@@ -7,61 +7,32 @@
   <style>
     /* ===== 팔레트 (dataviz 레퍼런스 팔레트, 라이트/다크) ===== */
     :root {
-      --surface-1: #fcfcfb;       /* 카드 표면 */
-      --page: #f9f9f7;            /* 페이지 배경 */
-      --text-primary: #0b0b0b;
-      --text-secondary: #52514e;
-      --text-muted: #898781;
-      --grid: #e1e0d9;
-      --axis: #c3c2b7;
-      --border: rgba(11, 11, 11, 0.10);
-      --series-1: #2a78d6;        /* blue */
-      --series-2: #1baf7a;        /* aqua */
-      --series-3: #eda100;        /* yellow */
-      --series-4: #008300;        /* green */
-      --series-6: #e34948;        /* red */
-      --up: #d03b3b;              /* 상승(한국 관례: 빨강) */
-      --down: #2a78d6;            /* 하락(파랑) */
-      --good: #006300;
+      --surface-1: #fcfcfb; --page: #f9f9f7;
+      --text-primary: #0b0b0b; --text-secondary: #52514e; --text-muted: #898781;
+      --grid: #e1e0d9; --axis: #c3c2b7; --border: rgba(11,11,11,0.10);
+      --series-1: #2a78d6; --series-2: #1baf7a; --series-3: #eda100;
+      --series-4: #008300; --series-5: #4a3aa7; --series-6: #e34948; --series-8: #eb6834;
+      --up: #d03b3b; --down: #2a78d6; --good: #006300;
       --shadow: 0 1px 2px rgba(11,11,11,.05), 0 4px 16px rgba(11,11,11,.04);
       --radius: 14px;
     }
     :root[data-theme="dark"] {
-      --surface-1: #1a1a19;
-      --page: #0d0d0d;
-      --text-primary: #ffffff;
-      --text-secondary: #c3c2b7;
-      --text-muted: #898781;
-      --grid: #2c2c2a;
-      --axis: #383835;
-      --border: rgba(255, 255, 255, 0.10);
-      --series-1: #3987e5;
-      --series-2: #199e70;
-      --series-3: #c98500;
-      --series-4: #008300;
-      --series-6: #e66767;
-      --up: #ff6b6b;
-      --down: #5598e7;
-      --good: #0ca30c;
+      --surface-1: #1a1a19; --page: #0d0d0d;
+      --text-primary: #ffffff; --text-secondary: #c3c2b7; --text-muted: #898781;
+      --grid: #2c2c2a; --axis: #383835; --border: rgba(255,255,255,0.10);
+      --series-1: #3987e5; --series-2: #199e70; --series-3: #c98500;
+      --series-4: #008300; --series-5: #9085e9; --series-6: #e66767; --series-8: #d95926;
+      --up: #ff6b6b; --down: #5598e7; --good: #0ca30c;
       --shadow: 0 1px 2px rgba(0,0,0,.4), 0 4px 16px rgba(0,0,0,.3);
     }
     @media (prefers-color-scheme: dark) {
       :root:not([data-theme="light"]) {
-        --surface-1: #1a1a19;
-        --page: #0d0d0d;
-        --text-primary: #ffffff;
-        --text-secondary: #c3c2b7;
-        --text-muted: #898781;
-        --grid: #2c2c2a;
-        --axis: #383835;
-        --border: rgba(255, 255, 255, 0.10);
-        --series-1: #3987e5;
-        --series-2: #199e70;
-        --series-3: #c98500;
-        --series-6: #e66767;
-        --up: #ff6b6b;
-        --down: #5598e7;
-        --good: #0ca30c;
+        --surface-1: #1a1a19; --page: #0d0d0d;
+        --text-primary: #ffffff; --text-secondary: #c3c2b7; --text-muted: #898781;
+        --grid: #2c2c2a; --axis: #383835; --border: rgba(255,255,255,0.10);
+        --series-1: #3987e5; --series-2: #199e70; --series-3: #c98500;
+        --series-5: #9085e9; --series-6: #e66767; --series-8: #d95926;
+        --up: #ff6b6b; --down: #5598e7; --good: #0ca30c;
         --shadow: 0 1px 2px rgba(0,0,0,.4), 0 4px 16px rgba(0,0,0,.3);
       }
     }
@@ -70,49 +41,53 @@
     html, body { margin: 0; padding: 0; }
     body {
       font-family: system-ui, -apple-system, "Segoe UI", "Malgun Gothic", sans-serif;
-      background: var(--page);
-      color: var(--text-primary);
-      line-height: 1.5;
+      background: var(--page); color: var(--text-primary); line-height: 1.5;
       -webkit-font-smoothing: antialiased;
     }
 
     /* ===== 상단 검색 바 ===== */
     .topbar {
-      position: sticky; top: 0; z-index: 20;
-      background: var(--surface-1);
+      position: sticky; top: 0; z-index: 20; background: var(--surface-1);
       border-bottom: 1px solid var(--border);
-      display: flex; align-items: center; gap: 14px;
-      padding: 12px 20px;
-      flex-wrap: wrap;
+      display: flex; align-items: center; gap: 12px; padding: 12px 20px; flex-wrap: wrap;
     }
     .brand { font-weight: 700; font-size: 17px; letter-spacing: -.02em; white-space: nowrap; }
     .brand .dot { color: var(--series-1); }
-    .search { display: flex; flex: 1 1 320px; min-width: 220px; gap: 8px; }
+    .search { display: flex; flex: 1 1 300px; min-width: 200px; gap: 8px; }
     .search input {
-      flex: 1; padding: 10px 14px; font-size: 15px;
-      border: 1px solid var(--border); border-radius: 10px;
-      background: var(--page); color: var(--text-primary);
+      flex: 1; padding: 10px 14px; font-size: 15px; border: 1px solid var(--border);
+      border-radius: 10px; background: var(--page); color: var(--text-primary);
     }
     .search input:focus { outline: 2px solid var(--series-1); outline-offset: 0; border-color: transparent; }
     .btn {
       border: 1px solid var(--border); background: var(--page); color: var(--text-primary);
-      padding: 10px 16px; font-size: 14px; border-radius: 10px; cursor: pointer; white-space: nowrap;
+      padding: 10px 14px; font-size: 14px; border-radius: 10px; cursor: pointer; white-space: nowrap;
     }
     .btn:hover { border-color: var(--series-1); }
     .btn-primary { background: var(--series-1); color: #fff; border-color: transparent; font-weight: 600; }
     .btn-icon { padding: 10px 12px; }
+    .btn.on { background: var(--series-1); color: #fff; border-color: transparent; }
+
+    /* 즐겨찾기 칩 */
+    .favbar { max-width: 1120px; margin: 12px auto 0; padding: 0 20px; display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+    .favbar .lbl { font-size: 12px; color: var(--text-muted); }
+    .chip {
+      display: inline-flex; align-items: center; gap: 6px; font-size: 13px; cursor: pointer;
+      padding: 5px 10px; border-radius: 999px; border: 1px solid var(--border); background: var(--surface-1); color: var(--text-secondary);
+    }
+    .chip:hover { border-color: var(--series-1); color: var(--text-primary); }
+    .chip .x { color: var(--text-muted); font-weight: 700; }
+    .chip .x:hover { color: var(--up); }
 
     /* ===== 리포트 컨테이너 ===== */
-    .report { max-width: 1120px; margin: 22px auto 60px; padding: 0 20px; }
+    .report { max-width: 1120px; margin: 16px auto 60px; padding: 0 20px; }
     .card {
-      background: var(--surface-1); border: 1px solid var(--border);
-      border-radius: var(--radius); box-shadow: var(--shadow);
-      padding: 20px 22px; margin-bottom: 18px;
+      background: var(--surface-1); border: 1px solid var(--border); border-radius: var(--radius);
+      box-shadow: var(--shadow); padding: 20px 22px; margin-bottom: 18px;
     }
     .section-title {
-      display: flex; align-items: center; gap: 10px;
-      font-size: 15px; font-weight: 700; letter-spacing: -.01em;
-      margin: 0 0 16px; color: var(--text-primary);
+      display: flex; align-items: center; gap: 10px; font-size: 15px; font-weight: 700;
+      letter-spacing: -.01em; margin: 0 0 16px; color: var(--text-primary); flex-wrap: wrap;
     }
     .section-title .accent { width: 4px; height: 16px; border-radius: 2px; background: var(--series-1); }
     .badge {
@@ -121,61 +96,59 @@
     }
     .badge.live { color: var(--good); border-color: color-mix(in srgb, var(--good) 40%, transparent); }
     .badge.sample { color: var(--series-3); border-color: color-mix(in srgb, var(--series-3) 45%, transparent); }
-    .ml-auto { margin-left: auto; }
 
     /* ===== 종목 요약 헤더 ===== */
-    .summary { display: flex; flex-wrap: wrap; align-items: flex-end; gap: 20px 34px; }
+    .summary { display: flex; flex-wrap: wrap; align-items: flex-end; gap: 18px 34px; }
     .summary .name-block { display: flex; flex-direction: column; gap: 4px; }
-    .summary .name { font-size: 26px; font-weight: 800; letter-spacing: -.02em; }
+    .summary .name { font-size: 26px; font-weight: 800; letter-spacing: -.02em; display: flex; align-items: center; gap: 8px; }
+    .star { cursor: pointer; font-size: 20px; color: var(--text-muted); line-height: 1; }
+    .star.on { color: var(--series-3); }
     .summary .code { font-size: 13px; color: var(--text-muted); }
-    .mkt-badge { font-size: 11px; font-weight: 700; padding: 2px 7px; border-radius: 6px; margin-left: 8px; vertical-align: middle;
+    .mkt-badge { font-size: 11px; font-weight: 700; padding: 2px 7px; border-radius: 6px;
       background: color-mix(in srgb, var(--series-1) 15%, transparent); color: var(--series-1); }
     .price-block { display: flex; flex-direction: column; }
     .price { font-size: 30px; font-weight: 800; letter-spacing: -.02em; font-variant-numeric: tabular-nums; }
     .change { font-size: 14px; font-weight: 600; font-variant-numeric: tabular-nums; }
-    .up { color: var(--up); }
-    .down { color: var(--down); }
-    .flat { color: var(--text-secondary); }
-    .kpis { display: flex; flex-wrap: wrap; gap: 18px 28px; margin-left: auto; }
+    .up { color: var(--up); } .down { color: var(--down); } .flat { color: var(--text-secondary); }
+    .kpis { display: flex; flex-wrap: wrap; gap: 16px 26px; margin-left: auto; }
     .kpi { display: flex; flex-direction: column; }
     .kpi .k { font-size: 12px; color: var(--text-muted); }
     .kpi .v { font-size: 16px; font-weight: 700; font-variant-numeric: tabular-nums; }
+    .asof { width: 100%; font-size: 12px; color: var(--text-muted); margin-top: 2px; }
 
-    /* ===== 시세 섹션 ===== */
-    .range-toggle { display: flex; gap: 4px; margin-left: auto; }
-    .range-toggle button {
+    /* ===== 토글/차트 ===== */
+    .toggles { display: flex; gap: 4px; margin-left: auto; flex-wrap: wrap; }
+    .toggles button {
       font-size: 12px; padding: 5px 10px; border-radius: 8px; cursor: pointer;
       border: 1px solid var(--border); background: var(--page); color: var(--text-secondary);
     }
-    .range-toggle button.active { background: var(--series-1); color: #fff; border-color: transparent; font-weight: 600; }
+    .toggles button.active { background: var(--series-1); color: #fff; border-color: transparent; font-weight: 600; }
     .chart-wrap { position: relative; height: 300px; }
     .chart-wrap.small { height: 110px; }
+    .chart-wrap.mid { height: 200px; }
+    .chart-cap { font-size: 11px; color: var(--text-muted); margin: 2px 0 -6px 2px; }
     .stat-row { display: flex; flex-wrap: wrap; gap: 14px 30px; margin-top: 16px; padding-top: 14px; border-top: 1px solid var(--grid); }
     .stat { display: flex; flex-direction: column; }
     .stat .k { font-size: 12px; color: var(--text-muted); }
     .stat .v { font-size: 15px; font-weight: 700; font-variant-numeric: tabular-nums; }
 
-    /* ===== 그리드 레이아웃 ===== */
     .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
     @media (max-width: 820px) { .grid-2 { grid-template-columns: 1fr; } }
 
     /* ===== 투자의견 ===== */
-    .target-band { margin: 6px 0 18px; }
     .target-track { position: relative; height: 10px; border-radius: 999px; margin: 34px 0 30px;
       background: linear-gradient(90deg, var(--down), var(--text-muted), var(--up)); opacity: .9; }
     .target-marker { position: absolute; top: 50%; transform: translate(-50%, -50%); }
     .target-marker .dot { width: 14px; height: 14px; border-radius: 50%; border: 2px solid var(--surface-1); }
-    .target-marker .lbl { position: absolute; left: 50%; transform: translateX(-50%); white-space: nowrap;
-      font-size: 11px; font-weight: 600; }
-    .target-marker .lbl.top { bottom: 16px; }
-    .target-marker .lbl.bot { top: 16px; }
+    .target-marker .lbl { position: absolute; left: 50%; transform: translateX(-50%); white-space: nowrap; font-size: 11px; font-weight: 600; }
+    .target-marker .lbl.top { bottom: 16px; } .target-marker .lbl.bot { top: 16px; }
     .opinion-bar { display: flex; height: 26px; border-radius: 8px; overflow: hidden; margin: 4px 0 10px; }
     .opinion-bar > div { display: flex; align-items: center; justify-content: center; color: #fff; font-size: 11px; font-weight: 700; }
     .opinion-legend { display: flex; flex-wrap: wrap; gap: 12px; font-size: 12px; color: var(--text-secondary); }
     .opinion-legend span { display: inline-flex; align-items: center; gap: 5px; }
     .opinion-legend i { width: 10px; height: 10px; border-radius: 3px; display: inline-block; }
 
-    /* ===== 리포트/뉴스 리스트 ===== */
+    /* ===== 리스트 ===== */
     .list { display: flex; flex-direction: column; }
     .list-item { display: flex; gap: 12px; padding: 11px 0; border-top: 1px solid var(--grid); }
     .list-item:first-child { border-top: 0; }
@@ -191,15 +164,14 @@
     .rt .tgt { font-size: 14px; font-weight: 700; font-variant-numeric: tabular-nums; }
     .rt .tgt-k { font-size: 11px; color: var(--text-muted); }
 
-    /* ===== 재무 테이블 ===== */
+    /* ===== 테이블 ===== */
     table.fin { width: 100%; border-collapse: collapse; font-size: 13px; font-variant-numeric: tabular-nums; }
-    table.fin th, table.fin td { padding: 8px 10px; text-align: right; border-bottom: 1px solid var(--grid); }
+    table.fin th, table.fin td { padding: 8px 10px; text-align: right; border-bottom: 1px solid var(--grid); white-space: nowrap; }
     table.fin th:first-child, table.fin td:first-child { text-align: left; color: var(--text-secondary); }
     table.fin thead th { color: var(--text-muted); font-weight: 600; font-size: 12px; }
     table.fin tbody tr:last-child td { border-bottom: 0; }
-    .pos { color: var(--up); } .neg { color: var(--down); }
 
-    /* ===== 상태(로딩/에러/빈) ===== */
+    /* ===== 상태 ===== */
     .state { text-align: center; padding: 80px 20px; color: var(--text-secondary); }
     .state .big { font-size: 40px; margin-bottom: 12px; }
     .spinner { width: 34px; height: 34px; border: 3px solid var(--grid); border-top-color: var(--series-1);
@@ -211,13 +183,13 @@
     .foot { text-align: center; font-size: 12px; color: var(--text-muted); margin-top: 8px; }
     .foot a { color: var(--series-1); }
 
-    /* ===== 인쇄 (A4 한 장 지향) ===== */
+    /* ===== 인쇄/PDF (A4 지향) ===== */
     @media print {
-      .topbar, .range-toggle, .btn { display: none !important; }
+      .topbar, .favbar, .toggles, .btn, .star { display: none !important; }
       body { background: #fff; }
       .report { margin: 0; max-width: none; padding: 0; }
       .card { box-shadow: none; border-color: #ddd; break-inside: avoid; margin-bottom: 10px; padding: 12px 14px; }
-      .chart-wrap { height: 200px; }
+      .chart-wrap { height: 210px; } .chart-wrap.small { height: 90px; } .chart-wrap.mid { height: 160px; }
     }
   </style>
 </head>
@@ -225,19 +197,18 @@
   <header class="topbar">
     <div class="brand"><span class="dot">◼</span> 종목 통합 리포트</div>
     <form class="search" id="searchForm" autocomplete="off">
-      <input id="q" list="tickerList" placeholder="종목명 또는 코드 입력 (예: 삼성전자, 005930)" />
+      <input id="q" list="tickerList" placeholder="종목명 또는 코드 (예: 삼성전자, 005930)" />
       <datalist id="tickerList"></datalist>
       <button type="submit" class="btn btn-primary">조회</button>
     </form>
+    <button class="btn" id="compareBtn" title="여러 종목 비교">⇄ 비교</button>
+    <button class="btn btn-icon" id="pdfBtn" title="PDF 저장 / 인쇄">🖨 PDF</button>
     <button class="btn btn-icon" id="themeBtn" title="라이트/다크 전환">◐</button>
-    <button class="btn btn-icon" id="printBtn" title="인쇄 / PDF 저장">🖨</button>
   </header>
+  <div class="favbar" id="favbar"></div>
 
   <main class="report" id="report">
-    <div class="state">
-      <div class="big">📈</div>
-      <div>종목명 또는 종목코드를 입력해 통합 리포트를 조회하세요.</div>
-    </div>
+    <div class="state"><div class="big">📈</div><div>종목명 또는 종목코드를 입력해 통합 리포트를 조회하세요.</div></div>
   </main>
 
   <!-- Chart.js 4.4.1 (인라인 번들) -->
@@ -643,6 +614,30 @@ window.generateSampleData = function generateSampleData(ticker) {
     debtRatio.push(+((liab / eq) * 100).toFixed(1));
   }
 
+  // --- 외국인/기관 수급 (최근 20거래일, 순매수 대금 억원 추정) ---
+  const flowDates = dates.slice(-20);
+  const foreign = [], inst = [], indiv = [], foreignRatio = [];
+  let fr = 35 + rng() * 20; // 외국인 지분율(%) 시작
+  const flowScale = Math.max(20, p.cap * 0.0015);
+  for (let i = 0; i < flowDates.length; i++) {
+    const f = Math.round((rng() - 0.47) * flowScale);
+    const o = Math.round((rng() - 0.5) * flowScale * 0.8);
+    foreign.push(f);
+    inst.push(o);
+    indiv.push(-(f + o)); // 개인은 외국인+기관의 반대(수급 균형 근사)
+    fr += (f / flowScale) * 0.15;
+    foreignRatio.push(+Math.max(5, Math.min(70, fr)).toFixed(2));
+  }
+
+  // --- 동종 시장 지수 시계열(리베이스/상대수익률용) ---
+  const idxName = ticker.market === "KOSDAQ" ? "KOSDAQ" : "KOSPI";
+  const idxClose = [];
+  let iv = (idxName === "KOSDAQ" ? 850 : 2600) * (0.92 + rng() * 0.08);
+  for (let i = 0; i < dates.length; i++) {
+    iv = iv * (1 + (rng() - 0.5) * 0.011);
+    idxClose.push(+iv.toFixed(2));
+  }
+
   return {
     quote: {
       price: last,
@@ -658,6 +653,8 @@ window.generateSampleData = function generateSampleData(ticker) {
       currency: "KRW"
     },
     chart: { dates, close, volume },
+    investorTrend: { dates: flowDates, foreign: foreign, inst: inst, indiv: indiv, foreignRatio: foreignRatio },
+    index: { name: idxName, dates: dates.slice(), close: idxClose },
     recommendation: {
       targetMean,
       targetHigh,
@@ -689,155 +686,187 @@ window.generateSampleData = function generateSampleData(ticker) {
   <script>
   (function () {
     "use strict";
-
     var nf = new Intl.NumberFormat("ko-KR");
     var els = {
       report: document.getElementById("report"),
       form: document.getElementById("searchForm"),
       q: document.getElementById("q"),
       datalist: document.getElementById("tickerList"),
+      favbar: document.getElementById("favbar"),
       themeBtn: document.getElementById("themeBtn"),
-      printBtn: document.getElementById("printBtn")
+      pdfBtn: document.getElementById("pdfBtn"),
+      compareBtn: document.getElementById("compareBtn")
     };
-    var state = { data: null, ticker: null, range: "1Y", charts: {} };
+    var state = {
+      data: null, ticker: null, range: "1Y", charts: {},
+      priceMode: "price", showMA: true,   // price | rebase
+      mode: "single", compare: [], favorites: []
+    };
 
-    /* ---------- 포맷 helpers ---------- */
-    function won(v) { return nf.format(Math.round(v)) + "원"; }
+    /* ---------- 포맷 ---------- */
+    function won(v) { return v == null ? "-" : nf.format(Math.round(v)) + "원"; }
     function wonShort(v) {
-      if (v == null) return "-";
-      var a = Math.abs(v);
+      if (v == null) return "-"; var a = Math.abs(v);
       if (a >= 1e12) return (v / 1e12).toFixed(1) + "조원";
       if (a >= 1e8) return Math.round(v / 1e8).toLocaleString("ko-KR") + "억원";
       return nf.format(v) + "원";
     }
-    function eok(v) { // 억원 단위 입력
-      if (v == null) return "-";
-      if (Math.abs(v) >= 10000) return (v / 10000).toFixed(1) + "조";
-      return nf.format(Math.round(v)) + "억";
-    }
-    function pct(v) { return (v > 0 ? "+" : "") + v.toFixed(2) + "%"; }
+    function eok(v) { if (v == null) return "-"; if (Math.abs(v) >= 10000) return (v / 10000).toFixed(1) + "조"; return nf.format(Math.round(v)) + "억"; }
+    function pct(v) { return v == null ? "-" : (v > 0 ? "+" : "") + v.toFixed(2) + "%"; }
     function signCls(v) { return v > 0 ? "up" : v < 0 ? "down" : "flat"; }
+    function esc(s) { return String(s == null ? "" : s).replace(/[&<>"]/g, function (c) { return ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]; }); }
 
-    /* ---------- 테마 색상 (차트용) ---------- */
-    function css(name) { return getComputedStyle(document.documentElement).getPropertyValue(name).trim(); }
+    function css(n) { return getComputedStyle(document.documentElement).getPropertyValue(n).trim(); }
     function themeColors() {
-      return {
-        s1: css("--series-1"), s2: css("--series-2"), s3: css("--series-3"),
-        grid: css("--grid"), axis: css("--axis"), muted: css("--text-muted"),
-        text: css("--text-secondary"), surface: css("--surface-1")
-      };
+      return { s1: css("--series-1"), s2: css("--series-2"), s3: css("--series-3"),
+        s5: css("--series-5"), s6: css("--series-6"), s8: css("--series-8"),
+        up: css("--up"), down: css("--down"),
+        grid: css("--grid"), muted: css("--text-muted"), text: css("--text-secondary"), surface: css("--surface-1") };
     }
 
     /* ================= 데이터 레이어 ================= */
     var PROXIES = [
-      function (u) { return u; }, // 직접
+      function (u) { return u; },
       function (u) { return "https://corsproxy.io/?url=" + encodeURIComponent(u); },
-      function (u) { return "https://api.allorigins.win/raw?url=" + encodeURIComponent(u); }
+      function (u) { return "https://api.allorigins.win/raw?url=" + encodeURIComponent(u); },
+      function (u) { return "https://thingproxy.freeboard.io/fetch/" + u; }
     ];
-
+    function withTimeout(promise, ms) {
+      return new Promise(function (resolve, reject) {
+        var t = setTimeout(function () { reject(new Error("timeout")); }, ms);
+        promise.then(function (v) { clearTimeout(t); resolve(v); }, function (e) { clearTimeout(t); reject(e); });
+      });
+    }
+    // 프록시를 병렬 시도하고 가장 먼저 성공하는 응답을 사용(폴백 지연 최소화, 각 시도 4초 타임아웃)
     function fetchText(url) {
-      var i = 0;
-      function attempt() {
-        if (i >= PROXIES.length) return Promise.reject(new Error("all proxies failed"));
-        var wrapped = PROXIES[i++](url);
-        return fetch(wrapped, { headers: { Accept: "application/json, text/plain, */*" } })
-          .then(function (r) { if (!r.ok) throw new Error("HTTP " + r.status); return r.text(); })
-          .catch(function () { return attempt(); });
-      }
-      return attempt();
+      var attempts = PROXIES.map(function (w) {
+        return withTimeout(
+          fetch(w(url), { headers: { Accept: "application/json, text/plain, */*" } })
+            .then(function (r) { if (!r.ok) throw new Error("HTTP " + r.status); return r.text(); }),
+          4000
+        );
+      });
+      // Promise.any 미지원 환경 대비 폴리필 형태
+      if (typeof Promise.any === "function") return Promise.any(attempts);
+      return new Promise(function (resolve, reject) {
+        var left = attempts.length, err;
+        attempts.forEach(function (p) { p.then(resolve, function (e) { err = e; if (--left === 0) reject(err); }); });
+      });
     }
     function fetchJson(url) { return fetchText(url).then(function (t) { return JSON.parse(t); }); }
-
+    function num(v) { if (v == null) return null; var n = parseFloat(String(v).replace(/,/g, "")); return isNaN(n) ? null : n; }
     function raw(o) { return o && typeof o === "object" && "raw" in o ? o.raw : o; }
 
+    /* --- 네이버 모바일 API (한국 데이터 정확) --- */
+    var NAVER = "https://m.stock.naver.com/api/stock/";
+    function fetchNaver(ticker) {
+      var c = ticker.code;
+      return Promise.all([
+        fetchJson(NAVER + c + "/basic").catch(function () { return null; }),
+        fetchJson(NAVER + c + "/price?pageSize=250&page=1").catch(function () { return null; }),
+        fetchJson(NAVER + c + "/trend").catch(function () { return null; })
+      ]).then(function (arr) { return normalizeNaver(arr[0], arr[1], arr[2], ticker); });
+    }
+    function normalizeNaver(basic, priceRes, trend, ticker) {
+      // 가격 시계열
+      var rows = Array.isArray(priceRes) ? priceRes : (priceRes && priceRes.priceInfos) || (priceRes && priceRes.datas) || [];
+      if (!rows.length) throw new Error("naver no price");
+      var dates = [], close = [], volume = [];
+      rows.slice().reverse().forEach(function (r) {
+        var d = r.localTradedAt || r.tradeDate || r.date;
+        var cp = num(r.closePrice || r.closeVal || r.close);
+        if (!d || cp == null) return;
+        dates.push(String(d).slice(0, 10));
+        close.push(cp);
+        volume.push(num(r.accumulatedTradingVolume || r.volume) || 0);
+      });
+      if (!close.length) throw new Error("naver empty");
+      var price = close[close.length - 1], prevClose = close[close.length - 2] || price;
+      var q = { price: price, prevClose: prevClose, change: price - prevClose,
+        changePct: +(((price - prevClose) / prevClose) * 100).toFixed(2),
+        marketCap: null, per: null, pbr: null, eps: null,
+        high52: Math.max.apply(null, close), low52: Math.min.apply(null, close), currency: "KRW" };
+      if (basic) {
+        q.price = num(basic.closePrice) || q.price;
+        q.change = num(basic.compareToPreviousClosePrice) != null ? num(basic.compareToPreviousClosePrice) : q.change;
+        q.changePct = num(basic.fluctuationsRatio) != null ? num(basic.fluctuationsRatio) : q.changePct;
+        q.prevClose = q.price - q.change;
+        q.marketCap = num(basic.marketValue) != null ? num(basic.marketValue) * 1e8 : q.marketCap; // 네이버 시총 단위 억
+        q.per = num(basic.per); q.pbr = num(basic.pbr); q.eps = num(basic.eps);
+        var hi = basic.dealTrendInfos; // guard
+        if (basic.high52wPrice) q.high52 = num(basic.high52wPrice);
+        if (basic.low52wPrice) q.low52 = num(basic.low52wPrice);
+      }
+      var data = { quote: q, chart: { dates: dates, close: close, volume: volume },
+        investorTrend: null, index: null, recommendation: null, reports: null, news: null, financials: null, currency: "KRW" };
+      // 수급
+      var ti = trend && (trend.dealTrendInfos || trend.trendInfos || trend);
+      if (Array.isArray(ti) && ti.length) {
+        var fd = [], fo = [], io = [], id = [], frr = [];
+        ti.slice(0, 20).reverse().forEach(function (t) {
+          var d = t.bizdate || t.localTradedAt || t.date; if (!d) return;
+          fd.push(String(d).slice(0, 10).replace(/(\d{4})(\d{2})(\d{2})/, "$1-$2-$3"));
+          var cp = num(t.closePrice) || price;
+          fo.push(round1(num(t.foreignerPureBuyQuant) * cp / 1e8)); // 순매수 대금(억)
+          io.push(round1(num(t.organPureBuyQuant) * cp / 1e8));
+          id.push(round1(num(t.individualPureBuyQuant) * cp / 1e8));
+          frr.push(num(t.foreignerHoldRatio));
+        });
+        if (fd.length) data.investorTrend = { dates: fd, foreign: fo, inst: io, indiv: id, foreignRatio: frr };
+      }
+      return data;
+    }
+    function round1(v) { return v == null || isNaN(v) ? 0 : Math.round(v); }
+
+    /* --- Yahoo (보조) --- */
     function fetchYahoo(ticker) {
       var symbol = window.toYahooSymbol(ticker);
       var chartUrl = "https://query1.finance.yahoo.com/v8/finance/chart/" + symbol + "?range=1y&interval=1d";
       var qsUrl = "https://query1.finance.yahoo.com/v10/finance/quoteSummary/" + symbol +
         "?modules=price,summaryDetail,defaultKeyStatistics,financialData,recommendationTrend,incomeStatementHistory,balanceSheetHistory";
-      return Promise.all([
-        fetchJson(chartUrl),
-        fetchJson(qsUrl).catch(function () { return null; })
-      ]).then(function (arr) { return normalizeYahoo(arr[0], arr[1]); });
+      return Promise.all([fetchJson(chartUrl), fetchJson(qsUrl).catch(function () { return null; })])
+        .then(function (a) { return normalizeYahoo(a[0], a[1]); });
     }
-
     function normalizeYahoo(chartJson, qsJson) {
       var r = chartJson && chartJson.chart && chartJson.chart.result && chartJson.chart.result[0];
       if (!r || !r.meta) throw new Error("no chart");
-      var meta = r.meta;
-      var ts = r.timestamp || [];
-      var q = (r.indicators && r.indicators.quote && r.indicators.quote[0]) || {};
+      var meta = r.meta, ts = r.timestamp || [], q = (r.indicators && r.indicators.quote && r.indicators.quote[0]) || {};
       var dates = [], close = [], volume = [];
       for (var i = 0; i < ts.length; i++) {
         if (q.close && q.close[i] == null) continue;
         dates.push(new Date(ts[i] * 1000).toISOString().slice(0, 10));
-        close.push(Math.round(q.close[i]));
-        volume.push(q.volume ? q.volume[i] : null);
+        close.push(Math.round(q.close[i])); volume.push(q.volume ? q.volume[i] : null);
       }
-      var price = meta.regularMarketPrice;
-      var prevClose = meta.chartPreviousClose || meta.previousClose || close[close.length - 2] || price;
-
-      var data = {
-        quote: {
-          price: price, prevClose: prevClose,
-          change: price - prevClose,
-          changePct: +(((price - prevClose) / prevClose) * 100).toFixed(2),
-          marketCap: null, per: null, pbr: null, eps: null,
-          high52: meta.fiftyTwoWeekHigh || Math.max.apply(null, close),
-          low52: meta.fiftyTwoWeekLow || Math.min.apply(null, close),
-          currency: meta.currency || "KRW"
-        },
-        chart: { dates: dates, close: close, volume: volume },
-        recommendation: null, reports: null, news: null,
-        financials: null, currency: meta.currency || "KRW"
-      };
-
+      var price = meta.regularMarketPrice, prevClose = meta.chartPreviousClose || close[close.length - 2] || price;
+      var data = { quote: { price: price, prevClose: prevClose, change: price - prevClose,
+          changePct: +(((price - prevClose) / prevClose) * 100).toFixed(2), marketCap: null, per: null, pbr: null, eps: null,
+          high52: meta.fiftyTwoWeekHigh || Math.max.apply(null, close), low52: meta.fiftyTwoWeekLow || Math.min.apply(null, close), currency: meta.currency || "KRW" },
+        chart: { dates: dates, close: close, volume: volume }, investorTrend: null, index: null,
+        recommendation: null, reports: null, news: null, financials: null, currency: meta.currency || "KRW" };
       var m = qsJson && qsJson.quoteSummary && qsJson.quoteSummary.result && qsJson.quoteSummary.result[0];
       if (m) {
         if (m.price) data.quote.marketCap = raw(m.price.marketCap);
-        if (m.summaryDetail) {
-          data.quote.per = raw(m.summaryDetail.trailingPE);
-        }
-        if (m.defaultKeyStatistics) {
-          data.quote.pbr = raw(m.defaultKeyStatistics.priceToBook);
-          data.quote.eps = raw(m.defaultKeyStatistics.trailingEps);
-        }
-        if (m.financialData) {
-          var fd = m.financialData;
-          data.recommendation = {
-            targetMean: raw(fd.targetMeanPrice), targetHigh: raw(fd.targetHighPrice),
-            targetLow: raw(fd.targetLowPrice), currentPrice: raw(fd.currentPrice) || price,
-            numberOfAnalysts: raw(fd.numberOfAnalystOpinions) || 0,
-            dist: null, ratingText: fd.recommendationKey || ""
-          };
-        }
+        if (m.summaryDetail) data.quote.per = raw(m.summaryDetail.trailingPE);
+        if (m.defaultKeyStatistics) { data.quote.pbr = raw(m.defaultKeyStatistics.priceToBook); data.quote.eps = raw(m.defaultKeyStatistics.trailingEps); }
+        if (m.financialData) { var f = m.financialData; data.recommendation = { targetMean: raw(f.targetMeanPrice), targetHigh: raw(f.targetHighPrice),
+            targetLow: raw(f.targetLowPrice), currentPrice: raw(f.currentPrice) || price, numberOfAnalysts: raw(f.numberOfAnalystOpinions) || 0, dist: null, ratingText: f.recommendationKey || "" }; }
         if (m.recommendationTrend && m.recommendationTrend.trend && m.recommendationTrend.trend[0]) {
           var tr = m.recommendationTrend.trend[0];
-          var dist = { strongBuy: tr.strongBuy || 0, buy: tr.buy || 0, hold: tr.hold || 0, sell: tr.sell || 0, strongSell: tr.strongSell || 0 };
-          if (data.recommendation) data.recommendation.dist = dist;
+          if (data.recommendation) data.recommendation.dist = { strongBuy: tr.strongBuy || 0, buy: tr.buy || 0, hold: tr.hold || 0, sell: tr.sell || 0, strongSell: tr.strongSell || 0 };
         }
-        // 재무제표 (raw KRW -> 억원)
         var inc = m.incomeStatementHistory && m.incomeStatementHistory.incomeStatementHistory;
         var bal = m.balanceSheetHistory && m.balanceSheetHistory.balanceSheetStatements;
         if (inc && inc.length) {
           var fin = { years: [], revenue: [], operatingIncome: [], netIncome: [], assets: [], liabilities: [], equity: [], roe: [], debtRatio: [] };
-          var rows = inc.slice(0, 4).reverse();
-          for (var j = 0; j < rows.length; j++) {
-            var it = rows[j];
-            var yr = it.endDate && it.endDate.fmt ? it.endDate.fmt.slice(0, 4) : "";
-            fin.years.push(yr);
-            fin.revenue.push(toEok(raw(it.totalRevenue)));
-            fin.operatingIncome.push(toEok(raw(it.operatingIncome)));
-            fin.netIncome.push(toEok(raw(it.netIncome)));
+          inc.slice(0, 4).reverse().forEach(function (it) {
+            fin.years.push(it.endDate && it.endDate.fmt ? it.endDate.fmt.slice(0, 4) : "");
+            fin.revenue.push(toEok(raw(it.totalRevenue))); fin.operatingIncome.push(toEok(raw(it.operatingIncome))); fin.netIncome.push(toEok(raw(it.netIncome)));
             var bs = bal && bal.find ? bal.find(function (b) { return b.endDate && b.endDate.fmt === (it.endDate && it.endDate.fmt); }) : null;
-            var eq = bs ? toEok(raw(bs.totalStockholderEquity)) : null;
-            var li = bs ? toEok(raw(bs.totalLiab)) : null;
-            fin.equity.push(eq);
-            fin.liabilities.push(li);
-            fin.assets.push(eq != null && li != null ? eq + li : null);
+            var eq = bs ? toEok(raw(bs.totalStockholderEquity)) : null, li = bs ? toEok(raw(bs.totalLiab)) : null;
+            fin.equity.push(eq); fin.liabilities.push(li); fin.assets.push(eq != null && li != null ? eq + li : null);
             fin.roe.push(eq ? +((toEok(raw(it.netIncome)) / eq) * 100).toFixed(1) : null);
             fin.debtRatio.push(eq && li != null ? +((li / eq) * 100).toFixed(1) : null);
-          }
+          });
           if (fin.years.length) data.financials = fin;
         }
       }
@@ -845,7 +874,18 @@ window.generateSampleData = function generateSampleData(ticker) {
     }
     function toEok(v) { return v == null ? null : Math.round(v / 1e8); }
 
-    /* Google News RSS (프록시 경유) */
+    /* --- 지수(Yahoo) --- */
+    function fetchIndex(market) {
+      var sym = market === "KOSDAQ" ? "%5EKQ11" : "%5EKS11";
+      var url = "https://query1.finance.yahoo.com/v8/finance/chart/" + sym + "?range=1y&interval=1d";
+      return fetchJson(url).then(function (j) {
+        var r = j.chart.result[0], ts = r.timestamp, cl = r.indicators.quote[0].close, dates = [], close = [];
+        for (var i = 0; i < ts.length; i++) { if (cl[i] == null) continue; dates.push(new Date(ts[i] * 1000).toISOString().slice(0, 10)); close.push(cl[i]); }
+        return { name: market === "KOSDAQ" ? "KOSDAQ" : "KOSPI", dates: dates, close: close };
+      });
+    }
+
+    /* --- 뉴스(Google News RSS) --- */
     function fetchNews(name) {
       var url = "https://news.google.com/rss/search?q=" + encodeURIComponent(name + " 주가") + "&hl=ko&gl=KR&ceid=KR:ko";
       return fetchText(url).then(function (xml) {
@@ -853,415 +893,430 @@ window.generateSampleData = function generateSampleData(ticker) {
         var items = Array.prototype.slice.call(doc.querySelectorAll("item")).slice(0, 6);
         if (!items.length) throw new Error("no news");
         return items.map(function (it) {
-          var title = (it.querySelector("title") || {}).textContent || "";
-          var link = (it.querySelector("link") || {}).textContent || "#";
-          var pub = (it.querySelector("pubDate") || {}).textContent || "";
-          var src = (it.querySelector("source") || {}).textContent || "";
-          var d = pub ? new Date(pub).toISOString().slice(0, 10) : "";
-          return { title: title, source: src || "Google News", date: d, url: link, summary: "" };
+          var g = function (s) { var e = it.querySelector(s); return e ? e.textContent : ""; };
+          return { title: g("title"), source: g("source") || "Google News", date: g("pubDate") ? new Date(g("pubDate")).toISOString().slice(0, 10) : "", url: g("link") || "#", summary: "" };
         });
       });
     }
 
-    /* 실 API 우선, 실패/누락 시 샘플로 섹션별 폴백 */
+    /* --- 오케스트레이션: 모든 소스를 병렬 호출 후 병합(네이버·Yahoo 장점 결합), 섹션별 샘플 폴백 --- */
     function loadData(ticker) {
       var sample = window.generateSampleData(ticker);
-      var sources = { market: "sample", fin: "sample", rec: "sample", news: "sample" };
-      var live = null;
-      return fetchYahoo(ticker)
-        .then(function (d) { live = d; })
-        .catch(function () { live = null; })
-        .then(function () {
-          var data;
-          if (live && live.quote && live.chart && live.chart.close.length) {
-            data = live; sources.market = "live";
-            // per/pbr/marketCap 누락 시 샘플 프로파일로 보완
-            if (data.quote.marketCap == null) data.quote.marketCap = sample.quote.marketCap;
-            if (data.quote.per == null) data.quote.per = sample.quote.per;
-            if (data.quote.pbr == null) data.quote.pbr = sample.quote.pbr;
-            if (data.quote.eps == null) data.quote.eps = sample.quote.eps;
-            // 재무: 실시간 있으면 live, 없으면 샘플
-            if (data.financials && data.financials.years.length) { sources.fin = "live"; }
-            else { data.financials = sample.financials; sources.fin = "sample"; }
-            // 투자의견: 실시간 있으면 live, 없으면 샘플
-            if (data.recommendation && data.recommendation.numberOfAnalysts) {
-              sources.rec = "live";
-              if (!data.recommendation.dist) data.recommendation.dist = sample.recommendation.dist;
-            } else { data.recommendation = sample.recommendation; sources.rec = "sample"; }
-          } else {
-            // 전체 폴백: 모든 섹션 샘플 (sources는 초기값 그대로 sample)
-            data = sample;
-          }
-          // 증권사 레포트 목록은 실시간 소스가 없어 항상 샘플/예시로 보완
-          if (!data.reports || !data.reports.length) data.reports = sample.reports;
-          data.sector = data.sector || sample.sector;
-          return fetchNews(ticker.name)
-            .then(function (n) { data.news = n; sources.news = "live"; })
-            .catch(function () { data.news = sample.news; sources.news = "sample"; })
-            .then(function () { data.sources = sources; return data; });
+      var sources = { market: "sample", flow: "sample", fin: "sample", rec: "sample", news: "sample", index: "sample" };
+      var no = function () { return null; };
+      return Promise.all([
+        fetchNaver(ticker).catch(no),
+        fetchYahoo(ticker).catch(no),
+        fetchIndex(ticker.market).catch(no),
+        fetchNews(ticker.name).catch(no)
+      ]).then(function (res) {
+        var nv = res[0], yh = res[1], idx = res[2], nw = res[3];
+        var hasCore = function (x) { return x && x.quote && x.chart && x.chart.close.length; };
+        var live = hasCore(nv) ? nv : hasCore(yh) ? yh : null;   // 시세/차트: 네이버 우선
+        var data = live || sample;
+        if (live) sources.market = "live";
+        // 시총/PER/PBR/EPS 보완 (네이버가 우선, 없으면 Yahoo, 없으면 샘플)
+        ["marketCap", "per", "pbr", "eps"].forEach(function (k) {
+          if (data.quote[k] == null && hasCore(yh) && yh.quote[k] != null) data.quote[k] = yh.quote[k];
+          if (data.quote[k] == null) data.quote[k] = sample.quote[k];
         });
+        // 수급(외국인/기관): 네이버만 제공
+        if (live && data.investorTrend && data.investorTrend.dates.length) sources.flow = "live";
+        else if (nv && nv.investorTrend && nv.investorTrend.dates.length) { data.investorTrend = nv.investorTrend; sources.flow = "live"; }
+        else data.investorTrend = sample.investorTrend;
+        // 재무제표: Yahoo 제공(네이버 미제공) → Yahoo 우선
+        var fin = (yh && yh.financials && yh.financials.years.length) ? yh.financials : (live && live.financials && live.financials.years.length ? live.financials : null);
+        if (fin) { data.financials = fin; sources.fin = "live"; } else data.financials = sample.financials;
+        // 투자의견: Yahoo 제공
+        var rec = (yh && yh.recommendation && yh.recommendation.numberOfAnalysts) ? yh.recommendation : null;
+        if (rec) { data.recommendation = rec; sources.rec = "live"; if (!rec.dist) rec.dist = sample.recommendation.dist; }
+        else data.recommendation = sample.recommendation;
+        // 지수
+        if (idx && idx.close && idx.close.length) { data.index = alignIndex(idx, data.chart.dates); sources.index = "live"; }
+        else data.index = sample.index;
+        // 뉴스
+        if (nw && nw.length) { data.news = nw; sources.news = "live"; } else data.news = sample.news;
+        // 레포트 목록(실시간 API 부재 → 샘플/예시)
+        if (!data.reports || !data.reports.length) data.reports = sample.reports;
+        data.sector = data.sector || sample.sector;
+        data.sources = sources;
+        data.asOf = new Date();
+        return data;
+      });
+    }
+    // 지수 시계열을 종목 날짜에 맞춰 근사 정렬(간단히 뒤에서부터 길이 맞춤)
+    function alignIndex(idx, dates) {
+      if (!idx || !idx.close || !idx.close.length) return null;
+      var n = dates.length, c = idx.close.slice(-n);
+      return { name: idx.name, dates: dates.slice(-c.length), close: c };
     }
 
-    /* ================= 렌더링 ================= */
-    function el(html) { var t = document.createElement("template"); t.innerHTML = html.trim(); return t.content.firstChild; }
-    function badge(src) {
-      return src === "live"
-        ? '<span class="badge live">실시간</span>'
-        : '<span class="badge sample">샘플</span>';
-    }
+    /* ================= 지표 계산 ================= */
+    function sma(arr, n) { var out = new Array(arr.length).fill(null), s = 0; for (var i = 0; i < arr.length; i++) { s += arr[i]; if (i >= n) s -= arr[i - n]; if (i >= n - 1) out[i] = Math.round(s / n); } return out; }
+    function rsi(arr, p) { p = p || 14; var out = new Array(arr.length).fill(null); if (arr.length <= p) return out; var g = 0, l = 0, i;
+      for (i = 1; i <= p; i++) { var d = arr[i] - arr[i - 1]; if (d >= 0) g += d; else l -= d; } g /= p; l /= p; out[p] = l === 0 ? 100 : 100 - 100 / (1 + g / l);
+      for (i = p + 1; i < arr.length; i++) { var dd = arr[i] - arr[i - 1], gg = dd > 0 ? dd : 0, ll = dd < 0 ? -dd : 0; g = (g * (p - 1) + gg) / p; l = (l * (p - 1) + ll) / p; out[i] = l === 0 ? 100 : +(100 - 100 / (1 + g / l)).toFixed(1); } return out; }
+
+    /* ================= 렌더 ================= */
+    function badge(s) { return s === "live" ? '<span class="badge live">실시간</span>' : '<span class="badge sample">샘플</span>'; }
+    function kpi(k, v) { return '<div class="kpi"><span class="k">' + k + '</span><span class="v">' + v + "</span></div>"; }
+    function stat(k, v) { return '<div class="stat"><span class="k">' + k + '</span><span class="v">' + v + "</span></div>"; }
+    function rangeCount() { return { "1M": 21, "3M": 63, "6M": 126, "1Y": 999 }[state.range] || 999; }
+    function sliceR(arr) { var n = rangeCount(); return arr.slice(Math.max(0, arr.length - n)); }
 
     function render(ticker, d) {
       destroyCharts();
-      var anySample = Object.keys(d.sources).some(function (k) { return d.sources[k] === "sample"; });
-      var allSample = Object.keys(d.sources).every(function (k) { return d.sources[k] === "sample"; });
-      var q = d.quote;
+      var sc = d.sources, q = d.quote;
+      var anySample = Object.keys(sc).some(function (k) { return sc[k] === "sample"; });
+      var allSample = Object.keys(sc).every(function (k) { return sc[k] === "sample"; });
       var mkt = ticker.market === "KOSDAQ" ? "KOSDAQ" : "KOSPI";
+      var fav = state.favorites.some(function (f) { return f.code === ticker.code; });
+      var asof = d.asOf ? fmtDateTime(d.asOf) : "";
 
       var html = "";
-      if (anySample) {
-        html += '<div class="banner">' +
-          (allSample
-            ? "⚠ 실시간 데이터를 불러오지 못해 <b>샘플 데이터</b>로 표시합니다. (브라우저 CORS / 네트워크 정책). README의 프록시 설정을 참고하세요."
-            : "일부 섹션은 실시간 데이터를 불러오지 못해 <b>샘플</b>로 대체했습니다. 각 섹션 배지를 확인하세요.") +
-          "</div>";
-      }
+      if (anySample) html += '<div class="banner">' + (allSample
+        ? "⚠ 실시간 데이터를 불러오지 못해 <b>샘플 데이터</b>로 표시합니다(브라우저 CORS/네트워크 정책). 사내망에서는 프록시가 막힐 수 있습니다."
+        : "일부 섹션은 실시간 데이터를 불러오지 못해 <b>샘플</b>로 대체했습니다. 섹션별 배지를 확인하세요.") + "</div>";
 
-      // 1) 요약 헤더
+      // 1) 요약
       html += '<div class="card"><div class="summary">' +
-        '<div class="name-block">' +
-          '<div class="name">' + esc(ticker.name) + '<span class="mkt-badge">' + mkt + '</span></div>' +
-          '<div class="code">' + ticker.code + ' · ' + (d.sector || "") + '</div>' +
-        '</div>' +
-        '<div class="price-block">' +
-          '<div class="price ' + signCls(q.change) + '">' + nf.format(q.price) + '</div>' +
-          '<div class="change ' + signCls(q.change) + '">' +
-            (q.change > 0 ? "▲" : q.change < 0 ? "▼" : "-") + " " + nf.format(Math.abs(q.change)) + " (" + pct(q.changePct) + ")" +
-          '</div>' +
-        '</div>' +
-        '<div class="kpis">' +
-          kpi("시가총액", wonShort(q.marketCap)) +
-          kpi("PER", q.per != null ? q.per.toFixed(1) + "배" : "-") +
-          kpi("PBR", q.pbr != null ? q.pbr.toFixed(2) + "배" : "-") +
-          kpi("EPS", q.eps != null ? nf.format(q.eps) + "원" : "-") +
-          kpi("데이터", d.sources.market === "live" ? "실시간(Yahoo)" : "샘플") +
-        '</div>' +
-      '</div></div>';
+        '<div class="name-block"><div class="name"><span class="star ' + (fav ? "on" : "") + '" id="starBtn" title="관심종목">' + (fav ? "★" : "☆") + '</span>' + esc(ticker.name) + ' <span class="mkt-badge">' + mkt + '</span></div>' +
+        '<div class="code">' + ticker.code + ' · ' + (d.sector || "") + '</div></div>' +
+        '<div class="price-block"><div class="price ' + signCls(q.change) + '">' + nf.format(Math.round(q.price)) + '</div>' +
+        '<div class="change ' + signCls(q.change) + '">' + (q.change > 0 ? "▲" : q.change < 0 ? "▼" : "-") + " " + nf.format(Math.abs(Math.round(q.change))) + " (" + pct(q.changePct) + ')</div></div>' +
+        '<div class="kpis">' + kpi("시가총액", wonShort(q.marketCap)) + kpi("PER", q.per != null ? q.per.toFixed(1) + "배" : "-") +
+        kpi("PBR", q.pbr != null ? q.pbr.toFixed(2) + "배" : "-") + kpi("EPS", q.eps != null ? nf.format(Math.round(q.eps)) + "원" : "-") +
+        kpi("데이터", sc.market === "live" ? "실시간" : "샘플") + '</div>' +
+        '<div class="asof">기준 시각: ' + asof + ' · 출처: ' + (sc.market === "live" ? "네이버/Yahoo · Google News" : "내장 샘플") + '</div>' +
+        '</div></div>';
 
-      // 2) 시세
-      html += '<div class="card">' +
-        '<div class="section-title"><span class="accent"></span>시세 ' + badge(d.sources.market) +
-          '<div class="range-toggle" id="rangeToggle">' +
-            ["1M", "3M", "6M", "1Y"].map(function (r) {
-              return '<button data-range="' + r + '"' + (r === state.range ? ' class="active"' : "") + ">" + r + "</button>";
-            }).join("") +
-          '</div>' +
-        '</div>' +
+      // 2) 시세 + 지표
+      var relLabel = state.priceMode === "rebase" ? "가격" : "지수대비";
+      html += '<div class="card"><div class="section-title"><span class="accent"></span>시세 · 기술적지표 ' + badge(sc.market) +
+        '<div class="toggles">' +
+          '<button data-act="mode" id="modeToggle">' + relLabel + '</button>' +
+          '<button data-act="ma" class="' + (state.showMA ? "active" : "") + '" id="maToggle">이동평균</button>' +
+          ["1M", "3M", "6M", "1Y"].map(function (r) { return '<button data-range="' + r + '"' + (r === state.range ? ' class="active"' : "") + ">" + r + "</button>"; }).join("") +
+        '</div></div>' +
         '<div class="chart-wrap"><canvas id="priceChart"></canvas></div>' +
-        '<div class="chart-wrap small"><canvas id="volChart"></canvas></div>' +
-        '<div class="stat-row">' +
-          stat("현재가", won(q.price)) +
-          stat("전일종가", won(q.prevClose)) +
-          stat("52주 최고", won(q.high52)) +
-          stat("52주 최저", won(q.low52)) +
-        '</div>' +
-      '</div>';
+        '<div class="chart-cap">RSI(14)</div><div class="chart-wrap small"><canvas id="rsiChart"></canvas></div>' +
+        '<div class="chart-cap">거래량</div><div class="chart-wrap small"><canvas id="volChart"></canvas></div>' +
+        '<div class="stat-row">' + priceStats(d) + '</div></div>';
 
-      // 3) 투자의견 + 4) 뉴스 (2단)
+      // 3) 수급
+      html += flowCard(d);
+
+      // 4) 투자의견 | 뉴스
       html += '<div class="grid-2">' + recommendationCard(d) + newsCard(d) + '</div>';
 
       // 5) 재무제표
       html += financialsCard(d);
 
-      html += '<div class="foot">본 화면은 정보 제공 목적의 참고 자료이며 투자 판단의 책임은 이용자에게 있습니다. ' +
-        '데이터 출처: Yahoo Finance, Google News (실시간) / 내장 샘플(폴백).</div>';
+      html += '<div class="foot">본 화면은 정보 제공 목적의 참고 자료이며 투자 판단의 책임은 이용자에게 있습니다. 데이터: 네이버·Yahoo Finance·Google News(실시간) / 내장 샘플(폴백).</div>';
 
       els.report.innerHTML = html;
-
-      // 차트/이벤트
-      renderPriceChart();
-      renderVolChart();
-      renderFinChart(d);
-      var rt = document.getElementById("rangeToggle");
-      if (rt) rt.addEventListener("click", function (e) {
-        var b = e.target.closest("button"); if (!b) return;
-        state.range = b.getAttribute("data-range");
-        Array.prototype.forEach.call(rt.children, function (c) { c.classList.toggle("active", c === b); });
-        renderPriceChart(); renderVolChart();
-      });
+      renderPriceChart(); renderRsiChart(); renderVolChart(); renderFlowCharts(d); renderFinChart(d);
+      bindSectionEvents();
     }
 
-    function kpi(k, v) { return '<div class="kpi"><span class="k">' + k + '</span><span class="v">' + v + "</span></div>"; }
-    function stat(k, v) { return '<div class="stat"><span class="k">' + k + '</span><span class="v">' + v + "</span></div>"; }
-    function esc(s) { return String(s).replace(/[&<>"]/g, function (c) { return ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]; }); }
+    function fmtDateTime(dt) {
+      function z(n) { return (n < 10 ? "0" : "") + n; }
+      return dt.getFullYear() + "-" + z(dt.getMonth() + 1) + "-" + z(dt.getDate()) + " " + z(dt.getHours()) + ":" + z(dt.getMinutes());
+    }
 
-    function rangeCount() { return { "1M": 21, "3M": 63, "6M": 126, "1Y": 999 }[state.range] || 999; }
-    function sliced(arr) { var n = rangeCount(); return arr.slice(Math.max(0, arr.length - n)); }
+    function priceStats(d) {
+      var q = d.quote, c = d.chart.close, cS = sliceR(c);
+      var ret = ((cS[cS.length - 1] - cS[0]) / cS[0]) * 100;
+      var idxRet = null;
+      if (d.index && d.index.close && d.index.close.length) { var iS = sliceR(d.index.close); idxRet = ((iS[iS.length - 1] - iS[0]) / iS[0]) * 100; }
+      var rel = idxRet != null ? ret - idxRet : null;
+      return stat("현재가", won(q.price)) + stat("52주 최고", won(q.high52)) + stat("52주 최저", won(q.low52)) +
+        stat(state.range + " 수익률", '<span class="' + signCls(ret) + '">' + pct(ret) + "</span>") +
+        (idxRet != null ? stat((d.index.name || "지수") + " 수익률", '<span class="' + signCls(idxRet) + '">' + pct(idxRet) + "</span>") : "") +
+        (rel != null ? stat("지수 대비 초과", '<span class="' + signCls(rel) + '">' + pct(rel) + "</span>") : "");
+    }
+
+    /* --- 차트 --- */
+    function baseOpts(c, fmt, legend) {
+      return { responsive: true, maintainAspectRatio: false, interaction: { mode: "index", intersect: false },
+        plugins: { legend: legend ? { position: "top", labels: { color: c.text, boxWidth: 10, boxHeight: 10, font: { size: 11 } } } : { display: false },
+          tooltip: { backgroundColor: c.surface, titleColor: c.text, bodyColor: c.text, borderColor: c.grid, borderWidth: 1, padding: 10,
+            callbacks: { label: function (i) { return " " + (i.dataset.label ? i.dataset.label + ": " : "") + fmt(i.parsed.y); } } } },
+        scales: { x: { grid: { display: false }, ticks: { color: c.muted, maxTicksLimit: 6, autoSkip: true, font: { size: 11 } } },
+          y: { grid: { color: c.grid }, border: { display: false }, ticks: { color: c.muted, maxTicksLimit: 5, font: { size: 11 }, callback: function (v) { return fmt(v); } } } } };
+    }
+    function hexA(hex, a) { hex = hex.replace("#", ""); if (hex.length === 3) hex = hex.split("").map(function (x) { return x + x; }).join(""); var n = parseInt(hex, 16); return "rgba(" + ((n >> 16) & 255) + "," + ((n >> 8) & 255) + "," + (n & 255) + "," + a + ")"; }
 
     function renderPriceChart() {
-      var d = state.data; var c = themeColors();
-      var labels = sliced(d.chart.dates), data = sliced(d.chart.close);
-      var up = data[data.length - 1] >= data[0];
-      var line = up ? css("--up") : css("--down");
+      var d = state.data, c = themeColors();
+      var labels = sliceR(d.chart.dates), close = sliceR(d.chart.close);
       destroyChart("price");
-      state.charts.price = new Chart(document.getElementById("priceChart"), {
-        type: "line",
-        data: { labels: labels, datasets: [{
-          label: "종가", data: data, borderColor: line, borderWidth: 2,
-          pointRadius: 0, pointHoverRadius: 4, tension: 0.2,
-          fill: true, backgroundColor: fadeFill(line)
-        }] },
-        options: baseLineOpts(c, function (v) { return nf.format(v) + "원"; })
-      });
+      var ds, opts;
+      if (state.priceMode === "rebase") {
+        var b0 = close[0]; var rebase = close.map(function (v) { return +((v / b0) * 100).toFixed(2); });
+        ds = [{ label: d.ticker || "종목", data: rebase, borderColor: c.s1, borderWidth: 2, pointRadius: 0, pointHoverRadius: 4, tension: .2 }];
+        if (d.index && d.index.close && d.index.close.length) {
+          var idxS = sliceR(d.index.close), ib = idxS[0];
+          ds.push({ label: d.index.name, data: idxS.map(function (v) { return +((v / ib) * 100).toFixed(2); }), borderColor: c.muted, borderWidth: 1.5, borderDash: [5, 4], pointRadius: 0, pointHoverRadius: 3, tension: .2 });
+        }
+        opts = baseOpts(c, function (v) { return v.toFixed(1); }, true);
+      } else {
+        var up = close[close.length - 1] >= close[0], line = up ? c.up : c.down;
+        var ctx = document.getElementById("priceChart").getContext("2d");
+        var g = ctx.createLinearGradient(0, 0, 0, 300); g.addColorStop(0, hexA(line, .18)); g.addColorStop(1, hexA(line, 0));
+        ds = [{ label: "종가", data: close, borderColor: line, borderWidth: 2, pointRadius: 0, pointHoverRadius: 4, tension: .2, fill: true, backgroundColor: g }];
+        if (state.showMA) {
+          var full = d.chart.close, cut = Math.max(0, full.length - rangeCount());
+          [[5, c.s3], [20, c.s2], [60, c.s5]].forEach(function (m) {
+            ds.push({ label: "MA" + m[0], data: sma(full, m[0]).slice(cut), borderColor: m[1], borderWidth: 1.3, pointRadius: 0, tension: .2, fill: false });
+          });
+        }
+        opts = baseOpts(c, function (v) { return nf.format(Math.round(v)) + "원"; }, state.showMA);
+      }
+      state.charts.price = new Chart(document.getElementById("priceChart"), { type: "line", data: { labels: labels, datasets: ds }, options: opts });
+    }
+    function renderRsiChart() {
+      var d = state.data, c = themeColors();
+      var full = d.chart.close, cut = Math.max(0, full.length - rangeCount());
+      var labels = sliceR(d.chart.dates), data = rsi(full, 14).slice(cut);
+      destroyChart("rsi");
+      var opts = baseOpts(c, function (v) { return Math.round(v); }, false);
+      opts.scales.y.min = 0; opts.scales.y.max = 100; opts.scales.y.ticks.callback = function (v) { return v; };
+      opts.scales.y.ticks.stepSize = 50;
+      state.charts.rsi = new Chart(document.getElementById("rsiChart"), { type: "line",
+        data: { labels: labels, datasets: [{ label: "RSI", data: data, borderColor: c.s5, borderWidth: 1.5, pointRadius: 0, tension: .2 }] }, options: opts });
     }
     function renderVolChart() {
-      var d = state.data; var c = themeColors();
-      var labels = sliced(d.chart.dates), data = sliced(d.chart.volume);
+      var d = state.data, c = themeColors();
       destroyChart("vol");
-      state.charts.vol = new Chart(document.getElementById("volChart"), {
-        type: "bar",
-        data: { labels: labels, datasets: [{ label: "거래량", data: data, backgroundColor: c.s1, borderRadius: 1, barPercentage: 1, categoryPercentage: .9 }] },
-        options: Object.assign(baseLineOpts(c, function (v) { return nf.format(v); }), { scales: volScales(c) })
-      });
-    }
-    function fadeFill(hex) {
-      var ctx = document.getElementById("priceChart").getContext("2d");
-      var g = ctx.createLinearGradient(0, 0, 0, 300);
-      g.addColorStop(0, hexA(hex, .18)); g.addColorStop(1, hexA(hex, 0));
-      return g;
-    }
-    function hexA(hex, a) {
-      hex = hex.replace("#", "");
-      if (hex.length === 3) hex = hex.split("").map(function (x) { return x + x; }).join("");
-      var n = parseInt(hex, 16);
-      return "rgba(" + ((n >> 16) & 255) + "," + ((n >> 8) & 255) + "," + (n & 255) + "," + a + ")";
-    }
-    function baseLineOpts(c, fmt) {
-      return {
-        responsive: true, maintainAspectRatio: false,
-        interaction: { mode: "index", intersect: false },
-        plugins: {
-          legend: { display: false },
-          tooltip: {
-            backgroundColor: c.surface, titleColor: c.text, bodyColor: c.text,
-            borderColor: c.grid, borderWidth: 1, padding: 10,
-            callbacks: { label: function (i) { return " " + fmt(i.parsed.y); } }
-          }
-        },
-        scales: {
-          x: { grid: { display: false }, ticks: { color: c.muted, maxTicksLimit: 6, autoSkip: true, font: { size: 11 } } },
-          y: { grid: { color: c.grid }, border: { display: false }, ticks: { color: c.muted, maxTicksLimit: 5, font: { size: 11 }, callback: function (v) { return fmt(v); } } }
-        }
-      };
-    }
-    function volScales(c) {
-      return {
-        x: { grid: { display: false }, ticks: { display: false } },
-        y: { grid: { color: c.grid }, border: { display: false }, ticks: { color: c.muted, maxTicksLimit: 3, font: { size: 10 }, callback: function (v) { return v >= 1e6 ? (v / 1e6).toFixed(0) + "M" : v >= 1e3 ? (v / 1e3).toFixed(0) + "K" : v; } } }
-      };
+      var opts = baseOpts(c, function (v) { return nf.format(v); }, false);
+      opts.scales.x.ticks = { display: false };
+      opts.scales.y.ticks.callback = function (v) { return v >= 1e6 ? (v / 1e6).toFixed(0) + "M" : v >= 1e3 ? (v / 1e3).toFixed(0) + "K" : v; };
+      opts.scales.y.ticks.maxTicksLimit = 3;
+      state.charts.vol = new Chart(document.getElementById("volChart"), { type: "bar",
+        data: { labels: sliceR(d.chart.dates), datasets: [{ label: "거래량", data: sliceR(d.chart.volume), backgroundColor: c.s1, barPercentage: 1, categoryPercentage: .9 }] }, options: opts });
     }
 
-    /* --- 투자의견 카드 --- */
+    /* --- 수급 카드 --- */
+    function flowCard(d) {
+      var f = d.investorTrend;
+      if (!f || !f.dates.length) return "";
+      var sum = function (a, n) { return a.slice(-n).reduce(function (x, y) { return x + (y || 0); }, 0); };
+      var f5 = sum(f.foreign, 5), i5 = sum(f.inst, 5), f20 = sum(f.foreign, 20), i20 = sum(f.inst, 20);
+      var fr = f.foreignRatio && f.foreignRatio.length ? f.foreignRatio[f.foreignRatio.length - 1] : null;
+      var html = '<div class="card"><div class="section-title"><span class="accent"></span>외국인 · 기관 수급 ' + badge(d.sources.flow) + '</div>' +
+        '<div class="grid-2">' +
+          '<div><div class="chart-cap">일별 순매수 대금(억원) · 최근 ' + f.dates.length + '거래일</div><div class="chart-wrap mid"><canvas id="flowChart"></canvas></div></div>' +
+          '<div><div class="chart-cap">외국인 지분율(%)</div><div class="chart-wrap mid"><canvas id="frChart"></canvas></div></div>' +
+        '</div>' +
+        '<div class="stat-row">' +
+          stat("외국인 5일 누적", '<span class="' + signCls(f5) + '">' + (f5 > 0 ? "+" : "") + eok(f5) + "</span>") +
+          stat("기관 5일 누적", '<span class="' + signCls(i5) + '">' + (i5 > 0 ? "+" : "") + eok(i5) + "</span>") +
+          stat("외국인 20일 누적", '<span class="' + signCls(f20) + '">' + (f20 > 0 ? "+" : "") + eok(f20) + "</span>") +
+          stat("기관 20일 누적", '<span class="' + signCls(i20) + '">' + (i20 > 0 ? "+" : "") + eok(i20) + "</span>") +
+          (fr != null ? stat("외국인 지분율", fr.toFixed(2) + "%") : "") +
+        '</div></div>';
+      return html;
+    }
+    function renderFlowCharts(d) {
+      var f = d.investorTrend; if (!f || !f.dates.length) return;
+      var c = themeColors();
+      destroyChart("flow"); destroyChart("fr");
+      var opts = baseOpts(c, function (v) { return eok(v); }, true);
+      opts.scales.x.ticks = { color: c.muted, maxTicksLimit: 5, font: { size: 10 } };
+      state.charts.flow = new Chart(document.getElementById("flowChart"), { type: "bar",
+        data: { labels: f.dates, datasets: [
+          { label: "외국인", data: f.foreign, backgroundColor: c.s1, borderRadius: 2 },
+          { label: "기관", data: f.inst, backgroundColor: c.s3, borderRadius: 2 } ] }, options: opts });
+      if (f.foreignRatio && f.foreignRatio.some(function (x) { return x != null; })) {
+        var o2 = baseOpts(c, function (v) { return v == null ? "-" : v.toFixed(2) + "%"; }, false);
+        o2.scales.x.ticks = { color: c.muted, maxTicksLimit: 5, font: { size: 10 } };
+        state.charts.fr = new Chart(document.getElementById("frChart"), { type: "line",
+          data: { labels: f.dates, datasets: [{ label: "외국인 지분율", data: f.foreignRatio, borderColor: c.s2, borderWidth: 2, pointRadius: 0, pointHoverRadius: 4, tension: .2, fill: true, backgroundColor: hexA(c.s2, .12) }] }, options: o2 });
+      }
+    }
+
+    /* --- 투자의견 --- */
     function recommendationCard(d) {
-      var r = d.recommendation; var q = d.quote;
-      var lo = Math.min(r.targetLow, q.price) * 0.96;
-      var hi = Math.max(r.targetHigh, q.price) * 1.04;
-      var span = hi - lo || 1;
-      function posOf(v) { return ((v - lo) / span) * 100; }
+      var r = d.recommendation, q = d.quote;
+      var lo = Math.min(r.targetLow, q.price) * 0.96, hi = Math.max(r.targetHigh, q.price) * 1.04, span = hi - lo || 1;
+      function pos(v) { return Math.max(0, Math.min(100, ((v - lo) / span) * 100)); }
       var upside = ((r.targetMean - q.price) / q.price) * 100;
-
       var dist = r.dist || { strongBuy: 0, buy: 0, hold: 0, sell: 0, strongSell: 0 };
       var total = dist.strongBuy + dist.buy + dist.hold + dist.sell + dist.strongSell || 1;
-      var segs = [
-        { k: "강력매수", v: dist.strongBuy, c: "--series-4" },
-        { k: "매수", v: dist.buy, c: "--series-2" },
-        { k: "중립", v: dist.hold, c: "--series-3" },
-        { k: "매도", v: dist.sell + dist.strongSell, c: "--series-6" }
-      ];
-
-      var html = '<div class="card">' +
-        '<div class="section-title"><span class="accent"></span>증권사 투자의견 · 목표주가 ' + badge(d.sources.rec) + '</div>';
-
-      // 목표주가 밴드
-      html += '<div class="target-band">' +
-        '<div class="target-track">' +
-          marker(posOf(r.targetLow), "--text-muted", "최저 " + nf.format(r.targetLow), "top") +
-          marker(posOf(r.targetHigh), "--text-muted", "최고 " + nf.format(r.targetHigh), "top") +
-          marker(posOf(q.price), "--text-primary", "현재가 " + nf.format(q.price), "bot") +
-          marker(posOf(r.targetMean), "--series-1", "목표 " + nf.format(r.targetMean), "bot") +
-        '</div>' +
-      '</div>';
-
-      html += '<div class="kpis" style="margin:0 0 14px;gap:14px 26px;">' +
-        kpi("목표주가(평균)", nf.format(r.targetMean) + "원") +
-        kpi("상승여력", '<span class="' + signCls(upside) + '">' + pct(upside) + "</span>") +
-        kpi("투자의견", r.ratingText ? mapRating(r.ratingText) : "-") +
-        kpi("애널리스트", r.numberOfAnalysts + "명") +
-      '</div>';
-
-      // 의견 분포 바
-      html += '<div class="opinion-bar">' + segs.map(function (s) {
-        var w = (s.v / total) * 100;
-        if (w <= 0) return "";
-        return '<div style="width:' + w + '%;background:var(' + s.c + ')">' + (w > 8 ? s.v : "") + "</div>";
-      }).join("") + "</div>";
-      html += '<div class="opinion-legend">' + segs.map(function (s) {
-        return '<span><i style="background:var(' + s.c + ')"></i>' + s.k + " " + s.v + "</span>";
-      }).join("") + "</div>";
-
-      // 최근 리포트
-      html += '<div class="section-title" style="margin:18px 0 8px;font-size:13px;"><span class="accent"></span>최근 증권사 레포트</div>';
-      html += '<div class="list">' + d.reports.slice(0, 5).map(function (rp) {
-        var opCls = /매도|sell/i.test(rp.opinion) ? "sell" : /중립|hold/i.test(rp.opinion) ? "hold" : "";
-        return '<div class="list-item">' +
-          '<span class="op-pill ' + opCls + '">' + esc(rp.opinion) + '</span>' +
-          '<div class="main"><div class="t">' + esc(rp.title) + '</div>' +
-          '<div class="meta">' + esc(rp.broker) + ' · ' + rp.date + '</div></div>' +
-          '<div class="rt"><div class="tgt">' + nf.format(rp.target) + '</div><div class="tgt-k">목표가</div></div>' +
-        '</div>';
-      }).join("") + "</div>";
-
-      html += '<div class="foot" style="text-align:left;margin-top:10px;">' +
-        '📄 원문 리포트: <a href="https://finance.naver.com/research/company_list.naver?searchType=itemCode&itemCode=' + d.reportCode() + '" target="_blank" rel="noopener">네이버 금융 리서치</a></div>';
-      html += "</div>";
+      var segs = [{ k: "강력매수", v: dist.strongBuy, c: "--series-4" }, { k: "매수", v: dist.buy, c: "--series-2" }, { k: "중립", v: dist.hold, c: "--series-3" }, { k: "매도", v: dist.sell + dist.strongSell, c: "--series-6" }];
+      var html = '<div class="card"><div class="section-title"><span class="accent"></span>증권사 투자의견 · 목표주가 ' + badge(d.sources.rec) + '</div>' +
+        '<div class="target-track">' + marker(pos(r.targetLow), "--text-muted", "최저 " + nf.format(r.targetLow), "top") + marker(pos(r.targetHigh), "--text-muted", "최고 " + nf.format(r.targetHigh), "top") +
+        marker(pos(q.price), "--text-primary", "현재가 " + nf.format(Math.round(q.price)), "bot") + marker(pos(r.targetMean), "--series-1", "목표 " + nf.format(r.targetMean), "bot") + '</div>' +
+        '<div class="kpis" style="gap:14px 26px;margin-bottom:14px;">' + kpi("목표주가(평균)", nf.format(r.targetMean) + "원") + kpi("상승여력", '<span class="' + signCls(upside) + '">' + pct(upside) + "</span>") +
+        kpi("투자의견", r.ratingText ? mapRating(r.ratingText) : "-") + kpi("애널리스트", r.numberOfAnalysts + "명") + '</div>' +
+        '<div class="opinion-bar">' + segs.map(function (s) { var w = (s.v / total) * 100; return w <= 0 ? "" : '<div style="width:' + w + '%;background:var(' + s.c + ')">' + (w > 8 ? s.v : "") + "</div>"; }).join("") + '</div>' +
+        '<div class="opinion-legend">' + segs.map(function (s) { return '<span><i style="background:var(' + s.c + ')"></i>' + s.k + " " + s.v + "</span>"; }).join("") + '</div>' +
+        '<div class="section-title" style="margin:18px 0 8px;font-size:13px;"><span class="accent"></span>최근 증권사 레포트</div>' +
+        '<div class="list">' + d.reports.slice(0, 5).map(function (rp) { var oc = /매도|sell/i.test(rp.opinion) ? "sell" : /중립|hold/i.test(rp.opinion) ? "hold" : "";
+          return '<div class="list-item"><span class="op-pill ' + oc + '">' + esc(rp.opinion) + '</span><div class="main"><div class="t">' + esc(rp.title) + '</div><div class="meta">' + esc(rp.broker) + ' · ' + rp.date + '</div></div><div class="rt"><div class="tgt">' + nf.format(rp.target) + '</div><div class="tgt-k">목표가</div></div></div>'; }).join("") + '</div>' +
+        '<div class="foot" style="text-align:left;margin-top:10px;">📄 원문 리포트: <a href="https://finance.naver.com/research/company_list.naver?searchType=itemCode&itemCode=' + d.ticker + '" target="_blank" rel="noopener">네이버 금융 리서치</a></div></div>';
       return html;
     }
-    function marker(left, colorVar, label, place) {
-      left = Math.max(0, Math.min(100, left));
-      return '<div class="target-marker" style="left:' + left + '%">' +
-        '<span class="dot" style="background:var(' + colorVar + ')"></span>' +
-        '<span class="lbl ' + place + '" style="color:var(' + colorVar + ')">' + label + "</span></div>";
-    }
-    function mapRating(k) {
-      var map = { strong_buy: "적극매수", buy: "매수", hold: "중립", sell: "매도", underperform: "시장수익률하회", outperform: "시장수익률상회" };
-      return map[String(k).toLowerCase()] || k;
-    }
+    function marker(left, cv, label, place) { return '<div class="target-marker" style="left:' + left + '%"><span class="dot" style="background:var(' + cv + ')"></span><span class="lbl ' + place + '" style="color:var(' + cv + ')">' + label + "</span></div>"; }
+    function mapRating(k) { var m = { strong_buy: "적극매수", buy: "매수", hold: "중립", sell: "매도", underperform: "시장수익률하회", outperform: "시장수익률상회" }; return m[String(k).toLowerCase()] || k; }
 
-    /* --- 뉴스 카드 --- */
+    /* --- 뉴스 --- */
     function newsCard(d) {
-      var html = '<div class="card"><div class="section-title"><span class="accent"></span>시황 · 관련 뉴스 ' + badge(d.sources.news) + '</div>';
-      html += '<div class="list">' + d.news.slice(0, 6).map(function (n) {
-        return '<div class="list-item"><div class="main">' +
-          '<a class="t" href="' + n.url + '" target="_blank" rel="noopener">' + esc(n.title) + '</a>' +
-          '<div class="meta">' + esc(n.source || "") + (n.date ? " · " + n.date : "") + '</div>' +
-          '</div></div>';
-      }).join("") + "</div></div>";
-      return html;
+      return '<div class="card"><div class="section-title"><span class="accent"></span>시황 · 관련 뉴스 ' + badge(d.sources.news) + '</div><div class="list">' +
+        d.news.slice(0, 6).map(function (n) { return '<div class="list-item"><div class="main"><a class="t" href="' + n.url + '" target="_blank" rel="noopener">' + esc(n.title) + '</a><div class="meta">' + esc(n.source) + (n.date ? " · " + n.date : "") + '</div></div></div>'; }).join("") + '</div></div>';
     }
 
-    /* --- 재무제표 카드 --- */
+    /* --- 재무 --- */
     function financialsCard(d) {
       var f = d.financials;
-      var html = '<div class="card"><div class="section-title"><span class="accent"></span>재무제표 (연간, 단위: 억원) ' + badge(d.sources.fin) + '</div>';
-      html += '<div class="grid-2">';
-      html += '<div class="chart-wrap" style="height:260px;"><canvas id="finChart"></canvas></div>';
-      // 표
-      html += '<div style="overflow-x:auto;"><table class="fin"><thead><tr><th>항목</th>' +
-        f.years.map(function (y) { return "<th>" + y + "</th>"; }).join("") + "</tr></thead><tbody>";
-      html += finRow("매출액", f.revenue);
-      html += finRow("영업이익", f.operatingIncome);
-      html += finRow("당기순이익", f.netIncome);
-      html += finRow("자산총계", f.assets);
-      html += finRow("부채총계", f.liabilities);
-      html += finRow("자본총계", f.equity);
-      html += finRow("ROE(%)", f.roe, true);
-      html += finRow("부채비율(%)", f.debtRatio, true);
-      html += "</tbody></table></div>";
-      html += "</div></div>";
+      var html = '<div class="card"><div class="section-title"><span class="accent"></span>재무제표 (연간, 단위: 억원) ' + badge(d.sources.fin) + '</div><div class="grid-2">' +
+        '<div class="chart-wrap" style="height:260px;"><canvas id="finChart"></canvas></div>' +
+        '<div style="overflow-x:auto;"><table class="fin"><thead><tr><th>항목</th>' + f.years.map(function (y) { return "<th>" + y + "</th>"; }).join("") + "</tr></thead><tbody>";
+      html += finRow("매출액", f.revenue) + finRow("영업이익", f.operatingIncome) + finRow("당기순이익", f.netIncome) +
+        finRow("자산총계", f.assets) + finRow("부채총계", f.liabilities) + finRow("자본총계", f.equity) + finRow("ROE(%)", f.roe, true) + finRow("부채비율(%)", f.debtRatio, true);
+      html += "</tbody></table></div></div></div>";
       return html;
     }
-    function finRow(name, arr, isPct) {
-      return "<tr><td>" + name + "</td>" + arr.map(function (v) {
-        if (v == null) return "<td>-</td>";
-        var txt = isPct ? v.toFixed(1) : eok(v);
-        var cls = isPct ? "" : "";
-        return "<td>" + txt + "</td>";
-      }).join("") + "</tr>";
-    }
+    function finRow(name, arr, isPct) { return "<tr><td>" + name + "</td>" + arr.map(function (v) { return "<td>" + (v == null ? "-" : isPct ? v.toFixed(1) : eok(v)) + "</td>"; }).join("") + "</tr>"; }
     function renderFinChart(d) {
-      var f = d.financials; var c = themeColors();
+      var f = d.financials, c = themeColors();
       destroyChart("fin");
-      state.charts.fin = new Chart(document.getElementById("finChart"), {
-        type: "bar",
-        data: {
-          labels: f.years,
-          datasets: [
-            { label: "매출액", data: f.revenue, backgroundColor: c.s1, borderRadius: 3 },
-            { label: "영업이익", data: f.operatingIncome, backgroundColor: c.s2, borderRadius: 3 },
-            { label: "당기순이익", data: f.netIncome, backgroundColor: c.s3, borderRadius: 3 }
-          ]
-        },
-        options: {
-          responsive: true, maintainAspectRatio: false,
-          interaction: { mode: "index", intersect: false },
-          plugins: {
-            legend: { position: "top", labels: { color: c.text, boxWidth: 10, boxHeight: 10, font: { size: 11 } } },
-            tooltip: {
-              backgroundColor: c.surface, titleColor: c.text, bodyColor: c.text, borderColor: c.grid, borderWidth: 1,
-              callbacks: { label: function (i) { return " " + i.dataset.label + ": " + eok(i.parsed.y) + "원"; } }
-            }
-          },
-          scales: {
-            x: { grid: { display: false }, ticks: { color: c.muted, font: { size: 11 } } },
-            y: { grid: { color: c.grid }, border: { display: false }, ticks: { color: c.muted, maxTicksLimit: 5, font: { size: 10 }, callback: function (v) { return eok(v); } } }
-          }
-        }
-      });
+      var opts = baseOpts(c, function (v) { return eok(v) + "원"; }, true);
+      opts.scales.y.ticks.callback = function (v) { return eok(v); };
+      state.charts.fin = new Chart(document.getElementById("finChart"), { type: "bar", data: { labels: f.years, datasets: [
+        { label: "매출액", data: f.revenue, backgroundColor: c.s1, borderRadius: 3 },
+        { label: "영업이익", data: f.operatingIncome, backgroundColor: c.s2, borderRadius: 3 },
+        { label: "당기순이익", data: f.netIncome, backgroundColor: c.s3, borderRadius: 3 } ] }, options: opts });
     }
 
-    function destroyChart(k) { if (state.charts[k]) { state.charts[k].destroy(); delete state.charts[k]; } }
+    function destroyChart(k) { if (state.charts[k]) { try { state.charts[k].destroy(); } catch (e) {} delete state.charts[k]; } }
     function destroyCharts() { Object.keys(state.charts).forEach(destroyChart); }
 
-    /* reportCode helper (네이버 리서치 링크용) - render 컨텍스트에서 코드 접근 */
-    /* d 객체엔 code가 없으므로 state.ticker 사용 */
+    /* --- 섹션 이벤트 --- */
+    function bindSectionEvents() {
+      var tg = els.report.querySelector(".toggles");
+      if (tg) tg.addEventListener("click", function (e) {
+        var b = e.target.closest("button"); if (!b) return;
+        if (b.dataset.range) { state.range = b.dataset.range; }
+        else if (b.dataset.act === "ma") { state.showMA = !state.showMA; }
+        else if (b.dataset.act === "mode") { state.priceMode = state.priceMode === "price" ? "rebase" : "price"; }
+        render(state.ticker, state.data);
+      });
+      var star = document.getElementById("starBtn");
+      if (star) star.addEventListener("click", function () { toggleFav(state.ticker); render(state.ticker, state.data); });
+    }
 
-    /* ================= 조회 흐름 ================= */
+    /* ================= 즐겨찾기 ================= */
+    function loadFav() { try { state.favorites = JSON.parse(localStorage.getItem("favorites") || "[]"); } catch (e) { state.favorites = []; } }
+    function saveFav() { try { localStorage.setItem("favorites", JSON.stringify(state.favorites)); } catch (e) {} }
+    function toggleFav(t) {
+      var i = state.favorites.findIndex(function (f) { return f.code === t.code; });
+      if (i >= 0) state.favorites.splice(i, 1); else state.favorites.push({ code: t.code, name: t.name, market: t.market });
+      saveFav(); renderFavChips();
+    }
+    function renderFavChips() {
+      if (!state.favorites.length) { els.favbar.innerHTML = '<span class="lbl">☆ 관심종목을 추가하면 여기에 표시됩니다.</span>'; return; }
+      els.favbar.innerHTML = '<span class="lbl">관심종목</span>' + state.favorites.map(function (f) {
+        return '<span class="chip" data-code="' + f.code + '">' + esc(f.name) + '<span class="x" data-x="' + f.code + '">×</span></span>'; }).join("");
+    }
+    els.favbar.addEventListener("click", function (e) {
+      var x = e.target.closest("[data-x]");
+      if (x) { var code = x.dataset.x; var i = state.favorites.findIndex(function (f) { return f.code === code; }); if (i >= 0) { state.favorites.splice(i, 1); saveFav(); renderFavChips(); } e.stopPropagation(); return; }
+      var chip = e.target.closest("[data-code]");
+      if (chip) { if (state.mode === "compare") addCompare(chip.dataset.code); else runQuery(chip.dataset.code); }
+    });
+
+    /* ================= 종목 비교 ================= */
+    function enterCompare() {
+      state.mode = "compare"; els.compareBtn.classList.add("on");
+      if (state.ticker && !state.compare.some(function (c) { return c.ticker.code === state.ticker.code; })) addCompare(state.ticker.code);
+      else renderCompare();
+    }
+    function exitCompare() { state.mode = "single"; els.compareBtn.classList.remove("on"); if (state.ticker) render(state.ticker, state.data); else els.report.innerHTML = '<div class="state"><div class="big">📈</div><div>종목을 조회하세요.</div></div>'; }
+    function addCompare(input) {
+      var t = window.resolveTicker(input); if (!t) return;
+      if (state.compare.some(function (c) { return c.ticker.code === t.code; })) return;
+      if (state.compare.length >= 4) { alert("최대 4종목까지 비교할 수 있습니다."); return; }
+      var entry = { ticker: t, data: null };
+      state.compare.push(entry); renderCompare();
+      loadData(t).then(function (d) { d.ticker = t.code; entry.data = d; renderCompare(); }).catch(function () { entry.data = window.generateSampleData(t); renderCompare(); });
+    }
+    function removeCompare(code) { state.compare = state.compare.filter(function (c) { return c.ticker.code !== code; }); renderCompare(); }
+    function renderCompare() {
+      destroyCharts();
+      var COLORS = [themeColors().s1, themeColors().s6, themeColors().s2, themeColors().s8];
+      var chips = state.compare.map(function (c, i) { return '<span class="chip" style="border-color:' + COLORS[i] + '"><i style="width:9px;height:9px;border-radius:2px;background:' + COLORS[i] + ';display:inline-block"></i>' + esc(c.ticker.name) + '<span class="x" data-cx="' + c.ticker.code + '">×</span></span>'; }).join("");
+      var html = '<div class="card"><div class="section-title"><span class="accent"></span>종목 비교 (기준=100 리베이스)' +
+        '<div class="toggles">' + ["3M", "6M", "1Y"].map(function (r) { return '<button data-crange="' + r + '"' + (r === state.range ? ' class="active"' : "") + ">" + r + "</button>"; }).join("") + '<button id="cmpExit">단일 보기</button></div></div>' +
+        '<form id="cmpAdd" style="display:flex;gap:8px;margin-bottom:12px;"><input id="cmpInput" list="tickerList" placeholder="비교할 종목 추가 (예: SK하이닉스)" style="flex:1;padding:8px 12px;border:1px solid var(--border);border-radius:8px;background:var(--page);color:var(--text-primary)"><button class="btn btn-primary" type="submit">추가</button></form>' +
+        '<div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:14px">' + (chips || '<span class="lbl" style="color:var(--text-muted);font-size:13px">종목을 추가하세요.</span>') + '</div>' +
+        '<div class="chart-wrap"><canvas id="cmpChart"></canvas></div>';
+      // 지표 표
+      var ready = state.compare.filter(function (c) { return c.data; });
+      if (ready.length) {
+        html += '<div style="overflow-x:auto;margin-top:16px"><table class="fin"><thead><tr><th>지표</th>' + ready.map(function (c) { return "<th>" + esc(c.ticker.name) + "</th>"; }).join("") + '</tr></thead><tbody>';
+        html += cmpRow("현재가", ready, function (d) { return won(d.quote.price); });
+        html += cmpRow("전일대비", ready, function (d) { return '<span class="' + signCls(d.quote.change) + '">' + pct(d.quote.changePct) + "</span>"; });
+        html += cmpRow(state.range + " 수익률", ready, function (d) { var c = sliceR(d.chart.close); var r = ((c[c.length - 1] - c[0]) / c[0]) * 100; return '<span class="' + signCls(r) + '">' + pct(r) + "</span>"; });
+        html += cmpRow("시가총액", ready, function (d) { return wonShort(d.quote.marketCap); });
+        html += cmpRow("PER", ready, function (d) { return d.quote.per != null ? d.quote.per.toFixed(1) + "배" : "-"; });
+        html += cmpRow("PBR", ready, function (d) { return d.quote.pbr != null ? d.quote.pbr.toFixed(2) + "배" : "-"; });
+        html += cmpRow("목표주가", ready, function (d) { return d.recommendation ? nf.format(d.recommendation.targetMean) + "원" : "-"; });
+        html += cmpRow("외국인 5일순매수", ready, function (d) { if (!d.investorTrend) return "-"; var s = d.investorTrend.foreign.slice(-5).reduce(function (a, b) { return a + (b || 0); }, 0); return '<span class="' + signCls(s) + '">' + (s > 0 ? "+" : "") + eok(s) + "</span>"; });
+        html += "</tbody></table></div>";
+      }
+      html += "</div>";
+      els.report.innerHTML = html;
+      renderCompareChart(COLORS);
+      document.getElementById("cmpExit").addEventListener("click", exitCompare);
+      document.getElementById("cmpAdd").addEventListener("submit", function (e) { e.preventDefault(); var v = document.getElementById("cmpInput").value.trim(); if (v) { addCompare(v); document.getElementById("cmpInput").value = ""; } });
+      els.report.querySelector(".toggles").addEventListener("click", function (e) { var b = e.target.closest("[data-crange]"); if (b) { state.range = b.dataset.crange; renderCompare(); } });
+      els.report.addEventListener("click", function (e) { var x = e.target.closest("[data-cx]"); if (x) removeCompare(x.dataset.cx); });
+    }
+    function cmpRow(name, ready, fn) { return "<tr><td>" + name + "</td>" + ready.map(function (c) { return "<td>" + fn(c.data) + "</td>"; }).join("") + "</tr>"; }
+    function renderCompareChart(COLORS) {
+      var c = themeColors(); var ready = state.compare.filter(function (x) { return x.data; });
+      destroyChart("cmp");
+      if (!ready.length) return;
+      // 공통 라벨: 첫 종목 날짜 기준
+      var base = ready[0].data.chart, labels = sliceR(base.dates);
+      var ds = ready.map(function (x, i) {
+        var cl = sliceR(x.data.chart.close), b0 = cl[0];
+        return { label: x.ticker.name, data: cl.map(function (v) { return +((v / b0) * 100).toFixed(2); }), borderColor: COLORS[i % COLORS.length], borderWidth: 2, pointRadius: 0, pointHoverRadius: 4, tension: .2 };
+      });
+      var opts = baseOpts(c, function (v) { return v.toFixed(1); }, true);
+      state.charts.cmp = new Chart(document.getElementById("cmpChart"), { type: "line", data: { labels: labels, datasets: ds }, options: opts });
+    }
+
+    /* ================= 조회 ================= */
     function runQuery(rawInput) {
       var ticker = window.resolveTicker(rawInput);
-      if (!ticker) {
-        els.report.innerHTML = '<div class="state"><div class="big">🔍</div>' +
-          '<div>"' + esc(rawInput) + '" 종목을 찾지 못했습니다.<br>종목명(예: 삼성전자) 또는 6자리 코드(예: 005930)를 입력하세요.</div></div>';
-        return;
-      }
-      state.ticker = ticker;
-      // reportCode를 render에서 쓰기 위해 d에 주입되는 helper
+      if (!ticker) { els.report.innerHTML = '<div class="state"><div class="big">🔍</div><div>"' + esc(rawInput) + '" 종목을 찾지 못했습니다.<br>종목명 또는 6자리 코드를 입력하세요.</div></div>'; return; }
+      if (state.mode === "compare") { addCompare(ticker.code); els.q.value = ""; return; }
+      state.ticker = ticker; els.q.value = ticker.name;
       els.report.innerHTML = '<div class="state"><div class="spinner"></div><div>' + esc(ticker.name) + ' (' + ticker.code + ') 리포트를 불러오는 중…</div></div>';
-      els.q.value = ticker.name;
-      loadData(ticker).then(function (d) {
-        d.reportCode = function () { return ticker.code; };
-        state.data = d;
-        render(ticker, d);
-      }).catch(function (err) {
-        console.error(err);
-        var d = window.generateSampleData(ticker);
-        d.sources = { market: "sample", fin: "sample", rec: "sample", news: "sample" };
-        d.news = d.news; d.reportCode = function () { return ticker.code; };
-        state.data = d; render(ticker, d);
-      });
+      loadData(ticker).then(function (d) { d.ticker = ticker.code; state.data = d; render(ticker, d); })
+        .catch(function (err) { console.error(err); var d = window.generateSampleData(ticker); d.ticker = ticker.code;
+          d.sources = { market: "sample", flow: "sample", fin: "sample", rec: "sample", news: "sample", index: "sample" }; d.asOf = new Date(); state.data = d; render(ticker, d); });
     }
 
     /* ================= 초기화 ================= */
-    function buildDatalist() {
-      els.datalist.innerHTML = window.TICKERS.map(function (t) {
-        return '<option value="' + t.name + '">' + t.code + " · " + t.market + "</option>";
-      }).join("");
-    }
+    function buildDatalist() { els.datalist.innerHTML = window.TICKERS.map(function (t) { return '<option value="' + t.name + '">' + t.code + " · " + t.market + "</option>"; }).join(""); }
     function initTheme() {
       var saved = null; try { saved = localStorage.getItem("theme"); } catch (e) {}
       if (saved) document.documentElement.setAttribute("data-theme", saved);
       els.themeBtn.addEventListener("click", function () {
         var cur = document.documentElement.getAttribute("data-theme");
         var next = cur === "dark" ? "light" : cur === "light" ? "dark" : (matchMedia("(prefers-color-scheme: dark)").matches ? "light" : "dark");
-        document.documentElement.setAttribute("data-theme", next);
-        try { localStorage.setItem("theme", next); } catch (e) {}
-        if (state.data && state.ticker) render(state.ticker, state.data);
+        document.documentElement.setAttribute("data-theme", next); try { localStorage.setItem("theme", next); } catch (e) {}
+        if (state.mode === "compare") renderCompare(); else if (state.data && state.ticker) render(state.ticker, state.data);
       });
     }
-
     els.form.addEventListener("submit", function (e) { e.preventDefault(); if (els.q.value.trim()) runQuery(els.q.value.trim()); });
-    els.printBtn.addEventListener("click", function () { window.print(); });
-    buildDatalist();
-    initTheme();
-    // 기본 예시 종목
+    els.pdfBtn.addEventListener("click", function () { window.print(); });
+    els.compareBtn.addEventListener("click", function () { if (state.mode === "compare") exitCompare(); else enterCompare(); });
+    buildDatalist(); loadFav(); renderFavChips(); initTheme();
     runQuery("삼성전자");
   })();
   </script>

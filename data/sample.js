@@ -201,6 +201,30 @@ window.generateSampleData = function generateSampleData(ticker) {
     debtRatio.push(+((liab / eq) * 100).toFixed(1));
   }
 
+  // --- 외국인/기관 수급 (최근 20거래일, 순매수 대금 억원 추정) ---
+  const flowDates = dates.slice(-20);
+  const foreign = [], inst = [], indiv = [], foreignRatio = [];
+  let fr = 35 + rng() * 20; // 외국인 지분율(%) 시작
+  const flowScale = Math.max(20, p.cap * 0.0015);
+  for (let i = 0; i < flowDates.length; i++) {
+    const f = Math.round((rng() - 0.47) * flowScale);
+    const o = Math.round((rng() - 0.5) * flowScale * 0.8);
+    foreign.push(f);
+    inst.push(o);
+    indiv.push(-(f + o)); // 개인은 외국인+기관의 반대(수급 균형 근사)
+    fr += (f / flowScale) * 0.15;
+    foreignRatio.push(+Math.max(5, Math.min(70, fr)).toFixed(2));
+  }
+
+  // --- 동종 시장 지수 시계열(리베이스/상대수익률용) ---
+  const idxName = ticker.market === "KOSDAQ" ? "KOSDAQ" : "KOSPI";
+  const idxClose = [];
+  let iv = (idxName === "KOSDAQ" ? 850 : 2600) * (0.92 + rng() * 0.08);
+  for (let i = 0; i < dates.length; i++) {
+    iv = iv * (1 + (rng() - 0.5) * 0.011);
+    idxClose.push(+iv.toFixed(2));
+  }
+
   return {
     quote: {
       price: last,
@@ -216,6 +240,8 @@ window.generateSampleData = function generateSampleData(ticker) {
       currency: "KRW"
     },
     chart: { dates, close, volume },
+    investorTrend: { dates: flowDates, foreign: foreign, inst: inst, indiv: indiv, foreignRatio: foreignRatio },
+    index: { name: idxName, dates: dates.slice(), close: idxClose },
     recommendation: {
       targetMean,
       targetHigh,
