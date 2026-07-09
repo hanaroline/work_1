@@ -739,12 +739,15 @@ window.generateSampleData = function generateSampleData(ticker) {
 
     /* ================= 데이터 레이어 ================= */
     var PROXIES = [
-      function (u) { return u; },
+      function (u) { return u; }, // 직접(대상이 CORS 허용 시)
+      function (u) { return "https://api.codetabs.com/v1/proxy/?quest=" + encodeURIComponent(u); },
       function (u) { return "https://corsproxy.io/?url=" + encodeURIComponent(u); },
       function (u) { return "https://api.allorigins.win/raw?url=" + encodeURIComponent(u); },
-      function (u) { return "https://thingproxy.freeboard.io/fetch/" + u; }
+      function (u) { return "https://cors.eu.org/" + u; },
+      function (u) { return "https://thingproxy.freeboard.io/fetch/" + u; },
+      function (u) { return "https://r.jina.ai/" + u; }
     ];
-    var PROXY_NAMES = ["직접", "corsproxy.io", "allorigins.win", "thingproxy"];
+    var PROXY_NAMES = ["직접", "codetabs", "corsproxy.io", "allorigins", "cors.eu.org", "thingproxy", "jina"];
     var DIAG = []; // 데이터 진단용: 각 요청의 성공여부/경로/원문 일부 캡처
     function withTimeout(promise, ms) {
       return new Promise(function (resolve, reject) {
@@ -755,14 +758,16 @@ window.generateSampleData = function generateSampleData(ticker) {
     // 캐시 무력화: 프록시/CDN이 오래된 응답을 돌려주지 않도록 매 호출 고유 파라미터 부여
     function bust(url) { return url + (url.indexOf("?") >= 0 ? "&" : "?") + "_ts=" + Date.now(); }
     // 프록시를 병렬 시도하고 가장 먼저 성공하는 응답을 사용(폴백 지연 최소화, 각 시도 4초 타임아웃)
-    function fetchText(url) {
+    // validate(t): 유효하지 않으면 throw → 그 프록시 시도는 탈락(에러 페이지가 경쟁에서 이기지 못하게 함)
+    function fetchText(url, validate) {
       var orig = url;
       url = bust(url);
       var attempts = PROXIES.map(function (w, i) {
         return withTimeout(
           fetch(w(url), { headers: { Accept: "application/json, text/plain, */*" }, cache: "no-store" })
-            .then(function (r) { if (!r.ok) throw new Error("HTTP " + r.status); return r.text().then(function (t) { return { t: t, pi: i }; }); }),
-          4000
+            .then(function (r) { if (!r.ok) throw new Error("HTTP " + r.status); return r.text(); })
+            .then(function (t) { if (validate) validate(t); return { t: t, pi: i }; }),
+          4500
         );
       });
       var combined;
@@ -770,10 +775,17 @@ window.generateSampleData = function generateSampleData(ticker) {
       else combined = new Promise(function (resolve, reject) { var left = attempts.length, err; attempts.forEach(function (p) { p.then(resolve, function (e) { err = e; if (--left === 0) reject(err); }); }); });
       return combined.then(
         function (o) { DIAG.push({ url: orig, ok: true, via: PROXY_NAMES[o.pi] || ("proxy#" + o.pi), len: o.t.length, head: o.t.slice(0, 1400) }); return o.t; },
-        function (e) { DIAG.push({ url: orig, ok: false, err: String((e && e.message) || e) }); throw e; }
+        function (e) { DIAG.push({ url: orig, ok: false, err: String((e && (e.message || (e.errors && e.errors[0] && e.errors[0].message))) || e) }); throw e; }
       );
     }
-    function fetchJson(url) { return fetchText(url).then(function (t) { return JSON.parse(t); }); }
+    // JSON 엔드포인트: 각 프록시 응답이 파싱 가능한 JSON일 때만 채택
+    function fetchJson(url) {
+      return fetchText(url, function (t) {
+        var s = t.replace(/^﻿/, "").trim();
+        if (s[0] !== "{" && s[0] !== "[") throw new Error("not json");
+        JSON.parse(s);
+      }).then(function (t) { return JSON.parse(t.replace(/^﻿/, "").trim()); });
+    }
     function num(v) { if (v == null) return null; var n = parseFloat(String(v).replace(/,/g, "")); return isNaN(n) ? null : n; }
     function raw(o) { return o && typeof o === "object" && "raw" in o ? o.raw : o; }
     // 한국식 금액 문자열("504조 1,234억원", "5,041,234"(억 단위), 원 숫자)을 원 단위로 변환
