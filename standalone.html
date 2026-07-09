@@ -737,11 +737,14 @@ window.generateSampleData = function generateSampleData(ticker) {
         promise.then(function (v) { clearTimeout(t); resolve(v); }, function (e) { clearTimeout(t); reject(e); });
       });
     }
+    // 캐시 무력화: 프록시/CDN이 오래된 응답을 돌려주지 않도록 매 호출 고유 파라미터 부여
+    function bust(url) { return url + (url.indexOf("?") >= 0 ? "&" : "?") + "_ts=" + Date.now(); }
     // 프록시를 병렬 시도하고 가장 먼저 성공하는 응답을 사용(폴백 지연 최소화, 각 시도 4초 타임아웃)
     function fetchText(url) {
+      url = bust(url);
       var attempts = PROXIES.map(function (w) {
         return withTimeout(
-          fetch(w(url), { headers: { Accept: "application/json, text/plain, */*" } })
+          fetch(w(url), { headers: { Accept: "application/json, text/plain, */*" }, cache: "no-store" })
             .then(function (r) { if (!r.ok) throw new Error("HTTP " + r.status); return r.text(); }),
           4000
         );
@@ -756,6 +759,16 @@ window.generateSampleData = function generateSampleData(ticker) {
     function fetchJson(url) { return fetchText(url).then(function (t) { return JSON.parse(t); }); }
     function num(v) { if (v == null) return null; var n = parseFloat(String(v).replace(/,/g, "")); return isNaN(n) ? null : n; }
     function raw(o) { return o && typeof o === "object" && "raw" in o ? o.raw : o; }
+    // 한국식 금액 문자열("504조 1,234억원", "5,041,234"(억 단위), 원 숫자)을 원 단위로 변환
+    function parseKMoney(v) {
+      if (v == null) return null;
+      var s = String(v);
+      var jo = s.match(/([\d,.]+)\s*조/), eok = s.match(/([\d,.]+)\s*억/);
+      if (jo || eok) { var w = 0; if (jo) w += parseFloat(jo[1].replace(/,/g, "")) * 1e12; if (eok) w += parseFloat(eok[1].replace(/,/g, "")) * 1e8; return Math.round(w); }
+      var n = num(s); if (n == null) return null;
+      // 네이버 marketValue는 대체로 '억원' 단위 정수(예: 5041234 → 504.1조)
+      return Math.round(n * 1e8);
+    }
 
     /* --- 네이버 모바일 API (한국 데이터 정확) --- */
     var NAVER = "https://m.stock.naver.com/api/stock/";
@@ -787,15 +800,25 @@ window.generateSampleData = function generateSampleData(ticker) {
         marketCap: null, per: null, pbr: null, eps: null,
         high52: Math.max.apply(null, close), low52: Math.min.apply(null, close), currency: "KRW" };
       if (basic) {
-        q.price = num(basic.closePrice) || q.price;
-        q.change = num(basic.compareToPreviousClosePrice) != null ? num(basic.compareToPreviousClosePrice) : q.change;
-        q.changePct = num(basic.fluctuationsRatio) != null ? num(basic.fluctuationsRatio) : q.changePct;
+        if (num(basic.closePrice) != null) q.price = num(basic.closePrice);
+        if (num(basic.compareToPreviousClosePrice) != null) q.change = num(basic.compareToPreviousClosePrice);
+        if (num(basic.fluctuationsRatio) != null) q.changePct = num(basic.fluctuationsRatio);
+        // 하락 방향 부호 보정
+        var dir = basic.compareToPreviousPrice ? (basic.compareToPreviousPrice.code || basic.compareToPreviousPrice.text || "") : "";
+        if (/하락|down|▼/.test(String(dir)) || (basic.risefall && String(basic.risefall).indexOf("4") === 0) || (basic.risefall && String(basic.risefall).indexOf("5") === 0)) {
+          q.change = -Math.abs(q.change); q.changePct = -Math.abs(q.changePct);
+        }
         q.prevClose = q.price - q.change;
-        q.marketCap = num(basic.marketValue) != null ? num(basic.marketValue) * 1e8 : q.marketCap; // 네이버 시총 단위 억
-        q.per = num(basic.per); q.pbr = num(basic.pbr); q.eps = num(basic.eps);
-        var hi = basic.dealTrendInfos; // guard
-        if (basic.high52wPrice) q.high52 = num(basic.high52wPrice);
-        if (basic.low52wPrice) q.low52 = num(basic.low52wPrice);
+        // 지표: top-level 또는 stockItemTotalInfos/totalInfos 배열에서 추출
+        var infos = basic.stockItemTotalInfos || basic.totalInfos || [];
+        var getInfo = function (re) { for (var i = 0; i < infos.length; i++) { var it = infos[i]; if (re.test(String(it.code || "")) || re.test(String(it.key || ""))) return it.value; } return null; };
+        var mv = basic.marketValue != null ? basic.marketValue : getInfo(/marketValue|시가총액/i);
+        if (mv != null) { var mc = parseKMoney(mv); if (mc != null) q.marketCap = mc; }
+        var per = basic.per != null ? basic.per : getInfo(/(^|[^a-z])per([^a-z]|$)|PER/i); if (num(per) != null) q.per = num(per);
+        var pbr = basic.pbr != null ? basic.pbr : getInfo(/(^|[^a-z])pbr([^a-z]|$)|PBR/i); if (num(pbr) != null) q.pbr = num(pbr);
+        var eps = basic.eps != null ? basic.eps : getInfo(/(^|[^a-z])eps([^a-z]|$)|EPS/i); if (num(eps) != null) q.eps = num(eps);
+        if (num(basic.high52wPrice) != null) q.high52 = num(basic.high52wPrice);
+        if (num(basic.low52wPrice) != null) q.low52 = num(basic.low52wPrice);
       }
       var data = { quote: q, chart: { dates: dates, close: close, volume: volume },
         investorTrend: null, index: null, recommendation: null, reports: null, news: null, financials: null, currency: "KRW" };
@@ -915,10 +938,10 @@ window.generateSampleData = function generateSampleData(ticker) {
         var live = hasCore(nv) ? nv : hasCore(yh) ? yh : null;   // 시세/차트: 네이버 우선
         var data = live || sample;
         if (live) sources.market = "live";
-        // 시총/PER/PBR/EPS 보완 (네이버가 우선, 없으면 Yahoo, 없으면 샘플)
+        // 시총/PER/PBR/EPS 보완 (네이버 우선, 없으면 Yahoo). 실시간인데 못 받으면 옛 샘플값 대신 '-' 표시(null 유지)
         ["marketCap", "per", "pbr", "eps"].forEach(function (k) {
           if (data.quote[k] == null && hasCore(yh) && yh.quote[k] != null) data.quote[k] = yh.quote[k];
-          if (data.quote[k] == null) data.quote[k] = sample.quote[k];
+          if (data.quote[k] == null && !live) data.quote[k] = sample.quote[k];
         });
         // 수급(외국인/기관): 네이버만 제공
         if (live && data.investorTrend && data.investorTrend.dates.length) sources.flow = "live";
@@ -987,7 +1010,7 @@ window.generateSampleData = function generateSampleData(ticker) {
         '<div class="kpis">' + kpi("시가총액", wonShort(q.marketCap)) + kpi("PER", q.per != null ? q.per.toFixed(1) + "배" : "-") +
         kpi("PBR", q.pbr != null ? q.pbr.toFixed(2) + "배" : "-") + kpi("EPS", q.eps != null ? nf.format(Math.round(q.eps)) + "원" : "-") +
         kpi("데이터", sc.market === "live" ? "실시간" : "샘플") + '</div>' +
-        '<div class="asof">기준 시각: ' + asof + ' · 출처: ' + (sc.market === "live" ? "네이버/Yahoo · Google News" : "내장 샘플") + '</div>' +
+        '<div class="asof">데이터 기준일: ' + (d.chart && d.chart.dates.length ? d.chart.dates[d.chart.dates.length - 1] : "-") + ' · 조회: ' + asof + ' · 출처: ' + (sc.market === "live" ? "네이버/Yahoo · Google News" : "내장 샘플") + '</div>' +
         '</div></div>';
 
       // 2) 시세 + 지표
@@ -1154,10 +1177,12 @@ window.generateSampleData = function generateSampleData(ticker) {
         '<div class="opinion-legend">' + segs.map(function (s) { return '<span><i style="background:var(' + s.c + ')"></i>' + s.k + " " + s.v + "</span>"; }).join("") + '</div>' +
         '<div class="section-title" style="margin:18px 0 8px;font-size:13px;"><span class="accent"></span>최근 증권사 레포트</div>' +
         '<div class="list">' + d.reports.slice(0, 5).map(function (rp) { var oc = /매도|sell/i.test(rp.opinion) ? "sell" : /중립|hold/i.test(rp.opinion) ? "hold" : "";
-          return '<div class="list-item"><span class="op-pill ' + oc + '">' + esc(rp.opinion) + '</span><div class="main"><div class="t">' + esc(rp.title) + '</div><div class="meta">' + esc(rp.broker) + ' · ' + rp.date + '</div></div><div class="rt"><div class="tgt">' + nf.format(rp.target) + '</div><div class="tgt-k">목표가</div></div></div>'; }).join("") + '</div>' +
-        '<div class="foot" style="text-align:left;margin-top:10px;">📄 원문 리포트: <a href="https://finance.naver.com/research/company_list.naver?searchType=itemCode&itemCode=' + d.ticker + '" target="_blank" rel="noopener">네이버 금융 리서치</a></div></div>';
+          var link = rp.url || naverResearchUrl(d.ticker);
+          return '<div class="list-item"><span class="op-pill ' + oc + '">' + esc(rp.opinion) + '</span><div class="main"><a class="t" href="' + link + '" target="_blank" rel="noopener">' + esc(rp.title) + '</a><div class="meta">' + esc(rp.broker) + ' · ' + rp.date + '</div></div><div class="rt"><div class="tgt">' + nf.format(rp.target) + '</div><div class="tgt-k">목표가</div></div></div>'; }).join("") + '</div>' +
+        '<div class="foot" style="text-align:left;margin-top:10px;">📄 원문 리포트(종목 전체): <a href="' + naverResearchUrl(d.ticker) + '" target="_blank" rel="noopener">네이버 금융 리서치</a> · 제목을 클릭하면 해당 종목 리서치 목록이 열립니다.</div></div>';
       return html;
     }
+    function naverResearchUrl(code) { return "https://finance.naver.com/research/company_list.naver?searchType=itemCode&itemCode=" + code; }
     function marker(left, cv, label, place) { return '<div class="target-marker" style="left:' + left + '%"><span class="dot" style="background:var(' + cv + ')"></span><span class="lbl ' + place + '" style="color:var(' + cv + ')">' + label + "</span></div>"; }
     function mapRating(k) { var m = { strong_buy: "적극매수", buy: "매수", hold: "중립", sell: "매도", underperform: "시장수익률하회", outperform: "시장수익률상회" }; return m[String(k).toLowerCase()] || k; }
 
