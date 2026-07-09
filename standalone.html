@@ -203,8 +203,21 @@
     </form>
     <button class="btn" id="compareBtn" title="여러 종목 비교">⇄ 비교</button>
     <button class="btn btn-icon" id="pdfBtn" title="PDF 저장 / 인쇄">🖨 PDF</button>
+    <button class="btn btn-icon" id="diagBtn" title="데이터 진단(실시간 응답 확인)">🔧</button>
     <button class="btn btn-icon" id="themeBtn" title="라이트/다크 전환">◐</button>
   </header>
+
+  <div id="diagOverlay" style="display:none;position:fixed;inset:0;z-index:50;background:rgba(0,0,0,.5);padding:24px;">
+    <div style="max-width:820px;margin:0 auto;background:var(--surface-1);border:1px solid var(--border);border-radius:14px;padding:18px 20px;max-height:88vh;display:flex;flex-direction:column;">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;">
+        <b style="font-size:15px;">🔧 데이터 진단</b>
+        <span style="font-size:12px;color:var(--text-muted);">아래 내용을 복사해 개발자에게 전달하면 파싱 오류를 정확히 수정할 수 있습니다.</span>
+        <button class="btn" id="diagCopy" style="margin-left:auto;">복사</button>
+        <button class="btn" id="diagClose">닫기</button>
+      </div>
+      <textarea id="diagText" readonly style="flex:1;min-height:360px;width:100%;font-family:ui-monospace,Menlo,Consolas,monospace;font-size:12px;line-height:1.45;border:1px solid var(--border);border-radius:8px;background:var(--page);color:var(--text-primary);padding:12px;white-space:pre;overflow:auto;"></textarea>
+    </div>
+  </div>
   <div class="favbar" id="favbar"></div>
 
   <main class="report" id="report">
@@ -731,6 +744,8 @@ window.generateSampleData = function generateSampleData(ticker) {
       function (u) { return "https://api.allorigins.win/raw?url=" + encodeURIComponent(u); },
       function (u) { return "https://thingproxy.freeboard.io/fetch/" + u; }
     ];
+    var PROXY_NAMES = ["직접", "corsproxy.io", "allorigins.win", "thingproxy"];
+    var DIAG = []; // 데이터 진단용: 각 요청의 성공여부/경로/원문 일부 캡처
     function withTimeout(promise, ms) {
       return new Promise(function (resolve, reject) {
         var t = setTimeout(function () { reject(new Error("timeout")); }, ms);
@@ -741,20 +756,22 @@ window.generateSampleData = function generateSampleData(ticker) {
     function bust(url) { return url + (url.indexOf("?") >= 0 ? "&" : "?") + "_ts=" + Date.now(); }
     // 프록시를 병렬 시도하고 가장 먼저 성공하는 응답을 사용(폴백 지연 최소화, 각 시도 4초 타임아웃)
     function fetchText(url) {
+      var orig = url;
       url = bust(url);
-      var attempts = PROXIES.map(function (w) {
+      var attempts = PROXIES.map(function (w, i) {
         return withTimeout(
           fetch(w(url), { headers: { Accept: "application/json, text/plain, */*" }, cache: "no-store" })
-            .then(function (r) { if (!r.ok) throw new Error("HTTP " + r.status); return r.text(); }),
+            .then(function (r) { if (!r.ok) throw new Error("HTTP " + r.status); return r.text().then(function (t) { return { t: t, pi: i }; }); }),
           4000
         );
       });
-      // Promise.any 미지원 환경 대비 폴리필 형태
-      if (typeof Promise.any === "function") return Promise.any(attempts);
-      return new Promise(function (resolve, reject) {
-        var left = attempts.length, err;
-        attempts.forEach(function (p) { p.then(resolve, function (e) { err = e; if (--left === 0) reject(err); }); });
-      });
+      var combined;
+      if (typeof Promise.any === "function") combined = Promise.any(attempts);
+      else combined = new Promise(function (resolve, reject) { var left = attempts.length, err; attempts.forEach(function (p) { p.then(resolve, function (e) { err = e; if (--left === 0) reject(err); }); }); });
+      return combined.then(
+        function (o) { DIAG.push({ url: orig, ok: true, via: PROXY_NAMES[o.pi] || ("proxy#" + o.pi), len: o.t.length, head: o.t.slice(0, 1400) }); return o.t; },
+        function (e) { DIAG.push({ url: orig, ok: false, err: String((e && e.message) || e) }); throw e; }
+      );
     }
     function fetchJson(url) { return fetchText(url).then(function (t) { return JSON.parse(t); }); }
     function num(v) { if (v == null) return null; var n = parseFloat(String(v).replace(/,/g, "")); return isNaN(n) ? null : n; }
@@ -924,6 +941,7 @@ window.generateSampleData = function generateSampleData(ticker) {
 
     /* --- 오케스트레이션: 모든 소스를 병렬 호출 후 병합(네이버·Yahoo 장점 결합), 섹션별 샘플 폴백 --- */
     function loadData(ticker) {
+      DIAG = []; // 이번 조회의 진단 초기화
       var sample = window.generateSampleData(ticker);
       var sources = { market: "sample", flow: "sample", fin: "sample", rec: "sample", news: "sample", index: "sample" };
       var no = function () { return null; };
@@ -1338,6 +1356,35 @@ window.generateSampleData = function generateSampleData(ticker) {
         if (state.mode === "compare") renderCompare(); else if (state.data && state.ticker) render(state.ticker, state.data);
       });
     }
+    /* ================= 데이터 진단 ================= */
+    function openDiag() {
+      var L = [];
+      L.push("=== 종목 통합 리포트 데이터 진단 ===");
+      L.push("종목: " + (state.ticker ? state.ticker.name + " (" + state.ticker.code + ", " + state.ticker.market + ")" : "-"));
+      L.push("조회시각: " + fmtDateTime(new Date()));
+      L.push("섹션 출처(sources): " + (state.data && state.data.sources ? JSON.stringify(state.data.sources) : "-"));
+      if (state.data && state.data.quote) { var q = state.data.quote; L.push("표시값: price=" + q.price + " change=" + q.change + " pct=" + q.changePct + " mcap=" + q.marketCap + " per=" + q.per + " pbr=" + q.pbr + " eps=" + q.eps + " hi52=" + q.high52 + " lo52=" + q.low52); }
+      if (state.data && state.data.chart) { var c = state.data.chart; L.push("차트: " + c.dates.length + "일, 마지막날짜=" + c.dates[c.dates.length - 1] + " 마지막종가=" + c.close[c.close.length - 1]); }
+      if (state.data && state.data.recommendation) { var r = state.data.recommendation; L.push("목표주가: mean=" + r.targetMean + " high=" + r.targetHigh + " low=" + r.targetLow + " n=" + r.numberOfAnalysts); }
+      L.push("");
+      L.push("--- 원본 응답 캡처 (" + DIAG.length + "건, 각 앞부분 1400자) ---");
+      DIAG.forEach(function (d, i) {
+        L.push("[" + (i + 1) + "] " + (d.ok ? "OK via " + (d.via || "-") : "FAIL") + "  " + d.url);
+        L.push(d.ok ? ("len=" + d.len + "\n" + d.head) : ("err=" + d.err));
+        L.push("--------------------------------------");
+      });
+      document.getElementById("diagText").value = L.join("\n");
+      document.getElementById("diagOverlay").style.display = "block";
+    }
+    document.getElementById("diagBtn").addEventListener("click", openDiag);
+    document.getElementById("diagClose").addEventListener("click", function () { document.getElementById("diagOverlay").style.display = "none"; });
+    document.getElementById("diagCopy").addEventListener("click", function () {
+      var ta = document.getElementById("diagText"); ta.focus(); ta.select();
+      var done = function () { var b = document.getElementById("diagCopy"); b.textContent = "복사됨!"; setTimeout(function () { b.textContent = "복사"; }, 1500); };
+      if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(ta.value).then(done, function () { try { document.execCommand("copy"); done(); } catch (e) {} });
+      else { try { document.execCommand("copy"); done(); } catch (e) {} }
+    });
+
     els.form.addEventListener("submit", function (e) { e.preventDefault(); if (els.q.value.trim()) runQuery(els.q.value.trim()); });
     els.pdfBtn.addEventListener("click", function () { window.print(); });
     els.compareBtn.addEventListener("click", function () { if (state.mode === "compare") exitCompare(); else enterCompare(); });
