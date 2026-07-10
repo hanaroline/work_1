@@ -1,19 +1,20 @@
-# -*- coding: utf-8 -*-
-# 보유자산 통합 브리핑 - 로컬 프록시 서버 (PowerShell 판)
+# Holdings briefing - local proxy server (PowerShell edition)
 #
-# Python 설치가 막힌 환경(사내망 등)을 위해, 윈도우에 기본 내장된
-# PowerShell 만으로 server.py 와 동일한 역할을 수행한다.
-#  - briefing.html(정적 파일) 제공
-#  - 네이버 증권 / 야후 파이낸스 API 를 서버 측에서 대신 호출(프록시)
-#    브라우저가 직접 부르면 CORS 에 막히지만, 서버가 부르면 Referer 를
-#    붙일 수 있어 정상적으로 데이터를 받아온다.
+# For environments where installing Python is blocked (e.g. corporate network),
+# this reproduces server.py using only PowerShell, which ships with Windows.
+#  - serves briefing.html (static file)
+#  - proxies Naver / Yahoo finance APIs from the server side so the browser
+#    is not blocked by CORS (server can attach the Referer header).
 #
-# 실행: 이 폴더에서  powershell -NoProfile -ExecutionPolicy Bypass -File server.ps1
+# NOTE: This file is intentionally ASCII-only so it parses correctly on
+# Korean Windows PowerShell 5.1 regardless of file encoding.
+#
+# Run:  powershell -NoProfile -ExecutionPolicy Bypass -File server.ps1
 
 $ErrorActionPreference = 'Stop'
-[Console]::OutputEncoding = [System.Text.Encoding]::UTF8
+try { [Console]::OutputEncoding = [System.Text.Encoding]::UTF8 } catch {}
 
-# TLS 1.2 이상 강제(구형 기본값 회피)
+# Force TLS 1.2+ (avoid old default)
 try {
   [System.Net.ServicePointManager]::SecurityProtocol = `
     [System.Net.SecurityProtocolType]::Tls12 -bor `
@@ -26,10 +27,11 @@ try { [System.Net.ServicePointManager]::SecurityProtocol = `
 $ROOT = Split-Path -Parent $MyInvocation.MyCommand.Definition
 Set-Location $ROOT
 
+$CRLF = [string]([char]13 + [char]10)
 $UA = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36"
 $ALLOW = @('ac.stock.naver.com','m.stock.naver.com','api.stock.naver.com','query1.finance.yahoo.com','query2.finance.yahoo.com')
 
-# 야후 crumb 인증용 쿠키/크럼(브라우저에선 막히지만 서버에선 가능)
+# Yahoo crumb auth cookie/crumb (blocked in browser, works server-side)
 $script:YHCookies = New-Object System.Net.CookieContainer
 $script:YHCrumb   = $null
 
@@ -37,12 +39,12 @@ function Escape-Json([string]$s) {
   if ($null -eq $s) { return '' }
   $s = $s -replace '\\','\\\\'
   $s = $s -replace '"','\"'
-  $s = $s -replace "`r",' '
-  $s = $s -replace "`n",' '
+  $s = $s -replace ([char]13),' '
+  $s = $s -replace ([char]10),' '
   return $s
 }
 
-# 지정 URL 을 헤더 붙여 가져와 byte[] 반환
+# Fetch URL with headers, return byte[]
 function Http-Get {
   param([string]$Url, [string]$Referer, [switch]$UseYhCookies)
   $req = [System.Net.HttpWebRequest]::Create($Url)
@@ -53,7 +55,7 @@ function Http-Get {
   $req.AutomaticDecompression = [System.Net.DecompressionMethods]::GZip -bor [System.Net.DecompressionMethods]::Deflate
   if ($Referer) { $req.Referer = $Referer }
   if ($UseYhCookies) { $req.CookieContainer = $script:YHCookies }
-  # 사내 프록시(있다면) 자동 사용 + 현재 사용자 자격증명(NTLM 등)
+  # Use system proxy (if any) + current user credentials (NTLM etc.)
   try {
     $proxy = [System.Net.WebRequest]::GetSystemWebProxy()
     $proxy.Credentials = [System.Net.CredentialCache]::DefaultCredentials
@@ -82,12 +84,12 @@ function Send-Response {
   $texts = @{ 200='OK'; 400='Bad Request'; 403='Forbidden'; 404='Not Found'; 500='Internal Server Error'; 502='Bad Gateway' }
   $st = $texts[$Status]; if (-not $st) { $st = 'OK' }
   if ($null -eq $Body) { $Body = New-Object byte[] 0 }
-  $head  = "HTTP/1.1 $Status $st`r`n"
-  $head += "Content-Type: $ContentType`r`n"
-  $head += "Content-Length: $($Body.Length)`r`n"
-  $head += "Access-Control-Allow-Origin: *`r`n"
-  $head += "Cache-Control: no-store`r`n"
-  $head += "Connection: close`r`n`r`n"
+  $head  = "HTTP/1.1 $Status $st" + $CRLF
+  $head += "Content-Type: $ContentType" + $CRLF
+  $head += "Content-Length: $($Body.Length)" + $CRLF
+  $head += "Access-Control-Allow-Origin: *" + $CRLF
+  $head += "Cache-Control: no-store" + $CRLF
+  $head += "Connection: close" + $CRLF + $CRLF
   $hb = [System.Text.Encoding]::ASCII.GetBytes($head)
   $Stream.Write($hb, 0, $hb.Length)
   if ($Body.Length -gt 0) { $Stream.Write($Body, 0, $Body.Length) }
@@ -233,7 +235,7 @@ function Read-RequestHeaders($stream) {
   return [System.Text.Encoding]::ASCII.GetString($buf.ToArray())
 }
 
-# ---- 서버 시작 ----
+# ---- start server ----
 $listener = $null
 $port = 0
 for ($p = 8899; $p -lt 8919; $p++) {
@@ -245,20 +247,20 @@ for ($p = 8899; $p -lt 8919; $p++) {
 }
 if (-not $listener) {
   Write-Host ""
-  Write-Host "[오류] 사용 가능한 포트를 찾지 못했습니다." -ForegroundColor Red
-  Read-Host "엔터를 누르면 종료합니다"
+  Write-Host "[ERROR] No free port available." -ForegroundColor Red
+  Read-Host "Press Enter to exit"
   return
 }
 
 $url = "http://localhost:$port/"
 $line = ('=' * 56)
 Write-Host $line
-Write-Host "  보유자산 통합 브리핑 서버가 실행되었습니다. (PowerShell 판)"
-Write-Host "  브라우저가 자동으로 열립니다:  $url"
-Write-Host "  (안 열리면 위 주소를 브라우저 주소창에 직접 붙여넣으세요)"
+Write-Host "  Holdings briefing server is running (PowerShell edition)."
+Write-Host "  Browser will open automatically:  $url"
+Write-Host "  (If not, paste that address into your browser.)"
 Write-Host ""
-Write-Host "  * 이 창은 닫지 마세요. 닫으면 대시보드도 멈춥니다." -ForegroundColor Yellow
-Write-Host "  종료하려면: 이 창을 클릭한 뒤 Ctrl+C"
+Write-Host "  * Do NOT close this window - the dashboard stops if you do." -ForegroundColor Yellow
+Write-Host "  To stop: click this window and press Ctrl+C"
 Write-Host $line
 
 try { Start-Process $url | Out-Null } catch {}
@@ -272,14 +274,14 @@ while ($true) {
     $stream = $client.GetStream()
     $reqText = Read-RequestHeaders $stream
     if ($reqText) {
-      $firstLine = ($reqText -split "`r`n")[0]
+      $firstLine = $reqText.Split([char]10)[0]
       $parts = $firstLine.Split(' ')
       if ($parts.Length -ge 2) {
         Handle-Request $stream $parts[0] $parts[1]
       }
     }
   } catch {
-    # 개별 연결 오류는 무시하고 계속 서비스
+    # ignore per-connection errors and keep serving
   } finally {
     if ($client) { try { $client.Close() } catch {} }
   }
