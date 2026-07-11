@@ -71,6 +71,7 @@
   .tag.stock{color:#5b9bff;border-color:#5b9bff55}
   .tag.etf{color:#22b07d;border-color:#22b07d55}
   .tag.fund{color:#c07de0;border-color:#c07de055}
+  .tag.bond{color:#e0a83e;border-color:#e0a83e55}
   .st-dot{width:8px;height:8px;border-radius:50%;display:inline-block}
   .st-normal{background:var(--up)} .st-warn{background:var(--warn)} .st-missing{background:var(--text-faint)}
   .hold .h-sub{font-size:11.5px;color:var(--text-faint);margin-bottom:10px}
@@ -186,6 +187,16 @@
     #printSummary table{width:100%;border-collapse:collapse;font-size:10.5px}
     #printSummary th,#printSummary td{border:1px solid #bbb;padding:3px 6px;text-align:left}
   }
+  /* 채권 입력폼 */
+  .bform{display:grid;grid-template-columns:1fr 1fr;gap:11px}
+  .bfld{display:flex;flex-direction:column;gap:5px}
+  .bfld.full{grid-column:1 / -1}
+  .bfld label{font-size:12px;color:var(--text-dim);font-weight:600}
+  .bfld .u{color:var(--text-faint);font-weight:400}
+  .bfld input,.bfld select{width:100%;padding:9px 11px;font-size:14px;background:var(--bg);color:var(--text);border:1px solid var(--border);border-radius:9px;outline:none;font-family:inherit}
+  .bfld input:focus,.bfld select:focus{border-color:var(--accent)}
+  .bfoot{display:flex;gap:10px;margin-top:16px}
+  .bfoot .spacer{flex:1}
 </style>
 </head>
 <body>
@@ -211,6 +222,7 @@
         <div class="suggest" id="suggest"></div>
       </div>
       <button class="btn primary" id="btnAdd">+ 추가</button>
+      <button class="btn" id="btnBond">＋ 채권 직접추가</button>
       <span class="muted" id="countInfo"></span>
     </div>
   </section>
@@ -225,6 +237,7 @@
     <button class="chipbtn" data-f="type" data-v="stock">주식</button>
     <button class="chipbtn" data-f="type" data-v="etf">ETF</button>
     <button class="chipbtn" data-f="type" data-v="fund">펀드</button>
+    <button class="chipbtn" data-f="type" data-v="bond">채권</button>
     <span class="muted" style="margin:0 4px 0 12px">상태</span>
     <button class="chipbtn active" data-f="status" data-v="all">전체</button>
     <button class="chipbtn" data-f="status" data-v="normal">정상</button>
@@ -280,6 +293,80 @@
   </div>
 </div>
 
+<!-- 채권 직접입력 모달 -->
+<div class="modal-bg" id="bondBg">
+  <div class="modal" style="max-width:560px">
+    <div class="mhead">
+      <div><div class="mtitle" id="bondTitle">채권 추가</div><div class="msub">보유 채권 정보를 입력하면 잔존만기·수익률·연이자를 자동 계산합니다.</div></div>
+      <button class="mclose" id="bondClose">✕</button>
+    </div>
+    <div class="mbody">
+      <form id="bondForm">
+        <div class="bform">
+          <div class="bfld full">
+            <label>채권명 <span class="u">(필수)</span></label>
+            <input id="bName" type="text" placeholder="예: 국고03000-5403(24-9)" required />
+          </div>
+          <div class="bfld">
+            <label>종류</label>
+            <select id="bKind">
+              <option value="국고채">국고채</option>
+              <option value="지방채">지방채</option>
+              <option value="특수채">특수채</option>
+              <option value="은행채">은행채</option>
+              <option value="회사채">회사채</option>
+              <option value="기타">기타</option>
+            </select>
+          </div>
+          <div class="bfld">
+            <label>표면금리 (연 %) <span class="u">(필수)</span></label>
+            <input id="bCoupon" type="text" inputmode="decimal" placeholder="예: 3.000" required />
+          </div>
+          <div class="bfld">
+            <label>만기일 <span class="u">(필수)</span></label>
+            <input id="bMaturity" type="date" required />
+          </div>
+          <div class="bfld">
+            <label>이자지급주기</label>
+            <select id="bFreq">
+              <option value="3">3개월</option>
+              <option value="6">6개월</option>
+              <option value="12">1년</option>
+              <option value="할인">할인(무이표)</option>
+            </select>
+          </div>
+          <div class="bfld">
+            <label>매입수익률 (연 %) <span class="u">(선택)</span></label>
+            <input id="bBuyYield" type="text" inputmode="decimal" placeholder="예: 3.85" />
+          </div>
+          <div class="bfld">
+            <label>매입단가 <span class="u">(선택·액면 10,000 기준)</span></label>
+            <input id="bBuyPrice" type="text" inputmode="decimal" placeholder="예: 9,650" />
+          </div>
+          <div class="bfld">
+            <label>매입일 <span class="u">(선택)</span></label>
+            <input id="bBuyDate" type="date" />
+          </div>
+          <div class="bfld">
+            <label>보유 액면금액 <span class="u">(선택·원)</span></label>
+            <input id="bFace" type="text" inputmode="decimal" placeholder="예: 10,000,000" />
+          </div>
+          <div class="bfld full">
+            <label>메모 <span class="u">(선택)</span></label>
+            <input id="bMemo" type="text" placeholder="상담용 메모" />
+          </div>
+        </div>
+        <div class="bfoot">
+          <button type="button" class="btn danger" id="bDelete" style="display:none">삭제</button>
+          <span class="spacer"></span>
+          <button type="button" class="btn" id="bCancel">취소</button>
+          <button type="submit" class="btn primary">저장</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
 <div class="toast" id="toast"></div>
 
 <script>
@@ -305,7 +392,7 @@ const LS="mirae_briefing_v1";
 let holdings=[]; // {key,code,reutersCode,name,type,domestic,yahooSymbol,typeName, brief, status, loading}
 let filter={type:"all",status:"all"};
 
-function save(){ try{ localStorage.setItem(LS, JSON.stringify(holdings.map(h=>({code:h.code,reutersCode:h.reutersCode,name:h.name,type:h.type,domestic:h.domestic,yahooSymbol:h.yahooSymbol,typeName:h.typeName})))); }catch(e){} }
+function save(){ try{ localStorage.setItem(LS, JSON.stringify(holdings.map(h=> h.type==="bond"?{type:"bond",name:h.name,key:h.key,bond:h.bond}:{code:h.code,reutersCode:h.reutersCode,name:h.name,type:h.type,domestic:h.domestic,yahooSymbol:h.yahooSymbol,typeName:h.typeName}))); }catch(e){} }
 function load(){ try{ const a=JSON.parse(localStorage.getItem(LS)||"[]"); return Array.isArray(a)?a:[]; }catch(e){ return []; } }
 
 /* ============ 종목 해석 ============ */
@@ -329,6 +416,7 @@ function classifyType(h, integ){
 
 /* ============ 브리핑 데이터 로드 ============ */
 async function loadBrief(h){
+  if(h.type==="bond"){ h.brief=computeBond(h.bond); h.status=deriveStatus(h); h.loading=false; renderHolds(); renderKPIs(); return; }
   h.loading=true; renderHolds();
   try{
     if(h.type==="fund"){ h.brief=await briefFund(h); }
@@ -494,6 +582,7 @@ function periodRet(S,days){ if(!S||S.length<2) return null; const last=S[S.lengt
 /* ============ 상태 판정 ============ */
 function deriveStatus(h){
   const b=h.brief; if(!b||b.error) return "missing";
+  if(h.type==="bond"){ if(b.remainDays!=null&&(b.matured||b.remainDays<=90)) return "warn"; return "normal"; }
   if(h.type==="fund"){ if(b.basePrice==null) return "missing"; if(b.ret&&b.ret["3M"]!=null&&b.ret["3M"]<=-10) return "warn"; return "normal"; }
   if(b.price==null) return "missing";
   const r1=b.ret&&b.ret["1M"];
@@ -598,7 +687,7 @@ function buildPrintSummary(){
   const avgOf=k=>{ const r=done.map(h=>h.brief.ret&&h.brief.ret[k]).filter(v=>v!=null); return r.length?r.reduce((a,b)=>a+b,0)/r.length:null; };
   const cnt=t=>holdings.filter(h=>h.type===t).length;
   const warnN=holdings.filter(h=>h.status==="warn").length;
-  let rows='<tr><td>보유 종목</td><td>총 '+holdings.length+'개 (주식 '+cnt("stock")+' · ETF '+cnt("etf")+' · 펀드 '+cnt("fund")+')</td></tr>';
+  let rows='<tr><td>보유 종목</td><td>총 '+holdings.length+'개 (주식 '+cnt("stock")+' · ETF '+cnt("etf")+' · 펀드 '+cnt("fund")+' · 채권 '+cnt("bond")+')</td></tr>';
   rows+='<tr><td>평균 수익률</td><td>1개월 '+pct(avgOf("1M"))+' · 3개월 '+pct(avgOf("3M"))+' · 6개월 '+pct(avgOf("6M"))+' · 1년 '+pct(avgOf("1Y"))+'</td></tr>';
   rows+='<tr><td>주의 종목</td><td>'+warnN+'개</td></tr>';
   el.innerHTML='<div class="pt">포트폴리오 요약</div><table><tbody>'+rows+'</tbody></table>';
@@ -666,8 +755,8 @@ function reorderHoldings(fromKey,toKey){
 }
 function holdCard(h){
   const b=h.brief||{};
-  const tagcls=h.type==="fund"?"fund":h.type==="etf"?"etf":"stock";
-  const tagtxt=h.type==="fund"?"펀드":h.type==="etf"?"ETF":"주식";
+  const _tt=(h.type==="fund"?["fund","펀드"]:h.type==="etf"?["etf","ETF"]:h.type==="bond"?["bond","채권"]:["stock","주식"]);
+  const tagcls=_tt[0]; const tagtxt=_tt[1];
   const stcls=h.status==="warn"?"st-warn":h.status==="missing"?"st-missing":"st-normal";
   let body="";
   if(h.loading){ body='<div class="loading">불러오는 중…</div>'; }
@@ -678,6 +767,8 @@ function holdCard(h){
       '<div class="mini"><div class="row"><span>위험등급</span><span>'+riskKR(b.riskGrade)+'</span></div>'+
       '<div class="row"><span>총보수</span><span>'+(b.fees&&b.fees.total!=null?b.fees.total.toFixed(2)+"%":"—")+'</span></div>'+
       '<div class="row"><span>운용사</span><span>'+esc(b.company||"—")+'</span></div></div>';
+  } else if(h.type==="bond"){
+    body=bondCardBody(b);
   } else {
     const chg=b.changePct;
     body='<div><span class="h-price">'+fmtP(b.price,b.currency)+'</span>'+
@@ -689,7 +780,7 @@ function holdCard(h){
   }
   return '<div class="hold" data-key="'+esc(h.key)+'"><button class="x" title="삭제">✕</button><span class="drag-h" title="드래그해 순서 변경">⠿</span>'+
     '<div class="h-top"><span class="st-dot '+stcls+'"></span><span class="h-name">'+esc(h.name)+'</span><span class="tag '+tagcls+'">'+tagtxt+'</span></div>'+
-    '<div class="h-sub">'+esc(h.type==="fund"?(b.parentPeer||"펀드"):(h.domestic?((h.type==="etf"?"국내ETF":"국내주식")+" · "+h.code):((h.type==="etf"?"해외ETF":"해외주식")+" · "+h.code)))+'</div>'+
+    '<div class="h-sub">'+esc(h.type==="bond"?(b.kind||"채권"):h.type==="fund"?(b.parentPeer||"펀드"):(h.domestic?((h.type==="etf"?"국내ETF":"국내주식")+" · "+h.code):((h.type==="etf"?"해외ETF":"해외주식")+" · "+h.code)))+'</div>'+
     body+'</div>';
 }
 function miniStockInfo(h,b){
@@ -707,16 +798,75 @@ function miniStockInfo(h,b){
 }
 function riskKR(g){ return ({veryLowRisk:"매우낮음",lowRisk:"낮음",moderatelyLowRisk:"다소낮음",moderateRisk:"보통",moderatelyHighRisk:"다소높음",highRisk:"높음",veryHighRisk:"매우높음"})[g]||g||"—"; }
 
+/* ============ 채권 (간이 카드: 수기입력 + 자동계산) ============ */
+function parseYMD(s){ if(!s) return null; const m=String(s).match(/(\d{4})\D?(\d{1,2})\D?(\d{1,2})/); if(!m) return null; const d=new Date(+m[1],+m[2]-1,+m[3]); return isNaN(d.getTime())?null:d; }
+function fmtDate(d){ if(!d) return "—"; const y=d.getFullYear(),m=("0"+(d.getMonth()+1)).slice(-2),dd=("0"+d.getDate()).slice(-2); return y+"."+m+"."+dd; }
+function freqMonths(f){ return ({"3":3,"6":6,"12":12})[String(f)]||null; }
+function freqText(f){ return ({"3":"3개월","6":"6개월","12":"1년","할인":"할인(무이표)"})[String(f)]||"—"; }
+function nextCoupon(mat,fm){ if(!mat||!fm) return null; const now=new Date(); now.setHours(0,0,0,0); if(mat<=now) return null; let next=new Date(mat); while(true){ const prev=new Date(next); prev.setMonth(prev.getMonth()-fm); if(prev>now) next=prev; else break; } return next; }
+function computeBond(bd){
+  bd=bd||{};
+  const b={ isBond:true, type:"bond", currency:"KRW", kind:bd.kind||"채권", payFreq:bd.payFreq,
+    couponRate:num(bd.couponRate), maturityDate:bd.maturityDate||"", buyDate:bd.buyDate||"",
+    buyPrice:num(bd.buyPrice), buyYield:num(bd.buyYield), faceAmount:num(bd.faceAmount), memo:bd.memo||"" };
+  const mat=parseYMD(bd.maturityDate);
+  if(mat){ const now=new Date(); now.setHours(0,0,0,0);
+    b.remainDays=Math.round((mat-now)/86400000); b.remainYears=b.remainDays/365; b.matured=b.remainDays<0;
+    const fm=freqMonths(bd.payFreq); b.nextCoupon=(fm&&!b.matured)?nextCoupon(mat,fm):null;
+  }
+  if(b.couponRate!=null){ b.per10k=Math.round(10000*b.couponRate/100); if(b.faceAmount!=null) b.annualInterest=Math.round(b.faceAmount*b.couponRate/100); }
+  return b;
+}
+function remainText(b){ if(b.remainDays==null) return "—"; if(b.matured) return "만기 경과"; const t=b.remainYears>=1?(b.remainYears.toFixed(1)+"년"):(b.remainDays+"일"); return t+" (D-"+b.remainDays+")"; }
+function bondCardBody(b){
+  b=b||{};
+  const mrow=(k,v)=>'<div class="row"><span>'+esc(k)+'</span><span>'+v+'</span></div>';
+  let s='<div class="h-price">'+(b.couponRate!=null?b.couponRate.toFixed(3)+"%":"—")+'<span class="muted" style="font-size:12px"> 표면금리</span></div>';
+  s+='<div class="mini">';
+  s+=mrow("잔존만기", esc(remainText(b)));
+  s+=mrow("만기일", esc(b.maturityDate||"—"));
+  if(b.buyYield!=null) s+=mrow("매입수익률", b.buyYield.toFixed(3)+"%");
+  else if(b.buyPrice!=null) s+=mrow("매입단가", fmtN(b.buyPrice));
+  if(b.annualInterest!=null) s+=mrow("연 예상이자", fmtN(b.annualInterest)+"원");
+  s+='</div>';
+  return s;
+}
+function bondComment(b){
+  const p=[];
+  if(b.matured) p.push("⚠️ <b>만기 경과</b> — 상환/재투자 확인 필요");
+  else if(b.remainDays!=null&&b.remainDays<=90) p.push("⚠️ <b>만기 임박</b> (D-"+b.remainDays+") — 재투자 계획 점검");
+  if(b.couponRate!=null&&b.buyYield!=null){ const g=b.buyYield-b.couponRate; p.push("매입수익률 "+b.buyYield.toFixed(3)+"% (표면금리 대비 "+(g>=0?"+":"")+g.toFixed(3)+"%p)"); }
+  if(b.nextCoupon) p.push("다음 이표일 "+fmtDate(b.nextCoupon));
+  if(b.annualInterest!=null) p.push("연 예상이자 약 "+fmtN(b.annualInterest)+"원");
+  return p.length?p.join("<br>"):"특이사항 없음.";
+}
+function detailBond(h){
+  const b=h.brief||{};
+  let html='<div class="sec"><div style="font-size:24px;font-weight:800">'+(b.couponRate!=null?b.couponRate.toFixed(3)+"%":"—")+' <span class="muted" style="font-size:14px">표면금리(연)</span></div></div>';
+  html+='<div class="sec"><div class="sec-t">채권 정보</div>'+
+    kv("종류",b.kind)+kv("만기일",b.maturityDate)+kv("잔존만기",b.remainDays!=null?remainText(b):null)+
+    kv("이자지급주기",freqText(b.payFreq))+kv("다음 이표일",b.nextCoupon?fmtDate(b.nextCoupon):null)+
+    kv("매입일",b.buyDate)+kv("매입수익률",b.buyYield!=null?b.buyYield.toFixed(3)+"%":null)+
+    kv("매입단가",b.buyPrice!=null?fmtN(b.buyPrice):null)+kv("보유 액면금액",b.faceAmount!=null?fmtN(b.faceAmount)+"원":null)+
+    kv("연 예상이자",b.annualInterest!=null?fmtN(b.annualInterest)+"원":null)+kv("액면 10,000당 연이자",b.per10k!=null?fmtN(b.per10k)+"원":null)+'</div>';
+  if(b.memo) html+='<div class="sec"><div class="sec-t">메모</div><div class="action-box">'+esc(b.memo)+'</div></div>';
+  html+='<div class="sec"><div class="sec-t">브리핑 코멘트</div><div class="action-box">'+bondComment(b)+'</div></div>';
+  html+='<div class="sec"><button class="btn sm" id="bondEditBtn">정보 수정</button></div>';
+  return html;
+}
+
 /* ============ 상세 브리핑 ============ */
 function openDetail(key){
   const h=holdings.find(x=>x.key===key); if(!h||!h.brief) return;
   const b=h.brief;
   document.getElementById("dTitle").textContent=h.name;
-  document.getElementById("dSub").textContent=(h.type==="fund"?"펀드":h.type==="etf"?"ETF":(h.domestic?"국내주식":"해외주식"))+" · "+h.code;
+  document.getElementById("dSub").textContent = h.type==="bond" ? ((b.kind||"채권")+" · 채권") : ((h.type==="fund"?"펀드":h.type==="etf"?"ETF":(h.domestic?"국내주식":"해외주식"))+" · "+h.code);
   const body=document.getElementById("dBody");
-  if(h.type==="fund") body.innerHTML=detailFund(b);
+  if(h.type==="bond") body.innerHTML=detailBond(h);
+  else if(h.type==="fund") body.innerHTML=detailFund(b);
   else body.innerHTML=detailStockEtf(h,b);
   document.getElementById("detailBg").classList.add("open");
+  if(h.type==="bond"){ const be=document.getElementById("bondEditBtn"); if(be) be.onclick=()=>{ document.getElementById("detailBg").classList.remove("open"); openBondForm(h.key); }; }
   // 차트 그리기
   const svg=document.getElementById("chartBig");
   if(svg&&b.series&&b.series.length>1) drawChart(svg,b.series,b.currency);
@@ -923,8 +1073,8 @@ function briefMD(){
   let md="# 보유자산 통합 브리핑\n\n";
   md+="| 종목 | 유형 | 현재가 | 당일 | 1개월 | 3개월 | 6개월 | 1년 | 상태 |\n|---|---|---|---|---|---|---|---|---|\n";
   const R=(b,k)=>b.ret&&b.ret[k]!=null?pct(b.ret[k]):"-";
-  holdings.forEach(h=>{ const b=h.brief||{}; const t=h.type==="fund"?"펀드":h.type==="etf"?"ETF":"주식";
-    const price=h.type==="fund"?fmtN(b.basePrice):fmtP(b.price,b.currency);
+  holdings.forEach(h=>{ const b=h.brief||{}; const t=h.type==="fund"?"펀드":h.type==="etf"?"ETF":h.type==="bond"?"채권":"주식";
+    const price=h.type==="fund"?fmtN(b.basePrice):h.type==="bond"?(b.couponRate!=null?b.couponRate.toFixed(3)+"%(표면)":"-"):fmtP(b.price,b.currency);
     md+="| "+h.name+" | "+t+" | "+price+" | "+(b.changePct!=null?pct(b.changePct):"-")+" | "+R(b,"1M")+" | "+R(b,"3M")+" | "+R(b,"6M")+" | "+R(b,"1Y")+" | "+({normal:"정상",warn:"주의",missing:"누락"}[h.status]||"-")+" |\n";
   });
   return md;
@@ -932,8 +1082,8 @@ function briefMD(){
 function briefCSV(){
   let c="종목,코드,유형,현재가,당일수익률,1개월,3개월,6개월,1년,상태\n";
   const N=(b,k)=>b.ret&&b.ret[k]!=null?b.ret[k].toFixed(2):"";
-  holdings.forEach(h=>{ const b=h.brief||{}; const t=h.type==="fund"?"펀드":h.type==="etf"?"ETF":"주식";
-    const price=h.type==="fund"?(b.basePrice||""):(b.price||"");
+  holdings.forEach(h=>{ const b=h.brief||{}; const t=h.type==="fund"?"펀드":h.type==="etf"?"ETF":h.type==="bond"?"채권":"주식";
+    const price=h.type==="fund"?(b.basePrice||""):h.type==="bond"?(b.couponRate!=null?b.couponRate:""):(b.price||"");
     c+='"'+h.name+'",'+h.code+","+t+","+price+","+(b.changePct!=null?b.changePct.toFixed(2):"")+","+N(b,"1M")+","+N(b,"3M")+","+N(b,"6M")+","+N(b,"1Y")+","+({normal:"정상",warn:"주의",missing:"누락"}[h.status]||"")+"\n";
   });
   return c;
@@ -981,10 +1131,62 @@ document.getElementById("vClose").onclick=()=>document.getElementById("viewerBg"
 document.getElementById("viewerBg").onclick=(e)=>{ if(e.target.id==="viewerBg") document.getElementById("viewerBg").classList.remove("open"); };
 document.addEventListener("keydown",(e)=>{ if(e.key==="Escape"){ document.getElementById("viewerBg").classList.remove("open"); document.getElementById("detailBg").classList.remove("open"); } });
 
+/* ============ 채권 입력 폼 ============ */
+let editingBondKey=null;
+function bval(id){ return document.getElementById(id).value; }
+function bset(id,v){ document.getElementById(id).value=(v==null?"":v); }
+function openBondForm(key){
+  editingBondKey=key||null;
+  const h=key?holdings.find(x=>x.key===key):null;
+  const bd=h?(h.bond||{}):{};
+  document.getElementById("bondTitle").textContent=h?"채권 수정":"채권 추가";
+  bset("bName", h?h.name:"");
+  bset("bKind", bd.kind||"국고채");
+  bset("bCoupon", bd.couponRate);
+  bset("bMaturity", bd.maturityDate);
+  bset("bFreq", bd.payFreq||"3");
+  bset("bBuyYield", bd.buyYield);
+  bset("bBuyPrice", bd.buyPrice);
+  bset("bBuyDate", bd.buyDate);
+  bset("bFace", bd.faceAmount);
+  bset("bMemo", bd.memo);
+  document.getElementById("bDelete").style.display=h?"":"none";
+  document.getElementById("bondBg").classList.add("open");
+  setTimeout(()=>document.getElementById("bName").focus(),30);
+}
+function closeBondForm(){ document.getElementById("bondBg").classList.remove("open"); editingBondKey=null; }
+document.getElementById("btnBond").onclick=()=>openBondForm(null);
+document.getElementById("bondClose").onclick=closeBondForm;
+document.getElementById("bCancel").onclick=closeBondForm;
+document.getElementById("bondBg").onclick=(e)=>{ if(e.target.id==="bondBg") closeBondForm(); };
+document.getElementById("bDelete").onclick=()=>{ if(editingBondKey){ removeHolding(editingBondKey); closeBondForm(); } };
+document.addEventListener("keydown",(e)=>{ if(e.key==="Escape") closeBondForm(); });
+document.getElementById("bondForm").addEventListener("submit",(e)=>{
+  e.preventDefault();
+  const name=bval("bName").trim(); if(!name){ toast("채권명을 입력하세요"); return; }
+  if(!bval("bCoupon").trim()){ toast("표면금리를 입력하세요"); return; }
+  if(!bval("bMaturity")){ toast("만기일을 입력하세요"); return; }
+  const isEdit=!!editingBondKey;
+  const bd={ kind:bval("bKind"), couponRate:bval("bCoupon"), maturityDate:bval("bMaturity"), payFreq:bval("bFreq"),
+    buyYield:bval("bBuyYield"), buyPrice:bval("bBuyPrice"), buyDate:bval("bBuyDate"), faceAmount:bval("bFace"), memo:bval("bMemo").trim() };
+  if(isEdit){
+    const h=holdings.find(x=>x.key===editingBondKey);
+    if(h){ h.name=name; h.bond=bd; h.brief=computeBond(bd); h.status=deriveStatus(h); h.loading=false; }
+  } else {
+    const key="bond_"+Date.now().toString(36)+Math.floor(Math.random()*1e6).toString(36);
+    const h={ key, name, type:"bond", bond:bd, brief:computeBond(bd), status:"normal", loading:false };
+    h.status=deriveStatus(h); holdings.push(h);
+  }
+  save(); renderHolds(); renderKPIs(); closeBondForm();
+  toast(isEdit?"수정되었습니다":"채권이 추가되었습니다");
+});
+
 /* ============ 시작: localStorage 복원 ============ */
 (async function init(){
   const saved=load();
-  holdings=saved.map(s=>({ ...s, key:s.reutersCode||s.code, brief:null, status:"loading", loading:true }));
+  holdings=saved.map(s=> s.type==="bond"
+    ? { type:"bond", name:s.name, key:s.key||("bond_"+Math.random().toString(36).slice(2)), bond:s.bond, brief:null, status:"loading", loading:true }
+    : { ...s, key:s.reutersCode||s.code, brief:null, status:"loading", loading:true });
   renderHolds(); renderKPIs();
   for(const h of holdings){ await loadBrief(h); }
   save();
