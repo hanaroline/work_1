@@ -29,11 +29,15 @@ Set-Location $ROOT
 
 $CRLF = [string]([char]13 + [char]10)
 $UA = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36"
-$ALLOW = @('ac.stock.naver.com','m.stock.naver.com','api.stock.naver.com','query1.finance.yahoo.com','query2.finance.yahoo.com')
+$ALLOW = @('ac.stock.naver.com','m.stock.naver.com','api.stock.naver.com','query1.finance.yahoo.com','query2.finance.yahoo.com','data.krx.co.kr')
 
 # Yahoo crumb auth cookie/crumb (blocked in browser, works server-side)
 $script:YHCookies = New-Object System.Net.CookieContainer
 $script:YHCrumb   = $null
+
+# KRX (Korea Exchange) POST API cookie jar + warmup flag
+$script:KRXCookies = New-Object System.Net.CookieContainer
+$script:KRXWarmed  = $false
 
 function Escape-Json([string]$s) {
   if ($null -eq $s) { return '' }
@@ -46,7 +50,7 @@ function Escape-Json([string]$s) {
 
 # Fetch URL with headers, return byte[]
 function Http-Get {
-  param([string]$Url, [string]$Referer, [switch]$UseYhCookies)
+  param([string]$Url, [string]$Referer, [switch]$UseYhCookies, [System.Net.CookieContainer]$Jar)
   $req = [System.Net.HttpWebRequest]::Create($Url)
   $req.UserAgent = $UA
   $req.Accept = "application/json, text/plain, */*"
@@ -55,6 +59,7 @@ function Http-Get {
   $req.AutomaticDecompression = [System.Net.DecompressionMethods]::GZip -bor [System.Net.DecompressionMethods]::Deflate
   if ($Referer) { $req.Referer = $Referer }
   if ($UseYhCookies) { $req.CookieContainer = $script:YHCookies }
+  if ($Jar) { $req.CookieContainer = $Jar }
   # Use system proxy (if any) + current user credentials (NTLM etc.)
   try {
     $proxy = [System.Net.WebRequest]::GetSystemWebProxy()
@@ -178,6 +183,56 @@ function Handle-Yq($Stream, [string]$query) {
   Send-Json $Stream 502 ('{"error":"' + (Escape-Json $lastErr.Exception.Message) + '"}')
 }
 
+function Http-Post {
+  param([string]$Url, [string]$Body, [string]$Referer, [System.Net.CookieContainer]$Jar)
+  $req = [System.Net.HttpWebRequest]::Create($Url)
+  $req.Method = "POST"
+  $req.UserAgent = $UA
+  $req.Accept = "application/json, text/javascript, */*; q=0.01"
+  $req.ContentType = "application/x-www-form-urlencoded; charset=UTF-8"
+  $req.Timeout = 20000
+  $req.ReadWriteTimeout = 20000
+  $req.AutomaticDecompression = [System.Net.DecompressionMethods]::GZip -bor [System.Net.DecompressionMethods]::Deflate
+  try { $req.Headers.Add("X-Requested-With","XMLHttpRequest") } catch {}
+  if ($Referer) { $req.Referer = $Referer }
+  if ($Jar) { $req.CookieContainer = $Jar }
+  try {
+    $proxy = [System.Net.WebRequest]::GetSystemWebProxy()
+    $proxy.Credentials = [System.Net.CredentialCache]::DefaultCredentials
+    $req.Proxy = $proxy
+  } catch {}
+  $bytes = [System.Text.Encoding]::UTF8.GetBytes($Body)
+  $req.ContentLength = $bytes.Length
+  $rs = $req.GetRequestStream(); $rs.Write($bytes, 0, $bytes.Length); $rs.Close()
+  $resp = $req.GetResponse()
+  try {
+    $s = $resp.GetResponseStream(); $ms = New-Object System.IO.MemoryStream; $s.CopyTo($ms); return ,$ms.ToArray()
+  } finally { $resp.Close() }
+}
+
+# KRX data system (POST) proxy: inbound GET /api/krx?bld=...&<params> -> outbound POST getJsonData.cmd
+function Handle-Krx($Stream, [string]$query) {
+  $q = Parse-Query $query
+  # cmd=finder -> bond issue finder(search); otherwise getJsonData (bld required)
+  $isFinder = ($q.ContainsKey('cmd') -and $q['cmd'] -eq 'finder')
+  if (-not $isFinder -and -not $q.ContainsKey('bld')) { Send-Json $Stream 400 '{"error":"no bld"}'; return }
+  $pairs = @()
+  foreach ($k in $q.Keys) { if ($k -eq 'cmd') { continue }; $pairs += ([System.Uri]::EscapeDataString([string]$k) + "=" + [System.Uri]::EscapeDataString([string]$q[$k])) }
+  $body = [string]::Join("&", $pairs)
+  if ($isFinder) { $target = "http://data.krx.co.kr/comm/finder/finder_bondisu.cmd" }
+  else           { $target = "http://data.krx.co.kr/comm/bldAttendant/getJsonData.cmd" }
+  try {
+    if (-not $script:KRXWarmed) {
+      try { [void](Http-Get -Url "http://data.krx.co.kr/contents/MDC/MDI/mdiLoader/index.cmd?menuId=MDC0201020101" -Referer "http://data.krx.co.kr/" -Jar $script:KRXCookies) } catch {}
+      $script:KRXWarmed = $true
+    }
+    $out = Http-Post -Url $target -Body $body -Referer "http://data.krx.co.kr/" -Jar $script:KRXCookies
+    Send-Response $Stream 200 "application/json; charset=utf-8" $out
+  } catch {
+    Send-Json $Stream 502 ('{"error":"' + (Escape-Json $_.Exception.Message) + '"}')
+  }
+}
+
 function Handle-Proxy($Stream, [string]$query) {
   $q = Parse-Query $query
   $target = $q['u']
@@ -204,6 +259,7 @@ function Handle-Request($Stream, [string]$Method, [string]$RawPath) {
   if ($path -eq '/api/proxy') { Handle-Proxy $Stream $query; return }
   if ($path -eq '/api/fund')  { Handle-Fund  $Stream $query; return }
   if ($path -eq '/api/yq')    { Handle-Yq    $Stream $query; return }
+  if ($path -eq '/api/krx')   { Handle-Krx   $Stream $query; return }
 
   if ($path -eq '/' -or $path -eq '') { $path = '/briefing.html' }
   $rel  = $path.TrimStart('/')
