@@ -339,6 +339,7 @@ async function loadBrief(h){
 }
 
 async function briefStockEtf(h){
+  if(!h.domestic) return await briefOverseas(h);   // 해외주식은 네이버 해외 API 경로로 (야후 심볼 불일치 회피)
   const b={type:h.type};
   // 1) Yahoo 시세 + 히스토리
   const q=await yh("/v8/finance/chart/"+encodeURIComponent(h.yahooSymbol)+"?range=1d&interval=5m");
@@ -401,6 +402,75 @@ async function briefStockEtf(h){
   return b;
 }
 
+/* ============ 해외주식: 네이버 해외 API 기반 (미국 외 종목 지원) ============ */
+function yhOverseasSymbol(h){
+  const rc=String(h.reutersCode||""), code=String(h.code||"");
+  const dot=rc.lastIndexOf("."); const suf=dot>=0?rc.slice(dot+1):""; const base=dot>=0?rc.slice(0,dot):rc;
+  if(!suf) return rc||code;
+  if(["O","K","N","P","A","OQ","PK"].indexOf(suf)>=0) return code||base;   // 미국 → 야후는 접미사 없는 티커
+  if(suf==="HM"||suf==="HN") return base+".VN";                            // 베트남 → 야후 .VN
+  return rc;                                                               // 홍콩(.HK)·도쿄(.T)·상하이(.SS)·선전(.SZ) 등은 그대로
+}
+function parseNaverChart(arr){
+  if(!Array.isArray(arr)) return [];
+  const S=[];
+  for(const r of arr){ const c=num(r&&r.closePrice); const d=String(r&&r.localDate||""); if(c==null||d.length<8) continue;
+    const t=Date.UTC(+d.slice(0,4),(+d.slice(4,6))-1,+d.slice(6,8))/1000; S.push({t,c}); }
+  S.sort((a,b)=>a.t-b.t); return S;
+}
+async function naverForeignChart(reutersCode){
+  const end=new Date(), start=new Date(); start.setFullYear(start.getFullYear()-2);
+  const f=dt=>{ const y=dt.getFullYear(),m=("0"+(dt.getMonth()+1)).slice(-2),d=("0"+dt.getDate()).slice(-2); return ""+y+m+d; };
+  const url="https://api.stock.naver.com/chart/foreign/item/"+encodeURIComponent(reutersCode)+"/day?startDateTime="+f(start)+"&endDateTime="+f(end);
+  return parseNaverChart(await proxy(url));
+}
+async function briefOverseas(h){
+  const b={type:"stock", isFund:false};
+  // 1) 기본 시세 (네이버 해외 /basic)
+  const bs=await nvApi("/stock/"+encodeURIComponent(h.reutersCode)+"/basic");
+  b.currency=(bs.currencyType&&bs.currencyType.code)||"USD";
+  b.price=num(bs.closePrice);
+  b.changePct=num(bs.fluctuationsRatio);
+  b.change=num(bs.compareToPreviousClosePrice);
+  b.totalInfos=Array.isArray(bs.stockItemTotalInfos)?bs.stockItemTotalInfos:[];
+  b.w52High=num(tiGet(b,"highPriceOf52Weeks")); b.w52Low=num(tiGet(b,"lowPriceOf52Weeks"));
+  b.dayHigh=num(tiGet(b,"highPrice")); b.dayLow=num(tiGet(b,"lowPrice"));
+  if(bs.isEtf||bs.isEtfAmerica) b.type="etf";
+  if(b.price==null) throw new Error("no overseas price");
+  // 2) 통합정보 (컨센서스/동일업종/기업개요)
+  try{
+    const ig=await nvApi("/stock/"+encodeURIComponent(h.reutersCode)+"/integration");
+    b.consensus=ig.consensusInfo||null;
+    b.industryCompare=(ig.industryCompareInfo&&Array.isArray(ig.industryCompareInfo.globalStocks))?ig.industryCompareInfo.globalStocks:[];
+    b.overview=ig.corporateOverview||(ig.summaries&&ig.summaries.summary)||null;
+  }catch(e){ b.industryCompare=[]; }
+  b.reports=[]; b.deal=[];
+  // 3) 수익률/스파크라인: 네이버 해외차트 우선(8자리 날짜), 실패 시 야후 폴백
+  b.series=[]; b.ret={};
+  try{
+    const S=await naverForeignChart(h.reutersCode);
+    if(S&&S.length>2){ b.series=S.slice(-260); b.ret={"1M":periodRet(S,30),"3M":periodRet(S,91),"6M":periodRet(S,182),"1Y":periodRet(S,365)}; }
+    else throw new Error("thin");
+  }catch(e){
+    try{
+      const hy=await yh("/v8/finance/chart/"+encodeURIComponent(yhOverseasSymbol(h))+"?range=2y&interval=1d");
+      const hr=hy.chart.result[0]; const ts=hr.timestamp||[]; const cl=(hr.indicators.quote[0].close)||[];
+      const S=[]; for(let i=0;i<ts.length;i++) if(cl[i]!=null) S.push({t:ts[i],c:cl[i]});
+      b.series=S.slice(-260); b.ret={"1M":periodRet(S,30),"3M":periodRet(S,91),"6M":periodRet(S,182),"1Y":periodRet(S,365)};
+    }catch(_){}
+  }
+  // 4) 해외 ETF 편입종목 (야후 topHoldings)
+  if(b.type==="etf"){
+    try{
+      const th=await fetch("/api/yq?symbol="+encodeURIComponent(yhOverseasSymbol(h))+"&modules=topHoldings").then(r=>r.json());
+      const r0=th.quoteSummary&&th.quoteSummary.result&&th.quoteSummary.result[0];
+      const hs=(r0&&r0.topHoldings&&r0.topHoldings.holdings)||[];
+      b.holdings=hs.map(x=>({sym:x.symbol,name:x.holdingName,pct:x.holdingPercent&&x.holdingPercent.raw!=null?x.holdingPercent.raw*100:null}));
+    }catch(e){ b.holdings=[]; }
+  }
+  return b;
+}
+
 async function briefFund(h){
   const d=await fetch("/api/fund?code="+encodeURIComponent(h.code)).then(r=>r.json());
   if(!d||!d.detail) throw new Error("no fund");
@@ -449,7 +519,7 @@ function gaugeHTML(label,leftTxt,rightTxt,posPct,curTxt,rev){
 }
 function cardMetrics(h,b){
   const items=[];
-  if(h.domestic&&h.type!=="fund"){
+  if(h.type!=="fund"){
     const per=tiGet(b,"per"), pbr=tiGet(b,"pbr"), dy=tiGet(b,"dividendYieldRatio");
     if(per) items.push("PER "+per);
     if(pbr) items.push("PBR "+pbr);
@@ -462,16 +532,14 @@ function cardMetrics(h,b){
 function detailMetrics(h,b){
   let html=""; const cells=[];
   const push=(l,v)=>{ if(v!=null&&v!=="") cells.push('<div class="mcell"><div class="ml">'+esc(l)+'</div><div class="mv">'+esc(v)+'</div></div>'); };
-  if(h.domestic&&h.type!=="fund"){
+  if(h.type!=="fund"){
     push("시가총액",tiGet(b,"marketValue")); push("거래량",tiGet(b,"accumulatedTradingVolume")); push("거래대금",tiGet(b,"accumulatedTradingValue"));
     push("PER",tiGet(b,"per")); push("추정PER(선행)",tiGet(b,"cnsPer")); push("PBR",tiGet(b,"pbr"));
     push("EPS",tiGet(b,"eps")); push("BPS",tiGet(b,"bps")); push("배당수익률",tiGet(b,"dividendYieldRatio"));
-    push("주당배당금",tiGet(b,"dividend")); push("외국인소진율",tiGet(b,"foreignRate"));
+    push("주당배당금",tiGet(b,"dividend")); push("배당락일",tiGet(b,"exDividendAt")); push("외국인소진율",tiGet(b,"foreignRate"));
+    push("업종",tiGet(b,"industryGroupKor"));
     push("52주 최고",tiGet(b,"highPriceOf52Weeks")); push("52주 최저",tiGet(b,"lowPriceOf52Weeks"));
-  } else if(!h.domestic){
-    push("거래량", b.volume!=null?fmtN(b.volume):null);
-    push("52주 최고", b.w52High!=null?fmtN(b.w52High):null);
-    push("52주 최저", b.w52Low!=null?fmtN(b.w52Low):null);
+    if(!cells.length&&!h.domestic){ push("거래량", b.volume!=null?fmtN(b.volume):null); push("52주 최고", b.w52High!=null?fmtN(b.w52High):null); push("52주 최저", b.w52Low!=null?fmtN(b.w52Low):null); }
   }
   if(cells.length) html+='<div class="sec"><div class="sec-t">핵심 지표</div><div class="mgrid">'+cells.join("")+'</div></div>';
   const pos=w52Pos(b);
@@ -698,10 +766,14 @@ function detailStockEtf(h,b){
       b.deal.slice(0,5).map(d=>'<tr><td>'+(d.bizdate||"").replace(/(\d{4})(\d{2})(\d{2})/,"$2.$3")+'</td><td>'+esc(d.closePrice||"—")+'</td>'+
         sc(d.foreignerPureBuyQuant)+sc(d.organPureBuyQuant)+sc(d.individualPureBuyQuant)+'</tr>').join("")+'</tbody></table></div>';
   }
-  // 동일업종 비교 (업그레이드)
-  if(h.domestic&&Array.isArray(b.industryCompare)&&b.industryCompare.length){
+  // 기업 개요 (해외종목)
+  if(b.overview){
+    html+='<div class="sec"><div class="sec-t">기업 개요</div><div class="muted" style="font-size:12.5px;line-height:1.7">'+esc(b.overview)+'</div></div>';
+  }
+  // 동일업종 비교 (국내: 배열 / 해외: globalStocks)
+  if(Array.isArray(b.industryCompare)&&b.industryCompare.length){
     html+='<div class="sec"><div class="sec-t">동일업종 비교</div><table class="mini-tbl"><thead><tr><th>종목</th><th>현재가</th><th>등락률</th></tr></thead><tbody>'+
-      b.industryCompare.slice(0,6).map(x=>{ const fr=num(x.fluctuationsRatio); const dn=x.compareToPreviousPrice&&x.compareToPreviousPrice.code==="5"; const frv=fr!=null?(dn?-fr:fr):null;
+      b.industryCompare.slice(0,6).map(x=>{ const fr=num(x.fluctuationsRatio); const dn=x.compareToPreviousPrice&&x.compareToPreviousPrice.code==="5"; const frv=fr==null?null:(fr<0?fr:(dn?-fr:fr));
         return '<tr><td>'+esc(x.stockName||"")+'</td><td>'+esc(x.closePrice||"—")+'</td><td class="'+cls(frv)+'">'+(fr!=null?pct(frv):"—")+'</td></tr>'; }).join("")+
       '</tbody></table></div>';
   }
@@ -770,8 +842,8 @@ function comment(h,b){
   // 52주 위치
   const pos=w52Pos(b);
   if(pos!=null) parts.push("52주 밴드 "+(pos>=80?"고점권":pos<=20?"저점권":"중단")+" ("+pos.toFixed(0)+"%)");
-  // 밸류에이션/배당 (국내)
-  if(h.domestic&&h.type!=="fund"){ const per=tiGet(b,"per"), dy=tiGet(b,"dividendYieldRatio"); if(per) parts.push("PER "+per+(dy?(" · 배당수익률 "+dy):"")); }
+  // 밸류에이션/배당
+  if(h.type!=="fund"){ const per=tiGet(b,"per"), dy=tiGet(b,"dividendYieldRatio"); if(per) parts.push("PER "+per+(dy?(" · 배당수익률 "+dy):"")); }
   // 목표가 여력
   const up=targetUpside(b);
   if(up!=null) parts.push("애널리스트 목표가까지 "+(up>=0?"상승여력 ":"하락 ")+pct(up));
