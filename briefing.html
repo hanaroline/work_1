@@ -351,6 +351,10 @@
             <label>보유 액면금액 <span class="u">(선택·원)</span></label>
             <input id="bFace" type="text" inputmode="decimal" placeholder="예: 10,000,000" />
           </div>
+          <div class="bfld">
+            <label>가정 매도수익률 <span class="u">(선택·중도매도 시뮬레이션)</span></label>
+            <input id="bSellYield" type="text" inputmode="decimal" placeholder="예: 3.50" />
+          </div>
           <div class="bfld full">
             <label>메모 <span class="u">(선택)</span></label>
             <input id="bMemo" type="text" placeholder="상담용 메모" />
@@ -804,17 +808,65 @@ function fmtDate(d){ if(!d) return "—"; const y=d.getFullYear(),m=("0"+(d.getM
 function freqMonths(f){ return ({"3":3,"6":6,"12":12})[String(f)]||null; }
 function freqText(f){ return ({"3":"3개월","6":"6개월","12":"1년","할인":"할인(무이표)"})[String(f)]||"—"; }
 function nextCoupon(mat,fm){ if(!mat||!fm) return null; const now=new Date(); now.setHours(0,0,0,0); if(mat<=now) return null; let next=new Date(mat); while(true){ const prev=new Date(next); prev.setMonth(prev.getMonth()-fm); if(prev>now) next=prev; else break; } return next; }
+/* 채권 수식 (표준식 기반 이론·근사값) */
+var BOND_TAX=0.154, BOND_YR=365*86400000;
+function bondCouponDates(mat,sm,settle){ const out=[]; let d=new Date(mat); while(d>settle){ out.push(new Date(d)); const p=new Date(d); p.setMonth(p.getMonth()-sm); d=p; } out.reverse(); return out; }
+function bondPrice(face,cr,mat,freq,y,settle){
+  const sm=freqMonths(freq);
+  if(!sm){ const t=Math.max(0,(mat-settle)/BOND_YR); return face/Math.pow(1+y,t); }
+  const f=12/sm, per=cr/100*face/f; const ds=bondCouponDates(mat,sm,settle); let pv=0;
+  for(let i=0;i<ds.length;i++){ const t=(ds[i]-settle)/BOND_YR; let cf=per; if(i===ds.length-1) cf+=face; pv+=cf/Math.pow(1+y/f,f*t); }
+  return pv;
+}
+function bondYield(face,cr,mat,freq,price,settle){ let lo=-0.9,hi=2.0; for(let i=0;i<200;i++){ const m=(lo+hi)/2; if(bondPrice(face,cr,mat,freq,m,settle)>price) lo=m; else hi=m; } return (lo+hi)/2; }
+function bondDur(face,cr,mat,freq,y,settle){
+  const sm=freqMonths(freq);
+  if(!sm){ const t=Math.max(0,(mat-settle)/BOND_YR); return {mod:t/(1+y)}; }
+  const f=12/sm, per=cr/100*face/f; const ds=bondCouponDates(mat,sm,settle); let pv=0,ws=0;
+  for(let i=0;i<ds.length;i++){ const t=(ds[i]-settle)/BOND_YR; let cf=per; if(i===ds.length-1) cf+=face; const d=cf/Math.pow(1+y/f,f*t); pv+=d; ws+=t*d; }
+  return {mod:(ws/pv)/(1+y/f)};
+}
 function computeBond(bd){
   bd=bd||{};
   const b={ isBond:true, type:"bond", currency:"KRW", kind:bd.kind||"채권", payFreq:bd.payFreq,
     couponRate:num(bd.couponRate), maturityDate:bd.maturityDate||"", buyDate:bd.buyDate||"",
-    buyPrice:num(bd.buyPrice), buyYield:num(bd.buyYield), faceAmount:num(bd.faceAmount), memo:bd.memo||"" };
-  const mat=parseYMD(bd.maturityDate);
-  if(mat){ const now=new Date(); now.setHours(0,0,0,0);
-    b.remainDays=Math.round((mat-now)/86400000); b.remainYears=b.remainDays/365; b.matured=b.remainDays<0;
-    const fm=freqMonths(bd.payFreq); b.nextCoupon=(fm&&!b.matured)?nextCoupon(mat,fm):null;
+    buyPrice:num(bd.buyPrice), buyYield:num(bd.buyYield), faceAmount:num(bd.faceAmount),
+    sellYield:num(bd.sellYield), memo:bd.memo||"" };
+  const now=new Date(); now.setHours(0,0,0,0);
+  const mat=parseYMD(bd.maturityDate), FACE=10000, cr=b.couponRate;
+  if(mat){ b.remainDays=Math.round((mat-now)/86400000); b.remainYears=b.remainDays/365; b.matured=b.remainDays<0;
+    const fm=freqMonths(bd.payFreq); b.nextCoupon=(fm&&!b.matured)?nextCoupon(mat,fm):null; }
+  if(cr!=null){ b.per10k=Math.round(FACE*cr/100);
+    if(b.faceAmount!=null){ b.annualInterest=Math.round(b.faceAmount*cr/100); b.annualInterestAfterTax=Math.round(b.faceAmount*cr/100*(1-BOND_TAX)); } }
+  if(mat && !b.matured && cr!=null){
+    const settleBuy=parseYMD(b.buyDate)||now;
+    let price=b.buyPrice, ytm=b.buyYield;
+    if(ytm!=null && price==null){ price=bondPrice(FACE,cr,mat,b.payFreq,ytm/100,settleBuy); b.derivedPrice=Math.round(price*100)/100; }
+    else if(price!=null && ytm==null){ ytm=bondYield(FACE,cr,mat,b.payFreq,price,settleBuy)*100; b.derivedYtm=true; }
+    b.ytm=(ytm!=null)?ytm:null;
+    if(price!=null) b.currentYield=(cr/100*FACE)/price*100;
+    const y=(b.ytm!=null?b.ytm:cr)/100;
+    b.modDuration=bondDur(FACE,cr,mat,b.payFreq,y,now).mod;
+    b.priceUp1=-b.modDuration;
+    const fm=freqMonths(b.payFreq);
+    if(b.nextCoupon&&fm){ const prev=new Date(b.nextCoupon); prev.setMonth(prev.getMonth()-fm); const pd=(b.nextCoupon-prev)/86400000, el=(now-prev)/86400000; if(pd>0&&el>=0) b.accrued10k=(cr/100*FACE/(12/fm))*(el/pd); }
+    if(price!=null && b.faceAmount!=null){
+      const units=b.faceAmount/FACE, invested=b.faceAmount*price/FACE;
+      let couponsTotal=0; if(fm){ const nC=bondCouponDates(mat,fm,now).length; couponsTotal=(cr/100*FACE/(12/fm))*nC*units; }
+      const redeem=b.faceAmount+couponsTotal, profit=redeem-invested, capGain=b.faceAmount-invested;
+      b.invested=Math.round(invested); b.couponsTotal=Math.round(couponsTotal); b.redeemTotal=Math.round(redeem);
+      b.totalProfit=Math.round(profit); b.totalReturnPct=profit/invested*100;
+      b.annualReturnPct=(b.remainYears>0)?b.totalReturnPct/b.remainYears:null;
+      const afterTaxProfit=couponsTotal*(1-BOND_TAX)+capGain;
+      b.afterTaxTotalReturnPct=afterTaxProfit/invested*100;
+      b.afterTaxAnnualPct=(b.remainYears>0)?b.afterTaxTotalReturnPct/b.remainYears:null;
+    }
+    if(b.sellYield!=null && price!=null){
+      const sp=bondPrice(FACE,cr,mat,b.payFreq,b.sellYield/100,now);
+      b.sellPrice10k=Math.round(sp*100)/100; b.sellCapPct=(sp-price)/price*100;
+      if(b.faceAmount!=null) b.sellProfit=Math.round((sp-price)*(b.faceAmount/FACE));
+    }
   }
-  if(b.couponRate!=null){ b.per10k=Math.round(10000*b.couponRate/100); if(b.faceAmount!=null) b.annualInterest=Math.round(b.faceAmount*b.couponRate/100); }
   return b;
 }
 function remainText(b){ if(b.remainDays==null) return "—"; if(b.matured) return "만기 경과"; const t=b.remainYears>=1?(b.remainYears.toFixed(1)+"년"):(b.remainDays+"일"); return t+" (D-"+b.remainDays+")"; }
@@ -824,9 +876,9 @@ function bondCardBody(b){
   let s='<div class="h-price">'+(b.couponRate!=null?b.couponRate.toFixed(3)+"%":"—")+'<span class="muted" style="font-size:12px"> 표면금리</span></div>';
   s+='<div class="mini">';
   s+=mrow("잔존만기", esc(remainText(b)));
+  if(b.ytm!=null) s+=mrow("만기보유수익률", b.ytm.toFixed(3)+"%");
+  if(b.currentYield!=null) s+=mrow("경상수익률", b.currentYield.toFixed(3)+"%");
   s+=mrow("만기일", esc(b.maturityDate||"—"));
-  if(b.buyYield!=null) s+=mrow("매입수익률", b.buyYield.toFixed(3)+"%");
-  else if(b.buyPrice!=null) s+=mrow("매입단가", fmtN(b.buyPrice));
   if(b.annualInterest!=null) s+=mrow("연 예상이자", fmtN(b.annualInterest)+"원");
   s+='</div>';
   return s;
@@ -849,6 +901,35 @@ function detailBond(h){
     kv("매입일",b.buyDate)+kv("매입수익률",b.buyYield!=null?b.buyYield.toFixed(3)+"%":null)+
     kv("매입단가",b.buyPrice!=null?fmtN(b.buyPrice):null)+kv("보유 액면금액",b.faceAmount!=null?fmtN(b.faceAmount)+"원":null)+
     kv("연 예상이자",b.annualInterest!=null?fmtN(b.annualInterest)+"원":null)+kv("액면 10,000당 연이자",b.per10k!=null?fmtN(b.per10k)+"원":null)+'</div>';
+  // 수익률 분석
+  const ry=[]; const add=(k,v)=>{ if(v!=null&&v!=="") ry.push(kv(k,v)); };
+  add("만기보유수익률(YTM)", b.ytm!=null?b.ytm.toFixed(3)+"%":null);
+  add("경상수익률", b.currentYield!=null?b.currentYield.toFixed(3)+"%":null);
+  if(b.buyPrice==null&&b.derivedPrice!=null) add("환산 매입단가", fmtN(b.derivedPrice));
+  add("수정듀레이션", b.modDuration!=null?b.modDuration.toFixed(2)+"년":null);
+  add("금리 +1%p 시 가격", b.priceUp1!=null?b.priceUp1.toFixed(2)+"%":null);
+  add("금리 −1%p 시 가격", b.priceUp1!=null?(-b.priceUp1).toFixed(2)+"%":null);
+  add("경과이자(10,000당)", b.accrued10k!=null?fmtN(Math.round(b.accrued10k))+"원":null);
+  add("세전 연이자", b.annualInterest!=null?fmtN(b.annualInterest)+"원":null);
+  add("세후 연이자(이자세 15.4%)", b.annualInterestAfterTax!=null?fmtN(b.annualInterestAfterTax)+"원":null);
+  if(ry.length) html+='<div class="sec"><div class="sec-t">수익률 분석 (이론·근사)</div>'+ry.join("")+'<div class="muted" style="margin-top:6px;font-size:11.5px">※ 개인 투자자는 채권 매매·상환차익 비과세, 이자에만 15.4% 과세. 표준식 기반 근사치입니다.</div></div>';
+  // 만기 보유 시 총수익
+  if(b.totalProfit!=null){
+    html+='<div class="sec"><div class="sec-t">만기 보유 시 (매입가·보유액면 기준)</div>'+
+      kv("투자원금",fmtN(b.invested)+"원")+kv("만기 총수령",fmtN(b.redeemTotal)+"원")+
+      kv("총수익",fmtN(b.totalProfit)+"원")+kv("총수익률",b.totalReturnPct.toFixed(2)+"%")+
+      kv("연환산(단리)",b.annualReturnPct!=null?b.annualReturnPct.toFixed(2)+"%":null)+
+      kv("세후 총수익률(근사)",b.afterTaxTotalReturnPct!=null?b.afterTaxTotalReturnPct.toFixed(2)+"%":null)+
+      kv("세후 연환산(근사)",b.afterTaxAnnualPct!=null?b.afterTaxAnnualPct.toFixed(2)+"%":null)+'</div>';
+  }
+  // 중도매도 시뮬레이션
+  if(b.sellPrice10k!=null){
+    html+='<div class="sec"><div class="sec-t">중도매도 시뮬레이션 (가정 매도수익률 '+b.sellYield.toFixed(3)+'%)</div>'+
+      kv("예상 매도단가(10,000당)",fmtN(b.sellPrice10k))+
+      kv("단가손익률",(b.sellCapPct>=0?"+":"")+b.sellCapPct.toFixed(2)+"%")+
+      kv("예상 매도손익",b.sellProfit!=null?((b.sellProfit>=0?"+":"")+fmtN(b.sellProfit)+"원"):null)+
+      '<div class="muted" style="margin-top:6px;font-size:11.5px">※ 매도일까지의 이표·경과이자는 별도. 실제 매도수익률(시장금리)에 따라 달라집니다.</div></div>';
+  }
   if(b.memo) html+='<div class="sec"><div class="sec-t">메모</div><div class="action-box">'+esc(b.memo)+'</div></div>';
   html+='<div class="sec"><div class="sec-t">브리핑 코멘트</div><div class="action-box">'+bondComment(b)+'</div></div>';
   html+='<div class="sec"><button class="btn sm" id="bondEditBtn">정보 수정</button></div>';
@@ -1149,6 +1230,7 @@ function openBondForm(key){
   bset("bBuyPrice", bd.buyPrice);
   bset("bBuyDate", bd.buyDate);
   bset("bFace", bd.faceAmount);
+  bset("bSellYield", bd.sellYield);
   bset("bMemo", bd.memo);
   document.getElementById("bDelete").style.display=h?"":"none";
   document.getElementById("bondBg").classList.add("open");
@@ -1168,7 +1250,7 @@ document.getElementById("bondForm").addEventListener("submit",(e)=>{
   if(!bval("bMaturity")){ toast("만기일을 입력하세요"); return; }
   const isEdit=!!editingBondKey;
   const bd={ kind:bval("bKind"), couponRate:bval("bCoupon"), maturityDate:bval("bMaturity"), payFreq:bval("bFreq"),
-    buyYield:bval("bBuyYield"), buyPrice:bval("bBuyPrice"), buyDate:bval("bBuyDate"), faceAmount:bval("bFace"), memo:bval("bMemo").trim() };
+    buyYield:bval("bBuyYield"), buyPrice:bval("bBuyPrice"), buyDate:bval("bBuyDate"), faceAmount:bval("bFace"), sellYield:bval("bSellYield"), memo:bval("bMemo").trim() };
   if(isEdit){
     const h=holdings.find(x=>x.key===editingBondKey);
     if(h){ h.name=name; h.bond=bd; h.brief=computeBond(bd); h.status=deriveStatus(h); h.loading=false; }
