@@ -1,505 +1,221 @@
-<title>신길파크자이 · 신풍역 천지개벽 미래개발 브로슈어</title>
+<title>신길파크자이 · 신풍역 천지개벽</title>
 <style>
   :root{
-    color-scheme: dark;
-    --bg:#140A22;--bg-2:#1B0F30;--panel:#241640;--panel-2:#2C1A4E;
-    --line:rgba(255,255,255,.10);--line-2:rgba(47,227,208,.28);
-    --indigo:#4A2597;--magenta:#E23C86;--magenta-2:#FF5BA6;
-    --amber:#F7A82E;--amber-2:#FFC94B;--cyan:#2FE3D0;--cyan-2:#7BF5E7;
-    --coral:#FF6B5B;--cream:#FDF6EE;--mute:#C6B9E0;--mute-2:#9585B8;
-    --kr:'Pretendard Variable',Pretendard,'Apple SD Gothic Neo','Malgun Gothic','Noto Sans KR',system-ui,-apple-system,sans-serif;
+    color-scheme:dark;
+    --bg:#0C0620;--bg-2:#140A28;--panel:#1E123C;
+    --line:rgba(255,255,255,.10);--line-2:rgba(47,227,208,.26);
+    --magenta:#FF5BA6;--amber:#FFC94B;--amber-2:#F7A82E;--cyan:#2FE3D0;--cyan-2:#7BF5E7;
+    --violet:#B79BFF;--cream:#FDF6EE;--mute:#C6B9E0;--mute-2:#9585B8;
+    --kr:'Pretendard Variable',Pretendard,'Apple SD Gothic Neo','Malgun Gothic','Noto Sans KR',system-ui,sans-serif;
   }
   *{box-sizing:border-box}
   html,body{margin:0;padding:0}
-  body{
-    font-family:var(--kr);color:var(--cream);
-    -webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;
-    background:
-      radial-gradient(1100px 640px at 85% -8%, rgba(226,60,134,.28), transparent 58%),
-      radial-gradient(900px 620px at -5% 8%, rgba(74,37,151,.5), transparent 55%),
-      radial-gradient(1000px 700px at 50% 118%, rgba(247,168,46,.18), transparent 55%),
-      var(--bg);
-    padding:26px 15px 60px;display:flex;justify-content:center;
-  }
-  .page{width:100%;max-width:940px;position:relative;overflow:hidden;
-    background:linear-gradient(177deg,#1B0F30 0%, #150A24 46%, #12081F 100%);
-    border:1px solid var(--line);border-radius:26px;
-    box-shadow:0 34px 90px -34px rgba(0,0,0,.8), inset 0 1px 0 rgba(255,255,255,.05);}
+  body{font-family:var(--kr);color:var(--cream);-webkit-font-smoothing:antialiased;
+    background:radial-gradient(900px 560px at 85% -10%,rgba(255,91,166,.25),transparent 60%),radial-gradient(800px 560px at 0% 6%,rgba(74,37,151,.5),transparent 55%),var(--bg);
+    padding:24px 15px 54px;display:flex;justify-content:center}
+  .page{width:100%;max-width:900px;position:relative;overflow:hidden;border-radius:24px;
+    background:linear-gradient(180deg,#160B2C,#0C0620);border:1px solid var(--line);
+    box-shadow:0 34px 90px -34px rgba(0,0,0,.8)}
 
-  /* ============ HERO (premium render) ============ */
+  /* ---------- HERO (image-led) ---------- */
   .hero{position:relative}
-  .hero-art{position:relative;width:100%;display:block}
-  .hero-art svg{display:block;width:100%;height:auto}
-  .hero-txt{position:absolute;left:0;right:0;bottom:0;padding:0 42px 26px;z-index:3;
-    background:linear-gradient(180deg,transparent,rgba(18,8,31,.35) 40%,rgba(18,8,31,.9))}
-  .eyebrow{display:inline-flex;align-items:center;gap:9px;font-size:12px;font-weight:800;letter-spacing:.16em;
+  .hero svg{display:block;width:100%;height:auto}
+  .hero-txt{position:absolute;left:0;right:0;bottom:0;padding:0 40px 30px;
+    background:linear-gradient(180deg,transparent,rgba(12,6,32,.5) 45%,rgba(12,6,32,.94))}
+  .eyebrow{display:inline-flex;gap:8px;align-items:center;font-size:11.5px;font-weight:800;letter-spacing:.18em;
     text-transform:uppercase;color:var(--cyan-2);padding:7px 14px;border-radius:999px;
-    background:rgba(15,20,34,.5);border:1px solid var(--line-2);backdrop-filter:blur(4px)}
+    background:rgba(12,6,32,.55);border:1px solid var(--line-2);backdrop-filter:blur(4px)}
   .eyebrow .dot{width:8px;height:8px;border-radius:50%;background:var(--cyan);box-shadow:0 0 12px var(--cyan)}
-  h1.title{margin:16px 0 6px;font-weight:900;letter-spacing:-.03em;line-height:.9;font-size:clamp(46px,9.5vw,92px);text-wrap:balance}
-  h1.title .l1{display:block;font-size:.36em;font-weight:800;letter-spacing:.02em;color:var(--cream);opacity:.92;margin-bottom:.3em;text-shadow:0 2px 12px rgba(0,0,0,.6)}
-  h1.title .big{background:linear-gradient(96deg,var(--cyan-2) 0%,var(--magenta-2) 48%,var(--amber-2) 100%);
-    -webkit-background-clip:text;background-clip:text;color:transparent;filter:drop-shadow(0 6px 22px rgba(226,60,134,.35))}
-  .lede{font-size:clamp(14px,2.3vw,18px);line-height:1.55;margin:14px 0 4px;max-width:60ch;font-weight:600;text-shadow:0 2px 14px rgba(0,0,0,.7)}
-  .lede b{color:var(--amber-2)} .lede .cy{color:var(--cyan-2)}
-  .id-row{display:flex;flex-wrap:wrap;gap:8px;margin-top:16px}
-  .id-chip{font-size:12px;font-weight:700;padding:8px 13px;border-radius:10px;display:inline-flex;gap:7px;align-items:center;
-    background:rgba(20,10,34,.55);border:1px solid rgba(255,255,255,.16);backdrop-filter:blur(4px)}
-  .id-chip i{font-style:normal;color:var(--cyan-2)}
+  h1{margin:16px 0 8px;font-weight:900;letter-spacing:-.03em;line-height:.92;font-size:clamp(48px,10vw,96px);text-wrap:balance;
+    background:linear-gradient(96deg,var(--cyan-2),var(--magenta) 50%,var(--amber));-webkit-background-clip:text;background-clip:text;color:transparent;
+    filter:drop-shadow(0 6px 26px rgba(255,91,166,.32))}
+  .tag{font-size:clamp(14px,2.4vw,18px);font-weight:700;color:var(--cream);margin:0;text-shadow:0 2px 14px rgba(0,0,0,.7)}
+  .tag b{color:var(--amber)}
 
-  /* ============ HEADLINE STAT ============ */
-  .megastat{display:flex;align-items:center;gap:20px;flex-wrap:wrap;margin:0 42px;padding:20px 24px;border-radius:18px;
-    background:linear-gradient(110deg,rgba(226,60,134,.20),rgba(47,227,208,.14));border:1px solid var(--line-2);margin-top:26px}
-  .megastat .num{font-size:clamp(38px,7vw,58px);font-weight:900;letter-spacing:-.03em;line-height:1;
-    background:linear-gradient(92deg,var(--amber-2),var(--magenta-2));-webkit-background-clip:text;background-clip:text;color:transparent;white-space:nowrap}
-  .megastat .txt{font-size:14px;line-height:1.5;color:var(--cream)}
-  .megastat .txt b{color:var(--cyan-2)}
+  /* ---------- STAT BAND ---------- */
+  .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--line)}
+  .stat{background:linear-gradient(180deg,#1B1036,#140A28);padding:18px 12px;text-align:center}
+  .stat .n{font-size:clamp(22px,4vw,32px);font-weight:900;letter-spacing:-.02em;line-height:1;font-variant-numeric:tabular-nums}
+  .stat .n.a{color:var(--amber)} .stat .n.c{color:var(--cyan-2)} .stat .n.m{color:var(--magenta)}
+  .stat .l{font-size:11px;color:var(--mute);margin-top:7px;font-weight:600}
 
-  /* ============ SECTIONS ============ */
-  section{padding:30px 42px}
-  .sec-head{display:flex;align-items:center;gap:13px;margin-bottom:6px}
-  .sec-kbtn{font-size:11px;font-weight:800;letter-spacing:.14em;color:#160B28;background:linear-gradient(90deg,var(--magenta),var(--amber));padding:5px 12px;border-radius:7px}
-  .sec-title{font-size:clamp(20px,3.3vw,27px);font-weight:900;letter-spacing:-.02em;margin:0}
-  .sec-title .accent{background:linear-gradient(90deg,var(--cyan-2),var(--magenta-2));-webkit-background-clip:text;background-clip:text;color:transparent}
-  .sec-sub{font-size:13px;color:var(--mute);margin:12px 0 18px;line-height:1.62;max-width:76ch}
-  .sec-sub b{color:var(--amber-2)}
+  /* ---------- SECTIONS ---------- */
+  section{padding:26px 40px}
+  .sh{display:flex;align-items:center;gap:11px;margin-bottom:16px}
+  .sh .k{font-size:10.5px;font-weight:800;letter-spacing:.14em;color:#160B28;background:linear-gradient(90deg,var(--magenta),var(--amber));padding:5px 11px;border-radius:6px}
+  .sh h2{margin:0;font-size:clamp(18px,3vw,23px);font-weight:900;letter-spacing:-.02em}
+  .sh h2 .a{background:linear-gradient(90deg,var(--cyan-2),var(--magenta));-webkit-background-clip:text;background-clip:text;color:transparent}
 
-  /* ============ ISO MAP ============ */
-  .map-cap{display:flex;align-items:baseline;justify-content:space-between;gap:10px;padding:0 2px 8px;flex-wrap:wrap}
-  .map-cap .t{font-size:12.5px;font-weight:800;color:var(--amber-2)}
-  .map-cap .s{font-size:11px;color:var(--mute-2)}
-  svg.map{display:block;width:100%;height:auto;border-radius:14px;border:1px solid var(--line)}
-  .maplbl{font-family:var(--kr);font-weight:800}
+  /* dev chips — one line each */
+  .chips{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+  .chip{display:flex;align-items:center;gap:11px;padding:12px 14px;border-radius:12px;
+    background:linear-gradient(180deg,var(--panel),var(--bg-2));border:1px solid var(--line)}
+  .chip .e{flex:0 0 auto;width:34px;height:34px;border-radius:9px;display:grid;place-items:center;font-size:17px;
+    background:linear-gradient(135deg,rgba(47,227,208,.2),rgba(255,91,166,.2));border:1px solid var(--line)}
+  .chip .t{font-size:13px;font-weight:800;line-height:1.2}
+  .chip .t span{display:block;font-size:11px;font-weight:600;color:var(--mute-2);margin-top:2px}
 
-  /* ============ ROADMAP ============ */
-  .roadmap{display:grid;grid-template-columns:repeat(6,1fr);gap:0;position:relative;margin-top:6px}
-  .roadmap::before{content:"";position:absolute;left:5%;right:5%;top:13px;height:3px;border-radius:3px;background:linear-gradient(90deg,var(--magenta),var(--cyan),var(--amber))}
-  .rm{position:relative;padding:0 6px;text-align:center}
-  .rm .node{width:15px;height:15px;border-radius:50%;background:var(--cream);margin:6px auto 0;position:relative;z-index:2;box-shadow:0 0 0 5px rgba(255,255,255,.08)}
-  .rm.cy .node{background:var(--cyan);box-shadow:0 0 0 5px rgba(47,227,208,.16),0 0 16px var(--cyan)}
-  .rm.mg .node{background:var(--magenta-2);box-shadow:0 0 0 5px rgba(226,60,134,.18),0 0 16px var(--magenta)}
-  .rm.am .node{background:var(--amber-2);box-shadow:0 0 0 5px rgba(247,168,46,.18),0 0 16px var(--amber)}
-  .rm .yr{font-size:12px;font-weight:900;margin-top:11px;font-variant-numeric:tabular-nums}
-  .rm .ev{font-size:10.5px;color:var(--mute);margin-top:3px;line-height:1.38}
+  /* price */
+  .price{display:grid;grid-template-columns:.8fr 1.2fr;gap:20px;align-items:center}
+  .pcard{background:linear-gradient(160deg,#241247,#140A28);border:1px solid var(--line-2);border-radius:16px;padding:20px}
+  .pcard .l{font-size:11.5px;color:var(--mute);font-weight:700}
+  .pcard .big{font-size:clamp(40px,8vw,56px);font-weight:900;letter-spacing:-.03em;line-height:1;margin:5px 0 1px;
+    background:linear-gradient(90deg,var(--amber),var(--magenta));-webkit-background-clip:text;background-clip:text;color:transparent}
+  .pcard .big small{font-size:22px;-webkit-text-fill-color:var(--cream)}
+  .pcard .s{font-size:11px;color:var(--cyan-2);font-weight:700}
+  .bar{display:grid;grid-template-columns:118px 1fr 50px;align-items:center;gap:10px;margin-bottom:9px}
+  .bar .nm{font-size:12px;font-weight:700}
+  .track{height:22px;border-radius:6px;background:rgba(255,255,255,.06);overflow:hidden}
+  .fill{height:100%;border-radius:6px;background:linear-gradient(90deg,#4A2597,var(--cyan));transform-origin:left}
+  .fill.hl{background:linear-gradient(90deg,var(--magenta),var(--amber))}
+  .bar .v{font-size:13px;font-weight:800;text-align:right;font-variant-numeric:tabular-nums}
+  .bar .v.hl{color:var(--amber)}
 
-  /* ============ CATALYST CARDS ============ */
-  .devcards{display:grid;grid-template-columns:repeat(3,1fr);gap:13px;margin-top:24px}
-  .dev{position:relative;padding:18px 16px 16px;border-radius:15px;overflow:hidden;background:linear-gradient(180deg,var(--panel),var(--bg-2));border:1px solid rgba(255,255,255,.09)}
-  .dev::before{content:"";position:absolute;inset:0 0 auto 0;height:3px;background:var(--grad,linear-gradient(90deg,var(--cyan),var(--magenta)))}
-  .dev.c1{--grad:linear-gradient(90deg,var(--cyan),var(--cyan-2))}
-  .dev.c2{--grad:linear-gradient(90deg,var(--magenta),var(--coral))}
-  .dev.c3{--grad:linear-gradient(90deg,var(--amber),var(--amber-2))}
-  .dev .tagline{font-size:10px;font-weight:800;letter-spacing:.07em;text-transform:uppercase;color:var(--mute-2)}
-  .dev h3{margin:8px 0 3px;font-size:15.5px;font-weight:900;letter-spacing:-.01em}
-  .dev .meta{font-size:11px;font-weight:700;color:var(--cyan-2);margin-bottom:8px}
-  .dev.c2 .meta{color:var(--magenta-2)} .dev.c3 .meta{color:var(--amber-2)}
-  .dev p{margin:0;font-size:12px;line-height:1.55;color:var(--mute)}
-  .dev p b{color:var(--cream);font-weight:700}
+  /* cta + footer */
+  .cta{margin:4px 40px 0;padding:22px;border-radius:18px;text-align:center;
+    background:linear-gradient(115deg,rgba(74,37,151,.5),rgba(255,91,166,.4) 55%,rgba(247,168,46,.4));border:1px solid var(--line)}
+  .cta h3{margin:0;font-size:clamp(17px,3.2vw,25px);font-weight:900;letter-spacing:-.02em;text-wrap:balance}
+  footer{padding:18px 40px 30px;color:var(--mute-2);font-size:10px;line-height:1.55}
+  footer .b{font-weight:900;background:linear-gradient(90deg,var(--cyan-2),var(--amber));-webkit-background-clip:text;background-clip:text;color:transparent}
 
-  /* ============ STRENGTHS ============ */
-  .why{background:linear-gradient(180deg,rgba(255,255,255,.025),transparent)}
-  .strengths{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
-  .st{display:flex;gap:13px;padding:15px 15px;border-radius:14px;background:linear-gradient(180deg,var(--panel),var(--bg-2));border:1px solid rgba(255,255,255,.08)}
-  .st .ic{flex:0 0 auto;width:40px;height:40px;border-radius:11px;display:grid;place-items:center;font-size:20px;background:linear-gradient(135deg,rgba(47,227,208,.22),rgba(226,60,134,.22));border:1px solid var(--line)}
-  .st h4{margin:0 0 4px;font-size:14px;font-weight:800}
-  .st p{margin:0;font-size:11.5px;line-height:1.52;color:var(--mute)}
-  .st p b{color:var(--amber-2)}
-
-  /* ============ PRICE ============ */
-  .price-wrap{display:grid;grid-template-columns:.82fr 1.18fr;gap:22px;align-items:center}
-  .price-card{background:linear-gradient(160deg,var(--panel-2),var(--bg-2));border:1px solid var(--line-2);border-radius:18px;padding:22px}
-  .price-card .lab{font-size:12px;color:var(--mute);font-weight:700}
-  .price-card .big{font-size:clamp(38px,7.5vw,56px);font-weight:900;letter-spacing:-.03em;line-height:1;margin:6px 0 2px;
-    background:linear-gradient(90deg,var(--amber-2),var(--magenta-2));-webkit-background-clip:text;background-clip:text;color:transparent}
-  .price-card .big small{font-size:22px;-webkit-text-fill-color:var(--cream);color:var(--cream)}
-  .price-card .sub2{font-size:11.5px;color:var(--cyan-2);font-weight:700;margin-top:2px}
-  .price-card .row2{display:flex;gap:16px;margin-top:14px;border-top:1px dashed rgba(255,255,255,.14);padding-top:13px}
-  .price-card .row2 div{flex:1}
-  .price-card .row2 .k{font-size:11px;color:var(--mute-2)}
-  .price-card .row2 .v{font-size:15px;font-weight:800;margin-top:2px;font-variant-numeric:tabular-nums}
-  .compare{display:flex;flex-direction:column;gap:10px}
-  .compare .ch{font-size:12px;font-weight:800;color:var(--cyan-2);margin-bottom:2px}
-  .bar-row{display:grid;grid-template-columns:134px 1fr 52px;align-items:center;gap:11px}
-  .bar-row .name{font-size:12px;font-weight:700}
-  .bar-row .name span{display:block;font-size:10px;font-weight:500;color:var(--mute-2);margin-top:1px}
-  .track{height:23px;border-radius:7px;background:rgba(255,255,255,.06);overflow:hidden}
-  .fill{height:100%;border-radius:7px;background:linear-gradient(90deg,var(--indigo),var(--cyan));transform-origin:left}
-  .fill.hl{background:linear-gradient(90deg,var(--magenta),var(--amber-2))}
-  .bar-row .val{font-size:13.5px;font-weight:800;text-align:right;font-variant-numeric:tabular-nums}
-  .bar-row .val.hl{color:var(--amber-2)}
-
-  /* ============ CTA + FOOTER ============ */
-  .cta{margin:6px 42px 0;padding:24px 30px;border-radius:20px;text-align:center;position:relative;overflow:hidden;
-    background:linear-gradient(115deg,rgba(74,37,151,.55),rgba(226,60,134,.42) 55%,rgba(247,168,46,.42));border:1px solid var(--line)}
-  .cta h3{margin:0 0 8px;font-size:clamp(19px,3.6vw,29px);font-weight:900;letter-spacing:-.02em;text-wrap:balance}
-  .cta p{margin:0;font-size:13px;color:var(--cream);opacity:.92;line-height:1.55}
-  footer{padding:24px 42px 34px;color:var(--mute-2);font-size:11px;line-height:1.6}
-  footer .brand{font-weight:900;letter-spacing:.05em;background:linear-gradient(90deg,var(--cyan-2),var(--amber-2));-webkit-background-clip:text;background-clip:text;color:transparent}
-  .disc{margin-top:10px;padding-top:12px;border-top:1px solid rgba(255,255,255,.08)}
-  .disc b{color:var(--mute)}
-
-  @media (max-width:680px){
-    .hero-txt{padding:0 20px 20px} section{padding:26px 20px}
-    .megastat{margin:22px 20px 0;flex-direction:column;align-items:flex-start;gap:8px}
-    .cta{margin:6px 20px 0;padding:20px} footer{padding:22px}
-    .roadmap{grid-template-columns:1fr 1fr 1fr}
-    .roadmap::before{display:none}
-    .rm{text-align:left;display:flex;gap:9px;align-items:flex-start;padding:8px 4px}
-    .rm .node{margin:4px 0 0}
-    .devcards{grid-template-columns:1fr} .strengths{grid-template-columns:1fr}
-    .price-wrap{grid-template-columns:1fr}
-    .bar-row{grid-template-columns:110px 1fr 48px;gap:8px}
+  @media (max-width:640px){
+    .hero-txt{padding:0 20px 22px} section{padding:22px 20px} .cta{margin:4px 20px 0} footer{padding:18px 20px 26px}
+    .stats{grid-template-columns:repeat(2,1fr)} .chips{grid-template-columns:1fr} .price{grid-template-columns:1fr}
+    .bar{grid-template-columns:100px 1fr 46px}
   }
-  @media print{ body{background:#140A22;padding:0} .page{box-shadow:none;border-radius:0;max-width:none;border:none} }
+  @media print{body{background:#0C0620;padding:0}.page{box-shadow:none;border-radius:0;max-width:none;border:none}}
   @media (prefers-reduced-motion:no-preference){
-    .fill{animation:grow 1.05s cubic-bezier(.2,.8,.2,1) both}
-    @keyframes grow{from{transform:scaleX(.03)}to{transform:scaleX(1)}}
-    .pulse{animation:pulse 2.4s ease-in-out infinite}
-    @keyframes pulse{0%,100%{opacity:.4}50%{opacity:0}}
-    .twinkle{animation:tw 3.5s ease-in-out infinite}
-    @keyframes tw{0%,100%{opacity:.9}50%{opacity:.35}}
+    .fill{animation:g 1s cubic-bezier(.2,.8,.2,1) both}@keyframes g{from{transform:scaleX(.03)}to{transform:scaleX(1)}}
+    .tw{animation:tw 3.6s ease-in-out infinite}@keyframes tw{0%,100%{opacity:.9}50%{opacity:.35}}
+    .pu{animation:pu 2.4s ease-in-out infinite}@keyframes pu{0%,100%{opacity:.9}50%{opacity:.25}}
   }
 </style>
 
 <div class="page">
-  <!-- ================= HERO : PREMIUM DUSK RENDER ================= -->
+  <!-- ============ HERO : refined night skyline ============ -->
   <div class="hero">
-    <div class="hero-art">
-      <svg viewBox="0 0 1000 560" role="img" aria-label="신길파크자이 프리미엄 주거 타워의 화려한 야경 렌더링">
-        <defs>
-          <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0" stop-color="#0B0620"/><stop offset="30%" stop-color="#2A1152"/>
-            <stop offset="58%" stop-color="#7A2A73"/><stop offset="80%" stop-color="#D24A5E"/><stop offset="94%" stop-color="#F0863A"/><stop offset="100%" stop-color="#FFC24B"/>
-          </linearGradient>
-          <radialGradient id="sun" cx="72%" cy="80%" r="46%">
-            <stop offset="0" stop-color="#FFE6B0" stop-opacity=".95"/><stop offset="42%" stop-color="#FF8A4D" stop-opacity=".35"/><stop offset="100%" stop-color="#FF8A4D" stop-opacity="0"/>
-          </radialGradient>
-          <linearGradient id="glass" x1="0" y1="0" x2="1" y2="1">
-            <stop offset="0" stop-color="#CFF6EF"/><stop offset="28%" stop-color="#54C6D6"/><stop offset="58%" stop-color="#8A3F92"/><stop offset="100%" stop-color="#2A1642"/>
-          </linearGradient>
-          <linearGradient id="glassR" x1="0" y1="0" x2="1" y2="1">
-            <stop offset="0" stop-color="#9FE2DA"/><stop offset="52%" stop-color="#6A4E96"/><stop offset="100%" stop-color="#201236"/>
-          </linearGradient>
-          <linearGradient id="glassBack" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0" stop-color="#6A55A0"/><stop offset="100%" stop-color="#241640"/>
-          </linearGradient>
-          <pattern id="grid" width="15" height="19" patternUnits="userSpaceOnUse">
-            <rect width="15" height="19" fill="none"/><path d="M15 0V19M0 19H15" stroke="rgba(10,20,30,.35)" stroke-width="1"/>
-          </pattern>
-          <linearGradient id="waterFade" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0" stop-color="#0B0620" stop-opacity="0"/><stop offset="100%" stop-color="#0B0620" stop-opacity=".85"/>
-          </linearGradient>
-          <filter id="blur2" x="-40%" y="-40%" width="180%" height="180%"><feGaussianBlur stdDeviation="7"/></filter>
-          <filter id="blurBig" x="-60%" y="-60%" width="220%" height="220%"><feGaussianBlur stdDeviation="20"/></filter>
-        </defs>
-
-        <!-- sky -->
-        <rect width="1000" height="560" fill="url(#sky)"/>
-        <rect width="1000" height="560" fill="url(#sun)"/>
-        <!-- aurora ribbons -->
-        <path d="M-40 150 Q260 60 520 140 T1040 120" fill="none" stroke="#2FE3D0" stroke-width="42" opacity=".22" filter="url(#blurBig)"/>
-        <path d="M-40 210 Q300 130 560 210 T1040 190" fill="none" stroke="#FF5BA6" stroke-width="36" opacity=".22" filter="url(#blurBig)"/>
-        <path d="M-40 100 Q340 40 640 100 T1040 80" fill="none" stroke="#B79BFF" stroke-width="30" opacity=".18" filter="url(#blurBig)"/>
-        <!-- moon + stars -->
-        <circle class="twinkle" cx="838" cy="78" r="30" fill="#FFF3D6" opacity=".7" filter="url(#blur2)"/>
-        <circle cx="838" cy="78" r="19" fill="#FFF7E4"/>
-        <g fill="#FFFFFF"><circle class="twinkle" cx="150" cy="60" r="1.5"/><circle class="twinkle" cx="300" cy="95" r="1.1"/><circle cx="470" cy="55" r="1.3"/><circle class="twinkle" cx="600" cy="88" r="1"/><circle cx="720" cy="60" r="1.2"/><circle class="twinkle" cx="920" cy="140" r="1.3"/><circle cx="220" cy="130" r="1"/></g>
-        <!-- firework sparkles (화려) -->
-        <g stroke-linecap="round">
-          <g stroke="#FFC94B" opacity=".85" transform="translate(720,150)"><line x1="0" y1="-16" x2="0" y2="-7"/><line x1="0" y1="16" x2="0" y2="7"/><line x1="-16" y1="0" x2="-7" y2="0"/><line x1="16" y1="0" x2="7" y2="0"/><line x1="-11" y1="-11" x2="-5" y2="-5"/><line x1="11" y1="11" x2="5" y2="5"/><line x1="11" y1="-11" x2="5" y2="-5"/><line x1="-11" y1="11" x2="-5" y2="5"/></g>
-          <g stroke="#2FE3D0" opacity=".8" transform="translate(120,180) scale(.8)"><line x1="0" y1="-16" x2="0" y2="-7"/><line x1="0" y1="16" x2="0" y2="7"/><line x1="-16" y1="0" x2="-7" y2="0"/><line x1="16" y1="0" x2="7" y2="0"/><line x1="-11" y1="-11" x2="-5" y2="-5"/><line x1="11" y1="11" x2="5" y2="5"/><line x1="11" y1="-11" x2="5" y2="-5"/><line x1="-11" y1="11" x2="-5" y2="5"/></g>
-        </g>
-
-        <!-- distant glowing skyline -->
-        <g fill="#241641" opacity=".9">
-          <rect x="600" y="300" width="34" height="140"/><rect x="640" y="270" width="26" height="170"/><rect x="672" y="312" width="30" height="128"/>
-          <rect x="708" y="284" width="24" height="156"/><rect x="738" y="318" width="34" height="122"/><rect x="778" y="292" width="26" height="148"/>
-          <rect x="812" y="322" width="30" height="118"/><rect x="848" y="300" width="24" height="140"/><rect x="880" y="330" width="34" height="110"/><rect x="920" y="308" width="26" height="132"/>
-          <rect x="30" y="322" width="28" height="118"/><rect x="64" y="298" width="22" height="142"/><rect x="94" y="330" width="26" height="110"/>
-        </g>
-        <g fill="#FFD98A" opacity=".7"><rect x="646" y="290" width="5" height="7"/><rect x="716" y="304" width="5" height="7"/><rect x="784" y="312" width="5" height="7"/><rect x="854" y="320" width="5" height="7"/><rect x="70" y="318" width="5" height="7"/></g>
-
-        <!-- secondary towers -->
-        <g>
-          <rect x="150" y="228" width="82" height="212" rx="6" fill="url(#glassBack)"/><rect x="150" y="228" width="82" height="212" rx="6" fill="url(#grid)" opacity=".5"/>
-          <g fill="#FFD98A" opacity=".9"><rect x="162" y="248" width="8" height="10"/><rect x="188" y="270" width="8" height="10"/><rect x="210" y="300" width="8" height="10"/><rect x="162" y="330" width="8" height="10"/><rect x="200" y="360" width="8" height="10"/><rect x="176" y="392" width="8" height="10"/></g>
-        </g>
-        <g>
-          <rect x="430" y="200" width="100" height="240" rx="6" fill="url(#glassR)"/><rect x="430" y="200" width="100" height="240" rx="6" fill="url(#grid)" opacity=".5"/>
-          <g fill="#FFD98A" opacity=".9"><rect x="444" y="222" width="9" height="11"/><rect x="474" y="246" width="9" height="11"/><rect x="504" y="274" width="9" height="11"/><rect x="458" y="316" width="9" height="11"/><rect x="504" y="350" width="9" height="11"/><rect x="474" y="392" width="9" height="11"/><rect x="512" y="222" width="9" height="11"/></g>
-        </g>
-        <g>
-          <rect x="544" y="262" width="62" height="178" rx="5" fill="url(#glassBack)"/><rect x="544" y="262" width="62" height="178" rx="5" fill="url(#grid)" opacity=".45"/>
-          <g fill="#FFD98A" opacity=".85"><rect x="554" y="282" width="8" height="10"/><rect x="580" y="312" width="8" height="10"/><rect x="562" y="360" width="8" height="10"/></g>
-        </g>
-
-        <!-- MAIN premium tower -->
-        <g>
-          <ellipse cx="322" cy="290" rx="180" ry="240" fill="#FF6BB0" opacity=".16" filter="url(#blurBig)"/>
-          <polygon points="392,186 424,202 424,440 392,440" fill="url(#glassR)"/><polygon points="392,186 424,202 424,440 392,440" fill="url(#grid)" opacity=".4"/>
-          <rect x="252" y="166" width="140" height="274" rx="10" fill="url(#glass)"/><rect x="252" y="166" width="140" height="274" rx="10" fill="url(#grid)" opacity=".6"/>
-          <g stroke="rgba(207,246,239,.4)" stroke-width="2"><line x1="288" y1="172" x2="288" y2="438"/><line x1="322" y1="168" x2="322" y2="438"/><line x1="356" y1="172" x2="356" y2="438"/></g>
-          <g fill="#FFD84F">
-            <rect x="276" y="196" width="9" height="12"/><rect x="304" y="196" width="9" height="12"/><rect x="346" y="236" width="9" height="12"/><rect x="262" y="256" width="9" height="12"/><rect x="318" y="256" width="9" height="12"/><rect x="360" y="276" width="9" height="12"/><rect x="290" y="296" width="9" height="12"/><rect x="332" y="316" width="9" height="12"/><rect x="374" y="210" width="9" height="12"/><rect x="262" y="336" width="9" height="12"/><rect x="304" y="356" width="9" height="12"/><rect x="346" y="356" width="9" height="12"/><rect x="290" y="216" width="9" height="12"/><rect x="318" y="392" width="9" height="12"/><rect x="360" y="356" width="9" height="12"/><rect x="276" y="276" width="9" height="12"/><rect x="332" y="256" width="9" height="12"/><rect x="262" y="196" width="9" height="12"/><rect x="374" y="316" width="9" height="12"/><rect x="304" y="316" width="9" height="12"/><rect x="346" y="176" width="9" height="12"/><rect x="290" y="396" width="9" height="12"/><rect x="332" y="396" width="9" height="12"/><rect x="262" y="396" width="9" height="12"/></g>
-          <g fill="#9CF7EC" opacity=".75"><rect x="290" y="256" width="9" height="12"/><rect x="318" y="316" width="9" height="12"/><rect x="346" y="296" width="9" height="12"/><rect x="276" y="336" width="9" height="12"/><rect x="304" y="236" width="9" height="12"/><rect x="360" y="216" width="9" height="12"/><rect x="262" y="296" width="9" height="12"/><rect x="332" y="196" width="9" height="12"/><rect x="374" y="376" width="9" height="12"/></g>
-          <polygon points="252,166 336,166 262,440 252,440" fill="#FFFFFF" opacity=".08"/>
-          <rect x="288" y="146" width="68" height="20" rx="4" fill="#3A2358"/><rect x="312" y="164" width="20" height="6" fill="#241640"/>
-          <line x1="322" y1="146" x2="322" y2="112" stroke="#7BF5E7" stroke-width="2.5"/><circle class="pulse" cx="322" cy="110" r="4.5" fill="#FF6B5B"/>
-          <rect x="252" y="166" width="140" height="6" rx="3" fill="#FFC94B"/>
-        </g>
-
-        <!-- waterline + reflections -->
-        <rect x="0" y="440" width="1000" height="120" fill="#0B0620"/>
-        <g opacity=".38" filter="url(#blur2)">
-          <rect x="252" y="440" width="140" height="90" fill="url(#glass)" transform="scale(1,-1) translate(0,-880)"/>
-          <rect x="150" y="440" width="82" height="70" fill="url(#glassBack)" transform="scale(1,-1) translate(0,-880)"/>
-          <rect x="430" y="440" width="100" height="72" fill="url(#glassR)" transform="scale(1,-1) translate(0,-880)"/>
-        </g>
-        <g fill="#FFD84F" opacity=".3" filter="url(#blur2)"><rect x="300" y="452" width="9" height="26"/><rect x="330" y="452" width="9" height="30"/><rect x="470" y="452" width="9" height="24"/></g>
-        <rect x="0" y="440" width="1000" height="120" fill="url(#waterFade)"/>
-        <!-- ripple lines -->
-        <g stroke="#7BF5E7" stroke-width="1.4" opacity=".22"><line x1="240" y1="470" x2="410" y2="470"/><line x1="140" y1="492" x2="540" y2="492"/><line x1="300" y1="512" x2="600" y2="512"/></g>
-        <!-- foreground bokeh -->
-        <g fill="#FFE9A8"><circle class="twinkle" cx="120" cy="452" r="3.5"/><circle cx="620" cy="450" r="3"/><circle class="twinkle" cx="760" cy="456" r="3.5"/><circle cx="900" cy="450" r="3"/><circle class="twinkle" cx="500" cy="460" r="2.6"/></g>
-      </svg>
-    </div>
-    <div class="hero-txt">
-      <span class="eyebrow"><span class="dot"></span>서울 영등포 · 신길뉴타운 8구역</span>
-      <h1 class="title"><span class="l1">신풍역이 통째로 바뀐다</span><span class="big">천지개벽, 신길파크자이</span></h1>
-      <p class="lede">신풍역 반경이 <b>재건축·재개발·신안산선</b>으로 다시 쓰여집니다. 그 변화의 <span class="cy">한복판에 이미 완성된 신축</span>에서 <b>실거주의 오늘</b>과 <b>미래의 가치</b>를 함께 선점하세요.</p>
-      <div class="id-row">
-        <span class="id-chip"><i>규모</i> GS건설 자이 · 641세대</span>
-        <span class="id-chip"><i>입주</i> 2020.12 (신축)</span>
-        <span class="id-chip"><i>역세권</i> 7호선 신풍역 도보 7분</span>
-      </div>
-    </div>
-  </div>
-
-  <!-- ================= MEGA STAT ================= -->
-  <div class="megastat">
-    <div class="num">약 5,000세대+</div>
-    <div class="txt"><b>신풍역 반경 도보권</b>에서 앞으로 쏟아지는 신축 물량(추진·예정 합산). 신길10구역·신풍역세권 장기전세·신길2구역·신속통합기획 신규 구역이 동시다발로 진행됩니다.</div>
-  </div>
-
-  <!-- ================= 미래개발 지도 ================= -->
-  <section>
-    <div class="sec-head"><span class="sec-kbtn">MAP</span><h2 class="sec-title">신풍역 일대 <span class="accent">미래개발 조감도</span></h2></div>
-    <div class="map-cap"><span class="t">▲ 사방에서 솟아오르는 신축 벨트 — 그 한가운데 신길파크자이</span><span class="s">개념도 · 위치/규모는 이해를 돕기 위한 도식</span></div>
-    <svg class="map" viewBox="0 0 1000 560" role="img" aria-label="신풍역 일대 개발 아이소메트릭 지도">
+    <svg viewBox="0 0 1000 500" role="img" aria-label="신길파크자이 야경 스카이라인">
       <defs>
-        <linearGradient id="ground" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#281851"/><stop offset="100%" stop-color="#160B28"/></linearGradient>
-        <linearGradient id="gTop" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FFD873"/><stop offset="1" stop-color="#F7A82E"/></linearGradient>
-        <linearGradient id="gR" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#E9902A"/><stop offset="1" stop-color="#B96C15"/></linearGradient>
-        <linearGradient id="gL" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#C67A1E"/><stop offset="1" stop-color="#8F5210"/></linearGradient>
-        <linearGradient id="mTop" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FF7FBE"/><stop offset="1" stop-color="#E23C86"/></linearGradient>
-        <linearGradient id="mR" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#C42E6F"/><stop offset="1" stop-color="#8E1F50"/></linearGradient>
-        <linearGradient id="mL" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#9E255A"/><stop offset="1" stop-color="#6E1740"/></linearGradient>
-        <linearGradient id="cTop" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#9CF7EC"/><stop offset="1" stop-color="#2FE3D0"/></linearGradient>
-        <linearGradient id="cR" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#22B6A8"/><stop offset="1" stop-color="#137F76"/></linearGradient>
-        <linearGradient id="cL" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#178C82"/><stop offset="1" stop-color="#0C5C56"/></linearGradient>
-        <linearGradient id="pTop" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#B79BFF"/><stop offset="1" stop-color="#7A4FE0"/></linearGradient>
-        <linearGradient id="pR" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#5E38B0"/><stop offset="1" stop-color="#3B2080"/></linearGradient>
-        <linearGradient id="pL" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#4A2B92"/><stop offset="1" stop-color="#2C1860"/></linearGradient>
-        <filter id="soft" x="-40%" y="-40%" width="180%" height="180%"><feGaussianBlur stdDeviation="7"/></filter>
+        <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stop-color="#0A0520"/><stop offset="34%" stop-color="#2A1152"/><stop offset="60%" stop-color="#7A2A73"/>
+          <stop offset="82%" stop-color="#D24A5E"/><stop offset="95%" stop-color="#F0863A"/><stop offset="100%" stop-color="#FFC24B"/>
+        </linearGradient>
+        <radialGradient id="glow" cx="70%" cy="82%" r="50%">
+          <stop offset="0" stop-color="#FFE6B0" stop-opacity=".9"/><stop offset="45%" stop-color="#FF8A4D" stop-opacity=".3"/><stop offset="100%" stop-color="#FF8A4D" stop-opacity="0"/>
+        </radialGradient>
+        <linearGradient id="cool" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#8FE3DB"/><stop offset="45%" stop-color="#4A6DA8"/><stop offset="100%" stop-color="#160B2C"/></linearGradient>
+        <linearGradient id="cool2" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#B79BFF"/><stop offset="50%" stop-color="#5E3F9E"/><stop offset="100%" stop-color="#160B2C"/></linearGradient>
+        <linearGradient id="gold" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FFE7A8"/><stop offset="45%" stop-color="#F2A63A"/><stop offset="100%" stop-color="#5A2E12"/></linearGradient>
+        <filter id="bb" x="-70%" y="-70%" width="240%" height="240%"><feGaussianBlur stdDeviation="22"/></filter>
+        <filter id="bs" x="-40%" y="-40%" width="180%" height="180%"><feGaussianBlur stdDeviation="6"/></filter>
       </defs>
-      <polygon points="500,120 970,360 500,600 30,360" fill="url(#ground)" stroke="rgba(255,255,255,.06)"/>
-      <g stroke="rgba(255,255,255,.05)" stroke-width="1">
-        <line x1="265" y1="240" x2="735" y2="480"/><line x1="380" y1="180" x2="850" y2="420"/><line x1="150" y1="300" x2="620" y2="540"/>
-        <line x1="735" y1="240" x2="265" y2="480"/><line x1="620" y1="180" x2="150" y2="420"/><line x1="850" y1="300" x2="380" y2="540"/>
-      </g>
-      <!-- 7호선 -->
-      <line x1="770" y1="350" x2="250" y2="610" stroke="#F7A82E" stroke-width="9" stroke-linecap="round" opacity=".28"/>
-      <line x1="770" y1="350" x2="250" y2="610" stroke="#FFC94B" stroke-width="3" stroke-dasharray="2 12" stroke-linecap="round" opacity=".7"/>
-      <!-- 신안산선 -->
-      <line x1="170" y1="310" x2="730" y2="590" stroke="#2FE3D0" stroke-width="16" stroke-linecap="round" opacity=".22" filter="url(#soft)"/>
-      <line x1="170" y1="310" x2="730" y2="590" stroke="#2FE3D0" stroke-width="7" stroke-linecap="round"/>
-      <line x1="170" y1="310" x2="730" y2="590" stroke="#0E3B37" stroke-width="2.4" stroke-dasharray="3 13" stroke-linecap="round" opacity=".8"/>
 
-      <!-- back existing towers -->
-      <g opacity=".5">
-        <polygon points="470,150 504,133 470,116 436,133" fill="#3A2A5C"/><polygon points="470,220 504,203 504,133 470,150" fill="#2C2047"/><polygon points="470,220 436,203 436,133 470,150" fill="#241A3B"/>
-      </g>
+      <rect width="1000" height="500" fill="url(#sky)"/>
+      <rect width="1000" height="500" fill="url(#glow)"/>
+      <!-- aurora -->
+      <path d="M-40 120 Q280 40 560 120 T1040 96" fill="none" stroke="#2FE3D0" stroke-width="40" opacity=".2" filter="url(#bb)"/>
+      <path d="M-40 180 Q320 100 600 180 T1040 156" fill="none" stroke="#FF5BA6" stroke-width="34" opacity=".2" filter="url(#bb)"/>
+      <!-- moon + stars -->
+      <circle class="tw" cx="150" cy="66" r="26" fill="#FFF3D6" opacity=".7" filter="url(#bs)"/><circle cx="150" cy="66" r="17" fill="#FFF7E4"/>
+      <g fill="#fff"><circle class="tw" cx="330" cy="58" r="1.4"/><circle cx="470" cy="92" r="1.1"/><circle class="tw" cx="620" cy="54" r="1.3"/><circle cx="770" cy="84" r="1"/><circle class="tw" cx="900" cy="120" r="1.2"/><circle cx="260" cy="110" r="1"/></g>
 
-      <!-- 신풍역세권 장기전세 2054 (purple, tall, back-right) cx800 cy330 hw50 ht185 -->
+      <!-- soft glow halos behind key towers -->
+      <ellipse cx="500" cy="300" rx="150" ry="220" fill="#FFB24D" opacity=".14" filter="url(#bb)"/>
+      <ellipse cx="720" cy="320" rx="120" ry="170" fill="#2FE3D0" opacity=".12" filter="url(#bb)"/>
+      <ellipse cx="230" cy="330" rx="110" ry="150" fill="#FF5BA6" opacity=".1" filter="url(#bb)"/>
+
+      <!-- SKYLINE (slim elegant towers on baseline y=440) -->
       <g>
-        <polygon points="800,145 850,120 800,95 750,120" fill="url(#pTop)"/>
-        <polygon points="800,330 850,305 850,120 800,145" fill="url(#pR)"/>
-        <polygon points="800,330 750,305 750,120 800,145" fill="url(#pL)"/>
-        <g fill="#2C1860" opacity=".6"><rect x="782" y="160" width="7" height="11"/><rect x="782" y="188" width="7" height="11"/><rect x="782" y="216" width="7" height="11"/><rect x="812" y="155" width="7" height="11"/><rect x="812" y="183" width="7" height="11"/></g>
+        <!-- left cluster -->
+        <rect x="70"  y="300" width="42" height="140" rx="21" fill="url(#cool2)"/>
+        <rect x="120" y="248" width="50" height="192" rx="24" fill="url(#cool)"/>
+        <rect x="180" y="286" width="40" height="154" rx="20" fill="url(#cool2)"/>
+        <!-- HERO gold tower (신길파크자이) -->
+        <rect x="238" y="176" width="72" height="264" rx="20" fill="url(#gold)"/>
+        <rect x="238" y="176" width="72" height="8" rx="4" fill="#FFF3C4"/>
+        <line x1="274" y1="176" x2="274" y2="150" stroke="#7BF5E7" stroke-width="2.5"/><circle class="pu" cx="274" cy="148" r="4.5" fill="#FF6B5B"/>
+        <!-- mid -->
+        <rect x="330" y="262" width="44" height="178" rx="22" fill="url(#cool)"/>
+        <rect x="386" y="220" width="56" height="220" rx="26" fill="url(#cool2)"/>
+        <rect x="456" y="292" width="38" height="148" rx="19" fill="url(#cool)"/>
+        <!-- right cluster -->
+        <rect x="520" y="238" width="58" height="202" rx="26" fill="url(#cool2)"/>
+        <rect x="592" y="200" width="52" height="240" rx="24" fill="url(#cool)"/>
+        <rect x="658" y="270" width="42" height="170" rx="21" fill="url(#cool2)"/>
+        <rect x="716" y="228" width="60" height="212" rx="28" fill="url(#cool)"/>
+        <rect x="790" y="288" width="40" height="152" rx="20" fill="url(#cool2)"/>
+        <rect x="844" y="250" width="54" height="190" rx="26" fill="url(#cool)"/>
+        <rect x="912" y="300" width="40" height="140" rx="20" fill="url(#cool2)"/>
       </g>
+      <!-- window glow (warm dots) -->
+      <g fill="#FFD84F">
+        <rect x="256" y="210" width="7" height="10"/><rect x="284" y="230" width="7" height="10"/><rect x="256" y="270" width="7" height="10"/><rect x="284" y="300" width="7" height="10"/><rect x="256" y="340" width="7" height="10"/><rect x="284" y="380" width="7" height="10"/><rect x="270" y="250" width="7" height="10"/><rect x="270" y="410" width="7" height="10"/>
+        <rect x="136" y="272" width="6" height="9"/><rect x="152" y="310" width="6" height="9"/><rect x="136" y="360" width="6" height="9"/>
+        <rect x="404" y="248" width="6" height="9"/><rect x="420" y="296" width="6" height="9"/><rect x="404" y="356" width="6" height="9"/><rect x="420" y="400" width="6" height="9"/>
+        <rect x="536" y="266" width="6" height="9"/><rect x="556" y="320" width="6" height="9"/><rect x="536" y="384" width="6" height="9"/>
+        <rect x="608" y="230" width="6" height="9"/><rect x="624" y="286" width="6" height="9"/><rect x="608" y="360" width="6" height="9"/><rect x="624" y="404" width="6" height="9"/>
+        <rect x="732" y="258" width="6" height="9"/><rect x="752" y="312" width="6" height="9"/><rect x="732" y="380" width="6" height="9"/>
+        <rect x="860" y="282" width="6" height="9"/><rect x="878" y="336" width="6" height="9"/>
+      </g>
+      <g fill="#9CF7EC" opacity=".7"><rect x="270" y="290" width="7" height="10"/><rect x="256" y="380" width="7" height="10"/><rect x="152" y="330" width="6" height="9"/><rect x="420" y="340" width="6" height="9"/><rect x="556" y="360" width="6" height="9"/><rect x="624" y="330" width="6" height="9"/><rect x="752" y="360" width="6" height="9"/></g>
 
-      <!-- 신길10구역 써밋클라비온 (magenta, crane) cx700 cy350 hw54 ht120 -->
-      <g>
-        <line x1="782" y1="358" x2="782" y2="150" stroke="#FFC94B" stroke-width="4"/>
-        <line x1="712" y1="168" x2="846" y2="182" stroke="#FFC94B" stroke-width="4"/>
-        <line x1="782" y1="150" x2="720" y2="170" stroke="#FFC94B" stroke-width="2"/><line x1="782" y1="150" x2="836" y2="180" stroke="#FFC94B" stroke-width="2"/>
-        <line x1="752" y1="176" x2="752" y2="208" stroke="#FFC94B" stroke-width="1.6"/><rect x="745" y="208" width="14" height="10" fill="#FFC94B"/>
-        <polygon points="700,230 754,203 700,176 646,203" fill="url(#mTop)"/>
-        <polygon points="700,350 754,323 754,203 700,230" fill="url(#mR)"/>
-        <polygon points="700,350 646,323 646,203 700,230" fill="url(#mL)"/>
-        <g stroke="rgba(255,255,255,.22)" stroke-width="1.4"><line x1="700" y1="320" x2="754" y2="293"/><line x1="700" y1="290" x2="754" y2="263"/><line x1="700" y1="320" x2="646" y2="293"/><line x1="700" y1="290" x2="646" y2="263"/></g>
-      </g>
-
-      <!-- 신길2구역 45층 (cyan tall) cx320 cy360 hw52 ht210 -->
-      <g>
-        <polygon points="320,150 372,124 320,98 268,124" fill="url(#cTop)"/>
-        <polygon points="320,360 372,334 372,124 320,150" fill="url(#cR)"/>
-        <polygon points="320,360 268,334 268,124 320,150" fill="url(#cL)"/>
-        <g fill="#0C5C56" opacity=".55"><rect x="300" y="175" width="8" height="12"/><rect x="300" y="205" width="8" height="12"/><rect x="300" y="235" width="8" height="12"/><rect x="332" y="170" width="8" height="12"/><rect x="332" y="200" width="8" height="12"/><rect x="332" y="230" width="8" height="12"/></g>
-      </g>
-
-      <!-- 신길3구역 cx650 cy470 hw44 ht95 -->
-      <g>
-        <polygon points="650,375 694,353 650,331 606,353" fill="url(#cTop)"/>
-        <polygon points="650,470 694,448 694,353 650,375" fill="url(#cR)"/>
-        <polygon points="650,470 606,448 606,353 650,375" fill="url(#cL)"/>
-      </g>
-
-      <!-- 신길파크자이 HERO gold cx500 cy410 hw70 ht150 -->
-      <g>
-        <ellipse cx="500" cy="420" rx="120" ry="34" fill="#F7A82E" opacity=".18" filter="url(#soft)"/>
-        <polygon points="500,260 570,225 500,190 430,225" fill="url(#gTop)"/>
-        <polygon points="500,410 570,375 570,225 500,260" fill="url(#gR)"/>
-        <polygon points="500,410 430,375 430,225 500,260" fill="url(#gL)"/>
-        <g fill="#8F5210" opacity=".6"><rect x="470" y="280" width="9" height="13"/><rect x="470" y="310" width="9" height="13"/><rect x="470" y="340" width="9" height="13"/><rect x="514" y="272" width="9" height="13"/><rect x="514" y="302" width="9" height="13"/><rect x="514" y="332" width="9" height="13"/></g>
-        <polygon points="500,190 512,176 500,162 488,176" fill="#FFE39A"/>
-      </g>
-
-      <!-- 신길1구역 cx350 cy480 hw46 ht110 -->
-      <g>
-        <polygon points="350,370 396,347 350,324 304,347" fill="url(#mTop)"/>
-        <polygon points="350,480 396,457 396,347 350,370" fill="url(#mR)"/>
-        <polygon points="350,480 304,457 304,347 350,370" fill="url(#mL)"/>
-      </g>
-
-      <!-- 신길3922/6구역 신통기획 (small purple front-left) cx200 cy430 hw40 ht75 -->
-      <g>
-        <polygon points="200,355 240,335 200,315 160,335" fill="url(#pTop)"/>
-        <polygon points="200,430 240,410 240,335 200,355" fill="url(#pR)"/>
-        <polygon points="200,430 160,410 160,335 200,355" fill="url(#pL)"/>
-      </g>
-
-      <!-- 신풍역 node -->
-      <g>
-        <circle class="pulse" cx="500" cy="492" r="22" fill="#2FE3D0"/>
-        <circle cx="500" cy="492" r="12" fill="#0C5C56" stroke="#7BF5E7" stroke-width="3"/><circle cx="500" cy="492" r="4.5" fill="#EAFFFB"/>
-      </g>
-
-      <!-- labels -->
-      <g class="maplbl">
-        <g transform="translate(500,466)"><rect x="-48" y="-19" width="96" height="24" rx="6" fill="#0C5C56" stroke="#2FE3D0"/><text x="0" y="-2" text-anchor="middle" font-size="13" font-weight="900" fill="#EAFFFB">신풍역 🚇</text></g>
-        <g transform="translate(500,150)"><rect x="-60" y="-17" width="120" height="24" rx="6" fill="#7A4A00" stroke="#FFC94B"/><text x="0" y="0" text-anchor="middle" font-size="12.5" font-weight="900" fill="#FFE7A8">신길파크자이 ★</text></g>
-        <g transform="translate(320,84)"><rect x="-54" y="-16" width="108" height="22" rx="6" fill="#0C4A45" stroke="#2FE3D0"/><text x="0" y="0" text-anchor="middle" font-size="11" font-weight="800" fill="#C8FFF7">신길2구역 45층</text></g>
-        <g transform="translate(700,150)"><rect x="-60" y="-16" width="124" height="22" rx="6" fill="#7A1F4A" stroke="#FF7FBE"/><text x="0" y="0" text-anchor="middle" font-size="10.5" font-weight="800" fill="#FFD6EA">써밋클라비온 착공</text></g>
-        <g transform="translate(800,82)"><rect x="-66" y="-16" width="132" height="22" rx="6" fill="#3B2080" stroke="#B79BFF"/><text x="0" y="0" text-anchor="middle" font-size="10.5" font-weight="800" fill="#E6DAFF">신풍역세권 2,054가구</text></g>
-        <g transform="translate(350,512)"><rect x="-40" y="-15" width="80" height="21" rx="6" fill="#7A1F4A" stroke="#FF7FBE"/><text x="0" y="0" text-anchor="middle" font-size="10.5" font-weight="800" fill="#FFD6EA">신길1구역</text></g>
-        <g transform="translate(650,502)"><rect x="-40" y="-15" width="80" height="21" rx="6" fill="#0C4A45" stroke="#2FE3D0"/><text x="0" y="0" text-anchor="middle" font-size="10.5" font-weight="800" fill="#C8FFF7">신길3구역</text></g>
-        <g transform="translate(200,462)"><rect x="-56" y="-15" width="112" height="21" rx="6" fill="#3B2080" stroke="#B79BFF"/><text x="0" y="0" text-anchor="middle" font-size="10" font-weight="800" fill="#E6DAFF">3922·6구역 신통기획</text></g>
-        <text x="180" y="300" font-size="11.5" font-weight="900" fill="#7BF5E7">신안산선(2028 예정)</text>
-        <text x="712" y="600" font-size="11.5" font-weight="800" fill="#FFC94B" opacity=".9">7호선</text>
-      </g>
+      <!-- water: soft glow reflection + ripples -->
+      <rect x="0" y="440" width="1000" height="60" fill="#0A0520"/>
+      <rect x="0" y="440" width="1000" height="60" fill="url(#glow)" opacity=".5"/>
+      <g filter="url(#bs)" opacity=".4"><rect x="238" y="440" width="72" height="50" fill="url(#gold)" transform="scale(1,-1) translate(0,-930)"/><rect x="592" y="440" width="52" height="46" fill="url(#cool)" transform="scale(1,-1) translate(0,-930)"/></g>
+      <g stroke="#7BF5E7" stroke-width="1.3" opacity=".22"><line x1="230" y1="464" x2="420" y2="464"/><line x1="150" y1="482" x2="560" y2="482"/></g>
+      <g fill="#FFE9A8"><circle class="tw" cx="150" cy="456" r="3"/><circle cx="500" cy="462" r="2.6"/><circle class="tw" cx="780" cy="458" r="3"/></g>
     </svg>
-  </section>
-
-  <!-- ================= 로드맵 ================= -->
-  <section style="padding-top:6px">
-    <div class="sec-head"><span class="sec-kbtn">FUTURE</span><h2 class="sec-title">가치 상승을 이끌 <span class="accent">개발 타임라인</span></h2></div>
-    <p class="sec-sub">신길파크자이는 <b>이미 완성된 신축</b>. 반면 주변은 지금부터 착공·개통·준공이 순차적으로 터집니다. 각 이벤트마다 신풍역 생활권 전체의 위상이 <b>계단식으로</b> 올라갑니다.</p>
-    <div class="roadmap">
-      <div class="rm mg"><div class="node"></div><div class="yr">2026.07</div><div class="ev">신길10구역<br>써밋클라비온 착공</div></div>
-      <div class="rm mg"><div class="node"></div><div class="yr">2026</div><div class="ev">신길2구역 착공·<br>신통기획 확정</div></div>
-      <div class="rm cy"><div class="node"></div><div class="yr">2026~27</div><div class="ev">신길1구역 수주·<br>3구역 분양</div></div>
-      <div class="rm cy"><div class="node"></div><div class="yr">2028</div><div class="ev">신안산선 개통<br>(신풍역 신설·목표)</div></div>
-      <div class="rm am"><div class="node"></div><div class="yr">2029~30</div><div class="ev">써밋클라비온·<br>신길2구역 준공</div></div>
-      <div class="rm am"><div class="node"></div><div class="yr">이후</div><div class="ev">신풍역세권 2,054<br>등 벨트 완성</div></div>
+    <div class="hero-txt">
+      <span class="eyebrow"><span class="dot"></span>영등포 · 신길뉴타운 8구역</span>
+      <h1>천지개벽,<br>신길파크자이</h1>
+      <p class="tag">신풍역이 통째로 바뀝니다 — <b>그 한복판의 완성된 신축.</b></p>
     </div>
-
-    <div class="devcards">
-      <div class="dev c1">
-        <div class="tagline">Transit · 교통 혁신</div>
-        <h3>신안산선 신풍역 신설</h3>
-        <div class="meta">7호선+신안산선 더블역세권 · 2028 개통(목표)</div>
-        <p>신풍역이 환승 거점으로 진화. 개통 시 <b>여의도·서울역 급행</b> 연결로 직주근접이 크게 강화됩니다. (안전·공정 이슈로 개통 지연 이력.)</p>
-      </div>
-      <div class="dev c2">
-        <div class="tagline">Renewal · 역 앞 재건축</div>
-        <h3>신길10구역 써밋 클라비온</h3>
-        <div class="meta">대우건설 하이엔드 · 812세대 · 29층</div>
-        <p>50년 된 남서울아파트가 <b>신풍역 초역세권 하이엔드 단지</b>로. <b>2026.7 착공~2029.11 준공</b>, 역 앞 스카이라인이 통째로 바뀝니다.</p>
-      </div>
-      <div class="dev c3">
-        <div class="tagline">Supply · 대규모 신규공급</div>
-        <h3>신풍역세권 2,054가구</h3>
-        <div class="meta">신길동 413-8 · 지하3~지상35층</div>
-        <p>역세권 장기전세주택으로 <b>공공 270 + 분양 1,784가구</b> 규모의 신규 대단지가 신풍역 인근에 공급 — 생활 인프라·상권 집적을 가속합니다.</p>
-      </div>
-      <div class="dev c1">
-        <div class="tagline">Renewal · 신규 정비구역</div>
-        <h3>신길3922·6구역 신속통합기획</h3>
-        <div class="meta">신풍역 역세권 · 2026.4 확정/연번</div>
-        <p>노후 저층 주거지가 <b>신규 재개발 구역</b>으로 지정·추진. 신풍역 반경이 추가로 신축 벨트에 편입되며 미래 공급·수요를 함께 키웁니다.</p>
-      </div>
-      <div class="dev c2">
-        <div class="tagline">Belt · 뉴타운 완성</div>
-        <h3>신길2구역 45층 대단지</h3>
-        <div class="meta">도심공공 · 약 1,332가구 · 2026 착공~2030</div>
-        <p>신길뉴타운 마지막 퍼즐이 <b>초고층 랜드마크</b>로. 신길1·3구역과 함께 <b>약 1만 세대+ 신흥 주거벨트</b>를 완성합니다.</p>
-      </div>
-      <div class="dev c3">
-        <div class="tagline">Macro · 광역 배후</div>
-        <h3>여의도·영등포 배후 '제2의 마포'</h3>
-        <div class="meta">금융·업무 직주근접 · 광역 정비 확산</div>
-        <p>신길·영등포역 일대 재개발이 영등포뉴타운까지 이어지며 <b>서남권 광역 정비축</b>을 형성. 여의도 금융·업무 수요가 든든한 배후입니다.</p>
-      </div>
-    </div>
-  </section>
-
-  <!-- ================= 강점 ================= -->
-  <section class="why">
-    <div class="sec-head"><span class="sec-kbtn">VALUE</span><h2 class="sec-title">왜 하필 <span class="accent">신길파크자이</span>인가</h2></div>
-    <p class="sec-sub">개발의 과실은 <b>‘이미 완성된 신축’</b>이 가장 먼저, 가장 안전하게 가져갑니다. 공사·입주 대기 리스크 없이 오늘 바로 실거주하면서 미래가치를 선점하는 포지션입니다.</p>
-    <div class="strengths">
-      <div class="st"><div class="ic">🎯</div><div><h4>개발 한복판의 완성형 신축</h4><p>주변이 <b>착공·개통·준공</b>으로 바뀌는 동안 우리는 이미 입주 완료 — <b>수혜는 받되 리스크는 회피</b>.</p></div></div>
-      <div class="st"><div class="ic">🚇</div><div><h4>7호선 + 신안산선(예정) 더블역세권</h4><p>신풍역 <b>도보 약 7분</b>. 개통 시 여의도·서울역 급행으로 직주근접 강화.</p></div></div>
-      <div class="st"><div class="ic">🏙️</div><div><h4>GS건설 자이 641세대 대단지</h4><p>1군 브랜드 조경·커뮤니티·주차 등 <b>신축 상품성</b>과 대단지 관리 프리미엄. 뉴타운 내 정원뷰로도 손꼽힘.</p></div></div>
-      <div class="st"><div class="ic">🌳</div><div><h4>공원·학군 정주 환경</h4><p>어울림·근린공원 인접, 대방·신길초·신길중 등 <b>도보 통학권</b>과 학원가, 여의도·영등포 생활 인프라.</p></div></div>
-    </div>
-  </section>
-
-  <!-- ================= 시세 2026 ================= -->
-  <section>
-    <div class="sec-head"><span class="sec-kbtn">PRICE</span><h2 class="sec-title">2026년 <span class="accent">시세 포지션</span></h2></div>
-    <p class="sec-sub">2026년 들어 <b>신길뉴타운 신축 84㎡가 잇따라 20억을 돌파</b>하며 대장급 시세대를 형성 중입니다. 아래는 최근 실거래·호가 기준 <b>참고 범위</b>로, 시점·층·향·평형에 따라 달라집니다.</p>
-    <div class="price-wrap">
-      <div class="price-card">
-        <div class="lab">전용 84㎡ (34평) · 현재 시세대</div>
-        <div class="big">약 20~22<small>억</small></div>
-        <div class="sub2">신길뉴타운 84㎡ 20억 돌파 흐름</div>
-        <div class="row2">
-          <div><div class="k">전용 59㎡ (24평)</div><div class="v">약 15억대</div></div>
-          <div><div class="k">전용 114㎡ (45평)</div><div class="v">약 23억+</div></div>
-        </div>
-      </div>
-      <div class="compare">
-        <div class="ch">신길뉴타운 대장 단지 전용 84㎡ 비교 <span style="font-weight:500;color:var(--mute-2)">(2026 실거래·호가 참고, 억원)</span></div>
-        <div class="bar-row"><div class="name">신길파크자이<span>8구역 · 641세대 · 자이</span></div><div class="track"><div class="fill hl" style="width:96%"></div></div><div class="val hl">20~22</div></div>
-        <div class="bar-row"><div class="name">래미안에스티움<span>7구역 · 1,722세대</span></div><div class="track"><div class="fill" style="width:98%"></div></div><div class="val">20억+</div></div>
-        <div class="bar-row"><div class="name">힐스테이트클래시안<span>9구역 · 1,476세대</span></div><div class="track"><div class="fill" style="width:95%"></div></div><div class="val">20억+</div></div>
-        <div class="bar-row"><div class="name">신길센트럴자이<span>12구역 · 1,008세대</span></div><div class="track"><div class="fill" style="width:92%"></div></div><div class="val">19~20</div></div>
-      </div>
-    </div>
-  </section>
-
-  <!-- ================= CTA ================= -->
-  <div class="cta">
-    <h3>신풍역이 바뀌는 만큼, 오늘의 선택이 내일의 자산이 됩니다</h3>
-    <p>이미 완성된 신축에서 실거주하며, 신길뉴타운의 다음 사이클을 가장 앞줄에서 맞이하세요 — 신길파크자이.</p>
   </div>
+
+  <!-- ============ STATS ============ -->
+  <div class="stats">
+    <div class="stat"><div class="n a">641</div><div class="l">세대 · GS 자이</div></div>
+    <div class="stat"><div class="n c">7분</div><div class="l">7호선 신풍역</div></div>
+    <div class="stat"><div class="n m">5,000+</div><div class="l">반경 신축 예정</div></div>
+    <div class="stat"><div class="n a">20~22억</div><div class="l">84㎡ 시세(’26)</div></div>
+  </div>
+
+  <!-- ============ 개발 호재 (one-liners) ============ -->
+  <section>
+    <div class="sh"><span class="k">FUTURE</span><h2>가치를 끌어올릴 <span class="a">신풍역 개발</span></h2></div>
+    <div class="chips">
+      <div class="chip"><div class="e">🚇</div><div class="t">신안산선 신풍역 신설<span>여의도·서울역 급행 · 2028 개통(목표)</span></div></div>
+      <div class="chip"><div class="e">🏗️</div><div class="t">신길10 써밋 클라비온<span>대우 하이엔드 812세대 · 2026 착공</span></div></div>
+      <div class="chip"><div class="e">🏢</div><div class="t">신풍역세권 장기전세<span>2,054가구 · 지상 35층</span></div></div>
+      <div class="chip"><div class="e">📐</div><div class="t">신길3922·6구역<span>신속통합기획 · 2026.4 확정</span></div></div>
+      <div class="chip"><div class="e">🏙️</div><div class="t">신길2구역 45층<span>약 1,332가구 · 뉴타운 벨트 완성</span></div></div>
+      <div class="chip"><div class="e">💹</div><div class="t">여의도·영등포 배후<span>'제2의 마포' 광역 정비축</span></div></div>
+    </div>
+  </section>
+
+  <!-- ============ 시세 ============ -->
+  <section style="padding-top:4px">
+    <div class="sh"><span class="k">PRICE</span><h2>2026 <span class="a">시세 포지션</span></h2></div>
+    <div class="price">
+      <div class="pcard">
+        <div class="l">전용 84㎡ (34평)</div>
+        <div class="big">20~22<small>억</small></div>
+        <div class="s">신길뉴타운 84㎡ 20억 돌파 흐름</div>
+      </div>
+      <div>
+        <div class="bar"><div class="nm">신길파크자이</div><div class="track"><div class="fill hl" style="width:96%"></div></div><div class="v hl">20~22</div></div>
+        <div class="bar"><div class="nm">래미안에스티움</div><div class="track"><div class="fill" style="width:98%"></div></div><div class="v">20+</div></div>
+        <div class="bar"><div class="nm">힐스테이트클래시안</div><div class="track"><div class="fill" style="width:95%"></div></div><div class="v">20+</div></div>
+        <div class="bar"><div class="nm">신길센트럴자이</div><div class="track"><div class="fill" style="width:92%"></div></div><div class="v">19~20</div></div>
+      </div>
+    </div>
+  </section>
+
+  <div class="cta"><h3>신풍역이 바뀌는 만큼, 오늘의 선택이 내일의 자산이 됩니다</h3></div>
 
   <footer>
-    <span class="brand">SINGIL PARK XI · 天地開闢</span> · 서울특별시 영등포구 신길동 · 신길뉴타운 8구역 · GS건설 자이
-    <div class="disc">
-      <b>※ 본 자료는 신길파크자이 및 신풍역·신길뉴타운의 공개 정보(국토부 실거래·호갱노노·언론 보도 등)를 바탕으로 매수 관점의 장점을 정리한 홍보·참고용 브로슈어입니다(작성 기준 2026.07.12). 상단 렌더·조감도는 실제와 다른 개념 이미지이며, 시세는 최근 실거래·호가를 종합한 근사 범위로 시점·평형·층·향에 따라 달라집니다. 신안산선 개통 시기(현재 2028년 목표, 지연 이력), 신길10구역·신길2구역 착공·준공, 신풍역세권 2,054가구, 신속통합기획 신규 구역 등 개발 계획은 인허가·공정·정책에 따라 변동·지연될 수 있고 확정된 사실이 아닙니다. 세대수·규모 수치는 사업계획 기준으로 향후 변경될 수 있습니다. 본 자료는 투자 권유·수익 보장을 위한 것이 아니며, 실제 계약 전 국토교통부 실거래가 및 현장 확인을 반드시 권장합니다.</b>
-    </div>
+    <span class="b">SINGIL PARK XI</span> · 서울 영등포구 신길동 · 신길뉴타운 8구역 · GS건설 자이 · 2020.12 입주 · 641세대
+    <div style="margin-top:8px;padding-top:8px;border-top:1px solid rgba(255,255,255,.08)">※ 공개 정보(국토부 실거래·호갱노노·언론) 기반 홍보·참고용(2026.07.12). 이미지는 개념 이미지이며 시세는 최근 실거래·호가를 종합한 근사 범위로 시점·평형·층·향에 따라 상이. 개발 계획(신안산선 개통시기 등)은 인허가·공정·정책에 따라 변동·지연될 수 있고 확정된 사실이 아님. 투자 권유·수익 보장이 아니며 계약 전 실거래가·현장 확인 권장.</div>
   </footer>
 </div>
