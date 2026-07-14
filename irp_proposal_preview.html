@@ -380,4 +380,14 @@ body{margin:0; background:var(--page-bg);
 .sumcard .row b.safe{color:var(--safe);} .sumcard .row b.risk{color:var(--orange);}
 .foot{position:absolute; left:0; right:0; bottom:0; background:var(--navy); color:#C3CEE0;
  font-size:.98cqw; text-align:center; padding:.85cqw 2cqw; line-height:1.2;}
+
+@media print{
+  @page{ size:13.333in 7.5in; margin:0; }
+  body{ background:#fff; padding:0; }
+  .deck{ gap:0; max-width:none; }
+  .intro,.cap{ display:none !important; }
+  .slide{ border-radius:0; box-shadow:none; width:13.333in; height:7.5in; }
+  .slidewrap{ break-after:page; page-break-after:always; }
+  .slidewrap:last-child{ break-after:auto; page-break-after:auto; }
+}
 </style>
