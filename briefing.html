@@ -136,9 +136,14 @@
     .kpi{padding:6px 8px;border-color:#ccc}
     .kpi .kv{font-size:14px!important}
     .kpi .kl{font-size:10px}
-    /* 카드: 고정 3열, 균형있게, 페이지 내 분할 방지 */
-    .holds{grid-template-columns:repeat(3,1fr)!important;gap:8px;margin-top:8px}
-    .hold{break-inside:avoid;page-break-inside:avoid;box-shadow:none;border:1px solid #bbb;padding:9px 11px}
+    /* 카드: 고정 3열 균등폭, 페이지 내 분할 방지 */
+    .holds{grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:8px;margin-top:8px;align-items:start}
+    .hold{break-inside:avoid;page-break-inside:avoid;box-shadow:none;border:1px solid #bbb;padding:9px 11px;min-width:0;overflow:hidden}
+    .hold *{min-width:0}
+    .hold .h-name{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .hold .h-sub,.hold .mini,.hold .card-metrics{overflow-wrap:anywhere;word-break:break-all}
+    .hold .mini .row{gap:6px}
+    .hold .mini .row span{overflow:hidden;text-overflow:ellipsis}
     .hold .spark{display:none}          /* 세로 공간 절약 */
     .hold .h-price{font-size:15px}
     .hold .rets{gap:8px;margin-top:6px}
