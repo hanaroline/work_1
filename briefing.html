@@ -160,6 +160,12 @@
   html[data-theme="light"]{--bg:#f4f6fb;--bg-elev:#fff;--card:#fff;--card-2:#f7f9fc;--border:#e3e8f0;--text:#16202f;--text-dim:#5a6577;--text-faint:#8b95a7;--accent:#e8820c;--accent2:#2563eb;--up:#0f9d80;--down:#e5484d;--warn:#c98a12;--shadow:0 4px 20px rgba(30,50,90,.08);}
   .icon-btn{padding:8px 11px;border-radius:9px;border:1px solid var(--border);background:var(--card);color:var(--text);cursor:pointer;font-size:14px;font-weight:600}
   .icon-btn:hover{border-color:var(--accent)}
+  .btn.danger:hover{border-color:var(--down);color:var(--down)}
+  /* 고객(프로필) 바 */
+  .profbar{display:flex;gap:8px;align-items:center;flex-wrap:wrap;padding-bottom:12px;border-bottom:1px solid var(--border)}
+  .profbar>.muted{font-weight:600}
+  .profbar select{background:var(--bg-elev);color:var(--text);border:1px solid var(--border);border-radius:9px;padding:8px 12px;font-size:14px;font-weight:700;min-width:150px;max-width:280px;outline:none;cursor:pointer}
+  .profbar select:focus{border-color:var(--accent)}
   /* 요약 인사이트 바 */
   .insight{display:flex;gap:12px;flex-wrap:wrap;align-items:center;margin:14px 0 0;padding:11px 15px;background:var(--card-2);border:1px solid var(--border);border-radius:12px;font-size:13px}
   .insight .ic{display:flex;align-items:center;gap:6px;color:var(--text-dim);white-space:nowrap}
@@ -186,7 +192,7 @@
   .gauge .gmark{position:absolute;top:-3px;width:3px;height:14px;background:var(--text);border-radius:2px;transform:translateX(-50%)}
   .gauge .gcur{font-size:11px;color:var(--text-dim);margin-top:5px;text-align:center}
   @media print {
-    .insight,.toolrow,#tools{display:none!important}
+    .insight,.toolrow,#tools,.profbar{display:none!important}
     #printSummary{display:block!important;margin:6px 0 10px}
     #printSummary .pt{font-size:12px;font-weight:800;margin-bottom:4px}
     #printSummary table{width:100%;border-collapse:collapse;font-size:10.5px}
@@ -221,7 +227,15 @@
   <div id="printSummary" class="print-only"></div>
 
   <section class="card">
-    <div class="inbar">
+    <div class="profbar">
+      <span class="muted">고객</span>
+      <select id="profileSel" title="고객(프로필) 선택"></select>
+      <button class="btn sm" id="btnNewProfile">+ 새 고객</button>
+      <button class="btn sm" id="btnRenameProfile">이름변경</button>
+      <button class="btn sm danger" id="btnDelProfile">삭제</button>
+      <span class="muted" style="margin-left:auto">고객별로 보유잔고가 따로 저장돼요</span>
+    </div>
+    <div class="inbar" style="margin-top:12px">
       <div class="search-box">
         <input id="search" type="text" autocomplete="off" spellcheck="false" placeholder="보유 종목 추가 — 예: 삼성전자, 005930, KODEX 200, AAPL, 미래에셋 (펀드)" />
         <div class="suggest" id="suggest"></div>
@@ -273,8 +287,8 @@
   </div>
 
   <footer>
-    데이터: 네이버 증권 · 야후 파이낸스 (실시간, 지연 시세 포함) · 로컬 서버 경유<br />
-    고객명·계좌번호 등 개인정보는 저장하지 않습니다. 투자 판단의 최종 근거로 사용하지 마세요.
+    데이터: 네이버 증권 · 야후 파이낸스 · 한국거래소 (실시간, 지연 시세 포함) · 로컬 서버 경유<br />
+    고객 프로필은 이 브라우저(localStorage)에만 저장되며 외부로 전송되지 않습니다. 실명·계좌번호 대신 <b>별칭·관리코드</b> 사용을 권장합니다. 투자 판단의 최종 근거로 사용하지 마세요.
   </footer>
 </div>
 
@@ -397,12 +411,68 @@ function esc(s){ return String(s==null?"":s).replace(/[&<>"']/g,c=>({"&":"&amp;"
 function toast(m){ const t=document.getElementById("toast"); t.textContent=m; t.classList.add("show"); setTimeout(()=>t.classList.remove("show"),1600); }
 
 /* ============ 상태 ============ */
-const LS="mirae_briefing_v1";
+const LS="mirae_briefing_v1";              // (구버전 단일 목록 — 마이그레이션용)
+const PROF_LS="mirae_briefing_profiles_v1"; // 고객별 프로필 저장소
 let holdings=[]; // {key,code,reutersCode,name,type,domestic,yahooSymbol,typeName, brief, status, loading}
 let filter={type:"all",status:"all"};
 
-function save(){ try{ localStorage.setItem(LS, JSON.stringify(holdings.map(h=> h.type==="bond"?{type:"bond",name:h.name,key:h.key,bond:h.bond}:{code:h.code,reutersCode:h.reutersCode,name:h.name,type:h.type,domestic:h.domestic,yahooSymbol:h.yahooSymbol,typeName:h.typeName}))); }catch(e){} }
-function load(){ try{ const a=JSON.parse(localStorage.getItem(LS)||"[]"); return Array.isArray(a)?a:[]; }catch(e){ return []; } }
+/* 고객(프로필) 저장소: { active:"고객명", data:{ "고객명":[직렬화 목록], ... } } */
+function loadProfiles(){
+  try{ const o=JSON.parse(localStorage.getItem(PROF_LS)||"null"); if(o&&o.data&&Object.keys(o.data).length){ if(!o.data[o.active]) o.active=Object.keys(o.data)[0]; return o; } }catch(e){}
+  const mig={active:"기본", data:{"기본":[]}};   // 구버전 단일목록이 있으면 '기본'으로 이관
+  try{ const old=localStorage.getItem(LS); if(old){ const a=JSON.parse(old); if(Array.isArray(a)) mig.data["기본"]=a; } }catch(e){}
+  return mig;
+}
+let PROFILES=loadProfiles();
+function persistProfiles(){ try{ localStorage.setItem(PROF_LS, JSON.stringify(PROFILES)); }catch(e){} }
+function serializeHoldings(){ return holdings.map(h=> h.type==="bond"?{type:"bond",name:h.name,key:h.key,bond:h.bond}:{code:h.code,reutersCode:h.reutersCode,name:h.name,type:h.type,domestic:h.domestic,yahooSymbol:h.yahooSymbol,typeName:h.typeName}); }
+function hydrate(saved){ return (Array.isArray(saved)?saved:[]).map(s=> s.type==="bond"
+  ? { type:"bond", name:s.name, key:s.key||("bond_"+Math.random().toString(36).slice(2)), bond:s.bond, brief:null, status:"loading", loading:true }
+  : { ...s, key:s.reutersCode||s.code, brief:null, status:"loading", loading:true }); }
+
+function save(){ if(!PROFILES.data[PROFILES.active]) PROFILES.data[PROFILES.active]=[]; PROFILES.data[PROFILES.active]=serializeHoldings(); persistProfiles(); }
+function load(){ return PROFILES.data[PROFILES.active]||[]; }
+
+/* 고객 전환/관리 */
+async function loadActiveHoldings(){
+  holdings=hydrate(load());
+  renderProfiles(); renderHolds(); renderKPIs();
+  for(const h of holdings){ await loadBrief(h); }
+  save();
+}
+async function switchProfile(name){
+  if(!PROFILES.data[name]||name===PROFILES.active){ renderProfiles(); return; }
+  PROFILES.active=name; persistProfiles();
+  filter={type:"all",status:"all"}; sortMode="manual";
+  document.querySelectorAll('.chipbtn').forEach(x=>x.classList.toggle("active", x.dataset.v==="all"));
+  const ss=document.getElementById("sortSel"); if(ss) ss.value="manual";
+  await loadActiveHoldings();
+  toast("'"+name+"' 고객 불러옴");
+}
+function newProfile(){
+  const name=(prompt("새 고객(프로필) 이름\n※ 실명·계좌번호 대신 별칭/관리코드 권장 (예: 홍길동님, A-001)","")||"").trim();
+  if(!name) return;
+  if(PROFILES.data[name]){ toast("이미 있는 고객입니다"); switchProfile(name); return; }
+  PROFILES.data[name]=[]; persistProfiles(); switchProfile(name);
+}
+function renameProfile(){
+  const cur=PROFILES.active; const name=(prompt("고객 이름 변경:",cur)||"").trim();
+  if(!name||name===cur) return;
+  if(PROFILES.data[name]){ toast("이미 있는 고객입니다"); return; }
+  PROFILES.data[name]=PROFILES.data[cur]; delete PROFILES.data[cur]; PROFILES.active=name; persistProfiles(); renderProfiles();
+  toast("이름이 변경되었습니다");
+}
+function deleteProfile(){
+  if(Object.keys(PROFILES.data).length<=1){ toast("최소 1명은 있어야 합니다"); return; }
+  if(!confirm("'"+PROFILES.active+"' 고객의 저장된 보유잔고를 삭제할까요? 되돌릴 수 없습니다.")) return;
+  delete PROFILES.data[PROFILES.active]; PROFILES.active=Object.keys(PROFILES.data)[0]; persistProfiles();
+  loadActiveHoldings(); toast("고객이 삭제되었습니다");
+}
+function renderProfiles(){
+  const sel=document.getElementById("profileSel"); if(!sel) return;
+  const names=Object.keys(PROFILES.data);
+  sel.innerHTML=names.map(n=>'<option value="'+esc(n)+'"'+(n===PROFILES.active?" selected":"")+'>'+esc(n)+'</option>').join("");
+}
 
 /* ============ 종목 해석 ============ */
 function itemToHolding(item){
@@ -1179,7 +1249,7 @@ document.getElementById("btnCopy").onclick=async()=>{ if(!holdings.length){toast
 document.getElementById("btnCsvDl").onclick=()=>{ if(!holdings.length){toast("보유 종목이 없습니다");return;} download("보유자산_브리핑.csv","﻿"+briefCSV(),"text/csv;charset=utf-8"); };
 document.getElementById("btnPrint").onclick=()=>{ if(!holdings.length){toast("보유 종목이 없습니다");return;}
   const now=new Date().toLocaleString("ko-KR",{dateStyle:"long",timeStyle:"short"});
-  document.getElementById("printHead").textContent="보유자산 통합 브리핑  ·  생성일 "+now+"  ·  총 "+holdings.length+"종목";
+  document.getElementById("printHead").textContent="보유자산 통합 브리핑  ·  "+PROFILES.active+"  ·  생성일 "+now+"  ·  총 "+holdings.length+"종목";
   buildPrintSummary();
   window.print();
 };
@@ -1268,15 +1338,15 @@ document.getElementById("bondForm").addEventListener("submit",(e)=>{
   toast(isEdit?"수정되었습니다":"채권이 추가되었습니다");
 });
 
-/* ============ 시작: localStorage 복원 ============ */
+/* ============ 고객(프로필) 버튼 연결 ============ */
+document.getElementById("profileSel").addEventListener("change",e=>switchProfile(e.target.value));
+document.getElementById("btnNewProfile").onclick=newProfile;
+document.getElementById("btnRenameProfile").onclick=renameProfile;
+document.getElementById("btnDelProfile").onclick=deleteProfile;
+
+/* ============ 시작: 활성 고객 복원 ============ */
 (async function init(){
-  const saved=load();
-  holdings=saved.map(s=> s.type==="bond"
-    ? { type:"bond", name:s.name, key:s.key||("bond_"+Math.random().toString(36).slice(2)), bond:s.bond, brief:null, status:"loading", loading:true }
-    : { ...s, key:s.reutersCode||s.code, brief:null, status:"loading", loading:true });
-  renderHolds(); renderKPIs();
-  for(const h of holdings){ await loadBrief(h); }
-  save();
+  await loadActiveHoldings();
 })();
 </script>
 </body>
