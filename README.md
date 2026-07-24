@@ -16,7 +16,19 @@
 - 우상단 **한/영(KO/EN) 토글**, 인쇄 시 종이용 라이트로 자동 전환
 - ⚠️ 실제 사이트의 "MONEYLAND" 로고/워드마크는 사칭 방지를 위해 그대로 복제하지 않고 중립 브랜드로 처리
 
-데이터 소스·폴백·CORS 동작은 `index.html`과 동일합니다. `data/*.js`, `vendor/*.js`를 로드하므로 로컬 서버로 여세요.
+데이터 소스·폴백·CORS 동작은 `index.html`과 동일합니다.
+
+### 실행 방법 — `money-standalone.html` (더블클릭)
+
+`money-standalone.html`은 위 `money.html`에 **CSS·JS·차트 라이브러리·데이터를 모두 인라인**한 단일 파일입니다.
+별도 서버 없이 **파일을 더블클릭**하면(`file://`) 바로 열립니다.
+
+```
+money-standalone.html   ← 이 파일만 더블클릭
+```
+
+> 개발용으로 스타일/로직을 수정할 때는 `money.html`(+ `data/*.js`, `vendor/chart.umd.js`)을 고친 뒤 다시 인라인해 재생성합니다.
+> 서버로 열 경우엔 `money.html`도 그대로 동작합니다 (`python3 -m http.server 8000` → `http://localhost:8000/money.html`).
 
 ## 🟠 미래에셋 브랜드 버전 — `mas.html`
 
