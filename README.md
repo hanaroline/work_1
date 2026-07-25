@@ -18,17 +18,35 @@
 
 데이터 소스·폴백·CORS 동작은 `index.html`과 동일합니다.
 
-### 실행 방법 — `money-standalone.html` (더블클릭)
+### 실행 방법 1) 실시간 데이터 — `serve.py` (권장)
 
-`money-standalone.html`은 위 `money.html`에 **CSS·JS·차트 라이브러리·데이터를 모두 인라인**한 단일 파일입니다.
-별도 서버 없이 **파일을 더블클릭**하면(`file://`) 바로 열립니다.
+브라우저에서 HTML을 직접 열면(`file://`) 출처가 `null`이 되어 **외부 시세 API가 CORS로 차단**됩니다.
+공개 CORS 프록시로 우회하지만 **사내망에서는 그마저 막혀 매번 샘플 데이터로 표시**됩니다.
+
+**실시간으로 보려면** 함께 제공되는 작은 실행기 `serve.py`를 쓰세요. 이 PC가 데이터를 대신 받아와(CORS 우회) 브라우저에 전달합니다.
+
+```bash
+# serve.py 와 money-standalone.html(또는 money.html)을 같은 폴더에 두고
+python serve.py           # 기본 8000 포트, 브라우저 자동 오픈
+# → http://localhost:8000  에서 실시간 조회
+```
+
+- 파이썬 표준 라이브러리만 사용(별도 설치 불필요), Python 3.7+ 권장
+- `/proxy` 는 네이버·야후·구글뉴스 등 **필요한 데이터 소스 호스트만** 통과시킵니다(오남용 방지)
+- 이 PC가 `finance.naver.com` 등에 접근 가능해야 실시간이 됩니다. (막히면 자동으로 샘플 폴백)
+- 미래에셋 **사내 시세 API**가 있다면 `serve.py`의 `ALLOW_HOSTS`에 해당 호스트를 추가하거나, HTML의 fetch 대상 URL을 사내 엔드포인트로 바꾸면 됩니다.
+
+### 실행 방법 2) 오프라인/샘플 — `money-standalone.html` (더블클릭)
+
+`money-standalone.html`은 **CSS·JS·차트 라이브러리·데이터를 모두 인라인**한 단일 파일로, 서버 없이 더블클릭하면(`file://`) 바로 열립니다.
+다만 위 CORS 제약으로 **실시간은 어렵고 주로 샘플 데이터**로 표시됩니다(레이아웃/기능 확인·오프라인 데모용).
 
 ```
-money-standalone.html   ← 이 파일만 더블클릭
+money-standalone.html   ← 더블클릭 (샘플 위주)
+serve.py + 위 파일       ← python serve.py 로 실행하면 실시간
 ```
 
-> 개발용으로 스타일/로직을 수정할 때는 `money.html`(+ `data/*.js`, `vendor/chart.umd.js`)을 고친 뒤 다시 인라인해 재생성합니다.
-> 서버로 열 경우엔 `money.html`도 그대로 동작합니다 (`python3 -m http.server 8000` → `http://localhost:8000/money.html`).
+> 스타일/로직 수정 시 `money.html`(+ `data/*.js`, `vendor/chart.umd.js`)을 고친 뒤 인라인해 `money-standalone.html`을 재생성합니다.
 
 ## 🟠 미래에셋 브랜드 버전 — `mas.html`
 
