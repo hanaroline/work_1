@@ -191,7 +191,18 @@
   .gauge.rev .gbar{background:linear-gradient(90deg,var(--up),var(--warn),var(--down))}
   .gauge .gmark{position:absolute;top:-3px;width:3px;height:14px;background:var(--text);border-radius:2px;transform:translateX(-50%)}
   .gauge .gcur{font-size:11px;color:var(--text-dim);margin-top:5px;text-align:center}
+  /* 카드: 미니 브리핑용(라벨/코멘트/카드내 게이지) */
+  .hold .mini .rlab{color:var(--text-faint)}
+  .hold .gauge{margin-top:11px}
+  .hold .gauge .gt,.hold .gauge .gcur{font-size:10px;margin-bottom:3px}
+  .hold .c-note{margin-top:11px;background:var(--card-2);border:1px solid var(--border);border-radius:9px;padding:8px 10px;font-size:11.5px;line-height:1.6;color:var(--text-dim)}
+  .hold .c-note b{color:var(--text)}
+  .hold .news1{margin-top:10px;font-size:11.5px;color:var(--text-dim);display:flex;gap:6px;align-items:baseline}
+  .hold .news1 .nt{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--text)}
   @media print {
+    .hold .c-note{margin-top:6px;font-size:10px;padding:6px 8px}
+    .hold .gauge{margin-top:6px}
+    .hold .news1{margin-top:6px;font-size:10px}
     .insight,.toolrow,#tools,.profbar{display:none!important}
     #printSummary{display:block!important;margin:6px 0 10px}
     #printSummary .pt{font-size:12px;font-weight:800;margin-bottom:4px}
@@ -685,17 +696,49 @@ function gaugeHTML(label,leftTxt,rightTxt,posPct,curTxt,rev){
     '<div class="gt" style="margin-top:4px"><span>'+esc(leftTxt)+'</span><span>'+esc(rightTxt)+'</span></div>'+
     (curTxt?'<div class="gcur">'+esc(curTxt)+'</div>':"")+'</div>';
 }
-function cardMetrics(h,b){
-  const items=[];
-  if(h.type!=="fund"){
-    const per=tiGet(b,"per"), pbr=tiGet(b,"pbr"), dy=tiGet(b,"dividendYieldRatio");
-    if(per) items.push("PER "+per);
-    if(pbr) items.push("PBR "+pbr);
-    if(dy) items.push("배당 "+dy);
-  }
-  const pos=w52Pos(b);
-  if(pos!=null) items.push("52주 "+pos.toFixed(0)+"%");
-  return items.length?'<div class="card-metrics">'+items.map(x=>'<span>'+esc(x)+'</span>').join("")+'</div>':"";
+/* 카드(클릭 전) 미니 브리핑용 헬퍼 — 라벨 esc, 값은 caller가 HTML/텍스트로 전달 */
+function cardRow(label,val){ if(val==null||val===""||val==="—") return ""; return '<div class="row"><span class="rlab">'+esc(label)+'</span><span>'+val+'</span></div>'; }
+function card52Gauge(b){ const pos=w52Pos(b); if(pos==null) return "";
+  return gaugeHTML("52주 위치","저 "+fmtN(num(b.w52Low)),"고 "+fmtN(num(b.w52High)),pos,"현재 저점比 "+pos.toFixed(0)+"%",false); }
+function cardNews1(b){ const n=b&&Array.isArray(b.news)&&b.news[0]; if(!n||!n.title) return "";
+  return '<div class="news1"><span>📰</span><span class="nt" title="'+esc(n.title)+'">'+esc(n.title)+'</span></div>'; }
+function cardStockInfo(h,b){
+  const rows=[];
+  if(b.consensus&&b.consensus.priceTargetMean){ const tgt=num(b.consensus.priceTargetMean), up=tgt&&b.price?((tgt-b.price)/b.price*100):null;
+    rows.push(cardRow("목표주가", fmtN(tgt)+(h.domestic?"원":"")+(up!=null?' <span class="'+cls(up)+'">('+pct(up)+')</span>':""))); }
+  const mv=tiGet(b,"marketValue"); if(mv) rows.push(cardRow("시가총액", esc(mv)));
+  const per=tiGet(b,"per"), cper=tiGet(b,"cnsPer");
+  if(per) rows.push(cardRow("PER", esc(per)+(cper?' <span class="rlab">(추정 '+esc(cper)+')</span>':"")));
+  const pbr=tiGet(b,"pbr"); if(pbr) rows.push(cardRow("PBR", esc(pbr)));
+  const eps=tiGet(b,"eps"); if(eps) rows.push(cardRow("EPS", esc(eps)));
+  const dy=tiGet(b,"dividendYieldRatio"); if(dy) rows.push(cardRow("배당수익률", esc(dy)));
+  const fr=tiGet(b,"foreignRate"); if(fr) rows.push(cardRow("외국인소진율", esc(fr)));
+  if(h.domestic&&b.etf&&b.etf.totalNav) rows.push(cardRow("순자산", esc(b.etf.totalNav)));
+  if(h.domestic&&b.deal&&b.deal[0]){ const d=b.deal[0];
+    rows.push(cardRow("외국인/기관", '<span class="'+(sgn(d.foreignerPureBuyQuant)>=0?"up":"down")+'">'+esc(d.foreignerPureBuyQuant||"—")+'</span> / <span class="'+(sgn(d.organPureBuyQuant)>=0?"up":"down")+'">'+esc(d.organPureBuyQuant||"—")+'</span>')); }
+  if(h.domestic&&h.type==="stock"&&b.reports) rows.push(cardRow("증권사 리포트", b.reports.length+"건"));
+  if(!rows.length&&b.volume!=null) rows.push(cardRow("거래량", fmtN(b.volume)));
+  return rows.length?'<div class="mini">'+rows.join("")+'</div>':"";
+}
+function cardComment(h,b){
+  const p=[]; const r1=b.ret&&b.ret["1M"], r6=b.ret&&b.ret["6M"];
+  if(r1!=null&&r6!=null){ if(r1>0&&r6>0)p.push("꾸준한 상승 흐름"); else if(r1<0&&r6<0)p.push("지속적 약세"); else if(r1>0&&r6<0)p.push("최근 반등"); else if(r1<0&&r6>0)p.push("단기 조정"); }
+  const pos=w52Pos(b); if(pos!=null)p.push("52주 "+(pos>=80?"고점권":pos<=20?"저점권":"중단"));
+  const up=targetUpside(b); if(up!=null)p.push("목표가 "+(up>=0?"여력 ":"하락 ")+pct(up));
+  if(h.domestic&&b.deal&&b.deal[0]){ const d=b.deal[0], f=sgn(d.foreignerPureBuyQuant), o=sgn(d.organPureBuyQuant);
+    if(f<0&&o<0)p.push("외국인·기관 동반매도"); else if(f>0&&o>0)p.push("외국인·기관 동반매수"); }
+  let s=p.join(" · ");
+  if(h.status==="warn") s="⚠️ <b>주의</b> — "+(s||"단기 급락/수급 이탈 신호");
+  return s?'<div class="c-note">'+s+'</div>':"";
+}
+function fundCardComment(b){
+  const p=[]; const r3=b.ret&&b.ret["3M"];
+  if(r3!=null){ let s="최근 3개월 "+pct(r3); const pk=(b.periods||[]).find(x=>x.term==="3m");
+    if(pk&&pk.peerCompanyReturn!=null) s+=" (유형평균 "+pct(pk.peerCompanyReturn)+")"; p.push(s); }
+  if(b.riskGrade) p.push("위험등급 "+riskKR(b.riskGrade));
+  let s=p.join(" · ");
+  if(r3!=null&&r3<=-10) s="⚠️ <b>최근 3개월 부진</b> — "+s;
+  return s?'<div class="c-note">'+s+'</div>':"";
 }
 function detailMetrics(h,b){
   let html=""; const cells=[];
@@ -841,39 +884,36 @@ function holdCard(h){
   if(h.loading){ body='<div class="loading">불러오는 중…</div>'; }
   else if(h.status==="missing"){ body='<div class="loading">데이터를 불러오지 못했습니다.</div>'; }
   else if(h.type==="fund"){
-    body='<div class="h-price">'+fmtN(b.basePrice)+'<span class="muted" style="font-size:12px"> 기준가</span></div>'+
-      '<div class="rets">'+["1M","3M","6M","1Y"].map(k=>'<div class="ret">'+k+'<b class="'+cls(b.ret&&b.ret[k])+'">'+pct(b.ret&&b.ret[k])+'</b></div>').join("")+'</div>'+
-      '<div class="mini"><div class="row"><span>위험등급</span><span>'+riskKR(b.riskGrade)+'</span></div>'+
-      '<div class="row"><span>총보수</span><span>'+(b.fees&&b.fees.total!=null?b.fees.total.toFixed(2)+"%":"—")+'</span></div>'+
-      '<div class="row"><span>운용사</span><span>'+esc(b.company||"—")+'</span></div></div>';
+    body='<div class="h-price">'+fmtN(b.basePrice)+'<span class="muted" style="font-size:12px"> 기준가</span>'+
+      (b.change!=null?' <span class="h-chg '+cls(b.change)+'">'+(b.change>=0?"▲":"▼")+" "+fmtN(Math.abs(b.change))+'</span>':"")+'</div>'+
+      '<div class="rets">'+["1M","3M","6M","1Y"].map(k=>'<div class="ret">'+({"1M":"1개월","3M":"3개월","6M":"6개월","1Y":"1년"}[k])+'<b class="'+cls(b.ret&&b.ret[k])+'">'+pct(b.ret&&b.ret[k])+'</b></div>').join("")+'</div>'+
+      '<div class="mini">'+
+        cardRow("유형", esc((b.parentPeer||"")+(b.peerGroup?" · "+b.peerGroup:"")))+
+        cardRow("위험등급", esc(riskKR(b.riskGrade)))+
+        cardRow("총보수", b.fees&&b.fees.total!=null?b.fees.total.toFixed(2)+"%":null)+
+        cardRow("순자산(NAV)", esc(b.nav))+
+        cardRow("설정액", esc(b.aum))+
+        cardRow("벤치마크", esc(b.benchmark))+
+        cardRow("운용사", esc(b.company))+
+      '</div>'+
+      fundCardComment(b);
   } else if(h.type==="bond"){
-    body=bondCardBody(b);
+    body=bondCardBody(b)+'<div class="c-note">'+bondComment(b)+'</div>';
   } else {
     const chg=b.changePct;
     body='<div><span class="h-price">'+fmtP(b.price,b.currency)+'</span>'+
       '<span class="h-chg '+cls(chg)+'">'+(chg==null?"":(chg>=0?"▲":"▼")+" "+pct(chg))+'</span></div>'+
-      '<div class="rets">'+["1M","3M","6M","1Y"].map(k=>'<div class="ret">'+k+'<b class="'+cls(b.ret&&b.ret[k])+'">'+pct(b.ret&&b.ret[k])+'</b></div>').join("")+'</div>'+
+      '<div class="rets">'+["1M","3M","6M","1Y"].map(k=>'<div class="ret">'+({"1M":"1개월","3M":"3개월","6M":"6개월","1Y":"1년"}[k])+'<b class="'+cls(b.ret&&b.ret[k])+'">'+pct(b.ret&&b.ret[k])+'</b></div>').join("")+'</div>'+
       sparkline(b.series,260,40)+
-      miniStockInfo(h,b)+
-      cardMetrics(h,b);
+      card52Gauge(b)+
+      cardStockInfo(h,b)+
+      cardNews1(b)+
+      cardComment(h,b);
   }
   return '<div class="hold" data-key="'+esc(h.key)+'"><button class="x" title="삭제">✕</button><span class="drag-h" title="드래그해 순서 변경">⠿</span>'+
     '<div class="h-top"><span class="st-dot '+stcls+'"></span><span class="h-name">'+esc(h.name)+'</span><span class="tag '+tagcls+'">'+tagtxt+'</span></div>'+
     '<div class="h-sub">'+esc(h.type==="bond"?(b.kind||"채권"):h.type==="fund"?(b.parentPeer||"펀드"):(h.domestic?((h.type==="etf"?"국내ETF":"국내주식")+" · "+h.code):((h.type==="etf"?"해외ETF":"해외주식")+" · "+h.code)))+'</div>'+
     body+'</div>';
-}
-function miniStockInfo(h,b){
-  let s='<div class="mini">';
-  if(b.consensus&&b.consensus.priceTargetMean){
-    const tgt=num(b.consensus.priceTargetMean); const up=tgt&&b.price?((tgt-b.price)/b.price*100):null;
-    s+='<div class="row"><span>목표주가(평균)</span><span>'+fmtN(tgt)+(h.domestic?"원":"")+(up!=null?' <span class="'+cls(up)+'">('+pct(up)+')</span>':"")+'</span></div>';
-  }
-  if(h.domestic&&b.etf){ s+='<div class="row"><span>순자산</span><span>'+esc(b.etf.totalNav||"—")+'</span></div>'; }
-  if(h.domestic&&b.deal&&b.deal[0]){ const d=b.deal[0];
-    s+='<div class="row"><span>외국인/기관(최근)</span><span class="'+(sgn(d.foreignerPureBuyQuant)>=0?"up":"down")+'">'+esc(d.foreignerPureBuyQuant||"—")+'</span> / <span class="'+(sgn(d.organPureBuyQuant)>=0?"up":"down")+'">'+esc(d.organPureBuyQuant||"—")+'</span></div>';
-  }
-  if(h.domestic&&h.type==="stock"&&b.reports){ s+='<div class="row"><span>증권사 리포트</span><span>'+b.reports.length+'건</span></div>'; }
-  s+='</div>'; return s;
 }
 function riskKR(g){ return ({veryLowRisk:"매우낮음",lowRisk:"낮음",moderatelyLowRisk:"다소낮음",moderateRisk:"보통",moderatelyHighRisk:"다소높음",highRisk:"높음",veryHighRisk:"매우높음"})[g]||g||"—"; }
 
