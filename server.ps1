@@ -315,11 +315,13 @@ function Read-RequestHeaders($stream) {
 }
 
 # ---- start server ----
+# Bind to Any (0.0.0.0) so the same PC (localhost) AND other devices on the
+# same Wi-Fi/LAN (e.g. a Galaxy Tab browser) can reach the dashboard.
 $listener = $null
 $port = 0
 for ($p = 8899; $p -lt 8919; $p++) {
   try {
-    $l = New-Object System.Net.Sockets.TcpListener([System.Net.IPAddress]::Loopback, $p)
+    $l = New-Object System.Net.Sockets.TcpListener([System.Net.IPAddress]::Any, $p)
     $l.Start()
     $listener = $l; $port = $p; break
   } catch { $listener = $null }
@@ -332,11 +334,40 @@ if (-not $listener) {
 }
 
 $url = "http://localhost:$port/"
-$line = ('=' * 56)
+
+# Find this PC's LAN IPv4 so other devices (tablet/phone) can connect.
+$lanIp = $null
+try {
+  $ips = [System.Net.Dns]::GetHostAddresses([System.Net.Dns]::GetHostName())
+  foreach ($ip in $ips) {
+    if ($ip.AddressFamily -eq [System.Net.Sockets.AddressFamily]::InterNetwork) {
+      $s = $ip.ToString()
+      if ($s -ne '127.0.0.1' -and -not $s.StartsWith('169.254.')) { $lanIp = $s; break }
+    }
+  }
+} catch {}
+
+# Best-effort: open the firewall for this port (private network). Needs admin;
+# if it fails (no rights / corporate policy), we just skip it silently.
+try {
+  $ruleName = "MiraeBriefing_$port"
+  Start-Process -FilePath "netsh" `
+    -ArgumentList @("advfirewall","firewall","add","rule","name=$ruleName","dir=in","action=allow","protocol=TCP","localport=$port","profile=private") `
+    -WindowStyle Hidden -Wait -ErrorAction SilentlyContinue | Out-Null
+} catch {}
+
+$line = ('=' * 60)
 Write-Host $line
 Write-Host "  Holdings briefing server is running (PowerShell edition)."
-Write-Host "  Browser will open automatically:  $url"
-Write-Host "  (If not, paste that address into your browser.)"
+Write-Host ""
+Write-Host "  On THIS PC:        $url"
+if ($lanIp) {
+  Write-Host "  On tablet/phone:   http://$lanIp`:$port/" -ForegroundColor Cyan
+  Write-Host "  (Same Wi-Fi required. Type that address in the tablet browser.)"
+} else {
+  Write-Host "  (Could not detect LAN IP - run 'ipconfig' to find IPv4, then"
+  Write-Host "   open http://<that-ip>:$port/ on the tablet, same Wi-Fi.)"
+}
 Write-Host ""
 Write-Host "  * Do NOT close this window - the dashboard stops if you do." -ForegroundColor Yellow
 Write-Host "  To stop: click this window and press Ctrl+C"
