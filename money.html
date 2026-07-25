@@ -397,7 +397,11 @@
     function hexA(hex, a) { hex = hex.replace("#", ""); if (hex.length === 3) hex = hex.split("").map(function (x) { return x + x; }).join(""); var n = parseInt(hex, 16); return "rgba(" + ((n >> 16) & 255) + "," + ((n >> 8) & 255) + "," + (n & 255) + "," + a + ")"; }
 
     /* ================= 데이터 레이어 (index.html과 동일) ================= */
-    var PROXIES = [
+    // http(s)로 서빙되면(= serve.py 실행 시) 같은 출처의 로컬 프록시를 최우선 사용 → 실시간 데이터
+    var LOCAL_PROXY = /^https?:$/.test(location.protocol)
+      ? [function (u) { return location.origin + "/proxy?url=" + encodeURIComponent(u); }]
+      : [];
+    var PROXIES = LOCAL_PROXY.concat([
       function (u) { return u; },
       function (u) { return "https://api.codetabs.com/v1/proxy/?quest=" + encodeURIComponent(u); },
       function (u) { return "https://corsproxy.io/?url=" + encodeURIComponent(u); },
@@ -405,7 +409,7 @@
       function (u) { return "https://cors.eu.org/" + u; },
       function (u) { return "https://thingproxy.freeboard.io/fetch/" + u; },
       function (u) { return "https://r.jina.ai/" + u; }
-    ];
+    ]);
     function withTimeout(promise, ms) {
       return new Promise(function (resolve, reject) {
         var to = setTimeout(function () { reject(new Error("timeout")); }, ms);
