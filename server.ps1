@@ -39,6 +39,22 @@ $script:YHCrumb   = $null
 $script:KRXCookies = New-Object System.Net.CookieContainer
 $script:KRXWarmed  = $false
 
+# In-memory response cache (cuts external requests -> lower rate-limit/block risk)
+$script:CACHE = @{}
+$script:CACHE_TTL = 90     # seconds; raise for less traffic (more stale), lower for fresher
+function Cache-Get([string]$key) {
+  if ($script:CACHE.ContainsKey($key)) {
+    $e = $script:CACHE[$key]
+    if ($e.exp -gt (Get-Date)) { return $e.bytes }
+    $script:CACHE.Remove($key)
+  }
+  return $null
+}
+function Cache-Set([string]$key, [byte[]]$bytes, [int]$ttl) {
+  if ($script:CACHE.Count -gt 500) { $script:CACHE.Clear() }   # simple cap
+  $script:CACHE[$key] = @{ bytes = $bytes; exp = (Get-Date).AddSeconds($ttl) }
+}
+
 function Escape-Json([string]$s) {
   if ($null -eq $s) { return '' }
   $s = $s -replace '\\','\\\\'
@@ -50,7 +66,8 @@ function Escape-Json([string]$s) {
 
 # Fetch URL with headers, return byte[]
 function Http-Get {
-  param([string]$Url, [string]$Referer, [switch]$UseYhCookies, [System.Net.CookieContainer]$Jar)
+  param([string]$Url, [string]$Referer, [switch]$UseYhCookies, [System.Net.CookieContainer]$Jar, [switch]$NoCache, [int]$CacheTtl = 0)
+  if (-not $NoCache) { $cv = Cache-Get $Url; if ($null -ne $cv) { return ,$cv } }
   $req = [System.Net.HttpWebRequest]::Create($Url)
   $req.UserAgent = $UA
   $req.Accept = "application/json, text/plain, */*"
@@ -71,15 +88,17 @@ function Http-Get {
     $rs = $resp.GetResponseStream()
     $ms = New-Object System.IO.MemoryStream
     $rs.CopyTo($ms)
-    return ,$ms.ToArray()
+    $data = $ms.ToArray()
   } finally { $resp.Close() }
+  if (-not $NoCache) { $t = $CacheTtl; if ($t -le 0) { $t = $script:CACHE_TTL }; Cache-Set $Url $data $t }
+  return ,$data
 }
 
 function Get-YhCrumb {
   param([switch]$Force)
   if ($script:YHCrumb -and -not $Force) { return $script:YHCrumb }
-  try { [void](Http-Get -Url "https://fc.yahoo.com/" -UseYhCookies) } catch {}
-  $b = Http-Get -Url "https://query2.finance.yahoo.com/v1/test/getcrumb" -UseYhCookies
+  try { [void](Http-Get -Url "https://fc.yahoo.com/" -UseYhCookies -NoCache) } catch {}
+  $b = Http-Get -Url "https://query2.finance.yahoo.com/v1/test/getcrumb" -UseYhCookies -NoCache
   $script:YHCrumb = ([System.Text.Encoding]::UTF8.GetString($b)).Trim()
   return $script:YHCrumb
 }
@@ -184,7 +203,9 @@ function Handle-Yq($Stream, [string]$query) {
 }
 
 function Http-Post {
-  param([string]$Url, [string]$Body, [string]$Referer, [System.Net.CookieContainer]$Jar)
+  param([string]$Url, [string]$Body, [string]$Referer, [System.Net.CookieContainer]$Jar, [int]$CacheTtl = 300)
+  $ckey = "POST|" + $Url + "|" + $Body
+  $cv = Cache-Get $ckey; if ($null -ne $cv) { return ,$cv }
   $req = [System.Net.HttpWebRequest]::Create($Url)
   $req.Method = "POST"
   $req.UserAgent = $UA
@@ -206,8 +227,10 @@ function Http-Post {
   $rs = $req.GetRequestStream(); $rs.Write($bytes, 0, $bytes.Length); $rs.Close()
   $resp = $req.GetResponse()
   try {
-    $s = $resp.GetResponseStream(); $ms = New-Object System.IO.MemoryStream; $s.CopyTo($ms); return ,$ms.ToArray()
+    $s = $resp.GetResponseStream(); $ms = New-Object System.IO.MemoryStream; $s.CopyTo($ms); $data = $ms.ToArray()
   } finally { $resp.Close() }
+  Cache-Set $ckey $data $CacheTtl
+  return ,$data
 }
 
 # KRX data system (POST) proxy: inbound GET /api/krx?bld=...&<params> -> outbound POST getJsonData.cmd
@@ -223,7 +246,7 @@ function Handle-Krx($Stream, [string]$query) {
   else           { $target = "http://data.krx.co.kr/comm/bldAttendant/getJsonData.cmd" }
   try {
     if (-not $script:KRXWarmed) {
-      try { [void](Http-Get -Url "http://data.krx.co.kr/contents/MDC/MDI/mdiLoader/index.cmd?menuId=MDC0201020101" -Referer "http://data.krx.co.kr/" -Jar $script:KRXCookies) } catch {}
+      try { [void](Http-Get -Url "http://data.krx.co.kr/contents/MDC/MDI/mdiLoader/index.cmd?menuId=MDC0201020101" -Referer "http://data.krx.co.kr/" -Jar $script:KRXCookies -NoCache) } catch {}
       $script:KRXWarmed = $true
     }
     $out = Http-Post -Url $target -Body $body -Referer "http://data.krx.co.kr/" -Jar $script:KRXCookies
