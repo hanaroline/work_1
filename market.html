@@ -195,9 +195,10 @@
   var NAVER_URL='https://finance.naver.com/research/market_info_list.naver';
   var DEFAULT_Q=['증시 시황 모닝브리프','코스피 마감 시황','증시 개장 전 체크포인트'];
   var PROXIES=[
-    function(u){return u;},
+    function(u){return 'https://api.codetabs.com/v1/proxy/?quest='+encodeURIComponent(u);},
+    function(u){return 'https://api.allorigins.win/raw?url='+encodeURIComponent(u);},
     function(u){return 'https://corsproxy.io/?url='+encodeURIComponent(u);},
-    function(u){return 'https://api.allorigins.win/raw?url='+encodeURIComponent(u);}
+    function(u){return 'https://thingproxy.freeboard.io/fetch/'+u;}
   ];
 
   function $(id){return document.getElementById(id);}
@@ -441,7 +442,11 @@
     var h='<div class="card">';
     var g1=groupHTML('증권사 시황 리포트 (네이버 금융 리서치)',data.firms);
     var g2=groupHTML('주요 시황 뉴스 (Google 뉴스)',data.news);
-    if(!g1&&!g2){h+='<div class="errbox"><div>수집된 항목이 없습니다. 사내망 차단 또는 프록시 실패일 수 있습니다. 소스/검색어를 조정하거나 다시 시도하세요.</div></div>';}
+    if(!g1&&!g2){h+='<div class="errbox"><div>수집된 항목이 없습니다 (브라우저 CORS 차단).</div>'+
+      '<div class="code" style="text-align:left;max-width:560px;white-space:normal;">해결 순서:<br>'+
+      '① 이 파일을 <b>더블클릭(file://)</b>으로 열었다면, 대신 <b>https 주소</b>로 여세요 — 프록시가 file://을 거부합니다.<br>'+
+      '② 사내망이면 외부 프록시(api.codetabs.com 등)가 차단됐을 수 있습니다.<br>'+
+      '③ 안정적으로 쓰려면 <b>서버 수집(GitHub Actions)</b> 또는 <b>붙여넣기 방식</b>을 권장합니다.</div></div>';}
     else{h+=g1+g2;}
     h+='</div>';
     $('aggOut').innerHTML=h;
