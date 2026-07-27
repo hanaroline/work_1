@@ -97,6 +97,11 @@
   .modal .mtitle{font-size:19px;font-weight:800}
   .modal .msub{font-size:12.5px;color:var(--text-dim);margin-top:2px}
   .mclose{background:none;border:none;color:var(--text-dim);font-size:22px;cursor:pointer;line-height:1}
+  .mback{background:none;border:1px solid var(--border);border-radius:8px;color:var(--text-dim);font-size:16px;cursor:pointer;line-height:1;padding:4px 9px;margin-right:2px;align-self:center}
+  .mback:hover{color:var(--accent);border-color:var(--accent)}
+  tr.rel-row{cursor:pointer}
+  tr.rel-row:hover td{background:var(--bg-hover,rgba(127,127,127,.10))}
+  tr.rel-row td:first-child{color:var(--accent)}
   .mbody{overflow-y:auto;margin-top:14px}
   .sec{margin-bottom:18px}
   .sec-t{font-size:12px;text-transform:uppercase;letter-spacing:.04em;color:var(--text-dim);font-weight:700;margin-bottom:8px}
@@ -229,7 +234,7 @@
 <body>
 <div class="wrap">
   <header class="top">
-    <div class="brand"><span class="dot"></span> 보유자산 통합 브리핑 <small>미래에셋증권 · 실데이터 · <b style="color:var(--accent)">v2026.07.27-5</b></small></div>
+    <div class="brand"><span class="dot"></span> 보유자산 통합 브리핑 <small>미래에셋증권 · 실데이터 · <b style="color:var(--accent)">v2026.07.27-6</b></small></div>
     <div class="spacer"></div>
     <button class="icon-btn" id="btnTheme" title="다크/라이트 테마 전환">◐</button>
     <button class="btn sm" id="btnSample" title="체험용 예시 종목(삼성전자·SK하이닉스·KODEX 200·AAPL·미래에셋)을 자동으로 채웁니다">예시 채우기</button>
@@ -312,7 +317,8 @@
 <div class="modal-bg" id="detailBg">
   <div class="modal">
     <div class="mhead">
-      <div><div class="mtitle" id="dTitle">—</div><div class="msub" id="dSub"></div></div>
+      <button class="mback" id="dBack" title="이전 종목으로" style="display:none">←</button>
+      <div style="flex:1;min-width:0"><div class="mtitle" id="dTitle">—</div><div class="msub" id="dSub"></div></div>
       <button class="mclose" id="dClose">✕</button>
     </div>
     <div class="mbody" id="dBody"></div>
@@ -637,7 +643,8 @@ async function briefOverseas(h){
     const th=await fetch("/api/yq?symbol="+encodeURIComponent(yhOverseasSymbol(h))+"&modules=upgradeDowngradeHistory,financialData").then(r=>r.json());
     const r0=th.quoteSummary&&th.quoteSummary.result&&th.quoteSummary.result[0];
     const hist=(r0&&r0.upgradeDowngradeHistory&&r0.upgradeDowngradeHistory.history)||[];
-    b.upgrades=hist.map(x=>({ firm:x.firm||"", action:x.action||"", to:(x.toGrade||""), from:(x.fromGrade||""), date:fmtNewsEpoch(x.epochGradeDate) })).filter(u=>u.firm||u.to);
+    hist.sort((a,b2)=>(b2.epochGradeDate||0)-(a.epochGradeDate||0));   // 최신순
+    b.upgrades=hist.map(x=>({ firm:x.firm||"", action:x.action||"", to:(x.toGrade||""), from:(x.fromGrade||""), date:fmtNewsEpoch(x.epochGradeDate) })).filter(u=>u.firm||u.to).slice(0,10);   // 최신 10건만
     let fd=r0&&r0.financialData;
     if(!fd){ // 결합 호출에서 재무 모듈이 누락되면 단독 호출로 재시도(목표가 유실 방지)
       try{ const th2=await fetch("/api/yq?symbol="+encodeURIComponent(yhOverseasSymbol(h))+"&modules=financialData").then(r=>r.json());
@@ -1200,11 +1207,21 @@ function detailBond(h){
 }
 
 /* ============ 상세 브리핑 ============ */
+let detailStack=[];   // 상세 네비게이션 스택(관련 종목 클릭 시 이동, 뒤로가기 지원)
 function openDetail(key){
   const h=holdings.find(x=>x.key===key); if(!h||!h.brief) return;
-  const b=h.brief;
+  detailStack=[h];
+  renderDetail(h);
+  document.getElementById("detailBg").classList.add("open");
+}
+function detailBack(){
+  if(detailStack.length>1){ detailStack.pop(); renderDetail(detailStack[detailStack.length-1]); }
+}
+function renderDetail(h){
+  const b=h.brief||{};
   document.getElementById("dTitle").textContent=h.name;
   document.getElementById("dSub").textContent = h.type==="bond" ? ((b.kind||"채권")+" · 채권") : ((h.type==="fund"?"펀드":h.type==="etf"?"ETF":(h.domestic?"국내주식":"해외주식"))+" · "+h.code);
+  const back=document.getElementById("dBack"); if(back) back.style.display=detailStack.length>1?"":"none";
   const body=document.getElementById("dBody");
   try{
     if(h.type==="bond") body.innerHTML=detailBond(h);
@@ -1213,7 +1230,6 @@ function openDetail(key){
   }catch(err){
     body.innerHTML='<div class="sec"><div class="muted">상세 정보를 표시하는 중 오류가 발생했습니다.<br>'+esc(String((err&&err.message)||err))+'</div></div>';
   }
-  document.getElementById("detailBg").classList.add("open");
   if(h.type==="bond"){ const be=document.getElementById("bondEditBtn"); if(be) be.onclick=()=>{ document.getElementById("detailBg").classList.remove("open"); openBondForm(h.key); }; }
   // 차트 그리기
   const svg=document.getElementById("chartBig");
@@ -1231,6 +1247,48 @@ function openDetail(key){
   // 해외 뉴스 한글 번역 토글 + 저장된 설정이면 자동 적용
   const tb=document.getElementById("btnTransNews");
   if(tb){ tb.onclick=toggleTrans; updateTransBtn(); if(transOn()) applyNewsTranslation(); }
+  // 관련 종목(동일업종/편입종목) 클릭 → 상세 이동
+  [...body.querySelectorAll(".rel-row")].forEach(el=>{
+    el.onclick=()=>openRelated({ code:el.dataset.code||"", reutersCode:el.dataset.rc||"", name:el.dataset.name||"", domestic:el.dataset.dom==="1" });
+  });
+}
+/* 관련 종목을 네이버 검색으로 정확히 해석(코스피/코스닥·해외 구분) */
+async function resolveRelated(spec){
+  const q = spec.domestic ? (spec.code||spec.name) : (spec.name||spec.reutersCode||spec.code);
+  if(!q) return null;
+  try{
+    const d=await nvAc(q);
+    const items=(d.items||[]).filter(x=>x.category==="stock");
+    if(items.length){
+      return (spec.reutersCode&&items.find(x=>x.reutersCode===spec.reutersCode))
+        ||(spec.code&&items.find(x=>x.code===spec.code))
+        ||(spec.name&&items.find(x=>x.name===spec.name))||items[0];
+    }
+  }catch(e){}
+  return null;
+}
+/* 관련 종목 클릭 → 임시 조회 후 상세 이동(보유목록에 추가하지 않음) */
+async function openRelated(spec){
+  if(!spec||(!spec.code&&!spec.reutersCode&&!spec.name)) return;
+  const key=spec.reutersCode||spec.code;
+  const existing=key&&holdings.find(x=>x.key===key&&x.brief&&!x.brief.error);
+  if(existing){ detailStack.push(existing); renderDetail(existing); return; }
+  document.getElementById("dTitle").textContent=spec.name||"조회 중…";
+  document.getElementById("dBody").innerHTML='<div class="sec"><div class="muted">종목 정보를 불러오는 중…</div></div>';
+  let h=null;
+  const item=await resolveRelated(spec);
+  if(item){ h=itemToHolding(item); }
+  else if(spec.reutersCode||spec.code){
+    h={ key:key, code:spec.code||key, reutersCode:spec.reutersCode||spec.code||key, name:spec.name||key,
+        type:"stock", domestic:!!spec.domestic,
+        yahooSymbol:(spec.domestic?((spec.code||"")+".KS"):(spec.reutersCode||spec.code)), typeName:"", brief:null };
+  }
+  const prev=detailStack[detailStack.length-1];
+  if(!h){ toast("종목 정보를 찾지 못했습니다"); if(prev) renderDetail(prev); return; }
+  try{ h.brief=await briefStockEtf(h); if(h.brief&&h.brief.type) h.type=h.brief.type; }
+  catch(e){ h.brief={error:true}; }
+  if(!h.brief||h.brief.error){ toast("상세 정보를 불러오지 못했습니다"); if(prev) renderDetail(prev); return; }
+  detailStack.push(h); renderDetail(h);
 }
 /* 리스트를 initN개만 보여주고 나머지는 '더 보기'로 펼침(접기) */
 function listMore(id, itemsHtml, initN){
@@ -1269,7 +1327,7 @@ function detailStockEtf(h,b){
     html+='<div class="sec"><div class="sec-t">편입종목 TOP 10'+tot+'</div>';
     if(b.holdings&&b.holdings.length){
       html+='<table class="mini-tbl"><thead><tr><th>종목</th><th>비중</th></tr></thead><tbody>'+
-        b.holdings.slice(0,10).map(x=>'<tr><td>'+esc(x.name||x.sym||"")+(x.sym&&x.name?' <span class="muted">('+esc(x.sym)+')</span>':"")+'</td><td>'+(x.pct!=null?x.pct.toFixed(2)+"%":"—")+'</td></tr>').join("")+'</tbody></table>';
+        b.holdings.slice(0,10).map(x=>'<tr'+relAttr(x.sym,x.sym,x.name)+'><td>'+esc(x.name||x.sym||"")+(x.sym&&x.name?' <span class="muted">('+esc(x.sym)+')</span>':"")+'</td><td>'+(x.pct!=null?x.pct.toFixed(2)+"%":"—")+'</td></tr>').join("")+'</tbody></table>';
     } else {
       html+='<div class="muted">구성종목 정보를 불러오지 못했습니다.</div>';
     }
@@ -1289,7 +1347,7 @@ function detailStockEtf(h,b){
   if(Array.isArray(b.industryCompare)&&b.industryCompare.length){
     html+='<div class="sec"><div class="sec-t">동일업종 비교</div><table class="mini-tbl"><thead><tr><th>종목</th><th>현재가</th><th>등락률</th></tr></thead><tbody>'+
       b.industryCompare.slice(0,6).map(x=>{ const fr=num(x.fluctuationsRatio); const dn=x.compareToPreviousPrice&&x.compareToPreviousPrice.code==="5"; const frv=fr==null?null:(fr<0?fr:(dn?-fr:fr));
-        return '<tr><td>'+esc(x.stockName||"")+'</td><td>'+esc(x.closePrice||"—")+'</td><td class="'+cls(frv)+'">'+(fr!=null?pct(frv):"—")+'</td></tr>'; }).join("")+
+        return '<tr'+relAttr(x.reutersCode||x.symbolCode,x.symbolCode,x.stockName)+'><td>'+esc(x.stockName||"")+'</td><td>'+esc(x.closePrice||"—")+'</td><td class="'+cls(frv)+'">'+(fr!=null?pct(frv):"—")+'</td></tr>'; }).join("")+
       '</tbody></table></div>';
   }
   // 리포트 (국내)
@@ -1356,7 +1414,7 @@ function detailFund(b){
   // 편입종목 TOP 10 (자동 탐색) — 없으면 안내(해외/역외펀드는 네이버 미제공)
   if(b.holdings&&b.holdings.length){
     html+='<div class="sec"><div class="sec-t">편입종목 TOP 10 · 총 '+b.holdings.length+'종목</div><table class="mini-tbl"><thead><tr><th>종목</th><th>비중</th></tr></thead><tbody>'+
-      b.holdings.slice(0,10).map(x=>'<tr><td>'+esc(x.name||x.sym||"")+(x.sym&&x.name?' <span class="muted">('+esc(x.sym)+')</span>':"")+'</td><td>'+(x.pct!=null?(+x.pct).toFixed(2)+"%":"—")+'</td></tr>').join("")+'</tbody></table></div>';
+      b.holdings.slice(0,10).map(x=>'<tr'+relAttr(x.sym,x.sym,x.name)+'><td>'+esc(x.name||x.sym||"")+(x.sym&&x.name?' <span class="muted">('+esc(x.sym)+')</span>':"")+'</td><td>'+(x.pct!=null?(+x.pct).toFixed(2)+"%":"—")+'</td></tr>').join("")+'</tbody></table></div>';
   } else {
     const isFof=/재간접|재재간접|모자|feeder/i.test(b.fundName||"");
     const reason=isFof
@@ -1388,6 +1446,14 @@ function detailFund(b){
 function kv(k,v){ return (v==null||v===""||v==="undefined")?"":'<div class="kv2"><span class="k">'+k+'</span><span>'+esc(v)+'</span></div>'; }
 /* 값에 이미 안전한 HTML(<span> 등)이 들어있는 행 — 이스케이프하지 않음 */
 function kvH(k,v){ return (v==null||v==="")?"":'<div class="kv2"><span class="k">'+esc(k)+'</span><span>'+v+'</span></div>'; }
+/* 관련 종목(동일업종/편입종목) 클릭용 행 속성 — 6자리 숫자면 국내, 아니면 해외로 판정 */
+function relAttr(rc, sym, name){
+  rc=String(rc==null?"":rc); sym=String(sym==null?"":sym); name=String(name==null?"":name);
+  const dom=/^\d{6}$/.test(rc)||/^\d{6}$/.test(sym);
+  if(!rc&&!sym) return "";   // 식별자 없으면 비클릭
+  const code=dom?(/^\d{6}$/.test(rc)?rc:sym):sym;
+  return ' class="rel-row" data-rc="'+esc(rc)+'" data-code="'+esc(code)+'" data-name="'+esc(name)+'" data-dom="'+(dom?"1":"0")+'"';
+}
 function sc(v){ const s=String(v==null?"":v); const c=s.startsWith("+")?"up":s.startsWith("-")?"down":""; return '<td class="'+c+'">'+esc(s||"—")+'</td>'; }
 function comment(h,b){
   const parts=[];
@@ -1534,6 +1600,7 @@ document.getElementById("btnSample").onclick=async()=>{
 
 /* ============ 모달 닫기 ============ */
 document.getElementById("dClose").onclick=()=>document.getElementById("detailBg").classList.remove("open");
+document.getElementById("dBack").onclick=detailBack;
 document.getElementById("detailBg").onclick=(e)=>{ if(e.target.id==="detailBg") document.getElementById("detailBg").classList.remove("open"); };
 document.getElementById("vClose").onclick=()=>document.getElementById("viewerBg").classList.remove("open");
 document.getElementById("viewerBg").onclick=(e)=>{ if(e.target.id==="viewerBg") document.getElementById("viewerBg").classList.remove("open"); };
