@@ -628,7 +628,14 @@ async function briefOverseas(h){
     b.overview=ig.corporateOverview||(ig.summaries&&ig.summaries.summary)||null;
   }catch(e){ b.industryCompare=[]; }
   b.reports=[]; b.deal=[];
-  b.news=await loadNews(h);   // 해외 종목 뉴스(가능 시)
+  b.news=await loadNews(h);   // 해외 종목 뉴스(야후 우선)
+  // 해외: 애널리스트 투자의견 변경 이력(야후) — 국내 '증권사 리포트' 대체
+  try{
+    const th=await fetch("/api/yq?symbol="+encodeURIComponent(yhOverseasSymbol(h))+"&modules=upgradeDowngradeHistory").then(r=>r.json());
+    const r0=th.quoteSummary&&th.quoteSummary.result&&th.quoteSummary.result[0];
+    const hist=(r0&&r0.upgradeDowngradeHistory&&r0.upgradeDowngradeHistory.history)||[];
+    b.upgrades=hist.map(x=>({ firm:x.firm||"", action:x.action||"", to:(x.toGrade||""), from:(x.fromGrade||""), date:fmtNewsEpoch(x.epochGradeDate) })).filter(u=>u.firm||u.to);
+  }catch(e){ b.upgrades=[]; }
   // 3) 수익률/스파크라인: 네이버 해외차트 우선(8자리 날짜), 실패 시 야후 폴백
   b.series=[]; b.ret={};
   try{
@@ -698,13 +705,21 @@ function collectNews(raw){
   }
   return out;
 }
+function fmtNewsEpoch(t){ if(t==null||t==="") return ""; let ms=+t; if(isNaN(ms)) return ""; if((""+t).length<=12) ms*=1000; const d=new Date(ms); if(isNaN(d.getTime())) return ""; const p=n=>("0"+n).slice(-2); return d.getFullYear()+"."+p(d.getMonth()+1)+"."+p(d.getDate())+" "+p(d.getHours())+":"+p(d.getMinutes()); }
+async function yahooNews(symbol){
+  const d=await yh("/v1/finance/search?q="+encodeURIComponent(symbol)+"&quotesCount=0&newsCount=30&enableFuzzyQuery=false&lang=en-US&region=US");
+  const arr=(d&&d.news)||[];
+  return arr.map(n=>({ title:String(n.title||"").trim(), press:String(n.publisher||""), date:fmtNewsEpoch(n.providerPublishTime), link:String(n.link||"") })).filter(n=>n.title).slice(0,30);
+}
 async function loadNews(h){
-  try{
-    let raw;
-    if(h.domestic) raw=await nvM("/news/stock/"+encodeURIComponent(h.code)+"?pageSize=30&page=1");
-    else           raw=await nvApi("/news/worldStock/"+encodeURIComponent(h.reutersCode)+"?pageSize=30&page=1");
-    return collectNews(raw);
-  }catch(e){ return []; }
+  if(h.domestic){
+    // 국내: 네이버 종목뉴스(한글) 우선, 없으면 야후 폴백
+    try{ const r=collectNews(await nvM("/news/stock/"+encodeURIComponent(h.code)+"?pageSize=30&page=1")); if(r.length) return r; }catch(e){}
+    try{ return await yahooNews(h.yahooSymbol); }catch(e){ return []; }
+  }
+  // 해외: 야후 뉴스(신뢰) 우선, 없으면 네이버 해외 시도
+  try{ const r=await yahooNews(yhOverseasSymbol(h)); if(r.length) return r; }catch(e){}
+  try{ return collectNews(await nvApi("/news/worldStock/"+encodeURIComponent(h.reutersCode)+"?pageSize=30&page=1")); }catch(e){ return []; }
 }
 
 /* ============ 상태 판정 ============ */
@@ -1178,6 +1193,15 @@ function detailStockEtf(h,b){
   if(h.domestic&&b.reports&&b.reports.length){
     const items=b.reports.map((r,i)=>'<div class="li" data-idx="'+i+'"><div class="t">'+esc(r.title)+'</div><div class="m"><span class="badge">'+esc(r.brokerName||"")+'</span> '+esc(r.writeDate||"")+'</div>'+(r.previewContent?'<div class="p">'+esc(r.previewContent)+'</div>':"")+'</div>');
     html+='<div class="sec"><div class="sec-t">증권사 리포트 (핵심 요약) · 총 '+b.reports.length+'건</div>'+listMore("dReports",items,5)+'</div>';
+  }
+  // 증권사 투자의견 변경 이력 (해외 — 야후)
+  if(!h.domestic&&b.upgrades&&b.upgrades.length){
+    const AC={up:"상향",down:"하향",init:"신규",main:"유지",reit:"재확인"};
+    const items=b.upgrades.map(u=>{ const act=AC[u.action]||u.action||"";
+      const grade=u.to?((u.from&&u.from!==u.to)?(esc(u.from)+" → "+esc(u.to)):esc(u.to)):"";
+      return '<div class="li"><div class="t">'+esc(u.firm||"증권사")+(act?' <span class="badge">'+esc(act)+'</span>':"")+'</div><div class="m">'+(grade||"")+(u.date?(grade?" · ":"")+esc(u.date):"")+'</div></div>'; });
+    html+='<div class="sec"><div class="sec-t">증권사 투자의견 변경 이력 · 총 '+b.upgrades.length+'건</div>'+listMore("dUpgrades",items,5)+
+      '<div class="muted" style="margin-top:6px;font-size:11px">해외 종목은 개별 리포트 원문 대신 애널리스트 등급 변경 이력을 제공합니다</div></div>';
   }
   // 최근 뉴스 / 시황
   if(b.news&&b.news.length){
