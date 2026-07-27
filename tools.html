@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>영업 지원 도구 · 미래에셋증권</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<style>
+  :root{
+    --primary:#F58220; --primary-active:#CB6015; --primary-soft:#FAB072;
+    --secondary:#043B72;
+    --canvas:#FFFFFF; --surface-soft:#ECEFF4; --surface-subtle:#F7F8FA;
+    --hairline:#CDCECB; --hairline-soft:#E5E4E1;
+    --ink:#1A1A1A; --body:#3D3D3D; --muted:#6C6C6C; --muted-soft:#84888B;
+    --font-kr:'Noto Sans KR','Spoqa Han Sans Neo','Apple SD Gothic Neo','Malgun Gothic',sans-serif;
+    --font-en:'Inter','Aptos','Segoe UI',system-ui,-apple-system,sans-serif;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html[lang="ko"] body{font-family:var(--font-kr)}
+  html[lang="en"] body{font-family:var(--font-en)}
+  body{background:var(--canvas);color:var(--body);line-height:1.65;-webkit-font-smoothing:antialiased}
+  .page{max-width:1200px;margin:0 auto;padding:0 32px}
+  a{color:inherit;text-decoration:none}
+
+  header{border-bottom:1px solid var(--hairline)}
+  .head-row{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;padding:30px 0 26px}
+  .brandtag{font-size:12px;font-weight:600;letter-spacing:1px;color:var(--primary);text-transform:uppercase}
+  .head-titles h1{font-size:34px;font-weight:700;line-height:1.12;margin-top:6px}
+  .head-titles p{font-size:16px;color:var(--muted);margin-top:8px;max-width:640px}
+
+  .lang-toggle{display:inline-flex;border:1px solid var(--hairline);border-radius:2px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,.06);flex:0 0 auto}
+  .lang-toggle button{font-family:var(--font-en);font-size:14px;font-weight:500;letter-spacing:.5px;padding:10px 17px;background:#fff;color:var(--muted);border:none;cursor:pointer}
+  .lang-toggle button+button{border-left:1px solid var(--hairline)}
+  .lang-toggle button.active{background:var(--primary);color:#fff}
+  .lang-toggle button:not(.active):hover{background:var(--surface-subtle);color:var(--ink)}
+
+  .grid{display:grid;grid-template-columns:repeat(2,1fr);gap:22px;margin:40px 0 24px}
+  @media (max-width:820px){ .grid{grid-template-columns:1fr} }
+
+  .card{display:flex;flex-direction:column;border:1px solid var(--hairline);border-radius:4px;padding:26px 28px;background:#fff;transition:border-color .12s, box-shadow .12s;height:100%}
+  .card:hover{border-color:var(--primary);box-shadow:0 4px 18px rgba(0,0,0,.07)}
+  .card:focus-visible{outline:2px solid var(--primary);outline-offset:2px}
+  .card-top{display:flex;align-items:center;gap:12px;margin-bottom:4px}
+  .cat{font-size:12px;font-weight:600;letter-spacing:.6px;color:#fff;background:var(--secondary);padding:3px 9px;border-radius:2px;text-transform:uppercase}
+  .num{margin-left:auto;font-family:var(--font-en);font-size:15px;font-weight:600;color:var(--muted-soft)}
+  .card h2{font-size:21px;font-weight:700;color:var(--ink);margin:10px 0 6px;line-height:1.25}
+  .card p{font-size:15px;color:var(--body);flex:1}
+  .tags{display:flex;flex-wrap:wrap;gap:7px;margin-top:16px}
+  .tag{font-size:12px;color:var(--muted);background:var(--surface-subtle);border:1px solid var(--hairline-soft);padding:3px 9px;border-radius:2px}
+  .open{display:inline-flex;align-items:center;gap:6px;margin-top:18px;font-size:15px;font-weight:600;color:var(--primary-active)}
+  .open .arw{font-family:var(--font-en)}
+
+  .foot{margin:36px 0 60px;padding-top:20px;border-top:1px solid var(--hairline-soft)}
+  .foot p{font-size:13px;color:var(--muted-soft);line-height:1.55}
+</style>
+</head>
+<body>
+<header>
+  <div class="page">
+    <div class="head-row">
+      <div class="head-titles">
+        <div class="brandtag">MIRAE ASSET · SALES TOOLKIT</div>
+        <h1 data-i18n="title">영업 지원 도구</h1>
+        <p data-i18n="subtitle">상담·제안·리스크 관리에 쓰는 도구 모음입니다. 각 도구는 설치 없이 브라우저에서 바로 실행됩니다.</p>
+      </div>
+      <div class="lang-toggle" role="radiogroup" aria-label="language">
+        <button id="ko" class="active" role="radio" aria-checked="true">KO</button>
+        <button id="en" role="radio" aria-checked="false">EN</button>
+      </div>
+    </div>
+  </div>
+</header>
+
+<div class="page">
+  <div class="grid" id="grid"></div>
+
+  <div class="foot">
+    <p data-i18n="disclaimer">본 도구의 데이터·수치는 시연용 예시 또는 공개 규칙 기반 추정이며 투자 권유·자문이 아닙니다. 상품·세무·거래 조건은 최신 규정과 상품설명서, 회사 기준을 확인하십시오.</p>
+  </div>
+</div>
+
+<script>
+(function(){
+  "use strict";
+  var I18N={
+    title:{ko:"영업 지원 도구",en:"Sales Toolkit"},
+    subtitle:{ko:"상담·제안·리스크 관리에 쓰는 도구 모음입니다. 각 도구는 설치 없이 브라우저에서 바로 실행됩니다.",en:"A set of tools for consulting, proposals and risk management. Each runs in the browser with no install."},
+    open:{ko:"열기",en:"Open"},
+    disclaimer:{ko:"본 도구의 데이터·수치는 시연용 예시 또는 공개 규칙 기반 추정이며 투자 권유·자문이 아닙니다. 상품·세무·거래 조건은 최신 규정과 상품설명서, 회사 기준을 확인하십시오.",en:"Figures here are sample data or estimates from public rules and are not investment advice. Verify product, tax and trading terms against the latest rules, prospectuses and company guidance."}
+  };
+  var TOOLS=[
+    {href:"standalone.html", cat:{ko:"리서치",en:"Research"},
+     name:{ko:"종목 통합 리포트 대시보드",en:"Stock Report Dashboard"},
+     desc:{ko:"종목명·코드로 시세·수급·증권사 투자의견·재무·뉴스를 한 장의 리포트로 조회합니다.",en:"One-page report of price, flows, ratings, financials and news by ticker."},
+     tags:{ko:["시세·차트","외국인·기관 수급","투자의견","재무","PDF"],en:["Price","Flows","Ratings","Financials","PDF"]}},
+    {href:"product-compare.html", cat:{ko:"상품·제안",en:"Products"},
+     name:{ko:"상품 비교기",en:"Product Comparison"},
+     desc:{ko:"ELS·채권·펀드를 나란히 비교하고 고객 투자성향에 따른 적합/부적합을 확인합니다.",en:"Compare ELS, bonds and funds side by side with investor-suitability checks."},
+     tags:{ko:["ELS","채권","펀드","적합성"],en:["ELS","Bonds","Funds","Suitability"]}},
+    {href:"pension-tax.html", cat:{ko:"절세",en:"Tax"},
+     name:{ko:"연금·절세 시뮬레이터",en:"Pension & Tax Simulator"},
+     desc:{ko:"연금저축·IRP·ISA 납입에 따른 세액공제 환급액과 장기 과세이연 효과를 계산합니다.",en:"Estimate tax-credit refunds and long-term tax-deferral from pension, IRP and ISA."},
+     tags:{ko:["세액공제","IRP","ISA","연금수령세"],en:["Tax credit","IRP","ISA","Pension tax"]}},
+    {href:"margin-risk.html", cat:{ko:"리스크",en:"Risk"},
+     name:{ko:"신용·미수 반대매매 계산기",en:"Margin & Misu Risk Calculator"},
+     desc:{ko:"신용융자 담보비율과 반대매매 발생가, 미수거래 결제·반대매매 리스크를 계산합니다.",en:"Compute margin collateral ratio, forced-sell trigger and unsettled-trade risk."},
+     tags:{ko:["신용융자","담보비율","미수","반대매매"],en:["Margin","Collateral","Misu","Forced sell"]}}
+  ];
+
+  var STATE={lang:"ko"};
+
+  function esc(s){return String(s).replace(/[&<>"]/g,function(c){return ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"})[c];});}
+
+  function render(){
+    var L=STATE.lang;
+    document.documentElement.lang=L;
+    document.querySelectorAll("[data-i18n]").forEach(function(el){
+      var k=el.getAttribute("data-i18n"); if(I18N[k]) el.textContent=I18N[k][L];
+    });
+    document.getElementById("ko").classList.toggle("active",L==="ko");
+    document.getElementById("en").classList.toggle("active",L==="en");
+    document.getElementById("ko").setAttribute("aria-checked",L==="ko");
+    document.getElementById("en").setAttribute("aria-checked",L==="en");
+
+    var g=document.getElementById("grid"); g.innerHTML="";
+    TOOLS.forEach(function(t,i){
+      var a=document.createElement("a");
+      a.className="card"; a.href=t.href;
+      var tags=t.tags[L].map(function(x){return '<span class="tag">'+esc(x)+'</span>';}).join("");
+      a.innerHTML=
+        '<div class="card-top"><span class="cat">'+esc(t.cat[L])+'</span><span class="num">0'+(i+1)+'</span></div>'+
+        '<h2>'+esc(t.name[L])+'</h2>'+
+        '<p>'+esc(t.desc[L])+'</p>'+
+        '<div class="tags">'+tags+'</div>'+
+        '<div class="open">'+esc(I18N.open[L])+' <span class="arw">&rarr;</span></div>';
+      g.appendChild(a);
+    });
+  }
+
+  function setLang(l){STATE.lang=l;try{localStorage.setItem("tk_lang",l);}catch(e){}render();}
+  document.getElementById("ko").onclick=function(){setLang("ko");};
+  document.getElementById("en").onclick=function(){setLang("en");};
+  try{var sv=localStorage.getItem("tk_lang");if(sv==="ko"||sv==="en")STATE.lang=sv;}catch(e){}
+  render();
+})();
+</script>
+</body>
+</html>
