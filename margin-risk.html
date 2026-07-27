@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>신용·미수 반대매매 리스크 계산기 · 미래에셋증권</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<style>
+  :root{
+    --primary:#F58220; --primary-active:#CB6015; --primary-soft:#FAB072;
+    --secondary:#043B72;
+    --canvas:#FFFFFF; --surface-soft:#ECEFF4; --surface-subtle:#F7F8FA;
+    --hairline:#CDCECB; --hairline-soft:#E5E4E1; --highlight:#D7D7D7;
+    --ink:#1A1A1A; --body:#3D3D3D; --muted:#6C6C6C; --muted-soft:#84888B;
+    --success:#2E8540; --warning:#D4A017; --error:#C62828;
+    --font-kr:'Noto Sans KR','Spoqa Han Sans Neo','Apple SD Gothic Neo','Malgun Gothic',sans-serif;
+    --font-en:'Inter','Aptos','Segoe UI',system-ui,-apple-system,sans-serif;
+    --space-block:56px;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html[lang="ko"] body{font-family:var(--font-kr)}
+  html[lang="en"] body{font-family:var(--font-en)}
+  body{background:var(--canvas);color:var(--body);line-height:1.65;-webkit-font-smoothing:antialiased}
+  .page{max-width:1200px;margin:0 auto;padding:0 32px}
+  h1,h2,h3{color:var(--ink);letter-spacing:-0.3px}
+
+  header{border-bottom:1px solid var(--hairline)}
+  .head-row{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;padding:26px 0 22px}
+  .head-titles h1{font-size:29px;font-weight:700;line-height:1.15}
+  .head-titles p{font-size:15px;color:var(--muted);margin-top:6px}
+
+  .lang-toggle{display:inline-flex;border:1px solid var(--hairline);border-radius:2px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,.06);flex:0 0 auto}
+  .lang-toggle button{font-family:var(--font-en);font-size:14px;font-weight:500;letter-spacing:.5px;padding:10px 17px;background:#fff;color:var(--muted);border:none;cursor:pointer}
+  .lang-toggle button+button{border-left:1px solid var(--hairline)}
+  .lang-toggle button.active{background:var(--primary);color:#fff}
+  .lang-toggle button:not(.active):hover{background:var(--surface-subtle);color:var(--ink)}
+
+  .tabbar{display:flex;margin-top:22px;border-bottom:2px solid var(--hairline-soft)}
+  .tabbar button{font:inherit;font-size:17px;font-weight:500;padding:12px 22px;background:none;border:none;border-bottom:2px solid transparent;margin-bottom:-2px;color:var(--muted);cursor:pointer}
+  .tabbar button.active{color:var(--primary);border-bottom-color:var(--primary);font-weight:700}
+
+  .grid{display:grid;grid-template-columns:minmax(340px,420px) 1fr;gap:38px;margin:24px 0 var(--space-block)}
+  @media (max-width:860px){ .grid{grid-template-columns:1fr;gap:28px} }
+
+  .section-rule{height:1px;background:var(--primary);margin-bottom:16px}
+  .section-title{font-size:20px;font-weight:700;margin-bottom:2px}
+  .section-sub{font-size:13px;color:var(--muted);margin-bottom:18px}
+
+  .field{margin-bottom:18px}
+  .field label{display:block;font-size:14px;font-weight:500;color:var(--ink);margin-bottom:7px}
+  .field .hint{font-size:12px;color:var(--muted-soft);font-weight:400}
+  .in-wrap{display:flex;align-items:center;border:1px solid var(--hairline);border-radius:2px;overflow:hidden}
+  .in-wrap:focus-within{border-color:var(--primary)}
+  .in-wrap input{flex:1;font:inherit;font-size:17px;font-variant-numeric:tabular-nums;text-align:right;padding:10px 12px;border:none;outline:none;color:var(--ink);min-width:0}
+  .in-wrap .unit{padding:0 13px;font-size:14px;color:var(--muted);background:var(--surface-subtle);align-self:stretch;display:flex;align-items:center;border-left:1px solid var(--hairline)}
+
+  .stat-card{border:1px solid var(--hairline);border-radius:4px;padding:22px 26px;margin-bottom:18px}
+  .stat-card.accent{background:var(--primary);border-color:var(--primary)}
+  .stat-card.danger{background:var(--error);border-color:var(--error)}
+  .stat-label{font-size:14px;font-weight:500;letter-spacing:.4px;color:var(--muted)}
+  .accent .stat-label,.danger .stat-label{color:rgba(255,255,255,.85)}
+  .stat-hero{font-size:40px;font-weight:700;line-height:1.05;font-variant-numeric:tabular-nums;margin-top:6px;color:var(--secondary)}
+  .accent .stat-hero,.danger .stat-hero{color:#fff}
+  .stat-note{font-size:14px;color:var(--muted);margin-top:8px}
+  .accent .stat-note,.danger .stat-note{color:rgba(255,255,255,.9)}
+
+  .kv{display:grid;grid-template-columns:1fr auto;gap:10px 16px;border:1px solid var(--hairline);border-radius:4px;padding:18px 22px;margin-bottom:18px}
+  .kv .k{font-size:15px;color:var(--body)}
+  .kv .v{font-size:15px;font-weight:600;color:var(--ink);text-align:right;font-variant-numeric:tabular-nums}
+  .kv .full{grid-column:1/3;height:1px;background:var(--hairline-soft);margin:2px 0}
+
+  .callout{border-left:3px solid var(--primary);background:var(--surface-subtle);padding:14px 18px;border-radius:0 4px 4px 0;margin-bottom:18px;font-size:15px;color:var(--body)}
+  .callout strong{color:var(--primary-active)}
+  .callout.ok{border-left-color:var(--success)} .callout.ok strong{color:var(--success)}
+  .callout.warn{border-left-color:var(--error)} .callout.warn strong{color:var(--error)}
+
+  .foot{margin-bottom:60px;padding-top:20px;border-top:1px solid var(--hairline-soft)}
+  .foot p{font-size:13px;color:var(--muted-soft);line-height:1.55}
+  .btn{font:inherit;font-size:15px;font-weight:500;padding:10px 19px;height:42px;border:none;border-radius:2px;background:var(--primary);color:#fff;cursor:pointer;margin-top:6px}
+  .btn:hover{background:var(--primary-active)}
+  .hidden{display:none!important}
+
+  @media print{ .lang-toggle,.tabbar,.btn{display:none!important} .grid{grid-template-columns:1fr 1fr} body{font-size:13px} }
+</style>
+</head>
+<body>
+<header>
+  <div class="page">
+    <div class="head-row">
+      <div class="head-titles">
+        <h1 data-i18n="title">신용·미수 반대매매 리스크 계산기</h1>
+        <p data-i18n="subtitle">신용융자 담보비율·반대매매 발생가와 미수거래 결제·반대매매 리스크를 계산합니다</p>
+      </div>
+      <div class="lang-toggle" role="radiogroup" aria-label="language">
+        <button id="ko" class="active" role="radio" aria-checked="true">KO</button>
+        <button id="en" role="radio" aria-checked="false">EN</button>
+      </div>
+    </div>
+    <div class="page" style="padding:0"><div class="tabbar" id="tabbar"></div></div>
+  </div>
+</header>
+
+<div class="page">
+  <!-- ============ CREDIT (신용융자) ============ -->
+  <div id="panelCredit" class="grid">
+    <div>
+      <div class="section-rule"></div>
+      <h2 class="section-title" data-i18n="cIn">신용융자 입력</h2>
+      <p class="section-sub" data-i18n="unitNote">금액 단위: 만원</p>
+
+      <div class="field"><label data-i18n="cBuy">신용 매수금액</label>
+        <div class="in-wrap"><input id="c_buy" type="number" min="0" value="1000" /><span class="unit">만원</span></div></div>
+      <div class="field"><label data-i18n="cPrice">매수 단가 <span class="hint" data-i18n="opt">(선택)</span></label>
+        <div class="in-wrap"><input id="c_price" type="number" min="0" value="50000" /><span class="unit">원</span></div></div>
+      <div class="field"><label data-i18n="cMargin">신용 증거금률</label>
+        <div class="in-wrap"><input id="c_margin" type="number" min="1" max="100" value="40" /><span class="unit">%</span></div></div>
+      <div class="field"><label data-i18n="cChg">현재 등락률 <span class="hint" data-i18n="cChgHint">(매수가 대비, 하락은 −)</span></label>
+        <div class="in-wrap"><input id="c_chg" type="number" value="-10" /><span class="unit">%</span></div></div>
+      <div class="field"><label data-i18n="cMaint">담보유지비율</label>
+        <div class="in-wrap"><input id="c_maint" type="number" min="100" value="140" /><span class="unit">%</span></div></div>
+      <div class="field"><label data-i18n="cCash">추가 현금담보 <span class="hint" data-i18n="opt">(선택)</span></label>
+        <div class="in-wrap"><input id="c_cash" type="number" min="0" value="0" /><span class="unit">만원</span></div></div>
+      <div class="field"><label data-i18n="cInt">융자 연이자율</label>
+        <div class="in-wrap"><input id="c_int" type="number" min="0" step="0.1" value="7.5" /><span class="unit">%</span></div></div>
+      <div class="field"><label data-i18n="cDays">융자 기간</label>
+        <div class="in-wrap"><input id="c_days" type="number" min="1" value="30" /><span class="unit" data-i18n="uDay">일</span></div></div>
+    </div>
+
+    <div>
+      <div class="section-rule"></div>
+      <h2 class="section-title" data-i18n="cOut">신용융자 결과</h2>
+      <p class="section-sub" data-i18n="cOutSub">담보비율이 유지비율 미만이면 반대매매 대상</p>
+
+      <div class="stat-card" id="c_ratioCard">
+        <div class="stat-label" data-i18n="cRatioL">현재 담보비율</div>
+        <div class="stat-hero" id="c_ratio">-</div>
+        <div class="stat-note" id="c_ratioNote"></div>
+      </div>
+
+      <div id="c_callout"></div>
+
+      <div class="stat-card">
+        <div class="stat-label" data-i18n="cTrigL">반대매매 발생 수준</div>
+        <div class="stat-hero" id="c_trig" style="color:var(--primary-active)">-</div>
+        <div class="stat-note" id="c_trigNote"></div>
+      </div>
+
+      <div class="kv">
+        <div class="k" data-i18n="cLoan">융자금액</div><div class="v" id="c_loan">-</div>
+        <div class="k" data-i18n="cOwn">신용 증거금(자기자금)</div><div class="v" id="c_own">-</div>
+        <div class="full"></div>
+        <div class="k" data-i18n="cVal">현재 담보평가액</div><div class="v" id="c_val">-</div>
+        <div class="k" data-i18n="cBuffer">반대매매까지 추가하락 여력</div><div class="v" id="c_buffer">-</div>
+        <div class="k" id="c_intLabel">예상 융자이자</div><div class="v" id="c_intVal">-</div>
+      </div>
+
+      <button class="btn" id="printBtn" data-i18n="printBtn">인쇄 / PDF 저장</button>
+    </div>
+  </div>
+
+  <!-- ============ MISU (미수거래) ============ -->
+  <div id="panelMisu" class="grid hidden">
+    <div>
+      <div class="section-rule"></div>
+      <h2 class="section-title" data-i18n="mIn">미수거래 입력</h2>
+      <p class="section-sub" data-i18n="unitNote">금액 단위: 만원</p>
+
+      <div class="field"><label data-i18n="mDep">예수금(가용 증거금)</label>
+        <div class="in-wrap"><input id="m_dep" type="number" min="0" value="400" /><span class="unit">만원</span></div></div>
+      <div class="field"><label data-i18n="mMargin">증거금률</label>
+        <div class="in-wrap"><input id="m_margin" type="number" min="1" max="100" value="40" /><span class="unit">%</span></div></div>
+      <div class="field"><label data-i18n="mBuy">매수 주문금액</label>
+        <div class="in-wrap"><input id="m_buy" type="number" min="0" value="1000" /><span class="unit">만원</span></div></div>
+    </div>
+
+    <div>
+      <div class="section-rule"></div>
+      <h2 class="section-title" data-i18n="mOut">미수거래 결과</h2>
+      <p class="section-sub" data-i18n="mOutSub">미수금은 결제일(T+2)까지 입금해야 합니다</p>
+
+      <div class="stat-card accent">
+        <div class="stat-label" data-i18n="mMaxL">최대 미수 매수가능금액</div>
+        <div class="stat-hero" id="m_max">-</div>
+        <div class="stat-note" id="m_maxNote"></div>
+      </div>
+
+      <div id="m_callout"></div>
+
+      <div class="kv">
+        <div class="k" data-i18n="mNeed">필요 증거금</div><div class="v" id="m_need">-</div>
+        <div class="k" data-i18n="mDebt">미수금 (결제 필요액)</div><div class="v" id="m_debt">-</div>
+        <div class="k" data-i18n="mRatio">실질 레버리지</div><div class="v" id="m_lev">-</div>
+      </div>
+
+      <button class="btn" id="printBtn2" data-i18n="printBtn">인쇄 / PDF 저장</button>
+    </div>
+  </div>
+
+  <div class="foot">
+    <p data-i18n="disclaimer">본 계산은 일반적인 신용융자·미수거래 규정에 기반한 추정입니다. 실제 증거금률·담보유지비율·이자율·반대매매 시점 및 절차는 증권사·종목·계좌 유형에 따라 다르며, 반대매매는 통상 담보부족·미수 발생 익영업일 동시호가에 하한가 등으로 집행됩니다. 정확한 조건은 거래 약관 및 회사 규정을 확인하십시오.</p>
+  </div>
+</div>
+
+<script>
+(function(){
+  "use strict";
+
+  var I18N={
+    title:{ko:"신용·미수 반대매매 리스크 계산기",en:"Margin & Unsettled-Trade Risk Calculator"},
+    subtitle:{ko:"신용융자 담보비율·반대매매 발생가와 미수거래 결제·반대매매 리스크를 계산합니다",en:"Compute margin-loan collateral ratio, forced-sell trigger, and unsettled-trade settlement risk"},
+    tabCredit:{ko:"신용융자",en:"Margin Loan"},
+    tabMisu:{ko:"미수거래",en:"Unsettled (Misu)"},
+    unitNote:{ko:"금액 단위: 만원",en:"Amounts in 10K KRW"},
+    opt:{ko:"(선택)",en:"(optional)"},
+    printBtn:{ko:"인쇄 / PDF 저장",en:"Print / Save PDF"},
+    // credit
+    cIn:{ko:"신용융자 입력",en:"Margin Loan Inputs"},
+    cBuy:{ko:"신용 매수금액",en:"Margin buy amount"},
+    cPrice:{ko:"매수 단가",en:"Buy price"},
+    cMargin:{ko:"신용 증거금률",en:"Initial margin rate"},
+    cChg:{ko:"현재 등락률",en:"Current change"},
+    cChgHint:{ko:"(매수가 대비, 하락은 −)",en:"(vs buy price, − for drop)"},
+    cMaint:{ko:"담보유지비율",en:"Maintenance ratio"},
+    cCash:{ko:"추가 현금담보",en:"Extra cash collateral"},
+    cInt:{ko:"융자 연이자율",en:"Loan rate (p.a.)"},
+    cDays:{ko:"융자 기간",en:"Loan period"},
+    cOut:{ko:"신용융자 결과",en:"Margin Loan Result"},
+    cOutSub:{ko:"담보비율이 유지비율 미만이면 반대매매 대상",en:"Below maintenance ratio triggers forced sell"},
+    cRatioL:{ko:"현재 담보비율",en:"Current collateral ratio"},
+    cTrigL:{ko:"반대매매 발생 수준",en:"Forced-sell trigger"},
+    cLoan:{ko:"융자금액",en:"Loan amount"},
+    cOwn:{ko:"신용 증거금(자기자금)",en:"Own margin"},
+    cVal:{ko:"현재 담보평가액",en:"Current collateral value"},
+    cBuffer:{ko:"반대매매까지 추가하락 여력",en:"Buffer to forced sell"},
+    cInt2:{ko:"예상 융자이자",en:"Est. loan interest"},
+    uDay:{ko:"일",en:"d"},
+    // misu
+    mIn:{ko:"미수거래 입력",en:"Unsettled-Trade Inputs"},
+    mDep:{ko:"예수금(가용 증거금)",en:"Cash deposit (available)"},
+    mMargin:{ko:"증거금률",en:"Margin rate"},
+    mBuy:{ko:"매수 주문금액",en:"Buy order amount"},
+    mOut:{ko:"미수거래 결과",en:"Unsettled-Trade Result"},
+    mOutSub:{ko:"미수금은 결제일(T+2)까지 입금해야 합니다",en:"Unsettled amount must be funded by T+2"},
+    mMaxL:{ko:"최대 미수 매수가능금액",en:"Max buyable with misu"},
+    mNeed:{ko:"필요 증거금",en:"Required margin"},
+    mDebt:{ko:"미수금 (결제 필요액)",en:"Unsettled amount (to fund)"},
+    mRatio:{ko:"실질 레버리지",en:"Effective leverage"}
+  };
+
+  var TABS=[{key:"credit",k:"tabCredit"},{key:"misu",k:"tabMisu"}];
+  var STATE={lang:"ko",tab:"credit"};
+
+  function val(id){var n=parseFloat(document.getElementById(id).value);return isNaN(n)?0:n;}
+  function fmtMan(v){
+    if(STATE.lang==="en") return "KRW "+Math.round(v*1e4).toLocaleString();
+    var neg=v<0; v=Math.abs(v); var s;
+    if(v>=10000) s=(v/10000).toLocaleString(undefined,{maximumFractionDigits:2})+"억원";
+    else s=Math.round(v).toLocaleString()+"만원";
+    return (neg?"−":"")+s;
+  }
+  function fmtWon(won){ return (STATE.lang==="en"?"KRW ":"")+Math.round(won).toLocaleString()+(STATE.lang==="ko"?"원":""); }
+  function pp(v){ return (v>0?"+":"")+v.toFixed(1)+"%p"; }
+
+  /* ---------- CREDIT ---------- */
+  function calcCredit(){
+    var P0=val("c_buy"), price=val("c_price"), m=val("c_margin")/100,
+        chg=val("c_chg")/100, R=val("c_maint")/100, C=val("c_cash"),
+        i=val("c_int")/100, days=val("c_days");
+    var L=P0*(1-m);                    // 융자금
+    var own=P0*m;                      // 자기자금
+    var V=P0*(1+chg);                  // 현재 평가액
+    var collat=V+C;                    // 담보평가액
+    var ratio=L>0 ? collat/L*100 : 0;
+    // 반대매매 트리거: (Vtrig + C)/L = R -> Vtrig = R*L - C ; 매수가 대비 등락률
+    var Vtrig=R*L - C;
+    var chgTrig=P0>0 ? (Vtrig/P0 - 1)*100 : 0;   // % vs 매수가
+    var interest=L*i*days/365;         // 만원
+    var addNeed=collat < R*L ? (R*L - collat) : 0; // 마진콜 시 추가 담보
+    return {P0,price,m,chg:chg*100,R:R*100,C,L,own,V,collat,ratio,Vtrig,chgTrig,interest,addNeed,i,days};
+  }
+
+  function renderCredit(){
+    var L=STATE.lang, c=calcCredit();
+    var safe=c.ratio>=c.R;
+
+    var rc=document.getElementById("c_ratioCard");
+    rc.className="stat-card"+(safe?"":" danger");
+    document.getElementById("c_ratio").textContent=c.ratio.toFixed(1)+"%";
+    document.getElementById("c_ratioNote").textContent=(L==="ko"
+      ? "담보유지비율 "+c.R.toFixed(0)+"% 기준"
+      : "vs "+c.R.toFixed(0)+"% maintenance");
+
+    var co=document.getElementById("c_callout");
+    if(safe){
+      co.innerHTML='<div class="callout ok">'+(L==="ko"
+        ? '현재 담보비율이 유지비율을 <strong>'+(c.ratio-c.R).toFixed(1)+'%p</strong> 상회합니다. 매수가 대비 약 <strong>'+Math.abs(c.chgTrig).toFixed(1)+'%</strong> 하락 시 반대매매 위험 구간에 진입합니다.'
+        : 'Ratio exceeds maintenance by <strong>'+(c.ratio-c.R).toFixed(1)+'%p</strong>. Forced-sell risk near <strong>'+Math.abs(c.chgTrig).toFixed(1)+'%</strong> drop from buy price.')+'</div>';
+    } else {
+      co.innerHTML='<div class="callout warn">'+(L==="ko"
+        ? '<strong>담보 부족(마진콜)</strong> — 유지비율 미달 상태입니다. 반대매매를 피하려면 현금담보 <strong>'+fmtMan(c.addNeed)+'</strong>을 추가 입금하거나 상환이 필요합니다.'
+        : '<strong>Margin call</strong> — below maintenance. Add <strong>'+fmtMan(c.addNeed)+'</strong> collateral or repay to avoid forced sell.')+'</div>';
+    }
+
+    // 반대매매 발생 수준
+    var trigEl=document.getElementById("c_trig"), trigNote=document.getElementById("c_trigNote");
+    if(c.price>0){
+      var trigPrice=c.price*(1+c.chgTrig/100);
+      trigEl.textContent=fmtWon(trigPrice);
+      trigNote.textContent=(L==="ko"
+        ? "매수가 "+fmtWon(c.price)+" 대비 "+c.chgTrig.toFixed(1)+"% (현재가 "+fmtWon(c.price*(1+c.chg/100))+")"
+        : "vs buy "+fmtWon(c.price)+", "+c.chgTrig.toFixed(1)+"%");
+    } else {
+      trigEl.textContent=c.chgTrig.toFixed(1)+"%";
+      trigNote.textContent=(L==="ko"?"매수가 대비 하락률 기준":"drop vs buy price");
+    }
+
+    document.getElementById("c_loan").textContent=fmtMan(c.L);
+    document.getElementById("c_own").textContent=fmtMan(c.own);
+    document.getElementById("c_val").textContent=fmtMan(c.collat);
+    document.getElementById("c_buffer").textContent = safe ? (L==="ko"?"약 ":"~")+(c.chg - c.chgTrig).toFixed(1)+"%p" : (L==="ko"?"해당없음":"n/a");
+    document.getElementById("c_intLabel").textContent=I18N.cInt2[L];
+    document.getElementById("c_intVal").textContent=fmtWon(c.interest*1e4);
+  }
+
+  /* ---------- MISU ---------- */
+  function calcMisu(){
+    var D=val("m_dep"), m=val("m_margin")/100, P=val("m_buy");
+    var maxBuy = m>0 ? D/m : 0;
+    var need = P*m;
+    var debt = Math.max(0, P-D);            // 결제일까지 채워야 할 미수금
+    var over = P>maxBuy;                     // 증거금 부족 주문불가
+    var lev = D>0 ? P/D : 0;
+    return {D,m,P,maxBuy,need,debt,over,lev};
+  }
+
+  function renderMisu(){
+    var L=STATE.lang, x=calcMisu();
+    document.getElementById("m_max").textContent=fmtMan(x.maxBuy);
+    document.getElementById("m_maxNote").textContent=(L==="ko"
+      ? "예수금 "+fmtMan(x.D)+" ÷ 증거금률 "+(x.m*100).toFixed(0)+"%"
+      : "deposit "+fmtMan(x.D)+" ÷ "+(x.m*100).toFixed(0)+"%");
+
+    var mc=document.getElementById("m_callout");
+    if(x.over){
+      mc.innerHTML='<div class="callout warn">'+(L==="ko"
+        ? '<strong>증거금 부족</strong> — 주문금액이 최대 매수가능금액('+fmtMan(x.maxBuy)+')을 초과해 주문이 거부됩니다.'
+        : '<strong>Insufficient margin</strong> — order exceeds max buyable ('+fmtMan(x.maxBuy)+') and will be rejected.')+'</div>';
+    } else if(x.debt>0){
+      mc.innerHTML='<div class="callout">'+(L==="ko"
+        ? '미수금 <strong>'+fmtMan(x.debt)+'</strong>이 발생합니다. 결제일(T+2)까지 미입금 시 <strong>익영업일 오전 동시호가에 하한가로 반대매매</strong>되고, 계좌는 30일간 미수동결계좌로 지정됩니다.'
+        : 'Unsettled amount <strong>'+fmtMan(x.debt)+'</strong> arises. If not funded by T+2, it is <strong>force-sold at the next-day opening auction</strong> and the account is frozen for 30 days.')+'</div>';
+    } else {
+      mc.innerHTML='<div class="callout ok">'+(L==="ko"
+        ? '예수금 내 매수로 <strong>미수금이 없습니다.</strong>'
+        : 'Fully funded — <strong>no unsettled amount.</strong>')+'</div>';
+    }
+
+    document.getElementById("m_need").textContent=fmtMan(x.need);
+    document.getElementById("m_debt").textContent=fmtMan(x.debt);
+    document.getElementById("m_lev").textContent=x.lev.toFixed(2)+(L==="ko"?"배":"x");
+  }
+
+  /* ---------- shell ---------- */
+  function renderTabs(){
+    var tb=document.getElementById("tabbar"); tb.innerHTML="";
+    TABS.forEach(function(t){
+      var b=document.createElement("button");
+      b.textContent=I18N[t.k][STATE.lang];
+      if(t.key===STATE.tab) b.className="active";
+      b.onclick=function(){ STATE.tab=t.key; renderTabs(); renderPanels(); };
+      tb.appendChild(b);
+    });
+  }
+  function renderPanels(){
+    document.getElementById("panelCredit").classList.toggle("hidden",STATE.tab!=="credit");
+    document.getElementById("panelMisu").classList.toggle("hidden",STATE.tab!=="misu");
+    renderCredit(); renderMisu();
+  }
+  function applyI18n(){
+    document.documentElement.lang=STATE.lang;
+    document.querySelectorAll("[data-i18n]").forEach(function(el){
+      var k=el.getAttribute("data-i18n"); if(I18N[k]) el.textContent=I18N[k][STATE.lang];
+    });
+    document.querySelectorAll(".unit[data-i18n=uDay]").forEach(function(el){el.textContent=I18N.uDay[STATE.lang];});
+    document.getElementById("ko").classList.toggle("active",STATE.lang==="ko");
+    document.getElementById("en").classList.toggle("active",STATE.lang==="en");
+    document.getElementById("ko").setAttribute("aria-checked",STATE.lang==="ko");
+    document.getElementById("en").setAttribute("aria-checked",STATE.lang==="en");
+  }
+  function renderAll(){ applyI18n(); renderTabs(); renderPanels(); }
+
+  function setLang(l){ STATE.lang=l; try{localStorage.setItem("mr_lang",l);}catch(e){} renderAll(); }
+  document.getElementById("ko").onclick=function(){setLang("ko");};
+  document.getElementById("en").onclick=function(){setLang("en");};
+  document.getElementById("printBtn").onclick=function(){window.print();};
+  document.getElementById("printBtn2").onclick=function(){window.print();};
+  ["c_buy","c_price","c_margin","c_chg","c_maint","c_cash","c_int","c_days"].forEach(function(id){
+    document.getElementById(id).addEventListener("input",renderCredit);
+  });
+  ["m_dep","m_margin","m_buy"].forEach(function(id){
+    document.getElementById(id).addEventListener("input",renderMisu);
+  });
+
+  try{ var sv=localStorage.getItem("mr_lang"); if(sv==="ko"||sv==="en") STATE.lang=sv; }catch(e){}
+  renderAll();
+})();
+</script>
+</body>
+</html>
