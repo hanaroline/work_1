@@ -1350,7 +1350,11 @@ function detailFund(b){
     html+='<div class="sec"><div class="sec-t">편입종목 TOP 10 · 총 '+b.holdings.length+'종목</div><table class="mini-tbl"><thead><tr><th>종목</th><th>비중</th></tr></thead><tbody>'+
       b.holdings.slice(0,10).map(x=>'<tr><td>'+esc(x.name||x.sym||"")+(x.sym&&x.name?' <span class="muted">('+esc(x.sym)+')</span>':"")+'</td><td>'+(x.pct!=null?(+x.pct).toFixed(2)+"%":"—")+'</td></tr>').join("")+'</tbody></table></div>';
   } else {
-    html+='<div class="sec"><div class="sec-t">편입종목</div><div class="muted" style="font-size:12px">개별 편입종목 정보를 제공하지 않는 펀드입니다(해외·역외펀드 등은 운용사가 미공개). 자산구성·섹터구성으로 참고하세요.</div></div>';
+    const isFof=/재간접|재재간접|모자|feeder/i.test(b.fundName||"");
+    const reason=isFof
+      ? "재간접형 펀드(다른 펀드에 투자)라 개별 편입종목이 공개되지 않습니다 — 실제 종목은 모(母)펀드에 있습니다."
+      : "개별 편입종목 정보를 제공하지 않는 펀드입니다(해외·역외펀드 등 운용사 미공개).";
+    html+='<div class="sec"><div class="sec-t">편입종목</div><div class="muted" style="font-size:12px">'+reason+' 자산구성·섹터구성으로 참고하세요.</div></div>';
   }
   // 자산 구성
   if(b.assetAlloc&&b.assetAlloc.length){
