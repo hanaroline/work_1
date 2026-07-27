@@ -215,6 +215,7 @@
     </div>
     <button class="btn" id="settingsBtn" title="설정">⚙︎ <span data-ko>설정</span><span data-en>Settings</span></button>
     <button class="btn" id="printBtn" title="인쇄/PDF">🖨 <span data-ko>인쇄</span><span data-en>Print</span></button>
+    <button class="btn" id="exportBtn" title="공유용 HTML 내보내기">⤓ <span data-ko>공유용 내보내기</span><span data-en>Export to share</span></button>
     <button class="btn btn-primary" id="genBtn"><span data-ko>번역·요약 생성</span><span data-en>Generate</span></button>
   </div>
 
@@ -664,6 +665,150 @@
   }
   $('genBtn').onclick = generate;
   $('printBtn').onclick = function () { window.print(); };
+  $('exportBtn').onclick = exportViewer;
+
+  // ===== 공유용 독립형 뷰어 내보내기 (오프라인, 키·클로드 불필요) =====
+  var VIEWER_CSS = `
+    :root{--mas-orange:#F58220;--mas-orange-active:#CB6015;--mas-blue:#043B72;--accent-blue:#043B72;
+      --th-bg:#FAB072;--th-fg:#1A1A1A;--canvas:#FFFFFF;--surface-soft:#ECEFF4;--surface-subtle:#F7F8FA;
+      --hairline:#CDCECB;--hairline-soft:#E5E4E1;--ink:#1A1A1A;--body:#3D3D3D;--muted:#6C6C6C;--muted-soft:#84888B;
+      --up:#C62828;--down:#043B72;--page:#EEF0F3;
+      --font-kr:'Noto Sans KR','Apple SD Gothic Neo','Malgun Gothic',sans-serif;
+      --font-en:'Inter','Segoe UI',system-ui,sans-serif;--font-num:'Inter','SF Mono',ui-monospace,monospace;}
+    @media (prefers-color-scheme:dark){:root{--canvas:#16181c;--surface-soft:#1e2229;--surface-subtle:#1a1d22;
+      --hairline:#33373e;--hairline-soft:#262a31;--ink:#f2f3f5;--body:#c7cbd1;--muted:#9aa0a8;--muted-soft:#7d838b;
+      --up:#ff6b6b;--down:#5b9be0;--accent-blue:#5b9be0;--th-bg:#7a5230;--th-fg:#f2f3f5;--page:#0e1013;}}
+    :root[data-theme="light"]{--canvas:#FFFFFF;--surface-soft:#ECEFF4;--surface-subtle:#F7F8FA;--hairline:#CDCECB;
+      --hairline-soft:#E5E4E1;--ink:#1A1A1A;--body:#3D3D3D;--muted:#6C6C6C;--muted-soft:#84888B;--up:#C62828;
+      --down:#043B72;--accent-blue:#043B72;--th-bg:#FAB072;--th-fg:#1A1A1A;--page:#EEF0F3;}
+    :root[data-theme="dark"]{--canvas:#16181c;--surface-soft:#1e2229;--surface-subtle:#1a1d22;--hairline:#33373e;
+      --hairline-soft:#262a31;--ink:#f2f3f5;--body:#c7cbd1;--muted:#9aa0a8;--muted-soft:#7d838b;--up:#ff6b6b;
+      --down:#5b9be0;--accent-blue:#5b9be0;--th-bg:#7a5230;--th-fg:#f2f3f5;--page:#0e1013;}
+    *{box-sizing:border-box;}html,body{margin:0;padding:0;}
+    body{background:var(--page);color:var(--ink);font-family:var(--font-kr);line-height:1.65;-webkit-font-smoothing:antialiased;}
+    html[lang="en"] body{font-family:var(--font-en);}
+    html[lang="ko"] [data-en]{display:none;}html[lang="en"] [data-ko]{display:none;}
+    .num{font-family:var(--font-num);font-variant-numeric:tabular-nums;}
+    .topbar{position:sticky;top:0;z-index:20;background:var(--canvas);border-bottom:1px solid var(--hairline);
+      display:flex;align-items:center;gap:14px;padding:12px 20px;flex-wrap:wrap;}
+    .brand{display:flex;align-items:baseline;gap:9px;}.brand .logo{width:13px;height:13px;background:var(--mas-orange);border-radius:2px;display:inline-block;}
+    .brand .name{font-weight:700;font-size:16px;letter-spacing:-.02em;}.brand .sub{font-size:12px;color:var(--muted);}
+    .spacer{flex:1 1 auto;}
+    .btn{border:1px solid var(--hairline);background:var(--canvas);color:var(--ink);padding:8px 14px;font-size:13px;border-radius:2px;cursor:pointer;font-family:inherit;}
+    .btn:hover{border-color:var(--mas-orange);}.btn:focus-visible{outline:2px solid var(--mas-orange);outline-offset:2px;}
+    .lang-toggle{display:inline-flex;border:1px solid var(--hairline);border-radius:2px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,.06);}
+    .lang-toggle button{border:none;background:var(--canvas);color:var(--muted);font-family:var(--font-en);font-size:13px;font-weight:500;letter-spacing:.5px;padding:8px 15px;cursor:pointer;}
+    .lang-toggle button+button{border-left:1px solid var(--hairline);}.lang-toggle button.on{background:var(--mas-orange);color:#fff;}
+    .page{max-width:940px;margin:18px auto 0;padding:0 20px 60px;}
+    .briefing{background:var(--canvas);border:1px solid var(--hairline);border-radius:4px;padding:40px 44px;}
+    @media (max-width:768px){.briefing{padding:24px 20px;}}
+    .badges{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:20px;}
+    .badge{font-size:11px;font-family:var(--font-en);letter-spacing:.3px;padding:4px 9px;border-radius:2px;border:1px solid var(--hairline);color:var(--muted);}
+    .badge.live{border-color:var(--mas-orange);color:var(--mas-orange-active);}
+    .badge.blue{border-color:var(--accent-blue);color:var(--accent-blue);}
+    .hero-tag{font-family:var(--font-en);font-size:12px;font-weight:600;letter-spacing:1px;color:var(--mas-orange);text-transform:uppercase;margin-bottom:6px;}
+    .hero-date{font-family:var(--font-num);font-size:14px;color:var(--muted);margin-bottom:14px;}
+    h1.headline{font-size:30px;font-weight:700;line-height:1.25;letter-spacing:-.3px;margin:0 0 18px;text-wrap:balance;}
+    @media (max-width:768px){h1.headline{font-size:23px;}}
+    .summary{font-size:17px;line-height:1.7;color:var(--body);padding:18px 20px;background:var(--surface-soft);border-left:3px solid var(--mas-orange);border-radius:0 3px 3px 0;margin-bottom:40px;}
+    section.block{margin-bottom:40px;}.section-rule{height:1px;background:var(--mas-orange);margin-bottom:14px;}
+    .section-title{font-size:20px;font-weight:700;margin:0 0 16px;letter-spacing:-.2px;}
+    ol.keypoints{list-style:none;counter-reset:kp;margin:0;padding:0;}
+    ol.keypoints li{counter-increment:kp;position:relative;padding:10px 0 10px 44px;border-bottom:1px solid var(--hairline-soft);font-size:16px;line-height:1.6;color:var(--body);}
+    ol.keypoints li:last-child{border-bottom:none;}
+    ol.keypoints li::before{content:counter(kp);position:absolute;left:0;top:10px;width:28px;height:28px;background:var(--mas-blue);color:#fff;font-family:var(--font-num);font-weight:600;font-size:14px;display:flex;align-items:center;justify-content:center;border-radius:2px;}
+    .table-wrap{overflow-x:auto;}
+    table.markets{width:100%;border-collapse:collapse;border:1px solid var(--hairline);font-size:15px;}
+    table.markets th{background:var(--th-bg);color:var(--th-fg);font-weight:700;text-align:left;padding:10px 14px;font-size:14px;}
+    table.markets td{padding:10px 14px;border-top:1px solid var(--hairline-soft);vertical-align:top;}
+    table.markets td.name{font-weight:600;white-space:nowrap;}
+    table.markets td.val{font-family:var(--font-num);font-variant-numeric:tabular-nums;white-space:nowrap;}
+    table.markets td.chg{font-family:var(--font-num);white-space:nowrap;font-weight:600;}
+    table.markets td.chg.up{color:var(--up);}table.markets td.chg.down{color:var(--down);}
+    table.markets td.note{color:var(--muted);font-size:14px;}table.markets tr:hover td{background:var(--surface-subtle);}
+    ul.watch{list-style:none;margin:0;padding:0;}
+    ul.watch li{position:relative;padding:8px 0 8px 20px;font-size:16px;color:var(--body);line-height:1.6;}
+    ul.watch li::before{content:"▸";position:absolute;left:0;top:8px;color:var(--mas-orange);}
+    .disclaimer{margin-top:44px;padding-top:16px;border-top:1px solid var(--hairline-soft);font-size:12px;color:var(--muted-soft);line-height:1.6;}
+    @media print{.topbar,.badges{display:none!important;}body{background:#fff;}.page{padding:0;margin:0;}.briefing{border:none;padding:0;}section.block{page-break-inside:avoid;}@page{margin:14mm;}}
+  `;
+
+  var VIEWER_BODY = `
+    <div class="topbar">
+      <div class="brand"><span class="logo"></span><span class="name">Bloomberg 브리핑</span>
+        <span class="sub" data-ko>아침 번역·요약</span><span class="sub" data-en>Morning briefing</span></div>
+      <div class="spacer"></div>
+      <div class="lang-toggle" role="radiogroup" aria-label="language">
+        <button id="langKo" class="on" role="radio" aria-checked="true">KO</button>
+        <button id="langEn" role="radio" aria-checked="false">EN</button></div>
+      <button class="btn" id="printBtn"><span data-ko>인쇄 / PDF</span><span data-en>Print / PDF</span></button>
+    </div>
+    <div class="page"><div class="badges" id="badges"></div><div class="briefing" id="briefing"></div></div>
+  `;
+
+  var VIEWER_JS = `
+    (function(){
+      "use strict";
+      function esc(s){return String(s==null?'':s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});}
+      function lang(){return document.documentElement.getAttribute('lang')||'ko';}
+      function fld(o,b){return o[b+'_'+lang()]!=null?o[b+'_'+lang()]:(o[b+'_ko']||o[b+'_en']||'');}
+      function bi(o){return o[lang()]!=null?o[lang()]:(o.ko||o.en||'');}
+      function chgClass(c){c=(c||'').trim();var f=c.charAt(0);if(f==='+')return 'up';if(f==='-')return 'down';return '';}
+      function badges(){var en=lang()==='en';var w=new Date(META.at);
+        var t=w.toLocaleString(en?'en-US':'ko-KR',{month:'short',day:'numeric',hour:'2-digit',minute:'2-digit'});
+        return '<span class="badge live">'+(en?'AI translated':'AI 번역·요약')+'</span>'+
+          '<span class="badge blue">'+esc(META.model)+'</span>'+
+          '<span class="badge">'+(en?'Generated ':'생성 ')+esc(t)+'</span>';}
+      function render(){var d=DATA,en=lang()==='en';
+        var T=en?{tag:'Morning Briefing',kp:'Key Points',mk:'Markets',mkc:['Asset','Level','Change','Note'],wt:'What to Watch',disc:'Automated translation/summary for internal reference only. Not investment advice; verify against original sources.'}
+          :{tag:'아침 브리핑',kp:'핵심 포인트',mk:'시장 동향',mkc:['자산','수준','변동','코멘트'],wt:'오늘 주목',disc:'본 자료는 원문의 자동 번역·요약으로 사내 참고용입니다. 투자 판단의 근거가 아니며, 수치·내용은 원문과 대조하시기 바랍니다.'};
+        var kp=(d.key_points||[]).map(function(p){return '<li>'+esc(bi(p))+'</li>';}).join('');
+        var mk=(d.markets||[]).map(function(m){var cc=chgClass(m.change);return '<tr><td class="name">'+esc(fld(m,'name'))+'</td><td class="val">'+esc(m.value||'')+'</td><td class="chg '+cc+'">'+esc(m.change||'')+'</td><td class="note">'+esc(fld(m,'note'))+'</td></tr>';}).join('');
+        var wt=(d.watch||[]).map(function(w){return '<li>'+esc(bi(w))+'</li>';}).join('');
+        var h='<div class="hero-tag">'+T.tag+'</div><div class="hero-date">'+esc(d.date_label||'')+'</div><h1 class="headline">'+esc(fld(d,'headline'))+'</h1><div class="summary">'+esc(fld(d,'summary'))+'</div>';
+        if(kp)h+='<section class="block"><div class="section-rule"></div><h2 class="section-title">'+T.kp+'</h2><ol class="keypoints">'+kp+'</ol></section>';
+        if(mk)h+='<section class="block"><div class="section-rule"></div><h2 class="section-title">'+T.mk+'</h2><div class="table-wrap"><table class="markets"><thead><tr><th>'+T.mkc[0]+'</th><th>'+T.mkc[1]+'</th><th>'+T.mkc[2]+'</th><th>'+T.mkc[3]+'</th></tr></thead><tbody>'+mk+'</tbody></table></div></section>';
+        if(wt)h+='<section class="block"><div class="section-rule"></div><h2 class="section-title">'+T.wt+'</h2><ul class="watch">'+wt+'</ul></section>';
+        h+='<div class="disclaimer">'+T.disc+'</div>';
+        document.getElementById('briefing').innerHTML=h;
+        document.getElementById('badges').innerHTML=badges();}
+      function setLang(l){document.documentElement.setAttribute('lang',l);
+        document.getElementById('langKo').classList.toggle('on',l==='ko');
+        document.getElementById('langEn').classList.toggle('on',l==='en');
+        document.getElementById('langKo').setAttribute('aria-checked',l==='ko');
+        document.getElementById('langEn').setAttribute('aria-checked',l==='en');render();}
+      document.getElementById('langKo').onclick=function(){setLang('ko');};
+      document.getElementById('langEn').onclick=function(){setLang('en');};
+      document.getElementById('printBtn').onclick=function(){window.print();};
+      setLang('ko');
+    })();
+  `;
+
+  function buildViewerHTML(stored) {
+    var json = JSON.stringify(stored.data).replace(/</g, '\\u003c');
+    var meta = JSON.stringify({ model: stored.model, at: stored.at }).replace(/</g, '\\u003c');
+    var dlabel = String(stored.data.date_label || '').replace(/[<>]/g, '');
+    return '<!DOCTYPE html>\n<html lang="ko">\n<head>\n<meta charset="UTF-8">\n' +
+      '<meta name="viewport" content="width=device-width, initial-scale=1.0">\n' +
+      '<title>Bloomberg 브리핑 · ' + dlabel + '</title>\n<style>' + VIEWER_CSS + '</style>\n</head>\n<body>' +
+      VIEWER_BODY + '\n<' + 'script>\nvar DATA=' + json + ';\nvar META=' + meta + ';\n' + VIEWER_JS +
+      '\n<' + '/script>\n</body>\n</html>';
+  }
+
+  function exportViewer() {
+    var raw = localStorage.getItem(todayKey());
+    if (!raw) { showError({ msg: '먼저 번역·요약을 생성한 뒤 내보낼 수 있습니다.' }); return; }
+    var stored;
+    try { stored = JSON.parse(raw); } catch (e) { showError({ msg: '저장된 브리핑을 읽을 수 없습니다.' }); return; }
+    var html = buildViewerHTML(stored);
+    var blob = new Blob([html], { type: 'text/html;charset=utf-8' });
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement('a');
+    a.href = url;
+    a.download = 'bloomberg-briefing-' + (stored.data.date_label || 'today') + '.html';
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(function () { URL.revokeObjectURL(url); }, 1000);
+  }
 
   // ===== 초기화 =====
   setLang(localStorage.getItem(LS.lang) || 'ko');
