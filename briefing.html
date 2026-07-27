@@ -229,7 +229,7 @@
 <body>
 <div class="wrap">
   <header class="top">
-    <div class="brand"><span class="dot"></span> 보유자산 통합 브리핑 <small>미래에셋증권 · 실데이터 · <b style="color:var(--accent)">v2026.07.27</b></small></div>
+    <div class="brand"><span class="dot"></span> 보유자산 통합 브리핑 <small>미래에셋증권 · 실데이터 · <b style="color:var(--accent)">v2026.07.27-2</b></small></div>
     <div class="spacer"></div>
     <button class="icon-btn" id="btnTheme" title="다크/라이트 테마 전환">◐</button>
     <button class="btn sm" id="btnSample" title="체험용 예시 종목(삼성전자·SK하이닉스·KODEX 200·AAPL·미래에셋)을 자동으로 채웁니다">예시 채우기</button>
@@ -1202,9 +1202,13 @@ function openDetail(key){
   document.getElementById("dTitle").textContent=h.name;
   document.getElementById("dSub").textContent = h.type==="bond" ? ((b.kind||"채권")+" · 채권") : ((h.type==="fund"?"펀드":h.type==="etf"?"ETF":(h.domestic?"국내주식":"해외주식"))+" · "+h.code);
   const body=document.getElementById("dBody");
-  if(h.type==="bond") body.innerHTML=detailBond(h);
-  else if(h.type==="fund") body.innerHTML=detailFund(b);
-  else body.innerHTML=detailStockEtf(h,b);
+  try{
+    if(h.type==="bond") body.innerHTML=detailBond(h);
+    else if(h.type==="fund") body.innerHTML=detailFund(b);
+    else body.innerHTML=detailStockEtf(h,b);
+  }catch(err){
+    body.innerHTML='<div class="sec"><div class="muted">상세 정보를 표시하는 중 오류가 발생했습니다.<br>'+esc(String((err&&err.message)||err))+'</div></div>';
+  }
   document.getElementById("detailBg").classList.add("open");
   if(h.type==="bond"){ const be=document.getElementById("bondEditBtn"); if(be) be.onclick=()=>{ document.getElementById("detailBg").classList.remove("open"); openBondForm(h.key); }; }
   // 차트 그리기
