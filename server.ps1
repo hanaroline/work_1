@@ -29,7 +29,7 @@ Set-Location $ROOT
 
 $CRLF = [string]([char]13 + [char]10)
 $UA = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36"
-$ALLOW = @('ac.stock.naver.com','m.stock.naver.com','api.stock.naver.com','query1.finance.yahoo.com','query2.finance.yahoo.com','data.krx.co.kr','translate.googleapis.com')
+$ALLOW = @('ac.stock.naver.com','m.stock.naver.com','api.stock.naver.com','query1.finance.yahoo.com','query2.finance.yahoo.com','data.krx.co.kr','translate.googleapis.com','news.google.com')
 
 # Yahoo crumb auth cookie/crumb (blocked in browser, works server-side)
 $script:YHCookies = New-Object System.Net.CookieContainer
