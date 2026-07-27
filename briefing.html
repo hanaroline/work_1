@@ -675,6 +675,7 @@ async function briefFund(h){
   const f=d.detail;
   const periods=Array.isArray(d.returns)?d.returns:[];
   const pget=t=>{ const x=periods.find(p=>p.term===t); return x&&x.fundReturn!=null?x.fundReturn:null; };
+  let holdings=[]; try{ holdings=await fundHoldings(h.code); }catch(e){}
   return { type:"fund", isFund:true, currency:"KRW",
     fundName:f.fundName, basePrice:num(f.basePrice), change:num(f.changePrice),
     ret:{ "1M":pget("1m"), "3M":pget("3m")??num(f.returnRate3m), "6M":pget("6m"), "1Y":pget("1y") },
@@ -683,7 +684,35 @@ async function briefFund(h){
     company:f.companyName, inception:f.inceptionDate,
     fees:{ total:num(f.totalFee), mgmt:num(f.managementFee), sales:num(f.salesFee), custody:num(f.custodyFee) },
     peerGroup:f.peerGroupName, parentPeer:f.parentPeerGroupName, term:d.term||{},
+    holdings,
     assetAlloc:Array.isArray(d.assetAlloc)?d.assetAlloc:[], sectorAlloc:Array.isArray(d.sectorAlloc)?d.sectorAlloc:[], metrics:d.metrics||null };
+}
+/* 펀드 편입종목: 문서화되지 않아 여러 후보 경로를 런타임에 자동 탐색(성공 경로는 캐시) */
+const FUND_HOLD_LS="mirae_fund_hold_path";
+const FUND_HOLD_CANDS=["investmentStock/list","investmentStock","asset/investment","stock/top","stock","investment/top","investment/stock","portfolio/stock","portfolio/list","stock/composition","composition/list","stockAndBond/list","holding/list","invest/stock","top/stock"];
+function fundNormHoldings(root){
+  const arrs=[]; const walk=(o,d)=>{ if(!o||d>5) return;
+    if(Array.isArray(o)){ if(o.length&&o[0]&&typeof o[0]==="object") arrs.push(o); o.forEach(x=>walk(x,d+1)); }
+    else if(typeof o==="object"){ for(const k in o) walk(o[k],d+1); } };
+  walk(root,0);
+  const NK=["itemName","stockName","companyName","issueName","korSecNm","koreanName","name","itemNm","secNm"];
+  const WK=["weight","constituentWeight","investmentWeight","weightRatio","fundWeight","ratio","investRatio","비중"];
+  for(const a of arrs){ const s=a[0]; const nk=NK.find(k=>typeof s[k]==="string"&&s[k]); if(!nk) continue;
+    const wk=WK.find(k=>s[k]!=null&&!isNaN(+s[k]));
+    const out=a.map(x=>({ name:x[nk], sym:x.itemCode||x.stockCode||x.code||x.isinCode||"", pct:(wk&&x[wk]!=null&&!isNaN(+x[wk]))?(+x[wk]):null })).filter(x=>x.name);
+    if(out.length) return out;
+  }
+  return [];
+}
+async function fundHoldings(code){
+  const enc=encodeURIComponent(code);
+  const tryPath=async(p)=>{ try{
+      const j=await fetch("/api/proxy?u="+encodeURIComponent("https://m.stock.naver.com/front-api/fund/"+p+"?fundCode="+enc)).then(r=>r.json());
+      if(!j||j.error) return null; const h=fundNormHoldings(j.result!=null?j.result:j); return h.length?h:null;
+    }catch(e){ return null; } };
+  try{ const cp=localStorage.getItem(FUND_HOLD_LS); if(cp){ const h=await tryPath(cp); if(h) return h; } }catch(e){}
+  for(const p of FUND_HOLD_CANDS){ const h=await tryPath(p); if(h){ try{localStorage.setItem(FUND_HOLD_LS,p);}catch(e){} return h; } }
+  return [];
 }
 const FUND_TERM_KR={ "1d":"1일","1w":"1주","1m":"1개월","2m":"2개월","3m":"3개월","6m":"6개월","9m":"9개월","ytd":"연초후","1y":"1년","2y":"2년","3y":"3년","5y":"5년","10y":"10년","dx":"설정후" };
 function num(v){ if(v==null) return null; const n=parseFloat(String(v).replace(/,/g,"")); return isNaN(n)?null:n; }
@@ -1314,6 +1343,11 @@ function detailFund(b){
     kv("운용",b.fees&&b.fees.mgmt!=null?b.fees.mgmt.toFixed(3)+"%":null)+
     kv("판매",b.fees&&b.fees.sales!=null?b.fees.sales.toFixed(3)+"%":null)+
     kv("수탁",b.fees&&b.fees.custody!=null?b.fees.custody.toFixed(3)+"%":null)+'</div>';
+  // 편입종목 TOP 10 (자동 탐색)
+  if(b.holdings&&b.holdings.length){
+    html+='<div class="sec"><div class="sec-t">편입종목 TOP 10 · 총 '+b.holdings.length+'종목</div><table class="mini-tbl"><thead><tr><th>종목</th><th>비중</th></tr></thead><tbody>'+
+      b.holdings.slice(0,10).map(x=>'<tr><td>'+esc(x.name||x.sym||"")+(x.sym&&x.name?' <span class="muted">('+esc(x.sym)+')</span>':"")+'</td><td>'+(x.pct!=null?(+x.pct).toFixed(2)+"%":"—")+'</td></tr>').join("")+'</tbody></table></div>';
+  }
   // 자산 구성
   if(b.assetAlloc&&b.assetAlloc.length){
     html+='<div class="sec"><div class="sec-t">자산 구성</div><table class="mini-tbl"><thead><tr><th>자산유형</th><th>비중</th></tr></thead><tbody>'+
