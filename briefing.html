@@ -110,6 +110,9 @@
   .li .m{font-size:11px;color:var(--text-faint);margin-top:2px}
   .li .p{font-size:12px;color:var(--text-dim);margin-top:3px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
   .badge{background:var(--card-2);border:1px solid var(--border);border-radius:6px;padding:1px 7px;font-size:11px;color:var(--text-dim)}
+  .collapsed .xtra{display:none}
+  .more-btn{margin-top:9px;background:var(--card-2);border:1px solid var(--border);color:var(--accent2);border-radius:8px;padding:6px 13px;font-size:12px;font-weight:600;cursor:pointer}
+  .more-btn:hover{border-color:var(--accent2)}
   table.mini-tbl{width:100%;border-collapse:collapse;font-size:12.5px}
   table.mini-tbl th,table.mini-tbl td{padding:6px 8px;text-align:right;border-bottom:1px solid var(--border);white-space:nowrap}
   table.mini-tbl th:first-child,table.mini-tbl td:first-child{text-align:left}
@@ -553,7 +556,7 @@ async function briefStockEtf(h){
       if(d.etfKeyIndicator){ b.etf=d.etfKeyIndicator; } // 순자산/보수 등은 네이버, 수익률은 야후(6개월 포함) 유지
     }catch(e){}
     // 리포트(주식/ETF 공통 시도)
-    try{ const rp=await nvM("/research/stock/"+h.code+"?pageSize=6&page=1"); b.reports=Array.isArray(rp)?rp:[]; }catch(e){ b.reports=[]; }
+    try{ const rp=await nvM("/research/stock/"+h.code+"?pageSize=30&page=1"); b.reports=Array.isArray(rp)?rp:[]; }catch(e){ b.reports=[]; }
     // 종목 뉴스/시황
     b.news=await loadNews(h);
   } else {
@@ -691,15 +694,15 @@ function collectNews(raw){
     const t=String(title).replace(/<[^>]+>/g,"").replace(/&quot;/g,'"').replace(/&amp;/g,"&").trim();
     const key=t.slice(0,40); if(!t||seen.has(key)) continue; seen.add(key);
     out.push({ title:t, press:String(press||""), date:fmtNewsDate(dt), link:String(link||"") });
-    if(out.length>=8) break;
+    if(out.length>=30) break;
   }
   return out;
 }
 async function loadNews(h){
   try{
     let raw;
-    if(h.domestic) raw=await nvM("/news/stock/"+encodeURIComponent(h.code)+"?pageSize=10&page=1");
-    else           raw=await nvApi("/news/worldStock/"+encodeURIComponent(h.reutersCode)+"?pageSize=10&page=1");
+    if(h.domestic) raw=await nvM("/news/stock/"+encodeURIComponent(h.code)+"?pageSize=30&page=1");
+    else           raw=await nvApi("/news/worldStock/"+encodeURIComponent(h.reutersCode)+"?pageSize=30&page=1");
     return collectNews(raw);
   }catch(e){ return []; }
 }
@@ -1103,8 +1106,21 @@ function openDetail(key){
   if(svg&&b.series&&b.series.length>1) drawChart(svg,b.series,b.currency);
   // 리포트 클릭
   const rl=document.getElementById("dReports");
-  if(rl) rl.onclick=(e)=>{ const li=e.target.closest(".li"); if(li) openReport(h.code, b.reports[+li.dataset.idx]); };
-  // 다음 액션
+  if(rl) rl.onclick=(e)=>{ const li=e.target.closest(".li"); if(li&&li.dataset.idx!=null) openReport(h.code, b.reports[+li.dataset.idx]); };
+  // 더 보기 / 접기 토글
+  [...document.getElementById("dBody").querySelectorAll(".more-btn")].forEach(btn=>{
+    btn.onclick=()=>{ const box=document.getElementById(btn.dataset.t); if(!box) return;
+      const collapsed=box.classList.toggle("collapsed");
+      btn.textContent=collapsed?("더 보기 (+"+btn.dataset.n+")"):"접기"; };
+  });
+}
+/* 리스트를 initN개만 보여주고 나머지는 '더 보기'로 펼침(접기) */
+function listMore(id, itemsHtml, initN){
+  const n=itemsHtml.length; if(!n) return "";
+  const hasMore=n>initN;
+  const inner=itemsHtml.map((s,i)=> i>=initN ? s.replace('class="li', 'class="li xtra') : s).join("");
+  return '<div id="'+esc(id)+'"'+(hasMore?' class="collapsed"':'')+'>'+inner+'</div>'+
+    (hasMore?'<button class="more-btn" data-t="'+esc(id)+'" data-n="'+(n-initN)+'">더 보기 (+'+(n-initN)+')</button>':'');
 }
 function detailStockEtf(h,b){
   let html="";
@@ -1160,13 +1176,13 @@ function detailStockEtf(h,b){
   }
   // 리포트 (국내)
   if(h.domestic&&b.reports&&b.reports.length){
-    html+='<div class="sec"><div class="sec-t">증권사 리포트 (핵심 요약)</div><div id="dReports">'+
-      b.reports.slice(0,5).map((r,i)=>'<div class="li" data-idx="'+i+'"><div class="t">'+esc(r.title)+'</div><div class="m"><span class="badge">'+esc(r.brokerName||"")+'</span> '+esc(r.writeDate||"")+'</div>'+(r.previewContent?'<div class="p">'+esc(r.previewContent)+'</div>':"")+'</div>').join("")+'</div></div>';
+    const items=b.reports.map((r,i)=>'<div class="li" data-idx="'+i+'"><div class="t">'+esc(r.title)+'</div><div class="m"><span class="badge">'+esc(r.brokerName||"")+'</span> '+esc(r.writeDate||"")+'</div>'+(r.previewContent?'<div class="p">'+esc(r.previewContent)+'</div>':"")+'</div>');
+    html+='<div class="sec"><div class="sec-t">증권사 리포트 (핵심 요약) · 총 '+b.reports.length+'건</div>'+listMore("dReports",items,5)+'</div>';
   }
   // 최근 뉴스 / 시황
   if(b.news&&b.news.length){
-    html+='<div class="sec"><div class="sec-t">최근 뉴스 · 시황</div>'+
-      b.news.slice(0,6).map(n=>'<a class="li"'+(n.link?' href="'+esc(n.link)+'" target="_blank" rel="noopener"':'')+'><div class="t">'+esc(n.title)+'</div><div class="m"><span class="badge">'+esc(n.press||"뉴스")+'</span> '+esc(n.date||"")+'</div></a>').join("")+
+    const items=b.news.map(n=>'<a class="li"'+(n.link?' href="'+esc(n.link)+'" target="_blank" rel="noopener"':'')+'><div class="t">'+esc(n.title)+'</div><div class="m"><span class="badge">'+esc(n.press||"뉴스")+'</span> '+esc(n.date||"")+'</div></a>');
+    html+='<div class="sec"><div class="sec-t">최근 뉴스 · 시황 · 총 '+b.news.length+'건</div>'+listMore("dNews",items,5)+
       '<div class="muted" style="margin-top:6px;font-size:11px">제목 클릭 시 원문(새 탭)으로 이동</div></div>';
   }
   // 다음 액션
