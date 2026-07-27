@@ -234,7 +234,7 @@
 <body>
 <div class="wrap">
   <header class="top">
-    <div class="brand"><span class="dot"></span> 보유자산 통합 브리핑 <small>미래에셋증권 · 실데이터 · <b style="color:var(--accent)">v2026.07.27-6</b></small></div>
+    <div class="brand"><span class="dot"></span> 보유자산 통합 브리핑 <small>미래에셋증권 · 실데이터 · <b style="color:var(--accent)">v2026.07.27-7</b></small></div>
     <div class="spacer"></div>
     <button class="icon-btn" id="btnTheme" title="다크/라이트 테마 전환">◐</button>
     <button class="btn sm" id="btnSample" title="체험용 예시 종목(삼성전자·SK하이닉스·KODEX 200·AAPL·미래에셋)을 자동으로 채웁니다">예시 채우기</button>
@@ -579,7 +579,10 @@ async function briefStockEtf(h){
       try{
         const cj=await proxy("https://m.stock.naver.com/front-api/stock/domestic/etf/constituent/list?code="+encodeURIComponent(h.code)+"&pageSize=15");
         const rows=(cj.result&&cj.result.result)||[];
-        b.holdings=rows.map(x=>({sym:x.itemCode,name:x.itemName,pct:x.constituentWeight!=null?+x.constituentWeight:null}));
+        b.holdings=rows.map(x=>{ const pi=x.priceInfo||{};
+          const rc=x.reutersCode||pi.reutersCode||"";                 // 국내:6자리 / 해외:"AAPL.O"
+          const sc=pi.symbolCode||x.symbolCode||(/^\d{6}$/.test(rc)?rc:"");
+          return { rc:rc, sym:sc||rc, name:x.itemName||pi.name||"", pct:x.constituentWeight!=null?+x.constituentWeight:null }; });
         b.holdingsCount=cj.result&&cj.result.totalCount;
       }catch(e){ b.holdings=[]; }
     } else {
@@ -1254,8 +1257,9 @@ function renderDetail(h){
 }
 /* 관련 종목을 네이버 검색으로 정확히 해석(코스피/코스닥·해외 구분) */
 async function resolveRelated(spec){
-  const q = spec.domestic ? (spec.code||spec.name) : (spec.name||spec.reutersCode||spec.code);
+  let q = spec.domestic ? (spec.code||spec.name) : (spec.name||spec.reutersCode||spec.code);
   if(!q) return null;
+  if(/[A-Za-z]/.test(q)&&!/[가-힣]/.test(q)) q=cleanCoName(q)||q;   // 영문명이면 접미사 정리
   try{
     const d=await nvAc(q);
     const items=(d.items||[]).filter(x=>x.category==="stock");
@@ -1327,7 +1331,7 @@ function detailStockEtf(h,b){
     html+='<div class="sec"><div class="sec-t">편입종목 TOP 10'+tot+'</div>';
     if(b.holdings&&b.holdings.length){
       html+='<table class="mini-tbl"><thead><tr><th>종목</th><th>비중</th></tr></thead><tbody>'+
-        b.holdings.slice(0,10).map(x=>'<tr'+relAttr(x.sym,x.sym,x.name)+'><td>'+esc(x.name||x.sym||"")+(x.sym&&x.name?' <span class="muted">('+esc(x.sym)+')</span>':"")+'</td><td>'+(x.pct!=null?x.pct.toFixed(2)+"%":"—")+'</td></tr>').join("")+'</tbody></table>';
+        b.holdings.slice(0,10).map(x=>'<tr'+relAttr(x.rc||x.sym,x.sym,x.name)+'><td>'+esc(x.name||x.sym||"")+(x.sym&&x.name?' <span class="muted">('+esc(x.sym)+')</span>':"")+'</td><td>'+(x.pct!=null?x.pct.toFixed(2)+"%":"—")+'</td></tr>').join("")+'</tbody></table>';
     } else {
       html+='<div class="muted">구성종목 정보를 불러오지 못했습니다.</div>';
     }
@@ -1446,13 +1450,20 @@ function detailFund(b){
 function kv(k,v){ return (v==null||v===""||v==="undefined")?"":'<div class="kv2"><span class="k">'+k+'</span><span>'+esc(v)+'</span></div>'; }
 /* 값에 이미 안전한 HTML(<span> 등)이 들어있는 행 — 이스케이프하지 않음 */
 function kvH(k,v){ return (v==null||v==="")?"":'<div class="kv2"><span class="k">'+esc(k)+'</span><span>'+v+'</span></div>'; }
-/* 관련 종목(동일업종/편입종목) 클릭용 행 속성 — 6자리 숫자면 국내, 아니면 해외로 판정 */
+/* 관련 종목(동일업종/편입종목) 클릭용 행 속성 — 6자리 숫자면 국내, 아니면 해외.
+   코드가 없어도 이름이 있으면 이름 검색으로 클릭 가능(해외펀드 편입종목 등) */
 function relAttr(rc, sym, name){
   rc=String(rc==null?"":rc); sym=String(sym==null?"":sym); name=String(name==null?"":name);
+  if(!rc&&!sym&&!name) return "";   // 식별자·이름 모두 없으면 비클릭
   const dom=/^\d{6}$/.test(rc)||/^\d{6}$/.test(sym);
-  if(!rc&&!sym) return "";   // 식별자 없으면 비클릭
   const code=dom?(/^\d{6}$/.test(rc)?rc:sym):sym;
   return ' class="rel-row" data-rc="'+esc(rc)+'" data-code="'+esc(code)+'" data-name="'+esc(name)+'" data-dom="'+(dom?"1":"0")+'"';
+}
+/* 영문 회사명에서 접미사 제거(검색 정확도 향상): "Apple Inc"->"Apple", "Sandisk Corp/DE"->"Sandisk" */
+function cleanCoName(s){
+  s=String(s==null?"":s).replace(/\s*\/[A-Za-z]{2}$/,"");
+  for(let i=0;i<3;i++){ s=s.replace(/[.,]?\s+(Incorporated|Inc|Corporation|Corp|Company|Co|Ltd|PLC|LLC|N\.?V|S\.?A|AG|SE|Holdings?|Group|Class\s+[A-C])\.?$/i,"").trim(); }
+  return s.replace(/\s*&\s*$/,"").trim();
 }
 function sc(v){ const s=String(v==null?"":v); const c=s.startsWith("+")?"up":s.startsWith("-")?"down":""; return '<td class="'+c+'">'+esc(s||"—")+'</td>'; }
 function comment(h,b){
