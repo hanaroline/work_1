@@ -712,13 +712,28 @@ async function yahooNews(symbol){
   const arr=(d&&d.news)||[];
   return arr.map(n=>({ title:String(n.title||"").trim(), press:String(n.publisher||""), date:fmtNewsEpoch(n.providerPublishTime), link:String(n.link||"") })).filter(n=>n.title).slice(0,30);
 }
+function fmtNewsAny(s){ if(!s) return ""; const d=new Date(s); if(!isNaN(d.getTime())){ const p=n=>("0"+n).slice(-2); return d.getFullYear()+"."+p(d.getMonth()+1)+"."+p(d.getDate()); } return fmtNewsDate(s); }
+async function googleNewsKo(query){
+  if(!query) return [];
+  const url="https://news.google.com/rss/search?q="+encodeURIComponent(query)+"%20when:30d&hl=ko&gl=KR&ceid=KR:ko";
+  const xml=await fetch("/api/proxy?u="+encodeURIComponent(url)).then(r=>{ if(!r.ok) throw new Error("proxy "+r.status); return r.text(); });
+  const doc=new DOMParser().parseFromString(xml,"text/xml");
+  const get=(it,tag)=>{ const e=it.getElementsByTagName(tag)[0]; return e?e.textContent:""; };
+  return [...doc.getElementsByTagName("item")].slice(0,30).map(it=>{
+    let title=(get(it,"title")||"").trim(); const press=(get(it,"source")||"").trim();
+    if(press&&title.endsWith(" - "+press)) title=title.slice(0,-(press.length+3)).trim();  // 제목 끝 " - 매체" 제거
+    return { title, press, date:fmtNewsAny(get(it,"pubDate")), link:(get(it,"link")||"").trim() };
+  }).filter(n=>n.title);
+}
 async function loadNews(h){
   if(h.domestic){
-    // 국내: 네이버 종목뉴스(한글) 우선, 없으면 야후 폴백
+    // 국내: 네이버 종목뉴스(한글) 우선 -> 구글뉴스(한글) -> 야후
     try{ const r=collectNews(await nvM("/news/stock/"+encodeURIComponent(h.code)+"?pageSize=30&page=1")); if(r.length) return r; }catch(e){}
+    try{ const r=await googleNewsKo(h.name); if(r.length) return r; }catch(e){}
     try{ return await yahooNews(h.yahooSymbol); }catch(e){ return []; }
   }
-  // 해외: 야후 뉴스(신뢰) 우선, 없으면 네이버 해외 시도
+  // 해외: 구글뉴스(한글) 우선 -> 야후(영문) -> 네이버 해외
+  try{ const r=await googleNewsKo(h.name||yhOverseasSymbol(h)); if(r.length) return r; }catch(e){}
   try{ const r=await yahooNews(yhOverseasSymbol(h)); if(r.length) return r; }catch(e){}
   try{ return collectNews(await nvApi("/news/worldStock/"+encodeURIComponent(h.reutersCode)+"?pageSize=30&page=1")); }catch(e){ return []; }
 }
