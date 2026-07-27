@@ -689,7 +689,8 @@ async function briefFund(h){
 }
 /* 펀드 편입종목: 문서화되지 않아 여러 후보 경로를 런타임에 자동 탐색(성공 경로는 캐시) */
 const FUND_HOLD_LS="mirae_fund_hold_path";
-const FUND_HOLD_CANDS=["investmentStock/list","investmentStock","asset/investment","stock/top","stock","investment/top","investment/stock","portfolio/stock","portfolio/list","stock/composition","composition/list","stockAndBond/list","holding/list","invest/stock","top/stock"];
+const FUND_HOLD_CANDS=["portfolio/allocation","investmentStock/list","portfolio/stock","portfolio/list","stock/top","investment/top","stock/composition","holding/list"];
+function fundShortCode(s){ const m=String(s||"").match(/^KR7(\d{6})/); return m?m[1]:String(s||""); }
 function fundNormHoldings(root){
   const arrs=[]; const walk=(o,d)=>{ if(!o||d>5) return;
     if(Array.isArray(o)){ if(o.length&&o[0]&&typeof o[0]==="object") arrs.push(o); o.forEach(x=>walk(x,d+1)); }
@@ -699,8 +700,9 @@ function fundNormHoldings(root){
   const WK=["weight","constituentWeight","investmentWeight","weightRatio","fundWeight","ratio","investRatio","비중"];
   for(const a of arrs){ const s=a[0]; const nk=NK.find(k=>typeof s[k]==="string"&&s[k]); if(!nk) continue;
     const wk=WK.find(k=>s[k]!=null&&!isNaN(+s[k]));
-    const out=a.map(x=>({ name:x[nk], sym:x.itemCode||x.stockCode||x.code||x.isinCode||"", pct:(wk&&x[wk]!=null&&!isNaN(+x[wk]))?(+x[wk]):null })).filter(x=>x.name);
-    if(out.length) return out;
+    const out=a.map(x=>({ name:x[nk], sym:fundShortCode(x.itemCode||x.stockCode||x.code||x.isinCode||""),
+      pct:(wk&&x[wk]!=null&&!isNaN(+x[wk]))?(+x[wk]):null })).filter(x=>x.name);
+    if(out.length){ const mx=Math.max(...out.map(x=>x.pct||0)); if(mx>0&&mx<=1) out.forEach(x=>{ if(x.pct!=null) x.pct*=100; }); return out; }
   }
   return [];
 }
