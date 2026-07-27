@@ -229,7 +229,7 @@
 <body>
 <div class="wrap">
   <header class="top">
-    <div class="brand"><span class="dot"></span> 보유자산 통합 브리핑 <small>미래에셋증권 · 실데이터 · <b style="color:var(--accent)">v2026.07.27-2</b></small></div>
+    <div class="brand"><span class="dot"></span> 보유자산 통합 브리핑 <small>미래에셋증권 · 실데이터 · <b style="color:var(--accent)">v2026.07.27-3</b></small></div>
     <div class="spacer"></div>
     <button class="icon-btn" id="btnTheme" title="다크/라이트 테마 전환">◐</button>
     <button class="btn sm" id="btnSample" title="체험용 예시 종목(삼성전자·SK하이닉스·KODEX 200·AAPL·미래에셋)을 자동으로 채웁니다">예시 채우기</button>
@@ -638,7 +638,11 @@ async function briefOverseas(h){
     const r0=th.quoteSummary&&th.quoteSummary.result&&th.quoteSummary.result[0];
     const hist=(r0&&r0.upgradeDowngradeHistory&&r0.upgradeDowngradeHistory.history)||[];
     b.upgrades=hist.map(x=>({ firm:x.firm||"", action:x.action||"", to:(x.toGrade||""), from:(x.fromGrade||""), date:fmtNewsEpoch(x.epochGradeDate) })).filter(u=>u.firm||u.to);
-    const fd=r0&&r0.financialData;
+    let fd=r0&&r0.financialData;
+    if(!fd){ // 결합 호출에서 재무 모듈이 누락되면 단독 호출로 재시도(목표가 유실 방지)
+      try{ const th2=await fetch("/api/yq?symbol="+encodeURIComponent(yhOverseasSymbol(h))+"&modules=financialData").then(r=>r.json());
+        const r2=th2.quoteSummary&&th2.quoteSummary.result&&th2.quoteSummary.result[0]; fd=r2&&r2.financialData; }catch(e2){}
+    }
     if(fd){ const g=k=>(fd[k]&&fd[k].raw!=null)?fd[k].raw:null;
       b.yfin={ tgtMean:g("targetMeanPrice"), tgtHigh:g("targetHighPrice"), tgtLow:g("targetLowPrice"),
         recMean:g("recommendationMean"), recKey:fd.recommendationKey||"", nAnalysts:g("numberOfAnalystOpinions"), cur:g("currentPrice") }; }
