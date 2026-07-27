@@ -6,7 +6,8 @@
 |------|------|
 | `index.html` / `standalone.html` | **종목 통합 리포트 대시보드** (아래) |
 | **`briefing.html`** | **Bloomberg 브리핑 아침 번역·요약** — 원문을 붙여넣거나 RSS로 수집하면 Claude API가 **1장짜리 한국어 브리핑**으로 자동 번역·요약합니다. |
-| **`market.html`** | **증권사 아침 시황 종합** — 여러 증권사·매체의 아침 시황을 **키 없이 한 화면에 모아보고**, API 키가 있으면 **AI 종합요약**까지 얹습니다. |
+| **`market.html`** | **증권사 아침 시황 종합 (브라우저판)** — 여러 증권사·매체의 아침 시황을 **키 없이 한 화면에 모아보고**, API 키가 있으면 **AI 종합요약**까지 얹습니다. |
+| **`docs/market.html`** | **증권사 아침 시황 종합 (서버 자동판 · 권장)** — 매일 아침 **GitHub Actions가 서버에서 직접 수집**해 만든 정적 페이지. 받는 사람은 링크만 열면 됩니다(설정·키·CORS 불필요). |
 
 ## 증권사 아침 시황 종합 (`market.html`)
 
@@ -23,6 +24,40 @@
 - **인쇄/PDF**, 미래에셋 브랜드 디자인, 다크/라이트 테마 지원
 
 > 사내망 등으로 외부 접근이 막히면 일부 소스가 비어 있을 수 있습니다. 증권사 리포트 원문(PDF)은 저작권이 있어 제목·링크만 수집하며, 본 화면은 사내 참고용입니다.
+
+> **브라우저판의 한계** — 순수 브라우저(특히 `file://` 더블클릭)에서 남의 사이트를 직접 긁는 것은 **CORS**로 자주 막혀 화면이 비어 보일 수 있습니다. **매일 자동으로 최신 시황이 모여 있고, 받는 사람은 키·설정 없이 링크만 열면 되는** 안정적인 방식을 원하면 아래 **서버 자동 수집(GitHub Actions)** 을 사용하세요.
+
+---
+
+## 증권사 아침 시황 종합 — 서버 자동 수집 (권장, `docs/market.html`)
+
+브라우저 CORS 제약을 근본적으로 없앤 방식입니다. **GitHub Actions**(무료)가 매일 아침 서버에서 직접 시황을 수집·요약해 **정적 HTML**로 만들어 두고, 여러분과 동료는 **완성된 페이지 링크만 열면** 됩니다. 각자 키를 넣거나 설정할 필요가 전혀 없습니다.
+
+**동작 흐름**
+1. 매일 아침(기본 **06:40 KST**, `.github/workflows/market.yml`의 cron) 또는 **수동 실행** 시 워크플로우가 돕니다.
+2. `scripts/collect.mjs`(Node, 무의존성)가 **서버에서 직접**(CORS 없음) 네이버 금융 리서치 시황(EUC-KR)과 Google 뉴스 RSS를 수집합니다.
+3. 저장소 Secret에 **`ANTHROPIC_API_KEY`가 있으면** Claude로 **AI 종합요약 한 장**을 얹고, 없으면 **모아보기만** 게시합니다(키는 서버에만 있고 노출되지 않음).
+4. 결과를 `docs/market.html`(+ `docs/index.html`, 아카이브 `docs/data/*.json`)로 커밋합니다.
+5. **GitHub Pages**가 이를 공개 링크로 서빙합니다.
+
+### 최초 1회 설정
+
+1. **이 브랜치를 기본 브랜치에 병합**합니다. (스케줄 워크플로우는 기본 브랜치에서만 자동 실행됩니다.)
+2. **GitHub Pages 켜기** — 저장소 **Settings → Pages → Build and deployment → Source: `Deploy from a branch`**, Branch: `main`(기본 브랜치) / 폴더: **`/docs`** 선택 후 저장.
+   → 공개 주소: `https://<계정>.github.io/<저장소>/market.html` (예: `https://hanaroline.github.io/work_1/market.html`)
+3. **(선택) AI 종합요약 켜기** — **Settings → Secrets and variables → Actions → New repository secret** 에서 이름 `ANTHROPIC_API_KEY`, 값은 `sk-ant-...` 키. 없으면 모아보기만 게시됩니다.
+4. **첫 실행** — **Actions 탭 → `증시 시황 자동 수집` → Run workflow**. 이후에는 매일 아침 자동 갱신됩니다.
+
+### 선택 설정(저장소 Variables)
+
+**Settings → Secrets and variables → Actions → Variables** 에서:
+
+| 이름 | 용도 | 기본값 |
+|------|------|--------|
+| `MARKET_MODEL` | AI 종합요약 모델 | `claude-opus-5` (대안: `claude-sonnet-5`, `claude-haiku-4-5`) |
+| `MARKET_QUERIES` | 뉴스 검색어(콤마 구분) | `증시 시황 모닝브리프,코스피 마감 시황,증시 개장 전 체크포인트` |
+
+> 공유 방법: 완성된 **Pages 링크**를 그대로 전달하면 끝입니다. 받는 사람은 클로드·키·설정 없이 링크만 열면 되고, 매일 최신 내용으로 자동 갱신됩니다. (링크 없이 파일만 주고 싶으면 페이지에서 인쇄→PDF 하거나, 브라우저판의 **⤓ 공유용 내보내기**를 쓰세요.)
 
 ---
 

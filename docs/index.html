@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>증권사 아침 시황 종합</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--mas-orange:#F58220;--mas-blue:#043B72;--canvas:#fff;--hairline:#CDCECB;--ink:#1A1A1A;--body:#3D3D3D;--muted:#6C6C6C;--page:#EEF0F3;
+  --font-kr:'Noto Sans KR','Apple SD Gothic Neo','Malgun Gothic',sans-serif;}
+@media (prefers-color-scheme:dark){:root{--canvas:#16181c;--hairline:#33373e;--ink:#f2f3f5;--body:#c7cbd1;--muted:#9aa0a8;--page:#0e1013;}}
+*{box-sizing:border-box;}html,body{margin:0;padding:0;}
+body{background:var(--page);color:var(--ink);font-family:var(--font-kr);line-height:1.6;}
+.topbar{background:var(--canvas);border-bottom:1px solid var(--hairline);display:flex;align-items:baseline;gap:9px;padding:12px 20px;}
+.logo{width:13px;height:13px;background:var(--mas-orange);border-radius:2px;display:inline-block;}
+.name{font-weight:700;font-size:16px;}.sub{font-size:12px;color:var(--muted);}
+.page{max-width:720px;margin:0 auto;padding:60px 20px;}
+.card{background:var(--canvas);border:1px solid var(--hairline);border-top:3px solid var(--mas-orange);border-radius:4px;padding:36px 40px;text-align:center;}
+h1{font-size:22px;font-weight:700;margin:0 0 12px;}
+p{color:var(--body);font-size:15px;margin:0 0 8px;}
+.muted{color:var(--muted);font-size:13px;}
+</style>
+</head>
+<body>
+<div class="topbar"><span class="logo"></span><span class="name">증권사 아침 시황 종합</span><span class="sub">매일 아침 서버 자동 수집</span></div>
+<div class="page"><div class="card">
+  <h1>첫 자동 수집을 기다리는 중입니다</h1>
+  <p>매일 아침(KST 기준) 서버가 여러 증권사·매체의 시황을 자동으로 모아 이 페이지를 갱신합니다.</p>
+  <p class="muted">지금 바로 보려면 저장소의 Actions에서 <b>증시 시황 자동 수집</b> 워크플로우를 수동 실행(Run workflow)하세요.</p>
+</div></div>
+</body>
+</html>

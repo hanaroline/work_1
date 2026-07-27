@@ -1,0 +1,51 @@
+name: 증시 시황 자동 수집
+
+# 매일 아침 여러 증권사·매체의 시황을 서버에서 직접 수집해
+# docs/market.html 을 자동 갱신합니다. (브라우저 CORS 제약 없음)
+
+on:
+  schedule:
+    # UTC 기준. 21:40 UTC = 익일 06:40 KST (장 시작 전)
+    - cron: '40 21 * * 0-4'
+  workflow_dispatch:      # 저장소 Actions 탭에서 수동 실행 가능
+
+# 워크플로우가 docs/ 를 커밋할 수 있도록 쓰기 권한 부여
+permissions:
+  contents: write
+
+concurrency:
+  group: market-collect
+  cancel-in-progress: false
+
+jobs:
+  collect:
+    runs-on: ubuntu-latest
+    steps:
+      - name: 저장소 체크아웃
+        uses: actions/checkout@v4
+
+      - name: Node 설정
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: 시황 수집 및 HTML 생성
+        env:
+          # AI 종합요약을 쓰려면 저장소 Secrets에 ANTHROPIC_API_KEY 추가(없으면 모아보기만)
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          # 선택: 모델/검색어 변경
+          MARKET_MODEL: ${{ vars.MARKET_MODEL }}
+          MARKET_QUERIES: ${{ vars.MARKET_QUERIES }}
+        run: node scripts/collect.mjs
+
+      - name: 변경분 커밋 & 푸시
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add docs/
+          if git diff --staged --quiet; then
+            echo "변경 없음 — 커밋 생략"
+          else
+            git commit -m "chore: 증시 시황 자동 갱신 ($(TZ=Asia/Seoul date '+%Y-%m-%d %H:%M KST'))"
+            git push
+          fi
