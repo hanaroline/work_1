@@ -234,7 +234,7 @@
 <body>
 <div class="wrap">
   <header class="top">
-    <div class="brand"><span class="dot"></span> 보유자산 통합 브리핑 <small>미래에셋증권 · 실데이터 · <b style="color:var(--accent)">v2026.07.27-8</b></small></div>
+    <div class="brand"><span class="dot"></span> 보유자산 통합 브리핑 <small>미래에셋증권 · 실데이터 · <b style="color:var(--accent)">v2026.07.27-9</b></small></div>
     <div class="spacer"></div>
     <button class="icon-btn" id="btnTheme" title="다크/라이트 테마 전환">◐</button>
     <button class="btn sm" id="btnSample" title="체험용 예시 종목(삼성전자·SK하이닉스·KODEX 200·AAPL·미래에셋)을 자동으로 채웁니다">예시 채우기</button>
@@ -376,6 +376,10 @@
           <div class="bfld">
             <label>이자소득세율 (연 %) <span class="u">(브라질국채=0, 기본 15.4)</span></label>
             <input id="bTax" type="text" inputmode="decimal" placeholder="예: 15.4" />
+          </div>
+          <div class="bfld">
+            <label>적용환율 <span class="u">(선택·원/외화, 원화 환산용)</span></label>
+            <input id="bFx" type="text" inputmode="decimal" placeholder="예: 1,380 (USD=원화일 땐 불필요)" />
           </div>
           <div class="bfld">
             <label>표면금리 (연 %) <span class="u">(필수)</span></label>
@@ -1104,6 +1108,10 @@ var BOND_TAX=0.154, BOND_YR=365*86400000;
 /* 통화 단위 표기: 원화는 "원", 외화는 " USD" 등, 기타는 단위 없음 */
 function bondUnit(b){ const c=b&&b.currency; return (!c||c==="KRW")?"원":(c==="기타"?"":" "+c); }
 function bmoney(b,v){ return fmtN(v)+bondUnit(b); }
+/* 외화 + 환율이 있으면 원화 환산액을 괄호로 덧붙임 */
+function bkrw(b,v){ if(v==null) return "—"; let s=bmoney(b,v);
+  if(b&&b.currency&&b.currency!=="KRW"&&b.fxRate) s+=" (≈ "+fmtN(Math.round(v*b.fxRate))+"원)";
+  return s; }
 function bondCouponDates(mat,sm,settle){ const out=[]; let d=new Date(mat); while(d>settle){ out.push(new Date(d)); const p=new Date(d); p.setMonth(p.getMonth()-sm); d=p; } out.reverse(); return out; }
 function bondPrice(face,cr,mat,freq,y,settle){
   const sm=freqMonths(freq);
@@ -1125,7 +1133,7 @@ function computeBond(bd){
   const hasTax=(bd.taxRate!=null && String(bd.taxRate).trim()!=="");
   const taxFrac=hasTax?((num(bd.taxRate)||0)/100):BOND_TAX;
   const b={ isBond:true, type:"bond", currency:bd.currency||"KRW", taxRate:taxFrac, taxPct:+(taxFrac*100).toFixed(3),
-    kind:bd.kind||"채권", payFreq:bd.payFreq,
+    fxRate:num(bd.fxRate), kind:bd.kind||"채권", payFreq:bd.payFreq,
     couponRate:num(bd.couponRate), maturityDate:bd.maturityDate||"", buyDate:bd.buyDate||"",
     buyPrice:num(bd.buyPrice), buyYield:num(bd.buyYield), faceAmount:num(bd.faceAmount),
     sellYield:num(bd.sellYield), memo:bd.memo||"" };
@@ -1176,7 +1184,7 @@ function bondCardBody(b){
   if(b.ytm!=null) s+=mrow("만기보유수익률", b.ytm.toFixed(3)+"%");
   if(b.currentYield!=null) s+=mrow("경상수익률", b.currentYield.toFixed(3)+"%");
   s+=mrow("만기일", esc(b.maturityDate||"—"));
-  if(b.annualInterest!=null) s+=mrow("연 예상이자", bmoney(b,b.annualInterest));
+  if(b.annualInterest!=null) s+=mrow("연 예상이자", bkrw(b,b.annualInterest));
   s+='</div>';
   return s;
 }
@@ -1198,8 +1206,9 @@ function detailBond(h){
     kv("이자지급주기",freqText(b.payFreq))+kv("다음 이표일",b.nextCoupon?fmtDate(b.nextCoupon):null)+
     kv("매입일",b.buyDate)+kv("매입수익률",b.buyYield!=null?b.buyYield.toFixed(3)+"%":null)+
     kv("통화",b.currency&&b.currency!=="KRW"?b.currency:null)+
-    kv("매입단가",b.buyPrice!=null?fmtN(b.buyPrice):null)+kv("보유 액면금액",b.faceAmount!=null?bmoney(b,b.faceAmount):null)+
-    kv("연 예상이자",b.annualInterest!=null?bmoney(b,b.annualInterest):null)+kv("액면 10,000당 연이자",b.per10k!=null?bmoney(b,b.per10k):null)+'</div>';
+    kv("적용환율",(b.currency&&b.currency!=="KRW"&&b.fxRate)?(fmtN(b.fxRate)+"원 / "+b.currency):null)+
+    kv("매입단가",b.buyPrice!=null?fmtN(b.buyPrice):null)+kv("보유 액면금액",b.faceAmount!=null?bkrw(b,b.faceAmount):null)+
+    kv("연 예상이자",b.annualInterest!=null?bkrw(b,b.annualInterest):null)+kv("액면 10,000당 연이자",b.per10k!=null?bmoney(b,b.per10k):null)+'</div>';
   // 수익률 분석
   const ry=[]; const add=(k,v)=>{ if(v!=null&&v!=="") ry.push(kv(k,v)); };
   add("만기보유수익률(YTM)", b.ytm!=null?b.ytm.toFixed(3)+"%":null);
@@ -1209,8 +1218,8 @@ function detailBond(h){
   add("금리 +1%p 시 가격", b.priceUp1!=null?b.priceUp1.toFixed(2)+"%":null);
   add("금리 −1%p 시 가격", b.priceUp1!=null?(-b.priceUp1).toFixed(2)+"%":null);
   add("경과이자(10,000당)", b.accrued10k!=null?bmoney(b,Math.round(b.accrued10k)):null);
-  add("세전 연이자", b.annualInterest!=null?bmoney(b,b.annualInterest):null);
-  add("세후 연이자(이자세 "+b.taxPct+"%)", b.annualInterestAfterTax!=null?bmoney(b,b.annualInterestAfterTax):null);
+  add("세전 연이자", b.annualInterest!=null?bkrw(b,b.annualInterest):null);
+  add("세후 연이자(이자세 "+b.taxPct+"%)", b.annualInterestAfterTax!=null?bkrw(b,b.annualInterestAfterTax):null);
   const taxNote=(b.taxPct===0)
     ? "※ 이자소득세 0%로 계산(예: 브라질국채 — 한·브라질 조세협약 이자 비과세). 개인은 매매·상환차익 비과세."
     : "※ 개인 투자자는 채권 매매·상환차익 비과세, 이자에만 "+b.taxPct+"% 과세. 표준식 기반 근사치입니다.";
@@ -1219,8 +1228,8 @@ function detailBond(h){
   // 만기 보유 시 총수익
   if(b.totalProfit!=null){
     html+='<div class="sec"><div class="sec-t">만기 보유 시 (매입가·보유액면 기준)</div>'+
-      kv("투자원금",bmoney(b,b.invested))+kv("만기 총수령",bmoney(b,b.redeemTotal))+
-      kv("총수익",bmoney(b,b.totalProfit))+kv("총수익률",b.totalReturnPct.toFixed(2)+"%")+
+      kv("투자원금",bkrw(b,b.invested))+kv("만기 총수령",bkrw(b,b.redeemTotal))+
+      kv("총수익",bkrw(b,b.totalProfit))+kv("총수익률",b.totalReturnPct.toFixed(2)+"%")+
       kv("연환산(단리)",b.annualReturnPct!=null?b.annualReturnPct.toFixed(2)+"%":null)+
       kv("세후 총수익률(근사)",b.afterTaxTotalReturnPct!=null?b.afterTaxTotalReturnPct.toFixed(2)+"%":null)+
       kv("세후 연환산(근사)",b.afterTaxAnnualPct!=null?b.afterTaxAnnualPct.toFixed(2)+"%":null)+'</div>';
@@ -1230,7 +1239,7 @@ function detailBond(h){
     html+='<div class="sec"><div class="sec-t">중도매도 시뮬레이션 (가정 매도수익률 '+b.sellYield.toFixed(3)+'%)</div>'+
       kv("예상 매도단가(10,000당)",fmtN(b.sellPrice10k))+
       kv("단가손익률",(b.sellCapPct>=0?"+":"")+b.sellCapPct.toFixed(2)+"%")+
-      kv("예상 매도손익",b.sellProfit!=null?((b.sellProfit>=0?"+":"")+bmoney(b,b.sellProfit)):null)+
+      kv("예상 매도손익",b.sellProfit!=null?((b.sellProfit>=0?"+":"")+bkrw(b,b.sellProfit)):null)+
       '<div class="muted" style="margin-top:6px;font-size:11.5px">※ 매도일까지의 이표·경과이자는 별도. 실제 매도수익률(시장금리)에 따라 달라집니다.</div></div>';
   }
   if(b.memo) html+='<div class="sec"><div class="sec-t">메모</div><div class="action-box">'+esc(b.memo)+'</div></div>';
@@ -1660,6 +1669,7 @@ function openBondForm(key){
   bset("bKind", bd.kind||"국고채");
   bset("bCur", bd.currency||"KRW");
   bset("bTax", bd.taxRate!=null?bd.taxRate:"");
+  bset("bFx", bd.fxRate!=null?bd.fxRate:"");
   bset("bCoupon", bd.couponRate);
   bset("bMaturity", bd.maturityDate);
   bset("bFreq", bd.payFreq||"3");
@@ -1686,7 +1696,7 @@ document.getElementById("bondForm").addEventListener("submit",(e)=>{
   if(!bval("bCoupon").trim()){ toast("표면금리를 입력하세요"); return; }
   if(!bval("bMaturity")){ toast("만기일을 입력하세요"); return; }
   const isEdit=!!editingBondKey;
-  const bd={ kind:bval("bKind"), currency:bval("bCur"), taxRate:bval("bTax").trim(), couponRate:bval("bCoupon"), maturityDate:bval("bMaturity"), payFreq:bval("bFreq"),
+  const bd={ kind:bval("bKind"), currency:bval("bCur"), taxRate:bval("bTax").trim(), fxRate:bval("bFx").trim(), couponRate:bval("bCoupon"), maturityDate:bval("bMaturity"), payFreq:bval("bFreq"),
     buyYield:bval("bBuyYield"), buyPrice:bval("bBuyPrice"), buyDate:bval("bBuyDate"), faceAmount:bval("bFace"), sellYield:bval("bSellYield"), memo:bval("bMemo").trim() };
   if(isEdit){
     const h=holdings.find(x=>x.key===editingBondKey);
