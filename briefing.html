@@ -554,6 +554,8 @@ async function briefStockEtf(h){
     }catch(e){}
     // 리포트(주식/ETF 공통 시도)
     try{ const rp=await nvM("/research/stock/"+h.code+"?pageSize=6&page=1"); b.reports=Array.isArray(rp)?rp:[]; }catch(e){ b.reports=[]; }
+    // 종목 뉴스/시황
+    b.news=await loadNews(h);
   } else {
     // 미국: 컨센서스 via naver overseas
     try{ const d=await nvApi("/stock/"+encodeURIComponent(h.reutersCode)+"/integration"); b.consensus=d.consensusInfo||null; b.totalInfos=d.totalInfos||[]; }catch(e){}
@@ -623,6 +625,7 @@ async function briefOverseas(h){
     b.overview=ig.corporateOverview||(ig.summaries&&ig.summaries.summary)||null;
   }catch(e){ b.industryCompare=[]; }
   b.reports=[]; b.deal=[];
+  b.news=await loadNews(h);   // 해외 종목 뉴스(가능 시)
   // 3) 수익률/스파크라인: 네이버 해외차트 우선(8자리 날짜), 실패 시 야후 폴백
   b.series=[]; b.ret={};
   try{
@@ -668,6 +671,38 @@ async function briefFund(h){
 const FUND_TERM_KR={ "1d":"1일","1w":"1주","1m":"1개월","2m":"2개월","3m":"3개월","6m":"6개월","9m":"9개월","ytd":"연초후","1y":"1년","2y":"2년","3y":"3년","5y":"5년","10y":"10년","dx":"설정후" };
 function num(v){ if(v==null) return null; const n=parseFloat(String(v).replace(/,/g,"")); return isNaN(n)?null:n; }
 function periodRet(S,days){ if(!S||S.length<2) return null; const last=S[S.length-1]; const tg=last.t-days*86400; let p=null; for(let i=0;i<S.length;i++){ if(S[i].t<=tg)p=S[i]; else break; } return p?((last.c-p.c)/p.c*100):null; }
+
+/* ============ 종목 뉴스/시황 ============ */
+function fmtNewsDate(s){ s=String(s||""); const m=s.match(/(\d{4})[.\-\/]?(\d{2})[.\-\/]?(\d{2})(?:[ T]?(\d{2}):?(\d{2}))?/); if(!m) return s.slice(0,16); let out=m[1]+"."+m[2]+"."+m[3]; if(m[4]&&m[5]) out+=" "+m[4]+":"+m[5]; return out; }
+function collectNews(raw){
+  // 응답 형태가 배열/클러스터/{items}/{result} 등 무엇이든 뉴스 항목만 평탄화
+  let buckets=[];
+  const feed=(x)=>{ if(!x) return; if(Array.isArray(x)) buckets.push(...x); else if(Array.isArray(x.items)) buckets.push(...x.items); else if(Array.isArray(x.result)) buckets.push(...x.result); else if(x.result&&Array.isArray(x.result.items)) buckets.push(...x.result.items); };
+  feed(raw);
+  const flat=[];
+  for(const it of buckets){ if(it&&Array.isArray(it.items)) flat.push(...it.items); else if(it) flat.push(it); }
+  const out=[], seen=new Set();
+  for(const it of flat){ if(!it) continue;
+    const title=it.title||it.newsTitle||it.headline||it.subject; if(!title) continue;
+    const press=it.officeName||it.pressName||it.press||it.mediaName||it.officeName||"";
+    const dt=it.datetime||it.dateTime||it.date||it.pubDate||it.wdate||it.regDateTime||it.publishedAt||"";
+    let link=it.linkUrl||it.link||it.url||it.officeUrl||"";
+    if(!link && it.officeId && (it.articleId||it.newsId)) link="https://n.news.naver.com/mnews/article/"+it.officeId+"/"+(it.articleId||it.newsId);
+    const t=String(title).replace(/<[^>]+>/g,"").replace(/&quot;/g,'"').replace(/&amp;/g,"&").trim();
+    const key=t.slice(0,40); if(!t||seen.has(key)) continue; seen.add(key);
+    out.push({ title:t, press:String(press||""), date:fmtNewsDate(dt), link:String(link||"") });
+    if(out.length>=8) break;
+  }
+  return out;
+}
+async function loadNews(h){
+  try{
+    let raw;
+    if(h.domestic) raw=await nvM("/news/stock/"+encodeURIComponent(h.code)+"?pageSize=10&page=1");
+    else           raw=await nvApi("/news/worldStock/"+encodeURIComponent(h.reutersCode)+"?pageSize=10&page=1");
+    return collectNews(raw);
+  }catch(e){ return []; }
+}
 
 /* ============ 상태 판정 ============ */
 function deriveStatus(h){
@@ -1127,6 +1162,12 @@ function detailStockEtf(h,b){
   if(h.domestic&&b.reports&&b.reports.length){
     html+='<div class="sec"><div class="sec-t">증권사 리포트 (핵심 요약)</div><div id="dReports">'+
       b.reports.slice(0,5).map((r,i)=>'<div class="li" data-idx="'+i+'"><div class="t">'+esc(r.title)+'</div><div class="m"><span class="badge">'+esc(r.brokerName||"")+'</span> '+esc(r.writeDate||"")+'</div>'+(r.previewContent?'<div class="p">'+esc(r.previewContent)+'</div>':"")+'</div>').join("")+'</div></div>';
+  }
+  // 최근 뉴스 / 시황
+  if(b.news&&b.news.length){
+    html+='<div class="sec"><div class="sec-t">최근 뉴스 · 시황</div>'+
+      b.news.slice(0,6).map(n=>'<a class="li"'+(n.link?' href="'+esc(n.link)+'" target="_blank" rel="noopener"':'')+'><div class="t">'+esc(n.title)+'</div><div class="m"><span class="badge">'+esc(n.press||"뉴스")+'</span> '+esc(n.date||"")+'</div></a>').join("")+
+      '<div class="muted" style="margin-top:6px;font-size:11px">제목 클릭 시 원문(새 탭)으로 이동</div></div>';
   }
   // 다음 액션
   html+='<div class="sec"><div class="sec-t">브리핑 코멘트</div><div class="action-box">'+comment(h,b)+'</div></div>';
