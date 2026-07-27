@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>연금·절세 시뮬레이터 · 미래에셋증권</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<style>
+  :root{
+    --primary:#F58220; --primary-active:#CB6015; --primary-soft:#FAB072;
+    --secondary:#043B72;
+    --canvas:#FFFFFF; --surface-soft:#ECEFF4; --surface-subtle:#F7F8FA;
+    --hairline:#CDCECB; --hairline-soft:#E5E4E1; --highlight:#D7D7D7;
+    --ink:#1A1A1A; --body:#3D3D3D; --muted:#6C6C6C; --muted-soft:#84888B;
+    --success:#2E8540; --warning:#D4A017; --error:#C62828;
+    --font-kr:'Noto Sans KR','Spoqa Han Sans Neo','Apple SD Gothic Neo','Malgun Gothic',sans-serif;
+    --font-en:'Inter','Aptos','Segoe UI',system-ui,-apple-system,sans-serif;
+    --space-block:56px;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html[lang="ko"] body{font-family:var(--font-kr)}
+  html[lang="en"] body{font-family:var(--font-en)}
+  body{background:var(--canvas);color:var(--body);line-height:1.65;-webkit-font-smoothing:antialiased}
+  .page{max-width:1200px;margin:0 auto;padding:0 32px}
+  h1,h2,h3{color:var(--ink);letter-spacing:-0.3px}
+  .num{font-variant-numeric:tabular-nums}
+
+  header{border-bottom:1px solid var(--hairline)}
+  .head-row{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;padding:26px 0 22px}
+  .head-titles h1{font-size:30px;font-weight:700;line-height:1.15}
+  .head-titles p{font-size:15px;color:var(--muted);margin-top:6px}
+
+  .lang-toggle{display:inline-flex;border:1px solid var(--hairline);border-radius:2px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,.06);flex:0 0 auto}
+  .lang-toggle button{font-family:var(--font-en);font-size:14px;font-weight:500;letter-spacing:.5px;padding:10px 17px;background:#fff;color:var(--muted);border:none;cursor:pointer}
+  .lang-toggle button+button{border-left:1px solid var(--hairline)}
+  .lang-toggle button.active{background:var(--primary);color:#fff}
+  .lang-toggle button:not(.active):hover{background:var(--surface-subtle);color:var(--ink)}
+
+  .grid{display:grid;grid-template-columns:minmax(340px,420px) 1fr;gap:38px;margin:30px 0 var(--space-block)}
+  @media (max-width:860px){ .grid{grid-template-columns:1fr;gap:28px} }
+
+  .section-rule{height:1px;background:var(--primary);margin-bottom:16px}
+  .section-title{font-size:20px;font-weight:700;margin-bottom:2px}
+  .section-sub{font-size:13px;color:var(--muted);margin-bottom:18px}
+
+  /* Inputs */
+  .field{margin-bottom:18px}
+  .field label{display:block;font-size:14px;font-weight:500;color:var(--ink);margin-bottom:7px}
+  .field .hint{font-size:12px;color:var(--muted-soft);font-weight:400}
+  .in-wrap{display:flex;align-items:center;border:1px solid var(--hairline);border-radius:2px;overflow:hidden}
+  .in-wrap:focus-within{border-color:var(--primary)}
+  .in-wrap input{flex:1;font:inherit;font-size:17px;font-variant-numeric:tabular-nums;text-align:right;padding:10px 12px;border:none;outline:none;color:var(--ink);min-width:0}
+  .in-wrap .unit{padding:0 13px;font-size:14px;color:var(--muted);background:var(--surface-subtle);align-self:stretch;display:flex;align-items:center;border-left:1px solid var(--hairline)}
+  .seg{display:flex;gap:8px;flex-wrap:wrap}
+  .seg button{font:inherit;font-size:14px;padding:8px 14px;border:1px solid var(--hairline);border-radius:2px;background:#fff;color:var(--body);cursor:pointer}
+  .seg button.active{background:var(--secondary);color:#fff;border-color:var(--secondary)}
+  .seg button:not(.active):hover{background:var(--surface-subtle)}
+
+  /* Results */
+  .stat-card{border:1px solid var(--hairline);border-radius:4px;padding:24px 26px;margin-bottom:18px}
+  .stat-card.accent{background:var(--primary);border-color:var(--primary)}
+  .stat-label{font-size:14px;font-weight:500;letter-spacing:.4px;color:var(--muted)}
+  .accent .stat-label{color:#ffe8d4}
+  .stat-hero{font-size:44px;font-weight:700;line-height:1.05;font-variant-numeric:tabular-nums;margin-top:6px;color:var(--secondary)}
+  .accent .stat-hero{color:#fff}
+  .stat-note{font-size:14px;color:var(--muted);margin-top:8px}
+  .accent .stat-note{color:#ffe8d4}
+
+  .kv{display:grid;grid-template-columns:1fr auto;gap:10px 16px;border:1px solid var(--hairline);border-radius:4px;padding:18px 22px;margin-bottom:18px}
+  .kv .k{font-size:15px;color:var(--body)}
+  .kv .v{font-size:15px;font-weight:600;color:var(--ink);text-align:right;font-variant-numeric:tabular-nums}
+  .kv .full{grid-column:1/3;height:1px;background:var(--hairline-soft);margin:2px 0}
+
+  .callout{border-left:3px solid var(--primary);background:var(--surface-subtle);padding:14px 18px;border-radius:0 4px 4px 0;margin-bottom:18px;font-size:15px;color:var(--body)}
+  .callout strong{color:var(--primary-active)}
+  .callout.ok{border-left-color:var(--success)}
+  .callout.ok strong{color:var(--success)}
+
+  .foot{margin-bottom:60px;padding-top:20px;border-top:1px solid var(--hairline-soft)}
+  .foot p{font-size:13px;color:var(--muted-soft);line-height:1.55}
+  .btn{font:inherit;font-size:15px;font-weight:500;padding:10px 19px;height:42px;border:none;border-radius:2px;background:var(--primary);color:#fff;cursor:pointer;margin-top:6px}
+  .btn:hover{background:var(--primary-active)}
+
+  @media print{ .lang-toggle,.btn{display:none!important} .grid{grid-template-columns:1fr 1fr} body{font-size:13px} }
+</style>
+</head>
+<body>
+<header>
+  <div class="page">
+    <div class="head-row">
+      <div class="head-titles">
+        <h1 data-i18n="title">연금·절세 시뮬레이터</h1>
+        <p data-i18n="subtitle">연금저축·IRP·ISA 납입에 따른 세액공제 환급액과 장기 과세이연 효과를 계산합니다</p>
+      </div>
+      <div class="lang-toggle" role="radiogroup" aria-label="language">
+        <button id="ko" class="active" role="radio" aria-checked="true">KO</button>
+        <button id="en" role="radio" aria-checked="false">EN</button>
+      </div>
+    </div>
+  </div>
+</header>
+
+<div class="page">
+  <div class="grid">
+    <!-- INPUTS -->
+    <div>
+      <div class="section-rule"></div>
+      <h2 class="section-title" data-i18n="inTitle">입력</h2>
+      <p class="section-sub" data-i18n="inSub">단위: 만원 / 연간 기준</p>
+
+      <div class="field">
+        <label data-i18n="lSalary">총급여 (연)</label>
+        <div class="in-wrap"><input id="salary" type="number" min="0" value="5000" /><span class="unit">만원</span></div>
+        <div class="hint" id="rateHint"></div>
+      </div>
+
+      <div class="field">
+        <label data-i18n="lPs">연금저축 납입액 <span class="hint" data-i18n="lPsHint">(공제한도 600)</span></label>
+        <div class="in-wrap"><input id="ps" type="number" min="0" value="600" /><span class="unit">만원</span></div>
+      </div>
+
+      <div class="field">
+        <label data-i18n="lIrp">IRP 납입액 <span class="hint" data-i18n="lIrpHint">(연금저축 합산 900)</span></label>
+        <div class="in-wrap"><input id="irp" type="number" min="0" value="300" /><span class="unit">만원</span></div>
+      </div>
+
+      <div class="field">
+        <label data-i18n="lIsa">ISA 만기 전환액 <span class="hint" data-i18n="lIsaHint">(전환액의 10%, 최대 300 추가공제)</span></label>
+        <div class="in-wrap"><input id="isa" type="number" min="0" value="0" /><span class="unit">만원</span></div>
+      </div>
+
+      <div class="section-rule" style="margin-top:30px"></div>
+      <h2 class="section-title" data-i18n="projTitle">장기 시뮬레이션 (가정)</h2>
+      <p class="section-sub" data-i18n="projSub">매년 동일 납입 가정</p>
+
+      <div class="field">
+        <label data-i18n="lYears">납입 기간</label>
+        <div class="in-wrap"><input id="years" type="number" min="1" max="50" value="20" /><span class="unit" data-i18n="uYear">년</span></div>
+      </div>
+      <div class="field">
+        <label data-i18n="lReturn">가정 연 수익률</label>
+        <div class="in-wrap"><input id="ret" type="number" min="0" max="30" step="0.1" value="5.0" /><span class="unit">%</span></div>
+      </div>
+
+      <div class="field">
+        <label data-i18n="lAge">연금 수령 개시 연령</label>
+        <div class="seg" id="ageSeg"></div>
+      </div>
+    </div>
+
+    <!-- RESULTS -->
+    <div>
+      <div class="section-rule"></div>
+      <h2 class="section-title" data-i18n="outTitle">결과</h2>
+      <p class="section-sub" id="basisNote">2025년 세법 기준</p>
+
+      <div class="stat-card accent">
+        <div class="stat-label" data-i18n="rRefund">올해 예상 세액공제 환급</div>
+        <div class="stat-hero" id="refund">-</div>
+        <div class="stat-note" id="refundNote"></div>
+      </div>
+
+      <div id="roomCallout"></div>
+
+      <div class="kv">
+        <div class="k" data-i18n="kBase">세액공제 대상금액</div><div class="v" id="kBase">-</div>
+        <div class="k" data-i18n="kRate">적용 공제율</div><div class="v" id="kRate">-</div>
+        <div class="full"></div>
+        <div class="k" id="kPrincipalLabel">누적 납입원금</div><div class="v" id="kPrincipal">-</div>
+        <div class="k" data-i18n="kGain">예상 운용수익 (가정)</div><div class="v" id="kGain">-</div>
+        <div class="k" data-i18n="kFv">예상 적립금 (세전)</div><div class="v" id="kFv">-</div>
+        <div class="k" data-i18n="kTaxSaved">세액공제 누계 (환급 합계)</div><div class="v" id="kTaxSaved">-</div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-label" data-i18n="rWithdraw">연금 수령 시 예상 세율</div>
+        <div class="stat-hero" id="wrate" style="color:var(--primary-active)">-</div>
+        <div class="stat-note" id="wrateNote"></div>
+      </div>
+
+      <button class="btn" id="printBtn" data-i18n="printBtn">인쇄 / PDF 저장</button>
+    </div>
+  </div>
+
+  <div class="foot">
+    <p data-i18n="disclaimer">본 계산은 2025년 세법(연금계좌 세액공제 통합한도 900만원, 공제율 13.2%/16.5%, ISA 전환 추가공제 최대 300만원, 연금소득세 연령별 3.3~5.5%) 기준의 단순 추정이며, 개인별 소득·공제 상황에 따라 실제와 다를 수 있습니다. 운용수익률은 가정치이며 원금·수익을 보장하지 않습니다. 정확한 세무는 세무 전문가·국세청 기준을 확인하십시오.</p>
+  </div>
+</div>
+
+<script>
+(function(){
+  "use strict";
+
+  var I18N = {
+    title:{ko:"연금·절세 시뮬레이터",en:"Pension & Tax Simulator"},
+    subtitle:{ko:"연금저축·IRP·ISA 납입에 따른 세액공제 환급액과 장기 과세이연 효과를 계산합니다",en:"Estimate tax-credit refunds and long-term tax-deferral from pension savings, IRP and ISA contributions"},
+    inTitle:{ko:"입력",en:"Inputs"},
+    inSub:{ko:"단위: 만원 / 연간 기준",en:"Unit: 10K KRW / annual"},
+    lSalary:{ko:"총급여 (연)",en:"Annual gross salary"},
+    lPs:{ko:"연금저축 납입액",en:"Pension savings"},
+    lPsHint:{ko:"(공제한도 600)",en:"(limit 600)"},
+    lIrp:{ko:"IRP 납입액",en:"IRP contribution"},
+    lIrpHint:{ko:"(연금저축 합산 900)",en:"(combined cap 900)"},
+    lIsa:{ko:"ISA 만기 전환액",en:"ISA maturity rollover"},
+    lIsaHint:{ko:"(전환액의 10%, 최대 300 추가공제)",en:"(10% of rollover, +300 max)"},
+    projTitle:{ko:"장기 시뮬레이션 (가정)",en:"Long-term projection (assumed)"},
+    projSub:{ko:"매년 동일 납입 가정",en:"Assumes equal annual contribution"},
+    lYears:{ko:"납입 기간",en:"Contribution period"},
+    lReturn:{ko:"가정 연 수익률",en:"Assumed annual return"},
+    lAge:{ko:"연금 수령 개시 연령",en:"Pension start age"},
+    outTitle:{ko:"결과",en:"Results"},
+    rRefund:{ko:"올해 예상 세액공제 환급",en:"Est. tax-credit refund (this year)"},
+    kBase:{ko:"세액공제 대상금액",en:"Deductible base"},
+    kRate:{ko:"적용 공제율",en:"Credit rate"},
+    kPrincipal:{ko:"누적 납입원금",en:"Cumulative principal"},
+    kGain:{ko:"예상 운용수익 (가정)",en:"Est. investment gain"},
+    kFv:{ko:"예상 적립금 (세전)",en:"Projected balance (pre-tax)"},
+    kTaxSaved:{ko:"세액공제 누계 (환급 합계)",en:"Cumulative tax credit"},
+    rWithdraw:{ko:"연금 수령 시 예상 세율",en:"Est. pension income tax rate"},
+    printBtn:{ko:"인쇄 / PDF 저장",en:"Print / Save PDF"},
+    basis:{ko:"2025년 세법 기준",en:"Based on 2025 tax rules"},
+    disclaimer:{ko:"본 계산은 2025년 세법(연금계좌 세액공제 통합한도 900만원, 공제율 13.2%/16.5%, ISA 전환 추가공제 최대 300만원, 연금소득세 연령별 3.3~5.5%) 기준의 단순 추정이며, 개인별 소득·공제 상황에 따라 실제와 다를 수 있습니다. 운용수익률은 가정치이며 원금·수익을 보장하지 않습니다. 정확한 세무는 세무 전문가·국세청 기준을 확인하십시오.",en:"Estimates use 2025 tax rules (pension-account credit cap KRW 9M, rate 13.2%/16.5%, ISA rollover extra credit up to KRW 3M, pension income tax 3.3–5.5% by age) and may differ by individual circumstances. Returns are assumptions and not guaranteed. Confirm with a tax professional / NTS guidance."},
+    uYear:{ko:"년",en:"y"},
+    // dynamic
+    rateLow:{ko:"총급여 5,500만원 이하 → 16.5% 적용",en:"Salary ≤ 55M → 16.5%"},
+    rateHigh:{ko:"총급여 5,500만원 초과 → 13.2% 적용",en:"Salary > 55M → 13.2%"},
+    roomFull:{ko:"공제 한도를 모두 채웠습니다. 최대 환급을 받고 있습니다.",en:"Deduction limit fully used — maximum refund achieved."},
+    ageNote:{ko:"{a}세 이상 수령 기준. 사적연금 연 1,500만원 초과 시 종합과세 또는 16.5% 분리과세 선택.",en:"For age {a}+. Private pension over KRW 15M/yr: global taxation or 16.5% separate taxation."}
+  };
+
+  var AGES = [
+    {v:65, floor:70, ko:"55~69세", en:"55–69"},
+    {v:75, floor:70, ko:"70~79세", en:"70–79"},
+    {v:82, floor:80, ko:"80세 이상", en:"80+"}
+  ];
+  // 연금소득세율(지방세 포함): <70 5.5%, 70~79 4.4%, >=80 3.3%
+  function withdrawRate(band){ return band<70 ? 5.5 : band<80 ? 4.4 : 3.3; }
+
+  var STATE = { lang:"ko", ageBand:65 };
+
+  function fmtMan(v){ // v in 만원 -> localized
+    if(STATE.lang==="en") return "KRW "+Math.round(v*1e4).toLocaleString();
+    if(v>=10000) return (v/10000).toLocaleString(undefined,{maximumFractionDigits:2})+"억원";
+    return Math.round(v).toLocaleString()+"만원";
+  }
+  function fmtWon(man){ // small refund amounts, show 원
+    if(STATE.lang==="en") return "KRW "+Math.round(man*1e4).toLocaleString();
+    return Math.round(man*1e4).toLocaleString()+"원";
+  }
+
+  function val(id){ var n=parseFloat(document.getElementById(id).value); return isNaN(n)||n<0?0:n; }
+
+  function compute(){
+    var salary=val("salary"), ps=val("ps"), irp=val("irp"), isa=val("isa"),
+        years=Math.max(1,val("years")||1), ret=val("ret")/100;
+
+    var psElig=Math.min(ps,600);
+    var combined=Math.min(psElig+irp, 900);
+    var isaBonus=Math.min(isa*0.10, 300);
+    var base=combined+isaBonus;                 // 만원
+    var rate=salary<=5500 ? 0.165 : 0.132;
+    var refund=base*rate;                        // 만원
+
+    // remaining room to 900 (연금계좌 본납입 기준)
+    var combinedRoom=Math.max(0, 900-combined);
+
+    // projection: annual contribution = ps+irp (실제 납입)
+    var annual=ps+irp;
+    var fv = ret>0 ? annual*((Math.pow(1+ret,years)-1)/ret) : annual*years;
+    var principal=annual*years;
+    var gain=fv-principal;
+    var taxCum=refund*years;
+
+    return {salary,ps,irp,isa,years,ret,base,rate,refund,combinedRoom,annual,fv,principal,gain,taxCum};
+  }
+
+  function render(){
+    var L=STATE.lang, c=compute();
+    // rate hint under salary
+    document.getElementById("rateHint").textContent = c.salary<=5500 ? I18N.rateLow[L] : I18N.rateHigh[L];
+
+    document.getElementById("refund").textContent = fmtWon(c.refund);
+    document.getElementById("refundNote").textContent =
+      (L==="ko" ? "세액공제 대상 "+fmtMan(c.base)+" × "+ (c.rate*100).toFixed(1)+"%"
+                : "base "+fmtMan(c.base)+" × "+(c.rate*100).toFixed(1)+"%");
+
+    // room callout
+    var rc=document.getElementById("roomCallout");
+    if(c.combinedRoom>0){
+      var extra=c.combinedRoom*c.rate;
+      rc.innerHTML= L==="ko"
+        ? '<div class="callout">연금계좌에 <strong>'+fmtMan(c.combinedRoom)+'</strong>을 더 납입하면 올해 공제 한도(900만원)를 모두 채워 <strong>'+fmtWon(extra)+'</strong>을 추가 환급받을 수 있습니다.</div>'
+        : '<div class="callout"><strong>'+fmtMan(c.combinedRoom)+'</strong> more into the pension account fills the KRW 9M limit — up to <strong>'+fmtWon(extra)+'</strong> extra refund.</div>';
+    } else {
+      rc.innerHTML='<div class="callout ok"><strong>'+I18N.roomFull[L]+'</strong></div>';
+    }
+
+    document.getElementById("kBase").textContent=fmtMan(c.base);
+    document.getElementById("kRate").textContent=(c.rate*100).toFixed(1)+"%";
+    document.getElementById("kPrincipalLabel").textContent=I18N.kPrincipal[L]+" ("+c.years+I18N.uYear[L]+")";
+    document.getElementById("kPrincipal").textContent=fmtMan(c.principal);
+    document.getElementById("kGain").textContent=fmtMan(c.gain);
+    document.getElementById("kFv").textContent=fmtMan(c.fv);
+    document.getElementById("kTaxSaved").textContent=fmtMan(c.taxCum);
+
+    var wr=withdrawRate(STATE.ageBand);
+    document.getElementById("wrate").textContent=wr.toFixed(1)+"%";
+    document.getElementById("wrateNote").textContent=I18N.ageNote[L].replace("{a}", STATE.ageBand<70?"55":STATE.ageBand<80?"70":"80");
+  }
+
+  function renderAges(){
+    var seg=document.getElementById("ageSeg"); seg.innerHTML="";
+    AGES.forEach(function(a){
+      var b=document.createElement("button");
+      b.textContent=a[STATE.lang];
+      if(a.v===STATE.ageBand) b.className="active";
+      b.onclick=function(){ STATE.ageBand=a.v; renderAges(); render(); };
+      seg.appendChild(b);
+    });
+  }
+
+  function applyI18n(){
+    document.documentElement.lang=STATE.lang;
+    document.querySelectorAll("[data-i18n]").forEach(function(el){
+      var k=el.getAttribute("data-i18n"); if(I18N[k]) el.textContent=I18N[k][STATE.lang];
+    });
+    document.querySelectorAll(".unit[data-i18n=uYear]").forEach(function(el){el.textContent=I18N.uYear[STATE.lang];});
+    document.getElementById("basisNote").textContent=I18N.basis[STATE.lang];
+    document.getElementById("ko").classList.toggle("active",STATE.lang==="ko");
+    document.getElementById("en").classList.toggle("active",STATE.lang==="en");
+    document.getElementById("ko").setAttribute("aria-checked",STATE.lang==="ko");
+    document.getElementById("en").setAttribute("aria-checked",STATE.lang==="en");
+  }
+
+  function renderAll(){ applyI18n(); renderAges(); render(); }
+
+  function setLang(l){ STATE.lang=l; try{localStorage.setItem("pt_lang",l);}catch(e){} renderAll(); }
+  document.getElementById("ko").onclick=function(){setLang("ko");};
+  document.getElementById("en").onclick=function(){setLang("en");};
+  document.getElementById("printBtn").onclick=function(){window.print();};
+  ["salary","ps","irp","isa","years","ret"].forEach(function(id){
+    document.getElementById(id).addEventListener("input", render);
+  });
+
+  try{ var sv=localStorage.getItem("pt_lang"); if(sv==="ko"||sv==="en") STATE.lang=sv; }catch(e){}
+  renderAll();
+})();
+</script>
+</body>
+</html>
