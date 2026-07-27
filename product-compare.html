@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>상품 비교기 · 미래에셋증권</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<style>
+  :root{
+    --primary:#F58220; --primary-active:#CB6015; --primary-soft:#FAB072;
+    --secondary:#043B72;
+    --canvas:#FFFFFF; --surface-soft:#ECEFF4; --surface-subtle:#F7F8FA;
+    --hairline:#CDCECB; --hairline-soft:#E5E4E1; --highlight:#D7D7D7;
+    --ink:#1A1A1A; --body:#3D3D3D; --muted:#6C6C6C; --muted-soft:#84888B;
+    --success:#2E8540; --warning:#D4A017; --error:#C62828;
+    --best-bg:#FDEBD9;
+    --font-kr:'Noto Sans KR','Spoqa Han Sans Neo','Apple SD Gothic Neo','Malgun Gothic',sans-serif;
+    --font-en:'Inter','Aptos','Segoe UI',system-ui,-apple-system,sans-serif;
+    --font-num:'Inter','SF Mono',monospace;
+    --space-block:56px; --space-content:28px;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html[lang="ko"] body{font-family:var(--font-kr)}
+  html[lang="en"] body{font-family:var(--font-en)}
+  body{background:var(--canvas);color:var(--body);line-height:1.65;-webkit-font-smoothing:antialiased}
+  .page{max-width:1200px;margin:0 auto;padding:0 32px}
+  h1,h2,h3{color:var(--ink);letter-spacing:-0.3px}
+  .num{font-variant-numeric:tabular-nums}
+
+  /* Header */
+  header{border-bottom:1px solid var(--hairline);background:var(--canvas)}
+  .head-row{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;padding:26px 0 22px}
+  .head-titles h1{font-size:30px;font-weight:700;line-height:1.15}
+  .head-titles p{font-size:15px;color:var(--muted);margin-top:6px}
+
+  /* Lang toggle */
+  .lang-toggle{display:inline-flex;border:1px solid var(--hairline);border-radius:2px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,.06);flex:0 0 auto}
+  .lang-toggle button{font-family:var(--font-en);font-size:14px;font-weight:500;letter-spacing:.5px;padding:10px 17px;background:#fff;color:var(--muted);border:none;cursor:pointer}
+  .lang-toggle button+button{border-left:1px solid var(--hairline)}
+  .lang-toggle button.active{background:var(--primary);color:#fff}
+  .lang-toggle button:not(.active):hover{background:var(--surface-subtle);color:var(--ink)}
+
+  /* Controls */
+  .controls{padding:22px 0 8px}
+  .ctrl-label{font-size:13px;font-weight:500;letter-spacing:.4px;color:var(--muted);text-transform:uppercase;margin-bottom:10px}
+  .seg{display:flex;flex-wrap:wrap;gap:8px}
+  .seg button{font:inherit;font-size:15px;padding:9px 18px;border:1px solid var(--hairline);border-radius:2px;background:#fff;color:var(--body);cursor:pointer}
+  .seg button.active{background:var(--secondary);color:#fff;border-color:var(--secondary)}
+  .seg.risk button.active{background:var(--primary);border-color:var(--primary)}
+  .seg button:not(.active):hover{background:var(--surface-subtle)}
+
+  .tabbar{display:flex;gap:0;margin-top:22px;border-bottom:2px solid var(--hairline-soft)}
+  .tabbar button{font:inherit;font-size:17px;font-weight:500;padding:12px 22px;background:none;border:none;border-bottom:2px solid transparent;margin-bottom:-2px;color:var(--muted);cursor:pointer}
+  .tabbar button.active{color:var(--primary);border-bottom-color:var(--primary);font-weight:700}
+
+  /* Product picker */
+  .picker{padding:22px 0}
+  .picker .ctrl-label{display:flex;align-items:center;justify-content:space-between}
+  .chips{display:flex;flex-wrap:wrap;gap:10px}
+  .chip{display:flex;flex-direction:column;gap:2px;text-align:left;padding:11px 15px;border:1px solid var(--hairline);border-radius:4px;background:#fff;cursor:pointer;min-width:210px;transition:border-color .12s}
+  .chip:hover{border-color:var(--primary-soft)}
+  .chip.on{border-color:var(--primary);background:var(--best-bg)}
+  .chip.disabled{opacity:.45;cursor:not-allowed}
+  .chip .cn{font-size:15px;font-weight:500;color:var(--ink)}
+  .chip .cs{font-size:13px;color:var(--muted)}
+
+  /* Table */
+  .section-rule{height:1px;background:var(--primary);margin:var(--space-block) 0 18px}
+  .section-title{font-size:24px;font-weight:700;margin-bottom:4px}
+  .section-sub{font-size:14px;color:var(--muted);margin-bottom:20px}
+  .table-wrap{overflow-x:auto;border:1px solid var(--hairline)}
+  table{border-collapse:collapse;width:100%;min-width:640px}
+  th,td{padding:13px 16px;text-align:left;border-bottom:1px solid var(--hairline-soft);font-size:15px;vertical-align:middle}
+  thead th{background:var(--primary-soft);color:#3a2410;font-weight:700;font-size:15px;white-space:nowrap}
+  thead th:first-child{background:var(--secondary);color:#fff}
+  tbody th{background:var(--surface-subtle);color:var(--ink);font-weight:500;white-space:nowrap;position:sticky;left:0}
+  td.val{text-align:right;font-variant-numeric:tabular-nums;color:var(--body)}
+  td.best{background:var(--best-bg)}
+  td.best .v{color:var(--primary-active);font-weight:700}
+  .tag{display:inline-block;font-size:11px;font-weight:600;padding:2px 7px;border-radius:2px;margin-left:6px;vertical-align:middle}
+  .tag.best{background:var(--primary);color:#fff}
+  .fit{font-size:13px;font-weight:600;padding:4px 10px;border-radius:2px;display:inline-block}
+  .fit.ok{background:#E7F1E9;color:var(--success)}
+  .fit.no{background:#FBE7E7;color:var(--error)}
+  .rowhint{font-size:12px;color:var(--muted-soft);font-weight:400}
+
+  .empty{padding:60px 20px;text-align:center;color:var(--muted);border:1px dashed var(--hairline);margin-top:8px}
+
+  .foot{margin:var(--space-block) 0 60px;padding-top:20px;border-top:1px solid var(--hairline-soft)}
+  .foot p{font-size:13px;color:var(--muted-soft);line-height:1.55}
+  .btn{font:inherit;font-size:15px;font-weight:500;padding:10px 19px;height:42px;border:none;border-radius:2px;background:var(--primary);color:#fff;cursor:pointer}
+  .btn:hover{background:var(--primary-active)}
+  .btn.ghost{background:#fff;color:var(--body);border:1px solid var(--hairline)}
+  .btn.ghost:hover{background:var(--surface-subtle)}
+  .actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:18px}
+
+  @media (max-width:768px){
+    .page{padding:0 20px}
+    .head-titles h1{font-size:24px}
+    .section-title{font-size:21px}
+    .chip{min-width:160px}
+  }
+  @media print{
+    .lang-toggle,.tabbar,.picker,.controls .seg.risk-wrap,.actions,.btn{display:none !important}
+    .section-rule{margin-top:24px}
+    body{font-size:13px}
+    .table-wrap{overflow:visible;border:1px solid #999}
+    table{page-break-inside:avoid}
+  }
+</style>
+</head>
+<body>
+<header>
+  <div class="page">
+    <div class="head-row">
+      <div class="head-titles">
+        <h1 data-i18n="title">상품 비교기</h1>
+        <p data-i18n="subtitle">ELS · 채권 · 펀드를 나란히 비교하고 고객 투자성향 적합 여부를 확인합니다</p>
+      </div>
+      <div class="lang-toggle" role="radiogroup" aria-label="language">
+        <button id="ko" class="active" role="radio" aria-checked="true">KO</button>
+        <button id="en" role="radio" aria-checked="false">EN</button>
+      </div>
+    </div>
+  </div>
+</header>
+
+<div class="page">
+  <!-- Investor type -->
+  <div class="controls">
+    <div class="ctrl-label" data-i18n="investorLabel">고객 투자성향</div>
+    <div class="seg risk" id="investorSeg"></div>
+  </div>
+
+  <!-- Product type tabs -->
+  <div class="tabbar" id="tabbar"></div>
+
+  <!-- Picker -->
+  <div class="picker">
+    <div class="ctrl-label">
+      <span data-i18n="pickLabel">비교할 상품 선택 (최대 4개)</span>
+    </div>
+    <div class="chips" id="chips"></div>
+  </div>
+
+  <!-- Comparison -->
+  <section>
+    <div class="section-rule"></div>
+    <h2 class="section-title" id="cmpTitle" data-i18n="compareTitle">비교 결과</h2>
+    <p class="section-sub" id="cmpSub"></p>
+    <div id="cmpBody"></div>
+    <div class="actions">
+      <button class="btn" id="printBtn" data-i18n="printBtn">인쇄 / PDF 저장</button>
+      <button class="btn ghost" id="clearBtn" data-i18n="clearBtn">선택 초기화</button>
+    </div>
+  </section>
+
+  <div class="foot">
+    <p data-i18n="disclaimer">본 화면의 상품·수치는 기능 시연용 예시 데이터이며 실제 판매 상품과 무관합니다. 투자 권유 전 반드시 투자설명서와 적합성 진단 결과를 확인하십시오. 투자에 따른 손익은 투자자에게 귀속됩니다.</p>
+  </div>
+</div>
+
+<script>
+(function(){
+  "use strict";
+
+  /* ---------- i18n ---------- */
+  var I18N = {
+    title:{ko:"상품 비교기",en:"Product Comparison"},
+    subtitle:{ko:"ELS · 채권 · 펀드를 나란히 비교하고 고객 투자성향 적합 여부를 확인합니다",en:"Compare ELS, bonds and funds side by side and check investor-suitability"},
+    investorLabel:{ko:"고객 투자성향",en:"Investor Risk Profile"},
+    pickLabel:{ko:"비교할 상품 선택 (최대 4개)",en:"Select products to compare (up to 4)"},
+    compareTitle:{ko:"비교 결과",en:"Comparison"},
+    printBtn:{ko:"인쇄 / PDF 저장",en:"Print / Save PDF"},
+    clearBtn:{ko:"선택 초기화",en:"Clear selection"},
+    disclaimer:{ko:"본 화면의 상품·수치는 기능 시연용 예시 데이터이며 실제 판매 상품과 무관합니다. 투자 권유 전 반드시 투자설명서와 적합성 진단 결과를 확인하십시오. 투자에 따른 손익은 투자자에게 귀속됩니다.",en:"All products and figures shown are sample data for demonstration only and unrelated to any product actually offered. Always review the prospectus and suitability assessment before any solicitation. Investment results accrue to the investor."},
+    emptyPick:{ko:"위에서 비교할 상품을 선택하세요.",en:"Select products above to compare."},
+    fitOk:{ko:"적합",en:"Suitable"},
+    fitNo:{ko:"부적합",en:"Unsuitable"},
+    best:{ko:"우위",en:"Best"},
+    subSuffix:{ko:"개 상품 · 투자성향",en:" product(s) · profile"},
+    grade:{ko:"등급",en:" grade"}
+  };
+
+  var INVESTORS = [
+    {key:"aggr", floor:1, ko:"공격투자형", en:"Aggressive"},
+    {key:"active", floor:2, ko:"적극투자형", en:"Active"},
+    {key:"neutral", floor:3, ko:"위험중립형", en:"Neutral"},
+    {key:"stable_seek", floor:4, ko:"안정추구형", en:"Conservative"},
+    {key:"stable", floor:5, ko:"안정형", en:"Safety"}
+  ];
+
+  var TABS = [
+    {key:"els", ko:"ELS / ELB", en:"ELS / ELB"},
+    {key:"bond", ko:"채권", en:"Bonds"},
+    {key:"fund", ko:"펀드", en:"Funds"}
+  ];
+
+  /* ---------- helpers ---------- */
+  function T(v){ return (v && typeof v==="object" && "ko" in v) ? v[STATE.lang] : v; }
+  function pct(v){ return v==null?"-":(v>0?"+":"")+v.toFixed(2)+"%"; }
+  function pctp(v){ return v==null?"-":v.toFixed(2)+"%"; }
+  function num0(v){ return v==null?"-":v.toLocaleString(); }
+  function won(v){ // v in 만원
+    if(v==null) return "-";
+    if(STATE.lang==="en"){ return "KRW "+(v*1e4).toLocaleString(); }
+    if(v>=10000){ return (v/10000).toLocaleString()+"억원"; }
+    return v.toLocaleString()+"만원";
+  }
+  function money(v, unit){ return v==null?"-":v.toLocaleString()+(STATE.lang==="ko"?unit.ko:unit.en); }
+
+  /* ---------- data (sample) ---------- */
+  var DATA = {
+    els:[
+      {id:"e1", name:{ko:"미래에셋 ELS 제32541회",en:"Mirae Asset ELS #32541"}, issuer:{ko:"미래에셋증권",en:"Mirae Asset Sec."},
+       under:{ko:"KOSPI200 / S&P500",en:"KOSPI200 / S&P500"}, structure:{ko:"3년 6개월 스텝다운",en:"3Y step-down, 6M call"},
+       maturity:36, coupon:6.8, callBarrier:90, ki:45, principal:false, risk:2, minAmt:100},
+      {id:"e2", name:{ko:"미래에셋 ELS 제32550회",en:"Mirae Asset ELS #32550"}, issuer:{ko:"미래에셋증권",en:"Mirae Asset Sec."},
+       under:{ko:"S&P500 / EuroStoxx50 / 닛케이225",en:"S&P500 / EuroStoxx50 / Nikkei225"}, structure:{ko:"노낙인 스텝다운",en:"No-KI step-down"},
+       maturity:36, coupon:5.2, callBarrier:85, ki:null, principal:false, risk:3, minAmt:100},
+      {id:"e3", name:{ko:"미래에셋 ELS 제32562회 (종목형)",en:"Mirae Asset ELS #32562 (single-stock)"}, issuer:{ko:"미래에셋증권",en:"Mirae Asset Sec."},
+       under:{ko:"테슬라 / 엔비디아",en:"Tesla / NVIDIA"}, structure:{ko:"3년 스텝다운",en:"3Y step-down"},
+       maturity:36, coupon:12.5, callBarrier:90, ki:50, principal:false, risk:1, minAmt:100},
+      {id:"e4", name:{ko:"미래에셋 ELB 제1204회 (원금지급형)",en:"Mirae Asset ELB #1204 (principal-protected)"}, issuer:{ko:"미래에셋증권",en:"Mirae Asset Sec."},
+       under:{ko:"KOSPI200",en:"KOSPI200"}, structure:{ko:"녹아웃 콜",en:"Knock-out call"},
+       maturity:24, coupon:4.5, callBarrier:null, ki:null, principal:true, risk:5, minAmt:100}
+    ],
+    bond:[
+      {id:"b1", name:{ko:"국고채권 03875-3909",en:"KTB 03875-3909"}, issuer:{ko:"대한민국(국채)",en:"Republic of Korea"},
+       type:{ko:"국채",en:"Sovereign"}, credit:"AAA", cscore:7, coupon:3.875, ytm:3.42, maturity:4.2, duration:3.9,
+       freq:{ko:"6개월",en:"Semi-annual"}, aftertax:2.89, risk:5, minAmt:1},
+      {id:"b2", name:{ko:"미래에셋증권 회사채 15-2",en:"Mirae Asset Sec. Corp. 15-2"}, issuer:{ko:"미래에셋증권",en:"Mirae Asset Sec."},
+       type:{ko:"회사채",en:"Corporate"}, credit:"AA-", cscore:5, coupon:4.2, ytm:4.35, maturity:2.1, duration:2.0,
+       freq:{ko:"3개월",en:"Quarterly"}, aftertax:3.68, risk:4, minAmt:100},
+      {id:"b3", name:{ko:"한국전력공사채 1043",en:"KEPCO Bond 1043"}, issuer:{ko:"한국전력공사",en:"KEPCO"},
+       type:{ko:"특수채",en:"Special"}, credit:"AAA", cscore:7, coupon:3.6, ytm:3.55, maturity:3.0, duration:2.8,
+       freq:{ko:"6개월",en:"Semi-annual"}, aftertax:3.00, risk:4, minAmt:10},
+      {id:"b4", name:{ko:"롯데카드 여전채 87-1",en:"Lotte Card Bond 87-1"}, issuer:{ko:"롯데카드",en:"Lotte Card"},
+       type:{ko:"여전채",en:"Card/Fin."}, credit:"A+", cscore:4, coupon:4.8, ytm:5.10, maturity:1.5, duration:1.4,
+       freq:{ko:"3개월",en:"Quarterly"}, aftertax:4.31, risk:3, minAmt:100}
+    ],
+    fund:[
+      {id:"f1", name:{ko:"미래에셋 글로벌그로스 주식",en:"Mirae Asset Global Growth Equity"}, house:{ko:"미래에셋자산운용",en:"Mirae Asset Global Inv."},
+       type:{ko:"해외주식형",en:"Global Equity"}, ret1y:18.4, ret3y:14.2, ter:1.35, vol:16.2, mdd:-22.4, risk:2, aum:8420, bm:"MSCI ACWI"},
+      {id:"f2", name:{ko:"미래에셋 코어테크 주식",en:"Mirae Asset Core Tech Equity"}, house:{ko:"미래에셋자산운용",en:"Mirae Asset Global Inv."},
+       type:{ko:"국내주식형",en:"Korea Equity"}, ret1y:9.2, ret3y:11.5, ter:1.28, vol:18.9, mdd:-28.1, risk:2, aum:3110, bm:"KOSPI"},
+      {id:"f3", name:{ko:"미래에셋 글로벌다이나믹 채권",en:"Mirae Asset Global Dynamic Bond"}, house:{ko:"미래에셋자산운용",en:"Mirae Asset Global Inv."},
+       type:{ko:"채권형",en:"Fixed Income"}, ret1y:5.1, ret3y:3.8, ter:0.62, vol:4.3, mdd:-6.2, risk:4, aum:12000, bm:"BBG Global Agg"},
+      {id:"f4", name:{ko:"미래에셋 전략배분 TDF2045",en:"Mirae Asset TDF 2045"}, house:{ko:"미래에셋자산운용",en:"Mirae Asset Global Inv."},
+       type:{ko:"TDF/혼합",en:"TDF / Multi-asset"}, ret1y:11.0, ret3y:8.7, ter:0.90, vol:10.1, mdd:-14.5, risk:3, aum:6800, bm:"Custom Glidepath"}
+    ]
+  };
+
+  /* ---------- metric definitions per type ---------- */
+  // better: 'high' | 'low' | null   fmt: function(product)->string   raw: function(product)->number|null
+  var METRICS = {
+    els:[
+      {label:{ko:"발행사",en:"Issuer"}, fmt:function(p){return T(p.issuer)}},
+      {label:{ko:"기초자산",en:"Underlying"}, fmt:function(p){return T(p.under)}},
+      {label:{ko:"상품구조",en:"Structure"}, fmt:function(p){return T(p.structure)}},
+      {label:{ko:"만기",en:"Maturity"}, fmt:function(p){return p.maturity+(STATE.lang==="ko"?"개월":"M")}},
+      {label:{ko:"제시수익률 (연)",en:"Offered yield (p.a.)"}, hint:{ko:"높을수록 유리",en:"higher is better"}, better:"high", raw:function(p){return p.coupon}, fmt:function(p){return pctp(p.coupon)}},
+      {label:{ko:"1차 조기상환 배리어",en:"1st early-call barrier"}, fmt:function(p){return p.callBarrier==null?(STATE.lang==="ko"?"해당없음":"N/A"):p.callBarrier+"%"}},
+      {label:{ko:"낙인(KI) 배리어",en:"Knock-in (KI)"}, hint:{ko:"낮을수록/없을수록 안전",en:"lower / none is safer"}, better:"low", raw:function(p){return p.ki==null?0:p.ki}, fmt:function(p){return p.ki==null?(STATE.lang==="ko"?"없음":"None"):p.ki+"%"}},
+      {label:{ko:"원금보장",en:"Principal protection"}, fmt:function(p){return p.principal?(STATE.lang==="ko"?"보장":"Protected"):(STATE.lang==="ko"?"비보장":"Not protected")}},
+      {label:{ko:"최소가입금액",en:"Min. subscription"}, fmt:function(p){return won(p.minAmt)}}
+    ],
+    bond:[
+      {label:{ko:"발행사",en:"Issuer"}, fmt:function(p){return T(p.issuer)}},
+      {label:{ko:"종류",en:"Type"}, fmt:function(p){return T(p.type)}},
+      {label:{ko:"신용등급",en:"Credit rating"}, hint:{ko:"높을수록 안전",en:"higher is safer"}, better:"high", raw:function(p){return p.cscore}, fmt:function(p){return p.credit}},
+      {label:{ko:"표면금리",en:"Coupon rate"}, fmt:function(p){return pctp(p.coupon)}},
+      {label:{ko:"매매수익률 (YTM)",en:"Yield to maturity"}, hint:{ko:"높을수록 유리",en:"higher is better"}, better:"high", raw:function(p){return p.ytm}, fmt:function(p){return pctp(p.ytm)}},
+      {label:{ko:"세후 수익률",en:"After-tax yield"}, hint:{ko:"높을수록 유리",en:"higher is better"}, better:"high", raw:function(p){return p.aftertax}, fmt:function(p){return pctp(p.aftertax)}},
+      {label:{ko:"잔존만기",en:"Residual maturity"}, fmt:function(p){return p.maturity+(STATE.lang==="ko"?"년":"y")}},
+      {label:{ko:"듀레이션",en:"Duration"}, hint:{ko:"낮을수록 금리위험↓",en:"lower = less rate risk"}, better:"low", raw:function(p){return p.duration}, fmt:function(p){return p.duration.toFixed(1)}},
+      {label:{ko:"이자지급주기",en:"Coupon frequency"}, fmt:function(p){return T(p.freq)}},
+      {label:{ko:"최소투자금액",en:"Min. investment"}, fmt:function(p){return won(p.minAmt)}}
+    ],
+    fund:[
+      {label:{ko:"운용사",en:"Manager"}, fmt:function(p){return T(p.house)}},
+      {label:{ko:"유형",en:"Category"}, fmt:function(p){return T(p.type)}},
+      {label:{ko:"1년 수익률",en:"1-yr return"}, hint:{ko:"높을수록 유리",en:"higher is better"}, better:"high", raw:function(p){return p.ret1y}, fmt:function(p){return pct(p.ret1y)}},
+      {label:{ko:"3년 수익률 (연환산)",en:"3-yr return (ann.)"}, hint:{ko:"높을수록 유리",en:"higher is better"}, better:"high", raw:function(p){return p.ret3y}, fmt:function(p){return pct(p.ret3y)}},
+      {label:{ko:"총보수 (TER)",en:"Total expense (TER)"}, hint:{ko:"낮을수록 유리",en:"lower is better"}, better:"low", raw:function(p){return p.ter}, fmt:function(p){return pctp(p.ter)}},
+      {label:{ko:"변동성 (표준편차)",en:"Volatility (SD)"}, hint:{ko:"낮을수록 안정",en:"lower is steadier"}, better:"low", raw:function(p){return p.vol}, fmt:function(p){return pctp(p.vol)}},
+      {label:{ko:"최대낙폭 (MDD)",en:"Max drawdown"}, hint:{ko:"낮을수록 방어적",en:"smaller loss is better"}, better:"high", raw:function(p){return p.mdd}, fmt:function(p){return pct(p.mdd)}},
+      {label:{ko:"운용규모",en:"AUM"}, fmt:function(p){return money(p.aum,{ko:"억원",en:" (100M KRW)"})}},
+      {label:{ko:"벤치마크",en:"Benchmark"}, fmt:function(p){return p.bm}}
+    ]
+  };
+
+  /* ---------- state ---------- */
+  var STATE = { lang:"ko", investor:"neutral", tab:"els", sel:{els:[],bond:[],fund:[]} };
+
+  /* ---------- rendering ---------- */
+  function applyI18n(){
+    document.documentElement.lang = STATE.lang;
+    document.querySelectorAll("[data-i18n]").forEach(function(el){
+      var k = el.getAttribute("data-i18n");
+      if(I18N[k]) el.textContent = I18N[k][STATE.lang];
+    });
+    document.getElementById("ko").classList.toggle("active", STATE.lang==="ko");
+    document.getElementById("en").classList.toggle("active", STATE.lang==="en");
+    document.getElementById("ko").setAttribute("aria-checked", STATE.lang==="ko");
+    document.getElementById("en").setAttribute("aria-checked", STATE.lang==="en");
+  }
+
+  function renderInvestor(){
+    var seg = document.getElementById("investorSeg");
+    seg.innerHTML = "";
+    INVESTORS.forEach(function(iv){
+      var b = document.createElement("button");
+      b.textContent = iv[STATE.lang];
+      if(iv.key===STATE.investor) b.className="active";
+      b.onclick = function(){ STATE.investor=iv.key; renderInvestor(); renderCompare(); };
+      seg.appendChild(b);
+    });
+  }
+
+  function renderTabs(){
+    var tb = document.getElementById("tabbar");
+    tb.innerHTML = "";
+    TABS.forEach(function(t){
+      var b = document.createElement("button");
+      b.textContent = t[STATE.lang];
+      if(t.key===STATE.tab) b.className="active";
+      b.onclick = function(){ STATE.tab=t.key; renderTabs(); renderChips(); renderCompare(); };
+      tb.appendChild(b);
+    });
+  }
+
+  function renderChips(){
+    var wrap = document.getElementById("chips");
+    wrap.innerHTML = "";
+    var sel = STATE.sel[STATE.tab];
+    DATA[STATE.tab].forEach(function(p){
+      var on = sel.indexOf(p.id)>=0;
+      var full = !on && sel.length>=4;
+      var c = document.createElement("button");
+      c.className = "chip"+(on?" on":"")+(full?" disabled":"");
+      c.disabled = full;
+      var sub = STATE.tab==="els" ? T(p.under) : STATE.tab==="bond" ? T(p.type)+" · "+p.credit : T(p.type);
+      c.innerHTML = '<span class="cn">'+esc(T(p.name))+'</span><span class="cs">'+esc(sub)+'</span>';
+      c.onclick = function(){
+        var i = sel.indexOf(p.id);
+        if(i>=0) sel.splice(i,1); else if(sel.length<4) sel.push(p.id);
+        renderChips(); renderCompare();
+      };
+      wrap.appendChild(c);
+    });
+  }
+
+  function fitFor(p){
+    var floor = INVESTORS.filter(function(x){return x.key===STATE.investor})[0].floor;
+    return p.risk >= floor; // risk 1 = highest risk; floor smaller = more aggressive
+  }
+
+  function renderCompare(){
+    var body = document.getElementById("cmpBody");
+    var sub = document.getElementById("cmpSub");
+    var sel = STATE.sel[STATE.tab];
+    var prods = DATA[STATE.tab].filter(function(p){return sel.indexOf(p.id)>=0;});
+    // keep selection order
+    prods.sort(function(a,b){return sel.indexOf(a.id)-sel.indexOf(b.id);});
+
+    var ivName = INVESTORS.filter(function(x){return x.key===STATE.investor})[0][STATE.lang];
+    sub.textContent = prods.length + I18N.subSuffix[STATE.lang] + " · " + ivName;
+
+    if(prods.length===0){
+      body.innerHTML = '<div class="empty">'+I18N.emptyPick[STATE.lang]+'</div>';
+      return;
+    }
+
+    var metrics = METRICS[STATE.tab];
+    var html = '<div class="table-wrap"><table><thead><tr><th>'+(STATE.lang==="ko"?"항목":"Item")+'</th>';
+    prods.forEach(function(p){ html += '<th>'+esc(T(p.name))+'</th>'; });
+    html += '</tr></thead><tbody>';
+
+    // suitability row
+    html += '<tr><th>'+(STATE.lang==="ko"?"적합성":"Suitability")+'</th>';
+    prods.forEach(function(p){
+      var ok = fitFor(p);
+      html += '<td class="val"><span class="fit '+(ok?"ok":"no")+'">'+(ok?I18N.fitOk[STATE.lang]:I18N.fitNo[STATE.lang])+'</span></td>';
+    });
+    html += '</tr>';
+
+    // risk grade row
+    html += '<tr><th>'+(STATE.lang==="ko"?"위험등급":"Risk grade")+'<br><span class="rowhint">'+(STATE.lang==="ko"?"1(고위험)~6(저위험)":"1 high – 6 low")+'</span></th>';
+    prods.forEach(function(p){ html += '<td class="val"><span class="v">'+p.risk+(STATE.lang==="ko"?"등급":"")+'</span></td>'; });
+    html += '</tr>';
+
+    // metric rows
+    metrics.forEach(function(m){
+      var bestId = null;
+      if(m.better){
+        var best=null;
+        prods.forEach(function(p){
+          var r = m.raw(p);
+          if(r==null) return;
+          if(best==null || (m.better==="high" ? r>best.v : r<best.v)){ best={v:r,id:p.id}; }
+        });
+        if(best && prods.length>1) bestId = best.id;
+      }
+      var hint = m.hint ? '<br><span class="rowhint">'+m.hint[STATE.lang]+'</span>' : '';
+      html += '<tr><th>'+m.label[STATE.lang]+hint+'</th>';
+      prods.forEach(function(p){
+        var isBest = p.id===bestId;
+        html += '<td class="val'+(isBest?" best":"")+'"><span class="v">'+esc(m.fmt(p))+'</span>'+(isBest?'<span class="tag best">'+I18N.best[STATE.lang]+'</span>':'')+'</td>';
+      });
+      html += '</tr>';
+    });
+
+    html += '</tbody></table></div>';
+    body.innerHTML = html;
+  }
+
+  function esc(s){ return String(s==null?"":s).replace(/[&<>"]/g,function(c){return ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"})[c];}); }
+
+  function renderAll(){ applyI18n(); renderInvestor(); renderTabs(); renderChips(); renderCompare(); }
+
+  /* ---------- events ---------- */
+  function setLang(l){ STATE.lang=l; try{localStorage.setItem("pc_lang",l);}catch(e){} renderAll(); }
+  document.getElementById("ko").onclick=function(){setLang("ko");};
+  document.getElementById("en").onclick=function(){setLang("en");};
+  document.getElementById("printBtn").onclick=function(){window.print();};
+  document.getElementById("clearBtn").onclick=function(){ STATE.sel[STATE.tab]=[]; renderChips(); renderCompare(); };
+
+  try{ var sv=localStorage.getItem("pc_lang"); if(sv==="ko"||sv==="en") STATE.lang=sv; }catch(e){}
+
+  // preselect two for demo
+  STATE.sel.els = ["e1","e3"];
+  renderAll();
+})();
+</script>
+</body>
+</html>
