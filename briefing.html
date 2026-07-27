@@ -229,7 +229,7 @@
 <body>
 <div class="wrap">
   <header class="top">
-    <div class="brand"><span class="dot"></span> 보유자산 통합 브리핑 <small>미래에셋증권 · 실데이터 · <b style="color:var(--accent)">v2026.07.27-3</b></small></div>
+    <div class="brand"><span class="dot"></span> 보유자산 통합 브리핑 <small>미래에셋증권 · 실데이터 · <b style="color:var(--accent)">v2026.07.27-4</b></small></div>
     <div class="spacer"></div>
     <button class="icon-btn" id="btnTheme" title="다크/라이트 테마 전환">◐</button>
     <button class="btn sm" id="btnSample" title="체험용 예시 종목(삼성전자·SK하이닉스·KODEX 200·AAPL·미래에셋)을 자동으로 채웁니다">예시 채우기</button>
@@ -1302,10 +1302,10 @@ function detailStockEtf(h,b){
     const y=b.yfin, price=(b.price!=null?b.price:y.cur), up=(price&&y.tgtMean)?((y.tgtMean-price)/price*100):null;
     const recMap={strong_buy:"적극매수",buy:"매수",hold:"보유",underperform:"비중축소",sell:"매도",strong_sell:"적극매도"};
     html+='<div class="sec"><div class="sec-t">애널리스트 컨센서스 · 목표주가</div>'+
-      kv("목표주가 평균", fmtP(y.tgtMean,b.currency)+(up!=null?' <span class="'+cls(up)+'">('+(up>=0?"상승여력 ":"하락 ")+pct(up)+')</span>':""))+
-      kv("목표주가 범위", (y.tgtLow!=null&&y.tgtHigh!=null)?(fmtP(y.tgtLow,b.currency)+" ~ "+fmtP(y.tgtHigh,b.currency)):null)+
-      kv("투자의견", (recMap[y.recKey]||y.recKey||"")+(y.recMean!=null?' <span class="muted">(평균 '+y.recMean.toFixed(2)+", 1=적극매수~5=적극매도)</span>":""))+
-      kv("애널리스트 수", y.nAnalysts!=null?(y.nAnalysts+"명"):null)+'</div>';
+      kvH("목표주가 평균", fmtP(y.tgtMean,b.currency)+(up!=null?' <span class="'+cls(up)+'">('+(up>=0?"상승여력 ":"하락 ")+pct(up)+')</span>':""))+
+      kvH("목표주가 범위", (y.tgtLow!=null&&y.tgtHigh!=null)?(fmtP(y.tgtLow,b.currency)+" ~ "+fmtP(y.tgtHigh,b.currency)):null)+
+      kvH("투자의견", (recMap[y.recKey]||y.recKey||"")+(y.recMean!=null?' <span class="muted">(평균 '+y.recMean.toFixed(2)+", 1=적극매수~5=적극매도)</span>":""))+
+      kvH("애널리스트 수", y.nAnalysts!=null?(y.nAnalysts+"명"):null)+'</div>';
   }
   // 증권사 투자의견 변경 이력 (해외 — 야후, 참고용·비클릭)
   if(!h.domestic&&b.upgrades&&b.upgrades.length){
@@ -1386,6 +1386,8 @@ function detailFund(b){
   return html;
 }
 function kv(k,v){ return (v==null||v===""||v==="undefined")?"":'<div class="kv2"><span class="k">'+k+'</span><span>'+esc(v)+'</span></div>'; }
+/* 값에 이미 안전한 HTML(<span> 등)이 들어있는 행 — 이스케이프하지 않음 */
+function kvH(k,v){ return (v==null||v==="")?"":'<div class="kv2"><span class="k">'+esc(k)+'</span><span>'+v+'</span></div>'; }
 function sc(v){ const s=String(v==null?"":v); const c=s.startsWith("+")?"up":s.startsWith("-")?"down":""; return '<td class="'+c+'">'+esc(s||"—")+'</td>'; }
 function comment(h,b){
   const parts=[];
