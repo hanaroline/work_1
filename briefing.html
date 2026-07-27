@@ -1264,9 +1264,13 @@ function detailStockEtf(h,b){
   // 최근 뉴스 / 시황
   if(b.news&&b.news.length){
     const items=b.news.map(n=>'<a class="li"'+(n.link?' href="'+esc(n.link)+'" target="_blank" rel="noopener"':'')+'><div class="t">'+esc(n.title)+'</div><div class="m"><span class="badge">'+esc(n.press||"뉴스")+'</span> '+esc(n.date||"")+'</div></a>');
-    const transBtn=!h.domestic?'<button class="more-btn" id="btnTransNews" style="margin-left:8px">한글 번역</button>':'';
+    // 이미 한글 뉴스면 번역 버튼 숨김, 영문(야후 폴백)일 때만 표시
+    const koCount=b.news.filter(n=>/[가-힣]/.test(n.title||"")).length;
+    const mostlyKo=koCount>=Math.ceil(b.news.length/2);
+    const showTrans=!h.domestic&&!mostlyKo;
+    const transBtn=showTrans?'<button class="more-btn" id="btnTransNews" style="margin-left:8px">한글 번역</button>':'';
     html+='<div class="sec"><div class="sec-t">최근 뉴스 · 시황 · 총 '+b.news.length+'건</div>'+listMore("dNews",items,5)+transBtn+
-      '<div class="muted" style="margin-top:6px;font-size:11px">제목 클릭 시 원문(새 탭)으로 이동'+(!h.domestic?' · 번역은 참고용(구글 자동번역)':'')+'</div></div>';
+      '<div class="muted" style="margin-top:6px;font-size:11px">제목 클릭 시 원문(새 탭)으로 이동'+(showTrans?' · 번역은 참고용(구글 자동번역)':'')+'</div></div>';
   }
   // 다음 액션
   html+='<div class="sec"><div class="sec-t">브리핑 코멘트</div><div class="action-box">'+comment(h,b)+'</div></div>';
