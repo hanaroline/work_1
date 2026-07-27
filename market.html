@@ -1,0 +1,578 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>증권사 아침 시황 종합</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --mas-orange:#F58220;--mas-orange-active:#CB6015;--mas-orange-soft:#FAB072;--mas-blue:#043B72;--accent-blue:#043B72;
+      --th-bg:#FAB072;--th-fg:#1A1A1A;--canvas:#FFFFFF;--surface-soft:#ECEFF4;--surface-subtle:#F7F8FA;
+      --hairline:#CDCECB;--hairline-soft:#E5E4E1;--ink:#1A1A1A;--body:#3D3D3D;--muted:#6C6C6C;--muted-soft:#84888B;
+      --up:#C62828;--down:#043B72;--page:#EEF0F3;
+      --font-kr:'Noto Sans KR','Apple SD Gothic Neo','Malgun Gothic',sans-serif;
+      --font-en:'Inter','Segoe UI',system-ui,sans-serif;--font-num:'Inter','SF Mono',ui-monospace,monospace;
+    }
+    @media (prefers-color-scheme:dark){:root{--canvas:#16181c;--surface-soft:#1e2229;--surface-subtle:#1a1d22;
+      --hairline:#33373e;--hairline-soft:#262a31;--ink:#f2f3f5;--body:#c7cbd1;--muted:#9aa0a8;--muted-soft:#7d838b;
+      --up:#ff6b6b;--down:#5b9be0;--accent-blue:#5b9be0;--th-bg:#7a5230;--th-fg:#f2f3f5;--page:#0e1013;}}
+    :root[data-theme="light"]{--canvas:#FFFFFF;--surface-soft:#ECEFF4;--surface-subtle:#F7F8FA;--hairline:#CDCECB;
+      --hairline-soft:#E5E4E1;--ink:#1A1A1A;--body:#3D3D3D;--muted:#6C6C6C;--muted-soft:#84888B;--up:#C62828;--down:#043B72;
+      --accent-blue:#043B72;--th-bg:#FAB072;--th-fg:#1A1A1A;--page:#EEF0F3;}
+    :root[data-theme="dark"]{--canvas:#16181c;--surface-soft:#1e2229;--surface-subtle:#1a1d22;--hairline:#33373e;
+      --hairline-soft:#262a31;--ink:#f2f3f5;--body:#c7cbd1;--muted:#9aa0a8;--muted-soft:#7d838b;--up:#ff6b6b;--down:#5b9be0;
+      --accent-blue:#5b9be0;--th-bg:#7a5230;--th-fg:#f2f3f5;--page:#0e1013;}
+
+    *{box-sizing:border-box;}html,body{margin:0;padding:0;}
+    body{background:var(--page);color:var(--ink);font-family:var(--font-kr);line-height:1.6;-webkit-font-smoothing:antialiased;}
+    .num{font-family:var(--font-num);font-variant-numeric:tabular-nums;}
+    a{color:var(--accent-blue);text-decoration:none;}a:hover{text-decoration:underline;}
+
+    .topbar{position:sticky;top:0;z-index:30;background:var(--canvas);border-bottom:1px solid var(--hairline);
+      display:flex;align-items:center;gap:12px;padding:12px 20px;flex-wrap:wrap;}
+    .brand{display:flex;align-items:baseline;gap:9px;}
+    .brand .logo{width:13px;height:13px;background:var(--mas-orange);border-radius:2px;display:inline-block;}
+    .brand .name{font-weight:700;font-size:16px;letter-spacing:-.02em;}
+    .brand .sub{font-size:12px;color:var(--muted);}
+    .spacer{flex:1 1 auto;}
+    .btn{border:1px solid var(--hairline);background:var(--canvas);color:var(--ink);padding:8px 14px;font-size:13px;
+      border-radius:2px;cursor:pointer;font-family:inherit;white-space:nowrap;}
+    .btn:hover{border-color:var(--mas-orange);}.btn:focus-visible{outline:2px solid var(--mas-orange);outline-offset:2px;}
+    .btn-primary{background:var(--mas-orange);color:#fff;border-color:transparent;font-weight:600;}
+    .btn-primary:hover{background:var(--mas-orange-active);}
+    .btn:disabled{opacity:.5;cursor:not-allowed;}
+
+    .page{max-width:960px;margin:0 auto;padding:24px 20px 80px;}
+    .config{background:var(--canvas);border:1px solid var(--hairline);border-radius:4px;margin-bottom:20px;overflow:hidden;}
+    .config .head{display:flex;align-items:center;gap:10px;padding:12px 16px;border-bottom:1px solid var(--hairline-soft);background:var(--surface-subtle);}
+    .config .head .title{font-weight:600;font-size:14px;}
+    .config .body{padding:14px 16px;}
+    .config label.chk{display:inline-flex;align-items:center;gap:7px;font-size:14px;margin-right:18px;}
+    .config .qlist{display:flex;flex-direction:column;gap:7px;margin-top:12px;}
+    .config .qrow{display:flex;gap:6px;}
+    .config .qrow input{flex:1;padding:8px 11px;border:1px solid var(--hairline);border-radius:3px;font-size:13px;}
+    .hint{font-size:12px;color:var(--muted);margin-top:10px;line-height:1.5;}
+
+    .badges{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:16px;}
+    .badge{font-size:11px;font-family:var(--font-en);letter-spacing:.3px;padding:4px 9px;border-radius:2px;border:1px solid var(--hairline);color:var(--muted);}
+    .badge.live{border-color:var(--mas-orange);color:var(--mas-orange-active);}
+    .badge.blue{border-color:var(--accent-blue);color:var(--accent-blue);}
+
+    .card{background:var(--canvas);border:1px solid var(--hairline);border-radius:4px;padding:28px 32px;margin-bottom:22px;}
+    @media (max-width:768px){.card{padding:20px 18px;}}
+    .card.ai{border-top:3px solid var(--mas-orange);}
+
+    .hero-tag{font-family:var(--font-en);font-size:12px;font-weight:600;letter-spacing:1px;color:var(--mas-orange);text-transform:uppercase;margin-bottom:6px;}
+    h1.headline{font-size:26px;font-weight:700;line-height:1.25;letter-spacing:-.3px;margin:0 0 14px;text-wrap:balance;}
+    @media (max-width:768px){h1.headline{font-size:21px;}}
+    .summary{font-size:16px;line-height:1.7;color:var(--body);padding:16px 18px;background:var(--surface-soft);border-left:3px solid var(--mas-orange);border-radius:0 3px 3px 0;margin-bottom:28px;}
+
+    section.block{margin-bottom:28px;}section.block:last-child{margin-bottom:0;}
+    .section-rule{height:1px;background:var(--mas-orange);margin-bottom:12px;}
+    .section-title{font-size:18px;font-weight:700;margin:0 0 14px;letter-spacing:-.2px;}
+
+    ol.keypoints{list-style:none;counter-reset:kp;margin:0;padding:0;}
+    ol.keypoints li{counter-increment:kp;position:relative;padding:9px 0 9px 42px;border-bottom:1px solid var(--hairline-soft);font-size:15px;line-height:1.6;color:var(--body);}
+    ol.keypoints li:last-child{border-bottom:none;}
+    ol.keypoints li::before{content:counter(kp);position:absolute;left:0;top:9px;width:26px;height:26px;background:var(--mas-blue);color:#fff;font-family:var(--font-num);font-weight:600;font-size:13px;display:flex;align-items:center;justify-content:center;border-radius:2px;}
+
+    .table-wrap{overflow-x:auto;}
+    table.markets{width:100%;border-collapse:collapse;border:1px solid var(--hairline);font-size:14px;}
+    table.markets th{background:var(--th-bg);color:var(--th-fg);font-weight:700;text-align:left;padding:9px 13px;font-size:13px;}
+    table.markets td{padding:9px 13px;border-top:1px solid var(--hairline-soft);vertical-align:top;}
+    table.markets td.name{font-weight:600;white-space:nowrap;}
+    table.markets td.val{font-family:var(--font-num);white-space:nowrap;}
+    table.markets td.chg{font-family:var(--font-num);white-space:nowrap;font-weight:600;}
+    table.markets td.chg.up{color:var(--up);}table.markets td.chg.down{color:var(--down);}
+    table.markets td.note{color:var(--muted);}
+
+    /* 소스 그룹 리스트 */
+    .grp{margin-bottom:20px;}
+    .grp .gh{display:flex;align-items:baseline;gap:8px;margin-bottom:6px;}
+    .grp .gh .firm{font-weight:700;font-size:15px;}
+    .grp .gh .cnt{font-size:12px;color:var(--muted-soft);font-family:var(--font-num);}
+    ul.items{list-style:none;margin:0;padding:0;}
+    ul.items li{padding:7px 0;border-bottom:1px solid var(--hairline-soft);font-size:14px;line-height:1.5;display:flex;gap:10px;}
+    ul.items li:last-child{border-bottom:none;}
+    ul.items li .t{flex:1;color:var(--body);}
+    ul.items li .d{color:var(--muted-soft);font-family:var(--font-num);font-size:12px;white-space:nowrap;}
+
+    .disclaimer{margin-top:8px;font-size:12px;color:var(--muted-soft);line-height:1.6;}
+
+    .empty,.loading,.errbox{text-align:center;padding:50px 20px;color:var(--muted);}
+    .empty .big{font-size:17px;color:var(--ink);font-weight:600;margin-bottom:8px;}
+    .spinner{width:32px;height:32px;border:3px solid var(--hairline);border-top-color:var(--mas-orange);border-radius:50%;margin:0 auto 14px;animation:spin .8s linear infinite;}
+    @keyframes spin{to{transform:rotate(360deg);}}
+    .errbox{color:var(--up);}
+    .errbox .code{font-family:var(--font-num);font-size:12px;background:var(--surface-soft);color:var(--body);padding:8px 12px;border-radius:3px;display:inline-block;margin-top:10px;}
+
+    .modal-back{position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:50;display:none;align-items:center;justify-content:center;padding:20px;}
+    .modal-back.open{display:flex;}
+    .modal{background:var(--canvas);border-radius:4px;width:100%;max-width:460px;padding:24px;box-shadow:0 8px 40px rgba(0,0,0,.25);}
+    .modal h2{font-size:18px;margin:0 0 4px;}.modal .msub{font-size:13px;color:var(--muted);margin-bottom:18px;}
+    .field{margin-bottom:16px;}.field label{display:block;font-size:13px;font-weight:600;margin-bottom:6px;}
+    .field input,.field select{width:100%;padding:10px 12px;border:1px solid var(--hairline);border-radius:3px;font-size:14px;font-family:var(--font-en);}
+    .field .fhint{font-size:12px;color:var(--muted);margin-top:6px;line-height:1.5;}
+    .modal-actions{display:flex;justify-content:flex-end;gap:10px;margin-top:20px;}
+
+    @media print{.topbar,.config,.badges,.modal-back{display:none!important;}body{background:#fff;}.page{padding:0;}
+      .card{border:none;padding:0 0 20px;}section.block{page-break-inside:avoid;}@page{margin:14mm;}}
+  </style>
+</head>
+<body>
+  <div class="topbar">
+    <div class="brand">
+      <span class="logo"></span>
+      <span class="name">증권사 아침 시황 종합</span>
+      <span class="sub">여러 증권사·매체 → 한 화면</span>
+    </div>
+    <div class="spacer"></div>
+    <button class="btn" id="settingsBtn">⚙︎ 설정</button>
+    <button class="btn" id="printBtn">🖨 인쇄</button>
+    <button class="btn" id="exportBtn">⤓ 공유용 내보내기</button>
+    <button class="btn" id="aiBtn">✦ AI 종합요약</button>
+    <button class="btn btn-primary" id="fetchBtn">시황 수집</button>
+  </div>
+
+  <div class="page">
+    <div class="config" id="configPanel">
+      <div class="head">
+        <span class="title">수집 소스</span>
+        <div class="spacer"></div>
+        <button class="btn" id="collapseBtn" style="padding:4px 10px;font-size:12px;">▲</button>
+      </div>
+      <div class="body">
+        <label class="chk"><input type="checkbox" id="srcNaver" checked /> 네이버 금융 리서치 시황(증권사별)</label>
+        <label class="chk"><input type="checkbox" id="srcNews" checked /> Google 뉴스 RSS(시황 뉴스)</label>
+        <div class="qlist" id="qlist"></div>
+        <div style="margin-top:10px;">
+          <button class="btn" id="addQ" style="padding:6px 12px;font-size:13px;">+ 뉴스 검색어 추가</button>
+        </div>
+        <div class="hint">공개 소스를 CORS 프록시로 수집합니다(네이버 페이지는 EUC-KR 자동 디코딩). 사내망 등으로 외부 접근이 막히면 일부 소스가 비어 있을 수 있습니다. <b>AI 종합요약</b>은 설정의 Claude API 키가 있을 때만 동작합니다(없으면 모아보기만).</div>
+      </div>
+    </div>
+
+    <div class="badges" id="badges"></div>
+    <div id="aiOut"></div>
+    <div id="aggOut">
+      <div class="card"><div class="empty"><div class="big">아직 수집된 시황이 없습니다</div><div>우측 상단 <b>시황 수집</b>을 누르면 여러 증권사·매체의 아침 시황을 한 화면에 모아옵니다.</div></div></div>
+    </div>
+  </div>
+
+  <div class="modal-back" id="modalBack">
+    <div class="modal">
+      <h2>설정</h2>
+      <div class="msub">Claude API 키는 이 브라우저에만 저장됩니다(localStorage). 서버로 전송되지 않으며, briefing.html과 공유됩니다.</div>
+      <div class="field">
+        <label>Claude API Key (AI 종합요약용 · 선택)</label>
+        <input type="password" id="apiKey" placeholder="sk-ant-... (없으면 모아보기만)" autocomplete="off" />
+        <div class="fhint">키가 없어도 시황 모아보기는 그대로 사용할 수 있습니다.</div>
+      </div>
+      <div class="field">
+        <label>모델</label>
+        <select id="model">
+          <option value="claude-opus-5">Claude Opus 5 (최고 품질)</option>
+          <option value="claude-sonnet-5">Claude Sonnet 5 (균형·경제적)</option>
+          <option value="claude-haiku-4-5">Claude Haiku 4.5 (가장 빠름·저렴)</option>
+        </select>
+      </div>
+      <div class="modal-actions">
+        <button class="btn" id="modalCancel">닫기</button>
+        <button class="btn btn-primary" id="modalSave">저장</button>
+      </div>
+    </div>
+  </div>
+
+<script>
+(function(){
+  "use strict";
+  var LS={key:'bbg_api_key',model:'bbg_model',q:'mkt_queries',src:'mkt_src'};
+  var API_URL='https://api.anthropic.com/v1/messages';
+  var API_VERSION='2023-06-01';
+  var NAVER_URL='https://finance.naver.com/research/market_info_list.naver';
+  var DEFAULT_Q=['증시 시황 모닝브리프','코스피 마감 시황','증시 개장 전 체크포인트'];
+  var PROXIES=[
+    function(u){return u;},
+    function(u){return 'https://corsproxy.io/?url='+encodeURIComponent(u);},
+    function(u){return 'https://api.allorigins.win/raw?url='+encodeURIComponent(u);}
+  ];
+
+  function $(id){return document.getElementById(id);}
+  function pad(n){return n<10?'0'+n:''+n;}
+  function todayStr(){var d=new Date();return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate());}
+  function rawKey(){return 'mkt_raw_'+todayStr();}
+  function aiKey(){return 'mkt_ai_'+todayStr();}
+  function esc(s){return String(s==null?'':s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});}
+  function norm(s){return String(s||'').replace(/\s+/g,' ').trim();}
+
+  // ===== 프록시 fetch (arrayBuffer + charset 디코딩) =====
+  function fetchDecoded(url,charset){
+    var idx=0;
+    function attempt(){
+      var target=PROXIES[idx](url);
+      return fetch(target).then(function(r){if(!r.ok)throw new Error('HTTP '+r.status);return r.arrayBuffer();})
+        .then(function(buf){
+          try{return new TextDecoder(charset||'utf-8').decode(buf);}
+          catch(e){return new TextDecoder('utf-8').decode(buf);}
+        })
+        .catch(function(e){idx++;if(idx<PROXIES.length)return attempt();throw e;});
+    }
+    return attempt();
+  }
+
+  // ===== 검색어 목록 =====
+  function loadQ(){try{return JSON.parse(localStorage.getItem(LS.q))||DEFAULT_Q.slice();}catch(e){return DEFAULT_Q.slice();}}
+  function saveQ(a){localStorage.setItem(LS.q,JSON.stringify(a));}
+  function renderQ(){
+    var arr=loadQ(),box=$('qlist');box.innerHTML='';
+    arr.forEach(function(q,i){
+      var row=document.createElement('div');row.className='qrow';
+      var inp=document.createElement('input');inp.type='text';inp.value=q;inp.placeholder='뉴스 검색어';
+      inp.oninput=function(){arr[i]=inp.value;saveQ(arr);};
+      var del=document.createElement('button');del.className='btn';del.textContent='✕';del.style.padding='6px 11px';
+      del.onclick=function(){arr.splice(i,1);saveQ(arr);renderQ();};
+      row.appendChild(inp);row.appendChild(del);box.appendChild(row);
+    });
+  }
+  $('addQ').onclick=function(){var a=loadQ();a.push('');saveQ(a);renderQ();};
+
+  var collapsed=false;
+  $('collapseBtn').onclick=function(){collapsed=!collapsed;$('configPanel').querySelector('.body').style.display=collapsed?'none':'';this.textContent=collapsed?'▼':'▲';};
+
+  // ===== 네이버 리서치 시황 파싱 (EUC-KR) =====
+  function fetchNaver(){
+    return fetchDecoded(NAVER_URL,'euc-kr').then(function(html){
+      var doc=new DOMParser().parseFromString(html,'text/html');
+      var rows=doc.querySelectorAll('table.type_1 tr');
+      var byFirm={};
+      rows.forEach(function(tr){
+        var a=tr.querySelector('a[href*="market_info_read"]');
+        if(!a)return;
+        var title=norm(a.textContent);
+        if(!title)return;
+        var tds=tr.querySelectorAll('td');
+        var firm='';var date='';
+        for(var i=0;i<tds.length;i++){
+          var t=norm(tds[i].textContent);
+          if(/^\d{2}\.\d{2}\.\d{2}$/.test(t)||/^\d{4}\.\d{2}\.\d{2}$/.test(t))date=t;
+        }
+        // 증권사: 제목 td 다음 td가 보통 증권사명
+        if(tds.length>=2)firm=norm(tds[1].textContent);
+        if(!firm||firm===title)firm='기타';
+        var href=a.getAttribute('href')||'';
+        var link=href.indexOf('http')===0?href:('https://finance.naver.com/research/'+href.replace(/^\//,''));
+        if(!byFirm[firm])byFirm[firm]=[];
+        if(byFirm[firm].length<6)byFirm[firm].push({title:title,date:date,link:link});
+      });
+      var out=Object.keys(byFirm).map(function(f){return {firm:f,items:byFirm[f]};});
+      out.sort(function(a,b){return b.items.length-a.items.length;});
+      return out.slice(0,20);
+    }).catch(function(){return [];});
+  }
+
+  // ===== Google 뉴스 RSS 파싱 =====
+  function fetchNews(queries){
+    var bySource={};
+    return queries.filter(function(q){return q&&q.trim();}).reduce(function(p,q){
+      var url='https://news.google.com/rss/search?q='+encodeURIComponent(q+' when:1d')+'&hl=ko&gl=KR&ceid=KR:ko';
+      return p.then(function(){
+        return fetchDecoded(url,'utf-8').then(function(xml){
+          var doc=new DOMParser().parseFromString(xml,'text/xml');
+          var items=doc.querySelectorAll('item');
+          for(var i=0;i<items.length&&i<10;i++){
+            var it=items[i];
+            var rawTitle=norm((it.querySelector('title')||{}).textContent);
+            var src=norm((it.querySelector('source')||{}).textContent)||'뉴스';
+            var title=rawTitle.replace(new RegExp('\\s+-\\s+'+src.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')+'$'),'');
+            title=title.replace(/\s+-\s+[^-]+$/,'');
+            var link=norm((it.querySelector('link')||{}).textContent);
+            var pd=(it.querySelector('pubDate')||{}).textContent||'';
+            var date='';try{var dd=new Date(pd);if(!isNaN(dd))date=pad(dd.getMonth()+1)+'.'+pad(dd.getDate());}catch(e){}
+            if(!title)continue;
+            if(!bySource[src])bySource[src]=[];
+            var dup=bySource[src].some(function(x){return x.title===title;});
+            if(!dup&&bySource[src].length<6)bySource[src].push({title:title,date:date,link:link});
+          }
+        }).catch(function(){});
+      });
+    },Promise.resolve()).then(function(){
+      var out=Object.keys(bySource).map(function(s){return {firm:s,items:bySource[s]};});
+      out.sort(function(a,b){return b.items.length-a.items.length;});
+      return out.slice(0,20);
+    });
+  }
+
+  // ===== 수집 =====
+  function collect(){
+    var doNaver=$('srcNaver').checked, doNews=$('srcNews').checked;
+    localStorage.setItem(LS.src,JSON.stringify({naver:doNaver,news:doNews}));
+    $('aggOut').innerHTML='<div class="card"><div class="loading"><div class="spinner"></div><div>여러 소스에서 아침 시황을 수집하고 있습니다…</div></div></div>';
+    $('aiOut').innerHTML='';
+    var tasks=[doNaver?fetchNaver():Promise.resolve([]), doNews?fetchNews(loadQ()):Promise.resolve([])];
+    return Promise.all(tasks).then(function(res){
+      var data={date:todayStr(),firms:res[0]||[],news:res[1]||[]};
+      localStorage.setItem(rawKey(),JSON.stringify(data));
+      localStorage.removeItem(aiKey()); // 새로 수집하면 이전 AI요약 무효화
+      renderAll();
+      return data;
+    });
+  }
+  $('fetchBtn').onclick=function(){$('fetchBtn').disabled=true;collect().then(function(){$('fetchBtn').disabled=false;}).catch(function(){$('fetchBtn').disabled=false;});};
+
+  // ===== 평탄화(AI 입력용) =====
+  function flatten(data){
+    var lines=[];
+    (data.firms||[]).forEach(function(g){g.items.forEach(function(it){lines.push('['+g.firm+'] '+it.title);});});
+    (data.news||[]).forEach(function(g){g.items.forEach(function(it){lines.push('('+g.firm+') '+it.title);});});
+    return lines;
+  }
+
+  // ===== AI 종합요약 =====
+  var SCHEMA={type:'object',additionalProperties:false,
+    required:['date_label','headline_ko','summary_ko','key_points','markets','watch'],
+    properties:{
+      date_label:{type:'string'},headline_ko:{type:'string'},summary_ko:{type:'string'},
+      key_points:{type:'array',items:{type:'object',additionalProperties:false,required:['ko'],properties:{ko:{type:'string'}}}},
+      markets:{type:'array',items:{type:'object',additionalProperties:false,required:['name','value','change','note'],
+        properties:{name:{type:'string'},value:{type:'string'},change:{type:'string'},note:{type:'string'}}}},
+      watch:{type:'array',items:{type:'object',additionalProperties:false,required:['ko'],properties:{ko:{type:'string'}}}}
+    }};
+
+  function aiPrompt(lines){
+    return [
+      '당신은 미래에셋증권의 시황 전략가입니다. 아래는 오늘 아침 여러 증권사·매체가 낸 시황 코멘트 제목 모음입니다.',
+      '이들을 종합해 한국 투자자를 위한 "오늘의 시황 종합 브리핑" 한 장을 작성하세요.',
+      '규칙:',
+      '- 중복·유사 내용은 합치고, 여러 곳에서 공통으로 언급된 테마를 우선하세요.',
+      '- 특정 증권사 편향 없이 균형 있게 종합하세요.',
+      '- 지수/금리/환율/미국증시/유가 등 언급된 지표는 markets에 정리(값이 없으면 비워두고 지어내지 마세요). change는 "+0.8%", "-12bp"처럼 부호 포함.',
+      '- 제목만 있는 경우 정성적으로 요약하고 수치를 임의로 만들지 마세요.',
+      '- key_points 5~7개, 각 한 문장. 모두 한국어(개조식/간결체).',
+      '- date_label은 오늘 날짜.',
+      '',
+      '--- 오늘 아침 시황 제목 모음 ---',
+      lines.join('\n')
+    ].join('\n');
+  }
+
+  function callClaude(lines){
+    var key=localStorage.getItem(LS.key);
+    var model=localStorage.getItem(LS.model)||'claude-opus-5';
+    if(!key)return Promise.reject({msg:'API 키가 없습니다. 설정에서 입력하면 AI 종합요약을 쓸 수 있습니다.'});
+    var body={model:model,max_tokens:8000,output_config:{effort:'medium',format:{type:'json_schema',schema:SCHEMA}},
+      messages:[{role:'user',content:aiPrompt(lines)}]};
+    return fetch(API_URL,{method:'POST',headers:{'content-type':'application/json','x-api-key':key,
+      'anthropic-version':API_VERSION,'anthropic-dangerous-direct-browser-access':'true'},body:JSON.stringify(body)})
+      .then(function(r){return r.text().then(function(t){
+        var data;try{data=JSON.parse(t);}catch(e){throw {msg:'응답 파싱 실패',code:t.slice(0,200)};}
+        if(!r.ok){throw {msg:'API 오류',code:(data&&data.error&&data.error.message)||('HTTP '+r.status)};}
+        if(data.stop_reason==='refusal')throw {msg:'요청이 거부되었습니다(safety).',code:'refusal'};
+        var tb=null;(data.content||[]).forEach(function(b){if(b.type==='text'&&!tb)tb=b.text;});
+        if(!tb)throw {msg:'텍스트 응답 없음',code:data.stop_reason||''};
+        var parsed;try{parsed=JSON.parse(tb);}catch(e){throw {msg:'JSON 파싱 실패',code:tb.slice(0,200)};}
+        return {data:parsed,model:model,at:new Date().toISOString()};
+      });});
+  }
+
+  $('aiBtn').onclick=function(){
+    var raw=localStorage.getItem(rawKey());
+    if(!raw){showErr('먼저 시황을 수집하세요.');return;}
+    var data=JSON.parse(raw);var lines=flatten(data);
+    if(!lines.length){showErr('요약할 시황 제목이 없습니다.');return;}
+    if(!localStorage.getItem(LS.key)){openModal();return;}
+    $('aiBtn').disabled=true;
+    $('aiOut').innerHTML='<div class="card ai"><div class="loading"><div class="spinner"></div><div>수집한 시황을 하나로 종합 요약하는 중…</div></div></div>';
+    callClaude(lines).then(function(res){localStorage.setItem(aiKey(),JSON.stringify(res));$('aiBtn').disabled=false;renderAll();})
+      .catch(function(err){$('aiBtn').disabled=false;$('aiOut').innerHTML=errCard(err);});
+  };
+
+  function showErr(msg){$('aiOut').innerHTML=errCard({msg:msg});}
+  function errCard(err){return '<div class="card"><div class="errbox"><div>⚠︎ '+esc(err.msg||'오류')+'</div>'+(err.code?'<div class="code">'+esc(err.code)+'</div>':'')+'</div></div>';}
+
+  function chgClass(c){c=(c||'').trim();var f=c.charAt(0);if(f==='+')return 'up';if(f==='-')return 'down';return '';}
+
+  // ===== 렌더 =====
+  function renderBadges(data,ai){
+    var b=$('badges');if(!data){b.innerHTML='';return;}
+    var nf=(data.firms||[]).length,nn=(data.news||[]).length;
+    var html='<span class="badge live">실시간 수집</span>'+
+      '<span class="badge">증권사 '+nf+'곳 · 매체 '+nn+'곳</span>';
+    if(ai){var w=new Date(ai.at);var t=w.toLocaleString('ko-KR',{month:'short',day:'numeric',hour:'2-digit',minute:'2-digit'});
+      html+='<span class="badge blue">AI 종합 '+esc(ai.model)+'</span><span class="badge">요약 '+esc(t)+'</span>';}
+    b.innerHTML=html;
+  }
+
+  function renderAI(ai){
+    if(!ai){$('aiOut').innerHTML='';return;}
+    var d=ai.data;
+    var kp=(d.key_points||[]).map(function(p){return '<li>'+esc(p.ko)+'</li>';}).join('');
+    var mk=(d.markets||[]).map(function(m){var cc=chgClass(m.change);
+      return '<tr><td class="name">'+esc(m.name)+'</td><td class="val">'+esc(m.value||'')+'</td><td class="chg '+cc+'">'+esc(m.change||'')+'</td><td class="note">'+esc(m.note||'')+'</td></tr>';}).join('');
+    var wt=(d.watch||[]).map(function(w){return '<li>'+esc(w.ko)+'</li>';}).join('');
+    var h='<div class="card ai"><div class="hero-tag">AI 종합요약 · Morning Briefing</div>'+
+      '<h1 class="headline">'+esc(d.headline_ko)+'</h1>'+
+      '<div class="summary">'+esc(d.summary_ko)+'</div>';
+    if(kp)h+='<section class="block"><div class="section-rule"></div><h2 class="section-title">핵심 포인트</h2><ol class="keypoints">'+kp+'</ol></section>';
+    if(mk)h+='<section class="block"><div class="section-rule"></div><h2 class="section-title">시장 동향</h2><div class="table-wrap"><table class="markets"><thead><tr><th>자산</th><th>수준</th><th>변동</th><th>코멘트</th></tr></thead><tbody>'+mk+'</tbody></table></div></section>';
+    if(wt)h+='<section class="block"><div class="section-rule"></div><h2 class="section-title">오늘 체크포인트</h2><ol class="keypoints">'+wt+'</ol></section>';
+    h+='<div class="disclaimer">여러 증권사·매체 아침 시황을 AI가 종합·요약한 사내 참고용 자료입니다. 투자 판단의 근거가 아니며 원문과 대조하시기 바랍니다.</div></div>';
+    $('aiOut').innerHTML=h;
+  }
+
+  function groupHTML(title,groups){
+    if(!groups||!groups.length)return '';
+    var h='<section class="block"><div class="section-rule"></div><h2 class="section-title">'+esc(title)+'</h2>';
+    groups.forEach(function(g){
+      h+='<div class="grp"><div class="gh"><span class="firm">'+esc(g.firm)+'</span><span class="cnt">'+g.items.length+'건</span></div><ul class="items">';
+      g.items.forEach(function(it){
+        var t=it.link?('<a href="'+esc(it.link)+'" target="_blank" rel="noopener">'+esc(it.title)+'</a>'):esc(it.title);
+        h+='<li><span class="t">'+t+'</span><span class="d">'+esc(it.date||'')+'</span></li>';
+      });
+      h+='</ul></div>';
+    });
+    return h+'</section>';
+  }
+
+  function renderAgg(data){
+    if(!data){return;}
+    var h='<div class="card">';
+    var g1=groupHTML('증권사 시황 리포트 (네이버 금융 리서치)',data.firms);
+    var g2=groupHTML('주요 시황 뉴스 (Google 뉴스)',data.news);
+    if(!g1&&!g2){h+='<div class="errbox"><div>수집된 항목이 없습니다. 사내망 차단 또는 프록시 실패일 수 있습니다. 소스/검색어를 조정하거나 다시 시도하세요.</div></div>';}
+    else{h+=g1+g2;}
+    h+='</div>';
+    $('aggOut').innerHTML=h;
+  }
+
+  function renderAll(){
+    var raw=localStorage.getItem(rawKey());
+    var aiRaw=localStorage.getItem(aiKey());
+    var data=raw?JSON.parse(raw):null;
+    var ai=aiRaw?JSON.parse(aiRaw):null;
+    renderBadges(data,ai);
+    renderAI(ai);
+    if(data)renderAgg(data);
+  }
+
+  // ===== 설정 모달 =====
+  function openModal(){$('apiKey').value=localStorage.getItem(LS.key)||'';$('model').value=localStorage.getItem(LS.model)||'claude-opus-5';$('modalBack').classList.add('open');}
+  function closeModal(){$('modalBack').classList.remove('open');}
+  $('settingsBtn').onclick=openModal;$('modalCancel').onclick=closeModal;
+  $('modalBack').onclick=function(e){if(e.target===this)closeModal();};
+  $('modalSave').onclick=function(){localStorage.setItem(LS.key,$('apiKey').value.trim());localStorage.setItem(LS.model,$('model').value);closeModal();};
+  $('printBtn').onclick=function(){window.print();};
+
+  // ===== 공유용 내보내기 (오프라인 뷰어) =====
+  var VIEWER_CSS=`
+    :root{--mas-orange:#F58220;--mas-blue:#043B72;--accent-blue:#043B72;--th-bg:#FAB072;--th-fg:#1A1A1A;
+      --canvas:#fff;--surface-soft:#ECEFF4;--surface-subtle:#F7F8FA;--hairline:#CDCECB;--hairline-soft:#E5E4E1;
+      --ink:#1A1A1A;--body:#3D3D3D;--muted:#6C6C6C;--muted-soft:#84888B;--up:#C62828;--down:#043B72;--page:#EEF0F3;
+      --font-kr:'Noto Sans KR','Apple SD Gothic Neo','Malgun Gothic',sans-serif;--font-num:'Inter','SF Mono',monospace;}
+    @media (prefers-color-scheme:dark){:root{--canvas:#16181c;--surface-soft:#1e2229;--surface-subtle:#1a1d22;--hairline:#33373e;
+      --hairline-soft:#262a31;--ink:#f2f3f5;--body:#c7cbd1;--muted:#9aa0a8;--muted-soft:#7d838b;--up:#ff6b6b;--down:#5b9be0;
+      --accent-blue:#5b9be0;--th-bg:#7a5230;--th-fg:#f2f3f5;--page:#0e1013;}}
+    *{box-sizing:border-box;}html,body{margin:0;padding:0;}
+    body{background:var(--page);color:var(--ink);font-family:var(--font-kr);line-height:1.6;-webkit-font-smoothing:antialiased;}
+    a{color:var(--accent-blue);text-decoration:none;}a:hover{text-decoration:underline;}
+    .num{font-family:var(--font-num);}
+    .topbar{background:var(--canvas);border-bottom:1px solid var(--hairline);display:flex;align-items:center;gap:12px;padding:12px 20px;}
+    .brand{display:flex;align-items:baseline;gap:9px;}.brand .logo{width:13px;height:13px;background:var(--mas-orange);border-radius:2px;display:inline-block;}
+    .brand .name{font-weight:700;font-size:16px;}.brand .sub{font-size:12px;color:var(--muted);}.spacer{flex:1 1 auto;}
+    .btn{border:1px solid var(--hairline);background:var(--canvas);color:var(--ink);padding:8px 14px;font-size:13px;border-radius:2px;cursor:pointer;}
+    .page{max-width:960px;margin:0 auto;padding:24px 20px 70px;}
+    .badges{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px;}
+    .badge{font-size:11px;font-family:var(--font-num);padding:4px 9px;border-radius:2px;border:1px solid var(--hairline);color:var(--muted);}
+    .badge.live{border-color:var(--mas-orange);color:var(--mas-orange);}.badge.blue{border-color:var(--accent-blue);color:var(--accent-blue);}
+    .card{background:var(--canvas);border:1px solid var(--hairline);border-radius:4px;padding:28px 32px;margin-bottom:22px;}
+    .card.ai{border-top:3px solid var(--mas-orange);}
+    @media (max-width:768px){.card{padding:20px 18px;}}
+    .hero-tag{font-family:var(--font-num);font-size:12px;font-weight:600;letter-spacing:1px;color:var(--mas-orange);text-transform:uppercase;margin-bottom:6px;}
+    h1.headline{font-size:26px;font-weight:700;line-height:1.25;margin:0 0 14px;}
+    .summary{font-size:16px;line-height:1.7;color:var(--body);padding:16px 18px;background:var(--surface-soft);border-left:3px solid var(--mas-orange);border-radius:0 3px 3px 0;margin-bottom:28px;}
+    section.block{margin-bottom:28px;}section.block:last-child{margin-bottom:0;}
+    .section-rule{height:1px;background:var(--mas-orange);margin-bottom:12px;}
+    .section-title{font-size:18px;font-weight:700;margin:0 0 14px;}
+    ol.keypoints{list-style:none;counter-reset:kp;margin:0;padding:0;}
+    ol.keypoints li{counter-increment:kp;position:relative;padding:9px 0 9px 42px;border-bottom:1px solid var(--hairline-soft);font-size:15px;color:var(--body);}
+    ol.keypoints li:last-child{border-bottom:none;}
+    ol.keypoints li::before{content:counter(kp);position:absolute;left:0;top:9px;width:26px;height:26px;background:var(--mas-blue);color:#fff;font-family:var(--font-num);font-weight:600;font-size:13px;display:flex;align-items:center;justify-content:center;border-radius:2px;}
+    .table-wrap{overflow-x:auto;}
+    table.markets{width:100%;border-collapse:collapse;border:1px solid var(--hairline);font-size:14px;}
+    table.markets th{background:var(--th-bg);color:var(--th-fg);font-weight:700;text-align:left;padding:9px 13px;font-size:13px;}
+    table.markets td{padding:9px 13px;border-top:1px solid var(--hairline-soft);}
+    table.markets td.name{font-weight:600;white-space:nowrap;}table.markets td.val,table.markets td.chg{font-family:var(--font-num);white-space:nowrap;}
+    table.markets td.chg.up{color:var(--up);}table.markets td.chg.down{color:var(--down);}table.markets td.note{color:var(--muted);}
+    .grp{margin-bottom:20px;}.grp .gh{display:flex;align-items:baseline;gap:8px;margin-bottom:6px;}
+    .grp .gh .firm{font-weight:700;font-size:15px;}.grp .gh .cnt{font-size:12px;color:var(--muted-soft);font-family:var(--font-num);}
+    ul.items{list-style:none;margin:0;padding:0;}ul.items li{padding:7px 0;border-bottom:1px solid var(--hairline-soft);font-size:14px;display:flex;gap:10px;}
+    ul.items li:last-child{border-bottom:none;}ul.items li .t{flex:1;color:var(--body);}ul.items li .d{color:var(--muted-soft);font-family:var(--font-num);font-size:12px;white-space:nowrap;}
+    .disclaimer{margin-top:8px;font-size:12px;color:var(--muted-soft);line-height:1.6;}
+    @media print{.topbar,.badges{display:none!important;}body{background:#fff;}.page{padding:0;}.card{border:none;padding:0 0 18px;}@page{margin:14mm;}}
+  `;
+  var VIEWER_JS=`
+    (function(){
+      "use strict";
+      function esc(s){return String(s==null?'':s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});}
+      function chgClass(c){c=(c||'').trim();var f=c.charAt(0);if(f==='+')return 'up';if(f==='-')return 'down';return '';}
+      function groupHTML(title,groups){if(!groups||!groups.length)return '';
+        var h='<section class="block"><div class="section-rule"></div><h2 class="section-title">'+esc(title)+'</h2>';
+        groups.forEach(function(g){h+='<div class="grp"><div class="gh"><span class="firm">'+esc(g.firm)+'</span><span class="cnt">'+g.items.length+'건</span></div><ul class="items">';
+          g.items.forEach(function(it){var t=it.link?('<a href="'+esc(it.link)+'" target="_blank" rel="noopener">'+esc(it.title)+'</a>'):esc(it.title);
+            h+='<li><span class="t">'+t+'</span><span class="d">'+esc(it.date||'')+'</span></li>';});
+          h+='</ul></div>';});
+        return h+'</section>';}
+      function badges(){var h='<span class="badge live">시황 종합</span><span class="badge">'+esc(RAW.date||'')+'</span>';
+        if(AI){var w=new Date(AI.at);var t=w.toLocaleString('ko-KR',{month:'short',day:'numeric',hour:'2-digit',minute:'2-digit'});
+          h+='<span class="badge blue">AI '+esc(AI.model)+'</span><span class="badge">요약 '+esc(t)+'</span>';}
+        return h;}
+      function renderAI(){if(!AI)return '';var d=AI.data;
+        var kp=(d.key_points||[]).map(function(p){return '<li>'+esc(p.ko)+'</li>';}).join('');
+        var mk=(d.markets||[]).map(function(m){var cc=chgClass(m.change);return '<tr><td class="name">'+esc(m.name)+'</td><td class="val">'+esc(m.value||'')+'</td><td class="chg '+cc+'">'+esc(m.change||'')+'</td><td class="note">'+esc(m.note||'')+'</td></tr>';}).join('');
+        var wt=(d.watch||[]).map(function(w){return '<li>'+esc(w.ko)+'</li>';}).join('');
+        var h='<div class="card ai"><div class="hero-tag">AI 종합요약 · Morning Briefing</div><h1 class="headline">'+esc(d.headline_ko)+'</h1><div class="summary">'+esc(d.summary_ko)+'</div>';
+        if(kp)h+='<section class="block"><div class="section-rule"></div><h2 class="section-title">핵심 포인트</h2><ol class="keypoints">'+kp+'</ol></section>';
+        if(mk)h+='<section class="block"><div class="section-rule"></div><h2 class="section-title">시장 동향</h2><div class="table-wrap"><table class="markets"><thead><tr><th>자산</th><th>수준</th><th>변동</th><th>코멘트</th></tr></thead><tbody>'+mk+'</tbody></table></div></section>';
+        if(wt)h+='<section class="block"><div class="section-rule"></div><h2 class="section-title">오늘 체크포인트</h2><ol class="keypoints">'+wt+'</ol></section>';
+        h+='<div class="disclaimer">여러 증권사·매체 아침 시황을 AI가 종합·요약한 사내 참고용 자료입니다. 투자 판단의 근거가 아니며 원문과 대조하시기 바랍니다.</div></div>';
+        return h;}
+      document.getElementById('badges').innerHTML=badges();
+      document.getElementById('aiOut').innerHTML=renderAI();
+      document.getElementById('aggOut').innerHTML='<div class="card">'+groupHTML('증권사 시황 리포트 (네이버 금융 리서치)',RAW.firms)+groupHTML('주요 시황 뉴스 (Google 뉴스)',RAW.news)+'</div>';
+      document.getElementById('printBtn').onclick=function(){window.print();};
+    })();
+  `;
+  function buildViewerHTML(raw,ai){
+    var rjson=JSON.stringify(raw).replace(/</g,'\\u003c');
+    var ajson=JSON.stringify(ai||null).replace(/</g,'\\u003c');
+    return '<!DOCTYPE html>\n<html lang="ko">\n<head>\n<meta charset="UTF-8">\n<meta name="viewport" content="width=device-width, initial-scale=1.0">\n'+
+      '<title>증권사 아침 시황 종합 · '+esc(raw.date||'')+'</title>\n<style>'+VIEWER_CSS+'</style>\n</head>\n<body>'+
+      '<div class="topbar"><div class="brand"><span class="logo"></span><span class="name">증권사 아침 시황 종합</span><span class="sub">'+esc(raw.date||'')+'</span></div><div class="spacer"></div><button class="btn" id="printBtn">🖨 인쇄 / PDF</button></div>'+
+      '<div class="page"><div class="badges" id="badges"></div><div id="aiOut"></div><div id="aggOut"></div></div>'+
+      '\n<'+'script>\nvar RAW='+rjson+';\nvar AI='+ajson+';\n'+VIEWER_JS+'\n<'+'/script>\n</body>\n</html>';
+  }
+  $('exportBtn').onclick=function(){
+    var raw=localStorage.getItem(rawKey());
+    if(!raw){showErr('먼저 시황을 수집한 뒤 내보낼 수 있습니다.');return;}
+    var data=JSON.parse(raw);
+    var aiRaw=localStorage.getItem(aiKey());var ai=aiRaw?JSON.parse(aiRaw):null;
+    var html=buildViewerHTML(data,ai);
+    var blob=new Blob([html],{type:'text/html;charset=utf-8'});
+    var url=URL.createObjectURL(blob);var a=document.createElement('a');
+    a.href=url;a.download='시황종합-'+(data.date||'today')+'.html';
+    document.body.appendChild(a);a.click();a.remove();
+    setTimeout(function(){URL.revokeObjectURL(url);},1000);
+  };
+
+  // ===== 초기화 =====
+  (function(){
+    try{var s=JSON.parse(localStorage.getItem(LS.src));if(s){$('srcNaver').checked=!!s.naver;$('srcNews').checked=!!s.news;}}catch(e){}
+    renderQ();
+    if(localStorage.getItem(rawKey()))renderAll();
+  })();
+})();
+</script>
+</body>
+</html>
