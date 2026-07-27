@@ -427,6 +427,7 @@ function toast(m){ const t=document.getElementById("toast"); t.textContent=m; t.
 /* ============ 상태 ============ */
 const LS="mirae_briefing_v1";              // (구버전 단일 목록 — 마이그레이션용)
 const PROF_LS="mirae_briefing_profiles_v1"; // 고객별 프로필 저장소
+const TRANS_LS="mirae_briefing_translate";  // 해외 뉴스 한글 번역 on/off 기억
 let holdings=[]; // {key,code,reutersCode,name,type,domestic,yahooSymbol,typeName, brief, status, loading}
 let filter={type:"all",status:"all"};
 
@@ -721,6 +722,44 @@ async function loadNews(h){
   try{ const r=await yahooNews(yhOverseasSymbol(h)); if(r.length) return r; }catch(e){}
   try{ return collectNews(await nvApi("/news/worldStock/"+encodeURIComponent(h.reutersCode)+"?pageSize=30&page=1")); }catch(e){ return []; }
 }
+
+/* ============ 한글 번역 (구글 무료 엔드포인트, 키 불필요) ============ */
+const TURL="https://translate.googleapis.com/translate_a/single?client=gtx&sl=auto&tl=ko&dt=t&q=";
+const TCACHE=new Map();
+async function tKo(text){ if(!text) return text; if(TCACHE.has(text)) return TCACHE.get(text);
+  try{ const j=await proxy(TURL+encodeURIComponent(text)); const out=((j&&j[0])?j[0].map(s=>(s&&s[0])||"").join(""):text)||text; TCACHE.set(text,out); return out; }
+  catch(e){ return text; } }
+async function tChunk(texts){
+  const joined=texts.join("\n");
+  try{ const j=await proxy(TURL+encodeURIComponent(joined)); const full=(j&&j[0])?j[0].map(s=>(s&&s[0])||"").join(""):""; const lines=full.split("\n"); if(lines.length===texts.length) return lines; }catch(e){}
+  const out=[]; for(const t of texts) out.push(await tKo(t)); return out;   // 개수 불일치 시 개별 폴백
+}
+async function tKoBatch(texts){
+  const out=new Array(texts.length); let i=0;
+  while(i<texts.length){ const start=i; let chunk=[],len=0;
+    while(i<texts.length && (chunk.length===0 || len+texts[i].length<1400)){ chunk.push(texts[i]); len+=texts[i].length+1; i++; }
+    const res=await tChunk(chunk); for(let k=0;k<chunk.length;k++) out[start+k]=res[k]||chunk[k];
+  }
+  return out;
+}
+function transOn(){ try{ return localStorage.getItem(TRANS_LS)==="1"; }catch(e){ return false; } }
+function updateTransBtn(){ const tb=document.getElementById("btnTransNews"); if(tb&&!tb.disabled) tb.textContent=transOn()?"원문 보기":"한글 번역"; }
+async function applyNewsTranslation(){
+  const box=document.getElementById("dNews"); if(!box) return;
+  const titles=[...box.querySelectorAll(".li .t")]; if(!titles.length){ updateTransBtn(); return; }
+  const tb=document.getElementById("btnTransNews");
+  if(transOn()){
+    if(tb){ tb.disabled=true; tb.textContent="번역 중…"; }
+    const origs=titles.map(el=>{ if(!el.dataset.orig) el.dataset.orig=el.textContent; return el.dataset.orig; });
+    const kos=await tKoBatch(origs);
+    titles.forEach((el,i)=>{ el.textContent=kos[i]||el.dataset.orig; });
+    if(tb){ tb.disabled=false; }
+  } else {
+    titles.forEach(el=>{ if(el.dataset.orig) el.textContent=el.dataset.orig; });
+  }
+  updateTransBtn();
+}
+function toggleTrans(){ try{ localStorage.setItem(TRANS_LS, transOn()?"0":"1"); }catch(e){} applyNewsTranslation(); }
 
 /* ============ 상태 판정 ============ */
 function deriveStatus(h){
@@ -1122,12 +1161,16 @@ function openDetail(key){
   // 리포트 클릭
   const rl=document.getElementById("dReports");
   if(rl) rl.onclick=(e)=>{ const li=e.target.closest(".li"); if(li&&li.dataset.idx!=null) openReport(h.code, b.reports[+li.dataset.idx]); };
-  // 더 보기 / 접기 토글
+  // 더 보기 / 접기 토글 (번역 버튼은 제외)
   [...document.getElementById("dBody").querySelectorAll(".more-btn")].forEach(btn=>{
+    if(btn.id==="btnTransNews") return;
     btn.onclick=()=>{ const box=document.getElementById(btn.dataset.t); if(!box) return;
       const collapsed=box.classList.toggle("collapsed");
       btn.textContent=collapsed?("더 보기 (+"+btn.dataset.n+")"):"접기"; };
   });
+  // 해외 뉴스 한글 번역 토글 + 저장된 설정이면 자동 적용
+  const tb=document.getElementById("btnTransNews");
+  if(tb){ tb.onclick=toggleTrans; updateTransBtn(); if(transOn()) applyNewsTranslation(); }
 }
 /* 리스트를 initN개만 보여주고 나머지는 '더 보기'로 펼침(접기) */
 function listMore(id, itemsHtml, initN){
@@ -1206,8 +1249,9 @@ function detailStockEtf(h,b){
   // 최근 뉴스 / 시황
   if(b.news&&b.news.length){
     const items=b.news.map(n=>'<a class="li"'+(n.link?' href="'+esc(n.link)+'" target="_blank" rel="noopener"':'')+'><div class="t">'+esc(n.title)+'</div><div class="m"><span class="badge">'+esc(n.press||"뉴스")+'</span> '+esc(n.date||"")+'</div></a>');
-    html+='<div class="sec"><div class="sec-t">최근 뉴스 · 시황 · 총 '+b.news.length+'건</div>'+listMore("dNews",items,5)+
-      '<div class="muted" style="margin-top:6px;font-size:11px">제목 클릭 시 원문(새 탭)으로 이동</div></div>';
+    const transBtn=!h.domestic?'<button class="more-btn" id="btnTransNews" style="margin-left:8px">한글 번역</button>':'';
+    html+='<div class="sec"><div class="sec-t">최근 뉴스 · 시황 · 총 '+b.news.length+'건</div>'+listMore("dNews",items,5)+transBtn+
+      '<div class="muted" style="margin-top:6px;font-size:11px">제목 클릭 시 원문(새 탭)으로 이동'+(!h.domestic?' · 번역은 참고용(구글 자동번역)':'')+'</div></div>';
   }
   // 다음 액션
   html+='<div class="sec"><div class="sec-t">브리핑 코멘트</div><div class="action-box">'+comment(h,b)+'</div></div>';
