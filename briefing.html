@@ -1,0 +1,686 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Bloomberg 브리핑 · 아침 번역 요약</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    /* ===== 미래에셋 디자인 토큰 (mas-design) ===== */
+    :root {
+      --mas-orange: #F58220;
+      --mas-orange-active: #CB6015;
+      --mas-orange-soft: #FAB072;
+      --mas-blue: #043B72;
+      --canvas: #FFFFFF;
+      --surface-soft: #ECEFF4;
+      --surface-subtle: #F7F8FA;
+      --hairline: #CDCECB;
+      --hairline-soft: #E5E4E1;
+      --ink: #1A1A1A;
+      --body: #3D3D3D;
+      --muted: #6C6C6C;
+      --muted-soft: #84888B;
+      --up: #C62828;    /* 상승 = 빨강(국내 관행) */
+      --down: #043B72;  /* 하락 = 블루 */
+      --font-kr: 'Noto Sans KR', 'Spoqa Han Sans Neo', 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif;
+      --font-en: 'Inter', 'Aptos', 'Segoe UI', system-ui, sans-serif;
+      --font-num: 'Inter', 'SF Mono', monospace;
+    }
+
+    * { box-sizing: border-box; }
+    html, body { margin: 0; padding: 0; }
+    body {
+      font-family: var(--font-kr);
+      background: var(--surface-subtle);
+      color: var(--ink);
+      line-height: 1.65;
+      -webkit-font-smoothing: antialiased;
+    }
+    html[lang="en"] body { font-family: var(--font-en); }
+    .num { font-family: var(--font-num); font-variant-numeric: tabular-nums; }
+
+    /* 언어별 표시 토글 */
+    html[lang="ko"] [data-en] { display: none; }
+    html[lang="en"] [data-ko] { display: none; }
+
+    /* ===== 상단 바 ===== */
+    .topbar {
+      position: sticky; top: 0; z-index: 30; background: var(--canvas);
+      border-bottom: 1px solid var(--hairline);
+      display: flex; align-items: center; gap: 16px;
+      padding: 12px 24px; flex-wrap: wrap;
+    }
+    .brand { display: flex; align-items: baseline; gap: 10px; }
+    .brand .logo { width: 14px; height: 14px; background: var(--mas-orange); display: inline-block; border-radius: 2px; }
+    .brand .name { font-weight: 700; font-size: 17px; letter-spacing: -.02em; color: var(--ink); white-space: nowrap; }
+    .brand .sub { font-size: 12px; color: var(--muted); }
+    .spacer { flex: 1 1 auto; }
+
+    .btn {
+      border: 1px solid var(--hairline); background: var(--canvas); color: var(--ink);
+      padding: 9px 15px; font-size: 14px; border-radius: 2px; cursor: pointer;
+      white-space: nowrap; font-family: inherit; transition: border-color .15s, background .15s;
+    }
+    .btn:hover { border-color: var(--mas-orange); }
+    .btn-primary { background: var(--mas-orange); color: #fff; border-color: transparent; font-weight: 600; }
+    .btn-primary:hover { background: var(--mas-orange-active); }
+    .btn:disabled { opacity: .5; cursor: not-allowed; }
+
+    /* 한/영 토글 */
+    .lang-toggle { display: inline-flex; border: 1px solid var(--hairline); border-radius: 2px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
+    .lang-toggle button {
+      border: none; background: var(--canvas); color: #6C6C6C; font-family: var(--font-en);
+      font-size: 14px; font-weight: 500; letter-spacing: .5px; padding: 9px 16px; cursor: pointer;
+    }
+    .lang-toggle button + button { border-left: 1px solid var(--hairline); }
+    .lang-toggle button:hover { background: var(--surface-subtle); color: var(--ink); }
+    .lang-toggle button.on { background: var(--mas-orange); color: #fff; }
+
+    /* ===== 레이아웃 ===== */
+    .page { max-width: 940px; margin: 0 auto; padding: 28px 24px 80px; }
+    @media (max-width: 768px) { .page { padding: 20px 16px 60px; } }
+
+    /* 소스 입력 패널 */
+    .source-panel {
+      background: var(--canvas); border: 1px solid var(--hairline); border-radius: 4px;
+      margin-bottom: 24px; overflow: hidden;
+    }
+    .source-head {
+      display: flex; align-items: center; gap: 10px; padding: 12px 16px;
+      border-bottom: 1px solid var(--hairline-soft); background: var(--surface-subtle);
+    }
+    .source-head .title { font-weight: 600; font-size: 14px; }
+    .tabs { display: inline-flex; gap: 4px; margin-left: 8px; }
+    .tab { font-size: 13px; padding: 5px 12px; border: 1px solid var(--hairline); background: var(--canvas); border-radius: 2px; cursor: pointer; color: var(--muted); }
+    .tab.on { background: var(--mas-blue); color: #fff; border-color: transparent; }
+    .source-body { padding: 16px; }
+    .source-body textarea {
+      width: 100%; min-height: 150px; resize: vertical; padding: 12px 14px;
+      border: 1px solid var(--hairline); border-radius: 3px; font-family: var(--font-en);
+      font-size: 14px; line-height: 1.55; color: var(--body); background: var(--surface-subtle);
+    }
+    .source-body textarea:focus { outline: 2px solid var(--mas-orange); outline-offset: 0; border-color: transparent; }
+    .rss-list { display: flex; flex-direction: column; gap: 8px; }
+    .rss-list input { width: 100%; padding: 9px 12px; border: 1px solid var(--hairline); border-radius: 3px; font-family: var(--font-en); font-size: 13px; }
+    .hint { font-size: 12px; color: var(--muted); margin-top: 10px; line-height: 1.5; }
+    .row { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; margin-top: 12px; }
+
+    /* 배지 */
+    .badges { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; margin-bottom: 16px; }
+    .badge { font-size: 11px; font-family: var(--font-en); letter-spacing: .3px; padding: 4px 9px; border-radius: 2px; border: 1px solid var(--hairline); color: var(--muted); background: var(--canvas); }
+    .badge.live { border-color: var(--mas-orange); color: var(--mas-orange-active); }
+    .badge.blue { border-color: var(--mas-blue); color: var(--mas-blue); }
+
+    /* ===== 브리핑 본문 ===== */
+    .briefing { background: var(--canvas); border: 1px solid var(--hairline); border-radius: 4px; padding: 40px 44px; }
+    @media (max-width: 768px) { .briefing { padding: 24px 20px; } }
+
+    .hero-tag { font-family: var(--font-en); font-size: 12px; font-weight: 600; letter-spacing: 1px; color: var(--mas-orange); text-transform: uppercase; margin-bottom: 6px; }
+    .hero-date { font-family: var(--font-en); font-size: 14px; color: var(--muted); margin-bottom: 14px; }
+    h1.headline { font-size: 30px; font-weight: 700; line-height: 1.25; letter-spacing: -.3px; margin: 0 0 18px; color: var(--ink); }
+    @media (max-width: 768px) { h1.headline { font-size: 23px; } }
+
+    .summary { font-size: 17px; line-height: 1.7; color: var(--body); padding: 18px 20px; background: var(--surface-soft); border-left: 3px solid var(--mas-orange); border-radius: 0 3px 3px 0; margin-bottom: 40px; }
+
+    section.block { margin-bottom: 40px; }
+    .section-rule { height: 1px; background: var(--mas-orange); margin-bottom: 14px; }
+    .section-title { font-size: 20px; font-weight: 700; color: var(--ink); margin: 0 0 16px; letter-spacing: -.2px; }
+
+    /* 핵심 포인트 */
+    ol.keypoints { list-style: none; counter-reset: kp; margin: 0; padding: 0; }
+    ol.keypoints li { counter-increment: kp; position: relative; padding: 10px 0 10px 44px; border-bottom: 1px solid var(--hairline-soft); font-size: 16px; line-height: 1.6; color: var(--body); }
+    ol.keypoints li:last-child { border-bottom: none; }
+    ol.keypoints li::before {
+      content: counter(kp); position: absolute; left: 0; top: 10px;
+      width: 28px; height: 28px; background: var(--mas-blue); color: #fff;
+      font-family: var(--font-en); font-weight: 600; font-size: 14px;
+      display: flex; align-items: center; justify-content: center; border-radius: 2px;
+    }
+
+    /* 시장 표 */
+    table.markets { width: 100%; border-collapse: collapse; border: 1px solid var(--hairline); font-size: 15px; }
+    table.markets th { background: var(--mas-orange-soft); color: #1A1A1A; font-weight: 700; text-align: left; padding: 10px 14px; font-size: 14px; }
+    table.markets td { padding: 10px 14px; border-top: 1px solid var(--hairline-soft); vertical-align: top; }
+    table.markets td.name { font-weight: 600; white-space: nowrap; }
+    table.markets td.val { font-family: var(--font-num); font-variant-numeric: tabular-nums; white-space: nowrap; }
+    table.markets td.chg { font-family: var(--font-num); white-space: nowrap; font-weight: 600; }
+    table.markets td.chg.up { color: var(--up); }
+    table.markets td.chg.down { color: var(--down); }
+    table.markets td.note { color: var(--muted); font-size: 14px; }
+    table.markets tr:hover td { background: var(--surface-subtle); }
+    .table-wrap { overflow-x: auto; }
+
+    /* 주목 이슈 */
+    ul.watch { list-style: none; margin: 0; padding: 0; }
+    ul.watch li { position: relative; padding: 8px 0 8px 20px; font-size: 16px; color: var(--body); line-height: 1.6; }
+    ul.watch li::before { content: "▸"; position: absolute; left: 0; top: 8px; color: var(--mas-orange); }
+
+    .disclaimer { margin-top: 44px; padding-top: 16px; border-top: 1px solid var(--hairline-soft); font-size: 12px; color: var(--muted-soft); line-height: 1.6; }
+
+    /* 빈 상태 / 로딩 */
+    .empty, .loading, .errbox { text-align: center; padding: 60px 20px; color: var(--muted); }
+    .empty .big { font-size: 18px; color: var(--ink); font-weight: 600; margin-bottom: 8px; }
+    .spinner { width: 34px; height: 34px; border: 3px solid var(--hairline); border-top-color: var(--mas-orange); border-radius: 50%; margin: 0 auto 16px; animation: spin .8s linear infinite; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .errbox { color: var(--up); }
+    .errbox .code { font-family: var(--font-num); font-size: 13px; background: var(--surface-soft); color: var(--body); padding: 8px 12px; border-radius: 3px; display: inline-block; margin-top: 10px; }
+
+    /* ===== 설정 모달 ===== */
+    .modal-back { position: fixed; inset: 0; background: rgba(0,0,0,.4); z-index: 50; display: none; align-items: center; justify-content: center; padding: 20px; }
+    .modal-back.open { display: flex; }
+    .modal { background: var(--canvas); border-radius: 4px; width: 100%; max-width: 460px; padding: 24px; box-shadow: 0 8px 40px rgba(0,0,0,.25); }
+    .modal h2 { font-size: 18px; margin: 0 0 4px; }
+    .modal .msub { font-size: 13px; color: var(--muted); margin-bottom: 18px; }
+    .field { margin-bottom: 16px; }
+    .field label { display: block; font-size: 13px; font-weight: 600; margin-bottom: 6px; }
+    .field input, .field select { width: 100%; padding: 10px 12px; border: 1px solid var(--hairline); border-radius: 3px; font-size: 14px; font-family: var(--font-en); }
+    .field .fhint { font-size: 12px; color: var(--muted); margin-top: 6px; line-height: 1.5; }
+    .field .check { display: flex; align-items: center; gap: 8px; font-size: 14px; font-family: var(--font-kr); }
+    .field .check input { width: auto; }
+    .modal-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px; }
+
+    @media (max-width: 520px) {
+      .topbar { gap: 10px; padding: 10px 16px; }
+      .brand .sub { display: none; }
+    }
+
+    /* ===== 인쇄 (A4 1장) ===== */
+    @media print {
+      .topbar, .source-panel, .modal-back, .badges .badge.action, #genBtn, #printBtn, #settingsBtn, #refreshBtn { display: none !important; }
+      body { background: #fff; }
+      .page { max-width: 100%; padding: 0; }
+      .briefing { border: none; padding: 0; }
+      section.block { page-break-inside: avoid; }
+      .section-title, h1.headline { page-break-after: avoid; }
+      table.markets { page-break-inside: avoid; }
+      @page { margin: 14mm; }
+    }
+  </style>
+</head>
+<body>
+  <div class="topbar">
+    <div class="brand">
+      <span class="logo"></span>
+      <span class="name">Bloomberg 브리핑</span>
+      <span class="sub" data-ko>아침 자동 번역·요약</span>
+      <span class="sub" data-en>Morning auto-translate briefing</span>
+    </div>
+    <div class="spacer"></div>
+    <div class="lang-toggle" role="radiogroup" aria-label="언어">
+      <button id="langKo" class="on" role="radio" aria-checked="true">KO</button>
+      <button id="langEn" role="radio" aria-checked="false">EN</button>
+    </div>
+    <button class="btn" id="settingsBtn" title="설정">⚙︎ <span data-ko>설정</span><span data-en>Settings</span></button>
+    <button class="btn" id="printBtn" title="인쇄/PDF">🖨 <span data-ko>인쇄</span><span data-en>Print</span></button>
+    <button class="btn btn-primary" id="genBtn"><span data-ko>번역·요약 생성</span><span data-en>Generate</span></button>
+  </div>
+
+  <div class="page">
+    <!-- 소스 입력 -->
+    <div class="source-panel" id="sourcePanel">
+      <div class="source-head">
+        <span class="title" data-ko>원문 소스</span>
+        <span class="title" data-en>Source</span>
+        <div class="tabs">
+          <button class="tab on" data-tab="paste"><span data-ko>붙여넣기</span><span data-en>Paste</span></button>
+          <button class="tab" data-tab="rss"><span data-ko>자동수집(RSS)</span><span data-en>Auto (RSS)</span></button>
+        </div>
+        <div class="spacer"></div>
+        <button class="btn" id="collapseBtn" style="padding:4px 10px;font-size:12px;">▲</button>
+      </div>
+      <div class="source-body" id="sourceBody">
+        <div id="paneP">
+          <textarea id="srcText" placeholder="Bloomberg 'Five Things to Start Your Day' 등 아침 브리핑 원문(영문)을 여기에 붙여넣으세요."></textarea>
+          <div class="hint" data-ko>원문을 붙여넣고 <b>번역·요약 생성</b>을 누르면 1장짜리 한국어 브리핑이 만들어집니다. 결과는 그날 하루 자동 저장되어, 다시 열면 바로 표시됩니다.</div>
+          <div class="hint" data-en>Paste the original briefing and click <b>Generate</b> to produce a one-page Korean summary. The result is cached for the day and shown automatically on revisit.</div>
+        </div>
+        <div id="paneR" style="display:none;">
+          <div class="rss-list" id="rssList"></div>
+          <div class="row">
+            <button class="btn" id="addRss" style="padding:6px 12px;font-size:13px;">+ <span data-ko>피드 추가</span><span data-en>Add feed</span></button>
+            <button class="btn" id="fetchRss" style="padding:6px 12px;font-size:13px;"><span data-ko>지금 수집</span><span data-en>Fetch now</span></button>
+            <span class="hint" id="rssStatus" style="margin-top:0;"></span>
+          </div>
+          <div class="hint" data-ko>공개 RSS를 CORS 프록시로 수집해 원문 영역을 채웁니다. Bloomberg 전문 기사는 유료 구독으로 막혀 있을 수 있어, 안정적인 결과는 <b>붙여넣기</b>를 권장합니다.</div>
+          <div class="hint" data-en>Fetches public RSS via a CORS proxy into the source box. Full Bloomberg articles are often paywalled — Paste mode is the reliable path.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="badges" id="badges"></div>
+
+    <!-- 브리핑 출력 -->
+    <div class="briefing" id="briefing">
+      <div class="empty">
+        <div class="big" data-ko>아직 오늘의 브리핑이 없습니다</div>
+        <div class="big" data-en>No briefing yet for today</div>
+        <div data-ko>① 우측 상단 <b>설정</b>에서 Claude API 키를 입력하고 ② 원문을 붙여넣은 뒤 ③ <b>번역·요약 생성</b>을 누르세요.</div>
+        <div data-en>① Enter your Claude API key in <b>Settings</b>, ② paste the source, then ③ click <b>Generate</b>.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 설정 모달 -->
+  <div class="modal-back" id="modalBack">
+    <div class="modal">
+      <h2 data-ko>설정</h2>
+      <h2 data-en>Settings</h2>
+      <div class="msub" data-ko>키는 이 브라우저에만 저장됩니다(localStorage). 서버로 전송되지 않습니다.</div>
+      <div class="msub" data-en>Your key is stored only in this browser (localStorage). It is never sent to any server.</div>
+
+      <div class="field">
+        <label>Claude API Key</label>
+        <input type="password" id="apiKey" placeholder="sk-ant-..." autocomplete="off" />
+        <div class="fhint" data-ko>console.anthropic.com 에서 발급받은 키를 입력하세요.</div>
+        <div class="fhint" data-en>Paste a key from console.anthropic.com.</div>
+      </div>
+
+      <div class="field">
+        <label data-ko>모델</label><label data-en>Model</label>
+        <select id="model">
+          <option value="claude-opus-5">Claude Opus 5 (최고 품질)</option>
+          <option value="claude-sonnet-5">Claude Sonnet 5 (균형·경제적)</option>
+          <option value="claude-haiku-4-5">Claude Haiku 4.5 (가장 빠름·저렴)</option>
+        </select>
+      </div>
+
+      <div class="field">
+        <div class="check">
+          <input type="checkbox" id="autoDaily" />
+          <label for="autoDaily" style="margin:0;font-weight:400;">
+            <span data-ko>아침에 열면 자동으로 생성 (원문/RSS + 키가 준비된 경우)</span>
+            <span data-en>Auto-generate on open each morning (if source/RSS + key ready)</span>
+          </label>
+        </div>
+      </div>
+
+      <div class="modal-actions">
+        <button class="btn" id="modalCancel"><span data-ko>닫기</span><span data-en>Close</span></button>
+        <button class="btn btn-primary" id="modalSave"><span data-ko>저장</span><span data-en>Save</span></button>
+      </div>
+    </div>
+  </div>
+
+<script>
+(function () {
+  "use strict";
+
+  var LS = {
+    key: 'bbg_api_key', model: 'bbg_model', auto: 'bbg_auto',
+    lang: 'bbg_lang', rss: 'bbg_rss', tab: 'bbg_tab', src: 'bbg_src'
+  };
+  var API_URL = 'https://api.anthropic.com/v1/messages';
+  var API_VERSION = '2023-06-01';
+
+  var DEFAULT_RSS = [
+    'https://feeds.bloomberg.com/markets/news.rss',
+    'https://feeds.bloomberg.com/economics/news.rss'
+  ];
+
+  // CORS 프록시 폴백 (기존 대시보드와 동일 전략)
+  var PROXIES = [
+    function (u) { return u; },
+    function (u) { return 'https://corsproxy.io/?url=' + encodeURIComponent(u); },
+    function (u) { return 'https://api.allorigins.win/raw?url=' + encodeURIComponent(u); }
+  ];
+
+  function $(id) { return document.getElementById(id); }
+  function todayKey() {
+    var d = new Date();
+    return 'bbg_cache_' + d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate());
+  }
+  function pad(n) { return n < 10 ? '0' + n : '' + n; }
+  function esc(s) {
+    return String(s == null ? '' : s).replace(/[&<>"]/g, function (c) {
+      return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c];
+    });
+  }
+
+  // ===== 언어 =====
+  function setLang(lang) {
+    document.documentElement.setAttribute('lang', lang);
+    $('langKo').classList.toggle('on', lang === 'ko');
+    $('langEn').classList.toggle('on', lang === 'en');
+    $('langKo').setAttribute('aria-checked', lang === 'ko');
+    $('langEn').setAttribute('aria-checked', lang === 'en');
+    localStorage.setItem(LS.lang, lang);
+  }
+  $('langKo').onclick = function () { setLang('ko'); render(); };
+  $('langEn').onclick = function () { setLang('en'); render(); };
+
+  // ===== 소스 패널 =====
+  var curTab = localStorage.getItem(LS.tab) || 'paste';
+  function setTab(t) {
+    curTab = t;
+    localStorage.setItem(LS.tab, t);
+    var tabs = document.querySelectorAll('.tab');
+    for (var i = 0; i < tabs.length; i++) tabs[i].classList.toggle('on', tabs[i].getAttribute('data-tab') === t);
+    $('paneP').style.display = t === 'paste' ? '' : 'none';
+    $('paneR').style.display = t === 'rss' ? '' : 'none';
+  }
+  var tabEls = document.querySelectorAll('.tab');
+  for (var i = 0; i < tabEls.length; i++) {
+    (function (el) { el.onclick = function () { setTab(el.getAttribute('data-tab')); }; })(tabEls[i]);
+  }
+  var collapsed = false;
+  $('collapseBtn').onclick = function () {
+    collapsed = !collapsed;
+    $('sourceBody').style.display = collapsed ? 'none' : '';
+    this.textContent = collapsed ? '▼' : '▲';
+  };
+  $('srcText').value = localStorage.getItem(LS.src) || '';
+  $('srcText').addEventListener('input', function () { localStorage.setItem(LS.src, this.value); });
+
+  // ===== RSS 피드 목록 =====
+  function loadRss() {
+    try { return JSON.parse(localStorage.getItem(LS.rss)) || DEFAULT_RSS.slice(); }
+    catch (e) { return DEFAULT_RSS.slice(); }
+  }
+  function saveRss(arr) { localStorage.setItem(LS.rss, JSON.stringify(arr)); }
+  function renderRss() {
+    var arr = loadRss(), box = $('rssList');
+    box.innerHTML = '';
+    arr.forEach(function (url, idx) {
+      var wrap = document.createElement('div');
+      wrap.style.display = 'flex'; wrap.style.gap = '6px';
+      var inp = document.createElement('input');
+      inp.type = 'text'; inp.value = url;
+      inp.oninput = function () { arr[idx] = inp.value; saveRss(arr); };
+      var del = document.createElement('button');
+      del.className = 'btn'; del.textContent = '✕'; del.style.padding = '4px 10px';
+      del.onclick = function () { arr.splice(idx, 1); saveRss(arr); renderRss(); };
+      wrap.appendChild(inp); wrap.appendChild(del);
+      box.appendChild(wrap);
+    });
+  }
+  $('addRss').onclick = function () { var a = loadRss(); a.push(''); saveRss(a); renderRss(); };
+  renderRss();
+
+  // ===== 프록시 fetch =====
+  function fetchWithProxy(url) {
+    var idx = 0;
+    function attempt() {
+      var target = PROXIES[idx](url);
+      return fetch(target, { headers: { 'Accept': 'text/xml, application/xml, */*' } })
+        .then(function (r) { if (!r.ok) throw new Error('HTTP ' + r.status); return r.text(); })
+        .catch(function (e) {
+          idx++;
+          if (idx < PROXIES.length) return attempt();
+          throw e;
+        });
+    }
+    return attempt();
+  }
+
+  function parseRssItems(xmlText, limit) {
+    var out = [];
+    try {
+      var doc = new DOMParser().parseFromString(xmlText, 'text/xml');
+      var items = doc.querySelectorAll('item, entry');
+      for (var i = 0; i < items.length && out.length < limit; i++) {
+        var it = items[i];
+        var title = (it.querySelector('title') || {}).textContent || '';
+        var desc = (it.querySelector('description, summary, content') || {}).textContent || '';
+        desc = desc.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim();
+        if (title.trim()) out.push('• ' + title.trim() + (desc ? ' — ' + desc.slice(0, 300) : ''));
+      }
+    } catch (e) {}
+    return out;
+  }
+
+  $('fetchRss').onclick = function () { doFetchRss(false); };
+
+  function doFetchRss(silent) {
+    var feeds = loadRss().filter(function (u) { return u && u.trim(); });
+    if (!feeds.length) { if (!silent) $('rssStatus').textContent = '피드가 없습니다.'; return Promise.resolve(false); }
+    $('rssStatus').textContent = '수집 중…';
+    var lines = [];
+    return feeds.reduce(function (p, url) {
+      return p.then(function () {
+        return fetchWithProxy(url)
+          .then(function (xml) { lines = lines.concat(parseRssItems(xml, 8)); })
+          .catch(function () { /* skip failed feed */ });
+      });
+    }, Promise.resolve()).then(function () {
+      if (lines.length) {
+        var text = 'Market headlines (' + new Date().toLocaleDateString() + '):\n' + lines.join('\n');
+        $('srcText').value = text;
+        localStorage.setItem(LS.src, text);
+        setTab('paste');
+        $('rssStatus').textContent = lines.length + '개 헤드라인 수집됨.';
+        return true;
+      } else {
+        $('rssStatus').textContent = '수집 실패 — 붙여넣기를 이용하세요.';
+        return false;
+      }
+    });
+  }
+
+  // ===== 설정 모달 =====
+  function openModal() {
+    $('apiKey').value = localStorage.getItem(LS.key) || '';
+    $('model').value = localStorage.getItem(LS.model) || 'claude-opus-5';
+    $('autoDaily').checked = localStorage.getItem(LS.auto) === '1';
+    $('modalBack').classList.add('open');
+  }
+  function closeModal() { $('modalBack').classList.remove('open'); }
+  $('settingsBtn').onclick = openModal;
+  $('modalCancel').onclick = closeModal;
+  $('modalBack').onclick = function (e) { if (e.target === this) closeModal(); };
+  $('modalSave').onclick = function () {
+    localStorage.setItem(LS.key, $('apiKey').value.trim());
+    localStorage.setItem(LS.model, $('model').value);
+    localStorage.setItem(LS.auto, $('autoDaily').checked ? '1' : '0');
+    closeModal();
+  };
+
+  // ===== Claude API 호출 =====
+  var SCHEMA = {
+    type: 'object', additionalProperties: false,
+    required: ['date_label', 'headline_ko', 'headline_en', 'summary_ko', 'summary_en', 'key_points', 'markets', 'watch'],
+    properties: {
+      date_label: { type: 'string' },
+      headline_ko: { type: 'string' }, headline_en: { type: 'string' },
+      summary_ko: { type: 'string' }, summary_en: { type: 'string' },
+      key_points: {
+        type: 'array',
+        items: { type: 'object', additionalProperties: false, required: ['ko', 'en'], properties: { ko: { type: 'string' }, en: { type: 'string' } } }
+      },
+      markets: {
+        type: 'array',
+        items: {
+          type: 'object', additionalProperties: false,
+          required: ['name_ko', 'name_en', 'value', 'change', 'note_ko', 'note_en'],
+          properties: { name_ko: { type: 'string' }, name_en: { type: 'string' }, value: { type: 'string' }, change: { type: 'string' }, note_ko: { type: 'string' }, note_en: { type: 'string' } }
+        }
+      },
+      watch: {
+        type: 'array',
+        items: { type: 'object', additionalProperties: false, required: ['ko', 'en'], properties: { ko: { type: 'string' }, en: { type: 'string' } } }
+      }
+    }
+  };
+
+  function buildPrompt(source) {
+    return [
+      'You are a senior financial editor at Mirae Asset Securities creating a one-page morning market briefing for Korean institutional readers, based on the Bloomberg-style briefing text below.',
+      '',
+      'Produce a concise, executive one-pager. For every field, provide BOTH a Korean version and an English version.',
+      'Rules:',
+      '- Korean should read as natural, professional 증권사 리포트 tone (존댓말 아님, 개조식/서술 혼용 간결체).',
+      '- Keep numbers, %, tickers, and acronyms (FOMC, ECB, BOJ, CPI, S&P 500, WTI, UST 등) intact in both languages.',
+      '- 5–7 key points. Each a single tight sentence.',
+      '- markets: cover the important instruments actually mentioned (지수/금리/환율/원자재). "value" = level, "change" = e.g. "+0.8%" or "-12bp" (leading sign matters for coloring). If a number is not given, infer direction words are fine but prefer leaving value blank rather than fabricating.',
+      '- Do NOT invent data that is not supported by the source. If the source is only headlines, summarize qualitatively and keep markets short.',
+      '- date_label: the briefing date if present, else today.',
+      '',
+      '--- SOURCE BRIEFING ---',
+      source
+    ].join('\n');
+  }
+
+  function callClaude(source) {
+    var key = localStorage.getItem(LS.key);
+    var model = localStorage.getItem(LS.model) || 'claude-opus-5';
+    if (!key) return Promise.reject({ msg: 'API 키가 없습니다. 설정에서 입력하세요.' });
+
+    var body = {
+      model: model,
+      max_tokens: 12000,
+      output_config: { effort: 'medium', format: { type: 'json_schema', schema: SCHEMA } },
+      messages: [{ role: 'user', content: buildPrompt(source) }]
+    };
+
+    return fetch(API_URL, {
+      method: 'POST',
+      headers: {
+        'content-type': 'application/json',
+        'x-api-key': key,
+        'anthropic-version': API_VERSION,
+        'anthropic-dangerous-direct-browser-access': 'true'
+      },
+      body: JSON.stringify(body)
+    }).then(function (r) {
+      return r.text().then(function (t) {
+        var data;
+        try { data = JSON.parse(t); } catch (e) { throw { msg: '응답 파싱 실패', code: t.slice(0, 200) }; }
+        if (!r.ok) {
+          var em = (data && data.error && data.error.message) || ('HTTP ' + r.status);
+          throw { msg: 'API 오류', code: em };
+        }
+        if (data.stop_reason === 'refusal') throw { msg: '요청이 거부되었습니다(safety).', code: 'refusal' };
+        var textBlock = null;
+        (data.content || []).forEach(function (b) { if (b.type === 'text' && !textBlock) textBlock = b.text; });
+        if (!textBlock) throw { msg: '텍스트 응답이 없습니다.', code: data.stop_reason || '' };
+        var parsed;
+        try { parsed = JSON.parse(textBlock); } catch (e) { throw { msg: 'JSON 결과 파싱 실패', code: textBlock.slice(0, 200) }; }
+        return { data: parsed, model: model, at: new Date().toISOString() };
+      });
+    });
+  }
+
+  // ===== 렌더 =====
+  function renderBadges(meta) {
+    var b = $('badges');
+    if (!meta) { b.innerHTML = ''; return; }
+    var when = new Date(meta.at);
+    var lang = document.documentElement.getAttribute('lang');
+    var timeStr = when.toLocaleString(lang === 'en' ? 'en-US' : 'ko-KR', { hour: '2-digit', minute: '2-digit', month: 'short', day: 'numeric' });
+    b.innerHTML =
+      '<span class="badge live">' + (lang === 'en' ? 'AI translated' : 'AI 번역·요약') + '</span>' +
+      '<span class="badge blue">' + esc(meta.model) + '</span>' +
+      '<span class="badge">' + (lang === 'en' ? 'Generated ' : '생성 ') + esc(timeStr) + '</span>';
+  }
+
+  function chgClass(change) {
+    var s = (change || '').trim();
+    if (/^[+▲]|^\+|상승|up/i.test(s) || /^\+/.test(s)) return 'up';
+    if (/^[-▼]|하락|down/i.test(s) || /^-/.test(s)) return 'down';
+    return '';
+  }
+
+  function fld(obj, base) {
+    var lang = document.documentElement.getAttribute('lang');
+    return obj[base + '_' + lang] != null ? obj[base + '_' + lang] : (obj[base + '_ko'] || obj[base + '_en'] || '');
+  }
+  function bi(obj) {
+    var lang = document.documentElement.getAttribute('lang');
+    return obj[lang] != null ? obj[lang] : (obj.ko || obj.en || '');
+  }
+
+  var lastMeta = null;
+
+  function render() {
+    var raw = localStorage.getItem(todayKey());
+    var box = $('briefing');
+    if (!raw) { lastMeta = null; renderBadges(null); return; }
+    var stored;
+    try { stored = JSON.parse(raw); } catch (e) { box.innerHTML = '<div class="errbox">저장된 브리핑을 읽을 수 없습니다.</div>'; return; }
+    lastMeta = stored;
+    var d = stored.data;
+    var lang = document.documentElement.getAttribute('lang');
+    renderBadges(stored);
+
+    var kp = (d.key_points || []).map(function (p) { return '<li>' + esc(bi(p)) + '</li>'; }).join('');
+    var mk = (d.markets || []).map(function (m) {
+      var cc = chgClass(m.change);
+      return '<tr><td class="name">' + esc(fld(m, 'name')) + '</td>' +
+        '<td class="val">' + esc(m.value || '') + '</td>' +
+        '<td class="chg ' + cc + '">' + esc(m.change || '') + '</td>' +
+        '<td class="note">' + esc(fld(m, 'note')) + '</td></tr>';
+    }).join('');
+    var wt = (d.watch || []).map(function (w) { return '<li>' + esc(bi(w)) + '</li>'; }).join('');
+
+    var T = lang === 'en'
+      ? { tag: 'Morning Briefing', kp: 'Key Points', mk: 'Markets', mkc: ['Asset', 'Level', 'Change', 'Note'], wt: 'What to Watch', disc: 'Automated translation/summary for internal reference only. Not investment advice; verify against original sources.' }
+      : { tag: '아침 브리핑', kp: '핵심 포인트', mk: '시장 동향', mkc: ['자산', '수준', '변동', '코멘트'], wt: '오늘 주목', disc: '본 자료는 원문의 자동 번역·요약으로 사내 참고용입니다. 투자 판단의 근거가 아니며, 수치·내용은 원문과 대조하시기 바랍니다.' };
+
+    var html = '' +
+      '<div class="hero-tag">' + T.tag + '</div>' +
+      '<div class="hero-date num">' + esc(d.date_label || '') + '</div>' +
+      '<h1 class="headline">' + esc(fld(d, 'headline')) + '</h1>' +
+      '<div class="summary">' + esc(fld(d, 'summary')) + '</div>';
+
+    if (kp) html += '<section class="block"><div class="section-rule"></div><h2 class="section-title">' + T.kp + '</h2><ol class="keypoints">' + kp + '</ol></section>';
+    if (mk) html += '<section class="block"><div class="section-rule"></div><h2 class="section-title">' + T.mk + '</h2><div class="table-wrap"><table class="markets"><thead><tr><th>' + T.mkc[0] + '</th><th>' + T.mkc[1] + '</th><th>' + T.mkc[2] + '</th><th>' + T.mkc[3] + '</th></tr></thead><tbody>' + mk + '</tbody></table></div></section>';
+    if (wt) html += '<section class="block"><div class="section-rule"></div><h2 class="section-title">' + T.wt + '</h2><ul class="watch">' + wt + '</ul></section>';
+
+    html += '<div class="disclaimer">' + T.disc + '</div>';
+    box.innerHTML = html;
+  }
+
+  function showLoading() {
+    $('briefing').innerHTML = '<div class="loading"><div class="spinner"></div>' +
+      '<div data-ko>번역·요약을 생성하고 있습니다…</div><div data-en>Generating translation & summary…</div></div>';
+  }
+  function showError(err) {
+    $('briefing').innerHTML = '<div class="errbox"><div>⚠︎ ' + esc(err.msg || '오류가 발생했습니다.') + '</div>' +
+      (err.code ? '<div class="code">' + esc(err.code) + '</div>' : '') + '</div>';
+  }
+
+  function generate() {
+    var source = $('srcText').value.trim();
+    if (!source) {
+      if (curTab === 'rss') {
+        return doFetchRss(false).then(function (ok) { if (ok) generate(); else showError({ msg: '원문이 없습니다. 붙여넣기 하세요.' }); });
+      }
+      showError({ msg: '원문이 없습니다. 원문을 붙여넣고 다시 시도하세요.' });
+      return;
+    }
+    if (!localStorage.getItem(LS.key)) { openModal(); return; }
+    $('genBtn').disabled = true;
+    showLoading();
+    callClaude(source).then(function (result) {
+      localStorage.setItem(todayKey(), JSON.stringify(result));
+      $('genBtn').disabled = false;
+      render();
+    }).catch(function (err) {
+      $('genBtn').disabled = false;
+      showError(err || {});
+    });
+  }
+  $('genBtn').onclick = generate;
+  $('printBtn').onclick = function () { window.print(); };
+
+  // ===== 초기화 =====
+  setLang(localStorage.getItem(LS.lang) || 'ko');
+  setTab(curTab);
+  render();
+
+  // 아침 자동 생성: 오늘자 캐시가 없고 자동옵션 + 키 + 소스(또는 RSS)가 준비된 경우
+  (function autoMorning() {
+    if (localStorage.getItem(todayKey())) return;              // 이미 오늘 것 있음
+    if (localStorage.getItem(LS.auto) !== '1') return;          // 자동 옵션 꺼짐
+    if (!localStorage.getItem(LS.key)) return;                  // 키 없음
+    if ($('srcText').value.trim()) { generate(); return; }      // 저장된 원문 있음
+    if ((localStorage.getItem(LS.tab) || 'paste') === 'rss') {  // RSS 모드면 수집 후 생성
+      doFetchRss(true).then(function (ok) { if (ok) generate(); });
+    }
+  })();
+})();
+</script>
+</body>
+</html>
