@@ -234,7 +234,7 @@
 <body>
 <div class="wrap">
   <header class="top">
-    <div class="brand"><span class="dot"></span> 보유자산 통합 브리핑 <small>미래에셋증권 · 실데이터 · <b style="color:var(--accent)">v2026.07.27-11</b></small></div>
+    <div class="brand"><span class="dot"></span> 보유자산 통합 브리핑 <small>미래에셋증권 · 실데이터 · <b style="color:var(--accent)">v2026.07.27-12</b></small></div>
     <div class="spacer"></div>
     <button class="icon-btn" id="btnTheme" title="다크/라이트 테마 전환">◐</button>
     <button class="btn sm" id="btnSample" title="체험용 예시 종목(삼성전자·SK하이닉스·KODEX 200·AAPL·미래에셋)을 자동으로 채웁니다" style="display:none">예시 채우기</button>
@@ -587,7 +587,11 @@ async function briefStockEtf(h){
       if(d.etfKeyIndicator){ b.etf=d.etfKeyIndicator; } // 순자산/보수 등은 네이버, 수익률은 야후(6개월 포함) 유지
     }catch(e){}
     // 리포트(주식/ETF 공통 시도)
-    try{ const rp=await nvM("/research/stock/"+h.code+"?pageSize=30&page=1"); b.reports=Array.isArray(rp)?rp:[]; }catch(e){ b.reports=[]; }
+    try{ const rp=await nvM("/research/stock/"+h.code+"?pageSize=30&page=1");
+      b.reports=Array.isArray(rp)?rp.slice():[];
+      // 최신순 보장(writeDate 내림차순, 동일 날짜는 researchId 내림차순)
+      b.reports.sort((a,c)=>{ const d=String(c.writeDate||"").localeCompare(String(a.writeDate||"")); return d!==0?d:((+c.researchId||0)-(+a.researchId||0)); });
+    }catch(e){ b.reports=[]; }
     // 종목 뉴스/시황
     b.news=await loadNews(h);
   } else {
