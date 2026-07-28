@@ -1,0 +1,100 @@
+<!doctype html><html><head><meta charset="utf-8">
+<style>
+  *{margin:0;padding:0;box-sizing:border-box;font-family:'WenQuanYi Zen Hei',sans-serif}
+  :root{--o:#F26100;--o2:#ff8a3d;--od:#C94E00;--navy:#172540;--mut:#5b6b82;--line:#e6ebf2;--bg:#eef2f7}
+  body{background:var(--bg);width:1120px}
+  .page{padding:34px 38px 30px}
+  /* header */
+  .hd{background:linear-gradient(120deg,#F26100,#ff7a29);border-radius:20px;padding:26px 32px;color:#fff;position:relative;overflow:hidden}
+  .hd:after{content:"";position:absolute;right:-60px;top:-60px;width:260px;height:260px;background:rgba(255,255,255,.12);border-radius:50%}
+  .hd .tag{display:inline-block;background:rgba(255,255,255,.22);padding:4px 12px;border-radius:20px;font-size:15px;font-weight:700;letter-spacing:.5px}
+  .hd h1{font-size:40px;font-weight:800;margin-top:12px;letter-spacing:-.5px}
+  .hd p{font-size:19px;margin-top:8px;opacity:.95}
+  /* section */
+  .sec{margin-top:26px}
+  .sec-h{display:flex;align-items:center;gap:12px;margin-bottom:15px}
+  .sec-h .bar{width:8px;height:30px;background:var(--o);border-radius:5px}
+  .sec-h .t{font-size:26px;font-weight:800;color:var(--navy)}
+  .sec-h .s{font-size:16px;color:var(--mut);font-weight:700;margin-left:2px}
+  /* steps */
+  .steps{display:flex;flex-direction:column;gap:11px}
+  .step{background:#fff;border:1px solid var(--line);border-radius:14px;padding:16px 20px;display:flex;align-items:center;gap:18px;box-shadow:0 2px 6px rgba(20,40,80,.05)}
+  .num{flex:none;width:46px;height:46px;border-radius:50%;background:var(--o);color:#fff;font-size:24px;font-weight:800;display:flex;align-items:center;justify-content:center}
+  .step .body{flex:1}
+  .step .st{font-size:20px;font-weight:800;color:var(--navy)}
+  .step .sd{font-size:16px;color:var(--mut);margin-top:3px;line-height:1.45}
+  .step .sd b{color:var(--od)}
+  .code{background:#fff4ec;color:var(--od);border:1px solid #ffd9bf;border-radius:7px;padding:1px 8px;font-weight:700;font-size:15px}
+  /* tablet callout */
+  .tab{margin-top:12px;background:#fff7f0;border:1.5px dashed var(--o2);border-radius:14px;padding:15px 20px;display:flex;align-items:center;gap:16px}
+  .tab .ic{flex:none;width:44px;height:44px;border-radius:12px;background:var(--o);color:#fff;font-size:22px;font-weight:800;display:flex;align-items:center;justify-content:center}
+  .tab .tt{font-size:18px;font-weight:800;color:var(--navy)}
+  .tab .td{font-size:15.5px;color:var(--mut);margin-top:2px}
+  /* op grid */
+  .grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  .op{background:#fff;border:1px solid var(--line);border-radius:14px;padding:15px 17px;display:flex;gap:14px;box-shadow:0 2px 6px rgba(20,40,80,.05)}
+  .op .badge{flex:none;width:42px;height:42px;border-radius:11px;background:#fff1e7;color:var(--o);border:1px solid #ffd9bf;font-size:20px;font-weight:800;display:flex;align-items:center;justify-content:center}
+  .op .ot{font-size:18px;font-weight:800;color:var(--navy)}
+  .op .od{font-size:15px;color:var(--mut);margin-top:3px;line-height:1.45}
+  .op .od b{color:var(--od)}
+  .pill{display:inline-block;background:#eaf0f8;color:#2f4straight;border-radius:6px}
+  .blue{color:#1769d1;font-weight:800}
+  /* footer */
+  .foot{margin-top:22px;background:var(--navy);border-radius:14px;padding:16px 22px;color:#dbe4f0;display:flex;gap:26px;flex-wrap:wrap}
+  .foot .fi{font-size:15.5px;display:flex;align-items:center;gap:8px}
+  .foot .fi .k{color:#ffb27a;font-weight:800;font-size:17px}
+  .warn{color:#ffd7c2}
+  .brand{text-align:right;font-size:13.5px;color:var(--mut);margin-top:12px;font-weight:700}
+</style></head>
+<body><div class="page">
+
+  <div class="hd">
+    <span class="tag">미래에셋증권 · 상담 지원 도구</span>
+    <h1>보유자산 통합 브리핑 · 사용 안내</h1>
+    <p>처음 실행부터 화면 조작까지 — 한 장으로 보는 가이드</p>
+  </div>
+
+  <div class="sec">
+    <div class="sec-h"><span class="bar"></span><span class="t">처음 실행하기</span><span class="s">PC에 파이썬 설치 불필요</span></div>
+    <div class="steps">
+      <div class="step"><div class="num">1</div><div class="body">
+        <div class="st">파일을 한 폴더에 모으기</div>
+        <div class="sd"><span class="code">briefing.html</span> · <span class="code">server.ps1</span> · <span class="code">실행.bat</span> 를 <b>같은 폴더</b>에 둡니다.</div>
+      </div></div>
+      <div class="step"><div class="num">2</div><div class="body">
+        <div class="st">실행 파일 더블클릭 → 검은 창이 뜸</div>
+        <div class="sd"><span class="code">실행.bat</span> 을 더블클릭하면 <b>검은 창(콘솔)</b>이 나타납니다. 이 창은 <b>켜진 채로 그대로</b> 두세요.</div>
+      </div></div>
+      <div class="step"><div class="num">3</div><div class="body">
+        <div class="st">브리핑 화면이 자동으로 열림</div>
+        <div class="sd">잠시 후 브라우저에 <span class="code">http://localhost:8899/</span> 화면이 열립니다. 헤더의 버전 표시로 최신본 확인.</div>
+      </div></div>
+      <div class="step"><div class="num">4</div><div class="body">
+        <div class="st">종료하기 — 검은 창 닫기</div>
+        <div class="sd">사용을 마치면 <b>검은 창(콘솔)을 닫으면</b> 서버가 종료됩니다. (별도 종료 파일 불필요)</div>
+      </div></div>
+    </div>
+  </div>
+
+  <div class="sec">
+    <div class="sec-h"><span class="bar"></span><span class="t">화면 조작법</span><span class="s">클릭 몇 번으로 상담 준비 완료</span></div>
+    <div class="grid">
+      <div class="op"><div class="badge">Q</div><div><div class="ot">종목 추가</div><div class="od">검색창에 <b>이름·코드·펀드·해외티커(AAPL)</b> 입력 후 선택. 채권은 <b>'+채권'</b> 버튼.</div></div></div>
+      <div class="op"><div class="badge">◉</div><div><div class="ot">고객별 저장</div><div class="od">상단 <b>프로필</b>에서 고객 선택·추가. 보유목록은 브라우저에 <b>자동 저장</b>.</div></div></div>
+      <div class="op"><div class="badge">▤</div><div><div class="ot">카드 클릭 → 상세</div><div class="od">차트·기간수익률·<b>목표주가</b>·증권사 리포트·<b>뉴스</b>·브리핑 코멘트를 한 화면에.</div></div></div>
+      <div class="op"><div class="badge">↗</div><div><div class="ot">관련 종목으로 이동</div><div class="od">동일업종·편입종목의 <span class="blue">파란 종목명</span> 클릭 → 그 종목 상세로. <b>←</b> 로 복귀.</div></div></div>
+      <div class="op"><div class="badge">₩</div><div><div class="ot">채권 (국내·해외)</div><div class="od">표면금리·만기 입력 → 수익률·듀레이션 자동계산. 해외채권은 <b>통화·세율·환율</b>까지.</div></div></div>
+      <div class="op"><div class="badge">文</div><div><div class="ot">해외 뉴스 자동 한글 번역</div><div class="od">해외 종목 뉴스는 <b>한글로 자동 번역</b>되어 표시됩니다.</div></div></div>
+      <div class="op"><div class="badge">⎙</div><div><div class="ot">상담용 출력</div><div class="od"><b>인쇄</b> 버튼으로 카드를 종이·PDF로 출력해 대면 상담에 활용.</div></div></div>
+      <div class="op"><div class="badge">↻</div><div><div class="ot">새로고침 · 내보내기 · 테마</div><div class="od"><b>새로고침</b>(시세 갱신) · <b>복사(MD)</b> · <b>CSV 저장</b> · 밝게/어둡게 <b>테마</b>.</div></div></div>
+    </div>
+  </div>
+
+  <div class="foot">
+    <div class="fi"><span class="k warn">!</span><span class="warn">고객명·계좌번호 등 개인정보는 입력·저장하지 마세요.</span></div>
+    <div class="fi"><span class="k">◷</span><span>시세는 <b style="color:#fff">클릭·새로고침 시</b>에만 조회(트래픽 절약).</span></div>
+    <div class="fi"><span class="k">⌘</span><span>실시간 데이터는 <b style="color:#fff">인터넷 연결</b> 필요.</span></div>
+  </div>
+  <div class="brand">보유자산 통합 브리핑 · 사용 안내</div>
+
+</div></body></html>
