@@ -5,8 +5,12 @@
 코드(순수 Python)로 프레임을 그려 MP4로 인코딩합니다.
 
 - **산출물**: [`out/realestate_tax_guide.mp4`](out/realestate_tax_guide.mp4)
-- **규격**: 1280×720 (16:9) · 30fps · H.264(yuv420p) · 약 3분 45초
+- **규격**: 1280×720 (16:9) · 30fps · H.264(yuv420p) · **AAC 배경음악** · 3분 36초
 - **기준**: **2026년 7월** · 중급 수준 · 교육용 개요
+
+> 🔊 **소리**: 은은한 배경음악(코드로 합성)이 깔려 있습니다. 사람 목소리 나레이션은
+> 이 환경의 네트워크 정책상 TTS 서버가 차단되어 넣지 못했습니다. 나레이션 음성이
+> 필요하면 `narration_ko.md` 스크립트로 외부 TTS/성우 녹음 후 트랙을 합성하세요.
 
 > ⚠️ **면책**: 세금·대출·규제 규칙은 자주 바뀝니다. 본 영상은 교육용 개요이며,
 > 실제 취득·보유·양도·대출 전에는 **최신 법령과 세무/대출 전문가 상담**으로 반드시 확인하세요.
@@ -41,7 +45,9 @@
 ```bash
 pip install pillow imageio imageio-ffmpeg numpy
 cd video/realestate
-python3 make_realestate_video.py     # -> out/realestate_tax_guide.mp4
+python3 make_realestate_video.py     # 1) 영상(무음) 렌더 -> out/realestate_tax_guide.mp4
+python3 make_music.py                # 2) 배경음악 합성 -> out/bgm.wav
+bash mux_audio.sh                    # 3) 영상에 배경음악 입히기(영상 재인코딩 없음)
 ```
 
 `imageio-ffmpeg` 가 ffmpeg 바이너리를 자동 제공하므로 별도 설치가 필요 없습니다.
@@ -51,9 +57,11 @@ python3 make_realestate_video.py     # -> out/realestate_tax_guide.mp4
 ```
 engine.py                 # 경량 2D 모션그래픽 엔진(캐릭터·아이콘·도형·이징)
 make_realestate_video.py  # 타임라인 + 챕터 씬 + CONTENT(모든 수치·문구)
-narration_ko.md           # 나레이션 스크립트(성우/TTS용, 자막 무음 영상 보완)
+make_music.py             # 배경음악 합성기(numpy) -> out/bgm.wav
+mux_audio.sh              # 배경음악을 영상에 입히는 스크립트(ffmpeg)
+narration_ko.md           # 나레이션 스크립트(성우/TTS용)
 fonts/NotoSansKR-*.ttf    # 서브셋 한글 폰트
-out/realestate_tax_guide.mp4
+out/realestate_tax_guide.mp4   # 최종 산출물(영상 + 배경음악)
 ```
 
 ## 수정 방법
