@@ -92,7 +92,7 @@ data/tickers.js       # 종목명↔코드↔시장 매핑 + 조회 함수
 data/sample.js        # 샘플/폴백 데이터 생성기 (종목코드 시드 기반 결정적 생성)
 
 els.html              # ELS 상품 구조 페이지 (아래 참고)
-els-standalone.html   # 위 파일의 단일 파일 산출물 (빌드 결과물)
+els-product-search.html # ELS 상품 조회 — 배포용 단일 파일 (빌드 결과물)
 data/els.js           # ELS 상품 데이터 + 기초자산 과거 시세 (매일 자동 수집)
 scripts/              # 수집·빌드·탐색 스크립트
 ```
@@ -123,8 +123,8 @@ scripts/              # 수집·빌드·탐색 스크립트
 ## 실행 방법
 
 ```bash
-# 단일 파일 — 더블클릭만 하면 됨 (외부 의존성 없음)
-els-standalone.html
+# 배포용 단일 파일 — 더블클릭만 하면 됨 (외부 의존성 없음)
+els-product-search.html
 
 # 개발용 — 분리 파일은 로컬 서버 필요
 python3 -m http.server 8000   # → http://localhost:8000/els.html
@@ -133,7 +133,7 @@ python3 -m http.server 8000   # → http://localhost:8000/els.html
 수정은 `els.html` / `data/els.js` 를 고친 뒤 다시 합칩니다.
 
 ```bash
-node scripts/build_standalone.mjs   # els.html + data/els.js -> els-standalone.html
+node scripts/build_els_page.mjs   # els.html + data/els.js -> els-product-search.html
 ```
 
 ## 데이터 수집 (매일 자동)
