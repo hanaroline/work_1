@@ -93,7 +93,7 @@ data/sample.js        # 샘플/폴백 데이터 생성기 (종목코드 시드 �
 
 els.html              # ELS 상품 구조 페이지 (아래 참고)
 els-standalone.html   # 위 파일의 단일 파일 산출물 (빌드 결과물)
-data/els.js           # ELS 상품 데이터 (주간 자동 수집)
+data/els.js           # ELS 상품 데이터 + 기초자산 과거 시세 (매일 자동 수집)
 scripts/              # 수집·빌드·탐색 스크립트
 ```
 
@@ -136,7 +136,7 @@ python3 -m http.server 8000   # → http://localhost:8000/els.html
 node scripts/build_standalone.mjs   # els.html + data/els.js -> els-standalone.html
 ```
 
-## 데이터 수집 (주 1회 자동)
+## 데이터 수집 (매일 자동)
 
 미래에셋증권 홈페이지는 **WebSquare 기반 SPA**이고, 데이터는 `.wjson` POST 엔드포인트로
 오갑니다. 정적 HTML에는 상품 정보가 전혀 없어 **헤드리스 브라우저 렌더링**이 필요합니다.
@@ -144,11 +144,12 @@ node scripts/build_standalone.mjs   # els.html + data/els.js -> els-standalone.h
 
 | 파일 | 역할 |
 |------|------|
-| `.github/workflows/els-weekly.yml` | 매주 월요일 08:00 KST 수집 → `data/els.js` 갱신 → 단일 파일 재빌드 → 커밋 |
+| `.github/workflows/els-weekly.yml` | **매일 08:00 KST** 수집 → `data/els.js` 갱신 → 단일 파일 재빌드 → 커밋 |
 | `scripts/collect_els.mjs` | 실제 수집기. 상품 목록 화면을 렌더링하고 `.wjson` 응답에서 상품을 추출 |
 | `.github/workflows/els-discover.yml` | 사이트 구조 조사용(1회성). 엔드포인트가 바뀌었을 때 다시 돌린다 |
 | `scripts/discover_els.mjs` | 위 조사 스크립트 |
 | `scripts/collect_history.mjs` | 기초자산 10년치 일별 종가(Yahoo Finance) → `data/els.js` 의 `history` |
+| `tools/discovery/rendered_list.json` | 수집할 때 홈페이지 화면에 실제로 그려진 목록 원문. 수집 결과와 대조용 |
 | `scripts/reparse_els.mjs` | 파서를 고쳤을 때, 이미 수집된 `data/els.js` 의 일정을 원문 표기에서 다시 계산 |
 
 **위험등급**은 목록 API 응답에 없습니다(`omkt_drvs_risk_gcd` 는 사내 코드값). 화면에만
@@ -164,8 +165,13 @@ node scripts/build_standalone.mjs   # els.html + data/els.js -> els-standalone.h
 다음 주 수집을 기다리지 말고 `node scripts/reparse_els.mjs` 로 기존 데이터를 맞춰두세요
 (수집기와 같은 파서를 씁니다).
 
+ELS 청약기간은 보통 1주일이라 주 1회 수집으로는 이미 마감된 상품이 며칠씩 남습니다.
+그래서 **매일** 수집하고, 페이지는 저장된 청약기간과 **여는 날짜**를 비교해 청약중 /
+청약마감 / 청약예정을 다시 판정합니다. 마감된 상품은 기본으로 목록에서 숨기고,
+수집한 지 하루라도 지났으면 목록 위에 안내 문구와 홈페이지 링크를 띄웁니다.
+
 **수집이 실패해도 페이지는 깨지지 않습니다.** 워크플로우는 `data/els.js` 를 건드리지 않고
-끝나므로 직전 주 데이터가 그대로 유지되고, 진단 자료는 `els-collect-debug` 아티팩트로
+끝나므로 직전 수집 데이터가 그대로 유지되고, 진단 자료는 `els-collect-debug` 아티팩트로
 남습니다. 한 번도 수집되지 않은 상태에서는 내장 예시 데이터가 표시되며, 화면에
 **"예시 데이터"** 배지가 붙습니다.
 

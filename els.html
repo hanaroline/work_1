@@ -185,6 +185,15 @@ tr.highlight td{background:var(--gray-hl); font-weight:600;}
   border:1px solid var(--hairline); border-radius:2px; background:#fff; color:var(--body);
 }
 .finder-bar button:hover{background:var(--surface-subtle);}
+.finder-bar .chk{display:inline-flex; align-items:center; gap:7px; cursor:pointer; font-size:16px; color:var(--body-strong);}
+.finder-bar .chk input{width:17px; height:17px; accent-color:var(--orange); cursor:pointer;}
+.badge.closed{border-color:var(--muted); color:var(--muted); background:var(--surface-soft);}
+.badge.open{border-color:var(--success); color:var(--success);}
+.badge.upcoming{border-color:var(--blue); color:var(--blue);}
+.stale-note{
+  margin-top:14px; padding:14px 18px; border-left:3px solid var(--warning);
+  background:#FDF6E3; color:#6b5209; font-size:16px; border-radius:0 4px 4px 0;
+}
 #finder-table tbody tr{cursor:pointer;}
 #finder-table tbody tr.selected td{background:var(--gray-hl); font-weight:600;}
 #finder-table tbody tr.selected td:first-child{box-shadow:inset 3px 0 0 var(--orange);}
@@ -291,6 +300,7 @@ footer .disc strong{color:var(--body-strong);}
   <div class="section-eyebrow" data-ko="상품 찾기" data-en="Find a product">상품 찾기</div>
   <h2 class="section-title" data-ko="조건으로 좁혀서 고르세요" data-en="Narrow it down">조건으로 좁혀서 고르세요</h2>
   <p class="section-lead" id="finder-lead"></p>
+  <p class="stale-note" id="finder-stale" hidden></p>
 
   <div class="finder-search">
     <svg width="18" height="18" viewBox="0 0 18 18" fill="none" aria-hidden="true">
@@ -310,6 +320,7 @@ footer .disc strong{color:var(--body-strong);}
 
   <div class="finder-bar">
     <span id="finder-count"></span>
+    <label class="chk"><input type="checkbox" id="f-open" checked><span id="f-open-label"></span></label>
     <button type="button" id="f-reset" data-ko="조건 초기화" data-en="Reset filters">조건 초기화</button>
   </div>
 
@@ -832,7 +843,46 @@ function renderKeyCards(){
 /* ============================================================
    4. 상품 찾기 — 검색 + 필터 + 목록
    ============================================================ */
-var filters = { q:'', type:'', under:'', mat:'', cycle:'', risk:'' };
+var filters = { q:'', type:'', under:'', mat:'', cycle:'', risk:'', openOnly:true };
+
+/* ------------------------------------------------------------
+   청약 상태는 수집 시점의 prgs_stat_nm 을 그대로 믿지 않고 오늘 날짜로 다시 판정한다.
+   수집과 열람 사이에 며칠이 지나면 이미 마감된 상품이 "진행중"으로 남기 때문이다.
+   ------------------------------------------------------------ */
+function pad2(n){ return (n < 10 ? '0' : '') + n; }
+function todayStr(){
+  var d = new Date();
+  return d.getFullYear() + '-' + pad2(d.getMonth()+1) + '-' + pad2(d.getDate());
+}
+/** 'open' | 'closed' | 'upcoming' | 'unknown' */
+function offerState(p){
+  var today = todayStr();
+  if (!p.offerStart && !p.offerEnd) return 'unknown';
+  if (p.offerEnd && p.offerEnd < today) return 'closed';
+  if (p.offerStart && p.offerStart > today) return 'upcoming';
+  return 'open';
+}
+function offerBadge(p){
+  var st = offerState(p);
+  if (st === 'unknown') return '';
+  var txt = st === 'closed'   ? t('청약마감','Closed')
+          : st === 'upcoming' ? t('청약예정','Upcoming')
+          :                     t('청약중','On offer');
+  return '<span class="badge ' + st + '">' + txt + '</span>';
+}
+/** 수집 후 며칠 지났는지 (모르면 null) */
+function daysSinceUpdate(){
+  if (!DATA.updatedAt) return null;
+  var ms = Date.now() - new Date(DATA.updatedAt).getTime();
+  return Math.floor(ms / 86400000);
+}
+
+/** 필터·검색을 적용하기 전의 대상 목록 (마감 상품 숨김 여부까지 반영) */
+function baseProducts(){
+  return filters.openOnly
+    ? DATA.products.filter(function(p){ return offerState(p) !== 'closed'; })
+    : DATA.products.slice();
+}
 
 /** 조기상환 평가 주기(개월). 회차 간격이 일정하지 않으면 첫 간격을 쓴다. */
 function cycleMonths(p){
@@ -870,7 +920,7 @@ function matchesFilters(p){
   return true;
 }
 function filteredProducts(){
-  return DATA.products.filter(matchesFilters);
+  return baseProducts().filter(matchesFilters);
 }
 
 /** select 하나를 [{value,label,count}] 로 채운다. 선택값은 유지한다. */
@@ -894,7 +944,7 @@ function fillSelect(id, allLabel, options, value){
 /** 어떤 필드로 묶어 개수를 세고, 정렬해서 옵션 목록을 만든다 */
 function optionsBy(keyFn, labelFn, sortFn){
   var m = {};
-  DATA.products.forEach(function(p){
+  baseProducts().forEach(function(p){
     var keys = keyFn(p);
     (Array.isArray(keys) ? keys : [keys]).forEach(function(k){
       if (k == null || k === '') return;
@@ -940,14 +990,22 @@ function renderFinder(){
   el('f-q').placeholder = t('상품코드 · 상품명 · 기초자산 검색  (예: 37993, KR6MD, 삼성전자)',
                             'Search by code, name or underlying  (e.g. 37993, KR6MD, Samsung)');
 
+  var closed = DATA.products.filter(function(p){ return offerState(p) === 'closed'; }).length;
+  el('f-open-label').textContent = closed
+    ? t('청약 마감 ' + closed + '건 숨기기', 'Hide ' + closed + ' closed')
+    : t('청약 마감 상품 숨기기', 'Hide closed products');
+
   renderFilters();
 
   var list = filteredProducts();
-  var total = DATA.products.length;
-  el('finder-count').innerHTML = list.length === total
-    ? t('전체 <strong>' + total + '</strong>개 상품', 'All <strong>' + total + '</strong> products')
-    : t('<strong>' + list.length + '</strong>개 / 전체 ' + total + '개',
-        '<strong>' + list.length + '</strong> of ' + total + ' products');
+  var base = baseProducts().length;
+  el('finder-count').innerHTML = list.length !== base
+    ? t('<strong>' + list.length + '</strong>개 / ' + base + '개',
+        '<strong>' + list.length + '</strong> of ' + base + ' products')
+    : filters.openOnly
+      ? t('청약 가능 <strong>' + base + '</strong>개 상품', '<strong>' + base + '</strong> products available')
+      : t('마감 포함 전체 <strong>' + base + '</strong>개 상품',
+          '<strong>' + base + '</strong> products incl. closed');
 
   var tb = el('finder-table').querySelector('tbody');
   tb.innerHTML = '';
@@ -956,7 +1014,13 @@ function renderFinder(){
     var tr0 = document.createElement('tr');
     tr0.className = 'empty-row';
     tr0.innerHTML = '<td colspan="11">' +
-      t('조건에 맞는 상품이 없습니다. 조건을 줄여보세요.','No products match. Try relaxing the filters.') + '</td>';
+      (filters.openOnly && !base
+        ? t('저장된 상품이 모두 청약 마감되었습니다. 최신 상품은 홈페이지에서 확인하세요 — ' +
+              '“청약 마감 상품 숨기기”를 꺼면 지난 상품을 볼 수 있습니다.',
+            'Every stored product has closed. Check the issuer’s site for current offers — ' +
+              'untick “Hide closed products” to browse the past ones.')
+        : t('조건에 맞는 상품이 없습니다. 조건을 줄여보세요.','No products match. Try relaxing the filters.')) +
+      '</td>';
     tb.appendChild(tr0);
   }
 
@@ -980,7 +1044,7 @@ function renderFinder(){
       '<td class="num">' + (p.principalProtection>=100 ? t('원금지급','Protected')
                             : p.knockIn==null ? t('노낙인','None') : p.knockIn + '%') + '</td>' +
       '<td>' + riskLabel(p) + '</td>' +
-      '<td>' + period + '</td>';
+      '<td>' + period + ' ' + offerBadge(p) + '</td>';
     tr.addEventListener('click', function(){
       current = i; renderAll();
       el('detail').scrollIntoView({ behavior:'smooth', block:'start' });
@@ -988,9 +1052,27 @@ function renderFinder(){
     tb.appendChild(tr);
   });
 
-  el('finder-foot').textContent = t(
-    '행을 클릭하면 아래 상세·구조도·시뮬레이터가 그 상품 조건으로 바뀝니다. 조기상환 배리어는 회차 순서대로 표기했습니다.',
-    'Click a row to switch the detail, charts and simulator below. Barriers are listed in observation order.');
+  var age = daysSinceUpdate();
+  el('finder-foot').innerHTML = t(
+    '행을 클릭하면 아래 상세·구조도·시뮬레이터가 그 상품 조건으로 바뀝니다. 조기상환 배리어는 회차 순서대로 표기했습니다. ' +
+      '청약 상태는 저장된 청약기간과 <strong>오늘 날짜</strong>를 비교해 표시합니다.',
+    'Click a row to switch the detail, charts and simulator below. Barriers are listed in observation order. ' +
+      'Offer status is derived by comparing the stored offer period with <strong>today’s date</strong>.');
+
+  // 수집 이후 시간이 지나면 목록 자체가 실제 판매 상품과 어긋날 수 있다
+  var stale = el('finder-stale');
+  if (age != null && age >= 1){
+    stale.hidden = false;
+    stale.innerHTML = t(
+      '이 파일의 상품 정보는 <strong>' + age + '일 전(' + fmtDate(String(DATA.updatedAt).slice(0,10)) + ')</strong>에 수집한 것입니다. ' +
+        '그 사이 새로 나온 상품은 빠져 있고, 청약이 끝난 상품이 남아 있을 수 있습니다. ' +
+        '최신 목록은 <a href="https://securities.miraeasset.com/hks/hks4022/n01.do" target="_blank" rel="noopener">홈페이지 ELS/DLS 캘린더</a>에서 확인하세요.',
+      'The product data in this file was collected <strong>' + age + ' day(s) ago (' +
+        fmtDate(String(DATA.updatedAt).slice(0,10)) + ')</strong>. Products launched since then are missing and some listed here may have closed. ' +
+        'Check the <a href="https://securities.miraeasset.com/hks/hks4022/n01.do" target="_blank" rel="noopener">issuer’s ELS/DLS calendar</a> for the current list.');
+  } else {
+    stale.hidden = true;
+  }
 }
 
 /** 검색·필터 입력 연결 (최초 1회) */
@@ -1006,9 +1088,18 @@ function bindFinder(){
       });
     });
 
+  el('f-open').addEventListener('change', function(){
+    filters.openOnly = this.checked;
+    // 숨겨진 상품이 선택돼 있으면 보이는 첫 상품으로 옮긴다
+    var list = filteredProducts();
+    if (list.length && list.indexOf(DATA.products[current]) < 0) current = DATA.products.indexOf(list[0]);
+    renderAll();
+  });
+
   el('f-reset').addEventListener('click', function(){
-    filters = { q:'', type:'', under:'', mat:'', cycle:'', risk:'' };
+    filters = { q:'', type:'', under:'', mat:'', cycle:'', risk:'', openOnly:true };
     qEl.value = '';
+    el('f-open').checked = true;
     apply();
   });
 }
@@ -1032,7 +1123,7 @@ function renderDetail(){
     '<span class="badge ' + (p.type==='ELB'?'blue':'orange') + '">' + (p.type||'ELS') + '</span> ' +
     (p.shape ? '<span class="badge orange">' + label(SHAPE_EN, p.shape) + '</span> ' : '') +
     (p.riskLabel ? '<span class="badge">' + riskLabel(p) + '</span> ' : '') +
-    (p.status ? '<span class="badge">' + label(STATUS_EN, p.status) + '</span>' : '');
+    offerBadge(p);
 
   var ki = p.principalProtection >= 100 ? t('해당 없음 (원금지급형)','n/a (principal-protected)')
          : p.knockIn == null ? t('없음 (노낙인)','None (no knock-in)')
@@ -1056,7 +1147,7 @@ function renderDetail(){
     specRow(t('위험등급','Risk grade'), riskLabel(p)) +
     specRow(t('청약기간','Offer period'),
             (p.offerStart || p.offerEnd) ? fmtDate(p.offerStart) + ' ~ ' + fmtDate(p.offerEnd) : '–') +
-    specRow(t('진행상태','Status'), p.status ? label(STATUS_EN, p.status) : '–') +
+    specRow(t('청약 상태 (오늘 기준)','Offer status (today)'), offerBadge(p) || '–') +
     specRow(t('홈페이지 원문 표기','As published'), p.structureDesc || '–') +
     (p.url ? specRow(t('상품 페이지','Product page'),
       '<a href="' + p.url + '" target="_blank" rel="noopener">' + t('홈페이지에서 보기 →','Open on the website →') + '</a>') : '');
