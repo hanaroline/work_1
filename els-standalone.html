@@ -780,7 +780,11 @@ function renderLadder(){
 
   var W = 1000, H = 430, L = 62, R = 28, T = 30, B = 64;
   var s = schedule(p);
-  var yMin = 40, yMax = 110;
+  // 낙인이나 배리어가 낮은 상품도 잘리지 않도록 세로 범위를 상품에 맞춘다 (10% 단위)
+  var lowest = Math.min.apply(null, s.map(function(x){ return x.barrier; })
+    .concat(p.knockIn != null ? [p.knockIn] : []));
+  var yMin = Math.min(40, Math.floor((lowest - 10) / 10) * 10);
+  var yMax = 110;
   function Y(v){ return T + (yMax - v) / (yMax - yMin) * (H - T - B); }
   var cw = (W - L - R) / s.length;             // 회차 1칸 폭
   function X(i){ return L + cw * i; }
@@ -827,7 +831,7 @@ function renderLadder(){
   });
 
   // 낙인 배리어
-  if (p.knockIn != null && p.knockIn >= yMin){
+  if (p.knockIn != null){
     var ky = Y(p.knockIn);
     svg.appendChild(mk('line', { x1:L, y1:ky, x2:W-R, y2:ky, stroke:C.error, 'stroke-width':2, 'stroke-dasharray':'8 5' }));
     svg.appendChild(mk('text', { x:L+8, y:ky-9, 'font-size':14, 'font-weight':600, fill:C.error },
