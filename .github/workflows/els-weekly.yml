@@ -1,10 +1,11 @@
-name: ELS 상품 주간 수집
+name: ELS 상품 수집 (매일)
 
 on:
   workflow_dispatch:
   schedule:
-    # 매주 월요일 08:00 KST (일요일 23:00 UTC)
-    - cron: '0 23 * * 0'
+    # 매일 08:00 KST (23:00 UTC). ELS 청약기간은 보통 1주일이라 주 1회로는
+    # 이미 마감된 상품이 며칠씩 "청약중"으로 남는다.
+    - cron: '0 23 * * *'
   # 수집기를 고쳤을 때 바로 검증되도록
   push:
     branches:
@@ -66,11 +67,11 @@ jobs:
         run: |
           git config user.name  "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add data/els.js els-standalone.html
+          git add data/els.js els-standalone.html tools/discovery/rendered_list.json
           if git diff --cached --quiet; then
             echo "변경 없음 — 커밋 생략"
           else
-            git commit -m "chore(els): 주간 상품 데이터 갱신 ($(date -u +%Y-%m-%d))"
+            git commit -m "chore(els): 상품 데이터 갱신 ($(date -u +%Y-%m-%d))"
             git push
           fi
 
@@ -78,7 +79,7 @@ jobs:
         if: always()
         run: |
           {
-            echo "### ELS 주간 수집 결과"
+            echo "### ELS 수집 결과"
             echo ""
             if [ "${{ steps.collect.outcome }}" = "success" ]; then
               echo "- 수집: 성공"
