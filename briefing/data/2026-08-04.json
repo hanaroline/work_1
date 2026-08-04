@@ -9,27 +9,378 @@
   "keypoints": [
     {
       "text": "**코스피 6,257.45 (-5.12%, -338.00p).** 7/31 사상 최대 급등(+1,001.89p, +17.91%)을 하루 만에 되돌렸다. 장중 저점은 6,223.29(-5.64%)였고 서킷브레이커·매도 사이드카까지는 가지 않았다.",
-      "text_en": "**KOSPI 6,257.45 (-5.12%, -338.00 pts).** The record 1,001.89-point (+17.91%) surge of July 31 was mostly erased in one session. The intraday low was 6,223.29 (-5.64%); no circuit breaker or sell-side sidecar was triggered."
+      "text_en": "**KOSPI 6,257.45 (-5.12%, -338.00 pts).** The record 1,001.89-point (+17.91%) surge of July 31 was mostly erased in one session. The intraday low was 6,223.29 (-5.64%); no circuit breaker or sell-side sidecar was triggered.",
+      "facts": [
+        {
+          "label": "코스피 종가",
+          "label_en": "KOSPI close",
+          "value": "6,257.45",
+          "numeric": true
+        },
+        {
+          "label": "전일대비",
+          "label_en": "Change",
+          "value": "-338.00p (-5.12%)",
+          "numeric": true
+        },
+        {
+          "label": "장중 저점",
+          "label_en": "Intraday low",
+          "value": "6,223.29 (-5.64%)",
+          "numeric": true
+        },
+        {
+          "label": "직전 거래일(7/31) 종가",
+          "label_en": "Prior close (Jul 31)",
+          "value": "6,595.45 (+1,001.89p, +17.91%)",
+          "numeric": true
+        },
+        {
+          "label": "7월 월간 수익률",
+          "label_en": "July return",
+          "value": "-22% (금융위기 이후 최대 월간 낙폭)",
+          "numeric": true,
+          "value_en": "-22% (steepest month since the GFC)"
+        }
+      ],
+      "detail": [
+        "하락은 개장 전부터 예고돼 있었다. 전일 야간 지수선물에서 외국인이 대량 매도에 나서 -5%가 넘는 약세 출발이 시사됐고, 실제 개장은 4%대 하락으로 시작해 장중 -5.64%까지 밀렸다가 -5.12%로 마감했다.",
+        "다만 **서킷브레이커와 매도 사이드카는 발동되지 않았다.** 코스피 서킷브레이커 1단계는 8% 하락이 1분간 지속될 때 발동되므로, 이번 하락은 제도적 발동 요건에 미치지 못한 수준이다. 올해 서킷브레이커가 이미 9회 발동됐다는 점을 감안하면 상대적 해석이 필요하다.",
+        "**주목할 것은 방향이 아니라 진폭이다.** 7월 한 달 -22%(금융위기 이후 최대 월간 낙폭) → 7/31 사상 최대 급등(+17.91%) → 8/3 -5.12%. 사흘 사이 지수 변동폭이 웬만한 연간 변동폭을 넘는다. 고객 응대에서 지수 레벨 전망보다 변동성 관리를 먼저 다뤄야 하는 이유다."
+      ],
+      "detail_en": [
+        "The decline was flagged before the open. Heavy foreign selling in overnight index futures pointed to a drop of more than 5%; the market opened down about 4%, fell as much as 5.64% intraday, and closed 5.12% lower.",
+        "Notably, **neither a circuit breaker nor a sell-side sidecar was triggered.** A first-stage KOSPI circuit breaker requires an 8% decline sustained for one minute, so this move fell short of the regulatory threshold — relevant context given that circuit breakers have already fired nine times this year.",
+        "**The issue is amplitude, not direction.** July -22% (steepest month since the GFC), then a record +17.91% on July 31, then -5.12% on August 3. The index moved more in three sessions than in a typical full year. That is why volatility management, not an index target, should lead any client conversation."
+      ],
+      "links": [
+        {
+          "title": "코스피 5%대 하락해 6250선 마감…코스닥은 2%대 상승",
+          "url": "https://www.etnews.com/20260803000375",
+          "publisher": "전자신문"
+        },
+        {
+          "title": "[0803마감체크] 코스피, 반등 하루 만에 5%대 하락... 코스닥은 상승",
+          "url": "https://www.infostockdaily.co.kr/news/articleView.html?idxno=217229",
+          "publisher": "인포스탁데일리"
+        },
+        {
+          "title": "외인 '팔자'에 코스피 4%대 하락 출발…\"기록적 폭등 후 차익 매물 출회\"",
+          "url": "https://www.etoday.co.kr/news/view/2610256",
+          "publisher": "이투데이"
+        }
+      ]
     },
     {
       "text": "**외국인 2조8,427억·기관 1조9,475억 동반 순매도.** 외국인 매도는 SK하이닉스 약 1조7,244억원, 삼성전자 약 9,521억원에 집중됐다.",
-      "text_en": "**Foreigners sold KRW 2.84tn, institutions KRW 1.95tn.** Foreign selling was concentrated in SK Hynix (approx. KRW 1,724.4bn) and Samsung Electronics (approx. KRW 952.1bn)."
+      "text_en": "**Foreigners sold KRW 2.84tn, institutions KRW 1.95tn.** Foreign selling was concentrated in SK Hynix (approx. KRW 1,724.4bn) and Samsung Electronics (approx. KRW 952.1bn).",
+      "facts": [
+        {
+          "label": "외국인 순매도",
+          "label_en": "Foreign net selling",
+          "value": "-2조 8,427억원",
+          "numeric": true,
+          "value_en": "-KRW 2,842.7bn"
+        },
+        {
+          "label": "기관 순매도",
+          "label_en": "Institutional net selling",
+          "value": "-1조 9,475억원",
+          "numeric": true,
+          "value_en": "-KRW 1,947.5bn"
+        },
+        {
+          "label": "합계",
+          "label_en": "Combined",
+          "value": "-4조 7,902억원",
+          "numeric": true,
+          "value_en": "-KRW 4,790.2bn"
+        },
+        {
+          "label": "외국인 SK하이닉스",
+          "label_en": "Foreign — SK Hynix",
+          "value": "약 -1조 7,244억원",
+          "numeric": true,
+          "value_en": "approx. -KRW 1,724.4bn"
+        },
+        {
+          "label": "외국인 삼성전자",
+          "label_en": "Foreign — Samsung Elec",
+          "value": "약 -9,521억원",
+          "numeric": true,
+          "value_en": "approx. -KRW 952.1bn"
+        },
+        {
+          "label": "직전 거래일 외국인",
+          "label_en": "Prior session (foreign)",
+          "value": "약 +7조원 순매수",
+          "numeric": true,
+          "value_en": "approx. +KRW 7tn net buy"
+        },
+        {
+          "label": "상반기 외국인 누적",
+          "label_en": "H1 2026 cumulative (foreign)",
+          "value": "-148조 3,000억원 (사상 최대)",
+          "numeric": true,
+          "value_en": "-KRW 148.3tn (record)"
+        }
+      ],
+      "detail": [
+        "직전 거래일 약 7조원을 순매수했던 외국인이 하루 만에 3조원 가까운 순매도로 돌아섰다. **방향 전환의 속도 자체가 이번 장세의 성격**을 말해준다. 포지션이 며칠 단위로 뒤집히는 구간에서는 일별 수급을 추세 신호로 읽으면 안 된다.",
+        "해석은 두 갈래다. **① 차익실현설** — 전일 사상 최대 급등에 대한 기계적 이익 확정이며, 반도체 두 종목에 매도가 집중된 점이 이를 뒷받침한다. **② 구조적 이탈설** — 외국인의 2026년 상반기 누적 순매도가 148조3,000억원(약 967억달러)으로 사상 최대치를 기록했다는 사실은 일회성으로 설명되지 않는다.",
+        "실무적으로는 두 해석을 구분할 관측 지점이 있다. **오늘 외국인이 삼성전자·SK하이닉스에서 순매수로 전환하는지**가 그것이다. 전환하면 ①, 매도가 이어지면 ②의 무게가 커진다."
+      ],
+      "detail_en": [
+        "Foreigners bought roughly KRW 7tn in the prior session, then swung to nearly KRW 3tn of net selling a day later. **The speed of that reversal defines this market** — when positions flip within days, daily flow data should not be read as a trend signal.",
+        "Two readings compete. **(1) Profit-taking**: mechanical realisation of gains after a record surge, supported by the concentration of selling in two chip names. **(2) Structural exit**: cumulative foreign net selling of KRW 148.3tn (approx. USD 96.7bn) in the first half of 2026 — a record — is not explained by a one-off.",
+        "There is an observable test to separate them: **whether foreigners turn net buyers of Samsung Electronics and SK Hynix today.** If they do, reading (1) holds; if selling continues, (2) gains weight."
+      ],
+      "links": [
+        {
+          "title": "7조 원 쓸어 담더니 하루 만에 3조 원 순매도…외국인 수급 지속될까",
+          "url": "https://www.hankookilbo.com/news/article/A2026080314210005198",
+          "publisher": "한국일보"
+        },
+        {
+          "title": "역대급 폭등 뒤 다시 급락…코스피, 회복론은 유효할까",
+          "url": "https://www.fnnews.com/news/202608040659570278",
+          "publisher": "파이낸셜뉴스"
+        },
+        {
+          "title": "Korea's Leveraged Chip Trade Hits the Margin Call Wall",
+          "url": "https://www.investing.com/analysis/koreas-leveraged-chip-trade-hits-the-margin-call-wall-200684082",
+          "publisher": "Investing.com"
+        }
+      ]
     },
     {
       "text": "**코스닥은 737.35 (+2.44%)로 역주행.** 매수 사이드카가 발동됐고, 반도체에 쏠려 있던 수급이 제약·바이오와 로봇 업종으로 이동했다.",
-      "text_en": "**KOSDAQ bucked the trend at 737.35 (+2.44%).** A buy-side sidecar was triggered as flows rotated out of semiconductors into pharma/biotech and robotics."
+      "text_en": "**KOSDAQ bucked the trend at 737.35 (+2.44%).** A buy-side sidecar was triggered as flows rotated out of semiconductors into pharma/biotech and robotics.",
+      "facts": [
+        {
+          "label": "코스닥 종가",
+          "label_en": "KOSDAQ close",
+          "value": "737.35",
+          "numeric": true
+        },
+        {
+          "label": "전일대비",
+          "label_en": "Change",
+          "value": "+17.59p (+2.44%)",
+          "numeric": true
+        },
+        {
+          "label": "특이사항",
+          "label_en": "Event",
+          "value": "매수 사이드카 발동",
+          "numeric": false,
+          "value_en": "Buy-side sidecar triggered"
+        },
+        {
+          "label": "주도 업종",
+          "label_en": "Leading sectors",
+          "value": "제약·바이오, 로봇",
+          "numeric": false,
+          "value_en": "Pharma/biotech, robotics"
+        }
+      ],
+      "detail": [
+        "같은 날 코스피가 -5.12%인데 코스닥이 +2.44%였다는 사실은 **이번 하락이 시장 전체의 위험회피가 아니었음**을 보여주는 가장 직접적인 증거다. 자금이 시장을 떠난 것이 아니라 반도체에서 비반도체로 이동했다.",
+        "코스닥은 최근 20% 급락을 겪은 뒤의 반등 국면에 있고, 이날은 **매수 사이드카**가 발동될 정도로 상승 탄력이 강했다. 매수 사이드카는 코스닥150 선물이 6% 이상 상승한 상태가 1분간 지속될 때 프로그램 매수 호가를 5분간 정지시키는 제도로, 지수 자체 상승률(+2.44%)보다 선물 쪽 쏠림이 훨씬 강했음을 뜻한다.",
+        "핵심 질문은 지속성이다. **코스피가 반등하는데도 코스닥 강세가 유지되면** 단순 되돌림이 아닌 주도주 교체 신호로 볼 수 있다. 반대로 코스피 반등과 함께 코스닥이 되밀리면 이날 흐름은 일시적 자금 피난처였다는 해석이 맞다."
+      ],
+      "detail_en": [
+        "The KOSPI at -5.12% and the KOSDAQ at +2.44% on the same day is the most direct evidence that **this was not a broad risk-off move.** Money rotated from semiconductors into non-semiconductors rather than leaving the market.",
+        "The KOSDAQ is rebounding after a recent 20% drawdown, and momentum was strong enough to trigger a **buy-side sidecar** — a five-minute halt on program buy orders when KOSDAQ 150 futures rise more than 6% for one minute. That implies far more crowding in futures than the index's own 2.44% gain suggests.",
+        "The question is durability. **If KOSDAQ strength holds even as the KOSPI rebounds**, it points to a genuine change of leadership. If the KOSDAQ fades as the KOSPI recovers, this was a temporary haven for flows."
+      ],
+      "links": [
+        {
+          "title": "반도체 쏠림 풀리자 '코스닥 매수 사이드카'…20% 급락 딛고 반등 시작하나",
+          "url": "https://www.etoday.co.kr/news/view/2610468",
+          "publisher": "이투데이"
+        },
+        {
+          "title": "코스피 5.12% 하락…투심은 반도체→비반도체",
+          "url": "https://www.newspim.com/news/view/20260803001301",
+          "publisher": "뉴스핌"
+        }
+      ]
     },
     {
       "text": "**뉴욕 3대 지수 동반 상승, 다우 사상 최고 53,178.41.** 트럼프 대통령의 이란 공격 보류 발언에 WTI가 5.1% 급락하고 미 국채 10년물이 4.68%(-7bp)로 내리며 주식·채권이 동반 강세를 보였다.",
-      "text_en": "**All three US benchmarks rose; the Dow set a record at 53,178.41.** WTI fell 5.1% and the US 10-year yield eased to 4.68% (-7bp) after Trump said he would refrain from strikes on Iran, lifting both stocks and bonds."
+      "text_en": "**All three US benchmarks rose; the Dow set a record at 53,178.41.** WTI fell 5.1% and the US 10-year yield eased to 4.68% (-7bp) after Trump said he would refrain from strikes on Iran, lifting both stocks and bonds.",
+      "facts": [
+        {
+          "label": "다우존스30",
+          "label_en": "Dow Jones",
+          "value": "53,178.41 (+693.38, +1.32%) 사상 최고",
+          "numeric": true,
+          "value_en": "53,178.41 (+693.38, +1.32%) record high"
+        },
+        {
+          "label": "S&P 500",
+          "label_en": "S&P 500",
+          "value": "7,600.50 (+110.78, +1.48%)",
+          "numeric": true
+        },
+        {
+          "label": "나스닥 종합",
+          "label_en": "Nasdaq Composite",
+          "value": "25,913.90 (+540.04, +2.13%)",
+          "numeric": true
+        },
+        {
+          "label": "WTI 9월물",
+          "label_en": "WTI (Sep)",
+          "value": "$80.34 (-5.1%)",
+          "numeric": true
+        },
+        {
+          "label": "브렌트 10월물",
+          "label_en": "Brent (Oct)",
+          "value": "$83.77 (-4.7%)",
+          "numeric": true
+        },
+        {
+          "label": "미 국채 10년물",
+          "label_en": "US 10Y Treasury",
+          "value": "4.68% (-7bp)",
+          "numeric": true
+        }
+      ],
+      "detail": [
+        "출발점은 지정학이다. 트럼프 대통령이 **이란에 대한 공격을 보류하겠다**고 밝히고 중동 사태 종결 합의가 가깝다고 언급했다. 원유 공급망 교란 시나리오의 확률이 내려가자 다음 연쇄가 하루에 압축돼 나타났다.",
+        "**유가 급락(WTI -5.1%) → 기대 인플레이션 하락 → 국채 금리 하락(10년물 -7bp) → 할인율 하락 → 주식 밸류에이션 지지.** 주식과 채권이 동반 강세를 보인 것이 이 경로를 확인해준다. 위험선호가 아니라 금리 경로가 만든 랠리다.",
+        "구성도 시사적이다. 금리 하락 민감도가 가장 큰 기술주가 앞섰지만(나스닥 +2.13%), **경기민감·전통 대형주 중심의 다우가 사상 최고를 경신**했다. 특정 테마 랠리가 아니라 매크로 변수 개선에 기반한 전면적 상승이라는 뜻이다.",
+        "국내 시장 관점에서 중요한 것은 **시차**다. 8/3 서울 마감은 우리 시간 오후, 뉴욕 랠리는 그 이후 밤에 나왔다. 즉 코스피 6,257.45는 이 호재를 반영하지 못한 가격이며, 유가·금리 개선분은 오늘 국내 장에 남아 있는 재료다."
+      ],
+      "detail_en": [
+        "It started with geopolitics. President Trump said he would **hold off on strikes against Iran** and suggested a deal to end the fighting was close. As the probability of an oil supply disruption fell, the following chain played out in a single session.",
+        "**Oil down (WTI -5.1%) → lower inflation expectations → lower Treasury yields (10Y -7bp) → lower discount rate → firmer equity valuations.** Stocks and bonds rallying together confirms this path: a rally driven by the rate outlook, not by risk appetite.",
+        "The composition matters too. Technology, most sensitive to lower yields, led (Nasdaq +2.13%), but the **cyclical, old-economy-heavy Dow set a record high** — a broad advance grounded in improving macro variables rather than a single theme.",
+        "For Korea the key point is **timing**. The August 3 Seoul close came in the afternoon local time; the New York rally came that night. KOSPI 6,257.45 is therefore a price that never reflected this news, and the improvement in oil and yields is still to be priced into today's Seoul session."
+      ],
+      "links": [
+        {
+          "title": "뉴욕증시, 유가·미 국채 수익률 급락에 랠리…다우 사상 최고",
+          "url": "https://www.newspim.com/news/view/20260804000024",
+          "publisher": "뉴스핌"
+        },
+        {
+          "title": "국제유가, 중동 우려 완화에 급락…WTI 5.1%↓",
+          "url": "https://www.etoday.co.kr/news/view/2610588",
+          "publisher": "이투데이"
+        },
+        {
+          "title": "유가 급락에 美 주식·채권 동반강세…나스닥 2%↑",
+          "url": "http://www.koreatimes.com/article/20260803/1624069",
+          "publisher": "미주 한국일보"
+        }
+      ]
     },
     {
       "text": "**엔화가 최대 변수.** 미국과 일본이 엔화 가치 방어에 나선 것이 확인되며 엔이 지난해 말 이후 최고 수준으로 올랐고, 엔 캐리 트레이드 청산 우려가 국내 외국인 수급을 압박하고 있다.",
-      "text_en": "**The yen is the key swing factor.** The yen rose to its strongest since late last year after the US and Japan confirmed they acted to support it, and fears of a yen carry trade unwind are weighing on foreign flows into Korea."
+      "text_en": "**The yen is the key swing factor.** The yen rose to its strongest since late last year after the US and Japan confirmed they acted to support it, and fears of a yen carry trade unwind are weighing on foreign flows into Korea.",
+      "facts": [
+        {
+          "label": "엔화 수준",
+          "label_en": "Yen level",
+          "value": "지난해 말 이후 최고 강세",
+          "numeric": false,
+          "value_en": "Strongest since late last year"
+        },
+        {
+          "label": "배경",
+          "label_en": "Trigger",
+          "value": "미·일 공동 엔화 가치 방어 확인",
+          "numeric": false,
+          "value_en": "Confirmed joint US-Japan action to support the yen"
+        },
+        {
+          "label": "일본 장기금리",
+          "label_en": "Japan long-term yield",
+          "value": "2.8% (29년 최고)",
+          "numeric": true,
+          "value_en": "2.8% (29-year high)"
+        },
+        {
+          "label": "일본 미 국채 매도",
+          "label_en": "Japanese UST selling",
+          "value": "2026년 1분기 약 300억달러 (4년 내 최대 속도)",
+          "numeric": true,
+          "value_en": "approx. USD 30bn in Q1 2026, fastest in four years"
+        }
+      ],
+      "detail": [
+        "엔 캐리 트레이드는 저금리 엔화를 조달해 해외 고수익 자산에 투자하는 구조다. 조달 통화가 강해지거나 일본 금리가 오르면 이 구조의 수익성이 사라지고, 포지션 청산이 **해외 자산 매도 → 엔 환전**의 형태로 나타난다.",
+        "지금은 두 조건이 동시에 성립한다. **① 엔 강세** — 미국과 일본이 엔 가치 방어에 공동으로 나섰음이 확인되며 엔이 지난해 말 이후 최고 수준으로 올랐다. **② 일본 금리 상승** — 일본 장기금리가 29년 만의 최고인 2.8%까지 올라 자국 내 투자 유인이 커졌다. 일본이 2026년 1분기에만 약 300억달러의 미 국채를 팔며 4년 내 가장 빠른 속도로 자금을 되돌린 것이 그 증거다.",
+        "한국이 특히 취약한 이유는 자체 구조 때문이다. **반도체 두 종목이 시총 50% 이상**이고 레버리지 상품이 거래대금을 지배하는 시장에서, 외국인 자금이 조금만 빠져도 지수 변동은 증폭된다. 즉 엔화는 한국 증시의 직접 변수가 아니지만, **가장 강력한 선행 변수**다."
+      ],
+      "detail_en": [
+        "The yen carry trade funds high-yielding overseas assets with low-cost yen. When the funding currency strengthens or Japanese rates rise, the economics break down and unwinding shows up as **selling foreign assets and converting back into yen**.",
+        "Both conditions now hold. **(1) A stronger yen** — confirmation that the US and Japan acted jointly to support it pushed the yen to its strongest since late last year. **(2) Higher Japanese rates** — long-term yields at a 29-year high of 2.8% make domestic investment more attractive. Japan sold roughly USD 30bn of US Treasuries in Q1 2026 alone, the fastest pace in four years.",
+        "Korea is unusually exposed because of its own structure. In a market where **two chip names exceed 50% of market cap** and leveraged products dominate turnover, even modest foreign outflows amplify index moves. The yen is not a direct Korean variable — but it is the most powerful leading one."
+      ],
+      "links": [
+        {
+          "title": "Asian stocks are mixed as yen jumps against the dollar, while oil prices slip",
+          "url": "https://tribtown.com/2026/08/03/asian-stocks-are-mixed-as-yen-jumps-against-the-dollar-while-oil-prices-slip/",
+          "publisher": "AP"
+        },
+        {
+          "title": "Korea's Leveraged Chip Trade Hits the Margin Call Wall",
+          "url": "https://www.investing.com/analysis/koreas-leveraged-chip-trade-hits-the-margin-call-wall-200684082",
+          "publisher": "Investing.com"
+        },
+        {
+          "title": "역대급 폭등 뒤 다시 급락…코스피, 회복론은 유효할까",
+          "url": "https://www.fnnews.com/news/202608040659570278",
+          "publisher": "파이낸셜뉴스"
+        }
+      ]
     },
     {
       "text": "**원/달러 1,429.8원(+5.8원).** 오늘은 우호적으로 바뀐 대외 여건과 취약한 국내 수급의 힘겨루기가 될 전망이다.",
-      "text_en": "**USD/KRW at 1,429.8 (+5.8 won).** Today sets up as a tug-of-war between an improved external backdrop and fragile domestic flows."
+      "text_en": "**USD/KRW at 1,429.8 (+5.8 won).** Today sets up as a tug-of-war between an improved external backdrop and fragile domestic flows.",
+      "facts": [
+        {
+          "label": "원/달러 종가",
+          "label_en": "USD/KRW close",
+          "value": "1,429.8원",
+          "numeric": true
+        },
+        {
+          "label": "전일대비",
+          "label_en": "Change",
+          "value": "+5.8원 (+0.41%)",
+          "numeric": true
+        },
+        {
+          "label": "심리적 저항",
+          "label_en": "Psychological level",
+          "value": "1,430원",
+          "numeric": false,
+          "value_en": "1,430"
+        }
+      ],
+      "detail": [
+        "환율이 1,430원선에 근접한 것은 두 방향으로 작용한다. **외국인 입장**에서는 원화 약세가 주식 평가이익을 잠식하므로 매도 유인이 커진다. **국내 투자자 입장**에서는 해외자산 신규 투자 진입 단가가 높아진다.",
+        "주의할 것은 **환율과 외국인 수급이 서로를 강화하는 고리**다. 외국인이 주식을 팔고 달러로 환전하면 원화가 더 약해지고, 원화가 약해지면 남은 외국인의 매도 유인이 커진다. 이 고리가 작동하는 구간에서는 환율과 지수를 따로 보면 안 된다.",
+        "이번 주 방향을 가를 변수는 **8/7 예정 미국 7월 고용보고서**다. 고용이 강하면 금리 인하 기대가 후퇴하고 달러가 강세로 가면서 원/달러에 추가 상승 압력이 된다."
+      ],
+      "detail_en": [
+        "Approaching 1,430 cuts both ways. **For foreign investors**, won weakness erodes equity returns and raises the incentive to sell. **For domestic investors**, it raises the entry cost of new overseas allocations.",
+        "The thing to watch is the **feedback loop between the currency and foreign flows**: foreigners selling equities and converting to dollars weakens the won, and a weaker won raises the incentive for remaining holders to sell. While that loop is active, the currency and the index cannot be analysed separately.",
+        "The variable that will set this week's direction is the **US July employment report, due August 7**. A strong print would push back rate-cut expectations and strengthen the dollar, adding upward pressure on USD/KRW."
+      ],
+      "links": [
+        {
+          "title": "원·달러 환율, 5.8원 오른 1429.8원 마감(종합)",
+          "url": "https://nwww.newsis.com/view/NISX20260803_0003734488",
+          "publisher": "뉴시스"
+        }
+      ]
     }
   ],
   "markets": {
@@ -41,7 +392,78 @@
         "change": -338.0,
         "change_pct": -5.12,
         "note": "장중 저점 6,223.29 · 7월 -22%(금융위기 이후 최대 월간 낙폭)",
-        "note_en": "Intraday low 6,223.29 · July -22%, steepest month since the GFC"
+        "note_en": "Intraday low 6,223.29 · July -22%, steepest month since the GFC",
+        "facts": [
+          {
+            "label": "종가",
+            "label_en": "Close",
+            "value": "6,257.45",
+            "numeric": true
+          },
+          {
+            "label": "전일대비",
+            "label_en": "Change",
+            "value": "-338.00p (-5.12%)",
+            "numeric": true
+          },
+          {
+            "label": "장중 저점",
+            "label_en": "Intraday low",
+            "value": "6,223.29 (-5.64%)",
+            "numeric": true
+          },
+          {
+            "label": "직전 거래일 종가",
+            "label_en": "Prior close",
+            "value": "6,595.45 (+17.91%)",
+            "numeric": true
+          },
+          {
+            "label": "7월 월간",
+            "label_en": "July",
+            "value": "-22%",
+            "numeric": true
+          },
+          {
+            "label": "연초 이후 변동성",
+            "label_en": "YTD volatility",
+            "value": "60% 이상 (연율)",
+            "numeric": true,
+            "value_en": "over 60% annualised"
+          },
+          {
+            "label": "올해 서킷브레이커",
+            "label_en": "Circuit breakers YTD",
+            "value": "9회 (2025년 0회, 2024년 1회)",
+            "numeric": true,
+            "value_en": "9 times (0 in 2025, 1 in 2024)"
+          }
+        ],
+        "detail": [
+          "코스피는 사실상 반도체 두 종목의 함수다. 삼성전자와 SK하이닉스가 시가총액의 50% 이상을 차지하므로 두 종목이 각각 8~9% 하락하면 그것만으로 지수가 4~5% 밀린다. **이날 지수 하락은 시장 전반의 부진이 아니라 두 종목의 되돌림**이며, 같은 날 코스닥이 +2.44%였던 사실이 이를 뒷받침한다.",
+          "변동성은 자산군의 상식을 벗어난 수준이다. 연초 이후 연율화 변동성이 60%를 넘어 비트코인(48%)을 상회하고, 서킷브레이커가 올해 7월 말까지 9회 발동됐다(2025년 0회, 2024년 1회). **분산 효과가 작동하지 않는 지수**라는 점을 고객에게 먼저 설명해야 한다."
+        ],
+        "detail_en": [
+          "The KOSPI is effectively a function of two chip names. With Samsung Electronics and SK Hynix over 50% of market cap, an 8-9% fall in each moves the index 4-5% on its own. **This decline was a pullback in two stocks, not broad market weakness** — the KOSDAQ's +2.44% the same day confirms it.",
+          "Volatility is outside normal asset-class bounds: over 60% annualised year-to-date, above Bitcoin's 48%, with nine circuit breakers through end-July (zero in 2025, one in 2024). Clients need to understand first that **this is an index where diversification does not work.**"
+        ],
+        "links": [
+          {
+            "title": "코스피 5%대 하락해 6250선 마감…코스닥은 2%대 상승",
+            "url": "https://www.etnews.com/20260803000375",
+            "publisher": "전자신문"
+          },
+          {
+            "title": "South Korea Stock Boom: Why Kospi Is World's Most Volatile Benchmark Stock Index",
+            "url": "https://www.bloomberg.com/news/articles/2026-07-31/south-korea-stock-boom-why-kospi-is-world-s-most-volatile-benchmark-stock-index",
+            "publisher": "Bloomberg"
+          },
+          {
+            "title": "코스피 5.12% 하락…투심은 반도체→비반도체",
+            "url": "https://www.newspim.com/news/view/20260803001301",
+            "publisher": "뉴스핌"
+          }
+        ]
       },
       {
         "name": "코스닥",
@@ -50,7 +472,55 @@
         "change": 17.59,
         "change_pct": 2.44,
         "note": "매수 사이드카 발동 · 제약·바이오/로봇 주도",
-        "note_en": "Buy-side sidecar triggered · led by pharma/biotech and robotics"
+        "note_en": "Buy-side sidecar triggered · led by pharma/biotech and robotics",
+        "facts": [
+          {
+            "label": "종가",
+            "label_en": "Close",
+            "value": "737.35",
+            "numeric": true
+          },
+          {
+            "label": "전일대비",
+            "label_en": "Change",
+            "value": "+17.59p (+2.44%)",
+            "numeric": true
+          },
+          {
+            "label": "특이사항",
+            "label_en": "Event",
+            "value": "매수 사이드카 발동",
+            "numeric": false,
+            "value_en": "Buy-side sidecar triggered"
+          },
+          {
+            "label": "최근 흐름",
+            "label_en": "Recent",
+            "value": "20% 급락 후 반등 국면",
+            "numeric": false,
+            "value_en": "Rebounding after a 20% drawdown"
+          }
+        ],
+        "detail": [
+          "반도체에 집중됐던 수급이 제약·바이오와 로봇으로 이동하며 코스피와 정반대로 움직였다. 매수 사이드카까지 발동돼 **선물 쪽 쏠림이 지수 상승률(+2.44%)보다 훨씬 강했음**을 시사한다.",
+          "다만 코스닥은 시장 전체 시가총액에서 코스피 대비 비중이 작아, 코스닥 강세가 국내 주식형 포트폴리오 전체 성과를 방어하기는 어렵다. **주도주 교체의 신호로 읽되, 자산배분 근거로 삼기에는 확인이 더 필요하다.**"
+        ],
+        "detail_en": [
+          "Flows rotated from semiconductors into pharma/biotech and robotics, moving the KOSDAQ opposite to the KOSPI. A buy-side sidecar was triggered, implying **crowding in futures well beyond the index's 2.44% gain.**",
+          "That said, the KOSDAQ is small relative to the KOSPI in total market cap, so its strength cannot defend overall Korean equity portfolio performance. **Read it as a signal of rotating leadership, but not yet as a basis for reallocation.**"
+        ],
+        "links": [
+          {
+            "title": "반도체 쏠림 풀리자 '코스닥 매수 사이드카'…20% 급락 딛고 반등 시작하나",
+            "url": "https://www.etoday.co.kr/news/view/2610468",
+            "publisher": "이투데이"
+          },
+          {
+            "title": "[0803마감체크] 코스피, 반등 하루 만에 5%대 하락... 코스닥은 상승",
+            "url": "https://www.infostockdaily.co.kr/news/articleView.html?idxno=217229",
+            "publisher": "인포스탁데일리"
+          }
+        ]
       },
       {
         "name": "삼성전자",
@@ -58,7 +528,49 @@
         "value": 239500,
         "change_pct": -8.76,
         "note": "외국인 약 9,521억원 순매도",
-        "note_en": "Foreign net selling approx. KRW 952.1bn"
+        "note_en": "Foreign net selling approx. KRW 952.1bn",
+        "facts": [
+          {
+            "label": "종가",
+            "label_en": "Close",
+            "value": "239,500원",
+            "numeric": true,
+            "value_en": "KRW 239,500"
+          },
+          {
+            "label": "등락률",
+            "label_en": "Change",
+            "value": "-8.76%",
+            "numeric": true
+          },
+          {
+            "label": "외국인 순매도",
+            "label_en": "Foreign net selling",
+            "value": "약 -9,521억원",
+            "numeric": true,
+            "value_en": "approx. -KRW 952.1bn"
+          }
+        ],
+        "detail": [
+          "전일 급등분을 대부분 반납했다. 외국인 순매도 상위권에 이름을 올렸고, SK하이닉스와 함께 **코스피 시가총액의 50% 이상**을 구성하는 만큼 이 종목의 등락이 곧 지수 등락으로 직결된다.",
+          "고객 포트폴리오 점검 시 주의할 점은 **중복 노출**이다. 코스피 인덱스 펀드, 반도체 테마 ETF, 개별 종목을 함께 보유한 고객은 실질적으로 동일 리스크에 3중으로 노출돼 있을 수 있다."
+        ],
+        "detail_en": [
+          "Gave back most of the prior session's gain. It ranked among the top foreign sell targets and, together with SK Hynix, makes up **over 50% of KOSPI market cap** — so its moves translate directly into index moves.",
+          "When reviewing client portfolios, watch for **overlapping exposure**: a client holding a KOSPI index fund, a semiconductor thematic ETF and the single stock may effectively hold the same risk three times over."
+        ],
+        "links": [
+          {
+            "title": "[0803마감체크] 코스피, 반등 하루 만에 5%대 하락... 코스닥은 상승",
+            "url": "https://www.infostockdaily.co.kr/news/articleView.html?idxno=217229",
+            "publisher": "인포스탁데일리"
+          },
+          {
+            "title": "7조 원 쓸어 담더니 하루 만에 3조 원 순매도…외국인 수급 지속될까",
+            "url": "https://www.hankookilbo.com/news/article/A2026080314210005198",
+            "publisher": "한국일보"
+          }
+        ]
       },
       {
         "name": "SK하이닉스",
@@ -66,7 +578,63 @@
         "value": 1567000,
         "change_pct": -8.79,
         "note": "외국인 약 1조7,244억원 순매도",
-        "note_en": "Foreign net selling approx. KRW 1,724.4bn"
+        "note_en": "Foreign net selling approx. KRW 1,724.4bn",
+        "facts": [
+          {
+            "label": "종가",
+            "label_en": "Close",
+            "value": "1,567,000원",
+            "numeric": true,
+            "value_en": "KRW 1,567,000"
+          },
+          {
+            "label": "등락률",
+            "label_en": "Change",
+            "value": "-8.79%",
+            "numeric": true
+          },
+          {
+            "label": "외국인 순매도",
+            "label_en": "Foreign net selling",
+            "value": "약 -1조 7,244억원",
+            "numeric": true,
+            "value_en": "approx. -KRW 1,724.4bn"
+          },
+          {
+            "label": "직전 궤적",
+            "label_en": "Recent path",
+            "value": "3거래일 -27% → 상한가(+30%) → -8.79%",
+            "numeric": false,
+            "value_en": "-27% over three sessions, then limit-up (+30%), then -8.79%"
+          }
+        ],
+        "detail": [
+          "이 종목의 최근 궤적은 이번 장세의 성격을 그대로 압축한다. **데이터센터 투자 둔화 우려로 3거래일간 27% 하락 → 심리 반전으로 상한가(+30%) → 다시 -8.79%.** 펀더멘털이 며칠 사이 이만큼 변할 수 없으므로, 이 진폭은 포지션과 레버리지가 만든 것이다.",
+          "외국인 순매도 규모(약 1조7,244억원)가 삼성전자(약 9,521억원)의 1.8배라는 점도 눈여겨볼 부분이다. 외국인 매도가 **시장 전체가 아니라 AI·HBM 노출도가 높은 종목에 선별적으로 집중**됐음을 뜻한다.",
+          "레버리지 상품을 보유한 고객에게는 이 궤적 자체가 설명 자료가 된다. -27% → +30% → -8.79% 구간을 2배 레버리지로 통과했다면, 기초자산이 제자리로 돌아와도 원금은 크게 훼손된다."
+        ],
+        "detail_en": [
+          "This stock's recent path compresses the whole market story: **-27% over three sessions on data-centre capex concerns, then a 30% limit-up as sentiment reversed, then -8.79%.** Fundamentals cannot change that much in days — the amplitude came from positioning and leverage.",
+          "Foreign net selling here (approx. KRW 1,724.4bn) was 1.8 times that in Samsung Electronics (approx. KRW 952.1bn), indicating that foreign selling was **selectively concentrated in high AI/HBM exposure rather than the market as a whole.**",
+          "For clients holding leveraged products, this path is itself the explanation: passing through -27% → +30% → -8.79% at 2x leverage destroys principal even if the underlying returns to where it started."
+        ],
+        "links": [
+          {
+            "title": "[0803마감체크] 코스피, 반등 하루 만에 5%대 하락... 코스닥은 상승",
+            "url": "https://www.infostockdaily.co.kr/news/articleView.html?idxno=217229",
+            "publisher": "인포스탁데일리"
+          },
+          {
+            "title": "Korea's Leveraged Chip Trade Hits the Margin Call Wall",
+            "url": "https://www.investing.com/analysis/koreas-leveraged-chip-trade-hits-the-margin-call-wall-200684082",
+            "publisher": "Investing.com"
+          },
+          {
+            "title": "7조 원 쓸어 담더니 하루 만에 3조 원 순매도…외국인 수급 지속될까",
+            "url": "https://www.hankookilbo.com/news/article/A2026080314210005198",
+            "publisher": "한국일보"
+          }
+        ]
       }
     ],
     "global": [
@@ -77,7 +645,41 @@
         "change": 693.38,
         "change_pct": 1.32,
         "note": "사상 최고 경신",
-        "note_en": "Record closing high"
+        "note_en": "Record closing high",
+        "facts": [
+          {
+            "label": "종가",
+            "label_en": "Close",
+            "value": "53,178.41",
+            "numeric": true
+          },
+          {
+            "label": "전일대비",
+            "label_en": "Change",
+            "value": "+693.38 (+1.32%)",
+            "numeric": true
+          },
+          {
+            "label": "의미",
+            "label_en": "Significance",
+            "value": "사상 최고 종가",
+            "numeric": false,
+            "value_en": "Record closing high"
+          }
+        ],
+        "detail": [
+          "경기민감·전통 대형주 중심의 다우가 사상 최고를 경신한 것은, 이번 랠리가 **AI·기술 테마가 아니라 유가·금리라는 매크로 변수 개선**에 기반했음을 보여준다. 기술주 단독 랠리라면 다우는 이만큼 오르지 않는다."
+        ],
+        "detail_en": [
+          "A record high in the cyclical, old-economy-heavy Dow shows the rally was grounded in **improving macro variables — oil and rates — rather than an AI or tech theme.** A tech-only rally would not lift the Dow this much."
+        ],
+        "links": [
+          {
+            "title": "뉴욕증시, 유가·미 국채 수익률 급락에 랠리…다우 사상 최고",
+            "url": "https://www.newspim.com/news/view/20260804000024",
+            "publisher": "뉴스핌"
+          }
+        ]
       },
       {
         "name": "S&P 500",
@@ -93,7 +695,48 @@
         "change": 540.04,
         "change_pct": 2.13,
         "note": "금리 하락에 기술주 주도",
-        "note_en": "Tech led as yields fell"
+        "note_en": "Tech led as yields fell",
+        "facts": [
+          {
+            "label": "종가",
+            "label_en": "Close",
+            "value": "25,913.90",
+            "numeric": true
+          },
+          {
+            "label": "전일대비",
+            "label_en": "Change",
+            "value": "+540.04 (+2.13%)",
+            "numeric": true
+          },
+          {
+            "label": "동반 지표",
+            "label_en": "Related",
+            "value": "미 10년물 4.68% (-7bp)",
+            "numeric": true,
+            "value_en": "US 10Y 4.68% (-7bp)"
+          }
+        ],
+        "detail": [
+          "3대 지수 중 상승률이 가장 컸다. 기술주는 이익의 상당 부분이 미래에 있어 **할인율(금리) 하락의 수혜가 가장 크다.** 10년물 7bp 하락이 나스닥 2.13% 상승으로 증폭된 구조다.",
+          "국내 반도체 대형주에 우호적인 재료지만, 어제 국내 마감에는 반영되지 못했다. 오늘 반등 시도의 근거가 여기에 있다."
+        ],
+        "detail_en": [
+          "The largest gain among the three benchmarks. Technology earnings sit further in the future, so tech benefits most from **a lower discount rate.** A 7bp fall in the 10-year amplified into a 2.13% Nasdaq gain.",
+          "This is supportive for Korean large-cap chips but was not reflected in yesterday's Seoul close — which is the basis for a rebound attempt today."
+        ],
+        "links": [
+          {
+            "title": "뉴욕증시, 유가·미 국채 수익률 급락에 랠리…다우 사상 최고",
+            "url": "https://www.newspim.com/news/view/20260804000024",
+            "publisher": "뉴스핌"
+          },
+          {
+            "title": "유가 급락에 美 주식·채권 동반강세…나스닥 2%↑",
+            "url": "http://www.koreatimes.com/article/20260803/1624069",
+            "publisher": "미주 한국일보"
+          }
+        ]
       },
       {
         "name": "코스피",
@@ -122,7 +765,44 @@
         "change": 5.8,
         "change_pct": 0.41,
         "note": "서울 외환시장 8/3 종가",
-        "note_en": "Seoul FX market close, Aug 3"
+        "note_en": "Seoul FX market close, Aug 3",
+        "facts": [
+          {
+            "label": "종가",
+            "label_en": "Close",
+            "value": "1,429.8원",
+            "numeric": true,
+            "value_en": "KRW 1,429.8"
+          },
+          {
+            "label": "전일대비",
+            "label_en": "Change",
+            "value": "+5.8원 (+0.41%)",
+            "numeric": true
+          },
+          {
+            "label": "기준",
+            "label_en": "Basis",
+            "value": "서울 외환시장 8/3 종가",
+            "numeric": false,
+            "value_en": "Seoul FX close, Aug 3"
+          }
+        ],
+        "detail": [
+          "1,430원선에 근접했다. 외국인의 환차손이 주식 매도 유인을 강화하고, 국내 투자자의 해외자산 진입 단가를 높인다. **환율과 외국인 수급이 서로를 강화하는 고리**에 주의가 필요하다.",
+          "이번 주 방향은 8/7 예정 미국 7월 고용보고서가 가른다."
+        ],
+        "detail_en": [
+          "Approaching the 1,430 level. FX losses strengthen the incentive for foreigners to sell equities and raise entry costs for domestic investors going abroad — watch **the feedback loop between the currency and foreign flows.**",
+          "This week's direction hinges on the US July employment report due August 7."
+        ],
+        "links": [
+          {
+            "title": "원·달러 환율, 5.8원 오른 1429.8원 마감(종합)",
+            "url": "https://nwww.newsis.com/view/NISX20260803_0003734488",
+            "publisher": "뉴시스"
+          }
+        ]
       },
       {
         "name": "미 국채 10년물",
@@ -130,7 +810,48 @@
         "value": "4.68%",
         "change": -0.07,
         "note": "-7bp · 유가 급락에 동반 하락",
-        "note_en": "-7bp, following the drop in oil"
+        "note_en": "-7bp, following the drop in oil",
+        "facts": [
+          {
+            "label": "수익률",
+            "label_en": "Yield",
+            "value": "4.68%",
+            "numeric": true
+          },
+          {
+            "label": "전일대비",
+            "label_en": "Change",
+            "value": "-0.07%p (-7bp)",
+            "numeric": true
+          },
+          {
+            "label": "원인",
+            "label_en": "Driver",
+            "value": "유가 급락에 따른 인플레 기대 완화",
+            "numeric": false,
+            "value_en": "Easing inflation expectations as oil fell"
+          }
+        ],
+        "detail": [
+          "글로벌 채권의 준거 금리다. 유가 급락으로 기대 인플레이션이 내려가면서 7bp 하락했다. **금리 하락은 주식 할인율을 낮춰 밸류에이션을 지지**하므로, 이날 주식·채권 동반 강세의 연결고리다.",
+          "역방향 리스크도 같은 경로다. 중동 합의가 결렬되면 유가가 되돌려지고 금리가 다시 오르며 이날 랠리의 근거가 사라진다."
+        ],
+        "detail_en": [
+          "The global benchmark yield, down 7bp as falling oil lowered inflation expectations. **Lower yields reduce the equity discount rate and support valuations** — the link behind the simultaneous rally in stocks and bonds.",
+          "The reverse risk runs the same path: if the Middle East deal breaks down, oil rebounds, yields rise again and the basis for this rally disappears."
+        ],
+        "links": [
+          {
+            "title": "뉴욕증시, 유가·미 국채 수익률 급락에 랠리…다우 사상 최고",
+            "url": "https://www.newspim.com/news/view/20260804000024",
+            "publisher": "뉴스핌"
+          },
+          {
+            "title": "국제유가, 중동 우려 완화에 급락…WTI 5.1%↓",
+            "url": "https://www.etoday.co.kr/news/view/2610588",
+            "publisher": "이투데이"
+          }
+        ]
       },
       {
         "name": "WTI (9월물)",
@@ -138,7 +859,54 @@
         "value": "$80.34",
         "change_pct": -5.1,
         "note": "이란 공격 보류 발언에 공급 우려 완화",
-        "note_en": "Supply fears eased on the Iran de-escalation signal"
+        "note_en": "Supply fears eased on the Iran de-escalation signal",
+        "facts": [
+          {
+            "label": "종가",
+            "label_en": "Close",
+            "value": "$80.34",
+            "numeric": true
+          },
+          {
+            "label": "등락률",
+            "label_en": "Change",
+            "value": "-5.1%",
+            "numeric": true
+          },
+          {
+            "label": "브렌트 10월물",
+            "label_en": "Brent (Oct)",
+            "value": "$83.77 (-4.7%)",
+            "numeric": true
+          },
+          {
+            "label": "원인",
+            "label_en": "Driver",
+            "value": "트럼프 대통령 이란 공격 보류 발언",
+            "numeric": false,
+            "value_en": "Trump said he would refrain from strikes on Iran"
+          }
+        ],
+        "detail": [
+          "트럼프 대통령이 미군의 이란 공격을 보류하겠다고 밝히고 중동 사태 종결 합의가 가깝다고 언급하면서, 원유 공급망 교란 우려가 빠르게 완화됐다.",
+          "**현재 유가는 위험자산의 방향을 결정하는 단일 변수 역할**을 하고 있다. 합의가 진전되면 추가 하락 여지가 있지만, 결렬 시 유가·금리·주식이 모두 반대로 되돌려지는 **비대칭 리스크**를 안고 있다. 한국은 원유 순수입국이므로 유가 하락 자체는 교역조건 개선 요인이다."
+        ],
+        "detail_en": [
+          "Fears of oil supply disruption receded quickly after President Trump said US forces would refrain from attacking Iran and suggested a deal to end the fighting was close.",
+          "**Oil is currently the single variable steering risk assets.** Progress on a deal leaves room for further declines, but a breakdown carries **asymmetric risk** — oil, yields and equities would all reverse. As a net oil importer, Korea benefits from lower crude through its terms of trade."
+        ],
+        "links": [
+          {
+            "title": "국제유가, 중동 우려 완화에 급락…WTI 5.1%↓",
+            "url": "https://www.etoday.co.kr/news/view/2610588",
+            "publisher": "이투데이"
+          },
+          {
+            "title": "뉴욕증시, 유가·미 국채 수익률 급락에 랠리…다우 사상 최고",
+            "url": "https://www.newspim.com/news/view/20260804000024",
+            "publisher": "뉴스핌"
+          }
+        ]
       },
       {
         "name": "브렌트유 (10월물)",
@@ -167,14 +935,112 @@
         "name_en": "Foreign investors",
         "amount": -28427,
         "note": "SK하이닉스 -1조7,244억 · 삼성전자 -9,521억 집중",
-        "note_en": "Concentrated: SK Hynix -1,724.4bn, Samsung Elec -952.1bn"
+        "note_en": "Concentrated: SK Hynix -1,724.4bn, Samsung Elec -952.1bn",
+        "facts": [
+          {
+            "label": "순매도",
+            "label_en": "Net selling",
+            "value": "-2조 8,427억원",
+            "numeric": true,
+            "value_en": "-KRW 2,842.7bn"
+          },
+          {
+            "label": "SK하이닉스",
+            "label_en": "SK Hynix",
+            "value": "약 -1조 7,244억원",
+            "numeric": true,
+            "value_en": "approx. -KRW 1,724.4bn"
+          },
+          {
+            "label": "삼성전자",
+            "label_en": "Samsung Elec",
+            "value": "약 -9,521억원",
+            "numeric": true,
+            "value_en": "approx. -KRW 952.1bn"
+          },
+          {
+            "label": "직전 거래일",
+            "label_en": "Prior session",
+            "value": "약 +7조원 순매수",
+            "numeric": true,
+            "value_en": "approx. +KRW 7tn net buy"
+          },
+          {
+            "label": "상반기 누적",
+            "label_en": "H1 cumulative",
+            "value": "-148조 3,000억원 (사상 최대)",
+            "numeric": true,
+            "value_en": "-KRW 148.3tn (record)"
+          }
+        ],
+        "detail": [
+          "매도가 반도체 두 종목에 집중됐다는 점이 결정적이다. 두 종목 합계 약 2조6,765억원으로 **전체 순매도(2조8,427억원)의 94%**를 차지한다. 시장 전반에서 자금을 빼는 것이 아니라 특정 포지션을 정리하는 흐름이다.",
+          "다만 상반기 누적 순매도가 148조3,000억원(약 967억달러)으로 사상 최대라는 점은 별도로 봐야 한다. 원인으로는 반도체 대형주 차익실현, 글로벌 자산 리밸런싱, 원화 약세가 함께 지적된다."
+        ],
+        "detail_en": [
+          "The decisive point is concentration: the two chip names total roughly KRW 2,676.5bn, or **94% of the KRW 2,842.7bn total.** This is the unwinding of specific positions, not withdrawal from the market.",
+          "Separately, cumulative H1 net selling of KRW 148.3tn (approx. USD 96.7bn) is a record. Cited drivers include profit-taking in large-cap chips, global asset rebalancing and won weakness."
+        ],
+        "links": [
+          {
+            "title": "7조 원 쓸어 담더니 하루 만에 3조 원 순매도…외국인 수급 지속될까",
+            "url": "https://www.hankookilbo.com/news/article/A2026080314210005198",
+            "publisher": "한국일보"
+          },
+          {
+            "title": "Korea's Leveraged Chip Trade Hits the Margin Call Wall",
+            "url": "https://www.investing.com/analysis/koreas-leveraged-chip-trade-hits-the-margin-call-wall-200684082",
+            "publisher": "Investing.com"
+          },
+          {
+            "title": "역대급 폭등 뒤 다시 급락…코스피, 회복론은 유효할까",
+            "url": "https://www.fnnews.com/news/202608040659570278",
+            "publisher": "파이낸셜뉴스"
+          }
+        ]
       },
       {
         "name": "기관",
         "name_en": "Institutions",
         "amount": -19475,
         "note": "외국인과 동반 매도",
-        "note_en": "Sold alongside foreigners"
+        "note_en": "Sold alongside foreigners",
+        "facts": [
+          {
+            "label": "순매도",
+            "label_en": "Net selling",
+            "value": "-1조 9,475억원",
+            "numeric": true,
+            "value_en": "-KRW 1,947.5bn"
+          },
+          {
+            "label": "방향",
+            "label_en": "Direction",
+            "value": "외국인과 동반 매도",
+            "numeric": false,
+            "value_en": "Sold alongside foreigners"
+          }
+        ],
+        "detail": [
+          "외국인과 같은 방향으로 매도했다. 외국인·기관이 동시에 매도하는 국면에서는 통상 개인이 반대편을 받는데, 이 구조는 지수 하락을 완화하는 대신 **개인의 손실 노출을 키운다.**",
+          "특히 단일종목 레버리지 ETF가 피크 시 일간 거래대금의 70% 이상을 차지했던 시장 구조에서는, 개인이 받은 물량이 반대매매로 다시 시장에 나오는 경로가 열려 있다."
+        ],
+        "detail_en": [
+          "Institutions sold in the same direction as foreigners. When both sell simultaneously, retail typically absorbs the other side — cushioning the index decline but **increasing retail loss exposure.**",
+          "In a market where single-stock leveraged ETFs made up over 70% of daily turnover at their peak, that absorbed inventory can return to the market through forced liquidations."
+        ],
+        "links": [
+          {
+            "title": "[0803마감체크] 코스피, 반등 하루 만에 5%대 하락... 코스닥은 상승",
+            "url": "https://www.infostockdaily.co.kr/news/articleView.html?idxno=217229",
+            "publisher": "인포스탁데일리"
+          },
+          {
+            "title": "Korea's Leveraged Chip Trade Hits the Margin Call Wall",
+            "url": "https://www.investing.com/analysis/koreas-leveraged-chip-trade-hits-the-margin-call-wall-200684082",
+            "publisher": "Investing.com"
+          }
+        ]
       },
       {
         "name": "외국인 + 기관 합계",
@@ -201,7 +1067,47 @@
       "value": 1567000,
       "change_pct": -8.79,
       "comment": "전일 상한가(+30%) 급등분 되돌림. 3거래일간 27% 하락 후 상한가, 다시 급락으로 이어진 극단적 변동성",
-      "comment_en": "Reversed the prior session's 30% limit-up gain, after a 27% drop over three sessions — extreme volatility"
+      "comment_en": "Reversed the prior session's 30% limit-up gain, after a 27% drop over three sessions — extreme volatility",
+      "facts": [
+        {
+          "label": "종가",
+          "label_en": "Close",
+          "value": "1,567,000원",
+          "numeric": true,
+          "value_en": "KRW 1,567,000"
+        },
+        {
+          "label": "등락률",
+          "label_en": "Change",
+          "value": "-8.79%",
+          "numeric": true
+        },
+        {
+          "label": "외국인 순매도",
+          "label_en": "Foreign net selling",
+          "value": "약 -1조 7,244억원",
+          "numeric": true,
+          "value_en": "approx. -KRW 1,724.4bn"
+        }
+      ],
+      "detail": [
+        "3거래일간 27% 하락 → 상한가(+30%) → -8.79%. **펀더멘털이 아니라 포지션과 레버리지가 만든 진폭**이다. 데이터센터 투자 둔화 우려가 하락의 명목 이유였지만, 며칠 만에 30% 반등했다가 다시 급락한 경로는 수급 변수로만 설명된다."
+      ],
+      "detail_en": [
+        "-27% over three sessions, then limit-up (+30%), then -8.79%. **This amplitude came from positioning and leverage, not fundamentals.** Data-centre capex concerns were the stated reason for the fall, but a 30% rebound followed by another slump is explicable only through flows."
+      ],
+      "links": [
+        {
+          "title": "Korea's Leveraged Chip Trade Hits the Margin Call Wall",
+          "url": "https://www.investing.com/analysis/koreas-leveraged-chip-trade-hits-the-margin-call-wall-200684082",
+          "publisher": "Investing.com"
+        },
+        {
+          "title": "[0803마감체크] 코스피, 반등 하루 만에 5%대 하락... 코스닥은 상승",
+          "url": "https://www.infostockdaily.co.kr/news/articleView.html?idxno=217229",
+          "publisher": "인포스탁데일리"
+        }
+      ]
     },
     {
       "name": "삼성전자",
@@ -209,19 +1115,89 @@
       "value": 239500,
       "change_pct": -8.76,
       "comment": "외국인 순매도 1위권. 전일 급등분 대부분 반납",
-      "comment_en": "Among the top foreign sell targets; gave back most of the prior day's gain"
+      "comment_en": "Among the top foreign sell targets; gave back most of the prior day's gain",
+      "facts": [
+        {
+          "label": "종가",
+          "label_en": "Close",
+          "value": "239,500원",
+          "numeric": true,
+          "value_en": "KRW 239,500"
+        },
+        {
+          "label": "등락률",
+          "label_en": "Change",
+          "value": "-8.76%",
+          "numeric": true
+        },
+        {
+          "label": "외국인 순매도",
+          "label_en": "Foreign net selling",
+          "value": "약 -9,521억원",
+          "numeric": true,
+          "value_en": "approx. -KRW 952.1bn"
+        }
+      ],
+      "detail": [
+        "외국인 순매도 상위권. 전일 급등분을 대부분 반납했다. SK하이닉스 대비 매도 규모가 절반 수준인 것은 AI·HBM 노출도 차이로 해석된다."
+      ],
+      "detail_en": [
+        "Among the top foreign sell targets, giving back most of the prior day's gain. Selling was about half that in SK Hynix, which can be read as a difference in AI/HBM exposure."
+      ],
+      "links": [
+        {
+          "title": "7조 원 쓸어 담더니 하루 만에 3조 원 순매도…외국인 수급 지속될까",
+          "url": "https://www.hankookilbo.com/news/article/A2026080314210005198",
+          "publisher": "한국일보"
+        }
+      ]
     },
     {
       "name": "코스닥 제약·바이오",
       "name_en": "KOSDAQ pharma & biotech",
       "comment": "반도체 쏠림 완화로 자금 유입. 코스닥 매수 사이드카 발동의 주 배경",
-      "comment_en": "Attracted flows as the semiconductor concentration unwound; a key driver of the KOSDAQ buy-side sidecar"
+      "comment_en": "Attracted flows as the semiconductor concentration unwound; a key driver of the KOSDAQ buy-side sidecar",
+      "detail": [
+        "반도체 쏠림이 풀리면서 대체 목적지로 자금이 유입됐다. 코스닥 매수 사이드카 발동의 주 배경이다.",
+        "다만 이날 강세는 **개별 기업 실적이나 파이프라인 진전이 아니라 수급 이동**에 기인한다. 순환매 성격이 강하므로 종목 단위 접근 시 실적 근거를 별도로 확인해야 한다."
+      ],
+      "detail_en": [
+        "As the semiconductor concentration unwound, flows sought an alternative destination — the main driver behind the KOSDAQ buy-side sidecar.",
+        "Note that the strength came from **flow rotation, not company earnings or pipeline progress.** Given its rotational character, stock-level exposure needs a separate earnings case."
+      ],
+      "links": [
+        {
+          "title": "반도체 쏠림 풀리자 '코스닥 매수 사이드카'…20% 급락 딛고 반등 시작하나",
+          "url": "https://www.etoday.co.kr/news/view/2610468",
+          "publisher": "이투데이"
+        },
+        {
+          "title": "코스피 5.12% 하락…투심은 반도체→비반도체",
+          "url": "https://www.newspim.com/news/view/20260803001301",
+          "publisher": "뉴스핌"
+        }
+      ]
     },
     {
       "name": "코스닥 로봇",
       "name_en": "KOSDAQ robotics",
       "comment": "제약·바이오와 함께 순환매 수혜. 20% 급락 이후 반등 국면",
-      "comment_en": "Benefited from the rotation alongside biotech, rebounding after a 20% drawdown"
+      "comment_en": "Benefited from the rotation alongside biotech, rebounding after a 20% drawdown",
+      "detail": [
+        "제약·바이오와 함께 순환매 수혜를 받았다. 20% 급락 이후의 반등 국면이라 기술적 반등 성격이 섞여 있다.",
+        "지속성 판단 기준은 코스피 반등 시에도 강세가 유지되는지 여부다."
+      ],
+      "detail_en": [
+        "Benefited from the rotation alongside biotech, rebounding after a 20% drawdown, so part of the move is technical.",
+        "The test of durability is whether strength holds even as the KOSPI rebounds."
+      ],
+      "links": [
+        {
+          "title": "반도체 쏠림 풀리자 '코스닥 매수 사이드카'…20% 급락 딛고 반등 시작하나",
+          "url": "https://www.etoday.co.kr/news/view/2610468",
+          "publisher": "이투데이"
+        }
+      ]
     }
   ],
   "sector_comment": [
@@ -260,7 +1236,29 @@
       "view_en": "The prevailing view is that it is **too early to call this a trend reversal**, reading the move as profit-taking after a record surge combined with foreign selling and yen carry unwind fears. Analysts add that even once selling abates, a durable rebound requires restored conviction in semiconductor earnings.",
       "stance": "neutral",
       "stance_label": "조정 국면 · 추세 전환 아님",
-      "stance_label_en": "Correction, not a reversal"
+      "stance_label_en": "Correction, not a reversal",
+      "detail": [
+        "이번 조정의 원인으로 증권가가 공통적으로 지적하는 세 가지는 **① 7/31 사상 최대 급등(+17.91%) 직후의 차익실현, ② 외국인 대량 순매도, ③ 엔 캐리 트레이드 청산 우려**다. 세 요인이 모두 수급·포지션 변수이고 기업 이익 전망 훼손이 아니라는 점이 \"추세 전환으로 보기 이르다\"는 판단의 근거다.",
+        "동시에 조건도 함께 제시된다. 매도가 잦아든 뒤 **추세적 반등으로 이어지려면 반도체 이익 전망에 대한 확신 회복이 전제**라는 지적이다. 즉 지수 반등의 트리거를 수급이 아니라 이익 가시성에서 찾고 있다.",
+        "고객 응대 시에는 이 구분을 그대로 쓰는 것이 정확하다. \"하락 원인은 수급이고, 반등 조건은 이익입니다.\""
+      ],
+      "detail_en": [
+        "Brokerages consistently cite three causes: **(1) profit-taking right after the record +17.91% surge of July 31, (2) heavy foreign net selling, and (3) fears of a yen carry trade unwind.** All three are flow and positioning variables rather than damage to earnings estimates — the basis for judging it \"too early to call a trend reversal.\"",
+        "They attach a condition: once selling abates, **a durable rebound requires restored conviction in semiconductor earnings.** In other words, the trigger for an index recovery is earnings visibility, not flows.",
+        "That distinction transfers directly to client conversations: \"The cause of the decline is flows; the condition for a rebound is earnings.\""
+      ],
+      "links": [
+        {
+          "title": "역대급 폭등 뒤 다시 급락…코스피, 회복론은 유효할까",
+          "url": "https://www.fnnews.com/news/202608040659570278",
+          "publisher": "파이낸셜뉴스"
+        },
+        {
+          "title": "코스피 5.12% 하락…투심은 반도체→비반도체",
+          "url": "https://www.newspim.com/news/view/20260803001301",
+          "publisher": "뉴스핌"
+        }
+      ]
     },
     {
       "firm": "eToro",
@@ -271,7 +1269,22 @@
       "view_en": "Called it \"a **textbook example** of what happens when a crowded trade meets leverage,\" while cautioning that it should not be mistaken for a wholesale collapse in the AI investment case — a positioning and leverage problem, not yet an industry cycle problem.",
       "stance": "neutral",
       "stance_label": "포지션 문제 · 사이클 훼손 아님",
-      "stance_label_en": "Positioning, not the cycle"
+      "stance_label_en": "Positioning, not the cycle",
+      "detail": [
+        "\"혼잡한 거래(crowded trade)가 레버리지와 만났을 때 벌어지는 일의 교과서적 사례\"라는 평가의 핵심은 **원인을 산업이 아니라 시장 구조에 둔다**는 점이다. 같은 논리로, 이를 AI 투자 논리의 전면 붕괴로 확대 해석하는 것에는 명확히 선을 그었다.",
+        "이 구분은 실무적으로 중요하다. 원인이 포지션·레버리지라면 처방은 **비중과 레버리지 조정**이다. 원인이 산업 사이클이라면 처방은 **섹터 이탈**이다. 두 처방은 고객에게 전혀 다른 결과를 만든다."
+      ],
+      "detail_en": [
+        "The point of calling it \"a textbook example of what happens when a crowded trade meets leverage\" is that **the cause is located in market structure, not the industry.** On the same logic, it explicitly rejects reading this as a wholesale collapse of the AI investment case.",
+        "The distinction matters practically. If the cause is positioning and leverage, the remedy is **adjusting size and leverage.** If it were the industry cycle, the remedy would be **exiting the sector.** Those lead clients to very different outcomes."
+      ],
+      "links": [
+        {
+          "title": "Korea's Leveraged Chip Trade Hits the Margin Call Wall",
+          "url": "https://www.investing.com/analysis/koreas-leveraged-chip-trade-hits-the-margin-call-wall-200684082",
+          "publisher": "Investing.com"
+        }
+      ]
     },
     {
       "firm": "Bloomberg Opinion",
@@ -282,7 +1295,29 @@
       "view_en": "Published under the headline \"South Korea Is Becoming Uninvestable, Too,\" squarely raising the question of **foreign investor confidence** amid extreme volatility, the spread of leveraged products and the policy response. As an opinion piece it should be distinguished from house research, but it is a useful read on the offshore lens applied to foreign flows.",
       "stance": "bear",
       "stance_label": "구조적 신뢰 훼손 경고",
-      "stance_label_en": "Warns of structural confidence damage"
+      "stance_label_en": "Warns of structural confidence damage",
+      "detail": [
+        "8월 3일 「South Korea Is Becoming Uninvestable, Too」라는 제목으로 게재됐다. 제목이 제기하는 문제는 개별 종목의 밸류에이션이 아니라 **시장 자체의 투자 적격성**이다.",
+        "이 시각을 뒷받침하는 관측 가능한 사실들은 실재한다. 코스피 연율화 변동성 60% 초과(비트코인 48% 상회), 올해 서킷브레이커 9회, 상반기 외국인 순매도 148조3,000억원 사상 최대, 단일종목 레버리지 ETF가 피크 시 거래대금 70% 초과. **외국인 수급을 설명하는 해외 시각으로서 참고 가치가 있다.**",
+        "단, **오피니언 칼럼이며 하우스 투자의견이 아니다.** 고객에게 인용할 때는 이 구분을 반드시 명시해야 한다. 애널리스트 투자의견과 동일한 무게로 전달하면 부정확한 안내가 된다."
+      ],
+      "detail_en": [
+        "Published August 3 under the headline \"South Korea Is Becoming Uninvestable, Too.\" The question it raises concerns **the investability of the market itself**, not the valuation of individual stocks.",
+        "The observable facts behind that view are real: KOSPI annualised volatility above 60% (versus Bitcoin's 48%), nine circuit breakers this year, record H1 foreign net selling of KRW 148.3tn, and single-stock leveraged ETFs exceeding 70% of turnover at their peak. **It has reference value as the offshore lens on foreign flows.**",
+        "But it is **an opinion column, not house research.** That distinction must be stated explicitly when quoting it to clients; presenting it with the weight of an analyst rating would be inaccurate."
+      ],
+      "links": [
+        {
+          "title": "South Korea Is Becoming Uninvestable, Too",
+          "url": "https://www.bloomberg.com/opinion/articles/2026-08-03/south-korea-is-becoming-uninvestable-too",
+          "publisher": "Bloomberg Opinion"
+        },
+        {
+          "title": "South Korea Stock Boom: Why Kospi Is World's Most Volatile Benchmark Stock Index",
+          "url": "https://www.bloomberg.com/news/articles/2026-07-31/south-korea-stock-boom-why-kospi-is-world-s-most-volatile-benchmark-stock-index",
+          "publisher": "Bloomberg"
+        }
+      ]
     },
     {
       "firm": "정책 당국",
@@ -293,7 +1328,24 @@
       "view_en": "Noted that **approval of single-stock leveraged ETFs was rushed**, acknowledging that these products accounted for over 70% of daily turnover at their peak and that retail concentration in chip-linked products amplified volatility. Follow-up measures on product regulation are a live possibility.",
       "stance": "neutral",
       "stance_label": "레버리지 상품 규제 리스크",
-      "stance_label_en": "Leveraged product regulation risk"
+      "stance_label_en": "Leveraged product regulation risk",
+      "detail": [
+        "구윤철 부총리 겸 기획재정부 장관은 **단일종목 레버리지 ETF 승인이 서둘러 이뤄졌다**는 점을 언급했다. 해당 상품군은 피크 시점 일간 거래대금의 70% 이상을 차지했고, 개인 자금이 삼성전자·SK하이닉스 연계 상품에 집중돼 지수 급등락을 증폭시켰다.",
+        "정책 당국이 상품 승인 과정 자체를 문제로 지적한 것은 **후속 규제 가능성**을 의미한다. 레버리지 상품을 보유한 고객에게는 시장 리스크와 별개로 **규제 변경 리스크**를 함께 안내하는 것이 맞다.",
+        "구체적으로는 신규 상장 제한, 레버리지 배수 조정, 개인 투자자 진입 요건 강화 등이 통상적인 정책 수단이다. 다만 현재 발표된 조치는 없으므로, 가능성으로만 안내해야 한다."
+      ],
+      "detail_en": [
+        "Deputy Prime Minister and Finance Minister Koo Yun-cheol noted that **approval of single-stock leveraged ETFs was rushed.** These products accounted for more than 70% of daily turnover at their peak, and retail concentration in Samsung Electronics and SK Hynix-linked products amplified index swings.",
+        "Policymakers questioning the approval process itself implies **the possibility of follow-up regulation.** Clients holding leveraged products should be briefed on **regulatory change risk** alongside market risk.",
+        "Typical policy tools would include restricting new listings, adjusting leverage multiples, or tightening retail eligibility. No measures have been announced, so this should be communicated strictly as a possibility."
+      ],
+      "links": [
+        {
+          "title": "Korea's Leveraged Chip Trade Hits the Margin Call Wall",
+          "url": "https://www.investing.com/analysis/koreas-leveraged-chip-trade-hits-the-margin-call-wall-200684082",
+          "publisher": "Investing.com"
+        }
+      ]
     }
   ],
   "calendar": [
@@ -303,7 +1355,22 @@
       "event_en": "Korean market open",
       "watch": "뉴욕 강세를 반영한 반등 시도 여부. 갭 상승 후 외국인 매도로 되밀리는 패턴이 반복되는지 확인",
       "watch_en": "Whether a rebound follows the US rally — watch for the pattern of a gap-up faded by foreign selling",
-      "time_en": "09:00"
+      "time_en": "09:00",
+      "detail": [
+        "뉴욕 3대 지수 상승(다우 +1.32%, S&P +1.48%, 나스닥 +2.13%)과 유가·금리 하락은 갭 상승 요인이다. **확인할 것은 갭 상승 그 자체가 아니라 그 이후의 흐름**이다.",
+        "최근 반복된 패턴은 '갭 상승 → 외국인 매도 유입 → 오전 중 되밀림'이다. 이 패턴이 다시 나오면 대외 호재가 국내 수급을 이기지 못한다는 신호이며, 반대로 오전 강세가 유지되면 전일 매도가 일회성이었을 가능성이 높아진다."
+      ],
+      "detail_en": [
+        "Gains in New York (Dow +1.32%, S&P +1.48%, Nasdaq +2.13%) plus lower oil and yields argue for a gap-up. **What matters is not the gap itself but what follows it.**",
+        "The recent pattern has been gap-up, foreign selling, then fading through the morning. A repeat signals that external tailwinds cannot overcome domestic flows; sustained morning strength would suggest the prior day's selling was a one-off."
+      ],
+      "links": [
+        {
+          "title": "뉴욕증시, 유가·미 국채 수익률 급락에 랠리…다우 사상 최고",
+          "url": "https://www.newspim.com/news/view/20260804000024",
+          "publisher": "뉴스핌"
+        }
+      ]
     },
     {
       "time": "장중",
@@ -311,7 +1378,22 @@
       "event_en": "Foreign flows in Samsung Electronics and SK Hynix",
       "watch": "전일 3조원 순매도가 하루짜리 이벤트였는지 판단하는 핵심 지표. 두 종목 순매수 전환이 지수 반등의 필요조건",
       "watch_en": "The key read on whether the KRW 3tn of selling was a one-day event; a swing to net buying in these two is a precondition for an index rebound",
-      "time_en": "Intraday"
+      "time_en": "Intraday",
+      "detail": [
+        "가장 중요한 단일 관측 지표다. 전일 외국인은 SK하이닉스 약 1조7,244억원, 삼성전자 약 9,521억원을 순매도했고, 두 종목이 전체 순매도의 94%를 차지했다.",
+        "**판단 기준:** 두 종목에서 순매수 전환 → 차익실현 종료 신호, 지수 반등 가능성. 순매도 지속 → 구조적 이탈 가능성, 반등 시도마다 매물벽. 판단은 오후 장중 집계로 어느 정도 가늠할 수 있다."
+      ],
+      "detail_en": [
+        "The single most important observation. Foreigners sold approximately KRW 1,724.4bn of SK Hynix and KRW 952.1bn of Samsung Electronics — 94% of total net selling.",
+        "**Decision rule:** a swing to net buying in these two signals profit-taking has run its course and an index rebound is possible. Continued net selling points to a structural exit, with supply capping every rally attempt. Intraday afternoon tallies give a reasonable early read."
+      ],
+      "links": [
+        {
+          "title": "7조 원 쓸어 담더니 하루 만에 3조 원 순매도…외국인 수급 지속될까",
+          "url": "https://www.hankookilbo.com/news/article/A2026080314210005198",
+          "publisher": "한국일보"
+        }
+      ]
     },
     {
       "time": "장중",
@@ -319,7 +1401,27 @@
       "event_en": "USD/JPY",
       "watch": "미·일 공동 대응 이후 엔 강세가 지속되는지. 엔 추가 강세는 캐리 청산 압력으로 국내 수급에 직접 부담",
       "watch_en": "Whether yen strength persists after the joint US-Japan action; further strength adds carry-unwind pressure on Korean flows",
-      "time_en": "Intraday"
+      "time_en": "Intraday",
+      "detail": [
+        "미·일이 엔화 가치 방어에 공동으로 나섰음이 확인되며 엔이 지난해 말 이후 최고 수준으로 올랐다. 일본 장기금리도 29년 만의 최고인 2.8%다.",
+        "**엔 추가 강세는 캐리 트레이드 청산 압력**으로 이어져 외국인의 한국 주식 매도를 연장시킨다. 반대로 개입 효과가 소진돼 엔이 되돌려지면 아시아 위험자산 전반에 우호적이다. 국내 지수를 볼 때 엔/달러를 함께 띄워두는 것이 실용적이다."
+      ],
+      "detail_en": [
+        "Confirmation of joint US-Japan action to support the yen pushed it to its strongest since late last year; Japanese long-term yields are also at a 29-year high of 2.8%.",
+        "**Further yen strength means carry-unwind pressure**, extending foreign selling of Korean equities. Conversely, if the intervention effect fades and the yen retraces, that is supportive for Asian risk assets broadly. Practically, keep USD/JPY on screen alongside the index."
+      ],
+      "links": [
+        {
+          "title": "Asian stocks are mixed as yen jumps against the dollar, while oil prices slip",
+          "url": "https://tribtown.com/2026/08/03/asian-stocks-are-mixed-as-yen-jumps-against-the-dollar-while-oil-prices-slip/",
+          "publisher": "AP"
+        },
+        {
+          "title": "Korea's Leveraged Chip Trade Hits the Margin Call Wall",
+          "url": "https://www.investing.com/analysis/koreas-leveraged-chip-trade-hits-the-margin-call-wall-200684082",
+          "publisher": "Investing.com"
+        }
+      ]
     },
     {
       "time": "수시",
@@ -327,7 +1429,27 @@
       "event_en": "Middle East headlines and crude oil",
       "watch": "합의 진전 시 유가 추가 하락 → 금리 하락 → 위험자산 우호. 반대로 합의 결렬 시 전일 랠리의 근거가 사라진다",
       "watch_en": "Progress on a deal means lower oil and yields and a friendlier risk backdrop; a breakdown removes the basis for the prior session's rally",
-      "time_en": "Ongoing"
+      "time_en": "Ongoing",
+      "detail": [
+        "전일 글로벌 랠리는 **트럼프 대통령의 이란 공격 보류 발언이라는 단일 재료**에 의존한다. WTI -5.1%, 브렌트 -4.7%, 미 10년물 -7bp가 모두 이 하나에서 파생됐다.",
+        "따라서 리스크는 비대칭적이다. 합의가 진전되면 유가 추가 하락 → 금리 하락 → 위험자산 우호. 합의가 지연·결렬되면 이 세 경로가 동시에 역전되며 **전일 랠리의 근거 자체가 사라진다.** 한국은 원유 순수입국이므로 유가 하락은 교역조건 측면에서 추가 수혜다."
+      ],
+      "detail_en": [
+        "The prior session's global rally rests on **a single catalyst: Trump's statement that he would refrain from striking Iran.** WTI -5.1%, Brent -4.7% and the US 10-year -7bp all derive from it.",
+        "The risk is therefore asymmetric. Progress means lower oil, lower yields and a friendlier risk backdrop. Delay or breakdown reverses all three paths at once and **removes the basis for the rally itself.** As a net oil importer, Korea gains additionally from lower crude via terms of trade."
+      ],
+      "links": [
+        {
+          "title": "국제유가, 중동 우려 완화에 급락…WTI 5.1%↓",
+          "url": "https://www.etoday.co.kr/news/view/2610588",
+          "publisher": "이투데이"
+        },
+        {
+          "title": "뉴욕증시, 유가·미 국채 수익률 급락에 랠리…다우 사상 최고",
+          "url": "https://www.newspim.com/news/view/20260804000024",
+          "publisher": "뉴스핌"
+        }
+      ]
     },
     {
       "time": "코스닥",
@@ -335,7 +1457,22 @@
       "event_en": "Durability of the pharma-biotech and robotics rotation",
       "watch": "코스피 반등 시에도 코스닥 강세가 유지되는지. 유지되면 주도주 교체 신호로 해석 가능",
       "watch_en": "Whether KOSDAQ strength holds even if the KOSPI rebounds — if so, it points to a genuine change of leadership",
-      "time_en": "KOSDAQ"
+      "time_en": "KOSDAQ",
+      "detail": [
+        "전일 코스닥은 +2.44%로 매수 사이드카까지 발동됐다. **판단 기준은 코스피와의 동행 여부**다.",
+        "코스피가 반등하는데도 코스닥이 함께 강세면 주도주 교체가 진행 중이라는 신호다. 코스피 반등과 함께 코스닥이 되밀리면 전일 흐름은 반도체 회피 자금의 일시적 피난처였다는 해석이 맞다. 후자라면 코스닥 종목의 추격 매수는 위험하다."
+      ],
+      "detail_en": [
+        "The KOSDAQ rose 2.44% and triggered a buy-side sidecar. **The test is whether it moves with or against the KOSPI.**",
+        "If the KOSDAQ stays strong even as the KOSPI rebounds, a change of leadership is underway. If it fades as the KOSPI recovers, the prior session was a temporary haven for money fleeing semiconductors — in which case chasing KOSDAQ names is risky."
+      ],
+      "links": [
+        {
+          "title": "반도체 쏠림 풀리자 '코스닥 매수 사이드카'…20% 급락 딛고 반등 시작하나",
+          "url": "https://www.etoday.co.kr/news/view/2610468",
+          "publisher": "이투데이"
+        }
+      ]
     },
     {
       "time": "8/7 (금) 예정",
@@ -343,29 +1480,228 @@
       "event_en": "US July employment report (scheduled)",
       "watch": "이번 주 최대 매크로 이벤트. 금리 경로와 달러 방향을 통해 원/달러와 외국인 수급에 파급",
       "watch_en": "The week's biggest macro event, feeding through to USD/KRW and foreign flows via the rate path and the dollar",
-      "time_en": "Fri, Aug 7 (scheduled)"
+      "time_en": "Fri, Aug 7 (scheduled)",
+      "detail": [
+        "이번 주 최대 매크로 이벤트다. 미 노동부 고용보고서는 통상 매월 첫째 금요일에 발표되며, 8월은 7일(금)이 해당된다.",
+        "**전달 경로:** 고용 강세 → 금리 인하 기대 후퇴 → 달러 강세·미 금리 상승 → 원/달러 상승 압력 + 외국인 매도 유인 강화. 고용 둔화 → 반대 경로. 현재 원/달러가 1,429.8원으로 1,430원선에 근접해 있어 민감도가 높은 구간이다.",
+        "**주의:** 발표 일정은 관례에 따른 것이며, 고객 안내 전 미 노동통계국(BLS) 공식 일정을 확인하는 것이 안전하다."
+      ],
+      "detail_en": [
+        "The week's biggest macro event. The US employment report is normally released on the first Friday of each month, which falls on August 7.",
+        "**Transmission:** a strong print pushes back rate-cut expectations, strengthening the dollar and lifting US yields, which adds upward pressure on USD/KRW and strengthens the incentive for foreigners to sell. A weak print runs the reverse. With USD/KRW at 1,429.8, close to 1,430, sensitivity is high.",
+        "**Caveat:** the date follows convention — verify the official BLS calendar before communicating it to clients."
+      ],
+      "links": [
+        {
+          "title": "원·달러 환율, 5.8원 오른 1429.8원 마감(종합)",
+          "url": "https://nwww.newsis.com/view/NISX20260803_0003734488",
+          "publisher": "뉴시스"
+        }
+      ]
     }
   ],
   "risks": [
     {
       "text": "**엔 캐리 트레이드 청산.** 엔이 지난해 말 이후 최고 수준까지 강세를 보이고 있다. 일본 국내 장기금리가 29년 만의 최고 수준(2.8%)까지 오른 가운데, 일본계 자금이 해외 자산을 되돌리는 흐름은 아시아 증시 전반의 수급 리스크다.",
-      "text_en": "**Yen carry trade unwind.** The yen is at its strongest since late last year, and with Japanese long-term yields at a 29-year high of 2.8%, repatriation of Japanese capital is a flow risk for Asian equities broadly."
+      "text_en": "**Yen carry trade unwind.** The yen is at its strongest since late last year, and with Japanese long-term yields at a 29-year high of 2.8%, repatriation of Japanese capital is a flow risk for Asian equities broadly.",
+      "facts": [
+        {
+          "label": "엔화",
+          "label_en": "Yen",
+          "value": "지난해 말 이후 최고 강세",
+          "numeric": false,
+          "value_en": "Strongest since late last year"
+        },
+        {
+          "label": "일본 장기금리",
+          "label_en": "Japan long-term yield",
+          "value": "2.8% (29년 최고)",
+          "numeric": true,
+          "value_en": "2.8% (29-year high)"
+        },
+        {
+          "label": "일본 미 국채 매도",
+          "label_en": "Japanese UST selling",
+          "value": "1분기 약 300억달러",
+          "numeric": true,
+          "value_en": "approx. USD 30bn in Q1"
+        }
+      ],
+      "detail": [
+        "청산 경로는 **해외 자산 매도 → 엔 환전 → 엔 추가 강세 → 추가 청산**의 자기강화 구조다. 2024년 8월 사례에서 확인됐듯, 이 과정은 며칠 단위로 급격하게 진행될 수 있다.",
+        "모니터링 지표는 엔/달러와 일본 10년물 금리다. 한국 증시에 대한 파급은 외국인 순매도로 나타난다."
+      ],
+      "detail_en": [
+        "The unwind is self-reinforcing: **sell foreign assets → convert to yen → yen strengthens further → more unwinding.** As August 2024 showed, this can move violently within days.",
+        "Monitor USD/JPY and the Japanese 10-year yield; transmission to Korean equities shows up as foreign net selling."
+      ],
+      "links": [
+        {
+          "title": "Asian stocks are mixed as yen jumps against the dollar, while oil prices slip",
+          "url": "https://tribtown.com/2026/08/03/asian-stocks-are-mixed-as-yen-jumps-against-the-dollar-while-oil-prices-slip/",
+          "publisher": "AP"
+        },
+        {
+          "title": "Korea's Leveraged Chip Trade Hits the Margin Call Wall",
+          "url": "https://www.investing.com/analysis/koreas-leveraged-chip-trade-hits-the-margin-call-wall-200684082",
+          "publisher": "Investing.com"
+        }
+      ]
     },
     {
       "text": "**반도체 쏠림에 따른 지수 구조 리스크.** 삼성전자·SK하이닉스가 코스피 시총의 50%를 넘는다. 두 종목의 실적·수급 이슈가 곧바로 지수 리스크로 전이되며, 분산 효과가 사실상 작동하지 않는다.",
-      "text_en": "**Index concentration in semiconductors.** Samsung Electronics and SK Hynix exceed 50% of KOSPI market cap, so any earnings or flow issue in these two transmits directly to the index, leaving little diversification benefit."
+      "text_en": "**Index concentration in semiconductors.** Samsung Electronics and SK Hynix exceed 50% of KOSPI market cap, so any earnings or flow issue in these two transmits directly to the index, leaving little diversification benefit.",
+      "facts": [
+        {
+          "label": "삼성전자+SK하이닉스 시총 비중",
+          "label_en": "Samsung + SK Hynix share of market cap",
+          "value": "코스피의 50% 이상",
+          "numeric": true,
+          "value_en": "over 50% of the KOSPI"
+        },
+        {
+          "label": "8/3 등락",
+          "label_en": "Aug 3 moves",
+          "value": "삼성전자 -8.76%, SK하이닉스 -8.79%",
+          "numeric": true
+        }
+      ],
+      "detail": [
+        "두 종목이 시총의 절반을 넘으므로 **코스피는 분산된 지수가 아니다.** 두 종목이 각각 8~9% 하락하면 그것만으로 지수가 4~5% 움직인다.",
+        "실무적 함의: 코스피 인덱스 상품을 '분산 투자'로 안내하면 부정확하다. 또한 인덱스 펀드 + 반도체 ETF + 개별 종목을 함께 보유한 고객은 **동일 리스크에 중복 노출**돼 있을 수 있으므로 포트폴리오 점검이 필요하다."
+      ],
+      "detail_en": [
+        "With two names over half of market cap, **the KOSPI is not a diversified index.** An 8-9% fall in each moves the index 4-5% by itself.",
+        "Practical implication: describing a KOSPI index product as \"diversification\" is inaccurate. Clients holding an index fund plus a semiconductor ETF plus the single stocks may carry **overlapping exposure to the same risk** — worth a portfolio review."
+      ],
+      "links": [
+        {
+          "title": "South Korea Stock Boom: Why Kospi Is World's Most Volatile Benchmark Stock Index",
+          "url": "https://www.bloomberg.com/news/articles/2026-07-31/south-korea-stock-boom-why-kospi-is-world-s-most-volatile-benchmark-stock-index",
+          "publisher": "Bloomberg"
+        },
+        {
+          "title": "[0803마감체크] 코스피, 반등 하루 만에 5%대 하락... 코스닥은 상승",
+          "url": "https://www.infostockdaily.co.kr/news/articleView.html?idxno=217229",
+          "publisher": "인포스탁데일리"
+        }
+      ]
     },
     {
       "text": "**레버리지 상품 연쇄 청산.** 단일종목 레버리지 ETF가 피크 시 거래대금의 70% 이상을 차지했다. 급락 시 반대매매가 추가 하락을 강제하는 구조로, 변동성이 자기강화된다.",
-      "text_en": "**Cascading liquidation in leveraged products.** Single-stock leveraged ETFs made up over 70% of turnover at their peak; in a sell-off, forced liquidations compel further declines and volatility becomes self-reinforcing."
+      "text_en": "**Cascading liquidation in leveraged products.** Single-stock leveraged ETFs made up over 70% of turnover at their peak; in a sell-off, forced liquidations compel further declines and volatility becomes self-reinforcing.",
+      "facts": [
+        {
+          "label": "피크 시 거래대금 비중",
+          "label_en": "Share of turnover at peak",
+          "value": "일간 70% 이상",
+          "numeric": true,
+          "value_en": "over 70% of daily turnover"
+        },
+        {
+          "label": "사례",
+          "label_en": "Case",
+          "value": "SK하이닉스 3거래일 -27% → 상한가 → -8.79%",
+          "numeric": false,
+          "value_en": "SK Hynix: -27% over 3 sessions, limit-up, then -8.79%"
+        }
+      ],
+      "detail": [
+        "레버리지 ETF는 일별로 목표 배수를 맞추기 위해 재조정한다. 따라서 **변동성이 클수록 누적 수익률이 기초자산 배수보다 구조적으로 나빠진다**(변동성 붕괴). 코스피 연율 변동성 60% 초과 환경은 이 손실이 가장 크게 나타나는 구간이다.",
+        "여기에 반대매매가 겹친다. 급락 시 담보 부족으로 강제 청산된 물량이 다시 하락을 만들고, 그 하락이 추가 청산을 부른다. 지수 하락이 자기강화되는 이유다.",
+        "**대응:** 보유 고객에게 비중 축소 또는 보유 기간 단축을 권고하고, 정책 당국이 상품 승인 과정을 문제로 지적한 만큼 규제 변경 리스크도 함께 안내한다."
+      ],
+      "detail_en": [
+        "Leveraged ETFs rebalance daily to maintain their target multiple, so **the higher the volatility, the worse cumulative returns become relative to the multiple of the underlying** (volatility decay). With KOSPI volatility above 60% annualised, this is where the decay bites hardest.",
+        "Forced liquidation compounds it: in a sell-off, margin-driven liquidations create further declines, which trigger more liquidations. That is why index declines become self-reinforcing.",
+        "**Action:** recommend reducing size or shortening holding periods, and flag regulatory change risk given that policymakers have questioned how these products were approved."
+      ],
+      "links": [
+        {
+          "title": "Korea's Leveraged Chip Trade Hits the Margin Call Wall",
+          "url": "https://www.investing.com/analysis/koreas-leveraged-chip-trade-hits-the-margin-call-wall-200684082",
+          "publisher": "Investing.com"
+        }
+      ]
     },
     {
       "text": "**중동 합의 불확실성.** 전일 글로벌 랠리는 이란 관련 긴장 완화라는 단일 재료에 의존한다. 합의가 지연·결렬되면 유가와 금리가 되돌려지고 랠리의 근거가 사라진다.",
-      "text_en": "**Middle East deal uncertainty.** The prior session's global rally rests on a single catalyst — de-escalation with Iran. Any delay or breakdown would reverse oil and yields and remove the basis for the rally."
+      "text_en": "**Middle East deal uncertainty.** The prior session's global rally rests on a single catalyst — de-escalation with Iran. Any delay or breakdown would reverse oil and yields and remove the basis for the rally.",
+      "facts": [
+        {
+          "label": "WTI 9월물",
+          "label_en": "WTI (Sep)",
+          "value": "$80.34 (-5.1%)",
+          "numeric": true
+        },
+        {
+          "label": "브렌트 10월물",
+          "label_en": "Brent (Oct)",
+          "value": "$83.77 (-4.7%)",
+          "numeric": true
+        },
+        {
+          "label": "미 10년물",
+          "label_en": "US 10Y",
+          "value": "4.68% (-7bp)",
+          "numeric": true
+        }
+      ],
+      "detail": [
+        "전일 글로벌 랠리의 근거는 단일 재료다. 유가·금리·주식이 모두 같은 뉴스에서 파생됐으므로, **그 뉴스가 뒤집히면 세 자산이 동시에 역방향으로 움직인다.** 상관관계가 1에 가까워지는 구간에서는 자산배분의 방어력이 떨어진다.",
+        "다만 한국은 원유 순수입국이므로 유가 하락이 유지되는 한 교역조건·물가 측면의 수혜는 남는다."
+      ],
+      "detail_en": [
+        "The rally rests on one catalyst. Because oil, yields and equities all derive from the same news, **a reversal moves all three against you at once.** When correlations approach one, asset allocation offers less protection.",
+        "That said, as a net oil importer Korea retains a terms-of-trade and inflation benefit for as long as lower crude holds."
+      ],
+      "links": [
+        {
+          "title": "국제유가, 중동 우려 완화에 급락…WTI 5.1%↓",
+          "url": "https://www.etoday.co.kr/news/view/2610588",
+          "publisher": "이투데이"
+        },
+        {
+          "title": "뉴욕증시, 유가·미 국채 수익률 급락에 랠리…다우 사상 최고",
+          "url": "https://www.newspim.com/news/view/20260804000024",
+          "publisher": "뉴스핌"
+        }
+      ]
     },
     {
       "text": "**원/달러 1,430원 근접.** 외국인의 환차손이 주식 매도 유인을 강화하고, 국내 투자자의 해외자산 신규 투자 진입 단가를 높인다. 환율과 외국인 수급이 서로를 강화하는 고리에 주의가 필요하다.",
-      "text_en": "**USD/KRW near 1,430.** FX losses strengthen the incentive for foreigners to sell equities while raising entry costs for domestic investors going overseas — watch the feedback loop between the currency and foreign flows."
+      "text_en": "**USD/KRW near 1,430.** FX losses strengthen the incentive for foreigners to sell equities while raising entry costs for domestic investors going overseas — watch the feedback loop between the currency and foreign flows.",
+      "facts": [
+        {
+          "label": "원/달러",
+          "label_en": "USD/KRW",
+          "value": "1,429.8원 (+5.8원)",
+          "numeric": true,
+          "value_en": "KRW 1,429.8 (+5.8)"
+        },
+        {
+          "label": "주요 변수",
+          "label_en": "Key event",
+          "value": "8/7 예정 미 7월 고용보고서",
+          "numeric": false,
+          "value_en": "US July employment report, due Aug 7"
+        }
+      ],
+      "detail": [
+        "외국인은 원화 자산을 보유하므로 원화 약세는 곧 평가손이다. 주식이 오르지 않아도 환율만으로 손실이 커지면 매도 압력이 생기고, 그 매도가 다시 원화를 약하게 만든다.",
+        "**대응:** 해외투자 신규 자금은 일시 집행보다 분할 매수 또는 부분 환헤지를 검토한다. 환율 레벨만으로 진입 시점을 판단하지 않도록 안내한다."
+      ],
+      "detail_en": [
+        "Foreign investors hold won-denominated assets, so won weakness is an immediate valuation loss. Even without equity declines, FX alone can create selling pressure — which weakens the won further.",
+        "**Action:** for new overseas allocations, consider staged entries or partial FX hedging rather than a single execution, and advise against timing entry on the FX level alone."
+      ],
+      "links": [
+        {
+          "title": "원·달러 환율, 5.8원 오른 1429.8원 마감(종합)",
+          "url": "https://nwww.newsis.com/view/NISX20260803_0003734488",
+          "publisher": "뉴시스"
+        }
+      ]
     }
   ],
   "talking_points": [
@@ -373,7 +1709,50 @@
       "q": "지금이 저가 매수 기회입니까?",
       "q_en": "Is this a buying opportunity?",
       "a": "증권가의 공통된 평가는 \"추세 전환으로 보기는 이르다\"는 것입니다. 즉 이번 하락을 시장 붕괴로 볼 근거는 약하지만, 동시에 지금이 바닥이라고 단정할 근거도 없습니다. 실무적으로는 **① 일시 매수보다 분할 접근, ② 지수(코스피) 베팅보다 업종·종목 단위 대응, ③ 반도체 이익 전망 확인 전까지 반도체 비중 확대 유보**를 권합니다. 반등의 필요조건은 외국인의 삼성전자·SK하이닉스 순매수 전환입니다.",
-      "a_en": "The consensus view is that it is \"too early to call a trend reversal\" — there is little basis for treating this as a market breakdown, but equally none for declaring a bottom. Practically we suggest **(1) staged entries rather than a single purchase, (2) sector- and stock-level positioning rather than index bets, and (3) holding off on adding semiconductor exposure until earnings visibility improves**. The precondition for a rebound is foreigners turning net buyers of Samsung Electronics and SK Hynix."
+      "a_en": "The consensus view is that it is \"too early to call a trend reversal\" — there is little basis for treating this as a market breakdown, but equally none for declaring a bottom. Practically we suggest **(1) staged entries rather than a single purchase, (2) sector- and stock-level positioning rather than index bets, and (3) holding off on adding semiconductor exposure until earnings visibility improves**. The precondition for a rebound is foreigners turning net buyers of Samsung Electronics and SK Hynix.",
+      "facts": [
+        {
+          "label": "증권가 판단",
+          "label_en": "Brokerage view",
+          "value": "추세 전환으로 보기는 이르다",
+          "numeric": false,
+          "value_en": "Too early to call a trend reversal"
+        },
+        {
+          "label": "반등 필요조건",
+          "label_en": "Precondition for a rebound",
+          "value": "외국인의 삼성전자·SK하이닉스 순매수 전환",
+          "numeric": false,
+          "value_en": "Foreigners turning net buyers of Samsung Elec and SK Hynix"
+        },
+        {
+          "label": "확인해야 할 것",
+          "label_en": "What to confirm",
+          "value": "반도체 이익 전망 가시성",
+          "numeric": false,
+          "value_en": "Visibility on semiconductor earnings"
+        }
+      ],
+      "detail": [
+        "**하지 말아야 할 안내:** \"바닥입니다\", \"지금 들어가면 됩니다.\" 하락 원인이 수급·포지션이므로 바닥 시점은 관측 불가능하다.",
+        "**할 수 있는 안내:** 하락 원인이 이익 훼손이 아니라 수급이라는 사실, 그리고 반등을 확인할 구체적 조건(외국인 순매수 전환, 반도체 이익 가시성). 조건을 제시하면 고객이 스스로 판단할 근거를 갖게 된다."
+      ],
+      "detail_en": [
+        "**What not to say:** \"This is the bottom,\" or \"Now is the time to buy.\" Because the cause is flows and positioning, the timing of a bottom is not observable.",
+        "**What can be said:** that the decline stems from flows rather than damaged earnings, plus the specific conditions that would confirm a rebound (foreigners turning net buyers, semiconductor earnings visibility). Giving conditions lets the client reason for themselves."
+      ],
+      "links": [
+        {
+          "title": "역대급 폭등 뒤 다시 급락…코스피, 회복론은 유효할까",
+          "url": "https://www.fnnews.com/news/202608040659570278",
+          "publisher": "파이낸셜뉴스"
+        },
+        {
+          "title": "7조 원 쓸어 담더니 하루 만에 3조 원 순매도…외국인 수급 지속될까",
+          "url": "https://www.hankookilbo.com/news/article/A2026080314210005198",
+          "publisher": "한국일보"
+        }
+      ]
     },
     {
       "q": "미국은 사상 최고인데 왜 한국만 급락했습니까?",
@@ -385,7 +1764,56 @@
       "q": "레버리지 ETF를 보유한 고객에게 무엇을 안내해야 합니까?",
       "q_en": "What should we tell clients holding leveraged ETFs?",
       "a": "**변동성이 높을수록 레버리지 상품의 누적 수익률은 기초자산 배수보다 구조적으로 나빠진다**는 점을 먼저 설명해야 합니다. 코스피 변동성이 연율 60%를 넘고 서킷브레이커가 올해 9회 발동된 환경은 일별 재조정에서 발생하는 손실(변동성 붕괴)이 가장 크게 나타나는 구간입니다. SK하이닉스가 3거래일 27% 하락 → 상한가 → 다시 8.79% 하락한 궤적이 그 예시입니다. 비중 축소 또는 보유 기간 단축을 권고하고, 정책 당국이 해당 상품군의 승인 과정을 문제로 지적한 만큼 **규제 변경 리스크**도 함께 안내하십시오.",
-      "a_en": "Start by explaining that **the higher the volatility, the worse a leveraged product's cumulative return becomes relative to the multiple of its underlying**. With KOSPI volatility above 60% annualised and nine circuit breakers this year, this is precisely the regime where daily-rebalancing decay bites hardest — SK Hynix's path (-27% over three sessions, then limit-up, then -8.79%) is the illustration. Recommend reducing size or shortening holding periods, and flag **regulatory change risk**, given that policymakers have publicly questioned how these products were approved."
+      "a_en": "Start by explaining that **the higher the volatility, the worse a leveraged product's cumulative return becomes relative to the multiple of its underlying**. With KOSPI volatility above 60% annualised and nine circuit breakers this year, this is precisely the regime where daily-rebalancing decay bites hardest — SK Hynix's path (-27% over three sessions, then limit-up, then -8.79%) is the illustration. Recommend reducing size or shortening holding periods, and flag **regulatory change risk**, given that policymakers have publicly questioned how these products were approved.",
+      "facts": [
+        {
+          "label": "코스피 변동성",
+          "label_en": "KOSPI volatility",
+          "value": "연율 60% 초과 (비트코인 48%)",
+          "numeric": true,
+          "value_en": "over 60% annualised (Bitcoin 48%)"
+        },
+        {
+          "label": "올해 서킷브레이커",
+          "label_en": "Circuit breakers YTD",
+          "value": "9회",
+          "numeric": true
+        },
+        {
+          "label": "피크 시 거래대금 비중",
+          "label_en": "Share of turnover at peak",
+          "value": "일간 70% 이상",
+          "numeric": true,
+          "value_en": "over 70% of daily turnover"
+        },
+        {
+          "label": "사례",
+          "label_en": "Case",
+          "value": "SK하이닉스 -27% → 상한가(+30%) → -8.79%",
+          "numeric": false,
+          "value_en": "SK Hynix -27% → +30% limit-up → -8.79%"
+        }
+      ],
+      "detail": [
+        "**설명 순서를 이렇게 잡는 것이 효과적이다.** ① 레버리지 ETF는 일별로 재조정한다 → ② 따라서 변동성이 크면 기초자산이 제자리로 돌아와도 원금은 줄어든다 → ③ 지금 코스피 변동성은 연율 60%가 넘는다 → ④ SK하이닉스의 최근 궤적(-27% → +30% → -8.79%)이 실제 사례다.",
+        "**추가로 반드시 짚을 것:** 정책 당국이 단일종목 레버리지 ETF의 승인 과정 자체를 문제로 지적했다. 신규 상장 제한이나 진입 요건 강화 같은 조치가 나올 가능성이 있으므로, 시장 리스크와 별개로 **규제 변경 리스크**를 안내해야 한다. 다만 현재 발표된 조치는 없다."
+      ],
+      "detail_en": [
+        "**An effective sequence:** (1) leveraged ETFs rebalance daily → (2) so with high volatility, principal shrinks even if the underlying returns to its starting point → (3) KOSPI volatility is currently above 60% annualised → (4) SK Hynix's recent path (-27% → +30% → -8.79%) is the live example.",
+        "**Also essential:** policymakers have questioned the approval process for single-stock leveraged ETFs. Measures such as restricting new listings or tightening eligibility are possible, so **regulatory change risk** should be communicated alongside market risk — while noting that nothing has been announced."
+      ],
+      "links": [
+        {
+          "title": "Korea's Leveraged Chip Trade Hits the Margin Call Wall",
+          "url": "https://www.investing.com/analysis/koreas-leveraged-chip-trade-hits-the-margin-call-wall-200684082",
+          "publisher": "Investing.com"
+        },
+        {
+          "title": "South Korea Stock Boom: Why Kospi Is World's Most Volatile Benchmark Stock Index",
+          "url": "https://www.bloomberg.com/news/articles/2026-07-31/south-korea-stock-boom-why-kospi-is-world-s-most-volatile-benchmark-stock-index",
+          "publisher": "Bloomberg"
+        }
+      ]
     },
     {
       "q": "원/달러가 1,430원인데 해외투자를 지금 시작해도 됩니까?",
