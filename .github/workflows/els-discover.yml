@@ -28,6 +28,11 @@ jobs:
       - name: 탐색 실행
         run: node scripts/discover_els.mjs
 
+      - name: 수익률 기준 확인
+        if: hashFiles('scripts/verify_rate_basis.mjs') != ''
+        continue-on-error: true
+        run: node scripts/verify_rate_basis.mjs
+
       - name: 원문 업로드
         if: always()
         uses: actions/upload-artifact@v4
