@@ -522,7 +522,7 @@ var lang = 'ko';
 try { lang = localStorage.getItem('mas-els-lang') || 'ko'; } catch(e){}
 
 function t(ko, en){ return lang === 'en' ? en : ko; }
-function num(n, d){ d = d==null?1:d; return Number(n).toFixed(d).replace(/\.0+$/,''); }
+function num(n, d){ return Number(n).toFixed(d==null?1:d); }
 function comma(n){ return String(Math.round(n)).replace(/\B(?=(\d{3})+(?!\d))/g, ','); }
 function el(id){ return document.getElementById(id); }
 function svgNS(){ return 'http://www.w3.org/2000/svg'; }
@@ -604,7 +604,10 @@ function renderMeta(){
     t('데이터 출처: ', 'Data source: ') +
     (live ? t('미래에셋증권 홈페이지 (주 1회 자동 수집)','Mirae Asset Securities website (collected weekly)')
           : t('내장 예시 데이터','built-in sample data')) +
-    (DATA.sourceNote ? ' — ' + DATA.sourceNote : '') +
+    (function(){
+      var note = lang === 'en' ? (DATA.sourceNoteEn || DATA.sourceNote) : DATA.sourceNote;
+      return note ? ' — ' + note : '';
+    })() +
     (DATA.updatedAt ? ' / ' + t('갱신 ','updated ') + new Date(DATA.updatedAt).toISOString().slice(0,16).replace('T',' ') + ' UTC' : '');
 }
 
@@ -787,7 +790,7 @@ function renderPayoff(svgId, kiTouched){
   var svg = el(svgId);
   while (svg.childNodes.length) svg.removeChild(svg.firstChild);
 
-  var W = 520, H = 360, L = 54, R = 18, T = 20, B = 46;
+  var W = 520, H = 360, L = 54, R = 34, T = 20, B = 46;
   var xMin = 0, xMax = 160;
   var full = cumReturn(p, p.maturityMonths);
   var yMax = Math.max(20, Math.ceil((full + 10) / 10) * 10);
