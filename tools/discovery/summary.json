@@ -1,198 +1,394 @@
-[
-  {
-    "url": "https://securities.miraeasset.com/",
-    "depth": 0,
-    "finalUrl": "https://securities.miraeasset.com/",
-    "status": 200,
-    "error": null,
-    "contentType": "text/html",
-    "bytes": 4281,
-    "title": "미래에셋증권 - 글로벌 투자 파트너",
-    "evidence": null,
-    "apiHints": []
-  },
-  {
-    "url": "https://m.securities.miraeasset.com/",
-    "depth": 0,
-    "finalUrl": "https://m.securities.miraeasset.com/",
-    "status": 200,
-    "error": null,
-    "contentType": "text/html",
-    "bytes": 3820,
-    "title": "미래에셋증권",
-    "evidence": null,
-    "apiHints": []
-  },
-  {
-    "url": "https://securities.miraeasset.com/bbs/maf/pdt/list.do",
-    "depth": 0,
-    "finalUrl": "https://securities.miraeasset.com/bbs/maf/pdt/list.do",
-    "status": 404,
-    "error": null,
-    "contentType": "text/html;charset=EUC-KR",
-    "bytes": 27371,
-    "title": "미래에셋증권",
-    "evidence": {
-      "hits": {
-        "ELS": 0,
-        "파생결합": 0,
-        "청약": 1,
-        "조기상환": 0,
-        "기초자산": 0,
-        "낙인": 0
-      },
-      "total": 1,
-      "sample": ""
+{
+  "log": [
+    {
+      "step": "home",
+      "title": "미래에셋증권 - 글로벌 투자 파트너",
+      "scripts": 39
     },
-    "apiHints": [
-      "/main/bannerViewCnt.json",
-      "/bbs/main/research/index.do"
-    ]
-  },
-  {
-    "url": "https://securities.miraeasset.com/sitemap.do",
-    "depth": 0,
-    "finalUrl": "https://securities.miraeasset.com/sitemap.do",
-    "status": 404,
-    "error": null,
-    "contentType": "text/html;charset=euc-kr",
-    "bytes": 1303,
-    "title": "방문하시려는 페이지를 찾을 수 없습니다.",
-    "evidence": null,
-    "apiHints": []
-  },
-  {
-    "url": "https://securities.miraeasset.com/main/sitemap.do",
-    "depth": 0,
-    "finalUrl": "https://securities.miraeasset.com/main/sitemap.do",
-    "status": 404,
-    "error": null,
-    "contentType": "text/html; charset=euc-kr",
-    "bytes": 1272,
-    "title": "방문하시려는 페이지를 찾을 수 없습니다.",
-    "evidence": null,
-    "apiHints": []
-  },
-  {
-    "url": "https://download.securities.miraeasset.com/Kairos/Setup_KairosHTS.exe",
-    "depth": 1,
-    "finalUrl": "https://download.securities.miraeasset.com/Kairos/Setup_KairosHTS.exe",
-    "status": 200,
-    "error": null,
-    "contentType": "application/octet-stream",
-    "bytes": 284860535,
-    "title": "",
-    "evidence": {
-      "hits": {
-        "ELS": 14,
-        "파생결합": 0,
-        "청약": 0,
-        "조기상환": 0,
-        "기초자산": 0,
-        "낙인": 0
-      },
-      "total": 14,
-      "sample": "R�[���\u0004{\u0017HI���c\u0003rr��l\u0018AQ�ڻ��ϙ&��e\u001b\u001f���� ~�fRa�Q�\u0002]���^C\u001c8.\u0007���~\u0016b��\u001b �\u001e��(�Nz��h<N�:+��2��-\u001f�UT��@�ܖ}��(e�=�\u0003\u001b��δ��r=�=���d�\u001b\u0004-Z� ����X\b�1���D\u000f�\u001a�7�� qξ\u0012�Lb�7>̎5m)��ǟ��L���CS��� �����s&=�F�\u001a��b.=���L�y�\u0016�i׫��٫�\u0019�\u0006�(k� \u001aN_�#��f�!\u0003��*���\u0006\u0015Q�\u0013�]�zq'�\u0017Et����b�vYP�Ł�u\u001b5�2�=�V\u0003Lc����n\u0006ㄉ�>l��Lf��H�\u0007⸖ W��\u001dELS�h}o��^[����g�����)xi��\u0011#\u0003�R�Wu&[����.�7��a\u0000Z. i�-E�R\\TV&�$�Ȥ_7��&o�դ��,\u0012��� ��R����Йnw�z\u001c\u001a\u001d���\u0003a\u0006%ѐF\u00126\u0011XV��� 8z�=�tI'�ֶ �k\u0001�I8\u001a�\u001ez\\�>y'���\bz�Oe�7C� �h����$4t �7����5�q��G���]�\u001a��p�Ȩ��#1�N,5ȡ��9�U��Z ��%x�P���0�\u000e��=���:�Q-�-!1�\u0017)�5�W5́\u001c�5�\u000e���\u0003\u001b�;7�s8e����k�w�\u001a��р��W���m���k���&�`����u�R��n1��z$���c\u0001������l�7L\u0006wnð�\u0013�W$�����\u001d��s3�\"�k�w\u0018�#f�I/V���� �\u001dk������� d��h\u001fz��p��\u0018\u001b\u0016��n0��(�\u000e�C{\u0002�y\u000f�4 �|��`X�(z�4�Q�P4{��`LH\u001e\u001aؾڸ\u0005b�T��\b�� ���\u0002�\u0006�O�|�(\u0001H��������$�[.�\\�?7� �\u001d��]��O�(Kz���Q%��^[�,\u0002��\"Kz@��z��d�b�[��1N�z��\u001aO�^���\u001c\u0001��\u0018 \u0018wct7�B�Ĥ�(9�� \\n���#, \u001d�I)���oC\u0002��j��P��Ŗ��$�� #yP\u001c>{\u0002�л>)�hw\u000f���{o���<�d �@\b���=�zj)��qE����,9&N�~�\u00124�\u000fL��ʒ�JU�\u001e�\u0011��@���>;:��b.]�]?��\u001e\u0005\u0019� �\"�����[�\u0000\u0013�\u000e3��\"� 3؀���X�vM�j�\u0003Y�,\u0004&=�\u0006&=P7=ɷ;�o\u001e�[=D=�\u001a������\u00076\u0000�\u001ehZ � /\u001f@^nD^nY\u001b؍�Lqt'�:\u00071�Pi�\u00014�Zv\u0017W�I�\u0015J�\u001c*9$�1�k(�ɱ�\u000f��\u0013�G�3[�*j�Z\u001c]���W\u000f0���!��Ԛ�:տWr ��?Y�R�M���\u0011�K�=��wYߕf�}(�LJUW�\u0012]�V%�!\u0002J��F �����t �qi��c�hƹ�\b�g@ �\u0004�؃M�"
+    {
+      "step": "candidates",
+      "fromSearch": 0,
+      "fromBundles": 1238,
+      "tried": 40
+    }
+  ],
+  "doPathCount": 1238,
+  "wjsonPathCount": 1,
+  "visited": [
+    {
+      "path": "/hku/hku4028/c02.do",
+      "title": "미래에셋증권 - 보안프로그램 설치",
+      "textLen": 96,
+      "isEls": false,
+      "newXhr": 0,
+      "head": "접속하신 브라우저는 통합설치를 지원하지 않습니다. 프로그램명 간편인증/QR인증 로그인시 공동인증 로그인시 설치상태 통합설치 프로그램 (VeraPort) 필수 필수 미지원"
     },
-    "apiHints": []
-  },
-  {
-    "url": "https://ci.securities.miraeasset.com/",
-    "depth": 1,
-    "finalUrl": "https://ci.securities.miraeasset.com/",
-    "status": 200,
-    "error": null,
-    "contentType": "text/html",
-    "bytes": 3905,
-    "title": "회사소개 | 미래에셋증권",
-    "evidence": null,
-    "apiHints": []
-  },
-  {
-    "url": "https://english.securities.miraeasset.com/",
-    "depth": 1,
-    "finalUrl": "https://english.securities.miraeasset.com/",
-    "status": 200,
-    "error": null,
-    "contentType": "text/html",
-    "bytes": 3912,
-    "title": "Mirae Asset Securities",
-    "evidence": null,
-    "apiHints": []
-  },
-  {
-    "url": "https://securities.miraeasset.com/newir/view/pc/en/investor/researchReportsList.jsp",
-    "depth": 1,
-    "finalUrl": "https://securities.miraeasset.com/newir/view/pc/en/investor/researchReportsList.jsp",
-    "status": 200,
-    "error": null,
-    "contentType": "text/html; charset=euc-kr",
-    "bytes": 106629,
-    "title": "Research Report | Mirae Asset Securities",
-    "evidence": null,
-    "apiHints": [
-      "/newir/view/pc/en/investor/researchReportsList.jsp",
-      "/newir/view/pc/en/investor/researchReportsView.jsp"
-    ]
-  },
-  {
-    "url": "https://tornado.securities.miraeasset.com/",
-    "depth": 1,
-    "finalUrl": "https://tornado.securities.miraeasset.com/",
-    "status": 200,
-    "error": null,
-    "contentType": "text/html",
-    "bytes": 1021,
-    "title": "미래에셋증권 탁구단 TORNADO",
-    "evidence": null,
-    "apiHints": []
-  },
-  {
-    "url": "https://recruit.securities.miraeasset.com/",
-    "depth": 1,
-    "finalUrl": "https://recruit.securities.miraeasset.com/",
-    "status": 200,
-    "error": null,
-    "contentType": "text/html",
-    "bytes": 320,
-    "title": "e-HR",
-    "evidence": null,
-    "apiHints": []
-  },
-  {
-    "url": "https://webzine.securities.miraeasset.com/",
-    "depth": 1,
-    "finalUrl": "https://webzine.securities.miraeasset.com/",
-    "status": 200,
-    "error": null,
-    "contentType": "text/html; charset=UTF-8",
-    "bytes": 421,
-    "title": "미래에셋증권 웹진",
-    "evidence": null,
-    "apiHints": []
-  },
-  {
-    "url": "https://magazine.securities.miraeasset.com/",
-    "depth": 1,
-    "finalUrl": "https://magazine.securities.miraeasset.com/",
-    "status": 200,
-    "error": null,
-    "contentType": "text/html",
-    "bytes": 782,
-    "title": "",
-    "evidence": null,
-    "apiHints": []
-  },
-  {
-    "url": "https://securities.miraeasset.com.sg/",
-    "depth": 1,
-    "finalUrl": "https://securities.miraeasset.com.sg/",
-    "status": 200,
-    "error": null,
-    "contentType": "text/html; charset=utf-8",
-    "bytes": 71188,
-    "title": "Mirae Asset Securities (Singapore) - Global Leader in Financial Services",
-    "evidence": null,
-    "apiHints": []
-  }
-]
+    {
+      "path": "/hku/hku4161/a01.do",
+      "title": "미래에셋증권 - 보안프로그램 설치",
+      "textLen": 96,
+      "isEls": false,
+      "newXhr": 0,
+      "head": "접속하신 브라우저는 통합설치를 지원하지 않습니다. 프로그램명 간편인증/QR인증 로그인시 공동인증 로그인시 설치상태 통합설치 프로그램 (VeraPort) 필수 필수 미지원"
+    },
+    {
+      "path": "/hks/hks4200/n05.do",
+      "title": "방문하시려는 페이지를 찾을 수 없습니다.",
+      "textLen": 60,
+      "isEls": false,
+      "newXhr": 0,
+      "head": "방문하시려는 웹 페이지의 주소가 잘못 입력되었거나, 변경 또는 삭제되어 요청하신 페이지를 찾을 수 없습니다."
+    },
+    {
+      "path": "/hku/hku4028/c01.do",
+      "title": "미래에셋증권 - 보안프로그램 설치",
+      "textLen": 96,
+      "isEls": false,
+      "newXhr": 0,
+      "head": "접속하신 브라우저는 통합설치를 지원하지 않습니다. 프로그램명 간편인증/QR인증 로그인시 공동인증 로그인시 설치상태 통합설치 프로그램 (VeraPort) 필수 필수 미지원"
+    },
+    {
+      "path": "/hku/hku4028/c05.do",
+      "title": "미래에셋증권 - 보안프로그램 설치",
+      "textLen": 96,
+      "isEls": false,
+      "newXhr": 0,
+      "head": "접속하신 브라우저는 통합설치를 지원하지 않습니다. 프로그램명 간편인증/QR인증 로그인시 공동인증 로그인시 설치상태 통합설치 프로그램 (VeraPort) 필수 필수 미지원"
+    },
+    {
+      "path": "/hkd/hkd1001/r01.do",
+      "title": "미래에셋증권 - 보안프로그램 설치",
+      "textLen": 96,
+      "isEls": false,
+      "newXhr": 0,
+      "head": "접속하신 브라우저는 통합설치를 지원하지 않습니다. 프로그램명 간편인증/QR인증 로그인시 공동인증 로그인시 설치상태 통합설치 프로그램 (VeraPort) 필수 필수 미지원"
+    },
+    {
+      "path": "/hkd/hkd1002/r01.do",
+      "title": "미래에셋증권 - 보안프로그램 설치",
+      "textLen": 96,
+      "isEls": false,
+      "newXhr": 0,
+      "head": "접속하신 브라우저는 통합설치를 지원하지 않습니다. 프로그램명 간편인증/QR인증 로그인시 공동인증 로그인시 설치상태 통합설치 프로그램 (VeraPort) 필수 필수 미지원"
+    },
+    {
+      "path": "/hkd/hkd1002/p01.do",
+      "title": "방문하시려는 페이지를 찾을 수 없습니다.",
+      "textLen": 60,
+      "isEls": false,
+      "newXhr": 0,
+      "head": "방문하시려는 웹 페이지의 주소가 잘못 입력되었거나, 변경 또는 삭제되어 요청하신 페이지를 찾을 수 없습니다."
+    },
+    {
+      "path": "/hkd/hkd1002/r02.do",
+      "title": "미래에셋증권 - 보안프로그램 설치",
+      "textLen": 96,
+      "isEls": false,
+      "newXhr": 0,
+      "head": "접속하신 브라우저는 통합설치를 지원하지 않습니다. 프로그램명 간편인증/QR인증 로그인시 공동인증 로그인시 설치상태 통합설치 프로그램 (VeraPort) 필수 필수 미지원"
+    },
+    {
+      "path": "/hkd/hkd1002/r03.do",
+      "title": "미래에셋증권 - 보안프로그램 설치",
+      "textLen": 96,
+      "isEls": false,
+      "newXhr": 0,
+      "head": "접속하신 브라우저는 통합설치를 지원하지 않습니다. 프로그램명 간편인증/QR인증 로그인시 공동인증 로그인시 설치상태 통합설치 프로그램 (VeraPort) 필수 필수 미지원"
+    },
+    {
+      "path": "/hkd/hkd1003/r01.do",
+      "title": "미래에셋증권 - 보안프로그램 설치",
+      "textLen": 96,
+      "isEls": false,
+      "newXhr": 0,
+      "head": "접속하신 브라우저는 통합설치를 지원하지 않습니다. 프로그램명 간편인증/QR인증 로그인시 공동인증 로그인시 설치상태 통합설치 프로그램 (VeraPort) 필수 필수 미지원"
+    },
+    {
+      "path": "/hkd/hkd1003/r02.do",
+      "title": "미래에셋증권 - 보안프로그램 설치",
+      "textLen": 96,
+      "isEls": false,
+      "newXhr": 0,
+      "head": "접속하신 브라우저는 통합설치를 지원하지 않습니다. 프로그램명 간편인증/QR인증 로그인시 공동인증 로그인시 설치상태 통합설치 프로그램 (VeraPort) 필수 필수 미지원"
+    },
+    {
+      "path": "/hkd/hkd1003/r03.do",
+      "title": "미래에셋증권 - 보안프로그램 설치",
+      "textLen": 96,
+      "isEls": false,
+      "newXhr": 0,
+      "head": "접속하신 브라우저는 통합설치를 지원하지 않습니다. 프로그램명 간편인증/QR인증 로그인시 공동인증 로그인시 설치상태 통합설치 프로그램 (VeraPort) 필수 필수 미지원"
+    },
+    {
+      "path": "/hkd/hkd1003/r04.do",
+      "title": "미래에셋증권 - 보안프로그램 설치",
+      "textLen": 96,
+      "isEls": false,
+      "newXhr": 0,
+      "head": "접속하신 브라우저는 통합설치를 지원하지 않습니다. 프로그램명 간편인증/QR인증 로그인시 공동인증 로그인시 설치상태 통합설치 프로그램 (VeraPort) 필수 필수 미지원"
+    },
+    {
+      "path": "/hkd/hkd1003/r05.do",
+      "title": "미래에셋증권 - 보안프로그램 설치",
+      "textLen": 96,
+      "isEls": false,
+      "newXhr": 0,
+      "head": "접속하신 브라우저는 통합설치를 지원하지 않습니다. 프로그램명 간편인증/QR인증 로그인시 공동인증 로그인시 설치상태 통합설치 프로그램 (VeraPort) 필수 필수 미지원"
+    },
+    {
+      "path": "/hkd/hkd1003/r06.do",
+      "title": "미래에셋증권 - 보안프로그램 설치",
+      "textLen": 96,
+      "isEls": false,
+      "newXhr": 0,
+      "head": "접속하신 브라우저는 통합설치를 지원하지 않습니다. 프로그램명 간편인증/QR인증 로그인시 공동인증 로그인시 설치상태 통합설치 프로그램 (VeraPort) 필수 필수 미지원"
+    },
+    {
+      "path": "/hkd/hkd1003/r07.do",
+      "title": "미래에셋증권 - 보안프로그램 설치",
+      "textLen": 96,
+      "isEls": false,
+      "newXhr": 0,
+      "head": "접속하신 브라우저는 통합설치를 지원하지 않습니다. 프로그램명 간편인증/QR인증 로그인시 공동인증 로그인시 설치상태 통합설치 프로그램 (VeraPort) 필수 필수 미지원"
+    },
+    {
+      "path": "/hkd/hkd1003/r08.do",
+      "title": "미래에셋증권 - 보안프로그램 설치",
+      "textLen": 96,
+      "isEls": false,
+      "newXhr": 0,
+      "head": "접속하신 브라우저는 통합설치를 지원하지 않습니다. 프로그램명 간편인증/QR인증 로그인시 공동인증 로그인시 설치상태 통합설치 프로그램 (VeraPort) 필수 필수 미지원"
+    },
+    {
+      "path": "/hkd/hkd1003/r09.do",
+      "title": "미래에셋증권 - 보안프로그램 설치",
+      "textLen": 96,
+      "isEls": false,
+      "newXhr": 0,
+      "head": "접속하신 브라우저는 통합설치를 지원하지 않습니다. 프로그램명 간편인증/QR인증 로그인시 공동인증 로그인시 설치상태 통합설치 프로그램 (VeraPort) 필수 필수 미지원"
+    },
+    {
+      "path": "/hkd/hkd1003/r10.do",
+      "title": "미래에셋증권 - 보안프로그램 설치",
+      "textLen": 96,
+      "isEls": false,
+      "newXhr": 0,
+      "head": "접속하신 브라우저는 통합설치를 지원하지 않습니다. 프로그램명 간편인증/QR인증 로그인시 공동인증 로그인시 설치상태 통합설치 프로그램 (VeraPort) 필수 필수 미지원"
+    },
+    {
+      "path": "/hkd/hkd1003/r12.do",
+      "title": "미래에셋증권 - 보안프로그램 설치",
+      "textLen": 96,
+      "isEls": false,
+      "newXhr": 0,
+      "head": "접속하신 브라우저는 통합설치를 지원하지 않습니다. 프로그램명 간편인증/QR인증 로그인시 공동인증 로그인시 설치상태 통합설치 프로그램 (VeraPort) 필수 필수 미지원"
+    },
+    {
+      "path": "/hkd/hkd1003/r14.do",
+      "title": "미래에셋증권 - 보안프로그램 설치",
+      "textLen": 96,
+      "isEls": false,
+      "newXhr": 0,
+      "head": "접속하신 브라우저는 통합설치를 지원하지 않습니다. 프로그램명 간편인증/QR인증 로그인시 공동인증 로그인시 설치상태 통합설치 프로그램 (VeraPort) 필수 필수 미지원"
+    },
+    {
+      "path": "/hkd/hkd1003/r16.do",
+      "title": "미래에셋증권 - 보안프로그램 설치",
+      "textLen": 96,
+      "isEls": false,
+      "newXhr": 0,
+      "head": "접속하신 브라우저는 통합설치를 지원하지 않습니다. 프로그램명 간편인증/QR인증 로그인시 공동인증 로그인시 설치상태 통합설치 프로그램 (VeraPort) 필수 필수 미지원"
+    },
+    {
+      "path": "/hkd/hkd1003/r17.do",
+      "title": "미래에셋증권 - 보안프로그램 설치",
+      "textLen": 96,
+      "isEls": false,
+      "newXhr": 0,
+      "head": "접속하신 브라우저는 통합설치를 지원하지 않습니다. 프로그램명 간편인증/QR인증 로그인시 공동인증 로그인시 설치상태 통합설치 프로그램 (VeraPort) 필수 필수 미지원"
+    },
+    {
+      "path": "/hkd/hkd1003/r18.do",
+      "title": "미래에셋증권 - 보안프로그램 설치",
+      "textLen": 96,
+      "isEls": false,
+      "newXhr": 0,
+      "head": "접속하신 브라우저는 통합설치를 지원하지 않습니다. 프로그램명 간편인증/QR인증 로그인시 공동인증 로그인시 설치상태 통합설치 프로그램 (VeraPort) 필수 필수 미지원"
+    },
+    {
+      "path": "/hkd/hkd1003/r20.do",
+      "title": "미래에셋증권 - 보안프로그램 설치",
+      "textLen": 96,
+      "isEls": false,
+      "newXhr": 0,
+      "head": "접속하신 브라우저는 통합설치를 지원하지 않습니다. 프로그램명 간편인증/QR인증 로그인시 공동인증 로그인시 설치상태 통합설치 프로그램 (VeraPort) 필수 필수 미지원"
+    },
+    {
+      "path": "/hkd/hkd1003/r23.do",
+      "title": "미래에셋증권 - 보안프로그램 설치",
+      "textLen": 96,
+      "isEls": false,
+      "newXhr": 0,
+      "head": "접속하신 브라우저는 통합설치를 지원하지 않습니다. 프로그램명 간편인증/QR인증 로그인시 공동인증 로그인시 설치상태 통합설치 프로그램 (VeraPort) 필수 필수 미지원"
+    },
+    {
+      "path": "/hkd/hkd1004/r01.do",
+      "title": "미래에셋증권 - 보안프로그램 설치",
+      "textLen": 96,
+      "isEls": false,
+      "newXhr": 0,
+      "head": "접속하신 브라우저는 통합설치를 지원하지 않습니다. 프로그램명 간편인증/QR인증 로그인시 공동인증 로그인시 설치상태 통합설치 프로그램 (VeraPort) 필수 필수 미지원"
+    },
+    {
+      "path": "/hkd/hkd1004/r02.do",
+      "title": "미래에셋증권 - 보안프로그램 설치",
+      "textLen": 96,
+      "isEls": false,
+      "newXhr": 0,
+      "head": "접속하신 브라우저는 통합설치를 지원하지 않습니다. 프로그램명 간편인증/QR인증 로그인시 공동인증 로그인시 설치상태 통합설치 프로그램 (VeraPort) 필수 필수 미지원"
+    },
+    {
+      "path": "/hkd/hkd1004/p01.do",
+      "title": "미래에셋증권 - 보안프로그램 설치",
+      "textLen": 96,
+      "isEls": false,
+      "newXhr": 0,
+      "head": "접속하신 브라우저는 통합설치를 지원하지 않습니다. 프로그램명 간편인증/QR인증 로그인시 공동인증 로그인시 설치상태 통합설치 프로그램 (VeraPort) 필수 필수 미지원"
+    },
+    {
+      "path": "/hkd/hkd1005/r01.do",
+      "title": "미래에셋증권 - 보안프로그램 설치",
+      "textLen": 96,
+      "isEls": false,
+      "newXhr": 0,
+      "head": "접속하신 브라우저는 통합설치를 지원하지 않습니다. 프로그램명 간편인증/QR인증 로그인시 공동인증 로그인시 설치상태 통합설치 프로그램 (VeraPort) 필수 필수 미지원"
+    },
+    {
+      "path": "/hkd/hkd1006/r04.do",
+      "title": "미래에셋증권 - 보안프로그램 설치",
+      "textLen": 96,
+      "isEls": false,
+      "newXhr": 0,
+      "head": "접속하신 브라우저는 통합설치를 지원하지 않습니다. 프로그램명 간편인증/QR인증 로그인시 공동인증 로그인시 설치상태 통합설치 프로그램 (VeraPort) 필수 필수 미지원"
+    },
+    {
+      "path": "/hkd/hkd1008/r01.do",
+      "title": "미래에셋증권 - 보안프로그램 설치",
+      "textLen": 96,
+      "isEls": false,
+      "newXhr": 0,
+      "head": "접속하신 브라우저는 통합설치를 지원하지 않습니다. 프로그램명 간편인증/QR인증 로그인시 공동인증 로그인시 설치상태 통합설치 프로그램 (VeraPort) 필수 필수 미지원"
+    },
+    {
+      "path": "/hks/hks4000/n06.do",
+      "title": "미래에셋증권 - 보안프로그램 설치",
+      "textLen": 96,
+      "isEls": false,
+      "newXhr": 0,
+      "head": "접속하신 브라우저는 통합설치를 지원하지 않습니다. 프로그램명 간편인증/QR인증 로그인시 공동인증 로그인시 설치상태 통합설치 프로그램 (VeraPort) 필수 필수 미지원"
+    },
+    {
+      "path": "/hks/hks4901/n01.do",
+      "title": "IMA(종합투자계좌) 안내 | IMA | 금융상품 | 미래에셋증권",
+      "textLen": 3147,
+      "isEls": true,
+      "newXhr": 3,
+      "head": "본문 내용 바로가기 주 메뉴 바로가기 HTS 다운로드 트레이딩 인증서/OTP 자주하는 질문 챗봇상담 원격지원 금융소비자포털 상품공시실 로그인 계좌개설 회원가입 MY자산 뱅킹/대출/청약 뱅킹/대출/ 청약 전체 메뉴 보기 이체로그인필요 대여 대출 청약 지로/공과금 납부 체크카드 미래에셋 현대카드 메뉴닫기 금융상품 금융상품 전체 메뉴 보기 추천상품 IMA 개인투자용국채 펀드 CMA ELS/DLS/ETN/ELW 발행어음 채권/RP ISA종합 중개형ISA 신탁형ISA 일임형ISA 신탁/Wrap 자문서비스 방카슈랑스 세금혜택상품 숙려제도 메뉴닫기 연금자산 연금자산 전체 메뉴 보기 MY개인연금로그인필요 개인연금매매 개인연금관리 MY퇴직연금로그인필요 퇴직연금/IRP매매 퇴직연금/IRP관리 퇴직연금서비스 퇴직연금안내 사업자공시 퇴직연금/IRP 간편조회 메뉴닫기 투자정보 투자정보 전체 메뉴 보기 리서치 리포트 종목서베이 국내주식 금액주문(소수점) 가능 종목 코넥스 기업현황 보고서 및 기타로그인필요 해"
+    },
+    {
+      "path": "/hks/hks4046/n01.do",
+      "title": "개인투자용국채 안내 | 개인투자용국채 | 금융상품 | 미래에셋증권",
+      "textLen": 3176,
+      "isEls": true,
+      "newXhr": 3,
+      "head": "본문 내용 바로가기 주 메뉴 바로가기 HTS 다운로드 트레이딩 인증서/OTP 자주하는 질문 챗봇상담 원격지원 금융소비자포털 상품공시실 로그인 계좌개설 회원가입 MY자산 뱅킹/대출/청약 뱅킹/대출/ 청약 전체 메뉴 보기 이체로그인필요 대여 대출 청약 지로/공과금 납부 체크카드 미래에셋 현대카드 메뉴닫기 금융상품 금융상품 전체 메뉴 보기 추천상품 IMA 개인투자용국채 펀드 CMA ELS/DLS/ETN/ELW 발행어음 채권/RP ISA종합 중개형ISA 신탁형ISA 일임형ISA 신탁/Wrap 자문서비스 방카슈랑스 세금혜택상품 숙려제도 메뉴닫기 연금자산 연금자산 전체 메뉴 보기 MY개인연금로그인필요 개인연금매매 개인연금관리 MY퇴직연금로그인필요 퇴직연금/IRP매매 퇴직연금/IRP관리 퇴직연금서비스 퇴직연금안내 사업자공시 퇴직연금/IRP 간편조회 메뉴닫기 투자정보 투자정보 전체 메뉴 보기 리서치 리포트 종목서베이 국내주식 금액주문(소수점) 가능 종목 코넥스 기업현황 보고서 및 기타로그인필요 해"
+    },
+    {
+      "path": "/hks/hks4046/v01.do",
+      "title": "미래에셋증권 - 보안프로그램 설치",
+      "textLen": 96,
+      "isEls": false,
+      "newXhr": 0,
+      "head": "접속하신 브라우저는 통합설치를 지원하지 않습니다. 프로그램명 간편인증/QR인증 로그인시 공동인증 로그인시 설치상태 통합설치 프로그램 (VeraPort) 필수 필수 미지원"
+    },
+    {
+      "path": "/hks/hks4046/v02.do",
+      "title": "미래에셋증권 - 보안프로그램 설치",
+      "textLen": 96,
+      "isEls": false,
+      "newXhr": 0,
+      "head": "접속하신 브라우저는 통합설치를 지원하지 않습니다. 프로그램명 간편인증/QR인증 로그인시 공동인증 로그인시 설치상태 통합설치 프로그램 (VeraPort) 필수 필수 미지원"
+    },
+    {
+      "path": "/hks/hks4046/v03.do",
+      "title": "미래에셋증권 - 보안프로그램 설치",
+      "textLen": 96,
+      "isEls": false,
+      "newXhr": 0,
+      "head": "접속하신 브라우저는 통합설치를 지원하지 않습니다. 프로그램명 간편인증/QR인증 로그인시 공동인증 로그인시 설치상태 통합설치 프로그램 (VeraPort) 필수 필수 미지원"
+    },
+    {
+      "path": "/hks/hks4046/v04.do",
+      "title": "미래에셋증권 - 보안프로그램 설치",
+      "textLen": 96,
+      "isEls": false,
+      "newXhr": 0,
+      "head": "접속하신 브라우저는 통합설치를 지원하지 않습니다. 프로그램명 간편인증/QR인증 로그인시 공동인증 로그인시 설치상태 통합설치 프로그램 (VeraPort) 필수 필수 미지원"
+    }
+  ],
+  "productApiCandidates": [],
+  "allXhr": [
+    "POST https://securities.miraeasset.com/public/banner/event.banner02.wjson",
+    "POST https://securities.miraeasset.com/public/main/home_main_jisu.wjson",
+    "POST https://securities.miraeasset.com/common/a02.json",
+    "POST https://securities.miraeasset.com/search/getTotalSearch.jsp",
+    "POST https://securities.miraeasset.com/public/banner/event.banner03.wjson",
+    "POST https://securities.miraeasset.com/public/banner/event.banner04.wjson",
+    "GET https://securities.miraeasset.com/advancement/html/com/js/jquery-1.11.2.min.js",
+    "GET https://securities.miraeasset.com/advancement/html/com/js/commonUtil.js",
+    "GET https://securities.miraeasset.com/advancement/html/com/js/jquery.easing.1.3.js",
+    "GET https://securities.miraeasset.com/advancement/html/com/js/jquery.bxslider.min.js",
+    "GET https://securities.miraeasset.com/public/main/popupNoti.js?dummy=1239%3E",
+    "GET https://securities.miraeasset.com/srh/autoComplete/dqAutoCompleteCommon.js",
+    "GET https://securities.miraeasset.com/advancement/html/com/js/cm.GNB.ui.js",
+    "GET https://securities.miraeasset.com/srh/autoComplete/dqAutoComplete_Top.js",
+    "GET https://securities.miraeasset.com/bbsdocs/bbs-html/home_main_notice.js",
+    "GET https://securities.miraeasset.com/advancement/resource/js/CookieManager.js",
+    "GET https://securities.miraeasset.com/js/weblog_tag.js",
+    "GET https://securities.miraeasset.com/advancement/html/com/js/ajax.js",
+    "GET https://securities.miraeasset.com/advancement/resource/js/loading.js",
+    "GET https://securities.miraeasset.com/advancement/resource/js/popup.js",
+    "GET https://securities.miraeasset.com/advancement/resource/js/polyfill.js",
+    "GET https://securities.miraeasset.com/advancement/resource/js/messageBox.js",
+    "GET https://securities.miraeasset.com/advancement/resource/js/investCommon.js?d=228",
+    "GET https://securities.miraeasset.com/advancement/resource/js/fileCommon.js?d=228",
+    "GET https://securities.miraeasset.com/js/bestez.menu.ui.js?d=228%20type=",
+    "GET https://securities.miraeasset.com/js/bestez.menu.ui.new.js?d=228%20type=",
+    "GET https://securities.miraeasset.com/js/jquery.jmpopups.js",
+    "GET https://securities.miraeasset.com/js/bestez.form.js",
+    "GET https://securities.miraeasset.com/js/jquery.stylish-select.js",
+    "GET https://securities.miraeasset.com/advancement/html/com/js/jquery.selectbox.js",
+    "GET https://securities.miraeasset.com/advancement/resource/js/coordinate.js",
+    "GET https://securities.miraeasset.com/advancement/resource/js/investCashCommon.js?d=789",
+    "GET https://securities.miraeasset.com/advancement/resource/js/investSurveyCash.js?v=1",
+    "GET https://securities.miraeasset.com/advancement/resource/js/pdfCommon.js?d=168",
+    "GET https://securities.miraeasset.com/site_variable.jsp?d=365",
+    "GET https://securities.miraeasset.com/js/bestez.menu.js",
+    "GET https://securities.miraeasset.com/js/bestez.menu.data.js",
+    "GET https://securities.miraeasset.com/js/bestez.banner.data.js",
+    "GET https://securities.miraeasset.com/js/bestez.specialmenu.data.js",
+    "GET https://securities.miraeasset.com/js/bestez.guide.data.js",
+    "GET https://securities.miraeasset.com/advancement/html/com/js/cm.jQuery.browser.check.js",
+    "POST https://127.0.0.1:14440/",
+    "POST https://127.0.0.1:14441/",
+    "POST https://127.0.0.1:14442/",
+    "POST https://127.0.0.1:14443/",
+    "POST https://127.0.0.1:14444/",
+    "POST https://127.0.0.1:14445/",
+    "POST https://127.0.0.1:14446/",
+    "POST https://127.0.0.1:14447/",
+    "POST https://127.0.0.1:14448/",
+    "POST https://127.0.0.1:14449/",
+    "POST https://securities.miraeasset.com/hks/hks4046/a06.json"
+  ]
+}
