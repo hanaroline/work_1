@@ -2950,6 +2950,24 @@ function applyLang(){
 /* ============================================================
    2. 상품 모델
    ============================================================ */
+/**
+ * 상품 번호. "미래에셋증권(ELS)37998e" -> { no:37998, suffix:'e' }
+ * 회차 번호가 없으면 목록 맨 뒤로 보낸다.
+ */
+function productNo(p){
+  var m = String(p.name || '').match(/\((?:ELS|ELB|DLS|DLB)\)\s*(\d+)([A-Za-z]*)/i)
+       || String(p.name || '').match(/제?\s*(\d{3,6})\s*회()/);
+  return m ? { no: Number(m[1]), suffix: m[2] || '' } : { no: Infinity, suffix: '' };
+}
+
+// 목록은 상품 번호 오름차순이 기본이다. 수집기는 청약 마감일·수익률 순으로
+// 담아 주지만, 화면에서는 번호대로 훑어보는 쪽이 찾기 쉽다.
+DATA.products.sort(function(a, b){
+  var x = productNo(a), y = productNo(b);
+  return x.no - y.no || x.suffix.localeCompare(y.suffix) ||
+         String(a.name || '').localeCompare(String(b.name || ''));
+});
+
 var current = 0;
 
 function product(){ return DATA.products[current] || null; }
