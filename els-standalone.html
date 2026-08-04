@@ -143,6 +143,56 @@ tr.highlight td{background:var(--gray-hl); font-weight:600;}
 .picker button[aria-pressed="true"]{background:var(--orange); border-color:var(--orange); color:#fff;}
 .picker button .sm{display:block; font-size:13px; opacity:.8;}
 
+/* ---------- 상품 찾기 (검색 + 필터) ---------- */
+.finder-search{position:relative; margin-top:var(--space-block);}
+.finder-search input{
+  width:100%; box-sizing:border-box; font-family:inherit; font-size:19px;
+  padding:16px 18px 16px 48px; color:var(--ink); background:#fff;
+  border:1px solid var(--hairline); border-radius:4px;
+}
+.finder-search input:focus{outline:2px solid var(--orange); outline-offset:-1px; border-color:var(--orange);}
+.finder-search svg{position:absolute; left:17px; top:50%; transform:translateY(-50%); pointer-events:none;}
+
+.finder-filters{
+  display:grid; grid-template-columns:repeat(5, minmax(0,1fr)); gap:14px;
+  margin-top:16px; align-items:end;
+}
+@media (max-width:1000px){ .finder-filters{grid-template-columns:repeat(2, minmax(0,1fr));} }
+@media (max-width:560px){ .finder-filters{grid-template-columns:1fr;} }
+.finder-filters .f{display:flex; flex-direction:column; gap:6px; min-width:0;}
+.finder-filters .f > span{font-size:14px; font-weight:500; letter-spacing:.4px; color:var(--muted);}
+.finder-filters select{
+  font-family:inherit; font-size:16px; padding:12px 14px; width:100%; box-sizing:border-box;
+  border:1px solid var(--hairline); border-radius:2px; background:#fff; color:var(--body-strong);
+  cursor:pointer; appearance:none;
+  background-image:url("data:image/svg+xml;charset=utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M1 1l5 5 5-5' fill='none' stroke='%23666' stroke-width='1.6'/%3E%3C/svg%3E");
+  background-repeat:no-repeat; background-position:right 14px center;
+}
+.finder-filters select:focus{outline:2px solid var(--orange); outline-offset:-1px;}
+.finder-filters select.on{border-color:var(--orange); color:var(--orange-active); font-weight:600;}
+
+.finder-bar{
+  display:flex; flex-wrap:wrap; align-items:baseline; gap:14px;
+  margin:20px 0 12px; font-size:16px; color:var(--muted);
+}
+.finder-bar strong{font-family:var(--font-num); font-size:22px; color:var(--orange-active);}
+.finder-bar button{
+  font-family:inherit; font-size:15px; padding:7px 14px; cursor:pointer; margin-left:auto;
+  border:1px solid var(--hairline); border-radius:2px; background:#fff; color:var(--body);
+}
+.finder-bar button:hover{background:var(--surface-subtle);}
+#finder-table tbody tr{cursor:pointer;}
+#finder-table tbody tr.selected td{background:var(--gray-hl); font-weight:600;}
+#finder-table tbody tr.selected td:first-child{box-shadow:inset 3px 0 0 var(--orange);}
+.empty-row td{text-align:center; color:var(--muted); padding:34px 16px;}
+
+/* ---------- 상세 스펙 표 ---------- */
+.spec{display:grid; grid-template-columns:repeat(2, minmax(0,1fr)); gap:0 34px; margin-top:var(--space-content);}
+@media (max-width:760px){ .spec{grid-template-columns:1fr;} }
+.spec div{display:flex; justify-content:space-between; gap:16px; padding:13px 2px; border-bottom:1px solid var(--hairline-soft); font-size:17px;}
+.spec dt{color:var(--muted); margin:0; white-space:nowrap;}
+.spec dd{margin:0; color:var(--ink); font-weight:600; text-align:right; word-break:keep-all;}
+
 /* ---------- 차트 ---------- */
 .chart-wrapper{border:1px solid var(--hairline); border-radius:4px; padding:24px; background:#fff; overflow-x:auto;}
 .chart-wrapper svg{display:block; width:100%; height:auto; min-width:560px;}
@@ -231,6 +281,57 @@ footer .disc strong{color:var(--body-strong);}
 
 <main class="page">
 
+<!-- ================= 0. 상품 찾기 ================= -->
+<section class="section" id="finder">
+  <div class="section-rule"></div>
+  <div class="section-eyebrow" data-ko="상품 찾기" data-en="Find a product">상품 찾기</div>
+  <h2 class="section-title" data-ko="조건으로 좁혀서 고르세요" data-en="Narrow it down">조건으로 좁혀서 고르세요</h2>
+  <p class="section-lead" id="finder-lead"></p>
+
+  <div class="finder-search">
+    <svg width="18" height="18" viewBox="0 0 18 18" fill="none" aria-hidden="true">
+      <circle cx="8" cy="8" r="6" stroke="#8A8A8A" stroke-width="1.8"/>
+      <path d="M12.5 12.5L16 16" stroke="#8A8A8A" stroke-width="1.8" stroke-linecap="round"/>
+    </svg>
+    <input id="f-q" type="search" autocomplete="off" aria-label="상품코드 · 기초자산 검색">
+  </div>
+
+  <div class="finder-filters">
+    <label class="f"><span data-ko="유형" data-en="Type">유형</span><select id="f-type"></select></label>
+    <label class="f"><span data-ko="기초자산" data-en="Underlying">기초자산</span><select id="f-under"></select></label>
+    <label class="f"><span data-ko="만기" data-en="Tenor">만기</span><select id="f-mat"></select></label>
+    <label class="f"><span data-ko="조기상환 주기" data-en="Observation cycle">조기상환 주기</span><select id="f-cycle"></select></label>
+    <label class="f"><span data-ko="위험등급" data-en="Risk grade">위험등급</span><select id="f-risk"></select></label>
+  </div>
+
+  <div class="finder-bar">
+    <span id="finder-count"></span>
+    <button type="button" id="f-reset" data-ko="조건 초기화" data-en="Reset filters">조건 초기화</button>
+  </div>
+
+  <div class="table-wrap">
+    <table id="finder-table">
+      <thead>
+        <tr>
+          <th data-ko="상품" data-en="Product">상품</th>
+          <th data-ko="유형" data-en="Type">유형</th>
+          <th data-ko="기초자산" data-en="Underlying">기초자산</th>
+          <th class="num" data-ko="최대 연 수익률" data-en="Max p.a.">최대 연 수익률</th>
+          <th class="num" data-ko="만기 보유 시 총액" data-en="Total if held">만기 보유 시 총액</th>
+          <th class="num" data-ko="만기" data-en="Tenor">만기</th>
+          <th class="num" data-ko="주기" data-en="Cycle">주기</th>
+          <th data-ko="조기상환 배리어" data-en="Barriers">조기상환 배리어</th>
+          <th data-ko="낙인" data-en="KI">낙인</th>
+          <th data-ko="위험등급" data-en="Risk">위험등급</th>
+          <th data-ko="청약기간" data-en="Offer period">청약기간</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+  </div>
+  <p style="font-size:14px;color:var(--muted);margin-top:12px" id="finder-foot"></p>
+</section>
+
 <!-- ================= 1. 30초 요약 ================= -->
 <section class="section" id="summary">
   <div class="section-rule"></div>
@@ -257,16 +358,24 @@ footer .disc strong{color:var(--body-strong);}
   </div>
 </section>
 
-<!-- ================= 2. 상품 선택 + 조기상환 사다리 ================= -->
+<!-- ================= 2. 선택 상품 상세 ================= -->
+<section class="section" id="detail">
+  <div class="section-rule"></div>
+  <div class="section-eyebrow" data-ko="상품 상세" data-en="Product detail">상품 상세</div>
+  <h2 class="section-title" id="detail-title"></h2>
+  <p class="section-lead" id="detail-lead"></p>
+  <div id="detail-badges" style="margin-top:6px"></div>
+  <dl class="spec" id="detail-spec"></dl>
+</section>
+
+<!-- ================= 3. 조기상환 사다리 ================= -->
 <section class="section" id="ladder">
   <div class="section-rule"></div>
   <div class="section-eyebrow" data-ko="조기상환 조건" data-en="Early redemption">조기상환 조건</div>
   <h2 class="section-title" data-ko="언제, 어떤 조건이면 끝나는가" data-en="When and how it redeems">언제, 어떤 조건이면 끝나는가</h2>
-  <p class="section-lead" data-ko="아래에서 상품을 고르면 이 페이지의 그래프와 시뮬레이터가 모두 그 상품 조건으로 바뀝니다." data-en="Pick a product below — every chart and the simulator on this page switch to its terms.">아래에서 상품을 고르면 이 페이지의 그래프와 시뮬레이터가 모두 그 상품 조건으로 바뀝니다.</p>
+  <p class="section-lead" data-ko="위에서 고른 상품의 조건입니다. 목록에서 다른 상품을 클릭하면 이 페이지의 그래프와 시뮬레이터가 모두 그 상품 조건으로 바뀝니다." data-en="Terms of the product selected above. Click another row in the list to redraw every chart and the simulator.">위에서 고른 상품의 조건입니다. 목록에서 다른 상품을 클릭하면 이 페이지의 그래프와 시뮬레이터가 모두 그 상품 조건으로 바뀝니다.</p>
 
-  <div class="picker" id="picker" role="group" aria-label="상품 선택" style="margin-top:var(--space-content)"></div>
-
-  <div class="grid grid-3" style="margin-bottom:var(--space-content)">
+  <div class="grid grid-3" style="margin-bottom:var(--space-content); margin-top:var(--space-content)">
     <div class="card">
       <div class="label" data-ko="기초자산" data-en="Underlying">기초자산</div>
       <div id="k-under" style="font-size:22px;font-weight:600;color:var(--ink);line-height:1.35"></div>
@@ -398,32 +507,52 @@ footer .disc strong{color:var(--body-strong);}
   </div>
 </section>
 
-<!-- ================= 5. 이번 주 청약 상품 ================= -->
-<section class="section" id="offers">
+<!-- ================= 6. 과거 시뮬레이션 ================= -->
+<section class="section" id="backtest">
   <div class="section-rule"></div>
-  <div class="section-eyebrow" data-ko="이번 주 상품" data-en="This week">이번 주 상품</div>
-  <h2 class="section-title" data-ko="현재 청약 중인 상품" data-en="Currently on offer">현재 청약 중인 상품</h2>
-  <p class="section-lead" id="offers-lead"></p>
+  <div class="section-eyebrow" data-ko="과거 시뮬레이션" data-en="Historical simulation">과거 시뮬레이션</div>
+  <h2 class="section-title" data-ko="과거에 이 구조였다면 어떻게 됐을까" data-en="How this structure would have fared">과거에 이 구조였다면 어떻게 됐을까</h2>
+  <p class="section-lead" id="bt-lead"></p>
 
-  <div class="table-wrap" style="margin-top:var(--space-block)">
-    <table id="offers-table">
-      <thead>
-        <tr>
-          <th data-ko="상품" data-en="Product">상품</th>
-          <th data-ko="유형" data-en="Type">유형</th>
-          <th data-ko="기초자산" data-en="Underlying">기초자산</th>
-          <th class="num" data-ko="최대 연 수익률" data-en="Max p.a.">최대 연 수익률</th>
-          <th class="num" data-ko="만기 보유 시 총액" data-en="Total if held">만기 보유 시 총액</th>
-          <th class="num" data-ko="만기" data-en="Tenor">만기</th>
-          <th data-ko="조기상환 배리어" data-en="Barriers">조기상환 배리어</th>
-          <th data-ko="낙인" data-en="KI">낙인</th>
-          <th data-ko="청약기간" data-en="Offer period">청약기간</th>
-        </tr>
-      </thead>
-      <tbody></tbody>
-    </table>
+  <div id="bt-body" hidden>
+    <div class="grid grid-3" style="margin-top:var(--space-block)">
+      <div class="card">
+        <div class="label" data-ko="첫 평가일에 조기상환" data-en="Redeemed at first observation">첫 평가일에 조기상환</div>
+        <div class="stat orange" id="bt-first"></div>
+        <p class="note" id="bt-first-note"></p>
+      </div>
+      <div class="card">
+        <div class="label" data-ko="원금 손실로 종료" data-en="Ended in a principal loss">원금 손실로 종료</div>
+        <div class="stat" id="bt-loss" style="color:var(--error)"></div>
+        <p class="note" id="bt-loss-note"></p>
+      </div>
+      <div class="card">
+        <div class="label" data-ko="평균 손익 (연환산, 세전)" data-en="Average outcome (p.a., pre-tax)">평균 손익 (연환산, 세전)</div>
+        <div class="stat" id="bt-avg"></div>
+        <p class="note" id="bt-avg-note"></p>
+      </div>
+    </div>
+
+    <div class="chart-wrapper" style="margin-top:var(--space-block)">
+      <svg id="bt-chart" viewBox="0 0 960 420" role="img" aria-label="과거 시뮬레이션 결과 분포"></svg>
+    </div>
+
+    <div class="table-wrap" style="margin-top:var(--space-block)">
+      <table id="bt-table">
+        <thead>
+          <tr>
+            <th data-ko="종료 형태" data-en="Outcome">종료 형태</th>
+            <th class="num" data-ko="발생 횟수" data-en="Count">발생 횟수</th>
+            <th class="num" data-ko="비중" data-en="Share">비중</th>
+            <th class="num" data-ko="보유기간" data-en="Holding period">보유기간</th>
+            <th class="num" data-ko="손익 (세전)" data-en="Return (pre-tax)">손익 (세전)</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+    <p style="font-size:14px;color:var(--muted);margin-top:12px" id="bt-foot"></p>
   </div>
-  <p style="font-size:14px;color:var(--muted);margin-top:12px" id="offers-foot"></p>
 </section>
 
 <!-- ================= 6. 리스크 ================= -->
@@ -2903,41 +3032,236 @@ function renderKeyCards(){
 }
 
 /* ============================================================
-   4. 상품 선택기
+   4. 상품 찾기 — 검색 + 필터 + 목록
    ============================================================ */
-function renderPicker(){
-  var box = el('picker');
-  box.innerHTML = '';
-  if (!DATA.products.length){
-    box.innerHTML = '<p style="color:var(--muted)">' + t('표시할 상품이 없습니다.','No products to display.') + '</p>';
-    return;
-  }
-  // 상품이 많으면 화면을 잡아먹으므로 앞쪽 몇 개만 버튼으로 두고
-  // 나머지는 아래 "현재 청약 중인 상품" 표에서 행을 클릭해 고르게 한다.
-  var LIMIT = 8;
-  var shown = DATA.products.slice(0, LIMIT);
-  if (current >= LIMIT) shown = shown.concat([DATA.products[current]]);
+var filters = { q:'', type:'', under:'', mat:'', cycle:'', risk:'' };
 
-  shown.forEach(function(p){
+/** 조기상환 평가 주기(개월). 회차 간격이 일정하지 않으면 첫 간격을 쓴다. */
+function cycleMonths(p){
+  var s = schedule(p);
+  return s.length > 1 ? s[1].months - s[0].months : s[0].months;
+}
+/** 위험등급 표기. 등급 문구가 수집되지 않았으면 구조에서 성격만 표시한다. */
+function riskLabel(p){
+  if (p.riskLabel) {
+    return lang === 'en' && p.riskGrade
+      ? 'Grade ' + p.riskGrade
+      : p.riskLabel + (p.riskGrade ? ' (' + p.riskGrade + '등급)' : '');
+  }
+  return p.principalProtection >= 100 ? t('원금지급형','Principal-protected') : '–';
+}
+/** 필터·검색 그룹 키 (등급 문구가 없으면 원금지급 여부로 묶는다) */
+function riskKey(p){
+  return p.riskLabel || (p.principalProtection >= 100 ? '_pp' : '_ki');
+}
+
+function matchesFilters(p){
+  var f = filters;
+  if (f.type  && (p.type || 'ELS') !== f.type) return false;
+  if (f.under && (p.underlyings || []).indexOf(f.under) < 0) return false;
+  if (f.mat   && String(p.maturityMonths) !== f.mat) return false;
+  if (f.cycle && String(cycleMonths(p)) !== f.cycle) return false;
+  if (f.risk  && riskKey(p) !== f.risk) return false;
+  if (f.q){
+    // 상품코드(ISIN)·회차번호·상품명·기초자산 어디든 걸리면 통과
+    var hay = [p.code, p.name, shortName(p), p.shape, (p.underlyings||[]).join(' ')]
+      .join(' ').toLowerCase().replace(/\s+/g,' ');
+    var terms = f.q.toLowerCase().split(/\s+/).filter(Boolean);
+    for (var i=0;i<terms.length;i++) if (hay.indexOf(terms[i]) < 0) return false;
+  }
+  return true;
+}
+function filteredProducts(){
+  return DATA.products.filter(matchesFilters);
+}
+
+/** select 하나를 [{value,label,count}] 로 채운다. 선택값은 유지한다. */
+function fillSelect(id, allLabel, options, value){
+  var sel = el(id);
+  sel.innerHTML = '';
+  var o0 = document.createElement('option');
+  o0.value = ''; o0.textContent = allLabel;
+  sel.appendChild(o0);
+  options.forEach(function(o){
+    var op = document.createElement('option');
+    op.value = o.value;
+    op.textContent = o.label + ' (' + o.count + ')';
+    sel.appendChild(op);
+  });
+  sel.value = value || '';
+  if (sel.value !== (value || '')) sel.value = '';   // 사라진 선택지는 전체로 되돌림
+  sel.classList.toggle('on', !!sel.value);
+}
+
+/** 어떤 필드로 묶어 개수를 세고, 정렬해서 옵션 목록을 만든다 */
+function optionsBy(keyFn, labelFn, sortFn){
+  var m = {};
+  DATA.products.forEach(function(p){
+    var keys = keyFn(p);
+    (Array.isArray(keys) ? keys : [keys]).forEach(function(k){
+      if (k == null || k === '') return;
+      if (!m[k]) m[k] = { value:String(k), label:labelFn(k, p), count:0 };
+      m[k].count++;
+    });
+  });
+  var arr = Object.keys(m).map(function(k){ return m[k]; });
+  arr.sort(sortFn || function(a,b){ return b.count - a.count || a.label.localeCompare(b.label); });
+  return arr;
+}
+
+function renderFilters(){
+  var byNum = function(a,b){ return Number(a.value) - Number(b.value); };
+
+  fillSelect('f-type', t('전체 유형','All types'),
+    optionsBy(function(p){ return p.type || 'ELS'; }, function(k){ return k; }), filters.type);
+
+  fillSelect('f-under', t('전체 기초자산','All underlyings'),
+    optionsBy(function(p){ return p.underlyings || []; }, function(k){ return k; }), filters.under);
+
+  fillSelect('f-mat', t('전체 만기','All tenors'),
+    optionsBy(function(p){ return p.maturityMonths; },
+              function(k){ return lang==='en' ? k + 'M' : k + '개월'; }, byNum), filters.mat);
+
+  fillSelect('f-cycle', t('전체 조기상환 주기','All cycles'),
+    optionsBy(cycleMonths, function(k){ return lang==='en' ? 'every ' + k + 'M' : k + '개월마다'; }, byNum),
+    filters.cycle);
+
+  fillSelect('f-risk', t('전체 위험등급','All risk grades'),
+    optionsBy(riskKey, function(k, p){ return riskLabel(p); },
+              function(a,b){ return a.label.localeCompare(b.label); }), filters.risk);
+}
+
+function renderFinder(){
+  var live = DATA.source === 'live';
+  el('finder-lead').innerHTML = live
+    ? t('미래에셋증권 홈페이지에서 자동 수집한 <strong>청약 진행 중</strong>인 상품입니다. 상품코드나 기초자산으로 검색하고, 아래 조건으로 좁힌 뒤 <strong>행을 클릭하면</strong> 그 상품의 상세와 구조도가 이어서 나옵니다.',
+        'Products <strong>currently on offer</strong>, collected automatically from the Mirae Asset Securities website. Search by code or underlying, narrow with the filters, then <strong>click a row</strong> to see that product in full.')
+    : t('<strong>아직 실제 청약 데이터가 수집되지 않았습니다.</strong> 아래는 구조 이해를 돕기 위한 대표 예시이며, 실제 판매 상품이 아닙니다.',
+        '<strong>Live subscription data has not been collected yet.</strong> The rows below are representative examples for education only, not actual products on sale.');
+
+  el('f-q').placeholder = t('상품코드 · 상품명 · 기초자산 검색  (예: 37993, KR6MD, 삼성전자)',
+                            'Search by code, name or underlying  (e.g. 37993, KR6MD, Samsung)');
+
+  renderFilters();
+
+  var list = filteredProducts();
+  var total = DATA.products.length;
+  el('finder-count').innerHTML = list.length === total
+    ? t('전체 <strong>' + total + '</strong>개 상품', 'All <strong>' + total + '</strong> products')
+    : t('<strong>' + list.length + '</strong>개 / 전체 ' + total + '개',
+        '<strong>' + list.length + '</strong> of ' + total + ' products');
+
+  var tb = el('finder-table').querySelector('tbody');
+  tb.innerHTML = '';
+
+  if (!list.length){
+    var tr0 = document.createElement('tr');
+    tr0.className = 'empty-row';
+    tr0.innerHTML = '<td colspan="11">' +
+      t('조건에 맞는 상품이 없습니다. 조건을 줄여보세요.','No products match. Try relaxing the filters.') + '</td>';
+    tb.appendChild(tr0);
+  }
+
+  list.forEach(function(p){
     var i = DATA.products.indexOf(p);
-    var b = document.createElement('button');
-    b.type = 'button';
-    b.setAttribute('aria-pressed', i === current ? 'true' : 'false');
-    b.innerHTML = '<strong>' + shortName(p) + '</strong>' +
-      '<span class="sm">' + underlyingLabel(p) + ' · ' + t('연 ','') + num(annualRate(p),2) + '%' +
-      (lang === 'en' ? ' p.a.' : '') + ' · ' + p.maturityMonths + (lang==='en'?'M':'개월') + '</span>';
-    b.addEventListener('click', function(){ current = i; renderAll(); });
-    box.appendChild(b);
+    var s = schedule(p);
+    var period = (p.offerStart || p.offerEnd)
+      ? fmtDate(p.offerStart) + ' ~ ' + fmtDate(p.offerEnd) : '–';
+    var tr = document.createElement('tr');
+    if (i === current) tr.className = 'selected';
+    tr.innerHTML =
+      '<td>' + (p.name || shortName(p)) +
+        (live ? '' : ' <span class="badge sample">' + t('예시','Sample') + '</span>') + '</td>' +
+      '<td><span class="badge ' + (p.type==='ELB'?'blue':'orange') + '">' + (p.type||'ELS') + '</span></td>' +
+      '<td>' + underlyingLabel(p) + '</td>' +
+      '<td class="num">' + num(annualRate(p),2) + '%</td>' +
+      '<td class="num">' + num(totalRate(p),2) + '%</td>' +
+      '<td class="num">' + p.maturityMonths + (lang==='en'?'M':'개월') + '</td>' +
+      '<td class="num">' + cycleMonths(p) + (lang==='en'?'M':'개월') + '</td>' +
+      '<td class="num">' + s.map(function(x){ return x.barrier; }).join('-') + '</td>' +
+      '<td class="num">' + (p.principalProtection>=100 ? t('원금지급','Protected')
+                            : p.knockIn==null ? t('노낙인','None') : p.knockIn + '%') + '</td>' +
+      '<td>' + riskLabel(p) + '</td>' +
+      '<td>' + period + '</td>';
+    tr.addEventListener('click', function(){
+      current = i; renderAll();
+      el('detail').scrollIntoView({ behavior:'smooth', block:'start' });
+    });
+    tb.appendChild(tr);
   });
 
-  if (DATA.products.length > LIMIT){
-    var more = document.createElement('a');
-    more.href = '#offers';
-    more.style.cssText = 'align-self:center;font-size:16px;color:var(--blue);padding:10px 4px';
-    more.textContent = t('전체 ' + DATA.products.length + '개 상품 보기 →',
-                         'See all ' + DATA.products.length + ' products →');
-    box.appendChild(more);
-  }
+  el('finder-foot').textContent = t(
+    '행을 클릭하면 아래 상세·구조도·시뮬레이터가 그 상품 조건으로 바뀝니다. 조기상환 배리어는 회차 순서대로 표기했습니다.',
+    'Click a row to switch the detail, charts and simulator below. Barriers are listed in observation order.');
+}
+
+/** 검색·필터 입력 연결 (최초 1회) */
+function bindFinder(){
+  var apply = function(){ renderFinder(); };
+  var qEl = el('f-q');
+  qEl.addEventListener('input', function(){ filters.q = qEl.value.trim(); apply(); });
+
+  [['f-type','type'],['f-under','under'],['f-mat','mat'],['f-cycle','cycle'],['f-risk','risk']]
+    .forEach(function(pair){
+      el(pair[0]).addEventListener('change', function(){
+        filters[pair[1]] = this.value; apply();
+      });
+    });
+
+  el('f-reset').addEventListener('click', function(){
+    filters = { q:'', type:'', under:'', mat:'', cycle:'', risk:'' };
+    qEl.value = '';
+    apply();
+  });
+}
+
+/* ============================================================
+   4-2. 선택 상품 상세
+   ============================================================ */
+function specRow(label, value){
+  return '<div><dt>' + label + '</dt><dd>' + value + '</dd></div>';
+}
+function renderDetail(){
+  var p = product(); if (!p) return;
+  var s = schedule(p);
+
+  el('detail-title').textContent = p.name || shortName(p);
+  el('detail-lead').innerHTML = t(
+    '목록에서 고른 상품의 청약 조건입니다. 아래 그래프와 시뮬레이터는 모두 이 조건을 씁니다.',
+    'Terms of the product selected from the list. Every chart and simulator below uses these terms.');
+
+  el('detail-badges').innerHTML =
+    '<span class="badge ' + (p.type==='ELB'?'blue':'orange') + '">' + (p.type||'ELS') + '</span> ' +
+    (p.shape ? '<span class="badge orange">' + label(SHAPE_EN, p.shape) + '</span> ' : '') +
+    (p.riskLabel ? '<span class="badge">' + riskLabel(p) + '</span> ' : '') +
+    (p.status ? '<span class="badge">' + label(STATUS_EN, p.status) + '</span>' : '');
+
+  var ki = p.principalProtection >= 100 ? t('해당 없음 (원금지급형)','n/a (principal-protected)')
+         : p.knockIn == null ? t('없음 (노낙인)','None (no knock-in)')
+         : p.knockIn + '%';
+
+  el('detail-spec').innerHTML =
+    specRow(t('상품코드','Code'), p.code || '–') +
+    specRow(t('기초자산','Underlying'), underlyingLabel(p)) +
+    specRow(t('조건 충족 시 최대 연 수익률 (세전)','Max coupon p.a. (pre-tax)'), num(annualRate(p),2) + '%') +
+    specRow(t('만기 보유 시 총 수익률 (세전)','Total if held to maturity'), num(totalRate(p),2) + '%') +
+    specRow(t('만기','Tenor'), p.maturityMonths + (lang==='en'?' months':'개월')) +
+    specRow(t('조기상환 평가주기','Observation cycle'),
+            cycleMonths(p) + (lang==='en'?' months':'개월') + ' · ' + s.length + (lang==='en'?' obs.':'회차')) +
+    specRow(t('조기상환 배리어','Barriers'), s.map(function(x){ return x.barrier; }).join('-')) +
+    specRow(t('낙인 배리어','Knock-in'), ki) +
+    specRow(t('원금지급률','Principal protection'), num(p.principalProtection || 0, 0) + '%') +
+    specRow(t('조건 미충족 시 최대손실률','Max loss if conditions fail'),
+            p.maxLossRate != null && p.maxLossRate !== 0
+              ? num(Math.abs(p.maxLossRate), 0) + '%'
+              : (p.principalProtection >= 100 ? '0%' : '100%')) +
+    specRow(t('위험등급','Risk grade'), riskLabel(p)) +
+    specRow(t('청약기간','Offer period'),
+            (p.offerStart || p.offerEnd) ? fmtDate(p.offerStart) + ' ~ ' + fmtDate(p.offerEnd) : '–') +
+    specRow(t('진행상태','Status'), p.status ? label(STATUS_EN, p.status) : '–') +
+    specRow(t('홈페이지 원문 표기','As published'), p.structureDesc || '–') +
+    (p.url ? specRow(t('상품 페이지','Product page'),
+      '<a href="' + p.url + '" target="_blank" rel="noopener">' + t('홈페이지에서 보기 →','Open on the website →') + '</a>') : '');
 }
 /** "미래에셋증권(ELS)37993" -> "ELS 37993", "… 제31234회" -> "ELS 31234회" */
 function shortName(p){
@@ -3339,46 +3663,286 @@ function fmtDate(d){
   var x = String(d).slice(0,10);
   return lang === 'en' ? x : x.replace(/-/g, '.');
 }
-function renderOffers(){
-  var live = DATA.source === 'live';
-  el('offers-lead').innerHTML = live
-    ? t('미래에셋증권 홈페이지에서 자동 수집한 청약 예정·진행 상품입니다. 상품명을 위 선택기에서 고르면 해당 조건으로 구조도가 다시 그려집니다.',
-        'Products currently on offer, collected automatically from the Mirae Asset Securities website. Select one above to redraw every chart with its terms.')
-    : t('<strong>아직 실제 청약 데이터가 수집되지 않았습니다.</strong> 아래는 구조 이해를 돕기 위한 대표 예시이며, 실제 판매 상품이 아닙니다.',
-        '<strong>Live subscription data has not been collected yet.</strong> The rows below are representative examples for education only, not actual products on sale.');
+/* ============================================================
+   8-2. 과거 시뮬레이션 (백테스트)
 
-  var tb = el('offers-table').querySelector('tbody');
+   투자설명서의 "과거 시뮬레이션(모의실험)"과 같은 방식이다. 과거 기초자산
+   시세로 이 상품이 매 거래일 발행되었다고 가정하고, 회차별 조기상환 판정과
+   낙인 터치를 그대로 돌려 어떤 결말이 몇 번 나왔는지 센다.
+   설명서 수치를 옮겨온 것이 아니라 이 페이지가 계산한 값이다.
+   ============================================================ */
+/** YYYYMMDD 정수에 개월 더하기 */
+function addMonths(ymd, m){
+  var y = Math.floor(ymd/10000), mo = Math.floor(ymd/100)%100, d = ymd%100;
+  var x = new Date(Date.UTC(y, mo - 1 + m, d));
+  return x.getUTCFullYear()*10000 + (x.getUTCMonth()+1)*100 + x.getUTCDate();
+}
+/** dates 배열에서 ymd 이상인 첫 인덱스 (없으면 -1) */
+function idxOnOrAfter(dates, ymd, from){
+  var lo = from || 0, hi = dates.length - 1, ans = -1;
+  while (lo <= hi){
+    var mid = (lo + hi) >> 1;
+    if (dates[mid] >= ymd){ ans = mid; hi = mid - 1; } else lo = mid + 1;
+  }
+  return ans;
+}
+/** 이 상품을 돌릴 수 있는 시세가 다 있는지 */
+function historyFor(p){
+  var h = DATA.history;
+  if (!h || !h.series || !h.dates || !h.dates.length) return null;
+  var names = p.underlyings || [];
+  if (!names.length) return null;
+  for (var i=0;i<names.length;i++) if (!h.series[names[i]]) return null;
+  return h;
+}
+
+function runBacktest(p){
+  var h = historyFor(p); if (!h) return null;
+  var dates = h.dates, N = dates.length;
+  var series = (p.underlyings || []).map(function(n){ return h.series[n]; });
+  var s = schedule(p), mat = p.maturityMonths;
+  var full = totalRate(p);
+
+  // 모든 기초자산에 값이 있는 첫 지점부터 발행 가능
+  var startIdx = 0;
+  series.forEach(function(arr){
+    var i = 0; while (i < N && arr[i] == null) i++;
+    if (i > startIdx) startIdx = i;
+  });
+
+  var buckets = {};            // key -> { label, count, months, retSum, retMin, retMax }
+  var runs = 0, retSum = 0, annSum = 0, lossCount = 0, firstCount = 0, worst = Infinity;
+
+  function bump(key, labelKo, labelEn, months, ret){
+    var b = buckets[key] || (buckets[key] =
+      { key:key, labelKo:labelKo, labelEn:labelEn, count:0, months:months, retMin:Infinity, retMax:-Infinity });
+    b.count++;
+    if (ret < b.retMin) b.retMin = ret;
+    if (ret > b.retMax) b.retMax = ret;
+  }
+
+  var issueFrom = null, issueTo = null;
+  for (var i = startIdx; i < N; i++){
+    if (addMonths(dates[i], mat) > dates[N-1]) break;   // 만기가 데이터 끝을 넘으면 중단
+
+    var base = series.map(function(arr){ return arr[i]; });
+    if (base.some(function(v){ return v == null || !(v > 0); })) continue;
+
+    var scan = i;              // 낙인 감시 위치
+    var kiHit = false;
+    var done = null;
+
+    for (var k = 0; k < s.length && !done; k++){
+      var j = idxOnOrAfter(dates, addMonths(dates[i], s[k].months), scan);
+      if (j < 0){ break; }
+
+      // 직전 평가일 다음날부터 이번 평가일까지 낙인 감시 (종가 기준)
+      if (p.knockIn != null && !kiHit){
+        for (var x = scan; x <= j && !kiHit; x++){
+          for (var a = 0; a < series.length; a++){
+            var v = series[a][x];
+            if (v != null && (v / base[a]) * 100 < p.knockIn){ kiHit = true; break; }
+          }
+        }
+      }
+      scan = j;
+
+      var wp = Infinity;       // 워스트 퍼포머 수준 (%)
+      for (var a2 = 0; a2 < series.length; a2++){
+        var v2 = series[a2][j];
+        if (v2 == null){ wp = null; break; }
+        wp = Math.min(wp, (v2 / base[a2]) * 100);
+      }
+      if (wp == null) break;
+
+      var last = k === s.length - 1;
+      if (wp >= s[k].barrier){
+        done = { months:s[k].months, ret:cumReturn(p, s[k].months),
+                 key:last ? 'mat' : 'e'+k,
+                 ko:last ? '만기 상환 (수익)' : (k+1) + '차 조기상환',
+                 en:last ? 'Redeemed at maturity' : 'Early redemption #' + (k+1) };
+      } else if (s[k].lizard != null && wp >= s[k].lizard){
+        // 리자드: 배리어는 못 채웠지만 리자드 선 위 -> 낮은 쿠폰으로 상환
+        var lr = s[k].lizardRate != null ? s[k].lizardRate * (s[k].months/12) : cumReturn(p, s[k].months);
+        done = { months:s[k].months, ret:lr, key:'lz',
+                 ko:(k+1) + '차 리자드 상환', en:'Lizard redemption #' + (k+1) };
+      } else if (last){
+        // 만기까지 조건 미충족
+        if (p.principalProtection >= 100){
+          done = { months:mat, ret:0, key:'pp', ko:'만기 · 원금지급', en:'Maturity · principal repaid' };
+        } else if (p.knockIn != null && !kiHit){
+          done = { months:mat, ret:full, key:'noki',
+                   ko:'만기 · 낙인 미터치로 수익', en:'Maturity · no knock-in, full coupon' };
+        } else {
+          done = { months:mat, ret:wp - 100, key:'loss',
+                   ko:'만기 · 원금 손실', en:'Maturity · principal loss' };
+        }
+      }
+    }
+
+    if (!done) continue;
+    if (issueFrom == null) issueFrom = dates[i];
+    issueTo = dates[i];
+    runs++;
+    retSum += done.ret;
+    annSum += done.ret * 12 / done.months;
+    if (done.ret < 0) lossCount++;
+    if (done.ret < worst) worst = done.ret;
+    if (done.key === 'e0') firstCount++;
+    bump(done.key, done.ko, done.en, done.months, done.ret);
+  }
+
+  if (!runs) return null;
+
+  var order = { e0:0 };
+  var list = Object.keys(buckets).map(function(k){ return buckets[k]; });
+  list.sort(function(a,b){
+    var rank = function(x){
+      if (x.key.charAt(0) === 'e') return 100 + Number(x.key.slice(1));
+      if (x.key === 'lz') return 300;
+      if (x.key === 'mat' || x.key === 'noki' || x.key === 'pp') return 400;
+      return 500;
+    };
+    return rank(a) - rank(b) || a.months - b.months;
+  });
+
+  return {
+    runs: runs, buckets: list,
+    // 발행일로 잡을 수 있었던 구간. 만기가 데이터 끝을 넘는 날짜는 제외되므로
+    // 시세 보유 구간(dates[startIdx] ~ 마지막)보다 만기만큼 짧다.
+    from: issueFrom, to: issueTo, dataTo: dates[N-1],
+    firstRate: firstCount / runs * 100,
+    lossRate: lossCount / runs * 100,
+    avgRet: retSum / runs,
+    avgAnn: annSum / runs,
+    worst: worst,
+    assets: (p.underlyings || []).slice(),
+  };
+}
+
+/** YYYYMMDD -> 표시용 날짜 */
+function fmtYmd(v){
+  var s = String(v);
+  var d = s.slice(0,4) + '-' + s.slice(4,6) + '-' + s.slice(6,8);
+  return lang === 'en' ? d : d.replace(/-/g, '.');
+}
+
+function renderBacktest(){
+  var p = product(); if (!p) return;
+  var lead = el('bt-lead'), body = el('bt-body');
+  var h = DATA.history;
+  var r = runBacktest(p);
+
+  if (!r){
+    body.hidden = true;
+    var why;
+    if (!h || !h.series){
+      why = t('기초자산 과거 시세가 아직 수집되지 않았습니다. 주간 수집이 한 번 더 돌면 이 자리에 결과가 표시됩니다.',
+              'Underlying price history has not been collected yet. It will appear here after the next weekly collection.');
+    } else {
+      var miss = (p.underlyings || []).filter(function(n){ return !h.series[n]; });
+      why = miss.length
+        ? t('이 상품의 기초자산 중 ' + miss.join(', ') + ' 의 과거 시세가 없어 시뮬레이션을 돌리지 못했습니다.',
+            'No price history for ' + miss.join(', ') + ', so this product cannot be simulated.')
+        : t('보유한 시세 구간이 이 상품의 만기(' + p.maturityMonths + '개월)보다 짧아 시뮬레이션을 돌리지 못했습니다.',
+            'The available price history is shorter than this product’s ' + p.maturityMonths + '-month tenor.');
+    }
+    lead.innerHTML = why;
+    return;
+  }
+
+  body.hidden = false;
+  lead.innerHTML = t(
+    '<strong>' + fmtYmd(r.from) + ' ~ ' + fmtYmd(r.to) + '</strong> 사이 매 거래일에 이 상품이 발행되었다고 가정하고 ' +
+      '<strong>' + comma(r.runs) + '회</strong>를 돌린 결과입니다. 기초자산(' + r.assets.join(', ') + ')의 실제 종가로 ' +
+      '회차별 조기상환 판정과 낙인 터치를 그대로 적용했습니다. 만기(' + p.maturityMonths + '개월)까지 지켜볼 수 있어야 하므로 ' +
+      '발행일은 시세 마지막 날(' + fmtYmd(r.dataTo) + ')에서 만기만큼 앞선 날까지만 잡았습니다.',
+    'Assuming this product had been issued on every trading day between <strong>' + fmtYmd(r.from) + ' and ' +
+      fmtYmd(r.to) + '</strong> — <strong>' + comma(r.runs) + '</strong> runs. Each run applies the actual closing ' +
+      'prices of ' + r.assets.join(', ') + ' to the observation and knock-in tests. Issue dates stop ' +
+      p.maturityMonths + ' months before the last price date (' + fmtYmd(r.dataTo) + ') so every run can reach maturity.');
+
+  el('bt-first').textContent = num(r.firstRate, 1) + '%';
+  el('bt-first-note').innerHTML = t(
+    '첫 평가일(' + schedule(p)[0].months + '개월)에 조건을 채워 바로 끝난 비율입니다.',
+    'Share of runs that met the first observation (' + schedule(p)[0].months + 'M) and ended immediately.');
+
+  el('bt-loss').textContent = num(r.lossRate, 1) + '%';
+  el('bt-loss-note').innerHTML = r.lossRate > 0
+    ? t('원금 손실로 끝난 비율입니다. 가장 나빴던 경우 ' + num(r.worst, 1) + '%.',
+        'Share of runs that ended in a loss. Worst case ' + num(r.worst, 1) + '%.')
+    : t('이 구간에서는 원금 손실로 끝난 경우가 없었습니다. <strong>앞으로도 그렇다는 뜻은 아닙니다.</strong>',
+        'No run ended in a loss over this window. <strong>That is not a forecast.</strong>');
+
+  var avg = el('bt-avg');
+  avg.textContent = (r.avgAnn >= 0 ? '+' : '') + num(r.avgAnn, 2) + '%';
+  avg.style.color = r.avgAnn >= 0 ? 'var(--blue)' : 'var(--error)';
+  el('bt-avg-note').innerHTML = t(
+    '보유기간으로 나눈 연환산 평균입니다. 총액 기준 평균은 ' + num(r.avgRet, 2) + '%.',
+    'Average annualised over the holding period. Average total return ' + num(r.avgRet, 2) + '%.');
+
+  drawBacktestChart(r);
+
+  var tb = el('bt-table').querySelector('tbody');
   tb.innerHTML = '';
-  DATA.products.forEach(function(p, i){
-    var s = schedule(p);
-    var bars = s.map(function(x){ return x.barrier; }).join('-');
-    var period = (p.offerStart || p.offerEnd)
-      ? fmtDate(p.offerStart) + ' ~ ' + fmtDate(p.offerEnd) : '–';
+  r.buckets.forEach(function(b){
+    var share = b.count / r.runs * 100;
+    var ret = b.retMin === b.retMax
+      ? (b.retMin >= 0 ? '+' : '') + num(b.retMin, 2) + '%'
+      : num(b.retMin, 1) + '% ~ ' + (b.retMax >= 0 ? '+' : '') + num(b.retMax, 1) + '%';
     var tr = document.createElement('tr');
-    tr.style.cursor = 'pointer';
+    if (b.key === 'loss') tr.className = 'highlight';
     tr.innerHTML =
-      '<td>' + (p.url ? '<a href="'+p.url+'" target="_blank" rel="noopener">'+ (p.name||shortName(p)) +'</a>'
-                      : (p.name || shortName(p))) +
-        (live ? '' : ' <span class="badge sample">' + t('예시','Sample') + '</span>') + '</td>' +
-      '<td><span class="badge ' + (p.type==='ELB'?'blue':'orange') + '">' + (p.type||'ELS') + '</span></td>' +
-      '<td>' + underlyingLabel(p) + '</td>' +
-      '<td class="num">' + num(annualRate(p),2) + '%</td>' +
-      '<td class="num">' + num(totalRate(p),2) + '%</td>' +
-      '<td class="num">' + p.maturityMonths + (lang==='en'?'M':'개월') + '</td>' +
-      '<td class="num">' + bars + '</td>' +
-      '<td class="num">' + (p.principalProtection>=100 ? t('원금지급','Protected')
-                            : p.knockIn==null ? t('노낙인','None') : p.knockIn + '%') + '</td>' +
-      '<td>' + period + '</td>';
-    tr.addEventListener('click', function(){
-      current = i; renderAll();
-      document.getElementById('ladder').scrollIntoView({ behavior:'smooth', block:'start' });
-    });
+      '<td>' + t(b.labelKo, b.labelEn) + '</td>' +
+      '<td class="num">' + comma(b.count) + '</td>' +
+      '<td class="num">' + num(share, 1) + '%</td>' +
+      '<td class="num">' + b.months + (lang==='en'?'M':'개월') + '</td>' +
+      '<td class="num">' + ret + '</td>';
     tb.appendChild(tr);
   });
 
-  el('offers-foot').textContent = t(
-    '표의 행을 클릭하면 해당 상품 조건으로 위 구조도와 시뮬레이터가 바뀝니다. 조기상환 배리어는 회차 순서대로 표기했습니다.',
-    'Click a row to redraw the charts and simulator with that product. Barriers are listed in observation order.');
+  el('bt-foot').innerHTML = t(
+    '계산 기준 — 종가 기준 워스트 퍼포머로 판정하고, 낙인은 기간 중 종가가 한 번이라도 낙인 아래로 내려가면 터치로 봅니다. ' +
+      '세금·수수료는 반영하지 않았습니다. <strong>투자설명서의 과거 시뮬레이션 수치를 옮긴 것이 아니라 이 페이지가 직접 계산한 값</strong>이며, ' +
+      '가정과 데이터 출처(' + (DATA.history.source || '') + ')가 달라 설명서 수치와 다를 수 있습니다. ' +
+      '과거 결과는 미래 수익을 보장하지 않습니다.',
+    'Method — the worst performer is judged on closing prices, and a knock-in counts if any close falls below the barrier. ' +
+      'Taxes and fees are excluded. <strong>These figures are computed on this page, not copied from the issuer’s prospectus</strong>, ' +
+      'and may differ from it because the assumptions and data source (' + (DATA.history.source || '') + ') differ. ' +
+      'Past results do not guarantee future returns.');
+}
+
+function drawBacktestChart(r){
+  var svg = el('bt-chart');
+  while (svg.firstChild) svg.removeChild(svg.firstChild);
+  var W = 960, L = 300, R = 90, T = 24, gap = 10;
+  var rows = r.buckets;
+  var barH = Math.max(20, Math.min(40, (420 - T*2 - gap*rows.length) / Math.max(rows.length,1)));
+  var H = T*2 + rows.length * (barH + gap);
+  svg.setAttribute('viewBox', '0 0 ' + W + ' ' + Math.max(H, 140));
+
+  var maxShare = Math.max.apply(null, rows.map(function(b){ return b.count; })) || 1;
+  var span = W - L - R;
+
+  rows.forEach(function(b, i){
+    var y = T + i * (barH + gap);
+    var share = b.count / r.runs * 100;
+    var w = Math.max(2, b.count / maxShare * span);
+    var loss = b.key === 'loss';
+    var early = b.key.charAt(0) === 'e' || b.key === 'lz';
+
+    svg.appendChild(mk('text', { x:L-14, y:y+barH/2+5, 'text-anchor':'end', 'font-size':15,
+      fill:loss ? C.error : C.ink }, t(b.labelKo, b.labelEn)));
+    svg.appendChild(mk('rect', { x:L, y:y, width:w, height:barH, rx:2,
+      fill: loss ? C.error : early ? C.orange : C.blue, opacity: loss ? .9 : .82 }));
+    svg.appendChild(mk('text', { x:L+w+10, y:y+barH/2+5, 'font-size':15, 'font-weight':600,
+      fill:C.ink }, num(share,1) + '%'));
+  });
+
+  if (!rows.length){
+    svg.appendChild(mk('text', { x:W/2, y:70, 'text-anchor':'middle', 'font-size':16, fill:C.muted },
+      t('표시할 결과가 없습니다.','No results to show.')));
+  }
 }
 
 /* ============================================================
@@ -3386,8 +3950,9 @@ function renderOffers(){
    ============================================================ */
 function renderAll(){
   renderMeta();
-  renderPicker();
+  renderFinder();
   if (!product()) return;
+  renderDetail();
   renderKeyCards();
   renderLadder();
   renderPayoff('payoff-noki', false);
@@ -3395,9 +3960,10 @@ function renderAll(){
   renderPayoffTable();
   buildSimSliders();
   runSim();
-  renderOffers();
+  renderBacktest();
 }
 
+bindFinder();
 applyLang();
 })();
 </script>
