@@ -204,6 +204,7 @@
     <button class="btn" id="compareBtn" title="여러 종목 비교">⇄ 비교</button>
     <button class="btn btn-icon" id="pdfBtn" title="PDF 저장 / 인쇄">🖨 PDF</button>
     <button class="btn btn-icon" id="diagBtn" title="데이터 진단(실시간 응답 확인)">🔧</button>
+    <a class="btn" href="datacenter.html" title="데이터센터 밸류체인 종목 맵" style="text-decoration:none;line-height:1;display:inline-flex;align-items:center;">밸류체인 맵</a>
     <button class="btn btn-icon" id="themeBtn" title="라이트/다크 전환">◐</button>
   </header>
 
@@ -1401,7 +1402,12 @@ window.generateSampleData = function generateSampleData(ticker) {
     els.pdfBtn.addEventListener("click", function () { window.print(); });
     els.compareBtn.addEventListener("click", function () { if (state.mode === "compare") exitCompare(); else enterCompare(); });
     buildDatalist(); loadFav(); renderFavChips(); initTheme();
-    runQuery("삼성전자");
+    /* URL 파라미터(?code=005930 / ?q=삼성전자)로 특정 종목을 바로 조회 — 밸류체인 맵에서의 딥링크 */
+    (function () {
+      var p = new URLSearchParams(location.search);
+      var target = p.get("code") || p.get("q");
+      runQuery(target && target.trim() ? target.trim() : "삼성전자");
+    })();
   })();
   </script>
 </body>
