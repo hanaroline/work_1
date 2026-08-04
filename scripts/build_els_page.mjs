@@ -1,17 +1,18 @@
 #!/usr/bin/env node
 /**
- * els.html + data/els.js -> els-standalone.html
+ * els.html + data/els.js -> els-product-search.html
  *
- * 저장소의 기존 컨벤션(index.html / standalone.html)과 동일하게,
- * 서버 없이 파일을 더블클릭만 해도 열리는 단일 파일 산출물을 만든다.
- * 외부 폰트 CDN 도 제거해 오프라인/사내망에서도 그대로 동작하게 한다.
+ * CSS·JS·상품 데이터·과거 시세를 한 파일에 인라인해, 서버 없이 더블클릭만으로
+ * 열리는 배포용 산출물을 만든다. 외부 폰트 CDN 도 제거해 오프라인/사내망에서도
+ * 그대로 동작한다. (받는 사람이 파일 이름만 보고 알 수 있게 els-product-search.html
+ * 로 내보낸다 — 저장소의 다른 산출물 standalone.html 과 달리 이름이 용도를 말한다.)
  */
 
 import { readFile, writeFile } from 'node:fs/promises';
 
 const SRC = 'els.html';
 const DATA = 'data/els.js';
-const OUT = 'els-standalone.html';
+const OUT = 'els-product-search.html';
 
 const html = await readFile(SRC, 'utf8');
 const data = await readFile(DATA, 'utf8');
