@@ -11,6 +11,7 @@ window.ELS_DATA = {
   updatedAt: null,          // ISO 8601. null 이면 페이지에서 "미수집" 으로 표기
   source: 'sample',         // 'live' | 'sample'
   sourceNote: '미래에셋증권 홈페이지 자동 수집 전 기본값 (구조 이해용 대표 예시)',
+  sourceNoteEn: 'Default sample used before automatic collection runs (illustrative structures only)',
   products: [
     {
       code: 'SAMPLE-31234',
