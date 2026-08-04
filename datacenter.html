@@ -1,0 +1,719 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>데이터센터 밸류체인 종목 맵</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --orange: #F58220; --orange-active: #CB6015; --orange-soft: #FAB072;
+      --blue: #043B72;
+      --canvas: #FFFFFF; --soft: #ECEFF4; --subtle: #F7F8FA;
+      --hairline: #CDCECB; --hairline-soft: #E5E4E1;
+      --ink: #1A1A1A; --body: #3D3D3D; --muted: #6C6C6C; --muted-soft: #84888B;
+      --up: #C62828; --down: #043B72; --success: #2E8540;
+      --font-kr: 'Spoqa Han Sans Neo', 'Noto Sans KR', sans-serif;
+      --font-en: 'Inter', 'Aptos', 'Segoe UI', system-ui, sans-serif;
+      --font-num: 'Inter', 'SF Mono', monospace;
+      --space-block: 56px; --space-content: 28px;
+    }
+    * { box-sizing: border-box; }
+    html, body { margin: 0; padding: 0; }
+    body {
+      background: var(--canvas); color: var(--body);
+      font-family: var(--font-kr); font-size: 19px; line-height: 1.65;
+      -webkit-font-smoothing: antialiased;
+    }
+    html[lang="en"] body { font-family: var(--font-en); }
+    h1, h2, h3 { color: var(--ink); margin: 0; }
+    a { color: var(--blue); text-decoration: none; border-bottom: 1px solid var(--hairline); }
+    a:hover { color: var(--orange-active); border-bottom-color: var(--orange); }
+    .num { font-family: var(--font-num); font-variant-numeric: tabular-nums; }
+
+    .page { max-width: 1360px; margin: 0 auto; padding: 0 32px; }
+
+    /* ---------- 헤더 ---------- */
+    .head { padding-top: 34px; padding-bottom: 22px; }
+    .head-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 19px; }
+    .kicker {
+      font-family: var(--font-en); font-size: 14px; font-weight: 600; letter-spacing: 1.2px;
+      color: var(--orange-active); text-transform: uppercase;
+    }
+    h1 { font-size: 34px; font-weight: 700; letter-spacing: -.3px; line-height: 1.25; margin-top: 10px; }
+    .lead { font-size: 19px; color: var(--body); max-width: 74ch; margin: 14px 0 0; }
+    .metarow {
+      margin-top: 19px; padding-top: 14px; border-top: 1px solid var(--hairline-soft);
+      font-size: 14px; color: var(--muted); display: flex; flex-wrap: wrap; gap: 6px 22px;
+    }
+
+    /* ---------- 한/영 토글 ---------- */
+    .lang-toggle {
+      display: inline-flex; border: 1px solid var(--hairline); border-radius: 2px;
+      background: #fff; box-shadow: 0 2px 8px rgba(0,0,0,.06); overflow: hidden; flex: none;
+    }
+    .lang-toggle button {
+      font-family: var(--font-en); font-size: 14px; font-weight: 500; letter-spacing: .5px;
+      padding: 10px 17px; border: 0; background: #fff; color: var(--muted); cursor: pointer;
+    }
+    .lang-toggle button + button { border-left: 1px solid var(--hairline); }
+    .lang-toggle button:hover:not(.on) { background: var(--subtle); color: var(--ink); }
+    .lang-toggle button.on { background: var(--orange); color: #fff; }
+
+    /* ---------- 컨트롤 ---------- */
+    .controls {
+      position: sticky; top: 0; z-index: 30; background: #fff;
+      border-bottom: 1px solid var(--hairline-soft); padding-top: 12px; padding-bottom: 12px;
+      display: flex; flex-wrap: wrap; align-items: center; gap: 10px 14px;
+    }
+    .seg { display: inline-flex; border: 1px solid var(--hairline); border-radius: 2px; overflow: hidden; }
+    .seg button {
+      font-size: 15px; font-family: inherit; padding: 8px 15px; border: 0; background: #fff;
+      color: var(--muted); cursor: pointer; white-space: nowrap;
+    }
+    .seg button + button { border-left: 1px solid var(--hairline); }
+    .seg button:hover:not(.on) { background: var(--subtle); color: var(--ink); }
+    .seg button.on { background: var(--orange); color: #fff; font-weight: 500; }
+    .searchwrap { position: relative; flex: 1 1 260px; min-width: 200px; max-width: 380px; }
+    .searchwrap input {
+      width: 100%; font-family: inherit; font-size: 16px; padding: 9px 13px;
+      border: 1px solid var(--hairline); border-radius: 2px; background: #fff; color: var(--ink);
+    }
+    .searchwrap input:focus { outline: 2px solid var(--orange); outline-offset: -1px; border-color: transparent; }
+    .legend { margin-left: auto; display: flex; gap: 16px; font-size: 14px; color: var(--muted); align-items: center; }
+    .legend i { display: inline-block; width: 3px; height: 15px; margin-right: 7px; vertical-align: -2px; }
+    .legend i.l { background: var(--orange); } .legend i.m { background: var(--hairline); }
+
+    /* ---------- 레이아웃 ---------- */
+    .layout { display: block; padding-top: var(--space-content); padding-bottom: 80px; }
+    @media (min-width: 1200px) {
+      .layout { display: grid; grid-template-columns: minmax(0, 1fr) 396px; gap: 38px; align-items: start; }
+    }
+
+    /* ---------- 단계 카드 ---------- */
+    .stage { margin-bottom: 46px; }
+    .stage-rule { height: 1px; background: var(--orange); }
+    .stage-head { display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap; margin-top: 14px; }
+    .stage-no {
+      font-family: var(--font-en); font-size: 14px; font-weight: 700; color: var(--orange-active);
+      letter-spacing: 1px; padding-top: 4px;
+    }
+    .stage h2 { font-size: 26px; font-weight: 700; letter-spacing: -.2px; }
+    .stage-driver { font-size: 14px; color: var(--muted); margin-left: auto; }
+    .stage-desc { font-size: 17px; color: var(--body); margin: 8px 0 19px; max-width: 88ch; }
+    .stage-grid { display: grid; gap: 19px; }
+    @media (min-width: 760px) { .stage-grid.two { grid-template-columns: 1fr 1fr; gap: 28px; } }
+    .grp-h {
+      font-size: 14px; font-weight: 700; letter-spacing: .6px; color: var(--muted);
+      text-transform: uppercase; font-family: var(--font-en);
+      padding-bottom: 7px; border-bottom: 1px solid var(--hairline-soft); margin-bottom: 12px;
+      display: flex; gap: 8px; align-items: center;
+    }
+    .grp-h .cnt { color: var(--muted-soft); font-weight: 500; font-family: var(--font-num); }
+    .chips { display: flex; flex-wrap: wrap; gap: 8px; }
+    .chip {
+      font-family: inherit; text-align: left; cursor: pointer;
+      background: #fff; border: 1px solid var(--hairline-soft); border-left: 3px solid var(--hairline);
+      border-radius: 2px; padding: 9px 13px;
+      flex: 1 1 190px; min-width: 0; max-width: 340px;
+      display: flex; flex-direction: column; gap: 1px;
+    }
+    .chip.large { border-left-color: var(--orange); }
+    .chip:hover { background: var(--subtle); border-color: var(--hairline); }
+    .chip:focus-visible { outline: 2px solid var(--orange); outline-offset: 1px; }
+    .chip .cn { font-size: 17px; font-weight: 700; color: var(--ink); letter-spacing: -.2px; }
+    .chip .cm { font-size: 13px; color: var(--muted-soft); font-family: var(--font-num); }
+    .chip .cp { font-size: 13px; color: var(--muted); }
+    .chip.on { background: var(--blue); border-color: var(--blue); border-left-color: var(--orange); }
+    .chip.on .cn, .chip.on .cm, .chip.on .cp { color: #fff; }
+    .empty { font-size: 15px; color: var(--muted-soft); padding: 6px 0 2px; }
+
+    /* ---------- 상세 패널 ---------- */
+    .panel {
+      background: #fff; border: 1px solid var(--hairline); border-radius: 4px;
+      padding: 0; overflow: hidden;
+    }
+    @media (min-width: 1200px) {
+      .panel { position: sticky; top: 74px; max-height: calc(100vh - 96px); display: flex; flex-direction: column; }
+      .panel-body { overflow-y: auto; }
+      .panel-close { display: none; }
+    }
+    @media (max-width: 1199px) {
+      .panel {
+        position: fixed; left: 0; right: 0; bottom: 0; z-index: 60; border-radius: 0;
+        border-left: 0; border-right: 0; border-bottom: 0; max-height: 86vh;
+        display: none; flex-direction: column; box-shadow: 0 -4px 24px rgba(0,0,0,.14);
+      }
+      .panel.open { display: flex; }
+      .panel-body { overflow-y: auto; -webkit-overflow-scrolling: touch; }
+      .backdrop { position: fixed; inset: 0; background: rgba(26,26,26,.34); z-index: 55; display: none; }
+      .backdrop.open { display: block; }
+    }
+    .panel-top {
+      background: var(--blue); color: #fff; padding: 19px 22px 17px; position: relative; flex: none;
+    }
+    .panel-top .pn { font-size: 24px; font-weight: 700; color: #fff; letter-spacing: -.3px; line-height: 1.3; }
+    .panel-top .pe { font-size: 14px; color: rgba(255,255,255,.78); font-family: var(--font-en); margin-top: 2px; }
+    .panel-top .ptags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 12px; }
+    .ptag {
+      font-size: 13px; font-weight: 500; padding: 3px 9px; border-radius: 2px;
+      background: rgba(255,255,255,.14); color: #fff; font-family: var(--font-num);
+    }
+    .ptag.tier { background: var(--orange); font-family: inherit; }
+    .panel-close {
+      position: absolute; top: 12px; right: 12px; background: rgba(255,255,255,.16); color: #fff;
+      border: 0; border-radius: 2px; font-size: 18px; line-height: 1; padding: 7px 11px; cursor: pointer;
+      font-family: var(--font-en);
+    }
+    .panel-close:hover { background: rgba(255,255,255,.3); }
+    .panel-body { padding: 19px 22px 26px; }
+    .pblock { margin-bottom: 22px; }
+    .pblock:last-child { margin-bottom: 0; }
+    .plabel {
+      font-size: 13px; font-weight: 700; letter-spacing: .7px; text-transform: uppercase;
+      color: var(--muted); font-family: var(--font-en); margin-bottom: 7px;
+      padding-bottom: 5px; border-bottom: 1px solid var(--orange-soft);
+    }
+    .ptext { font-size: 17px; color: var(--body); line-height: 1.6; }
+    .ptext strong { color: var(--ink); }
+    .plist { margin: 0; padding-left: 18px; font-size: 16px; color: var(--body); line-height: 1.6; }
+    .plist li { margin-bottom: 7px; }
+    .tags { display: flex; flex-wrap: wrap; gap: 6px; }
+    .tag {
+      font-size: 14px; padding: 4px 10px; border-radius: 2px;
+      background: var(--soft); color: var(--ink);
+    }
+    .quote { display: flex; align-items: flex-end; gap: 18px; flex-wrap: wrap; }
+    .quote .qp { font-size: 30px; font-weight: 700; color: var(--ink); line-height: 1.1; }
+    .quote .qc { font-size: 16px; font-weight: 600; }
+    .quote .qc.up { color: var(--up); } .quote .qc.dn { color: var(--down); } .quote .qc.fl { color: var(--muted); }
+    .qnote { font-size: 13px; color: var(--muted-soft); margin-top: 6px; }
+    .peer { display: flex; flex-wrap: wrap; gap: 6px; }
+    .peer button {
+      font-family: inherit; font-size: 15px; padding: 5px 11px; cursor: pointer;
+      background: #fff; border: 1px solid var(--hairline); border-radius: 2px; color: var(--body);
+    }
+    .peer button:hover { border-color: var(--orange); color: var(--ink); }
+    .plinks { display: flex; flex-direction: column; gap: 8px; }
+    .btn-primary {
+      display: inline-block; background: var(--orange); color: #fff; border: 0; border-radius: 2px;
+      font-family: inherit; font-size: 16px; font-weight: 500; padding: 10px 19px; cursor: pointer;
+      text-align: center; text-decoration: none;
+    }
+    .btn-primary:hover { background: var(--orange-active); color: #fff; }
+    .btn-ghost {
+      display: inline-block; background: #fff; color: var(--body); border: 1px solid var(--hairline);
+      border-radius: 2px; font-family: inherit; font-size: 15px; padding: 9px 17px; cursor: pointer;
+      text-align: center; text-decoration: none;
+    }
+    .btn-ghost:hover { border-color: var(--orange); color: var(--ink); }
+    .hint { padding: 46px 22px; text-align: center; color: var(--muted); font-size: 17px; }
+    .hint .hb { display: block; font-size: 19px; font-weight: 700; color: var(--ink); margin-bottom: 8px; }
+
+    /* ---------- 푸터 ---------- */
+    .foot {
+      border-top: 1px solid var(--hairline-soft); padding: 22px 0 56px;
+      font-size: 14px; color: var(--muted-soft); max-width: 90ch;
+    }
+
+    @media (max-width: 767px) {
+      .page { padding: 0 20px; }
+      h1 { font-size: 26px; }
+      .stage h2 { font-size: 22px; }
+      .legend { display: none; }
+      .stage-driver { margin-left: 0; width: 100%; }
+    }
+
+    @media print {
+      .controls, .lang-toggle, .panel, .backdrop { display: none !important; }
+      body { font-size: 12pt; line-height: 1.4; }
+      .page { max-width: 100%; padding: 0; }
+      .layout { display: block; }
+      .stage { page-break-inside: avoid; margin-bottom: 22px; }
+      .stage h2 { page-break-after: avoid; }
+      .chip { min-width: 0; }
+    }
+  </style>
+</head>
+<body>
+  <header class="page head">
+    <div class="head-top">
+      <div>
+        <span class="kicker" data-i18n="kicker">Data Center Value Chain</span>
+        <h1 data-i18n="title">국내외 데이터센터 밸류체인 종목 맵</h1>
+      </div>
+      <div class="lang-toggle" role="radiogroup" aria-label="Language">
+        <button id="langKo" role="radio" aria-checked="true" class="on">KO</button>
+        <button id="langEn" role="radio" aria-checked="false">EN</button>
+      </div>
+    </div>
+    <p class="lead" data-i18n="lead"></p>
+    <div class="metarow" id="metarow"></div>
+  </header>
+
+  <div class="controls page">
+    <div class="seg" id="regionSeg">
+      <button data-region="all" class="on" data-i18n="regAll">전체</button>
+      <button data-region="KR" data-i18n="regKr">국내</button>
+      <button data-region="OV" data-i18n="regOv">해외</button>
+    </div>
+    <div class="seg" id="tierSeg">
+      <button data-tier="all" class="on" data-i18n="tierAll">전체 규모</button>
+      <button data-tier="대형" data-i18n="tierLarge">대형주만</button>
+    </div>
+    <div class="searchwrap">
+      <input id="q" type="search" autocomplete="off" aria-label="search" />
+    </div>
+    <div class="legend">
+      <span><i class="l"></i><span data-i18n="lgLarge">대형주</span></span>
+      <span><i class="m"></i><span data-i18n="lgMid">중형 대표주</span></span>
+    </div>
+  </div>
+
+  <div class="page layout">
+    <div id="map"></div>
+    <aside class="panel" id="panel" aria-live="polite">
+      <div class="hint" id="panelHint">
+        <span class="hb" data-i18n="hintTitle">종목을 선택하세요</span>
+        <span data-i18n="hintBody">맵에서 종목을 클릭하면 사업 내용, 데이터센터 연관 포인트, 실시간 시세, 상세 리포트 링크가 표시됩니다.</span>
+      </div>
+    </aside>
+  </div>
+  <div class="backdrop" id="backdrop"></div>
+
+  <footer class="page foot">
+    <p id="footNote"></p>
+  </footer>
+
+  <script src="data/dc-chain.js"></script>
+  <script src="data/dc-chain-global.js"></script>
+  <script>
+  (function () {
+    "use strict";
+
+    /* ================= 다국어 문자열 ================= */
+    var I18N = {
+      ko: {
+        docTitle: "데이터센터 밸류체인 종목 맵",
+        kicker: "Data Center Value Chain",
+        title: "국내외 데이터센터 밸류체인 종목 맵",
+        lead: "AI 데이터센터 한 곳이 세워질 때 돈이 흘러가는 순서대로 9개 단계를 나누고, 각 단계에서 시장 지위를 확보한 국내·해외 대형 종목을 배치했습니다. 종목을 클릭하면 사업 내용과 데이터센터 연관 포인트, 실시간 시세를 확인할 수 있습니다.",
+        regAll: "전체", regKr: "국내", regOv: "해외",
+        tierAll: "전체 규모", tierLarge: "대형주만",
+        lgLarge: "대형주", lgMid: "중형 대표주",
+        search: "종목명 · 티커 · 키워드 검색",
+        grpKr: "국내", grpOv: "해외",
+        driver: "핵심 변수",
+        hintTitle: "종목을 선택하세요",
+        hintBody: "맵에서 종목을 클릭하면 사업 내용, 데이터센터 연관 포인트, 실시간 시세, 상세 리포트 링크가 표시됩니다.",
+        stageCount: "밸류체인 9단계",
+        total: "수록 종목", kr: "국내", ov: "해외",
+        asof: "작성 기준",
+        lbQuote: "시세", lbPos: "밸류체인 포지션", lbSum: "한 줄 요약",
+        lbPts: "데이터센터 연관 포인트", lbProd: "주요 제품 · 서비스",
+        lbEdge: "경쟁 지위", lbStage: "해당 단계", lbPeer: "같은 단계 종목", lbLink: "더 보기",
+        loading: "시세 조회 중…",
+        quoteFail: "실시간 시세를 불러오지 못했습니다. 사내망·프록시 환경에서는 외부 시세 API 접근이 차단될 수 있습니다.",
+        quoteVia: "조회 시각",
+        openReport: "종목 통합 리포트 열기",
+        naver: "네이버 금융에서 보기",
+        yahoo: "Yahoo Finance에서 보기",
+        noResult: "검색 결과가 없습니다.",
+        emptyStage: "해당 조건에 맞는 종목이 없습니다.",
+        close: "닫기",
+        foot: "본 자료는 데이터센터 밸류체인 구조를 이해하기 위한 정보 제공 목적의 참고 자료이며, 특정 종목의 매수·매도를 권유하지 않습니다. 종목 분류는 사업 포트폴리오상 관련성을 기준으로 한 것으로, 매출 비중은 기업별로 크게 다릅니다. 규모 구분(대형/중형)은 시장 지위와 시가총액을 함께 고려한 편집 기준입니다. 시세는 조회 시점에 외부 공개 API로 불러오며, 투자 판단과 그 결과에 대한 책임은 이용자에게 있습니다."
+      },
+      en: {
+        docTitle: "Data Center Value Chain Stock Map",
+        kicker: "Data Center Value Chain",
+        title: "Data Center Value Chain: Korea and Global Stock Map",
+        lead: "Nine stages, ordered the way money flows when an AI data center gets built, each populated with the Korean and global large caps that hold real market position. Click any name for its business, its data center linkage and a live quote.",
+        regAll: "All", regKr: "Korea", regOv: "Global",
+        tierAll: "All sizes", tierLarge: "Large cap only",
+        lgLarge: "Large cap", lgMid: "Mid-cap leader",
+        search: "Search name, ticker or keyword",
+        grpKr: "Korea", grpOv: "Global",
+        driver: "Key driver",
+        hintTitle: "Select a company",
+        hintBody: "Click a name on the map to see its business, data center linkage, a live quote and links to the full report.",
+        stageCount: "9 value chain stages",
+        total: "Companies", kr: "Korea", ov: "Global",
+        asof: "As of",
+        lbQuote: "Quote", lbPos: "Position in the chain", lbSum: "In one line",
+        lbPts: "Data center linkage", lbProd: "Key products and services",
+        lbEdge: "Competitive standing", lbStage: "Stages", lbPeer: "Peers in this stage", lbLink: "More",
+        loading: "Loading quote…",
+        quoteFail: "Could not load a live quote. Corporate networks and proxies often block external market data APIs.",
+        quoteVia: "Retrieved",
+        openReport: "Open full stock report",
+        naver: "View on Naver Finance",
+        yahoo: "View on Yahoo Finance",
+        noResult: "No matches.",
+        emptyStage: "No companies match the current filter.",
+        close: "Close",
+        foot: "This material is provided for information purposes to explain the structure of the data center value chain and is not a recommendation to buy or sell any security. Companies are grouped by business relevance; revenue exposure varies widely by company. Size labels (large / mid) are an editorial judgment combining market position and market capitalization. Quotes are pulled from public external APIs at view time. Investment decisions and their outcomes remain the responsibility of the user."
+      }
+    };
+
+    var STAGES = window.DC_STAGES || [];
+    var ALL = (window.DC_KR || []).concat(window.DC_GLOBAL || []);
+    var BY_ID = {};
+    ALL.forEach(function (c) { BY_ID[c.id] = c; });
+
+    var state = {
+      lang: "ko",
+      region: "all",
+      tier: "all",
+      q: "",
+      sel: null
+    };
+    try {
+      var savedLang = localStorage.getItem("dcLang");
+      if (savedLang === "ko" || savedLang === "en") state.lang = savedLang;
+    } catch (e) {}
+
+    var els = {
+      map: document.getElementById("map"),
+      panel: document.getElementById("panel"),
+      backdrop: document.getElementById("backdrop"),
+      q: document.getElementById("q"),
+      metarow: document.getElementById("metarow"),
+      footNote: document.getElementById("footNote"),
+      langKo: document.getElementById("langKo"),
+      langEn: document.getElementById("langEn")
+    };
+
+    function t(key) { return I18N[state.lang][key]; }
+    function L(o, field) {
+      // 언어별 필드 선택: ko는 field, en은 field+'En'(없으면 ko 폴백)
+      if (state.lang === "en") {
+        var k = field + "En";
+        if (o[k] != null) return o[k];
+      }
+      return o[field];
+    }
+    function esc(s) {
+      return String(s == null ? "" : s).replace(/[&<>"']/g, function (m) {
+        return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[m];
+      });
+    }
+    function isKR(c) { return c.region === "KR"; }
+    function tierLabel(c) {
+      if (state.lang === "en") return c.tier === "대형" ? "Large cap" : "Mid cap";
+      return c.tier + "주";
+    }
+
+    /* ================= 필터 ================= */
+    function matches(c) {
+      if (state.region === "KR" && !isKR(c)) return false;
+      if (state.region === "OV" && isKR(c)) return false;
+      if (state.tier !== "all" && c.tier !== state.tier) return false;
+      if (state.q) {
+        var q = state.q.toLowerCase();
+        var hay = [c.name, c.nameEn, c.tk, c.mkt, c.pos, c.posEn, c.sum, c.sumEn, c.edge, c.edgeEn]
+          .concat(c.prod || []).concat(c.prodEn || []).join(" ").toLowerCase();
+        if (hay.indexOf(q) < 0) return false;
+      }
+      return true;
+    }
+
+    /* ================= 맵 렌더 ================= */
+    function chipHtml(c) {
+      return '<button class="chip ' + (c.tier === "대형" ? "large" : "mid") +
+        (state.sel === c.id ? " on" : "") + '" data-id="' + esc(c.id) + '">' +
+        '<span class="cn">' + esc(L(c, "name")) + '</span>' +
+        '<span class="cm">' + esc(c.tk) + " · " + esc(c.mkt) + '</span>' +
+        '<span class="cp">' + esc(L(c, "pos")) + '</span>' +
+        '</button>';
+    }
+
+    function renderMap() {
+      var visible = ALL.filter(matches);
+      var html = "";
+      var shownStages = 0;
+
+      STAGES.forEach(function (st) {
+        var inStage = visible.filter(function (c) { return (c.stages || []).indexOf(st.id) >= 0; });
+        if (!inStage.length) return;
+        shownStages++;
+        var kr = inStage.filter(isKR);
+        var ov = inStage.filter(function (c) { return !isKR(c); });
+        var twoCol = state.region === "all";
+
+        html += '<article class="stage" id="stage-' + esc(st.id) + '">' +
+          '<div class="stage-rule"></div>' +
+          '<div class="stage-head">' +
+            '<span class="stage-no">' + esc(st.no) + '</span>' +
+            '<h2>' + esc(L(st, "name")) + '</h2>' +
+            '<span class="stage-driver">' + esc(t("driver")) + ": " + esc(L(st, "driver")) + '</span>' +
+          '</div>' +
+          '<p class="stage-desc">' + esc(L(st, "desc")) + '</p>' +
+          '<div class="stage-grid' + (twoCol ? " two" : "") + '">';
+
+        function group(label, arr) {
+          if (state.region === "KR" && label === t("grpOv")) return "";
+          if (state.region === "OV" && label === t("grpKr")) return "";
+          return '<div class="grp">' +
+            '<h3 class="grp-h">' + esc(label) + '<span class="cnt">' + arr.length + '</span></h3>' +
+            (arr.length
+              ? '<div class="chips">' + arr.map(chipHtml).join("") + '</div>'
+              : '<div class="empty">' + esc(t("emptyStage")) + '</div>') +
+            '</div>';
+        }
+        html += group(t("grpKr"), kr) + group(t("grpOv"), ov);
+        html += '</div></article>';
+      });
+
+      if (!shownStages) html = '<p class="empty" style="font-size:17px;padding:40px 0;">' + esc(t("noResult")) + '</p>';
+      els.map.innerHTML = html;
+    }
+
+    function renderMeta() {
+      var krN = ALL.filter(isKR).length, ovN = ALL.length - krN;
+      els.metarow.innerHTML =
+        '<span>' + esc(t("stageCount")) + '</span>' +
+        '<span>' + esc(t("total")) + ' <strong class="num">' + ALL.length + '</strong></span>' +
+        '<span>' + esc(t("kr")) + ' <strong class="num">' + krN + '</strong> · ' +
+          esc(t("ov")) + ' <strong class="num">' + ovN + '</strong></span>';
+      els.footNote.textContent = t("foot");
+    }
+
+    /* ================= 시세 조회 ================= */
+    var PROXIES = [
+      function (u) { return u; },
+      function (u) { return "https://api.codetabs.com/v1/proxy/?quest=" + encodeURIComponent(u); },
+      function (u) { return "https://corsproxy.io/?url=" + encodeURIComponent(u); },
+      function (u) { return "https://api.allorigins.win/raw?url=" + encodeURIComponent(u); },
+      function (u) { return "https://cors.eu.org/" + u; }
+    ];
+    function withTimeout(p, ms) {
+      return new Promise(function (res, rej) {
+        var timer = setTimeout(function () { rej(new Error("timeout")); }, ms);
+        p.then(function (v) { clearTimeout(timer); res(v); }, function (e) { clearTimeout(timer); rej(e); });
+      });
+    }
+    function fetchJson(url) {
+      var busted = url + (url.indexOf("?") >= 0 ? "&" : "?") + "_ts=" + Date.now();
+      var attempts = PROXIES.map(function (w) {
+        return withTimeout(
+          fetch(w(busted), { headers: { Accept: "application/json, text/plain, */*" }, cache: "no-store" })
+            .then(function (r) { if (!r.ok) throw new Error("HTTP " + r.status); return r.text(); })
+            .then(function (txt) {
+              var s = txt.replace(/^﻿/, "").trim();
+              if (s[0] !== "{" && s[0] !== "[") throw new Error("not json");
+              return JSON.parse(s);
+            }),
+          4500);
+      });
+      if (typeof Promise.any === "function") return Promise.any(attempts);
+      return new Promise(function (res, rej) {
+        var left = attempts.length, err;
+        attempts.forEach(function (p) { p.then(res, function (e) { err = e; if (--left === 0) rej(err); }); });
+      });
+    }
+    function n(v) {
+      if (v == null) return null;
+      var x = parseFloat(String(v).replace(/,/g, ""));
+      return isNaN(x) ? null : x;
+    }
+    function fetchQuoteKR(c) {
+      return fetchJson("https://m.stock.naver.com/api/stock/" + c.id + "/basic").then(function (d) {
+        var price = n(d.closePrice);
+        if (price == null) throw new Error("no price");
+        var chg = n(d.compareToPreviousClosePrice);
+        var pct = n(d.fluctuationsRatio);
+        return { price: price, chg: chg, pct: pct, cur: "KRW" };
+      });
+    }
+    function fetchQuoteGlobal(c) {
+      var u = "https://query1.finance.yahoo.com/v8/finance/chart/" +
+        encodeURIComponent(c.ysym) + "?range=5d&interval=1d";
+      return fetchJson(u).then(function (d) {
+        var m = d && d.chart && d.chart.result && d.chart.result[0] && d.chart.result[0].meta;
+        if (!m) throw new Error("no meta");
+        var price = n(m.regularMarketPrice);
+        var prev = n(m.chartPreviousClose != null ? m.chartPreviousClose : m.previousClose);
+        if (price == null) throw new Error("no price");
+        var chg = prev != null ? price - prev : null;
+        return { price: price, chg: chg, pct: (prev ? (chg / prev) * 100 : null), cur: m.currency || "" };
+      });
+    }
+    function fmtPrice(v, cur) {
+      if (v == null) return "-";
+      var dec = cur === "KRW" || cur === "JPY" || cur === "TWD" ? 0 : 2;
+      var s = v.toLocaleString(state.lang === "en" ? "en-US" : "ko-KR",
+        { minimumFractionDigits: dec, maximumFractionDigits: dec });
+      if (cur === "KRW") return s + (state.lang === "en" ? " KRW" : "원");
+      return s + (cur ? " " + cur : "");
+    }
+    function fmtTime(d) {
+      function p(x) { return x < 10 ? "0" + x : "" + x; }
+      return d.getFullYear() + "-" + p(d.getMonth() + 1) + "-" + p(d.getDate()) +
+        " " + p(d.getHours()) + ":" + p(d.getMinutes());
+    }
+    function loadQuote(c) {
+      var box = document.getElementById("quoteBox");
+      if (!box) return;
+      box.innerHTML = '<div class="qnote">' + esc(t("loading")) + "</div>";
+      var p = isKR(c) ? fetchQuoteKR(c) : fetchQuoteGlobal(c);
+      p.then(function (q) {
+        if (state.sel !== c.id) return;
+        var cls = q.chg == null ? "fl" : q.chg > 0 ? "up" : q.chg < 0 ? "dn" : "fl";
+        var sign = q.chg == null ? "" : q.chg > 0 ? "+" : "";
+        var chgTxt = q.chg == null ? "" :
+          sign + fmtPrice(q.chg, q.cur) +
+          (q.pct != null ? " (" + sign + q.pct.toFixed(2) + "%)" : "");
+        box.innerHTML =
+          '<div class="quote"><span class="qp num">' + esc(fmtPrice(q.price, q.cur)) + '</span>' +
+          (chgTxt ? '<span class="qc num ' + cls + '">' + esc(chgTxt) + "</span>" : "") + "</div>" +
+          '<div class="qnote">' + esc(t("quoteVia")) + ": " + esc(fmtTime(new Date())) + "</div>";
+      }, function () {
+        if (state.sel !== c.id) return;
+        box.innerHTML = '<div class="qnote">' + esc(t("quoteFail")) + "</div>";
+      });
+    }
+
+    /* ================= 상세 패널 ================= */
+    function stageNames(c) {
+      return (c.stages || []).map(function (id) {
+        var st = STAGES.filter(function (s) { return s.id === id; })[0];
+        return st ? st.no + " " + L(st, "name") : id;
+      });
+    }
+    function peersOf(c) {
+      var first = (c.stages || [])[0];
+      return ALL.filter(function (o) {
+        return o.id !== c.id && (o.stages || []).indexOf(first) >= 0 &&
+          (state.region === "all" || (state.region === "KR" ? isKR(o) : !isKR(o)));
+      }).slice(0, 8);
+    }
+    function renderPanel() {
+      var c = state.sel ? BY_ID[state.sel] : null;
+      if (!c) {
+        els.panel.innerHTML =
+          '<div class="hint"><span class="hb">' + esc(t("hintTitle")) + "</span>" +
+          "<span>" + esc(t("hintBody")) + "</span></div>";
+        els.panel.classList.remove("open");
+        els.backdrop.classList.remove("open");
+        return;
+      }
+      var links = "";
+      if (isKR(c)) {
+        links += '<a class="btn-primary" href="index.html?code=' + esc(c.id) + '">' + esc(t("openReport")) + "</a>";
+        links += '<a class="btn-ghost" target="_blank" rel="noopener" href="https://finance.naver.com/item/main.naver?code=' +
+          esc(c.id) + '">' + esc(t("naver")) + "</a>";
+      }
+      links += '<a class="btn-ghost" target="_blank" rel="noopener" href="https://finance.yahoo.com/quote/' +
+        encodeURIComponent(c.ysym) + '">' + esc(t("yahoo")) + "</a>";
+
+      els.panel.innerHTML =
+        '<div class="panel-top">' +
+          '<button class="panel-close" id="panelClose" aria-label="' + esc(t("close")) + '">&times;</button>' +
+          '<div class="pn">' + esc(L(c, "name")) + "</div>" +
+          '<div class="pe">' + esc(state.lang === "en" ? c.name : c.nameEn) + "</div>" +
+          '<div class="ptags">' +
+            '<span class="ptag tier">' + esc(tierLabel(c)) + "</span>" +
+            '<span class="ptag">' + esc(c.tk) + "</span>" +
+            '<span class="ptag">' + esc(c.mkt) + "</span>" +
+          "</div>" +
+        "</div>" +
+        '<div class="panel-body">' +
+          '<div class="pblock"><div class="plabel">' + esc(t("lbQuote")) + "</div>" +
+            '<div id="quoteBox"></div></div>' +
+          '<div class="pblock"><div class="plabel">' + esc(t("lbPos")) + "</div>" +
+            '<div class="ptext"><strong>' + esc(L(c, "pos")) + "</strong></div></div>" +
+          '<div class="pblock"><div class="plabel">' + esc(t("lbSum")) + "</div>" +
+            '<div class="ptext">' + esc(L(c, "sum")) + "</div></div>" +
+          '<div class="pblock"><div class="plabel">' + esc(t("lbPts")) + "</div>" +
+            "<ul class=\"plist\">" + (L(c, "pts") || []).map(function (x) {
+              return "<li>" + esc(x) + "</li>";
+            }).join("") + "</ul></div>" +
+          '<div class="pblock"><div class="plabel">' + esc(t("lbProd")) + "</div>" +
+            '<div class="tags">' + (L(c, "prod") || []).map(function (x) {
+              return '<span class="tag">' + esc(x) + "</span>";
+            }).join("") + "</div></div>" +
+          '<div class="pblock"><div class="plabel">' + esc(t("lbEdge")) + "</div>" +
+            '<div class="ptext">' + esc(L(c, "edge")) + "</div></div>" +
+          '<div class="pblock"><div class="plabel">' + esc(t("lbStage")) + "</div>" +
+            '<div class="tags">' + stageNames(c).map(function (x) {
+              return '<span class="tag">' + esc(x) + "</span>";
+            }).join("") + "</div></div>" +
+          '<div class="pblock"><div class="plabel">' + esc(t("lbPeer")) + "</div>" +
+            '<div class="peer">' + peersOf(c).map(function (o) {
+              return '<button data-id="' + esc(o.id) + '">' + esc(L(o, "name")) + "</button>";
+            }).join("") + "</div></div>" +
+          '<div class="pblock"><div class="plabel">' + esc(t("lbLink")) + "</div>" +
+            '<div class="plinks">' + links + "</div></div>" +
+        "</div>";
+
+      els.panel.classList.add("open");
+      els.backdrop.classList.add("open");
+      document.getElementById("panelClose").addEventListener("click", function () { select(null); });
+      els.panel.querySelectorAll(".peer button").forEach(function (b) {
+        b.addEventListener("click", function () { select(b.getAttribute("data-id")); });
+      });
+      loadQuote(c);
+    }
+
+    function select(id) {
+      state.sel = id && BY_ID[id] ? id : null;
+      renderMap();
+      renderPanel();
+      if (state.sel) {
+        if (history.replaceState) history.replaceState(null, "", "#" + state.sel);
+        var body = els.panel.querySelector(".panel-body");
+        if (body) body.scrollTop = 0;
+      } else if (history.replaceState) {
+        history.replaceState(null, "", location.pathname + location.search);
+      }
+    }
+
+    /* ================= 언어 · 필터 ================= */
+    function applyLang() {
+      document.documentElement.setAttribute("lang", state.lang);
+      document.title = t("docTitle");
+      els.langKo.classList.toggle("on", state.lang === "ko");
+      els.langEn.classList.toggle("on", state.lang === "en");
+      els.langKo.setAttribute("aria-checked", String(state.lang === "ko"));
+      els.langEn.setAttribute("aria-checked", String(state.lang === "en"));
+      document.querySelectorAll("[data-i18n]").forEach(function (el) {
+        var key = el.getAttribute("data-i18n");
+        if (I18N[state.lang][key] != null) el.textContent = I18N[state.lang][key];
+      });
+      els.q.placeholder = t("search");
+      try { localStorage.setItem("dcLang", state.lang); } catch (e) {}
+      renderMeta(); renderMap(); renderPanel();
+    }
+
+    document.addEventListener("click", function (e) {
+      var chip = e.target.closest ? e.target.closest(".chip") : null;
+      if (chip) { select(chip.getAttribute("data-id")); }
+    });
+    document.getElementById("regionSeg").addEventListener("click", function (e) {
+      var b = e.target.closest("button[data-region]"); if (!b) return;
+      state.region = b.getAttribute("data-region");
+      this.querySelectorAll("button").forEach(function (x) { x.classList.toggle("on", x === b); });
+      renderMap();
+    });
+    document.getElementById("tierSeg").addEventListener("click", function (e) {
+      var b = e.target.closest("button[data-tier]"); if (!b) return;
+      state.tier = b.getAttribute("data-tier");
+      this.querySelectorAll("button").forEach(function (x) { x.classList.toggle("on", x === b); });
+      renderMap();
+    });
+    els.q.addEventListener("input", function () { state.q = this.value.trim(); renderMap(); });
+    els.langKo.addEventListener("click", function () { state.lang = "ko"; applyLang(); });
+    els.langEn.addEventListener("click", function () { state.lang = "en"; applyLang(); });
+    els.backdrop.addEventListener("click", function () { select(null); });
+    document.addEventListener("keydown", function (e) { if (e.key === "Escape" && state.sel) select(null); });
+
+    /* ================= 초기화 ================= */
+    applyLang();
+    var initial = (location.hash || "").replace(/^#/, "");
+    if (initial && BY_ID[initial]) select(initial);
+  })();
+  </script>
+</body>
+</html>

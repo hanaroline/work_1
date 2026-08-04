@@ -1,0 +1,2433 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>데이터센터 밸류체인 종목 맵 (단일 파일)</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --orange: #F58220; --orange-active: #CB6015; --orange-soft: #FAB072;
+      --blue: #043B72;
+      --canvas: #FFFFFF; --soft: #ECEFF4; --subtle: #F7F8FA;
+      --hairline: #CDCECB; --hairline-soft: #E5E4E1;
+      --ink: #1A1A1A; --body: #3D3D3D; --muted: #6C6C6C; --muted-soft: #84888B;
+      --up: #C62828; --down: #043B72; --success: #2E8540;
+      --font-kr: 'Spoqa Han Sans Neo', 'Noto Sans KR', sans-serif;
+      --font-en: 'Inter', 'Aptos', 'Segoe UI', system-ui, sans-serif;
+      --font-num: 'Inter', 'SF Mono', monospace;
+      --space-block: 56px; --space-content: 28px;
+    }
+    * { box-sizing: border-box; }
+    html, body { margin: 0; padding: 0; }
+    body {
+      background: var(--canvas); color: var(--body);
+      font-family: var(--font-kr); font-size: 19px; line-height: 1.65;
+      -webkit-font-smoothing: antialiased;
+    }
+    html[lang="en"] body { font-family: var(--font-en); }
+    h1, h2, h3 { color: var(--ink); margin: 0; }
+    a { color: var(--blue); text-decoration: none; border-bottom: 1px solid var(--hairline); }
+    a:hover { color: var(--orange-active); border-bottom-color: var(--orange); }
+    .num { font-family: var(--font-num); font-variant-numeric: tabular-nums; }
+
+    .page { max-width: 1360px; margin: 0 auto; padding: 0 32px; }
+
+    /* ---------- 헤더 ---------- */
+    .head { padding-top: 34px; padding-bottom: 22px; }
+    .head-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 19px; }
+    .kicker {
+      font-family: var(--font-en); font-size: 14px; font-weight: 600; letter-spacing: 1.2px;
+      color: var(--orange-active); text-transform: uppercase;
+    }
+    h1 { font-size: 34px; font-weight: 700; letter-spacing: -.3px; line-height: 1.25; margin-top: 10px; }
+    .lead { font-size: 19px; color: var(--body); max-width: 74ch; margin: 14px 0 0; }
+    .metarow {
+      margin-top: 19px; padding-top: 14px; border-top: 1px solid var(--hairline-soft);
+      font-size: 14px; color: var(--muted); display: flex; flex-wrap: wrap; gap: 6px 22px;
+    }
+
+    /* ---------- 한/영 토글 ---------- */
+    .lang-toggle {
+      display: inline-flex; border: 1px solid var(--hairline); border-radius: 2px;
+      background: #fff; box-shadow: 0 2px 8px rgba(0,0,0,.06); overflow: hidden; flex: none;
+    }
+    .lang-toggle button {
+      font-family: var(--font-en); font-size: 14px; font-weight: 500; letter-spacing: .5px;
+      padding: 10px 17px; border: 0; background: #fff; color: var(--muted); cursor: pointer;
+    }
+    .lang-toggle button + button { border-left: 1px solid var(--hairline); }
+    .lang-toggle button:hover:not(.on) { background: var(--subtle); color: var(--ink); }
+    .lang-toggle button.on { background: var(--orange); color: #fff; }
+
+    /* ---------- 컨트롤 ---------- */
+    .controls {
+      position: sticky; top: 0; z-index: 30; background: #fff;
+      border-bottom: 1px solid var(--hairline-soft); padding-top: 12px; padding-bottom: 12px;
+      display: flex; flex-wrap: wrap; align-items: center; gap: 10px 14px;
+    }
+    .seg { display: inline-flex; border: 1px solid var(--hairline); border-radius: 2px; overflow: hidden; }
+    .seg button {
+      font-size: 15px; font-family: inherit; padding: 8px 15px; border: 0; background: #fff;
+      color: var(--muted); cursor: pointer; white-space: nowrap;
+    }
+    .seg button + button { border-left: 1px solid var(--hairline); }
+    .seg button:hover:not(.on) { background: var(--subtle); color: var(--ink); }
+    .seg button.on { background: var(--orange); color: #fff; font-weight: 500; }
+    .searchwrap { position: relative; flex: 1 1 260px; min-width: 200px; max-width: 380px; }
+    .searchwrap input {
+      width: 100%; font-family: inherit; font-size: 16px; padding: 9px 13px;
+      border: 1px solid var(--hairline); border-radius: 2px; background: #fff; color: var(--ink);
+    }
+    .searchwrap input:focus { outline: 2px solid var(--orange); outline-offset: -1px; border-color: transparent; }
+    .legend { margin-left: auto; display: flex; gap: 16px; font-size: 14px; color: var(--muted); align-items: center; }
+    .legend i { display: inline-block; width: 3px; height: 15px; margin-right: 7px; vertical-align: -2px; }
+    .legend i.l { background: var(--orange); } .legend i.m { background: var(--hairline); }
+
+    /* ---------- 레이아웃 ---------- */
+    .layout { display: block; padding-top: var(--space-content); padding-bottom: 80px; }
+    @media (min-width: 1200px) {
+      .layout { display: grid; grid-template-columns: minmax(0, 1fr) 396px; gap: 38px; align-items: start; }
+    }
+
+    /* ---------- 단계 카드 ---------- */
+    .stage { margin-bottom: 46px; }
+    .stage-rule { height: 1px; background: var(--orange); }
+    .stage-head { display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap; margin-top: 14px; }
+    .stage-no {
+      font-family: var(--font-en); font-size: 14px; font-weight: 700; color: var(--orange-active);
+      letter-spacing: 1px; padding-top: 4px;
+    }
+    .stage h2 { font-size: 26px; font-weight: 700; letter-spacing: -.2px; }
+    .stage-driver { font-size: 14px; color: var(--muted); margin-left: auto; }
+    .stage-desc { font-size: 17px; color: var(--body); margin: 8px 0 19px; max-width: 88ch; }
+    .stage-grid { display: grid; gap: 19px; }
+    @media (min-width: 760px) { .stage-grid.two { grid-template-columns: 1fr 1fr; gap: 28px; } }
+    .grp-h {
+      font-size: 14px; font-weight: 700; letter-spacing: .6px; color: var(--muted);
+      text-transform: uppercase; font-family: var(--font-en);
+      padding-bottom: 7px; border-bottom: 1px solid var(--hairline-soft); margin-bottom: 12px;
+      display: flex; gap: 8px; align-items: center;
+    }
+    .grp-h .cnt { color: var(--muted-soft); font-weight: 500; font-family: var(--font-num); }
+    .chips { display: flex; flex-wrap: wrap; gap: 8px; }
+    .chip {
+      font-family: inherit; text-align: left; cursor: pointer;
+      background: #fff; border: 1px solid var(--hairline-soft); border-left: 3px solid var(--hairline);
+      border-radius: 2px; padding: 9px 13px;
+      flex: 1 1 190px; min-width: 0; max-width: 340px;
+      display: flex; flex-direction: column; gap: 1px;
+    }
+    .chip.large { border-left-color: var(--orange); }
+    .chip:hover { background: var(--subtle); border-color: var(--hairline); }
+    .chip:focus-visible { outline: 2px solid var(--orange); outline-offset: 1px; }
+    .chip .cn { font-size: 17px; font-weight: 700; color: var(--ink); letter-spacing: -.2px; }
+    .chip .cm { font-size: 13px; color: var(--muted-soft); font-family: var(--font-num); }
+    .chip .cp { font-size: 13px; color: var(--muted); }
+    .chip.on { background: var(--blue); border-color: var(--blue); border-left-color: var(--orange); }
+    .chip.on .cn, .chip.on .cm, .chip.on .cp { color: #fff; }
+    .empty { font-size: 15px; color: var(--muted-soft); padding: 6px 0 2px; }
+
+    /* ---------- 상세 패널 ---------- */
+    .panel {
+      background: #fff; border: 1px solid var(--hairline); border-radius: 4px;
+      padding: 0; overflow: hidden;
+    }
+    @media (min-width: 1200px) {
+      .panel { position: sticky; top: 74px; max-height: calc(100vh - 96px); display: flex; flex-direction: column; }
+      .panel-body { overflow-y: auto; }
+      .panel-close { display: none; }
+    }
+    @media (max-width: 1199px) {
+      .panel {
+        position: fixed; left: 0; right: 0; bottom: 0; z-index: 60; border-radius: 0;
+        border-left: 0; border-right: 0; border-bottom: 0; max-height: 86vh;
+        display: none; flex-direction: column; box-shadow: 0 -4px 24px rgba(0,0,0,.14);
+      }
+      .panel.open { display: flex; }
+      .panel-body { overflow-y: auto; -webkit-overflow-scrolling: touch; }
+      .backdrop { position: fixed; inset: 0; background: rgba(26,26,26,.34); z-index: 55; display: none; }
+      .backdrop.open { display: block; }
+    }
+    .panel-top {
+      background: var(--blue); color: #fff; padding: 19px 22px 17px; position: relative; flex: none;
+    }
+    .panel-top .pn { font-size: 24px; font-weight: 700; color: #fff; letter-spacing: -.3px; line-height: 1.3; }
+    .panel-top .pe { font-size: 14px; color: rgba(255,255,255,.78); font-family: var(--font-en); margin-top: 2px; }
+    .panel-top .ptags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 12px; }
+    .ptag {
+      font-size: 13px; font-weight: 500; padding: 3px 9px; border-radius: 2px;
+      background: rgba(255,255,255,.14); color: #fff; font-family: var(--font-num);
+    }
+    .ptag.tier { background: var(--orange); font-family: inherit; }
+    .panel-close {
+      position: absolute; top: 12px; right: 12px; background: rgba(255,255,255,.16); color: #fff;
+      border: 0; border-radius: 2px; font-size: 18px; line-height: 1; padding: 7px 11px; cursor: pointer;
+      font-family: var(--font-en);
+    }
+    .panel-close:hover { background: rgba(255,255,255,.3); }
+    .panel-body { padding: 19px 22px 26px; }
+    .pblock { margin-bottom: 22px; }
+    .pblock:last-child { margin-bottom: 0; }
+    .plabel {
+      font-size: 13px; font-weight: 700; letter-spacing: .7px; text-transform: uppercase;
+      color: var(--muted); font-family: var(--font-en); margin-bottom: 7px;
+      padding-bottom: 5px; border-bottom: 1px solid var(--orange-soft);
+    }
+    .ptext { font-size: 17px; color: var(--body); line-height: 1.6; }
+    .ptext strong { color: var(--ink); }
+    .plist { margin: 0; padding-left: 18px; font-size: 16px; color: var(--body); line-height: 1.6; }
+    .plist li { margin-bottom: 7px; }
+    .tags { display: flex; flex-wrap: wrap; gap: 6px; }
+    .tag {
+      font-size: 14px; padding: 4px 10px; border-radius: 2px;
+      background: var(--soft); color: var(--ink);
+    }
+    .quote { display: flex; align-items: flex-end; gap: 18px; flex-wrap: wrap; }
+    .quote .qp { font-size: 30px; font-weight: 700; color: var(--ink); line-height: 1.1; }
+    .quote .qc { font-size: 16px; font-weight: 600; }
+    .quote .qc.up { color: var(--up); } .quote .qc.dn { color: var(--down); } .quote .qc.fl { color: var(--muted); }
+    .qnote { font-size: 13px; color: var(--muted-soft); margin-top: 6px; }
+    .peer { display: flex; flex-wrap: wrap; gap: 6px; }
+    .peer button {
+      font-family: inherit; font-size: 15px; padding: 5px 11px; cursor: pointer;
+      background: #fff; border: 1px solid var(--hairline); border-radius: 2px; color: var(--body);
+    }
+    .peer button:hover { border-color: var(--orange); color: var(--ink); }
+    .plinks { display: flex; flex-direction: column; gap: 8px; }
+    .btn-primary {
+      display: inline-block; background: var(--orange); color: #fff; border: 0; border-radius: 2px;
+      font-family: inherit; font-size: 16px; font-weight: 500; padding: 10px 19px; cursor: pointer;
+      text-align: center; text-decoration: none;
+    }
+    .btn-primary:hover { background: var(--orange-active); color: #fff; }
+    .btn-ghost {
+      display: inline-block; background: #fff; color: var(--body); border: 1px solid var(--hairline);
+      border-radius: 2px; font-family: inherit; font-size: 15px; padding: 9px 17px; cursor: pointer;
+      text-align: center; text-decoration: none;
+    }
+    .btn-ghost:hover { border-color: var(--orange); color: var(--ink); }
+    .hint { padding: 46px 22px; text-align: center; color: var(--muted); font-size: 17px; }
+    .hint .hb { display: block; font-size: 19px; font-weight: 700; color: var(--ink); margin-bottom: 8px; }
+
+    /* ---------- 푸터 ---------- */
+    .foot {
+      border-top: 1px solid var(--hairline-soft); padding: 22px 0 56px;
+      font-size: 14px; color: var(--muted-soft); max-width: 90ch;
+    }
+
+    @media (max-width: 767px) {
+      .page { padding: 0 20px; }
+      h1 { font-size: 26px; }
+      .stage h2 { font-size: 22px; }
+      .legend { display: none; }
+      .stage-driver { margin-left: 0; width: 100%; }
+    }
+
+    @media print {
+      .controls, .lang-toggle, .panel, .backdrop { display: none !important; }
+      body { font-size: 12pt; line-height: 1.4; }
+      .page { max-width: 100%; padding: 0; }
+      .layout { display: block; }
+      .stage { page-break-inside: avoid; margin-bottom: 22px; }
+      .stage h2 { page-break-after: avoid; }
+      .chip { min-width: 0; }
+    }
+  </style>
+</head>
+<body>
+  <header class="page head">
+    <div class="head-top">
+      <div>
+        <span class="kicker" data-i18n="kicker">Data Center Value Chain</span>
+        <h1 data-i18n="title">국내외 데이터센터 밸류체인 종목 맵</h1>
+      </div>
+      <div class="lang-toggle" role="radiogroup" aria-label="Language">
+        <button id="langKo" role="radio" aria-checked="true" class="on">KO</button>
+        <button id="langEn" role="radio" aria-checked="false">EN</button>
+      </div>
+    </div>
+    <p class="lead" data-i18n="lead"></p>
+    <div class="metarow" id="metarow"></div>
+  </header>
+
+  <div class="controls page">
+    <div class="seg" id="regionSeg">
+      <button data-region="all" class="on" data-i18n="regAll">전체</button>
+      <button data-region="KR" data-i18n="regKr">국내</button>
+      <button data-region="OV" data-i18n="regOv">해외</button>
+    </div>
+    <div class="seg" id="tierSeg">
+      <button data-tier="all" class="on" data-i18n="tierAll">전체 규모</button>
+      <button data-tier="대형" data-i18n="tierLarge">대형주만</button>
+    </div>
+    <div class="searchwrap">
+      <input id="q" type="search" autocomplete="off" aria-label="search" />
+    </div>
+    <div class="legend">
+      <span><i class="l"></i><span data-i18n="lgLarge">대형주</span></span>
+      <span><i class="m"></i><span data-i18n="lgMid">중형 대표주</span></span>
+    </div>
+  </div>
+
+  <div class="page layout">
+    <div id="map"></div>
+    <aside class="panel" id="panel" aria-live="polite">
+      <div class="hint" id="panelHint">
+        <span class="hb" data-i18n="hintTitle">종목을 선택하세요</span>
+        <span data-i18n="hintBody">맵에서 종목을 클릭하면 사업 내용, 데이터센터 연관 포인트, 실시간 시세, 상세 리포트 링크가 표시됩니다.</span>
+      </div>
+    </aside>
+  </div>
+  <div class="backdrop" id="backdrop"></div>
+
+  <footer class="page foot">
+    <p id="footNote"></p>
+  </footer>
+
+  <script>
+/* inlined: data/dc-chain.js */
+/*
+ * 데이터센터 밸류체인 — 단계 정의 + 국내(KR) 종목
+ * ------------------------------------------------
+ * 스키마
+ *   STAGES: [{ id, no, name, nameEn, desc, descEn, driver, driverEn }]
+ *   DC_KR / DC_GLOBAL: [{
+ *     id      : 고유 키(국내=6자리 코드, 해외=티커)
+ *     name    : 종목명(한글) / nameEn: 영문명
+ *     tk      : 화면 표기 티커      mkt: 시장(KOSPI/KOSDAQ/NASDAQ/NYSE/TWSE/TSE/...)
+ *     region  : 'KR' | 'US' | 'TW' | 'JP' | 'EU' | 'CN'
+ *     tier    : '대형' | '중형'      (시가총액/시장 지위 기준 표기)
+ *     stages  : 밸류체인 단계 id 배열(복수 가능 — 실제로 여러 단계에 걸친 기업)
+ *     pos     : 밸류체인 내 포지션(짧게) / posEn
+ *     sum     : 한 줄 요약 / sumEn
+ *     pts     : 데이터센터 연관 포인트 2개 / ptsEn
+ *     prod    : 주요 제품·서비스 태그 / prodEn
+ *     edge    : 경쟁 지위 한 줄 / edgeEn
+ *     ysym    : Yahoo Finance 심볼(시세 조회용)
+ *   }]
+ *
+ * 종목 선정 기준: 각 단계에서 시장 지위(점유율·수주·고객)를 확보한 대형주 중심.
+ * 국내 일부 단계는 대형주 부재로 해당 분야 1위 중형주를 '중형'으로 표기해 포함.
+ * 수치(주가·시가총액)는 데이터에 넣지 않고 조회 시점에 실시간으로 불러온다.
+ */
+
+window.DC_STAGES = [
+  {
+    id: "chip", no: "01",
+    name: "AI 반도체 · 연산", nameEn: "AI silicon & compute",
+    desc: "GPU·AI 가속기·CPU와 이를 만드는 파운드리. 데이터센터 투자액의 절반 이상이 여기서 소비된다.",
+    descEn: "GPUs, AI accelerators, CPUs and the foundries that build them — over half of data center capex lands here.",
+    driver: "가속기 출하량 · 파운드리 선단 공정 캐파",
+    driverEn: "Accelerator shipments, leading-edge foundry capacity"
+  },
+  {
+    id: "memory", no: "02",
+    name: "메모리 · 스토리지", nameEn: "Memory & storage",
+    desc: "HBM·서버 DRAM·eSSD·니어라인 HDD. 가속기 1장당 메모리 탑재량이 세대마다 늘어난다.",
+    descEn: "HBM, server DRAM, eSSD and nearline HDD — memory content per accelerator rises every generation.",
+    driver: "HBM 세대 전환 · 서버 DRAM 가격",
+    driverEn: "HBM generation shifts, server DRAM pricing"
+  },
+  {
+    id: "board", no: "03",
+    name: "기판 · 후공정 · 부품", nameEn: "Substrate, packaging & components",
+    desc: "FC-BGA·고다층 MLB·메모리 기판과 HBM 적층 장비, 고속 커넥터. AI 서버의 병목이 자주 생기는 구간.",
+    descEn: "FC-BGA, high-layer-count MLB, memory substrates, HBM stacking tools and high-speed connectors — a frequent bottleneck.",
+    driver: "층수·면적 증가 · 패키징 캐파",
+    driverEn: "Layer count and area growth, packaging capacity"
+  },
+  {
+    id: "server", no: "04",
+    name: "서버 · 시스템", nameEn: "Servers & systems",
+    desc: "AI 서버·랙 스케일 시스템을 설계·조립해 하이퍼스케일러에 공급하는 OEM·ODM과 랙·함체.",
+    descEn: "OEM/ODM builders of AI servers and rack-scale systems, plus racks and enclosures, shipping to hyperscalers.",
+    driver: "랙 출하량 · 액체냉각 랙 전환",
+    driverEn: "Rack shipments, transition to liquid-cooled racks"
+  },
+  {
+    id: "network", no: "05",
+    name: "네트워크 · 광통신", nameEn: "Networking & optics",
+    desc: "이더넷 스위치, 800G 광트랜시버, 광섬유·케이블. 클러스터가 커질수록 필요량이 비선형으로 늘어난다.",
+    descEn: "Ethernet switches, 800G optics, fiber and cable — demand scales non-linearly with cluster size.",
+    driver: "스케일아웃 클러스터 규모 · 800G/1.6T 전환",
+    driverEn: "Scale-out cluster size, 800G/1.6T transition"
+  },
+  {
+    id: "power", no: "06",
+    name: "전력 · 에너지", nameEn: "Power & energy",
+    desc: "발전(가스터빈·원전·연료전지)부터 변압기·배전반·UPS·비상발전기까지. 지금 밸류체인의 최대 병목.",
+    descEn: "From generation (gas turbines, nuclear, fuel cells) to transformers, switchgear, UPS and standby gensets — today's tightest bottleneck.",
+    driver: "계통 접속 대기 · 변압기 리드타임",
+    driverEn: "Grid interconnection queues, transformer lead times"
+  },
+  {
+    id: "cooling", no: "07",
+    name: "냉각 · 공조", nameEn: "Cooling & thermal",
+    desc: "칠러·CDU·액침냉각. 랙 전력밀도가 100kW를 넘어서며 공기냉각에서 액체냉각으로 표준이 이동 중.",
+    descEn: "Chillers, CDUs and immersion cooling — as rack density passes 100kW the standard is shifting from air to liquid.",
+    driver: "랙 전력밀도 · 액체냉각 채택률",
+    driverEn: "Rack power density, liquid cooling adoption"
+  },
+  {
+    id: "epc", no: "08",
+    name: "건설 · EPC", nameEn: "Construction & EPC",
+    desc: "부지 확보부터 전기·기계 설비 시공, 시운전까지. 착공에서 가동까지의 리드타임을 결정한다.",
+    descEn: "Site through electrical/mechanical installation and commissioning — this sets the lead time from groundbreaking to live load.",
+    driver: "신규 착공 규모 · 전기공사 인력",
+    driverEn: "New starts, electrical labor availability"
+  },
+  {
+    id: "ops", no: "09",
+    name: "운영 · 코로케이션 · 클라우드", nameEn: "Operators, colocation & cloud",
+    desc: "데이터센터를 소유·임대·운영하는 사업자와, 밸류체인 전체의 수요를 만드는 클라우드·AI 사업자.",
+    descEn: "Owners, landlords and operators of data centers — and the cloud/AI buyers whose capex funds the entire chain.",
+    driver: "하이퍼스케일러 capex · 계약 임대율",
+    driverEn: "Hyperscaler capex, contracted lease rates"
+  }
+];
+
+window.DC_KR = [
+  {
+    id: "005930", name: "삼성전자", nameEn: "Samsung Electronics", tk: "005930", mkt: "KOSPI",
+    region: "KR", tier: "대형", stages: ["chip", "memory"], ysym: "005930.KS",
+    pos: "메모리 · 파운드리 · eSSD", posEn: "Memory, foundry, eSSD",
+    sum: "HBM·서버 DRAM·eSSD와 파운드리를 한 회사가 모두 공급하는 국내 유일 사업자.",
+    sumEn: "The only Korean company supplying HBM, server DRAM, eSSD and foundry services all at once.",
+    pts: [
+      "AI 서버용 HBM·DDR5·eSSD 공급, 자체 파운드리로 AI 가속기 위탁생산도 병행",
+      "메모리 가격 사이클과 파운드리 수주가 실적을 동시에 좌우"
+    ],
+    ptsEn: [
+      "Supplies HBM, DDR5 and eSSD for AI servers while also fabricating accelerators in its own foundry",
+      "Earnings hinge on both the memory pricing cycle and foundry order flow"
+    ],
+    prod: ["HBM", "서버 DRAM", "eSSD", "파운드리", "이미지센서"],
+    prodEn: ["HBM", "Server DRAM", "eSSD", "Foundry", "Image sensors"],
+    edge: "메모리와 선단 파운드리를 동시에 보유한 세계 2개 회사 중 하나",
+    edgeEn: "One of only two firms worldwide holding both memory and leading-edge foundry"
+  },
+  {
+    id: "000660", name: "SK하이닉스", nameEn: "SK hynix", tk: "000660", mkt: "KOSPI",
+    region: "KR", tier: "대형", stages: ["memory"], ysym: "000660.KS",
+    pos: "HBM · 서버 DRAM", posEn: "HBM, server DRAM",
+    sum: "HBM 시장 선두 사업자로, AI 가속기 메모리 공급의 핵심 축.",
+    sumEn: "The HBM market leader and the pivotal memory supplier to AI accelerators.",
+    pts: [
+      "HBM은 고객과 물량·가격을 사전 계약하는 구조로 일반 D램보다 수익 변동성이 낮음",
+      "가속기 세대 전환(HBM3E→HBM4)마다 단가와 점유율이 재조정"
+    ],
+    ptsEn: [
+      "HBM ships under pre-agreed volume and price terms, damping the usual DRAM volatility",
+      "Each accelerator generation (HBM3E to HBM4) resets pricing and share"
+    ],
+    prod: ["HBM", "서버 DRAM", "eSSD", "SOCAMM"],
+    prodEn: ["HBM", "Server DRAM", "eSSD", "SOCAMM"],
+    edge: "HBM 점유율 글로벌 1위권, 주요 가속기 업체의 최우선 공급사",
+    edgeEn: "Top-ranked in global HBM share and lead supplier to the major accelerator vendors"
+  },
+  {
+    id: "042700", name: "한미반도체", nameEn: "Hanmi Semiconductor", tk: "042700", mkt: "KOSPI",
+    region: "KR", tier: "대형", stages: ["board"], ysym: "042700.KS",
+    pos: "HBM 적층 장비(TC 본더)", posEn: "HBM stacking tools (TC bonder)",
+    sum: "HBM D램을 쌓아 붙이는 TC 본더의 세계 선두 공급사.",
+    sumEn: "The world's leading supplier of the TC bonders that stack HBM DRAM dies.",
+    pts: [
+      "HBM 캐파 증설이 곧 장비 발주 — 메모리사의 투자 계획에 실적이 직결",
+      "본딩 방식 변화(TC 본딩 → 하이브리드 본딩) 대응이 중장기 관전 포인트"
+    ],
+    ptsEn: [
+      "Every HBM capacity addition becomes a tool order, tying results directly to memory capex",
+      "The shift from thermo-compression toward hybrid bonding is the key medium-term watch item"
+    ],
+    prod: ["TC 본더", "듀얼 TC 본더", "비전 플레이스먼트", "쏘잉"],
+    prodEn: ["TC bonder", "Dual TC bonder", "Vision placement", "Sawing"],
+    edge: "HBM용 TC 본더 시장 사실상 표준 장비 공급사",
+    edgeEn: "De facto standard tool supplier for HBM thermo-compression bonding"
+  },
+  {
+    id: "009150", name: "삼성전기", nameEn: "Samsung Electro-Mechanics", tk: "009150", mkt: "KOSPI",
+    region: "KR", tier: "대형", stages: ["board"], ysym: "009150.KS",
+    pos: "FC-BGA 기판 · MLCC", posEn: "FC-BGA substrates, MLCC",
+    sum: "AI 가속기·서버 CPU를 얹는 고다층 FC-BGA 기판과 전장용 MLCC 공급사.",
+    sumEn: "Supplier of the high-layer FC-BGA substrates that carry accelerators and server CPUs, plus MLCCs.",
+    pts: [
+      "서버·AI용 FC-BGA는 층수·면적이 커질수록 단가가 오르는 고부가 제품",
+      "MLCC도 서버 전원단 사용량이 늘어 데이터센터 수요에 연동"
+    ],
+    ptsEn: [
+      "Server and AI FC-BGA carries higher pricing as layer count and body size grow",
+      "MLCC content in server power stages is rising alongside data center demand"
+    ],
+    prod: ["FC-BGA", "MLCC", "패키지 기판", "카메라 모듈"],
+    prodEn: ["FC-BGA", "MLCC", "Package substrates", "Camera modules"],
+    edge: "국내 FC-BGA 최대 공급사, 일본·대만 업체와 상위권 경쟁",
+    edgeEn: "Korea's largest FC-BGA supplier, competing at the top with Japanese and Taiwanese peers"
+  },
+  {
+    id: "007660", name: "이수페타시스", nameEn: "Isu Petasys", tk: "007660", mkt: "KOSPI",
+    region: "KR", tier: "대형", stages: ["board", "network"], ysym: "007660.KS",
+    pos: "고다층 MLB(스위치·가속기 보드)", posEn: "High-layer MLB for switches and accelerators",
+    sum: "AI 스위치·가속기 보드에 쓰이는 고다층 인쇄회로기판(MLB)의 소수 공급사.",
+    sumEn: "One of few suppliers of the high-layer-count PCBs used in AI switch and accelerator boards.",
+    pts: [
+      "북미 하이퍼스케일러·네트워크 업체를 직접 고객으로 두고 층수 상승의 수혜",
+      "증설 캐파가 곧 매출 상한 — 신규 공장 가동 시점이 중요 변수"
+    ],
+    ptsEn: [
+      "Sells directly to North American hyperscalers and networking vendors, benefiting from rising layer counts",
+      "Revenue is capped by capacity, so new plant ramp timing is the key variable"
+    ],
+    prod: ["18층 이상 MLB", "네트워크 스위치 보드", "가속기 보드"],
+    prodEn: ["18+ layer MLB", "Network switch boards", "Accelerator boards"],
+    edge: "고다층 MLB 글로벌 상위권, AI 스위치 보드 핵심 벤더",
+    edgeEn: "Global top-tier in high-layer MLB and a core vendor for AI switch boards"
+  },
+  {
+    id: "222800", name: "심텍", nameEn: "Simmtech", tk: "222800", mkt: "KOSDAQ",
+    region: "KR", tier: "중형", stages: ["board", "memory"], ysym: "222800.KQ",
+    pos: "메모리 모듈 기판", posEn: "Memory module substrates",
+    sum: "서버 DRAM 모듈·SSD용 패키지 기판에 특화된 메모리 기판 전문업체.",
+    sumEn: "A memory-substrate specialist focused on package substrates for server DRAM modules and SSDs.",
+    pts: [
+      "서버 모듈·SOCAMM 등 AI 서버 메모리 폼팩터 변화의 직접 수혜 구간",
+      "메모리 출하량에 연동되는 구조로 D램 사이클 민감도가 높음"
+    ],
+    ptsEn: [
+      "Directly exposed to new AI-server memory form factors such as server modules and SOCAMM",
+      "Volume-linked to memory shipments, so sensitivity to the DRAM cycle is high"
+    ],
+    prod: ["메모리 모듈 PCB", "SSD 기판", "FC-CSP", "SOCAMM 기판"],
+    prodEn: ["Memory module PCB", "SSD substrates", "FC-CSP", "SOCAMM substrates"],
+    edge: "메모리 모듈 기판 세계 1위권 점유율",
+    edgeEn: "Top-ranked global share in memory module substrates"
+  },
+  {
+    id: "353200", name: "대덕전자", nameEn: "Daeduck Electronics", tk: "353200", mkt: "KOSPI",
+    region: "KR", tier: "중형", stages: ["board"], ysym: "353200.KS",
+    pos: "FC-BGA · 메모리 기판", posEn: "FC-BGA, memory substrates",
+    sum: "FC-BGA와 메모리 기판을 함께 하는 국내 2위권 패키지 기판 업체.",
+    sumEn: "Korea's number-two package substrate maker, spanning FC-BGA and memory substrates.",
+    pts: [
+      "서버·네트워크용 고부가 기판 비중 확대가 수익성 개선의 축",
+      "FC-BGA 신규 라인 가동률이 실적 레버리지를 결정"
+    ],
+    ptsEn: [
+      "Margin improvement rests on a growing mix of high-value server and networking substrates",
+      "Utilization of new FC-BGA lines drives the earnings leverage"
+    ],
+    prod: ["FC-BGA", "메모리 기판", "RF 패키지", "다층 PCB"],
+    prodEn: ["FC-BGA", "Memory substrates", "RF packages", "Multilayer PCB"],
+    edge: "국내 패키지 기판 2위, 서버용 고다층 라인 확대 중",
+    edgeEn: "Korea's second-largest package substrate maker, expanding server-grade high-layer lines"
+  },
+  {
+    id: "000150", name: "두산", nameEn: "Doosan", tk: "000150", mkt: "KOSPI",
+    region: "KR", tier: "대형", stages: ["board"], ysym: "000150.KS",
+    pos: "AI 가속기용 동박적층판(CCL)", posEn: "CCL for AI accelerators",
+    sum: "전자BG가 고속 신호용 동박적층판(CCL)을 공급, 지주부문은 두산에너빌리티 등을 보유.",
+    sumEn: "Its electronics unit supplies high-speed copper-clad laminate, while the holding arm owns Doosan Enerbility and others.",
+    pts: [
+      "고다층 MLB·가속기 보드의 소재 단계로, 층수 상승 시 소재 단가도 상승",
+      "지주회사로서 발전(두산에너빌리티) 밸류체인 노출도 함께 보유"
+    ],
+    ptsEn: [
+      "Sits upstream of high-layer MLB and accelerator boards, with material pricing rising alongside layer counts",
+      "As a holding company it also carries exposure to power generation via Doosan Enerbility"
+    ],
+    prod: ["저손실 CCL", "빌드업 필름", "전자소재"],
+    prodEn: ["Low-loss CCL", "Build-up film", "Electronic materials"],
+    edge: "고속·저손실 CCL 글로벌 소수 공급사",
+    edgeEn: "One of few global suppliers of high-speed, low-loss CCL"
+  },
+  {
+    id: "178320", name: "서진시스템", nameEn: "Seojin System", tk: "178320", mkt: "KOSDAQ",
+    region: "KR", tier: "중형", stages: ["server"], ysym: "178320.KQ",
+    pos: "서버 랙 · 함체 · 케이스", posEn: "Server racks, enclosures, casings",
+    sum: "통신장비·ESS 함체에서 출발해 서버 랙·구조물로 확장한 금속 가공 업체.",
+    sumEn: "A metal fabricator that expanded from telecom and ESS enclosures into server racks and structures.",
+    pts: [
+      "AI 랙은 무게·발열이 커져 구조물·수냉 매니폴드 등 기구 부품 사양이 상승",
+      "ESS 함체 수요와 데이터센터 수요가 함께 붙는 구조"
+    ],
+    ptsEn: [
+      "Heavier, hotter AI racks raise the spec for structures and liquid-cooling manifolds",
+      "ESS enclosure demand and data center demand stack on the same production base"
+    ],
+    prod: ["서버 랙", "ESS 함체", "통신장비 케이스", "정밀 가공"],
+    prodEn: ["Server racks", "ESS enclosures", "Telecom casings", "Precision machining"],
+    edge: "국내 대형 금속 함체 가공 캐파 보유",
+    edgeEn: "Holds among Korea's largest metal enclosure fabrication capacity"
+  },
+  {
+    id: "138080", name: "오이솔루션", nameEn: "OE Solutions", tk: "138080", mkt: "KOSDAQ",
+    region: "KR", tier: "중형", stages: ["network"], ysym: "138080.KQ",
+    pos: "광트랜시버", posEn: "Optical transceivers",
+    sum: "국내 최대 광트랜시버 업체로, 통신용에서 데이터센터용으로 축을 옮기는 중.",
+    sumEn: "Korea's largest optical transceiver maker, pivoting from telecom to data center applications.",
+    pts: [
+      "AI 클러스터는 GPU 수보다 빠르게 광모듈 수가 늘어나는 구조",
+      "800G급 데이터센터 제품 진입 여부가 밸류에이션의 핵심 변수"
+    ],
+    ptsEn: [
+      "Optical module counts in AI clusters grow faster than GPU counts",
+      "Qualification into 800G data center products is the key valuation driver"
+    ],
+    prod: ["광트랜시버", "5G 프론트홀", "데이터센터 광모듈"],
+    prodEn: ["Optical transceivers", "5G fronthaul", "Data center optics"],
+    edge: "국내 광트랜시버 1위, 국산화 대표 업체",
+    edgeEn: "Korea's number-one optical transceiver vendor and the flagship localization play"
+  },
+  {
+    id: "010170", name: "대한광통신", nameEn: "Taihan Fiberoptics", tk: "010170", mkt: "KOSPI",
+    region: "KR", tier: "중형", stages: ["network"], ysym: "010170.KS",
+    pos: "광섬유 · 광케이블", posEn: "Optical fiber and cable",
+    sum: "원재료부터 광섬유·광케이블까지 일괄 생산하는 국내 유일 업체.",
+    sumEn: "The only Korean firm producing optical fiber and cable end-to-end from raw materials.",
+    pts: [
+      "데이터센터 내·간 연결에 쓰이는 초고밀도 케이블 수요 확대",
+      "광섬유 가격 사이클과 빅테크 발주 시점에 실적 민감"
+    ],
+    ptsEn: [
+      "Demand is expanding for ultra-high-density cable used inside and between data centers",
+      "Earnings track the fiber pricing cycle and big-tech order timing"
+    ],
+    prod: ["광섬유", "초고밀도 광케이블", "광튜브"],
+    prodEn: ["Optical fiber", "Ultra-high-density cable", "Micro-duct cable"],
+    edge: "광섬유 수직계열화, 해외 빅테크 데이터센터 케이블 공급 이력",
+    edgeEn: "Vertically integrated in fiber, with a track record supplying overseas big-tech data centers"
+  },
+  {
+    id: "267260", name: "HD현대일렉트릭", nameEn: "HD Hyundai Electric", tk: "267260", mkt: "KOSPI",
+    region: "KR", tier: "대형", stages: ["power"], ysym: "267260.KS",
+    pos: "초고압 변압기 · 배전", posEn: "Ultra-high-voltage transformers, distribution",
+    sum: "북미 데이터센터·전력망 교체 수요를 받는 국내 대표 초고압 변압기 업체.",
+    sumEn: "Korea's flagship UHV transformer maker, riding North American data center and grid replacement demand.",
+    pts: [
+      "변압기는 리드타임이 수년 단위로 길어져 수주잔고가 곧 실적 가시성",
+      "미국 현지 생산·증설 여부가 관세·물류 리스크의 완충 장치"
+    ],
+    ptsEn: [
+      "Multi-year transformer lead times turn the order backlog into earnings visibility",
+      "US local production and expansion buffer tariff and logistics risk"
+    ],
+    prod: ["초고압 변압기", "고압 차단기", "회전기", "배전기기"],
+    prodEn: ["UHV transformers", "HV breakers", "Rotating machines", "Distribution gear"],
+    edge: "국내 변압기 1위, 북미 매출 비중 최상위",
+    edgeEn: "Korea's top transformer maker with the highest North American revenue mix"
+  },
+  {
+    id: "298040", name: "효성중공업", nameEn: "HS Hyosung Heavy Industries", tk: "298040", mkt: "KOSPI",
+    region: "KR", tier: "대형", stages: ["power"], ysym: "298040.KS",
+    pos: "변압기 · GIS · 계통 솔루션", posEn: "Transformers, GIS, grid solutions",
+    sum: "변압기와 가스절연개폐장치(GIS)를 함께 공급하는 전력기기 대형주.",
+    sumEn: "A large-cap power equipment maker supplying both transformers and gas-insulated switchgear.",
+    pts: [
+      "데이터센터 수전 설비는 변압기+개폐장치 패키지 발주가 일반적",
+      "미국·중동 수주잔고와 건설부문 실적이 함께 반영"
+    ],
+    ptsEn: [
+      "Data center intake substations are typically ordered as transformer plus switchgear packages",
+      "Results combine US and Middle East backlog with the construction division"
+    ],
+    prod: ["초고압 변압기", "GIS", "STATCOM", "ESS"],
+    prodEn: ["UHV transformers", "GIS", "STATCOM", "ESS"],
+    edge: "변압기·GIS 동시 공급 역량, 미국 현지 공장 보유",
+    edgeEn: "Able to bundle transformers and GIS, with US manufacturing on the ground"
+  },
+  {
+    id: "010120", name: "LS ELECTRIC", nameEn: "LS Electric", tk: "010120", mkt: "KOSPI",
+    region: "KR", tier: "대형", stages: ["power"], ysym: "010120.KS",
+    pos: "배전 · UPS · 전력 솔루션", posEn: "Distribution, UPS, power solutions",
+    sum: "배전기기·전력 자동화에서 데이터센터 수배전 솔루션까지 확장한 전력기기 업체.",
+    sumEn: "A power equipment maker extending from distribution gear and automation into data center power solutions.",
+    pts: [
+      "데이터센터 내부 배전반·UPS·전력 관리까지 묶어서 공급 가능",
+      "북미 배전 시장 진출과 국내 데이터센터 수주가 성장 축"
+    ],
+    ptsEn: [
+      "Can bundle in-building switchboards, UPS and power management",
+      "Growth rests on North American distribution entry and domestic data center orders"
+    ],
+    prod: ["배전반", "UPS", "전력 자동화", "저압 기기"],
+    prodEn: ["Switchboards", "UPS", "Power automation", "Low-voltage gear"],
+    edge: "국내 저압·배전기기 1위 사업자",
+    edgeEn: "Korea's number one in low-voltage and distribution equipment"
+  },
+  {
+    id: "006260", name: "LS", nameEn: "LS Corp.", tk: "006260", mkt: "KOSPI",
+    region: "KR", tier: "대형", stages: ["power"], ysym: "006260.KS",
+    pos: "초고압 케이블(LS전선) 지주", posEn: "Holding company for LS Cable UHV",
+    sum: "비상장 LS전선을 통해 초고압 전력케이블·해저케이블에 노출된 지주회사.",
+    sumEn: "A holding company with exposure to UHV power and submarine cable through unlisted LS Cable.",
+    pts: [
+      "데이터센터 단지 수전을 위한 초고압 케이블·접속재 수요 확대",
+      "미국 해저·전력 케이블 공장 투자로 현지 수요 대응"
+    ],
+    ptsEn: [
+      "Rising demand for UHV cable and accessories to feed data center campuses",
+      "US cable plant investment positions it for local demand"
+    ],
+    prod: ["초고압 케이블", "해저 케이블", "전선 접속재", "동제련"],
+    prodEn: ["UHV cable", "Submarine cable", "Cable accessories", "Copper smelting"],
+    edge: "국내 전선 1위(LS전선) 보유 지주",
+    edgeEn: "Holding company of LS Cable, Korea's largest wire and cable maker"
+  },
+  {
+    id: "001440", name: "대한전선", nameEn: "Taihan Cable & Solution", tk: "001440", mkt: "KOSPI",
+    region: "KR", tier: "중형", stages: ["power"], ysym: "001440.KS",
+    pos: "초고압 전력케이블", posEn: "UHV power cable",
+    sum: "북미·중동 전력망 프로젝트를 확대하는 국내 2위 전선업체.",
+    sumEn: "Korea's second-largest cable maker, growing in North American and Middle East grid projects.",
+    pts: [
+      "데이터센터 증설은 송배전 케이블 물량 증가로 직결",
+      "미국 공장 증설과 해저케이블 진입이 중장기 축"
+    ],
+    ptsEn: [
+      "Data center build-outs translate directly into transmission and distribution cable volume",
+      "US capacity additions and submarine cable entry are the medium-term drivers"
+    ],
+    prod: ["초고압 케이블", "배전 케이블", "해저 케이블", "버스덕트"],
+    prodEn: ["UHV cable", "Distribution cable", "Submarine cable", "Busduct"],
+    edge: "국내 전선 2위, 미국 현지 생산 확대",
+    edgeEn: "Korea's number-two cable maker, scaling US local production"
+  },
+  {
+    id: "103590", name: "일진전기", nameEn: "Iljin Electric", tk: "103590", mkt: "KOSPI",
+    region: "KR", tier: "중형", stages: ["power"], ysym: "103590.KS",
+    pos: "변압기 · 전선", posEn: "Transformers and cable",
+    sum: "변압기와 전선을 함께 생산하며 미국 수출 비중을 늘려온 전력기기 업체.",
+    sumEn: "A power equipment maker producing both transformers and cable, with a growing US export mix.",
+    pts: [
+      "미국 노후 전력망 교체·데이터센터 수전 수요를 동시 수취",
+      "변압기 캐파 증설 속도가 매출 성장의 상한"
+    ],
+    ptsEn: [
+      "Captures both US grid replacement and data center intake demand",
+      "Transformer capacity additions cap the revenue trajectory"
+    ],
+    prod: ["전력용 변압기", "배전 변압기", "가공선", "전력 케이블"],
+    prodEn: ["Power transformers", "Distribution transformers", "Overhead conductors", "Power cable"],
+    edge: "변압기·전선 동시 생산, 미국 매출 비중 상위",
+    edgeEn: "Produces both transformers and cable with a high US revenue mix"
+  },
+  {
+    id: "062040", name: "산일전기", nameEn: "Sanil Electric", tk: "062040", mkt: "KOSPI",
+    region: "KR", tier: "중형", stages: ["power"], ysym: "062040.KS",
+    pos: "미국향 배전 변압기", posEn: "Distribution transformers for the US",
+    sum: "매출 대부분이 변압기이고 그 대부분이 미국 수출인 배전 변압기 전문업체.",
+    sumEn: "A distribution transformer specialist whose revenue is mostly transformers, mostly exported to the US.",
+    pts: [
+      "미국 데이터센터·신재생 접속용 배전 변압기 수요에 직접 노출",
+      "연료전지·발전 설비 업체와의 공급 계약이 수주 가시성을 높임"
+    ],
+    ptsEn: [
+      "Direct exposure to US data center and renewable interconnection transformer demand",
+      "Supply agreements with fuel cell and generation vendors add backlog visibility"
+    ],
+    prod: ["배전 변압기", "몰드 변압기", "특수 변압기"],
+    prodEn: ["Distribution transformers", "Cast-resin transformers", "Specialty transformers"],
+    edge: "미국 배전 변압기 니치에서 높은 수익성 유지",
+    edgeEn: "Sustains high margins in the US distribution transformer niche"
+  },
+  {
+    id: "034020", name: "두산에너빌리티", nameEn: "Doosan Enerbility", tk: "034020", mkt: "KOSPI",
+    region: "KR", tier: "대형", stages: ["power"], ysym: "034020.KS",
+    pos: "가스터빈 · 원전 · SMR", posEn: "Gas turbines, nuclear, SMR",
+    sum: "데이터센터 전력원으로 부각된 가스터빈과 원전·SMR 주기기를 만드는 국내 유일 업체.",
+    sumEn: "Korea's only maker of the gas turbines and nuclear/SMR main equipment now sought as data center power.",
+    pts: [
+      "계통 접속 대기가 길어질수록 자체 발전(가스터빈·SMR) 수요가 부각",
+      "SMR 파운드리 역할로 해외 원전 스타트업 물량도 수취"
+    ],
+    ptsEn: [
+      "Longer interconnection queues push demand toward on-site generation such as gas turbines and SMRs",
+      "Its SMR foundry role also captures volume from overseas nuclear developers"
+    ],
+    prod: ["대형 가스터빈", "원자로 주기기", "SMR", "HRSG"],
+    prodEn: ["Heavy-duty gas turbines", "Nuclear main equipment", "SMR", "HRSG"],
+    edge: "가스터빈 자체 모델 보유 세계 5개 회사 중 하나, SMR 제작 캐파 세계 최상위",
+    edgeEn: "One of five firms worldwide with its own heavy gas turbine, and top-tier SMR fabrication capacity"
+  },
+  {
+    id: "015760", name: "한국전력", nameEn: "KEPCO", tk: "015760", mkt: "KOSPI",
+    region: "KR", tier: "대형", stages: ["power", "ops"], ysym: "015760.KS",
+    pos: "전력 공급 · 계통 접속", posEn: "Power supply and grid interconnection",
+    sum: "국내 데이터센터의 계통 접속과 전력 요금을 결정하는 송배전 독점 사업자.",
+    sumEn: "The transmission and distribution monopoly that decides interconnection and tariffs for Korean data centers.",
+    pts: [
+      "수도권 계통 여유 부족이 국내 데이터센터 입지·착공 속도를 좌우",
+      "전기요금 체계와 접속 규정이 데이터센터 운영비의 핵심 변수"
+    ],
+    ptsEn: [
+      "Limited capital-region grid headroom shapes where and how fast Korean data centers get built",
+      "Tariff design and interconnection rules are the core driver of operating cost"
+    ],
+    prod: ["송배전망", "전력 판매", "계통 접속"],
+    prodEn: ["T&D network", "Power sales", "Grid interconnection"],
+    edge: "국내 송배전 독점, 데이터센터 전력 공급의 관문",
+    edgeEn: "Monopoly over Korean T&D and the gateway for data center power"
+  },
+  {
+    id: "119850", name: "지엔씨에너지", nameEn: "GnC Energy", tk: "119850", mkt: "KOSDAQ",
+    region: "KR", tier: "중형", stages: ["power"], ysym: "119850.KQ",
+    pos: "데이터센터 비상발전기", posEn: "Data center standby generators",
+    sum: "데이터센터용 비상발전기 국내 1위 업체로, 대형 AI 데이터센터 공급 이력 보유.",
+    sumEn: "Korea's leading data center standby generator maker with a record of supplying large AI data centers.",
+    pts: [
+      "데이터센터는 전원 이중화가 필수여서 IT 용량 증가가 곧 발전기 수요",
+      "단일 프로젝트 규모가 커 수주 공시가 실적 가시성을 크게 바꿈"
+    ],
+    ptsEn: [
+      "Power redundancy is mandatory, so IT capacity growth maps straight to genset demand",
+      "Project sizes are large enough that single order announcements reset visibility"
+    ],
+    prod: ["디젤 비상발전기", "가스터빈 발전기", "바이오가스 발전"],
+    prodEn: ["Diesel standby gensets", "Gas turbine gensets", "Biogas generation"],
+    edge: "국내 데이터센터 비상발전기 시장 점유율 1위",
+    edgeEn: "Number-one share of Korea's data center standby generator market"
+  },
+  {
+    id: "066570", name: "LG전자", nameEn: "LG Electronics", tk: "066570", mkt: "KOSPI",
+    region: "KR", tier: "대형", stages: ["cooling"], ysym: "066570.KS",
+    pos: "칠러 · 데이터센터 공조", posEn: "Chillers and data center HVAC",
+    sum: "냉난방공조(HVAC) 사업을 데이터센터 냉각으로 확장하는 국내 최대 공조 사업자.",
+    sumEn: "Korea's largest HVAC player, extending its business into data center cooling.",
+    pts: [
+      "터보 칠러·CDU·액체냉각 솔루션으로 랙 고밀도화 대응",
+      "가전 사이클과 분리된 B2B 성장축으로 자리매김하는 과정"
+    ],
+    ptsEn: [
+      "Turbo chillers, CDUs and liquid cooling address rising rack density",
+      "Positioned as a B2B growth engine decoupled from the appliance cycle"
+    ],
+    prod: ["터보 칠러", "CDU", "액체냉각", "항온항습기"],
+    prodEn: ["Turbo chillers", "CDU", "Liquid cooling", "Precision AC"],
+    edge: "국내 최대 공조 캐파, 글로벌 HVAC 업체와 데이터센터에서 직접 경쟁",
+    edgeEn: "Korea's largest HVAC capacity, competing head-on with global players in data centers"
+  },
+  {
+    id: "096770", name: "SK이노베이션", nameEn: "SK Innovation", tk: "096770", mkt: "KOSPI",
+    region: "KR", tier: "대형", stages: ["cooling"], ysym: "096770.KS",
+    pos: "액침냉각유(SK엔무브)", posEn: "Immersion cooling fluids (SK Enmove)",
+    sum: "자회사 SK엔무브를 통해 데이터센터 액침냉각용 특수 유체를 공급.",
+    sumEn: "Supplies specialty immersion cooling fluids for data centers through its SK Enmove unit.",
+    pts: [
+      "액침냉각은 전력 사용 효율(PUE) 개선 폭이 커 채택 논의가 확대",
+      "윤활기유 사업의 고부가 확장으로 정유 사이클 의존도를 낮추는 시도"
+    ],
+    ptsEn: [
+      "Immersion cooling offers large PUE gains, widening adoption discussions",
+      "A high-value extension of the base-oil business that dilutes refining cycle dependence"
+    ],
+    prod: ["액침냉각 유체", "윤활기유", "정유", "배터리"],
+    prodEn: ["Immersion cooling fluid", "Base oils", "Refining", "Batteries"],
+    edge: "고급 윤활기유 기반 액침냉각 유체 글로벌 선도 그룹",
+    edgeEn: "Among the global leaders in immersion cooling fluids built on premium base oils"
+  },
+  {
+    id: "036200", name: "유니셈", nameEn: "Unisem", tk: "036200", mkt: "KOSDAQ",
+    region: "KR", tier: "중형", stages: ["cooling"], ysym: "036200.KQ",
+    pos: "산업용 칠러", posEn: "Industrial chillers",
+    sum: "반도체 공정용 칠러·스크러버 업체로, 데이터센터 냉각 장비로 영역을 넓히는 중.",
+    sumEn: "A semiconductor chiller and scrubber maker moving into data center cooling equipment.",
+    pts: [
+      "정밀 온도제어 칠러 기술을 데이터센터 CDU·수냉 설비에 전용 가능",
+      "반도체 투자 사이클과 데이터센터 수요가 이중 성장축"
+    ],
+    ptsEn: [
+      "Precision temperature-control know-how transfers to data center CDUs and liquid loops",
+      "Twin drivers: the semiconductor capex cycle and data center demand"
+    ],
+    prod: ["칠러", "스크러버", "냉각 설비"],
+    prodEn: ["Chillers", "Scrubbers", "Cooling systems"],
+    edge: "국내 반도체 칠러 상위 공급사",
+    edgeEn: "A top domestic supplier of semiconductor chillers"
+  },
+  {
+    id: "083450", name: "GST", nameEn: "Global Standard Technology", tk: "083450", mkt: "KOSDAQ",
+    region: "KR", tier: "중형", stages: ["cooling"], ysym: "083450.KQ",
+    pos: "칠러 · 스크러버", posEn: "Chillers and scrubbers",
+    sum: "국내 유일 수준으로 글로벌 반도체 업체에 칠러·스크러버를 수출하는 장비사.",
+    sumEn: "A rare Korean equipment maker exporting chillers and scrubbers to global chipmakers.",
+    pts: [
+      "친환경 CO2 칠러 등 저전력 냉각 기술이 데이터센터로 확장 가능",
+      "해외 고객(대만·미국) 비중이 높아 글로벌 투자 사이클에 연동"
+    ],
+    ptsEn: [
+      "Low-power cooling technology such as CO2 chillers is extendable to data centers",
+      "A high overseas customer mix ties results to the global capex cycle"
+    ],
+    prod: ["칠러", "스크러버", "CO2 칠러"],
+    prodEn: ["Chillers", "Scrubbers", "CO2 chillers"],
+    edge: "글로벌 파운드리·메모리에 칠러를 수출하는 국내 소수 업체",
+    edgeEn: "One of few Korean vendors exporting chillers to global foundry and memory fabs"
+  },
+  {
+    id: "053080", name: "케이엔솔", nameEn: "KNSOL", tk: "053080", mkt: "KOSDAQ",
+    region: "KR", tier: "중형", stages: ["cooling", "epc"], ysym: "053080.KQ",
+    pos: "데이터센터 냉각 · IT 인프라 구축", posEn: "Data center cooling and IT infrastructure",
+    sum: "IT 인프라 구축·운영 사업자로 글로벌 액침냉각 업체와 협력해 국내 시장에 진입.",
+    sumEn: "An IT infrastructure builder and operator entering immersion cooling via a global partnership.",
+    pts: [
+      "설계·구축·운영을 함께 하는 구조로 냉각 설비 매출이 프로젝트에 붙어 들어감",
+      "액침냉각은 초기 시장이라 레퍼런스 확보 여부가 관건"
+    ],
+    ptsEn: [
+      "Design, build and operate scope lets cooling hardware ride along with projects",
+      "Immersion cooling is early-stage, so reference wins are the gating factor"
+    ],
+    prod: ["액침냉각", "IT 인프라 구축", "데이터센터 운영"],
+    prodEn: ["Immersion cooling", "IT infrastructure", "Data center operations"],
+    edge: "글로벌 액침냉각 업체와 국내 파트너십 확보",
+    edgeEn: "Holds a domestic partnership with a global immersion cooling vendor"
+  },
+  {
+    id: "028260", name: "삼성물산", nameEn: "Samsung C&T", tk: "028260", mkt: "KOSPI",
+    region: "KR", tier: "대형", stages: ["epc"], ysym: "028260.KS",
+    pos: "데이터센터 시공 · 개발", posEn: "Data center construction and development",
+    sum: "반도체 팹 시공 경험을 데이터센터로 확장하는 국내 최대 건설·상사 그룹.",
+    sumEn: "Korea's largest construction and trading group, extending fab construction know-how to data centers.",
+    pts: [
+      "초순수·전기·클린룸 등 팹 시공 역량이 데이터센터 설비 공사와 직결",
+      "그룹 물량과 해외 개발 프로젝트를 함께 수취"
+    ],
+    ptsEn: [
+      "Fab-grade utilities, electrical and cleanroom capability maps onto data center works",
+      "Captures both in-group volume and overseas development projects"
+    ],
+    prod: ["건축·플랜트 시공", "데이터센터", "상사", "에너지"],
+    prodEn: ["Building and plant EPC", "Data centers", "Trading", "Energy"],
+    edge: "국내 최상위 시공 능력, 첨단 설비 공사 레퍼런스 보유",
+    edgeEn: "Top-tier Korean contractor with advanced facility references"
+  },
+  {
+    id: "000720", name: "현대건설", nameEn: "Hyundai E&C", tk: "000720", mkt: "KOSPI",
+    region: "KR", tier: "대형", stages: ["epc"], ysym: "000720.KS",
+    pos: "데이터센터 · 발전 시공", posEn: "Data center and power plant construction",
+    sum: "원전·발전 시공 역량을 데이터센터 전력 인프라 공사로 연결하는 대형 건설사.",
+    sumEn: "A major contractor linking nuclear and power plant capability into data center power infrastructure.",
+    pts: [
+      "발전·송전 시공과 데이터센터 수전 설비 공사가 같은 인력·장비 풀 사용",
+      "SMR·원전 등 전력 공급 측 프로젝트에도 동시 노출"
+    ],
+    ptsEn: [
+      "Power and transmission works share the same crews and equipment as data center intake facilities",
+      "Also exposed to supply-side projects such as SMR and nuclear"
+    ],
+    prod: ["건축", "발전 플랜트", "원전", "인프라"],
+    prodEn: ["Building", "Power plants", "Nuclear", "Infrastructure"],
+    edge: "원전·발전 시공 국내 최상위 트랙레코드",
+    edgeEn: "Korea's leading track record in nuclear and power plant construction"
+  },
+  {
+    id: "028050", name: "삼성E&A", nameEn: "Samsung E&A", tk: "028050", mkt: "KOSPI",
+    region: "KR", tier: "대형", stages: ["epc"], ysym: "028050.KS",
+    pos: "플랜트 · 전력 설비 EPC", posEn: "Plant and power facility EPC",
+    sum: "화공·산업 플랜트 EPC 역량으로 데이터센터 전력·유틸리티 공사에 참여.",
+    sumEn: "Brings chemical and industrial plant EPC capability to data center power and utility works.",
+    pts: [
+      "유틸리티·전력 설비 설계 역량이 대형 데이터센터 단지에서 요구되는 사양",
+      "그룹 반도체 투자와 해외 플랜트 수주가 실적의 두 축"
+    ],
+    ptsEn: [
+      "Utility and power design capability matches what large campuses require",
+      "Earnings rest on in-group semiconductor capex and overseas plant awards"
+    ],
+    prod: ["화공 플랜트", "산업 플랜트", "유틸리티", "친환경"],
+    prodEn: ["Chemical plants", "Industrial plants", "Utilities", "Green solutions"],
+    edge: "국내 플랜트 EPC 최상위, 그룹 첨단 시설 공사 담당",
+    edgeEn: "A top Korean plant EPC contractor handling the group's advanced facilities"
+  },
+  {
+    id: "006360", name: "GS건설", nameEn: "GS E&C", tk: "006360", mkt: "KOSPI",
+    region: "KR", tier: "중형", stages: ["epc"], ysym: "006360.KS",
+    pos: "데이터센터 시공", posEn: "Data center construction",
+    sum: "건축·플랜트 시공사로 국내 데이터센터 건설 수주에 참여하는 대형 건설사.",
+    sumEn: "A large contractor participating in domestic data center construction awards.",
+    pts: [
+      "주택 경기 의존도를 낮추는 비주택 수주로 데이터센터가 활용",
+      "전기·기계 설비 협력사 네트워크가 공기 단축의 관건"
+    ],
+    ptsEn: [
+      "Data centers serve as non-residential backlog that dilutes housing dependence",
+      "Electrical and mechanical subcontractor networks decide schedule compression"
+    ],
+    prod: ["건축", "플랜트", "인프라", "신사업"],
+    prodEn: ["Building", "Plant", "Infrastructure", "New businesses"],
+    edge: "국내 상위 시공 능력 순위 보유",
+    edgeEn: "Ranks among Korea's top contractors by capability"
+  },
+  {
+    id: "035420", name: "NAVER", nameEn: "NAVER", tk: "035420", mkt: "KOSPI",
+    region: "KR", tier: "대형", stages: ["ops"], ysym: "035420.KS",
+    pos: "자체 데이터센터 · 클라우드", posEn: "Own data centers and cloud",
+    sum: "국내 최대 자체 데이터센터를 운영하며 AI·클라우드 수요를 직접 만드는 사업자.",
+    sumEn: "Operates Korea's largest self-built data centers and generates AI and cloud demand directly.",
+    pts: [
+      "자체 데이터센터 운영으로 GPU·전력·냉각 발주의 국내 최대 수요처 중 하나",
+      "소버린 AI·공공 클라우드 수요가 설비 투자 규모를 좌우"
+    ],
+    ptsEn: [
+      "Self-operated facilities make it one of Korea's largest buyers of GPUs, power and cooling",
+      "Sovereign AI and public cloud demand set the capex scale"
+    ],
+    prod: ["데이터센터(각)", "네이버클라우드", "AI 모델", "검색·커머스"],
+    prodEn: ["GAK data centers", "NAVER Cloud", "AI models", "Search and commerce"],
+    edge: "국내 인터넷 1위, 자체 초대형 데이터센터 보유",
+    edgeEn: "Korea's leading internet platform with its own hyperscale data centers"
+  },
+  {
+    id: "017670", name: "SK텔레콤", nameEn: "SK Telecom", tk: "017670", mkt: "KOSPI",
+    region: "KR", tier: "대형", stages: ["ops"], ysym: "017670.KS",
+    pos: "AI 데이터센터 · IDC", posEn: "AI data centers and IDC",
+    sum: "SK브로드밴드 IDC와 AI 데이터센터 사업을 함께 추진하는 통신 대형주.",
+    sumEn: "A large-cap telco running SK Broadband IDC alongside a dedicated AI data center push.",
+    pts: [
+      "GPU 임대(GPUaaS)·AI 데이터센터로 IDC를 고부가 사업으로 전환하는 시도",
+      "그룹 차원의 대규모 AI 데이터센터 프로젝트 노출"
+    ],
+    ptsEn: [
+      "Moving IDC up the value chain via GPU-as-a-service and AI data centers",
+      "Exposed to group-level large-scale AI data center projects"
+    ],
+    prod: ["IDC", "AI 데이터센터", "GPUaaS", "이동통신"],
+    prodEn: ["IDC", "AI data centers", "GPUaaS", "Mobile"],
+    edge: "국내 이동통신 1위, 그룹 AI 데이터센터 전략의 축",
+    edgeEn: "Korea's top mobile carrier and the hub of its group's AI data center strategy"
+  },
+  {
+    id: "030200", name: "KT", nameEn: "KT", tk: "030200", mkt: "KOSPI",
+    region: "KR", tier: "대형", stages: ["ops"], ysym: "030200.KS",
+    pos: "IDC · 클라우드", posEn: "IDC and cloud",
+    sum: "전국 IDC와 kt cloud를 보유해 국내 코로케이션 시장 상위를 점하는 통신사.",
+    sumEn: "A telco holding nationwide IDC assets and kt cloud, ranking high in domestic colocation.",
+    pts: [
+      "통신국사 부지·전력 인프라가 데이터센터 확장의 구조적 이점",
+      "글로벌 빅테크와의 AI 협력이 클라우드 수요의 변수"
+    ],
+    ptsEn: [
+      "Legacy exchange sites and power infrastructure give a structural expansion advantage",
+      "AI partnerships with global big tech shape cloud demand"
+    ],
+    prod: ["IDC", "kt cloud", "통신", "AI 서비스"],
+    prodEn: ["IDC", "kt cloud", "Telecom", "AI services"],
+    edge: "국내 코로케이션 캐파 상위, 전국 통신 인프라 보유",
+    edgeEn: "Top-ranked domestic colocation capacity with nationwide network assets"
+  },
+  {
+    id: "032640", name: "LG유플러스", nameEn: "LG Uplus", tk: "032640", mkt: "KOSPI",
+    region: "KR", tier: "대형", stages: ["ops"], ysym: "032640.KS",
+    pos: "IDC 코로케이션", posEn: "IDC colocation",
+    sum: "수도권 대형 IDC를 증설하며 코로케이션 매출을 키우는 통신사.",
+    sumEn: "A telco growing colocation revenue by adding large capital-region IDC capacity.",
+    pts: [
+      "IDC는 통신 대비 이익률이 높고 계약 기간이 길어 실적 안정성에 기여",
+      "수도권 전력 확보 여부가 증설 속도의 제약"
+    ],
+    ptsEn: [
+      "IDC carries higher margins and longer contracts than telecom, aiding earnings stability",
+      "Securing capital-region power constrains the pace of expansion"
+    ],
+    prod: ["IDC", "기업 회선", "통신", "AI 솔루션"],
+    prodEn: ["IDC", "Enterprise lines", "Telecom", "AI solutions"],
+    edge: "수도권 하이퍼스케일 IDC 보유",
+    edgeEn: "Owns hyperscale IDC capacity in the capital region"
+  },
+  {
+    id: "018260", name: "삼성SDS", nameEn: "Samsung SDS", tk: "018260", mkt: "KOSPI",
+    region: "KR", tier: "대형", stages: ["ops"], ysym: "018260.KS",
+    pos: "클라우드 · 자체 데이터센터", posEn: "Cloud and own data centers",
+    sum: "자체 데이터센터 기반 클라우드(SCP)와 IT 서비스를 제공하는 그룹 IT 계열사.",
+    sumEn: "The group IT arm providing cloud (SCP) and IT services from its own data centers.",
+    pts: [
+      "그룹 물량 기반의 안정적 클라우드 수요와 GPU 인프라 투자 병행",
+      "생성형 AI 도입 프로젝트가 IT 서비스 단가를 끌어올리는 구조"
+    ],
+    ptsEn: [
+      "Stable in-group cloud demand alongside GPU infrastructure investment",
+      "Generative AI adoption projects lift IT services pricing"
+    ],
+    prod: ["클라우드(SCP)", "데이터센터", "IT 서비스", "물류 플랫폼"],
+    prodEn: ["Cloud (SCP)", "Data centers", "IT services", "Logistics platform"],
+    edge: "국내 IT 서비스 1위, 자체 데이터센터·클라우드 동시 보유",
+    edgeEn: "Korea's top IT services firm with both data centers and its own cloud"
+  },
+  {
+    id: "064400", name: "LG씨엔에스", nameEn: "LG CNS", tk: "064400", mkt: "KOSPI",
+    region: "KR", tier: "대형", stages: ["ops", "epc"], ysym: "064400.KS",
+    pos: "클라우드 전환 · DC 구축 운영", posEn: "Cloud transformation, DC build and operate",
+    sum: "클라우드·AI 전환 사업과 데이터센터 설계·구축·운영을 함께 수행하는 IT 서비스 대형주.",
+    sumEn: "A large-cap IT services firm doing cloud/AI transformation plus data center design, build and operate.",
+    pts: [
+      "데이터센터 구축(설계·시공 관리)과 운영을 묶어 수주하는 사업 구조",
+      "그룹 및 공공·금융 클라우드 전환 프로젝트가 매출 축"
+    ],
+    ptsEn: [
+      "Wins work bundling data center build management with ongoing operations",
+      "In-group plus public and financial cloud migrations drive revenue"
+    ],
+    prod: ["클라우드 전환", "데이터센터 구축·운영", "AI 플랫폼", "스마트 엔지니어링"],
+    prodEn: ["Cloud migration", "DC build and operate", "AI platforms", "Smart engineering"],
+    edge: "국내 IT 서비스 상위, 데이터센터 구축·운영 레퍼런스 다수",
+    edgeEn: "A leading Korean IT services firm with many data center build and operate references"
+  },
+  {
+    id: "093320", name: "케이아이엔엑스", nameEn: "KINX", tk: "093320", mkt: "KOSDAQ",
+    region: "KR", tier: "중형", stages: ["ops"], ysym: "093320.KQ",
+    pos: "IX · 코로케이션", posEn: "Internet exchange and colocation",
+    sum: "국내 유일 중립 인터넷 익스체인지(IX) 사업자로 코로케이션·클라우드 연결을 제공.",
+    sumEn: "Korea's only neutral internet exchange operator, offering colocation and cloud connectivity.",
+    pts: [
+      "트래픽 증가가 곧 IX·회선 매출 — 통신사 대비 중립성이 경쟁력",
+      "자체 데이터센터 증설로 코로케이션 매출 비중 확대"
+    ],
+    ptsEn: [
+      "Traffic growth converts into IX and transit revenue, with neutrality as its edge over carriers",
+      "New self-built capacity is lifting the colocation revenue mix"
+    ],
+    prod: ["IX", "코로케이션", "CDN", "클라우드 연결"],
+    prodEn: ["IX", "Colocation", "CDN", "Cloud connect"],
+    edge: "국내 유일 중립 IX 사업자",
+    edgeEn: "The only neutral IX operator in Korea"
+  },
+  {
+    id: "000880", name: "한화", nameEn: "Hanwha Corp.", tk: "000880", mkt: "KOSPI",
+    region: "KR", tier: "대형", stages: ["power", "board"], ysym: "000880.KS",
+    pos: "터보 기기 · 반도체 장비(자회사)", posEn: "Turbomachinery and semiconductor tools (subsidiaries)",
+    sum: "한화파워시스템의 압축기·터보 설비와 한화세미텍의 HBM 본더를 보유한 지주 성격 사업회사.",
+    sumEn: "A holding-style operating company with Hanwha Power Systems turbomachinery and Hanwha Semitech HBM bonders.",
+    pts: [
+      "발전·공정용 압축기와 데이터센터 유틸리티 설비 수요에 노출",
+      "자회사 HBM 본더 사업이 메모리 장비 시장의 신규 진입자"
+    ],
+    ptsEn: [
+      "Exposure to compressors for power and process use, plus data center utility equipment",
+      "Its subsidiary's HBM bonder business is a new entrant in memory tooling"
+    ],
+    prod: ["터보 압축기", "HBM 본더", "방산", "화학"],
+    prodEn: ["Turbo compressors", "HBM bonders", "Defense", "Chemicals"],
+    edge: "그룹 차원의 발전·기계·반도체 장비 포트폴리오",
+    edgeEn: "Group-level portfolio spanning power, machinery and semiconductor tools"
+  }
+];
+
+</script>
+  <script>
+/* inlined: data/dc-chain-global.js */
+/*
+ * 데이터센터 밸류체인 — 해외(글로벌) 종목
+ * ---------------------------------------
+ * 스키마는 data/dc-chain.js 상단 주석 참조.
+ * 선정 기준: 각 단계에서 글로벌 점유율·수주잔고·고객 기반을 확보한 대형주 중심.
+ * 티커는 Yahoo Finance 심볼 기준(예: 2330.TW, 6501.T, ABBN.SW).
+ */
+
+window.DC_GLOBAL = [
+  {
+    id: "NVDA", name: "엔비디아", nameEn: "NVIDIA", tk: "NVDA", mkt: "NASDAQ",
+    region: "US", tier: "대형", stages: ["chip", "server", "network"], ysym: "NVDA",
+    pos: "AI 가속기 · 랙 스케일 시스템", posEn: "AI accelerators and rack-scale systems",
+    sum: "AI 가속기와 이를 묶은 랙 시스템·네트워킹까지 제공하는 밸류체인의 기준점.",
+    sumEn: "The reference point of the chain, supplying accelerators plus the rack systems and networking around them.",
+    pts: [
+      "GPU 단품이 아닌 랙 단위 플랫폼 판매로 전력·냉각·네트워크 사양까지 규정",
+      "이 회사의 출하 계획이 하위 밸류체인 전체의 수요 기준선"
+    ],
+    ptsEn: [
+      "Sells rack-level platforms rather than standalone GPUs, dictating power, cooling and network specs",
+      "Its shipment plan is the demand baseline for the entire downstream chain"
+    ],
+    prod: ["AI GPU", "랙 스케일 시스템", "이더넷·인피니밴드", "CUDA"],
+    prodEn: ["AI GPUs", "Rack-scale systems", "Ethernet and InfiniBand", "CUDA"],
+    edge: "AI 가속기 점유율 압도적 1위, 소프트웨어 생태계 장벽 보유",
+    edgeEn: "Dominant accelerator share reinforced by a software ecosystem moat"
+  },
+  {
+    id: "AVGO", name: "브로드컴", nameEn: "Broadcom", tk: "AVGO", mkt: "NASDAQ",
+    region: "US", tier: "대형", stages: ["chip", "network"], ysym: "AVGO",
+    pos: "커스텀 ASIC · 이더넷 스위치칩", posEn: "Custom ASICs and Ethernet switch silicon",
+    sum: "하이퍼스케일러 맞춤형 AI 칩(ASIC)과 데이터센터 스위치 칩의 최대 공급사.",
+    sumEn: "The largest supplier of hyperscaler custom AI ASICs and data center switch silicon.",
+    pts: [
+      "빅테크 자체 칩 전략의 설계 파트너 — GPU 대안 수요를 흡수",
+      "스위치칩(Tomahawk 계열)으로 네트워크 단계도 동시 장악"
+    ],
+    ptsEn: [
+      "Design partner for big tech's in-house silicon, absorbing demand for GPU alternatives",
+      "Also dominates networking through its Tomahawk-class switch chips"
+    ],
+    prod: ["커스텀 AI ASIC", "이더넷 스위치칩", "옵티컬 DSP", "인프라 SW"],
+    prodEn: ["Custom AI ASICs", "Ethernet switch silicon", "Optical DSP", "Infrastructure software"],
+    edge: "커스텀 AI 칩·데이터센터 스위치칩 양쪽에서 1위",
+    edgeEn: "Number one in both custom AI silicon and data center switch chips"
+  },
+  {
+    id: "AMD", name: "AMD", nameEn: "AMD", tk: "AMD", mkt: "NASDAQ",
+    region: "US", tier: "대형", stages: ["chip"], ysym: "AMD",
+    pos: "AI 가속기 · 서버 CPU", posEn: "AI accelerators and server CPUs",
+    sum: "서버 CPU 점유율을 늘리며 AI 가속기(MI 시리즈)로 2위 공급자 자리를 노리는 사업자.",
+    sumEn: "Gaining server CPU share while positioning its MI-series accelerators as the number-two option.",
+    pts: [
+      "하이퍼스케일러의 공급망 이원화 수요가 구조적 기회",
+      "서버 CPU는 AI 서버에도 반드시 탑재되어 물량이 함께 증가"
+    ],
+    ptsEn: [
+      "Hyperscalers' desire for a second source is the structural opportunity",
+      "Server CPUs ship inside AI servers too, so volumes rise together"
+    ],
+    prod: ["AI 가속기(MI)", "서버 CPU(EPYC)", "DPU", "FPGA"],
+    prodEn: ["MI accelerators", "EPYC server CPUs", "DPUs", "FPGAs"],
+    edge: "x86 서버 CPU 점유율 지속 확대, 가속기 2위 진입 시도",
+    edgeEn: "Steadily gaining x86 server CPU share while pushing for the number-two accelerator slot"
+  },
+  {
+    id: "TSM", name: "TSMC", nameEn: "TSMC", tk: "TSM", mkt: "NYSE(ADR)",
+    region: "TW", tier: "대형", stages: ["chip", "board"], ysym: "TSM",
+    pos: "선단 파운드리 · 첨단 패키징", posEn: "Leading-edge foundry and advanced packaging",
+    sum: "AI 가속기 대부분을 위탁생산하고 첨단 패키징(CoWoS)까지 담당하는 사실상 단일 관문.",
+    sumEn: "The effective single gateway fabricating most AI accelerators and providing advanced CoWoS packaging.",
+    pts: [
+      "선단 공정과 CoWoS 캐파가 업계 전체 가속기 출하량의 물리적 상한",
+      "가격 결정력이 높아 AI 사이클에서 마진이 함께 개선"
+    ],
+    ptsEn: [
+      "Leading-edge and CoWoS capacity is the physical ceiling on industry accelerator output",
+      "Strong pricing power means margins expand with the AI cycle"
+    ],
+    prod: ["3/5nm 파운드리", "CoWoS", "SoIC", "특수 공정"],
+    prodEn: ["3/5nm foundry", "CoWoS", "SoIC", "Specialty nodes"],
+    edge: "선단 파운드리 점유율 압도적 1위, 첨단 패키징 캐파 최대",
+    edgeEn: "Overwhelming leading-edge foundry share and the largest advanced packaging capacity"
+  },
+  {
+    id: "MRVL", name: "마벨", nameEn: "Marvell", tk: "MRVL", mkt: "NASDAQ",
+    region: "US", tier: "대형", stages: ["chip", "network"], ysym: "MRVL",
+    pos: "커스텀 실리콘 · 광 DSP", posEn: "Custom silicon and optical DSP",
+    sum: "커스텀 AI 칩과 광통신용 DSP·리타이머를 공급하는 데이터센터 반도체 업체.",
+    sumEn: "A data center semiconductor firm supplying custom AI silicon plus optical DSPs and retimers.",
+    pts: [
+      "800G/1.6T 광모듈 전환에서 DSP 수요가 함께 증가",
+      "커스텀 칩 수주는 프로젝트 단위로 실적 변동성이 큼"
+    ],
+    ptsEn: [
+      "The 800G/1.6T optics transition pulls DSP demand along with it",
+      "Custom silicon wins are project-based, making results lumpy"
+    ],
+    prod: ["커스텀 AI 실리콘", "광 DSP", "리타이머", "스토리지 컨트롤러"],
+    prodEn: ["Custom AI silicon", "Optical DSP", "Retimers", "Storage controllers"],
+    edge: "데이터센터 광 DSP 시장 상위권, 커스텀 칩 2위 사업자",
+    edgeEn: "A top vendor in data center optical DSP and the number-two custom silicon house"
+  },
+  {
+    id: "MU", name: "마이크론", nameEn: "Micron", tk: "MU", mkt: "NASDAQ",
+    region: "US", tier: "대형", stages: ["memory"], ysym: "MU",
+    pos: "HBM · 서버 DRAM", posEn: "HBM and server DRAM",
+    sum: "HBM·서버 DRAM 3강 구도의 미국 사업자로 국내 메모리 업체의 직접 경쟁자.",
+    sumEn: "The US member of the HBM and server DRAM big three and a direct rival to the Korean memory makers.",
+    pts: [
+      "HBM 캐파 선판매 구조로 가격 하락 리스크가 상대적으로 제한",
+      "미국 내 생산 확대는 정책 지원과 고객 조달 다변화 수요에 부합"
+    ],
+    ptsEn: [
+      "Pre-sold HBM capacity limits downside price risk relative to commodity DRAM",
+      "US capacity expansion aligns with policy support and customer sourcing diversification"
+    ],
+    prod: ["HBM", "서버 DRAM", "데이터센터 SSD", "고용량 모듈"],
+    prodEn: ["HBM", "Server DRAM", "Data center SSD", "High-capacity modules"],
+    edge: "HBM·서버 D램 글로벌 3강, 미국 내 생산 기반 보유",
+    edgeEn: "One of three global HBM and server DRAM suppliers, with US manufacturing"
+  },
+  {
+    id: "STX", name: "시게이트", nameEn: "Seagate", tk: "STX", mkt: "NASDAQ",
+    region: "US", tier: "대형", stages: ["memory"], ysym: "STX",
+    pos: "니어라인 HDD", posEn: "Nearline HDD",
+    sum: "AI 학습 데이터를 보관하는 대용량 니어라인 HDD의 양대 공급사 중 하나.",
+    sumEn: "One of two suppliers of the high-capacity nearline HDDs that store AI training data.",
+    pts: [
+      "AI는 학습·추론 데이터 축적을 요구해 저비용 대용량 저장 수요가 재부각",
+      "HDD 공급이 사실상 2개 회사로 제한돼 가격 협상력이 높아진 국면"
+    ],
+    ptsEn: [
+      "AI accumulates training and inference data, reviving demand for low-cost bulk storage",
+      "Supply concentrated in two vendors has strengthened pricing power"
+    ],
+    prod: ["니어라인 HDD", "HAMR 드라이브", "스토리지 시스템"],
+    prodEn: ["Nearline HDD", "HAMR drives", "Storage systems"],
+    edge: "니어라인 HDD 사실상 2개 사업자 구도의 한 축",
+    edgeEn: "Half of the effective duopoly in nearline HDD"
+  },
+  {
+    id: "4062.T", name: "이비덴", nameEn: "Ibiden", tk: "4062.T", mkt: "TSE",
+    region: "JP", tier: "대형", stages: ["board"], ysym: "4062.T",
+    pos: "고사양 FC-BGA 기판", posEn: "High-end FC-BGA substrates",
+    sum: "AI 가속기·서버 CPU용 최상위 FC-BGA 기판의 대표 공급사.",
+    sumEn: "The benchmark supplier of top-end FC-BGA substrates for AI accelerators and server CPUs.",
+    pts: [
+      "가속기 면적 확대로 대형 기판 캐파가 병목 — 증설분이 곧 수주",
+      "선단 고객사 인증 기간이 길어 진입장벽이 높음"
+    ],
+    ptsEn: [
+      "Larger accelerator die area makes big-body substrate capacity a bottleneck, so additions are pre-sold",
+      "Long qualification cycles at leading customers keep barriers high"
+    ],
+    prod: ["FC-BGA", "빌드업 기판", "세라믹 부품"],
+    prodEn: ["FC-BGA", "Build-up substrates", "Ceramic components"],
+    edge: "고사양 FC-BGA 기판 글로벌 1위권",
+    edgeEn: "Global number one in high-end FC-BGA substrates"
+  },
+  {
+    id: "APH", name: "앰피놀", nameEn: "Amphenol", tk: "APH", mkt: "NYSE",
+    region: "US", tier: "대형", stages: ["board", "network"], ysym: "APH",
+    pos: "고속 커넥터 · 케이블 어셈블리", posEn: "High-speed connectors and cable assemblies",
+    sum: "AI 랙 내부 고속 신호를 연결하는 커넥터·구리 케이블의 글로벌 최대 공급사.",
+    sumEn: "The largest global supplier of the connectors and copper cabling that carry high-speed signals inside AI racks.",
+    pts: [
+      "랙 내부 연결이 구리 케이블 어셈블리로 늘어나며 단가·물량 동시 상승",
+      "전원 커넥터·백플레인까지 포함해 랙당 채택 금액이 커지는 구조"
+    ],
+    ptsEn: [
+      "More in-rack copper cable assemblies lift both price and volume",
+      "Power connectors and backplanes push content per rack higher"
+    ],
+    prod: ["고속 커넥터", "DAC 케이블", "백플레인", "전원 커넥터"],
+    prodEn: ["High-speed connectors", "DAC cables", "Backplanes", "Power connectors"],
+    edge: "커넥터 시장 글로벌 1위, AI 랙 내 채택 금액 최상위",
+    edgeEn: "Global connector leader with the highest content share inside AI racks"
+  },
+  {
+    id: "DELL", name: "델 테크놀로지스", nameEn: "Dell Technologies", tk: "DELL", mkt: "NYSE",
+    region: "US", tier: "대형", stages: ["server"], ysym: "DELL",
+    pos: "AI 서버 OEM", posEn: "AI server OEM",
+    sum: "하이퍼스케일러와 기업 고객 모두에 AI 서버를 공급하는 최대 OEM.",
+    sumEn: "The largest OEM shipping AI servers to both hyperscalers and enterprises.",
+    pts: [
+      "AI 서버는 매출은 크지만 마진이 낮아 믹스와 서비스 부착률이 관건",
+      "기업용 AI 도입 확산 시 고마진 스토리지·서비스가 함께 증가"
+    ],
+    ptsEn: [
+      "AI servers add revenue at thin margins, so mix and services attach rate matter",
+      "Broader enterprise AI adoption pulls higher-margin storage and services along"
+    ],
+    prod: ["AI 서버", "스토리지", "서버 서비스", "PC"],
+    prodEn: ["AI servers", "Storage", "Server services", "PCs"],
+    edge: "서버 OEM 글로벌 1위권, 대형 AI 클러스터 수주 이력",
+    edgeEn: "A top-ranked global server OEM with large AI cluster wins"
+  },
+  {
+    id: "SMCI", name: "슈퍼마이크로", nameEn: "Super Micro Computer", tk: "SMCI", mkt: "NASDAQ",
+    region: "US", tier: "중형", stages: ["server", "cooling"], ysym: "SMCI",
+    pos: "AI 서버 · 수냉 랙", posEn: "AI servers and liquid-cooled racks",
+    sum: "신규 가속기 플랫폼을 빠르게 제품화하고 수냉 랙을 함께 공급하는 서버 업체.",
+    sumEn: "A server vendor that productizes new accelerator platforms fast and ships liquid-cooled racks with them.",
+    pts: [
+      "직수냉(DLC) 랙 비중 확대가 차별화 포인트",
+      "부품 수급과 선주문 조달이 실적 변동성의 주요 원인"
+    ],
+    ptsEn: [
+      "A rising share of direct liquid cooling racks is the differentiator",
+      "Component sourcing and pre-buys drive earnings volatility"
+    ],
+    prod: ["AI 서버", "DLC 수냉 랙", "스토리지 서버"],
+    prodEn: ["AI servers", "DLC liquid-cooled racks", "Storage servers"],
+    edge: "신규 플랫폼 출시 속도와 수냉 랙 공급 역량",
+    edgeEn: "Speed to market on new platforms plus liquid-cooled rack capability"
+  },
+  {
+    id: "2317.TW", name: "훙하이(폭스콘)", nameEn: "Hon Hai (Foxconn)", tk: "2317.TW", mkt: "TWSE",
+    region: "TW", tier: "대형", stages: ["server"], ysym: "2317.TW",
+    pos: "AI 서버 ODM 1위", posEn: "Top AI server ODM",
+    sum: "AI 서버·랙 조립 물량의 최대 축을 담당하는 세계 최대 전자 수탁생산 업체.",
+    sumEn: "The world's largest contract manufacturer and the biggest single builder of AI server racks.",
+    pts: [
+      "랙 단위 완제품(L10~L11) 조립으로 대당 매출이 크게 상승",
+      "멕시코·미국 등 현지 생산 확장으로 고객 인접 공급 대응"
+    ],
+    ptsEn: [
+      "Building complete racks at L10 to L11 sharply raises revenue per unit",
+      "Local capacity in Mexico and the US supports customer-adjacent supply"
+    ],
+    prod: ["AI 서버 랙", "서버 보드", "전자 수탁생산"],
+    prodEn: ["AI server racks", "Server boards", "Contract manufacturing"],
+    edge: "AI 서버 랙 조립 점유율 세계 1위",
+    edgeEn: "World's largest share of AI server rack assembly"
+  },
+  {
+    id: "2382.TW", name: "콴타컴퓨터", nameEn: "Quanta Computer", tk: "2382.TW", mkt: "TWSE",
+    region: "TW", tier: "대형", stages: ["server"], ysym: "2382.TW",
+    pos: "AI 서버 ODM", posEn: "AI server ODM",
+    sum: "북미 하이퍼스케일러를 주요 고객으로 하는 대만 AI 서버 ODM 상위 사업자.",
+    sumEn: "A leading Taiwanese AI server ODM serving North American hyperscalers.",
+    pts: [
+      "고객사 클라우드 capex와 출하 스케줄에 실적이 직접 연동",
+      "수냉 랙 전환 대응 여부가 점유율 변동 요인"
+    ],
+    ptsEn: [
+      "Results track customer cloud capex and shipment schedules directly",
+      "Readiness for liquid-cooled racks decides share shifts"
+    ],
+    prod: ["AI 서버", "서버 랙", "노트북 ODM"],
+    prodEn: ["AI servers", "Server racks", "Notebook ODM"],
+    edge: "하이퍼스케일러 서버 ODM 상위권 점유율",
+    edgeEn: "Top-tier share in hyperscaler server ODM"
+  },
+  {
+    id: "6669.TW", name: "위윈(Wiwynn)", nameEn: "Wiwynn", tk: "6669.TW", mkt: "TWSE",
+    region: "TW", tier: "대형", stages: ["server"], ysym: "6669.TW",
+    pos: "하이퍼스케일 전용 ODM", posEn: "Hyperscale-dedicated ODM",
+    sum: "클라우드 사업자 맞춤 서버·랙만 만드는 하이퍼스케일 전용 ODM.",
+    sumEn: "An ODM building only custom servers and racks for cloud operators.",
+    pts: [
+      "소수 대형 고객 집중 구조로 수주 가시성은 높고 고객 리스크는 큼",
+      "커스텀 설계·수냉 대응 역량이 진입장벽"
+    ],
+    ptsEn: [
+      "Concentration in a few large customers gives visibility but raises customer risk",
+      "Custom design and liquid cooling capability form the barrier to entry"
+    ],
+    prod: ["커스텀 서버", "랙 통합", "수냉 시스템"],
+    prodEn: ["Custom servers", "Rack integration", "Liquid cooling systems"],
+    edge: "하이퍼스케일 커스텀 서버 전문 상위 ODM",
+    edgeEn: "A leading ODM specialized in hyperscale custom servers"
+  },
+  {
+    id: "2308.TW", name: "델타일렉트로닉스", nameEn: "Delta Electronics", tk: "2308.TW", mkt: "TWSE",
+    region: "TW", tier: "대형", stages: ["server", "power", "cooling"], ysym: "2308.TW",
+    pos: "서버 전원 · 냉각 · 인프라", posEn: "Server power, cooling and infrastructure",
+    sum: "AI 서버 전원장치(PSU)부터 랙 전력 분배·냉각까지 공급하는 전력전자 업체.",
+    sumEn: "A power electronics maker spanning AI server PSUs, rack power distribution and cooling.",
+    pts: [
+      "랙 전력이 커질수록 고효율 PSU·전력 분배 단가가 함께 상승",
+      "냉각(CDU·팬)까지 묶어 랙 인프라 통합 공급이 가능"
+    ],
+    ptsEn: [
+      "Higher rack power lifts pricing for high-efficiency PSUs and power distribution",
+      "Bundling cooling such as CDUs and fans enables integrated rack infrastructure supply"
+    ],
+    prod: ["서버 PSU", "전력 분배", "CDU·팬", "UPS"],
+    prodEn: ["Server PSUs", "Power distribution", "CDUs and fans", "UPS"],
+    edge: "서버 전원장치 글로벌 1위권, 랙 인프라 통합 역량",
+    edgeEn: "Global leader in server PSUs with integrated rack infrastructure capability"
+  },
+  {
+    id: "ANET", name: "아리스타 네트웍스", nameEn: "Arista Networks", tk: "ANET", mkt: "NYSE",
+    region: "US", tier: "대형", stages: ["network"], ysym: "ANET",
+    pos: "데이터센터 이더넷 스위치", posEn: "Data center Ethernet switching",
+    sum: "하이퍼스케일러 AI 클러스터의 이더넷 스위치를 공급하는 대표 네트워크 업체.",
+    sumEn: "The flagship networking vendor supplying Ethernet switches for hyperscaler AI clusters.",
+    pts: [
+      "AI 클러스터 백엔드 네트워크가 이더넷으로 이동하며 수요 확대",
+      "소수 대형 고객 비중이 높아 발주 스케줄에 실적이 민감"
+    ],
+    ptsEn: [
+      "AI cluster back-end networks shifting to Ethernet expands the addressable demand",
+      "High concentration in a few large customers makes results order-schedule sensitive"
+    ],
+    prod: ["800G 스위치", "네트워크 OS", "클러스터 관리"],
+    prodEn: ["800G switches", "Network OS", "Cluster management"],
+    edge: "데이터센터 고속 이더넷 스위치 점유율 1위권",
+    edgeEn: "Top share in high-speed data center Ethernet switching"
+  },
+  {
+    id: "CSCO", name: "시스코", nameEn: "Cisco", tk: "CSCO", mkt: "NASDAQ",
+    region: "US", tier: "대형", stages: ["network"], ysym: "CSCO",
+    pos: "네트워크 · 보안 · 광", posEn: "Networking, security and optics",
+    sum: "AI 데이터센터용 스위치·광 모듈·보안을 함께 공급하는 종합 네트워크 업체.",
+    sumEn: "A full-stack networking vendor bundling AI data center switches, optics and security.",
+    pts: [
+      "기업·통신사 네트워크 기반 위에 AI 인프라 수주를 추가하는 구조",
+      "광 모듈·실리콘 내재화로 스위치 원가 경쟁력 확보"
+    ],
+    ptsEn: [
+      "Adds AI infrastructure orders on top of an installed enterprise and carrier base",
+      "In-house optics and silicon underpin switch cost competitiveness"
+    ],
+    prod: ["데이터센터 스위치", "라우터", "광 모듈", "보안"],
+    prodEn: ["Data center switches", "Routers", "Optics", "Security"],
+    edge: "네트워크 장비 최대 설치 기반과 종합 포트폴리오",
+    edgeEn: "The largest installed base in networking with a full portfolio"
+  },
+  {
+    id: "COHR", name: "코히런트", nameEn: "Coherent", tk: "COHR", mkt: "NYSE",
+    region: "US", tier: "대형", stages: ["network"], ysym: "COHR",
+    pos: "광 트랜시버 · 광부품", posEn: "Optical transceivers and photonics",
+    sum: "데이터센터용 800G급 광 트랜시버와 광원(레이저)을 함께 공급하는 광부품 업체.",
+    sumEn: "A photonics supplier providing both 800G-class data center transceivers and the lasers inside them.",
+    pts: [
+      "광모듈 수요는 클러스터 규모에 비선형으로 증가",
+      "레이저 칩 내재화로 공급 병목 국면에서 유리"
+    ],
+    ptsEn: [
+      "Optical module demand grows non-linearly with cluster size",
+      "In-house laser chips are an advantage when supply is tight"
+    ],
+    prod: ["800G 트랜시버", "레이저 칩", "광 스위칭", "산업용 레이저"],
+    prodEn: ["800G transceivers", "Laser chips", "Optical switching", "Industrial lasers"],
+    edge: "데이터센터 광 트랜시버 글로벌 상위권, 수직계열화",
+    edgeEn: "A top-tier data center transceiver vendor with vertical integration"
+  },
+  {
+    id: "5803.T", name: "후지쿠라", nameEn: "Fujikura", tk: "5803.T", mkt: "TSE",
+    region: "JP", tier: "대형", stages: ["network"], ysym: "5803.T",
+    pos: "광섬유 · 초고밀도 케이블", posEn: "Optical fiber and ultra-high-density cable",
+    sum: "데이터센터 내·간 배선용 초고밀도 광케이블과 융착접속기의 대표 공급사.",
+    sumEn: "A benchmark supplier of ultra-high-density fiber cable and fusion splicers for data center wiring.",
+    pts: [
+      "케이블 굵기를 줄이는 초고밀도 제품이 데이터센터 배선의 표준으로 채택",
+      "융착접속기까지 공급해 시공 단계 부가가치도 수취"
+    ],
+    ptsEn: [
+      "Ultra-high-density cable that reduces bundle diameter is becoming the wiring standard",
+      "Also supplies fusion splicers, capturing value at the installation stage"
+    ],
+    prod: ["초고밀도 광케이블", "광섬유", "융착접속기", "커넥터"],
+    prodEn: ["Ultra-high-density cable", "Optical fiber", "Fusion splicers", "Connectors"],
+    edge: "데이터센터용 초고밀도 광케이블 글로벌 선두",
+    edgeEn: "Global leader in ultra-high-density data center fiber cable"
+  },
+  {
+    id: "ETN", name: "이튼", nameEn: "Eaton", tk: "ETN", mkt: "NYSE",
+    region: "US", tier: "대형", stages: ["power"], ysym: "ETN",
+    pos: "전력 배분 · UPS · 스위치기어", posEn: "Power distribution, UPS, switchgear",
+    sum: "데이터센터 수전부터 랙 배전까지 전력 인프라를 묶어 공급하는 글로벌 전력기기 대표주.",
+    sumEn: "The bellwether global power equipment name bundling infrastructure from grid intake to rack distribution.",
+    pts: [
+      "데이터센터 관련 수주잔고가 실적 가시성의 핵심 지표",
+      "북미 전력 인프라 교체 수요와 데이터센터 수요가 중첩"
+    ],
+    ptsEn: [
+      "Data center backlog is the key indicator of earnings visibility",
+      "North American grid replacement demand overlaps with data center demand"
+    ],
+    prod: ["스위치기어", "UPS", "버스웨이", "변압기"],
+    prodEn: ["Switchgear", "UPS", "Busway", "Transformers"],
+    edge: "데이터센터 전력 인프라 원스톱 공급 역량 1위권",
+    edgeEn: "Top-ranked one-stop supplier of data center electrical infrastructure"
+  },
+  {
+    id: "VRT", name: "버티브", nameEn: "Vertiv", tk: "VRT", mkt: "NYSE",
+    region: "US", tier: "대형", stages: ["power", "cooling"], ysym: "VRT",
+    pos: "데이터센터 전력 + 냉각 전문", posEn: "Data center power and cooling specialist",
+    sum: "데이터센터 전력·냉각 설비만 전문으로 하는 순수 플레이 사업자.",
+    sumEn: "A pure-play vendor focused solely on data center power and cooling infrastructure.",
+    pts: [
+      "액체냉각(CDU·매니폴드)과 전력 설비를 함께 공급하는 구조가 강점",
+      "수주잔고·수주율(book-to-bill)이 업종 선행지표로 활용"
+    ],
+    ptsEn: [
+      "Its edge is supplying liquid cooling (CDUs, manifolds) together with electrical gear",
+      "Backlog and book-to-bill are treated as sector leading indicators"
+    ],
+    prod: ["CDU·액체냉각", "정밀공조", "UPS", "랙 전력분배"],
+    prodEn: ["CDUs and liquid cooling", "Precision cooling", "UPS", "Rack PDU"],
+    edge: "데이터센터 전력·열관리 순수 플레이 1위",
+    edgeEn: "The leading pure-play in data center power and thermal management"
+  },
+  {
+    id: "SU.PA", name: "슈나이더 일렉트릭", nameEn: "Schneider Electric", tk: "SU.PA", mkt: "Euronext",
+    region: "EU", tier: "대형", stages: ["power", "cooling"], ysym: "SU.PA",
+    pos: "전력관리 · 데이터센터 설비", posEn: "Energy management and data center systems",
+    sum: "전력관리 소프트웨어부터 UPS·냉각까지 데이터센터 설비를 통합 공급하는 유럽 대표주.",
+    sumEn: "The European bellwether integrating energy management software with UPS and cooling for data centers.",
+    pts: [
+      "설비 + 전력관리 SW를 함께 공급해 운영 단계 매출도 확보",
+      "AI 데이터센터 표준 설계(레퍼런스 아키텍처) 제공으로 수요 선점"
+    ],
+    ptsEn: [
+      "Bundling hardware with management software secures operating-phase revenue",
+      "Publishing AI data center reference designs helps capture demand early"
+    ],
+    prod: ["UPS", "스위치기어", "액체냉각", "DCIM 소프트웨어"],
+    prodEn: ["UPS", "Switchgear", "Liquid cooling", "DCIM software"],
+    edge: "데이터센터 전력·설비 글로벌 1위권, 소프트웨어까지 통합",
+    edgeEn: "A global leader in data center electrical systems, integrated with software"
+  },
+  {
+    id: "ABBN.SW", name: "ABB", nameEn: "ABB", tk: "ABBN.SW", mkt: "SIX",
+    region: "EU", tier: "대형", stages: ["power"], ysym: "ABBN.SW",
+    pos: "전기화 · 배전 · 모션", posEn: "Electrification, distribution, motion",
+    sum: "배전·전기화 설비의 글로벌 상위 사업자로 데이터센터 전력 부문 수주를 확대.",
+    sumEn: "A global top-tier electrification and distribution player expanding data center power orders.",
+    pts: [
+      "중저압 배전 설비의 표준 공급사로 데이터센터 물량을 폭넓게 수취",
+      "전기화(Electrification) 부문 성장률이 데이터센터 노출도의 지표"
+    ],
+    ptsEn: [
+      "As a standard supplier of MV/LV distribution gear it captures broad data center volume",
+      "Electrification segment growth is the proxy for data center exposure"
+    ],
+    prod: ["중저압 배전", "스위치기어", "모터·드라이브", "자동화"],
+    prodEn: ["MV/LV distribution", "Switchgear", "Motors and drives", "Automation"],
+    edge: "배전·전기화 설비 글로벌 상위 3사",
+    edgeEn: "Among the global top three in distribution and electrification equipment"
+  },
+  {
+    id: "ENR.DE", name: "지멘스에너지", nameEn: "Siemens Energy", tk: "ENR.DE", mkt: "XETRA",
+    region: "EU", tier: "대형", stages: ["power"], ysym: "ENR.DE",
+    pos: "가스터빈 · 계통 설비", posEn: "Gas turbines and grid technology",
+    sum: "가스터빈과 송배전 설비를 함께 공급해 데이터센터 전력 병목의 양쪽을 담당.",
+    sumEn: "Supplies both gas turbines and grid technology, addressing both sides of the data center power bottleneck.",
+    pts: [
+      "가스터빈 수주잔고가 수년치로 쌓여 가격 결정력이 개선",
+      "계통(Grid Technologies) 부문이 변압기·개폐장치 수요를 수취"
+    ],
+    ptsEn: [
+      "A multi-year gas turbine backlog has improved pricing power",
+      "Its Grid Technologies unit captures transformer and switchgear demand"
+    ],
+    prod: ["대형 가스터빈", "변압기", "HVDC", "그리드 설비"],
+    prodEn: ["Heavy-duty gas turbines", "Transformers", "HVDC", "Grid equipment"],
+    edge: "가스터빈·계통 설비 동시 보유한 세계 소수 업체",
+    edgeEn: "One of few firms holding both gas turbines and grid equipment"
+  },
+  {
+    id: "GEV", name: "GE 버노바", nameEn: "GE Vernova", tk: "GEV", mkt: "NYSE",
+    region: "US", tier: "대형", stages: ["power"], ysym: "GEV",
+    pos: "가스터빈 · 전력 설비", posEn: "Gas turbines and electrification",
+    sum: "가스터빈 세계 최상위 공급사로 데이터센터 전용 발전 수요의 최대 수혜 후보.",
+    sumEn: "A top global gas turbine supplier and a prime beneficiary of dedicated data center generation demand.",
+    pts: [
+      "가스터빈 슬롯이 수년간 매진돼 신규 계약 단가가 상승",
+      "전력화(Electrification) 부문에서 변압기·개폐장치도 함께 공급"
+    ],
+    ptsEn: [
+      "Turbine slots sold out for years have lifted new contract pricing",
+      "Its Electrification arm also supplies transformers and switchgear"
+    ],
+    prod: ["가스터빈", "그리드 설비", "풍력", "원자력"],
+    prodEn: ["Gas turbines", "Grid equipment", "Wind", "Nuclear"],
+    edge: "가스터빈 글로벌 점유율 최상위",
+    edgeEn: "Highest-tier global gas turbine share"
+  },
+  {
+    id: "6501.T", name: "히타치", nameEn: "Hitachi", tk: "6501.T", mkt: "TSE",
+    region: "JP", tier: "대형", stages: ["power"], ysym: "6501.T",
+    pos: "히타치에너지(변압기·HVDC)", posEn: "Hitachi Energy (transformers, HVDC)",
+    sum: "자회사 히타치에너지를 통해 변압기·HVDC 등 계통 설비 글로벌 1위권을 점유.",
+    sumEn: "Through Hitachi Energy it holds a global top position in transformers and HVDC grid equipment.",
+    pts: [
+      "변압기 리드타임 장기화로 수주잔고와 가격이 동시에 상승",
+      "IT(디지털) 부문과 전력 부문을 함께 보유한 복합 노출"
+    ],
+    ptsEn: [
+      "Extended transformer lead times are lifting both backlog and pricing",
+      "Combined exposure through its digital IT and power segments"
+    ],
+    prod: ["변압기", "HVDC", "스위치기어", "디지털 IT"],
+    prodEn: ["Transformers", "HVDC", "Switchgear", "Digital IT"],
+    edge: "계통용 변압기·HVDC 글로벌 1위권",
+    edgeEn: "Global number one tier in grid transformers and HVDC"
+  },
+  {
+    id: "PRY.MI", name: "프리즈미안", nameEn: "Prysmian", tk: "PRY.MI", mkt: "Borsa Italiana",
+    region: "EU", tier: "대형", stages: ["power"], ysym: "PRY.MI",
+    pos: "전력 케이블 · 광케이블", posEn: "Power cable and optical cable",
+    sum: "전력 케이블 세계 1위 업체로 데이터센터 수전·계통 보강 물량을 수취.",
+    sumEn: "The world's largest power cable maker, capturing data center intake and grid reinforcement volume.",
+    pts: [
+      "전력 케이블과 데이터센터용 광케이블을 동시에 보유",
+      "북미 계통 투자 확대가 수주잔고의 주요 동력"
+    ],
+    ptsEn: [
+      "Holds both power cable and data center optical cable lines",
+      "Expanding North American grid investment is the main backlog driver"
+    ],
+    prod: ["초고압 케이블", "해저 케이블", "광케이블", "배전 케이블"],
+    prodEn: ["UHV cable", "Submarine cable", "Optical cable", "Distribution cable"],
+    edge: "전력 케이블 글로벌 점유율 1위",
+    edgeEn: "Number one global share in power cable"
+  },
+  {
+    id: "CEG", name: "컨스텔레이션 에너지", nameEn: "Constellation Energy", tk: "CEG", mkt: "NASDAQ",
+    region: "US", tier: "대형", stages: ["power"], ysym: "CEG",
+    pos: "원전 기반 무탄소 전력 공급", posEn: "Carbon-free nuclear power supply",
+    sum: "미국 최대 원전 발전 사업자로 하이퍼스케일러와 장기 전력계약을 체결.",
+    sumEn: "The largest US nuclear generator, signing long-term power agreements with hyperscalers.",
+    pts: [
+      "24시간 무탄소 전력이라는 희소 자원 보유 — 데이터센터가 프리미엄 지불",
+      "장기 PPA 체결이 발전 단가와 실적 가시성을 동시에 개선"
+    ],
+    ptsEn: [
+      "Owns the scarce resource of around-the-clock carbon-free power, for which data centers pay a premium",
+      "Long-term PPAs improve both realized pricing and earnings visibility"
+    ],
+    prod: ["원자력 발전", "장기 PPA", "소매 전력"],
+    prodEn: ["Nuclear generation", "Long-term PPAs", "Retail power"],
+    edge: "미국 최대 원전 포트폴리오 보유",
+    edgeEn: "Holds the largest US nuclear fleet"
+  },
+  {
+    id: "VST", name: "비스트라", nameEn: "Vistra", tk: "VST", mkt: "NYSE",
+    region: "US", tier: "대형", stages: ["power"], ysym: "VST",
+    pos: "발전 · 전력 판매", posEn: "Generation and retail power",
+    sum: "원전·가스 발전을 보유한 미국 대형 발전 사업자로 데이터센터 전력 수요의 수혜주.",
+    sumEn: "A large US generator with nuclear and gas assets, geared to data center power demand.",
+    pts: [
+      "전력 도매가격 상승이 기존 발전 자산의 수익을 그대로 확대",
+      "데이터센터 인접 부지의 직접 공급(behind-the-meter) 논의가 촉매"
+    ],
+    ptsEn: [
+      "Higher wholesale power prices flow straight through to existing assets",
+      "Behind-the-meter supply discussions at adjacent sites act as a catalyst"
+    ],
+    prod: ["원자력", "가스 발전", "소매 전력", "ESS"],
+    prodEn: ["Nuclear", "Gas generation", "Retail power", "Storage"],
+    edge: "미국 대형 발전 포트폴리오와 소매 채널 동시 보유",
+    edgeEn: "Combines a large US generation fleet with retail channels"
+  },
+  {
+    id: "BE", name: "블룸에너지", nameEn: "Bloom Energy", tk: "BE", mkt: "NYSE",
+    region: "US", tier: "중형", stages: ["power"], ysym: "BE",
+    pos: "연료전지 온사이트 발전", posEn: "On-site fuel cell power",
+    sum: "계통 접속을 기다리지 않고 부지에서 전력을 만드는 연료전지 공급사.",
+    sumEn: "A fuel cell supplier that generates power on site without waiting for grid interconnection.",
+    pts: [
+      "계통 대기 기간이 길어질수록 온사이트 발전의 상대 가치가 상승",
+      "데이터센터 사업자와의 대형 공급 계약이 실적 변곡점"
+    ],
+    ptsEn: [
+      "The longer interconnection queues get, the more valuable on-site generation becomes",
+      "Large supply agreements with data center operators are the earnings inflection"
+    ],
+    prod: ["고체산화물 연료전지", "온사이트 전력", "전해조"],
+    prodEn: ["Solid oxide fuel cells", "On-site power", "Electrolyzers"],
+    edge: "데이터센터용 상용 연료전지 공급 실적 보유",
+    edgeEn: "Has a commercial track record supplying fuel cells to data centers"
+  },
+  {
+    id: "7011.T", name: "미쓰비시중공업", nameEn: "Mitsubishi Heavy Industries", tk: "7011.T", mkt: "TSE",
+    region: "JP", tier: "대형", stages: ["power"], ysym: "7011.T",
+    pos: "가스터빈 · 원전", posEn: "Gas turbines and nuclear",
+    sum: "대형 가스터빈 세계 3강 중 하나로 데이터센터용 발전 설비 수주를 확대.",
+    sumEn: "One of three global heavy gas turbine makers, expanding data center generation orders.",
+    pts: [
+      "고효율 대형 가스터빈 슬롯이 수년간 확보돼 가격 협상력 상승",
+      "원전·에너지 전환 설비까지 포트폴리오 보유"
+    ],
+    ptsEn: [
+      "Multi-year sold-out slots for high-efficiency turbines strengthen pricing power",
+      "Portfolio also spans nuclear and energy transition equipment"
+    ],
+    prod: ["대형 가스터빈", "원자력", "발전 서비스", "방산"],
+    prodEn: ["Heavy gas turbines", "Nuclear", "Power services", "Defense"],
+    edge: "대형 가스터빈 세계 3강",
+    edgeEn: "One of the world's three heavy-duty gas turbine makers"
+  },
+  {
+    id: "JCI", name: "존슨콘트롤즈", nameEn: "Johnson Controls", tk: "JCI", mkt: "NYSE",
+    region: "US", tier: "대형", stages: ["cooling"], ysym: "JCI",
+    pos: "대형 칠러 · 빌딩 설비", posEn: "Large chillers and building systems",
+    sum: "데이터센터 냉각의 기본 설비인 대형 칠러·공조 시스템의 글로벌 상위 공급사.",
+    sumEn: "A global top supplier of the large chillers and HVAC systems that anchor data center cooling.",
+    pts: [
+      "액체냉각으로 전환해도 열을 최종 배출하는 칠러 수요는 유지·증가",
+      "데이터센터 전용 제품군과 서비스 계약이 반복 매출 기반"
+    ],
+    ptsEn: [
+      "Even with liquid cooling, chillers that reject the heat remain necessary and growing",
+      "Data center product lines plus service contracts build recurring revenue"
+    ],
+    prod: ["대형 칠러", "공조 시스템", "빌딩 제어", "서비스"],
+    prodEn: ["Large chillers", "HVAC systems", "Building controls", "Service"],
+    edge: "대형 칠러·빌딩 설비 글로벌 상위권",
+    edgeEn: "Global top tier in large chillers and building systems"
+  },
+  {
+    id: "TT", name: "트레인 테크놀로지스", nameEn: "Trane Technologies", tk: "TT", mkt: "NYSE",
+    region: "US", tier: "대형", stages: ["cooling"], ysym: "TT",
+    pos: "상업용 공조 · 열관리", posEn: "Commercial HVAC and thermal management",
+    sum: "상업용 공조 대표 업체로 데이터센터 등 고부가 응용 비중을 늘리는 중.",
+    sumEn: "A leading commercial HVAC name growing its mix of high-value applications such as data centers.",
+    pts: [
+      "데이터센터·산업용 등 상업 부문 수주잔고가 실적 가시성의 축",
+      "고효율 설비 교체 수요가 규제 강화와 함께 확대"
+    ],
+    ptsEn: [
+      "Commercial backlog including data centers underpins earnings visibility",
+      "High-efficiency replacement demand grows alongside tightening regulation"
+    ],
+    prod: ["상업용 공조", "칠러", "열관리 솔루션", "서비스"],
+    prodEn: ["Commercial HVAC", "Chillers", "Thermal solutions", "Service"],
+    edge: "상업용 공조 시장 상위권, 고효율 제품 프리미엄",
+    edgeEn: "Top-tier commercial HVAC with a high-efficiency product premium"
+  },
+  {
+    id: "6367.T", name: "다이킨", nameEn: "Daikin Industries", tk: "6367.T", mkt: "TSE",
+    region: "JP", tier: "대형", stages: ["cooling"], ysym: "6367.T",
+    pos: "공조 세계 1위", posEn: "Global HVAC leader",
+    sum: "세계 최대 공조 업체로 데이터센터용 대형 냉각 설비 사업을 확대.",
+    sumEn: "The world's largest HVAC maker, expanding into large-scale data center cooling.",
+    pts: [
+      "글로벌 공조 캐파와 냉매 기술을 함께 보유",
+      "데이터센터·산업용 비중 확대가 주택용 사이클 의존도를 낮춤"
+    ],
+    ptsEn: [
+      "Combines global HVAC capacity with proprietary refrigerant technology",
+      "A rising data center and industrial mix reduces dependence on the residential cycle"
+    ],
+    prod: ["칠러", "공조 시스템", "냉매", "히트펌프"],
+    prodEn: ["Chillers", "HVAC systems", "Refrigerants", "Heat pumps"],
+    edge: "공조 시장 글로벌 점유율 1위",
+    edgeEn: "Number one global share in HVAC"
+  },
+  {
+    id: "PWR", name: "콴타 서비시스", nameEn: "Quanta Services", tk: "PWR", mkt: "NYSE",
+    region: "US", tier: "대형", stages: ["epc", "power"], ysym: "PWR",
+    pos: "전력망 · 전기공사 EPC", posEn: "Grid and electrical infrastructure EPC",
+    sum: "북미 최대 전력망·전기공사 시공사로 데이터센터 접속 공사를 직접 수행.",
+    sumEn: "North America's largest grid and electrical contractor, executing the interconnection work itself.",
+    pts: [
+      "숙련 전기공 인력 자체 보유가 공기 단축의 핵심 경쟁력",
+      "송전·변전·데이터센터 접속을 묶어 수주하는 구조"
+    ],
+    ptsEn: [
+      "Owning a skilled electrical workforce is the core advantage in schedule compression",
+      "Wins bundled scopes across transmission, substations and data center interconnection"
+    ],
+    prod: ["송배전 시공", "변전소", "전기공사", "재생에너지 EPC"],
+    prodEn: ["T&D construction", "Substations", "Electrical works", "Renewables EPC"],
+    edge: "북미 전력 인프라 시공 점유율 1위",
+    edgeEn: "Number one share in North American power infrastructure construction"
+  },
+  {
+    id: "EME", name: "EMCOR 그룹", nameEn: "EMCOR Group", tk: "EME", mkt: "NYSE",
+    region: "US", tier: "대형", stages: ["epc"], ysym: "EME",
+    pos: "전기 · 기계 설비 시공", posEn: "Electrical and mechanical construction",
+    sum: "데이터센터 전기·기계 설비 시공을 담당하는 미국 대표 설비 시공사.",
+    sumEn: "A leading US specialty contractor handling data center electrical and mechanical installation.",
+    pts: [
+      "데이터센터 부문 수주잔고 증가가 실적 성장의 직접 동력",
+      "설비 시공은 인력 확보가 경쟁력이라 진입장벽이 존재"
+    ],
+    ptsEn: [
+      "Growth in data center backlog is the direct earnings driver",
+      "Labor availability is the competitive barrier in specialty installation"
+    ],
+    prod: ["전기 설비 시공", "기계 설비 시공", "시설 서비스"],
+    prodEn: ["Electrical construction", "Mechanical construction", "Facilities services"],
+    edge: "미국 설비 시공 최대 사업자 중 하나",
+    edgeEn: "One of the largest US specialty contractors"
+  },
+  {
+    id: "FIX", name: "컴포트 시스템즈", nameEn: "Comfort Systems USA", tk: "FIX", mkt: "NYSE",
+    region: "US", tier: "대형", stages: ["epc", "cooling"], ysym: "FIX",
+    pos: "기계 · 공조 설비 시공", posEn: "Mechanical and HVAC construction",
+    sum: "데이터센터·산업 시설의 공조·기계 설비를 모듈 방식으로 시공하는 업체.",
+    sumEn: "A contractor delivering HVAC and mechanical systems for data centers and industrial plants, including modular builds.",
+    pts: [
+      "모듈러 사전제작으로 현장 공기를 단축, 대형 프로젝트에서 선호",
+      "기술·산업 부문(데이터센터 포함) 수주잔고가 성장의 축"
+    ],
+    ptsEn: [
+      "Modular prefabrication shortens site schedules, a preference on large projects",
+      "Technology and industrial backlog including data centers drives growth"
+    ],
+    prod: ["공조 설비 시공", "모듈러 프리팹", "배관", "유지보수"],
+    prodEn: ["HVAC construction", "Modular prefab", "Piping", "Maintenance"],
+    edge: "데이터센터 기계 설비 시공에서 높은 수주잔고 성장",
+    edgeEn: "Fast backlog growth in data center mechanical construction"
+  },
+  {
+    id: "EQIX", name: "에퀴닉스", nameEn: "Equinix", tk: "EQIX", mkt: "NASDAQ",
+    region: "US", tier: "대형", stages: ["ops"], ysym: "EQIX",
+    pos: "글로벌 코로케이션 · 상호접속", posEn: "Global colocation and interconnection",
+    sum: "세계 최대 코로케이션 사업자로 상호접속(인터커넥션) 매출이 차별화 포인트.",
+    sumEn: "The world's largest colocation operator, differentiated by interconnection revenue.",
+    pts: [
+      "네트워크·클라우드가 모이는 거점 특성상 고객 이탈률이 낮음",
+      "전력 확보량(MW)과 계약 임대율이 성장의 실질 제약"
+    ],
+    ptsEn: [
+      "As the meeting point for networks and clouds, churn stays low",
+      "Secured megawatts and contracted lease rates are the real growth constraint"
+    ],
+    prod: ["코로케이션", "인터커넥션", "xScale 하이퍼스케일"],
+    prodEn: ["Colocation", "Interconnection", "xScale hyperscale"],
+    edge: "코로케이션·상호접속 글로벌 1위",
+    edgeEn: "Global number one in colocation and interconnection"
+  },
+  {
+    id: "DLR", name: "디지털 리얼티", nameEn: "Digital Realty", tk: "DLR", mkt: "NYSE",
+    region: "US", tier: "대형", stages: ["ops"], ysym: "DLR",
+    pos: "하이퍼스케일 데이터센터 리츠", posEn: "Hyperscale data center REIT",
+    sum: "하이퍼스케일러에 대규모 용량을 장기 임대하는 데이터센터 리츠.",
+    sumEn: "A data center REIT leasing large blocks of capacity to hyperscalers on long terms.",
+    pts: [
+      "신규 임대 단가 상승과 재계약 스프레드가 실적의 핵심 지표",
+      "전력 확보된 부지(파워드 셸)가 사실상의 희소 자산"
+    ],
+    ptsEn: [
+      "New lease pricing and renewal spreads are the key metrics",
+      "Powered land with secured electricity is the genuinely scarce asset"
+    ],
+    prod: ["하이퍼스케일 임대", "코로케이션", "데이터센터 개발"],
+    prodEn: ["Hyperscale leasing", "Colocation", "Development"],
+    edge: "글로벌 데이터센터 리츠 상위 2사",
+    edgeEn: "One of the two largest global data center REITs"
+  },
+  {
+    id: "IRM", name: "아이언마운틴", nameEn: "Iron Mountain", tk: "IRM", mkt: "NYSE",
+    region: "US", tier: "대형", stages: ["ops"], ysym: "IRM",
+    pos: "문서보관 + 데이터센터 리츠", posEn: "Records management plus data center REIT",
+    sum: "기존 문서보관 사업의 현금흐름으로 데이터센터 용량을 증설하는 리츠.",
+    sumEn: "A REIT funding data center expansion with cash flow from its records management business.",
+    pts: [
+      "안정적 본업 현금흐름이 데이터센터 개발 자금 조달의 강점",
+      "데이터센터 부문 임대 계약 잔고가 성장의 선행 지표"
+    ],
+    ptsEn: [
+      "Stable legacy cash flow is an advantage in funding development",
+      "Its data center leasing backlog leads the growth trajectory"
+    ],
+    prod: ["데이터센터 임대", "문서 보관", "자산 처분(ITAD)"],
+    prodEn: ["Data center leasing", "Records storage", "ITAD"],
+    edge: "본업 현금흐름 기반의 데이터센터 증설 여력",
+    edgeEn: "Capacity to fund data center growth from core cash flow"
+  },
+  {
+    id: "CRWV", name: "코어위브", nameEn: "CoreWeave", tk: "CRWV", mkt: "NASDAQ",
+    region: "US", tier: "대형", stages: ["ops"], ysym: "CRWV",
+    pos: "GPU 전용 클라우드(네오클라우드)", posEn: "GPU-specialized cloud (neocloud)",
+    sum: "GPU 인프라만 임대하는 전문 클라우드 사업자로 AI 수요를 직접 흡수.",
+    sumEn: "A specialist cloud renting GPU infrastructure only, absorbing AI demand directly.",
+    pts: [
+      "장기 계약 기반 GPU 임대로 매출 가시성은 높으나 부채·설비 부담이 큼",
+      "GPU 조달 우선순위와 데이터센터 전력 확보가 성장의 관건"
+    ],
+    ptsEn: [
+      "Long-term GPU contracts give revenue visibility but carry heavy debt and capex",
+      "Priority access to GPUs and secured power decide the growth ceiling"
+    ],
+    prod: ["GPU 클라우드", "AI 학습 인프라", "추론 서비스"],
+    prodEn: ["GPU cloud", "AI training infrastructure", "Inference services"],
+    edge: "GPU 전용 클라우드 최대 사업자",
+    edgeEn: "The largest GPU-specialized cloud operator"
+  },
+  {
+    id: "MSFT", name: "마이크로소프트", nameEn: "Microsoft", tk: "MSFT", mkt: "NASDAQ",
+    region: "US", tier: "대형", stages: ["ops"], ysym: "MSFT",
+    pos: "하이퍼스케일러(수요)", posEn: "Hyperscaler (demand side)",
+    sum: "Azure와 AI 서비스를 위해 데이터센터에 최대 규모로 투자하는 수요의 원천.",
+    sumEn: "A primary source of demand, investing at maximum scale in data centers for Azure and AI services.",
+    pts: [
+      "설비투자(capex) 가이던스가 밸류체인 전체의 수요 전망을 좌우",
+      "자체 칩·자체 데이터센터 설계로 공급사 협상력을 확보"
+    ],
+    ptsEn: [
+      "Its capex guidance sets the demand outlook for the entire chain",
+      "In-house silicon and data center designs give it leverage over suppliers"
+    ],
+    prod: ["Azure", "AI 서비스", "자체 데이터센터", "소프트웨어"],
+    prodEn: ["Azure", "AI services", "Own data centers", "Software"],
+    edge: "클라우드 설비투자 규모 세계 최상위",
+    edgeEn: "Among the world's largest cloud capex spenders"
+  },
+  {
+    id: "AMZN", name: "아마존", nameEn: "Amazon", tk: "AMZN", mkt: "NASDAQ",
+    region: "US", tier: "대형", stages: ["ops", "chip"], ysym: "AMZN",
+    pos: "하이퍼스케일러 + 자체 칩", posEn: "Hyperscaler plus in-house silicon",
+    sum: "AWS로 최대 클라우드 점유율을 보유하고 자체 AI 칩까지 설계하는 사업자.",
+    sumEn: "Holds the largest cloud share via AWS while also designing its own AI silicon.",
+    pts: [
+      "자체 가속기(트레이니엄 계열)로 GPU 의존도를 낮추는 전략",
+      "AWS capex 증가는 전력·냉각·서버 밸류체인 전반의 수요"
+    ],
+    ptsEn: [
+      "In-house accelerators such as the Trainium line reduce GPU dependence",
+      "Rising AWS capex is demand for the whole power, cooling and server chain"
+    ],
+    prod: ["AWS", "자체 AI 칩", "데이터센터", "리테일"],
+    prodEn: ["AWS", "In-house AI chips", "Data centers", "Retail"],
+    edge: "클라우드 점유율 1위, 자체 칩 설계 역량 보유",
+    edgeEn: "Number one cloud share with in-house silicon design"
+  },
+  {
+    id: "GOOGL", name: "알파벳", nameEn: "Alphabet", tk: "GOOGL", mkt: "NASDAQ",
+    region: "US", tier: "대형", stages: ["ops", "chip"], ysym: "GOOGL",
+    pos: "하이퍼스케일러 + TPU", posEn: "Hyperscaler plus TPU",
+    sum: "자체 AI 칩(TPU)을 가장 오래 운영해온 하이퍼스케일러.",
+    sumEn: "The hyperscaler with the longest-running in-house AI silicon program (TPU).",
+    pts: [
+      "TPU 자체 설계로 커스텀 ASIC 밸류체인의 최대 수요처",
+      "검색·클라우드·AI 모델을 모두 보유해 인프라 활용률이 높음"
+    ],
+    ptsEn: [
+      "TPU design makes it the largest buyer in the custom ASIC chain",
+      "Owning search, cloud and models keeps infrastructure utilization high"
+    ],
+    prod: ["Google Cloud", "TPU", "데이터센터", "AI 모델"],
+    prodEn: ["Google Cloud", "TPU", "Data centers", "AI models"],
+    edge: "자체 AI 가속기 최장 운영 이력, 클라우드 3강",
+    edgeEn: "The longest track record in in-house accelerators and a top-three cloud"
+  },
+  {
+    id: "META", name: "메타", nameEn: "Meta Platforms", tk: "META", mkt: "NASDAQ",
+    region: "US", tier: "대형", stages: ["ops"], ysym: "META",
+    pos: "자체 AI 클러스터(수요)", posEn: "Own AI clusters (demand side)",
+    sum: "외부 판매 없이 자체 AI 학습을 위해 대규모 데이터센터를 짓는 최대 단일 수요처 중 하나.",
+    sumEn: "One of the largest single buyers, building huge data centers purely for its own AI training.",
+    pts: [
+      "클라우드 매출이 없어 capex가 곧 자체 사용 — 수요의 순수 지표",
+      "초대형 단일 캠퍼스 프로젝트가 전력·냉각 발주의 대형 이벤트"
+    ],
+    ptsEn: [
+      "With no cloud revenue, its capex is pure own-use demand",
+      "Gigawatt-scale single campuses become major power and cooling order events"
+    ],
+    prod: ["자체 데이터센터", "AI 모델", "광고 플랫폼"],
+    prodEn: ["Own data centers", "AI models", "Advertising platform"],
+    edge: "자체 사용 목적 AI 인프라 투자 규모 최상위",
+    edgeEn: "Top-tier scale of AI infrastructure investment for own use"
+  },
+  {
+    id: "ORCL", name: "오라클", nameEn: "Oracle", tk: "ORCL", mkt: "NYSE",
+    region: "US", tier: "대형", stages: ["ops"], ysym: "ORCL",
+    pos: "AI 클라우드 계약 잔고", posEn: "AI cloud contracted backlog",
+    sum: "대형 AI 사업자와의 장기 클라우드 계약을 기반으로 데이터센터를 급증설하는 사업자.",
+    sumEn: "Scaling data centers rapidly on the back of long-term cloud contracts with major AI firms.",
+    pts: [
+      "계약 잔고(RPO)가 증설 계획과 차입 규모를 결정",
+      "임대·전력 확보 속도가 매출 인식 시점의 제약"
+    ],
+    ptsEn: [
+      "Contracted backlog (RPO) sets both the build plan and the borrowing need",
+      "Leasing and power procurement pace constrain when revenue is recognized"
+    ],
+    prod: ["OCI 클라우드", "데이터베이스", "AI 인프라 임대"],
+    prodEn: ["OCI cloud", "Database", "AI infrastructure leasing"],
+    edge: "대형 AI 고객 장기 계약 잔고 확보",
+    edgeEn: "Holds long-term contracted backlog with major AI customers"
+  }
+];
+
+</script>
+  <script>
+  (function () {
+    "use strict";
+
+    /* ================= 다국어 문자열 ================= */
+    var I18N = {
+      ko: {
+        docTitle: "데이터센터 밸류체인 종목 맵",
+        kicker: "Data Center Value Chain",
+        title: "국내외 데이터센터 밸류체인 종목 맵",
+        lead: "AI 데이터센터 한 곳이 세워질 때 돈이 흘러가는 순서대로 9개 단계를 나누고, 각 단계에서 시장 지위를 확보한 국내·해외 대형 종목을 배치했습니다. 종목을 클릭하면 사업 내용과 데이터센터 연관 포인트, 실시간 시세를 확인할 수 있습니다.",
+        regAll: "전체", regKr: "국내", regOv: "해외",
+        tierAll: "전체 규모", tierLarge: "대형주만",
+        lgLarge: "대형주", lgMid: "중형 대표주",
+        search: "종목명 · 티커 · 키워드 검색",
+        grpKr: "국내", grpOv: "해외",
+        driver: "핵심 변수",
+        hintTitle: "종목을 선택하세요",
+        hintBody: "맵에서 종목을 클릭하면 사업 내용, 데이터센터 연관 포인트, 실시간 시세, 상세 리포트 링크가 표시됩니다.",
+        stageCount: "밸류체인 9단계",
+        total: "수록 종목", kr: "국내", ov: "해외",
+        asof: "작성 기준",
+        lbQuote: "시세", lbPos: "밸류체인 포지션", lbSum: "한 줄 요약",
+        lbPts: "데이터센터 연관 포인트", lbProd: "주요 제품 · 서비스",
+        lbEdge: "경쟁 지위", lbStage: "해당 단계", lbPeer: "같은 단계 종목", lbLink: "더 보기",
+        loading: "시세 조회 중…",
+        quoteFail: "실시간 시세를 불러오지 못했습니다. 사내망·프록시 환경에서는 외부 시세 API 접근이 차단될 수 있습니다.",
+        quoteVia: "조회 시각",
+        openReport: "종목 통합 리포트 열기",
+        naver: "네이버 금융에서 보기",
+        yahoo: "Yahoo Finance에서 보기",
+        noResult: "검색 결과가 없습니다.",
+        emptyStage: "해당 조건에 맞는 종목이 없습니다.",
+        close: "닫기",
+        foot: "본 자료는 데이터센터 밸류체인 구조를 이해하기 위한 정보 제공 목적의 참고 자료이며, 특정 종목의 매수·매도를 권유하지 않습니다. 종목 분류는 사업 포트폴리오상 관련성을 기준으로 한 것으로, 매출 비중은 기업별로 크게 다릅니다. 규모 구분(대형/중형)은 시장 지위와 시가총액을 함께 고려한 편집 기준입니다. 시세는 조회 시점에 외부 공개 API로 불러오며, 투자 판단과 그 결과에 대한 책임은 이용자에게 있습니다."
+      },
+      en: {
+        docTitle: "Data Center Value Chain Stock Map",
+        kicker: "Data Center Value Chain",
+        title: "Data Center Value Chain: Korea and Global Stock Map",
+        lead: "Nine stages, ordered the way money flows when an AI data center gets built, each populated with the Korean and global large caps that hold real market position. Click any name for its business, its data center linkage and a live quote.",
+        regAll: "All", regKr: "Korea", regOv: "Global",
+        tierAll: "All sizes", tierLarge: "Large cap only",
+        lgLarge: "Large cap", lgMid: "Mid-cap leader",
+        search: "Search name, ticker or keyword",
+        grpKr: "Korea", grpOv: "Global",
+        driver: "Key driver",
+        hintTitle: "Select a company",
+        hintBody: "Click a name on the map to see its business, data center linkage, a live quote and links to the full report.",
+        stageCount: "9 value chain stages",
+        total: "Companies", kr: "Korea", ov: "Global",
+        asof: "As of",
+        lbQuote: "Quote", lbPos: "Position in the chain", lbSum: "In one line",
+        lbPts: "Data center linkage", lbProd: "Key products and services",
+        lbEdge: "Competitive standing", lbStage: "Stages", lbPeer: "Peers in this stage", lbLink: "More",
+        loading: "Loading quote…",
+        quoteFail: "Could not load a live quote. Corporate networks and proxies often block external market data APIs.",
+        quoteVia: "Retrieved",
+        openReport: "Open full stock report",
+        naver: "View on Naver Finance",
+        yahoo: "View on Yahoo Finance",
+        noResult: "No matches.",
+        emptyStage: "No companies match the current filter.",
+        close: "Close",
+        foot: "This material is provided for information purposes to explain the structure of the data center value chain and is not a recommendation to buy or sell any security. Companies are grouped by business relevance; revenue exposure varies widely by company. Size labels (large / mid) are an editorial judgment combining market position and market capitalization. Quotes are pulled from public external APIs at view time. Investment decisions and their outcomes remain the responsibility of the user."
+      }
+    };
+
+    var STAGES = window.DC_STAGES || [];
+    var ALL = (window.DC_KR || []).concat(window.DC_GLOBAL || []);
+    var BY_ID = {};
+    ALL.forEach(function (c) { BY_ID[c.id] = c; });
+
+    var state = {
+      lang: "ko",
+      region: "all",
+      tier: "all",
+      q: "",
+      sel: null
+    };
+    try {
+      var savedLang = localStorage.getItem("dcLang");
+      if (savedLang === "ko" || savedLang === "en") state.lang = savedLang;
+    } catch (e) {}
+
+    var els = {
+      map: document.getElementById("map"),
+      panel: document.getElementById("panel"),
+      backdrop: document.getElementById("backdrop"),
+      q: document.getElementById("q"),
+      metarow: document.getElementById("metarow"),
+      footNote: document.getElementById("footNote"),
+      langKo: document.getElementById("langKo"),
+      langEn: document.getElementById("langEn")
+    };
+
+    function t(key) { return I18N[state.lang][key]; }
+    function L(o, field) {
+      // 언어별 필드 선택: ko는 field, en은 field+'En'(없으면 ko 폴백)
+      if (state.lang === "en") {
+        var k = field + "En";
+        if (o[k] != null) return o[k];
+      }
+      return o[field];
+    }
+    function esc(s) {
+      return String(s == null ? "" : s).replace(/[&<>"']/g, function (m) {
+        return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[m];
+      });
+    }
+    function isKR(c) { return c.region === "KR"; }
+    function tierLabel(c) {
+      if (state.lang === "en") return c.tier === "대형" ? "Large cap" : "Mid cap";
+      return c.tier + "주";
+    }
+
+    /* ================= 필터 ================= */
+    function matches(c) {
+      if (state.region === "KR" && !isKR(c)) return false;
+      if (state.region === "OV" && isKR(c)) return false;
+      if (state.tier !== "all" && c.tier !== state.tier) return false;
+      if (state.q) {
+        var q = state.q.toLowerCase();
+        var hay = [c.name, c.nameEn, c.tk, c.mkt, c.pos, c.posEn, c.sum, c.sumEn, c.edge, c.edgeEn]
+          .concat(c.prod || []).concat(c.prodEn || []).join(" ").toLowerCase();
+        if (hay.indexOf(q) < 0) return false;
+      }
+      return true;
+    }
+
+    /* ================= 맵 렌더 ================= */
+    function chipHtml(c) {
+      return '<button class="chip ' + (c.tier === "대형" ? "large" : "mid") +
+        (state.sel === c.id ? " on" : "") + '" data-id="' + esc(c.id) + '">' +
+        '<span class="cn">' + esc(L(c, "name")) + '</span>' +
+        '<span class="cm">' + esc(c.tk) + " · " + esc(c.mkt) + '</span>' +
+        '<span class="cp">' + esc(L(c, "pos")) + '</span>' +
+        '</button>';
+    }
+
+    function renderMap() {
+      var visible = ALL.filter(matches);
+      var html = "";
+      var shownStages = 0;
+
+      STAGES.forEach(function (st) {
+        var inStage = visible.filter(function (c) { return (c.stages || []).indexOf(st.id) >= 0; });
+        if (!inStage.length) return;
+        shownStages++;
+        var kr = inStage.filter(isKR);
+        var ov = inStage.filter(function (c) { return !isKR(c); });
+        var twoCol = state.region === "all";
+
+        html += '<article class="stage" id="stage-' + esc(st.id) + '">' +
+          '<div class="stage-rule"></div>' +
+          '<div class="stage-head">' +
+            '<span class="stage-no">' + esc(st.no) + '</span>' +
+            '<h2>' + esc(L(st, "name")) + '</h2>' +
+            '<span class="stage-driver">' + esc(t("driver")) + ": " + esc(L(st, "driver")) + '</span>' +
+          '</div>' +
+          '<p class="stage-desc">' + esc(L(st, "desc")) + '</p>' +
+          '<div class="stage-grid' + (twoCol ? " two" : "") + '">';
+
+        function group(label, arr) {
+          if (state.region === "KR" && label === t("grpOv")) return "";
+          if (state.region === "OV" && label === t("grpKr")) return "";
+          return '<div class="grp">' +
+            '<h3 class="grp-h">' + esc(label) + '<span class="cnt">' + arr.length + '</span></h3>' +
+            (arr.length
+              ? '<div class="chips">' + arr.map(chipHtml).join("") + '</div>'
+              : '<div class="empty">' + esc(t("emptyStage")) + '</div>') +
+            '</div>';
+        }
+        html += group(t("grpKr"), kr) + group(t("grpOv"), ov);
+        html += '</div></article>';
+      });
+
+      if (!shownStages) html = '<p class="empty" style="font-size:17px;padding:40px 0;">' + esc(t("noResult")) + '</p>';
+      els.map.innerHTML = html;
+    }
+
+    function renderMeta() {
+      var krN = ALL.filter(isKR).length, ovN = ALL.length - krN;
+      els.metarow.innerHTML =
+        '<span>' + esc(t("stageCount")) + '</span>' +
+        '<span>' + esc(t("total")) + ' <strong class="num">' + ALL.length + '</strong></span>' +
+        '<span>' + esc(t("kr")) + ' <strong class="num">' + krN + '</strong> · ' +
+          esc(t("ov")) + ' <strong class="num">' + ovN + '</strong></span>';
+      els.footNote.textContent = t("foot");
+    }
+
+    /* ================= 시세 조회 ================= */
+    var PROXIES = [
+      function (u) { return u; },
+      function (u) { return "https://api.codetabs.com/v1/proxy/?quest=" + encodeURIComponent(u); },
+      function (u) { return "https://corsproxy.io/?url=" + encodeURIComponent(u); },
+      function (u) { return "https://api.allorigins.win/raw?url=" + encodeURIComponent(u); },
+      function (u) { return "https://cors.eu.org/" + u; }
+    ];
+    function withTimeout(p, ms) {
+      return new Promise(function (res, rej) {
+        var timer = setTimeout(function () { rej(new Error("timeout")); }, ms);
+        p.then(function (v) { clearTimeout(timer); res(v); }, function (e) { clearTimeout(timer); rej(e); });
+      });
+    }
+    function fetchJson(url) {
+      var busted = url + (url.indexOf("?") >= 0 ? "&" : "?") + "_ts=" + Date.now();
+      var attempts = PROXIES.map(function (w) {
+        return withTimeout(
+          fetch(w(busted), { headers: { Accept: "application/json, text/plain, */*" }, cache: "no-store" })
+            .then(function (r) { if (!r.ok) throw new Error("HTTP " + r.status); return r.text(); })
+            .then(function (txt) {
+              var s = txt.replace(/^﻿/, "").trim();
+              if (s[0] !== "{" && s[0] !== "[") throw new Error("not json");
+              return JSON.parse(s);
+            }),
+          4500);
+      });
+      if (typeof Promise.any === "function") return Promise.any(attempts);
+      return new Promise(function (res, rej) {
+        var left = attempts.length, err;
+        attempts.forEach(function (p) { p.then(res, function (e) { err = e; if (--left === 0) rej(err); }); });
+      });
+    }
+    function n(v) {
+      if (v == null) return null;
+      var x = parseFloat(String(v).replace(/,/g, ""));
+      return isNaN(x) ? null : x;
+    }
+    function fetchQuoteKR(c) {
+      return fetchJson("https://m.stock.naver.com/api/stock/" + c.id + "/basic").then(function (d) {
+        var price = n(d.closePrice);
+        if (price == null) throw new Error("no price");
+        var chg = n(d.compareToPreviousClosePrice);
+        var pct = n(d.fluctuationsRatio);
+        return { price: price, chg: chg, pct: pct, cur: "KRW" };
+      });
+    }
+    function fetchQuoteGlobal(c) {
+      var u = "https://query1.finance.yahoo.com/v8/finance/chart/" +
+        encodeURIComponent(c.ysym) + "?range=5d&interval=1d";
+      return fetchJson(u).then(function (d) {
+        var m = d && d.chart && d.chart.result && d.chart.result[0] && d.chart.result[0].meta;
+        if (!m) throw new Error("no meta");
+        var price = n(m.regularMarketPrice);
+        var prev = n(m.chartPreviousClose != null ? m.chartPreviousClose : m.previousClose);
+        if (price == null) throw new Error("no price");
+        var chg = prev != null ? price - prev : null;
+        return { price: price, chg: chg, pct: (prev ? (chg / prev) * 100 : null), cur: m.currency || "" };
+      });
+    }
+    function fmtPrice(v, cur) {
+      if (v == null) return "-";
+      var dec = cur === "KRW" || cur === "JPY" || cur === "TWD" ? 0 : 2;
+      var s = v.toLocaleString(state.lang === "en" ? "en-US" : "ko-KR",
+        { minimumFractionDigits: dec, maximumFractionDigits: dec });
+      if (cur === "KRW") return s + (state.lang === "en" ? " KRW" : "원");
+      return s + (cur ? " " + cur : "");
+    }
+    function fmtTime(d) {
+      function p(x) { return x < 10 ? "0" + x : "" + x; }
+      return d.getFullYear() + "-" + p(d.getMonth() + 1) + "-" + p(d.getDate()) +
+        " " + p(d.getHours()) + ":" + p(d.getMinutes());
+    }
+    function loadQuote(c) {
+      var box = document.getElementById("quoteBox");
+      if (!box) return;
+      box.innerHTML = '<div class="qnote">' + esc(t("loading")) + "</div>";
+      var p = isKR(c) ? fetchQuoteKR(c) : fetchQuoteGlobal(c);
+      p.then(function (q) {
+        if (state.sel !== c.id) return;
+        var cls = q.chg == null ? "fl" : q.chg > 0 ? "up" : q.chg < 0 ? "dn" : "fl";
+        var sign = q.chg == null ? "" : q.chg > 0 ? "+" : "";
+        var chgTxt = q.chg == null ? "" :
+          sign + fmtPrice(q.chg, q.cur) +
+          (q.pct != null ? " (" + sign + q.pct.toFixed(2) + "%)" : "");
+        box.innerHTML =
+          '<div class="quote"><span class="qp num">' + esc(fmtPrice(q.price, q.cur)) + '</span>' +
+          (chgTxt ? '<span class="qc num ' + cls + '">' + esc(chgTxt) + "</span>" : "") + "</div>" +
+          '<div class="qnote">' + esc(t("quoteVia")) + ": " + esc(fmtTime(new Date())) + "</div>";
+      }, function () {
+        if (state.sel !== c.id) return;
+        box.innerHTML = '<div class="qnote">' + esc(t("quoteFail")) + "</div>";
+      });
+    }
+
+    /* ================= 상세 패널 ================= */
+    function stageNames(c) {
+      return (c.stages || []).map(function (id) {
+        var st = STAGES.filter(function (s) { return s.id === id; })[0];
+        return st ? st.no + " " + L(st, "name") : id;
+      });
+    }
+    function peersOf(c) {
+      var first = (c.stages || [])[0];
+      return ALL.filter(function (o) {
+        return o.id !== c.id && (o.stages || []).indexOf(first) >= 0 &&
+          (state.region === "all" || (state.region === "KR" ? isKR(o) : !isKR(o)));
+      }).slice(0, 8);
+    }
+    function renderPanel() {
+      var c = state.sel ? BY_ID[state.sel] : null;
+      if (!c) {
+        els.panel.innerHTML =
+          '<div class="hint"><span class="hb">' + esc(t("hintTitle")) + "</span>" +
+          "<span>" + esc(t("hintBody")) + "</span></div>";
+        els.panel.classList.remove("open");
+        els.backdrop.classList.remove("open");
+        return;
+      }
+      var links = "";
+      if (isKR(c)) {
+        links += '<a class="btn-primary" href="standalone.html?code=' + esc(c.id) + '">' + esc(t("openReport")) + "</a>";
+        links += '<a class="btn-ghost" target="_blank" rel="noopener" href="https://finance.naver.com/item/main.naver?code=' +
+          esc(c.id) + '">' + esc(t("naver")) + "</a>";
+      }
+      links += '<a class="btn-ghost" target="_blank" rel="noopener" href="https://finance.yahoo.com/quote/' +
+        encodeURIComponent(c.ysym) + '">' + esc(t("yahoo")) + "</a>";
+
+      els.panel.innerHTML =
+        '<div class="panel-top">' +
+          '<button class="panel-close" id="panelClose" aria-label="' + esc(t("close")) + '">&times;</button>' +
+          '<div class="pn">' + esc(L(c, "name")) + "</div>" +
+          '<div class="pe">' + esc(state.lang === "en" ? c.name : c.nameEn) + "</div>" +
+          '<div class="ptags">' +
+            '<span class="ptag tier">' + esc(tierLabel(c)) + "</span>" +
+            '<span class="ptag">' + esc(c.tk) + "</span>" +
+            '<span class="ptag">' + esc(c.mkt) + "</span>" +
+          "</div>" +
+        "</div>" +
+        '<div class="panel-body">' +
+          '<div class="pblock"><div class="plabel">' + esc(t("lbQuote")) + "</div>" +
+            '<div id="quoteBox"></div></div>' +
+          '<div class="pblock"><div class="plabel">' + esc(t("lbPos")) + "</div>" +
+            '<div class="ptext"><strong>' + esc(L(c, "pos")) + "</strong></div></div>" +
+          '<div class="pblock"><div class="plabel">' + esc(t("lbSum")) + "</div>" +
+            '<div class="ptext">' + esc(L(c, "sum")) + "</div></div>" +
+          '<div class="pblock"><div class="plabel">' + esc(t("lbPts")) + "</div>" +
+            "<ul class=\"plist\">" + (L(c, "pts") || []).map(function (x) {
+              return "<li>" + esc(x) + "</li>";
+            }).join("") + "</ul></div>" +
+          '<div class="pblock"><div class="plabel">' + esc(t("lbProd")) + "</div>" +
+            '<div class="tags">' + (L(c, "prod") || []).map(function (x) {
+              return '<span class="tag">' + esc(x) + "</span>";
+            }).join("") + "</div></div>" +
+          '<div class="pblock"><div class="plabel">' + esc(t("lbEdge")) + "</div>" +
+            '<div class="ptext">' + esc(L(c, "edge")) + "</div></div>" +
+          '<div class="pblock"><div class="plabel">' + esc(t("lbStage")) + "</div>" +
+            '<div class="tags">' + stageNames(c).map(function (x) {
+              return '<span class="tag">' + esc(x) + "</span>";
+            }).join("") + "</div></div>" +
+          '<div class="pblock"><div class="plabel">' + esc(t("lbPeer")) + "</div>" +
+            '<div class="peer">' + peersOf(c).map(function (o) {
+              return '<button data-id="' + esc(o.id) + '">' + esc(L(o, "name")) + "</button>";
+            }).join("") + "</div></div>" +
+          '<div class="pblock"><div class="plabel">' + esc(t("lbLink")) + "</div>" +
+            '<div class="plinks">' + links + "</div></div>" +
+        "</div>";
+
+      els.panel.classList.add("open");
+      els.backdrop.classList.add("open");
+      document.getElementById("panelClose").addEventListener("click", function () { select(null); });
+      els.panel.querySelectorAll(".peer button").forEach(function (b) {
+        b.addEventListener("click", function () { select(b.getAttribute("data-id")); });
+      });
+      loadQuote(c);
+    }
+
+    function select(id) {
+      state.sel = id && BY_ID[id] ? id : null;
+      renderMap();
+      renderPanel();
+      if (state.sel) {
+        if (history.replaceState) history.replaceState(null, "", "#" + state.sel);
+        var body = els.panel.querySelector(".panel-body");
+        if (body) body.scrollTop = 0;
+      } else if (history.replaceState) {
+        history.replaceState(null, "", location.pathname + location.search);
+      }
+    }
+
+    /* ================= 언어 · 필터 ================= */
+    function applyLang() {
+      document.documentElement.setAttribute("lang", state.lang);
+      document.title = t("docTitle");
+      els.langKo.classList.toggle("on", state.lang === "ko");
+      els.langEn.classList.toggle("on", state.lang === "en");
+      els.langKo.setAttribute("aria-checked", String(state.lang === "ko"));
+      els.langEn.setAttribute("aria-checked", String(state.lang === "en"));
+      document.querySelectorAll("[data-i18n]").forEach(function (el) {
+        var key = el.getAttribute("data-i18n");
+        if (I18N[state.lang][key] != null) el.textContent = I18N[state.lang][key];
+      });
+      els.q.placeholder = t("search");
+      try { localStorage.setItem("dcLang", state.lang); } catch (e) {}
+      renderMeta(); renderMap(); renderPanel();
+    }
+
+    document.addEventListener("click", function (e) {
+      var chip = e.target.closest ? e.target.closest(".chip") : null;
+      if (chip) { select(chip.getAttribute("data-id")); }
+    });
+    document.getElementById("regionSeg").addEventListener("click", function (e) {
+      var b = e.target.closest("button[data-region]"); if (!b) return;
+      state.region = b.getAttribute("data-region");
+      this.querySelectorAll("button").forEach(function (x) { x.classList.toggle("on", x === b); });
+      renderMap();
+    });
+    document.getElementById("tierSeg").addEventListener("click", function (e) {
+      var b = e.target.closest("button[data-tier]"); if (!b) return;
+      state.tier = b.getAttribute("data-tier");
+      this.querySelectorAll("button").forEach(function (x) { x.classList.toggle("on", x === b); });
+      renderMap();
+    });
+    els.q.addEventListener("input", function () { state.q = this.value.trim(); renderMap(); });
+    els.langKo.addEventListener("click", function () { state.lang = "ko"; applyLang(); });
+    els.langEn.addEventListener("click", function () { state.lang = "en"; applyLang(); });
+    els.backdrop.addEventListener("click", function () { select(null); });
+    document.addEventListener("keydown", function (e) { if (e.key === "Escape" && state.sel) select(null); });
+
+    /* ================= 초기화 ================= */
+    applyLang();
+    var initial = (location.hash || "").replace(/^#/, "");
+    if (initial && BY_ID[initial]) select(initial);
+  })();
+  </script>
+</body>
+</html>
