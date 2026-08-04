@@ -53,6 +53,12 @@ jobs:
           retention-days: 14
           if-no-files-found: ignore
 
+      # 과거 시뮬레이션용 기초자산 시세. 실패해도 직전 시세를 그대로 쓴다.
+      - name: 기초자산 과거 시세 수집
+        id: history
+        continue-on-error: true
+        run: node scripts/collect_history.mjs
+
       - name: 단일 파일 재빌드
         run: node scripts/build_standalone.mjs
 

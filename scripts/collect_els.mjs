@@ -46,6 +46,12 @@ const OUT_DATA = 'data/els.js';
 const DEBUG_DIR = 'collect-debug';
 const MAX_PAGES = 20;
 
+/** 금융투자상품 위험등급 문구 -> 등급 숫자 (1등급이 가장 위험) */
+const RISK_GRADE = {
+  '매우높은위험': 1, '높은위험': 2, '다소높은위험': 3,
+  '보통위험': 4, '낮은위험': 5, '매우낮은위험': 6,
+};
+
 function toNum(v) {
   if (v == null || v === '') return null;
   const n = Number(String(v).replace(/[^0-9.\-]/g, ''));
@@ -112,6 +118,27 @@ function parseStructure(desc) {
   return { barriers, knockIn, lizard };
 }
 
+/**
+ * data/els.js 본문 직렬화.
+ * 상품 목록은 사람이 diff 로 읽을 수 있게 들여쓰고, 과거 시세(history)는
+ * 수천 개의 숫자라 한 줄로 눌러 담는다(줄마다 숫자 하나가 되는 걸 막는다).
+ */
+function serializeData(data) {
+  if (!data.history) return JSON.stringify(data, null, 2);
+  const compact = JSON.stringify(data.history);
+  return JSON.stringify({ ...data, history: '@@HISTORY@@' }, null, 2)
+    .replace('"@@HISTORY@@"', compact);
+}
+
+/** data/els.js 읽어 { header, data } 로 분해 */
+async function readData(file) {
+  const src = await readFile(file, 'utf8');
+  const header = src.split('window.ELS_DATA')[0];
+  const body = src.split(/window\.ELS_DATA\s*=\s*/)[1];
+  if (!body) throw new Error(`${file} 에서 window.ELS_DATA 를 찾지 못했습니다.`);
+  return { header, data: JSON.parse(body.trim().replace(/;\s*$/, '')) };
+}
+
 /** grid01 원소 -> data/els.js 스키마 */
 function normalize(r) {
   const name = String(r.itm_nm ?? '').trim();
@@ -170,7 +197,10 @@ function normalize(r) {
     schedule,
     knockIn,
     principalProtection,
-    riskGrade: null,                       // 응답의 omkt_drvs_risk_gcd 는 사내 코드값이라 등급으로 쓰지 않는다
+    // 응답의 omkt_drvs_risk_gcd 는 사내 코드값이라 등급으로 쓰지 않는다.
+    // 아래 두 값은 화면에서 읽은 위험등급 문구로 main() 에서 채운다.
+    riskGrade: null,                       // 1(매우높은위험) ~ 6(매우낮은위험)
+    riskLabel: null,                       // "높은위험" 등 원문 표기
     riskCode: String(r.omkt_drvs_risk_gcd ?? '') || null,
     status: String(r.prgs_stat_nm ?? '') || null,
     offerStart: toDate(r.apy_strt_dt),
@@ -234,6 +264,22 @@ async function main() {
     if (!nextKey) break;
   }
 
+  // 위험등급은 목록 API 응답에 없고(omkt_drvs_risk_gcd 는 사내 코드값) 화면에만
+  // "낮은위험" 같은 문구로 렌더링된다. 그려진 표에서 상품명과 함께 읽어 온다.
+  const riskByName = await page.evaluate(() => {
+    const GRADES = ['매우높은위험', '높은위험', '다소높은위험', '보통위험', '낮은위험', '매우낮은위험'];
+    const out = {};
+    for (const tr of document.querySelectorAll('table tbody tr')) {
+      const txt = (tr.textContent || '').replace(/\s+/g, ' ');
+      const name = (txt.match(/미래에셋증권\((?:ELS|ELB|DLS|DLB)\)[0-9A-Za-z]+/) || [])[0];
+      if (!name) continue;
+      const grade = GRADES.find((g) => txt.includes(g));
+      if (grade) out[name] = grade;
+    }
+    return out;
+  }).catch(() => ({}));
+  console.log(`화면에서 위험등급 ${Object.keys(riskByName).length}건 확인`);
+
   await browser.close();
 
   await writeFile(join(DEBUG_DIR, 'pages.json'), JSON.stringify(pages, null, 2));
@@ -247,6 +293,8 @@ async function main() {
     if (!p) { skipped.push({ itm_nm: r.itm_nm, desc: r.omkt_drv_desc_cn }); continue; }
     if (seen.has(p.code)) continue;
     seen.add(p.code);
+    const label = riskByName[p.name];
+    if (label) { p.riskLabel = label; p.riskGrade = RISK_GRADE[label] ?? null; }
     products.push(p);
   }
 
@@ -272,15 +320,17 @@ async function main() {
     process.exit(1);
   }
 
-  const header = (await readFile(OUT_DATA, 'utf8')).split('window.ELS_DATA')[0];
+  // 과거 시세는 collect_history.mjs 가 따로 채운다. 상품만 갈아끼우고 그대로 둔다.
+  const prev = await readData(OUT_DATA).catch(() => ({ header: '', data: {} }));
   const payload = {
     updatedAt: new Date().toISOString(),
     source: 'live',
     sourceNote: '미래에셋증권 홈페이지 ELS/DLS 캘린더 (청약 진행중)',
     sourceNoteEn: 'Mirae Asset Securities ELS/DLS calendar — currently on offer',
     products,
+    ...(prev.data.history ? { history: prev.data.history } : {}),
   };
-  await writeFile(OUT_DATA, header + 'window.ELS_DATA = ' + JSON.stringify(payload, null, 2) + ';\n');
+  await writeFile(OUT_DATA, prev.header + 'window.ELS_DATA = ' + serializeData(payload) + ';\n');
   console.log(`${OUT_DATA} 갱신 완료 — 상품 ${products.length}건`);
 }
 
@@ -289,4 +339,4 @@ if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) 
   main().catch((e) => { console.error(e); process.exit(1); });
 }
 
-export { parseStructure, normalize };
+export { parseStructure, normalize, serializeData, readData };

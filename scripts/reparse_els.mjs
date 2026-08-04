@@ -10,18 +10,12 @@
  * 사용: node scripts/reparse_els.mjs
  */
 
-import { readFile, writeFile } from 'node:fs/promises';
-import { parseStructure } from './collect_els.mjs';
+import { writeFile } from 'node:fs/promises';
+import { parseStructure, readData, serializeData } from './collect_els.mjs';
 
 const OUT_DATA = 'data/els.js';
 
-const src = await readFile(OUT_DATA, 'utf8');
-const [header, body] = [src.split('window.ELS_DATA')[0], src.split(/window\.ELS_DATA\s*=\s*/)[1]];
-if (!body) {
-  console.error(`${OUT_DATA} 에서 window.ELS_DATA 를 찾지 못했습니다.`);
-  process.exit(1);
-}
-const data = JSON.parse(body.trim().replace(/;\s*$/, ''));
+const { header, data } = await readData(OUT_DATA);
 
 let changed = 0;
 for (const p of data.products) {
@@ -51,5 +45,5 @@ if (!changed) {
   process.exit(0);
 }
 
-await writeFile(OUT_DATA, header + 'window.ELS_DATA = ' + JSON.stringify(data, null, 2) + ';\n');
+await writeFile(OUT_DATA, header + 'window.ELS_DATA = ' + serializeData(data) + ';\n');
 console.log(`${OUT_DATA} 갱신 완료 — ${changed}건`);
