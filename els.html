@@ -312,6 +312,7 @@ footer .disc strong{color:var(--body-strong);}
       <tbody></tbody>
     </table>
   </div>
+  <p style="font-size:14px;color:var(--muted);margin-top:12px" id="lizard-note"></p>
   <p style="font-size:14px;color:var(--muted);margin-top:12px" id="struct-desc"></p>
 </section>
 
@@ -531,6 +532,19 @@ function comma(n){ return String(Math.round(n)).replace(/\B(?=(\d{3})+(?!\d))/g,
 function money(manwon){
   return lang === 'en' ? 'KRW ' + comma(manwon * 10000) : comma(manwon) + '만원';
 }
+/* 수집 데이터의 상품 유형·진행상태는 한글 문자열이라 영문 화면에서 그대로 남는다.
+   홈페이지에서 쓰는 표현을 그대로 옮기고, 없는 값은 원문을 그대로 보여준다. */
+var SHAPE_EN = {
+  '스텝다운': 'Step-down',
+  '스텝다운 노낙인': 'Step-down, no knock-in',
+  '주식지급형 스텝다운': 'Step-down, physical delivery',
+  '월지급식': 'Monthly coupon',
+  '하이파이브 월지급식': 'High-Five, monthly coupon',
+  '리자드': 'Lizard'
+};
+var STATUS_EN = { '진행중': 'On offer', '청약마감': 'Closed', '마감': 'Closed', '판매예정': 'Upcoming' };
+function label(map, v){ return lang === 'en' ? (map[v] || v) : v; }
+
 function el(id){ return document.getElementById(id); }
 function svgNS(){ return 'http://www.w3.org/2000/svg'; }
 function mk(tag, attrs, text){
@@ -641,8 +655,8 @@ function renderKeyCards(){
 
   el('k-under').textContent = underlyingLabel(p);
   el('k-shape').innerHTML =
-    (p.shape ? '<span class="badge orange">' + p.shape + '</span> ' : '') +
-    (p.status ? '<span class="badge">' + p.status + '</span>' : '');
+    (p.shape ? '<span class="badge orange">' + label(SHAPE_EN, p.shape) + '</span> ' : '') +
+    (p.status ? '<span class="badge">' + label(STATUS_EN, p.status) + '</span>' : '');
   el('k-under-note').innerHTML = n > 1
     ? t('기초자산 ' + n + '개. 모든 판정은 <strong>가장 많이 떨어진 하나</strong>를 기준으로 합니다.',
         n + ' underlyings. Every test uses the <strong>worst performer</strong>.')
@@ -822,9 +836,26 @@ function renderLadder(){
       '<td class="num">' + step.barrier + '%</td>' +
       '<td class="num">+' + num(cumReturn(p, step.months), 2) + '%</td>' +
       '<td>' + t('워스트 퍼포머 종가가 최초기준가격의 ' + step.barrier + '% 이상',
-                 'Worst performer closes at or above ' + step.barrier + '% of the initial level') + '</td>';
+                 'Worst performer closes at or above ' + step.barrier + '% of the initial level') +
+        // 리자드 회차는 배리어를 못 채워도 한 번 더 낮은 선으로 상환 기회를 준다
+        (step.lizard != null
+          ? '<br><span style="color:var(--muted)">' +
+            t('또는 ' + step.lizard + '% 이상(리자드)', 'or at or above ' + step.lizard + '% (lizard)') +
+            '</span>'
+          : '') +
+      '</td>';
     tb.appendChild(tr);
   });
+
+  var lz = s.filter(function(step){ return step.lizard != null; })[0];
+  el('lizard-note').innerHTML = lz
+    ? t('리자드 조건 — ' + lz.months + '개월 평가일에 ' + lz.barrier + '% 를 못 채워도 ' + lz.lizard +
+          '% 이상이면 상환됩니다' +
+          (lz.lizardRate != null ? ' (이때 수익률은 연 ' + num(lz.lizardRate, 2) + '%).' : '.'),
+        'Lizard feature — at the ' + lz.months + '-month observation, redemption also occurs at or above ' +
+          lz.lizard + '% even if ' + lz.barrier + '% is missed' +
+          (lz.lizardRate != null ? ' (paying ' + num(lz.lizardRate, 2) + '% p.a.).' : '.'))
+    : '';
 
   // 홈페이지 원문 구조 표기를 그대로 보여줘 위 표와 대조할 수 있게 한다
   el('struct-desc').textContent = p.structureDesc

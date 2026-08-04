@@ -767,12 +767,30 @@ window.ELS_DATA = {
       "maturityMonths": 36,
       "schedule": [
         {
-          "months": 18,
+          "months": 6,
           "barrier": 80
         },
         {
-          "months": 36,
+          "months": 12,
+          "barrier": 75,
+          "lizard": 45,
+          "lizardRate": 20.5
+        },
+        {
+          "months": 18,
           "barrier": 75
+        },
+        {
+          "months": 24,
+          "barrier": 70
+        },
+        {
+          "months": 30,
+          "barrier": 65
+        },
+        {
+          "months": 36,
+          "barrier": 60
         }
       ],
       "knockIn": null,
@@ -1978,12 +1996,30 @@ window.ELS_DATA = {
       "maturityMonths": 36,
       "schedule": [
         {
-          "months": 18,
+          "months": 6,
           "barrier": 80
         },
         {
-          "months": 36,
+          "months": 12,
+          "barrier": 75,
+          "lizard": 40,
+          "lizardRate": 18.4
+        },
+        {
+          "months": 18,
           "barrier": 75
+        },
+        {
+          "months": 24,
+          "barrier": 70
+        },
+        {
+          "months": 30,
+          "barrier": 65
+        },
+        {
+          "months": 36,
+          "barrier": 60
         }
       ],
       "knockIn": null,
