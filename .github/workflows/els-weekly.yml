@@ -1,0 +1,87 @@
+name: ELS 상품 주간 수집
+
+on:
+  workflow_dispatch:
+  schedule:
+    # 매주 월요일 08:00 KST (일요일 23:00 UTC)
+    - cron: '0 23 * * 0'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: els-weekly
+  cancel-in-progress: false
+
+jobs:
+  collect:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref_name }}
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Playwright 설치
+        run: npm i -D playwright@1.56.1 && npx playwright install --with-deps chromium
+
+      # 수집 실패는 잡을 실패시키지 않는다.
+      # data/els.js 를 건드리지 않고 끝내므로 페이지는 직전 주 데이터를 유지한다.
+      - name: 상품 수집
+        id: collect
+        continue-on-error: true
+        run: node scripts/collect_els.mjs
+
+      - name: 수집 실패 진단자료 업로드
+        if: steps.collect.outcome == 'failure'
+        uses: actions/upload-artifact@v4
+        with:
+          name: els-collect-debug
+          path: |
+            discovery/
+            collect-debug/
+          retention-days: 14
+          if-no-files-found: ignore
+
+      - name: 단일 파일 재빌드
+        run: node scripts/build_standalone.mjs
+
+      - name: 커밋
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data/els.js els-standalone.html
+          if git diff --cached --quiet; then
+            echo "변경 없음 — 커밋 생략"
+          else
+            git commit -m "chore(els): 주간 상품 데이터 갱신 ($(date -u +%Y-%m-%d))"
+            git push
+          fi
+
+      - name: 결과 요약
+        if: always()
+        run: |
+          {
+            echo "### ELS 주간 수집 결과"
+            echo ""
+            if [ "${{ steps.collect.outcome }}" = "success" ]; then
+              echo "- 수집: 성공"
+            else
+              echo "- 수집: **실패** — \`data/els.js\` 는 직전 데이터를 그대로 유지합니다."
+              echo "- 진단자료는 \`els-collect-debug\` 아티팩트를 확인하세요."
+            fi
+            echo ""
+            echo '```json'
+            node -e "const d=require('./data/els.js.json');" 2>/dev/null || \
+              node -e "
+                const fs=require('fs');
+                const src=fs.readFileSync('data/els.js','utf8');
+                const m=src.match(/updatedAt:\s*(.*)/); const s=src.match(/source:\s*(.*)/);
+                console.log(JSON.stringify({updatedAt:(m&&m[1]||'').trim(), source:(s&&s[1]||'').trim(),
+                  products:(src.match(/^\s{4}\{/gm)||[]).length}, null, 2));
+              "
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
