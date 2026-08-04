@@ -194,6 +194,28 @@ tr.highlight td{background:var(--gray-hl); font-weight:600;}
   margin-top:14px; padding:14px 18px; border-left:3px solid var(--warning);
   background:#FDF6E3; color:#6b5209; font-size:16px; border-radius:0 4px 4px 0;
 }
+/* 열이 11개라 기본 표 스타일 그대로면 1440px 화면에서도 가로로 넘친다.
+   헤더 문구를 두 줄로 접고 셀 여백을 줄여 좌우 스크롤 없이 들어가게 한다. */
+/* 데스크톱에서는 다 들어가고, 폭이 모자라는 좁은 화면에서만 가로 스크롤 */
+#finder-table{font-size:16px; min-width:820px;}
+#finder-table thead th{white-space:normal; padding:11px 10px; line-height:1.3;}
+#finder-table tbody td{padding:11px 10px;}
+#finder-table .und{display:inline-block; max-width:170px; line-height:1.4; word-break:keep-all;}
+#finder-table .nw{white-space:nowrap;}
+#finder-table .period{white-space:nowrap; font-size:15px;}
+#finder-table .bar{white-space:nowrap;}
+#finder-table .bar .cnt{color:var(--muted); font-size:14px;}
+/* 화면이 좁아지면 만기·상환주기로 알 수 있는 두 열을 접어 가로 스크롤을 막는다.
+   두 값 모두 아래 "상품 상세"에 그대로 남는다. */
+@media (max-width:1180px){
+  #finder-table{min-width:700px;}
+  #finder-table thead th:nth-child(5), #finder-table tbody td:nth-child(5),
+  #finder-table thead th:nth-child(7), #finder-table tbody td:nth-child(7){ display:none; }
+}
+@media (max-width:960px){
+  #finder-table{min-width:560px; font-size:15px;}
+  #finder-table thead th:nth-child(8), #finder-table tbody td:nth-child(8){ display:none; }
+}
 #finder-table tbody tr{cursor:pointer;}
 #finder-table tbody tr.selected td{background:var(--gray-hl); font-weight:600;}
 #finder-table tbody tr.selected td:first-child{box-shadow:inset 3px 0 0 var(--orange);}
@@ -332,13 +354,13 @@ footer .disc strong{color:var(--body-strong);}
           <th data-ko="유형" data-en="Type">유형</th>
           <th data-ko="기초자산" data-en="Underlying">기초자산</th>
           <th class="num" data-ko="최대 연 수익률" data-en="Max p.a.">최대 연 수익률</th>
-          <th class="num" data-ko="만기 보유 시 총액" data-en="Total if held">만기 보유 시 총액</th>
+          <th class="num" data-ko="만기 보유 시 총액" data-en="Total">만기 보유 시 총액</th>
           <th class="num" data-ko="만기" data-en="Tenor">만기</th>
           <th class="num" data-ko="주기" data-en="Cycle">주기</th>
-          <th data-ko="조기상환 배리어" data-en="Barriers">조기상환 배리어</th>
+          <th class="num" data-ko="배리어" data-en="Barriers">배리어</th>
           <th data-ko="낙인" data-en="KI">낙인</th>
           <th data-ko="위험등급" data-en="Risk">위험등급</th>
-          <th data-ko="청약기간" data-en="Offer period">청약기간</th>
+          <th data-ko="청약기간" data-en="Offer">청약기간</th>
         </tr>
       </thead>
       <tbody></tbody>
@@ -866,9 +888,16 @@ function offerBadge(p){
   var st = offerState(p);
   if (st === 'unknown') return '';
   var txt = st === 'closed'   ? t('청약마감','Closed')
-          : st === 'upcoming' ? t('청약예정','Upcoming')
-          :                     t('청약중','On offer');
+          : st === 'upcoming' ? t('청약예정','Soon')
+          :                     t('청약중','Open');
   return '<span class="badge ' + st + '">' + txt + '</span>';
+}
+/** 목록용 짧은 청약기간. 같은 해면 뒤쪽 연도를 생략한다 ("2026.07.27 ~ 08.05") */
+function offerPeriodShort(p){
+  if (!p.offerStart && !p.offerEnd) return '–';
+  var a = fmtDate(p.offerStart), b = fmtDate(p.offerEnd);
+  if (p.offerStart && p.offerEnd && p.offerStart.slice(0,4) === p.offerEnd.slice(0,4)) b = b.slice(5);
+  return a + ' ~ ' + b;
 }
 /** 수집 후 며칠 지났는지 (모르면 null) */
 function daysSinceUpdate(){
@@ -897,6 +926,11 @@ function riskLabel(p){
       : p.riskLabel + (p.riskGrade ? ' (' + p.riskGrade + '등급)' : '');
   }
   return p.principalProtection >= 100 ? t('원금지급형','Principal-protected') : '–';
+}
+/** 목록용 짧은 위험등급 표기 ("매우높은위험 (1등급)" 은 열을 넓힌다) */
+function riskShort(p){
+  if (!p.riskLabel) return p.principalProtection >= 100 ? t('원금지급형','Protected') : '–';
+  return lang === 'en' && p.riskGrade ? 'Grade ' + p.riskGrade : p.riskLabel;
 }
 /** 필터·검색 그룹 키 (등급 문구가 없으면 원금지급 여부로 묶는다) */
 function riskKey(p){
@@ -1027,24 +1061,30 @@ function renderFinder(){
   list.forEach(function(p){
     var i = DATA.products.indexOf(p);
     var s = schedule(p);
-    var period = (p.offerStart || p.offerEnd)
-      ? fmtDate(p.offerStart) + ' ~ ' + fmtDate(p.offerEnd) : '–';
+    var period = offerPeriodShort(p);
     var tr = document.createElement('tr');
     if (i === current) tr.className = 'selected';
+    // 상품명은 모두 "미래에셋증권(…)" 으로 시작해 열만 넓히므로 짧은 이름을 쓰고
+    // 전체 이름은 title 로 남긴다.
+    tr.title = p.name || '';
     tr.innerHTML =
-      '<td>' + (p.name || shortName(p)) +
+      '<td class="nw">' + shortName(p) +
         (live ? '' : ' <span class="badge sample">' + t('예시','Sample') + '</span>') + '</td>' +
       '<td><span class="badge ' + (p.type==='ELB'?'blue':'orange') + '">' + (p.type||'ELS') + '</span></td>' +
-      '<td>' + underlyingLabel(p) + '</td>' +
+      '<td><span class="und">' + underlyingLabel(p) + '</span></td>' +
       '<td class="num">' + num(annualRate(p),2) + '%</td>' +
       '<td class="num">' + num(totalRate(p),2) + '%</td>' +
-      '<td class="num">' + p.maturityMonths + (lang==='en'?'M':'개월') + '</td>' +
-      '<td class="num">' + cycleMonths(p) + (lang==='en'?'M':'개월') + '</td>' +
-      '<td class="num">' + s.map(function(x){ return x.barrier; }).join('-') + '</td>' +
-      '<td class="num">' + (p.principalProtection>=100 ? t('원금지급','Protected')
+      '<td class="num nw">' + p.maturityMonths + (lang==='en'?'M':'개월') + '</td>' +
+      '<td class="num nw">' + cycleMonths(p) + (lang==='en'?'M':'개월') + '</td>' +
+      // 배리어는 12회차까지 있어 다 적으면 행이 몇 줄씩 높아진다.
+      // 목록에서는 첫→마지막과 회차 수만 보이고, 전체 순서는 title 과 아래 상세에서 본다.
+      // 회차 수는 만기/상환주기로 알 수 있어 생략한다. 전체 순서는 title 에 남긴다.
+      '<td class="num"><span class="bar" title="' + s.map(function(x){ return x.barrier; }).join('-') + '">' +
+        s[0].barrier + ' → ' + s[s.length-1].barrier + '</span></td>' +
+      '<td class="num nw">' + (p.principalProtection>=100 ? t('원금지급','None')
                             : p.knockIn==null ? t('노낙인','None') : p.knockIn + '%') + '</td>' +
-      '<td>' + riskLabel(p) + '</td>' +
-      '<td>' + period + ' ' + offerBadge(p) + '</td>';
+      '<td class="nw">' + riskShort(p) + '</td>' +
+      '<td class="period">' + period + ' ' + offerBadge(p) + '</td>';
     tr.addEventListener('click', function(){
       current = i; renderAll();
       el('detail').scrollIntoView({ behavior:'smooth', block:'start' });
