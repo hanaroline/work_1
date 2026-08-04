@@ -90,10 +90,12 @@ jobs:
               console.log(`- 기준: ${d.updatedAt ?? "미수집"} (source=${d.source})`);
               console.log(`- 상품 ${d.products.length}건`);
               console.log("");
-              console.log("| 상품 | 기초자산 | 연 수익률 | 만기 | 낙인 | 청약마감 |");
-              console.log("|---|---|---|---|---|---|");
+              const total = p => p.rateBasis === "total" ? p.couponRate : p.couponRate * p.maturityMonths / 12;
+              const annual = p => (total(p) * 12 / p.maturityMonths).toFixed(2);
+              console.log("| 상품 | 기초자산 | 연 환산 | 만기 총액 | 만기 | 낙인 | 청약마감 |");
+              console.log("|---|---|---|---|---|---|---|");
               for (const p of d.products.slice(0, 20)) {
-                console.log(`| ${p.name} | ${p.underlyings.join(", ")} | ${p.couponAnnual}% | ${p.maturityMonths}개월 | ${p.knockIn ?? "-"} | ${p.offerEnd ?? "-"} |`);
+                console.log(`| ${p.name} | ${p.underlyings.join(", ")} | ${annual(p)}% | ${total(p).toFixed(2)}% | ${p.maturityMonths}개월 | ${p.knockIn ?? "-"} | ${p.offerEnd ?? "-"} |`);
               }
             '
           } >> "$GITHUB_STEP_SUMMARY"

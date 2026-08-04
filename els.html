@@ -278,7 +278,7 @@ footer .disc strong{color:var(--body-strong);}
       <p class="note" id="k-under-note" style="margin-top:10px"></p>
     </div>
     <div class="card">
-      <div class="label" data-ko="제시 수익률 (세전, 연)" data-en="Coupon (p.a., pre-tax)">제시 수익률 (세전, 연)</div>
+      <div class="label" data-ko="조건 충족 시 최대 연 수익률 (세전)" data-en="Max coupon if conditions met (p.a., pre-tax)">조건 충족 시 최대 연 수익률 (세전)</div>
       <div class="stat orange"><span id="k-coupon">–</span><span style="font-size:26px">%</span></div>
       <p class="note" id="k-coupon-note" style="margin-top:10px"></p>
     </div>
@@ -415,7 +415,8 @@ footer .disc strong{color:var(--body-strong);}
           <th data-ko="상품" data-en="Product">상품</th>
           <th data-ko="유형" data-en="Type">유형</th>
           <th data-ko="기초자산" data-en="Underlying">기초자산</th>
-          <th class="num" data-ko="연 수익률" data-en="Coupon">연 수익률</th>
+          <th class="num" data-ko="최대 연 수익률" data-en="Max p.a.">최대 연 수익률</th>
+          <th class="num" data-ko="만기 보유 시 총액" data-en="Total if held">만기 보유 시 총액</th>
           <th class="num" data-ko="만기" data-en="Tenor">만기</th>
           <th data-ko="조기상환 배리어" data-en="Barriers">조기상환 배리어</th>
           <th data-ko="낙인" data-en="KI">낙인</th>
@@ -582,8 +583,25 @@ function schedule(p){
 }
 function maturity(p){ var s = schedule(p); return s[s.length-1]; }
 
+/**
+ * 상품이 제시하는 수익률의 기준.
+ *  'annual' — 연 수익률. 조기상환 시 수익 = 연율 × 경과 연수 (홈페이지 표기 기준)
+ *  'total'  — 만기 기준 총 수익률. 조기상환 시 수익 = 총액 × (경과 개월 / 만기 개월)
+ * 예전 데이터는 couponAnnual 만 있으므로 그 경우 연율로 본다.
+ */
+function rateBasis(p){ return p.rateBasis === 'total' ? 'total' : 'annual'; }
+function rawRate(p){ return p.couponRate != null ? p.couponRate : p.couponAnnual; }
+
+/** 연 환산 수익률(세전, %) */
+function annualRate(p){
+  return rateBasis(p) === 'total' ? rawRate(p) * 12 / p.maturityMonths : rawRate(p);
+}
+/** 만기까지 갔을 때의 총 수익률(세전, %) */
+function totalRate(p){
+  return rateBasis(p) === 'total' ? rawRate(p) : rawRate(p) * p.maturityMonths / 12;
+}
 /** 해당 회차 상환 시 누적 수익률(세전, %) */
-function cumReturn(p, months){ return p.couponAnnual * (months / 12); }
+function cumReturn(p, months){ return totalRate(p) * (months / p.maturityMonths); }
 
 function underlyingLabel(p){
   return (p.underlyings || []).join(' · ') || t('정보 없음','n/a');
@@ -631,12 +649,14 @@ function renderKeyCards(){
     : t('기초자산 1개. 판정 기준이 단순해 상대적으로 위험이 낮습니다.',
         'Single underlying — a simpler, relatively lower-risk test.');
 
-  el('k-coupon').textContent = num(p.couponAnnual, 2);
+  el('k-coupon').textContent = num(annualRate(p), 2);
   el('k-coupon-note').innerHTML = t(
-    '만기 ' + p.maturityMonths + '개월. 첫 평가일(' + schedule(p)[0].months + '개월)에 상환되면 ' +
-      num(cumReturn(p, schedule(p)[0].months), 2) + '%를 받습니다.',
-    p.maturityMonths + '-month tenor. Redemption at the first observation (' + schedule(p)[0].months +
-      'M) pays ' + num(cumReturn(p, schedule(p)[0].months), 2) + '%.'
+    '<strong>확정 수익이 아니라 상한</strong>입니다. 첫 평가일(' + schedule(p)[0].months + '개월)에 상환되면 ' +
+      num(cumReturn(p, schedule(p)[0].months), 2) + '%, 만기(' + p.maturityMonths + '개월)까지 가면 총 ' +
+      num(totalRate(p), 2) + '%를 받습니다.',
+    'This is a <strong>cap, not a guarantee</strong>. Redemption at the first observation (' +
+      schedule(p)[0].months + 'M) pays ' + num(cumReturn(p, schedule(p)[0].months), 2) +
+      '%; held to the ' + p.maturityMonths + '-month maturity, ' + num(totalRate(p), 2) + '% in total.'
   );
 
   if (p.principalProtection >= 100){
@@ -652,8 +672,12 @@ function renderKeyCards(){
         '% 미만일 때만 손실이 확정됩니다.',
       'No intra-term test. Loss is realised only if the level is below ' + maturity(p).barrier + '% <strong>at maturity</strong>.');
   } else {
-    el('k-ki').textContent = t('낙인 ' + p.knockIn + '% 터치 + 만기 ' + maturity(p).barrier + '% 미만',
-                               'KI ' + p.knockIn + '% breached + below ' + maturity(p).barrier + '% at maturity');
+    var maxLoss = p.maxLossRate != null && p.maxLossRate > 0
+      ? t(' 최대손실률 ' + num(p.maxLossRate, 0) + '%.', ' Max loss ' + num(p.maxLossRate, 0) + '%.')
+      : '';
+    el('k-ki').textContent = t('낙인 ' + p.knockIn + '% 터치 + 만기 ' + maturity(p).barrier + '% 미만' ,
+                               'KI ' + p.knockIn + '% breached + below ' + maturity(p).barrier + '% at maturity')
+                             + maxLoss;
     el('k-ki-note').innerHTML = t(
       '<strong>두 조건이 모두</strong> 성립할 때만 손실입니다. 낙인을 터치했더라도 만기에 ' + maturity(p).barrier +
         '% 이상으로 회복하면 약속된 수익을 받습니다.',
@@ -672,20 +696,39 @@ function renderPicker(){
     box.innerHTML = '<p style="color:var(--muted)">' + t('표시할 상품이 없습니다.','No products to display.') + '</p>';
     return;
   }
-  DATA.products.forEach(function(p, i){
+  // 상품이 많으면 화면을 잡아먹으므로 앞쪽 몇 개만 버튼으로 두고
+  // 나머지는 아래 "현재 청약 중인 상품" 표에서 행을 클릭해 고르게 한다.
+  var LIMIT = 8;
+  var shown = DATA.products.slice(0, LIMIT);
+  if (current >= LIMIT) shown = shown.concat([DATA.products[current]]);
+
+  shown.forEach(function(p){
+    var i = DATA.products.indexOf(p);
     var b = document.createElement('button');
     b.type = 'button';
     b.setAttribute('aria-pressed', i === current ? 'true' : 'false');
     b.innerHTML = '<strong>' + shortName(p) + '</strong>' +
-      '<span class="sm">' + underlyingLabel(p) + ' · ' + t('연 ','') + num(p.couponAnnual,2) + '%' +
+      '<span class="sm">' + underlyingLabel(p) + ' · ' + t('연 ','') + num(annualRate(p),2) + '%' +
       (lang === 'en' ? ' p.a.' : '') + ' · ' + p.maturityMonths + (lang==='en'?'M':'개월') + '</span>';
     b.addEventListener('click', function(){ current = i; renderAll(); });
     box.appendChild(b);
   });
+
+  if (DATA.products.length > LIMIT){
+    var more = document.createElement('a');
+    more.href = '#offers';
+    more.style.cssText = 'align-self:center;font-size:16px;color:var(--blue);padding:10px 4px';
+    more.textContent = t('전체 ' + DATA.products.length + '개 상품 보기 →',
+                         'See all ' + DATA.products.length + ' products →');
+    box.appendChild(more);
+  }
 }
+/** "미래에셋증권(ELS)37993" -> "ELS 37993", "… 제31234회" -> "ELS 31234회" */
 function shortName(p){
-  var m = String(p.name || '').match(/제?\s*(\d{3,6})\s*회/);
-  var no = m ? m[1] + (lang==='en' ? '' : '회') : (p.code || '');
+  var name = String(p.name || '');
+  var m = name.match(/\((?:ELS|ELB|DLS|DLB)\)\s*([0-9A-Za-z]+)/i)
+       || name.match(/제?\s*(\d{3,6})\s*회/);
+  var no = m ? m[1] + (/회/.test(name) && lang !== 'en' ? '회' : '') : (p.code || '');
   return (p.type || 'ELS') + ' ' + no;
 }
 
@@ -1086,7 +1129,8 @@ function renderOffers(){
         (live ? '' : ' <span class="badge sample">' + t('예시','Sample') + '</span>') + '</td>' +
       '<td><span class="badge ' + (p.type==='ELB'?'blue':'orange') + '">' + (p.type||'ELS') + '</span></td>' +
       '<td>' + underlyingLabel(p) + '</td>' +
-      '<td class="num">' + num(p.couponAnnual,2) + '%</td>' +
+      '<td class="num">' + num(annualRate(p),2) + '%</td>' +
+      '<td class="num">' + num(totalRate(p),2) + '%</td>' +
       '<td class="num">' + p.maturityMonths + (lang==='en'?'M':'개월') + '</td>' +
       '<td class="num">' + bars + '</td>' +
       '<td class="num">' + (p.principalProtection>=100 ? t('원금지급','Protected')

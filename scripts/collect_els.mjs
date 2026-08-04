@@ -89,8 +89,8 @@ function normalize(r) {
   const name = String(r.itm_nm ?? '').trim();
   if (!name) return null;
 
-  const couponAnnual = toNum(r.omkt_drv_frcs_ern_r);
-  if (couponAnnual == null) return null;
+  const couponRate = toNum(r.omkt_drv_frcs_ern_r);
+  if (couponRate == null) return null;
 
   const { barriers, knockIn: descKi } = parseStructure(r.omkt_drv_desc_cn);
 
@@ -128,7 +128,13 @@ function normalize(r) {
     type,
     shape: String(r.omkt_drvs_pcd_nm ?? '').trim() || null,
     underlyings,
-    couponAnnual,
+    couponRate,
+    // omkt_drv_frcs_ern_r 은 "조건 충족시 연 수익률(세전)" 의 최대치다.
+    // 홈페이지 화면의 컬럼 헤더와 표시값으로 확인 (scripts/verify_rate_basis.mjs).
+    // 원금지급형 ELB 도 10%대가 나오는데, 이는 월지급 쿠폰이 조건부라
+    // "최대" 연율일 뿐 확정 수익이 아니기 때문이다.
+    rateBasis: 'annual',
+    maxLossRate: toNum(r.max_abl_los_r),   // 조건 미충족시 최대손실률 %
     maturityMonths,
     schedule,
     knockIn,
@@ -214,8 +220,10 @@ async function main() {
   }
 
   // 청약 마감일이 가까운 순 → 수익률 높은 순
+  // 청약 마감이 임박한 순 → 연 환산 수익률 높은 순
+  const annual = (p) => p.couponRate * 12 / p.maturityMonths;
   products.sort((a, b) =>
-    (a.offerEnd || '9999').localeCompare(b.offerEnd || '9999') || b.couponAnnual - a.couponAnnual);
+    (a.offerEnd || '9999').localeCompare(b.offerEnd || '9999') || annual(b) - annual(a));
 
   console.log(`\n원시 ${rows.length}건 → 정규화 ${products.length}건 (스킵 ${skipped.length}건)`);
   if (skipped.length) {

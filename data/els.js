@@ -22,7 +22,6 @@ window.ELS_DATA = {
         "삼성전자",
         "SK하이닉스"
       ],
-      "couponAnnual": 53,
       "maturityMonths": 36,
       "schedule": [
         {
@@ -84,7 +83,9 @@ window.ELS_DATA = {
       "issueDate": null,
       "minAmount": null,
       "structureDesc": "85-85-85-85-85-85-85-85-85-80-75-70, KI 35, 원화",
-      "url": "https://securities.miraeasset.com/hks/hks4022/n01.do"
+      "url": "https://securities.miraeasset.com/hks/hks4022/n01.do",
+      "couponRate": 53,
+      "rateBasis": "annual"
     },
     {
       "code": "KR6MD0008RJ5",
@@ -95,7 +96,6 @@ window.ELS_DATA = {
         "삼성전자",
         "SK하이닉스"
       ],
-      "couponAnnual": 50.4,
       "maturityMonths": 12,
       "schedule": [
         {
@@ -125,7 +125,9 @@ window.ELS_DATA = {
       "issueDate": null,
       "minAmount": null,
       "structureDesc": "70-70-70-65, KI 40, 원화, 1년만기",
-      "url": "https://securities.miraeasset.com/hks/hks4022/n01.do"
+      "url": "https://securities.miraeasset.com/hks/hks4022/n01.do",
+      "couponRate": 50.4,
+      "rateBasis": "annual"
     },
     {
       "code": "KR6MD0008RL1",
@@ -136,7 +138,6 @@ window.ELS_DATA = {
         "마이크론 테크놀로지",
         "KOSPI200"
       ],
-      "couponAnnual": 44.6,
       "maturityMonths": 36,
       "schedule": [
         {
@@ -174,7 +175,9 @@ window.ELS_DATA = {
       "issueDate": null,
       "minAmount": null,
       "structureDesc": "80-80-75-75-70-70, KI 35, 원화",
-      "url": "https://securities.miraeasset.com/hks/hks4022/n01.do"
+      "url": "https://securities.miraeasset.com/hks/hks4022/n01.do",
+      "couponRate": 44.6,
+      "rateBasis": "annual"
     },
     {
       "code": "KR6MD0008RC0",
@@ -185,7 +188,6 @@ window.ELS_DATA = {
         "KOSPI200",
         "SK하이닉스"
       ],
-      "couponAnnual": 42.3,
       "maturityMonths": 12,
       "schedule": [
         {
@@ -215,7 +217,9 @@ window.ELS_DATA = {
       "issueDate": null,
       "minAmount": null,
       "structureDesc": "70-70-70-65, KI 35, 원화, 1년만기",
-      "url": "https://securities.miraeasset.com/hks/hks4022/n01.do"
+      "url": "https://securities.miraeasset.com/hks/hks4022/n01.do",
+      "couponRate": 42.3,
+      "rateBasis": "annual"
     },
     {
       "code": "KR6MD0008RK3",
@@ -226,7 +230,6 @@ window.ELS_DATA = {
         "마이크론 테크놀로지",
         "팔란티어 테크"
       ],
-      "couponAnnual": 40.6,
       "maturityMonths": 36,
       "schedule": [
         {
@@ -264,7 +267,9 @@ window.ELS_DATA = {
       "issueDate": null,
       "minAmount": null,
       "structureDesc": "75-75-75-75-70-70, KI 30, 원화",
-      "url": "https://securities.miraeasset.com/hks/hks4022/n01.do"
+      "url": "https://securities.miraeasset.com/hks/hks4022/n01.do",
+      "couponRate": 40.6,
+      "rateBasis": "annual"
     },
     {
       "code": "KR6MD0008RH9",
@@ -275,7 +280,6 @@ window.ELS_DATA = {
         "삼성전자",
         "SK하이닉스"
       ],
-      "couponAnnual": 40.5,
       "maturityMonths": 36,
       "schedule": [
         {
@@ -337,7 +341,9 @@ window.ELS_DATA = {
       "issueDate": null,
       "minAmount": null,
       "structureDesc": "75-75-75-75-75-75-75-75-70-70-70-65, KI 30, 원화",
-      "url": "https://securities.miraeasset.com/hks/hks4022/n01.do"
+      "url": "https://securities.miraeasset.com/hks/hks4022/n01.do",
+      "couponRate": 40.5,
+      "rateBasis": "annual"
     },
     {
       "code": "KR6MD0008RB2",
@@ -348,7 +354,6 @@ window.ELS_DATA = {
         "삼성전자",
         "SK하이닉스"
       ],
-      "couponAnnual": 34.41,
       "maturityMonths": 36,
       "schedule": [
         {
@@ -386,7 +391,9 @@ window.ELS_DATA = {
       "issueDate": null,
       "minAmount": null,
       "structureDesc": "85-85-85-80-75-70(월지급배리어:50), KI 30, 원화",
-      "url": "https://securities.miraeasset.com/hks/hks4022/n01.do"
+      "url": "https://securities.miraeasset.com/hks/hks4022/n01.do",
+      "couponRate": 34.41,
+      "rateBasis": "annual"
     },
     {
       "code": "KR6MD0008RA4",
@@ -397,7 +404,6 @@ window.ELS_DATA = {
         "삼성전자",
         "SK하이닉스"
       ],
-      "couponAnnual": 33,
       "maturityMonths": 36,
       "schedule": [
         {
@@ -459,7 +465,9 @@ window.ELS_DATA = {
       "issueDate": null,
       "minAmount": null,
       "structureDesc": "75-75-75-75-75-75-75-75-70-70-70-65, KI 25, 원화",
-      "url": "https://securities.miraeasset.com/hks/hks4022/n01.do"
+      "url": "https://securities.miraeasset.com/hks/hks4022/n01.do",
+      "couponRate": 33,
+      "rateBasis": "annual"
     },
     {
       "code": "KR6MD0008R96",
@@ -471,7 +479,6 @@ window.ELS_DATA = {
         "HSCEI",
         "KOSPI200"
       ],
-      "couponAnnual": 24.2,
       "maturityMonths": 36,
       "schedule": [
         {
@@ -509,7 +516,9 @@ window.ELS_DATA = {
       "issueDate": null,
       "minAmount": null,
       "structureDesc": "85-85-85-80-75-70, KI 35, 원화",
-      "url": "https://securities.miraeasset.com/hks/hks4022/n01.do"
+      "url": "https://securities.miraeasset.com/hks/hks4022/n01.do",
+      "couponRate": 24.2,
+      "rateBasis": "annual"
     },
     {
       "code": "KR6MD0008RG1",
@@ -521,7 +530,6 @@ window.ELS_DATA = {
         "HSCEI",
         "KOSPI200"
       ],
-      "couponAnnual": 24.2,
       "maturityMonths": 36,
       "schedule": [
         {
@@ -559,7 +567,9 @@ window.ELS_DATA = {
       "issueDate": null,
       "minAmount": null,
       "structureDesc": "80-80-80-80-75-70, KI 40, 원화",
-      "url": "https://securities.miraeasset.com/hks/hks4022/n01.do"
+      "url": "https://securities.miraeasset.com/hks/hks4022/n01.do",
+      "couponRate": 24.2,
+      "rateBasis": "annual"
     },
     {
       "code": "KR6MD0008R88",
@@ -571,7 +581,6 @@ window.ELS_DATA = {
         "KOSPI200",
         "S&P500"
       ],
-      "couponAnnual": 23.5,
       "maturityMonths": 36,
       "schedule": [
         {
@@ -609,7 +618,9 @@ window.ELS_DATA = {
       "issueDate": null,
       "minAmount": null,
       "structureDesc": "80-75-75-70-65-60, KI -, 원화",
-      "url": "https://securities.miraeasset.com/hks/hks4022/n01.do"
+      "url": "https://securities.miraeasset.com/hks/hks4022/n01.do",
+      "couponRate": 23.5,
+      "rateBasis": "annual"
     },
     {
       "code": "KR6MD0008RF3",
@@ -621,7 +632,6 @@ window.ELS_DATA = {
         "KOSPI200",
         "S&P500"
       ],
-      "couponAnnual": 22.2,
       "maturityMonths": 36,
       "schedule": [
         {
@@ -683,7 +693,9 @@ window.ELS_DATA = {
       "issueDate": null,
       "minAmount": null,
       "structureDesc": "85-85-85-85-80-80-80-80-75-75-75-70, KI 30, 원화",
-      "url": "https://securities.miraeasset.com/hks/hks4022/n01.do"
+      "url": "https://securities.miraeasset.com/hks/hks4022/n01.do",
+      "couponRate": 22.2,
+      "rateBasis": "annual"
     },
     {
       "code": "KR6MD0008R70",
@@ -695,7 +707,6 @@ window.ELS_DATA = {
         "KOSPI200",
         "S&P500"
       ],
-      "couponAnnual": 20.5,
       "maturityMonths": 36,
       "schedule": [
         {
@@ -717,7 +728,9 @@ window.ELS_DATA = {
       "issueDate": null,
       "minAmount": null,
       "structureDesc": "80-75(45)-75-70-65-60, KI -, 원화, 리자드 조건 충족 시 연 20.5%",
-      "url": "https://securities.miraeasset.com/hks/hks4022/n01.do"
+      "url": "https://securities.miraeasset.com/hks/hks4022/n01.do",
+      "couponRate": 20.5,
+      "rateBasis": "annual"
     },
     {
       "code": "KR6MD0008R62",
@@ -727,7 +740,6 @@ window.ELS_DATA = {
       "underlyings": [
         "KOSPI200"
       ],
-      "couponAnnual": 20.3,
       "maturityMonths": 36,
       "schedule": [
         {
@@ -789,7 +801,9 @@ window.ELS_DATA = {
       "issueDate": null,
       "minAmount": null,
       "structureDesc": "85-85-85-85-85-85-85-85-85-80-75-70, KI 30, 원화",
-      "url": "https://securities.miraeasset.com/hks/hks4022/n01.do"
+      "url": "https://securities.miraeasset.com/hks/hks4022/n01.do",
+      "couponRate": 20.3,
+      "rateBasis": "annual"
     },
     {
       "code": "KR6MD0008R54",
@@ -801,7 +815,6 @@ window.ELS_DATA = {
         "KOSPI200",
         "S&P500"
       ],
-      "couponAnnual": 20,
       "maturityMonths": 36,
       "schedule": [
         {
@@ -863,7 +876,9 @@ window.ELS_DATA = {
       "issueDate": null,
       "minAmount": null,
       "structureDesc": "85-85-85-85-80-80-80-80-75-75-75-70, KI 25, 원화",
-      "url": "https://securities.miraeasset.com/hks/hks4022/n01.do"
+      "url": "https://securities.miraeasset.com/hks/hks4022/n01.do",
+      "couponRate": 20,
+      "rateBasis": "annual"
     },
     {
       "code": "KR6MD0008R47",
@@ -873,7 +888,6 @@ window.ELS_DATA = {
       "underlyings": [
         "KOSPI200"
       ],
-      "couponAnnual": 19,
       "maturityMonths": 12,
       "schedule": [
         {
@@ -903,7 +917,9 @@ window.ELS_DATA = {
       "issueDate": null,
       "minAmount": null,
       "structureDesc": "85-80-75-70, KI 35, 원화, 1년만기",
-      "url": "https://securities.miraeasset.com/hks/hks4022/n01.do"
+      "url": "https://securities.miraeasset.com/hks/hks4022/n01.do",
+      "couponRate": 19,
+      "rateBasis": "annual"
     },
     {
       "code": "KR6MD0008R39",
@@ -913,7 +929,6 @@ window.ELS_DATA = {
       "underlyings": [
         "KOSPI200"
       ],
-      "couponAnnual": 17.3,
       "maturityMonths": 36,
       "schedule": [
         {
@@ -975,7 +990,9 @@ window.ELS_DATA = {
       "issueDate": null,
       "minAmount": null,
       "structureDesc": "85-85-85-85-85-85-85-85-85-80-75-70, KI 25, 원화",
-      "url": "https://securities.miraeasset.com/hks/hks4022/n01.do"
+      "url": "https://securities.miraeasset.com/hks/hks4022/n01.do",
+      "couponRate": 17.3,
+      "rateBasis": "annual"
     },
     {
       "code": "KR6MD0008RE6",
@@ -987,7 +1004,6 @@ window.ELS_DATA = {
         "HSCEI",
         "S&P500"
       ],
-      "couponAnnual": 13.5,
       "maturityMonths": 36,
       "schedule": [
         {
@@ -1025,7 +1041,9 @@ window.ELS_DATA = {
       "issueDate": null,
       "minAmount": null,
       "structureDesc": "85-85-80-80-75-70, KI 50, 원화",
-      "url": "https://securities.miraeasset.com/hks/hks4022/n01.do"
+      "url": "https://securities.miraeasset.com/hks/hks4022/n01.do",
+      "couponRate": 13.5,
+      "rateBasis": "annual"
     },
     {
       "code": "KR6MD0008R21",
@@ -1037,7 +1055,6 @@ window.ELS_DATA = {
         "EuroStoxx50",
         "S&P500"
       ],
-      "couponAnnual": 13,
       "maturityMonths": 36,
       "schedule": [
         {
@@ -1075,7 +1092,9 @@ window.ELS_DATA = {
       "issueDate": null,
       "minAmount": null,
       "structureDesc": "90-90-85-80-75-70, KI 45, 원화",
-      "url": "https://securities.miraeasset.com/hks/hks4022/n01.do"
+      "url": "https://securities.miraeasset.com/hks/hks4022/n01.do",
+      "couponRate": 13,
+      "rateBasis": "annual"
     },
     {
       "code": "KR6MD0008RM9",
@@ -1086,7 +1105,6 @@ window.ELS_DATA = {
         "삼성전자",
         "SK하이닉스"
       ],
-      "couponAnnual": 10.71,
       "maturityMonths": 36,
       "schedule": [
         {
@@ -1148,7 +1166,9 @@ window.ELS_DATA = {
       "issueDate": null,
       "minAmount": null,
       "structureDesc": "70-70-70-70-70-70-70-70-70-70-70-70(월지급배리어:70), KI -, 원화",
-      "url": "https://securities.miraeasset.com/hks/hks4022/n01.do"
+      "url": "https://securities.miraeasset.com/hks/hks4022/n01.do",
+      "couponRate": 10.71,
+      "rateBasis": "annual"
     },
     {
       "code": "KR6MD0008S79",
@@ -1159,7 +1179,6 @@ window.ELS_DATA = {
         "삼성전자",
         "SK하이닉스"
       ],
-      "couponAnnual": 52,
       "maturityMonths": 18,
       "schedule": [
         {
@@ -1197,7 +1216,9 @@ window.ELS_DATA = {
       "issueDate": null,
       "minAmount": null,
       "structureDesc": "85-85-85-80-75-70, KI 35, 원화",
-      "url": "https://securities.miraeasset.com/hks/hks4022/n01.do"
+      "url": "https://securities.miraeasset.com/hks/hks4022/n01.do",
+      "couponRate": 52,
+      "rateBasis": "annual"
     },
     {
       "code": "KR6MD0008SB0",
@@ -1208,7 +1229,6 @@ window.ELS_DATA = {
         "삼성전자",
         "SK하이닉스"
       ],
-      "couponAnnual": 50,
       "maturityMonths": 12,
       "schedule": [
         {
@@ -1238,7 +1258,9 @@ window.ELS_DATA = {
       "issueDate": null,
       "minAmount": null,
       "structureDesc": "70-70-70-65, KI 40, 원화",
-      "url": "https://securities.miraeasset.com/hks/hks4022/n01.do"
+      "url": "https://securities.miraeasset.com/hks/hks4022/n01.do",
+      "couponRate": 50,
+      "rateBasis": "annual"
     },
     {
       "code": "KR6MD0008SA2",
@@ -1249,7 +1271,6 @@ window.ELS_DATA = {
         "삼성전자",
         "SK하이닉스"
       ],
-      "couponAnnual": 46,
       "maturityMonths": 36,
       "schedule": [
         {
@@ -1311,7 +1332,9 @@ window.ELS_DATA = {
       "issueDate": null,
       "minAmount": null,
       "structureDesc": "85-85-85-85-85-85-85-85-85-80-75-70, KI 30, 원화",
-      "url": "https://securities.miraeasset.com/hks/hks4022/n01.do"
+      "url": "https://securities.miraeasset.com/hks/hks4022/n01.do",
+      "couponRate": 46,
+      "rateBasis": "annual"
     },
     {
       "code": "KR6MD0008SD6",
@@ -1322,7 +1345,6 @@ window.ELS_DATA = {
         "마이크론 테크놀로지",
         "KOSPI200"
       ],
-      "couponAnnual": 42.5,
       "maturityMonths": 36,
       "schedule": [
         {
@@ -1360,7 +1382,9 @@ window.ELS_DATA = {
       "issueDate": null,
       "minAmount": null,
       "structureDesc": "75-75-75-75-70-70, KI 35, 원화",
-      "url": "https://securities.miraeasset.com/hks/hks4022/n01.do"
+      "url": "https://securities.miraeasset.com/hks/hks4022/n01.do",
+      "couponRate": 42.5,
+      "rateBasis": "annual"
     },
     {
       "code": "KR6MD0008SC8",
@@ -1371,7 +1395,6 @@ window.ELS_DATA = {
         "마이크론 테크놀로지",
         "어플라이드 머티어리얼즈"
       ],
-      "couponAnnual": 42.4,
       "maturityMonths": 36,
       "schedule": [
         {
@@ -1409,7 +1432,9 @@ window.ELS_DATA = {
       "issueDate": null,
       "minAmount": null,
       "structureDesc": "80-80-75-75-70-70 , KI 25, 원화",
-      "url": "https://securities.miraeasset.com/hks/hks4022/n01.do"
+      "url": "https://securities.miraeasset.com/hks/hks4022/n01.do",
+      "couponRate": 42.4,
+      "rateBasis": "annual"
     },
     {
       "code": "KR6MD0008S61",
@@ -1420,7 +1445,6 @@ window.ELS_DATA = {
         "삼성전자",
         "SK하이닉스"
       ],
-      "couponAnnual": 37.41,
       "maturityMonths": 36,
       "schedule": [
         {
@@ -1458,7 +1482,9 @@ window.ELS_DATA = {
       "issueDate": null,
       "minAmount": null,
       "structureDesc": "85-85-85-80-75-70(월지급배리어:50), KI 35, 원화",
-      "url": "https://securities.miraeasset.com/hks/hks4022/n01.do"
+      "url": "https://securities.miraeasset.com/hks/hks4022/n01.do",
+      "couponRate": 37.41,
+      "rateBasis": "annual"
     },
     {
       "code": "KR6MD0008S53",
@@ -1469,7 +1495,6 @@ window.ELS_DATA = {
         "삼성전자",
         "SK하이닉스"
       ],
-      "couponAnnual": 33.5,
       "maturityMonths": 36,
       "schedule": [
         {
@@ -1507,7 +1532,9 @@ window.ELS_DATA = {
       "issueDate": null,
       "minAmount": null,
       "structureDesc": "75-75-75-75-70-65, KI 25, 원화",
-      "url": "https://securities.miraeasset.com/hks/hks4022/n01.do"
+      "url": "https://securities.miraeasset.com/hks/hks4022/n01.do",
+      "couponRate": 33.5,
+      "rateBasis": "annual"
     },
     {
       "code": "KR6MD0008S46",
@@ -1518,7 +1545,6 @@ window.ELS_DATA = {
         "삼성전자",
         "SK하이닉스"
       ],
-      "couponAnnual": 27,
       "maturityMonths": 36,
       "schedule": [
         {
@@ -1580,7 +1606,9 @@ window.ELS_DATA = {
       "issueDate": null,
       "minAmount": null,
       "structureDesc": "75-75-75-75-75-75-75-75-70-70-70-65, KI 20, 원화",
-      "url": "https://securities.miraeasset.com/hks/hks4022/n01.do"
+      "url": "https://securities.miraeasset.com/hks/hks4022/n01.do",
+      "couponRate": 27,
+      "rateBasis": "annual"
     },
     {
       "code": "KR6MD0008S38",
@@ -1592,7 +1620,6 @@ window.ELS_DATA = {
         "KOSPI200",
         "S&P500"
       ],
-      "couponAnnual": 23,
       "maturityMonths": 36,
       "schedule": [
         {
@@ -1630,7 +1657,9 @@ window.ELS_DATA = {
       "issueDate": null,
       "minAmount": null,
       "structureDesc": "85-85-80-80-75-70, KI 40, 원화",
-      "url": "https://securities.miraeasset.com/hks/hks4022/n01.do"
+      "url": "https://securities.miraeasset.com/hks/hks4022/n01.do",
+      "couponRate": 23,
+      "rateBasis": "annual"
     },
     {
       "code": "KR6MD0008S95",
@@ -1642,7 +1671,6 @@ window.ELS_DATA = {
         "KOSPI200",
         "S&P500"
       ],
-      "couponAnnual": 22,
       "maturityMonths": 36,
       "schedule": [
         {
@@ -1680,7 +1708,9 @@ window.ELS_DATA = {
       "issueDate": null,
       "minAmount": null,
       "structureDesc": "80-80-80-80-75-70, KI 40, 원화",
-      "url": "https://securities.miraeasset.com/hks/hks4022/n01.do"
+      "url": "https://securities.miraeasset.com/hks/hks4022/n01.do",
+      "couponRate": 22,
+      "rateBasis": "annual"
     },
     {
       "code": "KR6MD0008S20",
@@ -1692,7 +1722,6 @@ window.ELS_DATA = {
         "KOSPI200",
         "S&P500"
       ],
-      "couponAnnual": 21.4,
       "maturityMonths": 36,
       "schedule": [
         {
@@ -1730,7 +1759,9 @@ window.ELS_DATA = {
       "issueDate": null,
       "minAmount": null,
       "structureDesc": "80-75-75-70-65-60, KI -, 원화",
-      "url": "https://securities.miraeasset.com/hks/hks4022/n01.do"
+      "url": "https://securities.miraeasset.com/hks/hks4022/n01.do",
+      "couponRate": 21.4,
+      "rateBasis": "annual"
     },
     {
       "code": "KR6MD0008S87",
@@ -1742,7 +1773,6 @@ window.ELS_DATA = {
         "HSCEI",
         "KOSPI200"
       ],
-      "couponAnnual": 21,
       "maturityMonths": 36,
       "schedule": [
         {
@@ -1780,7 +1810,9 @@ window.ELS_DATA = {
       "issueDate": null,
       "minAmount": null,
       "structureDesc": "85-85-85-80-75-70, KI 30, 원화",
-      "url": "https://securities.miraeasset.com/hks/hks4022/n01.do"
+      "url": "https://securities.miraeasset.com/hks/hks4022/n01.do",
+      "couponRate": 21,
+      "rateBasis": "annual"
     },
     {
       "code": "KR6MD0008S12",
@@ -1790,7 +1822,6 @@ window.ELS_DATA = {
       "underlyings": [
         "KOSPI200"
       ],
-      "couponAnnual": 20,
       "maturityMonths": 36,
       "schedule": [
         {
@@ -1852,7 +1883,9 @@ window.ELS_DATA = {
       "issueDate": null,
       "minAmount": null,
       "structureDesc": "85-85-85-85-85-85-85-85-85-80-75-70, KI 35, 원화",
-      "url": "https://securities.miraeasset.com/hks/hks4022/n01.do"
+      "url": "https://securities.miraeasset.com/hks/hks4022/n01.do",
+      "couponRate": 20,
+      "rateBasis": "annual"
     },
     {
       "code": "KR6MD0008S04",
@@ -1862,7 +1895,6 @@ window.ELS_DATA = {
       "underlyings": [
         "KOSPI200"
       ],
-      "couponAnnual": 19,
       "maturityMonths": 12,
       "schedule": [
         {
@@ -1892,7 +1924,9 @@ window.ELS_DATA = {
       "issueDate": null,
       "minAmount": null,
       "structureDesc": "85-80-75-70, KI 40, 원화",
-      "url": "https://securities.miraeasset.com/hks/hks4022/n01.do"
+      "url": "https://securities.miraeasset.com/hks/hks4022/n01.do",
+      "couponRate": 19,
+      "rateBasis": "annual"
     },
     {
       "code": "KR6MD0008RZ1",
@@ -1904,7 +1938,6 @@ window.ELS_DATA = {
         "KOSPI200",
         "S&P500"
       ],
-      "couponAnnual": 18.4,
       "maturityMonths": 36,
       "schedule": [
         {
@@ -1926,7 +1959,9 @@ window.ELS_DATA = {
       "issueDate": null,
       "minAmount": null,
       "structureDesc": "80-75(40)-75-70-65-60, KI -, 원화, 리자드 조건 충족 시 연 18.4%",
-      "url": "https://securities.miraeasset.com/hks/hks4022/n01.do"
+      "url": "https://securities.miraeasset.com/hks/hks4022/n01.do",
+      "couponRate": 18.4,
+      "rateBasis": "annual"
     },
     {
       "code": "KR6MD0008RY4",
@@ -1938,7 +1973,6 @@ window.ELS_DATA = {
         "HSCEI",
         "S&P500"
       ],
-      "couponAnnual": 13,
       "maturityMonths": 36,
       "schedule": [
         {
@@ -1976,7 +2010,9 @@ window.ELS_DATA = {
       "issueDate": null,
       "minAmount": null,
       "structureDesc": "90-85-80-75-70-65, KI 45, 원화",
-      "url": "https://securities.miraeasset.com/hks/hks4022/n01.do"
+      "url": "https://securities.miraeasset.com/hks/hks4022/n01.do",
+      "couponRate": 13,
+      "rateBasis": "annual"
     },
     {
       "code": "KR6MD0008SE4",
@@ -1987,7 +2023,6 @@ window.ELS_DATA = {
         "삼성전자",
         "SK하이닉스"
       ],
-      "couponAnnual": 8.79,
       "maturityMonths": 36,
       "schedule": [
         {
@@ -2049,7 +2084,9 @@ window.ELS_DATA = {
       "issueDate": null,
       "minAmount": null,
       "structureDesc": "70-70-70-70-70-70-70-70-70-70-70-70(월지급배리어:65), KI -, 원화",
-      "url": "https://securities.miraeasset.com/hks/hks4022/n01.do"
+      "url": "https://securities.miraeasset.com/hks/hks4022/n01.do",
+      "couponRate": 8.79,
+      "rateBasis": "annual"
     }
   ]
 };

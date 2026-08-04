@@ -166,7 +166,9 @@ window.ELS_DATA = {
     name: '미래에셋증권 ELS 제31234회',
     type: 'ELS',                      // ELS | ELB | DLS | DLB
     underlyings: ['KOSPI200', 'S&P500'],
-    couponAnnual: 8.4,                // 세전 연 수익률 %
+    couponRate: 8.4,                  // 세전 수익률 %. 기준은 rateBasis 가 정한다
+    rateBasis: 'annual',              // 'annual' = 연율 | 'total' = 만기 기준 총액
+    maxLossRate: 100,                 // 조건 미충족 시 최대손실률 %
     maturityMonths: 36,
     schedule: [                       // 조기상환 평가 일정
       { months: 6,  barrier: 90 },    // barrier = 최초기준가격 대비 %
@@ -183,7 +185,14 @@ window.ELS_DATA = {
 ```
 
 `schedule` 의 **마지막 항목이 만기**이며, 회차별 누적 수익률은
-`couponAnnual × (months / 12)` 로 계산합니다.
+`만기 총 수익률 × (months / maturityMonths)` 로 계산합니다.
+
+> **수익률 기준** — 홈페이지 API 의 `omkt_drv_frcs_ern_r` 는 **"조건 충족시 연 수익률(세전)"의
+> 최대치**입니다. 홈페이지 화면의 컬럼 헤더와 표시값("최대 10.71%")으로 확인했습니다
+> (`scripts/verify_rate_basis.mjs`). 원금지급형 ELB 도 10%대가 나오는데, 월지급 쿠폰이
+> 조건부라 "최대" 연율일 뿐 확정 수익이 아니기 때문입니다.
+> 페이지는 이를 **상한**으로 명시하고 연율과 만기 보유 시 총액을 함께 보여줍니다.
+> `couponAnnual` 만 있는 예전 데이터는 연율로 해석합니다.
 
 ## 유의사항 (ELS 페이지)
 
