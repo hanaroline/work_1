@@ -362,7 +362,7 @@ footer .disc strong{color:var(--body-strong);}
   <div class="sim" style="margin-top:var(--space-block)">
     <div class="controls">
       <div class="ctrl">
-        <label for="sim-invest"><span data-ko="투자 원금" data-en="Investment">투자 원금</span><span class="v"><span id="sim-invest-v">1,000</span><span data-ko="만원" data-en="0k KRW">만원</span></span></label>
+        <label for="sim-invest"><span data-ko="투자 원금" data-en="Investment">투자 원금</span><span class="v" id="sim-invest-v">1,000만원</span></label>
         <input type="range" id="sim-invest" min="100" max="10000" step="100" value="1000">
       </div>
       <div id="sim-sliders"></div>
@@ -524,6 +524,10 @@ try { lang = localStorage.getItem('mas-els-lang') || 'ko'; } catch(e){}
 function t(ko, en){ return lang === 'en' ? en : ko; }
 function num(n, d){ return Number(n).toFixed(d==null?1:d); }
 function comma(n){ return String(Math.round(n)).replace(/\B(?=(\d{3})+(?!\d))/g, ','); }
+/** 만원 단위 금액을 언어에 맞게 표기 */
+function money(manwon){
+  return lang === 'en' ? 'KRW ' + comma(manwon * 10000) : comma(manwon) + '만원';
+}
 function el(id){ return document.getElementById(id); }
 function svgNS(){ return 'http://www.w3.org/2000/svg'; }
 function mk(tag, attrs, text){
@@ -897,6 +901,7 @@ function buildSimSliders(){
   if (!simLevels || simLevels.length !== s.length){
     simLevels = s.map(function(){ return 100; });
   }
+  el('sim-invest-v').textContent = money(Number(el('sim-invest').value));
   var box = el('sim-sliders');
   box.innerHTML = '';
   s.forEach(function(step, i){
@@ -970,11 +975,11 @@ function runSim(){
       ? t('만기상환 · +' + num(ret,2) + '%', 'Redeemed at maturity · +' + num(ret,2) + '%')
       : t(months + '개월차 조기상환 · +' + num(ret,2) + '%', 'Early redemption at ' + months + 'M · +' + num(ret,2) + '%');
     detail = t(
-      invest === 0 ? '' : comma(invest) + '만원 투자 시 세전 <strong>' + comma(invest * (1 + ret/100)) + '만원</strong>' +
-        ' (수익 ' + comma(invest * ret/100) + '만원)을 받고 상품이 종료됩니다.' +
+      money(invest) + ' 투자 시 세전 <strong>' + money(invest * (1 + ret/100)) + '</strong>' +
+        ' (수익 ' + money(invest * ret/100) + ')을 받고 상품이 종료됩니다.' +
         (redeemed < s.length-1 ? ' 이후 기간의 추가 수익은 없습니다.' : ''),
-      'On ' + comma(invest) + '0k KRW you receive <strong>' + comma(invest * (1 + ret/100)) + '0k KRW</strong> pre-tax' +
-        ' (gain ' + comma(invest * ret/100) + '0k) and the note terminates.' +
+      'On ' + money(invest) + ' you receive <strong>' + money(invest * (1 + ret/100)) + '</strong> pre-tax' +
+        ' (gain ' + money(invest * ret/100) + ') and the note terminates.' +
         (redeemed < s.length-1 ? ' No further coupon accrues.' : '')
     );
   } else {
@@ -990,10 +995,10 @@ function runSim(){
     } else if (p.knockIn == null){
       detail = t('노낙인 구조입니다. 만기 기초자산이 ' + maturity(p).barrier + '% 미만(' + finalLevel +
                    '%)이므로 하락률 ' + num(100-finalLevel,0) + '%만큼 손실이 확정됩니다. ' +
-                   comma(invest) + '만원 투자 시 <strong>' + comma(invest*(1+ret/100)) + '만원</strong>을 돌려받습니다.',
+                   money(invest) + ' 투자 시 <strong>' + money(invest*(1+ret/100)) + '</strong>을 돌려받습니다.',
                  'No knock-in structure. The level at maturity (' + finalLevel + '%) is below ' + maturity(p).barrier +
-                   '%, so the loss equals the ' + num(100-finalLevel,0) + '% decline. On ' + comma(invest) +
-                   '0k you receive <strong>' + comma(invest*(1+ret/100)) + '0k</strong>.');
+                   '%, so the loss equals the ' + num(100-finalLevel,0) + '% decline. On ' + money(invest) +
+                   ' you receive <strong>' + money(invest*(1+ret/100)) + '</strong>.');
     } else if (!kiTouched){
       cls = 'good';
       title = t('낙인 미터치 · +' + num(ret,2) + '%', 'No knock-in · +' + num(ret,2) + '%');
@@ -1004,12 +1009,12 @@ function runSim(){
     } else {
       detail = t('기간 중 최저점 ' + low + '%가 낙인 ' + p.knockIn + '%를 터치했고, 만기 기초자산 ' + finalLevel +
                    '%도 만기 배리어 ' + maturity(p).barrier + '%에 미달했습니다. 두 조건이 겹쳐 하락률 ' +
-                   num(100-finalLevel,0) + '%만큼 손실이 확정됩니다. ' + comma(invest) + '만원 투자 시 <strong>' +
-                   comma(invest*(1+ret/100)) + '만원</strong>을 돌려받습니다.',
+                   num(100-finalLevel,0) + '%만큼 손실이 확정됩니다. ' + money(invest) + ' 투자 시 <strong>' +
+                   money(invest*(1+ret/100)) + '</strong>을 돌려받습니다.',
                  'The low of ' + low + '% breached the ' + p.knockIn + '% knock-in, and the final level (' + finalLevel +
                    '%) is below the ' + maturity(p).barrier + '% barrier. Both conditions met, so the loss equals the ' +
-                   num(100-finalLevel,0) + '% decline: ' + comma(invest) + '0k becomes <strong>' +
-                   comma(invest*(1+ret/100)) + '0k</strong>.');
+                   num(100-finalLevel,0) + '% decline: ' + money(invest) + ' becomes <strong>' +
+                   money(invest*(1+ret/100)) + '</strong>.');
     }
   }
   head.className = 'headline ' + cls;
@@ -1019,7 +1024,7 @@ function runSim(){
 
 (function bindSim(){
   el('sim-invest').addEventListener('input', function(){
-    el('sim-invest-v').textContent = comma(this.value);
+    el('sim-invest-v').textContent = money(Number(this.value));
     runSim();
   });
   el('sim-low').addEventListener('input', function(){
@@ -1030,7 +1035,7 @@ function runSim(){
   });
   el('sim-reset').addEventListener('click', function(){
     simLevels = null;
-    el('sim-invest').value = 1000; el('sim-invest-v').textContent = '1,000';
+    el('sim-invest').value = 1000; el('sim-invest-v').textContent = money(1000);
     el('sim-low').value = 100; el('sim-low-v').textContent = '100';
     buildSimSliders(); runSim();
   });
