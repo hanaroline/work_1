@@ -80,6 +80,52 @@ strong { color: var(--ink); font-weight: 700; }
 .page { max-width: 1200px; margin: 0 auto; padding: 0 32px; }
 @media (max-width: 768px) { .page { padding: 0 20px; } }
 
+/* ---- 본문 + 사이드바 레이아웃 ---- */
+.shell { display: block; }
+@media (min-width: 1080px) {
+  .shell { display: grid; grid-template-columns: 208px minmax(0, 1fr); gap: 48px; align-items: start; }
+  .sidenav { position: sticky; top: 24px; max-height: calc(100vh - 48px); overflow-y: auto;
+             padding-bottom: 19px; }
+  .shell > main { min-width: 0; }
+  .shell > main > .section:first-child { margin-top: 56px; }
+}
+.sidenav-label {
+  font-size: 14px; font-weight: 500; letter-spacing: .6px; color: var(--muted-soft);
+  margin: 0 0 10px; padding-bottom: 8px; border-bottom: 1px solid var(--primary);
+}
+.sidenav ul { list-style: none; margin: 0 0 28px; padding: 0; }
+.sidenav ul:last-of-type { margin-bottom: 14px; }
+.sidenav a {
+  display: block; font-size: 16px; line-height: 1.35; color: var(--body);
+  padding: 7px 0 7px 12px; border: 0; border-left: 2px solid transparent;
+}
+.sidenav a:hover { color: var(--primary-active); border-left-color: var(--hairline); background: var(--surface-subtle); }
+.sidenav a[aria-current] { color: var(--primary-active); font-weight: 700; border-left-color: var(--primary); }
+.sidenav-dates a { font-family: var(--font-num); font-size: 15px; font-variant-numeric: tabular-nums; }
+.sidenav-more { font-size: 14px; padding-left: 12px; }
+.sidenav-more a { display: inline; padding: 0; border-left: 0; border-bottom: 1px solid var(--hairline); }
+.section { scroll-margin-top: 24px; }
+
+/* 좁은 화면 — 사이드바를 상단 가로 스크롤 칩 줄로 전환 */
+@media (max-width: 1079px) {
+  .sidenav {
+    position: sticky; top: 0; z-index: 5; background: var(--canvas);
+    border-bottom: 1px solid var(--hairline); padding: 12px 0 10px; margin-bottom: 28px;
+  }
+  .sidenav-label { display: none; }
+  .sidenav ul { display: flex; gap: 8px; overflow-x: auto; margin: 0 0 8px;
+                -webkit-overflow-scrolling: touch; scrollbar-width: thin; }
+  .sidenav ul:last-of-type { margin-bottom: 0; }
+  .sidenav ul li { flex: none; }
+  .sidenav a {
+    padding: 6px 12px; border: 1px solid var(--hairline); border-radius: 2px;
+    white-space: nowrap; font-size: 15px;
+  }
+  .sidenav a[aria-current] { background: var(--primary); color: #FFFFFF; border-color: var(--primary); }
+  .sidenav-more { display: none; }
+  .section { scroll-margin-top: 96px; }
+}
+
 /* ---- 한/영 토글 ---- */
 .topbar { display: flex; align-items: flex-start; justify-content: space-between; gap: 19px; padding-top: 24px; }
 .tag {
@@ -135,9 +181,11 @@ strong { color: var(--ink); font-weight: 700; }
 }
 
 /* ---- 지표 카드 ---- */
-.stat-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1px; background: var(--hairline-soft); border: 1px solid var(--hairline); }
-@media (max-width: 1023px) { .stat-grid { grid-template-columns: repeat(2, 1fr); } }
-@media (max-width: 560px) { .stat-grid { grid-template-columns: 1fr; } }
+/* minmax(0, 1fr) — 1fr 만 쓰면 트랙이 min-content 밑으로 못 줄어들어 가로 넘침이 생긴다.
+   사이드바가 붙어 본문 폭이 좁아지므로 4열은 넉넉한 화면에서만 쓴다. */
+.stat-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 1px; background: var(--hairline-soft); border: 1px solid var(--hairline); }
+@media (max-width: 1279px) { .stat-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 560px) { .stat-grid { grid-template-columns: minmax(0, 1fr); } }
 .stat { background: #FFFFFF; padding: 24px 22px; }
 .stat-label { font-size: 16px; font-weight: 500; letter-spacing: .6px; line-height: 1.2; color: var(--muted); margin: 0 0 10px; }
 .stat-value { font-family: var(--font-num); font-size: 34px; font-weight: 700; line-height: 1.0; letter-spacing: -0.6px; color: var(--ink); }
@@ -177,8 +225,8 @@ table.data tr.hl:hover td { background: #D7D7D7; }
 .bar-val.flat { color: var(--muted-soft); }
 
 /* ---- 하우스 뷰 ---- */
-.views { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1px; background: var(--hairline-soft); border: 1px solid var(--hairline); }
-@media (max-width: 860px) { .views { grid-template-columns: 1fr; } }
+.views { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1px; background: var(--hairline-soft); border: 1px solid var(--hairline); }
+@media (max-width: 1023px) { .views { grid-template-columns: minmax(0, 1fr); } }
 .view { background: #FFFFFF; padding: 24px 22px; }
 .view-firm { font-size: 16px; font-weight: 700; letter-spacing: .3px; color: var(--primary-active); margin: 0 0 4px; }
 .view-who { font-size: 14px; color: var(--muted-soft); margin: 0 0 12px; }
@@ -322,7 +370,8 @@ html[lang="en"] [data-lang-ko] { display: none; }
 html[lang="en"] [data-lang-en] { display: revert; }
 
 @media print {
-  .lang-toggle, .navlinks, .expand-all, .print-btn, .hint { display: none !important; }
+  .lang-toggle, .navlinks, .expand-all, .print-btn, .hint, .sidenav { display: none !important; }
+  .shell { display: block !important; }
   /* 인쇄는 화면 상태를 그대로 따른다(WYSIWYG). 접힌 상세는 인쇄에도 포함되지 않는다.
      '요약 PDF' / '전체 PDF' 버튼이 인쇄 직전에 전개 상태를 맞춘 뒤 복원한다. */
   /* 상세 패널의 근거 수치를 2열로 눕혀 지면을 절약한다 */
@@ -439,6 +488,45 @@ JS = """
       btn.setAttribute('aria-pressed', allOpen ? 'true' : 'false');
     }
   }
+  /* ---- 사이드바 목차: 현재 보고 있는 섹션 강조 ---- */
+  var tocLinks = document.querySelectorAll('.sidenav-toc a');
+  if (tocLinks.length && 'IntersectionObserver' in window) {
+    var byId = {};
+    var targets = [];
+    for (var t = 0; t < tocLinks.length; t++) {
+      var id = tocLinks[t].getAttribute('href').slice(1);
+      var el = document.getElementById(id);
+      if (el) { byId[id] = tocLinks[t]; targets.push(el); }
+    }
+    var visible = {};
+    function paint() {
+      var best = null;
+      for (var i = 0; i < targets.length; i++) {
+        if (visible[targets[i].id]) { best = targets[i].id; break; }   /* 문서 순서상 최상단 */
+      }
+      for (var id in byId) {
+        if (id === best) { byId[id].setAttribute('aria-current', 'true'); }
+        else { byId[id].removeAttribute('aria-current'); }
+      }
+      /* 좁은 화면 칩 줄에서는 활성 칩이 보이도록 가로 스크롤 */
+      if (best && window.innerWidth < 1080) {
+        var a = byId[best];
+        var ul = a.parentNode.parentNode;
+        if (ul.scrollWidth > ul.clientWidth) {
+          var target = a.offsetLeft - (ul.clientWidth - a.offsetWidth) / 2;
+          ul.scrollTo ? ul.scrollTo({ left: target, behavior: 'smooth' }) : (ul.scrollLeft = target);
+        }
+      }
+    }
+    var io = new IntersectionObserver(function (entries) {
+      for (var i = 0; i < entries.length; i++) {
+        visible[entries[i].target.id] = entries[i].isIntersecting;
+      }
+      paint();
+    }, { rootMargin: '-96px 0px -55% 0px', threshold: 0 });
+    for (var j = 0; j < targets.length; j++) io.observe(targets[j]);
+  }
+
   var pbs = document.querySelectorAll('.print-btn');
   for (var k = 0; k < pbs.length; k++) {
     pbs[k].addEventListener('click', function (ev) {
@@ -516,6 +604,7 @@ T = {
     "print_full_t": ("모든 상세를 펼친 전체본으로 인쇄 / PDF 저장 — 브리핑 준비용",
                      "Print or save with every detail expanded — for your own preparation"),
     "detail": ("상세", "Detail"),
+    "toc": ("목차", "Contents"),
     "talking_a": ("응대 스크립트", "Suggested response"),
     "srclink": ("원문", "Source"),
     "hint": (
@@ -928,6 +1017,33 @@ def render_sources(rows):
     return '<ul class="sources">%s</ul>' % "".join(items)
 
 
+def render_sidenav(secs, dates, current):
+    """목차 + 지난 브리핑 사이드바. secs = [(anchor, title_key), ...]"""
+    if not secs:
+        return ""
+    items = "".join('<li><a href="#%s">%s</a></li>' % (esc(a), label(k)) for a, k in secs)
+
+    date_block = ""
+    if dates:
+        recent = list(reversed(dates))[:8]
+        dl = []
+        for dt in recent:
+            cur = ' aria-current="page"' if dt == current else ""
+            href = "index.html" if dt == dates[-1] else "%s.html" % dt
+            dl.append('<li><a href="%s"%s>%s</a></li>' % (esc(href), cur, esc(dt)))
+        more = ""
+        if len(dates) > len(recent):
+            more = ('<p class="sidenav-more"><a href="archive.html">%s</a></p>'
+                    % label("archive"))
+        date_block = ('<p class="sidenav-label">%s</p><ul class="sidenav-dates">%s</ul>%s'
+                      % (label("archive"), "".join(dl), more))
+
+    return ('<nav class="sidenav" aria-label="%s">'
+            '<p class="sidenav-label">%s</p><ul class="sidenav-toc">%s</ul>'
+            '%s</nav>'
+            % (esc(T["toc"][0]), label("toc"), items, date_block))
+
+
 def section(anchor, title_key, inner, custom_title=None):
     if not inner:
         return ""
@@ -1004,7 +1120,7 @@ def topbar(with_expand=False):
     )
 
 
-def render_briefing(d, prev_date=None, next_date=None):
+def render_briefing(d, prev_date=None, next_date=None, all_dates=None):
     date = d["date"]
     tone = (d.get("tone") or "neutral").lower()
     tone = tone if tone in TONE_LABEL else "neutral"
@@ -1027,7 +1143,17 @@ def render_briefing(d, prev_date=None, next_date=None):
         )
     )
 
-    parts = [topbar(with_expand=True), hero]
+    head = [topbar(with_expand=True), hero]
+    parts = []
+    secs = []
+
+    def add(anchor, key, inner):
+        """내용이 있는 섹션만 본문과 목차에 넣는다."""
+        html = section(anchor, key, inner)
+        if html:
+            parts.append(html)
+            secs.append((anchor, key))
+
 
     # --- 핵심 요약 ---
     kp = d.get("keypoints") or []
@@ -1039,8 +1165,8 @@ def render_briefing(d, prev_date=None, next_date=None):
                 lis.append("<li>%s</li>" % html)
             else:
                 lis.append("<li>%s</li>" % rich(item))
-        parts.append(section("keypoints", "keypoints",
-                             '<ul class="keypoints">%s</ul>' % "".join(lis)))
+        add("keypoints", "keypoints",
+                             '<ul class="keypoints">%s</ul>' % "".join(lis))
 
     m = d.get("markets") or {}
 
@@ -1049,7 +1175,7 @@ def render_briefing(d, prev_date=None, next_date=None):
         render_stat_grid(m.get("kr") or [], hero=True),
         paras(d, "kr_comment"),
     ])
-    parts.append(section("kr", "kr", kr_inner))
+    add("kr", "kr", kr_inner)
 
     # --- 수급 ---
     flows = d.get("flows") or {}
@@ -1057,14 +1183,14 @@ def render_briefing(d, prev_date=None, next_date=None):
         render_flow_table(flows.get("rows") or []),
         paras(flows, "comment"),
     ])
-    parts.append(section("flows", "flows", flow_inner))
+    add("flows", "flows", flow_inner)
 
     # --- 업종 / 종목 ---
     sect_inner = "".join([
         render_mover_table(d.get("movers") or []),
         paras(d, "sector_comment"),
     ])
-    parts.append(section("sectors", "sectors", sect_inner))
+    add("sectors", "sectors", sect_inner)
 
     # --- 글로벌 증시 ---
     g = m.get("global") or []
@@ -1073,20 +1199,20 @@ def render_briefing(d, prev_date=None, next_date=None):
         render_index_table(g),
         paras(d, "global_comment"),
     ])
-    parts.append(section("global", "global", global_inner))
+    add("global", "global", global_inner)
 
     # --- 금리 / 환율 / 원자재 ---
     macro_inner = "".join([
         render_index_table(m.get("macro") or []),
         paras(d, "macro_comment"),
     ])
-    parts.append(section("macro", "macro", macro_inner))
+    add("macro", "macro", macro_inner)
 
     # --- 하우스 뷰 ---
-    parts.append(section("views", "views", render_views(d.get("views") or [])))
+    add("views", "views", render_views(d.get("views") or []))
 
     # --- 일정 ---
-    parts.append(section("calendar", "calendar", render_calendar(d.get("calendar") or [])))
+    add("calendar", "calendar", render_calendar(d.get("calendar") or []))
 
     # --- 리스크 ---
     risks = d.get("risks") or []
@@ -1098,7 +1224,7 @@ def render_briefing(d, prev_date=None, next_date=None):
                 lis.append("<li>%s</li>" % html)
             else:
                 lis.append("<li>%s</li>" % rich(r))
-        parts.append(section("risks", "risks", '<ul class="risks">%s</ul>' % "".join(lis)))
+        add("risks", "risks", '<ul class="risks">%s</ul>' % "".join(lis))
 
     # --- 고객 응대 포인트 (질문 클릭 시 답변 전개) ---
     tp = d.get("talking_points") or []
@@ -1114,10 +1240,10 @@ def render_briefing(d, prev_date=None, next_date=None):
                 '<span class="exp-mark" aria-hidden="true"></span></summary>%s%s</details>'
                 % (bi(item, "q", wrap="div"), body, extra)
             )
-        parts.append(section("talking", "talking", '<div class="qa">%s</div>' % "".join(items)))
+        add("talking", "talking", '<div class="qa">%s</div>' % "".join(items))
 
     # --- 출처 ---
-    parts.append(section("sources", "sources", render_sources(d.get("sources") or [])))
+    add("sources", "sources", render_sources(d.get("sources") or []))
 
     # --- 푸터 ---
     nav = ['<a href="index.html">%s</a>' % label("latest"),
@@ -1126,7 +1252,7 @@ def render_briefing(d, prev_date=None, next_date=None):
         nav.append('<a href="%s.html">&larr; %s</a>' % (esc(prev_date), esc(prev_date)))
     if next_date:
         nav.append('<a href="%s.html">%s &rarr;</a>' % (esc(next_date), esc(next_date)))
-    parts.append(
+    footer = (
         '<footer class="foot">'
         '<p>%s</p>'
         '<p>%s &middot; %s</p>'
@@ -1138,9 +1264,18 @@ def render_briefing(d, prev_date=None, next_date=None):
         )
     )
 
+    body = (
+        '<div class="page">%s'
+        '<div class="shell">%s<main>%s%s</main></div>'
+        '</div>' % (
+            "".join(head),
+            render_sidenav(secs, all_dates or [date], date),
+            "".join(parts), footer,
+        )
+    )
     title_ko = "%s %s | %s" % (date, T["doc"][0], T["brand"][0])
     title_en = "%s %s | %s" % (date, T["doc"][1], T["brand"][1])
-    return page_shell(title_ko, title_en, '<div class="page">%s</div>' % "".join(parts))
+    return page_shell(title_ko, title_en, body)
 
 
 def render_archive(entries):
@@ -1263,10 +1398,10 @@ def build(targets=None):
         prev_d = dates[i - 1] if i > 0 else None
         next_d = dates[i + 1] if i < len(dates) - 1 else None
         write(os.path.join(OUT_DIR, e["date"] + ".html"),
-              render_briefing(e, prev_d, next_d))
+              render_briefing(e, prev_d, next_d, dates))
     latest = entries[-1]
     write(os.path.join(OUT_DIR, "index.html"),
-          render_briefing(latest, dates[-2] if len(dates) > 1 else None, None))
+          render_briefing(latest, dates[-2] if len(dates) > 1 else None, None, dates))
     write(os.path.join(OUT_DIR, "archive.html"),
           render_archive(list(reversed(entries))))
 
