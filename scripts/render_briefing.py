@@ -29,7 +29,7 @@ OUT_DIR = os.path.join(ROOT, "briefing")
 # ----------------------------------------------------------------------------
 # 디자인 토큰 — Mirae Asset Design System
 # ----------------------------------------------------------------------------
-CSS = """
+CSS = r"""
 *, *::before, *::after { box-sizing: border-box; }
 :root {
   --primary: #F58220;
@@ -123,12 +123,12 @@ strong { color: var(--ink); font-weight: 700; }
 
 /* ---- 핵심 요약 ---- */
 .keypoints { list-style: none; margin: 0; padding: 0; counter-reset: kp; }
-.keypoints li {
+.keypoints > li {
   counter-increment: kp; position: relative; padding: 19px 0 19px 52px;
   border-bottom: 1px solid var(--hairline-soft);
 }
-.keypoints li:first-child { border-top: 1px solid var(--hairline-soft); }
-.keypoints li::before {
+.keypoints > li:first-child { border-top: 1px solid var(--hairline-soft); }
+.keypoints > li::before {
   content: counter(kp, decimal-leading-zero); position: absolute; left: 0; top: 21px;
   font-family: var(--font-num); font-size: 16px; font-weight: 700; color: var(--primary);
   letter-spacing: .6px;
@@ -200,12 +200,9 @@ table.data tr.hl:hover td { background: #D7D7D7; }
 
 /* ---- 리스크 / 체크리스트 ---- */
 .risks { list-style: none; margin: 0; padding: 0; }
-.risks li { padding: 14px 0 14px 22px; border-bottom: 1px solid var(--hairline-soft); position: relative; font-size: 17px; line-height: 1.55; }
-.risks li::before { content: ""; position: absolute; left: 0; top: 24px; width: 10px; height: 1px; background: var(--primary); }
+.risks > li { padding: 14px 0 14px 22px; border-bottom: 1px solid var(--hairline-soft); position: relative; font-size: 17px; line-height: 1.55; }
+.risks > li::before { content: ""; position: absolute; left: 0; top: 24px; width: 10px; height: 1px; background: var(--primary); }
 .qa { margin: 0; }
-.qa dt { font-size: 19px; font-weight: 700; color: var(--ink); margin-top: 28px; }
-.qa dt:first-child { margin-top: 0; }
-.qa dd { margin: 10px 0 0; font-size: 17px; line-height: 1.6; color: var(--body); max-width: 62em; }
 
 /* ---- 출처 / 푸터 ---- */
 .sources { list-style: none; margin: 0; padding: 0; font-size: 14px; line-height: 1.5; columns: 2; column-gap: 38px; }
@@ -227,12 +224,100 @@ footer.foot p { margin: 0 0 8px; max-width: none; }
 .arch .d { font-family: var(--font-num); font-size: 16px; color: var(--primary-active); font-weight: 700; }
 .arch .t { font-size: 19px; color: var(--ink); }
 
+/* ---- 클릭 드릴다운 ---- */
+.exp > summary {
+  cursor: pointer; list-style: none; display: block; position: relative;
+  padding-right: 34px;
+}
+.exp > summary::-webkit-details-marker { display: none; }
+.exp > summary::marker { content: ""; }
+.exp > summary:focus-visible { outline: 2px solid var(--primary); outline-offset: 3px; }
+.exp-mark {
+  position: absolute; right: 0; top: 0; width: 22px; height: 22px; flex: none;
+  border: 1px solid var(--hairline); border-radius: 2px; background: #FFFFFF;
+  font-family: var(--font-num); font-size: 15px; font-weight: 700; line-height: 20px;
+  text-align: center; color: var(--primary-active);
+}
+.exp > summary:hover .exp-mark { background: var(--primary); border-color: var(--primary); color: #FFFFFF; }
+.exp[open] > summary .exp-mark::after { content: "\2212"; }
+.exp:not([open]) > summary .exp-mark::after { content: "+"; }
+
+.detail {
+  margin-top: 19px; padding: 19px 22px; background: var(--surface-subtle);
+  border-left: 2px solid var(--primary); border-radius: 0 2px 2px 0;
+}
+.detail > p { font-size: 17px; line-height: 1.6; margin: 0 0 14px; max-width: 62em; }
+.detail > p:last-child { margin-bottom: 0; }
+.detail dl { margin: 0 0 14px; }
+.detail dl:last-child { margin-bottom: 0; }
+.detail dt { font-size: 14px; font-weight: 500; letter-spacing: .4px; color: var(--muted); margin-top: 12px; }
+.detail dt:first-child { margin-top: 0; }
+.detail dd { margin: 2px 0 0; font-size: 17px; line-height: 1.5; color: var(--ink); }
+.detail dd.n { font-variant-numeric: tabular-nums; letter-spacing: 0; }
+.detail-links { margin: 14px 0 0; padding: 0; list-style: none; font-size: 14px; line-height: 1.5; }
+.detail-links li { margin-bottom: 6px; }
+.detail-links li::before { content: "\2192"; color: var(--primary); margin-right: 8px; }
+.detail-label {
+  display: block; font-size: 14px; font-weight: 500; letter-spacing: .5px;
+  color: var(--primary-active); margin-bottom: 10px;
+}
+
+/* keypoints / risks / talking points 안의 details */
+.keypoints > li > .exp > summary, .risks > li > .exp > summary { padding-right: 34px; }
+.qa .exp { border-bottom: 1px solid var(--hairline-soft); padding: 19px 0; }
+.qa .exp:first-child { border-top: 1px solid var(--hairline-soft); }
+.qa .exp > summary { font-size: 19px; font-weight: 700; color: var(--ink); }
+.qa .exp > summary .exp-mark { top: 2px; }
+
+/* 카드형 details */
+details.stat > summary, details.view > summary { padding-right: 34px; }
+details.stat > summary .exp-mark, details.view > summary .exp-mark { top: -2px; }
+details.stat[open], details.view[open] { background: #FFFFFF; }
+
+/* 표 행 확장 */
+table.data tr.clickable { cursor: pointer; }
+table.data tr.clickable td:first-child { padding-left: 34px; position: relative; }
+table.data tr.clickable td:first-child::before {
+  content: "+"; position: absolute; left: 14px; top: 12px;
+  font-family: var(--font-num); font-size: 15px; font-weight: 700; color: var(--primary-active);
+}
+table.data tr.clickable[aria-expanded="true"] td:first-child::before { content: "\2212"; }
+table.data tr.clickable:focus-visible { outline: 2px solid var(--primary); outline-offset: -2px; }
+table.data tr.detail-row > td { background: var(--surface-subtle); padding: 0; }
+table.data tr.detail-row:hover > td { background: var(--surface-subtle); }
+table.data tr.detail-row .detail { margin: 0; border-radius: 0; }
+table.data tr.detail-row[hidden] { display: none; }
+
+/* 전체 펼치기 버튼 */
+.expand-all {
+  font-family: var(--font-kr); font-size: 14px; font-weight: 500; letter-spacing: .3px;
+  padding: 9px 15px; border: 1px solid var(--hairline); border-radius: 2px;
+  background: #FFFFFF; color: var(--muted); cursor: pointer; white-space: nowrap;
+}
+html[lang="en"] .expand-all { font-family: var(--font-en); }
+.expand-all:hover { background: var(--surface-subtle); color: var(--ink); border-color: var(--line-mid); }
+.expand-all:focus-visible { outline: 2px solid var(--primary); outline-offset: 2px; }
+.expand-all .lbl-collapse { display: none; }
+.expand-all[aria-pressed="true"] .lbl-expand { display: none; }
+.expand-all[aria-pressed="true"] .lbl-collapse { display: inline; }
+.topbar-actions { display: flex; align-items: center; gap: 10px; flex: none; }
+@media (max-width: 560px) {
+  .topbar { flex-wrap: wrap; }
+  .topbar-actions { width: 100%; justify-content: flex-end; }
+}
+.hint { font-size: 14px; color: var(--muted-soft); margin: 14px 0 0; }
+
 [data-lang-en] { display: none; }
 html[lang="en"] [data-lang-ko] { display: none; }
 html[lang="en"] [data-lang-en] { display: revert; }
 
 @media print {
-  .lang-toggle, .navlinks { display: none !important; }
+  .lang-toggle, .navlinks, .expand-all, .hint { display: none !important; }
+  .exp > summary { padding-right: 0; }
+  .exp-mark, table.data tr.clickable td:first-child::before { display: none !important; }
+  table.data tr.clickable td:first-child { padding-left: 14px; }
+  .detail { background: #FFF; border-left: 2px solid #999; break-inside: avoid; }
+  .detail-links { display: none; }
   body { font-size: 11pt; line-height: 1.4; color: #000; }
   .page { max-width: 100%; padding: 0; }
   .section { margin-top: 28px; }
@@ -268,6 +353,75 @@ JS = """
     var b = e.target.closest ? e.target.closest('.lang-toggle button') : null;
     if (b) apply(b.getAttribute('data-lang'));
   });
+
+  /* ---- 표 행 클릭 확장 ---- */
+  function detailRowOf(tr) {
+    var n = tr.nextElementSibling;
+    return (n && n.classList.contains('detail-row')) ? n : null;
+  }
+  function toggleRow(tr, force) {
+    var d = detailRowOf(tr);
+    if (!d) return;
+    var open = force !== undefined ? force : tr.getAttribute('aria-expanded') !== 'true';
+    tr.setAttribute('aria-expanded', open ? 'true' : 'false');
+    if (open) { d.removeAttribute('hidden'); } else { d.setAttribute('hidden', ''); }
+  }
+  document.addEventListener('click', function (e) {
+    if (!e.target.closest) return;
+    if (e.target.closest('a')) return;              /* 링크 클릭은 통과 */
+    var tr = e.target.closest('tr.clickable');
+    if (tr) toggleRow(tr);
+  });
+  document.addEventListener('keydown', function (e) {
+    if (e.key !== 'Enter' && e.key !== ' ') return;
+    var tr = e.target.closest ? e.target.closest('tr.clickable') : null;
+    if (tr) { e.preventDefault(); toggleRow(tr); }
+  });
+
+  /* ---- 전체 펼치기 / 접기 ---- */
+  function setAll(open) {
+    var ds = document.querySelectorAll('details.exp');
+    for (var i = 0; i < ds.length; i++) { if (open) { ds[i].setAttribute('open', ''); } else { ds[i].removeAttribute('open'); } }
+    var rows = document.querySelectorAll('tr.clickable');
+    for (var j = 0; j < rows.length; j++) toggleRow(rows[j], open);
+    var btn = document.querySelector('.expand-all');
+    if (btn) btn.setAttribute('aria-pressed', open ? 'true' : 'false');
+  }
+  var eb = document.querySelector('.expand-all');
+  if (eb) {
+    eb.addEventListener('click', function () {
+      setAll(eb.getAttribute('aria-pressed') !== 'true');
+    });
+  }
+
+  /* ---- 인쇄 시 모든 상세를 펼친다 ---- */
+  var restore = null;
+  function beforePrint() {
+    var ds = document.querySelectorAll('details.exp');
+    var rows = document.querySelectorAll('tr.clickable');
+    restore = { d: [], r: [] };
+    for (var i = 0; i < ds.length; i++) { restore.d.push(ds[i].hasAttribute('open')); ds[i].setAttribute('open', ''); }
+    for (var j = 0; j < rows.length; j++) {
+      restore.r.push(rows[j].getAttribute('aria-expanded') === 'true');
+      toggleRow(rows[j], true);
+    }
+  }
+  function afterPrint() {
+    if (!restore) return;
+    var ds = document.querySelectorAll('details.exp');
+    var rows = document.querySelectorAll('tr.clickable');
+    for (var i = 0; i < ds.length; i++) { if (!restore.d[i]) ds[i].removeAttribute('open'); }
+    for (var j = 0; j < rows.length; j++) toggleRow(rows[j], restore.r[j]);
+    restore = null;
+  }
+  window.addEventListener('beforeprint', beforePrint);
+  window.addEventListener('afterprint', afterPrint);
+  if (window.matchMedia) {
+    var mq = window.matchMedia('print');
+    if (mq.addEventListener) {
+      mq.addEventListener('change', function (m) { if (m.matches) { beforePrint(); } else { afterPrint(); } });
+    }
+  }
 })();
 """
 
@@ -325,6 +479,17 @@ T = {
     ),
     "auto": ("자동 생성 브리핑", "Auto-generated briefing"),
     "nodata": ("확인된 수치 없음", "No verified figure"),
+    "expand_all": ("전체 펼치기", "Expand all"),
+    "collapse_all": ("전체 접기", "Collapse all"),
+    "detail": ("상세", "Detail"),
+    "talking_a": ("응대 스크립트", "Suggested response"),
+    "srclink": ("원문", "Source"),
+    "hint": (
+        "각 항목을 클릭하면 근거 수치와 배경, 원문 링크가 펼쳐집니다. "
+        "인쇄(PDF 저장) 시에는 모든 상세가 자동으로 펼쳐집니다.",
+        "Click any item to reveal the underlying figures, background and source links. "
+        "All details expand automatically when printing to PDF.",
+    ),
 }
 
 TONE_LABEL = {
@@ -380,6 +545,59 @@ def dual(ko, en, wrap="span"):
         return rich(ko)
     return ('<%s data-lang-ko>%s</%s><%s data-lang-en>%s</%s>'
             % (wrap, rich(ko), wrap, wrap, rich(en), wrap))
+
+
+def has_detail(node):
+    if not isinstance(node, dict):
+        return False
+    return bool(node.get("detail") or node.get("facts") or node.get("links"))
+
+
+def detail_body(node):
+    """상세 패널 본문. detail(문단) + facts(수치 목록) + links(원문)."""
+    if not has_detail(node):
+        return ""
+    parts = ['<span class="detail-label">%s</span>' % label("detail")]
+
+    facts = node.get("facts") or []
+    if facts:
+        rows = []
+        for f in facts:
+            val = f.get("value")
+            cls = ' class="n"' if isinstance(val, (int, float)) or f.get("numeric") else ""
+            rows.append("<dt>%s</dt><dd%s>%s</dd>"
+                        % (bi(f, "label", wrap="span"), cls, bi(f, "value", wrap="span")))
+        parts.append("<dl>%s</dl>" % "".join(rows))
+
+    parts.append(paras(node, "detail"))
+
+    links = node.get("links") or []
+    if links:
+        items = []
+        for l in links:
+            title = esc(l.get("title") or l.get("url"))
+            url = esc(l.get("url") or "")
+            pub = l.get("publisher")
+            items.append(
+                "<li>%s%s</li>" % (
+                    ('<a href="%s" target="_blank" rel="noopener">%s</a>' % (url, title))
+                    if url else title,
+                    (' <span class="pub">&middot; %s</span>' % esc(pub)) if pub else "",
+                )
+            )
+        parts.append('<ul class="detail-links">%s</ul>' % "".join(items))
+
+    return '<div class="detail">%s</div>' % "".join(parts)
+
+
+def expandable(node, summary_html, extra_cls=""):
+    """detail 이 있으면 <details>, 없으면 그냥 감싸지 않은 요약만 반환."""
+    body = detail_body(node)
+    if not body:
+        return summary_html, False
+    cls = ("exp " + extra_cls).strip()
+    return ('<details class="%s"><summary>%s<span class="exp-mark" aria-hidden="true">'
+            '</span></summary>%s</details>' % (cls, summary_html, body)), True
 
 
 def parse_date(d):
@@ -459,17 +677,22 @@ def render_stat_grid(rows, hero=False):
             chg_bits.append("(" + signed(r.get("change_pct"), "%") + ")")
         chg = " ".join(chg_bits) or "&mdash;"
         note = bi(r, "note") if r.get("note") else ""
-        cells.append(
-            '<div class="stat">'
+        inner = (
             '<p class="stat-label">%s</p>'
             '<div class="stat-value">%s</div>'
             '<div class="stat-chg %s">%s</div>'
-            '%s'
-            '</div>' % (
+            '%s' % (
                 bi(r, "name"), plain(r.get("value")), cls, chg,
                 ('<div class="stat-note">%s</div>' % note) if note else "",
             )
         )
+        body = detail_body(r)
+        if body:
+            cells.append('<details class="stat exp"><summary>%s'
+                         '<span class="exp-mark" aria-hidden="true"></span></summary>%s</details>'
+                         % (inner, body))
+        else:
+            cells.append('<div class="stat">%s</div>' % inner)
     return '<div class="stat-grid%s">%s</div>' % (" hero-stat" if hero else "", "".join(cells))
 
 
@@ -510,21 +733,34 @@ def render_bars(rows):
             % (esc(T["barcap"][0]), "".join(out)))
 
 
+def expandable_row(r, cells_html, colspan):
+    """detail 이 있으면 클릭 가능한 <tr> + 숨겨진 상세 <tr> 을 함께 반환."""
+    body = detail_body(r)
+    if not body:
+        return "<tr>%s</tr>" % cells_html
+    return (
+        '<tr class="clickable" tabindex="0" role="button" aria-expanded="false">%s</tr>'
+        '<tr class="detail-row" hidden><td colspan="%d">%s</td></tr>'
+        % (cells_html, colspan, body)
+    )
+
+
 def render_index_table(rows, caption_ko=None, caption_en=None):
     if not rows:
         return ""
     body = []
     for r in rows:
         cls = dircls(r.get("change_pct", r.get("change")))
-        body.append(
-            '<tr><td>%s</td><td class="n">%s</td><td class="n %s">%s</td>'
-            '<td class="n %s">%s</td><td>%s</td></tr>' % (
+        cells = (
+            '<td>%s</td><td class="n">%s</td><td class="n %s">%s</td>'
+            '<td class="n %s">%s</td><td>%s</td>' % (
                 bi(r, "name"), plain(r.get("value")),
                 cls, signed(r.get("change")),
                 cls, signed(r.get("change_pct"), "%"),
                 bi(r, "note") if r.get("note") else "&mdash;",
             )
         )
+        body.append(expandable_row(r, cells, 5))
     cap = ""
     if caption_ko:
         cap = "<caption>%s</caption>" % dual(caption_ko, caption_en)
@@ -544,13 +780,22 @@ def render_flow_table(rows):
     body = []
     for r in rows:
         cls = dircls(r.get("amount"))
-        tr_cls = ' class="hl"' if r.get("highlight") else ""
-        body.append(
-            '<tr%s><td>%s</td><td class="n %s">%s</td><td>%s</td></tr>' % (
-                tr_cls, bi(r, "name"), cls, signed(r.get("amount")),
+        cells = (
+            '<td>%s</td><td class="n %s">%s</td><td>%s</td>' % (
+                bi(r, "name"), cls, signed(r.get("amount")),
                 bi(r, "note") if r.get("note") else "&mdash;",
             )
         )
+        if r.get("highlight"):
+            d = detail_body(r)
+            if d:
+                body.append(
+                    '<tr class="hl clickable" tabindex="0" role="button" aria-expanded="false">%s</tr>'
+                    '<tr class="detail-row" hidden><td colspan="3">%s</td></tr>' % (cells, d))
+            else:
+                body.append('<tr class="hl">%s</tr>' % cells)
+        else:
+            body.append(expandable_row(r, cells, 3))
     return (
         '<div class="table-wrap"><table class="data"><thead><tr>'
         '<th>%s</th><th class="n">%s</th><th>%s</th>'
@@ -565,13 +810,14 @@ def render_mover_table(rows):
     body = []
     for r in rows:
         cls = dircls(r.get("change_pct"))
-        body.append(
-            '<tr><td>%s</td><td class="n">%s</td><td class="n %s">%s</td><td>%s</td></tr>' % (
+        cells = (
+            '<td>%s</td><td class="n">%s</td><td class="n %s">%s</td><td>%s</td>' % (
                 bi(r, "name"), plain(r.get("value")),
                 cls, signed(r.get("change_pct"), "%"),
                 bi(r, "comment") if r.get("comment") else "&mdash;",
             )
         )
+        body.append(expandable_row(r, cells, 4))
     return (
         '<div class="table-wrap"><table class="data"><thead><tr>'
         '<th>%s</th><th class="n">%s</th><th class="n">%s</th><th>%s</th>'
@@ -585,12 +831,13 @@ def render_calendar(rows):
         return ""
     body = []
     for r in rows:
-        body.append(
-            '<tr><td class="n">%s</td><td>%s</td><td>%s</td></tr>' % (
+        cells = (
+            '<td class="n">%s</td><td>%s</td><td>%s</td>' % (
                 bi(r, "time") if r.get("time") else "&mdash;", bi(r, "event"),
                 bi(r, "watch") if r.get("watch") else "&mdash;",
             )
         )
+        body.append(expandable_row(r, cells, 3))
     return (
         '<div class="table-wrap"><table class="data"><thead><tr>'
         '<th class="n">%s</th><th>%s</th><th>%s</th>'
@@ -607,13 +854,11 @@ def render_views(rows):
         stance = (r.get("stance") or "neutral").lower()
         stance = stance if stance in ("bull", "bear", "neutral") else "neutral"
         who = r.get("analyst") or ""
-        cards.append(
-            '<div class="view">'
+        inner = (
             '<p class="view-firm">%s</p>'
             '%s'
             '<p class="view-body">%s</p>'
-            '%s'
-            '</div>' % (
+            '%s' % (
                 bi(r, "firm"),
                 ('<p class="view-who">%s</p>' % bi(r, "analyst")) if who else "",
                 bi(r, "view"),
@@ -621,6 +866,13 @@ def render_views(rows):
                 if r.get("stance_label") else "",
             )
         )
+        body = detail_body(r)
+        if body:
+            cards.append('<details class="view exp"><summary>%s'
+                         '<span class="exp-mark" aria-hidden="true"></span></summary>%s</details>'
+                         % (inner, body))
+        else:
+            cards.append('<div class="view">%s</div>' % inner)
     return '<div class="views">%s</div>' % "".join(cards)
 
 
@@ -687,14 +939,26 @@ def page_shell(title_ko, title_en, body, start_lang="ko"):
     )
 
 
-def topbar():
+def topbar(with_expand=False):
+    expand = ""
+    if with_expand:
+        expand = (
+            '<button type="button" class="expand-all" aria-pressed="false">'
+            '<span class="lbl-expand"><span data-lang-ko>%s</span>'
+            '<span data-lang-en>%s</span></span>'
+            '<span class="lbl-collapse"><span data-lang-ko>%s</span>'
+            '<span data-lang-en>%s</span></span>'
+            '</button>' % (esc(T["expand_all"][0]), esc(T["expand_all"][1]),
+                           esc(T["collapse_all"][0]), esc(T["collapse_all"][1]))
+        )
     return (
         '<div class="topbar">'
         '<span class="tag">%s</span>'
+        '<div class="topbar-actions">%s'
         '<div class="lang-toggle" role="radiogroup" aria-label="Language">'
         '<button type="button" data-lang="ko" role="radio" aria-checked="true">KO</button>'
         '<button type="button" data-lang="en" role="radio" aria-checked="false">EN</button>'
-        '</div></div>' % label("internal")
+        '</div></div></div>' % (label("internal"), expand)
     )
 
 
@@ -712,14 +976,16 @@ def render_briefing(d, prev_date=None, next_date=None):
         '<h1>%s</h1>'
         '<p class="hero-lede">%s</p>'
         '<p class="hero-meta"><span class="tone %s">%s</span> &nbsp; %s %s</p>'
+        '<p class="hint">%s</p>'
         '</div>' % (
             kicker, bi(d, "headline"), bi(d, "lede"), tone,
             dual(TONE_LABEL[tone][0], TONE_LABEL[tone][1]),
             label("asof"), esc(d.get("asof") or ""),
+            dual(T["hint"][0], T["hint"][1]),
         )
     )
 
-    parts = [topbar(), hero]
+    parts = [topbar(with_expand=True), hero]
 
     # --- 핵심 요약 ---
     kp = d.get("keypoints") or []
@@ -727,7 +993,8 @@ def render_briefing(d, prev_date=None, next_date=None):
         lis = []
         for item in kp:
             if isinstance(item, dict):
-                lis.append("<li>%s</li>" % bi(item, "text", wrap="div"))
+                html, _ = expandable(item, bi(item, "text", wrap="div"))
+                lis.append("<li>%s</li>" % html)
             else:
                 lis.append("<li>%s</li>" % rich(item))
         parts.append(section("keypoints", "keypoints",
@@ -784,18 +1051,28 @@ def render_briefing(d, prev_date=None, next_date=None):
     if risks:
         lis = []
         for r in risks:
-            lis.append("<li>%s</li>" % (bi(r, "text", wrap="div")
-                                        if isinstance(r, dict) else rich(r)))
+            if isinstance(r, dict):
+                html, _ = expandable(r, bi(r, "text", wrap="div"))
+                lis.append("<li>%s</li>" % html)
+            else:
+                lis.append("<li>%s</li>" % rich(r))
         parts.append(section("risks", "risks", '<ul class="risks">%s</ul>' % "".join(lis)))
 
-    # --- 고객 응대 포인트 ---
+    # --- 고객 응대 포인트 (질문 클릭 시 답변 전개) ---
     tp = d.get("talking_points") or []
     if tp:
-        dl = []
+        items = []
         for item in tp:
-            dl.append("<dt>%s</dt><dd>%s</dd>" % (bi(item, "q", wrap="div"),
-                                                  bi(item, "a", wrap="div")))
-        parts.append(section("talking", "talking", '<dl class="qa">%s</dl>' % "".join(dl)))
+            body = ('<div class="detail">%s%s</div>'
+                    % ('<span class="detail-label">%s</span>' % label("talking_a"),
+                       paras(item, "a")))
+            extra = detail_body(item)
+            items.append(
+                '<details class="exp"><summary>%s'
+                '<span class="exp-mark" aria-hidden="true"></span></summary>%s%s</details>'
+                % (bi(item, "q", wrap="div"), body, extra)
+            )
+        parts.append(section("talking", "talking", '<div class="qa">%s</div>' % "".join(items)))
 
     # --- 출처 ---
     parts.append(section("sources", "sources", render_sources(d.get("sources") or [])))
@@ -891,6 +1168,23 @@ _en 접미사 필드는 모두 선택. 있으면 EN 토글에 쓰이고, 없으�
   "talking_points": [ {"q","q_en","a","a_en"} ],
   "sources":  [ {"title","url","publisher"} ]
 }
+
+클릭 드릴다운 (detail / facts / links)
+-------------------------------------
+keypoints · markets.* · flows.rows · movers · views · calendar · risks · talking_points
+의 **모든 항목**에 아래 3개 필드를 붙일 수 있다. 하나라도 있으면 그 항목이 클릭 가능해지고,
+없으면 확장 표시 없이 평범하게 렌더된다. 즉 있는 항목만 골라 넣어도 된다.
+
+  "facts":  [ {"label","label_en","value","value_en","numeric": true} ]   근거 수치 목록
+  "detail": ["문단", ...],  "detail_en": [...]                            배경·해석 문단
+  "links":  [ {"title","url","publisher"} ]                              해당 항목의 원문
+
+표시 순서는 facts -> detail -> links 다.
+talking_points 는 `a`(응대 스크립트)가 자동으로 펼쳐지는 본문이 되고,
+detail/facts/links 를 추가하면 그 아래 '상세' 패널이 하나 더 붙는다.
+
+숫자 값은 `value` 에 **문자열로** 넣는다("−2조 8,427억원", "4.68% (-7bp)").
+표/카드의 `value` 와 달리 facts 는 서식이 있는 표시용 값이다.
 """
 
 
