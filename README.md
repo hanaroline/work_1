@@ -90,7 +90,111 @@ index.html            # 대시보드 (레이아웃 + CSS + 앱 로직)
 vendor/chart.umd.js   # Chart.js 4.4.1 로컬 번들 (CDN 차단 환경 대비, 실패 시 CDN 폴백)
 data/tickers.js       # 종목명↔코드↔시장 매핑 + 조회 함수
 data/sample.js        # 샘플/폴백 데이터 생성기 (종목코드 시드 기반 결정적 생성)
+
+els.html              # ELS 상품 구조 페이지 (아래 참고)
+els-standalone.html   # 위 파일의 단일 파일 산출물 (빌드 결과물)
+data/els.js           # ELS 상품 데이터 (주간 자동 수집)
+scripts/              # 수집·빌드·탐색 스크립트
 ```
+
+---
+
+# ELS 상품 구조 페이지
+
+`els.html` — ELS 상품의 **기초자산 · 조기상환 조건 · 수익 구조**를 고객이 한 화면에서
+이해할 수 있도록 만든 페이지입니다. 미래에셋증권 디자인 시스템(오렌지 `#F58220` /
+블루 `#043B72`, 1px 섹션 룰, `#FAB072` 테이블 헤더)을 따르며 한/영 토글을 지원합니다.
+
+## 화면 구성
+
+| 섹션 | 내용 |
+|------|------|
+| **30초 요약** | ELS를 결정짓는 세 가지(기초자산 / 조기상환 조건 / 수익 구조)를 카드로 정리 |
+| **조기상환 조건** | 회차별 배리어를 **계단형 사다리 그래프**로 표시. 낙인 배리어, 회차별 누적 수익률, 판정 기준 표 |
+| **수익 구조** | 만기 손익 그래프 2종 — **낙인 미터치 / 낙인 터치**를 나란히 비교. 기초자산 직접투자 대비선 포함 |
+| **시나리오 시뮬레이터** | 평가일별 기초자산 수준과 기간 중 최저점을 슬라이더로 지정 → 언제 상환되고 얼마를 받는지 계산 |
+| **이번 주 상품** | 청약 중인 상품 목록. 행을 클릭하면 위 그래프가 그 상품 조건으로 다시 그려짐 |
+| **확인 사항 / 용어** | 가입 전 점검할 5가지, 청약서 용어 사전 |
+
+상단 우측에 **KO/EN 토글**과 **인쇄·PDF 저장** 버튼이 있습니다.
+
+## 실행 방법
+
+```bash
+# 단일 파일 — 더블클릭만 하면 됨 (외부 의존성 없음)
+els-standalone.html
+
+# 개발용 — 분리 파일은 로컬 서버 필요
+python3 -m http.server 8000   # → http://localhost:8000/els.html
+```
+
+수정은 `els.html` / `data/els.js` 를 고친 뒤 다시 합칩니다.
+
+```bash
+node scripts/build_standalone.mjs   # els.html + data/els.js -> els-standalone.html
+```
+
+## 데이터 수집 (주 1회 자동)
+
+미래에셋증권 홈페이지는 **WebSquare 기반 SPA**이고, 데이터는 `.wjson` POST 엔드포인트로
+오갑니다. 정적 HTML에는 상품 정보가 전혀 없어 **헤드리스 브라우저 렌더링**이 필요합니다.
+따라서 수집은 GitHub Actions 러너에서 Playwright 로 수행합니다.
+
+| 파일 | 역할 |
+|------|------|
+| `.github/workflows/els-weekly.yml` | 매주 월요일 08:00 KST 수집 → `data/els.js` 갱신 → 단일 파일 재빌드 → 커밋 |
+| `scripts/collect_els.mjs` | 실제 수집기. 상품 목록 화면을 렌더링하고 `.wjson` 응답에서 상품을 추출 |
+| `.github/workflows/els-discover.yml` | 사이트 구조 조사용(1회성). 엔드포인트가 바뀌었을 때 다시 돌린다 |
+| `scripts/discover_els.mjs` | 위 조사 스크립트 |
+
+**수집이 실패해도 페이지는 깨지지 않습니다.** 워크플로우는 `data/els.js` 를 건드리지 않고
+끝나므로 직전 주 데이터가 그대로 유지되고, 진단 자료는 `els-collect-debug` 아티팩트로
+남습니다. 한 번도 수집되지 않은 상태에서는 내장 예시 데이터가 표시되며, 화면에
+**"예시 데이터"** 배지가 붙습니다.
+
+## ELS 데이터 스키마
+
+`data/els.js` 는 `window.ELS_DATA` 하나를 정의합니다.
+
+```js
+window.ELS_DATA = {
+  updatedAt: '2026-08-04T00:00:00Z',  // 수집 시각. null 이면 "미수집"
+  source: 'live',                     // 'live' | 'sample'
+  sourceNote: '...', sourceNoteEn: '...',
+  products: [{
+    code: 'ELS31234',
+    name: '미래에셋증권 ELS 제31234회',
+    type: 'ELS',                      // ELS | ELB | DLS | DLB
+    underlyings: ['KOSPI200', 'S&P500'],
+    couponAnnual: 8.4,                // 세전 연 수익률 %
+    maturityMonths: 36,
+    schedule: [                       // 조기상환 평가 일정
+      { months: 6,  barrier: 90 },    // barrier = 최초기준가격 대비 %
+      { months: 36, barrier: 75 },    // 마지막 항목이 만기
+    ],
+    knockIn: 50,                      // 낙인 배리어 %. null 이면 노낙인
+    principalProtection: 0,           // 원금지급률 %. 100 이면 ELB
+    riskGrade: 2,                     // 1(매우높은위험) ~ 6
+    offerStart: null, offerEnd: null, issueDate: null,
+    minAmount: 1000000,
+    url: null,                        // 상품 상세 링크
+  }],
+};
+```
+
+`schedule` 의 **마지막 항목이 만기**이며, 회차별 누적 수익률은
+`couponAnnual × (months / 12)` 로 계산합니다.
+
+## 유의사항 (ELS 페이지)
+
+이 페이지는 상품 **구조 이해를 돕기 위한 참고자료**이며 투자 권유나 청약 안내가
+아닙니다. 모든 수치는 세전 기준이고, 시뮬레이터 결과는 이용자가 입력한 가정에 따른
+산술 계산일 뿐 미래 수익을 예측하지 않습니다. 실제 상품 조건은 각 상품의 투자설명서가
+우선합니다.
+
+> **사내 활용 시 확인 필요** — 실제 판매 중인 상품 정보를 고객에게 노출하는 화면은
+> 금융투자협회 광고 심의 및 사내 컴플라이언스 검토 대상일 수 있습니다.
+> 대외 배포 전에 준법감시 부서 확인을 권장합니다.
 
 ## 종목 추가
 
