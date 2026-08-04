@@ -264,25 +264,49 @@ async function main() {
     if (!nextKey) break;
   }
 
-  // 위험등급은 목록 API 응답에 없고(omkt_drvs_risk_gcd 는 사내 코드값) 화면에만
-  // "낮은위험" 같은 문구로 렌더링된다. 그려진 표에서 상품명과 함께 읽어 온다.
-  const riskByName = await page.evaluate(() => {
+  // 화면에 실제로 그려진 목록을 그대로 떠 둔다.
+  //  - 위험등급은 목록 API 응답에 없다(omkt_drvs_risk_gcd 는 사내 코드값). 화면에만
+  //    "낮은위험" 같은 문구로 나오므로 여기서 읽는다.
+  //  - 수집 결과가 홈페이지 화면과 같은지 눈으로 대조할 수 있게 원문도 저장한다.
+  const rendered = await page.evaluate(() => {
     const GRADES = ['매우높은위험', '높은위험', '다소높은위험', '보통위험', '낮은위험', '매우낮은위험'];
-    const out = {};
+    const rows = [];
     for (const tr of document.querySelectorAll('table tbody tr')) {
-      const txt = (tr.textContent || '').replace(/\s+/g, ' ');
+      const txt = (tr.textContent || '').replace(/\s+/g, ' ').trim();
       const name = (txt.match(/미래에셋증권\((?:ELS|ELB|DLS|DLB)\)[0-9A-Za-z]+/) || [])[0];
       if (!name) continue;
-      const grade = GRADES.find((g) => txt.includes(g));
-      if (grade) out[name] = grade;
+      const cells = Array.from(tr.children).map((td) => (td.textContent || '').replace(/\s+/g, ' ').trim());
+      rows.push({
+        name,
+        grade: GRADES.find((g) => txt.includes(g)) || null,
+        // 화면에 보이는 수익률·손실률·청약기간 (수집값과 대조용)
+        rate: (txt.match(/(?:최대\s*)?(-?\d+(?:\.\d+)?)\s*%/) || [])[1] || null,
+        period: (txt.match(/(\d{4}\.\d{2}\.\d{2}\s*~\s*\d{4}\.\d{2}\.\d{2})/) || [])[1] || null,
+        cells,
+      });
     }
-    return out;
-  }).catch(() => ({}));
-  console.log(`화면에서 위험등급 ${Object.keys(riskByName).length}건 확인`);
+    return { title: document.title, count: rows.length, rows };
+  }).catch(() => ({ title: null, count: 0, rows: [] }));
+
+  const riskByName = {};
+  for (const r of rendered.rows) if (r.grade) riskByName[r.name] = r.grade;
+  console.log(`화면 렌더링 목록 ${rendered.count}건 / 위험등급 ${Object.keys(riskByName).length}건 확인`);
 
   await browser.close();
 
   await writeFile(join(DEBUG_DIR, 'pages.json'), JSON.stringify(pages, null, 2));
+
+  // 홈페이지 화면 원문 목록을 저장소에 남긴다. 수집 결과가 실제 판매 상품과
+  // 같은지 이 파일로 대조한다 (사이트 접근이 안 되는 환경에서의 확인 수단).
+  await mkdir('tools/discovery', { recursive: true });
+  await writeFile('tools/discovery/rendered_list.json', JSON.stringify({
+    capturedAt: new Date().toISOString(),
+    screen: ORIGIN + SCREEN,
+    title: rendered.title,
+    apiCount: rows.length,
+    renderedCount: rendered.count,
+    rows: rendered.rows,
+  }, null, 2));
   await writeFile(join(DEBUG_DIR, 'raw-rows.json'), JSON.stringify(rows.slice(0, 300), null, 2));
 
   const products = [];
