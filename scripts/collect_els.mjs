@@ -33,9 +33,11 @@
 import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
 import { createRequire } from 'node:module';
+import { pathToFileURL } from 'node:url';
 
+// 파서만 재사용하는 쪽(reparse_els.mjs)에서는 playwright 가 없어도 되도록 지연 로딩한다
 const require = createRequire(import.meta.url);
-const { chromium } = require('playwright');
+const playwright = () => require('playwright');
 
 const ORIGIN = 'https://securities.miraeasset.com';
 const LIST_API = '/hks/hks4022/a01.json';
@@ -66,22 +68,48 @@ function toMonths(v) {
 }
 
 /**
- * 구조 설명 문자열에서 배리어 시퀀스와 낙인을 뽑는다.
+ * 구조 설명 문자열에서 배리어 시퀀스와 낙인, 리자드 조건을 뽑는다.
  *   "90-90-85-85-80-75, KI 50, 원화"                        -> [90,90,85,85,80,75], KI 50
  *   "70-70-...-70(월지급배리어:70), KI -, 원화"              -> [70,...], KI 없음
  *   "95-90-90-85-85-80/ KI 45"                              -> [...], KI 45
+ *   "80-75(45)-75-70-65-60, KI -, 원화, 리자드 조건 충족 시 연 20.5%"
+ *                                                           -> [80,75,75,70,65,60], 2차에 리자드 45%
+ *
+ * 회차 뒤 괄호는 두 가지다. 숫자만 있으면 그 회차의 **리자드 배리어**이고
+ * ("(45)"), "(월지급배리어:70)" 처럼 이름이 붙으면 별개의 월지급 조건이다.
+ * 어느 쪽이든 괄호가 시퀀스를 끊어버리면 안 되므로 토큰 단위로 읽는다.
  */
 function parseStructure(desc) {
   const s = String(desc ?? '');
-  const seq = (s.match(/\d{2,3}(?:\.\d+)?(?:\s*-\s*\d{2,3}(?:\.\d+)?)+/) || [])[0];
-  const barriers = seq
-    ? seq.split(/\s*-\s*/).map(Number).filter((n) => n > 0 && n <= 200)
-    : null;
+  const seq = (s.match(
+    /\d{2,3}(?:\.\d+)?(?:\([^)]*\))?(?:\s*-\s*\d{2,3}(?:\.\d+)?(?:\([^)]*\))?)+/
+  ) || [])[0];
+
+  let barriers = null;
+  let lizard = null;
+  if (seq) {
+    barriers = [];
+    for (const token of seq.split(/\s*-\s*/)) {
+      const m = token.match(/^(\d{2,3}(?:\.\d+)?)(?:\((.*)\))?$/);
+      if (!m) continue;
+      const bar = Number(m[1]);
+      if (!(bar > 0 && bar <= 200)) continue;
+      const index = barriers.push(bar) - 1;
+      if (m[2] && /^\d{2,3}(?:\.\d+)?$/.test(m[2])) lizard = { index, barrier: Number(m[2]) };
+    }
+    if (!barriers.length) barriers = null;
+  }
+
+  // "리자드 조건 충족 시 연 20.5%" — 리자드 상환 시 적용되는 수익률
+  if (lizard) {
+    const rate = (s.match(/리자드[^0-9%]*(\d+(?:\.\d+)?)\s*%/) || [])[1];
+    if (rate) lizard.rate = Number(rate);
+  }
 
   const kiRaw = (s.match(/(?:KI|K\.I|낙인|녹인)\s*[:\s]*([0-9]{2,3}(?:\.\d+)?|-|없음)/i) || [])[1];
   const knockIn = !kiRaw || kiRaw === '-' || kiRaw === '없음' ? null : Number(kiRaw);
 
-  return { barriers, knockIn };
+  return { barriers, knockIn, lizard };
 }
 
 /** grid01 원소 -> data/els.js 스키마 */
@@ -92,7 +120,7 @@ function normalize(r) {
   const couponRate = toNum(r.omkt_drv_frcs_ern_r);
   if (couponRate == null) return null;
 
-  const { barriers, knockIn: descKi } = parseStructure(r.omkt_drv_desc_cn);
+  const { barriers, knockIn: descKi, lizard } = parseStructure(r.omkt_drv_desc_cn);
 
   const maturityMonths = toMonths(r.omkt_drv_exrt_cycl_cn)
     ?? (barriers ? barriers.length * (toMonths(r.omkt_drv_rpy_cycl_cn) ?? 6) : 36);
@@ -104,6 +132,9 @@ function normalize(r) {
   const schedule = Array.from({ length: count }, (_, i) => ({
     months: Math.round(step * (i + 1)),
     barrier: barriers ? barriers[i] : null,
+    ...(lizard && lizard.index === i
+      ? { lizard: lizard.barrier, lizardRate: lizard.rate ?? null }
+      : {}),
   })).filter((x) => x.barrier != null);
   if (!schedule.length) return null;
 
@@ -154,7 +185,7 @@ function normalize(r) {
 async function main() {
   await mkdir(DEBUG_DIR, { recursive: true });
 
-  const browser = await chromium.launch();
+  const browser = await playwright().chromium.launch();
   const ctx = await browser.newContext({
     locale: 'ko-KR',
     viewport: { width: 1440, height: 900 },
@@ -253,4 +284,9 @@ async function main() {
   console.log(`${OUT_DATA} 갱신 완료 — 상품 ${products.length}건`);
 }
 
-main().catch((e) => { console.error(e); process.exit(1); });
+// 수집기로 직접 실행할 때만 돈다. scripts/reparse_els.mjs 가 파서를 재사용한다.
+if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
+  main().catch((e) => { console.error(e); process.exit(1); });
+}
+
+export { parseStructure, normalize };
