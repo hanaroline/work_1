@@ -1,16 +1,31 @@
 #!/usr/bin/env node
 /**
- * 미래에셋증권 ELS 상품 주간 수집기
+ * 미래에셋증권 ELS/ELB 상품 주간 수집기
  *
- * 사이트가 WebSquare 기반 SPA 라 정적 HTML 에는 상품 정보가 없다.
- * 헤드리스 브라우저로 상품 목록 화면을 렌더링하면서 오가는 `.wjson` 응답을 가로채고,
- * 그중 상품 레코드로 보이는 JSON 을 data/els.js 스키마로 정규화한다.
+ * 엔드포인트 (scripts/discover_els.mjs 로 특정, 로그인 불필요)
+ *   화면  : https://securities.miraeasset.com/hks/hks4022/n01.do  (ELS/DLS 캘린더)
+ *           https://securities.miraeasset.com/hks/hks4023/n01.do  (ELS/DLS 상품 소개)
+ *   데이터: POST /hks/hks4022/a01.json
+ *           omkt_drvs_tcd=0&dlbr_term_yn=0&itm_nm=&prgs_scd=01
+ *           &qry_sort_tp=0&qry_sort_sqn=0&next_key=
  *
- * 설계 원칙
- *  - 사이트 구조 변경에 대비해 화면 후보를 여러 개 두고, 하나라도 되면 성공으로 본다
- *  - 필드명은 확정된 하나에 의존하지 않고 여러 후보 키를 순서대로 본다
- *  - 한 건도 못 얻으면 **exit 1 로 실패**시킨다. data/els.js 는 건드리지 않으므로
- *    페이지는 직전 주 데이터를 그대로 유지한다 (빈 화면이 되는 것보다 낫다)
+ * 응답 필드 (grid01[] 원소)
+ *   itm_nm                  상품명            "미래에셋증권(ELB)4039"
+ *   itm_no                  종목코드(ISIN)    "KR6MD0008RM9"
+ *   uast_cn                 기초자산          "삼성전자, SK하이닉스"
+ *   omkt_drv_frcs_ern_r     제시수익률(연 %)  "10.71000000"
+ *   omkt_drv_desc_cn        구조 설명         "90-90-85-85-80-75, KI 50, 원화"
+ *   omkt_drv_exrt_cycl_cn   만기              "3년"
+ *   omkt_drv_rpy_cycl_cn    상환주기          "6개월"
+ *   kni_yn                  낙인 여부         "0" | "1"
+ *   lwrk_bar_rt             낙인 배리어율     "50.00000000"
+ *   pca_grte_r              원금지급률(%)     "100.00000000"
+ *   apy_strt_dt/apy_end_dt  청약 시작/종료    "20260727"
+ *   prgs_stat_nm            진행상태          "진행중"
+ *   omkt_drvs_pcd_nm        상품유형          "하이파이브 월지급식"
+ *   omkt_drvs_risk_gcd      위험등급 코드     "15"
+ *
+ * 세션 쿠키가 필요해 헤드리스 브라우저로 홈을 한 번 열고 그 컨텍스트에서 호출한다.
  *
  * 사용: node scripts/collect_els.mjs
  */
@@ -23,120 +38,111 @@ const require = createRequire(import.meta.url);
 const { chromium } = require('playwright');
 
 const ORIGIN = 'https://securities.miraeasset.com';
+const LIST_API = '/hks/hks4022/a01.json';
+const SCREEN = '/hks/hks4022/n01.do';
 const OUT_DATA = 'data/els.js';
 const DEBUG_DIR = 'collect-debug';
-
-/**
- * ELS 상품 목록이 있을 만한 화면들.
- * scripts/discover_els.mjs 로 찾은 경로를 여기에 추가한다.
- */
-const SCREENS = [
-  '/hki/hki3028/r01.do',   // 금융상품 > ELS/DLS 청약
-  '/hki/hki3028/p01.do',
-  '/hki/hki3029/r01.do',
-  '/hki/hki7000/v05.do',
-];
-
-/** 상품 레코드로 보이는 객체인가 */
-function looksLikeProduct(o) {
-  if (!o || typeof o !== 'object') return false;
-  const keys = Object.keys(o).join(' ');
-  const vals = JSON.stringify(o);
-  return /제\s*\d{3,6}\s*회|ELS|ELB|DLS|파생결합/i.test(vals) &&
-         /NM|NAME|종목|상품|PDT|ITEM/i.test(keys);
-}
-
-/** 여러 후보 키 중 처음 값이 있는 것 */
-function pick(o, ...keys) {
-  for (const k of keys) {
-    for (const actual of Object.keys(o)) {
-      if (actual.toUpperCase() === k.toUpperCase() && o[actual] != null && o[actual] !== '') {
-        return o[actual];
-      }
-    }
-  }
-  return null;
-}
+const MAX_PAGES = 20;
 
 function toNum(v) {
-  if (v == null) return null;
+  if (v == null || v === '') return null;
   const n = Number(String(v).replace(/[^0-9.\-]/g, ''));
   return Number.isFinite(n) ? n : null;
 }
 
 function toDate(v) {
-  if (!v) return null;
-  const s = String(v).replace(/[^0-9]/g, '');
+  const s = String(v ?? '').replace(/[^0-9]/g, '');
   if (s.length < 8) return null;
   return `${s.slice(0, 4)}-${s.slice(4, 6)}-${s.slice(6, 8)}`;
 }
 
-/** "90-90-85-85-80-75" / "90,90,85" 형태의 배리어 문자열을 파싱 */
-function parseBarriers(v) {
-  if (!v) return null;
-  const nums = String(v).match(/\d{2,3}(?:\.\d+)?/g);
-  if (!nums || nums.length < 2) return null;
-  return nums.map(Number).filter((n) => n > 0 && n <= 130);
+/** "3년" / "1년6개월" / "18개월" -> 개월 수 */
+function toMonths(v) {
+  const s = String(v ?? '');
+  const y = Number((s.match(/(\d+)\s*년/) || [])[1] || 0);
+  const m = Number((s.match(/(\d+)\s*개?월/) || [])[1] || 0);
+  const total = y * 12 + m;
+  return total > 0 ? total : null;
 }
 
-/** 원시 레코드 -> data/els.js 스키마 */
-function normalize(raw) {
-  const name = pick(raw, 'PDT_NM', 'ITEM_NM', 'GOODS_NM', 'PRDT_NM', 'SECN_NM', '상품명', 'NAME');
+/**
+ * 구조 설명 문자열에서 배리어 시퀀스와 낙인을 뽑는다.
+ *   "90-90-85-85-80-75, KI 50, 원화"                        -> [90,90,85,85,80,75], KI 50
+ *   "70-70-...-70(월지급배리어:70), KI -, 원화"              -> [70,...], KI 없음
+ *   "95-90-90-85-85-80/ KI 45"                              -> [...], KI 45
+ */
+function parseStructure(desc) {
+  const s = String(desc ?? '');
+  const seq = (s.match(/\d{2,3}(?:\.\d+)?(?:\s*-\s*\d{2,3}(?:\.\d+)?)+/) || [])[0];
+  const barriers = seq
+    ? seq.split(/\s*-\s*/).map(Number).filter((n) => n > 0 && n <= 200)
+    : null;
+
+  const kiRaw = (s.match(/(?:KI|K\.I|낙인|녹인)\s*[:\s]*([0-9]{2,3}(?:\.\d+)?|-|없음)/i) || [])[1];
+  const knockIn = !kiRaw || kiRaw === '-' || kiRaw === '없음' ? null : Number(kiRaw);
+
+  return { barriers, knockIn };
+}
+
+/** grid01 원소 -> data/els.js 스키마 */
+function normalize(r) {
+  const name = String(r.itm_nm ?? '').trim();
   if (!name) return null;
 
-  const type = /ELB|원금지급/i.test(JSON.stringify(raw)) ? 'ELB'
-             : /DLS|DLB/i.test(String(name)) ? 'DLS' : 'ELS';
-
-  const maturityMonths = toNum(pick(raw, 'MTRT_MM', 'TERM_MM', 'INVT_TERM', '만기', 'MATURITY')) ?? 36;
-  const couponAnnual = toNum(pick(raw, 'ERNRT', 'YELD', 'RATE', 'PROFIT_RT', 'EXP_ERNRT', '수익률'));
+  const couponAnnual = toNum(r.omkt_drv_frcs_ern_r);
   if (couponAnnual == null) return null;
 
-  const barriers = parseBarriers(pick(raw, 'EXER_PRC', 'BARRIER', 'RDMPT_CNDT', '행사가격', 'STRIKE'));
-  const count = barriers?.length || Math.max(1, Math.round(maturityMonths / 6));
+  const { barriers, knockIn: descKi } = parseStructure(r.omkt_drv_desc_cn);
+
+  const maturityMonths = toMonths(r.omkt_drv_exrt_cycl_cn)
+    ?? (barriers ? barriers.length * (toMonths(r.omkt_drv_rpy_cycl_cn) ?? 6) : 36);
+
+  // 상환주기가 있으면 그걸로 회차 간격을 잡고, 없으면 배리어 개수로 균등 분할
+  const cycle = toMonths(r.omkt_drv_rpy_cycl_cn);
+  const count = barriers?.length ?? (cycle ? Math.round(maturityMonths / cycle) : 6);
   const step = maturityMonths / count;
   const schedule = Array.from({ length: count }, (_, i) => ({
     months: Math.round(step * (i + 1)),
-    barrier: barriers ? barriers[i] : 90,
-  }));
+    barrier: barriers ? barriers[i] : null,
+  })).filter((x) => x.barrier != null);
+  if (!schedule.length) return null;
 
-  const kiRaw = pick(raw, 'KI_PRC', 'KNOCK_IN', 'NOCKIN', '낙인', 'KI');
-  const knockIn = kiRaw == null || /없|NO|N\/A/i.test(String(kiRaw)) ? null : toNum(kiRaw);
+  // 낙인은 kni_yn / lwrk_bar_rt 를 우선하고, 없으면 설명 문자열에서 뽑은 값을 쓴다
+  const kniYn = String(r.kni_yn ?? '');
+  const barRate = toNum(r.lwrk_bar_rt);
+  const knockIn = kniYn === '0' ? null
+                : barRate && barRate > 0 ? barRate
+                : descKi;
 
-  const underRaw = pick(raw, 'UNDLY_AST', 'BASE_AST', 'UNDERLYING', '기초자산', 'BASE_ITEM_NM');
-  const underlyings = underRaw
-    ? String(underRaw).split(/[,/·]|\s{2,}/).map((s) => s.trim()).filter(Boolean)
-    : [];
+  const principalProtection = toNum(r.pca_grte_r) ?? 0;
+  const type = /\(ELB\)|ELB/i.test(name) ? 'ELB'
+             : /\(DLS\)|DLS/i.test(name) ? 'DLS'
+             : /\(DLB\)|DLB/i.test(name) ? 'DLB' : 'ELS';
+
+  const underlyings = String(r.uast_cn ?? '')
+    .split(/\s*,\s*/).map((s) => s.trim()).filter(Boolean);
 
   return {
-    code: String(pick(raw, 'PDT_CD', 'ITEM_CD', 'GOODS_CD', 'SECN_CD', 'CODE') ?? name).slice(0, 40),
-    name: String(name).trim(),
+    code: String(r.itm_no ?? name).trim(),
+    name,
     type,
-    shape: 'stepdown',
+    shape: String(r.omkt_drvs_pcd_nm ?? '').trim() || null,
     underlyings,
     couponAnnual,
     maturityMonths,
     schedule,
     knockIn,
-    principalProtection: type === 'ELB' ? 100 : 0,
-    riskGrade: toNum(pick(raw, 'RISK_GRD', 'RISK_GRADE', '위험등급')) ?? null,
-    offerStart: toDate(pick(raw, 'SBSCR_STRT_DT', 'OFFER_START', 'STRT_DT', '청약시작일')),
-    offerEnd: toDate(pick(raw, 'SBSCR_END_DT', 'OFFER_END', 'END_DT', '청약종료일')),
-    issueDate: toDate(pick(raw, 'ISSU_DT', 'ISSUE_DATE', '발행일')),
-    minAmount: toNum(pick(raw, 'MIN_AMT', 'MIN_AMOUNT', '최소가입금액')) ?? 1000000,
-    url: null,
+    principalProtection,
+    riskGrade: null,                       // 응답의 omkt_drvs_risk_gcd 는 사내 코드값이라 등급으로 쓰지 않는다
+    riskCode: String(r.omkt_drvs_risk_gcd ?? '') || null,
+    status: String(r.prgs_stat_nm ?? '') || null,
+    offerStart: toDate(r.apy_strt_dt),
+    offerEnd: toDate(r.apy_end_dt),
+    issueDate: null,
+    minAmount: null,
+    structureDesc: String(r.omkt_drv_desc_cn ?? '') || null,
+    url: ORIGIN + SCREEN,
   };
-}
-
-/** 임의 깊이 JSON 에서 상품처럼 보이는 객체를 전부 긁어온다 */
-function harvest(node, acc = [], depth = 0) {
-  if (depth > 8 || !node || typeof node !== 'object') return acc;
-  if (Array.isArray(node)) {
-    for (const x of node) harvest(x, acc, depth + 1);
-    return acc;
-  }
-  if (looksLikeProduct(node)) acc.push(node);
-  for (const v of Object.values(node)) harvest(v, acc, depth + 1);
-  return acc;
 }
 
 async function main() {
@@ -151,79 +157,92 @@ async function main() {
   });
   const page = await ctx.newPage();
 
-  const bodies = [];
-  page.on('response', async (res) => {
-    const req = res.request();
-    if (!['xhr', 'fetch'].includes(req.resourceType())) return;
-    if (/google|analytics|doubleclick/.test(res.url())) return;
-    try {
-      const body = await res.text();
-      if (body.length > 200) bodies.push({ url: res.url(), post: req.postData() || '', body });
-    } catch {}
-  });
-
   // 세션 쿠키 확보
-  await page.goto(ORIGIN + '/', { waitUntil: 'networkidle', timeout: 60000 });
+  await page.goto(ORIGIN + SCREEN, { waitUntil: 'networkidle', timeout: 60000 });
   await page.waitForTimeout(2500);
 
-  const tried = [];
-  for (const path of SCREENS) {
-    try {
-      await page.goto(ORIGIN + path, { waitUntil: 'networkidle', timeout: 45000 });
-      await page.waitForTimeout(3000);
-      tried.push({ path, title: await page.title(), ok: true });
-    } catch (e) {
-      tried.push({ path, error: String(e?.message ?? e) });
+  // 페이지네이션 (continueYn / next_key)
+  const rows = [];
+  const pages = [];
+  let nextKey = '';
+  for (let i = 0; i < MAX_PAGES; i++) {
+    const res = await page.evaluate(
+      async ({ origin, api, nextKey }) => {
+        const body =
+          'omkt_drvs_tcd=0&dlbr_term_yn=0&itm_nm=&prgs_scd=01' +
+          '&qry_sort_tp=0&qry_sort_sqn=0&next_key=' + encodeURIComponent(nextKey);
+        const r = await fetch(origin + api, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8' },
+          body,
+          credentials: 'include',
+        });
+        return { status: r.status, text: await r.text() };
+      },
+      { origin: ORIGIN, api: LIST_API, nextKey }
+    );
+
+    pages.push({ nextKey, status: res.status, bytes: res.text.length });
+    let json;
+    try { json = JSON.parse(res.text); } catch {
+      pages[pages.length - 1].parseError = true;
+      break;
     }
+    const grid = json.grid01 || [];
+    rows.push(...grid);
+    console.log(`  페이지 ${i + 1}: ${grid.length}건 (누적 ${rows.length}, continueYn=${json.continueYn})`);
+
+    if (String(json.continueYn) !== '1' || !grid.length) break;
+    nextKey = json.cts?.[0]?.next_key || grid[grid.length - 1]?.next_key || '';
+    if (!nextKey) break;
   }
+
   await browser.close();
 
-  // 응답에서 상품 레코드 수확
-  const rawProducts = [];
-  for (const b of bodies) {
-    let json;
-    try { json = JSON.parse(b.body); } catch { continue; }
-    for (const r of harvest(json)) rawProducts.push(r);
-  }
-
-  await writeFile(join(DEBUG_DIR, 'tried.json'), JSON.stringify(tried, null, 2));
-  await writeFile(join(DEBUG_DIR, 'bodies.json'),
-    JSON.stringify(bodies.map((b) => ({ url: b.url, post: b.post, body: b.body.slice(0, 8000) })), null, 2));
-  await writeFile(join(DEBUG_DIR, 'raw-products.json'), JSON.stringify(rawProducts.slice(0, 200), null, 2));
+  await writeFile(join(DEBUG_DIR, 'pages.json'), JSON.stringify(pages, null, 2));
+  await writeFile(join(DEBUG_DIR, 'raw-rows.json'), JSON.stringify(rows.slice(0, 300), null, 2));
 
   const products = [];
   const seen = new Set();
-  for (const r of rawProducts) {
+  const skipped = [];
+  for (const r of rows) {
     const p = normalize(r);
-    if (!p || seen.has(p.code)) continue;
+    if (!p) { skipped.push({ itm_nm: r.itm_nm, desc: r.omkt_drv_desc_cn }); continue; }
+    if (seen.has(p.code)) continue;
     seen.add(p.code);
     products.push(p);
   }
 
-  console.log(`방문 화면 ${tried.length}건, 응답 ${bodies.length}건, 원시 레코드 ${rawProducts.length}건, 정규화 ${products.length}건`);
-  tried.forEach((t) => console.log(`  ${t.ok ? 'OK ' : 'ERR'} ${t.path} ${t.title || t.error}`));
+  // 청약 마감일이 가까운 순 → 수익률 높은 순
+  products.sort((a, b) =>
+    (a.offerEnd || '9999').localeCompare(b.offerEnd || '9999') || b.couponAnnual - a.couponAnnual);
+
+  console.log(`\n원시 ${rows.length}건 → 정규화 ${products.length}건 (스킵 ${skipped.length}건)`);
+  if (skipped.length) {
+    console.log('스킵된 항목:');
+    skipped.slice(0, 10).forEach((s) => console.log(`  ${s.itm_nm} | ${s.desc}`));
+  }
 
   if (!products.length) {
     console.error(
       '\n상품을 한 건도 수집하지 못했습니다.\n' +
       `  · ${OUT_DATA} 는 그대로 두므로 페이지는 직전 데이터를 유지합니다.\n` +
-      `  · ${DEBUG_DIR}/ 의 응답 원문을 보고 SCREENS / normalize() 를 갱신하세요.\n` +
-      '  · 화면 경로가 바뀌었다면 scripts/discover_els.mjs 를 다시 돌리세요.'
+      `  · ${DEBUG_DIR}/raw-rows.json 의 실제 응답과 normalize() 를 대조하세요.\n` +
+      '  · 엔드포인트가 바뀌었다면 scripts/discover_els.mjs 를 다시 돌리세요.'
     );
     process.exit(1);
   }
 
-  // 기존 파일의 헤더 주석은 유지하고 데이터만 교체
   const header = (await readFile(OUT_DATA, 'utf8')).split('window.ELS_DATA')[0];
   const payload = {
     updatedAt: new Date().toISOString(),
     source: 'live',
-    sourceNote: '미래에셋증권 홈페이지 자동 수집',
-    sourceNoteEn: 'Auto-collected from the Mirae Asset Securities website',
+    sourceNote: '미래에셋증권 홈페이지 ELS/DLS 캘린더 (청약 진행중)',
+    sourceNoteEn: 'Mirae Asset Securities ELS/DLS calendar — currently on offer',
     products,
   };
   await writeFile(OUT_DATA, header + 'window.ELS_DATA = ' + JSON.stringify(payload, null, 2) + ';\n');
-  console.log(`\n${OUT_DATA} 갱신 완료 — 상품 ${products.length}건`);
+  console.log(`${OUT_DATA} 갱신 완료 — 상품 ${products.length}건`);
 }
 
 main().catch((e) => { console.error(e); process.exit(1); });

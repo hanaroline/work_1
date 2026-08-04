@@ -5,6 +5,13 @@ on:
   schedule:
     # 매주 월요일 08:00 KST (일요일 23:00 UTC)
     - cron: '0 23 * * 0'
+  # 수집기를 고쳤을 때 바로 검증되도록
+  push:
+    branches:
+      - 'claude/els-**'
+    paths:
+      - 'scripts/collect_els.mjs'
+      - '.github/workflows/els-weekly.yml'
 
 permissions:
   contents: write
@@ -74,14 +81,19 @@ jobs:
               echo "- 진단자료는 \`els-collect-debug\` 아티팩트를 확인하세요."
             fi
             echo ""
-            echo '```json'
-            node -e "const d=require('./data/els.js.json');" 2>/dev/null || \
-              node -e "
-                const fs=require('fs');
-                const src=fs.readFileSync('data/els.js','utf8');
-                const m=src.match(/updatedAt:\s*(.*)/); const s=src.match(/source:\s*(.*)/);
-                console.log(JSON.stringify({updatedAt:(m&&m[1]||'').trim(), source:(s&&s[1]||'').trim(),
-                  products:(src.match(/^\s{4}\{/gm)||[]).length}, null, 2));
-              "
-            echo '```'
+            node -e '
+              const fs = require("fs");
+              const src = fs.readFileSync("data/els.js", "utf8");
+              const window = {};
+              new Function("window", src)(window);
+              const d = window.ELS_DATA;
+              console.log(`- 기준: ${d.updatedAt ?? "미수집"} (source=${d.source})`);
+              console.log(`- 상품 ${d.products.length}건`);
+              console.log("");
+              console.log("| 상품 | 기초자산 | 연 수익률 | 만기 | 낙인 | 청약마감 |");
+              console.log("|---|---|---|---|---|---|");
+              for (const p of d.products.slice(0, 20)) {
+                console.log(`| ${p.name} | ${p.underlyings.join(", ")} | ${p.couponAnnual}% | ${p.maturityMonths}개월 | ${p.knockIn ?? "-"} | ${p.offerEnd ?? "-"} |`);
+              }
+            '
           } >> "$GITHUB_STEP_SUMMARY"

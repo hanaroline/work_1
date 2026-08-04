@@ -274,6 +274,7 @@ footer .disc strong{color:var(--body-strong);}
     <div class="card">
       <div class="label" data-ko="기초자산" data-en="Underlying">기초자산</div>
       <div id="k-under" style="font-size:22px;font-weight:600;color:var(--ink);line-height:1.35"></div>
+      <div id="k-shape" style="margin-top:8px"></div>
       <p class="note" id="k-under-note" style="margin-top:10px"></p>
     </div>
     <div class="card">
@@ -311,6 +312,7 @@ footer .disc strong{color:var(--body-strong);}
       <tbody></tbody>
     </table>
   </div>
+  <p style="font-size:14px;color:var(--muted);margin-top:12px" id="struct-desc"></p>
 </section>
 
 <!-- ================= 3. 만기 손익 구조 ================= -->
@@ -620,6 +622,9 @@ function renderKeyCards(){
   var n = (p.underlyings || []).length;
 
   el('k-under').textContent = underlyingLabel(p);
+  el('k-shape').innerHTML =
+    (p.shape ? '<span class="badge orange">' + p.shape + '</span> ' : '') +
+    (p.status ? '<span class="badge">' + p.status + '</span>' : '');
   el('k-under-note').innerHTML = n > 1
     ? t('기초자산 ' + n + '개. 모든 판정은 <strong>가장 많이 떨어진 하나</strong>를 기준으로 합니다.',
         n + ' underlyings. Every test uses the <strong>worst performer</strong>.')
@@ -777,6 +782,11 @@ function renderLadder(){
                  'Worst performer closes at or above ' + step.barrier + '% of the initial level') + '</td>';
     tb.appendChild(tr);
   });
+
+  // 홈페이지 원문 구조 표기를 그대로 보여줘 위 표와 대조할 수 있게 한다
+  el('struct-desc').textContent = p.structureDesc
+    ? t('홈페이지 원문 표기: ' + p.structureDesc, 'As published: ' + p.structureDesc)
+    : '';
 }
 
 /* ============================================================
