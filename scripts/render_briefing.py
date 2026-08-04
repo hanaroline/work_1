@@ -297,13 +297,23 @@ table.data tr.detail-row[hidden] { display: none; }
 html[lang="en"] .expand-all { font-family: var(--font-en); }
 .expand-all:hover { background: var(--surface-subtle); color: var(--ink); border-color: var(--line-mid); }
 .expand-all:focus-visible { outline: 2px solid var(--primary); outline-offset: 2px; }
+.print-btn {
+  font-family: var(--font-kr); font-size: 14px; font-weight: 500; letter-spacing: .3px;
+  padding: 9px 15px; border: 1px solid var(--primary); border-radius: 2px;
+  background: var(--primary); color: #FFFFFF; cursor: pointer; white-space: nowrap;
+}
+html[lang="en"] .print-btn { font-family: var(--font-en); }
+.print-btn:hover { background: var(--primary-active); border-color: var(--primary-active); }
+.print-btn:focus-visible { outline: 2px solid var(--primary); outline-offset: 2px; }
+.print-btn.alt { background: #FFFFFF; color: var(--primary-active); }
+.print-btn.alt:hover { background: var(--surface-subtle); border-color: var(--primary-active); }
 .expand-all .lbl-collapse { display: none; }
 .expand-all[aria-pressed="true"] .lbl-expand { display: none; }
 .expand-all[aria-pressed="true"] .lbl-collapse { display: inline; }
 .topbar-actions { display: flex; align-items: center; gap: 10px; flex: none; }
-@media (max-width: 560px) {
+@media (max-width: 680px) {
   .topbar { flex-wrap: wrap; }
-  .topbar-actions { width: 100%; justify-content: flex-end; }
+  .topbar-actions { width: 100%; justify-content: flex-end; flex-wrap: wrap; row-gap: 10px; }
 }
 .hint { font-size: 14px; color: var(--muted-soft); margin: 14px 0 0; }
 
@@ -312,7 +322,15 @@ html[lang="en"] [data-lang-ko] { display: none; }
 html[lang="en"] [data-lang-en] { display: revert; }
 
 @media print {
-  .lang-toggle, .navlinks, .expand-all, .hint { display: none !important; }
+  .lang-toggle, .navlinks, .expand-all, .print-btn, .hint { display: none !important; }
+  /* 인쇄는 화면 상태를 그대로 따른다(WYSIWYG). 접힌 상세는 인쇄에도 포함되지 않는다.
+     '요약 PDF' / '전체 PDF' 버튼이 인쇄 직전에 전개 상태를 맞춘 뒤 복원한다. */
+  /* 상세 패널의 근거 수치를 2열로 눕혀 지면을 절약한다 */
+  .detail dl { display: grid; grid-template-columns: 32% 1fr; column-gap: 10px; row-gap: 3px; }
+  .detail dt, .detail dd { margin: 0 !important; font-size: 9.5pt; }
+  .detail { padding: 10px 12px; margin-top: 10px; }
+  .detail > p { font-size: 10pt; margin-bottom: 8px; }
+  .detail-label { margin-bottom: 6px; }
   .exp > summary { padding-right: 0; }
   .exp-mark, table.data tr.clickable td:first-child::before { display: none !important; }
   table.data tr.clickable td:first-child { padding-left: 14px; }
@@ -394,33 +412,43 @@ JS = """
     });
   }
 
-  /* ---- 인쇄 시 모든 상세를 펼친다 ---- */
-  var restore = null;
-  function beforePrint() {
+  /* ---- PDF 저장 / 인쇄 ----
+     '요약 PDF'  = 상세를 접은 상태로 인쇄 (고객 전달용)
+     '전체 PDF'  = 상세를 모두 펼친 상태로 인쇄 (브리핑 준비용)
+     둘 다 인쇄 직전에 전개 상태를 맞추고, 인쇄가 끝나면 원래 화면 상태로 되돌린다.
+     Ctrl+P 로 직접 인쇄하면 화면에 보이는 그대로 인쇄된다. */
+  function snapshot() {
+    var s = { d: [], r: [] };
     var ds = document.querySelectorAll('details.exp');
     var rows = document.querySelectorAll('tr.clickable');
-    restore = { d: [], r: [] };
-    for (var i = 0; i < ds.length; i++) { restore.d.push(ds[i].hasAttribute('open')); ds[i].setAttribute('open', ''); }
-    for (var j = 0; j < rows.length; j++) {
-      restore.r.push(rows[j].getAttribute('aria-expanded') === 'true');
-      toggleRow(rows[j], true);
-    }
+    for (var i = 0; i < ds.length; i++) s.d.push(ds[i].hasAttribute('open'));
+    for (var j = 0; j < rows.length; j++) s.r.push(rows[j].getAttribute('aria-expanded') === 'true');
+    return s;
   }
-  function afterPrint() {
-    if (!restore) return;
+  function restoreFrom(s) {
+    if (!s) return;
     var ds = document.querySelectorAll('details.exp');
     var rows = document.querySelectorAll('tr.clickable');
-    for (var i = 0; i < ds.length; i++) { if (!restore.d[i]) ds[i].removeAttribute('open'); }
-    for (var j = 0; j < rows.length; j++) toggleRow(rows[j], restore.r[j]);
-    restore = null;
-  }
-  window.addEventListener('beforeprint', beforePrint);
-  window.addEventListener('afterprint', afterPrint);
-  if (window.matchMedia) {
-    var mq = window.matchMedia('print');
-    if (mq.addEventListener) {
-      mq.addEventListener('change', function (m) { if (m.matches) { beforePrint(); } else { afterPrint(); } });
+    for (var i = 0; i < ds.length; i++) {
+      if (s.d[i]) { ds[i].setAttribute('open', ''); } else { ds[i].removeAttribute('open'); }
     }
+    for (var j = 0; j < rows.length; j++) toggleRow(rows[j], s.r[j]);
+    var btn = document.querySelector('.expand-all');   /* 버튼 라벨도 원래대로 */
+    if (btn) {
+      var allOpen = ds.length > 0 && document.querySelectorAll('details.exp[open]').length === ds.length;
+      btn.setAttribute('aria-pressed', allOpen ? 'true' : 'false');
+    }
+  }
+  var pbs = document.querySelectorAll('.print-btn');
+  for (var k = 0; k < pbs.length; k++) {
+    pbs[k].addEventListener('click', function (ev) {
+      var full = ev.currentTarget.getAttribute('data-print') === 'full';
+      var before = snapshot();
+      setAll(full);
+      void document.body.offsetHeight;          /* 레이아웃 확정 */
+      try { window.focus(); } catch (e) {}      /* iframe 안에서도 자기 프레임 인쇄 */
+      try { window.print(); } finally { restoreFrom(before); }
+    });
   }
 })();
 """
@@ -481,14 +509,20 @@ T = {
     "nodata": ("확인된 수치 없음", "No verified figure"),
     "expand_all": ("전체 펼치기", "Expand all"),
     "collapse_all": ("전체 접기", "Collapse all"),
+    "print_brief": ("요약 PDF", "Summary PDF"),
+    "print_brief_t": ("상세를 접은 요약본으로 인쇄 / PDF 저장 — 고객 전달용",
+                      "Print or save the summary only — for handing to clients"),
+    "print_full": ("전체 PDF", "Full PDF"),
+    "print_full_t": ("모든 상세를 펼친 전체본으로 인쇄 / PDF 저장 — 브리핑 준비용",
+                     "Print or save with every detail expanded — for your own preparation"),
     "detail": ("상세", "Detail"),
     "talking_a": ("응대 스크립트", "Suggested response"),
     "srclink": ("원문", "Source"),
     "hint": (
         "각 항목을 클릭하면 근거 수치와 배경, 원문 링크가 펼쳐집니다. "
-        "인쇄(PDF 저장) 시에는 모든 상세가 자동으로 펼쳐집니다.",
+        "고객 전달용은 «요약 PDF», 브리핑 준비용은 «전체 PDF» 로 저장하십시오.",
         "Click any item to reveal the underlying figures, background and source links. "
-        "All details expand automatically when printing to PDF.",
+        "Use «Summary PDF» for client hand-outs and «Full PDF» for your own preparation.",
     ),
 }
 
@@ -943,12 +977,20 @@ def topbar(with_expand=False):
     expand = ""
     if with_expand:
         expand = (
+            '<button type="button" class="print-btn" data-print="brief" title="%s">'
+            '<span data-lang-ko>%s</span><span data-lang-en>%s</span></button>'
+            '<button type="button" class="print-btn alt" data-print="full" title="%s">'
+            '<span data-lang-ko>%s</span><span data-lang-en>%s</span></button>'
             '<button type="button" class="expand-all" aria-pressed="false">'
             '<span class="lbl-expand"><span data-lang-ko>%s</span>'
             '<span data-lang-en>%s</span></span>'
             '<span class="lbl-collapse"><span data-lang-ko>%s</span>'
             '<span data-lang-en>%s</span></span>'
-            '</button>' % (esc(T["expand_all"][0]), esc(T["expand_all"][1]),
+            '</button>' % (esc(T["print_brief_t"][0]),
+                           esc(T["print_brief"][0]), esc(T["print_brief"][1]),
+                           esc(T["print_full_t"][0]),
+                           esc(T["print_full"][0]), esc(T["print_full"][1]),
+                           esc(T["expand_all"][0]), esc(T["expand_all"][1]),
                            esc(T["collapse_all"][0]), esc(T["collapse_all"][1]))
         )
     return (
