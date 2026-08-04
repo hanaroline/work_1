@@ -1,0 +1,1106 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ELS 상품 구조 한눈에 보기 | 미래에셋증권</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* ============================================================
+   미래에셋증권 디자인 시스템
+   Orange #F58220 / Blue #043B72 / 1px 섹션 룰 / FAB072 테이블 헤더
+   ============================================================ */
+:root{
+  --orange:#F58220; --orange-active:#CB6015; --orange-soft:#FAB072;
+  --blue:#043B72; --blue-soft:#0086B8; --cyan:#00A9CE;
+  --gray-hl:#D7D7D7; --tan:#F0B26B; --terracotta:#AD624E; --neutral:#84888B;
+  --canvas:#FFFFFF; --surface-soft:#ECEFF4; --surface-subtle:#F7F8FA;
+  --hairline:#CDCECB; --hairline-soft:#E5E4E1;
+  --line-dark:#49535B; --line-mid:#84888B; --line-soft:#A0A6A8;
+  --ink:#1A1A1A; --body-strong:#2C2C2C; --body:#3D3D3D; --muted:#6C6C6C; --muted-soft:#84888B;
+  --success:#2E8540; --warning:#D4A017; --error:#C62828;
+
+  --font-kr:'Spoqa Han Sans Neo','Noto Sans KR','Apple SD Gothic Neo','Malgun Gothic',sans-serif;
+  --font-en:'Inter','Aptos','Segoe UI',system-ui,-apple-system,sans-serif;
+  --font-num:'Inter','SF Mono',ui-monospace,monospace;
+
+  --space-section:104px; --space-block:56px; --space-content:28px; --space-tight:14px;
+}
+@media (max-width:768px){ :root{ --space-section:72px; --space-block:36px; } }
+
+*{box-sizing:border-box;}
+html{-webkit-text-size-adjust:100%;}
+body{
+  margin:0; background:var(--canvas); color:var(--body);
+  font-family:var(--font-kr); font-size:19px; line-height:1.65;
+  font-variant-numeric:tabular-nums;
+}
+html[lang="en"] body{font-family:var(--font-en);}
+h1,h2,h3,h4{color:var(--ink); margin:0;}
+p{margin:0 0 var(--space-content);}
+a{color:var(--blue);}
+:focus-visible{outline:2px solid var(--orange); outline-offset:2px;}
+
+.page{max-width:1200px; margin:0 auto; padding:0 32px;}
+@media (max-width:768px){ .page{padding:0 20px;} }
+
+/* ---------- 한/영 토글 ---------- */
+.toolbar{
+  max-width:1200px; margin:0 auto; padding:18px 32px 0;
+  display:flex; justify-content:flex-end; gap:10px; align-items:center;
+}
+@media (max-width:768px){ .toolbar{padding:14px 20px 0;} }
+.lang-toggle{
+  display:inline-flex; border:1px solid var(--hairline); border-radius:2px;
+  overflow:hidden; background:#fff; box-shadow:0 2px 8px rgba(0,0,0,.06);
+}
+.lang-toggle button{
+  font-family:var(--font-en); font-size:14px; font-weight:500; letter-spacing:.5px;
+  padding:10px 17px; border:0; background:#fff; color:var(--muted); cursor:pointer;
+}
+.lang-toggle button + button{border-left:1px solid var(--hairline);}
+.lang-toggle button[aria-checked="true"]{background:var(--orange); color:#fff;}
+.lang-toggle button[aria-checked="false"]:hover{background:var(--surface-subtle); color:var(--ink);}
+
+.btn-print{
+  font-size:14px; padding:10px 15px; border:1px solid var(--hairline); border-radius:2px;
+  background:#fff; color:var(--muted); cursor:pointer; box-shadow:0 2px 8px rgba(0,0,0,.06);
+}
+.btn-print:hover{background:var(--surface-subtle); color:var(--ink);}
+
+/* ---------- Hero ---------- */
+.hero{background:var(--orange); color:#fff; padding:64px 0 72px; margin-top:18px;}
+.hero .tag{
+  display:inline-block; font-size:14px; letter-spacing:.6px; font-weight:500;
+  border:1px solid rgba(255,255,255,.6); padding:4px 10px; border-radius:2px; margin-bottom:28px;
+}
+.hero h1{font-size:67px; font-weight:700; line-height:1.1; letter-spacing:-1px; color:#fff;}
+.hero .sub{font-size:24px; line-height:1.5; margin-top:19px; max-width:760px; color:rgba(255,255,255,.94);}
+.hero .meta{margin-top:38px; font-size:16px; color:rgba(255,255,255,.9); display:flex; flex-wrap:wrap; gap:10px 28px;}
+@media (max-width:768px){ .hero h1{font-size:43px;} .hero .sub{font-size:19px;} .hero{padding:44px 0 52px;} }
+
+/* ---------- 섹션 ---------- */
+.section{padding-top:var(--space-section);}
+.section-rule{height:1px; background:var(--orange); margin-bottom:19px;}
+.section-eyebrow{font-size:16px; font-weight:500; letter-spacing:.6px; color:var(--orange); margin-bottom:6px;}
+.section-title{font-size:34px; font-weight:700; line-height:1.25; letter-spacing:-.3px;}
+@media (max-width:768px){ .section-title{font-size:26px;} }
+.section-lead{font-size:19px; color:var(--body); margin-top:14px; max-width:840px;}
+h3{font-size:22px; font-weight:600; margin:var(--space-block) 0 var(--space-tight);}
+h4{font-size:19px; font-weight:600; margin:var(--space-content) 0 10px;}
+
+/* ---------- 카드 ---------- */
+.grid{display:grid; gap:19px;}
+.grid-3{grid-template-columns:repeat(3,1fr);}
+.grid-2{grid-template-columns:repeat(2,1fr);}
+@media (max-width:900px){ .grid-3{grid-template-columns:repeat(2,1fr);} }
+@media (max-width:680px){ .grid-3,.grid-2{grid-template-columns:1fr;} }
+
+.card{border:1px solid var(--hairline); border-radius:4px; padding:28px; background:#fff;}
+.card .label{font-size:16px; font-weight:500; letter-spacing:.6px; color:var(--muted); margin-bottom:8px;}
+.card .stat{font-size:48px; font-weight:700; line-height:1; color:var(--blue); font-family:var(--font-num);}
+.card .stat.orange{color:var(--orange);}
+.card .note{font-size:17px; color:var(--body); margin-top:14px; line-height:1.55;}
+.card h4{margin-top:0;}
+
+.callout{background:var(--orange); color:#fff; border-radius:4px; padding:38px 44px; margin-top:var(--space-block);}
+.callout h3{color:#fff; margin:0 0 12px; font-size:26px;}
+.callout p{color:rgba(255,255,255,.95); margin:0;}
+.callout p + p{margin-top:12px;}
+
+.tint{background:var(--surface-soft); border-radius:4px; padding:28px;}
+
+/* ---------- 표 ---------- */
+.table-wrap{overflow-x:auto; border:1px solid var(--hairline); border-radius:4px;}
+table{border-collapse:collapse; width:100%; min-width:640px; font-size:17px; background:#fff;}
+thead th{
+  background:var(--orange-soft); color:var(--ink); font-weight:700; font-size:16px;
+  text-align:left; padding:13px 16px; border-bottom:1px solid var(--hairline); white-space:nowrap;
+}
+tbody td{padding:13px 16px; border-bottom:1px solid var(--hairline-soft); vertical-align:top;}
+tbody tr:last-child td{border-bottom:0;}
+tbody tr:hover{background:var(--surface-subtle);}
+td.num,th.num{text-align:right; font-family:var(--font-num); font-variant-numeric:tabular-nums;}
+tr.highlight td{background:var(--gray-hl); font-weight:600;}
+
+/* ---------- 배지 ---------- */
+.badge{
+  display:inline-block; font-size:13px; font-weight:600; letter-spacing:.3px;
+  padding:3px 9px; border-radius:2px; border:1px solid var(--hairline); color:var(--muted); background:#fff;
+  vertical-align:middle;
+}
+.badge.live{border-color:var(--success); color:var(--success);}
+.badge.sample{border-color:var(--warning); color:#8a6a0a; background:#FDF6E3;}
+.badge.orange{border-color:var(--orange); color:var(--orange-active);}
+.badge.blue{border-color:var(--blue); color:var(--blue);}
+
+/* ---------- 상품 선택 ---------- */
+.picker{display:flex; flex-wrap:wrap; gap:10px; margin-bottom:var(--space-content);}
+.picker button{
+  font-family:inherit; font-size:16px; padding:10px 17px; cursor:pointer;
+  border:1px solid var(--hairline); border-radius:2px; background:#fff; color:var(--body);
+  text-align:left; line-height:1.35;
+}
+.picker button:hover{background:var(--surface-subtle);}
+.picker button[aria-pressed="true"]{background:var(--orange); border-color:var(--orange); color:#fff;}
+.picker button .sm{display:block; font-size:13px; opacity:.8;}
+
+/* ---------- 차트 ---------- */
+.chart-wrapper{border:1px solid var(--hairline); border-radius:4px; padding:24px; background:#fff; overflow-x:auto;}
+.chart-wrapper svg{display:block; width:100%; height:auto; min-width:560px;}
+.legend{display:flex; flex-wrap:wrap; gap:10px 24px; margin-top:16px; font-size:15px; color:var(--muted);}
+.legend span{display:inline-flex; align-items:center; gap:8px;}
+.legend i{width:14px; height:14px; border-radius:2px; display:inline-block;}
+.legend i.line{height:0; border-top:2px dashed currentColor; width:18px; border-radius:0;}
+
+/* ---------- 시뮬레이터 ---------- */
+.sim{display:grid; grid-template-columns:340px 1fr; gap:28px; align-items:start;}
+@media (max-width:900px){ .sim{grid-template-columns:1fr;} }
+.controls{border:1px solid var(--hairline); border-radius:4px; padding:24px; background:var(--surface-subtle);}
+.ctrl{margin-bottom:22px;}
+.ctrl:last-child{margin-bottom:0;}
+.ctrl label{display:flex; justify-content:space-between; align-items:baseline; font-size:16px; font-weight:500; color:var(--body-strong); margin-bottom:8px;}
+.ctrl label .v{font-family:var(--font-num); font-size:19px; font-weight:700; color:var(--orange-active);}
+input[type=range]{width:100%; accent-color:var(--orange);}
+.ctrl .hint{font-size:14px; color:var(--muted); margin-top:6px; line-height:1.45;}
+.sim-result{border:1px solid var(--hairline); border-radius:4px; padding:0; overflow:hidden;}
+.sim-verdict{padding:24px 28px; border-bottom:1px solid var(--hairline-soft);}
+.sim-verdict .k{font-size:16px; font-weight:500; letter-spacing:.6px; color:var(--muted);}
+.sim-verdict .headline{font-size:34px; font-weight:700; line-height:1.2; margin-top:6px;}
+.sim-verdict .headline.good{color:var(--success);}
+.sim-verdict .headline.warn{color:var(--warning);}
+.sim-verdict .headline.bad{color:var(--error);}
+.sim-verdict .detail{font-size:17px; color:var(--body); margin-top:12px; line-height:1.55;}
+.sim-steps{padding:0;}
+.sim-steps table{min-width:0;}
+
+/* ---------- 리스크 ---------- */
+.risk-item{border-left:3px solid var(--orange); padding:4px 0 4px 19px; margin-bottom:var(--space-content);}
+.risk-item h4{margin:0 0 6px;}
+.risk-item p{margin:0; font-size:17px; line-height:1.6;}
+
+/* ---------- 용어 ---------- */
+dl.terms{margin:0; display:grid; grid-template-columns:200px 1fr; gap:0;}
+@media (max-width:680px){ dl.terms{grid-template-columns:1fr;} }
+dl.terms dt{font-weight:600; color:var(--ink); padding:14px 0; border-top:1px solid var(--hairline-soft); font-size:17px;}
+dl.terms dd{margin:0; padding:14px 0; border-top:1px solid var(--hairline-soft); font-size:17px; line-height:1.6;}
+@media (max-width:680px){ dl.terms dd{border-top:0; padding-top:0;} }
+
+/* ---------- 푸터 ---------- */
+footer{margin-top:var(--space-section); border-top:1px solid var(--hairline); padding:38px 0 72px;}
+footer .disc{font-size:14px; color:var(--muted); line-height:1.7; max-width:960px;}
+footer .disc strong{color:var(--body-strong);}
+
+/* ---------- 인쇄 ---------- */
+@media print{
+  .toolbar, .picker, .controls, .btn-print{display:none !important;}
+  body{font-size:13pt; line-height:1.4;}
+  .page{max-width:100%; padding:0;}
+  .hero{background:#fff !important; color:var(--ink); padding:0 0 24px; border-bottom:2px solid var(--orange);}
+  .hero h1,.hero .sub,.hero .meta{color:var(--ink) !important;}
+  .hero .tag{border-color:var(--hairline); color:var(--muted);}
+  .section{padding-top:32px;}
+  .chart-wrapper, table, .card{page-break-inside:avoid;}
+  .section-title, h2, h3{page-break-after:avoid;}
+  .callout{background:#fff; color:var(--ink); border:1px solid var(--orange);}
+  .callout h3,.callout p{color:var(--ink);}
+}
+</style>
+</head>
+<body>
+
+<div class="toolbar">
+  <button class="btn-print" onclick="window.print()" data-ko="인쇄 · PDF 저장" data-en="Print / PDF">인쇄 · PDF 저장</button>
+  <div class="lang-toggle" role="radiogroup" aria-label="Language">
+    <button type="button" role="radio" data-lang="ko" aria-checked="true">KO</button>
+    <button type="button" role="radio" data-lang="en" aria-checked="false">EN</button>
+  </div>
+</div>
+
+<!-- ================= HERO ================= -->
+<header class="hero">
+  <div class="page">
+    <span class="tag" data-ko="투자 참고자료" data-en="Reference Material">투자 참고자료</span>
+    <h1 data-ko="ELS, 구조부터 보고 고르세요" data-en="Understand the structure first">ELS, 구조부터 보고 고르세요</h1>
+    <p class="sub" data-ko="기초자산이 무엇인지, 언제 어떤 조건이면 조기상환되는지, 수익과 손실이 어떻게 결정되는지 — 세 가지만 알면 ELS는 어렵지 않습니다." data-en="Three things decide everything in an ELS: the underlying assets, the early-redemption conditions, and the payoff at maturity.">기초자산이 무엇인지, 언제 어떤 조건이면 조기상환되는지, 수익과 손실이 어떻게 결정되는지 — 세 가지만 알면 ELS는 어렵지 않습니다.</p>
+    <div class="meta">
+      <span data-ko="발행사 미래에셋증권" data-en="Issuer: Mirae Asset Securities">발행사 미래에셋증권</span>
+      <span id="hero-updated"></span>
+      <span id="hero-source"></span>
+    </div>
+  </div>
+</header>
+
+<main class="page">
+
+<!-- ================= 1. 30초 요약 ================= -->
+<section class="section" id="summary">
+  <div class="section-rule"></div>
+  <div class="section-eyebrow" data-ko="30초 요약" data-en="In 30 seconds">30초 요약</div>
+  <h2 class="section-title" data-ko="ELS는 “조건부 이자”를 주는 상품입니다" data-en="An ELS pays a conditional coupon">ELS는 “조건부 이자”를 주는 상품입니다</h2>
+  <p class="section-lead" data-ko="예금처럼 무조건 이자를 주는 상품이 아닙니다. 정해둔 날짜에 기초자산 가격이 정해둔 선(배리어) 위에 있으면 약속한 수익을 주고 끝나고, 아래면 다음 평가일로 넘어갑니다. 마지막까지 조건을 못 채우면 원금 손실이 발생할 수 있습니다." data-en="Unlike a deposit, the coupon is not guaranteed. On each valuation date, if the underlying is above the barrier, the note redeems early with the promised return. If not, it rolls to the next date. If the conditions are never met, principal loss is possible.">예금처럼 무조건 이자를 주는 상품이 아닙니다. 정해둔 날짜에 기초자산 가격이 정해둔 선(배리어) 위에 있으면 약속한 수익을 주고 끝나고, 아래면 다음 평가일로 넘어갑니다. 마지막까지 조건을 못 채우면 원금 손실이 발생할 수 있습니다.</p>
+
+  <div class="grid grid-3" style="margin-top:var(--space-block)">
+    <div class="card">
+      <div class="label" data-ko="① 기초자산" data-en="1. Underlying">① 기초자산</div>
+      <h4 data-ko="무엇의 가격을 보는가" data-en="What price is watched">무엇의 가격을 보는가</h4>
+      <p class="note" data-ko="주가지수(KOSPI200, S&P500 등)나 개별 종목. 여러 개면 <strong>가장 많이 떨어진 것 하나</strong>가 모든 판정을 결정합니다. 개수가 많을수록 쿠폰은 높아지고 위험도 커집니다." data-en="An index (KOSPI200, S&amp;P500) or a single stock. With several underlyings, the <strong>worst performer</strong> decides everything. More underlyings means a higher coupon and higher risk.">주가지수(KOSPI200, S&P500 등)나 개별 종목. 여러 개면 <strong>가장 많이 떨어진 것 하나</strong>가 모든 판정을 결정합니다. 개수가 많을수록 쿠폰은 높아지고 위험도 커집니다.</p>
+    </div>
+    <div class="card">
+      <div class="label" data-ko="② 조기상환 조건" data-en="2. Early redemption">② 조기상환 조건</div>
+      <h4 data-ko="언제 끝날 수 있는가" data-en="When it can end">언제 끝날 수 있는가</h4>
+      <p class="note" data-ko="보통 6개월마다 평가합니다. 기준가격 대비 배리어(예: 90%) 이상이면 그 자리에서 원금과 쿠폰을 받고 종료. 시간이 갈수록 배리어가 낮아지는 구조를 <strong>스텝다운</strong>이라 합니다." data-en="Typically evaluated every 6 months. If the worst performer is at or above the barrier (e.g. 90%), you receive principal plus coupon and the note ends. A barrier that steps lower over time is a <strong>step-down</strong> structure.">보통 6개월마다 평가합니다. 기준가격 대비 배리어(예: 90%) 이상이면 그 자리에서 원금과 쿠폰을 받고 종료. 시간이 갈수록 배리어가 낮아지는 구조를 <strong>스텝다운</strong>이라 합니다.</p>
+    </div>
+    <div class="card">
+      <div class="label" data-ko="③ 수익 구조" data-en="3. Payoff">③ 수익 구조</div>
+      <h4 data-ko="얼마를 받는가" data-en="What you receive">얼마를 받는가</h4>
+      <p class="note" data-ko="조건 충족 시 수익은 <strong>연 쿠폰 × 경과 기간</strong>으로 고정입니다. 기초자산이 두 배로 올라도 더 받지 못합니다. 반대로 낙인을 터치하고 만기 조건도 못 채우면 <strong>하락률만큼 손실</strong>이 납니다." data-en="If the condition is met, the return is fixed at <strong>coupon × elapsed years</strong> — you do not get more even if the index doubles. If the knock-in is breached and the final condition fails, you lose <strong>in line with the decline</strong>.">조건 충족 시 수익은 <strong>연 쿠폰 × 경과 기간</strong>으로 고정입니다. 기초자산이 두 배로 올라도 더 받지 못합니다. 반대로 낙인을 터치하고 만기 조건도 못 채우면 <strong>하락률만큼 손실</strong>이 납니다.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ================= 2. 상품 선택 + 조기상환 사다리 ================= -->
+<section class="section" id="ladder">
+  <div class="section-rule"></div>
+  <div class="section-eyebrow" data-ko="조기상환 조건" data-en="Early redemption">조기상환 조건</div>
+  <h2 class="section-title" data-ko="언제, 어떤 조건이면 끝나는가" data-en="When and how it redeems">언제, 어떤 조건이면 끝나는가</h2>
+  <p class="section-lead" data-ko="아래에서 상품을 고르면 이 페이지의 그래프와 시뮬레이터가 모두 그 상품 조건으로 바뀝니다." data-en="Pick a product below — every chart and the simulator on this page switch to its terms.">아래에서 상품을 고르면 이 페이지의 그래프와 시뮬레이터가 모두 그 상품 조건으로 바뀝니다.</p>
+
+  <div class="picker" id="picker" role="group" aria-label="상품 선택" style="margin-top:var(--space-content)"></div>
+
+  <div class="grid grid-3" style="margin-bottom:var(--space-content)">
+    <div class="card">
+      <div class="label" data-ko="기초자산" data-en="Underlying">기초자산</div>
+      <div id="k-under" style="font-size:22px;font-weight:600;color:var(--ink);line-height:1.35"></div>
+      <p class="note" id="k-under-note" style="margin-top:10px"></p>
+    </div>
+    <div class="card">
+      <div class="label" data-ko="제시 수익률 (세전, 연)" data-en="Coupon (p.a., pre-tax)">제시 수익률 (세전, 연)</div>
+      <div class="stat orange"><span id="k-coupon">–</span><span style="font-size:26px">%</span></div>
+      <p class="note" id="k-coupon-note" style="margin-top:10px"></p>
+    </div>
+    <div class="card">
+      <div class="label" data-ko="원금 손실 조건" data-en="Loss condition">원금 손실 조건</div>
+      <div id="k-ki" style="font-size:22px;font-weight:600;color:var(--ink);line-height:1.35"></div>
+      <p class="note" id="k-ki-note" style="margin-top:10px"></p>
+    </div>
+  </div>
+
+  <div class="chart-wrapper">
+    <svg id="ladder-svg" viewBox="0 0 1000 430" role="img" aria-labelledby="ladder-title"><title id="ladder-title">조기상환 배리어 사다리</title></svg>
+    <div class="legend">
+      <span><i style="background:var(--orange)"></i><b data-ko="조기상환 배리어" data-en="Redemption barrier">조기상환 배리어</b></span>
+      <span style="color:var(--error)"><i class="line"></i><b data-ko="낙인 배리어" data-en="Knock-in barrier">낙인 배리어</b></span>
+      <span><i style="background:var(--surface-soft);border:1px solid var(--hairline)"></i><b data-ko="상환 실패 구간" data-en="No redemption zone">상환 실패 구간</b></span>
+    </div>
+  </div>
+
+  <div class="table-wrap" style="margin-top:var(--space-content)">
+    <table id="sched-table">
+      <thead>
+        <tr>
+          <th data-ko="평가 회차" data-en="Obs.">평가 회차</th>
+          <th data-ko="시점" data-en="Date">시점</th>
+          <th class="num" data-ko="조기상환 배리어" data-en="Barrier">조기상환 배리어</th>
+          <th class="num" data-ko="상환 시 누적 수익률 (세전)" data-en="Cumulative return">상환 시 누적 수익률 (세전)</th>
+          <th data-ko="판정 기준" data-en="Condition">판정 기준</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+  </div>
+</section>
+
+<!-- ================= 3. 만기 손익 구조 ================= -->
+<section class="section" id="payoff">
+  <div class="section-rule"></div>
+  <div class="section-eyebrow" data-ko="수익 구조" data-en="Payoff">수익 구조</div>
+  <h2 class="section-title" data-ko="만기까지 갔을 때 얼마를 받는가" data-en="What you get if it reaches maturity">만기까지 갔을 때 얼마를 받는가</h2>
+  <p class="section-lead" data-ko="가로축은 만기 시점의 기초자산 성과(최초 기준가격 = 100), 세로축은 투자자가 받는 총 수익률입니다. 오른쪽 평평한 구간이 “쿠폰 확정”, 왼쪽 기울어진 구간이 “원금 손실”입니다." data-en="X-axis: the worst performer at maturity (initial level = 100). Y-axis: your total return. The flat area on the right is the fixed coupon; the sloped area on the left is principal loss.">가로축은 만기 시점의 기초자산 성과(최초 기준가격 = 100), 세로축은 투자자가 받는 총 수익률입니다. 오른쪽 평평한 구간이 “쿠폰 확정”, 왼쪽 기울어진 구간이 “원금 손실”입니다.</p>
+
+  <div class="grid grid-2" style="margin-top:var(--space-block)">
+    <div class="chart-wrapper">
+      <h4 style="margin:0 0 4px" data-ko="낙인을 한 번도 터치하지 않은 경우" data-en="Knock-in never breached">낙인을 한 번도 터치하지 않은 경우</h4>
+      <p style="font-size:15px;color:var(--muted);margin:0 0 12px" data-ko="투자 기간 내내 기초자산이 낙인 위에 머문 경우" data-en="The underlying stayed above the knock-in throughout">투자 기간 내내 기초자산이 낙인 위에 머문 경우</p>
+      <svg id="payoff-noki" viewBox="0 0 520 360" role="img" aria-label="낙인 미터치 시 만기 손익 구조"></svg>
+    </div>
+    <div class="chart-wrapper">
+      <h4 style="margin:0 0 4px" data-ko="낙인을 터치한 적이 있는 경우" data-en="Knock-in breached at least once">낙인을 터치한 적이 있는 경우</h4>
+      <p style="font-size:15px;color:var(--muted);margin:0 0 12px" data-ko="한 번이라도 낙인 아래로 내려간 적이 있는 경우" data-en="The underlying fell below the knock-in at least once">한 번이라도 낙인 아래로 내려간 적이 있는 경우</p>
+      <svg id="payoff-ki" viewBox="0 0 520 360" role="img" aria-label="낙인 터치 시 만기 손익 구조"></svg>
+    </div>
+  </div>
+  <div class="legend">
+    <span><i style="background:var(--orange)"></i><b data-ko="투자자 수익률" data-en="Investor return">투자자 수익률</b></span>
+    <span style="color:var(--line-mid)"><i class="line"></i><b data-ko="기초자산 직접 투자 시" data-en="Direct investment in the underlying">기초자산 직접 투자 시</b></span>
+  </div>
+
+  <div class="table-wrap" style="margin-top:var(--space-content)">
+    <table id="payoff-table">
+      <thead>
+        <tr>
+          <th data-ko="만기 시 기초자산 성과" data-en="Worst performer at maturity">만기 시 기초자산 성과</th>
+          <th data-ko="낙인 터치 이력" data-en="Knock-in history">낙인 터치 이력</th>
+          <th class="num" data-ko="투자자 손익 (세전)" data-en="Investor P&amp;L">투자자 손익 (세전)</th>
+          <th data-ko="설명" data-en="Note">설명</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+  </div>
+</section>
+
+<!-- ================= 4. 시뮬레이터 ================= -->
+<section class="section" id="sim">
+  <div class="section-rule"></div>
+  <div class="section-eyebrow" data-ko="시나리오 시뮬레이터" data-en="Scenario simulator">시나리오 시뮬레이터</div>
+  <h2 class="section-title" data-ko="직접 움직여보며 확인하세요" data-en="Move the sliders and see">직접 움직여보며 확인하세요</h2>
+  <p class="section-lead" data-ko="각 평가일에 기초자산(가장 많이 떨어진 것)이 최초 기준가격 대비 몇 %인지 직접 정해보면, 그 시나리오에서 언제 상환되고 얼마를 받는지 계산해 보여줍니다." data-en="Set where the worst performer stands on each valuation date. The simulator tells you when the note redeems and what you receive.">각 평가일에 기초자산(가장 많이 떨어진 것)이 최초 기준가격 대비 몇 %인지 직접 정해보면, 그 시나리오에서 언제 상환되고 얼마를 받는지 계산해 보여줍니다.</p>
+
+  <div class="sim" style="margin-top:var(--space-block)">
+    <div class="controls">
+      <div class="ctrl">
+        <label for="sim-invest"><span data-ko="투자 원금" data-en="Investment">투자 원금</span><span class="v"><span id="sim-invest-v">1,000</span><span data-ko="만원" data-en="0k KRW">만원</span></span></label>
+        <input type="range" id="sim-invest" min="100" max="10000" step="100" value="1000">
+      </div>
+      <div id="sim-sliders"></div>
+      <div class="ctrl">
+        <label for="sim-low"><span data-ko="투자 기간 중 최저 지점" data-en="Lowest point during term">투자 기간 중 최저 지점</span><span class="v"><span id="sim-low-v">100</span>%</span></label>
+        <input type="range" id="sim-low" min="20" max="100" step="1" value="100">
+        <div class="hint" data-ko="평가일 사이에 잠깐 내려간 최저점까지 포함합니다. 낙인 터치 여부는 이 값으로 판정합니다." data-en="Includes intraday lows between valuation dates. The knock-in test uses this value.">평가일 사이에 잠깐 내려간 최저점까지 포함합니다. 낙인 터치 여부는 이 값으로 판정합니다.</div>
+      </div>
+      <div class="ctrl">
+        <button class="btn-print" style="width:100%;padding:12px" id="sim-reset" data-ko="초기화" data-en="Reset">초기화</button>
+      </div>
+    </div>
+
+    <div class="sim-result">
+      <div class="sim-verdict">
+        <div class="k" data-ko="이 시나리오의 결과" data-en="Outcome">이 시나리오의 결과</div>
+        <div class="headline" id="sim-headline">–</div>
+        <div class="detail" id="sim-detail"></div>
+      </div>
+      <div class="sim-steps table-wrap" style="border:0;border-radius:0">
+        <table>
+          <thead>
+            <tr>
+              <th data-ko="평가일" data-en="Date">평가일</th>
+              <th class="num" data-ko="기초자산" data-en="Level">기초자산</th>
+              <th class="num" data-ko="배리어" data-en="Barrier">배리어</th>
+              <th data-ko="판정" data-en="Result">판정</th>
+            </tr>
+          </thead>
+          <tbody id="sim-rows"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= 5. 이번 주 청약 상품 ================= -->
+<section class="section" id="offers">
+  <div class="section-rule"></div>
+  <div class="section-eyebrow" data-ko="이번 주 상품" data-en="This week">이번 주 상품</div>
+  <h2 class="section-title" data-ko="현재 청약 중인 상품" data-en="Currently on offer">현재 청약 중인 상품</h2>
+  <p class="section-lead" id="offers-lead"></p>
+
+  <div class="table-wrap" style="margin-top:var(--space-block)">
+    <table id="offers-table">
+      <thead>
+        <tr>
+          <th data-ko="상품" data-en="Product">상품</th>
+          <th data-ko="유형" data-en="Type">유형</th>
+          <th data-ko="기초자산" data-en="Underlying">기초자산</th>
+          <th class="num" data-ko="연 수익률" data-en="Coupon">연 수익률</th>
+          <th class="num" data-ko="만기" data-en="Tenor">만기</th>
+          <th data-ko="조기상환 배리어" data-en="Barriers">조기상환 배리어</th>
+          <th data-ko="낙인" data-en="KI">낙인</th>
+          <th data-ko="청약기간" data-en="Offer period">청약기간</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+  </div>
+  <p style="font-size:14px;color:var(--muted);margin-top:12px" id="offers-foot"></p>
+</section>
+
+<!-- ================= 6. 리스크 ================= -->
+<section class="section" id="risk">
+  <div class="section-rule"></div>
+  <div class="section-eyebrow" data-ko="확인 사항" data-en="Before you invest">확인 사항</div>
+  <h2 class="section-title" data-ko="가입 전 반드시 확인할 다섯 가지" data-en="Five things to check">가입 전 반드시 확인할 다섯 가지</h2>
+
+  <div style="margin-top:var(--space-block)">
+    <div class="risk-item">
+      <h4 data-ko="1. 수익은 고정, 손실은 열려 있습니다" data-en="1. Capped upside, open downside">1. 수익은 고정, 손실은 열려 있습니다</h4>
+      <p data-ko="조건을 충족해도 받는 돈은 약속된 쿠폰까지입니다. 반대로 손실은 기초자산 하락률만큼 그대로 반영되어, 최악의 경우 원금 대부분을 잃을 수 있습니다." data-en="Even if every condition is met, your return stops at the coupon. Losses, however, track the full decline of the underlying — in the worst case most of the principal.">조건을 충족해도 받는 돈은 약속된 쿠폰까지입니다. 반대로 손실은 기초자산 하락률만큼 그대로 반영되어, 최악의 경우 원금 대부분을 잃을 수 있습니다.</p>
+    </div>
+    <div class="risk-item">
+      <h4 data-ko="2. 기초자산이 많을수록 위험합니다" data-en="2. More underlyings, more risk">2. 기초자산이 많을수록 위험합니다</h4>
+      <p data-ko="모든 판정은 가장 많이 떨어진 자산 하나로 이뤄집니다. 셋 중 둘이 올라도 하나가 무너지면 조건은 충족되지 않습니다. 높은 쿠폰은 그 위험의 대가입니다." data-en="Every test uses the worst performer. Two of three can rise, but if one collapses the condition fails. A high coupon is the price of that risk.">모든 판정은 가장 많이 떨어진 자산 하나로 이뤄집니다. 셋 중 둘이 올라도 하나가 무너지면 조건은 충족되지 않습니다. 높은 쿠폰은 그 위험의 대가입니다.</p>
+    </div>
+    <div class="risk-item">
+      <h4 data-ko="3. 중도 해지하면 원금이 깎입니다" data-en="3. Early termination costs you">3. 중도 해지하면 원금이 깎입니다</h4>
+      <p data-ko="만기 전 현금이 필요해 중도상환을 신청하면 평가금액에서 수수료가 차감되며, 시장 상황에 따라 원금을 크게 밑돌 수 있습니다. 만기까지 묶어둘 수 있는 자금으로만 투자하세요." data-en="Redeeming before maturity incurs a fee on the mark-to-market value, which can be far below par. Invest only money you can lock up until maturity.">만기 전 현금이 필요해 중도상환을 신청하면 평가금액에서 수수료가 차감되며, 시장 상황에 따라 원금을 크게 밑돌 수 있습니다. 만기까지 묶어둘 수 있는 자금으로만 투자하세요.</p>
+    </div>
+    <div class="risk-item">
+      <h4 data-ko="4. 예금자보호 대상이 아닙니다" data-en="4. Not deposit-insured">4. 예금자보호 대상이 아닙니다</h4>
+      <p data-ko="ELS는 발행 증권사의 신용으로 지급되는 파생결합증권입니다. 발행사가 파산하면 기초자산 조건과 무관하게 원리금을 받지 못할 수 있습니다." data-en="An ELS is an unsecured obligation of the issuing securities firm. If the issuer fails, you may not be repaid regardless of how the underlying performed.">ELS는 발행 증권사의 신용으로 지급되는 파생결합증권입니다. 발행사가 파산하면 기초자산 조건과 무관하게 원리금을 받지 못할 수 있습니다.</p>
+    </div>
+    <div class="risk-item">
+      <h4 data-ko="5. 세금과 실수령액을 따로 확인하세요" data-en="5. Check the after-tax amount">5. 세금과 실수령액을 따로 확인하세요</h4>
+      <p data-ko="이 페이지의 모든 수익률은 세전 기준입니다. 실제 수령액에는 배당소득세(15.4%)가 적용되며, 금융소득종합과세 대상 여부도 함께 확인해야 합니다." data-en="All figures on this page are pre-tax. Actual proceeds are subject to 15.4% withholding, and may count toward comprehensive financial income taxation.">이 페이지의 모든 수익률은 세전 기준입니다. 실제 수령액에는 배당소득세(15.4%)가 적용되며, 금융소득종합과세 대상 여부도 함께 확인해야 합니다.</p>
+    </div>
+  </div>
+
+  <div class="callout">
+    <h3 data-ko="이 한 문장만 기억하세요" data-en="Remember this one sentence">이 한 문장만 기억하세요</h3>
+    <p data-ko="“쿠폰이 높다”는 말은 “조건을 못 채울 가능성이 그만큼 크다”는 말과 같습니다. 두 상품의 쿠폰이 다르다면, 반드시 기초자산 개수와 낙인 수준을 나란히 비교하세요." data-en="A higher coupon means a higher chance the conditions are not met. Whenever two coupons differ, compare the number of underlyings and the knock-in level side by side.">“쿠폰이 높다”는 말은 “조건을 못 채울 가능성이 그만큼 크다”는 말과 같습니다. 두 상품의 쿠폰이 다르다면, 반드시 기초자산 개수와 낙인 수준을 나란히 비교하세요.</p>
+  </div>
+</section>
+
+<!-- ================= 7. 용어 ================= -->
+<section class="section" id="glossary">
+  <div class="section-rule"></div>
+  <div class="section-eyebrow" data-ko="용어" data-en="Glossary">용어</div>
+  <h2 class="section-title" data-ko="청약서에 나오는 말들" data-en="Terms you will see">청약서에 나오는 말들</h2>
+  <dl class="terms" style="margin-top:var(--space-block)">
+    <dt data-ko="최초기준가격" data-en="Initial level">최초기준가격</dt>
+    <dd data-ko="발행일에 정해지는 기초자산의 기준 가격. 이후 모든 판정은 이 값 대비 몇 %인지로 이뤄집니다." data-en="The underlying's reference price fixed on the issue date. Every later test is measured as a percentage of this level.">발행일에 정해지는 기초자산의 기준 가격. 이후 모든 판정은 이 값 대비 몇 %인지로 이뤄집니다.</dd>
+    <dt data-ko="조기상환 평가일" data-en="Valuation date">조기상환 평가일</dt>
+    <dd data-ko="보통 6개월 간격으로 정해진 날. 이날 종가로 조기상환 여부를 판정합니다." data-en="Usually every six months. The closing price on this date determines whether the note redeems.">보통 6개월 간격으로 정해진 날. 이날 종가로 조기상환 여부를 판정합니다.</dd>
+    <dt data-ko="배리어 (행사가격)" data-en="Barrier">배리어 (행사가격)</dt>
+    <dd data-ko="조기상환 판정선. “90%”는 최초기준가격의 90% 이상이면 상환된다는 뜻입니다." data-en="The redemption threshold. “90%” means the note redeems if the level is at or above 90% of the initial level.">조기상환 판정선. “90%”는 최초기준가격의 90% 이상이면 상환된다는 뜻입니다.</dd>
+    <dt data-ko="스텝다운" data-en="Step-down">스텝다운</dt>
+    <dd data-ko="회차가 지날수록 배리어가 낮아지는 구조. 시간이 갈수록 상환 조건이 완화됩니다." data-en="A structure where the barrier declines at each observation, making redemption progressively easier.">회차가 지날수록 배리어가 낮아지는 구조. 시간이 갈수록 상환 조건이 완화됩니다.</dd>
+    <dt data-ko="낙인 (Knock-In)" data-en="Knock-in">낙인 (Knock-In)</dt>
+    <dd data-ko="투자 기간 중 한 번이라도 이 선 아래로 내려가면 원금 손실 가능성이 열리는 하한선. 한 번 터치하면 되돌릴 수 없습니다." data-en="A lower boundary. If the underlying trades below it even once, the loss profile is activated — and it cannot be undone.">투자 기간 중 한 번이라도 이 선 아래로 내려가면 원금 손실 가능성이 열리는 하한선. 한 번 터치하면 되돌릴 수 없습니다.</dd>
+    <dt data-ko="노낙인" data-en="No knock-in">노낙인</dt>
+    <dd data-ko="기간 중 낙인 판정이 없고 만기 시점 가격만으로 판정하는 구조. 중간에 급락해도 만기에 회복하면 수익을 받습니다." data-en="No intra-term knock-in test; only the level at maturity matters. A mid-term crash that recovers by maturity still pays the coupon.">기간 중 낙인 판정이 없고 만기 시점 가격만으로 판정하는 구조. 중간에 급락해도 만기에 회복하면 수익을 받습니다.</dd>
+    <dt data-ko="워스트 퍼포머" data-en="Worst performer">워스트 퍼포머</dt>
+    <dd data-ko="기초자산 중 최초기준가격 대비 가장 많이 하락한 자산. 모든 판정의 기준이 됩니다." data-en="The underlying that has fallen the most versus its initial level. All tests reference this asset.">기초자산 중 최초기준가격 대비 가장 많이 하락한 자산. 모든 판정의 기준이 됩니다.</dd>
+    <dt data-ko="더미 수익" data-en="Dummy coupon">더미 수익</dt>
+    <dd data-ko="낙인을 터치하지 않고 만기까지 간 경우에 지급되는 별도 수익. 상품에 따라 있을 수도, 없을 수도 있습니다." data-en="A separate coupon paid when the knock-in is never breached and the note runs to maturity. Product-dependent.">낙인을 터치하지 않고 만기까지 간 경우에 지급되는 별도 수익. 상품에 따라 있을 수도, 없을 수도 있습니다.</dd>
+    <dt data-ko="ELB" data-en="ELB">ELB</dt>
+    <dd data-ko="원금지급형 파생결합사채. 만기까지 보유하면 발행사 신용 위험을 제외하고 원금이 보장되는 대신 수익률이 낮습니다." data-en="A principal-protected structured note. Principal is repaid at maturity (subject to issuer credit) in exchange for a lower return.">원금지급형 파생결합사채. 만기까지 보유하면 발행사 신용 위험을 제외하고 원금이 보장되는 대신 수익률이 낮습니다.</dd>
+  </dl>
+</section>
+
+</main>
+
+<footer>
+  <div class="page">
+    <p class="disc">
+      <strong data-ko="투자 유의사항" data-en="Important notice">투자 유의사항</strong><br>
+      <span data-ko="이 페이지는 ELS 상품 구조에 대한 이해를 돕기 위한 참고자료이며, 특정 상품의 투자 권유나 청약 안내가 아닙니다. 모든 수치는 세전 기준이며 실제 지급액과 다를 수 있습니다. 시뮬레이터 결과는 이용자가 입력한 가정에 따른 산술 계산 결과일 뿐, 미래의 수익을 예측하거나 보장하지 않습니다." data-en="This page is reference material intended to explain how ELS products are structured. It is not investment advice or an offer to subscribe. All figures are pre-tax and may differ from actual payments. Simulator results are arithmetic outputs of user-supplied assumptions and neither predict nor guarantee future returns.">이 페이지는 ELS 상품 구조에 대한 이해를 돕기 위한 참고자료이며, 특정 상품의 투자 권유나 청약 안내가 아닙니다. 모든 수치는 세전 기준이며 실제 지급액과 다를 수 있습니다. 시뮬레이터 결과는 이용자가 입력한 가정에 따른 산술 계산 결과일 뿐, 미래의 수익을 예측하거나 보장하지 않습니다.</span><br><br>
+      <span data-ko="ELS·DLS는 예금자보호법에 따라 보호되지 않으며, 원금 손실이 발생할 수 있습니다. 투자 전 반드시 정식 투자설명서와 간이투자설명서를 읽어보시기 바랍니다. 상품별 실제 조건은 각 상품의 투자설명서가 우선합니다." data-en="ELS and DLS are not protected under the Depositor Protection Act and may incur principal loss. Read the official prospectus and simplified prospectus before investing; the prospectus prevails over any figure shown here.">ELS·DLS는 예금자보호법에 따라 보호되지 않으며, 원금 손실이 발생할 수 있습니다. 투자 전 반드시 정식 투자설명서와 간이투자설명서를 읽어보시기 바랍니다. 상품별 실제 조건은 각 상품의 투자설명서가 우선합니다.</span><br><br>
+      <span id="foot-meta"></span>
+    </p>
+  </div>
+</footer>
+
+<script src="data/els.js"></script>
+<script>
+(function(){
+'use strict';
+
+/* ============================================================
+   0. 공용
+   ============================================================ */
+var C = { orange:'#F58220', orangeActive:'#CB6015', orangeSoft:'#FAB072',
+          blue:'#043B72', soft:'#ECEFF4', subtle:'#F7F8FA', hair:'#CDCECB',
+          lineDark:'#49535B', lineSoft:'#A0A6A8', ink:'#1A1A1A', muted:'#6C6C6C',
+          error:'#C62828', success:'#2E8540' };
+
+var DATA = (window.ELS_DATA && Array.isArray(window.ELS_DATA.products) && window.ELS_DATA.products.length)
+  ? window.ELS_DATA
+  : { updatedAt:null, source:'sample', sourceNote:'', products:[] };
+
+var lang = 'ko';
+try { lang = localStorage.getItem('mas-els-lang') || 'ko'; } catch(e){}
+
+function t(ko, en){ return lang === 'en' ? en : ko; }
+function num(n, d){ d = d==null?1:d; return Number(n).toFixed(d).replace(/\.0+$/,''); }
+function comma(n){ return String(Math.round(n)).replace(/\B(?=(\d{3})+(?!\d))/g, ','); }
+function el(id){ return document.getElementById(id); }
+function svgNS(){ return 'http://www.w3.org/2000/svg'; }
+function mk(tag, attrs, text){
+  var n = document.createElementNS(svgNS(), tag);
+  for (var k in attrs) n.setAttribute(k, attrs[k]);
+  if (text != null) n.textContent = text;
+  return n;
+}
+
+/* ============================================================
+   1. 언어 토글
+   ============================================================ */
+function applyLang(){
+  document.documentElement.lang = lang;
+  var nodes = document.querySelectorAll('[data-ko]');
+  for (var i=0;i<nodes.length;i++){
+    var n = nodes[i];
+    n.innerHTML = lang === 'en' ? n.getAttribute('data-en') : n.getAttribute('data-ko');
+  }
+  var btns = document.querySelectorAll('.lang-toggle button');
+  for (var j=0;j<btns.length;j++){
+    btns[j].setAttribute('aria-checked', btns[j].getAttribute('data-lang') === lang ? 'true' : 'false');
+  }
+  document.title = t('ELS 상품 구조 한눈에 보기 | 미래에셋증권',
+                     'ELS Product Structure at a Glance | Mirae Asset Securities');
+  renderAll();
+}
+(function bindLang(){
+  var btns = document.querySelectorAll('.lang-toggle button');
+  for (var i=0;i<btns.length;i++){
+    btns[i].addEventListener('click', function(){
+      lang = this.getAttribute('data-lang');
+      try { localStorage.setItem('mas-els-lang', lang); } catch(e){}
+      applyLang();
+    });
+  }
+})();
+
+/* ============================================================
+   2. 상품 모델
+   ============================================================ */
+var current = 0;
+
+function product(){ return DATA.products[current] || null; }
+
+function schedule(p){
+  return (p.schedule && p.schedule.length)
+    ? p.schedule
+    : [{ months: p.maturityMonths || 36, barrier: 100 }];
+}
+function maturity(p){ var s = schedule(p); return s[s.length-1]; }
+
+/** 해당 회차 상환 시 누적 수익률(세전, %) */
+function cumReturn(p, months){ return p.couponAnnual * (months / 12); }
+
+function underlyingLabel(p){
+  return (p.underlyings || []).join(' · ') || t('정보 없음','n/a');
+}
+
+/* ============================================================
+   3. 헤더 / 요약 카드
+   ============================================================ */
+function renderMeta(){
+  var upd = DATA.updatedAt ? new Date(DATA.updatedAt) : null;
+  var d = upd
+    ? (lang === 'en'
+        ? upd.toISOString().slice(0,10)
+        : upd.getFullYear() + '년 ' + (upd.getMonth()+1) + '월 ' + upd.getDate() + '일')
+    : null;
+  el('hero-updated').textContent = d ? t('기준일 ' + d, 'As of ' + d) : t('기준일 미수집','Data not yet collected');
+
+  var live = DATA.source === 'live';
+  el('hero-source').innerHTML = live
+    ? t('홈페이지 자동 수집','Auto-collected from the website')
+    : t('예시 데이터 (자동 수집 전)','Sample data (before auto-collection)');
+
+  el('foot-meta').innerHTML =
+    t('데이터 출처: ', 'Data source: ') +
+    (live ? t('미래에셋증권 홈페이지 (주 1회 자동 수집)','Mirae Asset Securities website (collected weekly)')
+          : t('내장 예시 데이터','built-in sample data')) +
+    (DATA.sourceNote ? ' — ' + DATA.sourceNote : '') +
+    (DATA.updatedAt ? ' / ' + t('갱신 ','updated ') + new Date(DATA.updatedAt).toISOString().slice(0,16).replace('T',' ') + ' UTC' : '');
+}
+
+function renderKeyCards(){
+  var p = product(); if (!p) return;
+  var n = (p.underlyings || []).length;
+
+  el('k-under').textContent = underlyingLabel(p);
+  el('k-under-note').innerHTML = n > 1
+    ? t('기초자산 ' + n + '개. 모든 판정은 <strong>가장 많이 떨어진 하나</strong>를 기준으로 합니다.',
+        n + ' underlyings. Every test uses the <strong>worst performer</strong>.')
+    : t('기초자산 1개. 판정 기준이 단순해 상대적으로 위험이 낮습니다.',
+        'Single underlying — a simpler, relatively lower-risk test.');
+
+  el('k-coupon').textContent = num(p.couponAnnual, 2);
+  el('k-coupon-note').innerHTML = t(
+    '만기 ' + p.maturityMonths + '개월. 첫 평가일(' + schedule(p)[0].months + '개월)에 상환되면 ' +
+      num(cumReturn(p, schedule(p)[0].months), 2) + '%를 받습니다.',
+    p.maturityMonths + '-month tenor. Redemption at the first observation (' + schedule(p)[0].months +
+      'M) pays ' + num(cumReturn(p, schedule(p)[0].months), 2) + '%.'
+  );
+
+  if (p.principalProtection >= 100){
+    el('k-ki').textContent = t('원금지급형','Principal-protected');
+    el('k-ki-note').innerHTML = t(
+      '만기까지 보유하면 원금이 지급됩니다. 다만 <strong>발행사 신용위험</strong>은 남아 있고, 예금자보호 대상은 아닙니다.',
+      'Principal is repaid at maturity, subject to <strong>issuer credit risk</strong>. Not deposit-insured.');
+  } else if (p.knockIn == null){
+    el('k-ki').textContent = t('노낙인 · 만기 ' + maturity(p).barrier + '% 미만',
+                               'No knock-in · below ' + maturity(p).barrier + '% at maturity');
+    el('k-ki-note').innerHTML = t(
+      '기간 중 아무리 떨어져도 판정하지 않습니다. <strong>만기 시점 가격</strong>이 ' + maturity(p).barrier +
+        '% 미만일 때만 손실이 확정됩니다.',
+      'No intra-term test. Loss is realised only if the level is below ' + maturity(p).barrier + '% <strong>at maturity</strong>.');
+  } else {
+    el('k-ki').textContent = t('낙인 ' + p.knockIn + '% 터치 + 만기 ' + maturity(p).barrier + '% 미만',
+                               'KI ' + p.knockIn + '% breached + below ' + maturity(p).barrier + '% at maturity');
+    el('k-ki-note').innerHTML = t(
+      '<strong>두 조건이 모두</strong> 성립할 때만 손실입니다. 낙인을 터치했더라도 만기에 ' + maturity(p).barrier +
+        '% 이상으로 회복하면 약속된 수익을 받습니다.',
+      'Loss requires <strong>both</strong> conditions. Even after a knock-in, recovering to ' + maturity(p).barrier +
+        '% by maturity pays the full coupon.');
+  }
+}
+
+/* ============================================================
+   4. 상품 선택기
+   ============================================================ */
+function renderPicker(){
+  var box = el('picker');
+  box.innerHTML = '';
+  if (!DATA.products.length){
+    box.innerHTML = '<p style="color:var(--muted)">' + t('표시할 상품이 없습니다.','No products to display.') + '</p>';
+    return;
+  }
+  DATA.products.forEach(function(p, i){
+    var b = document.createElement('button');
+    b.type = 'button';
+    b.setAttribute('aria-pressed', i === current ? 'true' : 'false');
+    b.innerHTML = '<strong>' + shortName(p) + '</strong>' +
+      '<span class="sm">' + underlyingLabel(p) + ' · ' + t('연 ','') + num(p.couponAnnual,2) + '%' +
+      (lang === 'en' ? ' p.a.' : '') + ' · ' + p.maturityMonths + (lang==='en'?'M':'개월') + '</span>';
+    b.addEventListener('click', function(){ current = i; renderAll(); });
+    box.appendChild(b);
+  });
+}
+function shortName(p){
+  var m = String(p.name || '').match(/제?\s*(\d{3,6})\s*회/);
+  var no = m ? m[1] + (lang==='en' ? '' : '회') : (p.code || '');
+  return (p.type || 'ELS') + ' ' + no;
+}
+
+/* ============================================================
+   5. 조기상환 사다리 (SVG)
+   ============================================================ */
+function renderLadder(){
+  var p = product(); if (!p) return;
+  var svg = el('ladder-svg');
+  while (svg.childNodes.length) svg.removeChild(svg.firstChild);
+  svg.appendChild(mk('title', {}, t('조기상환 배리어 사다리','Redemption barrier ladder')));
+
+  var W = 1000, H = 430, L = 62, R = 28, T = 30, B = 64;
+  var s = schedule(p);
+  var yMin = 40, yMax = 110;
+  function Y(v){ return T + (yMax - v) / (yMax - yMin) * (H - T - B); }
+  var cw = (W - L - R) / s.length;             // 회차 1칸 폭
+  function X(i){ return L + cw * i; }
+
+  // 축 · 그리드
+  for (var g = yMin; g <= yMax; g += 10){
+    svg.appendChild(mk('line', { x1:L, y1:Y(g), x2:W-R, y2:Y(g),
+      stroke:C.lineSoft, 'stroke-width':1, 'stroke-dasharray':'3 4', opacity: g===100?0:.55 }));
+    svg.appendChild(mk('text', { x:L-10, y:Y(g)+5, 'text-anchor':'end',
+      'font-size':13, fill:C.muted, 'font-family':'Inter,sans-serif' }, g + '%'));
+  }
+  // 100% 기준선
+  svg.appendChild(mk('line', { x1:L, y1:Y(100), x2:W-R, y2:Y(100), stroke:C.lineDark, 'stroke-width':1.5 }));
+  svg.appendChild(mk('text', { x:W-R, y:Y(100)-9, 'text-anchor':'end', 'font-size':13, fill:C.lineDark },
+    t('최초기준가격 100%','Initial level 100%')));
+
+  // 상환 실패 구간 음영 (배리어 아래)
+  s.forEach(function(step, i){
+    svg.appendChild(mk('rect', { x:X(i)+6, y:Y(step.barrier), width:cw-12, height:(H-B)-Y(step.barrier),
+      fill:C.soft }));
+  });
+
+  // 배리어 계단 + 라벨
+  s.forEach(function(step, i){
+    var x0 = X(i)+6, x1 = X(i)+cw-6, y = Y(step.barrier);
+    svg.appendChild(mk('line', { x1:x0, y1:y, x2:x1, y2:y, stroke:C.orange, 'stroke-width':4, 'stroke-linecap':'square' }));
+    if (i > 0){
+      var yPrev = Y(s[i-1].barrier);
+      if (yPrev !== y) svg.appendChild(mk('line', { x1:x0, y1:yPrev, x2:x0, y2:y, stroke:C.orange,
+        'stroke-width':2, 'stroke-dasharray':'4 3', opacity:.65 }));
+    }
+    svg.appendChild(mk('text', { x:(x0+x1)/2, y:y-12, 'text-anchor':'middle', 'font-size':17,
+      'font-weight':700, fill:C.orangeActive, 'font-family':'Inter,sans-serif' }, step.barrier + '%'));
+    // 누적 수익률
+    svg.appendChild(mk('text', { x:(x0+x1)/2, y:y+22, 'text-anchor':'middle', 'font-size':13,
+      fill:C.blue, 'font-family':'Inter,sans-serif' }, '+' + num(cumReturn(p, step.months), 2) + '%'));
+    // 하단 시점 라벨
+    var isLast = i === s.length - 1;
+    svg.appendChild(mk('text', { x:(x0+x1)/2, y:H-B+24, 'text-anchor':'middle', 'font-size':14,
+      'font-weight': isLast?700:400, fill: isLast?C.ink:C.muted },
+      lang==='en' ? step.months + 'M' : step.months + '개월'));
+    svg.appendChild(mk('text', { x:(x0+x1)/2, y:H-B+42, 'text-anchor':'middle', 'font-size':12, fill:C.muted },
+      isLast ? t('만기','Maturity') : (lang==='en' ? 'Obs.'+(i+1) : (i+1)+'차')));
+  });
+
+  // 낙인 배리어
+  if (p.knockIn != null && p.knockIn >= yMin){
+    var ky = Y(p.knockIn);
+    svg.appendChild(mk('line', { x1:L, y1:ky, x2:W-R, y2:ky, stroke:C.error, 'stroke-width':2, 'stroke-dasharray':'8 5' }));
+    svg.appendChild(mk('text', { x:L+8, y:ky-9, 'font-size':14, 'font-weight':600, fill:C.error },
+      t('낙인 ' + p.knockIn + '% — 기간 중 한 번이라도 아래로 내려가면 손실 가능',
+        'Knock-in ' + p.knockIn + '% — one breach opens the loss profile')));
+  } else if (p.knockIn == null && p.principalProtection < 100){
+    svg.appendChild(mk('text', { x:L+8, y:H-B-12, 'font-size':14, 'font-weight':600, fill:C.success },
+      t('노낙인 — 기간 중 하락은 판정하지 않습니다','No knock-in — intra-term declines are not tested')));
+  }
+
+  // 축선
+  svg.appendChild(mk('line', { x1:L, y1:T, x2:L, y2:H-B, stroke:C.lineDark, 'stroke-width':1 }));
+  svg.appendChild(mk('line', { x1:L, y1:H-B, x2:W-R, y2:H-B, stroke:C.lineDark, 'stroke-width':1 }));
+
+  // 표
+  var tb = el('sched-table').querySelector('tbody');
+  tb.innerHTML = '';
+  s.forEach(function(step, i){
+    var last = i === s.length - 1;
+    var tr = document.createElement('tr');
+    if (last) tr.className = 'highlight';
+    tr.innerHTML =
+      '<td>' + (last ? t('만기','Maturity') : (lang==='en' ? 'Obs. '+(i+1) : (i+1)+'차')) + '</td>' +
+      '<td>' + (lang==='en' ? step.months + ' months' : step.months + '개월') + '</td>' +
+      '<td class="num">' + step.barrier + '%</td>' +
+      '<td class="num">+' + num(cumReturn(p, step.months), 2) + '%</td>' +
+      '<td>' + t('워스트 퍼포머 종가가 최초기준가격의 ' + step.barrier + '% 이상',
+                 'Worst performer closes at or above ' + step.barrier + '% of the initial level') + '</td>';
+    tb.appendChild(tr);
+  });
+}
+
+/* ============================================================
+   6. 만기 손익 구조 (SVG payoff)
+   ============================================================ */
+/** 만기 손익률(%) 계산 */
+function payoffAt(p, level, kiTouched){
+  var mb = maturity(p).barrier;
+  var full = cumReturn(p, p.maturityMonths);
+  if (level >= mb) return full;
+  if (p.principalProtection >= 100) return 0;
+  if (p.knockIn == null) return level - 100;          // 노낙인: 만기 기준만
+  if (!kiTouched) return full;                        // 낙인 미터치 → 쿠폰
+  return level - 100;                                 // 낙인 터치 + 만기 미달 → 하락률만큼 손실
+}
+
+function renderPayoff(svgId, kiTouched){
+  var p = product(); if (!p) return;
+  var svg = el(svgId);
+  while (svg.childNodes.length) svg.removeChild(svg.firstChild);
+
+  var W = 520, H = 360, L = 54, R = 18, T = 20, B = 46;
+  var xMin = 0, xMax = 160;
+  var full = cumReturn(p, p.maturityMonths);
+  var yMax = Math.max(20, Math.ceil((full + 10) / 10) * 10);
+  var yMin = -100;
+  function X(v){ return L + (v - xMin) / (xMax - xMin) * (W - L - R); }
+  function Y(v){ return T + (yMax - v) / (yMax - yMin) * (H - T - B); }
+
+  // 그리드 + y축
+  for (var gy = yMin; gy <= yMax; gy += 20){
+    svg.appendChild(mk('line', { x1:L, y1:Y(gy), x2:W-R, y2:Y(gy), stroke:C.lineSoft,
+      'stroke-width':1, 'stroke-dasharray':'3 4', opacity:.5 }));
+    svg.appendChild(mk('text', { x:L-8, y:Y(gy)+4, 'text-anchor':'end', 'font-size':11, fill:C.muted,
+      'font-family':'Inter,sans-serif' }, (gy>0?'+':'') + gy + '%'));
+  }
+  // x축 눈금
+  [0,40,80,100,120,160].forEach(function(gx){
+    svg.appendChild(mk('text', { x:X(gx), y:H-B+18, 'text-anchor':'middle', 'font-size':11, fill:C.muted,
+      'font-family':'Inter,sans-serif' }, gx + '%'));
+  });
+  // 0선
+  svg.appendChild(mk('line', { x1:L, y1:Y(0), x2:W-R, y2:Y(0), stroke:C.lineDark, 'stroke-width':1.5 }));
+
+  // 기초자산 직접투자 기준선 (참고)
+  svg.appendChild(mk('line', { x1:X(xMin), y1:Y(xMin-100), x2:X(xMax), y2:Y(Math.min(yMax, xMax-100)),
+    stroke:C.lineSoft, 'stroke-width':1.5, 'stroke-dasharray':'6 4' }));
+
+  // 배리어 세로선
+  var mb = maturity(p).barrier;
+  svg.appendChild(mk('line', { x1:X(mb), y1:T, x2:X(mb), y2:H-B, stroke:C.orange,
+    'stroke-width':1, 'stroke-dasharray':'5 4', opacity:.8 }));
+  svg.appendChild(mk('text', { x:X(mb), y:T+13, 'text-anchor':'middle', 'font-size':11,
+    'font-weight':700, fill:C.orangeActive, 'font-family':'Inter,sans-serif' }, mb + '%'));
+
+  // 손익 곡선
+  var pts = [];
+  for (var v = xMin; v <= xMax; v += 1){
+    var y = payoffAt(p, v, kiTouched);
+    pts.push(X(v) + ',' + Y(Math.max(yMin, Math.min(yMax, y))));
+  }
+  svg.appendChild(mk('polyline', { points:pts.join(' '), fill:'none', stroke:C.orange,
+    'stroke-width':3.5, 'stroke-linejoin':'round' }));
+
+  // 구간 라벨
+  var lossZone = (p.principalProtection < 100) && (p.knockIn == null || kiTouched);
+  if (lossZone){
+    svg.appendChild(mk('rect', { x:X(xMin), y:Y(0), width:X(mb)-X(xMin), height:Y(yMin)-Y(0),
+      fill:C.error, opacity:.06 }));
+    svg.appendChild(mk('text', { x:(X(xMin)+X(mb))/2, y:Y(-55), 'text-anchor':'middle',
+      'font-size':12, 'font-weight':600, fill:C.error }, t('원금 손실 구간','Loss zone')));
+  } else {
+    svg.appendChild(mk('text', { x:(X(xMin)+X(mb))/2, y:Y(full)-14, 'text-anchor':'middle',
+      'font-size':12, 'font-weight':600, fill:C.success },
+      p.principalProtection >= 100 ? t('원금 지급','Principal repaid') : t('쿠폰 지급','Coupon paid')));
+  }
+  svg.appendChild(mk('text', { x:(X(mb)+X(xMax))/2, y:Y(full)-14, 'text-anchor':'middle',
+    'font-size':12, 'font-weight':600, fill:C.orangeActive },
+    t('수익 상한 +' + num(full,2) + '%', 'Capped at +' + num(full,2) + '%')));
+
+  // 축
+  svg.appendChild(mk('line', { x1:L, y1:T, x2:L, y2:H-B, stroke:C.lineDark, 'stroke-width':1 }));
+  svg.appendChild(mk('line', { x1:L, y1:H-B, x2:W-R, y2:H-B, stroke:C.lineDark, 'stroke-width':1 }));
+  svg.appendChild(mk('text', { x:(L+W-R)/2, y:H-6, 'text-anchor':'middle', 'font-size':11, fill:C.muted },
+    t('만기 시 기초자산 수준 (최초기준가격 = 100%)','Underlying at maturity (initial = 100%)')));
+}
+
+function renderPayoffTable(){
+  var p = product(); if (!p) return;
+  var mb = maturity(p).barrier;
+  var full = cumReturn(p, p.maturityMonths);
+  var rows = [
+    { lv:120, ki:false }, { lv:100, ki:false }, { lv:mb, ki:false },
+    { lv:mb-10, ki:false }, { lv:mb-10, ki:true }, { lv:60, ki:true }, { lv:35, ki:true }
+  ];
+  var tb = el('payoff-table').querySelector('tbody');
+  tb.innerHTML = '';
+  rows.forEach(function(r){
+    if (r.lv < 0) return;
+    var pl = payoffAt(p, r.lv, r.ki);
+    var kiTxt = (p.principalProtection >= 100) ? '–'
+      : (p.knockIn == null) ? t('해당 없음 (노낙인)','n/a (no KI)')
+      : (r.ki ? t('터치함','Breached') : t('터치 안 함','Not breached'));
+    var note = pl >= full - 0.001 ? t('조건 충족 — 약속된 수익 전액','Condition met — full coupon')
+      : pl === 0 ? t('원금만 상환','Principal only')
+      : t('기초자산 하락률만큼 손실','Loss equals the decline');
+    var color = pl > 0 ? 'color:var(--success)' : pl < 0 ? 'color:var(--error)' : '';
+    var tr = document.createElement('tr');
+    tr.innerHTML =
+      '<td>' + num(r.lv,0) + '%</td>' +
+      '<td>' + kiTxt + '</td>' +
+      '<td class="num" style="font-weight:700;' + color + '">' + (pl>0?'+':'') + num(pl,2) + '%</td>' +
+      '<td>' + note + '</td>';
+    tb.appendChild(tr);
+  });
+}
+
+/* ============================================================
+   7. 시뮬레이터
+   ============================================================ */
+var simLevels = null;
+
+function buildSimSliders(){
+  var p = product(); if (!p) return;
+  var s = schedule(p);
+  if (!simLevels || simLevels.length !== s.length){
+    simLevels = s.map(function(){ return 100; });
+  }
+  var box = el('sim-sliders');
+  box.innerHTML = '';
+  s.forEach(function(step, i){
+    var last = i === s.length-1;
+    var wrap = document.createElement('div');
+    wrap.className = 'ctrl';
+    var label = (lang==='en' ? (last?'Maturity':'Obs. '+(i+1)) + ' (' + step.months + 'M)'
+                             : (last?'만기':(i+1)+'차') + ' (' + step.months + '개월)');
+    wrap.innerHTML =
+      '<label for="sl'+i+'"><span>' + label + '</span>' +
+      '<span class="v"><span id="slv'+i+'">' + simLevels[i] + '</span>%</span></label>' +
+      '<input type="range" id="sl'+i+'" min="20" max="160" step="1" value="' + simLevels[i] + '">';
+    box.appendChild(wrap);
+    wrap.querySelector('input').addEventListener('input', function(){
+      simLevels[i] = Number(this.value);
+      el('slv'+i).textContent = this.value;
+      // 최저점은 평가일 수준 이하로 자동 보정
+      var lowInput = el('sim-low');
+      var minLevel = Math.min.apply(null, simLevels);
+      if (Number(lowInput.value) > minLevel){ lowInput.value = minLevel; el('sim-low-v').textContent = minLevel; }
+      runSim();
+    });
+  });
+}
+
+function runSim(){
+  var p = product(); if (!p) return;
+  var s = schedule(p);
+  var invest = Number(el('sim-invest').value);       // 만원
+  var low = Number(el('sim-low').value);
+  var kiTouched = (p.knockIn != null) && (low <= p.knockIn);
+
+  var tb = el('sim-rows');
+  tb.innerHTML = '';
+  var redeemed = -1;
+  for (var i=0;i<s.length;i++){
+    var lv = simLevels[i], bar = s[i].barrier;
+    var ok = lv >= bar;
+    var last = i === s.length-1;
+    var verdict;
+    if (redeemed >= 0){
+      verdict = '<span style="color:var(--muted)">' + t('해당 없음','—') + '</span>';
+    } else if (ok){
+      verdict = '<span style="color:var(--success);font-weight:600">' + t('조기상환','Redeemed') + '</span>';
+      if (last) verdict = '<span style="color:var(--success);font-weight:600">' + t('만기상환','Redeemed at maturity') + '</span>';
+      redeemed = i;
+    } else {
+      verdict = last
+        ? '<span style="color:var(--error);font-weight:600">' + t('조건 미충족','Condition failed') + '</span>'
+        : '<span style="color:var(--warning);font-weight:600">' + t('이월','Rolls over') + '</span>';
+    }
+    var tr = document.createElement('tr');
+    tr.innerHTML =
+      '<td>' + (lang==='en' ? s[i].months+'M' : s[i].months+'개월') + '</td>' +
+      '<td class="num">' + lv + '%</td>' +
+      '<td class="num">' + bar + '%</td>' +
+      '<td>' + verdict + '</td>';
+    if (redeemed === i) tr.className = 'highlight';
+    tb.appendChild(tr);
+  }
+
+  var head = el('sim-headline'), det = el('sim-detail');
+  var finalLevel = simLevels[s.length-1];
+  var ret, months, cls, title, detail;
+
+  if (redeemed >= 0){
+    months = s[redeemed].months;
+    ret = cumReturn(p, months);
+    cls = 'good';
+    title = (redeemed === s.length-1)
+      ? t('만기상환 · +' + num(ret,2) + '%', 'Redeemed at maturity · +' + num(ret,2) + '%')
+      : t(months + '개월차 조기상환 · +' + num(ret,2) + '%', 'Early redemption at ' + months + 'M · +' + num(ret,2) + '%');
+    detail = t(
+      invest === 0 ? '' : comma(invest) + '만원 투자 시 세전 <strong>' + comma(invest * (1 + ret/100)) + '만원</strong>' +
+        ' (수익 ' + comma(invest * ret/100) + '만원)을 받고 상품이 종료됩니다.' +
+        (redeemed < s.length-1 ? ' 이후 기간의 추가 수익은 없습니다.' : ''),
+      'On ' + comma(invest) + '0k KRW you receive <strong>' + comma(invest * (1 + ret/100)) + '0k KRW</strong> pre-tax' +
+        ' (gain ' + comma(invest * ret/100) + '0k) and the note terminates.' +
+        (redeemed < s.length-1 ? ' No further coupon accrues.' : '')
+    );
+  } else {
+    ret = payoffAt(p, finalLevel, kiTouched);
+    if (ret > 0){ cls = 'good'; }
+    else if (ret === 0){ cls = 'warn'; }
+    else { cls = 'bad'; }
+    title = (ret >= 0 ? '+' : '') + num(ret,2) + '%';
+    if (p.principalProtection >= 100){
+      title = t('원금 상환 · 0.00%','Principal repaid · 0.00%');
+      detail = t('원금지급형이므로 조건을 채우지 못해도 원금은 상환됩니다. 다만 수익은 없습니다.',
+                 'As a principal-protected note, principal is repaid even though the condition failed — but with no return.');
+    } else if (p.knockIn == null){
+      detail = t('노낙인 구조입니다. 만기 기초자산이 ' + maturity(p).barrier + '% 미만(' + finalLevel +
+                   '%)이므로 하락률 ' + num(100-finalLevel,0) + '%만큼 손실이 확정됩니다. ' +
+                   comma(invest) + '만원 투자 시 <strong>' + comma(invest*(1+ret/100)) + '만원</strong>을 돌려받습니다.',
+                 'No knock-in structure. The level at maturity (' + finalLevel + '%) is below ' + maturity(p).barrier +
+                   '%, so the loss equals the ' + num(100-finalLevel,0) + '% decline. On ' + comma(invest) +
+                   '0k you receive <strong>' + comma(invest*(1+ret/100)) + '0k</strong>.');
+    } else if (!kiTouched){
+      cls = 'good';
+      title = t('낙인 미터치 · +' + num(ret,2) + '%', 'No knock-in · +' + num(ret,2) + '%');
+      detail = t('만기 조건(' + maturity(p).barrier + '%)은 충족하지 못했지만, 기간 중 최저점 ' + low +
+                   '%가 낙인 ' + p.knockIn + '%를 건드리지 않았습니다. 따라서 약속된 수익 전액을 받습니다.',
+                 'The maturity barrier (' + maturity(p).barrier + '%) was missed, but the lowest point (' + low +
+                   '%) never touched the ' + p.knockIn + '% knock-in — so the full coupon is paid.');
+    } else {
+      detail = t('기간 중 최저점 ' + low + '%가 낙인 ' + p.knockIn + '%를 터치했고, 만기 기초자산 ' + finalLevel +
+                   '%도 만기 배리어 ' + maturity(p).barrier + '%에 미달했습니다. 두 조건이 겹쳐 하락률 ' +
+                   num(100-finalLevel,0) + '%만큼 손실이 확정됩니다. ' + comma(invest) + '만원 투자 시 <strong>' +
+                   comma(invest*(1+ret/100)) + '만원</strong>을 돌려받습니다.',
+                 'The low of ' + low + '% breached the ' + p.knockIn + '% knock-in, and the final level (' + finalLevel +
+                   '%) is below the ' + maturity(p).barrier + '% barrier. Both conditions met, so the loss equals the ' +
+                   num(100-finalLevel,0) + '% decline: ' + comma(invest) + '0k becomes <strong>' +
+                   comma(invest*(1+ret/100)) + '0k</strong>.');
+    }
+  }
+  head.className = 'headline ' + cls;
+  head.textContent = title;
+  det.innerHTML = detail;
+}
+
+(function bindSim(){
+  el('sim-invest').addEventListener('input', function(){
+    el('sim-invest-v').textContent = comma(this.value);
+    runSim();
+  });
+  el('sim-low').addEventListener('input', function(){
+    var minLevel = simLevels ? Math.min.apply(null, simLevels) : 100;
+    if (Number(this.value) > minLevel) this.value = minLevel;
+    el('sim-low-v').textContent = this.value;
+    runSim();
+  });
+  el('sim-reset').addEventListener('click', function(){
+    simLevels = null;
+    el('sim-invest').value = 1000; el('sim-invest-v').textContent = '1,000';
+    el('sim-low').value = 100; el('sim-low-v').textContent = '100';
+    buildSimSliders(); runSim();
+  });
+})();
+
+/* ============================================================
+   8. 청약 상품 표
+   ============================================================ */
+function fmtDate(d){
+  if (!d) return '–';
+  var x = String(d).slice(0,10);
+  return lang === 'en' ? x : x.replace(/-/g, '.');
+}
+function renderOffers(){
+  var live = DATA.source === 'live';
+  el('offers-lead').innerHTML = live
+    ? t('미래에셋증권 홈페이지에서 자동 수집한 청약 예정·진행 상품입니다. 상품명을 위 선택기에서 고르면 해당 조건으로 구조도가 다시 그려집니다.',
+        'Products currently on offer, collected automatically from the Mirae Asset Securities website. Select one above to redraw every chart with its terms.')
+    : t('<strong>아직 실제 청약 데이터가 수집되지 않았습니다.</strong> 아래는 구조 이해를 돕기 위한 대표 예시이며, 실제 판매 상품이 아닙니다.',
+        '<strong>Live subscription data has not been collected yet.</strong> The rows below are representative examples for education only, not actual products on sale.');
+
+  var tb = el('offers-table').querySelector('tbody');
+  tb.innerHTML = '';
+  DATA.products.forEach(function(p, i){
+    var s = schedule(p);
+    var bars = s.map(function(x){ return x.barrier; }).join('-');
+    var period = (p.offerStart || p.offerEnd)
+      ? fmtDate(p.offerStart) + ' ~ ' + fmtDate(p.offerEnd) : '–';
+    var tr = document.createElement('tr');
+    tr.style.cursor = 'pointer';
+    tr.innerHTML =
+      '<td>' + (p.url ? '<a href="'+p.url+'" target="_blank" rel="noopener">'+ (p.name||shortName(p)) +'</a>'
+                      : (p.name || shortName(p))) +
+        (live ? '' : ' <span class="badge sample">' + t('예시','Sample') + '</span>') + '</td>' +
+      '<td><span class="badge ' + (p.type==='ELB'?'blue':'orange') + '">' + (p.type||'ELS') + '</span></td>' +
+      '<td>' + underlyingLabel(p) + '</td>' +
+      '<td class="num">' + num(p.couponAnnual,2) + '%</td>' +
+      '<td class="num">' + p.maturityMonths + (lang==='en'?'M':'개월') + '</td>' +
+      '<td class="num">' + bars + '</td>' +
+      '<td class="num">' + (p.principalProtection>=100 ? t('원금지급','Protected')
+                            : p.knockIn==null ? t('노낙인','None') : p.knockIn + '%') + '</td>' +
+      '<td>' + period + '</td>';
+    tr.addEventListener('click', function(){
+      current = i; renderAll();
+      document.getElementById('ladder').scrollIntoView({ behavior:'smooth', block:'start' });
+    });
+    tb.appendChild(tr);
+  });
+
+  el('offers-foot').textContent = t(
+    '표의 행을 클릭하면 해당 상품 조건으로 위 구조도와 시뮬레이터가 바뀝니다. 조기상환 배리어는 회차 순서대로 표기했습니다.',
+    'Click a row to redraw the charts and simulator with that product. Barriers are listed in observation order.');
+}
+
+/* ============================================================
+   9. 렌더 오케스트레이션
+   ============================================================ */
+function renderAll(){
+  renderMeta();
+  renderPicker();
+  if (!product()) return;
+  renderKeyCards();
+  renderLadder();
+  renderPayoff('payoff-noki', false);
+  renderPayoff('payoff-ki', true);
+  renderPayoffTable();
+  buildSimSliders();
+  runSim();
+  renderOffers();
+}
+
+applyLang();
+})();
+</script>
+</body>
+</html>
