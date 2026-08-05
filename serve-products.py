@@ -291,7 +291,15 @@ def main():
     print(" 종료   : 이 창에서 Ctrl+C")
     print("=" * 64)
     if not args.no_browser:
-        threading.Timer(0.7, lambda: webbrowser.open(url)).start()
+        def open_browser():
+            # 잠긴 환경에서는 자동 열기가 실패할 수 있다 — 실패해도 서버는 계속 돈다
+            try:
+                if not webbrowser.open(url):
+                    raise RuntimeError("기본 브라우저를 찾지 못했습니다")
+            except Exception as e:
+                print("\n [알림] 브라우저 자동 열기 실패(%s)\n"
+                      "        위 주소를 브라우저에 직접 붙여넣어 주세요: %s\n" % (e, url))
+        threading.Timer(0.7, open_browser).start()
     try:
         server.serve_forever()
     except KeyboardInterrupt:
