@@ -2065,7 +2065,7 @@ window.DC_GLOBAL = [
         lbPts: "데이터센터 연관 포인트", lbProd: "주요 제품 · 서비스",
         lbEdge: "경쟁 지위", lbStage: "해당 단계", lbPeer: "같은 단계 종목", lbLink: "더 보기",
         loading: "시세 조회 중…",
-        quoteFail: "실시간 시세를 불러오지 못했습니다. 브라우저가 외부 시세 API를 직접 호출하는 구조여서 CORS·사내망 정책에 막힐 수 있습니다. 저장소 폴더에서 python3 serve.py 를 실행하고 localhost 로 접속하면 서버가 대신 호출해 정상 조회됩니다.",
+        quoteFail: "실시간 시세를 불러오지 못했습니다. CORS 우회 경로(JSONP)까지 모두 실패한 상태로, 현재 망에서 시세 사이트 접근 자체가 차단된 것으로 보입니다. 아래 진단에서 실패 원인을 확인할 수 있습니다.",
         quoteVia: "조회",
         diagBtn: "시세 진단", diagTitle: "시세 조회 진단", diagCopy: "복사", diagCopied: "복사됨",
         openReport: "종목 통합 리포트 열기",
@@ -2096,7 +2096,7 @@ window.DC_GLOBAL = [
         lbPts: "Data center linkage", lbProd: "Key products and services",
         lbEdge: "Competitive standing", lbStage: "Stages", lbPeer: "Peers in this stage", lbLink: "More",
         loading: "Loading quote…",
-        quoteFail: "Could not load a live quote. The page calls external market data APIs straight from the browser, which CORS and corporate network policy often block. Run python3 serve.py in the repository folder and open the page over localhost — the server then makes the call instead.",
+        quoteFail: "Could not load a live quote. Every route failed, including the CORS-free JSONP path, which suggests this network blocks the market data sites outright. Open the diagnostics below to see why each attempt failed.",
         quoteVia: "at",
         diagBtn: "Quote diagnostics", diagTitle: "Quote diagnostics", diagCopy: "Copy", diagCopied: "Copied",
         openReport: "Open full stock report",
@@ -2254,6 +2254,40 @@ window.DC_GLOBAL = [
       { name: "jina", w: function (u) { return "https://r.jina.ai/" + u; } }
     ]);
 
+    /* JSONP 경로 — <script> 태그로 불러오므로 CORS 검사를 받지 않는다.
+     * file:// 로 HTML 파일만 열었을 때도 동작하는 유일한 방식이라 1순위로 함께 시도한다.
+     * AllOrigins 의 get?callback= 응답은 { contents: "<원문>" } 형태다. */
+    var JSONP_SEQ = 0;
+    var JSONP_WRAPPERS = [
+      { name: "JSONP(allorigins)", w: function (u, cb) {
+          return "https://api.allorigins.win/get?charset=UTF-8&callback=" + cb + "&url=" + encodeURIComponent(u);
+        } },
+      { name: "JSONP(allorigins .win/get)", w: function (u, cb) {
+          return "https://api.allorigins.win/get?callback=" + cb + "&url=" + encodeURIComponent(u);
+        } }
+    ];
+    function jsonpText(url, wrapper) {
+      return new Promise(function (res, rej) {
+        var cb = "__dcjsonp" + (++JSONP_SEQ);
+        var s = document.createElement("script");
+        var timer = setTimeout(function () { cleanup(); rej(new Error("jsonp timeout")); }, 7000);
+        function cleanup() {
+          clearTimeout(timer);
+          try { delete window[cb]; } catch (e) { window[cb] = undefined; }
+          if (s.parentNode) s.parentNode.removeChild(s);
+        }
+        window[cb] = function (payload) {
+          cleanup();
+          var body = payload && payload.contents != null ? payload.contents : payload;
+          if (body == null) { rej(new Error("jsonp: empty body")); return; }
+          res(typeof body === "string" ? body : JSON.stringify(body));
+        };
+        s.onerror = function () { cleanup(); rej(new Error("jsonp: script load error")); };
+        s.src = wrapper.w(url, cb);
+        document.head.appendChild(s);
+      });
+    }
+
     var DIAG = [];   // { url, via, ok, info }
     function withTimeout(p, ms) {
       return new Promise(function (res, rej) {
@@ -2264,21 +2298,29 @@ window.DC_GLOBAL = [
     /* validate(text): 유효하지 않으면 throw → 그 경로는 탈락(프록시 에러 페이지가 이기지 못하게) */
     function fetchVia(url, validate) {
       var busted = url + (url.indexOf("?") >= 0 ? "&" : "?") + "_ts=" + Date.now();
-      var attempts = PROXIES.map(function (p) {
+      function record(name, txt) {
+        var out = validate(txt);
+        DIAG.push({ url: url, via: name, ok: true, info: "len=" + txt.length + " · " + txt.slice(0, 120).replace(/\s+/g, " ") });
+        return out;
+      }
+      function fail(name, e) {
+        DIAG.push({ url: url, via: name, ok: false, info: String((e && e.message) || e) });
+        throw e;
+      }
+      /* CORS 우회 경로(JSONP)를 먼저 배치 — file:// 실행에서도 동작 */
+      var attempts = JSONP_WRAPPERS.map(function (jp) {
+        return jsonpText(busted, jp)
+          .then(function (txt) { return record(jp.name, txt); })
+          .catch(function (e) { return fail(jp.name, e); });
+      });
+      attempts = attempts.concat(PROXIES.map(function (p) {
         return withTimeout(
           fetch(p.w(busted), { headers: { Accept: "application/json, text/plain, */*" }, cache: "no-store" })
             .then(function (r) { if (!r.ok) throw new Error("HTTP " + r.status); return r.text(); })
-            .then(function (txt) {
-              var out = validate(txt);
-              DIAG.push({ url: url, via: p.name, ok: true, info: "len=" + txt.length + " · " + txt.slice(0, 120).replace(/\s+/g, " ") });
-              return out;
-            })
-            .catch(function (e) {
-              DIAG.push({ url: url, via: p.name, ok: false, info: String((e && e.message) || e) });
-              throw e;
-            }),
+            .then(function (txt) { return record(p.name, txt); })
+            .catch(function (e) { return fail(p.name, e); }),
           6000);
-      });
+      }));
       if (typeof Promise.any === "function") return Promise.any(attempts);
       return new Promise(function (res, rej) {
         var left = attempts.length, err;
@@ -2331,6 +2373,21 @@ window.DC_GLOBAL = [
         return { price: a, chg: b != null ? a - b : null, pct: b ? ((a - b) / b) * 100 : null, cur: "KRW", src: "네이버 일별시세" };
       });
     }
+    /* 네이버 실시간 폴링 엔드포인트 — rf 코드로 방향 판정(4·5 = 하락) */
+    function quoteNaverPolling(code) {
+      return fetchJson("https://polling.finance.naver.com/api/realtime/domestic/stock/" + code).then(function (d) {
+        var r = d && ((d.datas && d.datas[0]) || (d.result && d.result.areas && d.result.areas[0] &&
+          d.result.areas[0].datas && d.result.areas[0].datas[0]));
+        var price = n(r && (r.nv != null ? r.nv : r.closePrice));
+        if (price == null) throw new Error("naver polling: no price");
+        var chg = n(r.cv), pct = n(r.cr);
+        if (/^[45]/.test(String(r.rf || ""))) {
+          if (chg != null) chg = -Math.abs(chg);
+          if (pct != null) pct = -Math.abs(pct);
+        }
+        return { price: price, chg: chg, pct: pct, cur: "KRW", src: "네이버 실시간" };
+      });
+    }
     function quoteYahoo(sym) {
       return fetchJson("https://query1.finance.yahoo.com/v8/finance/chart/" +
         encodeURIComponent(sym) + "?range=5d&interval=1d").then(function (d) {
@@ -2363,6 +2420,7 @@ window.DC_GLOBAL = [
     }
     function fetchQuoteKR(c) {
       return fetchJson(NAVER + c.id + "/basic").then(parseNaverBasic)
+        .catch(function () { return quoteNaverPolling(c.id); })
         .catch(function () { return quoteNaverPrice(c.id); })
         .catch(function () { return quoteYahoo(c.ysym); })
         .catch(function () { return quoteStooq(stooqSymbol(c)); });
@@ -2429,11 +2487,17 @@ window.DC_GLOBAL = [
       });
       if (!DIAG.length) L2.push("(기록 없음 — 종목을 클릭해 시세를 한 번 조회한 뒤 다시 확인하세요)");
       L2.push("");
+      L2.push("[경로 설명]");
+      L2.push("JSONP(...)  : <script> 태그로 불러오는 CORS 우회 경로. HTML 파일만 열었을 때(file://) 동작하는 경로.");
+      L2.push("직접 호출    : 시세 API를 그대로 호출. 대상 서버가 CORS 를 허용해야 성공.");
+      L2.push("공개 프록시  : codetabs / corsproxy.io / allorigins 등이 대신 호출.");
+      L2.push("로컬 프록시  : serve.py 로 접속했을 때만 사용 가능(가장 확실).");
+      L2.push("");
       L2.push("[대응 방법]");
-      L2.push("1) 저장소 폴더에서 python3 serve.py 실행 후 http://localhost:8000/datacenter.html 로 접속");
-      L2.push("   → 브라우저가 아니라 서버가 시세 API를 호출하므로 CORS 문제가 사라짐");
-      L2.push("2) 그래도 FAIL 이면 해당 PC/망에서 m.stock.naver.com · query1.finance.yahoo.com 접근 자체가 차단된 상태");
-      L2.push("   → 사내 프록시 주소를 serve.py 의 PROXY 환경변수로 지정하거나, 사내 시세 API로 교체 필요");
+      L2.push("1) JSONP 경로가 FAIL 이면 api.allorigins.win 접근이 막힌 것 — 방화벽/보안장비 정책 확인");
+      L2.push("2) 모든 경로가 FAIL 이면 m.stock.naver.com · query1.finance.yahoo.com 접근 자체가 차단된 상태");
+      L2.push("3) 파일 단독 실행이 아니어도 된다면: python3 serve.py 실행 후 http://localhost:8000/datacenter.html");
+      L2.push("   (HTTPS_PROXY=http://사내프록시:포트 python3 serve.py 로 사내 프록시 경유 가능)");
       return L2.join("\n");
     }
     function openDiag() {

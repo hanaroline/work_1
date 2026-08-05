@@ -119,53 +119,62 @@ var PROXIES = [
 - **한/영 토글** : 우상단 KO/EN, 단계 설명·종목 설명까지 전량 번역, 선택은 localStorage에 저장
 - **인쇄/PDF** : `@media print` 적용 — 컨트롤·패널을 숨기고 맵만 A4로 출력
 
-### 실행 방법
-
-**권장 — `serve.py`로 실행 (시세 조회까지 정상 동작)**
-
-```bash
-python3 serve.py          # → http://localhost:8000/datacenter.html
-python3 serve.py 9000     # 포트 지정
-```
-
-정적 파일 서비스 + **시세 API 프록시(`/api/proxy`)** 를 함께 제공합니다.
-브라우저가 아니라 서버가 네이버·Yahoo를 호출하므로 CORS 차단이 발생하지 않습니다.
-사내 프록시가 필요한 망에서는 환경변수를 그대로 사용합니다.
-
-```bash
-HTTPS_PROXY=http://proxy.company.co.kr:8080 python3 serve.py
-```
-
-**간단 실행**
+### 실행 방법 — 파일만 열면 됩니다
 
 ```
-datacenter-standalone.html   ← 단일 파일. 더블클릭으로 바로 열림 (시세는 막힐 수 있음)
-datacenter.html              ← data/dc-chain*.js 를 로드하므로 로컬 서버 필요
+datacenter-standalone.html   ← 이 파일 하나만 더블클릭 (설치·서버 불필요, 시세 조회 포함)
+```
+
+`file://`로 열어도 시세가 조회되도록 **JSONP(`<script>` 태그) 경로를 1순위로 사용**합니다.
+JSONP는 브라우저의 CORS 검사를 받지 않기 때문에, 서버 없이 파일만 열어도 동작합니다.
+
+```
+datacenter.html              ← data/dc-chain*.js 를 외부 로드하므로 로컬 서버 필요(개발용)
 ```
 
 ```bash
-python3 -m http.server 8000   # 프록시 없는 단순 서버
+python3 -m http.server 8000   # → http://localhost:8000/datacenter.html
 ```
+
+**선택 — `serve.py` (사내망에서 JSONP 중계 서버도 막힐 때)**
+
+```bash
+python3 serve.py                                            # → http://localhost:8000/datacenter.html
+HTTPS_PROXY=http://proxy.company.co.kr:8080 python3 serve.py # 사내 프록시 경유
+```
+
+정적 파일 서비스 + **시세 API 프록시(`/api/proxy`)** 를 함께 제공합니다. 브라우저가 아니라 서버가
+네이버·Yahoo를 직접 호출하므로, 외부 중계 서비스를 전혀 거치지 않습니다.
+
+### 시세 조회 구조
+
+**경로**(모두 병렬 시도 → 먼저 성공한 응답 채택)
+
+| 순서 | 경로 | file:// 지원 | 설명 |
+|---|---|---|---|
+| 1 | JSONP (`api.allorigins.win`) | O | `<script>` 태그 로드 — CORS 검사 없음 |
+| 2 | 직접 호출 | 대상 서버가 CORS 허용 시 | 중계 없이 시세 API 호출 |
+| 3 | 공개 CORS 프록시 5종 | 서비스별로 다름 | codetabs · corsproxy.io · allorigins · cors.eu.org 등 |
+| 4 | 로컬 프록시 `/api/proxy` | X (serve.py 접속 시만) | 서버가 대신 호출 |
+
+**소스**(순차 폴백)
+
+| 순서 | 국내 | 해외 |
+|---|---|---|
+| 1 | 네이버 모바일 `/basic` | Yahoo Finance `chart` |
+| 2 | 네이버 실시간 `polling` | Stooq CSV(전일 종가 기준) |
+| 3 | 네이버 `/price` 일별시세 2건으로 등락 계산 | — |
+| 4 | Yahoo Finance `chart` (`005930.KS`) → Stooq CSV (`005930.kr`) | — |
 
 ### 시세가 표시되지 않을 때
 
-시세는 **브라우저에서 외부 API를 직접 호출**하는 구조라, `file://`로 열거나 사내망에서 열면
-CORS·방화벽 정책에 막혀 조회되지 않을 수 있습니다. 조회 실패 시에도 맵과 종목 정보는 정상 동작합니다.
+조회 실패 시에도 맵과 종목 정보는 정상 동작합니다. 원인 확인은 화면 상단 **`시세 진단`** 버튼으로 합니다.
+소스 × 경로별 성공/실패와 오류 원인이 모두 기록되며 `복사`로 그대로 공유할 수 있습니다.
 
-1. **`python3 serve.py` 로 실행** → 서버가 대신 호출하므로 대부분 이 단계에서 해결됩니다.
-2. 그래도 안 되면 화면 상단 **`시세 진단`** 버튼을 눌러 기록을 확인합니다.
-   소스(네이버 → 네이버 일별시세 → Yahoo → Stooq) × 경로(로컬 프록시 → 직접 → 공개 CORS 프록시)별로
-   성공/실패와 오류 원인이 모두 남습니다. `복사` 버튼으로 그대로 공유할 수 있습니다.
-3. 모든 항목이 실패하면 해당 PC/망에서 `m.stock.naver.com`·`query1.finance.yahoo.com` 접근 자체가
-   차단된 상태입니다. `serve.py`의 `ALLOWED_HOSTS`에 사내 시세 엔드포인트를 추가하거나,
-   `HTTPS_PROXY`로 사내 프록시를 지정하세요.
-
-| 조회 순서 | 국내 | 해외 |
-|---|---|---|
-| 1 | 네이버 모바일 `/basic` (현재가·등락률) | Yahoo Finance `chart` |
-| 2 | 네이버 `/price` 일별시세 2건으로 등락 계산 | Stooq CSV(전일 종가 기준) |
-| 3 | Yahoo Finance `chart` (`005930.KS`) | — |
-| 4 | Stooq CSV (`005930.kr`) | — |
+1. `JSONP(...)` 가 FAIL → 중계 서비스(`api.allorigins.win`) 접근이 방화벽/보안장비에 막힌 상태.
+   `python3 serve.py` 로 실행하면 외부 중계 없이 조회됩니다.
+2. 모든 경로가 FAIL → 해당 PC/망에서 `m.stock.naver.com`·`query1.finance.yahoo.com` 접근 자체가 차단된 상태.
+   `serve.py`의 `ALLOWED_HOSTS`에 사내 시세 엔드포인트를 추가하거나 `HTTPS_PROXY`를 지정하세요.
 
 ### 종목 · 단계 추가
 
