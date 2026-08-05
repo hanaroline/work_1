@@ -158,13 +158,50 @@ data/sample.js        # 샘플/폴백 데이터 생성기 (종목코드 시드 �
 
 ## 실행 방법
 
+### 방법 1) 실행파일 — 실데이터가 들어오는 유일한 확실한 방법 ★
+
+브라우저가 KRX 를 직접 호출하면 **CORS 로 막힙니다.** `serve-products.py` 는 파이썬이
+**서버 대 서버**로 KRX 를 호출해 주기 때문에 CORS 가 아예 발생하지 않습니다.
+
+| 환경 | 실행 |
+|------|------|
+| **윈도우** | `run-products.bat` **더블클릭** |
+| macOS / Linux | `./run-products.sh` |
+| 직접 실행 | `python serve-products.py` |
+
+실행하면 로컬 서버가 뜨고 브라우저가 자동으로 열립니다. 설치할 패키지는 없습니다
+(파이썬 표준 라이브러리만 사용). 종료는 실행 창에서 `Ctrl+C`.
+
 ```bash
-# 방법 1) 단일 파일 — 더블클릭으로 바로 열기
-products-standalone.html
+python serve-products.py                # 서버 실행 + 브라우저 자동 열기
+python serve-products.py --port 9000    # 포트 지정
+python serve-products.py --check        # KRX 연결만 점검 (응답 키까지 출력)
+python serve-products.py --snapshot     # 실데이터를 파일로 저장 (오프라인용)
+python serve-products.py --krx-url ...  # 사내 프록시 경유
+```
 
-# 방법 2) 분리 파일 (개발용) — data/*.js 를 외부 로드하므로 로컬 서버 필요
-python3 -m http.server 8000   # http://localhost:8000/products.html
+연결이 안 되면 `--check` 를 먼저 실행하세요. 실패 사유와 **KRX 응답 키 목록**을 그대로 출력합니다.
+사내망 프록시가 필요하면 환경변수 `HTTPS_PROXY` 를 설정하거나 `--krx-url` 을 쓰면 됩니다.
 
+### 방법 2) 오프라인 실데이터 (스냅샷)
+
+망이 연결되는 곳에서 한 번 저장해 두면, 이후에는 **서버 없이 파일 더블클릭으로도** 실데이터가 보입니다.
+
+```bash
+python serve-products.py --snapshot        # data/krx-snapshot.js 생성
+python build-products-standalone.py        # 스냅샷을 포함한 단일 파일 재생성
+# 이제 products-standalone.html 을 더블클릭하면 저장된 실데이터로 조회된다
+```
+
+스냅샷은 **원본 응답을 그대로** 담고 파싱은 화면이 담당하므로, 실시간 조회와 결과가 동일합니다.
+출처 바에는 `KRX 스냅샷 2026-08-05 14:22` 처럼 저장 시각이 표시됩니다.
+
+### 방법 3) 단일 파일만 열기 (실데이터 없이 화면만)
+
+`products-standalone.html` 더블클릭. 화면 구성·조작은 모두 확인할 수 있지만
+KRX 호출은 CORS 로 막혀 **예시 데이터로 표시**됩니다(스냅샷이 포함돼 있으면 실데이터).
+
+```bash
 # 소스를 고친 뒤 단일 파일 다시 생성
 python3 build-products-standalone.py
 ```
@@ -172,10 +209,14 @@ python3 build-products-standalone.py
 ## 파일 구조
 
 ```
+serve-products.py              # 실행파일: 로컬 서버 + KRX 서버측 호출(CORS 회피) + 스냅샷 생성
+run-products.bat               # 윈도우 실행 런처 (더블클릭)
+run-products.sh                # macOS/Linux 실행 런처
 products.html                  # 화면 (레이아웃 + CSS + 앱 로직)
-data/sources.js                # 실데이터 연동 (KRX 어댑터 · CSV 임포트 · 진단)
+data/sources.js                # 실데이터 연동 (KRX 어댑터 · 스냅샷 · CSV 임포트 · 진단)
 data/products.js               # 예시 데이터 · 필터 스키마 · 한/영 사전
-products-standalone.html       # 위 세 파일을 합친 단일 파일 산출물
+data/krx-snapshot.js           # (선택) --snapshot 으로 생성되는 실데이터 스냅샷
+products-standalone.html       # 위 파일들을 합친 단일 파일 산출물
 build-products-standalone.py   # 단일 파일 생성 스크립트
 ```
 
@@ -229,8 +270,10 @@ ELS,미래에셋증권 제99001회 ELS,S99001,미래에셋증권,1,,,100,
 **2) 사내 API 어댑터** — `data/sources.js` 의 `CATALOG` 에 항목을 추가합니다.
 `run(asOfDate)` 이 MASP 스키마 배열을 반환하면 나머지(필터·정렬·표·상세·비교)는 그대로 동작합니다.
 
-**3) 사내 프록시** — 브라우저에서 KRX 를 직접 호출하면 CORS 로 막히는 경우가 많습니다.
-`data/sources.js` 의 `PROXIES` 맨 앞에 사내 프록시를 추가하세요.
+**3) 실행파일로 CORS 우회 (권장)** — `run-products.bat` / `python serve-products.py` 로 실행하면
+파이썬이 서버 대 서버로 KRX 를 호출하므로 CORS 가 발생하지 않습니다. 화면은 로컬 프록시
+`/api/krx` 를 자동으로 우선 사용합니다. 사내 프록시를 직접 넣고 싶으면
+`data/sources.js` 의 `PROXIES` 맨 앞에 추가하세요.
 
 ```js
 PROXIES.unshift({ name: '사내 프록시', wrap: function (u) { return '/api/proxy?url=' + encodeURIComponent(u); } });
