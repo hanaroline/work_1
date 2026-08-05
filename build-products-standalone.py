@@ -13,17 +13,23 @@ import sys
 ROOT = pathlib.Path(__file__).resolve().parent
 SRC = ROOT / "products.html"
 OUT = ROOT / "products-standalone.html"
-TAG = '<script src="data/products.js"></script>'
+# products.html 이 외부 로드하는 스크립트 전부를 인라인한다
+SCRIPTS = ["data/products.js", "data/sources.js"]
 
 html = SRC.read_text(encoding="utf-8")
-if TAG not in html:
-    sys.exit("script tag not found in products.html: " + TAG)
 
-js = (ROOT / "data" / "products.js").read_text(encoding="utf-8")
-# </script> 가 데이터 안에 있으면 인라인 스크립트가 조기 종료된다 — 방어적으로 검사
-if "</script" in js.lower():
-    sys.exit("data/products.js contains a closing script tag; cannot inline safely")
+for rel in SCRIPTS:
+    tag = '<script src="%s"></script>' % rel
+    if tag not in html:
+        sys.exit("script tag not found in products.html: " + tag)
+    js = (ROOT / rel).read_text(encoding="utf-8")
+    # </script> 가 데이터 안에 있으면 인라인 스크립트가 조기 종료된다 — 방어적으로 검사
+    if "</script" in js.lower():
+        sys.exit("%s contains a closing script tag; cannot inline safely" % rel)
+    html = html.replace(tag, "<!-- inlined from %s -->\n<script>\n%s\n</script>" % (rel, js))
 
-banner = "<!-- inlined from data/products.js by build-products-standalone.py -->"
-OUT.write_text(html.replace(TAG, banner + "\n<script>\n" + js + "\n</script>"), encoding="utf-8")
+if 'script src="data/' in html:
+    sys.exit("an external data script remains un-inlined")
+
+OUT.write_text(html, encoding="utf-8")
 print("wrote %s (%.0f KB)" % (OUT.name, OUT.stat().st_size / 1024))
