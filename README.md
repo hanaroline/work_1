@@ -121,14 +121,51 @@ var PROXIES = [
 
 ### 실행 방법
 
+**권장 — `serve.py`로 실행 (시세 조회까지 정상 동작)**
+
+```bash
+python3 serve.py          # → http://localhost:8000/datacenter.html
+python3 serve.py 9000     # 포트 지정
 ```
-datacenter-standalone.html   ← 단일 파일. 더블클릭으로 바로 열림
+
+정적 파일 서비스 + **시세 API 프록시(`/api/proxy`)** 를 함께 제공합니다.
+브라우저가 아니라 서버가 네이버·Yahoo를 호출하므로 CORS 차단이 발생하지 않습니다.
+사내 프록시가 필요한 망에서는 환경변수를 그대로 사용합니다.
+
+```bash
+HTTPS_PROXY=http://proxy.company.co.kr:8080 python3 serve.py
+```
+
+**간단 실행**
+
+```
+datacenter-standalone.html   ← 단일 파일. 더블클릭으로 바로 열림 (시세는 막힐 수 있음)
 datacenter.html              ← data/dc-chain*.js 를 로드하므로 로컬 서버 필요
 ```
 
 ```bash
-python3 -m http.server 8000   # → http://localhost:8000/datacenter.html
+python3 -m http.server 8000   # 프록시 없는 단순 서버
 ```
+
+### 시세가 표시되지 않을 때
+
+시세는 **브라우저에서 외부 API를 직접 호출**하는 구조라, `file://`로 열거나 사내망에서 열면
+CORS·방화벽 정책에 막혀 조회되지 않을 수 있습니다. 조회 실패 시에도 맵과 종목 정보는 정상 동작합니다.
+
+1. **`python3 serve.py` 로 실행** → 서버가 대신 호출하므로 대부분 이 단계에서 해결됩니다.
+2. 그래도 안 되면 화면 상단 **`시세 진단`** 버튼을 눌러 기록을 확인합니다.
+   소스(네이버 → 네이버 일별시세 → Yahoo → Stooq) × 경로(로컬 프록시 → 직접 → 공개 CORS 프록시)별로
+   성공/실패와 오류 원인이 모두 남습니다. `복사` 버튼으로 그대로 공유할 수 있습니다.
+3. 모든 항목이 실패하면 해당 PC/망에서 `m.stock.naver.com`·`query1.finance.yahoo.com` 접근 자체가
+   차단된 상태입니다. `serve.py`의 `ALLOWED_HOSTS`에 사내 시세 엔드포인트를 추가하거나,
+   `HTTPS_PROXY`로 사내 프록시를 지정하세요.
+
+| 조회 순서 | 국내 | 해외 |
+|---|---|---|
+| 1 | 네이버 모바일 `/basic` (현재가·등락률) | Yahoo Finance `chart` |
+| 2 | 네이버 `/price` 일별시세 2건으로 등락 계산 | Stooq CSV(전일 종가 기준) |
+| 3 | Yahoo Finance `chart` (`005930.KS`) | — |
+| 4 | Stooq CSV (`005930.kr`) | — |
 
 ### 종목 · 단계 추가
 
@@ -148,6 +185,7 @@ python3 -m http.server 8000   # → http://localhost:8000/datacenter.html
 ## 파일 구조
 
 ```
+serve.py                     # 로컬 실행 서버 (정적 파일 + 시세 API 프록시 /api/proxy)
 index.html                   # 종목 통합 리포트 대시보드 (레이아웃 + CSS + 앱 로직)
 standalone.html              # 위 대시보드의 단일 파일 산출물
 datacenter.html              # 데이터센터 밸류체인 종목 맵
