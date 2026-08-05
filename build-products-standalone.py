@@ -14,7 +14,9 @@ ROOT = pathlib.Path(__file__).resolve().parent
 SRC = ROOT / "products.html"
 OUT = ROOT / "products-standalone.html"
 # products.html 이 외부 로드하는 스크립트 전부를 인라인한다
-SCRIPTS = ["data/products.js", "data/sources.js"]
+SCRIPTS = ["data/products.js", "data/krx-snapshot.js", "data/sources.js"]
+# 스냅샷은 선택 사항 — 없으면 태그만 제거한다
+OPTIONAL = {"data/krx-snapshot.js"}
 
 html = SRC.read_text(encoding="utf-8")
 
@@ -22,6 +24,10 @@ for rel in SCRIPTS:
     tag = '<script src="%s"></script>' % rel
     if tag not in html:
         sys.exit("script tag not found in products.html: " + tag)
+    if rel in OPTIONAL and not (ROOT / rel).exists():
+        html = html.replace(tag, "<!-- %s 없음: 스냅샷 미포함 -->" % rel)
+        print("  skip %s (파일 없음)" % rel)
+        continue
     js = (ROOT / rel).read_text(encoding="utf-8")
     # </script> 가 데이터 안에 있으면 인라인 스크립트가 조기 종료된다 — 방어적으로 검사
     if "</script" in js.lower():

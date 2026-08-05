@@ -1321,6 +1321,8 @@ var MASP = (function () {
 })();
 
 </script>
+<!-- serve-products.py --snapshot 으로 만든 실데이터 스냅샷(있으면 사용, 없으면 무시) -->
+<!-- data/krx-snapshot.js 없음: 스냅샷 미포함 -->
 <!-- inlined from data/sources.js -->
 <script>
 /* ============================================================================
@@ -1357,13 +1359,41 @@ var MASPSRC = (function () {
   var KRX_REFERER = 'https://data.krx.co.kr/contents/MDC/MDI/outerLoader/index.cmd';
   var TIMEOUT = 8000;
 
-  /* CORS 프록시 폴백 체인 — 앞에서부터 시도하고 처음 성공한 경로를 계속 쓴다 */
+  /* CORS 프록시 폴백 체인 — 앞에서부터 시도하고 처음 성공한 경로를 계속 쓴다.
+     serve-products.py 로 실행한 경우 로컬 프록시가 맨 앞에 붙는다. 파이썬이
+     서버 대 서버로 KRX 를 호출하므로 CORS 가 발생하지 않는 유일한 확실한 경로다. */
   var PROXIES = [
     { name: '직접 호출', wrap: function (u) { return u; }, form: true },
     { name: 'corsproxy.io', wrap: function (u) { return 'https://corsproxy.io/?url=' + encodeURIComponent(u); }, form: true },
     { name: 'allorigins', wrap: function (u) { return 'https://api.allorigins.win/raw?url=' + encodeURIComponent(u); }, form: true }
   ];
+  var LOCAL_PROXY = { name: '로컬 실행(serve-products.py)', wrap: function () { return '/api/krx'; }, form: true };
+  /* http(s) 로 서비스되는 경우에만 로컬 프록시를 시도한다 (file:// 에서는 무의미) */
+  if (typeof location !== 'undefined' && /^https?:$/.test(location.protocol)) {
+    PROXIES.unshift(LOCAL_PROXY);
+  }
   var proxyHint = 0;   /* 성공한 프록시 인덱스를 기억해 이후 요청에 먼저 사용 */
+
+  /* serve-products.py --snapshot 으로 저장한 원본 응답. 있으면 네트워크를 타지
+     않고 이것을 그대로 파싱한다(같은 파서를 쓰므로 결과가 동일하다).      */
+  var SNAP = (typeof window !== 'undefined' && window.MASP_SNAPSHOT) || null;
+  var snapUse = {};   /* bld 별 소비 인덱스 — 같은 bld 를 여러 번 부르는 경우 대응 */
+  function snapshotFor(bld) {
+    if (!SNAP || !SNAP.calls) return null;
+    var short = bld.split('/').pop();
+    var list = SNAP.calls[short];
+    if (!list || !list.length) return null;
+    var i = snapUse[short] || 0;
+    snapUse[short] = i + 1;
+    var hit = list[Math.min(i, list.length - 1)];
+    if (hit && hit.__error__) return null;
+    return hit;
+  }
+  /* 출처 라벨 — 스냅샷을 소비했는지 실시간 조회인지 구분해 표시한다 */
+  function srcLabel() { return SNAP ? ('KRX 스냅샷 ' + (SNAP.asOf || '')) : 'KRX'; }
+  function snapshotInfo() {
+    return SNAP ? { asOf: SNAP.asOf, source: SNAP.source || 'KRX' } : null;
+  }
 
   /* 진단 로그 — 어떤 소스가 성공/실패했는지 화면에서 그대로 보여준다 */
   var diag = [];
@@ -1391,6 +1421,12 @@ var MASPSRC = (function () {
 
   /* KRX 는 form-encoded POST 로 bld + 파라미터를 받는다 */
   function krxPost(bld, params) {
+    /* 스냅샷이 있으면 네트워크를 타지 않는다 */
+    var snap = snapshotFor(bld);
+    if (snap) {
+      log({ bld: bld, proxy: '스냅샷 ' + (SNAP.asOf || ''), ok: true, msg: rowsOf(snap).length + '행' });
+      return Promise.resolve(snap);
+    }
     var body = new URLSearchParams();
     body.set('bld', bld);
     Object.keys(params || {}).forEach(function (k) { body.set(k, params[k]); });
@@ -1564,7 +1600,7 @@ var MASPSRC = (function () {
         var p = {
           cat: 'etf',
           live: true,
-          source: 'KRX',
+          source: srcLabel(),
           sourceUrl: 'https://data.krx.co.kr/contents/MDC/MDI/mdiLoader/index.cmd?menuId=MDC020103010101',
           code: String(code || ''),
           isin: String(pick(r, K.isin) || ''),
@@ -1641,7 +1677,7 @@ var MASPSRC = (function () {
         var code = pick(r, K.code), q = qByCode[code] || r;
         var nm = String(pick(r, K.name) || '');
         return {
-          cat: 'etf', live: true, source: 'KRX',
+          cat: 'etf', live: true, source: srcLabel(),
           sourceUrl: 'https://data.krx.co.kr/contents/MDC/MDI/mdiLoader/index.cmd?menuId=MDC020103020101',
           code: String(code || ''), name: [nm, nm],
           provider: [String(pick(r, K.manager) || ''), String(pick(r, K.manager) || '')],
@@ -1672,7 +1708,7 @@ var MASPSRC = (function () {
       var out = rows.map(function (row) {
         var nm = String(pick(row, K.bondName) || '');
         return {
-          cat: 'bond', live: true, source: 'KRX',
+          cat: 'bond', live: true, source: srcLabel(),
           sourceUrl: 'https://data.krx.co.kr/contents/MDC/MDI/mdiLoader/index.cmd?menuId=MDC020402010101',
           code: String(pick(row, K.code) || ''), name: [nm, nm],
           provider: [nm.split(/[0-9(]/)[0].trim(), nm.split(/[0-9(]/)[0].trim()],
@@ -1855,6 +1891,7 @@ var MASPSRC = (function () {
     fromCsv: fromCsv,
     parseCsv: parseCsv,
     getDiag: getDiag,
+    snapshotInfo: snapshotInfo,
     CATALOG: CATALOG,
     NO_SOURCE: NO_SOURCE,
     PROXIES: PROXIES,
