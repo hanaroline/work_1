@@ -31,6 +31,7 @@ import urllib.request
 # /api/proxy 로 호출을 허용하는 호스트 (시세·뉴스 조회용으로 한정)
 ALLOWED_HOSTS = (
     "m.stock.naver.com",
+    "polling.finance.naver.com",
     "api.stock.naver.com",
     "finance.naver.com",
     "query1.finance.yahoo.com",
