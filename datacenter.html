@@ -209,7 +209,29 @@
       text-align: center; text-decoration: none;
     }
     .btn-ghost:hover { border-color: var(--orange); color: var(--ink); }
+    .linkbtn {
+      background: none; border: 0; border-bottom: 1px solid var(--orange); color: var(--orange-active);
+      font-family: inherit; font-size: 13px; padding: 0; cursor: pointer;
+    }
     .hint { padding: 46px 22px; text-align: center; color: var(--muted); font-size: 17px; }
+
+    /* ---------- 진단 오버레이 ---------- */
+    .overlay {
+      position: fixed; inset: 0; z-index: 80; background: rgba(26,26,26,.5);
+      display: none; align-items: center; justify-content: center; padding: 24px;
+    }
+    .overlay .sheet {
+      background: #fff; border-radius: 4px; width: min(880px, 100%); max-height: 88vh;
+      display: flex; flex-direction: column; padding: 19px 22px 22px;
+    }
+    .overlay h2 { font-size: 22px; font-weight: 700; }
+    .overlay .row { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
+    .overlay .row .sp { margin-left: auto; display: flex; gap: 8px; }
+    .overlay textarea {
+      flex: 1; min-height: 320px; width: 100%; font-family: ui-monospace, Menlo, Consolas, monospace;
+      font-size: 12px; line-height: 1.5; color: var(--ink); background: var(--subtle);
+      border: 1px solid var(--hairline); border-radius: 2px; padding: 12px; white-space: pre; overflow: auto;
+    }
     .hint .hb { display: block; font-size: 19px; font-weight: 700; color: var(--ink); margin-bottom: 8px; }
 
     /* ---------- 푸터 ---------- */
@@ -266,9 +288,23 @@
     <div class="searchwrap">
       <input id="q" type="search" autocomplete="off" aria-label="search" />
     </div>
+    <button class="btn-ghost" id="diagBtn" style="font-size:14px;padding:8px 13px;" data-i18n="diagBtn">시세 진단</button>
     <div class="legend">
       <span><i class="l"></i><span data-i18n="lgLarge">대형주</span></span>
       <span><i class="m"></i><span data-i18n="lgMid">중형 대표주</span></span>
+    </div>
+  </div>
+
+  <div class="overlay" id="diagOverlay">
+    <div class="sheet">
+      <div class="row">
+        <h2 data-i18n="diagTitle">시세 조회 진단</h2>
+        <div class="sp">
+          <button class="btn-ghost" id="diagCopy" data-i18n="diagCopy">복사</button>
+          <button class="btn-ghost" id="diagClose" data-i18n="close">닫기</button>
+        </div>
+      </div>
+      <textarea id="diagText" readonly></textarea>
     </div>
   </div>
 
@@ -315,8 +351,9 @@
         lbPts: "데이터센터 연관 포인트", lbProd: "주요 제품 · 서비스",
         lbEdge: "경쟁 지위", lbStage: "해당 단계", lbPeer: "같은 단계 종목", lbLink: "더 보기",
         loading: "시세 조회 중…",
-        quoteFail: "실시간 시세를 불러오지 못했습니다. 사내망·프록시 환경에서는 외부 시세 API 접근이 차단될 수 있습니다.",
-        quoteVia: "조회 시각",
+        quoteFail: "실시간 시세를 불러오지 못했습니다. 브라우저가 외부 시세 API를 직접 호출하는 구조여서 CORS·사내망 정책에 막힐 수 있습니다. 저장소 폴더에서 python3 serve.py 를 실행하고 localhost 로 접속하면 서버가 대신 호출해 정상 조회됩니다.",
+        quoteVia: "조회",
+        diagBtn: "시세 진단", diagTitle: "시세 조회 진단", diagCopy: "복사", diagCopied: "복사됨",
         openReport: "종목 통합 리포트 열기",
         naver: "네이버 금융에서 보기",
         yahoo: "Yahoo Finance에서 보기",
@@ -345,8 +382,9 @@
         lbPts: "Data center linkage", lbProd: "Key products and services",
         lbEdge: "Competitive standing", lbStage: "Stages", lbPeer: "Peers in this stage", lbLink: "More",
         loading: "Loading quote…",
-        quoteFail: "Could not load a live quote. Corporate networks and proxies often block external market data APIs.",
-        quoteVia: "Retrieved",
+        quoteFail: "Could not load a live quote. The page calls external market data APIs straight from the browser, which CORS and corporate network policy often block. Run python3 serve.py in the repository folder and open the page over localhost — the server then makes the call instead.",
+        quoteVia: "at",
+        diagBtn: "Quote diagnostics", diagTitle: "Quote diagnostics", diagCopy: "Copy", diagCopied: "Copied",
         openReport: "Open full stock report",
         naver: "View on Naver Finance",
         yahoo: "View on Yahoo Finance",
@@ -480,32 +518,52 @@
       els.footNote.textContent = t("foot");
     }
 
-    /* ================= 시세 조회 ================= */
-    var PROXIES = [
-      function (u) { return u; },
-      function (u) { return "https://api.codetabs.com/v1/proxy/?quest=" + encodeURIComponent(u); },
-      function (u) { return "https://corsproxy.io/?url=" + encodeURIComponent(u); },
-      function (u) { return "https://api.allorigins.win/raw?url=" + encodeURIComponent(u); },
-      function (u) { return "https://cors.eu.org/" + u; }
-    ];
+    /* ================= 시세 조회 =================
+     * 브라우저에서 외부 시세 API를 직접 호출하면 CORS·사내망 정책으로 막히는 경우가 많다.
+     * 1) 같은 출처의 로컬 프록시(serve.py의 /api/proxy) → 가장 확실한 경로
+     * 2) 공개 CORS 프록시 여러 개를 병렬로 시도(가장 먼저 성공한 응답 채택)
+     * 를 순서대로 시도하고, 소스(네이버 → Yahoo → Stooq)도 순차 폴백한다.
+     * 모든 시도 결과는 DIAG에 기록되어 '시세 진단' 창에서 확인·복사할 수 있다.
+     */
+    var LOCAL_PROXY = /^https?:$/.test(location.protocol);
+    var PROXIES = [];
+    if (LOCAL_PROXY) {
+      PROXIES.push({ name: "로컬 프록시(serve.py)", w: function (u) { return "api/proxy?url=" + encodeURIComponent(u); } });
+    }
+    PROXIES = PROXIES.concat([
+      { name: "직접 호출", w: function (u) { return u; } },
+      { name: "codetabs", w: function (u) { return "https://api.codetabs.com/v1/proxy/?quest=" + encodeURIComponent(u); } },
+      { name: "corsproxy.io", w: function (u) { return "https://corsproxy.io/?url=" + encodeURIComponent(u); } },
+      { name: "allorigins", w: function (u) { return "https://api.allorigins.win/raw?url=" + encodeURIComponent(u); } },
+      { name: "cors.eu.org", w: function (u) { return "https://cors.eu.org/" + u; } },
+      { name: "thingproxy", w: function (u) { return "https://thingproxy.freeboard.io/fetch/" + u; } },
+      { name: "jina", w: function (u) { return "https://r.jina.ai/" + u; } }
+    ]);
+
+    var DIAG = [];   // { url, via, ok, info }
     function withTimeout(p, ms) {
       return new Promise(function (res, rej) {
-        var timer = setTimeout(function () { rej(new Error("timeout")); }, ms);
+        var timer = setTimeout(function () { rej(new Error("timeout " + ms + "ms")); }, ms);
         p.then(function (v) { clearTimeout(timer); res(v); }, function (e) { clearTimeout(timer); rej(e); });
       });
     }
-    function fetchJson(url) {
+    /* validate(text): 유효하지 않으면 throw → 그 경로는 탈락(프록시 에러 페이지가 이기지 못하게) */
+    function fetchVia(url, validate) {
       var busted = url + (url.indexOf("?") >= 0 ? "&" : "?") + "_ts=" + Date.now();
-      var attempts = PROXIES.map(function (w) {
+      var attempts = PROXIES.map(function (p) {
         return withTimeout(
-          fetch(w(busted), { headers: { Accept: "application/json, text/plain, */*" }, cache: "no-store" })
+          fetch(p.w(busted), { headers: { Accept: "application/json, text/plain, */*" }, cache: "no-store" })
             .then(function (r) { if (!r.ok) throw new Error("HTTP " + r.status); return r.text(); })
             .then(function (txt) {
-              var s = txt.replace(/^﻿/, "").trim();
-              if (s[0] !== "{" && s[0] !== "[") throw new Error("not json");
-              return JSON.parse(s);
+              var out = validate(txt);
+              DIAG.push({ url: url, via: p.name, ok: true, info: "len=" + txt.length + " · " + txt.slice(0, 120).replace(/\s+/g, " ") });
+              return out;
+            })
+            .catch(function (e) {
+              DIAG.push({ url: url, via: p.name, ok: false, info: String((e && e.message) || e) });
+              throw e;
             }),
-          4500);
+          6000);
       });
       if (typeof Promise.any === "function") return Promise.any(attempts);
       return new Promise(function (res, rej) {
@@ -513,32 +571,91 @@
         attempts.forEach(function (p) { p.then(res, function (e) { err = e; if (--left === 0) rej(err); }); });
       });
     }
+    function fetchJson(url) {
+      return fetchVia(url, function (txt) {
+        var s = txt.replace(/^﻿/, "").trim();
+        var i = s.search(/[[{]/);
+        if (i < 0) throw new Error("not json");
+        return JSON.parse(s.slice(i));
+      });
+    }
+    function fetchCsv(url) {
+      return fetchVia(url, function (txt) {
+        var rows = txt.trim().split(/\r?\n/).filter(function (r) { return r.indexOf(",") > 0; });
+        if (rows.length < 2) throw new Error("not csv");
+        if (/N\/D|Exceeded/i.test(txt)) throw new Error("no data");
+        return rows.map(function (r) { return r.split(","); });
+      });
+    }
     function n(v) {
       if (v == null) return null;
       var x = parseFloat(String(v).replace(/,/g, ""));
       return isNaN(x) ? null : x;
     }
-    function fetchQuoteKR(c) {
-      return fetchJson("https://m.stock.naver.com/api/stock/" + c.id + "/basic").then(function (d) {
-        var price = n(d.closePrice);
-        if (price == null) throw new Error("no price");
-        var chg = n(d.compareToPreviousClosePrice);
-        var pct = n(d.fluctuationsRatio);
-        return { price: price, chg: chg, pct: pct, cur: "KRW" };
+
+    var NAVER = "https://m.stock.naver.com/api/stock/";
+    /* 네이버 basic: 등락폭은 절대값이므로 방향 코드(하락=4·5)로 부호를 보정 */
+    function parseNaverBasic(d) {
+      var price = n(d && d.closePrice);
+      if (price == null) throw new Error("naver: no price");
+      var chg = n(d.compareToPreviousClosePrice);
+      var pct = n(d.fluctuationsRatio);
+      var cmp = d.compareToPreviousPrice || {};
+      var dir = String(cmp.code || cmp.text || d.risefall || "");
+      if (/하락|down|▼/.test(dir) || /^[45]/.test(dir)) {
+        if (chg != null) chg = -Math.abs(chg);
+        if (pct != null) pct = -Math.abs(pct);
+      }
+      return { price: price, chg: chg, pct: pct, cur: "KRW", src: "네이버 금융" };
+    }
+    function quoteNaverPrice(code) {
+      return fetchJson(NAVER + code + "/price?pageSize=2&page=1").then(function (res) {
+        var rows = Array.isArray(res) ? res : (res && (res.priceInfos || res.datas)) || [];
+        var a = n(rows[0] && (rows[0].closePrice || rows[0].closeVal));
+        var b = n(rows[1] && (rows[1].closePrice || rows[1].closeVal));
+        if (a == null) throw new Error("naver price: empty");
+        return { price: a, chg: b != null ? a - b : null, pct: b ? ((a - b) / b) * 100 : null, cur: "KRW", src: "네이버 일별시세" };
       });
     }
-    function fetchQuoteGlobal(c) {
-      var u = "https://query1.finance.yahoo.com/v8/finance/chart/" +
-        encodeURIComponent(c.ysym) + "?range=5d&interval=1d";
-      return fetchJson(u).then(function (d) {
-        var m = d && d.chart && d.chart.result && d.chart.result[0] && d.chart.result[0].meta;
-        if (!m) throw new Error("no meta");
+    function quoteYahoo(sym) {
+      return fetchJson("https://query1.finance.yahoo.com/v8/finance/chart/" +
+        encodeURIComponent(sym) + "?range=5d&interval=1d").then(function (d) {
+        var r = d && d.chart && d.chart.result && d.chart.result[0];
+        var m = r && r.meta;
+        if (!m) throw new Error("yahoo: no meta");
         var price = n(m.regularMarketPrice);
         var prev = n(m.chartPreviousClose != null ? m.chartPreviousClose : m.previousClose);
-        if (price == null) throw new Error("no price");
+        if (price == null) throw new Error("yahoo: no price");
         var chg = prev != null ? price - prev : null;
-        return { price: price, chg: chg, pct: (prev ? (chg / prev) * 100 : null), cur: m.currency || "" };
+        return { price: price, chg: chg, pct: prev ? (chg / prev) * 100 : null, cur: m.currency || "", src: "Yahoo Finance" };
       });
+    }
+    /* Stooq(무료 CSV) — 최후 폴백. KR은 {code}.kr, 미국은 {ticker}.us */
+    function stooqSymbol(c) {
+      if (isKR(c)) return c.id + ".kr";
+      if (c.region === "US" && /^[A-Z.]+$/.test(c.tk)) return c.tk.toLowerCase() + ".us";
+      return null;
+    }
+    function quoteStooq(sym) {
+      if (!sym) return Promise.reject(new Error("stooq: unsupported symbol"));
+      return fetchCsv("https://stooq.com/q/d/l/?s=" + encodeURIComponent(sym) + "&i=d").then(function (rows) {
+        var last = rows[rows.length - 1], prev = rows[rows.length - 2];
+        var price = n(last && last[4]);
+        var pc = n(prev && prev[4]);
+        if (price == null) throw new Error("stooq: no close");
+        return { price: price, chg: pc != null ? price - pc : null, pct: pc ? ((price - pc) / pc) * 100 : null,
+          cur: /\.kr$/.test(sym) ? "KRW" : "USD", src: "Stooq(전일 종가 기준)" };
+      });
+    }
+    function fetchQuoteKR(c) {
+      return fetchJson(NAVER + c.id + "/basic").then(parseNaverBasic)
+        .catch(function () { return quoteNaverPrice(c.id); })
+        .catch(function () { return quoteYahoo(c.ysym); })
+        .catch(function () { return quoteStooq(stooqSymbol(c)); });
+    }
+    function fetchQuoteGlobal(c) {
+      return quoteYahoo(c.ysym)
+        .catch(function () { return quoteStooq(stooqSymbol(c)); });
     }
     function fmtPrice(v, cur) {
       if (v == null) return "-";
@@ -556,6 +673,7 @@
     function loadQuote(c) {
       var box = document.getElementById("quoteBox");
       if (!box) return;
+      DIAG = [];
       box.innerHTML = '<div class="qnote">' + esc(t("loading")) + "</div>";
       var p = isKR(c) ? fetchQuoteKR(c) : fetchQuoteGlobal(c);
       p.then(function (q) {
@@ -568,11 +686,46 @@
         box.innerHTML =
           '<div class="quote"><span class="qp num">' + esc(fmtPrice(q.price, q.cur)) + '</span>' +
           (chgTxt ? '<span class="qc num ' + cls + '">' + esc(chgTxt) + "</span>" : "") + "</div>" +
-          '<div class="qnote">' + esc(t("quoteVia")) + ": " + esc(fmtTime(new Date())) + "</div>";
+          '<div class="qnote">' + esc(q.src || "") + " · " + esc(t("quoteVia")) + " " + esc(fmtTime(new Date())) + "</div>";
       }, function () {
         if (state.sel !== c.id) return;
-        box.innerHTML = '<div class="qnote">' + esc(t("quoteFail")) + "</div>";
+        box.innerHTML = '<div class="qnote">' + esc(t("quoteFail")) + " " +
+          '<button class="linkbtn" id="diagOpen2">' + esc(t("diagBtn")) + "</button></div>";
+        var b = document.getElementById("diagOpen2");
+        if (b) b.addEventListener("click", openDiag);
       });
+    }
+
+    /* ================= 시세 진단 ================= */
+    function diagText() {
+      var c = state.sel ? BY_ID[state.sel] : null;
+      var L2 = [];
+      L2.push("=== 시세 조회 진단 ===");
+      L2.push("종목: " + (c ? c.name + " (" + c.tk + " / " + c.mkt + ", ysym=" + c.ysym + ")" : "-"));
+      L2.push("시각: " + fmtTime(new Date()));
+      L2.push("페이지 프로토콜: " + location.protocol + (LOCAL_PROXY ? " (로컬 프록시 경로 사용 가능)" : " (file:// — 로컬 프록시 사용 불가)"));
+      L2.push("User-Agent: " + navigator.userAgent);
+      L2.push("온라인 상태: " + navigator.onLine);
+      L2.push("");
+      L2.push("--- 시도 기록 " + DIAG.length + "건 (소스별 × 경로별) ---");
+      DIAG.forEach(function (d, i) {
+        L2.push("[" + (i + 1) + "] " + (d.ok ? "OK  " : "FAIL") + " via " + d.via);
+        L2.push("     " + d.url);
+        L2.push("     " + d.info);
+      });
+      if (!DIAG.length) L2.push("(기록 없음 — 종목을 클릭해 시세를 한 번 조회한 뒤 다시 확인하세요)");
+      L2.push("");
+      L2.push("[대응 방법]");
+      L2.push("1) 저장소 폴더에서 python3 serve.py 실행 후 http://localhost:8000/datacenter.html 로 접속");
+      L2.push("   → 브라우저가 아니라 서버가 시세 API를 호출하므로 CORS 문제가 사라짐");
+      L2.push("2) 그래도 FAIL 이면 해당 PC/망에서 m.stock.naver.com · query1.finance.yahoo.com 접근 자체가 차단된 상태");
+      L2.push("   → 사내 프록시 주소를 serve.py 의 PROXY 환경변수로 지정하거나, 사내 시세 API로 교체 필요");
+      return L2.join("\n");
+    }
+    function openDiag() {
+      var ov = document.getElementById("diagOverlay");
+      document.getElementById("diagText").value = diagText();
+      ov.style.display = "flex";
     }
 
     /* ================= 상세 패널 ================= */
@@ -707,7 +860,27 @@
     els.langKo.addEventListener("click", function () { state.lang = "ko"; applyLang(); });
     els.langEn.addEventListener("click", function () { state.lang = "en"; applyLang(); });
     els.backdrop.addEventListener("click", function () { select(null); });
-    document.addEventListener("keydown", function (e) { if (e.key === "Escape" && state.sel) select(null); });
+    document.getElementById("diagBtn").addEventListener("click", openDiag);
+    document.getElementById("diagClose").addEventListener("click", function () {
+      document.getElementById("diagOverlay").style.display = "none";
+    });
+    document.getElementById("diagOverlay").addEventListener("click", function (e) {
+      if (e.target === this) this.style.display = "none";
+    });
+    document.getElementById("diagCopy").addEventListener("click", function () {
+      var ta = document.getElementById("diagText"), btn = this;
+      ta.focus(); ta.select();
+      var done = function () { btn.textContent = t("diagCopied"); setTimeout(function () { btn.textContent = t("diagCopy"); }, 1500); };
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(ta.value).then(done, function () { try { document.execCommand("copy"); done(); } catch (e) {} });
+      } else { try { document.execCommand("copy"); done(); } catch (e) {} }
+    });
+    document.addEventListener("keydown", function (e) {
+      if (e.key !== "Escape") return;
+      var ov = document.getElementById("diagOverlay");
+      if (ov.style.display === "flex") { ov.style.display = "none"; return; }
+      if (state.sel) select(null);
+    });
 
     /* ================= 초기화 ================= */
     applyLang();

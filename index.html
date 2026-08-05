@@ -286,6 +286,11 @@
       function (u) { return "https://r.jina.ai/" + u; }
     ];
     var PROXY_NAMES = ["직접", "codetabs", "corsproxy.io", "allorigins", "cors.eu.org", "thingproxy", "jina"];
+    // 로컬 서버(serve.py)로 접속한 경우: 같은 출처의 프록시를 1순위로 사용 → CORS 회피
+    if (/^https?:$/.test(location.protocol)) {
+      PROXIES.unshift(function (u) { return "api/proxy?url=" + encodeURIComponent(u); });
+      PROXY_NAMES.unshift("로컬 프록시(serve.py)");
+    }
     var DIAG = []; // 데이터 진단용: 각 요청의 성공여부/경로/원문 일부 캡처
     function withTimeout(promise, ms) {
       return new Promise(function (resolve, reject) {
