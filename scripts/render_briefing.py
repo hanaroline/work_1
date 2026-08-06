@@ -126,6 +126,60 @@ strong { color: var(--ink); font-weight: 700; }
   .section { scroll-margin-top: 96px; }
 }
 
+/* ---- 오른쪽 상세 패널 ----
+   넓은 화면에서는 항목을 클릭하면 본문 아래로 펼치지 않고 오른쪽 패널에 띄운다.
+   요약(왼쪽)과 근거(오른쪽)를 동시에 보게 하려는 것. 1400px 미만에서는
+   패널을 쓸 만한 가로 여유가 없으므로 기존의 인라인 펼침으로 되돌아간다. */
+.detailpane { display: none; }
+@media (min-width: 1400px) {
+  .page.wide { max-width: 1680px; }
+  .page.wide .shell {
+    grid-template-columns: 200px minmax(0, 1fr) 340px; gap: 36px;
+  }
+  .detailpane {
+    display: block; position: sticky; top: 24px; align-self: start;
+    max-height: calc(100vh - 48px); overflow-y: auto;
+    border-top: 1px solid var(--primary); padding: 14px 0 19px;
+  }
+  /* 본문 폭이 좁아지므로 지표 카드는 아주 넓은 화면에서만 4열을 유지한다. */
+  .pane-mode .stat-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (min-width: 1680px) {
+  .page.wide .shell { grid-template-columns: 200px minmax(0, 1fr) 380px; gap: 40px; }
+  .pane-mode .stat-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+}
+.hint-pane { display: none; }
+@media (min-width: 1400px) {
+  .hint-inline { display: none; }
+  .hint-pane { display: inline; }
+}
+.dp-head {
+  display: flex; align-items: flex-start; gap: 10px;
+  padding-bottom: 12px; border-bottom: 1px solid var(--hairline); margin-bottom: 16px;
+}
+.dp-head > div { min-width: 0; flex: 1 1 auto; }
+.dp-kicker {
+  font-size: 13px; font-weight: 500; letter-spacing: .5px;
+  color: var(--primary-active); margin: 0 0 3px;
+}
+.dp-kicker:empty { display: none; }
+.dp-title { font-size: 17px; font-weight: 700; line-height: 1.4; color: var(--ink); margin: 0; }
+.dp-title strong { font-weight: 700; }
+.dp-close {
+  flex: none; width: 26px; height: 26px; padding: 0; cursor: pointer;
+  border: 1px solid var(--hairline); border-radius: 2px; background: #FFFFFF;
+  font-family: var(--font-num); font-size: 17px; line-height: 22px; color: var(--muted);
+}
+.dp-close:hover { border-color: var(--primary); color: var(--primary-active); }
+.dp-empty { font-size: 16px; line-height: 1.6; color: var(--muted); margin: 0; }
+.detailpane .detail {
+  margin: 0; padding: 0; background: none; border-left: 0; border-radius: 0;
+}
+.detailpane .detail > p { font-size: 16px; max-width: none; }
+.detailpane .detail dd { font-size: 16px; }
+.detailpane .detail-label { display: none; }   /* 패널 머리글이 이미 '상세' 역할 */
+.detail-title { display: none; }
+
 /* ---- 한/영 토글 ---- */
 .topbar { display: flex; align-items: flex-start; justify-content: space-between; gap: 19px; padding-top: 24px; }
 .tag {
@@ -365,13 +419,32 @@ html[lang="en"] .print-btn { font-family: var(--font-en); }
 }
 .hint { font-size: 14px; color: var(--muted-soft); margin: 14px 0 0; }
 
+/* ---- 패널 모드 표시 (드릴다운 기본 규칙을 덮어야 하므로 반드시 그 뒤에 온다) ----
+   '+' 는 아래로 펼친다는 뜻이므로, 옆 패널에 띄우는 모드에서는 '›' 로 바꾼다. */
+.pane-mode .exp > summary .exp-mark::after,
+.pane-mode .exp[open] > summary .exp-mark::after,
+.pane-mode .exp:not([open]) > summary .exp-mark::after { content: "\203A"; }
+.pane-mode table.data tr.clickable td:first-child::before,
+.pane-mode table.data tr.clickable[aria-expanded="true"] td:first-child::before { content: "\203A"; }
+.pane-mode .exp.pane-active > summary {
+  background: var(--surface-subtle); box-shadow: inset 2px 0 0 var(--primary);
+}
+.pane-mode .exp.pane-active > summary .exp-mark {
+  background: var(--primary); border-color: var(--primary); color: #FFFFFF;
+}
+.pane-mode table.data tr.pane-active > td,
+.pane-mode table.data tr.pane-active:hover > td { background: var(--surface-soft); }
+.pane-mode table.data tr.pane-active td:first-child { box-shadow: inset 2px 0 0 var(--primary); }
+.pane-mode table.data tr.pane-active td:first-child::before { color: var(--primary); }
+
 [data-lang-en] { display: none; }
 html[lang="en"] [data-lang-ko] { display: none; }
 html[lang="en"] [data-lang-en] { display: revert; }
 
 @media print {
-  .lang-toggle, .navlinks, .expand-all, .print-btn, .hint, .sidenav { display: none !important; }
-  .shell { display: block !important; }
+  .lang-toggle, .navlinks, .expand-all, .print-btn, .hint, .sidenav,
+  .detailpane { display: none !important; }
+  .shell, .page.wide .shell { display: block !important; }
   /* 인쇄는 화면 상태를 그대로 따른다(WYSIWYG). 접힌 상세는 인쇄에도 포함되지 않는다.
      '요약 PDF' / '전체 PDF' 버튼이 인쇄 직전에 전개 상태를 맞춘 뒤 복원한다. */
   /* 상세 패널의 근거 수치를 2열로 눕혀 지면을 절약한다 */
@@ -433,16 +506,125 @@ JS = """
     tr.setAttribute('aria-expanded', open ? 'true' : 'false');
     if (open) { d.removeAttribute('hidden'); } else { d.setAttribute('hidden', ''); }
   }
+
+  /* ---- 오른쪽 상세 패널 ----
+     넓은 화면(>=1400px)에서는 클릭한 항목의 상세를 본문 아래가 아니라 오른쪽 패널에 띄운다.
+     요약을 눈에서 놓치지 않은 채 근거를 읽게 하려는 것. 좁은 화면이나 '전체 펼치기'
+     상태에서는 패널 모드를 끄고 원래의 인라인 펼침으로 돌아간다. */
+  var pane = document.querySelector('.detailpane');
+  var mq = window.matchMedia('(min-width: 1400px)');
+  var paneOn = false, activeHost = null;
+  var dpBody, dpTitle, dpKicker, dpClose, emptyBody, emptyTitle;
+  if (pane) {
+    dpBody = pane.querySelector('.dp-body');
+    dpTitle = pane.querySelector('.dp-title');
+    dpKicker = pane.querySelector('.dp-kicker');
+    dpClose = pane.querySelector('.dp-close');
+    emptyBody = dpBody.innerHTML;
+    emptyTitle = dpTitle.innerHTML;
+    dpClose.addEventListener('click', closePane);
+  }
+
+  function closePane() {
+    if (!pane) return;
+    if (activeHost) { activeHost.classList.remove('pane-active'); activeHost = null; }
+    dpBody.innerHTML = emptyBody;
+    dpTitle.innerHTML = emptyTitle;
+    dpKicker.innerHTML = '';
+    dpClose.setAttribute('hidden', '');
+  }
+
+  function detailOf(host, isRow) {
+    if (isRow) {
+      var dr = detailRowOf(host);
+      return dr ? dr.querySelector('.detail') : null;
+    }
+    var kids = host.children;
+    for (var i = 0; i < kids.length; i++) {
+      if (kids[i].classList.contains('detail')) return kids[i];
+    }
+    return null;
+  }
+
+  /* 패널 머리글에 쓸 항목 이름. 렌더러가 넣어준 .detail-title 이 있으면 그것을,
+     없으면 요약(또는 표의 첫 칸)에서 뽑는다. 어느 쪽이든 한/영 span 을 통째로
+     옮기므로 패널을 연 채 언어를 바꿔도 그대로 따라간다. */
+  function paneTitleOf(detailEl, host, isRow) {
+    var t = detailEl.querySelector('.detail-title');
+    if (t) return t.innerHTML;
+    if (isRow) {
+      var td = host.querySelector('td');
+      return td ? td.innerHTML : '';
+    }
+    var sm = host.querySelector('summary');
+    if (!sm) return '';
+    var c = sm.cloneNode(true);
+    var m = c.querySelector('.exp-mark');
+    if (m) m.parentNode.removeChild(m);
+    return c.innerHTML;
+  }
+
+  function openPane(host, isRow) {
+    var detailEl = detailOf(host, isRow);
+    if (!detailEl) return;
+    if (activeHost === host) { closePane(); return; }   /* 같은 항목 재클릭 = 닫기 */
+    if (activeHost) activeHost.classList.remove('pane-active');
+    activeHost = host;
+    host.classList.add('pane-active');
+
+    dpTitle.innerHTML = paneTitleOf(detailEl, host, isRow);
+    var sec = host.closest ? host.closest('.section') : null;
+    var st = sec ? sec.querySelector('.section-title') : null;
+    dpKicker.innerHTML = st ? st.innerHTML : '';
+
+    var clone = detailEl.cloneNode(true);
+    var dt = clone.querySelector('.detail-title');
+    if (dt) dt.parentNode.removeChild(dt);
+    dpBody.innerHTML = '';
+    dpBody.appendChild(clone);
+    dpClose.removeAttribute('hidden');
+    pane.scrollTop = 0;
+  }
+
+  function syncPaneMode() {
+    if (!pane) return;
+    var b = document.querySelector('.expand-all');
+    var allOpen = !!b && b.getAttribute('aria-pressed') === 'true';
+    var on = mq.matches && !allOpen;
+    if (on === paneOn) return;
+    paneOn = on;
+    document.body.classList.toggle('pane-mode', on);
+    if (!on) closePane();
+  }
+  if (mq.addEventListener) { mq.addEventListener('change', syncPaneMode); }
+  else if (mq.addListener) { mq.addListener(syncPaneMode); }
+
   document.addEventListener('click', function (e) {
     if (!e.target.closest) return;
     if (e.target.closest('a')) return;              /* 링크 클릭은 통과 */
+    if (e.target.closest('.detailpane')) return;    /* 패널 내부 클릭은 통과 */
     var tr = e.target.closest('tr.clickable');
-    if (tr) toggleRow(tr);
+    if (tr) {
+      if (paneOn) { e.preventDefault(); openPane(tr, true); } else { toggleRow(tr); }
+      return;
+    }
+    if (paneOn) {
+      var sm = e.target.closest('summary');
+      var host = sm && sm.parentNode;
+      if (host && host.classList && host.classList.contains('exp')) {
+        e.preventDefault();                          /* 인라인 펼침 대신 패널로 */
+        openPane(host, false);
+      }
+    }
   });
   document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape') { closePane(); return; }
     if (e.key !== 'Enter' && e.key !== ' ') return;
     var tr = e.target.closest ? e.target.closest('tr.clickable') : null;
-    if (tr) { e.preventDefault(); toggleRow(tr); }
+    if (tr) {
+      e.preventDefault();
+      if (paneOn) { openPane(tr, true); } else { toggleRow(tr); }
+    }
   });
 
   /* ---- 전체 펼치기 / 접기 ---- */
@@ -453,6 +635,7 @@ JS = """
     for (var j = 0; j < rows.length; j++) toggleRow(rows[j], open);
     var btn = document.querySelector('.expand-all');
     if (btn) btn.setAttribute('aria-pressed', open ? 'true' : 'false');
+    syncPaneMode();          /* 전체 펼침 중에는 패널 모드를 끈다(중복 표시 방지) */
   }
   var eb = document.querySelector('.expand-all');
   if (eb) {
@@ -487,6 +670,7 @@ JS = """
       var allOpen = ds.length > 0 && document.querySelectorAll('details.exp[open]').length === ds.length;
       btn.setAttribute('aria-pressed', allOpen ? 'true' : 'false');
     }
+    syncPaneMode();
   }
   /* ---- 사이드바 목차: 현재 보고 있는 섹션 강조 ---- */
   var tocLinks = document.querySelectorAll('.sidenav-toc a');
@@ -532,12 +716,20 @@ JS = """
     pbs[k].addEventListener('click', function (ev) {
       var full = ev.currentTarget.getAttribute('data-print') === 'full';
       var before = snapshot();
+      var paneWas = activeHost;                 /* 인쇄 후 열려 있던 상세 패널도 되돌린다 */
       setAll(full);
       void document.body.offsetHeight;          /* 레이아웃 확정 */
       try { window.focus(); } catch (e) {}      /* iframe 안에서도 자기 프레임 인쇄 */
-      try { window.print(); } finally { restoreFrom(before); }
+      try { window.print(); } finally {
+        restoreFrom(before);
+        if (paneWas && paneOn && !activeHost) {
+          openPane(paneWas, paneWas.tagName === 'TR');
+        }
+      }
     });
   }
+
+  syncPaneMode();
 })();
 """
 
@@ -604,6 +796,11 @@ T = {
     "print_full_t": ("모든 상세를 펼친 전체본으로 인쇄 / PDF 저장 — 브리핑 준비용",
                      "Print or save with every detail expanded — for your own preparation"),
     "detail": ("상세", "Detail"),
+    "detailpane": ("상세 보기", "Detail view"),
+    "pane_empty": ("왼쪽에서 항목을 클릭하면 근거 수치와 배경, 원문 링크가 여기에 표시됩니다.",
+                   "Click an item on the left to show its underlying figures, "
+                   "background and source links here."),
+    "pane_close": ("상세 닫기", "Close detail"),
     "toc": ("목차", "Contents"),
     "talking_a": ("응대 스크립트", "Suggested response"),
     "srclink": ("원문", "Source"),
@@ -611,6 +808,13 @@ T = {
         "각 항목을 클릭하면 근거 수치와 배경, 원문 링크가 펼쳐집니다. "
         "고객 전달용은 «요약 PDF», 브리핑 준비용은 «전체 PDF» 로 저장하십시오.",
         "Click any item to reveal the underlying figures, background and source links. "
+        "Use «Summary PDF» for client hand-outs and «Full PDF» for your own preparation.",
+    ),
+    "hint_pane": (
+        "각 항목을 클릭하면 근거 수치와 배경, 원문 링크가 오른쪽 패널에 표시됩니다. "
+        "고객 전달용은 «요약 PDF», 브리핑 준비용은 «전체 PDF» 로 저장하십시오.",
+        "Click any item to show the underlying figures, background and source links "
+        "in the panel on the right. "
         "Use «Summary PDF» for client hand-outs and «Full PDF» for your own preparation.",
     ),
 }
@@ -676,11 +880,18 @@ def has_detail(node):
     return bool(node.get("detail") or node.get("facts") or node.get("links"))
 
 
-def detail_body(node):
-    """상세 패널 본문. detail(문단) + facts(수치 목록) + links(원문)."""
+def detail_body(node, title=""):
+    """상세 패널 본문. detail(문단) + facts(수치 목록) + links(원문).
+
+    title 은 오른쪽 상세 패널의 머리글로만 쓰이는 숨은 항목명이다. 요약문이 그대로
+    제목이 되면 지나치게 긴 항목(지표 카드·표 행·하우스 뷰)에만 넘긴다.
+    """
     if not has_detail(node):
         return ""
-    parts = ['<span class="detail-label">%s</span>' % label("detail")]
+    parts = []
+    if title:
+        parts.append('<span class="detail-title">%s</span>' % title)
+    parts.append('<span class="detail-label">%s</span>' % label("detail"))
 
     facts = node.get("facts") or []
     if facts:
@@ -809,7 +1020,7 @@ def render_stat_grid(rows, hero=False):
                 ('<div class="stat-note">%s</div>' % note) if note else "",
             )
         )
-        body = detail_body(r)
+        body = detail_body(r, bi(r, "name"))
         if body:
             cells.append('<details class="stat exp"><summary>%s'
                          '<span class="exp-mark" aria-hidden="true"></span></summary>%s</details>'
@@ -856,9 +1067,9 @@ def render_bars(rows):
             % (esc(T["barcap"][0]), "".join(out)))
 
 
-def expandable_row(r, cells_html, colspan):
+def expandable_row(r, cells_html, colspan, title=""):
     """detail 이 있으면 클릭 가능한 <tr> + 숨겨진 상세 <tr> 을 함께 반환."""
-    body = detail_body(r)
+    body = detail_body(r, title)
     if not body:
         return "<tr>%s</tr>" % cells_html
     return (
@@ -883,7 +1094,7 @@ def render_index_table(rows, caption_ko=None, caption_en=None):
                 bi(r, "note") if r.get("note") else "&mdash;",
             )
         )
-        body.append(expandable_row(r, cells, 5))
+        body.append(expandable_row(r, cells, 5, bi(r, "name")))
     cap = ""
     if caption_ko:
         cap = "<caption>%s</caption>" % dual(caption_ko, caption_en)
@@ -910,7 +1121,7 @@ def render_flow_table(rows):
             )
         )
         if r.get("highlight"):
-            d = detail_body(r)
+            d = detail_body(r, bi(r, "name"))
             if d:
                 body.append(
                     '<tr class="hl clickable" tabindex="0" role="button" aria-expanded="false">%s</tr>'
@@ -918,7 +1129,7 @@ def render_flow_table(rows):
             else:
                 body.append('<tr class="hl">%s</tr>' % cells)
         else:
-            body.append(expandable_row(r, cells, 3))
+            body.append(expandable_row(r, cells, 3, bi(r, "name")))
     return (
         '<div class="table-wrap"><table class="data"><thead><tr>'
         '<th>%s</th><th class="n">%s</th><th>%s</th>'
@@ -940,7 +1151,7 @@ def render_mover_table(rows):
                 bi(r, "comment") if r.get("comment") else "&mdash;",
             )
         )
-        body.append(expandable_row(r, cells, 4))
+        body.append(expandable_row(r, cells, 4, bi(r, "name")))
     return (
         '<div class="table-wrap"><table class="data"><thead><tr>'
         '<th>%s</th><th class="n">%s</th><th class="n">%s</th><th>%s</th>'
@@ -960,7 +1171,7 @@ def render_calendar(rows):
                 bi(r, "watch") if r.get("watch") else "&mdash;",
             )
         )
-        body.append(expandable_row(r, cells, 3))
+        body.append(expandable_row(r, cells, 3, bi(r, "event")))
     return (
         '<div class="table-wrap"><table class="data"><thead><tr>'
         '<th class="n">%s</th><th>%s</th><th>%s</th>'
@@ -989,7 +1200,7 @@ def render_views(rows):
                 if r.get("stance_label") else "",
             )
         )
-        body = detail_body(r)
+        body = detail_body(r, bi(r, "firm"))
         if body:
             cards.append('<details class="view exp"><summary>%s'
                          '<span class="exp-mark" aria-hidden="true"></span></summary>%s</details>'
@@ -1042,6 +1253,24 @@ def render_sidenav(secs, dates, current):
             '<p class="sidenav-label">%s</p><ul class="sidenav-toc">%s</ul>'
             '%s</nav>'
             % (esc(T["toc"][0]), label("toc"), items, date_block))
+
+
+def render_detailpane():
+    """오른쪽 상세 패널의 빈 껍데기. 내용은 클릭 시 JS 가 채운다."""
+    return (
+        '<aside class="detailpane" aria-label="%s" aria-live="polite">'
+        '<div class="dp-head">'
+        '<div><p class="dp-kicker"></p><p class="dp-title">%s</p></div>'
+        '<button type="button" class="dp-close" aria-label="%s" title="%s" hidden>'
+        '&times;</button>'
+        '</div>'
+        '<div class="dp-body"><p class="dp-empty">%s</p></div>'
+        '</aside>' % (
+            esc(T["detailpane"][0]), label("detailpane"),
+            esc(T["pane_close"][0]), esc(T["pane_close"][0]),
+            dual(T["pane_empty"][0], T["pane_empty"][1]),
+        )
+    )
 
 
 def section(anchor, title_key, inner, custom_title=None):
@@ -1139,7 +1368,9 @@ def render_briefing(d, prev_date=None, next_date=None, all_dates=None):
             kicker, bi(d, "headline"), bi(d, "lede"), tone,
             dual(TONE_LABEL[tone][0], TONE_LABEL[tone][1]),
             label("asof"), esc(d.get("asof") or ""),
-            dual(T["hint"][0], T["hint"][1]),
+            ('<span class="hint-inline">%s</span><span class="hint-pane">%s</span>'
+             % (dual(T["hint"][0], T["hint"][1]),
+                dual(T["hint_pane"][0], T["hint_pane"][1]))),
         )
     )
 
@@ -1265,12 +1496,13 @@ def render_briefing(d, prev_date=None, next_date=None, all_dates=None):
     )
 
     body = (
-        '<div class="page">%s'
-        '<div class="shell">%s<main>%s%s</main></div>'
+        '<div class="page wide">%s'
+        '<div class="shell">%s<main>%s%s</main>%s</div>'
         '</div>' % (
             "".join(head),
             render_sidenav(secs, all_dates or [date], date),
             "".join(parts), footer,
+            render_detailpane(),
         )
     )
     title_ko = "%s %s | %s" % (date, T["doc"][0], T["brand"][0])
