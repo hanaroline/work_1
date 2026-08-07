@@ -157,5 +157,133 @@ console.log('\n■ 자료 산술 오류로 대조 제외 (자료가 제시한 �
   console.log('  SKIP  ' + r[0] + '  (' + r[1] + ')\n        ' + r[2]);
 });
 
-console.log('\n──────────────  통과 ' + pass + '  /  실패 ' + fail + '  ──────────────');
+console.log('\n──────────────  자료 대조 소계 : 통과 ' + pass + '  /  실패 ' + fail + '  ──────────────');
+
+/* ==========================================================================
+ * PART 2 — 상한 장치 3종 및 개편안 반영 ON/OFF 토글
+ *   금액은 chk(오차 허용), 비율·플래그는 chkVal(정확 일치)로 대조한다.
+ * ========================================================================*/
+function flag(label, got, want) { chkVal(label, got ? 1 : 0, want ? 1 : 0); }
+
+head('■ 재산세 과세표준상한제 (지방세법 §110의2) — 직전연도 과표 상당액 × 105%');
+{
+  var noCap = T.propertyTax({ gongsi: 10 * E, isOneHouse: true, share: 1, urban: true });
+  var cap = T.propertyTax({ gongsi: 10 * E, isOneHouse: true, share: 1, urban: true, prevGongsi: 8 * E });
+  console.log('        공시 8억 → 10억(+25%) · 공정비율 45%');
+  chk('과세표준상한액 = 8억 × 45% × 1.05 = 3.78억', cap.taxBase, 8 * E * 0.45 * 1.05, 0.00001);
+  chk('상한 미적용 시 과세표준 = 10억 × 45% = 4.5억', noCap.taxBase, 10 * E * 0.45, 0.00001);
+  flag('상한 적용 플래그', cap.baseCapped, 1);
+  flag('상한으로 본세가 실제로 줄어듦', cap.main < noCap.main, 1);
+  chkVal('과표상한율', cap.capRate, 0.05);
+  var down = T.propertyTax({ gongsi: 10 * E, isOneHouse: true, share: 1, urban: true, prevGongsi: 12 * E });
+  flag('직전연도가 더 높으면 상한 미작동', down.baseCapped, 0);
+  chk('이때 과세표준은 원래값 유지', down.taxBase, noCap.taxBase, 0.00001);
+}
+
+head('■ 재산세 세부담상한제 (지방세법 §122) — 공시가격 구간별 105/110/130%');
+{
+  chkVal('공시 3억 이하 → 105%', T.propBurdenCapRate(2.5 * E), 1.05);
+  chkVal('공시 3~6억 → 110%', T.propBurdenCapRate(5 * E), 1.10);
+  chkVal('공시 6억 초과 → 130%', T.propBurdenCapRate(10 * E), 1.30);
+  var prev = 500000;
+  var r = T.propertyTax({ gongsi: 10 * E, isOneHouse: true, share: 1, urban: true, prevMain: prev, year: 2027 });
+  chk('전년 본세 50만원 → 상한 130% = 65만원', r.main, prev * 1.30, 0.00001);
+  flag('상한 적용 플래그', r.burdenCapped, 1);
+  var r29 = T.propertyTax({ gongsi: 10 * E, isOneHouse: true, share: 1, urban: true, prevMain: prev, year: 2029 });
+  flag('2029년 주택분 세부담상한 폐지 → 미적용', r29.burdenCapped, 0);
+  flag('2028년까지는 적용 가능', T.propertyTax({ gongsi: 10 * E, isOneHouse: true, prevMain: prev, year: 2028 }).burdenCapAvailable, 1);
+}
+
+head('■ 종부세 세부담상한 (종부법 §10) — 150% → 개편안 200%');
+{
+  var base = { houses: [{ gongsi: 40 * E, resided: false, adjusted: true }], share: 1,
+               isOne1H: true, age: 50, holdY: 5, liveY: 0, skipPropDeduct: true };
+  var prev = 5000000;
+  var c26 = T.comprehensiveTax(Object.assign({ year: 2026, prevYearTotal: prev }, base));
+  var c27 = T.comprehensiveTax(Object.assign({ year: 2027, prevYearTotal: prev }, base));
+  var free = T.comprehensiveTax(Object.assign({ year: 2027 }, base));
+  console.log('        상한 미적용 2027년 종부세 : ' + man(free.net));
+  chkVal('2026년 상한율', c26.capLimit, 1.5);
+  chkVal('2027년 상한율', c27.capLimit, 2.0);
+  flag('두 해 모두 상한이 실제로 작동', c26.capApplied && c27.capApplied, 1);
+  chk('상한 천장 = 전년 총세액 × 200% − 재산세', c27.net, prev * 2.0 - c27.propTaxRef, 0.00001);
+  flag('상한 200%가 150%보다 세액이 큼(완충 약화)', c27.net > c26.net, 1);
+  flag('전년 보유세 미입력 시 상한 미작동', free.capApplied, 0);
+}
+
+head('■ 개편안 반영 ON/OFF — 종부세 (비거주 1주택 공시 22억, 2027년)');
+{
+  var arg = { year: 2027, houses: [{ gongsi: 22 * E, resided: false }], share: 1,
+              isOne1H: true, age: 55, holdY: 8, liveY: 0, skipPropDeduct: true };
+  var on = T.comprehensiveTax(Object.assign({ reform: true }, arg));
+  var off = T.comprehensiveTax(Object.assign({ reform: false }, arg));
+  chkVal('OFF 규칙연도 = 2026(현행 고정)', off.ruleYear, 2026);
+  chkVal('ON  규칙연도 = 2027', on.ruleYear, 2027);
+  chk('OFF 기본공제 = 현행 12억', off.basicDeduction, 12 * E, 0.00001);
+  chk('ON  기본공제 = 개편 9억(비거주)', on.basicDeduction, 9 * E, 0.00001);
+  chkVal('OFF 공정시장가액비율 60%', off.fairRatio, 0.60);
+  chkVal('ON  공정시장가액비율 70%', on.fairRatio, 0.70);
+  chkVal('OFF 기간공제 = 보유 8년 20%', off.creditRate.period, 0.20);
+  // 2027년은 경과규정 : 보유공제(10/20/25%)와 거주공제(20/40/50%) 중 높은 쪽.
+  // 보유 8년 → 보유공제 10%가 적용된다. 자료 p.40 은 이 경과규정을 생략하고
+  // 세액공제 0원으로 표기했으나, 자료 p.16 의 경과규정 표에 따르면 10%가 정상.
+  chkVal('ON  기간공제 = 2027 경과규정상 보유 8년 10%', on.creditRate.period, 0.10);
+  chkVal('ON  2028년에는 거주공제만 → 0%', T.comprehensiveTax(Object.assign({}, arg,
+    { year: 2028, reform: true })).creditRate.period, 0);
+  chk('ON 산출세액 = 자료 p.40 의 763만원', on.gross, 7630000);
+  flag('OFF 세액 < ON 세액 (비거주 증세 효과가 분리됨)', off.net < on.net, 1);
+  console.log('        OFF ' + man(off.net) + '  →  ON ' + man(on.net));
+}
+
+head('■ 개편안 반영 ON/OFF — 양도세 (취득 8억 → 양도 25억, 보유 12년 · 거주 0년)');
+{
+  var arg = { salePrice: 25 * E, buyPrice: 8 * E, expenses: 0, share: 1,
+              houseCount: 1, holdY: 12, liveY: 0, exempt: true };
+  var on = T.capitalGainsTax(Object.assign({ year: 2029, reform: true }, arg));
+  var off = T.capitalGainsTax(Object.assign({ year: 2029, reform: false }, arg));
+  chkVal('OFF 규칙연도 = 2025(현행 고정)', off.ruleYear, 2025);
+  chkVal('ON  2029 공제율 0% (거주 0년 → 보유공제 폐지)', on.ltRate, 0);
+  chkVal('OFF 2029 공제율 24% (현행 보유 연 2% × 12년)', off.ltRate, 0.24);
+  chk('OFF 세액 = 현행 기준 2억 6,970만원', off.total, 269700000);
+  chk('ON  세액 = 자료 3억 6,772만원', on.total, 367720000);
+  console.log('        OFF ' + man(off.total) + '  →  ON ' + man(on.total));
+
+  var hArg = { year: 2027, salePrice: 5 * E + 2500000 + 1, buyPrice: 0, expenses: 0, share: 1,
+               houseCount: 3, holdY: 5, liveY: 0, exempt: false, heavyTaxed: true };
+  chkVal('중과 ON 2027 = +10%p 한시완화', T.capitalGainsTax(Object.assign({ reform: true }, hArg)).surcharge, 0.10);
+  chkVal('중과 OFF = 현행 +30%p', T.capitalGainsTax(Object.assign({ reform: false }, hArg)).surcharge, 0.30);
+  chk('중과 OFF 세액 = 자료 3억 5,647만원', T.capitalGainsTax(Object.assign({ reform: false }, hArg)).total, 356470000);
+
+  var bArg = { year: 2027, salePrice: 28 * E, buyPrice: 6 * E, expenses: 0, share: 1,
+               houseCount: 1, holdY: 15, liveY: 15, exempt: true };
+  chk('기본공제 ON = 2,500만원 특례', T.capitalGainsTax(Object.assign({ reform: true }, bArg)).basicDed, 25000000, 0.00001);
+  chk('기본공제 OFF = 250만원', T.capitalGainsTax(Object.assign({ reform: false }, bArg)).basicDed, 2500000, 0.00001);
+  flag('고령 지방이주 감면은 개편안 항목 → OFF 시 미적용',
+    T.capitalGainsTax(Object.assign({ reform: false, seniorRelief: true }, bArg)).relief === 0, 1);
+}
+
+head('■ 지역자원시설세(소방분) 누진 구간표');
+{
+  chkVal('과표 600만원 = 600만 × 0.04%', T.fireFacilityTax(6000000), 2400, '원');
+  chkVal('과표 1,300만원 = 2,400 + 700만 × 0.05%', T.fireFacilityTax(13000000), 5900, '원');
+  chkVal('과표 2,600만원 = 5,900 + 1,300만 × 0.06%', T.fireFacilityTax(26000000), 13700, '원');
+  chkVal('과표 3,900만원 = 13,700 + 1,300만 × 0.08%', T.fireFacilityTax(39000000), 24100, '원');
+  chkVal('과표 6,400만원 = 24,100 + 2,500만 × 0.10%', T.fireFacilityTax(64000000), 49100, '원');
+  chkVal('과표 1억원 = 49,100 + 3,600만 × 0.12%', T.fireFacilityTax(100000000), 92300, '원');
+}
+
+head('■ 회귀 확인 — 상한 입력이 없으면 종전 결과와 완전히 동일');
+{
+  var r = T.propertyTax({ gongsi: 10.83 * E, isOneHouse: true, share: 0.5, urban: true });
+  chk('자료 p.46 재산세 합계 2,265,570원 유지', r.total, 2265570, 0.00001);
+  flag('과표상한 미작동', r.baseCapped, 0);
+  flag('세부담상한 미작동', r.burdenCapped, 0);
+  var c = T.comprehensiveTax({ year: 2027, houses: [{ gongsi: 30 * E, resided: true }], share: 1,
+    isOne1H: true, age: 65, holdY: 12, liveY: 12, skipPropDeduct: true });
+  chk('자료 p.41 종부세 산출세액 1,036만원 유지', c.gross, 10360000);
+  flag('세부담상한 미작동', c.capApplied, 0);
+  flag('기본값은 개편안 반영(reform 기본 true)', c.reform, 1);
+}
+
+console.log('\n══════════════  최종 : 통과 ' + pass + '  /  실패 ' + fail + '  ══════════════\n');
 process.exit(fail ? 1 : 0);
