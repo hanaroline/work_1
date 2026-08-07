@@ -63,7 +63,7 @@
     return { '&': '&amp;', '<': '&lt;', '>': '&gt;' }[c]; }); }
 
   /* ---------- 상태 읽기 ---------- */
-  var seg = { year: 2026, houses: 1, title: 'sole' };
+  var seg = { year: 2026, houses: 1, title: 'sole', reform: 'on' };
 
   function num(id) { var v = parseFloat(document.getElementById(id).value); return isNaN(v) ? 0 : v; }
   function chk(id) { return document.getElementById(id).checked; }
@@ -107,7 +107,14 @@
       seniorRelief: chk('seniorRelief'),
       urban: chk('urban'),
       usePropDeduct: chk('propDeduct'),
-      prevTotal: num('prevTotal') * 10000
+      reform: seg.reform !== 'off',
+      prevTotal: num('prevTotal') * 10000,
+      prevGongsi: num('prevGongsi') * EOK,
+      capBaseRate: Math.min(0.05, Math.max(0, num('capBaseRate') / 100)),
+      prevPropMain: num('prevPropMain') * 10000,
+      fireTax: num('fireTax') * 10000,
+      noBaseCap: chk('noBaseCap'),
+      noBurdenCap: chk('noBurdenCap')
     };
   }
 
@@ -125,14 +132,29 @@
   function calcProp(s) {
     var rows = [], totalWhole = 0, totalMine = 0;
     s.houses.forEach(function (h, i) {
+      // 상한 판정용 직전연도 값은 주택 1(대상 물건)에만 적용한다.
+      // 2·3주택의 직전연도 공시가격·재산세는 별도 입력받지 않으므로 상한 미적용.
+      var isTarget = i === 0;
       var r = TE.propertyTax({
-        gongsi: h.gongsi, isOneHouse: s.houseCount === 1, share: s.share, urban: s.urban
+        gongsi: h.gongsi, isOneHouse: s.houseCount === 1, share: s.share, urban: s.urban,
+        year: s.year,
+        prevGongsi: isTarget ? s.prevGongsi : 0,
+        capRate: s.capBaseRate,
+        prevMain: isTarget ? s.prevPropMain : 0,
+        noBaseCap: s.noBaseCap,
+        noBurdenCap: s.noBurdenCap
       });
-      r.idx = i + 1; r.gongsi = h.gongsi;
+      r.idx = i + 1; r.gongsi = h.gongsi; r.capEligible = isTarget;
       rows.push(r);
       totalWhole += r.total; totalMine += r.myShare;
     });
-    return { rows: rows, totalWhole: totalWhole, totalMine: totalMine };
+    return {
+      rows: rows,
+      totalWhole: totalWhole,
+      totalMine: totalMine,
+      fireTax: s.fireTax,
+      fireTaxMine: Math.round(s.fireTax * s.share)
+    };
   }
 
   // 종부세 : 명의 구조에 따라 인별 / 세대 합계 산출
@@ -142,7 +164,9 @@
     var year = opt.year || s.year;
     var base = {
       year: year, houses: s.houses, age: s.age, holdY: s.holdY, liveY: s.liveY,
-      prevYearTotal: s.prevTotal, skipPropDeduct: !s.usePropDeduct
+      prevYearTotal: s.prevTotal, skipPropDeduct: !s.usePropDeduct,
+      noBurdenCap: s.noBurdenCap,
+      reform: opt.reform != null ? opt.reform : s.reform
     };
 
     if (!s.joint) {
@@ -171,7 +195,8 @@
       year: year, salePrice: s.salePrice, buyPrice: s.buyPrice, expenses: s.expenses,
       houseCount: s.houseCount, holdY: s.holdY, liveY: s.liveY,
       exempt: s.exempt, heavyTaxed: s.heavyTaxed,
-      seniorRelief: s.seniorRelief, nonResident: s.nonResident
+      seniorRelief: s.seniorRelief, nonResident: s.nonResident,
+      reform: opt.reform != null ? opt.reform : s.reform
     };
     var shareA = opt.share != null ? opt.share : s.share;
     var a = TE.capitalGainsTax(Object.assign({}, base, { share: shareA }));
@@ -420,9 +445,10 @@
       '<div class="note">' + L('공시가격을 입력하면 계산됩니다.', 'Enter an assessed value to calculate.') + '</div>');
 
     var h = '<div class="stat-grid">' +
-      stat(L('재산세 합계 (세대)', 'Property tax (household)'), big(p.totalWhole),
-           L('본세 + 도시지역분 + 지방교육세', 'Base + urban portion + education tax'), 'orange') +
-      stat(L('본인 부담', 'My share'), big(p.totalMine),
+      stat(L('재산세 합계 (세대)', 'Property tax (household)'), big(p.totalWhole + p.fireTax),
+           p.fireTax > 0 ? L('본세 + 도시지역분 + 지방교육세 + 지역자원시설세', 'Base + urban + education + facility tax')
+                         : L('본세 + 도시지역분 + 지방교육세', 'Base + urban portion + education tax'), 'orange') +
+      stat(L('본인 부담', 'My share'), big(p.totalMine + p.fireTaxMine),
            s.joint ? L('지분 ', 'share ') + Math.round(s.share * 100) + '%' : L('단독명의', 'sole title'), 'blue') +
       stat(L('공정시장가액비율', 'Fair market ratio'), pct(p.rows[0].fairRatio, 0),
            s.houseCount === 1 ? L('1세대 1주택 특례 43~45%', 'Single-house election 43–45%')
@@ -433,15 +459,37 @@
     p.rows.forEach(function (r) {
       rows.push({ c: ['<strong>' + L('주택 ', 'House ') + r.idx + '</strong> · ' + L('공시가격', 'assessed') +
         ' ' + big(r.gongsi), '', ''] });
-      rows.push({ cls: 'sub', c: [L('과세표준 = 공시가격 × ', 'Tax base = assessed × ') + pct(r.fairRatio, 0), '', won(r.taxBase)] });
-      rows.push({ cls: 'sub', c: [L('재산세 본세', 'Property tax') +
-        (r.special ? ' <span class="pill">' + L('1주택 특례세율', 'single-house reduced rate') + '</span>' : ''), '', won(r.main)] });
+      // ① 과세표준상한제
+      if (r.baseCapped) {
+        rows.push({ cls: 'sub', c: [L('공시가격 × ', 'Assessed × ') + pct(r.fairRatio, 0) +
+          L(' (상한 적용 전)', ' (before cap)'), '', '<span class="strike">' + won(r.rawTaxBase) + '</span>'] });
+        rows.push({ cls: 'sub', c: [L('과세표준상한액 = 직전연도 과세표준 상당액 × ', 'Base cap = prior-year equivalent × ') +
+          pct(1 + r.capRate, 0) + ' <span class="pill warn">' + L('상한 적용', 'cap applied') + '</span>', '', won(r.baseCapAmt)] });
+        rows.push({ cls: 'sub', c: ['<strong>' + L('과세표준 (둘 중 작은 값)', 'Tax base (lower of the two)') + '</strong>', '', '<strong>' + won(r.taxBase) + '</strong>'] });
+      } else {
+        rows.push({ cls: 'sub', c: [L('과세표준 = 공시가격 × ', 'Tax base = assessed × ') + pct(r.fairRatio, 0), '', won(r.taxBase)] });
+      }
+      // ② 세부담상한제
+      if (r.burdenCapped) {
+        rows.push({ cls: 'sub', c: [L('재산세 본세 (상한 적용 전)', 'Property tax (before cap)') +
+          (r.special ? ' <span class="pill">' + L('1주택 특례세율', 'single-house reduced rate') + '</span>' : ''),
+          '', '<span class="strike">' + won(r.mainBeforeCap) + '</span>'] });
+        rows.push({ cls: 'sub', c: [L('세부담상한 = 직전연도 본세 × ', 'Burden cap = prior-year tax × ') +
+          pct(r.burdenCapRate, 0) + ' <span class="pill warn">' + L('상한 적용', 'cap applied') + '</span>',
+          '', '<strong>' + won(r.main) + '</strong>'] });
+      } else {
+        rows.push({ cls: 'sub', c: [L('재산세 본세', 'Property tax') +
+          (r.special ? ' <span class="pill">' + L('1주택 특례세율', 'single-house reduced rate') + '</span>' : ''), '', won(r.main)] });
+      }
       if (r.urban > 0) rows.push({ cls: 'sub', c: [L('도시지역분 (과세표준 × 0.14%)', 'Urban portion (base × 0.14%)'), '', won(r.urban)] });
       rows.push({ cls: 'sub', c: [L('지방교육세 (본세 × 20%)', 'Local education tax (20% of base)'), '', won(r.edu)] });
       rows.push({ c: [L('주택 ', 'House ') + r.idx + L(' 합계', ' total'), '', '<strong>' + won(r.total) + '</strong>'] });
     });
-    rows.push({ cls: 'total', c: [L('세대 합계', 'Household total'), '', won(p.totalWhole)] });
-    if (s.joint) rows.push({ cls: 'total', c: [L('본인 부담 (지분 ', 'My share (') + Math.round(s.share * 100) + '%)', '', won(p.totalMine)] });
+    if (p.fireTax > 0) {
+      rows.push({ c: [L('지역자원시설세 (소방분, 입력값)', 'Regional resource facility tax (as entered)'), '', won(p.fireTax)] });
+    }
+    rows.push({ cls: 'total', c: [L('세대 합계', 'Household total'), '', won(p.totalWhole + p.fireTax)] });
+    if (s.joint) rows.push({ cls: 'total', c: [L('본인 부담 (지분 ', 'My share (') + Math.round(s.share * 100) + '%)', '', won(p.totalMine + p.fireTaxMine)] });
 
     var h2 = sect(L('재산세 산출 내역', 'Property tax breakdown'),
       L('지방세법 기준 · 이번 세제개편안에 포함되지 않은 세목입니다. 공시가격이 오르지 않으면 세액도 변하지 않습니다.',
@@ -750,6 +798,46 @@
         { c: [L('1세대 3주택 이상', 'Three or more'), '+30%p', '+10%p', '+15%p', '+30%p'] }
       ]));
 
+    // ── 상한 장치 3종 비교 ──────────────────────────────────────
+    h += sect(L('상한 장치 3종 — 무엇을 제한하는가', 'Three cap mechanisms — what each limits'),
+      L('세 상한은 제한 대상이 서로 다르므로 중복 적용됩니다. 재산세는 ①과 ②를 차례로 거치고, 종부세는 ③이 마지막에 걸립니다.',
+        'The three caps limit different things and stack. Property tax passes through ① then ②; CRET is capped last by ③.'),
+      tbl([L('구분', 'Cap'), L('제한 대상', 'What it limits'), L('상한 수준', 'Level'),
+           L('근거 · 시행', 'Basis / status')], [
+        { c: [L('① 과세표준상한제', '① Tax base cap'),
+              L('재산세 <strong>과세표준</strong>', 'Property tax <strong>base</strong>'),
+              L('직전연도 과세표준 상당액 × (1 + 5%)', 'Prior-year equivalent base × (1 + 5%)'),
+              L('지방세법 §110의2 · 2024년 시행', 'Local Tax Act §110-2 · since 2024')] },
+        { c: [L('② 재산세 세부담상한', '② Property tax burden cap'),
+              L('재산세 <strong>세액</strong>', 'Property tax <strong>amount</strong>'),
+              L('공시가 3억↓ 105% / 3~6억 110% / 6억↑ 130%', '≤300m 105% / ≤600m 110% / >600m 130%'),
+              L('지방세법 §122 · 2028년까지 병행, 2029년 폐지 예정', 'Local Tax Act §122 · runs to 2028, ends 2029')] },
+        { c: [L('③ 종부세 세부담상한', '③ CRET burden cap'),
+              L('보유세 <strong>총액</strong>(재산세 + 종부세)', '<strong>Total</strong> holding tax'),
+              L('현행 150% → <strong>개편안 200%</strong>', 'Now 150% → <strong>reform 200%</strong>'),
+              L('종부세법 §10 · 2027년 상향', 'CRET Act §10 · raised in 2027')] }
+      ], { prose: true }));
+
+    h += '<div class="note warn"><strong>' + L('개편의 방향에 주의', 'Note on direction') + '</strong> ' +
+      L('①②는 납세자를 보호하는 장치이고, ③은 이번 개편으로 <strong>느슨해집니다</strong>. 150%에서 200%로 올라가면 공시가격·공정비율·세율이 동시에 오르는 2027~2028년에 상한이 방파제 역할을 하지 못하고 그대로 부과될 수 있습니다.',
+        'Caps ① and ② protect the taxpayer, but ③ is <strong>loosened</strong> by this reform. Raising it from 150% to 200% means it may no longer act as a buffer in 2027–2028, when assessed values, fair-market ratios and rates all rise together.') +
+      '</div>';
+
+    // ── 지역자원시설세 세율표 ───────────────────────────────────
+    var fireRows = [
+      ['600만원 이하', '≤ 6m', '0.04%', '—'],
+      ['600만 ~ 1,300만원', '6m – 13m', '0.05%', '2,400원'],
+      ['1,300만 ~ 2,600만원', '13m – 26m', '0.06%', '5,900원'],
+      ['2,600만 ~ 3,900만원', '26m – 39m', '0.08%', '13,700원'],
+      ['3,900만 ~ 6,400만원', '39m – 64m', '0.10%', '24,100원'],
+      ['6,400만원 초과', '> 64m', '0.12%', '49,100원']
+    ].map(function (r) { return { c: [L(r[0], r[1]), r[2], r[3]] }; });
+
+    h += sect(L('지역자원시설세 (소방분) 세율표', 'Regional resource facility tax (fire) rates'),
+      L('재산세 고지서에 병기되어 함께 징수됩니다. 과세표준은 건축물(주택 건물분) 시가표준액 기준이며, 공시가격만으로는 건물분을 분리할 수 없어 이 계산기는 자동 산출하지 않습니다.',
+        'Billed and collected alongside property tax. Its base is the building-only standard value, which cannot be derived from the assessed value alone, so this calculator does not compute it automatically.'),
+      tbl([L('과세표준', 'Tax base'), L('세율', 'Rate'), L('누진 기초금액', 'Base amount')], fireRows));
+
     h += sect(L('이번 개편에서 빠진 세목', 'Taxes outside this reform'),
       L('고객은 “부동산 세금이 다 오른다”고 이해하기 쉽지만, 실제로는 국세만 바뀌고 지방세는 그대로입니다.',
         'Clients often assume everything rises — in fact only national taxes change; local taxes are untouched.'),
@@ -800,6 +888,26 @@
       2029: L('보유공제 완전 폐지 — 거주하지 않은 주택은 장특공제 0%.', 'Holding-period deduction abolished — non-resident houses get 0%.')
     };
     document.getElementById('yearHint').textContent = hints[s.year];
+
+    // 개편안 적용 힌트
+    document.getElementById('reformHint').textContent = s.reform
+      ? L('선택한 연도의 개편안 규정을 적용합니다. 취득세·재산세는 개편 대상이 아니므로 어느 쪽을 골라도 동일합니다.',
+          'Applies the reform rules for the selected year. Acquisition and property tax are outside the reform, so both settings give the same result.')
+      : L('연도와 무관하게 현행 법령으로 계산합니다. 같은 연도·같은 공시가격에서 「개편안 반영」과 비교하면 개편 효과만 분리해 볼 수 있습니다.',
+          'Calculates under current law regardless of year. Compare with "Reform applied" at the same year and value to isolate the reform effect.');
+
+    // 세부담상한 폐지 연도 안내
+    document.getElementById('prevPropHint').textContent = s.year >= 2029
+      ? L('2029년은 주택분 재산세 세부담상한이 폐지될 예정이므로 이 값은 반영되지 않습니다.',
+          'The housing property-tax burden cap is scheduled to end in 2029, so this value is not applied.')
+      : L('주택 전체 기준 본세(도시지역분·지방교육세 제외). 공시가격 구간별 105/110/130%로 제한하며 2029년 폐지 예정입니다.',
+          'Whole-house main tax only. Capped at 105/110/130% by value band; scheduled to end in 2029.');
+
+    document.getElementById('prevTotalHint').textContent =
+      L('인별 기준 「재산세 + 종부세」 합계. 당해연도 보유세 총액을 이 금액의 ' +
+        (s.reform && s.year >= 2027 ? '200%' : '150%') + '로 제한합니다.',
+        'Per-person property tax + CRET. Caps this year\'s total holding tax at ' +
+        (s.reform && s.year >= 2027 ? '200%' : '150%') + ' of it.');
   }
 
   /* ---------- 조건부 입력 표시 ---------- */
@@ -833,6 +941,7 @@
     bindSeg('segYear', 'year', function (v) { return parseInt(v, 10); });
     bindSeg('segHouses', 'houses', function (v) { return parseInt(v, 10); });
     bindSeg('segTitle', 'title', null);
+    bindSeg('segReform', 'reform', null);
 
     document.getElementById('inputs').addEventListener('input', renderAll);
     document.getElementById('inputs').addEventListener('change', renderAll);
@@ -855,8 +964,8 @@
     document.getElementById('btnPrint').addEventListener('click', function () { window.print(); });
     document.getElementById('btnReset').addEventListener('click', function () {
       document.getElementById('inputs').reset();
-      seg = { year: 2026, houses: 1, title: 'sole' };
-      ['segYear', 'segHouses', 'segTitle'].forEach(function (id) {
+      seg = { year: 2026, houses: 1, title: 'sole', reform: 'on' };
+      ['segYear', 'segHouses', 'segTitle', 'segReform'].forEach(function (id) {
         var el = document.getElementById(id);
         el.querySelectorAll('button').forEach(function (b, i) { b.setAttribute('aria-pressed', i === 0 ? 'true' : 'false'); });
       });

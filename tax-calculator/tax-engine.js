@@ -151,22 +151,68 @@
     return 570000 + (base - 300000000) * 0.004;
   }
 
+  // 주택 재산세 세부담상한율 (지방세법 §122) — 공시가격 구간별
+  // 주택분은 과세표준상한제 도입에 따라 2028년까지 병행 적용 후 2029년 폐지 예정
+  function propBurdenCapRate(gongsi) {
+    if (gongsi <= 3 * EOK) return 1.05;
+    if (gongsi <= 6 * EOK) return 1.10;
+    return 1.30;
+  }
+
   /**
    * 재산세 계산 (주택 1채 기준, 주택 전체로 산출 후 지분 안분)
-   * @param {number} gongsi   공시가격(주택 전체)
-   * @param {boolean} isOneHouse 1세대 1주택 여부
-   * @param {number} share    본인 지분율
-   * @param {boolean} urban   도시지역분 과세 여부
+   *
+   * 상한 장치 2종을 모두 반영합니다.
+   *  ① 과세표준상한제 (지방세법 §110의2, 2024년 시행)
+   *     과세표준상한액 = 직전연도 과세표준 상당액 × (1 + 과표상한율 5%)
+   *     - 직전연도 과세표준 상당액 = 직전연도 공시가격 × 당해연도 공정시장가액비율
+   *     - 과세표준 = min(공시가격 × 공정시장가액비율, 과세표준상한액)
+   *  ② 세부담상한제 (지방세법 §122) — 전년 재산세액 대비 105/110/130%
+   *     과표상한제와 2028년까지 병행 적용, 2029년 폐지 예정
+   *
+   * @param {number}  gongsi      공시가격(주택 전체)
+   * @param {boolean} isOneHouse  1세대 1주택 여부
+   * @param {number}  share       본인 지분율
+   * @param {boolean} urban       도시지역분 과세 여부
+   * @param {number}  prevGongsi  직전연도 공시가격 (0/미입력 시 과표상한제 미적용)
+   * @param {number}  capRate     과표상한율 (기본 0.05)
+   * @param {number}  prevMain    직전연도 재산세 본세(주택 전체) (0/미입력 시 세부담상한 미적용)
+   * @param {number}  year        기준연도 (세부담상한 폐지 시점 판정)
+   * @param {boolean} noBaseCap   과세표준상한제 미적용
+   * @param {boolean} noBurdenCap 세부담상한제 미적용
    */
   function propertyTax(o) {
     var gongsi = o.gongsi || 0;
     if (gongsi <= 0) return null;
 
     var fair = propFairRatio(gongsi, o.isOneHouse);
-    var base = gongsi * fair;
+    var rawBase = gongsi * fair;
+
+    // ── ① 과세표준상한제 ────────────────────────────────────────
+    var capRate = o.capRate == null ? 0.05 : o.capRate;
+    var baseCapAmt = null, baseCapped = false;
+    var base = rawBase;
+    if (!o.noBaseCap && o.prevGongsi > 0) {
+      // 직전연도 공시가격 × 당해연도 공정시장가액비율 × (1 + 과표상한율)
+      baseCapAmt = o.prevGongsi * fair * (1 + capRate);
+      if (baseCapAmt < rawBase) { base = baseCapAmt; baseCapped = true; }
+    }
+
     // 1세대 1주택 + 공시가격 9억원 이하 → 세율 0.05%p 인하 특례
     var special = !!o.isOneHouse && gongsi <= 9 * EOK;
-    var main = propMain(base, special);
+    var mainRaw = propMain(base, special);
+
+    // ── ② 세부담상한제 (2028년까지) ─────────────────────────────
+    var year = o.year || 2026;
+    var burdenCapRate = propBurdenCapRate(gongsi);
+    var burdenCapAmt = null, burdenCapped = false;
+    var main = mainRaw;
+    var burdenCapAvailable = year <= 2028 && !o.noBurdenCap;
+    if (burdenCapAvailable && o.prevMain > 0) {
+      burdenCapAmt = o.prevMain * burdenCapRate;
+      if (burdenCapAmt < mainRaw) { main = burdenCapAmt; burdenCapped = true; }
+    }
+
     var urban = o.urban === false ? 0 : base * 0.0014;
     var edu = main * 0.2;
     var total = main + urban + edu;
@@ -174,8 +220,17 @@
 
     return {
       fairRatio: fair,
+      rawTaxBase: round(rawBase),
       taxBase: round(base),
+      baseCapAmt: baseCapAmt == null ? null : round(baseCapAmt),
+      baseCapped: baseCapped,
+      capRate: capRate,
       special: special,
+      mainBeforeCap: round(mainRaw),
+      burdenCapRate: burdenCapRate,
+      burdenCapAmt: burdenCapAmt == null ? null : round(burdenCapAmt),
+      burdenCapped: burdenCapped,
+      burdenCapAvailable: burdenCapAvailable,
       main: round(main),
       urban: round(urban),
       edu: round(edu),
@@ -183,6 +238,28 @@
       myShare: round(total * share),
       mainRaw: main
     };
+  }
+
+  /* ---------- 지역자원시설세 (소방분) — 재산세 고지서 병기 ---------- */
+  // 과세표준 = 건축물(주택 건물분) 시가표준액 상당액
+  var FIRE_BRACKETS = [
+    [6000000, 0.0004, 0],
+    [13000000, 0.0005, 2400],
+    [26000000, 0.0006, 5900],
+    [39000000, 0.0008, 13700],
+    [64000000, 0.0010, 24100],
+    [Infinity, 0.0012, 49100]
+  ];
+
+  function fireFacilityTax(base) {
+    if (!base || base <= 0) return 0;
+    var prev = 0;
+    for (var i = 0; i < FIRE_BRACKETS.length; i++) {
+      var cap = FIRE_BRACKETS[i][0], rate = FIRE_BRACKETS[i][1], flat = FIRE_BRACKETS[i][2];
+      if (base <= cap) return round(flat + (base - prev) * rate);
+      prev = cap;
+    }
+    return 0;
   }
 
   /* ==========================================================================
@@ -281,9 +358,15 @@
    * @param {boolean} isOne1H    1세대 1주택자 여부 (단독명의 1주택 또는 공동명의 1주택자 특례)
    * @param {boolean} wholeUnit  판정단위가 주택 전체인지(특례) 여부
    * @param {number} age, holdY, liveY
+   * @param {boolean} reform     2026.8.3. 개편안 반영 여부.
+   *                             false면 연도와 무관하게 현행 법령(2026년 기준)으로 계산 →
+   *                             동일 연도·동일 공시가격에서 개편 효과만 분리 비교 가능
    */
   function comprehensiveTax(o) {
     var year = o.year;
+    // 개편안 미반영 시 규칙연도를 2026년(현행)으로 고정
+    var reform = o.reform !== false;
+    var ry = reform ? year : 2026;
     var houses = (o.houses || []).filter(function (h) { return h.gongsi > 0; });
     if (!houses.length) return null;
 
@@ -303,16 +386,16 @@
 
     // ── 과세대상 문턱 (2027년 신설) ──────────────────────────────
     var threshold = null, blockedByThreshold = false;
-    if (year >= 2027) {
+    if (ry >= 2027) {
       threshold = o.isOne1H ? 14 * EOK : 9 * EOK;
       if (owned <= threshold) blockedByThreshold = true;
     }
 
-    var basic = ntBasicDeduction(year, o.isOne1H, resides, resided, owned);
-    var fair = ntFairRatio(year, o.isOne1H, houseCount, adjustedAny);
+    var basic = ntBasicDeduction(ry, o.isOne1H, resides, resided, owned);
+    var fair = ntFairRatio(ry, o.isOne1H, houseCount, adjustedAny);
     var taxBase = blockedByThreshold ? 0 : Math.max(0, owned - basic) * fair;
 
-    var brk = ntBrackets(year, houseCount);
+    var brk = ntBrackets(ry, houseCount);
     var gross = applyBrackets(taxBase, brk.b);
 
     // ── 재산세 중복분 공제 (종부령 §4의2) ────────────────────────
@@ -338,23 +421,25 @@
     var credit = { age: 0, period: 0, total: 0 };
     var creditAmt = 0, creditCapped = false;
     if (o.isOne1H) {
-      credit = ntCreditRate(year, o.age || 0, o.holdY || 0, o.liveY || 0);
+      credit = ntCreditRate(ry, o.age || 0, o.holdY || 0, o.liveY || 0);
       var raw = afterProp * credit.total;
-      var cap = ntCreditCap(year);
+      var cap = ntCreditCap(ry);
       creditAmt = Math.min(raw, cap);
       creditCapped = raw > cap;
     }
 
     var netBeforeCap = Math.max(0, afterProp - creditAmt);
 
-    // ── 세부담상한 (150% → 200%) ─────────────────────────────────
-    var capLimit = year >= 2027 ? 2.0 : 1.5;
-    var capApplied = false, net = netBeforeCap;
-    if (o.prevYearTotal > 0) {
-      var ceiling = o.prevYearTotal * capLimit;
+    // ── 세부담상한 (종부법 §10 : 150% → 개편안 200%) ─────────────
+    // 직전연도 「총세액상당액」(재산세 + 종부세) 대비 당해연도 보유세 총액을 제한.
+    // 종부세만 조정하며, 재산세는 이미 확정된 금액이므로 상한선에서 차감한다.
+    var capLimit = ry >= 2027 ? 2.0 : 1.5;
+    var capApplied = false, net = netBeforeCap, capCeiling = null;
+    if (o.prevYearTotal > 0 && !o.noBurdenCap) {
+      capCeiling = o.prevYearTotal * capLimit;
       var thisYearTotal = netBeforeCap + propMainTotal;
-      if (thisYearTotal > ceiling) {
-        net = Math.max(0, ceiling - propMainTotal);
+      if (thisYearTotal > capCeiling) {
+        net = Math.max(0, capCeiling - propMainTotal);
         capApplied = true;
       }
     }
@@ -379,10 +464,15 @@
       afterProp: round(afterProp),
       creditRate: credit,
       creditAmt: round(creditAmt),
-      creditCap: ntCreditCap(year),
+      creditCap: ntCreditCap(ry),
       creditCapped: creditCapped,
       capLimit: capLimit,
       capApplied: capApplied,
+      capCeiling: capCeiling == null ? null : round(capCeiling),
+      netBeforeCap: round(netBeforeCap),
+      propTaxRef: round(propMainTotal),
+      reform: reform,
+      ruleYear: ry,
       net: round(net),
       farm: round(farm),
       total: round(net + farm)
@@ -485,6 +575,12 @@
     var share = o.share == null ? 1 : o.share;
     var gainWhole = sale - buy - exp;
 
+    // 개편안 미반영 시 규칙연도를 2025년(현행)으로 고정 :
+    //  장특공제 보유4%+거주4%(최대80%) · 공제한도 없음 · 기본공제 250만원 ·
+    //  다주택 중과 +20/+30%p 원칙세율
+    var reform = o.reform !== false;
+    var ry = reform ? o.year : 2025;
+
     // 1세대 1주택 비과세 : 양도가액 12억원 초과분만 과세
     var taxableRatio = 1;
     if (o.exempt && o.houseCount === 1) {
@@ -494,14 +590,14 @@
     var taxableGain = taxableGainWhole * share;
 
     // 장기보유특별공제 / 장기거주 소득공제
-    var lt = ltDeductionRate(year0(o.year), {
+    var lt = ltDeductionRate(ry, {
       houseCount: o.houseCount, holdY: o.holdY || 0, liveY: o.liveY || 0,
       heavyTaxed: !!o.heavyTaxed
     });
     var ltRaw = taxableGain * lt.rate;
 
     // 공제한도 : 인별 한도 / 물건별 한도(지분 안분) 중 작은 값
-    var capBase = ltDeductionCap(o.year);
+    var capBase = ltDeductionCap(ry);
     var capPerson = capBase;
     var capItem = capBase === Infinity ? Infinity : capBase * share;
     var ltCap = Math.min(capPerson, capItem);
@@ -512,7 +608,7 @@
 
     // 기본공제 : 연 250만원 → 장기거주 1주택 특례 2,500만원 (2027년 이후)
     var basicDed = 2500000, basicSpecial = false;
-    if (o.year >= 2027 && o.houseCount === 1 && (o.liveY || 0) >= 10 &&
+    if (ry >= 2027 && o.houseCount === 1 && (o.liveY || 0) >= 10 &&
         sale <= 30 * EOK && !o.nonResident) {
       basicDed = 25000000;
       basicSpecial = true;
@@ -521,7 +617,7 @@
 
     // 세율
     var row = cgRateRow(taxBase);
-    var sur = o.heavyTaxed ? heavySurcharge(o.year, o.houseCount) : 0;
+    var sur = o.heavyTaxed ? heavySurcharge(ry, o.houseCount) : 0;
     var calcNormal = taxBase * (row[1] + sur) - row[2];
 
     // 단기양도 세율 (주택 : 1년 미만 70%, 1~2년 60%) 과 비교하여 큰 세액
@@ -535,7 +631,7 @@
 
     // 고령 1주택자 지방 이주 감면 (조특법 §71의3)
     var relief = 0;
-    if (o.seniorRelief && (o.year === 2027 || o.year === 2028)) {
+    if (o.seniorRelief && reform && (o.year === 2027 || o.year === 2028)) {
       var rRate = o.year === 2027 ? 0.5 : 0.3;
       var rCap = (o.year === 2027 ? 5 * EOK : 3 * EOK) * share;
       relief = Math.min(calc * rRate, rCap);
@@ -546,6 +642,8 @@
 
     return {
       year: o.year,
+      reform: reform,
+      ruleYear: ry,
       gainWhole: round(gainWhole),
       taxableRatio: taxableRatio,
       taxableGain: round(taxableGain),
@@ -574,8 +672,6 @@
     };
   }
 
-  function year0(y) { return y; }
-
   /* ==========================================================================
    * export
    * ========================================================================*/
@@ -583,6 +679,9 @@
     EOK: EOK,
     acquisitionTax: acquisitionTax,
     propertyTax: propertyTax,
+    propBurdenCapRate: propBurdenCapRate,
+    fireFacilityTax: fireFacilityTax,
+    FIRE_BRACKETS: FIRE_BRACKETS,
     comprehensiveTax: comprehensiveTax,
     capitalGainsTax: capitalGainsTax,
     ltDeductionRate: ltDeductionRate,
