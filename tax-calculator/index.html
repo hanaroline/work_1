@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>부동산 세금 계산기 · 2026년 세제개편안</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --orange:#F58220; --orange-active:#CB6015; --orange-soft:#FAB072;
+  --blue:#043B72; --gray-hl:#D7D7D7;
+  --canvas:#FFFFFF; --soft:#ECEFF4; --subtle:#F7F8FA;
+  --hair:#CDCECB; --hair-soft:#E5E4E1;
+  --ink:#1A1A1A; --body:#3D3D3D; --muted:#6C6C6C; --muted-soft:#84888B;
+  --success:#2E8540; --warning:#D4A017; --error:#C62828;
+  --font-kr:'Spoqa Han Sans Neo','Noto Sans KR',sans-serif;
+  --font-en:'Inter','Aptos','Segoe UI',system-ui,sans-serif;
+  --space-section:104px; --space-block:56px; --space-content:28px; --space-tight:14px;
+}
+@media (max-width:900px){ :root{ --space-section:72px; --space-block:36px; } }
+
+*{box-sizing:border-box;}
+html{-webkit-text-size-adjust:100%;}
+body{margin:0;background:var(--canvas);color:var(--body);
+  font-family:var(--font-kr);font-size:19px;line-height:1.65;
+  font-variant-numeric:tabular-nums;}
+html[lang="en"] body{font-family:var(--font-en);}
+h1,h2,h3,h4{color:var(--ink);margin:0;}
+table{border-collapse:collapse;width:100%;}
+
+.page{max-width:1360px;margin:0 auto;padding:0 32px;}
+@media (max-width:768px){ .page{padding:0 20px;} }
+
+/* ---------- lang toggle ---------- */
+.lang-toggle{display:inline-flex;border:1px solid var(--hair);border-radius:2px;
+  overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,.06);background:#fff;}
+.lang-toggle button{font-family:var(--font-en);font-size:14px;font-weight:500;
+  letter-spacing:.5px;padding:10px 17px;border:0;background:#fff;color:var(--muted);
+  cursor:pointer;line-height:1;}
+.lang-toggle button+button{border-left:1px solid var(--hair);}
+.lang-toggle button[aria-checked="true"]{background:var(--orange);color:#fff;}
+.lang-toggle button:not([aria-checked="true"]):hover{background:var(--subtle);color:var(--ink);}
+.lang-toggle button:focus-visible{outline:2px solid var(--orange);outline-offset:-2px;}
+
+/* ---------- hero ---------- */
+.hero{background:var(--orange);color:#fff;padding:38px 0 48px;}
+.hero .page{display:block;}
+.hero-top{display:flex;justify-content:space-between;align-items:flex-start;
+  gap:19px;margin-bottom:38px;flex-wrap:wrap;}
+.tag{font-size:14px;letter-spacing:.6px;font-weight:500;border:1px solid rgba(255,255,255,.55);
+  padding:5px 12px;border-radius:2px;}
+.hero h1{color:#fff;font-size:56px;font-weight:700;line-height:1.1;letter-spacing:-1px;}
+.hero p.sub{font-size:22px;margin:19px 0 0;max-width:900px;color:rgba(255,255,255,.94);}
+.hero p.src{font-size:14px;margin:19px 0 0;color:rgba(255,255,255,.85);letter-spacing:.2px;}
+@media (max-width:900px){ .hero h1{font-size:38px;} .hero p.sub{font-size:19px;} }
+
+/* ---------- layout ---------- */
+.shell{display:grid;grid-template-columns:minmax(0,400px) minmax(0,1fr);gap:48px;
+  padding-top:var(--space-block);padding-bottom:var(--space-section);align-items:start;}
+@media (max-width:1100px){ .shell{grid-template-columns:minmax(0,1fr);gap:38px;} }
+.shell > *{min-width:0;}
+
+.panel{border:1px solid var(--hair);border-radius:4px;background:#fff;min-width:0;}
+.panel-bd,.form-group{min-width:0;}
+.panel-hd{background:var(--subtle);border-bottom:1px solid var(--hair);
+  padding:14px 19px;font-size:16px;font-weight:700;color:var(--ink);letter-spacing:.2px;}
+.panel-bd{padding:19px;}
+
+.form-group{margin-bottom:var(--space-content);}
+.form-group:last-child{margin-bottom:0;}
+.group-rule{height:1px;background:var(--orange);margin-bottom:14px;}
+.group-title{font-size:16px;font-weight:700;color:var(--ink);margin-bottom:14px;letter-spacing:.2px;}
+
+label.fld{display:block;margin-bottom:14px;}
+label.fld > span.lbl{display:block;font-size:15px;color:var(--muted);
+  margin-bottom:5px;letter-spacing:.2px;}
+input[type=number],input[type=text],select{
+  width:100%;min-width:0;font-family:inherit;font-size:17px;color:var(--ink);
+  padding:9px 11px;border:1px solid var(--hair);border-radius:2px;background:#fff;
+  font-variant-numeric:tabular-nums;}
+input:focus,select:focus{outline:2px solid var(--orange);outline-offset:-1px;border-color:var(--orange);}
+.unit-row{display:flex;align-items:center;gap:8px;min-width:0;}
+.unit-row input{flex:1 1 0;min-width:0;}
+.unit-row .unit{font-size:15px;color:var(--muted);white-space:nowrap;flex:none;}
+
+.seg{display:flex;border:1px solid var(--hair);border-radius:2px;overflow:hidden;min-width:0;}
+.seg button{flex:1 1 0;min-width:0;font-family:inherit;font-size:16px;padding:9px 6px;border:0;
+  background:#fff;color:var(--muted);cursor:pointer;line-height:1.3;}
+.seg button+button{border-left:1px solid var(--hair);}
+.seg button[aria-pressed="true"]{background:var(--orange);color:#fff;font-weight:500;}
+.seg button:not([aria-pressed="true"]):hover{background:var(--subtle);color:var(--ink);}
+.seg button:focus-visible{outline:2px solid var(--orange);outline-offset:-2px;}
+
+label.chk{display:flex;align-items:flex-start;gap:9px;font-size:16px;
+  color:var(--body);margin-bottom:10px;cursor:pointer;line-height:1.45;}
+label.chk input{margin:4px 0 0;width:16px;height:16px;accent-color:var(--orange);flex:none;}
+.hint{font-size:14px;color:var(--muted-soft);line-height:1.45;margin-top:5px;}
+
+/* ---------- results ---------- */
+.tabs{display:flex;flex-wrap:wrap;gap:0;border-bottom:1px solid var(--hair);margin-bottom:var(--space-content);}
+.tabs button{font-family:inherit;font-size:17px;font-weight:500;padding:12px 19px;
+  border:0;border-bottom:3px solid transparent;background:none;color:var(--muted);cursor:pointer;}
+.tabs button[aria-selected="true"]{color:var(--ink);border-bottom-color:var(--orange);font-weight:700;}
+.tabs button:hover{color:var(--ink);}
+.tabs button:focus-visible{outline:2px solid var(--orange);outline-offset:-2px;}
+
+.section-rule{height:1px;background:var(--orange);margin-bottom:19px;}
+.section-title{font-size:26px;font-weight:700;color:var(--ink);letter-spacing:-.2px;}
+.section-lede{font-size:17px;color:var(--muted);margin:9px 0 0;}
+.block{margin-bottom:var(--space-block);}
+.block:last-child{margin-bottom:0;}
+
+.stat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(238px,1fr));gap:14px;margin:19px 0;}
+.stat{border:1px solid var(--hair);border-radius:4px;padding:19px;background:#fff;}
+.stat .k{font-size:15px;font-weight:500;color:var(--muted);letter-spacing:.5px;}
+.stat .v{font-size:34px;font-weight:700;line-height:1.15;color:var(--ink);
+  margin-top:6px;letter-spacing:-.5px;font-variant-numeric:tabular-nums;}
+.stat .v.orange{color:var(--orange-active);}
+.stat .v.blue{color:var(--blue);}
+.stat .d{font-size:14px;color:var(--muted);margin-top:6px;line-height:1.4;}
+/* 영문은 한국어보다 1.3~1.5배 길어지므로 수치 크기를 낮춰 줄바꿈을 방지 */
+html[lang="en"] .stat .v{font-size:29px;}
+.stat.zero .v{color:var(--success);}
+
+table.dt{border:1px solid var(--hair);font-size:16px;margin:0 0 14px;}
+table.dt th{background:var(--orange-soft);color:var(--ink);font-weight:700;
+  text-align:left;padding:10px 12px;border:1px solid var(--hair-soft);font-size:15px;}
+table.dt td{padding:10px 12px;border:1px solid var(--hair-soft);color:var(--body);vertical-align:top;}
+table.dt tbody tr:hover{background:var(--subtle);}
+table.dt td.num,table.dt th.num{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap;}
+table.dt tr.total td{background:var(--gray-hl);font-weight:700;color:var(--ink);}
+table.dt tr.total:hover td{background:var(--gray-hl);}
+table.dt tr.sub td{color:var(--muted);}
+/* 서술형 표 : 고정 레이아웃 + 자동 줄바꿈으로 가로 스크롤 없이 읽히게 한다 */
+table.dt.prose{table-layout:fixed;}
+table.dt.prose th,table.dt.prose td{white-space:normal;word-break:keep-all;}
+table.dt.prose th:first-child,table.dt.prose td:first-child{width:82px;}
+@media (max-width:700px){ table.dt.prose{table-layout:auto;} }
+table.dt td.pos{color:var(--error);} table.dt td.neg{color:var(--success);}
+.tbl-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch;}
+
+.note{background:var(--soft);border-radius:4px;padding:19px;font-size:16px;
+  color:var(--body);line-height:1.6;margin:19px 0;}
+.note strong{color:var(--ink);}
+.note.warn{background:#FDF6E7;border-left:3px solid var(--warning);border-radius:0 4px 4px 0;}
+.note.alert{background:#FBEDED;border-left:3px solid var(--error);border-radius:0 4px 4px 0;}
+.note ul{margin:9px 0 0;padding-left:20px;} .note li{margin-bottom:5px;}
+
+.callout{background:var(--orange);color:#fff;border-radius:4px;padding:38px;margin:19px 0;}
+.callout h3{color:#fff;font-size:22px;font-weight:700;margin-bottom:10px;}
+.callout p{margin:0;font-size:17px;color:rgba(255,255,255,.95);}
+
+.pill{display:inline-block;font-size:13px;font-weight:500;letter-spacing:.3px;
+  padding:3px 9px;border-radius:2px;background:var(--soft);color:var(--muted);
+  border:1px solid var(--hair-soft);white-space:nowrap;}
+.pill.on{background:var(--orange);color:#fff;border-color:var(--orange);}
+.pill.blue{background:var(--blue);color:#fff;border-color:var(--blue);}
+.pill.gray{background:var(--gray-hl);color:var(--ink);border-color:var(--hair);}
+
+.bar-row{display:grid;grid-template-columns:96px 1fr 128px;gap:12px;align-items:center;
+  margin-bottom:10px;font-size:16px;}
+.bar-track{background:var(--subtle);border:1px solid var(--hair-soft);height:26px;position:relative;border-radius:2px;}
+.bar-fill{height:100%;background:var(--orange);border-radius:1px;}
+.bar-fill.blue{background:var(--blue);}
+.bar-val{text-align:right;font-variant-numeric:tabular-nums;color:var(--ink);font-weight:500;}
+@media (max-width:600px){ .bar-row{grid-template-columns:74px 1fr 104px;font-size:14px;gap:8px;} }
+
+footer{border-top:1px solid var(--hair);padding:38px 0 56px;}
+footer p{font-size:14px;color:var(--muted-soft);margin:0 0 9px;line-height:1.55;}
+
+.hidden{display:none !important;}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;}
+.actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:19px;}
+.btn{font-family:inherit;font-size:16px;font-weight:500;padding:10px 19px;
+  border:1px solid var(--hair);border-radius:2px;background:#fff;color:var(--ink);cursor:pointer;}
+.btn.primary{background:var(--orange);border-color:var(--orange);color:#fff;}
+.btn.primary:hover{background:var(--orange-active);border-color:var(--orange-active);}
+.btn:hover{background:var(--subtle);}
+.btn.primary:focus-visible,.btn:focus-visible{outline:2px solid var(--orange);outline-offset:2px;}
+
+@media print{
+  .lang-toggle,.tabs,.actions,.panel{display:none !important;}
+  .shell{grid-template-columns:1fr;padding-top:0;}
+  body{font-size:12pt;line-height:1.4;}
+  .hero{background:#fff;color:#000;padding:0 0 12pt;}
+  .hero h1{color:#000;font-size:22pt;} .hero p.sub{color:#333;font-size:11pt;}
+  .hero p.src,.tag{color:#555;border-color:#999;}
+  .page{max-width:100%;padding:0;}
+  .tabpanel{display:block !important;page-break-before:always;}
+  table,.stat,.note,.callout{page-break-inside:avoid;}
+  h2,h3,.section-title{page-break-after:avoid;}
+  .callout{background:#fff;color:#000;border:1px solid #999;}
+  .callout h3,.callout p{color:#000;}
+}
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="page">
+    <div class="hero-top">
+      <span class="tag" data-ko="사내한 · 상담 실무용" data-en="Internal Use · Advisory Tool">사내한 · 상담 실무용</span>
+      <div class="lang-toggle" role="radiogroup" aria-label="Language">
+        <button type="button" role="radio" data-lang="ko" aria-checked="true">KO</button>
+        <button type="button" role="radio" data-lang="en" aria-checked="false">EN</button>
+      </div>
+    </div>
+    <h1 data-ko="부동산 세금 계산기" data-en="Real Estate Tax Calculator">부동산 세금 계산기</h1>
+    <p class="sub" data-ko="2026년 세제개편안 반영 — 취득세 · 재산세 · 종합부동산세 · 양도소득세를 거주 여부, 명의 구조, 주택 수 조건별로 한 번에 산출합니다."
+       data-en="Reflecting the 2026 tax reform bill — computes acquisition, property, comprehensive real estate and capital gains tax across residency, ownership structure and house-count conditions.">
+      2026년 세제개편안 반영 — 취득세 · 재산세 · 종합부동산세 · 양도소득세를 거주 여부, 명의 구조, 주택 수 조건별로 한 번에 산출합니다.</p>
+    <p class="src" data-ko="재정경제부 「2026년 세제개편안」(2026. 8. 3. 발표) 상세본 기준 · 정부안이며 국회 심의 과정에서 변경될 수 있음"
+       data-en="Based on the MOEF 2026 Tax Reform Bill (announced 3 Aug 2026) · Government proposal, subject to change during National Assembly review">
+      재정경제부 「2026년 세제개편안」(2026. 8. 3. 발표) 상세본 기준 · 정부안이며 국회 심의 과정에서 변경될 수 있음</p>
+  </div>
+</header>
+
+<main class="page shell">
+
+  <!-- ================= INPUTS ================= -->
+  <form class="panel" id="inputs" autocomplete="off">
+    <div class="panel-hd" data-ko="조건 입력" data-en="Input Conditions">조건 입력</div>
+    <div class="panel-bd">
+
+      <div class="form-group">
+        <div class="group-rule"></div>
+        <div class="group-title" data-ko="기준연도" data-en="Assessment Year">기준연도</div>
+        <div class="seg" id="segYear" role="group">
+          <button type="button" data-v="2026" aria-pressed="true">2026</button>
+          <button type="button" data-v="2027" aria-pressed="false">2027</button>
+          <button type="button" data-v="2028" aria-pressed="false">2028</button>
+          <button type="button" data-v="2029" aria-pressed="false">2029</button>
+        </div>
+        <p class="hint" id="yearHint"></p>
+      </div>
+
+      <div class="form-group">
+        <div class="group-rule"></div>
+        <div class="group-title" data-ko="보유 구조" data-en="Ownership Structure">보유 구조</div>
+
+        <label class="fld">
+          <span class="lbl" data-ko="세대 보유 주택 수" data-en="Houses owned by household">세대 보유 주택 수</span>
+          <div class="seg" id="segHouses" role="group">
+            <button type="button" data-v="1" aria-pressed="true" data-ko="1주택" data-en="1 house">1주택</button>
+            <button type="button" data-v="2" aria-pressed="false" data-ko="2주택" data-en="2 houses">2주택</button>
+            <button type="button" data-v="3" aria-pressed="false" data-ko="3주택 이상" data-en="3+ houses">3주택 이상</button>
+          </div>
+        </label>
+
+        <label class="fld">
+          <span class="lbl" data-ko="명의" data-en="Title">명의</span>
+          <div class="seg" id="segTitle" role="group">
+            <button type="button" data-v="sole" aria-pressed="true" data-ko="단독명의" data-en="Sole">단독명의</button>
+            <button type="button" data-v="joint" aria-pressed="false" data-ko="공동명의" data-en="Joint">공동명의</button>
+          </div>
+        </label>
+
+        <label class="fld hidden" id="wrapShare">
+          <span class="lbl" data-ko="본인 지분율" data-en="My ownership share">본인 지분율</span>
+          <div class="unit-row"><input type="number" id="share" value="50" min="1" max="99" step="1"><span class="unit">%</span></div>
+          <p class="hint" data-ko="입력한 지분율은 보유 중인 모든 주택에 동일하게 적용됩니다."
+             data-en="The share entered applies equally to every house owned.">입력한 지분율은 보유 중인 모든 주택에 동일하게 적용됩니다.</p>
+        </label>
+
+        <label class="chk"><input type="checkbox" id="adjusted" checked>
+          <span data-ko="조정대상지역 소재" data-en="Located in a regulated (adjustment-target) area">조정대상지역 소재</span></label>
+        <label class="chk hidden" id="wrapSpecial"><input type="checkbox" id="jointSpecial">
+          <span data-ko="공동명의 1주택자 특례 신청 (종부세법 §10의2)" data-en="Apply joint-owner single-house election (CRET Act §10-2)">공동명의 1주택자 특례 신청 (종부세법 §10의2)</span></label>
+      </div>
+
+      <div class="form-group">
+        <div class="group-rule"></div>
+        <div class="group-title" data-ko="주택별 공시가격 · 거주" data-en="Assessed Value & Residency">주택별 공시가격 · 거주</div>
+
+        <label class="fld">
+          <span class="lbl" data-ko="주택 1 — 공시가격 (주택 전체)" data-en="House 1 — assessed value (whole)">주택 1 — 공시가격 (주택 전체)</span>
+          <div class="unit-row"><input type="number" id="g1" value="14.5" min="0" step="0.1"><span class="unit" data-ko="억원" data-en="100M KRW">억원</span></div>
+        </label>
+        <label class="fld hidden" id="wrapG2">
+          <span class="lbl" data-ko="주택 2 — 공시가격" data-en="House 2 — assessed value">주택 2 — 공시가격</span>
+          <div class="unit-row"><input type="number" id="g2" value="7" min="0" step="0.1"><span class="unit" data-ko="억원" data-en="100M KRW">억원</span></div>
+        </label>
+        <label class="fld hidden" id="wrapG3">
+          <span class="lbl" data-ko="주택 3 — 공시가격" data-en="House 3 — assessed value">주택 3 — 공시가격</span>
+          <div class="unit-row"><input type="number" id="g3" value="5" min="0" step="0.1"><span class="unit" data-ko="억원" data-en="100M KRW">억원</span></div>
+        </label>
+
+        <label class="fld">
+          <span class="lbl" data-ko="실제 거주 중인 주택" data-en="House actually resided in">실제 거주 중인 주택</span>
+          <select id="livesIn">
+            <option value="0" data-ko="거주하지 않음 (임대 · 타지 거주)" data-en="None — leased out or living elsewhere">거주하지 않음 (임대 · 타지 거주)</option>
+            <option value="1" selected data-ko="주택 1에 거주" data-en="Resides in house 1">주택 1에 거주</option>
+            <option value="2" class="opt2" data-ko="주택 2에 거주" data-en="Resides in house 2">주택 2에 거주</option>
+            <option value="3" class="opt3" data-ko="주택 3에 거주" data-en="Resides in house 3">주택 3에 거주</option>
+          </select>
+          <p class="hint" data-ko="주민등록 전입~전출이 원칙이나, 공부와 실제가 다르면 실제 거주로 판단합니다."
+             data-en="Determined by resident registration in principle; actual residence prevails where records differ.">주민등록 전입~전출이 원칙이나, 공부와 실제가 다르면 실제 거주로 판단합니다.</p>
+        </label>
+
+        <label class="fld">
+          <span class="lbl" data-ko="전용면적" data-en="Exclusive floor area">전용면적</span>
+          <div class="unit-row"><input type="number" id="area" value="84" min="1" step="1"><span class="unit">㎡</span></div>
+          <p class="hint" data-ko="85㎡ 초과 시 취득세에 농어촌특별세가 가산됩니다."
+             data-en="Above 85㎡ a special rural development surtax applies to acquisition tax.">85㎡ 초과 시 취득세에 농어촌특별세가 가산됩니다.</p>
+        </label>
+      </div>
+
+      <div class="form-group">
+        <div class="group-rule"></div>
+        <div class="group-title" data-ko="납세자 · 기간" data-en="Taxpayer & Periods">납세자 · 기간</div>
+        <label class="fld"><span class="lbl" data-ko="만 나이" data-en="Age">만 나이</span>
+          <div class="unit-row"><input type="number" id="age" value="60" min="0" max="120" step="1"><span class="unit" data-ko="세" data-en="yrs">세</span></div></label>
+        <label class="fld"><span class="lbl" data-ko="보유기간" data-en="Holding period">보유기간</span>
+          <div class="unit-row"><input type="number" id="holdY" value="10" min="0" max="60" step="1"><span class="unit" data-ko="년" data-en="yrs">년</span></div></label>
+        <label class="fld"><span class="lbl" data-ko="거주기간" data-en="Residence period">거주기간</span>
+          <div class="unit-row"><input type="number" id="liveY" value="10" min="0" max="60" step="1"><span class="unit" data-ko="년" data-en="yrs">년</span></div></label>
+        <label class="chk"><input type="checkbox" id="nonResident">
+          <span data-ko="비거주자 (국내에 주소를 두지 않은 자)" data-en="Non-resident taxpayer (no domestic domicile)">비거주자 (국내에 주소를 두지 않은 자)</span></label>
+      </div>
+
+      <div class="form-group">
+        <div class="group-rule"></div>
+        <div class="group-title" data-ko="취득세 입력" data-en="Acquisition Tax Inputs">취득세 입력</div>
+        <label class="fld"><span class="lbl" data-ko="취득가액 (주택 전체)" data-en="Acquisition price (whole)">취득가액 (주택 전체)</span>
+          <div class="unit-row"><input type="number" id="buyPrice" value="20" min="0" step="0.1"><span class="unit" data-ko="억원" data-en="100M KRW">억원</span></div></label>
+        <label class="chk"><input type="checkbox" id="tempTwo">
+          <span data-ko="일시적 2주택 (종전주택 처분 예정)" data-en="Temporary two-house (prior home to be disposed)">일시적 2주택 (종전주택 처분 예정)</span></label>
+        <label class="chk"><input type="checkbox" id="firstTime">
+          <span data-ko="생애최초 주택 구입 감면 (12억 이하 · 최대 200만원)" data-en="First-time buyer relief (≤1.2B KRW, max 2M KRW)">생애최초 주택 구입 감면 (12억 이하 · 최대 200만원)</span></label>
+        <label class="chk"><input type="checkbox" id="isCorp">
+          <span data-ko="법인 취득" data-en="Acquired by a corporation">법인 취득</span></label>
+      </div>
+
+      <div class="form-group">
+        <div class="group-rule"></div>
+        <div class="group-title" data-ko="양도소득세 입력" data-en="Capital Gains Tax Inputs">양도소득세 입력</div>
+        <label class="fld"><span class="lbl" data-ko="양도가액 (주택 전체)" data-en="Sale price (whole)">양도가액 (주택 전체)</span>
+          <div class="unit-row"><input type="number" id="salePrice" value="30" min="0" step="0.1"><span class="unit" data-ko="억원" data-en="100M KRW">억원</span></div></label>
+        <label class="fld"><span class="lbl" data-ko="필요경비 (취득세 · 중개수수료 · 자본적지출)" data-en="Necessary expenses (acquisition tax, brokerage, capital expenditure)">필요경비 (취득세 · 중개수수료 · 자본적지출)</span>
+          <div class="unit-row"><input type="number" id="expenses" value="0.5" min="0" step="0.1"><span class="unit" data-ko="억원" data-en="100M KRW">억원</span></div></label>
+        <label class="chk"><input type="checkbox" id="exempt" checked>
+          <span data-ko="1세대 1주택 비과세 적용 (12억 초과분만 과세)" data-en="Single-house exemption applies (only gain above 1.2B taxed)">1세대 1주택 비과세 적용 (12억 초과분만 과세)</span></label>
+        <label class="chk"><input type="checkbox" id="heavyTaxed">
+          <span data-ko="조정대상지역 다주택 중과대상 주택" data-en="Subject to multi-home heavy taxation in a regulated area">조정대상지역 다주택 중과대상 주택</span></label>
+        <label class="chk"><input type="checkbox" id="seniorRelief">
+          <span data-ko="고령 1주택자 지방 이주 감면 (65세 이상 · 2027~2028년)" data-en="Senior relocation relief (65+, 2027–2028)">고령 1주택자 지방 이주 감면 (65세 이상 · 2027~2028년)</span></label>
+      </div>
+
+      <div class="form-group">
+        <div class="group-rule"></div>
+        <div class="group-title" data-ko="계산 옵션" data-en="Calculation Options">계산 옵션</div>
+        <label class="chk"><input type="checkbox" id="urban" checked>
+          <span data-ko="재산세 도시지역분 과세 (과세표준 × 0.14%)" data-en="Urban area property tax portion (base × 0.14%)">재산세 도시지역분 과세 (과세표준 × 0.14%)</span></label>
+        <label class="chk"><input type="checkbox" id="propDeduct" checked>
+          <span data-ko="종부세에서 재산세 중복분 공제 반영" data-en="Deduct overlapping property tax from CRET">종부세에서 재산세 중복분 공제 반영</span></label>
+        <label class="fld"><span class="lbl" data-ko="직전연도 보유세 합계 (세부담상한 판정용, 선택)" data-en="Prior-year holding tax total (for tax burden cap, optional)">직전연도 보유세 합계 (세부담상한 판정용, 선택)</span>
+          <div class="unit-row"><input type="number" id="prevTotal" value="0" min="0" step="10"><span class="unit" data-ko="만원" data-en="10K KRW">만원</span></div></label>
+        <div class="actions">
+          <button type="button" class="btn primary" id="btnPrint" data-ko="인쇄 · PDF 저장" data-en="Print / Save PDF">인쇄 · PDF 저장</button>
+          <button type="button" class="btn" id="btnReset" data-ko="초기화" data-en="Reset">초기화</button>
+        </div>
+      </div>
+
+    </div>
+  </form>
+
+  <!-- ================= RESULTS ================= -->
+  <div id="results">
+    <div class="tabs" role="tablist">
+      <button type="button" role="tab" data-tab="summary" aria-selected="true" data-ko="통합 요약" data-en="Summary">통합 요약</button>
+      <button type="button" role="tab" data-tab="acq" aria-selected="false" data-ko="취득세" data-en="Acquisition">취득세</button>
+      <button type="button" role="tab" data-tab="prop" aria-selected="false" data-ko="재산세" data-en="Property">재산세</button>
+      <button type="button" role="tab" data-tab="cret" aria-selected="false" data-ko="종합부동산세" data-en="CRET">종합부동산세</button>
+      <button type="button" role="tab" data-tab="cgt" aria-selected="false" data-ko="양도소득세" data-en="Capital Gains">양도소득세</button>
+      <button type="button" role="tab" data-tab="basis" aria-selected="false" data-ko="적용 기준" data-en="Basis">적용 기준</button>
+    </div>
+    <div id="tab-summary" class="tabpanel" role="tabpanel"></div>
+    <div id="tab-acq"  class="tabpanel hidden" role="tabpanel"></div>
+    <div id="tab-prop" class="tabpanel hidden" role="tabpanel"></div>
+    <div id="tab-cret" class="tabpanel hidden" role="tabpanel"></div>
+    <div id="tab-cgt"  class="tabpanel hidden" role="tabpanel"></div>
+    <div id="tab-basis" class="tabpanel hidden" role="tabpanel"></div>
+  </div>
+
+</main>
+
+<footer>
+  <div class="page">
+    <p data-ko="본 계산기는 재정경제부 「2026년 세제개편안」(2026. 8. 3.) 상세본을 기초로 한 교육 · 상담 보조 도구이며 세무 자문이 아닙니다."
+       data-en="This calculator is an educational and advisory support tool based on the MOEF 2026 Tax Reform Bill (3 Aug 2026). It does not constitute tax advice.">본 계산기는 재정경제부 「2026년 세제개편안」(2026. 8. 3.) 상세본을 기초로 한 교육 · 상담 보조 도구이며 세무 자문이 아닙니다.</p>
+    <p data-ko="종합부동산세 · 양도소득세 개편 내용은 정부안으로, 국회 심의 및 시행령 제정 과정에서 변경될 수 있습니다. 취득세 · 재산세는 이번 개편 대상이 아니며 현행 지방세법 기준으로 산출합니다."
+       data-en="The CRET and capital gains reforms are government proposals and may change during legislative review. Acquisition and property tax are outside this reform and follow current local tax law.">종합부동산세 · 양도소득세 개편 내용은 정부안으로, 국회 심의 및 시행령 제정 과정에서 변경될 수 있습니다. 취득세 · 재산세는 이번 개편 대상이 아니며 현행 지방세법 기준으로 산출합니다.</p>
+    <p data-ko="실제 신고 · 납부 세액은 공시가격 확정치, 필요경비 증빙, 개별 특례 적용 여부에 따라 달라지므로 의사결정 전 세무 전문가의 검토를 받으시기 바랍니다."
+       data-en="Actual filing amounts vary with final assessed values, documented expenses and individual elections. Obtain professional review before acting.">실제 신고 · 납부 세액은 공시가격 확정치, 필요경비 증빙, 개별 특례 적용 여부에 따라 달라지므로 의사결정 전 세무 전문가의 검토를 받으시기 바랍니다.</p>
+  </div>
+</footer>
+
+<script src="tax-engine.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
