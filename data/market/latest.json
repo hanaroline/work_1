@@ -1,0 +1,434 @@
+{
+  "generated_at_kst": "2026-08-08 12:56:33",
+  "generated_at_utc": "2026-08-08 03:56:33",
+  "sources": {
+    "yahoo:kospi": {
+      "ok": true
+    },
+    "yahoo:kosdaq": {
+      "ok": true
+    },
+    "yahoo:usdkrw": {
+      "ok": true
+    },
+    "yahoo:sp500": {
+      "ok": true
+    },
+    "yahoo:nasdaq": {
+      "ok": true
+    },
+    "yahoo:dow": {
+      "ok": true
+    },
+    "yahoo:sox": {
+      "ok": true
+    },
+    "yahoo:vix": {
+      "ok": true
+    },
+    "yahoo:dxy": {
+      "ok": true
+    },
+    "yahoo:usdjpy": {
+      "ok": true
+    },
+    "yahoo:wti": {
+      "ok": true
+    },
+    "yahoo:brent": {
+      "ok": true
+    },
+    "yahoo:gold": {
+      "ok": true
+    },
+    "yahoo:ust10y": {
+      "ok": true
+    },
+    "yahoo:ust2y": {
+      "ok": true
+    },
+    "yahoo:005930.KS": {
+      "ok": true
+    },
+    "yahoo:000660.KS": {
+      "ok": true
+    },
+    "yahoo:373220.KS": {
+      "ok": true
+    },
+    "yahoo:207940.KS": {
+      "ok": true
+    },
+    "yahoo:005380.KS": {
+      "ok": true
+    },
+    "yahoo:105560.KS": {
+      "ok": true
+    },
+    "yahoo:012450.KS": {
+      "ok": true
+    },
+    "yahoo:009150.KS": {
+      "ok": true
+    },
+    "yahoo:068270.KS": {
+      "ok": true
+    },
+    "yahoo:035420.KS": {
+      "ok": true
+    },
+    "naver:index:KOSPI": {
+      "ok": false,
+      "error": "HTTP 409"
+    },
+    "naver:index:KOSDAQ": {
+      "ok": false,
+      "error": "HTTP 409"
+    },
+    "naver:sectors": {
+      "ok": true
+    },
+    "krx:investors": {
+      "ok": false,
+      "error": "HTTP 400"
+    },
+    "krx:allstocks": {
+      "ok": false,
+      "error": "HTTP 400"
+    }
+  },
+  "indices": {
+    "kospi": {
+      "symbol": "^KS11",
+      "date": "2026-08-07",
+      "close": 6258.77,
+      "open": 6365.0698,
+      "high": 6415.6001,
+      "low": 6158.73,
+      "volume": 299400,
+      "prev_close": 6296.3799,
+      "change": -37.6099,
+      "change_pct": -0.5973,
+      "currency": "KRW"
+    },
+    "kosdaq": {
+      "symbol": "^KQ11",
+      "date": "2026-08-07",
+      "close": 798.81,
+      "open": 807.62,
+      "high": 814.8,
+      "low": 776.6,
+      "volume": 509900,
+      "prev_close": 801.67,
+      "change": -2.86,
+      "change_pct": -0.3568,
+      "currency": "KRW"
+    },
+    "usdkrw": {
+      "symbol": "KRW=X",
+      "date": "2026-08-08",
+      "close": 1407.45,
+      "open": 1422.7,
+      "high": 1425.61,
+      "low": 1406.1801,
+      "volume": 0,
+      "prev_close": 1422.3,
+      "change": -14.8501,
+      "change_pct": -1.0441,
+      "currency": "KRW"
+    },
+    "sp500": {
+      "symbol": "^GSPC",
+      "date": "2026-08-07",
+      "close": 7757.6401,
+      "open": 7735.1802,
+      "high": 7763.0801,
+      "low": 7719.1899,
+      "volume": 2719843000,
+      "prev_close": 7709.96,
+      "change": 47.6802,
+      "change_pct": 0.6184,
+      "currency": "USD"
+    },
+    "nasdaq": {
+      "symbol": "^IXIC",
+      "date": "2026-08-07",
+      "close": 26690.6152,
+      "open": 26534.6602,
+      "high": 26712.6172,
+      "low": 26478.0059,
+      "volume": 7207856000,
+      "prev_close": 26348.3496,
+      "change": 342.2656,
+      "change_pct": 1.299,
+      "currency": "USD"
+    },
+    "dow": {
+      "symbol": "^DJI",
+      "date": "2026-08-07",
+      "close": 54036.9297,
+      "open": 53849.2617,
+      "high": 54094.6484,
+      "low": 53807.9414,
+      "volume": 378681628,
+      "prev_close": 53885.1016,
+      "change": 151.8281,
+      "change_pct": 0.2818,
+      "currency": "USD"
+    },
+    "sox": {
+      "symbol": "^SOX",
+      "date": "2026-08-07",
+      "close": 12356.7871,
+      "open": 12299.9785,
+      "high": 12425.7432,
+      "low": 12082.625,
+      "volume": 0,
+      "prev_close": 12048.6904,
+      "change": 308.0967,
+      "change_pct": 2.5571,
+      "currency": "USD"
+    },
+    "vix": {
+      "symbol": "^VIX",
+      "date": "2026-08-07",
+      "close": 14.9,
+      "open": 15.3,
+      "high": 15.36,
+      "low": 14.77,
+      "volume": 0,
+      "prev_close": 15.15,
+      "change": -0.25,
+      "change_pct": -1.6502,
+      "currency": "USD"
+    },
+    "dxy": {
+      "symbol": "DX-Y.NYB",
+      "date": "2026-08-07",
+      "close": 99.604,
+      "open": 99.943,
+      "high": 99.997,
+      "low": 99.403,
+      "volume": 0,
+      "prev_close": 99.97,
+      "change": -0.366,
+      "change_pct": -0.3661,
+      "currency": "USD"
+    },
+    "usdjpy": {
+      "symbol": "JPY=X",
+      "date": "2026-08-08",
+      "close": 157.745,
+      "open": 158.452,
+      "high": 158.576,
+      "low": 156.652,
+      "volume": 0,
+      "prev_close": 158.409,
+      "change": -0.664,
+      "change_pct": -0.4192,
+      "currency": "JPY"
+    },
+    "wti": {
+      "symbol": "CL=F",
+      "date": "2026-08-07",
+      "close": 77.08,
+      "open": 78.17,
+      "high": 78.77,
+      "low": 76.53,
+      "volume": 206437,
+      "prev_close": 77.29,
+      "change": -0.21,
+      "change_pct": -0.2717,
+      "currency": "USD"
+    },
+    "brent": {
+      "symbol": "BZ=F",
+      "date": "2026-08-07",
+      "close": 82.27,
+      "open": 83.33,
+      "high": 84.39,
+      "low": 81.5,
+      "volume": 35386,
+      "prev_close": 82.49,
+      "change": -0.22,
+      "change_pct": -0.2667,
+      "currency": "USD"
+    },
+    "gold": {
+      "symbol": "GC=F",
+      "date": "2026-08-07",
+      "close": 4401.2998,
+      "open": 4298.2998,
+      "high": 4432.2998,
+      "low": 4288.0,
+      "volume": 182381,
+      "prev_close": 4242.0,
+      "change": 159.2998,
+      "change_pct": 3.7553,
+      "currency": "USD"
+    },
+    "ust10y": {
+      "symbol": "^TNX",
+      "date": "2026-08-07",
+      "close": 4.66,
+      "open": 4.664,
+      "high": 4.672,
+      "low": 4.603,
+      "volume": 0,
+      "prev_close": 4.67,
+      "change": -0.01,
+      "change_pct": -0.2141,
+      "currency": "USD"
+    },
+    "ust2y": {
+      "symbol": "^IRX",
+      "date": "2026-08-07",
+      "close": 3.71,
+      "open": 3.73,
+      "high": 3.73,
+      "low": 3.697,
+      "volume": 0,
+      "prev_close": 3.732,
+      "change": -0.022,
+      "change_pct": -0.5895,
+      "currency": "USD"
+    }
+  },
+  "stocks": {
+    "삼성전자": {
+      "symbol": "005930.KS",
+      "date": "2026-08-07",
+      "close": 231000.0,
+      "open": 235000.0,
+      "high": 239500.0,
+      "low": 229000.0,
+      "volume": 20546010,
+      "prev_close": 230500.0,
+      "change": 500.0,
+      "change_pct": 0.2169,
+      "currency": "KRW"
+    },
+    "SK하이닉스": {
+      "symbol": "000660.KS",
+      "date": "2026-08-07",
+      "close": 1422000.0,
+      "open": 1521000.0,
+      "high": 1542000.0,
+      "low": 1409000.0,
+      "volume": 5002539,
+      "prev_close": 1495000.0,
+      "change": -73000.0,
+      "change_pct": -4.8829,
+      "currency": "KRW"
+    },
+    "LG에너지솔루션": {
+      "symbol": "373220.KS",
+      "date": "2026-08-07",
+      "close": 360000.0,
+      "open": 347000.0,
+      "high": 363000.0,
+      "low": 346000.0,
+      "volume": 426444,
+      "prev_close": 345000.0,
+      "change": 15000.0,
+      "change_pct": 4.3478,
+      "currency": "KRW"
+    },
+    "삼성바이오로직스": {
+      "symbol": "207940.KS",
+      "date": "2026-08-07",
+      "close": 1556000.0,
+      "open": 1503000.0,
+      "high": 1556000.0,
+      "low": 1490000.0,
+      "volume": 51786,
+      "prev_close": 1514000.0,
+      "change": 42000.0,
+      "change_pct": 2.7741,
+      "currency": "KRW"
+    },
+    "현대차": {
+      "symbol": "005380.KS",
+      "date": "2026-08-07",
+      "close": 395500.0,
+      "open": 401000.0,
+      "high": 406000.0,
+      "low": 387000.0,
+      "volume": 415672,
+      "prev_close": 400000.0,
+      "change": -4500.0,
+      "change_pct": -1.125,
+      "currency": "KRW"
+    },
+    "KB금융": {
+      "symbol": "105560.KS",
+      "date": "2026-08-07",
+      "close": 175800.0,
+      "open": 169200.0,
+      "high": 176900.0,
+      "low": 169200.0,
+      "volume": 802418,
+      "prev_close": 171500.0,
+      "change": 4300.0,
+      "change_pct": 2.5073,
+      "currency": "KRW"
+    },
+    "한화에어로스페이스": {
+      "symbol": "012450.KS",
+      "date": "2026-08-07",
+      "close": 1097000.0,
+      "open": 1044000.0,
+      "high": 1100000.0,
+      "low": 1042000.0,
+      "volume": 162033,
+      "prev_close": 1054000.0,
+      "change": 43000.0,
+      "change_pct": 4.0797,
+      "currency": "KRW"
+    },
+    "삼성전기": {
+      "symbol": "009150.KS",
+      "date": "2026-08-07",
+      "close": 1278000.0,
+      "open": 1259000.0,
+      "high": 1304000.0,
+      "low": 1233000.0,
+      "volume": 894867,
+      "prev_close": 1229000.0,
+      "change": 49000.0,
+      "change_pct": 3.987,
+      "currency": "KRW"
+    },
+    "셀트리온": {
+      "symbol": "068270.KS",
+      "date": "2026-08-07",
+      "close": 199300.0,
+      "open": 193200.0,
+      "high": 199300.0,
+      "low": 193200.0,
+      "volume": 776632,
+      "prev_close": 195000.0,
+      "change": 4300.0,
+      "change_pct": 2.2051,
+      "currency": "KRW"
+    },
+    "NAVER": {
+      "symbol": "035420.KS",
+      "date": "2026-08-07",
+      "close": 210000.0,
+      "open": 219500.0,
+      "high": 222000.0,
+      "low": 208000.0,
+      "volume": 1755934,
+      "prev_close": 226000.0,
+      "change": -16000.0,
+      "change_pct": -7.0796,
+      "currency": "KRW"
+    }
+  },
+  "naver_sectors_html_bytes": 87320,
+  "summary": {
+    "sources_tried": 30,
+    "sources_ok": 26
+  }
+}
