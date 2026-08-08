@@ -1,6 +1,6 @@
 {
-  "generated_at_kst": "2026-08-08 14:22:38",
-  "generated_at_utc": "2026-08-08 05:22:38",
+  "generated_at_kst": "2026-08-08 14:25:36",
+  "generated_at_utc": "2026-08-08 05:25:36",
   "sources": {
     "yahoo:kospi": {
       "ok": true
@@ -104,9 +104,9 @@
     "naver:usdkrw": {
       "ok": true
     },
-    "ktb10y": {
+    "ecos:rates": {
       "ok": false,
-      "error": "ValueError: 네이버 채권 목록 -> HTTP Error 404: 404 | e-나라지표 시장금리 -> <urlopen error timed out> | ECOS 샘플키 일별 시장금리 -> 값 없음(150 bytes) | FRED 한국 장기금리(월별) -> The read operation timed out | investing.com -> HTTP Error 403: Forbidden"
+      "error": "ValueError: ECOS 에서 아무 항목도 못 받음 (항목목록 0건)"
     },
     "krx:futures_investors": {
       "ok": false,
