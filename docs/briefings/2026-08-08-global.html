@@ -257,6 +257,9 @@ table.data tr.sum > td,table.data tr.sum > th{background:var(--surface-subtle);
   border-top:2px solid var(--hairline);font-weight:600}
 table.data tr.sum > *:first-child{box-shadow:inset 3px 0 0 var(--primary)}
 table.data.compact{min-width:420px;font-size:15px}
+table.data th.note{min-width:190px}
+table.data td.note{font-size:14px;line-height:1.45;color:var(--muted);white-space:normal;min-width:190px;max-width:340px}
+@media (max-width:680px){table.data .note{display:none}}
 table.data.compact th,table.data.compact td{padding:8px 11px}
 
 /* ============ verification flags ============ */
@@ -636,27 +639,27 @@ html[lang="en"] [data-lang-en]{display:revert}
   <table class="data compact">
     <thead><tr>
       <th><span data-lang-ko>종목</span><span data-lang-en>Name</span></th>
+      <th class="note"><span data-lang-ko>핵심</span><span data-lang-en>What it does</span></th>
       <th class="n"><span data-lang-ko>종가</span><span data-lang-en>Close</span></th>
       <th class="n"><span data-lang-ko>등락률</span><span data-lang-en>Change</span></th>
-      <th class="n"><span data-lang-ko>전일 종가</span><span data-lang-en>Prev close</span></th>
     </tr></thead>
     <tbody>
-      <tr><th>테슬라</th><td class="n">$328.58</td><td class="n up">+2.83%</td><td class="n">$319.53</td></tr>
-      <tr><th>엔비디아</th><td class="n">$223.96</td><td class="n up">+2.27%</td><td class="n">$218.99</td></tr>
-      <tr><th>ASML</th><td class="n">$1,740.99</td><td class="n up">+2.15%</td><td class="n">$1,704.37</td></tr>
-      <tr><th>브로드컴</th><td class="n">$427.76</td><td class="n up">+1.71%</td><td class="n">$420.57</td></tr>
-      <tr><th>아마존</th><td class="n">$274.48</td><td class="n up">+0.82%</td><td class="n">$272.26</td></tr>
-      <tr><th>TSMC</th><td class="n">$420.04</td><td class="n up">+0.44%</td><td class="n">$418.20</td></tr>
-      <tr><th>메타</th><td class="n">$592.10</td><td class="n up">+0.37%</td><td class="n">$589.90</td></tr>
-      <tr><th>애플</th><td class="n">$313.33</td><td class="n up">+0.29%</td><td class="n">$312.41</td></tr>
-      <tr><th>마이크로소프트</th><td class="n">$499.99</td><td class="n up">+0.03%</td><td class="n">$499.86</td></tr>
-      <tr><th>마이크론</th><td class="n">$877.57</td><td class="n down">-0.44%</td><td class="n">$881.47</td></tr>
-      <tr><th>알파벳</th><td class="n">$354.30</td><td class="n down">-0.96%</td><td class="n">$357.75</td></tr>
-      <tr><th>AMD</th><td class="n">$483.36</td><td class="n down">-1.21%</td><td class="n">$489.28</td></tr>
+      <tr><th>테슬라</th><td class="note"><span data-lang-ko>전기차·에너지저장. 자율주행 기대가 밸류에이션에 반영</span><span data-lang-en>EVs and energy storage; valuation carries autonomy expectations</span></td><td class="n">$328.58</td><td class="n up">+2.83%</td></tr>
+      <tr><th>엔비디아</th><td class="note"><span data-lang-ko>AI 가속기(GPU) 사실상 표준. HBM 최대 수요처</span><span data-lang-en>The de facto standard in AI accelerators; largest HBM buyer</span></td><td class="n">$223.96</td><td class="n up">+2.27%</td></tr>
+      <tr><th>ASML</th><td class="note"><span data-lang-ko>EUV 노광장비 독점. 첨단 반도체 생산의 병목</span><span data-lang-en>Monopoly in EUV lithography; the bottleneck in leading-edge chips</span></td><td class="n">$1,740.99</td><td class="n up">+2.15%</td></tr>
+      <tr><th>브로드컴</th><td class="note"><span data-lang-ko>맞춤형 AI 칩(ASIC)·네트워크 반도체</span><span data-lang-en>Custom AI silicon (ASICs) and networking chips</span></td><td class="n">$427.76</td><td class="n up">+1.71%</td></tr>
+      <tr><th>아마존</th><td class="note"><span data-lang-ko>전자상거래 + AWS 클라우드</span><span data-lang-en>E-commerce plus AWS cloud</span></td><td class="n">$274.48</td><td class="n up">+0.82%</td></tr>
+      <tr><th>TSMC</th><td class="note"><span data-lang-ko>세계 1위 파운드리. 엔비디아·애플 칩을 위탁생산</span><span data-lang-en>The largest foundry; makes Nvidia and Apple silicon</span></td><td class="n">$420.04</td><td class="n up">+0.44%</td></tr>
+      <tr><th>메타</th><td class="note"><span data-lang-ko>페이스북·인스타그램. AI 인프라 투자 확대</span><span data-lang-en>Facebook and Instagram; scaling AI infrastructure</span></td><td class="n">$592.10</td><td class="n up">+0.37%</td></tr>
+      <tr><th>애플</th><td class="note"><span data-lang-ko>아이폰 중심. 서비스 매출 비중 확대</span><span data-lang-en>iPhone-centred, with a growing services mix</span></td><td class="n">$313.33</td><td class="n up">+0.29%</td></tr>
+      <tr><th>마이크로소프트</th><td class="note"><span data-lang-ko>애저 클라우드·오피스. AI 인프라 대규모 투자</span><span data-lang-en>Azure cloud and Office; a major AI infrastructure spender</span></td><td class="n">$499.99</td><td class="n up">+0.03%</td></tr>
+      <tr><th>마이크론</th><td class="note"><span data-lang-ko>미국 유일의 대형 D램 업체. HBM에서 국내 업체와 경쟁</span><span data-lang-en>The only large US DRAM maker; competes with Korea in HBM</span></td><td class="n">$877.57</td><td class="n down">-0.44%</td></tr>
+      <tr><th>알파벳</th><td class="note"><span data-lang-ko>구글 검색·유튜브·클라우드. 자체 AI 칩(TPU) 보유</span><span data-lang-en>Google search, YouTube and cloud; builds its own TPUs</span></td><td class="n">$354.30</td><td class="n down">-0.96%</td></tr>
+      <tr><th>AMD</th><td class="note"><span data-lang-ko>CPU·AI 가속기. 엔비디아의 대항마</span><span data-lang-en>CPUs and AI accelerators; Nvidia's main challenger</span></td><td class="n">$483.36</td><td class="n down">-1.21%</td></tr>
     </tbody>
   </table>
   </div>
-  <p class="cap"><span data-lang-ko>단위 달러. <strong>SOX가 +2.56%로 3대 지수를 앞섰지만 반도체 안에서도 갈렸습니다</strong> &mdash; 엔비디아 +2.27%, 브로드컴 +1.71% 인 반면 AMD &minus;1.21%, 마이크론 &minus;0.44% 입니다. 지수 등락률 하나로 &ldquo;반도체가 좋았다&rdquo;고 말하기 어려운 날입니다. ASML은 미국 예탁증서(ADR) 기준이며, 06번 표의 €1,499.00은 암스테르담 원주입니다.</span><span data-lang-en>In USD. <strong>The SOX rose 2.56%, ahead of all three headline indices, but the move was uneven inside semis</strong> &mdash; Nvidia +2.27% and Broadcom +1.71% against AMD &minus;1.21% and Micron &minus;0.44%. One index number does not make it a good day for the whole sector. ASML here is the US ADR; the &euro;1,499.00 in section 06 is the Amsterdam listing.</span></p>
+  <p class="cap"><span data-lang-ko>단위 달러. 「핵심」은 사업 내용이며 실적·전망이 아닙니다. <strong>SOX가 +2.56%로 3대 지수를 앞섰지만 반도체 안에서도 갈렸습니다</strong> &mdash; 엔비디아 +2.27%, 브로드컴 +1.71% 인 반면 AMD &minus;1.21%, 마이크론 &minus;0.44% 입니다. 지수 등락률 하나로 &ldquo;반도체가 좋았다&rdquo;고 말하기 어려운 날입니다. ASML은 미국 예탁증서(ADR) 기준이며, 06번 표의 €1,499.00은 암스테르담 원주입니다.</span><span data-lang-en>In USD. <strong>The SOX rose 2.56%, ahead of all three headline indices, but the move was uneven inside semis</strong> &mdash; Nvidia +2.27% and Broadcom +1.71% against AMD &minus;1.21% and Micron &minus;0.44%. One index number does not make it a good day for the whole sector. ASML here is the US ADR; the &euro;1,499.00 in section 06 is the Amsterdam listing.</span></p>
 
   <h3><span data-lang-ko>미국 업종 (S&amp;P500 섹터 ETF)</span><span data-lang-en>US sectors (S&amp;P 500 sector ETFs)</span></h3>
   <div class="table-wrap">
@@ -835,24 +838,24 @@ html[lang="en"] [data-lang-en]{display:revert}
   <div class="table-wrap">
   <table class="data compact">
     <thead><tr>
-      <th><span data-lang-ko>종목</span><span data-lang-en>Stock</span></th>
-      <th class="n"><span data-lang-ko>종가</span><span data-lang-en>Close</span></th>
+      <th><span data-lang-ko>종목</span><span data-lang-en>Name</span></th>
+      <th class="note"><span data-lang-ko>핵심</span><span data-lang-en>What it does</span></th>
+      <th class="n"><span data-lang-ko>종가 (현지통화)</span><span data-lang-en>Close (local)</span></th>
       <th class="n"><span data-lang-ko>등락률</span><span data-lang-en>Change</span></th>
-      <th><span data-lang-ko>검증</span><span data-lang-en>Verify</span></th>
     </tr></thead>
     <tbody>
-      <tr><th>SAP</th><td class="n">177.96 EUR</td><td class="n up">+4.08%</td><td><span class="vf ok">MARKET DATA</span></td></tr>
-      <tr><th>노보노디스크</th><td class="n">305.10 DKK</td><td class="n up">+3.92%</td><td><span class="vf ok">MARKET DATA</span></td></tr>
-      <tr><th>인피니언</th><td class="n">62.08 EUR</td><td class="n up">+2.92%</td><td><span class="vf ok">MARKET DATA</span></td></tr>
-      <tr><th>지멘스</th><td class="n">279.80 EUR</td><td class="n up">+2.45%</td><td><span class="vf ok">MARKET DATA</span></td></tr>
-      <tr><th>노바티스</th><td class="n">125.98 CHF</td><td class="n up">+0.64%</td><td><span class="vf ok">MARKET DATA</span></td></tr>
-      <tr><th>HSBC</th><td class="n">1,529.20 GBp</td><td class="n up">+0.53%</td><td><span class="vf ok">MARKET DATA</span></td></tr>
-      <tr><th>아스트라제네카</th><td class="n">11,896.00 GBp</td><td class="n up">+0.39%</td><td><span class="vf ok">MARKET DATA</span></td></tr>
-      <tr><th>ASML</th><td class="n">1,499.00 EUR</td><td class="n up">+0.33%</td><td><span class="vf ok">MARKET DATA</span></td></tr>
-      <tr><th>네슬레</th><td class="n">81.21 CHF</td><td class="n up">+0.11%</td><td><span class="vf ok">MARKET DATA</span></td></tr>
-      <tr><th>LVMH</th><td class="n">480.00 EUR</td><td class="n down">-0.30%</td><td><span class="vf ok">MARKET DATA</span></td></tr>
-      <tr><th>쉘</th><td class="n">3,277.50 GBp</td><td class="n down">-1.13%</td><td><span class="vf ok">MARKET DATA</span></td></tr>
-      <tr><th>로레알</th><td class="n">385.90 EUR</td><td class="n down">-1.15%</td><td><span class="vf ok">MARKET DATA</span></td></tr>
+      <tr><th>SAP</th><td class="note"><span data-lang-ko>기업용 소프트웨어(ERP). 유럽 최대 IT 기업</span><span data-lang-en>Enterprise software (ERP); Europe's largest tech company</span></td><td class="n">177.96</td><td class="n up">+4.08%</td></tr>
+      <tr><th>노보노디스크</th><td class="note"><span data-lang-ko>비만·당뇨 치료제(위고비·오젬픽)</span><span data-lang-en>Obesity and diabetes drugs (Wegovy, Ozempic)</span></td><td class="n">305.10</td><td class="n up">+3.92%</td></tr>
+      <tr><th>인피니언</th><td class="note"><span data-lang-ko>차량용·전력 반도체</span><span data-lang-en>Automotive and power semiconductors</span></td><td class="n">62.08</td><td class="n up">+2.92%</td></tr>
+      <tr><th>지멘스</th><td class="note"><span data-lang-ko>산업 자동화·전력 설비</span><span data-lang-en>Industrial automation and power equipment</span></td><td class="n">279.80</td><td class="n up">+2.45%</td></tr>
+      <tr><th>노바티스</th><td class="note"><span data-lang-ko>스위스 제약. 항암·심혈관</span><span data-lang-en>Swiss pharma; oncology and cardiovascular</span></td><td class="n">125.98</td><td class="n up">+0.64%</td></tr>
+      <tr><th>HSBC</th><td class="note"><span data-lang-ko>아시아 비중이 큰 영국계 은행</span><span data-lang-en>UK-listed bank with heavy Asian exposure</span></td><td class="n">1,529.20</td><td class="n up">+0.53%</td></tr>
+      <tr><th>아스트라제네카</th><td class="note"><span data-lang-ko>항암제 중심 제약</span><span data-lang-en>Pharma, weighted to oncology</span></td><td class="n">11,896.00</td><td class="n up">+0.39%</td></tr>
+      <tr><th>ASML</th><td class="note"><span data-lang-ko>EUV 노광장비 독점. 첨단 반도체 생산의 병목</span><span data-lang-en>Monopoly in EUV lithography; the bottleneck in leading-edge chips</span></td><td class="n">1,499.00</td><td class="n up">+0.33%</td></tr>
+      <tr><th>네슬레</th><td class="note"><span data-lang-ko>세계 최대 식품기업</span><span data-lang-en>The world's largest food company</span></td><td class="n">81.21</td><td class="n up">+0.11%</td></tr>
+      <tr><th>LVMH</th><td class="note"><span data-lang-ko>루이비통·디올 등 명품. 중국 소비에 민감</span><span data-lang-en>Louis Vuitton and Dior; sensitive to Chinese consumption</span></td><td class="n">480.00</td><td class="n down">-0.30%</td></tr>
+      <tr><th>쉘</th><td class="note"><span data-lang-ko>석유·가스 메이저. 유가에 연동</span><span data-lang-en>Oil and gas major; moves with crude</span></td><td class="n">3,277.50</td><td class="n down">-1.13%</td></tr>
+      <tr><th>로레알</th><td class="note"><span data-lang-ko>화장품 세계 1위</span><span data-lang-en>The world's largest cosmetics group</span></td><td class="n">385.90</td><td class="n down">-1.15%</td></tr>
     </tbody>
   </table>
   </div>
@@ -884,21 +887,21 @@ html[lang="en"] [data-lang-en]{display:revert}
   <table class="data compact">
     <thead><tr>
       <th><span data-lang-ko>종목</span><span data-lang-en>Name</span></th>
+      <th class="note"><span data-lang-ko>핵심</span><span data-lang-en>What it does</span></th>
       <th class="n"><span data-lang-ko>종가 (엔)</span><span data-lang-en>Close (JPY)</span></th>
       <th class="n"><span data-lang-ko>등락률</span><span data-lang-en>Change</span></th>
-      <th class="n"><span data-lang-ko>전일 종가</span><span data-lang-en>Prev close</span></th>
     </tr></thead>
     <tbody>
-      <tr><th>소니</th><td class="n">3,721.00</td><td class="n up">+2.62%</td><td class="n">3,626.00</td></tr>
-      <tr><th>히타치</th><td class="n">5,620.00</td><td class="n up">+2.18%</td><td class="n">5,500.00</td></tr>
-      <tr><th>패스트리테일링</th><td class="n">79,310.00</td><td class="n up">+0.53%</td><td class="n">78,890.00</td></tr>
-      <tr><th>도요타</th><td class="n">2,980.00</td><td class="n down">-0.12%</td><td class="n">2,983.50</td></tr>
-      <tr><th>미쓰비시UFJ</th><td class="n">3,564.00</td><td class="n down">-0.28%</td><td class="n">3,574.00</td></tr>
-      <tr><th>키엔스</th><td class="n">85,110.00</td><td class="n down">-0.49%</td><td class="n">85,530.00</td></tr>
-      <tr><th>신에쓰화학</th><td class="n">6,116.00</td><td class="n down">-0.83%</td><td class="n">6,167.00</td></tr>
-      <tr><th>도쿄일렉트론</th><td class="n">54,500.00</td><td class="n down">-1.50%</td><td class="n">55,330.00</td></tr>
-      <tr><th>어드반테스트</th><td class="n">32,190.00</td><td class="n down">-2.25%</td><td class="n">32,930.00</td></tr>
-      <tr><th>소프트뱅크그룹</th><td class="n">5,552.00</td><td class="n down">-2.51%</td><td class="n">5,695.00</td></tr>
+      <tr><th>소니</th><td class="note"><span data-lang-ko>이미지센서·게임·엔터. 스마트폰 카메라 센서 1위</span><span data-lang-en>Image sensors, games and entertainment; leads phone camera sensors</span></td><td class="n">3,721.00</td><td class="n up">+2.62%</td></tr>
+      <tr><th>히타치</th><td class="note"><span data-lang-ko>전력·철도·IT 인프라</span><span data-lang-en>Power, rail and IT infrastructure</span></td><td class="n">5,620.00</td><td class="n up">+2.18%</td></tr>
+      <tr><th>패스트리테일링</th><td class="note"><span data-lang-ko>유니클로 모회사</span><span data-lang-en>Owner of Uniqlo</span></td><td class="n">79,310.00</td><td class="n up">+0.53%</td></tr>
+      <tr><th>도요타</th><td class="note"><span data-lang-ko>세계 판매 1위 완성차. 하이브리드 강세</span><span data-lang-en>The world's biggest carmaker by volume; strong in hybrids</span></td><td class="n">2,980.00</td><td class="n down">-0.12%</td></tr>
+      <tr><th>미쓰비시UFJ</th><td class="note"><span data-lang-ko>일본 최대 금융그룹. 금리 인상 수혜</span><span data-lang-en>Japan's largest banking group; benefits from higher rates</span></td><td class="n">3,564.00</td><td class="n down">-0.28%</td></tr>
+      <tr><th>키엔스</th><td class="note"><span data-lang-ko>공장 자동화 센서. 높은 이익률로 유명</span><span data-lang-en>Factory-automation sensors, known for very high margins</span></td><td class="n">85,110.00</td><td class="n down">-0.49%</td></tr>
+      <tr><th>신에쓰화학</th><td class="note"><span data-lang-ko>반도체 웨이퍼 세계 1위</span><span data-lang-en>The world's largest supplier of silicon wafers</span></td><td class="n">6,116.00</td><td class="n down">-0.83%</td></tr>
+      <tr><th>도쿄일렉트론</th><td class="note"><span data-lang-ko>반도체 장비. 국내 장비주의 직접 비교군</span><span data-lang-en>Semiconductor equipment; the comparable for Korean toolmakers</span></td><td class="n">54,500.00</td><td class="n down">-1.50%</td></tr>
+      <tr><th>어드반테스트</th><td class="note"><span data-lang-ko>반도체 검사장비. HBM 수요에 민감</span><span data-lang-en>Chip test equipment; sensitive to HBM demand</span></td><td class="n">32,190.00</td><td class="n down">-2.25%</td></tr>
+      <tr><th>소프트뱅크그룹</th><td class="note"><span data-lang-ko>투자지주. 암(Arm) 최대 주주</span><span data-lang-en>Investment holding company; Arm's largest shareholder</span></td><td class="n">5,552.00</td><td class="n down">-2.51%</td></tr>
     </tbody>
   </table>
   </div>
@@ -910,21 +913,21 @@ html[lang="en"] [data-lang-en]{display:revert}
     <thead><tr>
       <th><span data-lang-ko>종목</span><span data-lang-en>Name</span></th>
       <th><span data-lang-ko>시장</span><span data-lang-en>Market</span></th>
+      <th class="note"><span data-lang-ko>핵심</span><span data-lang-en>What it does</span></th>
       <th class="n"><span data-lang-ko>종가</span><span data-lang-en>Close</span></th>
       <th class="n"><span data-lang-ko>등락률</span><span data-lang-en>Change</span></th>
-      <th class="n"><span data-lang-ko>전일 종가</span><span data-lang-en>Prev close</span></th>
     </tr></thead>
     <tbody>
-      <tr><th>중국해양석유</th><td><span data-lang-ko>홍콩</span><span data-lang-en>Hong Kong</span></td><td class="n">23.26</td><td class="n up">+2.47%</td><td class="n">22.70</td></tr>
-      <tr><th>SMIC</th><td><span data-lang-ko>홍콩</span><span data-lang-en>Hong Kong</span></td><td class="n">66.90</td><td class="n up">+2.37%</td><td class="n">65.35</td></tr>
-      <tr><th>샤오미</th><td><span data-lang-ko>홍콩</span><span data-lang-en>Hong Kong</span></td><td class="n">27.06</td><td class="n up">+0.74%</td><td class="n">26.86</td></tr>
-      <tr><th>BYD</th><td><span data-lang-ko>홍콩</span><span data-lang-en>Hong Kong</span></td><td class="n">90.15</td><td class="n up">+0.33%</td><td class="n">89.85</td></tr>
-      <tr><th>귀주모태</th><td><span data-lang-ko>본토</span><span data-lang-en>Mainland</span></td><td class="n">1,309.22</td><td class="n up">+0.05%</td><td class="n">1,308.55</td></tr>
-      <tr><th>CATL</th><td><span data-lang-ko>본토</span><span data-lang-en>Mainland</span></td><td class="n">388.07</td><td class="n up">+0.02%</td><td class="n">388.00</td></tr>
-      <tr><th>메이투안</th><td><span data-lang-ko>홍콩</span><span data-lang-en>Hong Kong</span></td><td class="n">92.20</td><td class="n flat">+0.00%</td><td class="n">92.20</td></tr>
-      <tr><th>텐센트</th><td><span data-lang-ko>홍콩</span><span data-lang-en>Hong Kong</span></td><td class="n">478.80</td><td class="n down">-0.08%</td><td class="n">479.20</td></tr>
-      <tr><th>알리바바</th><td><span data-lang-ko>홍콩</span><span data-lang-en>Hong Kong</span></td><td class="n">123.80</td><td class="n down">-0.48%</td><td class="n">124.40</td></tr>
-      <tr><th>중국건설은행</th><td><span data-lang-ko>홍콩</span><span data-lang-en>Hong Kong</span></td><td class="n">8.79</td><td class="n down">-0.79%</td><td class="n">8.86</td></tr>
+      <tr><th>중국해양석유</th><td><span data-lang-ko>홍콩</span><span data-lang-en>Hong Kong</span></td><td class="note"><span data-lang-ko>해양 원유·가스 개발</span><span data-lang-en>Offshore oil and gas exploration and production</span></td><td class="n">23.26</td><td class="n up">+2.47%</td></tr>
+      <tr><th>SMIC</th><td><span data-lang-ko>홍콩</span><span data-lang-en>Hong Kong</span></td><td class="note"><span data-lang-ko>중국 최대 파운드리. 미국 수출규제 대상</span><span data-lang-en>China's largest foundry; subject to US export controls</span></td><td class="n">66.90</td><td class="n up">+2.37%</td></tr>
+      <tr><th>샤오미</th><td><span data-lang-ko>홍콩</span><span data-lang-en>Hong Kong</span></td><td class="note"><span data-lang-ko>스마트폰·가전에서 전기차로 확장</span><span data-lang-en>Phones and appliances, expanding into EVs</span></td><td class="n">27.06</td><td class="n up">+0.74%</td></tr>
+      <tr><th>BYD</th><td><span data-lang-ko>홍콩</span><span data-lang-en>Hong Kong</span></td><td class="note"><span data-lang-ko>전기차 판매 세계 최대급. 배터리를 자체 생산</span><span data-lang-en>Among the world's largest EV sellers; makes its own batteries</span></td><td class="n">90.15</td><td class="n up">+0.33%</td></tr>
+      <tr><th>귀주모태</th><td><span data-lang-ko>본토</span><span data-lang-en>Mainland</span></td><td class="note"><span data-lang-ko>백주(마오타이) 1위. 중국 소비심리의 대표 지표</span><span data-lang-en>The top baijiu maker; a bellwether for Chinese consumption</span></td><td class="n">1,309.22</td><td class="n up">+0.05%</td></tr>
+      <tr><th>CATL</th><td><span data-lang-ko>본토</span><span data-lang-en>Mainland</span></td><td class="note"><span data-lang-ko>세계 1위 배터리 제조사. 국내 배터리사의 최대 경쟁자</span><span data-lang-en>The world's largest battery maker; Korea's chief rival</span></td><td class="n">388.07</td><td class="n up">+0.02%</td></tr>
+      <tr><th>메이투안</th><td><span data-lang-ko>홍콩</span><span data-lang-en>Hong Kong</span></td><td class="note"><span data-lang-ko>배달·생활 서비스 플랫폼</span><span data-lang-en>Food delivery and local-services platform</span></td><td class="n">92.20</td><td class="n flat">+0.00%</td></tr>
+      <tr><th>텐센트</th><td><span data-lang-ko>홍콩</span><span data-lang-en>Hong Kong</span></td><td class="note"><span data-lang-ko>위챗·게임. 중국 최대 인터넷 기업</span><span data-lang-en>WeChat and games; China's largest internet company</span></td><td class="n">478.80</td><td class="n down">-0.08%</td></tr>
+      <tr><th>알리바바</th><td><span data-lang-ko>홍콩</span><span data-lang-en>Hong Kong</span></td><td class="note"><span data-lang-ko>전자상거래·클라우드</span><span data-lang-en>E-commerce and cloud</span></td><td class="n">123.80</td><td class="n down">-0.48%</td></tr>
+      <tr><th>중국건설은행</th><td><span data-lang-ko>홍콩</span><span data-lang-en>Hong Kong</span></td><td class="note"><span data-lang-ko>4대 국유은행의 하나. 부동산 대출 비중이 큼</span><span data-lang-en>One of the big four state banks; large property loan book</span></td><td class="n">8.79</td><td class="n down">-0.79%</td></tr>
     </tbody>
   </table>
   </div>
@@ -961,21 +964,21 @@ html[lang="en"] [data-lang-en]{display:revert}
   <table class="data compact">
     <thead><tr>
       <th><span data-lang-ko>종목</span><span data-lang-en>Name</span></th>
-      <th class="n"><span data-lang-ko>종가</span><span data-lang-en>Close</span></th>
+      <th class="note"><span data-lang-ko>핵심</span><span data-lang-en>What it does</span></th>
+      <th class="n"><span data-lang-ko>종가 (원)</span><span data-lang-en>Close (KRW)</span></th>
       <th class="n"><span data-lang-ko>등락률</span><span data-lang-en>Change</span></th>
-      <th class="n"><span data-lang-ko>전일 종가</span><span data-lang-en>Prev close</span></th>
     </tr></thead>
     <tbody>
-      <tr><th>LG에너지솔루션</th><td class="n">360,000</td><td class="n up">+4.35%</td><td class="n">345,000</td></tr>
-      <tr><th>한화에어로스페이스</th><td class="n">1,097,000</td><td class="n up">+4.08%</td><td class="n">1,054,000</td></tr>
-      <tr><th>삼성전기</th><td class="n">1,278,000</td><td class="n up">+3.99%</td><td class="n">1,229,000</td></tr>
-      <tr><th>삼성바이오로직스</th><td class="n">1,556,000</td><td class="n up">+2.77%</td><td class="n">1,514,000</td></tr>
-      <tr><th>KB금융</th><td class="n">175,800</td><td class="n up">+2.51%</td><td class="n">171,500</td></tr>
-      <tr><th>셀트리온</th><td class="n">199,300</td><td class="n up">+2.21%</td><td class="n">195,000</td></tr>
-      <tr><th>삼성전자</th><td class="n">231,000</td><td class="n up">+0.22%</td><td class="n">230,500</td></tr>
-      <tr><th>현대차</th><td class="n">395,500</td><td class="n down">-1.12%</td><td class="n">400,000</td></tr>
-      <tr><th>SK하이닉스</th><td class="n">1,422,000</td><td class="n down">-4.88%</td><td class="n">1,495,000</td></tr>
-      <tr><th>NAVER</th><td class="n">210,000</td><td class="n down">-7.08%</td><td class="n">226,000</td></tr>
+      <tr><th>LG에너지솔루션</th><td class="note"><span data-lang-ko>이차전지 셀. 완성차에 배터리 공급</span><span data-lang-en>Battery cells supplied to global automakers</span></td><td class="n">360,000</td><td class="n up">+4.35%</td></tr>
+      <tr><th>한화에어로스페이스</th><td class="note"><span data-lang-ko>항공엔진·방산. 유럽 수출 확대</span><span data-lang-en>Aero engines and defence; expanding European exports</span></td><td class="n">1,097,000</td><td class="n up">+4.08%</td></tr>
+      <tr><th>삼성전기</th><td class="note"><span data-lang-ko>MLCC·반도체 기판. 삼성전자 공급망</span><span data-lang-en>MLCCs and semiconductor substrates; Samsung supply chain</span></td><td class="n">1,278,000</td><td class="n up">+3.99%</td></tr>
+      <tr><th>삼성바이오로직스</th><td class="note"><span data-lang-ko>바이오의약품 위탁생산(CDMO) 세계 최대급</span><span data-lang-en>One of the world's largest biologics CDMOs</span></td><td class="n">1,556,000</td><td class="n up">+2.77%</td></tr>
+      <tr><th>KB금융</th><td class="note"><span data-lang-ko>은행 중심 금융지주. 금리에 실적이 직결</span><span data-lang-en>Bank-led financial group; earnings track interest rates</span></td><td class="n">175,800</td><td class="n up">+2.51%</td></tr>
+      <tr><th>셀트리온</th><td class="note"><span data-lang-ko>바이오시밀러. 미국·유럽 처방 확대</span><span data-lang-en>Biosimilars, with prescriptions growing in the US and Europe</span></td><td class="n">199,300</td><td class="n up">+2.21%</td></tr>
+      <tr><th>삼성전자</th><td class="note"><span data-lang-ko>메모리·파운드리·스마트폰. 코스피 시총 1위</span><span data-lang-en>Memory, foundry and handsets; largest KOSPI constituent</span></td><td class="n">231,000</td><td class="n up">+0.22%</td></tr>
+      <tr><th>현대차</th><td class="note"><span data-lang-ko>완성차. 미국·인도 판매 비중이 큼</span><span data-lang-en>Automaker with heavy exposure to the US and India</span></td><td class="n">395,500</td><td class="n down">-1.12%</td></tr>
+      <tr><th>SK하이닉스</th><td class="note"><span data-lang-ko>D램·낸드. HBM 시장 선두권, 엔비디아 주요 공급사</span><span data-lang-en>DRAM and NAND; a leader in HBM and a key Nvidia supplier</span></td><td class="n">1,422,000</td><td class="n down">-4.88%</td></tr>
+      <tr><th>NAVER</th><td class="note"><span data-lang-ko>검색·커머스·핀테크. 국내 최대 인터넷 기업</span><span data-lang-en>Search, commerce and fintech; Korea's largest internet firm</span></td><td class="n">210,000</td><td class="n down">-7.08%</td></tr>
     </tbody>
   </table>
   </div>
