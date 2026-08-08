@@ -1,32 +1,29 @@
 ==============================================================================
-A. 네이버 모바일 선물 — 숫자가 박힌 자리의 필드명과 날짜
+A. 같은 필드를 현물 지수에서 읽어 단위를 가늠한다
 ==============================================================================
-  39610 bytes
-
-  --- '9,624' 주변 ---
-  물 (26.09.)</strong><div class="IndexOverviewSection_text__P5l0c">코스피200 주가지수를 기초자산으로 하는 선물지수</div></div><div class="DividingLine_line__F02JJ"></div><div class="IndexTrendSection_article__lHWBf"><div class="IndexTrendSection_info___FdhY"><strong class="IndexTrendSection_title___vwud">투자자별</strong><ul class="IndexTrendSection_list__mhaNi"><li class="IndexTrendSection_item__PCRni"><span class="IndexTrendSection_desc__n5iS8">개인</span><span class="IndexTrendSection_num__NfBdy IndexTrendSection_FALLING__e6q_S">-1,444</span></li><li class="IndexTrendSection_item__PCRni"><span class="IndexTrendSection_desc__n5iS8">외국인</span><span class="IndexTrendSection_num__NfBdy IndexTrendSection_RISING__0ZgJY">+9,624</span></li><li class="IndexTrendSection_item__PCRni"><span class="IndexTrendSection_desc__n5iS8">기관</span><span class="IndexTrendSection_num__NfBdy IndexTrendSection_FALLING__e6q_S">-7,662</span></li></ul></div></div><div class="DividingLine_line__F02JJ"></div><div class="DividingLine_line__F02JJ"></div><div clas
-
-  --- '9,624' 주변 ---
-  "value":"987.70","compareToPreviousPrice":{"code":"2","text":"상승","name":"RISING"}},{"code":"highPrice","key":"고가","value":"1,007.20","compareToPreviousPrice":{"code":"2","text":"상승","name":"RISING"}},{"code":"lowPrice","key":"저가","value":"963.15","compareToPreviousPrice":{"code":"5","text":"하락","name":"FALLING"}},{"code":"accumulatedTradingVolume","key":"거래량","value":"99,024"},{"code":"accumulatedTradingValue","key":"대금","value":"24,293,139백만"},{"code":"highPriceOf52Weeks","key":"52주 최고","value":"1,535.00"},{"code":"lowPriceOf52Weeks","key":"52주 최저","value":"610.00"}],"description":"코스피200 주가지수를 기초자산으로 하는 선물지수","dealTrendInfo":{"bizdate":"20260807","personalValue":"-1,444","foreignValue":"+9,624","institutionalValue":"-7,662"},"programTrendInfo":null,"upDownStockInfo":null,"enrollStocks":null,"month":"26.09."}},"dataUpdateCount":1,"dataUpdatedAt":1786169844693,"error":null,"errorUpdateCount":0,"errorUpdatedAt":0,"fetchFailureCount":0,"fetchFailureReason":null,"fetchMeta":null,"isInvalidated":false,"statu
-
-  --- 날짜로 보이는 값들 ---
-   "(?:localTradedAt|tradeDate|baseDa -> ['2026-08-07T15:34:59+09:00', '20260807']
-   2026-08-\d\d[T ]?[\d:]* -> ['2026-08-07T15:34:59']
-
-  --- 투자자 관련 필드명 ---
-   ['institutionalValue']
+  [KOSPI  ] {"bizdate":"20260807","personalValue":"+2,675","foreignValue":"-8,651","institutionalValue":"+5,854"}
+            종가=? 거래량=299,377천주 대금=24,730,513백만
+  [KOSDAQ ] {"bizdate":"20260807","personalValue":"+3,402","foreignValue":"-2,522","institutionalValue":"-1,044"}
+            종가=? 거래량=509,894천주 대금=5,269,046백만
+  [KPI200 ] {"bizdate":"20260807","personalValue":"+1,559","foreignValue":"-7,195","institutionalValue":"+5,535"}
+            종가=? 거래량=145,454천주 대금=22,561,039백만
+  [FUT    ] {"bizdate":"20260807","personalValue":"-1,444","foreignValue":"+9,624","institutionalValue":"-7,662"}
+            종가=? 거래량=99,024 대금=24,293,139백만
 
 ==============================================================================
-B. 문제의 기사 — 며칠자인가
+B. 이 화면이 부르는 JSON 엔드포인트 찾기 (HTML 긁기보다 안전)
 ==============================================================================
-  제목/날짜 후보: ['2023/07/06', '2023/08/21', '2025/03/07', '2025/03/26', '2025/03/27', '2025/04/14', '2025/04/24', '2025/06/27', '2026-07-10 17:31', '2026.07.10']
-  본문: 피에서는 802개 종목이 상승했고 92개 종목이 하락했다. 코스닥에서도 1488개 종목이 오르고 204개 종목이 내렸다. 시가총액 상위 종목 대부분이 강세를 나타냈다. 삼성전자는 2.52% 상승했고 LG에너지솔루션(3.99%), 현대차(2.69%), 삼성바이오로직스(5.28%), 삼성생명(4.45%), 삼성전기(6.10%), SK스퀘어(6.18%), KB금융(7.58%) 등이 일제히 올랐다. 반면 SK하이닉스는 0.27% 하락 마감했다. 코스피100지수는 2.24% 오른 9385.25, 코스피200지수는 2.30% 상승한 1196.69를 기록했다. 코스피200 편입 종목 가운데 160개가 상승하며 대형주 전반으로 반등세가 확산됐다. 코스피200선물(9월물)은 2.62% 오른 1210.50에 거래를 마쳤다. 선물시장에서는 기관이 6309계약을 순매수한 반면 외국인은 7738계약을 순매도했다. 다만 이날 반등에도 이번 주 초 기록한 급락분은 아직 모두 회복하지 못했다. 코스피는 지난 7~8일 이틀간 약 10% 하락한 뒤 9~10일 이틀 연속 반등했지만, 지수는 여전히 지난 4일 종가 수준을 밑돌고 있다. Copyright ⓒ 디지털데일리. All rights reserved. 무단 전재 및 재배포 금지. 이 기사는 언론사에서 경제 섹션으로 분류했습니다. 기사 섹션 분류 안내 기사의 섹션 정보는 해당 언론사의 분류를 따르고 있습니다. 언론
+  queryHash: []
+  [https://api.stock.naver.com/index/FUT/basic             ] HTTP Error 409: Conflict
+  [https://api.stock.naver.com/index/FUT/integration       ] HTTP Error 404: Not Found
+  [https://api.stock.naver.com/futures/FUT/integration     ] HTTP Error 404: Not Found
+  [s://api.stock.naver.com/index/nation/KOR/FUT/integration] HTTP Error 404: Not Found
+  [https://m.stock.naver.com/api/index/FUT/integration     ] OK  1009  dealTrendInfo=True
+      {"bizdate": "20260807", "personalValue": "-1,444", "foreignValue": "+9,624", "institutionalValue": "-7,662"}
 
 ==============================================================================
-C. 8월 7일자 마감 기사에서 선물 문장 다시 찾기 (날짜 지정 검색)
+C. 연합인포맥스 8월 7일자 기사에서 선물 계약 수 대조
 ==============================================================================
-  [코스피 마감 선물 외국인 계약] 기사 3건
-  [증시 마감 선물 순매수 계약 8월 7일] 기사 2건
-  [코스피 6258 마감] 기사 4건
+  기사 29건 (최신순)
 
 탐색 종료
