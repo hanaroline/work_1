@@ -11,6 +11,8 @@ JSON의 "sources" 에 남기므로, 브리핑은 무엇이 확보됐고 무엇�
 """
 
 import html as html_mod
+import csv
+import io
 import json
 import os
 import re
@@ -32,7 +34,7 @@ YAHOO_INDEX = {
     "vix": "^VIX", "dxy": "DX-Y.NYB", "usdjpy": "JPY=X",
     "wti": "CL=F", "brent": "BZ=F", "gold": "GC=F",
     # ^IRX 는 2년물이 아니라 13주(3개월)물이다. 2년물은 야후에 지수 심볼이 없어
-    # FRED(DGS2)로 따로 받는다. 아래는 야후에 실제로 있는 만기만 적는다.
+    # 미 재무부 원본 곡선으로 따로 받는다. 아래는 야후에 실제로 있는 만기만 적는다.
     "ust10y": "^TNX", "ust3m": "^IRX", "ust5y": "^FVX", "ust30y": "^TYX",
     # --- 아래는 모닝 브리핑용 (07:00 KST 시점에 미국장이 끝나 있고 선물이 열려 있다) ---
     "russell": "^RUT", "silver": "SI=F", "copper": "HG=F", "natgas": "NG=F",
@@ -618,46 +620,56 @@ def naver_news(now, limit=24):
             "credit_mentions": credit[:8]}
 
 
-def fred_yields():
-    """미 국채 금리 — 세인트루이스 연은 FRED. 인증키가 필요 없는 CSV 경로다.
+def treasury_yields(now):
+    """미 국채 수익률 곡선 — 미 재무부가 직접 내는 CSV. 인증키가 필요 없다.
 
     야후에는 2년물 지수 심볼이 없다(^IRX 는 3개월물이다). 2년물은 모닝 브리핑에서
-    연준 경로를 이야기할 때 반드시 쓰는 값이라, 재무부 원자료를 그대로 받는다.
-    10년-2년 스프레드(장단기 역전 여부)도 여기서 계산한다.
+    연준 경로를 이야기할 때 반드시 쓰는 값이다. FRED 는 러너에서 계속 끊겨
+    재무부 원본을 쓴다. 전 만기가 한 번에 오고 연중 일별 이력까지 들어 있어
+    전일 대비와 10년-2년 스프레드를 직접 계산할 수 있다.
     """
-    ids = ["DGS2", "DGS10", "DGS30", "DGS3MO"]
-    # cosd 를 안 주면 1962년부터 전부 내려와 응답이 느려 끊긴다. 최근치만 받는다.
-    since = (datetime.now(KST) - timedelta(days=45)).strftime("%Y-%m-%d")
-    csv = _get("https://fred.stlouisfed.org/graph/fredgraph.csv?id=%s&cosd=%s"
-               % (",".join(ids), since), timeout=60)
-    lines = [l for l in csv.splitlines() if l.strip()]
-    if len(lines) < 2:
-        raise ValueError("FRED 응답이 비었음 (%d bytes)" % len(csv))
-    head = [h.strip().strip('"') for h in lines[0].split(",")]
-    out = {}
-    # 최신 행부터 거슬러 올라가며 값이 실제로 있는 날을 찾는다(휴장일은 빈칸이다)
-    for line in reversed(lines[1:]):
-        cells = [c.strip().strip('"') for c in line.split(",")]
-        if len(cells) != len(head):
-            continue
-        row = dict(zip(head, cells))
-        date = row.get(head[0])
-        for key in ids:
-            if key in out:
-                continue
+    year = now.strftime("%Y")
+    csv_text = _get(
+        "https://home.treasury.gov/resource-center/data-chart-center/interest-rates/"
+        "daily-treasury-rates.csv/%s/all?type=daily_treasury_yield_curve"
+        "&field_tdr_date_value=%s&page&_format=csv" % (year, year), timeout=50)
+    rows = list(csv.reader(io.StringIO(csv_text)))
+    if len(rows) < 2:
+        raise ValueError("재무부 CSV 행 없음 (%d bytes)" % len(csv_text))
+    head = [h.strip() for h in rows[0]]
+    want = {"ust1m": "1 Mo", "ust3m": "3 Mo", "ust6m": "6 Mo", "ust1y": "1 Yr",
+            "ust2y": "2 Yr", "ust3y": "3 Yr", "ust5y": "5 Yr", "ust7y": "7 Yr",
+            "ust10y": "10 Yr", "ust20y": "20 Yr", "ust30y": "30 Yr"}
+
+    def parse(row):
+        d = dict(zip(head, [c.strip() for c in row]))
+        out = {}
+        for key, col in want.items():
             try:
-                out[key] = {"value": float(row[key]), "date": date}
+                out[key] = float(d[col])
             except (KeyError, ValueError):
                 pass
-        if all(k in out for k in ids):
-            break
-    if "DGS2" not in out or "DGS10" not in out:
-        raise ValueError("2년물/10년물을 못 받음: %s" % list(out))
-    res = {"ust2y": out["DGS2"], "ust10y": out["DGS10"],
-           "ust30y": out.get("DGS30"), "ust3m": out.get("DGS3MO"),
-           "unit": "%", "source_url": "https://fred.stlouisfed.org (DGS 시리즈)"}
-    res["spread_10y_2y_bp"] = round(
-        (out["DGS10"]["value"] - out["DGS2"]["value"]) * 100)
+        raw = d.get(head[0], "")
+        try:                                        # 08/07/2026 -> 2026-08-07
+            mm, dd, yy = raw.split("/")
+            out["date"] = "%s-%s-%s" % (yy, mm, dd)
+        except ValueError:
+            out["date"] = raw
+        return out
+
+    # 최신 행이 맨 위다. 전일 대비를 내려면 두 줄이 필요하다.
+    latest = parse(rows[1])
+    prev = parse(rows[2]) if len(rows) > 2 else {}
+    if "ust2y" not in latest or "ust10y" not in latest:
+        raise ValueError("2년물/10년물 없음: %s" % head[:14])
+    res = {"unit": "%", "date": latest["date"], "prev_date": prev.get("date"),
+           "curve": {k: v for k, v in latest.items() if k != "date"},
+           "prev_curve": {k: v for k, v in prev.items() if k != "date"},
+           "source_url": "https://home.treasury.gov (Daily Treasury Yield Curve)"}
+    res["change_bp"] = {
+        k: round((latest[k] - prev[k]) * 100)
+        for k in want if k in latest and k in prev}
+    res["spread_10y_2y_bp"] = round((latest["ust10y"] - latest["ust2y"]) * 100)
     res["inverted"] = res["spread_10y_2y_bp"] < 0
     return res
 
@@ -665,8 +677,7 @@ def fred_yields():
 def naver_vkospi():
     """VKOSPI — 코스피200 변동성지수. 야후에 없어 네이버 모바일에서 받는다."""
     errors = []
-    for code in ("VKOSPI", "VKOSPI200", "CBOEVKOSPI", "KSVKOSPI", "VKOSPI_KRX",
-                 "KOSPIVOL", "VKS", "KVX"):
+    for code in ("VKOSPI", "VKOSPI200"):
         try:
             j = json.loads(_get(
                 "https://m.stock.naver.com/api/index/%s/integration" % code,
@@ -690,7 +701,11 @@ def naver_vkospi():
                 "open": n(info.get("openPrice")), "high": n(info.get("highPrice")),
                 "low": n(info.get("lowPrice")),
                 "source_url": "https://m.stock.naver.com/api/index/%s/integration" % code}
-    raise ValueError("; ".join(errors) or "경로 없음")
+    raise ValueError(
+        "네이버는 VKOSPI 를 취급하지 않는다(지수 코드가 KOSPI/KOSDAQ/FUT/KPI100/"
+        "KPI200/KVALUE 뿐). 야후 미수록, 인베스팅 403, stooq 자바스크립트 차단. "
+        "KRX 오픈API 무료 인증키(KRX_AUTH_KEY)를 넣으면 열린다. 시도: "
+        + "; ".join(errors))
 
 
 def naver_futures(dump_dir=None):
@@ -816,9 +831,9 @@ def main():
         if v:
             out.setdefault("us_stocks", {})[name] = v
 
-    # 미 국채 — 야후에 2년물 심볼이 없어 FRED 원자료로 받는다
-    v, st = run("fred", fred_yields)
-    out["sources"]["fred:yields"] = st
+    # 미 국채 — 야후에 2년물 심볼이 없어 재무부 원본 곡선을 받는다
+    v, st = run("treasury", treasury_yields, now)
+    out["sources"]["treasury:curve"] = st
     if v:
         out["rates_us"] = v
 
