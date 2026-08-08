@@ -1,6 +1,6 @@
 {
-  "generated_at_kst": "2026-08-08 14:25:36",
-  "generated_at_utc": "2026-08-08 05:25:36",
+  "generated_at_kst": "2026-08-08 14:29:36",
+  "generated_at_utc": "2026-08-08 05:29:36",
   "sources": {
     "yahoo:kospi": {
       "ok": true
@@ -105,8 +105,7 @@
       "ok": true
     },
     "ecos:rates": {
-      "ok": false,
-      "error": "ValueError: ECOS 에서 아무 항목도 못 받음 (항목목록 0건)"
+      "ok": true
     },
     "krx:futures_investors": {
       "ok": false,
@@ -938,7 +937,10 @@
     "ktb10y_errors": [
       "il.naver?marketindexCd=IRR_GOVT10Y -> 값 없음(21553 bytes)",
       "nds/south-korea-10-year-bond-yield -> HTTP Error 403: Forbidden"
-    ]
+    ],
+    "ktb1y": 3.367,
+    "ktb5y": 3.964,
+    "ktb10y": 4.208
   },
   "at_kr_close": {
     "wti": {
@@ -964,6 +966,45 @@
     "rate": 1411.0,
     "source_url": "https://finance.naver.com/marketindex/",
     "note": "매매기준율"
+  },
+  "rates_ecos": {
+    "ktb1y": {
+      "value": 3.367,
+      "date": "20260807",
+      "item": "국고채(1년)",
+      "code": "010190000"
+    },
+    "ktb3y": {
+      "value": 3.746,
+      "date": "20260807",
+      "item": "국고채(3년)",
+      "code": "010200000"
+    },
+    "ktb5y": {
+      "value": 3.964,
+      "date": "20260807",
+      "item": "국고채(5년)",
+      "code": "010200001"
+    },
+    "ktb10y": {
+      "value": 4.208,
+      "date": "20260807",
+      "item": "국고채(10년)",
+      "code": "010210000"
+    },
+    "corp3y": {
+      "value": 10.246,
+      "date": "20260807",
+      "item": "회사채(3년, BBB-)",
+      "code": "010320000"
+    },
+    "cd91": {
+      "value": 2.93,
+      "date": "20260807",
+      "item": "CD(91일)",
+      "code": "010502000"
+    },
+    "source": "한국은행 ECOS 817Y002 (샘플 인증키)"
   },
   "limit_names": {
     "upper": {
@@ -1017,6 +1058,6 @@
   },
   "summary": {
     "sources_tried": 39,
-    "sources_ok": 36
+    "sources_ok": 37
   }
 }
