@@ -1,6 +1,6 @@
 {
-  "generated_at_kst": "2026-08-08 12:59:08",
-  "generated_at_utc": "2026-08-08 03:59:08",
+  "generated_at_kst": "2026-08-08 13:00:39",
+  "generated_at_utc": "2026-08-08 04:00:39",
   "sources": {
     "yahoo:kospi": {
       "ok": true
@@ -82,23 +82,11 @@
     },
     "naver:investors": {
       "ok": false,
-      "error": "ValueError: 투자자별 행을 찾지 못함"
+      "error": "TypeError: not all arguments converted during string formatting"
     },
-    "krx:allstocks:MDCSTAT01501:20260808": {
+    "krx:allstocks": {
       "ok": false,
-      "error": "HTTP 403"
-    },
-    "krx:allstocks:MDCSTAT01501:20260807": {
-      "ok": false,
-      "error": "HTTP 403"
-    },
-    "krx:investors:MDCSTAT02203:20260808": {
-      "ok": false,
-      "error": "HTTP 403"
-    },
-    "krx:investors:MDCSTAT02201:20260808": {
-      "ok": false,
-      "error": "HTTP 403"
+      "error": "HTTP 400"
     }
   },
   "indices": {
@@ -148,7 +136,7 @@
       "open": 7735.1802,
       "high": 7763.0801,
       "low": 7719.1899,
-      "volume": 2719843000,
+      "volume": 5019970000,
       "prev_close": 7709.96,
       "change": 47.6802,
       "change_pct": 0.6184,
@@ -157,13 +145,13 @@
     "nasdaq": {
       "symbol": "^IXIC",
       "date": "2026-08-07",
-      "close": 26690.6152,
+      "close": 26690.6191,
       "open": 26534.6602,
-      "high": 26712.6172,
-      "low": 26478.0059,
-      "volume": 7207856000,
+      "high": 26712.6191,
+      "low": 26478.0098,
+      "volume": 8183970000,
       "prev_close": 26348.3496,
-      "change": 342.2656,
+      "change": 342.2695,
       "change_pct": 1.299,
       "currency": "USD"
     },
@@ -174,7 +162,7 @@
       "open": 53849.2617,
       "high": 54094.6484,
       "low": 53807.9414,
-      "volume": 378681628,
+      "volume": 378680000,
       "prev_close": 53885.1016,
       "change": 151.8281,
       "change_pct": 0.2818,
@@ -183,13 +171,13 @@
     "sox": {
       "symbol": "^SOX",
       "date": "2026-08-07",
-      "close": 12356.7871,
-      "open": 12299.9785,
-      "high": 12425.7432,
-      "low": 12082.625,
+      "close": 12356.79,
+      "open": 12299.9805,
+      "high": 12425.7402,
+      "low": 12082.6299,
       "volume": 0,
       "prev_close": 12048.6904,
-      "change": 308.0967,
+      "change": 308.0996,
       "change_pct": 2.5571,
       "currency": "USD"
     },
@@ -209,14 +197,14 @@
     "dxy": {
       "symbol": "DX-Y.NYB",
       "date": "2026-08-07",
-      "close": 99.604,
-      "open": 99.943,
-      "high": 99.997,
-      "low": 99.403,
+      "close": 99.6,
+      "open": 99.94,
+      "high": 100.0,
+      "low": 99.4,
       "volume": 0,
       "prev_close": 99.97,
-      "change": -0.366,
-      "change_pct": -0.3661,
+      "change": -0.37,
+      "change_pct": -0.3701,
       "currency": "USD"
     },
     "usdjpy": {
@@ -235,40 +223,40 @@
     "wti": {
       "symbol": "CL=F",
       "date": "2026-08-07",
-      "close": 77.08,
+      "close": 78.18,
       "open": 78.17,
       "high": 78.77,
       "low": 76.53,
-      "volume": 206437,
+      "volume": 246260,
       "prev_close": 77.29,
-      "change": -0.21,
-      "change_pct": -0.2717,
+      "change": 0.89,
+      "change_pct": 1.1515,
       "currency": "USD"
     },
     "brent": {
       "symbol": "BZ=F",
       "date": "2026-08-07",
-      "close": 82.27,
-      "open": 0.0,
+      "close": 83.55,
+      "open": 83.33,
       "high": 84.39,
       "low": 81.5,
-      "volume": 35386,
+      "volume": 40651,
       "prev_close": 82.49,
-      "change": -0.22,
-      "change_pct": -0.2667,
+      "change": 1.06,
+      "change_pct": 1.285,
       "currency": "USD"
     },
     "gold": {
       "symbol": "GC=F",
       "date": "2026-08-07",
-      "close": 4401.2998,
-      "open": 4298.2998,
-      "high": 4432.2998,
-      "low": 4288.0,
-      "volume": 182381,
+      "close": 4340.7002,
+      "open": 4277.0,
+      "high": 4371.5,
+      "low": 4274.0,
+      "volume": 3101,
       "prev_close": 4242.0,
-      "change": 159.2998,
-      "change_pct": 3.7553,
+      "change": 98.7002,
+      "change_pct": 2.3267,
       "currency": "USD"
     },
     "ust10y": {
@@ -795,7 +783,7 @@
     ]
   },
   "summary": {
-    "sources_tried": 31,
+    "sources_tried": 28,
     "sources_ok": 26
   }
 }
