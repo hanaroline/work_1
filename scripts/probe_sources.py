@@ -1,65 +1,37 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""남은 공백을 채울 경로를 찾는 탐색 스크립트. 결과는 data/market/probe.txt.
+"""공표일정의 날짜-제목 짝을 마크업에서 확인한다. 결과는 data/market/probe.txt.
 
-지금까지:
-  1~2차 — KRX 정보데이터시스템은 공개 리더를 거쳐도 막힌다. 네이버 선물 화면엔 시세뿐.
-  3차   — 증시자금동향에서 고객예탁금·신용잔고를 얻었다(수집기에 반영 완료).
-  4~5차 — 기사 본문은 n.news.naver.com 으로 받으면 잘 들어온다(수집기에 반영 완료).
-          다만 그날 기사 30건에 선물 계약 수를 적은 문장은 하나도 없었다.
-  6차(지금) — 국내 경제지표 공표일정. 브리핑 세션은 한국은행·통계청에 직접 못 붙는다.
+평문으로 훑으면 '2026-08-14 12:00 6월 통화 및 유동성' 처럼 보이지만,
+날짜가 앞 제목에 붙는지 뒤 제목에 붙는지는 평문만으로 단정할 수 없다.
+표를 잘못 읽어 일정을 틀리게 쓰는 것보다, 마크업을 직접 보고 정하는 편이 낫다.
 """
 import re
 import urllib.request
 
 UA = ("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
       "(KHTML, like Gecko) Chrome/126.0 Safari/537.36")
+URL = ("https://www.bok.or.kr/portal/stats/statsPublictSchdul/listCldr.do"
+       "?menuNo=200775")
 
+req = urllib.request.Request(URL, headers={"User-Agent": UA,
+                                           "Accept-Language": "ko-KR,ko;q=0.9"})
+with urllib.request.urlopen(req, timeout=40) as r:
+    html = r.read().decode("utf-8", "replace")
 
-def get(url, encoding="utf-8", timeout=30):
-    req = urllib.request.Request(url, headers={
-        "User-Agent": UA, "Accept-Language": "ko-KR,ko;q=0.9"})
-    with urllib.request.urlopen(req, timeout=timeout) as r:
-        return r.read().decode(encoding, "replace")
+print("%d bytes" % len(html))
 
+print("\n=== '수출입물가' 주변 원본 마크업 ===")
+i = html.find("수출입물가")
+print(html[max(0, i - 1400):i + 400])
 
-def text(html):
-    t = re.sub(r"(?is)<(script|style).*?</\1>", " ", html)
-    t = re.sub(r"(?s)<[^>]+>", " ", t)
-    return re.sub(r"\s+", " ", re.sub(r"&nbsp;?", " ", t)).strip()
+print("\n=== '통화 및 유동성' 주변 원본 마크업 ===")
+i = html.find("통화 및 유동성")
+print(html[max(0, i - 900):i + 300])
 
+print("\n=== 날짜가 든 태그 패턴 ===")
+for m in list(re.finditer(r"2026-08-1[0-9]", html))[:6]:
+    print("---")
+    print(html[max(0, m.start() - 300):m.start() + 300])
 
-TARGETS = [
-    ("한은 공표일정 달력",
-     "https://www.bok.or.kr/portal/stats/statsPublictSchdul/listCldr.do?menuNo=200775"),
-    ("한은 공표일정 목록",
-     "https://www.bok.or.kr/portal/stats/statsPublictSchdul/list.do?menuNo=200776"),
-    ("통계청 공표일정",
-     "https://kostat.go.kr/board.es?mid=a10302010000&bid=219"),
-    ("e-나라지표", "https://www.index.go.kr/unity/potal/main/EachDtlPageDetail.do?idx_cd=1063"),
-]
-
-for label, url in TARGETS:
-    print("=" * 78)
-    print(label)
-    print("=" * 78)
-    try:
-        html = get(url)
-    except Exception as e:
-        print("  실패: %s: %s" % (type(e).__name__, str(e)[:90]))
-        continue
-    body = text(html)
-    print("  %d bytes / 본문 %d자" % (len(html), len(body)))
-    # 8월 10~14일이 들어간 대목만 추린다
-    hits = 0
-    for m in re.finditer(r"(8\s*월\s*1[0-4]\s*일|2026[-./]0?8[-./]1[0-4]|0?8[-./]1[0-4])", body):
-        s = body[max(0, m.start() - 90):m.start() + 170]
-        print("    · %s" % s.strip()[:250])
-        hits += 1
-        if hits >= 8:
-            break
-    if not hits:
-        print("  8월 10~14일 언급 없음. 본문 앞머리: %s" % body[:300])
-    print()
-
-print("탐색 종료")
+print("\n탐색 종료")
