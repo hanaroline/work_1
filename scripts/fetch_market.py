@@ -674,6 +674,48 @@ def treasury_yields(now):
     return res
 
 
+def naver_index_daily(code, pages=2):
+    """지수 일별시세 — 날짜별 종가·거래량·거래대금.
+
+    야후는 거래대금을 주지 않는다. 주간 기준선을 잡거나 지난 거래일 수치를
+    되짚을 때(모닝 브리핑은 전 거래일을 다룬다) 이 이력이 필요하다.
+    """
+    rows = []
+    for page in range(1, pages + 1):
+        s = _get("https://finance.naver.com/sise/sise_index_day.naver?code=%s&page=%d"
+                 % (code, page), referer="https://finance.naver.com/sise/",
+                 encoding="cp949")
+        for tr in re.findall(r"(?is)<tr[^>]*>.*?</tr>", s):
+            cells = [c for c in (_text(c) for c in
+                                 re.findall(r"(?is)<td[^>]*>(.*?)</td>", tr)) if c]
+            if len(cells) < 6 or not re.match(r"^\d{4}\.\d{2}\.\d{2}$", cells[0]):
+                continue
+
+            def n(x):
+                try:
+                    return float(x.replace(",", "").replace("%", "").replace("+", ""))
+                except ValueError:
+                    return None
+
+            rows.append({
+                "date": cells[0].replace(".", "-"),
+                "close": n(cells[1]),
+                "change_pct": n(cells[3]),
+                "volume_k_shares": n(cells[4]),      # 천주
+                "value_mn_krw": n(cells[5]),         # 백만원
+            })
+    if not rows:
+        raise ValueError("일별시세 행 없음")
+    seen, uniq = set(), []
+    for r in rows:
+        if r["date"] not in seen:
+            seen.add(r["date"])
+            uniq.append(r)
+    return {"code": code, "unit": {"volume": "천주", "value": "백만원"},
+            "series": uniq[:20],
+            "source_url": "https://finance.naver.com/sise/sise_index_day.naver?code=" + code}
+
+
 def naver_vkospi():
     """VKOSPI — 코스피200 변동성지수. 야후에 없어 네이버 모바일에서 받는다."""
     errors = []
@@ -836,6 +878,13 @@ def main():
     out["sources"]["treasury:curve"] = st
     if v:
         out["rates_us"] = v
+
+    # 지수 일별시세 — 거래대금은 야후에 없고, 전 거래일을 되짚을 때 필요하다
+    for code in ("KOSPI", "KOSDAQ"):
+        v, st = run("daily", naver_index_daily, code)
+        out["sources"]["naver:daily:" + code] = st
+        if v:
+            out.setdefault("index_daily", {})[code.lower()] = v
 
     # VKOSPI — 야후에 없다
     v, st = run("vkospi", naver_vkospi)
