@@ -32,6 +32,13 @@ jobs:
         with:
           python-version: '3.12'
 
+      - name: 원천 탐색 (작업 브랜치 전용)
+        # 새 원천을 본 수집기에 넣기 전에 어디가 응답하는지 먼저 본다.
+        # 정기 실행(main)에서는 돌지 않는다.
+        if: github.ref_name != 'main'
+        continue-on-error: true
+        run: python scripts/probe_sources.py
+
       - name: 시세 수집
         run: python scripts/fetch_market.py
 
