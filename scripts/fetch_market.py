@@ -488,9 +488,19 @@ def ecos_rates(now, dump_dir=None):
             continue
         last = rows[-1]
         try:
+            # 전 거래일 값도 같이 남긴다. 모닝 브리핑은 지난 거래일을 다루므로
+            # 최신치만 있으면 "묵은 값"으로 적을 수밖에 없다.
+            series = []
+            for r in rows:
+                try:
+                    series.append({"date": r.get("TIME"),
+                                   "value": float(r["DATA_VALUE"])})
+                except (KeyError, ValueError, TypeError):
+                    continue
             out[key] = {"value": float(last["DATA_VALUE"]),
                         "date": last.get("TIME"),
-                        "item": last.get("ITEM_NAME1"), "code": code}
+                        "item": last.get("ITEM_NAME1"), "code": code,
+                        "series": series[-10:]}
         except (KeyError, ValueError, TypeError):
             continue
     if not out:
