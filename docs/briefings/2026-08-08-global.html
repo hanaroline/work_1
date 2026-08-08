@@ -224,6 +224,11 @@ html[lang="en"] .expand-all,html[lang="en"] .print-btn{font-family:var(--font-en
 @media (max-width:1279px){ .stat-grid > .stat:nth-child(5):last-child{grid-column:1/-1} }
 .pane-mode .stat-grid > .stat:nth-child(5):last-child{grid-column:1/-1}
 .stat-grid.six{grid-template-columns:repeat(3,minmax(0,1fr))}
+.stat-grid.eight{grid-template-columns:repeat(4,minmax(0,1fr))}
+.pane-mode .stat-grid.eight{grid-template-columns:repeat(2,minmax(0,1fr))}
+@media (min-width:1680px){ .pane-mode .stat-grid.eight{grid-template-columns:repeat(4,minmax(0,1fr))} }
+@media (max-width:1279px){ .stat-grid.eight{grid-template-columns:repeat(2,minmax(0,1fr))} }
+@media (max-width:560px){ .stat-grid.eight{grid-template-columns:minmax(0,1fr)} }
 .pane-mode .stat-grid.six{grid-template-columns:repeat(2,minmax(0,1fr))}
 @media (min-width:1680px){ .pane-mode .stat-grid.six{grid-template-columns:repeat(3,minmax(0,1fr))} }
 @media (max-width:1023px){ .stat-grid.six{grid-template-columns:repeat(2,minmax(0,1fr))} }
@@ -291,6 +296,7 @@ table.data.compact th,table.data.compact td{padding:8px 11px}
 .view{background:var(--card);padding:22px 20px;box-shadow:0 0 0 1px var(--hairline-soft)}
 .view-firm{font-size:16px;font-weight:700;letter-spacing:.3px;color:var(--primary-active);margin:0 0 4px}
 .view-who{font-size:14px;color:var(--muted-soft);margin:0 0 12px}
+.view-who.num{font-size:15px;color:var(--ink);letter-spacing:-.1px}
 .view-body{font-size:16px;line-height:1.55;margin:0;color:var(--body)}
 .view-stance{display:inline-block;margin-top:12px;font-size:13px;font-weight:500;letter-spacing:.4px;
   padding:3px 9px;border-radius:2px;border:1px solid var(--hairline);color:var(--muted)}
@@ -468,7 +474,7 @@ html[lang="en"] [data-lang-en]{display:revert}
     <li><a href="#rates"><span class="sn">04</span><span data-lang-ko>금리 · 채권시장</span><span data-lang-en>Rates &amp; Bonds</span></a></li>
     <li><a href="#fx"><span class="sn">05</span><span data-lang-ko>환율 · 원자재</span><span data-lang-en>FX &amp; Commodities</span></a></li>
     <li><a href="#europe"><span class="sn">06</span><span data-lang-ko>유럽 &middot; 아시아 증시</span><span data-lang-en>Europe &amp; Asia</span></a></li>
-    <li><a href="#semis"><span class="sn">07</span><span data-lang-ko>반도체 · HBM 공급망</span><span data-lang-en>Semis &amp; HBM Supply Chain</span></a></li>
+    <li><a href="#semis"><span class="sn">07</span><span data-lang-ko>국내 증시 &middot; 반도체</span><span data-lang-en>Korea &amp; Semis</span></a></li>
     <li><a href="#views"><span class="sn">08</span><span data-lang-ko>하우스 시각 · 8월 코스피 전망</span><span data-lang-en>House Views · August KOSPI Outlook</span></a></li>
     <li><a href="#calendar"><span class="sn">09</span><span data-lang-ko>일정 · 체크포인트</span><span data-lang-en>Calendar &amp; Checkpoints</span></a></li>
     <li><a href="#risks"><span class="sn">10</span><span data-lang-ko>리스크 점검</span><span data-lang-en>Risk Check</span></a></li>
@@ -495,7 +501,7 @@ html[lang="en"] [data-lang-en]{display:revert}
   <span class="sec-num">01</span>
   <h2 class="section-title"><span data-lang-ko>한눈에 보는 핵심</span><span data-lang-en>Key Takeaways</span></h2>
 
-  <div class="stat-grid six">
+  <div class="stat-grid eight">
     <div class="stat">
       <p class="stat-label">S&amp;P 500</p>
       <div class="stat-value">7,757.64</div>
@@ -522,9 +528,9 @@ html[lang="en"] [data-lang-en]{display:revert}
     </div>
     <div class="stat">
       <p class="stat-label"><span data-lang-ko>미 10년물 국채</span><span data-lang-en>US 10Y Treasury</span></p>
-      <div class="stat-value sm">~4.61%</div>
-      <div class="stat-chg down"><span data-lang-ko>장중 고점 4.69%에서 &minus;8bp</span><span data-lang-en>&minus;8bp from day's high 4.69%</span></div>
-      <div class="stat-note"><span data-lang-ko>고용 발표 후 되돌림 <span class="vf ok">2 SOURCES</span></span><span data-lang-en>Retraced after jobs release <span class="vf ok">2 SOURCES</span></span></div>
+      <div class="stat-value sm">4.65%</div>
+      <div class="stat-chg down"><span data-lang-ko>-4bp (전일 4.69%)</span><span data-lang-en>-4bp (was 4.69%)</span></div>
+      <div class="stat-note"><span data-lang-ko>미 재무부 확정 고시 · 2Y&ndash;10Y +46bp <span class="vf ok">MARKET DATA</span></span><span data-lang-en>US Treasury official print · 2s10s +46bp <span class="vf ok">MARKET DATA</span></span></div>
     </div>
     <div class="stat">
       <p class="stat-label"><span data-lang-ko>다음 변곡점: 미 7월 CPI</span><span data-lang-en>Next: US July CPI</span></p>
@@ -771,21 +777,46 @@ html[lang="en"] [data-lang-en]{display:revert}
   <span class="sec-num">04</span>
   <h2 class="section-title"><span data-lang-ko>금리 · 채권시장</span><span data-lang-en>Rates &amp; Bonds</span></h2>
 
+  <p class="lede"><span data-lang-ko>첫 판은 검색에서 얻은 <strong>장중 고점과 추정 마감</strong>을 실었습니다. 아래는 <strong>미 재무부가 고시하는 일별 국채 수익률 곡선</strong>의 8월 7일 확정치입니다 &mdash; 만기 11개 전부와 전일(8/6) 대비 변동입니다.</span><span data-lang-en>The first edition carried a day&rsquo;s high and an <strong>estimated</strong> close taken from news search. Below is the <strong>US Treasury&rsquo;s official daily yield curve</strong> for 7 August &mdash; all eleven tenors, with the move from 6 August.</span></p>
+
   <div class="table-wrap">
-  <table class="data">
+  <table class="data compact">
     <thead><tr>
       <th><span data-lang-ko>만기</span><span data-lang-en>Tenor</span></th>
-      <th class="n"><span data-lang-ko>장중 고점</span><span data-lang-en>Day's high</span></th>
+      <th class="n"><span data-lang-ko>8/7 (금)</span><span data-lang-en>Fri 7 Aug</span></th>
+      <th class="n"><span data-lang-ko>8/6 (목)</span><span data-lang-en>Thu 6 Aug</span></th>
       <th class="n"><span data-lang-ko>변동</span><span data-lang-en>Move</span></th>
-      <th class="n"><span data-lang-ko>추정 마감</span><span data-lang-en>Est. close</span></th>
-      <th><span data-lang-ko>검증</span><span data-lang-en>Verify</span></th>
     </tr></thead>
     <tbody>
-      <tr><th>2Y UST</th><td class="n">4.252%</td><td class="n down">&minus;9.2bp</td><td class="n">~4.16%</td><td><span class="vf ok">2 SOURCES</span></td></tr>
-      <tr class="hl"><th>10Y UST</th><td class="n">4.69%</td><td class="n down">&minus;8bp</td><td class="n">~4.61%</td><td><span class="vf ok">2 SOURCES</span></td></tr>
-      <tr><th>30Y UST</th><td class="n">5.233%</td><td class="n down">~&minus;6bp</td><td class="n">~5.175%</td><td><span class="vf solo">1 SOURCE</span></td></tr>
+      <tr><th>1M</th><td class="n">3.79%</td><td class="n">3.80%</td><td class="n down">-1bp</td></tr>
+      <tr><th>3M</th><td class="n">3.87%</td><td class="n">3.90%</td><td class="n down">-3bp</td></tr>
+      <tr><th>6M</th><td class="n">3.96%</td><td class="n">3.99%</td><td class="n down">-3bp</td></tr>
+      <tr><th>1Y</th><td class="n">4.01%</td><td class="n">4.06%</td><td class="n down">-5bp</td></tr>
+      <tr class="hl"><th>2Y</th><td class="n">4.19%</td><td class="n">4.25%</td><td class="n down">-6bp</td></tr>
+      <tr><th>3Y</th><td class="n">4.25%</td><td class="n">4.31%</td><td class="n down">-6bp</td></tr>
+      <tr><th>5Y</th><td class="n">4.35%</td><td class="n">4.40%</td><td class="n down">-5bp</td></tr>
+      <tr><th>7Y</th><td class="n">4.49%</td><td class="n">4.53%</td><td class="n down">-4bp</td></tr>
+      <tr class="hl"><th>10Y</th><td class="n">4.65%</td><td class="n">4.69%</td><td class="n down">-4bp</td></tr>
+      <tr><th>20Y</th><td class="n">5.20%</td><td class="n">5.22%</td><td class="n down">-2bp</td></tr>
+      <tr><th>30Y</th><td class="n">5.19%</td><td class="n">5.22%</td><td class="n down">-3bp</td></tr>
     </tbody>
   </table>
+  </div>
+  <p class="cap"><span data-lang-ko>미국 재무부 일별 국채 수익률 고시(Daily Treasury Yield Curve) <span class="vf ok">MARKET DATA</span> &mdash; <strong>곡선 전체가 내렸습니다.</strong> 고용 발표에 가장 민감한 2년물이 &minus;6bp 로 가장 크게 내렸고, 20년 &middot; 30년 초장기는 &minus;2~&minus;3bp 에 그쳤습니다. 금리 기대가 움직인 것이지 장기 인플레이션 전망이 바뀐 것은 아니라는 배열입니다.</span><span data-lang-en>US Treasury Daily Treasury Yield Curve <span class="vf ok">MARKET DATA</span> &mdash; <strong>the whole curve fell.</strong> The 2-year, most sensitive to the jobs print, fell most at &minus;6bp, while the 20- and 30-year moved only &minus;2 to &minus;3bp: a shift in rate expectations rather than in long-run inflation views.</span></p>
+
+  <div class="views">
+    <div class="view">
+      <p class="view-firm"><span data-lang-ko>장단기 금리차</span><span data-lang-en>Curve spreads</span></p>
+      <p class="view-who num">2Y&ndash;10Y +46bp · 3M&ndash;10Y +78bp</p>
+      <p class="view-body"><span data-lang-ko>2년&ndash;10년 스프레드는 전일 +44bp 에서 <strong>+46bp</strong> 로 <strong>2bp 벌어졌습니다</strong>. 짧은 쪽이 더 많이 내렸다는 뜻으로, 통상 금리 인하 기대가 앞당겨질 때 나오는 모습입니다. 3개월&ndash;10년은 +79bp 에서 +78bp 로 거의 그대로였습니다. <strong>역전 구간은 없습니다.</strong></span><span data-lang-en>The 2s10s spread widened from +44bp to <strong>+46bp</strong>, a <strong>2bp steepening</strong> &mdash; the front end fell further, the usual shape when easing expectations get pulled forward. The 3m10y barely moved, +79bp to +78bp. <strong>No part of the curve is inverted.</strong></span></p>
+      <span class="view-stance neutral"><span data-lang-ko>스티프닝</span><span data-lang-en>Steepening</span></span>
+    </div>
+    <div class="view">
+      <p class="view-firm"><span data-lang-ko>연방기금 금리선물</span><span data-lang-en>Fed funds futures</span></p>
+      <p class="view-who num"><span data-lang-ko>내재금리 3.6325% (선물가 96.3675)</span><span data-lang-en>Implied 3.6325% (price 96.3675)</span></p>
+      <p class="view-body"><span data-lang-ko>CBOT 30일 연방기금 금리선물이 가리키는 해당 결제월 평균 정책금리는 <strong>3.63%</strong> 입니다. 같은 날 <strong>1개월 만기 국채가 3.79%</strong> 였으니, 선물은 그보다 <strong>16bp 낮은 수준</strong>을 보고 있습니다 &mdash; 시장이 정책금리 인상이 아니라 <strong>완화 쪽</strong>에 가격을 매기고 있다는 뜻입니다. 02번에서 &ldquo;고용 쇼크에도 주가가 올랐다&rdquo;고 적은 대목의 근거 숫자가 이것입니다.</span><span data-lang-en>CBOT 30-day fed funds futures imply an average policy rate of <strong>3.63%</strong> for the contract month. The <strong>1-month bill yielded 3.79%</strong> the same day, so futures sit <strong>16bp below it</strong> &mdash; the market is pricing <strong>easing, not tightening</strong>. This is the number behind the &ldquo;stocks rose despite the jobs shock&rdquo; reading in section 02.</span></p>
+      <span class="view-stance bull"><span data-lang-ko>완화 기대</span><span data-lang-en>Easing priced</span></span>
+    </div>
   </div>
 
   <details class="exp">
@@ -795,7 +826,7 @@ html[lang="en"] [data-lang-en]{display:revert}
       <p data-lang-en>An Etoday piece headlined &ldquo;[Bond close] 10Y tops 4.3%, highest in 2 years 8 months&rdquo; surfaced in search, but it sits over 0.3 points below every other source's ~4.6% level, and &ldquo;highest in 2y8m&rdquo; does not square with the current level either — <strong>judged to be from a different period and not adopted.</strong></p>
     </div>
   </details>
-  <p class="cap"><span data-lang-ko>국내 국고채 3년·10년물은 국내 시장 휴장으로 신규 마감치가 없습니다(전 거래일 8/7 수치는 5ebc6deb 장마감 브리핑 참고).</span><span data-lang-en>Korean 3Y/10Y KTB yields have no new close today (Korea is closed) — see the 5ebc6deb post-close briefing for 7 August's figures.</span></p>
+  <p class="cap"><span data-lang-ko>첫 판의 추정 마감(2Y ~4.16%, 10Y ~4.61%, 30Y ~5.175%)은 확정치와 각각 3bp·4bp·1.5bp 어긋났습니다. 국내 국고채 3년·10년물은 국내 시장 휴장으로 신규 마감치가 없습니다(전 거래일 8/7 수치는 5ebc6deb 장마감 브리핑 참고).</span><span data-lang-en>Korean 3Y/10Y KTB yields have no new close today (Korea is closed) — see the 5ebc6deb post-close briefing for 7 August's figures.</span></p>
 </section>
 
 <!-- 05 -->
@@ -974,22 +1005,51 @@ html[lang="en"] [data-lang-en]{display:revert}
 <section class="section" id="semis">
   <div class="section-rule"></div>
   <span class="sec-num">07</span>
-  <h2 class="section-title"><span data-lang-ko>반도체 · HBM 공급망</span><span data-lang-en>Semiconductors &amp; the HBM Supply Chain</span></h2>
-  <p class="lede"><span data-lang-ko>국내 휴장 중에도 월요일 개장에 영향을 줄 반도체 공급망 뉴스가 이어졌습니다.</span><span data-lang-en>Even with Korea closed, semiconductor supply-chain news kept developing — relevant for Monday's open.</span></p>
+  <h2 class="section-title"><span data-lang-ko>국내 증시 &middot; 반도체 공급망</span><span data-lang-en>Korean Equities &amp; the Semiconductor Supply Chain</span></h2>
 
-  <ul class="plain">
-    <li><span data-lang-ko><span class="vf ok">2 SOURCES</span> <strong>엔비디아, 차세대 GPU &lsquo;루빈 울트라&rsquo; 메모리 용량 축소 검토.</strong> HBM 공급 부족·비용 부담에 대응해 최근 몇 주간 GPU당 192GB·256GB 등 서로 다른 HBM 용량의 시제품을 최소 3개 테스트한 것으로 전해졌습니다(아주경제·헤럴드경제).</span><span data-lang-en><span class="vf ok">2 SOURCES</span> <strong>Nvidia is reportedly considering trimming memory capacity on its next-gen &ldquo;Rubin Ultra&rdquo; GPU</strong>, testing at least three prototypes with different HBM configurations (192GB and 256GB per GPU) in recent weeks, in response to HBM supply constraints and cost pressure (Ajunews, Herald Corp).</span></li>
-    <li><span data-lang-ko><span class="vf solo">1 SOURCE</span> <strong>SK하이닉스, HBM4 12단 가격 70% 인상</strong>(8/6, 엔비디아向). 같은 회사가 <strong>HBM4E 12단 샘플</strong>을 &lsquo;베라 루빈 울트라&rsquo;(2027년 출시 예정) 주요 고객사에 공급 중이라는 보도도 있습니다.</span><span data-lang-en><span class="vf solo">1 SOURCE</span> <strong>SK Hynix reportedly raised HBM4 12-layer pricing 70%</strong> for Nvidia (6 Aug), while separately supplying <strong>HBM4E 12-layer samples</strong> to key customers for the &ldquo;Vera Rubin Ultra&rdquo; accelerator due in 2027.</span></li>
-  </ul>
+  <p class="lede"><span data-lang-ko>국내 시장은 8월 7일(금) 마감 뒤 휴장입니다. <strong>월요일 개장은 아래 값에서 출발합니다.</strong> 코스피 <strong>6,258.77 (&minus;0.60%)</strong>, 코스닥 <strong>798.81 (&minus;0.36%)</strong> 입니다.</span><span data-lang-en>Korea has been closed since the Friday 7 August finish. <strong>Monday opens from the levels below</strong> &mdash; KOSPI <strong>6,258.77 (&minus;0.60%)</strong>, KOSDAQ <strong>798.81 (&minus;0.36%)</strong>.</span></p>
 
-  <div class="soft-card">
-    <h4><span data-lang-ko>월요일 개장 관점에서 읽는 법</span><span data-lang-en>Reading this into Monday's open</span></h4>
-    <p class="sub" data-lang-ko>가격 인상(SK하이닉스에 긍정적)과 사양 축소 검토(수요 측 비용 압박 신호)가 동시에 보도되고 있어 방향이 엇갈립니다. 08번의 대신증권 코멘트(반도체 목표 PER 8배&rarr;7배 하향)와 함께 읽으면, <strong>공급자 협상력은 유지되지만 밸류에이션 눈높이는 낮아지는 국면</strong>으로 요약됩니다. 확정된 판단이 아닙니다.</p>
-    <p class="sub" data-lang-en>Reports of both a price hike (positive for SK Hynix) and capacity trimming (a demand-side cost signal) point in different directions. Read alongside Daishin Securities' comment in section 08 (semi target P/E cut 8x&rarr;7x), the picture is <strong>supplier pricing power intact, but valuation expectations coming down</strong>. Not a settled conclusion.</p>
+  <h3><span data-lang-ko>52주 구간에서 지금 위치</span><span data-lang-en>Where we sit in the 52-week range</span></h3>
+  <p class="sub"><span data-lang-ko>&ldquo;지금 들어가기에 비싼 자리냐&rdquo; 는 질문에 먼저 대는 값입니다. 등락률 하나로는 답이 안 나옵니다.</span><span data-lang-en>The first figure to reach for when a client asks whether this is an expensive entry point. A single day&rsquo;s move cannot answer it.</span></p>
+  <div class="table-wrap">
+  <table class="data compact">
+    <thead><tr>
+      <th><span data-lang-ko>지수</span><span data-lang-en>Index</span></th>
+      <th class="n"><span data-lang-ko>8/7 종가</span><span data-lang-en>Close 7 Aug</span></th>
+      <th class="n"><span data-lang-ko>52주 최저</span><span data-lang-en>52w low</span></th>
+      <th class="n"><span data-lang-ko>52주 최고</span><span data-lang-en>52w high</span></th>
+      <th class="n"><span data-lang-ko>구간 내 위치</span><span data-lang-en>Position</span></th>
+      <th class="n"><span data-lang-ko>최고 대비</span><span data-lang-en>From high</span></th>
+    </tr></thead>
+    <tbody>
+      <tr class="hl"><th><span data-lang-ko>코스피</span><span data-lang-en>KOSPI</span></th><td class="n">6,258.77</td><td class="n">3,079.27</td><td class="n">9,385.59</td><td class="n">50.4%</td><td class="n down">-33.3%</td></tr>
+      <tr><th><span data-lang-ko>코스닥</span><span data-lang-en>KOSDAQ</span></th><td class="n">798.81</td><td class="n">630.99</td><td class="n">1,229.42</td><td class="n">28.0%</td><td class="n down">-35.0%</td></tr>
+    </tbody>
+  </table>
   </div>
+  <p class="cap"><span data-lang-ko>네이버 금융 지수 페이지 <span class="vf ok">MARKET DATA</span> &mdash; 코스피는 52주 구간의 <strong>한가운데(50.4%)</strong>, 코스닥은 <strong>아래쪽 28.0%</strong> 지점입니다. <strong>두 시장의 위치가 다릅니다</strong> &mdash; 코스닥 보유 비중이 큰 고객과 대형주 중심 고객에게 같은 말씀을 드리면 어긋납니다. 확정된 투자 판단이 아닙니다.</span><span data-lang-en>Naver Finance index pages <span class="vf ok">MARKET DATA</span> &mdash; the KOSPI sits <strong>mid-range (50.4%)</strong> while the KOSDAQ sits <strong>in the lower third (28.0%)</strong>. <strong>The two markets are not in the same place</strong>, so the same framing will not fit a small-cap-weighted client and a large-cap-weighted one. Not a settled investment conclusion.</span></p>
+
+  <h3><span data-lang-ko>등락 종목 수 &mdash; 지수와 대조</span><span data-lang-en>Advancers vs decliners &mdash; checked against the index</span></h3>
+  <div class="table-wrap">
+  <table class="data compact">
+    <thead><tr>
+      <th><span data-lang-ko>시장</span><span data-lang-en>Market</span></th>
+      <th class="n"><span data-lang-ko>지수</span><span data-lang-en>Index</span></th>
+      <th class="n"><span data-lang-ko>상승</span><span data-lang-en>Advancing</span></th>
+      <th class="n"><span data-lang-ko>보합</span><span data-lang-en>Unchanged</span></th>
+      <th class="n"><span data-lang-ko>하락</span><span data-lang-en>Declining</span></th>
+      <th class="n"><span data-lang-ko>상한가</span><span data-lang-en>Limit up</span></th>
+    </tr></thead>
+    <tbody>
+      <tr class="hl"><th><span data-lang-ko>코스피</span><span data-lang-en>KOSPI</span></th><td class="n down">-0.60%</td><td class="n up">554</td><td class="n">36</td><td class="n down">322</td><td class="n up">3</td></tr>
+      <tr><th><span data-lang-ko>코스닥</span><span data-lang-en>KOSDAQ</span></th><td class="n down">-0.36%</td><td class="n up">808</td><td class="n">84</td><td class="n down">829</td><td class="n up">6</td></tr>
+    </tbody>
+  </table>
+  </div>
+  <p class="cap"><span data-lang-ko><strong>코스피는 지수가 내렸는데 오른 종목이 더 많았습니다</strong>(554 대 322). 시장 전반이 약했던 것이 아니라 <strong>대형주 몇 개가 지수를 눌렀다</strong>는 뜻이고, 아래 표의 NAVER &minus;7.08% &middot; SK하이닉스 &minus;4.88% 가 그 몇 개입니다. 코스닥은 반대로 하락 종목이 근소하게 많아(808 대 829) 시장 전반이 무거웠습니다. <strong>두 시장을 뭉뚱그리면 틀립니다.</strong></span><span data-lang-en><strong>The KOSPI fell while more stocks rose than fell</strong> (554 vs 322). That is not broad weakness &mdash; <strong>a handful of heavyweights pulled the index down</strong>, and the table below names them: NAVER &minus;7.08% and SK Hynix &minus;4.88%. The KOSDAQ was the other way round, with decliners narrowly ahead (808 vs 829) and the whole market heavy. <strong>Treating the two as one market gets it wrong.</strong></span></p>
 
   <h3><span data-lang-ko>국내 주요 종목 (8/7 금 종가)</span><span data-lang-en>Korean large caps (close, Fri 7 Aug)</span></h3>
-  <p class="sub"><span data-lang-ko>월요일 개장 때 이 값에서 출발합니다. 코스피는 8/7 <strong>6,258.77 (&minus;0.60%)</strong>, 코스닥은 <strong>798.81 (&minus;0.36%)</strong> 로 마쳤습니다.</span><span data-lang-en>Monday opens from these levels. The KOSPI finished 7 Aug at <strong>6,258.77 (&minus;0.60%)</strong> and the KOSDAQ at <strong>798.81 (&minus;0.36%)</strong>.</span></p>
+  <p class="sub"><span data-lang-ko>등락률 순입니다. 「핵심」은 사업 내용이며 실적&middot;전망이 아닙니다.</span><span data-lang-en>Sorted by move. &ldquo;What it does&rdquo; describes the business, not earnings or an outlook.</span></p>
   <div class="table-wrap">
   <table class="data compact">
     <thead><tr>
@@ -1012,7 +1072,19 @@ html[lang="en"] [data-lang-en]{display:revert}
     </tbody>
   </table>
   </div>
-  <p class="cap"><span data-lang-ko>단위 원. <strong>지수는 0.6% 빠졌는데 종목은 크게 갈렸습니다</strong> &mdash; LG에너지솔루션 +4.35%, 한화에어로스페이스 +4.08% 가 오른 반면 NAVER &minus;7.08%, SK하이닉스 &minus;4.88% 였습니다. 업종으로는 전자제품 +5.40%, 전기제품 +4.90% 가 위였고 비철금속 &minus;7.23%, 생명보험 &minus;3.62% 가 아래였습니다. 07번의 HBM 가격 인상 보도와 SK하이닉스의 &minus;4.88% 를 함께 보십시오 &mdash; 호재 보도와 주가가 같은 방향이 아니었습니다.</span><span data-lang-en>In won. <strong>The index fell 0.6% but single names diverged sharply</strong> &mdash; LG Energy Solution +4.35% and Hanwha Aerospace +4.08% against NAVER &minus;7.08% and SK Hynix &minus;4.88%. By sector, electronics +5.40% and electrical equipment +4.90% led; non-ferrous metals &minus;7.23% and life insurance &minus;3.62% lagged. Read SK Hynix's &minus;4.88% against the HBM price-hike reports in section 07 &mdash; the headline and the share price did not point the same way.</span></p>
+  <p class="cap"><span data-lang-ko>단위 원. <strong>지수는 0.6% 빠졌는데 종목은 크게 갈렸습니다</strong> &mdash; LG에너지솔루션 +4.35%, 한화에어로스페이스 +4.08% 가 오른 반면 NAVER &minus;7.08%, SK하이닉스 &minus;4.88% 였습니다. 업종으로는 전자제품 +5.40%, 전기제품 +4.90% 가 위였고 비철금속 &minus;7.23%, 생명보험 &minus;3.62% 가 아래였습니다. 아래 「반도체 &middot; HBM 공급망」의 가격 인상 보도와 SK하이닉스의 &minus;4.88% 를 함께 보십시오 &mdash; 호재 보도와 주가가 같은 방향이 아니었습니다.</span><span data-lang-en>In won. <strong>The index fell 0.6% but single names diverged sharply</strong> &mdash; LG Energy Solution +4.35% and Hanwha Aerospace +4.08% against NAVER &minus;7.08% and SK Hynix &minus;4.88%. By sector, electronics +5.40% and electrical equipment +4.90% led; non-ferrous metals &minus;7.23% and life insurance &minus;3.62% lagged. Read SK Hynix's &minus;4.88% against the HBM price-hike reports below &mdash; the headline and the share price did not point the same way.</span></p>
+
+  <h3><span data-lang-ko>반도체 &middot; HBM 공급망</span><span data-lang-en>Semiconductors &amp; the HBM supply chain</span></h3>
+  <p class="lede"><span data-lang-ko>국내 휴장 중에도 월요일 개장에 영향을 줄 반도체 공급망 뉴스가 이어졌습니다.</span><span data-lang-en>Even with Korea closed, semiconductor supply-chain news kept developing — relevant for Monday's open.</span></p>
+  <ul class="plain">
+    <li><span data-lang-ko><span class="vf ok">2 SOURCES</span> <strong>엔비디아, 차세대 GPU &lsquo;루빈 울트라&rsquo; 메모리 용량 축소 검토.</strong> HBM 공급 부족·비용 부담에 대응해 최근 몇 주간 GPU당 192GB·256GB 등 서로 다른 HBM 용량의 시제품을 최소 3개 테스트한 것으로 전해졌습니다(아주경제·헤럴드경제).</span><span data-lang-en><span class="vf ok">2 SOURCES</span> <strong>Nvidia is reportedly considering trimming memory capacity on its next-gen &ldquo;Rubin Ultra&rdquo; GPU</strong>, testing at least three prototypes with different HBM configurations (192GB and 256GB per GPU) in recent weeks, in response to HBM supply constraints and cost pressure (Ajunews, Herald Corp).</span></li>
+    <li><span data-lang-ko><span class="vf solo">1 SOURCE</span> <strong>SK하이닉스, HBM4 12단 가격 70% 인상</strong>(8/6, 엔비디아向). 같은 회사가 <strong>HBM4E 12단 샘플</strong>을 &lsquo;베라 루빈 울트라&rsquo;(2027년 출시 예정) 주요 고객사에 공급 중이라는 보도도 있습니다.</span><span data-lang-en><span class="vf solo">1 SOURCE</span> <strong>SK Hynix reportedly raised HBM4 12-layer pricing 70%</strong> for Nvidia (6 Aug), while separately supplying <strong>HBM4E 12-layer samples</strong> to key customers for the &ldquo;Vera Rubin Ultra&rdquo; accelerator due in 2027.</span></li>
+  </ul>
+  <div class="soft-card">
+    <h4><span data-lang-ko>월요일 개장 관점에서 읽는 법</span><span data-lang-en>Reading this into Monday's open</span></h4>
+    <p class="sub" data-lang-ko>가격 인상(SK하이닉스에 긍정적)과 사양 축소 검토(수요 측 비용 압박 신호)가 동시에 보도되고 있어 방향이 엇갈립니다. 08번의 대신증권 코멘트(반도체 목표 PER 8배&rarr;7배 하향)와 함께 읽으면, <strong>공급자 협상력은 유지되지만 밸류에이션 눈높이는 낮아지는 국면</strong>으로 요약됩니다. 확정된 판단이 아닙니다.</p>
+    <p class="sub" data-lang-en>Reports of both a price hike (positive for SK Hynix) and capacity trimming (a demand-side cost signal) point in different directions. Read alongside Daishin Securities' comment in section 08 (semi target P/E cut 8x&rarr;7x), the picture is <strong>supplier pricing power intact, but valuation expectations coming down</strong>. Not a settled conclusion.</p>
+  </div>
 </section>
 
 <!-- 08 -->
