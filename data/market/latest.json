@@ -1,6 +1,6 @@
 {
-  "generated_at_kst": "2026-08-08 14:13:41",
-  "generated_at_utc": "2026-08-08 05:13:41",
+  "generated_at_kst": "2026-08-08 14:22:38",
+  "generated_at_utc": "2026-08-08 05:22:38",
   "sources": {
     "yahoo:kospi": {
       "ok": true
@@ -92,12 +92,31 @@
     "naver:rates": {
       "ok": true
     },
+    "yahoo:1530:wti": {
+      "ok": true
+    },
+    "yahoo:1530:brent": {
+      "ok": true
+    },
+    "yahoo:1530:gold": {
+      "ok": true
+    },
+    "naver:usdkrw": {
+      "ok": true
+    },
+    "ktb10y": {
+      "ok": false,
+      "error": "ValueError: 네이버 채권 목록 -> HTTP Error 404: 404 | e-나라지표 시장금리 -> <urlopen error timed out> | ECOS 샘플키 일별 시장금리 -> 값 없음(150 bytes) | FRED 한국 장기금리(월별) -> The read operation timed out | investing.com -> HTTP Error 403: Forbidden"
+    },
+    "krx:futures_investors": {
+      "ok": false,
+      "error": "HTTP 403"
+    },
     "naver:limit:upper": {
       "ok": true
     },
     "naver:limit:lower": {
-      "ok": false,
-      "error": "ValueError: .com/sise/sise_low.naver -> HTTP Error 404: 404 | om/sise/sise_lower.naver -> 종목 링크 없음(44327 bytes)"
+      "ok": true
     },
     "krx:allstocks": {
       "ok": false,
@@ -921,6 +940,31 @@
       "nds/south-korea-10-year-bond-yield -> HTTP Error 403: Forbidden"
     ]
   },
+  "at_kr_close": {
+    "wti": {
+      "symbol": "CL=F",
+      "at_kst": "2026-08-07 15:30",
+      "close": 77.78,
+      "minutes_off": 0
+    },
+    "brent": {
+      "symbol": "BZ=F",
+      "at_kst": "2026-08-07 15:30",
+      "close": 83.32,
+      "minutes_off": 0
+    },
+    "gold": {
+      "symbol": "GC=F",
+      "at_kst": "2026-08-07 15:30",
+      "close": 4344.6001,
+      "minutes_off": 0
+    }
+  },
+  "usdkrw_naver": {
+    "rate": 1411.0,
+    "source_url": "https://finance.naver.com/marketindex/",
+    "note": "매매기준율"
+  },
   "limit_names": {
     "upper": {
       "names": [
@@ -963,10 +1007,16 @@
       ],
       "count": 9,
       "source_url": "https://finance.naver.com/sise/sise_upper.naver"
+    },
+    "lower": {
+      "names": [],
+      "count": 0,
+      "source_url": "https://finance.naver.com/sise/sise_lower.naver",
+      "note": "해당 종목 없음"
     }
   },
   "summary": {
-    "sources_tried": 33,
-    "sources_ok": 31
+    "sources_tried": 39,
+    "sources_ok": 36
   }
 }
