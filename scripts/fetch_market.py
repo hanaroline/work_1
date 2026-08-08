@@ -120,27 +120,59 @@ def naver_sectors():
     return out
 
 
-def naver_investors():
-    """투자자별 매매동향(일자별) — 개인/외국인/기관 순매수, 단위 백만원."""
-    s = _get("https://finance.naver.com/sise/investorDealTrendDay.naver",
-             referer="https://finance.naver.com/sise/", encoding="cp949")
-    out = []
-    for row in re.findall(r"<tr[^>]*>(.*?)</tr>", s, re.S):
-        cells = [_text(c) for c in re.findall(r"<td[^>]*>(.*?)</td>", row, re.S)]
-        cells = [c for c in cells if c]
-        if len(cells) < 4 or not re.match(r"^\d{2}\.\d{2}\.\d{2}$", cells[0]):
+INVESTOR_URLS = [
+    "https://finance.naver.com/sise/investorDealTrendDay.naver?bizdate=&sosok=",
+    "https://finance.naver.com/sise/investorDealTrendDay.naver",
+    "https://finance.naver.com/sise/sise_index.naver?code=KOSPI",
+]
+
+
+def naver_investors(dump_dir=None):
+    """투자자별 매매동향 — 개인/외국인/기관 순매수(백만원).
+
+    페이지 구조가 바뀌면 파싱이 빗나가므로, 실패 시 원본 HTML을 남겨
+    다음 실행 때 무엇을 봐야 하는지 알 수 있게 한다.
+    """
+    errors = []
+    for url in INVESTOR_URLS:
+        try:
+            s = _get(url, referer="https://finance.naver.com/sise/", encoding="cp949")
+        except Exception as e:                                # noqa: BLE001
+            errors.append("%s -> %s" % (url.split("?")[0][-32:], e))
             continue
-        def n(x):
-            x = x.replace(",", "").replace("+", "")
-            try:
-                return int(x)
-            except ValueError:
-                return None
-        out.append({"date": cells[0], "retail": n(cells[1]),
-                    "foreign": n(cells[2]), "institution": n(cells[3])})
-    if not out:
-        raise ValueError("투자자별 행을 찾지 못함")
-    return out[:5]
+
+        out = []
+        for row in re.findall(r"<tr[^>]*>(.*?)</tr>", s, re.S):
+            cells = [c for c in
+                     (_text(c) for c in re.findall(r"<td[^>]*>(.*?)</td>", row, re.S)) if c]
+            if len(cells) < 4:
+                continue
+            # 첫 칸이 날짜인 행만 (YY.MM.DD 또는 YYYY.MM.DD)
+            if not re.match(r"^\d{2,4}\.\d{2}\.\d{2}$", cells[0]):
+                continue
+
+            def n(x):
+                x = x.replace(",", "").replace("+", "").strip()
+                try:
+                    return int(x)
+                except ValueError:
+                    return None
+
+            vals = [n(c) for c in cells[1:4]]
+            if all(v is None for v in vals):
+                continue
+            out.append({"date": cells[0], "retail": vals[0],
+                        "foreign": vals[1], "institution": vals[2],
+                        "unit": "백만원", "source_url": url})
+        if out:
+            return out[:5]
+        errors.append("%s -> 날짜 행 없음(%d bytes)" % (url.split("?")[0][-32:], len(s)))
+        if dump_dir:
+            os.makedirs(dump_dir, exist_ok=True)
+            fn = os.path.join(dump_dir, "investors_%s.html" % abs(hash(url)) % 10 ** 8)
+            with open(fn, "w", encoding="utf-8") as f:
+                f.write(s[:400000])
+    raise ValueError(" | ".join(errors))
 
 
 def krx_json(bld, **params):
@@ -198,34 +230,18 @@ def main():
     if v:
         out["sectors"] = {"all": v, "top5": v[:5], "bottom5": v[-5:]}
 
-    v, st = run("investors", naver_investors)
+    v, st = run("investors", naver_investors, "data/market/raw")
     out["sources"]["naver:investors"] = st
     if v:
         out["investors_kospi_millions_krw"] = v
 
-    # KRX — 파라미터를 바꿔 가며 시도하고, 처음 성공한 조합을 채택한다.
-    # 실패해도 어떤 조합이 왜 실패했는지 sources 에 남는다.
-    d = now.strftime("%Y%m%d")
-    prev = (now - timedelta(days=1)).strftime("%Y%m%d")
-    for label, attempts in (
-        ("allstocks", [
-            ("MDCSTAT01501", {"mktId": "ALL", "trdDd": d, "share": "1", "money": "1"}),
-            ("MDCSTAT01501", {"mktId": "ALL", "trdDd": prev, "share": "1", "money": "1"}),
-        ]),
-        ("investors", [
-            ("MDCSTAT02203", {"mktId": "STK", "invstTpCd": "9999", "strtDd": prev,
-                              "endDd": d, "share": "1", "money": "1"}),
-            ("MDCSTAT02201", {"mktId": "STK", "trdVolVal": "2", "askBid": "3",
-                              "strtDd": prev, "endDd": d, "share": "1", "money": "1"}),
-        ]),
-    ):
-        for bld, extra in attempts:
-            v, st = run(label, krx_json, "dbms/MDC/STAT/standard/" + bld, **extra)
-            key = "krx:%s:%s:%s" % (label, bld, extra.get("trdDd") or extra.get("endDd"))
-            out["sources"][key] = st
-            if v:
-                out.setdefault("krx", {})[label] = v[:60]
-                break
+    # KRX — 러너 IP를 막는 것으로 보인다(400 -> 헤더 보강 후 403).
+    # 한 번만 시도해 상태를 기록하고, 실패해도 나머지 원천으로 진행한다.
+    v, st = run("allstocks", krx_json, "dbms/MDC/STAT/standard/MDCSTAT01501",
+                mktId="ALL", trdDd=now.strftime("%Y%m%d"), share="1", money="1")
+    out["sources"]["krx:allstocks"] = st
+    if v:
+        out.setdefault("krx", {})["allstocks"] = v[:60]
 
     ok = sum(1 for s in out["sources"].values() if s["ok"])
     out["summary"] = {"sources_tried": len(out["sources"]), "sources_ok": ok}
