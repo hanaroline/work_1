@@ -35,6 +35,11 @@ jobs:
       - name: 시세 수집
         run: python scripts/fetch_market.py
 
+      - name: 오래된 덤프 정리
+        run: |
+          # 파싱 실패 시에만 남기는 원본이다. 7일 지난 것은 지운다.
+          find data/market/raw -name '*.html' -mtime +7 -delete 2>/dev/null || true
+
       - name: 커밋
         run: |
           git config user.name  'github-actions[bot]'
