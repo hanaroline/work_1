@@ -407,46 +407,71 @@ def naver_usdkrw():
             "note": "매매기준율"}
 
 
-KTB10Y_CANDIDATES = [
-    # (설명, URL, 인코딩, 정규식 후보들)
-    ("네이버 채권 목록", "https://finance.naver.com/marketindex/bondList.naver?marketindexCd=bond_all",
-     "cp949", [r"국고채\s*\(?10년\)?\s*([\d]+\.[\d]+)", r"국고채권\(10년\)\s*([\d]+\.[\d]+)"]),
-    ("e-나라지표 시장금리", "https://www.index.go.kr/unity/potal/main/EachDtlPageDetail.do?idx_cd=1073",
-     "utf-8", [r"국고채\s*\(?10년\)?[^\d]{0,40}([\d]+\.[\d]+)"]),
-    ("ECOS 샘플키 일별 시장금리",
-     "https://ecos.bok.or.kr/api/StatisticSearch/sample/json/kr/1/100/817Y002/D",
-     "utf-8", [r'"ITEM_NAME1"\s*:\s*"국고채\(10년\)"[^}]*?"DATA_VALUE"\s*:\s*"([\d.]+)"']),
-    ("FRED 한국 장기금리(월별)",
-     "https://fred.stlouisfed.org/graph/fredgraph.csv?id=IRLTLT01KRM156N",
-     "utf-8", [r"\n[\d-]{10},([\d.]+)\s*$"]),
-    ("investing.com", "https://www.investing.com/rates-bonds/south-korea-10-year-bond-yield",
-     "utf-8", [r'"last"\s*:\s*"?([\d.]+)', r"South Korea 10-Year[^\d]{0,60}([\d]+\.[\d]+)"]),
-]
+ECOS = "https://ecos.bok.or.kr/api/%s/sample/json/kr/1/10/%s"
 
 
-def ktb10y(dump_dir=None):
-    """국고채 10년 — 후보를 차례로 시도하고 처음 성공한 것을 채택한다."""
-    errors = []
-    for n, (label, url, enc, patterns) in enumerate(KTB10Y_CANDIDATES):
-        try:
-            raw = _get(url, referer="https://finance.naver.com/", encoding=enc)
-        except Exception as e:                                # noqa: BLE001
-            errors.append("%s -> %s" % (label, e))
-            continue
-        flat = re.sub(r"\s+", " ", _text(raw)) if "<" in raw[:400] else raw
-        for pat in patterns:
-            m = re.search(pat, flat) or re.search(pat, raw)
-            if m:
-                v = float(m.group(1))
-                if 0.5 < v < 20:
-                    return {"value": v, "source": label, "source_url": url}
-        errors.append("%s -> 값 없음(%d bytes)" % (label, len(raw)))
+def ecos_rates(now, dump_dir=None):
+    """한국은행 ECOS 일별 시장금리(817Y002).
+
+    샘플 인증키는 호출당 10건까지만 허용한다. 그래서 항목 목록을 먼저 받아
+    국고채 계열 코드를 찾은 뒤, 항목별로 최근 10영업일을 따로 부른다.
+    """
+    end = now.strftime("%Y%m%d")
+    start = (now - timedelta(days=12)).strftime("%Y%m%d")
+
+    # 1) 항목 코드 목록
+    items = {}
+    try:
+        j = json.loads(_get(ECOS % ("StatisticItemList", "817Y002")))
+        for row in (j.get("StatisticItemList", {}) or {}).get("row", []):
+            items[row.get("ITEM_NAME", "")] = row.get("ITEM_CODE", "")
+    except Exception as e:                                    # noqa: BLE001
+        items = {}
         if dump_dir:
             os.makedirs(dump_dir, exist_ok=True)
-            with open(os.path.join(dump_dir, "ktb10y_%d.txt" % n), "w",
+            with open(os.path.join(dump_dir, "ecos_items_err.txt"), "w",
                       encoding="utf-8") as f:
-                f.write(raw[:200000])
-    raise ValueError(" | ".join(errors))
+                f.write(str(e))
+
+    # 목록에서 못 찾으면 널리 쓰이는 코드를 후보로 쓴다
+    wanted = {"ktb1y": ("국고채(1년)", "010190000"),
+              "ktb3y": ("국고채(3년)", "010200000"),
+              "ktb5y": ("국고채(5년)", "010200001"),
+              "ktb10y": ("국고채(10년)", "010210000"),
+              "corp3y": ("회사채(3년,AA-)", "010320000"),
+              "cd91": ("CD(91일)", "010502000")}
+
+    out, tried = {}, {}
+    for key, (name, fallback) in wanted.items():
+        code = next((c for n, c in items.items() if name.split("(")[0] in n
+                     and name.split("(")[1].rstrip(")") in n), fallback)
+        url = ECOS % ("StatisticSearch",
+                      "817Y002/D/%s/%s/%s" % (start, end, code))
+        tried[key] = code
+        try:
+            j = json.loads(_get(url))
+        except Exception as e:                                # noqa: BLE001
+            continue
+        rows = (j.get("StatisticSearch", {}) or {}).get("row", [])
+        if not rows:
+            continue
+        last = rows[-1]
+        try:
+            out[key] = {"value": float(last["DATA_VALUE"]),
+                        "date": last.get("TIME"),
+                        "item": last.get("ITEM_NAME1"), "code": code}
+        except (KeyError, ValueError, TypeError):
+            continue
+    if not out:
+        if dump_dir:
+            os.makedirs(dump_dir, exist_ok=True)
+            with open(os.path.join(dump_dir, "ecos_debug.json"), "w",
+                      encoding="utf-8") as f:
+                json.dump({"items_found": items, "codes_tried": tried},
+                          f, ensure_ascii=False, indent=2)
+        raise ValueError("ECOS 에서 아무 항목도 못 받음 (항목목록 %d건)" % len(items))
+    out["source"] = "한국은행 ECOS 817Y002 (샘플 인증키)"
+    return out
 
 
 def krx_futures_investors(now, dump_dir=None):
@@ -560,12 +585,14 @@ def main():
     if v:
         out["usdkrw_naver"] = v
 
-    # 국고채 10년 — 후보 다섯 곳
-    v, st = run("ktb10y", ktb10y, "data/market/raw")
-    out["sources"]["ktb10y"] = st
+    # 국고채 만기별 — 한국은행 ECOS
+    v, st = run("ecos", ecos_rates, now, "data/market/raw")
+    out["sources"]["ecos:rates"] = st
     if v:
-        out.setdefault("rates_kr", {})["ktb10y"] = v["value"]
-        out.setdefault("rates_kr", {})["ktb10y_source"] = v["source"]
+        out["rates_ecos"] = v
+        for key in ("ktb1y", "ktb5y", "ktb10y"):
+            if key in v:
+                out.setdefault("rates_kr", {})[key] = v[key]["value"]
 
     # 선물 투자자별 — KRX OTP 정식 경로
     v, st = run("futures", krx_futures_investors, now, "data/market/raw")
