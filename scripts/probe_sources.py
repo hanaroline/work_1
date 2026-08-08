@@ -1,15 +1,16 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""선물 투자자별의 단위를 확정한다. 결과는 data/market/probe.txt.
+"""선물 투자자별 단위 확정 — 마지막 한 걸음. 결과는 data/market/probe.txt.
 
-10차에서 확정한 것:
-  dealTrendInfo = {"bizdate":"20260807","personalValue":"-1,444",
-                   "foreignValue":"+9,624","institutionalValue":"-7,662"}
-  기준일 20260807 확인. 부호가 반대였던 기사는 2026-07-10 자였다(다른 날).
+11차까지 확정:
+  엔드포인트 https://m.stock.naver.com/api/index/FUT/integration (JSON, 1KB)
+  dealTrendInfo = {bizdate 20260807, 개인 -1,444, 외국인 +9,624, 기관 -7,662}
+  같은 필드가 코스피 현물에서는 억원이다(외국인 -8,651 = 이미 검증된 억원 값).
 
-남은 문제: 이 값이 계약 수인가 억원인가. 틀린 단위로 고객 자료에 넣을 수는 없다.
-검증법 — 같은 API 의 코스피 현물 화면 dealTrendInfo 를 이미 아는 억원 값
-(외국인 약 -8,6xx억)과 대조한다. 현물이 억원이면 그 필드는 금액 단위다.
+단위가 억원인지 계약인지가 남았다. 추론으로 정하면 안 되므로 두 가지로 친다.
+  (1) 응답 전문을 떠서 단위 표기가 붙은 필드가 있는지 본다.
+  (2) 8월 7일자가 확실한 기사(종가 6,258.77 이 본문에 있는 기사)에서
+      선물 계약 수를 찾아 대조한다.
 """
 import json
 import re
@@ -37,72 +38,91 @@ def text(html):
 
 
 print("=" * 78)
-print("A. 같은 필드를 현물 지수에서 읽어 단위를 가늠한다")
+print("A. integration 응답 전문 — 단위 표기가 붙은 필드가 있는가")
 print("=" * 78)
-for code in ("KOSPI", "KOSDAQ", "KPI200", "FUT"):
+for code in ("FUT", "KOSPI"):
     try:
-        p = get("https://m.stock.naver.com/domestic/index/%s/total" % code, ua=MUA)
+        r = get("https://m.stock.naver.com/api/index/%s/integration" % code,
+                referer="https://m.stock.naver.com/", ua=MUA)
+        print("\n  --- %s (%d bytes) ---" % (code, len(r)))
+        print("  %s" % json.dumps(json.loads(r), ensure_ascii=False, indent=1)[:2600])
     except Exception as e:                                         # noqa: BLE001
-        print("  [%-7s] 실패 %s" % (code, str(e)[:50]))
-        continue
-    m = re.search(r'"dealTrendInfo":(\{.*?\})', p)
-    v = re.search(r'"accumulatedTradingValue","key":"대금","value":"([^"]+)"', p)
-    vol = re.search(r'"accumulatedTradingVolume","key":"거래량","value":"([^"]+)"', p)
-    cl = re.search(r'"closePrice"[^}]*?"value":"([^"]+)"', p)
-    print("  [%-7s] %s" % (code, m.group(1) if m else "dealTrendInfo 없음"))
-    print("            종가=%s 거래량=%s 대금=%s"
-          % (cl.group(1) if cl else "?", vol.group(1) if vol else "?",
-             v.group(1) if v else "?"))
+        print("  [%s] 실패 %s" % (code, str(e)[:60]))
 
 print()
 print("=" * 78)
-print("B. 이 화면이 부르는 JSON 엔드포인트 찾기 (HTML 긁기보다 안전)")
+print("B. 8월 7일자가 확실한 기사에서 선물 계약 수 찾기")
 print("=" * 78)
-p = get("https://m.stock.naver.com/domestic/index/FUT/total", ua=MUA)
-print("  queryHash: %s" % sorted(set(re.findall(r'"queryHash":"([^"]{4,90})"', p)))[:12])
-for cand in ("https://api.stock.naver.com/index/FUT/basic",
-             "https://api.stock.naver.com/index/FUT/integration",
-             "https://api.stock.naver.com/futures/FUT/integration",
-             "https://api.stock.naver.com/index/nation/KOR/FUT/integration",
-             "https://m.stock.naver.com/api/index/FUT/integration"):
-    try:
-        r = get(cand, referer="https://m.stock.naver.com/", ua=MUA)
-        ok = "dealTrendInfo" in r
-        print("  [%-56s] OK %5d  dealTrendInfo=%s" % (cand[-56:], len(r), ok))
-        if ok:
-            j = json.loads(r)
-            print("      %s" % json.dumps(
-                j.get("dealTrendInfo") or j, ensure_ascii=False)[:200])
-    except Exception as e:                                         # noqa: BLE001
-        print("  [%-56s] %s" % (cand[-56:], str(e)[:44]))
-
-print()
-print("=" * 78)
-print("C. 연합인포맥스 8월 7일자 기사에서 선물 계약 수 대조")
-print("=" * 78)
-FUT = re.compile(r"[^.。\n]{0,130}선물[^.。\n]{0,180}?계약[^.。\n]{0,60}")
-u = ("https://news.einfomax.co.kr/news/articleList.html?sc_word=%s&view_type=sm"
-     % urllib.parse.quote("선물 외국인"))
-try:
-    lst = get(u)
-    arts = sorted(set(re.findall(r'/news/articleView\.html\?idxno=\d+', lst)),
-                  key=lambda x: -int(x.split("=")[-1]))
-    print("  기사 %d건 (최신순)" % len(arts))
-    for a in arts[:12]:
+# 8/7 종가 6,258.77 은 그날에만 나오는 숫자다. 이걸로 날짜를 확정한다.
+MARK = ("6,258.77", "6258.77")
+FUT = re.compile(r"[^.。\n]{0,140}선물[^.。\n]{0,190}?계약[^.。\n]{0,70}")
+CONTRACT = re.compile(r"([-+]?[\d,]{3,})\s*계약")
+QUERIES = [
+    "코스피 6,258.77 마감", "코스피 6258.77 외국인", "코스피 마감 선물시장 계약",
+    "코스피200 선물 9월물 마감 외국인", "증시 마감 외국인 선물 순매수 8월 7일",
+    "코스피 7주 연속 하락 마감 선물",
+]
+seen, found = set(), 0
+for q in QUERIES:
+    for extra in ("&sort=1", "&sort=0&ds=2026.08.07&de=2026.08.08"):
+        u = ("https://search.naver.com/search.naver?where=news&query="
+             + urllib.parse.quote(q) + extra)
         try:
-            raw = get("https://news.einfomax.co.kr" + a)
+            page = get(u)
+        except Exception:                                          # noqa: BLE001
+            continue
+        links = sorted(set(re.findall(
+            r'https://n\.news\.naver\.com/mnews/article/\d+/\d+', page)))
+        for url in links[:10]:
+            if url in seen:
+                continue
+            seen.add(url)
+            try:
+                raw = get(url, referer="https://search.naver.com/")
+            except Exception:                                      # noqa: BLE001
+                continue
+            b = text(raw)
+            if not any(mk in b for mk in MARK):
+                continue
+            hits = [m.group(0).strip() for m in FUT.finditer(b)
+                    if CONTRACT.search(m.group(0))]
+            print("  [8/7 확인] %s" % url)
+            if hits:
+                for h in hits[:3]:
+                    print("      · %s" % h[:250])
+                found += 1
+            else:
+                print("      (선물 계약 문장 없음)")
+print("  8/7 확인된 기사 중 선물 계약 수가 있는 기사 %d건, 확인한 기사 %d건"
+      % (found, len(seen)))
+
+print()
+print("=" * 78)
+print("C. 파생 전문 매체 — 8/7 언급 기사")
+print("=" * 78)
+for q in ("선물 외국인 순매수 계약", "코스피200 선물 외국인"):
+    u = ("https://news.einfomax.co.kr/news/articleList.html?sc_word=%s"
+         "&view_type=sm&sc_order_by=E" % urllib.parse.quote(q))
+    try:
+        lst = get(u)
+    except Exception as e:                                         # noqa: BLE001
+        print("  [%s] 실패 %s" % (q[:20], str(e)[:40]))
+        continue
+    arts = sorted(set(re.findall(r'/news/articleView\.html\?idxno=(\d+)', lst)),
+                  key=lambda x: -int(x))
+    print("  [%s] 기사 %d건" % (q[:20], len(arts)))
+    for idx in arts[:10]:
+        a = "https://news.einfomax.co.kr/news/articleView.html?idxno=" + idx
+        try:
+            raw = get(a)
         except Exception:                                          # noqa: BLE001
             continue
         b = text(raw)
-        if "2026.08.07" not in raw and "2026-08-07" not in raw and "8월 7일" not in b:
-            continue
-        print("    [8/7자] https://news.einfomax.co.kr%s" % a)
-        for m in FUT.finditer(b):
-            s = m.group(0).strip()
-            if re.search(r"[\d,]{3,}\s*계약", s):
-                print("      · %s" % s[:240])
-except Exception as e:                                             # noqa: BLE001
-    print("  실패:", e)
+        d = re.search(r"(2026[.\-]\d\d[.\-]\d\d)", raw)
+        hits = [m.group(0).strip() for m in FUT.finditer(b) if CONTRACT.search(m.group(0))]
+        if hits:
+            print("    [%s] %s" % (d.group(1) if d else "날짜?", a))
+            print("      · %s" % hits[0][:240])
 
 print()
 print("탐색 종료")
