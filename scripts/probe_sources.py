@@ -1,37 +1,28 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""모닝 브리핑에서 아직 안 잡히는 것을 찾는다. 결과는 data/market/probe.txt.
+"""모닝 브리핑의 남은 두 항목. 결과는 data/market/probe.txt.
 
-남은 것: VKOSPI(코스피200 변동성지수). 야후에 없고 네이버 모바일 API 는
-VKOSPI/VKOSPI200/CBOEVKOSPI 셋 다 409 로 거절했다. 코드가 틀린 것이므로
-네이버가 실제로 쓰는 코드를 화면에서 찾고, 없으면 다른 원천을 본다.
+(1) 미 국채 2년물 — FRED 는 cosd 를 줘도 계속 끊긴다. 재무부 원본을 본다.
+(2) VKOSPI — 네이버는 아예 취급하지 않는다(지수 코드가 FUT/KOSDAQ/KOSPI/
+    KPI100/KPI200/KVALUE 뿐). 인베스팅 403, 야후 미수록, KRX 401.
+    stooq 같은 무료 배포처와 공개 리더 경유를 본다.
 """
-import json
 import re
 import urllib.error
+import urllib.parse
 import urllib.request
 
 UA = ("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
       "(KHTML, like Gecko) Chrome/126.0 Safari/537.36")
-MUA = ("Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X) AppleWebKit/605.1.15 "
-       "(KHTML, like Gecko) Version/17.0 Mobile/15E148 Safari/604.1")
 
 
-def get(url, encoding="utf-8", timeout=25, ua=UA, referer=None):
-    h = {"User-Agent": ua, "Accept-Language": "ko-KR,ko;q=0.9"}
-    if referer:
-        h["Referer"] = referer
+def get(url, timeout=30, encoding="utf-8"):
+    h = {"User-Agent": UA, "Accept-Language": "ko-KR,ko;q=0.9,en;q=0.8"}
     with urllib.request.urlopen(urllib.request.Request(url, headers=h), timeout=timeout) as r:
         return r.read().decode(encoding, "replace")
 
 
-def text(html):
-    t = re.sub(r"(?is)<(script|style).*?</\1>", " ", html)
-    t = re.sub(r"(?s)<[^>]+>", " ", t)
-    return re.sub(r"\s+", " ", re.sub(r"&nbsp;?", " ", t)).strip()
-
-
-def probe(label, url, show=140, **kw):
+def probe(label, url, show=200, **kw):
     try:
         raw = get(url, **kw)
     except urllib.error.HTTPError as e:
@@ -40,60 +31,60 @@ def probe(label, url, show=140, **kw):
     except Exception as e:                                         # noqa: BLE001
         print("  [%-30s] %s: %s" % (label, type(e).__name__, str(e)[:50]))
         return None
-    b = raw if raw.lstrip()[:1] in "{[" else text(raw)
-    print("  [%-30s] OK %6d | %s" % (label, len(raw), b[:show]))
+    print("  [%-30s] OK %6d | %s" % (label, len(raw), raw[:show].replace("\n", " | ")))
     return raw
 
 
 print("=" * 78)
-print("A. 네이버가 VKOSPI 를 어떤 코드로 부르는가")
+print("A. 미 국채 2년물 — 재무부 원본과 대안들")
 print("=" * 78)
-# 국내증시 화면과 검색에서 실제 링크를 찾는다
-idx = probe("데스크톱 국내증시 목차", "https://finance.naver.com/sise/", encoding="cp949",
-            show=60)
-if idx:
-    codes = sorted(set(re.findall(r'sise_index\.naver\?code=([A-Z0-9_]+)', idx)))
-    print("     └ 데스크톱 지수 코드: %s" % codes)
-srch = probe("네이버 검색 VKOSPI",
-             "https://search.naver.com/search.naver?query=VKOSPI", show=200)
-if srch:
-    print("     └ 검색결과 속 지수 링크: %s"
-          % sorted(set(re.findall(r'stock\.naver\.com/[A-Za-z0-9/_\-]*(?:VK|vol)[A-Za-z0-9/_\-]*',
-                                  srch, re.I)))[:10])
-for code in ("VKOSPI", "VKOSPI200", "KOSPI200VOL", "VKS", "KVX", "CBOEVKOSPI"):
-    probe("모바일 " + code,
-          "https://m.stock.naver.com/api/index/%s/integration" % code,
-          ua=MUA, referer="https://m.stock.naver.com/", show=110)
-probe("데스크톱 code=VKOSPI",
-      "https://finance.naver.com/sise/sise_index.naver?code=VKOSPI",
-      encoding="cp949", show=110)
-
-print()
-print("=" * 78)
-print("B. VKOSPI 를 싣는 다른 원천")
-print("=" * 78)
-probe("인베스팅 VKOSPI",
-      "https://kr.investing.com/indices/kospi-volatility", show=140)
-probe("야후 검색 VKOSPI",
-      "https://query1.finance.yahoo.com/v1/finance/search?q=VKOSPI", show=300)
-probe("야후 KSVKOSPI",
-      "https://query1.finance.yahoo.com/v8/finance/chart/%5EVKOSPI?range=5d&interval=1d",
-      show=200)
-probe("KRX 지수 오픈API(키없음)",
-      "https://data-dbg.krx.co.kr/svc/apis/idx/krx_dd_trd?basDd=20260807", show=140)
-
-print()
-print("=" * 78)
-print("C. FRED — cosd 를 주면 빨라지는지 확인")
-print("=" * 78)
-r = probe("FRED 최근 45일",
-          "https://fred.stlouisfed.org/graph/fredgraph.csv"
-          "?id=DGS2,DGS10,DGS30,DGS3MO&cosd=2026-06-25", show=120, timeout=60)
+r = probe("재무부 일별 수익률곡선 CSV",
+          "https://home.treasury.gov/resource-center/data-chart-center/interest-rates/"
+          "daily-treasury-rates.csv/2026/all?type=daily_treasury_yield_curve"
+          "&field_tdr_date_value=2026&page&_format=csv", show=260, timeout=50)
 if r:
     lines = [l for l in r.splitlines() if l.strip()]
-    print("     └ %d행. 머리글: %s" % (len(lines), lines[0]))
-    for l in lines[-4:]:
-        print("        %s" % l)
+    print("     └ %d행" % len(lines))
+    print("       머리글: %s" % lines[0][:220])
+    for l in lines[1:4]:
+        print("       %s" % l[:220])
+
+probe("야후 2년물 수익률선물",
+      "https://query1.finance.yahoo.com/v8/finance/chart/2YY=F?range=5d&interval=1d",
+      show=220)
+probe("stooq 2년물",
+      "https://stooq.com/q/d/l/?s=10usy2.b&i=d", show=200)
+probe("FRED 한 계열만",
+      "https://fred.stlouisfed.org/graph/fredgraph.csv?id=DGS2&cosd=2026-07-25",
+      show=200, timeout=50)
+
+print()
+print("=" * 78)
+print("B. VKOSPI — 무료 배포처")
+print("=" * 78)
+for label, url in [
+    ("stooq ^vkospi 일별", "https://stooq.com/q/d/l/?s=^vkospi&i=d"),
+    ("stooq ^vkospi 시세", "https://stooq.com/q/l/?s=^vkospi&f=sd2t2ohlcv&h&e=csv"),
+    ("stooq vkospi 검색", "https://stooq.com/cmp/?s=vkospi"),
+    ("stooq ^kospi 대조", "https://stooq.com/q/l/?s=^kospi&f=sd2t2ohlcv&h&e=csv"),
+]:
+    probe(label, url, show=220)
+
+# 공개 리더를 거쳐 인베스팅을 읽어 본다 (직접은 403)
+inv = "https://kr.investing.com/indices/kospi-volatility"
+probe("r.jina.ai 경유 인베스팅", "https://r.jina.ai/" + inv, show=300, timeout=60)
+probe("allorigins 경유 인베스팅",
+      "https://api.allorigins.win/raw?url=" + urllib.parse.quote(inv, safe=""),
+      show=300, timeout=60)
+
+print()
+print("=" * 78)
+print("C. 참고 — stooq 가 다른 지수도 주는지 (예비 원천으로 쓸 만한가)")
+print("=" * 78)
+for s in ("^spx", "^ndq", "^kospi", "^nkx"):
+    probe("stooq " + s,
+          "https://stooq.com/q/l/?s=%s&f=sd2t2ohlcv&h&e=csv" % urllib.parse.quote(s),
+          show=160)
 
 print()
 print("탐색 종료")
