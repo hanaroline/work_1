@@ -1,0 +1,63 @@
+name: 시세 수집
+
+# 브리핑을 만드는 Claude 세션은 사내 이그레스 정책 때문에 KRX·네이버·야후에
+# 직접 붙지 못한다. GitHub 러너는 그 정책 밖에서 돌므로 여기서 대신 받아
+# 저장소에 커밋하고, 세션은 커밋된 data/market/latest.json 을 읽는다.
+#
+# 주의: schedule 이벤트는 기본 브랜치(main)에 있는 워크플로만 발동한다.
+# 다른 브랜치에서는 수동 실행(workflow_dispatch)만 된다.
+
+on:
+  schedule:
+    # 국내 마감(15:30 KST) 직후 — 15:45 KST = 06:45 UTC
+    - cron: '45 6 * * 1-5'
+    # 미국 마감 뒤, 모닝 브리핑(07:00 KST) 직전 — 06:40 KST = 21:40 UTC 전일
+    - cron: '40 21 * * 0-4'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: market-data
+  cancel-in-progress: false
+
+jobs:
+  fetch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: 시세 수집
+        run: python scripts/fetch_market.py
+
+      - name: 커밋
+        run: |
+          git config user.name  'github-actions[bot]'
+          git config user.email 'github-actions[bot]@users.noreply.github.com'
+          git add data/market
+          if git diff --staged --quiet; then
+            echo "변경 없음"
+          else
+            git commit -m "시세 수집 $(TZ=Asia/Seoul date '+%Y-%m-%d %H:%M KST')"
+            git push
+          fi
+
+      - name: 요약
+        if: always()
+        run: |
+          if [ -f data/market/latest.json ]; then
+            python - <<'PY'
+          import json
+          d = json.load(open('data/market/latest.json', encoding='utf-8'))
+          s = d['summary']
+          print(f"::notice::원천 {s['sources_ok']}/{s['sources_tried']} 성공")
+          for k, v in sorted(d['sources'].items()):
+              if not v['ok']:
+                  print(f"::warning::{k} 실패 — {v['error']}")
+          PY
+          fi
