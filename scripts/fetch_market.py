@@ -81,6 +81,25 @@ YAHOO_EU_STOCKS = {
     "노바티스": "NOVN.SW",
 }
 
+# 일본 대형주 — 접미사 .T 는 도쿄증권거래소다. 통화는 엔.
+# 도쿄일렉트론·어드반테스트·신에쓰화학은 국내 반도체 장비·소재와 직접 겹치는
+# 비교군이라 반도체 얘기를 할 때 같이 봐야 한다.
+YAHOO_JP_STOCKS = {
+    "도요타": "7203.T", "소니": "6758.T", "도쿄일렉트론": "8035.T",
+    "어드반테스트": "6857.T", "소프트뱅크그룹": "9984.T", "키엔스": "6861.T",
+    "미쓰비시UFJ": "8306.T", "패스트리테일링": "9983.T",
+    "히타치": "6501.T", "신에쓰화학": "4063.T",
+}
+
+# 중국 대형주 — 홍콩 상장은 .HK(통화 HKD), 본토는 상하이 .SS / 선전 .SZ(통화 CNY).
+# 같은 회사가 양쪽에 상장된 경우가 있어 어느 시장 값인지 반드시 밝혀야 한다.
+YAHOO_CN_STOCKS = {
+    "텐센트": "0700.HK", "알리바바": "9988.HK", "BYD": "1211.HK",
+    "샤오미": "1810.HK", "메이투안": "3690.HK", "SMIC": "0981.HK",
+    "중국건설은행": "0939.HK", "중국해양석유": "0883.HK",
+    "귀주모태": "600519.SS", "CATL": "300750.SZ",
+}
+
 # 시가총액 상위 — 야후는 코스피 종목에 .KS, 코스닥에 .KQ 를 쓴다
 YAHOO_STOCKS = {
     "삼성전자": "005930.KS", "SK하이닉스": "000660.KS",
@@ -906,6 +925,16 @@ def main():
         out["sources"]["yahoo:eu:" + sym] = st
         if v:
             out.setdefault("eu_stocks", {})[name] = v
+    for name, sym in YAHOO_JP_STOCKS.items():
+        v, st = run(name, yahoo_quote, sym)
+        out["sources"]["yahoo:jp:" + sym] = st
+        if v:
+            out.setdefault("jp_stocks", {})[name] = v
+    for name, sym in YAHOO_CN_STOCKS.items():
+        v, st = run(name, yahoo_quote, sym)
+        out["sources"]["yahoo:cn:" + sym] = st
+        if v:
+            out.setdefault("cn_stocks", {})[name] = v
 
     # 미 국채 — 야후에 2년물 심볼이 없어 재무부 원본 곡선을 받는다
     v, st = run("treasury", treasury_yields, now)
