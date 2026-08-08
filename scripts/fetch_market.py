@@ -31,7 +31,33 @@ YAHOO_INDEX = {
     "sp500": "^GSPC", "nasdaq": "^IXIC", "dow": "^DJI", "sox": "^SOX",
     "vix": "^VIX", "dxy": "DX-Y.NYB", "usdjpy": "JPY=X",
     "wti": "CL=F", "brent": "BZ=F", "gold": "GC=F",
-    "ust10y": "^TNX", "ust2y": "^IRX",
+    # ^IRX 는 2년물이 아니라 13주(3개월)물이다. 2년물은 야후에 지수 심볼이 없어
+    # FRED(DGS2)로 따로 받는다. 아래는 야후에 실제로 있는 만기만 적는다.
+    "ust10y": "^TNX", "ust3m": "^IRX", "ust5y": "^FVX", "ust30y": "^TYX",
+    # --- 아래는 모닝 브리핑용 (07:00 KST 시점에 미국장이 끝나 있고 선물이 열려 있다) ---
+    "russell": "^RUT", "silver": "SI=F", "copper": "HG=F", "natgas": "NG=F",
+    "nikkei": "^N225", "hangseng": "^HSI", "shanghai": "000001.SS", "taiwan": "^TWII",
+    "eurostoxx": "^STOXX50E", "dax": "^GDAXI", "ftse": "^FTSE",
+    "eurusd": "EURUSD=X", "usdcny": "CNY=X", "btc": "BTC-USD",
+    # 지수선물 — 브리핑을 쓰는 시각에 유일하게 살아 있는 미국 가격
+    "sp500_fut": "ES=F", "nasdaq_fut": "NQ=F", "dow_fut": "YM=F", "russell_fut": "RTY=F",
+    # 연방기금 금리선물 — 내재 정책금리(100 - 가격)를 계산해 인하 기대를 가늠한다
+    "fedfunds_fut": "ZQ=F",
+}
+
+# 미국 업종 — S&P500 섹터 ETF. 국내 개장 전 어느 업종에 돈이 붙었는지 본다.
+YAHOO_US_SECTORS = {
+    "기술": "XLK", "금융": "XLF", "에너지": "XLE", "헬스케어": "XLV",
+    "임의소비재": "XLY", "필수소비재": "XLP", "산업재": "XLI", "소재": "XLB",
+    "유틸리티": "XLU", "부동산": "XLRE", "커뮤니케이션": "XLC",
+}
+
+# 국내 반도체·수출주와 직접 엮이는 미국 종목
+YAHOO_US_STOCKS = {
+    "엔비디아": "NVDA", "애플": "AAPL", "마이크로소프트": "MSFT",
+    "브로드컴": "AVGO", "AMD": "AMD", "마이크론": "MU", "TSMC": "TSM",
+    "알파벳": "GOOGL", "아마존": "AMZN", "메타": "META", "테슬라": "TSLA",
+    "ASML": "ASML",
 }
 
 # 시가총액 상위 — 야후는 코스피 종목에 .KS, 코스닥에 .KQ 를 쓴다
@@ -592,6 +618,78 @@ def naver_news(now, limit=24):
             "credit_mentions": credit[:8]}
 
 
+def fred_yields():
+    """미 국채 금리 — 세인트루이스 연은 FRED. 인증키가 필요 없는 CSV 경로다.
+
+    야후에는 2년물 지수 심볼이 없다(^IRX 는 3개월물이다). 2년물은 모닝 브리핑에서
+    연준 경로를 이야기할 때 반드시 쓰는 값이라, 재무부 원자료를 그대로 받는다.
+    10년-2년 스프레드(장단기 역전 여부)도 여기서 계산한다.
+    """
+    ids = ["DGS2", "DGS10", "DGS30", "DGS3MO"]
+    csv = _get("https://fred.stlouisfed.org/graph/fredgraph.csv?id=" + ",".join(ids),
+               timeout=40)
+    lines = [l for l in csv.splitlines() if l.strip()]
+    if len(lines) < 2:
+        raise ValueError("FRED 응답이 비었음 (%d bytes)" % len(csv))
+    head = [h.strip().strip('"') for h in lines[0].split(",")]
+    out = {}
+    # 최신 행부터 거슬러 올라가며 값이 실제로 있는 날을 찾는다(휴장일은 빈칸이다)
+    for line in reversed(lines[1:]):
+        cells = [c.strip().strip('"') for c in line.split(",")]
+        if len(cells) != len(head):
+            continue
+        row = dict(zip(head, cells))
+        date = row.get(head[0])
+        for key in ids:
+            if key in out:
+                continue
+            try:
+                out[key] = {"value": float(row[key]), "date": date}
+            except (KeyError, ValueError):
+                pass
+        if all(k in out for k in ids):
+            break
+    if "DGS2" not in out or "DGS10" not in out:
+        raise ValueError("2년물/10년물을 못 받음: %s" % list(out))
+    res = {"ust2y": out["DGS2"], "ust10y": out["DGS10"],
+           "ust30y": out.get("DGS30"), "ust3m": out.get("DGS3MO"),
+           "unit": "%", "source_url": "https://fred.stlouisfed.org (DGS 시리즈)"}
+    res["spread_10y_2y_bp"] = round(
+        (out["DGS10"]["value"] - out["DGS2"]["value"]) * 100)
+    res["inverted"] = res["spread_10y_2y_bp"] < 0
+    return res
+
+
+def naver_vkospi():
+    """VKOSPI — 코스피200 변동성지수. 야후에 없어 네이버 모바일에서 받는다."""
+    errors = []
+    for code in ("VKOSPI", "VKOSPI200", "CBOEVKOSPI"):
+        try:
+            j = json.loads(_get(
+                "https://m.stock.naver.com/api/index/%s/integration" % code,
+                referer="https://m.stock.naver.com/"))
+        except Exception as e:                                     # noqa: BLE001
+            errors.append("%s -> %s" % (code, str(e)[:60]))
+            continue
+        info = {t.get("code"): t.get("value") for t in j.get("totalInfos") or []}
+        if not info:
+            errors.append("%s -> totalInfos 없음" % code)
+            continue
+
+        def n(x):
+            try:
+                return float(str(x).replace(",", ""))
+            except (TypeError, ValueError):
+                return None
+
+        return {"code": code, "name": j.get("stockName"),
+                "prev_close": n(info.get("lastClosePrice")),
+                "open": n(info.get("openPrice")), "high": n(info.get("highPrice")),
+                "low": n(info.get("lowPrice")),
+                "source_url": "https://m.stock.naver.com/api/index/%s/integration" % code}
+    raise ValueError("; ".join(errors) or "경로 없음")
+
+
 def naver_futures(dump_dir=None):
     """코스피200 선물 — 시세와 투자자별 순매수.
 
@@ -702,6 +800,30 @@ def main():
         if v:
             out["stocks"][name] = v
         out["sources"]["yahoo:" + sym] = st
+
+    # 미국 업종 ETF · 미국 개별 종목 — 모닝 브리핑에서 국내 개장 전 흐름을 본다
+    for name, sym in YAHOO_US_SECTORS.items():
+        v, st = run(name, yahoo_quote, sym)
+        out["sources"]["yahoo:sector:" + sym] = st
+        if v:
+            out.setdefault("us_sectors", {})[name] = v
+    for name, sym in YAHOO_US_STOCKS.items():
+        v, st = run(name, yahoo_quote, sym)
+        out["sources"]["yahoo:us:" + sym] = st
+        if v:
+            out.setdefault("us_stocks", {})[name] = v
+
+    # 미 국채 — 야후에 2년물 심볼이 없어 FRED 원자료로 받는다
+    v, st = run("fred", fred_yields)
+    out["sources"]["fred:yields"] = st
+    if v:
+        out["rates_us"] = v
+
+    # VKOSPI — 야후에 없다
+    v, st = run("vkospi", naver_vkospi)
+    out["sources"]["naver:vkospi"] = st
+    if v:
+        out["vkospi"] = v
 
     # 네이버 — 야후에 없는 업종별 등락률과 투자자별 수급
     v, st = run("sectors", naver_sectors)
