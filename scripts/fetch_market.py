@@ -175,6 +175,155 @@ def naver_investors(now, dump_dir=None):
     raise ValueError(" | ".join(errors))
 
 
+
+def _first_int(text, label, window=40):
+    """라벨 뒤 window 글자 안에서 첫 정수를 뽑는다. 마크업이 아니라 텍스트를 본다."""
+    i = text.find(label)
+    if i < 0:
+        return None
+    m = re.search(r"([\d][\d,]*)", text[i + len(label): i + len(label) + window])
+    return int(m.group(1).replace(",", "")) if m else None
+
+
+def _first_float(text, label, window=40):
+    i = text.find(label)
+    if i < 0:
+        return None
+    m = re.search(r"([\d]+\.[\d]+)", text[i + len(label): i + len(label) + window])
+    return float(m.group(1)) if m else None
+
+
+def naver_breadth(code, dump_dir=None):
+    """상한·상승·보합·하락·하한 종목 수. code 는 KOSPI 또는 KOSDAQ."""
+    url = "https://finance.naver.com/sise/sise_index.naver?code=%s" % code
+    s = _get(url, referer="https://finance.naver.com/sise/", encoding="cp949")
+    t = re.sub(r"\s+", " ", _text(s))
+    out = {}
+    for label, key in (("상한", "limit_up"), ("상승", "advancing"),
+                       ("보합", "unchanged"), ("하락", "declining"),
+                       ("하한", "limit_down")):
+        v = _first_int(t, label)
+        if v is not None:
+            out[key] = v
+    if len(out) < 3:
+        if dump_dir:
+            os.makedirs(dump_dir, exist_ok=True)
+            with open(os.path.join(dump_dir, "breadth_%s.html" % code), "w",
+                      encoding="utf-8") as f:
+                f.write(s[:400000])
+        raise ValueError("종목 수를 %d개만 찾음 (%d bytes)" % (len(out), len(s)))
+    out["source_url"] = url
+    return out
+
+
+BOND_URLS = [
+    "https://finance.naver.com/marketindex/interestDailyQuote.naver?marketindexCd=IRR_GOVT03Y",
+    "https://finance.naver.com/marketindex/",
+]
+BOND_LABELS = (("국고채(3년)", "ktb3y"), ("국고채(5년)", "ktb5y"),
+               ("국고채(10년)", "ktb10y"), ("회사채(3년)", "corp3y"),
+               ("CD(91일)", "cd91"))
+
+
+def naver_bonds(dump_dir=None):
+    """국고채·회사채·CD 금리. 네이버 시장지표에서 텍스트로 뽑는다."""
+    errors = []
+    for n, url in enumerate(BOND_URLS):
+        try:
+            s = _get(url, referer="https://finance.naver.com/marketindex/",
+                     encoding="cp949")
+        except Exception as e:                                # noqa: BLE001
+            errors.append("%s -> %s" % (url[-38:], e))
+            continue
+        t = re.sub(r"\s+", " ", _text(s))
+        out = {}
+        for label, key in BOND_LABELS:
+            v = _first_float(t, label)
+            if v is not None and 0 < v < 20:
+                out[key] = v
+        if out:
+            out["source_url"] = url
+            return out
+        errors.append("%s -> 금리 라벨 없음(%d bytes)" % (url[-38:], len(s)))
+        if dump_dir:
+            os.makedirs(dump_dir, exist_ok=True)
+            with open(os.path.join(dump_dir, "bonds_try%d.html" % n), "w",
+                      encoding="utf-8") as f:
+                f.write(s[:400000])
+    raise ValueError(" | ".join(errors))
+
+
+def naver_investors_market(now, sosok, dump_dir=None):
+    """투자자별 매매동향. sosok='' 는 코스피, '1' 은 코스닥."""
+    base = "https://finance.naver.com/sise/investorDealTrendDay.naver"
+    errors = []
+    for i in range(5):
+        d = (now - timedelta(days=i)).strftime("%Y%m%d")
+        url = "%s?bizdate=%s&sosok=%s" % (base, d, sosok)
+        try:
+            s = _get(url, referer="https://finance.naver.com/sise/", encoding="cp949")
+        except Exception as e:                                # noqa: BLE001
+            errors.append(str(e))
+            continue
+        out = []
+        for row in re.findall(r"<tr[^>]*>(.*?)</tr>", s, re.S):
+            cells = [c for c in
+                     (_text(c) for c in re.findall(r"<td[^>]*>(.*?)</td>", row, re.S)) if c]
+            if len(cells) < 4 or not re.match(r"^\d{2,4}\.\d{2}\.\d{2}$", cells[0]):
+                continue
+
+            def n(x):
+                x = x.replace(",", "").replace("+", "").strip()
+                try:
+                    return int(x)
+                except ValueError:
+                    return None
+
+            vals = [n(c) for c in cells[1:4]]
+            if all(v is None for v in vals):
+                continue
+            out.append({"date": cells[0], "retail": vals[0], "foreign": vals[1],
+                        "institution": vals[2], "unit": "억원", "source_url": url})
+        if out:
+            return out[:6]
+        errors.append("%s -> 날짜 행 없음(%d bytes)" % (d, len(s)))
+        if dump_dir and i == 0:
+            os.makedirs(dump_dir, exist_ok=True)
+            with open(os.path.join(dump_dir, "investors_sosok%s.html" % (sosok or "0")),
+                      "w", encoding="utf-8") as f:
+                f.write(s[:400000])
+    raise ValueError(" | ".join(errors))
+
+
+FUTURES_URLS = [
+    "https://finance.naver.com/sise/programDeal.naver",
+    "https://finance.naver.com/sise/sise_index.naver?code=KPI200",
+]
+
+
+def naver_futures(dump_dir=None):
+    """선물·프로그램 매매. 외국인 선물 순매수를 찾을 수 있는지 확인한다."""
+    errors = []
+    for n, url in enumerate(FUTURES_URLS):
+        try:
+            s = _get(url, referer="https://finance.naver.com/sise/", encoding="cp949")
+        except Exception as e:                                # noqa: BLE001
+            errors.append("%s -> %s" % (url[-30:], e))
+            continue
+        t = re.sub(r"\s+", " ", _text(s))
+        hits = [k for k in ("외국인", "선물", "프로그램", "차익", "비차익") if k in t]
+        if len(hits) >= 3:
+            if dump_dir:
+                os.makedirs(dump_dir, exist_ok=True)
+                with open(os.path.join(dump_dir, "futures_try%d.html" % n), "w",
+                          encoding="utf-8") as f:
+                    f.write(s[:400000])
+            return {"source_url": url, "keywords_found": hits,
+                    "note": "원본을 data/market/raw 에 저장했습니다. 파서 미구현."}
+        errors.append("%s -> 키워드 %s (%d bytes)" % (url[-30:], hits, len(s)))
+    raise ValueError(" | ".join(errors))
+
+
 def krx_json(bld, **params):
     """KRX 정보데이터시스템 JSON 엔드포인트."""
     p = {"bld": bld, "locale": "ko_KR", "csvxls_isNo": "false"}
@@ -234,6 +383,33 @@ def main():
     out["sources"]["naver:investors"] = st
     if v:
         out["investors_kospi"] = v
+
+    # 코스닥 투자자별 — sosok 파라미터를 바꿔 시도
+    for sosok, label in (("1", "kosdaq"), ("01", "kosdaq_alt")):
+        v, st = run(label, naver_investors_market, now, sosok, "data/market/raw")
+        out["sources"]["naver:investors:%s(sosok=%s)" % (label, sosok)] = st
+        if v:
+            out["investors_kosdaq"] = v
+            break
+
+    # 상승·하락 종목 수
+    for code in ("KOSPI", "KOSDAQ"):
+        v, st = run("breadth", naver_breadth, code, "data/market/raw")
+        out["sources"]["naver:breadth:" + code] = st
+        if v:
+            out.setdefault("breadth", {})[code.lower()] = v
+
+    # 국고채·회사채·CD 금리
+    v, st = run("bonds", naver_bonds, "data/market/raw")
+    out["sources"]["naver:bonds"] = st
+    if v:
+        out["rates_kr"] = v
+
+    # 선물·프로그램 매매 (탐색 단계)
+    v, st = run("futures", naver_futures, "data/market/raw")
+    out["sources"]["naver:futures"] = st
+    if v:
+        out["futures_probe"] = v
 
     # KRX — 러너 IP를 막는 것으로 보인다(400 -> 헤더 보강 후 403).
     # 한 번만 시도해 상태를 기록하고, 실패해도 나머지 원천으로 진행한다.
