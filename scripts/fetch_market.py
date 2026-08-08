@@ -44,7 +44,7 @@ YAHOO_STOCKS = {
 }
 
 
-def _get(url, data=None, headers=None, referer=None, encoding="utf-8"):
+def _get(url, data=None, headers=None, referer=None, encoding="utf-8", timeout=None):
     """finance.naver.com 계열은 EUC-KR 이므로 encoding='cp949' 로 부른다."""
     h = {"User-Agent": UA, "Accept": "*/*",
          "Accept-Language": "ko-KR,ko;q=0.9,en;q=0.8"}
@@ -54,7 +54,7 @@ def _get(url, data=None, headers=None, referer=None, encoding="utf-8"):
         h.update(headers)
     body = urllib.parse.urlencode(data).encode() if data else None
     req = urllib.request.Request(url, data=body, headers=h)
-    with urllib.request.urlopen(req, timeout=TIMEOUT) as r:
+    with urllib.request.urlopen(req, timeout=timeout or TIMEOUT) as r:
         return r.read().decode(encoding, "replace")
 
 
@@ -422,7 +422,7 @@ def ecos_rates(now, dump_dir=None):
     # 1) 항목 코드 목록
     items = {}
     try:
-        j = json.loads(_get(ECOS % ("StatisticItemList", "817Y002")))
+        j = json.loads(_get(ECOS % ("StatisticItemList", "817Y002"), timeout=60))
         for row in (j.get("StatisticItemList", {}) or {}).get("row", []):
             items[row.get("ITEM_NAME", "")] = row.get("ITEM_CODE", "")
     except Exception as e:                                    # noqa: BLE001
@@ -441,7 +441,7 @@ def ecos_rates(now, dump_dir=None):
               "corp3y": ("회사채(3년,AA-)", "010320000"),
               "cd91": ("CD(91일)", "010502000")}
 
-    out, tried = {}, {}
+    out, tried, errs = {}, {}, []
     for key, (name, fallback) in wanted.items():
         code = next((c for n, c in items.items() if name.split("(")[0] in n
                      and name.split("(")[1].rstrip(")") in n), fallback)
@@ -449,11 +449,14 @@ def ecos_rates(now, dump_dir=None):
                       "817Y002/D/%s/%s/%s" % (start, end, code))
         tried[key] = code
         try:
-            j = json.loads(_get(url))
+            j = json.loads(_get(url, timeout=60))
         except Exception as e:                                # noqa: BLE001
+            errs.append("%s(%s) -> %s" % (key, code, e))
             continue
         rows = (j.get("StatisticSearch", {}) or {}).get("row", [])
         if not rows:
+            errs.append("%s(%s) -> %s" % (key, code,
+                        json.dumps(j, ensure_ascii=False)[:160]))
             continue
         last = rows[-1]
         try:
@@ -467,9 +470,9 @@ def ecos_rates(now, dump_dir=None):
             os.makedirs(dump_dir, exist_ok=True)
             with open(os.path.join(dump_dir, "ecos_debug.json"), "w",
                       encoding="utf-8") as f:
-                json.dump({"items_found": items, "codes_tried": tried},
-                          f, ensure_ascii=False, indent=2)
-        raise ValueError("ECOS 에서 아무 항목도 못 받음 (항목목록 %d건)" % len(items))
+                json.dump({"items_found": items, "codes_tried": tried,
+                           "errors": errs}, f, ensure_ascii=False, indent=2)
+        raise ValueError("ECOS 실패 (항목목록 %d건) — %s" % (len(items), " | ".join(errs)[:400]))
     out["source"] = "한국은행 ECOS 817Y002 (샘플 인증키)"
     return out
 
