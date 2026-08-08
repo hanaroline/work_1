@@ -1,6 +1,6 @@
 {
-  "generated_at_kst": "2026-08-08 13:01:47",
-  "generated_at_utc": "2026-08-08 04:01:47",
+  "generated_at_kst": "2026-08-08 13:04:34",
+  "generated_at_utc": "2026-08-08 04:04:34",
   "sources": {
     "yahoo:kospi": {
       "ok": true
@@ -81,8 +81,7 @@
       "ok": true
     },
     "naver:investors": {
-      "ok": false,
-      "error": "ValueError: /sise/investorDealTrendDay.naver -> 날짜 행 없음(1680 bytes) | /sise/investorDealTrendDay.naver -> 날짜 행 없음(1661 bytes) | .naver.com/sise/sise_index.naver -> 날짜 행 없음(57962 bytes)"
+      "ok": true
     },
     "krx:allstocks": {
       "ok": false,
@@ -782,8 +781,58 @@
       }
     ]
   },
+  "investors_kospi": [
+    {
+      "date": "26.08.07",
+      "retail": 2675,
+      "foreign": -8651,
+      "institution": 5854,
+      "unit": "억원",
+      "source_url": "https://finance.naver.com/sise/investorDealTrendDay.naver?bizdate=20260808&sosok="
+    },
+    {
+      "date": "26.08.06",
+      "retail": 33367,
+      "foreign": -32893,
+      "institution": -1214,
+      "unit": "억원",
+      "source_url": "https://finance.naver.com/sise/investorDealTrendDay.naver?bizdate=20260808&sosok="
+    },
+    {
+      "date": "26.08.05",
+      "retail": -11844,
+      "foreign": 14464,
+      "institution": -2838,
+      "unit": "억원",
+      "source_url": "https://finance.naver.com/sise/investorDealTrendDay.naver?bizdate=20260808&sosok="
+    },
+    {
+      "date": "26.08.04",
+      "retail": 8187,
+      "foreign": -3716,
+      "institution": -5385,
+      "unit": "억원",
+      "source_url": "https://finance.naver.com/sise/investorDealTrendDay.naver?bizdate=20260808&sosok="
+    },
+    {
+      "date": "26.08.03",
+      "retail": 46523,
+      "foreign": -28220,
+      "institution": -19516,
+      "unit": "억원",
+      "source_url": "https://finance.naver.com/sise/investorDealTrendDay.naver?bizdate=20260808&sosok="
+    },
+    {
+      "date": "26.07.31",
+      "retail": -82840,
+      "foreign": 72410,
+      "institution": 11503,
+      "unit": "억원",
+      "source_url": "https://finance.naver.com/sise/investorDealTrendDay.naver?bizdate=20260808&sosok="
+    }
+  ],
   "summary": {
     "sources_tried": 28,
-    "sources_ok": 26
+    "sources_ok": 27
   }
 }
