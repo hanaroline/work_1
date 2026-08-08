@@ -1,6 +1,6 @@
 {
-  "generated_at_kst": "2026-08-08 13:45:00",
-  "generated_at_utc": "2026-08-08 04:45:00",
+  "generated_at_kst": "2026-08-08 14:13:41",
+  "generated_at_utc": "2026-08-08 05:13:41",
   "sources": {
     "yahoo:kospi": {
       "ok": true
@@ -91,6 +91,13 @@
     },
     "naver:rates": {
       "ok": true
+    },
+    "naver:limit:upper": {
+      "ok": true
+    },
+    "naver:limit:lower": {
+      "ok": false,
+      "error": "ValueError: .com/sise/sise_low.naver -> HTTP Error 404: 404 | om/sise/sise_lower.naver -> 종목 링크 없음(44327 bytes)"
     },
     "krx:allstocks": {
       "ok": false,
@@ -914,8 +921,52 @@
       "nds/south-korea-10-year-bond-yield -> HTTP Error 403: Forbidden"
     ]
   },
+  "limit_names": {
+    "upper": {
+      "names": [
+        {
+          "code": "001290",
+          "name": "상상인증권"
+        },
+        {
+          "code": "003010",
+          "name": "혜인"
+        },
+        {
+          "code": "011330",
+          "name": "유니켐"
+        },
+        {
+          "code": "025900",
+          "name": "동화기업"
+        },
+        {
+          "code": "062970",
+          "name": "한국첨단소재"
+        },
+        {
+          "code": "162300",
+          "name": "신스틸"
+        },
+        {
+          "code": "226340",
+          "name": "본느"
+        },
+        {
+          "code": "042040",
+          "name": "케이피엠테크"
+        },
+        {
+          "code": "900340",
+          "name": "윙입푸드"
+        }
+      ],
+      "count": 9,
+      "source_url": "https://finance.naver.com/sise/sise_upper.naver"
+    }
+  },
   "summary": {
-    "sources_tried": 31,
-    "sources_ok": 30
+    "sources_tried": 33,
+    "sources_ok": 31
   }
 }
