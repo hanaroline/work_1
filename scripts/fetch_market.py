@@ -134,7 +134,7 @@ def naver_investors(dump_dir=None):
     다음 실행 때 무엇을 봐야 하는지 알 수 있게 한다.
     """
     errors = []
-    for url in INVESTOR_URLS:
+    for n_url, url in enumerate(INVESTOR_URLS):
         try:
             s = _get(url, referer="https://finance.naver.com/sise/", encoding="cp949")
         except Exception as e:                                # noqa: BLE001
@@ -169,7 +169,7 @@ def naver_investors(dump_dir=None):
         errors.append("%s -> 날짜 행 없음(%d bytes)" % (url.split("?")[0][-32:], len(s)))
         if dump_dir:
             os.makedirs(dump_dir, exist_ok=True)
-            fn = os.path.join(dump_dir, "investors_%s.html" % abs(hash(url)) % 10 ** 8)
+            fn = os.path.join(dump_dir, "investors_try%d.html" % n_url)
             with open(fn, "w", encoding="utf-8") as f:
                 f.write(s[:400000])
     raise ValueError(" | ".join(errors))
