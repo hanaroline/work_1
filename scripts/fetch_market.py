@@ -41,6 +41,14 @@ YAHOO_INDEX = {
     "nikkei": "^N225", "hangseng": "^HSI", "shanghai": "000001.SS", "taiwan": "^TWII",
     "eurostoxx": "^STOXX50E", "dax": "^GDAXI", "ftse": "^FTSE",
     "eurusd": "EURUSD=X", "usdcny": "CNY=X", "btc": "BTC-USD",
+    # --- 토요일 해외 증시 브리핑용 ---
+    # 유럽은 유로스톡스50(대형 50종목)만으로 부족하다. 기사에 가장 많이 나오는
+    # 광의 지수는 STOXX 600 이고, 국가별로는 프랑스·이탈리아·스페인·스위스가
+    # 빠지면 "유럽 증시" 라고 부르기 어렵다.
+    "stoxx600": "^STOXX", "cac": "^FCHI", "ftsemib": "FTSEMIB.MI",
+    "ibex": "^IBEX", "smi": "^SSMI", "aex": "^AEX",
+    "sensex": "^BSESN", "asx200": "^AXJO",
+    "eth": "ETH-USD", "platinum": "PL=F", "usdtwd": "TWD=X", "gbpusd": "GBPUSD=X",
     # 지수선물 — 브리핑을 쓰는 시각에 유일하게 살아 있는 미국 가격
     "sp500_fut": "ES=F", "nasdaq_fut": "NQ=F", "dow_fut": "YM=F", "russell_fut": "RTY=F",
     # 연방기금 금리선물 — 내재 정책금리(100 - 가격)를 계산해 인하 기대를 가늠한다
@@ -60,6 +68,17 @@ YAHOO_US_STOCKS = {
     "브로드컴": "AVGO", "AMD": "AMD", "마이크론": "MU", "TSMC": "TSM",
     "알파벳": "GOOGL", "아마존": "AMZN", "메타": "META", "테슬라": "TSLA",
     "ASML": "ASML",
+}
+
+# 유럽 대형주 — 유럽 증시가 왜 올랐는지/내렸는지를 종목으로 설명하려면 필요하다.
+# 접미사가 거래소를 가리킨다: .DE 프랑크푸르트, .PA 파리, .AS 암스테르담,
+# .L 런던, .SW 취리히, .MI 밀라노, .CO 코펜하겐.
+YAHOO_EU_STOCKS = {
+    "SAP": "SAP.DE", "인피니언": "IFX.DE", "지멘스": "SIE.DE",
+    "ASML": "ASML.AS", "LVMH": "MC.PA", "로레알": "OR.PA",
+    "네슬레": "NESN.SW", "노보노디스크": "NOVO-B.CO",
+    "쉘": "SHEL.L", "아스트라제네카": "AZN.L", "HSBC": "HSBA.L",
+    "노바티스": "NOVN.SW",
 }
 
 # 시가총액 상위 — 야후는 코스피 종목에 .KS, 코스닥에 .KQ 를 쓴다
@@ -882,6 +901,11 @@ def main():
         out["sources"]["yahoo:us:" + sym] = st
         if v:
             out.setdefault("us_stocks", {})[name] = v
+    for name, sym in YAHOO_EU_STOCKS.items():
+        v, st = run(name, yahoo_quote, sym)
+        out["sources"]["yahoo:eu:" + sym] = st
+        if v:
+            out.setdefault("eu_stocks", {})[name] = v
 
     # 미 국채 — 야후에 2년물 심볼이 없어 재무부 원본 곡선을 받는다
     v, st = run("treasury", treasury_yields, now)
