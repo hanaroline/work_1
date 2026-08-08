@@ -1,6 +1,6 @@
 {
-  "generated_at_kst": "2026-08-08 13:04:34",
-  "generated_at_utc": "2026-08-08 04:04:34",
+  "generated_at_kst": "2026-08-08 13:41:07",
+  "generated_at_utc": "2026-08-08 04:41:07",
   "sources": {
     "yahoo:kospi": {
       "ok": true
@@ -81,6 +81,28 @@
       "ok": true
     },
     "naver:investors": {
+      "ok": true
+    },
+    "naver:investors:kosdaq(sosok=1)": {
+      "ok": false,
+      "error": "ValueError: 20260808 -> 날짜 행 없음(1689 bytes) | 20260807 -> 날짜 행 없음(1689 bytes) | 20260806 -> 날짜 행 없음(1689 bytes) | 20260805 -> 날짜 행 없음(1689 bytes) | 20260804 -> 날짜 행 없음(1689 bytes)"
+    },
+    "naver:investors:kosdaq_alt(sosok=01)": {
+      "ok": true
+    },
+    "naver:breadth:KOSPI": {
+      "ok": false,
+      "error": "ValueError: 종목 수를 0개만 찾음 (57957 bytes)"
+    },
+    "naver:breadth:KOSDAQ": {
+      "ok": false,
+      "error": "ValueError: 종목 수를 0개만 찾음 (58008 bytes)"
+    },
+    "naver:bonds": {
+      "ok": false,
+      "error": "ValueError: yQuote.naver?marketindexCd=IRR_GOVT03Y -> 금리 라벨 없음(4228 bytes) | https://finance.naver.com/marketindex/ -> 금리 라벨 없음(56154 bytes)"
+    },
+    "naver:futures": {
       "ok": true
     },
     "krx:allstocks": {
@@ -831,8 +853,67 @@
       "source_url": "https://finance.naver.com/sise/investorDealTrendDay.naver?bizdate=20260808&sosok="
     }
   ],
+  "investors_kosdaq": [
+    {
+      "date": "26.08.07",
+      "retail": 2675,
+      "foreign": -8651,
+      "institution": 5854,
+      "unit": "억원",
+      "source_url": "https://finance.naver.com/sise/investorDealTrendDay.naver?bizdate=20260808&sosok=01"
+    },
+    {
+      "date": "26.08.06",
+      "retail": 33367,
+      "foreign": -32893,
+      "institution": -1214,
+      "unit": "억원",
+      "source_url": "https://finance.naver.com/sise/investorDealTrendDay.naver?bizdate=20260808&sosok=01"
+    },
+    {
+      "date": "26.08.05",
+      "retail": -11844,
+      "foreign": 14464,
+      "institution": -2838,
+      "unit": "억원",
+      "source_url": "https://finance.naver.com/sise/investorDealTrendDay.naver?bizdate=20260808&sosok=01"
+    },
+    {
+      "date": "26.08.04",
+      "retail": 8187,
+      "foreign": -3716,
+      "institution": -5385,
+      "unit": "억원",
+      "source_url": "https://finance.naver.com/sise/investorDealTrendDay.naver?bizdate=20260808&sosok=01"
+    },
+    {
+      "date": "26.08.03",
+      "retail": 46523,
+      "foreign": -28220,
+      "institution": -19516,
+      "unit": "억원",
+      "source_url": "https://finance.naver.com/sise/investorDealTrendDay.naver?bizdate=20260808&sosok=01"
+    },
+    {
+      "date": "26.07.31",
+      "retail": -82840,
+      "foreign": 72410,
+      "institution": 11503,
+      "unit": "억원",
+      "source_url": "https://finance.naver.com/sise/investorDealTrendDay.naver?bizdate=20260808&sosok=01"
+    }
+  ],
+  "futures_probe": {
+    "source_url": "https://finance.naver.com/sise/sise_index.naver?code=KPI200",
+    "keywords_found": [
+      "외국인",
+      "선물",
+      "프로그램"
+    ],
+    "note": "원본을 data/market/raw 에 저장했습니다. 파서 미구현."
+  },
   "summary": {
-    "sources_tried": 28,
-    "sources_ok": 27
+    "sources_tried": 34,
+    "sources_ok": 29
   }
 }
