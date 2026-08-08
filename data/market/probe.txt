@@ -1,29 +1,264 @@
 ==============================================================================
-A. 같은 필드를 현물 지수에서 읽어 단위를 가늠한다
+A. integration 응답 전문 — 단위 표기가 붙은 필드가 있는가
 ==============================================================================
-  [KOSPI  ] {"bizdate":"20260807","personalValue":"+2,675","foreignValue":"-8,651","institutionalValue":"+5,854"}
-            종가=? 거래량=299,377천주 대금=24,730,513백만
-  [KOSDAQ ] {"bizdate":"20260807","personalValue":"+3,402","foreignValue":"-2,522","institutionalValue":"-1,044"}
-            종가=? 거래량=509,894천주 대금=5,269,046백만
-  [KPI200 ] {"bizdate":"20260807","personalValue":"+1,559","foreignValue":"-7,195","institutionalValue":"+5,535"}
-            종가=? 거래량=145,454천주 대금=22,561,039백만
-  [FUT    ] {"bizdate":"20260807","personalValue":"-1,444","foreignValue":"+9,624","institutionalValue":"-7,662"}
-            종가=? 거래량=99,024 대금=24,293,139백만
+
+  --- FUT (1009 bytes) ---
+  {
+ "stockEndType": "futures",
+ "itemCode": "FUT",
+ "reutersCode": "FUT",
+ "stockName": "코스피 200 선물",
+ "totalInfos": [
+  {
+   "code": "lastClosePrice",
+   "key": "전일",
+   "value": "981.15"
+  },
+  {
+   "code": "openPrice",
+   "key": "시가",
+   "value": "987.70",
+   "compareToPreviousPrice": {
+    "code": "2",
+    "text": "상승",
+    "name": "RISING"
+   }
+  },
+  {
+   "code": "highPrice",
+   "key": "고가",
+   "value": "1,007.20",
+   "compareToPreviousPrice": {
+    "code": "2",
+    "text": "상승",
+    "name": "RISING"
+   }
+  },
+  {
+   "code": "lowPrice",
+   "key": "저가",
+   "value": "963.15",
+   "compareToPreviousPrice": {
+    "code": "5",
+    "text": "하락",
+    "name": "FALLING"
+   }
+  },
+  {
+   "code": "accumulatedTradingVolume",
+   "key": "거래량",
+   "value": "99,024"
+  },
+  {
+   "code": "accumulatedTradingValue",
+   "key": "대금",
+   "value": "24,293,139백만"
+  },
+  {
+   "code": "highPriceOf52Weeks",
+   "key": "52주 최고",
+   "value": "1,535.00"
+  },
+  {
+   "code": "lowPriceOf52Weeks",
+   "key": "52주 최저",
+   "value": "610.00"
+  }
+ ],
+ "description": "코스피200 주가지수를 기초자산으로 하는 선물지수",
+ "dealTrendInfo": {
+  "bizdate": "20260807",
+  "personalValue": "-1,444",
+  "foreignValue": "+9,624",
+  "institutionalValue": "-7,662"
+ },
+ "programTrendInfo": null,
+ "upDownStockInfo": null,
+ "enrollStocks": null,
+ "month": "26.09."
+}
+
+  --- KOSPI (15830 bytes) ---
+  {
+ "stockEndType": "index",
+ "itemCode": "KOSPI",
+ "reutersCode": "KOSPI",
+ "stockName": "코스피",
+ "totalInfos": [
+  {
+   "code": "lastClosePrice",
+   "key": "전일",
+   "value": "6,296.38"
+  },
+  {
+   "code": "openPrice",
+   "key": "시가",
+   "value": "6,365.07",
+   "compareToPreviousPrice": {
+    "code": "2",
+    "text": "상승",
+    "name": "RISING"
+   }
+  },
+  {
+   "code": "highPrice",
+   "key": "고가",
+   "value": "6,415.60",
+   "compareToPreviousPrice": {
+    "code": "2",
+    "text": "상승",
+    "name": "RISING"
+   }
+  },
+  {
+   "code": "lowPrice",
+   "key": "저가",
+   "value": "6,158.73",
+   "compareToPreviousPrice": {
+    "code": "5",
+    "text": "하락",
+    "name": "FALLING"
+   }
+  },
+  {
+   "code": "accumulatedTradingVolume",
+   "key": "거래량",
+   "value": "299,377천주"
+  },
+  {
+   "code": "accumulatedTradingValue",
+   "key": "대금",
+   "value": "24,730,513백만"
+  },
+  {
+   "code": "highPriceOf52Weeks",
+   "key": "52주 최고",
+   "value": "9,385.59"
+  },
+  {
+   "code": "lowPriceOf52Weeks",
+   "key": "52주 최저",
+   "value": "3,079.27"
+  }
+ ],
+ "description": "유가증권시장에 상장된 보통주를 구성종목으로하여 산출하는 지수로서 유가증권시장에서 형성되는 주가변동을 종합적으로 보여주는 국내 주요경제지표임",
+ "dealTrendInfo": {
+  "bizdate": "20260807",
+  "personalValue": "+2,675",
+  "foreignValue": "-8,651",
+  "institutionalValue": "+5,854"
+ },
+ "programTrendInfo": {
+  "bizdate": "20260807",
+  "indexDifferenceReal": "+877",
+  "indexBiDifferenceReal": "-7,391",
+  "indexTotalReal": "-6,513"
+ },
+ "upDownStockInfo": {
+  "upperCount": "3",
+  "riseCount": "554",
+  "lowerCount": "0",
+  "fallCount": "322",
+  "steadyCount": "36"
+ },
+ "enrollStocks": [
+  {
+   "stockType": "domestic",
+   "stockEndType": "stock",
+   "itemCode": "005930",
+   "reutersCode": "005930",
+   "stockName": "삼성전자",
+   "sosok": "0",
+   "closePrice": "231,000",
+   "compareToPreviousClosePrice": "500",
+   "compareToPreviousPrice": {
+    "code": "2",
+    "text": "상승",
+    "name": "RISING"
+   },
+   "fluctuationsRatio": "0.22",
+   "accumulatedTradingVolume": "34,013,267",
+   "accumulatedTradingValue": "7,935,548",
+   "localTradedAt": "2026-08-07T16:10:19+09:00",
+   "marketValue": "13,504,904",
+   "nav": "N/A",
+   "threeMonthEarningRate": "N/A",
+   "marketStatus": "CLOSE",
+   "tradeStopType": {
+    "code": "1",
+    "text": "운영.Trading",
+    "name": "TRADING"
+   },
+   "tradableStatus": "tradable",
+   "tradableStatusCode": "ok",
+   "tradableStatusUpdatedAt": "2026-08-07T08:01:29.932+09:00",
+   "stockExchangeType": {
+    "code": "KS",
+    "zoneId": "Asia/Seoul",
+    "nationType": "KOR",
+    "delayTime": 0,
+    "startTime": "0900",
+    "endTime": "1530",
+    "closePriceSendTime": "1630",
+    "nam
 
 ==============================================================================
-B. 이 화면이 부르는 JSON 엔드포인트 찾기 (HTML 긁기보다 안전)
+B. 8월 7일자가 확실한 기사에서 선물 계약 수 찾기
 ==============================================================================
-  queryHash: []
-  [https://api.stock.naver.com/index/FUT/basic             ] HTTP Error 409: Conflict
-  [https://api.stock.naver.com/index/FUT/integration       ] HTTP Error 404: Not Found
-  [https://api.stock.naver.com/futures/FUT/integration     ] HTTP Error 404: Not Found
-  [s://api.stock.naver.com/index/nation/KOR/FUT/integration] HTTP Error 404: Not Found
-  [https://m.stock.naver.com/api/index/FUT/integration     ] OK  1009  dealTrendInfo=True
-      {"bizdate": "20260807", "personalValue": "-1,444", "foreignValue": "+9,624", "institutionalValue": "-7,662"}
+  [8/7 확인] https://n.news.naver.com/mnews/article/422/0000893523
+      (선물 계약 문장 없음)
+  [8/7 확인] https://n.news.naver.com/mnews/article/001/0016239435
+      (선물 계약 문장 없음)
+  [8/7 확인] https://n.news.naver.com/mnews/article/001/0016239516
+      (선물 계약 문장 없음)
+  [8/7 확인] https://n.news.naver.com/mnews/article/055/0001378917
+      (선물 계약 문장 없음)
+  [8/7 확인] https://n.news.naver.com/mnews/article/057/0001962555
+      (선물 계약 문장 없음)
+  [8/7 확인] https://n.news.naver.com/mnews/article/215/0001261579
+      (선물 계약 문장 없음)
+  [8/7 확인] https://n.news.naver.com/mnews/article/374/0000526242
+      (선물 계약 문장 없음)
+  [8/7 확인] https://n.news.naver.com/mnews/article/421/0009102839
+      (선물 계약 문장 없음)
+  [8/7 확인] https://n.news.naver.com/mnews/article/421/0009102840
+      (선물 계약 문장 없음)
+  [8/7 확인] https://n.news.naver.com/mnews/article/421/0009102847
+      (선물 계약 문장 없음)
+  [8/7 확인] https://n.news.naver.com/mnews/article/421/0009102849
+      (선물 계약 문장 없음)
+  [8/7 확인] https://n.news.naver.com/mnews/article/016/0002681073
+      (선물 계약 문장 없음)
+  [8/7 확인] https://n.news.naver.com/mnews/article/022/0004149365
+      (선물 계약 문장 없음)
+  [8/7 확인] https://n.news.naver.com/mnews/article/665/0000007903
+      (선물 계약 문장 없음)
+  [8/7 확인] https://n.news.naver.com/mnews/article/003/0014114816
+      (선물 계약 문장 없음)
+  [8/7 확인] https://n.news.naver.com/mnews/article/015/0005318494
+      (선물 계약 문장 없음)
+  [8/7 확인] https://n.news.naver.com/mnews/article/018/0006346947
+      (선물 계약 문장 없음)
+  [8/7 확인] https://n.news.naver.com/mnews/article/022/0004149233
+      (선물 계약 문장 없음)
+  [8/7 확인] https://n.news.naver.com/mnews/article/030/0003455282
+      (선물 계약 문장 없음)
+  [8/7 확인] https://n.news.naver.com/mnews/article/031/0001048099
+      (선물 계약 문장 없음)
+  [8/7 확인] https://n.news.naver.com/mnews/article/079/0004176632
+      (선물 계약 문장 없음)
+  [8/7 확인] https://n.news.naver.com/mnews/article/081/0003668600
+      (선물 계약 문장 없음)
+  [8/7 확인] https://n.news.naver.com/mnews/article/082/0001393026
+      (선물 계약 문장 없음)
+  [8/7 확인] https://n.news.naver.com/mnews/article/366/0001184955
+      (선물 계약 문장 없음)
+  8/7 확인된 기사 중 선물 계약 수가 있는 기사 0건, 확인한 기사 46건
 
 ==============================================================================
-C. 연합인포맥스 8월 7일자 기사에서 선물 계약 수 대조
+C. 파생 전문 매체 — 8/7 언급 기사
 ==============================================================================
-  기사 29건 (최신순)
+  [선물 외국인 순매수 계약] 기사 29건
+  [코스피200 선물 외국인] 기사 29건
 
 탐색 종료
