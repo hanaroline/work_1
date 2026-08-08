@@ -1,0 +1,840 @@
+<title>아침 브리핑 · 2026년 8월 6일 (목)</title>
+<style>
+:root{
+  --orange:#F58220; --blue:#043B72; --soft:#FAB072; --active:#CB6015;
+  --gray-hl:#D7D7D7; --clay:#C6613F;
+  --canvas:#FFFFFF; --surf:#ECEFF4; --subtle:#F7F8FA; --card:#FFFFFF;
+  --hair:#CDCECB; --hair-soft:#E5E4E1;
+  --ink:#1A1A1A; --body:#3D3D3D; --muted:#6C6C6C; --muted2:#84888B;
+  --up:#C62828; --down:#043B72; --warn:#D4A017; --ok:#2E8540;
+  --callout-bg:#F58220; --callout-fg:#FFFFFF; --callout-rule:rgba(255,255,255,.5); --on-orange:#FFFFFF;
+  --tag-warn-bg:#FCF7E8; --tag-warn-fg:#8A6A0D;
+  --tag-ok-bg:#F0F7F1; --tag-ok-fg:#1F5C2C;
+  --tag-bad-bg:#FBF0F0; --tag-bad-fg:#8F1F1F;
+  --link-rule:rgba(4,59,114,.28);
+  --font-kr:'Pretendard','Apple SD Gothic Neo','Noto Sans KR','Malgun Gothic',system-ui,sans-serif;
+  --font-en:'Aptos','Segoe UI',system-ui,-apple-system,'Helvetica Neue',Arial,sans-serif;
+  --font-num:'Aptos','Segoe UI',system-ui,-apple-system,'Helvetica Neue',Arial,sans-serif;
+  --sp-section:104px; --sp-block:56px; --sp-content:28px; --sp-tight:14px;
+}
+@media (prefers-color-scheme:dark){
+  :root{
+    --orange:#FF9A4A; --blue:#82B7EA; --soft:#4A331E; --active:#FFB169;
+    --gray-hl:#272C34; --clay:#E08A69;
+    --canvas:#15171B; --surf:#212630; --subtle:#1B1F26; --card:#1A1E25;
+    --hair:#3A414C; --hair-soft:#2A303A;
+    --ink:#F1F3F6; --body:#CDD3DB; --muted:#98A0AB; --muted2:#7F8794;
+    --up:#FF7A7A; --down:#82B7EA; --warn:#E4BB55; --ok:#63C07C;
+    --callout-bg:#8A4410; --callout-fg:#FFF1E4; --callout-rule:rgba(255,241,228,.45); --on-orange:#241206;
+    --tag-warn-bg:#3A2F14; --tag-warn-fg:#E8C86B;
+    --tag-ok-bg:#16301D; --tag-ok-fg:#7DD494;
+    --tag-bad-bg:#3A1D1D; --tag-bad-fg:#F09090;
+    --link-rule:rgba(130,183,234,.35);
+  }
+}
+:root[data-theme="dark"]{
+  --orange:#FF9A4A; --blue:#82B7EA; --soft:#4A331E; --active:#FFB169;
+  --gray-hl:#272C34; --clay:#E08A69;
+  --canvas:#15171B; --surf:#212630; --subtle:#1B1F26; --card:#1A1E25;
+  --hair:#3A414C; --hair-soft:#2A303A;
+  --ink:#F1F3F6; --body:#CDD3DB; --muted:#98A0AB; --muted2:#7F8794;
+  --up:#FF7A7A; --down:#82B7EA; --warn:#E4BB55; --ok:#63C07C;
+  --callout-bg:#8A4410; --callout-fg:#FFF1E4; --callout-rule:rgba(255,241,228,.45); --on-orange:#241206;
+  --tag-warn-bg:#3A2F14; --tag-warn-fg:#E8C86B;
+  --tag-ok-bg:#16301D; --tag-ok-fg:#7DD494;
+  --tag-bad-bg:#3A1D1D; --tag-bad-fg:#F09090;
+  --link-rule:rgba(130,183,234,.35);
+}
+:root[data-theme="light"]{
+  --orange:#F58220; --blue:#043B72; --soft:#FAB072; --active:#CB6015;
+  --gray-hl:#D7D7D7; --clay:#C6613F;
+  --canvas:#FFFFFF; --surf:#ECEFF4; --subtle:#F7F8FA; --card:#FFFFFF;
+  --hair:#CDCECB; --hair-soft:#E5E4E1;
+  --ink:#1A1A1A; --body:#3D3D3D; --muted:#6C6C6C; --muted2:#84888B;
+  --up:#C62828; --down:#043B72; --warn:#D4A017; --ok:#2E8540;
+  --callout-bg:#F58220; --callout-fg:#FFFFFF; --callout-rule:rgba(255,255,255,.5); --on-orange:#FFFFFF;
+  --tag-warn-bg:#FCF7E8; --tag-warn-fg:#8A6A0D;
+  --tag-ok-bg:#F0F7F1; --tag-ok-fg:#1F5C2C;
+  --tag-bad-bg:#FBF0F0; --tag-bad-fg:#8F1F1F;
+  --link-rule:rgba(4,59,114,.28);
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--canvas);color:var(--body);
+  font-family:var(--font-kr);font-size:19px;line-height:1.65;
+  font-variant-numeric:tabular-nums;}
+html[lang="en"] body{font-family:var(--font-en);}
+html[lang="ko"] .en{display:none!important}
+html[lang="en"] .ko{display:none!important}
+.page{max-width:1200px;margin:0 auto;padding:0 32px}
+a{color:var(--blue);text-decoration:none;border-bottom:1px solid var(--link-rule)}
+a:hover{color:var(--orange);border-bottom-color:var(--orange)}
+a:focus-visible{outline:2px solid var(--orange);outline-offset:2px;border-radius:2px}
+.num{font-family:var(--font-num);font-variant-numeric:tabular-nums}
+
+/* Header */
+.masthead{padding:38px 0 0}
+.mast-top{display:flex;justify-content:space-between;align-items:flex-start;gap:19px;flex-wrap:wrap}
+.brandline{font-size:14px;letter-spacing:.6px;color:var(--muted);text-transform:uppercase;font-weight:500}
+.brandline b{color:var(--orange);font-weight:700}
+h1.title{font-size:34px;line-height:1.25;letter-spacing:-.3px;font-weight:700;color:var(--ink);margin:10px 0 6px}
+.dateline{font-size:17px;color:var(--muted);margin:0}
+.headline-band{margin:28px 0 0;border-left:3px solid var(--orange);padding:10px 0 10px 19px;
+  font-size:22px;font-weight:600;color:var(--ink);line-height:1.45}
+
+/* Lang toggle */
+.lang-toggle{display:inline-flex;border:1px solid var(--hair);border-radius:2px;overflow:hidden;
+  box-shadow:0 2px 8px rgba(0,0,0,.06);background:var(--card);flex:none}
+.lang-toggle button{font-family:var(--font-en);font-size:14px;font-weight:500;letter-spacing:.5px;
+  padding:10px 17px;border:0;background:var(--card);color:var(--muted);cursor:pointer;line-height:1}
+.lang-toggle button + button{border-left:1px solid var(--hair)}
+.lang-toggle button[aria-checked="true"]{background:var(--orange);color:var(--on-orange)}
+.lang-toggle button[aria-checked="false"]:hover{background:var(--subtle);color:var(--ink)}
+.lang-toggle button:focus-visible{outline:2px solid var(--orange);outline-offset:-2px}
+
+/* Stat strip */
+.stats{display:grid;grid-template-columns:repeat(5,1fr);gap:1px;background:var(--hair-soft);
+  border:1px solid var(--hair);margin:38px 0 10px}
+.stat{background:var(--card);padding:19px 17px}
+.stat .lbl{font-size:14px;font-weight:500;letter-spacing:.6px;color:var(--muted);margin-bottom:6px}
+.stat .val{font-family:var(--font-num);font-size:30px;font-weight:700;letter-spacing:-.4px;color:var(--ink);line-height:1.1}
+.stat .chg{font-size:15px;margin-top:5px;font-family:var(--font-num);font-weight:500}
+.stat .chg.up{color:var(--up)} .stat .chg.dn{color:var(--blue)} .stat .chg.na{color:var(--muted2)}
+.stat .sub{font-size:13px;color:var(--muted2);margin-top:4px;font-family:var(--font-kr)}
+html[lang="en"] .stat .sub{font-family:var(--font-en)}
+.asof{font-size:14px;color:var(--muted2);margin:0 0 var(--sp-block);padding-top:4px;border-top:1px solid var(--hair-soft)}
+
+/* Sections */
+.section{margin-bottom:var(--sp-section)}
+.section-rule{height:1px;background:var(--orange);margin-bottom:19px}
+.sec-num{font-family:var(--font-num);font-size:14px;font-weight:600;letter-spacing:1.2px;color:var(--orange);display:block;margin-bottom:4px}
+h2.section-title{font-size:26px;font-weight:700;color:var(--ink);margin:0 0 var(--sp-content);letter-spacing:0}
+h3{font-size:22px;font-weight:600;color:var(--ink);margin:var(--sp-block) 0 var(--sp-tight)}
+h3:first-of-type{margin-top:var(--sp-content)}
+p{margin:0 0 var(--sp-content)}
+.lede{font-size:19px;color:var(--ink);font-weight:500;line-height:1.6}
+ul{margin:0 0 var(--sp-content);padding-left:22px}
+li{margin-bottom:10px}
+.small{font-size:17px}
+.cap{font-size:14px;color:var(--muted2);line-height:1.5;margin-top:10px}
+
+/* Tables */
+.tw{overflow-x:auto;margin:0 0 var(--sp-content);-webkit-overflow-scrolling:touch}
+table{border-collapse:collapse;width:100%;border:1px solid var(--hair);font-size:16px;min-width:600px}
+thead th{background:var(--soft);color:var(--ink);font-weight:700;font-size:16px;text-align:left;
+  padding:11px 13px;border-bottom:1px solid var(--hair)}
+td,tbody th{padding:10px 13px;border-top:1px solid var(--hair-soft);vertical-align:top;line-height:1.5}
+tbody th{text-align:left;font-weight:600;color:var(--ink);white-space:nowrap}
+tbody tr:hover{background:var(--subtle)}
+td.n,th.n{text-align:right;font-family:var(--font-num);font-variant-numeric:tabular-nums;white-space:nowrap}
+tr.hl td,tr.hl th{background:var(--gray-hl)}
+tr.hl:hover td,tr.hl:hover th{background:var(--gray-hl)}
+.up{color:var(--up);font-weight:600}
+.dn{color:var(--blue);font-weight:600}
+.na{color:var(--muted2)}
+.tag{display:inline-block;font-size:12px;font-weight:600;letter-spacing:.4px;padding:2px 7px;
+  border-radius:2px;border:1px solid var(--hair);color:var(--muted);background:var(--card);white-space:nowrap;
+  font-family:var(--font-en)}
+.tag.solo{border-color:var(--warn);color:var(--tag-warn-fg);background:var(--tag-warn-bg)}
+.tag.conf{border-color:var(--ok);color:var(--tag-ok-fg);background:var(--tag-ok-bg)}
+.tag.mis{border-color:var(--up);color:var(--tag-bad-fg);background:var(--tag-bad-bg)}
+.tag.na{border-color:var(--hair);color:var(--muted2);background:var(--subtle)}
+.clay{color:var(--clay);font-weight:700}
+tr.top td,tr.top th{border-left:3px solid var(--clay)}
+
+/* Cards & callouts */
+.callout{background:var(--callout-bg);color:var(--callout-fg);border-radius:4px;padding:38px;margin:0 0 var(--sp-content)}
+.callout h4{margin:0 0 10px;font-size:22px;font-weight:700;color:var(--callout-fg)}
+.callout p{margin:0 0 12px;color:var(--callout-fg);font-size:17px;line-height:1.6}
+.callout p:last-child{margin-bottom:0}
+.callout a{color:var(--callout-fg);border-bottom-color:var(--callout-rule)}
+.callout a:hover{color:var(--callout-fg);border-bottom-color:var(--callout-fg)}
+.box{background:var(--surf);border-radius:4px;padding:24px 28px;margin:0 0 var(--sp-content)}
+.box h4{margin:0 0 10px;font-size:19px;font-weight:700;color:var(--ink)}
+.box p:last-child,.box ul:last-child{margin-bottom:0}
+.box.warn{background:var(--tag-warn-bg);border-left:3px solid var(--warn)}
+.quote{border-left:3px solid var(--orange);background:var(--subtle);padding:19px 24px;margin:0 0 var(--sp-content);border-radius:0 4px 4px 0}
+.quote p{margin:0 0 8px;font-size:19px;color:var(--ink);line-height:1.6}
+.quote .attr{font-size:15px;color:var(--muted);margin:0}
+.cards{display:grid;grid-template-columns:repeat(2,1fr);gap:19px;margin-bottom:var(--sp-content)}
+.card{border:1px solid var(--hair);border-radius:4px;padding:24px 26px;background:var(--card)}
+.card .q{font-size:19px;font-weight:700;color:var(--blue);margin:0 0 12px;line-height:1.45}
+.card .a{font-size:17px;margin:0;line-height:1.6}
+.card .a + .a{margin-top:10px}
+.disc{font-size:14px;color:var(--muted2);margin-top:14px;padding-top:10px;border-top:1px solid var(--hair-soft);line-height:1.5}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:var(--sp-content)}
+.foot{border-top:1px solid var(--orange);padding:24px 0 56px;font-size:14px;color:var(--muted2);line-height:1.6}
+
+@media (max-width:900px){
+  .stats{grid-template-columns:repeat(2,1fr)}
+  .cards,.two{grid-template-columns:1fr}
+}
+@media (max-width:768px){
+  :root{--sp-section:72px;--sp-block:36px}
+  body{font-size:19px}
+  .page{padding:0 20px}
+  h1.title{font-size:26px}
+  h2.section-title{font-size:22px}
+  h3{font-size:19px}
+  .headline-band{font-size:19px}
+  .stat .val{font-size:26px}
+  .callout{padding:26px}
+}
+@media print{
+  :root{
+    --orange:#F58220; --blue:#043B72; --soft:#FAB072; --gray-hl:#D7D7D7; --clay:#C6613F;
+    --canvas:#FFFFFF; --surf:#ECEFF4; --subtle:#F7F8FA; --card:#FFFFFF;
+    --hair:#CDCECB; --hair-soft:#E5E4E1;
+    --ink:#1A1A1A; --body:#3D3D3D; --muted:#6C6C6C; --muted2:#84888B;
+    --up:#C62828; --down:#043B72; --warn:#D4A017; --ok:#2E8540;
+    --tag-warn-bg:#FCF7E8; --tag-warn-fg:#8A6A0D;
+    --tag-ok-bg:#F0F7F1; --tag-ok-fg:#1F5C2C;
+    --tag-bad-bg:#FBF0F0; --tag-bad-fg:#8F1F1F;
+  }
+  .lang-toggle,nav{display:none!important}
+  body{font-size:11pt;line-height:1.4;color:#000}
+  .page{max-width:100%;padding:0}
+  :root{--sp-section:26px;--sp-block:18px;--sp-content:12px}
+  .section{page-break-inside:auto;margin-bottom:26px}
+  h2,h3,.section-rule{page-break-after:avoid}
+  table,.card,.box,.callout,.quote{page-break-inside:avoid}
+  table{font-size:9pt;min-width:0}
+  .callout{background:#fff!important;color:#000!important;border:1px solid var(--orange)}
+  .callout h4,.callout p,.callout a{color:#000!important}
+  a{color:#000;border:0}
+  .tw{overflow:visible}
+}
+</style>
+<div class="page">
+
+<header class="masthead">
+  <div class="mast-top">
+    <div>
+      <div class="brandline"><b>MIRAE ASSET</b> <span class="ko">마포WM · 아침 브리핑</span><span class="en">Mapo WM · Morning Brief</span></div>
+      <h1 class="title"><span class="ko">재섭님, 오늘의 시장입니다</span><span class="en">Jaeseop, here is today's market</span></h1>
+      <p class="dateline"><span class="ko">2026년 8월 6일 (목) 07:00 KST · 기준: 8월 5일(수) 국내 마감 + 밤사이 미국 마감</span><span class="en">Thursday, 6 August 2026, 07:00 KST · Basis: Korea close Wed 5 Aug + overnight US close</span></p>
+    </div>
+    <div class="lang-toggle" role="radiogroup" aria-label="Language">
+      <button type="button" id="btn-ko" role="radio" aria-checked="true" onclick="setLang('ko')">KO</button>
+      <button type="button" id="btn-en" role="radio" aria-checked="false" onclick="setLang('en')">EN</button>
+    </div>
+  </div>
+  <div class="headline-band">
+    <span class="ko">코스피 +3.76% 급등해 6,600선 문턱까지 — 외국인이 1조4,463억원을 사들였습니다. 다만 밤사이 뉴욕에서 AMD가 7% 급락하며 AI 랠리에 균열이 생겼고, 카시카리 연은 총재는 "지금이 금리를 올리기 시작할 때"라고 말했습니다.</span>
+    <span class="en">KOSPI surged 3.76% to just below 6,600 as foreigners bought KRW 1.45tn. Overnight, however, AMD fell 7% in New York, cracking the AI rally, and Fed's Kashkari said "now is the time to start slowly moving rates up."</span>
+  </div>
+</header>
+
+<div class="stats">
+  <div class="stat">
+    <div class="lbl">KOSPI</div>
+    <div class="val">6,598.26</div>
+    <div class="chg up">+239.31 (+3.76%)</div>
+    <div class="sub"><span class="ko">8/5 종가</span><span class="en">Close, 5 Aug</span></div>
+  </div>
+  <div class="stat">
+    <div class="lbl">KOSDAQ</div>
+    <div class="val">799.59</div>
+    <div class="chg up">+18.87 (+2.42%)</div>
+    <div class="sub"><span class="ko">8/5 종가</span><span class="en">Close, 5 Aug</span></div>
+  </div>
+  <div class="stat">
+    <div class="lbl">USD/KRW</div>
+    <div class="val">1,424.5</div>
+    <div class="chg dn">&minus;8.0</div>
+    <div class="sub"><span class="ko">8/5 15:30 주간거래 종가</span><span class="en">Onshore close, 5 Aug 15:30</span></div>
+  </div>
+  <div class="stat">
+    <div class="lbl">S&amp;P 500</div>
+    <div class="val">7,723.55</div>
+    <div class="chg dn">&minus;12.97 (&minus;0.17%)</div>
+    <div class="sub"><span class="ko">8/6 05:00 KST 마감</span><span class="en">Close, 6 Aug 05:00 KST</span></div>
+  </div>
+  <div class="stat">
+    <div class="lbl">VIX</div>
+    <div class="val na" style="font-size:26px"><span class="ko">미확인</span><span class="en">Unverified</span></div>
+    <div class="chg na">&mdash;</div>
+    <div class="sub"><span class="ko">8/4 종가 16.50 참고 · 8/5치 소스 3곳 상충</span><span class="en">Ref: 16.50 on 4 Aug · 3 sources conflict for 5 Aug</span></div>
+  </div>
+</div>
+<p class="asof"><span class="ko">국내 지수·환율은 2026년 8월 5일(수) 마감 기준, 미국은 8월 5일(수) 16:00 ET = 8월 6일(목) 05:00 KST 기준입니다. 모든 시각은 KST입니다.</span><span class="en">Korean indices and FX as of Wednesday 5 August 2026 close; US as of 5 Aug 16:00 ET = 6 Aug 05:00 KST. All times KST.</span></p>
+
+<!-- 01 -->
+<section class="section" id="s01">
+  <div class="section-rule"></div>
+  <span class="sec-num">01</span>
+  <h2 class="section-title"><span class="ko">국내 증시</span><span class="en">Korean Equities</span></h2>
+
+  <p class="lede">
+    <span class="ko">전 거래일 코스피는 239.31포인트(+3.76%) 오른 6,598.26에 마감했습니다. 코스닥은 18.87포인트(+2.42%) 상승한 799.59. 코스피는 2거래일, 코스닥은 4거래일 연속 상승입니다.</span>
+    <span class="en">KOSPI closed at 6,598.26, up 239.31 points (+3.76%). KOSDAQ rose 18.87 points (+2.42%) to 799.59 — a second straight gain for KOSPI and a fourth for KOSDAQ.</span>
+  </p>
+
+  <h3><span class="ko">장 흐름</span><span class="en">Session flow</span></h3>
+  <p>
+    <span class="ko">전일 미국 필라델피아 반도체지수가 6.55% 급등한 흐름을 그대로 받아 6,603.48로 갭상승 출발했습니다. 개장 24분 만인 09:24, 코스피200 선물이 기준가 대비 5.12% 오르며 <b>매수 사이드카</b>가 발동됐습니다. 장중 6,674.66(+4.96%)까지 치솟은 뒤 오후 차익실현에 6,540.27까지 밀렸고, 결국 6,600선 회복에 1.74포인트 못 미친 채 마감했습니다. 상승 종목이 코스피 675개 대 하락 197개, 코스닥 1,346개 대 301개로 압도적이었고 <b>양 시장 모두 하한가 종목이 없었습니다</b>.</span>
+    <span class="en">Following a 6.55% surge in the Philadelphia Semiconductor Index overnight, KOSPI gapped up to open at 6,603.48. Just 24 minutes in, at 09:24, KOSPI 200 futures rose 5.12% against the reference price, triggering a <b>buy-side sidecar</b>. The index spiked to 6,674.66 (+4.96%) intraday before afternoon profit-taking pushed it to 6,540.27, finishing 1.74 points short of reclaiming 6,600. Advancers overwhelmed decliners 675 to 197 on KOSPI and 1,346 to 301 on KOSDAQ, and <b>neither market had a single limit-down stock</b>.</span>
+  </p>
+  <p class="cap"><span class="ko">시가·장중 고저는 파이낸셜뉴스 단독 보도로 2차 검증되지 않았습니다.</span><span class="en">Open and intraday high/low are single-sourced (Financial News) and not second-verified.</span></p>
+
+  <h3><span class="ko">투자자별 수급</span><span class="en">Flows by investor type</span></h3>
+  <div class="tw">
+  <table>
+    <thead><tr>
+      <th><span class="ko">시장 · 주체</span><span class="en">Market · Investor</span></th>
+      <th class="n"><span class="ko">순매수(억원)</span><span class="en">Net buy (KRW 100m)</span></th>
+      <th><span class="ko">검증</span><span class="en">Verification</span></th>
+      <th><span class="ko">비고</span><span class="en">Note</span></th>
+    </tr></thead>
+    <tbody>
+      <tr class="hl"><th><span class="ko">코스피 · 외국인</span><span class="en">KOSPI · Foreign</span></th><td class="n up">+14,463</td><td><span class="tag conf">2 SOURCES</span></td><td><span class="ko">이투데이·뉴스핌 정확 일치</span><span class="en">Etoday and Newspim match exactly</span></td></tr>
+      <tr><th><span class="ko">코스피 · 개인</span><span class="en">KOSPI · Retail</span></th><td class="n dn">&minus;11,833 ~ &minus;11,854</td><td><span class="tag mis">RANGE</span></td><td><span class="ko">매체별 3개 값, 정확 일치 2곳 없음</span><span class="en">Three values reported; no exact two-source match</span></td></tr>
+      <tr><th><span class="ko">코스피 · 기관</span><span class="en">KOSPI · Institutions</span></th><td class="n dn">&minus;2,800 ~ &minus;2,837</td><td><span class="tag mis">RANGE</span></td><td><span class="ko">매체별 4개 값</span><span class="en">Four values reported</span></td></tr>
+      <tr class="hl"><th><span class="ko">코스닥 · 개인</span><span class="en">KOSDAQ · Retail</span></th><td class="n up">+3,950</td><td><span class="tag conf">2 SOURCES</span></td><td><span class="ko">한국경제·파이낸셜뉴스</span><span class="en">Hankyung, Financial News</span></td></tr>
+      <tr><th><span class="ko">코스닥 · 외국인</span><span class="en">KOSDAQ · Foreign</span></th><td class="n dn">&minus;2,980</td><td><span class="tag conf">2 SOURCES</span></td><td>&mdash;</td></tr>
+      <tr><th><span class="ko">코스닥 · 기관</span><span class="en">KOSDAQ · Institutions</span></th><td class="n dn">&minus;1,108</td><td><span class="tag conf">2 SOURCES</span></td><td>&mdash;</td></tr>
+    </tbody>
+  </table>
+  </div>
+  <p>
+    <span class="ko">구도가 뒤집혔습니다. 8월 1~4일 외국인은 코스피에서 3조4,900억원을 순매도했는데, 8월 5일 하루에 1조4,463억원을 되사들였습니다. 반대로 개인은 차익실현에 나섰습니다. 코스닥에서는 개인이 사고 외국인·기관이 판 정반대 구도였습니다.</span>
+    <span class="en">The pattern reversed. Foreigners sold KRW 3.49tn of KOSPI stock between 1 and 4 August, then bought back KRW 1.45tn in a single session on 5 August, while retail took profits. On KOSDAQ the mirror image held: retail bought, foreigners and institutions sold.</span>
+  </p>
+  <p class="cap"><span class="ko">출처: <a href="https://www.etoday.co.kr/news/view/2611385">이투데이 8/5</a> · <a href="https://www.newspim.com/news/view/20260805001292">뉴스핌 마감시황 8/5</a> · <a href="https://www.hankyung.com/article/2026080565876">한국경제 8/5</a> · <a href="https://www.fnnews.com/news/202608051559493323">파이낸셜뉴스 8/5</a> · <a href="https://economist.co.kr/article/view/ecn202608050044">이코노미스트 8/5</a></span><span class="en">Sources: <a href="https://www.etoday.co.kr/news/view/2611385">Etoday, 5 Aug</a> · <a href="https://www.newspim.com/news/view/20260805001292">Newspim, 5 Aug</a> · <a href="https://www.hankyung.com/article/2026080565876">Hankyung, 5 Aug</a> · <a href="https://www.fnnews.com/news/202608051559493323">Financial News, 5 Aug</a> · <a href="https://economist.co.kr/article/view/ecn202608050044">Economist, 5 Aug</a></span></p>
+
+  <h3><span class="ko">주간 · 월간 맥락</span><span class="en">Weekly and monthly context</span></h3>
+  <div class="tw">
+  <table>
+    <thead><tr>
+      <th><span class="ko">구간</span><span class="en">Period</span></th>
+      <th class="n"><span class="ko">코스피</span><span class="en">KOSPI</span></th>
+      <th><span class="ko">내용</span><span class="en">Detail</span></th>
+    </tr></thead>
+    <tbody>
+      <tr><th><span class="ko">2026 상반기</span><span class="en">H1 2026</span></th><td class="n up">+101.14%</td><td><span class="ko">세계 1위 상승률 <span class="tag solo">1 SOURCE</span></span><span class="en">Best-performing global index <span class="tag solo">1 SOURCE</span></span></td></tr>
+      <tr class="hl"><th><span class="ko">2026년 7월</span><span class="en">July 2026</span></th><td class="n dn">&minus;22.19%</td><td><span class="ko">주요국 중 하락률 1위. 서킷브레이커 4회(역대 15회 중 25%), 사이드카 15회, 시총 약 1,484조원 감소</span><span class="en">Worst among major markets. Four circuit breakers (25% of all 15 ever), 15 sidecars, market cap down ~KRW 1,484tn</span></td></tr>
+      <tr><th>7/31</th><td class="n up">+17.91%</td><td><span class="ko">+1,001.89p, 사상 최대 일간 상승폭</span><span class="en">+1,001.89 pts — largest single-day gain on record</span></td></tr>
+      <tr><th>8/3</th><td class="n dn">&minus;5.12%</td><td><span class="ko">6,257.45로 마감</span><span class="en">Closed at 6,257.45</span></td></tr>
+      <tr><th>8/3&ndash;8/5</th><td class="n up">+5.45%</td><td><span class="ko">3거래일 누적(계산치)</span><span class="en">Three-session cumulative (computed)</span></td></tr>
+    </tbody>
+  </table>
+  </div>
+  <p class="small">
+    <span class="ko">7월의 낙폭은 종목 단위에서 훨씬 컸습니다. 삼성전자 &minus;21.41%, SK하이닉스 &minus;35.17%. 지수 하락률(&minus;22.19%)보다 반도체 대형주의 조정이 깊었다는 뜻이고, 8월 5일의 반등이 정확히 그 자리에서 나온 이유이기도 합니다.</span>
+    <span class="en">July's damage was deeper at the single-stock level: Samsung Electronics &minus;21.41%, SK Hynix &minus;35.17%, both worse than the index's &minus;22.19%. That is precisely where 5 August's rebound came from.</span>
+  </p>
+
+  <h3><span class="ko">증권사 지수 밴드 · 지지 저항</span><span class="en">House index ranges and support/resistance</span></h3>
+  <div class="tw">
+  <table>
+    <thead><tr>
+      <th><span class="ko">증권사</span><span class="en">House</span></th>
+      <th><span class="ko">애널리스트</span><span class="en">Analyst</span></th>
+      <th><span class="ko">8월 밴드</span><span class="en">August range</span></th>
+      <th><span class="ko">코멘트</span><span class="en">Comment</span></th>
+    </tr></thead>
+    <tbody>
+      <tr class="hl"><th><span class="ko">한국투자증권</span><span class="en">Korea Investment</span></th><td><span class="ko">김대준</span><span class="en">Kim Dae-jun</span></td><td class="n">5,500&ndash;7,500</td><td><span class="ko">중심 6,500. 7/31 기준 12개월 선행 PER 5.3배(예상범위 4.6&ndash;6.3배 중단) <span class="tag conf">2 SOURCES</span></span><span class="en">Midpoint 6,500. 12M forward P/E of 5.3x as of 31 Jul, mid-range of the 4.6&ndash;6.3x band <span class="tag conf">2 SOURCES</span></span></td></tr>
+      <tr><th><span class="ko">삼성증권</span><span class="en">Samsung Securities</span></th><td><span class="ko">양일우 · 권범석</span><span class="en">Yang Il-woo, Kwon Beom-seok</span></td><td class="n">6,000&ndash;8,000</td><td><span class="ko">"외국인은 7,200p 이하를 합리적 가격으로 인식" <span class="tag solo">1 SOURCE</span></span><span class="en">"Foreigners see anything below 7,200 as reasonable" <span class="tag solo">1 SOURCE</span></span></td></tr>
+      <tr><th><span class="ko">유안타증권</span><span class="en">Yuanta Securities</span></th><td><span class="ko">김용구</span><span class="en">Kim Yong-gu</span></td><td class="n">5,150&ndash;8,000</td><td><span class="ko">5,150이 최악의 지지선. 별도 보도에서는 6,350선까지 기간조정 후 계단식 저점 상향 <span class="tag mis">SOURCES DIFFER</span></span><span class="en">5,150 as the worst-case floor; a separate report frames it as time-correction toward 6,350 then a stepwise higher low <span class="tag mis">SOURCES DIFFER</span></span></td></tr>
+      <tr><th><span class="ko">NH투자증권</span><span class="en">NH Investment</span></th><td><span class="ko">나정환</span><span class="en">Na Jung-hwan</span></td><td class="n">5,200&ndash;6,500</td><td><span class="ko">미 고용지표·반도체 실적 주목 <span class="tag solo">1 SOURCE</span></span><span class="en">Watching US payrolls and semiconductor earnings <span class="tag solo">1 SOURCE</span></span></td></tr>
+      <tr><th><span class="ko">현대차증권</span><span class="en">Hyundai Motor Securities</span></th><td><span class="ko">김재승</span><span class="en">Kim Jae-seung</span></td><td class="n"><span class="ko">밴드 미제시</span><span class="en">No range given</span></td><td><span class="ko">7,000&ndash;8,000 구간에 개인 대기 매물 <span class="tag solo">1 SOURCE</span></span><span class="en">Retail overhang sits in the 7,000&ndash;8,000 zone <span class="tag solo">1 SOURCE</span></span></td></tr>
+    </tbody>
+  </table>
+  </div>
+  <p class="small">
+    <span class="ko">밴드 자체가 크게 엇갈립니다. 유안타의 하단 5,150과 삼성의 하단 6,000은 850포인트, 한국투자의 상단 7,500과 NH의 상단 6,500은 1,000포인트 차이입니다. 현재 지수 6,598.26은 삼성 밴드의 하단 부근, NH 밴드의 상단 부근에 동시에 위치합니다.</span>
+    <span class="en">The ranges diverge sharply. Yuanta's 5,150 floor and Samsung's 6,000 floor are 850 points apart; Korea Investment's 7,500 ceiling and NH's 6,500 ceiling are 1,000 apart. At 6,598.26, the index sits near the bottom of Samsung's band and the top of NH's simultaneously.</span>
+  </p>
+</section>
+
+<!-- 02 -->
+<section class="section" id="s02">
+  <div class="section-rule"></div>
+  <span class="sec-num">02</span>
+  <h2 class="section-title"><span class="ko">수급 · 파생 지표</span><span class="en">Liquidity and Derivatives Indicators</span></h2>
+  <p class="lede">
+    <span class="ko">7월의 레버리지 청산은 대부분 소화된 것으로 보입니다. 신용융자 잔고는 6월 고점 대비 29% 줄었고, 반대매매 금액은 7월 31일의 4분의 1 수준으로 내려왔습니다. 동시에 투자자예탁금이 하루 만에 7.4% 늘며 110조원대를 회복했습니다.</span>
+    <span class="en">July's leverage unwind appears largely digested. Margin loan balances are down 29% from the June peak and forced-liquidation volume has fallen to a quarter of its 31 July level, while customer deposits jumped 7.4% in a day back above KRW 110tn.</span>
+  </p>
+  <div class="tw">
+  <table>
+    <thead><tr>
+      <th><span class="ko">지표</span><span class="en">Indicator</span></th>
+      <th class="n"><span class="ko">값</span><span class="en">Value</span></th>
+      <th><span class="ko">기준일</span><span class="en">As of</span></th>
+      <th><span class="ko">해석</span><span class="en">Reading</span></th>
+    </tr></thead>
+    <tbody>
+      <tr class="hl"><th><span class="ko">신용거래융자 잔고</span><span class="en">Margin loan balance</span></th><td class="n"><span class="ko">27조 4,038억</span><span class="en">KRW 27.40tn</span><br><span class="small dn">&minus;29.1% vs 6/24</span></td><td>8/4</td><td><span class="ko">6/24 고점 38조6,328억에서 11조2,290억 감소. 2025년 말(27조2,865억) 이후 최저 수준 &mdash; 레버리지 청산이 거의 끝난 구간 <span class="tag solo">1 SOURCE</span></span><span class="en">Down KRW 11.2tn from the 24 Jun peak of 38.6tn; lowest since end-2025 (27.3tn) — the deleveraging is close to complete <span class="tag solo">1 SOURCE</span></span></td></tr>
+      <tr><th><span class="ko">└ 7월 말 급감</span><span class="en">└ Late-July collapse</span></th><td class="n"><span class="ko">32조1,530억 → 28조9,350억</span><span class="en">KRW 32.15tn → 28.94tn</span></td><td>7/30 → 7/31</td><td><span class="ko">하루 만에 3조2,180억(&minus;10.0%) 청산 &mdash; 7월 급락의 직접 원인 <span class="tag conf">2 SOURCES</span></span><span class="en">KRW 3.2tn (&minus;10.0%) liquidated in one day — the proximate cause of July's crash <span class="tag conf">2 SOURCES</span></span></td></tr>
+      <tr class="hl"><th><span class="ko">투자자예탁금</span><span class="en">Customer deposits</span></th><td class="n"><span class="ko">110조 4,070억</span><span class="en">KRW 110.41tn</span><br><span class="small up">+7.4% DoD</span></td><td>8/4</td><td><span class="ko">11거래일 만에 110조원대 회복. 7/31 저점 104조1,350억, 6/4 고점 139조6,950억 &mdash; 대기 매수 재유입 신호 <span class="tag solo">1 SOURCE</span></span><span class="en">Back above KRW 110tn for the first time in 11 sessions; trough 104.1tn on 31 Jul, peak 139.7tn on 4 Jun — sidelined cash returning <span class="tag solo">1 SOURCE</span></span></td></tr>
+      <tr><th><span class="ko">반대매매 금액</span><span class="en">Forced liquidation value</span></th><td class="n"><span class="ko">315억</span><span class="en">KRW 31.5bn</span></td><td>8/4</td><td><span class="ko">7/31 1,220억의 약 1/4. 패닉 물량 소진 <span class="tag solo">1 SOURCE</span></span><span class="en">About a quarter of the KRW 122bn on 31 Jul — panic supply exhausted <span class="tag solo">1 SOURCE</span></span></td></tr>
+      <tr><th><span class="ko">반대매매 비중</span><span class="en">Forced liquidation ratio</span></th><td class="n">7.1%</td><td>7/31</td><td><span class="ko">연초 1% 안팎 대비 급등. 5&ndash;10%는 패닉 물량 구간 &mdash; 다만 이후 급감했으므로 <b>이미 지나간 스트레스</b>로 읽는 것이 타당 <span class="tag conf">2 SOURCES</span></span><span class="en">Versus roughly 1% early in the year. The 5&ndash;10% zone signals panic supply, but the sharp drop since suggests this stress is <b>already behind us</b> <span class="tag conf">2 SOURCES</span></span></td></tr>
+      <tr><th><span class="ko">위탁매매 미수금</span><span class="en">Unsettled receivables</span></th><td class="n"><span class="ko">1조 2,166억</span><span class="en">KRW 1.22tn</span></td><td>8/4</td><td><span class="ko">나흘 연속 감소 <span class="tag solo">1 SOURCE</span></span><span class="en">Fourth straight daily decline <span class="tag solo">1 SOURCE</span></span></td></tr>
+      <tr><th>VKOSPI</th><td class="n na"><span class="ko">미확인</span><span class="en">Unverified</span></td><td class="na">&mdash;</td><td><span class="ko">허용 매체에서 8/5 종가 미확보. 참고 기준: 40 이상은 고경계, 60&ndash;80은 위기 국면 <span class="tag na">NOT FOUND</span></span><span class="en">No 5 Aug close obtainable from permitted sources. Reference: above 40 is high alert, 60&ndash;80 is crisis <span class="tag na">NOT FOUND</span></span></td></tr>
+      <tr><th><span class="ko">외국인 상장주식 순매매</span><span class="en">Foreign net equity flow</span></th><td class="n dn"><span class="ko">&minus;49조 3,360억</span><span class="en">&minus;KRW 49.34tn</span></td><td><span class="ko">2026년 6월</span><span class="en">Jun 2026</span></td><td><span class="ko">6개월 연속 순매도. 코스피 &minus;50조9,790억, 코스닥 +1조6,430억. <b>7월분은 8/5 시점 미발표</b> &mdash; 최신 공식치는 6월 <span class="tag solo">1 SOURCE</span></span><span class="en">Sixth straight month of net selling: KOSPI &minus;50.98tn, KOSDAQ +1.64tn. <b>July data not yet released as of 5 Aug</b> — June is the latest official figure <span class="tag solo">1 SOURCE</span></span></td></tr>
+      <tr><th><span class="ko">외국인 상장채권 순투자</span><span class="en">Foreign net bond flow</span></th><td class="n up"><span class="ko">+4조 4,780억</span><span class="en">+KRW 4.48tn</span></td><td><span class="ko">2026년 6월</span><span class="en">Jun 2026</span></td><td><span class="ko">3개월 연속 순유입. 주식은 팔고 채권은 사는 구도가 이어졌습니다 <span class="tag solo">1 SOURCE</span></span><span class="en">Third straight month of inflows — the sell-equities, buy-bonds pattern persists <span class="tag solo">1 SOURCE</span></span></td></tr>
+    </tbody>
+  </table>
+  </div>
+  <div class="box warn">
+    <h4><span class="ko">확보하지 못한 항목</span><span class="en">Indicators we could not obtain</span></h4>
+    <p class="small">
+      <span class="ko"><b>VKOSPI</b>(8/5 종가) · <b>프로그램매매</b> 차익·비차익 · <b>선물 베이시스</b> · <b>공매도 잔고</b> · <b>Put/Call 비율</b> · <b>신용융자 전일 대비 증감액</b>(8/3→8/4). 이 항목들은 KRX·코스콤 등 세션 기반 페이지에서만 제공되며 API 인증키 없이는 정적 조회가 불가능합니다. <b>대차거래 잔액</b>(8/4 155조2,000억, 7/30 대비 +21조)은 단독 보도이고 증감폭이 비정상적으로 커 신뢰도 문제로 본문에서 제외했습니다.</span>
+      <span class="en"><b>VKOSPI</b> (5 Aug close), <b>program trading</b> (arb and non-arb), <b>futures basis</b>, <b>short interest</b>, <b>put/call ratio</b>, and the <b>day-on-day change in margin loans</b> (3→4 Aug). These live only on session-based KRX/Koscom pages that cannot be scraped statically without an API key. <b>Securities lending balance</b> (KRW 155.2tn on 4 Aug, +21tn vs 30 Jul) was single-sourced with an implausibly large swing and has been excluded on reliability grounds.</span>
+    </p>
+  </div>
+  <p class="cap"><span class="ko">출처: <a href="https://www.sedaily.com/article/20076108">서울경제 8/5</a> · <a href="https://www.etoday.co.kr/news/view/2610517">이투데이 8/2</a> · <a href="https://www.ajunews.com/view/20260803155858494">아주경제 8/3</a> · <a href="https://www.fnnews.com/news/202607301623271218">파이낸셜뉴스 7/30 (금감원 6월 외국인 증권투자)</a></span><span class="en">Sources: <a href="https://www.sedaily.com/article/20076108">Seoul Economic Daily, 5 Aug</a> · <a href="https://www.etoday.co.kr/news/view/2610517">Etoday, 2 Aug</a> · <a href="https://www.ajunews.com/view/20260803155858494">Ajunews, 3 Aug</a> · <a href="https://www.fnnews.com/news/202607301623271218">Financial News, 30 Jul (FSS June foreign flows)</a></span></p>
+</section>
+
+<!-- 03 -->
+<section class="section" id="s03">
+  <div class="section-rule"></div>
+  <span class="sec-num">03</span>
+  <h2 class="section-title"><span class="ko">종목 · 섹터 동향</span><span class="en">Stocks and Sectors</span></h2>
+  <p class="lede">
+    <span class="ko">반도체가 불을 붙였지만 상승은 반도체에만 머물지 않았습니다. 소부장(기판·카메라모듈)이 두 자릿수로 뛰었고, 건설·기계·조선·전기장비까지 확산됐습니다.</span>
+    <span class="en">Semis lit the fuse, but the rally did not stay there. Component and materials names (substrates, camera modules) jumped double digits, and the move spread into construction, machinery, shipbuilding and electrical equipment.</span>
+  </p>
+
+  <h3><span class="ko">시총 상위 · 주도 종목</span><span class="en">Large caps and leaders</span></h3>
+  <div class="tw">
+  <table>
+    <thead><tr>
+      <th><span class="ko">종목</span><span class="en">Stock</span></th>
+      <th class="n"><span class="ko">종가(원)</span><span class="en">Close (KRW)</span></th>
+      <th class="n"><span class="ko">등락률</span><span class="en">Change</span></th>
+      <th><span class="ko">이슈</span><span class="en">Driver</span></th>
+    </tr></thead>
+    <tbody>
+      <tr class="hl"><th><span class="ko">SK하이닉스</span><span class="en">SK Hynix</span></th><td class="n">1,668,000</td><td class="n up">+5.77%</td><td><span class="ko">메모리 3사 2027년 D램·HBM 물량 판매 완료 보도 <span class="tag conf">3 SOURCES</span></span><span class="en">Reports that the top three memory makers have sold out 2027 DRAM/HBM volume <span class="tag conf">3 SOURCES</span></span></td></tr>
+      <tr class="hl"><th><span class="ko">삼성전자</span><span class="en">Samsung Electronics</span></th><td class="n">246,000</td><td class="n up">+2.50%</td><td><span class="ko">7월 &minus;21.41% 낙폭 후 반등 <span class="tag conf">3 SOURCES</span></span><span class="en">Rebound after a &minus;21.41% July <span class="tag conf">3 SOURCES</span></span></td></tr>
+      <tr><th><span class="ko">삼성전기</span><span class="en">Samsung Electro-Mechanics</span></th><td class="n">1,356,000</td><td class="n up">+14.43%</td><td><span class="ko">반도체 기판(FC-BGA) 수요 확대 기대 <span class="tag conf">4 SOURCES</span></span><span class="en">Expectations of stronger FC-BGA substrate demand <span class="tag conf">4 SOURCES</span></span></td></tr>
+      <tr><th><span class="ko">LG이노텍</span><span class="en">LG Innotek</span></th><td class="n na"><span class="ko">미확인</span><span class="en">n/a</span></td><td class="n up">+14.48%</td><td><span class="ko">카메라모듈 공급 기회 <span class="tag solo">1 SOURCE</span></span><span class="en">Camera module supply opportunity <span class="tag solo">1 SOURCE</span></span></td></tr>
+      <tr><th><span class="ko">삼성물산</span><span class="en">Samsung C&amp;T</span></th><td class="n na"><span class="ko">미확인</span><span class="en">n/a</span></td><td class="n up">+7.75%</td><td><span class="ko">건설 섹터 강세 <span class="tag solo">1 SOURCE</span></span><span class="en">Construction sector strength <span class="tag solo">1 SOURCE</span></span></td></tr>
+      <tr><th><span class="ko">삼성생명</span><span class="en">Samsung Life</span></th><td class="n na"><span class="ko">미확인</span><span class="en">n/a</span></td><td class="n up">+5.76%</td><td><span class="ko">금융·보험 동반 상승 <span class="tag conf">2 SOURCES</span></span><span class="en">Financials rallied alongside <span class="tag conf">2 SOURCES</span></span></td></tr>
+      <tr><th>SK<span class="ko">스퀘어</span><span class="en"> Square</span></th><td class="n na"><span class="ko">미확인</span><span class="en">n/a</span></td><td class="n up">+5.57%</td><td><span class="ko">하이닉스 연동 <span class="tag conf">2 SOURCES</span></span><span class="en">Tracking SK Hynix <span class="tag conf">2 SOURCES</span></span></td></tr>
+      <tr><th><span class="ko">현대차</span><span class="en">Hyundai Motor</span></th><td class="n na"><span class="ko">미확인</span><span class="en">n/a</span></td><td class="n up">+3.06%</td><td><span class="ko">종가는 미확인 <span class="tag solo">1 SOURCE</span></span><span class="en">Close price not verified <span class="tag solo">1 SOURCE</span></span></td></tr>
+      <tr><th><span class="ko">LG에너지솔루션</span><span class="en">LG Energy Solution</span></th><td class="n na"><span class="ko">미확인</span><span class="en">Unverified</span></td><td class="n na"><span class="ko">미확인</span><span class="en">Unverified</span></td><td><span class="ko">허용 매체 보도 없음 <span class="tag na">NOT FOUND</span></span><span class="en">Not covered by any permitted source <span class="tag na">NOT FOUND</span></span></td></tr>
+      <tr><th><span class="ko">삼성바이오로직스</span><span class="en">Samsung Biologics</span></th><td class="n na"><span class="ko">미확인</span><span class="en">Unverified</span></td><td class="n na"><span class="ko">미확인</span><span class="en">Unverified</span></td><td><span class="ko">허용 매체 보도 없음 <span class="tag na">NOT FOUND</span></span><span class="en">Not covered by any permitted source <span class="tag na">NOT FOUND</span></span></td></tr>
+    </tbody>
+  </table>
+  </div>
+
+  <div class="two">
+    <div>
+      <h3><span class="ko">업종별 등락</span><span class="en">Sector moves</span></h3>
+      <ul class="small">
+        <li><span class="ko"><b>전자장비 +12.64%</b>, <b>전기장비 +9.08%</b>(2개 매체 일치), <b>통신장비 +8.39%</b></span><span class="en"><b>Electronic equipment +12.64%</b>, <b>electrical equipment +9.08%</b> (two sources agree), <b>telecom equipment +8.39%</b></span></li>
+        <li><span class="ko"><b>건설 +6.16% / +5.48%</b> &mdash; 매체별 업종 분류체계 차이로 값이 다릅니다</span><span class="en"><b>Construction +6.16% / +5.48%</b> — the two figures reflect different sector taxonomies, not an error</span></li>
+        <li><span class="ko"><b>기계장비 +5.58%</b>, <b>조선 +5.32%</b>, <b>전기전자 +4.47%</b>, <b>반도체 +4.10%</b></span><span class="en"><b>Machinery +5.58%</b>, <b>shipbuilding +5.32%</b>, <b>electric/electronics +4.47%</b>, <b>semiconductors +4.10%</b></span></li>
+      </ul>
+      <p class="small"><span class="ko"><b>소외 섹터</b> &mdash; 게임소프트웨어 &minus;3.04%, 백화점 &minus;1.03%, 화장품 &minus;0.05%, 음식료·담배 약세. 내수·소비재가 지수 상승에서 완전히 배제됐습니다.</span><span class="en"><b>Left behind</b> — game software &minus;3.04%, department stores &minus;1.03%, cosmetics &minus;0.05%, food and tobacco weak. Domestic demand and consumer names were entirely excluded from the rally.</span></p>
+    </div>
+    <div>
+      <h3><span class="ko">코스닥 주도 테마 &mdash; 광통신</span><span class="en">KOSDAQ theme — optical comms</span></h3>
+      <p class="small"><span class="ko">미국 정부가 중국산 데이터센터용 광트랜시버 수입 제한을 추진한다는 소식에 국내 광통신 수혜주로 자금이 몰렸습니다. 코스닥 상한가 종목이 11개 나왔습니다.</span><span class="en">Reports that Washington is moving to restrict imports of Chinese optical transceivers for data centres drove money into Korean optical-comms beneficiaries. Eleven KOSDAQ names hit the daily limit.</span></p>
+      <div class="tw">
+      <table style="min-width:0">
+        <thead><tr><th><span class="ko">종목</span><span class="en">Stock</span></th><th class="n"><span class="ko">종가</span><span class="en">Close</span></th><th class="n"><span class="ko">등락</span><span class="en">Change</span></th></tr></thead>
+        <tbody>
+          <tr><th><span class="ko">빛과전자</span><span class="en">Lightron</span></th><td class="n">2,890</td><td class="n up"><span class="ko">상한가</span><span class="en">Limit up</span></td></tr>
+          <tr><th><span class="ko">오이솔루션</span><span class="en">OE Solution</span></th><td class="n">25,150</td><td class="n up"><span class="ko">상한가</span><span class="en">Limit up</span></td></tr>
+          <tr><th><span class="ko">대한광통신</span><span class="en">Taihan Fiberoptics</span></th><td class="n">12,070</td><td class="n up">+18.57%</td></tr>
+          <tr><th>RF<span class="ko">머트리얼즈</span><span class="en"> Materials</span></th><td class="n">33,750</td><td class="n up">+12.69%</td></tr>
+        </tbody>
+      </table>
+      </div>
+      <p class="small"><span class="ko"><b>알테오젠</b>(코스닥 시총 1위)은 글로벌 제약사와 최대 3.65억달러(약 5,219억원) 규모 'ALT-B4' 기술수출 계약을 체결했습니다. 확인된 278,000원(+4.12%)은 13:07 장중 수치로 <b>종가가 아닙니다</b>.</span><span class="en"><b>Alteogen</b> (largest KOSDAQ stock by market cap) signed an ALT-B4 licensing deal with a global pharma worth up to USD 365m (~KRW 522bn). The 278,000 (+4.12%) figure we could verify is a 13:07 intraday print, <b>not a close</b>.</span></p>
+    </div>
+  </div>
+  <p class="cap"><span class="ko">출처: <a href="https://www.fnnews.com/news/202608051613557248">파이낸셜뉴스</a> · <a href="https://www.sedaily.com/article/20076081">서울경제</a> · <a href="https://www.mt.co.kr/stock/2026/08/05/2026080515350678600">머니투데이</a> · <a href="https://www.etoday.co.kr/news/view/2611419">이투데이(광통신)</a> · <a href="https://www.hankyung.com/article/202608055732i">한국경제(광통신)</a> · <a href="https://www.sedaily.com/article/20075999">서울경제(알테오젠)</a></span><span class="en">Sources: <a href="https://www.fnnews.com/news/202608051613557248">Financial News</a> · <a href="https://www.sedaily.com/article/20076081">Seoul Economic Daily</a> · <a href="https://www.mt.co.kr/stock/2026/08/05/2026080515350678600">Money Today</a> · <a href="https://www.etoday.co.kr/news/view/2611419">Etoday</a> · <a href="https://www.hankyung.com/article/202608055732i">Hankyung</a> · <a href="https://www.sedaily.com/article/20075999">Seoul Economic Daily (Alteogen)</a></span></p>
+</section>
+
+<!-- 04 -->
+<section class="section" id="s04">
+  <div class="section-rule"></div>
+  <span class="sec-num">04</span>
+  <h2 class="section-title"><span class="ko">증권가 코멘트 종합</span><span class="en">The Sell-Side, Compiled</span></h2>
+  <p class="lede">
+    <span class="ko"><b>모두가 동의하는 것</b> &mdash; 7월 폭락은 기업 실적이 훼손돼서가 아니라 반도체 쏠림, 레버리지 ETF 청산, 패닉셀이라는 <b>수급·포지션 문제</b>였다는 진단입니다. 그래서 V자 반등은 없고 계단식 회복이라는 데도 이견이 없습니다.<br><b>갈리는 것</b> &mdash; 어디까지 사도 되는가입니다. 키움은 코스닥 비중을 9:1에서 7:3까지 늘리자고 하고, 현대차증권은 금융주와 커버드콜로 변동성을 줄이자고 합니다. 리스크 방향이 정반대입니다.</span>
+    <span class="en"><b>Where they agree</b> — July's crash was not an earnings event but a <b>flow and positioning event</b>: semiconductor crowding, leveraged-ETF liquidation and panic selling. Hence no V-shaped recovery; a stepwise one instead.<br><b>Where they split</b> — how far to push. Kiwoom wants the KOSDAQ weight raised from 9:1 to as much as 7:3; Hyundai Motor Securities wants financials and covered calls to damp volatility. Opposite risk directions.</span>
+  </p>
+  <div class="tw">
+  <table>
+    <thead><tr>
+      <th><span class="ko">애널리스트</span><span class="en">Analyst</span></th>
+      <th><span class="ko">증권사</span><span class="en">House</span></th>
+      <th><span class="ko">핵심 주장</span><span class="en">Core call</span></th>
+      <th><span class="ko">근거</span><span class="en">Rationale</span></th>
+    </tr></thead>
+    <tbody>
+      <tr><th><span class="ko">김대준</span><span class="en">Kim Dae-jun</span></th><td><span class="ko">한국투자증권</span><span class="en">Korea Investment</span></td><td><span class="ko">8월 5,500&ndash;7,500, 급등·급락 모두 어렵다</span><span class="en">August 5,500&ndash;7,500; neither a spike nor a slump is likely</span></td><td><span class="ko">12M Fwd PER 5.3배(범위 4.6&ndash;6.3배 중단), 2Q 순이익 서프라이즈 기업비율 47.5%(+14.6%p YoY). ROE&gt;COE 업종(반도체·의류·화장품·은행) 선호</span><span class="en">12M forward P/E 5.3x, mid of the 4.6&ndash;6.3x band; 47.5% of firms beat on Q2 net (+14.6pp YoY). Prefers ROE&gt;COE sectors: semis, apparel, cosmetics, banks</span></td></tr>
+      <tr><th><span class="ko">김용구</span><span class="en">Kim Yong-gu</span></th><td><span class="ko">유안타증권</span><span class="en">Yuanta</span></td><td><span class="ko">하단 5,150, 기간조정 후 계단식 저점 상향</span><span class="en">Floor at 5,150; time-correction then stepwise higher lows</span></td><td><span class="ko">V자 반등이 아니라 불확실성을 확인하며 회복하는 형태</span><span class="en">Recovery by confirming uncertainty, not a V-shape</span></td></tr>
+      <tr><th><span class="ko">나정환</span><span class="en">Na Jung-hwan</span></th><td>NH<span class="ko">투자증권</span><span class="en"> Investment</span></td><td><span class="ko">반도체 이익 레벨은 내년까지 분기 계단식 상승</span><span class="en">Semi earnings step higher quarterly into next year</span></td><td><span class="ko">이익 '증가율'이 아니라 '절대 레벨'을 반영하는 반등 국면</span><span class="en">The rebound prices the absolute earnings level, not the growth rate</span></td></tr>
+      <tr class="hl"><th><span class="ko">한지영</span><span class="en">Han Ji-young</span></th><td><span class="ko">키움증권</span><span class="en">Kiwoom</span></td><td><span class="ko">섹터 로테이션보다 <b>바벨 전략</b>. 코스피:코스닥 9:1 → 8:2 또는 7:3, 반도체·바이오 저가매수</span><span class="en"><b>Barbell</b> over sector rotation: shift KOSPI:KOSDAQ from 9:1 to 8:2 or 7:3, buy semis and biotech on weakness</span></td><td><span class="ko">유가 &minus;6.4%, 미 2년물 &minus;4.6bp·10년물 &minus;6.3bp, 필라델피아반도체 +6.6%. AI 수익성 불안은 정점을 통과했다는 판단</span><span class="en">Oil &minus;6.4%, US 2Y &minus;4.6bp / 10Y &minus;6.3bp, SOX +6.6%. Judges that AI profitability anxiety has peaked</span></td></tr>
+      <tr><th><span class="ko">이경민</span><span class="en">Lee Kyung-min</span></th><td><span class="ko">대신증권 FICC리서치부장</span><span class="en">Daishin, Head of FICC Research</span></td><td><span class="ko">7월 폭락은 펀더멘털이 아니라 <b>쏠림·레버리지의 반작용</b></span><span class="en">July was a <b>backlash from crowding and leverage</b>, not fundamentals</span></td><td><span class="ko">6월 고점 형성 과정의 극단적 반도체 쏠림 + 레버리지 ETF 영향력 확대</span><span class="en">Extreme semiconductor crowding into the June peak plus the growing clout of leveraged ETFs</span></td></tr>
+      <tr><th><span class="ko">조재운</span><span class="en">Cho Jae-woon</span></th><td><span class="ko">대신증권</span><span class="en">Daishin</span></td><td><span class="ko">레버리지 ETF 청산압력 완화까지 <b>앞으로 3&ndash;4주</b></span><span class="en">Another <b>3&ndash;4 weeks</b> before leveraged-ETF liquidation pressure eases</span></td><td><span class="ko">현재 청산 속도 기준. 금융당국 조치가 시계를 앞당기는 중</span><span class="en">Based on the current unwind pace; regulatory action is pulling the timeline forward</span></td></tr>
+      <tr><th><span class="ko">이재원</span><span class="en">Lee Jae-won</span></th><td><span class="ko">유안타증권</span><span class="en">Yuanta</span></td><td><span class="ko">8월은 '과도했던 공포의 정상화' 구간, 투매 동참은 부적절</span><span class="en">August normalises an overdone fear; joining the capitulation is inappropriate</span></td><td><span class="ko">낙폭과대 구간의 기술적·펀더멘털 지표</span><span class="en">Technical and fundamental indicators in a deeply oversold zone</span></td></tr>
+      <tr class="hl"><th><span class="ko">김재승</span><span class="en">Kim Jae-seung</span></th><td><span class="ko">현대차증권</span><span class="en">Hyundai Motor Securities</span></td><td><span class="ko">반등은 이어지되 <b>속도조절</b>. 7,000&ndash;8,000 구간에 개인 대기 매물. 금융주+커버드콜 병행 권고</span><span class="en">Rally continues but <b>slows</b>; retail overhang at 7,000&ndash;8,000. Recommends financials plus covered calls</span></td><td><span class="ko">폭락 원인이 실적 악화가 아닌 패닉셀·레버리지 청산이었고, 외국인 반도체 순매수는 지속될 전망. 다만 AI 투자 내러티브가 완전히 회복된 것은 아님</span><span class="en">The crash was panic and deleveraging, not earnings; foreign semi buying should persist. But the AI capex narrative has not fully healed</span></td></tr>
+    </tbody>
+  </table>
+  </div>
+  <div class="quote">
+    <p><span class="ko">"7월이 '공포의 한 달'이었다면, 다음 달은 과도했던 공포가 정상화되는 과정을 확인하는 한 달이 될 가능성에 주목하고 있다"</span><span class="en">"If July was the month of fear, we are watching for the possibility that next month becomes the month in which an overdone fear normalises."</span></p>
+    <p class="attr"><span class="ko">이재원 · 유안타증권 · <a href="https://www.mt.co.kr/stock/2026/07/30/2026073011083185897">머니투데이 7/30</a></span><span class="en">Lee Jae-won, Yuanta · <a href="https://www.mt.co.kr/stock/2026/07/30/2026073011083185897">Money Today, 30 Jul</a></span></p>
+  </div>
+  <div class="quote">
+    <p><span class="ko">"과거 대비 가격 변동성은 제한적이어서 급등이나 급락은 나타나기 어렵다. 단기 가격 조정 이후에는 낮아진 밸류에이션에 근거한 저가매수 대응이 유리하다"</span><span class="en">"Price volatility is limited relative to the past, so neither a spike nor a slump is likely. After a short-term correction, buying on the lowered valuation is the better response."</span></p>
+    <p class="attr"><span class="ko">김대준 · 한국투자증권 · <a href="https://www.fnnews.com/news/202608040905352847">파이낸셜뉴스 8/4</a></span><span class="en">Kim Dae-jun, Korea Investment · <a href="https://www.fnnews.com/news/202608040905352847">Financial News, 4 Aug</a></span></p>
+  </div>
+</section>
+
+<!-- 05 -->
+<section class="section" id="s05">
+  <div class="section-rule"></div>
+  <span class="sec-num">05</span>
+  <h2 class="section-title"><span class="ko">애널리스트 액션 (최근 4주)</span><span class="en">Analyst Actions (last four weeks)</span></h2>
+  <p class="lede">
+    <span class="ko">2분기 실적 시즌과 7월 급락이 겹치며 목표주가 조정이 양방향으로 쏟아졌습니다. 반도체 대형주는 하향, 실적이 확인된 소부장·중공업은 상향입니다.</span>
+    <span class="en">Q2 results colliding with July's crash produced target revisions in both directions: cuts for large-cap semis, raises for components and heavy industry where results were confirmed.</span>
+  </p>
+  <div class="tw">
+  <table>
+    <thead><tr>
+      <th><span class="ko">종목</span><span class="en">Stock</span></th>
+      <th><span class="ko">증권사 · 애널리스트</span><span class="en">House · Analyst</span></th>
+      <th><span class="ko">의견</span><span class="en">Rating</span></th>
+      <th class="n"><span class="ko">목표주가 전 → 후</span><span class="en">Target: from → to</span></th>
+      <th><span class="ko">논거</span><span class="en">Rationale</span></th>
+      <th><span class="ko">일자</span><span class="en">Date</span></th>
+    </tr></thead>
+    <tbody>
+      <tr class="hl"><th><span class="ko">삼성전기</span><span class="en">Samsung Electro-Mech.</span></th><td><span class="ko">키움증권 권민규</span><span class="en">Kiwoom · Kwon Min-gyu</span></td><td class="up">BUY</td><td class="n up">340,000 → 2,800,000</td><td><span class="ko">주가는 고점 대비 &minus;61%인데 12MF EPS는 연초 대비 +113%. MLCC·FC-BGA 구조적 공급부족</span><span class="en">Shares &minus;61% from the peak while 12M forward EPS is +113% YTD; structural MLCC/FC-BGA shortage</span></td><td>7/31</td></tr>
+      <tr class="hl"><th><span class="ko">삼성전기</span><span class="en">Samsung Electro-Mech.</span></th><td>DS<span class="ko">투자증권 조대형</span><span class="en"> Investment · Cho Dae-hyung</span></td><td class="up">BUY</td><td class="n up">350,000 → 1,600,000</td><td><span class="ko">2Q 영업이익 컨센 상회. 26·27년 OP 추정 각 +34.5%, +47.6% 상향, 27E EPS에 PER 42.6배 적용</span><span class="en">Q2 OP beat; FY26/27 OP estimates raised 34.5% and 47.6%; 42.6x P/E on 2027E EPS</span></td><td>7/31</td></tr>
+      <tr><th><span class="ko">두산</span><span class="en">Doosan</span></th><td>BNK<span class="ko">투자증권 김장원</span><span class="en"> Investment · Kim Jang-won</span></td><td class="up">BUY</td><td class="n up">1,500,000 → 1,700,000</td><td><span class="ko">2Q 연결 영업이익 +38% YoY, 자체사업 매출·OP 분기 사상 최대</span><span class="en">Q2 consolidated OP +38% YoY; record quarterly revenue and OP in own operations</span></td><td>7/31</td></tr>
+      <tr><th><span class="ko">두산에너빌리티</span><span class="en">Doosan Enerbility</span></th><td><span class="ko">교보증권 이상호</span><span class="en">Kyobo · Lee Sang-ho</span></td><td class="up">BUY</td><td class="n up">113,000 → 120,000</td><td><span class="ko">2Q OP 컨센 34.5% 상회, 가스터빈 대규모 수주로 연간 가이던스의 97%를 2Q에 달성</span><span class="en">Q2 OP beat consensus by 34.5%; large gas turbine orders delivered 97% of full-year guidance in Q2</span></td><td>7/29</td></tr>
+      <tr class="hl"><th>SK<span class="ko">하이닉스</span><span class="en"> Hynix</span></th><td><span class="ko">미래에셋증권 김영건</span><span class="en">Mirae Asset · Kim Young-gun</span></td><td><span class="ko">매수 유지</span><span class="en">Buy maintained</span></td><td class="n dn">4,200,000 → 2,800,000</td><td><span class="ko">낸드 계약가 하락 우려와 글로벌 피어 밸류 하락을 목표배수에 반영. 다만 "펀더멘털 대비 주가 하락은 과도"</span><span class="en">Lower target multiple on NAND contract price risk and peer de-rating, though "the share fall is excessive versus fundamentals"</span></td><td>7/29</td></tr>
+      <tr><th><span class="ko">삼성전자</span><span class="en">Samsung Electronics</span></th><td>BNK<span class="ko">투자증권 이민희</span><span class="en"> Investment · Lee Min-hee</span></td><td><span class="ko">Buy 유지</span><span class="en">Buy maintained</span></td><td class="n dn">430,000 → 300,000</td><td><span class="ko">"정점은 지났으나 업종 내 피난처". 성과급 등 비용 부담, 수요 모멘텀 피크아웃. 특별배당·파운드리 수주는 긍정</span><span class="en">"Past the peak but a haven within the sector": bonus costs, demand momentum peaking; special dividend and foundry orders are positives</span></td><td>7/31</td></tr>
+      <tr><th><span class="ko">삼성SDI</span><span class="en">Samsung SDI</span></th><td><span class="ko">하나증권 김현수</span><span class="en">Hana · Kim Hyun-soo</span></td><td class="up">BUY</td><td class="n dn">857,000 → 667,000</td><td><span class="ko">2Q 매출 3.8조(+19% YoY), OP 2,038억으로 7개 분기 만에 흑자. 28년 EPS에 PER 24배</span><span class="en">Q2 revenue KRW 3.8tn (+19% YoY), OP KRW 204bn — first profit in seven quarters; 24x P/E on 2028E EPS</span></td><td>7/31</td></tr>
+      <tr><th><span class="ko">키움증권</span><span class="en">Kiwoom Securities</span></th><td>iM<span class="ko">증권 설용진</span><span class="en"> Securities · Seol Yong-jin</span></td><td class="up">Buy</td><td class="n dn">480,000 → 380,000</td><td><span class="ko">2Q 지배순이익 6,801억(+119.6% YoY)로 양호하고 저평가이나 대내외 환경발 변동성 확대 반영</span><span class="en">Q2 net KRW 680bn (+119.6% YoY) is solid and cheap, but reflects wider macro volatility</span></td><td>7/31</td></tr>
+      <tr class="hl"><th><span class="ko">삼성증권</span><span class="en">Samsung Securities</span></th><td>iM<span class="ko">증권 설용진</span><span class="en"> Securities · Seol Yong-jin</span></td><td class="up">Buy</td><td class="n dn">160,000 → 130,000</td><td><span class="ko">2Q 순이익 4,882억(+108.1% YoY)이나 거래대금·CP 관련 불확실성. 주주환원 정책은 신뢰</span><span class="en">Q2 net KRW 488bn (+108.1% YoY) but uncertainty on turnover and CP exposure; shareholder-return policy remains credible</span></td><td>8/5</td></tr>
+      <tr><th><span class="ko">크래프톤</span><span class="en">Krafton</span></th><td><span class="ko">키움증권 김진구</span><span class="en">Kiwoom · Kim Jin-gu</span></td><td><span class="ko">Outperform 유지</span><span class="en">Outperform maintained</span></td><td class="n dn">340,000 → 290,000</td><td><span class="ko">"전략적 의사결정의 이슈". 신규 멀티장르 라인업의 글로벌 AAA 흥행 여부는 게임스컴 등에서 엄격한 검증 필요</span><span class="en">"An issue of strategic decision-making": the new multi-genre line-up needs rigorous validation at Gamescom and beyond</span></td><td>7/30</td></tr>
+      <tr><th><span class="ko">에스티팜</span><span class="en">ST Pharm</span></th><td><span class="ko">다올투자증권 이지수</span><span class="en">Daol · Lee Ji-soo</span></td><td class="up">BUY</td><td class="n dn">210,000 → 190,000</td><td><span class="ko">2Q 컨센 하회, 3Q 소폭 둔화. 하반기 올리고 대형라인 가동과 4Q 공급 집중으로 모멘텀 재개 전망</span><span class="en">Q2 missed, Q3 to soften slightly; oligo mega-line start-up in H2 and Q4 supply concentration should restore momentum</span></td><td>7/29</td></tr>
+    </tbody>
+  </table>
+  </div>
+  <div class="box warn">
+    <h4><span class="ko">각주 &mdash; 방향만 확인된 항목</span><span class="en">Footnote — direction confirmed only</span></h4>
+    <p class="small"><span class="ko">파이낸셜뉴스 8/5 보도에 <b>미래에셋증권의 삼성전자 55만→37만</b>, <b>키움증권의 삼성전자 43만→39만</b>, <b>BNK투자증권의 SK하이닉스 185만→148만</b> 하향이 실려 있으나 애널리스트 실명이 기재돼 있지 않아 표에 넣지 않았습니다. <b>하향이라는 방향만</b> 확인된 상태입니다. 또한 삼성전기 2건은 직전 목표가가 2026년 1월 26일자 수치여서, 6개월 만의 커버리지 갱신입니다 &mdash; 변동률을 당월 리비전으로 읽으면 안 됩니다. 두 하우스의 신규 목표가도 280만원 대 160만원으로 75% 벌어져 있습니다.</span><span class="en">Financial News (5 Aug) reported cuts by <b>Mirae Asset on Samsung Electronics (550,000→370,000)</b>, <b>Kiwoom on Samsung Electronics (430,000→390,000)</b> and <b>BNK on SK Hynix (1,850,000→1,480,000)</b>, but named no analyst, so these are excluded from the table — <b>only the direction</b> is confirmed. Note also that both Samsung Electro-Mechanics entries revise a target last set on 26 January 2026; this is a six-month coverage refresh, not a same-month revision, and the two new targets are 75% apart (2.8m vs 1.6m).</span></p>
+  </div>
+</section>
+
+<!-- 06 -->
+<section class="section" id="s06">
+  <div class="section-rule"></div>
+  <span class="sec-num">06</span>
+  <h2 class="section-title"><span class="ko">금리 · 환율 · 원자재</span><span class="en">Rates, FX and Commodities</span></h2>
+  <div class="tw">
+  <table>
+    <thead><tr>
+      <th><span class="ko">항목</span><span class="en">Item</span></th>
+      <th class="n"><span class="ko">값</span><span class="en">Value</span></th>
+      <th><span class="ko">기준</span><span class="en">As of</span></th>
+      <th><span class="ko">비고</span><span class="en">Note</span></th>
+    </tr></thead>
+    <tbody>
+      <tr class="hl"><th><span class="ko">원/달러 (주간거래 종가)</span><span class="en">USD/KRW onshore close</span></th><td class="n">1,424.5 <span class="dn">(&minus;8.0)</span></td><td>8/5 15:30</td><td><span class="ko">베센트 미 재무장관의 원화 언급 직후 강세 <span class="tag conf">2 SOURCES</span></span><span class="en">Won firmed right after US Treasury Secretary Bessent's remarks <span class="tag conf">2 SOURCES</span></span></td></tr>
+      <tr><th><span class="ko">원/달러 야간거래 종가</span><span class="en">USD/KRW overnight close</span></th><td class="n na"><span class="ko">미확인</span><span class="en">Unverified</span></td><td class="na">&mdash;</td><td><span class="ko">허용 매체 미보도 <span class="tag na">NOT FOUND</span></span><span class="en">Not reported by permitted sources <span class="tag na">NOT FOUND</span></span></td></tr>
+      <tr class="hl"><th><span class="ko">한국은행 기준금리</span><span class="en">BOK base rate</span></th><td class="n">2.75%</td><td><span class="ko">7/16 결정</span><span class="en">Decided 16 Jul</span></td><td><span class="ko">2.50%→2.75% <b>인상</b>, 만장일치. 2023년 1월 이후 첫 인상 <span class="tag conf">2 SOURCES</span></span><span class="en">Raised from 2.50%, unanimous — the first hike since January 2023 <span class="tag conf">2 SOURCES</span></span></td></tr>
+      <tr><th><span class="ko">다음 금통위</span><span class="en">Next BOK meeting</span></th><td class="n">8/27 (<span class="ko">목</span><span class="en">Thu</span>)</td><td>&mdash;</td><td><span class="ko">한은 원문이 PDF 첨부라 2차 소스로 확인. 재확인 권장 <span class="tag solo">SECONDARY</span></span><span class="en">BOK's own release is a PDF attachment; confirmed via secondary sources — worth re-checking <span class="tag solo">SECONDARY</span></span></td></tr>
+      <tr><th><span class="ko">국고채 3년</span><span class="en">KTB 3Y</span></th><td class="n">3.74%</td><td>8/4</td><td><span class="ko">8/5치 미확보 <span class="tag conf">2 SOURCES</span></span><span class="en">No 5 Aug print obtained <span class="tag conf">2 SOURCES</span></span></td></tr>
+      <tr><th><span class="ko">국고채 10년</span><span class="en">KTB 10Y</span></th><td class="n">4.26%</td><td>8/4</td><td><span class="ko">단독 소스 <span class="tag solo">1 SOURCE</span></span><span class="en">Single source <span class="tag solo">1 SOURCE</span></span></td></tr>
+      <tr><th><span class="ko">미 국채 2년</span><span class="en">US Treasury 2Y</span></th><td class="n">4.179&ndash;4.19%</td><td>8/5</td><td><span class="ko">전일 4.194%에서 하락 <span class="tag conf">2 SOURCES</span></span><span class="en">Down from 4.194% <span class="tag conf">2 SOURCES</span></span></td></tr>
+      <tr><th><span class="ko">미 국채 10년</span><span class="en">US Treasury 10Y</span></th><td class="n">4.615&ndash;4.62%</td><td>8/5</td><td><span class="ko">전일 4.627%에서 하락 <span class="tag conf">2 SOURCES</span></span><span class="en">Down from 4.627% <span class="tag conf">2 SOURCES</span></span></td></tr>
+      <tr><th><span class="ko">미 연방기금금리 목표</span><span class="en">Fed funds target</span></th><td class="n">3.50&ndash;3.75%</td><td>8/5</td><td><span class="ko">7월 FOMC 동결(9대3). 로건·해맥·카시카리가 0.25%p 인상 소수의견 <span class="tag conf">2 SOURCES</span></span><span class="en">Held at the July FOMC 9&ndash;3; Logan, Hammack and Kashkari dissented for a 25bp hike <span class="tag conf">2 SOURCES</span></span></td></tr>
+      <tr><th><span class="ko">달러인덱스 (DXY)</span><span class="en">Dollar index (DXY)</span></th><td class="n">99.68 <span class="dn">(&minus;0.18%)</span></td><td>8/5</td><td><span class="ko">100 아래 <span class="tag conf">2 SOURCES</span></span><span class="en">Below 100 <span class="tag conf">2 SOURCES</span></span></td></tr>
+      <tr><th><span class="ko">달러/엔</span><span class="en">USD/JPY</span></th><td class="n">157.74</td><td>8/5</td><td><span class="ko">일본은행이 사상 최대 8.45조엔 개입 다음날 5.33조엔 추가 투입. 미·일 공조 매수 <span class="tag solo">1 SOURCE</span></span><span class="en">BOJ followed a record JPY 8.45tn intervention with another JPY 5.33tn the next day, in coordination with Washington <span class="tag solo">1 SOURCE</span></span></td></tr>
+      <tr><th>WTI</th><td class="n">$75.08&ndash;75.10 <span class="dn">(&minus;0.9%)</span></td><td>8/5</td><td><span class="ko">호르무즈 재개방 기대로 3거래일 연속 약세 <span class="tag conf">3 SOURCES</span></span><span class="en">Third straight decline on Hormuz reopening hopes <span class="tag conf">3 SOURCES</span></span></td></tr>
+      <tr><th><span class="ko">브렌트</span><span class="en">Brent</span></th><td class="n">$79.40&ndash;79.45 <span class="up">(+0.05%)</span></td><td>8/5</td><td><span class="tag conf">2 SOURCES</span></td></tr>
+      <tr class="hl"><th><span class="ko">금 (현물)</span><span class="en">Gold (spot)</span></th><td class="n">$4,244&ndash;4,247 <span class="up">(+4.1%)</span></td><td>8/5</td><td><span class="ko">6월 18일 이후 최고. ADP 쇼크·약달러·금리하락 3박자 <span class="tag conf">2 SOURCES</span></span><span class="en">Highest since 18 June on the ADP miss, a soft dollar and falling yields <span class="tag conf">2 SOURCES</span></span></td></tr>
+      <tr><th><span class="ko">은 (현물)</span><span class="en">Silver (spot)</span></th><td class="n">$61.88 <span class="up">(+4.16%)</span></td><td>8/5</td><td><span class="tag solo">1 SOURCE</span></td></tr>
+      <tr><th><span class="ko">구리 (COMEX)</span><span class="en">Copper (COMEX)</span></th><td class="n na">$6.72 vs $6.62 /lb</td><td>8/5</td><td><span class="ko">소스 간 불일치 미해소. LME 톤당 가격은 재배포 제한으로 확보 실패 <span class="tag mis">CONFLICT</span></span><span class="en">Unresolved source conflict; LME per-tonne price unobtainable due to redistribution limits <span class="tag mis">CONFLICT</span></span></td></tr>
+    </tbody>
+  </table>
+  </div>
+
+  <div class="callout">
+    <h4><span class="ko">이번 주 원/달러의 핵심 변수 두 가지</span><span class="en">Two variables that decide USD/KRW this week</span></h4>
+    <p><span class="ko"><b>① 미 7월 고용보고서 &mdash; 8월 7일(금) 21:30 KST.</b> 6월 실적치가 5.7만명으로 예상(11.5만)을 크게 하회한 데 이어 8월 5일 ADP 민간고용도 4.4만명(예상 7.5만)으로 미달했습니다. 시장이 9월 인상을 반영하는 상황에서 이번 지표는 연준 경로를 가르는 분수령입니다. KB 주간 전망 기준 시나리오는 <b>고용 호조 시 1,450원까지 상단, 부진 시 적정 하단 1,417원</b>입니다.</span><span class="en"><b>① US July payrolls — Friday 7 August, 21:30 KST.</b> June came in at 57k against 115k expected, and Wednesday's ADP private payrolls missed at 44k versus 75k. With the market pricing a September hike, this print is the fork in the Fed's path. KB's weekly scenario: <b>a strong print opens 1,450; a weak one puts fair value at 1,417</b>.</span></p>
+    <p><span class="ko"><b>② 베센트 미 재무장관의 원화 직접 언급.</b> 8월 5일 CNBC 인터뷰에서 "한국 원화에서도 과도한 변동성을 목격해왔다", "일본을 지원하기 위해 필요한 일은 무엇이든 할 것"이라고 말했습니다. 사실상 구두개입입니다. 미·일이 실제 개입을 연속 단행한 전례가 있어 발언의 무게가 다릅니다. 반대로 서학개미의 해외주식 순매수(7월 46억달러)는 구조적 달러 수요로 하단을 받칩니다.</span><span class="en"><b>② US Treasury Secretary Bessent naming the won.</b> In a 5 August CNBC interview he said he has "seen excessive volatility in the Korean won too" and would "do whatever is needed to support Japan." That is verbal intervention in all but name, and it carries weight because Washington and Tokyo have just intervened twice in succession. Pulling the other way, Korean retail buying of overseas equities (USD 4.6bn in July) is structural dollar demand that props up the floor.</span></p>
+  </div>
+</section>
+
+<!-- 07 -->
+<section class="section" id="s07">
+  <div class="section-rule"></div>
+  <span class="sec-num">07</span>
+  <h2 class="section-title"><span class="ko">글로벌 매크로</span><span class="en">Global Macro</span></h2>
+  <p class="lede">
+    <span class="ko">다우는 사상 최고 종가로 5거래일 연속 상승했는데, 나스닥은 0.84% 내렸습니다. 지수가 갈라진 이유는 하나입니다 &mdash; AI입니다.</span>
+    <span class="en">The Dow closed at a record for a fifth straight session while the Nasdaq fell 0.84%. The indices split for one reason: AI.</span>
+  </p>
+  <div class="two">
+    <div>
+      <div class="tw">
+      <table style="min-width:0">
+        <thead><tr><th><span class="ko">지수</span><span class="en">Index</span></th><th class="n"><span class="ko">종가</span><span class="en">Close</span></th><th class="n"><span class="ko">등락률</span><span class="en">Change</span></th></tr></thead>
+        <tbody>
+          <tr class="hl"><th><span class="ko">다우존스</span><span class="en">Dow Jones</span></th><td class="n">54,349.12</td><td class="n up">+0.49%</td></tr>
+          <tr><th>S&amp;P 500</th><td class="n">7,723.55</td><td class="n dn">&minus;0.17%</td></tr>
+          <tr><th><span class="ko">나스닥 종합</span><span class="en">Nasdaq Composite</span></th><td class="n">26,363.44</td><td class="n dn">&minus;0.84%</td></tr>
+          <tr><th><span class="ko">러셀 2000</span><span class="en">Russell 2000</span></th><td class="n">3,019.19</td><td class="n dn">&minus;0.59%</td></tr>
+          <tr><th><span class="ko">닛케이 225</span><span class="en">Nikkei 225</span></th><td class="n">66,300.44</td><td class="n up">+3.66%</td></tr>
+          <tr><th><span class="ko">항셍</span><span class="en">Hang Seng</span></th><td class="n">25,915.82</td><td class="n up">+0.24%</td></tr>
+          <tr><th><span class="ko">상해종합</span><span class="en">Shanghai Composite</span></th><td class="n">3,878.43</td><td class="n up">+1.47%</td></tr>
+          <tr><th>VIX</th><td class="n na"><span class="ko">미확인</span><span class="en">Unverified</span></td><td class="n na">&mdash;</td></tr>
+        </tbody>
+      </table>
+      </div>
+      <p class="cap"><span class="ko">다우는 <b>사상 최고 종가</b>. 러셀2000은 단독 소스입니다. 8/4 종가와 변동폭이 산술적으로 정확히 맞아떨어져 확정치로 채택했습니다.</span><span class="en">The Dow set a <b>record close</b>. Russell 2000 is single-sourced. These levels were adopted because they reconcile exactly with 4 Aug closes plus the reported point changes.</span></p>
+    </div>
+    <div>
+      <div class="tw">
+      <table style="min-width:0">
+        <thead><tr><th><span class="ko">미 반도체</span><span class="en">US semis</span></th><th class="n"><span class="ko">종가</span><span class="en">Close</span></th><th class="n"><span class="ko">등락률</span><span class="en">Change</span></th></tr></thead>
+        <tbody>
+          <tr><th>NVDA</th><td class="n">$219.22</td><td class="n up">+3.43%</td></tr>
+          <tr class="hl"><th>AMD</th><td class="n">$482.05</td><td class="n dn">&minus;7.04%</td></tr>
+          <tr><th>TSM</th><td class="n">$414.00</td><td class="n dn">&minus;0.76%</td></tr>
+          <tr><th>MU</th><td class="n">$893.19</td><td class="n up">+0.06%</td></tr>
+        </tbody>
+      </table>
+      </div>
+      <p class="small"><span class="ko">엔비디아는 3.4% 올랐는데 AMD는 7% 빠졌습니다. AMD는 매출이 예상을 넘고 가이던스도 양호했지만, "훌륭한 수준"으로는 부족하고 "탁월한 결과"를 요구하는 눈높이에 미달했다는 평가입니다. <b>국내 반도체 랠리가 8월 6일에도 이어질지를 가늠하는 데 이 온도차가 중요합니다.</b></span><span class="en">Nvidia rose 3.4% while AMD dropped 7%. AMD beat on revenue with decent guidance, but "good" was not enough for a bar that now demands "exceptional." <b>That gap matters for judging whether Korea's semi rally extends into 6 August.</b></span></p>
+    </div>
+  </div>
+
+  <h3><span class="ko">밤사이 무엇이 시장을 움직였나</span><span class="en">What moved markets overnight</span></h3>
+  <ul>
+    <li><span class="ko"><b>카시카리 미니애폴리스 연은 총재의 인상 발언.</b> 8월 5일 CNBC 인터뷰에서 "나중에 기다렸다가 정말 고착화된 인플레 문제를 겪느니, 지금 소폭으로 시작하는 게 낫다", "지금이 천천히 올리기 시작할 때"라고 말했습니다. 시장은 이미 9월 인상에 기울어 있고 10월에는 더 높은 확률을 반영 중입니다.</span><span class="en"><b>Minneapolis Fed President Kashkari argued for hikes.</b> On CNBC on 5 August: "Better to start small now than to wait and end up with a truly entrenched inflation problem," and "now is the time to start slowly moving rates up." Markets already lean toward a September hike, with higher odds for October.</span></li>
+    <li><span class="ko"><b>ADP 7월 민간고용 4.4만명</b>(예상 7.5만 하회). 연간 임금상승률 +4.4%. 국채금리 하락과 금 급등의 직접 촉매였습니다.</span><span class="en"><b>ADP private payrolls at 44k for July</b> versus 75k expected, with annual pay growth of 4.4% — the direct catalyst for lower yields and the gold spike.</span></li>
+    <li><span class="ko"><b>호르무즈 해협 재개방 합의 기대.</b> 미·이란·오만 잠정합의가 임박했다는 관측에 트럼프는 "내일이나 모레", 베센트 재무장관은 "수일 내 가능"이라고 했습니다. 직전 2거래일 유가 5%+ 급락에 이어 8월 5일도 WTI가 0.9% 내렸고, 에너지 섹터는 2.1% 하락했습니다. 다우 사상 최고 종가의 배경입니다.</span><span class="en"><b>Hopes of a deal to reopen the Strait of Hormuz.</b> With a US-Iran-Oman interim agreement said to be near, Trump said "tomorrow or the day after" and Bessent "within days." After two sessions of 5%+ oil declines, WTI fell another 0.9% and energy dropped 2.1% — the backdrop to the Dow's record close.</span></li>
+    <li><span class="ko"><b>AMD &minus;7.04%, SpaceX(SPCX) &minus;7~8%.</b> SpaceX는 매출이 두 배로 늘었는데도 "AI 지출이 통제 불능이고 둔화 조짐이 없다"는 우려가 주가를 눌렀습니다. AI 자본지출 회의론이 나스닥을 끌어내린 축입니다.</span><span class="en"><b>AMD &minus;7.04%, SpaceX (SPCX) &minus;7&ndash;8%.</b> SpaceX doubled revenue yet fell on worries that "AI spending is out of control with no sign of slowing." Scepticism about AI capex was the axis that dragged the Nasdaq down.</span></li>
+    <li><span class="ko"><b>대형 실적 호조가 다우를 밀어올렸습니다.</b> 일라이릴리 +2.8%, 디즈니 +2.2%, 아리스타네트웍스 +3.8%. 반면 우버는 6.2% 하락했습니다.</span><span class="en"><b>Blue-chip earnings carried the Dow:</b> Eli Lilly +2.8%, Disney +2.2%, Arista Networks +3.8%; Uber fell 6.2%.</span></li>
+    <li><span class="ko"><b>금·은 4% 동반 급등.</b> 약한 고용지표 + 달러 약세 + 국채금리 하락이 겹쳤습니다. 금 현물은 6월 18일 이후 최고입니다.</span><span class="en"><b>Gold and silver both jumped 4%</b> on the weak jobs print, a softer dollar and falling yields. Spot gold is at its highest since 18 June.</span></li>
+  </ul>
+  <p class="cap"><span class="ko">출처: <a href="https://www.kiplinger.com/investing/stocks/dow-makes-more-new-highs-despite-ai-drag-stock-market-today">Kiplinger</a> · <a href="https://www.cnbc.com/2026/08/05/feds-kashkari-says-now-is-the-time-to-start-slowly-moving-rates-up.html">CNBC (카시카리)</a> · <a href="https://www.cnbc.com/2026/08/05/private-companies-added-just-44000-workers-in-july-below-expectations-adp-reports.html">CNBC (ADP)</a> · <a href="https://mediacenter.adp.com/2026-08-05-ADP-National-Employment-Report-Private-Sector-Employment-Increased-by-44,000-Jobs-in-July,-Annual-Pay-was-Up-4-4">ADP 공식</a> · <a href="https://www.thestreet.com/stock-market-today/stock-market-today-dow-jones-sp-500-nasdaq-updates-aug-5-2026">TheStreet</a> · <a href="https://stockanalysis.com/stocks/amd/">StockAnalysis</a> · <a href="https://www.kitco.com/news/article/2026-08-05/gold-silver-prices-surge-highs-yields-ease-hormuz-hopes-cap-oil-inflation">Kitco</a> · <a href="https://www.mt.co.kr/world/2026/08/05/2026080517251990051">머니투데이 아시아마감</a></span><span class="en">Sources: <a href="https://www.kiplinger.com/investing/stocks/dow-makes-more-new-highs-despite-ai-drag-stock-market-today">Kiplinger</a> · <a href="https://www.cnbc.com/2026/08/05/feds-kashkari-says-now-is-the-time-to-start-slowly-moving-rates-up.html">CNBC (Kashkari)</a> · <a href="https://www.cnbc.com/2026/08/05/private-companies-added-just-44000-workers-in-july-below-expectations-adp-reports.html">CNBC (ADP)</a> · <a href="https://mediacenter.adp.com/2026-08-05-ADP-National-Employment-Report-Private-Sector-Employment-Increased-by-44,000-Jobs-in-July,-Annual-Pay-was-Up-4-4">ADP</a> · <a href="https://www.thestreet.com/stock-market-today/stock-market-today-dow-jones-sp-500-nasdaq-updates-aug-5-2026">TheStreet</a> · <a href="https://stockanalysis.com/stocks/amd/">StockAnalysis</a> · <a href="https://www.kitco.com/news/article/2026-08-05/gold-silver-prices-surge-highs-yields-ease-hormuz-hopes-cap-oil-inflation">Kitco</a> · <a href="https://www.mt.co.kr/world/2026/08/05/2026080517251990051">Money Today</a></span></p>
+</section>
+
+<!-- 08 -->
+<section class="section" id="s08">
+  <div class="section-rule"></div>
+  <span class="sec-num">08</span>
+  <h2 class="section-title"><span class="ko">일정 (향후 3거래일)</span><span class="en">Calendar (next three sessions)</span></h2>
+  <p class="lede"><span class="ko">모든 시각은 KST입니다. 미 동부는 서머타임(EDT)이므로 ET+13시간으로 환산했습니다. <span class="clay">붉은 항목</span>이 최상위 중요도입니다.</span><span class="en">All times KST. US Eastern is on daylight time, so ET+13 hours applies. <span class="clay">Items in clay</span> are the highest priority.</span></p>
+  <div class="tw">
+  <table>
+    <thead><tr>
+      <th><span class="ko">일시 (KST)</span><span class="en">Date · time (KST)</span></th>
+      <th><span class="ko">국가</span><span class="en">Region</span></th>
+      <th><span class="ko">항목</span><span class="en">Event</span></th>
+      <th><span class="ko">컨센서스</span><span class="en">Consensus</span></th>
+    </tr></thead>
+    <tbody>
+      <tr class="top"><th class="n"><span class="clay">8/6 (<span class="ko">목</span><span class="en">Thu</span>) 08:00</span></th><td><span class="ko">한국</span><span class="en">Korea</span></td><td><span class="clay"><span class="ko">6월 국제수지 (잠정) &mdash; 한국은행</span><span class="en">June balance of payments (preliminary) — Bank of Korea</span></span></td><td class="na"><span class="ko">미확인 (5월 386.1억달러 흑자, 역대 최대)</span><span class="en">Unverified (May: USD 38.61bn surplus, a record)</span></td></tr>
+      <tr><th class="n">8/6 12:35</th><td><span class="ko">일본</span><span class="en">Japan</span></td><td><span class="ko">30년물 JGB 입찰 결과</span><span class="en">30Y JGB auction result</span></td><td class="na"><span class="ko">미확인</span><span class="en">Unverified</span></td></tr>
+      <tr><th class="n">8/6 21:30</th><td><span class="ko">미국</span><span class="en">US</span></td><td><span class="ko">2Q 비농업 생산성·단위노동비용(예비)</span><span class="en">Q2 nonfarm productivity and unit labour costs (prelim)</span></td><td class="na"><span class="ko">미확인</span><span class="en">Unverified</span></td></tr>
+      <tr><th class="n">8/6 21:30</th><td><span class="ko">미국</span><span class="en">US</span></td><td><span class="ko">주간 신규 실업수당 청구</span><span class="en">Weekly initial jobless claims</span></td><td class="na"><span class="ko">미확인</span><span class="en">Unverified</span></td></tr>
+      <tr><th class="n">8/7 05:30</th><td><span class="ko">미국</span><span class="en">US</span></td><td><span class="ko">연준 H.4.1 (준비금 관련 요인)</span><span class="en">Fed H.4.1 (factors affecting reserves)</span></td><td class="na">&mdash;</td></tr>
+      <tr><th class="n"><span class="ko">8/7 장마감 후(미)</span><span class="en">8/7 post-US close</span></th><td><span class="ko">미국</span><span class="en">US</span></td><td><span class="ko">에어비앤비(ABNB) 2Q 실적 &mdash; IR 공식 확인</span><span class="en">Airbnb (ABNB) Q2 results — confirmed on IR site</span></td><td class="na"><span class="ko">미확인</span><span class="en">Unverified</span></td></tr>
+      <tr><th class="n">8/7 (<span class="ko">금</span><span class="en">Fri</span>) 08:30</th><td><span class="ko">일본</span><span class="en">Japan</span></td><td><span class="ko">6월 가계지출</span><span class="en">June household spending</span></td><td class="na"><span class="ko">미확인</span><span class="en">Unverified</span></td></tr>
+      <tr><th class="n">8/7 11:30</th><td><span class="ko">한국</span><span class="en">Korea</span></td><td><span class="ko">국고채 물가연동국채(KTBi) 입찰</span><span class="en">KTBi (inflation-linked) auction</span></td><td class="na"><span class="ko">미확인</span><span class="en">Unverified</span></td></tr>
+      <tr class="top"><th class="n"><span class="clay">8/7 12:00</span></th><td><span class="ko">중국</span><span class="en">China</span></td><td><span class="clay"><span class="ko">7월 무역수지 · 수출입</span><span class="en">July trade balance, exports and imports</span></span></td><td class="na"><span class="ko">미확인 &mdash; 신뢰할 컨센서스 확보 실패</span><span class="en">Unverified — no reliable consensus obtained</span></td></tr>
+      <tr><th class="n">8/7 14:00</th><td><span class="ko">일본</span><span class="en">Japan</span></td><td><span class="ko">6월 경기선행·동행지수(예비)</span><span class="en">June leading and coincident indices (prelim)</span></td><td class="na"><span class="ko">미확인</span><span class="en">Unverified</span></td></tr>
+      <tr class="top"><th class="n"><span class="clay">8/7 21:30</span></th><td><span class="ko">미국</span><span class="en">US</span></td><td><span class="clay"><span class="ko">7월 고용보고서 (비농업고용 · 실업률 · 시간당임금) &mdash; BLS 확정 일정</span><span class="en">July employment report (payrolls, unemployment, hourly earnings) — BLS confirmed</span></span></td><td class="na"><span class="ko">미확인. 참고: 6월 실적 5.7만명(예상 11.5만), 8/5 ADP 4.4만명(예상 7.5만)</span><span class="en">Unverified. Context: June printed 57k vs 115k expected; ADP on 5 Aug printed 44k vs 75k</span></td></tr>
+      <tr><th class="n">8/8 04:00</th><td><span class="ko">미국</span><span class="en">US</span></td><td><span class="ko">6월 소비자신용 (G.19)</span><span class="en">June consumer credit (G.19)</span></td><td class="na"><span class="ko">미확인</span><span class="en">Unverified</span></td></tr>
+      <tr><th class="n">8/9 (<span class="ko">일</span><span class="en">Sun</span>) 10:30</th><td><span class="ko">중국</span><span class="en">China</span></td><td><span class="ko">7월 CPI · PPI &mdash; 8/10 장에 반영</span><span class="en">July CPI and PPI — feeds into the 10 Aug session</span></td><td class="na"><span class="ko">미확인</span><span class="en">Unverified</span></td></tr>
+      <tr><th class="n">8/10 (<span class="ko">월</span><span class="en">Mon</span>) 11:30</th><td><span class="ko">한국</span><span class="en">Korea</span></td><td><span class="ko">국고채 3년물 입찰</span><span class="en">3Y KTB auction</span></td><td class="na"><span class="ko">미확인</span><span class="en">Unverified</span></td></tr>
+      <tr><th class="n">8/10 14:00</th><td><span class="ko">일본</span><span class="en">Japan</span></td><td><span class="ko">7월 경기관찰조사</span><span class="en">July Economy Watchers survey</span></td><td class="na"><span class="ko">미확인</span><span class="en">Unverified</span></td></tr>
+      <tr class="hl"><th class="n">8/27 (<span class="ko">목</span><span class="en">Thu</span>)</th><td><span class="ko">한국</span><span class="en">Korea</span></td><td><span class="ko"><b>한국은행 금융통화위원회</b> 통화정책방향 결정 (2026년 6번째). 이후 10/22, 11/26</span><span class="en"><b>Bank of Korea MPC</b> rate decision (sixth of 2026); then 22 Oct and 26 Nov</span></td><td class="na">&mdash;</td></tr>
+    </tbody>
+  </table>
+  </div>
+  <div class="box">
+    <h4><span class="ko">이 창(窓)에는 없는 것 &mdash; 확인 완료</span><span class="en">Confirmed absent from this window</span></h4>
+    <p class="small"><span class="ko"><b>FOMC 의사록</b>은 8/19(수) 발표(8/20 03:00 KST), 다음 정례회의는 9/15&ndash;16입니다. <b>연준 이사회 예정 연설</b>은 8/6·8/7·8/10 모두 없습니다(8/5 쿡, 8/8 보먼). <b>미 국채 쿠폰물 입찰</b>은 3년물 8/11, 10년물 8/12, 30년물 8/13으로 창 밖입니다. <b>영란은행</b>은 8월 회의가 없습니다(7/30로 앞당겨짐, 다음 9/17). <b>옵션만기</b>도 없습니다 &mdash; 코스피200 옵션만기 8/13, 미국 쿼드러플위칭 9/18. 다만 <b>미 7월 CPI 8/12(수) 21:30, PPI 8/13(목) 21:30</b>이 바로 다음 주 최대 이벤트입니다.</span><span class="en"><b>FOMC minutes</b> land on 19 Aug (20 Aug 03:00 KST); the next meeting is 15&ndash;16 Sep. <b>No Board-scheduled Fed speeches</b> on 6, 7 or 10 Aug (Cook spoke 5 Aug, Bowman speaks 8 Aug). <b>Coupon auctions</b> fall outside: 3Y on 11 Aug, 10Y on 12 Aug, 30Y on 13 Aug. <b>The Bank of England</b> has no August meeting (moved to 30 Jul; next 17 Sep). <b>No options expiry</b> either — KOSPI 200 options expire 13 Aug, US quadruple witching 18 Sep. Next week's main events are <b>US July CPI on 12 Aug 21:30</b> and <b>PPI on 13 Aug 21:30</b>.</span></p>
+  </div>
+</section>
+
+<!-- 09 -->
+<section class="section" id="s09">
+  <div class="section-rule"></div>
+  <span class="sec-num">09</span>
+  <h2 class="section-title"><span class="ko">WM 업계</span><span class="en">Wealth Management Industry</span></h2>
+
+  <h3><span class="ko">퇴직연금 &mdash; 증권 업권만 점유율이 오르고 있습니다</span><span class="en">Retirement pensions — only securities firms are gaining share</span></h3>
+  <div class="tw">
+  <table>
+    <thead><tr>
+      <th><span class="ko">구분</span><span class="en">Segment</span></th>
+      <th class="n"><span class="ko">적립금 (2026.6말)</span><span class="en">AUM (end-Jun 2026)</span></th>
+      <th class="n">YoY</th>
+      <th><span class="ko">점유율 변화</span><span class="en">Share change</span></th>
+    </tr></thead>
+    <tbody>
+      <tr class="hl"><th><span class="ko">전체 시장</span><span class="en">Total market</span></th><td class="n"><span class="ko">553조 8,779억</span><span class="en">KRW 553.88tn</span></td><td class="n up">+24.3%</td><td><span class="ko">2025년말 501조 4,030억 대비 +10.5%</span><span class="en">+10.5% vs KRW 501.4tn at end-2025</span></td></tr>
+      <tr><th><span class="ko">은행</span><span class="en">Banks</span></th><td class="n"><span class="ko">281조 5,105억</span><span class="en">KRW 281.51tn</span></td><td class="n up">+19.1%</td><td class="dn">&minus;1.2%p</td></tr>
+      <tr class="hl"><th><span class="ko">증권</span><span class="en">Securities</span></th><td class="n"><span class="ko">165조 468억</span><span class="en">KRW 165.05tn</span></td><td class="n up">+46.4%</td><td class="up"><span class="ko">+3.6%p → 29.8%</span><span class="en">+3.6pp → 29.8%</span></td></tr>
+      <tr><th><span class="ko">보험</span><span class="en">Insurers</span></th><td class="n"><span class="ko">107조 3,206억</span><span class="en">KRW 107.32tn</span></td><td class="n up">+10.1%</td><td class="dn">&minus;1.5%p</td></tr>
+    </tbody>
+  </table>
+  </div>
+  <div class="tw">
+  <table>
+    <thead><tr>
+      <th><span class="ko">증권사 순위 (2026.6말)</span><span class="en">Securities firm ranking (end-Jun 2026)</span></th>
+      <th class="n"><span class="ko">적립금</span><span class="en">AUM</span></th>
+      <th><span class="ko">비고</span><span class="en">Note</span></th>
+    </tr></thead>
+    <tbody>
+      <tr class="hl"><th>1. <span class="ko">미래에셋증권</span><span class="en">Mirae Asset Securities</span></th><td class="n"><span class="ko">52조 210억</span><span class="en">KRW 52.02tn</span></td><td><span class="ko"><b>증권업 최초 50조원 돌파.</b> 2Q 순증 9조 5,799억으로 시장 전체 증가액(45조 1,438억)의 <b>21.2%</b>, 42개 사업자 중 최대. 상반기 누적 약 14조원(+36.5% YTD)</span><span class="en"><b>First securities firm past KRW 50tn.</b> Q2 net inflow of KRW 9.58tn was <b>21.2%</b> of the market's total KRW 45.14tn increase — the largest of 42 providers. H1 cumulative ~KRW 14tn (+36.5% YTD)</span></td></tr>
+      <tr><th>2. <span class="ko">삼성증권</span><span class="en">Samsung Securities</span></th><td class="n"><span class="ko">28조 919억</span><span class="en">KRW 28.09tn</span></td><td>&mdash;</td></tr>
+      <tr><th>3. <span class="ko">한국투자증권</span><span class="en">Korea Investment</span></th><td class="n"><span class="ko">26조 4,044억</span><span class="en">KRW 26.40tn</span></td><td><span class="ko">디폴트옵션 3년 누적 <b>123.34%</b>로 전체 1위 (8/4 발표)</span><span class="en">Ranked first overall on three-year cumulative default-option returns at <b>123.34%</b> (announced 4 Aug)</span></td></tr>
+      <tr><th>4. <span class="ko">현대차증권</span><span class="en">Hyundai Motor Securities</span></th><td class="n"><span class="ko">19조 1,353억</span><span class="en">KRW 19.14tn</span></td><td>&mdash;</td></tr>
+    </tbody>
+  </table>
+  </div>
+  <p>
+    <span class="ko">2024년 10월 시행된 <b>실물이전</b>이 증권사 머니무브의 핵심 동인입니다. 제도별로는 IRP 비중이 25.4%→30.0%, DC가 27.0%→29.5%로 확대됐습니다. 다만 <b>수익률 양극화</b>가 상담에서 반드시 다뤄야 할 지점입니다 &mdash; 2분기 DC 원리금비보장형이 아이엠증권 66.24%, 현대차증권 66.12%, KB증권 60.13%, NH투자증권 56.65%, 삼성증권 56.03%였던 반면 원리금보장형은 2~3%대에 머물렀습니다. <b>최대 20배 격차</b>입니다. 디폴트옵션은 1분기말 상품 324개, 적립금 55조 8,624억원(+24.4% YoY).</span>
+    <span class="en"><b>In-kind transfers</b>, live since October 2024, are the engine of the money-move into securities firms. Within the system, IRP's weight rose from 25.4% to 30.0% and DC from 27.0% to 29.5%. The <b>dispersion in returns</b> is what clients need to hear: in Q2, non-principal-guaranteed DC returned 66.24% at iM Securities, 66.12% at Hyundai Motor, 60.13% at KB, 56.65% at NH and 56.03% at Samsung, while principal-guaranteed products sat at 2&ndash;3% — <b>a gap of up to 20 times</b>. Default-option products numbered 324 with KRW 55.86tn at end-Q1 (+24.4% YoY).</span>
+  </p>
+
+  <h3><span class="ko">세제 &mdash; 8/3 발표 「2026년 세제개편안」이 이번 달 최대 이슈</span><span class="en">Tax — the 3 August 2026 reform package is the month's biggest item</span></h3>
+  <ul>
+    <li><span class="ko"><b>「생산적금융 ISA」 신설.</b> 연 납입한도 2,000만원 / 총 2억원, 이자·배당소득 <b>한도 없이 전액 비과세</b>. 최초 3년·최장 10년, 투자대상은 국내 상장주식·국내 주식형펀드·국민성장펀드·BDC로 제한(<b>해외 ETF 불가</b>). 2027년 1월 1일 신규가입분부터, 가입기한 2029년 12월 31일.</span><span class="en"><b>New "productive finance ISA".</b> Annual cap KRW 20m, lifetime KRW 200m, with interest and dividend income <b>fully exempt with no ceiling</b>. Three years initially, up to ten; investments limited to Korean listed equities, domestic equity funds, the National Growth Fund and BDCs (<b>no overseas ETFs</b>). Applies to accounts opened from 1 Jan 2027, with enrolment closing 31 Dec 2029.</span></li>
+    <li><span class="ko"><b>일반 ISA 정비.</b> 총 계약기간이 <b>5년으로 제한</b>되고(기존 무제한), 연간 납입한도 2,000만원이 고정됩니다(누적이월 방식 폐지). <b>기존 고객에게 설명이 필요한 변경입니다.</b></span><span class="en"><b>Standard ISA tightened.</b> Total contract term <b>capped at five years</b> (previously open-ended) and the KRW 20m annual cap becomes fixed, with carry-forward of unused allowance abolished. <b>Existing clients will need this explained.</b></span></li>
+    <li><span class="ko"><b>연금계좌 추가납입 대상에 생산적금융 ISA 전환금 추가</b>, <b>청년 IRP 납입액 세액공제율 상향</b>, <b>BDC 과세특례 신설</b>(납입금 1억원 한도, 배당소득 9% 저율 분리과세), <b>외국인통합계좌 취급상품에 ETF·ETN 추가</b>(레버리지·인버스 제외).</span><span class="en">Also: productive-finance ISA rollovers become eligible for additional pension-account contributions; the tax credit rate on young savers' IRP contributions rises; a new BDC regime taxes dividend income at a preferential 9% separate rate up to KRW 100m of contributions; and ETFs and ETNs join the omnibus account for foreign investors (leveraged and inverse excluded).</span></li>
+    <li><span class="ko"><b>금투세</b>는 재도입 관련 내용이 없습니다(폐지 상태 유지). <b>배당소득 분리과세</b>는 2025년 말 국회 통과분(50억원 초과 구간 신설, 최고세율 30%)이 이미 시행 중이고, 이번 개편안은 고배당기업 특례의 신설법인 판정기준 보완 수준입니다.</span><span class="en">The <b>financial investment income tax</b> is not revived (it stays repealed). <b>Separate taxation of dividend income</b> — the bracket above KRW 5bn at a 30% top rate, passed in late 2025 — is already in force; this package only refines how newly incorporated entities qualify for the high-dividend regime.</span></li>
+    <li><span class="ko"><b>「주가누르기」 상장주식 평가방법 신설</b> &mdash; 저PBR 등 추정요건과 평가심의위원회를 통한 재평가로, 저평가 방치를 통한 상속·증여세 회피를 차단합니다. 자기주식 취득 시 <b>의제배당 과세</b>, 처분손익 익금·손금 불산입(2027년 이후 적용).</span><span class="en"><b>A new valuation method for "share-price suppression"</b> uses low-PBR presumption criteria and a review committee to re-value shares, closing the loophole of deliberate undervaluation ahead of inheritance and gift tax. Treasury share acquisitions become subject to <b>deemed dividend tax</b>, with disposal gains and losses excluded from taxable income (from 2027).</span></li>
+  </ul>
+
+  <h3><span class="ko">미래에셋증권 · 경쟁사</span><span class="en">Mirae Asset and competitors</span></h3>
+  <ul>
+    <li><span class="ko"><b>8월 5일 「퇴직연금 로보Wrap」 출시.</b> IRP 계좌 대상 일임형 로보어드바이저로 글로벌 자산배분·리밸런싱·매매를 일임합니다. M-STOCK에서 신청, 연 900만원 한도. RA 누적 14만좌·8조 3,000억원(7월말 기준). 하반기 조직개편에서 <b>연금자산관리본부를 신설</b>하고 로보어드바이저팀을 로보자산관리팀으로 개편했습니다. 연금(퇴직+개인) 총자산 80조 8,100억원, 누적 고객수익 24조 671억원.</span><span class="en"><b>"Retirement Pension Robo Wrap" launched 5 August</b> — a discretionary robo-advisory for IRP accounts covering global allocation, rebalancing and execution, available through M-STOCK with a KRW 9m annual cap. Cumulative robo accounts stand at 140,000 and KRW 8.3tn (end-July). The H2 reorganisation created a <b>Pension Asset Management Division</b> and renamed the robo-advisory team the Robo Asset Management team. Total pension assets (corporate plus personal) are KRW 80.81tn, with KRW 24.07tn of cumulative client returns.</span></li>
+    <li><span class="ko"><b>2분기 실적에는 단서가 붙습니다.</b> 순이익 컨센서스가 1조 4,539억원(YoY +258.2%)으로 업계 1위이고 자산관리 수수료는 1,090억원(+48.9%), 브로커리지는 5,785억원(+25.9%)입니다. 다만 여기에 <b>스페이스X 평가이익 1.2~1.3조원</b>이 반영돼 있고, 7월 스페이스X가 36.8% 하락하면서 <b>3분기 컨센서스는 3,352억원으로 급감</b>할 전망입니다. 고객에게 2분기 숫자만 인용하면 오해를 부릅니다.</span><span class="en"><b>Q2 earnings come with a caveat.</b> Consensus net profit of KRW 1.45tn (+258.2% YoY) leads the industry, with wealth management fees of KRW 109bn (+48.9%) and brokerage of KRW 578.5bn (+25.9%). But that includes <b>KRW 1.2&ndash;1.3tn of SpaceX valuation gains</b>, and with SpaceX down 36.8% in July, <b>Q3 consensus drops to KRW 335.2bn</b>. Quoting the Q2 figure alone to clients invites misunderstanding.</span></li>
+    <li><span class="ko"><b>경쟁사.</b> NH투자증권은 AX추진부와 리테일기획부를 신설했고 DC·IRP 비보장형 5년 수익률 증권업 1위를 발표했습니다(7/22). 삼성증권은 AX/PX센터를 확대했습니다. 하나증권은 연금컨설팅실을 신설하고 연금자산관리센터를 확대해 4개 조직 체제로 갔습니다(IRP 비보장 수익률 54.91%). KB증권은 2분기 DC 60.13%·IRP 52.98%로 수익률 1위를 발표했습니다. <b>신한투자증권·한화투자증권의 최근 2주 내 WM 전용 신규 전략 자료는 확인되지 않았습니다.</b></span><span class="en"><b>Competitors.</b> NH Investment created an AX division and a retail planning division and claimed the industry's best five-year non-guaranteed DC/IRP returns (22 Jul). Samsung expanded its AX/PX centre. Hana added a pension consulting office and expanded its pension asset management centre into a four-unit structure (IRP non-guaranteed return 54.91%). KB claimed Q2 return leadership at 60.13% for DC and 52.98% for IRP. <b>No new WM-specific strategy material from Shinhan or Hanwha was found in the last two weeks.</b></span></li>
+    <li><span class="ko"><b>금융지주 상반기 실적.</b> 4대 지주 합산 순이익 11조 3,392억원(+9.8% YoY)으로 사상 첫 11조원 돌파 &mdash; KB 3조 8,846억(+13.1%), 신한 3조 4,427억(+13.3%), 하나 2조 4,029억(+4.4%), 우리 1조 6,090억(+3.7%). <b>비은행·증권이 견인했습니다</b>(KB증권 7,963억, 신한투자증권 5,777억 +123%, 하나증권 +155.7%).</span><span class="en"><b>H1 financial holding results.</b> The four majors earned a combined KRW 11.34tn (+9.8% YoY), topping KRW 11tn for the first time: KB 3.88tn (+13.1%), Shinhan 3.44tn (+13.3%), Hana 2.40tn (+4.4%), Woori 1.61tn (+3.7%). <b>Non-bank and securities units drove it</b> — KB Securities KRW 796bn, Shinhan Investment KRW 578bn (+123%), Hana Securities +155.7%.</span></li>
+    <li><span class="ko"><b>ETF 시장.</b> 순자산 507조 3,886억원(5월말) &mdash; 1월 300조, 4월 400조, 5월 500조를 차례로 넘었습니다. 상반기 +215조 3,000억원(+72.4%). 이 성장으로 공모펀드(897조 4,000억)가 <b>사상 처음 사모펀드(837조 1,000억)를 추월</b>했습니다. 운용사 점유율은 삼성 201조 5,000억, 미래에셋 160조, KB 36조 4,000억.</span><span class="en"><b>ETF market.</b> Net assets reached KRW 507.39tn at end-May, having crossed 300tn in January, 400tn in April and 500tn in May — up KRW 215.3tn (+72.4%) in H1. That growth pushed public funds (KRW 897.4tn) <b>past private funds (KRW 837.1tn) for the first time ever</b>. Manager shares: Samsung KRW 201.5tn, Mirae Asset KRW 160tn, KB KRW 36.4tn.</span></li>
+    <li><span class="ko"><b>MSCI.</b> 2026년 6월 23일(현지) 연례 시장분류에서 <b>한국의 관찰대상국 등재가 다시 불발</b>됐습니다. 사유는 원화의 역외 실물인도 불가(NDF 중심), 야간거래 연장에도 남는 유동성 제약, 공매도 재개 후 시장참가자 운영부담입니다. 정부는 7월 6일부터 원/달러 24시간 무중단 거래를 시행했고 2027년부터 역외 원화결제망을 가동합니다. 현실적 시나리오는 2027년 6월 재심사 → 2028년 6월 편입 발표 → <b>2029년 5월 실제 편입</b>입니다. 최근 2주 내 신규 발표는 없습니다.</span><span class="en"><b>MSCI.</b> In the annual review on 23 June 2026, <b>Korea again failed to make the watch list</b>, on grounds of no offshore physical delivery of the won (NDF-centric), residual liquidity constraints despite extended hours, and the operational burden on participants since short selling resumed. The government opened 24-hour USD/KRW trading on 6 July and will launch an offshore won settlement network from 2027. The realistic path: re-review June 2027 → inclusion announcement June 2028 → <b>actual inclusion May 2029</b>. Nothing new in the past two weeks.</span></li>
+  </ul>
+  <p class="cap"><span class="ko">출처: <a href="https://www.sisajournal-e.com/news/articleView.html?idxno=422743">시사저널e</a> · <a href="https://www.mt.co.kr/stock/2026/08/04/2026080414420137906">머니투데이</a> · <a href="https://www.newspim.com/news/view/20260805001063">뉴스핌 8/5(로보Wrap)</a> · <a href="https://www.pwc.com/kr/ko/insights/tax-news-flash/samilpwc_tax-news-flash_260803_kr.pdf">삼일PwC 세무뉴스플래시 8/3</a> · <a href="https://www.news1.kr/amp/economy/trend/6246654">뉴스1</a> · <a href="https://www.newsworks.co.kr/news/articleView.html?idxno=848470">뉴스웍스</a> · <a href="https://www.newspim.com/news/view/20260724001125">뉴스핌(금융지주)</a> · <a href="https://www.munhwa.com/article/11595483">문화일보(ETF)</a> · <a href="https://www.fnnews.com/news/202606240723087392">파이낸셜뉴스(MSCI)</a></span><span class="en">Sources: <a href="https://www.sisajournal-e.com/news/articleView.html?idxno=422743">Sisajournal-e</a> · <a href="https://www.mt.co.kr/stock/2026/08/04/2026080414420137906">Money Today</a> · <a href="https://www.newspim.com/news/view/20260805001063">Newspim, 5 Aug</a> · <a href="https://www.pwc.com/kr/ko/insights/tax-news-flash/samilpwc_tax-news-flash_260803_kr.pdf">Samil PwC Tax News Flash, 3 Aug</a> · <a href="https://www.news1.kr/amp/economy/trend/6246654">News1</a> · <a href="https://www.newsworks.co.kr/news/articleView.html?idxno=848470">Newsworks</a> · <a href="https://www.newspim.com/news/view/20260724001125">Newspim (holdings)</a> · <a href="https://www.munhwa.com/article/11595483">Munhwa Ilbo (ETF)</a> · <a href="https://www.fnnews.com/news/202606240723087392">Financial News (MSCI)</a></span></p>
+</section>
+
+<!-- 10 -->
+<section class="section" id="s10">
+  <div class="section-rule"></div>
+  <span class="sec-num">10</span>
+  <h2 class="section-title"><span class="ko">고객 상담 포인트</span><span class="en">Client Conversation Points</span></h2>
+  <div class="cards">
+    <div class="card">
+      <p class="q"><span class="ko">"바닥은 지난 건가요? 지금 들어가도 됩니까?"</span><span class="en">"Was that the bottom? Should I get in now?"</span></p>
+      <p class="a"><span class="ko">증권가는 <b>원인 진단에서는 일치</b>합니다 &mdash; 7월 &minus;22.19%는 실적 훼손이 아니라 반도체 쏠림과 레버리지 ETF 청산이라는 수급 문제였다는 것(대신증권 이경민). 수급 지표도 이를 뒷받침합니다. 신용융자는 6월 고점 대비 29% 줄어 27조 4,038억원(8/4)까지 내려왔고, 반대매매는 7/31의 4분의 1 수준입니다.</span><span class="en">The sell-side <b>agrees on diagnosis</b>: July's &minus;22.19% was a flow problem — semiconductor crowding and leveraged-ETF liquidation — not an earnings one (Lee Kyung-min, Daishin). The flow data supports that: margin loans are down 29% from the June peak to KRW 27.4tn (4 Aug) and forced liquidations are a quarter of their 31 July level.</span></p>
+      <p class="a"><span class="ko">다만 <b>목표 수준에서는 크게 갈립니다.</b> 유안타는 하단 5,150, 삼성은 하단 6,000, 한국투자는 상단 7,500, NH는 상단 6,500을 봅니다. 현재 6,598.26은 어떤 하우스 기준이냐에 따라 '바닥권'이기도 하고 '상단'이기도 합니다. 대신증권 조재운은 레버리지 ETF 청산압력 완화까지 <b>3~4주가 더 필요</b>하다고 봅니다.</span><span class="en">But the <b>levels diverge sharply</b>: Yuanta's floor is 5,150, Samsung's is 6,000; Korea Investment's ceiling is 7,500, NH's is 6,500. At 6,598.26 the index is either near the bottom or near the top, depending on whose framework you use. Daishin's Cho Jae-woon thinks the leveraged-ETF unwind needs <b>another three to four weeks</b>.</span></p>
+      <p class="disc"><span class="ko">확정된 판단이 아닙니다. 고객의 위험성향과 투자기간을 먼저 확인한 뒤 논의해 주세요.</span><span class="en">Not a settled conclusion. Confirm the client's risk profile and horizon before discussing.</span></p>
+    </div>
+    <div class="card">
+      <p class="q"><span class="ko">"반도체 더 사도 될까요? 어제 하이닉스가 5.8% 올랐던데."</span><span class="en">"Should I buy more semis? Hynix was up 5.8% yesterday."</span></p>
+      <p class="a"><span class="ko">국내에서는 강했지만 <b>밤사이 미국에서 온도가 갈렸습니다.</b> 엔비디아는 3.43% 올랐는데 AMD는 7.04% 빠졌습니다. AMD는 매출과 가이던스가 나쁘지 않았는데도 시장의 눈높이가 "훌륭한 수준"이 아니라 "탁월한 결과"를 요구하는 지점에 와 있다는 신호로 읽힙니다.</span><span class="en">Strong in Korea, but <b>the temperature split overnight in the US</b>: Nvidia +3.43%, AMD &minus;7.04%. AMD's revenue and guidance were not bad, which is exactly the signal — the bar has moved from "good" to "exceptional."</span></p>
+      <p class="a"><span class="ko">애널리스트 액션도 양방향입니다. 미래에셋증권 김영건은 SK하이닉스 목표주가를 420만→280만원으로 낮추면서도 매수 의견을 유지하고 "펀더멘털 대비 주가 하락은 과도"하다고 했습니다. 반면 삼성전기는 키움 권민규가 34만→280만원으로 대폭 상향했습니다(직전 목표가가 1월 26일자라 6개월 만의 갱신입니다).</span><span class="en">Analyst actions run both ways. Mirae Asset's Kim Young-gun cut SK Hynix's target from 4.2m to 2.8m while keeping Buy, saying "the share fall is excessive versus fundamentals." Meanwhile Kiwoom's Kwon Min-gyu lifted Samsung Electro-Mechanics from 340,000 to 2,800,000 — though the prior target dated from 26 January, so it is a six-month refresh.</span></p>
+      <p class="disc"><span class="ko">확정된 판단이 아닙니다. 개별 종목 집중도가 이미 높은 고객이라면 비중 점검이 먼저입니다.</span><span class="en">Not a settled conclusion. For clients already concentrated in single names, review position sizing first.</span></p>
+    </div>
+    <div class="card">
+      <p class="q"><span class="ko">"환율이 1,424원까지 내렸는데 달러를 지금 사둘까요?"</span><span class="en">"The won is back at 1,424 — should I buy dollars now?"</span></p>
+      <p class="a"><span class="ko">8월 5일 하루에 8원 내린 배경은 <b>베센트 미 재무장관이 원화를 직접 거론</b>한 것입니다. "한국 원화에서도 과도한 변동성을 목격해왔다"는 발언이 사실상 구두개입으로 작동했습니다. 미·일이 실제 개입(일본은행 8.45조엔 → 5.33조엔 연속)을 단행한 직후라 무게가 다릅니다.</span><span class="en">The 8-won drop on 5 August followed <b>US Treasury Secretary Bessent naming the won</b>: "we have seen excessive volatility in the Korean won too" functioned as verbal intervention — and it carries weight coming right after Japan and the US actually intervened (BOJ JPY 8.45tn then 5.33tn).</span></p>
+      <p class="a"><span class="ko">이번 주 방향을 가르는 건 <b>8월 7일(금) 21:30 KST 미 7월 고용보고서</b>입니다. KB 시나리오 기준 고용이 강하면 1,450원까지 상단이 열리고, 부진하면 적정 하단이 1,417원입니다. 즉 <b>지금 레벨은 시나리오 두 개의 중간</b>이라, 한 번에 큰 금액을 환전하기보다 분할이 논의 대상입니다.</span><span class="en">This week hinges on the <b>US July employment report at 21:30 KST on Friday 7 August</b>. On KB's scenarios, a strong print opens 1,450; a weak one puts fair value at 1,417. In other words, <b>today sits between the two</b> — which makes staged conversion, rather than a single large one, the thing to discuss.</span></p>
+      <p class="disc"><span class="ko">확정된 판단이 아닙니다. 환전 목적(유학·해외투자·여행)과 필요 시점을 먼저 확인해 주세요.</span><span class="en">Not a settled conclusion. Establish the purpose (tuition, overseas investing, travel) and the timing need first.</span></p>
+    </div>
+    <div class="card">
+      <p class="q"><span class="ko">"ISA 세제가 바뀐다던데, 제 계좌는 어떻게 되나요?"</span><span class="en">"I heard the ISA rules are changing — what happens to my account?"</span></p>
+      <p class="a"><span class="ko">8월 3일 발표된 「2026년 세제개편안」에 두 가지가 들어 있습니다. <b>첫째, 「생산적금융 ISA」 신설</b> &mdash; 연 2,000만원 / 총 2억원 한도로 이자·배당소득이 한도 없이 전액 비과세입니다. 다만 투자대상이 국내 상장주식·국내 주식형펀드·국민성장펀드·BDC로 제한되고 <b>해외 ETF는 담을 수 없습니다</b>. 2027년 1월 1일 신규가입분부터입니다.</span><span class="en">The tax package announced on 3 August has two parts. <b>First, a new "productive finance ISA"</b>: KRW 20m a year up to KRW 200m, with interest and dividend income fully exempt and no ceiling — but investments are limited to Korean listed equities, domestic equity funds, the National Growth Fund and BDCs, and <b>overseas ETFs are not eligible</b>. It applies to accounts opened from 1 January 2027.</span></p>
+      <p class="a"><span class="ko"><b>둘째, 기존 일반 ISA가 조정됩니다.</b> 총 계약기간이 5년으로 제한되고(기존 무제한), 연간 납입한도 2,000만원이 고정돼 누적이월 방식이 폐지됩니다. <b>한도를 이월해 쓰려던 고객에게는 계획 수정이 필요한 변경</b>이므로 미리 안내하는 편이 좋겠습니다.</span><span class="en"><b>Second, the standard ISA is being tightened.</b> The total contract term is capped at five years (previously open-ended) and the KRW 20m annual cap becomes fixed, with carry-forward abolished. <b>Clients who planned to roll unused allowance forward will need to change plans</b>, so it is worth flagging early.</span></p>
+      <p class="disc"><span class="ko">세제개편안은 국회 통과 전 단계입니다. 확정 시행 내용은 입법 결과에 따라 달라질 수 있습니다.</span><span class="en">The package has not yet passed the National Assembly; final terms may change.</span></p>
+    </div>
+  </div>
+</section>
+
+<!-- 11 -->
+<section class="section" id="s11">
+  <div class="section-rule"></div>
+  <span class="sec-num">11</span>
+  <h2 class="section-title"><span class="ko">데이터 검증 노트</span><span class="en">Data Verification Notes</span></h2>
+  <p class="lede"><span class="ko">이 브리핑에 <b>쓰지 않은</b> 수치와 그 이유입니다. 여기가 신뢰도의 근거입니다.</span><span class="en">The numbers we <b>did not</b> use, and why. This is where the brief's reliability comes from.</span></p>
+
+  <h3><span class="ko">매체 간 불일치</span><span class="en">Conflicts between sources</span></h3>
+  <ul class="small">
+    <li><span class="ko"><b>코스피 외국인 순매수</b> &mdash; 1조4,463억(이투데이·뉴스핌) / 1조4,460억(한국경제) / 1조4,514억(파이낸셜뉴스 종합) / 1조4,270억(머니투데이) / 약 2조원(서울경제). 정확히 일치하는 2개 매체 값인 <b>1조4,463억</b>을 채택했습니다.</span><span class="en"><b>KOSPI foreign net buying</b> — KRW 1,446.3bn (Etoday, Newspim) / 1,446.0bn (Hankyung) / 1,451.4bn (Financial News wrap) / 1,427.0bn (Money Today) / "about 2tn" (Seoul Economic Daily). We took <b>1,446.3bn</b>, the value on which two sources match exactly.</span></li>
+    <li><span class="ko"><b>코스피 개인·기관 순매도</b> &mdash; 정확히 일치하는 2개 매체가 없어 <b>범위로 병기</b>했습니다(개인 &minus;1조1,833억~&minus;1조1,854억, 기관 &minus;2,800억~&minus;2,837억).</span><span class="en"><b>KOSPI retail and institutional net selling</b> — no two sources match exactly, so we <b>show ranges</b> (retail &minus;1,183.3 to &minus;1,185.4bn; institutions &minus;280.0 to &minus;283.7bn).</span></li>
+    <li><span class="ko"><b>파이낸셜뉴스 종합 기사의 수급 세트</b>(외국인 2조660억 / 개인 &minus;1조8,810억 / 기관 &minus;2,404억)는 다른 매체와 규모가 크게 달라, 코스피 단독이 아니라 양시장 합산이거나 매수총액 기준일 가능성이 있습니다. <b>확정치로 사용하지 않았습니다.</b></span><span class="en">The flow set in one Financial News wrap (foreign +2,066bn / retail &minus;1,881bn / institutions &minus;240.4bn) differs in magnitude from every other outlet, suggesting it may cover both markets combined or gross rather than net. <b>Not used.</b></span></li>
+    <li><span class="ko"><b>코스닥 등락폭</b> &mdash; 머니투데이만 "+8.87포인트"로 표기했습니다. 5개 매체가 +18.87포인트이므로 오기로 판단했습니다.</span><span class="en"><b>KOSDAQ point change</b> — Money Today alone reported "+8.87 points" against +18.87 in five other outlets; treated as a typo.</span></li>
+    <li><span class="ko"><b>미 3대 지수</b> &mdash; Yahoo Finance 라이브블로그가 다우 54,488.68 / S&amp;P 7,741.68 / 나스닥 26,454.00을 종가로 제시했으나, Reuters의 11:38am ET 장중 스냅샷과 대조하고 <b>8/4 종가 + 변동폭이 산술적으로 정확히 맞는</b> AP·Kiplinger·CNBC 값을 채택했습니다. Zacks의 제3의 값(다우 54,734.89)은 어느 세션과도 맞지 않아 배제했습니다.</span><span class="en"><b>US indices</b> — a Yahoo Finance live blog posted Dow 54,488.68 / S&amp;P 7,741.68 / Nasdaq 26,454.00 as closes. Cross-checking against a Reuters 11:38am ET intraday snapshot and confirming that <b>4 Aug closes plus reported point changes reconcile exactly</b>, we took the AP/Kiplinger/CNBC figures. A third set from Zacks (Dow 54,734.89) matched no session and was discarded.</span></li>
+    <li><span class="ko"><b>아시아 지수</b> &mdash; 항셍은 25,915.82(머니투데이·TradingEconomics 일치) 대 25,946.98(이투데이), 상해는 3,878.43(2곳) 대 3,857(TradingEconomics), 닛케이는 66,300.44(3곳) 대 66,217(TradingEconomics). 각각 다수 일치 값을 채택했습니다.</span><span class="en"><b>Asian indices</b> — Hang Seng 25,915.82 (Money Today, Trading Economics) vs 25,946.98 (Etoday); Shanghai 3,878.43 (two sources) vs 3,857 (Trading Economics); Nikkei 66,300.44 (three sources) vs 66,217 (Trading Economics). We took the majority value in each case.</span></li>
+    <li><span class="ko"><b>구리</b> &mdash; COMEX $6.72/lb 대 $6.62/lb로 <b>불일치가 해소되지 않았습니다.</b> 값을 하나로 고르지 않고 두 값을 병기했습니다.</span><span class="en"><b>Copper</b> — COMEX at $6.72/lb versus $6.62/lb, <b>unresolved</b>. Rather than pick one, both are shown.</span></li>
+    <li><span class="ko"><b>유안타증권 김용구</b>의 8월 밴드가 보도별로 5,150~8,000과 "5,150 하단 / 6,350까지 기간조정"으로 달라, 04번 섹션에는 확인 가능한 표현을 그대로 옮기고 불일치를 명시했습니다.</span><span class="en"><b>Yuanta's Kim Yong-gu</b> was reported both as 5,150&ndash;8,000 and as "floor 5,150 / time-correction to 6,350." Section 04 reproduces the verifiable wording and flags the conflict.</span></li>
+    <li><span class="ko"><b>건설 업종 등락률</b> &mdash; +6.16%와 +5.48%는 매체별 업종 분류체계(KRX 업종 대 WICS 계열)가 달라 발생한 차이로 보이며, 오류가 아닙니다.</span><span class="en"><b>Construction sector return</b> — +6.16% versus +5.48% appears to stem from different sector taxonomies (KRX versus WICS-family), not an error.</span></li>
+  </ul>
+
+  <h3><span class="ko">확보 실패 &mdash; 채우지 않고 비운 항목</span><span class="en">Not obtained — left blank rather than filled</span></h3>
+  <ul class="small">
+    <li><span class="ko"><b>VKOSPI 8/5 종가</b> &mdash; 소스별로 15.57 / 17.21 / 16.52로 세 값이 모두 달랐습니다. 스탯 스트립에도 "미확인"으로 두고 8/4 참고치(16.50)만 병기했습니다.</span><span class="en"><b>VKOSPI, 5 Aug close</b> — three sources gave 15.57, 17.21 and 16.52. Left as "unverified" in the stat strip, with only the 4 Aug reference (16.50) shown.</span></li>
+    <li><span class="ko"><b>LG에너지솔루션 · 삼성바이오로직스</b> 8/5 종가·등락률 &mdash; 허용 매체 어디에도 보도가 없었습니다. 시총 상위 표에서 행을 지우지 않고 "미확인"으로 남겼습니다.</span><span class="en"><b>LG Energy Solution and Samsung Biologics</b>, 5 Aug — no permitted source covered them. Rows kept but marked unverified rather than deleted.</span></li>
+    <li><span class="ko"><b>프로그램매매 · 선물 베이시스 · 공매도 잔고 · Put/Call 비율 · 신용융자 전일 대비 증감</b> &mdash; KRX·코스콤 세션 기반 페이지에서만 제공돼 API 키 없이는 정적 조회가 불가능합니다.</span><span class="en"><b>Program trading, futures basis, short interest, put/call ratio, day-on-day margin loan change</b> — available only on session-based KRX/Koscom pages, not statically retrievable without an API key.</span></li>
+    <li><span class="ko"><b>대차거래 잔액</b>(8/4 155조2,000억, 7/30 대비 +21조) &mdash; 단독 보도이고 증감폭이 비정상적이라 본문에서 제외했습니다.</span><span class="en"><b>Securities lending balance</b> (KRW 155.2tn on 4 Aug, +21tn vs 30 Jul) — single-sourced with an implausible swing; excluded.</span></li>
+    <li><span class="ko"><b>원/달러 야간거래 종가</b>, <b>국고채 3년·10년 8/5 기준치</b>(최신 확보분은 8/4), <b>미 30년물 2차 소스</b>, <b>러셀2000·TSM·MU 2차 소스</b>, <b>코스피 거래대금·거래량</b>, <b>연초 대비 코스피 등락률</b>.</span><span class="en"><b>USD/KRW overnight close</b>; <b>KTB 3Y and 10Y as of 5 Aug</b> (latest available is 4 Aug); <b>second source for the US 30Y</b>; <b>second source for Russell 2000, TSM and MU</b>; <b>KOSPI turnover and volume</b>; <b>KOSPI year-to-date return</b>.</span></li>
+    <li><span class="ko"><b>7월 외국인 상장주식·채권 순매수 확정치</b> &mdash; 8/5 시점 미발표입니다. 02번 섹션에는 최신 공식치인 2026년 6월분을 <b>기준일을 명시해</b> 실었습니다.</span><span class="en"><b>July foreign equity and bond flows</b> — not yet published as of 5 Aug. Section 02 uses the latest official data (June 2026) <b>with the reference date stated</b>.</span></li>
+    <li><span class="ko"><b>애널리스트 실명이 없는 목표주가 변경 3건</b>(미래에셋 삼성전자 55만→37만, 키움 삼성전자 43만→39만, BNK SK하이닉스 185만→148만) &mdash; 05번 표에서 제외하고 각주에 방향만 남겼습니다.</span><span class="en"><b>Three target changes without a named analyst</b> (Mirae Asset on Samsung Electronics 550,000→370,000; Kiwoom on Samsung Electronics 430,000→390,000; BNK on SK Hynix 1,850,000→1,480,000) — excluded from the section 05 table, with direction only noted in the footnote.</span></li>
+    <li><span class="ko"><b>주요 경제지표 컨센서스 대부분</b> &mdash; 미 7월 고용보고서, 한국 6월 경상수지, 중국 7월 무역수지·CPI/PPI. TradingEconomics 파싱값은 전월치와 혼재될 수 있어 <b>의도적으로 기재하지 않았습니다.</b></span><span class="en"><b>Most consensus figures</b> — US July payrolls, Korea's June current account, China's July trade and CPI/PPI. Trading Economics parsed values can be conflated with prior-month prints, so they were <b>deliberately omitted</b>.</span></li>
+    <li><span class="ko"><b>한국 상장사 8/6~8/10 실적 일정</b>과 <b>미래에셋증권 2Q 확정 실적발표일</b> &mdash; 개별 공시 기반이라 신뢰 가능한 통합 목록을 확보하지 못했습니다.</span><span class="en"><b>Korean corporate earnings dates for 6&ndash;10 Aug</b> and <b>Mirae Asset's confirmed Q2 results date</b> — filing-based, and no reliable consolidated list was obtainable.</span></li>
+  </ul>
+
+  <h3><span class="ko">접근 차단 소스</span><span class="en">Blocked sources</span></h3>
+  <p class="small"><span class="ko"><b>프록시 403</b>: finance.naver.com 및 naver.com 전체, einfomax.co.kr. <b>robots.txt 차단</b>: consensus.hankyung.com, comp.fnguide.com, wisefn.com, asiae.co.kr/marketin. <b>본문 조회 불가</b>: bloomberg.com(제목·URL만 인용 가능하며 <b>본문 수치를 일절 인용하지 않았습니다</b>). <b>JS/세션 기반이라 정적 조회 불가</b>: data.krx.co.kr, short.krx.co.kr, seibro.or.kr, freesis.kofia.or.kr, smbs.biz. <b>증권사 자체 리서치 목록</b>: 미래에셋·삼성·한국투자·신한·키움·하나·대신·유안타·메리츠·교보 모두 JavaScript 렌더링으로 빈 화면 &mdash; 증권사 코멘트는 전부 언론 인용으로 확보했습니다. 예외로 접근 가능하다고 안내된 m.nhsec.com/research/newestBoardList와 ds-sec.co.kr 리서치 게시판은 <b>이번 실행에서 fetch 권한(PROVENANCE_REQUIRED)으로 차단</b>돼 조회하지 못했습니다. 한국은행 금통위 일정 페이지와 통계 공표일정 캘린더는 <b>PDF 첨부·동적 렌더링</b>이라 본문 파싱에 실패해 2차 소스로 대체했습니다.</span><span class="en"><b>Proxy 403</b>: finance.naver.com and all of naver.com, einfomax.co.kr. <b>robots.txt</b>: consensus.hankyung.com, comp.fnguide.com, wisefn.com, asiae.co.kr/marketin. <b>Body inaccessible</b>: bloomberg.com — headlines and URLs only, and <b>no figures from its text were cited</b>. <b>JS/session-based, not statically retrievable</b>: data.krx.co.kr, short.krx.co.kr, seibro.or.kr, freesis.kofia.or.kr, smbs.biz. <b>Broker research listings</b>: Mirae Asset, Samsung, Korea Investment, Shinhan, Kiwoom, Hana, Daishin, Yuanta, Meritz and Kyobo all render blank via JavaScript — every sell-side comment here comes from press citation. The two normally reachable exceptions, m.nhsec.com/research/newestBoardList and the ds-sec.co.kr research board, were <b>blocked on this run by fetch permissions (PROVENANCE_REQUIRED)</b>. The BOK's MPC schedule and statistical release calendar are <b>PDF attachments and dynamically rendered</b>, so secondary sources were used instead.</span></p>
+
+  <h3><span class="ko">소스 등급 요약</span><span class="en">Source tier summary</span></h3>
+  <div class="tw">
+  <table>
+    <thead><tr>
+      <th><span class="ko">등급</span><span class="en">Tier</span></th>
+      <th><span class="ko">사용 여부</span><span class="en">Used</span></th>
+      <th><span class="ko">내용</span><span class="en">Detail</span></th>
+    </tr></thead>
+    <tbody>
+      <tr><th>TIER 1<br><span class="small"><span class="ko">공식 · API</span><span class="en">Official / API</span></span></th><td class="na"><span class="ko"><b>미사용</b></span><span class="en"><b>Not used</b></span></td><td><span class="ko">FactSet AI-Ready Data는 이 세션에서 <b>비활성</b>(enabledInChat: false)이라 지수·컨센서스·실적 캘린더를 조회하지 못했습니다. KRX Open API·한국은행 ECOS·공공데이터포털은 인증키가 설정돼 있지 않아 건너뛰었습니다. <b>다만 발행기관 원문은 직접 사용했습니다</b> &mdash; ADP 공식 보도자료, 한국은행 통화정책방향, BLS·재무부·연준 공식 캘린더, 에어비앤비 IR.</span><span class="en">FactSet AI-Ready Data is <b>disabled in this session</b> (enabledInChat: false), so no index, consensus or earnings-calendar lookups were possible. KRX Open API, BOK ECOS and the public data portal were skipped for lack of API keys. <b>Primary issuer documents were used directly</b>, however: ADP's release, the BOK policy statement, BLS/Treasury/Fed calendars and Airbnb's IR page.</span></td></tr>
+      <tr class="hl"><th>TIER 2<br><span class="small"><span class="ko">언론 인용</span><span class="en">Press</span></span></th><td class="up"><span class="ko"><b>주력</b></span><span class="en"><b>Primary</b></span></td><td><span class="ko">국내: 뉴스핌, 파이낸셜뉴스, 서울경제, 머니투데이, 이투데이, 한국경제, 아주경제, 글로벌이코노믹, 이코노미스트, 시사저널e. 해외: Reuters, CNBC, Kiplinger, TheStreet, Schwab, TradingEconomics, StockAnalysis, Kitco, AP(통신 배급본). <b>핵심 수치는 2개 매체 일치 시에만 확정</b> 원칙을 적용했습니다.</span><span class="en">Korea: Newspim, Financial News, Seoul Economic Daily, Money Today, Etoday, Hankyung, Ajunews, Global Economic, Economist, Sisajournal-e. Overseas: Reuters, CNBC, Kiplinger, TheStreet, Schwab, Trading Economics, StockAnalysis, Kitco, AP (syndicated). <b>Key figures were confirmed only on a two-source match.</b></span></td></tr>
+      <tr><th>TIER 3<br><span class="small"><span class="ko">보조</span><span class="en">Supplementary</span></span></th><td><span class="ko"><b>제한 사용</b></span><span class="en"><b>Limited</b></span></td><td><span class="ko">인베스팅닷컴은 <b>8/4 S&amp;P 종가와 VIX 히스토리 확인용으로만</b> 썼고 단독 근거로 삼지 않았습니다. 한경 데이터센터는 국고채 금리에, KB의 생각(kbthink.com)은 환율 시나리오의 정성적 근거로만 사용했습니다. 시사저널(sisajournal.com)은 허용 목록의 시사저널e와 별개 매체여서 <b>단독출처로 표기</b>했습니다.</span><span class="en">Investing.com was used <b>only to verify the 4 Aug S&amp;P close and VIX history</b>, never as sole evidence. Hankyung Data Center supplied KTB yields; kbthink.com supplied qualitative FX scenarios only. Sisajournal (sisajournal.com) is a different outlet from the permitted Sisajournal-e and is <b>marked single-source</b> throughout.</span></td></tr>
+    </tbody>
+  </table>
+  </div>
+</section>
+
+<div class="foot">
+  <p><span class="ko">미래에셋증권 마포WM · 송재섭 · 2026년 8월 6일(목) 07:00 KST 작성. 본 자료는 공개된 언론 보도와 공식 발표를 정리한 내부 참고용이며, 특정 종목의 매매를 권유하지 않습니다. 투자 판단의 최종 책임은 투자자 본인에게 있습니다. 확인되지 않은 수치는 "미확인"으로 표기했습니다.</span><span class="en">Mirae Asset Securities, Mapo WM · Jaeseop Song · Compiled 07:00 KST, Thursday 6 August 2026. This is an internal reference compiled from public reporting and official releases; it does not recommend the purchase or sale of any security. Investment decisions and their consequences rest with the investor. Figures that could not be verified are marked "unverified."</span></p>
+</div>
+
+</div>
+
+<script>
+function setLang(l){
+  document.documentElement.setAttribute('lang',l);
+  document.getElementById('btn-ko').setAttribute('aria-checked',String(l==='ko'));
+  document.getElementById('btn-en').setAttribute('aria-checked',String(l==='en'));
+  document.title = (l==='ko') ? '아침 브리핑 · 2026년 8월 6일 (목)' : 'Morning Brief · Thursday, 6 August 2026';
+  try{localStorage.setItem('mas-brief-lang',l);}catch(e){}
+}
+(function(){
+  var saved=null;
+  try{saved=localStorage.getItem('mas-brief-lang');}catch(e){}
+  setLang(saved==='en'?'en':'ko');
+})();
+</script>
