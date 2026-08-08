@@ -592,6 +592,52 @@ def naver_news(now, limit=24):
             "credit_mentions": credit[:8]}
 
 
+def naver_futures(dump_dir=None):
+    """코스피200 선물 — 시세와 투자자별 순매수.
+
+    데스크톱 네이버에는 선물 투자자별 화면이 없다. 모바일 쪽 JSON 에만 있다.
+    단위: `dealTrendInfo` 는 억원이다. 같은 필드를 코스피 현물에서 부르면
+    개인 +2,675 / 외국인 -8,651 / 기관 +5,854 가 나오는데, 이는
+    investorDealTrendDay.naver 가 "(단위:억원)" 이라고 못박아 둔 값과 같다.
+    선물 화면에는 단위 표기가 없어 이 대조로 정한 것이다.
+    """
+    j = json.loads(_get("https://m.stock.naver.com/api/index/FUT/integration",
+                        referer="https://m.stock.naver.com/"))
+    d = j.get("dealTrendInfo") or {}
+    if not d.get("bizdate"):
+        if dump_dir:
+            os.makedirs(dump_dir, exist_ok=True)
+            with open(os.path.join(dump_dir, "futures.json"), "w", encoding="utf-8") as f:
+                json.dump(j, f, ensure_ascii=False)
+        raise ValueError("dealTrendInfo 없음")
+
+    def n(x):
+        try:
+            return float(str(x).replace(",", "").replace("+", ""))
+        except ValueError:
+            return None
+
+    info = {t.get("code"): t.get("value") for t in j.get("totalInfos") or []}
+    vol = n(info.get("accumulatedTradingVolume"))
+    val = n(re.sub(r"[^\d.]", "", info.get("accumulatedTradingValue") or ""))
+    prev = n(info.get("lastClosePrice"))
+    out = {
+        "bizdate": d["bizdate"], "month": j.get("month"),
+        "investors": {"retail": n(d.get("personalValue")),
+                      "foreign": n(d.get("foreignValue")),
+                      "institution": n(d.get("institutionalValue"))},
+        "investor_unit": "억원",
+        "prev_close": prev, "open": n(info.get("openPrice")),
+        "high": n(info.get("highPrice")), "low": n(info.get("lowPrice")),
+        "volume_contracts": vol, "value_mn_krw": val,
+        "source_url": "https://m.stock.naver.com/api/index/FUT/integration",
+    }
+    # 대금 / 거래량 / 지수 로 승수를 되짚어 자료가 서로 맞는지 확인해 둔다
+    if vol and val and prev:
+        out["implied_multiplier"] = round(val * 1e6 / vol / prev)
+    return out
+
+
 def krx_openapi(now, key=None):
     """KRX 공식 오픈API. 인증키가 있으면 선물 투자자별을 정식으로 받는다.
 
@@ -710,6 +756,12 @@ def main():
     out["sources"]["krx:futures_investors"] = st
     if v:
         out["futures_investors"] = v
+
+    # 선물 투자자별 — 데스크톱에는 없고 모바일 JSON 에만 있다
+    v, st = run("futures_naver", naver_futures, "data/market/raw")
+    out["sources"]["naver:futures"] = st
+    if v:
+        out["futures"] = v
 
     # 증시자금동향 — 고객예탁금·신용잔고
     v, st = run("moneyflow", naver_money_flow, "data/market/raw")
