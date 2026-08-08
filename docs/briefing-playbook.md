@@ -29,7 +29,7 @@ python3 -m json.tool data/market/latest.json | head -120
 
 | 키 | 내용 |
 |---|---|
-| `indices` | kospi, kosdaq, usdkrw, sp500, nasdaq, dow, sox, vix, dxy, usdjpy, wti, brent, gold, ust10y, ust2y — 각각 `date` `open` `high` `low` `close` `volume` `prev_close` `change` `change_pct` |
+| `indices` | 지수·환율·원자재 48종. 각각 `date` `open` `high` `low` `close` `volume` `prev_close` `change` `change_pct`. **국내** kospi, kosdaq, usdkrw / **미국** sp500, nasdaq, dow, sox, vix, russell + 지수선물(`*_fut`) / **유럽** stoxx600, eurostoxx, dax, cac, ftse, ftsemib, ibex, smi, aex / **아시아** nikkei, hangseng, shanghai, taiwan, sensex, asx200 / **환율** dxy, eurusd, usdjpy, usdcny, gbpusd, usdtwd / **원자재·기타** wti, brent, gold, silver, copper, natgas, platinum, btc, eth |
 | `stocks` | 시총 상위 10종목의 종가·등락률·거래량 |
 | `sectors` | 네이버 업종 79개 등락률 (`all` / `top5` / `bottom5`) |
 | `investors_kospi` | 코스피 투자자별 순매수 최근 6거래일 — `retail`/`foreign`/`institution`, **단위 억원** |
@@ -40,6 +40,7 @@ python3 -m json.tool data/market/latest.json | head -120
 | `limit_names` | 상한가·하한가 종목명과 종목코드 |
 | `rates_us` | 미 국채 수익률 곡선 — 미 재무부 원본. `curve`(1m~30y), `prev_curve`, `change_bp`, `spread_10y_2y_bp`, `inverted`. **야후에 2년물 심볼은 없습니다. `^IRX` 를 2년물로 쓰지 마십시오 — 3개월물입니다** |
 | `us_sectors` / `us_stocks` | S&P500 업종 ETF 11개 / 미국 주요 종목 12개. 모닝 브리핑에서 국내 개장 전 흐름을 볼 때 씁니다 |
+| `eu_stocks` | 유럽 대형주 12종목 — SAP·인피니언·지멘스·ASML·LVMH·로레알·네슬레·노보노디스크·쉘·아스트라제네카·HSBC·노바티스. **거래 통화 기준입니다**(EUR·GBp·CHF·DKK). 영국 종목은 펜스(GBp) 표시라 파운드로 보려면 100으로 나눕니다 |
 | `index_daily` | 코스피·코스닥 일별시세 20영업일 — 종가·등락률·거래량(천주)·**거래대금(백만원)**. 거래대금은 야후에 없습니다. 지난 거래일을 되짚을 때 씁니다 |
 | `fed_implied` | 연방기금 금리선물(ZQ=F)에서 되짚은 내재 정책금리 |
 | `vkospi` | **대개 비어 있습니다.** 무료 원천이 없습니다(네이버 미취급·야후 미수록·인베스팅 403·stooq 차단). VIX 를 대용으로 쓰고, 없다는 사실을 적으십시오 |
@@ -51,6 +52,13 @@ python3 -m json.tool data/market/latest.json | head -120
 **이 수치는 거래소 원천이므로 뉴스 보도보다 우선합니다.** 배지는
 `<span class="vf ok">MARKET DATA</span>` 로 표시합니다. 뉴스와 값이 다르면
 이 파일을 채택하되 차이를 검증 노트에 적습니다.
+
+**주말·휴장일 브리핑에도 똑같이 적용됩니다.** 국내가 쉬는 날 쓰는 해외 증시
+브리핑은 검색만으로 만들기 쉬운데, 그렇게 만든 8/8 판은 SOX·VIX·달러인덱스를
+"검색 4회 실패" 로 비워 두고 유가는 매체 세 곳이 엇갈려 확정치를 못 걸었습니다.
+**셋 다 이 파일에 있었습니다.** 국내가 쉬어도 미국·유럽은 금요일에 열렸고,
+수집기는 그 마감가를 받아 둡니다. 검색으로 못 찾았다고 미확보로 적기 전에
+이 파일을 먼저 여십시오.
 
 **날짜를 반드시 확인하십시오.** `indices.kospi.date` 가 대상 거래일과 다르거나
 `generated_at_kst` 가 오늘이 아니면 파일이 갱신되지 않은 것입니다. 그 사실을
