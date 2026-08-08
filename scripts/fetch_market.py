@@ -500,6 +500,114 @@ def krx_futures_investors(now, dump_dir=None):
     return {"header": rows[0], "rows": rows[1:20], "trdDd": d}
 
 
+def naver_money_flow(dump_dir=None):
+    """증시자금동향 — 고객예탁금·신용잔고·펀드 설정액.
+
+    반대매매 금액은 이 표에 없다(금투협 통계 소관). 신용잔고는 결제일 기준이라
+    당일 종가 대비 하루이틀 늦게 실린다. 그래서 날짜를 값과 같이 돌려준다.
+    """
+    html = _get("https://finance.naver.com/sise/sise_deposit.naver", encoding="cp949")
+    tbl = re.search(r"(?is)<table[^>]*>(?:(?!</table>).)*?증시자금동향.*?</table>", html)
+    if not tbl:
+        tbl = re.search(r"(?is)<table.*?</table>", html)
+    rows = []
+    for tr in re.findall(r"(?is)<tr[^>]*>.*?</tr>", tbl.group(0) if tbl else html):
+        cells = []
+        for c in re.findall(r"(?is)<t[dh][^>]*>(.*?)</t[dh]>", tr):
+            c = re.sub(r"&nbsp;?", " ", re.sub(r"(?s)<[^>]+>", " ", c))
+            cells.append(re.sub(r"\s+", " ", c).strip())
+        if len(cells) >= 11 and re.match(r"^\d\d\.\d\d\.\d\d$", cells[0]):
+            rows.append(cells)
+    if not rows:
+        if dump_dir:
+            os.makedirs(dump_dir, exist_ok=True)
+            with open(os.path.join(dump_dir, "deposit.html"), "w", encoding="utf-8") as f:
+                f.write(html[:400000])
+        raise ValueError("증시자금동향 행 없음 (%d bytes)" % len(html))
+
+    def n(x):
+        try:
+            return float(x.replace(",", ""))
+        except ValueError:
+            return None
+
+    series = []
+    for r in rows[:10]:
+        y, m, d = r[0].split(".")
+        series.append({
+            "date": "20%s-%s-%s" % (y, m, d),
+            "deposit": n(r[1]), "deposit_chg": n(r[2]),          # 고객예탁금
+            "credit_balance": n(r[3]), "credit_chg": n(r[4]),    # 신용잔고
+            "fund_equity": n(r[5]), "fund_mixed": n(r[7]), "fund_bond": n(r[9]),
+        })
+    return {"unit": "억원", "latest": series[0], "series": series,
+            "source_url": "https://finance.naver.com/sise/sise_deposit.naver",
+            "note": "신용잔고는 결제일 기준이라 종가일보다 1~2영업일 늦게 반영된다"}
+
+
+_FUT_SENT = re.compile(r"[^.。\n]{0,110}선물[^.。\n]{0,150}?(?:계약|억원)[^.。\n]{0,60}")
+_CREDIT_SENT = re.compile(
+    r"[^.。\n]{0,90}(?:반대매매|미수금|신용거래융자|신용융자|예탁금)[^.。\n]{0,140}")
+
+
+def naver_news(now, limit=24):
+    """그날 증시 기사 본문을 받아 둔다.
+
+    브리핑 세션은 사내 이그레스 정책 때문에 언론사 사이트에 직접 못 붙는다.
+    검색 요약 대신 원문을 인용할 수 있도록 본문과 URL을 같이 저장한다.
+    선물 수급·신용융자처럼 시세 화면에 없는 수치도 여기서 건진다.
+    """
+    lst = _get("https://finance.naver.com/news/mainnews.naver?date="
+               + now.strftime("%Y-%m-%d"), encoding="cp949")
+    links = []
+    for aid, oid, title in re.findall(
+            r'article_id=(\d+)[^"]*?office_id=(\d+)[^"]*"[^>]*>\s*([^<]{4,90})', lst):
+        url = "https://n.news.naver.com/mnews/article/%s/%s" % (oid, aid)
+        if url not in [u for _, u in links]:
+            links.append((_text(title).strip(), url))
+    if not links:
+        raise ValueError("기사 목록 없음 (%d bytes)" % len(lst))
+
+    arts, fut, credit = [], [], []
+    for title, url in links[:limit]:
+        try:
+            body = _text(_get(url, referer="https://finance.naver.com/"))
+        except Exception:                                          # noqa: BLE001
+            continue
+        # 네이버 뉴스 껍데기(메뉴·안내문)를 걷어내고 기사 몸통만 남긴다
+        i = body.find("기사원문")
+        core = body[i:] if i > 0 else body
+        arts.append({"title": title, "url": url, "chars": len(core),
+                     "body": core[:6000]})
+        for m in _FUT_SENT.finditer(core):
+            s = m.group(0).strip()
+            if re.search(r"[\d,]{3,}\s*계약", s) or "선물시장" in s:
+                fut.append({"title": title, "url": url, "sentence": s[:300]})
+        for m in _CREDIT_SENT.finditer(core):
+            s = m.group(0).strip()
+            if re.search(r"\d", s) and "본문 바로가기" not in s:
+                credit.append({"title": title, "url": url, "sentence": s[:300]})
+    return {"date": now.strftime("%Y-%m-%d"), "count": len(arts),
+            "articles": arts, "futures_mentions": fut[:8],
+            "credit_mentions": credit[:8]}
+
+
+def krx_openapi(now, key=None):
+    """KRX 공식 오픈API. 인증키가 있으면 선물 투자자별을 정식으로 받는다.
+
+    키가 없으면 서버가 무엇을 요구하는지 그대로 기록해 둔다 — 남은 공백이
+    '막혀서'가 아니라 '키 한 장이 없어서'임을 눈으로 확인할 수 있게.
+    """
+    url = ("https://data-dbg.krx.co.kr/svc/apis/drv/fut_bydd_trd?basDd="
+           + now.strftime("%Y%m%d"))
+    body = _get(url, headers={"AUTH_KEY": key} if key else None, timeout=30)
+    j = json.loads(body)
+    rows = j.get("OutBlock_1")
+    if not rows:
+        raise ValueError("응답에 자료 없음: %s" % json.dumps(j, ensure_ascii=False)[:200])
+    return {"rows": rows[:40], "basDd": now.strftime("%Y%m%d")}
+
+
 def krx_json(bld, **params):
     """KRX 정보데이터시스템 JSON 엔드포인트."""
     p = {"bld": bld, "locale": "ko_KR", "csvxls_isNo": "false"}
@@ -602,6 +710,24 @@ def main():
     out["sources"]["krx:futures_investors"] = st
     if v:
         out["futures_investors"] = v
+
+    # 증시자금동향 — 고객예탁금·신용잔고
+    v, st = run("moneyflow", naver_money_flow, "data/market/raw")
+    out["sources"]["naver:money_flow"] = st
+    if v:
+        out["money_flow"] = v
+
+    # 그날 증시 기사 본문 — 시세 화면에 없는 수치(선물 수급·반대매매)를 여기서 건진다
+    v, st = run("news", naver_news, now)
+    out["sources"]["naver:news"] = st
+    if v:
+        out["news"] = v
+
+    # KRX 공식 오픈API — 인증키(KRX_AUTH_KEY)가 있으면 선물 투자자별이 열린다
+    v, st = run("krx_openapi", krx_openapi, now, os.environ.get("KRX_AUTH_KEY"))
+    out["sources"]["krx:openapi"] = st
+    if v:
+        out["krx_futures"] = v
 
     # 상한가·하한가 종목명 (개수는 market_internals.breadth 에 있다)
     for kind in ("upper", "lower"):
