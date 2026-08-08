@@ -120,21 +120,21 @@ def naver_sectors():
     return out
 
 
-INVESTOR_URLS = [
-    "https://finance.naver.com/sise/investorDealTrendDay.naver?bizdate=&sosok=",
-    "https://finance.naver.com/sise/investorDealTrendDay.naver",
-    "https://finance.naver.com/sise/sise_index.naver?code=KOSPI",
-]
+def _investor_urls(now):
+    """bizdate 없이 부르면 표 껍데기(1.6KB)만 오므로 날짜를 붙여 부른다."""
+    base = "https://finance.naver.com/sise/investorDealTrendDay.naver"
+    days = [(now - timedelta(days=i)).strftime("%Y%m%d") for i in range(0, 5)]
+    return ["%s?bizdate=%s&sosok=" % (base, d) for d in days]
 
 
-def naver_investors(dump_dir=None):
-    """투자자별 매매동향 — 개인/외국인/기관 순매수(백만원).
+def naver_investors(now, dump_dir=None):
+    """투자자별 매매동향 — 개인/외국인/기관 순매수, 단위 억원.
 
     페이지 구조가 바뀌면 파싱이 빗나가므로, 실패 시 원본 HTML을 남겨
     다음 실행 때 무엇을 봐야 하는지 알 수 있게 한다.
     """
     errors = []
-    for n_url, url in enumerate(INVESTOR_URLS):
+    for n_url, url in enumerate(_investor_urls(now)):
         try:
             s = _get(url, referer="https://finance.naver.com/sise/", encoding="cp949")
         except Exception as e:                                # noqa: BLE001
@@ -163,9 +163,9 @@ def naver_investors(dump_dir=None):
                 continue
             out.append({"date": cells[0], "retail": vals[0],
                         "foreign": vals[1], "institution": vals[2],
-                        "unit": "백만원", "source_url": url})
+                        "unit": "억원", "source_url": url})
         if out:
-            return out[:5]
+            return out[:6]
         errors.append("%s -> 날짜 행 없음(%d bytes)" % (url.split("?")[0][-32:], len(s)))
         if dump_dir:
             os.makedirs(dump_dir, exist_ok=True)
@@ -230,10 +230,10 @@ def main():
     if v:
         out["sectors"] = {"all": v, "top5": v[:5], "bottom5": v[-5:]}
 
-    v, st = run("investors", naver_investors, "data/market/raw")
+    v, st = run("investors", naver_investors, now, "data/market/raw")
     out["sources"]["naver:investors"] = st
     if v:
-        out["investors_kospi_millions_krw"] = v
+        out["investors_kospi"] = v
 
     # KRX — 러너 IP를 막는 것으로 보인다(400 -> 헤더 보강 후 403).
     # 한 번만 시도해 상태를 기록하고, 실패해도 나머지 원천으로 진행한다.
