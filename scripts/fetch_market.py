@@ -626,8 +626,10 @@ def fred_yields():
     10년-2년 스프레드(장단기 역전 여부)도 여기서 계산한다.
     """
     ids = ["DGS2", "DGS10", "DGS30", "DGS3MO"]
-    csv = _get("https://fred.stlouisfed.org/graph/fredgraph.csv?id=" + ",".join(ids),
-               timeout=40)
+    # cosd 를 안 주면 1962년부터 전부 내려와 응답이 느려 끊긴다. 최근치만 받는다.
+    since = (datetime.now(KST) - timedelta(days=45)).strftime("%Y-%m-%d")
+    csv = _get("https://fred.stlouisfed.org/graph/fredgraph.csv?id=%s&cosd=%s"
+               % (",".join(ids), since), timeout=60)
     lines = [l for l in csv.splitlines() if l.strip()]
     if len(lines) < 2:
         raise ValueError("FRED 응답이 비었음 (%d bytes)" % len(csv))
@@ -663,13 +665,14 @@ def fred_yields():
 def naver_vkospi():
     """VKOSPI — 코스피200 변동성지수. 야후에 없어 네이버 모바일에서 받는다."""
     errors = []
-    for code in ("VKOSPI", "VKOSPI200", "CBOEVKOSPI"):
+    for code in ("VKOSPI", "VKOSPI200", "CBOEVKOSPI", "KSVKOSPI", "VKOSPI_KRX",
+                 "KOSPIVOL", "VKS", "KVX"):
         try:
             j = json.loads(_get(
                 "https://m.stock.naver.com/api/index/%s/integration" % code,
                 referer="https://m.stock.naver.com/"))
         except Exception as e:                                     # noqa: BLE001
-            errors.append("%s -> %s" % (code, str(e)[:60]))
+            errors.append("%s -> %s" % (code, str(e)[:40]))
             continue
         info = {t.get("code"): t.get("value") for t in j.get("totalInfos") or []}
         if not info:
@@ -824,6 +827,16 @@ def main():
     out["sources"]["naver:vkospi"] = st
     if v:
         out["vkospi"] = v
+
+    # 연방기금 금리선물에서 시장이 보는 정책금리를 되짚는다 (내재금리 = 100 - 가격)
+    ff = out["indices"].get("fedfunds_fut")
+    if ff and ff.get("close"):
+        out["fed_implied"] = {
+            "contract_price": ff["close"],
+            "implied_rate_pct": round(100 - ff["close"], 4),
+            "note": "해당 결제월의 평균 연방기금금리 기대치. 현 정책금리와 비교해 인하 기대를 읽는다",
+            "source": "CBOT 30일 연방기금 금리선물 (ZQ=F)",
+        }
 
     # 네이버 — 야후에 없는 업종별 등락률과 투자자별 수급
     v, st = run("sectors", naver_sectors)
