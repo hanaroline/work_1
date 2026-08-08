@@ -1,6 +1,6 @@
 {
-  "generated_at_kst": "2026-08-08 13:41:07",
-  "generated_at_utc": "2026-08-08 04:41:07",
+  "generated_at_kst": "2026-08-08 13:45:00",
+  "generated_at_utc": "2026-08-08 04:45:00",
   "sources": {
     "yahoo:kospi": {
       "ok": true
@@ -83,26 +83,13 @@
     "naver:investors": {
       "ok": true
     },
-    "naver:investors:kosdaq(sosok=1)": {
-      "ok": false,
-      "error": "ValueError: 20260808 -> 날짜 행 없음(1689 bytes) | 20260807 -> 날짜 행 없음(1689 bytes) | 20260806 -> 날짜 행 없음(1689 bytes) | 20260805 -> 날짜 행 없음(1689 bytes) | 20260804 -> 날짜 행 없음(1689 bytes)"
-    },
-    "naver:investors:kosdaq_alt(sosok=01)": {
+    "naver:market:KOSPI": {
       "ok": true
     },
-    "naver:breadth:KOSPI": {
-      "ok": false,
-      "error": "ValueError: 종목 수를 0개만 찾음 (57957 bytes)"
+    "naver:market:KOSDAQ": {
+      "ok": true
     },
-    "naver:breadth:KOSDAQ": {
-      "ok": false,
-      "error": "ValueError: 종목 수를 0개만 찾음 (58008 bytes)"
-    },
-    "naver:bonds": {
-      "ok": false,
-      "error": "ValueError: yQuote.naver?marketindexCd=IRR_GOVT03Y -> 금리 라벨 없음(4228 bytes) | https://finance.naver.com/marketindex/ -> 금리 라벨 없음(56154 bytes)"
-    },
-    "naver:futures": {
+    "naver:rates": {
       "ok": true
     },
     "krx:allstocks": {
@@ -853,67 +840,82 @@
       "source_url": "https://finance.naver.com/sise/investorDealTrendDay.naver?bizdate=20260808&sosok="
     }
   ],
-  "investors_kosdaq": [
-    {
-      "date": "26.08.07",
-      "retail": 2675,
-      "foreign": -8651,
-      "institution": 5854,
+  "market_internals": {
+    "kospi": {
+      "source_url": "https://finance.naver.com/sise/sise_index.naver?code=KOSPI",
       "unit": "억원",
-      "source_url": "https://finance.naver.com/sise/investorDealTrendDay.naver?bizdate=20260808&sosok=01"
+      "breadth": {
+        "limit_up": 3,
+        "advancing": 554,
+        "unchanged": 36,
+        "declining": 322,
+        "limit_down": 0
+      },
+      "investor_flows": {
+        "retail": 2675,
+        "foreign": -8651,
+        "institution": 5854
+      },
+      "program_trading": {
+        "arb": 877,
+        "non_arb": -7391,
+        "total": -6513
+      },
+      "intraday": {
+        "high": 6415.6,
+        "low": 6158.73
+      },
+      "fifty_two_week": {
+        "high": 9385.59,
+        "low": 3079.27
+      }
     },
-    {
-      "date": "26.08.06",
-      "retail": 33367,
-      "foreign": -32893,
-      "institution": -1214,
+    "kosdaq": {
+      "source_url": "https://finance.naver.com/sise/sise_index.naver?code=KOSDAQ",
       "unit": "억원",
-      "source_url": "https://finance.naver.com/sise/investorDealTrendDay.naver?bizdate=20260808&sosok=01"
-    },
-    {
-      "date": "26.08.05",
-      "retail": -11844,
-      "foreign": 14464,
-      "institution": -2838,
-      "unit": "억원",
-      "source_url": "https://finance.naver.com/sise/investorDealTrendDay.naver?bizdate=20260808&sosok=01"
-    },
-    {
-      "date": "26.08.04",
-      "retail": 8187,
-      "foreign": -3716,
-      "institution": -5385,
-      "unit": "억원",
-      "source_url": "https://finance.naver.com/sise/investorDealTrendDay.naver?bizdate=20260808&sosok=01"
-    },
-    {
-      "date": "26.08.03",
-      "retail": 46523,
-      "foreign": -28220,
-      "institution": -19516,
-      "unit": "억원",
-      "source_url": "https://finance.naver.com/sise/investorDealTrendDay.naver?bizdate=20260808&sosok=01"
-    },
-    {
-      "date": "26.07.31",
-      "retail": -82840,
-      "foreign": 72410,
-      "institution": 11503,
-      "unit": "억원",
-      "source_url": "https://finance.naver.com/sise/investorDealTrendDay.naver?bizdate=20260808&sosok=01"
+      "breadth": {
+        "limit_up": 6,
+        "advancing": 808,
+        "unchanged": 84,
+        "declining": 829,
+        "limit_down": 0
+      },
+      "investor_flows": {
+        "retail": 3402,
+        "foreign": -2522,
+        "institution": -1044
+      },
+      "program_trading": {
+        "arb": -208,
+        "non_arb": -2446,
+        "total": -2654
+      },
+      "intraday": {
+        "high": 814.8,
+        "low": 776.6
+      },
+      "fifty_two_week": {
+        "high": 1229.42,
+        "low": 630.99
+      }
     }
-  ],
-  "futures_probe": {
-    "source_url": "https://finance.naver.com/sise/sise_index.naver?code=KPI200",
-    "keywords_found": [
-      "외국인",
-      "선물",
-      "프로그램"
-    ],
-    "note": "원본을 data/market/raw 에 저장했습니다. 파서 미구현."
+  },
+  "rates_kr": {
+    "cd91": 2.93,
+    "call": 2.76,
+    "ktb3y": 3.74,
+    "corp3y": 4.44,
+    "cofix_balance": 2.94,
+    "cofix_new": 3.05,
+    "source_url": "https://finance.naver.com/marketindex/",
+    "unit": "%",
+    "ktb10y_errors": [
+      "il.naver?marketindexCd=IRR_GOVT10Y -> 값 없음(21553 bytes)",
+      "nds/south-korea-10-year-bond-yield -> HTTP Error 403: Forbidden"
+    ]
   },
   "summary": {
-    "sources_tried": 34,
-    "sources_ok": 29
+    "sources_tried": 31,
+    "sources_ok": 30
   }
 }
