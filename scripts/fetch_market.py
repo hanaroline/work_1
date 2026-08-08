@@ -334,8 +334,7 @@ def naver_rates(dump_dir=None):
 
 LIMIT_URLS = {
     "upper": ["https://finance.naver.com/sise/sise_upper.naver"],
-    "lower": ["https://finance.naver.com/sise/sise_low.naver",
-              "https://finance.naver.com/sise/sise_lower.naver"],
+    "lower": ["https://finance.naver.com/sise/sise_lower.naver"],
 }
 
 
@@ -356,6 +355,11 @@ def naver_limit_names(kind, dump_dir=None):
                 names.append({"code": code, "name": name})
         if names:
             return {"names": names[:40], "count": len(names), "source_url": url}
+        # 해당 종목이 하나도 없는 날은 링크가 없는 것이 정상이다.
+        # 페이지가 온전히 내려왔으면 0건으로 처리하고, 껍데기만 왔으면 실패로 본다.
+        if len(s) > 20000:
+            return {"names": [], "count": 0, "source_url": url,
+                    "note": "해당 종목 없음"}
         errors.append("%s -> 종목 링크 없음(%d bytes)" % (url[-24:], len(s)))
         if dump_dir:
             os.makedirs(dump_dir, exist_ok=True)
