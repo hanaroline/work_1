@@ -100,6 +100,133 @@ YAHOO_CN_STOCKS = {
     "귀주모태": "600519.SS", "CATL": "300750.SZ",
 }
 
+# 종목 한 줄 설명 — 표에 이름만 있으면 고객 응대에서 "이 회사가 뭐 하는 곳이냐"
+# 를 매번 다시 찾게 된다. 시세와 함께 내보내 브리핑이 그대로 쓰게 한다.
+# 시황이 아니라 사업 내용이다. 실적·주가 전망은 여기 넣지 않는다 —
+# 그런 것은 날마다 바뀌고, 이 표는 바뀌지 않는 것만 담는다.
+STOCK_NOTES = {
+    # --- 국내 ---
+    "삼성전자": ("메모리·파운드리·스마트폰. 코스피 시총 1위",
+              "Memory, foundry and handsets; largest KOSPI constituent"),
+    "SK하이닉스": ("D램·낸드. HBM 시장 선두권, 엔비디아 주요 공급사",
+                "DRAM and NAND; a leader in HBM and a key Nvidia supplier"),
+    "LG에너지솔루션": ("이차전지 셀. 완성차에 배터리 공급",
+                  "Battery cells supplied to global automakers"),
+    "삼성바이오로직스": ("바이오의약품 위탁생산(CDMO) 세계 최대급",
+                   "One of the world's largest biologics CDMOs"),
+    "현대차": ("완성차. 미국·인도 판매 비중이 큼",
+            "Automaker with heavy exposure to the US and India"),
+    "KB금융": ("은행 중심 금융지주. 금리에 실적이 직결",
+             "Bank-led financial group; earnings track interest rates"),
+    "한화에어로스페이스": ("항공엔진·방산. 유럽 수출 확대",
+                    "Aero engines and defence; expanding European exports"),
+    "삼성전기": ("MLCC·반도체 기판. 삼성전자 공급망",
+              "MLCCs and semiconductor substrates; Samsung supply chain"),
+    "NAVER": ("검색·커머스·핀테크. 국내 최대 인터넷 기업",
+              "Search, commerce and fintech; Korea's largest internet firm"),
+    "셀트리온": ("바이오시밀러. 미국·유럽 처방 확대",
+              "Biosimilars, with prescriptions growing in the US and Europe"),
+    # --- 미국 ---
+    "엔비디아": ("AI 가속기(GPU) 사실상 표준. HBM 최대 수요처",
+              "The de facto standard in AI accelerators; largest HBM buyer"),
+    "애플": ("아이폰 중심. 서비스 매출 비중 확대",
+           "iPhone-centred, with a growing services mix"),
+    "마이크로소프트": ("애저 클라우드·오피스. AI 인프라 대규모 투자",
+                 "Azure cloud and Office; a major AI infrastructure spender"),
+    "브로드컴": ("맞춤형 AI 칩(ASIC)·네트워크 반도체",
+              "Custom AI silicon (ASICs) and networking chips"),
+    "AMD": ("CPU·AI 가속기. 엔비디아의 대항마",
+            "CPUs and AI accelerators; Nvidia's main challenger"),
+    "마이크론": ("미국 유일의 대형 D램 업체. HBM에서 국내 업체와 경쟁",
+              "The only large US DRAM maker; competes with Korea in HBM"),
+    "TSMC": ("세계 1위 파운드리. 엔비디아·애플 칩을 위탁생산",
+             "The largest foundry; makes Nvidia and Apple silicon"),
+    "알파벳": ("구글 검색·유튜브·클라우드. 자체 AI 칩(TPU) 보유",
+            "Google search, YouTube and cloud; builds its own TPUs"),
+    "아마존": ("전자상거래 + AWS 클라우드",
+            "E-commerce plus AWS cloud"),
+    "메타": ("페이스북·인스타그램. AI 인프라 투자 확대",
+           "Facebook and Instagram; scaling AI infrastructure"),
+    "테슬라": ("전기차·에너지저장. 자율주행 기대가 밸류에이션에 반영",
+            "EVs and energy storage; valuation carries autonomy expectations"),
+    "ASML": ("EUV 노광장비 독점. 첨단 반도체 생산의 병목",
+             "Monopoly in EUV lithography; the bottleneck in leading-edge chips"),
+    # --- 유럽 ---
+    "SAP": ("기업용 소프트웨어(ERP). 유럽 최대 IT 기업",
+            "Enterprise software (ERP); Europe's largest tech company"),
+    "인피니언": ("차량용·전력 반도체",
+             "Automotive and power semiconductors"),
+    "지멘스": ("산업 자동화·전력 설비",
+            "Industrial automation and power equipment"),
+    "LVMH": ("루이비통·디올 등 명품. 중국 소비에 민감",
+             "Louis Vuitton and Dior; sensitive to Chinese consumption"),
+    "로레알": ("화장품 세계 1위",
+            "The world's largest cosmetics group"),
+    "네슬레": ("세계 최대 식품기업",
+            "The world's largest food company"),
+    "노보노디스크": ("비만·당뇨 치료제(위고비·오젬픽)",
+                "Obesity and diabetes drugs (Wegovy, Ozempic)"),
+    "쉘": ("석유·가스 메이저. 유가에 연동",
+          "Oil and gas major; moves with crude"),
+    "아스트라제네카": ("항암제 중심 제약",
+                 "Pharma, weighted to oncology"),
+    "HSBC": ("아시아 비중이 큰 영국계 은행",
+             "UK-listed bank with heavy Asian exposure"),
+    "노바티스": ("스위스 제약. 항암·심혈관",
+             "Swiss pharma; oncology and cardiovascular"),
+    # --- 일본 ---
+    "도요타": ("세계 판매 1위 완성차. 하이브리드 강세",
+            "The world's biggest carmaker by volume; strong in hybrids"),
+    "소니": ("이미지센서·게임·엔터. 스마트폰 카메라 센서 1위",
+           "Image sensors, games and entertainment; leads phone camera sensors"),
+    "도쿄일렉트론": ("반도체 장비. 국내 장비주의 직접 비교군",
+                "Semiconductor equipment; the comparable for Korean toolmakers"),
+    "어드반테스트": ("반도체 검사장비. HBM 수요에 민감",
+                "Chip test equipment; sensitive to HBM demand"),
+    "소프트뱅크그룹": ("투자지주. 암(Arm) 최대 주주",
+                  "Investment holding company; Arm's largest shareholder"),
+    "키엔스": ("공장 자동화 센서. 높은 이익률로 유명",
+            "Factory-automation sensors, known for very high margins"),
+    "미쓰비시UFJ": ("일본 최대 금융그룹. 금리 인상 수혜",
+                 "Japan's largest banking group; benefits from higher rates"),
+    "패스트리테일링": ("유니클로 모회사",
+                 "Owner of Uniqlo"),
+    "히타치": ("전력·철도·IT 인프라",
+            "Power, rail and IT infrastructure"),
+    "신에쓰화학": ("반도체 웨이퍼 세계 1위",
+               "The world's largest supplier of silicon wafers"),
+    # --- 중국 ---
+    "텐센트": ("위챗·게임. 중국 최대 인터넷 기업",
+            "WeChat and games; China's largest internet company"),
+    "알리바바": ("전자상거래·클라우드",
+             "E-commerce and cloud"),
+    "BYD": ("전기차 판매 세계 최대급. 배터리를 자체 생산",
+            "Among the world's largest EV sellers; makes its own batteries"),
+    "샤오미": ("스마트폰·가전에서 전기차로 확장",
+            "Phones and appliances, expanding into EVs"),
+    "메이투안": ("배달·생활 서비스 플랫폼",
+             "Food delivery and local-services platform"),
+    "SMIC": ("중국 최대 파운드리. 미국 수출규제 대상",
+             "China's largest foundry; subject to US export controls"),
+    "중국건설은행": ("4대 국유은행의 하나. 부동산 대출 비중이 큼",
+                "One of the big four state banks; large property loan book"),
+    "중국해양석유": ("해양 원유·가스 개발",
+                "Offshore oil and gas exploration and production"),
+    "귀주모태": ("백주(마오타이) 1위. 중국 소비심리의 대표 지표",
+             "The top baijiu maker; a bellwether for Chinese consumption"),
+    "CATL": ("세계 1위 배터리 제조사. 국내 배터리사의 최대 경쟁자",
+             "The world's largest battery maker; Korea's chief rival"),
+}
+
+
+def attach_note(name, quote):
+    """시세에 회사 한 줄 설명을 붙인다. 없으면 조용히 넘어간다."""
+    note = STOCK_NOTES.get(name)
+    if note and quote:
+        quote["note_ko"], quote["note_en"] = note
+    return quote
+
+
 # 시가총액 상위 — 야후는 코스피 종목에 .KS, 코스닥에 .KQ 를 쓴다
 YAHOO_STOCKS = {
     "삼성전자": "005930.KS", "SK하이닉스": "000660.KS",
@@ -906,7 +1033,7 @@ def main():
     for name, sym in YAHOO_STOCKS.items():
         v, st = run(name, yahoo_quote, sym)
         if v:
-            out["stocks"][name] = v
+            out["stocks"][name] = attach_note(name, v)
         out["sources"]["yahoo:" + sym] = st
 
     # 미국 업종 ETF · 미국 개별 종목 — 모닝 브리핑에서 국내 개장 전 흐름을 본다
@@ -919,22 +1046,22 @@ def main():
         v, st = run(name, yahoo_quote, sym)
         out["sources"]["yahoo:us:" + sym] = st
         if v:
-            out.setdefault("us_stocks", {})[name] = v
+            out.setdefault("us_stocks", {})[name] = attach_note(name, v)
     for name, sym in YAHOO_EU_STOCKS.items():
         v, st = run(name, yahoo_quote, sym)
         out["sources"]["yahoo:eu:" + sym] = st
         if v:
-            out.setdefault("eu_stocks", {})[name] = v
+            out.setdefault("eu_stocks", {})[name] = attach_note(name, v)
     for name, sym in YAHOO_JP_STOCKS.items():
         v, st = run(name, yahoo_quote, sym)
         out["sources"]["yahoo:jp:" + sym] = st
         if v:
-            out.setdefault("jp_stocks", {})[name] = v
+            out.setdefault("jp_stocks", {})[name] = attach_note(name, v)
     for name, sym in YAHOO_CN_STOCKS.items():
         v, st = run(name, yahoo_quote, sym)
         out["sources"]["yahoo:cn:" + sym] = st
         if v:
-            out.setdefault("cn_stocks", {})[name] = v
+            out.setdefault("cn_stocks", {})[name] = attach_note(name, v)
 
     # 미 국채 — 야후에 2년물 심볼이 없어 재무부 원본 곡선을 받는다
     v, st = run("treasury", treasury_yields, now)
