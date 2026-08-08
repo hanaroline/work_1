@@ -3,15 +3,15 @@
 """남은 공백을 채울 경로를 찾는 탐색 스크립트. 결과는 data/market/probe.txt.
 
 지금까지:
-  1차 — KRX 는 공개 리더를 거쳐도 막힌다. 네이버 목차에 증시자금동향·공매도가 있다.
-  2차 — 선물 화면에는 시세뿐. freeSis 는 SPA 라 조회 파라미터가 안 드러난다.
-  3차 — 증시자금동향에서 고객예탁금·신용잔고를 얻었다(표 확인 완료).
-        마감시황 기사 본문 추출이 76자로 실패 — news_read 는 껍데기였다.
-  4차(지금) — 기사 본문을 n.news.naver.com 으로 직접 받아 선물 외국인 계약 수를 찾는다.
-        공매도 화면 구조도 다시 본다.
+  1~2차 — KRX 는 공개 리더를 거쳐도 막힌다. 네이버 선물 화면에는 시세뿐이다.
+  3차   — 증시자금동향에서 고객예탁금·신용잔고를 얻었다.
+  4차   — 기사 본문은 n.news.naver.com 으로 받으면 9천자씩 잘 들어온다.
+          다만 제목으로 거르니 마감시황 기사가 안 걸려 선물 문장을 못 찾았다.
+  5차(지금) — 제목으로 거르지 말고 그날 기사 본문을 전부 훑어 선물 수급 문장을 찾는다.
+          네이버 뉴스 검색도 함께 쓴다.
 """
 import re
-import urllib.error
+import urllib.parse
 import urllib.request
 
 UA = ("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
@@ -33,100 +33,92 @@ def text(html):
     return re.sub(r"\s+", " ", re.sub(r"&nbsp;?", " ", t)).strip()
 
 
-# 선물시장 수급 문장. '외국인은 선물시장에서 3,000계약 순매도' 같은 형태를 노린다.
-FUT = re.compile(r"[^.。\n]{0,100}선물[^.。\n]{0,140}?(?:계약|억원)[^.。\n]{0,50}")
-CREDIT = re.compile(r"[^.。\n]{0,80}(?:반대매매|미수금|신용융자|신용거래융자)[^.。\n]{0,120}")
+# 선물 수급 문장: '외국인은 선물시장에서 3,000계약 순매도' 형태를 노린다.
+FUT = re.compile(r"[^.。\n]{0,110}선물[^.。\n]{0,150}?(?:계약|억원)[^.。\n]{0,60}")
+NUM_CONTRACT = re.compile(r"([-+]?[\d,]{3,})\s*계약")
 
 
-def articles_from(url, label, enc="cp949"):
-    """네이버 금융 뉴스 목록에서 (제목, 기사 URL) 을 뽑는다."""
+def collect(url, label, enc="cp949"):
     try:
         lst = get(url, encoding=enc)
     except Exception as e:
-        print("  [%s] 목록 실패 %s" % (label, e))
+        print("  [%s] 목록 실패 %s" % (label, str(e)[:60]))
         return []
     out = []
-    for oid, aid, title in re.findall(
+    for a, b, title in re.findall(
             r'article_id=(\d+)[^"]*?office_id=(\d+)[^"]*"[^>]*>\s*([^<]{4,90})', lst):
-        out.append((title.strip(), "https://n.news.naver.com/mnews/article/%s/%s" % (aid, oid)))
-    for oid, aid, title in re.findall(
+        out.append((title.strip(), "https://n.news.naver.com/mnews/article/%s/%s" % (b, a)))
+    for a, b, title in re.findall(
             r'office_id=(\d+)[^"]*?article_id=(\d+)[^"]*"[^>]*>\s*([^<]{4,90})', lst):
-        out.append((title.strip(), "https://n.news.naver.com/mnews/article/%s/%s" % (oid, aid)))
-    seen, uniq = set(), []
-    for t, u in out:
-        if u not in seen:
-            seen.add(u)
-            uniq.append((t, u))
-    print("  [%s] 기사 %d건" % (label, len(uniq)))
-    return uniq
+        out.append((title.strip(), "https://n.news.naver.com/mnews/article/%s/%s" % (a, b)))
+    for oid, aid in re.findall(r'n\.news\.naver\.com/mnews/article/(\d+)/(\d+)', lst):
+        out.append(("(검색)", "https://n.news.naver.com/mnews/article/%s/%s" % (oid, aid)))
+    print("  [%s] 기사 %d건" % (label, len(out)))
+    return out
 
 
-print("=" * 78)
-print("A. 마감시황 기사 본문에서 선물 외국인 계약 수 찾기")
-print("=" * 78)
 cands = []
-cands += articles_from(
-    "https://finance.naver.com/news/mainnews.naver?date=" + DAY_DOT, "주요뉴스")
-cands += articles_from(
-    "https://finance.naver.com/news/news_list.naver?mode=LSS3D&section_id=101"
-    "&section_id2=258&date=" + DAY, "시황·전망")
+cands += collect("https://finance.naver.com/news/mainnews.naver?date=" + DAY_DOT, "주요뉴스")
+for page in (2, 3):
+    cands += collect("https://finance.naver.com/news/mainnews.naver?date=%s&page=%d"
+                     % (DAY_DOT, page), "주요뉴스 %d쪽" % page)
+q = urllib.parse.quote("코스피 마감 외국인 선물 순매도")
+cands += collect("https://search.naver.com/search.naver?where=news&query=%s"
+                 "&sort=0&ds=2026.08.07&de=2026.08.07"
+                 "&nso=so:r,p:from20260807to20260807" % q, "뉴스검색", enc="utf-8")
 
-seen, checked, fut_hit = set(), 0, 0
+seen, bodies = set(), []
+print()
+print("=" * 78)
+print("A. 그날 기사 본문 전수 조사 — 선물 수급 문장")
+print("=" * 78)
 for title, url in cands:
-    if url in seen:
+    if url in seen or len(seen) >= 30:
         continue
     seen.add(url)
-    if not re.search(r"마감|증시|코스피|코스닥|시황|외국인|수급", title):
-        continue
-    if checked >= 12:
-        break
-    checked += 1
     try:
         body = text(get(url, referer="https://finance.naver.com/"))
-    except Exception as e:
-        print("    [%-32s] 본문 실패 %s" % (title[:32], str(e)[:40]))
+    except Exception:
         continue
-    hits = [m.group(0).strip() for m in FUT.finditer(body)][:3]
-    print("    [%-32s] %5d자  선물문장 %d" % (title[:32], len(body), len(hits)))
-    for h in hits:
-        print("        · %s" % h[:200])
-    fut_hit += bool(hits)
-print("  본문 확인 %d건 / 선물 문장 있는 기사 %d건" % (checked, fut_hit))
+    bodies.append((title, url, body))
+    hits = [m.group(0).strip() for m in FUT.finditer(body)]
+    hits = [h for h in hits if NUM_CONTRACT.search(h) or "선물시장" in h]
+    if hits:
+        print("  [%s]" % title[:50])
+        print("    %s" % url)
+        for h in hits[:4]:
+            print("      · %s" % h[:230])
+print("  본문 %d건 확인" % len(bodies))
 
 print()
 print("=" * 78)
-print("B. 반대매매·미수금이 적힌 기사")
+print("B. '계약' 이 들어간 문장 전체 (선물 단어가 없어도)")
 print("=" * 78)
-cr = 0
-for title, url in cands:
-    if not re.search(r"신용|빚투|반대매매|미수|예탁금", title):
-        continue
-    if cr >= 5:
-        break
-    cr += 1
-    try:
-        body = text(get(url, referer="https://finance.naver.com/"))
-    except Exception as e:
-        print("    [%-32s] 실패 %s" % (title[:32], str(e)[:40]))
-        continue
-    print("    [%-32s] %5d자" % (title[:32], len(body)))
-    for m in list(CREDIT.finditer(body))[:3]:
-        print("        · %s" % m.group(0).strip()[:200])
-if not cr:
-    print("  제목에 신용/반대매매가 걸린 기사 없음")
+n = 0
+for title, url, body in bodies:
+    for m in NUM_CONTRACT.finditer(body):
+        s = body[max(0, m.start() - 120):m.end() + 60]
+        if re.search(r"선물|옵션|외국인|기관|미결제", s):
+            print("  [%s] · %s" % (title[:34], s.strip()[:220]))
+            n += 1
+            break
+print("  %d건" % n)
 
 print()
 print("=" * 78)
-print("C. 공매도 화면 구조 다시 보기")
+print("C. 증시자금동향·신용 관련 수치가 적힌 문장")
 print("=" * 78)
-try:
-    sh = get("https://finance.naver.com/sise/short_trade.naver", encoding="cp949")
-    print("  <table> %d개, <tr> %d개" % (sh.count("<table"), sh.count("<tr")))
-    body = text(sh)
-    i = body.find("공매도")
-    print("  본문 일부: %s" % body[max(0, i - 40):i + 700])
-except Exception as e:
-    print("  실패:", e)
+CR = re.compile(r"[^.。\n]{0,90}(?:반대매매|미수금|신용거래융자|신용융자|예탁금)[^.。\n]{0,140}")
+n = 0
+for title, url, body in bodies:
+    hits = [m.group(0).strip() for m in CR.finditer(body) if re.search(r"\d", m.group(0))]
+    if hits:
+        print("  [%s]" % title[:50])
+        for h in hits[:3]:
+            print("      · %s" % h[:230])
+        n += 1
+    if n >= 6:
+        break
 
 print()
 print("탐색 종료")
