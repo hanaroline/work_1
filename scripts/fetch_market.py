@@ -369,6 +369,109 @@ def naver_limit_names(kind, dump_dir=None):
     raise ValueError(" | ".join(errors))
 
 
+def yahoo_intraday_at(symbol, target_date, hhmm="15:30"):
+    """KST 특정 시각의 5분봉 종가. 유가·금의 '국내 마감 시점' 값을 만든다."""
+    url = ("https://query1.finance.yahoo.com/v8/finance/chart/"
+           + urllib.parse.quote(symbol) + "?range=5d&interval=5m")
+    j = json.loads(_get(url))
+    res = j["chart"]["result"][0]
+    q = res["indicators"]["quote"][0]
+    ts = res["timestamp"]
+    hh, mm = (int(x) for x in hhmm.split(":"))
+    best, best_gap = None, None
+    for i, t in enumerate(ts):
+        if q["close"][i] is None:
+            continue
+        dt = datetime.fromtimestamp(t, KST)
+        if dt.strftime("%Y-%m-%d") != target_date:
+            continue
+        gap = abs((dt.hour * 60 + dt.minute) - (hh * 60 + mm))
+        if best_gap is None or gap < best_gap:
+            best, best_gap = (dt, q["close"][i]), gap
+    if best is None or best_gap > 30:
+        raise ValueError("%s: %s %s 부근 5분봉 없음" % (symbol, target_date, hhmm))
+    return {"symbol": symbol, "at_kst": best[0].strftime("%Y-%m-%d %H:%M"),
+            "close": _num(best[1]), "minutes_off": best_gap}
+
+
+def naver_usdkrw():
+    """네이버 시장지표의 미국 USD 매매기준율 — 원/달러 두 번째 출처."""
+    s = _get("https://finance.naver.com/marketindex/",
+             referer="https://finance.naver.com/", encoding="cp949")
+    t = re.sub(r"\s+", " ", _text(s))
+    m = re.search(r"미국\s*USD\s*([\d,]+\.[\d]+)", t)
+    if not m:
+        raise ValueError("미국 USD 라벨 없음 (%d bytes)" % len(s))
+    return {"rate": float(m.group(1).replace(",", "")),
+            "source_url": "https://finance.naver.com/marketindex/",
+            "note": "매매기준율"}
+
+
+KTB10Y_CANDIDATES = [
+    # (설명, URL, 인코딩, 정규식 후보들)
+    ("네이버 채권 목록", "https://finance.naver.com/marketindex/bondList.naver?marketindexCd=bond_all",
+     "cp949", [r"국고채\s*\(?10년\)?\s*([\d]+\.[\d]+)", r"국고채권\(10년\)\s*([\d]+\.[\d]+)"]),
+    ("e-나라지표 시장금리", "https://www.index.go.kr/unity/potal/main/EachDtlPageDetail.do?idx_cd=1073",
+     "utf-8", [r"국고채\s*\(?10년\)?[^\d]{0,40}([\d]+\.[\d]+)"]),
+    ("ECOS 샘플키 일별 시장금리",
+     "https://ecos.bok.or.kr/api/StatisticSearch/sample/json/kr/1/100/817Y002/D",
+     "utf-8", [r'"ITEM_NAME1"\s*:\s*"국고채\(10년\)"[^}]*?"DATA_VALUE"\s*:\s*"([\d.]+)"']),
+    ("FRED 한국 장기금리(월별)",
+     "https://fred.stlouisfed.org/graph/fredgraph.csv?id=IRLTLT01KRM156N",
+     "utf-8", [r"\n[\d-]{10},([\d.]+)\s*$"]),
+    ("investing.com", "https://www.investing.com/rates-bonds/south-korea-10-year-bond-yield",
+     "utf-8", [r'"last"\s*:\s*"?([\d.]+)', r"South Korea 10-Year[^\d]{0,60}([\d]+\.[\d]+)"]),
+]
+
+
+def ktb10y(dump_dir=None):
+    """국고채 10년 — 후보를 차례로 시도하고 처음 성공한 것을 채택한다."""
+    errors = []
+    for n, (label, url, enc, patterns) in enumerate(KTB10Y_CANDIDATES):
+        try:
+            raw = _get(url, referer="https://finance.naver.com/", encoding=enc)
+        except Exception as e:                                # noqa: BLE001
+            errors.append("%s -> %s" % (label, e))
+            continue
+        flat = re.sub(r"\s+", " ", _text(raw)) if "<" in raw[:400] else raw
+        for pat in patterns:
+            m = re.search(pat, flat) or re.search(pat, raw)
+            if m:
+                v = float(m.group(1))
+                if 0.5 < v < 20:
+                    return {"value": v, "source": label, "source_url": url}
+        errors.append("%s -> 값 없음(%d bytes)" % (label, len(raw)))
+        if dump_dir:
+            os.makedirs(dump_dir, exist_ok=True)
+            with open(os.path.join(dump_dir, "ktb10y_%d.txt" % n), "w",
+                      encoding="utf-8") as f:
+                f.write(raw[:200000])
+    raise ValueError(" | ".join(errors))
+
+
+def krx_futures_investors(now, dump_dir=None):
+    """선물 투자자별 거래실적 — KRX OTP 발급 후 CSV 내려받는 정식 경로."""
+    d = now.strftime("%Y%m%d")
+    gen = "http://data.krx.co.kr/comm/fileDn/GenerateOTP/generate.cmd"
+    dl = "http://data.krx.co.kr/comm/fileDn/download_csv/download.cmd"
+    ref = "http://data.krx.co.kr/contents/MDC/MDI/mainChart/index.cmd"
+    params = {"locale": "ko_KR", "trdDd": d, "prodId": "KRDRVFUK2I",
+              "mktTpCd": "T", "share": "1", "money": "1", "csvxls_isNo": "false",
+              "name": "fileDown", "url": "dbms/MDC/STAT/standard/MDCSTAT12502"}
+    otp = _get(gen + "?" + urllib.parse.urlencode(params), referer=ref).strip()
+    if not otp or "<" in otp[:20]:
+        if dump_dir:
+            os.makedirs(dump_dir, exist_ok=True)
+            with open(os.path.join(dump_dir, "krx_otp.txt"), "w", encoding="utf-8") as f:
+                f.write(otp[:20000])
+        raise ValueError("OTP 발급 실패 (%d bytes)" % len(otp))
+    csv = _get(dl, data={"code": otp}, referer=ref, encoding="cp949")
+    rows = [r for r in csv.splitlines() if r.strip()]
+    if len(rows) < 2:
+        raise ValueError("CSV 행 없음 (%d bytes)" % len(csv))
+    return {"header": rows[0], "rows": rows[1:20], "trdDd": d}
+
+
 def krx_json(bld, **params):
     """KRX 정보데이터시스템 JSON 엔드포인트."""
     p = {"bld": bld, "locale": "ko_KR", "csvxls_isNo": "false"}
@@ -441,6 +544,34 @@ def main():
     out["sources"]["naver:rates"] = st
     if v:
         out["rates_kr"] = v
+
+    # 유가·금의 국내 마감(15:30 KST) 시점 값 — 5분봉에서 뽑는다
+    kd = (out.get("indices", {}).get("kospi") or {}).get("date")
+    if kd:
+        for name, sym in (("wti", "CL=F"), ("brent", "BZ=F"), ("gold", "GC=F")):
+            v, st = run(name, yahoo_intraday_at, sym, kd, "15:30")
+            out["sources"]["yahoo:1530:" + name] = st
+            if v:
+                out.setdefault("at_kr_close", {})[name] = v
+
+    # 원/달러 두 번째 출처
+    v, st = run("usdkrw2", naver_usdkrw)
+    out["sources"]["naver:usdkrw"] = st
+    if v:
+        out["usdkrw_naver"] = v
+
+    # 국고채 10년 — 후보 다섯 곳
+    v, st = run("ktb10y", ktb10y, "data/market/raw")
+    out["sources"]["ktb10y"] = st
+    if v:
+        out.setdefault("rates_kr", {})["ktb10y"] = v["value"]
+        out.setdefault("rates_kr", {})["ktb10y_source"] = v["source"]
+
+    # 선물 투자자별 — KRX OTP 정식 경로
+    v, st = run("futures", krx_futures_investors, now, "data/market/raw")
+    out["sources"]["krx:futures_investors"] = st
+    if v:
+        out["futures_investors"] = v
 
     # 상한가·하한가 종목명 (개수는 market_internals.breadth 에 있다)
     for kind in ("upper", "lower"):
