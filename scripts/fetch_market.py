@@ -10,8 +10,10 @@ JSON의 "sources" 에 남기므로, 브리핑은 무엇이 확보됐고 무엇�
 그대로 알 수 있다.
 """
 
+import html as html_mod
 import json
 import os
+import re
 import sys
 import urllib.error
 import urllib.parse
@@ -42,7 +44,8 @@ YAHOO_STOCKS = {
 }
 
 
-def _get(url, data=None, headers=None, referer=None):
+def _get(url, data=None, headers=None, referer=None, encoding="utf-8"):
+    """finance.naver.com 계열은 EUC-KR 이므로 encoding='cp949' 로 부른다."""
     h = {"User-Agent": UA, "Accept": "*/*",
          "Accept-Language": "ko-KR,ko;q=0.9,en;q=0.8"}
     if referer:
@@ -52,7 +55,11 @@ def _get(url, data=None, headers=None, referer=None):
     body = urllib.parse.urlencode(data).encode() if data else None
     req = urllib.request.Request(url, data=body, headers=h)
     with urllib.request.urlopen(req, timeout=TIMEOUT) as r:
-        return r.read().decode("utf-8", "replace")
+        return r.read().decode(encoding, "replace")
+
+
+def _text(fragment):
+    return html_mod.unescape(re.sub(r"<[^>]*>", " ", fragment)).replace("\xa0", " ").strip()
 
 
 def _num(x):
@@ -94,26 +101,62 @@ def yahoo_quote(symbol):
     }
 
 
-def naver_index(code):
-    """네이버 금융 지수 API — 지수 기본 시세."""
-    return json.loads(_get(
-        "https://api.stock.naver.com/index/%s/basic" % code,
-        referer="https://m.stock.naver.com/"))
-
-
 def naver_sectors():
-    """업종별 등락률 — 네이버 업종 시세 페이지(HTML)."""
-    return _get("https://finance.naver.com/sise/sise_group.naver?type=upjong",
-                referer="https://finance.naver.com/")
+    """업종별 등락률 — 네이버 업종 시세 페이지(EUC-KR HTML)를 파싱한다."""
+    s = _get("https://finance.naver.com/sise/sise_group.naver?type=upjong",
+             referer="https://finance.naver.com/", encoding="cp949")
+    out = []
+    for row in re.findall(r"<tr>(.*?)</tr>", s, re.S):
+        m = re.search(r"sise_group_detail[^>]*>(.*?)</a>", row, re.S)
+        if not m:
+            continue
+        pct = re.search(r"([+\-]?\d+\.\d+)%", row)
+        if not pct:
+            continue
+        out.append({"name": _text(m.group(1)), "change_pct": float(pct.group(1))})
+    if not out:
+        raise ValueError("업종 행을 찾지 못함")
+    out.sort(key=lambda d: d["change_pct"], reverse=True)
+    return out
+
+
+def naver_investors():
+    """투자자별 매매동향(일자별) — 개인/외국인/기관 순매수, 단위 백만원."""
+    s = _get("https://finance.naver.com/sise/investorDealTrendDay.naver",
+             referer="https://finance.naver.com/sise/", encoding="cp949")
+    out = []
+    for row in re.findall(r"<tr[^>]*>(.*?)</tr>", s, re.S):
+        cells = [_text(c) for c in re.findall(r"<td[^>]*>(.*?)</td>", row, re.S)]
+        cells = [c for c in cells if c]
+        if len(cells) < 4 or not re.match(r"^\d{2}\.\d{2}\.\d{2}$", cells[0]):
+            continue
+        def n(x):
+            x = x.replace(",", "").replace("+", "")
+            try:
+                return int(x)
+            except ValueError:
+                return None
+        out.append({"date": cells[0], "retail": n(cells[1]),
+                    "foreign": n(cells[2]), "institution": n(cells[3])})
+    if not out:
+        raise ValueError("투자자별 행을 찾지 못함")
+    return out[:5]
 
 
 def krx_json(bld, **params):
     """KRX 정보데이터시스템 JSON 엔드포인트."""
-    p = {"bld": bld, "locale": "ko_KR"}
+    p = {"bld": bld, "locale": "ko_KR", "csvxls_isNo": "false"}
     p.update(params)
-    return json.loads(_get(
+    j = json.loads(_get(
         "https://data.krx.co.kr/comm/bldAttendant/getJsonData.cmd",
-        data=p, referer="https://data.krx.co.kr/contents/MDC/MDI/mainChart/index.cmd"))
+        data=p, referer="https://data.krx.co.kr/contents/MDC/MDI/mainChart/index.cmd",
+        headers={"X-Requested-With": "XMLHttpRequest",
+                 "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8",
+                 "Origin": "https://data.krx.co.kr"}))
+    rows = j.get("OutBlock_1") or j.get("output") or j.get("block1")
+    if not rows:
+        raise ValueError("빈 응답: keys=%s" % list(j)[:6])
+    return rows
 
 
 def run(label, fn, *a, **k):
@@ -149,35 +192,40 @@ def main():
             out["stocks"][name] = v
         out["sources"]["yahoo:" + sym] = st
 
-    # 네이버 — 지수 기본 + 업종별 (야후에 없는 것들)
-    for code in ("KOSPI", "KOSDAQ"):
-        v, st = run(code, naver_index, code)
-        if v:
-            out.setdefault("naver", {})[code] = v
-        out["sources"]["naver:index:" + code] = st
-
-    html, st = run("sectors", naver_sectors)
+    # 네이버 — 야후에 없는 업종별 등락률과 투자자별 수급
+    v, st = run("sectors", naver_sectors)
     out["sources"]["naver:sectors"] = st
-    if html:
-        out["naver_sectors_html_bytes"] = len(html)
-        os.makedirs("data/market/raw", exist_ok=True)
-        with open("data/market/raw/naver_sectors_%s.html" % now.strftime("%Y-%m-%d"),
-                  "w", encoding="utf-8") as f:
-            f.write(html)
+    if v:
+        out["sectors"] = {"all": v, "top5": v[:5], "bottom5": v[-5:]}
 
-    # KRX — 투자자별 거래실적(MDCSTAT02201), 전종목 시세(MDCSTAT01501)
+    v, st = run("investors", naver_investors)
+    out["sources"]["naver:investors"] = st
+    if v:
+        out["investors_kospi_millions_krw"] = v
+
+    # KRX — 파라미터를 바꿔 가며 시도하고, 처음 성공한 조합을 채택한다.
+    # 실패해도 어떤 조합이 왜 실패했는지 sources 에 남는다.
     d = now.strftime("%Y%m%d")
-    for label, bld, extra in (
-        ("investors", "dbms/MDC/STAT/standard/MDCSTAT02201",
-         {"mktId": "STK", "trdVolVal": "2", "askBid": "3",
-          "strtDd": d, "endDd": d, "share": "1", "money": "1"}),
-        ("allstocks", "dbms/MDC/STAT/standard/MDCSTAT01501",
-         {"mktId": "ALL", "trdDd": d, "share": "1", "money": "1"}),
+    prev = (now - timedelta(days=1)).strftime("%Y%m%d")
+    for label, attempts in (
+        ("allstocks", [
+            ("MDCSTAT01501", {"mktId": "ALL", "trdDd": d, "share": "1", "money": "1"}),
+            ("MDCSTAT01501", {"mktId": "ALL", "trdDd": prev, "share": "1", "money": "1"}),
+        ]),
+        ("investors", [
+            ("MDCSTAT02203", {"mktId": "STK", "invstTpCd": "9999", "strtDd": prev,
+                              "endDd": d, "share": "1", "money": "1"}),
+            ("MDCSTAT02201", {"mktId": "STK", "trdVolVal": "2", "askBid": "3",
+                              "strtDd": prev, "endDd": d, "share": "1", "money": "1"}),
+        ]),
     ):
-        v, st = run(label, krx_json, bld, **extra)
-        if v:
-            out.setdefault("krx", {})[label] = v
-        out["sources"]["krx:" + label] = st
+        for bld, extra in attempts:
+            v, st = run(label, krx_json, "dbms/MDC/STAT/standard/" + bld, **extra)
+            key = "krx:%s:%s:%s" % (label, bld, extra.get("trdDd") or extra.get("endDd"))
+            out["sources"][key] = st
+            if v:
+                out.setdefault("krx", {})[label] = v[:60]
+                break
 
     ok = sum(1 for s in out["sources"].values() if s["ok"])
     out["summary"] = {"sources_tried": len(out["sources"]), "sources_ok": ok}
