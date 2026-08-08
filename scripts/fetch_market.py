@@ -332,6 +332,39 @@ def naver_rates(dump_dir=None):
     return out
 
 
+LIMIT_URLS = {
+    "upper": ["https://finance.naver.com/sise/sise_upper.naver"],
+    "lower": ["https://finance.naver.com/sise/sise_low.naver",
+              "https://finance.naver.com/sise/sise_lower.naver"],
+}
+
+
+def naver_limit_names(kind, dump_dir=None):
+    """상한가·하한가 종목명. kind 는 'upper' 또는 'lower'."""
+    errors = []
+    for n, url in enumerate(LIMIT_URLS[kind]):
+        try:
+            s = _get(url, referer="https://finance.naver.com/sise/", encoding="cp949")
+        except Exception as e:                                # noqa: BLE001
+            errors.append("%s -> %s" % (url[-24:], e))
+            continue
+        names, seen = [], set()
+        for m in re.finditer(r'/item/main\.naver\?code=(\d{6})"[^>]*>([^<]+)</a>', s):
+            code, name = m.group(1), _text(m.group(2))
+            if name and code not in seen:
+                seen.add(code)
+                names.append({"code": code, "name": name})
+        if names:
+            return {"names": names[:40], "count": len(names), "source_url": url}
+        errors.append("%s -> 종목 링크 없음(%d bytes)" % (url[-24:], len(s)))
+        if dump_dir:
+            os.makedirs(dump_dir, exist_ok=True)
+            with open(os.path.join(dump_dir, "limit_%s_try%d.html" % (kind, n)), "w",
+                      encoding="utf-8") as f:
+                f.write(s[:300000])
+    raise ValueError(" | ".join(errors))
+
+
 def krx_json(bld, **params):
     """KRX 정보데이터시스템 JSON 엔드포인트."""
     p = {"bld": bld, "locale": "ko_KR", "csvxls_isNo": "false"}
@@ -404,6 +437,13 @@ def main():
     out["sources"]["naver:rates"] = st
     if v:
         out["rates_kr"] = v
+
+    # 상한가·하한가 종목명 (개수는 market_internals.breadth 에 있다)
+    for kind in ("upper", "lower"):
+        v, st = run("limit", naver_limit_names, kind, "data/market/raw")
+        out["sources"]["naver:limit:" + kind] = st
+        if v:
+            out.setdefault("limit_names", {})[kind] = v
 
     # KRX — 러너 IP를 막는 것으로 보인다(400 -> 헤더 보강 후 403).
     # 한 번만 시도해 상태를 기록하고, 실패해도 나머지 원천으로 진행한다.
