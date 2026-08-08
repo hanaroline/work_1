@@ -32,7 +32,7 @@ python3 -m json.tool data/market/latest.json | head -120
 | `indices` | kospi, kosdaq, usdkrw, sp500, nasdaq, dow, sox, vix, dxy, usdjpy, wti, brent, gold, ust10y, ust2y — 각각 `date` `open` `high` `low` `close` `volume` `prev_close` `change` `change_pct` |
 | `stocks` | 시총 상위 10종목의 종가·등락률·거래량 |
 | `sectors` | 네이버 업종 79개 등락률 (`all` / `top5` / `bottom5`) |
-| `investors_kospi_millions_krw` | 투자자별 순매수(백만원). 파싱 실패 시 없을 수 있음 |
+| `investors_kospi` | 코스피 투자자별 순매수 최근 6거래일 — `retail`/`foreign`/`institution`, **단위 억원** |
 | `sources` | 원천별 성공/실패와 실패 사유 |
 
 **이 수치는 거래소 원천이므로 뉴스 보도보다 우선합니다.** 배지는
@@ -43,7 +43,7 @@ python3 -m json.tool data/market/latest.json | head -120
 `generated_at_kst` 가 오늘이 아니면 파일이 갱신되지 않은 것입니다. 그 사실을
 검증 노트에 명시하고 뉴스 검색으로 진행합니다.
 
-`sources` 에 실패로 기록된 항목(KRX 등)은 재시도하지 마십시오.
+`sources` 에 실패로 기록된 항목은 재시도하지 마십시오. **KRX(`krx:allstocks`)는 러너 IP를 막아 상시 실패**합니다 — 정상이며, 필요한 값은 야후·네이버가 모두 채웁니다.
 
 ---
 
