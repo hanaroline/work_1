@@ -38,6 +38,11 @@ python3 -m json.tool data/market/latest.json | head -120
 | `rates_ecos` | 한국은행 ECOS 원본 — 국고채 1·3·5·10년, 회사채 BBB&minus;, CD. 항목명·기준일 포함 |
 | `at_kr_close` | 국내 마감(15:30 KST) 시점의 WTI·브렌트·금. 5분봉에서 뽑은 값 |
 | `limit_names` | 상한가·하한가 종목명과 종목코드 |
+| `rates_us` | 미 국채 수익률 곡선 — 미 재무부 원본. `curve`(1m~30y), `prev_curve`, `change_bp`, `spread_10y_2y_bp`, `inverted`. **야후에 2년물 심볼은 없습니다. `^IRX` 를 2년물로 쓰지 마십시오 — 3개월물입니다** |
+| `us_sectors` / `us_stocks` | S&P500 업종 ETF 11개 / 미국 주요 종목 12개. 모닝 브리핑에서 국내 개장 전 흐름을 볼 때 씁니다 |
+| `index_daily` | 코스피·코스닥 일별시세 20영업일 — 종가·등락률·거래량(천주)·**거래대금(백만원)**. 거래대금은 야후에 없습니다. 지난 거래일을 되짚을 때 씁니다 |
+| `fed_implied` | 연방기금 금리선물(ZQ=F)에서 되짚은 내재 정책금리 |
+| `vkospi` | **대개 비어 있습니다.** 무료 원천이 없습니다(네이버 미취급·야후 미수록·인베스팅 403·stooq 차단). VIX 를 대용으로 쓰고, 없다는 사실을 적으십시오 |
 | `futures` | 코스피200 선물 — `investors`(retail/foreign/institution, **단위 억원**), `bizdate`, 시가·고가·저가, `volume_contracts`, `implied_multiplier`. 데스크톱 네이버에는 없는 자료입니다. 단위 표기가 원천에 없어 현물 대조로 정한 값이므로 배지는 `vf solo`(1 SOURCE) 로 답니다 |
 | `money_flow` | 증시자금동향 — `latest` 와 `series`(10영업일). `deposit`(고객예탁금) `credit_balance`(신용융자 잔고) `fund_equity`/`fund_mixed`/`fund_bond`, **단위 억원**. 신용잔고는 결제일 기준이라 종가일보다 1~2영업일 늦습니다 — 반드시 `date` 를 같이 쓰십시오 |
 | `news` | 그날 증시 기사 본문. `articles`(제목·URL·본문 6천자), `futures_mentions`, `credit_mentions`. **브리핑 세션은 언론사에 직접 못 붙으므로, 검색 요약보다 이 원문을 우선 인용합니다** |
