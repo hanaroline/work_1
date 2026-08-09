@@ -626,18 +626,34 @@ def ecos_rates(now, dump_dir=None):
                       encoding="utf-8") as f:
                 f.write(str(e))
 
-    # 목록에서 못 찾으면 널리 쓰이는 코드를 후보로 쓴다
+    # 목록에서 못 찾으면 널리 쓰이는 코드를 후보로 쓴다.
+    #
+    # 010320000 은 AA- 가 아니라 BBB- 다. 예전에 이 코드를 "회사채(3년,AA-)" 로
+    # 적어 뒀는데, ECOS 가 돌려주는 항목명은 "회사채(3년, BBB-)" 이고 값도
+    # 10.246% 로 네이버의 AA-(4.44%)와 6%p 가까이 벌어진다. 라벨만 믿고 쓰면
+    # 브리핑에 "회사채 AA- 10.25%" 가 나간다. AA- 는 코드를 확신할 수 없으므로
+    # 후보값 없이 항목목록에서만 찾고, 못 찾으면 조용히 빼는 대신 오류로 남긴다
+    # (네이버 rates_kr.corp3y 가 AA- 를 채우고 있다).
     wanted = {"ktb1y": ("국고채(1년)", "010190000"),
               "ktb3y": ("국고채(3년)", "010200000"),
               "ktb5y": ("국고채(5년)", "010200001"),
               "ktb10y": ("국고채(10년)", "010210000"),
-              "corp3y": ("회사채(3년,AA-)", "010320000"),
+              "corp3y": ("회사채(3년,BBB-)", "010320000"),
+              "corp3y_aa": ("회사채(3년,AA-)", None),
               "cd91": ("CD(91일)", "010502000")}
+
+    def _norm(t):
+        """항목명 비교용 — ECOS 는 "회사채(3년, BBB-)" 처럼 공백을 섞어 준다."""
+        return (t or "").replace(" ", "")
 
     out, tried, errs = {}, {}, []
     for key, (name, fallback) in wanted.items():
-        code = next((c for n, c in items.items() if name.split("(")[0] in n
-                     and name.split("(")[1].rstrip(")") in n), fallback)
+        head, grade = name.split("(")[0], _norm(name.split("(")[1].rstrip(")"))
+        code = next((c for n, c in items.items()
+                     if head in n and grade in _norm(n)), fallback)
+        if code is None:
+            errs.append("%s -> 항목목록에서 %s 를 찾지 못했다" % (key, name))
+            continue
         url = ECOS % ("StatisticSearch",
                       "817Y002/D/%s/%s/%s" % (start, end, code))
         tried[key] = code
@@ -652,6 +668,12 @@ def ecos_rates(now, dump_dir=None):
                         json.dumps(j, ensure_ascii=False)[:160]))
             continue
         last = rows[-1]
+        # 코드가 기대한 항목을 돌려줬는지 확인한다. 등급이 다른 계열을 받아
+        # 놓고 라벨만 우리 것으로 붙이면 틀린 값이 조용히 브리핑까지 간다.
+        if grade and grade not in _norm(last.get("ITEM_NAME1")):
+            errs.append("%s(%s) -> 항목명 불일치: 기대 %s, 응답 %s"
+                        % (key, code, grade, last.get("ITEM_NAME1")))
+            continue
         try:
             # 전 거래일 값도 같이 남긴다. 모닝 브리핑은 지난 거래일을 다루므로
             # 최신치만 있으면 "묵은 값"으로 적을 수밖에 없다.
