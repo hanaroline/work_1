@@ -263,6 +263,9 @@ table.data tr.sum > td,table.data tr.sum > th{background:var(--surface-subtle);
 table.data tr.sum > *:first-child{box-shadow:inset 3px 0 0 var(--primary)}
 table.data.compact{min-width:420px;font-size:15px}
 table.data th.note{min-width:190px}
+table.data td.sparkcell{width:132px;color:var(--primary);line-height:0}
+.spark{display:block;overflow:visible}
+@media (max-width:680px){table.data .sparkcell{display:none}}
 table.data td.note{font-size:14px;line-height:1.45;color:var(--muted);white-space:normal;min-width:190px;max-width:340px}
 @media (max-width:680px){table.data .note{display:none}}
 table.data.compact th,table.data.compact td{padding:8px 11px}
@@ -865,6 +868,31 @@ html[lang="en"] [data-lang-en]{display:revert}
   </table>
   </div>
   <p class="cap"><span data-lang-ko><span class="vf ok">MARKET DATA</span> <strong>신용스프레드는 두 층으로 봐야 합니다.</strong> 국고채 3년 3.746% 위로 우량 회사채(AA&minus;)가 <strong>+69bp</strong>, 투기등급 문턱(BBB&minus;)이 <strong>+650bp</strong> 입니다. 우량물은 붙어 있는데 저등급이 이만큼 벌어져 있으면 <strong>시장이 신용을 가려 받고 있다</strong>는 뜻입니다. <strong>COFIX 는 고객 대출금리에 직결됩니다</strong> &mdash; 신규취급액 3.05% 는 잔액기준 2.94% 보다 11bp 높아, 지금 새로 빌리는 쪽이 기존 대출보다 비쌉니다. 확정된 투자 판단이 아닙니다.</span><span data-lang-en><span class="vf ok">MARKET DATA</span> <strong>Read the credit spread in two layers.</strong> Over the 3-year KTB at 3.746%, investment-grade corporates (AA&minus;) sit <strong>+69bp</strong> and the sub-investment-grade threshold (BBB&minus;) <strong>+650bp</strong>. Quality paper tight while low-grade gaps out this far means <strong>the market is discriminating on credit</strong>. <strong>COFIX feeds straight into retail loan pricing</strong>: the new-origination rate of 3.05% is 11bp above the balance-based 2.94%, so new borrowing costs more than existing loans. Not a settled investment conclusion.</span></p>
+
+  <details class="exp">
+    <summary><span data-lang-ko>국고채 10영업일 추이 &mdash; 단기는 그대로, 중장기만 내렸습니다</span><span data-lang-en>Korean government bonds over ten sessions &mdash; the front end held, the belly and long end fell</span><span class="exp-mark" aria-hidden="true"></span></summary>
+    <div class="detail">
+      <p class="sub"><span data-lang-ko>7/27 ~ 8/7, 한국은행 ECOS <span class="vf ok">MARKET DATA</span>. 세로 축은 각 줄 안에서만 맞췄습니다 &mdash; 만기끼리 높이를 견주라는 그림이 아니라 <strong>방향을 보라는 그림</strong>입니다.</span><span data-lang-en>7/27 to 8/7, Bank of Korea ECOS <span class="vf ok">MARKET DATA</span>. Each sparkline is scaled within its own row &mdash; it shows <strong>direction, not relative level</strong>.</span></p>
+      <div class="table-wrap">
+      <table class="data compact">
+        <thead><tr>
+          <th><span data-lang-ko>만기</span><span data-lang-en>Tenor</span></th>
+          <th class="n"><span data-lang-ko>7/27</span><span data-lang-en>7/27</span></th>
+          <th class="n"><span data-lang-ko>8/7</span><span data-lang-en>8/7</span></th>
+          <th class="n"><span data-lang-ko>10일 변동</span><span data-lang-en>10-session move</span></th>
+          <th class="sparkcell"><span data-lang-ko>추이</span><span data-lang-en>Trend</span></th>
+        </tr></thead>
+        <tbody>
+      <tr><th><span data-lang-ko>국고채 1년</span><span data-lang-en>KTB 1Y</span></th><td class="n">3.375%</td><td class="n">3.367%</td><td class="n down">-1bp</td><td class="sparkcell"><svg class="spark" viewBox="0 0 120 24" width="120" height="24" role="img" aria-label="KTB 1Y 7/27~8/7"><polyline fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" points="1.0,4.1 14.1,7.1 27.2,10.2 40.3,1.0 53.4,10.2 66.6,14.4 79.7,15.1 92.8,23.0 105.9,8.3 119.0,8.9"/></svg></td></tr>
+      <tr><th><span data-lang-ko>국고채 3년</span><span data-lang-en>KTB 3Y</span></th><td class="n">3.865%</td><td class="n">3.746%</td><td class="n down">-12bp</td><td class="sparkcell"><svg class="spark" viewBox="0 0 120 24" width="120" height="24" role="img" aria-label="KTB 3Y 7/27~8/7"><polyline fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" points="1.0,1.0 14.1,5.0 27.2,8.3 40.3,4.8 53.4,13.0 66.6,14.8 79.7,15.0 92.8,23.0 105.9,14.8 119.0,14.4"/></svg></td></tr>
+      <tr><th><span data-lang-ko>국고채 5년</span><span data-lang-en>KTB 5Y</span></th><td class="n">4.117%</td><td class="n">3.964%</td><td class="n down">-15bp</td><td class="sparkcell"><svg class="spark" viewBox="0 0 120 24" width="120" height="24" role="img" aria-label="KTB 5Y 7/27~8/7"><polyline fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" points="1.0,1.0 14.1,6.4 27.2,9.8 40.3,5.3 53.4,12.2 66.6,12.3 79.7,13.4 92.8,23.0 105.9,18.5 119.0,17.7"/></svg></td></tr>
+      <tr class="hl"><th><span data-lang-ko>국고채 10년</span><span data-lang-en>KTB 10Y</span></th><td class="n">4.333%</td><td class="n">4.208%</td><td class="n down">-12bp</td><td class="sparkcell"><svg class="spark" viewBox="0 0 120 24" width="120" height="24" role="img" aria-label="KTB 10Y 7/27~8/7"><polyline fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" points="1.0,1.0 14.1,6.3 27.2,10.1 40.3,3.6 53.4,9.7 66.6,9.3 79.7,9.8 92.8,23.0 105.9,17.6 119.0,16.0"/></svg></td></tr>
+        </tbody>
+      </table>
+      </div>
+      <p class="cap"><span data-lang-ko><strong>1년물은 -1bp 로 사실상 그대로인데 3&middot;5&middot;10년이 -12~-15bp 내렸습니다.</strong> 기준금리 기대(짧은 쪽)는 움직이지 않았고 <strong>중장기만 눌린 모양</strong>이라, 1년&ndash;10년 스프레드가 96bp 에서 <strong>84bp 로 12bp 평탄해졌습니다</strong>. 같은 기간 미국은 반대로 가팔라졌습니다(2년&ndash;10년 +44bp &rarr; +46bp). <strong>두 나라 곡선이 서로 다른 방향으로 움직이고 있습니다</strong> &mdash; 미국은 인하 기대가 앞당겨지는 쪽, 한국은 장기 성장&middot;물가 기대가 낮아지는 쪽으로 읽힙니다. 확정된 투자 판단이 아닙니다.</span><span data-lang-en><strong>The 1-year moved -1bp &mdash; effectively flat &mdash; while the 3-, 5- and 10-year fell -12 to -15bp.</strong> Policy-rate expectations at the front end did not move; <strong>only the belly and long end were pushed down</strong>, flattening the 1s10s spread from 96bp to <strong>84bp, a 12bp flattening</strong>. Over the same period the US curve did the opposite and steepened (2s10s +44bp to +46bp). <strong>The two curves are moving in opposite directions</strong> &mdash; the US pricing earlier easing, Korea marking down long-run growth and inflation expectations. Not a settled investment conclusion.</span></p>
+    </div>
+  </details>
 </section>
 
 <!-- 05 -->
