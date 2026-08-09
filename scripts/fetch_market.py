@@ -49,6 +49,9 @@ YAHOO_INDEX = {
     "ibex": "^IBEX", "smi": "^SSMI", "aex": "^AEX",
     "sensex": "^BSESN", "asx200": "^AXJO",
     "eth": "ETH-USD", "platinum": "PL=F", "usdtwd": "TWD=X", "gbpusd": "GBPUSD=X",
+    # 채권 변동성 — 주식의 VIX 에 해당한다. 금리가 내린 날 변동성까지 죽었으면
+    # 안도이고, 금리는 내렸는데 변동성이 살아 있으면 관망이다. 둘은 다른 얘기다.
+    "move": "^MOVE",
     # 지수선물 — 브리핑을 쓰는 시각에 유일하게 살아 있는 미국 가격
     "sp500_fut": "ES=F", "nasdaq_fut": "NQ=F", "dow_fut": "YM=F", "russell_fut": "RTY=F",
     # 연방기금 금리선물 — 내재 정책금리(100 - 가격)를 계산해 인하 기대를 가늠한다
@@ -871,6 +874,79 @@ def treasury_yields(now):
     return res
 
 
+def treasury_real_yields(now):
+    """미 국채 실질수익률 곡선(TIPS) — 명목 곡선과 같은 재무부 CSV, type 만 다르다.
+
+    명목금리만 보면 금리가 내린 이유가 성장 전망인지 물가 전망인지 갈리지 않는다.
+    명목 − 실질 이 곧 기대인플레이션(브레이크이븐)이라, 이 한 번의 요청으로
+    실질금리와 기대인플레이션을 같이 얻는다. FRED 의 T10YIE 를 쓰면 될 일이지만
+    FRED 는 러너에서 계속 타임아웃이라 이미 잘 붙는 호스트로 대신한다.
+
+    만기는 5·7·10·20·30년만 있다 — TIPS 가 그 만기로만 발행되기 때문이다.
+    """
+    year = now.strftime("%Y")
+    csv_text = _get(
+        "https://home.treasury.gov/resource-center/data-chart-center/interest-rates/"
+        "daily-treasury-rates.csv/%s/all?type=daily_treasury_real_yield_curve"
+        "&field_tdr_date_value=%s&page&_format=csv" % (year, year), timeout=50)
+    rows = list(csv.reader(io.StringIO(csv_text)))
+    if len(rows) < 2:
+        raise ValueError("재무부 실질금리 CSV 행 없음 (%d bytes)" % len(csv_text))
+    head = [h.strip() for h in rows[0]]
+    want = {"ust5y": "5 YR", "ust7y": "7 YR", "ust10y": "10 YR",
+            "ust20y": "20 YR", "ust30y": "30 YR"}
+
+    def parse(row):
+        d = dict(zip(head, [c.strip() for c in row]))
+        out = {}
+        for key, col in want.items():
+            try:
+                out[key] = float(d[col])
+            except (KeyError, ValueError):
+                pass
+        raw = d.get(head[0], "")
+        try:                                        # 08/07/2026 -> 2026-08-07
+            mm, dd, yy = raw.split("/")
+            out["date"] = "%s-%s-%s" % (yy, mm, dd)
+        except ValueError:
+            out["date"] = raw
+        return out
+
+    latest = parse(rows[1])
+    prev = parse(rows[2]) if len(rows) > 2 else {}
+    if "ust10y" not in latest:
+        raise ValueError("실질 10년물 없음: %s" % head[:8])
+    return {"unit": "%", "date": latest["date"], "prev_date": prev.get("date"),
+            "curve": {k: v for k, v in latest.items() if k != "date"},
+            "prev_curve": {k: v for k, v in prev.items() if k != "date"},
+            "source_url": "https://home.treasury.gov (Daily Treasury Real Yield Curve)"}
+
+
+def nyfed_effr():
+    """실효 연방기금금리(EFFR) — 뉴욕연은 공개 API. 인증키가 필요 없다.
+
+    지금까지 정책금리 실측치가 없어서 선물 내재금리를 1개월물 국채와 견주는
+    우회를 썼는데, 그 비교는 틀린 답을 준다 — 단기 국채는 정책금리 위에서
+    거래되는 게 보통이라 "선물이 국채보다 낮다" 를 완화 기대로 읽으면 안 된다.
+    EFFR 이 있으면 선물 내재금리와 직접 견줄 수 있다.
+
+    하루 지연 공표라 발표일(effectiveDate)이 시세일보다 하루 이르다.
+    """
+    j = json.loads(_get("https://markets.newyorkfed.org/api/rates/unsecured/"
+                        "effr/last/5.json", timeout=40))
+    rows = [r for r in j.get("refRates", []) if r.get("type") == "EFFR"]
+    if not rows:
+        raise ValueError("EFFR 행 없음")
+    last = rows[0]
+    return {"effr_pct": float(last["percentRate"]),
+            "date": last.get("effectiveDate"),
+            "percentile_1": last.get("percentPercentile1"),
+            "percentile_99": last.get("percentPercentile99"),
+            "volume_bn_usd": last.get("volumeInBillions"),
+            "note": "실효 연방기금금리. 하루 지연 공표라 시세일보다 하루 이르다",
+            "source_url": "https://markets.newyorkfed.org/api/rates/unsecured/effr"}
+
+
 def naver_index_daily(code, pages=2):
     """지수 일별시세 — 날짜별 종가·거래량·거래대금.
 
@@ -1091,6 +1167,28 @@ def main():
     if v:
         out["rates_us"] = v
 
+    # 실질금리(TIPS)와 기대인플레이션 — 같은 재무부 CSV, type 만 다르다
+    v, st = run("treasury_real", treasury_real_yields, now)
+    out["sources"]["treasury:real_curve"] = st
+    if v:
+        out["rates_us_real"] = v
+        # 기대인플레이션 = 명목 − 실질. 두 곡선의 기준일이 같을 때만 낸다.
+        nom = out.get("rates_us", {})
+        if nom.get("date") == v.get("date"):
+            bei = {k: round(nom["curve"][k] - v["curve"][k], 3)
+                   for k in v["curve"] if k in nom.get("curve", {})}
+            out["breakeven"] = {
+                "unit": "%", "date": v["date"], "curve": bei,
+                "note": "기대인플레이션(브레이크이븐) = 명목 국채금리 − 물가연동채(TIPS) 실질금리",
+                "source_url": "https://home.treasury.gov (명목·실질 곡선 차)",
+            }
+
+    # 실효 연방기금금리 — 선물 내재금리를 견줄 실측 정책금리
+    v, st = run("nyfed_effr", nyfed_effr)
+    out["sources"]["nyfed:effr"] = st
+    if v:
+        out["policy_rate_us"] = v
+
     # 지수 일별시세 — 거래대금은 야후에 없고, 전 거래일을 되짚을 때 필요하다
     for code in ("KOSPI", "KOSDAQ"):
         v, st = run("daily", naver_index_daily, code)
@@ -1107,12 +1205,20 @@ def main():
     # 연방기금 금리선물에서 시장이 보는 정책금리를 되짚는다 (내재금리 = 100 - 가격)
     ff = out["indices"].get("fedfunds_fut")
     if ff and ff.get("close"):
+        implied = round(100 - ff["close"], 4)
         out["fed_implied"] = {
             "contract_price": ff["close"],
-            "implied_rate_pct": round(100 - ff["close"], 4),
-            "note": "해당 결제월의 평균 연방기금금리 기대치. 현 정책금리와 비교해 인하 기대를 읽는다",
+            "implied_rate_pct": implied,
+            "quote_date": ff.get("date"),
+            "note": "해당 결제월의 평균 연방기금금리 기대치. policy_rate_us.effr 와 견주십시오 "
+                    "— 단기 국채와 견주면 안 됩니다(국채는 정책금리 위에서 거래되는 게 보통)",
             "source": "CBOT 30일 연방기금 금리선물 (ZQ=F)",
         }
+        # 실측 정책금리 대비 몇 bp 인지까지 내준다. 부호가 곧 인상/인하 기대다.
+        eff = out.get("policy_rate_us", {}).get("effr_pct")
+        if eff is not None:
+            out["fed_implied"]["effr_pct"] = eff
+            out["fed_implied"]["vs_effr_bp"] = round((implied - eff) * 100)
 
     # 네이버 — 야후에 없는 업종별 등락률과 투자자별 수급
     v, st = run("sectors", naver_sectors)
