@@ -262,6 +262,26 @@ table.data tr.sum > td,table.data tr.sum > th{background:var(--surface-subtle);
   border-top:2px solid var(--hairline);font-weight:600}
 table.data tr.sum > *:first-child{box-shadow:inset 3px 0 0 var(--primary)}
 table.data.compact{min-width:420px;font-size:15px}
+/* 좁은 화면: 표를 화면 안에 넣는다. min-width 를 두면 등락률 열이 잘린다 */
+@media (max-width:680px){
+  table.data,table.data.compact{min-width:0;font-size:14px}
+  table.data th,table.data td,
+  table.data.compact th,table.data.compact td{padding:7px 8px}
+  table.data thead th,table.data tbody th{white-space:normal;word-break:keep-all;overflow-wrap:anywhere}
+  table.data td{overflow-wrap:anywhere}
+  /* 숫자는 공백에서만 접는다. 값 한가운데가 끊기면 읽을 수 없다 */
+  table.data td.n,table.data th.n{white-space:normal;overflow-wrap:normal;word-break:keep-all}
+  table.data thead th{font-size:13px}
+  /* 좁은 화면에서 뺄 수 있는 보조 열 */
+  table.data .opt{display:none}
+  /* 기본 .vf 정의가 뒤쪽에 있어 같은 우선순위로는 진다 */
+  table.data .vf{font-size:10px;padding:1px 5px;letter-spacing:.2px;white-space:normal;overflow-wrap:normal;word-break:keep-all}
+}
+@media (max-width:400px){
+  table.data,table.data.compact{font-size:13px}
+  table.data th,table.data td,
+  table.data.compact th,table.data.compact td{padding:6px 6px}
+}
 table.data th.note{min-width:190px}
 table.data td.sparkcell{width:132px;color:var(--primary);line-height:0}
 .spark{display:block;overflow:visible}
@@ -646,18 +666,18 @@ html[lang="en"] [data-lang-en]{display:revert}
   <table class="data">
     <thead><tr>
       <th><span data-lang-ko>지수</span><span data-lang-en>Index</span></th>
-      <th class="n">8/6 <span data-lang-ko>마감</span><span data-lang-en>close</span></th>
+      <th class="n opt">8/6 <span data-lang-ko>마감</span><span data-lang-en>close</span></th>
       <th class="n">8/7 <span data-lang-ko>마감</span><span data-lang-en>close</span></th>
       <th class="n"><span data-lang-ko>등락</span><span data-lang-en>Change</span></th>
-      <th class="n"><span data-lang-ko>주간</span><span data-lang-en>Week</span></th>
+      <th class="n opt"><span data-lang-ko>주간</span><span data-lang-en>Week</span></th>
       <th><span data-lang-ko>검증</span><span data-lang-en>Verify</span></th>
     </tr></thead>
     <tbody>
-      <tr><th>Dow Jones</th><td class="n">53,885.10</td><td class="n">54,036.93</td><td class="n up">+151.83 (+0.28%)</td><td class="n up">+2.96%</td><td><span class="vf ok">2 SOURCES</span></td></tr>
-      <tr class="hl"><th>S&amp;P 500</th><td class="n">7,709.96</td><td class="n">7,757.64</td><td class="n up">+47.68 (+0.62%)</td><td class="n up">+3.58%</td><td><span class="vf ok">2 SOURCES</span></td></tr>
-      <tr><th>NASDAQ</th><td class="n">26,348.35</td><td class="n">26,690.62</td><td class="n up">+342.26 (+1.30%)</td><td class="n up">+5.19%</td><td><span class="vf ok">2 SOURCES</span></td></tr>
-      <tr class="hl"><th><span data-lang-ko>필라델피아 반도체(SOX)</span><span data-lang-en>Philadelphia Semiconductor (SOX)</span></th><td class="n">12,048.69</td><td class="n">12,356.79</td><td class="n up">+308.10 (+2.56%)</td><td class="n na">&mdash;</td><td><span class="vf ok">MARKET DATA</span></td></tr>
-      <tr><th>VIX</th><td class="n">15.15</td><td class="n">14.90</td><td class="n down">-0.25 (-1.65%)</td><td class="n na">&mdash;</td><td><span class="vf ok">MARKET DATA</span></td></tr>
+      <tr><th>Dow Jones</th><td class="n opt">53,885.10</td><td class="n">54,036.93</td><td class="n up">+151.83 (+0.28%)</td><td class="n up opt">+2.96%</td><td><span class="vf ok">2 SOURCES</span></td></tr>
+      <tr class="hl"><th>S&amp;P 500</th><td class="n opt">7,709.96</td><td class="n">7,757.64</td><td class="n up">+47.68 (+0.62%)</td><td class="n up opt">+3.58%</td><td><span class="vf ok">2 SOURCES</span></td></tr>
+      <tr><th>NASDAQ</th><td class="n opt">26,348.35</td><td class="n">26,690.62</td><td class="n up">+342.26 (+1.30%)</td><td class="n up opt">+5.19%</td><td><span class="vf ok">2 SOURCES</span></td></tr>
+      <tr class="hl"><th><span data-lang-ko>필라델피아 반도체(SOX)</span><span data-lang-en>Philadelphia Semiconductor (SOX)</span></th><td class="n opt">12,048.69</td><td class="n">12,356.79</td><td class="n up">+308.10 (+2.56%)</td><td class="n na opt">&mdash;</td><td><span class="vf ok">MARKET DATA</span></td></tr>
+      <tr><th>VIX</th><td class="n opt">15.15</td><td class="n">14.90</td><td class="n down">-0.25 (-1.65%)</td><td class="n na opt">&mdash;</td><td><span class="vf ok">MARKET DATA</span></td></tr>
     </tbody>
   </table>
   </div>
@@ -787,22 +807,22 @@ html[lang="en"] [data-lang-en]{display:revert}
     <thead><tr>
       <th><span data-lang-ko>만기</span><span data-lang-en>Tenor</span></th>
       <th class="n"><span data-lang-ko>8/7 (금)</span><span data-lang-en>Fri 7 Aug</span></th>
-      <th class="n"><span data-lang-ko>8/6 (목)</span><span data-lang-en>Thu 6 Aug</span></th>
+      <th class="n opt"><span data-lang-ko>8/6 (목)</span><span data-lang-en>Thu 6 Aug</span></th>
       <th class="n"><span data-lang-ko>변동</span><span data-lang-en>Move</span></th>
       <th><span data-lang-ko>검증</span><span data-lang-en>Verify</span></th>
     </tr></thead>
     <tbody>
-      <tr><th>1M</th><td class="n">3.79%</td><td class="n">3.80%</td><td class="n down">-1bp</td><td><span class="vf ok">MARKET DATA</span></td></tr>
-      <tr><th>3M</th><td class="n">3.87%</td><td class="n">3.90%</td><td class="n down">-3bp</td><td><span class="vf ok">MARKET DATA</span><sup>*</sup></td></tr>
-      <tr><th>6M</th><td class="n">3.96%</td><td class="n">3.99%</td><td class="n down">-3bp</td><td><span class="vf ok">MARKET DATA</span></td></tr>
-      <tr><th>1Y</th><td class="n">4.01%</td><td class="n">4.06%</td><td class="n down">-5bp</td><td><span class="vf ok">MARKET DATA</span></td></tr>
-      <tr class="hl"><th>2Y</th><td class="n">4.19%</td><td class="n">4.25%</td><td class="n down">-6bp</td><td><span class="vf ok">MARKET DATA</span></td></tr>
-      <tr><th>3Y</th><td class="n">4.25%</td><td class="n">4.31%</td><td class="n down">-6bp</td><td><span class="vf ok">MARKET DATA</span></td></tr>
-      <tr><th>5Y</th><td class="n">4.35%</td><td class="n">4.40%</td><td class="n down">-5bp</td><td><span class="vf ok">2 SOURCES</span></td></tr>
-      <tr><th>7Y</th><td class="n">4.49%</td><td class="n">4.53%</td><td class="n down">-4bp</td><td><span class="vf ok">MARKET DATA</span></td></tr>
-      <tr class="hl"><th>10Y</th><td class="n">4.65%</td><td class="n">4.69%</td><td class="n down">-4bp</td><td><span class="vf ok">2 SOURCES</span></td></tr>
-      <tr><th>20Y</th><td class="n">5.20%</td><td class="n">5.22%</td><td class="n down">-2bp</td><td><span class="vf ok">MARKET DATA</span></td></tr>
-      <tr><th>30Y</th><td class="n">5.19%</td><td class="n">5.22%</td><td class="n down">-3bp</td><td><span class="vf ok">2 SOURCES</span></td></tr>
+      <tr><th>1M</th><td class="n">3.79%</td><td class="n opt">3.80%</td><td class="n down">-1bp</td><td><span class="vf ok">MARKET DATA</span></td></tr>
+      <tr><th>3M</th><td class="n">3.87%</td><td class="n opt">3.90%</td><td class="n down">-3bp</td><td><span class="vf ok">MARKET DATA</span><sup>*</sup></td></tr>
+      <tr><th>6M</th><td class="n">3.96%</td><td class="n opt">3.99%</td><td class="n down">-3bp</td><td><span class="vf ok">MARKET DATA</span></td></tr>
+      <tr><th>1Y</th><td class="n">4.01%</td><td class="n opt">4.06%</td><td class="n down">-5bp</td><td><span class="vf ok">MARKET DATA</span></td></tr>
+      <tr class="hl"><th>2Y</th><td class="n">4.19%</td><td class="n opt">4.25%</td><td class="n down">-6bp</td><td><span class="vf ok">MARKET DATA</span></td></tr>
+      <tr><th>3Y</th><td class="n">4.25%</td><td class="n opt">4.31%</td><td class="n down">-6bp</td><td><span class="vf ok">MARKET DATA</span></td></tr>
+      <tr><th>5Y</th><td class="n">4.35%</td><td class="n opt">4.40%</td><td class="n down">-5bp</td><td><span class="vf ok">2 SOURCES</span></td></tr>
+      <tr><th>7Y</th><td class="n">4.49%</td><td class="n opt">4.53%</td><td class="n down">-4bp</td><td><span class="vf ok">MARKET DATA</span></td></tr>
+      <tr class="hl"><th>10Y</th><td class="n">4.65%</td><td class="n opt">4.69%</td><td class="n down">-4bp</td><td><span class="vf ok">2 SOURCES</span></td></tr>
+      <tr><th>20Y</th><td class="n">5.20%</td><td class="n opt">5.22%</td><td class="n down">-2bp</td><td><span class="vf ok">MARKET DATA</span></td></tr>
+      <tr><th>30Y</th><td class="n">5.19%</td><td class="n opt">5.22%</td><td class="n down">-3bp</td><td><span class="vf ok">2 SOURCES</span></td></tr>
     </tbody>
   </table>
   </div>
@@ -1094,14 +1114,14 @@ html[lang="en"] [data-lang-en]{display:revert}
     <thead><tr>
       <th><span data-lang-ko>지수</span><span data-lang-en>Index</span></th>
       <th class="n"><span data-lang-ko>8/7 종가</span><span data-lang-en>Close 7 Aug</span></th>
-      <th class="n"><span data-lang-ko>52주 최저</span><span data-lang-en>52w low</span></th>
-      <th class="n"><span data-lang-ko>52주 최고</span><span data-lang-en>52w high</span></th>
+      <th class="n opt"><span data-lang-ko>52주 최저</span><span data-lang-en>52w low</span></th>
+      <th class="n opt"><span data-lang-ko>52주 최고</span><span data-lang-en>52w high</span></th>
       <th class="n"><span data-lang-ko>구간 내 위치</span><span data-lang-en>Position</span></th>
       <th class="n"><span data-lang-ko>최고 대비</span><span data-lang-en>From high</span></th>
     </tr></thead>
     <tbody>
-      <tr class="hl"><th><span data-lang-ko>코스피</span><span data-lang-en>KOSPI</span></th><td class="n">6,258.77</td><td class="n">3,079.27</td><td class="n">9,385.59</td><td class="n">50.4%</td><td class="n down">-33.3%</td></tr>
-      <tr><th><span data-lang-ko>코스닥</span><span data-lang-en>KOSDAQ</span></th><td class="n">798.81</td><td class="n">630.99</td><td class="n">1,229.42</td><td class="n">28.0%</td><td class="n down">-35.0%</td></tr>
+      <tr class="hl"><th><span data-lang-ko>코스피</span><span data-lang-en>KOSPI</span></th><td class="n">6,258.77</td><td class="n opt">3,079.27</td><td class="n opt">9,385.59</td><td class="n">50.4%</td><td class="n down">-33.3%</td></tr>
+      <tr><th><span data-lang-ko>코스닥</span><span data-lang-en>KOSDAQ</span></th><td class="n">798.81</td><td class="n opt">630.99</td><td class="n opt">1,229.42</td><td class="n">28.0%</td><td class="n down">-35.0%</td></tr>
     </tbody>
   </table>
   </div>
@@ -1114,13 +1134,13 @@ html[lang="en"] [data-lang-en]{display:revert}
       <th><span data-lang-ko>시장</span><span data-lang-en>Market</span></th>
       <th class="n"><span data-lang-ko>지수</span><span data-lang-en>Index</span></th>
       <th class="n"><span data-lang-ko>상승</span><span data-lang-en>Advancing</span></th>
-      <th class="n"><span data-lang-ko>보합</span><span data-lang-en>Unchanged</span></th>
+      <th class="n opt"><span data-lang-ko>보합</span><span data-lang-en>Unchanged</span></th>
       <th class="n"><span data-lang-ko>하락</span><span data-lang-en>Declining</span></th>
-      <th class="n"><span data-lang-ko>상한가</span><span data-lang-en>Limit up</span></th>
+      <th class="n opt"><span data-lang-ko>상한가</span><span data-lang-en>Limit up</span></th>
     </tr></thead>
     <tbody>
-      <tr class="hl"><th><span data-lang-ko>코스피</span><span data-lang-en>KOSPI</span></th><td class="n down">-0.60%</td><td class="n up">554</td><td class="n">36</td><td class="n down">322</td><td class="n up">3</td></tr>
-      <tr><th><span data-lang-ko>코스닥</span><span data-lang-en>KOSDAQ</span></th><td class="n down">-0.36%</td><td class="n up">808</td><td class="n">84</td><td class="n down">829</td><td class="n up">6</td></tr>
+      <tr class="hl"><th><span data-lang-ko>코스피</span><span data-lang-en>KOSPI</span></th><td class="n down">-0.60%</td><td class="n up">554</td><td class="n opt">36</td><td class="n down">322</td><td class="n up opt">3</td></tr>
+      <tr><th><span data-lang-ko>코스닥</span><span data-lang-en>KOSDAQ</span></th><td class="n down">-0.36%</td><td class="n up">808</td><td class="n opt">84</td><td class="n down">829</td><td class="n up opt">6</td></tr>
     </tbody>
   </table>
   </div>
