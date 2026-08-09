@@ -1,32 +1,39 @@
 ==============================================================================
-A. 미 국채 2년물 — 재무부 원본과 대안들
+A. 채권 변동성 (MOVE) — 야후에 심볼이 있는가
 ==============================================================================
-  [재무부 일별 수익률곡선 CSV              ] OK  12341 | Date,"1 Mo","1.5 Month","2 Mo","3 Mo","4 Mo","6 Mo","1 Yr","2 Yr","3 Yr","5 Yr","7 Yr","10 Yr","20 Yr","30 Yr" | 08/07/2026,3.79,3.79,3.83,3.87,3.89,3.96,4.01,4.19,4.25,4.35,4.49,4.65,5.20,5.19 | 08/06/2026,3.80,3.80,3.84,3.90,3.92,3.99,4.06,4.25,4.31,4.40,4.53,4.
+  [야후 ^MOVE                        ] OK   1122 | 
+     └ ^MOVE | 종가 72.0302 | 통화 USD | 이름 ICE BofAML MOVE Index
+  [야후 MOVE                         ] OK   1608 | 
+     └ MOVE | 종가 12.96 | 통화 USD | 이름 Corvex, Inc.
+  [야후 ^VXTLT                       ] OK   1116 | 
+     └ ^VXTLT | 종가 11.33 | 통화 USD | 이름 CBOE 20+ Year Treasury Bond ETF
+  [야후 TLT                          ] OK   1632 | 
+     └ TLT | 종가 82.76 | 통화 USD | 이름 iShares 20+ Year Treasury Bond 
+
+==============================================================================
+B. 기대인플레이션 — 재무부 실질수익률곡선(TIPS)
+==============================================================================
+  [재무부 실질수익률곡선 CSV                 ] OK   5478 | 
      └ 152행
-       머리글: Date,"1 Mo","1.5 Month","2 Mo","3 Mo","4 Mo","6 Mo","1 Yr","2 Yr","3 Yr","5 Yr","7 Yr","10 Yr","20 Yr","30 Yr"
-       08/07/2026,3.79,3.79,3.83,3.87,3.89,3.96,4.01,4.19,4.25,4.35,4.49,4.65,5.20,5.19
-       08/06/2026,3.80,3.80,3.84,3.90,3.92,3.99,4.06,4.25,4.31,4.40,4.53,4.69,5.22,5.22
-       08/05/2026,3.77,3.79,3.84,3.89,3.91,3.98,4.03,4.18,4.24,4.33,4.47,4.63,5.18,5.17
-  [야후 2년물 수익률선물                  ] OK   1571 | {"chart":{"result":[{"meta":{"currency":"USD","symbol":"2YY=F","exchangeName":"CBT","fullExchangeName":"CBOT","instrumentType":"ALTSYMBOL","firstTradeDate":1628827200,"regularMarketTime":1784119558,"hasPrePostMarketData"
-  [stooq 2년물                     ] OK    796 | <!DOCTYPE html><html><head><meta charset="utf-8"><meta name="robots" content="noindex,nofollow"></head><body><noscript>This site requires JavaScript to verify your browser. Please enable JavaScript an
-  [FRED 한 계열만                    ] TimeoutError: The read operation timed out
+       머리글: Date,"5 YR","7 YR","10 YR","20 YR","30 YR"
+       08/07/2026,2.13,2.25,2.40,2.75,2.96
+       08/06/2026,2.17,2.29,2.43,2.78,2.98
+  [FRED 기대인플레 T10YIE               ] TimeoutError: The read operation timed out
 
 ==============================================================================
-B. VKOSPI — 무료 배포처
+C. 미국 정책금리 — 뉴욕연은 EFFR
 ==============================================================================
-  [stooq ^vkospi 일별              ] OK    796 | <!DOCTYPE html><html><head><meta charset="utf-8"><meta name="robots" content="noindex,nofollow"></head><body><noscript>This site requires JavaScript to verify your browser. Please enable JavaScript and reload.</noscript>
-  [stooq ^vkospi 시세              ] HTTP 404
-  [stooq vkospi 검색               ] OK    796 | <!DOCTYPE html><html><head><meta charset="utf-8"><meta name="robots" content="noindex,nofollow"></head><body><noscript>This site requires JavaScript to verify your browser. Please enable JavaScript and reload.</noscript>
-  [stooq ^kospi 대조               ] HTTP 404
-  [r.jina.ai 경유 인베스팅             ] HTTP 403
-  [allorigins 경유 인베스팅            ] HTTP 520
+  [뉴욕연은 EFFR                       ] OK    867 | 
+     └ 2026-08-06 3.63% (type EFFR)
+     └ 2026-08-05 3.63% (type EFFR)
+     └ 2026-08-04 3.63% (type EFFR)
+  [FRED 연방기금 목표 상단 DFEDTARU        ] TimeoutError: The read operation timed out
 
 ==============================================================================
-C. 참고 — stooq 가 다른 지수도 주는지 (예비 원천으로 쓸 만한가)
+D. 한국 기준금리 — ECOS 722Y001
 ==============================================================================
-  [stooq ^spx                    ] HTTP 404
-  [stooq ^ndq                    ] HTTP 404
-  [stooq ^kospi                  ] HTTP 404
-  [stooq ^nkx                    ] HTTP 404
+  [ECOS 항목목록 722Y001               ] OK    150 | 
+  [ECOS 기준금리 0101000               ] OK    150 | 
+     └ 0행
 
-탐색 종료
+끝.
