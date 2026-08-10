@@ -276,8 +276,12 @@ def yahoo_quote(symbol):
     `regularMarketPrice` 를 종가로 쓴다. 날짜가 어긋나면(아직 열리지 않은
     날의 빈 봉) 종전대로 마지막 실봉으로 물러선다.
 
-    날짜는 거래소 현지 기준이다. 유럽은 취리히 17:30 마감이 KST 로 다음 날
-    00:30 이라, KST 로 비교하면 같은 날인데도 어긋난 것으로 보인다.
+    빈 봉인지 견주는 **날짜 비교만** 거래소 현지로 한다. 유럽은 취리히
+    17:30 마감이 KST 로 다음 날 00:30 이라, KST 로 비교하면 같은 날인데도
+    어긋난 것으로 보인다. 내보내는 `date` 는 종전대로 KST 다 — 지수는 두
+    기준이 어차피 같고, 환율은 다르기 때문이다. `KRW=X` 는 거래소가
+    Europe/London 인 24시간 시세라 마지막 봉이 **진행 중인 호가**인데,
+    현지 기준으로 적으면 그 호가가 전날 마감인 것처럼 보인다.
     """
     url = ("https://query1.finance.yahoo.com/v8/finance/chart/"
            + urllib.parse.quote(symbol) + "?range=5d&interval=1d")
@@ -288,10 +292,13 @@ def yahoo_quote(symbol):
     ts = res["timestamp"]
 
     off = meta.get("gmtoffset")
-    tz = timezone(timedelta(seconds=off)) if isinstance(off, int) else KST
+    ex_tz = timezone(timedelta(seconds=off)) if isinstance(off, int) else KST
 
-    def day(t):
-        return datetime.fromtimestamp(t, tz).strftime("%Y-%m-%d")
+    def day(t):                       # 내보내는 날짜 — KST
+        return datetime.fromtimestamp(t, KST).strftime("%Y-%m-%d")
+
+    def day_ex(t):                    # 빈 봉 대조용 날짜 — 거래소 현지
+        return datetime.fromtimestamp(t, ex_tz).strftime("%Y-%m-%d")
 
     have = [i for i, c in enumerate(q["close"]) if c is not None]      # 실봉
     tail = len(ts) - 1                                                  # 마지막 봉
@@ -299,7 +306,7 @@ def yahoo_quote(symbol):
 
     # 마지막 봉이 비었는데 meta 가 그 날 마감을 들고 있는가
     from_meta = (tail >= 0 and q["close"][tail] is None
-                 and rmt and rmp is not None and day(ts[tail]) == day(rmt))
+                 and rmt and rmp is not None and day_ex(ts[tail]) == day_ex(rmt))
 
     if from_meta:
         last = tail
