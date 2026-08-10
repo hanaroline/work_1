@@ -1,39 +1,62 @@
-==============================================================================
-A. 채권 변동성 (MOVE) — 야후에 심볼이 있는가
-==============================================================================
-  [야후 ^MOVE                        ] OK   1174 | 
-     └ ^MOVE | 종가 75.4556 | 통화 USD | 이름 ICE BofAML MOVE Index
-  [야후 MOVE                         ] OK   1606 | 
-     └ MOVE | 종가 11.74 | 통화 USD | 이름 Corvex, Inc.
-  [야후 ^VXTLT                       ] OK   1167 | 
-     └ ^VXTLT | 종가 12.26 | 통화 USD | 이름 CBOE 20+ Year Treasury Bond ETF
-  [야후 TLT                          ] OK   1631 | 
-     └ TLT | 종가 82.06 | 통화 USD | 이름 iShares 20+ Year Treasury Bond 
+지금 2026-08-11 07:29:29 KST
 
-==============================================================================
-B. 기대인플레이션 — 재무부 실질수익률곡선(TIPS)
-==============================================================================
-  [재무부 실질수익률곡선 CSV                 ] OK   5514 | 
-     └ 153행
-       머리글: Date,"5 YR","7 YR","10 YR","20 YR","30 YR"
-       08/10/2026,2.16,2.28,2.43,2.79,3.00
-       08/07/2026,2.13,2.25,2.40,2.75,2.96
-  [FRED 기대인플레 T10YIE               ] TimeoutError: The read operation timed out
+=== ^KS11  코스피
+  range=5d   실패 HTTPError: HTTP Error 429: Too Many Requests
+  range=1mo  실패 HTTPError: HTTP Error 429: Too Many Requests
+  range=5d   실패 HTTPError: HTTP Error 429: Too Many Requests
 
-==============================================================================
-C. 미국 정책금리 — 뉴욕연은 EFFR
-==============================================================================
-  [뉴욕연은 EFFR                       ] OK    867 | 
-     └ 2026-08-07 3.63% (type EFFR)
-     └ 2026-08-06 3.63% (type EFFR)
-     └ 2026-08-05 3.63% (type EFFR)
-  [FRED 연방기금 목표 상단 DFEDTARU        ] TimeoutError: The read operation timed out
+=== ^KQ11  코스닥
+  range=5d   실패 HTTPError: HTTP Error 429: Too Many Requests
+  range=1mo  실패 HTTPError: HTTP Error 429: Too Many Requests
+  range=5d   실패 HTTPError: HTTP Error 429: Too Many Requests
 
-==============================================================================
-D. 한국 기준금리 — ECOS 722Y001
-==============================================================================
-  [ECOS 항목목록 722Y001               ] OK    150 | 
-  [ECOS 기준금리 0101000               ] OK    150 | 
-     └ 0행
+=== ^N225  니케이
+  range=5d   실패 HTTPError: HTTP Error 429: Too Many Requests
+  range=1mo  실패 HTTPError: HTTP Error 429: Too Many Requests
+  range=5d   실패 HTTPError: HTTP Error 429: Too Many Requests
 
-끝.
+=== ^HSI  항셍
+  range=5d   실패 HTTPError: HTTP Error 429: Too Many Requests
+  range=1mo  실패 HTTPError: HTTP Error 429: Too Many Requests
+  range=5d   실패 HTTPError: HTTP Error 429: Too Many Requests
+
+=== 000001.SS  상하이
+  range=5d   실패 HTTPError: HTTP Error 429: Too Many Requests
+  range=1mo  실패 HTTPError: HTTP Error 429: Too Many Requests
+  range=5d   실패 HTTPError: HTTP Error 429: Too Many Requests
+
+=== ^TWII  대만
+  range=5d   실패 HTTPError: HTTP Error 429: Too Many Requests
+  range=1mo  실패 HTTPError: HTTP Error 429: Too Many Requests
+  range=5d   실패 HTTPError: HTTP Error 429: Too Many Requests
+
+=== ^BSESN  센섹스
+  range=5d   실패 HTTPError: HTTP Error 429: Too Many Requests
+  range=1mo  실패 HTTPError: HTTP Error 429: Too Many Requests
+  range=5d   실패 HTTPError: HTTP Error 429: Too Many Requests
+
+=== ^AXJO  호주
+  range=5d   실패 HTTPError: HTTP Error 429: Too Many Requests
+  range=1mo  실패 HTTPError: HTTP Error 429: Too Many Requests
+  range=5d   실패 HTTPError: HTTP Error 429: Too Many Requests
+
+=== ^GSPC  S&P500(대조군)
+  range=5d   실패 HTTPError: HTTP Error 429: Too Many Requests
+  range=1mo  실패 HTTPError: HTTP Error 429: Too Many Requests
+  range=5d   실패 HTTPError: HTTP Error 429: Too Many Requests
+
+=== 7203.T  도요타(대조군)
+  range=5d   실패 HTTPError: HTTP Error 429: Too Many Requests
+  range=1mo  실패 HTTPError: HTTP Error 429: Too Many Requests
+  range=5d   실패 HTTPError: HTTP Error 429: Too Many Requests
+
+=== 600519.SS  귀주모태(대조군)
+  range=5d   실패 HTTPError: HTTP Error 429: Too Many Requests
+  range=1mo  실패 HTTPError: HTTP Error 429: Too Many Requests
+  range=5d   실패 HTTPError: HTTP Error 429: Too Many Requests
+
+=== stooq 대안 확인
+  ^nkx     </script></body></html>
+  ^hsi     </script></body></html>
+  ^shc     </script></body></html>
+  ^kospi   </script></body></html>
