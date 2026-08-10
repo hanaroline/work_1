@@ -655,6 +655,24 @@ html[lang="en"] [data-lang-en]{display:revert}
   </table>
   </div>
 
+  <div class="table-wrap">
+  <table class="data">
+    <caption><span data-lang-ko>52주 구간 안에서 어디에 있는가 · 8/10 종가 <span class="vf ok">MARKET DATA</span></span><span data-lang-en>Where each index sits in its 52-week range · 10 Aug close <span class="vf ok">MARKET DATA</span></span></caption>
+    <thead><tr>
+      <th class="wrap"><span data-lang-ko>지수</span><span data-lang-en>Index</span></th>
+      <th class="n"><span data-lang-ko>종가</span><span data-lang-en>Close</span></th>
+      <th class="n opt"><span data-lang-ko>52주 최저</span><span data-lang-en>52w low</span></th>
+      <th class="n opt"><span data-lang-ko>52주 최고</span><span data-lang-en>52w high</span></th>
+      <th class="n"><span data-lang-ko>구간 내 위치</span><span data-lang-en>Position</span></th>
+      <th class="n"><span data-lang-ko>최고 대비</span><span data-lang-en>From high</span></th>
+    </tr></thead>
+    <tbody>
+      <tr><th>KOSPI</th><td class="n">6,299.66</td><td class="n opt">3,079.27</td><td class="n opt">9,385.59</td><td class="n">51.1%</td><td class="n down">-32.9%</td></tr>
+      <tr><th>KOSDAQ</th><td class="n">854.47</td><td class="n opt">630.99</td><td class="n opt">1,229.42</td><td class="n">37.3%</td><td class="n down">-30.5%</td></tr>
+    </tbody>
+  </table>
+  </div>
+
   <h3><span data-lang-ko>시가총액 상위 10종목</span><span data-lang-en>Ten largest stocks</span></h3>
   <p class="sub"><span data-lang-ko><strong>반도체 두 종목이 내렸습니다.</strong> 지수가 오른 날 대형
   반도체가 빠졌다는 것은, 어제 상승이 반도체 재료가 아니었다는 뜻입니다. 간밤 SOX 가 -2.94%
@@ -665,23 +683,24 @@ html[lang="en"] [data-lang-en]{display:revert}
 
   <div class="table-wrap">
   <table class="data">
-    <caption><span data-lang-ko>8/10 종가 <span class="vf ok">MARKET DATA</span></span><span data-lang-en>10 Aug close <span class="vf ok">MARKET DATA</span></span></caption>
+    <caption><span data-lang-ko>8/10 종가 · 「핵심」은 그 회사가 무엇으로 돈을 버는가 <span class="vf ok">MARKET DATA</span></span><span data-lang-en>10 Aug close · &ldquo;What it does&rdquo; is how the company earns <span class="vf ok">MARKET DATA</span></span></caption>
     <thead><tr>
       <th class="wrap"><span data-lang-ko>종목</span><span data-lang-en>Stock</span></th>
+      <th class="note opt"><span data-lang-ko>핵심</span><span data-lang-en>What it does</span></th>
       <th class="n"><span data-lang-ko>종가(원)</span><span data-lang-en>Close (KRW)</span></th>
       <th class="n"><span data-lang-ko>등락률</span><span data-lang-en>Chg</span></th>
     </tr></thead>
     <tbody>
-      <tr><th>삼성전자</th><td class="n">230,000</td><td class="n down">-0.43%</td></tr>
-      <tr><th>SK하이닉스</th><td class="n">1,420,000</td><td class="n down">-0.14%</td></tr>
-      <tr><th>LG에너지솔루션</th><td class="n">367,500</td><td class="n up">+2.08%</td></tr>
-      <tr><th>삼성바이오로직스</th><td class="n">1,569,000</td><td class="n up">+0.84%</td></tr>
-      <tr><th>현대차</th><td class="n">408,000</td><td class="n up">+3.16%</td></tr>
-      <tr><th>KB금융</th><td class="n">171,700</td><td class="n down">-2.33%</td></tr>
-      <tr><th>한화에어로스페이스</th><td class="n">1,152,000</td><td class="n up">+5.01%</td></tr>
-      <tr><th>삼성전기</th><td class="n">1,274,000</td><td class="n down">-0.31%</td></tr>
-      <tr><th>셀트리온</th><td class="n">201,000</td><td class="n up">+0.85%</td></tr>
-      <tr><th>NAVER</th><td class="n">211,500</td><td class="n up">+0.71%</td></tr>
+      <tr><th>삼성전자</th><td class="note opt"><span data-lang-ko>메모리·파운드리·스마트폰. 코스피 시총 1위</span><span data-lang-en>Memory, foundry and handsets; largest KOSPI constituent</span></td><td class="n">230,000</td><td class="n down">-0.43%</td></tr>
+      <tr><th>SK하이닉스</th><td class="note opt"><span data-lang-ko>D램·낸드. HBM 시장 선두권, 엔비디아 주요 공급사</span><span data-lang-en>DRAM and NAND; a leader in HBM and a key Nvidia supplier</span></td><td class="n">1,420,000</td><td class="n down">-0.14%</td></tr>
+      <tr><th>LG에너지솔루션</th><td class="note opt"><span data-lang-ko>이차전지 셀. 완성차에 배터리 공급</span><span data-lang-en>Battery cells supplied to global automakers</span></td><td class="n">367,500</td><td class="n up">+2.08%</td></tr>
+      <tr><th>삼성바이오로직스</th><td class="note opt"><span data-lang-ko>바이오의약품 위탁생산(CDMO) 세계 최대급</span><span data-lang-en>One of the world's largest biologics CDMOs</span></td><td class="n">1,569,000</td><td class="n up">+0.84%</td></tr>
+      <tr><th>현대차</th><td class="note opt"><span data-lang-ko>완성차. 미국·인도 판매 비중이 큼</span><span data-lang-en>Automaker with heavy exposure to the US and India</span></td><td class="n">408,000</td><td class="n up">+3.16%</td></tr>
+      <tr><th>KB금융</th><td class="note opt"><span data-lang-ko>은행 중심 금융지주. 금리에 실적이 직결</span><span data-lang-en>Bank-led financial group; earnings track interest rates</span></td><td class="n">171,700</td><td class="n down">-2.33%</td></tr>
+      <tr><th>한화에어로스페이스</th><td class="note opt"><span data-lang-ko>항공엔진·방산. 유럽 수출 확대</span><span data-lang-en>Aero engines and defence; expanding European exports</span></td><td class="n">1,152,000</td><td class="n up">+5.01%</td></tr>
+      <tr><th>삼성전기</th><td class="note opt"><span data-lang-ko>MLCC·반도체 기판. 삼성전자 공급망</span><span data-lang-en>MLCCs and semiconductor substrates; Samsung supply chain</span></td><td class="n">1,274,000</td><td class="n down">-0.31%</td></tr>
+      <tr><th>셀트리온</th><td class="note opt"><span data-lang-ko>바이오시밀러. 미국·유럽 처방 확대</span><span data-lang-en>Biosimilars, with prescriptions growing in the US and Europe</span></td><td class="n">201,000</td><td class="n up">+0.85%</td></tr>
+      <tr><th>NAVER</th><td class="note opt"><span data-lang-ko>검색·커머스·핀테크. 국내 최대 인터넷 기업</span><span data-lang-en>Search, commerce and fintech; Korea's largest internet firm</span></td><td class="n">211,500</td><td class="n up">+0.71%</td></tr>
     </tbody>
   </table>
   </div>
@@ -730,6 +749,27 @@ html[lang="en"] [data-lang-en]{display:revert}
   없어 현물과 대조해 정한 값입니다 <span class="vf solo">1 SOURCE</span></span>
   <span data-lang-en>Futures investor flows are not on desktop Naver and the source carries no unit label;
   the unit was inferred by cross-checking against cash flows <span class="vf solo">1 SOURCE</span></span></p>
+
+  <h3><span data-lang-ko>최근 6거래일 투자자별 순매수</span><span data-lang-en>Six sessions of investor flows</span></h3>
+  <div class="table-wrap">
+  <table class="data compact">
+    <caption><span data-lang-ko>코스피 · 단위 억원 · 외국인 매도가 이어지는 모양을 봅니다 <span class="vf ok">MARKET DATA</span></span><span data-lang-en>KOSPI · KRW 100mn · watch the run of foreign selling <span class="vf ok">MARKET DATA</span></span></caption>
+    <thead><tr>
+      <th class="wrap"><span data-lang-ko>날짜</span><span data-lang-en>Date</span></th>
+      <th class="n"><span data-lang-ko>개인</span><span data-lang-en>Retail</span></th>
+      <th class="n"><span data-lang-ko>외국인</span><span data-lang-en>Foreign</span></th>
+      <th class="n"><span data-lang-ko>기관</span><span data-lang-en>Institution</span></th>
+    </tr></thead>
+    <tbody>
+      <tr class="hl"><th>26.08.10</th><td class="n up">9,003</td><td class="n down">-14,909</td><td class="n up">5,692</td></tr>
+      <tr><th>26.08.07</th><td class="n up">2,675</td><td class="n down">-8,651</td><td class="n up">5,854</td></tr>
+      <tr><th>26.08.06</th><td class="n up">33,367</td><td class="n down">-32,893</td><td class="n down">-1,214</td></tr>
+      <tr><th>26.08.05</th><td class="n down">-11,844</td><td class="n up">14,464</td><td class="n down">-2,838</td></tr>
+      <tr><th>26.08.04</th><td class="n up">8,187</td><td class="n down">-3,716</td><td class="n down">-5,385</td></tr>
+      <tr><th>26.08.03</th><td class="n up">46,523</td><td class="n down">-28,220</td><td class="n down">-19,516</td></tr>
+    </tbody>
+  </table>
+  </div>
 
   <h3><span data-lang-ko>프로그램 매매와 레버리지</span><span data-lang-en>Programme trading and leverage</span></h3>
 
@@ -845,6 +885,25 @@ html[lang="en"] [data-lang-en]{display:revert}
   </div>
   <p class="cap"><span data-lang-ko>네이버 업종 시세 79개 중 상위 5개와 하위 5개 · 8/10 기준 <span class="vf ok">MARKET DATA</span></span><span data-lang-en>Top and bottom five of 79 sectors · 10 Aug <span class="vf ok">MARKET DATA</span></span></p>
 
+  <div class="table-wrap">
+  <table class="data compact">
+    <caption><span data-lang-ko>상승 상위 5개와 하락 상위 5개 · 8/10 <span class="vf ok">MARKET DATA</span></span><span data-lang-en>Five best and five worst sectors · 10 Aug <span class="vf ok">MARKET DATA</span></span></caption>
+    <thead><tr>
+      <th class="wrap"><span data-lang-ko>상승 상위</span><span data-lang-en>Leaders</span></th>
+      <th class="n"><span data-lang-ko>등락률</span><span data-lang-en>Chg</span></th>
+      <th class="wrap opt"><span data-lang-ko>하락 상위</span><span data-lang-en>Laggards</span></th>
+      <th class="n opt"><span data-lang-ko>등락률</span><span data-lang-en>Chg</span></th>
+    </tr></thead>
+    <tbody>
+      <tr><th>복합유틸리티</th><td class="n up">+11.63%</td><th class="opt">다각화된통신서비스</th><td class="n opt down">-1.65%</td></tr>
+      <tr><th>비철금속</th><td class="n up">+10.01%</td><th class="opt">해운사</th><td class="n opt down">-1.72%</td></tr>
+      <tr><th>생물공학</th><td class="n up">+9.56%</td><th class="opt">항공화물운송과물류</th><td class="n opt down">-1.79%</td></tr>
+      <tr><th>통신장비</th><td class="n up">+8.87%</td><th class="opt">은행</th><td class="n opt down">-2.67%</td></tr>
+      <tr><th>생명과학도구및서비스</th><td class="n up">+7.11%</td><th class="opt">무선통신서비스</th><td class="n opt down">-2.71%</td></tr>
+    </tbody>
+  </table>
+  </div>
+
   <div class="soft-card">
     <h4><span data-lang-ko>비철금속을 눈여겨보십시오</span><span data-lang-en>Watch non-ferrous metals</span></h4>
     <p><span data-lang-ko>비철금속은 금요일 <strong>&minus;7.23%</strong> 였다가 어제 <strong>+10.01%</strong>
@@ -900,25 +959,26 @@ html[lang="en"] [data-lang-en]{display:revert}
   <h3><span data-lang-ko>주요 종목 &mdash; 반도체가 한 방향이었습니다</span><span data-lang-en>Key stocks &mdash; semis moved as one</span></h3>
   <div class="table-wrap">
   <table class="data">
-    <caption><span data-lang-ko>8/10 뉴욕 종가(달러) <span class="vf ok">MARKET DATA</span></span><span data-lang-en>10 Aug New York close, USD <span class="vf ok">MARKET DATA</span></span></caption>
+    <caption><span data-lang-ko>8/10 뉴욕 종가(달러) · 등락률 낮은 순 <span class="vf ok">MARKET DATA</span></span><span data-lang-en>10 Aug New York close, USD · weakest first <span class="vf ok">MARKET DATA</span></span></caption>
     <thead><tr>
       <th class="wrap"><span data-lang-ko>종목</span><span data-lang-en>Stock</span></th>
-      <th class="n"><span data-lang-ko>종가</span><span data-lang-en>Close</span></th>
+      <th class="note opt"><span data-lang-ko>핵심</span><span data-lang-en>What it does</span></th>
+      <th class="n"><span data-lang-ko>종가($)</span><span data-lang-en>Close ($)</span></th>
       <th class="n"><span data-lang-ko>등락률</span><span data-lang-en>Chg</span></th>
     </tr></thead>
     <tbody>
-      <tr><th>엔비디아</th><td class="n">217.55</td><td class="n down">-2.86%</td></tr>
-      <tr><th>AMD</th><td class="n">469.56</td><td class="n down">-2.85%</td></tr>
-      <tr><th>마이크론</th><td class="n">861.00</td><td class="n down">-1.89%</td></tr>
-      <tr><th>애플</th><td class="n">308.26</td><td class="n down">-1.62%</td></tr>
-      <tr><th>브로드컴</th><td class="n">422.40</td><td class="n down">-1.25%</td></tr>
-      <tr><th>ASML</th><td class="n">1,733.48</td><td class="n down">-0.43%</td></tr>
-      <tr><th>TSMC</th><td class="n">418.47</td><td class="n down">-0.37%</td></tr>
-      <tr><th>메타</th><td class="n">594.92</td><td class="n up">+0.48%</td></tr>
-      <tr><th>테슬라</th><td class="n">330.88</td><td class="n up">+0.70%</td></tr>
-      <tr><th>알파벳</th><td class="n">357.52</td><td class="n up">+0.91%</td></tr>
-      <tr><th>마이크로소프트</th><td class="n">506.06</td><td class="n up">+1.21%</td></tr>
-      <tr><th>아마존</th><td class="n">278.09</td><td class="n up">+1.32%</td></tr>
+      <tr><th>엔비디아</th><td class="note opt"><span data-lang-ko>AI 가속기(GPU) 사실상 표준. HBM 최대 수요처</span><span data-lang-en>The de facto standard in AI accelerators; largest HBM buyer</span></td><td class="n">217.55</td><td class="n down">-2.86%</td></tr>
+      <tr><th>AMD</th><td class="note opt"><span data-lang-ko>CPU·AI 가속기. 엔비디아의 대항마</span><span data-lang-en>CPUs and AI accelerators; Nvidia's main challenger</span></td><td class="n">469.56</td><td class="n down">-2.85%</td></tr>
+      <tr><th>마이크론</th><td class="note opt"><span data-lang-ko>미국 유일의 대형 D램 업체. HBM에서 국내 업체와 경쟁</span><span data-lang-en>The only large US DRAM maker; competes with Korea in HBM</span></td><td class="n">861.00</td><td class="n down">-1.89%</td></tr>
+      <tr><th>애플</th><td class="note opt"><span data-lang-ko>아이폰 중심. 서비스 매출 비중 확대</span><span data-lang-en>iPhone-centred, with a growing services mix</span></td><td class="n">308.26</td><td class="n down">-1.62%</td></tr>
+      <tr><th>브로드컴</th><td class="note opt"><span data-lang-ko>맞춤형 AI 칩(ASIC)·네트워크 반도체</span><span data-lang-en>Custom AI silicon (ASICs) and networking chips</span></td><td class="n">422.40</td><td class="n down">-1.25%</td></tr>
+      <tr><th>ASML</th><td class="note opt"><span data-lang-ko>EUV 노광장비 독점. 첨단 반도체 생산의 병목</span><span data-lang-en>Monopoly in EUV lithography; the bottleneck in leading-edge chips</span></td><td class="n">1,733.48</td><td class="n down">-0.43%</td></tr>
+      <tr><th>TSMC</th><td class="note opt"><span data-lang-ko>세계 1위 파운드리. 엔비디아·애플 칩을 위탁생산</span><span data-lang-en>The largest foundry; makes Nvidia and Apple silicon</span></td><td class="n">418.47</td><td class="n down">-0.37%</td></tr>
+      <tr><th>메타</th><td class="note opt"><span data-lang-ko>페이스북·인스타그램. AI 인프라 투자 확대</span><span data-lang-en>Facebook and Instagram; scaling AI infrastructure</span></td><td class="n">594.92</td><td class="n up">+0.48%</td></tr>
+      <tr><th>테슬라</th><td class="note opt"><span data-lang-ko>전기차·에너지저장. 자율주행 기대가 밸류에이션에 반영</span><span data-lang-en>EVs and energy storage; valuation carries autonomy expectations</span></td><td class="n">330.88</td><td class="n up">+0.70%</td></tr>
+      <tr><th>알파벳</th><td class="note opt"><span data-lang-ko>구글 검색·유튜브·클라우드. 자체 AI 칩(TPU) 보유</span><span data-lang-en>Google search, YouTube and cloud; builds its own TPUs</span></td><td class="n">357.52</td><td class="n up">+0.91%</td></tr>
+      <tr><th>마이크로소프트</th><td class="note opt"><span data-lang-ko>애저 클라우드·오피스. AI 인프라 대규모 투자</span><span data-lang-en>Azure cloud and Office; a major AI infrastructure spender</span></td><td class="n">506.06</td><td class="n up">+1.21%</td></tr>
+      <tr><th>아마존</th><td class="note opt"><span data-lang-ko>전자상거래 + AWS 클라우드</span><span data-lang-en>E-commerce plus AWS cloud</span></td><td class="n">278.09</td><td class="n up">+1.32%</td></tr>
     </tbody>
   </table>
   </div>
@@ -1139,6 +1199,28 @@ html[lang="en"] [data-lang-en]{display:revert}
   </table>
   </div>
 
+  <h3><span data-lang-ko>국고채 최근 추이</span><span data-lang-en>Recent path of Korean government bonds</span></h3>
+  <div class="table-wrap">
+  <table class="data">
+    <caption><span data-lang-ko>한국은행 ECOS · 07/30 → 08/10 <span class="vf ok">MARKET DATA</span></span><span data-lang-en>Bank of Korea ECOS · 07/30 to 08/10 <span class="vf ok">MARKET DATA</span></span></caption>
+    <thead><tr>
+      <th class="wrap"><span data-lang-ko>만기</span><span data-lang-en>Tenor</span></th>
+      <th class="n opt"><span data-lang-ko>07/30</span><span data-lang-en>07/30</span></th>
+      <th class="n"><span data-lang-ko>08/10</span><span data-lang-en>08/10</span></th>
+      <th class="n"><span data-lang-ko>변동</span><span data-lang-en>Chg</span></th>
+      <th class="sparkcell"><span data-lang-ko>추이</span><span data-lang-en>Path</span></th>
+    </tr></thead>
+    <tbody>
+      <tr><th><span data-lang-ko>국고채 1년</span><span data-lang-en>KTB 1Y</span></th><td class="n opt">3.380%</td><td class="n">3.384%</td><td class="n up">+0.4bp</td><td class="sparkcell"><svg class="spark" width="120" height="26" viewBox="0 0 120 26" preserveAspectRatio="none" aria-hidden="true"><polyline fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" points="0.0,4.2 17.1,12.4 34.3,16.3 51.4,16.8 68.6,24.0 85.7,10.8 102.9,11.3 120.0,2.0"/></svg></td></tr>
+      <tr><th><span data-lang-ko>국고채 3년</span><span data-lang-en>KTB 3Y</span></th><td class="n opt">3.831%</td><td class="n">3.778%</td><td class="n down">-5.3bp</td><td class="sparkcell"><svg class="spark" width="120" height="26" viewBox="0 0 120 26" preserveAspectRatio="none" aria-hidden="true"><polyline fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" points="0.0,2.0 17.1,11.9 34.3,14.1 51.4,14.4 68.6,24.0 85.7,14.1 102.9,13.5 120.0,9.2"/></svg></td></tr>
+      <tr><th><span data-lang-ko>국고채 5년</span><span data-lang-en>KTB 5Y</span></th><td class="n opt">4.078%</td><td class="n">3.994%</td><td class="n down">-8.4bp</td><td class="sparkcell"><svg class="spark" width="120" height="26" viewBox="0 0 120 26" preserveAspectRatio="none" aria-hidden="true"><polyline fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" points="0.0,2.0 17.1,10.6 34.3,10.7 51.4,12.0 68.6,24.0 85.7,18.4 102.9,17.5 120.0,13.4"/></svg></td></tr>
+      <tr><th><span data-lang-ko>국고채 10년</span><span data-lang-en>KTB 10Y</span></th><td class="n opt">4.311%</td><td class="n">4.239%</td><td class="n down">-7.2bp</td><td class="sparkcell"><svg class="spark" width="120" height="26" viewBox="0 0 120 26" preserveAspectRatio="none" aria-hidden="true"><polyline fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" points="0.0,2.0 17.1,8.8 34.3,8.4 51.4,9.0 68.6,24.0 85.7,17.9 102.9,16.1 120.0,11.8"/></svg></td></tr>
+      <tr><th><span data-lang-ko>CD 91일</span><span data-lang-en>CD 91D</span></th><td class="n opt">2.930%</td><td class="n">2.930%</td><td class="n flat">+0.0bp</td><td class="sparkcell"><svg class="spark" width="120" height="26" viewBox="0 0 120 26" preserveAspectRatio="none" aria-hidden="true"><polyline fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" points="0.0,24.0 17.1,2.0 34.3,24.0 51.4,24.0 68.6,24.0 85.7,24.0 102.9,24.0 120.0,24.0"/></svg></td></tr>
+    </tbody>
+  </table>
+  </div>
+  <p class="cap"><span data-lang-ko>ECOS 는 영업일마다 갱신되며 최신 영업일이 시세일보다 하루 이를 수 있습니다. 추이 선은 표 안 값으로 그린 것입니다.</span><span data-lang-en>ECOS updates each business day and its latest point can be a day behind the price date. The path is drawn from the values in this table.</span></p>
+
   <p class="cap"><span data-lang-ko><strong>회사채 3년은 BBB&minus; 등급입니다</strong> &mdash; AA&minus; 가 아닙니다.
   한때 수집기가 이 코드를 AA&minus; 로 적어 4.44%여야 할 자리에 10.246%가 들어갈 뻔했고, 지금은 응답
   항목명과 대조해 어긋나면 버립니다.</span>
@@ -1256,32 +1338,84 @@ html[lang="en"] [data-lang-en]{display:revert}
   </table>
   </div>
 
+  <h3><span data-lang-ko>유럽 주요 종목</span><span data-lang-en>European stocks</span></h3>
+  <p class="sub"><span data-lang-ko>유럽 지수는 제자리였지만 안쪽은 갈렸습니다 &mdash; ASML +0.99%, 인피니언 +0.72% 로 반도체는 버텼고 지멘스 -1.02%, 네슬레 -0.74% 는 밀렸습니다. <strong>쉘 +0.63%</strong> 는 어제 유가 급등을 그대로 받았습니다.</span><span data-lang-en>The European indices went nowhere but the internals split &mdash; ASML +0.99% and Infineon +0.72% held up in semis while Siemens -1.02% and Nestl&eacute; -0.74% fell. <strong>Shell +0.63%</strong> tracked the crude spike.</span></p>
   <div class="table-wrap">
-  <table class="data compact">
-    <caption><span data-lang-ko>일본&middot;중국 주요 종목 · 8/10 · 거래 통화 기준 <span class="vf ok">MARKET DATA</span></span><span data-lang-en>Key Japanese and Chinese stocks · 10 Aug · in local trading currency <span class="vf ok">MARKET DATA</span></span></caption>
+  <table class="data">
+    <caption><span data-lang-ko>유럽 주요 종목 · 8/10 · <strong>거래 통화 기준</strong>(EUR·GBp·CHF·DKK). 영국 종목은 펜스 표시라 파운드로 보려면 100으로 나눕니다 <span class="vf ok">MARKET DATA</span></span><span data-lang-en>Key European stocks · 10 Aug · <strong>in local trading currency</strong> (EUR, GBp, CHF, DKK); UK names are quoted in pence <span class="vf ok">MARKET DATA</span></span></caption>
     <thead><tr>
       <th class="wrap"><span data-lang-ko>종목</span><span data-lang-en>Stock</span></th>
+      <th class="note opt"><span data-lang-ko>핵심</span><span data-lang-en>What it does</span></th>
+      <th class="n"><span data-lang-ko>종가(현지통화)</span><span data-lang-en>Close (local)</span></th>
       <th class="n"><span data-lang-ko>등락률</span><span data-lang-en>Chg</span></th>
-      <th class="wrap opt"><span data-lang-ko>종목</span><span data-lang-en>Stock</span></th>
-      <th class="n opt"><span data-lang-ko>등락률</span><span data-lang-en>Chg</span></th>
     </tr></thead>
     <tbody>
-      <tr><th>어드반테스트</th><td class="n up">+6.43%</td><th class="opt">귀주모태</th><td class="n opt up">+3.03%</td></tr>
-      <tr><th>도쿄일렉트론</th><td class="n up">+4.13%</td><th class="opt">BYD</th><td class="n opt up">+2.38%</td></tr>
-      <tr><th>신에쓰화학</th><td class="n up">+2.78%</td><th class="opt">알리바바</th><td class="n opt up">+2.34%</td></tr>
-      <tr><th>소니</th><td class="n up">+1.16%</td><th class="opt">샤오미</th><td class="n opt up">+2.07%</td></tr>
-      <tr><th>도요타</th><td class="n up">+0.03%</td><th class="opt">메이투안</th><td class="n opt up">+1.84%</td></tr>
-      <tr><th>히타치</th><td class="n flat">+0.00%</td><th class="opt">CATL</th><td class="n opt up">+1.49%</td></tr>
-      <tr><th>키엔스</th><td class="n down">-0.13%</td><th class="opt">중국건설은행</th><td class="n opt up">+0.74%</td></tr>
-      <tr><th>패스트리테일링</th><td class="n down">-0.74%</td><th class="opt">중국해양석유</th><td class="n opt up">+0.60%</td></tr>
-      <tr><th>소프트뱅크그룹</th><td class="n down">-1.22%</td><th class="opt">텐센트</th><td class="n opt up">+0.54%</td></tr>
-      <tr><th>미쓰비시UFJ</th><td class="n down">-1.52%</td><th class="opt">SMIC</th><td class="n opt down">-1.05%</td></tr>
+      <tr><th>ASML</th><td class="note opt"><span data-lang-ko>EUV 노광장비 독점. 첨단 반도체 생산의 병목</span><span data-lang-en>Monopoly in EUV lithography; the bottleneck in leading-edge chips</span></td><td class="n">1,513.80</td><td class="n up">+0.99%</td></tr>
+      <tr><th>아스트라제네카</th><td class="note opt"><span data-lang-ko>항암제 중심 제약</span><span data-lang-en>Pharma, weighted to oncology</span></td><td class="n">11,990.00</td><td class="n up">+0.79%</td></tr>
+      <tr><th>SAP</th><td class="note opt"><span data-lang-ko>기업용 소프트웨어(ERP). 유럽 최대 IT 기업</span><span data-lang-en>Enterprise software (ERP); Europe's largest tech company</span></td><td class="n">179.30</td><td class="n up">+0.75%</td></tr>
+      <tr><th>인피니언</th><td class="note opt"><span data-lang-ko>차량용·전력 반도체</span><span data-lang-en>Automotive and power semiconductors</span></td><td class="n">62.53</td><td class="n up">+0.72%</td></tr>
+      <tr><th>로레알</th><td class="note opt"><span data-lang-ko>화장품 세계 1위</span><span data-lang-en>The world's largest cosmetics group</span></td><td class="n">388.50</td><td class="n up">+0.67%</td></tr>
+      <tr><th>노바티스</th><td class="note opt"><span data-lang-ko>스위스 제약. 항암·심혈관</span><span data-lang-en>Swiss pharma; oncology and cardiovascular</span></td><td class="n">126.80</td><td class="n up">+0.65%</td></tr>
+      <tr><th>쉘</th><td class="note opt"><span data-lang-ko>석유·가스 메이저. 유가에 연동</span><span data-lang-en>Oil and gas major; moves with crude</span></td><td class="n">3,298.00</td><td class="n up">+0.63%</td></tr>
+      <tr><th>LVMH</th><td class="note opt"><span data-lang-ko>루이비통·디올 등 명품. 중국 소비에 민감</span><span data-lang-en>Louis Vuitton and Dior; sensitive to Chinese consumption</span></td><td class="n">482.45</td><td class="n up">+0.51%</td></tr>
+      <tr><th>노보노디스크</th><td class="note opt"><span data-lang-ko>비만·당뇨 치료제(위고비·오젬픽)</span><span data-lang-en>Obesity and diabetes drugs (Wegovy, Ozempic)</span></td><td class="n">306.15</td><td class="n up">+0.34%</td></tr>
+      <tr><th>HSBC</th><td class="note opt"><span data-lang-ko>아시아 비중이 큰 영국계 은행</span><span data-lang-en>UK-listed bank with heavy Asian exposure</span></td><td class="n">1,526.40</td><td class="n down">-0.18%</td></tr>
+      <tr><th>네슬레</th><td class="note opt"><span data-lang-ko>세계 최대 식품기업</span><span data-lang-en>The world's largest food company</span></td><td class="n">80.61</td><td class="n down">-0.74%</td></tr>
+      <tr><th>지멘스</th><td class="note opt"><span data-lang-ko>산업 자동화·전력 설비</span><span data-lang-en>Industrial automation and power equipment</span></td><td class="n">276.95</td><td class="n down">-1.02%</td></tr>
     </tbody>
   </table>
   </div>
-  <p class="cap"><span data-lang-ko>왼쪽 두 열은 일본, 오른쪽 두 열은 중국&middot;홍콩입니다. 좁은 화면에서는
-  일본만 보입니다.</span><span data-lang-en>The left pair is Japan, the right pair China and Hong Kong.
-  On narrow screens only Japan is shown.</span></p>
+
+  <h3><span data-lang-ko>일본 주요 종목</span><span data-lang-en>Japanese stocks</span></h3>
+  <div class="table-wrap">
+  <table class="data">
+    <caption><span data-lang-ko>일본 주요 종목 · 8/10 <span class="vf ok">MARKET DATA</span></span><span data-lang-en>Key Japanese stocks · 10 Aug <span class="vf ok">MARKET DATA</span></span></caption>
+    <thead><tr>
+      <th class="wrap"><span data-lang-ko>종목</span><span data-lang-en>Stock</span></th>
+      <th class="note opt"><span data-lang-ko>핵심</span><span data-lang-en>What it does</span></th>
+      <th class="n"><span data-lang-ko>종가(엔)</span><span data-lang-en>Close (JPY)</span></th>
+      <th class="n"><span data-lang-ko>등락률</span><span data-lang-en>Chg</span></th>
+    </tr></thead>
+    <tbody>
+      <tr><th>어드반테스트</th><td class="note opt"><span data-lang-ko>반도체 검사장비. HBM 수요에 민감</span><span data-lang-en>Chip test equipment; sensitive to HBM demand</span></td><td class="n">34,260.00</td><td class="n up">+6.43%</td></tr>
+      <tr><th>도쿄일렉트론</th><td class="note opt"><span data-lang-ko>반도체 장비. 국내 장비주의 직접 비교군</span><span data-lang-en>Semiconductor equipment; the comparable for Korean toolmakers</span></td><td class="n">56,750.00</td><td class="n up">+4.13%</td></tr>
+      <tr><th>신에쓰화학</th><td class="note opt"><span data-lang-ko>반도체 웨이퍼 세계 1위</span><span data-lang-en>The world's largest supplier of silicon wafers</span></td><td class="n">6,286.00</td><td class="n up">+2.78%</td></tr>
+      <tr><th>소니</th><td class="note opt"><span data-lang-ko>이미지센서·게임·엔터. 스마트폰 카메라 센서 1위</span><span data-lang-en>Image sensors, games and entertainment; leads phone camera sensors</span></td><td class="n">3,764.00</td><td class="n up">+1.16%</td></tr>
+      <tr><th>도요타</th><td class="note opt"><span data-lang-ko>세계 판매 1위 완성차. 하이브리드 강세</span><span data-lang-en>The world's biggest carmaker by volume; strong in hybrids</span></td><td class="n">2,981.00</td><td class="n up">+0.03%</td></tr>
+      <tr><th>히타치</th><td class="note opt"><span data-lang-ko>전력·철도·IT 인프라</span><span data-lang-en>Power, rail and IT infrastructure</span></td><td class="n">5,620.00</td><td class="n flat">+0.00%</td></tr>
+      <tr><th>키엔스</th><td class="note opt"><span data-lang-ko>공장 자동화 센서. 높은 이익률로 유명</span><span data-lang-en>Factory-automation sensors, known for very high margins</span></td><td class="n">85,000.00</td><td class="n down">-0.13%</td></tr>
+      <tr><th>패스트리테일링</th><td class="note opt"><span data-lang-ko>유니클로 모회사</span><span data-lang-en>Owner of Uniqlo</span></td><td class="n">78,720.00</td><td class="n down">-0.74%</td></tr>
+      <tr><th>소프트뱅크그룹</th><td class="note opt"><span data-lang-ko>투자지주. 암(Arm) 최대 주주</span><span data-lang-en>Investment holding company; Arm's largest shareholder</span></td><td class="n">5,484.00</td><td class="n down">-1.22%</td></tr>
+      <tr><th>미쓰비시UFJ</th><td class="note opt"><span data-lang-ko>일본 최대 금융그룹. 금리 인상 수혜</span><span data-lang-en>Japan's largest banking group; benefits from higher rates</span></td><td class="n">3,510.00</td><td class="n down">-1.52%</td></tr>
+    </tbody>
+  </table>
+  </div>
+
+  <h3><span data-lang-ko>중국&middot;홍콩 주요 종목</span><span data-lang-en>Chinese and Hong Kong stocks</span></h3>
+  <div class="table-wrap">
+  <table class="data">
+    <caption><span data-lang-ko>중국&middot;홍콩 주요 종목 · 8/10 <span class="vf ok">MARKET DATA</span></span><span data-lang-en>Key Chinese and Hong Kong stocks · 10 Aug <span class="vf ok">MARKET DATA</span></span></caption>
+    <thead><tr>
+      <th class="wrap"><span data-lang-ko>종목</span><span data-lang-en>Stock</span></th>
+      <th class="note opt"><span data-lang-ko>핵심</span><span data-lang-en>What it does</span></th>
+      <th class="n"><span data-lang-ko>종가(현지통화)</span><span data-lang-en>Close (local)</span></th>
+      <th class="n"><span data-lang-ko>등락률</span><span data-lang-en>Chg</span></th>
+    </tr></thead>
+    <tbody>
+      <tr><th>귀주모태</th><td class="note opt"><span data-lang-ko>백주(마오타이) 1위. 중국 소비심리의 대표 지표</span><span data-lang-en>The top baijiu maker; a bellwether for Chinese consumption</span></td><td class="n">1,348.86</td><td class="n up">+3.03%</td></tr>
+      <tr><th>BYD</th><td class="note opt"><span data-lang-ko>전기차 판매 세계 최대급. 배터리를 자체 생산</span><span data-lang-en>Among the world's largest EV sellers; makes its own batteries</span></td><td class="n">92.30</td><td class="n up">+2.38%</td></tr>
+      <tr><th>알리바바</th><td class="note opt"><span data-lang-ko>전자상거래·클라우드</span><span data-lang-en>E-commerce and cloud</span></td><td class="n">126.70</td><td class="n up">+2.34%</td></tr>
+      <tr><th>샤오미</th><td class="note opt"><span data-lang-ko>스마트폰·가전에서 전기차로 확장</span><span data-lang-en>Phones and appliances, expanding into EVs</span></td><td class="n">27.62</td><td class="n up">+2.07%</td></tr>
+      <tr><th>메이투안</th><td class="note opt"><span data-lang-ko>배달·생활 서비스 플랫폼</span><span data-lang-en>Food delivery and local-services platform</span></td><td class="n">93.90</td><td class="n up">+1.84%</td></tr>
+      <tr><th>CATL</th><td class="note opt"><span data-lang-ko>세계 1위 배터리 제조사. 국내 배터리사의 최대 경쟁자</span><span data-lang-en>The world's largest battery maker; Korea's chief rival</span></td><td class="n">393.87</td><td class="n up">+1.49%</td></tr>
+      <tr><th>중국건설은행</th><td class="note opt"><span data-lang-ko>4대 국유은행의 하나. 부동산 대출 비중이 큼</span><span data-lang-en>One of the big four state banks; large property loan book</span></td><td class="n">8.86</td><td class="n up">+0.74%</td></tr>
+      <tr><th>중국해양석유</th><td class="note opt"><span data-lang-ko>해양 원유·가스 개발</span><span data-lang-en>Offshore oil and gas exploration and production</span></td><td class="n">23.40</td><td class="n up">+0.60%</td></tr>
+      <tr><th>텐센트</th><td class="note opt"><span data-lang-ko>위챗·게임. 중국 최대 인터넷 기업</span><span data-lang-en>WeChat and games; China's largest internet company</span></td><td class="n">481.40</td><td class="n up">+0.54%</td></tr>
+      <tr><th>SMIC</th><td class="note opt"><span data-lang-ko>중국 최대 파운드리. 미국 수출규제 대상</span><span data-lang-en>China's largest foundry; subject to US export controls</span></td><td class="n">66.20</td><td class="n down">-1.05%</td></tr>
+    </tbody>
+  </table>
+  </div>
+
 </section>
 
 <section class="section" id="views">
