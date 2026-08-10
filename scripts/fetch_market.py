@@ -263,7 +263,22 @@ def _num(x):
 
 
 def yahoo_quote(symbol):
-    """일봉 2개를 받아 종가·전일대비·OHLC·거래량을 만든다."""
+    """일봉 2개를 받아 종가·전일대비·OHLC·거래량을 만든다.
+
+    **마지막 봉의 종가가 비어 있어도 그 날을 버리지 않는다.** 지수 심볼은
+    장이 끝난 뒤에도 일봉 종가가 한동안 `null` 로 오고 마감가는 `meta` 에만
+    실린다. 8월 11일 아침에 ^KS11 ^KQ11 ^N225 ^HSI 000001.SS ^TWII ^BSESN
+    ^AXJO ^STOXX 가 **전부** 그랬고, 같은 거래소의 개별 종목(005930.KS,
+    7203.T, 600519.SS)은 멀쩡했다. 빈 봉을 건너뛰면 8월 7일 값을 8월 10일
+    값으로 읽게 된다 — 실제로 그렇게 나갔다.
+
+    그래서 마지막 봉이 비었고 `meta` 가 **같은 날** 장을 마쳤다고 하면
+    `regularMarketPrice` 를 종가로 쓴다. 날짜가 어긋나면(아직 열리지 않은
+    날의 빈 봉) 종전대로 마지막 실봉으로 물러선다.
+
+    날짜는 거래소 현지 기준이다. 유럽은 취리히 17:30 마감이 KST 로 다음 날
+    00:30 이라, KST 로 비교하면 같은 날인데도 어긋난 것으로 보인다.
+    """
     url = ("https://query1.finance.yahoo.com/v8/finance/chart/"
            + urllib.parse.quote(symbol) + "?range=5d&interval=1d")
     j = json.loads(_get(url))
@@ -272,29 +287,57 @@ def yahoo_quote(symbol):
     q = res["indicators"]["quote"][0]
     ts = res["timestamp"]
 
-    # 마지막으로 종가가 있는 인덱스
-    idx = [i for i, c in enumerate(q["close"]) if c is not None]
-    if not idx:
-        raise ValueError("no close data")
-    last = idx[-1]
-    prev = idx[-2] if len(idx) > 1 else None
+    off = meta.get("gmtoffset")
+    tz = timezone(timedelta(seconds=off)) if isinstance(off, int) else KST
 
-    close = q["close"][last]
-    prev_close = q["close"][prev] if prev is not None else meta.get("chartPreviousClose")
+    def day(t):
+        return datetime.fromtimestamp(t, tz).strftime("%Y-%m-%d")
+
+    have = [i for i, c in enumerate(q["close"]) if c is not None]      # 실봉
+    tail = len(ts) - 1                                                  # 마지막 봉
+    rmt, rmp = meta.get("regularMarketTime"), meta.get("regularMarketPrice")
+
+    # 마지막 봉이 비었는데 meta 가 그 날 마감을 들고 있는가
+    from_meta = (tail >= 0 and q["close"][tail] is None
+                 and rmt and rmp is not None and day(ts[tail]) == day(rmt))
+
+    if from_meta:
+        last = tail
+        close = rmp
+        prev_close = (q["close"][have[-1]] if have else meta.get("chartPreviousClose"))
+        # 빈 봉은 OHLC 도 비어 있는 일이 많다. meta 에 있으면 그것을 쓴다.
+        o = q["open"][last] if q["open"][last] is not None else meta.get("regularMarketOpen")
+        hi = q["high"][last] if q["high"][last] is not None else meta.get("regularMarketDayHigh")
+        lo = q["low"][last] if q["low"][last] is not None else meta.get("regularMarketDayLow")
+        vol = q["volume"][last] if q["volume"][last] is not None else meta.get("regularMarketVolume")
+    else:
+        if not have:
+            raise ValueError("no close data")
+        last = have[-1]
+        prev = have[-2] if len(have) > 1 else None
+        close = q["close"][last]
+        prev_close = q["close"][prev] if prev is not None else meta.get("chartPreviousClose")
+        o, hi, lo, vol = (q["open"][last], q["high"][last],
+                          q["low"][last], q["volume"][last])
+
     change = close - prev_close if prev_close else None
-    return {
+    out = {
         "symbol": symbol,
-        "date": datetime.fromtimestamp(ts[last], KST).strftime("%Y-%m-%d"),
+        "date": day(ts[last]),
         "close": _num(close),
-        "open": _num(q["open"][last]),
-        "high": _num(q["high"][last]),
-        "low": _num(q["low"][last]),
-        "volume": q["volume"][last],
+        "open": _num(o),
+        "high": _num(hi),
+        "low": _num(lo),
+        "volume": vol,
         "prev_close": _num(prev_close),
         "change": _num(change),
         "change_pct": _num(change / prev_close * 100) if prev_close else None,
         "currency": meta.get("currency"),
     }
+    if from_meta:
+        # 브리핑 검증 노트에서 구분할 수 있게 남긴다
+        out["quote_basis"] = "meta.regularMarketPrice (일봉 종가 미기재)"
+    return out
 
 
 def naver_sectors():
