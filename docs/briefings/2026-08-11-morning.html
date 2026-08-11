@@ -253,6 +253,7 @@ table.data tbody tr:hover{background:var(--surface-subtle)}
 table.data tbody th{font-weight:600;color:var(--ink);white-space:nowrap}
 table.data td.n,table.data th.n{text-align:right;font-family:var(--font-num);white-space:nowrap}
 table.data td.tick,table.data th.tick{font-family:var(--font-num);font-variant-numeric:tabular-nums;letter-spacing:.3px;color:var(--muted);white-space:nowrap}
+table.data td.wh,table.data th.wh{white-space:nowrap;color:var(--muted);font-size:14px}
 table.data td.up,table.data .up{color:var(--up)} table.data td.down,table.data .down{color:var(--down)}
 table.data .na{color:var(--muted-soft)}
 table.data tr.hl > td,table.data tr.hl > th{background:var(--hl-row)}
@@ -1492,53 +1493,125 @@ html[lang="en"] [data-lang-en]{display:revert}
   <span class="sec-num">10</span>
   <h2 class="section-title"><span data-lang-ko>일정 &middot; 체크포인트</span><span data-lang-en>Calendar</span></h2>
 
+  <p class="lede"><span data-lang-ko>앞으로 2주의 축은 <strong>셋</strong>입니다. <strong>내일(수) 미 7월 CPI</strong> 가 이번 주를 결정하고, <strong>8/17(월)은 광복절 대체공휴일로 국내 증시가 쉽니다</strong> &mdash; 사흘 연휴 뒤 8/18(화) 아침에 미국 이틀치를 한꺼번에 받습니다. 그리고 <strong>8/27(목) 하루에 금통위와 엔비디아 실적, 잭슨홀 개막이 겹칩니다.</strong> 8월에는 FOMC 가 없어 다음 회의는 9/15~16 입니다.</span><span data-lang-en>Three things anchor the next two weeks. <strong>US July CPI tomorrow</strong> decides this week; <strong>Monday 17 August is a market holiday in Korea</strong> &mdash; after the three-day weekend, Tuesday morning absorbs two US sessions at once. And <strong>Thursday 27 August stacks the Bank of Korea decision, Nvidia&rsquo;s results and the opening of Jackson Hole into one day.</strong> There is no FOMC in August; the next is 15&ndash;16 September.</span></p>
+
   <div class="table-wrap">
   <table class="data">
+    <caption><span data-lang-ko>2026년 8월 11일(화) ~ 31일(월) · 시각은 한국시간 · <strong>모두 예정</strong>이며 결과가 아닙니다</span><span data-lang-en>11 to 31 August 2026 · times in KST · <strong>all scheduled</strong>, none of them results</span></caption>
     <thead><tr>
-      <th class="wrap"><span data-lang-ko>시각(KST)</span><span data-lang-en>Time (KST)</span></th>
+      <th class="wrap"><span data-lang-ko>일시(KST)</span><span data-lang-en>When (KST)</span></th>
+      <th class="wh"><span data-lang-ko>구분</span><span data-lang-en>Where</span></th>
       <th class="wrap"><span data-lang-ko>일정</span><span data-lang-en>Event</span></th>
       <th class="note opt"><span data-lang-ko>보는 법</span><span data-lang-en>What to look for</span></th>
     </tr></thead>
     <tbody>
-      <tr class="hl">
-        <th><span data-lang-ko>오늘 09:00</span><span data-lang-en>Today 09:00</span></th>
-        <td><span data-lang-ko>국내 증시 개장</span><span data-lang-en>Korea opens</span></td>
-        <td class="note opt"><span data-lang-ko>어제 급등한 중소형주의 <strong>시가</strong>가 첫 신호입니다.
-        갭 상승 뒤 밀리면 차익실현, 눌러서 열면 어제 상승분 소화 국면입니다</span>
-        <span data-lang-en>The <strong>opening print</strong> on yesterday&rsquo;s small-cap winners is the first
-        signal: a gap up that fades means profit-taking; a soft open means digestion</span></td>
+      <tr>
+        <th><span data-lang-ko>8/11(화) 15:30</span><span data-lang-en>8/11 Tue 15:30</span></th>
+        <td class="wh"><span data-lang-ko>한국</span><span data-lang-en>Korea</span></td>
+        <td><span data-lang-ko>금투협 신용융자 잔액(8/10분) 발표</span><span data-lang-en>KOFIA margin-loan balance for 10 Aug</span> <span class="vf solo">1 SOURCE</span></td>
+        <td class="note opt"><span data-lang-ko>어제 28.8조원에서 얼마나 늘었는지 &mdash; 코스닥이 +6.97% 오른 다음 날 가장 먼저 볼 숫자입니다</span><span data-lang-en>How far it rose from KRW 28.8tn &mdash; the first number to check the day after a +6.97% KOSDAQ session</span></td>
       </tr>
       <tr>
-        <th><span data-lang-ko>오늘 15:30</span><span data-lang-en>Today 15:30</span></th>
-        <td><span data-lang-ko>국내 마감 · 신용융자(8/10) 발표</span><span data-lang-en>Korea closes · 10 Aug margin data</span></td>
-        <td class="note opt"><span data-lang-ko>어제 28.8조원에서 얼마나 늘었는지 &mdash; 급등 다음 날 확인해야 할 숫자입니다</span>
-        <span data-lang-en>How far it rose from KRW 28.8tn &mdash; the number to check the day after a melt-up</span></td>
-      </tr>
-      <tr>
-        <th><span data-lang-ko>오늘 22:00</span><span data-lang-en>Today 22:00</span></th>
-        <td><span data-lang-ko>뉴욕 연준 EFFR(8/10분) 공표</span><span data-lang-en>NY Fed publishes 10 Aug EFFR</span></td>
-        <td class="note opt"><span data-lang-ko>지금 파일의 EFFR 은 2026-08-07 기준입니다. 하루 지연 공표라 정상입니다</span>
-        <span data-lang-en>The EFFR in the file is for 2026-08-07; the one-day lag is normal</span></td>
-      </tr>
-      <tr>
-        <th><span data-lang-ko>오늘 22:30</span><span data-lang-en>Today 22:30</span></th>
-        <td><span data-lang-ko>미국 증시 개장</span><span data-lang-en>US market opens</span></td>
-        <td class="note opt"><span data-lang-ko>반도체가 이틀 연속 밀리는지. SOX 가 어제 -2.94% 였습니다</span>
-        <span data-lang-en>Whether semis fall a second day; the SOX was -2.94% yesterday</span></td>
+        <th><span data-lang-ko>8/11(화) 22:00</span><span data-lang-en>8/11 Tue 22:00</span></th>
+        <td class="wh"><span data-lang-ko>미국</span><span data-lang-en>US</span></td>
+        <td><span data-lang-ko>뉴욕 연준 EFFR(8/10분) 공표</span><span data-lang-en>NY Fed publishes the 10 Aug EFFR</span> <span class="vf ok">2 SOURCES</span></td>
+        <td class="note opt"><span data-lang-ko>지금 파일의 EFFR 은 8/7 기준입니다. 하루 지연 공표라 정상입니다</span><span data-lang-en>The EFFR in the file is dated 7 Aug; the one-day lag is normal</span></td>
       </tr>
       <tr class="hl">
-        <th><span data-lang-ko>내일(수) 21:30</span><span data-lang-en>Tomorrow 21:30</span></th>
-        <td><span data-lang-ko><strong>미 7월 소비자물가(CPI)</strong></span><span data-lang-en><strong>US July CPI</strong></span></td>
-        <td class="note opt"><span data-lang-ko>이번 주 최대 변수입니다. 유가 +5.04% 와 금리 +7bp 가 이미
-        물가 쪽으로 움직인 뒤라 <strong>상방 서프라이즈에 시장이 더 민감</strong>합니다.
-        발표 전이므로 결과를 미리 적지 마십시오</span>
-        <span data-lang-en>The week&rsquo;s main event. With crude at +5.04% and yields +7bp already leaning
-        that way, <strong>the market is more exposed to an upside surprise</strong>. It has not been released &mdash;
-        do not write a result in advance</span></td>
+        <th><span data-lang-ko>8/12(수) 21:30</span><span data-lang-en>8/12 Wed 21:30</span></th>
+        <td class="wh"><span data-lang-ko>미국</span><span data-lang-en>US</span></td>
+        <td><span data-lang-ko><strong>미 7월 소비자물가(CPI)</strong></span><span data-lang-en><strong>US July CPI</strong></span> <span class="vf ok">2 SOURCES</span></td>
+        <td class="note opt"><span data-lang-ko>이번 주 최대 변수입니다. 유가 +5.04% 와 금리 +7bp 가 이미 물가 쪽으로 움직인 뒤라 <strong>상방 서프라이즈에 시장이 더 민감</strong>합니다. 미발표이므로 결과를 미리 적지 마십시오</span><span data-lang-en>The week&rsquo;s main event. With crude +5.04% and yields +7bp already leaning that way, <strong>the market is more exposed to an upside surprise</strong>. Not yet released &mdash; do not write a result in advance</span></td>
+      </tr>
+      <tr>
+        <th><span data-lang-ko>8/13(목) 새벽</span><span data-lang-en>8/13 Thu, early</span></th>
+        <td class="wh"><span data-lang-ko>한국</span><span data-lang-en>Korea</span></td>
+        <td><span data-lang-ko>MSCI 8월 정기리뷰 결과 발표</span><span data-lang-en>MSCI August index review announced</span> <span class="vf solo">1 SOURCE</span></td>
+        <td class="note opt"><span data-lang-ko>미국 현지 8/12 발표라 국내에는 새벽에 들어옵니다. 편입 후보로 <strong>LG이노텍</strong>이 거론됩니다 &mdash; 편출입 종목에 패시브 자금이 붙습니다</span><span data-lang-en>Announced on 12 Aug US time, so it lands here overnight. <strong>LG Innotek</strong> is the name most often cited for inclusion; passive money follows the additions and deletions</span></td>
+      </tr>
+      <tr>
+        <th><span data-lang-ko>8/13(목)</span><span data-lang-en>8/13 Thu</span></th>
+        <td class="wh"><span data-lang-ko>한국</span><span data-lang-en>Korea</span></td>
+        <td><span data-lang-ko>8월 옵션 만기일</span><span data-lang-en>August option expiry</span> <span class="vf ok">2 SOURCES</span></td>
+        <td class="note opt"><span data-lang-ko>둘째 주 목요일입니다. 만기 주간에는 프로그램 매매가 지수를 흔들 수 있습니다</span><span data-lang-en>The second Thursday. Programme trading can move the index into expiry</span></td>
+      </tr>
+      <tr>
+        <th><span data-lang-ko>8/13(목) 21:30</span><span data-lang-en>8/13 Thu 21:30</span></th>
+        <td class="wh"><span data-lang-ko>미국</span><span data-lang-en>US</span></td>
+        <td><span data-lang-ko>미 7월 생산자물가(PPI)</span><span data-lang-en>US July PPI</span> <span class="vf ok">2 SOURCES</span></td>
+        <td class="note opt"><span data-lang-ko>CPI 다음 날입니다. 두 지표가 같은 방향이면 물가 이야기가 굳어집니다</span><span data-lang-en>The day after CPI; if the two point the same way, the inflation story hardens</span></td>
+      </tr>
+      <tr>
+        <th><span data-lang-ko>8/14(금) 21:30</span><span data-lang-en>8/14 Fri 21:30</span></th>
+        <td class="wh"><span data-lang-ko>미국</span><span data-lang-en>US</span></td>
+        <td><span data-lang-ko>미 7월 소매판매</span><span data-lang-en>US July retail sales</span> <span class="vf ok">2 SOURCES</span></td>
+        <td class="note opt"><span data-lang-ko>물가 이틀 뒤에 나오는 수요 지표입니다. 물가는 높고 소비가 꺾이면 가장 나쁜 조합입니다</span><span data-lang-en>The demand print after two inflation prints; hot prices with softening consumption is the worst mix</span></td>
+      </tr>
+      <tr>
+        <th><span data-lang-ko>8/14(금)</span><span data-lang-en>8/14 Fri</span></th>
+        <td class="wh"><span data-lang-ko>한국</span><span data-lang-en>Korea</span></td>
+        <td><span data-lang-ko>한국은행 7월 수출입물가지수</span><span data-lang-en>Bank of Korea July export and import price indices</span> <span class="vf solo">1 SOURCE</span></td>
+        <td class="note opt"><span data-lang-ko>반도체 수출가격이 어디로 가는지 보는 자리입니다</span><span data-lang-en>Where semiconductor export prices are heading</span></td>
+      </tr>
+      <tr class="hl">
+        <th><span data-lang-ko>8/17(월)</span><span data-lang-en>8/17 Mon</span></th>
+        <td class="wh"><span data-lang-ko>한국</span><span data-lang-en>Korea</span></td>
+        <td><span data-lang-ko><strong>국내 증시 휴장</strong> &mdash; 광복절 대체공휴일</span><span data-lang-en><strong>Korean market closed</strong> &mdash; Liberation Day substitute holiday</span> <span class="vf ok">2 SOURCES</span></td>
+        <td class="note opt"><span data-lang-ko>8/15(토)~8/17(월) 사흘 연휴입니다. 국내는 <strong>8/14(금) 마감 뒤 8/18(화)에 다시 엽니다</strong> &mdash; 그 사이 미국이 두 번(8/14·8/17) 마감하므로 <strong>8/18 아침에 이틀치를 한꺼번에 받습니다</strong></span><span data-lang-en>A three-day weekend from Sat 15 to Mon 17. Korea <strong>closes on Fri 14 and reopens Tue 18</strong>; the US trades twice in between (14 and 17), so <strong>Tuesday morning absorbs two US sessions at once</strong></span></td>
+      </tr>
+      <tr>
+        <th><span data-lang-ko>8/18(화)</span><span data-lang-en>8/18 Tue</span></th>
+        <td class="wh"><span data-lang-ko>기업</span><span data-lang-en>Company</span></td>
+        <td><span data-lang-ko>홈디포 실적 (미 개장 전)</span><span data-lang-en>Home Depot results, before the US open</span> <span class="vf ok">2 SOURCES</span></td>
+        <td class="note opt"><span data-lang-ko>미국 소비의 온도계입니다. 소매판매와 엇갈리는지 봅니다</span><span data-lang-en>A thermometer for the US consumer; watch whether it agrees with retail sales</span></td>
+      </tr>
+      <tr>
+        <th><span data-lang-ko>8/20(목) 03:00</span><span data-lang-en>8/20 Thu 03:00</span></th>
+        <td class="wh"><span data-lang-ko>미국</span><span data-lang-en>US</span></td>
+        <td><span data-lang-ko>7월 FOMC 의사록 공개</span><span data-lang-en>Minutes of the July FOMC</span> <span class="vf ok">2 SOURCES</span></td>
+        <td class="note opt"><span data-lang-ko>7/28~29 회의록입니다. <strong>8월에는 FOMC 가 없고</strong> 다음 회의는 9/15~16 이라, 그 사이 연준의 생각을 읽을 수 있는 유일한 자료입니다</span><span data-lang-en>From the 28&ndash;29 July meeting. <strong>There is no August FOMC</strong> and the next is 15&ndash;16 September, so this is the only read on the Fed in between</span></td>
+      </tr>
+      <tr>
+        <th><span data-lang-ko>8/21(금)</span><span data-lang-en>8/21 Fri</span></th>
+        <td class="wh"><span data-lang-ko>한국</span><span data-lang-en>Korea</span></td>
+        <td><span data-lang-ko>관세청 8월 1~20일 수출입 현황</span><span data-lang-en>Customs Service export and import data, 1&ndash;20 August</span> <span class="vf solo">1 SOURCE</span></td>
+        <td class="note opt"><span data-lang-ko>월간 확정치보다 열흘 빠른 수출 속보입니다. 반도체 품목별 증감을 봅니다</span><span data-lang-en>The early read on exports, ten days ahead of the monthly figure; watch semiconductors by item</span></td>
+      </tr>
+      <tr class="hl">
+        <th><span data-lang-ko>8/26(수) 장 마감 후</span><span data-lang-en>8/26 Wed, after the close</span></th>
+        <td class="wh"><span data-lang-ko>기업</span><span data-lang-en>Company</span></td>
+        <td><span data-lang-ko><strong>엔비디아 실적</strong> (국내 8/27 목 새벽)</span><span data-lang-en><strong>Nvidia results</strong> (early hours of Thu 27 in Korea)</span> <span class="vf ok">2 SOURCES</span></td>
+        <td class="note opt"><span data-lang-ko>회사 가이던스가 <strong>매출 약 910억 달러</strong>입니다. 간밤 SOX 가 -2.94% 빠진 국면이라 국내 반도체에 그대로 옮겨붙는 이벤트입니다</span><span data-lang-en>Company guidance is <strong>about USD 91bn of revenue</strong>. With the SOX down -2.94% overnight, this transmits directly to Korean semis</span></td>
+      </tr>
+      <tr class="hl">
+        <th><span data-lang-ko>8/27(목)</span><span data-lang-en>8/27 Thu</span></th>
+        <td class="wh"><span data-lang-ko>한국</span><span data-lang-en>Korea</span></td>
+        <td><span data-lang-ko><strong>한국은행 금통위</strong> + 수정 경제전망</span><span data-lang-en><strong>Bank of Korea rate decision</strong> and revised forecasts</span> <span class="vf ok">2 SOURCES</span></td>
+        <td class="note opt"><span data-lang-ko>현 기준금리 <strong>2.75%</strong>(7월 0.25%p 인상). 증권가에서는 성장률·물가 전망 상향을 동반한 「매파적 동결」 전망이 나옵니다 &mdash; <strong>전망일 뿐 결과가 아닙니다</strong>. 엔비디아 실적과 <strong>같은 날 아침</strong>입니다</span><span data-lang-en>The policy rate is <strong>2.75%</strong> after a 25bp hike in July. Houses are looking for a &ldquo;hawkish hold&rdquo; alongside upgraded growth and inflation forecasts &mdash; <strong>a forecast, not a result</strong>. It falls on the <strong>same morning</strong> as Nvidia</span></td>
+      </tr>
+      <tr>
+        <th><span data-lang-ko>8/27(목)~29(토)</span><span data-lang-en>27&ndash;29 Aug</span></th>
+        <td class="wh"><span data-lang-ko>미국</span><span data-lang-en>US</span></td>
+        <td><span data-lang-ko>잭슨홀 심포지엄</span><span data-lang-en>Jackson Hole symposium</span> <span class="vf ok">2 SOURCES</span></td>
+        <td class="note opt"><span data-lang-ko>캔자스시티 연준 주최이고 올해 주제는 「금융혁신 &mdash; 지급결제와 정책」입니다. FOMC 가 없는 달이라 <strong>연준 발언이 나오는 유일한 자리</strong>입니다</span><span data-lang-en>Hosted by the Kansas City Fed; this year&rsquo;s theme is &ldquo;Financial Innovation: Implications for Payments and Policy&rdquo;. With no FOMC this month, <strong>it is the only Fed podium</strong></span></td>
+      </tr>
+      <tr>
+        <th><span data-lang-ko>8/28(금) 21:30</span><span data-lang-en>8/28 Fri 21:30</span></th>
+        <td class="wh"><span data-lang-ko>미국</span><span data-lang-en>US</span></td>
+        <td><span data-lang-ko>미 7월 PCE 물가</span><span data-lang-en>US July PCE price index</span> <span class="vf solo">1 SOURCE</span></td>
+        <td class="note opt"><span data-lang-ko>연준이 실제로 보는 물가 지표입니다. CPI 와 어긋나면 CPI 쪽이 아니라 이쪽이 정책에 붙습니다</span><span data-lang-en>The inflation gauge the Fed actually targets; where it diverges from CPI, policy follows this one</span></td>
+      </tr>
+      <tr>
+        <th><span data-lang-ko>8/31(월) 종가</span><span data-lang-en>8/31 Mon, at the close</span></th>
+        <td class="wh"><span data-lang-ko>한국</span><span data-lang-en>Korea</span></td>
+        <td><span data-lang-ko>MSCI 지수 리밸런싱 매매 (9/1 적용)</span><span data-lang-en>MSCI rebalance trade, effective 1 September</span> <span class="vf solo">1 SOURCE</span></td>
+        <td class="note opt"><span data-lang-ko>8/13 발표 내용이 실제 매매로 나오는 날입니다. 종가 무렵 거래량이 몰립니다</span><span data-lang-en>The day the 13 August announcement turns into actual trades; volume clusters into the close</span></td>
       </tr>
     </tbody>
   </table>
   </div>
+
+  <p class="cap"><span data-lang-ko>일정은 검색으로 확인했습니다 &mdash; 서로 다른 두 곳 이상이 일치하면 <span class="vf ok">2 SOURCES</span>, 한 곳뿐이면 <span class="vf solo">1 SOURCE</span> 입니다. 기관이 예고한 날짜라도 바뀔 수 있으니 <strong>당일 아침에 다시 확인하십시오</strong>. MSCI 발표일은 매체에 따라 미국시간 8/12 와 한국시간 8/13 으로 갈려 적히는데 같은 시점입니다.</span><span data-lang-en>Dates were confirmed by search &mdash; <span class="vf ok">2 SOURCES</span> where two or more independent outlets agree, <span class="vf solo">1 SOURCE</span> where only one does. Scheduled dates can still move, so <strong>re-check on the morning itself</strong>. The MSCI announcement is written as 12 August US time in some outlets and 13 August KST in others &mdash; the same moment.</span></p>
 </section>
 
 <section class="section" id="risks">
