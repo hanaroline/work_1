@@ -247,10 +247,12 @@ html[lang="en"] .stat-note{font-family:var(--font-en)}
 table.data{width:100%;border-collapse:collapse;font-size:16px;min-width:560px}
 table.data caption{caption-side:top;text-align:left;font-size:14px;color:var(--muted-soft);padding:0 0 10px}
 table.data th,table.data td{padding:11px 13px;border-bottom:1px solid var(--hairline-soft);text-align:left;vertical-align:top;line-height:1.5}
+table.data.compact th,table.data.compact td{padding:8px 11px}
 table.data thead th{background:var(--primary-soft);color:var(--ink);font-size:15px;font-weight:700;white-space:nowrap}
 table.data tbody tr:hover{background:var(--surface-subtle)}
 table.data tbody th{font-weight:600;color:var(--ink);white-space:nowrap}
 table.data td.n,table.data th.n{text-align:right;font-family:var(--font-num);white-space:nowrap}
+table.data td.tick,table.data th.tick{font-family:var(--font-num);font-variant-numeric:tabular-nums;letter-spacing:.3px;color:var(--muted);white-space:nowrap}
 table.data td.up,table.data .up{color:var(--up)} table.data td.down,table.data .down{color:var(--down)}
 table.data .na{color:var(--muted-soft)}
 table.data tr.hl > td,table.data tr.hl > th{background:var(--hl-row)}
@@ -288,7 +290,6 @@ table.data td.sparkcell{width:132px;color:var(--primary);line-height:0}
 @media (max-width:680px){table.data .sparkcell{display:none}}
 table.data td.note{font-size:14px;line-height:1.45;color:var(--muted);white-space:normal;min-width:190px;max-width:340px}
 @media (max-width:680px){table.data .note{display:none}}
-table.data.compact th,table.data.compact td{padding:8px 11px}
 
 /* ============ verification flags ============ */
 .vf{display:inline-block;font-size:11px;font-weight:600;letter-spacing:.4px;padding:2px 7px;
@@ -640,16 +641,20 @@ html[lang="en"] [data-lang-en]{display:revert}
       <th class="n"><span data-lang-ko>하락</span><span data-lang-en>Down</span></th>
       <th class="n opt"><span data-lang-ko>보합</span><span data-lang-en>Flat</span></th>
       <th class="n"><span data-lang-ko>상한가</span><span data-lang-en>Limit up</span></th>
+      <th class="n opt"><span data-lang-ko>하한가</span><span data-lang-en>Limit down</span></th>
+      <th class="n opt"><span data-lang-ko>전체</span><span data-lang-en>Total</span></th>
       <th class="n"><span data-lang-ko>상승/하락</span><span data-lang-en>A/D</span></th>
     </tr></thead>
     <tbody>
       <tr>
         <th>KOSPI</th><td class="n up">697</td><td class="n down">183</td>
-        <td class="n opt">31</td><td class="n up">0</td><td class="n">3.8배</td>
+        <td class="n opt">31</td><td class="n up">0</td><td class="n opt flat">0</td>
+        <td class="n opt">911</td><td class="n">3.8배</td>
       </tr>
       <tr>
         <th>KOSDAQ</th><td class="n up">1,431</td><td class="n down">236</td>
-        <td class="n opt">52</td><td class="n up">11</td><td class="n">6.1배</td>
+        <td class="n opt">52</td><td class="n up">11</td><td class="n opt flat">0</td>
+        <td class="n opt">1,719</td><td class="n">6.1배</td>
       </tr>
     </tbody>
   </table>
@@ -727,19 +732,23 @@ html[lang="en"] [data-lang-en]{display:revert}
       <th class="n"><span data-lang-ko>개인</span><span data-lang-en>Retail</span></th>
       <th class="n"><span data-lang-ko>외국인</span><span data-lang-en>Foreign</span></th>
       <th class="n"><span data-lang-ko>기관</span><span data-lang-en>Institution</span></th>
+      <th class="note opt"><span data-lang-ko>읽는 법</span><span data-lang-en>How to read it</span></th>
     </tr></thead>
     <tbody>
       <tr>
         <th><span data-lang-ko>코스피 현물</span><span data-lang-en>KOSPI cash</span></th>
         <td class="n up">9,003</td><td class="n down">-14,909</td><td class="n up">5,692</td>
+        <td class="note opt"><span data-lang-ko>외국인 순매도 나흘째. 개인이 9,003억원을 받았습니다</span><span data-lang-en>A fourth straight day of foreign selling; retail absorbed 9,003</span></td>
       </tr>
       <tr>
         <th><span data-lang-ko>코스닥 현물</span><span data-lang-en>KOSDAQ cash</span></th>
         <td class="n down">-6,729</td><td class="n up">1,027</td><td class="n up">5,667</td>
+        <td class="note opt"><span data-lang-ko>여기서는 외국인이 샀습니다 &mdash; 두 시장을 다르게 다뤘다는 뜻입니다</span><span data-lang-en>Here foreigners bought &mdash; they treated the two markets differently</span></td>
       </tr>
       <tr>
         <th><span data-lang-ko>코스피200 선물</span><span data-lang-en>KOSPI 200 futures</span></th>
         <td class="n up">2,030</td><td class="n up">5,471</td><td class="n down">-7,017</td>
+        <td class="note opt"><span data-lang-ko>현물은 팔고 선물은 5,471억원 샀습니다. 방향을 접은 것이 아니라 수단을 바꾼 모양입니다</span><span data-lang-en>Selling cash while buying 5,471 of futures &mdash; a change of instrument, not of direction</span></td>
       </tr>
     </tbody>
   </table>
@@ -753,20 +762,23 @@ html[lang="en"] [data-lang-en]{display:revert}
   <h3><span data-lang-ko>최근 6거래일 투자자별 순매수</span><span data-lang-en>Six sessions of investor flows</span></h3>
   <div class="table-wrap">
   <table class="data compact">
-    <caption><span data-lang-ko>코스피 · 단위 억원 · 외국인 매도가 이어지는 모양을 봅니다 <span class="vf ok">MARKET DATA</span></span><span data-lang-en>KOSPI · KRW 100mn · watch the run of foreign selling <span class="vf ok">MARKET DATA</span></span></caption>
+    <caption><span data-lang-ko>코스피 · 순매수 단위 억원 · 거래대금은 원화 조원 · 지수가 오른 날에도 외국인이 팔았는지 함께 보십시오 <span class="vf ok">MARKET DATA</span></span><span data-lang-en>KOSPI · net buying in KRW 100mn, value traded in KRW trn · read the flows against the index move <span class="vf ok">MARKET DATA</span></span></caption>
     <thead><tr>
       <th class="wrap"><span data-lang-ko>날짜</span><span data-lang-en>Date</span></th>
+      <th class="n opt"><span data-lang-ko>코스피 종가</span><span data-lang-en>KOSPI close</span></th>
+      <th class="n"><span data-lang-ko>등락률</span><span data-lang-en>Chg</span></th>
       <th class="n"><span data-lang-ko>개인</span><span data-lang-en>Retail</span></th>
       <th class="n"><span data-lang-ko>외국인</span><span data-lang-en>Foreign</span></th>
       <th class="n"><span data-lang-ko>기관</span><span data-lang-en>Institution</span></th>
+      <th class="n opt"><span data-lang-ko>거래대금</span><span data-lang-en>Value</span></th>
     </tr></thead>
     <tbody>
-      <tr class="hl"><th>26.08.10</th><td class="n up">9,003</td><td class="n down">-14,909</td><td class="n up">5,692</td></tr>
-      <tr><th>26.08.07</th><td class="n up">2,675</td><td class="n down">-8,651</td><td class="n up">5,854</td></tr>
-      <tr><th>26.08.06</th><td class="n up">33,367</td><td class="n down">-32,893</td><td class="n down">-1,214</td></tr>
-      <tr><th>26.08.05</th><td class="n down">-11,844</td><td class="n up">14,464</td><td class="n down">-2,838</td></tr>
-      <tr><th>26.08.04</th><td class="n up">8,187</td><td class="n down">-3,716</td><td class="n down">-5,385</td></tr>
-      <tr><th>26.08.03</th><td class="n up">46,523</td><td class="n down">-28,220</td><td class="n down">-19,516</td></tr>
+      <tr class="hl"><th><span class="opt">26.</span>08.10</th><td class="n opt">6,299.66</td><td class="n up">+0.65%</td><td class="n up">9,003</td><td class="n down">-14,909</td><td class="n up">5,692</td><td class="n opt">19.0조</td></tr>
+      <tr><th><span class="opt">26.</span>08.07</th><td class="n opt">6,258.77</td><td class="n down">-0.60%</td><td class="n up">2,675</td><td class="n down">-8,651</td><td class="n up">5,854</td><td class="n opt">24.7조</td></tr>
+      <tr><th><span class="opt">26.</span>08.06</th><td class="n opt">6,296.38</td><td class="n down">-4.58%</td><td class="n up">33,367</td><td class="n down">-32,893</td><td class="n down">-1,214</td><td class="n opt">26.5조</td></tr>
+      <tr><th><span class="opt">26.</span>08.05</th><td class="n opt">6,598.26</td><td class="n up">+3.76%</td><td class="n down">-11,844</td><td class="n up">14,464</td><td class="n down">-2,838</td><td class="n opt">25.7조</td></tr>
+      <tr><th><span class="opt">26.</span>08.04</th><td class="n opt">6,358.95</td><td class="n up">+1.62%</td><td class="n up">8,187</td><td class="n down">-3,716</td><td class="n down">-5,385</td><td class="n opt">28.2조</td></tr>
+      <tr><th><span class="opt">26.</span>08.03</th><td class="n opt">6,257.45</td><td class="n down">-5.12%</td><td class="n up">46,523</td><td class="n down">-28,220</td><td class="n down">-19,516</td><td class="n opt">26.3조</td></tr>
     </tbody>
   </table>
   </div>
@@ -934,23 +946,24 @@ html[lang="en"] [data-lang-en]{display:revert}
     <caption><span data-lang-ko>8월 10일(월) 뉴욕 마감 <span class="vf ok">MARKET DATA</span></span><span data-lang-en>Close, Monday 10 August, New York <span class="vf ok">MARKET DATA</span></span></caption>
     <thead><tr>
       <th class="wrap"><span data-lang-ko>지수</span><span data-lang-en>Index</span></th>
+      <th class="note opt"><span data-lang-ko>무엇을 담고 있는가</span><span data-lang-en>What it holds</span></th>
       <th class="n"><span data-lang-ko>종가</span><span data-lang-en>Close</span></th>
       <th class="n"><span data-lang-ko>등락률</span><span data-lang-en>Chg</span></th>
       <th class="n opt"><span data-lang-ko>장중 고가</span><span data-lang-en>High</span></th>
       <th class="n opt"><span data-lang-ko>장중 저가</span><span data-lang-en>Low</span></th>
     </tr></thead>
     <tbody>
-      <tr><th>S&amp;P 500</th><td class="n">7,753.11</td><td class="n down">-0.06%</td>
+      <tr><th>S&amp;P 500</th><td class="note opt"><span data-lang-ko>미국 대형주 500종목. 미국 시장을 대표하는 기준 지수입니다</span><span data-lang-en>The 500 US large caps &mdash; the benchmark for the American market</span></td><td class="n">7,753.11</td><td class="n down">-0.06%</td>
         <td class="n opt">7,773.76</td><td class="n opt">7,743.11</td></tr>
-      <tr><th>NASDAQ</th><td class="n">26,605.36</td><td class="n down">-0.32%</td>
+      <tr><th>NASDAQ</th><td class="note opt"><span data-lang-ko>기술주 비중이 큽니다. 금리가 오르면 더 밀리는 쪽입니다</span><span data-lang-en>Tech-heavy, and the more rate-sensitive of the headline indices</span></td><td class="n">26,605.36</td><td class="n down">-0.32%</td>
         <td class="n opt">26,724.63</td><td class="n opt">26,548.26</td></tr>
-      <tr><th>DOW</th><td class="n">53,975.98</td><td class="n down">-0.11%</td>
+      <tr><th>DOW</th><td class="note opt"><span data-lang-ko>대형 우량주 30종목. 주가가 비싼 종목의 영향이 큰 가격가중 지수입니다</span><span data-lang-en>Thirty blue chips, price-weighted, so higher-priced shares carry more of it</span></td><td class="n">53,975.98</td><td class="n down">-0.11%</td>
         <td class="n opt">54,072.66</td><td class="n opt">53,850.19</td></tr>
-      <tr><th>SOX <span data-lang-ko>(반도체)</span><span data-lang-en>(semis)</span></th><td class="n">11,993.86</td><td class="n down">-2.94%</td>
+      <tr><th>SOX <span data-lang-ko>(반도체)</span><span data-lang-en>(semis)</span></th><td class="note opt"><span data-lang-ko>반도체 30종목. 국내 반도체와 가장 직접 이어지는 지수입니다</span><span data-lang-en>Thirty semiconductor names &mdash; the closest read-across to Korean chip stocks</span></td><td class="n">11,993.86</td><td class="n down">-2.94%</td>
         <td class="n opt">12,432.94</td><td class="n opt">11,992.95</td></tr>
-      <tr><th>Russell 2000</th><td class="n">3,017.40</td><td class="n down">-0.56%</td>
+      <tr><th>Russell 2000</th><td class="note opt"><span data-lang-ko>미국 중소형주 2,000종목. 내수 경기와 금리에 민감합니다</span><span data-lang-en>Two thousand US small caps, sensitive to domestic demand and rates</span></td><td class="n">3,017.40</td><td class="n down">-0.56%</td>
         <td class="n opt">3,031.81</td><td class="n opt">3,013.13</td></tr>
-      <tr><th>VIX</th><td class="n">15.46</td><td class="n up">+3.76%</td>
+      <tr><th>VIX</th><td class="note opt"><span data-lang-ko>S&amp;P500 옵션이 가리키는 30일 변동성. 오르면 불안이 커졌다는 뜻입니다</span><span data-lang-en>The 30-day volatility implied by S&amp;P 500 options; a rise means more anxiety</span></td><td class="n">15.46</td><td class="n up">+3.76%</td>
         <td class="n opt">15.72</td><td class="n opt">15.10</td></tr>
     </tbody>
   </table>
@@ -988,23 +1001,27 @@ html[lang="en"] [data-lang-en]{display:revert}
     <caption><span data-lang-ko>S&amp;P500 업종 ETF 11개 · 8/10 <span class="vf ok">MARKET DATA</span></span><span data-lang-en>Eleven S&amp;P 500 sector ETFs · 10 Aug <span class="vf ok">MARKET DATA</span></span></caption>
     <thead><tr>
       <th class="wrap"><span data-lang-ko>업종</span><span data-lang-en>Sector</span></th>
+      <th class="tick opt"><span data-lang-ko>ETF</span><span data-lang-en>ETF</span></th>
+      <th class="note opt"><span data-lang-ko>대표 편입 종목</span><span data-lang-en>Largest holdings</span></th>
+      <th class="n opt"><span data-lang-ko>종가($)</span><span data-lang-en>Close ($)</span></th>
       <th class="n"><span data-lang-ko>등락률</span><span data-lang-en>Chg</span></th>
     </tr></thead>
     <tbody>
-      <tr><th>에너지</th><td class="n up">+4.66%</td></tr>
-      <tr><th>헬스케어</th><td class="n up">+1.67%</td></tr>
-      <tr><th>소재</th><td class="n up">+0.61%</td></tr>
-      <tr><th>커뮤니케이션</th><td class="n up">+0.52%</td></tr>
-      <tr><th>금융</th><td class="n up">+0.36%</td></tr>
-      <tr><th>임의소비재</th><td class="n down">-0.16%</td></tr>
-      <tr><th>필수소비재</th><td class="n down">-0.20%</td></tr>
-      <tr><th>산업재</th><td class="n down">-0.31%</td></tr>
-      <tr><th>기술</th><td class="n down">-0.88%</td></tr>
-      <tr><th>유틸리티</th><td class="n down">-1.10%</td></tr>
-      <tr><th>부동산</th><td class="n down">-1.29%</td></tr>
+      <tr><th><span data-lang-ko>에너지</span><span data-lang-en>Energy</span></th><td class="tick opt">XLE</td><td class="note opt"><span data-lang-ko>엑슨모빌 · 셰브론 · 코노코필립스</span><span data-lang-en>Exxon Mobil, Chevron, ConocoPhillips</span></td><td class="n opt">60.18</td><td class="n up">+4.66%</td></tr>
+      <tr><th><span data-lang-ko>헬스케어</span><span data-lang-en>Health care</span></th><td class="tick opt">XLV</td><td class="note opt"><span data-lang-ko>일라이릴리 · 존슨앤드존슨 · 애브비</span><span data-lang-en>Eli Lilly, Johnson &amp; Johnson, AbbVie</span></td><td class="n opt">168.44</td><td class="n up">+1.67%</td></tr>
+      <tr><th><span data-lang-ko>소재</span><span data-lang-en>Materials</span></th><td class="tick opt">XLB</td><td class="note opt"><span data-lang-ko>린데 · 셔윈윌리엄스 · 뉴몬트</span><span data-lang-en>Linde, Sherwin-Williams, Newmont</span></td><td class="n opt">53.18</td><td class="n up">+0.61%</td></tr>
+      <tr><th><span data-lang-ko>커뮤니케이션</span><span data-lang-en>Communication</span></th><td class="tick opt">XLC</td><td class="note opt"><span data-lang-ko>알파벳 · 메타 · 넷플릭스</span><span data-lang-en>Alphabet, Meta, Netflix</span></td><td class="n opt">111.83</td><td class="n up">+0.52%</td></tr>
+      <tr><th><span data-lang-ko>금융</span><span data-lang-en>Financials</span></th><td class="tick opt">XLF</td><td class="note opt"><span data-lang-ko>버크셔해서웨이 · JP모건 · 비자</span><span data-lang-en>Berkshire Hathaway, JPMorgan, Visa</span></td><td class="n opt">57.81</td><td class="n up">+0.36%</td></tr>
+      <tr><th><span data-lang-ko>임의소비재</span><span data-lang-en>Cons. discretionary</span></th><td class="tick opt">XLY</td><td class="note opt"><span data-lang-ko>아마존 · 테슬라 · 홈디포</span><span data-lang-en>Amazon, Tesla, Home Depot</span></td><td class="n opt">119.67</td><td class="n down">-0.16%</td></tr>
+      <tr><th><span data-lang-ko>필수소비재</span><span data-lang-en>Cons. staples</span></th><td class="tick opt">XLP</td><td class="note opt"><span data-lang-ko>코스트코 · 월마트 · P&amp;G</span><span data-lang-en>Costco, Walmart, Procter &amp; Gamble</span></td><td class="n opt">84.95</td><td class="n down">-0.20%</td></tr>
+      <tr><th><span data-lang-ko>산업재</span><span data-lang-en>Industrials</span></th><td class="tick opt">XLI</td><td class="note opt"><span data-lang-ko>GE에어로스페이스 · 캐터필러 · RTX</span><span data-lang-en>GE Aerospace, Caterpillar, RTX</span></td><td class="n opt">184.60</td><td class="n down">-0.31%</td></tr>
+      <tr><th><span data-lang-ko>기술</span><span data-lang-en>Technology</span></th><td class="tick opt">XLK</td><td class="note opt"><span data-lang-ko>엔비디아 · 마이크로소프트 · 애플</span><span data-lang-en>Nvidia, Microsoft, Apple</span></td><td class="n opt">186.32</td><td class="n down">-0.88%</td></tr>
+      <tr><th><span data-lang-ko>유틸리티</span><span data-lang-en>Utilities</span></th><td class="tick opt">XLU</td><td class="note opt"><span data-lang-ko>넥스트에라 · 서던 · 콘스텔레이션에너지</span><span data-lang-en>NextEra, Southern, Constellation Energy</span></td><td class="n opt">43.13</td><td class="n down">-1.10%</td></tr>
+      <tr><th><span data-lang-ko>부동산</span><span data-lang-en>Real estate</span></th><td class="tick opt">XLRE</td><td class="note opt"><span data-lang-ko>프로로지스 · 아메리칸타워 · 웰타워</span><span data-lang-en>Prologis, American Tower, Welltower</span></td><td class="n opt">44.40</td><td class="n down">-1.29%</td></tr>
     </tbody>
   </table>
   </div>
+  <p class="cap"><span data-lang-ko>종가와 등락률은 SPDR 섹터 ETF 11개의 8/10 뉴욕 종가입니다 <span class="vf ok">MARKET DATA</span> · 대표 편입 종목은 각 ETF에서 비중이 큰 종목이며 구성은 수시로 바뀝니다 <span class="vf none">REFERENCE</span></span><span data-lang-en>Closes and changes are the 10 Aug New York closes of the eleven SPDR sector ETFs <span class="vf ok">MARKET DATA</span>. Holdings are the largest weights in each fund and change over time <span class="vf none">REFERENCE</span></span></p>
 </section>
 
 <section class="section" id="rates">
@@ -1023,13 +1040,14 @@ html[lang="en"] [data-lang-en]{display:revert}
 
   <div class="table-wrap">
   <table class="data">
-    <caption><span data-lang-ko>미 재무부 확정 고시 · 2026-08-10 기준 (직전 2026-08-07) <span class="vf ok">MARKET DATA</span></span><span data-lang-en>US Treasury official par yields · 2026-08-10 (prior 2026-08-07) <span class="vf ok">MARKET DATA</span></span></caption>
+    <caption><span data-lang-ko>미 재무부 확정 고시 · 2026-08-10 기준 (직전 2026-08-07) · 「정책금리 대비」는 실효 연방기금금리 3.63%%(8/7)와의 차이 <span class="vf ok">MARKET DATA</span></span><span data-lang-en>US Treasury official par yields · 2026-08-10 (prior 2026-08-07) · &ldquo;vs EFFR&rdquo; is the spread over the effective fed funds rate of 3.63%% (7 Aug) <span class="vf ok">MARKET DATA</span></span></caption>
     <thead><tr>
       <th class="wrap"><span data-lang-ko>만기</span><span data-lang-en>Tenor</span></th>
       <th class="n"><span data-lang-ko>금리</span><span data-lang-en>Yield</span></th>
       <th class="n"><span data-lang-ko>전일비</span><span data-lang-en>Chg</span></th>
       <th class="n opt"><span data-lang-ko>실질</span><span data-lang-en>Real</span></th>
       <th class="n opt"><span data-lang-ko>기대인플레</span><span data-lang-en>Breakeven</span></th>
+      <th class="n opt"><span data-lang-ko>정책금리 대비</span><span data-lang-en>vs EFFR</span></th>
     </tr></thead>
     <tbody>
       <tr>
@@ -1038,6 +1056,7 @@ html[lang="en"] [data-lang-en]{display:revert}
         <td class="n flat">+0bp</td>
         <td class="n opt">&mdash;</td>
         <td class="n opt">&mdash;</td>
+        <td class="n opt">+16bp</td>
       </tr>
       <tr>
         <th><span data-lang-ko>3개월</span><span data-lang-en>3M</span></th>
@@ -1045,6 +1064,7 @@ html[lang="en"] [data-lang-en]{display:revert}
         <td class="n up">+2bp</td>
         <td class="n opt">&mdash;</td>
         <td class="n opt">&mdash;</td>
+        <td class="n opt">+26bp</td>
       </tr>
       <tr>
         <th><span data-lang-ko>6개월</span><span data-lang-en>6M</span></th>
@@ -1052,6 +1072,7 @@ html[lang="en"] [data-lang-en]{display:revert}
         <td class="n up">+4bp</td>
         <td class="n opt">&mdash;</td>
         <td class="n opt">&mdash;</td>
+        <td class="n opt">+37bp</td>
       </tr>
       <tr>
         <th><span data-lang-ko>1년</span><span data-lang-en>1Y</span></th>
@@ -1059,6 +1080,7 @@ html[lang="en"] [data-lang-en]{display:revert}
         <td class="n up">+3bp</td>
         <td class="n opt">&mdash;</td>
         <td class="n opt">&mdash;</td>
+        <td class="n opt">+41bp</td>
       </tr>
       <tr class="hl">
         <th><span data-lang-ko>2년</span><span data-lang-en>2Y</span></th>
@@ -1066,6 +1088,7 @@ html[lang="en"] [data-lang-en]{display:revert}
         <td class="n up">+6bp</td>
         <td class="n opt">&mdash;</td>
         <td class="n opt">&mdash;</td>
+        <td class="n opt">+62bp</td>
       </tr>
       <tr>
         <th><span data-lang-ko>3년</span><span data-lang-en>3Y</span></th>
@@ -1073,6 +1096,7 @@ html[lang="en"] [data-lang-en]{display:revert}
         <td class="n up">+6bp</td>
         <td class="n opt">&mdash;</td>
         <td class="n opt">&mdash;</td>
+        <td class="n opt">+68bp</td>
       </tr>
       <tr>
         <th><span data-lang-ko>5년</span><span data-lang-en>5Y</span></th>
@@ -1080,6 +1104,7 @@ html[lang="en"] [data-lang-en]{display:revert}
         <td class="n up">+6bp</td>
         <td class="n opt">2.16%</td>
         <td class="n opt">2.25%</td>
+        <td class="n opt">+78bp</td>
       </tr>
       <tr>
         <th><span data-lang-ko>7년</span><span data-lang-en>7Y</span></th>
@@ -1087,6 +1112,7 @@ html[lang="en"] [data-lang-en]{display:revert}
         <td class="n up">+7bp</td>
         <td class="n opt">2.28%</td>
         <td class="n opt">2.28%</td>
+        <td class="n opt">+93bp</td>
       </tr>
       <tr class="hl">
         <th><span data-lang-ko>10년</span><span data-lang-en>10Y</span></th>
@@ -1094,6 +1120,7 @@ html[lang="en"] [data-lang-en]{display:revert}
         <td class="n up">+7bp</td>
         <td class="n opt">2.43%</td>
         <td class="n opt">2.29%</td>
+        <td class="n opt">+109bp</td>
       </tr>
       <tr>
         <th><span data-lang-ko>20년</span><span data-lang-en>20Y</span></th>
@@ -1101,6 +1128,7 @@ html[lang="en"] [data-lang-en]{display:revert}
         <td class="n up">+5bp</td>
         <td class="n opt">2.79%</td>
         <td class="n opt">2.46%</td>
+        <td class="n opt">+162bp</td>
       </tr>
       <tr>
         <th><span data-lang-ko>30년</span><span data-lang-en>30Y</span></th>
@@ -1108,6 +1136,7 @@ html[lang="en"] [data-lang-en]{display:revert}
         <td class="n up">+6bp</td>
         <td class="n opt">3.00%</td>
         <td class="n opt">2.25%</td>
+        <td class="n opt">+162bp</td>
       </tr>
     </tbody>
   </table>
@@ -1153,7 +1182,7 @@ html[lang="en"] [data-lang-en]{display:revert}
       <tr>
         <th><span data-lang-ko>국고채 1년</span><span data-lang-en>KTB 1Y</span></th>
         <td class="n">3.384%</td>
-        <td class="note opt"><span data-lang-ko></span><span data-lang-en></span></td>
+        <td class="note opt"><span data-lang-ko>콜금리보다 <strong>60bp</strong> 높습니다 &mdash; 1년 안에 인하가 있다고 보지 않는 자리</span><span data-lang-en><strong>60bp</strong> above the call rate &mdash; not pricing a cut within a year</span></td>
       </tr>
       <tr>
         <th><span data-lang-ko>국고채 3년</span><span data-lang-en>KTB 3Y</span></th>
@@ -1163,12 +1192,12 @@ html[lang="en"] [data-lang-en]{display:revert}
       <tr>
         <th><span data-lang-ko>국고채 5년</span><span data-lang-en>KTB 5Y</span></th>
         <td class="n">3.994%</td>
-        <td class="note opt"><span data-lang-ko></span><span data-lang-en></span></td>
+        <td class="note opt"><span data-lang-ko>3년 대비 <strong>+22bp</strong>. 3년과 10년 사이를 메웁니다</span><span data-lang-en><strong>22bp</strong> over the 3-year, filling the gap to the 10-year</span></td>
       </tr>
       <tr>
         <th><span data-lang-ko>국고채 10년</span><span data-lang-en>KTB 10Y</span></th>
         <td class="n">4.239%</td>
-        <td class="note opt"><span data-lang-ko></span><span data-lang-en></span></td>
+        <td class="note opt"><span data-lang-ko>3년 대비 <strong>+47bp</strong> &mdash; 장단기 곡선은 우상향입니다</span><span data-lang-en><strong>47bp</strong> over the 3-year &mdash; the curve is positively sloped</span></td>
       </tr>
       <tr>
         <th><span data-lang-ko>회사채 3년 (BBB&minus;)</span><span data-lang-en>Corporate 3Y (BBB&minus;)</span></th>
@@ -1178,12 +1207,12 @@ html[lang="en"] [data-lang-en]{display:revert}
       <tr>
         <th><span data-lang-ko>CD 91일</span><span data-lang-en>CD 91D</span></th>
         <td class="n">2.930%</td>
-        <td class="note opt"><span data-lang-ko></span><span data-lang-en></span></td>
+        <td class="note opt"><span data-lang-ko>은행 단기 조달금리. 변동금리 대출과 스왑의 기준이 됩니다</span><span data-lang-en>Banks&rsquo; short-term funding rate; the base for floating-rate loans and swaps</span></td>
       </tr>
       <tr>
         <th><span data-lang-ko>콜금리</span><span data-lang-en>Call rate</span></th>
         <td class="n">2.780%</td>
-        <td class="note opt"><span data-lang-ko></span><span data-lang-en></span></td>
+        <td class="note opt"><span data-lang-ko>하루짜리 자금 금리로 정책금리에 가장 가깝습니다</span><span data-lang-en>The overnight rate &mdash; the closest market proxy for policy</span></td>
       </tr>
       <tr>
         <th><span data-lang-ko>COFIX (신규취급액)</span><span data-lang-en>COFIX (new)</span></th>
@@ -1193,7 +1222,7 @@ html[lang="en"] [data-lang-en]{display:revert}
       <tr>
         <th><span data-lang-ko>COFIX (잔액)</span><span data-lang-en>COFIX (balance)</span></th>
         <td class="n">2.940%</td>
-        <td class="note opt"><span data-lang-ko></span><span data-lang-en></span></td>
+        <td class="note opt"><span data-lang-ko>기존 대출에 적용됩니다. 신규취급액보다 <strong>11bp</strong> 낮습니다</span><span data-lang-en>Applies to existing loans; <strong>11bp</strong> below the new-lending COFIX</span></td>
       </tr>
     </tbody>
   </table>
@@ -1208,18 +1237,19 @@ html[lang="en"] [data-lang-en]{display:revert}
       <th class="n opt"><span data-lang-ko>07/30</span><span data-lang-en>07/30</span></th>
       <th class="n"><span data-lang-ko>08/10</span><span data-lang-en>08/10</span></th>
       <th class="n"><span data-lang-ko>변동</span><span data-lang-en>Chg</span></th>
+      <th class="n opt"><span data-lang-ko>미 국채 대비</span><span data-lang-en>vs UST</span></th>
       <th class="sparkcell"><span data-lang-ko>추이</span><span data-lang-en>Path</span></th>
     </tr></thead>
     <tbody>
-      <tr><th><span data-lang-ko>국고채 1년</span><span data-lang-en>KTB 1Y</span></th><td class="n opt">3.380%</td><td class="n">3.384%</td><td class="n up">+0.4bp</td><td class="sparkcell"><svg class="spark" width="120" height="26" viewBox="0 0 120 26" preserveAspectRatio="none" aria-hidden="true"><polyline fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" points="0.0,4.2 17.1,12.4 34.3,16.3 51.4,16.8 68.6,24.0 85.7,10.8 102.9,11.3 120.0,2.0"/></svg></td></tr>
-      <tr><th><span data-lang-ko>국고채 3년</span><span data-lang-en>KTB 3Y</span></th><td class="n opt">3.831%</td><td class="n">3.778%</td><td class="n down">-5.3bp</td><td class="sparkcell"><svg class="spark" width="120" height="26" viewBox="0 0 120 26" preserveAspectRatio="none" aria-hidden="true"><polyline fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" points="0.0,2.0 17.1,11.9 34.3,14.1 51.4,14.4 68.6,24.0 85.7,14.1 102.9,13.5 120.0,9.2"/></svg></td></tr>
-      <tr><th><span data-lang-ko>국고채 5년</span><span data-lang-en>KTB 5Y</span></th><td class="n opt">4.078%</td><td class="n">3.994%</td><td class="n down">-8.4bp</td><td class="sparkcell"><svg class="spark" width="120" height="26" viewBox="0 0 120 26" preserveAspectRatio="none" aria-hidden="true"><polyline fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" points="0.0,2.0 17.1,10.6 34.3,10.7 51.4,12.0 68.6,24.0 85.7,18.4 102.9,17.5 120.0,13.4"/></svg></td></tr>
-      <tr><th><span data-lang-ko>국고채 10년</span><span data-lang-en>KTB 10Y</span></th><td class="n opt">4.311%</td><td class="n">4.239%</td><td class="n down">-7.2bp</td><td class="sparkcell"><svg class="spark" width="120" height="26" viewBox="0 0 120 26" preserveAspectRatio="none" aria-hidden="true"><polyline fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" points="0.0,2.0 17.1,8.8 34.3,8.4 51.4,9.0 68.6,24.0 85.7,17.9 102.9,16.1 120.0,11.8"/></svg></td></tr>
-      <tr><th><span data-lang-ko>CD 91일</span><span data-lang-en>CD 91D</span></th><td class="n opt">2.930%</td><td class="n">2.930%</td><td class="n flat">+0.0bp</td><td class="sparkcell"><svg class="spark" width="120" height="26" viewBox="0 0 120 26" preserveAspectRatio="none" aria-hidden="true"><polyline fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" points="0.0,24.0 17.1,2.0 34.3,24.0 51.4,24.0 68.6,24.0 85.7,24.0 102.9,24.0 120.0,24.0"/></svg></td></tr>
+      <tr><th><span data-lang-ko>국고채 1년</span><span data-lang-en>KTB 1Y</span></th><td class="n opt">3.380%</td><td class="n">3.384%</td><td class="n up">+0.4bp</td><td class="n opt">-66bp</td><td class="sparkcell"><svg class="spark" width="120" height="26" viewBox="0 0 120 26" preserveAspectRatio="none" aria-hidden="true"><polyline fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" points="0.0,4.2 17.1,12.4 34.3,16.3 51.4,16.8 68.6,24.0 85.7,10.8 102.9,11.3 120.0,2.0"/></svg></td></tr>
+      <tr><th><span data-lang-ko>국고채 3년</span><span data-lang-en>KTB 3Y</span></th><td class="n opt">3.831%</td><td class="n">3.778%</td><td class="n down">-5.3bp</td><td class="n opt">-53bp</td><td class="sparkcell"><svg class="spark" width="120" height="26" viewBox="0 0 120 26" preserveAspectRatio="none" aria-hidden="true"><polyline fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" points="0.0,2.0 17.1,11.9 34.3,14.1 51.4,14.4 68.6,24.0 85.7,14.1 102.9,13.5 120.0,9.2"/></svg></td></tr>
+      <tr><th><span data-lang-ko>국고채 5년</span><span data-lang-en>KTB 5Y</span></th><td class="n opt">4.078%</td><td class="n">3.994%</td><td class="n down">-8.4bp</td><td class="n opt">-42bp</td><td class="sparkcell"><svg class="spark" width="120" height="26" viewBox="0 0 120 26" preserveAspectRatio="none" aria-hidden="true"><polyline fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" points="0.0,2.0 17.1,10.6 34.3,10.7 51.4,12.0 68.6,24.0 85.7,18.4 102.9,17.5 120.0,13.4"/></svg></td></tr>
+      <tr><th><span data-lang-ko>국고채 10년</span><span data-lang-en>KTB 10Y</span></th><td class="n opt">4.311%</td><td class="n">4.239%</td><td class="n down">-7.2bp</td><td class="n opt">-48bp</td><td class="sparkcell"><svg class="spark" width="120" height="26" viewBox="0 0 120 26" preserveAspectRatio="none" aria-hidden="true"><polyline fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" points="0.0,2.0 17.1,8.8 34.3,8.4 51.4,9.0 68.6,24.0 85.7,17.9 102.9,16.1 120.0,11.8"/></svg></td></tr>
+      <tr><th><span data-lang-ko>CD 91일</span><span data-lang-en>CD 91D</span></th><td class="n opt">2.930%</td><td class="n">2.930%</td><td class="n flat">+0.0bp</td><td class="n opt">-96bp</td><td class="sparkcell"><svg class="spark" width="120" height="26" viewBox="0 0 120 26" preserveAspectRatio="none" aria-hidden="true"><polyline fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" points="0.0,24.0 17.1,2.0 34.3,24.0 51.4,24.0 68.6,24.0 85.7,24.0 102.9,24.0 120.0,24.0"/></svg></td></tr>
     </tbody>
   </table>
   </div>
-  <p class="cap"><span data-lang-ko>ECOS 는 영업일마다 갱신되며 최신 영업일이 시세일보다 하루 이를 수 있습니다. 추이 선은 표 안 값으로 그린 것입니다.</span><span data-lang-en>ECOS updates each business day and its latest point can be a day behind the price date. The path is drawn from the values in this table.</span></p>
+  <p class="cap"><span data-lang-ko>ECOS 는 영업일마다 갱신되며 최신 영업일이 시세일보다 하루 이를 수 있습니다. 추이 선은 표 안 값으로 그린 것입니다. 「미 국채 대비」는 같은 만기 미 국채(CD 91일은 3개월물)와의 차이이고, <strong>(&minus;)는 한국 금리가 그만큼 낮다</strong>는 뜻입니다 &mdash; 원화 약세 쪽으로 작용하는 방향입니다.</span><span data-lang-en>ECOS updates each business day and its latest point can be a day behind the price date. The path is drawn from the values in this table. &ldquo;vs UST&rdquo; is the gap to the same-tenor US Treasury (the 3-month for CD 91D); a <strong>negative figure means the Korean yield is lower</strong>, which pushes the won weaker.</span></p>
 
   <p class="cap"><span data-lang-ko><strong>회사채 3년은 BBB&minus; 등급입니다</strong> &mdash; AA&minus; 가 아닙니다.
   한때 수집기가 이 코드를 AA&minus; 로 적어 4.44%여야 할 자리에 10.246%가 들어갈 뻔했고, 지금은 응답
@@ -1322,18 +1352,19 @@ html[lang="en"] [data-lang-en]{display:revert}
     <caption><span data-lang-ko>8/10 마감 <span class="vf ok">MARKET DATA</span></span><span data-lang-en>10 Aug close <span class="vf ok">MARKET DATA</span></span></caption>
     <thead><tr>
       <th class="wrap"><span data-lang-ko>지수</span><span data-lang-en>Index</span></th>
+      <th class="note opt"><span data-lang-ko>무엇을 담고 있는가</span><span data-lang-en>What it holds</span></th>
       <th class="n"><span data-lang-ko>종가</span><span data-lang-en>Close</span></th>
       <th class="n"><span data-lang-ko>등락률</span><span data-lang-en>Chg</span></th>
     </tr></thead>
     <tbody>
-      <tr><th><span data-lang-ko>니케이 225</span><span data-lang-en>Nikkei 225</span></th><td class="n">66,970.22</td><td class="n up">+2.08%</td></tr>
-      <tr><th><span data-lang-ko>대만 가권</span><span data-lang-en>Taiwan TAIEX</span></th><td class="n">44,928.76</td><td class="n up">+1.59%</td></tr>
-      <tr><th><span data-lang-ko>항셍</span><span data-lang-en>Hang Seng</span></th><td class="n">25,937.49</td><td class="n up">+1.05%</td></tr>
-      <tr><th><span data-lang-ko>상하이 종합</span><span data-lang-en>Shanghai Composite</span></th><td class="n">3,966.59</td><td class="n up">+0.67%</td></tr>
-      <tr><th><span data-lang-ko>STOXX 600</span><span data-lang-en>STOXX 600</span></th><td class="n">660.45</td><td class="n up">+0.03%</td></tr>
-      <tr><th><span data-lang-ko>DAX</span><span data-lang-en>DAX</span></th><td class="n">26,323.88</td><td class="n up">+0.02%</td></tr>
-      <tr><th><span data-lang-ko>CAC 40</span><span data-lang-en>CAC 40</span></th><td class="n">8,726.03</td><td class="n up">+0.13%</td></tr>
-      <tr><th><span data-lang-ko>FTSE 100</span><span data-lang-en>FTSE 100</span></th><td class="n">10,862.50</td><td class="n down">-0.35%</td></tr>
+      <tr><th><span data-lang-ko>니케이 225</span><span data-lang-en>Nikkei 225</span></th><td class="note opt"><span data-lang-ko>일본 대형주 225종목. 반도체 장비·수출주 비중이 큽니다</span><span data-lang-en>Japan&rsquo;s 225 large caps; heavy in chip equipment and exporters</span></td><td class="n">66,970.22</td><td class="n up">+2.08%</td></tr>
+      <tr><th><span data-lang-ko>대만 가권</span><span data-lang-en>Taiwan TAIEX</span></th><td class="note opt"><span data-lang-ko>TSMC 한 종목 비중이 가장 큽니다. 국내 반도체와 같은 방향으로 움직입니다</span><span data-lang-en>Dominated by TSMC; tends to move with Korean semis</span></td><td class="n">44,928.76</td><td class="n up">+1.59%</td></tr>
+      <tr><th><span data-lang-ko>항셍</span><span data-lang-en>Hang Seng</span></th><td class="note opt"><span data-lang-ko>홍콩에 상장한 중국 대형주. 텐센트·알리바바 등 플랫폼 비중이 큽니다</span><span data-lang-en>Chinese large caps listed in Hong Kong; platform names like Tencent and Alibaba dominate</span></td><td class="n">25,937.49</td><td class="n up">+1.05%</td></tr>
+      <tr><th><span data-lang-ko>상하이 종합</span><span data-lang-en>Shanghai Composite</span></th><td class="note opt"><span data-lang-ko>중국 본토 A주 전체. 내수와 정책에 더 민감합니다</span><span data-lang-en>All mainland A-shares; more sensitive to domestic demand and policy</span></td><td class="n">3,966.59</td><td class="n up">+0.67%</td></tr>
+      <tr><th><span data-lang-ko>STOXX 600</span><span data-lang-en>STOXX 600</span></th><td class="note opt"><span data-lang-ko>유럽 17개국 600종목. 유럽 전체를 보는 지수입니다</span><span data-lang-en>Six hundred names across 17 European countries &mdash; the broad European gauge</span></td><td class="n">660.45</td><td class="n up">+0.03%</td></tr>
+      <tr><th><span data-lang-ko>DAX</span><span data-lang-en>DAX</span></th><td class="note opt"><span data-lang-ko>독일 40종목. 자동차·산업재·화학 비중이 큽니다</span><span data-lang-en>Germany&rsquo;s 40; weighted towards autos, industrials and chemicals</span></td><td class="n">26,323.88</td><td class="n up">+0.02%</td></tr>
+      <tr><th><span data-lang-ko>CAC 40</span><span data-lang-en>CAC 40</span></th><td class="note opt"><span data-lang-ko>프랑스 40종목. 명품(LVMH)과 에너지(토탈) 비중이 큽니다</span><span data-lang-en>France&rsquo;s 40; heavy in luxury (LVMH) and energy (TotalEnergies)</span></td><td class="n">8,726.03</td><td class="n up">+0.13%</td></tr>
+      <tr><th><span data-lang-ko>FTSE 100</span><span data-lang-en>FTSE 100</span></th><td class="note opt"><span data-lang-ko>영국 100종목. 에너지·금융 비중이 크고 매출 대부분이 해외에서 나옵니다</span><span data-lang-en>The UK&rsquo;s 100; energy- and financial-heavy, with most revenue earned abroad</span></td><td class="n">10,862.50</td><td class="n down">-0.35%</td></tr>
     </tbody>
   </table>
   </div>
@@ -1570,19 +1601,20 @@ html[lang="en"] [data-lang-en]{display:revert}
 
   <div class="table-wrap">
   <table class="data">
-    <caption><span data-lang-ko>진입 시점별 코스피 손익 · 8/10 종가 6,299.66 기준 <span class="vf ok">MARKET DATA</span></span><span data-lang-en>KOSPI P&amp;L by entry point · against the 10 Aug close of 6,299.66 <span class="vf ok">MARKET DATA</span></span></caption>
+    <caption><span data-lang-ko>진입 시점별 코스피 손익 · 8/10 종가 6,299.66 기준 · 거래소 일별시세가 7/24까지만 와서 20거래일 항목은 뺐습니다 <span class="vf ok">MARKET DATA</span></span><span data-lang-en>KOSPI P&amp;L by entry point · against the 10 Aug close of 6,299.66 · the exchange daily table reaches back only to 24 July, so the 20-session row is omitted <span class="vf ok">MARKET DATA</span></span></caption>
     <thead><tr>
       <th class="wrap"><span data-lang-ko>진입 시점</span><span data-lang-en>Entry</span></th>
       <th class="n"><span data-lang-ko>당시 지수</span><span data-lang-en>Index then</span></th>
+      <th class="n"><span data-lang-ko>지수 차이</span><span data-lang-en>Points</span></th>
       <th class="n"><span data-lang-ko>현재 손익</span><span data-lang-en>P&amp;L</span></th>
+      <th class="note opt"><span data-lang-ko>읽는 법</span><span data-lang-en>How to read it</span></th>
     </tr></thead>
     <tbody>
-      <tr><th><span data-lang-ko>전 거래일 (8/7)</span><span data-lang-en>Prior session (7 Aug)</span></th><td class="n">6,258.77</td><td class="n up">+0.65%</td></tr>
-      <tr><th><span data-lang-ko>5거래일 전</span><span data-lang-en>Five sessions ago</span></th><td class="n">6,358.95</td><td class="n down">-0.93%</td></tr>
-      <tr><th><span data-lang-ko>10거래일 전</span><span data-lang-en>Ten sessions ago</span></th><td class="n">6,023.66</td><td class="n up">+4.58%</td></tr>
-      <tr><th><span data-lang-ko>20거래일 전</span><span data-lang-en>Twenty sessions ago</span></th><td class="n">6,690.62</td><td class="n down">-5.84%</td></tr>
-      <tr><th><span data-lang-ko>52주 저점</span><span data-lang-en>52-week low</span></th><td class="n">3,079.27</td><td class="n up">+104.58%</td></tr>
-      <tr><th><span data-lang-ko>52주 고점</span><span data-lang-en>52-week high</span></th><td class="n">9,385.59</td><td class="n down">-32.88%</td></tr>
+      <tr><th><span data-lang-ko>전 거래일 (8/7)</span><span data-lang-en>Prior session (7 Aug)</span></th><td class="n">6,258.77</td><td class="n up">+40.89</td><td class="n up">+0.65%</td><td class="note opt"><span data-lang-ko>어제 하루치 상승분입니다</span><span data-lang-en>Yesterday&rsquo;s gain, and nothing more</span></td></tr>
+      <tr><th><span data-lang-ko>5거래일 전 (8/3)</span><span data-lang-en>Five sessions ago (3 Aug)</span></th><td class="n">6,257.45</td><td class="n up">+42.21</td><td class="n up">+0.67%</td><td class="note opt"><span data-lang-ko>일주일 전과 사실상 같은 자리입니다</span><span data-lang-en>Essentially back where it stood a week ago</span></td></tr>
+      <tr><th><span data-lang-ko>10거래일 전 (7/27)</span><span data-lang-en>Ten sessions ago (27 Jul)</span></th><td class="n">6,755.75</td><td class="n down">-456.09</td><td class="n down">-6.75%</td><td class="note opt"><span data-lang-ko>2주 전보다는 아직 한참 아래입니다</span><span data-lang-en>Still well below the level of two weeks ago</span></td></tr>
+      <tr><th><span data-lang-ko>52주 저점</span><span data-lang-en>52-week low</span></th><td class="n">3,079.27</td><td class="n up">+3,220.39</td><td class="n up">+104.58%</td><td class="note opt"><span data-lang-ko>저점 대비 두 배가 넘었습니다</span><span data-lang-en>More than doubled off the low</span></td></tr>
+      <tr><th><span data-lang-ko>52주 고점</span><span data-lang-en>52-week high</span></th><td class="n">9,385.59</td><td class="n down">-3,085.93</td><td class="n down">-32.88%</td><td class="note opt"><span data-lang-ko>고점을 되찾으려면 여기서 <strong>+49.0%</strong> 가 더 필요합니다</span><span data-lang-en>Recovering the high would take another <strong>+49.0%</strong> from here</span></td></tr>
     </tbody>
   </table>
   </div>
