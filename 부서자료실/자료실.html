@@ -1,0 +1,621 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>부서 자료실</title>
+<style>
+/* ============================================================
+   부서 자료실 — 단일 파일 포털
+   외부 리소스(CDN/폰트/이미지)를 일절 불러오지 않습니다.
+   인터넷이 차단된 사내망·오프라인 환경에서도 그대로 동작합니다.
+   ============================================================ */
+
+:root{
+  /* 브랜드 */
+  --primary:#F58220;
+  --primary-active:#CB6015;
+  --primary-soft:#FAB072;
+  --secondary:#043B72;
+
+  /* 표면 */
+  --canvas:#FFFFFF;
+  --surface-soft:#ECEFF4;
+  --surface-subtle:#F7F8FA;
+  --hairline:#CDCECB;
+  --hairline-soft:#E5E4E1;
+  --cell-highlight:#D7D7D7;
+
+  /* 텍스트 */
+  --ink:#1A1A1A;
+  --body:#3D3D3D;
+  --muted:#6C6C6C;
+  --muted-soft:#84888B;
+
+  /* 의미 */
+  --success:#2E8540;
+  --error:#C62828;
+
+  /* 간격 */
+  --space-section:104px;
+  --space-block:56px;
+  --space-content:28px;
+  --space-tight:14px;
+
+  /* 폰트 — CDN 미사용, 로컬 설치 폰트만 사용 */
+  --font-kr:'Spoqa Han Sans Neo','Noto Sans KR','Malgun Gothic','맑은 고딕','Apple SD Gothic Neo',sans-serif;
+  --font-en:'Aptos','Inter','Segoe UI',system-ui,-apple-system,sans-serif;
+  --font-num:'Consolas','SF Mono','Menlo',monospace;
+}
+
+@media (max-width:768px){
+  :root{ --space-section:72px; --space-block:36px; }
+}
+
+*{ box-sizing:border-box; }
+
+html,body{ margin:0; padding:0; }
+
+body{
+  background:var(--canvas);
+  color:var(--body);
+  font-family:var(--font-kr);
+  font-size:19px;
+  line-height:1.65;
+  -webkit-font-smoothing:antialiased;
+}
+html[lang="en"] body{ font-family:var(--font-en); }
+
+.page{ max-width:1200px; margin:0 auto; padding:0 32px; }
+@media (max-width:768px){ .page{ padding:0 20px; } }
+
+a{ color:var(--secondary); }
+
+/* ---------- 헤더 ---------- */
+.masthead{ padding-top:38px; padding-bottom:0; }
+.masthead-top{
+  display:flex; align-items:flex-start; justify-content:space-between;
+  gap:19px; flex-wrap:wrap;
+}
+.eyebrow{
+  font-size:14px; font-weight:500; letter-spacing:.6px;
+  color:var(--muted); text-transform:uppercase;
+  margin:0 0 10px;
+}
+h1{
+  font-size:34px; font-weight:700; line-height:1.25; letter-spacing:-.3px;
+  color:var(--ink); margin:0;
+}
+@media (max-width:768px){ h1{ font-size:26px; } }
+.subtitle{ font-size:17px; color:var(--muted); margin:10px 0 0; max-width:62ch; }
+
+/* 한/영 토글 (우상단, 스크롤 고정 안 함) */
+.lang-toggle{
+  display:inline-flex; align-items:stretch; flex:0 0 auto;
+  border:1px solid var(--hairline); border-radius:2px;
+  box-shadow:0 2px 8px rgba(0,0,0,.06);
+  overflow:hidden; background:#fff;
+}
+.lang-toggle button{
+  appearance:none; border:0; background:#fff; color:var(--muted);
+  font-family:var(--font-en); font-size:14px; font-weight:500; letter-spacing:.5px;
+  padding:10px 17px; min-height:38px; cursor:pointer;
+}
+.lang-toggle button + button{ border-left:1px solid var(--hairline); }
+.lang-toggle button:hover:not([aria-checked="true"]){ background:var(--surface-subtle); color:var(--ink); }
+.lang-toggle button[aria-checked="true"]{ background:var(--primary); color:#fff; }
+.lang-toggle button:focus-visible{ outline:2px solid var(--primary); outline-offset:-2px; }
+
+/* ---------- 시그니처 1px 오렌지 룰 ---------- */
+.section{ margin-top:var(--space-block); }
+.section-rule{ height:1px; background:var(--primary); margin-bottom:19px; }
+.section-title{ font-size:26px; font-weight:600; line-height:1.3; color:var(--ink); margin:0; }
+@media (max-width:768px){ .section-title{ font-size:22px; } }
+.section-desc{ font-size:17px; color:var(--muted); margin:10px 0 0; }
+
+/* ---------- 요약 수치 ---------- */
+.stat-row{
+  display:grid; grid-template-columns:repeat(3,1fr); gap:19px;
+  margin-top:var(--space-content);
+}
+.stat-card{ border:1px solid var(--hairline); border-radius:4px; padding:19px 24px; background:#fff; }
+.stat-label{
+  font-size:16px; font-weight:500; letter-spacing:.6px; line-height:1.2;
+  color:var(--muted); margin:0 0 5px;
+}
+.stat-value{
+  font-size:48px; font-weight:700; line-height:1; letter-spacing:-.6px;
+  color:var(--secondary); font-variant-numeric:tabular-nums; margin:0;
+}
+.stat-value.is-date{ font-size:26px; letter-spacing:0; padding-top:14px; padding-bottom:8px; }
+.stat-value.accent{ color:var(--primary); }
+
+/* ---------- 검색 / 정렬 ---------- */
+.controls{
+  display:flex; gap:14px; flex-wrap:wrap; align-items:center;
+  margin-top:var(--space-content);
+}
+.search-wrap{ flex:1 1 320px; min-width:0; }
+input[type="search"]{
+  width:100%; font-family:inherit; font-size:17px; color:var(--ink);
+  padding:10px 14px; min-height:42px;
+  border:1px solid var(--hairline); border-radius:2px; background:#fff;
+}
+input[type="search"]:focus-visible{ outline:2px solid var(--primary); outline-offset:-2px; }
+select{
+  font-family:inherit; font-size:17px; color:var(--ink);
+  padding:10px 14px; min-height:42px;
+  border:1px solid var(--hairline); border-radius:2px; background:#fff; cursor:pointer;
+}
+select:focus-visible{ outline:2px solid var(--primary); outline-offset:-2px; }
+.result-count{ font-size:16px; color:var(--muted); font-variant-numeric:tabular-nums; }
+
+/* ---------- 카테고리 바로가기 칩 ---------- */
+.chip-row{ display:flex; flex-wrap:wrap; gap:10px; margin-top:var(--space-tight); }
+.chip{
+  display:inline-block; font-size:16px; font-weight:500; text-decoration:none;
+  color:var(--body); background:#fff;
+  border:1px solid var(--hairline); border-radius:2px;
+  padding:6px 12px;
+}
+.chip:hover{ background:var(--surface-subtle); color:var(--ink); border-color:var(--muted-soft); }
+.chip .chip-n{ color:var(--muted); font-variant-numeric:tabular-nums; margin-left:6px; }
+
+/* ---------- 표 ---------- */
+.table-wrap{ margin-top:19px; border:1px solid var(--hairline); overflow-x:auto; }
+table{ width:100%; border-collapse:collapse; font-size:17px; }
+thead th{
+  background:var(--primary-soft); color:var(--ink);
+  font-size:16px; font-weight:700; text-align:left;
+  padding:11px 14px; white-space:nowrap;
+  border-bottom:1px solid var(--hairline);
+}
+tbody td{ padding:11px 14px; border-top:1px solid var(--hairline-soft); vertical-align:middle; }
+tbody tr:hover{ background:var(--surface-subtle); }
+td.num{ text-align:right; font-variant-numeric:tabular-nums; white-space:nowrap; color:var(--muted); }
+td.date{ white-space:nowrap; font-variant-numeric:tabular-nums; color:var(--muted); }
+th.col-type,td.col-type{ width:96px; }
+th.col-size,td.col-size{ width:110px; }
+th.col-date,td.col-date{ width:130px; }
+
+/* 좁은 화면에서는 표를 행 단위 블록으로 쌓는다.
+   (열 폭을 유지하면 자료명이 한두 글자씩 끊겨 읽을 수 없다) */
+@media (max-width:640px){
+  .stat-row{
+    grid-template-columns:1fr; gap:0;
+    border:1px solid var(--hairline); border-radius:4px;
+  }
+  .stat-card{
+    border:0; border-top:1px solid var(--hairline-soft); border-radius:0;
+    display:flex; align-items:baseline; justify-content:space-between;
+    gap:14px; padding:12px 16px;
+  }
+  .stat-card:first-child{ border-top:0; }
+  .stat-label{ margin:0; }
+  .stat-value{ font-size:26px; }
+  .stat-value.is-date{ font-size:19px; padding:0; }
+
+  .table-wrap{ overflow-x:visible; }
+  table,tbody,tr,td{ display:block; width:auto; }
+  thead{ display:none; }
+  tbody tr{ padding:12px 14px; border-top:1px solid var(--hairline-soft); }
+  tbody tr:first-child{ border-top:0; }
+  tbody td{ border-top:0; padding:0; }
+  td.col-size{ display:none; }
+  td.col-type,td.col-date{ display:inline-block; width:auto; vertical-align:middle; }
+  td.col-type{ margin-right:10px; }
+  td.col-date{ font-size:14px; }
+  .file-link{ display:block; margin-bottom:6px; }
+}
+
+.file-link{ color:var(--ink); text-decoration:none; font-weight:500; word-break:break-word; }
+.file-link:hover{ color:var(--primary-active); text-decoration:underline; }
+.file-link:focus-visible{ outline:2px solid var(--primary); outline-offset:2px; }
+
+/* 파일 형식 칩 */
+.ext{
+  display:inline-block; font-family:var(--font-en);
+  font-size:13px; font-weight:600; letter-spacing:.4px; text-transform:uppercase;
+  padding:2px 8px; border-radius:2px; border:1px solid currentColor; background:#fff;
+  white-space:nowrap;
+}
+.ext-pdf{ color:#CB6015; }
+.ext-sheet{ color:#2E8540; }
+.ext-slide{ color:#AD624E; }
+.ext-doc{ color:#043B72; }
+.ext-web{ color:#0086B8; }
+.ext-img{ color:#7E9FC3; }
+.ext-etc{ color:#84888B; }
+
+/* ---------- 빈 상태 ---------- */
+.empty{
+  border:1px solid var(--hairline); border-radius:4px;
+  background:var(--surface-subtle);
+  padding:38px 28px; margin-top:19px;
+  font-size:17px; color:var(--muted);
+}
+.empty strong{ display:block; color:var(--ink); font-size:19px; margin-bottom:10px; }
+.empty code{
+  font-family:var(--font-num); font-size:15px;
+  background:#fff; border:1px solid var(--hairline-soft); border-radius:2px; padding:1px 6px;
+}
+.hidden{ display:none !important; }
+
+/* ---------- 안내 콜아웃 ---------- */
+.notice{
+  border:1px solid var(--hairline); border-left:3px solid var(--primary);
+  background:var(--surface-subtle); border-radius:2px;
+  padding:19px 24px; margin-top:var(--space-content);
+  font-size:17px;
+}
+.notice p{ margin:0 0 10px; }
+.notice p:last-child{ margin-bottom:0; }
+.notice strong{ color:var(--ink); }
+
+/* ---------- 푸터 ---------- */
+footer{
+  margin-top:var(--space-section); padding:28px 0 56px;
+  border-top:1px solid var(--hairline-soft);
+  font-size:14px; line-height:1.4; color:var(--muted-soft);
+}
+footer p{ margin:0 0 5px; }
+
+/* ---------- 인쇄 ---------- */
+@media print{
+  .lang-toggle,.controls,.chip-row,.notice{ display:none !important; }
+  body{ font-size:11pt; line-height:1.4; }
+  .page{ max-width:100%; padding:0; }
+  .section{ margin-top:24px; }
+  .section-title{ font-size:14pt; page-break-after:avoid; }
+  table{ page-break-inside:avoid; font-size:9pt; }
+  thead th{ background:var(--primary-soft) !important; -webkit-print-color-adjust:exact; print-color-adjust:exact; }
+  tbody tr:hover{ background:transparent; }
+  .file-link{ color:#000; }
+  footer{ margin-top:24px; }
+}
+</style>
+</head>
+<body>
+
+<div class="page">
+
+  <header class="masthead">
+    <div class="masthead-top">
+      <div>
+        <p class="eyebrow" data-ko="부서 공유 · 대외비" data-en="Department Only · Confidential">부서 공유 · 대외비</p>
+        <h1 data-ko="부서 자료실" data-en="Department Archive">부서 자료실</h1>
+        <p class="subtitle"
+           data-ko="부서 공유 폴더에 보관된 자료를 분류별로 모아 놓은 목록입니다. 자료명을 누르면 해당 파일이 열립니다."
+           data-en="A categorized index of the files stored in this department's shared folder. Select a title to open the file.">
+          부서 공유 폴더에 보관된 자료를 분류별로 모아 놓은 목록입니다. 자료명을 누르면 해당 파일이 열립니다.
+        </p>
+      </div>
+      <div class="lang-toggle" role="radiogroup" aria-label="언어 선택 / Language">
+        <button type="button" id="btn-ko" role="radio" aria-checked="true" lang="en">KO</button>
+        <button type="button" id="btn-en" role="radio" aria-checked="false" lang="en">EN</button>
+      </div>
+    </div>
+
+    <div class="stat-row">
+      <div class="stat-card">
+        <p class="stat-label" data-ko="전체 자료" data-en="TOTAL FILES">전체 자료</p>
+        <p class="stat-value" id="stat-files">0</p>
+      </div>
+      <div class="stat-card">
+        <p class="stat-label" data-ko="분류" data-en="CATEGORIES">분류</p>
+        <p class="stat-value accent" id="stat-cats">0</p>
+      </div>
+      <div class="stat-card">
+        <p class="stat-label" data-ko="목록 갱신" data-en="INDEX UPDATED">목록 갱신</p>
+        <p class="stat-value is-date" id="stat-updated">—</p>
+      </div>
+    </div>
+  </header>
+
+  <div class="controls">
+    <div class="search-wrap">
+      <label class="hidden" for="q" data-ko="자료 검색" data-en="Search files">자료 검색</label>
+      <input type="search" id="q" autocomplete="off"
+             data-ko-placeholder="자료명 검색 (예: 실적, 2026, 가이드)"
+             data-en-placeholder="Search by file name (e.g. report, 2026, guide)"
+             placeholder="자료명 검색 (예: 실적, 2026, 가이드)">
+    </div>
+    <label class="hidden" for="sort" data-ko="정렬" data-en="Sort">정렬</label>
+    <select id="sort">
+      <option value="date" data-ko="최신순" data-en="Newest first">최신순</option>
+      <option value="name" data-ko="이름순" data-en="Name (A–Z)">이름순</option>
+      <option value="size" data-ko="용량순" data-en="Largest first">용량순</option>
+    </select>
+    <span class="result-count" id="count"></span>
+  </div>
+
+  <nav class="chip-row" id="chips" aria-label="분류 바로가기"></nav>
+
+  <main id="categories"></main>
+
+  <div class="notice">
+    <p><strong data-ko="자료를 추가하려면" data-en="To add a file">자료를 추가하려면</strong></p>
+    <p data-ko="자료 폴더 아래 해당 분류 폴더에 파일을 넣은 뒤, 목록 갱신 스크립트를 실행하세요. 목록이 자동으로 다시 만들어집니다."
+       data-en="Drop the file into the matching category folder under the archive root, then run the index script. The list below is regenerated automatically.">
+      자료 폴더 아래 해당 분류 폴더에 파일을 넣은 뒤, 목록 갱신 스크립트를 실행하세요. 목록이 자동으로 다시 만들어집니다.
+    </p>
+  </div>
+
+  <footer>
+    <p data-ko="이 파일은 부서 공유 폴더 안에서 열어야 정상 동작합니다. 자료실.html 파일 하나만 따로 복사하면 자료 링크가 끊깁니다."
+       data-en="Open this page from inside the shared folder. Copying this HTML file alone will break every file link.">
+      이 파일은 부서 공유 폴더 안에서 열어야 정상 동작합니다. 자료실.html 파일 하나만 따로 복사하면 자료 링크가 끊깁니다.
+    </p>
+    <p data-ko="접근 권한은 폴더 권한으로 통제됩니다. 부서 외부로 폴더나 파일을 반출하지 마십시오."
+       data-en="Access is controlled by the shared-folder permissions. Do not move this folder or its files outside the department.">
+      접근 권한은 폴더 권한으로 통제됩니다. 부서 외부로 폴더나 파일을 반출하지 마십시오.
+    </p>
+  </footer>
+
+</div>
+
+<script>
+/* ARCHIVE:BEGIN — 이 블록은 목록 갱신 스크립트가 통째로 다시 씁니다. 직접 수정하지 마세요. */
+window.ARCHIVE = {
+  "generated": "2026-08-12 10:50",
+  "root": "자료",
+  "categories": [
+    {
+      "id": "01-리서치",
+      "name": "리서치",
+      "desc": "시장·종목 분석 자료와 외부 리서치 리포트",
+      "files": []
+    },
+    {
+      "id": "02-업무가이드",
+      "name": "업무가이드",
+      "desc": "업무 절차, 시스템 사용법, 체크리스트",
+      "files": []
+    },
+    {
+      "id": "03-회의자료",
+      "name": "회의자료",
+      "desc": "부서 회의·주간보고 발표 자료와 회의록",
+      "files": []
+    },
+    {
+      "id": "04-데이터",
+      "name": "데이터",
+      "desc": "정기 집계 데이터와 원본 데이터셋",
+      "files": []
+    },
+    {
+      "id": "05-교육자료",
+      "name": "교육자료",
+      "desc": "신규 입사자 온보딩 및 직무 교육 자료",
+      "files": []
+    }
+  ]
+};
+/* ARCHIVE:END */
+</script>
+
+<script>
+(function () {
+  "use strict";
+
+  var DATA = window.ARCHIVE || { generated: "", root: "자료", categories: [] };
+  var STORE_KEY = "archive.lang";
+
+  /* ---------- 파일 형식 분류 ---------- */
+  var EXT_CLASS = {
+    pdf: "ext-pdf",
+    xlsx: "ext-sheet", xls: "ext-sheet", xlsm: "ext-sheet", csv: "ext-sheet",
+    pptx: "ext-slide", ppt: "ext-slide",
+    docx: "ext-doc", doc: "ext-doc", hwp: "ext-doc", hwpx: "ext-doc", txt: "ext-doc", md: "ext-doc",
+    html: "ext-web", htm: "ext-web",
+    png: "ext-img", jpg: "ext-img", jpeg: "ext-img", gif: "ext-img", svg: "ext-img",
+    zip: "ext-etc"
+  };
+  function extClass(e) { return EXT_CLASS[e] || "ext-etc"; }
+
+  /* ---------- 포맷터 ---------- */
+  function fmtSize(bytes) {
+    if (typeof bytes !== "number" || bytes < 0) return "—";
+    if (bytes < 1024) return bytes + " B";
+    var kb = bytes / 1024;
+    if (kb < 1024) return kb.toFixed(kb < 10 ? 1 : 0) + " KB";
+    var mb = kb / 1024;
+    if (mb < 1024) return mb.toFixed(mb < 10 ? 1 : 0) + " MB";
+    return (mb / 1024).toFixed(1) + " GB";
+  }
+  function fmtCount(n) { return String(n).replace(/\B(?=(\d{3})+(?!\d))/g, ","); }
+
+  /* ---------- 상태 ---------- */
+  var state = { q: "", sort: "date", lang: "ko" };
+
+  var elCats    = document.getElementById("categories");
+  var elChips   = document.getElementById("chips");
+  var elCount   = document.getElementById("count");
+  var elQ       = document.getElementById("q");
+  var elSort    = document.getElementById("sort");
+
+  /* ---------- 렌더 ---------- */
+  function matches(file, q) {
+    if (!q) return true;
+    return (file.name || "").toLowerCase().indexOf(q) !== -1;
+  }
+
+  function sortFiles(files) {
+    var arr = files.slice();
+    if (state.sort === "name") {
+      arr.sort(function (a, b) { return (a.name || "").localeCompare(b.name || "", "ko"); });
+    } else if (state.sort === "size") {
+      arr.sort(function (a, b) { return (b.size || 0) - (a.size || 0); });
+    } else {
+      arr.sort(function (a, b) { return String(b.mtime || "").localeCompare(String(a.mtime || "")); });
+    }
+    return arr;
+  }
+
+  function el(tag, cls, text) {
+    var n = document.createElement(tag);
+    if (cls) n.className = cls;
+    if (text != null) n.textContent = text;
+    return n;
+  }
+
+  function buildTable(files) {
+    var wrap = el("div", "table-wrap");
+    var table = document.createElement("table");
+
+    var thead = document.createElement("thead");
+    var hrow = document.createElement("tr");
+    [
+      ["자료명", "File", ""],
+      ["형식", "Type", "col-type"],
+      ["크기", "Size", "col-size"],
+      ["수정일", "Modified", "col-date"]
+    ].forEach(function (h) {
+      var th = el("th", h[2] || null);
+      th.setAttribute("data-ko", h[0]);
+      th.setAttribute("data-en", h[1]);
+      th.textContent = state.lang === "en" ? h[1] : h[0];
+      hrow.appendChild(th);
+    });
+    thead.appendChild(hrow);
+    table.appendChild(thead);
+
+    var tbody = document.createElement("tbody");
+    files.forEach(function (f) {
+      var tr = document.createElement("tr");
+
+      var tdName = document.createElement("td");
+      var a = el("a", "file-link", f.name);
+      a.href = f.path;
+      a.setAttribute("title", f.path);
+      tdName.appendChild(a);
+      tr.appendChild(tdName);
+
+      var tdExt = el("td", "col-type");
+      tdExt.appendChild(el("span", "ext " + extClass(f.ext), f.ext || "?"));
+      tr.appendChild(tdExt);
+
+      tr.appendChild(el("td", "col-size num", fmtSize(f.size)));
+      tr.appendChild(el("td", "col-date date", f.mtime || "—"));
+
+      tbody.appendChild(tr);
+    });
+    table.appendChild(tbody);
+    wrap.appendChild(table);
+    return wrap;
+  }
+
+  function render() {
+    var q = state.q.trim().toLowerCase();
+    elCats.textContent = "";
+    elChips.textContent = "";
+
+    var shown = 0;
+    var total = 0;
+    var visibleCats = 0;
+
+    (DATA.categories || []).forEach(function (cat) {
+      var all = cat.files || [];
+      total += all.length;
+      var files = all.filter(function (f) { return matches(f, q); });
+      if (!files.length) return;
+
+      shown += files.length;
+      visibleCats += 1;
+
+      var sec = el("section", "section");
+      sec.id = "cat-" + cat.id;
+      sec.appendChild(el("div", "section-rule"));
+
+      var h2 = el("h2", "section-title", cat.name);
+      sec.appendChild(h2);
+
+      if (cat.desc) sec.appendChild(el("p", "section-desc", cat.desc));
+
+      sec.appendChild(buildTable(sortFiles(files)));
+      elCats.appendChild(sec);
+
+      var chip = el("a", "chip", cat.name);
+      chip.href = "#cat-" + cat.id;
+      chip.appendChild(el("span", "chip-n", fmtCount(files.length)));
+      elChips.appendChild(chip);
+    });
+
+    if (!visibleCats) {
+      var empty = el("div", "empty");
+      if (total === 0) {
+        empty.appendChild(el("strong", null,
+          state.lang === "en" ? "The archive is empty." : "아직 등록된 자료가 없습니다."));
+        var p = el("p", null,
+          state.lang === "en"
+            ? "Put files into the category folders under the archive root, then run the index script."
+            : "자료 폴더 아래 분류 폴더에 파일을 넣고 목록 갱신 스크립트를 실행하세요.");
+        p.style.margin = "0";
+        empty.appendChild(p);
+      } else {
+        empty.appendChild(el("strong", null,
+          state.lang === "en" ? "No matching files." : "검색 결과가 없습니다."));
+        var p2 = el("p", null,
+          state.lang === "en" ? "Try a different keyword." : "다른 검색어로 시도해 보세요.");
+        p2.style.margin = "0";
+        empty.appendChild(p2);
+      }
+      elCats.appendChild(empty);
+    }
+
+    // 요약 수치
+    document.getElementById("stat-files").textContent = fmtCount(total);
+    document.getElementById("stat-cats").textContent  = fmtCount((DATA.categories || []).length);
+    document.getElementById("stat-updated").textContent = DATA.generated || "—";
+
+    // 결과 건수
+    if (q) {
+      elCount.textContent = state.lang === "en"
+        ? fmtCount(shown) + " of " + fmtCount(total)
+        : total > 0 ? fmtCount(total) + "건 중 " + fmtCount(shown) + "건" : "";
+    } else {
+      elCount.textContent = "";
+    }
+  }
+
+  /* ---------- 한/영 전환 ---------- */
+  function applyLang(lang) {
+    state.lang = lang === "en" ? "en" : "ko";
+    document.documentElement.lang = state.lang;
+
+    var attr = state.lang === "en" ? "data-en" : "data-ko";
+    var nodes = document.querySelectorAll("[data-ko][data-en]");
+    for (var i = 0; i < nodes.length; i++) {
+      var v = nodes[i].getAttribute(attr);
+      if (v != null) nodes[i].textContent = v;
+    }
+
+    var ph = elQ.getAttribute(state.lang === "en" ? "data-en-placeholder" : "data-ko-placeholder");
+    if (ph) elQ.setAttribute("placeholder", ph);
+
+    document.title = state.lang === "en" ? "Department Archive" : "부서 자료실";
+
+    var ko = document.getElementById("btn-ko");
+    var en = document.getElementById("btn-en");
+    ko.setAttribute("aria-checked", state.lang === "ko" ? "true" : "false");
+    en.setAttribute("aria-checked", state.lang === "en" ? "true" : "false");
+
+    try { localStorage.setItem(STORE_KEY, state.lang); } catch (e) {}
+    render();
+  }
+
+  /* ---------- 이벤트 ---------- */
+  elQ.addEventListener("input", function () { state.q = elQ.value; render(); });
+  elSort.addEventListener("change", function () { state.sort = elSort.value; render(); });
+  document.getElementById("btn-ko").addEventListener("click", function () { applyLang("ko"); });
+  document.getElementById("btn-en").addEventListener("click", function () { applyLang("en"); });
+
+  var saved = "ko";
+  try { saved = localStorage.getItem(STORE_KEY) || "ko"; } catch (e) {}
+  applyLang(saved);
+})();
+</script>
+
+</body>
+</html>
