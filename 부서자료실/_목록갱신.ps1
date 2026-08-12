@@ -87,6 +87,20 @@ function Get-CategoryDesc([string]$CatDir) {
     return ''
 }
 
+# 설정 모드('분류.json')는 Python 버전에서만 지원합니다.
+# 여기서 폴더만 훑으면 설정에 정의된 자료를 통째로 빠뜨린 목록이 만들어지므로,
+# 잘못된 결과를 쓰는 대신 멈춥니다.
+$ConfigPath = Join-Path $Here '분류.json'
+if (Test-Path -LiteralPath $ConfigPath -PathType Leaf) {
+    Write-Host ""
+    Write-Host "이 자료실은 '분류.json' 설정 모드로 동작합니다." -ForegroundColor Yellow
+    Write-Host "PowerShell 버전은 폴더 모드만 지원하므로, 아래 명령으로 갱신해 주세요."
+    Write-Host ""
+    Write-Host "    python _목록갱신.py" -ForegroundColor Cyan
+    Write-Host ""
+    exit 1
+}
+
 if (-not (Test-Path -LiteralPath $RootDir -PathType Container)) {
     Write-Host "[오류] '$RootName' 폴더를 찾을 수 없습니다: $RootDir" -ForegroundColor Red
     exit 1
