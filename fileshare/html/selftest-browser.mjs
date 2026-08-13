@@ -173,8 +173,10 @@ check('제목 유지', (await page.textContent('.brand h1')).trim() === '공개 
 // 영문 모드
 await page.click('.topbar .lang-btn[data-lang="en"]');
 await page.waitForTimeout(200);
-check('영문 전환', (await page.textContent('table.files thead th:nth-child(2)')).trim() === 'File name');
+check('영문 전환', (await page.textContent('table.files thead th:nth-child(3)')).trim() === 'File name');
 await page.screenshot({ path: `${OUT}/06-en.png` });
+await page.click('.topbar .lang-btn[data-lang="ko"]');   // 언어 선택은 localStorage 에 남으므로 되돌린다
+await page.waitForTimeout(150);
 await page.close();
 
 // ---------- 5. 임시 보관 복원 ----------
@@ -187,6 +189,131 @@ await page.click('#draftLoad');
 await page.waitForSelector('table.files tbody tr');
 check('임시 보관 복원됨', await page.locator('table.files tbody tr').count() >= 1);
 await page.screenshot({ path: `${OUT}/07-draft.png` });
+await page.close();
+
+// ---------- 6. 관리 기능 ----------
+console.log('\n6. 폴더·삭제·되돌리기 등 관리 기능');
+page = await newPage();
+await page.goto(SRC);
+await page.waitForSelector('#listArea .empty');
+await page.click('#draftDrop').catch(() => {});
+await page.click('#addBtn');
+await page.setInputFiles('#fileInput', FILES);
+await page.waitForFunction(() => window.FS_TEST.state.items.length === 3);
+await page.click('#addModal [data-close]');
+
+// 폴더 만들기
+await page.click('#folderBtn');
+await page.fill('#fmNew', '리서치');
+await page.click('#fmAdd');
+await page.fill('#fmNew', '회의');
+await page.click('#fmAdd');
+await page.fill('#fmNew', '리서치');
+await page.click('#fmAdd');
+check('중복 폴더 거부', await page.isVisible('#fmErr.on'));
+check('빈 폴더도 목록에 유지', (await page.locator('.folder-row').count()) === 3);
+await page.screenshot({ path: `${OUT}/09-folders.png` });
+await page.click('#folderModal .modal-foot [data-close]');
+
+// 폴더 이동
+await page.locator('table.files tbody tr').first().locator('input[type=checkbox]').check();
+await page.locator('table.files tbody tr').nth(1).locator('input[type=checkbox]').check();
+await page.click('#moveBtn');
+await page.selectOption('#mvTarget', '리서치');
+await page.click('#mvGo');
+await page.waitForTimeout(200);
+check('선택 파일 폴더 이동', await page.evaluate(() =>
+  window.FS_TEST.state.items.filter(i => i.folder === '리서치').length) === 2);
+
+// 폴더 이름 변경
+await page.click('#folderBtn');
+await page.waitForSelector('#folderModal:not([hidden]) .folder-row');
+page.once('dialog', d => d.accept('리서치자료'));
+await page.locator('.folder-row', { hasText: '리서치' }).first().getByRole('button', { name: '이름 변경' }).click();
+await page.waitForTimeout(200);
+check('폴더 이름 변경 반영', await page.evaluate(() =>
+  window.FS_TEST.state.items.filter(i => i.folder === '리서치자료').length) === 2);
+
+// 폴더 삭제 → 파일은 남고 폴더 없음으로
+page.once('dialog', d => d.accept());
+await page.locator('.folder-row', { hasText: '리서치자료' }).first().getByRole('button', { name: '삭제' }).click();
+await page.waitForTimeout(200);
+check('폴더 삭제해도 파일 유지', await page.evaluate(() => window.FS_TEST.state.items.length) === 3);
+check('삭제된 폴더의 파일은 폴더 없음', await page.evaluate(() =>
+  window.FS_TEST.state.items.every(i => i.folder !== '리서치자료')));
+await page.click('#folderModal .modal-foot [data-close]');
+
+// 되돌리기
+await page.click('#undoBtn');
+await page.waitForTimeout(200);
+check('실행 취소로 폴더 복구', await page.evaluate(() =>
+  window.FS_TEST.state.items.filter(i => i.folder === '리서치자료').length) === 2);
+
+// 중요 표시
+await page.locator('table.files tbody tr').last().locator('.pin').click();
+await page.waitForTimeout(200);
+check('중요 표시가 맨 위로 정렬', await page.locator('table.files tbody tr').first().locator('.pin.on').count() === 1);
+
+// 파일 교체
+await page.locator('table.files tbody tr', { hasText: 'meeting-notes.md' }).getByRole('button', { name: '교체' }).click();
+await page.setInputFiles('#replaceInput', [{ name: 'new.md', mimeType: 'text/markdown', buffer: Buffer.from('교체된 내용') }]);
+await page.waitForFunction(() => window.FS_TEST.state.items.some(i => i.version === 2));
+check('교체 시 버전 증가', await page.locator('.ver').first().textContent() === 'v2');
+
+// 삭제
+await page.locator('table.files tbody tr').first().locator('input[type=checkbox]').check();
+page.once('dialog', d => d.accept());
+await page.click('#delBtn');
+await page.waitForTimeout(300);
+check('선택 삭제', await page.evaluate(() => window.FS_TEST.state.items.length) === 2);
+await page.click('#undoBtn');
+await page.waitForTimeout(200);
+check('삭제 되돌리기', await page.evaluate(() => window.FS_TEST.state.items.length) === 3);
+
+// 자료실 설정(공지)
+await page.click('#roomSetBtn');
+await page.fill('#rsTitle', '리서치팀 자료실');
+await page.fill('#rsOwner', '송재섭');
+await page.fill('#rsNotice', '8월 자료입니다. 대외 공유 금지.');
+await page.click('#rsSave');
+check('공지 표시', (await page.textContent('#noticeText')).includes('대외 공유 금지'));
+
+// CSV
+const [csv] = await Promise.all([page.waitForEvent('download'), page.click('#csvBtn')]);
+await csv.saveAs(`${OUT}/list.csv`);
+const csvText = fs.readFileSync(`${OUT}/list.csv`, 'utf8');
+check('CSV 내보내기', csvText.includes('파일명') && csvText.includes('meeting-notes.md'));
+
+// 전체 다운로드
+const [zipAll] = await Promise.all([page.waitForEvent('download'), page.click('#zipAllBtn')]);
+await zipAll.saveAs(`${OUT}/all2.zip`);
+check('전체 다운로드 ZIP', fs.statSync(`${OUT}/all2.zip`).size > 500);
+await page.screenshot({ path: `${OUT}/10-admin.png` });
+
+// 저장 → 폴더/공지/핀 유지 확인
+await page.click('#saveBtn');
+await page.fill('#savePw', 'room-2026');
+await page.fill('#savePw2', 'room-2026');
+const [dl4] = await Promise.all([page.waitForEvent('download'), page.click('#saveGo')]);
+const v3 = `${OUT}/room-v3.html`;
+await dl4.saveAs(v3);
+check('전달 문구 자동 생성', (await page.inputValue('#shareText')).includes('제1판'));
+await page.screenshot({ path: `${OUT}/11-done.png` });
+check('암호화 시 폴더명도 감춰짐', !fs.readFileSync(v3, 'utf8').includes('리서치자료'));
+await page.close();
+
+page = await newPage();
+await page.goto('file://' + v3);
+await page.fill('#gatePw', 'room-2026');
+await page.click('#gateBtn');
+await page.waitForSelector('table.files tbody tr');
+check('저장본에 공지 유지', (await page.textContent('#noticeText')).includes('대외 공유 금지'));
+check('저장본에 폴더 유지', await page.evaluate(() =>
+  window.FS_TEST.state.items.filter(i => i.folder === '리서치자료').length) === 2);
+check('저장본에 중요 표시 유지', await page.locator('table.files tbody tr').first().locator('.pin.on').count() === 1);
+check('판 정보 표시', (await page.textContent('#revInfo')).includes('제1판'));
+check('기준 시각 안내 표시', await page.isVisible('#staleHint'));
+await page.screenshot({ path: `${OUT}/12-view-admin.png` });
 await page.close();
 
 console.log('\nJS 오류:', errors.length ? errors : 'none');

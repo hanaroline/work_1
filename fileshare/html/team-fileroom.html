@@ -141,6 +141,21 @@ progress.bar::-moz-progress-bar{background:var(--primary)}
 .guide .hint{margin-top:10px}
 .done-file{display:flex;gap:10px;align-items:baseline;flex-wrap:wrap;font-size:15px;color:var(--muted);margin-bottom:14px}
 .done-file b{font-size:17px;color:var(--ink);font-weight:600;word-break:break-all}
+.bar-label{font-size:14px;font-weight:600;letter-spacing:.4px;color:var(--muted)}
+.bar-sep{width:1px;height:20px;background:var(--hairline)}
+.notice-board{border:1px solid var(--hairline);border-left:3px solid var(--secondary);background:var(--surface-soft);padding:14px 19px;margin-bottom:19px;font-size:16px;color:var(--ink);white-space:pre-wrap}
+.notice-board[hidden]{display:none}
+.pin{border:0;background:none;cursor:pointer;font-size:17px;line-height:1;color:var(--hairline);padding:0 2px}
+.pin.on{color:var(--primary)}
+.cell-pin{width:34px;text-align:center}
+tr.pinned td{background:#FFFBF6}
+.folder-list{border:1px solid var(--hairline);border-radius:2px;max-height:320px;overflow:auto;margin-bottom:19px}
+.folder-row{display:flex;align-items:center;gap:10px;padding:10px 14px;border-bottom:1px solid var(--hairline-soft)}
+.folder-row:last-child{border-bottom:0}
+.folder-row .nm{flex:1 1 auto;font-weight:500;color:var(--ink);word-break:break-all}
+.folder-row .cnt{font-size:14px;color:var(--muted);font-family:var(--font-num);white-space:nowrap}
+.folder-row .ops{display:flex;gap:6px}
+.ver{font-size:13px;color:var(--muted-soft);font-family:var(--font-num);margin-left:6px}
 
 /* 화면 모드 */
 body[data-mode="lock"] .only-app{display:none}
@@ -184,6 +199,7 @@ body[data-mode="edit"] .only-view{display:none}
       <span class="chip only-view" data-i18n="mode_view">조회</span>
       <span class="chip edit only-edit" data-i18n="mode_edit">편집 중</span>
       <span class="filename" id="curFile"></span>
+      <span class="filename" id="revInfo"></span>
     </div>
     <div class="acts">
       <button type="button" class="btn btn-sm only-view" id="editBtn" data-i18n="btn_edit_mode">자료 관리</button>
@@ -236,19 +252,37 @@ body[data-mode="edit"] .only-view{display:none}
     </div>
   </section>
 
+  <div class="notice-board" id="noticeBox" hidden><span id="noticeText"></span></div>
+  <p class="hint only-view" id="staleHint" hidden></p>
+
   <div class="toolbar">
     <div class="grow"><input type="search" id="search" aria-label="search"></div>
-    <select id="folderFilter" aria-label="folder"></select>
+    <select id="folderFilter" aria-label="folder" data-dyn></select>
     <select id="sort" aria-label="sort">
       <option value="new" data-i18n="sort_new">최신순</option>
       <option value="name" data-i18n="sort_name">이름순</option>
       <option value="size" data-i18n="sort_size">용량순</option>
+      <option value="folder" data-i18n="sort_folder">폴더순</option>
     </select>
     <span class="selinfo" id="selInfo"></span>
     <button type="button" class="btn btn-sm" id="zipBtn" data-i18n="btn_zip" disabled>선택 다운로드 (ZIP)</button>
-    <button type="button" class="btn btn-sm btn-danger only-edit" id="delBtn" data-i18n="btn_del" disabled>선택 삭제</button>
+    <button type="button" class="btn btn-sm" id="zipAllBtn" data-i18n="btn_zip_all">전체 다운로드</button>
     <button type="button" class="btn btn-sm btn-primary only-edit" id="addBtn" data-i18n="btn_add">파일 추가</button>
   </div>
+
+  <div class="toolbar only-edit" id="adminBar">
+    <span class="bar-label" data-i18n="admin_tools">관리</span>
+    <button type="button" class="btn btn-sm" id="moveBtn" data-i18n="btn_move" disabled>폴더 이동</button>
+    <button type="button" class="btn btn-sm btn-danger" id="delBtn" data-i18n="btn_del" disabled>선택 삭제</button>
+    <span class="bar-sep"></span>
+    <button type="button" class="btn btn-sm" id="folderBtn" data-i18n="btn_folders">폴더 관리</button>
+    <button type="button" class="btn btn-sm" id="roomSetBtn" data-i18n="btn_roomset">자료실 설정</button>
+    <button type="button" class="btn btn-sm" id="csvBtn" data-i18n="btn_csv">목록 내보내기</button>
+    <span class="bar-sep"></span>
+    <button type="button" class="btn btn-sm" id="undoBtn" data-i18n="btn_undo" disabled>실행 취소</button>
+  </div>
+
+  <div class="alert warn only-edit" id="dupMsg" role="status"></div>
 
   <div id="listArea" data-dyn></div>
 </main>
@@ -267,6 +301,7 @@ body[data-mode="edit"] .only-view{display:none}
       <div class="hint" data-i18n="add_limit" style="margin-top:8px">총 용량 50MB 이하를 권장합니다. 전달할 때 사내 메일·메신저의 첨부 한도에 걸리지 않는지 확인하세요.</div>
     </div>
     <input type="file" id="fileInput" multiple hidden>
+<input type="file" id="replaceInput" hidden>
     <div class="field-row">
       <div class="field">
         <label for="addFolder" data-i18n="f_folder">폴더 (선택)</label>
@@ -343,6 +378,82 @@ body[data-mode="edit"] .only-view{display:none}
   </div>
 </div>
 
+<!-- ===================== 폴더 관리 ===================== -->
+<div class="modal-back" id="folderModal" hidden>
+  <div class="modal" role="dialog" aria-modal="true">
+    <div class="modal-head">
+      <h2 data-i18n="fm_title">폴더 관리</h2>
+      <button type="button" class="btn btn-sm" data-close data-i18n="close">닫기</button>
+    </div>
+    <div class="rule"></div>
+    <div class="alert" id="fmErr" role="alert"></div>
+    <div class="folder-list" id="folderList2" data-dyn></div>
+    <div class="field-row">
+      <div class="field">
+        <label for="fmNew" data-i18n="fm_new">새 폴더 이름</label>
+        <input type="text" id="fmNew" maxlength="60">
+      </div>
+      <div class="field" style="flex:0 0 auto;align-self:flex-end">
+        <button type="button" class="btn btn-primary" id="fmAdd" data-i18n="fm_add">폴더 만들기</button>
+      </div>
+    </div>
+    <p class="hint" data-i18n="fm_hint">폴더를 지워도 안에 있던 파일은 지워지지 않고 &lt;폴더 없음&gt; 으로 이동합니다.</p>
+    <div class="modal-foot"><button type="button" class="btn" data-close data-i18n="close">닫기</button></div>
+  </div>
+</div>
+
+<!-- ===================== 폴더 이동 ===================== -->
+<div class="modal-back" id="moveModal" hidden>
+  <div class="modal" role="dialog" aria-modal="true">
+    <div class="modal-head">
+      <h2 data-i18n="mv_title">폴더 이동</h2>
+      <button type="button" class="btn btn-sm" data-close data-i18n="close">닫기</button>
+    </div>
+    <div class="rule"></div>
+    <div class="kv"><span data-i18n="mv_count">이동할 파일</span>: <b id="mvCount">-</b></div>
+    <div class="field">
+      <label for="mvTarget" data-i18n="mv_target">옮길 폴더</label>
+      <select id="mvTarget" data-dyn></select>
+    </div>
+    <div class="field">
+      <label for="mvNew" data-i18n="mv_new">또는 새 폴더 이름</label>
+      <input type="text" id="mvNew" maxlength="60">
+    </div>
+    <div class="modal-foot">
+      <button type="button" class="btn" data-close data-i18n="cancel">취소</button>
+      <button type="button" class="btn btn-primary" id="mvGo" data-i18n="mv_go">이동</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===================== 자료실 설정 ===================== -->
+<div class="modal-back" id="roomModal" hidden>
+  <div class="modal" role="dialog" aria-modal="true">
+    <div class="modal-head">
+      <h2 data-i18n="rs_title">자료실 설정</h2>
+      <button type="button" class="btn btn-sm" data-close data-i18n="close">닫기</button>
+    </div>
+    <div class="rule"></div>
+    <div class="field">
+      <label for="rsTitle" data-i18n="rs_name">자료실 이름</label>
+      <input type="text" id="rsTitle" maxlength="60">
+    </div>
+    <div class="field">
+      <label for="rsOwner" data-i18n="rs_owner">담당자 (선택)</label>
+      <input type="text" id="rsOwner" maxlength="40">
+    </div>
+    <div class="field">
+      <label for="rsNotice" data-i18n="rs_notice">팀원에게 보일 공지 (선택)</label>
+      <textarea id="rsNotice" rows="3" maxlength="500"></textarea>
+      <p class="hint" data-i18n="rs_notice_hint">목록 위에 표시됩니다. 예: 8월 자료입니다. 대외 공유 금지.</p>
+    </div>
+    <div class="modal-foot">
+      <button type="button" class="btn" data-close data-i18n="cancel">취소</button>
+      <button type="button" class="btn btn-primary" id="rsSave" data-i18n="save">저장</button>
+    </div>
+  </div>
+</div>
+
 <!-- ===================== 저장 완료 안내 ===================== -->
 <div class="modal-back" id="doneModal" hidden>
   <div class="modal" role="dialog" aria-modal="true">
@@ -358,7 +469,14 @@ body[data-mode="edit"] .only-view{display:none}
       <li data-i18n-html="done_3">다음에 자료를 추가·수정할 때도 <b>이 파일</b>을 여세요.</li>
     </ol>
     <div class="alert warn on" data-i18n="done_warn">지금 보고 계신 화면(빈 틀 파일)에는 자료가 남지 않습니다. 방금 만들어진 파일을 잘 보관하세요.</div>
-    <div class="modal-foot"><button type="button" class="btn btn-primary" data-close data-i18n="close">닫기</button></div>
+    <div class="field">
+      <label for="shareText" data-i18n="share_label">전달용 안내 문구</label>
+      <textarea id="shareText" rows="5" readonly></textarea>
+    </div>
+    <div class="modal-foot">
+      <button type="button" class="btn" id="copyShare" data-i18n="share_copy">문구 복사</button>
+      <button type="button" class="btn btn-primary" data-close data-i18n="close">닫기</button>
+    </div>
   </div>
 </div>
 
@@ -413,9 +531,32 @@ body[data-mode="edit"] .only-view{display:none}
       done_2:"팀원에게는 <b>이 파일</b>을 보내세요. 받는 사람은 더블클릭만 하면 됩니다.",
       done_3:"다음에 자료를 추가·수정할 때도 <b>이 파일</b>을 여세요.",
       done_warn:"지금 보고 계신 화면(빈 틀 파일)에는 자료가 남지 않습니다. 방금 만들어진 파일을 잘 보관하세요.",
+      share_label:"전달용 안내 문구", share_copy:"문구 복사", share_copied:"문구를 복사했습니다.",
+      rev_label:"제{n}판", based_on:"{when} 기준", owner_label:"담당자",
+      share_msg:"[{title}] 자료실 제{rev}판을 보냅니다.\n- 파일 {n}개 / 총 {size}\n- 기준 시각: {when}\n\n첨부한 HTML 파일을 더블클릭하면 목록이 열립니다. 파일명을 누르면 내려받아집니다.{pw}",
+      share_pw:"\n열람 비밀번호는 별도로 전달드립니다.",
+      view_stale:"이 파일은 {when} 기준입니다. 이후 추가된 자료는 담당자에게 새 파일을 요청하세요.",
       stat_files:"등록 파일", stat_size:"총 용량", stat_made:"만든 날짜", unit:"개",
       search_ph:"파일명 · 설명 검색", folder_all:"전체 폴더",
-      sort_new:"최신순", sort_name:"이름순", sort_size:"용량순",
+      sort_new:"최신순", sort_name:"이름순", sort_size:"용량순", sort_folder:"폴더순",
+      admin_tools:"관리", btn_move:"폴더 이동", btn_folders:"폴더 관리", btn_roomset:"자료실 설정",
+      btn_csv:"목록 내보내기", btn_undo:"실행 취소", btn_zip_all:"전체 다운로드",
+      act_replace:"교체", act_pin:"중요 표시", th_pin:"★",
+      fm_title:"폴더 관리", fm_new:"새 폴더 이름", fm_add:"폴더 만들기",
+      fm_hint:"폴더를 지워도 안에 있던 파일은 지워지지 않고 <폴더 없음> 으로 이동합니다.",
+      fm_rename:"이름 변경", fm_delete:"삭제", fm_none:"폴더 없음",
+      fm_dup:"같은 이름의 폴더가 이미 있습니다.", fm_empty:"폴더 이름을 입력하세요.",
+      fm_confirm_del:"폴더 \"{name}\" 을 지웁니다. 안의 파일 {n}개는 <폴더 없음> 으로 옮겨집니다.",
+      fm_prompt_rename:"새 폴더 이름",
+      mv_title:"폴더 이동", mv_count:"이동할 파일", mv_target:"옮길 폴더",
+      mv_new:"또는 새 폴더 이름", mv_go:"이동", mv_done:"{n}개 파일을 옮겼습니다.",
+      rs_title:"자료실 설정", rs_name:"자료실 이름", rs_owner:"담당자 (선택)",
+      rs_notice:"팀원에게 보일 공지 (선택)",
+      rs_notice_hint:"목록 위에 표시됩니다. 예: 8월 자료입니다. 대외 공유 금지.",
+      dup_warn:"이름이 같은 파일이 있습니다: {names}",
+      replaced:"파일을 새 버전으로 교체했습니다.",
+      undo_done:"되돌렸습니다.", csv_done:"목록을 CSV 로 내보냈습니다.",
+      ver_label:"v",
       btn_zip:"선택 다운로드 (ZIP)", btn_del:"선택 삭제", btn_add:"파일 추가",
       th_name:"파일명", th_folder:"폴더", th_note:"설명", th_size:"용량", th_added:"등록일", th_act:"작업",
       act_get:"받기", act_edit:"수정", act_del:"삭제",
@@ -465,9 +606,32 @@ body[data-mode="edit"] .only-view{display:none}
       done_2:"Send <b>that file</b> to your team - they only need to double-click it.",
       done_3:"Open <b>that file</b> again next time you add or edit documents.",
       done_warn:"This template screen keeps nothing. Keep the file you just created safe.",
+      share_label:"Message to send with the file", share_copy:"Copy message", share_copied:"Message copied.",
+      rev_label:"rev {n}", based_on:"as of {when}", owner_label:"Owner",
+      share_msg:"[{title}] file room, revision {rev}.\n- {n} files / {size} total\n- As of {when}\n\nDouble-click the attached HTML file to open the list, then click a file name to download it.{pw}",
+      share_pw:"\nThe password will be sent separately.",
+      view_stale:"This copy is as of {when}. For anything added later, ask the owner for a new file.",
       stat_files:"Files", stat_size:"Total size", stat_made:"Created", unit:"",
       search_ph:"Search name or note", folder_all:"All folders",
-      sort_new:"Newest", sort_name:"Name", sort_size:"Size",
+      sort_new:"Newest", sort_name:"Name", sort_size:"Size", sort_folder:"Folder",
+      admin_tools:"Manage", btn_move:"Move to folder", btn_folders:"Folders", btn_roomset:"Room settings",
+      btn_csv:"Export list", btn_undo:"Undo", btn_zip_all:"Download all",
+      act_replace:"Replace", act_pin:"Pin", th_pin:"★",
+      fm_title:"Folders", fm_new:"New folder name", fm_add:"Create folder",
+      fm_hint:"Deleting a folder keeps its files; they move to <no folder>.",
+      fm_rename:"Rename", fm_delete:"Delete", fm_none:"No folder",
+      fm_dup:"A folder with that name already exists.", fm_empty:"Enter a folder name.",
+      fm_confirm_del:"Delete folder \"{name}\"? Its {n} file(s) move to <no folder>.",
+      fm_prompt_rename:"New folder name",
+      mv_title:"Move to folder", mv_count:"Files to move", mv_target:"Target folder",
+      mv_new:"Or new folder name", mv_go:"Move", mv_done:"Moved {n} file(s).",
+      rs_title:"Room settings", rs_name:"File room name", rs_owner:"Owner (optional)",
+      rs_notice:"Notice shown to your team (optional)",
+      rs_notice_hint:"Displayed above the list. e.g. August pack. Internal use only.",
+      dup_warn:"Files with the same name: {names}",
+      replaced:"File replaced with the new version.",
+      undo_done:"Reverted.", csv_done:"List exported as CSV.",
+      ver_label:"v",
       btn_zip:"Download selected (ZIP)", btn_del:"Remove selected", btn_add:"Add files",
       th_name:"File name", th_folder:"Folder", th_note:"Note", th_size:"Size", th_added:"Added", th_act:"Actions",
       act_get:"Get", act_edit:"Edit", act_del:"Remove",
@@ -706,10 +870,14 @@ body[data-mode="edit"] .only-view{display:none}
     var ready = state.items.every(function (i) { return !!i.bytes; });
     if (!ready) return;                       // 아직 복호화되지 않은 자료는 건드리지 않는다
     draftPut({
-      title: state.title, created: state.created, savedAt: new Date().toISOString(),
+      title: state.title, owner: state.owner, notice: state.notice,
+      created: state.created, folders: state.folders.slice(),
+      savedAt: new Date().toISOString(),
       items: state.items.map(function (i) {
         return { id: i.id, name: i.name, size: i.size, type: i.type,
-                 folder: i.folder, note: i.note, added: i.added, bytes: i.bytes };
+                 folder: i.folder, note: i.note, added: i.added,
+                 pinned: !!i.pinned, version: i.version || 1, updated: i.updated || "",
+                 bytes: i.bytes };
       })
     }).catch(function () {});                 // 용량 초과 등은 조용히 무시
   }
@@ -717,13 +885,43 @@ body[data-mode="edit"] .only-view{display:none}
   /* ------------------------------------------------------------------ 상태 */
   var state = {
     title: "팀 자료실",
+    owner: "",
+    notice: "",
     created: nowISO(),
-    items: [],          // {id, name, size, type, folder, note, added, bytes|null, enc:{iv,data}|null}
+    folders: [],        // 빈 폴더도 유지하기 위해 별도로 관리한다
+    items: [],          // {id, name, size, type, folder, note, added, pinned, version, updated, bytes|null, enc|null}
     key: null,          // 복호화 키(잠긴 자료실을 연 경우)
     dirty: false,
     selected: {},
-    locked: false
+    locked: false,
+    history: []         // 실행 취소용 스냅샷 (최대 20단계)
   };
+
+  /* 되돌리기 — 바이트는 참조만 공유하므로 스냅샷 비용이 작다 */
+  function snapshot() {
+    state.history.push({
+      title: state.title, owner: state.owner, notice: state.notice,
+      folders: state.folders.slice(),
+      items: state.items.map(function (i) {
+        return { id: i.id, name: i.name, size: i.size, type: i.type, folder: i.folder,
+                 note: i.note, added: i.added, pinned: i.pinned, version: i.version,
+                 updated: i.updated, bytes: i.bytes, enc: i.enc };
+      })
+    });
+    if (state.history.length > 20) state.history.shift();
+    $("undoBtn").disabled = false;
+  }
+  function undo() {
+    var prev = state.history.pop();
+    if (!prev) return;
+    state.title = prev.title; state.owner = prev.owner; state.notice = prev.notice;
+    state.folders = prev.folders; state.items = prev.items;
+    state.selected = {};
+    $("undoBtn").disabled = state.history.length === 0;
+    setTitle(state.title); renderNotice();
+    markDirty(true); renderFolders(); render(); updateStats(); checkDuplicates(); saveDraft();
+    toast(T("undo_done"));
+  }
 
   function setMode(mode) {
     document.body.setAttribute("data-mode", mode);
@@ -761,23 +959,128 @@ body[data-mode="edit"] .only-view{display:none}
   /* ------------------------------------------------------------------ 목록 */
   function folders() {
     var set = {};
-    state.items.forEach(function (i) { if (i.folder) set[i.folder] = 1; });
-    return Object.keys(set).sort();
+    state.folders.forEach(function (f) { if (f) set[f] = 1; });
+    state.items.forEach(function (i) { if (i.folder) set[i.folder] = 1; });   // 예전 파일 호환
+    return Object.keys(set).sort(function (a, b) { return a.localeCompare(b, "ko"); });
+  }
+  function ensureFolder(name) {
+    name = (name || "").trim();
+    if (!name) return "";
+    if (state.folders.indexOf(name) < 0) state.folders.push(name);
+    return name;
+  }
+  function folderStat(name) {
+    var n = 0, bytes = 0;
+    state.items.forEach(function (i) {
+      if ((i.folder || "") === name) { n++; bytes += (i.size || 0); }
+    });
+    return { n: n, bytes: bytes };
+  }
+  function option(value, text) {
+    var o = document.createElement("option");
+    o.value = value; o.textContent = text;
+    return o;
   }
   function renderFolders() {
+    var list = folders();
+
     var sel = $("folderFilter"), cur = sel.value;
     sel.innerHTML = "";
-    var all = document.createElement("option");
-    all.value = ""; all.textContent = T("folder_all");
-    sel.appendChild(all);
-    var list = folders();
+    sel.appendChild(option("", T("folder_all")));
     list.forEach(function (f) {
-      var o = document.createElement("option"); o.value = f; o.textContent = f; sel.appendChild(o);
+      var st = folderStat(f);
+      sel.appendChild(option(f, f + " (" + st.n + ")"));
     });
     sel.value = list.indexOf(cur) >= 0 ? cur : "";
+
     var dl = $("folderList");
     dl.innerHTML = "";
-    list.forEach(function (f) { var o = document.createElement("option"); o.value = f; dl.appendChild(o); });
+    list.forEach(function (f) { dl.appendChild(option(f, f)); });
+
+    var mv = $("mvTarget");
+    if (mv) {
+      var mvCur = mv.value;
+      mv.innerHTML = "";
+      mv.appendChild(option("", T("fm_none")));
+      list.forEach(function (f) { mv.appendChild(option(f, f)); });
+      mv.value = list.indexOf(mvCur) >= 0 ? mvCur : "";
+    }
+
+    var box = $("folderList2");
+    if (box) {
+      box.innerHTML = "";
+      var none = folderStat("");
+      renderFolderRow(box, "", none, true);
+      list.forEach(function (f) { renderFolderRow(box, f, folderStat(f), false); });
+    }
+  }
+  function renderFolderRow(box, name, st, isNone) {
+    var row = document.createElement("div");
+    row.className = "folder-row";
+    var nm = document.createElement("span");
+    nm.className = "nm";
+    nm.textContent = isNone ? T("fm_none") : name;
+    var cnt = document.createElement("span");
+    cnt.className = "cnt";
+    cnt.textContent = st.n + " · " + fmtBytes(st.bytes);
+    row.appendChild(nm); row.appendChild(cnt);
+    if (!isNone) {
+      var ops = document.createElement("span");
+      ops.className = "ops";
+      var ren = document.createElement("button");
+      ren.type = "button"; ren.className = "btn btn-sm"; ren.textContent = T("fm_rename");
+      ren.addEventListener("click", function () { renameFolder(name); });
+      var del = document.createElement("button");
+      del.type = "button"; del.className = "btn btn-sm btn-danger"; del.textContent = T("fm_delete");
+      del.addEventListener("click", function () { deleteFolder(name); });
+      ops.appendChild(ren); ops.appendChild(del);
+      row.appendChild(ops);
+    }
+    box.appendChild(row);
+  }
+
+  /* ------------------------------------------------------------ 폴더 관리 */
+  function addFolder() {
+    var err = $("fmErr"), name = $("fmNew").value.trim();
+    hideMsg(err);
+    if (!name) { showMsg(err, T("fm_empty")); return; }
+    if (folders().indexOf(name) >= 0) { showMsg(err, T("fm_dup")); return; }
+    snapshot();
+    ensureFolder(name);
+    $("fmNew").value = "";
+    markDirty(true); renderFolders(); render(); saveDraft();
+  }
+  function renameFolder(name) {
+    var next = window.prompt(T("fm_prompt_rename"), name);
+    if (next === null) return;
+    next = next.trim();
+    if (!next || next === name) return;
+    if (folders().indexOf(next) >= 0) { showMsg($("fmErr"), T("fm_dup")); return; }
+    snapshot();
+    state.folders = state.folders.map(function (f) { return f === name ? next : f; });
+    ensureFolder(next);
+    state.items.forEach(function (i) { if ((i.folder || "") === name) i.folder = next; });
+    markDirty(true); renderFolders(); render(); saveDraft();
+  }
+  function deleteFolder(name) {
+    var st = folderStat(name);
+    if (!window.confirm(T("fm_confirm_del", { name: name, n: st.n }))) return;
+    snapshot();
+    state.folders = state.folders.filter(function (f) { return f !== name; });
+    state.items.forEach(function (i) { if ((i.folder || "") === name) i.folder = ""; });
+    markDirty(true); renderFolders(); render(); saveDraft();
+  }
+  function moveSelected() {
+    var ids = selectedIds();
+    if (!ids.length) return;
+    var target = $("mvNew").value.trim() || $("mvTarget").value;
+    snapshot();
+    if (target) ensureFolder(target);
+    state.items.forEach(function (i) { if (ids.indexOf(i.id) >= 0) i.folder = target; });
+    $("mvNew").value = "";
+    $("moveModal").hidden = true;
+    markDirty(true); renderFolders(); render(); saveDraft();
+    toast(T("mv_done", { n: ids.length }));
   }
   function visible() {
     var q = $("search").value.trim().toLowerCase();
@@ -793,9 +1096,17 @@ body[data-mode="edit"] .only-view{display:none}
     var cmp = {
       new: function (a, b) { return String(b.added).localeCompare(String(a.added)); },
       name: function (a, b) { return String(a.name).localeCompare(String(b.name), "ko"); },
-      size: function (a, b) { return (b.size || 0) - (a.size || 0); }
+      size: function (a, b) { return (b.size || 0) - (a.size || 0); },
+      folder: function (a, b) {
+        var f = String(a.folder || "\uffff").localeCompare(String(b.folder || "\uffff"), "ko");
+        return f !== 0 ? f : String(a.name).localeCompare(String(b.name), "ko");
+      }
     };
-    return rows.sort(cmp[mode] || cmp.new);
+    var by = cmp[mode] || cmp.new;
+    return rows.sort(function (a, b) {                 // 중요 표시한 파일을 항상 위로
+      if (!!a.pinned !== !!b.pinned) return a.pinned ? -1 : 1;
+      return by(a, b);
+    });
   }
   function td(tr, text, cls) {
     var c = document.createElement("td");
@@ -838,6 +1149,10 @@ body[data-mode="edit"] .only-view{display:none}
     });
     checkTh.appendChild(all); hr.appendChild(checkTh);
 
+    var pinTh = document.createElement("th");
+    pinTh.className = "cell-pin"; pinTh.textContent = T("th_pin");
+    hr.appendChild(pinTh);
+
     var cols = [["th_name", ""], ["th_folder", ""], ["th_note", ""], ["th_size", "num"], ["th_added", ""]];
     cols.push(["th_act", "actions"]);
     cols.forEach(function (c) {
@@ -859,12 +1174,32 @@ body[data-mode="edit"] .only-view{display:none}
         updateSel();
       });
       ct.appendChild(cb); tr.appendChild(ct);
+      if (item.pinned) tr.classList.add("pinned");
+
+      var pinTd = td(tr, undefined, "cell-pin");
+      var pin = document.createElement("button");
+      pin.type = "button";
+      pin.className = "pin" + (item.pinned ? " on" : "");
+      pin.textContent = item.pinned ? "\u2605" : "\u2606";
+      pin.title = T("act_pin");
+      if (editing) {
+        pin.addEventListener("click", function () { togglePin(item); });
+      } else {
+        pin.disabled = true;
+      }
+      pinTd.appendChild(pin);
 
       var nameTd = td(tr);
       var link = document.createElement("button");
       link.type = "button"; link.className = "fname"; link.textContent = item.name;
       link.addEventListener("click", function () { getOne(item); });
       nameTd.appendChild(link);
+      if (item.version && item.version > 1) {
+        var ver = document.createElement("span");
+        ver.className = "ver";
+        ver.textContent = T("ver_label") + item.version;
+        nameTd.appendChild(ver);
+      }
 
       var ftd = td(tr);
       if (item.folder) {
@@ -886,6 +1221,10 @@ body[data-mode="edit"] .only-view{display:none}
         ed.type = "button"; ed.className = "btn-link"; ed.textContent = T("act_edit");
         ed.addEventListener("click", function () { openEdit(item); });
         at.appendChild(ed);
+        var rep = document.createElement("button");
+        rep.type = "button"; rep.className = "btn-link"; rep.textContent = T("act_replace");
+        rep.addEventListener("click", function () { askReplace(item); });
+        at.appendChild(rep);
         var del = document.createElement("button");
         del.type = "button"; del.className = "btn-link danger"; del.textContent = T("act_del");
         del.addEventListener("click", function () { removeItems([item.id]); });
@@ -902,6 +1241,7 @@ body[data-mode="edit"] .only-view{display:none}
     $("selInfo").textContent = n ? T("sel_n", { n: n }) : "";
     $("zipBtn").disabled = n === 0;
     $("delBtn").disabled = n === 0;
+    $("moveBtn").disabled = n === 0;
   }
   function updateStats() {
     $("statCount").textContent = state.items.length;
@@ -946,16 +1286,20 @@ body[data-mode="edit"] .only-view{display:none}
     var note = $("addNote").value.trim();
     var pending = Array.prototype.slice.call(list);
     if (!pending.length) return;
+    snapshot();
+    if (folder) ensureFolder(folder);
     Promise.all(pending.map(function (file) {
       return file.arrayBuffer().then(function (buf) {
         state.items.push({
           id: uid(), name: file.name, size: file.size,
           type: file.type || "application/octet-stream",
           folder: folder, note: note, added: nowISO(),
+          pinned: false, version: 1, updated: "",
           bytes: new Uint8Array(buf), enc: null
         });
       });
     })).then(function () {
+      checkDuplicates();
       markDirty(true); renderFolders(); render(); updateStats(); saveDraft();
       toast(T("ok_added"));
     });
@@ -974,18 +1318,142 @@ body[data-mode="edit"] .only-view{display:none}
     if (!item) return;
     var name = $("edName").value.trim();
     if (!name) return;
+    snapshot();
     item.name = name;
-    item.folder = $("edFolder").value.trim();
+    item.folder = ensureFolder($("edFolder").value.trim());
     item.note = $("edNote").value.trim();
+    checkDuplicates();
     $("editModal").hidden = true;
     markDirty(true); renderFolders(); render(); saveDraft();
   }
   function removeItems(ids) {
     if (!ids.length) return;
     if (!window.confirm(T("confirm_del", { n: ids.length }))) return;
+    snapshot();
     state.items = state.items.filter(function (i) { return ids.indexOf(i.id) < 0; });
+    checkDuplicates();
     ids.forEach(function (id) { delete state.selected[id]; });
     markDirty(true); renderFolders(); render(); updateStats(); saveDraft();
+  }
+
+  /* --------------------------------------------------------- 관리 기능 */
+  function togglePin(item) {
+    snapshot();
+    item.pinned = !item.pinned;
+    markDirty(true); render(); saveDraft();
+  }
+
+  var replaceId = null;
+  function askReplace(item) {
+    replaceId = item.id;
+    $("replaceInput").value = "";
+    $("replaceInput").click();
+  }
+  function doReplace(file) {
+    var item = state.items.filter(function (i) { return i.id === replaceId; })[0];
+    if (!item || !file) return;
+    file.arrayBuffer().then(function (buf) {
+      snapshot();
+      item.bytes = new Uint8Array(buf);
+      item.size = file.size;
+      item.type = file.type || item.type;
+      item.version = (item.version || 1) + 1;
+      item.updated = nowISO();
+      markDirty(true); render(); updateStats(); saveDraft();
+      toast(T("replaced"));
+    });
+  }
+
+  function checkDuplicates() {
+    var seen = {}, dups = {};
+    state.items.forEach(function (i) {
+      var k = String(i.name).toLowerCase();
+      if (seen[k]) dups[i.name] = 1; else seen[k] = 1;
+    });
+    var names = Object.keys(dups);
+    if (names.length) showMsg($("dupMsg"), T("dup_warn", { names: names.join(", ") }), "warn");
+    else hideMsg($("dupMsg"));
+  }
+
+  function fmtStamp(iso) {
+    if (!iso) return "-";
+    var d = new Date(iso);
+    if (isNaN(d.getTime())) return "-";
+    return d.getFullYear() + "-" + pad(d.getMonth() + 1) + "-" + pad(d.getDate()) +
+           " " + pad(d.getHours()) + ":" + pad(d.getMinutes());
+  }
+  function totalBytes() {
+    return state.items.reduce(function (a, i) { return a + (i.size || 0); }, 0);
+  }
+  function renderRevInfo() {
+    var hint = $("staleHint");
+    if (hint) {
+      if (state.savedAt) {
+        hint.textContent = T("view_stale", { when: fmtStamp(state.savedAt) });
+        hint.hidden = false;
+      } else {
+        hint.textContent = ""; hint.hidden = true;
+      }
+    }
+    var el = $("revInfo");
+    if (!el) return;
+    if (!state.rev) { el.textContent = ""; return; }
+    el.textContent = T("rev_label", { n: state.rev }) + " · " +
+                     T("based_on", { when: fmtStamp(state.savedAt) }) +
+                     (state.owner ? " · " + T("owner_label") + " " + state.owner : "");
+  }
+  function shareMessage(hasPw) {
+    return T("share_msg", {
+      title: state.title, rev: (state.rev || 1), n: state.items.length,
+      size: fmtBytes(totalBytes()), when: fmtStamp(state.savedAt || nowISO()),
+      pw: hasPw ? T("share_pw") : ""
+    });
+  }
+  function renderNotice() {
+    var box = $("noticeBox");
+    if (state.notice) {
+      $("noticeText").textContent = state.notice;
+      box.hidden = false;
+    } else {
+      $("noticeText").textContent = "";
+      box.hidden = true;
+    }
+  }
+
+  function openRoomSettings() {
+    $("rsTitle").value = state.title;
+    $("rsOwner").value = state.owner || "";
+    $("rsNotice").value = state.notice || "";
+    $("roomModal").hidden = false;
+  }
+  function saveRoomSettings() {
+    snapshot();
+    setTitle($("rsTitle").value.trim());
+    state.owner = $("rsOwner").value.trim();
+    state.notice = $("rsNotice").value.trim();
+    $("roomModal").hidden = true;
+    renderNotice();
+    markDirty(true); saveDraft();
+  }
+
+  function exportCsv() {
+    var head = ["폴더", "파일명", "설명", "용량(bytes)", "등록일", "버전", "중요"];
+    var esc = function (v) { return '"' + String(v == null ? "" : v).split('"').join('""') + '"'; };
+    var lines = [head.map(esc).join(",")];
+    visible().forEach(function (i) {
+      lines.push([i.folder || "", i.name, i.note || "", i.size || 0,
+                  fmtDate(i.added), i.version || 1, i.pinned ? "Y" : ""].map(esc).join(","));
+    });
+    var text = "\ufeff" + lines.join("\r\n");     // 엑셀에서 한글이 깨지지 않도록 BOM
+    download(state.title + "_목록.csv", new Blob([text], { type: "text/csv;charset=utf-8" }));
+    toast(T("csv_done"));
+  }
+
+  function downloadAll() {
+    state.selected = {};
+    state.items.forEach(function (i) { state.selected[i.id] = true; });
+    render();
+    getZip();
   }
 
   /* ------------------------------------------------------ 자료실 파일 저장 */
@@ -1005,7 +1473,17 @@ body[data-mode="edit"] .only-view{display:none}
     each(clone.querySelectorAll("[data-i18n]"), function (el) {
       el.textContent = T(el.getAttribute("data-i18n"));
     });
-    each(clone.querySelectorAll("#zipBtn, #delBtn"), function (el) { el.setAttribute("disabled", ""); });
+    each(clone.querySelectorAll("#zipBtn, #delBtn, #moveBtn, #undoBtn"), function (el) {
+      el.setAttribute("disabled", "");
+    });
+    each(clone.querySelectorAll("#noticeBox, #staleHint"), function (el) { el.setAttribute("hidden", ""); });
+    var ri = clone.querySelector("#revInfo");
+    if (ri) ri.textContent = "";
+    var sh = clone.querySelector("#staleHint");
+    if (sh) sh.textContent = "";
+    var nt = clone.querySelector("#noticeText");
+    if (nt) nt.textContent = "";
+    each(clone.querySelectorAll("textarea"), function (el) { el.textContent = ""; });
     each(clone.querySelectorAll("[data-i18n-html]"), function (el) {
       el.innerHTML = T(el.getAttribute("data-i18n-html"));
     });
@@ -1031,14 +1509,19 @@ body[data-mode="edit"] .only-view{display:none}
   function buildPayload(password, onProgress) {
     var meta = state.items.map(function (i) {
       return { id: i.id, name: i.name, size: i.size, type: i.type,
-               folder: i.folder || "", note: i.note || "", added: i.added };
+               folder: i.folder || "", note: i.note || "", added: i.added,
+               pinned: !!i.pinned, version: i.version || 1, updated: i.updated || "" };
     });
-    var payload = { v: 1, title: state.title, created: state.created, enc: false, files: [] };
+    var room = { items: meta, folders: folders(), notice: state.notice || "", owner: state.owner || "" };
+    var payload = {
+      v: 2, title: state.title, created: state.created,
+      savedAt: nowISO(), rev: (state.rev || 0) + 1, enc: false, files: []
+    };
     var total = state.items.length + 1, done = 0;
     function tick() { done++; if (onProgress) onProgress(Math.round(done * 100 / total)); }
 
     if (!password) {
-      payload.meta = meta;
+      payload.meta = room;
       return state.items.reduce(function (chain, item) {
         return chain.then(function () {
           return bytesOf(item).then(function (b) {
@@ -1053,7 +1536,7 @@ body[data-mode="edit"] .only-view{display:none}
     payload.enc = true;
     payload.kdf = { salt: toB64(salt), iter: KDF_ITER };
     return deriveKey(password, salt, KDF_ITER).then(function (key) {
-      return encryptBytes(key, new TextEncoder().encode(JSON.stringify(meta)))
+      return encryptBytes(key, new TextEncoder().encode(JSON.stringify(room)))
         .then(function (encMeta) {
           payload.meta = encMeta;
           tick();
@@ -1088,6 +1571,8 @@ body[data-mode="edit"] .only-view{display:none}
     bar.hidden = false; bar.value = 0;
 
     buildPayload(pw, function (p) { bar.value = p; }).then(function (payload) {
+      state.rev = payload.rev;
+      state.savedAt = payload.savedAt;
       var json = JSON.stringify(payload).replace(/</g, "\\u003c");
       var html = serializeDocument(json, !!pw);
       var d = new Date();
@@ -1098,7 +1583,9 @@ body[data-mode="edit"] .only-view{display:none}
       saveDraft();
       $("saveModal").hidden = true;
       $("doneName").textContent = outName;
+      $("shareText").value = shareMessage(!!pw);
       $("doneModal").hidden = false;
+      renderRevInfo();
     }).catch(function (e) {
       showMsg(err, String((e && e.message) || e));
     }).then(function () {
@@ -1113,39 +1600,47 @@ body[data-mode="edit"] .only-view{display:none}
     if (!node) return null;
     try { return JSON.parse(node.textContent); } catch (e) { return null; }
   }
-  function adoptPlain(payload) {
+  function adoptHead(payload) {
     state.title = payload.title || state.title;
     state.created = payload.created || state.created;
+    state.savedAt = payload.savedAt || "";
+    state.rev = payload.rev || 1;
+  }
+  function adoptRoom(room, byId, decrypted) {
+    var meta = Array.isArray(room) ? room : (room.items || []);      // v1 호환
+    if (!Array.isArray(room)) {
+      state.folders = (room.folders || []).slice();
+      state.notice = room.notice || "";
+      state.owner = room.owner || "";
+    }
+    state.items = meta.map(function (m) { return toItem(m, byId[m.id], decrypted); });
+  }
+  function toItem(m, f, decrypted) {
+    return {
+      id: m.id, name: m.name, size: m.size, type: m.type, folder: m.folder || "",
+      note: m.note || "", added: m.added, pinned: !!m.pinned,
+      version: m.version || 1, updated: m.updated || "",
+      bytes: decrypted ? (f ? fromB64(f.data) : new Uint8Array(0)) : null,
+      enc: decrypted ? null : (f ? { iv: f.iv, data: f.data } : null)
+    };
+  }
+  function adoptPlain(payload) {
+    adoptHead(payload);
     var byId = {};
     payload.files.forEach(function (f) { byId[f.id] = f; });
-    state.items = (payload.meta || []).map(function (m) {
-      var f = byId[m.id];
-      return {
-        id: m.id, name: m.name, size: m.size, type: m.type, folder: m.folder,
-        note: m.note, added: m.added,
-        bytes: f ? fromB64(f.data) : new Uint8Array(0), enc: null
-      };
-    });
+    adoptRoom(payload.meta || [], byId, true);
   }
   function unlock(password) {
     var payload = loadPayload();
     var salt = fromB64(payload.kdf.salt);
     return deriveKey(password, salt, payload.kdf.iter).then(function (key) {
       return decryptBytes(key, payload.meta.iv, payload.meta.data).then(function (metaBytes) {
-        var meta = JSON.parse(new TextDecoder().decode(metaBytes));
+        var room = JSON.parse(new TextDecoder().decode(metaBytes));
         var byId = {};
         payload.files.forEach(function (f) { byId[f.id] = f; });
         state.key = key;
-        state.title = payload.title || state.title;
-        state.created = payload.created || state.created;
-        state.items = meta.map(function (m) {
-          var f = byId[m.id];
-          return {
-            id: m.id, name: m.name, size: m.size, type: m.type, folder: m.folder,
-            note: m.note, added: m.added,
-            bytes: null, enc: f ? { iv: f.iv, data: f.data } : null
-          };
-        });
+        adoptHead(payload);
+        adoptRoom(room, byId, false);
       });
     });
   }
@@ -1179,6 +1674,43 @@ body[data-mode="edit"] .only-view{display:none}
   $("viewBtn").addEventListener("click", function () { setMode("view"); });
   $("helpBtn").addEventListener("click", function () { $("helpModal").hidden = false; });
   $("edSave").addEventListener("click", saveEdit);
+  $("zipAllBtn").addEventListener("click", downloadAll);
+  $("undoBtn").addEventListener("click", undo);
+  $("folderBtn").addEventListener("click", function () {
+    hideMsg($("fmErr")); $("fmNew").value = "";
+    renderFolders();
+    $("folderModal").hidden = false;
+  });
+  $("fmAdd").addEventListener("click", addFolder);
+  $("fmNew").addEventListener("keydown", function (e) { if (e.key === "Enter") addFolder(); });
+  $("moveBtn").addEventListener("click", function () {
+    if (!selectedIds().length) return;
+    $("mvCount").textContent = String(selectedIds().length);
+    $("mvNew").value = "";
+    renderFolders();
+    $("moveModal").hidden = false;
+  });
+  $("mvGo").addEventListener("click", moveSelected);
+  $("roomSetBtn").addEventListener("click", openRoomSettings);
+  $("rsSave").addEventListener("click", saveRoomSettings);
+  $("csvBtn").addEventListener("click", exportCsv);
+  $("copyShare").addEventListener("click", function () {
+    var box = $("shareText");
+    box.removeAttribute("readonly");
+    box.select();
+    var done = false;
+    try { done = document.execCommand("copy"); } catch (e) { done = false; }
+    box.setAttribute("readonly", "");
+    if (!done && navigator.clipboard) {
+      navigator.clipboard.writeText(box.value).then(function () { toast(T("share_copied")); });
+      return;
+    }
+    if (done) toast(T("share_copied"));
+  });
+  $("replaceInput").addEventListener("change", function () {
+    if (this.files && this.files[0]) doReplace(this.files[0]);
+    this.value = "";
+  });
 
   $("addBtn").addEventListener("click", function () {
     $("addFolder").value = ""; $("addNote").value = "";
@@ -1215,6 +1747,8 @@ body[data-mode="edit"] .only-view{display:none}
     btn.disabled = true; btn.textContent = T("decrypting");
     unlock($("gatePw").value).then(function () {
       state.locked = false;
+      setTitle(state.title);
+      renderNotice(); renderRevInfo();
       setMode("view");
       renderFolders(); render(); updateStats();
     }).catch(function () {
@@ -1250,14 +1784,20 @@ body[data-mode="edit"] .only-view{display:none}
       $("draftBar").hidden = false;
       $("draftLoad").onclick = function () {
         state.title = rec.title || state.title;
+        state.owner = rec.owner || "";
+        state.notice = rec.notice || "";
         state.created = rec.created || state.created;
+        state.folders = (rec.folders || []).slice();
         state.items = rec.items.map(function (i) {
           return { id: i.id, name: i.name, size: i.size, type: i.type, folder: i.folder,
-                   note: i.note, added: i.added,
+                   note: i.note, added: i.added, pinned: !!i.pinned,
+                   version: i.version || 1, updated: i.updated || "",
                    bytes: (i.bytes instanceof Uint8Array) ? i.bytes : new Uint8Array(i.bytes),
                    enc: null };
         });
         setTitle(state.title);
+        renderNotice();
+        checkDuplicates();
         $("draftBar").hidden = true;
         $("blankGuide").hidden = true;
         markDirty(true);
@@ -1285,6 +1825,7 @@ body[data-mode="edit"] .only-view{display:none}
     if (payload) {
       adoptPlain(payload);
       setTitle(state.title);
+      renderNotice();
       document.body.setAttribute("data-mode", "view");
     } else {
       setTitle(state.title);
@@ -1293,7 +1834,8 @@ body[data-mode="edit"] .only-view{display:none}
       offerDraft();
     }
     applyLang();
-    renderFolders(); render(); updateStats();
+    renderRevInfo();
+    renderFolders(); render(); updateStats(); checkDuplicates();
   }
 
   if (document.readyState === "loading") {
