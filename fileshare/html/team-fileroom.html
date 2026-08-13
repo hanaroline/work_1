@@ -1,0 +1,1136 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>팀 자료실</title>
+<style>
+:root{
+  --primary:#F58220; --primary-active:#CB6015; --primary-soft:#FAB072; --secondary:#043B72;
+  --canvas:#FFFFFF; --surface-soft:#ECEFF4; --surface-subtle:#F7F8FA;
+  --hairline:#CDCECB; --hairline-soft:#E5E4E1;
+  --ink:#1A1A1A; --body:#3D3D3D; --muted:#6C6C6C; --muted-soft:#84888B;
+  --success:#2E8540; --warning:#D4A017; --error:#C62828;
+  --font-kr:'Spoqa Han Sans Neo','Noto Sans KR','Apple SD Gothic Neo','Malgun Gothic',sans-serif;
+  --font-en:'Inter','Aptos','Segoe UI',system-ui,-apple-system,sans-serif;
+  --font-num:'Inter','Aptos','Consolas',monospace;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--canvas);color:var(--body);font-family:var(--font-kr);font-size:17px;line-height:1.65}
+html[lang="en"] body{font-family:var(--font-en)}
+h1,h2,h3{color:var(--ink);margin:0}
+h1{font-size:30px;font-weight:700;line-height:1.25;letter-spacing:-0.3px}
+h2{font-size:22px;font-weight:600}
+h3{font-size:19px;font-weight:600}
+p{margin:0 0 14px}
+.num{font-family:var(--font-num);font-variant-numeric:tabular-nums}
+.rule{height:1px;background:var(--primary);margin:19px 0}
+.hide{display:none !important}
+
+/* 언어 토글 */
+.lang-toggle{display:inline-flex;border:1px solid var(--hairline);border-radius:2px;overflow:hidden;background:#fff;box-shadow:0 2px 8px rgba(0,0,0,.06)}
+.lang-btn{font-family:var(--font-en);font-size:14px;font-weight:500;letter-spacing:.5px;padding:9px 17px;border:0;background:#fff;color:var(--muted);cursor:pointer}
+.lang-btn+.lang-btn{border-left:1px solid var(--hairline)}
+.lang-btn:hover:not(.is-active){background:var(--surface-subtle);color:var(--ink)}
+.lang-btn.is-active{background:var(--primary);color:#fff}
+
+/* 버튼 · 입력 */
+.btn{font:inherit;font-size:16px;font-weight:500;padding:9px 19px;min-height:42px;border-radius:2px;border:1px solid var(--hairline);background:#fff;color:var(--ink);cursor:pointer;white-space:nowrap}
+.btn:hover{background:var(--surface-subtle)}
+.btn:disabled{color:var(--muted-soft);background:var(--surface-subtle);cursor:not-allowed}
+.btn-primary{background:var(--primary);border-color:var(--primary);color:#fff}
+.btn-primary:hover{background:var(--primary-active);border-color:var(--primary-active)}
+.btn-primary:disabled{background:#D7D7D7;border-color:#D7D7D7;color:#fff}
+.btn-danger{color:var(--error)}
+.btn-danger:hover{background:#FBEDED}
+.btn-sm{min-height:32px;padding:3px 12px;font-size:15px}
+.btn-link{border:0;background:none;padding:0 5px;color:var(--secondary);font:inherit;font-size:15px;cursor:pointer}
+.btn-link:hover{text-decoration:underline}
+.btn-link.danger{color:var(--error)}
+:focus-visible{outline:2px solid var(--primary);outline-offset:2px}
+label{display:block;font-size:15px;font-weight:500;color:var(--ink);margin-bottom:6px}
+input[type=text],input[type=password],input[type=search],select,textarea{font:inherit;font-size:17px;width:100%;padding:9px 12px;min-height:42px;color:var(--ink);background:#fff;border:1px solid var(--hairline);border-radius:2px}
+input:focus,select:focus,textarea:focus{border-color:var(--primary);outline:none}
+.field{margin-bottom:19px}
+.field-row{display:flex;gap:14px;flex-wrap:wrap}
+.field-row>.field{flex:1 1 220px}
+.hint{font-size:14px;color:var(--muted);line-height:1.45}
+.checkline{display:flex;align-items:center;gap:10px;margin-bottom:14px}
+.checkline input{width:18px;height:18px;min-height:0;margin:0;accent-color:var(--primary)}
+.checkline label{margin:0;font-weight:400}
+
+.alert{display:none;border-left:3px solid var(--error);background:#FBEDED;color:#8E1F1F;font-size:15px;padding:10px 14px;margin-bottom:19px}
+.alert.on{display:block}
+.alert.ok{border-left-color:var(--success);background:#EDF5EE;color:#1F5B2C}
+.alert.warn{border-left-color:var(--warning);background:#FBF5E5;color:#7A5C0A}
+
+/* 잠금 화면 */
+.gate{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:28px 19px;background:var(--surface-subtle)}
+.gate-card{width:100%;max-width:460px;background:#fff;border:1px solid var(--hairline);border-radius:4px;padding:38px}
+.gate-head{display:flex;justify-content:space-between;align-items:flex-start;gap:14px}
+.tag{display:inline-block;font-size:13px;font-weight:600;letter-spacing:.6px;color:var(--primary);border:1px solid var(--primary);border-radius:2px;padding:1px 8px}
+.gate-card .btn-primary{width:100%}
+.gate-sub{color:var(--muted);font-size:16px;margin-bottom:28px}
+.gate-foot{margin-top:19px;font-size:14px;color:var(--muted-soft)}
+
+/* 앱 */
+.topbar{border-bottom:1px solid var(--hairline-soft);background:#fff}
+.topbar-in{max-width:1400px;margin:0 auto;padding:19px 28px;display:flex;align-items:center;gap:19px;flex-wrap:wrap}
+.brand{display:flex;align-items:baseline;gap:10px;margin-right:auto}
+.chip{font-size:13px;font-weight:600;letter-spacing:.4px;padding:2px 9px;border-radius:2px;color:#fff;background:var(--secondary)}
+.chip.edit{background:var(--primary)}
+.acts{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.page{max-width:1400px;margin:0 auto;padding:28px 28px 56px}
+@media (max-width:768px){.page,.topbar-in{padding-left:19px;padding-right:19px}h1{font-size:24px}}
+
+.stats{display:flex;gap:19px;flex-wrap:wrap;margin-bottom:28px}
+.stat{flex:1 1 200px;border:1px solid var(--hairline-soft);border-radius:4px;padding:14px 19px}
+.stat-label{font-size:15px;font-weight:500;letter-spacing:.6px;color:var(--muted)}
+.stat-value{font-size:30px;font-weight:700;line-height:1.15;color:var(--ink)}
+.stat-value .u{font-size:16px;font-weight:500;color:var(--muted);margin-left:4px}
+
+.toolbar{display:flex;gap:14px;align-items:center;flex-wrap:wrap;padding-bottom:14px;margin-bottom:19px;border-bottom:1px solid var(--hairline-soft)}
+.toolbar .grow{flex:1 1 240px}
+.toolbar select{width:auto;min-width:140px}
+.selinfo{font-size:15px;color:var(--muted)}
+
+.table-wrap{overflow-x:auto;border:1px solid var(--hairline);border-radius:2px}
+table.files{width:100%;border-collapse:collapse;font-size:16px;min-width:860px}
+table.files thead th{background:var(--primary-soft);color:var(--ink);font-weight:700;font-size:15px;text-align:left;padding:10px 14px;white-space:nowrap;border-bottom:1px solid var(--hairline)}
+table.files tbody td{padding:10px 14px;border-bottom:1px solid var(--hairline-soft);vertical-align:top}
+table.files tbody tr:hover{background:var(--surface-subtle)}
+table.files tbody tr.sel{background:#FFF6ED}
+table.files td.num,table.files th.num{text-align:right;font-family:var(--font-num);font-variant-numeric:tabular-nums}
+.cell-check{width:40px}
+.cell-check input{width:17px;height:17px;accent-color:var(--primary)}
+.fname{color:var(--ink);font-weight:500;word-break:break-all;background:none;border:0;font:inherit;font-weight:500;text-align:left;cursor:pointer;padding:0;text-decoration:underline}
+.fnote{color:var(--muted);font-size:15px;word-break:break-word}
+.folder-chip{display:inline-block;font-size:14px;padding:1px 8px;border-radius:2px;background:var(--surface-soft);color:var(--secondary);white-space:nowrap}
+.nowrap{white-space:nowrap}
+.actions{white-space:nowrap;text-align:right}
+.empty{padding:56px 19px;text-align:center;border:1px dashed var(--hairline);border-radius:4px}
+.empty p{color:var(--muted);margin:6px 0 0}
+
+/* 모달 */
+.modal-back{position:fixed;inset:0;background:rgba(26,26,26,.45);display:flex;align-items:flex-start;justify-content:center;padding:38px 19px;overflow-y:auto;z-index:50}
+.modal-back[hidden]{display:none}
+.modal{width:100%;max-width:640px;background:#fff;border:1px solid var(--hairline);border-radius:4px;padding:28px}
+.modal-head{display:flex;align-items:center;justify-content:space-between;gap:14px}
+.modal-foot{display:flex;justify-content:flex-end;gap:10px;margin-top:19px}
+.dropzone{border:1px dashed var(--hairline);border-radius:4px;background:var(--surface-subtle);padding:38px 19px;text-align:center;color:var(--muted);cursor:pointer;margin-bottom:19px}
+.dropzone.over{border-color:var(--primary);background:#FFF6ED;color:var(--ink)}
+progress.bar{-webkit-appearance:none;appearance:none;display:block;width:100%;height:4px;border:0;background:var(--surface-soft);color:var(--primary);margin-top:10px}
+progress.bar::-webkit-progress-bar{background:var(--surface-soft)}
+progress.bar::-webkit-progress-value{background:var(--primary)}
+progress.bar::-moz-progress-bar{background:var(--primary)}
+.toast{position:fixed;left:50%;bottom:28px;transform:translateX(-50%);background:var(--ink);color:#fff;font-size:15px;padding:10px 19px;border-radius:2px;z-index:90;max-width:90vw}
+.toast[hidden]{display:none}
+.steps{margin:0;padding-left:20px;font-size:16px;color:var(--body)}
+.steps li{margin-bottom:8px}
+.kv{font-size:15px;color:var(--muted);margin-bottom:8px}
+.kv b{color:var(--ink);font-weight:500}
+
+/* 화면 모드 */
+body[data-mode="lock"] .only-app{display:none}
+body:not([data-mode="lock"]) .only-lock{display:none}
+body:not([data-mode="edit"]) .only-edit{display:none}
+body[data-mode="edit"] .only-view{display:none}
+@media print{.acts,.toolbar,.lang-toggle,.actions,.cell-check{display:none !important}}
+</style>
+</head>
+<body data-mode="edit">
+
+<!-- ===================== 잠금 화면 ===================== -->
+<main class="gate only-lock">
+  <div class="gate-card">
+    <div class="gate-head">
+      <span class="tag" data-i18n="tag">사내한</span>
+      <div class="lang-toggle" role="radiogroup" aria-label="Language">
+        <button type="button" class="lang-btn" data-lang="ko" role="radio">KO</button>
+        <button type="button" class="lang-btn" data-lang="en" role="radio">EN</button>
+      </div>
+    </div>
+    <div class="rule"></div>
+    <h1 data-title>팀 자료실</h1>
+    <p class="gate-sub" data-i18n="lock_sub">이 자료실은 비밀번호로 잠겨 있습니다.</p>
+    <div class="alert" id="gateErr" role="alert"></div>
+    <div class="field">
+      <label for="gatePw" data-i18n="lock_pw">열람 비밀번호</label>
+      <input type="password" id="gatePw" autocomplete="off">
+    </div>
+    <button type="button" class="btn btn-primary" id="gateBtn" data-i18n="lock_open">열기</button>
+    <p class="gate-foot" data-i18n="lock_foot">비밀번호는 자료실을 만든 사람에게 문의하세요. 이 파일은 인터넷 연결 없이 동작합니다.</p>
+  </div>
+</main>
+
+<!-- ===================== 본 화면 ===================== -->
+<div class="only-app">
+<header class="topbar">
+  <div class="topbar-in">
+    <div class="brand">
+      <h1 data-title>팀 자료실</h1>
+      <span class="chip only-view" data-i18n="mode_view">조회</span>
+      <span class="chip edit only-edit" data-i18n="mode_edit">편집 중</span>
+    </div>
+    <div class="acts">
+      <button type="button" class="btn btn-sm only-view" id="editBtn" data-i18n="btn_edit_mode">자료 관리</button>
+      <button type="button" class="btn btn-sm only-edit" id="viewBtn" data-i18n="btn_view_mode">조회 화면</button>
+      <button type="button" class="btn btn-sm btn-primary only-edit" id="saveBtn" data-i18n="btn_save">자료실 파일 저장</button>
+      <button type="button" class="btn btn-sm" id="helpBtn" data-i18n="btn_help">사용법</button>
+      <div class="lang-toggle" role="radiogroup" aria-label="Language">
+        <button type="button" class="lang-btn" data-lang="ko" role="radio">KO</button>
+        <button type="button" class="lang-btn" data-lang="en" role="radio">EN</button>
+      </div>
+    </div>
+  </div>
+</header>
+
+<main class="page">
+  <div class="rule"></div>
+
+  <div class="alert warn only-edit" id="dirtyMsg" role="status"></div>
+
+  <section class="stats">
+    <div class="stat">
+      <div class="stat-label" data-i18n="stat_files">등록 파일</div>
+      <div class="stat-value num"><span id="statCount">0</span><span class="u" data-i18n="unit">개</span></div>
+    </div>
+    <div class="stat">
+      <div class="stat-label" data-i18n="stat_size">총 용량</div>
+      <div class="stat-value num" id="statSize">0</div>
+    </div>
+    <div class="stat">
+      <div class="stat-label" data-i18n="stat_made">만든 날짜</div>
+      <div class="stat-value num" id="statMade" style="font-size:22px">-</div>
+    </div>
+  </section>
+
+  <div class="toolbar">
+    <div class="grow"><input type="search" id="search" aria-label="search"></div>
+    <select id="folderFilter" aria-label="folder"></select>
+    <select id="sort" aria-label="sort">
+      <option value="new" data-i18n="sort_new">최신순</option>
+      <option value="name" data-i18n="sort_name">이름순</option>
+      <option value="size" data-i18n="sort_size">용량순</option>
+    </select>
+    <span class="selinfo" id="selInfo"></span>
+    <button type="button" class="btn btn-sm" id="zipBtn" data-i18n="btn_zip" disabled>선택 다운로드 (ZIP)</button>
+    <button type="button" class="btn btn-sm btn-danger only-edit" id="delBtn" data-i18n="btn_del" disabled>선택 삭제</button>
+    <button type="button" class="btn btn-sm btn-primary only-edit" id="addBtn" data-i18n="btn_add">파일 추가</button>
+  </div>
+
+  <div id="listArea" data-dyn></div>
+</main>
+</div>
+
+<!-- ===================== 파일 추가 ===================== -->
+<div class="modal-back" id="addModal" hidden>
+  <div class="modal" role="dialog" aria-modal="true">
+    <div class="modal-head">
+      <h2 data-i18n="add_title">파일 추가</h2>
+      <button type="button" class="btn btn-sm" data-close data-i18n="close">닫기</button>
+    </div>
+    <div class="rule"></div>
+    <div class="dropzone" id="dropzone">
+      <span data-i18n="add_drop">여기에 파일을 끌어다 놓거나 클릭해서 선택하세요</span>
+      <div class="hint" data-i18n="add_limit" style="margin-top:8px">총 용량 50MB 이하를 권장합니다. 전달할 때 사내 메일·메신저의 첨부 한도에 걸리지 않는지 확인하세요.</div>
+    </div>
+    <input type="file" id="fileInput" multiple hidden>
+    <div class="field-row">
+      <div class="field">
+        <label for="addFolder" data-i18n="f_folder">폴더 (선택)</label>
+        <input type="text" id="addFolder" maxlength="60" list="folderList">
+        <datalist id="folderList" data-dyn></datalist>
+      </div>
+      <div class="field">
+        <label for="addNote" data-i18n="f_note">설명 (선택)</label>
+        <input type="text" id="addNote" maxlength="200">
+      </div>
+    </div>
+    <div class="modal-foot"><button type="button" class="btn" data-close data-i18n="close">닫기</button></div>
+  </div>
+</div>
+
+<!-- ===================== 파일 정보 수정 ===================== -->
+<div class="modal-back" id="editModal" hidden>
+  <div class="modal" role="dialog" aria-modal="true">
+    <div class="modal-head">
+      <h2 data-i18n="edit_title">파일 정보 수정</h2>
+      <button type="button" class="btn btn-sm" data-close data-i18n="close">닫기</button>
+    </div>
+    <div class="rule"></div>
+    <div class="field">
+      <label for="edName" data-i18n="f_name">파일명</label>
+      <input type="text" id="edName" maxlength="200">
+    </div>
+    <div class="field-row">
+      <div class="field">
+        <label for="edFolder" data-i18n="f_folder">폴더 (선택)</label>
+        <input type="text" id="edFolder" maxlength="60" list="folderList">
+      </div>
+      <div class="field">
+        <label for="edNote" data-i18n="f_note">설명 (선택)</label>
+        <input type="text" id="edNote" maxlength="200">
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button type="button" class="btn" data-close data-i18n="cancel">취소</button>
+      <button type="button" class="btn btn-primary" id="edSave" data-i18n="save">저장</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===================== 자료실 파일 저장 ===================== -->
+<div class="modal-back" id="saveModal" hidden>
+  <div class="modal" role="dialog" aria-modal="true">
+    <div class="modal-head">
+      <h2 data-i18n="save_title">자료실 파일 저장</h2>
+      <button type="button" class="btn btn-sm" data-close data-i18n="close">닫기</button>
+    </div>
+    <div class="rule"></div>
+    <p class="hint" data-i18n="save_desc">자료와 화면이 하나로 합쳐진 HTML 파일이 만들어집니다. 이 파일을 팀원에게 전달하면, 받은 사람은 더블클릭만으로 목록을 보고 파일을 받을 수 있습니다.</p>
+    <div class="alert" id="saveErr" role="alert"></div>
+    <div class="field">
+      <label for="saveTitle" data-i18n="save_name">자료실 이름</label>
+      <input type="text" id="saveTitle" maxlength="60">
+    </div>
+    <div class="field">
+      <label for="savePw" data-i18n="save_pw">열람 비밀번호 (선택, 6자 이상)</label>
+      <input type="password" id="savePw" autocomplete="new-password">
+      <p class="hint" data-i18n="save_pw_hint">입력하면 파일 내용이 실제로 암호화(AES-256)됩니다. 비워 두면 누구나 열 수 있습니다.</p>
+    </div>
+    <div class="field">
+      <label for="savePw2" data-i18n="save_pw2">비밀번호 확인</label>
+      <input type="password" id="savePw2" autocomplete="new-password">
+    </div>
+    <div class="kv"><span data-i18n="save_total">담기는 용량</span>: <b id="saveTotal" class="num">-</b></div>
+    <progress class="bar" id="saveBar" max="100" value="0" hidden></progress>
+    <div class="modal-foot">
+      <button type="button" class="btn" data-close data-i18n="cancel">취소</button>
+      <button type="button" class="btn btn-primary" id="saveGo" data-i18n="save_go">파일 만들기</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===================== 사용법 ===================== -->
+<div class="modal-back" id="helpModal" hidden>
+  <div class="modal" role="dialog" aria-modal="true">
+    <div class="modal-head">
+      <h2 data-i18n="help_title">사용법</h2>
+      <button type="button" class="btn btn-sm" data-close data-i18n="close">닫기</button>
+    </div>
+    <div class="rule"></div>
+    <h3 data-i18n="help_admin">자료를 올리는 사람</h3>
+    <ol class="steps">
+      <li data-i18n="help_a1">[자료 관리] → [파일 추가] 로 파일을 넣습니다. 폴더·설명도 함께 적을 수 있습니다.</li>
+      <li data-i18n="help_a2">[자료실 파일 저장] 을 누르고 열람 비밀번호를 정한 뒤 [파일 만들기] 를 누릅니다.</li>
+      <li data-i18n="help_a3">저장된 HTML 파일 하나를 팀원에게 전달합니다(사내 메신저·메일 등).</li>
+      <li data-i18n="help_a4">자료를 바꾸려면 저장된 파일을 다시 열어 [자료 관리] 에서 수정하고 새로 저장합니다.</li>
+    </ol>
+    <h3 data-i18n="help_team">받는 사람</h3>
+    <ol class="steps">
+      <li data-i18n="help_t1">받은 HTML 파일을 더블클릭합니다(인터넷 연결 불필요).</li>
+      <li data-i18n="help_t2">비밀번호를 입력하면 자료 목록이 보입니다.</li>
+      <li data-i18n="help_t3">파일명을 누르면 다운로드되고, 여러 개는 체크 후 [선택 다운로드 (ZIP)] 를 씁니다.</li>
+    </ol>
+    <div class="alert warn on" data-i18n="help_warn">알아두실 점: 이 파일은 서버가 아니라 파일 한 개입니다. 자료를 갱신하면 새 파일을 다시 전달해야 하고, 받은 사람이 자기 사본을 고쳐도 다른 사람에게는 영향이 없습니다.</div>
+    <div class="modal-foot"><button type="button" class="btn" data-close data-i18n="close">닫기</button></div>
+  </div>
+</div>
+
+<div class="toast" id="toast" hidden></div>
+
+<script id="fsapp">
+(function () {
+  "use strict";
+
+  /* ------------------------------------------------------------------ 언어 */
+  var STR = {
+    ko: {
+      tag:"사내한", lock_sub:"이 자료실은 비밀번호로 잠겨 있습니다.", lock_pw:"열람 비밀번호",
+      lock_open:"열기", lock_foot:"비밀번호는 자료실을 만든 사람에게 문의하세요. 이 파일은 인터넷 연결 없이 동작합니다.",
+      mode_view:"조회", mode_edit:"편집 중", btn_edit_mode:"자료 관리", btn_view_mode:"조회 화면",
+      btn_save:"자료실 파일 저장", btn_help:"사용법",
+      stat_files:"등록 파일", stat_size:"총 용량", stat_made:"만든 날짜", unit:"개",
+      search_ph:"파일명 · 설명 검색", folder_all:"전체 폴더",
+      sort_new:"최신순", sort_name:"이름순", sort_size:"용량순",
+      btn_zip:"선택 다운로드 (ZIP)", btn_del:"선택 삭제", btn_add:"파일 추가",
+      th_name:"파일명", th_folder:"폴더", th_note:"설명", th_size:"용량", th_added:"등록일", th_act:"작업",
+      act_get:"받기", act_edit:"수정", act_del:"삭제",
+      empty_view:"등록된 자료가 없습니다.", empty_edit:"[파일 추가] 를 눌러 자료를 넣어 주세요.",
+      empty_search:"검색 조건에 맞는 파일이 없습니다.",
+      add_title:"파일 추가", add_drop:"여기에 파일을 끌어다 놓거나 클릭해서 선택하세요",
+      add_limit:"총 용량 50MB 이하를 권장합니다. 전달할 때 사내 메일·메신저의 첨부 한도에 걸리지 않는지 확인하세요.",
+      f_folder:"폴더 (선택)", f_note:"설명 (선택)", f_name:"파일명",
+      edit_title:"파일 정보 수정", save:"저장", cancel:"취소", close:"닫기",
+      save_title:"자료실 파일 저장",
+      save_desc:"자료와 화면이 하나로 합쳐진 HTML 파일이 만들어집니다. 이 파일을 팀원에게 전달하면, 받은 사람은 더블클릭만으로 목록을 보고 파일을 받을 수 있습니다.",
+      save_name:"자료실 이름", save_pw:"열람 비밀번호 (선택, 6자 이상)",
+      save_pw_hint:"입력하면 파일 내용이 실제로 암호화(AES-256)됩니다. 비워 두면 누구나 열 수 있습니다.",
+      save_pw2:"비밀번호 확인", save_total:"담기는 용량", save_go:"파일 만들기",
+      help_title:"사용법", help_admin:"자료를 올리는 사람", help_team:"받는 사람",
+      help_a1:"[자료 관리] → [파일 추가] 로 파일을 넣습니다. 폴더·설명도 함께 적을 수 있습니다.",
+      help_a2:"[자료실 파일 저장] 을 누르고 열람 비밀번호를 정한 뒤 [파일 만들기] 를 누릅니다.",
+      help_a3:"저장된 HTML 파일 하나를 팀원에게 전달합니다(사내 메신저·메일 등).",
+      help_a4:"자료를 바꾸려면 저장된 파일을 다시 열어 [자료 관리] 에서 수정하고 새로 저장합니다.",
+      help_t1:"받은 HTML 파일을 더블클릭합니다(인터넷 연결 불필요).",
+      help_t2:"비밀번호를 입력하면 자료 목록이 보입니다.",
+      help_t3:"파일명을 누르면 다운로드되고, 여러 개는 체크 후 [선택 다운로드 (ZIP)] 를 씁니다.",
+      help_warn:"알아두실 점: 이 파일은 서버가 아니라 파일 한 개입니다. 자료를 갱신하면 새 파일을 다시 전달해야 하고, 받은 사람이 자기 사본을 고쳐도 다른 사람에게는 영향이 없습니다.",
+      err_pw:"비밀번호가 올바르지 않습니다.", err_pw_short:"비밀번호는 6자 이상이어야 합니다.",
+      err_pw_diff:"두 비밀번호가 다릅니다.", err_none:"담을 파일이 없습니다.",
+      err_crypto:"이 브라우저에서는 암호화를 쓸 수 없습니다. 비밀번호 없이 저장하거나 최신 Edge/Chrome 으로 열어 주세요.",
+      ok_saved:"자료실 파일을 저장했습니다.", ok_added:"파일을 추가했습니다.",
+      dirty:"변경된 내용이 있습니다. [자료실 파일 저장] 을 눌러야 파일로 남습니다.",
+      confirm_del:"선택한 파일 {n}개를 목록에서 지웁니다.",
+      confirm_leave:"저장하지 않은 변경이 있습니다. 이 페이지를 벗어날까요?",
+      sel_n:"{n}개 선택", working:"만드는 중...", decrypting:"여는 중..."
+    },
+    en: {
+      tag:"INTERNAL", lock_sub:"This file room is password protected.", lock_pw:"Password",
+      lock_open:"Open", lock_foot:"Ask the owner for the password. This file works without an internet connection.",
+      mode_view:"View", mode_edit:"Editing", btn_edit_mode:"Manage files", btn_view_mode:"View mode",
+      btn_save:"Save file room", btn_help:"How to use",
+      stat_files:"Files", stat_size:"Total size", stat_made:"Created", unit:"",
+      search_ph:"Search name or note", folder_all:"All folders",
+      sort_new:"Newest", sort_name:"Name", sort_size:"Size",
+      btn_zip:"Download selected (ZIP)", btn_del:"Remove selected", btn_add:"Add files",
+      th_name:"File name", th_folder:"Folder", th_note:"Note", th_size:"Size", th_added:"Added", th_act:"Actions",
+      act_get:"Get", act_edit:"Edit", act_del:"Remove",
+      empty_view:"No files yet.", empty_edit:"Use [Add files] to put documents in.",
+      empty_search:"No files match this search.",
+      add_title:"Add files", add_drop:"Drop files here, or click to browse",
+      add_limit:"Keep the total under about 50 MB, and check your mail or messenger attachment limit before sending.",
+      f_folder:"Folder (optional)", f_note:"Note (optional)", f_name:"File name",
+      edit_title:"Edit file details", save:"Save", cancel:"Cancel", close:"Close",
+      save_title:"Save file room",
+      save_desc:"One HTML file containing both the documents and this screen. Send it to your team; they only need to double-click it.",
+      save_name:"File room name", save_pw:"Password (optional, 6+ characters)",
+      save_pw_hint:"With a password the contents are truly encrypted (AES-256). Leave blank and anyone can open it.",
+      save_pw2:"Confirm password", save_total:"Payload size", save_go:"Create file",
+      help_title:"How to use", help_admin:"If you publish files", help_team:"If you receive the file",
+      help_a1:"[Manage files] -> [Add files]. You can add a folder and a note.",
+      help_a2:"Click [Save file room], set a password, then [Create file].",
+      help_a3:"Send that single HTML file to your team.",
+      help_a4:"To update, open the saved file again, edit, and save a new copy.",
+      help_t1:"Double-click the HTML file you received (no internet needed).",
+      help_t2:"Enter the password to see the list.",
+      help_t3:"Click a file name to download, or tick several and use [Download selected (ZIP)].",
+      help_warn:"Note: this is a file, not a server. Updates mean sending a new copy, and edits to a received copy affect no one else.",
+      err_pw:"Wrong password.", err_pw_short:"Password must be at least 6 characters.",
+      err_pw_diff:"The two passwords do not match.", err_none:"There are no files to save.",
+      err_crypto:"Encryption is unavailable in this browser. Save without a password, or open in a recent Edge/Chrome.",
+      ok_saved:"File room saved.", ok_added:"Files added.",
+      dirty:"You have unsaved changes. Click [Save file room] to write them to a file.",
+      confirm_del:"Remove {n} selected file(s) from the list?",
+      confirm_leave:"You have unsaved changes. Leave this page?",
+      sel_n:"{n} selected", working:"Working...", decrypting:"Opening..."
+    }
+  };
+  var lang = "ko";
+  try { var sv = localStorage.getItem("fs_lang"); if (sv === "ko" || sv === "en") lang = sv; } catch (e) {}
+  function T(k, v) {
+    var t = (STR[lang] && STR[lang][k] != null) ? STR[lang][k] : (STR.ko[k] != null ? STR.ko[k] : k);
+    if (v) Object.keys(v).forEach(function (n) { t = t.split("{" + n + "}").join(String(v[n])); });
+    return t;
+  }
+  function applyLang() {
+    document.documentElement.setAttribute("lang", lang);
+    each(document.querySelectorAll("[data-i18n]"), function (el) { el.textContent = T(el.getAttribute("data-i18n")); });
+    $("search").setAttribute("placeholder", T("search_ph"));
+    each(document.querySelectorAll(".lang-btn"), function (b) {
+      var on = b.getAttribute("data-lang") === lang;
+      b.classList.toggle("is-active", on);
+      b.setAttribute("aria-checked", on ? "true" : "false");
+    });
+    renderFolders(); render(); updateStats();
+  }
+
+  /* ------------------------------------------------------------------ 유틸 */
+  function $(id) { return document.getElementById(id); }
+  function each(list, fn) { Array.prototype.forEach.call(list, fn); }
+  function fmtBytes(n) {
+    n = Number(n) || 0;
+    var u = ["B", "KB", "MB", "GB"], i = 0;
+    while (n >= 1024 && i < u.length - 1) { n /= 1024; i++; }
+    return (i === 0 ? n : n.toFixed(n >= 100 ? 0 : 1)) + " " + u[i];
+  }
+  function pad(v) { return String(v).length < 2 ? "0" + v : String(v); }
+  function fmtDate(iso) {
+    var d = new Date(iso);
+    if (isNaN(d.getTime())) return "-";
+    return d.getFullYear() + "-" + pad(d.getMonth() + 1) + "-" + pad(d.getDate());
+  }
+  function nowISO() { return new Date().toISOString(); }
+  function uid() {
+    var s = "";
+    for (var i = 0; i < 16; i++) s += "0123456789abcdef"[Math.floor(Math.random() * 16)];
+    return s + Date.now().toString(16);
+  }
+  function toB64(bytes) {
+    var out = "", chunk = 0x8000;
+    for (var i = 0; i < bytes.length; i += chunk) {
+      out += String.fromCharCode.apply(null, bytes.subarray(i, i + chunk));
+    }
+    return btoa(out);
+  }
+  function fromB64(text) {
+    var bin = atob(text), out = new Uint8Array(bin.length);
+    for (var i = 0; i < bin.length; i++) out[i] = bin.charCodeAt(i);
+    return out;
+  }
+  var toast_t = null;
+  function toast(msg) {
+    var t = $("toast");
+    t.textContent = msg; t.hidden = false;
+    clearTimeout(toast_t); toast_t = setTimeout(function () { t.hidden = true; }, 3200);
+  }
+  function showMsg(el, msg, kind) {
+    el.textContent = msg;
+    el.className = "alert on" + (kind ? " " + kind : "");
+  }
+  function hideMsg(el) { el.className = "alert"; }
+
+  /* ------------------------------------------------------------------ 암호 */
+  var SUBTLE = (window.crypto && window.crypto.subtle) ? window.crypto.subtle : null;
+  var KDF_ITER = 200000;
+
+  function randomBytes(n) {
+    var b = new Uint8Array(n);
+    window.crypto.getRandomValues(b);
+    return b;
+  }
+  function deriveKey(password, salt, iter) {
+    return SUBTLE.importKey("raw", new TextEncoder().encode(password), "PBKDF2", false, ["deriveKey"])
+      .then(function (base) {
+        return SUBTLE.deriveKey(
+          { name: "PBKDF2", salt: salt, iterations: iter, hash: "SHA-256" },
+          base, { name: "AES-GCM", length: 256 }, false, ["encrypt", "decrypt"]);
+      });
+  }
+  function encryptBytes(key, bytes) {
+    var iv = randomBytes(12);
+    return SUBTLE.encrypt({ name: "AES-GCM", iv: iv }, key, bytes).then(function (ct) {
+      return { iv: toB64(iv), data: toB64(new Uint8Array(ct)) };
+    });
+  }
+  function decryptBytes(key, ivB64, dataB64) {
+    return SUBTLE.decrypt({ name: "AES-GCM", iv: fromB64(ivB64) }, key, fromB64(dataB64))
+      .then(function (buf) { return new Uint8Array(buf); });
+  }
+
+  /* -------------------------------------------------------------- ZIP 생성 */
+  var CRC_TABLE = (function () {
+    var t = new Uint32Array(256);
+    for (var n = 0; n < 256; n++) {
+      var c = n;
+      for (var k = 0; k < 8; k++) c = (c & 1) ? (0xEDB88320 ^ (c >>> 1)) : (c >>> 1);
+      t[n] = c >>> 0;
+    }
+    return t;
+  })();
+  function crc32(bytes) {
+    var c = 0xFFFFFFFF;
+    for (var i = 0; i < bytes.length; i++) c = CRC_TABLE[(c ^ bytes[i]) & 0xFF] ^ (c >>> 8);
+    return (c ^ 0xFFFFFFFF) >>> 0;
+  }
+  function dosTime(d) {
+    return ((d.getHours() << 11) | (d.getMinutes() << 5) | (Math.floor(d.getSeconds() / 2))) & 0xFFFF;
+  }
+  function dosDate(d) {
+    return (((d.getFullYear() - 1980) << 9) | ((d.getMonth() + 1) << 5) | d.getDate()) & 0xFFFF;
+  }
+  function buildZip(entries) {   // entries: [{name, bytes}]
+    var enc = new TextEncoder(), parts = [], central = [], offset = 0, now = new Date();
+    var time = dosTime(now), date = dosDate(now);
+
+    entries.forEach(function (e) {
+      var nameBytes = enc.encode(e.name);
+      var crc = crc32(e.bytes), size = e.bytes.length;
+      var local = new Uint8Array(30 + nameBytes.length);
+      var dv = new DataView(local.buffer);
+      dv.setUint32(0, 0x04034b50, true);
+      dv.setUint16(4, 20, true);
+      dv.setUint16(6, 0x0800, true);     // UTF-8 파일명
+      dv.setUint16(8, 0, true);          // 압축 없음(STORE)
+      dv.setUint16(10, time, true); dv.setUint16(12, date, true);
+      dv.setUint32(14, crc, true);
+      dv.setUint32(18, size, true); dv.setUint32(22, size, true);
+      dv.setUint16(26, nameBytes.length, true); dv.setUint16(28, 0, true);
+      local.set(nameBytes, 30);
+      parts.push(local, e.bytes);
+
+      var cen = new Uint8Array(46 + nameBytes.length);
+      var cv = new DataView(cen.buffer);
+      cv.setUint32(0, 0x02014b50, true);
+      cv.setUint16(4, 20, true); cv.setUint16(6, 20, true);
+      cv.setUint16(8, 0x0800, true); cv.setUint16(10, 0, true);
+      cv.setUint16(12, time, true); cv.setUint16(14, date, true);
+      cv.setUint32(16, crc, true);
+      cv.setUint32(20, size, true); cv.setUint32(24, size, true);
+      cv.setUint16(28, nameBytes.length, true);
+      cv.setUint32(42, offset, true);
+      cen.set(nameBytes, 46);
+      central.push(cen);
+      offset += local.length + size;
+    });
+
+    var centralSize = central.reduce(function (a, c) { return a + c.length; }, 0);
+    var end = new Uint8Array(22);
+    var ev = new DataView(end.buffer);
+    ev.setUint32(0, 0x06054b50, true);
+    ev.setUint16(8, entries.length, true); ev.setUint16(10, entries.length, true);
+    ev.setUint32(12, centralSize, true); ev.setUint32(16, offset, true);
+
+    return new Blob(parts.concat(central, [end]), { type: "application/zip" });
+  }
+
+  /* ------------------------------------------------------------------ 상태 */
+  var state = {
+    title: "팀 자료실",
+    created: nowISO(),
+    items: [],          // {id, name, size, type, folder, note, added, bytes|null, enc:{iv,data}|null}
+    key: null,          // 복호화 키(잠긴 자료실을 연 경우)
+    dirty: false,
+    selected: {},
+    locked: false
+  };
+
+  function setMode(mode) {
+    document.body.setAttribute("data-mode", mode);
+    if (mode !== "lock") { render(); updateStats(); }
+  }
+  function markDirty(on) {
+    state.dirty = on;
+    var box = $("dirtyMsg");
+    if (on) showMsg(box, T("dirty"), "warn"); else hideMsg(box);
+  }
+  function setTitle(text) {
+    state.title = text || "팀 자료실";
+    each(document.querySelectorAll("[data-title]"), function (el) { el.textContent = state.title; });
+    document.title = state.title;
+  }
+
+  /* ------------------------------------------------------------- 파일 바이트 */
+  function bytesOf(item) {           // 필요할 때만 복호화한다
+    if (item.bytes) return Promise.resolve(item.bytes);
+    if (!item.enc || !state.key) return Promise.reject(new Error("no data"));
+    return decryptBytes(state.key, item.enc.iv, item.enc.data).then(function (b) {
+      item.bytes = b;
+      return b;
+    });
+  }
+  function download(name, bytes, type) {
+    var blob = (bytes instanceof Blob) ? bytes : new Blob([bytes], { type: type || "application/octet-stream" });
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement("a");
+    a.href = url; a.download = name;
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(function () { URL.revokeObjectURL(url); }, 30000);
+  }
+
+  /* ------------------------------------------------------------------ 목록 */
+  function folders() {
+    var set = {};
+    state.items.forEach(function (i) { if (i.folder) set[i.folder] = 1; });
+    return Object.keys(set).sort();
+  }
+  function renderFolders() {
+    var sel = $("folderFilter"), cur = sel.value;
+    sel.innerHTML = "";
+    var all = document.createElement("option");
+    all.value = ""; all.textContent = T("folder_all");
+    sel.appendChild(all);
+    var list = folders();
+    list.forEach(function (f) {
+      var o = document.createElement("option"); o.value = f; o.textContent = f; sel.appendChild(o);
+    });
+    sel.value = list.indexOf(cur) >= 0 ? cur : "";
+    var dl = $("folderList");
+    dl.innerHTML = "";
+    list.forEach(function (f) { var o = document.createElement("option"); o.value = f; dl.appendChild(o); });
+  }
+  function visible() {
+    var q = $("search").value.trim().toLowerCase();
+    var folder = $("folderFilter").value;
+    var mode = $("sort").value;
+    var rows = state.items.filter(function (i) {
+      if (folder && (i.folder || "") !== folder) return false;
+      if (!q) return true;
+      return [i.name, i.note, i.folder].some(function (v) {
+        return String(v || "").toLowerCase().indexOf(q) >= 0;
+      });
+    });
+    var cmp = {
+      new: function (a, b) { return String(b.added).localeCompare(String(a.added)); },
+      name: function (a, b) { return String(a.name).localeCompare(String(b.name), "ko"); },
+      size: function (a, b) { return (b.size || 0) - (a.size || 0); }
+    };
+    return rows.sort(cmp[mode] || cmp.new);
+  }
+  function td(tr, text, cls) {
+    var c = document.createElement("td");
+    if (cls) c.className = cls;
+    if (text !== undefined) c.textContent = text;
+    tr.appendChild(c);
+    return c;
+  }
+  function render() {
+    var area = $("listArea");
+    if (!area) return;
+    var rows = visible(), editing = document.body.getAttribute("data-mode") === "edit";
+    area.innerHTML = "";
+
+    if (!rows.length) {
+      var box = document.createElement("div");
+      box.className = "empty";
+      var h = document.createElement("h3");
+      var p = document.createElement("p");
+      if (state.items.length) { h.textContent = T("empty_search"); }
+      else { h.textContent = T("empty_view"); if (editing) p.textContent = T("empty_edit"); }
+      box.appendChild(h); box.appendChild(p);
+      area.appendChild(box);
+      updateSel();
+      return;
+    }
+
+    var wrap = document.createElement("div"); wrap.className = "table-wrap";
+    var table = document.createElement("table"); table.className = "files";
+    var thead = document.createElement("thead"), hr = document.createElement("tr");
+
+    var checkTh = document.createElement("th"); checkTh.className = "cell-check";
+    var all = document.createElement("input"); all.type = "checkbox";
+    all.checked = rows.every(function (i) { return state.selected[i.id]; });
+    all.addEventListener("change", function () {
+      rows.forEach(function (i) {
+        if (all.checked) state.selected[i.id] = true; else delete state.selected[i.id];
+      });
+      render();
+    });
+    checkTh.appendChild(all); hr.appendChild(checkTh);
+
+    var cols = [["th_name", ""], ["th_folder", ""], ["th_note", ""], ["th_size", "num"], ["th_added", ""]];
+    cols.push(["th_act", "actions"]);
+    cols.forEach(function (c) {
+      var th = document.createElement("th"); th.className = c[1]; th.textContent = T(c[0]); hr.appendChild(th);
+    });
+    thead.appendChild(hr); table.appendChild(thead);
+
+    var tbody = document.createElement("tbody");
+    rows.forEach(function (item) {
+      var tr = document.createElement("tr");
+      if (state.selected[item.id]) tr.classList.add("sel");
+
+      var ct = document.createElement("td"); ct.className = "cell-check";
+      var cb = document.createElement("input"); cb.type = "checkbox";
+      cb.checked = !!state.selected[item.id];
+      cb.addEventListener("change", function () {
+        if (cb.checked) state.selected[item.id] = true; else delete state.selected[item.id];
+        tr.classList.toggle("sel", cb.checked);
+        updateSel();
+      });
+      ct.appendChild(cb); tr.appendChild(ct);
+
+      var nameTd = td(tr);
+      var link = document.createElement("button");
+      link.type = "button"; link.className = "fname"; link.textContent = item.name;
+      link.addEventListener("click", function () { getOne(item); });
+      nameTd.appendChild(link);
+
+      var ftd = td(tr);
+      if (item.folder) {
+        var chip = document.createElement("span");
+        chip.className = "folder-chip"; chip.textContent = item.folder;
+        ftd.appendChild(chip);
+      }
+      td(tr, item.note || "", "fnote");
+      td(tr, fmtBytes(item.size), "num nowrap");
+      td(tr, fmtDate(item.added), "nowrap");
+
+      var at = td(tr, undefined, "actions");
+      var get = document.createElement("button");
+      get.type = "button"; get.className = "btn-link"; get.textContent = T("act_get");
+      get.addEventListener("click", function () { getOne(item); });
+      at.appendChild(get);
+      if (editing) {
+        var ed = document.createElement("button");
+        ed.type = "button"; ed.className = "btn-link"; ed.textContent = T("act_edit");
+        ed.addEventListener("click", function () { openEdit(item); });
+        at.appendChild(ed);
+        var del = document.createElement("button");
+        del.type = "button"; del.className = "btn-link danger"; del.textContent = T("act_del");
+        del.addEventListener("click", function () { removeItems([item.id]); });
+        at.appendChild(del);
+      }
+      tbody.appendChild(tr);
+    });
+    table.appendChild(tbody); wrap.appendChild(table); area.appendChild(wrap);
+    updateSel();
+  }
+  function selectedIds() { return Object.keys(state.selected); }
+  function updateSel() {
+    var n = selectedIds().length;
+    $("selInfo").textContent = n ? T("sel_n", { n: n }) : "";
+    $("zipBtn").disabled = n === 0;
+    $("delBtn").disabled = n === 0;
+  }
+  function updateStats() {
+    $("statCount").textContent = state.items.length;
+    $("statSize").textContent = fmtBytes(state.items.reduce(function (a, i) { return a + (i.size || 0); }, 0));
+    $("statMade").textContent = fmtDate(state.created);
+  }
+
+  /* ------------------------------------------------------------ 다운로드 */
+  function getOne(item) {
+    bytesOf(item).then(function (bytes) {
+      download(item.name, bytes, item.type);
+    }).catch(function () { toast(T("err_pw")); });
+  }
+  function getZip() {
+    var ids = selectedIds();
+    if (!ids.length) return;
+    var picked = state.items.filter(function (i) { return ids.indexOf(i.id) >= 0; });
+    $("zipBtn").disabled = true;
+    var used = {};
+    Promise.all(picked.map(function (i) {
+      return bytesOf(i).then(function (b) {
+        var base = (i.folder ? i.folder.replace(/[\\/:*?"<>|]/g, "_") + "/" : "") +
+                   i.name.replace(/[\\/:*?"<>|]/g, "_");
+        var n = used[base] || 0; used[base] = n + 1;
+        if (n) {
+          var dot = base.lastIndexOf(".");
+          base = dot > 0 ? base.slice(0, dot) + " (" + n + ")" + base.slice(dot) : base + " (" + n + ")";
+        }
+        return { name: base, bytes: b };
+      });
+    })).then(function (entries) {
+      var d = new Date();
+      var stamp = d.getFullYear() + pad(d.getMonth() + 1) + pad(d.getDate());
+      download(state.title + "_" + stamp + ".zip", buildZip(entries));
+    }).catch(function () { toast(T("err_pw")); })
+      .then(function () { updateSel(); });
+  }
+
+  /* -------------------------------------------------------------- 편집 */
+  function addFiles(list) {
+    var folder = $("addFolder").value.trim();
+    var note = $("addNote").value.trim();
+    var pending = Array.prototype.slice.call(list);
+    if (!pending.length) return;
+    Promise.all(pending.map(function (file) {
+      return file.arrayBuffer().then(function (buf) {
+        state.items.push({
+          id: uid(), name: file.name, size: file.size,
+          type: file.type || "application/octet-stream",
+          folder: folder, note: note, added: nowISO(),
+          bytes: new Uint8Array(buf), enc: null
+        });
+      });
+    })).then(function () {
+      markDirty(true); renderFolders(); render(); updateStats();
+      toast(T("ok_added"));
+    });
+  }
+  var editingId = null;
+  function openEdit(item) {
+    editingId = item.id;
+    $("edName").value = item.name;
+    $("edFolder").value = item.folder || "";
+    $("edNote").value = item.note || "";
+    $("editModal").hidden = false;
+    $("edName").focus();
+  }
+  function saveEdit() {
+    var item = state.items.filter(function (i) { return i.id === editingId; })[0];
+    if (!item) return;
+    var name = $("edName").value.trim();
+    if (!name) return;
+    item.name = name;
+    item.folder = $("edFolder").value.trim();
+    item.note = $("edNote").value.trim();
+    $("editModal").hidden = true;
+    markDirty(true); renderFolders(); render();
+  }
+  function removeItems(ids) {
+    if (!ids.length) return;
+    if (!window.confirm(T("confirm_del", { n: ids.length }))) return;
+    state.items = state.items.filter(function (i) { return ids.indexOf(i.id) < 0; });
+    ids.forEach(function (id) { delete state.selected[id]; });
+    markDirty(true); renderFolders(); render(); updateStats();
+  }
+
+  /* ------------------------------------------------------ 자료실 파일 저장 */
+  function serializeDocument(payloadJson, locked) {
+    var clone = document.documentElement.cloneNode(true);
+    var old = clone.querySelector("#fsdata");
+    if (old) old.parentNode.removeChild(old);
+    each(clone.querySelectorAll("[data-dyn]"), function (el) { el.innerHTML = ""; });
+    each(clone.querySelectorAll(".modal-back"), function (el) { el.setAttribute("hidden", ""); });
+    each(clone.querySelectorAll(".alert"), function (el) { el.className = "alert"; el.textContent = ""; });
+    each(clone.querySelectorAll("input"), function (el) {
+      if (el.type !== "file") el.setAttribute("value", "");
+      el.removeAttribute("checked");
+    });
+    // 저장하던 순간의 UI 상태(비활성 버튼·"만드는 중..." 문구)가 굳지 않도록 되돌린다.
+    each(clone.querySelectorAll("button"), function (el) { el.removeAttribute("disabled"); });
+    each(clone.querySelectorAll("[data-i18n]"), function (el) {
+      el.textContent = T(el.getAttribute("data-i18n"));
+    });
+    each(clone.querySelectorAll("#zipBtn, #delBtn"), function (el) { el.setAttribute("disabled", ""); });
+    var body = clone.querySelector("body");
+    body.setAttribute("data-mode", locked ? "lock" : "view");
+    var toastEl = clone.querySelector("#toast");
+    if (toastEl) { toastEl.setAttribute("hidden", ""); toastEl.textContent = ""; }
+    var bar = clone.querySelector("#saveBar");
+    if (bar) { bar.setAttribute("hidden", ""); bar.setAttribute("value", "0"); }
+
+    var script = clone.ownerDocument.createElement("script");
+    script.setAttribute("id", "fsdata");
+    script.setAttribute("type", "application/json");
+    script.textContent = payloadJson;
+    // 앱 스크립트보다 먼저 파싱되도록 body 맨 앞에 넣는다.
+    body.insertBefore(script, body.firstChild);
+    return "<!DOCTYPE html>\n" + clone.outerHTML;
+  }
+
+  function buildPayload(password, onProgress) {
+    var meta = state.items.map(function (i) {
+      return { id: i.id, name: i.name, size: i.size, type: i.type,
+               folder: i.folder || "", note: i.note || "", added: i.added };
+    });
+    var payload = { v: 1, title: state.title, created: state.created, enc: false, files: [] };
+    var total = state.items.length + 1, done = 0;
+    function tick() { done++; if (onProgress) onProgress(Math.round(done * 100 / total)); }
+
+    if (!password) {
+      payload.meta = meta;
+      return state.items.reduce(function (chain, item) {
+        return chain.then(function () {
+          return bytesOf(item).then(function (b) {
+            payload.files.push({ id: item.id, data: toB64(b) });
+            tick();
+          });
+        });
+      }, Promise.resolve()).then(function () { tick(); return payload; });
+    }
+
+    var salt = randomBytes(16);
+    payload.enc = true;
+    payload.kdf = { salt: toB64(salt), iter: KDF_ITER };
+    return deriveKey(password, salt, KDF_ITER).then(function (key) {
+      return encryptBytes(key, new TextEncoder().encode(JSON.stringify(meta)))
+        .then(function (encMeta) {
+          payload.meta = encMeta;
+          tick();
+          return state.items.reduce(function (chain, item) {
+            return chain.then(function () {
+              return bytesOf(item).then(function (b) {
+                return encryptBytes(key, b).then(function (e) {
+                  payload.files.push({ id: item.id, iv: e.iv, data: e.data });
+                  tick();
+                });
+              });
+            });
+          }, Promise.resolve());
+        }).then(function () { return payload; });
+    });
+  }
+
+  function doSave() {
+    var err = $("saveErr");
+    hideMsg(err);
+    if (!state.items.length) { showMsg(err, T("err_none")); return; }
+    var pw = $("savePw").value, pw2 = $("savePw2").value;
+    if (pw) {
+      if (pw.length < 6) { showMsg(err, T("err_pw_short")); return; }
+      if (pw !== pw2) { showMsg(err, T("err_pw_diff")); return; }
+      if (!SUBTLE) { showMsg(err, T("err_crypto")); return; }
+    }
+    setTitle($("saveTitle").value.trim());
+
+    var btn = $("saveGo"), bar = $("saveBar");
+    btn.disabled = true; btn.textContent = T("working");
+    bar.hidden = false; bar.value = 0;
+
+    buildPayload(pw, function (p) { bar.value = p; }).then(function (payload) {
+      var json = JSON.stringify(payload).replace(/</g, "\\u003c");
+      var html = serializeDocument(json, !!pw);
+      var d = new Date();
+      var stamp = d.getFullYear() + pad(d.getMonth() + 1) + pad(d.getDate());
+      download(state.title + "_" + stamp + ".html",
+               new Blob([html], { type: "text/html;charset=utf-8" }));
+      markDirty(false);
+      $("saveModal").hidden = true;
+      toast(T("ok_saved"));
+    }).catch(function (e) {
+      showMsg(err, String((e && e.message) || e));
+    }).then(function () {
+      btn.disabled = false; btn.textContent = T("save_go");
+      bar.hidden = true;
+    });
+  }
+
+  /* ------------------------------------------------------------ 불러오기 */
+  function loadPayload() {
+    var node = document.getElementById("fsdata");
+    if (!node) return null;
+    try { return JSON.parse(node.textContent); } catch (e) { return null; }
+  }
+  function adoptPlain(payload) {
+    state.title = payload.title || state.title;
+    state.created = payload.created || state.created;
+    var byId = {};
+    payload.files.forEach(function (f) { byId[f.id] = f; });
+    state.items = (payload.meta || []).map(function (m) {
+      var f = byId[m.id];
+      return {
+        id: m.id, name: m.name, size: m.size, type: m.type, folder: m.folder,
+        note: m.note, added: m.added,
+        bytes: f ? fromB64(f.data) : new Uint8Array(0), enc: null
+      };
+    });
+  }
+  function unlock(password) {
+    var payload = loadPayload();
+    var salt = fromB64(payload.kdf.salt);
+    return deriveKey(password, salt, payload.kdf.iter).then(function (key) {
+      return decryptBytes(key, payload.meta.iv, payload.meta.data).then(function (metaBytes) {
+        var meta = JSON.parse(new TextDecoder().decode(metaBytes));
+        var byId = {};
+        payload.files.forEach(function (f) { byId[f.id] = f; });
+        state.key = key;
+        state.title = payload.title || state.title;
+        state.created = payload.created || state.created;
+        state.items = meta.map(function (m) {
+          var f = byId[m.id];
+          return {
+            id: m.id, name: m.name, size: m.size, type: m.type, folder: m.folder,
+            note: m.note, added: m.added,
+            bytes: null, enc: f ? { iv: f.iv, data: f.data } : null
+          };
+        });
+      });
+    });
+  }
+
+  /* ------------------------------------------------------------ 이벤트 */
+  document.addEventListener("click", function (e) {
+    var closer = e.target.closest ? e.target.closest("[data-close]") : null;
+    if (closer) {
+      var back = closer.closest(".modal-back");
+      if (back) back.hidden = true;
+    }
+    if (e.target.classList && e.target.classList.contains("modal-back")) e.target.hidden = true;
+  });
+  document.addEventListener("keydown", function (e) {
+    if (e.key === "Escape") each(document.querySelectorAll(".modal-back:not([hidden])"), function (m) { m.hidden = true; });
+  });
+  each(document.querySelectorAll(".lang-btn"), function (b) {
+    b.addEventListener("click", function () {
+      lang = b.getAttribute("data-lang");
+      try { localStorage.setItem("fs_lang", lang); } catch (e) {}
+      applyLang();
+    });
+  });
+
+  $("search").addEventListener("input", render);
+  $("folderFilter").addEventListener("change", render);
+  $("sort").addEventListener("change", render);
+  $("zipBtn").addEventListener("click", getZip);
+  $("delBtn").addEventListener("click", function () { removeItems(selectedIds()); });
+  $("editBtn").addEventListener("click", function () { setMode("edit"); });
+  $("viewBtn").addEventListener("click", function () { setMode("view"); });
+  $("helpBtn").addEventListener("click", function () { $("helpModal").hidden = false; });
+  $("edSave").addEventListener("click", saveEdit);
+
+  $("addBtn").addEventListener("click", function () {
+    $("addFolder").value = ""; $("addNote").value = "";
+    $("addModal").hidden = false;
+  });
+  $("dropzone").addEventListener("click", function () { $("fileInput").click(); });
+  $("fileInput").addEventListener("change", function () {
+    addFiles($("fileInput").files);
+    $("fileInput").value = "";
+  });
+  ["dragenter", "dragover"].forEach(function (n) {
+    $("dropzone").addEventListener(n, function (e) { e.preventDefault(); $("dropzone").classList.add("over"); });
+  });
+  ["dragleave", "drop"].forEach(function (n) {
+    $("dropzone").addEventListener(n, function (e) { e.preventDefault(); $("dropzone").classList.remove("over"); });
+  });
+  $("dropzone").addEventListener("drop", function (e) {
+    if (e.dataTransfer && e.dataTransfer.files.length) addFiles(e.dataTransfer.files);
+  });
+  window.addEventListener("dragover", function (e) { e.preventDefault(); });
+  window.addEventListener("drop", function (e) { e.preventDefault(); });
+
+  $("saveBtn").addEventListener("click", function () {
+    hideMsg($("saveErr"));
+    $("saveTitle").value = state.title;
+    $("saveTotal").textContent = fmtBytes(state.items.reduce(function (a, i) { return a + (i.size || 0); }, 0));
+    $("saveModal").hidden = false;
+  });
+  $("saveGo").addEventListener("click", doSave);
+
+  $("gateBtn").addEventListener("click", function () {
+    var btn = $("gateBtn"), err = $("gateErr");
+    hideMsg(err);
+    btn.disabled = true; btn.textContent = T("decrypting");
+    unlock($("gatePw").value).then(function () {
+      state.locked = false;
+      setMode("view");
+      renderFolders(); render(); updateStats();
+    }).catch(function () {
+      showMsg(err, T("err_pw"));
+      $("gatePw").select();
+    }).then(function () {
+      btn.disabled = false; btn.textContent = T("lock_open");
+    });
+  });
+  $("gatePw").addEventListener("keydown", function (e) {
+    if (e.key === "Enter") $("gateBtn").click();
+  });
+
+  window.addEventListener("beforeunload", function (e) {
+    if (!state.dirty) return;
+    e.preventDefault();
+    e.returnValue = "";
+  });
+
+  /* ------------------------------------------------------------ 시작 */
+  function start() {
+    var payload = loadPayload();
+    if (payload && payload.enc) {
+      state.title = payload.title || state.title;
+      state.created = payload.created || state.created;
+      state.locked = true;
+      setTitle(state.title);
+      document.body.setAttribute("data-mode", "lock");
+      applyLang();
+      setTimeout(function () { $("gatePw").focus(); }, 50);
+      return;
+    }
+    if (payload) {
+      adoptPlain(payload);
+      setTitle(state.title);
+      document.body.setAttribute("data-mode", "view");
+    } else {
+      setTitle(state.title);
+      document.body.setAttribute("data-mode", "edit");
+    }
+    applyLang();
+    renderFolders(); render(); updateStats();
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", start);
+  } else {
+    start();
+  }
+
+  window.FS_TEST = { state: state, buildZip: buildZip, T: T };
+})();
+</script>
+</body>
+</html>
