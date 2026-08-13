@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>{{SITE_TITLE}}</title>
+<link rel="icon" href="/static/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="/static/app.css">
+</head>
+<body>
+<main class="login-wrap">
+  <div class="login-card">
+    <div class="login-head">
+      <span class="tag" data-i18n="tag">사내한</span>
+      <div class="lang-toggle" role="radiogroup" aria-label="Language">
+        <button type="button" class="lang-btn" data-lang="ko" role="radio" aria-checked="true">KO</button>
+        <button type="button" class="lang-btn" data-lang="en" role="radio" aria-checked="false">EN</button>
+      </div>
+    </div>
+
+    <div class="rule"></div>
+    <h1 id="siteTitle">{{SITE_TITLE}}</h1>
+    <p class="login-sub" data-i18n="login_sub">사내망 전용 파일 공유. 접속하려면 비밀번호를 입력하세요.</p>
+
+    <div class="alert" id="err" role="alert"></div>
+
+    <form id="loginForm" autocomplete="off">
+      <div class="field" id="nameField">
+        <label for="name" data-i18n="login_name">이름 (선택)</label>
+        <input type="text" id="name" name="name" maxlength="40" data-i18n-ph="login_name_ph" autocomplete="off">
+      </div>
+      <div class="field">
+        <label for="password" data-i18n="login_password">비밀번호</label>
+        <input type="password" id="password" name="password" required autofocus
+               data-i18n-ph="login_password_ph" autocomplete="current-password">
+      </div>
+      <button type="submit" class="btn btn-primary" id="submitBtn" data-i18n="login_submit">접속</button>
+    </form>
+
+    <p class="login-foot">
+      <span data-i18n="login_hint">비밀번호는 관리자에게 문의하세요.</span><br>
+      <span data-i18n="login_offline_note">이 사이트는 사내망에서만 열립니다. 외부 인터넷 연결이 필요하지 않습니다.</span>
+    </p>
+  </div>
+</main>
+
+<script src="/static/i18n.js"></script>
+<script src="/static/login.js"></script>
+</body>
+</html>

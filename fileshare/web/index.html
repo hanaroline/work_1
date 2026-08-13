@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>{{SITE_TITLE}}</title>
+<link rel="icon" href="/static/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="/static/app.css">
+</head>
+<body>
+
+<header class="topbar">
+  <div class="topbar-inner">
+    <div class="brand">
+      <h1 id="siteTitle">{{SITE_TITLE}}</h1>
+      <span class="role-chip" id="roleChip">·</span>
+    </div>
+    <div class="topbar-actions">
+      <button type="button" class="btn btn-sm" id="settingsBtn" data-i18n="nav_settings" hidden>설정</button>
+      <button type="button" class="btn btn-sm" id="logoutBtn" data-i18n="nav_logout">로그아웃</button>
+      <div class="lang-toggle" role="radiogroup" aria-label="Language">
+        <button type="button" class="lang-btn" data-lang="ko" role="radio" aria-checked="true">KO</button>
+        <button type="button" class="lang-btn" data-lang="en" role="radio" aria-checked="false">EN</button>
+      </div>
+    </div>
+  </div>
+</header>
+
+<main class="page" id="page">
+  <div class="rule"></div>
+
+  <section class="stats">
+    <div class="stat">
+      <div class="stat-label" data-i18n="stat_files">등록 파일</div>
+      <div class="stat-value num"><span id="statCount">0</span><span class="u" data-i18n="unit_files">개</span></div>
+    </div>
+    <div class="stat">
+      <div class="stat-label" data-i18n="stat_size">총 용량</div>
+      <div class="stat-value num" id="statSize">0</div>
+    </div>
+    <div class="stat">
+      <div class="stat-label" data-i18n="stat_downloads">누적 다운로드</div>
+      <div class="stat-value num" id="statDownloads">0</div>
+    </div>
+  </section>
+
+  <div class="toolbar">
+    <div class="grow">
+      <input type="search" id="search" data-i18n-ph="search_ph" aria-label="search">
+    </div>
+    <select id="folderFilter" aria-label="folder"></select>
+    <select id="sort" aria-label="sort">
+      <option value="new" data-i18n="sort_new">최신순</option>
+      <option value="old" data-i18n="sort_old">오래된순</option>
+      <option value="name" data-i18n="sort_name">이름순</option>
+      <option value="size" data-i18n="sort_size">용량순</option>
+      <option value="downloads" data-i18n="sort_downloads">다운로드순</option>
+    </select>
+    <span class="sel-count" id="selCount"></span>
+    <button type="button" class="btn btn-sm" id="zipBtn" data-i18n="btn_download_sel" disabled>선택 다운로드 (ZIP)</button>
+    <button type="button" class="btn btn-sm btn-danger" id="deleteBtn" data-i18n="btn_delete_sel" hidden disabled>선택 삭제</button>
+    <button type="button" class="btn btn-sm btn-primary" id="uploadBtn" data-i18n="btn_upload" hidden>파일 업로드</button>
+  </div>
+
+  <div id="listArea"></div>
+</main>
+
+<!-- 업로드 -->
+<div class="modal-back" id="uploadModal" hidden>
+  <div class="modal" role="dialog" aria-modal="true">
+    <div class="modal-head">
+      <h2 data-i18n="up_title">파일 업로드</h2>
+      <button type="button" class="btn btn-sm" data-close data-i18n="close">닫기</button>
+    </div>
+    <div class="rule"></div>
+    <div class="alert" id="upErr" role="alert"></div>
+    <div class="dropzone" id="dropzone">
+      <span data-i18n="up_drop">여기에 파일을 끌어다 놓거나 클릭해서 선택하세요</span>
+      <div class="hint hint-sp"><span data-i18n="up_max">최대 업로드 크기</span>: <span id="maxSize" class="num">-</span></div>
+    </div>
+    <input type="file" id="fileInput" multiple hidden>
+    <div class="uplist" id="upList"></div>
+    <div class="field-row">
+      <div class="field">
+        <label for="upFolder" data-i18n="up_folder">폴더 (선택)</label>
+        <input type="text" id="upFolder" maxlength="60" list="folderList" data-i18n-ph="up_folder_ph">
+        <datalist id="folderList"></datalist>
+      </div>
+      <div class="field">
+        <label for="upNote" data-i18n="up_note">설명 (선택)</label>
+        <input type="text" id="upNote" maxlength="300" data-i18n-ph="up_note_ph">
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button type="button" class="btn" data-close data-i18n="close">닫기</button>
+      <button type="button" class="btn btn-primary" id="upStart" data-i18n="up_start" disabled>업로드 시작</button>
+    </div>
+  </div>
+</div>
+
+<!-- 파일 정보 수정 -->
+<div class="modal-back" id="editModal" hidden>
+  <div class="modal" role="dialog" aria-modal="true">
+    <div class="modal-head">
+      <h2 data-i18n="ed_title">파일 정보 수정</h2>
+      <button type="button" class="btn btn-sm" data-close data-i18n="close">닫기</button>
+    </div>
+    <div class="rule"></div>
+    <div class="field">
+      <label for="edName" data-i18n="ed_name">파일명</label>
+      <input type="text" id="edName" maxlength="255">
+    </div>
+    <div class="field-row">
+      <div class="field">
+        <label for="edFolder" data-i18n="up_folder">폴더 (선택)</label>
+        <input type="text" id="edFolder" maxlength="60" list="folderList">
+      </div>
+      <div class="field">
+        <label for="edNote" data-i18n="up_note">설명 (선택)</label>
+        <input type="text" id="edNote" maxlength="300">
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button type="button" class="btn" data-close data-i18n="cancel">취소</button>
+      <button type="button" class="btn btn-primary" id="edSave" data-i18n="ed_save">저장</button>
+    </div>
+  </div>
+</div>
+
+<!-- 관리자 설정 -->
+<div class="modal-back" id="settingsModal" hidden>
+  <div class="modal wide" role="dialog" aria-modal="true">
+    <div class="modal-head">
+      <h2 data-i18n="set_title">관리자 설정</h2>
+      <button type="button" class="btn btn-sm" data-close data-i18n="close">닫기</button>
+    </div>
+    <div class="rule"></div>
+
+    <div class="tabs">
+      <button type="button" class="tab is-active" data-tab="general" data-i18n="set_tab_general">일반</button>
+      <button type="button" class="tab" data-tab="password" data-i18n="set_tab_password">비밀번호</button>
+      <button type="button" class="tab" data-tab="audit" data-i18n="set_tab_audit">접속 기록</button>
+    </div>
+
+    <section class="tabpane" data-pane="general">
+      <div class="alert" id="setMsg" role="status"></div>
+      <div class="field-row">
+        <div class="field">
+          <label for="setTitle" data-i18n="set_site_title">사이트 이름</label>
+          <input type="text" id="setTitle" maxlength="60">
+        </div>
+        <div class="field">
+          <label for="setHours" data-i18n="set_session_hours">로그인 유지 시간 (시간)</label>
+          <input type="number" id="setHours" min="1" max="720">
+        </div>
+        <div class="field">
+          <label for="setMaxMb" data-i18n="set_max_upload">최대 업로드 크기 (MB)</label>
+          <input type="number" id="setMaxMb" min="1" max="20480">
+        </div>
+      </div>
+      <div class="checkline">
+        <input type="checkbox" id="setViewerUpload">
+        <label for="setViewerUpload" data-i18n="set_viewer_upload">조회용 사용자도 업로드 허용</label>
+      </div>
+      <div class="checkline">
+        <input type="checkbox" id="setRequireName">
+        <label for="setRequireName" data-i18n="set_require_name">로그인 시 이름 입력 필수</label>
+      </div>
+      <div class="kv"><span data-i18n="set_data_dir">데이터 저장 위치</span>: <b id="setDataDir">-</b></div>
+      <div class="modal-foot">
+        <button type="button" class="btn btn-primary" id="setSave" data-i18n="set_save">설정 저장</button>
+      </div>
+    </section>
+
+    <section class="tabpane" data-pane="password" hidden>
+      <div class="alert" id="pwMsg" role="status"></div>
+      <div class="field">
+        <label for="pwTarget" data-i18n="pw_which">변경할 비밀번호</label>
+        <select id="pwTarget">
+          <option value="viewer" data-i18n="pw_viewer">조회용 (팀원 접속)</option>
+          <option value="admin" data-i18n="pw_admin">관리자 (본인)</option>
+        </select>
+      </div>
+      <div class="field">
+        <label for="pwCurrent" data-i18n="pw_current">현재 관리자 비밀번호</label>
+        <input type="password" id="pwCurrent" autocomplete="current-password">
+      </div>
+      <div class="field-row">
+        <div class="field">
+          <label for="pwNew" data-i18n="pw_new">새 비밀번호</label>
+          <input type="password" id="pwNew" autocomplete="new-password">
+        </div>
+        <div class="field">
+          <label for="pwNew2" data-i18n="pw_new2">새 비밀번호 확인</label>
+          <input type="password" id="pwNew2" autocomplete="new-password">
+        </div>
+      </div>
+      <div class="modal-foot">
+        <button type="button" class="btn btn-primary" id="pwSave" data-i18n="pw_submit">비밀번호 변경</button>
+      </div>
+    </section>
+
+    <section class="tabpane" data-pane="audit" hidden>
+      <div class="audit-scroll">
+        <table class="audit">
+          <thead>
+            <tr>
+              <th data-i18n="audit_ts">시각</th>
+              <th data-i18n="audit_action">동작</th>
+              <th data-i18n="audit_actor">사용자</th>
+              <th data-i18n="audit_ip">IP</th>
+              <th data-i18n="audit_detail">내용</th>
+            </tr>
+          </thead>
+          <tbody id="auditBody"></tbody>
+        </table>
+      </div>
+    </section>
+  </div>
+</div>
+
+<div class="toast" id="toast" hidden></div>
+
+<script src="/static/i18n.js"></script>
+<script src="/static/app.js"></script>
+</body>
+</html>
