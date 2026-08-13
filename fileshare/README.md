@@ -54,7 +54,50 @@ cd fileshare
 
 ---
 
-## 2. 옵션
+## 2. 사내 업무망으로 옮기기 (반입)
+
+인터넷망에서 아래 명령으로 반입용 패키지를 만듭니다.
+
+```bash
+python3 make_package.py
+```
+
+`dist/` 에 세 가지가 생성됩니다. 사내 파일전송 시스템 정책에 맞는 것을 골라 보내면 됩니다.
+
+| 파일 | 설명 |
+|---|---|
+| `team-fileshare-<날짜>.zip` | 전체 폴더 압축본. **기본 권장** |
+| `team-fileshare-standalone.py` | web 자산까지 한 파일에 담은 **단일 파일 서버**. 압축 반입이 막힐 때 |
+| `team-fileshare-standalone.py.txt` | 위 파일의 `.txt` 사본. `.py` 반입이 막힐 때 (받은 뒤 확장자를 `.py` 로 변경) |
+
+업무망에 도착한 뒤:
+
+```bash
+# 1) zip 을 받은 경우
+#    압축을 풀고 team-fileshare 폴더에서
+python server.py            # 또는 run.bat 더블클릭
+
+# 2) 단일 파일을 받은 경우 (폴더 구조 없이 이 파일 하나면 됩니다)
+python team-fileshare-standalone.py
+```
+
+두 방식 모두 기능은 동일하며, 데이터는 실행한 파일과 같은 위치의 `data/` 폴더에 쌓입니다.
+
+전송이 끝나면 파일이 온전한지 `dist/CHECKSUMS.txt` 의 SHA-256 값으로 확인할 수 있습니다.
+
+```powershell
+certutil -hashfile team-fileshare-standalone.py SHA256   # Windows
+shasum -a 256 team-fileshare-standalone.py               # Mac/Linux
+```
+
+> 반입 심사에서 내용 확인을 요구하면, 외부 통신 코드가 없다는 점을 그대로 보여줄 수 있습니다.
+> 서버(`server.py`)와 화면(`web/`)에는 외부 주소 호출이 전혀 없고 — 화면의 모든 요청은 자기 자신(`/api/...`)으로만 갑니다 —
+> 파이썬 표준 라이브러리로만 동작합니다. 외부 패키지 설치가 필요 없습니다.
+> (`selftest.py` 는 점검용으로 `urllib` 을 쓰지만 `127.0.0.1` 자기 서버만 호출하며, 운영에는 쓰이지 않습니다.)
+
+---
+
+## 3. 옵션
 
 ```bash
 python server.py --port 9000          # 포트 변경 (기본 8080)
@@ -68,7 +111,7 @@ python server.py --set-password viewer  # 조회용 비밀번호를 콘솔에서
 
 ---
 
-## 3. 사용법
+## 4. 사용법
 
 ### 관리자 (본인)
 
@@ -100,7 +143,7 @@ python server.py --set-password viewer  # 조회용 비밀번호를 콘솔에서
 
 ---
 
-## 4. 데이터와 백업
+## 5. 데이터와 백업
 
 ```
 fileshare/
@@ -120,7 +163,7 @@ fileshare/
 
 ---
 
-## 5. 상시 운영
+## 6. 상시 운영
 
 ### Windows — 부팅 시 자동 실행
 
@@ -162,7 +205,7 @@ New-NetFirewallRule -DisplayName "TeamFileShare 8080" -Direction Inbound -Protoc
 
 ---
 
-## 6. 보안 관련 안내
+## 7. 보안 관련 안내
 
 이미 적용되어 있는 것:
 
@@ -183,7 +226,7 @@ New-NetFirewallRule -DisplayName "TeamFileShare 8080" -Direction Inbound -Protoc
 
 ---
 
-## 7. 점검 · 문제 해결
+## 8. 점검 · 문제 해결
 
 ```bash
 python3 selftest.py     # 로그인·업로드·다운로드·ZIP·권한·비밀번호 변경 등 45개 항목 자동 점검
