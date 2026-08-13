@@ -64,6 +64,16 @@ STATIC_FILES = {
     "favicon.svg": "image/svg+xml",
 }
 
+# 단일 파일 배포본(make_package.py 산출물)에서는 web/ 자산이 여기에 base64 로 담긴다.
+# 값이 비어 있으면 옆의 web/ 폴더에서 읽는다.
+EMBEDDED_WEB: dict = {}
+
+
+def read_web_asset(name: str) -> bytes:
+    if name in EMBEDDED_WEB:
+        return base64.b64decode(EMBEDDED_WEB[name])
+    return (WEB_DIR / name).read_bytes()
+
 
 # --------------------------------------------------------------------------
 # 비밀번호 해시
@@ -584,9 +594,8 @@ class Handler(http.server.BaseHTTPRequestHandler):
 
     # -- 정적 파일 ----------------------------------------------------------
     def serve_page(self, name: str) -> None:
-        path = WEB_DIR / name
         try:
-            body = path.read_bytes()
+            body = read_web_asset(name)
         except OSError:
             return self._error(500, "missing_asset", f"{name} 파일을 찾을 수 없습니다.")
         title = str(self.store.config.get("site_title") or DEFAULT_CONFIG["site_title"])
@@ -601,7 +610,7 @@ class Handler(http.server.BaseHTTPRequestHandler):
         if not content_type:
             return self._error(404, "not_found")
         try:
-            body = (WEB_DIR / name).read_bytes()
+            body = read_web_asset(name)
         except OSError:
             return self._error(404, "not_found")
         self._send_bytes(200, body, content_type)
