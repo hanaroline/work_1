@@ -130,6 +130,17 @@ progress.bar::-moz-progress-bar{background:var(--primary)}
 .steps li{margin-bottom:8px}
 .kv{font-size:15px;color:var(--muted);margin-bottom:8px}
 .kv b{color:var(--ink);font-weight:500}
+.filename{font-size:14px;color:var(--muted-soft);font-family:var(--font-num)}
+.notice{display:flex;gap:14px;align-items:center;flex-wrap:wrap;border:1px solid var(--primary);border-left-width:3px;background:#FFF6ED;padding:14px 19px;margin-bottom:19px}
+.notice[hidden]{display:none}
+.notice-text{flex:1 1 260px;font-size:16px;color:var(--ink)}
+.notice-acts{display:flex;gap:10px}
+.guide{border:1px solid var(--hairline);border-left:3px solid var(--primary);background:var(--surface-subtle);padding:19px 24px;margin-bottom:19px}
+.guide[hidden]{display:none}
+.guide h3{margin-bottom:10px}
+.guide .hint{margin-top:10px}
+.done-file{display:flex;gap:10px;align-items:baseline;flex-wrap:wrap;font-size:15px;color:var(--muted);margin-bottom:14px}
+.done-file b{font-size:17px;color:var(--ink);font-weight:600;word-break:break-all}
 
 /* 화면 모드 */
 body[data-mode="lock"] .only-app{display:none}
@@ -172,11 +183,12 @@ body[data-mode="edit"] .only-view{display:none}
       <h1 data-title>팀 자료실</h1>
       <span class="chip only-view" data-i18n="mode_view">조회</span>
       <span class="chip edit only-edit" data-i18n="mode_edit">편집 중</span>
+      <span class="filename" id="curFile"></span>
     </div>
     <div class="acts">
       <button type="button" class="btn btn-sm only-view" id="editBtn" data-i18n="btn_edit_mode">자료 관리</button>
       <button type="button" class="btn btn-sm only-edit" id="viewBtn" data-i18n="btn_view_mode">조회 화면</button>
-      <button type="button" class="btn btn-sm btn-primary only-edit" id="saveBtn" data-i18n="btn_save">자료실 파일 저장</button>
+      <button type="button" class="btn btn-sm btn-primary only-edit" id="saveBtn" data-i18n="btn_save">자료실 파일 만들기</button>
       <button type="button" class="btn btn-sm" id="helpBtn" data-i18n="btn_help">사용법</button>
       <div class="lang-toggle" role="radiogroup" aria-label="Language">
         <button type="button" class="lang-btn" data-lang="ko" role="radio">KO</button>
@@ -188,6 +200,24 @@ body[data-mode="edit"] .only-view{display:none}
 
 <main class="page">
   <div class="rule"></div>
+
+  <div class="notice" id="draftBar" hidden>
+    <div class="notice-text" id="draftText"></div>
+    <div class="notice-acts">
+      <button type="button" class="btn btn-sm btn-primary" id="draftLoad" data-i18n="draft_load">이어서 작업</button>
+      <button type="button" class="btn btn-sm" id="draftDrop" data-i18n="draft_drop">지우기</button>
+    </div>
+  </div>
+
+  <div class="guide only-edit" id="blankGuide" hidden>
+    <h3 data-i18n="guide_title">이 파일은 자료를 담는 &lt;빈 틀&gt; 입니다</h3>
+    <ol class="steps">
+      <li data-i18n="guide_1">아래 [파일 추가] 로 자료를 넣습니다.</li>
+      <li data-i18n-html="guide_2">[자료실 파일 만들기] 를 누르면 <b>자료가 담긴 새 HTML 파일</b>이 다운로드 폴더에 생깁니다.</li>
+      <li data-i18n-html="guide_3">팀원에게는 그 <b>새 파일</b>을 보내고, 다음에 자료를 고칠 때도 그 새 파일을 여세요.</li>
+    </ol>
+    <p class="hint" data-i18n="guide_warn">지금 이 파일(빈 틀)에는 자료가 저장되지 않습니다. 다시 열어도 비어 있습니다.</p>
+  </div>
 
   <div class="alert warn only-edit" id="dirtyMsg" role="status"></div>
 
@@ -285,7 +315,7 @@ body[data-mode="edit"] .only-view{display:none}
 <div class="modal-back" id="saveModal" hidden>
   <div class="modal" role="dialog" aria-modal="true">
     <div class="modal-head">
-      <h2 data-i18n="save_title">자료실 파일 저장</h2>
+      <h2 data-i18n="save_title">자료실 파일 만들기</h2>
       <button type="button" class="btn btn-sm" data-close data-i18n="close">닫기</button>
     </div>
     <div class="rule"></div>
@@ -310,6 +340,25 @@ body[data-mode="edit"] .only-view{display:none}
       <button type="button" class="btn" data-close data-i18n="cancel">취소</button>
       <button type="button" class="btn btn-primary" id="saveGo" data-i18n="save_go">파일 만들기</button>
     </div>
+  </div>
+</div>
+
+<!-- ===================== 저장 완료 안내 ===================== -->
+<div class="modal-back" id="doneModal" hidden>
+  <div class="modal" role="dialog" aria-modal="true">
+    <div class="modal-head">
+      <h2 data-i18n="done_title">자료실 파일을 만들었습니다</h2>
+      <button type="button" class="btn btn-sm" data-close data-i18n="close">닫기</button>
+    </div>
+    <div class="rule"></div>
+    <div class="done-file"><span data-i18n="done_made">만들어진 파일</span><b id="doneName">-</b></div>
+    <ol class="steps">
+      <li data-i18n-html="done_1">이 파일은 <b>다운로드 폴더</b>에 저장되었습니다.</li>
+      <li data-i18n-html="done_2">팀원에게는 <b>이 파일</b>을 보내세요. 받는 사람은 더블클릭만 하면 됩니다.</li>
+      <li data-i18n-html="done_3">다음에 자료를 추가·수정할 때도 <b>이 파일</b>을 여세요.</li>
+    </ol>
+    <div class="alert warn on" data-i18n="done_warn">지금 보고 계신 화면(빈 틀 파일)에는 자료가 남지 않습니다. 방금 만들어진 파일을 잘 보관하세요.</div>
+    <div class="modal-foot"><button type="button" class="btn btn-primary" data-close data-i18n="close">닫기</button></div>
   </div>
 </div>
 
@@ -351,7 +400,19 @@ body[data-mode="edit"] .only-view{display:none}
       tag:"사내한", lock_sub:"이 자료실은 비밀번호로 잠겨 있습니다.", lock_pw:"열람 비밀번호",
       lock_open:"열기", lock_foot:"비밀번호는 자료실을 만든 사람에게 문의하세요. 이 파일은 인터넷 연결 없이 동작합니다.",
       mode_view:"조회", mode_edit:"편집 중", btn_edit_mode:"자료 관리", btn_view_mode:"조회 화면",
-      btn_save:"자료실 파일 저장", btn_help:"사용법",
+      btn_save:"자료실 파일 만들기", btn_help:"사용법",
+      draft_load:"이어서 작업", draft_drop:"지우기",
+      draft_text:"이 브라우저에 임시 보관된 작업이 있습니다 — {title} (파일 {n}개, {when})",
+      guide_title:"이 파일은 자료를 담는 <빈 틀> 입니다",
+      guide_1:"아래 [파일 추가] 로 자료를 넣습니다.",
+      guide_2:"[자료실 파일 만들기] 를 누르면 <b>자료가 담긴 새 HTML 파일</b>이 다운로드 폴더에 생깁니다.",
+      guide_3:"팀원에게는 그 <b>새 파일</b>을 보내고, 다음에 자료를 고칠 때도 그 새 파일을 여세요.",
+      guide_warn:"지금 이 파일(빈 틀)에는 자료가 저장되지 않습니다. 다시 열어도 비어 있습니다.",
+      done_title:"자료실 파일을 만들었습니다", done_made:"만들어진 파일",
+      done_1:"이 파일은 <b>다운로드 폴더</b>에 저장되었습니다.",
+      done_2:"팀원에게는 <b>이 파일</b>을 보내세요. 받는 사람은 더블클릭만 하면 됩니다.",
+      done_3:"다음에 자료를 추가·수정할 때도 <b>이 파일</b>을 여세요.",
+      done_warn:"지금 보고 계신 화면(빈 틀 파일)에는 자료가 남지 않습니다. 방금 만들어진 파일을 잘 보관하세요.",
       stat_files:"등록 파일", stat_size:"총 용량", stat_made:"만든 날짜", unit:"개",
       search_ph:"파일명 · 설명 검색", folder_all:"전체 폴더",
       sort_new:"최신순", sort_name:"이름순", sort_size:"용량순",
@@ -364,7 +425,7 @@ body[data-mode="edit"] .only-view{display:none}
       add_limit:"총 용량 50MB 이하를 권장합니다. 전달할 때 사내 메일·메신저의 첨부 한도에 걸리지 않는지 확인하세요.",
       f_folder:"폴더 (선택)", f_note:"설명 (선택)", f_name:"파일명",
       edit_title:"파일 정보 수정", save:"저장", cancel:"취소", close:"닫기",
-      save_title:"자료실 파일 저장",
+      save_title:"자료실 파일 만들기",
       save_desc:"자료와 화면이 하나로 합쳐진 HTML 파일이 만들어집니다. 이 파일을 팀원에게 전달하면, 받은 사람은 더블클릭만으로 목록을 보고 파일을 받을 수 있습니다.",
       save_name:"자료실 이름", save_pw:"열람 비밀번호 (선택, 6자 이상)",
       save_pw_hint:"입력하면 파일 내용이 실제로 암호화(AES-256)됩니다. 비워 두면 누구나 열 수 있습니다.",
@@ -382,7 +443,7 @@ body[data-mode="edit"] .only-view{display:none}
       err_pw_diff:"두 비밀번호가 다릅니다.", err_none:"담을 파일이 없습니다.",
       err_crypto:"이 브라우저에서는 암호화를 쓸 수 없습니다. 비밀번호 없이 저장하거나 최신 Edge/Chrome 으로 열어 주세요.",
       ok_saved:"자료실 파일을 저장했습니다.", ok_added:"파일을 추가했습니다.",
-      dirty:"변경된 내용이 있습니다. [자료실 파일 저장] 을 눌러야 파일로 남습니다.",
+      dirty:"아직 파일로 만들어지지 않았습니다. [자료실 파일 만들기] 를 눌러야 자료가 담긴 파일이 생깁니다.",
       confirm_del:"선택한 파일 {n}개를 목록에서 지웁니다.",
       confirm_leave:"저장하지 않은 변경이 있습니다. 이 페이지를 벗어날까요?",
       sel_n:"{n}개 선택", working:"만드는 중...", decrypting:"여는 중..."
@@ -391,7 +452,19 @@ body[data-mode="edit"] .only-view{display:none}
       tag:"INTERNAL", lock_sub:"This file room is password protected.", lock_pw:"Password",
       lock_open:"Open", lock_foot:"Ask the owner for the password. This file works without an internet connection.",
       mode_view:"View", mode_edit:"Editing", btn_edit_mode:"Manage files", btn_view_mode:"View mode",
-      btn_save:"Save file room", btn_help:"How to use",
+      btn_save:"Create file room", btn_help:"How to use",
+      draft_load:"Continue", draft_drop:"Discard",
+      draft_text:"A draft is kept in this browser — {title} ({n} files, {when})",
+      guide_title:"This file is an empty template",
+      guide_1:"Put documents in with [Add files] below.",
+      guide_2:"[Create file room] writes <b>a new HTML file containing the documents</b> to your Downloads folder.",
+      guide_3:"Send that <b>new file</b> to your team, and open that same new file next time you edit.",
+      guide_warn:"Nothing is stored in this template file. Reopening it shows an empty list.",
+      done_title:"Your file room has been created", done_made:"File created",
+      done_1:"It was saved to your <b>Downloads</b> folder.",
+      done_2:"Send <b>that file</b> to your team - they only need to double-click it.",
+      done_3:"Open <b>that file</b> again next time you add or edit documents.",
+      done_warn:"This template screen keeps nothing. Keep the file you just created safe.",
       stat_files:"Files", stat_size:"Total size", stat_made:"Created", unit:"",
       search_ph:"Search name or note", folder_all:"All folders",
       sort_new:"Newest", sort_name:"Name", sort_size:"Size",
@@ -404,7 +477,7 @@ body[data-mode="edit"] .only-view{display:none}
       add_limit:"Keep the total under about 50 MB, and check your mail or messenger attachment limit before sending.",
       f_folder:"Folder (optional)", f_note:"Note (optional)", f_name:"File name",
       edit_title:"Edit file details", save:"Save", cancel:"Cancel", close:"Close",
-      save_title:"Save file room",
+      save_title:"Create file room",
       save_desc:"One HTML file containing both the documents and this screen. Send it to your team; they only need to double-click it.",
       save_name:"File room name", save_pw:"Password (optional, 6+ characters)",
       save_pw_hint:"With a password the contents are truly encrypted (AES-256). Leave blank and anyone can open it.",
@@ -422,7 +495,7 @@ body[data-mode="edit"] .only-view{display:none}
       err_pw_diff:"The two passwords do not match.", err_none:"There are no files to save.",
       err_crypto:"Encryption is unavailable in this browser. Save without a password, or open in a recent Edge/Chrome.",
       ok_saved:"File room saved.", ok_added:"Files added.",
-      dirty:"You have unsaved changes. Click [Save file room] to write them to a file.",
+      dirty:"Not written to a file yet. Click [Create file room] to produce the file that holds these documents.",
       confirm_del:"Remove {n} selected file(s) from the list?",
       confirm_leave:"You have unsaved changes. Leave this page?",
       sel_n:"{n} selected", working:"Working...", decrypting:"Opening..."
@@ -438,6 +511,7 @@ body[data-mode="edit"] .only-view{display:none}
   function applyLang() {
     document.documentElement.setAttribute("lang", lang);
     each(document.querySelectorAll("[data-i18n]"), function (el) { el.textContent = T(el.getAttribute("data-i18n")); });
+    each(document.querySelectorAll("[data-i18n-html]"), function (el) { el.innerHTML = T(el.getAttribute("data-i18n-html")); });
     $("search").setAttribute("placeholder", T("search_ph"));
     each(document.querySelectorAll(".lang-btn"), function (b) {
       var on = b.getAttribute("data-lang") === lang;
@@ -584,6 +658,60 @@ body[data-mode="edit"] .only-view{display:none}
     ev.setUint32(12, centralSize, true); ev.setUint32(16, offset, true);
 
     return new Blob(parts.concat(central, [end]), { type: "application/zip" });
+  }
+
+  /* ------------------------------------------- 임시 보관(이 브라우저 안에만) */
+  var DRAFT_DB = "fs_fileroom_draft", DRAFT_KEY = "current";
+  function draftOpen() {
+    return new Promise(function (res, rej) {
+      if (!window.indexedDB) { rej(new Error("no idb")); return; }
+      var req = indexedDB.open(DRAFT_DB, 1);
+      req.onupgradeneeded = function () { req.result.createObjectStore("draft"); };
+      req.onsuccess = function () { res(req.result); };
+      req.onerror = function () { rej(req.error); };
+    });
+  }
+  function draftPut(rec) {
+    return draftOpen().then(function (db) {
+      return new Promise(function (res, rej) {
+        var tx = db.transaction("draft", "readwrite");
+        tx.objectStore("draft").put(rec, DRAFT_KEY);
+        tx.oncomplete = function () { db.close(); res(); };
+        tx.onerror = function () { db.close(); rej(tx.error); };
+      });
+    });
+  }
+  function draftGet() {
+    return draftOpen().then(function (db) {
+      return new Promise(function (res, rej) {
+        var tx = db.transaction("draft", "readonly");
+        var q = tx.objectStore("draft").get(DRAFT_KEY);
+        q.onsuccess = function () { db.close(); res(q.result || null); };
+        q.onerror = function () { db.close(); rej(q.error); };
+      });
+    });
+  }
+  function draftClear() {
+    return draftOpen().then(function (db) {
+      return new Promise(function (res) {
+        var tx = db.transaction("draft", "readwrite");
+        tx.objectStore("draft").delete(DRAFT_KEY);
+        tx.oncomplete = function () { db.close(); res(); };
+        tx.onerror = function () { db.close(); res(); };
+      });
+    }).catch(function () {});
+  }
+  function saveDraft() {
+    if (!state.items.length) { draftClear(); return; }
+    var ready = state.items.every(function (i) { return !!i.bytes; });
+    if (!ready) return;                       // 아직 복호화되지 않은 자료는 건드리지 않는다
+    draftPut({
+      title: state.title, created: state.created, savedAt: new Date().toISOString(),
+      items: state.items.map(function (i) {
+        return { id: i.id, name: i.name, size: i.size, type: i.type,
+                 folder: i.folder, note: i.note, added: i.added, bytes: i.bytes };
+      })
+    }).catch(function () {});                 // 용량 초과 등은 조용히 무시
   }
 
   /* ------------------------------------------------------------------ 상태 */
@@ -828,7 +956,7 @@ body[data-mode="edit"] .only-view{display:none}
         });
       });
     })).then(function () {
-      markDirty(true); renderFolders(); render(); updateStats();
+      markDirty(true); renderFolders(); render(); updateStats(); saveDraft();
       toast(T("ok_added"));
     });
   }
@@ -850,14 +978,14 @@ body[data-mode="edit"] .only-view{display:none}
     item.folder = $("edFolder").value.trim();
     item.note = $("edNote").value.trim();
     $("editModal").hidden = true;
-    markDirty(true); renderFolders(); render();
+    markDirty(true); renderFolders(); render(); saveDraft();
   }
   function removeItems(ids) {
     if (!ids.length) return;
     if (!window.confirm(T("confirm_del", { n: ids.length }))) return;
     state.items = state.items.filter(function (i) { return ids.indexOf(i.id) < 0; });
     ids.forEach(function (id) { delete state.selected[id]; });
-    markDirty(true); renderFolders(); render(); updateStats();
+    markDirty(true); renderFolders(); render(); updateStats(); saveDraft();
   }
 
   /* ------------------------------------------------------ 자료실 파일 저장 */
@@ -878,6 +1006,12 @@ body[data-mode="edit"] .only-view{display:none}
       el.textContent = T(el.getAttribute("data-i18n"));
     });
     each(clone.querySelectorAll("#zipBtn, #delBtn"), function (el) { el.setAttribute("disabled", ""); });
+    each(clone.querySelectorAll("[data-i18n-html]"), function (el) {
+      el.innerHTML = T(el.getAttribute("data-i18n-html"));
+    });
+    each(clone.querySelectorAll("#draftBar, #blankGuide"), function (el) { el.setAttribute("hidden", ""); });
+    var cf = clone.querySelector("#curFile");
+    if (cf) cf.textContent = "";
     var body = clone.querySelector("body");
     body.setAttribute("data-mode", locked ? "lock" : "view");
     var toastEl = clone.querySelector("#toast");
@@ -958,11 +1092,13 @@ body[data-mode="edit"] .only-view{display:none}
       var html = serializeDocument(json, !!pw);
       var d = new Date();
       var stamp = d.getFullYear() + pad(d.getMonth() + 1) + pad(d.getDate());
-      download(state.title + "_" + stamp + ".html",
-               new Blob([html], { type: "text/html;charset=utf-8" }));
+      var outName = state.title + "_" + stamp + ".html";
+      download(outName, new Blob([html], { type: "text/html;charset=utf-8" }));
       markDirty(false);
+      saveDraft();
       $("saveModal").hidden = true;
-      toast(T("ok_saved"));
+      $("doneName").textContent = outName;
+      $("doneModal").hidden = false;
     }).catch(function (e) {
       showMsg(err, String((e && e.message) || e));
     }).then(function () {
@@ -1099,7 +1235,42 @@ body[data-mode="edit"] .only-view{display:none}
   });
 
   /* ------------------------------------------------------------ 시작 */
+  function showCurrentFileName() {
+    var name = "";
+    try {
+      name = decodeURIComponent((location.pathname || "").split("/").pop() || "");
+    } catch (e) { name = ""; }
+    $("curFile").textContent = name ? name : "";
+  }
+  function offerDraft() {
+    draftGet().then(function (rec) {
+      if (!rec || !rec.items || !rec.items.length) return;
+      var when = rec.savedAt ? rec.savedAt.slice(0, 16).replace("T", " ") : "";
+      $("draftText").textContent = T("draft_text", { title: rec.title || "-", n: rec.items.length, when: when });
+      $("draftBar").hidden = false;
+      $("draftLoad").onclick = function () {
+        state.title = rec.title || state.title;
+        state.created = rec.created || state.created;
+        state.items = rec.items.map(function (i) {
+          return { id: i.id, name: i.name, size: i.size, type: i.type, folder: i.folder,
+                   note: i.note, added: i.added,
+                   bytes: (i.bytes instanceof Uint8Array) ? i.bytes : new Uint8Array(i.bytes),
+                   enc: null };
+        });
+        setTitle(state.title);
+        $("draftBar").hidden = true;
+        $("blankGuide").hidden = true;
+        markDirty(true);
+        renderFolders(); render(); updateStats();
+      };
+      $("draftDrop").onclick = function () {
+        draftClear();
+        $("draftBar").hidden = true;
+      };
+    }).catch(function () {});
+  }
   function start() {
+    showCurrentFileName();
     var payload = loadPayload();
     if (payload && payload.enc) {
       state.title = payload.title || state.title;
@@ -1118,6 +1289,8 @@ body[data-mode="edit"] .only-view{display:none}
     } else {
       setTitle(state.title);
       document.body.setAttribute("data-mode", "edit");
+      $("blankGuide").hidden = false;   // 빈 틀임을 분명히 알린다
+      offerDraft();
     }
     applyLang();
     renderFolders(); render(); updateStats();
