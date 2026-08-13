@@ -32,6 +32,7 @@ import sys
 import threading
 import time
 import urllib.parse
+import webbrowser
 import zipfile
 from pathlib import Path
 
@@ -1080,7 +1081,7 @@ def print_banner(store: Store, host: str, port: int) -> None:
     print(f"  데이터 폴더 : {store.dir}")
     print(f"  접속 주소   : http://localhost:{port}")
     for address in local_addresses():
-        print(f"                http://{address}:{port}   ← 팀원에게 이 주소를 알려주세요")
+        print(f"                http://{address}:{port}   <- 팀원에게 이 주소를 알려주세요")
     if initial:
         print("-" * 64)
         print("  최초 실행입니다. 아래 비밀번호로 로그인한 뒤 바로 변경하세요.")
@@ -1092,13 +1093,38 @@ def print_banner(store: Store, host: str, port: int) -> None:
     print(bar, flush=True)
 
 
+def open_browser_later(port: int, delay: float = 1.0) -> None:
+    """서버가 뜬 직후 기본 브라우저로 접속 화면을 연다(실패해도 무시)."""
+    def go():
+        try:
+            webbrowser.open(f"http://localhost:{port}")
+        except Exception:
+            pass
+    timer = threading.Timer(delay, go)
+    timer.daemon = True
+    timer.start()
+
+
 def main(argv=None) -> int:
+    try:  # 윈도우 콘솔에서 표현 못 하는 문자 때문에 죽지 않도록
+        sys.stdout.reconfigure(errors="replace")
+    except Exception:
+        pass
+
+    if sys.version_info < (3, 7):
+        print("Python 3.7 이상이 필요합니다. 현재 버전: %s" % sys.version.split()[0])
+        return 1
+
     parser = argparse.ArgumentParser(description="사내망 팀 자료실 서버")
     parser.add_argument("--host", default="0.0.0.0", help="바인딩 주소 (기본 0.0.0.0)")
     parser.add_argument("--port", type=int, default=8080, help="포트 (기본 8080)")
     parser.add_argument("--data", default=str(APP_DIR / "data"), help="데이터 저장 폴더")
     parser.add_argument("--set-password", choices=["admin", "viewer"],
                         help="비밀번호를 콘솔에서 재설정하고 종료")
+    parser.add_argument("--open", dest="open_browser", action="store_true",
+                        help="시작 후 브라우저를 자동으로 연다")
+    parser.add_argument("--no-open", action="store_true",
+                        help="브라우저를 열지 않는다 (서비스로 상시 운영할 때)")
     args = parser.parse_args(argv)
 
     store = Store(Path(args.data))
@@ -1123,8 +1149,22 @@ def main(argv=None) -> int:
     Handler.sessions = Sessions(lambda: store.config.get("session_hours", 12))
     Handler.guard = LoginGuard()
 
-    httpd = ThreadingHTTPServer((args.host, args.port), Handler)
+    try:
+        httpd = ThreadingHTTPServer((args.host, args.port), Handler)
+    except OSError as exc:
+        print("=" * 64)
+        print(f"  서버를 시작하지 못했습니다: {exc}")
+        print(f"  {args.port} 번 포트를 이미 다른 프로그램이 쓰고 있을 수 있습니다.")
+        print(f"  다른 포트로 실행해 보세요:  python server.py --port {args.port + 1}")
+        print("=" * 64, flush=True)
+        return 1
+
     print_banner(store, args.host, args.port)
+
+    interactive = bool(getattr(sys.stdout, "isatty", lambda: False)())
+    if args.open_browser or (interactive and not args.no_open):
+        open_browser_later(args.port)
+
     try:
         httpd.serve_forever()
     except KeyboardInterrupt:
