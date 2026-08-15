@@ -315,8 +315,11 @@ def fetch_category(name, list_path, read_path, pages, api_path, dump_dir=None):
 #   · 하우스가 낸 원문 PDF 주소
 #   · 제목에 박힌 종목코드와 투자의견 — 「SMIC (00981 HK/매수)」
 #   · 해외 종목 커버리지 — 네이버 리서치 목록에는 없다
-MIRAE_LIST = ("https://securities.miraeasset.com/bbs/board/message/list.do"
-              "?categoryId=%s&pageIndex=%d")
+MIRAE_LIST = "https://securities.miraeasset.com/bbs/board/message/list.do?categoryId=%s"
+# 쪽 넘김 인자 이름을 모른다. pageIndex 를 믿고 여섯 쪽을 부른 판에서 오히려
+# 건수가 줄었다 — 인자가 먹히지 않으면 모든 쪽이 첫 쪽과 같아 헛돈다.
+# 그래서 후보를 차례로 대 보고 **새 줄을 물어오는 것**을 골라 쓴다.
+MIRAE_PAGE_PARAMS = ("pageIndex", "page", "currentPageNo", "startPage")
 MIRAE_VIEW = ("https://securities.miraeasset.com/bbs/board/message/view.do"
               "?messageId=%s&categoryId=%s")
 MIRAE_BOARDS = [("리서치 리포트", "1521", 6)]        # 한 쪽에 다섯 줄쯤 온다
@@ -367,27 +370,59 @@ def parse_mirae(html, board, category_id):
     return rows
 
 
+def _mirae_page(cid, board, param, page):
+    url = MIRAE_LIST % cid
+    if page > 1:
+        url += "&%s=%d" % (param, page)
+    html = _get(url, encoding="cp949", referer="https://securities.miraeasset.com/")
+    return parse_mirae(html, board, cid), html
+
+
 def fetch_mirae(dump_dir=None):
-    rows, seen = [], set()
+    """하우스 목록을 받는다. (줄 목록, 어떻게 받았는지) 를 돌려준다."""
+    rows, seen, used, first_n = [], set(), None, 0
+
+    def add(got):
+        n = 0
+        for r in got:
+            if r["nid"] in seen:
+                continue
+            seen.add(r["nid"])
+            rows.append(r)
+            n += 1
+        return n
+
     for board, cid, pages in MIRAE_BOARDS:
-        for page in range(1, pages + 1):
-            html = _get(MIRAE_LIST % (cid, page), encoding="cp949",
-                        referer="https://securities.miraeasset.com/")
-            got = parse_mirae(html, board, cid)
-            if not got:
-                if dump_dir:
-                    _dump(dump_dir, "mirae_%s_p%d.html" % (cid, page), html)
-                if page == 1:
-                    raise ValueError("미래에셋 목록에서 줄을 못 찾았다 (%d bytes)" % len(html))
-                break
-            for r in got:
-                if r["nid"] in seen:
+        first, html = _mirae_page(cid, board, "pageIndex", 1)
+        if not first:
+            if dump_dir:
+                _dump(dump_dir, "mirae_%s_p1.html" % cid, html)
+            raise ValueError("미래에셋 목록에서 줄을 못 찾았다 (%d bytes)" % len(html))
+        first_n = max(first_n, len(first))
+        add(first)
+
+        # 두 쪽째를 후보 인자로 한 번씩 불러 본다. 새 줄이 오는 것이 진짜다.
+        if used is None:
+            for param in MIRAE_PAGE_PARAMS:
+                try:
+                    got, _ = _mirae_page(cid, board, param, 2)
+                except Exception:                               # noqa: BLE001
                     continue
-                seen.add(r["nid"])
-                rows.append(r)
+                if add(got):
+                    used = param
+                    break
+            if used is None:
+                continue                     # 쪽 넘김이 없는 게시판 — 첫 쪽만 쓴다
+        for page in range(3, pages + 1):
+            try:
+                got, _ = _mirae_page(cid, board, used, page)
+            except Exception:                                   # noqa: BLE001
+                break
+            if not add(got):
+                break                        # 더 나올 것이 없다
     if not rows:
         raise ValueError("미래에셋 리서치에서 한 줄도 못 얻었다")
-    return rows
+    return rows, {"page_param": used or "(쪽 넘김 없음)", "first_page_rows": first_n}
 
 
 def _key(title):
@@ -816,11 +851,12 @@ def main():
     # 하우스(미래에셋) 리포트는 원천에서 직접 받아 포갠다. 실명·원문 PDF가
     # 여기에만 있고, 네이버 목록에 없는 해외 종목도 여기서 들어온다.
     try:
-        house = fetch_mirae(dump_dir=RAW_DIR)
+        house, how = fetch_mirae(dump_dir=RAW_DIR)
         stat = merge_house(reports, house)
-        out["sources"]["미래에셋증권 리서치"] = {
-            "ok": True, "count": len(house), "via": "html",
-            "merged_into_naver": stat["merged"], "new": stat["added"]}
+        rec = {"ok": True, "count": len(house), "via": "html",
+               "merged_into_naver": stat["merged"], "new": stat["added"]}
+        rec.update(how)
+        out["sources"]["미래에셋증권 리서치"] = rec
     except urllib.error.HTTPError as e:
         out["sources"]["미래에셋증권 리서치"] = {"ok": False, "error": "HTTP %s" % e.code}
     except Exception as e:                                       # noqa: BLE001
