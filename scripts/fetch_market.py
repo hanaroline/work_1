@@ -20,7 +20,7 @@ import sys
 import urllib.error
 import urllib.parse
 import urllib.request
-from datetime import datetime, timedelta, timezone
+from datetime import date, datetime, timedelta, timezone
 
 KST = timezone(timedelta(hours=9))
 UA = ("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
@@ -262,6 +262,59 @@ def _num(x):
     return round(x, 4) if isinstance(x, float) else x
 
 
+def _months_before(d, n):
+    """d 에서 n 개월 전 같은 날. 말일 보정(3/31 - 1개월 = 2/28)."""
+    y, m = d.year, d.month - n
+    while m <= 0:
+        y -= 1
+        m += 12
+    for day in range(d.day, 0, -1):
+        try:
+            return date(y, m, day)
+        except ValueError:
+            continue
+    return date(y, m, 1)
+
+
+def _perf(bars, last_close):
+    """기간 수익률(%) — 달력으로 되짚어 그 날 **이전의 마지막 실봉**과 견준다.
+
+    거래일 수로 세지 않는다. 휴장일이 나라마다 달라 같은 「1개월」이 시장마다
+    다른 기간이 되기 때문이다. 기준일이 휴장이면 그 앞의 마지막 거래일을 쓴다.
+
+    bars 는 (date, close) 오름차순. 되짚을 구간이 자료 범위를 벗어나면 그
+    항목만 빠진다 — 상장한 지 얼마 안 된 종목에서 그렇다.
+    """
+    if not bars or not last_close:
+        return None
+    d0 = bars[-1][0]
+
+    def ref_before(target):
+        v = None
+        for dt, c in bars:
+            if dt <= target:
+                v = c
+            else:
+                break
+        return v
+
+    out = {}
+    for key, back in (("w1", lambda: d0 - timedelta(days=7)),
+                      ("m1", lambda: _months_before(d0, 1)),
+                      ("m3", lambda: _months_before(d0, 3)),
+                      ("m6", lambda: _months_before(d0, 6)),
+                      ("y1", lambda: _months_before(d0, 12))):
+        r = ref_before(back())
+        if r:
+            out[key] = round((last_close / r - 1) * 100, 2)
+    r = ref_before(date(d0.year, 1, 1) - timedelta(days=1))   # 전년 마지막 거래일
+    if r:
+        out["ytd"] = round((last_close / r - 1) * 100, 2)
+    if out:
+        out["from"] = bars[0][0].isoformat()                  # 자료가 닿는 가장 이른 날
+    return out or None
+
+
 def yahoo_quote(symbol):
     """일봉 2개를 받아 종가·전일대비·OHLC·거래량을 만든다.
 
@@ -284,7 +337,7 @@ def yahoo_quote(symbol):
     현지 기준으로 적으면 그 호가가 전날 마감인 것처럼 보인다.
     """
     url = ("https://query1.finance.yahoo.com/v8/finance/chart/"
-           + urllib.parse.quote(symbol) + "?range=5d&interval=1d")
+           + urllib.parse.quote(symbol) + "?range=2y&interval=1d")
     j = json.loads(_get(url))
     res = j["chart"]["result"][0]
     meta = res["meta"]
@@ -344,6 +397,14 @@ def yahoo_quote(symbol):
     if from_meta:
         # 브리핑 검증 노트에서 구분할 수 있게 남긴다
         out["quote_basis"] = "meta.regularMarketPrice (일봉 종가 미기재)"
+
+    # 기간 수익률 — 2년치 일봉에서 계산해 요약만 싣는다(원본 계열은 싣지 않는다)
+    bars = [(datetime.fromtimestamp(ts[i], ex_tz).date(), q["close"][i]) for i in have]
+    if from_meta:
+        bars.append((datetime.fromtimestamp(ts[last], ex_tz).date(), close))
+    perf = _perf(bars, close)
+    if perf:
+        out["perf"] = perf
     return out
 
 
