@@ -976,49 +976,45 @@ def _ecos_url(service, tail, start=1, rows=None):
             % (service, ECOS_KEY, start, start + rows - 1, tail))
 
 
-def _ecos_monthly(code, now, months=26):
-    """월별 금리를 되짚어 (date, value) 오름차순으로 준다.
+def _ecos_at(code, target, span=16):
+    """`target` 그 날 **이전의 마지막 실측 금리**를 한 번의 호출로 받는다.
 
-    일별은 샘플 키로 10건까지라 기간 변화를 낼 수 없다. 817Y002 의 월별 값은
-    **그 달의 평균**이므로, 되짚은 값은 「그 달 평균 대비」다. 표에 반드시
-    그렇게 적어야 한다 — 특정일 대비가 아니다.
-
-    달의 **첫날**을 날짜로 삼는다. 마지막 날로 잡으면 「1개월 전」이 한 달
-    더 뒤로 밀린다(7월 15일을 되짚는데 7월 31일 봉이 걸려 6월이 잡힌다).
+    817Y002 는 일별 계열만 있다 — 월별(M)로 부르면 빈 응답이 온다. 그리고
+    샘플 인증키는 호출당 10건이라 2년치를 한꺼번에 받을 수 없다. 그래서
+    기준일마다 짧은 창(기본 16일)을 따로 부른다. 창 안의 마지막 값이 곧
+    그 시점의 금리다 — 월평균이 아니라 **일별 실측**이다.
     """
-    y, m = now.year, now.month - months
-    while m <= 0:
-        y -= 1
-        m += 12
-    if ECOS_KEY == "sample":
-        tail = "817Y002/M/%04d%02d/%04d%02d/%s" % (y, m, now.year, now.month, code)
-    else:                                   # 인증키가 있으면 일별 실측으로 받는다
-        tail = "817Y002/D/%04d%02d%02d/%s/%s" % (y, m, 1, now.strftime("%Y%m%d"), code)
-    bars, start = [], 1
-    while start <= (months + 2 if ECOS_KEY == "sample" else 1):
+    tail = "817Y002/D/%s/%s/%s" % ((target - timedelta(days=span)).strftime("%Y%m%d"),
+                                   target.strftime("%Y%m%d"), code)
+    j = json.loads(_get(_ecos_url("StatisticSearch", tail, rows=10), timeout=45))
+    rows = (j.get("StatisticSearch", {}) or {}).get("row", [])
+    for r in reversed(rows):
         try:
-            j = json.loads(_get(_ecos_url("StatisticSearch", tail, start), timeout=60))
+            return float(r["DATA_VALUE"])
+        except (KeyError, ValueError, TypeError):
+            continue
+    return None
+
+
+def _ecos_perf(code, now, spot):
+    """국내 금리의 기간 변화(bp). 되짚는 기준은 달력이다(4-3절과 같다)."""
+    d0 = now.date()
+    wants = (("w1", d0 - timedelta(days=7)), ("m1", _months_before(d0, 1)),
+             ("m3", _months_before(d0, 3)), ("m6", _months_before(d0, 6)),
+             ("y1", _months_before(d0, 12)),
+             ("ytd", date(d0.year, 1, 1) - timedelta(days=1)))
+    out = {}
+    for key, target in wants:
+        try:
+            v = _ecos_at(code, target)
         except Exception:                                      # noqa: BLE001
-            break
-        rows = (j.get("StatisticSearch", {}) or {}).get("row", [])
-        if not rows:
-            break
-        for r in rows:
-            t, v = r.get("TIME", ""), r.get("DATA_VALUE")
-            if v in (None, ""):
-                continue
-            try:
-                if len(t) == 6:                       # 월별 — 그 달 1일로 잡는다
-                    bars.append((date(int(t[:4]), int(t[4:]), 1), float(v)))
-                elif len(t) == 8:                     # 일별
-                    bars.append((date(int(t[:4]), int(t[4:6]), int(t[6:])), float(v)))
-            except ValueError:
-                pass
-        if len(rows) < ECOS_ROWS:
-            break
-        start += ECOS_ROWS
-    bars.sort()
-    return bars
+            continue
+        if v:
+            out[key] = round((spot - v) * 100, 1)
+    if out:
+        out["unit"] = "bp"
+        out["basis"] = "일별 실측 대비 (한국은행 ECOS 817Y002)"
+    return out or None
 
 
 def ecos_rates(now, dump_dir=None):
@@ -1115,21 +1111,16 @@ def ecos_rates(now, dump_dir=None):
     for key in ("ktb3y", "ktb10y", "cd91"):
         if key not in out or key not in tried:
             continue
-        try:
-            bars = _ecos_monthly(tried[key], now)
-        except Exception as e:                                # noqa: BLE001
-            errs.append("%s 월별 -> %s" % (key, str(e)[:60]))
-            continue
-        if len(bars) < 4:
-            continue
         spot = out[key]["value"]
-        bars.append((now.date(), spot))                        # 기준점은 최신 실측치
-        p = _perf(bars, spot, as_bp=True)
+        try:
+            p = _ecos_perf(tried[key], now, spot)
+        except Exception as e:                                # noqa: BLE001
+            errs.append("%s 기간변화 -> %s" % (key, str(e)[:60]))
+            continue
         if p:
-            p["basis"] = ("월평균 대비 (817Y002 월별은 그 달의 평균이다). "
-                          "ECOS_API_KEY 를 넣으면 일별 실측으로 바뀐다"
-                          if ECOS_KEY == "sample" else "일별 실측 대비")
             out[key]["perf"] = p
+        else:
+            errs.append("%s 기간변화 -> 되짚은 값이 하나도 없다" % key)
 
     if errs:
         out["notes"] = errs[:12]          # 성공해도 무엇이 빠졌는지는 남긴다
