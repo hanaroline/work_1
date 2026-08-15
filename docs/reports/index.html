@@ -195,6 +195,8 @@
       <div class="cards two" id="highlights"></div>
     </div>
 
+    <div id="hit"></div>
+
     <div class="section-title" id="listTop"><span class="accent"></span>전체 리포트 <span class="hint" id="cnt"></span></div>
     <div class="filters" id="filters"></div>
     <div class="cards" id="list"></div>
@@ -360,6 +362,45 @@
       "</article>";
   }
 
+  /* 종목으로 조회했을 때 그 종목을 한 줄로 세운다 — 몇 곳이 다뤘고
+     목표주가가 어디쯤인지. 걸러 낸 목록만 보여 주면 「조회」한 느낌이 없다. */
+  function renderHit(reps, q) {
+    var box = document.getElementById("hit");
+    if (!q) { box.innerHTML = ""; return; }
+    // 걸린 리포트들이 한 종목을 가리킬 때만 세운다.
+    var codes = {}, name = null;
+    reps.forEach(function (r) {
+      var st = r.stock || {};
+      if (st.code) { codes[st.code] = 1; name = st.name || name; }
+    });
+    var keys = Object.keys(codes);
+    if (keys.length !== 1) { box.innerHTML = ""; return; }
+    var code = keys[0];
+    var mine = reps.filter(function (r) { return (r.stock || {}).code === code; });
+    var tgts = mine.map(function (r) { return r.target_price; }).filter(Boolean);
+    var brokers = [];
+    mine.forEach(function (r) { if (r.broker && brokers.indexOf(r.broker) < 0) brokers.push(r.broker); });
+    var ops = {};
+    mine.forEach(function (r) { if (r.opinion) ops[r.opinion] = (ops[r.opinion] || 0) + 1; });
+    var opText = Object.keys(ops).map(function (k) { return k + " " + ops[k]; }).join(" · ");
+    var avg = tgts.length ? Math.round(tgts.reduce(function (a, b) { return a + b; }, 0) / tgts.length) : null;
+
+    box.innerHTML =
+      '<div class="stats" style="margin-top:18px;">' +
+        stat(esc(name || code) + " (" + esc(code) + ")", nf.format(mine.length) + "<small> 건</small>") +
+        stat("다룬 증권사", nf.format(brokers.length) + "<small> 곳</small>") +
+        (avg ? stat("목표주가 평균", nf.format(avg) + "<small>원</small>" +
+          (tgts.length > 1 ? '<small style="display:block;font-size:11px;">최저 ' + nf.format(Math.min.apply(null, tgts)) +
+            " · 최고 " + nf.format(Math.max.apply(null, tgts)) + "</small>" : "")) : "") +
+        (opText ? stat("투자의견", '<span style="font-size:15px;">' + esc(opText) + "</span>") : "") +
+      "</div>" +
+      '<div style="font-size:12px;color:var(--text-muted);margin:6px 0 0;">' +
+        esc(brokers.join(" · ")) +
+        (window.__NO_DASH__ ? "" :
+          ' · <a href="../../index.html?code=' + esc(code) + '">이 종목 통합 대시보드 열기 →</a>') +
+      "</div>";
+  }
+
   /* 조회창 자동완성 — 이 판에 실제로 들어 있는 종목·증권사만 올린다.
      없는 이름을 쳐서 0건이 뜨는 헛걸음을 줄인다. */
   function buildPickList() {
@@ -435,6 +476,10 @@
       return String(b.date || "").localeCompare(String(a.date || "")) || (b.views || 0) - (a.views || 0);
     });
     els.cnt.textContent = reps.length + "건" + (q ? ' · "' + q + '" 검색' : "");
+    renderHit(reps, q);
+    // 조회 중에는 「오늘의 주요 리포트」를 접는다 — 조회와 상관없는 것이
+    // 위를 다 차지하면 정작 찾은 것이 화면 밖으로 밀린다.
+    els.hlWrap.style.display = (!q && (state.data.highlights || []).length) ? "" : "none";
     els.list.innerHTML = reps.length
       ? reps.map(card).join("")
       : '<div class="state"><div class="big">🔍</div>' +
@@ -467,7 +512,11 @@
     // 걸려 있어 0건이 뜨면 고장으로 보인다.
     if (state.q.trim()) { state.cat = "전체"; state.broker = "전체"; buildFilters(); }
     renderList();
-    if (scroll) document.getElementById("listTop").scrollIntoView({ behavior: "smooth", block: "start" });
+    if (scroll) {
+      var top = document.getElementById("hit");
+      if (!top.innerHTML) top = document.getElementById("listTop");
+      top.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
   }
   document.getElementById("searchForm").addEventListener("submit", function (e) {
     e.preventDefault(); applySearch(true);
