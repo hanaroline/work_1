@@ -62,6 +62,9 @@
     /* 상단 바의 날짜 고르개는 글자만큼만 차지한다 — width:100% 를 물려받으면
        한 줄을 통째로 먹고 나머지 단추가 아래로 밀린다. */
     .topbar select { width: auto; min-width: 112px; }
+    .search { display: flex; gap: 8px; align-items: center; }
+    .btn-primary { background: var(--series-1); color: #fff; border-color: transparent; font-weight: 600; }
+    .btn-primary:hover { filter: brightness(1.08); }
     input[type="search"]:focus, select:focus { outline: 2px solid var(--series-1); border-color: transparent; }
     .btn {
       border: 1px solid var(--border); background: var(--page); color: var(--text-primary);
@@ -167,9 +170,14 @@
 <body>
   <div class="topbar">
     <div class="brand"><span class="dot">◼</span> 증권사 리포트 다이제스트</div>
-    <div class="grow"><input type="search" id="q" placeholder="제목 · 종목 · 증권사 검색" /></div>
+    <form class="grow search" id="searchForm" autocomplete="off">
+      <input type="search" id="q" list="pickList" placeholder="종목명 · 종목코드 · 증권사 · 제목 (예: 삼성전자, 005930)" />
+      <datalist id="pickList"></datalist>
+      <button type="submit" class="btn btn-primary">조회</button>
+      <button type="button" class="btn" id="clearBtn" title="검색 지우기">✕</button>
+    </form>
     <select id="day" title="지난 판"></select>
-    <a class="btn" href="../../index.html" title="종목 통합 리포트">📈 대시보드</a>
+    <a class="btn" href="../../index.html" id="dashLink" title="종목 통합 리포트">📈 대시보드</a>
     <button class="btn" id="themeBtn" title="테마 전환">◐</button>
   </div>
 
@@ -187,7 +195,7 @@
       <div class="cards two" id="highlights"></div>
     </div>
 
-    <div class="section-title"><span class="accent"></span>전체 리포트 <span class="hint" id="cnt"></span></div>
+    <div class="section-title" id="listTop"><span class="accent"></span>전체 리포트 <span class="hint" id="cnt"></span></div>
     <div class="filters" id="filters"></div>
     <div class="cards" id="list"></div>
 
@@ -264,7 +272,12 @@
     state.data = d;
     var s = d.summary || {};
     els.title.textContent = (s.report_date || d.date || "") + " 증권사 리포트";
-    els.asof.textContent = "수집 " + (d.generated_at_kst || "-") + " KST · 출처 " + (d.source || "");
+    // 출처가 여럿이면 어디서 몇 건이 왔는지 그대로 적는다.
+    var srcs = s.by_source || {};
+    var srcText = Object.keys(srcs).length
+      ? Object.keys(srcs).map(function (k) { return k + " " + srcs[k] + "건"; }).join(" · ")
+      : (d.source || "");
+    els.asof.textContent = "수집 " + (d.generated_at_kst || "-") + " KST · 출처 " + srcText;
 
     var moves = s.target_moves || [];
     var up = moves.filter(function (m) { return m.move === "상향"; }).length;
@@ -282,6 +295,7 @@
     els.hlWrap.style.display = hl.length ? "" : "none";
     els.highlights.innerHTML = hl.map(card).join("");
 
+    buildPickList();
     buildFilters();
     renderList();
     els.note.innerHTML =
@@ -313,6 +327,7 @@
   function card(r) {
     var st = r.stock || {};
     var tags = ['<span class="tag cat">' + esc(r.category) + "</span>"];
+    if (r.sector) tags.push('<span class="tag">' + esc(r.sector) + "</span>");
     if (st.name) tags.push('<span class="tag stock">' + esc(st.name) + "</span>");
     if (r.opinion) tags.push('<span class="tag op ' + opClass(r.opinion) + '">' + esc(r.opinion) + "</span>");
     if (r.target_price) {
@@ -324,7 +339,7 @@
     var sum = r.summary
       ? '<div class="sum">' + esc(r.summary) + "</div>"
       : '<div class="sum none">본문 요약을 아직 받지 못했습니다 — 제목과 원문으로 확인하십시오.</div>';
-    var meta = [r.broker, r.date, r.views != null ? "조회 " + nf.format(r.views) : null]
+    var meta = [r.broker, r.date, r.views != null ? "조회 " + nf.format(r.views) : null, r.source]
       .filter(Boolean).map(esc).join(' <span class="sep">·</span> ');
 
     var links = ['<a class="go" href="' + esc(r.url) + '" target="_blank" rel="noopener">세부 리포트 →</a>'];
@@ -340,6 +355,24 @@
       (r.excerpt ? '<div class="ex">' + esc(r.excerpt) + "…</div>" : "") +
       '<div class="foot"><span>' + meta + "</span>" + links.join("") + "</div>" +
       "</article>";
+  }
+
+  /* 조회창 자동완성 — 이 판에 실제로 들어 있는 종목·증권사만 올린다.
+     없는 이름을 쳐서 0건이 뜨는 헛걸음을 줄인다. */
+  function buildPickList() {
+    var seen = {}, out = [];
+    (state.data.reports || []).forEach(function (r) {
+      var st = r.stock || {};
+      if (st.name && !seen["s" + st.code]) {
+        seen["s" + st.code] = 1;
+        out.push('<option value="' + esc(st.name) + '">' + esc(st.code) + " · 종목</option>");
+      }
+      if (r.broker && !seen["b" + r.broker]) {
+        seen["b" + r.broker] = 1;
+        out.push('<option value="' + esc(r.broker) + '">증권사</option>');
+      }
+    });
+    document.getElementById("pickList").innerHTML = out.join("");
   }
 
   /* ================= 걸러 보기 ================= */
@@ -400,7 +433,11 @@
     els.cnt.textContent = reps.length + "건" + (q ? ' · "' + q + '" 검색' : "");
     els.list.innerHTML = reps.length
       ? reps.map(card).join("")
-      : '<div class="state"><div class="big">🔍</div><div>걸러 낸 조건에 맞는 리포트가 없습니다.</div></div>';
+      : '<div class="state"><div class="big">🔍</div>' +
+        "<div>" + (q ? '"' + esc(state.q.trim()) + '" 에 맞는 리포트가 이 판에 없습니다.' : "걸러 낸 조건에 맞는 리포트가 없습니다.") + "</div>" +
+        '<div style="margin-top:12px;font-size:13px;">종목명·종목코드·증권사·제목의 일부로 찾습니다. ' +
+        '그 종목에 이번 판 리포트가 없을 수도 있습니다 — ' +
+        '<a href="https://finance.naver.com/research/" target="_blank" rel="noopener">네이버 금융 리서치</a>에서 지난 것까지 볼 수 있습니다.</div></div>';
   }
 
   /* 카드 아무 데나 눌러도 세부 리포트로 간다. 링크·버튼을 누른 것은 그대로 둔다. */
@@ -415,7 +452,30 @@
     if (url) window.open(url, "_blank", "noopener");
   });
 
-  els.q.addEventListener("input", function (e) { state.q = e.target.value; if (state.data) renderList(); });
+  /* ================= 조회 =================
+     글자를 치는 대로 걸러 주지만, **조회 단추와 엔터도 받는다** — 단추가
+     없으면 「조회가 안 된다」고 느끼기 때문이다. 걸러 낸 결과가 위쪽 「주요
+     리포트」에 가려지지 않도록 목록으로 스크롤도 옮겨 준다. */
+  function applySearch(scroll) {
+    state.q = els.q.value;
+    if (!state.data) return;
+    // 검색할 때는 판·증권사 걸개를 풀어 준다 — 「삼성전자」를 쳤는데 산업분석만
+    // 걸려 있어 0건이 뜨면 고장으로 보인다.
+    if (state.q.trim()) { state.cat = "전체"; state.broker = "전체"; buildFilters(); }
+    renderList();
+    if (scroll) document.getElementById("listTop").scrollIntoView({ behavior: "smooth", block: "start" });
+  }
+  document.getElementById("searchForm").addEventListener("submit", function (e) {
+    e.preventDefault(); applySearch(true);
+  });
+  document.getElementById("clearBtn").addEventListener("click", function () {
+    els.q.value = ""; applySearch(false); els.q.focus();
+  });
+  els.q.addEventListener("input", function () { applySearch(false); });
+
+  // 한 파일 실행본에는 대시보드가 딸려 오지 않는다 — 눌러 봐야 「파일에
+  // 액세스할 수 없습니다」만 뜨므로 아예 감춘다.
+  if (window.__NO_DASH__) document.getElementById("dashLink").style.display = "none";
 
   /* ================= 지난 판 ================= */
   getJSON(DATA_DIR + "index.json").then(function (ix) {

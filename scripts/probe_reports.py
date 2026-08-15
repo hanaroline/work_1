@@ -20,6 +20,48 @@ RAW = "data/reports/raw"
 
 # (이름, URL, 인코딩, 리퍼러, 여기 있으면 반가운 글자)
 CANDIDATES = [
+    # --- 2차 탐색 ---
+    # 네이버 모바일 API 는 살아 있다(1차에서 확인). 나머지 넉 판의 길 이름을
+    # 모르니 그럴듯한 것을 다 넣어 본다. 목록이 JSON 이면 제목이 잘리지 않는다.
+    ("네이버API marketInfo", "https://m.stock.naver.com/api/research/marketInfo?page=1&pageSize=5",
+     "utf-8", "https://m.stock.naver.com/", ["title", "brokerName"]),
+    ("네이버API market_info", "https://m.stock.naver.com/api/research/market_info?page=1&pageSize=5",
+     "utf-8", "https://m.stock.naver.com/", ["title", "brokerName"]),
+    ("네이버API market", "https://m.stock.naver.com/api/research/market?page=1&pageSize=5",
+     "utf-8", "https://m.stock.naver.com/", ["title", "brokerName"]),
+    ("네이버API invest", "https://m.stock.naver.com/api/research/invest?page=1&pageSize=5",
+     "utf-8", "https://m.stock.naver.com/", ["title", "brokerName"]),
+    ("네이버API economy", "https://m.stock.naver.com/api/research/economy?page=1&pageSize=5",
+     "utf-8", "https://m.stock.naver.com/", ["title", "brokerName"]),
+    ("네이버API debenture", "https://m.stock.naver.com/api/research/debenture?page=1&pageSize=5",
+     "utf-8", "https://m.stock.naver.com/", ["title", "brokerName"]),
+    ("네이버API bond", "https://m.stock.naver.com/api/research/bond?page=1&pageSize=5",
+     "utf-8", "https://m.stock.naver.com/", ["title", "brokerName"]),
+
+    # 한경 컨센서스 — 1차에서 500 이 났다. 화면이 실제로 부르는 인자를 다
+    # 채워 다시 붙어 본다. 목표주가·투자의견을 열로 주는 유일한 곳이라
+    # 한 번 더 매달릴 값어치가 있다.
+    ("한경 전체(인자 완비)",
+     "https://consensus.hankyung.com/analysis/list?sdate=&edate=&report_type=&business_code="
+     "&order_type=&now_page=1&search_text=&pagenum=40",
+     "utf-8", "https://consensus.hankyung.com/", ["목표주가", "투자의견", "증권"]),
+    ("한경 skinType",
+     "https://consensus.hankyung.com/analysis/list?skinType=business&sdate=&edate="
+     "&report_type=CO&now_page=1&pagenum=40",
+     "utf-8", "https://consensus.hankyung.com/", ["목표주가", "투자의견", "증권"]),
+    ("한경 첫 화면",
+     "https://consensus.hankyung.com/", "utf-8", "https://www.hankyung.com/",
+     ["목표주가", "투자의견", "리포트"]),
+
+    # 미래에셋 리서치 — 1차에서 표 껍데기만 왔다(줄은 스크립트가 채운다).
+    # 쪽 번호를 붙인 길과 JSON 길을 찔러 본다.
+    ("미래에셋 목록 pageIndex",
+     "https://securities.miraeasset.com/bbs/board/message/list.do?categoryId=1521&pageIndex=1",
+     "cp949", "https://securities.miraeasset.com/", ["증권", "리포트"]),
+    ("미래에셋 리서치 첫 화면",
+     "https://securities.miraeasset.com/bbs/main/research/index.do",
+     "cp949", "https://securities.miraeasset.com/", ["리서치", "리포트"]),
+
     # 한경 컨센서스 — 증권사 리포트를 한자리에 모으고 **목표주가·투자의견을
     # 열로 준다**. 네이버 리서치에 없는 값이라 붙일 값어치가 크다.
     ("한경컨센서스 기업",
