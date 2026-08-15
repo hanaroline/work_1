@@ -339,11 +339,14 @@
     var sum = r.summary
       ? '<div class="sum">' + esc(r.summary) + "</div>"
       : '<div class="sum none">본문 요약을 아직 받지 못했습니다 — 제목과 원문으로 확인하십시오.</div>';
-    var meta = [r.broker, r.date, r.views != null ? "조회 " + nf.format(r.views) : null, r.source]
+    var who = r.broker + (r.analyst ? " " + r.analyst : "");
+    var meta = [who, r.date, r.views != null ? "조회 " + nf.format(r.views) : null, r.source]
       .filter(Boolean).map(esc).join(' <span class="sep">·</span> ');
 
     var links = ['<a class="go" href="' + esc(r.url) + '" target="_blank" rel="noopener">세부 리포트 →</a>'];
     if (r.pdf) links.push('<a class="go" href="' + esc(r.pdf) + '" target="_blank" rel="noopener">원문 PDF ↓</a>');
+    // 하우스에서 직접 받은 원문이 따로 있으면 그 길도 같이 연다.
+    if (r.house_pdf && r.house_pdf !== r.pdf) links.push('<a class="go" href="' + esc(r.house_pdf) + '" target="_blank" rel="noopener">미래에셋 원문 ↓</a>');
     // 한 파일 실행본에는 대시보드가 딸려 오지 않으므로 그 줄은 빼 둔다.
     if (st.code && !window.__NO_DASH__) links.push('<a class="go" href="../../index.html?code=' + esc(st.code) + '">종목 대시보드</a>');
     if (r.excerpt) links.push('<button type="button" data-more="1">본문 발췌</button>');
@@ -418,7 +421,8 @@
       if (state.cat !== "전체" && r.category !== state.cat) return false;
       if (state.broker !== "전체" && r.broker !== state.broker) return false;
       if (!q) return true;
-      var hay = [r.title, r.broker, r.summary, (r.stock || {}).name, (r.stock || {}).code]
+      var hay = [r.title, r.broker, r.analyst, r.summary, r.sector,
+                 (r.stock || {}).name, (r.stock || {}).code]
         .filter(Boolean).join(" ").toLowerCase();
       return hay.indexOf(q) >= 0;
     });

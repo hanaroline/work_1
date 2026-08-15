@@ -48,7 +48,8 @@ BASE = "https://finance.naver.com/research/"
 CATEGORIES = [
     ("종목분석", "company_list.naver", "company_read.naver", 3, "company"),
     ("산업분석", "industry_list.naver", "industry_read.naver", 2, "industry"),
-    ("시황정보", "market_info_list.naver", "market_info_read.naver", 1, "marketInfo"),
+    # 시황정보의 API 길 이름은 marketInfo 가 아니라 market 이다(탐색으로 확인).
+    ("시황정보", "market_info_list.naver", "market_info_read.naver", 1, "market"),
     ("투자정보", "invest_list.naver", "invest_read.naver", 1, "invest"),
     ("경제분석", "economy_list.naver", "economy_read.naver", 1, "economy"),
     ("채권분석", "debenture_list.naver", "debenture_read.naver", 1, "debenture"),
@@ -305,6 +306,122 @@ def fetch_category(name, list_path, read_path, pages, api_path, dump_dir=None):
     except Exception:                                           # noqa: BLE001
         pass                                     # 첨부는 상세에서도 채워진다
     return rows, how
+
+
+# ------------------------------------------------ 미래에셋증권 리서치 (하우스)
+
+# 우리 하우스 리포트는 네이버를 거치지 않고 원천에서 받는다. 여기에만 있는 것:
+#   · **애널리스트 실명** — 네이버 리서치에는 없다
+#   · 하우스가 낸 원문 PDF 주소
+#   · 제목에 박힌 종목코드와 투자의견 — 「SMIC (00981 HK/매수)」
+#   · 해외 종목 커버리지 — 네이버 리서치 목록에는 없다
+MIRAE_LIST = ("https://securities.miraeasset.com/bbs/board/message/list.do"
+              "?categoryId=%s&pageIndex=%d")
+MIRAE_VIEW = ("https://securities.miraeasset.com/bbs/board/message/view.do"
+              "?messageId=%s&categoryId=%s")
+MIRAE_BOARDS = [("리서치 리포트", "1521", 2)]
+
+_MIRAE_A = re.compile(
+    r"""(?is)<a\s+href="javascript:view\('(\d+)','[^']*'\)"[^>]*>(.*?)</a>""")
+_MIRAE_PDF = re.compile(r"""(?i)downConfirm\('([^']+\.pdf[^']*)'""")
+# 「SMIC (00981 HK/매수)」 · 「삼성전자 (005930/매수)」 에서 종목·코드·의견을 뗀다
+_MIRAE_HEAD = re.compile(r"^(.*?)\s*\(([0-9A-Z]{5,8})(?:\s+[A-Z]{2})?\s*/\s*([^)]+)\)\s*$")
+
+
+def parse_mirae(html, board, category_id):
+    rows = []
+    for row in _ROW.findall(html):
+        m = _MIRAE_A.search(row)
+        if not m:
+            continue
+        mid, inner = m.group(1), m.group(2)
+        # 제목 줄은 <b>종목 (코드/의견)</b><br/>리포트 제목 꼴이다.
+        part = re.split(r"(?i)<br\s*/?>", inner, 1)
+        head = _text(part[0]).strip()
+        tail = _text(part[1]).strip() if len(part) > 1 else ""
+        stock, opinion = None, None
+        hm = _MIRAE_HEAD.match(head) if tail else None
+        if hm:
+            stock = {"code": hm.group(2), "name": hm.group(1).strip()}
+            opinion = hm.group(3).strip()
+            title = tail
+        elif tail:
+            # 종목물이 아니면 앞머리는 연재물 이름이다(「월스트리트파인더 Ep.202」).
+            # 종목으로 앉히면 있지도 않은 종목이 생긴다.
+            title = head + " — " + tail
+        else:
+            title = head
+        cells = [_text(c).strip() for c in _TD.findall(row)]
+        date = next((c for c in cells if re.fullmatch(r"\d{4}-\d{2}-\d{2}", c)), None)
+        # 마지막 칸이 작성자다 — 애널리스트 실명.
+        analyst = cells[-1] if cells and 1 <= len(cells[-1]) <= 12 else None
+        pdf = _MIRAE_PDF.search(row)
+        rows.append({
+            "nid": "mirae-" + mid, "category": board, "title": title,
+            "url": MIRAE_VIEW % (mid, category_id),
+            "stock": stock, "broker": "미래에셋증권", "analyst": analyst,
+            "opinion": opinion, "date": date, "views": None,
+            "pdf": pdf.group(1) if pdf else None,
+            "source": "미래에셋증권 리서치", "via": "html",
+        })
+    return rows
+
+
+def fetch_mirae(dump_dir=None):
+    rows, seen = [], set()
+    for board, cid, pages in MIRAE_BOARDS:
+        for page in range(1, pages + 1):
+            html = _get(MIRAE_LIST % (cid, page), encoding="cp949",
+                        referer="https://securities.miraeasset.com/")
+            got = parse_mirae(html, board, cid)
+            if not got:
+                if dump_dir:
+                    _dump(dump_dir, "mirae_%s_p%d.html" % (cid, page), html)
+                if page == 1:
+                    raise ValueError("미래에셋 목록에서 줄을 못 찾았다 (%d bytes)" % len(html))
+                break
+            for r in got:
+                if r["nid"] in seen:
+                    continue
+                seen.add(r["nid"])
+                rows.append(r)
+    if not rows:
+        raise ValueError("미래에셋 리서치에서 한 줄도 못 얻었다")
+    return rows
+
+
+def _key(title):
+    """같은 리포트인지 견주는 열쇠. 띄어쓰기·문장부호는 지운다."""
+    return re.sub(r"[^0-9A-Za-z가-힣]", "", title or "").lower()
+
+
+def merge_house(reports, house):
+    """하우스 리포트를 네이버 줄에 포개고, 없는 것은 새로 세운다.
+
+    같은 리포트가 두 곳에 다 있으면 **하나로 합친다** — 네이버 쪽에는 본문
+    요약이, 하우스 쪽에는 애널리스트 실명과 원문 PDF가 있어 둘 다 아깝다.
+    """
+    idx = {}
+    for r in reports:
+        if r.get("broker") == "미래에셋증권" and r.get("title"):
+            idx.setdefault(_key(r["title"]), r)
+    added, merged = 0, 0
+    for h in house:
+        mate = idx.get(_key(h["title"]))
+        if mate:
+            merged += 1
+            if h.get("analyst"):
+                mate["analyst"] = h["analyst"]
+            if h.get("pdf"):
+                mate["house_pdf"] = h["pdf"]
+            mate["house_url"] = h["url"]
+            if h.get("opinion") and not mate.get("opinion"):
+                mate["opinion"] = h["opinion"]
+            mate["source"] = "네이버 리서치 + 미래에셋증권"
+        else:
+            added += 1
+            reports.append(h)
+    return {"merged": merged, "added": added}
 
 
 # ---------------------------------------------------------------- 상세
@@ -678,7 +795,7 @@ def main():
     out = {
         "date": today,
         "generated_at_kst": now.strftime("%Y-%m-%d %H:%M:%S"),
-        "source": "네이버 금융 리서치 (finance.naver.com/research)",
+        "source": "네이버 금융 리서치 · 미래에셋증권 리서치",
         "sources": {},
         "reports": [],
     }
@@ -695,6 +812,20 @@ def main():
             out["sources"][key] = {"ok": False, "error": "HTTP %s" % e.code}
         except Exception as e:                                   # noqa: BLE001
             out["sources"][key] = {"ok": False, "error": "%s: %s" % (type(e).__name__, e)}
+
+    # 하우스(미래에셋) 리포트는 원천에서 직접 받아 포갠다. 실명·원문 PDF가
+    # 여기에만 있고, 네이버 목록에 없는 해외 종목도 여기서 들어온다.
+    try:
+        house = fetch_mirae(dump_dir=RAW_DIR)
+        stat = merge_house(reports, house)
+        out["sources"]["미래에셋증권 리서치"] = {
+            "ok": True, "count": len(house), "via": "html",
+            "merged_into_naver": stat["merged"], "new": stat["added"]}
+    except urllib.error.HTTPError as e:
+        out["sources"]["미래에셋증권 리서치"] = {"ok": False, "error": "HTTP %s" % e.code}
+    except Exception as e:                                       # noqa: BLE001
+        out["sources"]["미래에셋증권 리서치"] = {
+            "ok": False, "error": "%s: %s" % (type(e).__name__, e)}
 
     if not reports:
         raise SystemExit("리포트를 한 건도 받지 못했다 — 목록 구조가 바뀌었을 수 있다. "
