@@ -696,7 +696,9 @@ def naver_investors(now, dump_dir=None):
                         "foreign": vals[1], "institution": vals[2],
                         "unit": "억원", "source_url": url})
         if out:
-            return out[:6]
+            # 여섯 줄만 남기던 것을 넓혔다. 「이번 주 외국인이 계속 샀는가」를
+            # 말하려면 한 달은 있어야 한다 — 여섯 줄로는 주간 얘기가 안 된다.
+            return out[:25]
         errors.append("%s -> 날짜 행 없음(%d bytes)" % (url.split("?")[0][-32:], len(s)))
         if dump_dir:
             os.makedirs(dump_dir, exist_ok=True)
@@ -938,7 +940,62 @@ def naver_usdkrw():
             "note": "매매기준율"}
 
 
-ECOS = "https://ecos.bok.or.kr/api/%s/sample/json/kr/1/10/%s"
+# 샘플 인증키는 **호출당 10건**까지다. ecos.bok.or.kr 에서 무료 인증키를 받아
+# ECOS_API_KEY 로 넣으면 한 번에 다 온다 — 그러면 국내 금리 기간 변화를 월평균이
+# 아니라 일별 실측으로 낼 수 있다.
+ECOS_KEY = (os.environ.get("ECOS_API_KEY") or "").strip() or "sample"
+ECOS_ROWS = 10 if ECOS_KEY == "sample" else 900
+
+
+def _ecos_url(service, tail, start=1, rows=None):
+    rows = rows or ECOS_ROWS
+    return ("https://ecos.bok.or.kr/api/%s/%s/json/kr/%d/%d/%s"
+            % (service, ECOS_KEY, start, start + rows - 1, tail))
+
+
+def _ecos_monthly(code, now, months=26):
+    """월별 금리를 되짚어 (date, value) 오름차순으로 준다.
+
+    일별은 샘플 키로 10건까지라 기간 변화를 낼 수 없다. 817Y002 의 월별 값은
+    **그 달의 평균**이므로, 되짚은 값은 「그 달 평균 대비」다. 표에 반드시
+    그렇게 적어야 한다 — 특정일 대비가 아니다.
+
+    달의 **첫날**을 날짜로 삼는다. 마지막 날로 잡으면 「1개월 전」이 한 달
+    더 뒤로 밀린다(7월 15일을 되짚는데 7월 31일 봉이 걸려 6월이 잡힌다).
+    """
+    y, m = now.year, now.month - months
+    while m <= 0:
+        y -= 1
+        m += 12
+    if ECOS_KEY == "sample":
+        tail = "817Y002/M/%04d%02d/%04d%02d/%s" % (y, m, now.year, now.month, code)
+    else:                                   # 인증키가 있으면 일별 실측으로 받는다
+        tail = "817Y002/D/%04d%02d%02d/%s/%s" % (y, m, 1, now.strftime("%Y%m%d"), code)
+    bars, start = [], 1
+    while start <= (months + 2 if ECOS_KEY == "sample" else 1):
+        try:
+            j = json.loads(_get(_ecos_url("StatisticSearch", tail, start), timeout=60))
+        except Exception:                                      # noqa: BLE001
+            break
+        rows = (j.get("StatisticSearch", {}) or {}).get("row", [])
+        if not rows:
+            break
+        for r in rows:
+            t, v = r.get("TIME", ""), r.get("DATA_VALUE")
+            if v in (None, ""):
+                continue
+            try:
+                if len(t) == 6:                       # 월별 — 그 달 1일로 잡는다
+                    bars.append((date(int(t[:4]), int(t[4:]), 1), float(v)))
+                elif len(t) == 8:                     # 일별
+                    bars.append((date(int(t[:4]), int(t[4:6]), int(t[6:])), float(v)))
+            except ValueError:
+                pass
+        if len(rows) < ECOS_ROWS:
+            break
+        start += ECOS_ROWS
+    bars.sort()
+    return bars
 
 
 def ecos_rates(now, dump_dir=None):
@@ -953,7 +1010,8 @@ def ecos_rates(now, dump_dir=None):
     # 1) 항목 코드 목록
     items = {}
     try:
-        j = json.loads(_get(ECOS % ("StatisticItemList", "817Y002"), timeout=60))
+        j = json.loads(_get(_ecos_url("StatisticItemList", "817Y002", rows=100),
+                            timeout=60))
         for row in (j.get("StatisticItemList", {}) or {}).get("row", []):
             items[row.get("ITEM_NAME", "")] = row.get("ITEM_CODE", "")
     except Exception as e:                                    # noqa: BLE001
@@ -992,8 +1050,8 @@ def ecos_rates(now, dump_dir=None):
         if code is None:
             errs.append("%s -> 항목목록에서 %s 를 찾지 못했다" % (key, name))
             continue
-        url = ECOS % ("StatisticSearch",
-                      "817Y002/D/%s/%s/%s" % (start, end, code))
+        url = _ecos_url("StatisticSearch",
+                        "817Y002/D/%s/%s/%s" % (start, end, code))
         tried[key] = code
         try:
             j = json.loads(_get(url, timeout=60))
@@ -1028,6 +1086,28 @@ def ecos_rates(now, dump_dir=None):
                         "series": series[-10:]}
         except (KeyError, ValueError, TypeError):
             continue
+
+    # 기간 변화(bp). 브리핑이 실제로 인용하는 세 가지만 되짚는다 — 샘플 키에서는
+    # 항목 하나에 서너 번을 더 불러야 해서 다 하면 ECOS 가 버티지 못한다.
+    for key in ("ktb3y", "ktb10y", "cd91"):
+        if key not in out or key not in tried:
+            continue
+        try:
+            bars = _ecos_monthly(tried[key], now)
+        except Exception as e:                                # noqa: BLE001
+            errs.append("%s 월별 -> %s" % (key, str(e)[:60]))
+            continue
+        if len(bars) < 4:
+            continue
+        spot = out[key]["value"]
+        bars.append((now.date(), spot))                        # 기준점은 최신 실측치
+        p = _perf(bars, spot, as_bp=True)
+        if p:
+            p["basis"] = ("월평균 대비 (817Y002 월별은 그 달의 평균이다). "
+                          "ECOS_API_KEY 를 넣으면 일별 실측으로 바뀐다"
+                          if ECOS_KEY == "sample" else "일별 실측 대비")
+            out[key]["perf"] = p
+
     if not out:
         if dump_dir:
             os.makedirs(dump_dir, exist_ok=True)
@@ -1094,15 +1174,49 @@ def naver_money_flow(dump_dir=None):
         except ValueError:
             return None
 
+    # 열 이름을 읽어 **이름으로** 담는다. 자리번호로 담으면 네이버가 열을 하나
+    # 끼워 넣는 순간 「주식형펀드」 자리에 미수금이 들어와도 아무도 모른다.
+    # 읽어 낸 이름은 그대로 내보내 눈으로 대조할 수 있게 한다.
+    head = []
+    for tr in re.findall(r"(?is)<tr[^>]*>.*?</tr>", tbl.group(0) if tbl else html):
+        hs = [re.sub(r"\s+", " ", _text(c)).strip()
+              for c in re.findall(r"(?is)<th[^>]*>(.*?)</th>", tr)]
+        if len(hs) >= 4:
+            head = hs
+            break
+
+    FIELDS = (("deposit", ("고객예탁금", "예탁금")),
+              ("credit_balance", ("신용잔고", "신용융자")),
+              ("margin_due", ("미수금",)),                      # 반대매매의 앞 단계
+              ("fund_equity", ("주식형",)),
+              ("fund_mixed", ("혼합형", "혼합")),
+              ("fund_bond", ("채권형",)))
+    # 머리행 이름 -> 값 칸 자리. 「전일대비」 열이 값 열 뒤에 붙어 있으므로
+    # 이름이 붙은 열만 세고 그 다음 칸은 증감으로 본다.
+    pos = {}
+    for key, words in FIELDS:
+        for i, h in enumerate(head):
+            if any(w in h for w in words):
+                pos[key] = i
+                break
+
     series = []
-    for r in rows[:10]:
+    for r in rows[:20]:
         y, m, d = r[0].split(".")
-        series.append({
-            "date": "20%s-%s-%s" % (y, m, d),
-            "deposit": n(r[1]), "deposit_chg": n(r[2]),          # 고객예탁금
-            "credit_balance": n(r[3]), "credit_chg": n(r[4]),    # 신용잔고
-            "fund_equity": n(r[5]), "fund_mixed": n(r[7]), "fund_bond": n(r[9]),
-        })
+        rec = {"date": "20%s-%s-%s" % (y, m, d)}
+        if pos:
+            for key, i in pos.items():
+                if i < len(r):
+                    rec[key] = n(r[i])
+                if i + 1 < len(r) and key in ("deposit", "credit_balance", "margin_due"):
+                    rec[key + "_chg"] = n(r[i + 1])
+        else:
+            # 머리행을 못 읽었을 때의 종전 자리배치. 이름이 안 잡히면 여기로 온다.
+            rec.update({"deposit": n(r[1]), "deposit_chg": n(r[2]),
+                        "credit_balance": n(r[3]), "credit_chg": n(r[4]),
+                        "fund_equity": n(r[5]), "fund_mixed": n(r[7]),
+                        "fund_bond": n(r[9])})
+        series.append(rec)
     # 네이버 표의 「전일대비」(*_chg) 는 **부호가 없는 절대값**이다. 줄어든 날에도
     # 양수로 실려, 그대로 옮기면 감소가 증가로 나간다 — 8월 13일 판에서 예탁금
     # 3조 4,884억 「감소」를 「+34,884 증가」로 내보냈다. 값끼리 빼서 부호를 만든다.
@@ -1110,12 +1224,14 @@ def naver_money_flow(dump_dir=None):
         nxt = series[i + 1] if i + 1 < len(series) else None
         if not nxt:
             continue
-        for base in ("deposit", "credit_balance", "fund_equity", "fund_mixed", "fund_bond"):
+        for base in ("deposit", "credit_balance", "margin_due",
+                     "fund_equity", "fund_mixed", "fund_bond"):
             a, b = r.get(base), nxt.get(base)
             if a is not None and b is not None:
                 r[base + "_delta"] = round(a - b, 1)
 
     return {"unit": "억원", "latest": series[0], "series": series,
+            "columns": head,
             "source_url": "https://finance.naver.com/sise/sise_deposit.naver",
             "note": "신용잔고는 결제일 기준이라 종가일보다 1~2영업일 늦게 반영된다",
             "delta_note": "*_chg 는 네이버가 준 **절대값**이라 부호가 없다. 증감은 반드시 "
@@ -1561,11 +1677,20 @@ def update_history(out, path="data/market/history.json"):
                           for s in out["sectors"]["all"] if s.get("name")}
     if mf:
         row["money_flow"] = {k: mf.get(k) for k in
-                             ("deposit", "deposit_delta", "credit_balance",
-                              "credit_balance_delta", "fund_equity") if k in mf}
+                             ("date", "deposit", "deposit_delta", "credit_balance",
+                              "credit_balance_delta", "margin_due", "margin_due_delta",
+                              "fund_equity") if k in mf}
     if inv:
         row["investors_kospi"] = {k: inv[0].get(k)
                                   for k in ("date", "retail", "foreign", "institution")}
+    rk = out.get("rates_kr") or {}
+    if rk:
+        row["rates_kr"] = {k: rk[k] for k in
+                           ("ktb1y", "ktb3y", "ktb5y", "ktb10y", "cd91", "call",
+                            "corp3y", "cofix_new") if k in rk}
+    won = (out.get("usdkrw_naver") or {}).get("rate")
+    if won:
+        row["usdkrw"] = won
 
     try:
         with open(path, encoding="utf-8") as f:
