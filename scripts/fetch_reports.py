@@ -319,7 +319,7 @@ MIRAE_LIST = ("https://securities.miraeasset.com/bbs/board/message/list.do"
               "?categoryId=%s&pageIndex=%d")
 MIRAE_VIEW = ("https://securities.miraeasset.com/bbs/board/message/view.do"
               "?messageId=%s&categoryId=%s")
-MIRAE_BOARDS = [("리서치 리포트", "1521", 2)]
+MIRAE_BOARDS = [("리서치 리포트", "1521", 6)]        # 한 쪽에 다섯 줄쯤 온다
 
 _MIRAE_A = re.compile(
     r"""(?is)<a\s+href="javascript:view\('(\d+)','[^']*'\)"[^>]*>(.*?)</a>""")
