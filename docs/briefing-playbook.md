@@ -121,7 +121,8 @@ python3 -m json.tool data/market/latest.json | head -120
 | 키 | 내용 |
 |---|---|
 | `indices` | 지수·환율·원자재 48종. 각각 `date` `open` `high` `low` `close` `volume` `prev_close` `change` `change_pct` `perf`(기간 수익률 — 4-3절). **국내** kospi, kosdaq, usdkrw / **미국** sp500, nasdaq, dow, sox, vix, russell + 지수선물(`*_fut`) / **유럽** stoxx600, eurostoxx, dax, cac, ftse, ftsemib, ibex, smi, aex / **아시아** nikkei, hangseng, shanghai, taiwan, sensex, asx200 / **환율** dxy, eurusd, usdjpy, usdcny, gbpusd, usdtwd / **원자재·기타** wti, brent, gold, silver, copper, natgas, platinum, btc, eth |
-| `stocks` | 시총 상위 10종목의 종가·등락률·거래량 |
+| `stocks` | **국내 42종목** — 코스피 대형주(반도체·이차전지·바이오·자동차·금융·조선/방산·인터넷·소비재)와 코스닥 상위 8종목. 종가·등락률·거래량에 `note_ko`/`note_en`(한 줄 설명)과 `perf` 가 붙습니다 |
+| `kr_etf` | **국내 상장 ETF 12종** — KODEX 200/코스닥150/레버리지/인버스2X/반도체/골드/미국채10년, TIGER 200/미국S&P500/나스닥100/필라델피아반도체/리츠. **고객이 실제로 사는 물건이라 「무엇을 사면 이 시황을 사는 것인지」를 표에서 바로 보여 줄 수 있습니다** |
 | `sectors` | 네이버 업종 79개 등락률 (`all` / `top5` / `bottom5`) |
 | `investors_kospi` | 코스피 투자자별 순매수 최근 6거래일 — `retail`/`foreign`/`institution`, **단위 억원** |
 | `market_internals` | `kospi` / `kosdaq` 각각 — `breadth`(상한·상승·보합·하락·하한 종목 수), `investor_flows`(당일 개인/외국인/기관), `program_trading`(차익/비차익/전체), `intraday`(고가·저가), `fifty_two_week`(52주 고저). **단위 억원** |
@@ -129,16 +130,22 @@ python3 -m json.tool data/market/latest.json | head -120
 | `rates_ecos` | 한국은행 ECOS 원본 — 국고채 1·3·5·10년, 회사채 BBB&minus;(`corp3y`), CD. 각 항목에 10영업일 `series` 와 실제 항목명(`item`)이 붙습니다. **`corp3y` 는 BBB&minus; 입니다** — 수집기가 한때 이 코드를 AA&minus; 로 적어 둬서 4.44% 여야 할 자리에 10.246% 가 들어갈 뻔했습니다. 지금은 응답 항목명과 대조해 어긋나면 버립니다. **AA&minus; 는 `rates_kr.corp3y` 를 쓰십시오.** `corp3y_aa` 는 ECOS 항목목록에서 찾았을 때만 채워지므로 없을 수 있습니다 |
 | `at_kr_close` | 국내 마감(15:30 KST) 시점의 WTI·브렌트·금. 5분봉에서 뽑은 값 |
 | `limit_names` | 상한가·하한가 종목명과 종목코드 |
-| `rates_us` | 미 국채 수익률 곡선 — 미 재무부 원본. `curve`(1m~30y), `prev_curve`, `change_bp`, `spread_10y_2y_bp`, `inverted`. **야후에 2년물 심볼은 없습니다. `^IRX` 를 2년물로 쓰지 마십시오 — 3개월물입니다** |
-| `us_sectors` / `us_stocks` | S&P500 업종 ETF 11개 / 미국 주요 종목 12개. 모닝 브리핑에서 국내 개장 전 흐름을 볼 때 씁니다 |
+| `rates_us` | 미 국채 수익률 곡선 — 미 재무부 원본. `curve`(1m~30y), `prev_curve`, `change_bp`, `spread_10y_2y_bp`, `inverted`, **`perf`(만기별 기간 변화 — 단위 bp, 4-3절)**. **야후에 2년물 심볼은 없습니다. `^IRX` 를 2년물로 쓰지 마십시오 — 3개월물입니다** |
+| `us_sectors` / `us_stocks` | S&P500 업종 ETF 11개 / 미국 주요 종목 12개. 모닝 브리핑에서 국내 개장 전 흐름을 볼 때 씁니다. 업종에도 `note_ko`(무엇이 들어 있는 묶음인지)와 `perf` 가 붙습니다 |
 | `eu_stocks` | 유럽 대형주 12종목 — SAP·인피니언·지멘스·ASML·LVMH·로레알·네슬레·노보노디스크·쉘·아스트라제네카·HSBC·노바티스. **거래 통화 기준입니다**(EUR·GBp·CHF·DKK). 영국 종목은 펜스(GBp) 표시라 파운드로 보려면 100으로 나눕니다 |
 | `index_daily` | 코스피·코스닥 일별시세 20영업일 — 종가·등락률·거래량(천주)·**거래대금(백만원)**. 거래대금은 야후에 없습니다. 지난 거래일을 되짚을 때 씁니다 |
 | `fed_implied` | 연방기금 금리선물(ZQ=F)에서 되짚은 내재 정책금리 |
 | `vkospi` | **대개 비어 있습니다.** 무료 원천이 없습니다(네이버 미취급·야후 미수록·인베스팅 403·stooq 차단). VIX 를 대용으로 쓰고, 없다는 사실을 적으십시오 |
 | `futures` | 코스피200 선물 — `investors`(retail/foreign/institution, **단위 억원**), `bizdate`, 시가·고가·저가, `volume_contracts`, `implied_multiplier`. 데스크톱 네이버에는 없는 자료입니다. 단위 표기가 원천에 없어 현물 대조로 정한 값이므로 배지는 `vf solo`(1 SOURCE) 로 답니다 |
-| `money_flow` | 증시자금동향 — `latest` 와 `series`(10영업일). `deposit`(고객예탁금) `credit_balance`(신용융자 잔고) `fund_equity`/`fund_mixed`/`fund_bond`, **단위 억원**. 신용잔고는 결제일 기준이라 종가일보다 1~2영업일 늦습니다 — 반드시 `date` 를 같이 쓰십시오 |
-| `news` | 그날 증시 기사 본문. `articles`(제목·URL·본문 6천자), `futures_mentions`, `credit_mentions`. **브리핑 세션은 언론사에 직접 못 붙으므로, 검색 요약보다 이 원문을 우선 인용합니다** |
+| `money_flow` | 증시자금동향 — `latest` 와 `series`(10영업일). `deposit`(고객예탁금) `credit_balance`(신용융자 잔고) `fund_equity`/`fund_mixed`/`fund_bond`, **단위 억원**. 신용잔고는 결제일 기준이라 종가일보다 1~2영업일 늦습니다 — 반드시 `date` 를 같이 쓰십시오.<br>**증감은 `*_delta` 를 쓰십시오. `*_chg` 는 네이버가 준 부호 없는 절대값입니다** — 8/13 판이 예탁금 3조 4,884억 **감소**를 「+34,884 증가」로 내보냈습니다 |
+| `news` | 그날 증시 기사 본문. `articles`(제목·URL·본문 6천자), `futures_mentions`, `credit_mentions`. **브리핑 세션은 언론사에 직접 못 붙으므로, 검색 요약보다 이 원문을 우선 인용합니다**.<br>`extraction` 에 어디서 건졌는지가 세어져 있습니다 — `id="dic_area"` 가 정상이고 `fallback` 이 섞였으면 네이버 구조가 바뀐 것입니다. 절반을 넘으면 수집기가 실패로 올립니다 |
 | `sources` | 원천별 성공/실패와 실패 사유 |
+
+`data/market/history.json` 은 **따로 쌓이는 파일**입니다 — 날짜별로 코스피·코스닥 종가,
+등락 종목 수(`breadth`), 업종 79개 등락률, 투자자별 순매수, 예탁금·신용잔고를 모아 둡니다.
+**추이를 쓸 때 날짜별 스냅숏을 하나씩 열어 손으로 잇지 마십시오.** 8/15 판의
+「697 → 563 → 380 → 333 → 677」 계열이 그렇게 만들어졌습니다. 이제 이 파일 한 장이면 됩니다.
+넉 달치(120행)를 남기고 시세일을 열쇠로 덮어씁니다.
 
 **이 수치는 거래소 원천이므로 뉴스 보도보다 우선합니다.** 배지는
 `<span class="vf ok">MARKET DATA</span>` 로 표시합니다. 뉴스와 값이 다르면
@@ -419,30 +426,82 @@ CNY 입니다. `cn_stocks` 에는 홍콩과 본토가 섞여 있으므로 표에
 넘칩니다. 「등락률」(전일 대비) 다음에 두면 **1일 → 1주 → 1개월 → 3개월 → 연초**
 사다리가 되어 읽기 좋습니다.
 
-### 설명 열과 기간 수익률은 함께 설 자리가 없습니다
+### 설명은 **열이 아니라 이름 밑의 줄**입니다
 
-**본문 칸은 아무리 넓어도 ~960px 입니다.** 1400px 위에서는 오른쪽 패널이 열려
-오히려 **~720px 로 좁아집니다** — 화면이 넓어질수록 표가 넓어지는 것이 아닙니다.
-그래서 `.note`(핵심·무엇을 담고 있는가·읽는 법)와 `.perf` 중 하나만 세웁니다.
+처음에는 설명을 열로 두고 좁아지면 접었습니다. **그것이 틀렸습니다.** 1620px 아래에서
+설명 열을 접었더니 노트북과 **PDF 양쪽에서 「이 지수가 무엇인지」가 통째로 사라졌습니다.**
+고객에게 건네는 것은 PDF 입니다 — 거기서 사라지면 없는 것입니다.
 
-```css
-@media (max-width:1620px){ table.data .note{display:none} }
-@media (max-width:860px){ table.data .perf{display:none} }
-table.data .perf{padding-left:8px;padding-right:8px}
+**열은 접히지만 줄은 접히지 않습니다.** 그래서 설명을 이름 칸 안에 붙는 작은 줄로
+내립니다. 표를 하나하나 고치지 말고 만들어진 HTML 을 한 번에 훑으십시오.
+
+```bash
+python3 scripts/inline_notes.py docs/briefings/<날짜>-<구분>.html
 ```
 
-- **1620px 위** — 설명 + 기간 수익률
-- **860~1620px** — 설명을 접고 숫자를 남깁니다. **숫자가 표의 본론입니다**
-- **860px 아래** — 기간 수익률도 접습니다(기존 `.opt` 와 같은 자리)
+머리행에서 class 에 `note` 가 든 칸을 찾아 모든 행에서 그 칸을 빼고 첫 칸 안에
+`<span class="sub">` 로 옮깁니다. 칸 수가 머리행과 다른 행(colspan·상세행)은
+건드리지 않습니다. **표를 만들 때는 종전대로 `class="note"` 열로 쓰고, 마지막에 이
+스크립트를 한 번 돌리십시오.**
+
+### 그래도 열이 아홉을 넘으면 줄이십시오
+
+설명을 내려도 열이 너무 많으면 넘칩니다. **CSS 로 버티지 말고 열을 줄이십시오.**
+
+- 미 국채 곡선에서 「EFFR 대비」를 뺐습니다 — 꼬리말에 `EFFR 3.63%, 10년물은 +105bp 위`
+  한 줄로 대신합니다.
+- 국내 지수에서 「주간 누적」을 뺐습니다 — 꼬리말이 이미 기준일과 값을 밝힙니다.
+- 열이 여덟을 넘는 표는 `class="data compact"` 로 세웁니다.
+
+```css
+@media (max-width:860px){ table.data .perf{display:none} }
+table.data .perf{padding-left:8px;padding-right:8px}
+table.data.compact .perf{padding-left:5px;padding-right:5px}
+
+/* 1400px 위에서는 오른쪽 상세 패널이 열려 본문 칸이 오히려 ~720px 로 **좁아진다**.
+   넓은 화면이라고 표가 넓어지는 것이 아니다. */
+@media (min-width:1400px) and (max-width:1620px){ table.data .opt{display:none} }
+```
 
 **`.perf` 를 `.opt` 로 달지 마십시오.** `.opt` 는 680px 에서 접히는데, 기간 수익률은
 그보다 훨씬 일찍 접어야 합니다.
+
+### 금리는 기간 「수익률」이 아니라 기간 「변화(bp)」입니다
+
+**4.20% 가 4.50% 가 된 것을 「+7.1%」라고 적으면 아무도 못 읽습니다. 「+30bp」입니다.**
+수집기가 알아서 갈라 줍니다 — `perf.unit` 이 `bp` 면 금리, `%` 면 가격입니다.
+
+- `indices.ust3m/ust5y/ust10y/ust30y` — 야후 금리 심볼. `perf.unit = "bp"`, `change_bp` 도 같이 옵니다
+- `rates_us.perf[만기]` — 재무부 곡선. 전년 CSV 까지 받아 만기별로 계산합니다
+
+지수·종목·업종 ETF·원자재·환율은 그대로 `%` 입니다.
+
+### 어느 표에 세우는가
+
+**기간 수익률이 없는 표를 남기지 마십시오.** 지금 세워 둔 곳은 다음과 같습니다.
+
+| 표 | 단위 |
+|---|---|
+| 미국·유럽·아시아·국내 지수 | % |
+| 국내·미국·유럽·일본·중국 개별 종목 | % |
+| S&P500 업종 ETF 11개 | % |
+| 원자재 · 환율 · 비트코인 · MOVE | % |
+| 미 국채 수익률 곡선 | **bp** |
 
 ### 폭 검증은 네 개가 아니라 **훑어서** 합니다
 
 지침 6절의 1680·820·390·360px **네 폭만 재면 놓칩니다.** 실제로 그 넷은 통과했는데
 **1400·1200·700px 에서 넘쳤습니다** — 브레이크포인트 사이가 구멍입니다.
 `340px 부터 1920px 까지 20px 씩` 훑어 **전 구간 0** 을 확인하십시오.
+
+**그리고 PDF 를 열어 눈으로 확인하십시오.** 인쇄는 종이 폭(~700px)에서 다시 흐르므로
+화면 미디어쿼리가 그대로 먹습니다. `pdftotext -layout` 으로 한 행을 뽑아 기간 수익률과
+설명이 **둘 다** 있는지 보십시오 — 화면에서 멀쩡한데 PDF 에서만 빠지는 일이 실제로
+있었습니다.
+
+```bash
+pdftotext -layout out/미래에셋_마포WM_*_전체.pdf - | grep -E '삼성전기|XLE'
+```
 
 ---
 
