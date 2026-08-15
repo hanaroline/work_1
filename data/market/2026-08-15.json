@@ -1,6 +1,6 @@
 {
-  "generated_at_kst": "2026-08-15 17:07:01",
-  "generated_at_utc": "2026-08-15 08:07:01",
+  "generated_at_kst": "2026-08-15 17:37:03",
+  "generated_at_utc": "2026-08-15 08:37:03",
   "sources": {
     "yahoo:kospi": {
       "ok": true
@@ -523,8 +523,7 @@
       "ok": true
     },
     "ecos:rates": {
-      "ok": false,
-      "error": "ValueError: ECOS 실패 (항목목록 0건) — ktb1y(010190000) -> <urlopen error timed out> | ktb3y(010200000) -> <urlopen error timed out> | ktb5y(010200001) -> <urlopen error timed out> | ktb10y(010210000) -> <urlopen error timed out> | corp3y(010320000) -> <urlopen error timed out> | corp3y_aa -> 항목목록에서 회사채(3년,AA-) 를 찾지 못했다 | cd91(010502000) -> <urlopen error timed out>"
+      "ok": true
     },
     "krx:futures_investors": {
       "ok": false,
@@ -868,8 +867,13 @@
       "currency": "USD",
       "perf": {
         "w1": 3.6,
+        "m1": 11.1,
+        "m3": 23.5,
+        "m6": 64.0,
+        "y1": 40.3,
+        "ytd": 53.3,
         "unit": "bp",
-        "from": "2026-07-23"
+        "from": "2024-08-14"
       },
       "quote_kind": "yield_pct",
       "change_bp": 5.5
@@ -888,8 +892,13 @@
       "currency": "USD",
       "perf": {
         "w1": -1.3,
+        "m1": -0.3,
+        "m3": 10.9,
+        "m6": 10.4,
+        "y1": -41.5,
+        "ytd": 15.0,
         "unit": "bp",
-        "from": "2026-07-23"
+        "from": "2024-08-14"
       },
       "quote_kind": "yield_pct",
       "change_bp": -0.8
@@ -1139,7 +1148,7 @@
       "prev_close": 6545.4702,
       "change": -5.8804,
       "change_pct": -0.0898,
-      "currency": null,
+      "currency": "EUR",
       "perf": {
         "w1": 0.24,
         "m1": 4.13,
@@ -1246,22 +1255,22 @@
     "btc": {
       "symbol": "BTC-USD",
       "date": "2026-08-15",
-      "close": 62995.1797,
+      "close": 62959.9805,
       "open": 62977.6133,
       "high": 63086.3555,
       "low": 62938.4023,
-      "volume": 18705625088,
+      "volume": 18109849600,
       "prev_close": 62975.5938,
-      "change": 19.5859,
-      "change_pct": 0.0311,
+      "change": -15.6133,
+      "change_pct": -0.0248,
       "currency": "USD",
       "perf": {
-        "w1": -2.94,
-        "m1": -2.65,
-        "m3": -20.33,
-        "m6": -8.42,
-        "y1": -46.34,
-        "ytd": -28.01,
+        "w1": -3.0,
+        "m1": -2.71,
+        "m3": -20.37,
+        "m6": -8.47,
+        "y1": -46.37,
+        "ytd": -28.05,
         "unit": "%",
         "from": "2024-08-15"
       }
@@ -1453,22 +1462,22 @@
     "eth": {
       "symbol": "ETH-USD",
       "date": "2026-08-15",
-      "close": 1878.33,
+      "close": 1877.8101,
       "open": 1880.3744,
       "high": 1884.0059,
       "low": 1878.3486,
-      "volume": 5072450560,
+      "volume": 4971571712,
       "prev_close": 1880.65,
-      "change": -2.3201,
-      "change_pct": -0.1234,
+      "change": -2.84,
+      "change_pct": -0.151,
       "currency": "USD",
       "perf": {
-        "w1": -1.94,
-        "m1": -2.01,
-        "m3": -15.52,
-        "m6": -4.46,
-        "y1": -57.7,
-        "ytd": -36.69,
+        "w1": -1.97,
+        "m1": -2.04,
+        "m3": -15.54,
+        "m6": -4.49,
+        "y1": -57.71,
+        "ytd": -36.71,
         "unit": "%",
         "from": "2024-08-15"
       }
@@ -1544,16 +1553,27 @@
     },
     "move": {
       "symbol": "^MOVE",
-      "date": "2026-08-15",
+      "date": "2026-08-14",
       "close": 69.5796,
       "open": 69.2283,
       "high": 69.5796,
       "low": 69.2283,
       "volume": 0,
-      "prev_close": 69.2283,
-      "change": 0.3513,
-      "change_pct": 0.5074,
-      "currency": "USD"
+      "prev_close": 70.88,
+      "change": -1.3004,
+      "change_pct": -1.8346,
+      "currency": "USD",
+      "quote_basis": "meta.regularMarketPrice (일봉 종가 미기재)",
+      "perf": {
+        "w1": -1.83,
+        "m1": -7.26,
+        "m3": -0.07,
+        "m6": -0.74,
+        "y1": -9.37,
+        "ytd": 8.79,
+        "unit": "%",
+        "from": "2024-08-15"
+      }
     },
     "sp500_fut": {
       "symbol": "ES=F",
@@ -2738,8 +2758,13 @@
       "currency": "KRW",
       "perf": {
         "w1": 12.2,
+        "m1": 0.31,
+        "m3": -11.85,
+        "m6": 34.45,
+        "y1": 151.74,
+        "ytd": 80.74,
         "unit": "%",
-        "from": "2026-07-22"
+        "from": "2024-08-14"
       },
       "note_ko": "코스피200을 그대로 따라가는 대표 지수 ETF",
       "note_en": "The benchmark ETF tracking the KOSPI 200"
@@ -2758,8 +2783,13 @@
       "currency": "KRW",
       "perf": {
         "w1": 12.31,
+        "m1": 0.53,
+        "m3": -11.54,
+        "m6": 34.88,
+        "y1": 152.29,
+        "ytd": 81.15,
         "unit": "%",
-        "from": "2026-07-22"
+        "from": "2024-08-14"
       },
       "note_ko": "코스피200 추종. KODEX 200과 같은 지수, 운용사만 다름",
       "note_en": "Also tracks the KOSPI 200; a different manager, same index"
@@ -2803,8 +2833,13 @@
       "currency": "KRW",
       "perf": {
         "w1": 25.18,
+        "m1": -8.14,
+        "m3": -35.9,
+        "m6": 34.17,
+        "y1": 345.98,
+        "ytd": 137.57,
         "unit": "%",
-        "from": "2026-07-22"
+        "from": "2024-08-14"
       },
       "note_ko": "코스피200 일간 수익률의 2배. 변동성이 크고 장기보유에 불리",
       "note_en": "Twice the KOSPI 200's daily move; unsuited to long holding"
@@ -2848,8 +2883,13 @@
       "currency": "KRW",
       "perf": {
         "w1": 17.17,
+        "m1": -5.22,
+        "m3": -19.69,
+        "m6": 42.26,
+        "y1": 228.95,
+        "ytd": 105.95,
         "unit": "%",
-        "from": "2026-07-22"
+        "from": "2024-08-14"
       },
       "note_ko": "국내 반도체 종목 묶음. 삼성전자·SK하이닉스 비중이 큼",
       "note_en": "A basket of Korean chip names, led by Samsung and SK hynix"
@@ -2943,8 +2983,13 @@
       "currency": "KRW",
       "perf": {
         "w1": 1.97,
+        "m1": 3.37,
+        "m3": -4.72,
+        "m6": -10.11,
+        "y1": -2.59,
+        "ytd": -6.87,
         "unit": "%",
-        "from": "2026-07-22"
+        "from": "2024-08-14"
       },
       "note_ko": "국내 리츠·인프라 묶음. 배당과 금리에 민감",
       "note_en": "Korean REITs and infrastructure; driven by yield and rates"
@@ -2963,8 +3008,13 @@
       "currency": "KRW",
       "perf": {
         "w1": 0.42,
+        "m1": -4.77,
+        "m3": -5.26,
+        "m6": -3.92,
+        "y1": 0.55,
+        "ytd": -3.02,
         "unit": "%",
-        "from": "2026-07-22"
+        "from": "2024-08-14"
       },
       "note_ko": "미 국채 10년 선물. 금리가 내리면 오른다",
       "note_en": "US 10-year Treasury futures; rises when yields fall"
@@ -2983,8 +3033,13 @@
       "currency": "KRW",
       "perf": {
         "w1": 1.06,
+        "m1": 7.42,
+        "m3": -8.48,
+        "m6": -14.1,
+        "y1": 22.81,
+        "ytd": -3.57,
         "unit": "%",
-        "from": "2026-07-22"
+        "from": "2024-08-14"
       },
       "note_ko": "국제 금 선물, 환헤지형. 금값만 따라간다",
       "note_en": "Gold futures, currency-hedged, so only bullion moves it"
@@ -3577,12 +3632,11 @@
       "open": 182.0,
       "high": 185.74,
       "low": 179.28,
-      "volume": 2827192,
+      "volume": 2829216,
       "prev_close": 175.38,
       "change": 4.76,
       "change_pct": 2.7141,
       "currency": "EUR",
-      "quote_basis": "meta.regularMarketPrice (일봉 종가 미기재)",
       "perf": {
         "w1": 1.22,
         "m1": 31.76,
@@ -3603,12 +3657,11 @@
       "open": 62.0,
       "high": 62.96,
       "low": 61.55,
-      "volume": 2976643,
+      "volume": 2979014,
       "prev_close": 62.5,
       "change": -0.77,
       "change_pct": -1.232,
       "currency": "EUR",
-      "quote_basis": "meta.regularMarketPrice (일봉 종가 미기재)",
       "perf": {
         "w1": -0.56,
         "m1": -14.05,
@@ -3629,12 +3682,11 @@
       "open": 284.7,
       "high": 284.8,
       "low": 282.2,
-      "volume": 613430,
+      "volume": 613772,
       "prev_close": 284.1,
       "change": -0.1,
       "change_pct": -0.0352,
       "currency": "EUR",
-      "quote_basis": "meta.regularMarketPrice (일봉 종가 미기재)",
       "perf": {
         "w1": 1.5,
         "m1": 4.07,
@@ -3654,13 +3706,12 @@
       "close": 1579.6,
       "open": 1598.8,
       "high": 1613.2,
-      "low": 1576.6,
+      "low": 1575.4,
       "volume": 532443,
       "prev_close": 1609.4,
       "change": -29.8,
       "change_pct": -1.8516,
       "currency": "EUR",
-      "quote_basis": "meta.regularMarketPrice (일봉 종가 미기재)",
       "perf": {
         "w1": 5.38,
         "m1": 1.53,
@@ -3686,7 +3737,6 @@
       "change": -1.6,
       "change_pct": -0.3478,
       "currency": "EUR",
-      "quote_basis": "meta.regularMarketPrice (일봉 종가 미기재)",
       "perf": {
         "w1": -4.5,
         "m1": -5.08,
@@ -3712,7 +3762,6 @@
       "change": -3.8,
       "change_pct": -0.9914,
       "currency": "EUR",
-      "quote_basis": "meta.regularMarketPrice (일봉 종가 미기재)",
       "perf": {
         "w1": -1.66,
         "m1": 0.18,
@@ -3733,7 +3782,7 @@
       "open": 81.27,
       "high": 81.42,
       "low": 80.57,
-      "volume": 1880186,
+      "volume": 1881191,
       "prev_close": 81.07,
       "change": -0.06,
       "change_pct": -0.074,
@@ -3758,12 +3807,11 @@
       "open": 299.75,
       "high": 302.7,
       "low": 293.95,
-      "volume": 3167350,
+      "volume": 3273211,
       "prev_close": 298.25,
       "change": -3.55,
       "change_pct": -1.1903,
       "currency": "DKK",
-      "quote_basis": "meta.regularMarketPrice (일봉 종가 미기재)",
       "perf": {
         "w1": -3.41,
         "m1": -7.82,
@@ -3784,12 +3832,11 @@
       "open": 3292.0,
       "high": 3331.0,
       "low": 3283.5,
-      "volume": 5069089,
+      "volume": 11446789,
       "prev_close": 3288.0,
       "change": 32.0,
       "change_pct": 0.9732,
       "currency": "GBp",
-      "quote_basis": "meta.regularMarketPrice (일봉 종가 미기재)",
       "perf": {
         "w1": 1.3,
         "m1": 5.5,
@@ -3810,12 +3857,11 @@
       "open": 11610.0,
       "high": 11658.0,
       "low": 11404.0,
-      "volume": 3963823,
+      "volume": 4272813,
       "prev_close": 11708.0,
       "change": -248.0,
       "change_pct": -2.1182,
       "currency": "GBp",
-      "quote_basis": "meta.regularMarketPrice (일봉 종가 미기재)",
       "perf": {
         "w1": -3.67,
         "m1": -7.31,
@@ -3836,12 +3882,11 @@
       "open": 1527.8,
       "high": 1534.4,
       "low": 1513.8,
-      "volume": 41723531,
+      "volume": 42408141,
       "prev_close": 1525.8,
       "change": 2.0,
       "change_pct": 0.1311,
       "currency": "GBp",
-      "quote_basis": "meta.regularMarketPrice (일봉 종가 미기재)",
       "perf": {
         "w1": -0.09,
         "m1": 2.54,
@@ -3862,12 +3907,11 @@
       "open": 123.44,
       "high": 123.66,
       "low": 121.02,
-      "volume": 1619321,
+      "volume": 1619121,
       "prev_close": 123.74,
       "change": -1.3,
       "change_pct": -1.0506,
       "currency": "CHF",
-      "quote_basis": "meta.regularMarketPrice (일봉 종가 미기재)",
       "perf": {
         "w1": -2.81,
         "m1": 0.02,
@@ -5198,6 +5242,198 @@
       "institution": 5854,
       "unit": "억원",
       "source_url": "https://finance.naver.com/sise/investorDealTrendDay.naver?bizdate=20260815&sosok="
+    },
+    {
+      "date": "26.08.06",
+      "retail": 33367,
+      "foreign": -32893,
+      "institution": -1214,
+      "unit": "억원",
+      "source_url": "https://finance.naver.com/sise/investorDealTrendDay.naver?bizdate=20260815&sosok="
+    },
+    {
+      "date": "26.08.05",
+      "retail": -11844,
+      "foreign": 14464,
+      "institution": -2838,
+      "unit": "억원",
+      "source_url": "https://finance.naver.com/sise/investorDealTrendDay.naver?bizdate=20260815&sosok="
+    },
+    {
+      "date": "26.08.04",
+      "retail": 8187,
+      "foreign": -3716,
+      "institution": -5385,
+      "unit": "억원",
+      "source_url": "https://finance.naver.com/sise/investorDealTrendDay.naver?bizdate=20260815&sosok="
+    },
+    {
+      "date": "26.08.03",
+      "retail": 46523,
+      "foreign": -28220,
+      "institution": -19516,
+      "unit": "억원",
+      "source_url": "https://finance.naver.com/sise/investorDealTrendDay.naver?bizdate=20260815&sosok="
+    },
+    {
+      "date": "26.07.31",
+      "retail": -82840,
+      "foreign": 72410,
+      "institution": 11503,
+      "unit": "억원",
+      "source_url": "https://finance.naver.com/sise/investorDealTrendDay.naver?bizdate=20260801&sosok="
+    },
+    {
+      "date": "26.07.30",
+      "retail": -14309,
+      "foreign": 13280,
+      "institution": 805,
+      "unit": "억원",
+      "source_url": "https://finance.naver.com/sise/investorDealTrendDay.naver?bizdate=20260801&sosok="
+    },
+    {
+      "date": "26.07.29",
+      "retail": -19701,
+      "foreign": -12502,
+      "institution": 31769,
+      "unit": "억원",
+      "source_url": "https://finance.naver.com/sise/investorDealTrendDay.naver?bizdate=20260801&sosok="
+    },
+    {
+      "date": "26.07.28",
+      "retail": 43152,
+      "foreign": -45009,
+      "institution": 1830,
+      "unit": "억원",
+      "source_url": "https://finance.naver.com/sise/investorDealTrendDay.naver?bizdate=20260801&sosok="
+    },
+    {
+      "date": "26.07.27",
+      "retail": 19788,
+      "foreign": -28811,
+      "institution": 8595,
+      "unit": "억원",
+      "source_url": "https://finance.naver.com/sise/investorDealTrendDay.naver?bizdate=20260801&sosok="
+    },
+    {
+      "date": "26.07.24",
+      "retail": 51782,
+      "foreign": -32683,
+      "institution": -19514,
+      "unit": "억원",
+      "source_url": "https://finance.naver.com/sise/investorDealTrendDay.naver?bizdate=20260801&sosok="
+    },
+    {
+      "date": "26.07.23",
+      "retail": -22077,
+      "foreign": 21359,
+      "institution": 976,
+      "unit": "억원",
+      "source_url": "https://finance.naver.com/sise/investorDealTrendDay.naver?bizdate=20260801&sosok="
+    },
+    {
+      "date": "26.07.22",
+      "retail": -12176,
+      "foreign": 26211,
+      "institution": -13963,
+      "unit": "억원",
+      "source_url": "https://finance.naver.com/sise/investorDealTrendDay.naver?bizdate=20260801&sosok="
+    },
+    {
+      "date": "26.07.21",
+      "retail": -16421,
+      "foreign": 2952,
+      "institution": 13744,
+      "unit": "억원",
+      "source_url": "https://finance.naver.com/sise/investorDealTrendDay.naver?bizdate=20260801&sosok="
+    },
+    {
+      "date": "26.07.20",
+      "retail": 3490,
+      "foreign": 5198,
+      "institution": -9235,
+      "unit": "억원",
+      "source_url": "https://finance.naver.com/sise/investorDealTrendDay.naver?bizdate=20260801&sosok="
+    },
+    {
+      "date": "26.07.16",
+      "retail": 36647,
+      "foreign": -13665,
+      "institution": -23831,
+      "unit": "억원",
+      "source_url": "https://finance.naver.com/sise/investorDealTrendDay.naver?bizdate=20260718&sosok="
+    },
+    {
+      "date": "26.07.15",
+      "retail": -24666,
+      "foreign": 23031,
+      "institution": 1992,
+      "unit": "억원",
+      "source_url": "https://finance.naver.com/sise/investorDealTrendDay.naver?bizdate=20260718&sosok="
+    },
+    {
+      "date": "26.07.14",
+      "retail": -41411,
+      "foreign": 9565,
+      "institution": 32117,
+      "unit": "억원",
+      "source_url": "https://finance.naver.com/sise/investorDealTrendDay.naver?bizdate=20260718&sosok="
+    },
+    {
+      "date": "26.07.13",
+      "retail": 38869,
+      "foreign": -16705,
+      "institution": -22338,
+      "unit": "억원",
+      "source_url": "https://finance.naver.com/sise/investorDealTrendDay.naver?bizdate=20260718&sosok="
+    },
+    {
+      "date": "26.07.10",
+      "retail": -7805,
+      "foreign": -3228,
+      "institution": 11314,
+      "unit": "억원",
+      "source_url": "https://finance.naver.com/sise/investorDealTrendDay.naver?bizdate=20260718&sosok="
+    },
+    {
+      "date": "26.07.09",
+      "retail": -13278,
+      "foreign": 1343,
+      "institution": 12884,
+      "unit": "억원",
+      "source_url": "https://finance.naver.com/sise/investorDealTrendDay.naver?bizdate=20260718&sosok="
+    },
+    {
+      "date": "26.07.08",
+      "retail": -358,
+      "foreign": 3437,
+      "institution": -3552,
+      "unit": "억원",
+      "source_url": "https://finance.naver.com/sise/investorDealTrendDay.naver?bizdate=20260718&sosok="
+    },
+    {
+      "date": "26.07.07",
+      "retail": 31359,
+      "foreign": -29172,
+      "institution": -3108,
+      "unit": "억원",
+      "source_url": "https://finance.naver.com/sise/investorDealTrendDay.naver?bizdate=20260718&sosok="
+    },
+    {
+      "date": "26.07.06",
+      "retail": 26829,
+      "foreign": -13144,
+      "institution": -14618,
+      "unit": "억원",
+      "source_url": "https://finance.naver.com/sise/investorDealTrendDay.naver?bizdate=20260718&sosok="
+    },
+    {
+      "date": "26.07.03",
+      "retail": -22942,
+      "foreign": -21750,
+      "institution": 44079,
+      "unit": "억원",
+      "source_url": "https://finance.naver.com/sise/investorDealTrendDay.naver?bizdate=20260718&sosok="
     }
   ],
   "market_internals": {
@@ -5272,7 +5508,10 @@
     "ktb10y_errors": [
       "il.naver?marketindexCd=IRR_GOVT10Y -> 값 없음(21509 bytes)",
       "nds/south-korea-10-year-bond-yield -> HTTP Error 403: Forbidden"
-    ]
+    ],
+    "ktb1y": 3.402,
+    "ktb5y": 4.047,
+    "ktb10y": 4.313
   },
   "at_kr_close": {
     "wti": {
@@ -5298,6 +5537,300 @@
     "rate": 1418.5,
     "source_url": "https://finance.naver.com/marketindex/",
     "note": "매매기준율"
+  },
+  "rates_ecos": {
+    "ktb1y": {
+      "value": 3.402,
+      "date": "20260814",
+      "item": "국고채(1년)",
+      "code": "010190000",
+      "series": [
+        {
+          "date": "20260803",
+          "value": 3.358
+        },
+        {
+          "date": "20260804",
+          "value": 3.357
+        },
+        {
+          "date": "20260805",
+          "value": 3.344
+        },
+        {
+          "date": "20260806",
+          "value": 3.368
+        },
+        {
+          "date": "20260807",
+          "value": 3.367
+        },
+        {
+          "date": "20260810",
+          "value": 3.384
+        },
+        {
+          "date": "20260811",
+          "value": 3.395
+        },
+        {
+          "date": "20260812",
+          "value": 3.397
+        },
+        {
+          "date": "20260813",
+          "value": 3.396
+        },
+        {
+          "date": "20260814",
+          "value": 3.402
+        }
+      ]
+    },
+    "ktb3y": {
+      "value": 3.796,
+      "date": "20260814",
+      "item": "국고채(3년)",
+      "code": "010200000",
+      "series": [
+        {
+          "date": "20260803",
+          "value": 3.742
+        },
+        {
+          "date": "20260804",
+          "value": 3.74
+        },
+        {
+          "date": "20260805",
+          "value": 3.669
+        },
+        {
+          "date": "20260806",
+          "value": 3.742
+        },
+        {
+          "date": "20260807",
+          "value": 3.746
+        },
+        {
+          "date": "20260810",
+          "value": 3.778
+        },
+        {
+          "date": "20260811",
+          "value": 3.808
+        },
+        {
+          "date": "20260812",
+          "value": 3.791
+        },
+        {
+          "date": "20260813",
+          "value": 3.781
+        },
+        {
+          "date": "20260814",
+          "value": 3.796
+        }
+      ]
+    },
+    "ktb5y": {
+      "value": 4.047,
+      "date": "20260814",
+      "item": "국고채(5년)",
+      "code": "010200001",
+      "series": [
+        {
+          "date": "20260803",
+          "value": 4.014
+        },
+        {
+          "date": "20260804",
+          "value": 4.004
+        },
+        {
+          "date": "20260805",
+          "value": 3.916
+        },
+        {
+          "date": "20260806",
+          "value": 3.957
+        },
+        {
+          "date": "20260807",
+          "value": 3.964
+        },
+        {
+          "date": "20260810",
+          "value": 3.994
+        },
+        {
+          "date": "20260811",
+          "value": 4.042
+        },
+        {
+          "date": "20260812",
+          "value": 4.025
+        },
+        {
+          "date": "20260813",
+          "value": 4.016
+        },
+        {
+          "date": "20260814",
+          "value": 4.047
+        }
+      ]
+    },
+    "ktb10y": {
+      "value": 4.313,
+      "date": "20260814",
+      "item": "국고채(10년)",
+      "code": "010210000",
+      "series": [
+        {
+          "date": "20260803",
+          "value": 4.264
+        },
+        {
+          "date": "20260804",
+          "value": 4.26
+        },
+        {
+          "date": "20260805",
+          "value": 4.15
+        },
+        {
+          "date": "20260806",
+          "value": 4.195
+        },
+        {
+          "date": "20260807",
+          "value": 4.208
+        },
+        {
+          "date": "20260810",
+          "value": 4.239
+        },
+        {
+          "date": "20260811",
+          "value": 4.301
+        },
+        {
+          "date": "20260812",
+          "value": 4.294
+        },
+        {
+          "date": "20260813",
+          "value": 4.298
+        },
+        {
+          "date": "20260814",
+          "value": 4.313
+        }
+      ]
+    },
+    "corp3y": {
+      "value": 10.298,
+      "date": "20260814",
+      "item": "회사채(3년, BBB-)",
+      "code": "010320000",
+      "series": [
+        {
+          "date": "20260803",
+          "value": 10.258
+        },
+        {
+          "date": "20260804",
+          "value": 10.253
+        },
+        {
+          "date": "20260805",
+          "value": 10.188
+        },
+        {
+          "date": "20260806",
+          "value": 10.243
+        },
+        {
+          "date": "20260807",
+          "value": 10.246
+        },
+        {
+          "date": "20260810",
+          "value": 10.276
+        },
+        {
+          "date": "20260811",
+          "value": 10.305
+        },
+        {
+          "date": "20260812",
+          "value": 10.297
+        },
+        {
+          "date": "20260813",
+          "value": 10.293
+        },
+        {
+          "date": "20260814",
+          "value": 10.298
+        }
+      ]
+    },
+    "cd91": {
+      "value": 2.94,
+      "date": "20260814",
+      "item": "CD(91일)",
+      "code": "010502000",
+      "series": [
+        {
+          "date": "20260803",
+          "value": 2.93
+        },
+        {
+          "date": "20260804",
+          "value": 2.93
+        },
+        {
+          "date": "20260805",
+          "value": 2.93
+        },
+        {
+          "date": "20260806",
+          "value": 2.93
+        },
+        {
+          "date": "20260807",
+          "value": 2.93
+        },
+        {
+          "date": "20260810",
+          "value": 2.93
+        },
+        {
+          "date": "20260811",
+          "value": 2.93
+        },
+        {
+          "date": "20260812",
+          "value": 2.94
+        },
+        {
+          "date": "20260813",
+          "value": 2.93
+        },
+        {
+          "date": "20260814",
+          "value": 2.94
+        }
+      ]
+    },
+    "notes": [
+      "corp3y_aa -> 항목목록에서 회사채(3년,AA-) 를 찾지 못했다"
+    ],
+    "source": "한국은행 ECOS 817Y002 (샘플 인증키)"
   },
   "futures": {
     "bizdate": "20260814",
@@ -5478,12 +6011,169 @@
         "credit_chg": 8377.0,
         "fund_equity": 2949685.0,
         "fund_mixed": 460881.0,
-        "fund_bond": 2135698.0
+        "fund_bond": 2135698.0,
+        "deposit_delta": -49342.0,
+        "credit_balance_delta": -8377.0,
+        "fund_equity_delta": -60486.0,
+        "fund_mixed_delta": -2036.0,
+        "fund_bond_delta": -6163.0
+      },
+      {
+        "date": "2026-07-29",
+        "deposit": 1095926.0,
+        "deposit_chg": 23931.0,
+        "credit_balance": 325230.0,
+        "credit_chg": 1923.0,
+        "fund_equity": 3010171.0,
+        "fund_mixed": 462917.0,
+        "fund_bond": 2141861.0,
+        "deposit_delta": 23932.0,
+        "credit_balance_delta": -1923.0,
+        "fund_equity_delta": -106253.0,
+        "fund_mixed_delta": -2209.0,
+        "fund_bond_delta": 3441.0
+      },
+      {
+        "date": "2026-07-28",
+        "deposit": 1071994.0,
+        "deposit_chg": 19680.0,
+        "credit_balance": 327153.0,
+        "credit_chg": 4453.0,
+        "fund_equity": 3116424.0,
+        "fund_mixed": 465126.0,
+        "fund_bond": 2138420.0,
+        "deposit_delta": -19681.0,
+        "credit_balance_delta": 4453.0,
+        "fund_equity_delta": -185218.0,
+        "fund_mixed_delta": -5971.0,
+        "fund_bond_delta": 3390.0
+      },
+      {
+        "date": "2026-07-27",
+        "deposit": 1091675.0,
+        "deposit_chg": 35304.0,
+        "credit_balance": 322700.0,
+        "credit_chg": 669.0,
+        "fund_equity": 3301642.0,
+        "fund_mixed": 471097.0,
+        "fund_bond": 2135030.0,
+        "deposit_delta": 35304.0,
+        "credit_balance_delta": 669.0,
+        "fund_equity_delta": 7169.0,
+        "fund_mixed_delta": 1419.0,
+        "fund_bond_delta": 344.0
+      },
+      {
+        "date": "2026-07-24",
+        "deposit": 1056371.0,
+        "deposit_chg": 13396.0,
+        "credit_balance": 322031.0,
+        "credit_chg": 783.0,
+        "fund_equity": 3294473.0,
+        "fund_mixed": 469678.0,
+        "fund_bond": 2134686.0,
+        "deposit_delta": 13396.0,
+        "credit_balance_delta": -784.0,
+        "fund_equity_delta": -122131.0,
+        "fund_mixed_delta": -1005.0,
+        "fund_bond_delta": 934.0
+      },
+      {
+        "date": "2026-07-23",
+        "deposit": 1042975.0,
+        "deposit_chg": 4209.0,
+        "credit_balance": 322815.0,
+        "credit_chg": 2845.0,
+        "fund_equity": 3416604.0,
+        "fund_mixed": 470683.0,
+        "fund_bond": 2133752.0,
+        "deposit_delta": 4210.0,
+        "credit_balance_delta": -2845.0,
+        "fund_equity_delta": 65781.0,
+        "fund_mixed_delta": 728.0,
+        "fund_bond_delta": -1565.0
+      },
+      {
+        "date": "2026-07-22",
+        "deposit": 1038765.0,
+        "deposit_chg": 28164.0,
+        "credit_balance": 325660.0,
+        "credit_chg": 5030.0,
+        "fund_equity": 3350823.0,
+        "fund_mixed": 469955.0,
+        "fund_bond": 2135317.0,
+        "deposit_delta": -28165.0,
+        "credit_balance_delta": -5030.0,
+        "fund_equity_delta": 41170.0,
+        "fund_mixed_delta": 567.0,
+        "fund_bond_delta": -386.0
+      },
+      {
+        "date": "2026-07-21",
+        "deposit": 1066930.0,
+        "deposit_chg": 58260.0,
+        "credit_balance": 330690.0,
+        "credit_chg": 2234.0,
+        "fund_equity": 3309653.0,
+        "fund_mixed": 469388.0,
+        "fund_bond": 2135703.0,
+        "deposit_delta": -58260.0,
+        "credit_balance_delta": 2234.0,
+        "fund_equity_delta": 51884.0,
+        "fund_mixed_delta": 2289.0,
+        "fund_bond_delta": 27.0
+      },
+      {
+        "date": "2026-07-20",
+        "deposit": 1125190.0,
+        "deposit_chg": 44371.0,
+        "credit_balance": 328456.0,
+        "credit_chg": 141.0,
+        "fund_equity": 3257769.0,
+        "fund_mixed": 467099.0,
+        "fund_bond": 2135676.0,
+        "deposit_delta": 44371.0,
+        "credit_balance_delta": -142.0,
+        "fund_equity_delta": -118906.0,
+        "fund_mixed_delta": -1879.0,
+        "fund_bond_delta": -4707.0
+      },
+      {
+        "date": "2026-07-16",
+        "deposit": 1080819.0,
+        "deposit_chg": 17851.0,
+        "credit_balance": 328598.0,
+        "credit_chg": 9904.0,
+        "fund_equity": 3376675.0,
+        "fund_mixed": 468978.0,
+        "fund_bond": 2140383.0,
+        "deposit_delta": -17851.0,
+        "credit_balance_delta": -9904.0,
+        "fund_equity_delta": -121963.0,
+        "fund_mixed_delta": -4551.0,
+        "fund_bond_delta": -4657.0
+      },
+      {
+        "date": "2026-07-15",
+        "deposit": 1098670.0,
+        "deposit_chg": 14155.0,
+        "credit_balance": 338502.0,
+        "credit_chg": 3408.0,
+        "fund_equity": 3498638.0,
+        "fund_mixed": 473529.0,
+        "fund_bond": 2145040.0
       }
+    ],
+    "columns": [
+      "날짜",
+      "고객예탁금",
+      "신용잔고",
+      "펀드"
     ],
     "source_url": "https://finance.naver.com/sise/sise_deposit.naver",
     "note": "신용잔고는 결제일 기준이라 종가일보다 1~2영업일 늦게 반영된다",
-    "delta_note": "*_chg 는 네이버가 준 **절대값**이라 부호가 없다. 증감은 반드시 *_delta (앞뒤 값의 차) 를 쓸 것"
+    "delta_note": "*_chg 는 네이버가 준 **절대값**이라 부호가 없다. 증감은 반드시 *_delta (앞뒤 값의 차) 를 쓸 것",
+    "missing": "미수금·반대매매는 이 표에 없다. 머리행이 날짜/고객예탁금/신용잔고/펀드 뿐인 것으로 확인했다. 금투협(freesis.kofia.or.kr) 소관인데 웹방화벽이 막는다 — 브리핑에서는 NOT FOUND 로 두고 신용잔고를 대용으로 쓸 것"
   },
   "news": {
     "date": "2026-08-15",
@@ -5492,6 +6182,20 @@
       "id=\"dic_area\"": 24
     },
     "articles": [
+      {
+        "title": "‘연비좋은 GV80’…현대차, 제네시스 하이브리드 기대감에 6% 강세",
+        "url": "https://n.news.naver.com/mnews/article/021/0002811641",
+        "chars": 530,
+        "extracted": "id=\"dic_area\"",
+        "body": "제네시스 GV80 하이브리드. 제네시스 제공 \n\n제네시스의 첫 하이브리드 차량 출시 기대감에 14일 현대자동차 주가가 6%대 강세를 보이고 있다.\n\n한국거래소에 따르면 이날 오전 10시 7분 기준 현대차는 전장 대비 2만5500원(6.09%) 오른 44만4000원에 거래되고 있다.\n\n주가는 이날 1.31% 상승 출발해 개장 직후 8% 급등세를 연출하며 45만 원을 넘어서기도 했다.\n\n현대차그룹이 다음달 출시를 예고한 제네시스 ‘GV80 하이브리드’ 신차에 대한 기대감이 매수세를 자극하고 있다는 분석이다.\n\n제네시스는 전날 전기차 주행감성을 극대화한 차세대 2.5 터보 하이브리드 시스템을 공개하고, 다음 달 출시되는 GV80 하이브리드에 이 시스템을 탑재할 예정이라고 밝혔다.\n\n올해 상반기 글로벌 하이브리드 판매량은 전년 대비 25% 증가한 35만3668대를 기록하며 시장 전망은 밝은 상황이다.\n\n시장에서는 하반기 자동차 수출에 대한 긍적적인 전망도 잇따른다. 지난달 자동차 수출액은 62억4000만 달러로 전년 동기 대비 7% 증가했다."
+      },
+      {
+        "title": "고점론 퍼지는데…\"삼전닉스 저평가\" 보고서 등장에 '들썩' [종목+]",
+        "url": "https://n.news.naver.com/mnews/article/015/0005321245",
+        "chars": 2648,
+        "extracted": "id=\"dic_area\"",
+        "body": "\"삼성전자·SK하이닉스 내년 영업익 964조원\"\n대규모 주주환원은 밸류에이션 재평가 요인\n고점 대비 49% 급락 삼성전자…\"상승 시작\" \n \n \n \n\n 이재용 삼성전자 회장과 최태원 SK그룹 회장 / 사진=연합뉴스 \n증권가를 중심으로 '반도체 고점론'이 확산하는 상황에서 KB증권이 최근 삼성전자와 SK하이닉스에 대해 매우 긍정적으로 분석한 리포트를 연이어 냈다. 메모리 업황이 통상적인 사이클과 달리 공급 제약이 맞물린 장기 초호황 국면에 진입했다는 판단에서다. 다른 증권사들이 목표주가를 줄줄이 낮추는 상황에서도 KB증권만 강한 낙관론을 제시한 배경에 관심이 쏠린다. \"삼성전자·SK하이닉스 주가 극단적 저평가\" \n15일 금융투자업계에 따르면 김동원 KB증권 리서치본부장은 최근 보고서를 통해 \"삼성전자, SK하이닉스의 합산 영업이익은 지난해 91조원 수준에서 올해 641조원(삼성전자 382조원, SK하이닉스 259조원), 내년 964조원(삼성전자 575조원, SK하이닉스 389조원)으로 급증하며 1000조원에 근접할 전망\"이라고 분석했다.\n\n그는 \"삼성전자의 3분기 영업이익은 전년 동기 대비 817%(9.2배) 급증한 112조원(영업이익률 55%)으로, 지난해 4분기 20조원 이후 4개 분기 연속 역대 최대 실적 경신을 예상한다\"며 \"SK하이닉스 3분기 영업이익도 전년 동기 대비 579%(6.8배) 급증한 77조원(영업이익률 78%)으로 추정한다\"고 제시했다.\n\n또한 \"하이퍼스케일러(대형 클라우드 기업) 중심의 5년 장기공급계약(LTA) 반영이 본격화되며 전체 메모리 생산 물량의 60% 이상이 공급 확정된 상태에서, 메모리 가격도 동시에 상승할 것으로 예상되기 때문\"이라고 분석의 근거를 댔다.\n\nKB증권은 두 기업의 압도적인 실적 전망치를 고려할 때 현재 삼성전자와 SK하이닉스 두 회사에 대한 주가는 극단적으로 저평가됐다고 봤다. 김 본부장은 \"양사의 내년 추정 영업이익은 지난해 대비 각각 13.2배, 8.2배 급증할 전망\"이라며 \"그러나 8월12일 종가 기준, 2027년 주가수익비율(PER)은 삼성전자 3.7배, SK하이닉스 3.2배에 불과해 내년 실적 개선 전망이 주가에 전혀 반영되지 않고 있다\"고 주장했다.\n\n김 본부장은 \"조만간 발표할 삼성전자, SK하이닉스의 신규 주주환원 정책은 TSMC 사례와 유사하게 밸류에이션(실적 대비 주가 수준) 재평가와 주가 상승을 동시에 견인할 전망\"이라며 \"중장기 수급 기반이 한층 강화되는 가운데 밸류에이션 재평가가 본격화되면서 주가의 추가 상승을 견인할 것으로 기대한다\"고 강조했다.\n\n그러면서 \"대규모 주주환원이 테마섹과 아부다비투자청(ADIA) 등 글로벌 국부펀드와 대형 장기자금의 유입도 촉진할 수 있다\"며 \"중장기 수급 기반이 강화되면서 밸류에이션 재평가가 본격화될 것\"이라고 내다봤다. \n \n \n \n\n KB증권 사옥 \"삼성전자 주가 조정 끝나\"…상승 추세 진입 전망 \n앞서 김 본부장은 지난 12일에도 삼성전자의 주주환원에 대한 분석을 담은 보고서를 발표하면서 \"삼성전자 주가는 고점 대비 49% 하락하며 12개월 선행 PER이 4.0배까지 낮아진 상태로, 조정의 끝자락에서 이제는 상승 추세의 시작을 준비할 시점\"이라고 말한 바 있다.\n\n김 본부장은 \"주가 조정이 끝났다고 판단하는 근거는 상장을 준비 중인 오픈AI가 이르면 연내 기업공개 (IPO)를 통해 대규모 자금을 조달할 것으로 전망되면서 그동안 시장의 부담 요인으로 작용했던 AI 순환 금융 우려와 투자 지속성에 대한 불확실성이 크게 완화될 가능성이 높다는 점\"이라고 말했다.\n\n아울러 \"6~7월 삼성전자 주가 급락을 초래했던 과도한 신용 레버리지 물량이 상당 부분 청산되며 수급에 따른 단기 조정도 일단락된 것으로 판단되기 때문\"이라며 \"조만간 발표될 대규모 주주환원 정책이 향후 주가 상승을 견인할 강력한 촉매로 작용할 것이란 점도 이같은 분석의 판단 근거\"라고 덧붙였다.\n\nKB증권은 2028년까지 최소 3년간 메모리 공급 부족이 지속될 전망이라고 짚었다. 김 본부장은 \"이달 기준 빅테크 고객사의 메모리 수요 충족률은 60% 수준에 불과해 공급 부족은 오히려 심화되고 있다\"며 \"특히 공급 능력을 넘어선 올해 미 충족 수요는 내년으로 이연되고, 내년에 충족되지 못한 메모리 수요는 다시 2028년으로 넘어가는 수요 이연의 연쇄 효과가 예상된다\"고 점쳤다.\n\n그러면서 \"반면 메모리 신규 생산라인 완공에 최소 3년 이상 소요된다는 점을 감안하면 공급의 단기간 확대는 현실적으로 어렵다\"며 \"따라서 2028년까지 최소 3년간 메모리 공급 부족은 지속될 전망\"이라고 부연했다.\n\nKB증권의 이같은 분석은 최근 삼성전자를 비롯해 '반도체 고점론' 투자자들 사이에서 퍼진 가운데 나와 이목을 끌고 있다. 키움증권은 최근 삼성전자의 목표가를 기존 39만원에서 35만원으로 하향 조정했다. 미래에셋증권은 55만원에서 37만원, 신한투자증권은 59만원에서 45만원, 삼성증권은 50만원에서 40만원으로 목표가를 낮췄다.\n\n한 업계 관계자는 \"KB증권이 유독 강한 전망을 내놓는 데는 김 본부장을 중심으로 그동안 메모리 업황과 삼성전자·SK하이닉스 실적을 꾸준히 추적하며 시장의 변곡점을 짚어온 경험이 작용하고 있는 것\"며 \"이번에도 단순한 낙관론이라기보다 메모리 업황을 전형적인 사이클 반복이 아니라 사실상 반도체 역사상 처음 발생하는 극단적인 공급 제약 장기화에 포커싱했기 때문\"이라고 말했다."
+      },
       {
         "title": "“이 정도면 국민주 맞네”…반도체株 열풍에 ‘삼전닉스’ 개미 1100만명 넘었다",
         "url": "https://n.news.naver.com/mnews/article/011/0004652102",
@@ -5584,6 +6288,13 @@
         "body": "13일 장중 주가 20% 상승도\n소스 사업 해외 확장 기대감 탓\n실적은 부진 최근 5분기 연속 적자 \n \n \n \n\n 백종원 더본코리아 대표. 뉴스1 상장 이후 부진을 면치 못하던 더본코리아(475560) 의 주가가 10% 넘게 치솟았다. 기업간거래(B2B) 전용 소스 사업을 해외로 확장한다는 소식에 매수세가 몰린 것으로 분석된다.\n\n15일 한국거래소에 따르면 전날 더본코리아의 주가는 전장 대비 12.78% 상승한 1만 5890원에 거래를 마쳤다. 장 중 주가는 1만 7760원까지 치솟으면서 20% 넘게 오르기도 했다. 2024년 11월 상장 이후 약 2년 동안 줄곧 추락하기만 했던 주가가 큰 폭의 반등에 성공한 것이다.\n\n투자 심리에 영향을 준 것은 더본코리아의 해외 사업 확장이다. 백종원 더본코리아 대표는 최근 미국 로스앤젤레스(LA) 현지 식당을 방문해 ‘TBK(The Born Korea) 소스’의 해외사업 확장에 나섰다고 밝혔다. \n\n백 대표는 김치분말소스, 양념치킨 등 소스 11종을 활용한 메뉴를 소개하고 제품 공급과 조리법 적용 방안을 논의했다. 더본코리아는 지난해부터 미국과 캐나다, 태국, 대만, 중국 등에서 현지 식품·유통기업과 TBK 소스 공급을 협의해 왔다. 연내 미국·태국 현지 기업들과 업무협약(MOU) 체결 가능성도 검토 중이다. \n\n해외사업 확장 소식에 주가가 반등하자 투자자들의 기대도 커지고 있다. 더본코리아 주가는 공모가 대비 반토막 이하 수준까지 떨어진 상태다. 2024년 11월 6일 상장 첫날에는 공모가 3만 4000원보다 51.18% 오른 5만 1400원에 거래를 마쳤다. 상장 당일 장중 6만 4500원까지 올랐다. 백 대표의 높은 인지도와 외식 프랜차이즈 사업 확대에 대한 기대감이 당시 주가에 반영됐다는 평가를 받았다. \n\n그러나 주가는 상장 이후 줄곧 내리막길을 걷고 있다. 농지법 위반 의혹, 빽햄 가격 부풀리기 논란, 식품표시광고법 위반 의혹 등 각종 악재가 겹치면서 투자심리가 악화된 영향이다. 또 외식업 전반의 업황 악화와 회사 실적 부진에 투자 심리도 얼어붙었다. \n\n 올해 2분기 더본코리아의 매출은 전년 동기 대비 12% 증가한 832억 원, 56억 원의 영업 손실을 기록했다. 전년 동기 대비 75% 급감한 수치로 적자 폭을 대폭 축소했지만 지난해 2분기부터 올해 2분기까지 다섯 분기 연속 영업 적자다. \n\n \n \n \n \n\n ."
       },
       {
+        "title": "12차 전기본 밑그림 나온다…정부, 20일 정책토론회 개최",
+        "url": "https://n.news.naver.com/mnews/article/018/0006352367",
+        "chars": 1309,
+        "extracted": "id=\"dic_area\"",
+        "body": "메가프로젝트 추가 수요 반영\n2040년 전력수요 재전망 공개\n재생에너지 보급 전망도 제시 [이데일리 정두리 기자] 정부가 지난 6월 발표된 메가프로젝트 추진계획을 반영해 오는 2040년까지의 국가 전력수요를 재전망한다. 인공지능(AI)과 반도체 등 첨단산업 성장으로 전력수요가 크게 늘어날 것으로 예상되는 가운데, 재생에너지 보급 전망도 함께 제시한다.\n\n \n \n \n \n\n \n \n 기후에너지환경부와 제12차 전력수급기본계획(전기본) 수립 총괄위원회는 오는 20일 국회의원회관 3세미나실에서에서 제4·5차 대국민 정책토론회를 열고 이 같은 내용을 논의한다고 15일 밝혔다.\n\n20일 오전 10시부터 열리는 제4차 토론회에서는 ‘전기의 시대’를 맞아 산업·수송·건물 등 경제·사회 전반의 에너지원을 전기화하는 ‘전기국가’로의 전환과 에너지정책 방향을 다룬다.\n\n최근 전 세계적으로 AI와 반도체 등 첨단산업이 성장하고 산업·수송·건물 부문의 전기화가 빠르게 진행되면서 안정적이고 경제적인 전력 공급능력이 국가 경쟁력을 좌우하는 핵심 요소로 떠오르고 있다.\n\n토론회에서는 전기화가 향후 에너지 수요와 전력산업에 미칠 영향을 살펴보고, 증가하는 전력수요에 안정적으로 대응하는 동시에 전기화를 새로운 산업 성장의 기회로 활용하기 위한 정책 방향을 논의한다.\n\n오후 2시부터 열리는 제5차 토론회에서는 2040년까지의 국가 전력수요를 재전망하고 재생에너지를 주력전원으로 확대하기 위한 보급 전망을 공개한다.\n\n앞서 지난 4월 열린 제3차 토론회에서는 전력수요 전망 잠정안이 제시됐다. 그러나 지난 6월 메가프로젝트 추진계획이 발표되면서 추가로 발생할 것으로 예상되는 전력수요를 반영하기 위해 제12차 전기본 수요소위원회가 기존 전망을 재검토해왔다.\n\n이번 토론회에서는 새롭게 반영된 여건을 토대로 재산정한 전력수요 전망 결과를 공개한다. 늘어나는 전력수요에 안정적으로 대응하기 위한 방안과 함께 재생에너지를 주력전원으로 확대하기 위한 보급 전망도 제시할 예정이다.\n\n정부는 이번 토론회를 비롯해 국민과 전문가의 의견을 전기본에 적극 반영한다는 방침이다. 12차 전기본 수립 과정의 투명성을 높이고 국민과 함께 계획을 마련하기 위해 토론회에서 제시되는 다양한 의견을 검토해 최종 계획에 반영할 계획이다.\n\n이번 토론회는 현장 참석과 온라인 생중계를 병행한다. 현장 참석을 원하는 경우 한국전력거래소 홈페이지 배너를 통해 사전 신청해야 한다.\n\n정부는 이번 4·5차 토론회 이후에도 전기본과 관련한 논의를 이어간다. 오는 9~10월에는 신규원전과 석탄발전 폐지 로드맵을 비롯해 전력시장 개편방향, 송변전 계획 등을 주제로 연속 토론회를 개최할 예정이다."
+      },
+      {
         "title": "현대차 투자공식 바뀌나…시총 13조 불린 '아틀라스'",
         "url": "https://n.news.naver.com/mnews/article/014/0005561993",
         "chars": 1482,
@@ -5619,6 +6330,13 @@
         "body": "14일 오전 서울 중구 하나은행 딜링룸에서 딜러들이 업무를 보고 있다. 뉴시스 제공 \n \n[파이낸셜뉴스] 이번주 외국인과 기관은 삼성전자와 SK하이닉스를 비롯한 대형주를 나란히 쓸어 담으며 코스피 랠리를 이끈 반면, 개인은 한국전력과 제주반도체, 알테오젠 등 개별 종목에 베팅했다. \n \n15일 한국거래소에 따르면 코스피는 지난 10일 6299.66에서 14일 6977.94로 10.77% 상승했다. 같은 기간 코스닥도 854.47에서 864.65로 1.19% 올랐다. 특히 코스피는 12일부터 14일까지 3거래일 연속 2% 이상 급등하며 7000선에 바짝 다가섰다. 거래대금도 19조원에서 34조8000억원까지 늘어나며 강한 매수세가 유입됐다. \n \n외국인은 SK하이닉스(2조4476억원)와 삼성전자(2조2899억원)를 가장 많이 사들였고 SK스퀘어(2267억원), 셀트리온(1539억원), LG전자(1410억원), 현대차(1397억원), 삼성바이오로직스(844억원), 한화오션(813억원) 등이 순매수 상위권에 이름을 올렸다. 반도체를 중심으로 자동차와 조선 등 시가총액 상위 대형주에 자금이 집중됐다. \n \n기관의 장바구니도 크게 다르지 않았다. 삼성전자(1조4084억원)와 SK하이닉스(2033억원)를 가장 많이 담은 데 이어 삼성전기(1161억원), 삼성SDI(1127억원), LG전자(710억원), LG에너지솔루션(658억원), GS(653억원) 등을 집중 매수했다. 외국인과 기관 모두 시장을 끌어올린 대표 대형주를 같은 방향으로 선택한 것이다. \n \n반면 개인은 전혀 다른 그림을 그렸다. 개인 순매수 1위는 한국전력(1584억원)이었고 제주반도체(810억원), 달바글로벌(678억원), 알테오젠(647억원), KB금융(635억원), JYP Ent.(599억원), 두산에너빌리티(589억원), CJ제일제당(573억원) 등이 뒤를 이었다. 외국인과 기관이 대거 사들인 삼성전자와 SK하이닉스는 개인 순매수 상위권에서 찾아보기 어려웠다. \n \n증권업계 관계자는 \"외국인과 기관은 반도체와 대형주를 중심으로 코스피 상승 흐름에 올라탔고, 개인은 순환매를 염두에 둔 개별 종목 중심의 투자 전략을 선택했다\"라며 \"투자자들의 선택이 엇갈리면서 같은 상승장을 바라보는 시선도 뚜렷하게 달라졌다\"고 말했다. \n \n증권가는 당분간 코스피 대형주 중심의 흐름이 이어질 가능성에 무게를 두고 있다. 이재원 유안타증권 연구원은 \"이번주 코스피와 코스닥이 모두 5거래일 연속 상승했지만 상승을 이끈 수급 주체는 코스피는 외국인, 코스닥은 개인이었다\"며 \"결국 코스피 상승 추세 연장을 위해서는 외국인의 추세적인 순매수 복귀가 중요하다\"고 말했다. \n \n이어 \"이번주 누적 7조8000억원의 외국인 순매수는 의미 있는 자금 유입\"이라며 \"지정학적 갈등 완화로 인한 유가 추가 하락과 주주환원 정책을 강하게 발표한다는 두 가지 상승 모멘텀이 남아있기 때문에 반도체와 대형주 중심의 비중확대를 준비할 필요가 있다\"고 조언했다."
       },
       {
+        "title": "기업들 AI 붐…'챗GPT' 오픈AI도 기업 매출이 개인 추월",
+        "url": "https://n.news.naver.com/mnews/article/277/0005803485",
+        "chars": 1097,
+        "extracted": "id=\"dic_area\"",
+        "body": "오픈AI 비공개회의 발언 보도\n7월 한달간 기업매출 32% 급증 \n당초 예상시점은 2026년 말 인공지능(AI) 챗봇 '챗GPT' 개발사 오픈AI의 기업용 사업 매출이 개인 고객 매출을 처음으로 넘어섰다. 사측은 당초 두 사업의 매출이 연말경 같아질 것으로 예상했지만, 기업들의 AI 기술 도입이 빨라지면서 예상시점보다 수개월 앞섰다.\n\n \n \n \n \n\n 샘 올트먼 오픈AI 최고경영자가 지난 7월 24일(현지시간) 미국 샌프란시스코 더 미드웨이에서 이재명 대통령이 참석한 가운데 열린 '샌프란시스코 AI 서밋'에서 발언하고 있다. 연합뉴스 \n\n14일(현지시간) 미 경제매체 CNBC방송에 따르면, 새러 프라이어 오픈AI 최고재무책임자(CFO)는 비공개 투자자 회의에서 \"올해 초 소비자와 기업 매출 비중이 60대40이었지만 기업 사업이 예상보다 훨씬 빠르게 성장하면서 두 선이 교차했다\"며 \"현재 매출의 과반이 기업에서 나온다\"고 말했다.\n\n오픈AI의 연환산 매출은 400억달러(약 56조원)에 달한다. 지난 7월 연환산 매출은 전월보다 20% 증가했고, 기업 고객 수는 같은 기간 32% 늘었다. 지난 2월 시작한 챗GPT 광고 사업도 연환산 매출이 10억달러에 육박한 것으로 전해졌다.\n\n기업들의 AI 소비 방식도 달라지고 있다. 프라이어 CFO는 기업들이 사용량을 극대화하는 이른바 '토큰맥싱'에서 벗어나 같은 비용으로 얼마나 높은 AI 성능을 얻을 수 있는지를 뜻하는 '지능 단위당 비용'에 집중하고 있다고 설명했다. 오픈AI는 최근 모델 가격을 인하했고, 최신 모델의 에이전트형 코딩 작업 효율은 54% 높아졌다고 밝혔다.\n\n그레그 브록먼 오픈AI 사장은 중국 오픈소스 AI의 부상에 대해 \"오픈소스가 더 저렴하다는 것은 오해\"라는 취지로 답했다. 기업공개(IPO) 시점에 대해서는 미 증권거래위원회(SEC)에 비공개로 관련 서류를 제출했다는 이유로 답변을 피했다.\n\n한편, 이번 회의는 고위 임원들이 잇따라 회사를 떠나는 가운데 열렸다. 데니스 드레서 최고매출책임자(CRO)는 취임 8개월 만에 사임했고, 8년간 오픈AI에서 근무한 브래드 라이트캡도 퇴사를 발표했다. 후임 CRO에는 구글이 인수한 사이버보안 업체 위즈 출신 달리 라직이 영입됐다."
+      },
+      {
         "title": "과거에도 이러다 폭등했는데…이번 놓치면 후회? 전문가들 \"금 아직 싸다\"[주末머니]",
         "url": "https://n.news.naver.com/mnews/article/277/0005803478",
         "chars": 869,
@@ -5631,34 +6349,6 @@
         "chars": 987,
         "extracted": "id=\"dic_area\"",
         "body": "트럼프, 호르무즈 美영토 선언에\n이란 \"호르무즈 해협, 말로 장악 못해\"\n美·이란 '맞불 봉쇄' 지속…협상 난항 도널드 트럼프 미국 대통령이 호르무즈 해협을 조만간 미국 영토로 선언하겠다고 밝히자 이란이 \"과거에도, 앞으로도 우리 땅\"이라며 즉각 반발했다. 해협 통제권과 관련해 양국의 신경전이 격화하면서 종전 협상 역시 영향을 받을 것으로 관측됐다.\n\n \n \n \n \n\n 2018년 호르무즈 해협을 지나가는 유조선. 로이터연합뉴스 \n\n카젬 가리바바디 이란 외무차관은 15일(현지시간) 사회관계망서비스(SNS) 엑스(X·옛 트위터)에 \"호르무즈 해협은 트윗이나 항공모함, 명령이나 선거 연설로 장악할 수 있는 곳이 아니다\"라며 이같이 밝혔다.\n\n가리바바디 차관은 \"이란은 위협을 두려워하지 않고 무력 과시에도 굴복하지 않는다\"며 \"이제 현실을 받아들이라. 미국은 전략적으로도, 막대한 대가를 치른다는 점에서도 거듭 패배해왔다\"고 했다. \n\n이어 \"해협은 오직 이란의 명령에 따라 봉쇄되고 개방될 것\"이라며 \"미국이 패배라는 현실을 받아들이지 않고 허황된 망상에 빠져 있는 한 이란은 봉쇄를 계속할 것\"이라고 했다.\n\n앞서 트럼프 대통령은 14일 연설에서 \"호르무즈 해협을 조만간 미국 영토로 선언하게 될 것\"이라며 \"본질적으로 이미 그렇다. 우리가 그곳을 봉쇄하고 있기 때문\"이라고 말했다.\n\n지난 2월 개전 이후 미국과 이란은 세계 원유 수송의 핵심 길목인 호르무즈 해협의 통제권을 놓고 맞서고 있다. 양측이 무력을 동원한 '맞불 봉쇄'를 이어가는 상황에서 트럼프 대통령이 한발 더 나아가 해협을 미국 영토로 선언할 수 있다고 주장한 것이다.\n\n이란은 미국과의 협상 재개에도 선을 그었다. 이란 반관영 ISNA통신에 따르면 아바스 아라그치 외무장관은 이날 미국과 협상을 다시 시작할 가능성에 대해 \"아직 결정된 것이 없다\"고 말했다.\n\n아라그치 장관은 \"카타르와 파키스탄이 이란과 접촉하며 메시지를 주고받고 있지만, 이것이 협상을 의미하는 것은 아니다\"라고 했다."
-      },
-      {
-        "title": "폭락한 '삼전닉스'에 \"매수 구간 진입\" or \"추가 하락\"... 어떤 말을 믿어야 할까[인치범의 주식 투자 부트캠프]",
-        "url": "https://n.news.naver.com/mnews/article/014/0005561965",
-        "chars": 4092,
-        "extracted": "id=\"dic_area\"",
-        "body": "영화 오디세이 포스터ⓒ 뉴스1 김진환 기자 /사진=뉴스1 \"그것은(세이렌의 노래는) 가장 원하는 것이 가장 가질 수 없는 것이며, 가장 가질 수 없는 것은 이미 \n 가졌다가 잃어버린 것이라는 걸 말해줬어.\" <영화 오디세이 오디세우스(맷 데이먼)> \n영화 <오디세이>의 주인공 오디세우스(맷 데이먼)가 세이렌의 노래를 회상하며 말하는 장면입니다. \"주식투자자에게 세이렌의 노래는 무엇일까요? 아마도 '이번에는 다르다', '이번 종목만 따라가면 된다', '조금만 더 투자하면 손실을 만회할 수 있다'는 달콤한 확신일지도 모릅니다. \n \nTV, 라디오, 인터넷, 유튜브, 숏폼 영상, 카톡 단체방… 우리는 파도처럼 넘쳐나는 시장 정보를 좇느라 분주합니다. 무엇이 제대로 된 정보인지 가늠하기 힘듭니다. 그런 와중에 급등을 암시하는 문구가 눈에 띕니다. 마치 세이렌에 홀린 듯이 눌러버린 매수 버튼. 기대와는 다르게 주가는 오르내림을 반복하더니 하락세가 완연해 보입니다. \n \n외부의 수많은 소음과 잡음 중 하나를 신호(signal)로 혼동했기 때문입니다. 정보의 홍수 속에 투자의 중심을 잃은 초보 투자자들에게 전문 투자자 마크 미너비니가 다음과 같은 통찰을 줍니다. \n \n \"해양학자는 파도, 조수, 해류의 온갖 복잡성을 설명할 수 있다. 그러나 파도타기에 관해서는 캘리포니아 말리부에 사는 13살짜리 아이에게 돈을 거는 편이 낫다. 그 아이는 바다와 관련된 사실에 대해서는 아무것도 모르지만 줄곧 파도를 탔고, 물에 대한 직관적인 감을 갖고 있다.\" <출처: 마크 미너비니 저서 초수익 성장주 투자(Trade Like a Stock Market Wizard)> \n \n \n \n \n\n 세이렌의 유혹에 도전 받는 오디세우스. 제미나이 생성이미지 파도의 원리, 역동성, 복잡성을 자세히 설명해주는 전문가의 분석은 명쾌합니다. 그러나 이는 매일 바다에서 파도의 실체를 경험 중인 소년의 그것과는 다릅니다. 이론적 분석만으로는 부족합니다. 시장에서 직접 경험하고 복기하면서 길러진 '실전 감각'이 분석을 실제 투자 판단으로 연결해주는 중요한 힘이 될 수 있습니다. 다만, 이것도 탄탄한 '기본기'가 있을 때 가능합니다. 기본기 없는 실전 감각은 자칫 무모한 베팅으로 변할 수 있기 때문입니다. \n \n \n \n \n \n\n 초보 투자자를 위한 제언1. 제미나이 생성 이미지 초보 투자자를 위한 제언① : 아무리 전문가 분석이라도 무조건 신봉하는 것은 금물! \n주식시장은 언제나 요동칩니다. 2025년, 2026년 상반기엔 시장이 급등했습니다. 현재(2026년 하반기)는 급등 뒤 단기간에 급락과 급등을 반복하는 극심한 변동성 장세를 보이고 있습니다. 다음 국면이 상승이나 하락, 급등락이나 횡보 중 어느 방향으로 전개될지 누구도 쉽게 예측하기 어렵습니다. 그럼에도 미디어·소셜미디어에 나온 전문가의 분석은 신뢰도 가고 설득력도 있어 보입니다. \n \n \n \n \n \n\n 전문가도 틀릴 수 있다. 제미나이 생성이미지 전문가도 틀릴 수 있다: '분석의 한계' \n투자 분석, 주식 분석, 시황 분석…. '전가의 보도(傳家의 寶刀)'처럼 자주 쓰이는 이 '분석'이란 단어를 생각해보겠습니다. 분석(分析)은 한자어로 '나눌 분'과 '쪼갤 석'을 합친 말입니다. 먼저 데이터(혹은 정보)를 의미 해석이 가능한 수준까지 계속 나누고 쪼개봅니다. \n \n다음은 데이터 간 원인·결과의 인과관계를 추론해 보거나 상관관계를 맞춰봅니다. 관계를 살펴보고 다양한 가능성을 가정해 시나리오를 만들어보는 것입니다. 그래서 \"이번 급락 이후 반등한 이유는 낙폭과대에 따른 저가 매수세 유입…\" 식의 \n전문가 나름의 분석 의견이 나옵니다. 마치 전문가가 물고기의 근육과 뼈, 내장을 해부해 상호 간의 관계를 살펴보고 물고기의 추진력과 역동성(Dynamics)을 알아보는 것과 같습니다. \n \n물론 이러한 분석은 물고기를 아는 데 많은 도움이 됩니다. 다만 해부해서 분해한 물고기는 다시 합체해도 살아있는 물고기가 되지 않습니다. 주식시장도 마찬가지입니다. 우리가 접하는 주식시장은 정보라는 구성 요소들의 단순 합이 아닙니다. 시장 참여자들의 심리와 상호작용이 얽혀 실시간으로 변하는 '살아 있는 유기체'와 같은 존재입니다. 해부된 물고기가 살아나지 못하는 것처럼, 과거와 현재의 데이터를 아무리 정교하게 분석하고 미래를 전망하더라도, 살아 움직이는 시장의 미래를 확정적으로 예측할 수는 없습니다. \n \n어떤 경우에는 살아서 헤엄치는 물고기의 움직임을 오랫동안 관찰해온 비전문가가 성과를 내기도 합니다. '해류'의 단어 뜻도 모르지만 파도 하나는 기가 막히게 잘 타는 소년처럼 말입니다. 주식 전문가의 분석이 분명 도움은 됩니다. 그러나 이 분석에도 한계와 오류가 존재한다는 사실을 반드시 인지해야 합니다. 이러한 한계를 극복하기 위해 초보 주식 투자자들이 어떻게 해야 할까요? \n \n \n \n \n\n 초보 투자자를 위한 제언 2. 제미나이 생성 이미지 초보 투자자를 위한 제언② : 파도타기 소년처럼 실전에서 자신만의 감각을 키워라 \n마크 미너비니가 언급한 '파도를 잘 타는 소년'의 비유에서 답을 찾을 수 있습니다. 성공적인 주식투자를 위해 전문가의 분석은 물론 필요합니다. 그러나 그것만으로 부족합니다. 주식시장의 흐름을 직접 경험하고 대응하는 '투자자만의 실전 감각'이 결합되어야 합니다. 이론을 실제 투자 결정으로 연결해야 하기 때문입니다 \n전문가의 분석은 나의 실전 감각을 키우는 데 필요합니다. 파도의 크기, 조수, 해류 등에 대해 모르는 것보다 아는 것이 파도를 타는 데 도움을 주니까요. 특히 전문가의 거시경제 및 시장 흐름에 대한 분석은 주식투자 감각을 키우는 데 보탬이 되니 참고하시기 바랍니다. \n \n다만 \"TV에 나온 전문가 분석이니 100% 맞을 거야''라는 식의 '무조건적 맹신'은 경계해야 합니다. 진짜 실전 감각을 키우기 위해 선행해야 할 것이 있습니다. 주식투자의 가장 기본적인 지식을 습득하고 반복 실행하는 일입니다. 파도 타는 소년 역시 갖춰야 할 기본기가 있습니다. 예를 들면, 수영을 배워야 합니다. 서핑보드 밖은 모두 바다이니까요. 쥐가 나지 않도록 입수 전 준비 운동도 해야합니다. \n \n보드(Surfboard)와 몸을 연결하는 안전줄인 리쉬(Leash)도 입수 전 반드시 점검해야 합니다. 그날의 일기예보는 물론 그 시각 현장의 날씨도 반드시 살펴봐야합니다. 작은 준비 부족도 거친 바다에서는 큰 사고로 이어질 수 있습니다. \n \n 철저한 기본기 연마가 필수적이다 \n주식투자도 이와 같습니다. 20대 초보 투자자가 시장에서 다치지 않고 생존하여 궁극적으로 성공하려면 철저한 기본기 연마가 필수적입니다. ① 투자자로 성공하는 기본기( 시간의 복리/ 학습의 복리 /지속적인 투자 경험 ), ② 자산을 지키는 기본기 ( 현금 보유 / 손실과 회복의 비대칭성 / 오버트레이딩 / 레버리지 / 생존 우선에 대한 인식 ), ③ 시장관리 및 자기관리 기본기(소비자→투자자 관점 / 시장 보는 두 렌즈(기본적·기술적 분석) / 복기·평정심·인내 )를 습관화해야 합니다. \n \n이미 지난 칼럼들을 통해 설명드렸고 앞으로 더 다룰 기본기들은 파도 타는 소년에게 있어 '준비운동'이자 '안전 장비(Leash)'와도 같습니다. 그러니 반드시 숙지해야 합니다. 이 같은 기본 훈련은 오디세우스가 세이렌의 치명적인 유혹에 넘어가지 않기 위해 자신을 돛대에 묶었던 강력한 '밧줄'이 될 것입니다. \n \n기본기는 시장의 수많은 세이렌(소음, 잡음 같은 유혹)들에게 계좌를 빼앗기지 않게 도와줄 것입니다. 오디세우스는 세이렌의 유혹을 견디며 끝내 이타카로 귀환했습니다. 여러분도 주식시장이라는 살아있는 바다에서 크고 작은 파도를 만나게 될 것입니다. 철저한 기본기로 쌓은 실전감각이 힘을 발휘할 것입니다. 파도타기를 성공적으로 마치고 무사히 해변으로 돌아오기를 진심으로 바랍니다. \n \n[필자소개] \n인치범 전무는 금융(삼성생명), IT(안랩, 한글과컴퓨터, SK커뮤니케이션즈), 유통(삼성테스코) 등의 분야에서 30년 간 일관되게 기업 커뮤니케이션 업무(PR·IR·ESG·CSR) 책임자로 근무했다. 현재는 케이피아이투자자문에서 투자와 기업 커뮤니케이션 관련 서적을 집필하는 데 힘쓰고 있다. '주식투자성공은 무엇보다 돈을 다루는 올바른 습관을 자동화하는 과정에서 비롯된다'는 지론을 갖고 있다. \n \n \n \n \n \n\n 케이피아이투자자문 인치범 전무"
-      },
-      {
-        "title": "국민연금 \"2분기 美 552개 종목 투자…219조원 가치\"",
-        "url": "https://n.news.naver.com/mnews/article/243/0000101716",
-        "chars": 1277,
-        "extracted": "id=\"dic_area\"",
-        "body": "김성주 국민연금공단 이사장. [사진 연합뉴스] [이코노미스트 박재우 기자] 국민연금의 미국 주식 평가액이 한 분기 만에 18% 가까이 급증하며 200조원을 넘어섰다. 애플과 마이크로소프트(MS) 등 주요 빅테크 보유량을 늘린 가운데 미국 증시가 강세를 보인 영향이다.\n\n14일 국민연금이 미국 증권거래위원회(SEC)에 제출한 13F 보고서(기관투자자 보유주식 현황)에 따르면 올해 2분기 말 미국 주식 평가액은 1550억7500만달러로 집계됐다. 한화로 약 219조원 규모다. 1분기 말 1316억7900만달러보다 234억달러 늘었다.\n\n김성주 국민연금공단 이사장은 이날 자신의 사회관계망서비스(SNS)를 통해 \"1분기 대비 3개월 새 보유 주식 수는 2.1% 늘고 평가 가치는 17.9% 급증했다\"고 밝혔다. 이어 \"이 수치는 국민연금 직접 투자만 포함한 것이고 위탁운용까지 포함하면 규모는 훨씬 커진다\"고 설명했다.\n\n평가액 증가에는 미국 증시 상승도 영향을 미친 것으로 보인다. S&P500지수는 2분기 14.87% 상승했다. 특히 반도체 업체 마이크론 주가는 같은 기간 241.67% 오르는 등 기술주 강세가 기존 보유 자산의 평가액을 끌어올렸다.\n\n국민연금은 2분기 최대 보유 종목인 엔비디아 주식을 43만9562주 줄인 반면 다른 빅테크는 대체로 추가 매수했다. 애플은 49만8222주, MS는 32만2336주, 아마존은 52만8421주, 알파벳 클래스A는 30만4920주 늘렸다. 메타와 브로드컴, 테슬라 보유량도 증가했다.\n\n엔비디아는 일부 매도에도 미국 주식 포트폴리오 1위를 유지했다. 2분기 말 평가액은 약 101억7100만달러로 전체의 6.56%를 차지했다. 애플이 91억2000만달러로 뒤를 이었고 MS, 아마존, 알파벳 클래스A 순이었다.\n\n신규 편입 종목 가운데서는 스페이스X가 눈에 띈다. 국민연금은 지난 6월 상장한 스페이스X 주식 350만주를 새로 담았다. 6월 말 기준 평가액은 약 5억9801만달러로 신규 편입 종목 가운데 가장 큰 규모다.\n\n인공지능(AI) 인프라 관련 기업 투자도 크게 늘렸다. 코히어런트 보유량은 전분기보다 약 2907%, 루멘텀 홀딩스는 2501%, 네비우스 그룹은 1911%, AI 클라우드 업체 코어위브는 1195% 증가했다. 빅테크 중심의 포트폴리오를 유지하면서 AI 데이터센터와 광통신·클라우드 등으로 투자 범위를 넓힌 모습이다.\n\n국민연금은 6월 말 기준 미국 증시에 상장된 552개 종목을 보유하고 있다. 다만 13F는 분기 말 시점의 보유 현황만 보여주는 자료로 실제 매수·매도 시점과 가격은 확인할 수 없다."
-      },
-      {
-        "title": "국내 1·2위 업체 모두 품었다…사모펀드가 렌터카를 사들이는 이유",
-        "url": "https://n.news.naver.com/mnews/article/018/0006352320",
-        "chars": 1654,
-        "extracted": "id=\"dic_area\"",
-        "body": "[위클리M&A]\n롯데렌탈 품은 TPG, SK렌터카 산 어피니티\n예측 가능한 현금 흐름에 실물 자산 안전판\n볼트온·사업 시너지…“PE 투자에 최적화” 이 기사는 2026년08월15일 07시30분에 마켓인 프리미엄 콘텐츠 로 선공개 되었습니다.\n\n[이데일리 마켓in 허지은 기자] 국내 렌터카 시장 1·2위 사업자가 모두 사모펀드(PEF) 운용사 품에 안겼다. 텍사스퍼시픽그룹(TPG)이 업계 1위 롯데렌탈을 전격 인수하면서, 앞서 SK렌터카를 품은 어피니티에쿼티파트너스와 함께 사모펀드 주도의 렌터카 업계 재편이 본격화되는 양상이다. \n\n \n \n \n \n\n \n \n \n\n15일 투자은행(IB) 업계에 따르면 호텔롯데와 부산롯데호텔은 지난 11일 보유 중이던 롯데렌탈(089860) 지분 61.17%를 TPG 측 특수목적법인(SPC) 렉시콘코리아홀드코에 매각하는 주식매매계약(SPA)을 체결했다.매각가는 1조3105억원 규모다. 국내 2위인 SK렌터카에 이어 1위 업체까지 사모펀드로 대주주가 변경되면서 국내 렌터카 시장의 주도권은 대기업에서 글로벌 사모펀드로 빠르게 이동하고 있다. \n\n 안정적 현금흐름과 실물 자산…‘인수금융’ 최적화 모델 \n\n사모펀드가 렌터카 산업에 잇따라 대규모 자금을 투입하는 이유는 예측 가능하고 안정적인 현금 흐름에 있다. 렌터카 사업, 특히 장기 렌터카 및 플릿(법인 렌트) 비즈니스는 3~5년 단위 계약을 기반으로 매달 정기적인 리스·렌트료 수입을 창출한다. 경기 변동 영향이 적고 현금 창출력이 뛰어난 구조다. \n\n이같은 렌터카 사업의 특징은 인수합병(M&A) 시 인수금융을 적극 활용하는 사모펀드의 특성과도 부합한다. 매달 유입되는 고정 현금으로 인수금융 이자를 안정적으로 상환할 수 있을 뿐만 아니라 꾸준한 배당 재원 확보도 가능하기 때문이다. \n\n렌터카 업체가 보유하는 차량 역시 담보 가치가 명확한 매력적인 요소다. 렌터카가 보유한 대규모 차량들은 시세가 명확한 실물 자산이다. 이를 기반으로 자산담보부증권(ABS)을 발행하는 등 낮은 금리로 대규모 자금을 조달하는 것도 용이하다. 의무 대여 기간이 끝난 차량은 중고차 시장에 매각해 2차 수익을 창출할 수 있는 선순환 구조도 갖추고 있다. \n\n 볼트업·시너지 용이…밸류업 유연성 확보 \n\n렌터카 산업은 사모펀드가 선호하는 볼트온(동종기업 추가 인수) 및 사업 다각화 전략을 구사하기에도 최적화돼 있다. 대표적으로 어피니티는 지난 2015년 KT렌탈(현 롯데렌탈) 인수전에서 롯데그룹에 밀려 고배를 마셨지만, 2024년 8월 SK렌터카 인수에 성공한 후 롯데렌탈 인수까지 추진하는 등 렌터카 자산에 지속적인 공을 들여왔다. \n\nTPG의 롯데렌탈 인수 역시 전략적 시너지가 작용했다는 분석이다. TPG가 카카오모빌리티 지분 약 14%를 보유한 2대주주라는 점에서 향후 롯데렌탈과 카카오모빌리티 간 사업적 시너지도 기대되는 대목이다. 단기 렌터카 및 카셰어링 연동, 오토리스, 중고차 수출 및 경매장 운영, 전기차(EV) 충전 인프라 연계 등 모빌리티 생태계 전반으로 밸류업할 수 있는 여지가 충분하다는 평가다. \n\nIB 업계 관계자는 “렌터카 사업은 안정적인 현금 흐름과 명확한 자산 가치 덕분에 인수금융 구조를 짜기 최적의 대상”이라며 “대기업 그늘에서 벗어난 렌터카 기업들이 사모펀드의 효율적 자금 조달과 플랫폼 연계 전략을 바탕으로 격변기를 맞이할 것”이라고 밝혔다."
-      },
-      {
-        "title": "'국민주' 반열에 오른 SK하이닉스…소액주주 68만→346만 명 돌파",
-        "url": "https://n.news.naver.com/mnews/article/014/0005561961",
-        "chars": 864,
-        "extracted": "id=\"dic_area\"",
-        "body": "경기 이천시 SK하이닉스 본사. 2026.07.29. /사진=뉴시스 \n[파이낸셜뉴스] SK하이닉스가 소액주주 346만 명을 돌파하며 단숨에 '국민주' 반열에 올랐다. 불과 1년 만에 개인 투자자가 5배 이상 폭증한 결과다. 회사 실적을 견인하는 10% 이상 비중의 '큰 손' 고객 역시 2곳으로 늘어났다. \n \n14일 공개된 SK하이닉스 반기보고서에 따르면, 지난 6월 말 기준 소액주주 수는 346만1526명으로 집계됐다. 지난해 같은 기간 68만1671명에서 약 278만명 증가한 규모다. \n \n지난해 말 118만6328명과 비교해도 반년 만에 227만명 이상 늘었다. 이들 소액주주가 확보한 지분은 전체 발행주식 7억1270만2365주의 67.98%인 4억8449만7952주에 달한다. \n \n전체 주주 가운데 소액주주 비중은 99.99%다. SK하이닉스는 발행주식 총수의 1% 미만을 보유한 주주를 소액주주로 분류했다. \n \n전체 매출의 10%를 넘기는 주요 고객사는 기존 1곳에서 2곳으로 늘어났다. 올해 상반기 고객사 A에서 발생한 매출은 17조6087억원으로 전체의 13.35%를, 고객사 B 매출은 17조1874억원으로 13.03%를 각각 기록했다. 두 고객사의 합산 매출 비중은 전체의 26.38%에 달한다. \n \n이 밖의 주요 지분은 최대주주인 SK스퀘어(20.50%)와 국민연금공단(8.06%), 블랙록 펀드 어드바이저스(5.11%)가 보유한 것으로 나타났다. \n \n한편 증권가에서는 소액주주 100만명 이상을 '국민주' 진입 기준으로 본다. 다만 금융당국이나 거래소가 정한 공식 기준은 없다. 같은 날 공시된 반기보고서 기준 소액주주가 가장 많은 상장사는 삼성전자로 797만여명을 기록했으며, SK하이닉스는 그 뒤를 이었다."
       }
     ],
     "futures_mentions": [],
@@ -5728,6 +6418,6 @@
   },
   "summary": {
     "sources_tried": 182,
-    "sources_ok": 177
+    "sources_ok": 178
   }
 }
