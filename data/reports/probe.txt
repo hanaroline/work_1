@@ -1,0 +1,59 @@
+리포트 원천 후보 탐색
+
+=== 한경컨센서스 기업
+    https://consensus.hankyung.com/analysis/list?report_type=CO&pagenum=40&now_page=1
+    실패 HTTPError: HTTP Error 500: Internal Server Error
+
+=== 한경컨센서스 산업
+    https://consensus.hankyung.com/analysis/list?report_type=IN&pagenum=40&now_page=1
+    실패 HTTPError: HTTP Error 500: Internal Server Error
+
+=== 한경컨센서스 시장
+    https://consensus.hankyung.com/analysis/list?report_type=MA&pagenum=40&now_page=1
+    실패 HTTPError: HTTP Error 500: Internal Server Error
+
+=== 한경컨센서스 경제
+    https://consensus.hankyung.com/analysis/list?report_type=EC&pagenum=40&now_page=1
+    실패 HTTPError: HTTP Error 500: Internal Server Error
+
+=== 한경컨센서스 채권
+    https://consensus.hankyung.com/analysis/list?report_type=DB&pagenum=40&now_page=1
+    실패 HTTPError: HTTP Error 500: Internal Server Error
+
+=== 미래에셋 리서치 목록
+    https://securities.miraeasset.com/bbs/board/message/list.do?messageId=&searchType=&searchText=&categoryId=1521
+    66458 bytes
+    찾던 글자: (하나도 없음)
+    <tr> 14개 · pdf 링크 0개
+    첫 글자: ��ü | ����ġ ����Ʈ | �������� | �̷���������                            <m
+
+=== 미래에셋 투자정보
+    https://securities.miraeasset.com/bbs/board/message/list.do?categoryId=1571
+    2930 bytes
+    찾던 글자: (하나도 없음)
+    <tr> 0개 · pdf 링크 0개
+    첫 글자: �̷���������                                        <!--
+
+=== 네이버 모바일 리서치 API
+    https://m.stock.naver.com/api/research/company?page=1&pageSize=30
+    7790 bytes
+    찾던 글자: title, brokerName, researchId
+    <tr> 0개 · pdf 링크 0개
+    첫 글자: [{"researchCategory":"종목분석","category":"종목분석","itemCode":"001450","itemName":"현대해상","researchId":95658,"title":"손에 잡힐 것도 같은 배당","brokerName":"미래에셋증권","writeDate":"2026-08-14","readCount":"4297","endUrl":"https://m.stock.
+
+=== 네이버 모바일 산업 리서치 API
+    https://m.stock.naver.com/api/research/industry?page=1&pageSize=30
+    6770 bytes
+    찾던 글자: title, brokerName
+    <tr> 0개 · pdf 링크 0개
+    첫 글자: [{"researchCategory":"산업분석","category":"철강금속","researchId":45680,"title":"신한 자동차/철강금속 Weekly (2026.08.14)","brokerName":"신한투자증권","writeDate":"2026-08-14","readCount":"1226","endUrl":"https://m.stock.naver.com/research/in
+
+=== 한국IR협의회 리서치
+    https://www.kirs.or.kr/information/tech_report.html
+    실패 URLError: <urlopen error timed out>
+
+=== 다음 금융 리서치
+    https://finance.daum.net/api/research/list?page=1&perPage=30
+    실패 HTTPError: HTTP Error 500: 
+
+살아 있는 후보 4/11
