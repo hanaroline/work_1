@@ -54,13 +54,18 @@ CATEGORIES = [
 
 # 상세 본문을 몇 건까지 열어 볼지. 한 건에 1초 남짓 걸리므로 상한을 둔다.
 # 나머지는 제목·증권사·목표주가만 담긴 채로 목록에 남는다(요약은 비어 있다).
-DETAIL_LIMIT = int(os.environ.get("REPORTS_DETAIL_LIMIT", "80"))
+#
+# 한 건에 0.6초쯤 걸린다. 120건이면 수집 전체가 2분 안쪽이라 넉넉하다.
+DETAIL_LIMIT = int(os.environ.get("REPORTS_DETAIL_LIMIT", "120"))
 
 # 본문을 여는 차례에 판마다 몫을 준다. 조회수만으로 줄을 세우면 종목분석이
 # 상한을 다 먹고 시황·투자·경제·채권 판은 한 건도 못 연다 — 실제로 그랬고,
-# 「주요 리포트」에 요약 없는 카드가 여럿 올라왔다. 한 바퀴에 종목분석 셋,
+# 「주요 리포트」에 요약 없는 카드가 여럿 올라왔다. 한 바퀴에 종목분석 넷,
 # 산업분석 둘, 나머지 하나씩 연다.
-DETAIL_SHARE = {"종목분석": 3, "산업분석": 2}
+#
+# 종목분석에 몫을 크게 주는 까닭은 목표주가·투자의견이 거기서만 나오기
+# 때문이다. 셋으로 줄였더니 목표주가가 열여섯 건에서 열 건으로 떨어졌다.
+DETAIL_SHARE = {"종목분석": 4, "산업분석": 2}
 
 _ROW = re.compile(r"(?is)<tr[^>]*>(.*?)</tr>")
 _TD = re.compile(r"(?is)<t[dh][^>]*>(.*?)</t[dh]>")
@@ -245,9 +250,37 @@ def parse_detail(html):
     return best, how
 
 
+def full_title(html, short):
+    """목록에 잘려 실린 제목(「…기대도 여전..」)을 상세 페이지에서 되찾는다.
+
+    상세 페이지의 어느 태그에 제목이 들어 있는지는 네이버가 바꿀 수 있으므로
+    자리를 외우지 않는다. **잘린 제목의 앞머리로 시작하는 가장 긴 글자**를
+    페이지 안에서 찾는다. 못 찾으면 잘린 채로 둔다.
+    """
+    stem = re.sub(r"[.…]{2,}\s*$", "", short).strip()[:12]
+    if len(stem) < 6:
+        return short
+    cands = []
+    # 태그마다 따로 훑는다. 한 번에 훑으면 바깥 <th> 가 안쪽 <strong> 을
+    # 삼켜 버려(정규식은 앞 매치 뒤부터 이어 찾는다) 제목만 담은 태그를
+    # 영영 못 본다 — 실제로 그랬다.
+    for tag in ("strong", "h1", "h2", "h3", "h4", "title", "th", "td"):
+        for m in re.finditer(r"(?is)<%s[^>]*>(.*?)</%s\s*>" % (tag, tag), html):
+            t = _text(m.group(1)).strip()
+            # 제목은 한 줄이다. 여러 줄이면 제목을 품은 바깥 상자를 집은 것이라
+            # 증권사·작성일까지 딸려 온다.
+            if "\n" in t or not t.startswith(stem) or not (len(stem) < len(t) < 200):
+                continue
+            cands.append(t)
+    # 가장 짧은 것을 고른다 — 제목만 담은 가장 안쪽 태그다.
+    return min(cands, key=len) if cands else short
+
+
 def fetch_detail(rep, dump_dir=None):
     """리포트 한 건의 본문을 받아 요약·목표주가·투자의견을 채운다."""
     html = _get(rep["url"], encoding="cp949", referer=BASE + "company_list.naver")
+    if rep["title"].rstrip().endswith(".."):
+        rep["title"] = full_title(html, rep["title"])
     body, how = parse_detail(html)
     if len(body) < 80:
         if dump_dir:
