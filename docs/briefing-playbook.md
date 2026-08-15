@@ -120,7 +120,7 @@ python3 -m json.tool data/market/latest.json | head -120
 
 | 키 | 내용 |
 |---|---|
-| `indices` | 지수·환율·원자재 48종. 각각 `date` `open` `high` `low` `close` `volume` `prev_close` `change` `change_pct`. **국내** kospi, kosdaq, usdkrw / **미국** sp500, nasdaq, dow, sox, vix, russell + 지수선물(`*_fut`) / **유럽** stoxx600, eurostoxx, dax, cac, ftse, ftsemib, ibex, smi, aex / **아시아** nikkei, hangseng, shanghai, taiwan, sensex, asx200 / **환율** dxy, eurusd, usdjpy, usdcny, gbpusd, usdtwd / **원자재·기타** wti, brent, gold, silver, copper, natgas, platinum, btc, eth |
+| `indices` | 지수·환율·원자재 48종. 각각 `date` `open` `high` `low` `close` `volume` `prev_close` `change` `change_pct` `perf`(기간 수익률 — 4-3절). **국내** kospi, kosdaq, usdkrw / **미국** sp500, nasdaq, dow, sox, vix, russell + 지수선물(`*_fut`) / **유럽** stoxx600, eurostoxx, dax, cac, ftse, ftsemib, ibex, smi, aex / **아시아** nikkei, hangseng, shanghai, taiwan, sensex, asx200 / **환율** dxy, eurusd, usdjpy, usdcny, gbpusd, usdtwd / **원자재·기타** wti, brent, gold, silver, copper, natgas, platinum, btc, eth |
 | `stocks` | 시총 상위 10종목의 종가·등락률·거래량 |
 | `sectors` | 네이버 업종 79개 등락률 (`all` / `top5` / `bottom5`) |
 | `investors_kospi` | 코스피 투자자별 순매수 최근 6거래일 — `retail`/`foreign`/`institution`, **단위 억원** |
@@ -386,6 +386,63 @@ CNY 입니다. `cn_stocks` 에는 홍콩과 본토가 섞여 있으므로 표에
   묶인 채 3·5·10년만 &minus;12~&minus;15bp 내려 1년&ndash;10년이 96bp →
   84bp 로 평탄해졌고, 같은 기간 미국은 2년&ndash;10년이 +44 → +46bp 로
   가팔라졌습니다. **두 곡선이 반대로 가는 국면**은 그 자체가 이야깃거리입니다.
+
+---
+
+## 4-3. 기간 수익률을 표에 함께 싣습니다
+
+**하루 등락률만으로는 지금이 신고가인지 되돌림인지 알 수 없습니다.** 8/14 현대차가
+`+8.24%` 였는데 3개월로는 `−36.4%` 였습니다 — 급등이 아니라 되돌림이었고, 하루치
+숫자만 실은 표는 그 사실을 감춥니다.
+
+수집기가 야후 일봉 **2년치**에서 계산해 각 지수·종목에 `perf` 를 붙입니다.
+원본 계열은 싣지 않고 요약만 싣습니다(`latest.json` 이 12KB 늘었습니다).
+
+| 키 | 뜻 |
+|---|---|
+| `w1` `m1` `m3` `m6` `y1` | 1주 · 1개월 · 3개월 · 6개월 · 1년 |
+| `ytd` | 전년 마지막 거래일 대비 |
+| `from` | 자료가 닿는 가장 이른 날 |
+
+- **되짚는 기준은 거래일 수가 아니라 달력입니다.** 휴장일이 나라마다 달라 같은
+  「1개월」이 시장마다 다른 기간이 되기 때문입니다. 기준일이 휴장이면 그 앞의
+  마지막 거래일을 씁니다.
+- **자료가 닿지 않는 구간은 그 항목이 아예 없습니다.** 상장한 지 얼마 안 된 종목이
+  그렇습니다. 표에는 `—` 로 두고 **0으로 채우지 마십시오.**
+
+### 표에는 네 개만 세웁니다
+
+`w1 · m1 · m3 · ytd`. 여섯 개를 다 세우면 어느 폭에서도 표가 넘칩니다.
+`m6` `y1` 은 자료에 남아 있으므로 **본문에서 필요할 때 인용**하십시오.
+
+머리는 `1주 / 1개월 / 3개월 / 연초`. 「연초 대비」로 쓰면 그 한 열 때문에 표가
+넘칩니다. 「등락률」(전일 대비) 다음에 두면 **1일 → 1주 → 1개월 → 3개월 → 연초**
+사다리가 되어 읽기 좋습니다.
+
+### 설명 열과 기간 수익률은 함께 설 자리가 없습니다
+
+**본문 칸은 아무리 넓어도 ~960px 입니다.** 1400px 위에서는 오른쪽 패널이 열려
+오히려 **~720px 로 좁아집니다** — 화면이 넓어질수록 표가 넓어지는 것이 아닙니다.
+그래서 `.note`(핵심·무엇을 담고 있는가·읽는 법)와 `.perf` 중 하나만 세웁니다.
+
+```css
+@media (max-width:1620px){ table.data .note{display:none} }
+@media (max-width:860px){ table.data .perf{display:none} }
+table.data .perf{padding-left:8px;padding-right:8px}
+```
+
+- **1620px 위** — 설명 + 기간 수익률
+- **860~1620px** — 설명을 접고 숫자를 남깁니다. **숫자가 표의 본론입니다**
+- **860px 아래** — 기간 수익률도 접습니다(기존 `.opt` 와 같은 자리)
+
+**`.perf` 를 `.opt` 로 달지 마십시오.** `.opt` 는 680px 에서 접히는데, 기간 수익률은
+그보다 훨씬 일찍 접어야 합니다.
+
+### 폭 검증은 네 개가 아니라 **훑어서** 합니다
+
+지침 6절의 1680·820·390·360px **네 폭만 재면 놓칩니다.** 실제로 그 넷은 통과했는데
+**1400·1200·700px 에서 넘쳤습니다** — 브레이크포인트 사이가 구멍입니다.
+`340px 부터 1920px 까지 20px 씩` 훑어 **전 구간 0** 을 확인하십시오.
 
 ---
 
