@@ -92,6 +92,28 @@ HTML 표 파서로 그대로 내려앉습니다.
 안전하기 때문입니다. 목표주가·투자의견도 기계가 뽑은 값이라 원문과 다를 수 있으니,
 판단은 반드시 세부 리포트 원문으로 하십시오.
 
+### 건네줄 파일 만들기 — 한 파일 HTML + PDF 둘
+
+```bash
+bash scripts/make_reports_outputs.sh            # 최신 판
+bash scripts/make_reports_outputs.sh 2026-08-15 # 그날 판
+```
+
+`out/` 아래에 셋이 생깁니다(`.gitignore` 에 있습니다).
+
+| 파일 | 무엇 |
+|---|---|
+| `미래에셋_증권사리포트_YYYYMMDD.html` | **데이터까지 넣은 한 파일** — 서버 없이 더블클릭하면 열리고 조회·걸러 보기가 다 됩니다 |
+| `…_요약.pdf` | 머리 요약 · 주요 리포트 12장 · 목표주가를 움직인 리포트 (2쪽 안팎) |
+| `…_전체.pdf` | 위의 것 + 전체 목록 (30쪽 안팎) |
+
+PDF 에서도 제목과 「원문 PDF」는 눌러서 원문으로 갑니다. 화면의 조회창·걸개·
+단추는 인쇄에서 빠지고, 카드는 쪽 경계에서 잘리지 않으며, 다크 테마여도
+종이는 늘 밝은 바탕으로 나옵니다.
+
+> 브리핑 쪽 `scripts/make_outputs.sh` 와 같은 짜임입니다. 새 컨테이너에는
+> 한글 글꼴도 playwright 도 없으므로 스크립트가 둘 다 갖춘 뒤 뽑습니다.
+
 ```bash
 # 지금 바로 한 판 받아 보기 (네이버에 붙을 수 있는 곳에서)
 python3 scripts/fetch_reports.py
@@ -149,6 +171,8 @@ docs/reports/index.html        # 증권사 리포트 다이제스트 화면
 scripts/fetch_reports.py       # 리포트 수집·요약기 (러너에서 매일 실행)
 scripts/probe_reports.py       # 새 원천 후보 탐색 (작업 브랜치에서만 실행)
 scripts/make_reports_standalone.py  # 데이터까지 넣은 한 파일 실행본 만들기
+scripts/make_reports_outputs.sh     # 한 파일 HTML + 요약/전체 PDF 한 번에
+scripts/reports_to_pdf.mjs          # A4 PDF 렌더러 (요약본·전체본)
 scripts/request_reports_refresh.sh  # 수집을 지금 돌려 달라고 요청
 data/reports/latest.json       # 가장 최근 판 (화면이 읽는 파일)
 data/reports/YYYY-MM-DD.json   # 날짜별 보관
