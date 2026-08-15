@@ -651,21 +651,46 @@ def naver_sectors():
     return out
 
 
-def _investor_urls(now):
-    """bizdate 없이 부르면 표 껍데기(1.6KB)만 오므로 날짜를 붙여 부른다."""
+def _investor_urls(now, back=0):
+    """bizdate 없이 부르면 표 껍데기(1.6KB)만 오므로 날짜를 붙여 부른다.
+
+    한 번 부르면 **열 줄**만 온다. 더 거슬러 올라가려면 bizdate 를 뒤로 옮겨
+    다시 불러야 한다 — `back` 이 그 일수다.
+    """
     base = "https://finance.naver.com/sise/investorDealTrendDay.naver"
-    days = [(now - timedelta(days=i)).strftime("%Y%m%d") for i in range(0, 5)]
+    days = [(now - timedelta(days=back + i)).strftime("%Y%m%d") for i in range(0, 5)]
     return ["%s?bizdate=%s&sosok=" % (base, d) for d in days]
 
 
 def naver_investors(now, dump_dir=None):
-    """투자자별 매매동향 — 개인/외국인/기관 순매수, 단위 억원.
+    """투자자별 매매동향 — 개인/외국인/기관 순매수, 단위 억원. 약 한 달치.
+
+    화면 한 장에 **열 줄**만 나오므로 bizdate 를 2주씩 뒤로 옮겨 세 번 부르고
+    날짜로 합친다. 「이번 주 내내 외국인이 샀는가」를 말하려면 열 줄로는 모자란다.
+    """
+    seen, merged = set(), []
+    for back in (0, 14, 28):
+        try:
+            for r in _naver_investors_page(now, dump_dir, back):
+                if r["date"] not in seen:
+                    seen.add(r["date"])
+                    merged.append(r)
+        except Exception as e:                                # noqa: BLE001
+            if not merged:
+                raise
+            merged[0].setdefault("partial", str(e)[:80])
+    merged.sort(key=lambda r: r["date"], reverse=True)
+    return merged
+
+
+def _naver_investors_page(now, dump_dir=None, back=0):
+    """투자자별 매매동향 한 장(열 줄).
 
     페이지 구조가 바뀌면 파싱이 빗나가므로, 실패 시 원본 HTML을 남겨
     다음 실행 때 무엇을 봐야 하는지 알 수 있게 한다.
     """
     errors = []
-    for n_url, url in enumerate(_investor_urls(now)):
+    for n_url, url in enumerate(_investor_urls(now, back)):
         try:
             s = _get(url, referer="https://finance.naver.com/sise/", encoding="cp949")
         except Exception as e:                                # noqa: BLE001
@@ -696,13 +721,11 @@ def naver_investors(now, dump_dir=None):
                         "foreign": vals[1], "institution": vals[2],
                         "unit": "억원", "source_url": url})
         if out:
-            # 여섯 줄만 남기던 것을 넓혔다. 「이번 주 외국인이 계속 샀는가」를
-            # 말하려면 한 달은 있어야 한다 — 여섯 줄로는 주간 얘기가 안 된다.
-            return out[:25]
+            return out
         errors.append("%s -> 날짜 행 없음(%d bytes)" % (url.split("?")[0][-32:], len(s)))
         if dump_dir:
             os.makedirs(dump_dir, exist_ok=True)
-            fn = os.path.join(dump_dir, "investors_try%d.html" % n_url)
+            fn = os.path.join(dump_dir, "investors_%d_try%d.html" % (back, n_url))
             with open(fn, "w", encoding="utf-8") as f:
                 f.write(s[:400000])
     raise ValueError(" | ".join(errors))
@@ -1108,6 +1131,8 @@ def ecos_rates(now, dump_dir=None):
                           if ECOS_KEY == "sample" else "일별 실측 대비")
             out[key]["perf"] = p
 
+    if errs:
+        out["notes"] = errs[:12]          # 성공해도 무엇이 빠졌는지는 남긴다
     if not out:
         if dump_dir:
             os.makedirs(dump_dir, exist_ok=True)
@@ -1185,38 +1210,28 @@ def naver_money_flow(dump_dir=None):
             head = hs
             break
 
-    FIELDS = (("deposit", ("고객예탁금", "예탁금")),
-              ("credit_balance", ("신용잔고", "신용융자")),
-              ("margin_due", ("미수금",)),                      # 반대매매의 앞 단계
-              ("fund_equity", ("주식형",)),
-              ("fund_mixed", ("혼합형", "혼합")),
-              ("fund_bond", ("채권형",)))
-    # 머리행 이름 -> 값 칸 자리. 「전일대비」 열이 값 열 뒤에 붙어 있으므로
-    # 이름이 붙은 열만 세고 그 다음 칸은 증감으로 본다.
-    pos = {}
-    for key, words in FIELDS:
-        for i, h in enumerate(head):
-            if any(w in h for w in words):
-                pos[key] = i
-                break
-
+    # **자리번호로 담는다.** 이름으로 담으려다 한 번 틀렸다 — 이 표의 머리는
+    # 두 줄짜리 묶음머리(날짜 | 고객예탁금 | 신용잔고 | 펀드)라, 이름이 붙은
+    # 열과 실제 값 칸의 자리가 다르다. 이름만 보고 매기면 신용잔고 자리에
+    # 예탁금 전일대비가 들어온다(실제로 들어왔다).
+    #
+    # 읽어 낸 머리행은 진단용으로 그대로 내보낸다. 「미수금」이 여기 없다는
+    # 것이 곧 이 원천에 미수금이 없다는 증거다.
     series = []
     for r in rows[:20]:
         y, m, d = r[0].split(".")
-        rec = {"date": "20%s-%s-%s" % (y, m, d)}
-        if pos:
-            for key, i in pos.items():
-                if i < len(r):
-                    rec[key] = n(r[i])
-                if i + 1 < len(r) and key in ("deposit", "credit_balance", "margin_due"):
-                    rec[key + "_chg"] = n(r[i + 1])
-        else:
-            # 머리행을 못 읽었을 때의 종전 자리배치. 이름이 안 잡히면 여기로 온다.
-            rec.update({"deposit": n(r[1]), "deposit_chg": n(r[2]),
-                        "credit_balance": n(r[3]), "credit_chg": n(r[4]),
-                        "fund_equity": n(r[5]), "fund_mixed": n(r[7]),
-                        "fund_bond": n(r[9])})
-        series.append(rec)
+        series.append({
+            "date": "20%s-%s-%s" % (y, m, d),
+            "deposit": n(r[1]), "deposit_chg": n(r[2]),          # 고객예탁금
+            "credit_balance": n(r[3]), "credit_chg": n(r[4]),    # 신용잔고
+            "fund_equity": n(r[5]), "fund_mixed": n(r[7]), "fund_bond": n(r[9]),
+        })
+
+    # 자리배치가 밀렸는지 값으로 잡는다. 예탁금은 조 단위(수십만 억원)이고
+    # 신용잔고는 그보다 한 자리 작다. 신용잔고가 예탁금 증감과 같으면 밀린 것이다.
+    s0 = series[0]
+    if s0.get("credit_balance") is not None and s0["credit_balance"] == s0.get("deposit_chg"):
+        raise ValueError("증시자금동향 열이 밀렸다 — 머리행 %s" % head)
     # 네이버 표의 「전일대비」(*_chg) 는 **부호가 없는 절대값**이다. 줄어든 날에도
     # 양수로 실려, 그대로 옮기면 감소가 증가로 나간다 — 8월 13일 판에서 예탁금
     # 3조 4,884억 「감소」를 「+34,884 증가」로 내보냈다. 값끼리 빼서 부호를 만든다.
@@ -1235,7 +1250,10 @@ def naver_money_flow(dump_dir=None):
             "source_url": "https://finance.naver.com/sise/sise_deposit.naver",
             "note": "신용잔고는 결제일 기준이라 종가일보다 1~2영업일 늦게 반영된다",
             "delta_note": "*_chg 는 네이버가 준 **절대값**이라 부호가 없다. 증감은 반드시 "
-                          "*_delta (앞뒤 값의 차) 를 쓸 것"}
+                          "*_delta (앞뒤 값의 차) 를 쓸 것",
+            "missing": "미수금·반대매매는 이 표에 없다. 머리행이 날짜/고객예탁금/신용잔고/펀드 "
+                       "뿐인 것으로 확인했다. 금투협(freesis.kofia.or.kr) 소관인데 웹방화벽이 "
+                       "막는다 — 브리핑에서는 NOT FOUND 로 두고 신용잔고를 대용으로 쓸 것"}
 
 
 _FUT_SENT = re.compile(r"[^.。\n]{0,110}선물[^.。\n]{0,150}?(?:계약|억원)[^.。\n]{0,60}")
