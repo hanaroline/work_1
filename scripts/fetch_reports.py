@@ -257,8 +257,11 @@ def full_title(html, short):
     자리를 외우지 않는다. **잘린 제목의 앞머리로 시작하는 가장 긴 글자**를
     페이지 안에서 찾는다. 못 찾으면 잘린 채로 둔다.
     """
-    stem = re.sub(r"[.…]{2,}\s*$", "", short).strip()[:12]
-    if len(stem) < 6:
+    # 잘리기 전까지 보이는 대목은 진짜 제목의 앞부분 **그대로**다. 그것으로
+    # 시작하고 그보다 긴 한 줄만 후보로 삼는다 — 열두 자만 맞춰 보면 엉뚱한
+    # 줄이 걸린다.
+    prefix = re.sub(r"[.…]{2,}\s*$", "", short).strip()
+    if len(prefix) < 6:
         return short
     cands = []
     # 태그마다 따로 훑는다. 한 번에 훑으면 바깥 <th> 가 안쪽 <strong> 을
@@ -266,10 +269,14 @@ def full_title(html, short):
     # 영영 못 본다 — 실제로 그랬다.
     for tag in ("strong", "h1", "h2", "h3", "h4", "title", "th", "td"):
         for m in re.finditer(r"(?is)<%s[^>]*>(.*?)</%s\s*>" % (tag, tag), html):
-            t = _text(m.group(1)).strip()
-            # 제목은 한 줄이다. 여러 줄이면 제목을 품은 바깥 상자를 집은 것이라
-            # 증권사·작성일까지 딸려 온다.
-            if "\n" in t or not t.startswith(stem) or not (len(stem) < len(t) < 200):
+            # 제목은 한 줄이다. 제목만 담은 태그가 따로 없고 증권사·작성일까지
+            # 한 상자에 들어 있을 수 있으므로 **첫 줄만** 본다. 처음엔 여러
+            # 줄짜리 후보를 통째로 버렸는데, 그 바람에 스물세 건이 잘린 채로
+            # 남았다. 여는 태그 앞에도 줄을 끊어야 제목과 출처가 갈린다 —
+            # `_text` 는 닫는 태그에서만 줄을 바꾸기 때문이다.
+            frag = re.sub(r"(?i)<(p|div|span|br|em|small|a)\b", r"\n<\1", m.group(1))
+            t = _text(frag).strip().split("\n")[0].strip()
+            if not t.startswith(prefix) or not (len(prefix) < len(t) < 200):
                 continue
             cands.append(t)
     # 가장 짧은 것을 고른다 — 제목만 담은 가장 안쪽 태그다.
@@ -280,7 +287,13 @@ def fetch_detail(rep, dump_dir=None):
     """리포트 한 건의 본문을 받아 요약·목표주가·투자의견을 채운다."""
     html = _get(rep["url"], encoding="cp949", referer=BASE + "company_list.naver")
     if rep["title"].rstrip().endswith(".."):
-        rep["title"] = full_title(html, rep["title"])
+        got = full_title(html, rep["title"])
+        if got != rep["title"]:
+            rep["title_full"] = True
+        elif dump_dir:
+            # 되찾지 못했으면 그 쪽을 남긴다 — 마크업을 보고 고칠 수 있게.
+            _dump(dump_dir, "title_%s.html" % rep["nid"], html)
+        rep["title"] = got
     body, how = parse_detail(html)
     if len(body) < 80:
         if dump_dir:
@@ -609,8 +622,13 @@ def main():
     # 본문 추출이 깨지면 조용히 망가진다 — 요약 자리가 빈 채로 화면이 뜬다.
     # 몇 건을 열어 몇 건에서 요약이 나왔는지 같이 남겨 눈으로 본다.
     summarized = sum(1 for r in reports if r.get("summary"))
-    out["extraction"] = {"detail_opened": opened, "summarized": summarized,
-                         "detail_failed": failed}
+    opened_reps = [r for r in reports if r.get("extracted")]
+    out["extraction"] = {
+        "detail_opened": opened, "summarized": summarized, "detail_failed": failed,
+        # 목록의 제목은 잘려 온다. 본문을 연 것 중 몇 건을 되찾았는지 센다.
+        "titles_recovered": sum(1 for r in opened_reps if r.get("title_full")),
+        "titles_truncated": sum(1 for r in opened_reps if r["title"].rstrip().endswith("..")),
+    }
     if opened >= 5 and summarized < opened // 2:
         out["extraction"]["warning"] = ("본문에서 요약을 못 만든 건이 절반을 넘는다 "
                                         "— 상세 페이지 구조가 바뀐 듯하다")

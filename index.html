@@ -156,6 +156,7 @@
     .list-item .t { font-size: 14px; font-weight: 600; color: var(--text-primary); text-decoration: none; }
     .list-item .t:hover { color: var(--series-1); text-decoration: underline; }
     .list-item .meta { font-size: 12px; color: var(--text-muted); margin-top: 3px; }
+    .list-item .sum { font-size: 12.5px; color: var(--text-secondary); margin-top: 4px; line-height: 1.5; }
     .op-pill { font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 6px; white-space: nowrap;
       background: color-mix(in srgb, var(--series-4) 15%, transparent); color: var(--series-4); }
     .op-pill.hold { background: color-mix(in srgb, var(--series-3) 18%, transparent); color: var(--series-3); }
@@ -489,19 +490,39 @@
       });
     }
 
+    /* --- 증권사 레포트: 러너가 매일 받아 커밋해 둔 data/reports/latest.json 에서
+           이 종목 것만 골라 온다. 파일이 없거나(아직 안 돌았거나 file:// 로 연
+           경우) 이 종목 리포트가 없으면 null 을 돌려 샘플로 넘긴다. --- */
+    var REPORTS_FILE = null;
+    function fetchReports(ticker) {
+      if (!REPORTS_FILE) {
+        REPORTS_FILE = fetch("data/reports/latest.json", { cache: "no-cache" })
+          .then(function (r) { if (!r.ok) throw new Error("reports " + r.status); return r.json(); });
+      }
+      return REPORTS_FILE.then(function (d) {
+        var mine = (d.reports || []).filter(function (r) { return r.stock && r.stock.code === ticker.code; });
+        return mine.map(function (r) {
+          return { broker: r.broker || "-", title: r.title, opinion: r.opinion || "-",
+                   target: r.target_price || null, date: r.date || "-", url: r.url,
+                   pdf: r.pdf || null, summary: r.summary || null };
+        });
+      });
+    }
+
     /* --- 오케스트레이션: 모든 소스를 병렬 호출 후 병합(네이버·Yahoo 장점 결합), 섹션별 샘플 폴백 --- */
     function loadData(ticker) {
       DIAG = []; // 이번 조회의 진단 초기화
       var sample = window.generateSampleData(ticker);
-      var sources = { market: "sample", flow: "sample", fin: "sample", rec: "sample", news: "sample", index: "sample" };
+      var sources = { market: "sample", flow: "sample", fin: "sample", rec: "sample", news: "sample", index: "sample", reports: "sample" };
       var no = function () { return null; };
       return Promise.all([
         fetchNaver(ticker).catch(no),
         fetchYahoo(ticker).catch(no),
         fetchIndex(ticker.market).catch(no),
-        fetchNews(ticker.name).catch(no)
+        fetchNews(ticker.name).catch(no),
+        fetchReports(ticker).catch(no)
       ]).then(function (res) {
-        var nv = res[0], yh = res[1], idx = res[2], nw = res[3];
+        var nv = res[0], yh = res[1], idx = res[2], nw = res[3], rp = res[4];
         var hasCore = function (x) { return x && x.quote && x.chart && x.chart.close.length; };
         var live = hasCore(nv) ? nv : hasCore(yh) ? yh : null;   // 시세/차트: 네이버 우선
         var data = live || sample;
@@ -527,8 +548,9 @@
         else data.index = sample.index;
         // 뉴스
         if (nw && nw.length) { data.news = nw; sources.news = "live"; } else data.news = sample.news;
-        // 레포트 목록(실시간 API 부재 → 샘플/예시)
-        if (!data.reports || !data.reports.length) data.reports = sample.reports;
+        // 레포트 목록: 수집기가 받아 둔 실제 리포트 → 없으면 샘플/예시
+        if (rp && rp.length) { data.reports = rp; sources.reports = "live"; }
+        else if (!data.reports || !data.reports.length) data.reports = sample.reports;
         data.sector = data.sector || sample.sector;
         data.sources = sources;
         data.asOf = new Date();
@@ -743,11 +765,17 @@
         kpi("투자의견", r.ratingText ? mapRating(r.ratingText) : "-") + kpi("애널리스트", r.numberOfAnalysts + "명") + '</div>' +
         '<div class="opinion-bar">' + segs.map(function (s) { var w = (s.v / total) * 100; return w <= 0 ? "" : '<div style="width:' + w + '%;background:var(' + s.c + ')">' + (w > 8 ? s.v : "") + "</div>"; }).join("") + '</div>' +
         '<div class="opinion-legend">' + segs.map(function (s) { return '<span><i style="background:var(' + s.c + ')"></i>' + s.k + " " + s.v + "</span>"; }).join("") + '</div>' +
-        '<div class="section-title" style="margin:18px 0 8px;font-size:13px;"><span class="accent"></span>최근 증권사 레포트</div>' +
-        '<div class="list">' + d.reports.slice(0, 5).map(function (rp) { var oc = /매도|sell/i.test(rp.opinion) ? "sell" : /중립|hold/i.test(rp.opinion) ? "hold" : "";
+        '<div class="section-title" style="margin:18px 0 8px;font-size:13px;"><span class="accent"></span>최근 증권사 레포트 ' + badge(d.sources.reports) + '</div>' +
+        '<div class="list">' + d.reports.slice(0, 5).map(function (rp) { var oc = /매도|축소|sell/i.test(rp.opinion) ? "sell" : /중립|hold/i.test(rp.opinion) ? "hold" : "";
           var link = rp.url || naverResearchUrl(d.ticker);
-          return '<div class="list-item"><span class="op-pill ' + oc + '">' + esc(rp.opinion) + '</span><div class="main"><a class="t" href="' + link + '" target="_blank" rel="noopener">' + esc(rp.title) + '</a><div class="meta">' + esc(rp.broker) + ' · ' + rp.date + '</div></div><div class="rt"><div class="tgt">' + nf.format(rp.target) + '</div><div class="tgt-k">목표가</div></div></div>'; }).join("") + '</div>' +
-        '<div class="foot" style="text-align:left;margin-top:10px;">📄 원문 리포트(종목 전체): <a href="' + naverResearchUrl(d.ticker) + '" target="_blank" rel="noopener">네이버 금융 리서치</a> · 제목을 클릭하면 해당 종목 리서치 목록이 열립니다.</div></div>';
+          return '<div class="list-item"><span class="op-pill ' + oc + '">' + esc(rp.opinion) + '</span><div class="main"><a class="t" href="' + link + '" target="_blank" rel="noopener">' + esc(rp.title) + '</a><div class="meta">' + esc(rp.broker) + ' · ' + rp.date +
+            (rp.pdf ? ' · <a href="' + esc(rp.pdf) + '" target="_blank" rel="noopener">원문 PDF ↓</a>' : "") + '</div>' +
+            (rp.summary ? '<div class="sum">' + esc(rp.summary) + '</div>' : "") +
+            '</div><div class="rt"><div class="tgt">' + (rp.target ? nf.format(rp.target) : "-") + '</div><div class="tgt-k">목표가</div></div></div>'; }).join("") + '</div>' +
+        '<div class="foot" style="text-align:left;margin-top:10px;">📄 제목을 누르면 <b>세부 리포트</b>(네이버 상세)로 갑니다. ' +
+        '그날 나온 리포트 전체는 <a href="docs/reports/index.html">증권사 리포트 다이제스트</a>에서 봅니다 · ' +
+        '<a href="' + naverResearchUrl(d.ticker) + '" target="_blank" rel="noopener">이 종목 리서치 목록</a>' +
+        (d.sources.reports === "live" ? " · 요약은 리포트 본문에서 뽑은 원문 문장입니다." : " · 아직 수집된 리포트가 없어 예시를 보여 줍니다.") + '</div></div>';
       return html;
     }
     function naverResearchUrl(code) { return "https://finance.naver.com/research/company_list.naver?searchType=itemCode&itemCode=" + code; }
@@ -891,7 +919,7 @@
       els.report.innerHTML = '<div class="state"><div class="spinner"></div><div>' + esc(ticker.name) + ' (' + ticker.code + ') 리포트를 불러오는 중…</div></div>';
       loadData(ticker).then(function (d) { d.ticker = ticker.code; state.data = d; render(ticker, d); })
         .catch(function (err) { console.error(err); var d = window.generateSampleData(ticker); d.ticker = ticker.code;
-          d.sources = { market: "sample", flow: "sample", fin: "sample", rec: "sample", news: "sample", index: "sample" }; d.asOf = new Date(); state.data = d; render(ticker, d); });
+          d.sources = { market: "sample", flow: "sample", fin: "sample", rec: "sample", news: "sample", index: "sample", reports: "sample" }; d.asOf = new Date(); state.data = d; render(ticker, d); });
     }
 
     /* ================= 초기화 ================= */
