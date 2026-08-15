@@ -45,10 +45,56 @@ def show(symbol, label):
                  q["close"][i]))
 
 
+# 아직 못 채운 두 칸을 어디서 받을 수 있는지 본다. 러너에서만 알 수 있다 —
+# 브리핑 세션은 이그레스 정책 때문에 어디에도 직접 못 붙기 때문이다.
+#
+#   VKOSPI  — 야후 미수록, 네이버 미취급, 인베스팅 403, stooq 차단.
+#   반대매매 — 증시자금동향 표에 없다(금투협 소관).
+GAPS = [
+    ("VKOSPI · KRX 지수 통계(공개)",
+     "https://data.krx.co.kr/comm/bldAttendant/getJsonData.cmd", "post_krx"),
+    ("VKOSPI · 네이버 모바일 지수 목록",
+     "https://m.stock.naver.com/api/index/VKOSPI/basic", "get"),
+    ("VKOSPI · 야후 심볼 시도(^VKOSPI)",
+     "https://query1.finance.yahoo.com/v8/finance/chart/%5EVKOSPI?range=5d&interval=1d", "get"),
+    ("반대매매 · 금투협 FREESIS 통계 화면",
+     "https://freesis.kofia.or.kr/meta/getMetaDataList.do", "get"),
+    ("반대매매 · 금투협 공시 포털",
+     "https://dis.kofia.or.kr/websquare/index.jsp", "get"),
+]
+
+
+def probe_gaps():
+    """빈 칸을 메울 원천 후보에 붙어 본다. 무엇이 돌아오는지만 적는다."""
+    print("\n\n########## 아직 못 채운 항목의 원천 후보 ##########")
+    for label, url, how in GAPS:
+        print("\n=== %s\n    %s" % (label, url))
+        try:
+            if how == "post_krx":
+                body = _get(url,
+                            data={"bld": "dbms/MDC/STAT/standard/MDCSTAT00301",
+                                  "locale": "ko_KR", "idxIndMidclssCd": "05"},
+                            referer="https://data.krx.co.kr/",
+                            headers={"X-Requested-With": "XMLHttpRequest",
+                                     "Origin": "https://data.krx.co.kr"})
+            else:
+                body = _get(url, referer="https://www.google.com/")
+        except Exception as e:                                    # noqa: BLE001
+            print("    실패 %s: %s" % (type(e).__name__, str(e)[:120]))
+            continue
+        head = body[:200].replace("\n", " ")
+        print("    %d bytes | %s" % (len(body), head))
+        if "VKOSPI" in body or "변동성" in body:
+            print("    >>> VKOSPI 문자열이 응답에 있다 — 파서를 붙일 만하다")
+        if "반대매매" in body or "미수금" in body:
+            print("    >>> 반대매매 문자열이 응답에 있다 — 파서를 붙일 만하다")
+
+
 def main():
     print("지금 %s KST" % datetime.now(KST).strftime("%Y-%m-%d %H:%M:%S"))
     for sym, label in FX.items():
         show(sym, label)
+    probe_gaps()
 
 
 if __name__ == "__main__":
