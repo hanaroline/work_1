@@ -323,6 +323,16 @@ tr.total td{background:var(--cell-hi);font-weight:700;color:var(--ink)}
             <option value="2" data-i18n="fxHigh">높음 (달러 분산 선호)</option>
           </select>
         </div>
+        <div class="field">
+          <label for="fVehicle" data-i18n="lVehicle">선호 상품 유형</label>
+          <select id="fVehicle">
+            <option value="auto" selected data-i18n="vehAuto">자동 (금액·성향에 맞춰)</option>
+            <option value="etf" data-i18n="vehEtf">ETF 중심 (저비용)</option>
+            <option value="fund" data-i18n="vehFund">공모펀드 중심</option>
+            <option value="managed" data-i18n="vehManaged">랩·신탁 등 일임형 중심</option>
+          </select>
+          <span class="hint" data-i18n="hVehicle">같은 자산군이라도 어떤 형태로 담을지 결정합니다.</span>
+        </div>
       </div>
       <div class="field" style="margin-top:19px">
         <span class="lbl" data-i18n="lHold">기존 보유 자산 (복수 선택)</span>
@@ -389,11 +399,12 @@ var SLEEVES = {
   fi_gl : { grp:'fi',   ret:4.5, vol:7.0,  color:'#AD624E' },
   alt_re: { grp:'alt',  ret:6.0, vol:15.0, color:'#00A9CE' },
   alt_gd: { grp:'alt',  ret:4.0, vol:14.0, color:'#F0B26B' },
+  alt_st: { grp:'alt',  ret:5.5, vol:9.0,  color:'#7E9FC3' },
   cash  : { grp:'cash', ret:3.0, vol:0.5,  color:'#84888B' }
 };
-var SLEEVE_ORDER = ['eq_kr','eq_dm','eq_em','fi_kr','fi_gl','alt_re','alt_gd','cash'];
+var SLEEVE_ORDER = ['eq_kr','eq_dm','eq_em','fi_kr','fi_gl','alt_re','alt_gd','alt_st','cash'];
 var CLASS_OF = { eq_kr:'EQ', eq_dm:'EQ', eq_em:'EQ', fi_kr:'FI', fi_gl:'FI',
-                 alt_re:'ALT', alt_gd:'ALT', cash:'CASH' };
+                 alt_re:'ALT', alt_gd:'ALT', alt_st:'ALT', cash:'CASH' };
 
 /* 상관계수 (그룹 간) */
 var CORR = {
@@ -403,24 +414,54 @@ var CORR = {
   cash:{eq:0, fi:0, alt:0, cash:1}
 };
 
-/* 예시 상품 카탈로그 (참고용) */
+/* -------------------------------------------------------------------------
+   예시 상품 카탈로그 (참고용)
+
+   n    실제 상품명 (그대로 표기)          nk  상품 유형만 적는 항목의 문구 키
+   v    판매 형태 — etf | fund | managed | direct | trust | els | rp
+   risk 적합 위험성향 범위 [최소, 최대]     min 최소 가입금액 (만원)
+   goal 해당 투자목적에서만 제시
+
+   사내 라인업으로 교체할 때는 이 표만 고치면 나머지 화면이 따라옵니다.
+   ------------------------------------------------------------------------- */
 var CATALOG = {
-  eq_kr : [ {n:'TIGER 200',                  t:'ETF'},
-            {n:'TIGER MSCI Korea TR',        t:'ETF'} ],
-  eq_dm : [ {n:'TIGER 미국S&P500',            t:'ETF'},
-            {n:'TIGER 미국나스닥100',          t:'ETF'},
-            {n:'TIGER 선진국MSCI World',      t:'ETF'} ],
-  eq_em : [ {n:'TIGER 인도니프티50',           t:'ETF'},
-            {n:'TIGER 차이나전기차SOLACTIVE',  t:'ETF'} ],
-  fi_kr : [ {n:'TIGER 국고채3년',              t:'ETF'},
-            {n:'TIGER 중장기국공채',            t:'ETF'} ],
-  fi_gl : [ {n:'TIGER 미국채10년선물',          t:'ETF'},
-            {n:'TIGER 미국달러단기채권액티브',    t:'ETF'} ],
-  alt_re: [ {n:'TIGER 리츠부동산인프라',        t:'ETF'} ],
-  alt_gd: [ {n:'TIGER 골드선물(H)',            t:'ETF'},
-            {n:'KRX 금현물',                   t:'ETF'} ],
-  cash  : [ {n:'TIGER CD금리투자KIS(합성)',    t:'ETF'},
-            {n:'RP · 발행어음', ne:'RP / Issued notes', t:'MMT'} ]
+  eq_kr : [ {n:'TIGER 200',                 v:'etf'},
+            {n:'TIGER MSCI Korea TR',       v:'etf'},
+            {nk:'p_kr_eq_fund',             v:'fund',    risk:[3,5], min:100},
+            {nk:'p_kr_eq_wrap',             v:'managed', risk:[3,5], min:3000},
+            {nk:'p_kr_eq_direct',           v:'direct',  risk:[4,5], min:2000} ],
+  eq_dm : [ {n:'TIGER 미국S&P500',           v:'etf'},
+            {n:'TIGER 미국나스닥100',         v:'etf',     risk:[3,5]},
+            {n:'TIGER 선진국MSCI World',     v:'etf'},
+            {nk:'p_tdf',                    v:'fund',    goal:['retire','edu']},
+            {nk:'p_dm_eq_fund',             v:'fund',    min:100},
+            {nk:'p_dm_eq_direct',           v:'direct',  risk:[4,5], min:2000},
+            {nk:'p_gl_eq_wrap',             v:'managed', risk:[3,5], min:5000} ],
+  eq_em : [ {n:'TIGER 인도니프티50',          v:'etf',     risk:[3,5]},
+            {n:'TIGER 차이나전기차SOLACTIVE', v:'etf',     risk:[4,5]},
+            {nk:'p_em_eq_fund',             v:'fund',    risk:[3,5], min:100} ],
+  fi_kr : [ {n:'TIGER 국고채3년',             v:'etf'},
+            {n:'TIGER 중장기국공채',           v:'etf'},
+            {nk:'p_kr_bond_direct',         v:'direct',  min:1000},
+            {nk:'p_kr_credit_direct',       v:'direct',  risk:[3,5], min:1000},
+            {nk:'p_kr_bond_fund',           v:'fund',    min:100} ],
+  fi_gl : [ {n:'TIGER 미국채10년선물',         v:'etf'},
+            {n:'TIGER 미국달러단기채권액티브',   v:'etf'},
+            {nk:'p_us_treasury',            v:'direct',  min:2000},
+            {nk:'p_gl_bond_fund',           v:'fund',    min:100} ],
+  alt_re: [ {n:'TIGER 리츠부동산인프라',       v:'etf'},
+            {nk:'p_reit_fund',              v:'fund',    min:100},
+            {nk:'p_infra_trust',            v:'managed', risk:[3,5], min:5000} ],
+  alt_gd: [ {n:'TIGER 골드선물(H)',           v:'etf'},
+            {n:'KRX 금현물',                  v:'etf'},
+            {nk:'p_gold_bank',              v:'trust',   min:10} ],
+  alt_st: [ {nk:'p_els_stepdown',           v:'els',     risk:[3,5], min:100},
+            {nk:'p_elb',                    v:'els',     risk:[1,4], min:100},
+            {nk:'p_dlb',                    v:'els',     risk:[2,4], min:100} ],
+  cash  : [ {nk:'p_rp',                     v:'rp'},
+            {nk:'p_note',                   v:'rp',      min:100},
+            {n:'TIGER CD금리투자KIS(합성)',   v:'etf'},
+            {nk:'p_mmf',                    v:'fund'} ]
 };
 
 /* 절세 한도 (만원) */
@@ -447,6 +488,9 @@ ko:{
  lGoal:'투자 목적', goalRetire:'노후 자금', goalWealth:'목돈 마련', goalEdu:'자녀 교육 자금',
  goalHouse:'주택 자금', goalSurplus:'여유 자금 운용',
  lFx:'달러 자산 선호', fxLow:'낮음 (원화 중심)', fxMid:'보통', fxHigh:'높음 (달러 분산 선호)',
+ lVehicle:'선호 상품 유형', vehAuto:'자동 (금액·성향에 맞춰)', vehEtf:'ETF 중심 (저비용)',
+ vehFund:'공모펀드 중심', vehManaged:'랩·신탁 등 일임형 중심',
+ hVehicle:'같은 자산군이라도 어떤 형태로 담을지 결정합니다.',
  lHold:'기존 보유 자산 (복수 선택)',
  hold_deposit:'예금·적금', hold_stock:'국내 주식', hold_foreign:'해외 주식', hold_fund:'펀드·ETF',
  hold_bond:'채권·RP', hold_pension:'연금계좌', hold_estate:'부동산',
@@ -485,11 +529,44 @@ ko:{
  total:'합계',
  EQ:'주식', FI:'채권', ALT:'대체투자', CASH:'현금성',
  eq_kr:'국내 주식', eq_dm:'선진국 주식', eq_em:'신흥국 주식',
- fi_kr:'국내 채권', fi_gl:'해외 채권', alt_re:'리츠·인프라', alt_gd:'금·원자재', cash:'현금성 자산',
+ fi_kr:'국내 채권', fi_gl:'해외 채권', alt_re:'리츠·인프라', alt_gd:'금·원자재',
+ alt_st:'구조화 상품', cash:'현금성 자산',
  role_eq_kr:'국내 경기 회복 참여 · 배당', role_eq_dm:'포트폴리오 성장 엔진',
  role_eq_em:'고성장 지역 위성 배분', role_fi_kr:'금리 수익 · 변동성 완충',
  role_fi_gl:'달러 분산 · 위기 시 방어', role_alt_re:'배당 현금흐름 · 인플레이션 대응',
- role_alt_gd:'실물 자산 · 지정학 위험 헤지', role_cash:'유동성 · 재투자 대기',
+ role_alt_gd:'실물 자산 · 지정학 위험 헤지', role_alt_st:'횡보장 쿠폰 수익 · 손실 구간 완충',
+ role_cash:'유동성 · 재투자 대기',
+
+ /* 상품 유형 */
+ ty_etf:'ETF', ty_fund:'공모펀드', ty_managed:'랩·신탁', ty_direct:'직접투자',
+ ty_trust:'신탁', ty_els:'파생결합증권', ty_rp:'RP·발행어음',
+ p_kr_eq_fund:'국내 주식형 공모펀드 (액티브)',
+ p_kr_eq_wrap:'국내주식 일임형 랩',
+ p_kr_eq_direct:'국내 우량주 직접투자',
+ p_dm_eq_fund:'선진국 주식형 공모펀드',
+ p_dm_eq_direct:'미국 대표주 직접투자',
+ p_gl_eq_wrap:'글로벌 자산배분형 랩·특정금전신탁',
+ p_tdf:'TDF (은퇴시점 목표배분형 펀드)',
+ p_em_eq_fund:'신흥국 주식형 공모펀드',
+ p_kr_bond_direct:'국고채 직접투자 (만기 보유)',
+ p_kr_credit_direct:'우량 회사채 직접투자 (A급 이상)',
+ p_kr_bond_fund:'국내 채권형 공모펀드',
+ p_us_treasury:'미국 국채 직접투자 (달러)',
+ p_gl_bond_fund:'해외 채권형 공모펀드',
+ p_reit_fund:'국내외 리츠 재간접 공모펀드',
+ p_infra_trust:'부동산·인프라 특정금전신탁',
+ p_gold_bank:'금 적립 (골드뱅킹)',
+ p_els_stepdown:'지수형 ELS (스텝다운)',
+ p_elb:'원금지급형 ELB',
+ p_dlb:'원금지급형 DLB',
+ p_rp:'RP (환매조건부채권)',
+ p_note:'발행어음',
+ p_mmf:'MMF (머니마켓펀드)',
+ minAmt:'최소 {v}',
+ vehNote:'상품 유형은 {pref} 기준으로 골랐습니다. 같은 자산군을 ETF·공모펀드·직접투자·랩·신탁 중 어떤 형태로 담을지는 고객 선호와 계좌 종류에 따라 바꿀 수 있습니다.',
+ vehNoteAuto:'투자금액과 위험성향',
+ stNote:'구조화 상품(ELS·ELB·DLB)은 기초자산이 손실 구간(녹인)에 진입하면 원금 손실이 발생할 수 있고, 표의 변동성 수치가 이 위험을 온전히 나타내지 못합니다. 원금지급형(ELB·DLB)은 발행사 신용위험에 노출됩니다. 청약 전 상품별 손익구조와 조기상환 조건을 반드시 설명해 주십시오.',
+ pensionNote:'연금저축·IRP 계좌는 위험자산 70% 한도가 적용되며, 파생결합증권·레버리지 상품은 편입이 제한됩니다. 계좌 내 배분을 단순화하려면 TDF 한 상품으로 대체할 수 있습니다.',
  allocLead:'위험성향·연령·투자기간·목적을 반영한 전략적 자산배분(SAA)입니다.',
  tuneTitle:'배분 미세조정', tuneLead:'자산군 비중을 조정하면 아래 표와 시뮬레이션이 즉시 갱신됩니다. 나머지 자산군은 비율에 맞춰 자동 조정됩니다.',
  prodLead:'각 세부 자산의 대표 상품 예시입니다. 실제 제안 시에는 사내 상품 라인업과 적합성 등급을 확인해 확정합니다.',
@@ -541,6 +618,9 @@ en:{
  lGoal:'Objective', goalRetire:'Retirement', goalWealth:'Wealth accumulation', goalEdu:'Education',
  goalHouse:'Home purchase', goalSurplus:'Surplus cash',
  lFx:'Preference for USD assets', fxLow:'Low (KRW focused)', fxMid:'Neutral', fxHigh:'High (USD diversification)',
+ lVehicle:'Preferred vehicle', vehAuto:'Automatic (by amount and risk)', vehEtf:'ETF focused (low cost)',
+ vehFund:'Mutual funds', vehManaged:'Wrap and trust mandates',
+ hVehicle:'Decides how each asset class is actually held.',
  lHold:'Existing holdings (multiple)',
  hold_deposit:'Deposits', hold_stock:'Korean equity', hold_foreign:'Overseas equity', hold_fund:'Funds / ETFs',
  hold_bond:'Bonds / RP', hold_pension:'Pension accounts', hold_estate:'Real estate',
@@ -578,11 +658,43 @@ en:{
  total:'Total',
  EQ:'Equity', FI:'Fixed income', ALT:'Alternatives', CASH:'Cash',
  eq_kr:'Korean equity', eq_dm:'Developed equity', eq_em:'Emerging equity',
- fi_kr:'Korean bonds', fi_gl:'Global bonds', alt_re:'REITs / infra', alt_gd:'Gold / commodities', cash:'Cash equivalents',
+ fi_kr:'Korean bonds', fi_gl:'Global bonds', alt_re:'REITs / infra', alt_gd:'Gold / commodities',
+ alt_st:'Structured products', cash:'Cash equivalents',
  role_eq_kr:'Domestic recovery and dividends', role_eq_dm:'Core growth engine',
  role_eq_em:'Satellite exposure to high growth', role_fi_kr:'Carry and volatility buffer',
  role_fi_gl:'USD diversification and crisis hedge', role_alt_re:'Income and inflation response',
- role_alt_gd:'Real asset and geopolitical hedge', role_cash:'Liquidity and dry powder',
+ role_alt_gd:'Real asset and geopolitical hedge', role_alt_st:'Coupon income in range-bound markets',
+ role_cash:'Liquidity and dry powder',
+
+ ty_etf:'ETF', ty_fund:'Mutual fund', ty_managed:'Wrap / trust', ty_direct:'Direct',
+ ty_trust:'Trust', ty_els:'Structured note', ty_rp:'RP / notes',
+ p_kr_eq_fund:'Korean equity fund (active)',
+ p_kr_eq_wrap:'Korean equity discretionary wrap',
+ p_kr_eq_direct:'Direct holdings in Korean blue chips',
+ p_dm_eq_fund:'Developed market equity fund',
+ p_dm_eq_direct:'Direct holdings in US large caps',
+ p_gl_eq_wrap:'Global multi-asset wrap / trust',
+ p_tdf:'TDF (target date fund)',
+ p_em_eq_fund:'Emerging market equity fund',
+ p_kr_bond_direct:'Korean treasury bonds (hold to maturity)',
+ p_kr_credit_direct:'Investment grade corporate bonds (A or above)',
+ p_kr_bond_fund:'Korean bond fund',
+ p_us_treasury:'US Treasuries (USD)',
+ p_gl_bond_fund:'Global bond fund',
+ p_reit_fund:'Global REIT fund of funds',
+ p_infra_trust:'Real estate and infrastructure trust',
+ p_gold_bank:'Gold savings account',
+ p_els_stepdown:'Index-linked ELS (step-down)',
+ p_elb:'Principal-protected ELB',
+ p_dlb:'Principal-protected DLB',
+ p_rp:'RP (repurchase agreement)',
+ p_note:'Issued notes',
+ p_mmf:'MMF (money market fund)',
+ minAmt:'min {v}',
+ vehNote:'Vehicles were selected on a {pref} basis. The same asset class can be held as an ETF, fund, direct holding, wrap or trust depending on client preference and account type.',
+ vehNoteAuto:'amount and risk profile',
+ stNote:'Structured products (ELS, ELB, DLB) can lose principal once the underlying breaches the knock-in barrier, and the volatility figure in the table does not fully capture that risk. Principal-protected notes remain exposed to issuer credit risk. Explain the payoff structure and early redemption terms before subscription.',
+ pensionNote:'Pension Savings and IRP accounts cap risk assets at 70% and restrict structured and leveraged products. A single TDF can replace the in-account allocation where simplicity is preferred.',
  allocLead:'Strategic asset allocation (SAA) derived from risk profile, age, horizon and objective.',
  tuneTitle:'Fine-tune allocation', tuneLead:'Adjust a class weight and the tables and projection update instantly. Remaining classes rescale proportionally.',
  prodLead:'Representative products per sleeve. Final selection follows the in-house line-up and suitability rules.',
@@ -737,11 +849,17 @@ function sleeveAllocation(cls, inp){
   if (inp.years <= 3){ bkr = Math.min(0.8, bkr + 0.15); bgl = 1 - bkr; }
   s.fi_kr = cls.FI * bkr; s.fi_gl = cls.FI * bgl;
 
-  /* 대체 */
+  /* 대체 — 구조화 상품은 ETF 중심 선호이거나 청약 최소금액에 못 미치면 넣지 않는다. */
   var re = 0.60;
   if (inp.goal === 'retire') re = 0.70;
   if (inp.risk <= 2) re = 0.50;
-  s.alt_re = cls.ALT * re; s.alt_gd = cls.ALT * (1 - re);
+  var gd = 1 - re, st = 0;
+  var altAmt = totalInvest(inp) * cls.ALT / 100;
+  if (inp.vehicle !== 'etf' && inp.risk >= 2 && altAmt >= 300){
+    st = inp.risk >= 3 ? 0.35 : 0.25;
+    re *= (1 - st); gd *= (1 - st);
+  }
+  s.alt_re = cls.ALT * re; s.alt_gd = cls.ALT * gd; s.alt_st = cls.ALT * st;
 
   s.cash = cls.CASH;
 
@@ -806,6 +924,7 @@ function readInputs(){
     risk: parseInt($('fRisk').value, 10),
     goal: $('fGoal').value,
     fx: parseInt($('fFx').value, 10),
+    vehicle: $('fVehicle').value,
     holds: holds,
     pb: $('fPb').value.trim(),
     branch: $('fBranch').value.trim(),
@@ -1069,26 +1188,70 @@ function secAlloc(m, cls, sv, st){
 
 function totalInvest(inp){ return inp.lump + inp.monthly * 12 * inp.years; }
 
+/* 자산군에 담을 상품을 고른다 — 위험성향·최소가입금액·투자목적으로 거르고,
+   선호 유형을 앞세운다. 아무것도 남지 않으면 문턱을 무시하고 첫 항목을 쓴다. */
+function pickProducts(k, inp, amt){
+  var list = CATALOG[k] || [];
+  var pref = inp.vehicle;
+  var ok = list.filter(function(p){
+    if (p.risk && (inp.risk < p.risk[0] || inp.risk > p.risk[1])) return false;
+    if (p.min && amt < p.min) return false;
+    if (p.goal && p.goal.indexOf(inp.goal) < 0) return false;
+    if (pref === 'etf' && (p.v === 'els' || p.v === 'managed')) return false;
+    return true;
+  });
+  var score = function(p){
+    var s = 0;
+    if (pref !== 'auto' && p.v === pref) s += 10;
+    if (pref === 'auto' && p.v === 'etf') s += 2;
+    if (p.v === 'etf') s += 1;
+    return s;
+  };
+  ok.sort(function(a, b){ return score(b) - score(a); });
+  if (!ok.length) ok = list.slice(0, 1);
+  /* 유형을 지정했고 그 유형만으로 표를 채울 수 있으면 다른 유형은 섞지 않는다. */
+  if (pref !== 'auto'){
+    var same = ok.filter(function(p){ return p.v === pref; });
+    if (same.length >= 2) return same.slice(0, 3);
+  }
+  return ok.slice(0, 3);
+}
+
+function prodName(p){ return p.n ? p.n : t(p.nk); }
+
 function secProducts(inp, sv){
   var rows = '';
+  var total = totalInvest(inp);
   SLEEVE_ORDER.forEach(function(k){
     if (sv[k] <= 0) return;
-    var list = CATALOG[k] || [];
+    var list = pickProducts(k, inp, total * sv[k] / 100);
     list.forEach(function(p, i){
       rows += '<tr>' +
         (i === 0 ? '<td rowspan="' + list.length + '"><span class="swatch" style="background:' +
           SLEEVES[k].color + '"></span>' + esc(t(k)) + '<br><span class="num" style="color:#6C6C6C;font-size:15px">' +
           pct(sv[k]) + '</span></td>' : '') +
-        '<td>' + esc(lang === 'en' && p.ne ? p.ne : p.n) + '</td><td>' + esc(p.t) + '</td>' +
+        '<td>' + esc(prodName(p)) +
+          (p.min ? '<br><span style="color:#84888B;font-size:14px">' +
+            esc(tf('minAmt', {v: money(p.min)})) + '</span>' : '') + '</td>' +
+        '<td>' + esc(t('ty_' + p.v)) + '</td>' +
         (i === 0 ? '<td rowspan="' + list.length + '" class="n">' + esc(SLEEVES[k].ret.toFixed(1)) + '%</td>' +
           '<td rowspan="' + list.length + '" class="n">' + esc(SLEEVES[k].vol.toFixed(1)) + '%</td>' : '') +
         '</tr>';
     });
   });
+  var prefLabel = inp.vehicle === 'auto' ? t('vehNoteAuto') :
+    t('veh' + inp.vehicle.charAt(0).toUpperCase() + inp.vehicle.slice(1));
+  var notes = '<div class="note" style="margin-top:19px">' +
+    esc(tf('vehNote', {pref: prefLabel})) + '</div>';
+  if (sv.alt_st > 0) notes += '<div class="note" style="margin-top:12px">' + esc(t('stNote')) + '</div>';
+  if (inp.goal === 'retire' || inp.holds.indexOf('pension') >= 0)
+    notes += '<div class="note" style="margin-top:12px">' + esc(t('pensionNote')) + '</div>';
+
   var b = '<div class="table-scroll"><table><thead><tr>' +
     '<th>' + esc(t('thSleeve')) + '</th><th>' + esc(t('thProduct')) + '</th>' +
     '<th>' + esc(t('thType')) + '</th><th class="n">' + esc(t('thRet')) + '</th>' +
-    '<th class="n">' + esc(t('thVol')) + '</th></tr></thead><tbody>' + rows + '</tbody></table></div>';
+    '<th class="n">' + esc(t('thVol')) + '</th></tr></thead><tbody>' + rows + '</tbody></table></div>' +
+    notes;
   return sec('s-products', t('s4'), t('prodLead'), b);
 }
 
@@ -1312,6 +1475,7 @@ function restoreInputs(){
   set('fName', v.name); set('fAge', v.age); set('fIncome', v.income);
   set('fLump', v.lump); set('fMonthly', v.monthly); set('fYears', v.years);
   set('fGoalAmt', v.goalAmt); set('fRisk', v.risk); set('fGoal', v.goal); set('fFx', v.fx);
+  set('fVehicle', v.vehicle);
   set('fPb', v.pb); set('fBranch', v.branch); set('fDate', v.date);
   if (Array.isArray(v.holds)){
     Array.prototype.forEach.call($('fHold').querySelectorAll('input'), function(c){
@@ -1333,6 +1497,7 @@ function loadSample(){
   $('fAge').value = 42; $('fIncome').value = 'high';
   $('fLump').value = 20000; $('fMonthly').value = 150; $('fYears').value = 15;
   $('fGoalAmt').value = 80000; $('fRisk').value = '4'; $('fGoal').value = 'retire'; $('fFx').value = '2';
+  $('fVehicle').value = 'auto';
   Array.prototype.forEach.call($('fHold').querySelectorAll('input'), function(c){
     c.checked = ['deposit','stock','pension'].indexOf(c.value) >= 0;
   });
