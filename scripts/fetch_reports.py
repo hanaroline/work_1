@@ -422,7 +422,25 @@ def fetch_mirae(dump_dir=None):
                 break                        # 더 나올 것이 없다
     if not rows:
         raise ValueError("미래에셋 리서치에서 한 줄도 못 얻었다")
-    return rows, {"page_param": used or "(쪽 넘김 없음)", "first_page_rows": first_n}
+
+    # 같은 리포트가 공저자 수만큼 줄로 서는 일이 있다(SMIC 리포트가 강민희·
+    # 정태준 두 줄로 왔다). 제목과 날짜가 같으면 한 줄로 모으고 이름만 잇는다.
+    uniq, by_key = [], {}
+    for r in rows:
+        k = (_key(r["title"]), r.get("date"))
+        mate = by_key.get(k)
+        if not mate:
+            by_key[k] = r
+            uniq.append(r)
+            continue
+        for who in (r.get("analyst") or "").split(","):
+            who = who.strip()
+            if who and who not in (mate.get("analyst") or ""):
+                mate["analyst"] = (mate.get("analyst") + ", " + who) if mate.get("analyst") else who
+        if r.get("pdf") and not mate.get("pdf"):
+            mate["pdf"] = r["pdf"]
+    return uniq, {"page_param": used or "(쪽 넘김 없음)",
+                  "first_page_rows": first_n, "rows_before_dedupe": len(rows)}
 
 
 def _key(title):
