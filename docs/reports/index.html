@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>증권사 리포트 다이제스트</title>
+  <style>
+    /* 팔레트·타이포는 대시보드(index.html)와 같은 것을 쓴다 — 두 화면을 오가도
+       같은 자리에 있다는 느낌이 끊기지 않게. */
+    :root {
+      --surface-1: #fcfcfb; --page: #f9f9f7;
+      --text-primary: #0b0b0b; --text-secondary: #52514e; --text-muted: #898781;
+      --grid: #e1e0d9; --border: rgba(11,11,11,0.10);
+      --series-1: #2a78d6; --series-2: #1baf7a; --series-3: #eda100;
+      --series-5: #4a3aa7; --series-6: #e34948; --series-8: #eb6834;
+      --up: #d03b3b; --down: #2a78d6;
+      --shadow: 0 1px 2px rgba(11,11,11,.05), 0 4px 16px rgba(11,11,11,.04);
+      --radius: 14px;
+    }
+    :root[data-theme="dark"] {
+      --surface-1: #1a1a19; --page: #0d0d0d;
+      --text-primary: #ffffff; --text-secondary: #c3c2b7; --text-muted: #898781;
+      --grid: #2c2c2a; --border: rgba(255,255,255,0.10);
+      --series-1: #3987e5; --series-2: #199e70; --series-3: #c98500;
+      --series-5: #9085e9; --series-6: #e66767; --series-8: #d95926;
+      --up: #ff6b6b; --down: #5598e7;
+      --shadow: 0 1px 2px rgba(0,0,0,.4), 0 4px 16px rgba(0,0,0,.3);
+    }
+    @media (prefers-color-scheme: dark) {
+      :root:not([data-theme="light"]) {
+        --surface-1: #1a1a19; --page: #0d0d0d;
+        --text-primary: #ffffff; --text-secondary: #c3c2b7; --text-muted: #898781;
+        --grid: #2c2c2a; --border: rgba(255,255,255,0.10);
+        --series-1: #3987e5; --series-2: #199e70; --series-3: #c98500;
+        --series-5: #9085e9; --series-6: #e66767; --series-8: #d95926;
+        --up: #ff6b6b; --down: #5598e7;
+        --shadow: 0 1px 2px rgba(0,0,0,.4), 0 4px 16px rgba(0,0,0,.3);
+      }
+    }
+
+    * { box-sizing: border-box; }
+    html, body { margin: 0; padding: 0; }
+    body {
+      font-family: system-ui, -apple-system, "Segoe UI", "Malgun Gothic", sans-serif;
+      background: var(--page); color: var(--text-primary); line-height: 1.55;
+      -webkit-font-smoothing: antialiased;
+    }
+    a { color: inherit; }
+
+    .topbar {
+      position: sticky; top: 0; z-index: 20; background: var(--surface-1);
+      border-bottom: 1px solid var(--border);
+      display: flex; align-items: center; gap: 10px; padding: 12px 20px; flex-wrap: wrap;
+    }
+    .brand { font-weight: 700; font-size: 17px; letter-spacing: -.02em; white-space: nowrap; }
+    .brand .dot { color: var(--series-1); }
+    .grow { flex: 1 1 240px; min-width: 160px; }
+    input[type="search"], select {
+      width: 100%; padding: 9px 12px; font-size: 14px; border: 1px solid var(--border);
+      border-radius: 10px; background: var(--page); color: var(--text-primary);
+    }
+    /* 상단 바의 날짜 고르개는 글자만큼만 차지한다 — width:100% 를 물려받으면
+       한 줄을 통째로 먹고 나머지 단추가 아래로 밀린다. */
+    .topbar select { width: auto; min-width: 112px; }
+    input[type="search"]:focus, select:focus { outline: 2px solid var(--series-1); border-color: transparent; }
+    .btn {
+      border: 1px solid var(--border); background: var(--page); color: var(--text-primary);
+      padding: 9px 12px; font-size: 14px; border-radius: 10px; cursor: pointer; white-space: nowrap;
+      text-decoration: none; display: inline-flex; align-items: center; gap: 6px;
+    }
+    .btn:hover { border-color: var(--series-1); }
+
+    .wrap { max-width: 1080px; margin: 0 auto; padding: 20px; }
+
+    /* 머리 요약 */
+    .head { display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap; margin-bottom: 6px; }
+    .head h1 { font-size: 22px; margin: 0; letter-spacing: -.02em; }
+    .head .sub { font-size: 13px; color: var(--text-muted); }
+    .stats { display: flex; gap: 10px; flex-wrap: wrap; margin: 14px 0 6px; }
+    .stat {
+      background: var(--surface-1); border: 1px solid var(--border); border-radius: var(--radius);
+      padding: 12px 16px; box-shadow: var(--shadow); min-width: 132px;
+    }
+    .stat .k { font-size: 12px; color: var(--text-muted); }
+    .stat .v { font-size: 22px; font-weight: 700; letter-spacing: -.02em; }
+    .stat .v small { font-size: 13px; font-weight: 500; color: var(--text-secondary); }
+
+    .section-title {
+      display: flex; align-items: center; gap: 8px; font-size: 15px; font-weight: 700;
+      margin: 26px 0 12px;
+    }
+    .section-title .accent { width: 4px; height: 15px; background: var(--series-1); border-radius: 2px; }
+    .section-title .hint { font-weight: 400; font-size: 12px; color: var(--text-muted); }
+
+    /* 걸러 보기 */
+    .filters { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; margin-bottom: 12px; }
+    .chip {
+      font-size: 13px; cursor: pointer; padding: 6px 12px; border-radius: 999px;
+      border: 1px solid var(--border); background: var(--surface-1); color: var(--text-secondary);
+    }
+    .chip:hover { border-color: var(--series-1); color: var(--text-primary); }
+    .chip.on { background: var(--series-1); color: #fff; border-color: transparent; }
+    .chip .n { opacity: .7; margin-left: 4px; font-size: 11px; }
+    .filters select { width: auto; min-width: 130px; }
+
+    /* 리포트 카드 */
+    .cards { display: grid; gap: 10px; }
+    .cards.two { grid-template-columns: repeat(auto-fill, minmax(330px, 1fr)); }
+    .rp {
+      background: var(--surface-1); border: 1px solid var(--border); border-radius: var(--radius);
+      padding: 14px 16px; box-shadow: var(--shadow); cursor: pointer; position: relative;
+    }
+    .rp:hover { border-color: var(--series-1); }
+    .rp .tags { display: flex; gap: 6px; flex-wrap: wrap; align-items: center; margin-bottom: 6px; }
+    .tag {
+      font-size: 11px; padding: 2px 8px; border-radius: 999px; border: 1px solid var(--border);
+      color: var(--text-secondary); white-space: nowrap;
+    }
+    .tag.cat { border-color: transparent; background: rgba(42,120,214,.12); color: var(--series-1); }
+    .tag.stock { border-color: transparent; background: var(--grid); color: var(--text-primary); font-weight: 600; }
+    .tag.op { border-color: transparent; background: rgba(27,175,122,.15); color: var(--series-2); font-weight: 600; }
+    .tag.op.hold { background: rgba(237,161,0,.15); color: var(--series-3); }
+    .tag.op.sell { background: rgba(227,73,72,.15); color: var(--series-6); }
+    .tag.tp { border-color: transparent; background: var(--grid); }
+    .tag.tp .mv-up { color: var(--up); font-weight: 700; }
+    .tag.tp .mv-dn { color: var(--down); font-weight: 700; }
+    .rp .t {
+      font-size: 15px; font-weight: 600; letter-spacing: -.01em; text-decoration: none;
+      display: inline-block; margin-bottom: 4px;
+    }
+    .rp .t:hover { text-decoration: underline; text-decoration-color: var(--series-1); }
+    .rp .sum { font-size: 13.5px; color: var(--text-secondary); margin: 4px 0 8px; }
+    .rp .sum.none { color: var(--text-muted); font-style: italic; }
+    .rp .ex {
+      display: none; font-size: 13px; color: var(--text-secondary); white-space: pre-wrap;
+      border-left: 3px solid var(--grid); padding: 6px 0 6px 12px; margin: 8px 0;
+      max-height: 320px; overflow: auto;
+    }
+    .rp.open .ex { display: block; }
+    .rp .foot {
+      display: flex; gap: 10px; flex-wrap: wrap; align-items: center;
+      font-size: 12px; color: var(--text-muted);
+    }
+    .rp .foot .go { color: var(--series-1); text-decoration: none; font-weight: 600; }
+    .rp .foot .go:hover { text-decoration: underline; }
+    .rp .foot button {
+      font: inherit; font-size: 12px; background: none; border: none; padding: 0;
+      color: var(--series-1); cursor: pointer;
+    }
+    .sep { color: var(--border); }
+
+    .state {
+      text-align: center; padding: 60px 20px; color: var(--text-muted);
+      background: var(--surface-1); border: 1px solid var(--border); border-radius: var(--radius);
+    }
+    .state .big { font-size: 34px; margin-bottom: 10px; }
+    .foot-note {
+      margin: 30px 0 10px; font-size: 12px; color: var(--text-muted); line-height: 1.7;
+      border-top: 1px solid var(--border); padding-top: 14px;
+    }
+    @media (max-width: 640px) {
+      .wrap { padding: 14px; }
+      .stat { flex: 1 1 40%; min-width: 0; }
+    }
+  </style>
+</head>
+<body>
+  <div class="topbar">
+    <div class="brand"><span class="dot">◼</span> 증권사 리포트 다이제스트</div>
+    <div class="grow"><input type="search" id="q" placeholder="제목 · 종목 · 증권사 검색" /></div>
+    <select id="day" title="지난 판"></select>
+    <a class="btn" href="../../index.html" title="종목 통합 리포트">📈 대시보드</a>
+    <button class="btn" id="themeBtn" title="테마 전환">◐</button>
+  </div>
+
+  <div class="wrap">
+    <div class="head">
+      <h1 id="title">증권사 리포트</h1>
+      <span class="sub" id="asof"></span>
+    </div>
+    <div class="stats" id="stats"></div>
+
+    <div id="hl-wrap" style="display:none;">
+      <div class="section-title"><span class="accent"></span>오늘의 주요 리포트
+        <span class="hint">조회수 · 목표주가 변경 · 여러 증권사가 함께 본 종목을 기준으로 고릅니다</span>
+      </div>
+      <div class="cards two" id="highlights"></div>
+    </div>
+
+    <div class="section-title"><span class="accent"></span>전체 리포트 <span class="hint" id="cnt"></span></div>
+    <div class="filters" id="filters"></div>
+    <div class="cards" id="list"></div>
+
+    <div class="foot-note" id="note"></div>
+  </div>
+
+<script>
+(function () {
+  "use strict";
+
+  var DATA_DIR = "../../data/reports/";
+  var state = { data: null, cat: "전체", broker: "전체", sort: "recent", q: "" };
+  var els = {
+    q: document.getElementById("q"), day: document.getElementById("day"),
+    title: document.getElementById("title"), asof: document.getElementById("asof"),
+    stats: document.getElementById("stats"), hlWrap: document.getElementById("hl-wrap"),
+    highlights: document.getElementById("highlights"), filters: document.getElementById("filters"),
+    list: document.getElementById("list"), cnt: document.getElementById("cnt"),
+    note: document.getElementById("note")
+  };
+
+  function esc(s) {
+    return String(s == null ? "" : s).replace(/[&<>"']/g, function (c) {
+      return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c];
+    });
+  }
+  var nf = new Intl.NumberFormat("ko-KR");
+
+  /* ================= 테마 ================= */
+  (function () {
+    var saved = null; try { saved = localStorage.getItem("theme"); } catch (e) {}
+    if (saved) document.documentElement.setAttribute("data-theme", saved);
+    document.getElementById("themeBtn").addEventListener("click", function () {
+      var cur = document.documentElement.getAttribute("data-theme");
+      var next = cur === "dark" ? "light" : cur === "light" ? "dark"
+        : (matchMedia("(prefers-color-scheme: dark)").matches ? "light" : "dark");
+      document.documentElement.setAttribute("data-theme", next);
+      try { localStorage.setItem("theme", next); } catch (e) {}
+    });
+  })();
+
+  /* ================= 불러오기 ================= */
+  function getJSON(url) {
+    return fetch(url, { cache: "no-cache" }).then(function (r) {
+      if (!r.ok) throw new Error(r.status + " " + url);
+      return r.json();
+    });
+  }
+
+  function load(day) {
+    var file = day ? day + ".json" : "latest.json";
+    els.list.innerHTML = '<div class="state"><div class="big">⏳</div><div>리포트를 불러오는 중…</div></div>';
+    return getJSON(DATA_DIR + file).then(render).catch(failed);
+  }
+
+  function failed(err) {
+    els.hlWrap.style.display = "none";
+    els.stats.innerHTML = "";
+    els.list.innerHTML = '<div class="state"><div class="big">📭</div>' +
+      '<div>아직 받아 둔 리포트가 없습니다.<br>' +
+      '수집은 GitHub Actions(<code>증권사 리포트 수집</code>)가 매일 아침·저녁에 돌려 ' +
+      '<code>data/reports/latest.json</code> 에 커밋합니다.</div>' +
+      '<div style="margin-top:14px;font-size:13px;">' +
+      '지금 바로 보려면 <a href="https://finance.naver.com/research/" target="_blank" rel="noopener">네이버 금융 리서치</a>로 가십시오.' +
+      '</div><div style="margin-top:10px;font-size:12px;">(' + esc(err && err.message) + ')</div></div>';
+  }
+
+  /* ================= 그리기 ================= */
+  function render(d) {
+    state.data = d;
+    var s = d.summary || {};
+    els.title.textContent = (s.report_date || d.date || "") + " 증권사 리포트";
+    els.asof.textContent = "수집 " + (d.generated_at_kst || "-") + " KST · 출처 " + (d.source || "");
+
+    var moves = s.target_moves || [];
+    var up = moves.filter(function (m) { return m.move === "상향"; }).length;
+    var dn = moves.filter(function (m) { return m.move === "하향"; }).length;
+    els.stats.innerHTML =
+      stat((s.report_date || "최근") + " 자 리포트",
+        nf.format(s.count_report_date || 0) + "<small> 건</small>") +
+      stat("수집한 전체", nf.format(s.count_collected || 0) + "<small> 건</small>") +
+      stat("목표주가 상향 · 하향",
+        '<span style="color:var(--up)">' + up + "</span> <small>·</small> " +
+        '<span style="color:var(--down)">' + dn + "</span>") +
+      stat("리포트가 몰린 종목", nf.format((s.crowded_stocks || []).length) + "<small> 종목</small>");
+
+    var hl = (d.highlights || []).map(byNid).filter(Boolean);
+    els.hlWrap.style.display = hl.length ? "" : "none";
+    els.highlights.innerHTML = hl.map(card).join("");
+
+    buildFilters();
+    renderList();
+    els.note.innerHTML =
+      "요약은 리포트 본문에서 <b>원문 문장을 그대로 골라</b> 이은 것입니다(자동 추출). " +
+      "새로 쓴 문장이 아니며, 요지를 옮기는 과정에서 맥락이 빠질 수 있으니 " +
+      "판단은 <b>세부 리포트 원문</b>으로 하십시오. 제목을 누르면 네이버 상세, " +
+      "「원문 PDF」를 누르면 증권사가 낸 리포트 파일로 갑니다.<br>" +
+      "목표주가·투자의견은 본문에서 기계로 뽑은 값이라 <b>원문과 다를 수 있습니다</b>. " +
+      "본 화면은 정보 제공 목적의 참고 자료이며, 투자 판단과 그 결과에 대한 책임은 이용자에게 있습니다." +
+      (d.extraction && d.extraction.warning ? "<br><b style='color:var(--series-6)'>⚠ " + esc(d.extraction.warning) + "</b>" : "");
+  }
+
+  function stat(k, v) {
+    return '<div class="stat"><div class="k">' + esc(k) + '</div><div class="v">' + v + "</div></div>";
+  }
+
+  function byNid(nid) {
+    var all = (state.data && state.data.reports) || [];
+    for (var i = 0; i < all.length; i++) if (all[i].nid === nid) return all[i];
+    return null;
+  }
+
+  function opClass(op) {
+    if (/매도|축소/.test(op)) return "sell";
+    if (/중립|보유/.test(op)) return "hold";
+    return "";
+  }
+
+  function card(r) {
+    var st = r.stock || {};
+    var tags = ['<span class="tag cat">' + esc(r.category) + "</span>"];
+    if (st.name) tags.push('<span class="tag stock">' + esc(st.name) + "</span>");
+    if (r.opinion) tags.push('<span class="tag op ' + opClass(r.opinion) + '">' + esc(r.opinion) + "</span>");
+    if (r.target_price) {
+      var mv = r.target_move === "상향" ? '<span class="mv-up"> ▲상향</span>'
+        : r.target_move === "하향" ? '<span class="mv-dn"> ▼하향</span>'
+        : r.target_move ? " " + esc(r.target_move) : "";
+      tags.push('<span class="tag tp">목표 ' + nf.format(r.target_price) + "원" + mv + "</span>");
+    }
+    var sum = r.summary
+      ? '<div class="sum">' + esc(r.summary) + "</div>"
+      : '<div class="sum none">본문 요약을 아직 받지 못했습니다 — 제목과 원문으로 확인하십시오.</div>';
+    var meta = [r.broker, r.date, r.views != null ? "조회 " + nf.format(r.views) : null]
+      .filter(Boolean).map(esc).join(' <span class="sep">·</span> ');
+
+    var links = ['<a class="go" href="' + esc(r.url) + '" target="_blank" rel="noopener">세부 리포트 →</a>'];
+    if (r.pdf) links.push('<a class="go" href="' + esc(r.pdf) + '" target="_blank" rel="noopener">원문 PDF ↓</a>');
+    if (st.code) links.push('<a class="go" href="../../index.html?code=' + esc(st.code) + '">종목 대시보드</a>');
+    if (r.excerpt) links.push('<button type="button" data-more="1">본문 발췌</button>');
+
+    return '<article class="rp" data-url="' + esc(r.url) + '">' +
+      '<div class="tags">' + tags.join("") + "</div>" +
+      '<a class="t" href="' + esc(r.url) + '" target="_blank" rel="noopener">' + esc(r.title) + "</a>" +
+      sum +
+      (r.excerpt ? '<div class="ex">' + esc(r.excerpt) + "…</div>" : "") +
+      '<div class="foot"><span>' + meta + "</span>" + links.join("") + "</div>" +
+      "</article>";
+  }
+
+  /* ================= 걸러 보기 ================= */
+  function buildFilters() {
+    var reps = state.data.reports || [];
+    var cats = {}, brokers = {};
+    reps.forEach(function (r) {
+      cats[r.category] = (cats[r.category] || 0) + 1;
+      if (r.broker) brokers[r.broker] = (brokers[r.broker] || 0) + 1;
+    });
+    var chips = ['<button class="chip' + (state.cat === "전체" ? " on" : "") + '" data-cat="전체">전체' +
+      '<span class="n">' + reps.length + "</span></button>"];
+    Object.keys(cats).forEach(function (c) {
+      chips.push('<button class="chip' + (state.cat === c ? " on" : "") + '" data-cat="' + esc(c) + '">' +
+        esc(c) + '<span class="n">' + cats[c] + "</span></button>");
+    });
+    var bl = Object.keys(brokers).sort(function (a, b) { return brokers[b] - brokers[a]; });
+    chips.push('<select id="broker"><option value="전체">증권사 전체</option>' +
+      bl.map(function (b) {
+        return '<option value="' + esc(b) + '"' + (state.broker === b ? " selected" : "") + ">" +
+          esc(b) + " (" + brokers[b] + ")</option>";
+      }).join("") + "</select>");
+    chips.push('<select id="sort">' +
+      '<option value="recent">최신순</option>' +
+      '<option value="views">조회순</option>' +
+      '<option value="target">목표주가 변경 먼저</option>' +
+      "</select>");
+    els.filters.innerHTML = chips.join("");
+    els.filters.querySelectorAll("[data-cat]").forEach(function (b) {
+      b.addEventListener("click", function () { state.cat = b.getAttribute("data-cat"); buildFilters(); renderList(); });
+    });
+    document.getElementById("broker").addEventListener("change", function (e) {
+      state.broker = e.target.value; renderList();
+    });
+    var sortSel = document.getElementById("sort");
+    sortSel.value = state.sort;
+    sortSel.addEventListener("change", function (e) { state.sort = e.target.value; renderList(); });
+  }
+
+  function renderList() {
+    var q = state.q.trim().toLowerCase();
+    var reps = (state.data.reports || []).filter(function (r) {
+      if (state.cat !== "전체" && r.category !== state.cat) return false;
+      if (state.broker !== "전체" && r.broker !== state.broker) return false;
+      if (!q) return true;
+      var hay = [r.title, r.broker, r.summary, (r.stock || {}).name, (r.stock || {}).code]
+        .filter(Boolean).join(" ").toLowerCase();
+      return hay.indexOf(q) >= 0;
+    });
+    reps = reps.slice().sort(function (a, b) {
+      if (state.sort === "views") return (b.views || 0) - (a.views || 0);
+      if (state.sort === "target") {
+        var am = a.target_move ? 1 : 0, bm = b.target_move ? 1 : 0;
+        if (am !== bm) return bm - am;
+      }
+      return String(b.date || "").localeCompare(String(a.date || "")) || (b.views || 0) - (a.views || 0);
+    });
+    els.cnt.textContent = reps.length + "건" + (q ? ' · "' + q + '" 검색' : "");
+    els.list.innerHTML = reps.length
+      ? reps.map(card).join("")
+      : '<div class="state"><div class="big">🔍</div><div>걸러 낸 조건에 맞는 리포트가 없습니다.</div></div>';
+  }
+
+  /* 카드 아무 데나 눌러도 세부 리포트로 간다. 링크·버튼을 누른 것은 그대로 둔다. */
+  document.addEventListener("click", function (e) {
+    var more = e.target.closest("[data-more]");
+    if (more) { more.closest(".rp").classList.toggle("open"); return; }
+    if (e.target.closest("a")) return;
+    var cardEl = e.target.closest(".rp");
+    if (!cardEl) return;
+    if (window.getSelection && String(window.getSelection())) return;   // 글자를 긁는 중이면 두고 본다
+    var url = cardEl.getAttribute("data-url");
+    if (url) window.open(url, "_blank", "noopener");
+  });
+
+  els.q.addEventListener("input", function (e) { state.q = e.target.value; if (state.data) renderList(); });
+
+  /* ================= 지난 판 ================= */
+  getJSON(DATA_DIR + "index.json").then(function (ix) {
+    var days = ix.days || [];
+    els.day.innerHTML = '<option value="">최신</option>' +
+      days.map(function (d) { return '<option value="' + d + '">' + d + "</option>"; }).join("");
+  }).catch(function () { els.day.style.display = "none"; });
+
+  els.day.addEventListener("change", function (e) { load(e.target.value); });
+
+  load("");
+})();
+</script>
+</body>
+</html>

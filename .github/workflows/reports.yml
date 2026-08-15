@@ -84,7 +84,8 @@ jobs:
           import json
           d = json.load(open('data/reports/latest.json', encoding='utf-8'))
           s, x = d['summary'], d.get('extraction', {})
-          print(f"::notice::리포트 {s['count_collected']}건 (오늘 {s['count_today']}건) "
+          print(f"::notice::리포트 {s['count_collected']}건 "
+                f"({s['report_date']} 자 {s['count_report_date']}건) "
                 f"· 본문 {x.get('detail_opened', 0)}건 중 {x.get('summarized', 0)}건 요약")
           for k, v in sorted(d['sources'].items()):
               if not v['ok']:
