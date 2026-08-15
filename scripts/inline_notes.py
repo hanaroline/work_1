@@ -29,6 +29,13 @@ table.data .sub{display:block;margin-top:3px;font-size:13px;font-weight:400;
   overflow-wrap:anywhere;max-width:330px}
 @media (min-width:521px){ table.data tbody th.hasnote{min-width:150px} }
 @media (max-width:520px){ table.data .sub{font-size:12px;max-width:180px} }
+@media (max-width:400px){ table.data .sub{max-width:150px} }
+/* 340px 은 아직 쓰이는 폭이다(갤럭시 폴드 접은 화면). 여기서는 여백을 더 줄인다. */
+/* 껍데기의 `table.data.compact th{padding:6px}` 가 클래스 두 개라 더 세다.
+   compact 도 같이 적어야 이긴다. */
+@media (max-width:360px){ table.data th,table.data td,
+  table.data.compact th,table.data.compact td{padding-left:4px;padding-right:4px}
+  table.data .sub{max-width:120px} }
 @media print{ table.data .sub{display:block!important;font-size:7.5pt;max-width:none} }
 """
 

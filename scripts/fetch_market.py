@@ -17,6 +17,7 @@ import json
 import os
 import re
 import sys
+import time
 import urllib.error
 import urllib.parse
 import urllib.request
@@ -986,7 +987,15 @@ def _ecos_at(code, target, span=16):
     """
     tail = "817Y002/D/%s/%s/%s" % ((target - timedelta(days=span)).strftime("%Y%m%d"),
                                    target.strftime("%Y%m%d"), code)
-    j = json.loads(_get(_ecos_url("StatisticSearch", tail, rows=10), timeout=45))
+    url = _ecos_url("StatisticSearch", tail, rows=10)
+    for attempt in (0, 1):                    # ECOS 는 자주 끊긴다. 한 번은 다시 본다.
+        try:
+            j = json.loads(_get(url, timeout=30))
+            break
+        except Exception:                                          # noqa: BLE001
+            if attempt:
+                raise
+            time.sleep(2)
     rows = (j.get("StatisticSearch", {}) or {}).get("row", [])
     for r in reversed(rows):
         try:
@@ -999,9 +1008,9 @@ def _ecos_at(code, target, span=16):
 def _ecos_perf(code, now, spot):
     """국내 금리의 기간 변화(bp). 되짚는 기준은 달력이다(4-3절과 같다)."""
     d0 = now.date()
-    wants = (("w1", d0 - timedelta(days=7)), ("m1", _months_before(d0, 1)),
-             ("m3", _months_before(d0, 3)), ("m6", _months_before(d0, 6)),
-             ("y1", _months_before(d0, 12)),
+    # 1주는 부르지 않는다 — 이미 받아 둔 10영업일 계열에 들어 있다.
+    wants = (("m1", _months_before(d0, 1)), ("m3", _months_before(d0, 3)),
+             ("m6", _months_before(d0, 6)), ("y1", _months_before(d0, 12)),
              ("ytd", date(d0.year, 1, 1) - timedelta(days=1)))
     out = {}
     for key, target in wants:
@@ -1108,16 +1117,20 @@ def ecos_rates(now, dump_dir=None):
 
     # 기간 변화(bp). 브리핑이 실제로 인용하는 세 가지만 되짚는다 — 샘플 키에서는
     # 항목 하나에 서너 번을 더 불러야 해서 다 하면 ECOS 가 버티지 못한다.
-    for key in ("ktb3y", "ktb10y", "cd91"):
+    for key in ("ktb3y", "ktb10y"):        # 두 가지만. ECOS 는 부를수록 잘 끊긴다.
         if key not in out or key not in tried:
             continue
         spot = out[key]["value"]
+        ser = out[key].get("series") or []
         try:
             p = _ecos_perf(tried[key], now, spot)
         except Exception as e:                                # noqa: BLE001
             errs.append("%s 기간변화 -> %s" % (key, str(e)[:60]))
             continue
         if p:
+            # 1주는 받아 둔 계열에서 바로 뽑는다(추가 호출 없음)
+            if len(ser) >= 6:
+                p["w1"] = round((spot - ser[-6]["value"]) * 100, 1)
             out[key]["perf"] = p
         else:
             errs.append("%s 기간변화 -> 되짚은 값이 하나도 없다" % key)
