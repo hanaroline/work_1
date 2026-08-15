@@ -42,16 +42,23 @@ OUT_DIR = "data/reports"
 RAW_DIR = "data/reports/raw"
 BASE = "https://finance.naver.com/research/"
 
-# 목록 여섯 판. 이름 / 목록 URL / 상세 URL 앞자리 / 몇 쪽까지 받을지.
-# 종목분석은 하루에 백 건이 넘어 두 쪽을 받고, 나머지는 한 쪽이면 넉넉하다.
+# 목록 여섯 판. 이름 / 목록 URL / 상세 URL 앞자리 / 몇 쪽까지 받을지 /
+# 모바일 API 의 길 이름.
+# 종목분석은 하루에 백 건이 넘어 세 쪽을 받고, 나머지는 한 쪽이면 넉넉하다.
 CATEGORIES = [
-    ("종목분석", "company_list.naver", "company_read.naver", 3),
-    ("산업분석", "industry_list.naver", "industry_read.naver", 2),
-    ("시황정보", "market_info_list.naver", "market_info_read.naver", 1),
-    ("투자정보", "invest_list.naver", "invest_read.naver", 1),
-    ("경제분석", "economy_list.naver", "economy_read.naver", 1),
-    ("채권분석", "debenture_list.naver", "debenture_read.naver", 1),
+    ("종목분석", "company_list.naver", "company_read.naver", 3, "company"),
+    ("산업분석", "industry_list.naver", "industry_read.naver", 2, "industry"),
+    ("시황정보", "market_info_list.naver", "market_info_read.naver", 1, "marketInfo"),
+    ("투자정보", "invest_list.naver", "invest_read.naver", 1, "invest"),
+    ("경제분석", "economy_list.naver", "economy_read.naver", 1, "economy"),
+    ("채권분석", "debenture_list.naver", "debenture_read.naver", 1, "debenture"),
 ]
+
+# 네이버 모바일은 같은 목록을 **JSON 으로** 준다. HTML 표를 긁는 것보다
+# 훨씬 튼튼하고, 무엇보다 **제목이 잘리지 않는다**(목록 HTML 은 「…여전..」
+# 처럼 잘라 준다). 다만 첨부 PDF 주소는 JSON 에 없어 HTML 목록에서 따로
+# 가져와 nid 로 이어 붙인다.
+NAVER_API = "https://m.stock.naver.com/api/research/%s?page=%d&pageSize=%d"
 
 # 상세 본문을 몇 건까지 열어 볼지. 한 건에 1초 남짓 걸리므로 상한을 둔다.
 # 나머지는 제목·증권사·목표주가만 담긴 채로 목록에 남는다(요약은 비어 있다).
@@ -209,7 +216,47 @@ def parse_list(html, read_path):
     return out
 
 
-def fetch_category(name, list_path, read_path, pages, dump_dir=None):
+def api_rows(name, api_path, read_path, pages, per_page=30):
+    """모바일 JSON 목록. 실패하면 예외를 던져 HTML 목록으로 넘긴다."""
+    rows, seen = [], set()
+    for page in range(1, pages + 1):
+        body = _get(NAVER_API % (api_path, page, per_page),
+                    referer="https://m.stock.naver.com/")
+        got = json.loads(body)
+        if not isinstance(got, list) or not got:
+            if page == 1:
+                raise ValueError("%s API 가 빈 목록을 줬다" % name)
+            break
+        for it in got:
+            nid = str(it.get("researchId") or "")
+            if not nid or nid in seen:
+                continue
+            seen.add(nid)
+            code = (it.get("itemCode") or "").strip()
+            try:
+                views = int(str(it.get("readCount") or "").replace(",", ""))
+            except ValueError:
+                views = None
+            rows.append({
+                "nid": nid, "category": name, "title": (it.get("title") or "").strip(),
+                "url": BASE + read_path + "?nid=" + nid,
+                "stock": {"code": code, "name": it.get("itemName")} if code else None,
+                # 산업분석은 category 칸에 업종이 온다(「철강금속」). 판 이름과
+                # 같으면 알맹이가 없는 것이니 버린다.
+                "sector": it.get("category") if it.get("category") != name else None,
+                "broker": (it.get("brokerName") or "").strip() or None,
+                "date": (it.get("writeDate") or "").strip() or None,
+                "views": views, "pdf": None, "mobile_url": it.get("endUrl"),
+                "source": "네이버 리서치", "via": "api",
+            })
+    if not rows:
+        raise ValueError("%s API 에서 한 줄도 못 얻었다" % name)
+    return rows
+
+
+def html_rows(name, list_path, read_path, pages, dump_dir=None):
+    """예전 길 — 목록 HTML 표. API 가 막혔을 때 쓰고, 평소에는 첨부 PDF
+    주소만 여기서 얻어 API 줄에 이어 붙인다."""
     rows, seen = [], set()
     for page in range(1, pages + 1):
         html = _get(_list_url(list_path, page), encoding="cp949",
@@ -226,8 +273,38 @@ def fetch_category(name, list_path, read_path, pages, dump_dir=None):
                 continue
             seen.add(r["nid"])
             r["category"] = name
+            r["source"] = "네이버 리서치"
+            r["via"] = "html"
             rows.append(r)
     return rows
+
+
+def fetch_category(name, list_path, read_path, pages, api_path, dump_dir=None):
+    """한 판을 받는다. JSON 을 앞에 세우고 HTML 로 첨부를 채운다.
+
+    돌려주는 것은 (줄 목록, 어떻게 받았는지) 이다.
+    """
+    how = "api"
+    try:
+        rows = api_rows(name, api_path, read_path, pages)
+    except Exception as api_err:                                # noqa: BLE001
+        # API 가 막히면 예전 길로 간다. 화면은 그대로 뜬다.
+        rows = html_rows(name, list_path, read_path, pages, dump_dir)
+        for r in rows:
+            r["api_error"] = "%s: %s" % (type(api_err).__name__, api_err)
+        return rows, "html(api 실패)"
+
+    # 첨부 PDF 는 JSON 에 없다. HTML 목록에서 nid→pdf 만 얻어 이어 붙인다.
+    try:
+        pdfs = {r["nid"]: r["pdf"] for r in html_rows(name, list_path, read_path, pages)
+                if r.get("pdf")}
+        for r in rows:
+            if pdfs.get(r["nid"]):
+                r["pdf"] = pdfs[r["nid"]]
+        how = "api+html첨부"
+    except Exception:                                           # noqa: BLE001
+        pass                                     # 첨부는 상세에서도 채워진다
+    return rows, how
 
 
 # ---------------------------------------------------------------- 상세
@@ -463,9 +540,11 @@ def digest(reports, day):
     """그날 판의 머리 요약. 화면 맨 위와 브리핑이 그대로 쓴다."""
     todays = [r for r in reports if r.get("date") == day]
     base = todays or reports
-    by_cat, by_broker, stocks = {}, {}, {}
+    by_cat, by_broker, stocks, by_source = {}, {}, {}, {}
     for r in base:
         by_cat[r["category"]] = by_cat.get(r["category"], 0) + 1
+        src = r.get("source") or "-"
+        by_source[src] = by_source.get(src, 0) + 1
         if r.get("broker"):
             by_broker[r["broker"]] = by_broker.get(r["broker"], 0) + 1
         st = r.get("stock") or {}
@@ -495,6 +574,7 @@ def digest(reports, day):
         "count_report_date": len(todays),
         "count_collected": len(reports),
         "by_category": by_cat,
+        "by_source": by_source,
         "by_broker": sorted(({"broker": b, "count": c} for b, c in by_broker.items()),
                             key=lambda e: -e["count"])[:20],
         "crowded_stocks": crowd,
@@ -604,16 +684,17 @@ def main():
     }
 
     reports = []
-    for name, list_path, read_path, pages in CATEGORIES:
+    for name, list_path, read_path, pages, api_path in CATEGORIES:
+        key = "네이버 리서치:" + name
         try:
-            got = fetch_category(name, list_path, read_path, pages, dump_dir=RAW_DIR)
+            got, how = fetch_category(name, list_path, read_path, pages,
+                                      api_path, dump_dir=RAW_DIR)
             reports.extend(got)
-            out["sources"]["naver:" + list_path] = {"ok": True, "count": len(got)}
+            out["sources"][key] = {"ok": True, "count": len(got), "via": how}
         except urllib.error.HTTPError as e:
-            out["sources"]["naver:" + list_path] = {"ok": False, "error": "HTTP %s" % e.code}
+            out["sources"][key] = {"ok": False, "error": "HTTP %s" % e.code}
         except Exception as e:                                   # noqa: BLE001
-            out["sources"]["naver:" + list_path] = {
-                "ok": False, "error": "%s: %s" % (type(e).__name__, e)}
+            out["sources"][key] = {"ok": False, "error": "%s: %s" % (type(e).__name__, e)}
 
     if not reports:
         raise SystemExit("리포트를 한 건도 받지 못했다 — 목록 구조가 바뀌었을 수 있다. "
@@ -666,7 +747,8 @@ def main():
     print("리포트 %d건 (%s 자 %d건) · 본문 %d건 요약 %d건"
           % (s["count_collected"], s["report_date"], s["count_report_date"], opened, summarized))
     for k, v in sorted(out["sources"].items()):
-        print("  %-34s %s" % (k, "%d건" % v["count"] if v["ok"] else "실패 " + v["error"]))
+        print("  %-24s %s" % (k, ("%d건 (%s)" % (v["count"], v.get("via", "-"))
+                                  if v["ok"] else "실패 " + v["error"])))
     return 0
 
 
