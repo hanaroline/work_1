@@ -1,0 +1,1372 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>고객 상품 제안서 생성기</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --primary:#F58220; --primary-active:#CB6015; --primary-soft:#FAB072;
+  --secondary:#043B72;
+  --canvas:#FFFFFF; --surface-soft:#ECEFF4; --surface-subtle:#F7F8FA;
+  --hairline:#CDCECB; --hairline-soft:#E5E4E1; --cell-hi:#D7D7D7;
+  --ink:#1A1A1A; --body:#3D3D3D; --muted:#6C6C6C; --muted-soft:#84888B;
+  --line-dark:#49535B; --line-mid:#84888B;
+  --success:#2E8540; --warning:#D4A017; --error:#C62828;
+  --font-kr:'Spoqa Han Sans Neo','Noto Sans KR','Apple SD Gothic Neo',sans-serif;
+  --font-en:'Inter','Aptos','Segoe UI',system-ui,sans-serif;
+  --font-num:'Inter','SF Mono',monospace;
+  --space-section:104px; --space-block:56px; --space-content:28px; --space-tight:14px;
+}
+@media (max-width:768px){ :root{ --space-section:72px; --space-block:36px; } }
+
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--canvas);color:var(--body);font-family:var(--font-kr);
+  font-size:19px;line-height:1.65;font-variant-numeric:tabular-nums}
+html[lang="en"] body{font-family:var(--font-en)}
+h1,h2,h3{color:var(--ink);margin:0}
+h1{font-size:34px;font-weight:700;line-height:1.25;letter-spacing:-.3px}
+h2{font-size:26px;font-weight:600;line-height:1.3}
+h3{font-size:22px;font-weight:600;line-height:1.3}
+@media (max-width:768px){ h1{font-size:26px} h2{font-size:22px} h3{font-size:19px} }
+p{margin:0 0 var(--space-tight)}
+a{color:var(--secondary)}
+.num{font-family:var(--font-num);font-variant-numeric:tabular-nums}
+
+.page{max-width:1200px;margin:0 auto;padding:0 32px}
+@media (max-width:768px){ .page{padding:0 20px} }
+
+/* ---------- masthead ---------- */
+.masthead{border-bottom:1px solid var(--hairline);background:var(--canvas)}
+.masthead-in{max-width:1200px;margin:0 auto;padding:22px 32px;display:flex;
+  align-items:flex-start;justify-content:space-between;gap:19px}
+@media (max-width:768px){ .masthead-in{padding:16px 20px} }
+.masthead .tag{font-size:14px;letter-spacing:.6px;color:var(--muted);
+  text-transform:uppercase;display:block;margin-bottom:5px}
+.masthead .title{font-size:26px;font-weight:700;color:var(--ink);line-height:1.25}
+@media (max-width:768px){ .masthead .title{font-size:20px} }
+
+.lang-toggle{display:inline-flex;border:1px solid var(--hairline);border-radius:2px;
+  overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,.06);flex:none;background:#fff}
+.lang-toggle button{appearance:none;border:0;background:#fff;color:var(--muted);
+  font-family:var(--font-en);font-size:14px;font-weight:500;letter-spacing:.5px;
+  padding:10px 17px;cursor:pointer;line-height:1}
+.lang-toggle button+button{border-left:1px solid var(--hairline)}
+.lang-toggle button:hover:not([aria-checked="true"]){background:var(--surface-subtle);color:var(--ink)}
+.lang-toggle button[aria-checked="true"]{background:var(--primary);color:#fff}
+.lang-toggle button:focus-visible{outline:2px solid var(--primary);outline-offset:-2px}
+
+/* ---------- section ---------- */
+.section{margin-top:var(--space-block)}
+.section-rule{height:1px;background:var(--primary);margin-bottom:19px}
+.section-title{font-size:26px;font-weight:700;color:var(--ink);margin:0 0 var(--space-tight)}
+.section-lead{color:var(--muted);font-size:17px;margin-bottom:var(--space-content)}
+.eyebrow{font-size:14px;letter-spacing:.6px;color:var(--primary-active);
+  font-weight:500;text-transform:uppercase;margin-bottom:5px}
+
+/* ---------- form ---------- */
+.form-wrap{padding-bottom:var(--space-block)}
+.intro{margin:var(--space-block) 0 var(--space-content)}
+.intro p{font-size:17px;color:var(--muted);max-width:70ch}
+fieldset{border:0;padding:0;margin:0 0 var(--space-lg,28px)}
+legend{padding:0;font-size:17px;font-weight:600;color:var(--ink);margin-bottom:var(--space-tight)}
+.grid{display:grid;gap:19px;grid-template-columns:repeat(3,1fr)}
+@media (max-width:1023px){ .grid{grid-template-columns:repeat(2,1fr)} }
+@media (max-width:640px){ .grid{grid-template-columns:1fr} }
+.field{display:flex;flex-direction:column;gap:6px}
+.field label,.field .lbl{font-size:16px;font-weight:500;color:var(--ink);letter-spacing:.2px}
+.field .hint{font-size:14px;color:var(--muted-soft);line-height:1.4}
+input[type=text],input[type=number],select{
+  font-family:inherit;font-size:17px;color:var(--ink);background:#fff;
+  border:1px solid var(--hairline);border-radius:4px;padding:10px 12px;width:100%;
+  font-variant-numeric:tabular-nums}
+input:focus-visible,select:focus-visible{outline:2px solid var(--primary);outline-offset:-1px;border-color:var(--primary)}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{position:relative}
+.chip input{position:absolute;opacity:0;width:0;height:0}
+.chip span{display:inline-block;border:1px solid var(--hairline);border-radius:2px;
+  padding:8px 14px;font-size:16px;color:var(--body);cursor:pointer;background:#fff;user-select:none}
+.chip input:checked+span{background:var(--primary);border-color:var(--primary);color:#fff}
+.chip input:focus-visible+span{outline:2px solid var(--primary);outline-offset:2px}
+.actions{display:flex;flex-wrap:wrap;gap:12px;align-items:center;margin-top:var(--space-content);
+  padding-top:var(--space-content);border-top:1px solid var(--hairline-soft)}
+.btn{font-family:inherit;font-size:17px;font-weight:500;padding:11px 22px;height:44px;
+  border-radius:2px;cursor:pointer;border:1px solid var(--primary);line-height:1}
+.btn-primary{background:var(--primary);color:#fff}
+.btn-primary:hover{background:var(--primary-active);border-color:var(--primary-active)}
+.btn-ghost{background:#fff;color:var(--primary-active)}
+.btn-ghost:hover{background:var(--surface-subtle)}
+.btn-quiet{background:#fff;color:var(--muted);border-color:var(--hairline)}
+.btn-quiet:hover{background:var(--surface-subtle);color:var(--ink)}
+.btn:focus-visible{outline:2px solid var(--primary);outline-offset:2px}
+.err{color:var(--error);font-size:16px;margin-top:10px;min-height:1px}
+
+/* ---------- report ---------- */
+#report[hidden]{display:none}
+.report-head{border-top:3px solid var(--primary);padding-top:var(--space-content);
+  margin-top:var(--space-block)}
+.report-head .to{font-size:17px;color:var(--muted);margin-bottom:6px}
+.report-head h1{margin-bottom:10px}
+.meta-row{display:flex;flex-wrap:wrap;gap:8px 28px;font-size:16px;color:var(--muted);
+  border-top:1px solid var(--hairline-soft);margin-top:19px;padding-top:12px}
+.meta-row b{color:var(--ink);font-weight:500}
+
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--hairline-soft);
+  border:1px solid var(--hairline-soft)}
+@media (max-width:900px){ .stats{grid-template-columns:repeat(2,1fr)} }
+.stat{background:#fff;padding:19px}
+.stat .k{font-size:16px;font-weight:500;letter-spacing:.6px;color:var(--muted);line-height:1.2}
+.stat .v{font-size:30px;font-weight:700;color:var(--ink);line-height:1.15;margin-top:8px;
+  font-family:var(--font-num)}
+.stat .v.accent{color:var(--primary-active)}
+.stat .v.blue{color:var(--secondary)}
+.stat .s{font-size:14px;color:var(--muted-soft);margin-top:4px}
+
+.callout{background:var(--primary);color:#fff;border-radius:4px;padding:38px}
+@media (max-width:768px){ .callout{padding:24px} }
+.callout h3{color:#fff;margin-bottom:12px}
+.callout ul{margin:0;padding-left:20px}
+.callout li{margin-bottom:8px;font-size:17px;line-height:1.6}
+.callout li:last-child{margin-bottom:0}
+
+.soft{background:var(--surface-soft);border-radius:4px;padding:24px}
+.note{background:var(--surface-subtle);border-left:3px solid var(--primary-soft);
+  padding:16px 19px;font-size:16px;color:var(--body);border-radius:0 4px 4px 0}
+
+table{width:100%;border-collapse:collapse;border:1px solid var(--hairline);font-size:17px}
+caption{caption-side:top;text-align:left;font-size:14px;color:var(--muted);padding-bottom:8px}
+th,td{border:1px solid var(--hairline-soft);padding:10px 12px;text-align:left;vertical-align:top}
+thead th{background:var(--primary-soft);color:var(--ink);font-weight:700;font-size:16px;white-space:nowrap}
+tbody tr:hover{background:var(--surface-subtle)}
+td.n,th.n{text-align:right;font-family:var(--font-num);font-variant-numeric:tabular-nums;white-space:nowrap}
+tr.total td{background:var(--cell-hi);font-weight:700;color:var(--ink)}
+.table-scroll{overflow-x:auto;-webkit-overflow-scrolling:touch}
+@media (max-width:640px){ .table-scroll table{min-width:560px} }
+.swatch{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:8px;
+  vertical-align:baseline;flex:none}
+
+.two-col{display:grid;grid-template-columns:minmax(280px,420px) 1fr;gap:38px;align-items:start}
+@media (max-width:900px){ .two-col{grid-template-columns:1fr;gap:28px} }
+.two-col>*{min-width:0}
+.chart-wrapper{min-width:0}
+.chart-wrapper svg{display:block;width:100%;height:auto}
+.donut-wrap{max-width:360px;margin:0 auto}
+@media (min-width:901px){ .donut-wrap{margin:0} }
+.legend{list-style:none;margin:19px 0 0;padding:0;font-size:16px}
+.legend li{display:flex;flex-wrap:wrap;align-items:baseline;gap:0 12px;padding:6px 0;
+  border-bottom:1px solid var(--hairline-soft)}
+.legend .nm{flex:1 1 55%;min-width:0;overflow-wrap:anywhere}
+.legend .pc{flex:0 1 auto;min-width:0;margin-left:auto;text-align:right;
+  font-family:var(--font-num);font-weight:600;color:var(--ink);overflow-wrap:anywhere}
+
+.steps{list-style:none;counter-reset:s;margin:0;padding:0}
+.steps li{counter-increment:s;position:relative;padding:14px 0 14px 46px;
+  border-bottom:1px solid var(--hairline-soft);font-size:17px}
+.steps li::before{content:counter(s);position:absolute;left:0;top:14px;width:28px;height:28px;
+  background:var(--secondary);color:#fff;border-radius:2px;font-family:var(--font-num);
+  font-size:15px;font-weight:600;display:flex;align-items:center;justify-content:center;line-height:1}
+.steps li b{color:var(--ink);font-weight:600}
+
+.disclaimer{border-top:1px solid var(--hairline);margin-top:var(--space-block);
+  padding:var(--space-content) 0 var(--space-block);font-size:14px;color:var(--muted);line-height:1.55}
+.disclaimer p{margin-bottom:8px}
+
+/* tune panel */
+.tune{border:1px solid var(--hairline);border-radius:4px;padding:19px;background:#fff}
+.tune-row{display:grid;grid-template-columns:120px 1fr 64px;gap:12px;align-items:center;
+  padding:8px 0;font-size:16px}
+@media (max-width:640px){ .tune-row{grid-template-columns:96px 1fr 56px} }
+.tune-row input[type=range]{width:100%;accent-color:var(--primary)}
+.tune-row .val{text-align:right;font-family:var(--font-num);font-weight:600;color:var(--ink)}
+.tune summary{cursor:pointer;font-size:17px;font-weight:500;color:var(--primary-active);
+  list-style:none;padding:0}
+.tune summary::-webkit-details-marker{display:none}
+.tune summary::before{content:"+ ";font-family:var(--font-num)}
+.tune[open] summary::before{content:"− "}
+.tune-body{margin-top:var(--space-tight);padding-top:var(--space-tight);border-top:1px solid var(--hairline-soft)}
+
+.tooltip{position:fixed;background:#1A1A1A;color:#fff;font-size:13px;padding:6px 10px;
+  border-radius:2px;pointer-events:none;z-index:50;white-space:nowrap;
+  font-family:var(--font-num);opacity:0;transition:opacity .08s}
+.tooltip.on{opacity:1}
+.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;
+  clip:rect(0,0,0,0);white-space:nowrap;border:0}
+
+/* ---------- print ---------- */
+@media print{
+  .lang-toggle,#formSection,.masthead,.no-print{display:none!important}
+  body{font-size:12pt;line-height:1.4;color:#000}
+  .page{max-width:100%;padding:0}
+  .report-head{margin-top:0;page-break-after:avoid}
+  h1{font-size:20pt} h2{font-size:14pt} h3{font-size:12pt}
+  .section{margin-top:20pt}
+  .section-title{font-size:14pt}
+  .stat .v{font-size:17pt}
+  table{font-size:9.5pt;page-break-inside:avoid}
+  th,td{padding:5pt 6pt}
+  .chart-wrapper,.callout,.soft,.note{page-break-inside:avoid}
+  .section-rule,h2,h3{page-break-after:avoid}
+  .callout{background:#F58220!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  thead th{background:#FAB072!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  tr.total td{background:#D7D7D7!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  .disclaimer{page-break-inside:avoid}
+  @page{size:A4;margin:14mm 12mm}
+}
+</style>
+</head>
+<body>
+
+<header class="masthead no-print">
+  <div class="masthead-in">
+    <div>
+      <span class="tag" data-i18n="brandTag">Wealth Management</span>
+      <span class="title" data-i18n="appTitle">고객 상품 제안서 생성기</span>
+    </div>
+    <div class="lang-toggle" role="radiogroup" aria-label="Language">
+      <button type="button" id="btnKo" role="radio" aria-checked="true" onclick="setLang('ko')">KO</button>
+      <button type="button" id="btnEn" role="radio" aria-checked="false" onclick="setLang('en')">EN</button>
+    </div>
+  </div>
+</header>
+
+<main class="page">
+
+<!-- ============ 입력 폼 ============ -->
+<section id="formSection" class="form-wrap">
+  <div class="intro">
+    <div class="eyebrow" data-i18n="step1">STEP 1</div>
+    <h1 data-i18n="formTitle">고객 기본 정보 입력</h1>
+    <p data-i18n="formLead">아래 항목을 채우면 위험성향·투자기간·목적에 맞춘 자산배분과 상품 구성, 기대 성과, 절세계좌 활용안이 담긴 제안서가 자동으로 만들어집니다.</p>
+  </div>
+
+  <form id="pform" novalidate>
+    <fieldset>
+      <legend data-i18n="fsCustomer">고객 정보</legend>
+      <div class="grid">
+        <div class="field">
+          <label for="fName" data-i18n="lName">고객명</label>
+          <input type="text" id="fName" autocomplete="off" data-ph="phName" placeholder="예: 김미래">
+        </div>
+        <div class="field">
+          <label for="fAge" data-i18n="lAge">연령</label>
+          <input type="number" id="fAge" min="19" max="99" step="1" value="45">
+          <span class="hint" data-i18n="hAge">만 나이 기준</span>
+        </div>
+        <div class="field">
+          <label for="fIncome" data-i18n="lIncome">총급여 구간</label>
+          <select id="fIncome">
+            <option value="low" data-i18n="incLow">5,500만원 이하</option>
+            <option value="high" selected data-i18n="incHigh">5,500만원 초과</option>
+          </select>
+          <span class="hint" data-i18n="hIncome">연금계좌 세액공제율 산정에만 사용</span>
+        </div>
+      </div>
+    </fieldset>
+
+    <fieldset>
+      <legend data-i18n="fsMoney">투자 규모 · 기간</legend>
+      <div class="grid">
+        <div class="field">
+          <label for="fLump" data-i18n="lLump">투자 원금 (만원)</label>
+          <input type="number" id="fLump" min="0" step="100" value="10000">
+          <span class="hint" data-i18n="hLump">일시 투자 가능 금액</span>
+        </div>
+        <div class="field">
+          <label for="fMonthly" data-i18n="lMonthly">월 적립액 (만원)</label>
+          <input type="number" id="fMonthly" min="0" step="10" value="100">
+          <span class="hint" data-i18n="hMonthly">없으면 0</span>
+        </div>
+        <div class="field">
+          <label for="fYears" data-i18n="lYears">투자 기간 (년)</label>
+          <input type="number" id="fYears" min="1" max="40" step="1" value="10">
+        </div>
+        <div class="field">
+          <label for="fGoalAmt" data-i18n="lGoalAmt">목표 금액 (만원)</label>
+          <input type="number" id="fGoalAmt" min="0" step="1000" value="0">
+          <span class="hint" data-i18n="hGoalAmt">선택 · 입력 시 달성 확률을 계산</span>
+        </div>
+      </div>
+    </fieldset>
+
+    <fieldset>
+      <legend data-i18n="fsProfile">투자 성향 · 목적</legend>
+      <div class="grid">
+        <div class="field">
+          <label for="fRisk" data-i18n="lRisk">위험성향</label>
+          <select id="fRisk">
+            <option value="1" data-i18n="risk1">안정형</option>
+            <option value="2" data-i18n="risk2">안정추구형</option>
+            <option value="3" selected data-i18n="risk3">위험중립형</option>
+            <option value="4" data-i18n="risk4">적극투자형</option>
+            <option value="5" data-i18n="risk5">공격투자형</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="fGoal" data-i18n="lGoal">투자 목적</label>
+          <select id="fGoal">
+            <option value="retire" selected data-i18n="goalRetire">노후 자금</option>
+            <option value="wealth" data-i18n="goalWealth">목돈 마련</option>
+            <option value="edu" data-i18n="goalEdu">자녀 교육 자금</option>
+            <option value="house" data-i18n="goalHouse">주택 자금</option>
+            <option value="surplus" data-i18n="goalSurplus">여유 자금 운용</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="fFx" data-i18n="lFx">달러 자산 선호</label>
+          <select id="fFx">
+            <option value="0" data-i18n="fxLow">낮음 (원화 중심)</option>
+            <option value="1" selected data-i18n="fxMid">보통</option>
+            <option value="2" data-i18n="fxHigh">높음 (달러 분산 선호)</option>
+          </select>
+        </div>
+      </div>
+      <div class="field" style="margin-top:19px">
+        <span class="lbl" data-i18n="lHold">기존 보유 자산 (복수 선택)</span>
+        <div class="chips" id="fHold">
+          <label class="chip"><input type="checkbox" value="deposit"><span data-i18n="hold_deposit">예금·적금</span></label>
+          <label class="chip"><input type="checkbox" value="stock"><span data-i18n="hold_stock">국내 주식</span></label>
+          <label class="chip"><input type="checkbox" value="foreign"><span data-i18n="hold_foreign">해외 주식</span></label>
+          <label class="chip"><input type="checkbox" value="fund"><span data-i18n="hold_fund">펀드·ETF</span></label>
+          <label class="chip"><input type="checkbox" value="bond"><span data-i18n="hold_bond">채권·RP</span></label>
+          <label class="chip"><input type="checkbox" value="pension"><span data-i18n="hold_pension">연금계좌</span></label>
+          <label class="chip"><input type="checkbox" value="estate"><span data-i18n="hold_estate">부동산</span></label>
+        </div>
+        <span class="hint" data-i18n="hHold">이미 보유한 자산군은 제안서의 중복 점검 항목에 반영됩니다.</span>
+      </div>
+    </fieldset>
+
+    <fieldset>
+      <legend data-i18n="fsPb">작성자</legend>
+      <div class="grid">
+        <div class="field">
+          <label for="fPb" data-i18n="lPb">담당 PB</label>
+          <input type="text" id="fPb" autocomplete="off" data-ph="phPb" placeholder="예: 홍길동 부장">
+        </div>
+        <div class="field">
+          <label for="fBranch" data-i18n="lBranch">지점 · 부서</label>
+          <input type="text" id="fBranch" autocomplete="off" data-ph="phBranch" placeholder="예: 강남WM센터">
+        </div>
+        <div class="field">
+          <label for="fDate" data-i18n="lDate">작성일</label>
+          <input type="text" id="fDate" autocomplete="off" placeholder="2026-08-15">
+        </div>
+      </div>
+    </fieldset>
+
+    <div class="actions">
+      <button type="submit" class="btn btn-primary" data-i18n="btnMake">제안서 생성</button>
+      <button type="button" class="btn btn-quiet" onclick="resetForm()" data-i18n="btnReset">초기화</button>
+      <button type="button" class="btn btn-ghost" onclick="loadSample()" data-i18n="btnSample">예시 값 채우기</button>
+    </div>
+    <div class="err" id="formErr" role="alert"></div>
+  </form>
+</section>
+
+<!-- ============ 제안서 ============ -->
+<section id="report" hidden aria-live="polite"></section>
+
+</main>
+
+<div class="tooltip" id="tip"></div>
+
+<script>
+"use strict";
+
+/* =========================================================================
+   1. 가정치 · 상품 카탈로그  — 사내 라인업/전망에 맞춰 이 블록만 고치면 됩니다.
+   ========================================================================= */
+
+/* 자산 슬리브: 기대수익률(연,%), 변동성(연,%), 상관 그룹 */
+var SLEEVES = {
+  eq_kr : { grp:'eq',   ret:7.0, vol:18.0, color:'#F58220' },
+  eq_dm : { grp:'eq',   ret:8.0, vol:16.0, color:'#043B72' },
+  eq_em : { grp:'eq',   ret:8.5, vol:22.0, color:'#FAB072' },
+  fi_kr : { grp:'fi',   ret:3.5, vol:4.0,  color:'#0086B8' },
+  fi_gl : { grp:'fi',   ret:4.5, vol:7.0,  color:'#AD624E' },
+  alt_re: { grp:'alt',  ret:6.0, vol:15.0, color:'#00A9CE' },
+  alt_gd: { grp:'alt',  ret:4.0, vol:14.0, color:'#F0B26B' },
+  cash  : { grp:'cash', ret:3.0, vol:0.5,  color:'#84888B' }
+};
+var SLEEVE_ORDER = ['eq_kr','eq_dm','eq_em','fi_kr','fi_gl','alt_re','alt_gd','cash'];
+var CLASS_OF = { eq_kr:'EQ', eq_dm:'EQ', eq_em:'EQ', fi_kr:'FI', fi_gl:'FI',
+                 alt_re:'ALT', alt_gd:'ALT', cash:'CASH' };
+
+/* 상관계수 (그룹 간) */
+var CORR = {
+  eq:{eq:0.80, fi:0.15, alt:0.50, cash:0},
+  fi:{eq:0.15, fi:0.70, alt:0.20, cash:0},
+  alt:{eq:0.50, fi:0.20, alt:0.30, cash:0},
+  cash:{eq:0, fi:0, alt:0, cash:1}
+};
+
+/* 예시 상품 카탈로그 (참고용) */
+var CATALOG = {
+  eq_kr : [ {n:'TIGER 200',                  t:'ETF'},
+            {n:'TIGER MSCI Korea TR',        t:'ETF'} ],
+  eq_dm : [ {n:'TIGER 미국S&P500',            t:'ETF'},
+            {n:'TIGER 미국나스닥100',          t:'ETF'},
+            {n:'TIGER 선진국MSCI World',      t:'ETF'} ],
+  eq_em : [ {n:'TIGER 인도니프티50',           t:'ETF'},
+            {n:'TIGER 차이나전기차SOLACTIVE',  t:'ETF'} ],
+  fi_kr : [ {n:'TIGER 국고채3년',              t:'ETF'},
+            {n:'TIGER 중장기국공채',            t:'ETF'} ],
+  fi_gl : [ {n:'TIGER 미국채10년선물',          t:'ETF'},
+            {n:'TIGER 미국달러단기채권액티브',    t:'ETF'} ],
+  alt_re: [ {n:'TIGER 리츠부동산인프라',        t:'ETF'} ],
+  alt_gd: [ {n:'TIGER 골드선물(H)',            t:'ETF'},
+            {n:'KRX 금현물',                   t:'ETF'} ],
+  cash  : [ {n:'TIGER CD금리투자KIS(합성)',    t:'ETF'},
+            {n:'RP · 발행어음', ne:'RP / Issued notes', t:'MMT'} ]
+};
+
+/* 절세 한도 (만원) */
+var TAX = { pensionSave:600, irpExtra:300, deductCap:900, isaYear:2000, isaTotal:10000,
+            rateLow:0.165, rateHigh:0.132 };
+
+/* =========================================================================
+   2. 다국어 문자열
+   ========================================================================= */
+var T = {
+ko:{
+ brandTag:'WEALTH MANAGEMENT', appTitle:'고객 상품 제안서 생성기',
+ step1:'STEP 1', formTitle:'고객 기본 정보 입력',
+ formLead:'아래 항목을 채우면 위험성향·투자기간·목적에 맞춘 자산배분과 상품 구성, 기대 성과, 절세계좌 활용안이 담긴 제안서가 자동으로 만들어집니다.',
+ fsCustomer:'고객 정보', fsMoney:'투자 규모 · 기간', fsProfile:'투자 성향 · 목적', fsPb:'작성자',
+ lName:'고객명', phName:'예: 김미래', lAge:'연령', hAge:'만 나이 기준',
+ lIncome:'총급여 구간', incLow:'5,500만원 이하', incHigh:'5,500만원 초과',
+ hIncome:'연금계좌 세액공제율 산정에만 사용',
+ lLump:'투자 원금 (만원)', hLump:'일시 투자 가능 금액',
+ lMonthly:'월 적립액 (만원)', hMonthly:'없으면 0', lYears:'투자 기간 (년)',
+ lGoalAmt:'목표 금액 (만원)', hGoalAmt:'선택 · 입력 시 달성 확률을 계산',
+ lRisk:'위험성향', risk1:'안정형', risk2:'안정추구형', risk3:'위험중립형',
+ risk4:'적극투자형', risk5:'공격투자형',
+ lGoal:'투자 목적', goalRetire:'노후 자금', goalWealth:'목돈 마련', goalEdu:'자녀 교육 자금',
+ goalHouse:'주택 자금', goalSurplus:'여유 자금 운용',
+ lFx:'달러 자산 선호', fxLow:'낮음 (원화 중심)', fxMid:'보통', fxHigh:'높음 (달러 분산 선호)',
+ lHold:'기존 보유 자산 (복수 선택)',
+ hold_deposit:'예금·적금', hold_stock:'국내 주식', hold_foreign:'해외 주식', hold_fund:'펀드·ETF',
+ hold_bond:'채권·RP', hold_pension:'연금계좌', hold_estate:'부동산',
+ hHold:'이미 보유한 자산군은 제안서의 중복 점검 항목에 반영됩니다.',
+ lPb:'담당 PB', phPb:'예: 홍길동 부장', lBranch:'지점 · 부서', phBranch:'예: 강남WM센터', lDate:'작성일',
+ btnMake:'제안서 생성', btnReset:'초기화', btnSample:'예시 값 채우기',
+ errName:'고객명을 입력해 주세요.', errAmount:'투자 원금 또는 월 적립액 중 하나는 0보다 커야 합니다.',
+ errYears:'투자 기간은 1년 이상 40년 이하로 입력해 주세요.',
+ errAge:'연령은 19세 이상 99세 이하로 입력해 주세요.',
+
+ /* 제안서 */
+ repTo:'{name} 고객님께 드리는', repTitle:'맞춤 자산관리 제안서',
+ mDate:'작성일', mPb:'담당', mBranch:'지점', mProfile:'투자성향', mNoPb:'—',
+ btnPrint:'인쇄 · PDF 저장', btnEdit:'입력값 수정',
+ s1:'고객 프로파일', s2:'제안 요약', s3:'자산배분 제안', s4:'상품 구성안',
+ s5:'기대 성과 시뮬레이션', s6:'절세 계좌 활용', s7:'리스크 점검', s8:'실행 계획',
+ kLump:'투자 원금', kMonthly:'월 적립', kYears:'투자 기간', kTotalIn:'총 납입액',
+ kExpRet:'기대수익률(연)', kExpVol:'변동성(연)', kFinal:'기대 평가액', kGoalProb:'목표 달성 확률',
+ unitY:'년', unitYear:'{n}년차', perMonth:'/월',
+ sumHead:'핵심 제안',
+ sumRisk:'{profile} 성향에 맞춰 위험자산 {eq}% · 안전자산 {safe}% 로 배분했습니다.',
+ sumHorizon:'투자기간 {y}년을 반영해 {tilt}',
+ tiltLong:'주식 비중을 표준안보다 높였습니다.',
+ tiltMid:'표준 배분을 유지했습니다.',
+ tiltShort:'만기 전 손실 위험을 줄이기 위해 채권·현금 비중을 늘렸습니다.',
+ sumGoalRetire:'노후 자금 목적에 맞춰 연금계좌(연금저축·IRP) 한도를 우선 채우는 순서로 설계했습니다.',
+ sumGoalWealth:'목돈 마련 목적에 맞춰 ISA 비과세 한도를 우선 활용하도록 설계했습니다.',
+ sumGoalEdu:'교육 자금 인출 시점이 다가올수록 안전자산 비중을 자동으로 높이는 계획을 포함했습니다.',
+ sumGoalHouse:'사용 시점이 정해진 자금이므로 원금 변동성을 최소화하는 데 우선순위를 두었습니다.',
+ sumGoalSurplus:'여유 자금 성격을 감안해 수익 추구와 유동성을 함께 고려했습니다.',
+ sumFx:'해외자산 비중 {fx}% 로 원화 자산 편중을 완화합니다.',
+ sumSim:'현재 가정 하에서 {y}년 후 기대 평가액은 {v} 입니다.',
+ sumGoalHit:'목표 금액 {g} 달성 확률은 약 {p}% 로 추정됩니다.',
+ thClass:'자산군', thWeight:'비중', thAmount:'금액', thRole:'역할',
+ thSleeve:'세부 자산', thProduct:'예시 상품', thType:'유형', thRet:'기대수익률', thVol:'변동성',
+ total:'합계',
+ EQ:'주식', FI:'채권', ALT:'대체투자', CASH:'현금성',
+ eq_kr:'국내 주식', eq_dm:'선진국 주식', eq_em:'신흥국 주식',
+ fi_kr:'국내 채권', fi_gl:'해외 채권', alt_re:'리츠·인프라', alt_gd:'금·원자재', cash:'현금성 자산',
+ role_eq_kr:'국내 경기 회복 참여 · 배당', role_eq_dm:'포트폴리오 성장 엔진',
+ role_eq_em:'고성장 지역 위성 배분', role_fi_kr:'금리 수익 · 변동성 완충',
+ role_fi_gl:'달러 분산 · 위기 시 방어', role_alt_re:'배당 현금흐름 · 인플레이션 대응',
+ role_alt_gd:'실물 자산 · 지정학 위험 헤지', role_cash:'유동성 · 재투자 대기',
+ allocLead:'위험성향·연령·투자기간·목적을 반영한 전략적 자산배분(SAA)입니다.',
+ tuneTitle:'배분 미세조정', tuneLead:'자산군 비중을 조정하면 아래 표와 시뮬레이션이 즉시 갱신됩니다. 나머지 자산군은 비율에 맞춰 자동 조정됩니다.',
+ prodLead:'각 세부 자산의 대표 상품 예시입니다. 실제 제안 시에는 사내 상품 라인업과 적합성 등급을 확인해 확정합니다.',
+ simLead:'기대수익률과 변동성을 이용한 정규분포 근사 추정치이며, 실제 수익률을 보장하지 않습니다.',
+ simMedian:'기대 경로', simUp:'낙관 (상위 10%)', simDown:'비관 (하위 10%)',
+ thYear:'경과', thPaid:'누적 납입', thExp:'기대 평가액', thBand:'하위 10% ~ 상위 10%',
+ taxLead:'세제 혜택 계좌를 먼저 채우는 순서로 납입 계획을 제안합니다. 연간 납입 여력 기준입니다.',
+ thAccount:'계좌', thLimit:'연간 한도', thPlan:'제안 납입', thBenefit:'세제 혜택',
+ acc_pension:'연금저축', acc_irp:'IRP', acc_isa:'ISA', acc_general:'일반 위탁계좌',
+ ben_pension:'세액공제 {r}%', ben_irp:'세액공제 {r}% (연금저축 합산 900만원)',
+ ben_isa:'{c}만원까지 비과세, 초과분 9.9% 분리과세',
+ ben_general:'배당·이자 15.4% 원천징수',
+ taxSave:'연간 예상 절세액 (세액공제 기준)', taxSaveNote:'연금계좌는 만 55세 이후 연금 형태로 수령해야 세제 혜택이 유지됩니다. 중도 해지 시 기타소득세 16.5%가 부과됩니다.',
+ riskLead:'같은 배분이라도 단기적으로는 아래 범위의 평가손익이 발생할 수 있습니다. 1년 보유 기준입니다.',
+ thScenario:'시나리오', thProb:'발생 가능성', thReturn:'수익률', thValue:'평가액',
+ riskBase:'기준 금액 {v} · 1년 보유 가정',
+ scBase:'기대 시나리오', scMild:'조정 국면', scSevere:'위기 국면',
+ probBase:'중앙값', probMild:'약 16% 확률', probSevere:'약 2.5% 확률',
+ riskOverlap:'중복 점검 — 이미 {list}을(를) 보유하고 계셔서, 신규 배분 시 해당 자산군의 총 노출도를 함께 확인했습니다.',
+ riskNone:'현재 보유 자산 정보가 없어 신규 자금 기준으로만 배분했습니다. 타사 보유 자산이 있다면 총 노출도를 다시 점검해 주십시오.',
+ stepsLead:'제안 확정 후 진행 순서입니다.',
+ st1:'<b>적합성 확인</b> — 투자자정보 확인서를 최신화하고, 제안 등급이 고객 성향과 일치하는지 확인합니다.',
+ st2:'<b>계좌 개설·전환</b> — 연금저축·IRP·ISA 중 미보유 계좌를 개설합니다.',
+ st3:'<b>분할 매수</b> — 위험자산은 3~6개월에 걸쳐 나누어 매수해 진입 시점 위험을 줄입니다.',
+ st4:'<b>자동 이체 설정</b> — 월 {m} 자동이체를 등록합니다.',
+ st5:'<b>정기 점검</b> — 반기 1회 성과를 점검하고, 자산군 비중이 목표 대비 ±5%p 이상 벌어지면 리밸런싱합니다.',
+ st6:'<b>연 1회 재설계</b> — 잔여 투자기간이 줄어드는 만큼 위험자산 비중을 단계적으로 낮춥니다.',
+ discTitle:'유의사항',
+ d1:'본 제안서는 정보 제공을 목적으로 작성된 참고 자료이며, 특정 상품의 매매를 권유하는 투자권유 문서가 아닙니다.',
+ d2:'기재된 상품명은 자산군별 구성 예시이며, 실제 제안 가능 상품은 사내 판매 라인업·적합성 등급·투자자 성향 진단 결과에 따라 달라집니다.',
+ d3:'기대수익률·변동성은 과거 통계와 시장 전망을 바탕으로 한 가정치로, 미래 수익률을 보장하지 않습니다. 시뮬레이션 결과는 정규분포를 가정한 근사치입니다.',
+ d4:'금융투자상품은 예금자보호법의 보호를 받지 않으며, 원금 손실이 발생할 수 있고 그 손실은 투자자에게 귀속됩니다.',
+ d5:'투자 전 상품설명서 및 집합투자규약을 반드시 확인하시기 바랍니다. 세제는 관련 법령 개정에 따라 변경될 수 있습니다.',
+ srDonut:'자산군별 비중 도넛 차트', srLine:'기간별 기대 평가액 추이 차트'
+},
+en:{
+ brandTag:'WEALTH MANAGEMENT', appTitle:'Client Proposal Generator',
+ step1:'STEP 1', formTitle:'Client profile input',
+ formLead:'Fill in the fields below and the tool builds a proposal — strategic allocation, product line-up, expected outcomes and tax-advantaged account planning — matched to risk tolerance, horizon and goal.',
+ fsCustomer:'Client', fsMoney:'Amount and horizon', fsProfile:'Risk and goal', fsPb:'Prepared by',
+ lName:'Client name', phName:'e.g. Kim Mirae', lAge:'Age', hAge:'Years',
+ lIncome:'Annual salary', incLow:'KRW 55m or below', incHigh:'Above KRW 55m',
+ hIncome:'Used only to set the pension tax-credit rate',
+ lLump:'Initial amount (KRW 10k)', hLump:'Lump sum available now',
+ lMonthly:'Monthly contribution (KRW 10k)', hMonthly:'Enter 0 if none', lYears:'Horizon (years)',
+ lGoalAmt:'Target amount (KRW 10k)', hGoalAmt:'Optional — enables probability of success',
+ lRisk:'Risk profile', risk1:'Conservative', risk2:'Moderately conservative', risk3:'Balanced',
+ risk4:'Growth', risk5:'Aggressive',
+ lGoal:'Objective', goalRetire:'Retirement', goalWealth:'Wealth accumulation', goalEdu:'Education',
+ goalHouse:'Home purchase', goalSurplus:'Surplus cash',
+ lFx:'Preference for USD assets', fxLow:'Low (KRW focused)', fxMid:'Neutral', fxHigh:'High (USD diversification)',
+ lHold:'Existing holdings (multiple)',
+ hold_deposit:'Deposits', hold_stock:'Korean equity', hold_foreign:'Overseas equity', hold_fund:'Funds / ETFs',
+ hold_bond:'Bonds / RP', hold_pension:'Pension accounts', hold_estate:'Real estate',
+ hHold:'Existing exposures are flagged in the overlap check section.',
+ lPb:'Adviser', phPb:'e.g. Hong Gil-dong', lBranch:'Branch', phBranch:'e.g. Gangnam WM Center', lDate:'Date',
+ btnMake:'Generate proposal', btnReset:'Reset', btnSample:'Fill sample values',
+ errName:'Please enter the client name.', errAmount:'Initial amount or monthly contribution must be greater than 0.',
+ errYears:'Horizon must be between 1 and 40 years.',
+ errAge:'Age must be between 19 and 99.',
+
+ repTo:'Prepared for {name}', repTitle:'Personalised Wealth Proposal',
+ mDate:'Date', mPb:'Adviser', mBranch:'Branch', mProfile:'Risk profile', mNoPb:'—',
+ btnPrint:'Print / Save as PDF', btnEdit:'Edit inputs',
+ s1:'Client profile', s2:'Proposal summary', s3:'Strategic allocation', s4:'Product line-up',
+ s5:'Projected outcome', s6:'Tax-advantaged accounts', s7:'Risk check', s8:'Implementation plan',
+ kLump:'Initial amount', kMonthly:'Monthly', kYears:'Horizon', kTotalIn:'Total contributions',
+ kExpRet:'Expected return p.a.', kExpVol:'Volatility p.a.', kFinal:'Projected value', kGoalProb:'Probability of target',
+ unitY:'yrs', unitYear:'Year {n}', perMonth:'/mo',
+ sumHead:'Key points',
+ sumRisk:'A {profile} profile maps to {eq}% risk assets and {safe}% defensive assets.',
+ sumHorizon:'Reflecting the {y}-year horizon, {tilt}',
+ tiltLong:'the equity weight is set above the standard model.',
+ tiltMid:'the standard allocation is retained.',
+ tiltShort:'bonds and cash are increased to limit drawdown before the payout date.',
+ sumGoalRetire:'For retirement, contributions fill the pension accounts (Pension Savings, IRP) first.',
+ sumGoalWealth:'For wealth accumulation, the ISA tax-free allowance is used first.',
+ sumGoalEdu:'The plan steps up defensive assets as the education payout date approaches.',
+ sumGoalHouse:'With a fixed spending date, minimising principal volatility takes priority.',
+ sumGoalSurplus:'As surplus cash, the plan balances return with liquidity.',
+ sumFx:'Overseas assets at {fx}% reduce the concentration in KRW assets.',
+ sumSim:'Under current assumptions the projected value after {y} years is {v}.',
+ sumGoalHit:'Probability of reaching the {g} target is estimated at about {p}%.',
+ thClass:'Asset class', thWeight:'Weight', thAmount:'Amount', thRole:'Role',
+ thSleeve:'Sleeve', thProduct:'Sample product', thType:'Type', thRet:'Exp. return', thVol:'Volatility',
+ total:'Total',
+ EQ:'Equity', FI:'Fixed income', ALT:'Alternatives', CASH:'Cash',
+ eq_kr:'Korean equity', eq_dm:'Developed equity', eq_em:'Emerging equity',
+ fi_kr:'Korean bonds', fi_gl:'Global bonds', alt_re:'REITs / infra', alt_gd:'Gold / commodities', cash:'Cash equivalents',
+ role_eq_kr:'Domestic recovery and dividends', role_eq_dm:'Core growth engine',
+ role_eq_em:'Satellite exposure to high growth', role_fi_kr:'Carry and volatility buffer',
+ role_fi_gl:'USD diversification and crisis hedge', role_alt_re:'Income and inflation response',
+ role_alt_gd:'Real asset and geopolitical hedge', role_cash:'Liquidity and dry powder',
+ allocLead:'Strategic asset allocation (SAA) derived from risk profile, age, horizon and objective.',
+ tuneTitle:'Fine-tune allocation', tuneLead:'Adjust a class weight and the tables and projection update instantly. Remaining classes rescale proportionally.',
+ prodLead:'Representative products per sleeve. Final selection follows the in-house line-up and suitability rules.',
+ simLead:'A normal-approximation estimate based on expected return and volatility. Returns are not guaranteed.',
+ simMedian:'Expected path', simUp:'Optimistic (top 10%)', simDown:'Pessimistic (bottom 10%)',
+ thYear:'Elapsed', thPaid:'Cumulative paid', thExp:'Projected value', thBand:'Bottom 10% – Top 10%',
+ taxLead:'Contributions are directed to tax-advantaged accounts first, based on annual capacity.',
+ thAccount:'Account', thLimit:'Annual limit', thPlan:'Proposed', thBenefit:'Tax treatment',
+ acc_pension:'Pension Savings', acc_irp:'IRP', acc_isa:'ISA', acc_general:'General brokerage',
+ ben_pension:'{r}% tax credit', ben_irp:'{r}% tax credit (KRW 9m combined cap)',
+ ben_isa:'Tax-free up to KRW {c}0k, 9.9% separate taxation above',
+ ben_general:'15.4% withholding on dividends and interest',
+ taxSave:'Estimated annual tax saving (credit basis)', taxSaveNote:'Pension accounts keep their benefit only if drawn as a pension from age 55. Early termination triggers 16.5% other-income tax.',
+ riskLead:'The same allocation can produce the following short-term outcomes. One-year holding basis.',
+ thScenario:'Scenario', thProb:'Likelihood', thReturn:'Return', thValue:'Value',
+ riskBase:'Basis {v} · one-year holding',
+ scBase:'Expected', scMild:'Correction', scSevere:'Crisis',
+ probBase:'Median', probMild:'about 16%', probSevere:'about 2.5%',
+ riskOverlap:'Overlap check — existing exposure to {list} was considered when sizing the new allocation.',
+ riskNone:'No existing holdings were recorded, so the allocation covers new money only. Please re-check total exposure if assets are held elsewhere.',
+ stepsLead:'Sequence once the proposal is agreed.',
+ st1:'<b>Suitability</b> — refresh the investor profile form and confirm the proposal grade matches it.',
+ st2:'<b>Open accounts</b> — open any missing Pension Savings, IRP or ISA account.',
+ st3:'<b>Phase in</b> — build risk assets over 3-6 months to reduce entry timing risk.',
+ st4:'<b>Automate</b> — set up the {m} monthly transfer.',
+ st5:'<b>Review</b> — review semi-annually and rebalance when a class drifts more than ±5pp from target.',
+ st6:'<b>Annual redesign</b> — step down risk assets as the remaining horizon shortens.',
+ discTitle:'Important notices',
+ d1:'This document is reference material prepared for information purposes and is not a solicitation to trade any specific product.',
+ d2:'Product names are illustrative of each sleeve. Products actually offered depend on the in-house line-up, product risk grade and the investor suitability assessment.',
+ d3:'Expected returns and volatility are assumptions based on historical statistics and market outlook, and do not guarantee future returns. Projections are normal-distribution approximations.',
+ d4:'Financial investment products are not protected by the Depositor Protection Act. Principal loss may occur and is borne by the investor.',
+ d5:'Please read the product prospectus and fund terms before investing. Tax treatment may change with legislation.',
+ srDonut:'Donut chart of allocation by asset class', srLine:'Line chart of projected value over time'
+}};
+
+var lang = 'ko';
+function t(k){ var v = T[lang][k]; return v === undefined ? k : v; }
+function tf(k, o){ return t(k).replace(/\{(\w+)\}/g, function(_, p){
+  return o[p] === undefined ? '' : o[p]; }); }
+
+/* =========================================================================
+   3. 유틸
+   ========================================================================= */
+function $(id){ return document.getElementById(id); }
+function esc(s){ return String(s).replace(/[&<>"]/g, function(c){
+  return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]; }); }
+function comma(n){ return Math.round(n).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ','); }
+function pct(n, d){ return (Math.round(n * Math.pow(10, d||1)) / Math.pow(10, d||1)).toFixed(d||1) + '%'; }
+
+/* 금액: 내부 단위는 만원 */
+function money(manwon){
+  var v = Math.round(manwon);
+  if (lang === 'en'){
+    var won = v * 10000;
+    if (won >= 1e9) return 'KRW ' + (won / 1e9).toFixed(2) + 'bn';
+    if (won >= 1e6) return 'KRW ' + (won / 1e6).toFixed(1) + 'm';
+    return 'KRW ' + comma(won);
+  }
+  if (v >= 10000){
+    var eok = Math.floor(v / 10000), rest = v % 10000;
+    return comma(eok) + '억' + (rest ? ' ' + comma(rest) + '만원' : '원');
+  }
+  return comma(v) + '만원';
+}
+
+/* 표준정규 CDF */
+function ncdf(x){
+  var t_ = 1 / (1 + 0.2316419 * Math.abs(x));
+  var d = 0.3989422804014327 * Math.exp(-x * x / 2);
+  var p = d * t_ * (0.319381530 + t_ * (-0.356563782 + t_ * (1.781477937 +
+          t_ * (-1.821255978 + t_ * 1.330274429))));
+  return x > 0 ? 1 - p : p;
+}
+
+/* =========================================================================
+   4. 배분 엔진
+   ========================================================================= */
+var BASE = {
+  1:{EQ:10, FI:60, ALT:5,  CASH:25},
+  2:{EQ:25, FI:55, ALT:8,  CASH:12},
+  3:{EQ:45, FI:40, ALT:10, CASH:5},
+  4:{EQ:65, FI:25, ALT:8,  CASH:2},
+  5:{EQ:80, FI:12, ALT:6,  CASH:2}
+};
+
+function classAllocation(inp){
+  var b = BASE[inp.risk];
+  var a = {EQ:b.EQ, FI:b.FI, ALT:b.ALT, CASH:b.CASH};
+  var tilt = 'tiltMid';
+
+  /* 투자기간 조정 */
+  if (inp.years <= 2){
+    var mv = a.EQ * 0.55; a.EQ -= mv; a.FI += mv * 0.4; a.CASH += mv * 0.6; tilt = 'tiltShort';
+  } else if (inp.years <= 5){
+    var mv2 = a.EQ * 0.22; a.EQ -= mv2; a.FI += mv2 * 0.7; a.CASH += mv2 * 0.3; tilt = 'tiltShort';
+  } else if (inp.years >= 15){
+    var mv3 = Math.min(8, a.FI * 0.25); a.FI -= mv3; a.EQ += mv3; tilt = 'tiltLong';
+  } else if (inp.years >= 10){
+    var mv4 = Math.min(5, a.FI * 0.15); a.FI -= mv4; a.EQ += mv4; tilt = 'tiltLong';
+  }
+
+  /* 연령 조정 (glide path) */
+  var ageAdj = 0;
+  if (inp.age >= 65) ageAdj = -10;
+  else if (inp.age >= 55) ageAdj = -6;
+  else if (inp.age >= 45) ageAdj = -2;
+  else if (inp.age <= 35) ageAdj = 5;
+  var shift = Math.max(-a.EQ, Math.min(ageAdj, a.FI + a.CASH));
+  a.EQ += shift; a.FI -= shift * 0.7; a.CASH -= shift * 0.3;
+
+  /* 목적 조정 */
+  if (inp.goal === 'retire'){ a.ALT += 2; a.EQ -= 2; }
+  else if (inp.goal === 'house'){ a.CASH += 5; a.EQ -= 3; a.FI -= 2; }
+  else if (inp.goal === 'edu'){ a.FI += 3; a.EQ -= 3; }
+  else if (inp.goal === 'surplus'){ a.EQ += 3; a.CASH -= 3; }
+
+  /* 하한/정규화 */
+  ['EQ','FI','ALT','CASH'].forEach(function(k){ if (a[k] < 0) a[k] = 0; });
+  if (a.CASH < 2) a.CASH = 2;
+  return { weights: normalize(a), tilt: tilt };
+}
+
+function normalize(a){
+  var keys = ['EQ','FI','ALT','CASH'];
+  var sum = keys.reduce(function(s, k){ return s + a[k]; }, 0);
+  var out = {}, acc = 0;
+  keys.forEach(function(k, i){
+    if (i === keys.length - 1) out[k] = Math.round((100 - acc) * 10) / 10;
+    else { out[k] = Math.round(a[k] / sum * 1000) / 10; acc += out[k]; }
+  });
+  return out;
+}
+
+function sleeveAllocation(cls, inp){
+  var s = {};
+  var fx = inp.fx; /* 0,1,2 */
+
+  /* 주식 */
+  var dm = 0.55, kr = 0.30, em = 0.15;
+  if (fx === 2){ dm = 0.65; kr = 0.22; em = 0.13; }
+  else if (fx === 0){ dm = 0.42; kr = 0.45; em = 0.13; }
+  if (inp.risk <= 2){ em = 0; dm = 0.6; kr = 0.4; if (fx === 2){ dm = 0.7; kr = 0.3; } }
+  else if (inp.risk >= 5){ em = 0.20; dm = Math.max(0.45, dm - 0.03); kr = 1 - em - dm; }
+  var eqSum = dm + kr + em;
+  s.eq_kr = cls.EQ * kr / eqSum; s.eq_dm = cls.EQ * dm / eqSum; s.eq_em = cls.EQ * em / eqSum;
+
+  /* 채권 */
+  var bkr = 0.60, bgl = 0.40;
+  if (fx === 2){ bkr = 0.45; bgl = 0.55; }
+  else if (fx === 0){ bkr = 0.75; bgl = 0.25; }
+  if (inp.years <= 3){ bkr = Math.min(0.8, bkr + 0.15); bgl = 1 - bkr; }
+  s.fi_kr = cls.FI * bkr; s.fi_gl = cls.FI * bgl;
+
+  /* 대체 */
+  var re = 0.60;
+  if (inp.goal === 'retire') re = 0.70;
+  if (inp.risk <= 2) re = 0.50;
+  s.alt_re = cls.ALT * re; s.alt_gd = cls.ALT * (1 - re);
+
+  s.cash = cls.CASH;
+
+  /* 반올림 후 잔차를 최대 항목에 흡수 */
+  var rounded = {}, acc = 0, maxK = 'cash', maxV = -1;
+  SLEEVE_ORDER.forEach(function(k){
+    rounded[k] = Math.round((s[k] || 0) * 10) / 10;
+    acc += rounded[k];
+    if (rounded[k] > maxV){ maxV = rounded[k]; maxK = k; }
+  });
+  rounded[maxK] = Math.round((rounded[maxK] + (100 - acc)) * 10) / 10;
+  return rounded;
+}
+
+function portfolioStats(sleeves){
+  var r = 0;
+  SLEEVE_ORDER.forEach(function(k){ r += (sleeves[k] / 100) * SLEEVES[k].ret; });
+  var varSum = 0;
+  SLEEVE_ORDER.forEach(function(i){
+    SLEEVE_ORDER.forEach(function(j){
+      var wi = sleeves[i] / 100, wj = sleeves[j] / 100;
+      if (!wi || !wj) return;
+      var rho = (i === j) ? 1 : CORR[SLEEVES[i].grp][SLEEVES[j].grp];
+      varSum += wi * wj * SLEEVES[i].vol * SLEEVES[j].vol * rho;
+    });
+  });
+  return { ret: r, vol: Math.sqrt(Math.max(varSum, 0)) };
+}
+
+/* 적립식 포함 미래가치 */
+function projectValue(lump, monthly, years, annualRet){
+  var r = annualRet / 100;
+  var lumpFV = lump * Math.pow(1 + r, years);
+  var rm = Math.pow(1 + r, 1 / 12) - 1;
+  var n = Math.round(years * 12);
+  var contribFV = rm === 0 ? monthly * n : monthly * (Math.pow(1 + rm, n) - 1) / rm;
+  return { lumpFV: lumpFV, contribFV: contribFV, total: lumpFV + contribFV };
+}
+
+/* 유효 노출기간: 일시금은 t, 적립금은 대략 t/2 */
+function effYears(p, years){
+  var tot = p.lumpFV + p.contribFV;
+  if (tot <= 0) return years;
+  return (p.lumpFV * years + p.contribFV * years / 2) / tot;
+}
+
+/* =========================================================================
+   5. 입력 수집
+   ========================================================================= */
+function readInputs(){
+  var holds = [];
+  Array.prototype.forEach.call($('fHold').querySelectorAll('input:checked'), function(c){
+    holds.push(c.value); });
+  return {
+    name: $('fName').value.trim(),
+    age: parseInt($('fAge').value, 10),
+    income: $('fIncome').value,
+    lump: Math.max(0, parseFloat($('fLump').value) || 0),
+    monthly: Math.max(0, parseFloat($('fMonthly').value) || 0),
+    years: parseInt($('fYears').value, 10),
+    goalAmt: Math.max(0, parseFloat($('fGoalAmt').value) || 0),
+    risk: parseInt($('fRisk').value, 10),
+    goal: $('fGoal').value,
+    fx: parseInt($('fFx').value, 10),
+    holds: holds,
+    pb: $('fPb').value.trim(),
+    branch: $('fBranch').value.trim(),
+    date: $('fDate').value.trim()
+  };
+}
+
+function validate(inp){
+  if (!inp.name) return 'errName';
+  if (!(inp.age >= 19 && inp.age <= 99)) return 'errAge';
+  if (!(inp.years >= 1 && inp.years <= 40)) return 'errYears';
+  if (inp.lump <= 0 && inp.monthly <= 0) return 'errAmount';
+  return null;
+}
+
+/* =========================================================================
+   6. 차트 (인라인 SVG)
+   ========================================================================= */
+function donut(sleeves){
+  var cx = 160, cy = 160, R = 140, r = 84, gap = 1.2, ang = -90, seg = '';
+  SLEEVE_ORDER.forEach(function(k){
+    var w = sleeves[k];
+    if (w <= 0) return;
+    var sweep = w / 100 * 360;
+    var a0 = ang + gap / 2, a1 = ang + sweep - gap / 2;
+    if (a1 <= a0) a1 = a0 + 0.4;
+    seg += arcPath(cx, cy, R, r, a0, a1, SLEEVES[k].color, k, w);
+    ang += sweep;
+  });
+  return '<svg viewBox="0 0 320 320" role="img" aria-label="' + esc(t('srDonut')) + '">' + seg +
+    '</svg>';
+}
+function pol(cx, cy, rad, deg){
+  var a = deg * Math.PI / 180;
+  return [cx + rad * Math.cos(a), cy + rad * Math.sin(a)];
+}
+function arcPath(cx, cy, R, r, a0, a1, color, key, w){
+  var large = (a1 - a0) > 180 ? 1 : 0;
+  var p1 = pol(cx, cy, R, a0), p2 = pol(cx, cy, R, a1);
+  var p3 = pol(cx, cy, r, a1), p4 = pol(cx, cy, r, a0);
+  var d = 'M' + p1[0].toFixed(2) + ' ' + p1[1].toFixed(2) +
+    ' A' + R + ' ' + R + ' 0 ' + large + ' 1 ' + p2[0].toFixed(2) + ' ' + p2[1].toFixed(2) +
+    ' L' + p3[0].toFixed(2) + ' ' + p3[1].toFixed(2) +
+    ' A' + r + ' ' + r + ' 0 ' + large + ' 0 ' + p4[0].toFixed(2) + ' ' + p4[1].toFixed(2) + ' Z';
+  return '<path d="' + d + '" fill="' + color + '" data-tip="' + esc(t(key) + '  ' + pct(w)) + '"></path>';
+}
+
+function lineChart(series, years){
+  var W = 720, H = 320, ml = 74, mr = 16, mt = 18, mb = 34;
+  var iw = W - ml - mr, ih = H - mt - mb;
+  var maxV = 0;
+  series.up.forEach(function(v){ if (v > maxV) maxV = v; });
+  if (maxV <= 0) maxV = 1;
+  var step = niceStep(maxV / 4);
+  var top = Math.ceil(maxV / step) * step;
+  var X = function(i){ return ml + iw * (i / years); };
+  var Y = function(v){ return mt + ih * (1 - v / top); };
+
+  var grid = '', ticks = '';
+  for (var g = 0; g <= top + 1e-9; g += step){
+    var y = Y(g).toFixed(1);
+    grid += '<line x1="' + ml + '" y1="' + y + '" x2="' + (ml + iw) + '" y2="' + y +
+      '" stroke="#A0A6A8" stroke-width="1" stroke-dasharray="3 4"></line>';
+    grid += '<text x="' + (ml - 8) + '" y="' + (Y(g) + 4).toFixed(1) +
+      '" text-anchor="end" font-size="12" fill="#6C6C6C">' + shortAmt(g) + '</text>';
+  }
+  var xs = years <= 10 ? 1 : (years <= 20 ? 2 : 5);
+  for (var i = 0; i <= years; i += xs){
+    ticks += '<text x="' + X(i).toFixed(1) + '" y="' + (H - 10) +
+      '" text-anchor="middle" font-size="12" fill="#6C6C6C">' + i + '</text>';
+  }
+  ticks += '<text x="' + (W - mr) + '" y="' + (H - 10) + '" text-anchor="end" font-size="12" ' +
+    'fill="#84888B">' + esc(t('unitY')) + '</text>';
+
+  var band = 'M' + series.up.map(function(v, i){ return X(i).toFixed(1) + ' ' + Y(v).toFixed(1); }).join(' L');
+  band += ' L' + series.down.slice().reverse().map(function(v, i){
+    return X(years - i).toFixed(1) + ' ' + Y(v).toFixed(1); }).join(' L') + ' Z';
+
+  var mid = 'M' + series.mid.map(function(v, i){ return X(i).toFixed(1) + ' ' + Y(v).toFixed(1); }).join(' L');
+  var paid = 'M' + series.paid.map(function(v, i){ return X(i).toFixed(1) + ' ' + Y(v).toFixed(1); }).join(' L');
+
+  var dots = '';
+  series.mid.forEach(function(v, i){
+    dots += '<circle cx="' + X(i).toFixed(1) + '" cy="' + Y(v).toFixed(1) + '" r="9" fill="transparent" ' +
+      'data-tip="' + esc(tf('unitYear', {n:i}) + '  ' + money(v)) + '"></circle>';
+  });
+
+  return '<svg viewBox="0 0 ' + W + ' ' + H + '" role="img" aria-label="' + esc(t('srLine')) + '">' +
+    grid +
+    '<path d="' + band + '" fill="#F58220" fill-opacity="0.13"></path>' +
+    '<path d="' + paid + '" fill="none" stroke="#84888B" stroke-width="1.5" stroke-dasharray="5 4"></path>' +
+    '<path d="' + mid + '" fill="none" stroke="#F58220" stroke-width="2.5"></path>' +
+    '<line x1="' + ml + '" y1="' + (mt + ih) + '" x2="' + (ml + iw) + '" y2="' + (mt + ih) +
+      '" stroke="#49535B" stroke-width="1"></line>' +
+    ticks + dots + '</svg>';
+}
+function niceStep(x){
+  var p = Math.pow(10, Math.floor(Math.log(x) / Math.LN10));
+  var n = x / p;
+  return (n <= 1 ? 1 : n <= 2 ? 2 : n <= 5 ? 5 : 10) * p;
+}
+function shortAmt(manwon){
+  if (lang === 'en'){
+    var won = manwon * 10000;
+    if (won >= 1e9) return (won / 1e9).toFixed(won >= 1e10 ? 0 : 1) + 'bn';
+    if (won >= 1e6) return (won / 1e6).toFixed(0) + 'm';
+    return comma(won);
+  }
+  if (manwon >= 10000) return (manwon / 10000).toFixed(manwon >= 100000 ? 0 : 1) + '억';
+  return comma(manwon);
+}
+
+/* =========================================================================
+   7. 제안서 렌더
+   ========================================================================= */
+var STATE = null;
+
+function buildModel(inp){
+  var ca = classAllocation(inp);
+  return { inp: inp, cls: ca.weights, tilt: ca.tilt,
+           sleeves: sleeveAllocation(ca.weights, inp) };
+}
+
+function render(){
+  var m = STATE, inp = m.inp;
+  var sv = m.sleeves, cls = m.cls;
+  var st = portfolioStats(sv);
+  var totalIn = inp.lump + inp.monthly * 12 * inp.years;
+  var proj = projectValue(inp.lump, inp.monthly, inp.years, st.ret);
+  var te = effYears(proj, inp.years);
+  var sig = st.vol / 100;
+  var bandUp = Math.exp(1.2816 * sig * Math.sqrt(te));
+  var bandDn = Math.exp(-1.2816 * sig * Math.sqrt(te));
+
+  var goalProb = null;
+  if (inp.goalAmt > 0 && proj.total > 0 && sig > 0 && te > 0){
+    goalProb = ncdf(Math.log(proj.total / inp.goalAmt) / (sig * Math.sqrt(te))) * 100;
+  }
+
+  var h = [];
+  h.push(head(inp));
+  h.push(secProfile(inp, st, totalIn, proj, goalProb));
+  h.push(secSummary(m, cls, st, proj, goalProb));
+  h.push(secAlloc(m, cls, sv, st));
+  h.push(secProducts(inp, sv));
+  h.push(secSim(inp, st, proj, bandUp, bandDn, te));
+  h.push(secTax(inp));
+  h.push(secRisk(inp, st, proj));
+  h.push(secSteps(inp));
+  h.push(disclaimer());
+
+  var el = $('report');
+  el.innerHTML = h.join('');
+  el.hidden = false;
+  bindTune();
+  bindTips();
+}
+
+function head(inp){
+  return '<div class="report-head">' +
+    '<div class="to">' + esc(tf('repTo', {name: inp.name})) + '</div>' +
+    '<h1>' + esc(t('repTitle')) + '</h1>' +
+    '<div class="meta-row">' +
+      '<span>' + esc(t('mDate')) + ' <b>' + esc(inp.date || todayStr()) + '</b></span>' +
+      '<span>' + esc(t('mProfile')) + ' <b>' + esc(t('risk' + inp.risk)) + '</b></span>' +
+      '<span>' + esc(t('mPb')) + ' <b>' + esc(inp.pb || t('mNoPb')) + '</b></span>' +
+      '<span>' + esc(t('mBranch')) + ' <b>' + esc(inp.branch || t('mNoPb')) + '</b></span>' +
+    '</div>' +
+    '<div class="actions no-print">' +
+      '<button type="button" class="btn btn-primary" onclick="window.print()">' + esc(t('btnPrint')) + '</button>' +
+      '<button type="button" class="btn btn-quiet" onclick="backToForm()">' + esc(t('btnEdit')) + '</button>' +
+    '</div></div>';
+}
+
+function sec(id, title, lead, body){
+  return '<section class="section" id="' + id + '"><div class="section-rule"></div>' +
+    '<h2 class="section-title">' + esc(title) + '</h2>' +
+    (lead ? '<p class="section-lead">' + esc(lead) + '</p>' : '') + body + '</section>';
+}
+
+function stat(k, v, s, cls){
+  return '<div class="stat"><div class="k">' + esc(k) + '</div>' +
+    '<div class="v' + (cls ? ' ' + cls : '') + '">' + esc(v) + '</div>' +
+    (s ? '<div class="s">' + esc(s) + '</div>' : '') + '</div>';
+}
+
+function secProfile(inp, st, totalIn, proj, goalProb){
+  var b = '<div class="stats">' +
+    stat(t('kLump'), money(inp.lump), '') +
+    stat(t('kMonthly'), inp.monthly > 0 ? money(inp.monthly) : '—', inp.monthly > 0 ? t('perMonth') : '') +
+    stat(t('kYears'), inp.years + ' ' + t('unitY'), '') +
+    stat(t('kTotalIn'), money(totalIn), '') +
+    '</div><div class="stats" style="margin-top:19px">' +
+    stat(t('kExpRet'), pct(st.ret), '', 'accent') +
+    stat(t('kExpVol'), pct(st.vol), '', 'blue') +
+    stat(t('kFinal'), money(proj.total), inp.years + ' ' + t('unitY'), 'accent') +
+    stat(t('kGoalProb'), goalProb === null ? '—' : Math.round(goalProb) + '%',
+         inp.goalAmt > 0 ? money(inp.goalAmt) : '', 'blue') +
+    '</div>';
+  return sec('s-profile', t('s1'), '', b);
+}
+
+function secSummary(m, cls, st, proj, goalProb){
+  var inp = m.inp;
+  var eq = cls.EQ + cls.ALT, safe = cls.FI + cls.CASH;
+  var fxW = m.sleeves.eq_dm + m.sleeves.eq_em + m.sleeves.fi_gl;
+  var li = [];
+  li.push(tf('sumRisk', {profile: t('risk' + inp.risk), eq: eq.toFixed(1), safe: safe.toFixed(1)}));
+  li.push(tf('sumHorizon', {y: inp.years, tilt: t(m.tilt)}));
+  li.push(t('sumGoal' + inp.goal.charAt(0).toUpperCase() + inp.goal.slice(1)));
+  li.push(tf('sumFx', {fx: fxW.toFixed(1)}));
+  li.push(tf('sumSim', {y: inp.years, v: money(proj.total)}));
+  if (goalProb !== null) li.push(tf('sumGoalHit', {g: money(inp.goalAmt), p: Math.round(goalProb)}));
+  var b = '<div class="callout"><h3>' + esc(t('sumHead')) + '</h3><ul>' +
+    li.map(function(x){ return '<li>' + esc(x) + '</li>'; }).join('') + '</ul></div>';
+  return sec('s-summary', t('s2'), '', b);
+}
+
+function secAlloc(m, cls, sv, st){
+  var inp = m.inp;
+  var legend = SLEEVE_ORDER.filter(function(k){ return sv[k] > 0; }).map(function(k){
+    return '<li><span class="swatch" style="background:' + SLEEVES[k].color + '"></span>' +
+      '<span class="nm">' + esc(t(k)) + '</span><span class="pc">' + pct(sv[k]) + '</span></li>';
+  }).join('');
+
+  var rows = '';
+  ['EQ','FI','ALT','CASH'].forEach(function(c){
+    var subs = SLEEVE_ORDER.filter(function(k){ return CLASS_OF[k] === c && sv[k] > 0; });
+    subs.forEach(function(k, i){
+      rows += '<tr>' +
+        (i === 0 ? '<td rowspan="' + subs.length + '"><b>' + esc(t(c)) + '</b><br>' +
+          '<span class="num" style="color:#6C6C6C;font-size:15px">' + pct(cls[c]) + '</span></td>' : '') +
+        '<td><span class="swatch" style="background:' + SLEEVES[k].color + '"></span>' + esc(t(k)) + '</td>' +
+        '<td class="n">' + pct(sv[k]) + '</td>' +
+        '<td class="n">' + esc(money(totalInvest(inp) * sv[k] / 100)) + '</td>' +
+        '<td>' + esc(t('role_' + k)) + '</td></tr>';
+    });
+  });
+  rows += '<tr class="total"><td colspan="2">' + esc(t('total')) + '</td>' +
+    '<td class="n">100.0%</td><td class="n">' + esc(money(totalInvest(inp))) + '</td>' +
+    '<td class="n">' + esc(t('kExpRet') + ' ' + pct(st.ret)) + '</td></tr>';
+
+  var tune = '<details class="tune no-print" id="tuneBox"><summary>' + esc(t('tuneTitle')) + '</summary>' +
+    '<div class="tune-body"><p class="hint" style="font-size:15px;color:#6C6C6C;margin-bottom:12px">' +
+    esc(t('tuneLead')) + '</p>' +
+    ['EQ','FI','ALT','CASH'].map(function(c){
+      return '<div class="tune-row"><label for="tw_' + c + '">' + esc(t(c)) + '</label>' +
+        '<input type="range" id="tw_' + c + '" min="0" max="100" step="1" value="' + Math.round(cls[c]) + '">' +
+        '<span class="val" id="tv_' + c + '">' + Math.round(cls[c]) + '%</span></div>';
+    }).join('') + '</div></details>';
+
+  var b = '<div class="two-col"><div class="chart-wrapper donut-wrap">' + donut(sv) +
+    '<ul class="legend">' + legend + '</ul></div>' +
+    '<div><div class="table-scroll"><table><thead><tr>' +
+    '<th>' + esc(t('thClass')) + '</th><th>' + esc(t('thSleeve')) + '</th>' +
+    '<th class="n">' + esc(t('thWeight')) + '</th><th class="n">' + esc(t('thAmount')) + '</th>' +
+    '<th>' + esc(t('thRole')) + '</th></tr></thead><tbody>' + rows + '</tbody></table></div>' +
+    '<div style="margin-top:19px">' + tune + '</div></div></div>';
+  return sec('s-alloc', t('s3'), t('allocLead'), b);
+}
+
+function totalInvest(inp){ return inp.lump + inp.monthly * 12 * inp.years; }
+
+function secProducts(inp, sv){
+  var rows = '';
+  SLEEVE_ORDER.forEach(function(k){
+    if (sv[k] <= 0) return;
+    var list = CATALOG[k] || [];
+    list.forEach(function(p, i){
+      rows += '<tr>' +
+        (i === 0 ? '<td rowspan="' + list.length + '"><span class="swatch" style="background:' +
+          SLEEVES[k].color + '"></span>' + esc(t(k)) + '<br><span class="num" style="color:#6C6C6C;font-size:15px">' +
+          pct(sv[k]) + '</span></td>' : '') +
+        '<td>' + esc(lang === 'en' && p.ne ? p.ne : p.n) + '</td><td>' + esc(p.t) + '</td>' +
+        (i === 0 ? '<td rowspan="' + list.length + '" class="n">' + esc(SLEEVES[k].ret.toFixed(1)) + '%</td>' +
+          '<td rowspan="' + list.length + '" class="n">' + esc(SLEEVES[k].vol.toFixed(1)) + '%</td>' : '') +
+        '</tr>';
+    });
+  });
+  var b = '<div class="table-scroll"><table><thead><tr>' +
+    '<th>' + esc(t('thSleeve')) + '</th><th>' + esc(t('thProduct')) + '</th>' +
+    '<th>' + esc(t('thType')) + '</th><th class="n">' + esc(t('thRet')) + '</th>' +
+    '<th class="n">' + esc(t('thVol')) + '</th></tr></thead><tbody>' + rows + '</tbody></table></div>';
+  return sec('s-products', t('s4'), t('prodLead'), b);
+}
+
+function secSim(inp, st, proj, bu, bd, te){
+  var mid = [], up = [], down = [], paid = [];
+  for (var i = 0; i <= inp.years; i++){
+    var p = projectValue(inp.lump, inp.monthly, i, st.ret);
+    var tei = i === 0 ? 0 : effYears(p, i);
+    var f = Math.exp(1.2816 * (st.vol / 100) * Math.sqrt(tei));
+    mid.push(p.total); up.push(p.total * f); down.push(p.total / f);
+    paid.push(inp.lump + inp.monthly * 12 * i);
+  }
+  var marks = [];
+  var step = inp.years <= 10 ? Math.max(1, Math.round(inp.years / 5)) : Math.round(inp.years / 5);
+  for (var y = step; y <= inp.years; y += step) marks.push(y);
+  if (marks[marks.length - 1] !== inp.years) marks.push(inp.years);
+
+  var rows = marks.map(function(y){
+    return '<tr><td>' + esc(tf('unitYear', {n: y})) + '</td>' +
+      '<td class="n">' + esc(money(paid[y])) + '</td>' +
+      '<td class="n">' + esc(money(mid[y])) + '</td>' +
+      '<td class="n">' + esc(money(down[y])) + ' ~ ' + esc(money(up[y])) + '</td></tr>';
+  }).join('');
+
+  var lg = '<ul class="legend" style="margin-top:14px">' +
+    '<li><span class="swatch" style="background:#F58220"></span><span class="nm">' + esc(t('simMedian')) +
+      '</span><span class="pc">' + esc(money(proj.total)) + '</span></li>' +
+    '<li><span class="swatch" style="background:#F58220;opacity:.25"></span><span class="nm">' +
+      esc(t('simDown')) + ' ~ ' + esc(t('simUp')) + '</span><span class="pc">' +
+      esc(money(proj.total * bd)) + ' ~ ' + esc(money(proj.total * bu)) + '</span></li>' +
+    '<li><span class="swatch" style="background:#84888B"></span><span class="nm">' + esc(t('thPaid')) +
+      '</span><span class="pc">' + esc(money(paid[inp.years])) + '</span></li></ul>';
+
+  var b = '<div class="chart-wrapper">' + lineChart({mid:mid, up:up, down:down, paid:paid}, inp.years) + '</div>' +
+    lg + '<div class="table-scroll" style="margin-top:28px"><table><thead><tr>' +
+    '<th>' + esc(t('thYear')) + '</th><th class="n">' + esc(t('thPaid')) + '</th>' +
+    '<th class="n">' + esc(t('thExp')) + '</th><th class="n">' + esc(t('thBand')) + '</th>' +
+    '</tr></thead><tbody>' + rows + '</tbody></table></div>';
+  return sec('s-sim', t('s5'), t('simLead'), b);
+}
+
+function secTax(inp){
+  var annual = inp.monthly * 12;
+  if (annual === 0) annual = Math.min(inp.lump, inp.lump / Math.max(inp.years, 1));
+  var rate = inp.income === 'low' ? TAX.rateLow : TAX.rateHigh;
+  var rest = annual;
+
+  var pension = Math.min(rest, TAX.pensionSave); rest -= pension;
+  var irp = Math.min(rest, TAX.irpExtra); rest -= irp;
+  var isa = Math.min(rest, TAX.isaYear); rest -= isa;
+  var general = rest;
+
+  var deduct = Math.min(pension + irp, TAX.deductCap);
+  var save = deduct * rate;
+  var isaFree = inp.income === 'low' ? 400 : 200;
+
+  var rows = [
+    [t('acc_pension'), TAX.pensionSave, pension, tf('ben_pension', {r: (rate * 100).toFixed(1)})],
+    [t('acc_irp'), TAX.irpExtra, irp, tf('ben_irp', {r: (rate * 100).toFixed(1)})],
+    [t('acc_isa'), TAX.isaYear, isa, tf('ben_isa', {c: comma(isaFree)})],
+    [t('acc_general'), null, general, t('ben_general')]
+  ].map(function(r){
+    return '<tr><td>' + esc(r[0]) + '</td>' +
+      '<td class="n">' + (r[1] === null ? '—' : esc(money(r[1]))) + '</td>' +
+      '<td class="n">' + esc(money(r[2])) + '</td>' +
+      '<td>' + esc(r[3]) + '</td></tr>';
+  }).join('');
+  rows += '<tr class="total"><td>' + esc(t('total')) + '</td><td class="n">—</td>' +
+    '<td class="n">' + esc(money(annual)) + '</td><td>' + esc(t('taxSave')) + ' ' +
+    esc(money(save)) + '</td></tr>';
+
+  var b = '<div class="table-scroll"><table><thead><tr>' +
+    '<th>' + esc(t('thAccount')) + '</th><th class="n">' + esc(t('thLimit')) + '</th>' +
+    '<th class="n">' + esc(t('thPlan')) + '</th><th>' + esc(t('thBenefit')) + '</th>' +
+    '</tr></thead><tbody>' + rows + '</tbody></table></div>' +
+    '<div class="note" style="margin-top:19px">' + esc(t('taxSaveNote')) + '</div>';
+  return sec('s-tax', t('s6'), t('taxLead'), b);
+}
+
+function secRisk(inp, st, proj){
+  var base = inp.lump > 0 ? inp.lump : inp.monthly * 12;
+  var r = st.ret, v = st.vol;
+  var scen = [
+    [t('scBase'), t('probBase'), r, base * (1 + r / 100)],
+    [t('scMild'), t('probMild'), r - v, base * (1 + (r - v) / 100)],
+    [t('scSevere'), t('probSevere'), r - 2 * v, base * (1 + (r - 2 * v) / 100)]
+  ];
+  var rows = scen.map(function(s, i){
+    var color = i === 0 ? '#2E8540' : (i === 1 ? '#D4A017' : '#C62828');
+    return '<tr><td><b>' + esc(s[0]) + '</b></td><td>' + esc(s[1]) + '</td>' +
+      '<td class="n" style="color:' + color + ';font-weight:600">' +
+        (s[2] >= 0 ? '+' : '') + pct(s[2]) + '</td>' +
+      '<td class="n">' + esc(money(s[3])) + '</td></tr>';
+  }).join('');
+
+  var holdTxt;
+  if (inp.holds.length){
+    holdTxt = tf('riskOverlap', {list: inp.holds.map(function(k){ return t('hold_' + k); }).join(', ')});
+  } else {
+    holdTxt = t('riskNone');
+  }
+
+  var b = '<div class="table-scroll"><table><caption>' +
+    esc(tf('riskBase', {v: money(base)})) + '</caption><thead><tr>' +
+    '<th>' + esc(t('thScenario')) + '</th><th>' + esc(t('thProb')) + '</th>' +
+    '<th class="n">' + esc(t('thReturn')) + '</th><th class="n">' + esc(t('thValue')) + '</th>' +
+    '</tr></thead><tbody>' + rows + '</tbody></table></div>' +
+    '<div class="note" style="margin-top:19px">' + esc(holdTxt) + '</div>';
+  return sec('s-risk', t('s7'), t('riskLead'), b);
+}
+
+function secSteps(inp){
+  var steps = ['st1','st2','st3','st4','st5','st6'];
+  var b = '<ol class="steps">' + steps.map(function(k){
+    var txt = k === 'st4' ? tf('st4', {m: money(inp.monthly)}) : t(k);
+    if (k === 'st4' && inp.monthly <= 0) return '';
+    return '<li>' + txt + '</li>';
+  }).join('') + '</ol>';
+  return sec('s-steps', t('s8'), t('stepsLead'), b);
+}
+
+function disclaimer(){
+  return '<div class="disclaimer"><b style="color:#1A1A1A">' + esc(t('discTitle')) + '</b>' +
+    ['d1','d2','d3','d4','d5'].map(function(k){
+      return '<p>· ' + esc(t(k)) + '</p>'; }).join('') + '</div>';
+}
+
+/* =========================================================================
+   8. 인터랙션
+   ========================================================================= */
+function bindTune(){
+  ['EQ','FI','ALT','CASH'].forEach(function(c){
+    var el = $('tw_' + c);
+    if (!el) return;
+    /* 드래그 중에는 숫자만 갱신하고, 손을 뗀 뒤 다시 그린다 — 재렌더가 드래그를 끊지 않도록. */
+    el.addEventListener('input', function(){
+      var v = $('tv_' + c);
+      if (v) v.textContent = Math.round(parseFloat(el.value)) + '%';
+    });
+    el.addEventListener('change', function(){
+      applyTune(c, parseFloat(el.value));
+    });
+  });
+}
+
+function applyTune(key, val){
+  var cls = STATE.cls;
+  var others = ['EQ','FI','ALT','CASH'].filter(function(k){ return k !== key; });
+  var restNow = others.reduce(function(s, k){ return s + cls[k]; }, 0);
+  var restNew = 100 - val;
+  var next = {};
+  next[key] = val;
+  if (restNow <= 0){
+    others.forEach(function(k){ next[k] = restNew / others.length; });
+  } else {
+    others.forEach(function(k){ next[k] = cls[k] / restNow * restNew; });
+  }
+  STATE.cls = normalize(next);
+  STATE.sleeves = sleeveAllocation(STATE.cls, STATE.inp);
+  var open = $('tuneBox') && $('tuneBox').open;
+  render();
+  if (open && $('tuneBox')) $('tuneBox').open = true;
+  var el = $('tw_' + key);
+  if (el) el.focus();
+}
+
+var tipEl;
+function bindTips(){
+  tipEl = $('tip');
+  var host = $('report');
+  host.addEventListener('mouseover', function(e){
+    var tip = e.target.getAttribute && e.target.getAttribute('data-tip');
+    if (!tip){ tipEl.classList.remove('on'); return; }
+    tipEl.textContent = tip;
+    tipEl.classList.add('on');
+  });
+  host.addEventListener('mousemove', function(e){
+    if (!tipEl.classList.contains('on')) return;
+    var x = e.clientX + 14, y = e.clientY - 34;
+    if (x + tipEl.offsetWidth > window.innerWidth - 8) x = e.clientX - tipEl.offsetWidth - 14;
+    tipEl.style.left = x + 'px'; tipEl.style.top = y + 'px';
+  });
+  host.addEventListener('mouseleave', function(){ tipEl.classList.remove('on'); });
+}
+
+function todayStr(){
+  var d = new Date();
+  var p = function(n){ return (n < 10 ? '0' : '') + n; };
+  return d.getFullYear() + '-' + p(d.getMonth() + 1) + '-' + p(d.getDate());
+}
+
+/* ---------- 언어 ---------- */
+function setLang(l){
+  lang = l;
+  document.documentElement.lang = l;
+  $('btnKo').setAttribute('aria-checked', String(l === 'ko'));
+  $('btnEn').setAttribute('aria-checked', String(l === 'en'));
+  document.title = t('appTitle');
+  Array.prototype.forEach.call(document.querySelectorAll('[data-i18n]'), function(el){
+    el.textContent = t(el.getAttribute('data-i18n'));
+  });
+  Array.prototype.forEach.call(document.querySelectorAll('[data-ph]'), function(el){
+    el.placeholder = t(el.getAttribute('data-ph'));
+  });
+  try { localStorage.setItem('mas_prop_lang', l); } catch (e) {}
+  if (STATE && !$('report').hidden) render();
+}
+
+/* ---------- 폼 ---------- */
+function saveInputs(inp){
+  try { localStorage.setItem('mas_prop_inp', JSON.stringify(inp)); } catch (e) {}
+}
+function restoreInputs(){
+  var raw;
+  try { raw = localStorage.getItem('mas_prop_inp'); } catch (e) { return; }
+  if (!raw) return;
+  var v;
+  try { v = JSON.parse(raw); } catch (e) { return; }
+  if (!v || typeof v !== 'object') return;
+  var set = function(id, val){ if (val !== undefined && val !== null && $(id)) $(id).value = val; };
+  set('fName', v.name); set('fAge', v.age); set('fIncome', v.income);
+  set('fLump', v.lump); set('fMonthly', v.monthly); set('fYears', v.years);
+  set('fGoalAmt', v.goalAmt); set('fRisk', v.risk); set('fGoal', v.goal); set('fFx', v.fx);
+  set('fPb', v.pb); set('fBranch', v.branch); set('fDate', v.date);
+  if (Array.isArray(v.holds)){
+    Array.prototype.forEach.call($('fHold').querySelectorAll('input'), function(c){
+      c.checked = v.holds.indexOf(c.value) >= 0;
+    });
+  }
+}
+function resetForm(){
+  try { localStorage.removeItem('mas_prop_inp'); } catch (e) {}
+  $('pform').reset();
+  $('fDate').value = todayStr();
+  $('formErr').textContent = '';
+  $('report').hidden = true;
+  STATE = null;
+  window.scrollTo(0, 0);
+}
+function loadSample(){
+  $('fName').value = lang === 'ko' ? '김미래' : 'Kim Mirae';
+  $('fAge').value = 42; $('fIncome').value = 'high';
+  $('fLump').value = 20000; $('fMonthly').value = 150; $('fYears').value = 15;
+  $('fGoalAmt').value = 80000; $('fRisk').value = '4'; $('fGoal').value = 'retire'; $('fFx').value = '2';
+  Array.prototype.forEach.call($('fHold').querySelectorAll('input'), function(c){
+    c.checked = ['deposit','stock','pension'].indexOf(c.value) >= 0;
+  });
+  $('fPb').value = lang === 'ko' ? '홍길동 부장' : 'Hong Gil-dong';
+  $('fBranch').value = lang === 'ko' ? '강남WM센터' : 'Gangnam WM Center';
+  $('fDate').value = todayStr();
+  $('formErr').textContent = '';
+}
+function backToForm(){
+  $('report').hidden = true;
+  $('formSection').scrollIntoView({behavior:'smooth', block:'start'});
+}
+
+$('pform').addEventListener('submit', function(e){
+  e.preventDefault();
+  var inp = readInputs();
+  var err = validate(inp);
+  $('formErr').textContent = err ? t(err) : '';
+  if (err) return;
+  if (!inp.date) { inp.date = todayStr(); $('fDate').value = inp.date; }
+  saveInputs(inp);
+  STATE = buildModel(inp);
+  render();
+  $('report').scrollIntoView({behavior:'smooth', block:'start'});
+});
+
+/* ---------- init ---------- */
+(function init(){
+  var saved;
+  try { saved = localStorage.getItem('mas_prop_lang'); } catch (e) {}
+  restoreInputs();
+  if (!$('fDate').value) $('fDate').value = todayStr();
+  setLang(saved === 'en' ? 'en' : 'ko');
+})();
+</script>
+</body>
+</html>
