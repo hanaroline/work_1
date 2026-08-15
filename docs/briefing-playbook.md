@@ -120,9 +120,11 @@ python3 -m json.tool data/market/latest.json | head -120
 
 | 키 | 내용 |
 |---|---|
-| `indices` | 지수·환율·원자재 48종. 각각 `date` `open` `high` `low` `close` `volume` `prev_close` `change` `change_pct` `perf`(기간 수익률 — 4-3절). **국내** kospi, kosdaq, usdkrw / **미국** sp500, nasdaq, dow, sox, vix, russell + 지수선물(`*_fut`) / **유럽** stoxx600, eurostoxx, dax, cac, ftse, ftsemib, ibex, smi, aex / **아시아** nikkei, hangseng, shanghai, taiwan, sensex, asx200 / **환율** dxy, eurusd, usdjpy, usdcny, gbpusd, usdtwd / **원자재·기타** wti, brent, gold, silver, copper, natgas, platinum, btc, eth |
+| `indices` | 지수·환율·원자재 48종. 각각 `date` `open` `high` `low` `close` `volume` `prev_close` `change` `change_pct` `perf`(기간 수익률 — 4-3절). **국내** kospi, kosdaq, usdkrw / **미국** sp500, nasdaq, dow, sox, vix, russell + 지수선물(`*_fut`) / **유럽** stoxx600, eurostoxx, dax, cac, ftse, ftsemib, ibex, smi, aex / **아시아** nikkei, hangseng, shanghai, taiwan, sensex, asx200 / **환율** dxy, eurusd, usdjpy, usdcny, gbpusd, usdtwd (**환율 표는 `indices` 가 아니라 `fx` 를 쓰십시오**) / **원자재·기타** wti, brent, gold, silver, copper, natgas, platinum, btc, eth |
 | `stocks` | **국내 42종목** — 코스피 대형주(반도체·이차전지·바이오·자동차·금융·조선/방산·인터넷·소비재)와 코스닥 상위 8종목. 종가·등락률·거래량에 `note_ko`/`note_en`(한 줄 설명)과 `perf` 가 붙습니다 |
 | `kr_etf` | **국내 상장 ETF 12종** — KODEX 200/코스닥150/레버리지/인버스2X/반도체/골드/미국채10년, TIGER 200/미국S&P500/나스닥100/필라델피아반도체/리츠. **고객이 실제로 사는 물건이라 「무엇을 사면 이 시황을 사는 것인지」를 표에서 바로 보여 줄 수 있습니다** |
+| `fx` | **환율 표 한 덩어리 16쌍.** `rows` 가 표시 순서대로 옵니다 — `name_ko`/`name_en`, `close`, `change`, `change_pct`, `perf`, `note_ko`/`note_en`, `basis`. **원화 크로스 다섯(원/100엔·원/위안·원/유로·원/헤알·원/호주달러)은 받아 온 값이 아니라 원/달러에서 계산한 재정환율입니다** — 원화는 달러 말고 직접 거래되는 시장이 사실상 없어 국내 고시 환율도 전부 그렇게 만듭니다. `basis` 가 어느 쪽인지 밝힙니다. 원/100엔은 `scale: 100` 이고 **배수는 수준값에만 곱합니다** — `change_pct` 와 `perf` 는 비율이라 배수와 무관합니다 |
+| `fx_pairs` | 원화 크로스를 만들 달러 상대 통화쌍 — `usdbrl` `audusd` `usdchf` `usdinr` `usdvnd`. 표에 직접 쓰지 말고 `fx.rows` 를 쓰십시오 |
 | `sectors` | 네이버 업종 79개 등락률 (`all` / `top5` / `bottom5`) |
 | `investors_kospi` | 코스피 투자자별 순매수 최근 6거래일 — `retail`/`foreign`/`institution`, **단위 억원** |
 | `market_internals` | `kospi` / `kosdaq` 각각 — `breadth`(상한·상승·보합·하락·하한 종목 수), `investor_flows`(당일 개인/외국인/기관), `program_trading`(차익/비차익/전체), `intraday`(고가·저가), `fifty_two_week`(52주 고저). **단위 억원** |
@@ -469,7 +471,7 @@ python3 scripts/inline_notes.py docs/briefings/<날짜>-<구분>.html
 - 열이 여덟을 넘는 표는 `class="data compact"` 로 세웁니다.
 
 ```css
-@media (max-width:860px){ table.data .perf{display:none} }
+@media (max-width:860px){ table.data .perf{display:none} }   /* 아래 fold_perf.py 를 반드시 같이 */
 table.data .perf{padding-left:8px;padding-right:8px}
 table.data.compact .perf{padding-left:5px;padding-right:5px}
 
@@ -480,6 +482,24 @@ table.data.compact .perf{padding-left:5px;padding-right:5px}
 
 **`.perf` 를 `.opt` 로 달지 마십시오.** `.opt` 는 680px 에서 접히는데, 기간 수익률은
 그보다 훨씬 일찍 접어야 합니다.
+
+### 접은 기간 열은 이름 밑의 줄로 되살립니다
+
+860px 아래에서 기간 열이 접히면 **폰에서 기간 추이가 통째로 사라집니다.** 설명 열에서
+똑같은 일이 있었고 같은 답을 씁니다 — **열은 접히지만 줄은 접히지 않습니다.**
+
+```bash
+python3 scripts/inline_notes.py docs/briefings/<날짜>-<구분>.html   # 설명을 먼저 내리고
+python3 scripts/fold_perf.py   docs/briefings/<날짜>-<구분>.html   # 기간을 그 밑에 붙입니다
+```
+
+**순서를 지키십시오.** 설명 줄이 먼저 이름 칸에 들어가고 기간 줄이 그 밑에 와야 읽는
+순서가 맞습니다. 기간 열은 **옮기지 않고 베껴 둡니다** — 넓은 화면에서는 열이 보이고
+줄이 숨고, 좁은 화면에서는 반대입니다. **인쇄는 종이 폭이 ~700px 이지만 기간 열을
+세워 두었으므로 줄을 숨깁니다**(양쪽이 다 나오면 같은 숫자가 두 번 찍힙니다).
+
+한 쌍(`1개월` + `−5.1%`)은 `white-space:nowrap` 으로 붙여 두고 쌍과 쌍 사이에서만
+넘깁니다. 붙여 두지 않으면 360px 에서 이름과 값이 다른 줄에 놓입니다.
 
 ### 금리는 기간 「수익률」이 아니라 기간 「변화(bp)」입니다
 
@@ -795,23 +815,40 @@ bash scripts/make_outputs.sh docs/briefings/2026-08-12-morning.html
 | 02 | 미국 증시 마감 | `us` | 지수 · 종목 12 · 업종 ETF 11 |
 | 03 | *(조건부)* 그날의 미국 지표 | `jobs` | 고용·CPI·PPI·소매판매·FOMC 같은 큰 발표가 있었던 날만 |
 | 04 | 금리 · 채권시장 | `rates` | 재무부 확정 곡선 · 스프레드 · 정책금리 · 국내 시장금리 |
-| 05 | 환율 · 원자재 | `fx` | |
-| 06 | 유럽 증시 | `europe` | 지수 + **유럽 종목 표** |
-| 07 | 아시아 증시 | `asia` | 지수 + **일본·중국 종목 표 둘** |
-| 08 | 국내 증시 되짚기 | `korea` | **직전 거래일** 마감 · 등락 종목 수 · 52주 위치 · 수급 · 국내 종목 표 |
-| 09 | 해외 시장 관심 이슈 | `issues` | 다음 주 해외 장을 여는 재료 4~6개. **국내에 무엇을 뜻하는지까지** 씁니다 |
-| 10 | 증권사 리포트 요약 | `reports` | **실명 인용만**. 아래 「리포트 요약」 항 참고 |
-| 11 | 하우스 시각 | `views` | |
-| 12 | 일정 · 휴장일 | `calendar` | **다음 국내 거래일이 언제이고 며칠치를 한꺼번에 받는지**를 맨 앞에 + **해외 휴장일 표** |
-| 13 | 리스크 점검 | `risks` | |
-| 14 | WM 업계 | `wm` | |
-| 15 | 고객 응대 포인트 | `talking` | |
-| 16 | 데이터 검증 노트 | `verify` | |
-| 17 | 출처 | `sources` | |
+| 05 | 환율 | `fx` | **표 둘로 가릅니다** — 「원화 환율」(원/달러 + 재정환율 다섯)과 「달러 상대 통화」. `fx.rows` 를 그대로 씁니다 |
+| 06 | 원자재 · 기타 지표 | `commodity` | 유가·금속·비트코인·MOVE·VIX |
+| 07 | 유럽 증시 | `europe` | 지수 + **유럽 종목 표** |
+| 08 | 아시아 증시 | `asia` | 지수 + **일본·중국 종목 표 둘** |
+| 09 | 국내 증시 되짚기 | `korea` | **직전 거래일** 마감 · 등락 종목 수 · 52주 위치 · 수급 · 국내 종목 표 |
+| 10 | 해외 시장 관심 이슈 | `issues` | 다음 주 해외 장을 여는 재료 4~6개. **국내에 무엇을 뜻하는지까지** 씁니다 |
+| 11 | 증권사 리포트 요약 | `reports` | **실명 인용만**. 아래 「리포트 요약」 항 참고 |
+| 12 | 하우스 시각 | `views` | |
+| 13 | 일정 · 휴장일 | `calendar` | **다음 국내 거래일이 언제이고 며칠치를 한꺼번에 받는지**를 맨 앞에 + **해외 휴장일 표** |
+| 14 | 리스크 점검 | `risks` | |
+| 15 | WM 업계 | `wm` | |
+| 16 | 고객 응대 포인트 | `talking` | |
+| 17 | 데이터 검증 노트 | `verify` | |
+| 18 | 출처 | `sources` | |
 
 **절 번호는 손으로 매기지 마십시오.** 절을 하나 끼워 넣을 때마다 뒤가 전부 밀려
 반드시 어긋납니다. 만들어진 HTML 에서 `<span class="sec-num">` 를 **문서 순서대로
 다시 매기고**, 목차 개수와 같은지 확인하십시오(어긋나면 빌드를 세웁니다).
+
+**본문에서 다른 절을 가리킬 때도 번호를 쓰지 마십시오.** 「(05번)」이라고 적어 두면
+절이 하나 늘 때 조용히 어긋납니다 — 실제로 어긋나 있었습니다. 「(10번)」이 가리키던
+일정 절은 그 사이 12번이 돼 있었고 아무도 알아채지 못했습니다. **절 이름으로
+가리키십시오**: 「(「원자재」 절)」, 「(see Commodities)」. 이름은 절이 늘어도
+어긋나지 않습니다.
+
+### 환율은 표 둘로 가릅니다
+
+한 표에 몰면 부호를 읽는 법이 뒤섞입니다. **원/달러가 내려가면 원화 강세이지만
+달러/엔이 내려가면 달러 약세**입니다. 그래서 「원화 환율」과 「달러 상대 통화」를
+갈라 세우고, 각 표의 꼬리말에 부호 읽는 법을 적습니다. 「달러 상대」 표 안에서도
+`유로/달러`·`파운드/달러` 두 줄만 표기 순서가 뒤집히므로 **맨 뒤로 몰아 두고 그
+줄에만 「여기만 반대입니다」를 답니다.**
+
+기간 열은 두 표 모두 `%` 입니다 — 환율은 가격이므로 bp 가 아닙니다.
 
 ### 등락 사유는 확인된 것만 답니다
 
