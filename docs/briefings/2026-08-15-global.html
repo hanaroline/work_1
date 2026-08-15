@@ -535,6 +535,44 @@ table.data .perfline{display:none}
 /* 인쇄는 종이 폭이 ~700px 이지만 기간 열을 세워 두었다. 줄은 접는다. */
 @media print{ table.data .perfline{display:none!important} }
 
+/* 인쇄: 긴 블록을 통째로 붙들면 앞 쪽에 큰 빈칸이 남는다. 쪽을 넘겨 잇되
+   줄은 쪼개지 않고 머리행을 되풀이한다. 짧은 것만 종전대로 붙든다. */
+@media print{
+  table.data{break-inside:auto!important}
+  table.data thead{display:table-header-group}
+  table.data tr{break-inside:avoid;break-after:auto}
+  table.data caption{break-after:avoid}
+  table.data.keep{break-inside:avoid!important}
+  .soft-card,.callout,.exp{break-inside:auto!important}
+  .soft-card.keep,.callout.keep{break-inside:avoid!important}
+  .stat,.view{break-inside:avoid}
+  p,li,dd{orphans:3;widows:3}
+  /* 제목만 남고 내용이 다음 쪽으로 넘어가는 것을 막는다. 절 번호도 포함한다
+     — 빼면 「01」 한 글자만 앞 쪽에 남는다. 실제로 그렇게 나왔다. */
+  h3,h4,.section-title,.section-rule,.sec-num{break-after:avoid}
+  /* 그리드는 쪽을 넘기면 **빈 칸 자리를 남긴다** — 크로미움이 다음 쪽으로 간
+     칸의 자리를 앞 쪽에 그대로 잡아 둔다. 표와 달리 쪼개면 더 나빠진다.
+     대신 인쇄에서 열을 늘려 낮게 만들어 통째로 들어가게 한다. */
+  .stat-grid,.views{break-inside:avoid!important}
+  .stat-grid{grid-template-columns:repeat(4,minmax(0,1fr))!important}
+  /* 글이 긴 카드(하우스 시각·지역별 요약)는 인쇄에서 열로 세우면 칸이 좁아
+     세로로 길어지고, 한 줄이 통째로 다음 쪽에 밀린다. 종이에서는 한 칸씩
+     가로로 눕히는 편이 짧고 잘 흐른다. */
+  .views{display:block!important}
+  .views > *{margin-bottom:9px;break-inside:avoid}
+  .views > *:last-child{margin-bottom:0}
+  /* 숫자 카드는 짧으므로 격자를 유지한다. 한 줄에 들어가면 쪽을 넘겨도 안전하다. */
+  .stat-grid.flow{break-inside:auto!important}
+  /* 꼬리말 세 줄만 마지막 쪽에 남는 것을 막는다 */
+  footer.foot{break-before:avoid;break-inside:avoid}
+  /* 여백을 조금씩 줄인다 — 쪽 머리에 남는 여백은 그대로 빈칸이고, 첫 쪽에서는
+     52px 이 모자라 첫 절의 지표 카드가 통째로 2쪽으로 밀려나 있었다. */
+  .section{margin-top:16px}
+  .section-title{margin-bottom:10px}
+  .hero{margin-top:6px;padding-bottom:8px}
+  .hero h1{margin-bottom:10px}
+}
+
 </style>
 
 <div class="page wide">
@@ -653,7 +691,7 @@ table.data .perfline{display:none}
   <p class="cap"><span data-lang-ko><strong>오늘은 광복절이라 국내 증시가 열리지 않습니다.</strong> 이 판은 <strong>해외 증시 브리핑</strong>이고, 기준은 <strong>8월 14일(금) 마감</strong>입니다 &mdash; 미국·유럽·아시아·국내 모두 같은 날입니다. 미 7월 소매판매는 8/14 21:30 KST 발표치입니다. 코스피 카드는 <strong>직전 거래일(8/14) 마감</strong>이며 오늘 값이 아닙니다 <span class="vf ok">MARKET DATA</span></span><span data-lang-en><strong>Korean markets are closed today for Liberation Day.</strong> This is the <strong>overseas edition</strong>, and the reference point is the <strong>close on Friday 14 August</strong> &mdash; the same date for the US, Europe, Asia and Korea. US July retail sales were released at 21:30 KST on the 14th. The KOSPI card is the <strong>last trading day&rsquo;s close</strong>, not today&rsquo;s <span class="vf ok">MARKET DATA</span></span></p>
 
   <h3><span data-lang-ko>지역별 요약</span><span data-lang-en>By region</span></h3>
-  <div class="views">
+  <div class="views flow">
     <div class="view">
       <h4><span data-lang-ko>미국</span><span data-lang-en>United States</span> <span class="tone risk-off"><span data-lang-ko>S&amp;P500 &minus;0.17% &middot; 나스닥 &minus;0.28% &middot; 러셀2000 <strong>+0.51%</strong></span><span data-lang-en>S&amp;P 500 &minus;0.17%, Nasdaq &minus;0.28%, Russell 2000 <strong>+0.51%</strong></span></span></h4>
       <p><span data-lang-ko><strong>AMD +6.50%</strong> vs <strong>브로드컴 &minus;5.94%</strong>. 소매판매 &minus;0.6% 에 지수는 밀렸지만 <strong>중소형주는 올랐습니다</strong> &mdash; 금리 인하 기대가 붙는 쪽입니다.</span><span data-lang-en><strong>AMD +6.50%</strong> against <strong>Broadcom &minus;5.94%</strong>. Retail sales at &minus;0.6% knocked the indices, but <strong>small caps rose</strong> &mdash; they are where rate-cut hopes land.</span></p>
@@ -1426,7 +1464,7 @@ table.data .perfline{display:none}
 
   <p class="lede"><span data-lang-ko><strong>확정된 투자 판단이 아닙니다.</strong> 아래는 금요일까지 확인된 수치에서 읽히는 것이며, 고객 상황에 따라 달리 적용됩니다.</span><span data-lang-en><strong>None of this is a settled investment judgement.</strong> What follows is what the figures through Friday suggest; it applies differently to different clients.</span></p>
 
-  <div class="views">
+  <div class="views flow">
     <div class="view">
       <h4><span data-lang-ko>① 주도주가 바뀐 것이 이번 주의 마지막 소식입니다</span><span data-lang-en>① A change of leadership was the week&rsquo;s closing news</span></h4>
       <p><span data-lang-ko>월~목은 <strong>반도체 넷</strong>이 지수를 끌었고 상승 종목은 697 → 333 으로 줄었습니다. 금요일은 <strong>현대차 +8.24%</strong>·무선통신 +8.49%·석유와가스 +5.84% 가 끌었고 상승 종목이 <strong>677 로 되돌아왔습니다.</strong> 거래대금은 오히려 줄었습니다 &mdash; <strong>새 돈이 들어와 넓어진 것이 아니라, 있던 돈이 옮겨 다닌 것</strong>에 가깝습니다. 이 전환이 이어지는지가 <strong>8/18 재개장의 첫 관전 포인트</strong>입니다.</span><span data-lang-en>From Monday to Thursday <strong>four semiconductor names</strong> carried the index while advancers fell from 697 to 333. On Friday <strong>Hyundai Motor +8.24%</strong>, telecoms +8.49% and oil and gas +5.84% led, and advancers <strong>rebounded to 677</strong> &mdash; on lower turnover. That looks less like new money broadening the market than <strong>existing money rotating</strong>. Whether the rotation holds is <strong>the first thing to watch when Korea reopens on the 18th</strong>.</span></p>
