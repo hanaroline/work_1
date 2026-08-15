@@ -63,6 +63,75 @@ YAHOO_INDEX = {
 # bp 로 낸다. 4.20 → 4.50 은 「+7.1%」가 아니라 「+30bp」다.
 YIELD_SYMBOLS = {"^TNX", "^IRX", "^FVX", "^TYX"}
 
+# 환율 — 달러 상대 통화쌍. 원화 크로스는 여기서 받지 않고 아래에서 **계산**한다.
+# 국내에서 고시하는 원/엔·원/위안·원/유로가 실제로 그렇게 만들어진다(재정환율).
+# 야후에 `JPYKRW=X` 같은 직접 심볼이 있기는 하나 호가가 얇고 결측이 잦다.
+YAHOO_FX = {
+    "usdbrl": "BRL=X",        # 브라질 국채를 든 고객이 실제로 보는 환율
+    "audusd": "AUDUSD=X",
+    "usdchf": "CHF=X",        # 안전자산 쏠림을 원화와 떼어 보는 대조군
+    "usdinr": "INR=X",
+    "usdvnd": "VND=X",
+}
+
+# 환율 표 — (키, 한글, 영문, 계산법, 배수, 설명)
+#
+# 계산법이 문자열이면 `indices`/`fx_pairs` 에서 그대로 가져온다. 튜플이면
+# 원/달러에서 재정환율을 만든다: ("div", x) 는 원/달러 ÷ x, ("mul", x) 는 곱한다.
+# 야후가 달러당 통화로 주는 쌍(JPY=X, CNY=X, BRL=X)은 나누고, 통화당 달러로
+# 주는 쌍(EURUSD=X, AUDUSD=X, GBPUSD=X)은 곱한다.
+#
+# 배수는 **표시 단위**다. 원/엔은 1엔이 9.4원이라 자릿수가 안 맞는다. 국내는
+# 100엔당으로 고시한다. 배수는 수준값에만 곱한다 — 등락률과 기간 수익률은
+# 비율이라 배수에 영향받지 않는다.
+FX_ROWS = [
+    ("usdkrw", "원/달러", "KRW/USD", "usdkrw", 1,
+     ("수입 물가와 외국인 수급을 동시에 흔드는 단일 변수",
+      "The single variable that moves import prices and foreign flows at once")),
+    ("jpykrw", "원/100엔", "KRW/100JPY", ("div", "usdjpy"), 100,
+     ("엔 대비 원화. 일본 여행·엔화 예금과 수출 경쟁력이 함께 걸린다",
+      "Won against yen — travel, yen deposits and export competitiveness")),
+    ("cnykrw", "원/위안", "KRW/CNY", ("div", "usdcny"), 1,
+     ("중국 경기와 원화가 같이 움직인다. 원화의 대리 통화로 읽힌다",
+      "Won tracks the yuan; the won trades as a China proxy")),
+    ("eurkrw", "원/유로", "KRW/EUR", ("mul", "eurusd"), 1,
+     ("유럽 펀드·유로 표시 자산의 원화 환산값",
+      "Won value of European funds and euro-denominated assets")),
+    ("brlkrw", "원/헤알", "KRW/BRL", ("div", "usdbrl"), 1,
+     ("브라질 국채 투자의 손익을 실제로 가르는 환율. 이자보다 크게 움직인다",
+      "The rate that actually decides Brazilian bond P&L — it swings more than the coupon")),
+    ("audkrw", "원/호주달러", "KRW/AUD", ("mul", "audusd"), 1,
+     ("호주 자원·배당 상품의 환산 기준. 원자재 값과 같이 간다",
+      "Conversion base for Australian resource and dividend products; tracks commodities")),
+    ("dxy", "달러인덱스", "Dollar Index", "dxy", 1,
+     ("주요 6개 통화 대비 달러. 원화가 약해진 것인지 달러가 세진 것인지 가른다",
+      "Dollar against six majors — separates a weak won from a strong dollar")),
+    ("eurusd", "유로/달러", "EUR/USD", "eurusd", 1,
+     ("달러인덱스의 절반 이상을 차지한다. 사실상 달러의 반대편",
+      "Over half the dollar index — effectively the other side of the dollar")),
+    ("usdjpy", "달러/엔", "USD/JPY", "usdjpy", 1,
+     ("일본은행 정책과 엔 캐리 자금의 방향계",
+      "Barometer for BOJ policy and yen-carry money")),
+    ("usdcny", "달러/위안", "USD/CNY", "usdcny", 1,
+     ("인민은행 고시가 상단을 정한다. 위안 약세는 원화 약세로 옮는다",
+      "PBOC fixing caps it; yuan weakness spills into the won")),
+    ("usdbrl", "달러/헤알", "USD/BRL", "usdbrl", 1,
+     ("헤알 자체의 강약. 원/헤알에서 원화 몫을 걷어낸 값",
+      "The real's own strength, with the won's part stripped out")),
+    ("gbpusd", "파운드/달러", "GBP/USD", "gbpusd", 1,
+     ("영란은행 금리 경로가 실린다", "Carries the Bank of England rate path")),
+    ("usdchf", "달러/스위스프랑", "USD/CHF", "usdchf", 1,
+     ("위험회피의 온도계. 프랑이 세지면 돈이 숨는 중이다",
+      "Risk-off thermometer — a strong franc means money is hiding")),
+    ("usdtwd", "달러/대만달러", "USD/TWD", "usdtwd", 1,
+     ("반도체 수출국 통화. 원화와 가장 비슷하게 움직인다",
+      "The other semiconductor exporter's currency; the closest match to the won")),
+    ("usdinr", "달러/루피", "USD/INR", "usdinr", 1,
+     ("인도 펀드의 환 손익", "Currency P&L on India funds")),
+    ("usdvnd", "달러/동", "USD/VND", "usdvnd", 1,
+     ("베트남 펀드의 환 손익", "Currency P&L on Vietnam funds")),
+]
+
 # 미국 업종 — S&P500 섹터 ETF. 국내 개장 전 어느 업종에 돈이 붙었는지 본다.
 YAHOO_US_SECTORS = {
     "기술": "XLK", "금융": "XLF", "에너지": "XLE", "헬스케어": "XLV",
@@ -1729,6 +1798,109 @@ def update_history(out, path="data/market/history.json"):
                   f, ensure_ascii=False, indent=1)
 
 
+def _cross_perf(a, b, op):
+    """두 통화쌍의 기간 수익률에서 재정환율의 기간 수익률을 만든다.
+
+    크로스 = A ÷ B 이면 크로스의 배수는 A 배수 ÷ B 배수다. 그래서
+    (1+ra)/(1+rb) − 1 이 된다. 곱셈 쪽은 (1+ra)(1+rb) − 1.
+    **수준값을 나눠 만든 뒤 다시 기간 수익률을 재는 것과 같은 값**이고,
+    일봉을 두 벌 더 받지 않아도 된다.
+
+    기준일이 하루쯤 어긋날 수 있다 — 24시간 시장이라 둘 다 같은 봉을 쓰지만
+    한쪽만 결측인 날이 있다. 그래서 기간이 양쪽에 다 있을 때만 낸다.
+    """
+    if not a or not b:
+        return None
+    out = {}
+    for k in ("w1", "m1", "m3", "m6", "y1", "ytd"):
+        ra, rb = a.get(k), b.get(k)
+        if ra is None or rb is None:
+            continue
+        f = (1 + ra / 100.0) * (1 + rb / 100.0) if op == "mul" \
+            else (1 + ra / 100.0) / (1 + rb / 100.0)
+        out[k] = round((f - 1) * 100, 2)
+    if not out:
+        return None
+    out["unit"] = "%"
+    froms = [x.get("from") for x in (a, b) if x.get("from")]
+    if froms:
+        out["from"] = max(froms)
+    return out
+
+
+def build_fx(out):
+    """환율 표를 한 덩어리로 만든다 — 수준·전일대비·기간 추이를 한 줄에.
+
+    원화 크로스(원/엔·원/위안·원/유로·원/헤알·원/호주달러)는 받아 오지 않고
+    원/달러에서 만든다. 국내 고시 환율이 그렇게 만들어지기 때문이다 — 원화는
+    달러 말고는 직접 거래되는 시장이 사실상 없어서, 나머지는 전부 달러를
+    거쳐 계산한 **재정환율**이다. 계산해서 쓰는 게 편법이 아니라 정공법이다.
+    """
+    src = dict(out.get("indices") or {})
+    src.update(out.get("fx_pairs") or {})
+    base = src.get("usdkrw") or {}
+    rows, missing = [], []
+
+    for key, ko, en, how, mul, note in FX_ROWS:
+        if isinstance(how, str):
+            q = src.get(how)
+            if not q or q.get("close") is None:
+                missing.append(ko)
+                continue
+            row = {"key": key, "name_ko": ko, "name_en": en,
+                   "symbol": q.get("symbol"), "date": q.get("date"),
+                   "close": q.get("close"), "prev_close": q.get("prev_close"),
+                   "change": q.get("change"), "change_pct": q.get("change_pct"),
+                   "basis": "야후 직접"}
+            if q.get("perf"):
+                row["perf"] = q["perf"]
+        else:
+            op, other = how
+            leg = src.get(other) or {}
+            if not base.get("close") or not leg.get("close"):
+                missing.append(ko)
+                continue
+            def cross(x, y):
+                return x * y if op == "mul" else x / y
+            close = cross(base["close"], leg["close"])
+            prev = None
+            if base.get("prev_close") and leg.get("prev_close"):
+                prev = cross(base["prev_close"], leg["prev_close"])
+            row = {"key": key, "name_ko": ko, "name_en": en,
+                   "symbol": "%s %s %s" % (base.get("symbol"),
+                                           "×" if op == "mul" else "÷",
+                                           leg.get("symbol")),
+                   "date": base.get("date"),
+                   "close": _num(close), "prev_close": _num(prev),
+                   "change": _num(close - prev) if prev else None,
+                   "change_pct": _num((close / prev - 1) * 100) if prev else None,
+                   "basis": "재정환율(USD 경유 계산)"}
+            p = _cross_perf(base.get("perf"), leg.get("perf"), op)
+            if p:
+                row["perf"] = p
+            if leg.get("date") and base.get("date") and leg["date"] != base["date"]:
+                row["date_note"] = "두 다리의 기준일이 다르다: %s / %s" % (
+                    base["date"], leg["date"])
+        if mul != 1:
+            for k in ("close", "prev_close", "change"):
+                if row.get(k) is not None:
+                    row[k] = _num(row[k] * mul)
+            row["scale"] = mul
+            row["scale_note"] = "국내 고시 관행에 맞춰 %d배로 적는다(등락률은 배수와 무관)" % mul
+        row["note_ko"], row["note_en"] = note
+        rows.append(row)
+
+    if not rows:
+        return None
+    res = {"rows": rows,
+           "note": "원화 크로스는 원/달러에서 계산한 재정환율입니다. "
+                   "국내 고시 환율과 소수점 아래에서 다를 수 있습니다.",
+           "source": "Yahoo Finance 일봉 (기간은 달력 기준, 휴장이면 직전 거래일)"}
+    if missing:
+        res["missing"] = missing
+    return res
+
+
 def main():
     now = datetime.now(KST)
     out = {
@@ -1750,6 +1922,13 @@ def main():
         if v:
             out["stocks"][name] = attach_note(name, v)
         out["sources"]["yahoo:" + sym] = st
+
+    # 환율 — 원화 크로스를 만들 달러 상대 통화쌍. 나머지 다리는 indices 에 있다.
+    for name, sym in YAHOO_FX.items():
+        v, st = run(name, yahoo_quote, sym)
+        out["sources"]["yahoo:fx:" + sym] = st
+        if v:
+            out.setdefault("fx_pairs", {})[name] = v
 
     # 국내 상장 ETF — 고객이 실제로 사는 물건
     for name, sym in YAHOO_KR_ETF.items():
@@ -1936,6 +2115,17 @@ def main():
     out["sources"]["krx:allstocks"] = st
     if v:
         out.setdefault("krx", {})["allstocks"] = v[:60]
+
+    # 환율 표 — 위에서 받은 통화쌍을 모아 원화 크로스까지 만든다
+    try:
+        fx = build_fx(out)
+        if fx:
+            out["fx"] = fx
+        out["sources"]["derived:fx"] = {"ok": bool(fx),
+                                        "rows": len(fx["rows"]) if fx else 0}
+    except Exception as e:                                        # noqa: BLE001
+        out["sources"]["derived:fx"] = {"ok": False,
+                                        "error": "%s: %s" % (type(e).__name__, e)}
 
     ok = sum(1 for s in out["sources"].values() if s["ok"])
     out["summary"] = {"sources_tried": len(out["sources"]), "sources_ok": ok}
