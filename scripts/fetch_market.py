@@ -58,6 +58,10 @@ YAHOO_INDEX = {
     "fedfunds_fut": "ZQ=F",
 }
 
+# 값이 「가격」이 아니라 「금리(%)」인 심볼. 기간 변화를 수익률(%)이 아니라
+# bp 로 낸다. 4.20 → 4.50 은 「+7.1%」가 아니라 「+30bp」다.
+YIELD_SYMBOLS = {"^TNX", "^IRX", "^FVX", "^TYX"}
+
 # 미국 업종 — S&P500 섹터 ETF. 국내 개장 전 어느 업종에 돈이 붙었는지 본다.
 YAHOO_US_SECTORS = {
     "기술": "XLK", "금융": "XLF", "에너지": "XLE", "헬스케어": "XLV",
@@ -129,6 +133,70 @@ STOCK_NOTES = {
               "Search, commerce and fintech; Korea's largest internet firm"),
     "셀트리온": ("바이오시밀러. 미국·유럽 처방 확대",
               "Biosimilars, with prescriptions growing in the US and Europe"),
+    "LG전자": ("가전·TV·전장. 전장(차량 부품)이 성장축",
+             "Appliances, TVs and auto parts; components are the growth engine"),
+    "삼성에스디에스": ("IT 서비스·물류 BPO. 그룹 시스템 통합",
+                 "IT services and logistics BPO; the group's systems integrator"),
+    "SK스퀘어": ("SK하이닉스를 거느린 투자지주",
+               "Investment holding company; SK hynix is its main asset"),
+    "LG화학": ("석유화학·첨단소재. LG에너지솔루션 최대주주",
+             "Petrochemicals and advanced materials; owns most of LG Energy Solution"),
+    "삼성SDI": ("이차전지 셀·전자재료. 각형 배터리 중심",
+              "Battery cells and electronic materials; focused on prismatic cells"),
+    "POSCO홀딩스": ("철강 + 리튬·니켈 등 이차전지 소재 지주",
+                 "Steel plus a battery-materials arm (lithium, nickel)"),
+    "기아": ("완성차. 현대차그룹, 미국·유럽 판매 비중이 큼",
+           "Automaker in the Hyundai group; large US and European sales"),
+    "현대모비스": ("자동차 부품·모듈. 현대차·기아 공급",
+               "Auto parts and modules supplied to Hyundai and Kia"),
+    "신한지주": ("은행 중심 금융지주. KB금융과 1·2위 다툼",
+              "Bank-led financial group; vies with KB for the top spot"),
+    "하나금융지주": ("은행 중심 금융지주. 외환·기업금융 강점",
+                "Bank-led financial group; strong in FX and corporate banking"),
+    "우리금융지주": ("은행 비중이 가장 큰 금융지주. 증권업 재진출",
+                "The most bank-weighted financial group; re-entering brokerage"),
+    "메리츠금융지주": ("보험·증권 통합 지주. 높은 주주환원율",
+                 "Insurance and brokerage holding company; high shareholder returns"),
+    "삼성생명": ("국내 최대 생명보험사. 삼성전자 지분 보유",
+              "Korea's largest life insurer; holds a stake in Samsung Electronics"),
+    "삼성화재": ("국내 최대 손해보험사",
+              "Korea's largest non-life insurer"),
+    "HD현대중공업": ("조선. LNG선·특수선 수주 잔고가 실적을 좌우",
+                 "Shipbuilding; LNG and naval order backlog drives earnings"),
+    "두산에너빌리티": ("발전 설비. 원전·가스터빈, SMR 기대주",
+                 "Power plant equipment; nuclear, gas turbines and SMRs"),
+    "카카오": ("카카오톡 기반 플랫폼·핀테크·콘텐츠",
+            "KakaoTalk-based platform, fintech and content"),
+    "크래프톤": ("배틀그라운드 개발사. 해외 매출 비중이 높음",
+             "Maker of PUBG; most revenue comes from overseas"),
+    "SK텔레콤": ("이동통신 1위. 배당 매력이 큰 방어주",
+              "The largest mobile carrier; a defensive, high-dividend name"),
+    "삼성물산": ("건설·상사·패션. 삼성그룹 지배구조의 정점",
+              "Construction, trading and fashion; top of the Samsung ownership chain"),
+    "KT&G": ("담배·홍삼. 경기와 무관한 현금창출력",
+             "Tobacco and red ginseng; cash generation independent of the cycle"),
+    "SK이노베이션": ("정유·석유화학 + 배터리(SK온). 유가에 연동",
+                 "Refining and chemicals plus batteries (SK On); tracks crude"),
+    "한국전력": ("전력 독점 공급. 요금과 연료비 차이가 실적",
+              "The electricity monopoly; earnings are the tariff-fuel cost gap"),
+    "HMM": ("컨테이너 해운. 운임 지수에 실적이 직결",
+            "Container shipping; earnings track freight rates"),
+    "알테오젠": ("피하주사 전환 기술(ALT-B4) 라이선스. 코스닥 대표주",
+              "Subcutaneous-conversion technology licensing; a KOSDAQ bellwether"),
+    "에코프로비엠": ("이차전지 양극재. 하이니켈 중심",
+                "Cathode materials for batteries, weighted to high-nickel"),
+    "에코프로": ("에코프로비엠 등을 거느린 이차전지 소재 지주",
+             "Battery-materials holding company; parent of Ecopro BM"),
+    "HLB": ("항암 신약(리보세라닙) 개발. 허가 이벤트에 크게 움직임",
+            "Oncology drug developer; moves sharply on regulatory events"),
+    "리노공업": ("반도체 검사용 프로브핀. 높은 이익률",
+              "Probe pins for chip testing; very high margins"),
+    "레인보우로보틱스": ("협동로봇·휴머노이드. 삼성전자가 최대주주",
+                   "Collaborative robots and humanoids; Samsung is top shareholder"),
+    "펄어비스": ("검은사막 개발사. 신작 붉은사막에 기대",
+             "Maker of Black Desert; hopes rest on Crimson Desert"),
+    "실리콘투": ("K뷰티 화장품 역직구 유통. 미국 매출 급증",
+             "Cross-border distributor of K-beauty; US sales growing fast"),
     # --- 미국 ---
     "엔비디아": ("AI 가속기(GPU) 사실상 표준. HBM 최대 수요처",
               "The de facto standard in AI accelerators; largest HBM buyer"),
@@ -219,6 +287,55 @@ STOCK_NOTES = {
              "The top baijiu maker; a bellwether for Chinese consumption"),
     "CATL": ("세계 1위 배터리 제조사. 국내 배터리사의 최대 경쟁자",
              "The world's largest battery maker; Korea's chief rival"),
+    # --- 미국 업종 ETF (S&P500 섹터) ---
+    # 「기술이 올랐다」로는 응대가 안 된다. 무엇이 들어 있는 묶음인지 적어 둔다.
+    "기술": ("S&P500 기술업종(XLK). 애플·MS·엔비디아가 큰 비중",
+           "S&P 500 technology (XLK); Apple, Microsoft and Nvidia dominate"),
+    "금융": ("S&P500 금융업종(XLF). 은행·보험·카드. 금리와 경기에 민감",
+           "S&P 500 financials (XLF); banks, insurers and card networks"),
+    "에너지": ("S&P500 에너지업종(XLE). 유가에 직접 연동",
+            "S&P 500 energy (XLE); moves directly with crude"),
+    "헬스케어": ("S&P500 헬스케어(XLV). 제약·의료기기·보험",
+              "S&P 500 health care (XLV); pharma, devices and insurers"),
+    "임의소비재": ("S&P500 경기소비재(XLY). 아마존·테슬라 비중이 큼",
+                "S&P 500 consumer discretionary (XLY); Amazon and Tesla heavy"),
+    "필수소비재": ("S&P500 필수소비재(XLP). 식품·생활용품. 대표적 방어업종",
+                "S&P 500 consumer staples (XLP); the classic defensive sector"),
+    "산업재": ("S&P500 산업재(XLI). 항공·기계·운송·방산",
+            "S&P 500 industrials (XLI); aerospace, machinery and transport"),
+    "소재": ("S&P500 소재업종(XLB). 화학·금속. 중국 경기에 민감",
+           "S&P 500 materials (XLB); chemicals and metals, China-sensitive"),
+    "유틸리티": ("S&P500 유틸리티(XLU). 전력·가스. 금리 내리면 유리",
+              "S&P 500 utilities (XLU); benefits when rates fall"),
+    "부동산": ("S&P500 부동산·리츠(XLRE). 금리에 가장 민감한 업종",
+            "S&P 500 real estate (XLRE); the most rate-sensitive sector"),
+    "커뮤니케이션": ("S&P500 커뮤니케이션(XLC). 알파벳·메타·넷플릭스",
+                 "S&P 500 communication services (XLC); Alphabet, Meta, Netflix"),
+    # --- 국내 상장 ETF ---
+    "KODEX 200": ("코스피200을 그대로 따라가는 대표 지수 ETF",
+                  "The benchmark ETF tracking the KOSPI 200"),
+    "TIGER 200": ("코스피200 추종. KODEX 200과 같은 지수, 운용사만 다름",
+                  "Also tracks the KOSPI 200; a different manager, same index"),
+    "KODEX 코스닥150": ("코스닥150 추종. 중소형·바이오 비중이 큼",
+                     "Tracks the KOSDAQ 150; heavy in small caps and biotech"),
+    "KODEX 레버리지": ("코스피200 일간 수익률의 2배. 변동성이 크고 장기보유에 불리",
+                    "Twice the KOSPI 200's daily move; unsuited to long holding"),
+    "KODEX 200선물인버스2X": ("코스피200 일간 수익률의 -2배. 하락에 베팅하는 상품",
+                          "Minus twice the KOSPI 200's daily move; a bearish bet"),
+    "KODEX 반도체": ("국내 반도체 종목 묶음. 삼성전자·SK하이닉스 비중이 큼",
+                  "A basket of Korean chip names, led by Samsung and SK hynix"),
+    "TIGER 미국S&P500": ("미국 S&P500 추종. 환헤지를 하지 않아 환율도 같이 반영",
+                      "Tracks the S&P 500 unhedged, so the won-dollar rate feeds in"),
+    "TIGER 미국나스닥100": ("나스닥100 추종. 미국 기술주 집중",
+                        "Tracks the Nasdaq 100; concentrated in US tech"),
+    "TIGER 미국필라델피아반도체나스닥": ("필라델피아 반도체지수(SOX) 추종",
+                                "Tracks the Philadelphia Semiconductor Index (SOX)"),
+    "TIGER 리츠부동산인프라": ("국내 리츠·인프라 묶음. 배당과 금리에 민감",
+                         "Korean REITs and infrastructure; driven by yield and rates"),
+    "KODEX 미국채10년선물": ("미 국채 10년 선물. 금리가 내리면 오른다",
+                        "US 10-year Treasury futures; rises when yields fall"),
+    "KODEX 골드선물(H)": ("국제 금 선물, 환헤지형. 금값만 따라간다",
+                      "Gold futures, currency-hedged, so only bullion moves it"),
 }
 
 
@@ -231,12 +348,56 @@ def attach_note(name, quote):
 
 
 # 시가총액 상위 — 야후는 코스피 종목에 .KS, 코스닥에 .KQ 를 쓴다
+#
+# 열 종목만 담던 것을 넓혔다. 고객이 들고 있는 종목이 표에 없으면 응대할 때
+# 매번 따로 찾아야 했다. 코스피 대형주에 업종을 골고루 깔고(반도체·자동차·
+# 금융·화학·조선·방산·통신·유통), 코스닥 상위를 붙였다.
 YAHOO_STOCKS = {
+    # --- 반도체·IT ---
     "삼성전자": "005930.KS", "SK하이닉스": "000660.KS",
-    "LG에너지솔루션": "373220.KS", "삼성바이오로직스": "207940.KS",
-    "현대차": "005380.KS", "KB금융": "105560.KS",
-    "한화에어로스페이스": "012450.KS", "삼성전기": "009150.KS",
-    "셀트리온": "068270.KS", "NAVER": "035420.KS",
+    "삼성전기": "009150.KS", "LG전자": "066570.KS",
+    "삼성에스디에스": "018260.KS", "SK스퀘어": "402340.KS",
+    # --- 이차전지·화학 ---
+    "LG에너지솔루션": "373220.KS", "LG화학": "051910.KS",
+    "삼성SDI": "006400.KS", "POSCO홀딩스": "005490.KS",
+    # --- 바이오·제약 ---
+    "삼성바이오로직스": "207940.KS", "셀트리온": "068270.KS",
+    # --- 자동차 ---
+    "현대차": "005380.KS", "기아": "000270.KS", "현대모비스": "012330.KS",
+    # --- 금융 ---
+    "KB금융": "105560.KS", "신한지주": "055550.KS",
+    "하나금융지주": "086790.KS", "우리금융지주": "316140.KS",
+    "메리츠금융지주": "138040.KS", "삼성생명": "032830.KS",
+    "삼성화재": "000810.KS",
+    # --- 조선·방산·기계·원전 ---
+    "한화에어로스페이스": "012450.KS", "HD현대중공업": "329180.KS",
+    "두산에너빌리티": "034020.KS",
+    # --- 인터넷·게임·통신 ---
+    "NAVER": "035420.KS", "카카오": "035720.KS",
+    "크래프톤": "259960.KS", "SK텔레콤": "017670.KS",
+    # --- 지주·소비재·에너지·운송 ---
+    "삼성물산": "028260.KS", "KT&G": "033780.KS",
+    "SK이노베이션": "096770.KS", "한국전력": "015760.KS",
+    "HMM": "011200.KS",
+    # --- 코스닥 상위 ---
+    "알테오젠": "196170.KQ", "에코프로비엠": "247540.KQ",
+    "에코프로": "086520.KQ", "HLB": "028300.KQ",
+    "리노공업": "058470.KQ", "레인보우로보틱스": "277810.KQ",
+    "펄어비스": "263750.KQ", "실리콘투": "257720.KQ",
+}
+
+# 국내 상장 ETF — 고객이 실제로 사는 물건이다. 지수·업종·해외·채권·원자재를
+# 한 줄씩 깔아 「무엇을 사면 이 시황을 사는 것인지」가 표에서 바로 보이게 한다.
+YAHOO_KR_ETF = {
+    "KODEX 200": "069500.KS", "TIGER 200": "102110.KS",
+    "KODEX 코스닥150": "229200.KS", "KODEX 레버리지": "122630.KS",
+    "KODEX 200선물인버스2X": "252670.KS",
+    "KODEX 반도체": "091160.KS",
+    "TIGER 미국S&P500": "360750.KS", "TIGER 미국나스닥100": "133690.KS",
+    "TIGER 미국필라델피아반도체나스닥": "381180.KS",
+    "TIGER 리츠부동산인프라": "329200.KS",
+    "KODEX 미국채10년선물": "308620.KS",
+    "KODEX 골드선물(H)": "132030.KS",
 }
 
 
@@ -254,8 +415,51 @@ def _get(url, data=None, headers=None, referer=None, encoding="utf-8", timeout=N
         return r.read().decode(encoding, "replace")
 
 
+_DROP_TAGS = re.compile(r"(?is)<(script|style|noscript|template)\b[^>]*>.*?</\1\s*>")
+_UNCLOSED_SCRIPT = re.compile(r"(?is)<(script|style)\b[^>]*>.*")
+
+
 def _text(fragment):
-    return html_mod.unescape(re.sub(r"<[^>]*>", " ", fragment)).replace("\xa0", " ").strip()
+    """태그를 걷어내고 글자만 남긴다.
+
+    **<script>·<style> 는 태그만 지우면 안 되고 내용째 지워야 한다.** 태그만
+    지우면 자바스크립트 소스가 본문 자리에 그대로 남는다. 네이버 뉴스 기사에서
+    실제로 그랬다 — 나흘 동안 기사 「본문」이 페이지 스크립트였다.
+    """
+    frag = _DROP_TAGS.sub(" ", fragment)
+    frag = _UNCLOSED_SCRIPT.sub(" ", frag)          # 닫히지 않은 채 잘린 조각
+    # 문단 구분을 살려 둔다 — 다 지우면 한 줄로 붙어 인용하기 어렵다
+    frag = re.sub(r"(?i)<br\s*/?>|</(p|div|li|h\d|article|tr)\s*>", "\n", frag)
+    txt = html_mod.unescape(re.sub(r"<[^>]*>", " ", frag)).replace("\xa0", " ")
+    txt = re.sub(r"[ \t​]+", " ", txt)
+    return re.sub(r"\n{3,}", "\n\n", txt).strip()
+
+
+def _slice_tag(html, needle):
+    """`needle`(예: id="dic_area") 을 품은 태그의 여는 곳부터 짝이 맞는 닫는
+    곳까지 잘라낸다.
+
+    비탐욕 정규식으로 `</div>` 까지 자르면 안 된다 — 기사 본문 안에 이미지·
+    표 컨테이너가 겹겹이 들어 있어 첫 `</div>` 에서 잘려 나간다. 같은 이름의
+    태그를 세어 짝을 맞춘다.
+    """
+    i = html.find(needle)
+    if i < 0:
+        return None
+    start = html.rfind("<", 0, i)
+    if start < 0:
+        return None
+    m = re.match(r"<([a-zA-Z][\w-]*)", html[start:])
+    if not m:
+        return None
+    tag = m.group(1)
+    pat = re.compile(r"(?i)<(/?)%s\b" % re.escape(tag))
+    depth = 0
+    for mm in pat.finditer(html, start):
+        depth += -1 if mm.group(1) else 1
+        if depth == 0:
+            return html[start:mm.end() + html[mm.end():].find(">") + 1]
+    return html[start:]                              # 닫히지 않았으면 끝까지
 
 
 def _num(x):
@@ -276,8 +480,20 @@ def _months_before(d, n):
     return date(y, m, 1)
 
 
-def _perf(bars, last_close):
+def _iso(s):
+    """'2026-08-14' 문자열을 date 로. 못 읽으면 None."""
+    try:
+        return date(*(int(x) for x in s.split("-")))
+    except (ValueError, TypeError, AttributeError):
+        return None
+
+
+def _perf(bars, last_close, as_bp=False):
     """기간 수익률(%) — 달력으로 되짚어 그 날 **이전의 마지막 실봉**과 견준다.
+
+    `as_bp=True` 면 비율이 아니라 **차이(bp)** 를 낸다. 금리에 %  수익률을
+    붙이면 읽을 수 없는 숫자가 된다 — 4.20% 가 4.50% 가 된 것을 「+7.1%」라고
+    적으면 아무도 못 알아본다. 금리는 「+30bp」다.
 
     거래일 수로 세지 않는다. 휴장일이 나라마다 달라 같은 「1개월」이 시장마다
     다른 기간이 되기 때문이다. 기준일이 휴장이면 그 앞의 마지막 거래일을 쓴다.
@@ -298,6 +514,9 @@ def _perf(bars, last_close):
                 break
         return v
 
+    def diff(r):
+        return round((last_close - r) * 100, 1) if as_bp else round((last_close / r - 1) * 100, 2)
+
     out = {}
     for key, back in (("w1", lambda: d0 - timedelta(days=7)),
                       ("m1", lambda: _months_before(d0, 1)),
@@ -306,11 +525,12 @@ def _perf(bars, last_close):
                       ("y1", lambda: _months_before(d0, 12))):
         r = ref_before(back())
         if r:
-            out[key] = round((last_close / r - 1) * 100, 2)
+            out[key] = diff(r)
     r = ref_before(date(d0.year, 1, 1) - timedelta(days=1))   # 전년 마지막 거래일
     if r:
-        out["ytd"] = round((last_close / r - 1) * 100, 2)
+        out["ytd"] = diff(r)
     if out:
+        out["unit"] = "bp" if as_bp else "%"
         out["from"] = bars[0][0].isoformat()                  # 자료가 닿는 가장 이른 날
     return out or None
 
@@ -402,9 +622,13 @@ def yahoo_quote(symbol):
     bars = [(datetime.fromtimestamp(ts[i], ex_tz).date(), q["close"][i]) for i in have]
     if from_meta:
         bars.append((datetime.fromtimestamp(ts[last], ex_tz).date(), close))
-    perf = _perf(bars, close)
+    perf = _perf(bars, close, as_bp=symbol in YIELD_SYMBOLS)
     if perf:
         out["perf"] = perf
+    if symbol in YIELD_SYMBOLS:
+        out["quote_kind"] = "yield_pct"    # 값 자체가 % 다. 등락은 bp 로 읽는다.
+        if change is not None:
+            out["change_bp"] = round(change * 100, 1)
     return out
 
 
@@ -879,14 +1103,64 @@ def naver_money_flow(dump_dir=None):
             "credit_balance": n(r[3]), "credit_chg": n(r[4]),    # 신용잔고
             "fund_equity": n(r[5]), "fund_mixed": n(r[7]), "fund_bond": n(r[9]),
         })
+    # 네이버 표의 「전일대비」(*_chg) 는 **부호가 없는 절대값**이다. 줄어든 날에도
+    # 양수로 실려, 그대로 옮기면 감소가 증가로 나간다 — 8월 13일 판에서 예탁금
+    # 3조 4,884억 「감소」를 「+34,884 증가」로 내보냈다. 값끼리 빼서 부호를 만든다.
+    for i, r in enumerate(series):
+        nxt = series[i + 1] if i + 1 < len(series) else None
+        if not nxt:
+            continue
+        for base in ("deposit", "credit_balance", "fund_equity", "fund_mixed", "fund_bond"):
+            a, b = r.get(base), nxt.get(base)
+            if a is not None and b is not None:
+                r[base + "_delta"] = round(a - b, 1)
+
     return {"unit": "억원", "latest": series[0], "series": series,
             "source_url": "https://finance.naver.com/sise/sise_deposit.naver",
-            "note": "신용잔고는 결제일 기준이라 종가일보다 1~2영업일 늦게 반영된다"}
+            "note": "신용잔고는 결제일 기준이라 종가일보다 1~2영업일 늦게 반영된다",
+            "delta_note": "*_chg 는 네이버가 준 **절대값**이라 부호가 없다. 증감은 반드시 "
+                          "*_delta (앞뒤 값의 차) 를 쓸 것"}
 
 
 _FUT_SENT = re.compile(r"[^.。\n]{0,110}선물[^.。\n]{0,150}?(?:계약|억원)[^.。\n]{0,60}")
 _CREDIT_SENT = re.compile(
     r"[^.。\n]{0,90}(?:반대매매|미수금|신용거래융자|신용융자|예탁금)[^.。\n]{0,140}")
+
+
+_BODY_IDS = ('id="dic_area"', 'id="newsct_article"', 'id="articleBodyContents"',
+             'id="comp_news_article"', 'class="newsct_article')
+
+_TAIL_CUT = re.compile(
+    r"(?m)^\s*(?:Copyright|저작권자|무단\s*전재|ⓒ|Ⓒ|▶|☞|\[ⓒ|<저작권자).*$")
+
+
+def _news_body(html):
+    """기사 몸통만 잘라 글자로 돌려준다. (본문, 어디서 건졌는지) 를 준다.
+
+    껍데기 전체를 `_text` 에 넣으면 메뉴·안내문·연관기사가 섞인다. 본문
+    컨테이너를 먼저 집어내고, 끝에 붙는 저작권 문구는 잘라 버린다.
+    """
+    for needle in _BODY_IDS:
+        frag = _slice_tag(html, needle)
+        if frag and len(frag) > 200:
+            body = _text(frag)
+            body = _TAIL_CUT.split(body)[0].strip()
+            if len(body) >= 120:
+                return body, needle.split('"')[-1] or needle
+    # 마지막 수단 — 예전 방식. 무엇으로 건졌는지 남겨 품질을 눈으로 본다.
+    body = _text(html)
+    i = body.find("기사원문")
+    return (body[i:] if i > 0 else body).strip(), "fallback"
+
+
+def _news_title(html, default=""):
+    for needle in ('id="title_area"', 'class="media_end_head_headline"'):
+        frag = _slice_tag(html, needle)
+        if frag:
+            t = _text(frag).strip()
+            if t:
+                return t[:200]
+    return default
 
 
 def naver_news(now, limit=24):
@@ -910,13 +1184,12 @@ def naver_news(now, limit=24):
     arts, fut, credit = [], [], []
     for title, url in links[:limit]:
         try:
-            body = _text(_get(url, referer="https://finance.naver.com/"))
+            page = _get(url, referer="https://finance.naver.com/")
         except Exception:                                          # noqa: BLE001
             continue
-        # 네이버 뉴스 껍데기(메뉴·안내문)를 걷어내고 기사 몸통만 남긴다
-        i = body.find("기사원문")
-        core = body[i:] if i > 0 else body
-        arts.append({"title": title, "url": url, "chars": len(core),
+        core, how = _news_body(page)
+        arts.append({"title": _news_title(page, title), "url": url,
+                     "chars": len(core), "extracted": how,
                      "body": core[:6000]})
         for m in _FUT_SENT.finditer(core):
             s = m.group(0).strip()
@@ -926,7 +1199,16 @@ def naver_news(now, limit=24):
             s = m.group(0).strip()
             if re.search(r"\d", s) and "본문 바로가기" not in s:
                 credit.append({"title": title, "url": url, "sentence": s[:300]})
+    # 본문 추출이 깨지면 조용히 망가진다 — 「본문」 자리에 스크립트가 실려도
+    # 글자 수는 오히려 늘어나기 때문이다. 어디서 건졌는지를 세어 같이 낸다.
+    tally = {}
+    for a in arts:
+        tally[a["extracted"]] = tally.get(a["extracted"], 0) + 1
+    if arts and tally.get("fallback", 0) > len(arts) // 2:
+        raise ValueError("기사 본문 컨테이너를 못 찾았다 — 네이버 뉴스 구조가 바뀐 듯하다"
+                         " (%d/%d 이 fallback)" % (tally["fallback"], len(arts)))
     return {"date": now.strftime("%Y-%m-%d"), "count": len(arts),
+            "extraction": tally,
             "articles": arts, "futures_mentions": fut[:8],
             "credit_mentions": credit[:8]}
 
@@ -982,6 +1264,33 @@ def treasury_yields(now):
         for k in want if k in latest and k in prev}
     res["spread_10y_2y_bp"] = round((latest["ust10y"] - latest["ust2y"]) * 100)
     res["inverted"] = res["spread_10y_2y_bp"] < 0
+
+    # 기간 변화 — 곡선 전체를 만기별로 되짚는다. 단위는 bp 다.
+    # CSV 는 해마다 끊겨 있어 1년·연초대비를 내려면 전년 것도 있어야 한다.
+    # 전년 요청이 실패해도 나머지 구간은 그대로 낸다.
+    hist = [parse(r) for r in rows[1:] if len(r) > 1]
+    try:
+        prev_csv = _get(
+            "https://home.treasury.gov/resource-center/data-chart-center/interest-rates/"
+            "daily-treasury-rates.csv/%d/all?type=daily_treasury_yield_curve"
+            "&field_tdr_date_value=%d&page&_format=csv" % (int(year) - 1, int(year) - 1),
+            timeout=50)
+        prows = list(csv.reader(io.StringIO(prev_csv)))
+        head_bak, head = head, [h.strip() for h in prows[0]]
+        hist += [parse(r) for r in prows[1:] if len(r) > 1]
+        head = head_bak
+    except Exception as e:                                       # noqa: BLE001
+        res["perf_note"] = "전년 곡선을 못 받아 1년·연초 대비는 빠질 수 있다: %s" % str(e)[:60]
+
+    perf = {}
+    for k in want:
+        bars = sorted((_iso(h["date"]), h[k]) for h in hist if k in h and _iso(h["date"]))
+        if len(bars) > 2:
+            p = _perf(bars, bars[-1][1], as_bp=True)
+            if p:
+                perf[k] = p
+    if perf:
+        res["perf"] = perf
     return res
 
 
@@ -1223,6 +1532,56 @@ def run(label, fn, *a, **k):
         return None, {"ok": False, "error": "%s: %s" % (type(e).__name__, e)}
 
 
+def update_history(out, path="data/market/history.json"):
+    """날마다 바뀌는 몇 가지를 한 파일에 쌓아 둔다.
+
+    지금까지는 등락 종목 수·업종 등락률·투자자별 수급의 **추이**를 쓰려면
+    날짜별 스냅숏(2026-08-13.json 같은 것)을 하나씩 열어 손으로 이어 붙여야
+    했다. 그 계열을 여기에 모아 두면 한 파일만 읽으면 된다.
+
+    시세일(코스피 일봉 날짜)을 열쇠로 삼아 덮어쓴다 — 하루에 여러 번 돌아도
+    행이 늘지 않는다. 넉 달치(120행)만 남긴다.
+    """
+    kd = (out.get("indices", {}).get("kospi") or {}).get("date")
+    if not kd:
+        return
+    mi = out.get("market_internals") or {}
+    mf = (out.get("money_flow") or {}).get("latest") or {}
+    inv = out.get("investors_kospi") or []          # 최신이 맨 앞인 리스트다
+    row = {"date": kd, "collected_kst": out["generated_at_kst"]}
+    for k in ("kospi", "kosdaq"):
+        q = out.get("indices", {}).get(k) or {}
+        if q.get("close"):
+            row[k] = {"close": q["close"], "change_pct": q.get("change_pct")}
+        b = (mi.get(k) or {}).get("breadth")
+        if b:
+            row.setdefault("breadth", {})[k] = b
+    if out.get("sectors", {}).get("all"):
+        row["sectors"] = {s["name"]: s.get("change_pct")
+                          for s in out["sectors"]["all"] if s.get("name")}
+    if mf:
+        row["money_flow"] = {k: mf.get(k) for k in
+                             ("deposit", "deposit_delta", "credit_balance",
+                              "credit_balance_delta", "fund_equity") if k in mf}
+    if inv:
+        row["investors_kospi"] = {k: inv[0].get(k)
+                                  for k in ("date", "retail", "foreign", "institution")}
+
+    try:
+        with open(path, encoding="utf-8") as f:
+            hist = json.load(f)
+        rows = [r for r in hist.get("rows", []) if r.get("date") != kd]
+    except (OSError, ValueError):
+        rows = []
+    rows.append(row)
+    rows.sort(key=lambda r: r["date"])
+    with open(path, "w", encoding="utf-8") as f:
+        json.dump({"note": "날짜별 시장 내부 지표 누적본. 최신이 맨 아래다.",
+                   "unit": "등락 종목 수는 개, 수급·예탁금은 억원",
+                   "count": len(rows[-120:]), "rows": rows[-120:]},
+                  f, ensure_ascii=False, indent=1)
+
+
 def main():
     now = datetime.now(KST)
     out = {
@@ -1245,12 +1604,19 @@ def main():
             out["stocks"][name] = attach_note(name, v)
         out["sources"]["yahoo:" + sym] = st
 
+    # 국내 상장 ETF — 고객이 실제로 사는 물건
+    for name, sym in YAHOO_KR_ETF.items():
+        v, st = run(name, yahoo_quote, sym)
+        out["sources"]["yahoo:etf:" + sym] = st
+        if v:
+            out.setdefault("kr_etf", {})[name] = attach_note(name, v)
+
     # 미국 업종 ETF · 미국 개별 종목 — 모닝 브리핑에서 국내 개장 전 흐름을 본다
     for name, sym in YAHOO_US_SECTORS.items():
         v, st = run(name, yahoo_quote, sym)
         out["sources"]["yahoo:sector:" + sym] = st
         if v:
-            out.setdefault("us_sectors", {})[name] = v
+            out.setdefault("us_sectors", {})[name] = attach_note(name, v)
     for name, sym in YAHOO_US_STOCKS.items():
         v, st = run(name, yahoo_quote, sym)
         out["sources"]["yahoo:us:" + sym] = st
@@ -1432,6 +1798,12 @@ def main():
     for path in ("data/market/latest.json", "data/market/%s.json" % stamp):
         with open(path, "w", encoding="utf-8") as f:
             json.dump(out, f, ensure_ascii=False, indent=2)
+
+    # 시장 내부 지표 추이 — 스냅숏을 손으로 이어 붙이지 않아도 되게 쌓아 둔다
+    try:
+        update_history(out)
+    except Exception as e:                                    # noqa: BLE001
+        print("!! history 갱신 실패: %s" % e)
 
     print("=== 원천별 결과 ===")
     for k, v in sorted(out["sources"].items()):
