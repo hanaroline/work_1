@@ -25,6 +25,7 @@ GitHub Actions 러너가 대신 받아 저장소에 커밋하고 세션·화면�
 `url` 로, 「원문 PDF」를 누르면 `pdf` 로 간다.
 """
 
+import html as html_mod
 import json
 import os
 import re
@@ -264,6 +265,15 @@ def full_title(html, short):
     if len(prefix) < 6:
         return short
     cands = []
+    # 가장 확실한 길 — 쪽 안에서 그 대목이 나오는 자리를 찾아 **다음 태그가
+    # 열릴 때까지** 이어 읽는다. 상세 쪽의 제목은 태그에 싸여 있지 않고
+    # <span><em>종목명</em></span> 과 <p class="source"> 사이에 맨몸으로
+    # 놓여 있어(러너가 남긴 덤프에서 확인) 태그를 훑는 것만으로는 못 집는다.
+    for m in re.finditer(re.escape(prefix), html):
+        t = html_mod.unescape(html[m.start():].split("<", 1)[0])
+        t = re.sub(r"\s+", " ", t).strip()
+        if len(prefix) < len(t) < 200:
+            cands.append(t)
     # 태그마다 따로 훑는다. 한 번에 훑으면 바깥 <th> 가 안쪽 <strong> 을
     # 삼켜 버려(정규식은 앞 매치 뒤부터 이어 찾는다) 제목만 담은 태그를
     # 영영 못 본다 — 실제로 그랬다.
