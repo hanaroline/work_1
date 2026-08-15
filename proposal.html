@@ -148,6 +148,11 @@ tr.total td{background:var(--cell-hi);font-weight:700;color:var(--ink)}
 @media (max-width:640px){ .table-scroll table{min-width:560px} }
 .swatch{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:8px;
   vertical-align:baseline;flex:none}
+.src{display:inline-block;font-size:12px;font-weight:500;letter-spacing:.2px;line-height:1;
+  padding:3px 6px;border-radius:2px;border:1px solid;white-space:nowrap;font-family:var(--font-kr)}
+html[lang="en"] .src{font-family:var(--font-en)}
+.src.mkt{color:#2E8540;border-color:#2E8540;background:#F4F9F5}
+.src.asm{color:#8A6100;border-color:#D4A017;background:#FDF8EC}
 
 .two-col{display:grid;grid-template-columns:minmax(280px,420px) 1fr;gap:38px;align-items:start}
 @media (max-width:900px){ .two-col{grid-template-columns:1fr;gap:28px} }
@@ -415,53 +420,102 @@ var CORR = {
 };
 
 /* -------------------------------------------------------------------------
-   예시 상품 카탈로그 (참고용)
+   시장 금리 — 이 저장소의 시세 수집 결과(data/market/latest.json)를 박아 둔 값.
+   HTTP 로 열면 최신 파일을 다시 읽어 덮어씁니다. 채권·현금성 상품의 기대수익률은
+   가정치가 아니라 이 금리(만기수익률)에서 나옵니다.
+   ------------------------------------------------------------------------- */
+var MARKET = {
+  as_of: '2026-08-14',
+  src_ko: '네이버 금융 · 한국은행 ECOS · 미 재무부',
+  src_en: 'Naver Finance, Bank of Korea ECOS, US Treasury',
+  rates: { call:2.76, cd91:2.94, ktb1y:3.402, ktb3y:3.796, ktb5y:4.047, ktb10y:4.313,
+           corp3y:4.49, ust1y:3.98, ust2y:4.17, ust5y:4.36, ust10y:4.68, ust30y:5.25 }
+};
 
-   n    실제 상품명 (그대로 표기)          nk  상품 유형만 적는 항목의 문구 키
-   v    판매 형태 — etf | fund | managed | direct | trust | els | rp
-   risk 적합 위험성향 범위 [최소, 최대]     min 최소 가입금액 (만원)
-   goal 해당 투자목적에서만 제시
+/* 금리 1%p 변동 가정과 원/달러 변동성 — 채권 변동성을 듀레이션에서 환산할 때 씁니다. */
+var YIELD_VOL = 0.8;   /* 연간 금리 변동성 (%p) */
+var FX_VOL    = 8.0;   /* 원/달러 연간 변동성 (%) */
+
+/* -------------------------------------------------------------------------
+   상품 카탈로그
+
+   n/nk  상품명 (nk 는 다국어 문구 키)
+   v     판매 형태 — etf | fund | managed | direct | trust | els | rp
+   ret   기대수익률 (%, 총보수 차감 전)   vol  변동성 (%)   fee  연 총보수 (%)
+   mk    시장 금리 키 — 넣으면 ret 을 MARKET.rates 에서 가져옵니다 (실제 금리)
+   dur   듀레이션 (년)   cs  신용 스프레드 변동분   fx  달러 자산 여부
+   risk  적합 위험성향 범위 [최소, 최대]   min  최소 가입금액 (만원)
+   goal  해당 투자목적에서만 제시
 
    사내 라인업으로 교체할 때는 이 표만 고치면 나머지 화면이 따라옵니다.
    ------------------------------------------------------------------------- */
 var CATALOG = {
-  eq_kr : [ {n:'TIGER 200',                 v:'etf'},
-            {n:'TIGER MSCI Korea TR',       v:'etf'},
-            {nk:'p_kr_eq_fund',             v:'fund',    risk:[3,5], min:100},
-            {nk:'p_kr_eq_wrap',             v:'managed', risk:[3,5], min:3000},
-            {nk:'p_kr_eq_direct',           v:'direct',  risk:[4,5], min:2000} ],
-  eq_dm : [ {n:'TIGER 미국S&P500',           v:'etf'},
-            {n:'TIGER 미국나스닥100',         v:'etf',     risk:[3,5]},
-            {n:'TIGER 선진국MSCI World',     v:'etf'},
-            {nk:'p_tdf',                    v:'fund',    goal:['retire','edu']},
-            {nk:'p_dm_eq_fund',             v:'fund',    min:100},
-            {nk:'p_dm_eq_direct',           v:'direct',  risk:[4,5], min:2000},
-            {nk:'p_gl_eq_wrap',             v:'managed', risk:[3,5], min:5000} ],
-  eq_em : [ {n:'TIGER 인도니프티50',          v:'etf',     risk:[3,5]},
-            {n:'TIGER 차이나전기차SOLACTIVE', v:'etf',     risk:[4,5]},
-            {nk:'p_em_eq_fund',             v:'fund',    risk:[3,5], min:100} ],
-  fi_kr : [ {n:'TIGER 국고채3년',             v:'etf'},
-            {n:'TIGER 중장기국공채',           v:'etf'},
-            {nk:'p_kr_bond_direct',         v:'direct',  min:1000},
-            {nk:'p_kr_credit_direct',       v:'direct',  risk:[3,5], min:1000},
-            {nk:'p_kr_bond_fund',           v:'fund',    min:100} ],
-  fi_gl : [ {n:'TIGER 미국채10년선물',         v:'etf'},
-            {n:'TIGER 미국달러단기채권액티브',   v:'etf'},
-            {nk:'p_us_treasury',            v:'direct',  min:2000},
-            {nk:'p_gl_bond_fund',           v:'fund',    min:100} ],
-  alt_re: [ {n:'TIGER 리츠부동산인프라',       v:'etf'},
-            {nk:'p_reit_fund',              v:'fund',    min:100},
-            {nk:'p_infra_trust',            v:'managed', risk:[3,5], min:5000} ],
-  alt_gd: [ {n:'TIGER 골드선물(H)',           v:'etf'},
-            {n:'KRX 금현물',                  v:'etf'},
-            {nk:'p_gold_bank',              v:'trust',   min:10} ],
-  alt_st: [ {nk:'p_els_stepdown',           v:'els',     risk:[3,5], min:100},
-            {nk:'p_elb',                    v:'els',     risk:[1,4], min:100},
-            {nk:'p_dlb',                    v:'els',     risk:[2,4], min:100} ],
-  cash  : [ {nk:'p_rp',                     v:'rp'},
-            {nk:'p_note',                   v:'rp',      min:100},
-            {n:'TIGER CD금리투자KIS(합성)',   v:'etf'},
-            {nk:'p_mmf',                    v:'fund'} ]
+  eq_kr : [
+    {n:'TIGER 200',                        v:'etf',     ret:7.0, vol:18.0, fee:0.05},
+    {n:'TIGER MSCI Korea TR',              v:'etf',     ret:7.0, vol:17.5, fee:0.09},
+    {n:'TIGER 배당성장',                     v:'etf',     ret:6.5, vol:14.5, fee:0.15},
+    {n:'신영밸류고배당증권자투자신탁',           v:'fund',    ret:7.0, vol:14.0, fee:1.10, min:100},
+    {n:'한국밸류10년투자증권투자신탁',          v:'fund',    ret:7.2, vol:16.0, fee:1.20, risk:[3,5], min:100},
+    {n:'미래에셋배당프리미엄증권자투자신탁',      v:'fund',    ret:6.3, vol:12.0, fee:1.00, min:100},
+    {nk:'p_kr_eq_wrap',                    v:'managed', ret:7.5, vol:17.0, fee:1.80, risk:[3,5], min:3000},
+    {nk:'p_kr_eq_direct',                  v:'direct',  ret:7.5, vol:22.0, fee:0.00, risk:[4,5], min:2000} ],
+
+  eq_dm : [
+    {n:'TIGER 미국S&P500',                  v:'etf',     ret:8.0, vol:16.0, fee:0.07},
+    {n:'TIGER 미국나스닥100',                v:'etf',     ret:9.0, vol:21.0, fee:0.07, risk:[3,5]},
+    {n:'TIGER 선진국MSCI World',            v:'etf',     ret:7.6, vol:15.0, fee:0.15},
+    {n:'TIGER 미국배당다우존스',              v:'etf',     ret:7.0, vol:13.5, fee:0.01},
+    {n:'미래에셋글로벌그로스증권자투자신탁',      v:'fund',    ret:8.5, vol:18.5, fee:1.30, risk:[3,5], min:100},
+    {n:'AB미국그로스증권투자신탁',              v:'fund',    ret:8.5, vol:18.0, fee:1.35, risk:[3,5], min:100},
+    {n:'피델리티글로벌테크놀로지증권자투자신탁',   v:'fund',    ret:9.0, vol:22.0, fee:1.40, risk:[4,5], min:100},
+    {nk:'p_dm_eq_direct',                  v:'direct',  ret:8.0, vol:24.0, fee:0.00, risk:[4,5], min:2000},
+    {nk:'p_gl_eq_wrap',                    v:'managed', ret:8.0, vol:15.0, fee:1.90, risk:[3,5], min:5000} ],
+
+  eq_em : [
+    {n:'TIGER 인도니프티50',                 v:'etf',     ret:8.5, vol:20.0, fee:0.19, risk:[3,5]},
+    {n:'TIGER 차이나전기차SOLACTIVE',         v:'etf',     ret:9.0, vol:30.0, fee:0.49, risk:[4,5]},
+    {n:'TIGER 신흥국MSCI',                  v:'etf',     ret:8.0, vol:19.0, fee:0.49, risk:[3,5]},
+    {n:'미래에셋인디아중소형포커스증권자투자신탁', v:'fund',   ret:9.0, vol:24.0, fee:1.50, risk:[4,5], min:100},
+    {n:'삼성인디아증권자투자신탁',              v:'fund',    ret:8.5, vol:21.0, fee:1.40, risk:[3,5], min:100} ],
+
+  /* 채권 — ret 은 가정치가 아니라 MARKET.rates 의 실제 만기수익률에서 나옵니다. */
+  fi_kr : [
+    {nk:'p_ktb3y',        v:'direct',  mk:'ktb3y',  dur:2.9, fee:0.00, min:1000},
+    {nk:'p_ktb5y',        v:'direct',  mk:'ktb5y',  dur:4.6, fee:0.00, min:1000},
+    {nk:'p_ktb10y',       v:'direct',  mk:'ktb10y', dur:8.3, fee:0.00, risk:[3,5], min:1000},
+    {nk:'p_corp3y',       v:'direct',  mk:'corp3y', dur:2.8, cs:0.7, fee:0.00, risk:[2,5], min:1000},
+    {n:'TIGER 국고채3년',   v:'etf',     mk:'ktb3y',  dur:2.9, fee:0.15},
+    {n:'TIGER 중장기국공채', v:'etf',     mk:'ktb5y',  dur:4.8, fee:0.15},
+    {n:'미래에셋코어본드증권자투자신탁', v:'fund', mk:'corp3y', dur:3.5, cs:0.5, fee:0.35, min:100} ],
+
+  fi_gl : [
+    {nk:'p_ust10y',       v:'direct',  mk:'ust10y', dur:8.3, fx:1, fee:0.00, risk:[3,5], min:2000},
+    {nk:'p_ust2y',        v:'direct',  mk:'ust2y',  dur:1.9, fx:1, fee:0.00, min:2000},
+    {n:'TIGER 미국채10년선물', v:'etf',   mk:'ust10y', dur:8.3, fx:1, fee:0.29, risk:[3,5]},
+    {n:'TIGER 미국달러단기채권액티브', v:'etf', mk:'ust1y', dur:0.6, fx:1, fee:0.19},
+    {nk:'p_gl_bond_fund', v:'fund',    mk:'ust5y',  dur:5.5, cs:0.6, fx:1, fee:0.60, min:100} ],
+
+  alt_re: [
+    {n:'TIGER 리츠부동산인프라',              v:'etf',     ret:6.0, vol:15.0, fee:0.29},
+    {n:'미래에셋글로벌리츠부동산자투자신탁',      v:'fund',    ret:6.2, vol:16.0, fee:1.20, min:100},
+    {nk:'p_infra_trust',                   v:'managed', ret:6.5, vol:12.0, fee:1.50, risk:[3,5], min:5000} ],
+
+  alt_gd: [
+    {n:'TIGER 골드선물(H)',  v:'etf',   ret:4.0, vol:14.0, fee:0.39},
+    {n:'KRX 금현물',        v:'etf',   ret:4.2, vol:13.5, fee:0.50},
+    {nk:'p_gold_bank',     v:'trust', ret:4.0, vol:15.0, fee:1.00, min:10} ],
+
+  alt_st: [
+    {nk:'p_els_stepdown', v:'els', ret:6.5, vol:12.0, fee:0.00, risk:[3,5], min:100},
+    {nk:'p_elb',          v:'els', ret:4.2, vol:1.5,  fee:0.00, risk:[1,4], min:100},
+    {nk:'p_dlb',          v:'els', ret:4.0, vol:1.5,  fee:0.00, risk:[2,4], min:100} ],
+
+  /* RP·발행어음은 약정 만기까지 확정금리라 듀레이션을 사실상 0 으로 둔다. */
+  cash  : [
+    {nk:'p_note',         v:'rp',   mk:'cd91', add:0.40, dur:0.05, fee:0.00, min:100},
+    {nk:'p_rp',           v:'rp',   mk:'cd91', add:0.10, dur:0.02, fee:0.00},
+    {n:'TIGER CD금리투자KIS(합성)', v:'etf', mk:'cd91', dur:0.05, fee:0.02},
+    {nk:'p_mmf',          v:'fund', mk:'call', add:0.15, dur:0.10, fee:0.20} ]
 };
 
 /* 절세 한도 (만원) */
@@ -540,20 +594,17 @@ ko:{
  /* 상품 유형 */
  ty_etf:'ETF', ty_fund:'공모펀드', ty_managed:'랩·신탁', ty_direct:'직접투자',
  ty_trust:'신탁', ty_els:'파생결합증권', ty_rp:'RP·발행어음',
- p_kr_eq_fund:'국내 주식형 공모펀드 (액티브)',
  p_kr_eq_wrap:'국내주식 일임형 랩',
  p_kr_eq_direct:'국내 우량주 직접투자',
- p_dm_eq_fund:'선진국 주식형 공모펀드',
  p_dm_eq_direct:'미국 대표주 직접투자',
  p_gl_eq_wrap:'글로벌 자산배분형 랩·특정금전신탁',
- p_tdf:'TDF (은퇴시점 목표배분형 펀드)',
- p_em_eq_fund:'신흥국 주식형 공모펀드',
- p_kr_bond_direct:'국고채 직접투자 (만기 보유)',
- p_kr_credit_direct:'우량 회사채 직접투자 (A급 이상)',
- p_kr_bond_fund:'국내 채권형 공모펀드',
- p_us_treasury:'미국 국채 직접투자 (달러)',
+ p_ktb3y:'국고채권 3년 지표물 (만기 보유)',
+ p_ktb5y:'국고채권 5년 지표물 (만기 보유)',
+ p_ktb10y:'국고채권 10년 지표물',
+ p_corp3y:'우량 회사채 3년 (AA− 등급)',
+ p_ust10y:'미국 국채 10년 (달러)',
+ p_ust2y:'미국 국채 2년 (달러)',
  p_gl_bond_fund:'해외 채권형 공모펀드',
- p_reit_fund:'국내외 리츠 재간접 공모펀드',
  p_infra_trust:'부동산·인프라 특정금전신탁',
  p_gold_bank:'금 적립 (골드뱅킹)',
  p_els_stepdown:'지수형 ELS (스텝다운)',
@@ -563,10 +614,19 @@ ko:{
  p_note:'발행어음',
  p_mmf:'MMF (머니마켓펀드)',
  minAmt:'최소 {v}',
+ kSaaRet:'계획 기대수익률', kSaaVol:'계획 변동성', kSaaBasis:'자산군 가정 기준',
+ kImpRet:'실행 기대수익률', kImpVol:'실행 변동성', kImpBasis:'1순위 상품 기준',
+ driftNote:'자산군 가정으로 짠 배분과 실제 1순위 상품으로 채웠을 때의 변동성이 {g}%p 벌어집니다. 뒤의 기대 성과·리스크 수치는 자산군 가정 기준이므로, 표의 상품을 그대로 실행한다면 실제 위험은 그만큼 다릅니다. 차이가 크면 상품을 바꾸거나 배분을 다시 잡으십시오.',
+ mktSrc:'네이버 금융 · 한국은행 ECOS · 미 재무부',
+ srcMarket:'시장금리', srcAssume:'장기가정',
+ thRetNet:'기대수익률(순)', thFee:'연 총보수', thFit:'적합도',
+ prodLead2:'각 자산군에서 위험조정수익이 높은 순으로 3종을 제시합니다. 채권·현금성 상품의 수익률은 {d} 기준 실제 시장금리({s})에서 계산했고, 주식·대체 상품은 장기 가정치입니다.',
+ rankNote:'적합도는 «순수익률 − {lam} × 변동성» 을 같은 자산군 후보들 안에서 100점 만점으로 환산한 값이고, 1순위가 100점입니다. {p} 고객이라 변동성 1%p 를 수익률 {lam}%p 와 같은 무게로 감점했습니다 — 보수적인 성향일수록 이 계수가 커져 저변동 상품이 앞으로 옵니다.',
+ srcNote:'«시장금리» 표시 상품은 표시일 기준 만기수익률에서 총보수를 뺀 값이라 만기 보유 시 실현 수익에 가깝습니다. «장기가정» 표시 상품의 수익률·변동성은 자산군 장기 가정치이며 개별 상품의 실제 성과가 아닙니다. 펀드·랩의 상품명·클래스·총보수는 판매사 자료와 금융투자협회 공시로 확인한 뒤 확정하십시오.',
  vehNote:'상품 유형은 {pref} 기준으로 골랐습니다. 같은 자산군을 ETF·공모펀드·직접투자·랩·신탁 중 어떤 형태로 담을지는 고객 선호와 계좌 종류에 따라 바꿀 수 있습니다.',
  vehNoteAuto:'투자금액과 위험성향',
  stNote:'구조화 상품(ELS·ELB·DLB)은 기초자산이 손실 구간(녹인)에 진입하면 원금 손실이 발생할 수 있고, 표의 변동성 수치가 이 위험을 온전히 나타내지 못합니다. 원금지급형(ELB·DLB)은 발행사 신용위험에 노출됩니다. 청약 전 상품별 손익구조와 조기상환 조건을 반드시 설명해 주십시오.',
- pensionNote:'연금저축·IRP 계좌는 위험자산 70% 한도가 적용되며, 파생결합증권·레버리지 상품은 편입이 제한됩니다. 계좌 내 배분을 단순화하려면 TDF 한 상품으로 대체할 수 있습니다.',
+ pensionNote:'연금저축·IRP 계좌는 위험자산 70% 한도가 적용되며, 파생결합증권·레버리지 상품은 편입이 제한됩니다. 계좌 안의 배분을 한 상품으로 단순화하려면 은퇴시점에 맞춰 위험자산을 자동으로 줄여 주는 TDF — 미래에셋전략배분TDF2045혼합자산자투자신탁, 삼성한국형TDF2040증권투자신탁 등 — 을 쓸 수 있습니다. TDF 는 그 자체가 주식·채권을 함께 담은 상품이라 위 표의 자산군별 배분을 대체하는 성격입니다.',
  allocLead:'위험성향·연령·투자기간·목적을 반영한 전략적 자산배분(SAA)입니다.',
  tuneTitle:'배분 미세조정', tuneLead:'자산군 비중을 조정하면 아래 표와 시뮬레이션이 즉시 갱신됩니다. 나머지 자산군은 비율에 맞춰 자동 조정됩니다.',
  prodLead:'각 세부 자산의 대표 상품 예시입니다. 실제 제안 시에는 사내 상품 라인업과 적합성 등급을 확인해 확정합니다.',
@@ -668,20 +728,17 @@ en:{
 
  ty_etf:'ETF', ty_fund:'Mutual fund', ty_managed:'Wrap / trust', ty_direct:'Direct',
  ty_trust:'Trust', ty_els:'Structured note', ty_rp:'RP / notes',
- p_kr_eq_fund:'Korean equity fund (active)',
  p_kr_eq_wrap:'Korean equity discretionary wrap',
  p_kr_eq_direct:'Direct holdings in Korean blue chips',
- p_dm_eq_fund:'Developed market equity fund',
  p_dm_eq_direct:'Direct holdings in US large caps',
  p_gl_eq_wrap:'Global multi-asset wrap / trust',
- p_tdf:'TDF (target date fund)',
- p_em_eq_fund:'Emerging market equity fund',
- p_kr_bond_direct:'Korean treasury bonds (hold to maturity)',
- p_kr_credit_direct:'Investment grade corporate bonds (A or above)',
- p_kr_bond_fund:'Korean bond fund',
- p_us_treasury:'US Treasuries (USD)',
+ p_ktb3y:'KTB 3-year benchmark (hold to maturity)',
+ p_ktb5y:'KTB 5-year benchmark (hold to maturity)',
+ p_ktb10y:'KTB 10-year benchmark',
+ p_corp3y:'Corporate bonds 3-year (AA− rated)',
+ p_ust10y:'US Treasury 10-year (USD)',
+ p_ust2y:'US Treasury 2-year (USD)',
  p_gl_bond_fund:'Global bond fund',
- p_reit_fund:'Global REIT fund of funds',
  p_infra_trust:'Real estate and infrastructure trust',
  p_gold_bank:'Gold savings account',
  p_els_stepdown:'Index-linked ELS (step-down)',
@@ -691,10 +748,19 @@ en:{
  p_note:'Issued notes',
  p_mmf:'MMF (money market fund)',
  minAmt:'min {v}',
+ kSaaRet:'Planned return', kSaaVol:'Planned volatility', kSaaBasis:'asset class assumptions',
+ kImpRet:'Implemented return', kImpVol:'Implemented volatility', kImpBasis:'top-ranked products',
+ driftNote:'Volatility differs by {g}pp between the allocation built on asset class assumptions and the same allocation filled with the top-ranked products. The projection and risk figures that follow use the asset class assumptions, so implementing the table as shown carries a materially different risk. Change the products or revisit the allocation if the gap matters.',
+ mktSrc:'Naver Finance, Bank of Korea ECOS, US Treasury',
+ srcMarket:'market', srcAssume:'assumed',
+ thRetNet:'Net return', thFee:'Fee p.a.', thFit:'Fit score',
+ prodLead2:'Three products per sleeve, ranked by risk-adjusted return. Bond and cash yields are computed from actual market rates as of {d} ({s}); equity and alternative figures are long-term assumptions.',
+ rankNote:'The fit score rescales "net return − {lam} × volatility" across the candidates in each sleeve, with the top pick at 100. For a {p} profile, 1pp of volatility is penalised as heavily as {lam}pp of return — the more conservative the profile, the larger this coefficient and the further low-volatility products move up.',
+ srcNote:'Products marked "market" use the yield to maturity on the stated date less fees, which is close to the realised return if held to maturity. Figures marked "assumed" are long-term asset class assumptions, not the individual product’s actual performance. Confirm fund and wrap names, share classes and total fees against the distributor documentation before finalising.',
  vehNote:'Vehicles were selected on a {pref} basis. The same asset class can be held as an ETF, fund, direct holding, wrap or trust depending on client preference and account type.',
  vehNoteAuto:'amount and risk profile',
  stNote:'Structured products (ELS, ELB, DLB) can lose principal once the underlying breaches the knock-in barrier, and the volatility figure in the table does not fully capture that risk. Principal-protected notes remain exposed to issuer credit risk. Explain the payoff structure and early redemption terms before subscription.',
- pensionNote:'Pension Savings and IRP accounts cap risk assets at 70% and restrict structured and leveraged products. A single TDF can replace the in-account allocation where simplicity is preferred.',
+ pensionNote:'Pension Savings and IRP accounts cap risk assets at 70% and restrict structured and leveraged products. To simplify the in-account allocation to a single holding, a target date fund that de-risks automatically toward retirement can be used. A TDF already blends equity and bonds, so it replaces the sleeve-level allocation above rather than sitting inside it.',
  allocLead:'Strategic asset allocation (SAA) derived from risk profile, age, horizon and objective.',
  tuneTitle:'Fine-tune allocation', tuneLead:'Adjust a class weight and the tables and projection update instantly. Remaining classes rescale proportionally.',
  prodLead:'Representative products per sleeve. Final selection follows the in-house line-up and suitability rules.',
@@ -1188,8 +1254,41 @@ function secAlloc(m, cls, sv, st){
 
 function totalInvest(inp){ return inp.lump + inp.monthly * 12 * inp.years; }
 
-/* 자산군에 담을 상품을 고른다 — 위험성향·최소가입금액·투자목적으로 거르고,
-   선호 유형을 앞세운다. 아무것도 남지 않으면 문턱을 무시하고 첫 항목을 쓴다. */
+/* 상품 한 건의 수익률·변동성.
+   mk 가 있으면 실제 시장 금리에서, 없으면 카탈로그의 장기 가정치에서 나온다.
+   채권 변동성은 듀레이션 × 금리변동성 + 신용 스프레드, 달러 자산이면 환변동성을 더한다. */
+function productStats(p){
+  var gross, vol, market = false;
+  if (p.mk && MARKET.rates[p.mk] !== undefined){
+    gross = MARKET.rates[p.mk] + (p.add || 0);
+    var rateVol = (p.dur || 0) * YIELD_VOL + (p.cs || 0);
+    vol = Math.sqrt(rateVol * rateVol + (p.fx ? FX_VOL * FX_VOL : 0));
+    market = true;
+  } else {
+    gross = p.ret; vol = p.vol;
+  }
+  var fee = p.fee || 0;
+  return { gross: gross, net: gross - fee, vol: vol, fee: fee, market: market };
+}
+
+/* 고객 기준 적합도 — 순수익률에서 변동성을 위험회피계수만큼 뺀 값을,
+   같은 자산군 후보들 안에서 0~100 으로 환산한다. 1등이 100. */
+function fitScores(list, risk){
+  var lam = LAMBDA[risk] || 0.6;
+  var raw = list.map(function(p){
+    var s = productStats(p); return s.net - lam * s.vol;
+  });
+  var hi = Math.max.apply(null, raw), lo = Math.min.apply(null, raw);
+  return raw.map(function(v){
+    return hi - lo < 0.01 ? 100 : Math.round(60 + 40 * (v - lo) / (hi - lo));
+  });
+}
+
+/* 위험회피계수 — 안정형일수록 변동성 1%p 를 더 무겁게 뺀다. */
+var LAMBDA = {1:1.20, 2:0.90, 3:0.60, 4:0.40, 5:0.25};
+
+/* 자산군에 담을 상품을 고른다 — 위험성향·최소가입금액·투자목적으로 거른 뒤,
+   위험조정 점수(순수익률 − λ×변동성)로 줄을 세운다. 선호 유형이 있으면 앞세운다. */
 function pickProducts(k, inp, amt){
   var list = CATALOG[k] || [];
   var pref = inp.vehicle;
@@ -1200,12 +1299,10 @@ function pickProducts(k, inp, amt){
     if (pref === 'etf' && (p.v === 'els' || p.v === 'managed')) return false;
     return true;
   });
+  var lam = LAMBDA[inp.risk] || 0.6;
   var score = function(p){
-    var s = 0;
-    if (pref !== 'auto' && p.v === pref) s += 10;
-    if (pref === 'auto' && p.v === 'etf') s += 2;
-    if (p.v === 'etf') s += 1;
-    return s;
+    var s = productStats(p);
+    return s.net - lam * s.vol + (pref !== 'auto' && p.v === pref ? 5 : 0);
   };
   ok.sort(function(a, b){ return score(b) - score(a); });
   if (!ok.length) ok = list.slice(0, 1);
@@ -1219,13 +1316,39 @@ function pickProducts(k, inp, amt){
 
 function prodName(p){ return p.n ? p.n : t(p.nk); }
 
+/* 자산배분은 «자산군 가정치» 로 짜지만 실제로 사는 건 개별 상품이다.
+   각 자산군 1순위 상품으로 채웠을 때의 수익률·변동성을 따로 구해,
+   계획과 실행이 얼마나 벌어지는지 보이게 한다. */
+function implementedStats(inp, sv){
+  var ret = 0, picks = {};
+  SLEEVE_ORDER.forEach(function(k){
+    if (sv[k] <= 0) return;
+    var p = pickProducts(k, inp, totalInvest(inp) * sv[k] / 100)[0];
+    if (!p) return;
+    var s = productStats(p);
+    picks[k] = s;
+    ret += (sv[k] / 100) * s.net;
+  });
+  var varSum = 0;
+  Object.keys(picks).forEach(function(i){
+    Object.keys(picks).forEach(function(j){
+      var wi = sv[i] / 100, wj = sv[j] / 100;
+      var rho = (i === j) ? 1 : CORR[SLEEVES[i].grp][SLEEVES[j].grp];
+      varSum += wi * wj * picks[i].vol * picks[j].vol * rho;
+    });
+  });
+  return { ret: ret, vol: Math.sqrt(Math.max(varSum, 0)) };
+}
+
 function secProducts(inp, sv){
   var rows = '';
   var total = totalInvest(inp);
   SLEEVE_ORDER.forEach(function(k){
     if (sv[k] <= 0) return;
     var list = pickProducts(k, inp, total * sv[k] / 100);
+    var fits = fitScores(list, inp.risk);
     list.forEach(function(p, i){
+      var s = productStats(p);
       rows += '<tr>' +
         (i === 0 ? '<td rowspan="' + list.length + '"><span class="swatch" style="background:' +
           SLEEVES[k].color + '"></span>' + esc(t(k)) + '<br><span class="num" style="color:#6C6C6C;font-size:15px">' +
@@ -1234,25 +1357,43 @@ function secProducts(inp, sv){
           (p.min ? '<br><span style="color:#84888B;font-size:14px">' +
             esc(tf('minAmt', {v: money(p.min)})) + '</span>' : '') + '</td>' +
         '<td>' + esc(t('ty_' + p.v)) + '</td>' +
-        (i === 0 ? '<td rowspan="' + list.length + '" class="n">' + esc(SLEEVES[k].ret.toFixed(1)) + '%</td>' +
-          '<td rowspan="' + list.length + '" class="n">' + esc(SLEEVES[k].vol.toFixed(1)) + '%</td>' : '') +
+        '<td class="n">' + esc(s.net.toFixed(2)) + '%' +
+          '<br><span class="src ' + (s.market ? 'mkt' : 'asm') + '">' +
+          esc(t(s.market ? 'srcMarket' : 'srcAssume')) + '</span></td>' +
+        '<td class="n">' + esc(s.vol.toFixed(1)) + '%</td>' +
+        '<td class="n">' + esc(s.fee.toFixed(2)) + '%</td>' +
+        '<td class="n"' + (i === 0 ? ' style="font-weight:700;color:#CB6015"' : '') + '>' +
+          esc(String(fits[i])) + '</td>' +
         '</tr>';
     });
   });
   var prefLabel = inp.vehicle === 'auto' ? t('vehNoteAuto') :
     t('veh' + inp.vehicle.charAt(0).toUpperCase() + inp.vehicle.slice(1));
-  var notes = '<div class="note" style="margin-top:19px">' +
-    esc(tf('vehNote', {pref: prefLabel})) + '</div>';
+  var saa = portfolioStats(sv), imp = implementedStats(inp, sv);
+  var drift = '<div class="stats" style="margin-top:19px">' +
+    stat(t('kSaaRet'), pct(saa.ret), t('kSaaBasis'), 'blue') +
+    stat(t('kSaaVol'), pct(saa.vol), t('kSaaBasis'), 'blue') +
+    stat(t('kImpRet'), pct(imp.ret), t('kImpBasis'), 'accent') +
+    stat(t('kImpVol'), pct(imp.vol), t('kImpBasis'), 'accent') + '</div>';
+  var gap = Math.abs(imp.vol - saa.vol);
+  if (gap >= 1.5) drift += '<div class="note" style="margin-top:12px">' +
+    esc(tf('driftNote', {g: gap.toFixed(1)})) + '</div>';
+
+  var notes = drift + '<div class="note" style="margin-top:19px">' +
+    esc(tf('rankNote', {lam: (LAMBDA[inp.risk] || 0.6).toFixed(2), p: t('risk' + inp.risk)})) + '</div>' +
+    '<div class="note" style="margin-top:12px">' + esc(tf('vehNote', {pref: prefLabel})) + '</div>' +
+    '<div class="note" style="margin-top:12px">' + esc(t('srcNote')) + '</div>';
   if (sv.alt_st > 0) notes += '<div class="note" style="margin-top:12px">' + esc(t('stNote')) + '</div>';
   if (inp.goal === 'retire' || inp.holds.indexOf('pension') >= 0)
     notes += '<div class="note" style="margin-top:12px">' + esc(t('pensionNote')) + '</div>';
 
   var b = '<div class="table-scroll"><table><thead><tr>' +
     '<th>' + esc(t('thSleeve')) + '</th><th>' + esc(t('thProduct')) + '</th>' +
-    '<th>' + esc(t('thType')) + '</th><th class="n">' + esc(t('thRet')) + '</th>' +
-    '<th class="n">' + esc(t('thVol')) + '</th></tr></thead><tbody>' + rows + '</tbody></table></div>' +
+    '<th>' + esc(t('thType')) + '</th><th class="n">' + esc(t('thRetNet')) + '</th>' +
+    '<th class="n">' + esc(t('thVol')) + '</th><th class="n">' + esc(t('thFee')) + '</th>' +
+    '<th class="n">' + esc(t('thFit')) + '</th></tr></thead><tbody>' + rows + '</tbody></table></div>' +
     notes;
-  return sec('s-products', t('s4'), t('prodLead'), b);
+  return sec('s-products', t('s4'), tf('prodLead2', {d: MARKET.as_of, s: t('mktSrc')}), b);
 }
 
 function secSim(inp, st, proj, bu, bd, te){
@@ -1524,6 +1665,31 @@ $('pform').addEventListener('submit', function(e){
   $('report').scrollIntoView({behavior:'smooth', block:'start'});
 });
 
+/* ---------- 시세 갱신 ----------
+   HTTP 로 열었으면 저장소의 최신 시세 파일에서 금리를 다시 읽는다.
+   파일(file://)로 열었거나 파일이 없으면 위에 박아 둔 값을 그대로 쓴다. */
+function refreshMarket(){
+  if (!window.fetch || location.protocol === 'file:') return;
+  fetch('data/market/latest.json', {cache:'no-store'}).then(function(r){
+    return r.ok ? r.json() : null;
+  }).then(function(d){
+    if (!d) return;
+    var kr = d.rates_kr || {}, us = (d.rates_us || {}).curve || {};
+    var next = {}, got = 0;
+    ['call','cd91','ktb1y','ktb3y','ktb5y','ktb10y','corp3y'].forEach(function(k){
+      if (typeof kr[k] === 'number'){ next[k] = kr[k]; got++; }
+    });
+    ['ust1y','ust2y','ust5y','ust10y','ust30y'].forEach(function(k){
+      if (typeof us[k] === 'number'){ next[k] = us[k]; got++; }
+    });
+    if (!got) return;
+    Object.keys(next).forEach(function(k){ MARKET.rates[k] = next[k]; });
+    if ((d.rates_us || {}).date) MARKET.as_of = d.rates_us.date;
+    else if (d.generated_at_kst) MARKET.as_of = d.generated_at_kst.slice(0, 10);
+    if (STATE && !$('report').hidden) render();
+  }).catch(function(){ /* 못 읽으면 박아 둔 값으로 간다 */ });
+}
+
 /* ---------- init ---------- */
 (function init(){
   var saved;
@@ -1531,6 +1697,7 @@ $('pform').addEventListener('submit', function(e){
   restoreInputs();
   if (!$('fDate').value) $('fDate').value = todayStr();
   setLang(saved === 'en' ? 'en' : 'ko');
+  refreshMarket();
 })();
 </script>
 </body>
