@@ -265,15 +265,20 @@ def full_title(html, short):
     if len(prefix) < 6:
         return short
     cands = []
+
+    def keep(t):
+        t = re.sub(r"\s+", " ", t).strip()
+        # 브라우저 탭 제목에는 사이트 이름이 붙는다 — 「… : Npay 증권」.
+        t = re.sub(r"\s*[:｜|]\s*(Npay|네이버(페이)?)\s*증권\s*$", "", t).strip()
+        if t.startswith(prefix) and len(prefix) < len(t) < 200:
+            cands.append(t)
+
     # 가장 확실한 길 — 쪽 안에서 그 대목이 나오는 자리를 찾아 **다음 태그가
     # 열릴 때까지** 이어 읽는다. 상세 쪽의 제목은 태그에 싸여 있지 않고
     # <span><em>종목명</em></span> 과 <p class="source"> 사이에 맨몸으로
     # 놓여 있어(러너가 남긴 덤프에서 확인) 태그를 훑는 것만으로는 못 집는다.
     for m in re.finditer(re.escape(prefix), html):
-        t = html_mod.unescape(html[m.start():].split("<", 1)[0])
-        t = re.sub(r"\s+", " ", t).strip()
-        if len(prefix) < len(t) < 200:
-            cands.append(t)
+        keep(html_mod.unescape(html[m.start():].split("<", 1)[0]))
     # 태그마다 따로 훑는다. 한 번에 훑으면 바깥 <th> 가 안쪽 <strong> 을
     # 삼켜 버려(정규식은 앞 매치 뒤부터 이어 찾는다) 제목만 담은 태그를
     # 영영 못 본다 — 실제로 그랬다.
@@ -285,12 +290,15 @@ def full_title(html, short):
             # 남았다. 여는 태그 앞에도 줄을 끊어야 제목과 출처가 갈린다 —
             # `_text` 는 닫는 태그에서만 줄을 바꾸기 때문이다.
             frag = re.sub(r"(?i)<(p|div|span|br|em|small|a)\b", r"\n<\1", m.group(1))
-            t = _text(frag).strip().split("\n")[0].strip()
-            if not t.startswith(prefix) or not (len(prefix) < len(t) < 200):
-                continue
-            cands.append(t)
-    # 가장 짧은 것을 고른다 — 제목만 담은 가장 안쪽 태그다.
-    return min(cands, key=len) if cands else short
+            keep(_text(frag).strip().split("\n")[0])
+    if not cands:
+        return short
+    # 가장 짧은 것을 고른다 — 제목만 담은 가장 안쪽 자리다. **다만 그것도
+    # 잘려 있으면 안 된다**: 상세 쪽의 <title> 은 목록보다 길게, 그러나 여전히
+    # 잘린 채로 실린다. 짧은 것부터 고르다 보니 다섯 건이 「…읽을 수 ..」로
+    # 남았다. 잘리지 않은 후보를 먼저 보고, 없을 때만 잘린 것을 쓴다.
+    whole = [t for t in cands if not re.search(r"[.…]{2,}$", t.rstrip())]
+    return min(whole or cands, key=len)
 
 
 def fetch_detail(rep, dump_dir=None):
