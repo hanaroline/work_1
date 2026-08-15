@@ -165,6 +165,48 @@
       .wrap { padding: 14px; }
       .stat { flex: 1 1 40%; min-width: 0; }
     }
+
+    /* ===== 인쇄 · PDF =====
+       화면은 걸러 보고 눌러 보는 물건이고, 종이는 훑는 물건이다. 누를 수
+       없는 것(조회창·걸개·단추)은 지우고, 링크는 눌러도 되게 남기되 카드가
+       쪽 경계에서 잘리지 않게 한다.
+
+       `body.pdf-summary` 는 「주요 리포트」까지만, `body.pdf-full` 은 전체
+       목록까지 싣는다. scripts/reports_to_pdf.mjs 가 이 이름을 붙인다. */
+    @media print {
+      /* 종이는 늘 밝은 바탕이다 — 다크 테마로 뽑으면 잉크만 먹는다. */
+      :root, :root[data-theme="dark"] {
+        --surface-1: #ffffff; --page: #ffffff;
+        --text-primary: #111111; --text-secondary: #333333; --text-muted: #666666;
+        --grid: #dddddd; --border: rgba(0,0,0,0.18); --shadow: none;
+      }
+      @page { size: A4; margin: 0; }
+      body { background: #fff; font-size: 9.5pt; line-height: 1.45; }
+      .topbar, .filters, .rp .foot button, #clearBtn, #themeBtn, #day, #dashLink { display: none !important; }
+      .wrap { max-width: none; padding: 0; }
+      .head h1 { font-size: 16pt; }
+      .head .sub { font-size: 8pt; }
+      .stats { gap: 6px; }
+      .stat { padding: 7px 10px; min-width: 0; flex: 1 1 0; box-shadow: none; }
+      .stat .v { font-size: 13pt; }
+      .stat .k { font-size: 7.5pt; }
+      .section-title { margin: 14px 0 8px; font-size: 11pt; }
+      .section-title .hint { font-size: 7.5pt; }
+      /* 카드는 쪽 경계에서 자르지 않는다 — 제목만 남고 넘어가면 못 읽는다. */
+      .rp { break-inside: avoid; page-break-inside: avoid; padding: 8px 10px; box-shadow: none; }
+      .cards { gap: 6px; }
+      .cards.two { grid-template-columns: 1fr 1fr; }
+      .rp .t { font-size: 10pt; }
+      .rp .sum { font-size: 8.5pt; margin: 3px 0 5px; }
+      .rp .ex { display: none !important; }          /* 발췌는 종이에서 뺀다 */
+      .rp .foot { font-size: 7.5pt; }
+      .rp .foot .go { text-decoration: underline; }
+      .tag { font-size: 7pt; }
+      .foot-note { font-size: 7.5pt; margin-top: 16px; }
+      /* 요약본에서는 전체 목록을 통째로 뺀다. */
+      body.pdf-summary #listTop, body.pdf-summary #list, body.pdf-summary #hit { display: none !important; }
+      body.pdf-full #hl-wrap { display: block !important; }
+    }
   </style>
 </head>
 <body>
@@ -193,6 +235,13 @@
         <span class="hint">조회수 · 목표주가 변경 · 여러 증권사가 함께 본 종목을 기준으로 고릅니다</span>
       </div>
       <div class="cards two" id="highlights"></div>
+    </div>
+
+    <div id="moves-wrap" style="display:none;">
+      <div class="section-title"><span class="accent"></span>목표주가를 움직인 리포트
+        <span class="hint">본문에서 「상향 · 하향 · 유지」를 읽어 낸 것입니다 — 원문으로 확인하십시오</span>
+      </div>
+      <div id="moves"></div>
     </div>
 
     <div id="hit"></div>
@@ -297,6 +346,7 @@
     els.hlWrap.style.display = hl.length ? "" : "none";
     els.highlights.innerHTML = hl.map(card).join("");
 
+    renderMoves(s.target_moves || []);
     buildPickList();
     buildFilters();
     renderList();
@@ -360,6 +410,29 @@
       (r.excerpt ? '<div class="ex">' + esc(r.excerpt) + "…</div>" : "") +
       '<div class="foot"><span>' + meta + "</span>" + links.join("") + "</div>" +
       "</article>";
+  }
+
+  /* 목표주가를 건드린 리포트만 따로 세운다 — 그날 판에서 가장 손이 가는
+     대목이고, 종이로 뽑았을 때 한눈에 보여야 하는 것도 이것이다. */
+  function renderMoves(moves) {
+    var wrap = document.getElementById("moves-wrap");
+    var up = moves.filter(function (m) { return m.move !== "유지"; });
+    wrap.style.display = up.length ? "" : "none";
+    if (up.length) wrap.dataset.has = "1"; else delete wrap.dataset.has;
+    if (!up.length) return;
+    document.getElementById("moves").innerHTML =
+      '<div class="cards">' + up.map(function (m) {
+        var cls = m.move === "상향" ? "mv-up" : m.move === "하향" ? "mv-dn" : "";
+        return '<article class="rp" data-url="' + esc(m.url) + '">' +
+          '<div class="tags">' +
+            (m.stock ? '<span class="tag stock">' + esc(m.stock) + "</span>" : "") +
+            '<span class="tag tp"><span class="' + cls + '">' + esc(m.move) + "</span>" +
+              (m.target_price ? " " + nf.format(m.target_price) + "원" : "") + "</span>" +
+            '<span class="tag">' + esc(m.broker || "-") + "</span>" +
+          "</div>" +
+          '<a class="t" href="' + esc(m.url) + '" target="_blank" rel="noopener">' + esc(m.title) + "</a>" +
+          "</article>";
+      }).join("") + "</div>";
   }
 
   /* 종목으로 조회했을 때 그 종목을 한 줄로 세운다 — 몇 곳이 다뤘고
@@ -480,6 +553,8 @@
     // 조회 중에는 「오늘의 주요 리포트」를 접는다 — 조회와 상관없는 것이
     // 위를 다 차지하면 정작 찾은 것이 화면 밖으로 밀린다.
     els.hlWrap.style.display = (!q && (state.data.highlights || []).length) ? "" : "none";
+    var mw = document.getElementById("moves-wrap");
+    if (mw.dataset.has) mw.style.display = q ? "none" : "";
     els.list.innerHTML = reps.length
       ? reps.map(card).join("")
       : '<div class="state"><div class="big">🔍</div>' +
