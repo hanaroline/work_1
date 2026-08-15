@@ -54,7 +54,13 @@ CATEGORIES = [
 
 # 상세 본문을 몇 건까지 열어 볼지. 한 건에 1초 남짓 걸리므로 상한을 둔다.
 # 나머지는 제목·증권사·목표주가만 담긴 채로 목록에 남는다(요약은 비어 있다).
-DETAIL_LIMIT = int(os.environ.get("REPORTS_DETAIL_LIMIT", "60"))
+DETAIL_LIMIT = int(os.environ.get("REPORTS_DETAIL_LIMIT", "80"))
+
+# 본문을 여는 차례에 판마다 몫을 준다. 조회수만으로 줄을 세우면 종목분석이
+# 상한을 다 먹고 시황·투자·경제·채권 판은 한 건도 못 연다 — 실제로 그랬고,
+# 「주요 리포트」에 요약 없는 카드가 여럿 올라왔다. 한 바퀴에 종목분석 셋,
+# 산업분석 둘, 나머지 하나씩 연다.
+DETAIL_SHARE = {"종목분석": 3, "산업분석": 2}
 
 _ROW = re.compile(r"(?is)<tr[^>]*>(.*?)</tr>")
 _TD = re.compile(r"(?is)<t[dh][^>]*>(.*?)</t[dh]>")
@@ -92,12 +98,14 @@ WEIGHT = [
     (re.compile(r"리스크|우려|부진|둔화"), 0.8),
 ]
 
+# 「투자의견」 바로 옆에서 쓰는 말들. 「보유」는 넣지 않는다 — 등급으로 쓰는
+# 일보다 「보유계약」·「대량보유」로 쓰는 일이 훨씬 많다.
 OPINIONS = [
+    ("매도", r"매도|SELL|Sell|시장수익률\s*하회|Underperform"),   # 「하회」를 먼저 본다
     ("매수", r"매수|BUY|Buy|적극매수|STRONG\s*BUY"),
     ("비중확대", r"비중\s*확대|Overweight|OVERWEIGHT"),
-    ("중립", r"중립|HOLD|Hold|보유|Neutral|NEUTRAL|시장수익률\b|Marketperform"),
     ("비중축소", r"비중\s*축소|Underweight|UNDERWEIGHT"),
-    ("매도", r"매도|SELL|Sell|시장수익률\s*하회|Underperform"),
+    ("중립", r"중립|HOLD|Hold|Neutral|NEUTRAL|시장수익률|Marketperform"),
 ]
 
 
@@ -129,18 +137,26 @@ def _row_date(cells):
 
 
 def _row_broker(cells):
-    """증권사 칸. 열 위치가 판마다 달라 이름으로 찾는다."""
+    """증권사 칸. 열 위치가 판마다 달라(종목분석에만 「종목명」이 앞에 있다)
+    **작성일 칸을 먼저 찾고 그 앞의 빈칸 아닌 칸**을 집는다.
+
+    열 순서는 어느 판이나 … 증권사 · 첨부 · 작성일 · 조회수 이고, 첨부 칸은
+    글자가 없다. 그래서 날짜 바로 앞의 글자 있는 칸이 곧 증권사다. 이름표로만
+    찾으면 「한국IR협의회」처럼 증권사가 아닌 발간처를 통째로 놓친다 —
+    실제로 다섯 건이 비어 있었다.
+    """
+    di = next((i for i, c in enumerate(cells) if _DATE.search(c)), None)
+    if di is not None:
+        for c in reversed(cells[:di]):
+            c = c.strip()
+            if c and len(c) <= 20 and not _INT.match(c):
+                return c
+    # 열 구성이 바뀌었을 때를 위한 대비 — 이름으로 찾는다.
     for c in cells:
         c = c.strip()
         if not c or len(c) > 20 or _DATE.search(c):
             continue
-        if BROKER.fullmatch(c) or (BROKER.match(c) and c.endswith("증권")):
-            return c
-    # 이름표에 없는 곳(새로 생긴 증권사 등)도 놓치지 않는다 — 「증권」으로 끝나는
-    # 짧은 칸이면 그것이 증권사다.
-    for c in cells:
-        c = c.strip()
-        if 2 < len(c) <= 12 and (c.endswith("증권") or c.endswith("투자증권")):
+        if BROKER.fullmatch(c) or c.endswith("증권"):
             return c
     return None
 
@@ -267,6 +283,7 @@ def _sentences(body):
     out = []
     for s in _SENT_SPLIT.split(body):
         s = re.sub(r"\s+", " ", s).strip(" ·-|")
+        s = re.sub(r"''+|``+", "'", s)               # ''매수'' 처럼 겹친 따옴표
         if not (20 <= len(s) <= 200):
             continue
         if _DROP_LINE.search(s):
@@ -300,43 +317,87 @@ def summarize(body, take=3):
     return " ".join(s for _, _, s in sorted(top, key=lambda t: t[1]))
 
 
+# 「목표주가 280만원」을 280 으로 읽으면 안 된다 — 만·억을 같이 집는다.
+# 조사가 끼어들므로(「목표주가를 95,000원으로」) 사이를 열어 두되, 열두 자로
+# 막아 뒤 문장의 숫자를 끌어오지 않게 한다.
+_TP_UNIT = re.compile(r"(?:목표\s*(?:주가|가)|TP)[^\d]{0,12}?([\d,]+(?:\.\d+)?)\s*(만|억)?\s*원")
+_TP_COLON = re.compile(r"(?:목표\s*(?:주가|가)|TP)\s*[:：]\s*([\d,]+(?:\.\d+)?)(?![\d,]*\s*[만억])")
+_UNIT = {"만": 10_000, "억": 100_000_000}
+
+
 def target_price(body, title=""):
     """목표주가. 원 단위 정수로. 못 찾으면 None."""
     for text in (title, body[:1500], body):
-        # 「목표주가를 95,000원으로」처럼 조사가 끼어들므로 사이를 열어 둔다.
-        # 다만 열두 자로 막아 뒤 문장의 숫자를 끌어오지 않게 한다.
-        m = re.search(r"목표\s*(?:주가|가)[^\d]{0,12}?([\d,]{3,12})\s*원", text)
-        if not m:
-            m = re.search(r"(?:TP|목표주가)\s*[:：]?\s*([\d,]{3,12})", text)
-        if m:
+        for pat in (_TP_UNIT, _TP_COLON):
+            m = pat.search(text)
+            if not m:
+                continue
             try:
-                v = int(m.group(1).replace(",", ""))
+                v = float(m.group(1).replace(",", ""))
             except ValueError:
                 continue
-            if 100 <= v <= 10_000_000:
-                return v
+            unit = m.group(2) if m.re is _TP_UNIT else None
+            v *= _UNIT.get(unit or "", 1)
+            if 100 <= v <= 100_000_000:
+                return int(round(v))
     return None
 
 
+# 「보유」·「중립」·「비중 축소」는 본문 아무 데서나 주우면 안 된다 —
+# 「보유계약 CSM」, 「대량보유 공시」, 「판매 비중 축소」가 죄다 투자의견으로
+# 둔갑했다. 그래서 **「투자의견」 가까이에서만** 온갖 말을 인정하고, 본문
+# 아무 데서나 줍는 것은 혼자 서도 뜻이 분명한 말로 한정한다.
+#
+# 「투자의견을 기존 Outperform에서 BUY로 상향한다」처럼 사이에 말이 끼므로
+# 뒤로 서른 자까지 본다.
+_OP_NEAR = re.compile(r"투자의견[^.\n]{0,30}")
+# \b 를 쓰면 안 된다 — 파이썬의 \w 에는 한글이 들어가서 「BUY로」에 경계가
+# 서지 않는다. 실제로 BUY 를 못 잡았다. 앞뒤로 라틴 글자만 막는다.
+_LAT = r"(?<![A-Za-z])%s(?![A-Za-z])"
+_OP_STANDALONE = [
+    ("매수", _LAT % "BUY" + r"|" + _LAT % "Buy" + r"|매수\s*(?:의견|유지|추천)|의견\s*매수"),
+    ("비중확대", _LAT % "(?:Overweight|OVERWEIGHT)"),
+    ("비중축소", _LAT % "(?:Underweight|UNDERWEIGHT)"),
+    ("매도", _LAT % "SELL" + r"|" + _LAT % "Sell" + r"|" + _LAT % "Underperform"
+             + r"|시장수익률\s*하회"),
+    ("중립", _LAT % "Marketperform"),
+]
+
+
 def opinion(body, title=""):
+    # 「투자의견」이 붙은 자리는 본문 어디에 있든 믿을 수 있다. 창 안에 등급이
+    # 둘 이상 보이면(「중립을 유지하나 매수 관점에서는…」) **먼저 나온 것**을
+    # 취한다 — 목록 차례가 아니라 글의 차례가 곧 뜻이다.
+    for m in _OP_NEAR.finditer(title + " " + body):
+        win = m.group(0)[4:]
+        hits = [(mm.start(), label) for label, pat in OPINIONS
+                for mm in [re.search(pat, win)] if mm]
+        if hits:
+            return min(hits)[1]
+    # 혼자 서는 말은 앞머리에서만 줍는다 — 뒤로 갈수록 남의 얘기가 섞인다.
     head = title + " " + body[:1200]
-    m = re.search(r"투자의견[^가-힣A-Za-z]{0,10}([가-힣A-Za-z ]{2,12})", head)
-    probe = m.group(1) if m else head
-    for label, pat in OPINIONS:
-        if re.search(pat, probe):
+    for label, pat in _OP_STANDALONE:
+        if re.search(pat, head):
             return label
-    if m:
-        for label, pat in OPINIONS:
-            if re.search(pat, head):
-                return label
     return None
 
 
 # ---------------------------------------------------------------- 하루치 판
 
-def digest(reports, today):
+def latest_day(reports):
+    """리포트가 실제로 올라온 가장 최근 날짜.
+
+    **오늘 날짜로 세면 안 된다.** 휴장일·주말에는 그날 올라온 것이 하나도
+    없어 「오늘 0건」이 된다. 실제로 8월 15일(광복절)에 그랬다. 사람이 알고
+    싶은 것은 「가장 최근에 나온 리포트가 며칠 치이고 몇 건인가」이다.
+    """
+    days = [r.get("date") for r in reports if r.get("date")]
+    return max(days) if days else None
+
+
+def digest(reports, day):
     """그날 판의 머리 요약. 화면 맨 위와 브리핑이 그대로 쓴다."""
-    todays = [r for r in reports if r.get("date") == today]
+    todays = [r for r in reports if r.get("date") == day]
     base = todays or reports
     by_cat, by_broker, stocks = {}, {}, {}
     for r in base:
@@ -366,8 +427,8 @@ def digest(reports, today):
               "target_price": r.get("target_price"), "move": r["target_move"]}
              for r in base if r.get("target_move")][:20]
     return {
-        "date": today,
-        "count_today": len(todays),
+        "report_date": day,
+        "count_report_date": len(todays),
         "count_collected": len(reports),
         "by_category": by_cat,
         "by_broker": sorted(({"broker": b, "count": c} for b, c in by_broker.items()),
@@ -377,7 +438,34 @@ def digest(reports, today):
     }
 
 
-def pick_highlights(reports, today, n=12):
+def detail_order(reports, day):
+    """본문을 열 차례. 판마다 몫을 주어 번갈아 연다(DETAIL_SHARE).
+
+    판 안에서는 「가장 최근 날짜 → 조회수」 순이다.
+    """
+    groups = {}
+    for r in reports:
+        groups.setdefault(r["category"], []).append(r)
+    for g in groups.values():
+        g.sort(key=lambda r: (r.get("date") != day, -(r.get("views") or 0)))
+    # 목록에 적힌 차례(CATEGORIES)를 지켜 돌아야 판마다 결과가 흔들리지 않는다.
+    names = [c[0] for c in CATEGORIES if c[0] in groups]
+    out, pos = [], {n: 0 for n in names}
+    while len(out) < len(reports):
+        moved = False
+        for name in names:
+            for _ in range(DETAIL_SHARE.get(name, 1)):
+                i = pos[name]
+                if i < len(groups[name]):
+                    out.append(groups[name][i])
+                    pos[name] = i + 1
+                    moved = True
+        if not moved:
+            break
+    return out
+
+
+def pick_highlights(reports, day, n=12):
     """「주요」 리포트를 고른다.
 
     조회수만으로 고르면 종목분석만 남는다. 판을 섞어 담고, 목표주가를
@@ -391,15 +479,17 @@ def pick_highlights(reports, today, n=12):
     scored = []
     for r in reports:
         sc = 0.0
-        if r.get("date") == today:
+        if r.get("date") == day:
             sc += 3.0
         sc += min((r.get("views") or 0) / 400.0, 4.0)
         if r.get("target_move"):
             sc += 2.5
         if r.get("target_price"):
             sc += 1.0
+        # 요약 없는 카드가 「주요」에 올라오면 화면이 빈 채로 뜬다. 본문을
+        # 읽어 둔 것을 크게 앞세운다.
         if r.get("summary"):
-            sc += 1.5
+            sc += 3.0
         sc += min(counts.get((r.get("stock") or {}).get("code"), 0) * 0.6, 2.4)
         scored.append((sc, r))
     scored.sort(key=lambda t: -t[0])
@@ -465,9 +555,11 @@ def main():
         raise SystemExit("리포트를 한 건도 받지 못했다 — 목록 구조가 바뀌었을 수 있다. "
                          "data/reports/raw 의 덤프를 보십시오.")
 
-    # 오늘 것부터, 그다음 조회수 순으로 본문을 연다. 상한에 걸린 나머지는
-    # 목록 정보(제목·증권사·PDF 링크)만 담긴 채로 남는다.
-    order = sorted(reports, key=lambda r: (r.get("date") != today, -(r.get("views") or 0)))
+    # 가장 최근 날짜 것부터, 그다음 조회수 순으로 본문을 연다. 상한에 걸린
+    # 나머지는 목록 정보(제목·증권사·PDF 링크)만 담긴 채로 남는다.
+    day = latest_day(reports) or today
+    out["report_date"] = day
+    order = detail_order(reports, day)
     opened, failed = 0, 0
     for r in order:
         if opened >= DETAIL_LIMIT:
@@ -492,8 +584,8 @@ def main():
 
     reports.sort(key=lambda r: (r.get("date") or "", r.get("views") or 0), reverse=True)
     out["reports"] = reports
-    out["summary"] = digest(reports, today)
-    out["highlights"] = pick_highlights(reports, today)
+    out["summary"] = digest(reports, day)
+    out["highlights"] = pick_highlights(reports, day)
 
     day_path = os.path.join(OUT_DIR, today + ".json")
     for path in (day_path, os.path.join(OUT_DIR, "latest.json")):
@@ -502,8 +594,8 @@ def main():
     write_index(OUT_DIR)
 
     s = out["summary"]
-    print("리포트 %d건 (오늘 %d건) · 본문 %d건 요약 %d건"
-          % (s["count_collected"], s["count_today"], opened, summarized))
+    print("리포트 %d건 (%s 자 %d건) · 본문 %d건 요약 %d건"
+          % (s["count_collected"], s["report_date"], s["count_report_date"], opened, summarized))
     for k, v in sorted(out["sources"].items()):
         print("  %-34s %s" % (k, "%d건" % v["count"] if v["ok"] else "실패 " + v["error"]))
     return 0

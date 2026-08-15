@@ -15,6 +15,7 @@
 | **재무제표** | 연간 손익(매출·영업이익·순이익) 차트 + 표, 재무상태(자산·부채·자본), ROE·부채비율 |
 
 ### 주요 기능
+- **증권사 리포트 매일 자동 요약(📰)** — 아래 「증권사 리포트 다이제스트」 참고
 - **관심종목 즐겨찾기(★)** — 브라우저에 저장(localStorage), 상단 칩에서 원클릭 조회
 - **종목 비교(⇄)** — 최대 4종목을 기준=100 리베이스 차트 + 지표 표로 비교
 - **지수 대비 보기** — 가격/지수대비(KOSPI·KOSDAQ 리베이스) 토글, 초과수익률 표시
@@ -46,6 +47,41 @@ python3 -m http.server 8000
 > `standalone.html`은 `index.html` + `data/*.js` + `vendor/chart.umd.js`를 합쳐 생성한 산출물입니다.
 > 소스를 수정할 때는 `index.html` / `data/*.js`를 고친 뒤 다시 합치면 됩니다.
 
+## 증권사 리포트 다이제스트 (매일 자동 요약)
+
+`docs/reports/index.html` — **그날 나온 증권사 리포트를 모아 요약해 보여 주는 화면**입니다.
+대시보드 상단의 **📰 리포트 요약** 단추로 들어갑니다.
+
+```
+GitHub Actions(증권사 리포트 수집)  ─매일 08:40 · 17:10 KST→  data/reports/latest.json
+                                                                    │
+                                                    docs/reports/index.html 이 읽어 그림
+```
+
+| 무엇 | 어디서 |
+|---|---|
+| 리포트 목록 | 네이버 금융 리서치 여섯 판 — 종목분석 · 산업분석 · 시황정보 · 투자정보 · 경제분석 · 채권분석 |
+| 요약 | **리포트 본문에서 원문 문장 셋을 골라** 이은 추출 요약 (`scripts/fetch_reports.py`) |
+| 목표주가 · 투자의견 | 본문에서 정규식으로 추출 (「목표주가 37만원」 같은 만·억 단위까지 환산) |
+| 세부 리포트 | 카드를 누르면 **네이버 상세 페이지**, 「원문 PDF ↓」를 누르면 **증권사가 낸 PDF** |
+
+화면에서 할 수 있는 것 — 판별·증권사별 걸러 보기, 제목·종목·증권사 검색, 최신순/조회순/
+목표주가 변경순 정렬, 「본문 발췌」 펼쳐 보기, 종목명 옆 **종목 대시보드**로 이동
+(`index.html?code=005930`), 지난 날짜 판 다시 보기.
+
+**요약은 새로 쓴 문장이 아니라 원문 문장을 고른 것입니다.** 러너에는 모델이 없어
+문장을 짓지 않습니다 — 지어낸 요약이 리포트 자리에 앉는 것보다 원문 세 줄이
+안전하기 때문입니다. 목표주가·투자의견도 기계가 뽑은 값이라 원문과 다를 수 있으니,
+판단은 반드시 세부 리포트 원문으로 하십시오.
+
+```bash
+# 지금 바로 한 판 받아 보기 (네이버에 붙을 수 있는 곳에서)
+python3 scripts/fetch_reports.py
+
+# 사내망 등 막힌 곳에서는 러너에 요청한다 (git push 로 워크플로를 깨움)
+bash scripts/request_reports_refresh.sh
+```
+
 ## 데이터 소스
 
 무료 공개 소스를 우선 사용하고, 실패 시 **섹션별로 샘플 데이터로 폴백**합니다.
@@ -59,7 +95,7 @@ python3 -m http.server 8000
 | 재무제표 | Yahoo `quoteSummary` (손익/재무상태) | 내장 샘플 |
 | 투자의견/목표주가 | Yahoo `quoteSummary` (financialData, recommendationTrend) | 내장 샘플 |
 | 시황/뉴스 | Google News RSS(`news.google.com/rss/search`) | 내장 샘플 |
-| 증권사 레포트 목록 | (실시간 API 부재) | 예시 데이터 + 네이버 리서치 딥링크 |
+| 증권사 레포트 목록 | 네이버 금융 리서치 (러너가 매일 수집 → `data/reports/`) | 예시 데이터 + 네이버 리서치 딥링크 |
 
 모든 소스는 **병렬 호출 + 4초 타임아웃**으로 요청하며, 실패한 섹션만 개별적으로 샘플로 대체합니다(전체 화면은 항상 정상 렌더). 요약 헤더에 조회 기준 시각과 출처가 표시됩니다.
 
@@ -86,10 +122,17 @@ var PROXIES = [
 ## 파일 구조
 
 ```
-index.html            # 대시보드 (레이아웃 + CSS + 앱 로직)
-vendor/chart.umd.js   # Chart.js 4.4.1 로컬 번들 (CDN 차단 환경 대비, 실패 시 CDN 폴백)
-data/tickers.js       # 종목명↔코드↔시장 매핑 + 조회 함수
-data/sample.js        # 샘플/폴백 데이터 생성기 (종목코드 시드 기반 결정적 생성)
+index.html                     # 대시보드 (레이아웃 + CSS + 앱 로직)
+vendor/chart.umd.js            # Chart.js 4.4.1 로컬 번들 (CDN 차단 환경 대비, 실패 시 CDN 폴백)
+data/tickers.js                # 종목명↔코드↔시장 매핑 + 조회 함수
+data/sample.js                 # 샘플/폴백 데이터 생성기 (종목코드 시드 기반 결정적 생성)
+
+docs/reports/index.html        # 증권사 리포트 다이제스트 화면
+scripts/fetch_reports.py       # 리포트 수집·요약기 (러너에서 매일 실행)
+scripts/request_reports_refresh.sh  # 수집을 지금 돌려 달라고 요청
+data/reports/latest.json       # 가장 최근 판 (화면이 읽는 파일)
+data/reports/YYYY-MM-DD.json   # 날짜별 보관
+.github/workflows/reports.yml  # 매일 자동 수집
 ```
 
 ## 종목 추가
