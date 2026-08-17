@@ -1783,6 +1783,43 @@ def update_history(out, path="data/market/history.json"):
     if won:
         row["usdkrw"] = won
 
+    # --- 아래는 마켓 모니터(build_market_monitor.py)가 추이로 쓰는 항목이다.
+    # 예전 행에는 없으므로 읽는 쪽은 결측을 견뎌야 한다.
+    idx = out.get("indices") or {}
+    quotes = {}
+    for k in ("sp500", "nasdaq", "sox", "vix", "dxy", "wti", "gold",
+              "usdjpy", "eurusd", "btc", "move"):
+        q = idx.get(k) or {}
+        if q.get("close") is not None:
+            quotes[k] = {"close": q["close"], "change_pct": q.get("change_pct"),
+                         "date": q.get("date")}
+    if quotes:
+        row["quotes"] = quotes
+
+    # 거래대금은 거래소 일별시세에만 있다.
+    for k in ("kospi", "kosdaq"):
+        ser = ((out.get("index_daily") or {}).get(k) or {}).get("series") or []
+        hit = next((s for s in ser if s.get("date") == kd), None)
+        if hit and hit.get("value_mn_krw"):
+            row.setdefault("turnover_mn_krw", {})[k] = hit["value_mn_krw"]
+
+    ru = out.get("rates_us") or {}
+    if ru.get("curve"):
+        row["rates_us"] = {
+            "date": ru.get("date"),
+            "curve": {t: ru["curve"][t] for t in
+                      ("ust3m", "ust2y", "ust5y", "ust10y", "ust30y")
+                      if ru["curve"].get(t) is not None},
+            "spread_10y_2y_bp": ru.get("spread_10y_2y_bp"),
+        }
+    eff = (out.get("policy_rate_us") or {}).get("effr_pct")
+    if eff is not None:
+        row["effr_pct"] = eff
+
+    pt = ((out.get("market_internals") or {}).get("kospi") or {}).get("program_trading")
+    if pt:
+        row["program_kospi"] = pt
+
     try:
         with open(path, encoding="utf-8") as f:
             hist = json.load(f)
