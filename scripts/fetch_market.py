@@ -72,6 +72,11 @@ YAHOO_FX = {
     "usdchf": "CHF=X",        # 안전자산 쏠림을 원화와 떼어 보는 대조군
     "usdinr": "INR=X",
     "usdvnd": "VND=X",
+    # 아래 둘은 표에 세우지 않는다. 포트폴리오 점검(build_portfolio_report.py)이
+    # 홍콩·덴마크 상장 종목을 원화로 환산할 때 쓴다 — 없으면 그 보유만 환산이
+    # 막힌다(텐센트·알리바바·노보노디스크).
+    "usdhkd": "HKD=X",
+    "usddkk": "DKK=X",
 }
 
 # 환율 표 — (키, 한글, 영문, 계산법, 배수, 설명)
