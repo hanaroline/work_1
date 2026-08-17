@@ -77,17 +77,19 @@ jobs:
           # 파싱 실패 시에만 남기는 원본이다. 7일 지난 것은 지운다.
           find data/market/raw -name '*.html' -mtime +7 -delete 2>/dev/null || true
 
-      - name: 마켓 모니터 재빌드
-        # 수집한 값을 추이 화면에 바로 반영한다. 저장소 안의 파일만 읽으므로
-        # 실패해도 시세 커밋을 막지 않는다.
+      - name: 화면 재빌드 (마켓 모니터 · 포트폴리오 점검)
+        # 두 화면은 수집한 시세를 안에 박아 넣는 단일 파일이다. 저장소 안의
+        # 파일만 읽으므로 실패해도 시세 커밋을 막지 않는다.
         continue-on-error: true
-        run: python scripts/build_market_monitor.py
+        run: |
+          python scripts/build_market_monitor.py
+          python scripts/build_portfolio_report.py
 
       - name: 커밋
         run: |
           git config user.name  'github-actions[bot]'
           git config user.email 'github-actions[bot]@users.noreply.github.com'
-          git add data/market market-monitor.html
+          git add data/market market-monitor.html portfolio-check.html
           if git diff --staged --quiet; then
             echo "변경 없음"
           else
