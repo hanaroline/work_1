@@ -3,6 +3,10 @@ node_modules/
 package-lock.json
 package.json
 
+# ELS 수집 실패 시에만 남는 진단자료 — 저장소에 들어갈 이유가 없다
+/discovery/
+collect-debug/
+
 # 파이썬 바이트코드 — 저장소에 들어갈 이유가 없다
 __pycache__/
 *.pyc
