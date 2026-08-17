@@ -1,0 +1,116 @@
+name: ELS 상품 수집 (매일)
+
+on:
+  workflow_dispatch:
+  schedule:
+    # 매일 08:00 KST (23:00 UTC). ELS 청약기간은 보통 1주일이라 주 1회로는
+    # 이미 마감된 상품이 며칠씩 "청약중"으로 남는다.
+    - cron: '0 23 * * *'
+  # 수집기를 고쳤을 때 바로 검증되도록
+  push:
+    branches:
+      - 'claude/els-**'
+    paths:
+      - 'scripts/collect_els.mjs'
+      - '.github/workflows/els-weekly.yml'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: els-weekly
+  cancel-in-progress: false
+
+jobs:
+  collect:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref_name }}
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Playwright 설치
+        run: npm i -D playwright@1.56.1 && npx playwright install --with-deps chromium
+
+      # 수집 실패는 잡을 실패시키지 않는다.
+      # data/els.js 를 건드리지 않고 끝내므로 페이지는 직전 주 데이터를 유지한다.
+      - name: 상품 수집
+        id: collect
+        continue-on-error: true
+        run: node scripts/collect_els.mjs
+
+      - name: 수집 실패 진단자료 업로드
+        if: steps.collect.outcome == 'failure'
+        uses: actions/upload-artifact@v4
+        with:
+          name: els-collect-debug
+          path: |
+            discovery/
+            collect-debug/
+          retention-days: 14
+          if-no-files-found: ignore
+
+      # 과거 시뮬레이션용 기초자산 시세. 실패해도 직전 시세를 그대로 쓴다.
+      - name: 기초자산 과거 시세 수집
+        id: history
+        continue-on-error: true
+        run: node scripts/collect_history.mjs
+
+      - name: 단일 파일 재빌드
+        run: node scripts/build_els_page.mjs
+
+      - name: 커밋
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data/els.js els-product-search.html tools/discovery/rendered_list.json
+          if git diff --cached --quiet; then
+            echo "변경 없음 — 커밋 생략"
+            exit 0
+          fi
+          git commit -m "chore(els): 상품 데이터 갱신 ($(date -u +%Y-%m-%d))"
+          # 같은 브랜치에 시세 수집 워크플로우도 커밋한다. 그 사이에 끼면
+          # push 가 거절되므로 새 커밋을 받아 얹고 다시 민다.
+          for i in 1 2 3 4 5; do
+            if git push; then exit 0; fi
+            echo "push 거절 — 원격 변경을 받아 재시도 ($i/5)"
+            git pull --rebase origin "${{ github.ref_name }}" || exit 1
+          done
+          echo "5회 시도 후에도 push 실패"
+          exit 1
+
+      - name: 결과 요약
+        if: always()
+        run: |
+          {
+            echo "### ELS 수집 결과"
+            echo ""
+            if [ "${{ steps.collect.outcome }}" = "success" ]; then
+              echo "- 수집: 성공"
+            else
+              echo "- 수집: **실패** — \`data/els.js\` 는 직전 데이터를 그대로 유지합니다."
+              echo "- 진단자료는 \`els-collect-debug\` 아티팩트를 확인하세요."
+            fi
+            echo ""
+            node -e '
+              const fs = require("fs");
+              const src = fs.readFileSync("data/els.js", "utf8");
+              const window = {};
+              new Function("window", src)(window);
+              const d = window.ELS_DATA;
+              console.log(`- 기준: ${d.updatedAt ?? "미수집"} (source=${d.source})`);
+              console.log(`- 상품 ${d.products.length}건`);
+              console.log("");
+              const total = p => p.rateBasis === "total" ? p.couponRate : p.couponRate * p.maturityMonths / 12;
+              const annual = p => (total(p) * 12 / p.maturityMonths).toFixed(2);
+              console.log("| 상품 | 기초자산 | 연 환산 | 만기 총액 | 만기 | 낙인 | 청약마감 |");
+              console.log("|---|---|---|---|---|---|---|");
+              for (const p of d.products.slice(0, 20)) {
+                console.log(`| ${p.name} | ${p.underlyings.join(", ")} | ${annual(p)}% | ${total(p).toFixed(2)}% | ${p.maturityMonths}개월 | ${p.knockIn ?? "-"} | ${p.offerEnd ?? "-"} |`);
+              }
+            '
+          } >> "$GITHUB_STEP_SUMMARY"
