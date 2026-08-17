@@ -923,6 +923,17 @@ function daysSinceUpdate(){
   var ms = Date.now() - new Date(DATA.updatedAt).getTime();
   return Math.floor(ms / 86400000);
 }
+/**
+ * 홈페이지를 마지막으로 확인한 뒤 며칠 지났는지.
+ * 청약중인 상품이 0건인 날은 목록이 그대로라 updatedAt 은 오래된 채 남지만,
+ * 확인 자체는 그날 했다. 둘을 구분해야 "낡은 파일" 과 "확인했는데 상품이 없음" 을
+ * 다르게 안내할 수 있다.
+ */
+function daysSinceCheck(){
+  var at = DATA.checkedAt || DATA.updatedAt;
+  if (!at) return null;
+  return Math.floor((Date.now() - new Date(at).getTime()) / 86400000);
+}
 
 /** 필터·검색을 적용하기 전의 대상 목록 (마감 상품 숨김 여부까지 반영) */
 function baseProducts(){
@@ -1119,7 +1130,19 @@ function renderFinder(){
 
   // 수집 이후 시간이 지나면 목록 자체가 실제 판매 상품과 어긋날 수 있다
   var stale = el('finder-stale');
-  if (age != null && age >= 1){
+  var checkAge = daysSinceCheck();
+  if (checkAge != null && checkAge < 1 && age != null && age >= 1){
+    // 오늘 확인했는데도 목록이 그대로 = 청약 진행중인 상품이 없는 날
+    stale.hidden = false;
+    stale.innerHTML = t(
+      '<strong>오늘 확인한 결과 청약 진행중인 상품이 없습니다.</strong> 아래 목록은 ' +
+        fmtDate(String(DATA.updatedAt).slice(0,10)) + ' 수집분이라 모두 청약이 끝났습니다. ' +
+        '새 상품은 <a href="https://securities.miraeasset.com/hks/hks4022/n01.do" target="_blank" rel="noopener">홈페이지 ELS/DLS 캘린더</a>에 올라오는 대로 반영됩니다.',
+      '<strong>Checked today — no products are currently on offer.</strong> The rows below are from the ' +
+        fmtDate(String(DATA.updatedAt).slice(0,10)) + ' collection and have all closed. ' +
+        'New offers appear here as soon as they are listed on the ' +
+        '<a href="https://securities.miraeasset.com/hks/hks4022/n01.do" target="_blank" rel="noopener">issuer’s ELS/DLS calendar</a>.');
+  } else if (age != null && age >= 1){
     stale.hidden = false;
     stale.innerHTML = t(
       '이 파일의 상품 정보는 <strong>' + age + '일 전(' + fmtDate(String(DATA.updatedAt).slice(0,10)) + ')</strong>에 수집한 것입니다. ' +
