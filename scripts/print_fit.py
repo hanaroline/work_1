@@ -63,14 +63,20 @@ FIT_CSS = """
   /* 그리드는 쪽을 넘기면 **빈 칸 자리를 남긴다** — 크로미움이 다음 쪽으로 간
      칸의 자리를 앞 쪽에 그대로 잡아 둔다. 표와 달리 쪼개면 더 나빠진다.
      대신 인쇄에서 열을 늘려 낮게 만들어 통째로 들어가게 한다. */
-  .stat-grid,.views{break-inside:avoid!important}
-  .stat-grid{grid-template-columns:repeat(4,minmax(0,1fr))!important}
+  .stat-grid{break-inside:avoid!important;grid-template-columns:repeat(4,minmax(0,1fr))!important}
   /* 글이 긴 카드(하우스 시각·지역별 요약)는 인쇄에서 열로 세우면 칸이 좁아
      세로로 길어지고, 한 줄이 통째로 다음 쪽에 밀린다. 종이에서는 한 칸씩
      가로로 눕히는 편이 짧고 잘 흐른다. */
   .views{display:block!important}
   .views > *{margin-bottom:9px;break-inside:avoid}
   .views > *:last-child{margin-bottom:0}
+  /* 글이 긴 카드는 통째로 붙들면 앞 쪽이 절반 비어 버린다 — 8/18 판 28쪽이
+     하우스 시각 카드 하나 때문에 47.6% 비었다. 쪽을 넘겨 잇게 둔다.
+     **`.views` 자체에 avoid 를 걸어 두면 안 된다** — 그 한 줄이 아래 규칙을
+     전부 덮어 실제로 47.6% 가 그대로 남았다. 블록으로 눕혔으니 붙들 이유도 없다. */
+  .views{break-inside:auto!important}
+  .views > .view{break-inside:auto}
+  .views > .view > h4{break-after:avoid}
   /* 숫자 카드는 짧으므로 격자를 유지한다. 한 줄에 들어가면 쪽을 넘겨도 안전하다. */
   .stat-grid.flow{break-inside:auto!important}
   /* 꼬리말 세 줄만 마지막 쪽에 남는 것을 막는다 */
