@@ -1,0 +1,1425 @@
+<title>장마감 시황 브리핑 · 2026년 8월 7일 (금) | 미래에셋증권 마포WM</title>
+<style>
+*,*::before,*::after{box-sizing:border-box}
+
+/* ============ tokens ============ */
+:root{
+  --primary:#F58220; --primary-active:#CB6015; --primary-soft:#FAB072;
+  --secondary:#043B72;
+  --canvas:#FFFFFF; --surface-soft:#ECEFF4; --surface-subtle:#F7F8FA; --card:#FFFFFF;
+  --hairline:#CDCECB; --hairline-soft:#E5E4E1;
+  --ink:#1A1A1A; --body:#3D3D3D; --muted:#6C6C6C; --muted-soft:#84888B;
+  --up:#C62828; --down:#043B72; --warning:#D4A017; --success:#2E8540;
+  --hl-row:#D7D7D7; --on-primary:#FFFFFF;
+  --callout-bg:#F58220; --callout-fg:#FFFFFF; --callout-rule:rgba(255,255,255,.5);
+  --vf-warn-bg:#FCF7E8; --vf-warn-fg:#8A6A0D;
+  --vf-ok-bg:#F0F7F1;   --vf-ok-fg:#1F5C2C;
+  --vf-bad-bg:#FBF0F0;  --vf-bad-fg:#8F1F1F;
+  --link-rule:rgba(4,59,114,.28);
+  --font-kr:'Pretendard','Apple SD Gothic Neo','Noto Sans KR','Malgun Gothic',system-ui,sans-serif;
+  --font-en:'Aptos','Segoe UI',system-ui,-apple-system,'Helvetica Neue',Arial,sans-serif;
+  --font-num:'Aptos','Segoe UI',system-ui,-apple-system,'Helvetica Neue',Arial,sans-serif;
+  --space-section:104px; --space-block:56px; --space-content:28px; --space-tight:14px;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --primary:#FF9A4A; --primary-active:#FFB169; --primary-soft:#4A331E;
+    --secondary:#82B7EA;
+    --canvas:#15171B; --surface-soft:#212630; --surface-subtle:#1B1F26; --card:#1A1E25;
+    --hairline:#3A414C; --hairline-soft:#2A303A;
+    --ink:#F1F3F6; --body:#CDD3DB; --muted:#98A0AB; --muted-soft:#7F8794;
+    --up:#FF7A7A; --down:#82B7EA; --warning:#E4BB55; --success:#63C07C;
+    --hl-row:#272C34; --on-primary:#241206;
+    --callout-bg:#8A4410; --callout-fg:#FFF1E4; --callout-rule:rgba(255,241,228,.45);
+    --vf-warn-bg:#3A2F14; --vf-warn-fg:#E8C86B;
+    --vf-ok-bg:#16301D;   --vf-ok-fg:#7DD494;
+    --vf-bad-bg:#3A1D1D;  --vf-bad-fg:#F09090;
+    --link-rule:rgba(130,183,234,.35);
+  }
+}
+:root[data-theme="dark"]{
+  --primary:#FF9A4A; --primary-active:#FFB169; --primary-soft:#4A331E;
+  --secondary:#82B7EA;
+  --canvas:#15171B; --surface-soft:#212630; --surface-subtle:#1B1F26; --card:#1A1E25;
+  --hairline:#3A414C; --hairline-soft:#2A303A;
+  --ink:#F1F3F6; --body:#CDD3DB; --muted:#98A0AB; --muted-soft:#7F8794;
+  --up:#FF7A7A; --down:#82B7EA; --warning:#E4BB55; --success:#63C07C;
+  --hl-row:#272C34; --on-primary:#241206;
+  --callout-bg:#8A4410; --callout-fg:#FFF1E4; --callout-rule:rgba(255,241,228,.45);
+  --vf-warn-bg:#3A2F14; --vf-warn-fg:#E8C86B;
+  --vf-ok-bg:#16301D;   --vf-ok-fg:#7DD494;
+  --vf-bad-bg:#3A1D1D;  --vf-bad-fg:#F09090;
+  --link-rule:rgba(130,183,234,.35);
+}
+:root[data-theme="light"]{
+  --primary:#F58220; --primary-active:#CB6015; --primary-soft:#FAB072;
+  --secondary:#043B72;
+  --canvas:#FFFFFF; --surface-soft:#ECEFF4; --surface-subtle:#F7F8FA; --card:#FFFFFF;
+  --hairline:#CDCECB; --hairline-soft:#E5E4E1;
+  --ink:#1A1A1A; --body:#3D3D3D; --muted:#6C6C6C; --muted-soft:#84888B;
+  --up:#C62828; --down:#043B72; --warning:#D4A017; --success:#2E8540;
+  --hl-row:#D7D7D7; --on-primary:#FFFFFF;
+  --callout-bg:#F58220; --callout-fg:#FFFFFF; --callout-rule:rgba(255,255,255,.5);
+  --vf-warn-bg:#FCF7E8; --vf-warn-fg:#8A6A0D;
+  --vf-ok-bg:#F0F7F1;   --vf-ok-fg:#1F5C2C;
+  --vf-bad-bg:#FBF0F0;  --vf-bad-fg:#8F1F1F;
+  --link-rule:rgba(4,59,114,.28);
+}
+@media (max-width:768px){ :root{--space-section:72px;--space-block:36px} }
+
+/* ============ base ============ */
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--canvas);color:var(--body);font-family:var(--font-kr);
+  font-size:19px;line-height:1.65;font-variant-numeric:tabular-nums}
+html[lang="en"] body{font-family:var(--font-en)}
+.num{font-family:var(--font-num);font-variant-numeric:tabular-nums}
+a{color:var(--secondary);text-decoration:none;border-bottom:1px solid var(--link-rule)}
+a:hover{color:var(--primary-active);border-bottom-color:var(--primary)}
+a:focus-visible{outline:2px solid var(--primary);outline-offset:2px;border-radius:2px}
+strong,b{color:var(--ink);font-weight:700}
+.page{max-width:1200px;margin:0 auto;padding:0 32px}
+@media (max-width:768px){ .page{padding:0 20px} }
+
+/* ============ shell / sidenav / pane ============ */
+.shell{display:block}
+@media (min-width:1080px){
+  .shell{display:grid;grid-template-columns:208px minmax(0,1fr);gap:48px;align-items:start}
+  .sidenav{position:sticky;top:24px;max-height:calc(100vh - 48px);overflow-y:auto;padding-bottom:19px}
+  .shell > main{min-width:0}
+  .shell > main > .section:first-child{margin-top:56px}
+}
+.sidenav-label{font-size:14px;font-weight:500;letter-spacing:.6px;color:var(--muted-soft);
+  margin:0 0 10px;padding-bottom:8px;border-bottom:1px solid var(--primary)}
+.sidenav ul{list-style:none;margin:0 0 28px;padding:0}
+.sidenav ul:last-of-type{margin-bottom:14px}
+.sidenav a{display:block;font-size:15px;line-height:1.35;color:var(--body);
+  padding:7px 0 7px 12px;border:0;border-left:2px solid transparent}
+.sidenav a:hover{color:var(--primary-active);border-left-color:var(--hairline);background:var(--surface-subtle)}
+.sidenav a[aria-current]{color:var(--primary-active);font-weight:700;border-left-color:var(--primary)}
+.sidenav .sn{font-family:var(--font-num);font-size:12px;color:var(--muted-soft);margin-right:7px}
+.sidenav a[aria-current] .sn{color:var(--primary)}
+.sidenav-dates a{font-size:15px}
+.sidenav-dates .d{font-family:var(--font-num);font-size:12px;color:var(--muted-soft);margin-right:7px}
+.sidenav-dates a[aria-current] .d{color:var(--primary)}
+.sidenav-dates .na{display:block;padding:7px 0 7px 12px;font-size:14px;color:var(--muted-soft)}
+.section{scroll-margin-top:24px}
+@media (max-width:1079px){
+  .sidenav{position:sticky;top:0;z-index:5;background:var(--canvas);
+    border-bottom:1px solid var(--hairline);padding:12px 0 10px;margin-bottom:28px}
+  .sidenav-label{display:none}
+  .sidenav ul{display:flex;gap:8px;overflow-x:auto;margin:0 0 8px;-webkit-overflow-scrolling:touch;scrollbar-width:thin}
+  .sidenav ul:last-of-type{margin-bottom:0}
+  .sidenav ul li{flex:none}
+  .sidenav a{padding:6px 12px;border:1px solid var(--hairline);border-radius:2px;white-space:nowrap;font-size:15px}
+  .sidenav a[aria-current]{background:var(--primary);color:var(--on-primary);border-color:var(--primary)}
+  .sidenav a[aria-current] .sn{color:var(--on-primary);opacity:.7}
+  .section{scroll-margin-top:96px}
+}
+.detailpane{display:none}
+@media (min-width:1400px){
+  .page.wide{max-width:1680px}
+  .page.wide .shell{grid-template-columns:200px minmax(0,1fr) 340px;gap:36px}
+  .detailpane{display:block;position:sticky;top:24px;align-self:start;
+    max-height:calc(100vh - 48px);overflow-y:auto;border-top:1px solid var(--primary);padding:14px 0 19px}
+  .pane-mode .stat-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .hint-inline{display:none}
+  .hint-pane{display:inline}
+}
+@media (min-width:1680px){
+  .page.wide .shell{grid-template-columns:200px minmax(0,1fr) 380px;gap:40px}
+  .pane-mode .stat-grid{grid-template-columns:repeat(4,minmax(0,1fr))}
+}
+.hint-pane{display:none}
+.dp-head{display:flex;align-items:flex-start;gap:10px;padding-bottom:12px;
+  border-bottom:1px solid var(--hairline);margin-bottom:16px}
+.dp-head > div{min-width:0;flex:1 1 auto}
+.dp-kicker{font-size:13px;font-weight:500;letter-spacing:.5px;color:var(--primary-active);margin:0 0 3px}
+.dp-kicker:empty{display:none}
+.dp-title{font-size:17px;font-weight:700;line-height:1.4;color:var(--ink);margin:0}
+.dp-close{flex:none;width:26px;height:26px;padding:0;cursor:pointer;border:1px solid var(--hairline);
+  border-radius:2px;background:var(--card);font-family:var(--font-num);font-size:17px;line-height:22px;color:var(--muted)}
+.dp-close:hover{border-color:var(--primary);color:var(--primary-active)}
+.dp-empty{font-size:16px;line-height:1.6;color:var(--muted);margin:0}
+.detailpane .detail{margin:0;padding:0;background:none;border-left:0;border-radius:0}
+.detailpane .detail > p{font-size:16px;max-width:none}
+.detailpane .detail dd{font-size:16px}
+.detailpane .detail-label{display:none}
+.detail-title{display:none}
+
+/* ============ topbar / hero ============ */
+.topbar{display:flex;align-items:flex-start;justify-content:space-between;gap:19px;padding-top:24px}
+.chip{display:inline-block;font-size:14px;letter-spacing:.6px;font-weight:500;color:var(--muted);
+  border:1px solid var(--hairline);padding:4px 10px;border-radius:2px}
+.topbar-actions{display:flex;align-items:center;gap:10px;flex:none;flex-wrap:wrap;justify-content:flex-end}
+.lang-toggle{display:inline-flex;border:1px solid var(--hairline);border-radius:2px;overflow:hidden;
+  box-shadow:0 2px 8px rgba(0,0,0,.06);flex:none;background:var(--card)}
+.lang-toggle button{font-family:var(--font-en);font-size:14px;font-weight:500;letter-spacing:.5px;
+  padding:10px 17px;border:0;background:var(--card);color:var(--muted);cursor:pointer;line-height:1}
+.lang-toggle button + button{border-left:1px solid var(--hairline)}
+.lang-toggle button:hover:not([aria-checked="true"]){background:var(--surface-subtle);color:var(--ink)}
+.lang-toggle button[aria-checked="true"]{background:var(--primary);color:var(--on-primary)}
+.lang-toggle button:focus-visible{outline:2px solid var(--primary);outline-offset:-2px}
+.expand-all,.print-btn{font-family:var(--font-kr);font-size:14px;font-weight:500;letter-spacing:.3px;
+  padding:9px 15px;border-radius:2px;cursor:pointer;white-space:nowrap;line-height:1.2}
+html[lang="en"] .expand-all,html[lang="en"] .print-btn{font-family:var(--font-en)}
+.expand-all{border:1px solid var(--hairline);background:var(--card);color:var(--muted)}
+.expand-all:hover{background:var(--surface-subtle);color:var(--ink)}
+.expand-all:focus-visible,.print-btn:focus-visible{outline:2px solid var(--primary);outline-offset:2px}
+.print-btn{border:1px solid var(--primary);background:var(--primary);color:var(--on-primary)}
+.print-btn:hover{background:var(--primary-active);border-color:var(--primary-active)}
+.print-btn.alt{background:var(--card);color:var(--primary-active)}
+.print-btn.alt:hover{background:var(--surface-subtle);border-color:var(--primary-active)}
+.expand-all .lbl-collapse{display:none}
+.expand-all[aria-pressed="true"] .lbl-expand{display:none}
+.expand-all[aria-pressed="true"] .lbl-collapse{display:inline}
+@media (max-width:680px){ .topbar{flex-wrap:wrap} .topbar-actions{width:100%;row-gap:10px} }
+
+.hero{margin-top:28px;padding-bottom:var(--space-block);border-bottom:1px solid var(--hairline-soft)}
+.hero-kicker{font-size:16px;font-weight:500;letter-spacing:.6px;color:var(--primary-active);margin:0 0 14px}
+.hero h1{font-size:46px;font-weight:700;line-height:1.16;letter-spacing:-.5px;color:var(--ink);
+  margin:0 0 19px;text-wrap:balance}
+.hero-lede{font-size:21px;line-height:1.6;color:var(--body);margin:0;max-width:62em}
+.hero-meta{margin-top:19px;font-size:14px;letter-spacing:.2px;color:var(--muted-soft)}
+@media (max-width:768px){ .hero h1{font-size:31px} .hero-lede{font-size:19px} }
+.tone{display:inline-block;font-size:14px;font-weight:500;letter-spacing:.4px;padding:4px 10px;
+  border-radius:2px;color:#FFFFFF;background:var(--muted-soft)}
+.tone.risk-off{background:var(--up)} .tone.risk-on{background:var(--success)}
+.tone.mixed{background:var(--warning);color:#2A2000}
+:root[data-theme="dark"] .tone.risk-off,:root[data-theme="dark"] .tone.risk-on{color:#12151A}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .tone.risk-off,
+  :root:not([data-theme="light"]) .tone.risk-on{color:#12151A}}
+.hint{font-size:14px;color:var(--muted-soft);margin:14px 0 0}
+
+/* ============ sections ============ */
+.section{margin-top:var(--space-section)}
+.section-rule{height:1px;background:var(--primary);margin-bottom:19px}
+.sec-num{font-family:var(--font-num);font-size:14px;font-weight:600;letter-spacing:1.2px;
+  color:var(--primary);display:block;margin-bottom:4px}
+.section-title{font-size:26px;font-weight:700;color:var(--ink);margin:0 0 var(--space-content)}
+@media (max-width:768px){ .section-title{font-size:22px} }
+.section h3{font-size:22px;font-weight:600;color:var(--ink);margin:var(--space-block) 0 var(--space-tight)}
+@media (max-width:768px){ .section h3{font-size:19px} }
+.section h3:first-of-type{margin-top:0}
+.section p{margin:0 0 var(--space-content);max-width:62em}
+.lede{font-size:19px;color:var(--ink);font-weight:500;line-height:1.6}
+.sub{font-size:17px;line-height:1.55;color:var(--muted)}
+.cap{font-size:14px;color:var(--muted-soft);line-height:1.5}
+.section ul.plain{margin:0 0 var(--space-content);padding-left:22px}
+.section ul.plain li{margin-bottom:10px}
+
+/* ============ keypoints ============ */
+.keypoints{list-style:none;margin:0;padding:0;counter-reset:kp}
+.keypoints > li{counter-increment:kp;position:relative;padding:19px 0 19px 52px;
+  border-bottom:1px solid var(--hairline-soft)}
+.keypoints > li:first-child{border-top:1px solid var(--hairline-soft)}
+.keypoints > li::before{content:counter(kp,decimal-leading-zero);position:absolute;left:0;top:21px;
+  font-family:var(--font-num);font-size:16px;font-weight:700;color:var(--primary);letter-spacing:.6px}
+
+/* ============ stat cards ============ */
+.stat-grid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:1px;
+  background:var(--card);border:1px solid var(--hairline)}
+@media (max-width:1279px){ .stat-grid{grid-template-columns:repeat(2,minmax(0,1fr))} }
+@media (max-width:560px){ .stat-grid{grid-template-columns:minmax(0,1fr)} }
+.stat{background:var(--card);padding:22px 20px;box-shadow:0 0 0 1px var(--hairline-soft)}
+/* 5개 카드가 5열이 아닌 격자에 놓이면 마지막 카드가 남은 열을 채웁니다 */
+@media (max-width:1279px){ .stat-grid > .stat:nth-child(5):last-child{grid-column:1/-1} }
+.pane-mode .stat-grid > .stat:nth-child(5):last-child{grid-column:1/-1}
+/* 카드가 6개일 때는 3열 격자로 두 줄을 채웁니다 */
+.stat-grid.six{grid-template-columns:repeat(3,minmax(0,1fr))}
+.pane-mode .stat-grid.six{grid-template-columns:repeat(2,minmax(0,1fr))}
+@media (min-width:1680px){ .pane-mode .stat-grid.six{grid-template-columns:repeat(3,minmax(0,1fr))} }
+@media (max-width:1023px){ .stat-grid.six{grid-template-columns:repeat(2,minmax(0,1fr))} }
+@media (max-width:560px){ .stat-grid.six{grid-template-columns:minmax(0,1fr)} }
+.stat-label{font-size:15px;font-weight:500;letter-spacing:.6px;line-height:1.2;color:var(--muted);margin:0 0 10px}
+.stat-value{font-family:var(--font-num);font-size:31px;font-weight:700;line-height:1;letter-spacing:-.6px;color:var(--ink)}
+.stat-value.sm{font-size:22px;letter-spacing:-.2px}
+.stat-chg{font-size:14px;line-height:1.4;margin-top:10px;font-family:var(--font-num)}
+.stat-chg.up{color:var(--up)} .stat-chg.down{color:var(--down)} .stat-chg.flat{color:var(--muted-soft)}
+.stat-note{font-size:13px;line-height:1.4;color:var(--muted-soft);margin-top:8px;font-family:var(--font-kr)}
+.stat-note .down{color:var(--down)} .stat-note .up{color:var(--up)}
+html[lang="en"] .stat-note{font-family:var(--font-en)}
+
+/* ============ tables ============ */
+.table-wrap{overflow-x:auto;border:1px solid var(--hairline);margin:0 0 var(--space-content);-webkit-overflow-scrolling:touch}
+table.data{width:100%;border-collapse:collapse;font-size:16px;min-width:560px}
+table.data caption{caption-side:top;text-align:left;font-size:14px;color:var(--muted-soft);padding:0 0 10px}
+table.data th,table.data td{padding:11px 13px;border-bottom:1px solid var(--hairline-soft);text-align:left;vertical-align:top;line-height:1.5}
+table.data thead th{background:var(--primary-soft);color:var(--ink);font-size:15px;font-weight:700;white-space:nowrap}
+table.data tbody tr:hover{background:var(--surface-subtle)}
+table.data tbody th{font-weight:600;color:var(--ink);white-space:nowrap}
+table.data td.n,table.data th.n{text-align:right;font-family:var(--font-num);white-space:nowrap}
+table.data td.up,table.data .up{color:var(--up)} table.data td.down,table.data .down{color:var(--down)}
+table.data .na{color:var(--muted-soft)}
+table.data tr.hl > td,table.data tr.hl > th{background:var(--hl-row)}
+table.data tr.hl:hover > td,table.data tr.hl:hover > th{background:var(--hl-row)}
+/* 주간 기준선 행 / 누적 합계 행 */
+table.data tr.base > td,table.data tr.base > th{background:var(--surface-subtle);
+  border-bottom:2px solid var(--hairline)}
+table.data tr.base > *:first-child{box-shadow:inset 3px 0 0 var(--secondary)}
+table.data tr.sum > td,table.data tr.sum > th{background:var(--surface-subtle);
+  border-top:2px solid var(--hairline);font-weight:600}
+table.data tr.sum > *:first-child{box-shadow:inset 3px 0 0 var(--primary)}
+/* 설명이 긴 머리 칸은 줄바꿈을 허용한다 (기본은 nowrap) */
+table.data th.wrap{white-space:normal;font-weight:600}
+/* 계보·미확보 표: 첫 열을 넓게, 나머지를 고르게 */
+table.data.prov{min-width:760px}
+table.data.prov th.wrap{width:40%}
+table.data.prov thead th,table.data.prov td{width:20%}
+table.data.prov td{white-space:normal}
+table.data.compact{min-width:420px;font-size:15px}
+table.data.compact th,table.data.compact td{padding:8px 11px}
+
+/* ============ verification flags ============ */
+.vf{display:inline-block;font-size:11px;font-weight:600;letter-spacing:.4px;padding:2px 7px;
+  border-radius:2px;border:1px solid var(--hairline);color:var(--muted);background:var(--card);
+  white-space:nowrap;font-family:var(--font-en);vertical-align:1px}
+.vf.ok{border-color:var(--success);color:var(--vf-ok-fg);background:var(--vf-ok-bg)}
+.vf.solo{border-color:var(--warning);color:var(--vf-warn-fg);background:var(--vf-warn-bg)}
+.vf.bad{border-color:var(--up);color:var(--vf-bad-fg);background:var(--vf-bad-bg)}
+.vf.none{border-color:var(--hairline);color:var(--muted-soft);background:var(--surface-subtle)}
+.vf.new{border-color:var(--primary);color:var(--primary-active);background:var(--vf-warn-bg)}
+
+/* ============ bars ============ */
+.bars{display:grid;gap:10px;margin:0 0 var(--space-content)}
+.bar-row{display:grid;grid-template-columns:minmax(96px,168px) 1fr 74px;align-items:center;gap:14px;font-size:16px}
+.bar-name{color:var(--body);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.bar-track{position:relative;height:20px;background:var(--surface-subtle);border:1px solid var(--hairline-soft)}
+.bar-track .zero{position:absolute;top:0;bottom:0;left:50%;width:1px;background:var(--hairline)}
+.bar-fill{position:absolute;top:3px;bottom:3px}
+.bar-fill.up{background:var(--up);left:50%}
+.bar-fill.down{background:var(--down)}
+.bar-val{text-align:right;font-family:var(--font-num);font-size:16px}
+.bar-val.up{color:var(--up)} .bar-val.down{color:var(--down)} .bar-val.flat{color:var(--muted-soft)}
+
+/* ============ house views ============ */
+.views{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1px;
+  background:var(--card);border:1px solid var(--hairline);margin-bottom:var(--space-content)}
+@media (max-width:1023px){ .views{grid-template-columns:minmax(0,1fr)} }
+.view{background:var(--card);padding:22px 20px;box-shadow:0 0 0 1px var(--hairline-soft)}
+.view-firm{font-size:16px;font-weight:700;letter-spacing:.3px;color:var(--primary-active);margin:0 0 4px}
+.view-who{font-size:14px;color:var(--muted-soft);margin:0 0 12px}
+.view-body{font-size:16px;line-height:1.55;margin:0;color:var(--body)}
+.view-stance{display:inline-block;margin-top:12px;font-size:13px;font-weight:500;letter-spacing:.4px;
+  padding:3px 9px;border-radius:2px;border:1px solid var(--hairline);color:var(--muted)}
+.view-stance.bull{border-color:var(--up);color:var(--up)}
+.view-stance.bear{border-color:var(--down);color:var(--down)}
+.view-stance.neutral{border-color:var(--muted-soft);color:var(--muted)}
+
+/* ============ callouts ============ */
+.callout{background:var(--callout-bg);color:var(--callout-fg);border-radius:4px;padding:34px;margin:0 0 var(--space-content)}
+.callout h3{color:var(--callout-fg);margin:0 0 14px;font-size:22px;font-weight:700}
+.callout p,.callout li{color:var(--callout-fg)}
+.callout p{font-size:17px;line-height:1.6;max-width:none}
+.callout p:last-child{margin-bottom:0}
+.callout ul{margin:0;padding-left:22px}
+.callout li{margin-bottom:10px;font-size:17px;line-height:1.55}
+.callout li:last-child{margin-bottom:0}
+.callout a{color:var(--callout-fg);border-bottom-color:var(--callout-rule)}
+.callout a:hover{color:var(--callout-fg);border-bottom-color:var(--callout-fg)}
+.soft-card{background:var(--surface-soft);border-radius:4px;padding:24px 26px;margin:0 0 var(--space-content)}
+.soft-card h4{margin:0 0 10px;font-size:19px;font-weight:700;color:var(--ink)}
+.soft-card p:last-child,.soft-card ul:last-child{margin-bottom:0}
+.soft-card.warn{background:var(--vf-warn-bg);border-left:3px solid var(--warning)}
+
+/* ============ risks / qa ============ */
+.risks{list-style:none;margin:0;padding:0}
+.risks > li{padding:14px 0 14px 22px;border-bottom:1px solid var(--hairline-soft);position:relative;
+  font-size:17px;line-height:1.55}
+.risks > li::before{content:"";position:absolute;left:0;top:24px;width:10px;height:1px;background:var(--primary)}
+.qa{margin:0}
+.qa .exp{border-bottom:1px solid var(--hairline-soft);padding:19px 0}
+.qa .exp:first-child{border-top:1px solid var(--hairline-soft)}
+.qa .exp > summary{font-size:19px;font-weight:700;color:var(--ink)}
+.qa .exp > summary .exp-mark{top:2px}
+.disc{font-size:14px;color:var(--muted-soft);margin-top:14px;padding-top:10px;
+  border-top:1px solid var(--hairline-soft);line-height:1.5}
+
+/* ============ sources / footer ============ */
+.sources{list-style:none;margin:0;padding:0;font-size:14px;line-height:1.5;columns:2;column-gap:38px}
+@media (max-width:768px){ .sources{columns:1} }
+.sources li{margin-bottom:10px;break-inside:avoid}
+.sources .pub{color:var(--muted-soft)}
+footer.foot{margin-top:var(--space-section);padding:28px 0 56px;border-top:1px solid var(--primary);
+  font-size:14px;color:var(--muted-soft)}
+footer.foot p{margin:0 0 8px;max-width:none}
+
+/* ============ drilldown ============ */
+.exp > summary{cursor:pointer;list-style:none;display:block;position:relative;padding-right:34px}
+.exp > summary::-webkit-details-marker{display:none}
+.exp > summary::marker{content:""}
+.exp > summary:focus-visible{outline:2px solid var(--primary);outline-offset:3px}
+.exp-mark{position:absolute;right:0;top:0;width:22px;height:22px;flex:none;
+  border:1px solid var(--hairline);border-radius:2px;background:var(--card);
+  font-family:var(--font-num);font-size:15px;font-weight:700;line-height:20px;text-align:center;color:var(--primary-active)}
+.exp > summary:hover .exp-mark{background:var(--primary);border-color:var(--primary);color:var(--on-primary)}
+.exp[open] > summary .exp-mark::after{content:"\2212"}
+.exp:not([open]) > summary .exp-mark::after{content:"+"}
+.detail{margin-top:19px;padding:19px 22px;background:var(--surface-subtle);
+  border-left:2px solid var(--primary);border-radius:0 2px 2px 0}
+.detail > p{font-size:16px;line-height:1.6;margin:0 0 14px;max-width:62em}
+.detail > p:last-child{margin-bottom:0}
+.detail dl{margin:0 0 14px}
+.detail dl:last-child{margin-bottom:0}
+.detail dt{font-size:13px;font-weight:500;letter-spacing:.4px;color:var(--muted);margin-top:12px}
+.detail dt:first-child{margin-top:0}
+.detail dd{margin:2px 0 0;font-size:16px;line-height:1.5;color:var(--ink)}
+.detail dd.n{font-family:var(--font-num);font-variant-numeric:tabular-nums;letter-spacing:0}
+.detail-links{margin:14px 0 0;padding:0;list-style:none;font-size:14px;line-height:1.5}
+.detail-links li{margin-bottom:6px}
+.detail-links li::before{content:"\2192";color:var(--primary);margin-right:8px}
+.detail-label{display:block;font-size:13px;font-weight:500;letter-spacing:.5px;color:var(--primary-active);margin-bottom:10px}
+.keypoints > li > .exp > summary,.risks > li > .exp > summary{padding-right:34px}
+details.stat > summary,details.view > summary{padding-right:34px}
+details.stat > summary .exp-mark,details.view > summary .exp-mark{top:-2px}
+table.data tr.clickable{cursor:pointer}
+table.data tr.clickable > *:first-child{padding-left:34px;position:relative}
+table.data tr.clickable > *:first-child::before{content:"+";position:absolute;left:13px;top:11px;
+  font-family:var(--font-num);font-size:15px;font-weight:700;color:var(--primary-active)}
+table.data tr.clickable[aria-expanded="true"] > *:first-child::before{content:"\2212"}
+table.data tr.clickable:focus-visible{outline:2px solid var(--primary);outline-offset:-2px}
+table.data tr.detail-row > td{background:var(--surface-subtle);padding:0}
+table.data tr.detail-row:hover > td{background:var(--surface-subtle)}
+table.data tr.detail-row .detail{margin:0;border-radius:0}
+table.data tr.detail-row[hidden]{display:none}
+
+/* pane mode overrides */
+.pane-mode .exp > summary .exp-mark::after,
+.pane-mode .exp[open] > summary .exp-mark::after,
+.pane-mode .exp:not([open]) > summary .exp-mark::after{content:"\203A"}
+.pane-mode table.data tr.clickable > *:first-child::before,
+.pane-mode table.data tr.clickable[aria-expanded="true"] > *:first-child::before{content:"\203A"}
+.pane-mode .exp.pane-active > summary{background:var(--surface-subtle);box-shadow:inset 2px 0 0 var(--primary)}
+.pane-mode .exp.pane-active > summary .exp-mark{background:var(--primary);border-color:var(--primary);color:var(--on-primary)}
+.pane-mode table.data tr.pane-active > td,.pane-mode table.data tr.pane-active > th,
+.pane-mode table.data tr.pane-active:hover > td,.pane-mode table.data tr.pane-active:hover > th{background:var(--surface-soft)}
+.pane-mode table.data tr.pane-active > *:first-child{box-shadow:inset 2px 0 0 var(--primary)}
+.pane-mode table.data tr.pane-active > *:first-child::before{color:var(--primary)}
+
+/* ============ i18n ============ */
+[data-lang-en]{display:none}
+html[lang="en"] [data-lang-ko]{display:none}
+html[lang="en"] [data-lang-en]{display:revert}
+
+@media (prefers-reduced-motion:reduce){ *{scroll-behavior:auto!important} }
+
+/* ============ print ============ */
+@media print{
+  :root{
+    --primary:#F58220;--primary-active:#CB6015;--primary-soft:#FAB072;--secondary:#043B72;
+    --canvas:#FFFFFF;--surface-soft:#ECEFF4;--surface-subtle:#F7F8FA;--card:#FFFFFF;
+    --hairline:#CDCECB;--hairline-soft:#E5E4E1;
+    --ink:#000000;--body:#1A1A1A;--muted:#555555;--muted-soft:#777777;
+    --up:#C62828;--down:#043B72;--warning:#D4A017;--success:#2E8540;--hl-row:#D7D7D7;
+    --vf-warn-bg:#FCF7E8;--vf-warn-fg:#8A6A0D;--vf-ok-bg:#F0F7F1;--vf-ok-fg:#1F5C2C;
+    --vf-bad-bg:#FBF0F0;--vf-bad-fg:#8F1F1F;
+    --space-section:28px;--space-block:19px;--space-content:14px;
+  }
+  .lang-toggle,.expand-all,.print-btn,.hint,.sidenav,.detailpane,.chip{display:none!important}
+  .shell,.page.wide .shell{display:block!important}
+  .detail dl{display:grid;grid-template-columns:32% 1fr;column-gap:10px;row-gap:3px}
+  .detail dt,.detail dd{margin:0!important;font-size:9.5pt}
+  .detail{padding:10px 12px;margin-top:10px;background:#FFF;border-left:2px solid #999;break-inside:avoid}
+  .detail > p{font-size:10pt;margin-bottom:8px}
+  .detail-label{margin-bottom:6px}
+  .detail-links{display:none}
+  .exp > summary{padding-right:0}
+  .exp-mark,table.data tr.clickable > *:first-child::before{display:none!important}
+  table.data tr.clickable > *:first-child{padding-left:13px}
+  body{font-size:11pt;line-height:1.4;color:#000;background:#FFF}
+  .page{max-width:100%;padding:0}
+  .section{margin-top:28px}
+  .hero h1{font-size:24pt} .hero-lede{font-size:12pt} .section-title{font-size:15pt}
+  .stat-grid,.views{break-inside:avoid;grid-template-columns:repeat(3,minmax(0,1fr))}
+  .section-rule,.section-title,h3{break-after:avoid}
+  table,.stat,.view,.callout,.soft-card{break-inside:avoid}
+  table.data{font-size:9pt;min-width:0}
+  .callout{background:#FFF!important;color:#000!important;border:1px solid #999}
+  .callout h3,.callout p,.callout li,.callout a{color:#000!important}
+  a{border-bottom:0;color:#000}
+  .table-wrap{overflow:visible}
+  .stat,.view{box-shadow:none!important;border:1px solid #CDCECB}
+}
+</style>
+
+<div class="page wide">
+
+<div class="topbar">
+  <span class="chip"><span data-lang-ko>장마감 브리핑</span><span data-lang-en>Post-close briefing</span></span>
+  <div class="topbar-actions">
+    <button type="button" class="print-btn" data-print="brief" title="상세를 접은 요약본으로 인쇄 / PDF 저장 — 고객 전달용"><span data-lang-ko>요약 PDF</span><span data-lang-en>Summary PDF</span></button>
+    <button type="button" class="print-btn alt" data-print="full" title="모든 상세를 펼친 전체본으로 인쇄 / PDF 저장 — 일일보고용"><span data-lang-ko>전체 PDF</span><span data-lang-en>Full PDF</span></button>
+    <button type="button" class="expand-all" aria-pressed="false"><span class="lbl-expand"><span data-lang-ko>전체 펼치기</span><span data-lang-en>Expand all</span></span><span class="lbl-collapse"><span data-lang-ko>전체 접기</span><span data-lang-en>Collapse all</span></span></button>
+    <div class="lang-toggle" role="radiogroup" aria-label="Language">
+      <button type="button" data-lang="ko" role="radio" aria-checked="true">KO</button>
+      <button type="button" data-lang="en" role="radio" aria-checked="false">EN</button>
+    </div>
+  </div>
+</div>
+
+<div class="hero">
+  <p class="hero-kicker"><span data-lang-ko>2026년 8월 7일(금) 장마감</span><span data-lang-en>Close, Friday 7 August 2026</span> &middot; <span data-lang-ko>미래에셋증권 마포WM · 장마감 시황 브리핑</span><span data-lang-en>Mirae Asset Securities, Mapo WM · Post-Close Briefing</span></p>
+  <h1><span data-lang-ko>하루 안에 256포인트를 오간 장, 종가는 &minus;0.60%였지만 조용한 날이 아니었다</span><span data-lang-en>A 257-point round trip in one session: the close says &minus;0.60%, the day was anything but quiet</span></h1>
+  <p class="hero-lede"><span data-lang-ko>코스피가 37.61포인트(&minus;0.60%) 내린 6,258.77로 마감했다. 종가만 보면 약보합이지만 <strong>장중 고가 6,415.60, 저가 6,158.73으로 하루 변동폭이 256.87포인트(고가 대비 4.00%)</strong>에 달했다. 1.09% 높게 출발해 오전에 6,415선까지 올랐다가 오후에 6,158선까지 밀렸고, 마지막에 100포인트를 되찾아 마감했다. 엔비디아가 차세대 AI 칩 &lsquo;루빈 울트라&rsquo;의 HBM 사양 하향을 검토한다는 소식에 SK하이닉스가 4.88% 급락한 것이 방아쇠였고, 외국인이 8,600억원 가까이 순매도했다. 다만 <strong>코스피에서는 오른 종목이 554개, 내린 종목이 322개로 상승이 더 많았다</strong> — LG에너지솔루션 +4.35%, 한화에어로스페이스 +4.08%, 삼성전기 +3.99%, KB금융 +2.51%로 지수를 누른 것은 반도체 대형주뿐이었다. 반면 <strong>코스닥은 내린 종목이 829개로 오른 종목 808개보다 많아</strong> 시장 전반이 고르게 약했다 — 두 시장의 성격이 정반대였다. 원/달러는 7.7원 내린 1,416.1원. 오늘 밤 21:30 미 7월 고용보고서가 남아 있다.</span><span data-lang-en>KOSPI closed at 6,258.77, down 37.61 points (&minus;0.60%). The close reads as a mild loss, but the index ran from a high of 6,415.60 to a low of 6,158.73 &mdash; <strong>a 256.87-point range, 4.00% of the high.</strong> It opened 1.09% higher, reached 6,415 in the morning, fell to 6,158 in the afternoon, and recovered 100 points into the close. The trigger was SK Hynix, down 4.88% on reports that Nvidia is considering lower HBM specifications for its next-generation &ldquo;Rubin Ultra&rdquo; chip, with foreigners selling close to KRW 860bn. Yet on KOSPI <strong>554 stocks rose against 322 that fell</strong>: LG Energy Solution +4.35%, Hanwha Aerospace +4.08%, Samsung Electro-Mechanics +3.99%, KB Financial +2.51% — only large-cap semis pushed the index down. On KOSDAQ, by contrast, <strong>829 fell against 808 that rose</strong>: broadly, evenly soft. The two markets behaved in opposite ways. The won firmed 7.7 to 1,416.1. The US July employment report lands tonight at 21:30 KST.</span></p>
+  <p class="hero-meta"><span class="tone risk-off"><span data-lang-ko>위험회피</span><span data-lang-en>Risk-off</span></span> &nbsp; <span data-lang-ko>기준: 2026년 8월 7일(금) 국내 마감 15:30 KST · 작성 18:55 KST · 8월 8일 13:10 거래소 원천 시세로 보강</span><span data-lang-en>Basis: Korea close 15:30 KST, Friday 7 August 2026 · compiled 18:55 KST · augmented with exchange data 8 Aug 13:10</span></p>
+  <p class="hint"><span class="hint-inline"><span data-lang-ko>각 항목을 클릭하면 근거 수치와 배경, 원문 링크가 펼쳐집니다. 고객 전달용은 «요약 PDF», 일일보고용은 «전체 PDF» 로 저장하십시오.</span><span data-lang-en>Click any item to reveal the underlying figures, background and source links. Use «Summary PDF» for client hand-outs and «Full PDF» for the daily report.</span></span><span class="hint-pane"><span data-lang-ko>각 항목을 클릭하면 근거 수치와 배경, 원문 링크가 오른쪽 패널에 표시됩니다. 고객 전달용은 «요약 PDF», 일일보고용은 «전체 PDF» 로 저장하십시오.</span><span data-lang-en>Click any item to show the underlying figures, background and source links in the panel on the right. Use «Summary PDF» for client hand-outs and «Full PDF» for the daily report.</span></span></p>
+</div>
+
+<div class="shell">
+
+<nav class="sidenav" aria-label="목차">
+  <p class="sidenav-label"><span data-lang-ko>목차</span><span data-lang-en>Contents</span></p>
+  <ul class="sidenav-toc">
+    <li><a href="#close"><span class="sn">01</span><span data-lang-ko>마감 요약</span><span data-lang-en>Close Summary</span></a></li>
+    <li><a href="#internals"><span class="sn">02</span><span data-lang-ko>지수 · 시장 내부</span><span data-lang-en>Index &amp; Internals</span></a></li>
+    <li><a href="#flows"><span class="sn">03</span><span data-lang-ko>투자자별 수급</span><span data-lang-en>Investor Flows</span></a></li>
+    <li><a href="#movers"><span class="sn">04</span><span data-lang-ko>특징주</span><span data-lang-en>Movers</span></a></li>
+    <li><a href="#week"><span class="sn">05</span><span data-lang-ko>이번 주 정리</span><span data-lang-en>Week in Review</span></a></li>
+    <li><a href="#macro"><span class="sn">06</span><span data-lang-ko>환율 · 금리 · 원자재</span><span data-lang-en>FX, Rates &amp; Commodities</span></a></li>
+    <li><a href="#tonight"><span class="sn">07</span><span data-lang-ko>오늘 밤 · 다음 주</span><span data-lang-en>Tonight &amp; Next Week</span></a></li>
+    <li><a href="#talking"><span class="sn">08</span><span data-lang-ko>고객 응대 포인트</span><span data-lang-en>Talking Points</span></a></li>
+    <li><a href="#verify"><span class="sn">09</span><span data-lang-ko>데이터 검증 노트</span><span data-lang-en>Verification Notes</span></a></li>
+    <li><a href="#sources"><span class="sn">10</span><span data-lang-ko>출처</span><span data-lang-en>Sources</span></a></li>
+  </ul>
+  <p class="sidenav-label"><span data-lang-ko>지난 브리핑</span><span data-lang-en>Archive</span></p>
+  <ul class="sidenav-dates">
+    <li><a href="https://claude.ai/code/artifact/f8703542-a9a9-42c0-aefd-1ae122a05888" target="_blank" rel="noopener"><span class="d">08-08</span><span data-lang-ko>해외 증시 모닝</span><span data-lang-en>Global morning</span></a></li>
+    <li><a href="#" aria-current="page"><span class="d">08-07</span><span data-lang-ko>장마감 시황</span><span data-lang-en>Close brief</span></a></li>
+    <li><a href="https://claude.ai/code/artifact/dca66b4e-550e-42ed-96d9-b24918392756" target="_blank" rel="noopener"><span class="d">08-07</span><span data-lang-ko>모닝 마켓</span><span data-lang-en>Morning brief</span></a></li>
+    <li><a href="https://claude.ai/code/artifact/382fd976-d577-44b0-8380-3c5d378bada7" target="_blank" rel="noopener"><span class="d">08-06</span><span data-lang-ko>아침 브리핑</span><span data-lang-en>Morning brief</span></a></li>
+    <li class="na"><span class="d">08-04</span><span data-lang-ko>보관본 없음</span><span data-lang-en>Not archived</span></li>
+  </ul>
+</nav>
+
+<main>
+
+<!-- 01 -->
+<section class="section" id="close">
+  <div class="section-rule"></div>
+  <span class="sec-num">01</span>
+  <h2 class="section-title"><span data-lang-ko>마감 요약</span><span data-lang-en>Close Summary</span></h2>
+
+  <div class="stat-grid six">
+    <div class="stat">
+      <p class="stat-label">KOSPI</p>
+      <div class="stat-value">6,258.77</div>
+      <div class="stat-chg down">&minus;37.61 (&minus;0.60%)</div>
+      <div class="stat-note"><span data-lang-ko>주간 <strong class="down">&minus;5.10%</strong> · 7주 연속 하락</span><span data-lang-en>Week <strong class="down">&minus;5.10%</strong> · seventh straight loss</span></div>
+    </div>
+    <div class="stat">
+      <p class="stat-label">KOSDAQ</p>
+      <div class="stat-value">798.81</div>
+      <div class="stat-chg down">&minus;2.86 (&minus;0.36%)</div>
+      <div class="stat-note"><span data-lang-ko>주간 <strong class="up">+10.98%</strong> · 5주 만에 상승 전환</span><span data-lang-en>Week <strong class="up">+10.98%</strong> · first weekly gain in five</span></div>
+    </div>
+    <div class="stat">
+      <p class="stat-label"><span data-lang-ko>장중 변동폭</span><span data-lang-en>Intraday range</span></p>
+      <div class="stat-value">256.87p</div>
+      <div class="stat-chg flat"><span data-lang-ko>고가 6,415.60 · 저가 6,158.73</span><span data-lang-en>High 6,415.60 · low 6,158.73</span></div>
+      <div class="stat-note"><span data-lang-ko>고가 대비 <strong class="down">4.00%</strong> · 거래대금 24.3조</span><span data-lang-en><strong class="down">4.00%</strong> of the high · turnover KRW 24.3tn</span></div>
+    </div>
+    <div class="stat">
+      <p class="stat-label"><span data-lang-ko>외국인 (코스피)</span><span data-lang-en>Foreigners (KOSPI)</span></p>
+      <div class="stat-value sm"><span data-lang-ko>&minus;8,581~8,625억</span><span data-lang-en>&minus;KRW 858&ndash;863bn</span></div>
+      <div class="stat-chg down"><span data-lang-ko>순매도</span><span data-lang-en>Net sell</span></div>
+      <div class="stat-note"><span data-lang-ko>기관 +5,791억 · 개인 +2,677억</span><span data-lang-en>Institutions +KRW 579bn · retail +KRW 268bn</span></div>
+    </div>
+    <div class="stat">
+      <p class="stat-label">USD/KRW</p>
+      <div class="stat-value">1,416.1</div>
+      <div class="stat-chg up">&minus;7.7 <span data-lang-ko>(원화 강세)</span><span data-lang-en>(won firmer)</span></div>
+      <div class="stat-note"><span data-lang-ko>15:30 주간거래 종가</span><span data-lang-en>Onshore close 15:30</span></div>
+    </div>
+    <div class="stat">
+      <p class="stat-label"><span data-lang-ko>오늘 밤 21:30</span><span data-lang-en>Tonight 21:30 KST</span></p>
+      <div class="stat-value sm"><span data-lang-ko>미 7월 고용</span><span data-lang-en>US payrolls</span></div>
+      <div class="stat-chg flat"><span data-lang-ko>컨센서스 +8.5만명</span><span data-lang-en>Consensus +85k</span></div>
+      <div class="stat-note"><span data-lang-ko>실업률 4.2% 유지 예상 · <strong>미발표</strong></span><span data-lang-en>Jobless rate seen 4.2% · <strong>not yet released</strong></span></div>
+    </div>
+  </div>
+
+  <ul class="keypoints">
+    <li>
+      <details class="exp">
+        <summary>
+          <div data-lang-ko><strong>고가 6,415.60 &rarr; 저가 6,158.73 &rarr; 종가 6,258.77.</strong> 하루 변동폭 256.87포인트(고가 대비 4.00%). 종가는 저가에서 100.04포인트(+1.62%)를 되찾은 자리이고, 이틀 연속 하락이지만 <strong>지수는 8월 3일 종가(6,257.45)와 거의 같은 자리</strong>로 돌아왔다.</div>
+          <div data-lang-en><strong>High 6,415.60, low 6,158.73, close 6,258.77.</strong> A 256.87-point range — 4.00% of the high. The close sits 100.04 points (+1.62%) above the low. A second straight down session, yet <strong>the index is back almost exactly where it closed on 3 August (6,257.45).</strong></div>
+          <span class="exp-mark" aria-hidden="true"></span>
+        </summary>
+        <div class="detail"><span class="detail-label"><span data-lang-ko>상세</span><span data-lang-en>Detail</span></span>
+          <dl>
+            <dt><span data-lang-ko>종가 / 전일대비</span><span data-lang-en>Close / change</span></dt><dd class="n">6,258.77 / &minus;37.61p (&minus;0.60%)</dd>
+            <dt><span data-lang-ko>시가</span><span data-lang-en>Open</span></dt><dd class="n">6,365.07 (+1.09%)</dd>
+            <dt><span data-lang-ko>장중 고가 / 저가</span><span data-lang-en>Intraday high / low</span></dt><dd class="n">6,415.60 / 6,158.73</dd>
+            <dt><span data-lang-ko>일중 변동폭</span><span data-lang-en>Intraday range</span></dt><dd class="n">256.87p <span data-lang-ko>(고가 대비 4.00%, 계산치)</span><span data-lang-en>(4.00% of the high, computed)</span></dd>
+            <dt><span data-lang-ko>저가 대비 종가</span><span data-lang-en>Close vs low</span></dt><dd class="n up">+100.04p (+1.62%) <span data-lang-ko>(계산치)</span><span data-lang-en>(computed)</span></dd>
+            <dt><span data-lang-ko>거래대금 / 거래량</span><span data-lang-en>Turnover / volume</span></dt><dd class="n">24조 3,047억원 / 2억 9,718만주</dd>
+          </dl>
+          <p data-lang-ko>종가만 보고 &ldquo;조용한 하루&rdquo;라고 전달하면 오해가 생깁니다. <strong>저가 6,158.73은 어제 종가(6,296.38)보다 137포인트 아래</strong>였습니다. 장중에 보고 계셨던 고객은 훨씬 큰 하락을 겪었고, 그 뒤 100포인트가 회복돼 마감한 것입니다.</p>
+          <p data-lang-en>Reporting this as "a quiet day" from the close alone invites misunderstanding. <strong>The low of 6,158.73 sat 137 points below yesterday's close of 6,296.38.</strong> A client watching intraday lived through a far bigger fall, and then a 100-point recovery into the bell.</p>
+          <ul class="detail-links">
+            <li><a href="https://www.newspim.com/news/view/20260807000978"><span data-lang-ko>뉴스핌 마감시황 8/7</span><span data-lang-en>Newspim close wrap, 7 Aug</span></a></li>
+            <li><a href="https://www.hankyung.com/article/2026080709686"><span data-lang-ko>한국경제 마감시황 8/7</span><span data-lang-en>Hankyung close wrap, 7 Aug</span></a></li>
+          </ul>
+        </div>
+      </details>
+    </li>
+    <li>
+      <details class="exp">
+        <summary>
+          <div data-lang-ko><strong>방아쇠는 엔비디아 HBM 사양 하향 검토였다.</strong> 차세대 AI 칩 &lsquo;루빈 울트라&rsquo;의 HBM 사양을 낮추는 방안을 검토 중이라는 소식에 SK하이닉스가 4.88% 급락(142만2,000원)했다. 어제 10.37%에 이어 이틀 만에 15% 가까이 빠진 셈이다.</div>
+          <div data-lang-en><strong>The trigger was a report that Nvidia may lower HBM specs.</strong> News that the next-generation &ldquo;Rubin Ultra&rdquo; AI chip could carry reduced HBM specifications sent SK Hynix down 4.88% to KRW 1,422,000 — close to 15% in two sessions after yesterday's 10.37%.</div>
+          <span class="exp-mark" aria-hidden="true"></span>
+        </summary>
+        <div class="detail"><span class="detail-label"><span data-lang-ko>상세</span><span data-lang-en>Detail</span></span>
+          <p data-lang-ko>어제의 방아쇠(샌디스크 가이던스 실망)와 오늘의 방아쇠(엔비디아 HBM 사양)는 <strong>성격이 다릅니다.</strong> 어제는 <em>실적 눈높이</em>의 문제였고, 오늘은 <em>제품 사양 = 향후 물량과 단가</em>의 문제입니다. 후자가 사실로 확정되면 HBM 매출 추정 자체를 낮춰야 하므로 고객 설명 시 구분해 주시는 편이 좋습니다.</p>
+          <p data-lang-en>Yesterday's trigger (SanDisk guidance) and today's (Nvidia HBM specs) are <strong>different in kind.</strong> Yesterday was about <em>the earnings bar</em>; today is about <em>product specification — future volume and price</em>. If confirmed, the latter forces HBM revenue estimates down, so the distinction is worth drawing for clients.</p>
+          <p data-lang-ko><span class="vf solo">1 SOURCE</span> &lsquo;검토 중&rsquo; 단계의 보도이며 엔비디아의 공식 확인은 확인되지 않았습니다. 확정 사실로 전달하지 마십시오.</p>
+          <p data-lang-en><span class="vf solo">1 SOURCE</span> Reported as under consideration; no official Nvidia confirmation was found. Do not present it as settled.</p>
+          <ul class="detail-links">
+            <li><a href="https://www.ddaily.co.kr/page/view/2026080716135770490"><span data-lang-ko>디지털데일리 — HBM 악재에 하이닉스 급락</span><span data-lang-en>Digital Daily — Hynix slides on HBM news</span></a></li>
+          </ul>
+        </div>
+      </details>
+    </li>
+    <li>
+      <details class="exp">
+        <summary>
+          <div data-lang-ko><strong>코스피는 지수가 내렸는데 상승 종목이 더 많았다(554 대 322).</strong> SK하이닉스 &minus;4.88%가 지수를 눌렀지만 삼성전자는 +0.22%였고, LG에너지솔루션 +4.35%, 한화에어로스페이스 +4.08%, 삼성전기 +3.99%, KB금융 +2.51%로 대형주 상당수가 올랐다. 코스피에서 상상인증권·혜인·유니켐이 상한가를 기록했다.</div>
+          <div data-lang-en><strong>On KOSPI the index fell while advancers led, 554 to 322.</strong> SK Hynix's &minus;4.88% dragged the index, but Samsung Electronics rose 0.22%, and LG Energy Solution +4.35%, Hanwha Aerospace +4.08%, Samsung Electro-Mechanics +3.99% and KB Financial +2.51% all gained. Sangsangin Securities, Haein and Unichem hit their limit up on KOSPI.</div>
+          <span class="exp-mark" aria-hidden="true"></span>
+        </summary>
+        <div class="detail"><span class="detail-label"><span data-lang-ko>상세</span><span data-lang-en>Detail</span></span>
+          <p data-lang-ko>이 점이 오늘 고객 응대의 핵심입니다. <strong>&ldquo;시장이 내렸다&rdquo;는 말과 실제 계좌의 움직임이 어긋나는 날</strong>이었습니다. 지수를 끌어내린 것은 사실상 SK하이닉스 한 종목이고, 시가총액 비중이 커서 지수에 그대로 반영됐을 뿐입니다.</p>
+          <p data-lang-en>This is the crux of today's client conversation. It was <strong>a day when "the market fell" and what a client sees in their account point in opposite directions.</strong> One name — SK Hynix — did most of the damage to the index, purely because of its weight.</p>
+          <p data-lang-ko>어제와의 차이도 여기 있습니다. 어제는 매도 사이드카가 걸릴 만큼 전면적인 하락이었고, 오늘은 <strong>반도체 한 섹터에 국한</strong>됐습니다.</p>
+          <p data-lang-en>That is also the difference from yesterday: yesterday's fall was broad enough to trigger a sell sidecar, while today's was <strong>confined to one sector.</strong></p>
+          <p data-lang-ko><span class="vf ok">MARKET DATA</span> 코스피 상한 3 · 상승 554 · 보합 36 · 하락 322 · 하한 0. 코스닥 상한 6 · 상승 808 · 보합 84 · 하락 829 · 하한 0. <strong>같은 날 두 시장의 방향이 반대였습니다.</strong></p>
+          <p data-lang-en><span class="vf ok">MARKET DATA</span> KOSPI: 3 limit up, 554 advancing, 36 flat, 322 declining, none limit down. KOSDAQ: 6, 808, 84, 829, none. <strong>The two markets pointed opposite ways on the same day.</strong></p>
+        </div>
+      </details>
+    </li>
+    <li>
+      <details class="exp">
+        <summary>
+          <div data-lang-ko><strong>주간으로는 코스피 &minus;5.10%, 코스닥 +10.98%.</strong> 코스피는 7주 연속 주간 하락으로 2022년 12월 이후 최장 기록이고, 코스닥은 5주 만에 상승 전환했다. 같은 주에 두 시장이 16%포인트 벌어졌다.</div>
+          <div data-lang-en><strong>On the week: KOSPI &minus;5.10%, KOSDAQ +10.98%.</strong> KOSPI's seventh consecutive weekly loss is its longest run since December 2022, while KOSDAQ turned higher for the first time in five weeks — a 16-point gap between the two in a single week.</div>
+          <span class="exp-mark" aria-hidden="true"></span>
+        </summary>
+        <div class="detail"><span class="detail-label"><span data-lang-ko>상세</span><span data-lang-en>Detail</span></span>
+          <dl>
+            <dt><span data-lang-ko>코스피 주간 (7/31 종가 6,595.45 &rarr; 8/7 6,258.77)</span><span data-lang-en>KOSPI week (6,595.45 on 31 Jul &rarr; 6,258.77)</span></dt><dd class="n down">&minus;336.68p (&minus;5.10%)</dd>
+            <dt><span data-lang-ko>코스닥 주간 (7/31 종가 719.76 &rarr; 8/7 798.81)</span><span data-lang-en>KOSDAQ week (719.76 on 31 Jul &rarr; 798.81)</span></dt><dd class="n up">+79.05p (+10.98%)</dd>
+          </dl>
+          <p data-lang-ko>대형주에서 빠진 돈이 시장을 떠난 것이 아니라 <strong>중소형주로 옮겨간 한 주</strong>였습니다. 반도체·대형주 비중이 높은 고객과 코스닥 비중이 높은 고객의 체감이 정반대일 수밖에 없으므로, 포트폴리오를 보지 않고 &ldquo;시장이 안 좋았다&rdquo;고 말하면 절반은 틀린 설명이 됩니다.</p>
+          <p data-lang-en>Money leaving large caps did not leave the market — it <strong>moved down the cap scale.</strong> Clients heavy in semis and large caps and clients heavy in KOSDAQ experienced opposite weeks, so saying "the market was weak" without looking at the portfolio is half wrong.</p>
+        </div>
+      </details>
+    </li>
+  </ul>
+</section>
+
+<!-- 02 -->
+<section class="section" id="internals">
+  <div class="section-rule"></div>
+  <span class="sec-num">02</span>
+  <h2 class="section-title"><span data-lang-ko>지수 · 시장 내부</span><span data-lang-en>Index &amp; Internals</span></h2>
+  <p class="lede"><span data-lang-ko>지수 하락폭은 작았지만 장중 되밀린 폭은 컸습니다. 이 둘을 구분해 보는 것이 오늘 장의 핵심입니다.</span><span data-lang-en>The index fell little; the intraday give-back was large. Separating the two is what matters today.</span></p>
+
+  <div class="table-wrap">
+  <table class="data">
+    <caption><span data-lang-ko>행을 클릭하면 근거가 열립니다.</span><span data-lang-en>Click a row to open the detail.</span></caption>
+    <thead><tr>
+      <th><span data-lang-ko>구분</span><span data-lang-en>Index</span></th>
+      <th class="n"><span data-lang-ko>종가</span><span data-lang-en>Close</span></th>
+      <th class="n"><span data-lang-ko>전일대비</span><span data-lang-en>Change</span></th>
+      <th class="n"><span data-lang-ko>주간</span><span data-lang-en>Week</span></th>
+      <th><span data-lang-ko>검증</span><span data-lang-en>Check</span></th>
+    </tr></thead>
+    <tbody>
+      <tr class="hl clickable" tabindex="0" aria-expanded="false"><th>KOSPI</th><td class="n">6,258.77</td><td class="n down">&minus;37.61 (&minus;0.60%)</td><td class="n down">&minus;5.10%</td><td><span class="vf ok">2 SOURCES</span></td></tr>
+      <tr class="detail-row" hidden><td colspan="5"><div class="detail">
+        <span class="detail-title"><span data-lang-ko>코스피 8월 7일 장 흐름</span><span data-lang-en>KOSPI session flow, 7 August</span></span>
+        <dl>
+          <dt><span data-lang-ko>시가</span><span data-lang-en>Open</span></dt><dd class="n">6,365.07 (+1.09%)</dd>
+          <dt><span data-lang-ko>장중 고가</span><span data-lang-en>High</span></dt><dd class="n">6,415.60</dd>
+          <dt><span data-lang-ko>장중 저가</span><span data-lang-en>Low</span></dt><dd class="n">6,158.73</dd>
+          <dt><span data-lang-ko>종가</span><span data-lang-en>Close</span></dt><dd class="n">6,258.77</dd>
+          <dt><span data-lang-ko>일중 변동폭</span><span data-lang-en>Intraday range</span></dt><dd class="n">256.87p <span data-lang-ko>(고가 대비 4.00%)</span><span data-lang-en>(4.00% of the high)</span></dd>
+          <dt><span data-lang-ko>고가 &rarr; 종가</span><span data-lang-en>High to close</span></dt><dd class="n down">&minus;156.83p (&minus;2.44%)</dd>
+          <dt><span data-lang-ko>저가 &rarr; 종가</span><span data-lang-en>Low to close</span></dt><dd class="n up">+100.04p (+1.62%)</dd>
+          <dt><span data-lang-ko>거래대금 / 거래량</span><span data-lang-en>Turnover / volume</span></dt><dd class="n">24조 3,047억원 / 2억 9,718만주</dd>
+          <dt><span data-lang-ko>사이드카 · 서킷브레이커</span><span data-lang-en>Sidecar / circuit breaker</span></dt><dd><span data-lang-ko>미발동 (어제는 10:18 매도 사이드카)</span><span data-lang-en>Neither triggered (yesterday saw a 10:18 sell sidecar)</span></dd>
+        </dl>
+        <p data-lang-ko>종가만 보면 &minus;0.60%로 조용한 하루처럼 보이지만, 실제로는 <strong>고가에서 4.00%를 흘러내렸다가 다시 1.62%를 되찾은</strong> 장입니다. 저가 6,158.73은 <strong>어제 종가보다 137.65포인트 아래</strong>였습니다. 어제(&minus;4.58%)와 오늘의 <strong>일중 변동폭이 사실상 비슷</strong>했다는 점 — 방향만 달랐을 뿐 — 이 지금 시장의 성격입니다.</p>
+        <p data-lang-en>On the close alone, &minus;0.60% looks quiet. In fact the index <strong>slid 4.00% from its high and then recovered 1.62%.</strong> The low of 6,158.73 was <strong>137.65 points below yesterday's close.</strong> That today's intraday range was <strong>much like yesterday's &minus;4.58% session</strong> — differing only in direction — is the character of this market.</p>
+      </div></td></tr>
+      <tr class="clickable" tabindex="0" aria-expanded="false"><th>KOSDAQ</th><td class="n">798.81</td><td class="n down">&minus;2.86 (&minus;0.36%)</td><td class="n up">+10.98%</td><td><span class="vf ok">2 SOURCES</span></td></tr>
+      <tr class="detail-row" hidden><td colspan="5"><div class="detail">
+        <span class="detail-title"><span data-lang-ko>코스닥 — 6거래일 만의 하락</span><span data-lang-en>KOSDAQ — first fall in six sessions</span></span>
+        <dl>
+          <dt><span data-lang-ko>시가 / 고가 / 저가 / 종가</span><span data-lang-en>Open / high / low / close</span></dt><dd class="n">807.62 / 814.80 / 776.60 / 798.81</dd>
+          <dt><span data-lang-ko>일중 변동폭</span><span data-lang-en>Intraday range</span></dt><dd class="n">38.20p <span data-lang-ko>(고가 대비 4.69%)</span><span data-lang-en>(4.69% of the high)</span></dd>
+        </dl>
+        <p data-lang-ko>어제까지 5거래일 연속 올랐던 흐름이 오늘 멈췄습니다. 다만 낙폭은 0.36%로 작고, <strong>주간으로는 +10.98%</strong>입니다. 800선은 종가 기준으로 내줬습니다(798.81). <strong>코스닥도 고가에서 4.69% 흘러내렸다가 되돌린</strong> 하루로, 변동성은 코스피와 같은 성격이었습니다.</p>
+        <p data-lang-en>A five-session winning run ended today, though the fall was only 0.36% and the week still shows <strong>+10.98%</strong>. The 800 level was surrendered on a closing basis (798.81).</p>
+      </div></td></tr>
+      <tr><th><span data-lang-ko>코스피 거래대금</span><span data-lang-en>KOSPI turnover</span></th><td class="n"><span data-lang-ko>24조 3,047억</span><span data-lang-en>KRW 24.30tn</span></td><td class="n na">&mdash;</td><td class="n na">&mdash;</td><td><span class="vf ok">2 SOURCES</span></td></tr>
+      <tr><th><span data-lang-ko>코스피 거래량</span><span data-lang-en>KOSPI volume</span></th><td class="n"><span data-lang-ko>2억 9,718만주</span><span data-lang-en>297.18m shares</span></td><td class="n na">&mdash;</td><td class="n na">&mdash;</td><td><span class="vf solo">1 SOURCE</span></td></tr>
+      <tr class="hl"><th><span data-lang-ko>코스피 상승 / 하락 종목 수</span><span data-lang-en>KOSPI advancers / decliners</span></th><td class="n"><span class="up">554</span> / <span class="down">322</span></td><td class="n na"><span data-lang-ko>보합 36</span><span data-lang-en>36 flat</span></td><td class="n na"><span data-lang-ko>상한 3</span><span data-lang-en>3 limit up</span></td><td><span class="vf ok">MARKET DATA</span></td></tr>
+      <tr><th><span data-lang-ko>코스닥 상승 / 하락 종목 수</span><span data-lang-en>KOSDAQ advancers / decliners</span></th><td class="n"><span class="up">808</span> / <span class="down">829</span></td><td class="n na"><span data-lang-ko>보합 84</span><span data-lang-en>84 flat</span></td><td class="n na"><span data-lang-ko>상한 6</span><span data-lang-en>6 limit up</span></td><td><span class="vf ok">MARKET DATA</span></td></tr>
+    </tbody>
+  </table>
+  </div>
+  <div class="callout">
+    <h3><span data-lang-ko>두 시장의 체감이 정반대였습니다</span><span data-lang-en>The two markets felt opposite</span></h3>
+    <p><span data-lang-ko><strong>코스피는 오른 종목이 554개, 내린 종목이 322개</strong>로 상승이 압도적으로 많았는데 지수는 &minus;0.60%였습니다. 반대로 <strong>코스닥은 오른 종목 808개, 내린 종목 829개</strong>로 내린 종목이 더 많았는데 지수는 &minus;0.36%로 덜 빠졌습니다. 코스피는 <strong>대형주 몇 개가 지수를 눌렀고</strong>, 코스닥은 <strong>시장 전반이 고르게 약했습니다.</strong> 같은 &ldquo;하락&rdquo;이라도 고객이 겪은 내용이 완전히 다릅니다.</span><span data-lang-en><strong>On KOSPI, 554 stocks rose against 322 that fell</strong> — advancers dominated, yet the index closed down 0.60%. On <strong>KOSDAQ, 808 rose against 829 that fell</strong> — decliners led, yet the index fell less, 0.36%. KOSPI was <strong>dragged by a handful of large caps</strong>; KOSDAQ was <strong>broadly, evenly soft.</strong> The same word "down" describes two very different experiences.</span></p>
+  </div>
+  <p class="cap"><span data-lang-ko><span class="vf ok">MARKET DATA</span> 상한가 9종목 — 코스피 <strong>상상인증권 · 혜인 · 유니켐</strong>, 코스닥 <strong>동화기업 · 한국첨단소재 · 신스틸 · 본느 · 케이피엠테크 · 윙입푸드</strong>. 하한가는 양 시장 모두 0종목입니다. 업종별 등락률은 04번에 있습니다.</span><span data-lang-en><span class="vf ok">MARKET DATA</span> Nine limit-ups — on KOSPI <strong>Sangsangin Securities, Haein, Unichem</strong>; on KOSDAQ <strong>Dongwha Enterprise, Korea Advanced Materials, Shinsteel, Bonne, KPM Tech, Wing Yip Food</strong>. No limit-downs in either market. Sector returns appear in section 04.</span></p>
+</section>
+
+<!-- 03 -->
+<section class="section" id="flows">
+  <div class="section-rule"></div>
+  <span class="sec-num">03</span>
+  <h2 class="section-title"><span data-lang-ko>투자자별 수급</span><span data-lang-en>Investor Flows</span></h2>
+  <p class="lede"><span data-lang-ko>외국인 홀로 매도, 기관과 개인이 함께 받은 구도입니다. 어제(외국인 &minus;3조3,000억대)와 비교하면 매도 강도는 4분의 1 수준으로 줄었습니다.</span><span data-lang-en>Foreigners sold alone; institutions and retail both absorbed. Against yesterday's KRW 3.3tn of foreign selling, the intensity fell to roughly a quarter.</span></p>
+
+  <div class="table-wrap">
+  <table class="data">
+    <thead><tr>
+      <th><span data-lang-ko>시장 · 주체</span><span data-lang-en>Market / investor</span></th>
+      <th class="n"><span data-lang-ko>순매수 (억원)</span><span data-lang-en>Net (KRW bn)</span></th>
+      <th><span data-lang-ko>검증</span><span data-lang-en>Check</span></th>
+      <th><span data-lang-ko>비고</span><span data-lang-en>Note</span></th>
+    </tr></thead>
+    <tbody>
+      <tr class="hl"><th><span data-lang-ko>코스피 · 외국인</span><span data-lang-en>KOSPI · foreign</span></th><td class="n down">&minus;8,651</td><td><span class="vf ok">MARKET DATA</span></td><td><span data-lang-ko>보도치는 8,581~8,625로 최대 70억(0.8%) 차이 — 거래소 원천을 채택</span><span data-lang-en>Reported figures span 8,581&ndash;8,625, up to 0.8% apart; the exchange figure is adopted</span></td></tr>
+      <tr><th><span data-lang-ko>코스피 · 기관</span><span data-lang-en>KOSPI · institutions</span></th><td class="n up">+5,854</td><td><span class="vf ok">MARKET DATA</span></td><td><span data-lang-ko>보도치 5,791 <span class="vf solo">1 SOURCE</span></span><span data-lang-en>Reported 5,791 <span class="vf solo">1 SOURCE</span></span></td></tr>
+      <tr><th><span data-lang-ko>코스피 · 개인</span><span data-lang-en>KOSPI · retail</span></th><td class="n up">+2,675</td><td><span class="vf ok">MARKET DATA</span></td><td><span data-lang-ko>보도치 2,677 — 사실상 일치</span><span data-lang-en>Reported 2,677 &mdash; effectively identical</span></td></tr>
+      <tr><th><span data-lang-ko>코스닥 · 개인</span><span data-lang-en>KOSDAQ · retail</span></th><td class="n up">+3,402</td><td><span class="vf ok">MARKET DATA</span></td><td><span data-lang-ko>코스피보다 많이 샀습니다</span><span data-lang-en>Bought more than on KOSPI</span></td></tr>
+      <tr><th><span data-lang-ko>코스닥 · 외국인</span><span data-lang-en>KOSDAQ · foreign</span></th><td class="n down">&minus;2,522</td><td><span class="vf ok">MARKET DATA</span></td><td><span data-lang-ko>양 시장 모두 순매도</span><span data-lang-en>Net seller in both markets</span></td></tr>
+      <tr><th><span data-lang-ko>코스닥 · 기관</span><span data-lang-en>KOSDAQ · institutions</span></th><td class="n down">&minus;1,044</td><td><span class="vf ok">MARKET DATA</span></td><td><span data-lang-ko>코스피에서는 +5,854로 방향이 반대</span><span data-lang-en>Opposite to +5,854 on KOSPI</span></td></tr>
+      <tr class="sum"><th><span data-lang-ko>코스피 · 프로그램 (비차익)</span><span data-lang-en>KOSPI program (non-arb)</span></th><td class="n down">&minus;7,391</td><td><span class="vf ok">MARKET DATA</span></td><td><span data-lang-ko>차익 +877 · 전체 &minus;6,513. <strong>바스켓 매도가 지수를 누른 경로입니다</strong></span><span data-lang-en>Arb +877, total &minus;6,513. <strong>Basket selling is how the index was pushed down</strong></span></td></tr>
+      <tr><th><span data-lang-ko>코스닥 · 프로그램 (전체)</span><span data-lang-en>KOSDAQ program (total)</span></th><td class="n down">&minus;2,654</td><td><span class="vf ok">MARKET DATA</span></td><td><span data-lang-ko>차익 &minus;208 · 비차익 &minus;2,446</span><span data-lang-en>Arb &minus;208, non-arb &minus;2,446</span></td></tr>
+      <tr class="sum"><th><span data-lang-ko>선물 · 외국인 순매수</span><span data-lang-en>Foreign futures</span></th><td class="n up">+9,624</td><td><span class="vf solo">1 SOURCE</span></td><td><span data-lang-ko>현물 &minus;8,651과 <strong>방향이 정반대이고 크기가 비슷합니다.</strong> 아래 문단을 보십시오</span><span data-lang-en><strong>Opposite in direction and similar in size</strong> to the &minus;8,651 in cash equities. See below</span></td></tr>
+      <tr><th><span data-lang-ko>선물 · 개인 / 기관</span><span data-lang-en>Futures &middot; retail / institutions</span></th><td class="n"><span class="down">&minus;1,444</span> / <span class="down">&minus;7,662</span></td><td><span class="vf solo">1 SOURCE</span></td><td><span data-lang-ko>기관이 선물에서 판 쪽입니다. 현물에서는 +5,854로 반대였습니다</span><span data-lang-en>Institutions were the futures sellers, having been +5,854 in cash</span></td></tr>
+    </tbody>
+  </table>
+  </div>
+
+  <h3><span data-lang-ko>이번 주 수급 — 외국인이 금요일에 넣은 돈을 그대로 빼 갔습니다</span><span data-lang-en>Flows this week — foreigners took back exactly what they put in on Friday</span></h3>
+  <div class="table-wrap">
+  <table class="data compact">
+    <caption><span data-lang-ko>코스피 순매수, 단위 억원. <span class="vf ok">MARKET DATA</span></span><span data-lang-en>KOSPI net buying, KRW 100m. <span class="vf ok">MARKET DATA</span></span></caption>
+    <thead><tr>
+      <th><span data-lang-ko>일자</span><span data-lang-en>Date</span></th>
+      <th class="n"><span data-lang-ko>개인</span><span data-lang-en>Retail</span></th>
+      <th class="n"><span data-lang-ko>외국인</span><span data-lang-en>Foreign</span></th>
+      <th class="n"><span data-lang-ko>기관</span><span data-lang-en>Institutions</span></th>
+    </tr></thead>
+    <tbody>
+      <tr class="base"><th>7/31 <span data-lang-ko>(금)</span><span data-lang-en>Fri</span></th><td class="n down">&minus;82,840</td><td class="n up">+72,410</td><td class="n up">+11,503</td></tr>
+      <tr><th>8/3 <span data-lang-ko>(월)</span><span data-lang-en>Mon</span></th><td class="n up">+46,523</td><td class="n down">&minus;28,220</td><td class="n down">&minus;19,516</td></tr>
+      <tr><th>8/4 <span data-lang-ko>(화)</span><span data-lang-en>Tue</span></th><td class="n up">+8,187</td><td class="n down">&minus;3,716</td><td class="n down">&minus;5,385</td></tr>
+      <tr><th>8/5 <span data-lang-ko>(수)</span><span data-lang-en>Wed</span></th><td class="n down">&minus;11,844</td><td class="n up">+14,464</td><td class="n down">&minus;2,838</td></tr>
+      <tr><th>8/6 <span data-lang-ko>(목)</span><span data-lang-en>Thu</span></th><td class="n up">+33,367</td><td class="n down">&minus;32,893</td><td class="n down">&minus;1,214</td></tr>
+      <tr class="hl"><th>8/7 <span data-lang-ko>(금)</span><span data-lang-en>Fri</span></th><td class="n up">+2,675</td><td class="n down">&minus;8,651</td><td class="n up">+5,854</td></tr>
+      <tr class="sum"><th>8/3&rarr;8/7</th><td class="n up">+78,908</td><td class="n down">&minus;59,016</td><td class="n down">&minus;23,099</td></tr>
+    </tbody>
+  </table>
+  </div>
+  <p><span data-lang-ko>이 표가 이번 주를 가장 정확하게 설명합니다. <strong>7월 31일 외국인이 7조2,410억원을 사들이며 사상 최대 상승을 만들었고, 그 뒤 4거래일 동안 5조9,016억원을 도로 팔았습니다.</strong> 같은 기간 개인이 7조8,908억원을 받았습니다. 지수가 왜 금요일 고점에서 5% 내려왔는지는 이 한 줄로 설명됩니다 — 방향을 바꾼 것은 외국인이고, 받아 낸 것은 개인입니다.</span><span data-lang-en>This table explains the week most precisely. <strong>Foreigners bought KRW 7.24tn on 31 July, creating the record rally, then sold KRW 5.90tn back over the following four sessions.</strong> Retail absorbed KRW 7.89tn across the same span. That is the whole explanation for the 5% slide from Friday's peak: foreigners turned, and retail took the other side.</span></p>
+  <p class="cap"><span data-lang-ko>확정된 판단이 아닙니다. 수급은 결과이지 원인이 아니며, 외국인이 매도를 이어갈지는 알 수 없습니다.</span><span data-lang-en>Not a settled conclusion. Flows are an outcome, not a cause, and whether foreign selling continues is unknown.</span></p>
+
+  <div class="callout">
+    <h3><span data-lang-ko>&ldquo;외국인이 팔고 나갔다&rdquo;는 오늘 하루에 관해서는 정확한 설명이 아닙니다</span><span data-lang-en>&ldquo;Foreigners sold and left&rdquo; is not an accurate description of this particular day</span></h3>
+    <p><span data-lang-ko>외국인은 현물에서 <strong>8,651억원을 순매도</strong>했지만, 같은 날 코스피200 선물에서는 <strong>9,624억원을 순매수</strong>했습니다. 두 다리를 합치면 <strong>+973억원</strong>으로, 사실상 방향을 접은 것이 아니라 <strong>현물 익스포저를 선물로 갈아탄 모습</strong>에 가깝습니다. 프로그램 비차익 &minus;7,391억원(바스켓 매도)이 현물 쪽 숫자를 만든 경로였고, 그 반대편에 선물 매수가 있었던 셈입니다.</span><span data-lang-en>Foreigners sold <strong>KRW 865.1bn of cash equities</strong> but bought <strong>KRW 962.4bn of KOSPI 200 futures</strong> the same day. The two legs net to <strong>+KRW 97.3bn</strong>: this looks less like closing out a direction and more like <strong>switching cash exposure into futures.</strong> The &minus;KRW 739.1bn of non-arb program flow (basket selling) is how the cash-side number was produced, with futures buying on the other side of it.</span></p>
+    <p><span data-lang-ko>고객에게 &ldquo;외국인 매도가 계속된다&rdquo;고만 말씀하시면 절반만 전달됩니다. <strong>오늘 수급은 이탈이라기보다 형태 변경에 가깝습니다.</strong> 다만 선물 매수는 현물보다 빠르게 되돌릴 수 있는 포지션이므로, 방향이 확정됐다는 뜻으로 읽어서도 안 됩니다.</span><span data-lang-en>Telling a client only that "foreign selling continues" conveys half of it. <strong>Today's flow looks more like a change of form than an exit.</strong> That said, a futures position can be reversed faster than a cash one, so it should not be read as a settled direction either.</span></p>
+    <p class="cap"><span data-lang-ko>선물 수급은 네이버 모바일 자료 한 곳에서만 확인됩니다. 8월 7일자로 확정된 기사 46건을 확인했지만 선물 계약을 적은 기사는 없었습니다. 단위는 아래 검증 노트를 보십시오.</span><span data-lang-en>The futures figures come from a single source. Of 46 articles positively dated 7 August, none printed a futures figure. See the verification notes for how the unit was established.</span></p>
+  </div>
+
+  <h3><span data-lang-ko>빚투와 대기자금 &mdash; 반등하자 하루 만에 1조가 다시 들어왔습니다</span><span data-lang-en>Leverage and cash on the sidelines &mdash; KRW 1tn came back in a single day</span></h3>
+  <div class="table-wrap">
+  <table class="data compact">
+    <thead><tr>
+      <th><span data-lang-ko>항목</span><span data-lang-en>Item</span></th>
+      <th><span data-lang-ko>금액</span><span data-lang-en>Amount</span></th>
+      <th><span data-lang-ko>검증</span><span data-lang-en>Check</span></th>
+      <th><span data-lang-ko>읽는 법</span><span data-lang-en>How to read it</span></th>
+    </tr></thead>
+    <tbody>
+      <tr class="sum"><th><span data-lang-ko>신용융자 잔고 (8/5)</span><span data-lang-en>Margin balance (5 Aug)</span></th><td class="n up">28조 277억</td><td><span class="vf ok">MARKET DATA</span></td><td><span data-lang-ko>하루 만에 <strong>+1조 073억</strong>. 8/4 27조 204억에서 급증했습니다</span><span data-lang-en><strong>+KRW 1.01tn in one day</strong>, up from KRW 27.0tn on 4 Aug</span></td></tr>
+      <tr><th><span data-lang-ko>신용융자 잔고 (8/6)</span><span data-lang-en>Margin balance (6 Aug)</span></th><td class="n up">28조 7,940억</td><td><span class="vf solo">1 SOURCE</span></td><td><span data-lang-ko>보도치. 시세 파일은 8/5까지만 실립니다(결제일 기준 시차)</span><span data-lang-en>Press figure; the data file lags by settlement date</span></td></tr>
+      <tr><th><span data-lang-ko>고객예탁금 (8/6)</span><span data-lang-en>Investor deposits (6 Aug)</span></th><td class="n">104조 712억</td><td><span class="vf ok">MARKET DATA</span></td><td><span data-lang-ko>전주 104조 6,584억과 사실상 같습니다. <strong>대기자금은 빠져나가지 않았습니다</strong></span><span data-lang-en>Effectively unchanged from KRW 104.7tn a week earlier &mdash; <strong>sideline cash has not left</strong></span></td></tr>
+      <tr><th><span data-lang-ko>반대매매 (8/5)</span><span data-lang-en>Forced liquidation (5 Aug)</span></th><td class="n">117억</td><td><span class="vf solo">1 SOURCE</span></td><td><span data-lang-ko>전장 315억에서 감소. 미수금 대비 1.0%</span><span data-lang-en>Down from KRW 31.5bn; 1.0% of unpaid balances</span></td></tr>
+    </tbody>
+  </table>
+  </div>
+  <p><span data-lang-ko>여기서 <strong>8월 4일 예탁금 110조 4,071억은 착시입니다.</strong> 4~5일 공모주 청약(케이앤에스아이앤씨)에 자금이 몰렸다가 빠져나간 것이어서, 그 하루를 &ldquo;대기자금 급증&rdquo;으로 읽으면 안 됩니다. 청약 자금을 걷어내면 예탁금은 한 주 내내 104조 안팎에서 거의 움직이지 않았습니다.</span><span data-lang-en>The KRW 110.4tn deposit figure on 4 August is <strong>an artifact</strong>: it reflects money parked for an IPO subscription on 4&ndash;5 August and then withdrawn. Strip that out and deposits sat near KRW 104tn all week.</span></p>
+  <p><span data-lang-ko>고객에게 설명할 때 두 숫자를 붙여서 보는 편이 낫습니다. <strong>대기자금은 그대로인데 빚만 하루 만에 1조가 늘었습니다.</strong> 급락 뒤 반등을 놓치지 않으려는 레버리지 수요가 먼저 돌아왔다는 뜻이고, 지수가 다시 밀리면 반대매매 압력으로 돌아올 자금이기도 합니다. 7월 한 달 반대매매 비중이 3.17%, 6월이 3.52%였던 점을 같이 놓고 보시기 바랍니다.</span><span data-lang-en>Read the two together: cash on the sidelines is flat while borrowing rose KRW 1tn in a day. Leveraged demand returned first after the drop &mdash; and that is the same money that becomes forced-selling pressure if the index rolls over. For scale, forced liquidations averaged 3.17% of unpaid balances in July and 3.52% in June.</span></p>
+
+  <div class="soft-card">
+    <h4><span data-lang-ko>채택하지 않은 수치</span><span data-lang-en>Figures not adopted</span></h4>
+    <p class="sub"><span data-lang-ko>이투데이 보도에는 <strong>개인·외국인 합계 &minus;4,341억, 기관 +4,664억</strong>이라는 다른 조합이 있습니다. 위 마감 확정 조합(외국인 &minus;8,625 + 기관 +5,791 + 개인 +2,677 = &minus;157억, 나머지는 기타법인)과 맞지 않아 <strong>장중 집계로 판단하고 채택하지 않았습니다.</strong> 두 조합을 섞어 쓰지 마십시오.</span><span data-lang-en>Etoday reports a different combination: <strong>retail and foreign together &minus;KRW 434bn, institutions +KRW 466bn.</strong> It does not reconcile with the closing set above (&minus;863 + 579 + 268 = &minus;16bn, the remainder being other corporates), so it was <strong>treated as an intraday snapshot and not adopted.</strong> Do not mix the two.</span></p>
+  </div>
+</section>
+
+<!-- 04 -->
+<section class="section" id="movers">
+  <div class="section-rule"></div>
+  <span class="sec-num">04</span>
+  <h2 class="section-title"><span data-lang-ko>특징주</span><span data-lang-en>Movers</span></h2>
+
+  <div class="table-wrap">
+  <table class="data">
+    <thead><tr>
+      <th><span data-lang-ko>종목</span><span data-lang-en>Name</span></th>
+      <th class="n"><span data-lang-ko>종가</span><span data-lang-en>Close</span></th>
+      <th class="n"><span data-lang-ko>등락률</span><span data-lang-en>Change</span></th>
+      <th><span data-lang-ko>사유</span><span data-lang-en>Driver</span></th>
+    </tr></thead>
+    <tbody>
+      <tr class="hl"><th>SK<span data-lang-ko>하이닉스</span><span data-lang-en> Hynix</span></th><td class="n">1,422,000</td><td class="n down">&minus;4.88%</td><td><span data-lang-ko>엔비디아 &lsquo;루빈 울트라&rsquo; HBM 사양 하향 검토 보도 <span class="vf ok">2 SOURCES</span></span><span data-lang-en>Reported review of lower HBM specs for Nvidia's "Rubin Ultra" <span class="vf ok">2 SOURCES</span></span></td></tr>
+      <tr><th><span data-lang-ko>LG에너지솔루션</span><span data-lang-en>LG Energy Solution</span></th><td class="n">360,000</td><td class="n up">+4.35%</td><td><span data-lang-ko>이차전지 매수세 <span class="vf ok">MARKET DATA</span></span><span data-lang-en>Battery-sector buying <span class="vf ok">MARKET DATA</span></span></td></tr>
+      <tr><th><span data-lang-ko>한화에어로스페이스</span><span data-lang-en>Hanwha Aerospace</span></th><td class="n">1,097,000</td><td class="n up">+4.08%</td><td><span data-lang-ko>&mdash; <span class="vf solo">1 SOURCE</span></span><span data-lang-en>&mdash; <span class="vf solo">1 SOURCE</span></span></td></tr>
+      <tr><th><span data-lang-ko>삼성전기</span><span data-lang-en>Samsung Electro-Mech.</span></th><td class="n">1,278,000</td><td class="n up">+3.99%</td><td><span data-lang-ko>어제 &minus;9.37%에서 반등 <span class="vf solo">1 SOURCE</span></span><span data-lang-en>Rebound from yesterday's &minus;9.37% <span class="vf solo">1 SOURCE</span></span></td></tr>
+      <tr><th>KB<span data-lang-ko>금융</span><span data-lang-en> Financial</span></th><td class="n">175,800</td><td class="n up">+2.51%</td><td><span data-lang-ko>은행 매수세 <span class="vf solo">1 SOURCE</span></span><span data-lang-en>Bank-sector buying <span class="vf solo">1 SOURCE</span></span></td></tr>
+      <tr><th><span data-lang-ko>삼성전자</span><span data-lang-en>Samsung Elec.</span></th><td class="n">231,000</td><td class="n up">+0.22%</td><td><span data-lang-ko>반도체 대형주 중 유일한 상승 <span class="vf ok">2 SOURCES</span></span><span data-lang-en>The only large-cap semi to rise <span class="vf ok">2 SOURCES</span></span></td></tr>
+      <tr class="hl"><th>NAVER</th><td class="n">210,000</td><td class="n down">&minus;7.08%</td><td><span data-lang-ko><strong>실적 발표 — 영업이익 전년 대비 0.2% 감소.</strong> 오늘 시총 상위 중 최대 낙폭 <span class="vf ok">MARKET DATA</span> <span class="vf solo">1 SOURCE</span></span><span data-lang-en><strong>Results: operating profit down 0.2% year on year.</strong> The largest large-cap fall today <span class="vf ok">MARKET DATA</span> <span class="vf solo">1 SOURCE</span></span></td></tr>
+      <tr><th><span data-lang-ko>삼성바이오로직스</span><span data-lang-en>Samsung Biologics</span></th><td class="n">1,556,000</td><td class="n up">+2.77%</td><td><span data-lang-ko>제약·바이오 매수세 <span class="vf ok">MARKET DATA</span></span><span data-lang-en>Pharma and biotech buying <span class="vf ok">MARKET DATA</span></span></td></tr>
+      <tr><th><span data-lang-ko>셀트리온</span><span data-lang-en>Celltrion</span></th><td class="n">199,300</td><td class="n up">+2.21%</td><td><span data-lang-ko>제약·바이오 매수세 <span class="vf ok">MARKET DATA</span></span><span data-lang-en>Pharma and biotech buying <span class="vf ok">MARKET DATA</span></span></td></tr>
+      <tr><th><span data-lang-ko>현대차</span><span data-lang-en>Hyundai Motor</span></th><td class="n">395,500</td><td class="n down">&minus;1.13%</td><td><span data-lang-ko>&mdash; <span class="vf ok">MARKET DATA</span></span><span data-lang-en>&mdash; <span class="vf ok">MARKET DATA</span></span></td></tr>
+      <tr><th><span data-lang-ko>상한가 (코스피)</span><span data-lang-en>Limit up (KOSPI)</span></th><td class="n na">&mdash;</td><td class="n up">+30.0%</td><td><span data-lang-ko>9종목 — 코스피 상상인증권·혜인·유니켐, 코스닥 동화기업·한국첨단소재·신스틸·본느·케이피엠테크·윙입푸드 <span class="vf ok">MARKET DATA</span></span><span data-lang-en>Nine names — KOSPI: Sangsangin Securities, Haein, Unichem; KOSDAQ: Dongwha Enterprise, Korea Advanced Materials, Shinsteel, Bonne, KPM Tech, Wing Yip Food <span class="vf ok">MARKET DATA</span></span></td></tr>
+    </tbody>
+  </table>
+  </div>
+  <p class="cap"><span data-lang-ko>종가와 등락률은 거래소 원천 시세에서 왔습니다. 상한가 종목의 등락률 +30.0%는 제도상 상한이며 개별 확인치가 아닙니다.</span><span data-lang-en>Prices and percentage moves come from exchange market data. The +30.0% shown for limit-up names is the regulatory cap, not an individually verified figure.</span></p>
+
+  <h3><span data-lang-ko>업종별 등락률 — 상·하위 5개</span><span data-lang-en>Sector moves — top and bottom five</span></h3>
+  <div class="table-wrap">
+  <table class="data compact">
+    <thead><tr>
+      <th><span data-lang-ko>상위 업종</span><span data-lang-en>Leaders</span></th><th class="n">%</th>
+      <th><span data-lang-ko>하위 업종</span><span data-lang-en>Laggards</span></th><th class="n">%</th>
+    </tr></thead>
+    <tbody>
+      <tr><th><span data-lang-ko>전자제품</span><span data-lang-en>Electronic products</span></th><td class="n up">+5.40</td><th><span data-lang-ko>비철금속</span><span data-lang-en>Non-ferrous metals</span></th><td class="n down">&minus;7.23</td></tr>
+      <tr><th><span data-lang-ko>전기제품</span><span data-lang-en>Electrical products</span></th><td class="n up">+4.90</td><th><span data-lang-ko>생명보험</span><span data-lang-en>Life insurance</span></th><td class="n down">&minus;3.62</td></tr>
+      <tr><th><span data-lang-ko>석유와가스</span><span data-lang-en>Oil and gas</span></th><td class="n up">+4.41</td><th><span data-lang-ko>항공사</span><span data-lang-en>Airlines</span></th><td class="n down">&minus;3.24</td></tr>
+      <tr><th><span data-lang-ko>화학</span><span data-lang-en>Chemicals</span></th><td class="n up">+3.98</td><th><span data-lang-ko>양방향미디어와서비스</span><span data-lang-en>Interactive media</span></th><td class="n down">&minus;3.07</td></tr>
+      <tr><th><span data-lang-ko>우주항공과국방</span><span data-lang-en>Aerospace and defence</span></th><td class="n up">+3.37</td><th><span data-lang-ko>무선통신서비스</span><span data-lang-en>Wireless telecom</span></th><td class="n down">&minus;2.43</td></tr>
+    </tbody>
+  </table>
+  </div>
+  <p class="cap"><span data-lang-ko>전체 79개 업종 중 상·하위 5개입니다. <span class="vf ok">MARKET DATA</span> 반도체 대형주가 지수를 눌렀지만 업종 단위로는 전자·전기·화학이 4~5% 올랐습니다 — <strong>&ldquo;반도체 하락&rdquo;과 &ldquo;시장 하락&rdquo;은 오늘 같은 말이 아닙니다.</strong></span><span data-lang-en>Top and bottom five of 79 sectors. <span class="vf ok">MARKET DATA</span> Large-cap semis dragged the index, yet at sector level electronics, electricals and chemicals rose 4&ndash;5% &mdash; <strong>"semis fell" and "the market fell" were not the same statement today.</strong></span></p>
+
+  <div class="bars">
+    <div class="bar-row">
+      <span class="bar-name"><span data-lang-ko>LG에너지솔루션</span><span data-lang-en>LG Energy Sol.</span></span>
+      <span class="bar-track"><span class="zero"></span><span class="bar-fill up" style="width:21.75%"></span></span>
+      <span class="bar-val up">+4.35%</span>
+    </div>
+    <div class="bar-row">
+      <span class="bar-name"><span data-lang-ko>한화에어로스페이스</span><span data-lang-en>Hanwha Aerospace</span></span>
+      <span class="bar-track"><span class="zero"></span><span class="bar-fill up" style="width:20.4%"></span></span>
+      <span class="bar-val up">+4.08%</span>
+    </div>
+    <div class="bar-row">
+      <span class="bar-name"><span data-lang-ko>삼성전기</span><span data-lang-en>Samsung Electro-M.</span></span>
+      <span class="bar-track"><span class="zero"></span><span class="bar-fill up" style="width:19.95%"></span></span>
+      <span class="bar-val up">+3.99%</span>
+    </div>
+    <div class="bar-row">
+      <span class="bar-name">KB<span data-lang-ko>금융</span><span data-lang-en> Financial</span></span>
+      <span class="bar-track"><span class="zero"></span><span class="bar-fill up" style="width:12.55%"></span></span>
+      <span class="bar-val up">+2.51%</span>
+    </div>
+    <div class="bar-row">
+      <span class="bar-name"><span data-lang-ko>삼성전자</span><span data-lang-en>Samsung Elec.</span></span>
+      <span class="bar-track"><span class="zero"></span><span class="bar-fill up" style="width:1.1%"></span></span>
+      <span class="bar-val up">+0.22%</span>
+    </div>
+    <div class="bar-row">
+      <span class="bar-name">KOSPI</span>
+      <span class="bar-track"><span class="zero"></span><span class="bar-fill down" style="right:50%;width:3%"></span></span>
+      <span class="bar-val down">&minus;0.60%</span>
+    </div>
+    <div class="bar-row">
+      <span class="bar-name">KOSDAQ</span>
+      <span class="bar-track"><span class="zero"></span><span class="bar-fill down" style="right:50%;width:1.8%"></span></span>
+      <span class="bar-val down">&minus;0.36%</span>
+    </div>
+    <div class="bar-row">
+      <span class="bar-name">SK<span data-lang-ko>하이닉스</span><span data-lang-en> Hynix</span></span>
+      <span class="bar-track"><span class="zero"></span><span class="bar-fill down" style="right:50%;width:24.4%"></span></span>
+      <span class="bar-val down">&minus;4.88%</span>
+    </div>
+  </div>
+  <p class="cap"><span data-lang-ko>막대 길이는 ±10% 척도입니다. <strong>지수 두 개가 막대의 한가운데 몰려 있고 개별 종목이 양쪽으로 벌어져 있는 모양</strong>이 오늘 장을 그대로 보여 줍니다.</span><span data-lang-en>Bars are scaled to ±10%. <strong>The two indices sit near the middle while individual names spread to both sides</strong> — that shape is the session.</span></p>
+</section>
+
+<!-- 05 -->
+<section class="section" id="week">
+  <div class="section-rule"></div>
+  <span class="sec-num">05</span>
+  <h2 class="section-title"><span data-lang-ko>이번 주 정리</span><span data-lang-en>Week in Review</span></h2>
+  <p class="lede"><span data-lang-ko>주간 등락은 <strong>직전 금요일(7월 31일) 종가</strong>를 기준으로 계산합니다. 월요일 종가를 기준으로 잡으면 월요일 당일 하락이 누락됩니다.</span><span data-lang-en>Weekly moves are measured from <strong>the prior Friday's close (31 July)</strong>. Using Monday's close as the base omits Monday's own move.</span></p>
+
+  <div class="table-wrap">
+  <table class="data">
+    <thead><tr>
+      <th><span data-lang-ko>일자</span><span data-lang-en>Date</span></th>
+      <th class="n">KOSPI</th>
+      <th class="n"><span data-lang-ko>등락률</span><span data-lang-en>Change</span></th>
+      <th><span data-lang-ko>성격</span><span data-lang-en>Character</span></th>
+    </tr></thead>
+    <tbody>
+      <tr class="base"><th>7/31 <span data-lang-ko>(금)</span><span data-lang-en>Fri</span></th><td class="n">6,595.45</td><td class="n up">+17.91%</td><td><span data-lang-ko><strong>주간 기준선.</strong> 사상 최대폭 상승(+1,001.89p)</span><span data-lang-en><strong>Week baseline.</strong> Record one-day gain (+1,001.89 pts)</span></td></tr>
+      <tr><th>8/3 <span data-lang-ko>(월)</span><span data-lang-en>Mon</span></th><td class="n">6,257.45</td><td class="n down">&minus;5.12%</td><td><span data-lang-ko>7월 급락의 연장</span><span data-lang-en>An extension of July's slide</span></td></tr>
+      <tr><th>8/4 <span data-lang-ko>(화)</span><span data-lang-en>Tue</span></th><td class="n">6,358.95</td><td class="n up">+1.62%</td><td><span data-lang-ko>개인 매수로 반등</span><span data-lang-en>Retail-led rebound</span></td></tr>
+      <tr><th>8/5 <span data-lang-ko>(수)</span><span data-lang-en>Wed</span></th><td class="n">6,598.26</td><td class="n up">+3.76%</td><td><span data-lang-ko>매수 사이드카 · 주중 고점</span><span data-lang-en>Buy sidecar · the week's high close</span></td></tr>
+      <tr><th>8/6 <span data-lang-ko>(목)</span><span data-lang-en>Thu</span></th><td class="n">6,296.38</td><td class="n down">&minus;4.58%</td><td><span data-lang-ko>매도 사이드카 · 샌디스크 가이던스</span><span data-lang-en>Sell sidecar · SanDisk guidance</span></td></tr>
+      <tr class="hl"><th>8/7 <span data-lang-ko>(금)</span><span data-lang-en>Fri</span></th><td class="n">6,258.77</td><td class="n down">&minus;0.60%</td><td><span data-lang-ko>엔비디아 HBM 사양 · 외국인 순매도</span><span data-lang-en>Nvidia HBM specs · foreign selling</span></td></tr>
+      <tr class="sum"><th>7/31&rarr;8/7</th><td class="n na">&mdash;</td><td class="n down">&minus;5.10%</td><td><span data-lang-ko><strong>주간 누적(계산치).</strong> &minus;336.68p · 7주 연속 하락(2022년 12월 이후 최장)</span><span data-lang-en><strong>Week to date (computed).</strong> &minus;336.68 pts; seventh straight weekly loss, the longest run since December 2022</span></td></tr>
+    </tbody>
+  </table>
+  </div>
+
+  <div class="callout">
+    <h3><span data-lang-ko>이번 주의 한 줄</span><span data-lang-en>The week in one line</span></h3>
+    <p><span data-lang-ko>대형주에서 빠진 돈이 시장을 떠나지 않고 중소형주로 옮겨갔습니다. <strong>코스피 &minus;5.10%, 코스닥 +10.98%</strong> — 같은 주에 16%포인트가 벌어졌습니다. 고객의 체감은 포트폴리오 구성에 따라 정반대일 수 있으므로, 계좌를 열어 보기 전에 &ldquo;시장이 안 좋았다&rdquo;고 단정하지 마십시오.</span><span data-lang-en>Money that left large caps did not leave the market; it moved down the cap scale. <strong>KOSPI &minus;5.10%, KOSDAQ +10.98%</strong> — a 16-point gap in one week. What a client felt depends entirely on their holdings, so do not open with "the market was weak" before opening the account.</span></p>
+  </div>
+</section>
+
+<!-- 06 -->
+<section class="section" id="macro">
+  <div class="section-rule"></div>
+  <span class="sec-num">06</span>
+  <h2 class="section-title"><span data-lang-ko>환율 · 금리 · 원자재</span><span data-lang-en>FX, Rates &amp; Commodities</span></h2>
+
+  <div class="table-wrap">
+  <table class="data">
+    <thead><tr>
+      <th><span data-lang-ko>항목</span><span data-lang-en>Item</span></th>
+      <th class="n"><span data-lang-ko>값</span><span data-lang-en>Level</span></th>
+      <th class="n"><span data-lang-ko>전일대비</span><span data-lang-en>Change</span></th>
+      <th><span data-lang-ko>검증 · 비고</span><span data-lang-en>Check / note</span></th>
+    </tr></thead>
+    <tbody>
+      <tr class="hl"><th><span data-lang-ko>원/달러 (15:30)</span><span data-lang-en>USD/KRW (15:30)</span></th><td class="n">1,416.1</td><td class="n up">&minus;7.7<span data-lang-ko>원</span></td><td><span class="vf ok">2 SOURCES</span> <span data-lang-ko>주간거래 종가. <strong>10개월여 만의 1410원대</strong></span><span data-lang-en>Onshore close; <strong>the 1,410s for the first time in about ten months</strong></span></td></tr>
+      <tr><th><span data-lang-ko>국고채 1년</span><span data-lang-en>KTB 1-year</span></th><td class="n">3.367%</td><td class="n na">&mdash;</td><td><span class="vf ok">MARKET DATA</span> <span data-lang-ko>한국은행 ECOS</span><span data-lang-en>Bank of Korea ECOS</span></td></tr>
+      <tr class="hl"><th><span data-lang-ko>국고채 3년</span><span data-lang-en>KTB 3-year</span></th><td class="n">3.746%</td><td class="n na">&mdash;</td><td><span class="vf ok">2 SOURCES</span> <span data-lang-ko>ECOS 3.746 / 네이버 3.74 &mdash; 일치</span><span data-lang-en>ECOS 3.746, Naver 3.74 &mdash; agree</span></td></tr>
+      <tr><th><span data-lang-ko>국고채 5년</span><span data-lang-en>KTB 5-year</span></th><td class="n">3.964%</td><td class="n na">&mdash;</td><td><span class="vf ok">MARKET DATA</span></td></tr>
+      <tr class="hl"><th><span data-lang-ko>국고채 10년</span><span data-lang-en>KTB 10-year</span></th><td class="n">4.208%</td><td class="n na">&mdash;</td><td><span class="vf ok">MARKET DATA</span> <span data-lang-ko>10년&minus;3년 스프레드 <strong>46bp</strong></span><span data-lang-en>10y&minus;3y spread <strong>46bp</strong></span></td></tr>
+      <tr><th><span data-lang-ko>회사채 3년 (AA&minus;)</span><span data-lang-en>Corporate 3-year (AA&minus;)</span></th><td class="n">4.44%</td><td class="n na">0.00</td><td><span class="vf ok">MARKET DATA</span> <span data-lang-ko>국고채 대비 <strong>69bp</strong></span><span data-lang-en><strong>69bp</strong> over KTB</span></td></tr>
+      <tr><th><span data-lang-ko>회사채 3년 (BBB&minus;)</span><span data-lang-en>Corporate 3-year (BBB&minus;)</span></th><td class="n">10.246%</td><td class="n na">&mdash;</td><td><span class="vf ok">MARKET DATA</span> <span data-lang-ko>국고채 대비 <strong>650bp</strong> &mdash; 신용 경계 지표</span><span data-lang-en><strong>650bp</strong> over KTB &mdash; a credit-stress gauge</span></td></tr>
+      <tr><th><span data-lang-ko>CD 91일</span><span data-lang-en>CD 91-day</span></th><td class="n">2.93%</td><td class="n na">0.00</td><td><span class="vf ok">2 SOURCES</span> <span data-lang-ko>ECOS·네이버 일치</span><span data-lang-en>ECOS and Naver agree</span></td></tr>
+      <tr><th><span data-lang-ko>콜금리</span><span data-lang-en>Call rate</span></th><td class="n">2.76%</td><td class="n up">+0.03</td><td><span class="vf ok">MARKET DATA</span></td></tr>
+      <tr><th>COFIX <span data-lang-ko>(잔액 / 신규)</span><span data-lang-en>(balance / new)</span></th><td class="n">2.94% / 3.05%</td><td class="n na">&mdash;</td><td><span class="vf ok">MARKET DATA</span> <span data-lang-ko>대출금리 문의 시 근거</span><span data-lang-en>Reference for loan-rate questions</span></td></tr>
+      <tr><th><span data-lang-ko>WTI (15:30 KST)</span><span data-lang-en>WTI (15:30 KST)</span></th><td class="n">$77.78</td><td class="n na">&mdash;</td><td><span class="vf ok">MARKET DATA</span> <span data-lang-ko>5분봉 기준, 오차 0분</span><span data-lang-en>From the 5-minute bar, exact</span></td></tr>
+      <tr><th><span data-lang-ko>브렌트 (15:30 KST)</span><span data-lang-en>Brent (15:30 KST)</span></th><td class="n">$83.32</td><td class="n na">&mdash;</td><td><span class="vf ok">MARKET DATA</span></td></tr>
+      <tr><th><span data-lang-ko>금 (15:30 KST)</span><span data-lang-en>Gold (15:30 KST)</span></th><td class="n">$4,344.60</td><td class="n na">&mdash;</td><td><span class="vf ok">MARKET DATA</span></td></tr>
+    </tbody>
+  </table>
+  </div>
+
+  <p><span data-lang-ko><strong>금리 곡선은 정상적으로 우상향</strong>입니다 — 1년 3.367%, 3년 3.746%, 5년 3.964%, 10년 4.208%. 10년&minus;3년 스프레드 46bp로 경기 침체를 가리키는 역전은 없습니다. 다만 <strong>BBB&minus;등급 회사채가 10.246%로 국고채보다 650bp 높다</strong>는 점은 저등급 회사채에 대한 경계가 여전하다는 뜻이므로, 고수익 채권형 상품을 문의하는 고객에게는 이 숫자를 함께 보여 주시는 편이 낫습니다.</span><span data-lang-en><strong>The curve is normally upward-sloping</strong>: 3.367% at one year, 3.746% at three, 3.964% at five and 4.208% at ten &mdash; a 46bp ten-minus-three spread, with no inversion. But <strong>BBB&minus; corporates at 10.246% sit 650bp over governments</strong>, which says caution toward low-rated credit persists. Worth showing alongside any high-yield bond product a client asks about.</span></p>
+
+  <p><span data-lang-ko>주식이 빠지는 날 원화가 <strong>강해졌다</strong>는 점은 짚어 둘 만합니다. 어제도 원/달러는 0.7원 내리는 데 그쳤고 오늘은 7.7원 내렸습니다. 6월 경상수지가 497억3,000만달러로 역대 최대였던 점(8/6 발표)이 배경으로 계속 작동하는 것으로 보입니다. <strong>외국인이 주식을 팔아도 경상 흑자가 달러를 공급하는 구조</strong>입니다.</span><span data-lang-en>It is worth noting that the won <strong>strengthened</strong> on a down day for equities. Yesterday USD/KRW slipped only 0.7; today it fell 7.7. The record June current account surplus of USD 49.73bn, reported on 6 August, appears to keep working in the background: <strong>the surplus supplies dollars even as foreigners sell equities.</strong></span></p>
+  <p class="cap"><span data-lang-ko>인과관계는 추정입니다. 확정된 해석이 아닙니다. 유가·금은 <strong>어느 매체도 공표하지 않는 값</strong>이라 5분봉에서 15:30 KST 봉을 직접 골라 만들었습니다 — 뉴욕 종가가 아니라 <strong>국내 마감 시점의 값</strong>이므로 국내 장과 시점을 맞춰 비교할 수 있습니다.</span><span data-lang-en>The causal link is an inference, not a settled reading. Oil and gold at the Korea close are <strong>published by no outlet</strong>; they were taken from the 15:30 KST five-minute bar. These are therefore <strong>values as of the domestic close</strong>, not New York closes, and can be compared like-for-like with the Korean session.</span></p>
+</section>
+
+<!-- 07 -->
+<section class="section" id="tonight">
+  <div class="section-rule"></div>
+  <span class="sec-num">07</span>
+  <h2 class="section-title"><span data-lang-ko>오늘 밤 · 다음 주</span><span data-lang-en>Tonight &amp; Next Week</span></h2>
+
+  <div class="callout">
+    <h3><span data-lang-ko>오늘 밤 21:30 — 미 7월 고용보고서</span><span data-lang-en>Tonight, 21:30 KST — US July employment report</span></h3>
+    <p><span data-lang-ko>컨센서스는 <strong>비농업 고용 +8만5,000명, 실업률 4.2% 유지</strong>입니다. 작성 시점(18:55 KST) 기준 <strong>아직 발표되지 않았습니다.</strong> 결과는 월요일 아침 브리핑에서 다룹니다.</span><span data-lang-en>Consensus is <strong>+85,000 nonfarm payrolls with unemployment steady at 4.2%.</strong> As of this writing (18:55 KST) it <strong>has not been released.</strong> The outcome will be covered in Monday's morning brief.</span></p>
+    <p><span data-lang-ko>KB 시나리오 기준 고용이 강하면 원/달러 1,450원, 부진하면 1,417원이 적정 하단이었습니다. <strong>오늘 종가 1,416.1원은 이미 그 하단에 닿아 있습니다</strong> — 시장이 부진한 고용을 상당 부분 선반영했다는 해석이 가능합니다.</span><span data-lang-en>On KB's scenarios, a strong print opened 1,450 and a weak one put fair value at 1,417. <strong>Today's close of 1,416.1 is already at that floor</strong> — arguably the market has largely pre-positioned for a soft number.</span></p>
+  </div>
+
+  <div class="table-wrap">
+  <table class="data">
+    <thead><tr>
+      <th><span data-lang-ko>시점</span><span data-lang-en>When</span></th>
+      <th><span data-lang-ko>내용</span><span data-lang-en>Event</span></th>
+      <th><span data-lang-ko>왜 중요한가</span><span data-lang-en>Why it matters</span></th>
+    </tr></thead>
+    <tbody>
+      <tr class="hl"><th><span data-lang-ko>오늘 21:30</span><span data-lang-en>Tonight 21:30</span></th><td><span data-lang-ko>미 7월 고용보고서</span><span data-lang-en>US July employment report</span></td><td><span data-lang-ko>연준 금리 경로 · 원/달러 · 다음 주 방향</span><span data-lang-en>Fed path, USD/KRW, next week's direction</span></td></tr>
+      <tr class="hl"><th><span data-lang-ko>오늘 16:32<br>(장 마감 후)</span><span data-lang-en>Today 16:32<br>(after the close)</span></th><td><span data-lang-ko><strong>SK하이닉스 분기배당 발표 — 주당 375원</strong>, 총 2,733억원, 배당기준일 8월 31일. 3분기 중 추가 주주환원 방안 발표 예고</span><span data-lang-en><strong>SK Hynix declares a quarterly dividend of KRW 375</strong>, KRW 273.3bn in total, record date 31 August, with an additional shareholder-return plan promised during Q3</span></td><td><span data-lang-ko><strong>월요일 재료입니다.</strong> 발표가 마감 뒤였으므로 오늘 4.88% 하락과는 무관합니다 <span class="vf ok">2 SOURCES</span></span><span data-lang-en><strong>A Monday factor.</strong> It landed after the close, so it did not cause today's 4.88% fall <span class="vf ok">2 SOURCES</span></span></td></tr>
+      <tr><th><span data-lang-ko>8월 12일(수) 21:30</span><span data-lang-en>Wed 12 Aug, 21:30</span></th><td><span data-lang-ko>미국 7월 소비자물가(CPI)</span><span data-lang-en>US July CPI</span></td><td><span data-lang-ko>오늘 고용에 이어 연준 경로를 정하는 두 번째 지표 <span class="vf solo">1 SOURCE</span></span><span data-lang-en>After tonight's payrolls, the second print that sets the Fed path <span class="vf solo">1 SOURCE</span></span></td></tr>
+      <tr><th><span data-lang-ko>8월 10일(월)~13일(목)</span><span data-lang-en>Mon 10 &ndash; Thu 13 Aug</span></th><td><span data-lang-ko>국내 지표 없음</span><span data-lang-en>No domestic releases</span></td><td><span data-lang-ko>한국은행 공표일정에 잡힌 것이 없습니다. 국내 재료보다 미 CPI와 환율이 주도할 구간입니다 <span class="vf ok">MARKET DATA</span></span><span data-lang-en>Nothing on the Bank of Korea's calendar &mdash; a stretch driven by the US CPI and the won rather than domestic news <span class="vf ok">MARKET DATA</span></span></td></tr>
+      <tr class="sum"><th><span data-lang-ko>8월 14일(금) 06:00 · 12:00</span><span data-lang-en>Fri 14 Aug, 06:00 &amp; 12:00</span></th><td><span data-lang-ko>7월 수출입물가지수 및 무역지수(잠정) · 6월 통화 및 유동성</span><span data-lang-en>July import/export price and trade indices (provisional); June money and liquidity</span></td><td><span data-lang-ko>원/달러가 1,407원까지 내려온 뒤라 <strong>수입물가 흐름이 물가 경로에 주는 신호</strong>를 봐 둘 만합니다 <span class="vf ok">MARKET DATA</span></span><span data-lang-en>With the won back at 1,407, the <strong>import-price trend is the one to watch for the inflation path</strong> <span class="vf ok">MARKET DATA</span></span></td></tr>
+      <tr><th><span data-lang-ko>확인 필요</span><span data-lang-en>To confirm</span></th><td><span data-lang-ko>엔비디아 HBM 사양 공식 입장</span><span data-lang-en>Nvidia's official position on HBM specs</span></td><td><span data-lang-ko>확정되면 HBM 매출 추정 하향 요인</span><span data-lang-en>If confirmed, forces HBM revenue estimates lower</span></td></tr>
+    </tbody>
+  </table>
+  </div>
+  <p class="cap"><span data-lang-ko>국내 일정은 한국은행 공표일정에서 직접 확인했습니다. 통계청 서버는 응답하지 않아 7월 고용동향 일정은 아직 미확정입니다.</span><span data-lang-en>The domestic entries were taken from the Bank of Korea's own schedule. Statistics Korea's server did not respond, so the July employment release remains unconfirmed.</span></p>
+</section>
+
+<!-- 08 -->
+<section class="section" id="talking">
+  <div class="section-rule"></div>
+  <span class="sec-num">08</span>
+  <h2 class="section-title"><span data-lang-ko>고객 응대 포인트</span><span data-lang-en>Client Talking Points</span></h2>
+  <p class="lede"><span data-lang-ko>금요일 장 마감 후 오는 전화는 대부분 &ldquo;주말 동안 어떻게 해야 하나&rdquo;입니다. 질문을 클릭하면 답변 자료가 열립니다.</span><span data-lang-en>Calls after a Friday close are mostly "what should I do over the weekend?" Click a question to open the material.</span></p>
+
+  <div class="qa">
+    <details class="exp">
+      <summary><span data-lang-ko>"이번 주 얼마나 빠진 건가요?"</span><span data-lang-en>"How much did I lose this week?"</span><span class="exp-mark" aria-hidden="true"></span></summary>
+      <div class="detail">
+        <p data-lang-ko><strong>고객의 보유 종목을 먼저 확인하셔야 합니다.</strong> 이번 주는 지수 하나로 답할 수 없는 주였습니다. 코스피는 &minus;5.10%, 코스닥은 <strong>+10.98%</strong>로 방향이 반대입니다.</p>
+        <p data-lang-en><strong>Check what the client actually holds first.</strong> This week cannot be answered with one index. KOSPI fell 5.10%; KOSDAQ rose <strong>10.98%</strong> — opposite directions.</p>
+        <div class="table-wrap">
+        <table class="data compact">
+          <thead><tr>
+            <th><span data-lang-ko>보유 성향</span><span data-lang-en>Client profile</span></th>
+            <th class="n"><span data-lang-ko>이번 주 (7/31&rarr;8/7)</span><span data-lang-en>This week</span></th>
+            <th><span data-lang-ko>대화의 출발점</span><span data-lang-en>Where to start</span></th>
+          </tr></thead>
+          <tbody>
+            <tr><th><span data-lang-ko>반도체 · 대형주 중심</span><span data-lang-en>Semis and large caps</span></th><td class="n down">&minus;5.10% <span data-lang-ko>이하</span><span data-lang-en>or worse</span></td><td><span data-lang-ko>SK하이닉스는 이틀에 약 15% 빠졌습니다. 비중 점검이 먼저입니다.</span><span data-lang-en>SK Hynix fell roughly 15% in two sessions. Review sizing first.</span></td></tr>
+            <tr><th><span data-lang-ko>코스닥 · 중소형주 중심</span><span data-lang-en>KOSDAQ and small caps</span></th><td class="n up">+10.98% <span data-lang-ko>내외</span><span data-lang-en>or so</span></td><td><span data-lang-ko>좋았던 한 주입니다. 다만 5주 만의 반등이라는 점은 짚어 주십시오.</span><span data-lang-en>A good week — but note it is the first weekly gain in five.</span></td></tr>
+          </tbody>
+        </table>
+        </div>
+        <p class="disc" data-lang-ko>확정된 판단이 아닙니다. 위는 지수 기준이므로 실제 평균단가와 보유 종목으로 다시 계산해 주세요.</p>
+        <p class="disc" data-lang-en>Not a settled conclusion. These are index figures; recompute against actual average cost and holdings.</p>
+      </div>
+    </details>
+    <details class="exp">
+      <summary><span data-lang-ko>"오늘은 올랐다가 왜 또 밀렸나요?"</span><span data-lang-en>"It was up today — why did it slip again?"</span><span class="exp-mark" aria-hidden="true"></span></summary>
+      <div class="detail">
+        <p data-lang-ko>장중에 무슨 일이 있었는지를 시각 순으로 설명하는 편이 가장 잘 전달됩니다. <strong>6,365.07로 1.09% 높게 출발</strong>해 <strong>6,415.60까지</strong> 올랐다가 <strong>6,258.77로 마감</strong>했습니다. 고점에서 2.44% 되밀린 것입니다.</p>
+        <p data-lang-en>A time-ordered account of the session communicates best. It <strong>opened 1.09% higher at 6,365.07</strong>, rose to <strong>6,415.60</strong>, and <strong>closed at 6,258.77</strong> — a 2.44% give-back from the high.</p>
+        <p data-lang-ko>원인은 하나로 좁혀집니다. <strong>엔비디아가 차세대 AI 칩의 HBM 사양을 낮추는 방안을 검토 중</strong>이라는 보도에 SK하이닉스가 4.88% 급락했고, 외국인이 8,600억원대를 순매도했습니다. 어제의 하락(샌디스크 실적 눈높이)과는 <strong>성격이 다른 재료</strong>입니다.</p>
+        <p data-lang-en>The cause narrows to one thing: a report that <strong>Nvidia is considering lower HBM specifications for its next-generation AI chip</strong> sent SK Hynix down 4.88%, with foreigners selling a net KRW 863bn. This is <strong>a different kind of news</strong> from yesterday's SanDisk earnings-bar story.</p>
+        <p class="disc" data-lang-ko>확정된 판단이 아닙니다. 엔비디아 보도는 &lsquo;검토 중&rsquo; 단계이며 공식 확인이 없습니다. 확정 사실로 전달하지 마십시오.</p>
+        <p class="disc" data-lang-en>Not a settled conclusion. The Nvidia report describes a review under consideration with no official confirmation. Do not present it as settled.</p>
+      </div>
+    </details>
+    <details class="exp">
+      <summary><span data-lang-ko>"주말에 미국 고용지표 나온다는데 월요일이 걱정입니다"</span><span data-lang-en>"US payrolls are out — should I worry about Monday?"</span><span class="exp-mark" aria-hidden="true"></span></summary>
+      <div class="detail">
+        <p data-lang-ko>발표는 <strong>오늘 밤 21:30</strong>이고, 컨센서스는 비농업 고용 +8만5,000명·실업률 4.2% 유지입니다. 지금 시장에 이미 반영된 부분이 있다는 점을 숫자로 보여 드리면 불안이 줄어듭니다 — <strong>원/달러가 오늘 7.7원 내린 1,416.1원</strong>으로, 고용이 부진할 경우의 적정 하단(1,417원)에 이미 닿아 있습니다.</p>
+        <p data-lang-en>The release is <strong>tonight at 21:30 KST</strong>, with consensus at +85,000 payrolls and unemployment steady at 4.2%. Showing what is already priced tends to reduce anxiety: <strong>USD/KRW fell 7.7 to 1,416.1 today</strong>, already at the 1,417 floor implied by a weak print.</p>
+        <p data-lang-ko>주말 동안 포지션을 바꿀 수 없다는 점도 사실대로 말씀드리는 편이 낫습니다. <strong>월요일 시가에 반응하기보다 그날 브리핑을 보고 판단하시자</strong>고 정리하는 것이 현실적입니다.</p>
+        <p data-lang-en>It also helps to say plainly that positions cannot be changed over the weekend. The realistic framing is: <strong>rather than react at Monday's open, look at Monday's brief first.</strong></p>
+        <p class="disc" data-lang-ko>확정된 판단이 아닙니다. 발표 결과에 따라 전제가 바뀝니다.</p>
+        <p class="disc" data-lang-en>Not a settled conclusion. The premise changes with the print.</p>
+      </div>
+    </details>
+  </div>
+</section>
+
+<!-- 09 -->
+<section class="section" id="verify">
+  <div class="section-rule"></div>
+  <span class="sec-num">09</span>
+  <h2 class="section-title"><span data-lang-ko>데이터 검증 노트</span><span data-lang-en>Verification Notes</span></h2>
+  <p class="lede"><span data-lang-ko>이 브리핑에 <strong>쓰지 않은</strong> 수치와 그 이유입니다. 여기가 신뢰도의 근거입니다.</span><span data-lang-en>The numbers we <strong>did not</strong> use, and why. This is where the brief's reliability comes from.</span></p>
+
+  <div class="soft-card warn">
+    <h4><span data-lang-ko>날짜 오염을 두 번 걸러냈습니다</span><span data-lang-en>Two date-contaminated results were filtered out</span></h4>
+    <p class="sub"><span data-lang-ko><strong>①</strong> &ldquo;8월 7일 삼성전자 SK하이닉스&rdquo; 검색이 <strong>&ldquo;코스피 6,400선 회복, 삼성전자 +3.15%, SK하이닉스 +2.54%, 90조원 자사주&rdquo;</strong>라는 결과를 반환했습니다. 오늘 실제 마감(코스피 &minus;0.60%, 외국인 순매도, SK하이닉스 &minus;4.88%)과 정면으로 배치되므로 <strong>다른 날짜의 기사</strong>로 판단해 전부 폐기했습니다.</span><span data-lang-en><strong>①</strong> A search for Samsung and SK Hynix on 7 August returned <strong>"KOSPI reclaims 6,400; Samsung +3.15%, SK Hynix +2.54%; KRW 90tn buyback."</strong> That contradicts today's actual close (KOSPI &minus;0.60%, net foreign selling, SK Hynix &minus;4.88%), so it was judged <strong>an article from a different date</strong> and discarded in full.</span></p>
+    <p class="sub"><span data-lang-ko><strong>②</strong> &ldquo;미 7월 고용보고서 결과&rdquo; 검색이 <strong>&ldquo;비농업 +11.4만명, 실업률 4.3%, 예상 +17.5만&rdquo;</strong>을 반환했습니다. 그러나 오늘 컨센서스는 <strong>+8.5만명 · 4.2%</strong>이고 발표는 <strong>오늘 밤 21:30로 아직 이뤄지지 않았습니다.</strong> 컨센서스 수치 자체가 다르다는 점에서 <strong>다른 연도의 7월 고용보고서</strong>로 판단해 폐기했습니다. 이 브리핑에는 발표 결과가 없습니다.</span><span data-lang-en><strong>②</strong> A search for the July US employment report returned <strong>"+114,000 payrolls, unemployment 4.3%, versus 175,000 expected."</strong> Today's consensus is <strong>+85,000 and 4.2%</strong>, and the release is <strong>tonight at 21:30 KST — it has not happened.</strong> Because the consensus figure itself differs, this was judged <strong>a July report from a different year</strong> and discarded. This brief contains no payroll result.</span></p>
+  </div>
+
+  <div class="soft-card warn">
+    <h4><span data-lang-ko>시세 원천을 확보했습니다 — 이 판부터 적용</span><span data-lang-en>A market-data source is now in place — applied from this edition</span></h4>
+    <p class="sub"><span data-lang-ko>이 세션은 사내 이그레스 정책상 시세 사이트에 직접 붙지 못합니다. 대신 <strong>GitHub Actions 러너가 매 거래일 시세를 받아 저장소에 커밋</strong>하고, 브리핑은 그 파일(<code>data/market/latest.json</code>)을 읽습니다. 러너는 사내 정책 밖에서 돌기 때문에 가능합니다.</span><span data-lang-en>This session cannot reach market-data sites under the organisation's egress policy. Instead, <strong>a GitHub Actions runner fetches prices every trading day and commits them to the repository</strong>, and the brief reads that file (<code>data/market/latest.json</code>). The runner sits outside the policy, which is what makes this work.</span></p>
+    <p class="sub"><span data-lang-ko>이 판에서 <span class="vf ok">MARKET DATA</span> 배지가 붙은 값은 전부 거래소 원천입니다 — 코스피·코스닥 시가·고가·저가·종가·거래량, 시총 상위 10종목, <strong>업종 79개 등락률</strong>, <strong>투자자별 순매수 6거래일치</strong>. 직전 판에서 &ldquo;확보하지 못함&rdquo;으로 남겼던 <strong>코스닥 장중 고저, 업종별 등락률, NAVER·삼성바이오·셀트리온·현대차 등락률, 종목 종가</strong>가 이번에 채워졌습니다.</span><span data-lang-en>Every value badged <span class="vf ok">MARKET DATA</span> in this edition comes from exchange data: KOSPI and KOSDAQ open/high/low/close and volume, the ten largest listings, <strong>returns for 79 sectors</strong>, and <strong>six sessions of investor flows</strong>. Items left as "not obtained" in the previous edition &mdash; KOSDAQ intraday range, sector returns, moves for NAVER, Samsung Biologics, Celltrion and Hyundai Motor, and closing prices &mdash; are now filled.</span></p>
+    <p class="sub"><span data-lang-ko><strong>보도치와 다를 때는 거래소 원천을 채택합니다.</strong> 오늘은 외국인 순매도가 보도 8,581~8,625억, 원천 8,651억으로 최대 0.8% 차이였습니다. 개인은 2,677 대 2,675로 사실상 같습니다.</span><span data-lang-en><strong>Where reporting and the exchange differ, the exchange figure is adopted.</strong> Today foreign net selling was reported at KRW 858.1&ndash;862.5bn against 865.1bn from the exchange &mdash; a gap of up to 0.8%. Retail was 267.7 versus 267.5bn, effectively identical.</span></p>
+  </div>
+
+  <h3><span data-lang-ko>데이터 계보 — 이 숫자는 어디서 왔나</span><span data-lang-en>Provenance — where each number comes from</span></h3>
+  <div class="table-wrap">
+  <table class="data prov">
+    <thead><tr>
+      <th><span data-lang-ko>항목</span><span data-lang-en>Item</span></th>
+      <th><span data-lang-ko>원천</span><span data-lang-en>Source</span></th>
+      <th><span data-lang-ko>경로</span><span data-lang-en>Path</span></th>
+      <th><span data-lang-ko>배지</span><span data-lang-en>Badge</span></th>
+    </tr></thead>
+    <tbody>
+      <tr class="hl"><th class="wrap"><span data-lang-ko>지수 시가·고가·저가·종가·거래량, 시총 상위 10종목, 미국 지수, VIX·달러인덱스, 유가·금, 미 국채</span><span data-lang-en>Index OHLC and volume, ten largest listings, US indices, VIX and DXY, oil and gold, US Treasuries</span></th><td><span data-lang-ko>야후 파이낸스</span><span data-lang-en>Yahoo Finance</span></td><td><span data-lang-ko>수집 서버 &rarr; 저장소 &rarr; 브리핑</span><span data-lang-en>Collector &rarr; repo &rarr; brief</span></td><td><span class="vf ok">MARKET DATA</span></td></tr>
+      <tr class="hl"><th class="wrap"><span data-lang-ko>업종 79개 등락률, 등락 종목 수, 투자자별 수급, 프로그램 매매, 국내 시장금리</span><span data-lang-en>79 sector returns, advance/decline counts, investor flows, program trading, domestic rates</span></th><td><span data-lang-ko>네이버 금융</span><span data-lang-en>Naver Finance</span></td><td><span data-lang-ko>수집 서버 &rarr; 저장소 &rarr; 브리핑</span><span data-lang-en>Collector &rarr; repo &rarr; brief</span></td><td><span class="vf ok">MARKET DATA</span></td></tr>
+      <tr class="hl"><th class="wrap"><span data-lang-ko>코스피200 선물 시세·투자자별 순매수</span><span data-lang-en>KOSPI 200 futures prices and investor flows</span></th><td><span data-lang-ko>네이버 모바일 (데스크톱에는 없음)</span><span data-lang-en>Naver mobile only; absent from desktop</span></td><td><span data-lang-ko>수집 서버 &rarr; 저장소 &rarr; 브리핑</span><span data-lang-en>Collector &rarr; repo &rarr; brief</span></td><td><span class="vf solo">1 SOURCE</span></td></tr>
+      <tr class="hl"><th class="wrap"><span data-lang-ko>고객예탁금, 신용융자 잔고 (일별 10영업일)</span><span data-lang-en>Investor deposits and margin balance, ten sessions</span></th><td><span data-lang-ko>네이버 증시자금동향</span><span data-lang-en>Naver market-liquidity table</span></td><td><span data-lang-ko>수집 서버 &rarr; 저장소 &rarr; 브리핑</span><span data-lang-en>Collector &rarr; repo &rarr; brief</span></td><td><span class="vf ok">MARKET DATA</span></td></tr>
+      <tr class="hl"><th class="wrap"><span data-lang-ko>국내 경제지표 공표일정</span><span data-lang-en>Domestic release calendar</span></th><td><span data-lang-ko>한국은행 공표일정</span><span data-lang-en>Bank of Korea schedule</span></td><td><span data-lang-ko>수집 서버 &rarr; 달력 칸 마크업 확인</span><span data-lang-en>Collector, read from the calendar cell markup</span></td><td><span class="vf ok">MARKET DATA</span></td></tr>
+      <tr><th class="wrap"><span data-lang-ko>반대매매·미수금, 특징주가 움직인 사유, 증권사 코멘트, 제도·업계 뉴스</span><span data-lang-en>Forced liquidation and unpaid balances, why individual names moved, broker commentary, regulatory and industry news</span></th><td><span data-lang-ko>언론 보도</span><span data-lang-en>Press reporting</span></td><td><span data-lang-ko><strong>수집 서버가 그날 기사 24건 본문을 저장</strong> + 브리핑 세션의 웹 검색</span><span data-lang-en><strong>Collector stores the full text of 24 same-day articles</strong>, plus web search from the briefing session</span></td><td><span class="vf ok">2 SOURCES</span> / <span class="vf solo">1 SOURCE</span></td></tr>
+      <tr><th class="wrap"><span data-lang-ko>주간·기간 누적 등락률, 변동폭, 스프레드</span><span data-lang-en>Cumulative returns, ranges, spreads</span></th><td><span data-lang-ko>계산</span><span data-lang-en>Computed</span></td><td><span data-lang-ko>위 값에서 산출 (산식은 아래에)</span><span data-lang-en>Derived from the above; formulas below</span></td><td><span data-lang-ko>계산치</span><span data-lang-en>computed</span></td></tr>
+    </tbody>
+  </table>
+  </div>
+
+  <div class="soft-card">
+    <h4><span data-lang-ko>수집 서버를 따로 두는 이유</span><span data-lang-en>Why the collector runs elsewhere</span></h4>
+    <p class="sub"><span data-lang-ko>브리핑을 만드는 세션은 사내 이그레스 정책상 <strong>한국거래소·네이버 금융·인베스팅닷컴·야후 파이낸스·Stooq·e-나라지표에 연결 자체가 되지 않습니다</strong>(CONNECT 단계 403). 위키피디아와 구글도 동일하게 막히므로 특정 사이트 문제가 아니라 전면 차단 후 일부만 허용하는 정책입니다.</span><span data-lang-en>The session that writes this brief <strong>cannot open a connection to KRX, Naver Finance, Investing.com, Yahoo Finance, Stooq or index.go.kr</strong> under the organisation's egress policy (403 at CONNECT). Wikipedia and Google are blocked identically, so this is a deny-by-default allowlist rather than a site-specific problem.</span></p>
+    <p class="sub"><span data-lang-ko>그래서 <strong>정책 바깥에서 도는 수집 서버(GitHub Actions)</strong>가 매 거래일 15:40과 06:40에 시세를 받아 저장소에 커밋하고, 브리핑은 커밋된 파일을 읽습니다. 우회가 아니라 정공법이며, <strong>관리자 허용 목록 변경은 더 이상 필요하지 않습니다.</strong> 세션이 장중 실시간 시세를 직접 조회해야 할 일이 생기면 그때 필요합니다.</span><span data-lang-en>A <strong>collector that runs outside that policy (GitHub Actions)</strong> therefore fetches prices at 15:40 and 06:40 each trading day and commits them to the repository, and the brief reads the committed file. This is a legitimate path, not a workaround, and <strong>no change to the administrator's allowlist is needed any more.</strong> It would only be needed if the session itself had to query live intraday prices.</span></p>
+  </div>
+
+  <h3><span data-lang-ko>아직 받지 못하는 항목과 이유</span><span data-lang-en>Still unavailable, and why</span></h3>
+  <div class="table-wrap">
+  <table class="data prov">
+    <thead><tr>
+      <th><span data-lang-ko>항목</span><span data-lang-en>Item</span></th>
+      <th><span data-lang-ko>이유</span><span data-lang-en>Reason</span></th>
+      <th><span data-lang-ko>현재 대응</span><span data-lang-en>How it is handled now</span></th>
+      <th><span data-lang-ko>해결 방법</span><span data-lang-en>What would fix it</span></th>
+    </tr></thead>
+    <tbody>
+      <tr><th class="wrap"><span data-lang-ko>KRX 전종목 시세</span><span data-lang-en>KRX full-market table</span></th><td><span data-lang-ko>수집 서버 IP를 차단 (400/403)</span><span data-lang-en>Blocks the collector's IP (400/403)</span></td><td><span data-lang-ko>야후·네이버가 필요한 값을 모두 대체</span><span data-lang-en>Yahoo and Naver cover what is needed</span></td><td><span data-lang-ko>불필요 &mdash; 대체 완료</span><span data-lang-en>Not needed; already covered</span></td></tr>
+      <tr class="sum"><th class="wrap"><span data-lang-ko>국고채 만기별 (1·3·5·10년)</span><span data-lang-en>KTB curve (1, 3, 5, 10 year)</span></th><td><span data-lang-ko>&mdash;</span><span data-lang-en>&mdash;</span></td><td><span data-lang-ko><strong>이 판에서 해결.</strong> 한국은행 ECOS 를 붙였습니다</span><span data-lang-en><strong>Resolved in this edition.</strong> Bank of Korea ECOS was connected</span></td><td><span data-lang-ko>완료 &mdash; 별도 키 없이 공개 샘플 인증키로 동작합니다</span><span data-lang-en>Done &mdash; works on the public sample key, no key of our own needed</span></td></tr>
+      <tr class="sum"><th class="wrap"><span data-lang-ko>선물 외국인 순매수</span><span data-lang-en>Foreign futures positioning</span></th><td><span data-lang-ko>&mdash;</span><span data-lang-en>&mdash;</span></td><td><span data-lang-ko><strong>이 판에서 해결.</strong> 데스크톱 네이버에는 없고 <strong>모바일 JSON 에만</strong> 있었습니다(&sect;03)</span><span data-lang-en><strong>Resolved in this edition.</strong> Absent from desktop Naver; it exists <strong>only in the mobile JSON</strong> (&sect;03)</span></td><td><span data-lang-ko>완료 &mdash; `dealTrendInfo` 를 매일 받습니다. KRX 무료 인증키를 넣으면 두 번째 출처로 교차검증까지 됩니다(수집기에 자리 마련 완료)</span><span data-lang-en>Done &mdash; `dealTrendInfo` now arrives daily. A free KRX key would add a second source for cross-checking; the slot is already wired</span></td></tr>
+      <tr class="sum"><th class="wrap"><span data-lang-ko>상한가·하한가 종목명</span><span data-lang-en>Names of limit-up stocks</span></th><td><span data-lang-ko>&mdash;</span><span data-lang-en>&mdash;</span></td><td><span data-lang-ko><strong>이 판에서 해결.</strong> 네이버 상한가 목록을 수집에 추가했습니다</span><span data-lang-en><strong>Resolved in this edition.</strong> Naver's limit-up listing was added to the collector</span></td><td><span data-lang-ko>완료 &mdash; 9종목 확보</span><span data-lang-en>Done; nine names obtained</span></td></tr>
+      <tr class="sum"><th class="wrap"><span data-lang-ko>신용융자 잔액 · 고객예탁금</span><span data-lang-en>Margin balance and investor deposits</span></th><td><span data-lang-ko>&mdash;</span><span data-lang-en>&mdash;</span></td><td><span data-lang-ko><strong>이 판에서 해결.</strong> 네이버 증시자금동향을 수집에 붙였습니다(&sect;03)</span><span data-lang-en><strong>Resolved in this edition.</strong> Naver's market-liquidity table was added to the collector (&sect;03)</span></td><td><span data-lang-ko>완료 &mdash; 일별 10영업일치가 시세 파일에 들어옵니다. 금투협 freeSis 는 화면이 SPA 라 조회 규격이 드러나지 않아 쓰지 않았습니다</span><span data-lang-en>Done &mdash; ten sessions of daily history now land in the data file. KOFIA's freeSis was dropped: its SPA front end never exposes a query contract</span></td></tr>
+      <tr class="sum"><th class="wrap"><span data-lang-ko>반대매매 금액</span><span data-lang-en>Forced liquidation</span></th><td><span data-lang-ko>어느 시세 화면에도 없습니다(금투협 소관)</span><span data-lang-en>Absent from every market screen; it sits with KOFIA</span></td><td><span data-lang-ko><strong>이 판에서 개선.</strong> 검색 요약 대신 <strong>기사 원문</strong>에서 뽑습니다</span><span data-lang-en><strong>Improved here:</strong> taken from <strong>full article text</strong> rather than search snippets</span></td><td><span data-lang-ko>수집 서버가 그날 증시 기사 24건 본문을 받아 저장합니다. 출처 URL이 같이 남습니다</span><span data-lang-en>The collector now stores the full text of 24 same-day market articles, with source URLs</span></td></tr>
+    </tbody>
+  </table>
+  </div>
+  <p class="cap"><span data-lang-ko>&ldquo;해결 방법&rdquo;은 실제로 가능한 경로만 적었습니다. 이 표는 다음 판에서 무엇을 먼저 붙여야 하는지를 정하는 근거로도 씁니다.</span><span data-lang-en>The "what would fix it" column lists only paths that are actually available. This table also serves as the queue for what to add to the collector next.</span></p>
+
+  <div class="soft-card warn">
+    <h4><span data-lang-ko>선물 수급 &mdash; 값보다 단위를 확정하는 데 더 오래 걸렸습니다</span><span data-lang-en>Futures flows &mdash; establishing the unit took longer than finding the number</span></h4>
+    <p class="sub"><span data-lang-ko>네이버 모바일 선물 화면에는 <strong>단위 표기가 없습니다.</strong> 계약 수인지 억원인지에 따라 이야기가 달라지므로 그대로 쓸 수 없었습니다. 다음 순서로 확정했습니다.</span><span data-lang-en>Naver's mobile futures screen <strong>carries no unit label.</strong> Contracts and won tell different stories, so the raw figure could not be used as-is. It was established as follows.</span></p>
+    <ul class="plain">
+      <li><span data-lang-ko>같은 이름의 필드(`dealTrendInfo`)를 코스피 현물에서 부르면 <strong>개인 +2,675 / 외국인 &minus;8,651 / 기관 +5,854</strong> 가 나옵니다.</span><span data-lang-en>The same field (`dealTrendInfo`) called for cash KOSPI returns <strong>+2,675 / &minus;8,651 / +5,854.</strong></span></li>
+      <li><span data-lang-ko>네이버 데스크톱 &lsquo;투자자별 매매동향&rsquo; 화면은 <strong>&ldquo;(단위:억원)&rdquo;</strong> 이라고 못박고 8월 7일 행에 <strong>같은 세 숫자</strong>를 싣고 있습니다. 따라서 이 필드는 억원입니다.</span><span data-lang-en>Naver's desktop investor-flows screen states <strong>"(unit: KRW 100m)"</strong> and shows <strong>the same three numbers</strong> on its 7 August row. The field is therefore in KRW 100m.</span></li>
+      <li><span data-lang-ko>선물 화면의 <strong>대금 &divide; 거래량 &divide; 지수 = 250,039원/포인트</strong>로, 코스피200 선물 정규 승수 250,000원과 일치합니다. 자료 내부가 서로 맞습니다.</span><span data-lang-en>On the futures screen, <strong>turnover &divide; volume &divide; index = KRW 250,039 per point</strong>, matching the contract multiplier of KRW 250,000. The data is internally consistent.</span></li>
+    </ul>
+    <p class="cap"><span data-lang-ko>다만 <strong>선물 화면 자체에 단위가 적혀 있지는 않습니다.</strong> 위는 같은 필드의 현물 동작으로 정한 것이고, 8월 7일자로 확정된 기사 46건 어디에도 선물 수치가 없어 제2 출처로 대조하지 못했습니다. 그래서 <span class="vf solo">1 SOURCE</span> 로 표시했습니다. KRX 무료 인증키를 넣으면 이 항목이 <span class="vf ok">2 SOURCES</span> 가 됩니다.</span><span data-lang-en>The futures screen itself still states no unit. The above is inferred from how the identical field behaves on the cash screens, and none of the 46 articles positively dated 7 August carried a futures figure to cross-check against. Hence the <span class="vf solo">1 SOURCE</span> badge. A free KRX key would lift this to <span class="vf ok">2 SOURCES</span>.</span></p>
+  </div>
+
+  <div class="soft-card">
+    <h4><span data-lang-ko>걸러낸 함정 &mdash; 부호가 반대인 기사</span><span data-lang-en>A trap that was caught: an article with the opposite sign</span></h4>
+    <p class="sub"><span data-lang-ko>검색으로 <strong>&ldquo;선물시장에서는 기관이 6,309계약을 순매수한 반면 외국인은 7,738계약을 순매도했다&rdquo;</strong> 는 문장이 잡혔습니다. 오늘 확인한 값과 <strong>부호가 정반대</strong>였는데, 기사 날짜를 확인하니 <strong>2026년 7월 10일</strong>자였습니다. 검색 결과에는 날짜가 드러나지 않아 그대로 썼으면 정반대 결론을 쓸 뻔했습니다.</span><span data-lang-en>A search surfaced the sentence <strong>"institutions net bought 6,309 contracts while foreigners net sold 7,738."</strong> The signs were <strong>exactly opposite</strong> to today's figures &mdash; and the article turned out to be dated <strong>10 July 2026.</strong> The search result did not show the date; used as-is it would have produced the opposite conclusion.</span></p>
+  </div>
+
+  <h3><span data-lang-ko>지난 판에서 비어 있다가 이번에 채운 항목</span><span data-lang-en>Blanks from the last edition, filled here</span></h3>
+  <p class="sub"><span data-lang-ko>지난 판에 &ldquo;못 채웠다&rdquo;고 적어 둔 두 가지입니다. 둘 다 원천이 없어서가 아니라 <strong>부르는 방법이 틀렸던 것</strong>이었습니다.</span><span data-lang-en>Both items were logged as unfilled last time. Neither was actually missing a source &mdash; <strong>the call was wrong</strong>.</span></p>
+  <ul class="plain">
+    <li><span data-lang-ko><strong>국제유가·금의 국내 마감 시점 기준치</strong> — 채웠습니다. 어느 매체도 공표하지 않는 값이라 <strong>5분봉에서 15:30 KST 봉을 직접 골라</strong> 만들었습니다(오차 0분). 뉴욕 종가는 국내 장이 끝난 뒤 시각이라 국내 지수와 나란히 놓으면 시점이 어긋납니다.</span><span data-lang-en><strong>Oil and gold as of the Korea close</strong> &mdash; filled. No outlet publishes it, so it was <strong>built from five-minute bars by taking the 15:30 KST bar</strong> (zero minutes off). New York closes fall after the Korean session, so pairing them with Korean index moves compares two different moments.</span></li>
+    <li><span data-lang-ko><strong>다음 주 국내 경제지표 일정</strong> — 채웠습니다. 한국은행 공표일정에서 <strong>8월 14일(금) 7월 수출입물가지수 및 무역지수(잠정), 6월 통화 및 유동성</strong>을 확인했습니다. 10~13일에는 한국은행 공표가 없습니다. 평문으로 훑으면 날짜가 앞뒤 어느 제목에 붙는지 단정할 수 없어, <strong>달력 칸의 마크업을 직접 확인해</strong> 짝을 지었습니다.</span><span data-lang-en><strong>Next week's domestic calendar</strong> &mdash; filled. The Bank of Korea's schedule confirms <strong>Friday 14 August: July import/export price and trade indices (provisional), and June money and liquidity</strong>. Nothing is scheduled for the 10th to 13th. Read as flat text the dates are ambiguous, so the pairing was <strong>taken from the calendar cell markup itself</strong>.</span></li>
+  </ul>
+  <p class="cap"><span data-lang-ko>통계청 공표일정 서버는 500을 돌려줘 7월 고용동향 일정은 확정하지 못했습니다. 월요일 아침 브리핑에서 보완합니다.</span><span data-lang-en>Statistics Korea's schedule server returned a 500, so the July employment release date is unconfirmed; it will be completed in Monday's morning brief.</span></p>
+
+  <h3><span data-lang-ko>계산으로 만든 값</span><span data-lang-en>Computed, not reported</span></h3>
+  <ul class="plain">
+    <li><span data-lang-ko><strong>코스피 주간 &minus;5.10%</strong> = 6,258.77 ÷ 6,595.45 &minus; 1. 기준선 6,595.45(7/31 종가)는 서울경제 보도와 8/3 하락폭(&minus;338.00p) 역산이 일치합니다. 보도의 &ldquo;이번 주 5%대 하락&rdquo;과도 부합합니다.</span><span data-lang-en><strong>KOSPI week &minus;5.10%</strong> = 6,258.77 ÷ 6,595.45 &minus; 1. The 6,595.45 baseline (31 July close) is confirmed both by Seoul Economic Daily and by back-calculation from the &minus;338.00-point fall on 3 August, and matches reporting of "a fall in the 5% range this week."</span></li>
+    <li><span data-lang-ko><strong>코스닥 주간 +10.98%</strong> = 798.81 ÷ 719.76 &minus; 1. 보도의 &ldquo;10%대 상승, 5주 만에 상승 전환&rdquo;과 부합합니다.</span><span data-lang-en><strong>KOSDAQ week +10.98%</strong> = 798.81 ÷ 719.76 &minus; 1, matching reporting of "a gain in the 10% range, the first weekly rise in five."</span></li>
+    <li><span data-lang-ko><strong>고가 대비 종가 &minus;2.44%</strong> = 6,258.77 ÷ 6,415.60 &minus; 1.</span><span data-lang-en><strong>Close vs high &minus;2.44%</strong> = 6,258.77 ÷ 6,415.60 &minus; 1.</span></li>
+    <li><span data-lang-ko><strong>SK하이닉스 이틀 누적 약 &minus;15%</strong> = 1,422,000 ÷ 1,668,000(8/5 종가 추정) &minus; 1. 8/6 종가 1,495,000원과 8/6 &minus;10.37%에서 역산했으며 <strong>근사치</strong>입니다.</span><span data-lang-en><strong>SK Hynix, roughly &minus;15% over two sessions</strong>, back-calculated from the 6 August close of KRW 1,495,000 and that session's &minus;10.37%. Treat as <strong>approximate</strong>.</span></li>
+  </ul>
+
+  <h3><span data-lang-ko>상충 수치</span><span data-lang-en>Conflicting figures</span></h3>
+  <ul class="plain">
+    <li><span data-lang-ko><strong>외국인 순매도</strong> 뉴스핌 8,590억 / 아주경제 8,625억 — 차이 35억(0.4%)으로 실무상 무의미해 <strong>범위로 병기</strong>했습니다.</span><span data-lang-en><strong>Foreign net selling:</strong> Newspim KRW 859bn versus Ajunews KRW 863bn — a 0.4% gap, immaterial in practice, so <strong>shown as a range</strong>.</span></li>
+    <li><span data-lang-ko><strong>이투데이의 수급 조합</strong>(개인·외국인 합계 &minus;4,341억, 기관 +4,664억)은 마감 확정 조합과 합이 맞지 않아 <strong>장중 집계로 판단하고 채택하지 않았습니다.</strong></span><span data-lang-en><strong>Etoday's flow set</strong> (retail and foreign together &minus;KRW 434bn, institutions +KRW 466bn) does not reconcile with the closing set and was <strong>treated as intraday and not adopted.</strong></span></li>
+    <li><span data-lang-ko><strong>&ldquo;이번 주 7%대 하락&rdquo;</strong>이라는 표현이 한 곳에서 확인됐으나, 7/31 종가 기준 계산치는 &minus;5.10%이고 다른 보도의 &ldquo;5%대&rdquo;와 일치하므로 <strong>계산치를 채택</strong>했습니다.</span><span data-lang-en><strong>One source described "a fall in the 7% range this week."</strong> The computed figure from the 31 July close is &minus;5.10%, matching another outlet's "5% range," so <strong>the computed value was adopted.</strong></span></li>
+  </ul>
+
+  <div class="soft-card">
+    <h4><span data-lang-ko>수집 방식의 한계</span><span data-lang-en>Collection limits</span></h4>
+    <p class="sub"><span data-lang-ko>이번 실행에서도 기사 본문 직접 조회는 대부분 차단됩니다. 따라서 <strong>수치 대부분은 기사 본문이 아니라 검색 결과 요약을 근거로 합니다.</strong> 출처 링크는 확인된 URL이지만 링크 대상 본문을 직접 읽고 대조하지는 못했습니다. 이 첫 판은 마감 3시간여 뒤(18:55)에 작성돼 마감시황 보도가 충분히 나온 상태였습니다. <strong>다음 판부터는 평일 16:00, 즉 마감 30분 뒤에 자동 작성되므로 일부 수급 수치가 잠정치일 수 있습니다.</strong></span><span data-lang-en>Direct article fetches remain mostly blocked, so <strong>most figures rest on search-result summaries rather than article bodies.</strong> The source links are verified URLs whose bodies were not read and cross-checked. This first edition was compiled at 18:55, over three hours after the close, with close wraps fully published. <strong>From the next edition onward it runs automatically at 16:00 — thirty minutes after the close — so some flow figures may be preliminary.</strong></span></p>
+  </div>
+</section>
+
+<!-- 10 -->
+<section class="section" id="sources">
+  <div class="section-rule"></div>
+  <span class="sec-num">10</span>
+  <h2 class="section-title"><span data-lang-ko>출처</span><span data-lang-en>Sources</span></h2>
+  <ul class="sources">
+    <li><a href="https://www.ebn.co.kr/news/articleView.html?idxno=1719599"><span data-lang-ko>코스피 6258.77 닷새째 널뛰기 끝 약세 마감, 외국인 8581억 순매도 — 장중 저가·거래대금</span><span data-lang-en>KOSPI 6,258.77 after a fifth volatile session; foreigners &minus;KRW 858bn — intraday low and turnover</span></a> <span class="pub">EBN 데이터센터 · 2026-08-07</span></li>
+    <li><a href="https://www.ebn.co.kr/news/articleView.html?idxno=1719602"><span data-lang-ko>코스피, 널뛰기 끝 약보합 6258 마감</span><span data-lang-en>KOSPI ends a whipsaw session slightly lower at 6,258</span></a> <span class="pub">EBN 데이터센터 · 2026-08-07</span></li>
+    <li><a href="https://www.ebn.co.kr/news/articleView.html?idxno=1719601"><span data-lang-ko>7일 상승 종목 30選 — 상한가 및 대형주 상승률</span><span data-lang-en>Thirty gainers on 7 August — limit-ups and large-cap moves</span></a> <span class="pub">EBN 데이터센터 · 2026-08-07</span></li>
+    <li><a href="https://www.newspim.com/news/view/20260807000978"><span data-lang-ko>마감시황 — 코스피 7주 연속 하락, 외국인 매도에 6258.77</span><span data-lang-en>Close wrap — seventh straight weekly loss at 6,258.77</span></a> <span class="pub">뉴스핌 · 2026-08-07</span></li>
+    <li><a href="https://www.hankyung.com/article/2026080709686"><span data-lang-ko>코스피 6200선 약보합, 0.60% 내린 6258.77 마감</span><span data-lang-en>KOSPI closes 0.60% lower at 6,258.77</span></a> <span class="pub">한국경제 · 2026-08-07</span></li>
+    <li><a href="https://www.mt.co.kr/stock/2026/08/07/2026080715205549201"><span data-lang-ko>[스팟] 코스피 37.61포인트(0.60%) 내린 6258.77 마감</span><span data-lang-en>KOSPI closes down 37.61 points</span></a> <span class="pub">머니투데이 · 2026-08-07</span></li>
+    <li><a href="https://www.mt.co.kr/stock/2026/08/07/2026080715213474738"><span data-lang-ko>[스팟] 코스닥 2.86포인트(0.36%) 내린 798.81 마감</span><span data-lang-en>KOSDAQ closes down 2.86 points at 798.81</span></a> <span class="pub">머니투데이 · 2026-08-07</span></li>
+    <li><a href="https://www.ajunews.com/view/20260807155609385"><span data-lang-ko>마감시황 — 외국인 팔자에 코스피 6200선, 코스닥도 하락</span><span data-lang-en>Close wrap — foreign selling drags both indices</span></a> <span class="pub">아주경제 · 2026-08-07</span></li>
+    <li><a href="https://www.etoday.co.kr/news/view/2612253"><span data-lang-ko>외국인 팔자에 하락 마감, 삼성전자·SK하이닉스 희비 갈려</span><span data-lang-en>Indices fall on foreign selling; Samsung and Hynix diverge</span></a> <span class="pub">이투데이 · 2026-08-07</span></li>
+    <li><a href="https://www.etoday.co.kr/news/view/2612155"><span data-lang-ko>상승 출발한 코스피·코스닥 하락 전환, SK하이닉스 5%대 약세</span><span data-lang-en>Both indices turn lower after a higher open; Hynix down about 5%</span></a> <span class="pub">이투데이 · 2026-08-07</span></li>
+    <li><a href="https://www.ddaily.co.kr/page/view/2026080716135770490"><span data-lang-ko>HBM 악재에 하이닉스 급락, 코스피 상승세도 꺾였다</span><span data-lang-en>Hynix slides on HBM news, snapping the index rally</span></a> <span class="pub">디지털데일리 · 2026-08-07</span></li>
+    <li><a href="https://www.kmib.co.kr/article/view.asp?arcid=9000001229&amp;code=61141211&amp;sid1=eco"><span data-lang-ko>외인 폭풍 매도에 반도체 롤러코스터 — 하닉 4.8%↓ 삼전 0.2%↑</span><span data-lang-en>Semis on a roller coaster — Hynix &minus;4.8%, Samsung +0.2%</span></a> <span class="pub">국민일보 · 2026-08-07</span></li>
+    <li><a href="http://inews24.com/view/1992985"><span data-lang-ko>외인 팔자 전환 — 코스피 0.6%↓ 코스닥 0.4%↓</span><span data-lang-en>Foreigners turn sellers — KOSPI &minus;0.6%, KOSDAQ &minus;0.4%</span></a> <span class="pub">아이뉴스24 · 2026-08-07</span></li>
+    <li><a href="https://www.mt.co.kr/economy/2026/08/07/2026080715351666193"><span data-lang-ko>원/달러 환율 7.7원 내린 1416.1원</span><span data-lang-en>USD/KRW falls 7.7 to 1,416.1</span></a> <span class="pub">머니투데이 · 2026-08-07</span></li>
+    <li><a href="https://www.mt.co.kr/stock/2026/08/07/2026080716242529311"><span data-lang-ko>코스피 2거래일 연속 하락 — 미 고용지표·SK하닉 배당금 주목</span><span data-lang-en>Second straight fall — payrolls and Hynix dividend in focus</span></a> <span class="pub">머니투데이 · 2026-08-07</span></li>
+    <li><a href="https://www.sedaily.com/article/20074393"><span data-lang-ko>7/31 코스피 6,595.45 · 코스닥 719.76 마감 — 주간 기준선</span><span data-lang-en>31 July close: KOSPI 6,595.45, KOSDAQ 719.76 — the week's baseline</span></a> <span class="pub">서울경제 · 2026-07-31</span></li>
+    <li><a href="https://www.blockmedia.co.kr/archives/1123229"><span data-lang-ko>미 7월 고용 8.5만명 전망 — 컨센서스</span><span data-lang-en>US July payrolls seen at +85,000 — consensus</span></a> <span class="pub">블록미디어 · 2026-08</span></li>
+  </ul>
+</section>
+
+</main>
+
+<aside class="detailpane" aria-label="상세 보기">
+  <div class="dp-head">
+    <div>
+      <p class="dp-kicker"></p>
+      <p class="dp-title"><span data-lang-ko>상세 보기</span><span data-lang-en>Detail</span></p>
+    </div>
+    <button type="button" class="dp-close" aria-label="닫기" hidden>&times;</button>
+  </div>
+  <div class="dp-body">
+    <p class="dp-empty"><span data-lang-ko>왼쪽에서 항목을 클릭하면 근거 수치와 배경이 여기에 표시됩니다.</span><span data-lang-en>Click an item on the left to show its figures and background here.</span></p>
+  </div>
+</aside>
+
+</div>
+
+<footer class="foot">
+  <p><span data-lang-ko>미래에셋증권 마포WM · 장마감 시황 브리핑 · 2026년 8월 7일(금) 18:55 KST 작성 · 이후 평일 16:00 자동 갱신</span><span data-lang-en>Mirae Asset Securities, Mapo WM · Post-Close Briefing · compiled 18:55 KST, Friday 7 August 2026 · updated automatically at 16:00 on weekdays</span></p>
+  <p><span data-lang-ko>본 자료는 사내 참고용으로 작성되었으며 투자 권유를 목적으로 하지 않습니다. 수치는 보도된 자료를 검증해 정리한 것이나 오류가 있을 수 있으므로, 고객 응대 전 원자료를 확인하시기 바랍니다. 검증 상태는 각 항목의 배지로 표시했습니다.</span><span data-lang-en>Prepared for internal reference only; not a solicitation to invest. Figures are verified against reported sources but may contain errors — confirm against primary data before client use. Verification status is shown by the badge on each item.</span></p>
+</footer>
+
+</div>
+
+<script>
+(function () {
+  var root = document.documentElement;
+  var KEY = 'mas-briefing-lang';
+
+  /* ---- 한/영 ---- */
+  function applyLang(lang) {
+    root.setAttribute('lang', lang);
+    var btns = document.querySelectorAll('.lang-toggle button');
+    for (var i = 0; i < btns.length; i++) {
+      btns[i].setAttribute('aria-checked', btns[i].getAttribute('data-lang') === lang ? 'true' : 'false');
+    }
+    document.title = (lang === 'ko')
+      ? '모닝 마켓 브리핑 · 2026년 8월 7일 (금) | 미래에셋증권 마포WM'
+      : 'Morning Market Briefing · Friday 7 August 2026 | Mirae Asset Securities Mapo WM';
+    try { localStorage.setItem(KEY, lang); } catch (e) {}
+  }
+  var saved = null;
+  try { saved = localStorage.getItem(KEY); } catch (e) {}
+  applyLang(saved === 'en' ? 'en' : 'ko');
+  document.addEventListener('click', function (e) {
+    var b = e.target.closest ? e.target.closest('.lang-toggle button') : null;
+    if (b) applyLang(b.getAttribute('data-lang'));
+  });
+
+  /* ---- 표 행 확장 ---- */
+  function detailRowOf(tr) {
+    var n = tr.nextElementSibling;
+    return (n && n.classList.contains('detail-row')) ? n : null;
+  }
+  function toggleRow(tr, force) {
+    var d = detailRowOf(tr);
+    if (!d) return;
+    var open = force !== undefined ? force : tr.getAttribute('aria-expanded') !== 'true';
+    tr.setAttribute('aria-expanded', open ? 'true' : 'false');
+    if (open) { d.removeAttribute('hidden'); } else { d.setAttribute('hidden', ''); }
+  }
+
+  /* ---- 오른쪽 상세 패널 ---- */
+  var pane = document.querySelector('.detailpane');
+  var mq = window.matchMedia('(min-width: 1400px)');
+  var paneOn = false, activeHost = null;
+  var dpBody, dpTitle, dpKicker, dpClose, emptyBody, emptyTitle;
+  if (pane) {
+    dpBody = pane.querySelector('.dp-body');
+    dpTitle = pane.querySelector('.dp-title');
+    dpKicker = pane.querySelector('.dp-kicker');
+    dpClose = pane.querySelector('.dp-close');
+    emptyBody = dpBody.innerHTML;
+    emptyTitle = dpTitle.innerHTML;
+    dpClose.addEventListener('click', closePane);
+  }
+  function closePane() {
+    if (!pane) return;
+    if (activeHost) { activeHost.classList.remove('pane-active'); activeHost = null; }
+    dpBody.innerHTML = emptyBody;
+    dpTitle.innerHTML = emptyTitle;
+    dpKicker.innerHTML = '';
+    dpClose.setAttribute('hidden', '');
+  }
+  function detailOf(host, isRow) {
+    if (isRow) {
+      var dr = detailRowOf(host);
+      return dr ? dr.querySelector('.detail') : null;
+    }
+    var kids = host.children;
+    for (var i = 0; i < kids.length; i++) {
+      if (kids[i].classList.contains('detail')) return kids[i];
+    }
+    return null;
+  }
+  function paneTitleOf(detailEl, host, isRow) {
+    var t = detailEl.querySelector('.detail-title');
+    if (t) return t.innerHTML;
+    if (isRow) {
+      var c0 = host.querySelector('th, td');
+      return c0 ? c0.innerHTML : '';
+    }
+    var sm = host.querySelector('summary');
+    if (!sm) return '';
+    var c = sm.cloneNode(true);
+    var m = c.querySelector('.exp-mark');
+    if (m) m.parentNode.removeChild(m);
+    return c.innerHTML;
+  }
+  function openPane(host, isRow) {
+    var detailEl = detailOf(host, isRow);
+    if (!detailEl) return;
+    if (activeHost === host) { closePane(); return; }
+    if (activeHost) activeHost.classList.remove('pane-active');
+    activeHost = host;
+    host.classList.add('pane-active');
+    dpTitle.innerHTML = paneTitleOf(detailEl, host, isRow);
+    var sec = host.closest ? host.closest('.section') : null;
+    var st = sec ? sec.querySelector('.section-title') : null;
+    dpKicker.innerHTML = st ? st.innerHTML : '';
+    var clone = detailEl.cloneNode(true);
+    var dt = clone.querySelector('.detail-title');
+    if (dt) dt.parentNode.removeChild(dt);
+    dpBody.innerHTML = '';
+    dpBody.appendChild(clone);
+    dpClose.removeAttribute('hidden');
+    pane.scrollTop = 0;
+  }
+  function syncPaneMode() {
+    if (!pane) return;
+    var b = document.querySelector('.expand-all');
+    var allOpen = !!b && b.getAttribute('aria-pressed') === 'true';
+    var on = mq.matches && !allOpen;
+    if (on === paneOn) return;
+    paneOn = on;
+    document.body.classList.toggle('pane-mode', on);
+    if (!on) closePane();
+  }
+  if (mq.addEventListener) { mq.addEventListener('change', syncPaneMode); }
+  else if (mq.addListener) { mq.addListener(syncPaneMode); }
+
+  document.addEventListener('click', function (e) {
+    if (!e.target.closest) return;
+    if (e.target.closest('a')) return;
+    if (e.target.closest('.detailpane')) return;
+    var tr = e.target.closest('tr.clickable');
+    if (tr) {
+      if (paneOn) { e.preventDefault(); openPane(tr, true); } else { toggleRow(tr); }
+      return;
+    }
+    if (paneOn) {
+      var sm = e.target.closest('summary');
+      var host = sm && sm.parentNode;
+      if (host && host.classList && host.classList.contains('exp')) {
+        e.preventDefault();
+        openPane(host, false);
+      }
+    }
+  });
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape') { closePane(); return; }
+    if (e.key !== 'Enter' && e.key !== ' ') return;
+    var tr = e.target.closest ? e.target.closest('tr.clickable') : null;
+    if (tr) {
+      e.preventDefault();
+      if (paneOn) { openPane(tr, true); } else { toggleRow(tr); }
+    }
+  });
+
+  /* ---- 전체 펼치기 / 접기 ---- */
+  function setAll(open) {
+    var ds = document.querySelectorAll('details.exp');
+    for (var i = 0; i < ds.length; i++) { if (open) { ds[i].setAttribute('open', ''); } else { ds[i].removeAttribute('open'); } }
+    var rows = document.querySelectorAll('tr.clickable');
+    for (var j = 0; j < rows.length; j++) toggleRow(rows[j], open);
+    var btn = document.querySelector('.expand-all');
+    if (btn) btn.setAttribute('aria-pressed', open ? 'true' : 'false');
+    syncPaneMode();
+  }
+  var eb = document.querySelector('.expand-all');
+  if (eb) {
+    eb.addEventListener('click', function () {
+      setAll(eb.getAttribute('aria-pressed') !== 'true');
+    });
+  }
+
+  /* ---- 인쇄 / PDF ---- */
+  function snapshot() {
+    var s = { d: [], r: [] };
+    var ds = document.querySelectorAll('details.exp');
+    var rows = document.querySelectorAll('tr.clickable');
+    for (var i = 0; i < ds.length; i++) s.d.push(ds[i].hasAttribute('open'));
+    for (var j = 0; j < rows.length; j++) s.r.push(rows[j].getAttribute('aria-expanded') === 'true');
+    return s;
+  }
+  function restoreFrom(s) {
+    if (!s) return;
+    var ds = document.querySelectorAll('details.exp');
+    var rows = document.querySelectorAll('tr.clickable');
+    for (var i = 0; i < ds.length; i++) {
+      if (s.d[i]) { ds[i].setAttribute('open', ''); } else { ds[i].removeAttribute('open'); }
+    }
+    for (var j = 0; j < rows.length; j++) toggleRow(rows[j], s.r[j]);
+    var btn = document.querySelector('.expand-all');
+    if (btn) {
+      var allOpen = ds.length > 0 && document.querySelectorAll('details.exp[open]').length === ds.length;
+      btn.setAttribute('aria-pressed', allOpen ? 'true' : 'false');
+    }
+    syncPaneMode();
+  }
+  var pbs = document.querySelectorAll('.print-btn');
+  for (var k = 0; k < pbs.length; k++) {
+    pbs[k].addEventListener('click', function (ev) {
+      var full = ev.currentTarget.getAttribute('data-print') === 'full';
+      var before = snapshot();
+      var paneWas = activeHost;
+      setAll(full);
+      void document.body.offsetHeight;
+      try { window.focus(); } catch (e) {}
+      try { window.print(); } finally {
+        restoreFrom(before);
+        if (paneWas && paneOn && !activeHost) {
+          openPane(paneWas, paneWas.tagName === 'TR');
+        }
+      }
+    });
+  }
+
+  /* ---- 목차 스크롤 스파이 ---- */
+  var tocLinks = document.querySelectorAll('.sidenav-toc a');
+  if (tocLinks.length && 'IntersectionObserver' in window) {
+    var byId = {}, targets = [];
+    for (var t = 0; t < tocLinks.length; t++) {
+      var id = tocLinks[t].getAttribute('href').slice(1);
+      var el = document.getElementById(id);
+      if (el) { byId[id] = tocLinks[t]; targets.push(el); }
+    }
+    var visible = {};
+    function paint() {
+      var best = null;
+      for (var i = 0; i < targets.length; i++) {
+        if (visible[targets[i].id]) { best = targets[i].id; break; }
+      }
+      for (var id2 in byId) {
+        if (id2 === best) { byId[id2].setAttribute('aria-current', 'true'); }
+        else { byId[id2].removeAttribute('aria-current'); }
+      }
+      if (best && window.innerWidth < 1080) {
+        var a = byId[best];
+        var ul = a.parentNode.parentNode;
+        if (ul.scrollWidth > ul.clientWidth) {
+          var target = a.offsetLeft - (ul.clientWidth - a.offsetWidth) / 2;
+          ul.scrollTo ? ul.scrollTo({ left: target, behavior: 'smooth' }) : (ul.scrollLeft = target);
+        }
+      }
+    }
+    var io = new IntersectionObserver(function (entries) {
+      for (var i = 0; i < entries.length; i++) {
+        visible[entries[i].target.id] = entries[i].isIntersecting;
+      }
+      paint();
+    }, { rootMargin: '-96px 0px -55% 0px', threshold: 0 });
+    for (var j2 = 0; j2 < targets.length; j2++) io.observe(targets[j2]);
+  }
+
+  syncPaneMode();
+})();
+</script>

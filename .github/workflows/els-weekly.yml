@@ -70,10 +70,18 @@ jobs:
           git add data/els.js els-product-search.html tools/discovery/rendered_list.json
           if git diff --cached --quiet; then
             echo "변경 없음 — 커밋 생략"
-          else
-            git commit -m "chore(els): 상품 데이터 갱신 ($(date -u +%Y-%m-%d))"
-            git push
+            exit 0
           fi
+          git commit -m "chore(els): 상품 데이터 갱신 ($(date -u +%Y-%m-%d))"
+          # 같은 브랜치에 시세 수집 워크플로우도 커밋한다. 그 사이에 끼면
+          # push 가 거절되므로 새 커밋을 받아 얹고 다시 민다.
+          for i in 1 2 3 4 5; do
+            if git push; then exit 0; fi
+            echo "push 거절 — 원격 변경을 받아 재시도 ($i/5)"
+            git pull --rebase origin "${{ github.ref_name }}" || exit 1
+          done
+          echo "5회 시도 후에도 push 실패"
+          exit 1
 
       - name: 결과 요약
         if: always()
