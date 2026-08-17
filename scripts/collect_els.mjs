@@ -257,7 +257,10 @@ async function main() {
     }
     const grid = json.grid01 || [];
     rows.push(...grid);
-    console.log(`  페이지 ${i + 1}: ${grid.length}건 (누적 ${rows.length}, continueYn=${json.continueYn})`);
+    // 0건일 때 "판매 상품이 없다" 와 "엔드포인트가 깨졌다" 를 구분해야 하므로
+    // 응답 상태와 크기를 함께 남긴다.
+    console.log(`  페이지 ${i + 1}: ${grid.length}건 (누적 ${rows.length}, ` +
+                `HTTP ${res.status}, ${res.text.length}B, continueYn=${json.continueYn})`);
 
     if (String(json.continueYn) !== '1' || !grid.length) break;
     nextKey = json.cts?.[0]?.next_key || grid[grid.length - 1]?.next_key || '';
@@ -298,15 +301,20 @@ async function main() {
 
   // 홈페이지 화면 원문 목록을 저장소에 남긴다. 수집 결과가 실제 판매 상품과
   // 같은지 이 파일로 대조한다 (사이트 접근이 안 되는 환경에서의 확인 수단).
-  await mkdir('tools/discovery', { recursive: true });
-  await writeFile('tools/discovery/rendered_list.json', JSON.stringify({
-    capturedAt: new Date().toISOString(),
-    screen: ORIGIN + SCREEN,
-    title: rendered.title,
-    apiCount: rows.length,
-    renderedCount: rendered.count,
-    rows: rendered.rows,
-  }, null, 2));
+  // 0건일 때 덮어쓰면 대조 기준이 사라지므로 직전 내용을 그대로 둔다.
+  if (rendered.count) {
+    await mkdir('tools/discovery', { recursive: true });
+    await writeFile('tools/discovery/rendered_list.json', JSON.stringify({
+      capturedAt: new Date().toISOString(),
+      screen: ORIGIN + SCREEN,
+      title: rendered.title,
+      apiCount: rows.length,
+      renderedCount: rendered.count,
+      rows: rendered.rows,
+    }, null, 2));
+  } else {
+    console.log('화면 목록이 0건이라 tools/discovery/rendered_list.json 은 직전 내용을 유지합니다.');
+  }
   await writeFile(join(DEBUG_DIR, 'raw-rows.json'), JSON.stringify(rows.slice(0, 300), null, 2));
 
   const products = [];
@@ -335,8 +343,30 @@ async function main() {
   }
 
   if (!products.length) {
+    // 청약 진행중인 상품이 실제로 없는 날이 있다. 그건 고장이 아니므로
+    // 정상 종료하되, 홈페이지를 확인한 시각만 남겨 화면이 "언제 확인한 결과인지"
+    // 말할 수 있게 한다. 응답 자체가 깨졌을 때만 실패로 다룬다.
+    const first = pages[0] || {};
+    const apiHealthy = first.status === 200 && !first.parseError;
+
+    if (apiHealthy && !rows.length && !rendered.count) {
+      console.log(
+        '\n현재 청약 진행중인 상품이 0건입니다 (목록 API·홈페이지 화면 모두 0건).\n' +
+        `  · ${OUT_DATA} 의 상품 목록은 그대로 두고 확인 시각만 기록합니다.`
+      );
+      const keep = await readData(OUT_DATA).catch(() => null);
+      if (keep) {
+        keep.data.checkedAt = new Date().toISOString();
+        keep.data.checkedCount = 0;
+        await writeFile(OUT_DATA, keep.header + 'window.ELS_DATA = ' + serializeData(keep.data) + ';\n');
+      }
+      return;
+    }
+
     console.error(
       '\n상품을 한 건도 수집하지 못했습니다.\n' +
+      `  · 목록 API: HTTP ${first.status ?? '응답없음'}${first.parseError ? ' (JSON 파싱 실패)' : ''}` +
+      `, 원시 ${rows.length}건 / 화면 ${rendered.count}건\n` +
       `  · ${OUT_DATA} 는 그대로 두므로 페이지는 직전 데이터를 유지합니다.\n` +
       `  · ${DEBUG_DIR}/raw-rows.json 의 실제 응답과 normalize() 를 대조하세요.\n` +
       '  · 엔드포인트가 바뀌었다면 scripts/discover_els.mjs 를 다시 돌리세요.'
@@ -348,6 +378,8 @@ async function main() {
   const prev = await readData(OUT_DATA).catch(() => ({ header: '', data: {} }));
   const payload = {
     updatedAt: new Date().toISOString(),
+    checkedAt: new Date().toISOString(),
+    checkedCount: products.length,
     source: 'live',
     sourceNote: '미래에셋증권 홈페이지 ELS/DLS 캘린더 (청약 진행중)',
     sourceNoteEn: 'Mirae Asset Securities ELS/DLS calendar — currently on offer',
