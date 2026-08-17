@@ -31,247 +31,21 @@ MARKET = ROOT / 'data' / 'market' / 'latest.json'
 BRIEF_DIR = ROOT / 'docs' / 'briefings'
 INDEX_JSON = BRIEF_DIR / 'index.json'
 
-UP = '#C62828'      # 상승
-DOWN = '#043B72'    # 하락
-ORANGE = '#F58220'
-BLUE = '#043B72'
-GRID = '#A0A6A8'
-AXIS = '#49535B'
+import masviz as mv
+from masviz import (BLUE, ORANGE, bp, cell, cls, eok, esc, hbars, num, pct,
+                    section, table)
 
 WEEKDAY_KO = ['월', '화', '수', '목', '금', '토', '일']
 
 
-# ---------------------------------------------------------------- 숫자 표기
-
-def num(v, digits=2):
-    if v is None:
-        return '—'
-    return f'{v:,.{digits}f}'
-
-
-def pct(v, digits=2):
-    """등락률. 부호를 항상 붙인다."""
-    if v is None:
-        return '—'
-    return f'{v:+.{digits}f}%'
-
-
-def bp(v):
-    if v is None:
-        return '—'
-    return f'{v:+,.0f}bp'
-
-
-def eok(v):
-    """억원. 조 단위가 되면 조로 접는다."""
-    if v is None:
-        return '—'
-    if abs(v) >= 10000:
-        return f'{v / 10000:+,.1f}조원'
-    return f'{v:+,.0f}억원'
-
-
-def cls(v):
-    if v is None:
-        return 'flat'
-    return 'up' if v > 0 else ('down' if v < 0 else 'flat')
-
-
-def esc(s):
-    return (str(s).replace('&', '&amp;').replace('<', '&lt;')
-            .replace('>', '&gt;').replace('"', '&quot;'))
-
-
-# ---------------------------------------------------------------- 차트
-
-def hbars(rows, unit='%', width=760, row_h=26, digits=2):
-    """가로 막대. rows = [(라벨, 값), ...]
-
-    등락 다이버징이므로 0 을 가운데 두고 좌우로 뻗는다. 값은 막대 끝에
-    직접 적는다 — 오렌지 대비 경고와 같은 이유로, 색만으로 크기를 읽게
-    하지 않는다.
-    """
-    rows = [(l, v) for l, v in rows if v is not None]
-    if not rows:
-        return '<p class="chart-empty">표시할 값이 없습니다.</p>'
-
-    label_w, value_w, pad = 190, 78, 8
-    plot_w = width - label_w - value_w - pad * 2
-    height = row_h * len(rows) + 22
-    vmax = max(abs(v) for _, v in rows) or 1.0
-    # 부호가 한쪽뿐이면 0 을 끝으로 밀어 폭을 다 쓴다. 섞여 있을 때만 가운데.
-    has_pos = any(v > 0 for _, v in rows)
-    has_neg = any(v < 0 for _, v in rows)
-    if has_pos and has_neg:
-        zero = label_w + pad + plot_w / 2
-        scale = (plot_w / 2) / vmax
-    elif has_neg:
-        zero = label_w + pad + plot_w
-        scale = plot_w / vmax
-    else:
-        zero = label_w + pad
-        scale = plot_w / vmax
-
-    out = [f'<svg class="chart" viewBox="0 0 {width} {height}" role="img" '
-           f'preserveAspectRatio="xMidYMid meet">']
-    # 0 기준선
-    out.append(f'<line x1="{zero:.1f}" y1="4" x2="{zero:.1f}" y2="{height - 18:.1f}" '
-               f'stroke="{AXIS}" stroke-width="1"/>')
-
-    for i, (label, v) in enumerate(rows):
-        y = 4 + i * row_h
-        bar_h = row_h - 10
-        w = abs(v) * scale
-        x = zero if v >= 0 else zero - w
-        color = UP if v > 0 else (DOWN if v < 0 else GRID)
-        # 4px 라운드는 데이터 끝쪽만 — 기준선에 붙는 쪽은 각지게 둔다.
-        r = '4' if w >= 4 else '0'
-        out.append(
-            f'<g class="mark" tabindex="0" data-label="{esc(label)}" '
-            f'data-value="{v:+.{digits}f}{unit}">'
-            # 막대보다 넓은 히트 존 — 행 어디에 커서를 두어도 값이 뜬다.
-            f'<rect class="row-hit" x="0" y="{y - 5:.1f}" width="{width}" '
-            f'height="{row_h}" fill="transparent"/>'
-            f'<rect x="{x:.1f}" y="{y:.1f}" width="{max(w, 1):.1f}" height="{bar_h}" '
-            f'rx="{r}" fill="{color}"/>'
-            f'<text class="bar-label" x="{label_w:.0f}" y="{y + bar_h * 0.5 + 4:.1f}" '
-            f'text-anchor="end">{esc(label)}</text>'
-            f'<text class="bar-value {cls(v)}" x="{width - value_w + 4:.0f}" '
-            f'y="{y + bar_h * 0.5 + 4:.1f}">{v:+.{digits}f}{unit}</text>'
-            f'</g>'
-        )
-
-    anchor = 'middle' if (has_pos and has_neg) else ('end' if has_neg else 'start')
-    reach = '좌우' if (has_pos and has_neg) else '최대'
-    out.append(f'<text class="axis-note" x="{zero:.1f}" y="{height - 4:.1f}" '
-               f'text-anchor="{anchor}">0{unit} 기준 · {reach} {vmax:.2f}{unit}</text>')
-    out.append('</svg>')
-    return ''.join(out)
-
-
-def dual_line(series, width=760, height=260):
-    """두 계열 리베이스 선. series = [(이름, 색, [(날짜, 값), ...]), ...]
-
-    두 값 모두 «기간 첫날 = 100» 으로 맞춰 하나의 축에 올린다.
-    축이 둘인 차트는 만들지 않는다.
-    """
-    series = [s for s in series if len(s[2]) >= 2]
-    if not series:
-        return '<p class="chart-empty">표시할 값이 없습니다.</p>'
-
-    ml, mr, mt, mb = 46, 14, 14, 34
-    pw, ph = width - ml - mr, height - mt - mb
-    n = max(len(s[2]) for s in series)
-
-    rebased = []
-    for name, color, pts in series:
-        base = pts[0][1]
-        rebased.append((name, color, [(d, v / base * 100) for d, v in pts]))
-
-    vals = [v for _, _, pts in rebased for _, v in pts]
-    lo, hi = min(vals), max(vals)
-    span = (hi - lo) or 1.0
-    lo, hi = lo - span * 0.08, hi + span * 0.08
-
-    def X(i):
-        return ml + (pw * i / (n - 1) if n > 1 else 0)
-
-    def Y(v):
-        return mt + ph - (v - lo) / (hi - lo) * ph
-
-    out = [f'<svg class="chart" viewBox="0 0 {width} {height}" role="img" '
-           f'preserveAspectRatio="xMidYMid meet">']
-
-    # 그리드 + 축 라벨
-    for k in range(5):
-        v = lo + (hi - lo) * k / 4
-        y = Y(v)
-        out.append(f'<line x1="{ml}" y1="{y:.1f}" x2="{ml + pw}" y2="{y:.1f}" '
-                   f'stroke="{GRID}" stroke-width="1" stroke-dasharray="3 3" opacity=".5"/>')
-        out.append(f'<text class="axis-note" x="{ml - 8}" y="{y + 4:.1f}" '
-                   f'text-anchor="end">{v:.0f}</text>')
-
-    # 100 기준선 — 이 주의 출발점
-    if lo <= 100 <= hi:
-        out.append(f'<line x1="{ml}" y1="{Y(100):.1f}" x2="{ml + pw}" y2="{Y(100):.1f}" '
-                   f'stroke="{AXIS}" stroke-width="1"/>')
-
-    for name, color, pts in rebased:
-        d = ' '.join(f'{"M" if i == 0 else "L"}{X(i):.1f} {Y(v):.1f}'
-                     for i, (_, v) in enumerate(pts))
-        out.append(f'<path d="{d}" fill="none" stroke="{color}" stroke-width="2" '
-                   f'stroke-linejoin="round" stroke-linecap="round"/>')
-        # 끝점만 표식 + 직접 라벨. 모든 점에 숫자를 달지 않는다.
-        lx, lv = X(len(pts) - 1), pts[-1][1]
-        out.append(f'<circle cx="{lx:.1f}" cy="{Y(lv):.1f}" r="4.5" fill="{color}" '
-                   f'stroke="#fff" stroke-width="2"/>')
-
-    # 날짜 축 — 양 끝과 가운데만
-    for i in (0, (n - 1) // 2, n - 1):
-        d = rebased[0][2][min(i, len(rebased[0][2]) - 1)][0]
-        anchor = 'start' if i == 0 else ('end' if i == n - 1 else 'middle')
-        out.append(f'<text class="axis-note" x="{X(i):.1f}" y="{height - 12}" '
-                   f'text-anchor="{anchor}">{esc(d[5:])}</text>')
-
-    # hover 크로스헤어용 히트 존
-    for i in range(n):
-        tip = ' · '.join(
-            f'{name} {pts[i][1]:.1f}' for name, _, pts in rebased if i < len(pts))
-        d = rebased[0][2][min(i, len(rebased[0][2]) - 1)][0]
-        out.append(
-            f'<rect class="hit" x="{X(i) - pw / (2 * max(n - 1, 1)):.1f}" y="{mt}" '
-            f'width="{pw / max(n - 1, 1):.1f}" height="{ph}" fill="transparent" '
-            f'data-label="{esc(d)}" data-value="{esc(tip)} (기준 100)"/>')
-
-    out.append('</svg>')
-
-    legend = ' '.join(
-        f'<span class="key"><i style="background:{c}"></i>{esc(nm)}</span>'
-        for nm, c, _ in rebased)
-    return f'<div class="legend">{legend}</div>' + ''.join(out)
-
-
-# ---------------------------------------------------------------- 표
-
-def table(headers, rows, aligns=None, highlight=None):
-    aligns = aligns or ['left'] * len(headers)
-    out = ['<div class="table-wrap"><table><thead><tr>']
-    for h, a in zip(headers, aligns):
-        style = ' style="text-align:right"' if a == 'right' else ''
-        out.append(f'<th{style}>{esc(h)}</th>')
-    out.append('</tr></thead><tbody>')
-    for r in rows:
-        tr_cls = ' class="hl"' if highlight and r[0] in highlight else ''
-        out.append(f'<tr{tr_cls}>')
-        for cell, a in zip(r, aligns):
-            style = ' class="n"' if a == 'right' else ''
-            out.append(f'<td{style}>{cell}</td>')
-        out.append('</tr>')
-    out.append('</tbody></table></div>')
-    return ''.join(out)
-
-
-def cell(v, digits=2, kind='pct'):
-    """등락 셀 — 색은 up/down 클래스로만 준다."""
-    if v is None:
-        return '<span class="flat">—</span>'
-    text = bp(v) if kind == 'bp' else pct(v, digits)
-    return f'<span class="{cls(v)}">{text}</span>'
-
-
-# ---------------------------------------------------------------- 본문
-
 def w1(d):
+    """수집기가 붙여 둔 주간 등락률. 없으면 None."""
     return (d.get('perf') or {}).get('w1')
 
 
-def section(num_, title, body, note=None):
-    n = f'<span class="sec-num">{num_}</span>' if num_ else ''
-    tail = f'<p class="note">{note}</p>' if note else ''
-    sid = f'sec-{num_}' if num_ else None
-    idattr = f' id="{sid}"' if sid else ''
-    return (f'<section class="section"{idattr}><div class="section-rule"></div>'
-            f'<h2 class="section-title">{n}{esc(title)}</h2>{body}{tail}</section>')
+def dual_line(series, **kw):
+    """두 계열을 «첫날 = 100» 으로 맞춰 한 축에 올린다."""
+    return mv.lines(series, rebase=True, digits=1, **kw)
 
 
 def build(m: dict, briefings: list[dict]) -> tuple[str, dict]:
@@ -564,28 +338,10 @@ def build(m: dict, briefings: list[dict]) -> tuple[str, dict]:
 
 # ---------------------------------------------------------------- 스타일
 
-STYLE = """<meta charset="utf-8">
-<title>주간 마켓 다이제스트 | 미래에셋증권 마포WM</title>
-<style>
-*,*::before,*::after{box-sizing:border-box}
-:root{
-  --primary:#F58220; --primary-active:#CB6015; --primary-soft:#FAB072;
-  --secondary:#043B72;
-  --canvas:#FFFFFF; --surface-soft:#ECEFF4; --surface-subtle:#F7F8FA;
-  --hairline:#CDCECB; --hairline-soft:#E5E4E1; --highlight:#D7D7D7;
-  --ink:#1A1A1A; --body:#3D3D3D; --muted:#6C6C6C; --muted-soft:#84888B;
-  --up:#C62828; --down:#043B72; --on-primary:#FFFFFF;
-  --font-kr:'Spoqa Han Sans Neo','Noto Sans KR','Apple SD Gothic Neo','Malgun Gothic',sans-serif;
-  --font-en:'Inter','Aptos','Segoe UI',system-ui,-apple-system,sans-serif;
-}
-.wd-root,body{font-family:var(--font-kr)}
-body{margin:0;background:var(--canvas);color:var(--body);font-size:19px;line-height:1.65;
-  font-variant-numeric:tabular-nums;-webkit-text-size-adjust:100%}
-h1,h2,h3{color:var(--ink);margin:0}
-a{color:var(--secondary)}
-code{font-family:var(--font-en);font-size:.88em;background:var(--surface-subtle);
-  padding:1px 5px;border-radius:2px}
-
+# ---------------------------------------------------------------- 스타일
+# 토큰·차트·표 CSS 는 masviz 가 갖는다. 여기에는 이 판 고유의 헤로와
+# 요약 타일만 둔다.
+PAGE_CSS = """
 .hero{background:var(--primary);color:var(--on-primary);padding:38px 32px 34px;margin-bottom:56px}
 .hero-tag{font-family:var(--font-en);font-size:14px;letter-spacing:.6px;opacity:.9;margin-bottom:10px}
 .hero h1{color:var(--on-primary);font-size:34px;font-weight:700;letter-spacing:-.3px;line-height:1.25}
@@ -593,19 +349,6 @@ code{font-family:var(--font-en);font-size:.88em;background:var(--surface-subtle)
 .hero-note{margin:14px 0 0;font-size:15px;opacity:.92;max-width:70ch}
 .hero code{background:rgba(255,255,255,.18);color:#fff}
 @media (max-width:768px){.hero{padding:28px 20px}.hero h1{font-size:26px}}
-
-.section{max-width:1200px;margin:0 auto 56px;padding:0 32px}
-@media (max-width:768px){.section{padding:0 20px;margin-bottom:36px}}
-.section-rule{height:1px;background:var(--primary);margin-bottom:19px}
-.section-title{font-size:26px;font-weight:600;margin-bottom:19px}
-@media (max-width:768px){.section-title{font-size:22px}}
-.sec-num{font-family:var(--font-en);color:var(--primary);margin-right:12px;font-weight:700}
-h3.sub{font-size:22px;font-weight:600;margin:28px 0 14px}
-.note{font-size:15px;color:var(--muted);margin:14px 0 0;line-height:1.55}
-.callout{background:var(--surface-soft);border-left:3px solid var(--primary);
-  padding:14px 19px;margin:19px 0 0;font-size:17px;border-radius:0 2px 2px 0}
-.dim{color:var(--muted-soft);font-size:.85em;font-family:var(--font-en)}
-.chart-empty{color:var(--muted);font-size:17px}
 
 .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:19px}
 @media (max-width:900px){.stats{grid-template-columns:repeat(2,1fr);gap:14px}}
@@ -615,110 +358,24 @@ h3.sub{font-size:22px;font-weight:600;margin:28px 0 14px}
 .stat-label{font-size:16px;font-weight:500;letter-spacing:.6px;color:var(--muted)}
 .stat-value{font-family:var(--font-en);font-size:38px;font-weight:700;line-height:1.1;
   color:var(--ink);margin-top:6px}
-@media (max-width:900px){.stat{padding:14px}.stat-value{font-size:30px}}
 .stat-chg{font-size:16px;margin-top:6px;font-weight:500}
-
-.chart{width:100%;height:auto;display:block;margin:8px 0 4px;overflow:visible}
-.chart text{font-family:var(--font-kr);font-variant-numeric:tabular-nums}
-.bar-label{font-size:15px;fill:var(--body)}
-.bar-value{font-size:15px;font-weight:500;font-family:var(--font-en)}
-.axis-note{font-size:13px;fill:var(--muted-soft);font-family:var(--font-en)}
-.chart .mark{cursor:default}
-.chart .mark:hover .row-hit{fill:var(--surface-subtle)}
-.chart .mark:focus-visible .row-hit{fill:var(--surface-subtle);stroke:var(--ink);stroke-width:1}
-.chart .hit{cursor:crosshair}
-.legend{display:flex;gap:19px;flex-wrap:wrap;margin-bottom:6px;font-size:16px}
-.legend .key{display:inline-flex;align-items:center;gap:7px;color:var(--body)}
-.legend i{width:14px;height:3px;border-radius:2px;display:inline-block}
-
-.table-wrap{overflow-x:auto;margin-top:19px}
-table{border-collapse:collapse;width:100%;border:1px solid var(--hairline);font-size:17px}
-th,td{padding:10px 13px;text-align:left;border-bottom:1px solid var(--hairline-soft)}
-thead th{background:var(--primary-soft);color:#1A1A1A;font-weight:700;font-size:16px;white-space:nowrap}
-tbody tr:hover{background:var(--surface-subtle)}
-tbody tr.hl{background:var(--highlight)}
-td.n,th[style]{text-align:right;font-family:var(--font-en);white-space:nowrap}
-.up{color:var(--up)} .down{color:var(--down)} .flat{color:var(--muted-soft)}
-.chart .up{fill:var(--up)} .chart .down{fill:var(--down)} .chart .flat{fill:var(--muted-soft)}
+@media (max-width:900px){.stat{padding:14px}.stat-value{font-size:30px}}
 
 .checks{margin:0;padding-left:24px;font-size:17px}
 .checks li{margin-bottom:8px}
 
-#wd-tip{position:fixed;z-index:50;background:#1A1A1A;color:#fff;font-size:13px;
-  padding:7px 10px;border-radius:2px;pointer-events:none;opacity:0;transition:opacity .1s;
-  font-family:var(--font-kr);white-space:nowrap;max-width:80vw}
-#wd-tip strong{display:block;font-weight:600;margin-bottom:2px}
-
 @media (prefers-color-scheme:dark){
-  :root:not([data-theme="light"]){
-    --canvas:#15171B;--surface-soft:#212630;--surface-subtle:#1B1F26;
-    --hairline:#3A414C;--hairline-soft:#2A303A;--highlight:#272C34;
-    --ink:#F1F3F6;--body:#CDD3DB;--muted:#98A0AB;--muted-soft:#7F8794;
-    --primary:#FF9A4A;--primary-soft:#4A331E;--secondary:#82B7EA;
-    --up:#FF7A7A;--down:#82B7EA;--on-primary:#241206;
-  }
   :root:not([data-theme="light"]) .hero{background:#8A4410;--on-primary:#FFF1E4}
   :root:not([data-theme="light"]) .hero h1{color:#FFF1E4}
-  :root:not([data-theme="light"]) thead th{color:#F1F3F6;background:#3A2A1C}
 }
-
-@media print{
-  body{font-size:13pt;line-height:1.4}
-  .section{max-width:100%;padding:0;margin-bottom:24px}
-  .hero{padding:16px 0;margin-bottom:24px}
-  table,.chart,.stats{page-break-inside:avoid}
-  h2,h3{page-break-after:avoid}
-  #wd-tip{display:none}
-}
-</style>
+@media print{.hero{padding:16px 0;margin-bottom:24px}}
 """
 
-SCRIPT = """
-<script>
-(function () {
-  var tip = document.createElement('div');
-  tip.id = 'wd-tip';
-  document.body.appendChild(tip);
+STYLE = ('<meta charset="utf-8">\n'
+         '<title>주간 마켓 다이제스트 | 미래에셋증권 마포WM</title>\n'
+         '<style>' + mv.TOKENS + PAGE_CSS + '</style>\n')
 
-  function show(el, e) {
-    var label = el.getAttribute('data-label');
-    var value = el.getAttribute('data-value');
-    if (!label && !value) return;
-    tip.innerHTML = '<strong>' + label + '</strong>' + value;
-    tip.style.opacity = '1';
-    move(e);
-  }
-  function move(e) {
-    var x = (e.clientX || 0) + 14, y = (e.clientY || 0) + 14;
-    var w = tip.offsetWidth, h = tip.offsetHeight;
-    if (x + w > window.innerWidth - 8) x = window.innerWidth - w - 8;
-    if (y + h > window.innerHeight - 8) y = (e.clientY || 0) - h - 12;
-    tip.style.left = x + 'px';
-    tip.style.top = y + 'px';
-  }
-  function hide() { tip.style.opacity = '0'; }
-
-  document.addEventListener('mouseover', function (e) {
-    var el = e.target.closest('.mark, .hit');
-    if (el) show(el, e);
-  });
-  document.addEventListener('mousemove', function (e) {
-    if (tip.style.opacity === '1') move(e);
-  });
-  document.addEventListener('mouseout', function (e) {
-    if (e.target.closest('.mark, .hit')) hide();
-  });
-  /* 키보드로도 값을 읽을 수 있게 한다 — 막대는 tabindex 를 갖는다. */
-  document.addEventListener('focusin', function (e) {
-    var el = e.target.closest('.mark');
-    if (!el) return;
-    var r = el.getBoundingClientRect();
-    show(el, { clientX: r.right, clientY: r.top });
-  });
-  document.addEventListener('focusout', hide);
-})();
-</script>
-"""
+SCRIPT = '<script>' + mv.TOOLTIP_JS + '</script>\n'
 
 
 def register(meta: dict) -> None:
