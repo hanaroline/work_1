@@ -1,0 +1,93 @@
+name: 주간 다이제스트 · 아카이브 갱신
+
+# 금요일 장마감 시세가 들어온 뒤 한 주를 정리하고, 브리핑 아카이브 색인을
+# 다시 만든다. 두 스크립트 모두 저장소 안의 파일만 읽으므로 네트워크가
+# 필요 없다 — 시세는 market-data.yml 이 이미 커밋해 둔 것을 쓴다.
+
+on:
+  workflow_dispatch:
+  schedule:
+    # 금요일 16:30 KST (07:30 UTC). 시세 수집(15:40·16:00 KST) 뒤다.
+    - cron: '30 7 * * 5'
+  # 브리핑이 새로 보관되면 아카이브 색인을 맞춘다.
+  push:
+    branches: [main]
+    paths:
+      - 'docs/briefings/*.html'
+      - 'docs/briefings/index.json'
+      - 'scripts/build_briefing_archive.py'
+      - 'scripts/build_weekly_digest.py'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: weekly-digest
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      # 예약 실행일 때만 새 판을 만든다. push 로 들어온 경우는 색인만
+      # 다시 만들면 되므로, 이미 있는 판을 덮어써 커밋을 늘리지 않는다.
+      - name: 주간 다이제스트 생성
+        if: github.event_name != 'push'
+        run: python3 scripts/build_weekly_digest.py
+
+      - name: 시세 파일 기준일 확인
+        if: github.event_name != 'push'
+        run: |
+          python3 - <<'PY'
+          import json, pathlib
+          m = json.loads(pathlib.Path('data/market/latest.json').read_text(encoding='utf-8'))
+          print('수집 시각 :', m['generated_at_kst'], 'KST')
+          print('코스피 종가일:', m['indices']['kospi']['date'])
+          PY
+
+      - name: 아카이브 색인 재생성
+        run: python3 scripts/build_briefing_archive.py
+
+      - name: 커밋
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add docs/index.html docs/briefings
+          if git diff --cached --quiet; then
+            echo "변경 없음 — 커밋 생략"
+            exit 0
+          fi
+          git commit -m "chore(docs): 주간 다이제스트·아카이브 갱신 ($(date -u +%Y-%m-%d))"
+          # 시세 수집 워크플로우가 같은 브랜치에 커밋한다. 그 사이에 끼면
+          # push 가 거절되므로 새 커밋을 받아 얹고 다시 민다.
+          for i in 1 2 3 4 5; do
+            if git push; then exit 0; fi
+            echo "push 거절 — 원격 변경을 받아 재시도 ($i/5)"
+            git pull --rebase origin "${GITHUB_REF_NAME}" || exit 1
+          done
+          echo "5회 시도 후에도 push 실패"
+          exit 1
+
+      - name: 결과 요약
+        run: |
+          {
+            echo "### 주간 다이제스트 · 아카이브"
+            echo ""
+            python3 - <<'PY'
+          import json, pathlib
+          d = json.loads(pathlib.Path('docs/briefings/index.json').read_text(encoding='utf-8'))
+          bs = d['briefings']
+          print(f"- 보관 {len(bs)}판")
+          print("")
+          print("| 날짜 | 판 | 제목 |")
+          print("|---|---|---|")
+          for b in bs[:10]:
+              print(f"| {b['date']} | {b.get('label_ko') or b.get('session','')} | {b.get('title','')} |")
+          PY
+          } >> "$GITHUB_STEP_SUMMARY"
