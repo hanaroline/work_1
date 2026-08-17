@@ -83,6 +83,14 @@ jobs:
           echo "5회 시도 후에도 push 실패"
           exit 1
 
+      # 수집 실패는 위에서 넘겼지만(직전 데이터 보존·시세 갱신은 그대로 돌아야 한다)
+      # 잡까지 초록으로 두면 데이터가 조용히 낡는다. 마지막에 빨갛게 만든다.
+      - name: 수집 실패 시 잡 실패 처리
+        if: steps.collect.outcome == 'failure'
+        run: |
+          echo "::error::ELS 상품 수집 실패 — data/els.js 는 직전 데이터를 유지합니다."
+          exit 1
+
       - name: 결과 요약
         if: always()
         run: |
