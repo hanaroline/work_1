@@ -1,104 +1,113 @@
 {
-  "note": "발행한 브리핑의 보관 목록이다. 사이드바 「지난 브리핑」은 이 목록으로 만든다. 세션 작업폴더는 컨테이너가 회수되면 사라지므로 원본 HTML 도 여기 함께 둔다. file 이 있는 항목의 HTML 은 <html>·<body> 없는 아티팩트 본문이라 그대로 다시 발행할 수 있다. file 이 null 이면 링크만 남아 있고 원본은 저장소에 없다. url 이 null 이면 같은 아티팩트 주소를 뒷날짜 판이 덮어써서 링크가 더 이상 그날 것을 가리키지 않는다는 뜻이다 — 원본은 file 에 그대로 있으니 다시 발행하면 된다.",
-  "briefings": [
-    {
-      "date": "2026-08-15",
-      "session": "global",
-      "title": "해외 증시 브리핑",
-      "label_ko": "해외 증시",
-      "label_en": "Global brief",
-      "url": "https://claude.ai/code/artifact/dca66b4e-550e-42ed-96d9-b24918392756",
-      "file": "2026-08-15-global.html"
-    },
-    {
-      "date": "2026-08-14",
-      "session": "morning",
-      "title": "모닝 마켓 브리핑",
-      "label_ko": "모닝 마켓",
-      "label_en": "Morning brief",
-      "url": null,
-      "file": "2026-08-14-morning.html"
-    },
-    {
-      "date": "2026-08-13",
-      "session": "morning",
-      "title": "모닝 마켓 브리핑",
-      "label_ko": "모닝 마켓",
-      "label_en": "Morning brief",
-      "url": null,
-      "file": "2026-08-13-morning.html"
-    },
-    {
-      "date": "2026-08-12",
-      "session": "morning",
-      "title": "모닝 마켓 브리핑",
-      "label_ko": "모닝 마켓",
-      "label_en": "Morning brief",
-      "url": null,
-      "file": "2026-08-12-morning.html"
-    },
-    {
-      "date": "2026-08-11",
-      "session": "morning",
-      "title": "모닝 마켓 브리핑",
-      "label_ko": "모닝 마켓",
-      "label_en": "Morning brief",
-      "url": null,
-      "file": "2026-08-11-morning.html"
-    },
-    {
-      "date": "2026-08-10",
-      "session": "close",
-      "title": "장마감 시황 브리핑",
-      "label_ko": "장마감 시황",
-      "label_en": "Close brief",
-      "url": "https://claude.ai/code/artifact/5ebc6deb-3931-4e56-ae1f-afbb420fd92b",
-      "file": "2026-08-10-close.html"
-    },
-    {
-      "date": "2026-08-10",
-      "session": "morning",
-      "title": "모닝 마켓 브리핑",
-      "label_ko": "모닝 마켓",
-      "label_en": "Morning brief",
-      "url": null,
-      "file": "2026-08-10-morning.html"
-    },
-    {
-      "date": "2026-08-08",
-      "session": "global-morning",
-      "title": "해외 증시 모닝 브리핑",
-      "label_ko": "해외 증시 모닝",
-      "label_en": "Global morning",
-      "url": "https://claude.ai/code/artifact/f8703542-a9a9-42c0-aefd-1ae122a05888",
-      "file": "2026-08-08-global.html"
-    },
-    {
-      "date": "2026-08-07",
-      "session": "close",
-      "title": "장마감 시황 브리핑",
-      "label_ko": "장마감 시황",
-      "label_en": "Close brief",
-      "url": null,
-      "file": "2026-08-07-close.html"
-    },
-    {
-      "date": "2026-08-07",
-      "session": "morning",
-      "title": "모닝 마켓 브리핑",
-      "label_ko": "모닝 마켓",
-      "label_en": "Morning brief",
-      "url": null,
-      "file": "2026-08-07-morning.html"
-    },
-    {
-      "date": "2026-08-06",
-      "session": "morning",
-      "title": "아침 브리핑",
-      "label_ko": "아침 브리핑",
-      "label_en": "Morning brief",
-      "url": "https://claude.ai/code/artifact/382fd976-d577-44b0-8380-3c5d378bada7",
-      "file": "2026-08-06-morning.html"
-    }
-  ]
+ "note": "발행한 브리핑의 보관 목록이다. 사이드바 「지난 브리핑」은 이 목록으로 만든다. 세션 작업폴더는 컨테이너가 회수되면 사라지므로 원본 HTML 도 여기 함께 둔다. file 이 있는 항목의 HTML 은 <html>·<body> 없는 아티팩트 본문이라 그대로 다시 발행할 수 있다. file 이 null 이면 링크만 남아 있고 원본은 저장소에 없다. url 이 null 이면 같은 아티팩트 주소를 뒷날짜 판이 덮어써서 링크가 더 이상 그날 것을 가리키지 않는다는 뜻이다 — 원본은 file 에 그대로 있으니 다시 발행하면 된다.",
+ "briefings": [
+  {
+   "date": "2026-08-17",
+   "session": "global",
+   "title": "해외 증시 브리핑",
+   "label_ko": "해외 증시",
+   "label_en": "Global brief",
+   "url": "https://claude.ai/code/artifact/dca66b4e-550e-42ed-96d9-b24918392756",
+   "file": "2026-08-17-global.html"
+  },
+  {
+   "date": "2026-08-15",
+   "session": "global",
+   "title": "해외 증시 브리핑",
+   "label_ko": "해외 증시",
+   "label_en": "Global brief",
+   "url": null,
+   "file": "2026-08-15-global.html"
+  },
+  {
+   "date": "2026-08-14",
+   "session": "morning",
+   "title": "모닝 마켓 브리핑",
+   "label_ko": "모닝 마켓",
+   "label_en": "Morning brief",
+   "url": null,
+   "file": "2026-08-14-morning.html"
+  },
+  {
+   "date": "2026-08-13",
+   "session": "morning",
+   "title": "모닝 마켓 브리핑",
+   "label_ko": "모닝 마켓",
+   "label_en": "Morning brief",
+   "url": null,
+   "file": "2026-08-13-morning.html"
+  },
+  {
+   "date": "2026-08-12",
+   "session": "morning",
+   "title": "모닝 마켓 브리핑",
+   "label_ko": "모닝 마켓",
+   "label_en": "Morning brief",
+   "url": null,
+   "file": "2026-08-12-morning.html"
+  },
+  {
+   "date": "2026-08-11",
+   "session": "morning",
+   "title": "모닝 마켓 브리핑",
+   "label_ko": "모닝 마켓",
+   "label_en": "Morning brief",
+   "url": null,
+   "file": "2026-08-11-morning.html"
+  },
+  {
+   "date": "2026-08-10",
+   "session": "close",
+   "title": "장마감 시황 브리핑",
+   "label_ko": "장마감 시황",
+   "label_en": "Close brief",
+   "url": "https://claude.ai/code/artifact/5ebc6deb-3931-4e56-ae1f-afbb420fd92b",
+   "file": "2026-08-10-close.html"
+  },
+  {
+   "date": "2026-08-10",
+   "session": "morning",
+   "title": "모닝 마켓 브리핑",
+   "label_ko": "모닝 마켓",
+   "label_en": "Morning brief",
+   "url": null,
+   "file": "2026-08-10-morning.html"
+  },
+  {
+   "date": "2026-08-08",
+   "session": "global-morning",
+   "title": "해외 증시 모닝 브리핑",
+   "label_ko": "해외 증시 모닝",
+   "label_en": "Global morning",
+   "url": "https://claude.ai/code/artifact/f8703542-a9a9-42c0-aefd-1ae122a05888",
+   "file": "2026-08-08-global.html"
+  },
+  {
+   "date": "2026-08-07",
+   "session": "close",
+   "title": "장마감 시황 브리핑",
+   "label_ko": "장마감 시황",
+   "label_en": "Close brief",
+   "url": null,
+   "file": "2026-08-07-close.html"
+  },
+  {
+   "date": "2026-08-07",
+   "session": "morning",
+   "title": "모닝 마켓 브리핑",
+   "label_ko": "모닝 마켓",
+   "label_en": "Morning brief",
+   "url": null,
+   "file": "2026-08-07-morning.html"
+  },
+  {
+   "date": "2026-08-06",
+   "session": "morning",
+   "title": "아침 브리핑",
+   "label_ko": "아침 브리핑",
+   "label_en": "Morning brief",
+   "url": "https://claude.ai/code/artifact/382fd976-d577-44b0-8380-3c5d378bada7",
+   "file": "2026-08-06-morning.html"
+  }
+ ]
 }
