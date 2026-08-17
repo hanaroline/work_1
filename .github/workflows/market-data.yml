@@ -1,0 +1,105 @@
+name: 시세 수집
+
+# 브리핑을 만드는 Claude 세션은 사내 이그레스 정책 때문에 KRX·네이버·야후에
+# 직접 붙지 못한다. GitHub 러너는 그 정책 밖에서 돌므로 여기서 대신 받아
+# 저장소에 커밋하고, 세션은 커밋된 data/market/latest.json 을 읽는다.
+#
+# 주의: schedule 이벤트는 기본 브랜치(main)에 있는 워크플로만 발동한다.
+# 다른 브랜치에서는 수동 실행(workflow_dispatch)만 된다.
+
+# 예약(schedule)은 제때 돌지 않는다. 8월 10일 15:40 예약은 17:15 에야
+# 만들어졌고(95분 지연), 같은 날 06:40 예약도 07:01 에 돌았다. 그래서
+#   (1) 한 판마다 예약을 두 번씩 걸어 한 번이 늦어도 다른 하나를 받고
+#   (2) 브리핑 루틴은 예약을 믿지 않고 scripts/check_market_fresh.py 로
+#       파일 날짜를 직접 확인한 뒤, 낡았으면 이 워크플로를 직접 발동한다.
+# 수동 발동(workflow_dispatch)은 지금까지 전부 몇 초 안에 시작했다.
+
+on:
+  schedule:
+    # 국내 마감(15:30 KST) 뒤 — 15:40 KST = 06:40 UTC
+    - cron: '40 6 * * 1-5'
+    # 위가 늦을 때를 대비한 두 번째 — 16:00 KST = 07:00 UTC
+    - cron: '0 7 * * 1-5'
+    # 미국 마감 뒤, 모닝 브리핑(07:30 KST) 전 — 06:20 KST = 21:20 UTC 전일
+    #
+    # **요일을 걸지 않는다.** 예전에는 0-4(일~목 UTC)여서 월~금 아침만 채웠다.
+    # 브리핑 루틴이 매일 07:30 에 돌게 된 뒤로 토·일 아침에는 받아 둔 시세가
+    # 없어 세션이 손으로 발동해야 했다. 주말에도 환율·원자재·암호자산은 움직이고
+    # 금요일 미국·유럽 마감은 토요일 해외 증시 판의 본문 그 자체다.
+    - cron: '20 21 * * *'
+    # 위가 늦을 때를 대비한 두 번째 — 06:45 KST = 21:45 UTC 전일
+    - cron: '45 21 * * *'
+    # 세 번째 — 07:05 KST = 22:05 UTC 전일. 모닝 루틴이 07:30 으로 옮겨져
+    # 여유가 생겼지만, 8월 12일에는 06:45 예약이 07:23 에야 돌았다(38분 지연).
+    - cron: '5 22 * * *'
+
+  # 브리핑 세션이 직접 부르는 길. 세션 토큰에는 Actions 쓰기 권한이 없어
+  # workflow_dispatch 를 API 로 부르지 못하지만(403), git push 는 됩니다.
+  # scripts/request_market_refresh.sh 가 이 파일만 건드려 밀어 넣습니다.
+  push:
+    paths:
+      - 'data/market/REFRESH'
+
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: market-data
+  cancel-in-progress: false
+
+jobs:
+  fetch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: 원천 탐색 (작업 브랜치 전용)
+        # 새 원천을 본 수집기에 넣기 전에 어디가 응답하는지 먼저 본다.
+        # 정기 실행(main)에서는 돌지 않는다.
+        if: github.ref_name != 'main'
+        continue-on-error: true
+        run: |
+          mkdir -p data/market
+          python scripts/probe_sources.py > data/market/probe.txt 2>&1
+          tail -5 data/market/probe.txt
+
+      - name: 시세 수집
+        run: python scripts/fetch_market.py
+
+      - name: 오래된 덤프 정리
+        run: |
+          # 파싱 실패 시에만 남기는 원본이다. 7일 지난 것은 지운다.
+          find data/market/raw -name '*.html' -mtime +7 -delete 2>/dev/null || true
+
+      - name: 커밋
+        run: |
+          git config user.name  'github-actions[bot]'
+          git config user.email 'github-actions[bot]@users.noreply.github.com'
+          git add data/market
+          if git diff --staged --quiet; then
+            echo "변경 없음"
+          else
+            git commit -m "시세 수집 $(TZ=Asia/Seoul date '+%Y-%m-%d %H:%M KST')"
+            git push
+          fi
+
+      - name: 요약
+        if: always()
+        run: |
+          if [ -f data/market/latest.json ]; then
+            python - <<'PY'
+          import json
+          d = json.load(open('data/market/latest.json', encoding='utf-8'))
+          s = d['summary']
+          print(f"::notice::원천 {s['sources_ok']}/{s['sources_tried']} 성공")
+          for k, v in sorted(d['sources'].items()):
+              if not v['ok']:
+                  print(f"::warning::{k} 실패 — {v['error']}")
+          PY
+          fi
