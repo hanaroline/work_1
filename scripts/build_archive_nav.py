@@ -27,6 +27,29 @@ INDEX = os.path.join(DIR, "index.json")
 
 BLOCK = re.compile(r'<ul class="sidenav-dates">.*?</ul>', re.S)
 
+# 인쇄본에도 같은 목록을 싣는다. 사이드바는 @media print 에서 숨으므로
+# PDF 에는 지난 판으로 가는 길이 하나도 남지 않았다. 아래 블록은 화면에서는
+# 숨고 인쇄에서만 나오며, 주소는 PDF 안에서 눌리는 링크로 남는다.
+PRINT = re.compile(r'<!-- archive-print:start -->.*?<!-- archive-print:end -->', re.S)
+
+PRINT_CSS = """<style>
+.archive-print{display:none}
+@media print{
+  .archive-print{display:block;margin-top:22px;padding-top:12px;
+    border-top:1px solid #CDCECB;break-inside:auto}
+  .archive-print .h{font-size:10.5pt;font-weight:700;color:#043B72;margin:0 0 3px}
+  .archive-print .s{font-size:9pt;color:#555;margin:0 0 9px}
+  .archive-print ul{list-style:none;margin:0;padding:0;columns:2;column-gap:24px}
+  .archive-print li{font-size:9.5pt;line-height:1.55;break-inside:avoid;
+    color:#1A1A1A;padding:0}
+  .archive-print .d{font-family:var(--font-num);font-size:9pt;color:#555;
+    margin-right:7px;letter-spacing:.2px}
+  .archive-print a{color:#043B72;text-decoration:none}
+  .archive-print .me{color:#777}
+}
+</style>
+"""
+
 # 같은 날 두 판이 있을 때의 순서. 모닝·해외 판이 먼저, 장마감이 뒤.
 SESSION_ORDER = {"morning": 0, "global": 0, "global-morning": 0, "close": 1}
 
@@ -52,6 +75,39 @@ def row(b, current):
     return ('    <li class="na"><span class="d">%s</span>'
             '<span data-lang-ko>%s &mdash; 보관본 없음</span>'
             '<span data-lang-en>%s &mdash; no hosted copy</span></li>' % (d, ko, en))
+
+
+def print_row(b, current):
+    d = esc(b["date"][5:])
+    ko, en = esc(b["label_ko"]), esc(b["label_en"])
+    if current:
+        return ('    <li><span class="d">%s</span><span data-lang-ko>%s</span>'
+                '<span data-lang-en>%s</span> <span class="me">'
+                '<span data-lang-ko>&mdash; 이 판</span>'
+                '<span data-lang-en>&mdash; this edition</span></span></li>' % (d, ko, en))
+    if b.get("url"):
+        return ('    <li><span class="d">%s</span><a href="%s">'
+                '<span data-lang-ko>%s</span><span data-lang-en>%s</span></a></li>'
+                % (d, esc(b["url"]), ko, en))
+    return ('    <li><span class="d">%s</span><span class="me">'
+            '<span data-lang-ko>%s &mdash; 보관본 없음</span>'
+            '<span data-lang-en>%s &mdash; no hosted copy</span></span></li>' % (d, ko, en))
+
+
+def print_block(visible, me):
+    rows = "\n".join(print_row(b, b is me) for b in visible)
+    return ('<!-- archive-print:start -->\n'
+            '%s'
+            '<div class="archive-print">\n'
+            '  <p class="h"><span data-lang-ko>지난 브리핑</span>'
+            '<span data-lang-en>Archive</span></p>\n'
+            '  <p class="s"><span data-lang-ko>날짜를 누르면 그 판이 열립니다. '
+            '화면 왼쪽 목차 아래에도 같은 목록이 있습니다.</span>'
+            '<span data-lang-en>Each date links to that edition; the same list sits '
+            'below the contents in the left-hand column on screen.</span></p>\n'
+            '  <ul>\n%s\n  </ul>\n'
+            '</div>\n'
+            '<!-- archive-print:end -->' % (PRINT_CSS, rows))
 
 
 def main():
@@ -86,6 +142,18 @@ def main():
             bad += 1
             continue
         out = BLOCK.sub(lambda _: new, src, count=1)
+
+        # 인쇄용 블록 — 있으면 갈아 끼우고, 없으면 </main> 바로 앞에 넣는다.
+        pb = print_block(visible, me)
+        if PRINT.search(out):
+            out = PRINT.sub(lambda _: pb, out, count=1)
+        elif out.count("</main>") == 1:
+            out = out.replace("</main>", pb + "\n\n</main>", 1)
+        else:
+            print("  !! %s: </main> 이 %d 개 — 인쇄용 목록을 못 넣었다"
+                  % (fn, out.count("</main>")))
+            bad += 1
+
         if out == src:
             continue
         changed.append((fn, len(visible)))
