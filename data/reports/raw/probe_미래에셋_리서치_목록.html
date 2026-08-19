@@ -22,7 +22,7 @@
     
     	<title>��ü | ����ġ ����Ʈ | �������� | �̷���������</title>    	
     
-    <link rel="stylesheet" type="text/css" href="https://securities.miraeasset.com/bbsdocs/ho
+    <link rel="stylesheet" type="text/css" href="https://securities.miraeasset.com/bbsdocs/home/css/b
   <meta http-equiv="Expires" content="-1" />
     <meta http-equiv="cache-control" content="no-store" />
     
@@ -31,7 +31,7 @@
     <script type="text/javascript" src="https://securities.miraeasset.com/bbsdocs/javascript/jquery-migrate-1.2.1.js"></script>
     <script type="text/javascript" src="https://securities.miraeasset.com/bbsdocs/javascript/jquery-ui.js"></script>
 	<script type="text/javascript" src="https://securities.miraeasset.com/bbsdocs/js/coordinate.js"></script>
-	<script type="text/javascript" src="https://securities.miraeasset.com/bbsdo
+	<script type="text/javascript" src="https://securities.miraeasset.com/bbsdocs/js/po
 ille.js"></script>
     <script type="text/javascript" src="https://securities.miraeasset.com/bbsdocs/javascript/bbs.js"></script>
     <script type="text/javascript" src="https://securities.miraeasset.com/bbsdocs/javascript/common.js"></script>
@@ -44,7 +44,8 @@ ille.js"></script>
     <script type="text/javascript" src="/advancement/html/com/js/common/stylishSelectNone.js"></script>
    	<script type="text/javascript">
 	//<![CDATA[ 
-        var imageServer = "https://securities.miraeasset.com/bbsdocs"
+        var imageServer = "https://securities.miraeasset.com/bbsdocs";
+     
 erSect == '2')
 		_loginNameColor = '#598d42';
 	if (loginUserSect == '9')
@@ -71,7 +72,7 @@ erSect == '2')
 	* NullCheck
 	*/
 	function isCommonNull(data){
-		if(data == null || data == "null" || data == "" || typeo
+		if(data == null || data == "null" || data == "" || typeof(data) 
 s/Setup_KairosHTS.exe" title="���� �ٿ�ε�">HTS �ٿ�ε�</a></li>
 						<li><a href="javascript:wtsOpen();" title="��â����">Ʈ���̵�</a></li>
 						<li><a href="javascript:openHp('/hku/hku2001/t01.do', true);">������/OTP</a></li>
@@ -79,7 +80,7 @@ s/Setup_KairosHTS.exe" title="���� �ٿ�ε�">HTS �ٿ�ε�</a><
 						<li><a href="javascript:openTalk();" title="��â����">ê�����</a></li>
 						<li><a href="javascript:openHp('/hki/hki3016/n04.do', false);">��������</a></li>						
 						<li><a href="javascript:openHp('/hki/hki3062/n05.do', false);">�����Һ�������</a></li>
-						<li><a href="javascript:openGuide('http://dis.kofia.or.kr/fs/dis2/com/COMOutItemAnn.
+						<li><a href="javascript:openGuide('http://dis.kofia.or.kr/fs/dis2/com/COMOutItemAnn.jsp?cert
 					<span class="line_right"></span>
 						</div>
 					</li>
@@ -104,7 +105,8 @@ s/Setup_KairosHTS.exe" title="���� �ٿ�ε�">HTS �ٿ�ε�</a><
 							<span class="line_right"></span>
 						</div>
 					</li>
-					<li class="m
+					<li class="menu">
+	
 					<div class="search">
 								<form name="topSearch" action="/srh.jsp" onsubmit="return false;" method="post">
 									<div class="search_form">
@@ -112,7 +114,7 @@ s/Setup_KairosHTS.exe" title="���� �ٿ�ε�">HTS �ٿ�ε�</a><
 											<dt>
 												<input type="text" name="q"  id="q" class="overlay srch_txt" onkeypress="return dq_handleEnter_Top(event);" onfocus="return dq_setTextbox_Top('0',event);" onmousedown="dq_setTextbox_Top('1',event);" onkeydown="dq_setTextbox_Top('1',event);" onkeyup="dq_resetBtn_display();" autocomplete="off" title="�˻�� �Է����ּ���" placeholder="�˻�� �Է����ּ���" />
 												<a href="#" title="�˻��� �ʱ�ȭ" id="searchText_reset" onclick="dq_setAcInput_Top('');" class="btn_value_del">����</a>
-												<inp
+												<input type=
 		<div class="recommend">
 									<dl>
 										<dt>��õ�˻���</dt>
@@ -128,7 +130,7 @@ s/Setup_KairosHTS.exe" title="���� �ٿ�ε�">HTS �ٿ�ε�</a><
 								</div>
 								<div class="list_wrap">
 									<div class="month_recommend">
-										<h3>���� ��õ��ǰ <span><a href="javas
+										<h3>���� ��õ��ǰ <span><a href="javascript:op
 llMenuPop(){
 			try{ showCommonPopup('/advancement/jsp/common/allMenuPopup.jsp', '1050', '750'); }catch(e){}
 		}
@@ -151,7 +153,7 @@ llMenuPop(){
 		}
 		
 		function doGnbLogin() {
-		    if (
+		    if (isMobile
 ata		: params,
 				dataType	: "json",
 				type		: "POST",
@@ -195,7 +197,7 @@ ata		: params,
 
 <div id="side">
 	<div class="menubox">
-		<div cla
+		<div class="menu
 rl;
 			}
 		}
@@ -220,7 +222,7 @@ rl;
 		$snbDepth1.on('click', function(){
 			var state = $(this).parent().hasClass('on');
 			if( !state ){
-				$(this).parent().addClass('on').siblings('li')
+				$(this).parent().addClass('on').siblings('li').removeC
       	$("ul.step1-tab").removeClass("step1-tab").addClass("step1-tbab_new");
         });
         
@@ -243,6 +245,7 @@ rl;
                 $popup.show();
 
                 setTimeout(function () {
+      
      	if($('#today_close').is(":checked")){
         		$.cookies.set("research_down_confirm", "Y");
         	}
@@ -297,7 +300,7 @@ rl;
 
 		var searchText = $("#searchText");
 		if(searchText.length > 0) {
-     
+        	if(s
 tartMonth").getSetSSValue(startSearchDayArr[1]);
         $("#searchStartDay").getSetSSValue(startSearchDayArr[2]);
         $("#searchEndYear").getSetSSValue(endSearchDayArr[0]);
@@ -308,15 +311,15 @@ tartMonth").getSetSSValue(startSearchDayArr[1]);
     // �˻� �Ⱓ ����
     function chageSearchDay(searchType){
     
-        var weekDay = "2026-08-09";
-        var monthDay = "2026-07-16";
+        var weekDay = "2026-08-12";
+        var monthDay = "2026-07-19";
         var searchDayArr;
         if(searchType == "week")
             searchDayArr = weekDay.split("-");
         else if(searchType == "month")
             searchDayArr = monthDay.split("-");
                
-        $("#searchStartYear").
+        $("#searchStartYear").getSetSS
 Day, #searchEndYear, #searchEndMonth, #searchEndDay").show();
         }, 0);
       
@@ -344,9 +347,9 @@ Day, #searchEndYear, #searchEndMonth, #searchEndDay").show();
         // search day
         $("#searchStartYear").getSetSSValue("2025");
         $("#searchStartMonth").getSetSSValue("08");
-        $("#searchStartDay").getSetSSValue("16");
+        $("#searchStartDay").getSetSSValue("19");
         $("#searchEndYear").getSetSSValue("2026");
-        $("#se
+        $("#searchEndM
 ope="col">�󼼰˻�</th>
        		<th scope="col">�󼼰˻�</th>
        	</tr>
@@ -382,7 +385,7 @@ ope="col">�󼼰˻�</th>
         
                     <option value="2">����</option>
         
-                    <option value
+                    <option value="18">��
 artYear" id="searchStartYear" title="�˻����� ���� ����">
                     
                         <option value="2010">2010</option>
@@ -400,7 +403,7 @@ artYear" id="searchStartYear" title="�˻����� ���� ���
                         <option value="2016">2016</option>
                     
                         <option value="2017">2017</option>
-     
+             
              
                     </select>
 
@@ -417,7 +420,7 @@ artYear" id="searchStartYear" title="�˻����� ���� ���
                     
                         <option value="05">05</option>
                     
-                        <option value="06">06</
+                        <option value="06">06</option>
 
                     
                         <option value="01">01</option>
@@ -437,7 +440,8 @@ artYear" id="searchStartYear" title="�˻����� ���� ���
                         <option value="08">08</option>
                     
                         <option value="09">09</option>
-                   
+                    
+     
 alue="19">19</option>
                     
                         <option value="20">20</option>
@@ -457,6 +461,7 @@ alue="19">19</option>
                         <option value="27">27</option>
                     
                         <option value="28">28</option>
+      
        <span class="flb">&nbsp;~</span>
 
                     <label class="hide" for="searchEndYear">�˻����� �⵵ ����</label>
@@ -472,7 +477,7 @@ alue="19">19</option>
                     
                         <option value="2014">2014</option>
                     
-                        <option value="20
+                        <option value="2015">2015
 2024">2024</option>
                     
                         <option value="2025">2025</option>
@@ -490,7 +495,7 @@ alue="19">19</option>
                     
                         <option value="03">03</option>
                     
-                     
+                        <opti
 label class="hide" for="searchEndDay">�˻����� �� ����</label>
                     <select class="month ui-usetab" name="searchEndDay" id="searchEndDay" title="�˻����� �� ����">
                     
@@ -507,6 +512,7 @@ label class="hide" for="searchEndDay">�˻����� �� ����</
                         <option value="06">06</option>
                     
                         <option value="07">07</option>
+       
                <option value="17">17</option>
                     
                         <option value="18">18</option>
@@ -525,7 +531,7 @@ label class="hide" for="searchEndDay">�˻����� �� ����</
                     
                         <option value="25">25</option>
                     
-                        <option va
+                        <option value="26"
                    </a>
                     
                     <div id="datepicker2" style="position:absolute;top:30px;left:232px;display:none;"></div>
@@ -533,14 +539,15 @@ label class="hide" for="searchEndDay">�˻����� �� ����</
 	                <span class="">
 	                	<a href="javascript:searchAll();"><img src="https://img.securities.miraeasset.com/bbsdocs/home/images/bbs/bbs_s_btn01.gif" class="mgt7" alt="��ü"/></a>
 	                	<a href="javascript:chageSearchDay('week');"><img src="https://img.securities.miraeasset.com/bbsdocs/home/images/bbs/bbs_s_btn02.gif" class="mgt7" alt="1����"/></a>
-	                	<a href="javascript:chageSearchDay('month');"><img src="https://img.securities.miraeasset.com/bbsdocs/home/images/bbs/bbs_s_btn03_1.gif" class="mgt7" alt="1����"
+	                	<a href="javascript:chageSearchDay('month');"><img src="https://img.securities.miraeasset.com/bbsdocs/home/images/bbs/bbs_s_btn03_1.gif" class="mgt7" alt="1����"/></a>
+
 argin-left:0;">���� ���� �� ������ �� �����ϴ�.</strong></li>
 				<li class="padb0">����� ����ġ �������� �ٿ�ε� �Ǵ� �ڵ� �뷮 �����Ͽ� ���� ���� �� ����� ������ϴ� ������ ���۱ǹ��� ���� ���۱� ħ�ؿ� �ش�Ǿ� <strong style="float:none;margin-left:0;">ó�� ���� �� �ֽ��ϴ�.</strong></li>
 			</ul>
         </div>
         
         <ul class="bbs_headInfo">
-          <li class="left">��ü�Ǽ� :<span>2567</span>��</li>
+          <li class="left">��ü�Ǽ� :<span>2568</span>��</li>
           <li class="right">
             
 
@@ -561,15 +568,15 @@ argin-left:0;">���� ���� �� ������ �� ��
 
 
         <form name="viewForm" id="viewForm" action="#" style="margin:0px;">
-            <input type="hidden" name="messageId"           id="vf_messageId"          val
+            <input type="hidden" name="messageId"           id="vf_messageId"          value="" />
 <input type="hidden" name="searchStartYear"     id="vf_searchStartYear"    value="2025" />
             <input type="hidden" name="searchStartMonth"    id="vf_searchStartMonth"   value="08" />
-            <input type="hidden" name="searchStartDay"      id="vf_searchStartDay"     value="16" />
+            <input type="hidden" name="searchStartDay"      id="vf_searchStartDay"     value="19" />
             <input type="hidden" name="searchEndYear"       id="vf_searchEndYear"      value="2026" />
             <input type="hidden" name="searchEndMonth"      id="vf_searchEndMonth"     value="08" />
-            <input type="hidden" name="searchEndDay"        id="vf_searchEndDay"       value="16" />
+            <input type="hidden" name="searchEndDay"        id="vf_searchEndDay"       value="19" />
             <input type="hidden" name="lastPageFlag"        id="vf_lastPageFlag"       value="" />
-            <input type="h
+            <input type="hidden" n
 	<caption>��ü</caption>		    	
 	    
        	
@@ -610,21 +617,115 @@ argin-left:0;">���� ���� �� ������ �� ��
 
 
             <td >
-2026-08-14
+2026-08-19
 
              </td>
 
 
             <td class="left">
-<div class="subject">
-          <td class="left">
-<div class="subject"><a href="javascript:view('2342082','2566')" id="bbsTitle1"><b>�ѱ�&�߱� ���� Ŭ��¡(8�� 14��)</b><br/>�ܱ��� ���� �������ż� '����'</a></div>
+<div class="subject"><a href=
+ </td>
+
+          </tr>         
+     
+          <tr >
+
+
+            <td >
+2026-08-19
+
+             </td>
+
+
+            <td class="left">
+<div class="subject"><a href="javascript:view('2342161','2567')" id="bbsTitle1"><b>���̴� ���̳�</b><br/>�߱� AI ��� �߰� ���� ����</a> <span><img src="https://img.securities.miraeasset.com/bbsdocs/home/images/bbs/ic_new.gif" align="middle" alt="New"/></span></div>
 
              </td>
 
 
             <td >
-<p class="bbsList_layer_icon">   <a href="javascript:downConfirm('https://securities.miraeasset.com/bbs/download/2146758.pdf?attachmentId=2146758','2146758','1024','768','yes','yes');" title="20260814_�ѱ�&amp;�߱� ���� Ŭ��¡(8�� 14��).pdf(��â����)">   <img src="https://img.securities.miraeasset.com/bbsdocs/home/images/bbs/ic_file.gif" alt="÷������"/></a></p>
+<p class="bbsList_layer_icon">   <a href="javascript:downConfirm('https://securities.miraeasset.com/bbs/download/2146824.pdf?attachmentId=2146824','2146824','1024','768','yes','yes');" title="20260819_���̴� ���̳�.pdf(��â����)">   <img src="https://img.securities.miraeasset.
+6821.pdf?attachmentId=2146821','2146821','1024','768','yes','yes');" title="20260819_Market Issue.pdf(��â����)">   <img src="https://img.securities.miraeasset.com/bbsdocs/home/images/bbs/ic_file.gif" alt="÷������"/></a></p>
+
+             </td>
+
+
+            <td >
+�輺��
+
+             </td>
+
+          </tr>         
+     
+          <tr >
+
+
+            <td >
+2026-08-19
+
+             </td>
+
+
+            <td class="left">
+<div class="subject"><a href="javascript:view('2342151','2565')" id="bbsTitle3"><b>Market Issue</b><br/>�ݸ��� ������ Ȯ�� ���� ����</a> <span><img src="https://img.securities.miraeasset.com/bbsdocs/home/images/bbs/ic_new.gif" align="middle" alt="New"/></span></div>
+
+             </td>
+
+
+     
+c="https://img.securities.miraeasset.com/bbsdocs/home/images/bbs/ic_new.gif" align="middle" alt="New"/></span></div>
+
+             </td>
+
+
+            <td >
+<p class="bbsList_layer_icon">   <a href="javascript:downConfirm('https://securities.miraeasset.com/bbs/download/2146808.pdf?attachmentId=2146808','2146808','1024','768','yes','yes');" title="20260819_���� ��(8�� 19��).pdf(��â����)">   <img src="https://img.securities.miraeasset.com/bbsdocs/home/images/bbs/ic_file.gif" alt="÷������"/></a></p>
+
+             </td>
+
+
+            <td >
+���ֿ�
+
+             </td>
+
+          </tr>         
+     
+          <tr >
+
+
+            <td >
+2026-08-19
+
+             </td>
+
+
+            <td class="left">
+<div class="subj
+�, CF...
+
+             </td>
+
+          </tr>         
+     
+          <tr >
+
+
+            <td >
+2026-08-19
+
+             </td>
+
+
+            <td class="left">
+<div class="subject"><a href="javascript:view('2342136','2562')" id="bbsTitle6"><b>AI ���ϸ� �۷ι� ���� �긮��(8�� 19��)</b><br/>���ݸ��� AI�ݵ�ü�� �϶�..�̱����� �༼</a> <span><img src="https://img.securities.miraeasset.com/bbsdocs/home/images/bbs/ic_new.gif" align="middle" alt="New"/></span></div>
+
+             </td>
+
+
+            <td >
+<p class="bbsList_layer_icon">   <a href="javascript:downConfirm('https://securities.miraeasset.com/bbs/download/2146806.pdf?attachmentId=2146806','2146806','1024','768','yes','yes');" title="20260819_AI ���ϸ� �۷ι� ��
+,'1024','768','yes','yes');" title="20260818_�ѱ�&amp;�߱� ���� Ŭ��¡(8�� 18��).pdf(��â����)">   <img src="https://img.securities.miraeasset.com/bbsdocs/home/images/bbs/ic_file.gif" alt="÷������"/></a></p>
 
              </td>
 
@@ -639,89 +740,21 @@ argin-left:0;">���� ���� �� ������ �� ��
           <tr >
 
 
-
-   </tr>         
-     
-          <tr >
-
-
             <td >
-2026-08-14
+2026-08-18
 
              </td>
 
 
             <td class="left">
-<div class="subject"><a href="javascript:view('2342069','2564')" id="bbsTitle3"><b>SMIC (00981 HK/�ż�)</b><br/>AI Ĩ ����ȭ ���� ���� �ν� ����</a></div>
+<div class="subject"><a href="javascript:view('2342132','2560')" id="bbsTitle8"><b>AI Focus</b><br/>���� ������� ��ǻƮ�� ��ģ��</a></div>
 
              </td>
 
 
             <td >
-<p class="bbsList_layer_icon">   <a href="javascript:downConfirm('https://securities.miraeasset.com/bbs/download/2146749.pdf?attachmentId=2146749','2146749','1024','768','yes','yes');" title="20260814_SMIC (00981 HK_�ż�).pdf(��â����)">   <img src="https://img.securities.miraeasset.com/bbsdocs/home/images/bbs/ic_file.gif" alt="÷������"/></a></p>
-
-             </td>
-
-
-            <td >
-����
-  </td>
-
-
-            <td >
-������, CF...
-
-             </td>
-
-          </tr>         
-     
-          <tr >
-
-
-            <td >
-2026-08-14
-
-             </td>
-
-
-            <td class="left">
-<div class="subject"><a href="javascript:view('2342057','2562')" id="bbsTitle5"><b>���� ��(8�� 14��)</b><br/>�ܱ��� �ż�, ����°</a></div>
-
-             </td>
-
-
-            <td >
-<p class="bbsList_layer_icon">   <a href="javascript:downConfirm('https://securities.miraeasset.com/bbs/download/2146734.pdf?attachmentId=2146734','2146734','1024','768','yes','yes');" title="20260814_���� ��(8�� 14��).pdf(��â����)">   <img src="https://img.securities.miraeasset.com/bbsdocs/home/images/bbs/ic_file.gif" alt="÷������"/><
-ages/bbs/ic_file.gif" alt="÷������"/></a></p>
-
-             </td>
-
-
-            <td >
-�迵��
-
-             </td>
-
-          </tr>         
-     
-          <tr >
-
-
-            <td >
-2026-08-14
-
-             </td>
-
-
-            <td class="left">
-<div class="subject"><a href="javascript:view('2342041','2560')" id="bbsTitle7"><b>�Ｚ���� (005930/�ż�)</b><br/>��濡�� �︮�� ������</a></div>
-
-             </td>
-
-
-            <td >
-<p class="bbsList_layer_icon">   <a href="javascript:downConfirm('https://securities.miraeasset.com/bbs/download/2146686.pdf?attachmentId=2146686','2146686','1024','768','yes','yes');" title="20260814_�Ｚ���� (005930_�ż�).pdf(��â����)">   <img src="https://img.securities.mira
-://img.securities.miraeasset.com/bbsdocs/home/images/bbs/ic_file.gif" alt="÷������"/></a></p>
+<p class="bbsList_layer_icon">   <a href="javascript:downConfirm('https://securities.miraeasset.com/bbs/download/2146804.pdf?attach
+aeasset.com/bbs/download/2146787.pdf?attachmentId=2146787','2146787','1024','768','yes','yes');" title="20260818_CJ (001040_�ż�).pdf(��â����)">   <img src="https://img.securities.miraeasset.com/bbsdocs/home/images/bbs/ic_file.gif" alt="÷������"/></a></p>
 
              </td>
 
@@ -732,38 +765,27 @@ ages/bbs/ic_file.gif" alt="÷������"/></a></p>
              </td>
 
           </tr>         
-     
-          <tr >
 
 
-            <td >
-2026-08-14
-
-             </td>
+          
+          
 
 
-            <td class="left">
-<div class="subject"><a href="javascript:view('2342039','2558')" id="bbsTitle9"><b>Ŭ���ý� (214150/�ż�)</b><br/>����� ����ȭ�� ����</a></div>
-
-             </td>
 
 
-            <td >
-<p class="bbsList_layer_icon">   <a href="javascript:downConfirm('https://securities.miraeasset.com/bbs/download/2146684.pdf?attachmentId=2146684','2146684','1024','768','yes','yes');" title="20260814_Ŭ���ý� (214150_�ż�).pdf(��â��
-� �� ����� ������ϴ� ������ ���۱ǹ��� ���� ���۱� ħ�ؿ�
-				 �ش�Ǿ� ó������ �� �ֽ��ϴ�.
-			    </p>
-			    <div class="btnWrap middle">
-			     <a class="btn" href="javascript:confirmClose();">���</a>
-			     <a class="btn blue" href="javascript:confirmOpen();" title="��â ����">Ȯ��</a>
-			    </div>
-			    <div class="today_close r">
-			     <input type="checkbox" id="today_close" /><label for="today_close">���� �Ϸ� ��â ������ ����</label>
-			    </div>
-			   </div>
-			   <a href="javascript:confirmClose();" class="btn_close">�ݱ�</a>
-			  </div>
-			  <div class="bg_alpha"></div>
+
+
+
+            
+        </tbody>
+        </table>
+    	<div class="confirm_box" id="downconfirm" style="display: none;">
+    		  <div class="confirm_wrap">
+			   <div class="confirm_header"><h1>���ǻ���</h1></div>
+			   <div class="confirm_content">
+			    <p>
+			     �� ����ġ �������� ���������� ��翡 �����Ƿ�, ���� ���� �Ǵ� ��
+a"></div>
     	</div> 
         <!-- ����¡ ����--> 
         
@@ -775,143 +797,192 @@ ages/bbs/ic_file.gif" alt="÷������"/></a></p>
 
 
     <!-- ����¡ ���� -->
-    <div class="bbs_pagingWra
-searchStartYear=2025&searchStartMonth=08&searchStartDay=16&searchEndYear=2026&searchEndMonth=08&searchEndDay=16&listType=1&startId=zzzzz~&startPage=1&curPage=3&direction=1" class="off">3</a></span>
-<span class="bar"><a href="list.do?categoryId=1521&searchStartYear=2025&searchStartMonth=08&searchStartDay=16&searchEndYear=2026&searchEndMonth=08&searchEndDay=16&listType=1&startId=zzzzz~&startPage=1&curPage=4&direction=1" class="off">4</a></span>
-<span class="bar"><a href="list.do?categoryId=1521&searchStartYear=2025&searchStartMonth=08&searchStartDay=16&searchEndYear=2026&searchEndMonth=08&searchEndDay=16&listType=1&startId=zzzzz~&startPage=1&curPage=5&direction=1" class="off">5</a></span>
-<span class="bar"><a href="list.do?categor
-><a href="list.do?categoryId=1521&searchStartYear=2025&searchStartMonth=08&searchStartDay=16&searchEndYear=2026&searchEndMonth=08&searchEndDay=16&listType=1&startId=zzzzz~&startPage=1&curPage=9&direction=1" class="off">9</a></span>
-<span class="bar"><a href="list.do?categoryId=1521&searchStartYear=2025&searchStartMonth=08&searchStartDay=16&searchEndYear=2026&searchEndMonth=08&searchEndDay=16&listType=1&startId=zzzzz~&startPage=1&curPage=10&direction=1" class="off">10</a></span>
-<span><a class="next" href="list.do?categoryId=1521&searchStartYear=2025&searchStartMonth=08&searchStartDay=16&searchEndYear=2026&searchEndMonth=08&searchEndDay=16&listType=1&startId=09pCQ~&startPage=11&curPage=11&direction=1"><img src='https://img.securit
-ô� �̿��ڿ��� �ֽ��ϴ�.</li><li>����������ȸ �ֳθ���Ʈ ������Ȳ ������ Ȯ���Ͻ� �� �ֽ��ϴ�.<a href='http://dis.kofia.or.kr/websquare/index.jsp?w2xPath=/wq/fundMgr/DISFundMgrAnalystStut.xml&divisionId=MDIS03002001000000&serviceId=SDIS03002001000' target='_blank'><img src='/bbsdocs/home/images/financial/bbs_notiBtn01.gif' alt='����������ȸ �ֳθ���Ʈ ������Ȳ' title='��â' /></a></li><li>������������ �����Ǵ� PDF������ �̿��Ͻ÷��� PDF�� ��ġ�Ͻñ� �ٶ��ϴ�.<a href='http://get.adobe.com/kr/reader/' target='_blank'><img src='/bbsdocs/home/images/financial/bbs_notiBtn02.gif' alt='PDF��� �ٿ�ε�' title='��â' /></a></li></ul></div>
+    <div class="bbs_pagingWrap" > 
+            <p class="bbs_paging">
+<span><a class="pre_end" href="javascript:first('zzzzz~')"><img src='https://img.securities.miraeasset.com/bbsdocs/home/images/bbs/bbs_pre_end.gif' alt='ó�� ������' /></a><a class="pre" href="javascript:void(0);"><img src='https://img.securities.miraeasset.com/bbsdocs/home/images/bbs/bbs_pre.gif' alt='���� 10������' /></a></span>
+<span class="first"><a  class="on">1</a></span>
+<span class="bar"><a href="list.do?categoryId=1521&searchStartYear=2025&searchStartMonth=08&searchStartDay=19&searchEndYear=2026&searchEndMonth=08&searchEndDay=19&listType=1&startId=zzzzz~&
+Day=19&listType=1&startId=zzzzz~&startPage=1&curPage=5&direction=1" class="off">5</a></span>
+<span class="bar"><a href="list.do?categoryId=1521&searchStartYear=2025&searchStartMonth=08&searchStartDay=19&searchEndYear=2026&searchEndMonth=08&searchEndDay=19&listType=1&startId=zzzzz~&startPage=1&curPage=6&direction=1" class="off">6</a></span>
+<span class="bar"><a href="list.do?categoryId=1521&searchStartYear=2025&searchStartMonth=08&searchStartDay=19&searchEndYear=2026&searchEndMonth=08&searchEndDay=19&listType=1&startId=zzzzz~&startPage=1&curPage=7&direction=1" class="off">7</a></span>
+<span class="bar"><a href="list.do?categoryId=1521&searchStartYear=2025&searchStartMonth=08&searchStartDay=19&searchEndYear=2026&searchEndMonth=08&searchEnd
+Year=2026&searchEndMonth=08&searchEndDay=19&listType=1&startId=09pD8~&startPage=11&curPage=11&direction=1"><img src='https://img.securities.miraeasset.com/bbsdocs/home/images/bbs/bbs_next.gif' alt='���� 10������' /></a><a class="next_end"  href="javascript:last()"><img src='https://img.securities.miraeasset.com/bbsdocs/home/images/bbs/bbs_next_end.gif' alt='������ ������' /></a></span>
+</p>
+
+    </div>
+    <p class="clear">&nbsp;</p>
+    <!-- ����¡ �� -->
+
+        <!-- ����¡ ��-->
+        
+        
+        
+
+
+
+
+
+
+
+        
+        
+        <div class="btn-right mgt20">&nbsp;</div>
+         
+        
+        <!-- Footer Area [[ -->
+        <div class='bbs_notice'><img src='/bbsdocs/home/images/financial/tx_info.gif'
+ε�' title='��â' /></a></li></ul></div>
         <!-- ]] Footer Area -->
         
         <!-- ]]Contents Area -->
             
-<!--
- == 9){
-				setTimeout(function(){				
-					$('.family_site a:last').focus();
-				},15);
+<!-- Body End -->
+
+
+
+
+
+ 
+
+
+            </div>
+        </div>
+    <!-- Bestez Bottom Area [[-->
+    
+
+
+
+
+
+	<style>
+	.quick_wrap a {text-decoration:none;}
+	#footer .footer_quick_menu .family_site > dl{height: 590px}
+	</style>
+	
+	<script type="text/javascript">
+	$(function(){
+		// Focus
+		$(this).on('keydown', '.family_site a:last', function(event){
+			var isShift = window.event.shiftKey ? true : false;		
+			
+			if( !isShift && event.keyCode == 9){									
+				$('.family_site a:first').focus();			
 				return false;
 			}
 		});
-		
-		// Ȱ��ȭ
-		$('.footer_quick_menu .btn_layer').on('click', function(e){
-			e.preventDefault();
-			var status = $(this).hasClass('on');
-			if ( !status ){
-				$(this).addClass('on');
-				$(this).next().show();		
-			}		
-		});
-		 
-		// �ݱ�
-		$('.family_site .btn_close').on('click', function(e){
-			e.preventDefault();		
-				
-			$(this).parent().hide();		
-			$('.footer_quick_menu .btn_layer').removeClass('on').focus();
-				
-		});
-	});
-	
-	//WTS ���� �˾� ����
+			
+		$(this).on('keydown', '.family_site a:first',
+� ����
 	function wtsEnOpen(){
 		
 			alert("�α��� ���� �̿밡���մϴ�.");return;
 				
-		window.open('/advancement/jsp/trading_eu/wts.
-9300</em></a></li>
-					<li><a href="javascript:openHp('/ocq/ocq1001/c05.do',false);"><span>�������ڿ뱹ä��㼾��</span><em>1644-3322</em></a></li>
-					<li><a href="javascript:openHp('/hki/hki3016/n01.do',false);"><span>�����ɼǻ�㼾��</span><em>02-3774-6800</em></a></li>
-				</ul>
-			</div><!-- //footer_info_wrap -->
-			
-			<div class="footer_quick_menu">
-				<div class="quick_wrap">
-					<ul class="quick_menu1">
-						<li><a href="https://ci.securities.miraeasset.com" target="_blank" title="��â����">ȸ��Ұ�(����)</a></li>
-						<li><a href="https://english.securities.miraeasset.com" target="_blank" title="��â����">Our Company</a></li>
-						<li><a href="https://securities.miraeasset.com/newir/view/pc/en/investor/r
-://magazine.securities.miraeasset.com" target="_blank" title="��â����">�̷��������� �Ű���</a></li>
+		window.open('/advancement/jsp/trading_eu/wts.jsp','MiraeassetSecurities_EN_WTS','width=1125,height=840,resizable=yes');
+	}
+	</script>
+	
+	<style>
+	/* #footer .footer_quick_menu .quick_wrap ul.quick_menu2 li.active a {font-weight:bold;color:#0059a6;} */
+	</style>
+
+
+	
+	<!--include area start -->
+	<div id="footerWrap">
+		<div id="footer">
+			<div class="footer_info_wrap">
+				<ul class="footer_info">
+					<li><a href="javascript:openHp('/hki/hki3016/n01.do',false);"><span>��������</span><em>1588-6800</em></a></li>
+					<li><a href="javascript:openHp('/ocq/ocq1001/c04.do',false);"><span>�����ڻ��������</span><em>1588-5577</em></a></li>
+
+om" target="_blank" title="��â����">Our Company</a></li>
+						<li><a href="https://securities.miraeasset.com/newir/view/pc/en/investor/researchReportsList.jsp" target="_blank" title="��â����">��������ġ</a></li>
+						<!-- <li><a href="javascript:wtsEnOpen();" title="��â����">���� WTS</a></li> -->
+						<li><a href="javascript:openHp('/hku/hku3020/n02.do',false);">���ڱ���������</a></li>
+						<li><a href="https://tornado.securities.miraeasset.com" target="_blank" title="��â����">Ź����</a></li>
+						<li><a href="https://recruit.securities.miraeasset.com" target="_blank" title="��â����">ä��</a></li>
+						<!-- <li><a href="javascript:openHp('/directMain.do',false);">���̷�Ʈ</a></li> -->
+						<li><a href="http://webzine.secur
+�����ǰ��Ϻ�</a></li>
+						<!-- <li><a href="javascript:openGuide('http://dis.kofia.or.kr/fs/dis2/com/COMOutItemAnn.jsp?certifyKey=56b5dcf368687fc83006dbd912ef0320168-7b70');" title="��â">��ǰ���ý�</a></li> -->
+						<li><a href="javascript:openHp('/hki/hki3096/r01.do',false);">������ �ȳ�</a></li>
+						<li><a href="javascript:openHp('/hki/hki3062/n03.do?clasCd=5',false);">���ڹο���û</a></li>
+						<li><a href="javascript:openHp('/hki/hki3062/n04.do',false);">��������</a></li>
 					</ul>
-					<ul class="quick_menu2">
-						<li class="active"><a href="javascript:openHp('/hki/hki3040/a00.do',false);">��������ó����ħ</a></li>
-						<li><a href="javascript:openHp('/hki/hki3040/a00.do?getCode=/hki/hki3040/n04.do',false);">����������޹�ħ</a></li> <!-- �������ǻ��� �ȳ� ȭ�鿡�� �ش�ȭ�� ��Ŀ�� -->
-						<li><a href="javascript:openHp('/hki/hki3031/a00.do',false);">��� �� ���� ���ǻ���</a></li>
-						<li><a href="javascript:openHp('/hki/hki3043/n01.do',false);">��ȣ������ǰ��Ϻ�</a></li>
-						<!-- <li><a href="javascript:openGuide('http://dis.kofia.or.kr/fs/dis2/com/COMOutItemAnn.jsp?certifyKey=56b5dc
-f="http://investments.miraeasset.com" target="_blank" title="��â����">�̷������ڻ���</a></li>
-							<li><a href="https://securities.miraeasset.com" target="_blank" title="��â����">�̷���������</a></li>
-							<li><a href="http://life.miraeasset.com" target="_blank" title="��â����">�̷����»���</a></li>
-							<li><a href="http://miraeassetlc.com" target="_blank" title="��â����">�̷����±�������</a></li>
-							<li><a href="http://venture.miraeasset.co.kr" target="_blank" title="��â����">�̷����º�ó����</a></li>
-							<li><a href="https://capital.miraeasset.com" target="_blank" title="��â����">�̷�����ĳ��Ż</a></li>
-							<li><a href="http://consulting.miraeasset.com" target="_blank" title="��â����">�̷�����������
-���(����)</a></li>
-							<li><a href="http://miraeassetsecuritiesus.com" target="_blank" title="��â����">�̷���������(�̱�)</a></li>
-							<li>�̷���������(�̱�-����)</li>
-							<li><a href="http://www.masvn.com" target="_blank" title="��â����">�̷���������(��Ʈ��)</a></li>
-							<li>�̷���������(��Ʈ��-ȣġ��)</li>
-							<li><a href="https://corretora.miraeasset.com.br" target="_blank" title="��â����">�̷���������(�����)</a></li>
-							<li><a href="https://securities.miraeasset.com.sg" target="_blank" title="��â����">�̷���������(�̰�����)</a></li>
-							<li><a href="https://securities.miraeasset.co.uk" target="_blank" title="��â����">�̷���������(����)</a></li>
-							<li><a href="http://cm.miraeasset.co.in/" tar
--miraeasset.com.vn/" target="_blank" title="��â����">�̷������ڻ���(��Ʈ��)</a></li>
-							<li>�̷������ڻ���(�ƶ����̸�Ʈ-�ι���)</li>
-							<!-- <li><a href="http://investments.miraeasset.com.br" target="_blank" title="��â����">�̷������ڻ���(�����)</a></li> -->
-							<li><a href="http://investments.miraeasset.co.uk/" target="_blank" title="��â����">�̷������ڻ���(����)</a></li>
-							<li><a href="http://www.miraeassetmf.co.in" target="_blank" title="��â����">�̷������ڻ���(�ε�)</a></li>
-							<li>�̷������ڻ���(�߱�-����)</li>
-							<li><a href="http://investments.miraeasset.com.au" target="_blank" title="��â����">�̷������ڻ���(ȣ��)</a></li>
-							<li><a href="https://www.am.miraeasset.com.hk/" ta
-</a></li>
-							<li>�̷����´�ü���ں�Ʈ��</li>
-							<li><a href="https://foundation.miraeasset.com.vn/" target="_blank" title="��â����">�̷�������(��Ʈ��)</a></li>
+				</div>
+				
+				<a href="#" class="btn_layer" title="�йи� ����Ʈ ���̾� ����"><img src="https://img.securities.miraeasset.com/new2026/btn_footer_layer.png" alt="�йи� ����Ʈ" /></a>
+				<div class="family_site">
+					<dl>
+						<dt>��
+tle="��â����">�̷�����ĳ��Ż</a></li>
+							<li><a href="http://consulting.miraeasset.com" target="_blank" title="��â����">�̷�����������</a></li>
+							<li><a href="http://energyinfra.miraeasset.co.kr/main/index.do" target="_blank" title="��â����">�������������ڻ���</a></li>
+							<li><a href="http://investpension.miraeasset.com" target="_blank" title="��â����">�̷��������ڿͿ��ݼ���</a></li>
+							<li><a href="http://foundation.miraeasset.com" target="_blank" title="��â����">�̷����¹��������</a></li>
 						</ul>
 						</dd>
-						<!-- ���� -->
+					</dl>
+					<dl class="half">
+						<dt>Global</dt>
 						<dd>
 						<ul>
-							<li><a href="https://www.globalxetfs.com/" target="_blank" title="��â����">Global X(�̱�)</a></li>
-							<li><a href="https://globalxetfs.com.br/" target="_blank" title="��â����">Global X(�����)</a></li>
-							<li><a href="https://www.globalxetfs.sg" target="_blank" title="��â����">Global X(�̰�����)</a></li>
-							<li><a href="https://www.globalxetfs.eu" target="_blank" title="��â����">Global X(���Ϸ���)</a></li>
-							<li><a href="https://globalxetfs.eu/" target="_blank" titl
-"><a href="https://miraeassetvc.co.in/" target="_blank" title="��â����">�̷����º�ó����(�ε�)</a></li>
-							<li><a href="https://fs.miraeasset.co.in/" target="_blank" title="��â����">�̷����±�������(�ε�)</a></li>
-							<li><a href="https://india.miraeasset.org/" target="_blank" title="��â����">�̷��������(�ε�)</a></li>
-							<li><a href="https://indices.miraeasset.com/" target="_blank" title="��â����">�̷����±۷ι��ε�ý�(�ε�)</a></li>
-							<li><a href="https://www.sharekhan.com/" target="_blank" title="��â����">�̷����½���ĭ(�ε�)</a></li>
-							<li><a href="https://www.lifesci.miraeasset.com" target="_blank" title="��â����">�̷�����ĳ��Ż���������̾�(�̱�)</a></li>
+							<li><a href="https://english.securities.miraeasset.com" target="_blank" title="��â����">�̷���������(�۷ι�)</
+ecurities.miraeasset.co.uk" target="_blank" title="��â����">�̷���������(����)</a></li>
+							<li><a href="http://cm.miraeasset.co.in/" target="_blank" title="��â����">�̷���������(�ε�)</a></li>
+							<li><a href="https://sekuritas.miraeasset.co.id" target="_blank" title="��â����">�̷���������(�ε��׽þ�)</a></li>
+							<li><a href="http://securities.miraeasset.hk" target="_blank" title="��â����">�̷���������(ȫ��*)</a></li>
+							<li>�̷���������(�߱�-����¡)</li>
+							<li>�̷���������(�߱�-������)</li>
+						</ul>
+						</dd>
+						<dd>
+						<ul>
+							<li><a href="https://www.am.miraeasset.com" target="_blank" title="��â����">�̷������ڻ���(�۷ι�)</a></li>
+							<li><a href="http://investments.miraeasset.us" targ
+.miraeasset.com.au" target="_blank" title="��â����">�̷������ڻ���(ȣ��)</a></li>
+							<li><a href="https://www.am.miraeasset.com.hk/" target="_blank" title="��â����">�̷������ڻ���(ȫ��*)</a></li>
+							<li><a href="http://www.hcmiraefund.com/" target="_blank" title="��â����">�̷�����ȭ���ڻ���(�߱�)</a></li>
+							<li>�̷������ڻ���(����θ�ũ-SICAV)</li>
+							
+							<li style="margin-top:30px;"><a href="http://mafc.com.vn" target="_blank" title="��â����">�̷��������̳������۴�(��Ʈ��)</a></li><!-- ���� -->
+							<li><a href="https://www.map-life.com.vn" target="_blank" title="��â����">�̷������������ƻ���(��Ʈ��)</a></li>
+							<li><a href="https://mpvn.com.vn/" target="_blank" title="��â����">�񳪵��������̳����
+.globalxetfs.eu" target="_blank" title="��â����">Global X(���Ϸ���)</a></li>
+							<li><a href="https://globalxetfs.eu/" target="_blank" title="��â����">Global X(����)</a></li>
+							<li><a href="https://globalxetfs.co.jp" target="_blank" title="��â����">Global X(�Ϻ�)</a></li>
+							<li><a href="https://globalxetfs.co/" target="_blank" title="��â����">Global X(�ݷҺ��)</a></li>
+							<li><a href="https://www.globalxetfs.com.hk" target="_blank" title="��â����">Global X(ȫ��*)</a></li>
+							<li><a href="https://globalx.ca" target="_blank" title="��â����">Global X(ĳ����)</a></li>
+							<li><a href="https://www.globalxetfs.com.au/" target="_blank" title="��â����">Global X(ȣ��)</a></li>
+							<li><a href="https://stockspot.co
+ww.lifesci.miraeasset.com" target="_blank" title="��â����">�̷�����ĳ��Ż���������̾�(�̱�)</a></li>
 							<li>Wealthspot (�̱�)</li>
-					
-COPYRIGHT 2021(C) MIRAE ASSET SECURITIES.CO., LTD. ALL RIGHTS RESERVED.</p>
+							<li><a href="https://www.mapscapital.com/en/" target="_blank" title="��â����">Mirae Asset Capital (China)</a></li>
+							<li><a href="https://www.ghco.co.uk/" target="_blank" title="��â����">GHCO(�׸���)</a></li>
+							<li><a href="https://www.ghco.co.uk/" target="_blank" title="��â����">GHCO(����)</a></li>
+						</ul>
+						</dd>
+					</dl>
+					<p class="ast">* �߱� ȫ�� Ư��������</p>
+					<a href="#" class="btn_close">�ݱ�</a>
 				</div>
-				<div class="footer_mark">
-					<div class="sns_wrap">
-						<a href="https://blog.naver.com/how2invest" target="_blank" title="��â����"><img src="https://img.securities.miraeasset.com/new2026/sns_01.svg" alt="���α�" /></a>
-						<a href="https://facebook.com/miraeassetmstock" target="_blank" title="��â����"><img src="https://img.securities.miraeasset.com/new2026/sns_02.svg" alt="���̽���" /></a>
-						<a href="https://instagram.com/miraeasset.securities_official" target="_blank" title="��â����"><img src="https://img.securities.miraeasset.com/new2026/sns_03.svg" alt="�ν�Ÿ�׷�" /></a>
-						<a href="https://x.com/MiraeAssetSec" target="_bl
-language='javascript' src='/js/weblog_tag.js'></script>
-<script type="text/javascript">
-	var _BTCC = "https://securities.miraeasset.com";
-	//var _BT_DEBUG = "off";
-	if(typeof(_bt_run_track)!="undefined"){
-		_bt_run_track(_BTCC);
-	}
-</script>	
+			</div><!-- //"footer_quick_menu" -->
+			
+			<div class="footer_logo_wrap">
+				<div class="footer_logo">
+					<img src="https://img.securities.
+mg src="https://img.securities.miraeasset.com/new2026/sns_03.svg" alt="�ν�Ÿ�׷�" /></a>
+						<a href="https://x.com/MiraeAssetSec" target="_blank" title="��â����"><img src="https://img.securities.miraeasset.com/new2026/sns_04.svg" alt="����" /></a>
+					</div>
+					<span><a href="http://webwatch.or.kr/certification/situation.html" target="_blank" title="��â����"><img src="https://img.securities.miraeasset.com/new2026/ico_footer_mark.png" alt="���б��������ź� WEB ACCESSIBLITY ��ũ(�� ���ټ� ǰ������ ��ũ)" /></a></span>
+				</div>			
+			</div>
+		</div><!--//footer  -->
+	</div>
+	<!--// include area end - footer.jsp -->
 
-    <!-- ]] Bestez Bottom Area-->
-    </div>
-</div>
-</body>
 
-<!-- //Body Start -->
-</html>ook.com/miraeassetmstock" target="_blank" title="��â����"><img src="https://img.securities.miraeasset.com/new2026/sns_02.svg" alt="���̽���" /></a>
-						<a href="https://instagram.com/miraeasset.securities_official" target="_blank" title="��â����"><img src="https://img.securities.miraeasset.com/new2026/sns_03.svg" alt="�ν�Ÿ�׷�" /></a>
-						<a href="https://x.com/MiraeAssetSec" target="_bl
-
+<script type="text/javascript">//<![CDATA[
+	try{
+		if ($("#contentframe", top.document).attr("QWAY") == 'Y') {
