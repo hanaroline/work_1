@@ -101,7 +101,18 @@ _TAIL_CUT = re.compile(
 _DROP_LINE = re.compile(
     r"(연락처|02-\d{3,4}-\d{4}|@[a-z]+\.com|Tel\.|E-mail|"
     r"^\s*[\d,.\s%▲▼△▽\-+()]+\s*$|투자의견\s*비율|매수\s*중립\s*매도|"
-    r"증권\s*\|?\s*\d{4}[.\-]\d{2}[.\-]\d{2}|조회\s*[\d,]{2,})")
+    r"증권\s*\|?\s*\d{4}[.\-]\d{2}[.\-]\d{2}|조회\s*[\d,]{2,}|"
+    # 첨부 파일 이름이 본문 사이에 끼어 있다 — 20260819_B45_cylee_76.pdf.
+    # 앞 문장이 마침표로 끝나면 이것이 한 「문장」으로 잘려 요약에 실린다.
+    r"\.[Pp][Dd][Ff](?![가-힣A-Za-z])|\d{8}_[A-Za-z0-9_]{3,})")
+
+# 본문 상자 안에는 첨부 파일 링크가 함께 들어 있다. 그 링크의 **글자**가
+# 파일 이름이라, 「…실적에 직접 반영되고 있음. 20260819_B45_cylee_76.pdf」
+# 처럼 본문에 끼어 한 문장으로 잘려 요약에 실린 판이 있었다(8/19 판 6건).
+# 파일 이름에 한글과 공백이 든 것도 있어(제목을 그대로 쓴 것) 글자만 보고
+# 잘라 내기 어렵다 — 태그째로 걷어낸다.
+_PDF_A = re.compile(r'(?is)<a\b[^>]*(?:\.pdf|attachment|downConfirm)[^>]*>.*?</a\s*>'
+                    r'|<a\b[^>]*>[^<]{0,120}?\.pdf\s*</a\s*>')
 
 # 요약 문장을 고르는 데 쓰는 저울. 리포트에서 사람이 먼저 읽는 것들이다.
 WEIGHT = [
@@ -493,7 +504,7 @@ def parse_detail(html):
         frag = _slice_tag(html, needle)
         if not frag:
             continue
-        body = _TAIL_CUT.split(_text(frag))[0].strip()
+        body = _TAIL_CUT.split(_text(_PDF_A.sub(" ", frag)))[0].strip()
         if len(body) > len(best):
             best, how = body, needle.split('"')[-2] if '"' in needle else needle
         if len(best) >= 300:
@@ -596,7 +607,9 @@ _SENT_SPLIT = re.compile(r"(?<=다\.)\s+|(?<=[.!?])\s+|\n+")
 def _sentences(body):
     out = []
     for s in _SENT_SPLIT.split(body):
-        s = re.sub(r"\s+", " ", s).strip(" ·-|")
+        # 통째로 따옴표에 싸인 문장이 있다. 양끝을 털어야 「" 또한,」 처럼
+        # 어정쩡하게 시작하지 않는다.
+        s = re.sub(r"\s+", " ", s).strip(" ·-|\"'“”")
         s = re.sub(r"''+|``+", "'", s)               # ''매수'' 처럼 겹친 따옴표
         if not (20 <= len(s) <= 200):
             continue
