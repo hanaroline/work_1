@@ -1,140 +1,149 @@
 {
- "note": "발행한 브리핑의 보관 목록이다. 사이드바 「지난 브리핑」은 이 목록으로 만들며, 만드는 것은 scripts/build_archive_nav.py 다 — 손으로 적지 말 것. 손으로 적던 동안 목록이 4~5줄에서 잘렸고, 앞판에서 베낀 주소가 그 사이 새 판에 덮여 엉뚱한 날을 가리키는 일이 있었다. 세션 작업폴더는 컨테이너가 회수되면 사라지므로 원본 HTML 도 여기 함께 둔다. file 이 있는 항목의 HTML 은 <html>·<body> 없는 아티팩트 본문이라 그대로 다시 발행할 수 있다. url 은 그 날짜 전용 아티팩트 주소이며 날짜마다 서로 다르다 — 한 주소를 여러 날이 돌려쓰지 않는다.",
- "briefings": [
-  {
-   "date": "2026-08-20",
-   "session": "morning",
-   "title": "모닝 마켓 브리핑",
-   "label_ko": "모닝 마켓",
-   "label_en": "Morning brief",
-   "url": "https://claude.ai/code/artifact/624996c3-aa73-4da4-9f69-79b2dba3a45c",
-   "file": "2026-08-20-morning.html"
-  },
-  {
-   "date": "2026-08-19",
-   "session": "morning",
-   "title": "모닝 마켓 브리핑",
-   "label_ko": "모닝 마켓",
-   "label_en": "Morning brief",
-   "url": "https://claude.ai/code/artifact/dca66b4e-550e-42ed-96d9-b24918392756",
-   "file": "2026-08-19-morning.html"
-  },
-  {
-   "date": "2026-08-18",
-   "session": "morning",
-   "title": "모닝 마켓 브리핑",
-   "label_ko": "모닝 마켓",
-   "label_en": "Morning brief",
-   "url": "https://claude.ai/code/artifact/c04b8081-7ddf-41a3-a693-d3f90acb6b71",
-   "file": "2026-08-18-morning.html"
-  },
-  {
-   "date": "2026-08-17",
-   "session": "global",
-   "title": "해외 증시 브리핑",
-   "label_ko": "해외 증시",
-   "label_en": "Global brief",
-   "url": "https://claude.ai/code/artifact/87160ee2-f83f-495a-9d9a-c036dd3b3f14",
-   "file": "2026-08-17-global.html"
-  },
-  {
-   "date": "2026-08-15",
-   "session": "global",
-   "title": "해외 증시 브리핑",
-   "label_ko": "해외 증시",
-   "label_en": "Global brief",
-   "url": "https://claude.ai/code/artifact/4498278f-4fa5-4ea1-aca1-dacb819f3ea7",
-   "file": "2026-08-15-global.html"
-  },
-  {
-   "date": "2026-08-14",
-   "session": "morning",
-   "title": "모닝 마켓 브리핑",
-   "label_ko": "모닝 마켓",
-   "label_en": "Morning brief",
-   "url": "https://claude.ai/code/artifact/9ee323f2-2aac-4b76-86ac-968b1546caf9",
-   "file": "2026-08-14-morning.html"
-  },
-  {
-   "date": "2026-08-13",
-   "session": "morning",
-   "title": "모닝 마켓 브리핑",
-   "label_ko": "모닝 마켓",
-   "label_en": "Morning brief",
-   "url": "https://claude.ai/code/artifact/4de32129-86ab-4daa-8a65-7658d2848765",
-   "file": "2026-08-13-morning.html"
-  },
-  {
-   "date": "2026-08-12",
-   "session": "morning",
-   "title": "모닝 마켓 브리핑",
-   "label_ko": "모닝 마켓",
-   "label_en": "Morning brief",
-   "url": "https://claude.ai/code/artifact/2f4b11f0-6a38-4007-9afd-02cefca42228",
-   "file": "2026-08-12-morning.html"
-  },
-  {
-   "date": "2026-08-11",
-   "session": "morning",
-   "title": "모닝 마켓 브리핑",
-   "label_ko": "모닝 마켓",
-   "label_en": "Morning brief",
-   "url": "https://claude.ai/code/artifact/81ed2f4f-4a38-4b60-911b-e42ee67c316a",
-   "file": "2026-08-11-morning.html"
-  },
-  {
-   "date": "2026-08-10",
-   "session": "close",
-   "title": "장마감 시황 브리핑",
-   "label_ko": "장마감 시황",
-   "label_en": "Close brief",
-   "url": "https://claude.ai/code/artifact/6bddc99f-2f51-4847-8707-a4b29c83a32f",
-   "file": "2026-08-10-close.html"
-  },
-  {
-   "date": "2026-08-10",
-   "session": "morning",
-   "title": "모닝 마켓 브리핑",
-   "label_ko": "모닝 마켓",
-   "label_en": "Morning brief",
-   "url": "https://claude.ai/code/artifact/f92ff123-0fc4-4931-b5cf-f9deb1fb7897",
-   "file": "2026-08-10-morning.html"
-  },
-  {
-   "date": "2026-08-08",
-   "session": "global-morning",
-   "title": "해외 증시 모닝 브리핑",
-   "label_ko": "해외 증시 모닝",
-   "label_en": "Global morning",
-   "url": "https://claude.ai/code/artifact/46f66af2-cd8c-4d32-bbe6-9cddbea5dab9",
-   "file": "2026-08-08-global.html"
-  },
-  {
-   "date": "2026-08-07",
-   "session": "close",
-   "title": "장마감 시황 브리핑",
-   "label_ko": "장마감 시황",
-   "label_en": "Close brief",
-   "url": "https://claude.ai/code/artifact/e4224dd3-fbc3-4cd1-970c-1c8f9e9713ba",
-   "file": "2026-08-07-close.html"
-  },
-  {
-   "date": "2026-08-07",
-   "session": "morning",
-   "title": "모닝 마켓 브리핑",
-   "label_ko": "모닝 마켓",
-   "label_en": "Morning brief",
-   "url": "https://claude.ai/code/artifact/8692db99-79e8-43f5-9a8d-832e560effe9",
-   "file": "2026-08-07-morning.html"
-  },
-  {
-   "date": "2026-08-06",
-   "session": "morning",
-   "title": "아침 브리핑",
-   "label_ko": "아침 브리핑",
-   "label_en": "Morning brief",
-   "url": "https://claude.ai/code/artifact/382fd976-d577-44b0-8380-3c5d378bada7",
-   "file": "2026-08-06-morning.html"
-  }
- ]
+  "note": "발행한 브리핑의 보관 목록이다. 사이드바 「지난 브리핑」은 이 목록으로 만들며, 만드는 것은 scripts/build_archive_nav.py 다 — 손으로 적지 말 것. 손으로 적던 동안 목록이 4~5줄에서 잘렸고, 앞판에서 베낀 주소가 그 사이 새 판에 덮여 엉뚱한 날을 가리키는 일이 있었다. 세션 작업폴더는 컨테이너가 회수되면 사라지므로 원본 HTML 도 여기 함께 둔다. file 이 있는 항목의 HTML 은 <html>·<body> 없는 아티팩트 본문이라 그대로 다시 발행할 수 있다. url 은 그 날짜 전용 아티팩트 주소이며 날짜마다 서로 다르다 — 한 주소를 여러 날이 돌려쓰지 않는다.",
+  "briefings": [
+    {
+      "date": "2026-08-20",
+      "session": "close",
+      "title": "장마감 시황 브리핑",
+      "label_ko": "장마감 시황",
+      "label_en": "Market close",
+      "url": "https://claude.ai/code/artifact/864a091f-6152-44d7-ba4b-3a4c09857b50",
+      "file": "2026-08-20-close.html"
+    },
+    {
+      "date": "2026-08-20",
+      "session": "morning",
+      "title": "모닝 마켓 브리핑",
+      "label_ko": "모닝 마켓",
+      "label_en": "Morning brief",
+      "url": "https://claude.ai/code/artifact/624996c3-aa73-4da4-9f69-79b2dba3a45c",
+      "file": "2026-08-20-morning.html"
+    },
+    {
+      "date": "2026-08-19",
+      "session": "morning",
+      "title": "모닝 마켓 브리핑",
+      "label_ko": "모닝 마켓",
+      "label_en": "Morning brief",
+      "url": "https://claude.ai/code/artifact/dca66b4e-550e-42ed-96d9-b24918392756",
+      "file": "2026-08-19-morning.html"
+    },
+    {
+      "date": "2026-08-18",
+      "session": "morning",
+      "title": "모닝 마켓 브리핑",
+      "label_ko": "모닝 마켓",
+      "label_en": "Morning brief",
+      "url": "https://claude.ai/code/artifact/c04b8081-7ddf-41a3-a693-d3f90acb6b71",
+      "file": "2026-08-18-morning.html"
+    },
+    {
+      "date": "2026-08-17",
+      "session": "global",
+      "title": "해외 증시 브리핑",
+      "label_ko": "해외 증시",
+      "label_en": "Global brief",
+      "url": "https://claude.ai/code/artifact/87160ee2-f83f-495a-9d9a-c036dd3b3f14",
+      "file": "2026-08-17-global.html"
+    },
+    {
+      "date": "2026-08-15",
+      "session": "global",
+      "title": "해외 증시 브리핑",
+      "label_ko": "해외 증시",
+      "label_en": "Global brief",
+      "url": "https://claude.ai/code/artifact/4498278f-4fa5-4ea1-aca1-dacb819f3ea7",
+      "file": "2026-08-15-global.html"
+    },
+    {
+      "date": "2026-08-14",
+      "session": "morning",
+      "title": "모닝 마켓 브리핑",
+      "label_ko": "모닝 마켓",
+      "label_en": "Morning brief",
+      "url": "https://claude.ai/code/artifact/9ee323f2-2aac-4b76-86ac-968b1546caf9",
+      "file": "2026-08-14-morning.html"
+    },
+    {
+      "date": "2026-08-13",
+      "session": "morning",
+      "title": "모닝 마켓 브리핑",
+      "label_ko": "모닝 마켓",
+      "label_en": "Morning brief",
+      "url": "https://claude.ai/code/artifact/4de32129-86ab-4daa-8a65-7658d2848765",
+      "file": "2026-08-13-morning.html"
+    },
+    {
+      "date": "2026-08-12",
+      "session": "morning",
+      "title": "모닝 마켓 브리핑",
+      "label_ko": "모닝 마켓",
+      "label_en": "Morning brief",
+      "url": "https://claude.ai/code/artifact/2f4b11f0-6a38-4007-9afd-02cefca42228",
+      "file": "2026-08-12-morning.html"
+    },
+    {
+      "date": "2026-08-11",
+      "session": "morning",
+      "title": "모닝 마켓 브리핑",
+      "label_ko": "모닝 마켓",
+      "label_en": "Morning brief",
+      "url": "https://claude.ai/code/artifact/81ed2f4f-4a38-4b60-911b-e42ee67c316a",
+      "file": "2026-08-11-morning.html"
+    },
+    {
+      "date": "2026-08-10",
+      "session": "close",
+      "title": "장마감 시황 브리핑",
+      "label_ko": "장마감 시황",
+      "label_en": "Close brief",
+      "url": "https://claude.ai/code/artifact/6bddc99f-2f51-4847-8707-a4b29c83a32f",
+      "file": "2026-08-10-close.html"
+    },
+    {
+      "date": "2026-08-10",
+      "session": "morning",
+      "title": "모닝 마켓 브리핑",
+      "label_ko": "모닝 마켓",
+      "label_en": "Morning brief",
+      "url": "https://claude.ai/code/artifact/f92ff123-0fc4-4931-b5cf-f9deb1fb7897",
+      "file": "2026-08-10-morning.html"
+    },
+    {
+      "date": "2026-08-08",
+      "session": "global-morning",
+      "title": "해외 증시 모닝 브리핑",
+      "label_ko": "해외 증시 모닝",
+      "label_en": "Global morning",
+      "url": "https://claude.ai/code/artifact/46f66af2-cd8c-4d32-bbe6-9cddbea5dab9",
+      "file": "2026-08-08-global.html"
+    },
+    {
+      "date": "2026-08-07",
+      "session": "close",
+      "title": "장마감 시황 브리핑",
+      "label_ko": "장마감 시황",
+      "label_en": "Close brief",
+      "url": "https://claude.ai/code/artifact/e4224dd3-fbc3-4cd1-970c-1c8f9e9713ba",
+      "file": "2026-08-07-close.html"
+    },
+    {
+      "date": "2026-08-07",
+      "session": "morning",
+      "title": "모닝 마켓 브리핑",
+      "label_ko": "모닝 마켓",
+      "label_en": "Morning brief",
+      "url": "https://claude.ai/code/artifact/8692db99-79e8-43f5-9a8d-832e560effe9",
+      "file": "2026-08-07-morning.html"
+    },
+    {
+      "date": "2026-08-06",
+      "session": "morning",
+      "title": "아침 브리핑",
+      "label_ko": "아침 브리핑",
+      "label_en": "Morning brief",
+      "url": "https://claude.ai/code/artifact/382fd976-d577-44b0-8380-3c5d378bada7",
+      "file": "2026-08-06-morning.html"
+    }
+  ]
 }
