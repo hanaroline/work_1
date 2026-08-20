@@ -244,7 +244,7 @@
 <body>
 <div class="wrap">
   <header class="top">
-    <div class="brand"><span class="dot"></span> 보유자산 통합 브리핑 <small>미래에셋증권 · 실데이터 · <b style="color:var(--accent)">v2026.08.20-14</b></small></div>
+    <div class="brand"><span class="dot"></span> 보유자산 통합 브리핑 <small>미래에셋증권 · 실데이터 · <b style="color:var(--accent)">v2026.08.20-15</b></small></div>
     <div class="spacer"></div>
     <button class="icon-btn" id="btnTheme" title="다크/라이트 테마 전환">◐</button>
     <button class="btn sm" id="btnSample" title="체험용 예시 종목(삼성전자·SK하이닉스·KODEX 200·AAPL·미래에셋)을 자동으로 채웁니다" style="display:none">예시 채우기</button>
@@ -460,6 +460,8 @@
             <option value="kr_etf">국내ETF</option>
             <option value="us_stock">해외주식</option>
             <option value="us_etf">해외ETF</option>
+            <option value="kr_fund">국내펀드</option>
+            <option value="us_fund">해외펀드</option>
             <option value="mine">내 보유자산(전체)</option>
           </select>
         </label>
@@ -1807,7 +1809,10 @@ const SCREEN_UNIV={
   kr_stock:{ dom:true, codes:["005930","000660","373220","207940","005380","000270","005490","035420","035720","068270","006400","051910","012330","105560","055550","028260","066570","015760","017670","033780","034020","011200","009150","000810","247540","086520","196170"] },
   kr_etf:{ dom:true, codes:["069500","102110","360750","133690","122630","229200","091160","305720","371460","381180","132030","261220","278530","232080","379800","148020"] },
   us_stock:{ dom:false, codes:["AAPL","MSFT","NVDA","GOOGL","AMZN","META","TSLA","AVGO","LLY","JPM","V","UNH","XOM","JNJ","WMT","MA","PG","COST","HD","ORCL","NFLX","AMD","CRM","ADBE"] },
-  us_etf:{ dom:false, codes:["SPY","QQQ","VOO","VTI","IWM","DIA","SOXX","SMH","XLK","XLE","XLF","XLV","VNQ","GLD","ARKK","TLT"] }
+  us_etf:{ dom:false, codes:["SPY","QQQ","VOO","VTI","IWM","DIA","SOXX","SMH","XLK","XLE","XLF","XLV","VNQ","GLD","ARKK","TLT"] },
+  /* 펀드: 종목명 검색(nvAc)으로 펀드코드 확인 → /api/fund 기간수익률 사용. codes 는 검색 질의어 */
+  kr_fund:{ kind:"fund", codes:["미래에셋코어테크","삼성코리아대표","KB한국대표그룹주","한국투자네비게이터","신영밸류고배당","메리츠코리아","에셋플러스코리아리치투게더","KB밸류포커스","한국투자한국의힘","NH아문디100년기업그린코리아","마이다스책임투자","키움차세대모빌리티","삼성퇴직연금코리아","미래에셋배당프리미엄"] },
+  us_fund:{ kind:"fund", codes:["미래에셋글로벌솔루션","피델리티글로벌테크놀로지","AB미국그로스","블랙록월드테크놀로지","삼성글로벌다이나믹","한국투자글로벌전기차","KB스타미국S&P500인덱스","미래에셋미국배당프리미엄","이스트스프링차이나드래곤","한화글로벌헬스케어","미래에셋인디아","삼성인디아","프랭클린미국","슈로더글로벌"] }
 };
 const scCache={}; let scRows=[];
 async function scResolve(code, dom){
@@ -1832,6 +1837,23 @@ async function scOne(code, dom){
   const rec={ code, dom, item, name:(item&&item.name)||code, rets };
   scCache[code]=rec; return rec;
 }
+/* 펀드: 이름 검색으로 펀드코드 확인 → /api/fund 기간수익률(차트 불필요) */
+async function scResolveFund(q){
+  try{ const d=await nvAc(q); return (d.items||[]).find(x=>x.category==="fund")||null; }catch(e){ return null; }
+}
+async function scFundRets(code){
+  const d=await fetch("/api/fund?code="+encodeURIComponent(code)).then(r=>r.json());
+  const periods=Array.isArray(d.returns)?d.returns:[];
+  const pget=t=>{ const x=periods.find(p=>p.term===t); return x&&x.fundReturn!=null?x.fundReturn:null; };
+  return { "1M":pget("1m"),"3M":pget("3m"),"6M":pget("6m"),"9M":pget("9m"),"YTD":pget("ytd"),"1Y":pget("1y"),"2Y":pget("2y"),"3Y":pget("3y"),"5Y":pget("5y") };
+}
+async function scOneFund(q){
+  const ck="F:"+q; if(scCache[ck]) return scCache[ck];
+  const item=await scResolveFund(q);
+  let rets=null; if(item&&item.code){ try{ rets=await scFundRets(item.code); }catch(e){} }
+  const rec={ code:(item&&item.code)||q, dom:true, item, name:(item&&item.name)||q, rets };
+  scCache[ck]=rec; return rec;
+}
 async function scPool(list, worker, n, onprog){
   const out=[]; let i=0, done=0;
   const run=async()=>{ while(i<list.length){ const idx=i++; try{ out[idx]=await worker(list[idx]); }catch(e){ out[idx]=null; } done++; if(onprog) onprog(done,list.length); } };
@@ -1852,9 +1874,10 @@ async function screenerRun(){
     return;
   }
   const U=SCREEN_UNIV[univKey]; if(!U) return;
-  srcEl.textContent="출처: 프리셋 유니버스 "+U.codes.length+"종목 · 실시간 차트로 "+RET_KR[period]+" 수익률 계산";
+  const isFund=U.kind==="fund";
+  srcEl.textContent="출처: 프리셋 유니버스 "+U.codes.length+(isFund?"개 펀드 · 네이버 기간수익률":"종목 · 실시간 차트로 "+RET_KR[period]+" 수익률 계산");
   runBtn.disabled=true; progEl.style.display=""; progEl.textContent="조회 중… 0/"+U.codes.length;
-  const recs=await scPool(U.codes, c=>scOne(c,U.dom), 5, (d,t)=>{ progEl.textContent="조회 중… "+d+"/"+t; });
+  const recs=await scPool(U.codes, c=>(isFund?scOneFund(c):scOne(c,U.dom)), 5, (d,t)=>{ progEl.textContent="조회 중… "+d+"/"+t; });
   progEl.style.display="none"; runBtn.disabled=false;
   const rows=recs.filter(r=>r&&r.rets&&r.rets[period]!=null)
     .map(r=>({code:r.code,dom:r.dom,item:r.item,name:r.name,r:r.rets[period],rets:r.rets}));
@@ -1866,14 +1889,13 @@ function renderScreen(rows,period,mine){
   const resEl=document.getElementById("scResult");
   scRows=rows;
   if(!rows.length){ return; }
-  let h='<table class="sc-tbl"><thead><tr><th>#</th><th>종목</th><th>'+RET_KR[period]+'</th><th>1개월</th><th>1년</th><th></th></tr></thead><tbody>';
+  const refs=["1M","3M","1Y"].filter(k=>k!==period).slice(0,2);
+  let h='<table class="sc-tbl"><thead><tr><th>#</th><th>종목</th><th>'+RET_KR[period]+'</th>'+refs.map(k=>'<th>'+RET_KR[k]+'</th>').join("")+'<th></th></tr></thead><tbody>';
   rows.forEach((x,i)=>{
-    const r1=x.rets&&x.rets["1M"], ry=x.rets&&x.rets["1Y"];
     h+='<tr><td class="rk">'+(i+1)+'</td>'+
        '<td><span class="sc-nm" data-i="'+i+'">'+esc(x.name)+'</span></td>'+
        '<td class="'+cls(x.r)+'">'+pct(x.r)+'</td>'+
-       '<td class="'+cls(r1)+'">'+(r1!=null?pct(r1):"—")+'</td>'+
-       '<td class="'+cls(ry)+'">'+(ry!=null?pct(ry):"—")+'</td>'+
+       refs.map(k=>{ const v=x.rets&&x.rets[k]; return '<td class="'+cls(v)+'">'+(v!=null?pct(v):"—")+'</td>'; }).join("")+
        '<td>'+(mine?'':'<button class="btn sc-add" data-i="'+i+'">＋추가</button>')+'</td></tr>';
   });
   h+='</tbody></table>';
