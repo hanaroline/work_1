@@ -90,6 +90,16 @@
   .empty b{color:var(--text-dim)}
 
   /* modal */
+  .screen-ctl{display:flex;flex-wrap:wrap;gap:10px 14px;align-items:flex-end}
+  .screen-ctl label{display:flex;flex-direction:column;gap:4px;font-size:12px;color:var(--text-dim);font-weight:700}
+  .screen-ctl select{padding:7px 9px}
+  .sc-tbl{width:100%;border-collapse:collapse;font-size:13px}
+  .sc-tbl th,.sc-tbl td{padding:7px 8px;border-bottom:1px solid var(--border);text-align:right;white-space:nowrap}
+  .sc-tbl th:nth-child(2),.sc-tbl td:nth-child(2){text-align:left;white-space:normal}
+  .sc-tbl th{color:var(--text-dim);font-weight:700;font-size:11.5px}
+  .sc-tbl td.rk{color:var(--text-dim);font-weight:800}
+  .sc-nm{font-weight:700;color:var(--accent);cursor:pointer}
+  .sc-add{padding:3px 10px;font-size:12px}
   .modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:100;display:none;align-items:center;justify-content:center;padding:16px}
   .modal-bg.open{display:flex}
   .modal{background:var(--bg-elev);border:1px solid var(--border);border-radius:16px;padding:22px;max-width:720px;width:100%;max-height:88vh;display:flex;flex-direction:column;box-shadow:var(--shadow)}
@@ -234,10 +244,11 @@
 <body>
 <div class="wrap">
   <header class="top">
-    <div class="brand"><span class="dot"></span> 보유자산 통합 브리핑 <small>미래에셋증권 · 실데이터 · <b style="color:var(--accent)">v2026.08.20-13</b></small></div>
+    <div class="brand"><span class="dot"></span> 보유자산 통합 브리핑 <small>미래에셋증권 · 실데이터 · <b style="color:var(--accent)">v2026.08.20-14</b></small></div>
     <div class="spacer"></div>
     <button class="icon-btn" id="btnTheme" title="다크/라이트 테마 전환">◐</button>
     <button class="btn sm" id="btnSample" title="체험용 예시 종목(삼성전자·SK하이닉스·KODEX 200·AAPL·미래에셋)을 자동으로 채웁니다" style="display:none">예시 채우기</button>
+    <button class="btn sm" id="btnScreen" title="기간별 수익률 상위 종목을 조회하고 대시보드에 추가합니다">🔎 수익률 상위</button>
     <button class="btn sm" id="btnCSV" title="종목명·코드를 줄바꿈/쉼표로 붙여넣어 여러 종목을 한 번에 추가합니다 (수량·매입가는 제외)">여러 종목 추가</button>
     <button class="btn sm" id="btnCopy" title="현재 보유목록 요약표를 클립보드에 복사(메신저·메일 붙여넣기용)">표 복사</button>
     <button class="btn sm" id="btnCsvDl" title="현재 보유목록 요약을 엑셀용 CSV 파일로 저장">엑셀 저장</button>
@@ -430,6 +441,53 @@
           <button type="submit" class="btn primary">저장</button>
         </div>
       </form>
+    </div>
+  </div>
+</div>
+
+<!-- 기간별 수익률 상위 조회 모달 -->
+<div class="modal-bg" id="screenBg">
+  <div class="modal" style="max-width:720px">
+    <div class="mhead">
+      <div><div class="mtitle">기간별 수익률 상위 조회</div><div class="msub">자산군·기간을 고르면 상위 종목을 조회합니다. 원하는 종목은 대시보드에 추가할 수 있습니다.</div></div>
+      <button class="mclose" id="screenClose">✕</button>
+    </div>
+    <div class="mbody">
+      <div class="screen-ctl">
+        <label>자산군
+          <select id="scUniv">
+            <option value="kr_stock">국내주식</option>
+            <option value="kr_etf">국내ETF</option>
+            <option value="us_stock">해외주식</option>
+            <option value="us_etf">해외ETF</option>
+            <option value="mine">내 보유자산(전체)</option>
+          </select>
+        </label>
+        <label>기간
+          <select id="scPeriod">
+            <option value="1M">1개월</option>
+            <option value="3M" selected>3개월</option>
+            <option value="6M">6개월</option>
+            <option value="9M">9개월</option>
+            <option value="YTD">연초후</option>
+            <option value="1Y">1년</option>
+            <option value="2Y">2년</option>
+            <option value="3Y">3년</option>
+            <option value="5Y">5년</option>
+          </select>
+        </label>
+        <label>표시
+          <select id="scTopN">
+            <option value="10">상위 10</option>
+            <option value="20">상위 20</option>
+            <option value="30">전체</option>
+          </select>
+        </label>
+        <button class="btn primary" id="scRun">조회</button>
+      </div>
+      <div class="msub" id="scSrc" style="margin-top:6px"></div>
+      <div id="scProg" class="muted" style="margin-top:10px;display:none"></div>
+      <div id="scResult" style="margin-top:12px"></div>
     </div>
   </div>
 </div>
@@ -1742,6 +1800,99 @@ document.getElementById("btnBond").onclick=()=>openBondForm(null);
 document.getElementById("bondClose").onclick=closeBondForm;
 document.getElementById("bCancel").onclick=closeBondForm;
 document.getElementById("bondBg").onclick=(e)=>{ if(e.target.id==="bondBg") closeBondForm(); };
+
+/* ============ 기간별 수익률 상위 조회(스크리너) ============ */
+/* 프리셋 유니버스: 코드/티커만 하드코딩하고, 이름·시장·reuters는 조회 시 실시간 확인 */
+const SCREEN_UNIV={
+  kr_stock:{ dom:true, codes:["005930","000660","373220","207940","005380","000270","005490","035420","035720","068270","006400","051910","012330","105560","055550","028260","066570","015760","017670","033780","034020","011200","009150","000810","247540","086520","196170"] },
+  kr_etf:{ dom:true, codes:["069500","102110","360750","133690","122630","229200","091160","305720","371460","381180","132030","261220","278530","232080","379800","148020"] },
+  us_stock:{ dom:false, codes:["AAPL","MSFT","NVDA","GOOGL","AMZN","META","TSLA","AVGO","LLY","JPM","V","UNH","XOM","JNJ","WMT","MA","PG","COST","HD","ORCL","NFLX","AMD","CRM","ADBE"] },
+  us_etf:{ dom:false, codes:["SPY","QQQ","VOO","VTI","IWM","DIA","SOXX","SMH","XLK","XLE","XLF","XLV","VNQ","GLD","ARKK","TLT"] }
+};
+const scCache={}; let scRows=[];
+async function scResolve(code, dom){
+  try{ const d=await nvAc(code); const items=(d.items||[]).filter(x=>x.category!=="fund"&&x.category!=="index"&&x.category!=="marketindicator");
+    if(dom) return items.find(x=>x.code===code)||items[0]||null;
+    return items.find(x=>x.code===code||String(x.reutersCode||"").split(".")[0]===code)||items[0]||null;
+  }catch(e){ return null; }
+}
+async function scChart(code, dom, item){
+  let symbol;
+  if(dom){ const suf=(item&&item.typeCode==="KOSDAQ")?".KQ":((item&&item.typeCode==="KONEX")?".KN":".KS"); symbol=code+suf; }
+  else symbol=code;
+  const hy=await yh("/v8/finance/chart/"+encodeURIComponent(symbol)+"?range=5y&interval=1d");
+  const hr=hy.chart.result[0]; const ts=hr.timestamp||[]; const cl=(hr.indicators.quote[0].close)||[];
+  const S=[]; for(let i=0;i<ts.length;i++) if(cl[i]!=null) S.push({t:ts[i],c:cl[i]});
+  return computeRets(S);
+}
+async function scOne(code, dom){
+  if(scCache[code]) return scCache[code];
+  const item=await scResolve(code,dom);
+  let rets=null; try{ rets=await scChart(code,dom,item); }catch(e){}
+  const rec={ code, dom, item, name:(item&&item.name)||code, rets };
+  scCache[code]=rec; return rec;
+}
+async function scPool(list, worker, n, onprog){
+  const out=[]; let i=0, done=0;
+  const run=async()=>{ while(i<list.length){ const idx=i++; try{ out[idx]=await worker(list[idx]); }catch(e){ out[idx]=null; } done++; if(onprog) onprog(done,list.length); } };
+  await Promise.all(Array.from({length:Math.min(n,list.length)},run));
+  return out;
+}
+async function screenerRun(){
+  const univKey=document.getElementById("scUniv").value, period=document.getElementById("scPeriod").value, topN=+document.getElementById("scTopN").value;
+  const resEl=document.getElementById("scResult"), progEl=document.getElementById("scProg"), srcEl=document.getElementById("scSrc"), runBtn=document.getElementById("scRun");
+  resEl.innerHTML="";
+  if(univKey==="mine"){
+    srcEl.textContent="출처: 내 보유자산 · 조회 완료된 종목의 "+RET_KR[period]+" 수익률 기준";
+    const rows=holdings.filter(h=>h.brief&&h.brief.ret&&h.brief.ret[period]!=null)
+      .map(h=>({key:h.key,name:h.name,r:h.brief.ret[period],rets:h.brief.ret}));
+    rows.sort((a,b)=>b.r-a.r);
+    renderScreen(rows.slice(0,topN||rows.length),period,true);
+    if(!rows.length) resEl.innerHTML='<div class="muted">표시할 수익률 데이터가 없습니다. 보유 종목을 먼저 조회하세요.</div>';
+    return;
+  }
+  const U=SCREEN_UNIV[univKey]; if(!U) return;
+  srcEl.textContent="출처: 프리셋 유니버스 "+U.codes.length+"종목 · 실시간 차트로 "+RET_KR[period]+" 수익률 계산";
+  runBtn.disabled=true; progEl.style.display=""; progEl.textContent="조회 중… 0/"+U.codes.length;
+  const recs=await scPool(U.codes, c=>scOne(c,U.dom), 5, (d,t)=>{ progEl.textContent="조회 중… "+d+"/"+t; });
+  progEl.style.display="none"; runBtn.disabled=false;
+  const rows=recs.filter(r=>r&&r.rets&&r.rets[period]!=null)
+    .map(r=>({code:r.code,dom:r.dom,item:r.item,name:r.name,r:r.rets[period],rets:r.rets}));
+  rows.sort((a,b)=>b.r-a.r);
+  renderScreen(rows.slice(0,topN||rows.length),period,false);
+  if(!rows.length) resEl.innerHTML='<div class="muted">데이터를 가져오지 못했습니다. 잠시 후 다시 시도하세요.</div>';
+}
+function renderScreen(rows,period,mine){
+  const resEl=document.getElementById("scResult");
+  scRows=rows;
+  if(!rows.length){ return; }
+  let h='<table class="sc-tbl"><thead><tr><th>#</th><th>종목</th><th>'+RET_KR[period]+'</th><th>1개월</th><th>1년</th><th></th></tr></thead><tbody>';
+  rows.forEach((x,i)=>{
+    const r1=x.rets&&x.rets["1M"], ry=x.rets&&x.rets["1Y"];
+    h+='<tr><td class="rk">'+(i+1)+'</td>'+
+       '<td><span class="sc-nm" data-i="'+i+'">'+esc(x.name)+'</span></td>'+
+       '<td class="'+cls(x.r)+'">'+pct(x.r)+'</td>'+
+       '<td class="'+cls(r1)+'">'+(r1!=null?pct(r1):"—")+'</td>'+
+       '<td class="'+cls(ry)+'">'+(ry!=null?pct(ry):"—")+'</td>'+
+       '<td>'+(mine?'':'<button class="btn sc-add" data-i="'+i+'">＋추가</button>')+'</td></tr>';
+  });
+  h+='</tbody></table>';
+  resEl.innerHTML=h;
+  [...resEl.querySelectorAll(".sc-add")].forEach(b=>b.onclick=()=>scAdd(+b.dataset.i));
+  [...resEl.querySelectorAll(".sc-nm")].forEach(s=>s.onclick=()=>{ const x=scRows[+s.dataset.i]; if(mine){ document.getElementById("screenBg").classList.remove("open"); openDetail(x.key); } else scAdd(+s.dataset.i); });
+}
+async function scAdd(i){
+  const x=scRows[i]; if(!x) return;
+  let item=x.item; if(!item){ item=await scResolve(x.code,x.dom); }
+  if(!item){ toast("종목 정보를 찾지 못했습니다"); return; }
+  if(holdings.some(hx=>hx.key===(item.reutersCode||item.code))){ toast("이미 추가된 종목입니다"); return; }
+  toast(x.name+" 추가 중…"); await addHolding(item); toast(x.name+" 추가됨");
+}
+function openScreener(){ document.getElementById("scResult").innerHTML=""; document.getElementById("scSrc").textContent=""; document.getElementById("scProg").style.display="none"; document.getElementById("screenBg").classList.add("open"); }
+document.getElementById("btnScreen").onclick=openScreener;
+document.getElementById("screenClose").onclick=()=>document.getElementById("screenBg").classList.remove("open");
+document.getElementById("screenBg").onclick=(e)=>{ if(e.target.id==="screenBg") document.getElementById("screenBg").classList.remove("open"); };
+document.getElementById("scRun").onclick=screenerRun;
 document.getElementById("bDelete").onclick=()=>{ if(editingBondKey){ removeHolding(editingBondKey); closeBondForm(); } };
 document.addEventListener("keydown",(e)=>{ if(e.key==="Escape") closeBondForm(); });
 document.getElementById("bondForm").addEventListener("submit",(e)=>{
