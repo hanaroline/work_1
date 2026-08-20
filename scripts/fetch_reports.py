@@ -800,14 +800,21 @@ def pick_highlights(reports, day, n=12):
 
     조회수만으로 고르면 종목분석만 남는다. 판을 섞어 담고, 목표주가를
     건드린 리포트와 여러 증권사가 함께 본 종목을 앞으로 당긴다.
+
+    **그날 자 리포트에서만 고른다.** 처음에는 전체에서 고르며 그날 것에
+    점수만 얹었는데, 아침에는 오늘 리포트의 조회수가 아직 낮아 며칠 묵은
+    리포트가 조회수로 이겼다 — 8/20 08:56 판에서 「오늘의 주요」 열두 장
+    가운데 열 장이 8/14·8/18 자였다. 그날 것이 아예 없을 때(있을 수
+    없지만)만 전체로 물러난다.
     """
+    pool = [r for r in reports if r.get("date") == day] or reports
     counts = {}
-    for r in reports:
+    for r in pool:
         st = (r.get("stock") or {}).get("code")
         if st:
             counts[st] = counts.get(st, 0) + 1
     scored = []
-    for r in reports:
+    for r in pool:
         sc = 0.0
         if r.get("date") == day:
             sc += 3.0
