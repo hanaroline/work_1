@@ -234,7 +234,7 @@
 <body>
 <div class="wrap">
   <header class="top">
-    <div class="brand"><span class="dot"></span> 보유자산 통합 브리핑 <small>미래에셋증권 · 실데이터 · <b style="color:var(--accent)">v2026.07.27-12</b></small></div>
+    <div class="brand"><span class="dot"></span> 보유자산 통합 브리핑 <small>미래에셋증권 · 실데이터 · <b style="color:var(--accent)">v2026.08.20-13</b></small></div>
     <div class="spacer"></div>
     <button class="icon-btn" id="btnTheme" title="다크/라이트 테마 전환">◐</button>
     <button class="btn sm" id="btnSample" title="체험용 예시 종목(삼성전자·SK하이닉스·KODEX 200·AAPL·미래에셋)을 자동으로 채웁니다" style="display:none">예시 채우기</button>
@@ -569,11 +569,11 @@ async function briefStockEtf(h){
   if(m.instrumentType==="ETF") b.type="etf"; // 야후 상품유형으로 ETF 판별(해외 포함)
   // 히스토리(1y) → 수익률 + 스파크라인
   try{
-    const hy=await yh("/v8/finance/chart/"+encodeURIComponent(h.yahooSymbol)+"?range=2y&interval=1d");
+    const hy=await yh("/v8/finance/chart/"+encodeURIComponent(h.yahooSymbol)+"?range=5y&interval=1d");
     const hr=hy.chart.result[0]; const ts=hr.timestamp||[]; const cl=(hr.indicators.quote[0].close)||[];
     const S=[]; for(let i=0;i<ts.length;i++) if(cl[i]!=null) S.push({t:ts[i],c:cl[i]});
     b.series=S.slice(-260); // 카드 스파크라인용 최근 1년
-    b.ret={ "1M":periodRet(S,30), "3M":periodRet(S,91), "6M":periodRet(S,182), "1Y":periodRet(S,365) };
+    b.ret=computeRets(S);
   }catch(e){ b.series=[]; b.ret={}; }
   // 2) 네이버 통합정보 (국내: 컨센서스/수급/ETF지표/리포트)
   if(h.domestic){
@@ -640,7 +640,7 @@ function parseNaverChart(arr){
   S.sort((a,b)=>a.t-b.t); return S;
 }
 async function naverForeignChart(reutersCode){
-  const end=new Date(), start=new Date(); start.setFullYear(start.getFullYear()-2);
+  const end=new Date(), start=new Date(); start.setFullYear(start.getFullYear()-5);
   const f=dt=>{ const y=dt.getFullYear(),m=("0"+(dt.getMonth()+1)).slice(-2),d=("0"+dt.getDate()).slice(-2); return ""+y+m+d; };
   const url="https://api.stock.naver.com/chart/foreign/item/"+encodeURIComponent(reutersCode)+"/day?startDateTime="+f(start)+"&endDateTime="+f(end);
   return parseNaverChart(await proxy(url));
@@ -687,14 +687,14 @@ async function briefOverseas(h){
   b.series=[]; b.ret={};
   try{
     const S=await naverForeignChart(h.reutersCode);
-    if(S&&S.length>2){ b.series=S.slice(-260); b.ret={"1M":periodRet(S,30),"3M":periodRet(S,91),"6M":periodRet(S,182),"1Y":periodRet(S,365)}; }
+    if(S&&S.length>2){ b.series=S.slice(-260); b.ret=computeRets(S); }
     else throw new Error("thin");
   }catch(e){
     try{
-      const hy=await yh("/v8/finance/chart/"+encodeURIComponent(yhOverseasSymbol(h))+"?range=2y&interval=1d");
+      const hy=await yh("/v8/finance/chart/"+encodeURIComponent(yhOverseasSymbol(h))+"?range=5y&interval=1d");
       const hr=hy.chart.result[0]; const ts=hr.timestamp||[]; const cl=(hr.indicators.quote[0].close)||[];
       const S=[]; for(let i=0;i<ts.length;i++) if(cl[i]!=null) S.push({t:ts[i],c:cl[i]});
-      b.series=S.slice(-260); b.ret={"1M":periodRet(S,30),"3M":periodRet(S,91),"6M":periodRet(S,182),"1Y":periodRet(S,365)};
+      b.series=S.slice(-260); b.ret=computeRets(S);
     }catch(_){}
   }
   // 4) 해외 ETF 편입종목 (야후 topHoldings)
@@ -718,7 +718,7 @@ async function briefFund(h){
   let holdings=[]; try{ holdings=await fundHoldings(h.code); }catch(e){}
   return { type:"fund", isFund:true, currency:"KRW",
     fundName:f.fundName, basePrice:num(f.basePrice), change:num(f.changePrice),
-    ret:{ "1M":pget("1m"), "3M":pget("3m")??num(f.returnRate3m), "6M":pget("6m"), "1Y":pget("1y") },
+    ret:{ "1M":pget("1m"), "3M":pget("3m")??num(f.returnRate3m), "6M":pget("6m"), "9M":pget("9m"), "YTD":pget("ytd"), "1Y":pget("1y"), "2Y":pget("2y"), "3Y":pget("3y"), "5Y":pget("5y") },
     periods,
     nav:f.nav, aum:f.aum, riskGrade:f.riskGrade, benchmark:f.benchmarkName,
     company:f.companyName, inception:f.inceptionDate,
@@ -759,6 +759,13 @@ async function fundHoldings(code){
 const FUND_TERM_KR={ "1d":"1일","1w":"1주","1m":"1개월","2m":"2개월","3m":"3개월","6m":"6개월","9m":"9개월","ytd":"연초후","1y":"1년","2y":"2년","3y":"3년","5y":"5년","10y":"10년","dx":"설정후" };
 function num(v){ if(v==null) return null; const n=parseFloat(String(v).replace(/,/g,"")); return isNaN(n)?null:n; }
 function periodRet(S,days){ if(!S||S.length<2) return null; const last=S[S.length-1]; const tg=last.t-days*86400; let p=null; for(let i=0;i<S.length;i++){ if(S[i].t<=tg)p=S[i]; else break; } return p?((last.c-p.c)/p.c*100):null; }
+/* 연초후(YTD): 올해 첫 거래일 직전(전년 말) 종가 기준 */
+function ytdRet(S){ if(!S||S.length<2) return null; const last=S[S.length-1]; const d=new Date(last.t*1000); const yStart=Math.floor(Date.UTC(d.getFullYear(),0,1)/1000); let p=null; for(let i=0;i<S.length;i++){ if(S[i].t<yStart)p=S[i]; else break; } return p?((last.c-p.c)/p.c*100):null; }
+/* 주식/ETF 다기간 수익률(1개월~5년 + 연초후) — 차트 시계열에서 계산 */
+function computeRets(S){ return { "1M":periodRet(S,30),"3M":periodRet(S,91),"6M":periodRet(S,182),"9M":periodRet(S,274),"YTD":ytdRet(S),"1Y":periodRet(S,365),"2Y":periodRet(S,730),"3Y":periodRet(S,1095),"5Y":periodRet(S,1825) }; }
+/* 상세 화면 기간수익률 표기 순서/라벨 (주식·ETF·펀드 공통) */
+const RET_ORDER=["1M","3M","6M","9M","YTD","1Y","2Y","3Y","5Y"];
+const RET_KR={"1M":"1개월","3M":"3개월","6M":"6개월","9M":"9개월","YTD":"연초후","1Y":"1년","2Y":"2년","3Y":"3년","5Y":"5년"};
 
 /* ============ 종목 뉴스/시황 ============ */
 function fmtNewsDate(s){ s=String(s||""); const m=s.match(/(\d{4})[.\-\/]?(\d{2})[.\-\/]?(\d{2})(?:[ T]?(\d{2}):?(\d{2}))?/); if(!m) return s.slice(0,16); let out=m[1]+"."+m[2]+"."+m[3]; if(m[4]&&m[5]) out+=" "+m[4]+":"+m[5]; return out; }
@@ -1391,8 +1398,8 @@ function detailStockEtf(h,b){
   // 요약 헤더
   html+='<div class="sec"><div style="font-size:24px;font-weight:800">'+fmtP(b.price,b.currency)+' <span style="font-size:15px" class="'+cls(b.changePct)+'">'+(b.changePct==null?"":(b.changePct>=0?"▲":"▼")+" "+pct(b.changePct))+'</span></div></div>';
   // 수익률
-  html+='<div class="sec"><div class="sec-t">기간별 수익률</div><div class="rets" style="gap:20px">'+
-    ["1M","3M","6M","1Y"].map(k=>'<div class="ret">'+({"1M":"1개월","3M":"3개월","6M":"6개월","1Y":"1년"}[k])+'<b class="'+cls(b.ret&&b.ret[k])+'" style="font-size:16px">'+pct(b.ret&&b.ret[k])+'</b></div>').join("")+'</div>'+
+  html+='<div class="sec"><div class="sec-t">기간별 수익률</div><div class="rets" style="gap:16px;flex-wrap:wrap">'+
+    RET_ORDER.map(k=>'<div class="ret">'+RET_KR[k]+'<b class="'+cls(b.ret&&b.ret[k])+'" style="font-size:16px">'+pct(b.ret&&b.ret[k])+'</b></div>').join("")+'</div>'+
     '<svg id="chartBig" viewBox="0 0 800 220" preserveAspectRatio="none"></svg></div>';
   // 핵심 지표 + 52주 위치/목표가 게이지 (업그레이드)
   html+=detailMetrics(h,b);
