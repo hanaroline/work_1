@@ -196,6 +196,61 @@ def check_dates(h, d):
                  "국내 마감 시각에는 갱신되지 않습니다. 표에 그 사실을 적으십시오" % (eu, dx))
 
 
+BYLINE = re.compile(r'미래에셋증권 마포WM\s*(?:&middot;|·)\s*송재섭\s*(?:&middot;|·)\s*'
+                    r'(\d{4})년\s*(\d{1,2})월\s*(\d{1,2})일\([^)]*\)\s*(\d{1,2}):(\d{2})\s*KST 작성')
+BYLINE_EN = re.compile(r'Jaeseop Song\s*(?:&middot;|·)\s*Compiled\s*(\d{1,2}):(\d{2})\s*KST')
+HEROMETA = re.compile(r'작성\s*(\d{4})-(\d{2})-(\d{2})\([^)]*\)\s*(\d{1,2}):(\d{2})\s*KST')
+
+
+def check_byline(h, path):
+    """꼬리말의 작성일 — **껍데기에서 물려받는 자리**라 조용히 어제 날짜로 남습니다.
+
+    8/20 모닝과 장마감 두 판이 8/19 판의 껍데기를 물려 쓰면서 「2026년 8월 19일
+    07:45 작성」을 달고 나갔습니다. 머리말만 고치면 한 문서 안에 작성 시각이
+    둘이 됩니다.
+    """
+    import datetime
+    import os
+
+    fm = re.match(r"(\d{4})-(\d{2})-(\d{2})-", os.path.basename(path))
+    fdate = tuple(int(x) for x in fm.groups()) if fm else None
+
+    b = BYLINE.search(h)
+    if not b:
+        fail("작성일", "꼬리말에서 작성일 줄을 찾지 못했습니다")
+        return
+    by = (int(b.group(1)), int(b.group(2)), int(b.group(3)))
+    bt = (int(b.group(4)), int(b.group(5)))
+
+    hm = HEROMETA.search(h)
+    if hm:
+        hy = (int(hm.group(1)), int(hm.group(2)), int(hm.group(3)))
+        ht = (int(hm.group(4)), int(hm.group(5)))
+        if by != hy or bt != ht:
+            fail("작성일", "머리말은 %04d-%02d-%02d %02d:%02d 인데 꼬리말은 %04d-%02d-%02d %02d:%02d 입니다 "
+                 "— 한 문서에 작성 시각이 둘입니다" % (hy + ht + by + bt))
+    else:
+        warn("작성일", "머리말에서 작성 시각을 찾지 못해 꼬리말만 봤습니다")
+
+    if fdate and by != fdate:
+        fail("작성일", "파일은 %04d-%02d-%02d 판인데 꼬리말 작성일은 %04d-%02d-%02d 입니다 "
+             "— 껍데기를 물려 쓰면서 안 고친 자국입니다" % (fdate + by))
+
+    en = BYLINE_EN.search(h)
+    if not en:
+        fail("작성일", "영문 꼬리말에서 Compiled 시각을 찾지 못했습니다")
+    elif (int(en.group(1)), int(en.group(2))) != bt:
+        fail("작성일", "국문 꼬리말은 %02d:%02d 인데 영문은 %02d:%02d 입니다"
+             % (bt + (int(en.group(1)), int(en.group(2)))))
+
+    now = datetime.datetime.now(datetime.timezone(datetime.timedelta(hours=9)))
+    when = datetime.datetime(by[0], by[1], by[2], bt[0], bt[1],
+                             tzinfo=datetime.timezone(datetime.timedelta(hours=9)))
+    if when > now + datetime.timedelta(minutes=1):
+        fail("작성일", "작성 시각 %02d:%02d 이 지금(%02d:%02d)보다 **미래**입니다 "
+             "— 예정 시각이 아니라 실제 시각을 적으십시오" % (bt + (now.hour, now.minute)))
+
+
 def check_derived(h, d):
     """판에 적힌 파생 계산을 다시 해 본다."""
     t = text(h)
@@ -204,9 +259,15 @@ def check_derived(h, d):
     mi = d.get("market_internals", {})
     if ks and mi.get("kospi"):
         f = mi["kospi"]["fifty_two_week"]
-        pos = (ks["close"] - f["low"]) / (f["high"] - f["low"]) * 100
-        if ("%.1f%%" % pos) not in t.replace(" ", ""):
-            warn("52주 위치", "다시 계산하면 %.1f%% 인데 판에서 찾지 못했습니다" % pos)
+        # 모닝·해외 판은 **전 거래일 종가** 위에 서 있고 장마감 판만 오늘 종가입니다.
+        # 둘 중 어느 쪽과도 안 맞을 때만 신고합니다.
+        ser = ((d.get("index_daily") or {}).get("kospi") or {}).get("series") or []
+        closes = [ks["close"]] + ([ser[1]["close"]] if len(ser) > 1 else [])
+        cand = [(c - f["low"]) / (f["high"] - f["low"]) * 100 for c in closes]
+        flat = t.replace(" ", "")
+        if not any(("%.1f%%" % p) in flat for p in cand):
+            warn("52주 위치", "다시 계산하면 %s 인데 판에서 찾지 못했습니다"
+                 % " 또는 ".join("%.1f%%" % p for p in cand))
         # 52주 고점이 최근 종가 흐름과 크게 다르면 표기 기준을 확인해야 한다
         ser = ((d.get("index_daily") or {}).get("kospi") or {}).get("series") or []
         if ser:
@@ -240,6 +301,7 @@ def main(argv):
     na = check_archive(h)
     check_limits(h, d)
     check_dates(h, d)
+    check_byline(h, path)
     check_derived(h, d)
 
     print("재검증: %s" % path)
