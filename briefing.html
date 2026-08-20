@@ -244,7 +244,7 @@
 <body>
 <div class="wrap">
   <header class="top">
-    <div class="brand"><span class="dot"></span> 보유자산 통합 브리핑 <small>미래에셋증권 · 실데이터 · <b style="color:var(--accent)">v2026.08.20-15</b></small></div>
+    <div class="brand"><span class="dot"></span> 보유자산 통합 브리핑 <small>미래에셋증권 · 실데이터 · <b style="color:var(--accent)">v2026.08.20-16</b></small></div>
     <div class="spacer"></div>
     <button class="icon-btn" id="btnTheme" title="다크/라이트 테마 전환">◐</button>
     <button class="btn sm" id="btnSample" title="체험용 예시 종목(삼성전자·SK하이닉스·KODEX 200·AAPL·미래에셋)을 자동으로 채웁니다" style="display:none">예시 채우기</button>
@@ -456,12 +456,12 @@
       <div class="screen-ctl">
         <label>자산군
           <select id="scUniv">
-            <option value="kr_stock">국내주식</option>
-            <option value="kr_etf">국내ETF</option>
-            <option value="us_stock">해외주식</option>
-            <option value="us_etf">해외ETF</option>
-            <option value="kr_fund">국내펀드</option>
-            <option value="us_fund">해외펀드</option>
+            <option value="kr_stock">국내주식 (시장 전체)</option>
+            <option value="kr_etf">국내ETF (시장 전체)</option>
+            <option value="us_stock">해외주식 (프리셋)</option>
+            <option value="us_etf">해외ETF (프리셋)</option>
+            <option value="kr_fund">국내펀드 (프리셋)</option>
+            <option value="us_fund">해외펀드 (프리셋)</option>
             <option value="mine">내 보유자산(전체)</option>
           </select>
         </label>
@@ -483,6 +483,13 @@
             <option value="10">상위 10</option>
             <option value="20">상위 20</option>
             <option value="30">전체</option>
+          </select>
+        </label>
+        <label title="국내주식·국내ETF 시장 전체 조회 시, 시가총액 상위 몇 개를 대상으로 계산할지(많을수록 느림)">대상범위(국내)
+          <select id="scUnivSize">
+            <option value="40">시총 상위 40</option>
+            <option value="60" selected>시총 상위 60</option>
+            <option value="100">시총 상위 100(느림)</option>
           </select>
         </label>
         <button class="btn primary" id="scRun">조회</button>
@@ -1815,27 +1822,45 @@ const SCREEN_UNIV={
   us_fund:{ kind:"fund", codes:["미래에셋글로벌솔루션","피델리티글로벌테크놀로지","AB미국그로스","블랙록월드테크놀로지","삼성글로벌다이나믹","한국투자글로벌전기차","KB스타미국S&P500인덱스","미래에셋미국배당프리미엄","이스트스프링차이나드래곤","한화글로벌헬스케어","미래에셋인디아","삼성인디아","프랭클린미국","슈로더글로벌"] }
 };
 const scCache={}; let scRows=[];
+/* 국내 시장 전체 유니버스: 네이버 순위 목록에서 시가총액 상위 실제 종목을 실시간 확보
+   (category: "all"=주식, "etf"=ETF). 이름·시장·코드를 목록이 직접 제공 → nvAc 불필요 */
+async function scNaverList(category, size){
+  const url="https://m.stock.naver.com/front-api/domestic/stock/list?sortType=marketValue&category="+category+"&domesticStockExchangeType=KRX&page=1&pageSize="+size;
+  const j=await proxy(url);
+  const arr=(j&&j.result&&j.result.stocks)||[];
+  const wantEtf=category==="etf";
+  return arr.filter(x=>wantEtf?(x.stockEndType==="etf"):(x.stockEndType==="stock"))
+    .map(x=>({ code:x.itemCode, name:x.name, market:x.stockExchangeType, dom:true, kind:"stock", live:true }));
+}
 async function scResolve(code, dom){
   try{ const d=await nvAc(code); const items=(d.items||[]).filter(x=>x.category!=="fund"&&x.category!=="index"&&x.category!=="marketindicator");
     if(dom) return items.find(x=>x.code===code)||items[0]||null;
     return items.find(x=>x.code===code||String(x.reutersCode||"").split(".")[0]===code)||items[0]||null;
   }catch(e){ return null; }
 }
-async function scChart(code, dom, item){
+async function scChart(code, dom, item, market){
   let symbol;
-  if(dom){ const suf=(item&&item.typeCode==="KOSDAQ")?".KQ":((item&&item.typeCode==="KONEX")?".KN":".KS"); symbol=code+suf; }
+  if(dom){ const mk=market||(item&&item.typeCode); const suf=(mk==="KOSDAQ")?".KQ":((mk==="KONEX")?".KN":".KS"); symbol=code+suf; }
   else symbol=code;
   const hy=await yh("/v8/finance/chart/"+encodeURIComponent(symbol)+"?range=5y&interval=1d");
   const hr=hy.chart.result[0]; const ts=hr.timestamp||[]; const cl=(hr.indicators.quote[0].close)||[];
   const S=[]; for(let i=0;i<ts.length;i++) if(cl[i]!=null) S.push({t:ts[i],c:cl[i]});
   return computeRets(S);
 }
-async function scOne(code, dom){
-  if(scCache[code]) return scCache[code];
-  const item=await scResolve(code,dom);
-  let rets=null; try{ rets=await scChart(code,dom,item); }catch(e){}
-  const rec={ code, dom, item, name:(item&&item.name)||code, rets };
-  scCache[code]=rec; return rec;
+/* 주식/ETF 한 종목 계산. entry={code,dom,name?,market?,live?} */
+async function scComputeStock(entry){
+  const code=entry.code, dom=entry.dom;
+  const ck=(dom?"D:":"O:")+code;
+  if(scCache[ck]) return scCache[ck];
+  let item=null, name=entry.name, market=entry.market;
+  if(dom){
+    if(entry.live){ // 목록이 이름·시장을 직접 제공 → item 합성(추가용), nvAc 생략
+      item={ code:code, name:name||code, nationCode:"KOR", typeCode:(market==="KOSDAQ"?"KOSDAQ":(market==="KONEX"?"KONEX":"KOSPI")), category:"stock", reutersCode:code };
+    } else { item=await scResolve(code,true); name=(item&&item.name)||name; market=item&&item.typeCode; }
+  } else { item=await scResolve(code,false); name=(item&&item.name)||name; }
+  let rets=null; try{ rets=await scChart(code,dom,item,market); }catch(e){}
+  const rec={ code, dom, item, name:(name||code), rets };
+  scCache[ck]=rec; return rec;
 }
 /* 펀드: 이름 검색으로 펀드코드 확인 → /api/fund 기간수익률(차트 불필요) */
 async function scResolveFund(q){
@@ -1875,9 +1900,28 @@ async function screenerRun(){
   }
   const U=SCREEN_UNIV[univKey]; if(!U) return;
   const isFund=U.kind==="fund";
-  srcEl.textContent="출처: 프리셋 유니버스 "+U.codes.length+(isFund?"개 펀드 · 네이버 기간수익률":"종목 · 실시간 차트로 "+RET_KR[period]+" 수익률 계산");
-  runBtn.disabled=true; progEl.style.display=""; progEl.textContent="조회 중… 0/"+U.codes.length;
-  const recs=await scPool(U.codes, c=>(isFund?scOneFund(c):scOne(c,U.dom)), 5, (d,t)=>{ progEl.textContent="조회 중… "+d+"/"+t; });
+  runBtn.disabled=true; progEl.style.display=""; progEl.textContent="목록 준비 중…";
+  // 유니버스(entries) 구성
+  let entries=[], srcTxt="";
+  try{
+    if(univKey==="kr_stock"||univKey==="kr_etf"){
+      const size=+document.getElementById("scUnivSize").value||60;
+      const cat=univKey==="kr_etf"?"etf":"all";
+      try{ entries=await scNaverList(cat, size); }catch(e){ entries=[]; }
+      if(entries.length){ srcTxt="출처: 네이버 시가총액 상위 "+entries.length+(univKey==="kr_etf"?"개 ETF":"종목")+" · 실시간 차트로 "+RET_KR[period]+" 수익률 계산"; }
+      else { entries=U.codes.map(c=>({code:c,dom:true,kind:"stock"})); srcTxt="출처: 프리셋 "+entries.length+"종목(시장 목록 조회 실패 시 대체)"; } // 폴백
+    } else if(isFund){
+      entries=U.codes.map(q=>({q, kind:"fund"}));
+      srcTxt="출처: 프리셋 "+entries.length+"개 펀드 · 네이버 기간수익률";
+    } else { // 해외
+      entries=U.codes.map(c=>({code:c,dom:false,kind:"stock"}));
+      srcTxt="출처: 프리셋 유니버스 "+entries.length+"종목 · 실시간 차트로 "+RET_KR[period]+" 수익률 계산";
+    }
+  }catch(e){ entries=[]; }
+  srcEl.textContent=srcTxt;
+  if(!entries.length){ progEl.style.display="none"; runBtn.disabled=false; resEl.innerHTML='<div class="muted">대상 목록을 준비하지 못했습니다. 잠시 후 다시 시도하세요.</div>'; return; }
+  progEl.textContent="조회 중… 0/"+entries.length;
+  const recs=await scPool(entries, e=>(e.kind==="fund"?scOneFund(e.q):scComputeStock(e)), 5, (d,t)=>{ progEl.textContent="조회 중… "+d+"/"+t; });
   progEl.style.display="none"; runBtn.disabled=false;
   const rows=recs.filter(r=>r&&r.rets&&r.rets[period]!=null)
     .map(r=>({code:r.code,dom:r.dom,item:r.item,name:r.name,r:r.rets[period],rets:r.rets}));
