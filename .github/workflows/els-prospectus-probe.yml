@@ -8,6 +8,7 @@ on:
     paths:
       - 'scripts/probe_prospectus.mjs'
       - 'scripts/fetch_prospectus.mjs'
+      - 'scripts/find_prospectus.mjs'
       - '.github/workflows/els-prospectus-probe.yml'
 
 permissions:
@@ -21,6 +22,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
+      - run: node scripts/find_prospectus.mjs
       - run: node scripts/fetch_prospectus.mjs
       - name: 추출 결과 커밋
         run: |
