@@ -94,14 +94,14 @@ await writeFile(`${OUT}/dart_filings.json`, JSON.stringify(uniq, null, 2));
 
 // ── 3. 문서 본문 받아 회차 확인 ─────────────────────────────────────────────
 console.log('\n## 3. 문서 본문');
-const wanted = uniq.filter((f) => f.name === '일괄신고추가서류').slice(0, 12);
+const wanted = uniq.filter((f) => f.name === '일괄신고추가서류');
 const docs = [];
 for (const f of wanted) {
   try {
     const main = await grab(`${DART}/dsaf001/main.do?rcpNo=${f.rcpNo}`);
     // 뷰어 파라미터는 main.do 안의 스크립트에 들어 있다
     const dcm = (main.text.match(/dcmNo["'\s:=]+(\d+)/) || main.text.match(/viewDoc\(\s*'[^']*'\s*,\s*'(\d+)'/) || [])[1];
-    if (!dcm) { console.log(`  ${f.rcpNo}: dcmNo 없음`); continue; }
+    if (!dcm) { console.log(`  ${f.rcpNo}: dcmNo 없음 (main.do ${main.buf.length}B)`); continue; }
     const doc = await grab(`${DART}/report/viewer.do?rcpNo=${f.rcpNo}&dcmNo=${dcm}&eleId=0&offset=0&length=0&dtd=dart3.xsd`);
     const text = toText(doc.text);
     const series = [...new Set(text.match(/제\s?\d{4,5}\s?회/g) || [])];
@@ -111,6 +111,8 @@ for (const f of wanted) {
     docs.push({ ...f, dcmNo: dcm, chars: text.length, series, range });
     // 8월 발행 ELS 회차가 들어 있으면 표를 떠 둔다
     if (nums.some((n) => n >= 37900 && n <= 38100)) {
+      // 회차별 조건·모의실험을 로컬에서 파싱할 수 있게 본문 전체를 남긴다
+      await writeFile(`${OUT}/prospectus_${f.rcpNo}.txt`, text);
       const slices = (needle, before, after, max) => {
         const found = []; let from = 0;
         while (found.length < max) {
