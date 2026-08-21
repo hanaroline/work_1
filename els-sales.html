@@ -1,0 +1,885 @@
+<title>ELS 세일즈 분석 8월 4주</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --orange:#F58220; --orange-active:#CB6015; --orange-soft:#FAB072;
+  --blue:#043B72; --canvas:#FFFFFF; --soft:#ECEFF4; --subtle:#F7F8FA;
+  --hairline:#CDCECB; --hairline-soft:#E5E4E1;
+  --ink:#1A1A1A; --body:#3D3D3D; --muted:#6C6C6C;
+  --error:#C62828; --warning:#B8860B; --success:#2E8540;
+  --font-kr:'Noto Sans KR','Spoqa Han Sans Neo','Malgun Gothic',sans-serif;
+  --font-num:'Inter','SF Mono',ui-monospace,monospace;
+}
+*{box-sizing:border-box;}
+body{margin:0; background:var(--canvas); color:var(--body);
+  font-family:var(--font-kr); font-size:18px; line-height:1.62; -webkit-font-smoothing:antialiased;}
+.sheet{max-width:1160px; margin:0 auto; padding:0 32px 72px;}
+h1,h2,h3{color:var(--ink); text-wrap:balance; margin:0;}
+h1{font-size:32px; font-weight:700; line-height:1.24; letter-spacing:-0.3px;}
+h2{font-size:25px; font-weight:700; line-height:1.3;}
+h3{font-size:19px; font-weight:600;}
+p{margin:0;}
+strong{color:var(--ink); font-weight:700;}
+
+.hero{background:var(--orange); color:#fff; padding:44px 0 38px;}
+.hero .sheet{padding-bottom:0;}
+.hero .tag{font-family:var(--font-num); font-size:12px; font-weight:600; letter-spacing:1.4px; opacity:.92;}
+.hero h1{color:#fff; font-size:40px; margin:12px 0 10px; letter-spacing:-0.6px;}
+.hero p{color:rgba(255,255,255,.95); font-size:19px; max-width:66ch;}
+.hero .meta{display:flex; flex-wrap:wrap; gap:8px 26px; margin-top:22px;
+  font-family:var(--font-num); font-size:14px; color:rgba(255,255,255,.94);}
+
+.page{padding-top:52px;}
+.page + .page{margin-top:52px; border-top:1px solid var(--hairline);}
+.page-no{font-family:var(--font-num); font-size:12px; font-weight:600; letter-spacing:1.4px;
+  color:var(--orange-active); margin-bottom:10px;}
+section{margin-top:40px;}
+section:first-of-type{margin-top:0;}
+.rule{height:1px; background:var(--orange); margin-bottom:16px;}
+.lead{margin-top:12px; max-width:76ch;}
+.stack{display:flex; flex-direction:column; gap:16px; margin-top:20px;}
+.cols{display:grid; grid-template-columns:1fr 1fr; gap:22px; margin-top:22px;}
+
+.note{border:1px solid var(--hairline); border-left:3px solid var(--orange);
+  background:var(--subtle); padding:18px 22px; border-radius:2px;}
+.note.alert{border-left-color:var(--error);}
+.note.good{border-left-color:var(--success);}
+.note h3{margin-bottom:6px;}
+.note ul{margin:8px 0 0; padding-left:20px;}
+.note li{margin-bottom:7px;}
+
+.stats{display:grid; grid-template-columns:repeat(auto-fit,minmax(178px,1fr)); gap:1px;
+  background:var(--hairline-soft); border:1px solid var(--hairline); margin-top:20px;}
+.stat{background:var(--canvas); padding:18px 20px;}
+.stat .label{font-size:14px; font-weight:500; color:var(--muted); letter-spacing:.3px;}
+.stat .value{font-family:var(--font-num); font-size:34px; font-weight:700; line-height:1.1;
+  color:var(--blue); margin-top:6px; font-variant-numeric:tabular-nums;}
+.stat .value.orange{color:var(--orange-active);} .stat .value.bad{color:var(--error);}
+.stat .sub{font-size:13px; color:var(--muted); margin-top:4px;}
+
+.scroll{overflow-x:auto; margin-top:20px; border:1px solid var(--hairline);}
+table{border-collapse:collapse; width:100%; font-size:15px;}
+thead th{background:var(--orange-soft); color:var(--ink); font-weight:700; text-align:left;
+  padding:10px 9px; white-space:nowrap; border-bottom:1px solid var(--hairline);}
+tbody td{padding:9px; border-bottom:1px solid var(--hairline-soft); vertical-align:top;}
+tbody tr:last-child td{border-bottom:none;}
+tbody tr:hover{background:var(--subtle);}
+.num{text-align:right; font-family:var(--font-num); font-variant-numeric:tabular-nums; white-space:nowrap;}
+.nw{white-space:nowrap;} .muted{color:var(--muted);}
+.code{font-family:var(--font-num); font-weight:600; color:var(--ink); white-space:nowrap;}
+.und{font-size:14px; line-height:1.42; word-break:keep-all; min-width:158px;}
+.bad{color:var(--error); font-weight:600;} .warn{color:var(--warning); font-weight:600;}
+.hot{color:var(--orange-active); font-weight:600;}
+caption{caption-side:bottom; text-align:left; font-size:13px; color:var(--muted); padding:10px; line-height:1.5;}
+table.mini{font-size:14px; border:1px solid var(--hairline); margin-top:10px;}
+table.mini thead th{padding:7px 9px;} table.mini tbody td{padding:6px 9px;}
+
+.chip{display:inline-block; font-size:12px; font-weight:600; padding:2px 7px; border-radius:2px;
+  white-space:nowrap; border:1px solid;}
+.chip.idx{color:var(--blue); border-color:var(--blue); background:rgba(4,59,114,.06);}
+.chip.stk{color:var(--orange-active); border-color:var(--orange-active); background:rgba(245,130,32,.08);}
+.chip.mix{color:var(--muted); border-color:var(--muted); background:var(--subtle);}
+
+.bar-row{display:grid; grid-template-columns:minmax(0,1fr) minmax(0,2fr) 62px;
+  align-items:center; gap:12px; padding:7px 0; border-bottom:1px solid var(--hairline-soft);}
+.bar-label{overflow-wrap:anywhere;}
+.bar-label{font-size:14px;}
+.bar-track{background:var(--soft); height:14px; position:relative;}
+.bar-fill{background:var(--error); height:100%;}
+.bar-val{font-family:var(--font-num); font-size:14px; font-weight:600; color:var(--error); text-align:right;}
+
+.script{border:1px solid var(--hairline); padding:18px 22px; border-radius:2px;}
+.script p + p{margin-top:10px;}
+.q{color:var(--blue); font-weight:700;}
+
+.foot{margin-top:44px; padding-top:18px; border-top:1px solid var(--hairline);
+  font-size:14px; color:var(--muted); line-height:1.66;}
+
+@media (max-width:820px){
+  body{font-size:16px;} .sheet{padding:0 18px 48px;} .hero h1{font-size:29px;} .cols{grid-template-columns:1fr;}
+}
+@media (max-width:520px){
+  .bar-row{grid-template-columns:1fr 52px; gap:6px 10px;}
+  .bar-track{grid-column:1 / -1;}
+}
+@media print{
+  .hero{background:#fff !important; border-bottom:2px solid var(--orange);}
+  .hero h1,.hero p,.hero .meta,.hero .tag{color:#000 !important;}
+  body{font-size:10.5pt;} .scroll{overflow:visible;}
+  .page{page-break-before:always; border-top:none;} .page:first-of-type{page-break-before:auto;}
+  tr,.note,.stats{page-break-inside:avoid;}
+}
+</style>
+
+<header class="hero">
+  <div class="sheet">
+    <div class="tag">MIRAE ASSET · ELS SALES ANALYSIS</div>
+    <h1>마지막 판매 주간 ELS 16건, 투자설명서로 다시 읽기</h1>
+    <p>제38008~38023회 — 청약 2026.08.03 ~ 2026.08.12. 홈페이지 목록에 없는 <strong style="color:#fff">공정가액·적용 변동성·리자드 조항</strong>을
+       일괄신고추가서류 원문에서 꺼내고, 발행사 20년 모의실험과 자체 10년 롤링 시뮬레이션을 나란히 놓았습니다.</p>
+    <div class="meta">
+      <span>발행 2026.08.13 · 만기 2029.08.13</span>
+      <span>16건 · 모집 1,900억원</span>
+      <span>공시 2026.07.31 기준</span>
+    </div>
+  </div>
+</header>
+
+<div class="sheet">
+
+<!-- ══════════ 1면 ══════════ -->
+<div class="page">
+  <div class="page-no">1 / 4 · 시장 위치와 이번 회차</div>
+
+  <section>
+    <div class="rule"></div>
+    <h2>세 줄 요약</h2>
+    <div class="stack">
+      <div class="note good">
+        <h3>1. 기준가는 좋은 자리에서 잡혔습니다</h3>
+        <p>KOSPI200이 6월 고점 대비 <strong>-26.9%</strong>, SK하이닉스가
+           <strong>-43.6%</strong> 아래에서 최초기준가격이 결정됐습니다.
+           2024년 홍콩 ELS가 H지수 고점에서 발행된 것과 정반대 국면입니다.</p>
+      </div>
+      <div class="note">
+        <h3>2. 쿠폰은 조건이 아니라 변동성의 가격표입니다</h3>
+        <p>발행사가 이론가에 적용한 변동성은 2026.07.24 기준
+           <strong>마이크론 테크놀로지 96.8%</strong>, <strong>SK하이닉스 87.7%</strong>, <strong>삼성전자 76.1%</strong> 입니다.
+           연 40%대 쿠폰이 붙은 회차는 조건이 후한 게 아니라 그만큼 흔들리는 자산입니다.</p>
+      </div>
+      <div class="note alert">
+        <h3>3. 같은 10,000원이 아닙니다</h3>
+        <p>공정가액이 발행가 대비 <strong>-15.4%</strong>인 회차부터
+           <strong>+2.6%</strong>인 회차까지 있습니다.
+           홈페이지 목록만 보면 전부 같은 10,000원짜리로 보입니다.</p>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="rule"></div>
+    <h2>기초자산이 서 있는 자리</h2>
+    <p class="lead">ELS 손익의 절반은 기준가를 어디서 잡느냐로 결정됩니다. 최근 1년 급등 뒤의 조정이라는 점이 이번 회차의 성격을 규정합니다.</p>
+    <div class="scroll">
+      <table>
+        <caption>최근 10년 종가 기준. 고점은 같은 구간의 최고 종가.</caption>
+        <thead><tr><th>기초자산</th><th>고점 대비</th><th>고점 시점</th><th>최근 1년</th><th>10년 최대낙폭</th></tr></thead>
+        <tbody>
+        <tr>
+          <td>SK하이닉스</td>
+          <td class="num bad">-43.6%</td>
+          <td class="num muted">2026.06.22</td>
+          <td class="num hot">+533%</td>
+          <td class="num">-55%</td>
+        </tr>
+        <tr>
+          <td>HSCEI</td>
+          <td class="num bad">-39.2%</td>
+          <td class="num muted">2018.01.26</td>
+          <td class="num ">-8%</td>
+          <td class="num">-64%</td>
+        </tr>
+        <tr>
+          <td>어플라이드 머티어리얼즈</td>
+          <td class="num bad">-29.9%</td>
+          <td class="num muted">2026.06.30</td>
+          <td class="num hot">+209%</td>
+          <td class="num">-55%</td>
+        </tr>
+        <tr>
+          <td>KOSPI200</td>
+          <td class="num bad">-26.9%</td>
+          <td class="num muted">2026.06.22</td>
+          <td class="num hot">+151%</td>
+          <td class="num">-41%</td>
+        </tr>
+        <tr>
+          <td>삼성전자</td>
+          <td class="num bad">-24.3%</td>
+          <td class="num muted">2026.06.18</td>
+          <td class="num hot">+289%</td>
+          <td class="num">-45%</td>
+        </tr>
+        <tr>
+          <td>마이크론 테크놀로지</td>
+          <td class="num ">-19.9%</td>
+          <td class="num muted">2026.06.25</td>
+          <td class="num hot">+725%</td>
+          <td class="num">-58%</td>
+        </tr>
+        <tr>
+          <td>팔란티어 테크</td>
+          <td class="num ">-16.0%</td>
+          <td class="num muted">2025.11.03</td>
+          <td class="num ">+11%</td>
+          <td class="num">-85%</td>
+        </tr>
+        <tr>
+          <td>Nikkei225</td>
+          <td class="num ">-5.2%</td>
+          <td class="num muted">2026.06.25</td>
+          <td class="num ">+61%</td>
+          <td class="num">-32%</td>
+        </tr>
+        <tr>
+          <td>EuroStoxx50</td>
+          <td class="num ">-0.2%</td>
+          <td class="num muted">2026.08.11</td>
+          <td class="num ">+21%</td>
+          <td class="num">-38%</td>
+        </tr>
+        <tr>
+          <td>S&amp;P500</td>
+          <td class="num ">-0.2%</td>
+          <td class="num muted">2026.08.13</td>
+          <td class="num ">+20%</td>
+          <td class="num">-34%</td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section>
+    <div class="rule"></div>
+    <h2>발행사가 이론가에 쓴 변동성</h2>
+    <p class="lead">투자설명서에만 있는 숫자입니다. 상담에서 “왜 이 상품이 연 42%인가”를 설명할 때 가장 정확한 근거가 됩니다.</p>
+    <div class="cols">
+      <div class="scroll" style="margin-top:0">
+        <table>
+          <caption>Volatility Surface에 VIX 방법론을 적용해 산출한 해당 만기 변동성 (설명서 기재).</caption>
+          <thead><tr><th>기초자산</th><th>2026.07.24 적용</th><th>2026.08.18 적용</th></tr></thead>
+          <tbody>
+        <tr><td>마이크론 테크놀로지</td><td class="num bad">96.80%</td><td class="num muted">98.09%</td></tr>
+        <tr><td>SK하이닉스</td><td class="num bad">87.70%</td><td class="num muted">60.91%</td></tr>
+        <tr><td>삼성전자</td><td class="num bad">76.09%</td><td class="num muted">51.73%</td></tr>
+        <tr><td>어플라이드 머티어리얼즈</td><td class="num bad">71.68%</td><td class="num muted">75.33%</td></tr>
+        <tr><td>KOSPI200</td><td class="num warn">52.50%</td><td class="num muted">40.52%</td></tr>
+        <tr><td>Nikkei225</td><td class="num ">31.59%</td><td class="num muted">30.42%</td></tr>
+        <tr><td>HSCEI</td><td class="num ">26.42%</td><td class="num muted">26.19%</td></tr>
+        <tr><td>S&amp;P500</td><td class="num ">24.59%</td><td class="num muted">24.17%</td></tr>
+        <tr><td>EuroStoxx50</td><td class="num ">22.63%</td><td class="num muted">22.24%</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="note">
+        <h3>읽는 법</h3>
+        <p>마이크론 <strong>98.09%</strong>는
+           1년 뒤 주가가 반토막이 나도, 두 배가 되어도 이상하지 않다는 뜻입니다. 이 변동성으로 만든 상품에
+           낙인 25%가 붙었다면 “거의 안 뚫린다”가 아니라 “뚫릴 확률을 그 쿠폰으로 사고 있다”가 맞습니다.</p>
+        <p style="margin-top:10px">지수는 다릅니다. KOSPI200
+           <strong>40.52%</strong>도 역사적으로 높은 편이지만
+           종목 대비 절반 수준이고, 지수는 상장폐지·실적 쇼크 같은 개별 위험이 없습니다.</p>
+      </div>
+    </div>
+  </section>
+</div>
+
+<!-- ══════════ 2면 ══════════ -->
+<div class="page">
+  <div class="page-no">2 / 4 · 16건 전수 비교</div>
+
+  <section>
+    <div class="rule"></div>
+    <h2>제38008~38023회 조건과 검증 결과</h2>
+    <p class="lead">낙인까지의 여유가 좁은 순서입니다. <strong>역대 최저</strong>는 과거 10년간 매 거래일 발행을 가정했을 때
+       워스트 퍼포머가 내려간 가장 낮은 수준(기준가 100), <strong>여유</strong>는 거기서 낙인을 뺀 값입니다. 음수는 과거에 이미 뚫렸다는 뜻입니다.</p>
+    <div class="scroll">
+      <table>
+        <caption>
+          공정가액 괴리 = (공정가액 ÷ 발행가 − 1). 설명서 기재 2026.07.24 기준이며 만기까지의 헤지비용은 가산되지 않은 값입니다.
+          발행사 모의실험은 2003년부터의 20년 롤링(설명서 기재), 역대 최저·여유는 최근 10년 종가로 계산했습니다.
+        </caption>
+        <thead><tr>
+          <th>회차</th><th>구분</th><th>기초자산</th><th>연쿠폰</th><th>만기</th><th>배리어</th><th>낙인</th>
+          <th>공정가액 괴리</th><th>발행사 1차상환</th><th>발행사 손실</th><th>역대 최저</th><th>여유</th>
+        </tr></thead>
+        <tbody>
+        <tr>
+          <td class="code">38008</td>
+          <td><span class="chip idx">지수</span></td>
+          <td class="und">S&amp;P500 · HSCEI · Nikkei225</td>
+          <td class="num">13.0%</td>
+          <td class="num">36개월</td>
+          <td class="num nw" title="90-85-80-75-70-65">90→65<span class="muted"> (6회)</span></td>
+          <td class="num">45%</td>
+          <td class="num warn">-4.0%</td>
+          <td class="num">69.0%</td>
+          <td class="num bad">4.17%</td>
+          <td class="num">40.4</td>
+          <td class="num bad">-4.6%p</td>
+        </tr>
+        <tr>
+          <td class="code">38018</td>
+          <td><span class="chip idx">지수</span></td>
+          <td class="und">KOSPI200 · HSCEI · Nikkei225</td>
+          <td class="num">21.0%</td>
+          <td class="num">36개월</td>
+          <td class="num nw" title="85-85-85-80-75-70">85→70<span class="muted"> (6회)</span></td>
+          <td class="num">30%</td>
+          <td class="num ">+0.4%</td>
+          <td class="num">80.1%</td>
+          <td class="num ">0.93%</td>
+          <td class="num">40.4</td>
+          <td class="num ">+10.4%p</td>
+        </tr>
+        <tr>
+          <td class="code">38023</td>
+          <td><span class="chip mix">혼합</span></td>
+          <td class="und">KOSPI200 · 마이크론 테크놀로지</td>
+          <td class="num">42.5%</td>
+          <td class="num">36개월</td>
+          <td class="num nw" title="75-75-75-75-70-70">75→70<span class="muted"> (6회)</span></td>
+          <td class="num">35%</td>
+          <td class="num bad">-15.4%</td>
+          <td class="num">83.1%</td>
+          <td class="num ">0.79%</td>
+          <td class="num">46.3</td>
+          <td class="num ">+11.3%p</td>
+        </tr>
+        <tr>
+          <td class="code">38016</td>
+          <td><span class="chip stk">종목</span></td>
+          <td class="und">삼성전자 · SK하이닉스</td>
+          <td class="num">37.4%</td>
+          <td class="num">36개월</td>
+          <td class="num nw" title="85-85-85-80-75-70">85→70<span class="muted"> (6회)</span></td>
+          <td class="num">35%</td>
+          <td class="num ">-0.6%</td>
+          <td class="num">77.7%</td>
+          <td class="num ">0.00%</td>
+          <td class="num">50.5</td>
+          <td class="num ">+15.5%p</td>
+        </tr>
+        <tr>
+          <td class="code">38021</td>
+          <td><span class="chip stk">종목</span></td>
+          <td class="und">삼성전자 · SK하이닉스</td>
+          <td class="num">50.0%</td>
+          <td class="num">12개월</td>
+          <td class="num nw" title="70-70-70-65">70-70-70-65</td>
+          <td class="num">40%</td>
+          <td class="num ">-2.2%</td>
+          <td class="num">96.8%</td>
+          <td class="num ">0.32%</td>
+          <td class="num">56.4</td>
+          <td class="num ">+16.4%p</td>
+        </tr>
+        <tr>
+          <td class="code">38013</td>
+          <td><span class="chip idx">지수</span></td>
+          <td class="und">EuroStoxx50 · S&amp;P500 · KOSPI200</td>
+          <td class="num">23.0%</td>
+          <td class="num">36개월</td>
+          <td class="num nw" title="85-85-80-80-75-70">85→70<span class="muted"> (6회)</span></td>
+          <td class="num">40%</td>
+          <td class="num ">-3.9%</td>
+          <td class="num">90.1%</td>
+          <td class="num ">0.00%</td>
+          <td class="num">58.8</td>
+          <td class="num ">+18.8%p</td>
+        </tr>
+        <tr>
+          <td class="code">38019</td>
+          <td><span class="chip idx">지수</span></td>
+          <td class="und">EuroStoxx50 · S&amp;P500 · KOSPI200</td>
+          <td class="num">22.0%</td>
+          <td class="num">36개월</td>
+          <td class="num nw" title="80-80-80-80-75-70">80→70<span class="muted"> (6회)</span></td>
+          <td class="num">40%</td>
+          <td class="num ">-3.3%</td>
+          <td class="num">94.3%</td>
+          <td class="num ">0.00%</td>
+          <td class="num">58.8</td>
+          <td class="num ">+18.8%p</td>
+        </tr>
+        <tr>
+          <td class="code">38022</td>
+          <td><span class="chip stk">종목</span></td>
+          <td class="und">어플라이드 머티어리얼즈 · 마이크론 테크놀로지</td>
+          <td class="num">42.4%</td>
+          <td class="num">36개월</td>
+          <td class="num nw" title="80-80-75-75-70-70">80→70<span class="muted"> (6회)</span></td>
+          <td class="num">25%</td>
+          <td class="num bad">-14.3%</td>
+          <td class="num">75.6%</td>
+          <td class="num bad">3.58%</td>
+          <td class="num">44.6</td>
+          <td class="num ">+19.6%p</td>
+        </tr>
+        <tr>
+          <td class="code">38020</td>
+          <td><span class="chip stk">종목</span></td>
+          <td class="und">삼성전자 · SK하이닉스</td>
+          <td class="num">46.0%</td>
+          <td class="num">36개월</td>
+          <td class="num nw" title="85-85-85-85-85-85-85-85-85-80-75-70">85→70<span class="muted"> (12회)</span></td>
+          <td class="num">30%</td>
+          <td class="num ">-2.5%</td>
+          <td class="num">84.3%</td>
+          <td class="num ">0.54%</td>
+          <td class="num">50.5</td>
+          <td class="num ">+20.5%p</td>
+        </tr>
+        <tr>
+          <td class="code">38017</td>
+          <td><span class="chip stk">종목</span></td>
+          <td class="und">삼성전자 · SK하이닉스</td>
+          <td class="num">52.0%</td>
+          <td class="num">18개월</td>
+          <td class="num nw" title="85-85-85-80-75-70">85→70<span class="muted"> (6회)</span></td>
+          <td class="num">35%</td>
+          <td class="num warn">-4.3%</td>
+          <td class="num">85.0%</td>
+          <td class="num bad">1.42%</td>
+          <td class="num">56.1</td>
+          <td class="num ">+21.1%p</td>
+        </tr>
+        <tr>
+          <td class="code">38011</td>
+          <td><span class="chip idx">지수</span></td>
+          <td class="und">KOSPI200</td>
+          <td class="num">20.0%</td>
+          <td class="num">36개월</td>
+          <td class="num nw" title="85-85-85-85-85-85-85-85-85-80-75-70">85→70<span class="muted"> (12회)</span></td>
+          <td class="num">35%</td>
+          <td class="num ">-1.6%</td>
+          <td class="num">96.0%</td>
+          <td class="num ">0.00%</td>
+          <td class="num">58.8</td>
+          <td class="num ">+23.8%p</td>
+        </tr>
+        <tr>
+          <td class="code">38010</td>
+          <td><span class="chip idx">지수</span></td>
+          <td class="und">KOSPI200</td>
+          <td class="num">19.0%</td>
+          <td class="num">12개월</td>
+          <td class="num nw" title="85-80-75-70">85-80-75-70</td>
+          <td class="num">40%</td>
+          <td class="num ">-3.5%</td>
+          <td class="num">96.6%</td>
+          <td class="num ">0.00%</td>
+          <td class="num">65.1</td>
+          <td class="num ">+25.1%p</td>
+        </tr>
+        <tr>
+          <td class="code">38015</td>
+          <td><span class="chip stk">종목</span></td>
+          <td class="und">삼성전자 · SK하이닉스</td>
+          <td class="num">33.5%</td>
+          <td class="num">36개월</td>
+          <td class="num nw" title="75-75-75-75-70-65">75→65<span class="muted"> (6회)</span></td>
+          <td class="num">25%</td>
+          <td class="num warn">-4.6%</td>
+          <td class="num">90.6%</td>
+          <td class="num ">0.55%</td>
+          <td class="num">50.5</td>
+          <td class="num ">+25.5%p</td>
+        </tr>
+        <tr>
+          <td class="code">38014</td>
+          <td><span class="chip stk">종목</span></td>
+          <td class="und">삼성전자 · SK하이닉스</td>
+          <td class="num">27.0%</td>
+          <td class="num">36개월</td>
+          <td class="num nw" title="75-75-75-75-75-75-75-75-70-70-70-65">75→65<span class="muted"> (12회)</span></td>
+          <td class="num">20%</td>
+          <td class="num ">-3.0%</td>
+          <td class="num">94.8%</td>
+          <td class="num ">0.12%</td>
+          <td class="num">50.5</td>
+          <td class="num ">+30.5%p</td>
+        </tr>
+        <tr>
+          <td class="code">38009</td>
+          <td><span class="chip idx">지수</span></td>
+          <td class="und">S&amp;P500 · KOSPI200 · Nikkei225</td>
+          <td class="num">18.4%</td>
+          <td class="num">36개월</td>
+          <td class="num nw" title="80-75-70-65-60">80→60<span class="muted"> (5회)</span></td>
+          <td class="num">없음</td>
+          <td class="num ">+2.6%</td>
+          <td class="num">95.6%</td>
+          <td class="num ">0.00%</td>
+          <td class="num">58.8</td>
+          <td class="num muted">낙인 없음</td>
+        </tr>
+        <tr>
+          <td class="code">38012</td>
+          <td><span class="chip idx">지수</span></td>
+          <td class="und">EuroStoxx50 · S&amp;P500 · KOSPI200</td>
+          <td class="num">21.4%</td>
+          <td class="num">36개월</td>
+          <td class="num nw" title="80-75-75-70-65-60">80→60<span class="muted"> (6회)</span></td>
+          <td class="num">없음</td>
+          <td class="num ">-3.2%</td>
+          <td class="num">94.3%</td>
+          <td class="num ">0.00%</td>
+          <td class="num">58.8</td>
+          <td class="num muted">낙인 없음</td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section>
+    <div class="rule"></div>
+    <h2>손실은 드물지만, 나면 크게 납니다</h2>
+    <p class="lead">발행사 20년 모의실험에서 손실 비중이 가장 높았던 두 회차의 손실 분포입니다.
+       손실 사례가 <strong>−30% ~ −50% 구간에 몰려</strong> 있습니다. 낙인은 조금 잃는 사건이 아닙니다.</p>
+    <div class="cols">
+      <div class="note alert">
+        <h3>제38008회 · S&amp;P500 · HSCEI · Nikkei225</h3>
+        <p style="font-size:15px">연 13.0% · 낙인 45% · 표본 4,637회 ·
+           손실 <strong class="bad">4.17%</strong></p>
+        <table class="mini"><thead><tr><th>손실 구간</th><th>횟수</th><th>빈도</th></tr></thead><tbody><tr><td>-40% ~ -30%</td><td class="num">19</td><td class="num bad">0.41%</td></tr><tr><td>-50% ~ -40%</td><td class="num">145</td><td class="num bad">3.13%</td></tr><tr><td>-50%이하</td><td class="num">29</td><td class="num bad">0.63%</td></tr></tbody></table>
+      </div>
+      <div class="note alert">
+        <h3>제38022회 · 어플라이드 머티어리얼즈 · 마이크론 테크놀로지</h3>
+        <p style="font-size:15px">연 42.4% · 낙인 25% · 표본 5,172회 ·
+           손실 <strong class="bad">3.58%</strong></p>
+        <table class="mini"><thead><tr><th>손실 구간</th><th>횟수</th><th>빈도</th></tr></thead><tbody><tr><td>-40% ~ -30%</td><td class="num">51</td><td class="num bad">0.99%</td></tr><tr><td>-50% ~ -40%</td><td class="num">86</td><td class="num bad">1.66%</td></tr><tr><td>-50%이하</td><td class="num">48</td><td class="num bad">0.93%</td></tr></tbody></table>
+      </div>
+    </div>
+  </section>
+</div>
+
+<!-- ══════════ 3면 ══════════ -->
+<div class="page">
+  <div class="page-no">3 / 4 · 홈페이지 목록에 없는 것</div>
+
+  <section>
+    <div class="rule"></div>
+    <h2>같은 10,000원이 아닙니다 — 공정가액 괴리</h2>
+    <p class="lead">발행가는 모두 10,000원이지만, 제3의 평가기관이 매긴 이론가는 회차마다 다릅니다.
+       아래는 최근 두 회차 묶음에서 괴리가 큰 순서입니다. <strong>이 값은 만기까지의 헤지비용을 아직 더하지 않은 가격</strong>이라
+       실질 비용은 이보다 큽니다.</p>
+    <div style="margin-top:18px">
+        <div class="bar-row">
+          <div class="bar-label">제38046회 <span class="muted">마이크론 테크놀로지 · 팔란티어 테크</span></div>
+          <div class="bar-track"><div class="bar-fill" style="width:90.5%"></div></div>
+          <div class="bar-val">-31.7%</div>
+        </div>
+        <div class="bar-row">
+          <div class="bar-label">제38045회 <span class="muted">어플라이드 머티어리얼즈 · 마이크론 테크놀로지</span></div>
+          <div class="bar-track"><div class="bar-fill" style="width:63.8%"></div></div>
+          <div class="bar-val">-22.3%</div>
+        </div>
+        <div class="bar-row">
+          <div class="bar-label">제38047회 <span class="muted">KOSPI200 · 마이크론 테크놀로지</span></div>
+          <div class="bar-track"><div class="bar-fill" style="width:63.0%"></div></div>
+          <div class="bar-val">-22.1%</div>
+        </div>
+        <div class="bar-row">
+          <div class="bar-label">제38023회 <span class="muted">KOSPI200 · 마이크론 테크놀로지</span></div>
+          <div class="bar-track"><div class="bar-fill" style="width:44.1%"></div></div>
+          <div class="bar-val">-15.4%</div>
+        </div>
+        <div class="bar-row">
+          <div class="bar-label">제38022회 <span class="muted">어플라이드 머티어리얼즈 · 마이크론 테크놀로지</span></div>
+          <div class="bar-track"><div class="bar-fill" style="width:41.0%"></div></div>
+          <div class="bar-val">-14.3%</div>
+        </div>
+        <div class="bar-row">
+          <div class="bar-label">제38042회 <span class="muted">KOSPI200 · HSCEI · Nikkei225</span></div>
+          <div class="bar-track"><div class="bar-fill" style="width:15.9%"></div></div>
+          <div class="bar-val">-5.5%</div>
+        </div>
+    </div>
+    <div class="note alert" style="margin-top:20px">
+      <p>연 30% 쿠폰을 받자고 들어간 상품이 발행 시점에 이미 <strong>-31.7%</strong> 낮게 평가돼 있다면,
+         첫 평가일에 조기상환되지 않는 순간부터 회수 난도가 급격히 올라갑니다. 이 숫자는 고객이 홈페이지에서 절대 볼 수 없고,
+         상담에서 먼저 꺼내면 신뢰를 얻는 대신 상품을 못 파는 쪽에 가깝습니다. <strong>그래도 꺼내야 합니다.</strong>
+         고난도금융투자상품 설명 의무의 핵심이 여기 있습니다.</p>
+    </div>
+  </section>
+
+  <section>
+    <div class="rule"></div>
+    <h2>홈페이지 목록에 칸이 없는 세 가지</h2>
+    <div class="cols">
+      <div class="note">
+        <h3>리자드 조기상환</h3>
+        <p><strong>제38009회</strong> — 2차 평가일에 배리어를 못 채워도,
+           그때까지 <strong>40%</strong> 미만으로 내려간 적이 없으면 액면 118.40%로 상환됩니다.</p>
+        <p style="margin-top:10px">홈페이지 목록에는 배리어와 낙인 칸만 있어 이 조항이 보이지 않습니다.
+           <strong>청약 전 회차별 신고서류를 반드시 대조해야 하는 첫 번째 이유입니다.</strong></p>
+      </div>
+      <div class="note">
+        <h3>중도상환 비용</h3>
+        <p>공정가액의 <strong>95% 이상</strong>, 단 발행 후 6개월까지는 <strong>90% 이상</strong>으로 지급합니다.
+           6개월 내 환매하면 공정가액에서 최대 10%가 추가로 깎입니다.</p>
+        <p>신청 불가일도 함께 안내해야 합니다 — 최종관찰일 직전 4영업일부터 최종관찰일까지, 각 조기상환평가일과 그 직전 영업일,
+           만기평가일과 그 직전 영업일. <strong>고객이 “지금 빼달라”고 하는 시점이 정확히 이 구간과 겹치는 경우가 많습니다.</strong></p>
+      </div>
+    </div>
+    <div class="note" style="margin-top:16px">
+      <h3>낙인 판정은 종가 기준입니다</h3>
+      <p>“최초기준가격평가일 익일로부터 최종관찰일(포함)까지 … <strong>(종가 기준)</strong>”이 원문 표현입니다.
+         장중에 낙인을 스쳐도 종가가 회복되면 터치가 아닙니다. 이 한 줄이 고객 불안을 크게 줄입니다.</p>
+    </div>
+  </section>
+
+  <section>
+    <div class="rule"></div>
+    <h2>자체 시뮬레이션이 발행사보다 낙관적인 이유</h2>
+    <p class="lead">같은 상품을 최근 10년 종가로 돌리면 손실률이 발행사 20년 결과보다 낮게 나옵니다. 그 차이를 설명 없이 쓰면 안 됩니다.</p>
+    <div class="note alert">
+      <ul>
+        <li><strong>구간이 다릅니다.</strong> 발행사는 2003년부터 20년, 자체 계산은 최근 10년입니다. 2008년이 빠져 있습니다.</li>
+        <li><strong>반도체에 특히 유리한 구간입니다.</strong> 이 10년은 삼성전자·SK하이닉스·마이크론의 역사적 강세장입니다.
+            최근 1년만 봐도 마이크론 +725%, SK하이닉스 +533%입니다.</li>
+        <li><strong>표본이 독립적이지 않습니다.</strong> 하루씩 밀린 중첩 구간이라 손실 경로는 특정 시기에 뭉쳐 발생합니다.
+            발행사 표본 4,637회도 마찬가지입니다.</li>
+        <li><strong>가격은 실현이 아니라 내재변동성으로 매겨집니다.</strong> 과거 기준 손실 0%인 상품에 연 40%가 붙었다면
+            시장이 과거와 다른 분포를 보고 있다는 뜻입니다.</li>
+      </ul>
+    </div>
+  </section>
+</div>
+
+<!-- ══════════ 4면 ══════════ -->
+<div class="page">
+  <div class="page-no">4 / 4 · 판단과 다음 회차</div>
+
+  <section>
+    <div class="rule"></div>
+    <h2>마지막 판매 주간에서 무엇이 좋았나</h2>
+    <p class="lead">낙인까지의 여유, 공정가액 괴리, 발행사 20년 손실률을 함께 본 순서입니다.
+       쿠폰이 높은 순서가 아니라 <strong>받는 쿠폰 대비 감수하는 위험이 작은 순서</strong>입니다.</p>
+    <div class="scroll">
+      <table>
+        <caption>상위 5건 — 방어적인 순서.</caption>
+        <thead><tr><th>순위</th><th>회차</th><th>기초자산</th><th>연쿠폰</th><th>낙인</th><th>여유</th><th>공정가액 괴리</th><th>발행사 손실</th></tr></thead>
+        <tbody>
+        <tr>
+          <td class="num">1</td>
+          <td class="code">38009</td>
+          <td class="und">S&amp;P500 · KOSPI200 · Nikkei225</td>
+          <td class="num">18.4%</td>
+          <td class="num">없음</td>
+          <td class="num muted">낙인 없음</td>
+          <td class="num ">+2.6%</td>
+          <td class="num ">0.00%</td>
+        </tr>
+        <tr>
+          <td class="num">2</td>
+          <td class="code">38012</td>
+          <td class="und">EuroStoxx50 · S&amp;P500 · KOSPI200</td>
+          <td class="num">21.4%</td>
+          <td class="num">없음</td>
+          <td class="num muted">낙인 없음</td>
+          <td class="num ">-3.2%</td>
+          <td class="num ">0.00%</td>
+        </tr>
+        <tr>
+          <td class="num">3</td>
+          <td class="code">38014</td>
+          <td class="und">삼성전자 · SK하이닉스</td>
+          <td class="num">27.0%</td>
+          <td class="num">20%</td>
+          <td class="num ">+30.5%p</td>
+          <td class="num ">-3.0%</td>
+          <td class="num ">0.12%</td>
+        </tr>
+        <tr>
+          <td class="num">4</td>
+          <td class="code">38011</td>
+          <td class="und">KOSPI200</td>
+          <td class="num">20.0%</td>
+          <td class="num">35%</td>
+          <td class="num ">+23.8%p</td>
+          <td class="num ">-1.6%</td>
+          <td class="num ">0.00%</td>
+        </tr>
+        <tr>
+          <td class="num">5</td>
+          <td class="code">38010</td>
+          <td class="und">KOSPI200</td>
+          <td class="num">19.0%</td>
+          <td class="num">40%</td>
+          <td class="num ">+25.1%p</td>
+          <td class="num ">-3.5%</td>
+          <td class="num ">0.00%</td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="scroll">
+      <table>
+        <caption>하위 3건 — 같은 기준에서 가장 공격적인 조합.</caption>
+        <thead><tr><th>순위</th><th>회차</th><th>기초자산</th><th>연쿠폰</th><th>낙인</th><th>여유</th><th>공정가액 괴리</th><th>발행사 손실</th></tr></thead>
+        <tbody>
+        <tr>
+          <td class="num muted">16</td>
+          <td class="code">38008</td>
+          <td class="und">S&amp;P500 · HSCEI · Nikkei225</td>
+          <td class="num">13.0%</td>
+          <td class="num">45%</td>
+          <td class="num bad">-4.6%p</td>
+          <td class="num warn">-4.0%</td>
+          <td class="num bad">4.17%</td>
+        </tr>
+        <tr>
+          <td class="num muted">15</td>
+          <td class="code">38022</td>
+          <td class="und">어플라이드 머티어리얼즈 · 마이크론 테크놀로지</td>
+          <td class="num">42.4%</td>
+          <td class="num">25%</td>
+          <td class="num ">+19.6%p</td>
+          <td class="num bad">-14.3%</td>
+          <td class="num bad">3.58%</td>
+        </tr>
+        <tr>
+          <td class="num muted">14</td>
+          <td class="code">38023</td>
+          <td class="und">KOSPI200 · 마이크론 테크놀로지</td>
+          <td class="num">42.5%</td>
+          <td class="num">35%</td>
+          <td class="num ">+11.3%p</td>
+          <td class="num bad">-15.4%</td>
+          <td class="num ">0.79%</td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section>
+    <div class="rule"></div>
+    <h2>같은 기준을 다음 회차에 적용하면 — 제38031~38047회</h2>
+    <p class="lead">청약 <strong>2026.08.24 ~ 2026.08.28</strong>, 발행 2026.08.31. 17건이 2026.08.21 공시됐습니다.
+       마지막 주간과 같은 잣대로 줄을 세운 결과입니다.</p>
+    <div class="scroll">
+      <table>
+        <caption>공정가액은 2026.08.18 기준. 상위 5건과 하위 3건.</caption>
+        <thead><tr><th>순위</th><th>회차</th><th>기초자산</th><th>연쿠폰</th><th>낙인</th><th>여유</th><th>공정가액 괴리</th><th>발행사 손실</th></tr></thead>
+        <tbody>
+        <tr>
+          <td class="num">1</td>
+          <td class="code">38035</td>
+          <td class="und">S&amp;P500 · KOSPI200 · Nikkei225</td>
+          <td class="num">15.6%</td>
+          <td class="num">없음</td>
+          <td class="num muted">낙인 없음</td>
+          <td class="num ">-2.2%</td>
+          <td class="num ">0.21%</td>
+        </tr>
+        <tr>
+          <td class="num">2</td>
+          <td class="code">38043</td>
+          <td class="und">삼성전자 · SK하이닉스</td>
+          <td class="num">19.2%</td>
+          <td class="num">20%</td>
+          <td class="num ">+30.5%p</td>
+          <td class="num ">-0.2%</td>
+          <td class="num ">0.49%</td>
+        </tr>
+        <tr>
+          <td class="num">3</td>
+          <td class="code">38037</td>
+          <td class="und">삼성전자 · SK하이닉스</td>
+          <td class="num">27.5%</td>
+          <td class="num">25%</td>
+          <td class="num ">+25.5%p</td>
+          <td class="num ">-0.2%</td>
+          <td class="num ">0.47%</td>
+        </tr>
+        <tr>
+          <td class="num">4</td>
+          <td class="code">38033</td>
+          <td class="und">EuroStoxx50 · KOSPI200 · Nikkei225</td>
+          <td class="num">13.2%</td>
+          <td class="num">35%</td>
+          <td class="num ">+23.8%p</td>
+          <td class="num ">-1.1%</td>
+          <td class="num ">0.00%</td>
+        </tr>
+        <tr>
+          <td class="num">5</td>
+          <td class="code">38031</td>
+          <td class="und">KOSPI200</td>
+          <td class="num">11.5%</td>
+          <td class="num">35%</td>
+          <td class="num ">+23.8%p</td>
+          <td class="num ">-1.6%</td>
+          <td class="num ">0.00%</td>
+        </tr>
+        <tr>
+          <td class="num muted">17</td>
+          <td class="code">38046</td>
+          <td class="und">마이크론 테크놀로지 · 팔란티어 테크</td>
+          <td class="num">25.0%</td>
+          <td class="num">25%</td>
+          <td class="num bad">-9.6%p</td>
+          <td class="num bad">-31.7%</td>
+          <td class="num bad">2.07%</td>
+        </tr>
+        <tr>
+          <td class="num muted">16</td>
+          <td class="code">38045</td>
+          <td class="und">어플라이드 머티어리얼즈 · 마이크론 테크놀로지</td>
+          <td class="num">30.2%</td>
+          <td class="num">35%</td>
+          <td class="num ">+9.6%p</td>
+          <td class="num bad">-22.3%</td>
+          <td class="num bad">3.40%</td>
+        </tr>
+        <tr>
+          <td class="num muted">15</td>
+          <td class="code">38042</td>
+          <td class="und">KOSPI200 · HSCEI · Nikkei225</td>
+          <td class="num">16.6%</td>
+          <td class="num">45%</td>
+          <td class="num bad">-4.6%p</td>
+          <td class="num warn">-5.5%</td>
+          <td class="num bad">4.21%</td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="note alert" style="margin-top:18px">
+      <h3>다음 회차에서 특히 조심할 것</h3>
+      <ul>
+        <li><strong>제38046회</strong> (마이크론 테크놀로지 · 팔란티어 테크, 연 25.0%) — 공정가액이 발행가보다 <strong class="bad">-31.7%</strong> 낮습니다. 과거 10년 안에 낙인 25%가 <strong class="bad">9.6%p</strong> 뚫린 이력이 있습니다. 발행사 20년 모의실험 손실률이 <strong class="bad">2.07%</strong>로 이번 회차 중 가장 높습니다.</li>
+        <li><strong>제38045회</strong> (어플라이드 머티어리얼즈 · 마이크론 테크놀로지, 연 30.2%) — 공정가액이 발행가보다 <strong class="bad">-22.3%</strong> 낮습니다. 낙인까지 여유가 <strong class="warn">9.6%p</strong>뿐입니다. 발행사 20년 모의실험 손실률이 <strong class="bad">3.40%</strong>로 이번 회차 중 가장 높습니다.</li>
+        <li><strong>제38042회</strong> (KOSPI200 · HSCEI · Nikkei225, 연 16.6%) — 과거 10년 안에 낙인 45%가 <strong class="bad">4.6%p</strong> 뚫린 이력이 있습니다. 발행사 20년 모의실험 손실률이 <strong class="bad">4.21%</strong>로 이번 회차 중 가장 높습니다.</li>
+      </ul>
+      <p style="margin-top:10px">쿠폰만 보고 권하면 안 되는 조합입니다. 권한다면 이 숫자들을 먼저 말해야 합니다.</p>
+    </div>
+  </section>
+
+  <section>
+    <div class="rule"></div>
+    <h2>상담에서 반드시 말할 다섯 가지</h2>
+    <div class="script">
+      <p><span class="q">1.</span> “이 상품은 <strong>원금이 보장되지 않고</strong>, 낙인이 뚫리면 손실이 −30%에서 −50% 구간에 몰립니다.
+         조금 잃는 상품이 아닙니다.”</p>
+      <p><span class="q">2.</span> “쿠폰이 높은 이유는 조건이 좋아서가 아니라 <strong>기초자산 변동성이 그만큼 높기 때문</strong>입니다.”
+         <span class="muted">— 예: 제38046회 마이크론 테크놀로지 · 팔란티어 테크의 적용 변동성은
+         마이크론 테크놀로지 98.1%, 팔란티어 테크 67.3%입니다.</span></p>
+      <p><span class="q">3.</span> “발행가는 10,000원이지만 <strong>공정가액</strong>은 그보다 낮습니다.
+         만기까지의 헤지비용은 여기에 아직 반영되지 않았습니다.”
+         <span class="muted">— 같은 회차 기준 6,833.73원(-31.7%).</span></p>
+      <p><span class="q">4.</span> “중간에 빼시려면 <strong>공정가액의 95%</strong>, 6개월 안이면 90%입니다.
+         조기상환평가일 전후로는 신청 자체가 안 되는 날이 있습니다.”</p>
+      <p><span class="q">5.</span> “과거 시뮬레이션은 <strong>2003년부터의 예시</strong>이지 예측치가 아닙니다.
+         설명서에도 그렇게 적혀 있습니다.”</p>
+    </div>
+  </section>
+
+  <p class="foot">
+    출처 — 회차 조건·공정가액·적용 변동성·수익률 모의실험은 미래에셋증권 일괄신고추가서류
+    (DART 접수번호 20260731000093, 20260821000193) 원문에서 추출했습니다.
+    역대 최저·여유·자체 시뮬레이션은 기초자산 최근 10년 일별 종가(Yahoo Finance (일별 종가))로 계산한 값이며
+    <strong>설명서 수치가 아닙니다</strong>. 세금·수수료·중도상환 비용은 반영하지 않았습니다.<br>
+    이 자료는 내부 검토용 분석이며 특정 상품의 매수를 권유하지 않습니다. ELS는 예금자보호 대상이 아니고 발행사 신용위험에 노출됩니다.
+    대외 배포 전 준법감시 부서 확인이 필요합니다.
+  </p>
+</div>
+
+</div>

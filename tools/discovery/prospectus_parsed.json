@@ -13,9 +13,9 @@
         "riskGrade": 2,
         "principalProtected": false,
         "underlyings": [
-          "EUROSTOXX50",
+          "EuroStoxx50",
           "S&P500",
-          "NIKKEI225"
+          "Nikkei225"
         ],
         "issueSize": 10000000000,
         "offerStart": "2026-07-27",
@@ -30,7 +30,7 @@
         "fairValueGap": -3.11,
         "volatility": [
           {
-            "asset": "EUROSTOXX50",
+            "asset": "EuroStoxx50",
             "vol": 22.59
           },
           {
@@ -38,21 +38,21 @@
             "vol": 24.7
           },
           {
-            "asset": "NIKKEI225",
+            "asset": "Nikkei225",
             "vol": 31.86
           }
         ],
         "correlation": [
           {
-            "pair": "EUROSTOXX50,S&P500",
+            "pair": "EuroStoxx50 · S&P500",
             "rho": 0.5472
           },
           {
-            "pair": "EUROSTOXX50,NIKKEI225",
+            "pair": "EuroStoxx50 · Nikkei225",
             "rho": 0.3466
           },
           {
-            "pair": "S&P500,NIKKEI225",
+            "pair": "S&P500 · Nikkei225",
             "rho": 0.1616
           }
         ],
@@ -93,7 +93,7 @@
         "knockIn": 45,
         "knockInBasis": "종가",
         "annualRate": 13,
-        "totalRate": 39,
+        "docMaxRate": 39,
         "simulation": [
           {
             "label": "1차 조기상환",
@@ -326,7 +326,7 @@
         "knockIn": 25,
         "knockInBasis": "종가",
         "annualRate": 17.3,
-        "totalRate": 51.9,
+        "docMaxRate": 51.9,
         "simulation": [
           {
             "label": "1차 조기상환",
@@ -547,7 +547,7 @@
         "knockIn": 35,
         "knockInBasis": "종가",
         "annualRate": 19,
-        "totalRate": 19,
+        "docMaxRate": 19,
         "simulation": [
           {
             "label": "1차 조기상환",
@@ -677,7 +677,7 @@
         "underlyings": [
           "S&P500",
           "KOSPI200",
-          "NIKKEI225"
+          "Nikkei225"
         ],
         "issueSize": 10000000000,
         "offerStart": "2026-07-27",
@@ -700,21 +700,21 @@
             "vol": 52.38
           },
           {
-            "asset": "NIKKEI225",
+            "asset": "Nikkei225",
             "vol": 31.86
           }
         ],
         "correlation": [
           {
-            "pair": "S&P500,KOSPI200",
+            "pair": "S&P500 · KOSPI200",
             "rho": 0.1792
           },
           {
-            "pair": "S&P500,NIKKEI225",
+            "pair": "S&P500 · Nikkei225",
             "rho": 0.1616
           },
           {
-            "pair": "KOSPI200,NIKKEI225",
+            "pair": "KOSPI200 · Nikkei225",
             "rho": 0.7615
           }
         ],
@@ -791,7 +791,7 @@
         "knockIn": 25,
         "knockInBasis": "종가",
         "annualRate": 20,
-        "totalRate": 60,
+        "docMaxRate": 60,
         "simulation": [
           {
             "label": "1차 조기상환",
@@ -1060,7 +1060,7 @@
         "knockIn": 30,
         "knockInBasis": "종가",
         "annualRate": 20.3,
-        "totalRate": 60.9,
+        "docMaxRate": 60.9,
         "simulation": [
           {
             "label": "1차 조기상환",
@@ -1236,7 +1236,7 @@
         "riskGrade": 2,
         "principalProtected": false,
         "underlyings": [
-          "EUROSTOXX50",
+          "EuroStoxx50",
           "S&P500",
           "KOSPI200"
         ],
@@ -1253,7 +1253,7 @@
         "fairValueGap": 1.96,
         "volatility": [
           {
-            "asset": "EUROSTOXX50",
+            "asset": "EuroStoxx50",
             "vol": 22.59
           },
           {
@@ -1267,15 +1267,15 @@
         ],
         "correlation": [
           {
-            "pair": "EUROSTOXX50,S&P500",
+            "pair": "EuroStoxx50 · S&P500",
             "rho": 0.5472
           },
           {
-            "pair": "EUROSTOXX50,KOSPI200",
+            "pair": "EuroStoxx50 · KOSPI200",
             "rho": 0.3117
           },
           {
-            "pair": "S&P500,KOSPI200",
+            "pair": "S&P500 · KOSPI200",
             "rho": 0.1792
           }
         ],
@@ -1314,7 +1314,7 @@
         "knockIn": null,
         "knockInBasis": null,
         "annualRate": 20.5,
-        "totalRate": 61.5,
+        "docMaxRate": 61.5,
         "simulation": [
           {
             "label": "1차 조기상환",
@@ -1462,7 +1462,7 @@
         "underlyings": [
           "S&P500",
           "KOSPI200",
-          "NIKKEI225"
+          "Nikkei225"
         ],
         "issueSize": 10000000000,
         "offerStart": "2026-07-27",
@@ -1485,21 +1485,21 @@
             "vol": 52.38
           },
           {
-            "asset": "NIKKEI225",
+            "asset": "Nikkei225",
             "vol": 31.86
           }
         ],
         "correlation": [
           {
-            "pair": "S&P500,KOSPI200",
+            "pair": "S&P500 · KOSPI200",
             "rho": 0.1792
           },
           {
-            "pair": "S&P500,NIKKEI225",
+            "pair": "S&P500 · Nikkei225",
             "rho": 0.1616
           },
           {
-            "pair": "KOSPI200,NIKKEI225",
+            "pair": "KOSPI200 · Nikkei225",
             "rho": 0.7615
           }
         ],
@@ -1540,7 +1540,7 @@
         "knockIn": null,
         "knockInBasis": null,
         "annualRate": 23.5,
-        "totalRate": 70.5,
+        "docMaxRate": 70.5,
         "simulation": [
           {
             "label": "1차 조기상환",
@@ -1682,7 +1682,7 @@
         "underlyings": [
           "KOSPI200",
           "HSCEI",
-          "NIKKEI225"
+          "Nikkei225"
         ],
         "issueSize": 20000000000,
         "offerStart": "2026-07-27",
@@ -1705,21 +1705,21 @@
             "vol": 26.63
           },
           {
-            "asset": "NIKKEI225",
+            "asset": "Nikkei225",
             "vol": 31.86
           }
         ],
         "correlation": [
           {
-            "pair": "KOSPI200,HSCEI",
+            "pair": "KOSPI200 · HSCEI",
             "rho": 0.2892
           },
           {
-            "pair": "KOSPI200,NIKKEI225",
+            "pair": "KOSPI200 · Nikkei225",
             "rho": 0.7615
           },
           {
-            "pair": "HSCEI,NIKKEI225",
+            "pair": "HSCEI · Nikkei225",
             "rho": 0.3366
           }
         ],
@@ -1760,7 +1760,7 @@
         "knockIn": 35,
         "knockInBasis": "종가",
         "annualRate": 24.2,
-        "totalRate": 72.6,
+        "docMaxRate": 72.6,
         "simulation": [
           {
             "label": "1차 조기상환",
@@ -1926,7 +1926,7 @@
         ],
         "correlation": [
           {
-            "pair": "삼성전자 보통주,SK하이닉스 보통주",
+            "pair": "삼성전자 · SK하이닉스",
             "rho": 0.8344
           }
         ],
@@ -2003,7 +2003,7 @@
         "knockIn": 25,
         "knockInBasis": "종가",
         "annualRate": 33,
-        "totalRate": 99,
+        "docMaxRate": 99,
         "simulation": [
           {
             "label": "1차 조기상환",
@@ -2205,7 +2205,7 @@
         ],
         "correlation": [
           {
-            "pair": "삼성전자 보통주,SK하이닉스 보통주",
+            "pair": "삼성전자 · SK하이닉스",
             "rho": 0.8344
           }
         ],
@@ -2246,7 +2246,7 @@
         "knockIn": 30,
         "knockInBasis": "종가",
         "annualRate": 34.41,
-        "totalRate": 2.8675,
+        "docMaxRate": 2.8675,
         "simulation": [
           {
             "label": "1차 조기상환",
@@ -2412,7 +2412,7 @@
         ],
         "correlation": [
           {
-            "pair": "KOSPI200,SK하이닉스 보통주",
+            "pair": "KOSPI200 · SK하이닉스",
             "rho": 0.9202
           }
         ],
@@ -2441,7 +2441,7 @@
         "knockIn": 35,
         "knockInBasis": "종가",
         "annualRate": 42.3,
-        "totalRate": 42.3,
+        "docMaxRate": 42.3,
         "simulation": [
           {
             "label": "1차 조기상환",
@@ -2595,7 +2595,7 @@
         ],
         "correlation": [
           {
-            "pair": "삼성전자 보통주,SK하이닉스 보통주",
+            "pair": "삼성전자 · SK하이닉스",
             "rho": 0.8344
           }
         ],
@@ -2672,7 +2672,7 @@
         "knockIn": 35,
         "knockInBasis": "종가",
         "annualRate": 53,
-        "totalRate": 159,
+        "docMaxRate": 159,
         "simulation": [
           {
             "label": "1차 조기상환",
@@ -2850,7 +2850,7 @@
         "underlyings": [
           "S&P500",
           "HSCEI",
-          "NIKKEI225"
+          "Nikkei225"
         ],
         "issueSize": 20000000000,
         "offerStart": "2026-07-27",
@@ -2873,21 +2873,21 @@
             "vol": 26.63
           },
           {
-            "asset": "NIKKEI225",
+            "asset": "Nikkei225",
             "vol": 31.86
           }
         ],
         "correlation": [
           {
-            "pair": "S&P500,HSCEI",
+            "pair": "S&P500 · HSCEI",
             "rho": 0.0775
           },
           {
-            "pair": "S&P500,NIKKEI225",
+            "pair": "S&P500 · Nikkei225",
             "rho": 0.1616
           },
           {
-            "pair": "HSCEI,NIKKEI225",
+            "pair": "HSCEI · Nikkei225",
             "rho": 0.3366
           }
         ],
@@ -2928,7 +2928,7 @@
         "knockIn": 50,
         "knockInBasis": "종가",
         "annualRate": 13.5,
-        "totalRate": 40.5,
+        "docMaxRate": 40.5,
         "simulation": [
           {
             "label": "1차 조기상환",
@@ -3068,7 +3068,7 @@
         "riskGrade": 2,
         "principalProtected": false,
         "underlyings": [
-          "EUROSTOXX50",
+          "EuroStoxx50",
           "S&P500",
           "KOSPI200"
         ],
@@ -3085,7 +3085,7 @@
         "fairValueGap": 0.53,
         "volatility": [
           {
-            "asset": "EUROSTOXX50",
+            "asset": "EuroStoxx50",
             "vol": 22.59
           },
           {
@@ -3099,15 +3099,15 @@
         ],
         "correlation": [
           {
-            "pair": "EUROSTOXX50,S&P500",
+            "pair": "EuroStoxx50 · S&P500",
             "rho": 0.5472
           },
           {
-            "pair": "EUROSTOXX50,KOSPI200",
+            "pair": "EuroStoxx50 · KOSPI200",
             "rho": 0.3117
           },
           {
-            "pair": "S&P500,KOSPI200",
+            "pair": "S&P500 · KOSPI200",
             "rho": 0.1792
           }
         ],
@@ -3184,7 +3184,7 @@
         "knockIn": 30,
         "knockInBasis": "종가",
         "annualRate": 22.2,
-        "totalRate": 66.6,
+        "docMaxRate": 66.6,
         "simulation": [
           {
             "label": "1차 조기상환",
@@ -3362,7 +3362,7 @@
         "underlyings": [
           "KOSPI200",
           "HSCEI",
-          "NIKKEI225"
+          "Nikkei225"
         ],
         "issueSize": 10000000000,
         "offerStart": "2026-07-27",
@@ -3385,21 +3385,21 @@
             "vol": 26.63
           },
           {
-            "asset": "NIKKEI225",
+            "asset": "Nikkei225",
             "vol": 31.86
           }
         ],
         "correlation": [
           {
-            "pair": "KOSPI200,HSCEI",
+            "pair": "KOSPI200 · HSCEI",
             "rho": 0.2892
           },
           {
-            "pair": "KOSPI200,NIKKEI225",
+            "pair": "KOSPI200 · Nikkei225",
             "rho": 0.7615
           },
           {
-            "pair": "HSCEI,NIKKEI225",
+            "pair": "HSCEI · Nikkei225",
             "rho": 0.3366
           }
         ],
@@ -3440,7 +3440,7 @@
         "knockIn": 40,
         "knockInBasis": "종가",
         "annualRate": 24.2,
-        "totalRate": 72.6,
+        "docMaxRate": 72.6,
         "simulation": [
           {
             "label": "1차 조기상환",
@@ -3606,7 +3606,7 @@
         ],
         "correlation": [
           {
-            "pair": "삼성전자 보통주,SK하이닉스 보통주",
+            "pair": "삼성전자 · SK하이닉스",
             "rho": 0.8344
           }
         ],
@@ -3683,7 +3683,7 @@
         "knockIn": 30,
         "knockInBasis": "종가",
         "annualRate": 40.5,
-        "totalRate": 121.5,
+        "docMaxRate": 121.5,
         "simulation": [
           {
             "label": "1차 조기상환",
@@ -3885,7 +3885,7 @@
         ],
         "correlation": [
           {
-            "pair": "삼성전자 보통주,SK하이닉스 보통주",
+            "pair": "삼성전자 · SK하이닉스",
             "rho": 0.8344
           }
         ],
@@ -3914,7 +3914,7 @@
         "knockIn": 40,
         "knockInBasis": "종가",
         "annualRate": 50.4,
-        "totalRate": 50.4,
+        "docMaxRate": 50.4,
         "simulation": [
           {
             "label": "1차 조기상환",
@@ -4042,16 +4042,14 @@
         "riskGrade": 1,
         "principalProtected": false,
         "underlyings": [
-          "Micron Technology Inc(Micron Technology",
-          "MU UW Equity",
-          "Palantir Technologies Inc. Class A(Palantir Technologies",
-          "PLTR UW Equity)"
+          "마이크론 테크놀로지",
+          "팔란티어 테크"
         ],
         "issueSize": 10000000000,
         "offerStart": "2026-07-27",
         "offerEnd": "2026-08-05",
         "issueDate": "2026-08-06",
-        "maturityDate": null,
+        "maturityDate": "2029-08-06",
         "baseDate": "2026-08-06",
         "currency": "KRW",
         "faceValue": 10000,
@@ -4060,17 +4058,17 @@
         "fairValueGap": -22.07,
         "volatility": [
           {
-            "asset": "Micron Technology Inc",
+            "asset": "마이크론 테크놀로지",
             "vol": 96.25
           },
           {
-            "asset": "Palantir Technologies Inc. Class A",
+            "asset": "팔란티어 테크",
             "vol": 61.12
           }
         ],
         "correlation": [
           {
-            "pair": "Micron Technology Inc,Palantir Technologies Inc. Class A",
+            "pair": "마이크론 테크놀로지 · 팔란티어 테크",
             "rho": 0.0909
           }
         ],
@@ -4111,7 +4109,7 @@
         "knockIn": 30,
         "knockInBasis": "종가",
         "annualRate": 40.6,
-        "totalRate": 121.8,
+        "docMaxRate": 121.8,
         "simulation": [
           {
             "label": "1차 조기상환",
@@ -4252,7 +4250,7 @@
         "principalProtected": false,
         "underlyings": [
           "KOSPI200",
-          "Micron Technology"
+          "마이크론 테크놀로지"
         ],
         "issueSize": 10000000000,
         "offerStart": "2026-07-27",
@@ -4271,13 +4269,13 @@
             "vol": 52.38
           },
           {
-            "asset": "Micron Technology Inc",
+            "asset": "마이크론 테크놀로지",
             "vol": 96.25
           }
         ],
         "correlation": [
           {
-            "pair": "KOSPI200,Micron Technology Inc",
+            "pair": "KOSPI200 · 마이크론 테크놀로지",
             "rho": 0.3149
           }
         ],
@@ -4318,7 +4316,7 @@
         "knockIn": 35,
         "knockInBasis": "종가",
         "annualRate": 44.6,
-        "totalRate": 133.8,
+        "docMaxRate": 133.8,
         "simulation": [
           {
             "label": "1차 조기상환",
@@ -4469,7 +4467,7 @@
         "underlyings": [
           "S&P500",
           "HSCEI",
-          "NIKKEI225"
+          "Nikkei225"
         ],
         "issueSize": 10000000000,
         "offerStart": "2026-08-03",
@@ -4492,21 +4490,21 @@
             "vol": 26.42
           },
           {
-            "asset": "NIKKEI225",
+            "asset": "Nikkei225",
             "vol": 31.59
           }
         ],
         "correlation": [
           {
-            "pair": "S&P500,HSCEI",
+            "pair": "S&P500 · HSCEI",
             "rho": 0.0684
           },
           {
-            "pair": "S&P500,NIKKEI225",
+            "pair": "S&P500 · Nikkei225",
             "rho": 0.1695
           },
           {
-            "pair": "HSCEI,NIKKEI225",
+            "pair": "HSCEI · Nikkei225",
             "rho": 0.3407
           }
         ],
@@ -4547,7 +4545,7 @@
         "knockIn": 45,
         "knockInBasis": "종가",
         "annualRate": 13,
-        "totalRate": 39,
+        "docMaxRate": 39,
         "simulation": [
           {
             "label": "1차 조기상환",
@@ -4689,7 +4687,7 @@
         "underlyings": [
           "S&P500",
           "KOSPI200",
-          "NIKKEI225"
+          "Nikkei225"
         ],
         "issueSize": 10000000000,
         "offerStart": "2026-08-03",
@@ -4712,21 +4710,21 @@
             "vol": 52.5
           },
           {
-            "asset": "NIKKEI225",
+            "asset": "Nikkei225",
             "vol": 31.59
           }
         ],
         "correlation": [
           {
-            "pair": "S&P500,KOSPI200",
+            "pair": "S&P500 · KOSPI200",
             "rho": 0.1748
           },
           {
-            "pair": "S&P500,NIKKEI225",
+            "pair": "S&P500 · Nikkei225",
             "rho": 0.1695
           },
           {
-            "pair": "KOSPI200,NIKKEI225",
+            "pair": "KOSPI200 · Nikkei225",
             "rho": 0.7635
           }
         ],
@@ -4765,7 +4763,7 @@
         "knockIn": null,
         "knockInBasis": null,
         "annualRate": 18.4,
-        "totalRate": 55.2,
+        "docMaxRate": 55.2,
         "simulation": [
           {
             "label": "1차 조기상환",
@@ -4956,7 +4954,7 @@
         "knockIn": 40,
         "knockInBasis": "종가",
         "annualRate": 19,
-        "totalRate": 19,
+        "docMaxRate": 19,
         "simulation": [
           {
             "label": "1차 조기상환",
@@ -5177,7 +5175,7 @@
         "knockIn": 35,
         "knockInBasis": "종가",
         "annualRate": 20,
-        "totalRate": 60,
+        "docMaxRate": 60,
         "simulation": [
           {
             "label": "1차 조기상환",
@@ -5353,7 +5351,7 @@
         "riskGrade": 2,
         "principalProtected": false,
         "underlyings": [
-          "EUROSTOXX50",
+          "EuroStoxx50",
           "S&P500",
           "KOSPI200"
         ],
@@ -5370,7 +5368,7 @@
         "fairValueGap": -3.16,
         "volatility": [
           {
-            "asset": "EUROSTOXX50",
+            "asset": "EuroStoxx50",
             "vol": 22.63
           },
           {
@@ -5384,15 +5382,15 @@
         ],
         "correlation": [
           {
-            "pair": "EUROSTOXX50,S&P500",
+            "pair": "EuroStoxx50 · S&P500",
             "rho": 0.5557
           },
           {
-            "pair": "EUROSTOXX50,KOSPI200",
+            "pair": "EuroStoxx50 · KOSPI200",
             "rho": 0.3012
           },
           {
-            "pair": "S&P500,KOSPI200",
+            "pair": "S&P500 · KOSPI200",
             "rho": 0.1748
           }
         ],
@@ -5433,7 +5431,7 @@
         "knockIn": null,
         "knockInBasis": null,
         "annualRate": 21.4,
-        "totalRate": 64.2,
+        "docMaxRate": 64.2,
         "simulation": [
           {
             "label": "1차 조기상환",
@@ -5573,7 +5571,7 @@
         "riskGrade": 2,
         "principalProtected": false,
         "underlyings": [
-          "EUROSTOXX50",
+          "EuroStoxx50",
           "S&P500",
           "KOSPI200"
         ],
@@ -5590,7 +5588,7 @@
         "fairValueGap": -3.86,
         "volatility": [
           {
-            "asset": "EUROSTOXX50",
+            "asset": "EuroStoxx50",
             "vol": 22.63
           },
           {
@@ -5604,15 +5602,15 @@
         ],
         "correlation": [
           {
-            "pair": "EUROSTOXX50,S&P500",
+            "pair": "EuroStoxx50 · S&P500",
             "rho": 0.5557
           },
           {
-            "pair": "EUROSTOXX50,KOSPI200",
+            "pair": "EuroStoxx50 · KOSPI200",
             "rho": 0.3012
           },
           {
-            "pair": "S&P500,KOSPI200",
+            "pair": "S&P500 · KOSPI200",
             "rho": 0.1748
           }
         ],
@@ -5653,7 +5651,7 @@
         "knockIn": 40,
         "knockInBasis": "종가",
         "annualRate": 23,
-        "totalRate": 69,
+        "docMaxRate": 69,
         "simulation": [
           {
             "label": "1차 조기상환",
@@ -5819,7 +5817,7 @@
         ],
         "correlation": [
           {
-            "pair": "삼성전자 보통주,SK하이닉스 보통주",
+            "pair": "삼성전자 · SK하이닉스",
             "rho": 0.8397
           }
         ],
@@ -5896,7 +5894,7 @@
         "knockIn": 20,
         "knockInBasis": "종가",
         "annualRate": 27,
-        "totalRate": 81,
+        "docMaxRate": 81,
         "simulation": [
           {
             "label": "1차 조기상환",
@@ -6098,7 +6096,7 @@
         ],
         "correlation": [
           {
-            "pair": "삼성전자 보통주,SK하이닉스 보통주",
+            "pair": "삼성전자 · SK하이닉스",
             "rho": 0.8397
           }
         ],
@@ -6139,7 +6137,7 @@
         "knockIn": 25,
         "knockInBasis": "종가",
         "annualRate": 33.5,
-        "totalRate": 100.5,
+        "docMaxRate": 100.5,
         "simulation": [
           {
             "label": "1차 조기상환",
@@ -6305,7 +6303,7 @@
         ],
         "correlation": [
           {
-            "pair": "삼성전자 보통주,SK하이닉스 보통주",
+            "pair": "삼성전자 · SK하이닉스",
             "rho": 0.8397
           }
         ],
@@ -6346,7 +6344,7 @@
         "knockIn": 35,
         "knockInBasis": "종가",
         "annualRate": 37.41,
-        "totalRate": 3.1175,
+        "docMaxRate": 3.1175,
         "simulation": [
           {
             "label": "1차 조기상환",
@@ -6512,7 +6510,7 @@
         ],
         "correlation": [
           {
-            "pair": "삼성전자 보통주,SK하이닉스 보통주",
+            "pair": "삼성전자 · SK하이닉스",
             "rho": 0.8397
           }
         ],
@@ -6553,7 +6551,7 @@
         "knockIn": 35,
         "knockInBasis": "종가",
         "annualRate": 52,
-        "totalRate": 78,
+        "docMaxRate": 78,
         "simulation": [
           {
             "label": "1차 조기상환",
@@ -6695,7 +6693,7 @@
         "underlyings": [
           "KOSPI200",
           "HSCEI",
-          "NIKKEI225"
+          "Nikkei225"
         ],
         "issueSize": 20000000000,
         "offerStart": "2026-08-03",
@@ -6718,21 +6716,21 @@
             "vol": 26.42
           },
           {
-            "asset": "NIKKEI225",
+            "asset": "Nikkei225",
             "vol": 31.59
           }
         ],
         "correlation": [
           {
-            "pair": "KOSPI200,HSCEI",
+            "pair": "KOSPI200 · HSCEI",
             "rho": 0.2969
           },
           {
-            "pair": "KOSPI200,NIKKEI225",
+            "pair": "KOSPI200 · Nikkei225",
             "rho": 0.7635
           },
           {
-            "pair": "HSCEI,NIKKEI225",
+            "pair": "HSCEI · Nikkei225",
             "rho": 0.3407
           }
         ],
@@ -6773,7 +6771,7 @@
         "knockIn": 30,
         "knockInBasis": "종가",
         "annualRate": 21,
-        "totalRate": 63,
+        "docMaxRate": 63,
         "simulation": [
           {
             "label": "1차 조기상환",
@@ -6913,7 +6911,7 @@
         "riskGrade": 2,
         "principalProtected": false,
         "underlyings": [
-          "EUROSTOXX50",
+          "EuroStoxx50",
           "S&P500",
           "KOSPI200"
         ],
@@ -6930,7 +6928,7 @@
         "fairValueGap": -3.31,
         "volatility": [
           {
-            "asset": "EUROSTOXX50",
+            "asset": "EuroStoxx50",
             "vol": 22.63
           },
           {
@@ -6944,15 +6942,15 @@
         ],
         "correlation": [
           {
-            "pair": "EUROSTOXX50,S&P500",
+            "pair": "EuroStoxx50 · S&P500",
             "rho": 0.5557
           },
           {
-            "pair": "EUROSTOXX50,KOSPI200",
+            "pair": "EuroStoxx50 · KOSPI200",
             "rho": 0.3012
           },
           {
-            "pair": "S&P500,KOSPI200",
+            "pair": "S&P500 · KOSPI200",
             "rho": 0.1748
           }
         ],
@@ -6993,7 +6991,7 @@
         "knockIn": 40,
         "knockInBasis": "종가",
         "annualRate": 22,
-        "totalRate": 66,
+        "docMaxRate": 66,
         "simulation": [
           {
             "label": "1차 조기상환",
@@ -7159,7 +7157,7 @@
         ],
         "correlation": [
           {
-            "pair": "삼성전자 보통주,SK하이닉스 보통주",
+            "pair": "삼성전자 · SK하이닉스",
             "rho": 0.8397
           }
         ],
@@ -7236,7 +7234,7 @@
         "knockIn": 30,
         "knockInBasis": "종가",
         "annualRate": 46,
-        "totalRate": 138,
+        "docMaxRate": 138,
         "simulation": [
           {
             "label": "1차 조기상환",
@@ -7438,7 +7436,7 @@
         ],
         "correlation": [
           {
-            "pair": "삼성전자 보통주,SK하이닉스 보통주",
+            "pair": "삼성전자 · SK하이닉스",
             "rho": 0.8397
           }
         ],
@@ -7467,7 +7465,7 @@
         "knockIn": 40,
         "knockInBasis": "종가",
         "annualRate": 50,
-        "totalRate": 50,
+        "docMaxRate": 50,
         "simulation": [
           {
             "label": "1차 조기상환",
@@ -7595,8 +7593,8 @@
         "riskGrade": 1,
         "principalProtected": false,
         "underlyings": [
-          "Applied Materials",
-          "Micron Technology"
+          "어플라이드 머티어리얼즈",
+          "마이크론 테크놀로지"
         ],
         "issueSize": 10000000000,
         "offerStart": "2026-08-03",
@@ -7611,17 +7609,17 @@
         "fairValueGap": -14.34,
         "volatility": [
           {
-            "asset": "Applied Materials, Inc.",
+            "asset": "어플라이드 머티어리얼즈",
             "vol": 71.68
           },
           {
-            "asset": "Micron Technology Inc",
+            "asset": "마이크론 테크놀로지",
             "vol": 96.8
           }
         ],
         "correlation": [
           {
-            "pair": "Applied Materials, Inc.,Micron Technology Inc",
+            "pair": "어플라이드 머티어리얼즈 · Inc. · 마이크론 테크놀로지",
             "rho": 0.7224
           }
         ],
@@ -7662,7 +7660,7 @@
         "knockIn": 25,
         "knockInBasis": "종가",
         "annualRate": 42.4,
-        "totalRate": 127.2,
+        "docMaxRate": 127.2,
         "simulation": [
           {
             "label": "1차 조기상환",
@@ -7803,7 +7801,7 @@
         "principalProtected": false,
         "underlyings": [
           "KOSPI200",
-          "Micron Technology"
+          "마이크론 테크놀로지"
         ],
         "issueSize": 10000000000,
         "offerStart": "2026-08-03",
@@ -7822,13 +7820,13 @@
             "vol": 52.5
           },
           {
-            "asset": "Micron Technology Inc",
+            "asset": "마이크론 테크놀로지",
             "vol": 96.8
           }
         ],
         "correlation": [
           {
-            "pair": "KOSPI200,Micron Technology Inc",
+            "pair": "KOSPI200 · 마이크론 테크놀로지",
             "rho": 0.3225
           }
         ],
@@ -7869,7 +7867,7 @@
         "knockIn": 35,
         "knockInBasis": "종가",
         "annualRate": 42.5,
-        "totalRate": 127.5,
+        "docMaxRate": 127.5,
         "simulation": [
           {
             "label": "1차 조기상환",
@@ -8111,7 +8109,7 @@
         "knockIn": 25,
         "knockInBasis": "종가",
         "annualRate": 12,
-        "totalRate": 36,
+        "docMaxRate": 36,
         "simulation": [
           {
             "label": "1차 조기상환",
@@ -8344,7 +8342,7 @@
         "knockIn": 35,
         "knockInBasis": "종가",
         "annualRate": 17,
-        "totalRate": 51,
+        "docMaxRate": 51,
         "simulation": [
           {
             "label": "1차 조기상환",
@@ -8550,7 +8548,7 @@
         "knockIn": 35,
         "knockInBasis": "종가",
         "annualRate": 11.5,
-        "totalRate": 34.5,
+        "docMaxRate": 34.5,
         "simulation": [
           {
             "label": "1차 조기상환",
@@ -8747,7 +8745,7 @@
         "knockIn": 40,
         "knockInBasis": "종가",
         "annualRate": 12.6,
-        "totalRate": 37.8,
+        "docMaxRate": 37.8,
         "simulation": [
           {
             "label": "1차 조기상환",
@@ -8887,9 +8885,9 @@
         "riskGrade": 1,
         "principalProtected": false,
         "underlyings": [
-          "EUROSTOXX50",
+          "EuroStoxx50",
           "KOSPI200",
-          "NIKKEI225"
+          "Nikkei225"
         ],
         "issueSize": 10000000000,
         "offerStart": "2026-08-24",
@@ -8904,7 +8902,7 @@
         "fairValueGap": -1.1,
         "volatility": [
           {
-            "asset": "EUROSTOXX50",
+            "asset": "EuroStoxx50",
             "vol": 22.24
           },
           {
@@ -8912,21 +8910,21 @@
             "vol": 40.52
           },
           {
-            "asset": "NIKKEI225",
+            "asset": "Nikkei225",
             "vol": 30.42
           }
         ],
         "correlation": [
           {
-            "pair": "EUROSTOXX50,KOSPI200",
+            "pair": "EuroStoxx50 · KOSPI200",
             "rho": 0.2313
           },
           {
-            "pair": "EUROSTOXX50,NIKKEI225",
+            "pair": "EuroStoxx50 · Nikkei225",
             "rho": 0.3094
           },
           {
-            "pair": "KOSPI200,NIKKEI225",
+            "pair": "KOSPI200 · Nikkei225",
             "rho": 0.7622
           }
         ],
@@ -8967,7 +8965,7 @@
         "knockIn": 35,
         "knockInBasis": "종가",
         "annualRate": 13.2,
-        "totalRate": 39.6,
+        "docMaxRate": 39.6,
         "simulation": [
           {
             "label": "1차 조기상환",
@@ -9107,7 +9105,7 @@
         "riskGrade": 1,
         "principalProtected": false,
         "underlyings": [
-          "EUROSTOXX50",
+          "EuroStoxx50",
           "S&P500",
           "KOSPI200"
         ],
@@ -9124,7 +9122,7 @@
         "fairValueGap": -2.57,
         "volatility": [
           {
-            "asset": "EUROSTOXX50",
+            "asset": "EuroStoxx50",
             "vol": 22.24
           },
           {
@@ -9138,15 +9136,15 @@
         ],
         "correlation": [
           {
-            "pair": "EUROSTOXX50,S&P500",
+            "pair": "EuroStoxx50 · S&P500",
             "rho": 0.5698
           },
           {
-            "pair": "EUROSTOXX50,KOSPI200",
+            "pair": "EuroStoxx50 · KOSPI200",
             "rho": 0.2313
           },
           {
-            "pair": "S&P500,KOSPI200",
+            "pair": "S&P500 · KOSPI200",
             "rho": 0.1754
           }
         ],
@@ -9187,7 +9185,7 @@
         "knockIn": 40,
         "knockInBasis": "종가",
         "annualRate": 14.2,
-        "totalRate": 42.6,
+        "docMaxRate": 42.6,
         "simulation": [
           {
             "label": "1차 조기상환",
@@ -9329,7 +9327,7 @@
         "underlyings": [
           "S&P500",
           "KOSPI200",
-          "NIKKEI225"
+          "Nikkei225"
         ],
         "issueSize": 10000000000,
         "offerStart": "2026-08-24",
@@ -9352,21 +9350,21 @@
             "vol": 40.52
           },
           {
-            "asset": "NIKKEI225",
+            "asset": "Nikkei225",
             "vol": 30.42
           }
         ],
         "correlation": [
           {
-            "pair": "S&P500,KOSPI200",
+            "pair": "S&P500 · KOSPI200",
             "rho": 0.1754
           },
           {
-            "pair": "S&P500,NIKKEI225",
+            "pair": "S&P500 · Nikkei225",
             "rho": 0.1876
           },
           {
-            "pair": "KOSPI200,NIKKEI225",
+            "pair": "KOSPI200 · Nikkei225",
             "rho": 0.7622
           }
         ],
@@ -9407,7 +9405,7 @@
         "knockIn": null,
         "knockInBasis": null,
         "annualRate": 15.6,
-        "totalRate": 46.8,
+        "docMaxRate": 46.8,
         "simulation": [
           {
             "label": "1차 조기상환",
@@ -9573,7 +9571,7 @@
         ],
         "correlation": [
           {
-            "pair": "KOSPI200,삼성전자 보통주",
+            "pair": "KOSPI200 · 삼성전자",
             "rho": 0.9557
           }
         ],
@@ -9614,7 +9612,7 @@
         "knockIn": 35,
         "knockInBasis": "종가",
         "annualRate": 20.5,
-        "totalRate": 61.5,
+        "docMaxRate": 61.5,
         "simulation": [
           {
             "label": "1차 조기상환",
@@ -9780,7 +9778,7 @@
         ],
         "correlation": [
           {
-            "pair": "삼성전자 보통주,SK하이닉스 보통주",
+            "pair": "삼성전자 · SK하이닉스",
             "rho": 0.8667
           }
         ],
@@ -9857,7 +9855,7 @@
         "knockIn": 25,
         "knockInBasis": "종가",
         "annualRate": 27.5,
-        "totalRate": 82.5,
+        "docMaxRate": 82.5,
         "simulation": [
           {
             "label": "1차 조기상환",
@@ -10059,7 +10057,7 @@
         ],
         "correlation": [
           {
-            "pair": "삼성전자 보통주,SK하이닉스 보통주",
+            "pair": "삼성전자 · SK하이닉스",
             "rho": 0.8667
           }
         ],
@@ -10100,7 +10098,7 @@
         "knockIn": 35,
         "knockInBasis": "종가",
         "annualRate": 30,
-        "totalRate": 90,
+        "docMaxRate": 90,
         "simulation": [
           {
             "label": "1차 조기상환",
@@ -10266,7 +10264,7 @@
         ],
         "correlation": [
           {
-            "pair": "삼성전자 보통주,SK하이닉스 보통주",
+            "pair": "삼성전자 · SK하이닉스",
             "rho": 0.8667
           }
         ],
@@ -10343,7 +10341,7 @@
         "knockIn": 30,
         "knockInBasis": "종가",
         "annualRate": 31.3,
-        "totalRate": 93.9,
+        "docMaxRate": 93.9,
         "simulation": [
           {
             "label": "1차 조기상환",
@@ -10545,7 +10543,7 @@
         ],
         "correlation": [
           {
-            "pair": "삼성전자 보통주,SK하이닉스 보통주",
+            "pair": "삼성전자 · SK하이닉스",
             "rho": 0.8667
           }
         ],
@@ -10586,7 +10584,7 @@
         "knockIn": 35,
         "knockInBasis": "종가",
         "annualRate": 35.2,
-        "totalRate": 105.6,
+        "docMaxRate": 105.6,
         "simulation": [
           {
             "label": "1차 조기상환",
@@ -10752,7 +10750,7 @@
         ],
         "correlation": [
           {
-            "pair": "삼성전자 보통주,SK하이닉스 보통주",
+            "pair": "삼성전자 · SK하이닉스",
             "rho": 0.8667
           }
         ],
@@ -10829,7 +10827,7 @@
         "knockIn": 35,
         "knockInBasis": "종가",
         "annualRate": 40,
-        "totalRate": 120,
+        "docMaxRate": 120,
         "simulation": [
           {
             "label": "1차 조기상환",
@@ -11007,7 +11005,7 @@
         "underlyings": [
           "KOSPI200",
           "HSCEI",
-          "NIKKEI225"
+          "Nikkei225"
         ],
         "issueSize": 10000000000,
         "offerStart": "2026-08-24",
@@ -11030,21 +11028,21 @@
             "vol": 26.19
           },
           {
-            "asset": "NIKKEI225",
+            "asset": "Nikkei225",
             "vol": 30.42
           }
         ],
         "correlation": [
           {
-            "pair": "KOSPI200,HSCEI",
+            "pair": "KOSPI200 · HSCEI",
             "rho": 0.1883
           },
           {
-            "pair": "KOSPI200,NIKKEI225",
+            "pair": "KOSPI200 · Nikkei225",
             "rho": 0.7622
           },
           {
-            "pair": "HSCEI,NIKKEI225",
+            "pair": "HSCEI · Nikkei225",
             "rho": 0.2766
           }
         ],
@@ -11085,7 +11083,7 @@
         "knockIn": 45,
         "knockInBasis": "종가",
         "annualRate": 16.6,
-        "totalRate": 49.8,
+        "docMaxRate": 49.8,
         "simulation": [
           {
             "label": "1차 조기상환",
@@ -11251,7 +11249,7 @@
         ],
         "correlation": [
           {
-            "pair": "삼성전자 보통주,SK하이닉스 보통주",
+            "pair": "삼성전자 · SK하이닉스",
             "rho": 0.8667
           }
         ],
@@ -11292,7 +11290,7 @@
         "knockIn": 20,
         "knockInBasis": "종가",
         "annualRate": 19.2,
-        "totalRate": 57.6,
+        "docMaxRate": 57.6,
         "simulation": [
           {
             "label": "1차 조기상환",
@@ -11458,7 +11456,7 @@
         ],
         "correlation": [
           {
-            "pair": "KOSPI200,SK하이닉스 보통주",
+            "pair": "KOSPI200 · SK하이닉스",
             "rho": 0.9374
           }
         ],
@@ -11535,7 +11533,7 @@
         "knockIn": 35,
         "knockInBasis": "종가",
         "annualRate": 24,
-        "totalRate": 72,
+        "docMaxRate": 72,
         "simulation": [
           {
             "label": "1차 조기상환",
@@ -11711,16 +11709,14 @@
         "riskGrade": 1,
         "principalProtected": false,
         "underlyings": [
-          "Applied Materials, Inc.(Applied Materials",
-          "AMAT UW Equity",
-          "Micron Technology Inc(Micron Technology",
-          "MU UW Equity)"
+          "어플라이드 머티어리얼즈",
+          "마이크론 테크놀로지"
         ],
         "issueSize": 10000000000,
         "offerStart": "2026-08-24",
         "offerEnd": "2026-08-28",
         "issueDate": "2026-08-31",
-        "maturityDate": null,
+        "maturityDate": "2029-08-31",
         "baseDate": "2026-08-31",
         "currency": "KRW",
         "faceValue": 10000,
@@ -11729,17 +11725,17 @@
         "fairValueGap": -22.32,
         "volatility": [
           {
-            "asset": "Applied Materials, Inc.",
+            "asset": "어플라이드 머티어리얼즈",
             "vol": 75.33
           },
           {
-            "asset": "Micron Technology Inc",
+            "asset": "마이크론 테크놀로지",
             "vol": 98.09
           }
         ],
         "correlation": [
           {
-            "pair": "Applied Materials, Inc.,Micron Technology Inc",
+            "pair": "어플라이드 머티어리얼즈 · Inc. · 마이크론 테크놀로지",
             "rho": 0.7352
           }
         ],
@@ -11780,7 +11776,7 @@
         "knockIn": 35,
         "knockInBasis": "종가",
         "annualRate": 30.2,
-        "totalRate": 90.6,
+        "docMaxRate": 90.6,
         "simulation": [
           {
             "label": "1차 조기상환",
@@ -11920,8 +11916,8 @@
         "riskGrade": 1,
         "principalProtected": false,
         "underlyings": [
-          "Micron Technology",
-          "Palantir Technologies Inc."
+          "마이크론 테크놀로지",
+          "팔란티어 테크"
         ],
         "issueSize": 10000000000,
         "offerStart": "2026-08-24",
@@ -11936,17 +11932,17 @@
         "fairValueGap": -31.66,
         "volatility": [
           {
-            "asset": "Micron Technology Inc",
+            "asset": "마이크론 테크놀로지",
             "vol": 98.09
           },
           {
-            "asset": "Palantir Technologies Inc. Class A",
+            "asset": "팔란티어 테크",
             "vol": 67.29
           }
         ],
         "correlation": [
           {
-            "pair": "Micron Technology Inc,Palantir Technologies Inc. Class A",
+            "pair": "마이크론 테크놀로지 · 팔란티어 테크",
             "rho": 0.0605
           }
         ],
@@ -11987,7 +11983,7 @@
         "knockIn": 25,
         "knockInBasis": "종가",
         "annualRate": 25,
-        "totalRate": 75,
+        "docMaxRate": 75,
         "simulation": [
           {
             "label": "1차 조기상환",
@@ -12128,7 +12124,7 @@
         "principalProtected": false,
         "underlyings": [
           "KOSPI200",
-          "Micron Technology"
+          "마이크론 테크놀로지"
         ],
         "issueSize": 10000000000,
         "offerStart": "2026-08-24",
@@ -12147,13 +12143,13 @@
             "vol": 40.52
           },
           {
-            "asset": "Micron Technology Inc",
+            "asset": "마이크론 테크놀로지",
             "vol": 98.09
           }
         ],
         "correlation": [
           {
-            "pair": "KOSPI200,Micron Technology Inc",
+            "pair": "KOSPI200 · 마이크론 테크놀로지",
             "rho": 0.3203
           }
         ],
@@ -12194,7 +12190,7 @@
         "knockIn": 35,
         "knockInBasis": "종가",
         "annualRate": 29,
-        "totalRate": 87,
+        "docMaxRate": 87,
         "simulation": [
           {
             "label": "1차 조기상환",
