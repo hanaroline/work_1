@@ -1,31 +1,30 @@
 #!/usr/bin/env node
 /**
- * 공시 원문(일괄신고추가서류)에서 회차별 조건·발행사 수익률 모의실험·이론가 변수를 뽑아
- * tools/discovery/ 에 남긴다.
+ * 마지막 판매 주간 회차를 찾고, 그 회차의 공시 원문(일괄신고추가서류)을 받아
+ * 조건·수익률 모의실험·이론가 변수를 tools/discovery/ 에 남긴다.
  *
- * 페이지의 과거 시뮬레이션은 우리가 종가로 계산한 값이라 발행사 수치와 다르다.
- * 설명서에는 2003년부터의 롤링 백테스트와 이론가 산출에 쓴 변동성·상관계수가 있어,
- * 그대로 옮겨오면 세일즈 자료로 방어 가능한 숫자가 된다.
+ * 두 단계로 나뉜다.
+ *  1) 미래에셋 목록 API 를 진행상태 코드별로 두드려 "지금 청약중" 말고 "직전에 팔린" 회차까지 본다.
+ *     (기본 수집기는 prgs_scd=01 = 청약중만 가져오므로 청약이 없는 주에는 빈손이다.)
+ *  2) DART 공시검색에서 미래에셋증권 일괄신고추가서류 접수번호를 긁고, 뷰어 문서를 받아
+ *     회차 번호가 맞는 문서를 골라 표를 뜬다.
  *
- * 개발 컨테이너에서는 KIND·DART 가 egress 차단이라 러너에서만 돈다.
+ * 개발 컨테이너에서는 세 사이트 모두 egress 차단이라 러너에서만 돈다.
  */
 import { writeFile, mkdir } from 'node:fs/promises';
 
 const UA = 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 Chrome/141 Safari/537.36';
 const OUT = 'tools/discovery';
-const SOURCES = [
-  { id: '20260605001024', label: '2026-06-05 일괄신고추가서류 (제37821~37839회)',
-    url: 'https://kind.krx.co.kr/external/2026/06/05/000396/20260605001024/10131.htm' },
-  { id: '20260730001210', label: '2026-07-30 투자설명서',
-    url: 'https://kind.krx.co.kr/external/2026/07/30/000510/20260730001210/10603.htm' },
-];
+const MAS = 'https://securities.miraeasset.com';
+const DART = 'https://dart.fss.or.kr';
+
+await mkdir(OUT, { recursive: true });
 
 const decode = (buf) => {
-  const probe = buf.subarray(0, 2000).toString('latin1').toLowerCase();
+  const probe = buf.subarray(0, 3000).toString('latin1').toLowerCase();
   return new TextDecoder(/euc-kr|ks_c_5601/.test(probe) ? 'euc-kr' : 'utf-8').decode(buf);
 };
 
-/** 표 구조를 살려 텍스트로. 셀은 \t, 행은 \n. */
 const toText = (html) => html
   .replace(/<(script|style)[\s\S]*?<\/\1>/gi, ' ')
   .replace(/<\/tr>/gi, '\n').replace(/<\/(p|div|h\d|table)>/gi, '\n\n')
@@ -34,55 +33,110 @@ const toText = (html) => html
   .replace(/&nbsp;/g, ' ').replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>')
   .replace(/[ \t]*\n/g, '\n').replace(/\n{3,}/g, '\n\n');
 
-/** needle 이 나오는 구간을 앞뒤로 잘라 모은다. */
-const slices = (text, needle, before, after, max) => {
-  const found = [];
-  let from = 0;
-  while (found.length < max) {
-    const i = text.indexOf(needle, from);
-    if (i < 0) break;
-    found.push(text.slice(Math.max(0, i - before), i + after));
-    from = i + after;
-  }
-  return found;
+const grab = async (url, opts = {}) => {
+  const r = await fetch(url, {
+    headers: { 'User-Agent': UA, ...(opts.body ? { 'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8' } : {}), ...(opts.headers || {}) },
+    method: opts.body ? 'POST' : 'GET',
+    body: opts.body,
+    signal: AbortSignal.timeout(90000),
+  });
+  const buf = Buffer.from(await r.arrayBuffer());
+  return { status: r.status, buf, text: decode(buf) };
 };
 
-await mkdir(OUT, { recursive: true });
-
-for (const src of SOURCES) {
-  console.log(`\n### ${src.label}`);
-  let text;
+// ── 1. 미래에셋 목록 — 진행상태별로 훑어 마지막 판매 주간을 찾는다 ────────────
+console.log('## 1. 미래에셋 상품 목록 (진행상태 코드별)');
+const listing = {};
+for (const code of ['01', '02', '03', '04', '00', '']) {
   try {
-    const r = await fetch(src.url, { headers: { 'User-Agent': UA }, signal: AbortSignal.timeout(90000) });
-    const buf = Buffer.from(await r.arrayBuffer());
-    console.log(`  HTTP ${r.status} / ${(buf.length / 1024 / 1024).toFixed(2)}MB`);
-    if (!r.ok) continue;
-    text = toText(decode(buf));
+    const body = `omkt_drvs_tcd=0&dlbr_term_yn=0&itm_nm=&prgs_scd=${code}&qry_sort_tp=0&qry_sort_sqn=0&next_key=`;
+    const { status, text } = await grab(`${MAS}/hks/hks4022/a01.json`, { body, headers: { Referer: `${MAS}/hks/hks4022/n01.do` } });
+    let rows = [];
+    try { rows = JSON.parse(text).grid01 || []; } catch { /* JSON 아님 */ }
+    const periods = {};
+    for (const r of rows) {
+      const k = `${r.apy_strt_dt || '?'}~${r.apy_end_dt || '?'}`;
+      (periods[k] = periods[k] || []).push(r.itm_nm);
+    }
+    listing[code] = {
+      status, count: rows.length,
+      periods: Object.fromEntries(Object.entries(periods).map(([k, v]) => [k, v.length])),
+      sample: rows.slice(0, 3).map((r) => ({ nm: r.itm_nm, stat: r.prgs_stat_nm, from: r.apy_strt_dt, to: r.apy_end_dt })),
+    };
+    console.log(`  prgs_scd=${code || '(빈값)'}: HTTP ${status}, ${rows.length}건`,
+      rows.length ? JSON.stringify(listing[code].periods) : '');
   } catch (e) {
-    console.log(`  실패: ${e.name} ${e.message}`);
-    continue;
-  }
-
-  const series = [...new Set(text.match(/제\s?\d{4,5}\s?회/g) || [])];
-  const extract = {
-    source: src.url,
-    fetchedAt: new Date().toISOString(),
-    chars: text.length,
-    seriesMentioned: series.slice(0, 60),
-    // 발행사 롤링 백테스트
-    simulation: slices(text, '모의실험', 400, 3000, 4),
-    // 이론가 산출 변수
-    volatility: slices(text, '변동성', 300, 1500, 3),
-    correlation: slices(text, '상관계수', 300, 1500, 3),
-    fairValue: slices(text, '공정가액', 300, 1200, 3),
-    // 회차별 조건표
-    terms: slices(text, '자동조기상환', 500, 2000, 3),
-    earlyRedeem: slices(text, '중도상환', 300, 1500, 2),
-  };
-  await writeFile(`${OUT}/prospectus_${src.id}.json`, JSON.stringify(extract, null, 2));
-
-  console.log(`  텍스트 ${text.length}자 / 회차표기 ${series.length}종: ${series.slice(0, 25).join(' ')}`);
-  for (const [k, v] of Object.entries(extract)) {
-    if (Array.isArray(v) && k !== 'seriesMentioned') console.log(`  ${k}: ${v.length}건`);
+    console.log(`  prgs_scd=${code || '(빈값)'}: 실패 ${e.name} ${e.message}`);
   }
 }
+await writeFile(`${OUT}/offer_states.json`, JSON.stringify(listing, null, 2));
+
+// ── 2. DART 공시검색 → 접수번호 ─────────────────────────────────────────────
+console.log('\n## 2. DART 일괄신고추가서류 접수번호');
+const search = await grab(`${DART}/dsab001/search.ax`, {
+  body: 'currentPage=1&maxResults=100&textCrpNm=미래에셋증권&startDate=20260720&endDate=20260821',
+  headers: { Referer: `${DART}/dsab001/main.do` },
+});
+const filings = [];
+for (const tr of search.text.split(/<tr[^>]*>/i).slice(1)) {
+  const rcp = (tr.match(/rcpNo=(\d{14})/) || [])[1];
+  if (!rcp) continue;
+  const plain = toText(tr).replace(/\s+/g, ' ').trim();
+  const date = (plain.match(/(\d{4}\.\d{2}\.\d{2})/) || [])[1];
+  const name = (plain.match(/(일괄신고추가서류|투자설명서[^\s]*|증권신고서[^\s]*)/) || [])[1];
+  if (name) filings.push({ rcpNo: rcp, date, name, row: plain.slice(0, 120) });
+}
+const uniq = [...new Map(filings.map((f) => [f.rcpNo, f])).values()]
+  .sort((a, b) => (b.date || '').localeCompare(a.date || ''));
+console.log(`  ${uniq.length}건`);
+uniq.slice(0, 20).forEach((f) => console.log(`  ${f.date} ${f.rcpNo} ${f.name}`));
+await writeFile(`${OUT}/dart_filings.json`, JSON.stringify(uniq, null, 2));
+
+// ── 3. 문서 본문 받아 회차 확인 ─────────────────────────────────────────────
+console.log('\n## 3. 문서 본문');
+const wanted = uniq.filter((f) => f.name === '일괄신고추가서류').slice(0, 12);
+const docs = [];
+for (const f of wanted) {
+  try {
+    const main = await grab(`${DART}/dsaf001/main.do?rcpNo=${f.rcpNo}`);
+    // 뷰어 파라미터는 main.do 안의 스크립트에 들어 있다
+    const dcm = (main.text.match(/dcmNo["'\s:=]+(\d+)/) || main.text.match(/viewDoc\(\s*'[^']*'\s*,\s*'(\d+)'/) || [])[1];
+    if (!dcm) { console.log(`  ${f.rcpNo}: dcmNo 없음`); continue; }
+    const doc = await grab(`${DART}/report/viewer.do?rcpNo=${f.rcpNo}&dcmNo=${dcm}&eleId=0&offset=0&length=0&dtd=dart3.xsd`);
+    const text = toText(doc.text);
+    const series = [...new Set(text.match(/제\s?\d{4,5}\s?회/g) || [])];
+    const nums = series.map((s) => Number(s.replace(/\D/g, ''))).filter((n) => n > 30000);
+    const range = nums.length ? `${Math.min(...nums)}~${Math.max(...nums)}` : '–';
+    console.log(`  ${f.date} ${f.rcpNo} dcm=${dcm} ${(doc.buf.length / 1024 / 1024).toFixed(2)}MB 회차 ${series.length}종 (${range})`);
+    docs.push({ ...f, dcmNo: dcm, chars: text.length, series, range });
+    // 8월 발행 ELS 회차가 들어 있으면 표를 떠 둔다
+    if (nums.some((n) => n >= 37900 && n <= 38100)) {
+      const slices = (needle, before, after, max) => {
+        const found = []; let from = 0;
+        while (found.length < max) {
+          const i = text.indexOf(needle, from);
+          if (i < 0) break;
+          found.push(text.slice(Math.max(0, i - before), i + after));
+          from = i + after;
+        }
+        return found;
+      };
+      await writeFile(`${OUT}/prospectus_${f.rcpNo}.json`, JSON.stringify({
+        rcpNo: f.rcpNo, date: f.date, source: `${DART}/dsaf001/main.do?rcpNo=${f.rcpNo}`,
+        fetchedAt: new Date().toISOString(), chars: text.length, series,
+        simulation: slices('모의실험', 500, 3200, 25),
+        volatility: slices('변동성', 400, 2000, 6),
+        correlation: slices('상관계수', 400, 2000, 6),
+        fairValue: slices('공정가액', 400, 1500, 6),
+        terms: slices('자동조기상환 발생조건', 600, 2500, 25),
+        offer: slices('청약기간', 300, 900, 4),
+        maxLoss: slices('최대손실액', 300, 2200, 25),
+      }, null, 2));
+      console.log(`    -> prospectus_${f.rcpNo}.json 저장`);
+    }
+  } catch (e) {
+    console.log(`  ${f.rcpNo}: 실패 ${e.name} ${e.message}`);
+  }
+}
+await writeFile(`${OUT}/dart_docs.json`, JSON.stringify(docs, null, 2));
+console.log(`\n완료 — 문서 ${docs.length}건 확인`);

@@ -1,4 +1,4 @@
-name: ELS 투자설명서 경로 탐색
+name: ELS 공시 원문 수집
 
 on:
   workflow_dispatch:
@@ -6,9 +6,7 @@ on:
     branches:
       - 'claude/els-**'
     paths:
-      - 'scripts/probe_prospectus.mjs'
       - 'scripts/fetch_prospectus.mjs'
-      - 'scripts/find_prospectus.mjs'
       - '.github/workflows/els-prospectus-probe.yml'
 
 permissions:
@@ -22,13 +20,12 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
-      - run: node scripts/find_prospectus.mjs
       - run: node scripts/fetch_prospectus.mjs
       - name: 추출 결과 커밋
         run: |
           git config user.name  "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add tools/discovery/prospectus_*.json
+          git add tools/discovery/
           if git diff --cached --quiet; then
             echo "변경 없음"
           else
