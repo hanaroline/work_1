@@ -1,0 +1,598 @@
+<title>ELS 주간 제안서</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --orange:#F58220; --orange-a:#CB6015; --soft:#FAB072; --blue:#043B72;
+  --ink:#1A1A1A; --body:#3D3D3D; --muted:#6C6C6C; --faint:#84888B;
+  --hair:#CDCECB; --hair-s:#E5E4E1; --surf:#F7F8FA; --tint:#ECEFF4; --paper:#FFFFFF;
+  --ok:#2E8540; --warn:#D4A017; --bad:#C62828;
+  --kr:'Noto Sans KR','Spoqa Han Sans Neo','Malgun Gothic',sans-serif;
+  --num:'Inter','Noto Sans KR',sans-serif;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--paper);color:var(--body);font-family:var(--kr);font-size:17px;line-height:1.65;
+  word-break:keep-all;-webkit-font-smoothing:antialiased}
+.num,.rnum,table td.num,.stv{font-family:var(--num);font-variant-numeric:tabular-nums}
+h1,h2,h3,h4{color:var(--ink);margin:0;text-wrap:balance}
+b{font-weight:700;color:var(--ink)}
+.wrap{max-width:1080px;margin:0 auto;padding:0 28px}
+
+/* ── 표지 ─────────────────────────────────────── */
+.mast{background:var(--orange);color:#fff;padding:40px 0 34px;margin-bottom:44px}
+.mast .wrap{display:flex;flex-wrap:wrap;gap:24px;align-items:flex-end;justify-content:space-between}
+.mast .tag{font-family:var(--num);font-size:13px;letter-spacing:1.4px;font-weight:600;opacity:.9;margin:0 0 8px}
+.mast h1{color:#fff;font-size:38px;font-weight:700;line-height:1.18;letter-spacing:-.5px}
+.mast .sub{margin:10px 0 0;font-size:17px;opacity:.94}
+.offer{background:#fff;color:var(--ink);padding:14px 20px;min-width:236px}
+.offer dt{font-size:13px;color:var(--muted);letter-spacing:.4px;margin-bottom:2px}
+.offer dd{margin:0 0 10px;font-family:var(--num);font-size:19px;font-weight:600;color:var(--ink)}
+.offer dd:last-child{margin-bottom:0}
+
+/* ── 섹션 ─────────────────────────────────────── */
+section{margin-bottom:56px}
+.rule{height:1px;background:var(--orange);margin-bottom:16px}
+.stitle{font-size:25px;font-weight:700;letter-spacing:-.2px}
+.slead{margin:8px 0 26px;color:var(--muted);font-size:16px;max-width:74ch}
+
+/* ── 요약 카드 ─────────────────────────────────── */
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:1px;background:var(--hair);
+  border:1px solid var(--hair);margin-bottom:26px}
+.stat{background:var(--paper);padding:18px 20px}
+.stat span{display:block;font-size:14px;color:var(--muted);letter-spacing:.4px}
+.stat b{display:block;font-family:var(--num);font-size:31px;font-weight:700;line-height:1.15;margin-top:5px;color:var(--blue)}
+.stat small{display:block;font-size:14px;color:var(--faint);margin-top:4px}
+.keys{list-style:none;padding:0;margin:0;display:grid;gap:12px}
+.keys li{padding-left:18px;position:relative;font-size:17px}
+.keys li::before{content:'';position:absolute;left:0;top:11px;width:8px;height:2px;background:var(--orange)}
+
+/* ── 추천 카드 ─────────────────────────────────── */
+.recs{display:grid;grid-template-columns:minmax(0,1fr);gap:24px}
+.rec{border:1px solid var(--hair);border-top:3px solid var(--orange);padding:24px 26px 22px;position:relative;
+  min-width:0;break-inside:avoid}
+.recno{position:absolute;top:-3px;right:0;background:var(--orange);color:#fff;font-family:var(--num);
+  font-size:15px;font-weight:700;width:30px;height:28px;display:grid;place-items:center}
+.rechead{margin-bottom:16px}
+.reclabel{margin:0 0 6px;font-size:14px;font-weight:500;color:var(--orange-a);letter-spacing:.4px}
+.rec h3{font-size:24px;font-weight:700;display:flex;align-items:center;gap:9px;flex-wrap:wrap}
+.recund{margin:6px 0 0;color:var(--muted);font-size:16px}
+.sep{color:var(--hair)}
+.tier{font-family:var(--kr);font-size:13px;font-weight:500;padding:3px 9px;border-radius:2px;letter-spacing:.3px}
+.t0{background:#E7F1E9;color:var(--ok)}
+.t1{background:#FBF2DC;color:#8A6A0B}
+.t2{background:#FAE7E7;color:var(--bad)}
+.fx{background:var(--tint);color:var(--blue)}
+.recrate{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;padding:14px 0 16px;border-top:1px solid var(--hair-s);
+  border-bottom:1px solid var(--hair-s)}
+.rlabel{font-size:14px;color:var(--muted);letter-spacing:.5px}
+.rnum{font-size:46px;font-weight:700;color:var(--orange);line-height:1}
+.rnum .pct{font-size:26px;margin-left:2px}
+.rsub{font-size:16px;color:var(--body);margin-left:auto}
+.how{list-style:none;padding:0;margin:18px 0 20px;display:grid;gap:10px}
+.how li{display:grid;grid-template-columns:64px minmax(0,1fr);gap:12px;align-items:baseline;font-size:16px}
+.hk{font-size:13px;font-weight:500;color:#fff;background:var(--blue);padding:2px 0;text-align:center;
+  letter-spacing:.5px;align-self:start;line-height:1.6}
+.stcap{margin:0;padding-top:14px;border-top:1px dashed var(--hair);font-size:13px;color:var(--muted)}
+.stairs{display:flex;align-items:flex-end;gap:6px;padding:8px 0 4px;min-width:0;overflow-x:auto}
+.st{flex:1 1 0;min-width:44px;display:flex;flex-direction:column;align-items:center;gap:4px}
+.stbar{width:100%;background:var(--soft);border-top:2px solid var(--orange)}
+.stv{font-size:13px;font-weight:600;color:var(--ink)}
+.stn{font-family:var(--num);font-size:11px;color:var(--faint)}
+.recfoot{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:1px;background:var(--hair-s);
+  border:1px solid var(--hair-s);margin-top:16px}
+.rf{background:var(--surf);padding:12px 14px}
+.rf span{display:block;font-size:13px;color:var(--muted)}
+.rf b{display:block;font-family:var(--num);font-size:20px;margin-top:2px}
+.rf small{display:block;font-size:13px;color:var(--faint);margin-top:2px}
+.recwhy{margin:16px 0 0;font-size:16px;background:var(--tint);padding:12px 16px;border-left:3px solid var(--blue)}
+
+/* ── 표 ───────────────────────────────────────── */
+.tw{overflow-x:auto;border:1px solid var(--hair)}
+table{border-collapse:collapse;width:100%;min-width:900px;font-size:15px}
+th{background:var(--soft);color:var(--ink);font-weight:700;text-align:left;padding:11px 12px;white-space:nowrap;
+  border-bottom:1px solid var(--hair)}
+th.num,td.num{text-align:right}
+td{padding:10px 12px;border-bottom:1px solid var(--hair-s);white-space:nowrap}
+tbody tr:last-child td{border-bottom:0}
+tbody tr:hover{background:var(--surf)}
+.code{font-family:var(--num);font-weight:600;color:var(--ink)}
+.und{white-space:normal;min-width:200px}
+.nk{font-size:12px;color:var(--blue);background:var(--tint);padding:1px 5px;margin-left:5px;white-space:nowrap}
+.rate{font-weight:700;color:var(--orange-a)}
+.fxs{font-family:var(--num);font-size:12px;color:var(--blue);background:var(--tint);padding:1px 5px}
+td.warn{color:#8A6A0B}
+td.bad{color:var(--bad);font-weight:600}
+.tnote{margin:10px 0 0;font-size:14px;color:var(--faint)}
+
+/* ── 주의 ─────────────────────────────────────── */
+.caus{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:18px}
+.cau{border:1px solid var(--hair);border-left:3px solid var(--bad);padding:16px 18px;break-inside:avoid}
+.cau h4{font-size:18px;font-weight:700;display:flex;gap:8px;flex-wrap:wrap;align-items:baseline}
+.cund{font-size:15px;font-weight:400;color:var(--muted)}
+.crate{font-family:var(--num);font-size:15px;color:var(--orange-a);margin-left:auto}
+.cau ul{margin:10px 0 0;padding-left:17px;display:grid;gap:6px;font-size:15px}
+
+/* ── 확인 사항 ─────────────────────────────────── */
+.checks{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:1px;background:var(--hair);
+  border:1px solid var(--hair)}
+.chk{background:var(--paper);padding:18px 20px;break-inside:avoid}
+.chk h4{font-size:17px;font-weight:700;margin-bottom:6px}
+.chk p{margin:0;font-size:15px;color:var(--body)}
+.script{border:1px solid var(--hair);border-top:3px solid var(--blue);padding:20px 24px;margin-top:26px}
+.script h4{font-size:18px;margin-bottom:12px}
+.script ol{margin:0;padding-left:20px;display:grid;gap:9px;font-size:16px}
+
+footer{border-top:1px solid var(--hair);margin-top:56px;padding:22px 0 46px;font-size:14px;color:var(--faint)}
+footer p{margin:0 0 5px}
+footer a{color:var(--muted)}
+
+@media (max-width:760px){
+  body{font-size:16px}
+  .wrap{padding:0 18px}
+  .mast h1{font-size:29px}
+  .mast .wrap{align-items:stretch}
+  .offer{min-width:0}
+  .stitle{font-size:22px}
+  .rec{padding:20px 18px}
+  .rnum{font-size:38px}
+  .rsub{margin-left:0;flex-basis:100%}
+  .how li{grid-template-columns:1fr;gap:3px}
+  .hk{justify-self:start;padding:2px 10px}
+  section{margin-bottom:44px}
+}
+@media print{
+  body{font-size:10pt;line-height:1.42;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  .wrap{max-width:100%;padding:0}
+  .mast{padding:16px 0 14px;margin-bottom:18px}
+  .mast h1{font-size:24pt}
+  .mast .sub,.offer dd{font-size:10pt}
+  section{margin-bottom:16px}
+  .stitle{font-size:15pt}
+  .slead{margin-bottom:12px;font-size:9.5pt}
+  .stat b{font-size:19pt}
+  .page-break{break-before:page}
+  .rec,.cau,.chk,.script,.recs>*,table{break-inside:avoid}
+  .recs{gap:12px}
+  .rec{padding:14px 16px}
+  .rec h3{font-size:14pt}
+  .rnum{font-size:26pt}
+  .how{margin:12px 0 14px;gap:6px}
+  .rf b{font-size:12pt}
+  .recwhy{margin-top:10px}
+  table{font-size:9pt;min-width:0}
+  th,td{padding:5px 7px}
+  .tw{overflow:visible}
+  .caus,.checks{gap:10px}
+  footer{margin-top:18px;padding:12px 0 0;font-size:8.5pt}
+  a{text-decoration:none}
+}
+</style>
+
+<header class="mast">
+  <div class="wrap">
+    <div>
+      <p class="tag">MIRAE ASSET · ELS WEEKLY</p>
+      <h1>제38031~38047회 ELS 제안서</h1>
+      <p class="sub">투자설명서(일괄신고추가서류) 2026.08.21 공시 원문 기준 · 전 17종 분석</p>
+    </div>
+    <dl class="offer">
+      <dt>청약기간</dt><dd>2026.08.24 ~ 2026.08.28</dd>
+      <dt>발행일 / 만기</dt><dd>2026.08.31 / 2029.08.31</dd>
+    </dl>
+  </div>
+</header>
+
+<main class="wrap">
+
+<section>
+  <div class="rule"></div>
+  <h2 class="stitle">이번 회차 한눈에</h2>
+  <p class="slead">이번 주 청약하는 17종을 조건·가격·과거 성과 세 가지로 나눠 봤습니다. 아래 숫자는 모두 투자설명서 원문에서 뽑았습니다.</p>
+  <div class="stats">
+    <div class="stat"><span>상품 수</span><b>17종</b><small>지수형 6 · 혼합 3 · 종목형 8</small></div>
+    <div class="stat"><span>연 수익률</span><b>11.5~40.0%</b><small>최고 제38041회</small></div>
+    <div class="stat"><span>만기</span><b>36개월</b><small>2029.08.31 만기</small></div>
+    <div class="stat"><span>등급 분포</span><b>7 / 6 / 4</b><small>방어적 / 중간 / 공격적</small></div>
+  </div>
+  <ul class="keys">
+    <li>모두 <b>원금비보장 1등급(매우높은위험)</b> 상품입니다. 아래 등급은 안전하다는 뜻이 아니라 <b>17종끼리 견준 순서</b>입니다.</li>
+    <li>같은 1만원이라도 상품마다 <b>출발 가치가 다릅니다.</b> 가장 좋은 제38044회는 10,013원, 가장 나쁜 제38046회는 6,834원입니다. 이 차이는 홈페이지 상품 목록에는 나오지 않습니다.</li>
+    <li>발행사가 이론가를 계산할 때 쓴 변동성은 <b>마이크론 테크놀로지 98%</b>, <b>어플라이드 머티어리얼즈 75%</b> 순입니다. 변동성이 높을수록 수익률도 높지만 그만큼 흔들린다는 뜻입니다.</li>
+  </ul>
+</section>
+
+<section class="page-break">
+  <div class="rule"></div>
+  <h2 class="stitle">추천 3종</h2>
+  <p class="slead">고객 성향에 따라 한 자리씩 골랐습니다. 각 상품이 어떻게 돈이 되는지, 어떤 경우에 손해가 나는지를 그대로 적었습니다.</p>
+  <div class="recs">
+      <article class="rec">
+        <div class="recno">1</div>
+        <div class="rechead">
+          <p class="reclabel">원금 방어를 먼저 보는 분</p>
+          <h3>제38044회 <span class="tier t0">방어적</span></h3>
+          <p class="recund">KOSPI200 · SK하이닉스 <span class="sep">·</span> 혼합형 <span class="sep">·</span> 36개월</p>
+        </div>
+        <div class="recrate">
+          <span class="rlabel">연 수익률</span>
+          <span class="rnum">24.0<span class="pct">%</span></span>
+          <span class="rsub">1만원 → 3개월 뒤 10,600원</span>
+        </div>
+        <ul class="how">
+          <li><span class="hk">판정</span><span>KOSPI200 · SK하이닉스 중 <b>더 많이 떨어진 하나</b>로 판정합니다.</span></li>
+          <li><span class="hk">조기상환</span><span>3개월마다 확인해서 처음 가격의 <b>75% 이상</b>(-25% 이내)이면 그 자리에서 끝나고 1만원이 <b>10,600원</b>이 됩니다.</span></li>
+          <li><span class="hk">원금</span><span>만기까지 한 번도 <b>35%</b>(-65%) 아래로 종가가 내려간 적이 없으면, 마지막에 얼마든 원금과 이자를 다 받습니다.</span></li>
+          <li><span class="hk">손실</span><span>35% 아래를 밟은 적이 있고 만기에도 65% 미만이면, 떨어진 만큼 그대로 손실입니다.</span></li>
+        </ul>
+        <p class="stcap">조기상환 조건 — 3개월마다 확인하며 뒤로 갈수록 낮아집니다 (75% → 65%)</p>
+      <div class="stairs" role="img" aria-label="3개월마다 확인하며 조기상환 조건이 75%에서 65%로 낮아집니다">
+        <div class="st"><div class="stbar" style="height:64px"></div><span class="stv">75%</span><span class="stn">3개월</span></div>
+        <div class="st"><div class="stbar" style="height:64px"></div><span class="stv">75%</span><span class="stn">6개월</span></div>
+        <div class="st"><div class="stbar" style="height:64px"></div><span class="stv">75%</span><span class="stn">9개월</span></div>
+        <div class="st"><div class="stbar" style="height:64px"></div><span class="stv">75%</span><span class="stn">12개월</span></div>
+        <div class="st"><div class="stbar" style="height:64px"></div><span class="stv">75%</span><span class="stn">15개월</span></div>
+        <div class="st"><div class="stbar" style="height:64px"></div><span class="stv">75%</span><span class="stn">18개월</span></div>
+        <div class="st"><div class="stbar" style="height:64px"></div><span class="stv">75%</span><span class="stn">21개월</span></div>
+        <div class="st"><div class="stbar" style="height:64px"></div><span class="stv">75%</span><span class="stn">24개월</span></div>
+        <div class="st"><div class="stbar" style="height:43px"></div><span class="stv">70%</span><span class="stn">27개월</span></div>
+        <div class="st"><div class="stbar" style="height:43px"></div><span class="stv">70%</span><span class="stn">30개월</span></div>
+        <div class="st"><div class="stbar" style="height:43px"></div><span class="stv">70%</span><span class="stn">33개월</span></div>
+        <div class="st"><div class="stbar" style="height:22px"></div><span class="stv">65%</span><span class="stn">36개월</span></div>
+      </div>
+        <div class="recfoot">
+          <div class="rf"><span>최근 10년(2016년~) 최저점</span><b>51%</b><small>원금 지키는 선 35%까지 +16%p</small></div>
+          <div class="rf"><span>발행사 20년 모의실험</span><b>손실 0.06%</b><small>첫 회 조기상환 95%</small></div>
+          <div class="rf"><span>1만원의 출발 가치</span><b>10,013원</b><small>공정가액 대비 +0.13%</small></div>
+        </div>
+        <p class="recwhy"><b>추천 이유</b> 이 회차에서 가장 느슨한 조건을 가진 축에 속하면서, 그 안에서는 수익률이 가장 높습니다.</p>
+      </article>
+      <article class="rec">
+        <div class="recno">2</div>
+        <div class="rechead">
+          <p class="reclabel">수익과 안정을 함께 보는 분</p>
+          <h3>제38040회 <span class="tier t1">중간</span></h3>
+          <p class="recund">삼성전자 · SK하이닉스 <span class="sep">·</span> 종목형 <span class="sep">·</span> 36개월</p>
+        </div>
+        <div class="recrate">
+          <span class="rlabel">연 수익률</span>
+          <span class="rnum">35.2<span class="pct">%</span></span>
+          <span class="rsub">1만원 → 6개월 뒤 11,760원</span>
+        </div>
+        <ul class="how">
+          <li><span class="hk">판정</span><span>삼성전자 · SK하이닉스 중 <b>더 많이 떨어진 하나</b>로 판정합니다.</span></li>
+          <li><span class="hk">조기상환</span><span>6개월마다 확인해서 처음 가격의 <b>85% 이상</b>(-15% 이내)이면 그 자리에서 끝나고 1만원이 <b>11,760원</b>이 됩니다.</span></li>
+          <li><span class="hk">원금</span><span>만기까지 한 번도 <b>35%</b>(-65%) 아래로 종가가 내려간 적이 없으면, 마지막에 얼마든 원금과 이자를 다 받습니다.</span></li>
+          <li><span class="hk">손실</span><span>35% 아래를 밟은 적이 있고 만기에도 70% 미만이면, 떨어진 만큼 그대로 손실입니다.</span></li>
+        </ul>
+        <p class="stcap">조기상환 조건 — 6개월마다 확인하며 뒤로 갈수록 낮아집니다 (85% → 70%)</p>
+      <div class="stairs" role="img" aria-label="6개월마다 확인하며 조기상환 조건이 85%에서 70%로 낮아집니다">
+        <div class="st"><div class="stbar" style="height:64px"></div><span class="stv">85%</span><span class="stn">6개월</span></div>
+        <div class="st"><div class="stbar" style="height:64px"></div><span class="stv">85%</span><span class="stn">12개월</span></div>
+        <div class="st"><div class="stbar" style="height:64px"></div><span class="stv">85%</span><span class="stn">18개월</span></div>
+        <div class="st"><div class="stbar" style="height:50px"></div><span class="stv">80%</span><span class="stn">24개월</span></div>
+        <div class="st"><div class="stbar" style="height:36px"></div><span class="stv">75%</span><span class="stn">30개월</span></div>
+        <div class="st"><div class="stbar" style="height:22px"></div><span class="stv">70%</span><span class="stn">36개월</span></div>
+      </div>
+        <div class="recfoot">
+          <div class="rf"><span>최근 10년(2016년~) 최저점</span><b>51%</b><small>원금 지키는 선 35%까지 +16%p</small></div>
+          <div class="rf"><span>발행사 20년 모의실험</span><b>손실 1.36%</b><small>첫 회 조기상환 78%</small></div>
+          <div class="rf"><span>1만원의 출발 가치</span><b>9,930원</b><small>공정가액 대비 -0.70%</small></div>
+        </div>
+        <p class="recwhy"><b>추천 이유</b> 조건이 한 단계 빡빡해진 대신 수익률이 크게 올라가는 구간입니다.</p>
+      </article>
+      <article class="rec">
+        <div class="recno">3</div>
+        <div class="rechead">
+          <p class="reclabel">수익률을 우선하는 분</p>
+          <h3>제38041회 <span class="tier t1">중간</span><span class="tier fx">USD</span></h3>
+          <p class="recund">삼성전자 · SK하이닉스 <span class="sep">·</span> 종목형 <span class="sep">·</span> 36개월</p>
+        </div>
+        <div class="recrate">
+          <span class="rlabel">연 수익률</span>
+          <span class="rnum">40.0<span class="pct">%</span></span>
+          <span class="rsub">1만원 → 3개월 뒤 11,000원</span>
+        </div>
+        <ul class="how">
+          <li><span class="hk">판정</span><span>삼성전자 · SK하이닉스 중 <b>더 많이 떨어진 하나</b>로 판정합니다.</span></li>
+          <li><span class="hk">조기상환</span><span>3개월마다 확인해서 처음 가격의 <b>85% 이상</b>(-15% 이내)이면 그 자리에서 끝나고 1만원이 <b>11,000원</b>이 됩니다.</span></li>
+          <li><span class="hk">원금</span><span>만기까지 한 번도 <b>35%</b>(-65%) 아래로 종가가 내려간 적이 없으면, 마지막에 얼마든 원금과 이자를 다 받습니다.</span></li>
+          <li><span class="hk">손실</span><span>35% 아래를 밟은 적이 있고 만기에도 70% 미만이면, 떨어진 만큼 그대로 손실입니다.</span></li>
+        </ul>
+        <p class="stcap">조기상환 조건 — 3개월마다 확인하며 뒤로 갈수록 낮아집니다 (85% → 70%)</p>
+      <div class="stairs" role="img" aria-label="3개월마다 확인하며 조기상환 조건이 85%에서 70%로 낮아집니다">
+        <div class="st"><div class="stbar" style="height:64px"></div><span class="stv">85%</span><span class="stn">3개월</span></div>
+        <div class="st"><div class="stbar" style="height:64px"></div><span class="stv">85%</span><span class="stn">6개월</span></div>
+        <div class="st"><div class="stbar" style="height:64px"></div><span class="stv">85%</span><span class="stn">9개월</span></div>
+        <div class="st"><div class="stbar" style="height:64px"></div><span class="stv">85%</span><span class="stn">12개월</span></div>
+        <div class="st"><div class="stbar" style="height:64px"></div><span class="stv">85%</span><span class="stn">15개월</span></div>
+        <div class="st"><div class="stbar" style="height:64px"></div><span class="stv">85%</span><span class="stn">18개월</span></div>
+        <div class="st"><div class="stbar" style="height:64px"></div><span class="stv">85%</span><span class="stn">21개월</span></div>
+        <div class="st"><div class="stbar" style="height:64px"></div><span class="stv">85%</span><span class="stn">24개월</span></div>
+        <div class="st"><div class="stbar" style="height:64px"></div><span class="stv">85%</span><span class="stn">27개월</span></div>
+        <div class="st"><div class="stbar" style="height:50px"></div><span class="stv">80%</span><span class="stn">30개월</span></div>
+        <div class="st"><div class="stbar" style="height:36px"></div><span class="stv">75%</span><span class="stn">33개월</span></div>
+        <div class="st"><div class="stbar" style="height:22px"></div><span class="stv">70%</span><span class="stn">36개월</span></div>
+      </div>
+        <div class="recfoot">
+          <div class="rf"><span>최근 10년(2016년~) 최저점</span><b>51%</b><small>원금 지키는 선 35%까지 +16%p</small></div>
+          <div class="rf"><span>발행사 20년 모의실험</span><b>손실 0.47%</b><small>첫 회 조기상환 84%</small></div>
+          <div class="rf"><span>1만원의 출발 가치</span><b>9,965원</b><small>공정가액 대비 -0.35%</small></div>
+        </div>
+        <p class="recwhy"><b>추천 이유</b> 이번 회차에서 가장 높은 수익률입니다. 출발 가치가 크게 깎이지 않은 상품 중에서 골랐습니다. <b>USD</b>로 투자하고 USD로 돌려받는 상품이라, 위 수익률에 환율 변동이 그대로 더해지거나 빠집니다.</p>
+      </article>
+  </div>
+</section>
+
+<section class="page-break">
+  <div class="rule"></div>
+  <h2 class="stitle">이번 회차 전체 17종</h2>
+  <p class="slead">방어적인 순서로 정렬했습니다. 같은 등급 안에서는 수익률에서 출발 가치 손해를 뺀 순서입니다.</p>
+  <div class="tw">
+    <table>
+      <thead>
+        <tr>
+          <th>회차</th><th>기초자산</th><th class="num">연 수익률</th><th class="num">확인 주기</th>
+          <th class="num">첫 조기상환</th><th class="num">원금 지키는 선</th><th class="num">1만원의 출발 가치</th>
+          <th class="num">20년 손실 확률</th><th>등급</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr>
+            <td class="code">제38044회</td>
+            <td class="und">KOSPI200 · SK하이닉스</td>
+            <td class="num rate">24.0%</td>
+            <td class="num">3개월</td>
+            <td class="num">75%</td>
+            <td class="num">35%</td>
+            <td class="num ">10,013원</td>
+            <td class="num ">0.06%</td>
+            <td><span class="tier t0">방어적</span></td>
+          </tr>
+          <tr>
+            <td class="code">제38036회</td>
+            <td class="und">KOSPI200 · 삼성전자</td>
+            <td class="num rate">20.5%</td>
+            <td class="num">6개월</td>
+            <td class="num">80%</td>
+            <td class="num">35%</td>
+            <td class="num ">9,886원</td>
+            <td class="num ">0.00%</td>
+            <td><span class="tier t0">방어적</span></td>
+          </tr>
+          <tr>
+            <td class="code">제38035회</td>
+            <td class="und">S&amp;P500 · KOSPI200 · Nikkei225</td>
+            <td class="num rate">15.6%</td>
+            <td class="num">6개월</td>
+            <td class="num">80%</td>
+            <td class="num">60%<span class="nk">만기만</span></td>
+            <td class="num ">9,780원</td>
+            <td class="num ">0.21%</td>
+            <td><span class="tier t0">방어적</span></td>
+          </tr>
+          <tr>
+            <td class="code">제38033회</td>
+            <td class="und">EuroStoxx50 · KOSPI200 · Nikkei225</td>
+            <td class="num rate">13.2%</td>
+            <td class="num">6개월</td>
+            <td class="num">85%</td>
+            <td class="num">35%</td>
+            <td class="num ">9,890원</td>
+            <td class="num ">0.00%</td>
+            <td><span class="tier t0">방어적</span></td>
+          </tr>
+          <tr>
+            <td class="code">제38032회</td>
+            <td class="und">KOSPI200 <span class="fxs">USD</span></td>
+            <td class="num rate">12.6%</td>
+            <td class="num">6개월</td>
+            <td class="num">75%</td>
+            <td class="num">40%</td>
+            <td class="num ">9,909원</td>
+            <td class="num ">0.00%</td>
+            <td><span class="tier t0">방어적</span></td>
+          </tr>
+          <tr>
+            <td class="code">제38034회</td>
+            <td class="und">EuroStoxx50 · S&amp;P500 · KOSPI200</td>
+            <td class="num rate">14.2%</td>
+            <td class="num">6개월</td>
+            <td class="num">85%</td>
+            <td class="num">40%</td>
+            <td class="num ">9,743원</td>
+            <td class="num ">0.00%</td>
+            <td><span class="tier t0">방어적</span></td>
+          </tr>
+          <tr>
+            <td class="code">제38031회</td>
+            <td class="und">KOSPI200</td>
+            <td class="num rate">11.5%</td>
+            <td class="num">6개월</td>
+            <td class="num">85%</td>
+            <td class="num">35%</td>
+            <td class="num ">9,843원</td>
+            <td class="num ">0.00%</td>
+            <td><span class="tier t0">방어적</span></td>
+          </tr>
+          <tr>
+            <td class="code">제38041회</td>
+            <td class="und">삼성전자 · SK하이닉스 <span class="fxs">USD</span></td>
+            <td class="num rate">40.0%</td>
+            <td class="num">3개월</td>
+            <td class="num">85%</td>
+            <td class="num">35%</td>
+            <td class="num ">9,965원</td>
+            <td class="num warn">0.47%</td>
+            <td><span class="tier t1">중간</span></td>
+          </tr>
+          <tr>
+            <td class="code">제38040회</td>
+            <td class="und">삼성전자 · SK하이닉스</td>
+            <td class="num rate">35.2%</td>
+            <td class="num">6개월</td>
+            <td class="num">85%</td>
+            <td class="num">35%</td>
+            <td class="num ">9,930원</td>
+            <td class="num warn">1.36%</td>
+            <td><span class="tier t1">중간</span></td>
+          </tr>
+          <tr>
+            <td class="code">제38039회</td>
+            <td class="und">삼성전자 · SK하이닉스</td>
+            <td class="num rate">31.3%</td>
+            <td class="num">3개월</td>
+            <td class="num">85%</td>
+            <td class="num">30%</td>
+            <td class="num ">9,899원</td>
+            <td class="num warn">0.47%</td>
+            <td><span class="tier t1">중간</span></td>
+          </tr>
+          <tr>
+            <td class="code">제38038회</td>
+            <td class="und">삼성전자 · SK하이닉스</td>
+            <td class="num rate">30.0%</td>
+            <td class="num">6개월</td>
+            <td class="num">75%</td>
+            <td class="num">35%</td>
+            <td class="num ">9,936원</td>
+            <td class="num warn">0.49%</td>
+            <td><span class="tier t1">중간</span></td>
+          </tr>
+          <tr>
+            <td class="code">제38037회</td>
+            <td class="und">삼성전자 · SK하이닉스</td>
+            <td class="num rate">27.5%</td>
+            <td class="num">3개월</td>
+            <td class="num">85%</td>
+            <td class="num">25%</td>
+            <td class="num ">9,981원</td>
+            <td class="num warn">0.47%</td>
+            <td><span class="tier t1">중간</span></td>
+          </tr>
+          <tr>
+            <td class="code">제38043회</td>
+            <td class="und">삼성전자 · SK하이닉스</td>
+            <td class="num rate">19.2%</td>
+            <td class="num">6개월</td>
+            <td class="num">75%</td>
+            <td class="num">20%</td>
+            <td class="num ">9,983원</td>
+            <td class="num warn">0.49%</td>
+            <td><span class="tier t1">중간</span></td>
+          </tr>
+          <tr>
+            <td class="code">제38042회</td>
+            <td class="und">KOSPI200 · HSCEI · Nikkei225</td>
+            <td class="num rate">16.6%</td>
+            <td class="num">6개월</td>
+            <td class="num">85%</td>
+            <td class="num">45%</td>
+            <td class="num warn">9,445원</td>
+            <td class="num bad">4.21%</td>
+            <td><span class="tier t2">공격적</span></td>
+          </tr>
+          <tr>
+            <td class="code">제38045회</td>
+            <td class="und">어플라이드 머티어리얼즈 · 마이크론 테크놀로지</td>
+            <td class="num rate">30.2%</td>
+            <td class="num">6개월</td>
+            <td class="num">80%</td>
+            <td class="num">35%</td>
+            <td class="num bad">7,768원</td>
+            <td class="num bad">3.40%</td>
+            <td><span class="tier t2">공격적</span></td>
+          </tr>
+          <tr>
+            <td class="code">제38047회</td>
+            <td class="und">KOSPI200 · 마이크론 테크놀로지</td>
+            <td class="num rate">29.0%</td>
+            <td class="num">6개월</td>
+            <td class="num">80%</td>
+            <td class="num">35%</td>
+            <td class="num bad">7,795원</td>
+            <td class="num warn">1.21%</td>
+            <td><span class="tier t2">공격적</span></td>
+          </tr>
+          <tr>
+            <td class="code">제38046회</td>
+            <td class="und">마이크론 테크놀로지 · 팔란티어 테크</td>
+            <td class="num rate">25.0%</td>
+            <td class="num">6개월</td>
+            <td class="num">75%</td>
+            <td class="num">25%</td>
+            <td class="num bad">6,834원</td>
+            <td class="num bad">2.07%</td>
+            <td><span class="tier t2">공격적</span></td>
+          </tr>
+      </tbody>
+    </table>
+  </div>
+  <p class="tnote">첫 조기상환 = 처음 확인일에 이 수준 이상이면 그 자리에서 끝납니다. 원금 지키는 선 = 만기까지 이 아래로 종가가 내려간 적이 없으면 원금과 이자를 다 받습니다. <b>만기만</b> 표시가 붙은 상품은 낙인이 없어 중간 하락을 따지지 않고 만기 그날만 봅니다. 20년 손실 확률 = 발행사가 투자설명서에 실은 모의실험 결과입니다.</p>
+</section>
+
+<section>
+  <div class="rule"></div>
+  <h2 class="stitle">이번 주 권하지 않는 상품</h2>
+  <p class="slead">수익률만 보면 눈에 띄지만, 조건이나 가격에서 대가를 치르고 있는 상품입니다.</p>
+  <div class="caus">
+        <div class="cau">
+          <h4>제38046회 <span class="cund">마이크론 테크놀로지 · 팔란티어 테크</span> <span class="crate">연 25.0%</span></h4>
+          <ul><li>1만원을 넣는 순간의 가치가 6,834원입니다</li><li>최근 5년(2020년~) 안에 원금 지키는 선을 이미 9.6%p 뚫고 내려간 적이 있습니다</li><li>발행사 20년 모의실험에서도 100번 중 2.1번은 손실이었습니다</li></ul>
+        </div>
+        <div class="cau">
+          <h4>제38047회 <span class="cund">KOSPI200 · 마이크론 테크놀로지</span> <span class="crate">연 29.0%</span></h4>
+          <ul><li>1만원을 넣는 순간의 가치가 7,795원입니다</li></ul>
+        </div>
+        <div class="cau">
+          <h4>제38045회 <span class="cund">어플라이드 머티어리얼즈 · 마이크론 테크놀로지</span> <span class="crate">연 30.2%</span></h4>
+          <ul><li>1만원을 넣는 순간의 가치가 7,768원입니다</li><li>최근 10년(2016년~) 최저점이 원금 지키는 선 바로 위 9.6%p까지 왔습니다</li><li>발행사 20년 모의실험에서도 100번 중 3.4번은 손실이었습니다</li></ul>
+        </div>
+        <div class="cau">
+          <h4>제38042회 <span class="cund">KOSPI200 · HSCEI · Nikkei225</span> <span class="crate">연 16.6%</span></h4>
+          <ul><li>최근 10년(2016년~) 안에 원금 지키는 선을 이미 4.6%p 뚫고 내려간 적이 있습니다</li><li>발행사 20년 모의실험에서도 100번 중 4.2번은 손실이었습니다</li></ul>
+        </div>
+  </div>
+</section>
+
+<section>
+  <div class="rule"></div>
+  <h2 class="stitle">가입 전 꼭 짚어드릴 4가지</h2>
+  <div class="checks">
+    <div class="chk">
+      <h4>1. 1만원이 1만원이 아닙니다</h4>
+      <p>투자설명서에는 발행일 기준 공정가액이 적혀 있습니다. 이번 회차는 10,013원부터 6,834원까지 벌어집니다. 게다가 이 값은 만기까지의 헤지비용을 뺀 값이라 실제 비용은 이보다 큽니다.</p>
+    </div>
+    <div class="chk">
+      <h4>2. 중간에 깨면 손해입니다</h4>
+      <p>중도상환은 그 시점 공정가액의 95%(가입 6개월 안이면 90%)로 정산됩니다. 원금이 아니라 그날의 평가금액 기준입니다. 3년을 묻어둘 수 있는 돈으로만 하셔야 합니다.</p>
+    </div>
+    <div class="chk">
+      <h4>3. 판정은 종가로 합니다</h4>
+      <p>장중에 잠깐 원금 지키는 선을 뚫어도 그날 종가가 위에서 끝나면 괜찮습니다. 반대로 종가가 한 번이라도 아래면 그걸로 기록이 남습니다.</p>
+    </div>
+    <div class="chk">
+      <h4>4. 과거가 미래를 보장하지 않습니다</h4>
+      <p>이 문서의 최저점은 최근 시장이 좋았던 구간을 포함합니다. 특히 반도체 종목은 최근 1년 상승분이 커서 과거 수치가 실제보다 안전해 보일 수 있습니다. 상장이 늦은 종목은 검증 구간 자체가 짧습니다.</p>
+    </div>
+  </div>
+  <div class="script">
+    <h4>상담 시 이 순서로 말씀하시면 됩니다</h4>
+    <ol>
+      <li>"이 상품은 3년짜리인데, 6개월마다 끝날 기회가 옵니다. 대부분은 첫 번째나 두 번째에 끝납니다."</li>
+      <li>"KOSPI200 · SK하이닉스 중 더 많이 떨어진 하나로 판정합니다."</li>
+      <li>"올라야 버는 게 아니라, 많이 안 떨어지면 버는 구조입니다."</li>
+      <li>"대신 크게 떨어지면 그 하락률이 그대로 손실로 옵니다. 원금이 보장되지 않습니다."</li>
+      <li>"3년 동안 안 쓸 돈인지 먼저 확인해 주세요. 중간에 빼면 그날 평가금액의 95%만 받습니다."</li>
+    </ol>
+  </div>
+</section>
+
+</main>
+
+<footer class="wrap">
+  <p>출처 — 금융감독원 전자공시시스템 일괄신고추가서류 접수번호 20260821000193 (2026.08.21 공시). 조건·공정가액·적용 변동성·수익률 모의실험은 공시 원문에서 자동 추출했습니다.</p>
+  <p>최저점과 자체 검증 수치는 20160815~20260817 기초자산 일별 종가로 매 거래일 가입을 가정해 만기까지 돌린 결과입니다. 상장이 늦은 기초자산이 섞인 상품은 검증 구간이 그만큼 짧으며, 상품마다 실제 구간을 표기했습니다.</p>
+  <p>본 자료는 투자 권유를 위한 참고 자료이며, 실제 청약 전 투자설명서와 간이투자설명서를 반드시 확인하셔야 합니다. 원금 손실이 발생할 수 있는 상품입니다.</p>
+  <p>생성 2026.08.21 · scripts/build_els_proposal.mjs</p>
+</footer>
