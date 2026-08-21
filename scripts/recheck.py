@@ -177,15 +177,48 @@ def check_limits(h, d):
                  "등락 종목 수 합계는 %d 개인데 명단은 %d 개입니다 — 판에 그 차이를 적으십시오" % (want, got))
 
 
-def check_dates(h, d):
-    """미국 계열은 국내 마감 시각에 전 거래일입니다. 「오늘」로 적히면 하루가 어긋납니다."""
-    today = (d.get("indices", {}).get("kospi", {}) or {}).get("date")
+def check_dates(h, d, path=None):
+    """미국 계열은 국내 마감 시각에 전 거래일입니다. 「오늘」로 적히면 하루가 어긋납니다.
+
+    이름표는 **두 가지 모두** 인정합니다 — 「전일 마감」이라는 말이 있거나,
+    **미 국채 날짜가 글자로 적혀 있거나**. 장마감 판은 앞쪽을 쓰고 모닝 판은
+    「미 재무부 확정 곡선 — 8월 20일」처럼 날짜를 씁니다. 문구 하나만 받으면
+    멀쩡한 모닝 판이 FAIL 로 걸립니다(8/21 판이 그랬습니다).
+
+    그리고 **판을 만든 뒤 시세 파일이 갱신되면 이 대조는 뜻이 없습니다.**
+    파일 이름의 날짜와 시세 파일의 국내 날짜가 어긋나면 그 사실부터 알립니다.
+    """
+    import os
+
     us = (d.get("rates_us") or {}).get("date")
+    today = (d.get("indices", {}).get("kospi", {}) or {}).get("date")
+
+    # 판의 날짜는 파일 이름에서 읽습니다 — 시세 파일은 그 뒤로 갱신됩니다.
+    edate = None
+    if path:
+        fm = re.match(r"(\d{4}-\d{2}-\d{2})-", os.path.basename(path))
+        edate = fm.group(1) if fm else None
+    if edate and today and edate != today:
+        warn("대조 시점",
+             "판은 %s 인데 시세 파일의 국내 날짜는 %s 입니다 — 판을 만든 뒤 시세가 갱신됐습니다. "
+             "날짜 관련 검사는 참고로만 보십시오" % (edate, today))
+        return
+
     if today and us and us != today:
         t = text(h)
-        # 미 국채 표 캡션에 전일 표시가 있는지
-        if "전일 마감" not in t and "previous close" not in t.lower():
-            fail("날짜 이름표", "미 국채는 %s 인데 국내는 %s 입니다 — 「전일 마감(날짜)」 이름표가 없습니다" % (us, today))
+        ok = ("전일 마감" in t) or ("previous close" in t.lower())
+        if not ok:
+            y, m, dd = us.split("-")
+            for form in ("%s년 %d월 %d일" % (y, int(m), int(dd)),
+                         "%d월 %d일" % (int(m), int(dd)),
+                         us):
+                if form in t:
+                    ok = True
+                    break
+        if not ok:
+            fail("날짜 이름표",
+                 "미 국채는 %s 인데 국내는 %s 입니다 — 「전일 마감」이라는 말도, %s 라는 날짜도 "
+                 "본문에 없습니다" % (us, today, us))
     # 24시간 시장과 장중 지수의 시각 차이
     fx = {r["key"]: r for r in (d.get("fx") or {}).get("rows", [])}
     if "dxy" in fx and "eurusd" in fx:
@@ -300,7 +333,7 @@ def main(argv):
     nd = check_details(h)
     na = check_archive(h)
     check_limits(h, d)
-    check_dates(h, d)
+    check_dates(h, d, path)
     check_byline(h, path)
     check_derived(h, d)
 
