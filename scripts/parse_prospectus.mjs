@@ -20,11 +20,32 @@ const ymd = (s) => {
   return m ? `${m[1]}-${m[2]}-${m[3]}` : null;
 };
 
-/** "S&P500 지수 / HSCEI 지수 / NIKKEI225 지수" -> ["S&P500","HSCEI","NIKKEI225"] */
-const parseUnderlyings = (s) => clean(s)
-  .split(/\s*\/\s*|\)(?=[A-Z가-힣])/)   // 구분자가 "/" 인 회차와 괄호로 이어붙인 회차가 섞여 있다
-  .map((x) => x.replace(/\([^)]*\)/g, '').replace(/\s*(지수|보통주|주식)\s*$/, '').replace(/,?\s*Inc\.?$|\s*Class A$/i, '').trim())
-  .filter(Boolean);
+/**
+ * 기초자산 표기는 회차마다 제각각이다 — "S&P500 지수 / HSCEI 지수" 처럼 슬래시로 나눈 것도 있고
+ * "Applied Materials, Inc.(Applied Materials+AMAT UW Equity)Micron Technology Inc(...)" 처럼
+ * 괄호로 붙여 쓴 것도 있다. 구분자로 자르는 대신 알려진 기초자산을 찾아 등장 순서대로 세운다.
+ * 이름은 data/els.js 의 과거 시세 키와 같게 맞춘다.
+ */
+const ASSETS = [
+  [/EURO\s?STOXX\s?50|EUROSTOXX50/i, 'EuroStoxx50'],
+  [/S&P\s?500/i, 'S&P500'],
+  [/NIKKEI\s?225/i, 'Nikkei225'],
+  [/KOSPI\s?200/i, 'KOSPI200'],
+  [/HSCEI/i, 'HSCEI'],
+  [/삼성전자/, '삼성전자'],
+  [/SK\s?하이닉스/, 'SK하이닉스'],
+  [/Micron|MU UW/i, '마이크론 테크놀로지'],
+  [/Applied Materials|AMAT/i, '어플라이드 머티어리얼즈'],
+  [/Palantir|PLTR/i, '팔란티어 테크'],
+];
+const parseUnderlyings = (s) => {
+  const line = clean(s);
+  return ASSETS
+    .map(([re, name]) => [line.search(re), name])
+    .filter(([at]) => at >= 0)
+    .sort((a, b) => a[0] - b[0])
+    .map(([, name]) => name);
+};
 
 function parseBlock(text) {
   const p = {};
@@ -42,7 +63,8 @@ function parseBlock(text) {
   p.offerStart = ymd((text.match(/청약시작일\s*\n\s*\t?\s*([^\n]+)/) || [])[1]);
   p.offerEnd = ymd((text.match(/청약종료일\s*\n\s*\t?\s*([^\n]+)/) || [])[1]);
   p.issueDate = ymd((text.match(/발 ?행 ?일\s*\n\s*\t?\s*([^\n]+)/) || [])[1]);
-  p.maturityDate = ymd((text.match(/만 ?기 ?일\s*\n\s*\t?\s*([^\n]+)/) || [])[1]);
+  // 실물인도형은 "만 기 일(실물인도일)" 로 적혀 있다
+  p.maturityDate = ymd((text.match(/만 ?기 ?일(?:\([^)]*\))?\s*\n\s*\t?\s*([^\n]+)/) || [])[1]);
   p.baseDate = ymd((text.match(/최초기준가격평가일\s*:\s*([^\n○]+)/) || [])[1]);
 
   // 공정가액 — 발행가 10,000원 대비 얼마나 깎여 있는지가 실질 비용의 하한
@@ -58,10 +80,10 @@ function parseBlock(text) {
   // 이론가 산출에 쓴 변동성·상관계수
   const volLine = (text.match(/기초자산가격 변동성\s*\n\s*\t?\s*([^\n]+)/) || [])[1] || '';
   p.volatility = [...volLine.matchAll(/-\s*([^:]+?)\s*:\s*([\d.]+)%/g)]
-    .map((m) => ({ asset: clean(m[1]).replace(/\s*(지수|보통주)$/, ''), vol: Number(m[2]) }));
+    .map((m) => ({ asset: parseUnderlyings(m[1])[0] || clean(m[1]), vol: Number(m[2]) }));
   const corrLine = (text.match(/상관계수\s*\n\s*\t?\s*([^\n]+)/) || [])[1] || '';
   p.correlation = [...corrLine.matchAll(/-\s*([^:]+?)\s*:\s*(-?[\d.]+)(?!%)/g)]
-    .map((m) => ({ pair: clean(m[1]).replace(/\s*지수/g, ''), rho: Number(m[2]) }));
+    .map((m) => ({ pair: clean(m[1]).split(',').map((x) => parseUnderlyings(x)[0] || clean(x)).join(' · '), rho: Number(m[2]) }));
 
   // 조기상환 차수별 평가일·상환금액
   const schedRows = [...text.matchAll(/(\d{1,2})차\s*\n\s*\t?\s*(\d{4}년\s*\d{2}월\s*\d{2}일)\s*\n\s*\t?\s*액면금액\s*×\s*([\d.]+)%/g)];
@@ -93,8 +115,10 @@ function parseBlock(text) {
   // 연 수익률 (세전)
   const rates = [...text.matchAll(/\(연\s*([\d.]+)%\)/g)].map((m) => Number(m[1]));
   p.annualRate = rates.length ? Math.max(...rates) : null;
+  // 월지급식은 "3.1175%(연 37.41%)" 처럼 한 달치가 적혀 있어 문서 값을 그대로 쓰면 안 된다.
+  // 총수익률은 연 수익률 × 보유연수로 통일한다.
   const totals = [...text.matchAll(/([\d.]+)%\(연\s*[\d.]+%\)/g)].map((m) => Number(m[1]));
-  p.totalRate = totals.length ? Math.max(...totals) : null;
+  p.docMaxRate = totals.length ? Math.max(...totals) : null;
 
   // 발행사 수익률 모의실험
   const simIdx = text.indexOf('수익률 모의실험');
