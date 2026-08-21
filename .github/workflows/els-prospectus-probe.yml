@@ -1,0 +1,20 @@
+name: ELS 투자설명서 경로 탐색
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - 'claude/els-**'
+    paths:
+      - 'scripts/probe_prospectus.mjs'
+      - '.github/workflows/els-prospectus-probe.yml'
+
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: node scripts/probe_prospectus.mjs
