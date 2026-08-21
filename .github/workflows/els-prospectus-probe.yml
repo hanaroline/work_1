@@ -7,6 +7,7 @@ on:
       - 'claude/els-**'
     paths:
       - 'scripts/probe_prospectus.mjs'
+      - 'scripts/fetch_prospectus.mjs'
       - '.github/workflows/els-prospectus-probe.yml'
 
 jobs:
@@ -17,4 +18,4 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
-      - run: node scripts/probe_prospectus.mjs
+      - run: node scripts/fetch_prospectus.mjs
