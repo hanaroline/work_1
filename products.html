@@ -967,6 +967,7 @@ table.cmp td.best{background:var(--disabled);font-weight:700;color:var(--ink)}
     ret3m: { k: 'col.ret3m', cls: 'n', r: function (p) { return '<span class="' + signCls(p.ret3m) + '">' + pct(p.ret3m) + '</span>'; } },
     ret1y: { k: 'col.ret1y', cls: 'n', r: function (p) { return '<span class="' + signCls(p.ret1y) + '">' + pct(p.ret1y) + '</span>'; } },
     ret3y: { k: 'col.ret3y', cls: 'n', r: function (p) { return '<span class="' + signCls(p.ret3y) + '">' + pct(p.ret3y) + '</span>'; } },
+    ret6m: { k: 'col.ret6m', cls: 'n', r: function (p) { return '<span class="' + signCls(p.ret6m) + '">' + pct(p.ret6m) + '</span>'; } },
     keyrate: {
       k: 'col.keyrate', cls: 'n', r: function (p) {
         var kr = keyRate(p);
@@ -1042,7 +1043,7 @@ table.cmp td.best{background:var(--disabled);font-weight:700;color:var(--ink)}
   };
   var COLS = {
     all: ['watch', 'name', 'risk', 'trend', 'keyrate', 'fee', 'min', 'tax', 'status', 'act'],
-    fund: ['watch', 'name', 'fundType', 'risk', 'trend', 'ret3m', 'ret1y', 'ret3y', 'fee', 'aum', 'status', 'act'],
+    fund: ['watch', 'name', 'fundType', 'risk', 'trend', 'ret3m', 'ret6m', 'ret1y', 'fee', 'aum', 'status', 'act'],
     etf: ['watch', 'name', 'index', 'risk', 'trend', 'ret3m', 'ret1y', 'fee', 'dist', 'aum', 'price', 'act'],
     els: ['watch', 'name', 'elsType', 'underlying', 'coupon', 'barrier', 'knockin', 'maturityM', 'deadline', 'min', 'act'],
     bond: ['watch', 'name', 'bondType', 'rating', 'ytm', 'bondCoupon', 'residual', 'cycle', 'ccy', 'min', 'act'],
