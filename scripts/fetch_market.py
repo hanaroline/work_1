@@ -1587,6 +1587,57 @@ def _item_news_links(code, pages=1):
     return links
 
 
+# 기사 제목이 회사를 부르는 **다른 이름**. 신문 제목은 정식 상호를 거의
+# 쓰지 않는다 — 「퇴직연금 시장서 존재감 키우는 NH증권」이 그 예다. 정식
+# 상호(NH투자증권)만 찾으면 이 기사는 회사 이름이 없는 것으로 세어져
+# 「인용 기사」로 밀린다. 실제로는 그 회사의 사업 동향 기사다.
+#
+# 줄임말은 **손으로 적는다.** 「증권」을 떼어 기계로 만들면 삼성증권이
+# 「삼성」이 되어 삼성전자 기사를 통째로 끌어온다. 한국금융지주는 자회사
+# 이름(한국투자증권)으로 나가므로 그것까지 같은 회사로 본다.
+_ALIASES = {
+    "미래에셋증권": ("미래에셋證",),
+    "삼성증권": ("삼성證",),
+    "NH투자증권": ("NH증권", "NH투자", "NH證"),
+    "키움증권": ("키움證", "키움"),
+    "한국금융지주": ("한국투자증권", "한투증권", "한국투자", "한투"),
+    "대신증권": ("대신證",),
+    "한화투자증권": ("한화증권", "한화투자", "한화證"),
+    "메리츠증권": ("메리츠證",),
+    "유안타증권": ("유안타",),
+    "신영증권": ("신영證",),
+    "교보증권": ("교보證",),
+    "DB금융투자": ("DB증권", "DB금투", "DB투자"),
+    "SK증권": ("SK證",),
+    "LS증권": ("LS證",),
+    "현대차증권": ("현대차證",),
+    "다올투자증권": ("다올증권", "다올투자", "다올證"),
+    "유진투자증권": ("유진증권", "유진투자", "유진證"),
+    "iM증권": ("iM證", "아이엠증권"),
+}
+# 「미래에셋」 뒤에 이것이 붙으면 **다른 계열사**다. 증권 기사가 아니다.
+_NOT_SAME = ("자산운용", "생명", "캐피탈", "벤처", "컨설팅", "글로벌인베스트")
+
+
+def _names_of(company):
+    """정식 상호와 줄임말을 함께 준다. 긴 것부터 — 겹칠 때 긴 쪽이 이긴다."""
+    return sorted((company,) + _ALIASES.get(company, ()), key=len, reverse=True)
+
+
+def _mentions(text, company):
+    """회사 이름(줄임말 포함)이 나온 자리를 준다. 다른 계열사는 세지 않는다."""
+    t, out = text or "", []
+    for nm in _names_of(company):
+        for m in re.finditer(re.escape(nm), t):
+            i = m.start()
+            if any(t[m.end():m.end() + 8].startswith(x) for x in _NOT_SAME):
+                continue
+            if any(abs(i - j) < len(nm) for j in out):     # 긴 이름과 겹치는 자리
+                continue
+            out.append(i)
+    return sorted(out)
+
+
 def _title_promises_company(title, company):
     """본문을 받기 전에 **제목만** 보고 회사 기사일 만한지 가늠한다.
 
@@ -1596,7 +1647,7 @@ def _title_promises_company(title, company):
     t = title or ""
     if not t:
         return True                                # 제목을 못 건졌으면 받아 본다
-    if company in t:
+    if _mentions(t, company):
         return True
     short = company.replace("증권", "").replace("투자", "")
     if len(short) >= 2 and short in t:
@@ -1620,6 +1671,15 @@ _CORP_ACT = (            # 회사가 한 행위 — 이것이 있으면 회사 �
     "소송", "전산장애", "먹통", "대표이사", "조직개편", "임원 인사",
     "발행어음", "종합금융투자", "초대형 IB", "인가", "라이선스",
     "자기자본", "자본확충", "신종자본증권", "해외법인", "지점 통폐합",
+)
+# 회사의 **사업이 어디로 가고 있나** — 한 건의 사건은 아니지만 동향이다.
+# 「증권업계 동향은 증권회사의 동향」이라는 주문에 맞춰 넣었다. 퇴직연금
+# 잔고가 늘고 있다는 기사는 사건이 아니라서 위의 행위 목록에 걸리지 않는데,
+# 회사가 어디로 가는지는 그런 기사에 들어 있다.
+_CORP_BIZ = (
+    "퇴직연금", "연금", "적립금", "자산관리", "예탁자산", "고객자산",
+    "랩어카운트", "신탁", "ISA", "브로커리지", "위탁매매",
+    "IB 부문", "WM 부문", "PB센터", "순유입", "판매액", "약정",
 )
 _CORP_WEAK = (           # 있으면 거들지만 그것만으로는 모자란 말
     "실적", "영업이익", "순이익", "당기순", "배당", "주주환원", "점유율",
@@ -1646,7 +1706,8 @@ def _looks_like_research_call(title, company):
     if _CALL_QUOTE.search(t):
         return True
     short = company.replace("증권", "").replace("투자", "").replace("금융지주", "")
-    named = company in t or (len(short) >= 2 and (short + "證") in t)
+    named = (bool(_mentions(t, company))
+             or (len(short) >= 2 and (short + "證") in t))
     return named and any(w in t for w in _CALL_WORD)
 
 
@@ -1664,19 +1725,23 @@ def _classify_broker(title, body, company):
     if _looks_like_research_call(t, company):
         return "quoted", -9, "리서치 콜 제목 — 이 회사가 낸 의견이지 이 회사 소식이 아니다"
     score, why = 0, []
-    if company in t:                              # 가장 센 신호다
+    if _mentions(t, company):                     # 가장 센 신호다 (줄임말 포함)
         score += 4
         why.append("제목에 회사 이름")
-    hits = [m.start() for m in re.finditer(re.escape(company), b)]
+    hits = _mentions(b, company)
     if not hits:
         return "quoted", score, "본문에 회사 이름 없음"
 
     near = lambda w: any(w in b[max(0, i - 150):i + 200] for i in hits)
     act = sorted({w for w in _CORP_ACT if near(w)})
+    biz = sorted({w for w in _CORP_BIZ if near(w)})
     weak = sorted({w for w in _CORP_WEAK if near(w)})
     if act:
         score += 3
         why.append("회사가 한 행위 — " + "·".join(act[:4]))
+    elif biz:
+        score += 2
+        why.append("사업 동향 — " + "·".join(biz[:4]))
     elif weak:
         score += 1
         why.append("곁의 말: " + "·".join(weak[:4]))
