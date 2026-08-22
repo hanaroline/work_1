@@ -44,7 +44,7 @@ from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
 
 ROOT = os.path.dirname(os.path.abspath(__file__))
 # 파일이 실제로 교체됐는지 한눈에 확인하기 위한 빌드 표시
-BUILD = "2026-08-23.5 (mas-fund)"
+BUILD = "2026-08-23.6 (mas-fund2)"
 KRX_URL = "https://data.krx.co.kr/comm/bldAttendant/getJsonData.cmd"
 KRX_REFERER = "https://data.krx.co.kr/contents/MDC/MDI/outerLoader/index.cmd"
 # 쿠키를 받기 위해 먼저 방문하는 페이지. KRX 는 세션 쿠키(JSESSIONID) 없이
@@ -536,6 +536,8 @@ def mas_probe():
                                  "first": fr["docs"][0]}
         else:
             out("     응답 최상위 키: %s" % ", ".join(fr["raw_keys"][:12]))
+        for t in fr.get("tried", []):
+            out("     시도: %s" % t)
     except Exception as e:
         out("[실패] 펀드 목록   %s" % str(e)[:180])
     out()
@@ -578,32 +580,97 @@ MAS_FUND_REF = "/mw/mks/mks4116/r01.do"
 
 
 def mas_fund_list(list_count=100, start=0, sort="NASST_SUM"):
-    """펀드 목록을 조회해 Document 배열과 전체 건수를 반환한다."""
+    """펀드 목록을 조회한다.
+
+    실제 화면은 검색폼 필드까지 함께 전송하므로 조합이 여러 가지일 수 있다.
+    후보를 순서대로 시도하고, 문서가 나오는 첫 조합을 채택한다.
+    어떤 조합이 통했는지/무엇이 실패했는지 tried 에 남겨 진단에 노출한다.
+    """
     mas_warmup(MAS_FUND_REF)
     ref = MAS_BASE + MAS_FUND_REF
+
+    mode = ""
     try:
-        mode = mas_post("/mw/mks/mks4116/a01.json", {"key": "FUND_SEARCH_MODE"}, referer=ref)
-        rv = str(mode.get("returnValue", "")).strip().upper()
-    except Exception:
-        rv = ""
-    path = "/mw/mks/mks4116/a02.json" if rv == "D" else "/search/getTotalSearch.jsp"
-    res = mas_post(path, {
+        r0 = mas_post("/mw/mks/mks4116/a01.json", {"key": "FUND_SEARCH_MODE"}, referer=ref)
+        mode = str(r0.get("returnValue", "")).strip().upper()
+    except Exception as e:
+        mode = "(조회실패: %s)" % str(e)[:60]
+
+    base = {
         "sort": sort,
         "sort_opt": "",
         "startCount": str(start),
         "listCount": str(list_count),
         "query": "",
-    }, referer=ref)
+    }
+    # 검색폼이 함께 보내는 것으로 보이는 필드들(없으면 무시되는 경우가 많다)
+    formish = {
+        "fundType": "", "pdClss": "", "admIcn": "", "fdStcCd": "",
+        "HIGH_RSK_YN": "", "searchKeyword": "",
+    }
 
-    docs, total = [], 0
+    order = []
+    if mode == "D":
+        order.append(("/mw/mks/mks4116/a02.json", dict(base)))
+    order += [
+        ("/search/getTotalSearch.jsp", dict(base)),
+        ("/mw/mks/mks4116/a02.json", dict(base)),
+    ]
+    withform = dict(base); withform.update(formish)
+    order += [
+        ("/search/getTotalSearch.jsp", withform),
+        ("/mw/mks/mks4116/a02.json", withform),
+    ]
+
+    tried = []
+    for path, params in order:
+        try:
+            res = mas_post(path, params, referer=ref)
+        except Exception as e:
+            tried.append("%s -> %s" % (path, str(e)[:110]))
+            continue
+        docs, total = _mas_fund_docs(res)
+        if docs:
+            return {"path": path, "mode": mode, "total": total, "docs": docs,
+                    "tried": tried, "raw_keys": list(res.keys()) if isinstance(res, dict) else []}
+        keys = ", ".join(list(res.keys())[:8]) if isinstance(res, dict) else type(res).__name__
+        msg = ""
+        if isinstance(res, dict):
+            msg = str(res.get("message") or res.get("errorMessage") or "")[:80]
+        tried.append("%s -> 문서 없음 (키: %s%s)" % (path, keys, (" / " + msg) if msg else ""))
+
+    return {"path": None, "mode": mode, "total": 0, "docs": [], "tried": tried, "raw_keys": []}
+
+
+def _mas_fund_docs(res):
+    """검색엔진 응답에서 Document 배열과 전체 건수를 꺼낸다."""
+    if not isinstance(res, dict):
+        return [], 0
     try:
         ds = res["SearchQueryResult"]["Collection"][0]["DocumentSet"]
         total = int(str(ds.get("TotalCount") or 0).replace(",", "") or 0)
         d = ds.get("Document") or []
-        docs = d if isinstance(d, list) else [d]
+        return (d if isinstance(d, list) else [d]), total
     except (KeyError, IndexError, TypeError, ValueError):
         pass
-    return {"path": path, "mode": rv, "total": total, "docs": docs, "raw_keys": list(res.keys())}
+    # 구조가 다를 수 있으므로 Document 배열을 재귀로 찾는다
+    found = []
+
+    def walk(o):
+        if isinstance(o, dict):
+            for k, v in o.items():
+                if k == "Document" and isinstance(v, list) and v:
+                    found.append(v)
+                walk(v)
+        elif isinstance(o, list):
+            for v in o:
+                walk(v)
+
+    walk(res)
+    if found:
+        return found[0], len(found[0])
+    return [], 0
+
 
 # ------------------------------------------------- 미래에셋 홈페이지 수집(공개 페이지)
 # 사내 상품 API 가 없을 때의 경로. 미래에셋증권 공개 상품 페이지를 사용자 PC 에서
