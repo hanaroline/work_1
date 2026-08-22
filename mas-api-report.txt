@@ -1,0 +1,35 @@
+======================================================================
+ 미래에셋증권 상품 JSON API 점검
+======================================================================
+빌드 : 2026-08-23.1 (mas-api)
+
+[OK] ELS/DLS 청약목록   POST /hks/hks4022/a01.json
+     최상위 키 : result, returnCode, continueYn, cts, grid01
+     result=success returnCode=0 continueYn=0
+     grid01 건수 : 3
+     첫 항목 필드: itm_nm, itm_no, omkt_drvs_pcd_nm, omkt_drvs_risk_gcd, omkt_drv_frcs_ern_r, uast_cn, apy_strt_dt, apy_end_dt, omkt_drv_exrt_cycl_cn, onln_apy_abl_yn, prgs_stat_nm, curr_cd_nm, max_abl_los_r, pca_grte_r
+     첫 항목 값  : {"itm_nm": "미래에셋증권 제32115회 ELS", "itm_no": "32115", "omkt_drvs_pcd_nm": "주가연계증권(ELS)", "omkt_drvs_risk_gcd": "2", "omkt_drv_frcs_ern_r": "12.50", "uast_cn": "KOSPI200 / S&P500 / EuroStoxx50", "apy_strt_dt": "20260820", "apy_end_dt": "20260826"}
+
+[OK] ELS/DLS 기준가   POST /hks/hks4023/a01.json
+     최상위 키 : result
+     result=success returnCode=None continueYn=None
+     데이터 배열이 비어 있습니다(조건/기간 확인 필요)
+     응답 원문: {"result": "success"}
+
+[OK] 채권/RP 기준수익률   POST /hks/hks4037/a01.json
+     최상위 키 : result, list
+     result=success returnCode=None continueYn=None
+     list 건수 : 1
+     첫 항목 필드: item, rate
+     첫 항목 값  : {"item": "국고채 3년", "rate": "2.874"}
+
+[OK] ETN 전체상품   POST /bp/q000.json
+     최상위 키 : result
+     result=success returnCode=None continueYn=None
+     데이터 배열이 비어 있습니다(조건/기간 확인 필요)
+     응답 원문: {"result": "success"}
+
+======================================================================
+데이터를 받은 엔드포인트 2 / 4
+=> 이 구조로 화면에 연결합니다. 위 '첫 항목 필드' 를 그대로 보내주세요.
+======================================================================
