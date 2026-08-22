@@ -371,10 +371,10 @@ us_sec = tbl("S&amp;P 500 업종 ETF &mdash; 8월 21일", "S&amp;P 500 sector ET
      TH("검증", "Verified", "n opt")], sect_rows, cls="data compact",
     foot_ko="<strong>맨 아래가 유틸리티(&minus;2.28%)</strong>인 것이 이날의 성격을 말합니다 &mdash; 배당으로 사는 업종이라 "
       "<strong>금리가 오르면 가장 먼저 밀립니다</strong> " + VF_C + ". 반대로 소재(+2.14%)는 금&middot;구리 강세를 그대로 받았습니다. "
-      "에너지가 &minus;0.17% 로 내린 것은 이날 WTI 가 &minus;1.35% 였기 때문입니다.",
+      "에너지가 &minus;0.17% 로 내린 것은 이날 WTI 가 " + pct(I["wti"]["change_pct"]) + " 였기 때문입니다.",
     foot_en="<strong>Utilities at the bottom (&minus;2.28%)</strong> tells you what kind of day it was &mdash; a sector bought for "
       "yield is <strong>the first to give way when rates rise</strong> " + VF_C + ". Materials (+2.14%) took the strength in gold and "
-      "copper straight through. Energy slipped 0.17% because WTI fell 1.35% on the day."
+      "copper straight through. Energy slipped 0.17% because WTI was " + pct(I["wti"]["change_pct"]) + " on the day."
     + "\n" + ib_html)
 
 sec("us", "미국 증시 마감", "US Equities Close",
@@ -435,8 +435,8 @@ oil_tbl = tbl("유가 &mdash; 6거래일 연속 상승", "Crude &mdash; six sess
       furow("브렌트유", "Brent", "<strong>6거래일 연속 상승</strong>. 배럴당 94달러대까지 올랐습니다",
             "<strong>Six sessions up</strong>, reaching the USD 94 area",
             "$" + n(I["brent"]["close"]) + " (주간 " + pct(I["brent"]["perf"]["w1"]) + ")", VF_2, True),
-      furow("WTI", "WTI", "이날은 &minus;1.35% 였지만 주간으로는 +5.15% 입니다",
-            "Down 1.35% on the day but +5.15% on the week",
+      furow("WTI", "WTI", "이날은 " + pct(I["wti"]["change_pct"]) + " 였지만 주간으로는 " + pct(I["wti"]["perf"]["w1"]) + " 입니다",
+            "" + pct(I["wti"]["change_pct"]) + " on the day but " + pct(I["wti"]["perf"]["w1"]) + " on the week",
             "$" + n(I["wti"]["close"]) + " (주간 " + pct(I["wti"]["perf"]["w1"]) + ")"),
       furow("왜 오르나", "Why", "트럼프 대통령이 <strong>이란과 거래하는 국가에도 경제 제재</strong>를 경고했습니다. "
             "베선트 장관은 <strong>8월 24일 대이란 압박 계획</strong>을 공개하겠다고 예고했습니다",
@@ -1324,8 +1324,9 @@ SEC_SEC = next((x for x in (D.get("sectors") or {}).get("all") or []
                 if x.get("name") == "증권"), None)
 
 br_rows = []
+# 메리츠증권은 메리츠금융지주로 합병돼 상장폐지라 뺐다(야후 404).
 for _nm in ("미래에셋증권", "삼성증권", "NH투자증권", "키움증권",
-            "한국금융지주", "메리츠증권", "대신증권", "한화투자증권"):
+            "한국금융지주", "대신증권", "한화투자증권"):
     q = BS.get(_nm)
     if not q:
         continue
@@ -1346,7 +1347,9 @@ br_tbl = tbl("증권업 주가 &mdash; 8월 21일 마감", "Brokerage share pric
     [TH("종목", "Name", "wrap"), TH("종가", "Close", "n"), TH("등락률", "Change %", "n"),
      THP(), TH("검증", "Verified", "n opt")], br_rows, cls="data compact",
     foot_ko="<strong>업종 줄의 기간 수익률은 지수가 아니라 일간 등락률을 이어 곱한 값</strong>이고 쌓인 날이 "
-      "닷새뿐이라 1주까지만 냅니다 &mdash; 1개월·3개월은 지어내지 않고 비웠습니다 " + VF_C + ".",
+      "닷새뿐이라 1주까지만 냅니다 &mdash; 1개월·3개월은 지어내지 않고 비웠습니다 " + VF_C + ". "
+      "<strong>종목 줄은 실제 주가 비율</strong>이라 업종 줄과 기준이 다릅니다. "
+      "메리츠증권은 메리츠금융지주로 합병돼 상장폐지라 뺐습니다.",
     foot_en="<strong>The sector row compounds daily moves rather than tracking an index</strong>, and only five "
       "sessions have accumulated, so nothing beyond one week is shown " + VF_C + ".") if br_rows else ""
 
@@ -1726,11 +1729,11 @@ hero = ('<div class="hero">\n'
             " KST, Saturday 22 August 2026 &middot; <strong>weekend edition &mdash; the next Korean session is Monday 24 August</strong>")
         + '</p>\n'
         '  <p class="hint"><span class="hint-inline">' + L(
-          "각 항목을 클릭하면 근거 수치와 배경, 원문 링크가 펼쳐집니다. 고객 전달용은 «요약 PDF», 브리핑 준비용은 «전체 PDF» 로 저장하십시오.",
-          "Click any item to reveal the underlying figures, background and source links. Use «Summary PDF» for client hand-outs and "
-          "«Full PDF» for your own preparation.") + '</span><span class="hint-pane">' + L(
-          "각 항목을 클릭하면 근거 수치와 배경, 원문 링크가 오른쪽 패널에 표시됩니다.",
-          "Click any item to show the underlying figures, background and source links in the panel on the right.") + '</span></p>\n'
+          "이 판은 <strong>세 층</strong>입니다 &mdash; 1층만 읽어도 통화가 되고, 2층에 그 근거가, 3층에 검증 노트가 있습니다. 접힌 표는 눌러 펼치십시오. 고객 전달용은 «요약 PDF»(3층 제외), 브리핑 준비용은 «전체 PDF» 입니다. <strong>베타 시안이라 고객에게 그대로 건네지 마십시오.</strong>",
+          "This edition has <strong>three tiers</strong> &mdash; tier 1 alone is enough to make the call, tier 2 carries the "
+          "reasoning and tier 3 the verification notes. Open folded tables by clicking them. «Summary PDF» drops tier 3; "
+          "«Full PDF» keeps everything. <strong>This is a beta draft &mdash; do not hand it to clients.</strong>") + '</span>'
+        '</span></p>\n'
         '</div>\n\n')
 
 
