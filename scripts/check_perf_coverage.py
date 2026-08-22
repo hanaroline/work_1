@@ -75,8 +75,8 @@ def survey(D):
         out.append((name, 1 if _has(p) else 0, 1, 1 if _core(p) else 0,
                     [] if _has(p) else [name]))
 
-    for name in ("indices", "stocks", "us_stocks", "eu_stocks", "jp_stocks",
-                 "cn_stocks", "us_sectors", "kr_etf"):
+    for name in ("indices", "stocks", "broker_stocks", "us_stocks", "eu_stocks",
+                 "jp_stocks", "cn_stocks", "us_sectors", "kr_etf"):
         flat(name, D.get(name))
 
     # 금리 곡선 — perf 가 만기별 사전으로 한 단계 더 들어가 있다

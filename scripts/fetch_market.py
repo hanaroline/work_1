@@ -1430,6 +1430,17 @@ _IB_SENT = re.compile(
 # 이슈(실적·인수·제재·인사·자사주 등)를 받는다. 리서치 자료가 아니라 **회사
 # 소식**이다.
 MIRAE_CODE = "006800"
+
+# 증권업 **동향**은 기사만으로는 안 된다 — 업권과 회사가 실제로 어떻게
+# 움직였는지 수치가 있어야 한다. 업종 등락률(sectors 의 「증권」)과 함께
+# 이 종목들의 주가·기간 수익률을 받아 둔다.
+YAHOO_BROKER_STOCKS = {
+    "미래에셋증권": "006800.KS", "삼성증권": "016360.KS",
+    "NH투자증권": "005940.KS", "키움증권": "039490.KS",
+    "한국금융지주": "071050.KS", "메리츠증권": "008560.KS",
+    "대신증권": "003540.KS", "한화투자증권": "003530.KS",
+}
+
 BROKER_CODES = {
     "006800": "미래에셋증권", "016360": "삼성증권", "005940": "NH투자증권",
     "039490": "키움증권", "071050": "한국금융지주", "008560": "메리츠증권",
@@ -1613,6 +1624,26 @@ _QUOTE_MARK = ("연구원", "애널리스트", "센터장", "리서치센터", "
                "투자전략", "스트래티지스트", "이코노미스트", "지수 담당")
 
 
+# 「리서치 콜」 제목 꼴. 이것이 걸리면 점수와 무관하게 인용으로 본다.
+#
+# 8/22 에 「교보證 "SK하이닉스 40조 자사주 소각, 시장 기대 웃돌아"」가
+# 회사 이슈로 들어왔다. 「자사주·소각」은 **SK하이닉스**가 한 일인데 교보증권
+# 이름 곁에 있었기 때문이다. 국내 기사에서 이 꼴 — 증권사 이름(또는 「○○證」)
+# 뒤에 따옴표, 또는 제목의 목표가·투자의견 — 은 언제나 리서치 의견이다.
+_CALL_WORD = ("목표가", "목표주가", "투자의견", "눈높이", "비중확대", "비중축소",
+              "매수 의견", "리포트", "보고서", "전망치", "실적 전망", "상향", "하향")
+_CALL_QUOTE = re.compile(r'(?:증권|證|투자|금융지주)\s*[“"\'‘]')
+
+
+def _looks_like_research_call(title, company):
+    t = title or ""
+    if _CALL_QUOTE.search(t):
+        return True
+    short = company.replace("증권", "").replace("투자", "").replace("금융지주", "")
+    named = company in t or (len(short) >= 2 and (short + "證") in t)
+    return named and any(w in t for w in _CALL_WORD)
+
+
 def _classify_broker(title, body, company):
     """그 회사 **자체** 기사인지, 그 회사 사람을 인용한 기사인지 가른다.
 
@@ -1624,6 +1655,8 @@ def _classify_broker(title, body, company):
     쪽이 한다.
     """
     t, b = title or "", body or ""
+    if _looks_like_research_call(t, company):
+        return "quoted", -9, "리서치 콜 제목 — 이 회사가 낸 의견이지 이 회사 소식이 아니다"
     score, why = 0, []
     if company in t:                              # 가장 센 신호다
         score += 4
@@ -2565,6 +2598,13 @@ def main():
         v, st = run(name, yahoo_quote, sym)
         if v:
             out["stocks"][name] = attach_note(name, v)
+        out["sources"]["yahoo:" + sym] = st
+
+    # 증권업 동향의 수치 쪽 — 미래에셋증권과 동종 주가·기간 수익률
+    for name, sym in YAHOO_BROKER_STOCKS.items():
+        v, st = run(name, yahoo_quote, sym)
+        if v:
+            out.setdefault("broker_stocks", {})[name] = v
         out["sources"]["yahoo:" + sym] = st
 
     # 환율 — 원화 크로스를 만들 달러 상대 통화쌍. 나머지 다리는 indices 에 있다.
