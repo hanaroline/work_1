@@ -120,7 +120,15 @@ var MASPSRC = (function () {
         body: body.toString(),
         signal: ctrl ? ctrl.signal : undefined
       }).then(function (r) {
-        if (!r.ok) throw new Error('HTTP ' + r.status);
+        if (!r.ok) {
+          /* 로컬 프록시는 실패 사유를 {"error": "..."} 로 돌려준다.
+             그 내용을 그대로 진단에 노출해야 원인을 CLI 없이 알 수 있다. */
+          return r.text().then(function (t) {
+            var detail = '';
+            try { detail = (JSON.parse(t) || {}).error || ''; } catch (e) { detail = t.slice(0, 120); }
+            throw new Error('HTTP ' + r.status + (detail ? ' | ' + detail : ''));
+          });
+        }
         return r.text();
       }).then(function (txt) {
         var j;
@@ -545,9 +553,20 @@ var MASPSRC = (function () {
     pension: ['공개 API 없음', 'No public API']
   };
 
+  /* 로컬 서버가 붙어 있으면 그 빌드 표시를 진단에 남긴다 (구버전 실행 구분용) */
+  function probeServer() {
+    if (typeof location === 'undefined' || !/^https?:$/.test(location.protocol)) return Promise.resolve();
+    return fetch('/api/health').then(function (r) { return r.ok ? r.json() : null; }).then(function (j) {
+      if (j) log({ bld: '로컬 서버', proxy: 'serve-products.py', ok: true, msg: '빌드 ' + (j.build || '(표시 없음 — 구버전)') });
+    }).catch(function () {
+      log({ bld: '로컬 서버', proxy: '-', ok: false, msg: '로컬 서버 없음 (파일을 직접 열었거나 서버 미실행)' });
+    });
+  }
+
   function loadAll(asOfDate, onEach) {
     resetDiag();
     var results = {};
+    return probeServer().then(function () {
     return Promise.all(CATALOG.map(function (s) {
       var t0 = Date.now();
       return s.run(asOfDate).then(function (rows) {
@@ -559,6 +578,7 @@ var MASPSRC = (function () {
         if (onEach) onEach(s.id, results[s.id]);
       });
     })).then(function () { return results; });
+    });
   }
 
   return {
