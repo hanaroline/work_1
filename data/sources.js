@@ -420,7 +420,7 @@ var MASPSRC = (function () {
   }
   /* 기초자산 문자열 -> 화면 기초자산 코드 목록 */
   var UAST_MAP = [
-    [/KOSPI\s*200|코스피\s*200/i, 'KOSPI200'], [/S&P\s*500|SPX/i, 'SPX'],
+    [/KOSPI\s*200|코스피\s*200|\bK2001\b/i, 'KOSPI200'], [/S&P\s*500|SPX/i, 'SPX'],
     [/EUROSTOXX|EURO\s*STOXX|SX5E/i, 'SX5E'], [/HSCEI|항셍/i, 'HSCEI'],
     [/NIKKEI|니케이|NKY/i, 'NKY'], [/NVIDIA|엔비디아/i, 'NVDA'],
     [/TESLA|테슬라/i, 'TSLA'], [/APPLE|애플/i, 'AAPL'],
@@ -434,47 +434,79 @@ var MASPSRC = (function () {
 
   function loadMasEls(asOfDate) {
     var today = fmtIso(asOfDate);
+    var plus60 = new Date((asOfDate || new Date()).getTime() + 60 * 86400000);
     return masPost('/hks/hks4022/a01.json', {
-      omkt_drvs_tcd: '', qry_strt_dt: today.replace(/-/g, ''), qry_end_dt: today.replace(/-/g, ''),
+      omkt_drvs_tcd: '',
+      qry_strt_dt: today.replace(/-/g, ''),
+      /* 당일~+60일로 조회해야 청약 예정 상품까지 나온다(실측 확인) */
+      qry_end_dt: fmtIso(plus60).replace(/-/g, ''),
       next_key: '', dlbr_term_yn: '0', qry_sort_tp: '0', qry_sort_sqn: '0'
     }, '/hks/hks4022/n01.do').then(function (res) {
-      var rows = res.grid01 || res.list || [];
-      if (!rows.length) throw new Error('청약 목록이 비어 있습니다 (result=' + res.result + ')');
-      auditRow('MAS/hks4022', rows[0], []);
-      var out = rows.map(function (r) {
-        var nm = String(r.itm_nm || '').trim();
-        var end = ymd8(r.apy_end_dt), start = ymd8(r.apy_strt_dt);
-        var dleft = daysUntil(end, today);
-        var risk = parseInt(String(r.omkt_drvs_risk_gcd || '').replace(/[^0-9]/g, ''), 10);
-        var online = String(r.onln_apy_abl_yn || '').toUpperCase() === 'Y';
-        return {
-          cat: 'els', live: true, source: '미래에셋증권',
-          sourceUrl: 'https://securities.miraeasset.com/hks/hks4022/n01.do',
-          code: String(r.itm_no || '').trim(),
-          name: [nm, nm],
-          provider: ['미래에셋증권', 'Mirae Asset Securities'],
-          elsType: elsTypeOf(r.omkt_drvs_pcd_nm),
-          underlying: uastCodes(r.uast_cn),
-          uastText: String(r.uast_cn || '').trim(),
-          coupon: n(r.omkt_drv_frcs_ern_r),
-          maxLoss: n(r.max_abl_los_r),
-          pcaGrte: n(r.pca_grte_r),
-          risk: (risk >= 1 && risk <= 6) ? risk : null,
-          subStart: start, subEnd: end, deadlineD: dleft,
-          status: dleft != null && dleft <= 7 ? 'closing' : 'open',
-          statusText: String(r.prgs_stat_nm || '').trim(),
-          currency: /USD|달러/.test(String(r.curr_cd_nm || r.curr_cd || '')) ? 'USD' : 'KRW',
-          channel: online ? ['online', 'app', 'branch'] : ['branch'],
-          tax: [], asset: 'der', region: 'gl',
-          earlyText: String(r.omkt_drv_exrt_cycl_cn || '').trim(),
-          minAmount: null, fee: null, aum: null,
-          series: null, bench: null, holdings: null
-        };
-      }).filter(function (p) { return p.name[0]; });
+      var rows = res.grid01 || [];
+      if (!rows.length) {
+        throw new Error('청약 목록 없음 (message=' + (res.message || res.returnCode) + ')');
+      }
+      var out = rows.map(function (r) { return masElsRow(r, today); })
+        .filter(function (p) { return p.name[0]; });
       log({ bld: '미래에셋 ELS/DLS', ok: true, msg: out.length + '건 수신' });
       return out;
     });
   }
+
+  /* 실제 응답 필드 기준 매핑 (--mas-probe 로 확인한 값)
+       tmod_nm  종목명 "(ELS)38031"      omkt_drvs_tcd 1.ELS 2.DLS 3.ELB 4.DLB
+       omkt_drv_frcs_ern_r 제시수익률    rmnd_dys 청약 잔여일수
+       apy_strt_dt~apy_end_dt 청약기간   kni_yn 낙인 여부(Y/N)
+       lwrk_bar_rt 최저 배리어율          max_abl_los_r 최대손실률(음수)
+       onln_apy_abl_yn 온라인청약 가능    curr_cd 통화
+       omkt_drv_rpy_cycl_cn 상환주기      omkt_drv_desc_cn 상품 설명
+       ofr_lmt_a 모집한도                 hlv_fn_ivst_pd_yn 고위험 여부
+     위험등급은 이 응답에 없으므로 채우지 않는다. */
+  var MAS_TCD = { '1': 'step', '2': 'dls', '3': 'elb', '4': 'elb' };
+  function masElsRow(r, today) {
+    var raw = String(pick(r, ['tmod_nm', 'itm_nm', 'omkt_drvs_pcd_nm']) || '').trim();
+    /* "(ELS)38031" 형태를 읽기 쉽게 재배열한다. 원문에 있는 정보만 쓰고 덧붙이지 않는다. */
+    var m = raw.match(/^\(([A-Z]+)\)\s*(\d+)$/);
+    var nm = m ? ('제' + m[2] + '회 ' + m[1]) : raw;
+    var tcd = String(r.omkt_drvs_tcd || '').trim();
+    var kni = String(r.kni_yn || '').trim().toUpperCase();
+    var bar = n(r.lwrk_bar_rt);
+    var loss = n(r.max_abl_los_r);
+    var dleft = n(r.rmnd_dys);
+    var end = ymd8(pick(r, ['apy_end_dt', 'dlbr_obj_apy_end_dt']));
+    var online = String(r.onln_apy_abl_yn || '').toUpperCase() === 'Y';
+    var desc = String(r.omkt_drv_desc_cn || '').trim();
+    var codes = uastCodes(desc + ' ' + [r.row1_cn, r.row2_cn, r.row3_cn].join(' '));
+    return {
+      cat: 'els', live: true, source: '미래에셋증권',
+      sourceUrl: 'https://securities.miraeasset.com/hks/hks4022/n01.do',
+      code: String(pick(r, ['omkt_drvs_pcd']) || (nm.match(/\d{3,}/) || [''])[0] || '').trim(),
+      name: [nm, nm], rawName: raw,
+      provider: ['미래에셋증권', 'Mirae Asset Securities'],
+      elsType: MAS_TCD[tcd] || (/DLS|DLB/.test(nm) ? 'dls' : /ELB/.test(nm) ? 'elb' : 'step'),
+      underlying: codes,
+      uastText: desc,
+      coupon: n(r.omkt_drv_frcs_ern_r),
+      /* 낙인 여부가 실제로 오므로 여기서는 단정해도 된다 */
+      knockIn: kni === 'Y' ? (bar != null ? bar : null) : null,
+      knockInKnown: kni === 'Y' || kni === 'N',
+      barrier: bar,
+      maxLoss: loss != null ? Math.abs(loss) : null,
+      risk: null,
+      subStart: ymd8(r.apy_strt_dt), subEnd: end,
+      deadlineD: dleft != null ? dleft : daysUntil(end, today),
+      status: (dleft != null && dleft <= 7) ? 'closing' : 'open',
+      currency: /USD|\$|미국/.test(String(r.curr_cd || '')) ? 'USD' : 'KRW',
+      channel: online ? ['online', 'app', 'branch'] : ['branch'],
+      tax: [], asset: 'der', region: codes.indexOf('KOSPI200') >= 0 ? 'kr' : 'gl',
+      earlyText: String(r.omkt_drv_rpy_cycl_cn || '').trim(),
+      offerLimit: n(r.ofr_lmt_a),
+      highRisk: String(r.hlv_fn_ivst_pd_yn || '').toUpperCase() === 'Y',
+      minAmount: null, fee: null, aum: null,
+      series: null, bench: null, holdings: null
+    };
+  }
+
   function fmtIso(d) {
     d = d || new Date();
     return d.getFullYear() + '-' + ('0' + (d.getMonth() + 1)).slice(-2) + '-' + ('0' + d.getDate()).slice(-2);

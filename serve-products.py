@@ -44,7 +44,7 @@ from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
 
 ROOT = os.path.dirname(os.path.abspath(__file__))
 # 파일이 실제로 교체됐는지 한눈에 확인하기 위한 빌드 표시
-BUILD = "2026-08-23.2 (mas-warmup)"
+BUILD = "2026-08-23.3 (mas-fields)"
 KRX_URL = "https://data.krx.co.kr/comm/bldAttendant/getJsonData.cmd"
 KRX_REFERER = "https://data.krx.co.kr/contents/MDC/MDI/outerLoader/index.cmd"
 # 쿠키를 받기 위해 먼저 방문하는 페이지. KRX 는 세션 쿠키(JSESSIONID) 없이
@@ -397,15 +397,22 @@ def mas_today():
     return time.strftime("%Y%m%d", time.localtime())
 
 
+def mas_days_ahead(days):
+    return time.strftime("%Y%m%d", time.localtime(time.time() + days * 86400))
+
+
 def mas_els_list(max_pages=8):
-    """ELS/DLS 청약 목록 전체를 next_key 페이징으로 수집한다."""
+    """ELS/DLS 청약 목록 전체를 next_key 페이징으로 수집한다.
+
+    조회기간을 당일~+60일로 둬야 청약 예정 상품까지 나온다(실측으로 확인).
+    """
     out, next_key, pages = [], "", 0
     while pages < max_pages:
         pages += 1
         res = mas_post("/hks/hks4022/a01.json", {
             "omkt_drvs_tcd": "",          # 전체 (1.ELS 2.DLS 3.ELB 4.DLB)
             "qry_strt_dt": mas_today(),
-            "qry_end_dt": mas_today(),
+            "qry_end_dt": mas_days_ahead(60),
             "next_key": next_key,
             "dlbr_term_yn": "0",
             "qry_sort_tp": "0",
@@ -440,6 +447,7 @@ def mas_probe():
         print(t)
         lines.append(t)
 
+    samples = {}
     out("=" * 70)
     out(" 미래에셋증권 상품 JSON API 점검")
     out("=" * 70)
@@ -492,6 +500,11 @@ def mas_probe():
             out("     최상위 키 : %s" % ", ".join(keys[:12]))
             out("     result=%s returnCode=%s continueYn=%s"
                 % (res.get("result"), res.get("returnCode"), res.get("continueYn")))
+            samples[label] = {"path": path, "params": p,
+                              "first": (rows[0] if rows else None),
+                              "count": len(rows or []),
+                              "top": {k: v for k, v in (res.items() if isinstance(res, dict) else [])
+                                      if not isinstance(v, list)}}
             if rows:
                 ok += 1
                 out("     %s 건수 : %d" % (grid, len(rows)))
@@ -512,6 +525,15 @@ def mas_probe():
     if ok:
         out("=> 이 구조로 화면에 연결합니다. 위 '첫 항목 필드' 를 그대로 보내주세요.")
     out("=" * 70)
+    # 응답 전문을 파일로 남긴다. 필드가 24개를 넘어 화면 출력만으로는 잘리기 때문.
+    sample_path = os.path.join(ROOT, "mas-api-sample.json")
+    try:
+        with open(sample_path, "w", encoding="utf-8") as fh:
+            json.dump(samples, fh, ensure_ascii=False, indent=1)
+        print("\n응답 전문 저장: %s" % sample_path)
+    except Exception as e:
+        print("\n응답 전문 저장 실패: %s" % e)
+
     path_out = os.path.join(ROOT, "mas-api-report.txt")
     try:
         with open(path_out, "w", encoding="utf-8") as fh:
@@ -693,6 +715,11 @@ def write_report(path):
         try:
             payload = krx_post(bld, params, base_ts)
             rows = rows_of(payload)
+            samples[label] = {"path": path, "params": p,
+                              "first": (rows[0] if rows else None),
+                              "count": len(rows or []),
+                              "top": {k: v for k, v in (res.items() if isinstance(res, dict) else [])
+                                      if not isinstance(v, list)}}
             if rows:
                 ok += 1
                 out("   [OK]   %-22s %5d건" % (label, len(rows)))
