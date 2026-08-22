@@ -2777,6 +2777,9 @@ def main():
             out.setdefault("broker_news", {})["sector_issues"] = si["issues"]
         out["sources"]["derived:sector_issues"] = {"ok": bool(si["count"]),
                                                    "count": si["count"]}
+        if not si["count"]:
+            out["sources"]["derived:sector_issues"]["error"] = \
+                "오늘 기사에 증권업 전반 이슈가 없다(말투로만 쓰인 것은 세지 않는다)"
     except Exception as e:                                        # noqa: BLE001
         out["sources"]["derived:sector_issues"] = {
             "ok": False, "error": "%s: %s" % (type(e).__name__, e)}
@@ -2855,8 +2858,13 @@ def main():
 
     print("=== 원천별 결과 ===")
     for k, v in sorted(out["sources"].items()):
+        # `error` 를 `v["error"]` 로 읽지 않는다. 실패 항목에 그 열쇠가 없으면
+        # **요약을 찍다가 수집기 전체가 죽는다.** 8/22 에 그렇게 죽었다 —
+        # 원천 188/193 을 다 받아 놓고 마지막 print 에서 KeyError 가 나
+        # 커밋 단계까지 못 갔다. 받아 온 자료가 요약문 하나 때문에 버려질
+        # 이유가 없다.
         print(("  OK   " if v["ok"] else "  FAIL ") + k
-              + ("" if v["ok"] else "  <- " + v["error"]))
+              + ("" if v["ok"] else "  <- " + str(v.get("error", "사유 없음"))))
     print("\n%d/%d 성공" % (ok, len(out["sources"])))
     for k in ("kospi", "kosdaq", "usdkrw"):
         if k in out["indices"]:
