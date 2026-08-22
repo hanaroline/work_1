@@ -14,9 +14,15 @@
  *   엔드포인트·파라미터명은 pykrx(https://github.com/sharebook-kr/pykrx)에
  *   공개된 KRX 메뉴 카탈로그(path_bld_information.json)에서 확인한 값이다.
  *
+ * [주 소스 — 미래에셋증권 공개 상품 API]
+ *   ELS/DLS 청약목록  POST /hks/hks4022/a01.json   (로컬 서버 /api/mas 경유)
+ *     상품명·상품번호·종류·위험등급·제시수익률·기초자산·청약기간·조기상환주기
+ *     ·온라인청약가능·진행상태·통화·최대손실률·원금보장률
+ *   엔드포인트와 파라미터명은 상품 페이지에 포함된 스크립트에서 확인한 값이다.
+ *   응답은 EUC-KR 이므로 로컬 서버가 cp949 로 디코딩해 UTF-8 로 넘겨준다.
+ *
  * [연동 불가 — 공개 API 부재]
  *   펀드 수익률·보수      금융투자협회 전자공시(dis.kofia.or.kr) — 공개 API 없음
- *   ELS/DLS 회차별 조건   미래에셋증권 홈페이지 — 공개 API 없음
  *   RP·CMA 금리           미래에셋증권 홈페이지 — 공개 API 없음
  *   랩·신탁               공개 소스 없음
  *   위험등급·세제·판매채널  KRX 공개데이터에 없음 (투자설명서 항목)
@@ -149,7 +155,14 @@ var MASPSRC = (function () {
       });
       return withTimeout(req, TIMEOUT, function () { if (ctrl) ctrl.abort(); })
         .catch(function (e) {
-          log({ bld: bld, proxy: px.name, ok: false, msg: String(e.message || e) });
+          var msg = String(e.message || e);
+          log({ bld: bld, proxy: px.name, ok: false, msg: msg });
+          /* 로컬 서버가 응답을 준 경우(HTTP 5xx 등) 그 서버가 이미 KRX 를 직접
+             호출한 것이다. 공용 프록시는 쿠키·로그인을 붙일 수 없어 성공할 수
+             없으므로, 요청당 24초를 낭비하지 않고 여기서 끝낸다. */
+          if (px === LOCAL_PROXY && /^HTTP /.test(msg)) {
+            return Promise.reject(new Error(msg));
+          }
           return tryNext();
         });
     }
@@ -354,6 +367,119 @@ var MASPSRC = (function () {
     return 'kr';
   }
 
+  /* ================================================== 미래에셋 ELS/DLS 어댑터 */
+  /* 미래에셋증권 공개 상품 API. 로컬 서버(serve-products.py)의 /api/mas 를 경유한다.
+     엔드포인트·파라미터는 상품 페이지에 포함된 스크립트에서 확인한 값이다.
+       POST /hks/hks4022/a01.json
+       grid01[] : itm_nm 상품명 / itm_no 상품번호 / omkt_drvs_pcd_nm 종류
+                  omkt_drvs_risk_gcd 위험등급 / omkt_drv_frcs_ern_r 제시수익률
+                  uast_cn 기초자산 / apy_strt_dt~apy_end_dt 청약기간
+                  omkt_drv_exrt_cycl_cn 조기상환주기 / onln_apy_abl_yn 온라인청약
+                  prgs_stat_nm 진행상태 / curr_cd_nm 통화 / max_abl_los_r 최대손실률
+     이 소스는 '보조' 가 아니라 주 소스다(미래에셋이 발행하는 실제 상품). */
+  function masPost(path, params, ref) {
+    var body = new URLSearchParams();
+    body.set('__path', path);
+    if (ref) body.set('__ref', ref);
+    Object.keys(params || {}).forEach(function (k) { body.set(k, params[k]); });
+    var ctrl = typeof AbortController !== 'undefined' ? new AbortController() : null;
+    var req = fetch('/api/mas', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8' },
+      body: body.toString(),
+      signal: ctrl ? ctrl.signal : undefined
+    }).then(function (r) {
+      return r.text().then(function (t) {
+        var j = null;
+        try { j = JSON.parse(t); } catch (e) { throw new Error('JSON 아님: ' + t.slice(0, 80)); }
+        if (!r.ok) throw new Error('HTTP ' + r.status + (j && j.error ? ' | ' + j.error : ''));
+        return j;
+      });
+    });
+    return withTimeout(req, 15000, function () { if (ctrl) ctrl.abort(); });
+  }
+
+  function ymd8(v) {
+    var t = String(v == null ? '' : v).replace(/[^0-9]/g, '');
+    return t.length === 8 ? t.slice(0, 4) + '-' + t.slice(4, 6) + '-' + t.slice(6, 8) : null;
+  }
+  function daysUntil(iso, todayIso) {
+    if (!iso) return null;
+    var a = new Date(iso + 'T00:00:00Z').getTime(), b = new Date(todayIso + 'T00:00:00Z').getTime();
+    if (isNaN(a) || isNaN(b)) return null;
+    return Math.round((a - b) / 86400000);
+  }
+  /* 미래에셋 상품종류명 -> 화면 유형코드 */
+  function elsTypeOf(nm) {
+    var t = String(nm || '');
+    if (/ELB|DLB|원금\s*지급|원금\s*보장/.test(t)) return 'elb';
+    if (/DLS/.test(t)) return 'dls';
+    if (/월지급/.test(t)) return 'month';
+    if (/리자드/.test(t)) return 'lizard';
+    return 'step';
+  }
+  /* 기초자산 문자열 -> 화면 기초자산 코드 목록 */
+  var UAST_MAP = [
+    [/KOSPI\s*200|코스피\s*200/i, 'KOSPI200'], [/S&P\s*500|SPX/i, 'SPX'],
+    [/EUROSTOXX|EURO\s*STOXX|SX5E/i, 'SX5E'], [/HSCEI|항셍/i, 'HSCEI'],
+    [/NIKKEI|니케이|NKY/i, 'NKY'], [/NVIDIA|엔비디아/i, 'NVDA'],
+    [/TESLA|테슬라/i, 'TSLA'], [/APPLE|애플/i, 'AAPL'],
+    [/CMS|금리/i, 'CMS'], [/WTI|원유/i, 'WTI']
+  ];
+  function uastCodes(text) {
+    var t = String(text || ''), out = [];
+    UAST_MAP.forEach(function (p) { if (p[0].test(t) && out.indexOf(p[1]) < 0) out.push(p[1]); });
+    return out;
+  }
+
+  function loadMasEls(asOfDate) {
+    var today = fmtIso(asOfDate);
+    return masPost('/hks/hks4022/a01.json', {
+      omkt_drvs_tcd: '', qry_strt_dt: today.replace(/-/g, ''), qry_end_dt: today.replace(/-/g, ''),
+      next_key: '', dlbr_term_yn: '0', qry_sort_tp: '0', qry_sort_sqn: '0'
+    }, '/hks/hks4022/n01.do').then(function (res) {
+      var rows = res.grid01 || res.list || [];
+      if (!rows.length) throw new Error('청약 목록이 비어 있습니다 (result=' + res.result + ')');
+      auditRow('MAS/hks4022', rows[0], []);
+      var out = rows.map(function (r) {
+        var nm = String(r.itm_nm || '').trim();
+        var end = ymd8(r.apy_end_dt), start = ymd8(r.apy_strt_dt);
+        var dleft = daysUntil(end, today);
+        var risk = parseInt(String(r.omkt_drvs_risk_gcd || '').replace(/[^0-9]/g, ''), 10);
+        var online = String(r.onln_apy_abl_yn || '').toUpperCase() === 'Y';
+        return {
+          cat: 'els', live: true, source: '미래에셋증권',
+          sourceUrl: 'https://securities.miraeasset.com/hks/hks4022/n01.do',
+          code: String(r.itm_no || '').trim(),
+          name: [nm, nm],
+          provider: ['미래에셋증권', 'Mirae Asset Securities'],
+          elsType: elsTypeOf(r.omkt_drvs_pcd_nm),
+          underlying: uastCodes(r.uast_cn),
+          uastText: String(r.uast_cn || '').trim(),
+          coupon: n(r.omkt_drv_frcs_ern_r),
+          maxLoss: n(r.max_abl_los_r),
+          pcaGrte: n(r.pca_grte_r),
+          risk: (risk >= 1 && risk <= 6) ? risk : null,
+          subStart: start, subEnd: end, deadlineD: dleft,
+          status: dleft != null && dleft <= 7 ? 'closing' : 'open',
+          statusText: String(r.prgs_stat_nm || '').trim(),
+          currency: /USD|달러/.test(String(r.curr_cd_nm || r.curr_cd || '')) ? 'USD' : 'KRW',
+          channel: online ? ['online', 'app', 'branch'] : ['branch'],
+          tax: [], asset: 'der', region: 'gl',
+          earlyText: String(r.omkt_drv_exrt_cycl_cn || '').trim(),
+          minAmount: null, fee: null, aum: null,
+          series: null, bench: null, holdings: null
+        };
+      }).filter(function (p) { return p.name[0]; });
+      log({ bld: '미래에셋 ELS/DLS', ok: true, msg: out.length + '건 수신' });
+      return out;
+    });
+  }
+  function fmtIso(d) {
+    d = d || new Date();
+    return d.getFullYear() + '-' + ('0' + (d.getMonth() + 1)).slice(-2) + '-' + ('0' + d.getDate()).slice(-2);
+  }
+
   /* =========================================================== ETN 어댑터 */
   function loadEtn(asOfDate) {
     var base = lastBusinessDay(asOfDate);
@@ -553,6 +679,9 @@ var MASPSRC = (function () {
      이 화면의 본질인 '미래에셋증권이 판매·발행하는 상품 라인업'은 제공하지 않는다.
      주 소스는 사내 상품 API 또는 CSV 임포트이며, KRX 미연결은 오류가 아니다. */
   var CATALOG = [
+    /* 주 소스: 미래에셋증권이 발행하는 실제 상품 */
+    { id: 'masEls', label: ['ELS·DLS (미래에셋 청약)', 'ELS/DLS (Mirae Asset offerings)'],
+      cats: ['els'], run: loadMasEls },
     { id: 'etf', label: ['ETF (KRX 전종목)', 'ETF (KRX all listings)'], cats: ['etf'], aux: true, run: loadEtf },
     { id: 'etn', label: ['ETN (KRX 전종목)', 'ETN (KRX all listings)'], cats: ['etf'], aux: true, run: loadEtn },
     { id: 'bond', label: ['채권 (KRX 전종목 시세)', 'Bonds (KRX all listings)'], cats: ['bond'], aux: true, run: loadBond }
@@ -566,7 +695,6 @@ var MASPSRC = (function () {
   /* 공개 소스가 없는 상품군 — 화면에 사유를 그대로 표시한다 */
   var NO_SOURCE = {
     fund: ['공개 API 없음 (금투협 전자공시)', 'No public API (KOFIA disclosure)'],
-    els: ['공개 API 없음 (발행사 홈페이지 전용)', 'No public API (issuer site only)'],
     rp: ['공개 API 없음 (발행사 홈페이지 전용)', 'No public API (issuer site only)'],
     wrap: ['공개 소스 없음', 'No public source'],
     pension: ['공개 API 없음', 'No public API']

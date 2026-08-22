@@ -44,7 +44,7 @@ from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
 
 ROOT = os.path.dirname(os.path.abspath(__file__))
 # 파일이 실제로 교체됐는지 한눈에 확인하기 위한 빌드 표시
-BUILD = "2026-08-22.5 (mas-capture)"
+BUILD = "2026-08-23.1 (mas-api)"
 KRX_URL = "https://data.krx.co.kr/comm/bldAttendant/getJsonData.cmd"
 KRX_REFERER = "https://data.krx.co.kr/contents/MDC/MDI/outerLoader/index.cmd"
 # 쿠키를 받기 위해 먼저 방문하는 페이지. KRX 는 세션 쿠키(JSESSIONID) 없이
@@ -321,6 +321,147 @@ def build_snapshot(out_path, base_ts=None):
     return ok, fail
 
 
+# ------------------------------------------------ 미래에셋 상품 JSON API (공개)
+# 상품 페이지는 화면만 있고, 데이터는 같은 경로의 *.json 을 AJAX 로 호출해 채운다.
+# 엔드포인트와 파라미터명은 각 페이지에 포함된 스크립트에서 확인한 값이다.
+#   ELS/DLS 청약목록   POST /hks/hks4022/a01.json
+#   ELS/DLS 기준가     POST /hks/hks4023/a01.json
+#   채권/RP 기준수익률 POST /hks/hks4037/a01.json   (indate)
+#   ETN 전체상품       POST /bp/q000.json
+# 사이트 응답은 EUC-KR 이므로 반드시 cp949 로 디코딩해야 한다.
+MAS_BASE = "https://securities.miraeasset.com"
+
+
+def decode_kr(raw):
+    """EUC-KR(cp949) 우선으로 디코딩한다. 실패하면 UTF-8 로 넘어간다."""
+    for enc in ("cp949", "euc-kr", "utf-8"):
+        try:
+            return raw.decode(enc)
+        except (UnicodeDecodeError, LookupError):
+            continue
+    return raw.decode("utf-8", "replace")
+
+
+def mas_post(path, params=None, referer=None):
+    """미래에셋 공개 상품 JSON 엔드포인트 호출 (서버측이므로 CORS 없음)."""
+    url = MAS_BASE + path
+    data = urllib.parse.urlencode(params or {}, encoding="cp949", errors="replace").encode("ascii")
+    req = urllib.request.Request(url, data=data, headers={
+        "User-Agent": UA,
+        "Referer": referer or (MAS_BASE + "/financeMain.do"),
+        "Content-Type": "application/x-www-form-urlencoded; charset=EUC-KR",
+        "Accept": "application/json, text/javascript, */*; q=0.01",
+        "Accept-Language": "ko-KR,ko;q=0.9",
+        "X-Requested-With": "XMLHttpRequest",
+    })
+    with _opener.open(req, timeout=timeout_s) as r:
+        raw = r.read()
+    text = decode_kr(raw)
+    try:
+        return json.loads(text)
+    except json.JSONDecodeError:
+        raise RuntimeError("JSON 이 아닌 응답(%d바이트): %s" % (len(raw), text[:200].replace("\n", " ")))
+
+
+def mas_today():
+    return time.strftime("%Y%m%d", time.localtime())
+
+
+def mas_els_list(max_pages=8):
+    """ELS/DLS 청약 목록 전체를 next_key 페이징으로 수집한다."""
+    out, next_key, pages = [], "", 0
+    while pages < max_pages:
+        pages += 1
+        res = mas_post("/hks/hks4022/a01.json", {
+            "omkt_drvs_tcd": "",          # 전체 (1.ELS 2.DLS 3.ELB 4.DLB)
+            "qry_strt_dt": mas_today(),
+            "qry_end_dt": mas_today(),
+            "next_key": next_key,
+            "dlbr_term_yn": "0",
+            "qry_sort_tp": "0",
+            "qry_sort_sqn": "0",
+        }, referer=MAS_BASE + "/hks/hks4022/n01.do")
+        rows = res.get("grid01") or []
+        out.extend(rows)
+        if str(res.get("continueYn", "")) != "1":
+            break
+        next_key = res.get("cts") or res.get("next_key") or ""
+        if not next_key:
+            break
+    return out
+
+
+MAS_PROBES = [
+    ("ELS/DLS 청약목록", "/hks/hks4022/a01.json", {
+        "omkt_drvs_tcd": "", "qry_strt_dt": "@TODAY", "qry_end_dt": "@TODAY",
+        "next_key": "", "dlbr_term_yn": "0", "qry_sort_tp": "0", "qry_sort_sqn": "0",
+    }, "/hks/hks4022/n01.do", "grid01"),
+    ("ELS/DLS 기준가", "/hks/hks4023/a01.json", {}, "/hks/hks4023/r01.do", None),
+    ("채권/RP 기준수익률", "/hks/hks4037/a01.json", {"indate": "@TODAY"}, "/hks/hks4037/r03.do", "list"),
+    ("ETN 전체상품", "/bp/q000.json", {}, "/hks/hks4318/n01_21.do", "a91303"),
+]
+
+
+def mas_probe():
+    """상품 JSON 엔드포인트를 실제로 호출해 응답 구조를 보고한다."""
+    lines = []
+
+    def out(t=""):
+        print(t)
+        lines.append(t)
+
+    out("=" * 70)
+    out(" 미래에셋증권 상품 JSON API 점검")
+    out("=" * 70)
+    out("빌드 : %s" % BUILD)
+    out()
+    ok = 0
+    for label, path, params, ref, grid in MAS_PROBES:
+        p = {k: (mas_today() if v == "@TODAY" else v) for k, v in params.items()}
+        try:
+            res = mas_post(path, p, referer=MAS_BASE + ref)
+            keys = list(res.keys()) if isinstance(res, dict) else []
+            rows = None
+            if grid and isinstance(res.get(grid), list):
+                rows = res[grid]
+            else:
+                for k, v in (res.items() if isinstance(res, dict) else []):
+                    if isinstance(v, list) and v:
+                        rows, grid = v, k
+                        break
+            out("[OK] %s   POST %s" % (label, path))
+            out("     최상위 키 : %s" % ", ".join(keys[:12]))
+            out("     result=%s returnCode=%s continueYn=%s"
+                % (res.get("result"), res.get("returnCode"), res.get("continueYn")))
+            if rows:
+                ok += 1
+                out("     %s 건수 : %d" % (grid, len(rows)))
+                out("     첫 항목 필드: %s" % ", ".join(list(rows[0].keys())[:24]))
+                sample = {k: rows[0][k] for k in list(rows[0].keys())[:8]}
+                out("     첫 항목 값  : %s" % json.dumps(sample, ensure_ascii=False)[:300])
+            else:
+                out("     데이터 배열이 비어 있습니다(조건/기간 확인 필요)")
+        except urllib.error.HTTPError as e:
+            out("[HTTP %s] %s   POST %s" % (e.code, label, path))
+        except Exception as e:
+            out("[실패] %s   POST %s" % (label, path))
+            out("     %s" % str(e)[:200])
+        out()
+    out("=" * 70)
+    out("데이터를 받은 엔드포인트 %d / %d" % (ok, len(MAS_PROBES)))
+    if ok:
+        out("=> 이 구조로 화면에 연결합니다. 위 '첫 항목 필드' 를 그대로 보내주세요.")
+    out("=" * 70)
+    path_out = os.path.join(ROOT, "mas-api-report.txt")
+    try:
+        with open(path_out, "w", encoding="utf-8") as fh:
+            fh.write("\n".join(lines) + "\n")
+        print("\n리포트 저장: %s" % path_out)
+    except Exception:
+        pass
+    return 0 if ok else 2
+
+
 # ------------------------------------------------- 미래에셋 홈페이지 수집(공개 페이지)
 # 사내 상품 API 가 없을 때의 경로. 미래에셋증권 공개 상품 페이지를 사용자 PC 에서
 # 읽어 온다(사내망/일반 PC 에서는 접속되지만 외부 데이터센터 IP 는 403 으로 막힌다).
@@ -376,10 +517,12 @@ def mas_capture(out_dir):
             with _opener.open(req, timeout=timeout_s) as r:
                 raw = r.read()
                 status = r.status
-            html = raw.decode("utf-8", "replace")
+            # 사이트가 EUC-KR 이므로 UTF-8 로 디코딩해 저장하면 한글이 소실된다.
+            # 분석용 원본은 바이트 그대로 남긴다.
             path = os.path.join(out_dir, name + ".html")
-            with open(path, "w", encoding="utf-8") as fh:
-                fh.write(html)
+            with open(path, "wb") as fh:
+                fh.write(raw)
+            html = decode_kr(raw)
 
             tables = html.lower().count("<table")
             rows = html.lower().count("<tr")
@@ -538,7 +681,26 @@ class Handler(SimpleHTTPRequestHandler):
         self.wfile.write(body)
 
     def do_POST(self):
-        if urllib.parse.urlparse(self.path).path != "/api/krx":
+        route = urllib.parse.urlparse(self.path).path
+        if route == "/api/mas":
+            # 화면 -> 로컬 서버 -> 미래에셋 상품 JSON API (EUC-KR 응답을 UTF-8 로 변환)
+            try:
+                length = int(self.headers.get("Content-Length") or 0)
+                raw = self.rfile.read(length).decode("utf-8") if length else ""
+                fields = urllib.parse.parse_qs(raw, keep_blank_values=True)
+                path = (fields.pop("__path", [""]) or [""])[0]
+                ref = (fields.pop("__ref", [""]) or [""])[0]
+                if not path.startswith("/"):
+                    self._send_json({"error": "__path 파라미터가 필요합니다"}, 400)
+                    return
+                params = {k: v[0] for k, v in fields.items()}
+                self._send_json(mas_post(path, params, referer=(MAS_BASE + ref) if ref else None))
+            except urllib.error.HTTPError as e:
+                self._send_json({"error": "미래에셋 HTTP %s" % e.code}, 502)
+            except Exception as e:
+                self._send_json({"error": str(e)}, 502)
+            return
+        if route != "/api/krx":
             self.send_error(404)
             return
         try:
@@ -603,6 +765,8 @@ def main():
     ap.add_argument("--check", action="store_true", help="KRX 연결만 점검하고 종료")
     ap.add_argument("--probe", action="store_true",
                     help="런처가 이 파이썬으로 스크립트가 실행되는지 확인용 (아무 것도 안 하고 종료)")
+    ap.add_argument("--mas-probe", action="store_true",
+                    help="미래에셋 상품 JSON API 를 실제 호출해 응답 구조 확인")
     ap.add_argument("--mas-capture", action="store_true",
                     help="미래에셋 공개 상품 페이지를 받아 원본 HTML 저장 + 구조 요약")
     ap.add_argument("--mas-dir", default=os.path.join(ROOT, "mas-capture"),
@@ -633,6 +797,9 @@ def main():
     # Microsoft Store 자리표시자는 스크립트를 실행하지 못해 0 이 아닌 코드로 죽는다.
     if args.probe:
         return 0
+
+    if args.mas_probe:
+        return mas_probe()
 
     if args.mas_capture:
         return mas_capture(args.mas_dir)
