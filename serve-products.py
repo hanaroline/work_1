@@ -44,7 +44,7 @@ from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
 
 ROOT = os.path.dirname(os.path.abspath(__file__))
 # 파일이 실제로 교체됐는지 한눈에 확인하기 위한 빌드 표시
-BUILD = "2026-08-22.4 (krx-login)"
+BUILD = "2026-08-22.5 (mas-capture)"
 KRX_URL = "https://data.krx.co.kr/comm/bldAttendant/getJsonData.cmd"
 KRX_REFERER = "https://data.krx.co.kr/contents/MDC/MDI/outerLoader/index.cmd"
 # 쿠키를 받기 위해 먼저 방문하는 페이지. KRX 는 세션 쿠키(JSESSIONID) 없이
@@ -321,6 +321,107 @@ def build_snapshot(out_path, base_ts=None):
     return ok, fail
 
 
+# ------------------------------------------------- 미래에셋 홈페이지 수집(공개 페이지)
+# 사내 상품 API 가 없을 때의 경로. 미래에셋증권 공개 상품 페이지를 사용자 PC 에서
+# 읽어 온다(사내망/일반 PC 에서는 접속되지만 외부 데이터센터 IP 는 403 으로 막힌다).
+#
+# 주의: 공개 HTML 을 읽는 방식이라 사이트 개편 시 깨진다. 또한 페이지가 JS 로
+# 데이터를 채우는 구조면 HTML 에는 값이 없고, 실제 데이터는 별도 AJAX 호출에 있다.
+# 그 경우 --mas-capture 결과가 "JS 로 채우는 껍데기" 로 보고되므로, 브라우저
+# 개발자도구(F12) Network 탭에서 해당 요청을 확인해 그 주소를 알려주면 된다.
+MAS_PAGES = [
+    ("금융상품 메인", "https://securities.miraeasset.com/financeMain.do"),
+    ("ELS/DLS 청약", "https://securities.miraeasset.com/hks/hks4022/n01.do"),
+    ("ELS/DLS 기준가", "https://securities.miraeasset.com/hks/hks4023/r01.do"),
+    ("ETN 전체상품", "https://securities.miraeasset.com/hks/hks4318/n01_21.do"),
+    ("RP", "https://securities.miraeasset.com/hks/hks4033/n01.do"),
+    ("채권/RP 기준수익률", "https://securities.miraeasset.com/hks/hks4037/r03.do"),
+    ("CMA 연수익률", "https://securities.miraeasset.com/hks/hks4311/n02.do"),
+    ("RP(모바일)", "https://securities.miraeasset.com/mw/mks/mks4033/n01.do"),
+    ("ELS/DLS(모바일)", "https://securities.miraeasset.com/mw/mks/mks4022/r01.do"),
+]
+MAS_KEYWORDS = ["상품", "수익률", "펀드", "ELS", "RP", "채권", "청약", "보수", "금리"]
+
+
+def mas_capture(out_dir):
+    """공개 상품 페이지를 받아 원본 HTML 을 저장하고 구조를 요약한다.
+
+    파서를 바로 쓰지 않는 이유: 실제 페이지 구조를 보지 못한 상태에서 추측으로
+    파서를 쓰면 틀린다. 먼저 원본을 확보하고, 그 구조에 맞춰 파서를 만든다.
+    """
+    lines = []
+
+    def out(t=""):
+        print(t)
+        lines.append(t)
+
+    os.makedirs(out_dir, exist_ok=True)
+    out("=" * 66)
+    out(" 미래에셋증권 공개 상품 페이지 수집")
+    out("=" * 66)
+    out("빌드   : %s" % BUILD)
+    out("저장   : %s" % out_dir)
+    out()
+
+    ok = 0
+    for label, url in MAS_PAGES:
+        name = re.sub(r"[^A-Za-z0-9]+", "_", url.split("securities.miraeasset.com/")[-1])[:60]
+        try:
+            req = urllib.request.Request(url, headers={
+                "User-Agent": UA,
+                "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+                "Accept-Language": "ko-KR,ko;q=0.9",
+                "Referer": "https://securities.miraeasset.com/",
+            })
+            with _opener.open(req, timeout=timeout_s) as r:
+                raw = r.read()
+                status = r.status
+            html = raw.decode("utf-8", "replace")
+            path = os.path.join(out_dir, name + ".html")
+            with open(path, "w", encoding="utf-8") as fh:
+                fh.write(html)
+
+            tables = html.lower().count("<table")
+            rows = html.lower().count("<tr")
+            hits = [k for k in MAS_KEYWORDS if k in html]
+            # 값이 HTML 에 들어있는지(서버 렌더) vs JS 로 채우는 껍데기인지 판별
+            server_rendered = tables > 0 and rows > 3 and len(hits) >= 3
+            out("[%s] %s" % ("OK" if status == 200 else status, label))
+            out("     %s" % url)
+            out("     크기 %d KB / <table> %d / <tr> %d / 키워드 %s"
+                % (len(raw) / 1024, tables, rows, ",".join(hits[:6]) or "없음"))
+            out("     판정: %s" % ("표 데이터가 HTML 에 있음 -> 파싱 가능"
+                                  if server_rendered else
+                                  "JS 로 채우는 껍데기로 보임 -> AJAX 주소 확인 필요"))
+            out("     저장: %s" % os.path.basename(path))
+            ok += 1
+        except urllib.error.HTTPError as e:
+            out("[HTTP %s] %s" % (e.code, label))
+            out("     %s" % url)
+            if e.code == 403:
+                out("     서버가 자동조회를 거부했습니다.")
+        except Exception as e:
+            out("[실패] %s" % label)
+            out("     %s -> %s" % (url, e))
+        out()
+
+    out("=" * 66)
+    out("수집 성공 %d / 전체 %d" % (ok, len(MAS_PAGES)))
+    if ok:
+        out("저장된 HTML 파일들을 압축해 보내주시면 그 구조에 맞는 파서를 만듭니다.")
+    else:
+        out("모두 실패했습니다. 사내망 프록시 설정(HTTPS_PROXY)을 확인해 주세요.")
+    out("=" * 66)
+    summary = os.path.join(out_dir, "_summary.txt")
+    try:
+        with open(summary, "w", encoding="utf-8") as fh:
+            fh.write("\n".join(lines) + "\n")
+        print("\n요약 저장: %s" % summary)
+    except Exception as e:
+        print("\n요약 저장 실패(%s)" % e)
+    return 0 if ok else 2
+
+
 # ------------------------------------------------------------------ 진단 리포트
 def write_report(path):
     """한 번 실행으로 진단에 필요한 모든 정보를 모아 출력하고 파일로도 남긴다."""
@@ -502,6 +603,10 @@ def main():
     ap.add_argument("--check", action="store_true", help="KRX 연결만 점검하고 종료")
     ap.add_argument("--probe", action="store_true",
                     help="런처가 이 파이썬으로 스크립트가 실행되는지 확인용 (아무 것도 안 하고 종료)")
+    ap.add_argument("--mas-capture", action="store_true",
+                    help="미래에셋 공개 상품 페이지를 받아 원본 HTML 저장 + 구조 요약")
+    ap.add_argument("--mas-dir", default=os.path.join(ROOT, "mas-capture"),
+                    help="--mas-capture 저장 폴더")
     ap.add_argument("--report", action="store_true",
                     help="진단 리포트를 출력하고 파일로 저장 (문제 보고용)")
     ap.add_argument("--out-report", default=os.path.join(ROOT, "diag-report.txt"))
@@ -528,6 +633,9 @@ def main():
     # Microsoft Store 자리표시자는 스크립트를 실행하지 못해 0 이 아닌 코드로 죽는다.
     if args.probe:
         return 0
+
+    if args.mas_capture:
+        return mas_capture(args.mas_dir)
 
     if args.report:
         return write_report(args.out_report)
