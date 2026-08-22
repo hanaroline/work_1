@@ -34,6 +34,8 @@ import webbrowser
 from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
 
 ROOT = os.path.dirname(os.path.abspath(__file__))
+# 파일이 실제로 교체됐는지 한눈에 확인하기 위한 빌드 표시
+BUILD = "2026-08-22.3 (cookie-warmup)"
 KRX_URL = "https://data.krx.co.kr/comm/bldAttendant/getJsonData.cmd"
 KRX_REFERER = "https://data.krx.co.kr/contents/MDC/MDI/outerLoader/index.cmd"
 # 쿠키를 받기 위해 먼저 방문하는 페이지. KRX 는 세션 쿠키(JSESSIONID) 없이
@@ -226,6 +228,88 @@ def build_snapshot(out_path, base_ts=None):
     return ok, fail
 
 
+# ------------------------------------------------------------------ 진단 리포트
+def write_report(path):
+    """한 번 실행으로 진단에 필요한 모든 정보를 모아 출력하고 파일로도 남긴다."""
+    lines = []
+
+    def out(s=""):
+        print(s)
+        lines.append(s)
+
+    out("=" * 62)
+    out(" 금융상품 통합조회 — 진단 리포트")
+    out("=" * 62)
+    out("빌드        : %s" % BUILD)
+    out("파이썬      : %s" % sys.version.split()[0])
+    out("실행 경로   : %s" % sys.executable)
+    out("폴더        : %s" % ROOT)
+    out("KRX 주소    : %s" % krx_url)
+    out("프록시 환경변수:")
+    found_proxy = False
+    for k in ("HTTP_PROXY", "HTTPS_PROXY", "http_proxy", "https_proxy", "NO_PROXY", "no_proxy"):
+        v = os.environ.get(k)
+        if v:
+            out("   %-12s = %s" % (k, v))
+            found_proxy = True
+    if not found_proxy:
+        out("   (설정 없음)")
+    out("파일 존재 확인:")
+    for rel in ("products.html", "data/sources.js", "data/products.js", "products-standalone.html"):
+        p = os.path.join(ROOT, rel.replace("/", os.sep))
+        out("   %-28s %s" % (rel, "있음 (%d bytes)" % os.path.getsize(p) if os.path.exists(p) else "없음"))
+    out()
+
+    out("[1] 워밍업 (세션 쿠키 확보)")
+    for url in (KRX_WARMUP if krx_url.startswith("https://data.krx.co.kr") else [krx_url]):
+        try:
+            req = urllib.request.Request(url, headers={"User-Agent": UA})
+            with _opener.open(req, timeout=timeout_s) as r:
+                out("   GET %s -> HTTP %s" % (url[:58], r.status))
+        except urllib.error.HTTPError as e:
+            out("   GET %s -> HTTP %s" % (url[:58], e.code))
+        except Exception as e:
+            out("   GET %s -> 실패: %s" % (url[:58], e))
+    names = sorted(c.name for c in _cookies)
+    out("   확보한 쿠키: %s" % (", ".join(names) if names else "(없음)"))
+    global _warmed
+    _warmed = True          # 위에서 직접 워밍업했으므로 재시도하지 않는다
+    out()
+
+    out("[2] 엔드포인트별 조회")
+    base_ts = time.time()
+    ok = 0
+    for label, bld, params in SNAPSHOT_PLAN:
+        try:
+            payload = krx_post(bld, params, base_ts)
+            rows = rows_of(payload)
+            if rows:
+                ok += 1
+                out("   [OK]   %-22s %5d건" % (label, len(rows)))
+                if ok == 1:
+                    out("          응답 키: %s" % " ".join(list(rows[0].keys())))
+            else:
+                keys = ", ".join(list(payload.keys())[:8]) if isinstance(payload, dict) else "?"
+                out("   [빈값] %-22s (최상위 키: %s)" % (label, keys))
+        except Exception as e:
+            out("   [실패] %-22s %s" % (label, str(e)[:150]))
+    out()
+    out("결과: 성공 %d / 전체 %d" % (ok, len(SNAPSHOT_PLAN)))
+    if ok:
+        out("=> 실데이터 조회가 됩니다. 서버를 실행하세요:  python serve-products.py")
+    else:
+        out("=> 위 [실패] 사유를 그대로 전달해 주세요.")
+    out("=" * 62)
+
+    try:
+        with open(path, "w", encoding="utf-8") as f:
+            f.write("\n".join(lines) + "\n")
+        print("\n리포트 저장: %s" % path)
+    except Exception as e:
+        print("\n리포트 파일 저장 실패(%s) — 위 내용을 복사해 주세요." % e)
+    return 0 if ok else 2
+
+
 # -------------------------------------------------------------------- 서버
 class Handler(SimpleHTTPRequestHandler):
     """정적 파일 + /api/krx 프록시. 로컬 전용이므로 외부에 열지 않는다."""
@@ -310,13 +394,20 @@ def main():
     ap.add_argument("--no-browser", action="store_true", help="브라우저 자동 열기 없이 실행")
     ap.add_argument("--snapshot", action="store_true", help="실데이터를 파일로 저장하고 종료")
     ap.add_argument("--check", action="store_true", help="KRX 연결만 점검하고 종료")
+    ap.add_argument("--report", action="store_true",
+                    help="진단 리포트를 출력하고 파일로 저장 (문제 보고용)")
+    ap.add_argument("--out-report", default=os.path.join(ROOT, "diag-report.txt"))
     ap.add_argument("--out", default=os.path.join(ROOT, "data", "krx-snapshot.js"))
     ap.add_argument("--krx-url", default=KRX_URL, help="사내 프록시 등으로 KRX 주소 변경")
     ap.add_argument("--timeout", type=int, default=20)
     args = ap.parse_args()
     krx_url, timeout_s = args.krx_url, args.timeout
 
+    if args.report:
+        return write_report(args.out_report)
+
     if args.check:
+        print("빌드: %s" % BUILD)
         print("KRX 연결 점검: %s" % krx_url)
         warmup(force=True, verbose=True)
         try:
@@ -345,7 +436,7 @@ def main():
     url = "http://127.0.0.1:%d/products.html" % port
     server = ThreadingHTTPServer(("127.0.0.1", port), Handler)
     print("=" * 64)
-    print(" 금융상품 통합조회 — 로컬 실행")
+    print(" 금융상품 통합조회 — 로컬 실행   (빌드 %s)" % BUILD)
     print("=" * 64)
     print(" 주소   : %s" % url)
     print(" 폴더   : %s" % ROOT)
