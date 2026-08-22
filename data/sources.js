@@ -367,6 +367,75 @@ var MASPSRC = (function () {
     return 'kr';
   }
 
+  /* ==================================================== 미래에셋 펀드 어댑터 */
+  /* 펀드찾기 화면의 검색 API. 2단계 호출이 필요해 로컬 서버가 대신 수행하고
+     결과만 /api/mas-fund 로 넘겨준다.
+       Field.FDN 펀드명 / KR_FD_CD·DOCID 펀드코드 / PD_CLSS 위험등급(01~06)
+       M1_BNFR·M3_BNFR·M6_BNFR·M12_BNFR 기간수익률 / NASST_SUM 순자산(원)
+       ONLINE_PRVT_YN 온라인 유무 / HAN_CLAS_NM 클래스명
+       BF_FEE_EXP 선취수수료 / FEE_N_YN 수수료무료 / PD_TYP_CD 유형코드
+     PD_TYP_CD·ADMICN(운용사) 의 코드→이름 표는 외부 JS 에 있어 아직 없다.
+     없는 값을 만들지 않고 비워 둔다. */
+  function loadMasFund(asOfDate) {
+    var body = new URLSearchParams();
+    body.set('listCount', '300');
+    body.set('sort', 'NASST_SUM');
+    var ctrl = typeof AbortController !== 'undefined' ? new AbortController() : null;
+    var req = fetch('/api/mas-fund', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8' },
+      body: body.toString(),
+      signal: ctrl ? ctrl.signal : undefined
+    }).then(function (r) {
+      return r.text().then(function (t) {
+        var j = null;
+        try { j = JSON.parse(t); } catch (e) { throw new Error('JSON 아님: ' + t.slice(0, 80)); }
+        if (!r.ok) throw new Error('HTTP ' + r.status + (j && j.error ? ' | ' + j.error : ''));
+        return j;
+      });
+    });
+    return withTimeout(req, 20000, function () { if (ctrl) ctrl.abort(); }).then(function (res) {
+      var docs = res.docs || [];
+      if (!docs.length) throw new Error('펀드 목록 없음 (mode=' + res.mode + ')');
+      var out = docs.map(function (d) { return masFundRow(d.Field || d); })
+        .filter(function (p) { return p && p.name[0]; });
+      log({ bld: '미래에셋 펀드', ok: true, msg: out.length + '건 수신 (전체 ' + res.total + ')' });
+      return out;
+    });
+  }
+
+  function masFundRow(fd) {
+    var nm = String(fd.FDN || '').split('\r')[0].trim();
+    if (!nm) return null;
+    var grade = parseInt(String(fd.PD_CLSS || '').replace(/[^0-9]/g, ''), 10);
+    var nasst = n(fd.NASST_SUM);
+    var cls = String(fd.HAN_CLAS_NM || '').trim();
+    var online = String(fd.ONLINE_PRVT_YN || '').trim() === '1';
+    return {
+      cat: 'fund', live: true, source: '미래에셋증권',
+      sourceUrl: 'https://securities.miraeasset.com/hks/hks4116/r01.do',
+      code: String(fd.KR_FD_CD || fd.DOCID || '').trim(),
+      name: [nm, nm],
+      /* 운용사 코드(ADMICN)의 이름 표가 없어 비워 둔다 — 추정하지 않는다 */
+      provider: ['', ''],
+      className: cls,
+      risk: (grade >= 1 && grade <= 6) ? grade : null,
+      ret1m: n(fd.M1_BNFR), ret3m: n(fd.M3_BNFR),
+      ret6m: n(fd.M6_BNFR), ret1y: n(fd.M12_BNFR), ret3y: null,
+      /* NASST_SUM 은 원 단위 -> 화면 단위(억원) */
+      aum: nasst != null ? Math.round(nasst / 1e8) : null,
+      /* BF_FEE_EXP 는 선취수수료다. 총보수가 아니므로 fee 로 쓰지 않는다. */
+      frontFee: n(fd.BF_FEE_EXP), fee: null,
+      feeFree: String(fd.FEE_N_YN || '').toUpperCase() === 'Y',
+      channel: online ? ['online', 'app', 'branch'] : ['branch'],
+      status: 'sale', currency: 'KRW', tax: [],
+      fundType: null, asset: null, region: null,
+      minAmount: null, series: null, bench: null, holdings: null,
+      highDifficulty: String(fd.FD_STC_CD || '') === '02',
+      pick: String(fd.PBFF_FD_UNVS_YN || '').toUpperCase() === 'Y'
+    };
+  }
+
   /* ================================================== 미래에셋 ELS/DLS 어댑터 */
   /* 미래에셋증권 공개 상품 API. 로컬 서버(serve-products.py)의 /api/mas 를 경유한다.
      엔드포인트·파라미터는 상품 페이지에 포함된 스크립트에서 확인한 값이다.
@@ -711,7 +780,9 @@ var MASPSRC = (function () {
      이 화면의 본질인 '미래에셋증권이 판매·발행하는 상품 라인업'은 제공하지 않는다.
      주 소스는 사내 상품 API 또는 CSV 임포트이며, KRX 미연결은 오류가 아니다. */
   var CATALOG = [
-    /* 주 소스: 미래에셋증권이 발행하는 실제 상품 */
+    /* 주 소스: 미래에셋증권이 판매·발행하는 실제 상품 */
+    { id: 'masFund', label: ['펀드 (미래에셋 펀드찾기)', 'Funds (Mirae Asset finder)'],
+      cats: ['fund'], run: loadMasFund },
     { id: 'masEls', label: ['ELS·DLS (미래에셋 청약)', 'ELS/DLS (Mirae Asset offerings)'],
       cats: ['els'], run: loadMasEls },
     { id: 'etf', label: ['ETF (KRX 전종목)', 'ETF (KRX all listings)'], cats: ['etf'], aux: true, run: loadEtf },
@@ -726,7 +797,6 @@ var MASPSRC = (function () {
   }
   /* 공개 소스가 없는 상품군 — 화면에 사유를 그대로 표시한다 */
   var NO_SOURCE = {
-    fund: ['공개 API 없음 (금투협 전자공시)', 'No public API (KOFIA disclosure)'],
     rp: ['공개 API 없음 (발행사 홈페이지 전용)', 'No public API (issuer site only)'],
     wrap: ['공개 소스 없음', 'No public source'],
     pension: ['공개 API 없음', 'No public API']
