@@ -2706,9 +2706,19 @@ def main():
         if v:
             out.setdefault("index_daily", {})[code.lower()] = v
 
-    # ^KS200 의 빈 기간 수익률을 네이버 계열로 채운다
+    # ^KS200 의 기간 수익률은 **네이버 계열을 먼저 쓴다.**
+    #
+    # 야후가 값을 내주기는 하는데 믿을 수 없다. 8/22 에 야후는 1주 +1.47% ·
+    # 1개월 +1.47% · 1년 +158.3% 를 냈다. 1주와 1개월이 같고 그 값이 곧
+    # **당일 등락률**이다 — 일봉이 두어 개뿐이라 두 구간이 같은 봉을 짚은
+    # 것이다. 1년 +158.3% 도 코스피(+120.04%)보다 한참 높다. 같은 날 네이버
+    # 계열로 되짚으면 1주 &minus;0.18% 로 코스피(&minus;0.93%)와 맞는다.
+    #
+    # 그래서 「야후가 비었을 때만 채운다」로는 부족하다 — 야후가 **틀린 값을
+    # 채워 두면** 그대로 나간다. 계열이 있으면 언제나 네이버가 이긴다.
     ks2, kd2 = out["indices"].get("kospi200"), (out.get("index_daily") or {}).get("kpi200")
-    if ks2 and not ks2.get("perf") and kd2:
+    if ks2 and kd2:
+        ks2.pop("perf", None)
         bars = sorted((_iso(r["date"]), r["close"]) for r in kd2.get("series") or []
                       if _iso(r.get("date")) and r.get("close"))
         p = _perf(bars, ks2["close"]) if len(bars) > 2 else None
