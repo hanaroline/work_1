@@ -188,7 +188,17 @@ def transform(html):
 
     if "table.data.keep{break-inside:avoid" not in html:
         html = html.replace("\n</style>", FIT_CSS + "\n</style>", 1)
+    if DONE not in html:
+        html = html.replace("\n</style>", "\n</style>\n" + DONE, 1)
     return html, kept_t[0], long_t[0], kept_c, long_c
+
+
+# 손봤다는 표시. 예전에는 FIT_CSS 가 있는지로 판단했는데, 껍데기(head)를 지난
+# 판에서 물려받으면 CSS 만 딸려 와서 **한 표도 손보지 않은 채** 건너뛰었다.
+# 8월 21일·22일 판이 그렇게 새어 나갔다. 이제는 이 표시나, 실제로 붙은
+# `keep` 클래스가 있을 때만 건너뛴다.
+DONE = "<!-- print-fit -->"
+APPLIED = re.compile(r'(?is)<(?:table|div)\b[^>]*\bclass="[^"]*\b(?:keep|flow)\b')
 
 
 def main(argv):
@@ -198,7 +208,7 @@ def main(argv):
     for path in argv:
         with open(path, encoding="utf-8") as f:
             src = f.read()
-        if "table.data.keep{break-inside:avoid" in src:
+        if DONE in src or APPLIED.search(src):
             print("%s — 이미 손봤다. 건너뛴다" % path)
             continue
         new, kt, lt, kc, lc = transform(src)
