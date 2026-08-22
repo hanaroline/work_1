@@ -56,7 +56,14 @@ def main():
 
     base = os.path.basename(src)[:-len(".html")]          # 2026-08-10-close
     date, kind = base[:10].replace("-", ""), base[11:]
-    name = "미래에셋_마포WM_%s_%s.html" % (LABEL.get(kind, kind), date)
+    # 베타 시안은 `<날짜>-<판>-beta.html` 이다. 꼬리의 `-beta` 를 떼어 판을
+    # 알아보고, 받는 사람이 파일 이름만 보고도 알도록 (베타)를 붙인다 —
+    # 이름이 `global-beta` 로 나가면 정식판과 섞인다.
+    beta = kind.endswith("-beta")
+    if beta:
+        kind = kind[:-len("-beta")]
+    name = "미래에셋_마포WM_%s%s_%s.html" % (
+        LABEL.get(kind, kind), "(베타)" if beta else "", date)
 
     outdir = sys.argv[2] if len(sys.argv) > 2 else os.path.dirname(src)
     os.makedirs(outdir, exist_ok=True)

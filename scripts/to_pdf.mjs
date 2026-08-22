@@ -44,6 +44,10 @@ for (const [full, suffix] of [[false, '_요약'], [true, '_전체']]) {
     document.querySelectorAll('details.exp').forEach(d => {
       if (open) d.setAttribute('open', ''); else d.removeAttribute('open');
     });
+    // 화면의 «요약 PDF» 단추가 붙이는 표시. 절마다 달린 data-brief 를 보고
+    // 요약본에서 뺄 절을 인쇄에서 감춘다. 이 표시가 없는 판(정식판)에는
+    // data-brief 도 규칙도 없으므로 아무 일도 일어나지 않는다.
+    document.body.classList.toggle('brief-print', !open);
     document.querySelectorAll('table.data tr.clickable').forEach(r => {
       r.setAttribute('aria-expanded', open ? 'true' : 'false');
       const next = r.nextElementSibling;
@@ -51,9 +55,12 @@ for (const [full, suffix] of [[false, '_요약'], [true, '_전체']]) {
         if (open) next.removeAttribute('hidden'); else next.setAttribute('hidden', '');
       }
     });
+    const secs = document.querySelectorAll('main .section').length;
+    const kept = document.querySelectorAll('main .section[data-brief="1"]').length;
     return {
       details: document.querySelectorAll('details.exp').length,
       opened: document.querySelectorAll('details.exp[open]').length,
+      secs, shown: open || !kept ? secs : kept,
       height: document.documentElement.scrollHeight,
     };
   }, full);
@@ -74,8 +81,8 @@ for (const [full, suffix] of [[false, '_요약'], [true, '_전체']]) {
       + '<span class="pageNumber"></span>/<span class="totalPages"></span></div>',
   });
   const kb = Math.round(fs.statSync(name).size / 1024);
-  console.log('만듦: %s (%dKB · 상세 %d개 중 %d개 펼침 · 문서 높이 %dpx)',
-              name, kb, state.details, state.opened, state.height);
+  console.log('만듦: %s (%dKB · 절 %d개 중 %d개 실림 · 상세 %d개 중 %d개 펼침 · 문서 높이 %dpx)',
+              name, kb, state.secs, state.shown, state.details, state.opened, state.height);
   made.push(name);
   await p.close();
 }
