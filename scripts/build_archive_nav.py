@@ -110,9 +110,63 @@ def print_block(visible, me):
             '<!-- archive-print:end -->' % (PRINT_CSS, rows))
 
 
+def beta(path, briefings):
+    """베타 판에 목록을 넣는다 — `index.json` 에 올리지 않은 채로.
+
+    베타는 정식 목록을 더럽히지 않으려고 index.json 에 넣지 않는다. 그런데
+    그러면 사이드바와 인쇄용 목록이 통째로 비어 재검증이 FAIL 을 낸다.
+    시안이라고 목록 없이 내면 정식판과 견줄 수가 없다 — 그래서 목록만
+    만들어 넣는다. 자기 자신은 목록에 없다(아직 발행된 판이 아니다).
+    """
+    m = re.search(r"(\d{4}-\d{2}-\d{2})", os.path.basename(path))
+    if not m:
+        print("  !! 파일 이름에서 날짜를 못 읽었다: %s" % path)
+        return 1
+    mine = m.group(1)
+    ordered = sorted(briefings, key=key, reverse=True)
+    visible = [b for b in ordered if str(b.get("date", "")) <= mine]
+    if not visible:
+        print("  !! %s 이전의 판이 없다" % mine)
+        return 1
+    src = open(path, encoding="utf-8").read()
+    if len(BLOCK.findall(src)) != 1:
+        print("  !! sidenav-dates 블록이 %d 개" % len(BLOCK.findall(src)))
+        return 1
+    # 자기 자신을 맨 위에 「이 판」으로 세운다. 목록에 자기가 없으면 읽는 사람이
+    # 어디에 있는지 알 수 없고, 재검증도 현재 판 표시를 1 개 요구한다.
+    me = {"date": mine, "label_ko": "베타 시안", "label_en": "Beta draft",
+          "file": os.path.basename(path)}
+    visible = [me] + [b for b in visible if b.get("date") != mine
+                      or b.get("file") != me["file"]]
+    rows = [row(b, b is me) for b in visible]
+    out = BLOCK.sub(lambda _: '<ul class="sidenav-dates">\n%s\n  </ul>' % "\n".join(rows),
+                    src, count=1)
+    pb = print_block(visible, me)
+    if PRINT.search(out):
+        out = PRINT.sub(lambda _: pb, out, count=1)
+    elif out.count("</main>") == 1:
+        out = out.replace("</main>", pb + "\n\n</main>", 1)
+    else:
+        print("  !! </main> 이 %d 개" % out.count("</main>"))
+        return 1
+    open(path, "w", encoding="utf-8").write(out)
+    print("  %s  → 베타 목록 %d 항목 (index.json 은 건드리지 않았다)"
+          % (os.path.basename(path), len(visible)))
+    return 0
+
+
 def main():
     check = "--check" in sys.argv
     briefings = json.load(open(INDEX, encoding="utf-8"))["briefings"]
+
+    # `--beta <경로>` — index.json 에 올리지 않은 시안에 목록만 넣는다
+    if "--beta" in sys.argv:
+        i = sys.argv.index("--beta")
+        if i + 1 >= len(sys.argv):
+            print("  !! --beta 뒤에 파일 경로가 필요하다")
+            return 1
+        return beta(sys.argv[i + 1], briefings)
+
     ordered = sorted(briefings, key=key, reverse=True)   # 최신이 위
 
     changed, skipped, bad = [], [], 0
