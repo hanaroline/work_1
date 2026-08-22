@@ -1876,11 +1876,20 @@ var MASPSRC = (function () {
 
   /* ================================================================= 총괄 */
   /* 소스별로 독립 실행 — 하나가 실패해도 나머지는 반영한다 */
+  /* KRX 는 '보조' 소스다. 시장 전체 상장 ETF/ETN/채권 시세를 주지만,
+     이 화면의 본질인 '미래에셋증권이 판매·발행하는 상품 라인업'은 제공하지 않는다.
+     주 소스는 사내 상품 API 또는 CSV 임포트이며, KRX 미연결은 오류가 아니다. */
   var CATALOG = [
-    { id: 'etf', label: ['ETF (KRX 전종목)', 'ETF (KRX all listings)'], cats: ['etf'], run: loadEtf },
-    { id: 'etn', label: ['ETN (KRX 전종목)', 'ETN (KRX all listings)'], cats: ['etf'], run: loadEtn },
-    { id: 'bond', label: ['채권 (KRX 전종목 시세)', 'Bonds (KRX all listings)'], cats: ['bond'], run: loadBond }
+    { id: 'etf', label: ['ETF (KRX 전종목)', 'ETF (KRX all listings)'], cats: ['etf'], aux: true, run: loadEtf },
+    { id: 'etn', label: ['ETN (KRX 전종목)', 'ETN (KRX all listings)'], cats: ['etf'], aux: true, run: loadEtn },
+    { id: 'bond', label: ['채권 (KRX 전종목 시세)', 'Bonds (KRX all listings)'], cats: ['bond'], aux: true, run: loadBond }
   ];
+  /* 보조 소스가 담당하는 상품군 — 실패해도 '연결 실패' 가 아니라 '미연결(선택)' 이다 */
+  function auxCats() {
+    var out = {};
+    CATALOG.forEach(function (s) { if (s.aux) s.cats.forEach(function (c) { out[c] = true; }); });
+    return out;
+  }
   /* 공개 소스가 없는 상품군 — 화면에 사유를 그대로 표시한다 */
   var NO_SOURCE = {
     fund: ['공개 API 없음 (금투협 전자공시)', 'No public API (KOFIA disclosure)'],
@@ -1933,6 +1942,7 @@ var MASPSRC = (function () {
     getDiag: getDiag,
     snapshotInfo: snapshotInfo,
     isFileMode: isFileMode,
+    auxCats: auxCats,
     CATALOG: CATALOG,
     NO_SOURCE: NO_SOURCE,
     PROXIES: PROXIES,
@@ -2020,6 +2030,11 @@ var MASPSRC = (function () {
     'src.sample': ['예시 데이터', 'Illustrative'],
     'src.fail': ['연결 실패', 'Failed'],
     'src.noServer': ['서버 미접속', 'Server not used'],
+    'src.auxOff': ['보조 소스 미연결', 'Optional source not connected'],
+    'src.auxWhy': ['KRX 계정 필요 · 선택 사항', 'Needs a KRX account - optional'],
+    'src.auxLive': ['실데이터 (KRX 보조)', 'Live (KRX, auxiliary)'],
+    'src.noInternal': ['사내 상품 데이터 미연결 — 예시로 표시. 상단 “사내 데이터 올리기(CSV)” 로 실제 상품을 넣으세요.',
+      'Internal product data not connected - showing illustrative data. Use "Import CSV" above.'],
     'src.nosrc': ['공개 소스 없음', 'No public source'],
     'src.source': ['출처', 'Source'],
     'src.at': ['조회', 'Fetched'],
@@ -3032,11 +3047,14 @@ var MASPSRC = (function () {
     D.CATEGORIES.forEach(function (c) {
       if (c[0] === 'all') return;
       var pv = PROV[c[0]] || { mode: 'sample', count: 0 };
-      var cls = pv.mode === 'live' ? 'prov-live' : pv.mode === 'fail' ? 'prov-fail' : 'prov-none';
+      /* KRX(보조) 담당 상품군의 실패는 오류가 아니라 '선택 사항 미연결' 이다 */
+      var isAux = window.MASPSRC && MASPSRC.auxCats()[c[0]];
+      var cls = pv.mode === 'live' ? 'prov-live'
+        : (pv.mode === 'fail' && !isAux) ? 'prov-fail' : 'prov-none';
       /* 파일을 직접 연 경우는 '연결 실패' 가 아니라 '서버 미접속' 이 정확한 설명이다 */
       var fileMode = window.MASPSRC && MASPSRC.isFileMode();
-      var label = pv.mode === 'live' ? T('src.live')
-        : pv.mode === 'fail' ? (fileMode ? T('src.noServer') : T('src.fail'))
+      var label = pv.mode === 'live' ? (isAux ? T('src.auxLive') : T('src.live'))
+        : pv.mode === 'fail' ? (fileMode ? T('src.noServer') : isAux ? T('src.auxOff') : T('src.fail'))
         : (pv.why ? T('src.nosrc') : T('src.sample'));
       var s = el('span', 'prov-item ' + cls);
       var html = '<span class="dot"></span><b>' + esc(L([c[1], c[2]])) + '</b>' +
@@ -3049,6 +3067,8 @@ var MASPSRC = (function () {
         if (pv.url) html += '<a href="' + pv.url + '" target="_blank" rel="noopener">' + esc(T('src.source')) + '</a>';
       } else if (pv.why) {
         html += '<span class="why">' + esc(pv.why) + '</span>';
+      } else if (pv.mode === 'fail' && isAux && !fileMode) {
+        html += '<span class="why">' + esc(T('src.auxWhy')) + '</span>';
       }
       s.innerHTML = html;
       if (pv.error) s.title = pv.error;
@@ -3092,7 +3112,7 @@ var MASPSRC = (function () {
       var live = 0;
       Object.keys(PROV).forEach(function (k) { if (PROV[k].mode === 'live') live += PROV[k].count; });
       setLoadTag(live ? T('src.loaded', live.toLocaleString('en-US'))
-        : (window.MASPSRC && MASPSRC.isFileMode() ? T('src.fileMode') : T('src.noneLoaded')), !live);
+        : (window.MASPSRC && MASPSRC.isFileMode() ? T('src.fileMode') : T('src.noInternal')), !live);
       renderDiag();
       render();
     }).catch(function (e) {

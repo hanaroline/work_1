@@ -549,11 +549,20 @@ var MASPSRC = (function () {
 
   /* ================================================================= 총괄 */
   /* 소스별로 독립 실행 — 하나가 실패해도 나머지는 반영한다 */
+  /* KRX 는 '보조' 소스다. 시장 전체 상장 ETF/ETN/채권 시세를 주지만,
+     이 화면의 본질인 '미래에셋증권이 판매·발행하는 상품 라인업'은 제공하지 않는다.
+     주 소스는 사내 상품 API 또는 CSV 임포트이며, KRX 미연결은 오류가 아니다. */
   var CATALOG = [
-    { id: 'etf', label: ['ETF (KRX 전종목)', 'ETF (KRX all listings)'], cats: ['etf'], run: loadEtf },
-    { id: 'etn', label: ['ETN (KRX 전종목)', 'ETN (KRX all listings)'], cats: ['etf'], run: loadEtn },
-    { id: 'bond', label: ['채권 (KRX 전종목 시세)', 'Bonds (KRX all listings)'], cats: ['bond'], run: loadBond }
+    { id: 'etf', label: ['ETF (KRX 전종목)', 'ETF (KRX all listings)'], cats: ['etf'], aux: true, run: loadEtf },
+    { id: 'etn', label: ['ETN (KRX 전종목)', 'ETN (KRX all listings)'], cats: ['etf'], aux: true, run: loadEtn },
+    { id: 'bond', label: ['채권 (KRX 전종목 시세)', 'Bonds (KRX all listings)'], cats: ['bond'], aux: true, run: loadBond }
   ];
+  /* 보조 소스가 담당하는 상품군 — 실패해도 '연결 실패' 가 아니라 '미연결(선택)' 이다 */
+  function auxCats() {
+    var out = {};
+    CATALOG.forEach(function (s) { if (s.aux) s.cats.forEach(function (c) { out[c] = true; }); });
+    return out;
+  }
   /* 공개 소스가 없는 상품군 — 화면에 사유를 그대로 표시한다 */
   var NO_SOURCE = {
     fund: ['공개 API 없음 (금투협 전자공시)', 'No public API (KOFIA disclosure)'],
@@ -606,6 +615,7 @@ var MASPSRC = (function () {
     getDiag: getDiag,
     snapshotInfo: snapshotInfo,
     isFileMode: isFileMode,
+    auxCats: auxCats,
     CATALOG: CATALOG,
     NO_SOURCE: NO_SOURCE,
     PROXIES: PROXIES,
