@@ -742,6 +742,7 @@ var MASP = (function () {
     'col.region': ['투자지역', 'Region'],
     'col.trend': ['1년 추이', '1Y trend'],
     'col.ret3m': ['3개월', '3M'],
+    'col.ret6m': ['6개월', '6M'],
     'col.ret1y': ['1년', '1Y'],
     'col.ret3y': ['3년', '3Y'],
     'col.fee': ['총보수', 'Total fee'],
@@ -1736,32 +1737,51 @@ var MASPSRC = (function () {
     });
   }
 
+  /* 실제 응답(/search/getTotalSearch.jsp) 확인 결과
+       DOCID 펀드표준코드(KR...)  FDN 펀드명       ADMICN 운용사명(코드 아님)
+       ADMIC_CD 운용사코드        PD_CLSS 위험등급  PD_TYP_CD 유형코드
+       Date 설정일               M1_BNFR/M6_BNFR/M12_BNFR 기간수익률
+       ESTD_AF_BNFR 설정후수익률  ONLINE_PRVT_YN 온라인판매
+       AREA_DVN/DMS_FO_DV_CD 지역구분
+     모바일 응답과 필드가 달라(KR_FD_CD/NASST_SUM/HAN_CLAS_NM 등) 양쪽 모두
+     후보로 두고, 없는 값은 채우지 않는다. */
   function masFundRow(fd) {
     var nm = String(fd.FDN || '').split('\r')[0].trim();
     if (!nm) return null;
     var grade = parseInt(String(fd.PD_CLSS || '').replace(/[^0-9]/g, ''), 10);
-    var nasst = n(fd.NASST_SUM);
-    var cls = String(fd.HAN_CLAS_NM || '').trim();
-    var online = String(fd.ONLINE_PRVT_YN || '').trim() === '1';
+    var nasst = n(pick(fd, ['NASST_SUM', 'NASST_TOTAMT']));
+    var online = String(pick(fd, ['ONLINE_PRVT_YN']) || '').trim() === '1';
+
+    /* ADMICN 은 응답에 따라 이름이거나 코드다. 숫자만이면 코드로 보고 비워 둔다. */
+    var adm = String(fd.ADMICN || '').trim();
+    var provider = /^[0-9\s]*$/.test(adm) ? '' : adm;
+
+    var region = null;
+    var dms = String(pick(fd, ['DMS_FO_DV_CD', 'AREA_DVN']) || '').trim();
+    if (/^1$|국내|domestic/i.test(dms)) region = 'kr';
+    else if (/^2$|해외|oversea|global/i.test(dms)) region = 'gl';
+
     return {
       cat: 'fund', live: true, source: '미래에셋증권',
       sourceUrl: 'https://securities.miraeasset.com/hks/hks4116/r01.do',
-      code: String(fd.KR_FD_CD || fd.DOCID || '').trim(),
+      code: String(pick(fd, ['KR_FD_CD', 'DOCID']) || '').trim(),
       name: [nm, nm],
-      /* 운용사 코드(ADMICN)의 이름 표가 없어 비워 둔다 — 추정하지 않는다 */
-      provider: ['', ''],
-      className: cls,
+      provider: [provider, provider],
+      className: String(pick(fd, ['HAN_CLAS_NM']) || '').trim(),
       risk: (grade >= 1 && grade <= 6) ? grade : null,
       ret1m: n(fd.M1_BNFR), ret3m: n(fd.M3_BNFR),
-      ret6m: n(fd.M6_BNFR), ret1y: n(fd.M12_BNFR), ret3y: null,
-      /* NASST_SUM 은 원 단위 -> 화면 단위(억원) */
+      ret6m: n(fd.M6_BNFR), ret1y: n(fd.M12_BNFR),
+      ret3y: null,
+      sinceLaunch: n(fd.ESTD_AF_BNFR),
+      /* NASST_SUM 은 원 단위 -> 화면 단위(억원). 응답에 없으면 비워 둔다. */
       aum: nasst != null ? Math.round(nasst / 1e8) : null,
       /* BF_FEE_EXP 는 선취수수료다. 총보수가 아니므로 fee 로 쓰지 않는다. */
       frontFee: n(fd.BF_FEE_EXP), fee: null,
       feeFree: String(fd.FEE_N_YN || '').toUpperCase() === 'Y',
+      launch: ymd8(fd.Date),
       channel: online ? ['online', 'app', 'branch'] : ['branch'],
       status: 'sale', currency: 'KRW', tax: [],
-      fundType: null, asset: null, region: null,
+      fundType: null, asset: null, region: region,
       minAmount: null, series: null, bench: null, holdings: null,
       highDifficulty: String(fd.FD_STC_CD || '') === '02',
       pick: String(fd.PBFF_FD_UNVS_YN || '').toUpperCase() === 'Y'
@@ -2593,6 +2613,7 @@ var MASPSRC = (function () {
     ret3m: { k: 'col.ret3m', cls: 'n', r: function (p) { return '<span class="' + signCls(p.ret3m) + '">' + pct(p.ret3m) + '</span>'; } },
     ret1y: { k: 'col.ret1y', cls: 'n', r: function (p) { return '<span class="' + signCls(p.ret1y) + '">' + pct(p.ret1y) + '</span>'; } },
     ret3y: { k: 'col.ret3y', cls: 'n', r: function (p) { return '<span class="' + signCls(p.ret3y) + '">' + pct(p.ret3y) + '</span>'; } },
+    ret6m: { k: 'col.ret6m', cls: 'n', r: function (p) { return '<span class="' + signCls(p.ret6m) + '">' + pct(p.ret6m) + '</span>'; } },
     keyrate: {
       k: 'col.keyrate', cls: 'n', r: function (p) {
         var kr = keyRate(p);
@@ -2668,7 +2689,7 @@ var MASPSRC = (function () {
   };
   var COLS = {
     all: ['watch', 'name', 'risk', 'trend', 'keyrate', 'fee', 'min', 'tax', 'status', 'act'],
-    fund: ['watch', 'name', 'fundType', 'risk', 'trend', 'ret3m', 'ret1y', 'ret3y', 'fee', 'aum', 'status', 'act'],
+    fund: ['watch', 'name', 'fundType', 'risk', 'trend', 'ret3m', 'ret6m', 'ret1y', 'fee', 'aum', 'status', 'act'],
     etf: ['watch', 'name', 'index', 'risk', 'trend', 'ret3m', 'ret1y', 'fee', 'dist', 'aum', 'price', 'act'],
     els: ['watch', 'name', 'elsType', 'underlying', 'coupon', 'barrier', 'knockin', 'maturityM', 'deadline', 'min', 'act'],
     bond: ['watch', 'name', 'bondType', 'rating', 'ytm', 'bondCoupon', 'residual', 'cycle', 'ccy', 'min', 'act'],

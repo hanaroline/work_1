@@ -182,6 +182,7 @@ var MASP = (function () {
     'col.region': ['투자지역', 'Region'],
     'col.trend': ['1년 추이', '1Y trend'],
     'col.ret3m': ['3개월', '3M'],
+    'col.ret6m': ['6개월', '6M'],
     'col.ret1y': ['1년', '1Y'],
     'col.ret3y': ['3년', '3Y'],
     'col.fee': ['총보수', 'Total fee'],
