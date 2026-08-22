@@ -629,6 +629,9 @@ table.cmp td.best{background:var(--disabled);font-weight:700;color:var(--ink)}
     'val.noField': ['공개데이터에 없는 항목', 'Not available in public data'],
     'detail.maxLoss': ['최대손실률', 'Max loss ratio'],
     'detail.pcaGrte': ['원금보장률', 'Principal guaranteed'],
+    'col.frontFee': ['선취수수료 (총보수는 공개 응답에 없음)', 'Front-end load (total fee not in the response)'],
+    'col.frontFeeShort': ['선취', 'front'],
+    'col.class': ['클래스', 'Class'],
     'src.reload': ['실데이터 새로고침', 'Refresh live data'],
     'src.import': ['사내 데이터 올리기(CSV)', 'Import CSV'],
     'src.diag': ['데이터 진단', 'Diagnostics'],
@@ -970,13 +973,20 @@ table.cmp td.best{background:var(--disabled);font-weight:700;color:var(--ink)}
         return '<span class="' + (p.cat === 'els' || p.cat === 'bond' || p.cat === 'rp' ? 'up' : signCls(kr.v)) + '">' + kr.txt + '</span>';
       }
     },
-    fee: { k: 'col.fee', cls: 'n', r: function (p) { return pctPlain(p.fee); } },
+    fee: { k: 'col.fee', cls: 'n', r: function (p) {
+      /* 총보수가 없고 선취수수료만 아는 경우 그 사실을 그대로 표시한다 */
+      if (p.fee != null) return pctPlain(p.fee);
+      if (p.frontFee != null) return '<span title="' + esc(T('col.frontFee')) + '">' +
+        pctPlain(p.frontFee) + '<span class="badge" style="margin-left:4px">' + esc(T('col.frontFeeShort')) + '</span></span>';
+      return DASH; } },
     mgmtfee: { k: 'col.mgmtfee', cls: 'n', r: function (p) { return pctPlain(p.mgmtFee); } },
     aum: { k: 'col.aum', cls: 'n', r: function (p) { return eok(p.aum); } },
     price: { k: 'col.price', cls: 'n', r: function (p) { return won(p.price); } },
     dist: { k: 'col.dist', cls: 'n', r: function (p) { return pctPlain(p.dist); } },
     index: { k: 'col.index', r: function (p) { return esc(p.etfIndex || DASH); } },
-    fundType: { k: 'col.type', r: function (p) { return lbl(D.FUND_TYPE, p.fundType); } },
+    fundType: { k: 'col.type', r: function (p) {
+      if (p.fundType) return lbl(D.FUND_TYPE, p.fundType);
+      return p.className ? esc(p.className) : DASH; } },
     elsType: { k: 'col.type', r: function (p) { return lbl(D.ELS_TYPE, p.elsType); } },
     bondType: { k: 'col.type', r: function (p) { return lbl(D.BOND_TYPE, p.bondType); } },
     rpType: { k: 'col.type', r: function (p) { return lbl(D.RP_TYPE, p.rpType); } },

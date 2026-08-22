@@ -44,7 +44,7 @@ from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
 
 ROOT = os.path.dirname(os.path.abspath(__file__))
 # 파일이 실제로 교체됐는지 한눈에 확인하기 위한 빌드 표시
-BUILD = "2026-08-23.4 (mas-scan)"
+BUILD = "2026-08-23.5 (mas-fund)"
 KRX_URL = "https://data.krx.co.kr/comm/bldAttendant/getJsonData.cmd"
 KRX_REFERER = "https://data.krx.co.kr/contents/MDC/MDI/outerLoader/index.cmd"
 # 쿠키를 받기 위해 먼저 방문하는 페이지. KRX 는 세션 쿠키(JSESSIONID) 없이
@@ -520,8 +520,28 @@ def mas_probe():
             out("[실패] %s   POST %s" % (label, path))
             out("     %s" % str(e)[:200])
         out()
+    # 펀드는 2단계 호출이라 별도로 점검한다
+    try:
+        fr = mas_fund_list(list_count=5)
+        out("[%s] 펀드 목록   POST %s" % ("OK" if fr["docs"] else "빈값", fr["path"]))
+        out("     검색모드 returnValue=%s / TotalCount=%s / 수신 %d건"
+            % (fr["mode"] or "(없음)", fr["total"], len(fr["docs"])))
+        if fr["docs"]:
+            ok += 1
+            fld = (fr["docs"][0] or {}).get("Field") or {}
+            out("     Field 항목: %s" % ", ".join(list(fld.keys())[:24]))
+            samp = {k: fld[k] for k in list(fld.keys())[:8]}
+            out("     첫 항목 값 : %s" % json.dumps(samp, ensure_ascii=False)[:300])
+            samples["펀드 목록"] = {"path": fr["path"], "total": fr["total"],
+                                 "first": fr["docs"][0]}
+        else:
+            out("     응답 최상위 키: %s" % ", ".join(fr["raw_keys"][:12]))
+    except Exception as e:
+        out("[실패] 펀드 목록   %s" % str(e)[:180])
+    out()
+
     out("=" * 70)
-    out("데이터를 받은 엔드포인트 %d / %d" % (ok, len(MAS_PROBES)))
+    out("데이터를 받은 엔드포인트 %d / %d" % (ok, len(MAS_PROBES) + 1))
     if ok:
         out("=> 이 구조로 화면에 연결합니다. 위 '첫 항목 필드' 를 그대로 보내주세요.")
     out("=" * 70)
@@ -543,6 +563,47 @@ def mas_probe():
         pass
     return 0 if ok else 2
 
+
+
+# ------------------------------------------------------ 미래에셋 펀드 검색 API
+# 펀드찾기 화면(/mw/mks/mks4116/r01.do)의 getTotalSearch() 를 그대로 따른다.
+#   1) POST /mw/mks/mks4116/a01.json  key=FUND_SEARCH_MODE  -> returnValue
+#   2) returnValue == "D" 이면 /mw/mks/mks4116/a02.json, 아니면
+#      /search/getTotalSearch.jsp 로 목록을 POST 조회
+#      params: sort, sort_opt, startCount, listCount, query
+#      sort: NASST_SUM(순자산) | M1_BNFR | M3_BNFR | M6_BNFR | M12_BNFR
+#   응답: SearchQueryResult.Collection[0].DocumentSet.{TotalCount, Document[]}
+#         Document[].Field.* 에 실제 값이 들어 있다.
+MAS_FUND_REF = "/mw/mks/mks4116/r01.do"
+
+
+def mas_fund_list(list_count=100, start=0, sort="NASST_SUM"):
+    """펀드 목록을 조회해 Document 배열과 전체 건수를 반환한다."""
+    mas_warmup(MAS_FUND_REF)
+    ref = MAS_BASE + MAS_FUND_REF
+    try:
+        mode = mas_post("/mw/mks/mks4116/a01.json", {"key": "FUND_SEARCH_MODE"}, referer=ref)
+        rv = str(mode.get("returnValue", "")).strip().upper()
+    except Exception:
+        rv = ""
+    path = "/mw/mks/mks4116/a02.json" if rv == "D" else "/search/getTotalSearch.jsp"
+    res = mas_post(path, {
+        "sort": sort,
+        "sort_opt": "",
+        "startCount": str(start),
+        "listCount": str(list_count),
+        "query": "",
+    }, referer=ref)
+
+    docs, total = [], 0
+    try:
+        ds = res["SearchQueryResult"]["Collection"][0]["DocumentSet"]
+        total = int(str(ds.get("TotalCount") or 0).replace(",", "") or 0)
+        d = ds.get("Document") or []
+        docs = d if isinstance(d, list) else [d]
+    except (KeyError, IndexError, TypeError, ValueError):
+        pass
+    return {"path": path, "mode": rv, "total": total, "docs": docs, "raw_keys": list(res.keys())}
 
 # ------------------------------------------------- 미래에셋 홈페이지 수집(공개 페이지)
 # 사내 상품 API 가 없을 때의 경로. 미래에셋증권 공개 상품 페이지를 사용자 PC 에서
@@ -786,6 +847,20 @@ class Handler(SimpleHTTPRequestHandler):
 
     def do_POST(self):
         route = urllib.parse.urlparse(self.path).path
+        if route == "/api/mas-fund":
+            # 펀드 목록은 2단계 호출이 필요해 서버에서 처리하고 결과만 넘긴다
+            try:
+                length = int(self.headers.get("Content-Length") or 0)
+                raw = self.rfile.read(length).decode("utf-8") if length else ""
+                q = urllib.parse.parse_qs(raw, keep_blank_values=True)
+                cnt = int((q.get("listCount", ["100"]) or ["100"])[0] or 100)
+                srt = (q.get("sort", ["NASST_SUM"]) or ["NASST_SUM"])[0]
+                self._send_json(mas_fund_list(list_count=min(cnt, 300), sort=srt))
+            except urllib.error.HTTPError as e:
+                self._send_json({"error": "미래에셋 HTTP %s" % e.code}, 502)
+            except Exception as e:
+                self._send_json({"error": str(e)}, 502)
+            return
         if route == "/api/mas":
             # 화면 -> 로컬 서버 -> 미래에셋 상품 JSON API (EUC-KR 응답을 UTF-8 로 변환)
             try:

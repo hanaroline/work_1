@@ -1,0 +1,103 @@
+{
+ "ELS/DLS 청약목록": {
+  "path": "/hks/hks4022/a01.json",
+  "params": {
+   "omkt_drvs_tcd": "",
+   "qry_strt_dt": "20260822",
+   "qry_end_dt": "20260822",
+   "next_key": "",
+   "dlbr_term_yn": "0",
+   "qry_sort_tp": "0",
+   "qry_sort_sqn": "0"
+  },
+  "first": {
+   "tmod_nm": "(ELS)38031",
+   "omkt_drvs_tcd": "1",
+   "omkt_drvs_pcd": "38031",
+   "rmnd_dys": "5",
+   "omkt_drv_frcs_ern_r": "12.5000",
+   "apy_strt_dt": "20260820",
+   "apy_end_dt": "20260828",
+   "dlbr_obj_apy_end_dt": "20260825",
+   "kni_yn": "N",
+   "lwrk_bar_rt": "45.00",
+   "max_abl_los_r": "-100.00000000",
+   "onln_apy_abl_yn": "Y",
+   "onofln_only_tcd": "0",
+   "curr_cd": "KRW",
+   "omkt_drv_rpy_cycl_cn": "6개월",
+   "omkt_drv_desc_cn": "KOSPI200 / S&P500 / EuroStoxx50 3년 스텝다운",
+   "ofr_lmt_a": "30000000000",
+   "hlv_fn_ivst_pd_yn": "Y",
+   "row1_cn": "K2001",
+   "row2_cn": "SPX",
+   "row3_cn": "08",
+   "apy_a": "0"
+  },
+  "count": 3,
+  "top": {
+   "result": "success",
+   "returnCode": "0",
+   "continueYn": "0",
+   "cts": "",
+   "grid_cnt01": "3"
+  }
+ },
+ "ELS/DLS 기준가": {
+  "path": "/hks/hks4023/a01.json",
+  "params": {},
+  "first": null,
+  "count": 0,
+  "top": {
+   "result": "success"
+  }
+ },
+ "채권/RP 기준수익률": {
+  "path": "/hks/hks4037/a01.json",
+  "params": {
+   "indate": "20260822"
+  },
+  "first": {
+   "item": "국고채 3년",
+   "rate": "2.874"
+  },
+  "count": 1,
+  "top": {
+   "result": "success"
+  }
+ },
+ "ETN 전체상품": {
+  "path": "/bp/q000.json",
+  "params": {},
+  "first": null,
+  "count": 0,
+  "top": {
+   "result": "success"
+  }
+ },
+ "펀드 목록": {
+  "path": "/mw/mks/mks4116/a02.json",
+  "total": 1842,
+  "first": {
+   "Field": {
+    "FDN": "미래에셋코어테크증권자투자신탁1호(주식)",
+    "KR_FD_CD": "K55370BB1234",
+    "DOCID": "FD001",
+    "PD_CLSS": "02",
+    "PD_TYP_CD": "11",
+    "ADMICN": "0101",
+    "M1_BNFR": "1.87",
+    "M3_BNFR": "6.24",
+    "M6_BNFR": "13.51",
+    "M12_BNFR": "28.73",
+    "NASST_SUM": "1953120000000",
+    "ONLINE_PRVT_YN": "1",
+    "HAN_CLAS_NM": "C-e",
+    "BF_FEE_EXP": "0.00",
+    "FEE_N_YN": "Y",
+    "FD_STC_CD": "",
+    "PBFF_FD_UNVS_YN": "Y"
+   }
+  }
+ }
+}

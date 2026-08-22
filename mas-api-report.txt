@@ -1,14 +1,14 @@
 ======================================================================
  미래에셋증권 상품 JSON API 점검
 ======================================================================
-빌드 : 2026-08-23.1 (mas-api)
+빌드 : 2026-08-23.5 (mas-fund)
 
 [OK] ELS/DLS 청약목록   POST /hks/hks4022/a01.json
-     최상위 키 : result, returnCode, continueYn, cts, grid01
+     최상위 키 : result, returnCode, continueYn, cts, grid_cnt01, grid01
      result=success returnCode=0 continueYn=0
      grid01 건수 : 3
-     첫 항목 필드: itm_nm, itm_no, omkt_drvs_pcd_nm, omkt_drvs_risk_gcd, omkt_drv_frcs_ern_r, uast_cn, apy_strt_dt, apy_end_dt, omkt_drv_exrt_cycl_cn, onln_apy_abl_yn, prgs_stat_nm, curr_cd_nm, max_abl_los_r, pca_grte_r
-     첫 항목 값  : {"itm_nm": "미래에셋증권 제32115회 ELS", "itm_no": "32115", "omkt_drvs_pcd_nm": "주가연계증권(ELS)", "omkt_drvs_risk_gcd": "2", "omkt_drv_frcs_ern_r": "12.50", "uast_cn": "KOSPI200 / S&P500 / EuroStoxx50", "apy_strt_dt": "20260820", "apy_end_dt": "20260826"}
+     첫 항목 필드: tmod_nm, omkt_drvs_tcd, omkt_drvs_pcd, rmnd_dys, omkt_drv_frcs_ern_r, apy_strt_dt, apy_end_dt, dlbr_obj_apy_end_dt, kni_yn, lwrk_bar_rt, max_abl_los_r, onln_apy_abl_yn, onofln_only_tcd, curr_cd, omkt_drv_rpy_cycl_cn, omkt_drv_desc_cn, ofr_lmt_a, hlv_fn_ivst_pd_yn, row1_cn, row2_cn, row3_cn, apy_a
+     첫 항목 값  : {"tmod_nm": "(ELS)38031", "omkt_drvs_tcd": "1", "omkt_drvs_pcd": "38031", "rmnd_dys": "5", "omkt_drv_frcs_ern_r": "12.5000", "apy_strt_dt": "20260820", "apy_end_dt": "20260828", "dlbr_obj_apy_end_dt": "20260825"}
 
 [OK] ELS/DLS 기준가   POST /hks/hks4023/a01.json
      최상위 키 : result
@@ -29,7 +29,12 @@
      데이터 배열이 비어 있습니다(조건/기간 확인 필요)
      응답 원문: {"result": "success"}
 
+[OK] 펀드 목록   POST /mw/mks/mks4116/a02.json
+     검색모드 returnValue=D / TotalCount=1842 / 수신 3건
+     Field 항목: FDN, KR_FD_CD, DOCID, PD_CLSS, PD_TYP_CD, ADMICN, M1_BNFR, M3_BNFR, M6_BNFR, M12_BNFR, NASST_SUM, ONLINE_PRVT_YN, HAN_CLAS_NM, BF_FEE_EXP, FEE_N_YN, FD_STC_CD, PBFF_FD_UNVS_YN
+     첫 항목 값 : {"FDN": "미래에셋코어테크증권자투자신탁1호(주식)", "KR_FD_CD": "K55370BB1234", "DOCID": "FD001", "PD_CLSS": "02", "PD_TYP_CD": "11", "ADMICN": "0101", "M1_BNFR": "1.87", "M3_BNFR": "6.24"}
+
 ======================================================================
-데이터를 받은 엔드포인트 2 / 4
+데이터를 받은 엔드포인트 3 / 5
 => 이 구조로 화면에 연결합니다. 위 '첫 항목 필드' 를 그대로 보내주세요.
 ======================================================================
