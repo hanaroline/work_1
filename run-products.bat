@@ -1,103 +1,72 @@
 @echo off
 rem ===========================================================================
-rem  Mirae Asset - Product Finder / local launcher
+rem  Mirae Asset - Product Finder / double-click launcher
 rem
-rem  ASCII-only on purpose: Korean text plus "chcp 65001" makes cmd.exe
-rem  mis-parse the rest of a batch file and exit silently.
+rem  Kept deliberately simple. Earlier versions used for-loops, call, quoted
+rem  candidates and delayed expansion to detect Python, and each of those
+rem  misfired on a real PC. Straight-line code only: no for, no call, no
+rem  nested quotes, no delayed expansion, no chcp, ASCII only.
 rem
-rem  Detection strategy: DO NOT inspect the interpreter from batch.
-rem  Earlier attempts (where / --version / for-f on -c output) all misfired -
-rem  the Microsoft Store placeholder can satisfy those checks, and nested
-rem  quotes inside for-f are fragile. Instead we simply ask each candidate to
-rem  run THIS script with --help. Only a real Python 3 can do that and return
-rem  0; the Store placeholder dies with 9009. That is exactly what we need.
+rem  The probe runs THIS script with --help. Only a real Python 3 can do that
+rem  and return 0; the Microsoft Store placeholder returns 9009 and is skipped.
 rem ===========================================================================
-setlocal
 cd /d "%~dp0"
 title Mirae Product Finder
 
-echo ==============================================================
-echo  Mirae Asset - Product Finder (local server)
-echo ==============================================================
+echo.
+echo  ==========================================================
+echo   Mirae Asset - Product Finder
+echo  ==========================================================
 echo.
 
 if not exist "serve-products.py" goto nofile
 
-set "PYEXE="
+set PY=
+python serve-products.py --help >nul 2>nul
+if not errorlevel 1 set PY=python
+if defined PY goto run
 
-rem --- candidates on PATH -------------------------------------------------
-for %%P in (python.exe py.exe python3.exe) do call :try "%%P"
+py -3 serve-products.py --help >nul 2>nul
+if not errorlevel 1 set PY=py -3
+if defined PY goto run
 
-rem --- candidates in the usual install folders ----------------------------
-set "PF86=%ProgramFiles(x86)%"
-for /d %%D in ("%LOCALAPPDATA%\Programs\Python\Python3*") do call :try "%%D\python.exe"
-for /d %%D in ("%ProgramFiles%\Python3*") do call :try "%%D\python.exe"
-for /d %%D in ("%PF86%\Python3*") do call :try "%%D\python.exe"
-for /d %%D in ("C:\Python3*") do call :try "%%D\python.exe"
+python3 serve-products.py --help >nul 2>nul
+if not errorlevel 1 set PY=python3
+if defined PY goto run
 
-if not defined PYEXE goto nopython
+goto nopython
 
-echo  Python : %PYEXE%
-echo  Folder : %CD%
+:run
+echo   Python  : %PY%
+echo   Folder  : %CD%
 echo.
-echo  Starting the server. Your browser should open by itself.
-echo  IMPORTANT: the address bar must start with 127.0.0.1
-echo             If it starts with C:\ you opened the file directly and
-echo             live data cannot load. Use the address printed below.
+echo   Starting the server. Your browser opens by itself.
+echo   The address must start with 127.0.0.1
+echo   Keep this window open. Stop with Ctrl+C.
 echo.
-echo  Keep this window open. Stop the server with Ctrl+C.
+%PY% serve-products.py %*
 echo.
-
-"%PYEXE%" serve-products.py %*
-set "RC=%errorlevel%"
-echo.
-if not "%RC%"=="0" echo  [ERROR] Server exited with code %RC%
-if not "%RC%"=="0" echo          Diagnose with: "%PYEXE%" serve-products.py --report
-echo  Server stopped.
-echo.
-pause
-exit /b %RC%
-
-rem --- try one candidate --------------------------------------------------
-rem  Ask it to run this very script. Real Python 3 -> exit 0.
-rem  Store placeholder / Python 2 / broken install -> non-zero, so skipped.
-:try
-if defined PYEXE goto :eof
-rem  --help works on every version of the script, so this probe does not
-rem  depend on a newly added flag. A real Python 3 prints help and returns 0;
-rem  the Microsoft Store placeholder cannot run the script and returns 9009.
-%1 serve-products.py --help >nul 2>nul
-if errorlevel 1 goto :eof
-set "PYEXE=%~1"
-goto :eof
+echo   Server stopped.
+goto end
 
 :nofile
-echo  [ERROR] serve-products.py is not in this folder:
-echo          %CD%
-echo          Unzip the whole folder, then run this file from inside it.
-echo.
-pause
-exit /b 1
+echo   [ERROR] serve-products.py is not in this folder:
+echo           %CD%
+echo           Unzip the whole folder, then run this file from inside it.
+goto end
 
 :nopython
-echo  [!] Could not run serve-products.py with any Python on this PC.
+echo   [ERROR] No working Python 3 was found.
 echo.
-echo      If you know Python works, open a command window here and run:
-echo          python serve-products.py
-echo      then tell us what it prints - that is the fastest way to fix this.
+echo   Open a command window in this folder and run:
+echo       python serve-products.py
+echo   and send us what it prints.
 echo.
-echo      Note: a "py" or "python" that only prints the word "Python" is the
-echo      Microsoft Store placeholder, not a real interpreter.
-echo.
-echo      Install Python: https://www.python.org/downloads/
-echo      Tick "Add Python to PATH" during installation.
-echo.
-echo      Nothing was opened on purpose: products-standalone.html can only
-echo      show illustrative data, and opening it here looked like success.
-echo.
-echo  ---- Reason (running the script with --help, unfiltered) --------------
-python serve-products.py --help
-echo  ----------------------------------------------------------------------
+echo   Note: a "py" or "python" that only prints the word "Python"
+echo   is the Microsoft Store placeholder, not a real interpreter.
+echo   Install Python: https://www.python.org/downloads/
+echo   Tick "Add Python to PATH" during installation.
+
+:end
 echo.
 pause
-exit /b 1
