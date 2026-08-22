@@ -19,6 +19,7 @@
 """
 
 import argparse
+import http.cookiejar
 import json
 import os
 import re
@@ -35,8 +36,19 @@ from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
 ROOT = os.path.dirname(os.path.abspath(__file__))
 KRX_URL = "https://data.krx.co.kr/comm/bldAttendant/getJsonData.cmd"
 KRX_REFERER = "https://data.krx.co.kr/contents/MDC/MDI/outerLoader/index.cmd"
+# 쿠키를 받기 위해 먼저 방문하는 페이지. KRX 는 세션 쿠키(JSESSIONID) 없이
+# getJsonData.cmd 를 POST 하면 HTTP 400 을 돌려준다.
+KRX_WARMUP = [
+    "https://data.krx.co.kr/",
+    "https://data.krx.co.kr/contents/MDC/MDI/mdiLoader/index.cmd?menuId=MDC0201020101",
+]
 UA = ("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
-      "(KHTML, like Gecko) Chrome/124.0 Safari/537.36")
+      "(KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36")
+
+# 쿠키를 유지하는 opener — 이걸로 warmup 과 POST 를 같은 세션으로 처리한다
+_cookies = http.cookiejar.CookieJar()
+_opener = urllib.request.build_opener(urllib.request.HTTPCookieProcessor(_cookies))
+_warmed = False
 
 # 화면(data/sources.js)이 호출하는 것과 동일한 엔드포인트.
 # ID·파라미터명은 pykrx 에 공개된 KRX 메뉴 카탈로그에서 확인한 값이다.
@@ -87,9 +99,42 @@ def resolve_date_token(token, base_ts):
 
 
 # ---------------------------------------------------------------- KRX 호출
-def krx_post(bld, params, base_ts=None):
+def warmup(force=False, verbose=False):
+    """KRX 페이지를 먼저 방문해 세션 쿠키를 받아 둔다.
+
+    이 단계를 건너뛰면 getJsonData.cmd 가 HTTP 400 을 돌려준다.
+    사내 프록시(--krx-url)로 우회하는 경우에는 필요 없으므로 건너뛴다.
+    """
+    global _warmed
+    if _warmed and not force:
+        return True
+    # 워밍업 대상은 실제 호출 주소의 origin 에서 유도한다 (사내 프록시도 동일하게 처리)
+    parts = urllib.parse.urlsplit(krx_url)
+    origin = "%s://%s/" % (parts.scheme, parts.netloc)
+    targets = [origin]
+    if parts.netloc.endswith("data.krx.co.kr"):
+        targets = KRX_WARMUP
+    got = False
+    for url in targets:
+        try:
+            req = urllib.request.Request(url, headers={"User-Agent": UA})
+            with _opener.open(req, timeout=timeout_s) as r:
+                r.read(2048)    # 본문은 필요 없다 — 쿠키만 받으면 된다
+            got = True
+        except Exception as e:
+            if verbose:
+                print("  [warmup] %s -> %s" % (url, e))
+    names = sorted(c.name for c in _cookies)
+    if verbose:
+        print("  [warmup] 쿠키 %d개: %s" % (len(names), ", ".join(names) or "(없음)"))
+    _warmed = got
+    return got
+
+
+def krx_post(bld, params, base_ts=None, _retry=True):
     """서버에서 KRX 를 직접 호출한다 — 브라우저가 아니므로 CORS 가 없다."""
     base_ts = base_ts if base_ts is not None else time.time()
+    warmup()
     body = {"bld": bld}
     for k, v in (params or {}).items():
         body[k] = resolve_date_token(v, base_ts) if isinstance(v, str) and v.startswith("@") else v
@@ -97,16 +142,32 @@ def krx_post(bld, params, base_ts=None):
     req = urllib.request.Request(
         krx_url, data=data,
         headers={
+            # pykrx 가 보내는 것과 동일하게 맞춘다 (charset 접미사 없음)
             "User-Agent": UA,
             "Referer": KRX_REFERER,
-            "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8",
+            "Content-Type": "application/x-www-form-urlencoded",
             "Accept": "application/json, text/javascript, */*; q=0.01",
             "X-Requested-With": "XMLHttpRequest",
         })
-    with urllib.request.urlopen(req, timeout=timeout_s) as r:
-        raw = r.read()
+    try:
+        with _opener.open(req, timeout=timeout_s) as r:
+            raw = r.read()
+    except urllib.error.HTTPError as e:
+        # 400/401/403 은 세션이 만료·누락된 경우가 많다 — 한 번 다시 워밍업해 재시도
+        if _retry and e.code in (400, 401, 403):
+            warmup(force=True)
+            return krx_post(bld, params, base_ts, _retry=False)
+        detail = ""
+        try:
+            detail = e.read(400).decode("utf-8", "replace").strip().replace("\n", " ")
+        except Exception:
+            pass
+        raise RuntimeError("HTTP %s%s" % (e.code, (" | " + detail) if detail else ""))
     text = raw.decode("utf-8", "replace")
-    return json.loads(text)
+    try:
+        return json.loads(text)
+    except json.JSONDecodeError:
+        raise RuntimeError("JSON 이 아닌 응답: %s" % text[:200].replace("\n", " "))
 
 
 def rows_of(payload):
@@ -257,6 +318,7 @@ def main():
 
     if args.check:
         print("KRX 연결 점검: %s" % krx_url)
+        warmup(force=True, verbose=True)
         try:
             payload = krx_post(BLD + "MDCSTAT04601", {})
             n = len(rows_of(payload))
