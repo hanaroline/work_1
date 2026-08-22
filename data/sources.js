@@ -450,6 +450,12 @@ var MASPSRC = (function () {
       status: 'sale', currency: 'KRW', tax: [],
       fundType: null, asset: null, region: region,
       minAmount: null, series: null, bench: null, holdings: null,
+      /* 상세 팝업(hks4116/p11.do)은 fd_cd 를 요구한다. 응답의 KR 표준코드가
+         그대로 fd_cd 이므로 별도로 보관해 링크 생성에 쓴다. */
+      fdCd: String(pick(fd, ['KR_FD_CD', 'DOCID']) || '').trim(),
+      typeCode: String(pick(fd, ['PD_TYP_CD']) || '').trim(),
+      online: online,
+      raw: fd,
       highDifficulty: String(fd.FD_STC_CD || '') === '02',
       pick: String(fd.PBFF_FD_UNVS_YN || '').toUpperCase() === 'Y'
     };
@@ -564,7 +570,16 @@ var MASPSRC = (function () {
     var end = ymd8(pick(r, ['apy_end_dt', 'dlbr_obj_apy_end_dt']));
     var online = String(r.onln_apy_abl_yn || '').toUpperCase() === 'Y';
     var desc = String(r.omkt_drv_desc_cn || '').trim();
-    var codes = uastCodes(desc + ' ' + [r.row1_cn, r.row2_cn, r.row3_cn].join(' '));
+    var uast = String(pick(r, ['uast_cn']) || '').trim();
+    /* '36개월' / '3년' / '6개월' 같은 표기에서 개월수를 뽑는다. 못 뽑으면 null. */
+    function monthsOf(txt) {
+      var t = String(txt || '');
+      var y = t.match(/(\d+(?:\.\d+)?)\s*년/);
+      if (y) return Math.round(parseFloat(y[1]) * 12);
+      var m = t.match(/(\d+)\s*개?월/);
+      return m ? parseInt(m[1], 10) : null;
+    }
+    var codes = uastCodes(uast + ' ' + desc + ' ' + [r.row1_cn, r.row2_cn, r.row3_cn].join(' '));
     return {
       cat: 'els', live: true, source: '미래에셋증권',
       sourceUrl: 'https://securities.miraeasset.com/hks/hks4022/n01.do',
@@ -579,8 +594,15 @@ var MASPSRC = (function () {
       knockIn: kni === 'Y' ? (bar != null ? bar : null) : null,
       knockInKnown: kni === 'Y' || kni === 'N',
       barrier: bar,
+      /* lwrk_bar_rt 는 '최저' 배리어다. 회차별 스텝다운 일정은 공개 응답에 없으므로
+         최초 배리어로 오해하게 표시하거나 계단을 지어내지 않는다. */
+      barrierIsLowest: bar != null,
       maxLoss: loss != null ? Math.abs(loss) : null,
-      risk: null,
+      /* 위험등급은 조회 조합에 따라 올 때도 있고 없을 때도 있다. 오면 쓴다. */
+      risk: (function () {
+        var g = parseInt(String(pick(r, ['omkt_drvs_risk_gcd']) || '').replace(/[^0-9]/g, ''), 10);
+        return (g >= 1 && g <= 6) ? g : null;
+      })(),
       subStart: ymd8(r.apy_strt_dt), subEnd: end,
       deadlineD: dleft != null ? dleft : daysUntil(end, today),
       status: (dleft != null && dleft <= 7) ? 'closing' : 'open',
@@ -588,8 +610,27 @@ var MASPSRC = (function () {
       channel: online ? ['online', 'app', 'branch'] : ['branch'],
       tax: [], asset: 'der', region: codes.indexOf('KOSPI200') >= 0 ? 'kr' : 'gl',
       earlyText: String(r.omkt_drv_rpy_cycl_cn || '').trim(),
+      maturityText: String(r.omkt_drv_exrt_cycl_cn || '').trim(),
+      earlyM: monthsOf(r.omkt_drv_rpy_cycl_cn),
+      maturityM: monthsOf(r.omkt_drv_exrt_cycl_cn) || monthsOf(desc),
       offerLimit: n(r.ofr_lmt_a),
-      highRisk: String(r.hlv_fn_ivst_pd_yn || '').toUpperCase() === 'Y',
+      subAmount: n(r.apy_a),
+      compRate: n(r.cpt_r),
+      pcaGrte: n(r.pca_grte_r),
+      coolEnd: ymd8(r.dlbr_obj_apy_end_dt),
+      coolTarget: String(r.dlbr_istu_obj_itm_yn || '').toUpperCase() === 'Y',
+      onOffOnly: String(r.onofln_only_tcd || '').trim(),
+      progressText: String(r.prgs_stat_nm || '').trim(),
+      /* 상세 팝업(p02.do)은 종목번호(itm_no)를 요구한다. 공개 응답에 없으면
+         비워 두고, 화면에서는 상품별 링크 대신 목록 링크만 노출한다. */
+      itmNo: String(pick(r, ['itm_no']) || '').trim(),
+      round: String(pick(r, ['omkt_drvs_pcd']) || '').trim(),
+      elsTypeName: String(pick(r, ['omkt_drvs_pcd_nm']) || '').trim(),
+      uastRows: (uast ? uast.split(',') : [r.row1_cn, r.row2_cn, r.row3_cn])
+        .map(function (v) { return String(v == null ? '' : v).trim(); })
+        .filter(function (v) { return v; }),
+      raw: r,
+      highRisk: /^(Y|1)$/i.test(String(r.hlv_fn_ivst_pd_yn || '').trim()),
       minAmount: null, fee: null, aum: null,
       series: null, bench: null, holdings: null
     };

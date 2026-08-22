@@ -44,7 +44,7 @@ from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
 
 ROOT = os.path.dirname(os.path.abspath(__file__))
 # 파일이 실제로 교체됐는지 한눈에 확인하기 위한 빌드 표시
-BUILD = "2026-08-23.6 (mas-fund2)"
+BUILD = "2026-08-24.1 (detail-links)"
 KRX_URL = "https://data.krx.co.kr/comm/bldAttendant/getJsonData.cmd"
 KRX_REFERER = "https://data.krx.co.kr/contents/MDC/MDI/outerLoader/index.cmd"
 # 쿠키를 받기 위해 먼저 방문하는 페이지. KRX 는 세션 쿠키(JSESSIONID) 없이
@@ -406,26 +406,58 @@ def mas_els_list(max_pages=8):
 
     조회기간을 당일~+60일로 둬야 청약 예정 상품까지 나온다(실측으로 확인).
     """
-    out, next_key, pages = [], "", 0
-    while pages < max_pages:
-        pages += 1
-        res = mas_post("/hks/hks4022/a01.json", {
-            "omkt_drvs_tcd": "",          # 전체 (1.ELS 2.DLS 3.ELB 4.DLB)
+    # 1순위: '청약중인 상품' 화면과 동일한 조합.
+    #        상세 팝업에 필요한 itm_no 와 기초자산/위험등급/경쟁률이 함께 온다.
+    # 2순위: 청약 일정(달력) 화면 조합. 필드는 적지만 확실히 동작한다.
+    combos = [
+        ("청약중(hks4023)", "/hks/hks4023/n01.do", lambda nk: {
+            "omkt_drvs_tcd": "",
+            "dlbr_term_yn": "",
+            "itm_nm": "",
+            "prgs_scd": "01",         # 00.전체 01.진행중 02.진행종료
+            "qry_sort_tp": "",
+            "qry_sort_sqn": "",
+            "next_key": nk,
+        }),
+        ("일정(hks4022)", "/hks/hks4022/n01.do", lambda nk: {
+            "omkt_drvs_tcd": "",      # 전체 (1.ELS 2.DLS 3.ELB 4.DLB)
             "qry_strt_dt": mas_today(),
             "qry_end_dt": mas_days_ahead(60),
-            "next_key": next_key,
+            "next_key": nk,
             "dlbr_term_yn": "0",
             "qry_sort_tp": "0",
             "qry_sort_sqn": "0",
-        }, referer=MAS_BASE + "/hks/hks4022/n01.do")
-        rows = res.get("grid01") or []
-        out.extend(rows)
-        if str(res.get("continueYn", "")) != "1":
-            break
-        next_key = res.get("cts") or res.get("next_key") or ""
-        if not next_key:
-            break
-    return out
+        }),
+    ]
+
+    best = []
+    for label, ref, mk in combos:
+        out, next_key, pages = [], "", 0
+        try:
+            while pages < max_pages:
+                pages += 1
+                res = mas_post("/hks/hks4022/a01.json", mk(next_key),
+                               referer=MAS_BASE + ref)
+                rows = res.get("grid01") or []
+                out.extend(rows)
+                if str(res.get("continueYn", "")) != "1":
+                    break
+                next_key = res.get("cts") or res.get("next_key") or ""
+                if not next_key:
+                    break
+        except Exception as e:
+            print("  [ELS] 조합 %s 실패: %s" % (label, e))
+            continue
+        if not out:
+            continue
+        # 종목번호가 오는 조합을 우선한다(상세 팝업 링크에 필요)
+        if any(r.get("itm_no") for r in out):
+            print("  [ELS] 조합 %s 채택 - %d건 (itm_no 포함)" % (label, len(out)))
+            return out
+        if len(out) > len(best):
+            best = out
+        print("  [ELS] 조합 %s - %d건 (itm_no 없음)" % (label, len(out)))
+    return best
 
 
 MAS_PROBES = [
@@ -433,6 +465,10 @@ MAS_PROBES = [
         "omkt_drvs_tcd": "", "qry_strt_dt": "@TODAY", "qry_end_dt": "@TODAY",
         "next_key": "", "dlbr_term_yn": "0", "qry_sort_tp": "0", "qry_sort_sqn": "0",
     }, "/hks/hks4022/n01.do", "grid01"),
+    ("ELS/DLS 청약중목록", "/hks/hks4022/a01.json", {
+        "omkt_drvs_tcd": "", "dlbr_term_yn": "", "itm_nm": "", "prgs_scd": "01",
+        "qry_sort_tp": "", "qry_sort_sqn": "", "next_key": "",
+    }, "/hks/hks4023/n01.do", "grid01"),
     ("ELS/DLS 기준가", "/hks/hks4023/a01.json", {}, "/hks/hks4023/r01.do", None),
     ("채권/RP 기준수익률", "/hks/hks4037/a01.json", {"indate": "@TODAY"}, "/hks/hks4037/r03.do", "list"),
     ("ETN 전체상품", "/bp/q000.json", {}, "/hks/hks4318/n01_21.do", "a91303"),

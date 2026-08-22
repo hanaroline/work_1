@@ -628,6 +628,50 @@ table.cmp td.best{background:var(--disabled);font-weight:700;color:var(--ink)}
     'val.no': ['미적용', 'No'],
     'val.noField': ['공개데이터에 없는 항목', 'Not available in public data'],
     'detail.maxLoss': ['최대손실률', 'Max loss ratio'],
+    'detail.maturity2': ['만기주기', 'Maturity cycle'],
+    'detail.offerLimit': ['모집한도', 'Offering limit'],
+    'detail.subAmount': ['청약금액', 'Subscribed amount'],
+    'detail.compRate': ['경쟁률', 'Competition ratio'],
+    'detail.coolEnd': ['숙려대상 청약마감', 'Cooling-off deadline'],
+    'detail.elsType': ['상품유형', 'Product type'],
+    'detail.elsDesc': ['상품설명', 'Description'],
+    'col.barrierLow': ['최저 배리어', 'Lowest barrier'],
+    'detail.payoffLowNote': ['공개 응답에는 최저 배리어만 제공됩니다. 회차별 조기상환 배리어(스텝다운) 일정은 투자설명서를 확인하세요.',
+      'The public response provides only the lowest barrier. See the prospectus for the step-down schedule.'],
+    'col.ret1m': ['1개월', '1M'],
+    'detail.round': ['회차', 'Series no.'],
+    'detail.highRisk': ['고난도 금융투자상품', 'High-complexity product'],
+    'detail.dLeft': ['청약 잔여일', 'Days left'],
+    'detail.sinceLaunch': ['설정 후 수익률', 'Since inception'],
+    'detail.className': ['클래스', 'Class'],
+    'detail.online': ['온라인 판매', 'Online sale'],
+    'detail.byMaturity': ['만기조건에 따름', 'Per maturity terms'],
+    'detail.raw': ['수신 원문 항목', 'Raw fields received'],
+    'detail.rawNote': ['미래에셋증권 공개 응답에서 그대로 받은 값입니다. 화면에 항목이 비어 있다면 응답에 그 값이 없다는 뜻입니다.',
+      'Values exactly as received from the public Mirae Asset response. A blank field means the response did not contain it.'],
+    'doc.fundDetail': ['펀드 상세 · 투자설명서', 'Fund detail / prospectus'],
+    'doc.fundSearch': ['펀드 검색', 'Fund search'],
+    'doc.elsDetail': ['ELS/DLS 상품 상세', 'ELS/DLS product detail'],
+    'doc.elsList': ['청약중인 ELS/DLS', 'ELS/DLS on offer'],
+    'doc.elsPrice': ['기준가 · 상환조건 조회', 'Reference price / redemption'],
+    'doc.elsCal': ['ELS/DLS 청약 일정', 'ELS/DLS calendar'],
+    'doc.etnPdf': ['투자설명서 (PDF)', 'Prospectus (PDF)'],
+    'doc.etnList': ['ETN 전체상품', 'All ETNs'],
+    'doc.bondDetail': ['채권 상세', 'Bond detail'],
+    'doc.bondList': ['장내채권', 'Listed bonds'],
+    'doc.rpList': ['RP 안내', 'RP guide'],
+    'doc.cma': ['CMA', 'CMA'],
+    'doc.wrap': ['랩어카운트 상품소개', 'Wrap account products'],
+    'doc.trust': ['특정금전신탁', 'Specified money trust'],
+    'doc.finMain': ['미래에셋증권 금융상품', 'Mirae Asset products'],
+    'doc.kofia': ['금융투자협회 전자공시', 'KOFIA disclosure'],
+    'doc.krx': ['KRX 정보데이터시스템', 'KRX data system'],
+    'doc.noteFund': ['투자설명서 · 간이투자설명서 원문은 위 펀드 상세 팝업 안에서 내려받습니다. 미래에셋증권 사이트가 새 창으로 열립니다.',
+      'The full prospectus and summary prospectus are downloaded inside the fund detail popup above.'],
+    'doc.noteEls': ['공개 목록 응답에는 종목번호가 없어 상품별 상세 팝업을 바로 열 수 없습니다. 아래 목록 화면에서 해당 회차를 선택하세요.',
+      'The public list response carries no item number, so the per-product popup cannot be opened directly. Pick the series on the list page below.'],
+    'doc.noteSample': ['이 상품은 예시 데이터입니다. 실제 투자설명서가 존재하지 않으므로 카테고리 안내 화면으로만 연결합니다.',
+      'This product is illustrative data. No actual prospectus exists, so only the category guide page is linked.'],
     'detail.pcaGrte': ['원금보장률', 'Principal guaranteed'],
     'col.frontFee': ['선취수수료 (총보수는 공개 응답에 없음)', 'Front-end load (total fee not in the response)'],
     'col.frontFeeShort': ['선취', 'front'],
@@ -727,6 +771,14 @@ table.cmp td.best{background:var(--disabled);font-weight:700;color:var(--ink)}
   function won(v) {
     if (v == null) return DASH;
     return state.lang === 'ko' ? v.toLocaleString('en-US') + '원' : 'KRW ' + v.toLocaleString('en-US');
+  }
+  /* 원 단위 금액 -> 억/만원 단위 한글 표기 */
+  function won(v) {
+    if (v == null) return DASH;
+    if (state.lang !== 'ko') return v.toLocaleString('en-US') + ' KRW';
+    if (v >= 1e8) return (v / 1e8).toFixed(v >= 1e9 ? 0 : 1).replace(/\.0$/, '') + '억원';
+    if (v >= 1e4) return Math.round(v / 1e4).toLocaleString('ko-KR') + '만원';
+    return v.toLocaleString('ko-KR') + '원';
   }
   function dt(iso) { return !iso ? DASH : state.lang === 'ko' ? iso.replace(/-/g, '.') : iso; }
   function months(m) { return m == null ? DASH : state.lang === 'ko' ? m + '개월' : m + 'M'; }
@@ -915,10 +967,18 @@ table.cmp td.best{background:var(--disabled);font-weight:700;color:var(--ink)}
   /* ELS 손익구조 다이어그램 */
   function payoffChart(host, p) {
     var W = 720, H = 210, pad = { l: 40, r: 14, t: 12, b: 30 };
-    var n = Math.max(2, Math.round(p.maturityM / p.earlyM));
+    /* 회차별 배리어 일정을 아는 경우에만 계단을 그린다. 최저 배리어만 아는
+       실데이터에서는 그 한 줄만 그린다 — 없는 일정을 지어내지 않는다. */
+    var stepKnown = !p.barrierIsLowest && p.maturityM > 0 && p.earlyM > 0;
+    var known = stepKnown;
+    var n = stepKnown ? Math.max(2, Math.round(p.maturityM / p.earlyM)) : 1;
     if (n > 12) n = 12;
     var steps = [];
-    for (var i = 0; i < n; i++) steps.push(Math.max(60, (p.barrier || 90) - i * 5));
+    if (stepKnown) {
+      for (var i = 0; i < n; i++) steps.push(Math.max(60, (p.barrier || 90) - i * 5));
+    } else {
+      steps.push(p.barrier);
+    }
     var lo = 30, hi = 110;
     function X(i) { return pad.l + (i + 0.5) / n * (W - pad.l - pad.r); }
     function Y(v) { return pad.t + (1 - (v - lo) / (hi - lo)) * (H - pad.t - pad.b); }
@@ -936,8 +996,10 @@ table.cmp td.best{background:var(--disabled);font-weight:700;color:var(--ink)}
         '" fill="#F58220" opacity="0.08"/>');
       g.push('<line x1="' + x0 + '" y1="' + Y(v) + '" x2="' + x1 + '" y2="' + Y(v) + '" stroke="#F58220" stroke-width="2.4"/>');
       g.push('<text x="' + X(i) + '" y="' + (Y(v) - 7) + '" text-anchor="middle" font-size="11" fill="#CB6015" font-weight="700">' + v + '%</text>');
-      g.push('<text x="' + X(i) + '" y="' + (H - 9) + '" text-anchor="middle" font-size="11" fill="#6C6C6C">' +
-        (i + 1) * p.earlyM + (state.lang === 'ko' ? '개월' : 'M') + '</text>');
+      if (known) {
+        g.push('<text x="' + X(i) + '" y="' + (H - 9) + '" text-anchor="middle" font-size="11" fill="#6C6C6C">' +
+          (i + 1) * p.earlyM + (state.lang === 'ko' ? '개월' : 'M') + '</text>');
+      }
     });
     if (p.knockIn) {
       g.push('<rect x="' + pad.l + '" y="' + Y(p.knockIn) + '" width="' + (W - pad.l - pad.r) + '" height="' +
@@ -1329,23 +1391,88 @@ table.cmp td.best{background:var(--disabled);font-weight:700;color:var(--ink)}
   }
 
   /* ------------------------------------------------------------------ 상세 드로어 */
+  /* 미래에셋증권 공개 페이지의 실제 링크 패턴.
+     각 URL 은 해당 화면 소스(hks4116/r01.do, hks4023/n01.do, hks4023/r01.do,
+     hks4318/n01_21.do, hks4036/r01.do)에서 직접 확인한 값이다.
+     확인되지 않은 패턴은 만들어 쓰지 않는다. */
+  var MAS = 'https://securities.miraeasset.com';
+  var KRCODE = /^KR[0-9A-Z]{10}$/i;
+
+  function productLinks(p) {
+    var out = [];
+    var code = String(p.code || '').trim();
+    var note = '';
+    var specific = false;   /* 이 상품 하나를 가리키는 링크가 있는지 */
+    function add(label, url, isOne) {
+      out.push({ label: label, url: url });
+      if (isOne) specific = true;
+    }
+
+    if (!p.live) {
+      /* 예시 데이터에는 실제 서류가 없다. 있는 척하지 않는다. */
+      note = T('doc.noteSample');
+    }
+
+    if (p.cat === 'fund') {
+      var fdCd = String(p.fdCd || (KRCODE.test(code) ? code : '')).trim();
+      if (p.live && fdCd) {
+        add(T('doc.fundDetail'), MAS + '/hks/hks4116/p11.do?fd_cd=' + encodeURIComponent(fdCd), true);
+        note = T('doc.noteFund');
+      }
+      add(T('doc.fundSearch'), MAS + '/hks/hks4116/r01.do');
+    } else if (p.cat === 'els') {
+      if (p.live && p.itmNo) {
+        add(T('doc.elsDetail'), MAS + '/hks/hks4023/p02.do?item_cd=' + encodeURIComponent(p.itmNo) +
+          '&hlv_fn_ivst_pd_yn=' + (p.highRisk ? '1' : '0') +
+          '&cpt_r=&apy_a=&omkt_drvs_pcd_nm=&omkt_drv_mult_ern_r_yn=', true);
+      } else if (p.live) {
+        note = T('doc.noteEls');
+      }
+      add(T('doc.elsList'), MAS + '/hks/hks4023/n01.do');
+      add(T('doc.elsPrice'), MAS + '/hks/hks4023/r01.do');
+      add(T('doc.elsCal'), MAS + '/hks/hks4022/n01.do');
+    } else if (p.cat === 'etf') {
+      /* ETN 종목번호(5xxxxx)는 투자설명서 PDF 가 공개되어 있다 */
+      if (/^5\d{5}$/.test(code)) add(T('doc.etnPdf'), MAS + '/public/hks4000/T' + code + '.pdf', true);
+      add(T('doc.etnList'), MAS + '/hks/hks4318/n01_21.do');
+      if (p.live && p.sourceUrl) add(T('doc.krx'), p.sourceUrl);
+    } else if (p.cat === 'bond') {
+      if (KRCODE.test(code)) add(T('doc.bondDetail'), MAS + '/hks/hks4036/v01.do?itemCode=' + encodeURIComponent(code), true);
+      add(T('doc.bondList'), MAS + '/hks/hks4036/r01.do');
+    } else if (p.cat === 'rp') {
+      add(T('doc.rpList'), MAS + '/hks/hks4033/n01.do');
+      add(T('doc.cma'), MAS + '/hks/hks4311/n01.do');
+    } else if (p.cat === 'wrap') {
+      add(T('doc.wrap'), MAS + '/hks/hks4125/n11.do');
+      add(T('doc.trust'), MAS + '/hks/hks4041/n01.do');
+    } else {
+      add(T('doc.finMain'), MAS + '/financeMain.do');
+    }
+    /* 투자설명서 원문 공시처 — 미래에셋증권 사이트 하단 '상품공시실' 과 동일 */
+    add(T('doc.kofia'), 'https://dis.kofia.or.kr/');
+    return { links: out, note: note, specific: specific };
+  }
+
   function metricCells(p) {
     var out = [];
     function add(label, val, sm, cls) { out.push({ l: label, v: val, sm: sm, cls: cls }); }
     if (p.cat === 'els') {
-      add(T('col.coupon'), pctPlain(p.coupon), false, 'up');
-      add(T('col.barrier'), p.barrier == null ? DASH : p.barrier + '%');
+      /* 제시수익률 0 은 '0%' 가 아니라 만기조건에 따른다는 뜻이다(원 화면과 동일) */
+      add(T('col.coupon'), p.coupon == null ? DASH
+        : p.coupon === 0 ? T('detail.byMaturity') : pctPlain(p.coupon), p.coupon === 0, 'up');
+      if (p.maxLoss != null) add(T('detail.maxLoss'), pctPlain(p.maxLoss), false, 'down');
+      if (p.pcaGrte != null) add(T('detail.pcaGrte'), pctPlain(p.pcaGrte), false);
+      add(T(p.barrierIsLowest ? 'col.barrierLow' : 'col.barrier'), p.barrier == null ? DASH : p.barrier + '%');
       /* 표와 동일한 원칙: 낙인 정보가 없으면 '노낙인' 이라고 단정하지 않는다 */
       add(T('col.knockin'), p.knockIn != null ? T('val.knockIn', p.knockIn)
         : (p.knockInKnown || p.barrier != null) ? T('val.noKnockIn') : DASH, true);
-      add(T('col.maturity'), months(p.maturityM), true);
       add(T('detail.obs'), p.earlyText ? p.earlyText
         : p.earlyM == null ? DASH
         : p.earlyM === 1 ? T('val.month') : T('val.everyM', p.earlyM), true);
+      add(T('col.maturity'), p.maturityText ? p.maturityText : months(p.maturityM), true);
       add(T('col.deadline'), dt(p.subEnd), true);
-      if (p.maxLoss != null) add(T('detail.maxLoss'), pctPlain(p.maxLoss), false, 'down');
-      if (p.pcaGrte != null) add(T('detail.pcaGrte'), pctPlain(p.pcaGrte), false);
-      if (p.statusText) add(T('detail.status'), p.statusText, true);
+      add(T('detail.dLeft'), days(p.deadlineD), true);
+      if (p.statusText || p.progressText) add(T('detail.status'), p.statusText || p.progressText, true);
     } else if (p.cat === 'bond') {
       add(T('col.ytm'), pctPlain(p.ytm), false, 'up');
       add(T('col.coupon'), pctPlain(p.coupon));
@@ -1361,11 +1488,18 @@ table.cmp td.best{background:var(--disabled);font-weight:700;color:var(--ink)}
       add(T('col.aum'), eok(p.aum), true);
       add(T('detail.status'), code2label(D.STATUS, p.status), true);
     } else {
+      /* 기간 수익률은 '응답에 있는 것만' 보여준다. 1년/3개월은 기준 항목이라
+         값이 없어도 자리를 유지하고, 나머지는 값이 있을 때만 노출한다. */
       add(T('col.ret1y'), pct(p.ret1y), false, signCls(p.ret1y));
       add(T('col.ret3m'), pct(p.ret3m), false, signCls(p.ret3m));
-      add(T('col.ret3y'), pct(p.ret3y), false, signCls(p.ret3y));
-      add(T('detail.excess'), pct(p.excess), false, signCls(p.excess));
-      add(T(p.mgmtFee != null ? 'col.mgmtfee' : 'col.fee'), pctPlain(p.fee != null ? p.fee : p.mgmtFee));
+      if (p.ret1m != null) add(T('col.ret1m'), pct(p.ret1m), false, signCls(p.ret1m));
+      if (p.ret6m != null) add(T('col.ret6m'), pct(p.ret6m), false, signCls(p.ret6m));
+      if (p.ret3y != null) add(T('col.ret3y'), pct(p.ret3y), false, signCls(p.ret3y));
+      if (p.sinceLaunch != null) add(T('detail.sinceLaunch'), pct(p.sinceLaunch), false, signCls(p.sinceLaunch));
+      if (p.excess != null) add(T('detail.excess'), pct(p.excess), false, signCls(p.excess));
+      if (p.fee != null || p.mgmtFee != null)
+        add(T(p.mgmtFee != null ? 'col.mgmtfee' : 'col.fee'), pctPlain(p.fee != null ? p.fee : p.mgmtFee));
+      if (p.frontFee != null) add(T('col.frontFeeShort'), pctPlain(p.frontFee));
       add(T('col.aum'), eok(p.aum), true);
     }
     return out;
@@ -1411,12 +1545,22 @@ table.cmp td.best{background:var(--disabled);font-weight:700;color:var(--ink)}
     }
     h.push('</div>');
 
-    /* ELS 손익구조 */
-    if (p.cat === 'els' && p.barrier) {
-      h.push('<div class="dsec"><div class="dsec-rule"></div><h3>' + esc(T('detail.payoff')) + '</h3>' +
-        '<p class="hint" style="margin-bottom:10px">' + esc(T('detail.payoffNote')) + '</p><div id="dPayoff"></div>' +
-        '<p class="hint" style="margin-top:8px">' + esc(T('detail.underlying')) + ': ' +
-        esc((p.underlying || []).map(function (u) { return code2label(D.UNDERLYING, u); }).join(' · ')) + '</p></div>');
+    /* ELS 손익구조 · 기초자산 — 배리어가 없어도 기초자산은 항상 보여준다 */
+    if (p.cat === 'els') {
+      /* row1_cn 등은 기초자산 코드다. 해석된 이름이 있으면 그것을 먼저 쓴다. */
+      var uText = (p.underlying || []).map(function (u) { return code2label(D.UNDERLYING, u); }).join(' · ')
+        || ((p.uastRows && p.uastRows.length) ? p.uastRows.join(' · ') : '');
+      var ub = [];
+      ub.push('<div class="dsec"><div class="dsec-rule"></div><h3>' + esc(T('detail.payoff')) + '</h3>');
+      if (p.barrier) {
+        ub.push('<p class="hint" style="margin-bottom:10px">' +
+          esc(T(p.barrierIsLowest ? 'detail.payoffLowNote' : 'detail.payoffNote')) + '</p><div id="dPayoff"></div>');
+      }
+      ub.push('<table class="kv"' + (p.barrier ? ' style="margin-top:12px"' : '') + '>' +
+        '<tr><th>' + esc(T('detail.underlying')) + '</th><td>' + (uText ? esc(uText) : DASH) + '</td></tr>' +
+        (p.uastText ? '<tr><th>' + esc(T('detail.elsDesc')) + '</th><td>' + esc(p.uastText) + '</td></tr>' : '') +
+        '</table></div>');
+      h.push(ub.join(''));
     }
     /* 자산 구성 */
     if (p.holdings) {
@@ -1441,28 +1585,63 @@ table.cmp td.best{background:var(--disabled);font-weight:700;color:var(--ink)}
       [T('detail.provider'), L(p.provider)],
       [T('detail.code'), p.code]
     ];
-    if (p.cat === 'els') kv.splice(1, 0, [T('detail.sub'), dt(p.subStart) + ' ~ ' + dt(p.subEnd)]);
+    if (p.cat === 'els') {
+      var ins = [[T('detail.sub'), dt(p.subStart) + ' ~ ' + dt(p.subEnd)]];
+      if (p.round) ins.push([T('detail.round'), p.round]);
+      if (p.elsTypeName) ins.push([T('detail.elsType'), p.elsTypeName]);
+      if (p.coolTarget || p.coolEnd) ins.push([T('detail.coolEnd'), dt(p.coolEnd)]);
+      if (p.offerLimit != null) ins.push([T('detail.offerLimit'), won(p.offerLimit)]);
+      if (p.subAmount != null) ins.push([T('detail.subAmount'), won(p.subAmount)]);
+      if (p.compRate != null) ins.push([T('detail.compRate'), p.compRate.toFixed(2)]);
+      ins.push([T('detail.highRisk'), T(p.highRisk ? 'val.yes' : 'val.no')]);
+      Array.prototype.splice.apply(kv, [1, 0].concat(ins));
+    }
+    if (p.cat === 'fund') {
+      var fins = [];
+      if (p.className) fins.push([T('detail.className'), p.className]);
+      if (p.frontFee != null) fins.push([T('col.frontFee'), pctPlain(p.frontFee)]);
+      if (p.online != null) fins.push([T('detail.online'), T(p.online ? 'val.yes' : 'val.no')]);
+      if (p.highDifficulty != null) fins.push([T('detail.highRisk'), T(p.highDifficulty ? 'val.yes' : 'val.no')]);
+      if (fins.length) Array.prototype.splice.apply(kv, [1, 0].concat(fins));
+    }
     if (p.taxCredit) kv.splice(1, 0, [T('col.taxcredit'), minAmt(p.taxCredit)]);
     kv.forEach(function (r) { h.push('<tr><th>' + esc(r[0]) + '</th><td>' + esc(r[1]) + '</td></tr>'); });
     h.push('</table></div>');
 
-    /* 서류·공시 */
-    var docUrl = p.cat === 'els' ? 'https://securities.miraeasset.com/hks/hks4022/n01.do'
-      : p.cat === 'rp' ? 'https://securities.miraeasset.com/hks/hks4033/n01.do'
-        : p.cat === 'etf' ? 'https://securities.miraeasset.com/hks/hks4318/n01_21.do'
-          : 'https://securities.miraeasset.com/financeMain.do';
+    /* 수신 원문 — 응답에 무엇이 왔는지 그대로 확인할 수 있게 한다 */
+    if (p.raw) {
+      var rk = Object.keys(p.raw).filter(function (k) {
+        var v = p.raw[k];
+        return v != null && String(v).trim() !== '' && typeof v !== 'object';
+      });
+      if (rk.length) {
+        h.push('<div class="dsec"><div class="dsec-rule"></div>' +
+          '<details><summary style="cursor:pointer;font-weight:600;font-size:15px">' +
+          esc(T('detail.raw')) + ' (' + rk.length + ')</summary>' +
+          '<p class="hint" style="margin:10px 0">' + esc(T('detail.rawNote')) + '</p><table class="kv">' +
+          rk.map(function (k) {
+            return '<tr><th style="white-space:nowrap">' + esc(k) + '</th><td>' + esc(String(p.raw[k]).trim()) + '</td></tr>';
+          }).join('') + '</table></details></div>');
+      }
+    }
+
+    /* 서류·공시 — 실제로 존재하는 URL 만 버튼으로 만든다 */
+    var dl = productLinks(p);
+    var docUrl = dl.links.length ? dl.links[0].url : 'https://securities.miraeasset.com/financeMain.do';
+    var hasOneLink = dl.specific;
     h.push('<div class="dsec"><div class="dsec-rule"></div><h3>' + esc(T('detail.doc')) + '</h3><div class="doclist">' +
-      '<a href="' + docUrl + '" target="_blank" rel="noopener">' + esc(T('detail.doc1')) + '</a>' +
-      '<a href="' + docUrl + '" target="_blank" rel="noopener">' + esc(T('detail.doc2')) + '</a>' +
-      '<a href="' + docUrl + '" target="_blank" rel="noopener">' + esc(T('detail.doc3')) + '</a></div>' +
-      '<p class="hint" style="margin-top:10px">' + esc(T('detail.disclaimer')) + '</p></div>');
+      dl.links.map(function (x) {
+        return '<a href="' + esc(x.url) + '" target="_blank" rel="noopener">' + esc(x.label) + '</a>';
+      }).join('') + '</div>' +
+      (dl.note ? '<p class="hint" style="margin-top:10px">' + esc(dl.note) + '</p>' : '') + '</div>');
 
     h.push('</div><div class="drawer-foot">' +
       '<button class="btn" id="dWatch" aria-pressed="' + (state.watch.indexOf(p.id) >= 0) + '">' +
       (state.watch.indexOf(p.id) >= 0 ? '★ ' : '☆ ') + esc(T('watch.title')) + '</button>' +
       '<button class="btn" id="dCmp">' + esc(T(state.cmp.indexOf(p.id) >= 0 ? 'detail.incmp' : 'detail.addcmp')) + '</button>' +
       '<a class="btn btn-primary" style="margin-left:auto;text-decoration:none;display:grid;place-items:center" href="' +
-      docUrl + '" target="_blank" rel="noopener">' + esc(T('detail.act')) + '</a></div>');
+      esc(docUrl) + '" target="_blank" rel="noopener">' +
+      esc(T(hasOneLink ? 'detail.act' : 'detail.openSite')) + '</a></div>');
 
     d.innerHTML = h.join('');
     d.hidden = false; $('#scrim').hidden = false;
