@@ -9,7 +9,7 @@ rem  Detection strategy: DO NOT inspect the interpreter from batch.
 rem  Earlier attempts (where / --version / for-f on -c output) all misfired -
 rem  the Microsoft Store placeholder can satisfy those checks, and nested
 rem  quotes inside for-f are fragile. Instead we simply ask each candidate to
-rem  run THIS script with --probe. Only a real Python 3 can do that and return
+rem  run THIS script with --help. Only a real Python 3 can do that and return
 rem  0; the Store placeholder dies with 9009. That is exactly what we need.
 rem ===========================================================================
 setlocal
@@ -63,7 +63,10 @@ rem  Ask it to run this very script. Real Python 3 -> exit 0.
 rem  Store placeholder / Python 2 / broken install -> non-zero, so skipped.
 :try
 if defined PYEXE goto :eof
-%1 serve-products.py --probe >nul 2>nul
+rem  --help works on every version of the script, so this probe does not
+rem  depend on a newly added flag. A real Python 3 prints help and returns 0;
+rem  the Microsoft Store placeholder cannot run the script and returns 9009.
+%1 serve-products.py --help >nul 2>nul
 if errorlevel 1 goto :eof
 set "PYEXE=%~1"
 goto :eof
@@ -89,10 +92,12 @@ echo.
 echo      Install Python: https://www.python.org/downloads/
 echo      Tick "Add Python to PATH" during installation.
 echo.
-echo      Opening products-standalone.html so you can still see the screen,
-echo      but it will show illustrative data, not live KRX data.
+echo      Nothing was opened on purpose: products-standalone.html can only
+echo      show illustrative data, and opening it here looked like success.
 echo.
-if exist "products-standalone.html" start "" "products-standalone.html"
+echo  ---- Reason (running the script with --help, unfiltered) --------------
+python serve-products.py --help
+echo  ----------------------------------------------------------------------
 echo.
 pause
 exit /b 1
