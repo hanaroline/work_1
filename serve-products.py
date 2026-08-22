@@ -352,7 +352,7 @@ class Handler(SimpleHTTPRequestHandler):
     def do_GET(self):
         parsed = urllib.parse.urlparse(self.path)
         if parsed.path == "/api/health":
-            self._send_json({"ok": True, "root": ROOT})
+            self._send_json({"ok": True, "build": BUILD, "root": ROOT})
             return
         if parsed.path == "/api/proxy":
             target = urllib.parse.parse_qs(parsed.query).get("url", [""])[0]
