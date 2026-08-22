@@ -57,6 +57,9 @@ YAHOO_INDEX = {
     "sp500_fut": "ES=F", "nasdaq_fut": "NQ=F", "dow_fut": "YM=F", "russell_fut": "RTY=F",
     # 연방기금 금리선물 — 내재 정책금리(100 - 가격)를 계산해 인하 기대를 가늠한다
     "fedfunds_fut": "ZQ=F",
+    # 코스피200 현물 — 선물(naver_futures)에는 일별 계열이 없어 기간 수익률을
+    # 낼 수 없다. 선물을 이야기할 때 되짚을 기준이 여기 있어야 한다.
+    "kospi200": "^KS200",
 }
 
 # 값이 「가격」이 아니라 「금리(%)」인 심볼. 기간 변화를 수익률(%)이 아니라
@@ -1074,15 +1077,52 @@ def _ecos_at(code, target, span=16):
     return None
 
 
-def _ecos_perf(code, now, spot):
-    """국내 금리의 기간 변화(bp). 되짚는 기준은 달력이다(4-3절과 같다)."""
+def _ecos_targets(d0):
+    """되짚을 기준일. 달력으로 센다(4-3절과 같다). 1주는 여기 없다 — 이미
+    받아 둔 10영업일 계열에서 공짜로 뽑는다."""
+    return {"m1": _months_before(d0, 1), "m3": _months_before(d0, 3),
+            "m6": _months_before(d0, 6), "y1": _months_before(d0, 12),
+            "ytd": date(d0.year, 1, 1) - timedelta(days=1)}
+
+
+def _ecos_perf_bulk(code, now, spot):
+    """정식 인증키가 있을 때 — **한 번의 호출**로 13개월치를 받아 모든 구간을
+    그 안에서 뽑는다. 샘플 키(호출당 10행)로는 못 하는 방식이라 갈라 둔다."""
     d0 = now.date()
-    # 1주는 부르지 않는다 — 이미 받아 둔 10영업일 계열에 들어 있다.
-    wants = (("m1", _months_before(d0, 1)), ("m3", _months_before(d0, 3)),
-             ("m6", _months_before(d0, 6)), ("y1", _months_before(d0, 12)),
-             ("ytd", date(d0.year, 1, 1) - timedelta(days=1)))
+    start = _months_before(d0, 13)
+    tail = "817Y002/D/%s/%s/%s" % (start.strftime("%Y%m%d"), d0.strftime("%Y%m%d"), code)
+    j = json.loads(_get(_ecos_url("StatisticSearch", tail, rows=900), timeout=60))
+    bars = []
+    for r in (j.get("StatisticSearch", {}) or {}).get("row", []):
+        t = str(r.get("TIME") or "")
+        try:
+            bars.append((date(int(t[:4]), int(t[4:6]), int(t[6:8])),
+                         float(r["DATA_VALUE"])))
+        except (KeyError, ValueError, TypeError):
+            continue
+    bars.sort()
+    if len(bars) < 3:
+        return None
+    p = _perf(bars, spot, as_bp=True)
+    if p:
+        p["basis"] = "일별 실측 대비 (한국은행 ECOS 817Y002, 13개월 일괄)"
+    return p
+
+
+def _ecos_perf(code, now, spot, wants=None):
+    """국내 금리의 기간 변화(bp). 되짚는 기준은 달력이다(4-3절과 같다).
+
+    `wants` 로 어느 구간을 되짚을지 줄일 수 있다 — 샘플 인증키에서는 구간
+    하나가 곧 호출 하나라, 계열이 늘면 예산을 나눠 써야 한다.
+    """
+    d0 = now.date()
+    tg = _ecos_targets(d0)
+    keys = tuple(wants) if wants is not None else tuple(tg)
     out = {}
-    for key, target in wants:
+    for key in keys:
+        target = tg.get(key)
+        if target is None:
+            continue
         try:
             v = _ecos_at(code, target)
         except Exception:                                      # noqa: BLE001
@@ -1184,22 +1224,48 @@ def ecos_rates(now, dump_dir=None):
         except (KeyError, ValueError, TypeError):
             continue
 
-    # 기간 변화(bp). 브리핑이 실제로 인용하는 세 가지만 되짚는다 — 샘플 키에서는
-    # 항목 하나에 서너 번을 더 불러야 해서 다 하면 ECOS 가 버티지 못한다.
-    for key in ("ktb3y", "ktb10y"):        # 두 가지만. ECOS 는 부를수록 잘 끊긴다.
+    # 기간 변화(bp). 예전에는 ktb3y·ktb10y **두 가지만** 되짚었다. 샘플
+    # 인증키가 호출당 10행이라 기준일마다 따로 불러야 했고, 여섯 계열을 다
+    # 하면 서른 번이 되어 ECOS 가 끊겼기 때문이다. 그 결과 브리핑의 국고채
+    # 1년·5년, 회사채, CD 91일에는 기간 변화 칸이 늘 비어 있었다.
+    #
+    # 이제 두 갈래로 나눈다.
+    #  · 정식 인증키(ECOS_API_KEY)가 있으면 계열당 **한 번**에 13개월치를 받아
+    #    모든 구간을 그 안에서 뽑는다 — 여섯 번이면 끝이고 구간도 다 채운다.
+    #  · 샘플 키면 1주는 이미 받아 둔 10영업일 계열에서 **공짜로** 뽑고(여섯
+    #    계열 전부), 나머지 구간은 호출 예산 안에서 되짚는다.
+    full = ECOS_KEY != "sample"
+    budget = [40 if full else 22]                 # 남은 호출 수. 0 이 되면 멈춘다.
+    for key in ("ktb3y", "ktb10y", "ktb1y", "ktb5y", "corp3y", "cd91"):
         if key not in out or key not in tried:
             continue
         spot = out[key]["value"]
         ser = out[key].get("series") or []
-        try:
-            p = _ecos_perf(tried[key], now, spot)
-        except Exception as e:                                # noqa: BLE001
-            errs.append("%s 기간변화 -> %s" % (key, str(e)[:60]))
-            continue
+        p = None
+        if full:
+            try:
+                budget[0] -= 1
+                p = _ecos_perf_bulk(tried[key], now, spot)
+            except Exception as e:                            # noqa: BLE001
+                errs.append("%s 기간변화(일괄) -> %s" % (key, str(e)[:60]))
+        if p is None:
+            # 앞의 둘은 브리핑이 늘 인용하므로 여섯 구간을 다 되짚고, 나머지
+            # 넷은 실제로 싣는 세 구간만 본다. 예산이 마르면 1주만 남는다.
+            wants = ("m1", "m3", "m6", "y1", "ytd") if key in ("ktb3y", "ktb10y") \
+                else ("m1", "m3", "ytd")
+            wants = wants[:max(0, budget[0])]
+            budget[0] -= len(wants)
+            try:
+                p = _ecos_perf(tried[key], now, spot, wants=wants) if wants else None
+            except Exception as e:                            # noqa: BLE001
+                errs.append("%s 기간변화 -> %s" % (key, str(e)[:60]))
+                p = None
+        # 1주는 받아 둔 10영업일 계열에서 바로 뽑는다(추가 호출 없음).
+        # 되짚기가 통째로 실패해도 이것만은 여섯 계열 모두에 붙는다.
+        if len(ser) >= 6:
+            p = p or {"unit": "bp", "basis": "일별 실측 대비 (한국은행 ECOS 817Y002)"}
+            p.setdefault("w1", round((spot - ser[-6]["value"]) * 100, 1))
         if p:
-            # 1주는 받아 둔 계열에서 바로 뽑는다(추가 호출 없음)
-            if len(ser) >= 6:
-                p["w1"] = round((spot - ser[-6]["value"]) * 100, 1)
             out[key]["perf"] = p
         else:
             errs.append("%s 기간변화 -> 되짚은 값이 하나도 없다" % key)
@@ -1334,6 +1400,42 @@ _CREDIT_SENT = re.compile(
     r"[^.。\n]{0,90}(?:반대매매|미수금|신용거래융자|신용융자|예탁금)[^.。\n]{0,140}")
 
 
+# 외국계 IB · 해외 투자전문가. 이름이 나온 **문장**을 통째로 건져 둔다.
+#
+# 브리핑에 "골드만삭스는 …" 을 쓰려면 그 말이 실제로 어느 기사 어느 문장에
+# 있었는지가 있어야 한다. 기억으로 쓰면 출처를 댈 수 없다. 이름만 세는 것도
+# 소용없다 — 문장이 있어야 인용이 된다.
+_IB_NAMES = (
+    # 투자은행 · 운용사
+    "골드만삭스", "모건스탠리", "JP모건", "JP모간", "제이피모건", "뱅크오브아메리카",
+    "BofA", "씨티", "시티그룹", "UBS", "도이체방크", "도이치방크", "바클레이스",
+    "노무라", "미즈호", "HSBC", "BNP", "소시에테제네랄", "웰스파고", "제프리스",
+    "번스타인", "번스타인리서치", "에버코어", "파이퍼샌들러", "레이먼드제임스",
+    "블랙록", "뱅가드", "피델리티", "핌코", "PIMCO", "브리지워터", "인베스코",
+    "칼라일", "블랙스톤", "KKR", "아폴로", "맥쿼리", "슈로더", "얼라이언스번스타인",
+    # 사람
+    "레이 달리오", "제프리 건들락", "빌 애크먼", "워런 버핏", "캐시 우드",
+    "모하메드 엘에리언", "엘 에리언", "제러미 시걸", "래리 서머스", "제이미 다이먼",
+    "데이비드 솔로몬", "켄 그리핀", "스탠리 드러켄밀러", "하워드 막스",
+    "톰 리", "에드 야데니", "마이크 윌슨", "데이비드 코스틴", "사비타 서브라마니안",
+)
+_IB_SENT = re.compile(
+    r"[^.。\n]{0,120}(?:" + "|".join(re.escape(x) for x in _IB_NAMES)
+    + r")[^.。\n]{0,200}")
+
+# 증권업종 — 미래에셋증권과 그 동종 상장사. 종목 뉴스 페이지에서 회사 자체의
+# 이슈(실적·인수·제재·인사·자사주 등)를 받는다. 리서치 자료가 아니라 **회사
+# 소식**이다.
+MIRAE_CODE = "006800"
+BROKER_CODES = {
+    "006800": "미래에셋증권", "016360": "삼성증권", "005940": "NH투자증권",
+    "039490": "키움증권", "071050": "한국금융지주", "008560": "메리츠증권",
+    "003540": "대신증권", "003470": "유안타증권", "001720": "신영증권",
+    "030610": "교보증권", "003530": "한화투자증권", "016610": "DB금융투자",
+    "001510": "SK증권", "078020": "LS증권", "001500": "현대차증권",
+    "030210": "다올투자증권", "001200": "유진투자증권", "003960": "iM증권",
+}
+
 _BODY_IDS = ('id="dic_area"', 'id="newsct_article"', 'id="articleBodyContents"',
              'id="comp_news_article"', 'class="newsct_article')
 
@@ -1355,9 +1457,13 @@ def _news_body(html):
             if len(body) >= 120:
                 return body, needle.split('"')[-1] or needle
     # 마지막 수단 — 예전 방식. 무엇으로 건졌는지 남겨 품질을 눈으로 본다.
+    # 여기서도 저작권 꼬리말은 잘라야 한다. 위쪽 길에만 잘라 두어서, 본문이
+    # 짧아 fallback 으로 떨어진 기사(단신 공시가 그렇다)는 「…무단전재 및
+    # 재배포 금지」까지 본문으로 들고 왔다.
     body = _text(html)
     i = body.find("기사원문")
-    return (body[i:] if i > 0 else body).strip(), "fallback"
+    body = (body[i:] if i > 0 else body)
+    return _TAIL_CUT.split(body)[0].strip(), "fallback"
 
 
 def _news_title(html, default=""):
@@ -1420,6 +1526,124 @@ def naver_news(now, limit=24):
             "credit_mentions": credit[:8]}
 
 
+def _item_news_links(code, pages=1):
+    """종목 뉴스 목록 — 그 회사 **자체**에 관한 기사다.
+
+    finance.naver.com 의 종목 뉴스는 iframe 으로 실려 있어 사람이 보는 주소로는
+    목록이 안 나온다. iframe 이 부르는 주소를 직접 부른다.
+    """
+    links, errs = [], []
+    for page in range(1, pages + 1):
+        try:
+            s = _get("https://finance.naver.com/item/news_news.naver"
+                     "?code=%s&page=%d&clusterId=" % (code, page),
+                     referer="https://finance.naver.com/item/news.naver?code=" + code,
+                     encoding="cp949")
+        except Exception as e:                                     # noqa: BLE001
+            errs.append(str(e)[:60])
+            break
+
+        def add(oid, aid):
+            u = "https://n.news.naver.com/mnews/article/%s/%s" % (oid, aid)
+            if u not in links:
+                links.append(u)
+
+        # 이 목록의 주소는 `article_id` 가 **먼저** 온다 — mainnews 쪽과 같은
+        # 차례다(naver_news 가 그렇게 읽고 있어 검증된 모양이다). `&amp;` 로
+        # 이스케이프되어 오는 경우까지 함께 받는다.
+        for aid, oid in re.findall(r"article_id=(\d+)(?:&amp;|&)office_id=(\d+)", s):
+            add(oid, aid)
+        for oid, aid in re.findall(r"office_id=(\d+)(?:&amp;|&)article_id=(\d+)", s):
+            add(oid, aid)
+        for oid, aid in re.findall(r"/mnews/article/(\d+)/(\d+)", s):
+            add(oid, aid)
+    if errs and not links:
+        raise ValueError("종목 %s 뉴스 목록: %s" % (code, errs[0]))
+    return links
+
+
+def broker_news(now, per_peer=2, mirae_n=8, peers=8):
+    """증권업종과 미래에셋증권 **자체**의 이슈.
+
+    지금까지 브리핑에는 증권업이 「업종 등락률 한 줄」로만 나왔다. 정작 이
+    회사가 속한 업종에 무슨 일이 있었는지, 미래에셋증권 자체에 무슨 일이
+    있었는지는 어디에도 없었다.
+
+    **리서치 자료가 아니다.** 미래에셋증권이 낸 종목·시황 리포트는 여기서
+    받지 않는다 — 회사 자체의 소식(실적·인수·제재·인사·자사주·신사업)과
+    업종 전반의 이슈를 받는다.
+    """
+    out = {"date": now.strftime("%Y-%m-%d"), "mirae": [], "sector": [],
+           "peers_seen": [], "errors": []}
+    seen = set()
+
+    def take(url, company, bucket):
+        if url in seen:
+            return
+        seen.add(url)
+        try:
+            page = _get(url, referer="https://finance.naver.com/")
+        except Exception as e:                                     # noqa: BLE001
+            out["errors"].append("%s %s" % (company, str(e)[:40]))
+            return
+        core, how = _news_body(page)
+        if len(core) < 120:                       # 껍데기만 온 것은 버린다
+            return
+        bucket.append({"company": company, "title": _news_title(page),
+                       "url": url, "chars": len(core), "extracted": how,
+                       "body": core[:5000]})
+
+    for u in _item_news_links(MIRAE_CODE, pages=2)[:mirae_n]:
+        take(u, "미래에셋증권", out["mirae"])
+
+    for code, name in list(BROKER_CODES.items()):
+        if code == MIRAE_CODE:
+            continue
+        if len(out["peers_seen"]) >= peers:
+            break
+        got = len(out["sector"])
+        for u in _item_news_links(code)[:per_peer]:
+            take(u, name, out["sector"])
+        if len(out["sector"]) > got:
+            out["peers_seen"].append(name)
+
+    out["count"] = len(out["mirae"]) + len(out["sector"])
+    if not out["count"]:
+        raise ValueError("증권업종 기사를 하나도 받지 못했다 (네이버 종목뉴스 구조 변경?)")
+    return out
+
+
+def ib_mentions(*article_groups):
+    """모아 둔 기사 본문에서 **외국계 IB·해외 투자전문가가 말한 문장**을 뽑는다.
+
+    새로 받아 오는 것이 없다 — 이미 받은 본문을 훑을 뿐이라 비용이 0 이다.
+    이름별로 묶어 두므로 「골드만삭스가 뭐라 했나」를 바로 찾을 수 있다.
+    """
+    hits, by_name = [], {}
+    for arts in article_groups:
+        for a in arts or []:
+            body = a.get("body") or ""
+            for m in _IB_SENT.finditer(body):
+                s = re.sub(r"\s+", " ", m.group(0)).strip()
+                if len(s) < 20 or not any(x in s for x in _IB_NAMES):
+                    continue
+                # 한 문장에 이름이 둘 이상 나오면(「브리지워터를 설립한 레이
+                # 달리오」) **먼저 나온 쪽**을 대표로 삼는다. _IB_NAMES 의
+                # 나열 순서로 고르면 엉뚱한 이름이 붙는다.
+                found = sorted(((s.index(x), x) for x in _IB_NAMES if x in s))
+                who = found[0][1]
+                row = {"who": who, "sentence": s[:400],
+                       "also": [x for _, x in found[1:]],
+                       "title": a.get("title"), "url": a.get("url")}
+                if any(h["sentence"] == row["sentence"] for h in hits):
+                    continue
+                hits.append(row)
+                by_name.setdefault(who, []).append(len(hits) - 1)
+    return {"count": len(hits), "names": sorted(by_name),
+            "by_name": {k: v for k, v in sorted(by_name.items())},
+            "mentions": hits[:40]}
+
+
 def treasury_yields(now):
     """미 국채 수익률 곡선 — 미 재무부가 직접 내는 CSV. 인증키가 필요 없다.
 
@@ -1476,18 +1700,7 @@ def treasury_yields(now):
     # CSV 는 해마다 끊겨 있어 1년·연초대비를 내려면 전년 것도 있어야 한다.
     # 전년 요청이 실패해도 나머지 구간은 그대로 낸다.
     hist = [parse(r) for r in rows[1:] if len(r) > 1]
-    try:
-        prev_csv = _get(
-            "https://home.treasury.gov/resource-center/data-chart-center/interest-rates/"
-            "daily-treasury-rates.csv/%d/all?type=daily_treasury_yield_curve"
-            "&field_tdr_date_value=%d&page&_format=csv" % (int(year) - 1, int(year) - 1),
-            timeout=50)
-        prows = list(csv.reader(io.StringIO(prev_csv)))
-        head_bak, head = head, [h.strip() for h in prows[0]]
-        hist += [parse(r) for r in prows[1:] if len(r) > 1]
-        head = head_bak
-    except Exception as e:                                       # noqa: BLE001
-        res["perf_note"] = "전년 곡선을 못 받아 1년·연초 대비는 빠질 수 있다: %s" % str(e)[:60]
+    hist += _treasury_prev_year(year, "daily_treasury_yield_curve", parse, res)
 
     perf = {}
     for k in want:
@@ -1543,10 +1756,68 @@ def treasury_real_yields(now):
     prev = parse(rows[2]) if len(rows) > 2 else {}
     if "ust10y" not in latest:
         raise ValueError("실질 10년물 없음: %s" % head[:8])
-    return {"unit": "%", "date": latest["date"], "prev_date": prev.get("date"),
-            "curve": {k: v for k, v in latest.items() if k != "date"},
-            "prev_curve": {k: v for k, v in prev.items() if k != "date"},
-            "source_url": "https://home.treasury.gov (Daily Treasury Real Yield Curve)"}
+    res = {"unit": "%", "date": latest["date"], "prev_date": prev.get("date"),
+           "curve": {k: v for k, v in latest.items() if k != "date"},
+           "prev_curve": {k: v for k, v in prev.items() if k != "date"},
+           "source_url": "https://home.treasury.gov (Daily Treasury Real Yield Curve)"}
+    res["change_bp"] = {k: round((latest[k] - prev[k]) * 100)
+                        for k in want if k in latest and k in prev}
+
+    # 기간 변화(bp). 명목 곡선과 똑같이 되짚는다 — 여기 CSV 에도 연중 일별
+    # 이력이 통째로 들어 있는데 그동안 최신 두 줄만 쓰고 버렸다. 명목에는
+    # 기간 변화가 붙고 실질에는 안 붙어서, 브리핑에서 "명목은 20bp 올랐는데
+    # 실질은?" 을 물으면 답할 수 없었다.
+    hist = [parse(r) for r in rows[1:] if len(r) > 1]
+    hist += _treasury_prev_year(year, "daily_treasury_real_yield_curve", parse, res)
+    perf = {}
+    for k in want:
+        bars = sorted((_iso(h["date"]), h[k]) for h in hist if k in h and _iso(h["date"]))
+        if len(bars) > 2:
+            p = _perf(bars, bars[-1][1], as_bp=True)
+            if p:
+                perf[k] = p
+    if perf:
+        res["perf"] = perf
+    return res
+
+
+def _treasury_prev_year(year, csv_type, parse, res):
+    """재무부 CSV 는 해마다 끊겨 있다. 1년·연초 대비를 내려면 전년 것도 있어야
+    한다. 전년 요청이 실패해도 나머지 구간은 그대로 낸다 — 되짚기가 짧아질 뿐
+    수치가 틀어지지는 않는다."""
+    try:
+        text = _get(
+            "https://home.treasury.gov/resource-center/data-chart-center/interest-rates/"
+            "daily-treasury-rates.csv/%d/all?type=%s"
+            "&field_tdr_date_value=%d&page&_format=csv"
+            % (int(year) - 1, csv_type, int(year) - 1), timeout=50)
+        prows = list(csv.reader(io.StringIO(text)))
+        return [parse(r) for r in prows[1:] if len(r) > 1]
+    except Exception as e:                                       # noqa: BLE001
+        res["perf_note"] = "전년 곡선을 못 받아 1년·연초 대비는 빠질 수 있다: %s" % str(e)[:60]
+        return []
+
+
+def breakeven_perf(nominal, real):
+    """기대인플레이션의 기간 변화 = 명목 변화 − 실질 변화 (같은 만기, bp).
+
+    브레이크이븐 자체가 두 곡선의 차라서 기간 변화도 차로 낼 수 있다 —
+    따로 받을 원천이 없다. 한쪽 만기가 비면 그 만기만 빠진다.
+    """
+    npf = (nominal or {}).get("perf") or {}
+    rpf = (real or {}).get("perf") or {}
+    out = {}
+    for k in set(npf) & set(rpf):
+        row = {}
+        for h in ("w1", "m1", "m3", "m6", "y1", "ytd"):
+            a, b = npf[k].get(h), rpf[k].get(h)
+            if a is not None and b is not None:
+                row[h] = round(a - b, 1)
+        if row:
+            row["unit"] = "bp"
+            row["basis"] = "명목 기간변화 − 실질 기간변화"
+            out[k] = row
+    return out or None
 
 
 def nyfed_effr():
@@ -1559,19 +1830,37 @@ def nyfed_effr():
 
     하루 지연 공표라 발표일(effectiveDate)이 시세일보다 하루 이르다.
     """
+    # 400 영업일치를 한 번에 받는다. 다섯 줄만 받던 때는 기간 변화를 낼 수가
+    # 없었다 — 같은 호출에 숫자만 더 딸려 오므로 값이 공짜다.
     j = json.loads(_get("https://markets.newyorkfed.org/api/rates/unsecured/"
-                        "effr/last/5.json", timeout=40))
+                        "effr/last/400.json", timeout=40))
     rows = [r for r in j.get("refRates", []) if r.get("type") == "EFFR"]
     if not rows:
         raise ValueError("EFFR 행 없음")
     last = rows[0]
-    return {"effr_pct": float(last["percentRate"]),
-            "date": last.get("effectiveDate"),
-            "percentile_1": last.get("percentPercentile1"),
-            "percentile_99": last.get("percentPercentile99"),
-            "volume_bn_usd": last.get("volumeInBillions"),
-            "note": "실효 연방기금금리. 하루 지연 공표라 시세일보다 하루 이르다",
-            "source_url": "https://markets.newyorkfed.org/api/rates/unsecured/effr"}
+    out = {"effr_pct": float(last["percentRate"]),
+           "date": last.get("effectiveDate"),
+           "percentile_1": last.get("percentPercentile1"),
+           "percentile_99": last.get("percentPercentile99"),
+           "volume_bn_usd": last.get("volumeInBillions"),
+           "note": "실효 연방기금금리. 하루 지연 공표라 시세일보다 하루 이르다",
+           "source_url": "https://markets.newyorkfed.org/api/rates/unsecured/effr"}
+    bars = []
+    for r in rows:
+        d = _iso(r.get("effectiveDate"))
+        try:
+            v = float(r["percentRate"])
+        except (KeyError, TypeError, ValueError):
+            continue
+        if d:
+            bars.append((d, v))
+    bars.sort()
+    if len(bars) > 2:
+        p = _perf(bars, bars[-1][1], as_bp=True)
+        if p:
+            out["perf"] = p
+            out["series_days"] = len(bars)
+    return out
 
 
 def naver_index_daily(code, pages=2):
@@ -1690,6 +1979,31 @@ def naver_futures(dump_dir=None):
         "volume_contracts": vol, "value_mn_krw": val,
         "source_url": "https://m.stock.naver.com/api/index/FUT/integration",
     }
+    # 종가. 그동안 이 블록에는 시가·고가·저가·전일종가만 있고 **종가가
+    # 없어서** 브리핑의 선물 줄이 늘 NOT FOUND 였다. 응답에서 현재가가 어느
+    # 이름으로 오는지 확정할 수 없어 널리 쓰이는 이름을 차례로 본다.
+    # 하나도 못 찾으면 원문을 남겨 다음번에 이름을 고칠 수 있게 한다.
+    for cand in ("closePrice", "currentPrice", "tradePrice", "nowPrice"):
+        c = n(info.get(cand)) if cand in info else n(j.get(cand))
+        if c:
+            out["close"] = c
+            out["close_field"] = cand
+            break
+    else:
+        out["close_note"] = "현재가 필드를 못 찾았다. 후보: %s" % ", ".join(sorted(info)[:12])
+        if dump_dir:
+            os.makedirs(dump_dir, exist_ok=True)
+            with open(os.path.join(dump_dir, "futures_fields.json"), "w",
+                      encoding="utf-8") as f:
+                json.dump({"totalInfos": info, "top_level": sorted(j)}, f,
+                          ensure_ascii=False, indent=1)
+    if out.get("close") and prev:
+        out["change"] = round(out["close"] - prev, 2)
+        out["change_pct"] = round((out["close"] / prev - 1) * 100, 2)
+    # 기간 수익률은 이 응답에 계열이 없어 낼 수 없다. 지어내지 않고 밝힌다.
+    out["perf_note"] = ("이 응답에는 일별 계열이 없어 기간 수익률을 낼 수 없다. "
+                        "현물 코스피200 지수(indices.kospi200)로 대신 보십시오")
+
     # 대금 / 거래량 / 지수 로 승수를 되짚어 자료가 서로 맞는지 확인해 둔다
     if vol and val and prev:
         out["implied_multiplier"] = round(val * 1e6 / vol / prev)
@@ -1739,6 +2053,127 @@ def run(label, fn, *a, **k):
         return None, {"ok": False, "error": "%s: %s" % (type(e).__name__, e)}
 
 
+def attach_history_perf(out, path="data/market/history.json"):
+    """쌓아 둔 history.json 으로 **네이버 스냅숏 항목들의 기간 변화**를 만든다.
+
+    네이버는 「오늘 값」만 준다. 업종 등락률·예탁금·신용잔고·국내 금리가 다
+    그렇고, 그래서 브리핑의 이 표들만 기간 수익률 칸이 늘 비어 있었다.
+    그런데 그 값들은 이미 날마다 history.json 에 쌓이고 있다 — 새로 받을
+    것 없이 그 파일만 읽으면 된다.
+
+    `update_history` 보다 **먼저** 돌려야 한다. 오늘 값은 아직 파일에 없으므로
+    여기서 계열 끝에 붙여 쓴다.
+
+    닿는 구간까지만 낸다. 넉 달치(120행)만 남기므로 1년·연초 대비는 파일이
+    그만큼 쌓인 뒤에야 나온다 — 없는 구간은 지어내지 않고 뺀다.
+    """
+    try:
+        with open(path, encoding="utf-8") as f:
+            rows = json.load(f).get("rows") or []
+    except (OSError, ValueError):
+        return
+    kd = (out.get("indices", {}).get("kospi") or {}).get("date")
+    rows = [r for r in rows if r.get("date") != kd]      # 오늘 행은 아래에서 새로 붙인다
+    hits = []
+
+    # ── 업종 등락률 ────────────────────────────────────────────────
+    # 업종은 **지수가 아니라 일간 등락률**로만 온다. 그래서 기간 수익률은 두
+    # 값의 비가 아니라 **일간 등락률을 이어 곱한 것**이다. 착각하기 쉬운 자리라
+    # 단위에 basis 를 붙여 둔다.
+    today_sec = {s["name"]: s.get("change_pct")
+                 for s in (out.get("sectors") or {}).get("all") or [] if s.get("name")}
+    if today_sec and rows:
+        hist = [(r["date"], r.get("sectors") or {}) for r in rows if r.get("sectors")]
+        spans = {"w1": 5, "m1": 20, "m3": 60}
+        for s in (out.get("sectors") or {}).get("all") or []:
+            nm = s.get("name")
+            if nm is None or s.get("change_pct") is None:
+                continue
+            p = {}
+            for key, ndays in spans.items():
+                take = [h[1].get(nm) for h in hist[-(ndays - 1):]] if ndays > 1 else []
+                take = [x for x in take if x is not None] + [s["change_pct"]]
+                # 쌓인 날이 모자라면 그 구간은 **뺀다**. 10일치를 「3개월」이라
+                # 적으면 1개월과 3개월이 같은 숫자로 나와 거짓이 된다.
+                if len(take) < ndays * 0.8:
+                    continue
+                acc = 1.0
+                for x in take:
+                    acc *= (1 + x / 100.0)
+                p[key] = round((acc - 1) * 100, 2)
+                p[key + "_days"] = len(take)
+            if p:
+                p["unit"] = "%"
+                p["basis"] = "일간 등락률 누적(지수 계열이 아님). 쌓인 날수만큼만 낸다"
+                s["perf"] = p
+        hits.append("sectors")
+
+    # ── 예탁금 · 신용잔고 · 펀드 ─────────────────────────────────────
+    # 자체 series 가 20영업일이라 3개월은 history 를 함께 봐야 닿는다.
+    mf = (out.get("money_flow") or {}).get("latest") or {}
+    if mf:
+        own = {r.get("date"): r for r in (out.get("money_flow") or {}).get("series") or []}
+        for r in rows:
+            m = r.get("money_flow") or {}
+            if m.get("date") and m["date"] not in own:
+                own[m["date"]] = m
+        perf = {}
+        for field in ("deposit", "credit_balance", "fund_equity"):
+            bars = sorted((_iso(d), v[field]) for d, v in own.items()
+                          if _iso(d) and v.get(field) is not None)
+            if len(bars) < 3 or mf.get(field) is None:
+                continue
+            p = _perf(bars, mf[field])
+            if not p:
+                continue
+            # 금액이라 증감률보다 **증감액(억원)** 이 먼저 읽힌다. 둘 다 낸다.
+            d0 = bars[-1][0]
+            for key, back in (("w1", d0 - timedelta(days=7)),
+                              ("m1", _months_before(d0, 1)),
+                              ("m3", _months_before(d0, 3))):
+                ref = None
+                for dt, c in bars:
+                    if dt <= back:
+                        ref = c
+                    else:
+                        break
+                if ref is not None:
+                    p[key + "_delta"] = round(mf[field] - ref, 1)
+            p["basis"] = "금투협 결제일 기준. 증감액 단위는 억원"
+            perf[field] = p
+        if perf:
+            out["money_flow"]["perf"] = perf
+            hits.append("money_flow")
+
+    # ── 국내 금리(네이버 스냅숏) ─────────────────────────────────────
+    # ECOS 가 되짚어 주는 것은 국고채·회사채·CD 뿐이다. 콜금리와 코픽스는
+    # 어느 원천에도 계열이 없어 여기서만 기간 변화가 나온다.
+    rk = out.get("rates_kr") or {}
+    if rk and rows:
+        perf = {}
+        for field in ("ktb1y", "ktb3y", "ktb5y", "ktb10y", "cd91", "call",
+                      "corp3y", "cofix_new", "cofix_balance"):
+            if rk.get(field) is None:
+                continue
+            bars = sorted((_iso(r["date"]), (r.get("rates_kr") or {})[field])
+                          for r in rows
+                          if _iso(r.get("date")) and (r.get("rates_kr") or {}).get(field) is not None)
+            bars.append((_iso(kd) or date.today(), rk[field]))
+            if len(bars) < 3:
+                continue
+            p = _perf(bars, rk[field], as_bp=True)
+            if p:
+                p["basis"] = "네이버 시장지표 누적본(history.json) 대비"
+                perf[field] = p
+        if perf:
+            out["rates_kr"]["perf"] = perf
+            hits.append("rates_kr")
+
+    if hits:
+        out.setdefault("sources", {})["derived:history_perf"] = {
+            "ok": True, "blocks": hits, "history_rows": len(rows)}
+
+
 def update_history(out, path="data/market/history.json"):
     """날마다 바뀌는 몇 가지를 한 파일에 쌓아 둔다.
 
@@ -1776,9 +2211,11 @@ def update_history(out, path="data/market/history.json"):
                                   for k in ("date", "retail", "foreign", "institution")}
     rk = out.get("rates_kr") or {}
     if rk:
+        # cofix_balance 도 쌓는다 — 빠져 있어서 잔액 기준 코픽스만 기간 변화를
+        # 낼 수 없었다. 주택담보대출 이야기에 늘 같이 나오는 값이다.
         row["rates_kr"] = {k: rk[k] for k in
                            ("ktb1y", "ktb3y", "ktb5y", "ktb10y", "cd91", "call",
-                            "corp3y", "cofix_new") if k in rk}
+                            "corp3y", "cofix_new", "cofix_balance") if k in rk}
     won = (out.get("usdkrw_naver") or {}).get("rate")
     if won:
         row["usdkrw"] = won
@@ -1985,6 +2422,14 @@ def main():
                 "note": "기대인플레이션(브레이크이븐) = 명목 국채금리 − 물가연동채(TIPS) 실질금리",
                 "source_url": "https://home.treasury.gov (명목·실질 곡선 차)",
             }
+            bp_ = breakeven_perf(nom, v)
+            if bp_:
+                out["breakeven"]["perf"] = bp_
+            nc, rc = nom.get("prev_curve") or {}, v.get("prev_curve") or {}
+            chg = {k: round((bei[k] - (nc[k] - rc[k])) * 100)
+                   for k in bei if k in nc and k in rc}
+            if chg:
+                out["breakeven"]["change_bp"] = chg
 
     # 실효 연방기금금리 — 선물 내재금리를 견줄 실측 정책금리
     v, st = run("nyfed_effr", nyfed_effr)
@@ -2022,6 +2467,21 @@ def main():
         if eff is not None:
             out["fed_implied"]["effr_pct"] = eff
             out["fed_implied"]["vs_effr_bp"] = round((implied - eff) * 100)
+        # 기간 변화(bp). ZQ=F 의 perf 는 **가격** 등락률(%)이라 그대로 쓰면 안
+        # 된다 — 내재금리는 100 − 가격이므로 가격이 오르면 금리는 내린다.
+        # 등락률로 그때의 가격을 되짚어 금리 차이로 바꾼다.
+        pp = ff.get("perf") or {}
+        rp = {}
+        for h in ("w1", "m1", "m3", "m6", "y1", "ytd"):
+            v = pp.get(h)
+            if v is None or v <= -100:
+                continue
+            then_price = ff["close"] / (1 + v / 100.0)
+            rp[h] = round(((100 - ff["close"]) - (100 - then_price)) * 100, 1)
+        if rp:
+            rp["unit"] = "bp"
+            rp["basis"] = "내재금리(100 − 가격) 기준. 선물 가격 등락률에서 되짚었다"
+            out["fed_implied"]["perf"] = rp
 
     # 네이버 — 야후에 없는 업종별 등락률과 투자자별 수급
     v, st = run("sectors", naver_sectors)
@@ -2095,6 +2555,29 @@ def main():
     if v:
         out["news"] = v
 
+    # 증권업종과 미래에셋증권 **자체**의 이슈. 리서치 자료가 아니라 회사 소식이다.
+    v, st = run("broker_news", broker_news, now)
+    out["sources"]["naver:broker_news"] = st
+    if v:
+        out["broker_news"] = v
+
+    # 외국계 IB · 해외 투자전문가가 말한 문장. 받아 둔 본문을 훑을 뿐이라 공짜다.
+    try:
+        ib = ib_mentions((out.get("news") or {}).get("articles"),
+                         (out.get("broker_news") or {}).get("mirae"),
+                         (out.get("broker_news") or {}).get("sector"))
+        if ib["count"]:
+            out["ib_mentions"] = ib
+        out["sources"]["derived:ib_mentions"] = {"ok": bool(ib["count"]),
+                                                 "count": ib["count"],
+                                                 "names": ib["names"][:12]}
+        if not ib["count"]:
+            out["sources"]["derived:ib_mentions"]["error"] = \
+                "오늘 기사 본문에 외국계 IB·전문가 언급이 없다"
+    except Exception as e:                                        # noqa: BLE001
+        out["sources"]["derived:ib_mentions"] = {
+            "ok": False, "error": "%s: %s" % (type(e).__name__, e)}
+
     # KRX 공식 오픈API — 인증키(KRX_AUTH_KEY)가 있으면 선물 투자자별이 열린다
     v, st = run("krx_openapi", krx_openapi, now, os.environ.get("KRX_AUTH_KEY"))
     out["sources"]["krx:openapi"] = st
@@ -2126,6 +2609,14 @@ def main():
     except Exception as e:                                        # noqa: BLE001
         out["sources"]["derived:fx"] = {"ok": False,
                                         "error": "%s: %s" % (type(e).__name__, e)}
+
+    # 네이버 스냅숏 항목의 기간 변화 — 쌓아 둔 history.json 으로 만든다.
+    # 반드시 latest.json 을 쓰기 **전에**, update_history 보다 **먼저** 돈다.
+    try:
+        attach_history_perf(out)
+    except Exception as e:                                        # noqa: BLE001
+        out["sources"]["derived:history_perf"] = {
+            "ok": False, "error": "%s: %s" % (type(e).__name__, e)}
 
     ok = sum(1 for s in out["sources"].values() if s["ok"])
     out["summary"] = {"sources_tried": len(out["sources"]), "sources_ok": ok}
