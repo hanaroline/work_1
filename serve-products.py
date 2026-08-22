@@ -394,6 +394,8 @@ def main():
     ap.add_argument("--no-browser", action="store_true", help="브라우저 자동 열기 없이 실행")
     ap.add_argument("--snapshot", action="store_true", help="실데이터를 파일로 저장하고 종료")
     ap.add_argument("--check", action="store_true", help="KRX 연결만 점검하고 종료")
+    ap.add_argument("--probe", action="store_true",
+                    help="런처가 이 파이썬으로 스크립트가 실행되는지 확인용 (아무 것도 안 하고 종료)")
     ap.add_argument("--report", action="store_true",
                     help="진단 리포트를 출력하고 파일로 저장 (문제 보고용)")
     ap.add_argument("--out-report", default=os.path.join(ROOT, "diag-report.txt"))
@@ -402,6 +404,11 @@ def main():
     ap.add_argument("--timeout", type=int, default=20)
     args = ap.parse_args()
     krx_url, timeout_s = args.krx_url, args.timeout
+
+    # 런처가 "이 파이썬으로 이 스크립트가 실제로 돌아가는가" 만 확인하는 용도.
+    # Microsoft Store 자리표시자는 스크립트를 실행하지 못해 0 이 아닌 코드로 죽는다.
+    if args.probe:
+        return 0
 
     if args.report:
         return write_report(args.out_report)
