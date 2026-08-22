@@ -44,7 +44,7 @@ from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
 
 ROOT = os.path.dirname(os.path.abspath(__file__))
 # 파일이 실제로 교체됐는지 한눈에 확인하기 위한 빌드 표시
-BUILD = "2026-08-23.1 (mas-api)"
+BUILD = "2026-08-23.2 (mas-warmup)"
 KRX_URL = "https://data.krx.co.kr/comm/bldAttendant/getJsonData.cmd"
 KRX_REFERER = "https://data.krx.co.kr/contents/MDC/MDI/outerLoader/index.cmd"
 # 쿠키를 받기 위해 먼저 방문하는 페이지. KRX 는 세션 쿠키(JSESSIONID) 없이
@@ -342,8 +342,38 @@ def decode_kr(raw):
     return raw.decode("utf-8", "replace")
 
 
+_mas_warmed = set()
+
+
+def mas_warmup(ref_path, verbose=False):
+    """상품 페이지를 먼저 GET 해 세션 쿠키를 받아 둔다.
+
+    KRX 와 같은 이유다. 화면을 거치지 않고 곧바로 *.json 을 POST 하면
+    세션이 없어 거부되는 경우가 있다. 페이지당 한 번만 수행한다.
+    """
+    if not ref_path or ref_path in _mas_warmed:
+        return
+    try:
+        req = urllib.request.Request(MAS_BASE + ref_path, headers={
+            "User-Agent": UA,
+            "Accept": "text/html,application/xhtml+xml,*/*;q=0.8",
+            "Accept-Language": "ko-KR,ko;q=0.9",
+            "Referer": MAS_BASE + "/financeMain.do",
+        })
+        with _opener.open(req, timeout=timeout_s) as r:
+            r.read(2048)
+        _mas_warmed.add(ref_path)
+        if verbose:
+            print("  [warmup] %s -> 쿠키 %s" % (ref_path, ", ".join(sorted(c.name for c in _cookies)) or "(없음)"))
+    except Exception as e:
+        if verbose:
+            print("  [warmup] %s -> 실패 %s" % (ref_path, e))
+
+
 def mas_post(path, params=None, referer=None):
     """미래에셋 공개 상품 JSON 엔드포인트 호출 (서버측이므로 CORS 없음)."""
+    if referer and referer.startswith(MAS_BASE):
+        mas_warmup(referer[len(MAS_BASE):])
     url = MAS_BASE + path
     data = urllib.parse.urlencode(params or {}, encoding="cp949", errors="replace").encode("ascii")
     req = urllib.request.Request(url, data=data, headers={
@@ -360,7 +390,7 @@ def mas_post(path, params=None, referer=None):
     try:
         return json.loads(text)
     except json.JSONDecodeError:
-        raise RuntimeError("JSON 이 아닌 응답(%d바이트): %s" % (len(raw), text[:200].replace("\n", " ")))
+        raise RuntimeError("JSON 이 아닌 응답(%d바이트): %s" % (len(raw), text[:300].replace("\n", " ")))
 
 
 def mas_today():
@@ -415,11 +445,40 @@ def mas_probe():
     out("=" * 70)
     out("빌드 : %s" % BUILD)
     out()
+    # ELS 목록은 조건 조합에 따라 결과가 달라질 수 있어 몇 가지를 자동으로 시도한다
+    t = mas_today()
+    plus60 = time.strftime("%Y%m%d", time.localtime(time.time() + 60 * 86400))
+    minus30 = time.strftime("%Y%m%d", time.localtime(time.time() - 30 * 86400))
+    VARIANTS = {
+        "/hks/hks4022/a01.json": [
+            ("기본(당일)", {}),
+            ("진행상태 청약중", {"prgs_scd": "01"}),
+            ("기간 당일~+60일", {"qry_end_dt": plus60}),
+            ("기간 -30일~+60일", {"qry_strt_dt": minus30, "qry_end_dt": plus60}),
+            ("종류 ELS만", {"omkt_drvs_tcd": "1"}),
+        ],
+    }
+
     ok = 0
     for label, path, params, ref, grid in MAS_PROBES:
-        p = {k: (mas_today() if v == "@TODAY" else v) for k, v in params.items()}
+        base = {k: (mas_today() if v == "@TODAY" else v) for k, v in params.items()}
+        variants = VARIANTS.get(path) or [("기본", {})]
+        p = dict(base)
         try:
+            mas_warmup(ref, verbose=True)
             res = mas_post(path, p, referer=MAS_BASE + ref)
+            # 결과가 비면 다른 조건 조합을 시도해 어떤 조건에서 나오는지 찾는다
+            if grid and not (isinstance(res, dict) and res.get(grid)):
+                for vname, extra in variants[1:]:
+                    p2 = dict(base); p2.update(extra)
+                    try:
+                        r2 = mas_post(path, p2, referer=MAS_BASE + ref)
+                    except Exception:
+                        continue
+                    if isinstance(r2, dict) and r2.get(grid):
+                        out("     * 조건 '%s' 에서 데이터가 나옴 -> %s" % (vname, json.dumps(extra, ensure_ascii=False)))
+                        res, p = r2, p2
+                        break
             keys = list(res.keys()) if isinstance(res, dict) else []
             rows = None
             if grid and isinstance(res.get(grid), list):
@@ -441,6 +500,7 @@ def mas_probe():
                 out("     첫 항목 값  : %s" % json.dumps(sample, ensure_ascii=False)[:300])
             else:
                 out("     데이터 배열이 비어 있습니다(조건/기간 확인 필요)")
+                out("     응답 원문: %s" % json.dumps(res, ensure_ascii=False)[:400])
         except urllib.error.HTTPError as e:
             out("[HTTP %s] %s   POST %s" % (e.code, label, path))
         except Exception as e:
