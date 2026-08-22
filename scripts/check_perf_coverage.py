@@ -36,6 +36,15 @@ def _has(p):
     return bool(p) and any(k in p for k in ("w1", "m1", "m3", "m6", "y1", "ytd"))
 
 
+def _explained(v):
+    """수집기가 「왜 못 냈는지」를 적어 둔 항목. 빈 것과는 다르게 센다.
+
+    적어 두지 않은 빈 칸만 결함이다. 사유가 적혀 있으면 그것은 판단이
+    끝난 자리다 — 원천에 계열이 없거나, 이력이 아직 안 쌓였거나.
+    """
+    return isinstance(v, dict) and bool(v.get("perf_note"))
+
+
 def _core(p):
     return bool(p) and CORE in p
 
@@ -48,6 +57,10 @@ def survey(D):
         if not isinstance(dct, dict):
             return
         items = [(k, v) for k, v in dct.items() if isinstance(v, dict)]
+        if not items:
+            return
+        # 사유를 적어 둔 것은 「채워졌다」로 세지 않되 결함으로도 세지 않는다
+        items = [(k, v) for k, v in items if not (_explained(v) and not _has(getter(v)))]
         if not items:
             return
         got = sum(1 for _, v in items if _has(getter(v)))

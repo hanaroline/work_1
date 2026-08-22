@@ -2644,12 +2644,28 @@ def main():
     if v:
         out["policy_rate_us"] = v
 
-    # 지수 일별시세 — 거래대금은 야후에 없고, 전 거래일을 되짚을 때 필요하다
-    for code in ("KOSPI", "KOSDAQ"):
-        v, st = run("daily", naver_index_daily, code)
+    # 지수 일별시세 — 거래대금은 야후에 없고, 전 거래일을 되짚을 때 필요하다.
+    # KPI200 은 쪽을 더 받는다. 야후의 ^KS200 은 일봉 이력이 짧아 기간
+    # 수익률이 통째로 비는데(8/22 확인), 선물을 이야기할 때 되짚을 기준이
+    # 바로 이 지수라 여기서 계열을 확보해 붙인다.
+    for code, pages in (("KOSPI", 2), ("KOSDAQ", 2), ("KPI200", 14)):
+        v, st = run("daily", naver_index_daily, code, pages)
         out["sources"]["naver:daily:" + code] = st
         if v:
             out.setdefault("index_daily", {})[code.lower()] = v
+
+    # ^KS200 의 빈 기간 수익률을 네이버 계열로 채운다
+    ks2, kd2 = out["indices"].get("kospi200"), (out.get("index_daily") or {}).get("kpi200")
+    if ks2 and not ks2.get("perf") and kd2:
+        bars = sorted((_iso(r["date"]), r["close"]) for r in kd2.get("series") or []
+                      if _iso(r.get("date")) and r.get("close"))
+        p = _perf(bars, ks2["close"]) if len(bars) > 2 else None
+        if p:
+            p["basis"] = "네이버 KPI200 일별시세 (야후 ^KS200 은 일봉 이력이 짧다)"
+            ks2["perf"] = p
+        else:
+            ks2["perf_note"] = ("야후 ^KS200 일봉이 짧고 네이버 계열도 %d행뿐이라 "
+                                "기간 수익률을 낼 수 없다" % len(bars))
 
     # VKOSPI — 야후에 없다
     v, st = run("vkospi", naver_vkospi)
