@@ -40,6 +40,9 @@ var MASPSRC = (function () {
     { name: 'corsproxy.io', wrap: function (u) { return 'https://corsproxy.io/?url=' + encodeURIComponent(u); }, form: true },
     { name: 'allorigins', wrap: function (u) { return 'https://api.allorigins.win/raw?url=' + encodeURIComponent(u); }, form: true }
   ];
+  /* KRX 는 세션 쿠키(JSESSIONID) 없이 POST 하면 HTTP 400 을 준다. 브라우저는
+     data.krx.co.kr 의 쿠키를 붙일 수 없으므로 '직접 호출'/공용 프록시 경로는
+     사실상 실패한다. serve-products.py 가 쿠키를 들고 호출하는 유일한 경로다. */
   var LOCAL_PROXY = { name: '로컬 실행(serve-products.py)', wrap: function () { return '/api/krx'; }, form: true };
   /* http(s) 로 서비스되는 경우에만 로컬 프록시를 시도한다 (file:// 에서는 무의미) */
   if (typeof location !== 'undefined' && /^https?:$/.test(location.protocol)) {
@@ -179,10 +182,10 @@ var MASPSRC = (function () {
     name: ['ISU_ABBRV', 'ISU_NM', 'ISU_KOR_ABBRV', 'ISU_KOR_NM'],
     index: ['ETF_OBJ_IDX_NM', 'IDX_IND_NM', 'BAS_IDX_NM', 'IDX_NM', 'ETN_OBJ_IDX_NM'],
     manager: ['COM_ABBRV', 'ISUR_NM', 'COM_NM'],
-    fee: ['TOT_PAY', 'TOT_FEE', 'TOTL_PAY', 'CMSN_RT', 'FEE_RT', 'ETF_TOT_PAY'],
+    fee: ['ETF_TOT_FEE', 'ETN_TOT_FEE', 'TOT_FEE', 'TOT_PAY', 'TOTL_PAY', 'CMSN_RT', 'FEE_RT'],
     listDd: ['LIST_DD', 'LIST_DT'],
     close: ['TDD_CLSPRC', 'CLSPRC', 'ISU_CLSPRC', 'TDD_CLSPRC1'],
-    nav: ['NAV', 'LAST_NAV', 'ISU_NAV'],
+    nav: ['NAV', 'LST_NAV', 'LAST_NAV', 'ISU_NAV'],
     netAsset: ['INVSTASST_NETASST_TOTAMT', 'NETASST_TOTAMT', 'LIST_MKTCAP', 'MKTCAP', 'NET_ASST_TOTAMT'],
     volume: ['ACC_TRDVOL', 'TRDVOL'],
     flucRt: ['FLUC_RT', 'CMPPREVDD_RT', 'FLUC_RT1'],
