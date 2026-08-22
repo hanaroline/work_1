@@ -11,6 +11,14 @@
     python serve-products.py --no-browser   # 브라우저 자동 열기 없이
     python serve-products.py --snapshot     # 실데이터를 파일로 저장(오프라인용)
     python serve-products.py --check        # KRX 연결만 점검하고 종료
+    python serve-products.py --report       # 진단 리포트 출력/저장
+    python serve-products.py --krx-login    # KRX 계정으로 로그인해서 실행
+
+KRX(data.krx.co.kr)는 2025년 이후 비로그인 조회를 HTTP 400 "LOGOUT" 으로
+거부한다. 실데이터를 받으려면 무료 KRX 회원 계정이 필요하다.
+계정은 https://data.krx.co.kr 에서 만들 수 있고, 아래 중 하나로 전달한다.
+    --krx-login                (권장: 비밀번호가 화면·명령기록에 남지 않음)
+    환경변수 KRX_ID / KRX_PW
 
 윈도우에서는 같은 폴더의 `조회화면 실행.bat` 을 더블클릭해도 된다.
 
@@ -19,6 +27,7 @@
 """
 
 import argparse
+import getpass
 import http.cookiejar
 import json
 import os
@@ -35,7 +44,7 @@ from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
 
 ROOT = os.path.dirname(os.path.abspath(__file__))
 # 파일이 실제로 교체됐는지 한눈에 확인하기 위한 빌드 표시
-BUILD = "2026-08-22.3 (cookie-warmup)"
+BUILD = "2026-08-22.4 (krx-login)"
 KRX_URL = "https://data.krx.co.kr/comm/bldAttendant/getJsonData.cmd"
 KRX_REFERER = "https://data.krx.co.kr/contents/MDC/MDI/outerLoader/index.cmd"
 # 쿠키를 받기 위해 먼저 방문하는 페이지. KRX 는 세션 쿠키(JSESSIONID) 없이
@@ -47,10 +56,18 @@ KRX_WARMUP = [
 UA = ("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
       "(KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36")
 
-# 쿠키를 유지하는 opener — 이걸로 warmup 과 POST 를 같은 세션으로 처리한다
+# KRX 회원 로그인 절차 (data.krx.co.kr 는 로그인 없이 조회하면 400 "LOGOUT" 을 준다)
+KRX_LOGIN_PAGE = "https://data.krx.co.kr/contents/MDC/COMS/client/MDCCOMS001.cmd"
+KRX_LOGIN_JSP = "https://data.krx.co.kr/contents/MDC/COMS/client/view/login.jsp?site=mdc"
+KRX_LOGIN_URL = "https://data.krx.co.kr/contents/MDC/COMS/client/MDCCOMS001D1.cmd"
+
+# 쿠키를 유지하는 opener — 이걸로 warmup/로그인/POST 를 같은 세션으로 처리한다
 _cookies = http.cookiejar.CookieJar()
 _opener = urllib.request.build_opener(urllib.request.HTTPCookieProcessor(_cookies))
 _warmed = False
+_logged_in = False
+krx_id = None
+krx_pw = None
 
 # 화면(data/sources.js)이 호출하는 것과 동일한 엔드포인트.
 # ID·파라미터명은 pykrx 에 공개된 KRX 메뉴 카탈로그에서 확인한 값이다.
@@ -133,6 +150,73 @@ def warmup(force=False, verbose=False):
     return got
 
 
+def krx_login(verbose=False):
+    """KRX 회원 로그인. data.krx.co.kr 는 비로그인 조회를 400 'LOGOUT' 으로 거부한다.
+
+    절차는 pykrx 와 동일하다.
+      1) 로그인 페이지 GET (세션 발급)   2) login.jsp GET (iframe 세션 초기화)
+      3) MDCCOMS001D1.cmd POST (로그인)  4) CD011(중복 로그인) 이면 skipDup=Y 재전송
+    반환: (성공여부, 코드, 메시지)
+    """
+    global _logged_in
+    if not (krx_id and krx_pw):
+        return False, "NO_CREDENTIAL", "KRX 계정 정보가 없습니다"
+
+    # 로그인 주소도 실제 호출 주소의 origin 에서 유도한다. 사내 프록시가 KRX 경로를
+    # 그대로 중계하는 경우에도 동작하고, 테스트 서버로 검증할 수 있다.
+    parts = urllib.parse.urlsplit(krx_url)
+    origin = "%s://%s" % (parts.scheme, parts.netloc)
+    page = origin + "/contents/MDC/COMS/client/MDCCOMS001.cmd"
+    jsp = origin + "/contents/MDC/COMS/client/view/login.jsp?site=mdc"
+    post_url = origin + "/contents/MDC/COMS/client/MDCCOMS001D1.cmd"
+
+    for url, ref in ((page, None), (jsp, page)):
+        try:
+            h = {"User-Agent": UA}
+            if ref:
+                h["Referer"] = ref
+            with _opener.open(urllib.request.Request(url, headers=h), timeout=timeout_s) as r:
+                r.read(2048)
+        except Exception as e:
+            if verbose:
+                print("  [login] 준비 요청 실패 %s -> %s" % (url[:52], e))
+
+    payload = {"mbrNm": "", "telNo": "", "di": "", "certType": "", "mbrId": krx_id, "pw": krx_pw}
+
+    def attempt(p):
+        data = urllib.parse.urlencode(p).encode("utf-8")
+        req = urllib.request.Request(post_url, data=data, headers={
+            "User-Agent": UA, "Referer": page,
+            "Content-Type": "application/x-www-form-urlencoded",
+            "X-Requested-With": "XMLHttpRequest",
+        })
+        with _opener.open(req, timeout=timeout_s) as r:
+            return json.loads(r.read().decode("utf-8", "replace"))
+
+    try:
+        res = attempt(payload)
+        code = res.get("_error_code", "")
+        msg = res.get("_error_message", "")
+        if code == "CD011":            # 중복 로그인 — 기존 세션을 밀어내고 재시도
+            payload["skipDup"] = "Y"
+            res = attempt(payload)
+            code = res.get("_error_code", "")
+            msg = res.get("_error_message", "")
+        _logged_in = (code == "CD001")
+        if verbose:
+            if _logged_in:
+                print("  [login] 로그인 성공 (%s)" % krx_id)
+            elif code == "CD010":
+                print("  [login] 비밀번호 변경이 필요합니다. www.krx.co.kr 에서 변경 후 다시 시도하세요.")
+            else:
+                print("  [login] 로그인 실패 code=%s msg=%s" % (code, msg))
+        return _logged_in, code, msg
+    except Exception as e:
+        if verbose:
+            print("  [login] 로그인 요청 실패: %s" % e)
+        return False, "ERROR", str(e)
+
+
 def krx_post(bld, params, base_ts=None, _retry=True):
     """서버에서 KRX 를 직접 호출한다 — 브라우저가 아니므로 CORS 가 없다."""
     base_ts = base_ts if base_ts is not None else time.time()
@@ -155,15 +239,24 @@ def krx_post(bld, params, base_ts=None, _retry=True):
         with _opener.open(req, timeout=timeout_s) as r:
             raw = r.read()
     except urllib.error.HTTPError as e:
-        # 400/401/403 은 세션이 만료·누락된 경우가 많다 — 한 번 다시 워밍업해 재시도
-        if _retry and e.code in (400, 401, 403):
-            warmup(force=True)
-            return krx_post(bld, params, base_ts, _retry=False)
         detail = ""
         try:
             detail = e.read(400).decode("utf-8", "replace").strip().replace("\n", " ")
         except Exception:
             pass
+        if _retry and e.code in (400, 401, 403):
+            # 본문이 LOGOUT 이면 회원 로그인이 필요하다는 뜻 — 로그인 후 재시도
+            if "LOGOUT" in detail.upper() and krx_id and krx_pw:
+                if krx_login()[0]:
+                    return krx_post(bld, params, base_ts, _retry=False)
+            else:
+                warmup(force=True)
+                return krx_post(bld, params, base_ts, _retry=False)
+        if "LOGOUT" in detail.upper() and not (krx_id and krx_pw):
+            raise RuntimeError(
+                "HTTP %s | LOGOUT — KRX 회원 로그인이 필요합니다. "
+                "data.krx.co.kr 계정을 만든 뒤 KRX_ID/KRX_PW 환경변수 또는 "
+                "--krx-login 옵션으로 로그인하세요." % e.code)
         raise RuntimeError("HTTP %s%s" % (e.code, (" | " + detail) if detail else ""))
     text = raw.decode("utf-8", "replace")
     try:
@@ -276,7 +369,20 @@ def write_report(path):
     _warmed = True          # 위에서 직접 워밍업했으므로 재시도하지 않는다
     out()
 
-    out("[2] 엔드포인트별 조회")
+    out("[2] KRX 회원 로그인")
+    if krx_id and krx_pw:
+        ok_l, code_l, msg_l = krx_login(verbose=False)
+        out("   ID          : %s" % krx_id)
+        out("   결과        : %s (code=%s) %s" % ("성공" if ok_l else "실패", code_l, msg_l or ""))
+        out("   로그인 후 쿠키: %s" % ", ".join(sorted(c.name for c in _cookies)))
+    else:
+        out("   계정 정보 없음 — 비로그인 상태로 조회합니다.")
+        out("   KRX 는 비로그인 조회를 HTTP 400 'LOGOUT' 으로 거부합니다.")
+        out("   data.krx.co.kr 계정을 만든 뒤 다음처럼 실행하세요:")
+        out("       python serve-products.py --krx-login")
+    out()
+
+    out("[3] 엔드포인트별 조회")
     base_ts = time.time()
     ok = 0
     for label, bld, params in SNAPSHOT_PLAN:
@@ -401,9 +507,22 @@ def main():
     ap.add_argument("--out-report", default=os.path.join(ROOT, "diag-report.txt"))
     ap.add_argument("--out", default=os.path.join(ROOT, "data", "krx-snapshot.js"))
     ap.add_argument("--krx-url", default=KRX_URL, help="사내 프록시 등으로 KRX 주소 변경")
+    ap.add_argument("--krx-id", default=os.environ.get("KRX_ID"),
+                    help="KRX 회원 ID (환경변수 KRX_ID 로도 지정 가능)")
+    ap.add_argument("--krx-pw", default=os.environ.get("KRX_PW"),
+                    help="KRX 비밀번호 (명령줄 노출을 피하려면 --krx-login 사용)")
+    ap.add_argument("--krx-login", action="store_true",
+                    help="KRX 계정을 화면에서 입력받아 로그인 (비밀번호가 화면·기록에 남지 않음)")
     ap.add_argument("--timeout", type=int, default=20)
     args = ap.parse_args()
+    global krx_id, krx_pw
     krx_url, timeout_s = args.krx_url, args.timeout
+    krx_id, krx_pw = args.krx_id, args.krx_pw
+    if args.krx_login:
+        # 비밀번호는 화면에 표시되지 않고 명령 기록에도 남지 않는다
+        if not krx_id:
+            krx_id = input("KRX 회원 ID: ").strip()
+        krx_pw = getpass.getpass("KRX 비밀번호(입력 시 표시되지 않음): ")
 
     # 런처가 "이 파이썬으로 이 스크립트가 실제로 돌아가는가" 만 확인하는 용도.
     # Microsoft Store 자리표시자는 스크립트를 실행하지 못해 0 이 아닌 코드로 죽는다.
@@ -417,6 +536,10 @@ def main():
         print("빌드: %s" % BUILD)
         print("KRX 연결 점검: %s" % krx_url)
         warmup(force=True, verbose=True)
+        if krx_id and krx_pw:
+            krx_login(verbose=True)
+        else:
+            print("  [login] KRX 계정 정보 없음 — 비로그인 상태로 시도합니다")
         try:
             payload = krx_post(BLD + "MDCSTAT04601", {})
             n = len(rows_of(payload))
@@ -432,6 +555,8 @@ def main():
 
     if args.snapshot:
         print("KRX 실데이터 조회 중 (%s)\n" % krx_url)
+        if krx_id and krx_pw:
+            krx_login(verbose=True)
         os.makedirs(os.path.dirname(args.out), exist_ok=True)
         ok, _ = build_snapshot(args.out, time.time())
         if ok:
@@ -448,6 +573,14 @@ def main():
     print(" 주소   : %s" % url)
     print(" 폴더   : %s" % ROOT)
     print(" KRX    : %s (서버에서 호출하므로 CORS 없음)" % krx_url)
+    if krx_id and krx_pw:
+        ok_l, code_l, msg_l = krx_login(verbose=False)
+        print(" 로그인 : %s (%s)" % ("성공" if ok_l else "실패 " + str(code_l), krx_id))
+        if not ok_l and msg_l:
+            print("          %s" % msg_l)
+    else:
+        print(" 로그인 : 계정 없음 — KRX 는 비로그인 조회를 거부합니다(400 LOGOUT)")
+        print("          실데이터가 필요하면: python serve-products.py --krx-login")
     print(" 종료   : 이 창에서 Ctrl+C")
     print("=" * 64)
     if not args.no_browser:
