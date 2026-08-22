@@ -44,7 +44,7 @@ from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
 
 ROOT = os.path.dirname(os.path.abspath(__file__))
 # 파일이 실제로 교체됐는지 한눈에 확인하기 위한 빌드 표시
-BUILD = "2026-08-23.3 (mas-fields)"
+BUILD = "2026-08-23.4 (mas-scan)"
 KRX_URL = "https://data.krx.co.kr/comm/bldAttendant/getJsonData.cmd"
 KRX_REFERER = "https://data.krx.co.kr/contents/MDC/MDI/outerLoader/index.cmd"
 # 쿠키를 받기 위해 먼저 방문하는 페이지. KRX 는 세션 쿠키(JSESSIONID) 없이
@@ -553,16 +553,27 @@ def mas_probe():
 # 그 경우 --mas-capture 결과가 "JS 로 채우는 껍데기" 로 보고되므로, 브라우저
 # 개발자도구(F12) Network 탭에서 해당 요청을 확인해 그 주소를 알려주면 된다.
 MAS_PAGES = [
-    ("금융상품 메인", "https://securities.miraeasset.com/financeMain.do"),
-    ("ELS/DLS 청약", "https://securities.miraeasset.com/hks/hks4022/n01.do"),
-    ("ELS/DLS 기준가", "https://securities.miraeasset.com/hks/hks4023/r01.do"),
-    ("ETN 전체상품", "https://securities.miraeasset.com/hks/hks4318/n01_21.do"),
-    ("RP", "https://securities.miraeasset.com/hks/hks4033/n01.do"),
-    ("채권/RP 기준수익률", "https://securities.miraeasset.com/hks/hks4037/r03.do"),
-    ("CMA 연수익률", "https://securities.miraeasset.com/hks/hks4311/n02.do"),
-    ("RP(모바일)", "https://securities.miraeasset.com/mw/mks/mks4033/n01.do"),
-    ("ELS/DLS(모바일)", "https://securities.miraeasset.com/mw/mks/mks4022/r01.do"),
+    # 상품 메뉴 경로. financeMain.do 와 각 상품 페이지의 링크에서 수집한 목록이다.
+    # 페이지 제목(EUC-KR)을 읽어 어떤 상품군인지 자동 식별한다.
+    "/financeMain.do",
+    "/hks/hks4000/n02.do", "/hks/hks4000/n06.do", "/hks/hks4002/n01.do",
+    "/hks/hks4022/n01.do", "/hks/hks4023/n01.do", "/hks/hks4023/r01.do",
+    "/hks/hks4033/n01.do", "/hks/hks4033/n02.do",
+    "/hks/hks4036/r01.do", "/hks/hks4037/r03.do",
+    "/hks/hks4041/n01.do", "/hks/hks4048/r05.do", "/hks/hks4049/v03.do",
+    "/hks/hks4054/v03.do", "/hks/hks4113/n02.do", "/hks/hks4116/r01.do",
+    "/hks/hks4116/n13.do", "/hks/hks4125/n11.do", "/hks/hks4200/n01.do",
+    "/hks/hks4311/n01.do", "/hks/hks4311/n02.do", "/hks/hks4312/r02.do",
+    "/hks/hks4318/n01_21.do", "/hks/hks4323/n05.do", "/hks/hks4659/n01.do",
+    # 모바일 페이지는 구조가 단순해 파라미터를 읽기 쉽다
+    "/mw/mks/mks4022/r01.do", "/mw/mks/mks4033/n01.do", "/mw/mks/mks4036/n01.do",
+    "/mw/mks/mks4041/n01.do", "/mw/mks/mks4113/n02.do", "/mw/mks/mks4116/r01.do",
+    "/mw/mks/mks4318/n11.do", "/mw/mks/mks4323/n05.do",
 ]
+SKIP_JSON = ("/main/bannerViewCnt.json", "/login/log.json", "/login/logoutTime.json")
+TITLE_RE = r"<title>(.*?)</title>"
+JSON_RE = r"""url\s*:\s*["'](/[^"']+\.json)["']"""
+PARAM_RE = r"([a-z][a-z0-9_]{2,30})\s*:\s*([^,\n]{1,50})"
 MAS_KEYWORDS = ["상품", "수익률", "펀드", "ELS", "RP", "채권", "청약", "보수", "금리"]
 
 
@@ -586,57 +597,63 @@ def mas_capture(out_dir):
     out("저장   : %s" % out_dir)
     out()
 
-    ok = 0
-    for label, url in MAS_PAGES:
-        name = re.sub(r"[^A-Za-z0-9]+", "_", url.split("securities.miraeasset.com/")[-1])[:60]
+    ok, found = 0, []
+    for path in MAS_PAGES:
+        url = MAS_BASE + path
+        name = re.sub(r"[^A-Za-z0-9]+", "_", path).strip("_")[:60]
         try:
             req = urllib.request.Request(url, headers={
                 "User-Agent": UA,
                 "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
                 "Accept-Language": "ko-KR,ko;q=0.9",
-                "Referer": "https://securities.miraeasset.com/",
+                "Referer": MAS_BASE + "/financeMain.do",
             })
             with _opener.open(req, timeout=timeout_s) as r:
                 raw = r.read()
-                status = r.status
-            # 사이트가 EUC-KR 이므로 UTF-8 로 디코딩해 저장하면 한글이 소실된다.
-            # 분석용 원본은 바이트 그대로 남긴다.
-            path = os.path.join(out_dir, name + ".html")
-            with open(path, "wb") as fh:
+            with open(os.path.join(out_dir, name + ".html"), "wb") as fh:
                 fh.write(raw)
             html = decode_kr(raw)
 
-            tables = html.lower().count("<table")
-            rows = html.lower().count("<tr")
-            hits = [k for k in MAS_KEYWORDS if k in html]
-            # 값이 HTML 에 들어있는지(서버 렌더) vs JS 로 채우는 껍데기인지 판별
-            server_rendered = tables > 0 and rows > 3 and len(hits) >= 3
-            out("[%s] %s" % ("OK" if status == 200 else status, label))
-            out("     %s" % url)
-            out("     크기 %d KB / <table> %d / <tr> %d / 키워드 %s"
-                % (len(raw) / 1024, tables, rows, ",".join(hits[:6]) or "없음"))
-            out("     판정: %s" % ("표 데이터가 HTML 에 있음 -> 파싱 가능"
-                                  if server_rendered else
-                                  "JS 로 채우는 껍데기로 보임 -> AJAX 주소 확인 필요"))
-            out("     저장: %s" % os.path.basename(path))
-            ok += 1
-        except urllib.error.HTTPError as e:
-            out("[HTTP %s] %s" % (e.code, label))
-            out("     %s" % url)
-            if e.code == 403:
-                out("     서버가 자동조회를 거부했습니다.")
-        except Exception as e:
-            out("[실패] %s" % label)
-            out("     %s -> %s" % (url, e))
-        out()
+            m = re.search(TITLE_RE, html, re.S | re.I)
+            title = re.sub(r"\s+", " ", m.group(1)).strip() if m else "(제목 없음)"
 
+            jsons = []
+            for jm in re.finditer(JSON_RE, html):
+                jpath = jm.group(1)
+                if jpath in SKIP_JSON:
+                    continue
+                seg = html[max(0, jm.start() - 1400):jm.start()]
+                skip = ("url", "data", "success", "error", "load", "type",
+                        "async", "cache", "datatype")
+                seen, plist = set(), []
+                for k, v in re.findall(PARAM_RE, seg):
+                    if k.lower() in skip or k in seen:
+                        continue
+                    seen.add(k)
+                    plist.append(k)
+                jsons.append((jpath, plist[-12:]))
+            if jsons:
+                ok += 1
+                found.append((path, title, jsons))
+            out("[%s] %s" % (title[:44], path))
+            for jpath, plist in jsons:
+                out("     -> %s   파라미터: %s" % (jpath, ", ".join(plist) or "(없음)"))
+            if not jsons:
+                out("     (데이터 엔드포인트 없음 - 안내 페이지이거나 다른 방식)")
+        except urllib.error.HTTPError as e:
+            out("[HTTP %s] %s" % (e.code, path))
+        except Exception as e:
+            out("[실패] %s -> %s" % (path, str(e)[:90]))
+        time.sleep(0.3)      # 사이트 부담을 줄이기 위한 간격
+
+    out()
     out("=" * 66)
-    out("수집 성공 %d / 전체 %d" % (ok, len(MAS_PAGES)))
-    if ok:
-        out("저장된 HTML 파일들을 압축해 보내주시면 그 구조에 맞는 파서를 만듭니다.")
-    else:
-        out("모두 실패했습니다. 사내망 프록시 설정(HTTPS_PROXY)을 확인해 주세요.")
+    out("데이터 엔드포인트를 가진 페이지 %d / %d" % (ok, len(MAS_PAGES)))
     out("=" * 66)
+    for path, title, jsons in found:
+        out("%-32s %s" % (jsons[0][0], title[:40]))
+    out()
+    out("위 목록을 그대로 보내주시면 상품군별 어댑터를 만듭니다.")
     summary = os.path.join(out_dir, "_summary.txt")
     try:
         with open(summary, "w", encoding="utf-8") as fh:
