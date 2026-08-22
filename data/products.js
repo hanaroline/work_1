@@ -240,6 +240,7 @@ var MASP = (function () {
     'detail.doc2': ['간이투자설명서', 'Summary prospectus'],
     'detail.doc3': ['상품 요약 설명서', 'Product summary'],
     'detail.act': ['가입·청약', 'Invest'],
+    'detail.openSite': ['미래에셋증권에서 보기', 'Open on Mirae Asset'],
     'detail.close': ['닫기', 'Close'],
     'detail.addcmp': ['비교함에 담기', 'Add to compare'],
     'detail.incmp': ['비교함에 담김', 'In compare tray'],
