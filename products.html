@@ -998,8 +998,9 @@ table.cmp td.best{background:var(--disabled);font-weight:700;color:var(--ink)}
     knockin: {
       k: 'col.knockin', cls: 'c', r: function (p) {
         if (p.knockIn != null) return '<span class="badge">' + esc(T('val.knockIn', p.knockIn)) + '</span>';
-        /* 낙인 정보가 아예 없는 실데이터에 '노낙인' 이라고 단정하면 사실과 다른
-           투자정보가 된다. 배리어 정보조차 없으면 미표기로 둔다. */
+        /* 낙인 여부가 응답에 실제로 있으면(knockInKnown) 그 값을 신뢰한다.
+           정보가 아예 없으면 '노낙인' 이라 단정하지 않고 미표기로 둔다. */
+        if (p.knockInKnown) return '<span class="badge badge-open">' + esc(T('val.noKnockIn')) + '</span>';
         if (p.barrier == null) return DASH;
         return '<span class="badge badge-open">' + esc(T('val.noKnockIn')) + '</span>';
       }
@@ -1325,7 +1326,7 @@ table.cmp td.best{background:var(--disabled);font-weight:700;color:var(--ink)}
       add(T('col.barrier'), p.barrier == null ? DASH : p.barrier + '%');
       /* 표와 동일한 원칙: 낙인 정보가 없으면 '노낙인' 이라고 단정하지 않는다 */
       add(T('col.knockin'), p.knockIn != null ? T('val.knockIn', p.knockIn)
-        : p.barrier == null ? DASH : T('val.noKnockIn'), true);
+        : (p.knockInKnown || p.barrier != null) ? T('val.noKnockIn') : DASH, true);
       add(T('col.maturity'), months(p.maturityM), true);
       add(T('detail.obs'), p.earlyText ? p.earlyText
         : p.earlyM == null ? DASH
