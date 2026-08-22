@@ -1,25 +1,74 @@
 {
- "totalInfos": {
-  "lastClosePrice": "1,082.25",
-  "openPrice": "1,073.05",
-  "highPrice": "1,105.25",
-  "lowPrice": "1,061.55",
-  "accumulatedTradingVolume": "111,188",
-  "accumulatedTradingValue": "30,287,610백만",
-  "highPriceOf52Weeks": "1,535.00",
-  "lowPriceOf52Weeks": "610.00"
+ "stockEndType": "futures",
+ "itemCode": "FUT",
+ "reutersCode": "FUT",
+ "stockName": "코스피 200 선물",
+ "totalInfos": [
+  {
+   "code": "lastClosePrice",
+   "key": "전일",
+   "value": "1,082.25"
+  },
+  {
+   "code": "openPrice",
+   "key": "시가",
+   "value": "1,073.05",
+   "compareToPreviousPrice": {
+    "code": "5",
+    "text": "하락",
+    "name": "FALLING"
+   }
+  },
+  {
+   "code": "highPrice",
+   "key": "고가",
+   "value": "1,105.25",
+   "compareToPreviousPrice": {
+    "code": "2",
+    "text": "상승",
+    "name": "RISING"
+   }
+  },
+  {
+   "code": "lowPrice",
+   "key": "저가",
+   "value": "1,061.55",
+   "compareToPreviousPrice": {
+    "code": "5",
+    "text": "하락",
+    "name": "FALLING"
+   }
+  },
+  {
+   "code": "accumulatedTradingVolume",
+   "key": "거래량",
+   "value": "111,188"
+  },
+  {
+   "code": "accumulatedTradingValue",
+   "key": "대금",
+   "value": "30,287,610백만"
+  },
+  {
+   "code": "highPriceOf52Weeks",
+   "key": "52주 최고",
+   "value": "1,535.00"
+  },
+  {
+   "code": "lowPriceOf52Weeks",
+   "key": "52주 최저",
+   "value": "610.00"
+  }
+ ],
+ "description": "코스피200 주가지수를 기초자산으로 하는 선물지수",
+ "dealTrendInfo": {
+  "bizdate": "20260821",
+  "personalValue": "-1,395",
+  "foreignValue": "+3,174",
+  "institutionalValue": "-1,991"
  },
- "top_level": [
-  "dealTrendInfo",
-  "description",
-  "enrollStocks",
-  "itemCode",
-  "month",
-  "programTrendInfo",
-  "reutersCode",
-  "stockEndType",
-  "stockName",
-  "totalInfos",
-  "upDownStockInfo"
- ]
+ "programTrendInfo": null,
+ "upDownStockInfo": null,
+ "enrollStocks": null,
+ "month": "26.09."
 }
