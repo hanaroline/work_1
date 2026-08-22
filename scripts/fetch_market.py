@@ -1171,7 +1171,10 @@ def ecos_rates(now, dump_dir=None):
               "ktb3y": ("국고채(3년)", "010200000"),
               "ktb5y": ("국고채(5년)", "010200001"),
               "ktb10y": ("국고채(10년)", "010210000"),
-              "corp3y": ("회사채(3년,BBB-)", "010320000"),
+              # 키 이름을 `corp3y` 로 두면 네이버의 `rates_kr.corp3y`(AA-,
+              # 4.54%)와 같은 이름이 되어, 브리핑이 10.356% 를 「회사채 3년」
+              # 으로 적을 수 있다. 등급을 이름에 박아 헷갈릴 수 없게 한다.
+              "corp3y_bbb": ("회사채(3년,BBB-)", "010320000"),
               "corp3y_aa": ("회사채(3년,AA-)", None),
               "cd91": ("CD(91일)", "010502000")}
 
@@ -1236,7 +1239,7 @@ def ecos_rates(now, dump_dir=None):
     #    계열 전부), 나머지 구간은 호출 예산 안에서 되짚는다.
     full = ECOS_KEY != "sample"
     budget = [40 if full else 22]                 # 남은 호출 수. 0 이 되면 멈춘다.
-    for key in ("ktb3y", "ktb10y", "ktb1y", "ktb5y", "corp3y", "cd91"):
+    for key in ("ktb3y", "ktb10y", "ktb1y", "ktb5y", "corp3y_bbb", "cd91"):
         if key not in out or key not in tried:
             continue
         spot = out[key]["value"]
@@ -1532,7 +1535,7 @@ def _item_news_links(code, pages=1):
     finance.naver.com 의 종목 뉴스는 iframe 으로 실려 있어 사람이 보는 주소로는
     목록이 안 나온다. iframe 이 부르는 주소를 직접 부른다.
     """
-    links, errs = [], []
+    links, seen, errs = [], set(), []
     for page in range(1, pages + 1):
         try:
             s = _get("https://finance.naver.com/item/news_news.naver"
@@ -1543,14 +1546,19 @@ def _item_news_links(code, pages=1):
             errs.append(str(e)[:60])
             break
 
-        def add(oid, aid):
+        def add(oid, aid, title=""):
             u = "https://n.news.naver.com/mnews/article/%s/%s" % (oid, aid)
-            if u not in links:
-                links.append(u)
+            if u in seen:
+                return
+            seen.add(u)
+            links.append((u, _text(title).strip()))
 
-        # 이 목록의 주소는 `article_id` 가 **먼저** 온다 — mainnews 쪽과 같은
-        # 차례다(naver_news 가 그렇게 읽고 있어 검증된 모양이다). `&amp;` 로
-        # 이스케이프되어 오는 경우까지 함께 받는다.
+        # 제목까지 같이 건진다. 본문을 받기 **전에** 제목만 보고 거를 수 있어
+        # 요청이 크게 줄고, 남은 요청이 쓸모 있는 기사에 쓰인다.
+        for aid, oid, title in re.findall(
+                r"article_id=(\d+)[^\"']*?office_id=(\d+)[^\"']*[\"'][^>]*>\s*([^<]{4,120})", s):
+            add(oid, aid, title)
+        # 차례가 반대이거나 제목을 못 붙인 경우도 놓치지 않는다
         for aid, oid in re.findall(r"article_id=(\d+)(?:&amp;|&)office_id=(\d+)", s):
             add(oid, aid)
         for oid, aid in re.findall(r"office_id=(\d+)(?:&amp;|&)article_id=(\d+)", s):
@@ -1560,6 +1568,95 @@ def _item_news_links(code, pages=1):
     if errs and not links:
         raise ValueError("종목 %s 뉴스 목록: %s" % (code, errs[0]))
     return links
+
+
+def _title_promises_company(title, company):
+    """본문을 받기 전에 **제목만** 보고 회사 기사일 만한지 가늠한다.
+
+    확실할 필요는 없다 — 본문을 받을지 말지만 정하고, 진짜 판정은
+    `_classify_broker` 가 본문을 보고 한다. 애매하면 받는 쪽으로 기운다.
+    """
+    t = title or ""
+    if not t:
+        return True                                # 제목을 못 건졌으면 받아 본다
+    if company in t:
+        return True
+    short = company.replace("증권", "").replace("투자", "")
+    if len(short) >= 2 and short in t:
+        return True
+    # 회사 이름이 제목에 없어도, 회사가 한 행위를 다루는 기사는 받아 본다
+    # (IPO 대표주관이 대표적이다 — 제목은 발행사 이름으로 나간다).
+    return any(w in t for w in ("공모", "상장", "주관", "인수", "합병", "매각",
+                                "제재", "과징금", "검사", "장애", "인사", "실적",
+                                "증권", "발행어음", "IB"))
+
+
+# 회사 **자체**에 무슨 일이 있었는지를 가리키는 말.
+#
+# 세기를 갈라 둔다. 처음에 한 뭉치로 두었더니 「수수료」·「출시」·「리테일」
+# 같은 흔한 말 때문에 주말 투자 칼럼(그 증권사 연구원을 인용했을 뿐인 글)이
+# 통째로 「회사 이슈」로 들어왔다. **강한 말은 회사가 한 행위**이고, 약한
+# 말은 아무 기사에나 나온다.
+_CORP_ACT = (            # 회사가 한 행위 — 이것이 있으면 회사 기사다
+    "대표주관", "상장 주관", "주관사", "인수단", "유상증자", "자사주", "소각",
+    "인수", "합병", "매각", "지분 취득", "제재", "과징금", "징계", "고발",
+    "소송", "전산장애", "먹통", "대표이사", "조직개편", "임원 인사",
+    "발행어음", "종합금융투자", "초대형 IB", "인가", "라이선스",
+    "자기자본", "자본확충", "신종자본증권", "해외법인", "지점 통폐합",
+)
+_CORP_WEAK = (           # 있으면 거들지만 그것만으로는 모자란 말
+    "실적", "영업이익", "순이익", "당기순", "배당", "주주환원", "점유율",
+    "수수료", "리테일", "출시", "진출", "신사업", "채용", "MTS", "HTS",
+)
+# 그 회사 사람이 **논평자로** 나온 기사. 회사 이야기가 아니다.
+_QUOTE_MARK = ("연구원", "애널리스트", "센터장", "리서치센터", "연구위원",
+               "투자전략", "스트래티지스트", "이코노미스트", "지수 담당")
+
+
+def _classify_broker(title, body, company):
+    """그 회사 **자체** 기사인지, 그 회사 사람을 인용한 기사인지 가른다.
+
+    네이버 종목뉴스는 두 가지를 섞어 준다. 증권사 종목뉴스는 특히 그렇다 —
+    「미래에셋증권 ○○○ 연구원은…」 한 줄 때문에 시황 기사가 통째로 딸려
+    온다. 그것은 리서치 자료이지 회사 소식이 아니다.
+
+    (판정, 점수, 근거) 를 준다. 버리지 않고 갈라만 놓는다 — 판단은 글 쓰는
+    쪽이 한다.
+    """
+    t, b = title or "", body or ""
+    score, why = 0, []
+    if company in t:                              # 가장 센 신호다
+        score += 4
+        why.append("제목에 회사 이름")
+    hits = [m.start() for m in re.finditer(re.escape(company), b)]
+    if not hits:
+        return "quoted", score, "본문에 회사 이름 없음"
+
+    near = lambda w: any(w in b[max(0, i - 150):i + 200] for i in hits)
+    act = sorted({w for w in _CORP_ACT if near(w)})
+    weak = sorted({w for w in _CORP_WEAK if near(w)})
+    if act:
+        score += 3
+        why.append("회사가 한 행위 — " + "·".join(act[:4]))
+    elif weak:
+        score += 1
+        why.append("곁의 말: " + "·".join(weak[:4]))
+    if len(hits) >= 3:
+        score += 1
+        why.append("본문에 %d번" % len(hits))
+
+    quoted = sum(1 for i in hits if any(q in b[i:i + 60] for q in _QUOTE_MARK))
+    if quoted == len(hits):
+        score -= 4
+        why.append("이름이 나올 때마다 연구원·센터장 인용")
+    elif quoted:
+        score -= 1
+        why.append("일부는 연구원 인용")
+    # 문턱 3. 「제목에 회사 이름」(+4) 하나로도 서고, 「회사가 한 행위」(+3)
+    # 하나로도 선다. 8/22 자료로 맞춰 본 값이다 — IPO 대표주관처럼 제목에
+    # 회사 이름이 안 나오는 회사 소식이 실제로 여기에 걸린다. 인용 표지가
+    # 섞이면(-1) 행위 하나만으로는 못 서게 되는데, 그게 맞다.
+    return ("about" if score >= 3 else "quoted"), score, "; ".join(why)
 
 
 def broker_news(now, per_peer=2, mirae_n=8, peers=8):
@@ -1589,28 +1686,109 @@ def broker_news(now, per_peer=2, mirae_n=8, peers=8):
         core, how = _news_body(page)
         if len(core) < 120:                       # 껍데기만 온 것은 버린다
             return
-        bucket.append({"company": company, "title": _news_title(page),
-                       "url": url, "chars": len(core), "extracted": how,
+        title = _news_title(page)
+        kind, score, why = _classify_broker(title, core, company)
+        bucket.append({"company": company, "title": title, "url": url,
+                       "chars": len(core), "extracted": how,
+                       "kind": kind, "score": score, "why": why,
                        "body": core[:5000]})
 
-    for u in _item_news_links(MIRAE_CODE, pages=2)[:mirae_n]:
+    # 미래에셋은 제목으로 거르지 않는다 — 이 회사 것은 다 보고 싶다.
+    for u, _t in _item_news_links(MIRAE_CODE, pages=2)[:mirae_n]:
         take(u, "미래에셋증권", out["mirae"])
 
-    for code, name in list(BROKER_CODES.items()):
+    # 동종은 목록(요청 1번)을 먼저 받아 **제목으로 거른 뒤** 본문을 받는다.
+    # 전에는 회사마다 앞의 두 건을 그냥 받아서, 그 회사 연구원을 인용했을
+    # 뿐인 시황 기사에 요청을 다 썼다.
+    skipped = 0
+    for code, name in BROKER_CODES.items():
         if code == MIRAE_CODE:
             continue
         if len(out["peers_seen"]) >= peers:
             break
+        try:
+            cand = _item_news_links(code)
+        except Exception as e:                                     # noqa: BLE001
+            out["errors"].append("%s 목록 %s" % (name, str(e)[:40]))
+            continue
+        picked = [u for u, t in cand if _title_promises_company(t, name)]
+        skipped += len(cand) - len(picked)
         got = len(out["sector"])
-        for u in _item_news_links(code)[:per_peer]:
+        for u in picked[:per_peer]:
             take(u, name, out["sector"])
         if len(out["sector"]) > got:
             out["peers_seen"].append(name)
+    out["title_skipped"] = skipped
 
+    # 갈래별 개수를 세어 둔다. 「자체 이슈가 몇 건인가」가 곧 이 절을 쓸 수
+    # 있는지 여부다 — 인용 기사만 스물이면 쓸 것이 없는 것이다.
+    for k in ("mirae", "sector"):
+        out[k].sort(key=lambda a: -a["score"])
+    out["about_mirae"] = sum(1 for a in out["mirae"] if a["kind"] == "about")
+    out["about_sector"] = sum(1 for a in out["sector"] if a["kind"] == "about")
     out["count"] = len(out["mirae"]) + len(out["sector"])
+    out["note"] = ("kind=about 이 회사 자체 이슈, kind=quoted 는 그 회사 사람을 "
+                   "논평자로 인용한 시황·종목 기사다. 브리핑의 증권업 절에는 "
+                   "about 만 쓰십시오.")
     if not out["count"]:
         raise ValueError("증권업종 기사를 하나도 받지 못했다 (네이버 종목뉴스 구조 변경?)")
     return out
+
+
+# 증권업 **전체**에 걸린 이슈. 개별 종목뉴스로는 안 잡히므로 그날 기사를
+# 훑어 따로 건진다.
+#
+# 「증권가」·「증권사」·「금융투자업계」는 국내 시황 기사에서 **출처를 대는
+# 말투**로 쓰인다 — 「증권가에선 …로 본다」, 「금융투자업계에 따르면 …」.
+# 이 말만으로 거르면 그날 기사 절반이 「증권업 이슈」로 들어온다. 실제로
+# 8/22 자료에서 여덟 건이 걸렸는데 업권 기사는 하나도 없었다.
+# 그래서 **업권에서만 쓰는 말**과 **말투로 쓰이는 말**을 갈라 둔다.
+_SECTOR_TERM = (         # 업권 기사에만 나오는 말
+    "증권업", "증권업계", "위탁매매", "브로커리지", "발행어음",
+    "종합금융투자사업자", "초대형 IB", "리테일 수수료", "약정 수수료",
+    "증권사 실적", "증권사 영업", "증권업 전망", "자기자본 규제",
+    "영업정지", "기관경고", "과징금", "금융위 의결", "금감원 검사",
+)
+_SECTOR_LOOSE = ("증권사", "증권가", "금융투자업계", "금융투자협회")
+# 말투로 쓰인 것 — 이 꼴로 나오면 업권 이슈가 아니다
+_ATTRIB = re.compile(r"(?:증권가|증권사|금융투자업계)\s*(?:에|에서|에선|에서는|는|은|의|에 따르면)")
+
+
+def sector_issues(articles, limit=12):
+    """증권업 전반에 걸린 이슈를 그날 기사에서 건진다. 새 호출이 없다.
+
+    제목에 업권 말이 있거나, 업권에서만 쓰는 말이 본문에 있을 때만 잡는다.
+    출처를 대는 말투(「증권가에선…」)는 세지 않는다.
+    """
+    out = []
+    for a in articles or []:
+        t, b = a.get("title") or "", a.get("body") or ""
+        head = b[:2500]
+        terms = sorted({w for w in _SECTOR_TERM if w in t or w in head})
+        loose_t = sorted({w for w in _SECTOR_LOOSE if w in t})
+        if not terms and not loose_t:
+            continue
+        # 느슨한 말이 제목에 있어도, 본문에서 전부 말투로만 쓰였으면 뺀다
+        if not terms and loose_t:
+            bare = _ATTRIB.sub("", head)
+            if not any(w in bare for w in loose_t):
+                continue
+        words = terms + loose_t
+        strong = [w for w in words if w in t]
+        sent = ""
+        for w in (terms or strong or words):
+            for m in re.finditer(r"[^.。\n]{0,80}" + re.escape(w) + r"[^.。\n]{0,160}", b):
+                s = re.sub(r"\s+", " ", m.group(0)).strip()
+                if len(s) > 25 and not _ATTRIB.match(s):
+                    sent = s
+                    break
+            if sent:
+                break
+        out.append({"title": t, "url": a.get("url"), "words": words,
+                    "in_title": strong, "sentence": sent[:360],
+                    "rank": (3 if terms and strong else 2 if terms else 1)})
+    out.sort(key=lambda r: (-r["rank"], -len(r["words"])))
+    return {"count": len(out), "issues": out[:limit]}
 
 
 def ib_mentions(*article_groups):
@@ -1625,7 +1803,14 @@ def ib_mentions(*article_groups):
             body = a.get("body") or ""
             for m in _IB_SENT.finditer(body):
                 s = re.sub(r"\s+", " ", m.group(0)).strip()
-                if len(s) < 20 or not any(x in s for x in _IB_NAMES):
+                if not any(x in s for x in _IB_NAMES):
+                    continue
+                # 길이로 거를 때 글자 수를 그대로 쓰면 안 된다. 한국어는
+                # 스무 글자면 이미 온전한 문장이다 — 「골드만삭스는 목표치를
+                # 올렸다」가 열다섯 자라 통째로 버려지고 있었다. 이름 말고
+                # **남는 말이 얼마나 되는지**로 본다.
+                rest = max(len(s) - len(x) for x in _IB_NAMES if x in s)
+                if rest < 8:
                     continue
                 # 한 문장에 이름이 둘 이상 나오면(「브리지워터를 설립한 레이
                 # 달리오」) **먼저 나온 쪽**을 대표로 삼는다. _IB_NAMES 의
@@ -1983,20 +2168,42 @@ def naver_futures(dump_dir=None):
     # 없어서** 브리핑의 선물 줄이 늘 NOT FOUND 였다. 응답에서 현재가가 어느
     # 이름으로 오는지 확정할 수 없어 널리 쓰이는 이름을 차례로 본다.
     # 하나도 못 찾으면 원문을 남겨 다음번에 이름을 고칠 수 있게 한다.
-    for cand in ("closePrice", "currentPrice", "tradePrice", "nowPrice"):
-        c = n(info.get(cand)) if cand in info else n(j.get(cand))
-        if c:
-            out["close"] = c
-            out["close_field"] = cand
-            break
+    # 8/22 응답을 받아 보니 `totalInfos` 에는 시가·고가·저가·전일종가와 52주
+    # 고저뿐이고 **현재가가 없었다.** 중첩된 블록(`upDownStockInfo` 등)에
+    # 들어 있을 수 있어 한 겹 더 들어가 찾는다.
+    CANDS = ("closePrice", "currentPrice", "tradePrice", "nowPrice",
+             "lastPrice", "price")
+
+    def dig(d):
+        for cand in CANDS:
+            if isinstance(d, dict) and d.get(cand) not in (None, ""):
+                v = n(d[cand])
+                if v:
+                    return v, cand
+        return None, None
+
+    close, field = dig(info)
+    if close is None:
+        close, field = dig(j)
+    if close is None:
+        for k, v in j.items():
+            if isinstance(v, dict):
+                close, field = dig(v)
+                if close is not None:
+                    field = "%s.%s" % (k, field)
+                    break
+    if close is not None:
+        out["close"] = close
+        out["close_field"] = field
     else:
-        out["close_note"] = "현재가 필드를 못 찾았다. 후보: %s" % ", ".join(sorted(info)[:12])
+        out["close_note"] = ("이 응답에는 현재가 필드가 없다. 지수 코스피200"
+                             "(indices.kospi200)으로 대신 보십시오")
         if dump_dir:
+            # 이름만 남기면 다음번에도 못 고친다. 응답을 통째로 남긴다.
             os.makedirs(dump_dir, exist_ok=True)
             with open(os.path.join(dump_dir, "futures_fields.json"), "w",
                       encoding="utf-8") as f:
-                json.dump({"totalInfos": info, "top_level": sorted(j)}, f,
-                          ensure_ascii=False, indent=1)
+                json.dump(j, f, ensure_ascii=False, indent=1)
     if out.get("close") and prev:
         out["change"] = round(out["close"] - prev, 2)
         out["change_pct"] = round((out["close"] / prev - 1) * 100, 2)
@@ -2560,6 +2767,19 @@ def main():
     out["sources"]["naver:broker_news"] = st
     if v:
         out["broker_news"] = v
+        st["about_mirae"] = v.get("about_mirae")
+        st["about_sector"] = v.get("about_sector")
+
+    # 증권업 **전체** 이슈 — 개별 종목뉴스로는 안 잡힌다. 그날 기사에서 건진다.
+    try:
+        si = sector_issues((out.get("news") or {}).get("articles"))
+        if si["count"]:
+            out.setdefault("broker_news", {})["sector_issues"] = si["issues"]
+        out["sources"]["derived:sector_issues"] = {"ok": bool(si["count"]),
+                                                   "count": si["count"]}
+    except Exception as e:                                        # noqa: BLE001
+        out["sources"]["derived:sector_issues"] = {
+            "ok": False, "error": "%s: %s" % (type(e).__name__, e)}
 
     # 외국계 IB · 해외 투자전문가가 말한 문장. 받아 둔 본문을 훑을 뿐이라 공짜다.
     try:
