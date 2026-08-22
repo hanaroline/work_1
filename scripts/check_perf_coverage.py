@@ -132,6 +132,36 @@ EXCUSED = {
 }
 
 
+def short_history(D):
+    """일봉이 모자라 **틀린 기간 수익률**이 실린 자리를 찾는다.
+
+    빈 칸만 문제가 아니다. 야후는 이력이 두어 개뿐인 심볼에도 값을 내주는데,
+    그러면 1주와 1개월이 같은 봉을 짚어 **둘 다 당일 등락률과 같아진다.**
+    8/22 에 ^KS200 이 그랬다 — 1주 +1.47% · 1개월 +1.47% 인데 그 값이 곧
+    당일 등락률이었고, 1년은 +158.3%(코스피 +120.04%)였다. 비어 있으면
+    눈에 띄는데 **틀린 값은 그냥 실린다.** 그쪽이 더 위험하다.
+    """
+    bad = []
+    for blk in ("indices", "stocks", "broker_stocks", "us_stocks", "eu_stocks",
+                "jp_stocks", "cn_stocks", "us_sectors", "kr_etf"):
+        for k, v in (D.get(blk) or {}).items():
+            if not isinstance(v, dict):
+                continue
+            p, ch = v.get("perf") or {}, v.get("change_pct")
+            if ch is None or p.get("unit") == "bp":
+                continue
+            w1, m1 = p.get("w1"), p.get("m1")
+            if w1 is None or m1 is None:
+                continue
+            # 셋 다 0 에 가까우면 이력이 짧은 게 아니라 **안 움직인** 것이다.
+            # 연방기금 선물이 그렇다 — 정책금리 기대가 그대로면 0.00 이 셋 나온다.
+            if abs(ch) < 0.05:
+                continue
+            if round(w1, 2) == round(m1, 2) == round(ch, 2):
+                bad.append((blk, k, w1, ch))
+    return bad
+
+
 def main(argv=None):
     ap = argparse.ArgumentParser(description="기간 수익률이 어디까지 채워졌는지 센다")
     ap.add_argument("path", nargs="?", default=PATH)
@@ -163,12 +193,20 @@ def main(argv=None):
     for name, why in sorted(EXCUSED.items()):
         print("  넘김 %-16s %s" % (name, why))
 
+    sh = short_history(D)
+    if sh:
+        print("\n일봉이 모자라 **틀린** 기간 수익률이 실린 자리 %d 곳" % len(sh))
+        for blk, k, w1, ch in sh:
+            print("  !! %s.%s — 1주=1개월=%+.2f%% 인데 그 값이 곧 당일 등락률(%+.2f%%)"
+                  % (blk, k, w1, ch))
+        print("  이력이 긴 원천으로 바꾸거나, 그 항목의 perf 를 빼십시오.")
+
     if bad:
         print("\n채워지지 않은 블록 %d 개: %s" % (len(bad), ", ".join(bad)))
         print("수집기(scripts/fetch_market.py)에서 그 블록의 perf 를 만드십시오.")
-    else:
-        print("\n기대한 블록이 모두 채워졌다.")
-    return 1 if (bad and a.strict) else 0
+    elif not sh:
+        print("\n기대한 블록이 모두 채워졌고, 수상한 값도 없다.")
+    return 1 if ((bad or sh) and a.strict) else 0
 
 
 if __name__ == "__main__":
