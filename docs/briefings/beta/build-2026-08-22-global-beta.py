@@ -114,9 +114,21 @@ VF_1 = '<span class="vf solo">1 SOURCE</span>'
 VF_C = '<span class="vf ok">CALCULATED</span>'
 VF_N = '<span class="vf none">NOT FOUND</span>'
 
+# 요약 PDF 에 실릴 절. 나머지는 화면과 «전체 PDF» 에는 그대로 있고 요약본에서만
+# 빠진다 — **지우는 것이 아니라 빼는 것**이다.
+#
+# 고르는 잣대는 하나다. 「그날의 축을 말하는 데 이 절이 필요한가」. 8/22 의
+# 축은 ① 금리 ② 국내 두 종목이다. 유럽·아시아 마감은 그 축을 만들지 않았고,
+# 리포트 요약·하우스 시각·업계 동향은 통화 뒤에 읽어도 되는 것들이다.
+# 「일정」은 뺐다. 17건짜리 표가 1.3쪽인데, 요약본에 필요한 세 건(8/24 베선트,
+# 8/26 엔비디아, 8/28 잭슨홀)은 이미 1층 판단의 ③에 이름까지 적혀 있다.
+# 같은 것을 두 번 싣지 않는다 — 휴장일까지 볼 사람은 «전체 PDF» 를 본다.
+BRIEF = {"keypoints", "talking", "jobs", "rates", "fx", "us", "korea"}
+
 S = []
 def sec(sid, ko, en, body):
-    S.append('<section class="section" id="' + sid + '">\n  <div class="section-rule"></div>\n'
+    S.append('<section class="section" id="' + sid + '" data-brief="'
+             + ("1" if sid in BRIEF else "0") + '">\n  <div class="section-rule"></div>\n'
              '  <span class="sec-num">00</span>\n'
              '  <h2 class="section-title">' + L(ko, en) + '</h2>\n' + body + '\n</section>')
 
@@ -1371,43 +1383,58 @@ _mirae = _bn_cards(BN.get("mirae") or [],
     + str(len([a for a in BN.get("mirae") or [] if a.get("kind") != "about"]))
     + "건은 리서치이지 회사 소식이 아니라 쓰지 않았습니다.",
     "No news about the company itself in today's collection.")
-_peers = _bn_cards(BN.get("sector") or [],
-    "동종 증권사의 회사 소식이 오늘 수집분에 없습니다.",
-    "No peer-company news in today's collection.")
 
-_si = BN.get("sector_issues") or []
-if _si:
-    _si_html = "\n".join(
-        '<div class="soft-card">\n  <p class="q">' + esc(x["title"])[:120] + '</p>\n  <p>'
-        + L(esc(x.get("sentence") or ""), esc(x.get("sentence") or "")) + ' ' + VF_1 + '</p>\n</div>'
-        for x in _si[:4])
+# 「증권업계 동향은 증권회사의 동향」 — 동종은 **회사별로 묶어** 세운다.
+# 업권 전체에 걸린 규제·제도 이야기는 이 절의 주인이 아니다. 8/22 자료로
+# 시험해 보니 그 갈래는 두 건이 나왔는데 하나는 아래 NH 회사 기사였고
+# 하나는 「금융투자업계에 따르면 … 증권사 7곳」 — 출처를 대는 말투였다.
+# 그래서 이 절에서 뺐다.
+_by_co = {}
+for _a in BN.get("sector") or []:
+    if _a.get("kind") == "about":
+        _by_co.setdefault(_a["company"], []).append(_a)
+if _by_co:
+    _peer_blocks = []
+    for _co in sorted(_by_co, key=lambda c: -len(_by_co[c])):
+        _peer_blocks.append(
+            '<h4 class="co-h">' + esc(_co) + '</h4>\n<div class="soft-grid">\n'
+            + _bn_cards(_by_co[_co], "", "") + '\n</div>')
+    _peers = "\n".join(_peer_blocks)
 else:
-    _si_html = ('<div class="soft-card">\n  <p class="q">' + L("업권 이슈 &mdash; 오늘은 없습니다", "Industry issues &mdash; none today")
-                + '</p>\n  <p>' + L(
-        "규제&middot;수수료&middot;발행어음처럼 <strong>업권 전체에 걸린 기사</strong>가 오늘 수집분에 없습니다. "
-        "「증권가에선 …」 같은 <strong>출처를 대는 말투</strong>는 업권 이슈로 세지 않습니다 &mdash; 그렇게 세면 "
-        "그날 기사 절반이 들어옵니다.",
-        "No industry-wide story in today's collection. Attribution phrases are not counted as industry issues.")
-                + ' ' + VF_N + '</p>\n</div>')
+    _peers = ('<div class="soft-card">\n  <p class="q">' + L("오늘은 없습니다", "Nothing today")
+              + '</p>\n  <p>' + L("동종 증권사의 회사 동향 기사가 오늘 수집분에 없습니다.",
+                                  "No peer-company news in today's collection.")
+              + ' ' + VF_N + '</p>\n</div>')
 
-sec("broker", "증권업 &middot; 미래에셋증권 동향", "Securities Industry and Mirae Asset",
+_q_mirae = len([a for a in BN.get("mirae") or [] if a.get("kind") != "about"])
+_q_peer = len([a for a in BN.get("sector") or [] if a.get("kind") != "about"])
+
+sec("broker", "증권회사 동향 &middot; 미래에셋증권", "Brokerages &mdash; Company Trends",
     '<p class="lede">' + L(
-      "<strong>업권과 우리 회사가 어제 어떻게 움직였는지입니다.</strong> 증권 업종은 " +
+      "<strong>증권회사들이 어제 어떻게 움직였는지입니다</strong> &mdash; 업권 제도가 아니라 "
+      "<strong>회사</strong>가 주인입니다. 증권 업종은 " +
       (pct(SEC_SEC["change_pct"]) if SEC_SEC else "&mdash;") +
       " 로 코스피(" + pct(KS["change_pct"]) + ")와 <strong>반대로 갔습니다</strong> &mdash; "
       "주주환원 이야기가 삼성전자 한 종목으로 몰리면서 나머지가 밀린 날입니다. "
-      "아래 기사는 <strong>회사가 한 일</strong>만 담았습니다. 그 회사 연구원을 인용한 시황&middot;종목 "
-      "기사는 리서치이지 회사 소식이 아니라 뺐습니다.",
-      "<strong>How the industry and our own firm moved yesterday.</strong> The securities sector was " +
+      "아래 기사는 <strong>회사가 한 일과 회사의 사업이 가는 방향</strong>만 담았습니다.",
+      "<strong>How the brokerages themselves moved yesterday</strong> &mdash; the companies, not the "
+      "regulatory backdrop. The securities sector was " +
       (pct(SEC_SEC["change_pct"]) if SEC_SEC else "&mdash;") + " against the KOSPI's " + pct(KS["change_pct"]) +
-      ". Below are only items about what the companies did &mdash; research notes quoting their analysts are excluded.")
+      ". Below are only what the firms did and where their businesses are heading.")
     + '</p>\n' + (br_tbl + '\n' if br_tbl else '')
     + '<h3 class="sub-h">' + L("미래에셋증권", "Mirae Asset Securities") + '</h3>\n'
     + '<div class="soft-grid">\n' + _mirae + '\n</div>\n'
-    + '<h3 class="sub-h">' + L("동종 증권사", "Peers") + '</h3>\n'
-    + '<div class="soft-grid">\n' + _peers + '\n</div>\n'
-    + '<h3 class="sub-h">' + L("업권 전반", "Industry-wide") + '</h3>\n'
-    + '<div class="soft-grid">\n' + _si_html + '\n</div>')
+    + '<h3 class="sub-h">' + L("동종 증권사 &mdash; 회사별", "Peers, company by company") + '</h3>\n'
+    + _peers + '\n'
+    + '<p class="cap">' + L(
+      "<strong>뺀 것을 밝혀 둡니다.</strong> 그 회사 연구원&middot;센터장을 논평자로 인용했을 뿐인 "
+      "시황&middot;종목 기사 <strong>" + str(_q_mirae + _q_peer) + "건</strong>(미래에셋증권 " + str(_q_mirae) +
+      ", 동종 " + str(_q_peer) + ")은 그 회사가 <em>낸</em> 의견이지 그 회사의 <em>동향</em>이 아니라 "
+      "쓰지 않았습니다. 규제&middot;제도처럼 업권 전체에 걸린 이야기도 이 절에 두지 않습니다 &mdash; "
+      "여기는 회사 이야기 자리입니다.",
+      "<strong>What was excluded.</strong> <strong>" + str(_q_mirae + _q_peer) + " articles</strong> merely quoting "
+      "these firms' analysts are opinions the firms <em>issued</em>, not news <em>about</em> them. Industry-wide "
+      "regulatory items are also kept out of this section.") + '</p>')
 
 
 
@@ -1729,11 +1756,16 @@ hero = ('<div class="hero">\n'
             " KST, Saturday 22 August 2026 &middot; <strong>weekend edition &mdash; the next Korean session is Monday 24 August</strong>")
         + '</p>\n'
         '  <p class="hint"><span class="hint-inline">' + L(
-          "이 판은 <strong>세 층</strong>입니다 &mdash; 1층만 읽어도 통화가 되고, 2층에 그 근거가, 3층에 검증 노트가 있습니다. 접힌 표는 눌러 펼치십시오. 고객 전달용은 «요약 PDF»(3층 제외), 브리핑 준비용은 «전체 PDF» 입니다. <strong>베타 시안이라 고객에게 그대로 건네지 마십시오.</strong>",
+          "이 판은 <strong>세 층</strong>입니다 &mdash; 1층만 읽어도 통화가 되고, 2층에 그 근거가, 3층에 검증 노트가 "
+          "있습니다. 접힌 표는 눌러 펼치십시오. <strong>«요약 PDF» 는 그날의 축을 말하는 데 필요한 " + str(len(BRIEF)) +
+          "개 절만 싣습니다</strong>(목차의 &bull; 표시). 나머지는 지워진 것이 아니라 «전체 PDF» 에 그대로 있습니다. "
+          "<strong>베타 시안이라 고객에게 그대로 건네지 마십시오.</strong>",
           "This edition has <strong>three tiers</strong> &mdash; tier 1 alone is enough to make the call, tier 2 carries the "
-          "reasoning and tier 3 the verification notes. Open folded tables by clicking them. «Summary PDF» drops tier 3; "
-          "«Full PDF» keeps everything. <strong>This is a beta draft &mdash; do not hand it to clients.</strong>") + '</span>'
-        '</span></p>\n'
+          "reasoning and tier 3 the verification notes. Open folded tables by clicking them. <strong>«Summary PDF» keeps only "
+          "the " + str(len(BRIEF)) + " sections needed to state the day&rsquo;s drivers</strong> (marked &bull; in the contents); "
+          "nothing is deleted &mdash; the rest stays in «Full PDF». "
+          "<strong>This is a beta draft &mdash; do not hand it to clients.</strong>")
+        + '</span></p>\n'
         '</div>\n\n')
 
 
@@ -1743,22 +1775,37 @@ hero = ('<div class="hero">\n'
 # 1층 판단 / 2층 본문 / 3층 근거. 3층(검증 노트·출처)이 지금 판의 12% 인데
 # 「국내 증시 되짚기」보다 무겁다. 정직성을 지키는 장치라 없앨 수 없지만,
 # 고객이 읽는 자리에 있을 이유도 없다 — 접어서 요약 PDF 에서 뺀다.
+# 2층 차례는 **네 걸음**이다. 전에는 지역 마감이 흩어져 있고 환율이 국내
+# 뒤에 있었다.
+#
+#   ① 축      금리 → 채권 → 환율 → 원자재   (그날을 만든 값. 서로 이어 읽힌다)
+#   ② 마감    미국 → 유럽 → 아시아 → 국내   (해 지는 차례. 국내가 끝에 오는 것은
+#                                            지침 7-3 의 「국내는 되짚기」와 같다)
+#   ③ 해석    이슈 → 하우스 시각 → 리포트   (숫자를 받아 뜻을 붙이는 자리)
+#   ④ 우리    증권회사 동향 → WM 업계        (읽는 사람이 몸담은 곳)
+#   ⑤ 준비    리스크 → 일정                  (다음 거래일로 넘기는 자리)
 TIERS = [
     ("1", "오늘의 판단", "What to do today",
      "이것만 읽어도 통화가 됩니다", "Enough to make the call",
      ["keypoints", "talking"]),
     ("2", "왜 그런가", "Why",
-     "그날의 축을 만든 절을 앞에 둡니다", "The sections that made the day",
-     ["jobs", "rates", "korea", "us", "europe", "asia", "fx", "commodity",
-      "issues", "broker", "reports", "views", "calendar", "risks", "wm"]),
+     "축 &rarr; 마감 &rarr; 해석 &rarr; 우리 업계 &rarr; 다음 거래일 차례입니다",
+     "Drivers, then closes, then readings, then our industry, then what is next",
+     ["jobs", "rates", "fx", "commodity",
+      "us", "europe", "asia", "korea",
+      "issues", "views", "reports",
+      "broker", "wm",
+      "risks", "calendar"]),
     ("3", "근거", "Evidence",
-     "쓰지 않은 값·어긋난 값·확보하지 못한 값. 요약본에서는 접힙니다",
-     "Unused, disputed and unavailable figures. Folded in the summary PDF",
+     "쓰지 않은 값·어긋난 값·확보하지 못한 값. 요약본에서는 빠집니다",
+     "Unused, disputed and unavailable figures. Dropped from the summary PDF",
      ["verify", "sources"]),
 ]
+# 층 표지도 요약본에서 함께 빠져야 한다. 3층은 통째로 빠지므로 표지도 뺀다.
+TIER_BRIEF = {"1": "1", "2": "1", "3": "0"}
 
 def _tier_head(num, ko, en, sko, sen):
-    return ('<div class="tier">\n'
+    return ('<div class="tier" data-brief="' + TIER_BRIEF[num] + '">\n'
             '  <span class="t-num">' + L("%s층" % num, "TIER %s" % num) + '</span>\n'
             '  <span class="t-name">' + L(ko, en) + '</span>\n'
             '  <span class="t-say">' + L(sko, sen) + '</span>\n</div>')
@@ -1776,7 +1823,7 @@ for _num, _ko, _en, _sko, _sen, _ids in TIERS:
     _out.append(_tier_head(_num, _ko, _en, _sko, _sen))
     if _num == "3":
         # 3층은 통째로 접는다. summary 를 details 안에 두어야 요약 PDF 에서 닫힌다.
-        _out.append('<details class="exp tier-3-body">\n  <summary>' + L(
+        _out.append('<details class="exp tier-3-body" data-brief="0">\n  <summary>' + L(
             "근거 자료 펼치기 &mdash; 데이터 검증 노트와 출처",
             "Open the evidence &mdash; verification notes and sources")
             + '</summary>\n  <div class="exp-body">\n' + "\n\n".join(_got) + '\n  </div>\n</details>')
@@ -1800,7 +1847,7 @@ TOC = [("keypoints", "한눈에 보는 핵심", "Key Takeaways"),
        ("views", "하우스 시각", "House View"),
        ("calendar", "일정 &middot; 휴장일", "Calendar"),
        ("risks", "리스크 점검", "Risk Check"),
-       ("broker", "증권업 &middot; 미래에셋증권 동향", "Securities Industry"),
+       ("broker", "증권회사 동향", "Brokerages"),
        ("wm", "WM 업계", "WM Industry"),
        ("talking", "고객 응대 포인트", "Talking Points"),
        ("verify", "데이터 검증 노트", "Verification Notes"),
@@ -1815,11 +1862,20 @@ TOC = [(sid, _TOC_BY_ID[sid][0], _TOC_BY_ID[sid][1]) for sid in _ORDER]
 # 진짜 대조는 아래 renum 이 한다 — 만들어진 HTML 의 절 번호 개수와 목차 개수.
 assert len(TOC) == len(_ORDER), "목차와 층 차례가 어긋났다"
 
-toc = "\n".join('    <li><a href="#' + sid + '"><span class="sn">' + ("%02d" % (i + 1)) + '</span>' + L(ko, en) + '</a></li>'
+_missing_brief = BRIEF - set(_TOC_BY_ID)
+assert not _missing_brief, "요약본 목록에 없는 절 이름이 있다: %s" % _missing_brief
+
+# 목차에서 요약본에 실리는 절을 알아볼 수 있게 해 둔다. 「요약 PDF 를
+# 뽑으면 무엇이 빠지는가」를 누르기 전에 알 수 있어야 한다.
+toc = "\n".join('    <li' + (' class="ib"' if sid in BRIEF else '') + '><a href="#' + sid
+                + '"><span class="sn">' + ("%02d" % (i + 1)) + '</span>' + L(ko, en) + '</a></li>'
                 for i, (sid, ko, en) in enumerate(TOC))
 nav = ('<div class="shell">\n\n<nav class="sidenav" aria-label="목차">\n'
        '  <p class="sidenav-label">' + L("목차", "Contents") + '</p>\n'
        '  <ul class="sidenav-toc">\n' + toc + '\n  </ul>\n'
+       '  <p class="toc-key">' + L(
+           "&bull; 표시가 «요약 PDF» 에 실리는 " + str(len(BRIEF)) + "개 절입니다",
+           "&bull; marks the " + str(len(BRIEF)) + " sections kept in the Summary PDF") + '</p>\n'
        '  <p class="sidenav-label">' + L("지난 브리핑", "Archive") + '</p>\n'
        '  <ul class="sidenav-dates">\n'
        '    <li><a href="#" aria-current="page"><span class="d">08-22</span>'
@@ -1958,6 +2014,26 @@ EXTRA_CSS = """
 .ibline .sq{min-width:0;overflow-wrap:anywhere}
 @media (max-width:520px){ .ibline li{display:block} .ibline .who{display:block;margin-bottom:2px} }
 
+/* ══ 베타 ⑤ 증권회사 동향 — 회사별 머리 ══ */
+.co-h{font-size:16px;font-weight:700;color:var(--secondary,#043B72);
+  margin:19px 0 8px;padding-bottom:4px;border-bottom:1px solid var(--hairline-soft)}
+.co-h:first-of-type{margin-top:10px}
+
+/* ══ 베타 ⑥ 목차에서 요약본에 실리는 절을 표시한다 ══ */
+.sidenav-toc li.ib > a::after{content:"\\2022";color:var(--primary);
+  font-weight:700;margin-left:6px}
+.toc-key{font-size:11.5px;line-height:1.5;color:var(--muted);
+  margin:7px 0 0;padding:0 0 0 2px}
+@media print{ .toc-key{display:none} }
+
+/* ══ 베타 ⑦ 요약 PDF 를 짧게 ══
+   전에는 요약본이 3층만 뺐다 — 27쪽이 19쪽이 되었을 뿐이다. 이제 그날의
+   축을 말하는 데 필요한 절만 남긴다. **지우는 것이 아니라 요약본에서만
+   빼는 것**이라 화면과 «전체 PDF» 에는 그대로 있다. */
+@media print{
+  body.brief-print [data-brief="0"]{display:none!important}
+}
+
 @media (min-width:861px) and (max-width:1180px),
        (min-width:1400px) and (max-width:1680px){
   table.data .perf{display:none}
@@ -1984,6 +2060,67 @@ EXTRA_CSS = """
 
 doc = head + hero + nav + "<main>\n\n" + body + "\n\n" + tail
 doc = doc.replace("\n</style>", EXTRA_CSS + "\n</style>", 1)
+
+
+# ══════════════════════════════════════════════════════════════════
+# 베타 — 오른쪽 상세 패널을 **실제로** 걷어낸다
+# ══════════════════════════════════════════════════════════════════
+# 지난 시안은 CSS 로 숨기기만 했다. 그러면 마크업도 스크립트도 그대로 남아
+# 화면 낭독기에는 여전히 읽히고, 표를 누를 때마다 없는 패널을 여닫으려는
+# 코드가 돈다. 없앤다고 했으면 없애야 한다.
+def _strip_pane(src):
+    changed = []
+
+    def cut(pat, what, need=1, repl=""):
+        nonlocal src
+        got = len(re.findall(pat, src, re.S))
+        assert got == need, "패널 걷어내기 — %s 를 %d 개 찾았다(%d 개여야 한다)" % (what, got, need)
+        src = re.sub(pat, repl, src, flags=re.S)
+        changed.append("%s %d" % (what, got))
+
+    cut(r'<aside class="detailpane".*?</aside>\n?', "aside 마크업")
+    # 패널을 여닫는 스크립트. 남겨 두면 querySelector 가 null 을 주고
+    # openPane 안에서 터진다 — 숨기기만 했을 때는 이것이 살아 있었다.
+    cut(r'(?m)^\s*var pane = document\.querySelector\(\'\.detailpane\'\);\s*$\n',
+        "pane 변수", 1, "  var pane = null;\n")
+    cut(r"(?m)^\s*if \(e\.target\.closest\('\.detailpane'\)\) return;\s*$\n",
+        "패널 클릭 무시 줄")
+    # CSS 규칙 — 선택자에 .detailpane 이 든 줄묶음을 통째로 지운다
+    n_css = len(re.findall(r'(?m)^\.detailpane[^\n{]*\{[^}]*\}\n', src))
+    src = re.sub(r'(?m)^\.detailpane[^\n{]*\{[^}]*\}\n', "", src)
+    src = re.sub(r'(?m)^(\s*)\.detailpane\{[^}]*\}\n', "", src)
+    src = re.sub(r',\s*\.detailpane\b', "", src)
+    changed.append("CSS 규칙 %d" % n_css)
+    left = src.count("detailpane")
+    assert left == 0, "아직 detailpane 이 %d 군데 남았다" % left
+    print("  오른쪽 패널 걷어냄 — " + " · ".join(changed))
+    return src
+
+doc = _strip_pane(doc)
+
+# 단추의 설명 글도 새 뜻에 맞춘다. 「상세를 접은 요약본」이라고 되어 있는데
+# 이제 절까지 골라 싣는다 — 눌러 보기 전에 무엇이 빠지는지 알아야 한다.
+_BTN_OLD = '상세를 접은 요약본으로 인쇄 / PDF 저장 — 고객 전달용'
+assert doc.count(_BTN_OLD) == 1, "요약 단추 설명을 %d 개 찾았다" % doc.count(_BTN_OLD)
+doc = doc.replace(_BTN_OLD, "그날의 축에 필요한 %d개 절만 인쇄 / PDF 저장 — 나머지는 전체 PDF 에 있습니다"
+                  % len(BRIEF), 1)
+
+
+# ══════════════════════════════════════════════════════════════════
+# 베타 — «요약 PDF» 를 누르면 요약본 절만 인쇄되게 한다
+# ══════════════════════════════════════════════════════════════════
+# 껍데기의 인쇄 단추는 상세만 접고 그대로 인쇄한다. 여기에 표시 하나를
+# 더 얹어, data-brief="0" 인 것이 인쇄에서 빠지게 한다. 전체 PDF 는 손대지
+# 않는다.
+_JS_ON = "      setAll(full);\n"
+assert doc.count(_JS_ON) == 1, "인쇄 단추의 setAll 줄을 %d 개 찾았다" % doc.count(_JS_ON)
+doc = doc.replace(_JS_ON, _JS_ON
+                  + "      document.body.classList.toggle('brief-print', !full);\n", 1)
+_JS_OFF = "      try { window.print(); } finally {\n"
+assert doc.count(_JS_OFF) == 1, "인쇄 단추의 finally 줄을 %d 개 찾았다" % doc.count(_JS_OFF)
+doc = doc.replace(_JS_OFF, _JS_OFF
+                  + "        document.body.classList.remove('brief-print');\n", 1)
+
 io.open(OUT, "w", encoding="utf-8").write(doc)
-print("만듦: %s (%d자, 절 %d개, 상세 %d개)"
-      % (OUT, len(doc), cnt[0], doc.count('<details class="exp"')))
+print("만듦: %s (%d자, 절 %d개, 상세 %d개, 요약본 절 %d개)"
+      % (OUT, len(doc), cnt[0], doc.count('<details class="exp"'), len(BRIEF)))
