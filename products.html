@@ -627,6 +627,8 @@ table.cmp td.best{background:var(--disabled);font-weight:700;color:var(--ink)}
     'val.yes': ['적용', 'Yes'],
     'val.no': ['미적용', 'No'],
     'val.noField': ['공개데이터에 없는 항목', 'Not available in public data'],
+    'detail.maxLoss': ['최대손실률', 'Max loss ratio'],
+    'detail.pcaGrte': ['원금보장률', 'Principal guaranteed'],
     'src.reload': ['실데이터 새로고침', 'Refresh live data'],
     'src.import': ['사내 데이터 올리기(CSV)', 'Import CSV'],
     'src.diag': ['데이터 진단', 'Diagnostics'],
@@ -983,15 +985,23 @@ table.cmp td.best{background:var(--disabled);font-weight:700;color:var(--ink)}
     strategy: { k: 'col.strategy', r: function (p) { return p.strategy ? esc(L(p.strategy)) : DASH; } },
     underlying: {
       k: 'col.underlying', r: function (p) {
-        return (p.underlying || []).map(function (u) { return '<span class="badge">' + esc(code2label(D.UNDERLYING, u)) + '</span>'; }).join(' ') || DASH;
+        var badges = (p.underlying || []).map(function (u) {
+          return '<span class="badge">' + esc(code2label(D.UNDERLYING, u)) + '</span>';
+        }).join(' ');
+        /* 실데이터는 기초자산이 자유 문장으로 온다 — 코드 매칭이 안 되면 원문을 보여준다 */
+        if (badges) return badges;
+        return p.uastText ? '<span title="' + esc(p.uastText) + '">' + esc(p.uastText.slice(0, 28)) + '</span>' : DASH;
       }
     },
     coupon: { k: 'col.coupon', cls: 'n', r: function (p) { return '<span class="up">' + pctPlain(p.coupon) + '</span>'; } },
     barrier: { k: 'col.barrier', cls: 'n', r: function (p) { return p.barrier == null ? DASH : p.barrier + '%'; } },
     knockin: {
       k: 'col.knockin', cls: 'c', r: function (p) {
-        return p.knockIn == null ? '<span class="badge badge-open">' + esc(T('val.noKnockIn')) + '</span>'
-          : '<span class="badge">' + esc(T('val.knockIn', p.knockIn)) + '</span>';
+        if (p.knockIn != null) return '<span class="badge">' + esc(T('val.knockIn', p.knockIn)) + '</span>';
+        /* 낙인 정보가 아예 없는 실데이터에 '노낙인' 이라고 단정하면 사실과 다른
+           투자정보가 된다. 배리어 정보조차 없으면 미표기로 둔다. */
+        if (p.barrier == null) return DASH;
+        return '<span class="badge badge-open">' + esc(T('val.noKnockIn')) + '</span>';
       }
     },
     maturityM: { k: 'col.maturity', cls: 'n', r: function (p) { return months(p.maturityM); } },
@@ -1313,10 +1323,17 @@ table.cmp td.best{background:var(--disabled);font-weight:700;color:var(--ink)}
     if (p.cat === 'els') {
       add(T('col.coupon'), pctPlain(p.coupon), false, 'up');
       add(T('col.barrier'), p.barrier == null ? DASH : p.barrier + '%');
-      add(T('col.knockin'), p.knockIn == null ? T('val.noKnockIn') : T('val.knockIn', p.knockIn), true);
+      /* 표와 동일한 원칙: 낙인 정보가 없으면 '노낙인' 이라고 단정하지 않는다 */
+      add(T('col.knockin'), p.knockIn != null ? T('val.knockIn', p.knockIn)
+        : p.barrier == null ? DASH : T('val.noKnockIn'), true);
       add(T('col.maturity'), months(p.maturityM), true);
-      add(T('detail.obs'), p.earlyM === 1 ? T('val.month') : T('val.everyM', p.earlyM), true);
+      add(T('detail.obs'), p.earlyText ? p.earlyText
+        : p.earlyM == null ? DASH
+        : p.earlyM === 1 ? T('val.month') : T('val.everyM', p.earlyM), true);
       add(T('col.deadline'), dt(p.subEnd), true);
+      if (p.maxLoss != null) add(T('detail.maxLoss'), pctPlain(p.maxLoss), false, 'down');
+      if (p.pcaGrte != null) add(T('detail.pcaGrte'), pctPlain(p.pcaGrte), false);
+      if (p.statusText) add(T('detail.status'), p.statusText, true);
     } else if (p.cat === 'bond') {
       add(T('col.ytm'), pctPlain(p.ytm), false, 'up');
       add(T('col.coupon'), pctPlain(p.coupon));
