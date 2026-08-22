@@ -2688,7 +2688,10 @@ def main():
     # KPI200 은 쪽을 더 받는다. 야후의 ^KS200 은 일봉 이력이 짧아 기간
     # 수익률이 통째로 비는데(8/22 확인), 선물을 이야기할 때 되짚을 기준이
     # 바로 이 지수라 여기서 계열을 확보해 붙인다.
-    for code, pages in (("KOSPI", 2), ("KOSDAQ", 2), ("KPI200", 14)):
+    # KPI200 은 쪽을 더 불러도 네이버가 20행 남짓에서 끊는다(14쪽 -> 20행,
+    # 8/22 확인). 그래서 1주까지만 닿고 1개월부터는 비는데, 그 사유를 자료에
+    # 적어 둔다. 지어내지 않고 「왜 없는지」를 남기는 쪽이다.
+    for code, pages in (("KOSPI", 2), ("KOSDAQ", 2), ("KPI200", 6)):
         v, st = run("daily", naver_index_daily, code, pages)
         out["sources"]["naver:daily:" + code] = st
         if v:
@@ -2703,6 +2706,12 @@ def main():
         if p:
             p["basis"] = "네이버 KPI200 일별시세 (야후 ^KS200 은 일봉 이력이 짧다)"
             ks2["perf"] = p
+            missing = [h for h in ("m1", "m3", "m6", "y1", "ytd") if h not in p]
+            if missing:
+                ks2["perf_note"] = (
+                    "네이버 KPI200 일별시세가 %d행(%s부터)뿐이라 %s 는 되짚지 못했다. "
+                    "쪽을 더 불러도 네이버가 그쯤에서 끊는다"
+                    % (len(bars), bars[0][0].isoformat(), "·".join(missing)))
         else:
             ks2["perf_note"] = ("야후 ^KS200 일봉이 짧고 네이버 계열도 %d행뿐이라 "
                                 "기간 수익률을 낼 수 없다" % len(bars))
