@@ -1,6 +1,6 @@
 {
-  "generated_at_kst": "2026-08-22 18:15:13",
-  "generated_at_utc": "2026-08-22 09:15:13",
+  "generated_at_kst": "2026-08-22 18:19:23",
+  "generated_at_utc": "2026-08-22 09:19:23",
   "sources": {
     "yahoo:kospi": {
       "ok": true
@@ -507,6 +507,9 @@
       "ok": true
     },
     "naver:daily:KOSDAQ": {
+      "ok": true
+    },
+    "naver:daily:KPI200": {
       "ok": true
     },
     "naver:vkospi": {
@@ -1306,22 +1309,22 @@
     "btc": {
       "symbol": "BTC-USD",
       "date": "2026-08-22",
-      "close": 77341.7422,
+      "close": 77272.3594,
       "open": 78326.9688,
       "high": 78767.3438,
       "low": 77018.3672,
-      "volume": 66591039488,
+      "volume": 66311729152,
       "prev_close": 78335.1875,
-      "change": -993.4453,
-      "change_pct": -1.2682,
+      "change": -1062.8281,
+      "change_pct": -1.3568,
       "currency": "USD",
       "perf": {
-        "w1": 22.72,
-        "m1": 17.01,
-        "m3": 2.46,
-        "m6": 14.31,
-        "y1": -33.82,
-        "ytd": -11.62,
+        "w1": 22.61,
+        "m1": 16.9,
+        "m3": 2.36,
+        "m6": 14.21,
+        "y1": -33.88,
+        "ytd": -11.7,
         "unit": "%",
         "from": "2024-08-22"
       }
@@ -1513,22 +1516,22 @@
     "eth": {
       "symbol": "ETH-USD",
       "date": "2026-08-22",
-      "close": 2425.8301,
+      "close": 2425.5601,
       "open": 2515.2744,
       "high": 2527.4084,
       "low": 2415.8306,
-      "volume": 34975014912,
+      "volume": 34920824832,
       "prev_close": 2515.2817,
-      "change": -89.4517,
-      "change_pct": -3.5563,
+      "change": -89.7217,
+      "change_pct": -3.5671,
       "currency": "USD",
       "perf": {
-        "w1": 28.97,
-        "m1": 25.46,
-        "m3": 17.49,
-        "m6": 23.91,
-        "y1": -49.79,
-        "ytd": -18.24,
+        "w1": 28.96,
+        "m1": 25.45,
+        "m3": 17.48,
+        "m6": 23.89,
+        "y1": -49.8,
+        "ytd": -18.25,
         "unit": "%",
         "from": "2024-08-22"
       }
@@ -1751,7 +1754,13 @@
       "prev_close": 1080.98,
       "change": 15.27,
       "change_pct": 1.4126,
-      "currency": null
+      "currency": null,
+      "perf": {
+        "w1": -0.18,
+        "unit": "%",
+        "from": "2026-07-24",
+        "basis": "네이버 KPI200 일별시세 (야후 ^KS200 은 일봉 이력이 짧다)"
+      }
     }
   },
   "stocks": {
@@ -4872,6 +4881,36 @@
     "note": "기대인플레이션(브레이크이븐) = 명목 국채금리 − 물가연동채(TIPS) 실질금리",
     "source_url": "https://home.treasury.gov (명목·실질 곡선 차)",
     "perf": {
+      "ust10y": {
+        "w1": 7.0,
+        "m1": 8.0,
+        "m3": -5.0,
+        "m6": 6.0,
+        "y1": -5.0,
+        "ytd": 9.0,
+        "unit": "bp",
+        "basis": "명목 기간변화 − 실질 기간변화"
+      },
+      "ust20y": {
+        "w1": 0.0,
+        "m1": 4.0,
+        "m3": -3.0,
+        "m6": 6.0,
+        "y1": -1.0,
+        "ytd": 7.0,
+        "unit": "bp",
+        "basis": "명목 기간변화 − 실질 기간변화"
+      },
+      "ust7y": {
+        "w1": 8.0,
+        "m1": 6.0,
+        "m3": -14.0,
+        "m6": 1.0,
+        "y1": -6.0,
+        "ytd": 9.0,
+        "unit": "bp",
+        "basis": "명목 기간변화 − 실질 기간변화"
+      },
       "ust5y": {
         "w1": 10.0,
         "m1": 6.0,
@@ -4889,36 +4928,6 @@
         "m6": 3.0,
         "y1": 0.0,
         "ytd": 5.0,
-        "unit": "bp",
-        "basis": "명목 기간변화 − 실질 기간변화"
-      },
-      "ust20y": {
-        "w1": 0.0,
-        "m1": 4.0,
-        "m3": -3.0,
-        "m6": 6.0,
-        "y1": -1.0,
-        "ytd": 7.0,
-        "unit": "bp",
-        "basis": "명목 기간변화 − 실질 기간변화"
-      },
-      "ust10y": {
-        "w1": 7.0,
-        "m1": 8.0,
-        "m3": -5.0,
-        "m6": 6.0,
-        "y1": -5.0,
-        "ytd": 9.0,
-        "unit": "bp",
-        "basis": "명목 기간변화 − 실질 기간변화"
-      },
-      "ust7y": {
-        "w1": 8.0,
-        "m1": 6.0,
-        "m3": -14.0,
-        "m6": 1.0,
-        "y1": -6.0,
-        "ytd": 9.0,
         "unit": "bp",
         "basis": "명목 기간변화 − 실질 기간변화"
       }
@@ -5139,6 +5148,156 @@
         }
       ],
       "source_url": "https://finance.naver.com/sise/sise_index_day.naver?code=KOSDAQ"
+    },
+    "kpi200": {
+      "code": "KPI200",
+      "unit": {
+        "volume": "천주",
+        "value": "백만원"
+      },
+      "series": [
+        {
+          "date": "2026-08-21",
+          "close": 1096.25,
+          "change_pct": 1.41,
+          "volume_k_shares": 124576.0,
+          "value_mn_krw": 24353088.0
+        },
+        {
+          "date": "2026-08-20",
+          "close": 1080.98,
+          "change_pct": 6.75,
+          "volume_k_shares": 118024.0,
+          "value_mn_krw": 25309295.0
+        },
+        {
+          "date": "2026-08-19",
+          "close": 1012.61,
+          "change_pct": -6.41,
+          "volume_k_shares": 113607.0,
+          "value_mn_krw": 20729498.0
+        },
+        {
+          "date": "2026-08-18",
+          "close": 1082.0,
+          "change_pct": -1.47,
+          "volume_k_shares": 157016.0,
+          "value_mn_krw": 26931638.0
+        },
+        {
+          "date": "2026-08-14",
+          "close": 1098.18,
+          "change_pct": 2.51,
+          "volume_k_shares": 144890.0,
+          "value_mn_krw": 24300839.0
+        },
+        {
+          "date": "2026-08-13",
+          "close": 1071.24,
+          "change_pct": 4.06,
+          "volume_k_shares": 203461.0,
+          "value_mn_krw": 30501328.0
+        },
+        {
+          "date": "2026-08-12",
+          "close": 1029.43,
+          "change_pct": 4.26,
+          "volume_k_shares": 133843.0,
+          "value_mn_krw": 23939240.0
+        },
+        {
+          "date": "2026-08-11",
+          "close": 987.4,
+          "change_pct": 0.98,
+          "volume_k_shares": 129552.0,
+          "value_mn_krw": 19291563.0
+        },
+        {
+          "date": "2026-08-10",
+          "close": 977.84,
+          "change_pct": 0.32,
+          "volume_k_shares": 114942.0,
+          "value_mn_krw": 16929827.0
+        },
+        {
+          "date": "2026-08-07",
+          "close": 974.73,
+          "change_pct": -0.83,
+          "volume_k_shares": 145454.0,
+          "value_mn_krw": 22561039.0
+        },
+        {
+          "date": "2026-08-06",
+          "close": 982.92,
+          "change_pct": -5.36,
+          "volume_k_shares": 149108.0,
+          "value_mn_krw": 24344161.0
+        },
+        {
+          "date": "2026-08-05",
+          "close": 1038.59,
+          "change_pct": 3.86,
+          "volume_k_shares": 148096.0,
+          "value_mn_krw": 22675616.0
+        },
+        {
+          "date": "2026-08-04",
+          "close": 1000.03,
+          "change_pct": 1.35,
+          "volume_k_shares": 148974.0,
+          "value_mn_krw": 25556227.0
+        },
+        {
+          "date": "2026-08-03",
+          "close": 986.72,
+          "change_pct": -5.74,
+          "volume_k_shares": 138688.0,
+          "value_mn_krw": 24324294.0
+        },
+        {
+          "date": "2026-07-31",
+          "close": 1046.81,
+          "change_pct": 19.98,
+          "volume_k_shares": 244557.0,
+          "value_mn_krw": 45801046.0
+        },
+        {
+          "date": "2026-07-30",
+          "close": 872.49,
+          "change_pct": -1.66,
+          "volume_k_shares": 200703.0,
+          "value_mn_krw": 35877602.0
+        },
+        {
+          "date": "2026-07-29",
+          "close": 887.2,
+          "change_pct": -6.18,
+          "volume_k_shares": 239271.0,
+          "value_mn_krw": 45897680.0
+        },
+        {
+          "date": "2026-07-28",
+          "close": 945.69,
+          "change_pct": -11.55,
+          "volume_k_shares": 153835.0,
+          "value_mn_krw": 33354728.0
+        },
+        {
+          "date": "2026-07-27",
+          "close": 1069.22,
+          "change_pct": 1.29,
+          "volume_k_shares": 112392.0,
+          "value_mn_krw": 21941493.0
+        },
+        {
+          "date": "2026-07-24",
+          "close": 1055.58,
+          "change_pct": -6.28,
+          "volume_k_shares": 135453.0,
+          "value_mn_krw": 26160909.0
+        }
+      ],
+      "source_url": "https://finance.naver.com/sise/sise_index_day.naver?code=KPI200"
     }
   },
   "fed_implied": {
@@ -7593,7 +7752,7 @@
       "교보증권"
     ],
     "errors": [],
-    "title_skipped": 76,
+    "title_skipped": 75,
     "about_mirae": 2,
     "about_sector": 2,
     "count": 21,
@@ -8095,7 +8254,7 @@
     "source": "Yahoo Finance 일봉 (기간은 달력 기준, 휴장이면 직전 거래일)"
   },
   "summary": {
-    "sources_tried": 193,
-    "sources_ok": 188
+    "sources_tried": 194,
+    "sources_ok": 189
   }
 }
