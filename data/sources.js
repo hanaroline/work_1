@@ -50,6 +50,12 @@ var MASPSRC = (function () {
   }
   var proxyHint = 0;   /* 성공한 프록시 인덱스를 기억해 이후 요청에 먼저 사용 */
 
+  /* 파일을 직접 열었는지(file://) 판별. 이 경우 파이썬 서버를 거치지 않으므로
+     KRX 세션 쿠키를 붙일 수 없고, 실데이터는 구조적으로 들어올 수 없다.
+     공용 프록시로 24초를 헛되게 쓰지 않고 사유를 바로 알린다. */
+  var IS_FILE = typeof location !== 'undefined' && location.protocol === 'file:';
+  function isFileMode() { return IS_FILE && !SNAP; }
+
   /* serve-products.py --snapshot 으로 저장한 원본 응답. 있으면 네트워크를 타지
      않고 이것을 그대로 파싱한다(같은 파서를 쓰므로 결과가 동일하다).      */
   var SNAP = (typeof window !== 'undefined' && window.MASP_SNAPSHOT) || null;
@@ -125,7 +131,11 @@ var MASPSRC = (function () {
              그 내용을 그대로 진단에 노출해야 원인을 CLI 없이 알 수 있다. */
           return r.text().then(function (t) {
             var detail = '';
-            try { detail = (JSON.parse(t) || {}).error || ''; } catch (e) { detail = t.slice(0, 120); }
+            try {
+              var j = JSON.parse(t) || {};
+              var e2 = j.error !== undefined ? j.error : j.message;
+              detail = (e2 && typeof e2 === 'object') ? JSON.stringify(e2) : (e2 == null ? '' : String(e2));
+            } catch (e) { detail = t.slice(0, 120); }
             throw new Error('HTTP ' + r.status + (detail ? ' | ' + detail : ''));
           });
         }
@@ -566,6 +576,13 @@ var MASPSRC = (function () {
   function loadAll(asOfDate, onEach) {
     resetDiag();
     var results = {};
+    if (isFileMode()) {
+      var why = 'HTML 파일을 직접 열었습니다. 실데이터는 로컬 서버로 접속해야 들어옵니다 '
+              + '(run-products.bat 실행 후 http://127.0.0.1:8800 접속).';
+      log({ bld: '실행 방식', proxy: 'file://', ok: false, msg: why });
+      CATALOG.forEach(function (s) { results[s.id] = { ok: false, rows: [], ms: 0, error: why }; });
+      return Promise.resolve(results);
+    }
     return probeServer().then(function () {
     return Promise.all(CATALOG.map(function (s) {
       var t0 = Date.now();
@@ -588,6 +605,7 @@ var MASPSRC = (function () {
     parseCsv: parseCsv,
     getDiag: getDiag,
     snapshotInfo: snapshotInfo,
+    isFileMode: isFileMode,
     CATALOG: CATALOG,
     NO_SOURCE: NO_SOURCE,
     PROXIES: PROXIES,
