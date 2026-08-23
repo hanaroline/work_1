@@ -110,6 +110,26 @@ export async function analyze(rcpNo) {
   const items = batch.items.map((it) => enrich(it, H));
   const head = items[0];
 
+  /**
+   * 청약 일정 — 개인 일반투자자는 숙려기간과 가입의사확인기간에 청약을 할 수 없다.
+   * 그래서 이 사람들의 실제 마감은 "숙려제도 대상청약종료일" 이다. 홈페이지와 공시 표지에
+   * 적힌 청약종료일(전문투자자·법인 기준)을 그대로 안내하면 며칠을 잘못 알려주게 된다.
+   */
+  const key = (i) => [i.offerStart, i.offerEnd, i.coolStart, i.coolEnd, i.coolingFrom, i.coolingTo, i.confirmBy].join('|');
+  const plan = {
+    start: head.offerStart, end: head.offerEnd,
+    coolStart: head.coolStart, coolEnd: head.coolEnd,
+    coolingFrom: head.coolingFrom, coolingTo: head.coolingTo,
+    confirmBy: head.confirmBy, confirmNote: head.confirmNote, payDate: head.payDate,
+    uniform: new Set(items.map(key)).size === 1,     // 회차마다 다르면 표지에 대표값을 쓸 수 없다
+  };
+  plan.retailEnd = plan.coolEnd || plan.end;         // 개인 일반투자자 마감
+  plan.retailDays = plan.coolStart && plan.coolEnd
+    ? Math.round((new Date(plan.coolEnd) - new Date(plan.coolStart)) / 86400000) + 1 : null;
+  plan.hasCooling = Boolean(plan.coolEnd && plan.coolEnd !== plan.end);
+  plan.recordingRight = items.every((i) => i.recordingRight);
+  plan.maxLossNotice = items.every((i) => i.maxLossNotice);
+
   // ── 자산군별 위험 — "종목이 섞이면 더 위험한가" 를 같은 척도로 확인한다 ──────
   const withMc = items.filter((i) => i.mcLoss != null);
   const byKind = KINDS.map((k) => {
@@ -170,6 +190,7 @@ export async function analyze(rcpNo) {
     offer: (batch.offer || '').split('~').map((s) => s.trim().replace(/-/g, '.')),
     checkedAt: w.ELS_DATA.checkedAt || w.ELS_DATA.updatedAt || null,
     onOfferNow: states?.['01']?.count ?? null,
+    plan,
     byKind, mcAvgAll, kindRatio, safest, idxWorst, stockBest,
     slots, caution, perRisk, idxPerRisk,
     rateMin: Math.min(...items.map((i) => i.annualRate)),

@@ -29,7 +29,7 @@ const A = await analyze(process.argv[2]).catch((e) => { console.error(e.message)
 const {
   rcp: RCP, items, head, H, filedOn, checkedAt, onOfferNow,
   byKind, mcAvgAll, kindRatio, safest, idxWorst, stockBest,
-  slots, caution, perRisk, idxPerRisk,
+  slots, caution, perRisk, idxPerRisk, plan,
   rateMin, rateMax, gapBest, gapWorst, tierCount,
 } = A;
 const [offerFrom, offerTo] = A.offer;
@@ -56,12 +56,15 @@ const dayLabel = (ymd) => {
 const asOf = checkedAt ? kst(checkedAt) : new Date();
 const asOfNum = asOf.getUTCFullYear() * 10000 + (asOf.getUTCMonth() + 1) * 100 + asOf.getUTCDate();
 const numOfDot = (s) => Number((s || '').replace(/\D/g, ''));
+const d2 = (iso) => dot(iso || '');
+const retailEnd = d2(plan.retailEnd);
+// 개인 일반투자자는 숙려기간·가입의사확인기간에 청약을 할 수 없다. 판단 기준은 그 마감이다.
 const phase = asOfNum < numOfDot(offerFrom) ? 'before'
-            : asOfNum > numOfDot(offerTo) ? 'after' : 'open';
+            : asOfNum > numOfDot(retailEnd) ? 'after' : 'open';
 const phaseLine = {
-  before: `이 회차는 <b>${dayLabel(offerFrom)}부터</b> 청약이 열립니다. 오늘은 아직 주문을 받을 수 없습니다.`,
-  open: `이 회차는 <b>오늘 청약 중</b>입니다. ${dayLabel(offerTo)}에 마감됩니다.`,
-  after: `이 회차는 <b>${dayLabel(offerTo)}에 청약이 마감</b>되었습니다. 이 문서로는 주문을 받을 수 없습니다.`,
+  before: `개인 일반투자자가 청약할 수 있는 날은 <b>${dayLabel(offerFrom)}부터 ${dayLabel(retailEnd)}까지</b>입니다. 오늘은 아직 주문을 받을 수 없습니다.`,
+  open: `개인 일반투자자는 <b>${dayLabel(retailEnd)}까지</b> 청약해야 합니다. 그 다음은 숙려기간이라 주문을 받을 수 없습니다.`,
+  after: `개인 일반투자자 청약은 <b>${dayLabel(retailEnd)}에 마감</b>되었습니다. 지금은 숙려·확인 기간이라 주문을 받을 수 없습니다.`,
 }[phase];
 
 /** 이 상품의 자체 검증 구간을 말로 — 상장이 늦은 기초자산이 섞이면 10년이 아니다 */
@@ -244,6 +247,9 @@ b{font-weight:700;color:var(--ink)}
 .offer dt{font-size:13px;color:var(--muted);letter-spacing:.4px;margin-bottom:2px}
 .offer dd{margin:0 0 10px;font-family:var(--num);font-size:19px;font-weight:600;color:var(--ink)}
 .offer dd:last-child{margin-bottom:0}
+.offer dd.hi{color:var(--orange-a);font-size:20px}
+.offer dd.sm{font-size:16px;font-weight:500;color:var(--body)}
+.offer .note{display:block;font-family:var(--kr);font-size:12px;font-weight:400;color:var(--faint);margin-top:1px}
 
 /* ── 확인 시각 띠 ──────────────────────────────── */
 .asof{display:grid;grid-template-columns:88px minmax(0,1fr);gap:4px 16px;align-items:baseline;
@@ -255,6 +261,24 @@ b{font-weight:700;color:var(--ink)}
 .asofv{margin:0;font-size:15px;color:var(--body);font-variant-numeric:tabular-nums}
 .asofn{margin:0;font-size:15px;color:var(--ink)}
 .asof b{font-weight:700}
+
+/* ── 청약 일정 ─────────────────────────────────── */
+.steps{list-style:none;padding:0;margin:0 0 16px;display:grid;gap:1px;background:var(--hair);
+  border:1px solid var(--hair)}
+.steps li{background:var(--paper);display:grid;grid-template-columns:64px 140px 190px minmax(0,1fr) 108px;
+  gap:14px;align-items:center;padding:13px 18px}
+.steps li.stop{background:#FDF6F6}
+.steps li.go{background:#F4F8F5}
+.sk{font-family:var(--num);font-size:12px;font-weight:600;color:var(--faint);letter-spacing:.4px}
+.steps b{font-size:17px}
+.sd{font-family:var(--num);font-size:16px;font-weight:600;color:var(--ink);font-variant-numeric:tabular-nums}
+.ss{font-size:14px;color:var(--muted)}
+.stag{font-size:13px;font-weight:500;text-align:center;padding:3px 0;color:var(--faint)}
+.stag.ok{background:var(--ok);color:#fff}
+.stag.no{background:var(--bad);color:#fff}
+.tlnote{margin:0 0 10px;padding:14px 16px;background:var(--tint);border-left:3px solid var(--blue);font-size:15px;line-height:1.6}
+.tlsub{margin:0;font-size:14px;color:var(--faint)}
+.chk.warnbox{border-left:3px solid var(--bad);background:#FDF6F6}
 
 /* ── 섹션 ─────────────────────────────────────── */
 section{margin-bottom:56px}
@@ -401,6 +425,8 @@ footer a{color:var(--muted)}
   .rsub{margin-left:0;flex-basis:100%}
   .how li{grid-template-columns:1fr;gap:3px}
   .hk{justify-self:start;padding:2px 10px}
+  .steps li{grid-template-columns:minmax(0,1fr);gap:4px;padding:12px 14px}
+  .stag{justify-self:start;padding:3px 10px}
   .asof{grid-template-columns:minmax(0,1fr);padding:12px 14px;margin-bottom:32px}
   .asofk{grid-row:auto}
   .two{grid-template-columns:minmax(0,1fr)}
@@ -410,6 +436,11 @@ footer a{color:var(--muted)}
   section{margin-bottom:44px}
 }
 @media print{
+  .steps,.steps li,.tlnote{break-inside:avoid}
+  .steps li{padding:6px 10px;grid-template-columns:52px 108px 150px minmax(0,1fr) 88px;gap:9px}
+  .steps b{font-size:10pt}
+  .sd{font-size:10pt}
+  .ss,.stag,.tlnote,.tlsub{font-size:8.5pt}
   .asof{margin-bottom:14px;padding:8px 12px;background:none;break-inside:avoid}
   .asofv,.asofn{font-size:9.5pt}
   .two,.mth,.defend,.mnote,.qa,.pbar{break-inside:avoid}
@@ -472,8 +503,9 @@ footer a{color:var(--muted)}
       <p class="sub">투자설명서(일괄신고추가서류) ${filedOn} 공시 원문 기준 · 전 ${items.length}종 분석</p>
     </div>
     <dl class="offer">
-      <dt>청약기간</dt><dd>${offerFrom} ~ ${offerTo}</dd>
-      <dt>발행일 / 만기</dt><dd>${dot(head.issueDate)} / ${dot(head.maturityDate)}</dd>
+      <dt>개인 일반투자자 청약</dt><dd class="hi">${offerFrom} ~ ${retailEnd}</dd>
+      <dt>전체 청약기간</dt><dd class="sm">${offerFrom} ~ ${offerTo}<span class="note">숙려 대상 아닌 경우</span></dd>
+      <dt>발행일 / 만기</dt><dd class="sm">${dot(head.issueDate)} / ${dot(head.maturityDate)}</dd>
     </dl>
   </div>
 </header>
@@ -485,6 +517,44 @@ footer a{color:var(--muted)}
   <p class="asofv">${stamp(checkedAt) || '–'} 기준 · 미래에셋증권 ELS/DLS 캘린더에 <b>청약 진행중 ${onOfferNow == null ? '–' : `${onOfferNow}건`}</b></p>
   <p class="asofn">${phaseLine}</p>
 </div>
+
+${plan.hasCooling ? `<section class="tl">
+  <div class="rule"></div>
+  <h2 class="stitle">언제까지 청약해야 하나</h2>
+  <p class="slead">홈페이지와 공시 표지에 적힌 청약기간은 <b>${offerFrom} ~ ${offerTo}</b>입니다. 그런데 개인 일반투자자는 그 뒤쪽 절반을 쓸 수 없습니다. 숙려기간과 가입의사확인기간에는 청약 자체가 불가능하기 때문입니다.</p>
+  <ol class="steps">
+    <li class="go">
+      <span class="sk">1단계</span>
+      <b>청약 접수</b>
+      <span class="sd">${dot(plan.coolStart)} ~ ${dot(plan.coolEnd)}</span>
+      <span class="ss">${dayLabel(dot(plan.coolStart))}~${dayLabel(dot(plan.coolEnd))} · ${plan.retailDays}일</span>
+      <span class="stag ok">이때만 주문 가능</span>
+    </li>
+    <li class="stop">
+      <span class="sk">2단계</span>
+      <b>숙려기간</b>
+      <span class="sd">${dot(plan.coolingFrom)} ~ ${dot(plan.coolingTo)}</span>
+      <span class="ss">2영업일 이상 · 이 기간에 최대 원금손실 가능금액을 고지받습니다</span>
+      <span class="stag no">청약 불가</span>
+    </li>
+    <li class="stop">
+      <span class="sk">3단계</span>
+      <b>가입의사 확인</b>
+      <span class="sd">${dot(plan.confirmBy)}</span>
+      <span class="ss">${esc(plan.confirmNote || '')} · 확인을 못 받으면 청약금은 환불됩니다</span>
+      <span class="stag no">청약 불가</span>
+    </li>
+    <li>
+      <span class="sk">4단계</span>
+      <b>발행</b>
+      <span class="sd">${dot(plan.payDate)}</span>
+      <span class="ss">납입 · 배정 · 환불 · 최초기준가격 평가</span>
+      <span class="stag">–</span>
+    </li>
+  </ol>
+  <p class="tlnote"><b>상담에서 이렇게 말씀하십시오</b> — "청약은 <b>${dayLabel(retailEnd)}까지</b> 넣으셔야 합니다. 그 뒤 이틀은 법으로 정해진 숙려기간이라 주문을 받을 수 없고, 숙려기간이 끝나면 저희가 다시 연락드려 최종 의사를 확인합니다. 그때 확인이 안 되면 청약이 집행되지 않습니다."</p>
+  <p class="tlsub">전문투자자·법인 등 숙려제도 대상이 아닌 경우에만 ${offerTo}까지 청약할 수 있습니다. 만 65세 이상 고령투자자는 별도 확인 절차가 더해질 수 있습니다.</p>
+</section>` : ''}
 
 <section>
   <div class="rule"></div>
@@ -585,34 +655,44 @@ ${cautionCards}
 
 <section>
   <div class="rule"></div>
-  <h2 class="stitle">가입 전 꼭 짚어드릴 4가지</h2>
+  <h2 class="stitle">가입 전 꼭 짚어드릴 것</h2>
   <div class="checks">
+    ${plan.hasCooling ? `<div class="chk warnbox">
+      <h4>1. 청약 마감은 ${dayLabel(retailEnd)}입니다</h4>
+      <p>홈페이지에는 ${offerFrom}~${offerTo}로 나오지만, 개인 일반투자자는 <b>${dayLabel(retailEnd)}까지</b>만 청약할 수 있습니다. ${dot(plan.coolingFrom)}~${dot(plan.coolingTo)}은 숙려기간, ${dot(plan.confirmBy)}은 가입의사확인기간이라 주문을 받을 수 없습니다. 마감일을 잘못 안내하면 고객이 청약 기회를 놓칩니다.</p>
+    </div>` : ''}
     <div class="chk">
-      <h4>1. 1만원이 1만원이 아닙니다</h4>
+      <h4>${plan.hasCooling ? 2 : 1}. 1만원이 1만원이 아닙니다</h4>
       <p>투자설명서에는 발행일 기준 공정가액이 적혀 있습니다. 이번 회차는 ${money(gapBest, gapBest.fairValue / 100)}부터 ${money(gapWorst, gapWorst.fairValue / 100)}까지 벌어집니다(각 액면 1만 단위 기준). 게다가 이 값은 만기까지의 헤지비용을 뺀 값이라 실제 비용은 이보다 큽니다.</p>
     </div>
     <div class="chk">
-      <h4>2. 중간에 깨면 손해입니다</h4>
+      <h4>${plan.hasCooling ? 3 : 2}. 중간에 깨면 손해입니다</h4>
       <p>중도상환은 그 시점 공정가액의 95%(가입 6개월 안이면 90%)로 정산됩니다. 원금이 아니라 그날의 평가금액 기준입니다. 3년을 묻어둘 수 있는 돈으로만 하셔야 합니다.</p>
     </div>
     <div class="chk">
-      <h4>3. 판정은 종가로 합니다</h4>
+      <h4>${plan.hasCooling ? 4 : 3}. 판정은 종가로 합니다</h4>
       <p>장중에 잠깐 원금 지키는 선을 뚫어도 그날 종가가 위에서 끝나면 괜찮습니다. 반대로 종가가 한 번이라도 아래면 그걸로 기록이 남습니다.</p>
     </div>
     <div class="chk">
-      <h4>4. 손실 확률 숫자를 그대로 옮기지 마십시오</h4>
+      <h4>${plan.hasCooling ? 5 : 4}. 손실 확률 숫자를 그대로 옮기지 마십시오</h4>
       <p>공시의 <b>${f1(head.simLoss, 2)}%</b> 같은 숫자는 "지난 ${head.simYearsWhole}년이 되풀이된다면"의 답입니다. 그 ${head.simYearsWhole}년은 대체로 상승장이었고, 상품마다 표본 구간도 다릅니다. 같은 조건으로 다시 돌리면 이번 회차 평균이 <b>${f1(mcAvgAll, 1)}%</b>입니다. <b>"손실 확률 ${f1(head.simLoss, 2)}%인 상품"이라고 말씀하시면 안 됩니다.</b></p>
     </div>
+    ${plan.recordingRight ? `<div class="chk">
+      <h4>${plan.hasCooling ? 6 : 5}. 판매 과정은 녹취됩니다</h4>
+      <p>개인 일반투자자는 판매 과정 녹취 자료를 요청할 수 있고, 투자 위험을 요약한 설명서를 받습니다.${plan.maxLossNotice ? ' 최대 원금손실 가능금액은 숙려기간 중에 따로 고지됩니다.' : ''} 설명을 건너뛰면 그대로 기록에 남습니다.</p>
+    </div>` : ''}
   </div>
   <div class="script">
     <h4>상담 시 이 순서로 말씀하시면 됩니다</h4>
     <ol>
+      ${plan.hasCooling ? `<li>"먼저 일정부터 말씀드리면, 청약은 <b>${dayLabel(retailEnd)}까지</b> 넣으셔야 합니다. 그 뒤 이틀은 법으로 정해진 숙려기간이라 주문을 받을 수 없습니다."</li>` : ''}
       <li>"이 상품은 3년짜리인데, ${slots[0].pick.every}개월마다 끝날 기회가 옵니다. 대부분은 첫 번째에 끝났습니다."</li>
       <li>"${judgeLine(slots[0].pick).replace(/<\/?b>/g, '')}"</li>
       <li>"올라야 버는 게 아니라, 많이 안 떨어지면 버는 구조입니다."</li>
       <li>"대신 ${slots[0].pick.knockIn ?? slots[0].pick.maturityBarrier}% 아래로 크게 떨어지면 그 하락률이 그대로 손실로 옵니다. 원금이 보장되지 않습니다."</li>
       <li>"과거 ${slots[0].pick.simYearsWhole}년으로 보면 손실은 ${f1(slots[0].pick.simLoss, 2)}%였지만, 그 구간이 좋았던 덕도 있습니다. 보수적으로 잡으면 ${f1(slots[0].pick.mcLoss, 0)}% 정도로 봅니다."</li>
       <li>"3년 동안 안 쓸 돈인지 먼저 확인해 주세요. 중간에 빼면 그날 평가금액의 95%만 받습니다."</li>
+      ${plan.hasCooling ? `<li>"청약을 넣으셔도 바로 확정되는 게 아닙니다. 이틀 숙려기간을 거친 뒤 저희가 다시 연락드려 최종 의사를 확인합니다. 그때 확인이 안 되면 청약금은 ${dot(plan.payDate)}에 돌려드립니다."</li>` : ''}
     </ol>
     <p class="qa"><b>"종목이 들어간 건 더 위험하지 않나요?"</b> 라고 물으시면 — "맞습니다. 이번 회차도 종목형 평균 손실 확률이 지수형의 ${f1(kindRatio, 1)}배입니다. 다만 제${slots[0].pick.no}회는 두 기초자산이 상관계수 ${f1(slots[0].pick.rho, 2)}로 거의 같이 움직이고 낙인이 ${slots[0].pick.knockIn}%로 깊어서, 같은 기준으로 재면 지수형 대부분보다 오히려 낮게 나옵니다." 라고 답하시면 됩니다.</p>
   </div>
@@ -622,6 +702,7 @@ ${cautionCards}
 
 <footer class="wrap">
   <p>출처 — 금융감독원 전자공시시스템 일괄신고추가서류 접수번호 ${RCP} (${filedOn} 공시). 조건·공정가액·적용 변동성·수익률 모의실험은 공시 원문에서 자동 추출했습니다.</p>
+  <p>청약 일정(숙려제도 대상청약기간·숙려기간·가입의사확인기간)은 투자설명서 상품개요 표에 적힌 날짜를 그대로 옮긴 것이며, 이번 회차 ${items.length}종이 모두 동일합니다. 자본시장법상 개인 일반투자자는 2영업일 이상의 숙려기간을 거쳐야 하고 그 기간과 가입의사확인기간에는 청약할 수 없습니다.</p>
   <p>판매 상태는 ${stamp(checkedAt) || '–'}에 미래에셋증권 ELS/DLS 캘린더를 진행상태별로 조회해 확인했습니다. 공시는 청약 시작 며칠 전에 올라오므로, 문서에 실린 회차가 오늘 곧바로 청약 가능한 것은 아닙니다.</p>
   <p>최저점과 자체 검증 수치는 ${dot(String(H.dates[0]))}~${dot(String(H.dates[H.dates.length - 1]))} 기초자산 일별 종가로 매 거래일 가입을 가정해 만기까지 돌린 결과입니다. 상장이 늦은 기초자산이 섞인 상품은 검증 구간이 그만큼 짧으며, 상품마다 실제 구간을 표기했습니다.</p>
   <p><b>B. 같은 조건 손실 확률</b>은 자체 계산입니다. 기하 브라운 운동으로 상품별 ${MC.paths.toLocaleString('ko-KR')}개 경로를 생성해 실제 관찰일·낙인·조기상환 규칙대로 판정했습니다. 변동성과 상관계수는 투자설명서의 이론가 산출 변수를 그대로 썼고(발행사 표기 — Volatility Surface에 VIX 방법론을 적용해 산출한 해당 만기 변동성, 상관계수는 180영업일 역사적 값), 기대수익률은 0으로 두어 어느 기초자산도 오르거나 내린다고 가정하지 않았습니다. 난수 시드를 고정해 같은 입력이면 같은 값이 나옵니다. 내재변동성은 실제 실현 변동성보다 높게 형성되는 것이 일반적이므로 이 확률은 <b>보수적인 상한</b>으로 읽어야 하며, 발행사의 이론가·헤지 손익과는 무관한 별개 계산입니다.</p>

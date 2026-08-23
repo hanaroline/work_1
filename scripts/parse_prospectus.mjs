@@ -60,8 +60,28 @@ function parseBlock(text) {
   p.underlyings = parseUnderlyings((text.match(/기초자산\s*\n\s*\t?\s*([^\n]+)/) || [])[1]);
   p.issueSize = numOf((text.match(/모 ?집 ?총 ?액\s*\n\s*\t?\s*([\d,]+)원/) || [])[1]);
 
-  p.offerStart = ymd((text.match(/청약시작일\s*\n\s*\t?\s*([^\n]+)/) || [])[1]);
-  p.offerEnd = ymd((text.match(/청약종료일\s*\n\s*\t?\s*([^\n]+)/) || [])[1]);
+  p.offerStart = ymd((text.match(/(?<!대상)청약시작일\s*\n\s*\t?\s*([^\n]+)/) || [])[1]);
+  p.offerEnd = ymd((text.match(/(?<!대상)청약종료일\s*\n\s*\t?\s*([^\n]+)/) || [])[1]);
+
+  /**
+   * 숙려제도 — 개인 일반투자자는 숙려기간과 가입의사확인기간에 청약을 할 수 없다.
+   * 즉 이 사람들의 실제 마감은 "숙려제도 대상청약종료일" 이지 위의 청약종료일이 아니다.
+   * 홈페이지 목록에는 청약기간만 나오므로 여기서 뽑지 않으면 상담에서 나흘을 잘못 안내한다.
+   */
+  p.coolStart = ymd((text.match(/숙려제도\s*대상청약시작일\s*\n\s*\t?\s*([^\n]+)/) || [])[1]);
+  p.coolEnd = ymd((text.match(/숙려제도\s*대상청약종료일\s*\n\s*\t?\s*([^\n]+)/) || [])[1]);
+  const cool = (text.match(/숙\s*려\s*기\s*간\s*\n\s*\t?\s*(\d{4}년\s*\d{2}월\s*\d{2}일)\s*~\s*(\d{4}년\s*\d{2}월\s*\d{2}일)/) || []);
+  p.coolingFrom = ymd(cool[1]);
+  p.coolingTo = ymd(cool[2]);
+  const confirm = (text.match(/가입의사확인기간\s*\n\s*\t?\s*([^\n]+)/) || [])[1] || '';
+  p.confirmBy = ymd(confirm);
+  p.confirmNote = clean(confirm) || null;          // "2026년 08월 28일 오후 5시까지"
+  p.payDate = ymd((text.match(/납 ?입 ?일\s*\n\s*\t?\s*([^\n]+)/) || [])[1]);
+  // 판매 절차 조항 — 회차 블록 안에 ※ 로 반복되는 것만 쓴다.
+  // (고령투자자 지정 문구는 문서 머리의 유의사항에만 있어 회차별로는 잡히지 않는다)
+  p.recordingRight = /판매과정에 대한 녹취 자료를 요청할 수 있으며/.test(text);
+  p.riskSummaryDoc = /투자 위험 등을 요약한 설명서를 받으며/.test(text);
+  p.maxLossNotice = /최대 원금손실 가능금액 등을 숙려기간 중 고지받습니다/.test(text);
   p.issueDate = ymd((text.match(/발 ?행 ?일\s*\n\s*\t?\s*([^\n]+)/) || [])[1]);
   // 실물인도형은 "만 기 일(실물인도일)" 로 적혀 있다
   p.maturityDate = ymd((text.match(/만 ?기 ?일(?:\([^)]*\))?\s*\n\s*\t?\s*([^\n]+)/) || [])[1]);
