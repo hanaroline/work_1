@@ -14,11 +14,16 @@ import { montecarlo } from './els-mc.mjs';
 export const MC = { paths: 40000, seed: 20260823 };   // 시드 고정 — 빌드마다 숫자가 흔들리면 안 된다
 export const IDX = new Set(['KOSPI200', 'S&P500', 'Nikkei225', 'EuroStoxx50', 'HSCEI']);
 export const KINDS = ['지수', '혼합', '종목'];
+export const TIER_CUT = [15, 25];                     // MC 손실확률(%) 경계
 export const TIERS = [
   { key: 'safe', name: '방어적', desc: '손실 확률이 낮은 축' },
   { key: 'mid', name: '중간', desc: '수익률과 손실 확률이 균형을 이루는 축' },
   { key: 'hot', name: '공격적', desc: '수익률이 높은 만큼 손실 확률도 높은 축' },
 ];
+// 등급 설명은 산출물마다 다시 쓰면 갈라진다. HTML·PPT 가 같은 문장을 가져다 쓴다.
+export const TIER_RULE = `등급은 B(같은 조건으로 돌린 손실 확률) 하나로만 가릅니다 — `
+  + `${TIER_CUT[0]}% 이하 방어적, ${TIER_CUT[0]}~${TIER_CUT[1]}% 중간, ${TIER_CUT[1]}% 초과 공격적. `
+  + `수익률이나 기초자산 종류는 등급에 넣지 않았습니다. 모두 원금비보장 1등급 상품이므로 "안전"이 아니라 서로 견준 순서입니다.`;
 
 export const kindOf = (it) => it.underlyings.every((u) => IDX.has(u)) ? '지수'
   : it.underlyings.some((u) => IDX.has(u)) ? '혼합' : '종목';
@@ -74,7 +79,7 @@ function enrich(item, H) {
 
   // 상대 등급 — 비교 가능한 척도(MC 손실확률) 하나로만 가른다.
   // 이 회차 전부가 원금비보장 1등급이므로 "안전"이 아니라 서로 견준 순서다.
-  const tier = mc == null ? 1 : mc.lossRate > 25 ? 2 : mc.lossRate > 15 ? 1 : 0;
+  const tier = mc == null ? 1 : mc.lossRate > TIER_CUT[1] ? 2 : mc.lossRate > TIER_CUT[0] ? 1 : 0;
 
   return {
     ...item,

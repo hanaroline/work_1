@@ -10,7 +10,7 @@
  * 표·도형·차트는 전부 네이티브라 파워포인트에서 그대로 고칠 수 있다.
  */
 import pptxgen from 'pptxgenjs';
-import { analyze, kindOf, tierOf, KINDS, money, baseOf, unitOf, josa } from './lib/els-analysis.mjs';
+import { analyze, kindOf, tierOf, KINDS, TIER_RULE, money, baseOf, unitOf, josa } from './lib/els-analysis.mjs';
 
 const A = await analyze(process.argv[2]);
 const OUT = 'els-proposal.pptx';
@@ -20,6 +20,8 @@ const ORANGE = 'F58220', ACTIVE = 'CB6015', SOFT = 'FAB072', BLUE = '043B72';
 const INK = '1A1A1A', BODY = '3D3D3D', MUTED = '6C6C6C', FAINT = '84888B';
 const HAIR = 'CDCECB', SURF = 'F7F8FA', TINT = 'ECEFF4', WHITE = 'FFFFFF';
 const BAD = 'C62828', WARN = '8A6A0B', OK = '2E8540';
+const TIER_INK = [OK, WARN, BAD];                       // 방어적 / 중간 / 공격적 — HTML 칩과 같은 색
+const TIER_BG = ['E7F1E9', 'FBF2DC', 'FAE7E7'];
 const F = '맑은 고딕';                      // 한국 사무용 PC 표준
 
 const W = 13.333, H = 7.5, M = 0.62, CW = W - M * 2;
@@ -286,13 +288,12 @@ A.slots.forEach((slot, idx) => {
   // 회차 · 기초자산 · 등급
   const CHIP0 = 2.92;                                   // "제38044회" 26pt 가 실제로 끝나는 지점 뒤
   s.addText(`제${it.no}회`, { x: M, y: y0, w: CHIP0 - M - 0.12, h: 0.5, fontFace: F, fontSize: 26, bold: true, color: INK, margin: 0 });
-  const chips = [[tierOf(it).name, it.tier === 0 ? OK : it.tier === 1 ? WARN : BAD],
-                 [`${kindOf(it)}형`, BLUE]].concat(it.currency !== 'KRW' ? [[it.currency, ACTIVE]] : []);
-  chips.forEach(([t, c], i) => {
+  const chips = [[tierOf(it).name, TIER_INK[it.tier], TIER_BG[it.tier]],
+                 [`${kindOf(it)}형`, BLUE, TINT]].concat(it.currency !== 'KRW' ? [[it.currency, WHITE, ACTIVE]] : []);
+  chips.forEach(([t, c, bg], i) => {
     const cx = CHIP0 + i * 1.02;
-    const fx = c === ACTIVE;                            // 통화 칩은 반전해 눈에 띄게 (대비도 확보)
-    s.addShape(pres.ShapeType.rect, { x: cx, y: y0 + 0.11, w: 0.94, h: 0.3, fill: { color: fx ? ACTIVE : TINT }, line: { width: 0 } });
-    s.addText(t, { x: cx, y: y0 + 0.11, w: 0.94, h: 0.3, fontFace: F, fontSize: 10.5, bold: true, color: fx ? WHITE : c, align: 'center', valign: 'middle', margin: 0 });
+    s.addShape(pres.ShapeType.rect, { x: cx, y: y0 + 0.11, w: 0.94, h: 0.3, fill: { color: bg }, line: { width: 0 } });
+    s.addText(t, { x: cx, y: y0 + 0.11, w: 0.94, h: 0.3, fontFace: F, fontSize: 10.5, bold: true, color: c, align: 'center', valign: 'middle', margin: 0 });
   });
   s.addText(`${it.underlyings.join(' · ')}  ·  ${it.months}개월  ·  ${it.every}개월마다 확인`, {
     x: M, y: y0 + 0.54, w: 7.4, h: 0.3, fontFace: F, fontSize: 13, color: MUTED, margin: 0,
@@ -375,9 +376,10 @@ function defence(it) {
   const s = slide();
   const y0 = head(s, `이번 회차 전체 ${A.items.length}종`,
     '같은 조건으로 돌린 손실 확률(B)이 낮은 순서. A 옆 괄호는 그 상품의 표본 구간 길이 — 10년에 못 미치면(빨강) 다른 상품과 나란히 비교할 수 없습니다. "만기만" = 낙인이 없어 만기 그날만 봅니다.');
-  const hdr = ['회차', '기초자산', '종류', '연 수익률', '조기상환', '원금 지키는 선', '적용 변동성', 'B. 손실 확률', 'A. 공시 손실', '출발 가치'];
+  const hdr = ['회차', '기초자산', '종류', '연 수익률', '조기상환', '원금 지키는 선', '적용 변동성', 'B. 손실 확률', '등급', 'A. 공시 손실', '출발 가치'];
+  const ALIGN = ['left', 'left', 'left', 'right', 'right', 'right', 'right', 'right', 'center', 'right', 'right'];
   const rows = [hdr.map((t, i) => ({
-    text: t, options: { bold: true, color: INK, fill: { color: SOFT }, align: i >= 3 ? 'right' : 'left' },
+    text: t, options: { bold: true, color: INK, fill: { color: SOFT }, align: ALIGN[i] },
   }))];
   for (const it of [...A.items].sort((a, b) => (a.mcLoss ?? 99) - (b.mcLoss ?? 99))) {
     rows.push([
@@ -388,15 +390,21 @@ function defence(it) {
       { text: `${it.every}개월 / ${it.barriers[0]}%`, options: { align: 'right', color: BODY } },
       { text: `${it.floor}%${it.knockIn == null ? ' (만기만)' : ''}`, options: { align: 'right', color: BODY } },
       { text: `${f1(it.vmax)}%`, options: { align: 'right', color: BODY } },
-      { text: `${f1(it.mcLoss)}%`, options: { align: 'right', bold: true, color: it.mcLoss > 25 ? BAD : it.mcLoss > 15 ? WARN : BLUE } },
+      { text: `${f1(it.mcLoss)}%`, options: { align: 'right', bold: true, color: [BLUE, WARN, BAD][it.tier] } },
+      { text: tierOf(it).name, options: { align: 'center', color: TIER_INK[it.tier], fill: { color: TIER_BG[it.tier] } } },
       { text: `${f1(it.simLoss, 2)}%  (${it.simShort ? f1(it.simYears) : it.simYearsWhole}년)`, options: { align: 'right', color: it.simShort ? BAD : BODY } },
       { text: money(it, it.fairValue / 100), options: { align: 'right', color: (it.fairValueGap ?? 0) <= -10 ? BAD : (it.fairValueGap ?? 0) <= -5 ? WARN : BODY } },
     ]);
   }
+  const colW = [0.80, 2.85, 0.58, 0.92, 1.00, 1.12, 0.90, 1.10, 0.62, 1.28, 0.92];
   s.addTable(rows, {
-    x: M, y: y0, w: CW, colW: [0.88, 2.85, 0.58, 0.92, 1.12, 1.22, 1.0, 1.1, 1.4, 1.02],
+    x: M, y: y0, w: CW, colW,
     fontFace: F, fontSize: 9, border: { type: 'solid', color: 'E5E4E1', pt: 1 },
     rowH: 0.24, valign: 'middle', margin: 2, autoPage: false,
+  });
+  s.addText(TIER_RULE, {
+    x: M, y: y0 + rows.length * 0.24 + 0.16, w: CW, h: 0.34,
+    fontFace: F, fontSize: 10.5, color: FAINT, valign: 'top', margin: 0,
   });
 }
 
