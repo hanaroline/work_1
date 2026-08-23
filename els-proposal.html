@@ -30,6 +30,17 @@ b{font-weight:700;color:var(--ink)}
 .offer dd{margin:0 0 10px;font-family:var(--num);font-size:19px;font-weight:600;color:var(--ink)}
 .offer dd:last-child{margin-bottom:0}
 
+/* ── 확인 시각 띠 ──────────────────────────────── */
+.asof{display:grid;grid-template-columns:88px minmax(0,1fr);gap:4px 16px;align-items:baseline;
+  border:1px solid var(--hair);border-left:3px solid var(--blue);background:var(--surf);
+  padding:14px 18px;margin:0 0 40px}
+.asof.before{border-left-color:var(--warn)}
+.asof.after{border-left-color:var(--bad)}
+.asofk{grid-row:span 2;margin:0;align-self:start;font-size:13px;font-weight:600;letter-spacing:.4px;color:var(--faint)}
+.asofv{margin:0;font-size:15px;color:var(--body);font-variant-numeric:tabular-nums}
+.asofn{margin:0;font-size:15px;color:var(--ink)}
+.asof b{font-weight:700}
+
 /* ── 섹션 ─────────────────────────────────────── */
 section{margin-bottom:56px}
 .rule{height:1px;background:var(--orange);margin-bottom:16px}
@@ -139,9 +150,13 @@ footer a{color:var(--muted)}
   .rsub{margin-left:0;flex-basis:100%}
   .how li{grid-template-columns:1fr;gap:3px}
   .hk{justify-self:start;padding:2px 10px}
+  .asof{grid-template-columns:minmax(0,1fr);padding:12px 14px;margin-bottom:32px}
+  .asofk{grid-row:auto}
   section{margin-bottom:44px}
 }
 @media print{
+  .asof{margin-bottom:14px;padding:8px 12px;background:none;break-inside:avoid}
+  .asofv,.asofn{font-size:9.5pt}
   body{font-size:10pt;line-height:1.42;-webkit-print-color-adjust:exact;print-color-adjust:exact}
   .wrap{max-width:100%;padding:0}
   .mast{padding:16px 0 14px;margin-bottom:18px}
@@ -184,6 +199,12 @@ footer a{color:var(--muted)}
 </header>
 
 <main class="wrap">
+
+<div class="asof before">
+  <p class="asofk">홈페이지 확인</p>
+  <p class="asofv">2026.08.23(일) 14:33 기준 · 미래에셋증권 ELS/DLS 캘린더에 <b>청약 진행중 0건</b></p>
+  <p class="asofn">이 회차는 <b>8월 24일(월)부터</b> 청약이 열립니다. 오늘은 아직 주문을 받을 수 없습니다.</p>
+</div>
 
 <section>
   <div class="rule"></div>
@@ -241,7 +262,7 @@ footer a{color:var(--muted)}
         <div class="st"><div class="stbar" style="height:22px"></div><span class="stv">65%</span><span class="stn">36개월</span></div>
       </div>
         <div class="recfoot">
-          <div class="rf"><span>최근 10년(2016년~) 최저점</span><b>51%</b><small>원금 지키는 선 35%까지 +16%p</small></div>
+          <div class="rf"><span>최근 9년(2016년~) 최저점</span><b>51%</b><small>원금 지키는 선 35%까지 +16%p</small></div>
           <div class="rf"><span>발행사 20년 모의실험</span><b>손실 0.06%</b><small>첫 회 조기상환 95%</small></div>
           <div class="rf"><span>1만원의 출발 가치</span><b>10,013원</b><small>공정가액 대비 +0.13%</small></div>
         </div>
@@ -275,7 +296,7 @@ footer a{color:var(--muted)}
         <div class="st"><div class="stbar" style="height:22px"></div><span class="stv">70%</span><span class="stn">36개월</span></div>
       </div>
         <div class="recfoot">
-          <div class="rf"><span>최근 10년(2016년~) 최저점</span><b>51%</b><small>원금 지키는 선 35%까지 +16%p</small></div>
+          <div class="rf"><span>최근 9년(2016년~) 최저점</span><b>51%</b><small>원금 지키는 선 35%까지 +16%p</small></div>
           <div class="rf"><span>발행사 20년 모의실험</span><b>손실 1.36%</b><small>첫 회 조기상환 78%</small></div>
           <div class="rf"><span>1만원의 출발 가치</span><b>9,930원</b><small>공정가액 대비 -0.70%</small></div>
         </div>
@@ -315,7 +336,7 @@ footer a{color:var(--muted)}
         <div class="st"><div class="stbar" style="height:22px"></div><span class="stv">70%</span><span class="stn">36개월</span></div>
       </div>
         <div class="recfoot">
-          <div class="rf"><span>최근 10년(2016년~) 최저점</span><b>51%</b><small>원금 지키는 선 35%까지 +16%p</small></div>
+          <div class="rf"><span>최근 9년(2016년~) 최저점</span><b>51%</b><small>원금 지키는 선 35%까지 +16%p</small></div>
           <div class="rf"><span>발행사 20년 모의실험</span><b>손실 0.47%</b><small>첫 회 조기상환 84%</small></div>
           <div class="rf"><span>1만원의 출발 가치</span><b>9,965원</b><small>공정가액 대비 -0.35%</small></div>
         </div>
@@ -546,11 +567,11 @@ footer a{color:var(--muted)}
         </div>
         <div class="cau">
           <h4>제38045회 <span class="cund">어플라이드 머티어리얼즈 · 마이크론 테크놀로지</span> <span class="crate">연 30.2%</span></h4>
-          <ul><li>1만원을 넣는 순간의 가치가 7,768원입니다</li><li>최근 10년(2016년~) 최저점이 원금 지키는 선 바로 위 9.6%p까지 왔습니다</li><li>발행사 20년 모의실험에서도 100번 중 3.4번은 손실이었습니다</li></ul>
+          <ul><li>1만원을 넣는 순간의 가치가 7,768원입니다</li><li>최근 9년(2016년~) 최저점이 원금 지키는 선 바로 위 9.6%p까지 왔습니다</li><li>발행사 20년 모의실험에서도 100번 중 3.4번은 손실이었습니다</li></ul>
         </div>
         <div class="cau">
           <h4>제38042회 <span class="cund">KOSPI200 · HSCEI · Nikkei225</span> <span class="crate">연 16.6%</span></h4>
-          <ul><li>최근 10년(2016년~) 안에 원금 지키는 선을 이미 4.6%p 뚫고 내려간 적이 있습니다</li><li>발행사 20년 모의실험에서도 100번 중 4.2번은 손실이었습니다</li></ul>
+          <ul><li>최근 9년(2016년~) 안에 원금 지키는 선을 이미 4.6%p 뚫고 내려간 적이 있습니다</li><li>발행사 20년 모의실험에서도 100번 중 4.2번은 손실이었습니다</li></ul>
         </div>
   </div>
 </section>
@@ -592,7 +613,8 @@ footer a{color:var(--muted)}
 
 <footer class="wrap">
   <p>출처 — 금융감독원 전자공시시스템 일괄신고추가서류 접수번호 20260821000193 (2026.08.21 공시). 조건·공정가액·적용 변동성·수익률 모의실험은 공시 원문에서 자동 추출했습니다.</p>
-  <p>최저점과 자체 검증 수치는 20160815~20260817 기초자산 일별 종가로 매 거래일 가입을 가정해 만기까지 돌린 결과입니다. 상장이 늦은 기초자산이 섞인 상품은 검증 구간이 그만큼 짧으며, 상품마다 실제 구간을 표기했습니다.</p>
+  <p>판매 상태는 2026.08.23(일) 14:33에 미래에셋증권 ELS/DLS 캘린더를 진행상태별로 조회해 확인했습니다. 공시는 청약 시작 며칠 전에 올라오므로, 문서에 실린 회차가 오늘 곧바로 청약 가능한 것은 아닙니다.</p>
+  <p>최저점과 자체 검증 수치는 20160822~20260821 기초자산 일별 종가로 매 거래일 가입을 가정해 만기까지 돌린 결과입니다. 상장이 늦은 기초자산이 섞인 상품은 검증 구간이 그만큼 짧으며, 상품마다 실제 구간을 표기했습니다.</p>
   <p>본 자료는 투자 권유를 위한 참고 자료이며, 실제 청약 전 투자설명서와 간이투자설명서를 반드시 확인하셔야 합니다. 원금 손실이 발생할 수 있는 상품입니다.</p>
   <p>생성 2026.08.21 · scripts/build_els_proposal.mjs</p>
 </footer>

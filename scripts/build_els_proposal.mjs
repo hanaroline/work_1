@@ -30,6 +30,12 @@ const P = JSON.parse(await readFile('tools/discovery/prospectus_parsed.json', 'u
 const RCP = process.argv[2] || Object.keys(P).sort().pop();
 if (!P[RCP]) { console.error(`접수번호 ${RCP} 없음. 가능: ${Object.keys(P).join(', ')}`); process.exit(1); }
 
+// 홈페이지를 언제 확인했고 그때 무엇이 걸려 있었는지. 공시는 청약 며칠 전에 올라오므로
+// 문서만 보면 "지금 살 수 있다"고 읽힌다. 상담 자리에서 그 오해가 제일 비싸다.
+const states = await readFile('tools/discovery/offer_states.json', 'utf8').then(JSON.parse).catch(() => null);
+const onOfferNow = states?.['01']?.count ?? null;                      // prgs_scd=01 = 청약 진행중
+const checkedAt = w.ELS_DATA.checkedAt || w.ELS_DATA.updatedAt || null;
+
 // ── 표기 도우미 ──────────────────────────────────────────────────────────────
 const esc = (s) => String(s ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 const f1 = (v, d = 1) => v == null || Number.isNaN(v) ? '–' : v.toFixed(d);
@@ -84,6 +90,30 @@ const items = batch.items.map(enrich);
 const filedOn = `${RCP.slice(0, 4)}.${RCP.slice(4, 6)}.${RCP.slice(6, 8)}`;
 const [offerFrom, offerTo] = (batch.offer || '').split('~').map((s) => dot(s.trim()));
 const head = items[0];
+
+// ── 오늘 기준 이 회차의 위치 ─────────────────────────────────────────────────
+const kst = (iso) => new Date(new Date(iso).getTime() + 9 * 3600000);
+const DOW = ['일', '월', '화', '수', '목', '금', '토'];
+const stamp = (iso) => {
+  if (!iso) return null;
+  const d = kst(iso);
+  return `${d.getUTCFullYear()}.${String(d.getUTCMonth() + 1).padStart(2, '0')}.${String(d.getUTCDate()).padStart(2, '0')}`
+       + `(${DOW[d.getUTCDay()]}) ${String(d.getUTCHours()).padStart(2, '0')}:${String(d.getUTCMinutes()).padStart(2, '0')}`;
+};
+const dayLabel = (ymd) => {                                  // "2026.08.24" → "8월 24일(월)"
+  const [y, m, d] = ymd.split('.').map(Number);
+  return `${m}월 ${d}일(${DOW[new Date(Date.UTC(y, m - 1, d)).getUTCDay()]})`;
+};
+const asOf = checkedAt ? kst(checkedAt) : new Date();
+const asOfNum = asOf.getUTCFullYear() * 10000 + (asOf.getUTCMonth() + 1) * 100 + asOf.getUTCDate();
+const numOfDot = (s) => Number((s || '').replace(/\D/g, ''));
+const phase = asOfNum < numOfDot(offerFrom) ? 'before'
+            : asOfNum > numOfDot(offerTo) ? 'after' : 'open';
+const phaseLine = {
+  before: `이 회차는 <b>${dayLabel(offerFrom)}부터</b> 청약이 열립니다. 오늘은 아직 주문을 받을 수 없습니다.`,
+  open: `이 회차는 <b>오늘 청약 중</b>입니다. ${dayLabel(offerTo)}에 마감됩니다.`,
+  after: `이 회차는 <b>${dayLabel(offerTo)}에 청약이 마감</b>되었습니다. 이 문서로는 주문을 받을 수 없습니다.`,
+}[phase];
 
 const TIERS = [
   { key: 'safe', name: '방어적', desc: '조건이 낮게 잡혀 조기상환이 잘 나는 쪽' },
@@ -264,6 +294,17 @@ b{font-weight:700;color:var(--ink)}
 .offer dd{margin:0 0 10px;font-family:var(--num);font-size:19px;font-weight:600;color:var(--ink)}
 .offer dd:last-child{margin-bottom:0}
 
+/* ── 확인 시각 띠 ──────────────────────────────── */
+.asof{display:grid;grid-template-columns:88px minmax(0,1fr);gap:4px 16px;align-items:baseline;
+  border:1px solid var(--hair);border-left:3px solid var(--blue);background:var(--surf);
+  padding:14px 18px;margin:0 0 40px}
+.asof.before{border-left-color:var(--warn)}
+.asof.after{border-left-color:var(--bad)}
+.asofk{grid-row:span 2;margin:0;align-self:start;font-size:13px;font-weight:600;letter-spacing:.4px;color:var(--faint)}
+.asofv{margin:0;font-size:15px;color:var(--body);font-variant-numeric:tabular-nums}
+.asofn{margin:0;font-size:15px;color:var(--ink)}
+.asof b{font-weight:700}
+
 /* ── 섹션 ─────────────────────────────────────── */
 section{margin-bottom:56px}
 .rule{height:1px;background:var(--orange);margin-bottom:16px}
@@ -373,9 +414,13 @@ footer a{color:var(--muted)}
   .rsub{margin-left:0;flex-basis:100%}
   .how li{grid-template-columns:1fr;gap:3px}
   .hk{justify-self:start;padding:2px 10px}
+  .asof{grid-template-columns:minmax(0,1fr);padding:12px 14px;margin-bottom:32px}
+  .asofk{grid-row:auto}
   section{margin-bottom:44px}
 }
 @media print{
+  .asof{margin-bottom:14px;padding:8px 12px;background:none;break-inside:avoid}
+  .asofv,.asofn{font-size:9.5pt}
   body{font-size:10pt;line-height:1.42;-webkit-print-color-adjust:exact;print-color-adjust:exact}
   .wrap{max-width:100%;padding:0}
   .mast{padding:16px 0 14px;margin-bottom:18px}
@@ -418,6 +463,12 @@ footer a{color:var(--muted)}
 </header>
 
 <main class="wrap">
+
+<div class="asof ${phase}">
+  <p class="asofk">홈페이지 확인</p>
+  <p class="asofv">${stamp(checkedAt) || '–'} 기준 · 미래에셋증권 ELS/DLS 캘린더에 <b>청약 진행중 ${onOfferNow == null ? '–' : `${onOfferNow}건`}</b></p>
+  <p class="asofn">${phaseLine}</p>
+</div>
 
 <section>
   <div class="rule"></div>
@@ -512,6 +563,7 @@ ${cautionCards}
 
 <footer class="wrap">
   <p>출처 — 금융감독원 전자공시시스템 일괄신고추가서류 접수번호 ${RCP} (${filedOn} 공시). 조건·공정가액·적용 변동성·수익률 모의실험은 공시 원문에서 자동 추출했습니다.</p>
+  <p>판매 상태는 ${stamp(checkedAt) || '–'}에 미래에셋증권 ELS/DLS 캘린더를 진행상태별로 조회해 확인했습니다. 공시는 청약 시작 며칠 전에 올라오므로, 문서에 실린 회차가 오늘 곧바로 청약 가능한 것은 아닙니다.</p>
   <p>최저점과 자체 검증 수치는 ${dot(String(H.dates[0]))}~${dot(String(H.dates[H.dates.length - 1]))} 기초자산 일별 종가로 매 거래일 가입을 가정해 만기까지 돌린 결과입니다. 상장이 늦은 기초자산이 섞인 상품은 검증 구간이 그만큼 짧으며, 상품마다 실제 구간을 표기했습니다.</p>
   <p>본 자료는 투자 권유를 위한 참고 자료이며, 실제 청약 전 투자설명서와 간이투자설명서를 반드시 확인하셔야 합니다. 원금 손실이 발생할 수 있는 상품입니다.</p>
   <p>생성 ${filedOn} · scripts/build_els_proposal.mjs</p>
