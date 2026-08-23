@@ -58,11 +58,16 @@ const slide = () => pres.addSlide();
     x: M, y: 3.9, w: 7.6, h: 0.34, fontFace: F, fontSize: 14, color: WHITE, margin: 0,
   });
 
-  s.addShape(pres.ShapeType.rect, { x: 8.7, y: 1.9, w: 4.0, h: 2.24, fill: { color: WHITE }, line: { width: 0 } });
-  const box = [['청약기간', `${A.offer[0]} ~ ${A.offer[1]}`], ['발행일 / 만기', `${dot(A.head.issueDate)} / ${dot(A.head.maturityDate)}`]];
-  box.forEach(([k, v], i) => {
-    s.addText(k, { x: 9.0, y: 2.14 + i * 1.06, w: 3.4, h: 0.26, fontFace: F, fontSize: 11, color: MUTED, margin: 0 });
-    s.addText(v, { x: 9.0, y: 2.42 + i * 1.06, w: 3.4, h: 0.4, fontFace: F, fontSize: 16, bold: true, color: INK, margin: 0 });
+  s.addShape(pres.ShapeType.rect, { x: 8.7, y: 1.9, w: 4.0, h: 2.66, fill: { color: WHITE }, line: { width: 0 } });
+  const P = A.plan;
+  const box = [
+    ['개인 일반투자자 청약', `${dot(P.start)} ~ ${dot(P.retailEnd)}`, ACTIVE, 17],
+    ['전체 청약기간 (숙려 대상 아닌 경우)', `${dot(P.start)} ~ ${dot(P.end)}`, BODY, 14],
+    ['발행일 / 만기', `${dot(A.head.issueDate)} / ${dot(A.head.maturityDate)}`, BODY, 14],
+  ];
+  box.forEach(([k, v, c, fs], i) => {
+    s.addText(k, { x: 9.0, y: 2.1 + i * 0.84, w: 3.4, h: 0.24, fontFace: F, fontSize: 10, color: MUTED, margin: 0 });
+    s.addText(v, { x: 9.0, y: 2.34 + i * 0.84, w: 3.4, h: 0.34, fontFace: F, fontSize: fs, bold: true, color: c, margin: 0 });
   });
 
   // 부제와 안내문 사이가 통째로 비어 추천 요약을 얹는다
@@ -76,9 +81,10 @@ const slide = () => pres.addSlide();
     ], { x: M + i * 2.55, y: 4.96, w: 2.45, h: 0.62, fontFace: F, color: WHITE, valign: 'top', lineSpacing: 15, margin: 0 });
   });
 
-  s.addText(A.onOfferNow === 0
+  s.addText((A.onOfferNow === 0
     ? `홈페이지 확인 ${stamp(A.checkedAt)} — 현재 청약 진행중 0건. 이 회차는 ${A.offer[0]}부터 열립니다.`
-    : `홈페이지 확인 ${stamp(A.checkedAt)} — 현재 청약 진행중 ${A.onOfferNow}건.`, {
+    : `홈페이지 확인 ${stamp(A.checkedAt)} — 현재 청약 진행중 ${A.onOfferNow}건.`)
+    + (A.plan.hasCooling ? `  개인 일반투자자 청약 마감은 ${dayLabel(A.plan.retailEnd)}입니다.` : ''), {
     x: M, y: 5.9, w: CW, h: 0.34, fontFace: F, fontSize: 12, color: WHITE, margin: 0,
   });
   s.addText('원금비보장 · 상품위험등급 1등급(매우높은위험) · 투자 권유 참고자료', {
@@ -87,12 +93,60 @@ const slide = () => pres.addSlide();
   s.addNotes(`이번 회차 ${A.items.length}종. 청약 ${A.offer[0]}~${A.offer[1]}. 전부 원금비보장 1등급입니다.`);
 }
 
+function dayLabel(iso) {
+  const d = new Date(iso + 'T00:00:00Z');
+  return `${d.getUTCMonth() + 1}월 ${d.getUTCDate()}일(${['일', '월', '화', '수', '목', '금', '토'][d.getUTCDay()]})`;
+}
+
 function stamp(iso) {
   if (!iso) return '–';
   const d = new Date(new Date(iso).getTime() + 9 * 3600000);
   const dow = ['일', '월', '화', '수', '목', '금', '토'][d.getUTCDay()];
   return `${d.getUTCFullYear()}.${String(d.getUTCMonth() + 1).padStart(2, '0')}.${String(d.getUTCDate()).padStart(2, '0')}(${dow}) `
        + `${String(d.getUTCHours()).padStart(2, '0')}:${String(d.getUTCMinutes()).padStart(2, '0')}`;
+}
+
+// ══ 1-A. 언제까지 청약해야 하나 ════════════════════════════════════════════
+if (A.plan.hasCooling) {
+  const P = A.plan;
+  const s = slide();
+  const y0 = head(s, '언제까지 청약해야 하나',
+    `홈페이지와 공시 표지의 청약기간은 ${dot(P.start)}~${dot(P.end)}입니다. 그런데 개인 일반투자자는 그 뒤쪽 절반을 쓸 수 없습니다 — 숙려기간과 가입의사확인기간에는 청약 자체가 불가능합니다.`);
+
+  const steps = [
+    ['1단계', '청약 접수', `${dot(P.coolStart)} ~ ${dot(P.coolEnd)}`,
+      `${dayLabel(P.coolStart)}~${dayLabel(P.coolEnd)} · ${P.retailDays}일`, '이때만 주문 가능', OK],
+    ['2단계', '숙려기간', `${dot(P.coolingFrom)} ~ ${dot(P.coolingTo)}`,
+      '2영업일 이상 · 최대 원금손실 가능금액을 고지받습니다', '청약 불가', BAD],
+    ['3단계', '가입의사 확인', dot(P.confirmBy),
+      `${P.confirmNote || ''} · 확인을 못 받으면 청약금은 환불됩니다`, '청약 불가', BAD],
+    ['4단계', '발행', dot(P.payDate), '납입 · 배정 · 환불 · 최초기준가격 평가', '–', FAINT],
+  ];
+  const rh = 0.78;
+  steps.forEach(([k, name, date, note, tag, tc], i) => {
+    const y = y0 + i * (rh + 0.09);
+    s.addShape(pres.ShapeType.rect, { x: M, y, w: CW, h: rh,
+      fill: { color: i === 0 ? 'F4F8F5' : tc === BAD ? 'FDF6F6' : WHITE }, line: { color: HAIR, width: 1 } });
+    s.addText(k, { x: M + 0.22, y, w: 0.7, h: rh, fontFace: F, fontSize: 10.5, color: FAINT, valign: 'middle', margin: 0 });
+    s.addText(name, { x: M + 1.0, y, w: 1.7, h: rh, fontFace: F, fontSize: 15, bold: true, color: INK, valign: 'middle', margin: 0 });
+    s.addText(date, { x: M + 2.76, y, w: 2.5, h: rh, fontFace: F, fontSize: 14, bold: true, color: INK, valign: 'middle', margin: 0 });
+    s.addText(note, { x: M + 5.34, y, w: CW - 6.9, h: rh, fontFace: F, fontSize: 11.5, color: MUTED, valign: 'middle', lineSpacing: 15, margin: 0 });
+    s.addShape(pres.ShapeType.rect, { x: M + CW - 1.44, y: y + 0.23, w: 1.24, h: 0.32,
+      fill: { color: tc === FAINT ? SURF : tc }, line: { width: 0 } });
+    s.addText(tag, { x: M + CW - 1.44, y: y + 0.23, w: 1.24, h: 0.32, fontFace: F, fontSize: 10.5, bold: true,
+      color: tc === FAINT ? FAINT : WHITE, align: 'center', valign: 'middle', margin: 0 });
+  });
+
+  const by = y0 + 4 * (rh + 0.09) + 0.12;
+  s.addShape(pres.ShapeType.rect, { x: M, y: by, w: CW, h: 0.74, fill: { color: TINT }, line: { width: 0 } });
+  s.addText([
+    { text: '상담에서 이렇게 말씀하십시오  ', options: { bold: true, color: INK } },
+    { text: `"청약은 ${dayLabel(P.retailEnd)}까지 넣으셔야 합니다. 그 뒤 이틀은 법으로 정해진 숙려기간이라 주문을 받을 수 없고, 숙려기간이 끝나면 저희가 다시 연락드려 최종 의사를 확인합니다. 그때 확인이 안 되면 청약이 집행되지 않습니다."` },
+  ], { x: M + 0.22, y: by, w: CW - 0.44, h: 0.74, fontFace: F, fontSize: 11.5, color: BODY, valign: 'middle', lineSpacing: 16, margin: 0 });
+  s.addText(`전문투자자·법인 등 숙려제도 대상이 아닌 경우에만 ${dot(P.end)}까지 청약할 수 있습니다. 만 65세 이상 고령투자자는 별도 확인 절차가 더해질 수 있습니다.`, {
+    x: M, y: by + 0.84, w: CW, h: 0.3, fontFace: F, fontSize: 10.5, color: FAINT, margin: 0,
+  });
+  s.addNotes(`마감일을 잘못 안내하면 고객이 청약 기회를 놓칩니다. 홈페이지의 ${dot(P.end)}이 아니라 ${dayLabel(P.retailEnd)}이 개인 일반투자자의 마감입니다.`);
 }
 
 // ══ 2. 이번 회차 한눈에 ════════════════════════════════════════════════════
@@ -385,43 +439,71 @@ function defence(it) {
   ], { x: M + 0.22, y: y0 + 3.76, w: CW - 0.44, h: 0.88, fontFace: F, fontSize: 11.5, color: BODY, valign: 'middle', lineSpacing: 16, margin: 0 });
 }
 
-// ══ 10. 가입 전 확인 + 상담 스크립트 ═══════════════════════════════════════
+// ══ 10. 가입 전 꼭 짚어드릴 것 ═════════════════════════════════════════════
 {
   const s = slide();
-  const y0 = head(s, '가입 전 꼭 짚어드릴 것과 상담 순서', null);
   const chk = [
-    ['1만원이 1만원이 아닙니다', `공정가액이 ${money(A.gapBest, A.gapBest.fairValue / 100)}부터 ${money(A.gapWorst, A.gapWorst.fairValue / 100)}까지 벌어집니다(각 액면 1만 단위). 게다가 만기까지의 헤지비용은 빠진 값입니다.`],
-    ['중간에 깨면 손해입니다', '중도상환은 그 시점 공정가액의 95%(가입 6개월 안이면 90%). 3년을 묻어둘 수 있는 돈으로만 하셔야 합니다.'],
-    ['판정은 종가로 합니다', '장중에 잠깐 뚫어도 종가가 위면 괜찮고, 종가가 한 번이라도 아래면 기록이 남습니다.'],
-    ['손실 확률 숫자를 그대로 옮기지 마십시오', `공시의 손실 확률은 "지난 ${A.head.simYearsWhole}년이 되풀이된다면"의 답입니다. 추천 1번 제${A.slots[0].pick.no}회도 공시로는 ${f1(A.slots[0].pick.simLoss, 2)}%지만 같은 조건으로 다시 돌리면 ${f1(A.slots[0].pick.mcLoss)}%입니다.`],
+    ...(A.plan.hasCooling ? [[`청약 마감은 ${dayLabel(A.plan.retailEnd)}입니다`,
+      `홈페이지에는 ${dot(A.plan.start)}~${dot(A.plan.end)}로 나오지만 개인 일반투자자는 ${dayLabel(A.plan.retailEnd)}까지만 청약할 수 있습니다. 이후는 숙려·가입의사확인 기간이라 주문을 받을 수 없습니다.`]] : []),
+    [`${baseOf(A.head)}이 ${baseOf(A.head)}이 아닙니다`,
+      `공정가액이 ${money(A.gapBest, A.gapBest.fairValue / 100)}부터 ${money(A.gapWorst, A.gapWorst.fairValue / 100)}까지 벌어집니다(각 액면 1만 단위). 게다가 만기까지의 헤지비용은 빠진 값입니다.`],
+    ['중간에 깨면 손해입니다',
+      '중도상환은 그 시점 공정가액의 95%(가입 6개월 안이면 90%). 3년을 묻어둘 수 있는 돈으로만 하셔야 합니다.'],
+    ['판정은 종가로 합니다',
+      '장중에 잠깐 뚫어도 종가가 위면 괜찮고, 종가가 한 번이라도 아래면 그걸로 기록이 남습니다.'],
+    ['손실 확률 숫자를 그대로 옮기지 마십시오',
+      `공시의 손실 확률은 "지난 ${A.head.simYearsWhole}년이 되풀이된다면"의 답입니다. 추천 1번 제${A.slots[0].pick.no}회도 공시로는 ${f1(A.slots[0].pick.simLoss, 2)}%지만 같은 조건으로 다시 돌리면 ${f1(A.slots[0].pick.mcLoss)}%입니다.`],
+    ...(A.plan.recordingRight ? [['판매 과정은 녹취됩니다',
+      `개인 일반투자자는 녹취 자료를 요청할 수 있고, 투자 위험을 요약한 설명서를 받습니다.${A.plan.maxLossNotice ? ' 최대 원금손실 가능금액은 숙려기간 중에 따로 고지됩니다.' : ''} 설명을 건너뛰면 그대로 기록에 남습니다.`]] : []),
   ];
+  const NUM = ['한', '두', '세', '네', '다섯', '여섯', '일곱', '여덟'];
+  const y0 = head(s, '가입 전 꼭 짚어드릴 것', `상담에서 이 ${NUM[chk.length - 1] || chk.length} 가지를 빠뜨리면 나중에 문제가 됩니다.`);
+  const cols = 3, cw = (CW - 0.26 * (cols - 1)) / cols, ch = 1.62;
   chk.forEach(([k, v], i) => {
-    const x = M + (i % 2) * (CW / 2 + 0.14), y = y0 + Math.floor(i / 2) * 1.06;
-    s.addShape(pres.ShapeType.rect, { x, y, w: CW / 2 - 0.14, h: 0.94, fill: { color: SURF }, line: { color: HAIR, width: 1 } });
-    s.addText(`${i + 1}. ${k}`, { x: x + 0.18, y: y + 0.1, w: CW / 2 - 0.5, h: 0.28, fontFace: F, fontSize: 12.5, bold: true, color: INK, margin: 0 });
-    s.addText(v, { x: x + 0.18, y: y + 0.38, w: CW / 2 - 0.5, h: 0.5, fontFace: F, fontSize: 10.5, color: BODY, valign: 'top', lineSpacing: 14, margin: 0 });
+    const x = M + (i % cols) * (cw + 0.26), y = y0 + Math.floor(i / cols) * (ch + 0.24);
+    const first = A.plan.hasCooling && i === 0;                 // 마감일 칸은 눈에 띄어야 한다
+    s.addShape(pres.ShapeType.rect, { x, y, w: cw, h: ch,
+      fill: { color: first ? 'FDF6F6' : SURF }, line: { color: first ? BAD : HAIR, width: 1 } });
+    s.addText(`${i + 1}`, { x: x + 0.2, y: y + 0.14, w: 0.4, h: 0.3, fontFace: F, fontSize: 15, bold: true,
+      color: first ? BAD : FAINT, margin: 0 });
+    s.addText(k, { x: x + 0.6, y: y + 0.14, w: cw - 0.8, h: 0.56, fontFace: F, fontSize: 13.5, bold: true,
+      color: first ? BAD : INK, valign: 'top', lineSpacing: 17, margin: 0 });
+    s.addText(v, { x: x + 0.2, y: y + 0.76, w: cw - 0.4, h: ch - 0.9, fontFace: F, fontSize: 11,
+      color: BODY, valign: 'top', lineSpacing: 15, margin: 0 });
   });
+  s.addNotes('1번은 이번 주에만 해당하는 이야기가 아니라 매 회차 반복됩니다. 마감일을 잘못 안내하면 고객이 청약 기회를 놓칩니다.');
+}
 
+// ══ 11. 상담 순서 ══════════════════════════════════════════════════════════
+{
+  const s = slide();
   const it0 = A.slots[0].pick;
+  const y0 = head(s, '상담 시 이 순서로 말씀하시면 됩니다', `추천 1번 제${it0.no}회 기준입니다. 다른 상품이면 회차·기간·낙인 숫자만 바꾸십시오.`);
   const script = [
+    ...(A.plan.hasCooling ? [`"먼저 일정부터 말씀드리면, 청약은 ${dayLabel(A.plan.retailEnd)}까지 넣으셔야 합니다. 그 뒤 이틀은 법으로 정해진 숙려기간이라 주문을 받을 수 없습니다."`] : []),
     `"이 상품은 3년짜리인데, ${it0.every}개월마다 끝날 기회가 옵니다. 대부분은 첫 번째에 끝났습니다."`,
     `"${it0.underlyings.join(' · ')} 중 더 많이 떨어진 하나로 판정합니다."`,
     '"올라야 버는 게 아니라, 많이 안 떨어지면 버는 구조입니다."',
     `"대신 ${it0.knockIn ?? it0.maturityBarrier}% 아래로 크게 떨어지면 그 하락률이 그대로 손실로 옵니다. 원금이 보장되지 않습니다."`,
     `"과거 ${it0.simYearsWhole}년으로 보면 손실은 ${f1(it0.simLoss, 2)}%였지만 그 구간이 좋았던 덕도 있습니다. 보수적으로는 ${f1(it0.mcLoss, 0)}% 정도로 봅니다."`,
     '"3년 동안 안 쓸 돈인지 먼저 확인해 주세요. 중간에 빼면 그날 평가금액의 95%만 받습니다."',
+    ...(A.plan.hasCooling ? [`"청약을 넣으셔도 바로 확정되는 게 아닙니다. 이틀 숙려기간을 거친 뒤 저희가 다시 연락드려 최종 의사를 확인합니다. 그때 확인이 안 되면 청약금은 ${dot(A.plan.payDate)}에 돌려드립니다."`] : []),
   ];
-  const sy = y0 + 2.34;
-  s.addShape(pres.ShapeType.rect, { x: M, y: sy, w: CW, h: 0.05, fill: { color: BLUE }, line: { width: 0 } });
-  s.addText('상담 시 이 순서로 말씀하시면 됩니다', { x: M, y: sy + 0.12, w: CW, h: 0.32, fontFace: F, fontSize: 15, bold: true, color: INK, margin: 0 });
-  s.addText(script.map((t, i) => ({ text: t, options: { bullet: { type: 'number' }, breakLine: i < script.length - 1 } })), {
-    x: M + 0.06, y: sy + 0.52, w: CW - 0.12, h: 1.9, fontFace: F, fontSize: 12, color: BODY, lineSpacing: 18, paraSpaceAfter: 5, margin: 0,
+  const rh = 0.5;
+  script.forEach((t, i) => {
+    const y = y0 + i * (rh + 0.06);
+    s.addShape(pres.ShapeType.rect, { x: M, y: y + 0.06, w: 0.38, h: 0.38, fill: { color: BLUE }, line: { width: 0 } });
+    s.addText(String(i + 1), { x: M, y: y + 0.06, w: 0.38, h: 0.38, fontFace: F, fontSize: 11, bold: true,
+      color: WHITE, align: 'center', valign: 'middle', margin: 0 });
+    s.addText(t, { x: M + 0.56, y, w: CW - 0.56, h: rh, fontFace: F, fontSize: 12.5, color: BODY,
+      valign: 'middle', lineSpacing: 17, margin: 0 });
   });
-  s.addShape(pres.ShapeType.rect, { x: M, y: 6.06, w: CW, h: 0.7, fill: { color: TINT }, line: { width: 0 } });
+  const qy = y0 + script.length * (rh + 0.06) + 0.14;
+  s.addShape(pres.ShapeType.rect, { x: M, y: qy, w: CW, h: 0.76, fill: { color: TINT }, line: { width: 0 } });
   s.addText([
     { text: '"종목이 들어간 건 더 위험하지 않나요?"  ', options: { bold: true, color: INK } },
     { text: `→ "맞습니다. 이번 회차도 종목형 평균 손실 확률이 지수형의 ${f1(A.kindRatio)}배입니다. 다만 제${it0.no}회는 두 기초자산이 상관계수 ${f1(it0.rho, 2)}로 거의 같이 움직이고 낙인이 ${it0.knockIn}%로 깊어서, 같은 기준으로 재면 지수형 대부분보다 오히려 낮게 나옵니다."` },
-  ], { x: M + 0.2, y: 6.06, w: CW - 0.4, h: 0.7, fontFace: F, fontSize: 11, color: BODY, valign: 'middle', lineSpacing: 15, margin: 0 });
+  ], { x: M + 0.22, y: qy, w: CW - 0.44, h: 0.76, fontFace: F, fontSize: 11.5, color: BODY, valign: 'middle', lineSpacing: 16, margin: 0 });
 }
 
 // ══ 꼬리말 — 표지 빼고 전 장 ═══════════════════════════════════════════════
