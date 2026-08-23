@@ -72,9 +72,15 @@ for (const code of ['01', '02', '03', '04', '00', '']) {
 await writeFile(`${OUT}/offer_states.json`, JSON.stringify(listing, null, 2));
 
 // ── 2. DART 공시검색 → 접수번호 ─────────────────────────────────────────────
-console.log('\n## 2. DART 일괄신고추가서류 접수번호');
+// 검색 구간은 실행일 기준으로 굴린다. 날짜를 박아두면 그 주에만 맞고 다음 주부터는
+// 빈손으로 끝나는데, 잡은 초록이라 조용히 낡는다.
+const ymd = (d) => `${d.getUTCFullYear()}${String(d.getUTCMonth() + 1).padStart(2, '0')}${String(d.getUTCDate()).padStart(2, '0')}`;
+const DAYS_BACK = Number(process.env.DART_DAYS_BACK || 45);
+const today = new Date();
+const since = new Date(today.getTime() - DAYS_BACK * 86400000);
+console.log(`\n## 2. DART 일괄신고추가서류 접수번호 (${ymd(since)}~${ymd(today)})`);
 const search = await grab(`${DART}/dsab001/search.ax`, {
-  body: 'currentPage=1&maxResults=100&textCrpNm=미래에셋증권&startDate=20260720&endDate=20260821',
+  body: `currentPage=1&maxResults=100&textCrpNm=미래에셋증권&startDate=${ymd(since)}&endDate=${ymd(today)}`,
   headers: { Referer: `${DART}/dsab001/main.do` },
 });
 const filings = [];
@@ -109,8 +115,9 @@ for (const f of wanted) {
     const range = nums.length ? `${Math.min(...nums)}~${Math.max(...nums)}` : '–';
     console.log(`  ${f.date} ${f.rcpNo} dcm=${dcm} ${(doc.buf.length / 1024 / 1024).toFixed(2)}MB 회차 ${series.length}종 (${range})`);
     docs.push({ ...f, dcmNo: dcm, chars: text.length, series, range });
-    // 8월 발행 ELS 회차가 들어 있으면 표를 떠 둔다
-    if (nums.some((n) => n >= 37900 && n <= 38100)) {
+    // 회차 번호대를 박아두면 번호가 굴러간 다음 달부터 아무것도 안 남는다.
+    // 여러 회차를 한 번에 담은 문서(=주간 발행분)이면 표를 떠 둔다.
+    if (nums.length >= 5) {
       // 회차별 조건·모의실험을 로컬에서 파싱할 수 있게 본문 전체를 남긴다
       await writeFile(`${OUT}/prospectus_${f.rcpNo}.txt`, text);
       const slices = (needle, before, after, max) => {
