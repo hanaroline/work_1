@@ -101,24 +101,55 @@ async function fetchSeries(symbol) {
 async function main() {
   const { header, data } = await readData(OUT_DATA);
 
+  // 직전 시세 — 이번에 못 받았거나 토막난 자산은 여기서 이월한다
+  const prev = data.history || {};
+  const prevDates = prev.dates || [];
+  const prevOf = (name) => {
+    const s = prev.series?.[name];
+    if (!Array.isArray(s)) return null;
+    const m = new Map();
+    for (let i = 0; i < prevDates.length; i++) if (s[i] != null) m.set(prevDates[i], s[i]);
+    return m.size ? m : null;
+  };
+
   const names = [...new Set(data.products.flatMap((p) => p.underlyings || []))].sort();
   console.log(`기초자산 ${names.length}종: ${names.join(', ')}`);
 
   const raw = new Map();       // 이름 -> Map(YYYYMMDD -> 종가)
   const symbols = {};
   const missing = [];
+  const stale = [];            // 직전 시세를 이월한 자산
   for (const name of names) {
     const sym = SYMBOLS[name];
     if (!sym) { missing.push(name); console.log(`  ${name}: 심볼 매핑 없음 — 건너뜀`); continue; }
+    const old = prevOf(name);
+    // Yahoo 가 200 을 주면서도 며칠치만 돌려주는 일이 있다. 그대로 받아 쓰면 10년치가
+    // 하루로 줄어드는데, 파일은 갱신되고 잡은 초록이라 아무도 모른 채 과거 검증이
+    // 통째로 사라진다(2026-08-23 KOSPI200). 직전 분량에 크게 못 미치면 이월한다.
+    const enough = (s) => !old || s.size >= old.size * 0.6;
     try {
       const s = await fetchSeries(sym);
+      const ks = [...s.keys()];
+      if (!enough(s)) {
+        stale.push(name);
+        raw.set(name, old);
+        symbols[name] = sym;
+        console.log(`  ${name} (${sym}): ${s.size}일뿐 — 직전 ${old.size}일을 이월`);
+        continue;
+      }
       raw.set(name, s);
       symbols[name] = sym;
-      const ks = [...s.keys()];
       console.log(`  ${name} (${sym}): ${s.size}일, ${ks[0]} ~ ${ks[ks.length - 1]}`);
     } catch (e) {
-      missing.push(name);
-      console.log(`  ${name} (${sym}): 실패 — ${e?.message ?? e}`);
+      if (old) {
+        stale.push(name);
+        raw.set(name, old);
+        symbols[name] = sym;
+        console.log(`  ${name} (${sym}): 실패(${e?.message ?? e}) — 직전 ${old.size}일을 이월`);
+      } else {
+        missing.push(name);
+        console.log(`  ${name} (${sym}): 실패 — ${e?.message ?? e}`);
+      }
     }
   }
 
@@ -154,13 +185,20 @@ async function main() {
     series,
     symbols,
     missing,
+    stale,
   };
 
   await writeFile(OUT_DATA, header + 'window.ELS_DATA = ' + serializeData(data) + ';\n');
   console.log(
     `\n${OUT_DATA} 갱신 완료 — ${Object.keys(series).length}종 / ${dates.length}거래일` +
-    (missing.length ? ` (미수집 ${missing.length}종: ${missing.join(', ')})` : '')
+    (missing.length ? ` (미수집 ${missing.length}종: ${missing.join(', ')})` : '') +
+    (stale.length ? ` (이월 ${stale.length}종: ${stale.join(', ')})` : '')
   );
+  // 파일은 이미 성한 상태로 남겼다. 다만 이월이 있으면 조용히 넘기지 않는다.
+  if (stale.length) {
+    console.error(`\n직전 시세를 이월한 자산 ${stale.length}종: ${stale.join(', ')}`);
+    process.exit(1);
+  }
 }
 
 main().catch((e) => { console.error(e); process.exit(1); });
