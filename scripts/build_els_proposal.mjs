@@ -17,98 +17,28 @@
  *
  * 문서에 적히는 수치는 전부 여기서 계산한다. 손으로 옮겨적는 숫자를 두지 않는다.
  */
-import { readFile, writeFile } from 'node:fs/promises';
-import { drawdown, backtest, fromProspectus, startIndex } from './lib/els-engine.mjs';
-import { montecarlo } from './lib/els-mc.mjs';
-
-const MC = { paths: 40000, seed: 20260823 };   // 시드 고정 — 빌드마다 숫자가 흔들리면 안 된다
+import { writeFile } from 'node:fs/promises';
+import {
+  analyze, kindOf, tierOf, KINDS, TIERS, IDX, MC, money, baseOf, unitOf, josa,
+} from './lib/els-analysis.mjs';
 
 const OUT = 'els-proposal.html';
 
-const w = {};
-new Function('window', await readFile('data/els.js', 'utf8'))(w);
-const H = w.ELS_DATA.history;
-const P = JSON.parse(await readFile('tools/discovery/prospectus_parsed.json', 'utf8'));
-
-const RCP = process.argv[2] || Object.keys(P).sort().pop();
-if (!P[RCP]) { console.error(`접수번호 ${RCP} 없음. 가능: ${Object.keys(P).join(', ')}`); process.exit(1); }
-
-// 홈페이지를 언제 확인했고 그때 무엇이 걸려 있었는지. 공시는 청약 며칠 전에 올라오므로
-// 문서만 보면 "지금 살 수 있다"고 읽힌다. 상담 자리에서 그 오해가 제일 비싸다.
-const states = await readFile('tools/discovery/offer_states.json', 'utf8').then(JSON.parse).catch(() => null);
-const onOfferNow = states?.['01']?.count ?? null;                      // prgs_scd=01 = 청약 진행중
-const checkedAt = w.ELS_DATA.checkedAt || w.ELS_DATA.updatedAt || null;
+// 숫자·등급·추천은 전부 분석층에서 나온다. 이 파일은 그것을 문서로 옮기는 일만 한다.
+const A = await analyze(process.argv[2]).catch((e) => { console.error(e.message); process.exit(1); });
+const {
+  rcp: RCP, items, head, H, filedOn, checkedAt, onOfferNow,
+  byKind, mcAvgAll, kindRatio, safest, idxWorst, stockBest,
+  slots, caution, perRisk, idxPerRisk,
+  rateMin, rateMax, gapBest, gapWorst, tierCount,
+} = A;
+const [offerFrom, offerTo] = A.offer;
 
 // ── 표기 도우미 ──────────────────────────────────────────────────────────────
 const esc = (s) => String(s ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 const f1 = (v, d = 1) => v == null || Number.isNaN(v) ? '–' : v.toFixed(d);
 const sgn = (v, d = 1) => v == null ? '–' : (v >= 0 ? '+' : '') + v.toFixed(d);
 const dot = (s) => (s || '').replace(/-/g, '.');
-const won = (n) => n == null ? '–' : Math.round(n).toLocaleString('ko-KR');
-/** 105.75% → "10,575원" (1만원 기준) */
-const money = (pct) => pct == null ? '–' : won(pct * 100) + '원';
-const monthsBetween = (a, b) => Math.round((new Date(b) - new Date(a)) / 86400000 / 30.44);
-
-// ── 회차별 지표 ──────────────────────────────────────────────────────────────
-function enrich(item) {
-  const p = fromProspectus(item);
-  const bt = p && backtest(p, H);
-  const dd = p && drawdown(p, H);
-  const first = item.schedule[0];
-  const every = first ? monthsBetween(item.baseDate || item.issueDate, first.date) : null;
-
-  // 검증 구간은 상품마다 다르다 — 상장이 늦은 기초자산이 섞이면 그만큼 짧아진다
-  const ser = item.underlyings.map((u) => H.series[u]);
-  const covAt = ser.every(Boolean) ? H.dates[startIndex(ser, H.dates.length)] : null;
-  const covYears = covAt ? Math.floor((H.dates[H.dates.length - 1] - covAt) / 10000) : null;
-
-  const gap = item.fairValueGap;
-  const ourLoss = bt?.lossRate;
-
-  // 발행사 모의실험은 상품마다 표본 구간이 다르다. 팔란티어처럼 상장이 늦은 자산이
-  // 섞이면 3년치(721회)뿐이라 20년치(5,100회)와 나란히 놓고 비교할 수 없다.
-  const simYears = item.simRange
-    ? +((new Date(item.simRange.to) - new Date(item.simRange.from)) / 31557600000).toFixed(1) : null;
-  const simShort = simYears != null && simYears < 10;      // 표본이 짧아 비교에 못 쓰는 상품
-  const simYearsWhole = simYears == null ? null : Math.floor(simYears);   // 공시가 '20년' 이라 부르는 구간을 21년으로 올리지 않는다
-  const simWin = item.simLoss == null ? null : +(100 - item.simLoss).toFixed(2);
-
-  // 전 상품을 같은 조건으로 견주기 위한 몬테카를로 — 입력은 발행사가 이론가에 쓴 변동성·상관계수
-  const mc = p && montecarlo(p, item.volatility, item.correlation, MC);
-
-  const vmax = item.volatility.length ? Math.max(...item.volatility.map((v) => v.vol)) : null;
-  const rho = item.correlation.length ? Math.min(...item.correlation.map((c) => c.rho)) : null;
-
-  // 상대 등급 — 비교 가능한 척도(MC 손실확률) 하나로만 가른다.
-  // 이 회차 전부가 원금비보장 1등급이므로 "안전"이 아니라 서로 견준 순서다.
-  const tier = mc == null ? 1 : mc.lossRate > 25 ? 2 : mc.lossRate > 15 ? 1 : 0;
-
-  return {
-    ...item,
-    months: p?.maturityMonths,
-    every,                                   // 관찰 주기(개월)
-    steps: p ? p.schedule.length : null,
-    barriers: p ? p.schedule.map((s) => s.barrier) : [],
-    totalRate: p?.totalRate,
-    ourLoss, ourFirst: bt?.firstRate, ourKi: bt?.kiRate, ourWorst: bt?.worst, runs: bt?.runs,
-    covAt, covYears,
-    simYears, simYearsWhole, simShort, simWin,
-    mcLoss: mc?.lossRate, mcKi: mc?.kiRate, mcFirst: mc?.firstRate, mcAvgLoss: mc?.avgLoss,
-    vmax, rho,
-    low: dd?.min,                            // 워스트 퍼포머가 검증 구간 안에서 닿았던 최저 수준
-    floor: item.knockIn ?? item.maturityBarrier,   // 원금이 깨지기 시작하는 선
-    margin: dd && item.knockIn != null ? dd.min - item.knockIn : null,
-    tier,
-    // 가성비 — 연 수익률에서 공정가액 괴리(=출발 시점에 이미 빠져 있는 몫)를 뺀다
-    value: (item.annualRate ?? 0) + (gap ?? 0),
-  };
-}
-
-const batch = P[RCP];
-const items = batch.items.map(enrich);
-const filedOn = `${RCP.slice(0, 4)}.${RCP.slice(4, 6)}.${RCP.slice(6, 8)}`;
-const [offerFrom, offerTo] = (batch.offer || '').split('~').map((s) => dot(s.trim()));
-const head = items[0];
 
 // ── 오늘 기준 이 회차의 위치 ─────────────────────────────────────────────────
 const kst = (iso) => new Date(new Date(iso).getTime() + 9 * 3600000);
@@ -119,7 +49,7 @@ const stamp = (iso) => {
   return `${d.getUTCFullYear()}.${String(d.getUTCMonth() + 1).padStart(2, '0')}.${String(d.getUTCDate()).padStart(2, '0')}`
        + `(${DOW[d.getUTCDay()]}) ${String(d.getUTCHours()).padStart(2, '0')}:${String(d.getUTCMinutes()).padStart(2, '0')}`;
 };
-const dayLabel = (ymd) => {                                  // "2026.08.24" → "8월 24일(월)"
+const dayLabel = (ymd) => {
   const [y, m, d] = ymd.split('.').map(Number);
   return `${m}월 ${d}일(${DOW[new Date(Date.UTC(y, m - 1, d)).getUTCDay()]})`;
 };
@@ -134,60 +64,14 @@ const phaseLine = {
   after: `이 회차는 <b>${dayLabel(offerTo)}에 청약이 마감</b>되었습니다. 이 문서로는 주문을 받을 수 없습니다.`,
 }[phase];
 
-const TIERS = [
-  { key: 'safe', name: '방어적', desc: '조건이 낮게 잡혀 조기상환이 잘 나는 쪽' },
-  { key: 'mid', name: '중간', desc: '수익률과 조건이 균형을 이루는 쪽' },
-  { key: 'hot', name: '공격적', desc: '수익률이 높은 만큼 조건도 빡빡한 쪽' },
-];
-const tierOf = (it) => TIERS[it.tier];
-
-const IDX = new Set(['KOSPI200', 'S&P500', 'Nikkei225', 'EuroStoxx50', 'HSCEI']);
-const kindOf = (it) => it.underlyings.every((u) => IDX.has(u)) ? '지수'
-  : it.underlyings.some((u) => IDX.has(u)) ? '혼합' : '종목';
-
-// ── 추천 3종 — 고객 성향별로 한 자리씩 ───────────────────────────────────────
-const krw = (it) => it.currency === 'KRW';
-const pickMax = (list, by) => list.length ? list.reduce((a, b) => (by(b) > by(a) ? b : a)) : null;
-// 출발 가치가 크게 깎인 상품은 어느 자리에도 올리지 않는다
-const sane = (i) => (i.fairValueGap ?? 0) > -5 && !i.simShort;
-const slots = [
-  {
-    label: '원금 방어를 먼저 보는 분',
-    why: '같은 조건으로 돌렸을 때 손실 확률이 가장 낮은 축에 들면서, 그 안에서는 수익률이 가장 높습니다.',
-    pick: pickMax(items.filter((i) => i.tier === 0 && krw(i) && sane(i)), (i) => i.annualRate),
-  },
-  {
-    label: '수익과 안정을 함께 보는 분',
-    why: '손실 확률이 한 단계 올라가는 대신 수익률이 크게 붙는 구간입니다.',
-    pick: pickMax(items.filter((i) => i.tier === 1 && krw(i) && sane(i)), (i) => i.value),
-  },
-  {
-    label: '수익률을 우선하는 분',
-    why: '이번 회차에서 가장 높은 수익률입니다. 출발 가치가 크게 깎이지 않은 상품 중에서 골랐습니다.',
-    pick: pickMax(items.filter((i) => sane(i) && i.tier < 2), (i) => i.annualRate),
-  },
-].filter((s) => s.pick);
-// 같은 상품이 두 자리를 차지하면 뒤쪽을 차선책으로 바꾼다
-const seen = new Set();
-for (const s of slots) {
-  if (!seen.has(s.pick.no)) { seen.add(s.pick.no); continue; }
-  const alt = pickMax(items.filter((i) => !seen.has(i.no) && (i.fairValueGap ?? 0) > -5 && krw(i)), (i) => i.value);
-  if (alt) { s.pick = alt; seen.add(alt.no); }
-}
-
-// ── 주의가 필요한 상품 ───────────────────────────────────────────────────────
-const caution = items
-  .filter((it) => (it.fairValueGap ?? 0) <= -10 || it.tier === 2 || it.simShort)
-  .sort((a, b) => (b.mcLoss ?? 0) - (a.mcLoss ?? 0))
-  .slice(0, 4);
-/** 이 상품의 검증 구간을 말로 — 상장이 늦은 기초자산이 섞이면 10년이 아니다 */
+/** 이 상품의 자체 검증 구간을 말로 — 상장이 늦은 기초자산이 섞이면 10년이 아니다 */
 const covLabel = (it) => it.covAt == null ? '과거 구간'
   : `최근 ${it.covYears}년(${String(it.covAt).slice(0, 4)}년~)`;
 
 const cautionReason = (it) => {
   const r = [];
   if (it.mcLoss != null && it.mcLoss > 25) r.push(`같은 조건으로 돌렸을 때 <b>100번 중 ${f1(it.mcLoss, 0)}번</b>이 손실입니다 (이번 회차 평균 ${f1(mcAvgAll, 0)}번)`);
-  if ((it.fairValueGap ?? 0) <= -10) r.push(`1만원을 넣는 순간의 가치가 <b>${money(it.fairValue / 100)}</b>입니다`);
+  if ((it.fairValueGap ?? 0) <= -10) r.push(`${baseOf(it)}${josa(baseOf(it), '을', '를')} 넣는 순간의 가치가 <b>${money(it, it.fairValue / 100)}</b>입니다`);
   if (it.simShort) r.push(`발행사 모의실험 표본이 ${f1(it.simYears, 1)}년(${it.simRuns.toLocaleString('ko-KR')}회)뿐입니다 — ${esc(it.underlyings[it.underlyings.length - 1])}가 늦게 상장해 큰 하락장이 표본에 없습니다. 공시의 손실 ${f1(it.simLoss, 2)}%를 20년짜리와 나란히 놓으면 안 됩니다`);
   if (it.vmax != null && it.vmax >= 90) r.push(`발행사가 이론가에 쓴 변동성이 <b>${f1(it.vmax, 0)}%</b>입니다 — 이번 회차에서 가장 높은 축입니다`);
   if (it.margin != null && it.margin < 0) r.push(`${covLabel(it)} 안에 원금 지키는 선을 이미 ${f1(-it.margin)}%p 뚫고 내려간 적이 있습니다`);
@@ -198,37 +82,6 @@ const cautionReason = (it) => {
 const vols = [...new Map(items.flatMap((it) => it.volatility.map((v) => [v.asset, v.vol]))).entries()]
   .sort((a, b) => b[1] - a[1]);
 
-// ── 자산군별 위험 — "종목이 섞이면 더 위험한가" 를 같은 척도로 확인한다 ──────────
-const KINDS = ['지수', '혼합', '종목'];
-const byKind = KINDS.map((k) => {
-  const g = items.filter((i) => kindOf(i) === k && i.mcLoss != null);
-  const avg = (f) => g.length ? g.reduce((s, i) => s + f(i), 0) / g.length : null;
-  return {
-    key: k, n: g.length,
-    loss: avg((i) => i.mcLoss),
-    vol: avg((i) => i.vmax),
-    rate: avg((i) => i.annualRate),
-    lo: g.length ? Math.min(...g.map((i) => i.mcLoss)) : null,
-    hi: g.length ? Math.max(...g.map((i) => i.mcLoss)) : null,
-  };
-}).filter((r) => r.n);
-const mcAvgAll = items.filter((i) => i.mcLoss != null).reduce((s, i) => s + i.mcLoss, 0)
-  / items.filter((i) => i.mcLoss != null).length;
-const kindRatio = byKind.find((r) => r.key === '종목') && byKind.find((r) => r.key === '지수')
-  ? byKind.find((r) => r.key === '종목').loss / byKind.find((r) => r.key === '지수').loss : null;
-// 자산군 규칙을 거스르는 사례 — 문서에서 근거로 쓴다
-const safest = [...items].filter((i) => i.mcLoss != null).sort((a, b) => a.mcLoss - b.mcLoss);
-const idxWorst = [...items].filter((i) => kindOf(i) === '지수' && i.mcLoss != null)
-  .sort((a, b) => b.mcLoss - a.mcLoss)[0];
-const stockBest = [...items].filter((i) => kindOf(i) !== '지수' && i.mcLoss != null)
-  .sort((a, b) => a.mcLoss - b.mcLoss)[0];
-
-const rateMin = Math.min(...items.map((i) => i.annualRate));
-const rateMax = Math.max(...items.map((i) => i.annualRate));
-const gapWorst = items.reduce((a, b) => ((b.fairValueGap ?? 0) < (a.fairValueGap ?? 0) ? b : a));
-const gapBest = items.reduce((a, b) => ((b.fairValueGap ?? 0) > (a.fairValueGap ?? 0) ? b : a));
-const tierCount = [0, 1, 2].map((t) => items.filter((i) => i.tier === t).length);
-
 // ── 상품 한 줄 설명 (전문 용어를 풀어쓴다) ───────────────────────────────────
 const judgeLine = (it) => it.underlyings.length === 1
   ? `${esc(it.underlyings[0])} 하나만 봅니다.`
@@ -236,7 +89,7 @@ const judgeLine = (it) => it.underlyings.length === 1
 const earlyLine = (it) => {
   const b = it.barriers[0];
   return `${it.every}개월마다 확인해서 처음 가격의 <b>${b}% 이상</b>(${sgn(b - 100, 0)}% 이내)이면 그 자리에서 끝나고 `
-       + `1만원이 <b>${money(it.schedule[0].payout)}</b>이 됩니다.`;
+       + `${baseOf(it)}${josa(baseOf(it), '이', '가')} <b>${money(it, it.schedule[0].payout)}</b>${josa(unitOf(it), '이', '가')} 됩니다.`;
 };
 const floorLine = (it) => it.knockIn != null
   ? `만기까지 한 번도 <b>${it.knockIn}%</b>(${sgn(it.knockIn - 100, 0)}%) 아래로 종가가 내려간 적이 없으면, `
@@ -280,20 +133,6 @@ const probBar = (it) => {
         : `이 구간에서는 <b>손실 사례가 한 번도 없었습니다.</b> 다만 위 B 기준으로는 ${f1(it.mcLoss, 1)}%입니다.`}</p>`;
 };
 
-/** 받침 유무로 조사를 고른다 — "SK하이닉스이(가)" 같은 표기를 두지 않는다 */
-const josa = (word, withJong, withoutJong) => {
-  const c = String(word).trim().slice(-1).charCodeAt(0);
-  if (!(c >= 0xac00 && c <= 0xd7a3)) return `${withJong}(${withoutJong})`;   // 한글이 아니면 판단하지 않는다
-  return (c - 0xac00) % 28 ? withJong : withoutJong;
-};
-
-/** 수익률을 손실 확률로 나눈 값 — 위험 한 단위당 얼마를 받는가 */
-const perRisk = (it) => (it.mcLoss ? it.annualRate / it.mcLoss : null);
-const idxPerRisk = (() => {
-  const g = items.filter((i) => kindOf(i) === '지수' && i.mcLoss);
-  return g.length ? g.reduce((s, i) => s + perRisk(i), 0) / g.length : null;
-})();
-
 /** 종목이 섞였는데도 앞자리에 올렸다면, 그 이유를 상담용 문장으로 남긴다 */
 const defenceLine = (it) => {
   if (kindOf(it) === '지수') return '';
@@ -334,7 +173,7 @@ const card = (slot, i) => {
         <div class="recrate">
           <span class="rlabel">연 수익률</span>
           <span class="rnum">${f1(it.annualRate, 1)}<span class="pct">%</span></span>
-          <span class="rsub">1만원 → ${it.every}개월 뒤 ${money(it.schedule[0].payout)}</span>
+          <span class="rsub">${baseOf(it)} → ${it.every}개월 뒤 ${money(it, it.schedule[0].payout)}</span>
         </div>
         <ul class="how">
           <li><span class="hk">판정</span><span>${judgeLine(it)}</span></li>
@@ -347,7 +186,7 @@ const card = (slot, i) => {
         <div class="recfoot">
           <div class="rf"><span>A. 발행사 ${it.simYearsWhole}년 모의실험</span><b>손실 ${f1(it.simLoss, 2)}%</b><small>${it.simRuns?.toLocaleString('ko-KR')}회 중 ${Math.round((it.simLoss ?? 0) / 100 * (it.simRuns ?? 0))}회 · 이익 ${f1(it.simWin, 2)}%</small></div>
           <div class="rf"><span>B. 같은 조건 모의실험</span><b>손실 ${f1(it.mcLoss, 1)}%</b><small>${items.length}종 평균 ${f1(mcAvgAll, 1)}% · ${rankLabel(it)}</small></div>
-          <div class="rf"><span>1만원의 출발 가치</span><b>${money(it.fairValue / 100)}</b><small>공정가액 대비 ${sgn(it.fairValueGap, 2)}%</small></div>
+          <div class="rf"><span>${baseOf(it)}의 출발 가치</span><b>${money(it, it.fairValue / 100)}</b><small>공정가액 대비 ${sgn(it.fairValueGap, 2)}%</small></div>
           <div class="rf"><span>적용 변동성 / 상관</span><b>${f1(it.vmax, 1)}%</b><small>${it.rho != null ? `기초자산끼리 ${f1(it.rho, 2)}` : '기초자산 하나'} · ${covLabel(it)} 최저 ${f1(it.low, 0)}%</small></div>
         </div>
         <p class="recwhy"><b>추천 이유</b> ${slot.why}${it.currency !== 'KRW'
@@ -358,16 +197,14 @@ const card = (slot, i) => {
 
 const rows = [...items].sort((a, b) => (a.mcLoss ?? 99) - (b.mcLoss ?? 99)).map((it) => `          <tr>
             <td class="code">제${it.no}회</td>
-            <td class="und">${esc(it.underlyings.join(' · '))}${it.currency !== 'KRW' ? ` <span class="fxs">${it.currency}</span>` : ''}</td>
-            <td><span class="kind k${KINDS.indexOf(kindOf(it))}">${kindOf(it)}</span></td>
+            <td class="und">${esc(it.underlyings.join(' · '))}${it.currency !== 'KRW' ? ` <span class="fxs">${it.currency}</span>` : ''} <span class="kind k${KINDS.indexOf(kindOf(it))}">${kindOf(it)}</span></td>
             <td class="num rate">${f1(it.annualRate, 1)}%</td>
-            <td class="num nw">${it.every}개월마다 ${it.barriers[0]}%</td>
+            <td class="num nw">${it.every}개월<span class="slash">/</span>${it.barriers[0]}%</td>
             <td class="num">${it.floor}%${it.knockIn == null ? '<span class="nk">만기만</span>' : ''}</td>
             <td class="num">${f1(it.vmax, 1)}%</td>
-            <td class="num ${it.mcLoss > 25 ? 'bad' : it.mcLoss > 15 ? 'warn' : ''}"><b>${f1(it.mcLoss, 1)}%</b></td>
-            <td class="num ${it.simShort ? 'bad' : ''}">${f1(it.simLoss, 2)}%<small class="sn">${it.simShort ? `${f1(it.simYears, 1)}년` : `${f1(it.simYears, 0)}년`}</small></td>
-            <td class="num ${(it.fairValueGap ?? 0) <= -10 ? 'bad' : (it.fairValueGap ?? 0) <= -5 ? 'warn' : ''}">${money(it.fairValue / 100)}</td>
-            <td>${tierChip(it)}</td>
+            <td class="num ${it.mcLoss > 25 ? 'bad' : it.mcLoss > 15 ? 'warn' : ''}"><b>${f1(it.mcLoss, 1)}%</b>${tierChip(it)}</td>
+            <td class="num ${it.simShort ? 'bad' : ''}">${f1(it.simLoss, 2)}%<small class="sn">${it.simShort ? f1(it.simYears) : it.simYearsWhole}년</small></td>
+            <td class="num ${(it.fairValueGap ?? 0) <= -10 ? 'bad' : (it.fairValueGap ?? 0) <= -5 ? 'warn' : ''}">${money(it, it.fairValue / 100)}</td>
           </tr>`).join('\n');
 
 const cautionCards = caution.map((it) => `        <div class="cau">
@@ -504,23 +341,30 @@ section{margin-bottom:56px}
 .recwhy{margin:16px 0 0;font-size:16px;background:var(--tint);padding:12px 16px;border-left:3px solid var(--blue)}
 
 /* ── 표 ───────────────────────────────────────── */
+/* 열이 11개라 헤더를 한 줄로 두면 데스크탑에서도 가로 스크롤이 난다.
+   머리글은 두 줄까지 접고, 종류·등급은 각각 기초자산·손실확률 칸에 넣어 열을 줄였다. */
 .tw{overflow-x:auto;border:1px solid var(--hair)}
-table{border-collapse:collapse;width:100%;min-width:900px;font-size:15px}
-th{background:var(--soft);color:var(--ink);font-weight:700;text-align:left;padding:11px 12px;white-space:nowrap;
-  border-bottom:1px solid var(--hair)}
+table{border-collapse:collapse;width:100%;font-size:14px;table-layout:auto}
+th{background:var(--soft);color:var(--ink);font-weight:700;text-align:left;padding:9px 9px;
+  white-space:normal;line-height:1.3;border-bottom:1px solid var(--hair);vertical-align:bottom}
 th.num,td.num{text-align:right}
-td{padding:10px 12px;border-bottom:1px solid var(--hair-s);white-space:nowrap}
+td{padding:9px 9px;border-bottom:1px solid var(--hair-s);white-space:nowrap;vertical-align:middle}
 tbody tr:last-child td{border-bottom:0}
 tbody tr:hover{background:var(--surf)}
 .code{font-family:var(--num);font-weight:600;color:var(--ink)}
-.und{white-space:normal;min-width:200px}
+.und{white-space:normal;min-width:172px;line-height:1.4}
 td.nw{white-space:nowrap}
+/* 좁은 화면에서는 어떤 배치로도 9열이 들어가지 않는다. 그때만 스크롤을 허용한다. */
+@media (min-width:1000px){ .tw{overflow-x:visible} }
+@media (max-width:999px){ table{min-width:860px} }
 .nk{font-size:12px;color:var(--blue);background:var(--tint);padding:1px 5px;margin-left:5px;white-space:nowrap}
 .rate{font-weight:700;color:var(--orange-a)}
 .fxs{font-family:var(--num);font-size:12px;color:var(--blue);background:var(--tint);padding:1px 5px}
 td.warn{color:#8A6A0B}
 td.bad{color:var(--bad);font-weight:600}
 .tnote{margin:10px 0 0;font-size:14px;color:var(--faint)}
+td .tier{margin-left:6px;font-size:11px;padding:2px 6px;vertical-align:1px}
+.slash{color:var(--hair);margin:0 3px}
 
 /* ── 주의 ─────────────────────────────────────── */
 .caus{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:18px}
@@ -584,17 +428,35 @@ footer a{color:var(--muted)}
   .stitle{font-size:15pt}
   .slead{margin-bottom:12px;font-size:9.5pt}
   .stat b{font-size:19pt}
-  .page-break{break-before:page}
-  .rec,.cau,.chk,.script,.recs>*,table{break-inside:avoid}
-  .recs{gap:12px}
-  .rec{padding:14px 16px}
-  .rec h3{font-size:14pt}
-  .rnum{font-size:26pt}
-  .how{margin:12px 0 14px;gap:6px}
-  .rf b{font-size:12pt}
-  .recwhy{margin-top:10px}
-  table{font-size:9pt;min-width:0}
-  th,td{padding:5px 7px}
+  /* 강제 개쪽을 걸면 앞쪽 꼬리가 통째로 빈다. 절은 흐르게 두고, 쪼개지면 안 되는
+     덩어리(추천 카드·주의 카드·확인사항)에만 break-inside 를 건다. */
+  .page-break{break-before:auto}
+  .rec,.cau,.chk,.script{break-inside:avoid}
+  h2,h3,h4,.stitle,.sub3,.slead,.slead2{break-after:avoid}
+  .recs{gap:10px}
+  .rec{padding:11px 13px}
+  .rec h3{font-size:13pt}
+  .recund,.rsub{font-size:9pt}
+  .rnum{font-size:22pt}
+  .rnum .pct{font-size:13pt}
+  .recrate{padding:8px 0 9px}
+  .how{margin:9px 0 10px;gap:5px}
+  .how li{font-size:9pt}
+  .stcap,.stn,.pnote{font-size:8pt}
+  .stairs{padding:4px 0 2px}
+  .st{min-width:0}
+  .stv{font-size:8.5pt}
+  /* 인쇄 폭에서는 3열로 접혀 넷째 칸 옆이 통째로 빈다. 2x2 로 고정한다. */
+  .recfoot{gap:1px;grid-template-columns:repeat(2,minmax(0,1fr))}
+  .rf{padding:7px 9px}
+  .rf b{font-size:11pt}
+  .rf span,.rf small{font-size:8pt}
+  .recwhy{margin-top:8px;font-size:9pt;padding:8px 10px}
+  /* 17행짜리 표는 쪼개지게 두되 머리글은 쪽마다 다시 그린다 */
+  table{font-size:8.5pt;min-width:0}
+  thead{display:table-header-group}
+  tr{break-inside:avoid}
+  th,td{padding:4px 6px}
   .tw{overflow:visible}
   .caus,.checks{gap:10px}
   footer{margin-top:18px;padding:12px 0 0;font-size:8.5pt}
@@ -636,7 +498,7 @@ footer a{color:var(--muted)}
   </div>
   <ul class="keys">
     <li>모두 <b>원금비보장 1등급(매우높은위험)</b> 상품입니다. 아래 등급은 안전하다는 뜻이 아니라 <b>${items.length}종끼리 견준 순서</b>입니다.</li>
-    <li>같은 1만원이라도 상품마다 <b>출발 가치가 다릅니다.</b> 가장 좋은 제${gapBest.no}회는 ${money(gapBest.fairValue / 100)}, 가장 나쁜 제${gapWorst.no}회는 ${money(gapWorst.fairValue / 100)}입니다. 이 차이는 홈페이지 상품 목록에는 나오지 않습니다.</li>
+    <li>같은 1만원이라도 상품마다 <b>출발 가치가 다릅니다.</b> 가장 좋은 제${gapBest.no}회는 ${money(gapBest, gapBest.fairValue / 100)}, 가장 나쁜 제${gapWorst.no}회는 ${money(gapWorst, gapWorst.fairValue / 100)}입니다. 이 차이는 홈페이지 상품 목록에는 나오지 않습니다.</li>
     <li>발행사가 이론가를 계산할 때 쓴 변동성은 ${vols.slice(0, 2).map(([a, v]) => `<b>${esc(a)} ${f1(v, 0)}%</b>`).join(', ')} 순입니다. 변동성이 높을수록 수익률도 높지만 그만큼 흔들린다는 뜻입니다.</li>
   </ul>
 </section>
@@ -699,9 +561,9 @@ ${slots.map(card).join('\n')}
     <table>
       <thead>
         <tr>
-          <th>회차</th><th>기초자산</th><th>종류</th><th class="num">연 수익률</th><th class="num">조기상환 조건</th>
-          <th class="num">원금 지키는 선</th><th class="num">적용 변동성</th>
-          <th class="num">B. 손실 확률</th><th class="num">A. 공시 손실</th><th class="num">1만원의 출발 가치</th><th>등급</th>
+          <th>회차</th><th>기초자산</th><th class="num">연<br>수익률</th><th class="num">조기상환<br>주기 / 조건</th>
+          <th class="num">원금<br>지키는 선</th><th class="num">적용<br>변동성</th>
+          <th class="num">B. 손실 확률<br>· 등급</th><th class="num">A. 공시<br>손실</th><th class="num">1만원의<br>출발 가치</th>
         </tr>
       </thead>
       <tbody>
@@ -709,7 +571,7 @@ ${rows}
       </tbody>
     </table>
   </div>
-  <p class="tnote">조기상환 조건 = 이 주기로 확인해서 처음 가격의 이 수준 이상이면 그 자리에서 끝납니다(뒤 회차로 갈수록 낮아지며, 표는 첫 회 기준). 원금 지키는 선 = 만기까지 이 아래로 종가가 내려간 적이 없으면 원금과 이자를 다 받습니다. <b>만기만</b> 표시가 붙은 상품은 낙인이 없어 중간 하락을 따지지 않고 만기 그날만 봅니다. <b>B</b> = ${items.length}종을 같은 조건(${MC.paths.toLocaleString('ko-KR')}회)으로 돌린 손실 확률 — 상품끼리 견주는 용도입니다. <b>A</b> = 투자설명서에 실린 발행사 모의실험 손실 확률이며, 작은 글씨는 그 상품의 표본 구간 길이입니다. <span class="bad">빨간 A</span>는 표본이 10년에 못 미쳐 다른 상품과 나란히 비교할 수 없다는 뜻입니다.</p>
+  <p class="tnote">조기상환 = 이 주기로 확인해서 처음 가격의 이 수준 이상이면 그 자리에서 끝납니다(뒤 회차로 갈수록 낮아지며, 표는 첫 회 기준). 원금 지키는 선 = 만기까지 이 아래로 종가가 내려간 적이 없으면 원금과 이자를 다 받습니다. <b>만기만</b> 표시가 붙은 상품은 낙인이 없어 중간 하락을 따지지 않고 만기 그날만 봅니다. <b>B</b> = ${items.length}종을 같은 조건(${MC.paths.toLocaleString('ko-KR')}회)으로 돌린 손실 확률 — 상품끼리 견주는 용도입니다. <b>A</b> = 투자설명서에 실린 발행사 모의실험 손실 확률이며, 작은 글씨는 그 상품의 표본 구간 길이입니다. <span class="bad">빨간 A</span>는 표본이 10년에 못 미쳐 다른 상품과 나란히 비교할 수 없다는 뜻입니다.</p>
 </section>
 
 <section>
@@ -727,7 +589,7 @@ ${cautionCards}
   <div class="checks">
     <div class="chk">
       <h4>1. 1만원이 1만원이 아닙니다</h4>
-      <p>투자설명서에는 발행일 기준 공정가액이 적혀 있습니다. 이번 회차는 ${money(gapBest.fairValue / 100)}부터 ${money(gapWorst.fairValue / 100)}까지 벌어집니다. 게다가 이 값은 만기까지의 헤지비용을 뺀 값이라 실제 비용은 이보다 큽니다.</p>
+      <p>투자설명서에는 발행일 기준 공정가액이 적혀 있습니다. 이번 회차는 ${money(gapBest, gapBest.fairValue / 100)}부터 ${money(gapWorst, gapWorst.fairValue / 100)}까지 벌어집니다(각 액면 1만 단위 기준). 게다가 이 값은 만기까지의 헤지비용을 뺀 값이라 실제 비용은 이보다 큽니다.</p>
     </div>
     <div class="chk">
       <h4>2. 중간에 깨면 손해입니다</h4>
