@@ -19,7 +19,7 @@
  */
 import { writeFile } from 'node:fs/promises';
 import {
-  analyze, kindOf, tierOf, KINDS, TIERS, IDX, MC, money, baseOf, unitOf, josa,
+  analyze, kindOf, tierOf, KINDS, TIER_RULE, IDX, MC, money, baseOf, unitOf, josa,
 } from './lib/els-analysis.mjs';
 
 const OUT = 'els-proposal.html';
@@ -641,7 +641,7 @@ ${rows}
       </tbody>
     </table>
   </div>
-  <p class="tnote">조기상환 = 이 주기로 확인해서 처음 가격의 이 수준 이상이면 그 자리에서 끝납니다(뒤 회차로 갈수록 낮아지며, 표는 첫 회 기준). 원금 지키는 선 = 만기까지 이 아래로 종가가 내려간 적이 없으면 원금과 이자를 다 받습니다. <b>만기만</b> 표시가 붙은 상품은 낙인이 없어 중간 하락을 따지지 않고 만기 그날만 봅니다. <b>B</b> = ${items.length}종을 같은 조건(${MC.paths.toLocaleString('ko-KR')}회)으로 돌린 손실 확률 — 상품끼리 견주는 용도입니다. <b>A</b> = 투자설명서에 실린 발행사 모의실험 손실 확률이며, 작은 글씨는 그 상품의 표본 구간 길이입니다. <span class="bad">빨간 A</span>는 표본이 10년에 못 미쳐 다른 상품과 나란히 비교할 수 없다는 뜻입니다.</p>
+  <p class="tnote">조기상환 = 이 주기로 확인해서 처음 가격의 이 수준 이상이면 그 자리에서 끝납니다(뒤 회차로 갈수록 낮아지며, 표는 첫 회 기준). 원금 지키는 선 = 만기까지 이 아래로 종가가 내려간 적이 없으면 원금과 이자를 다 받습니다. <b>만기만</b> 표시가 붙은 상품은 낙인이 없어 중간 하락을 따지지 않고 만기 그날만 봅니다. <b>B</b> = ${items.length}종을 같은 조건(${MC.paths.toLocaleString('ko-KR')}회)으로 돌린 손실 확률 — 상품끼리 견주는 용도입니다. <b>A</b> = 투자설명서에 실린 발행사 모의실험 손실 확률이며, 작은 글씨는 그 상품의 표본 구간 길이입니다. <span class="bad">빨간 A</span>는 표본이 10년에 못 미쳐 다른 상품과 나란히 비교할 수 없다는 뜻입니다. ${TIER_RULE}</p>
 </section>
 
 <section>
