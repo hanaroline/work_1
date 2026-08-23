@@ -2,6 +2,15 @@
   "note": "발행한 브리핑의 보관 목록이다. 사이드바 「지난 브리핑」은 이 목록으로 만들며, 만드는 것은 scripts/build_archive_nav.py 다 — 손으로 적지 말 것. 손으로 적던 동안 목록이 4~5줄에서 잘렸고, 앞판에서 베낀 주소가 그 사이 새 판에 덮여 엉뚱한 날을 가리키는 일이 있었다. 세션 작업폴더는 컨테이너가 회수되면 사라지므로 원본 HTML 도 여기 함께 둔다. file 이 있는 항목의 HTML 은 <html>·<body> 없는 아티팩트 본문이라 그대로 다시 발행할 수 있다. url 은 그 날짜 전용 아티팩트 주소이며 날짜마다 서로 다르다 — 한 주소를 여러 날이 돌려쓰지 않는다.",
   "briefings": [
     {
+      "date": "2026-08-23",
+      "session": "global",
+      "title": "해외 증시 브리핑 · 2026년 8월 23일 (일)",
+      "label_ko": "해외 증시",
+      "label_en": "Global brief",
+      "url": "https://claude.ai/code/artifact/66c51b57-6e3c-4287-92bf-b44d104a2e85",
+      "file": "2026-08-23-global.html"
+    },
+    {
       "date": "2026-08-22",
       "session": "global",
       "title": "해외 증시 브리핑",
