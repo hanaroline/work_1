@@ -30,7 +30,7 @@ const {
   rcp: RCP, items, head, H, filedOn, checkedAt, onOfferNow,
   byKind, mcAvgAll, kindRatio, safest, idxWorst, stockBest,
   slots, caution, perRisk, idxPerRisk, plan,
-  rateMin, rateMax, gapBest, gapWorst, tierCount,
+  rateMin, rateMax, gapBest, gapWorst, tierCount, coupon,
 } = A;
 const [offerFrom, offerTo] = A.offer;
 
@@ -205,10 +205,23 @@ const rows = [...items].sort((a, b) => (a.mcLoss ?? 99) - (b.mcLoss ?? 99)).map(
             <td class="num nw">${it.every}개월<span class="slash">/</span>${it.barriers[0]}%</td>
             <td class="num">${it.floor}%${it.knockIn == null ? '<span class="nk">만기만</span>' : ''}</td>
             <td class="num">${f1(it.vmax, 1)}%</td>
-            <td class="num ${it.mcLoss > 25 ? 'bad' : it.mcLoss > 15 ? 'warn' : ''}"><b>${f1(it.mcLoss, 1)}%</b>${tierChip(it)}</td>
+            <td class="num ${['', 'warn', 'bad'][it.tier]}"><b>${f1(it.mcLoss, 1)}%</b>${tierChip(it)}</td>
             <td class="num ${it.simShort ? 'bad' : ''}">${f1(it.simLoss, 2)}%<small class="sn">${it.simShort ? f1(it.simYears) : it.simYearsWhole}년</small></td>
             <td class="num ${(it.fairValueGap ?? 0) <= -10 ? 'bad' : (it.fairValueGap ?? 0) <= -5 ? 'warn' : ''}">${money(it, it.fairValue / 100)}</td>
           </tr>`).join('\n');
+
+// ── 쿠폰과 위험 ──────────────────────────────────────────────────────────────
+const { rho: CR, pairs: CP, reg: CG, eff: CE, why: CW, sens: CS } = coupon;
+const pp = (o) => (o.p < 0.001 ? '&lt;0.001' : o.p.toFixed(3));
+const rhoCell = (o) => `<td class="num"><b>${f1(o.r, 2)}</b><small class="sn">p ${pp(o)}${o.sig ? '' : ' · 유의하지 않음'}</small></td>`;
+const rhoRow = (label, k, hi) => `        <tr><td>${hi ? `<b>${label}</b>` : label}</td>`
+  + rhoCell(CR[k].all) + rhoCell(CR[k].fair) + '</tr>';
+const eff1 = (it) => f1(CE.ratio(it), 2);
+const avgLossOf = (kind) => {
+  const g = items.filter((i) => kindOf(i) === kind && i.mcAvgLoss != null);
+  return g.length ? Math.abs(g.reduce((s, i) => s + i.mcAvgLoss, 0) / g.length) : null;
+};
+const sensRow = (f) => CS.rows.map((r) => `<td class="num">${f(r)}</td>`).join('');
 
 const cautionCards = caution.map((it) => `        <div class="cau">
           <h4>제${it.no}회 <span class="cund">${esc(it.underlyings.join(' · '))}</span> <span class="crate">연 ${f1(it.annualRate, 1)}%</span></h4>
@@ -612,6 +625,57 @@ ${byKind.map((r) => `        <tr><td><b>${r.key}형</b></td><td class="num">${r.
     <li><b>가른 것은 자산군이 아니라 두 가지였습니다.</b> 첫째 <b>낙인이 얼마나 깊은가</b> — 제${idxWorst.no}회의 낙인 ${idxWorst.knockIn}%는 이번 회차에서 가장 얕아 쿠션이 가장 적습니다. 둘째 <b>기초자산끼리 얼마나 같이 움직이는가</b> — 상관계수가 낮으면 "둘 중 더 나쁜 것"으로 판정하는 구조에서 훨씬 불리해집니다. 제${idxWorst.no}회는 ${f1(idxWorst.rho, 2)}, 제${stockBest.no}회는 ${f1(stockBest.rho, 2)}입니다.</li>
     <li><b>따라서 이 문서는 자산군으로 거르지 않고 B의 손실 확률로 등급을 매겼습니다.</b> 다만 종목이 섞인 상품을 권할 때는 <b>왜 자산군 관행을 거스르는지</b>를 카드마다 적었습니다. 고객이 "종목형인데 안전하다고요?"라고 물으면 그 문장을 그대로 읽으시면 됩니다.</li>
   </ul>
+</section>
+
+<section class="page-break">
+  <div class="rule"></div>
+  <h2 class="stitle">쿠폰이 높으면 그만큼 위험한가</h2>
+  <p class="slead">"수익률이 높으면 그만큼 위험한 것 아니냐"는 질문을 자주 받습니다. <b>방향은 맞습니다.</b> 다만 정비례는 아니고, 어긋나는 그 자리가 곧 상품을 고르는 자리입니다. 이번 회차 ${coupon.n}종으로 확인했습니다.</p>
+
+  <p class="mnote"><b>왜 우연이 아닌가</b> — ELS 쿠폰은 고객이 발행사에 <b>풋옵션을 팔고 받는 프리미엄</b>입니다. "낙인 아래로 안 떨어지면 이자를 드리겠다"는 곧 "떨어지면 그 손실은 고객이 떠안는다"는 뜻이고, 그 약속의 값이 쿠폰입니다. 변동성이 높을수록 그 풋이 비싸지니 쿠폰도 올라갑니다. 관행이 아니라 가격 산식 자체가 그렇습니다. 그래서 <b>둘이 붙어 있지 않은 상품이 오히려 의심 대상</b>입니다.</p>
+
+  <div class="tw">
+    <table class="kt">
+      <thead><tr><th>쿠폰과 무엇의 관계</th><th class="num">전체 ${coupon.n}종</th><th class="num">가격 정상 ${coupon.nFair}종</th></tr></thead>
+      <tbody>
+${rhoRow('적용 변동성', 'vol')}
+${rhoRow('손실 확률', 'loss')}
+${rhoRow('기대손실 (손실 확률 × 평균 손실폭)', 'expLoss', true)}
+      </tbody>
+    </table>
+  </div>
+  <p class="tnote">순위상관(스피어만)과 양측 유의확률. 1에 가까울수록 "쿠폰이 높은 상품이 위험도 높다"가 잘 들어맞습니다. <b>가격 정상</b> = 출발 가치 갭이 -5%보다 나은 ${coupon.nFair}종. 나머지 ${coupon.n - coupon.nFair}종은 아래 ②를 보십시오.</p>
+
+  <ul class="keys">
+    <li><b>짝으로 세면 이렇습니다.</b> ${coupon.n}종에서 만들 수 있는 ${CP.all.n}짝 중 <b>${CP.all.ok}짝(${f1(CP.all.pct, 0)}%)</b>이 "쿠폰 높은 쪽이 기대손실도 크다"를 따랐습니다. 가격 정상 ${coupon.nFair}종만 보면 ${CP.fair.n}짝 중 <b>${CP.fair.ok}짝(${f1(CP.fair.pct, 0)}%)</b>입니다.</li>
+    <li><b>그런데 비례는 아닙니다.</b> 회귀 설명력이 <b>${f1(CG.r2 * 100, 0)}%</b>에 그칩니다. 쿠폰을 1%p 더 받을 때 손실 확률은 평균 ${f1(CG.slope, 2)}%p 오르지만 산포가 그 몇 배입니다. 가장 실무적인 숫자는 이것입니다 — <b>위험 한 단위당 받는 쿠폰이 ${eff1(CE.worst)}에서 ${eff1(CE.best)}까지 ${f1(CE.spread, 1)}배</b> 벌어집니다. 가격이 정상인 ${coupon.nFair}종만 추려도 ${f1(CE.fairSpread, 1)}배입니다. 완전 비례라면 이 값은 모두 같아야 합니다.</li>
+  </ul>
+
+  <h3 class="sub3">어긋나는 이유는 셋입니다</h3>
+  <ul class="keys">
+    <li><b>① 구조.</b> ${esc(CW.group[0].underlyings.join('·'))}를 기초자산으로 하는 ${CW.group.length}종은 <b>기초자산도 적용 변동성(${f1(CW.group[0].vmax, 1)}%)도 만기(${CW.group[0].months}개월)도 같은데</b> 쿠폰이 ${f1(Math.min(...CW.group.map((i) => i.annualRate)), 1)}~${f1(Math.max(...CW.group.map((i) => i.annualRate)), 1)}%로 갈립니다. 제${CW.twin.hi.no}회는 쿠폰 ${f1(CW.twin.hi.annualRate, 1)}%에 기대손실 ${f1(CW.twin.hi.mcExpLoss, 1)}%, 제${CW.twin.lo.no}회는 쿠폰 ${f1(CW.twin.lo.annualRate, 1)}%에 기대손실 ${f1(CW.twin.lo.mcExpLoss, 1)}% — <b>위험이 사실상 같은데 쿠폰이 ${f1(CW.twin.d, 1)}%p 차이납니다.</b> 조기상환을 ${CW.twin.hi.every}개월마다 보느냐 ${CW.twin.lo.every}개월마다 보느냐(상환 기회 ${CW.twin.hi.steps}번 대 ${CW.twin.lo.steps}번), 낙인이 ${CW.twin.hi.knockIn}%냐 ${CW.twin.lo.knockIn}%냐가 쿠폰과 위험을 각각 다른 방향으로 흔듭니다.</li>
+    <li><b>② 가격.</b> 제${CW.priced.no}회는 쿠폰 ${f1(CW.priced.annualRate, 1)}%인데 기대손실이 <b>${f1(CW.priced.mcExpLoss, 1)}%</b>입니다. 출발 가치 갭이 ${f1(CW.priced.fairValueGap, 1)}%이기 때문입니다 — 쿠폰이 위험의 대가로 돌아오는 게 아니라 <b>수수료로 새어나간</b> 경우입니다. 갭이 큰 ${coupon.n - coupon.nFair}종을 빼는 것만으로 쿠폰과 변동성의 상관이 ${f1(CR.vol.all.r, 2)}에서 <b>${f1(CR.vol.fair.r, 2)}</b>로 올라갑니다. 뒤집어 말하면 <b>이 법칙은 제값 받는 상품에서만 성립합니다.</b></li>
+    <li><b>③ 통화.</b> 제${CW.fx.fx.no}회(${CW.fx.fx.currency})는 쿠폰 ${f1(CW.fx.fx.annualRate, 1)}%에 기대손실 ${f1(CW.fx.fx.mcExpLoss, 1)}%로, 기초자산이 같은 원화 제${CW.fx.krw.no}회(${f1(CW.fx.krw.annualRate, 1)}%, ${f1(CW.fx.krw.mcExpLoss, 1)}%)보다 <b>더 주면서 덜 위험해 보입니다.</b> ${CW.fx.fx.currency} 금리가 쿠폰에 섞여 있고, 대신 <b>손실 확률에 잡히지 않는 환율 위험</b>이 붙기 때문입니다.</li>
+  </ul>
+
+  <h3 class="sub3">한 가지 바로잡을 것 — 쿠폰이 보상하는 것은 확률이 아닙니다</h3>
+  <p class="slead2">쿠폰은 손실 <b>확률</b>보다 <b>기대손실</b>과 훨씬 잘 붙습니다(${f1(CR.loss.fair.r, 2)} 대 <b>${f1(CR.expLoss.fair.r, 2)}</b>, 가격 정상 기준). 기대손실은 손실 확률에 평균 손실폭을 곱한 값입니다. 지수형은 떨어질 때 ${f1(avgLossOf('지수'), 0)}% 남짓, 종목형은 ${f1(avgLossOf('종목'), 0)}%가량 잃습니다. <b>발행사는 확률이 아니라 확률 × 크기로 값을 매깁니다.</b> 그래서 손실 확률이 ${f1(idxWorst.mcLoss, 1)}%인 지수형 제${idxWorst.no}회가, 확률이 더 낮은 종목형보다 쿠폰이 낮은 일이 생깁니다. 겉으로는 모순이지만 기대손실로 보면 맞습니다.</p>
+
+  <h3 class="sub3">가장 크게 어긋난 상품을 따로 흔들어 봤습니다</h3>
+  <p class="slead2">위험당 대가 1위인 제${CS.no}회${coupon.sensIsPick ? '(이 문서의 추천 상품)' : ''}가 공시 상관계수 <b>${f1(CS.disclosed, 2)}</b> 한 값에 얹혀 있는 것은 아닌지, 상관을 억지로 낮춰가며 다시 돌렸습니다.</p>
+  <div class="tw">
+    <table class="kt">
+      <thead><tr><th>기초자산 상관</th>${CS.rows.map((r) => `<th class="num">${r.rho == null ? '공시 ' + f1(CS.disclosed, 2) : f1(r.rho, 2)}</th>`).join('')}</tr></thead>
+      <tbody>
+        <tr><td>손실 확률</td>${sensRow((r) => f1(r.loss, 1) + '%')}</tr>
+        <tr><td>기대손실</td>${sensRow((r) => f1(r.expLoss, 1) + '%')}</tr>
+        <tr><td><b>위험당 쿠폰</b></td>${sensRow((r) => `<b>${f1(r.ratio, 2)}</b>`)}</tr>
+      </tbody>
+    </table>
+  </div>
+  <p class="tnote">상관을 ${f1(CS.rows[CS.rows.length - 1].rho, 2)}까지 떨어뜨려도 손실 확률은 ${f1(CS.rows[0].loss, 1)}%에서 ${f1(CS.rows[CS.rows.length - 1].loss, 1)}%로 오르는 데 그치고, 위험당 쿠폰은 ${f1(CS.rows[CS.rows.length - 1].ratio, 2)}로 여전히 이번 회차 1위입니다. 두 기초자산의 변동성이 ${f1(CS.volSpread, 1)}%p나 벌어져 있어 <b>상관과 무관하게 "더 나쁜 쪽"이 거의 항상 같은 자산</b>이기 때문입니다.</p>
+
+  <p class="mnote"><b>상담에서 쓰실 한 줄</b> — 고객이 "쿠폰 ${f1(rateMax, 1)}%짜리가 있는데 왜 ${f1(CE.fairBest.annualRate, 1)}%짜리를 먼저 권하냐"고 물으시면: <b>"쿠폰이 높으면 위험도 높은 건 맞습니다. 다만 같은 위험을 지고도 남들보다 많이 받는 상품이 있습니다. 이번 회차는 그 차이가 ${f1(CE.fairSpread, 1)}배까지 벌어집니다."</b> 그리고 쿠폰이 유난히 높은데 위험은 안 높아 보이는 상품을 만나면 셋 중 하나입니다 — 구조 덕이거나, 통화가 다르거나, <b>아직 못 본 위험이 있거나.</b> 앞의 둘로 설명되지 않으면 세 번째입니다.</p>
 </section>
 
 <section class="page-break">
