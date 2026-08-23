@@ -30,6 +30,10 @@ const f1 = (v, d = 1) => v == null || Number.isNaN(v) ? '–' : v.toFixed(d);
 const sgn = (v, d = 1) => v == null ? '–' : (v >= 0 ? '+' : '') + v.toFixed(d);
 const won = (n) => n == null ? '–' : Math.round(n).toLocaleString('ko-KR');
 const dot = (s) => (s || '').replace(/-/g, '.');
+const avgLossOf = (kind) => {
+  const g = A.items.filter((i) => kindOf(i) === kind && i.mcAvgLoss != null);
+  return g.length ? Math.abs(g.reduce((s, i) => s + i.mcAvgLoss, 0) / g.length) : null;
+};
 
 const pres = new pptxgen();
 pres.layout = 'LAYOUT_WIDE';                // 반드시 슬라이드 추가 전에
@@ -279,7 +283,133 @@ if (A.plan.hasCooling) {
   s.addNotes('고객이 "종목형은 위험하지 않나요"라고 물으면 이 장을 펴십시오. 일반론은 맞고, 개별로는 확인이 필요하다는 답입니다.');
 }
 
-// ══ 5-7. 추천 3종 ══════════════════════════════════════════════════════════
+// ══ 5. 쿠폰이 높으면 그만큼 위험한가 ═══════════════════════════════════════
+{
+  const C = A.coupon, { rho: CR, pairs: CP, reg: CG, eff: CE } = C;
+  const pp = (o) => (o.p < 0.001 ? '<0.001' : o.p.toFixed(3));
+  const s = slide();
+  const y0 = head(s, '쿠폰이 높으면 그만큼 위험한가',
+    `"수익률이 높으면 그만큼 위험한 것 아니냐" — 방향은 맞습니다. 다만 정비례는 아니고, 어긋나는 그 자리가 곧 상품을 고르는 자리입니다.`);
+
+  const hd = (t, a) => ({ text: t, options: { bold: true, color: INK, fill: { color: SOFT }, align: a || 'left' } });
+  const cell = (o, hi) => ({
+    text: [{ text: o.r.toFixed(2), options: { bold: true, fontSize: 13, color: hi ? ACTIVE : INK } },
+      { text: `   p ${pp(o)}${o.sig ? '' : ' · 유의하지 않음'}`, options: { fontSize: 9, color: FAINT } }],
+    options: { align: 'right' },
+  });
+  s.addTable([
+    [hd('쿠폰과 무엇의 관계'), hd(`전체 ${C.n}종`, 'right'), hd(`가격 정상 ${C.nFair}종`, 'right')],
+    [{ text: '적용 변동성', options: { color: BODY } }, cell(CR.vol.all), cell(CR.vol.fair)],
+    [{ text: '손실 확률', options: { color: BODY } }, cell(CR.loss.all), cell(CR.loss.fair)],
+    [{ text: '기대손실 (손실 확률 × 평균 손실폭)', options: { bold: true, color: INK } }, cell(CR.expLoss.all, true), cell(CR.expLoss.fair, true)],
+  ], {
+    x: M, y: y0, w: CW, colW: [5.50, 3.30, 3.293],
+    fontFace: F, fontSize: 11.5, border: { type: 'solid', color: 'E5E4E1', pt: 1 },
+    rowH: 0.4, valign: 'middle', margin: 5,
+  });
+  s.addText(`순위상관(스피어만)과 양측 유의확률. 1에 가까울수록 "쿠폰이 높은 상품이 위험도 높다"가 잘 들어맞습니다.  `
+    + `가격 정상 = 출발 가치 갭이 -5%보다 나은 ${C.nFair}종 — 나머지 ${C.n - C.nFair}종은 쿠폰이 위험의 대가가 아니라 수수료로 빠져나간 상품이라 법칙 자체가 성립하지 않습니다.`, {
+    x: M, y: y0 + 1.78, w: CW, h: 0.44, fontFace: F, fontSize: 10, color: FAINT, valign: 'top', lineSpacing: 14, margin: 0,
+  });
+
+  const cw = (CW - 0.6) / 3;
+  const stats = [
+    { k: '짝으로 세면', v: `${f1(CP.all.pct, 0)}%`, d: `${C.n}종에서 만들 수 있는 ${CP.all.n}짝 중 ${CP.all.ok}짝이 "쿠폰 높은 쪽이 기대손실도 크다"를 따랐습니다`, c: BLUE },
+    { k: '그런데 회귀 설명력', v: `${f1(CG.r2 * 100, 0)}%`, d: `쿠폰 1%p당 손실 확률 +${f1(CG.slope, 2)}%p — 방향은 맞지만 산포가 그 몇 배입니다`, c: WARN },
+    { k: '위험 한 단위당 쿠폰', v: `${f1(CE.spread, 1)}배`, d: `${f1(CE.ratio(CE.worst), 2)}(제${CE.worst.no}회) ~ ${f1(CE.ratio(CE.best), 2)}(제${CE.best.no}회). 완전 비례라면 모두 같아야 합니다`, c: ACTIVE },
+  ];
+  stats.forEach((t, i) => {
+    const x = M + i * (cw + 0.3);
+    s.addShape(pres.ShapeType.rect, { x, y: y0 + 2.42, w: cw, h: 1.32, fill: { color: SURF }, line: { color: HAIR, width: 1 } });
+    s.addText(t.k, { x: x + 0.22, y: y0 + 2.54, w: cw - 0.44, h: 0.24, fontFace: F, fontSize: 10.5, color: MUTED, margin: 0 });
+    s.addText(t.v, { x: x + 0.22, y: y0 + 2.76, w: cw - 0.44, h: 0.46, fontFace: F, fontSize: 28, bold: true, color: t.c, margin: 0 });
+    s.addText(t.d, { x: x + 0.22, y: y0 + 3.24, w: cw - 0.44, h: 0.44, fontFace: F, fontSize: 10, color: BODY, valign: 'top', lineSpacing: 13, margin: 0 });
+  });
+
+  const pw = (CW - 0.3) / 2;
+  const panels = [
+    { k: '왜 우연이 아닌가', t: 'ELS 쿠폰은 고객이 발행사에 풋옵션을 팔고 받는 프리미엄입니다. "낙인 아래로 안 떨어지면 이자를 드리겠다"는 곧 "떨어지면 그 손실은 고객이 떠안는다"는 뜻이고, 그 값이 쿠폰입니다. 변동성이 높을수록 그 풋이 비싸집니다. 관행이 아니라 가격 산식 자체가 그렇습니다.' },
+    { k: '쿠폰이 보상하는 것은 확률이 아닙니다', t: `쿠폰은 손실 확률(${f1(CR.loss.fair.r, 2)})보다 기대손실(${f1(CR.expLoss.fair.r, 2)})과 훨씬 잘 붙습니다. 지수형은 떨어질 때 ${f1(avgLossOf('지수'), 0)}% 남짓, 종목형은 ${f1(avgLossOf('종목'), 0)}%가량 잃습니다. 발행사는 확률이 아니라 확률 × 크기로 값을 매깁니다.` },
+  ];
+  panels.forEach((p, i) => {
+    const x = M + i * (pw + 0.3);
+    s.addShape(pres.ShapeType.rect, { x, y: y0 + 3.92, w: pw, h: 1.36, fill: { color: WHITE }, line: { color: HAIR, width: 1 } });
+    s.addText(p.k, { x: x + 0.22, y: y0 + 4.04, w: pw - 0.44, h: 0.26, fontFace: F, fontSize: 12, bold: true, color: BLUE, margin: 0 });
+    s.addText(p.t, { x: x + 0.22, y: y0 + 4.32, w: pw - 0.44, h: 0.9, fontFace: F, fontSize: 10.5, color: BODY, valign: 'top', lineSpacing: 14, margin: 0 });
+  });
+  s.addNotes('"수익률 높으면 위험한 거 아니냐"는 질문에 이 장을 펴십시오. 맞다고 인정하고 시작하되, 같은 위험에 더 받는 상품이 있다는 것이 다음 장입니다.');
+}
+
+// ══ 6. 어디서 갈라지나 ═════════════════════════════════════════════════════
+{
+  const C = A.coupon, { eff: CE, why: CW2, sens: CS } = C;
+  const s = slide();
+  const y0 = head(s, '그래서 어디서 갈라지나', '쿠폰과 위험이 어긋나는 이유는 셋입니다. 셋 다 이번 회차 데이터에서 확인됩니다.');
+
+  const cw = (CW - 0.6) / 3;
+  const cards = [
+    CW2.twin && { n: '①', k: '구조', c: BLUE,
+      t: `${CW2.group[0].underlyings.join('·')} ${CW2.group.length}종은 기초자산도 적용 변동성(${f1(CW2.group[0].vmax)}%)도 만기(${CW2.group[0].months}개월)도 같은데 쿠폰이 갈립니다.\n\n`
+        + `제${CW2.twin.hi.no}회 쿠폰 ${f1(CW2.twin.hi.annualRate)}% · 기대손실 ${f1(CW2.twin.hi.mcExpLoss)}%\n`
+        + `제${CW2.twin.lo.no}회 쿠폰 ${f1(CW2.twin.lo.annualRate)}% · 기대손실 ${f1(CW2.twin.lo.mcExpLoss)}%\n\n`
+        + `위험이 사실상 같은데 쿠폰이 ${f1(CW2.twin.d)}%p 차이납니다. 조기상환을 ${CW2.twin.hi.every}개월마다 보느냐 ${CW2.twin.lo.every}개월마다 보느냐, 낙인이 ${CW2.twin.hi.knockIn}%냐 ${CW2.twin.lo.knockIn}%냐가 갈랐습니다.` },
+    { n: '②', k: '가격', c: BAD,
+      t: `제${CW2.priced.no}회는 쿠폰 ${f1(CW2.priced.annualRate)}%인데 기대손실이 ${f1(CW2.priced.mcExpLoss)}%입니다. 출발 가치 갭이 ${f1(CW2.priced.fairValueGap)}%이기 때문입니다.\n\n`
+        + `쿠폰이 위험의 대가로 돌아오는 게 아니라 수수료로 새어나간 경우입니다.\n\n`
+        + `갭이 큰 ${C.n - C.nFair}종을 빼는 것만으로 쿠폰과 변동성의 상관이 ${f1(C.rho.vol.all.r, 2)} → ${f1(C.rho.vol.fair.r, 2)}로 올라갑니다. 이 법칙은 제값 받는 상품에서만 성립합니다.` },
+    CW2.fx && { n: '③', k: '통화', c: ACTIVE,
+      t: `제${CW2.fx.fx.no}회(${CW2.fx.fx.currency})는 쿠폰 ${f1(CW2.fx.fx.annualRate)}%에 기대손실 ${f1(CW2.fx.fx.mcExpLoss)}%로, 기초자산이 같은 원화 제${CW2.fx.krw.no}회(${f1(CW2.fx.krw.annualRate)}% · ${f1(CW2.fx.krw.mcExpLoss)}%)보다 더 주면서 덜 위험해 보입니다.\n\n`
+        + `${CW2.fx.fx.currency} 금리가 쿠폰에 섞여 있고, 대신 손실 확률에 잡히지 않는 환율 위험이 붙기 때문입니다.\n\n`
+        + `이 상품의 손실 확률은 환율을 뺀 숫자입니다.` },
+  ].filter(Boolean);
+  cards.forEach((c, i) => {
+    const x = M + i * (cw + 0.3);
+    s.addShape(pres.ShapeType.rect, { x, y: y0, w: cw, h: 2.30, fill: { color: WHITE }, line: { color: HAIR, width: 1 } });
+    s.addText([
+      { text: `${c.n} `, options: { bold: true, color: c.c, fontSize: 13 } },
+      { text: c.k, options: { bold: true, color: INK, fontSize: 13 } },
+    ], { x: x + 0.22, y: y0 + 0.14, w: cw - 0.44, h: 0.28, fontFace: F, margin: 0 });
+    s.addText(c.t, { x: x + 0.22, y: y0 + 0.48, w: cw - 0.44, h: 1.76, fontFace: F, fontSize: 10, color: BODY, valign: 'top', lineSpacing: 13, margin: 0 });
+  });
+
+  if (CS) {
+    s.addText(`가장 크게 어긋난 제${CS.no}회 — 그 우위가 공시 상관계수 ${f1(CS.disclosed, 2)} 한 값에 얹혀 있는지 흔들어 봤습니다`
+      + `${C.sensIsPick ? ' (이 문서의 추천 상품)' : ''}`, {
+      x: M, y: y0 + 2.46, w: CW, h: 0.26, fontFace: F, fontSize: 12, bold: true, color: INK, margin: 0,
+    });
+    const rhoHd = [{ text: '기초자산 상관', options: { bold: true, color: INK, fill: { color: SOFT } } }]
+      .concat(CS.rows.map((r) => ({
+        text: r.rho == null ? `공시 ${f1(CS.disclosed, 2)}` : f1(r.rho, 2),
+        options: { bold: true, color: INK, fill: { color: SOFT }, align: 'right' },
+      })));
+    const rrow = (label, f, hi) => [{ text: label, options: { bold: Boolean(hi), color: hi ? INK : BODY } }]
+      .concat(CS.rows.map((r) => ({ text: f(r), options: { align: 'right', bold: Boolean(hi), color: hi ? ACTIVE : BODY } })));
+    s.addTable([
+      rhoHd,
+      rrow('손실 확률', (r) => `${f1(r.loss)}%`),
+      rrow('기대손실', (r) => `${f1(r.expLoss)}%`),
+      rrow('위험당 쿠폰', (r) => f1(r.ratio, 2), true),
+    ], {
+      x: M, y: y0 + 2.78, w: CW, colW: [2.0].concat(CS.rows.map(() => (CW - 2.0) / CS.rows.length)),
+      fontFace: F, fontSize: 11, border: { type: 'solid', color: 'E5E4E1', pt: 1 },
+      rowH: 0.3, valign: 'middle', margin: 4,
+    });
+    const last = CS.rows[CS.rows.length - 1];
+    s.addText(`상관을 ${f1(last.rho, 2)}까지 떨어뜨려도 손실 확률은 ${f1(CS.rows[0].loss)}% → ${f1(last.loss)}% 오르는 데 그치고, 위험당 쿠폰 ${f1(last.ratio, 2)}로 여전히 이번 회차 1위입니다. `
+      + `두 기초자산의 변동성이 ${f1(CS.volSpread)}%p나 벌어져 있어 상관과 무관하게 "더 나쁜 쪽"이 거의 항상 같은 자산이기 때문입니다. 변동성이 비슷한 짝이었다면 이렇게 버티지 못합니다.`, {
+      x: M, y: y0 + 4.18, w: CW, h: 0.44, fontFace: F, fontSize: 10, color: FAINT, valign: 'top', lineSpacing: 13, margin: 0,
+    });
+  }
+
+  s.addShape(pres.ShapeType.rect, { x: M, y: y0 + 4.78, w: CW, h: 0.72, fill: { color: TINT }, line: { width: 0 } });
+  s.addText([
+    { text: `"쿠폰 ${f1(A.rateMax)}%짜리가 있는데 왜 ${f1(CE.fairBest.annualRate)}%짜리를 먼저 권하나요?"  `, options: { bold: true, color: INK } },
+    { text: `→ "쿠폰이 높으면 위험도 높은 건 맞습니다. 다만 같은 위험을 지고도 남들보다 많이 받는 상품이 있습니다. 이번 회차는 그 차이가 ${f1(CE.fairSpread)}배까지 벌어집니다."` },
+  ], { x: M + 0.22, y: y0 + 4.78, w: CW - 0.44, h: 0.72, fontFace: F, fontSize: 11.5, color: BODY, valign: 'middle', lineSpacing: 16, margin: 0 });
+  s.addNotes('쿠폰이 유난히 높은데 위험은 안 높아 보이면 셋 중 하나입니다 — 구조 덕이거나, 통화가 다르거나, 아직 못 본 위험이 있거나. 앞의 둘로 설명되지 않으면 세 번째입니다.');
+}
+
+// ══ 7-9. 추천 3종 ══════════════════════════════════════════════════════════
 A.slots.forEach((slot, idx) => {
   const it = slot.pick;
   const s = slide();

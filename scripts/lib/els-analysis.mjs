@@ -10,6 +10,7 @@
 import { readFile } from 'node:fs/promises';
 import { drawdown, backtest, fromProspectus, startIndex } from './els-engine.mjs';
 import { montecarlo } from './els-mc.mjs';
+import { spearman, regress, pairAgreement } from './els-stats.mjs';
 
 export const MC = { paths: 40000, seed: 20260823 };   // 시드 고정 — 빌드마다 숫자가 흔들리면 안 된다
 export const IDX = new Set(['KOSPI200', 'S&P500', 'Nikkei225', 'EuroStoxx50', 'HSCEI']);
@@ -92,6 +93,8 @@ function enrich(item, H) {
     covAt, covYears,
     simYears, simYearsWhole, simShort, simWin,
     mcLoss: mc?.lossRate, mcKi: mc?.kiRate, mcFirst: mc?.firstRate, mcAvgLoss: mc?.avgLoss,
+    // 기대손실 = 손실 확률 × 평균 손실폭. 쿠폰이 실제로 보상하는 것은 확률이 아니라 이쪽이다.
+    mcExpLoss: mc ? (mc.lossRate / 100) * Math.abs(mc.avgLoss) : null,
     vmax, rho,
     low: dd?.min,
     floor: item.knockIn ?? item.maturityBarrier,
@@ -99,6 +102,92 @@ function enrich(item, H) {
     tier,
     value: (item.annualRate ?? 0) + (item.fairValueGap ?? 0),
   };
+}
+
+/**
+ * "쿠폰이 높으면 그만큼 위험한가" 를 이번 회차 데이터로 확인한다.
+ *
+ * 쿠폰은 투자자가 파는 풋옵션의 프리미엄이므로 위험과 구조적으로 묶여 있다.
+ * 다만 묶여 있다는 것과 정비례한다는 것은 다르다. 어긋나는 지점이 곧 상품을
+ * 고르는 자리이므로, 여기서는 얼마나 붙어 있는지와 어디서 갈라지는지를 같이 낸다.
+ */
+function couponStudy(items, best) {
+  const withMc = items.filter((i) => i.mcLoss != null);
+  const fair = withMc.filter((i) => (i.fairValueGap ?? 0) > -5);   // 출발 가치가 크게 깎인 상품은 쿠폰이 위험의 대가가 아니다
+  const cp = (i) => i.annualRate;
+  const both = (xf, yf) => ({ all: spearman(withMc.map(xf), withMc.map(yf)), fair: spearman(fair.map(xf), fair.map(yf)) });
+
+  const rho = {
+    vol: both(cp, (i) => i.vmax),
+    loss: both(cp, (i) => i.mcLoss),
+    expLoss: both(cp, (i) => i.mcExpLoss),
+  };
+  const pairs = {
+    all: pairAgreement(withMc, cp, (i) => i.mcExpLoss),
+    fair: pairAgreement(fair, cp, (i) => i.mcExpLoss),
+  };
+  const reg = regress(fair.map(cp), fair.map((i) => i.mcLoss));
+
+  // 위험 한 단위당 받는 쿠폰 — 완전 비례라면 모두 같은 값이어야 한다
+  const ratio = (i) => i.annualRate / i.mcExpLoss;
+  const rank1 = [...withMc].sort((a, b) => ratio(b) - ratio(a));
+  const fairRank = [...fair].sort((a, b) => ratio(b) - ratio(a));
+  const eff = {
+    ratio, order: rank1,
+    best: rank1[0], worst: rank1[rank1.length - 1],
+    spread: ratio(rank1[0]) / ratio(rank1[rank1.length - 1]),
+    fairBest: fairRank[0], fairWorst: fairRank[fairRank.length - 1],
+    fairSpread: ratio(fairRank[0]) / ratio(fairRank[fairRank.length - 1]),
+  };
+
+  // ① 구조 — 기초자산도 변동성도 같은데 쿠폰만 갈리는 짝
+  const groups = new Map();
+  for (const i of withMc) {
+    const k = i.underlyings.join('|');
+    if (!groups.has(k)) groups.set(k, []);
+    groups.get(k).push(i);
+  }
+  const big = [...groups.values()].filter((g) => g.length >= 2).sort((a, b) => b.length - a.length)[0] ?? [];
+  let twin = null;
+  for (let a = 0; a < big.length; a++) {
+    for (let b = a + 1; b < big.length; b++) {
+      const [hi, lo] = big[a].annualRate >= big[b].annualRate ? [big[a], big[b]] : [big[b], big[a]];
+      if (Math.abs(hi.mcExpLoss - lo.mcExpLoss) > 1.5) continue;   // 위험이 사실상 같은 짝만
+      const d = hi.annualRate - lo.annualRate;
+      if (!twin || d > twin.d) twin = { hi, lo, d };
+    }
+  }
+
+  // ② 가격 — 갭이 가장 크게 벌어진 상품
+  const priced = withMc.reduce((a, b) => ((b.fairValueGap ?? 0) < (a.fairValueGap ?? 0) ? b : a));
+
+  // ③ 통화 — 같은 기초자산인데 통화만 다른 짝
+  let fx = null;
+  for (const g of groups.values()) {
+    const f = g.find((i) => i.currency !== 'KRW');
+    const k = g.filter((i) => i.currency === 'KRW').sort((a, b) => b.annualRate - a.annualRate)[0];
+    if (f && k && (!fx || f.annualRate > fx.fx.annualRate)) fx = { fx: f, krw: k };
+  }
+
+  return {
+    n: withMc.length, nFair: fair.length, rho, pairs, reg, eff,
+    why: { twin, group: big.sort((a, b) => b.annualRate - a.annualRate), priced, fx },
+    best,                                     // 상관 민감도를 확인할 상품 (아래에서 채운다)
+    sens: null,
+  };
+}
+
+/** 결론이 공시 상관계수 한 값에 얹혀 있지 않은지 흔들어 본다 */
+function rhoSensitivity(it) {
+  if (!it || !it.correlation?.length) return null;
+  const p = fromProspectus(it);
+  const rows = [null, 0.9, 0.8, 0.7, 0.6, 0.5].map((r) => {
+    const mc = montecarlo(p, it.volatility, r == null ? it.correlation : it.correlation.map((c) => ({ ...c, rho: r })), MC);
+    const exp = (mc.lossRate / 100) * Math.abs(mc.avgLoss);
+    return { rho: r, loss: mc.lossRate, expLoss: exp, ratio: it.annualRate / exp };
+  });
+  const vols = it.volatility.map((v) => v.vol).sort((a, b) => a - b);
+  return { no: it.no, disclosed: Math.min(...it.correlation.map((c) => c.rho)), rows, volSpread: vols[vols.length - 1] - vols[0] };
 }
 
 export async function analyze(rcpNo) {
@@ -189,7 +278,13 @@ export async function analyze(rcpNo) {
   const idxG = withMc.filter((i) => kindOf(i) === '지수');
   const idxPerRisk = idxG.length ? idxG.reduce((s, i) => s + perRisk(i), 0) / idxG.length : null;
 
+  // 쿠폰과 위험이 정말 비례하는가 — 위험당 대가가 가장 좋은 상품으로 상관 민감도까지 확인한다
+  const coupon = couponStudy(items, slots[0]?.pick);
+  coupon.sens = rhoSensitivity(coupon.eff.fairBest);
+  coupon.sensIsPick = coupon.sens != null && slots.some((s) => s.pick.no === coupon.sens.no);
+
   return {
+    coupon,
     rcp: RCP, batch, items, head, H,
     filedOn: `${RCP.slice(0, 4)}.${RCP.slice(4, 6)}.${RCP.slice(6, 8)}`,
     offer: (batch.offer || '').split('~').map((s) => s.trim().replace(/-/g, '.')),
