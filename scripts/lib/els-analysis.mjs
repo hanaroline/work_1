@@ -17,14 +17,14 @@ export const IDX = new Set(['KOSPI200', 'S&P500', 'Nikkei225', 'EuroStoxx50', 'H
 export const KINDS = ['지수', '혼합', '종목'];
 export const TIER_CUT = [15, 25];                     // MC 손실확률(%) 경계
 export const TIERS = [
-  { key: 'safe', name: '방어적', desc: '손실 확률이 낮은 축' },
-  { key: 'mid', name: '중간', desc: '수익률과 손실 확률이 균형을 이루는 축' },
-  { key: 'hot', name: '공격적', desc: '수익률이 높은 만큼 손실 확률도 높은 축' },
+  { key: 'safe', name: '방어적', desc: '손해 볼 가능성이 낮은 축' },
+  { key: 'mid', name: '중간', desc: '수익률과 손해 볼 가능성이 엇비슷하게 붙는 축' },
+  { key: 'hot', name: '공격적', desc: '수익률이 높은 만큼 손해 볼 가능성도 큰 축' },
 ];
 // 등급 설명은 산출물마다 다시 쓰면 갈라진다. HTML·PPT 가 같은 문장을 가져다 쓴다.
-export const TIER_RULE = `등급은 B(같은 조건으로 돌린 손실 확률) 하나로만 가릅니다 — `
-  + `${TIER_CUT[0]}% 이하 방어적, ${TIER_CUT[0]}~${TIER_CUT[1]}% 중간, ${TIER_CUT[1]}% 초과 공격적. `
-  + `수익률이나 기초자산 종류는 등급에 넣지 않았습니다. 모두 원금비보장 1등급 상품이므로 "안전"이 아니라 서로 견준 순서입니다.`;
+export const TIER_RULE = `이 등급은 B(컴퓨터로 다시 돌린 손실 확률) 하나만 보고 나눈 것입니다 — `
+  + `${TIER_CUT[0]}% 이하면 방어적, ${TIER_CUT[0]}~${TIER_CUT[1]}%면 중간, ${TIER_CUT[1]}%를 넘으면 공격적. `
+  + `수익률이나 기준 자산 종류는 등급에 넣지 않았습니다. 전부 원금을 잃을 수 있는 가장 높은 위험 등급이므로, "안전하다"는 뜻이 아니라 서로 견줘 본 순서일 뿐입니다.`;
 
 export const kindOf = (it) => it.underlyings.every((u) => IDX.has(u)) ? '지수'
   : it.underlyings.some((u) => IDX.has(u)) ? '혼합' : '종목';
@@ -250,14 +250,14 @@ export async function analyze(rcpNo) {
   const sane = (i) => (i.fairValueGap ?? 0) > -5 && !i.simShort;   // 출발 가치가 깎였거나 표본이 짧으면 제외
   const pickMax = (list, by) => list.length ? list.reduce((a, b) => (by(b) > by(a) ? b : a)) : null;
   const slots = [
-    { label: '원금 방어를 먼저 보는 분',
-      why: '같은 조건으로 돌렸을 때 손실 확률이 가장 낮은 축에 들면서, 그 안에서는 수익률이 가장 높습니다.',
+    { label: '원금을 지키는 게 먼저인 분',
+      why: '컴퓨터로 돌려봤을 때 손해 볼 가능성이 가장 낮은 축에 들면서, 그중에서는 수익률이 제일 높습니다.',
       pick: pickMax(items.filter((i) => i.tier === 0 && krw(i) && sane(i)), (i) => i.annualRate) },
-    { label: '수익과 안정을 함께 보는 분',
-      why: '손실 확률이 한 단계 올라가는 대신 수익률이 크게 붙는 구간입니다.',
+    { label: '수익과 안정을 반반 보는 분',
+      why: '손해 볼 가능성이 한 단계 올라가는 대신, 받는 수익률이 그보다 훨씬 크게 붙는 자리입니다.',
       pick: pickMax(items.filter((i) => i.tier === 1 && krw(i) && sane(i)), (i) => i.value) },
-    { label: '수익률을 우선하는 분',
-      why: '이번 회차에서 가장 높은 수익률입니다. 출발 가치가 크게 깎이지 않은 상품 중에서 골랐습니다.',
+    { label: '수익률을 먼저 보는 분',
+      why: '이번 주에서 가장 높은 수익률입니다. 넣는 순간의 값어치가 크게 깎이지 않은 상품 중에서 골랐습니다.',
       pick: pickMax(items.filter((i) => sane(i) && i.tier < 2), (i) => i.annualRate) },
   ].filter((s) => s.pick);
   // 같은 상품이 두 자리를 차지하면 뒤쪽을 차선책으로 바꾼다
