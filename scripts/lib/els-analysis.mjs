@@ -17,14 +17,14 @@ export const IDX = new Set(['KOSPI200', 'S&P500', 'Nikkei225', 'EuroStoxx50', 'H
 export const KINDS = ['지수', '혼합', '종목'];
 export const TIER_CUT = [15, 25];                     // MC 손실확률(%) 경계
 export const TIERS = [
-  { key: 'safe', name: '방어적', desc: '손해 볼 가능성이 낮은 축' },
-  { key: 'mid', name: '중간', desc: '수익률과 손해 볼 가능성이 엇비슷하게 붙는 축' },
-  { key: 'hot', name: '공격적', desc: '수익률이 높은 만큼 손해 볼 가능성도 큰 축' },
+  { key: 'safe', name: '방어적', desc: '손실 확률이 낮은 축' },
+  { key: 'mid', name: '중간', desc: '수익률과 손실 확률이 균형을 이루는 축' },
+  { key: 'hot', name: '공격적', desc: '수익률이 높은 만큼 손실 확률도 높은 축' },
 ];
 // 등급 설명은 산출물마다 다시 쓰면 갈라진다. HTML·PPT 가 같은 문장을 가져다 쓴다.
-export const TIER_RULE = `이 등급은 B(컴퓨터로 다시 돌린 손실 확률) 하나만 보고 나눈 것입니다 — `
-  + `${TIER_CUT[0]}% 이하면 방어적, ${TIER_CUT[0]}~${TIER_CUT[1]}%면 중간, ${TIER_CUT[1]}%를 넘으면 공격적. `
-  + `수익률이나 기준 자산 종류는 등급에 넣지 않았습니다. 전부 원금을 잃을 수 있는 가장 높은 위험 등급이므로, "안전하다"는 뜻이 아니라 서로 견줘 본 순서일 뿐입니다.`;
+export const TIER_RULE = `등급은 B(같은 조건으로 돌린 손실 확률) 하나로만 가릅니다 — `
+  + `${TIER_CUT[0]}% 이하 방어적, ${TIER_CUT[0]}~${TIER_CUT[1]}% 중간, ${TIER_CUT[1]}% 초과 공격적. `
+  + `수익률이나 기초자산 종류는 등급에 넣지 않았습니다. 모두 원금비보장 1등급 상품이므로 "안전"이 아니라 서로 견준 순서입니다.`;
 
 export const kindOf = (it) => it.underlyings.every((u) => IDX.has(u)) ? '지수'
   : it.underlyings.some((u) => IDX.has(u)) ? '혼합' : '종목';

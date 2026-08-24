@@ -191,7 +191,7 @@ if (A.plan.hasCooling) {
   const s = slide();
   const y0 = head(s, '손해 볼 가능성, 두 가지로 쟀습니다', '서로 다른 질문에 답하는 숫자라 값도 꽤 다릅니다. 하나만 보고 말씀드리면 틀린 안내가 됩니다.');
   const panels = [
-    { k: 'A. 회사가 과거로 돌려본 결과', q: `"지난 ${A.head.simYearsWhole}년이 그대로 되풀이된다면?"`, tag: '투자설명서',
+    { k: `A. 발행사 ${A.head.simYearsWhole}년 백테스트`, q: `"지난 ${A.head.simYearsWhole}년이 그대로 되풀이된다면?"`, tag: '투자설명서',
       rows: [
         ['무엇', `${dot(A.head.simRange?.from ?? '')}~${dot(A.head.simRange?.to ?? '')} 사이 매일 하루도 빠짐없이 가입했다고 치고 계산 (제${A.head.no}회 ${A.head.simRuns?.toLocaleString('ko-KR')}번)`],
         ['좋은 점', '지어낸 값이 아니라 실제로 있었던 가격입니다. 2008년 금융위기도 들어 있습니다.'],
@@ -230,10 +230,9 @@ if (A.plan.hasCooling) {
 {
   const s = slide();
   const y0 = head(s, '개별 종목이 섞이면 더 위험한가', '보통 개별 종목이 들어간 ELS가 지수만 담은 것보다 위험하다고 봅니다. 이번 주 상품에서 그 말이 맞는지 B로 확인했습니다.');
-  const KIND_LABEL = { 지수: '지수만', 혼합: '지수 + 종목', 종목: '개별 종목만' };
 
   s.addChart(pres.ChartType.bar, [
-    { name: '손해 볼 가능성(평균)', labels: A.byKind.map((r) => `${KIND_LABEL[r.key] || r.key} (${r.n}종)`), values: A.byKind.map((r) => +f1(r.loss, 1)) },
+    { name: '손해 볼 가능성(평균)', labels: A.byKind.map((r) => `${r.key}형 (${r.n}종)`), values: A.byKind.map((r) => +f1(r.loss, 1)) },
   ], {
     x: M, y: y0, w: 5.5, h: 3.9, barDir: 'col', barGapWidthPct: 60,
     chartColors: [BLUE, ORANGE, ACTIVE],
@@ -248,7 +247,7 @@ if (A.plan.hasCooling) {
   });
 
   const rows = [[
-    { text: '무엇이 기준인가', options: { bold: true, color: INK, fill: { color: SOFT } } },
+    { text: '기초자산 종류', options: { bold: true, color: INK, fill: { color: SOFT } } },
     { text: '상품 수', options: { bold: true, color: INK, fill: { color: SOFT }, align: 'right' } },
     { text: '가격 출렁임', options: { bold: true, color: INK, fill: { color: SOFT }, align: 'right' } },
     { text: '손해 볼 가능성', options: { bold: true, color: INK, fill: { color: SOFT }, align: 'right' } },
@@ -256,7 +255,7 @@ if (A.plan.hasCooling) {
   ]];
   for (const r of A.byKind) {
     rows.push([
-      { text: KIND_LABEL[r.key] || r.key, options: { bold: true, color: INK } },
+      { text: `${r.key}형`, options: { bold: true, color: INK } },
       { text: `${r.n}종`, options: { align: 'right', color: BODY } },
       { text: `${f1(r.vol)}%`, options: { align: 'right', color: BODY } },
       { text: `${f1(r.loss)}%`, options: { align: 'right', bold: true, color: r.key === '종목' ? BAD : r.key === '혼합' ? WARN : BLUE } },
@@ -420,8 +419,7 @@ A.slots.forEach((slot, idx) => {
   const CHIP0 = 2.92;                                   // "제38044회" 26pt 가 실제로 끝나는 지점 뒤
   s.addText(`제${it.no}회`, { x: M, y: y0, w: CHIP0 - M - 0.12, h: 0.5, fontFace: F, fontSize: 26, bold: true, color: INK, margin: 0 });
   const chips = [[tierOf(it).name, TIER_INK[it.tier], TIER_BG[it.tier]],
-                 [{ 지수: '지수만', 혼합: '섞임', 종목: '종목만' }[kindOf(it)] || kindOf(it), BLUE, TINT]]
-    .concat(it.currency !== 'KRW' ? [[it.currency, WHITE, ACTIVE]] : []);
+                 [`${kindOf(it)}형`, BLUE, TINT]].concat(it.currency !== 'KRW' ? [[it.currency, WHITE, ACTIVE]] : []);
   chips.forEach(([t, c, bg], i) => {
     const cx = CHIP0 + i * 1.02;
     s.addShape(pres.ShapeType.rect, { x: cx, y: y0 + 0.11, w: 0.94, h: 0.3, fill: { color: bg }, line: { width: 0 } });
@@ -463,7 +461,7 @@ A.slots.forEach((slot, idx) => {
 
   // 지표 4칸
   const stats = [
-    [`A. 회사가 ${it.simYearsWhole}년 돌려본 손실`, `${f1(it.simLoss, 2)}%`, `${it.simRuns?.toLocaleString('ko-KR')}번 중 ${Math.round((it.simLoss ?? 0) / 100 * (it.simRuns ?? 0))}번`],
+    [`A. 발행사 ${it.simYearsWhole}년 백테스트`, `${f1(it.simLoss, 2)}%`, `${it.simRuns?.toLocaleString('ko-KR')}번 중 ${Math.round((it.simLoss ?? 0) / 100 * (it.simRuns ?? 0))}번`],
     ['B. 컴퓨터로 다시 돌린 손실', `${f1(it.mcLoss)}%`, `${A.items.length}종 평균 ${f1(A.mcAvgAll)}% · 낮은 쪽 ${A.safest.findIndex((x) => x.no === it.no) + 1}번째`],
     [`${baseOf(it)}의 실제 값어치`, money(it, it.fairValue / 100), `제값보다 ${sgn(it.fairValueGap, 2)}%`],
     ['가격 출렁임', `${f1(it.vmax)}%`, it.rho != null ? `둘이 같이 움직임 ${f1(it.rho, 2)}` : '기준 자산 하나'],
@@ -506,9 +504,9 @@ function defence(it) {
 // ══ 8. 전체 17종 ═══════════════════════════════════════════════════════════
 {
   const s = slide();
-  const y0 = head(s, `이번 주 ${A.items.length}종 전부`,
-    '컴퓨터로 다시 돌린 손해 볼 가능성(B)이 낮은 순서. A 옆 괄호는 그 상품을 몇 년치 과거로 돌려봤는지 — 10년에 못 미치면(빨강) 다른 상품과 나란히 비교할 수 없습니다. "만기만" = 중간 하락을 안 따지고 마지막 날 하루만 봅니다.');
-  const hdr = ['회차', '기준 자산', '종류', '연 수익률', '끝나는 조건', '원금 지키는 선', '가격 출렁임', 'B. 손해 가능성', '등급', 'A. 서류 손실', '실제 값어치'];
+  const y0 = head(s, `이번 회차 전체 ${A.items.length}종`,
+    '같은 조건으로 돌린 손실 확률(B)이 낮은 순서. A 옆 괄호는 그 상품의 표본 구간 길이 — 10년에 못 미치면(빨강) 다른 상품과 나란히 비교할 수 없습니다. "만기만" = 낙인이 없어 만기 그날만 봅니다.');
+  const hdr = ['회차', '기초자산', '종류', '연 수익률', '조기상환', '원금 지키는 선', '적용 변동성', 'B. 손실 확률', '등급', 'A. 백테스트 손실', '출발 가치'];
   const ALIGN = ['left', 'left', 'left', 'right', 'right', 'right', 'right', 'right', 'center', 'right', 'right'];
   const rows = [hdr.map((t, i) => ({
     text: t, options: { bold: true, color: INK, fill: { color: SOFT }, align: ALIGN[i] },
@@ -517,7 +515,7 @@ function defence(it) {
     rows.push([
       { text: `제${it.no}회`, options: { bold: true, color: INK } },
       { text: it.underlyings.join(' · ') + (it.currency !== 'KRW' ? ` (${it.currency})` : ''), options: { color: BODY } },
-      { text: { 지수: '지수만', 혼합: '섞임', 종목: '종목만' }[kindOf(it)] || kindOf(it), options: { color: kindOf(it) === '종목' ? BAD : kindOf(it) === '혼합' ? WARN : BLUE } },
+      { text: kindOf(it), options: { color: kindOf(it) === '종목' ? BAD : kindOf(it) === '혼합' ? WARN : BLUE } },
       { text: `${f1(it.annualRate)}%`, options: { align: 'right', bold: true, color: INK } },
       { text: `${it.every}개월 / ${it.barriers[0]}%`, options: { align: 'right', color: BODY } },
       { text: `${it.floor}%${it.knockIn == null ? ' (만기만)' : ''}`, options: { align: 'right', color: BODY } },

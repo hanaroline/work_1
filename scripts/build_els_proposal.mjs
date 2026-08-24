@@ -110,9 +110,6 @@ const lossLine = (it) => it.knockIn != null
 
 // ── 조각 ─────────────────────────────────────────────────────────────────────
 const tierChip = (it) => `<span class="tier t${it.tier}">${tierOf(it).name}</span>`;
-// 자산군 이름도 풀어 쓴다 — "혼합형" 보다 "지수 + 종목" 이 무엇을 담았는지 바로 보인다
-const KIND_LABEL = { 지수: '지수만', 혼합: '섞임', 종목: '종목만' };
-const kindLabel = (it) => KIND_LABEL[kindOf(it)] || kindOf(it);
 
 const stairs = (it) => {
   const bs = it.barriers;
@@ -180,7 +177,7 @@ const card = (slot, i) => {
         <div class="rechead">
           <p class="reclabel">${slot.label}</p>
           <h3>제${it.no}회 ${tierChip(it)}${it.currency !== 'KRW' ? `<span class="tier fx">${it.currency}</span>` : ''}</h3>
-          <p class="recund">${esc(it.underlyings.join(' · '))} <span class="sep">·</span> ${kindLabel(it)} <span class="sep">·</span> ${it.months}개월</p>
+          <p class="recund">${esc(it.underlyings.join(' · '))} <span class="sep">·</span> ${kindOf(it)}형 <span class="sep">·</span> ${it.months}개월</p>
         </div>
         <div class="recrate">
           <span class="rlabel">잘 되면 연 수익률</span>
@@ -196,7 +193,7 @@ const card = (slot, i) => {
         ${stairs(it)}
         ${probBar(it)}
         <div class="recfoot">
-          <div class="rf"><span>A. 회사가 ${it.simYearsWhole}년 돌려본 손실</span><b>${f1(it.simLoss, 2)}%</b><small>${it.simRuns?.toLocaleString('ko-KR')}번 중 ${Math.round((it.simLoss ?? 0) / 100 * (it.simRuns ?? 0))}번 · 이익 ${f1(it.simWin, 2)}%</small></div>
+          <div class="rf"><span>A. 발행사 ${it.simYearsWhole}년 백테스트</span><b>${f1(it.simLoss, 2)}%</b><small>${it.simRuns?.toLocaleString('ko-KR')}번 중 ${Math.round((it.simLoss ?? 0) / 100 * (it.simRuns ?? 0))}번 · 이익 ${f1(it.simWin, 2)}%</small></div>
           <div class="rf"><span>B. 컴퓨터로 다시 돌린 손실</span><b>${f1(it.mcLoss, 1)}%</b><small>${items.length}종 평균 ${f1(mcAvgAll, 1)}% · ${rankLabel(it)}</small></div>
           <div class="rf"><span>${baseOf(it)}의 실제 값어치</span><b>${money(it, it.fairValue / 100)}</b><small>제값보다 ${sgn(it.fairValueGap, 2)}%</small></div>
           <div class="rf"><span>가격 출렁임</span><b>${f1(it.vmax, 1)}%</b><small>${it.rho != null ? `둘이 같이 움직임 ${f1(it.rho, 2)}` : '기준 자산 하나'} · ${covLabel(it)} 최저 ${f1(it.low, 0)}%</small></div>
@@ -209,7 +206,7 @@ const card = (slot, i) => {
 
 const rows = [...items].sort((a, b) => (a.mcLoss ?? 99) - (b.mcLoss ?? 99)).map((it) => `          <tr>
             <td class="code">제${it.no}회</td>
-            <td class="und">${esc(it.underlyings.join(' · '))}${it.currency !== 'KRW' ? ` <span class="fxs">${it.currency}</span>` : ''} <span class="kind k${KINDS.indexOf(kindOf(it))}">${kindLabel(it)}</span></td>
+            <td class="und">${esc(it.underlyings.join(' · '))}${it.currency !== 'KRW' ? ` <span class="fxs">${it.currency}</span>` : ''} <span class="kind k${KINDS.indexOf(kindOf(it))}">${kindOf(it)}</span></td>
             <td class="num rate">${f1(it.annualRate, 1)}%</td>
             <td class="num nw">${it.every}개월<span class="slash">/</span>${it.barriers[0]}%</td>
             <td class="num">${it.floor}%${it.knockIn == null ? '<span class="nk">만기만</span>' : ''}</td>
@@ -612,7 +609,7 @@ ${plan.hasCooling ? `<section class="tl">
 
   <div class="two">
     <div class="mth">
-      <p class="mk">A. 회사가 과거로 돌려본 결과</p>
+      <p class="mk">A. 발행사 ${head.simYearsWhole}년 백테스트</p>
       <p class="mq">"지난 ${head.simYearsWhole}년이 그대로 되풀이된다면?"</p>
       <p>투자설명서에 실려 있는 표입니다. ${dot(head.simRange?.from ?? '')}부터 ${dot(head.simRange?.to ?? '')}까지 <b>매일 하루도 빠짐없이 이 상품에 가입했다고 치고</b> 끝까지 돌려본 결과입니다. 제${head.no}회는 ${head.simRuns?.toLocaleString('ko-KR')}번을 돌렸습니다.</p>
       <p><b>좋은 점</b> 지어낸 값이 아니라 <b>실제로 있었던 가격</b>입니다. 2008년 금융위기도 들어 있습니다.</p>
@@ -632,9 +629,9 @@ ${plan.hasCooling ? `<section class="tl">
   <p class="slead2">보통 개별 종목이 들어간 ELS가 지수만 담은 것보다 위험하다고 봅니다. 이번 주 상품에서 그 말이 맞는지 B로 확인해 봤습니다.</p>
   <div class="tw">
     <table class="kt">
-      <thead><tr><th>무엇이 기준 자산인가</th><th class="num">상품 수</th><th class="num">가격 출렁임<br>(평균)</th><th class="num">손해 볼 가능성<br>(평균)</th><th class="num">가장 낮음~높음</th><th class="num">연 수익률<br>(평균)</th></tr></thead>
+      <thead><tr><th>기초자산 종류</th><th class="num">상품 수</th><th class="num">가격 출렁임<br>(평균)</th><th class="num">손해 볼 가능성<br>(평균)</th><th class="num">가장 낮음~높음</th><th class="num">연 수익률<br>(평균)</th></tr></thead>
       <tbody>
-${byKind.map((r) => `        <tr><td><b>${{ 지수: '지수만', 혼합: '지수 + 종목', 종목: '개별 종목만' }[r.key] || r.key}</b></td><td class="num">${r.n}종</td><td class="num">${f1(r.vol, 1)}%</td><td class="num ${r.key === '종목' ? 'bad' : r.key === '혼합' ? 'warn' : ''}"><b>${f1(r.loss, 1)}%</b></td><td class="num">${f1(r.lo, 1)} ~ ${f1(r.hi, 1)}%</td><td class="num">${f1(r.rate, 1)}%</td></tr>`).join('\n')}
+${byKind.map((r) => `        <tr><td><b>${r.key}형</b></td><td class="num">${r.n}종</td><td class="num">${f1(r.vol, 1)}%</td><td class="num ${r.key === '종목' ? 'bad' : r.key === '혼합' ? 'warn' : ''}"><b>${f1(r.loss, 1)}%</b></td><td class="num">${f1(r.lo, 1)} ~ ${f1(r.hi, 1)}%</td><td class="num">${f1(r.rate, 1)}%</td></tr>`).join('\n')}
       </tbody>
     </table>
   </div>
@@ -708,15 +705,15 @@ ${slots.map(card).join('\n')}
 
 <section class="page-break">
   <div class="rule"></div>
-  <h2 class="stitle">이번 주 ${items.length}종 전부</h2>
-  <p class="slead">컴퓨터로 다시 돌린 <b>손해 볼 가능성(B)</b>이 낮은 순서입니다.</p>
+  <h2 class="stitle">이번 회차 전체 ${items.length}종</h2>
+  <p class="slead">같은 조건으로 돌린 손실 확률(B)이 낮은 순서입니다.</p>
   <div class="tw">
     <table>
       <thead>
         <tr>
-          <th>회차</th><th>무엇을 기준으로 보나</th><th class="num">잘 되면<br>연 수익률</th><th class="num">언제 · 얼마면<br>끝나나</th>
-          <th class="num">원금<br>지키는 선</th><th class="num">가격<br>출렁임</th>
-          <th class="num">B. 손해 볼<br>가능성 · 등급</th><th class="num">A. 서류에<br>적힌 손실</th><th class="num">1만원의<br>실제 값어치</th>
+          <th>회차</th><th>기초자산</th><th class="num">연<br>수익률</th><th class="num">조기상환<br>주기 / 조건</th>
+          <th class="num">원금<br>지키는 선</th><th class="num">적용<br>변동성</th>
+          <th class="num">B. 손실 확률<br>· 등급</th><th class="num">A. 백테스트<br>손실</th><th class="num">1만원의<br>출발 가치</th>
         </tr>
       </thead>
       <tbody>
@@ -724,7 +721,7 @@ ${rows}
       </tbody>
     </table>
   </div>
-  <p class="tnote"><b>언제·얼마면 끝나나</b> = 이 주기마다 확인해서 처음 가격의 이 수준 이상이면 그 자리에서 끝납니다(뒤로 갈수록 기준이 낮아지며, 표에는 첫 번째 기준만 적었습니다). <b>원금 지키는 선</b> = 끝날 때까지 종가가 한 번도 이 아래로 안 내려가면 원금과 이자를 다 받습니다. <b>만기만</b>이라고 붙은 상품은 중간에 얼마나 빠졌든 따지지 않고 <b>마지막 날 하루만</b> 봅니다. <b>B</b> = ${items.length}종을 똑같은 조건(각 ${MC.paths.toLocaleString('ko-KR')}번)으로 돌린 결과라 <b>상품끼리 견줄 때</b> 쓰는 숫자입니다. <b>A</b> = 투자설명서에 회사가 적어 놓은 숫자이고, 작은 글씨는 그 상품을 <b>몇 년치 과거로 돌려봤는지</b>입니다. <span class="bad">빨간 A</span>는 돌려본 기간이 10년도 안 돼서 다른 상품과 나란히 비교할 수 없다는 표시입니다. ${TIER_RULE}</p>
+  <p class="tnote">조기상환 = 이 주기로 확인해서 처음 가격의 이 수준 이상이면 그 자리에서 끝납니다(뒤 회차로 갈수록 낮아지며, 표는 첫 회 기준). 원금 지키는 선 = 만기까지 이 아래로 종가가 내려간 적이 없으면 원금과 이자를 다 받습니다. <b>만기만</b> 표시가 붙은 상품은 낙인이 없어 중간 하락을 따지지 않고 만기 그날만 봅니다. <b>B</b> = ${items.length}종을 같은 조건(${MC.paths.toLocaleString('ko-KR')}회)으로 돌린 손실 확률 — 상품끼리 견주는 용도입니다. <b>A</b> = 투자설명서에 실린 발행사 백테스트 손실 확률로, 과거 실제 시세에 이 상품을 매 영업일 얹어 본 결과입니다. 작은 글씨는 그 상품의 표본 구간 길이이며, <span class="bad">빨간 A</span>는 표본이 10년에 못 미쳐 다른 상품과 나란히 비교할 수 없다는 뜻입니다. ${TIER_RULE}</p>
 </section>
 
 <section>
