@@ -506,7 +506,7 @@ function defence(it) {
   const s = slide();
   const y0 = head(s, `이번 회차 전체 ${A.items.length}종`,
     '같은 조건으로 돌린 손실 확률(B)이 낮은 순서. A 옆 괄호는 그 상품의 표본 구간 길이 — 10년에 못 미치면(빨강) 다른 상품과 나란히 비교할 수 없습니다. "만기만" = 낙인이 없어 만기 그날만 봅니다.');
-  const hdr = ['회차', '기초자산', '종류', '연 수익률', '조기상환', '원금 지키는 선', '적용 변동성', 'B. 시뮬레이션 손실 확률', '등급', `A. ${A.head.simYearsWhole}년 백테스트 손실`, '출발 가치'];
+  const hdr = ['회차', '기초자산', '종류', '연 수익률', '조기상환', '원금 지키는 선', '적용 변동성', 'B. 시뮬레이션 손실 확률', '등급', 'A. 백테스트 손실 확률', '출발 가치'];
   const ALIGN = ['left', 'left', 'left', 'right', 'right', 'right', 'right', 'right', 'center', 'right', 'right'];
   const rows = [hdr.map((t, i) => ({
     text: t, options: { bold: true, color: INK, fill: { color: SOFT }, align: ALIGN[i] },
