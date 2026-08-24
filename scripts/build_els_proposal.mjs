@@ -53,6 +53,12 @@ const dayLabel = (ymd) => {
   const [y, m, d] = ymd.split('.').map(Number);
   return `${m}월 ${d}일(${DOW[new Date(Date.UTC(y, m - 1, d)).getUTCDay()]})`;
 };
+// 문서를 만든 날 — 공시일(filedOn)과 다르다. 같은 회차를 며칠에 걸쳐 다시 뽑는 일이 있어
+// 꼬리말에는 공시일이 아니라 이 파일을 실제로 돌린 날을 적는다.
+const builtOn = (() => {
+  const d = new Date(Date.now() + 9 * 3600000);
+  return `${d.getUTCFullYear()}.${String(d.getUTCMonth() + 1).padStart(2, '0')}.${String(d.getUTCDate()).padStart(2, '0')}`;
+})();
 const asOf = checkedAt ? kst(checkedAt) : new Date();
 const asOfNum = asOf.getUTCFullYear() * 10000 + (asOf.getUTCMonth() + 1) * 100 + asOf.getUTCDate();
 const numOfDot = (s) => Number((s || '').replace(/\D/g, ''));
@@ -62,9 +68,9 @@ const retailEnd = d2(plan.retailEnd);
 const phase = asOfNum < numOfDot(offerFrom) ? 'before'
             : asOfNum > numOfDot(retailEnd) ? 'after' : 'open';
 const phaseLine = {
-  before: `개인 고객이 신청할 수 있는 날은 <b>${dayLabel(offerFrom)}부터 ${dayLabel(retailEnd)}까지</b>입니다. 오늘은 아직 주문을 받을 수 없습니다.`,
-  open: `개인 고객은 <b>${dayLabel(retailEnd)}까지</b> 신청하셔야 합니다. 그 다음은 법으로 정해진 "다시 생각하는 기간"이라 주문을 받을 수 없습니다.`,
-  after: `개인 고객 신청은 <b>${dayLabel(retailEnd)}에 마감</b>됐습니다. 지금은 다시 생각하는 기간과 확인하는 날이라 주문을 받을 수 없습니다.`,
+  before: `개인 일반투자자가 청약할 수 있는 날은 <b>${dayLabel(offerFrom)}부터 ${dayLabel(retailEnd)}까지</b>입니다. 오늘은 아직 주문을 받을 수 없습니다.`,
+  open: `개인 일반투자자는 <b>${dayLabel(retailEnd)}까지</b> 청약해야 합니다. 그 다음은 숙려기간이라 주문을 받을 수 없습니다.`,
+  after: `개인 일반투자자 청약은 <b>${dayLabel(retailEnd)}에 마감</b>되었습니다. 지금은 숙려·확인 기간이라 주문을 받을 수 없습니다.`,
 }[phase];
 
 /** 이 상품의 자체 검증 구간을 말로 — 상장이 늦은 기초자산이 섞이면 10년이 아니다 */
@@ -526,12 +532,12 @@ footer a{color:var(--muted)}
     <div>
       <p class="tag">MIRAE ASSET · ELS WEEKLY</p>
       <h1>제${items[0].no}~${items[items.length - 1].no}회 ELS 제안서</h1>
-      <p class="sub">${filedOn}에 공시된 투자설명서 원문을 그대로 읽어 ${items.length}종 전부를 견줬습니다</p>
+      <p class="sub">투자설명서(일괄신고추가서류) ${filedOn} 공시 원문 기준 · 전 ${items.length}종 분석</p>
     </div>
     <dl class="offer">
-      <dt>개인 고객이 넣을 수 있는 기간</dt><dd class="hi">${offerFrom} ~ ${retailEnd}</dd>
-      <dt>서류에 적힌 청약기간</dt><dd class="sm">${offerFrom} ~ ${offerTo}<span class="note">법인·전문투자자 기준</span></dd>
-      <dt>시작하는 날 / 끝나는 날</dt><dd class="sm">${dot(head.issueDate)} / ${dot(head.maturityDate)}</dd>
+      <dt>개인 일반투자자 청약</dt><dd class="hi">${offerFrom} ~ ${retailEnd}</dd>
+      <dt>전체 청약기간</dt><dd class="sm">${offerFrom} ~ ${offerTo}<span class="note">숙려 대상 아닌 경우</span></dd>
+      <dt>발행일 / 만기</dt><dd class="sm">${dot(head.issueDate)} / ${dot(head.maturityDate)}</dd>
     </dl>
   </div>
 </header>
@@ -540,46 +546,46 @@ footer a{color:var(--muted)}
 
 <div class="asof ${phase}">
   <p class="asofk">홈페이지 확인</p>
-  <p class="asofv">${stamp(checkedAt) || '–'} 기준 · 미래에셋증권 홈페이지 ELS/DLS 목록에 <b>지금 청약 중인 상품 ${onOfferNow == null ? '–' : `${onOfferNow}건`}</b></p>
+  <p class="asofv">${stamp(checkedAt) || '–'} 기준 · 미래에셋증권 ELS/DLS 캘린더에 <b>청약 진행중 ${onOfferNow == null ? '–' : `${onOfferNow}건`}</b></p>
   <p class="asofn">${phaseLine}</p>
 </div>
 
 ${plan.hasCooling ? `<section class="tl">
   <div class="rule"></div>
-  <h2 class="stitle">언제까지 신청해야 하나</h2>
-  <p class="slead">홈페이지와 서류에 적힌 청약기간은 <b>${offerFrom} ~ ${offerTo}</b>입니다. 그런데 개인 고객은 이 기간의 뒤쪽 절반을 쓸 수 없습니다. 뒤쪽은 <b>다시 한 번 생각해 보시라고 법이 비워 둔 기간</b>이라, 그때는 주문 자체를 받을 수 없기 때문입니다.</p>
+  <h2 class="stitle">언제까지 청약해야 하나</h2>
+  <p class="slead">홈페이지와 공시 표지에 적힌 청약기간은 <b>${offerFrom} ~ ${offerTo}</b>입니다. 그런데 개인 일반투자자는 그 뒤쪽 절반을 쓸 수 없습니다. 숙려기간과 가입의사확인기간에는 청약 자체가 불가능하기 때문입니다.</p>
   <ol class="steps">
     <li class="go">
       <span class="sk">1단계</span>
-      <b>신청 받는 날</b>
+      <b>청약 접수</b>
       <span class="sd">${dot(plan.coolStart)} ~ ${dot(plan.coolEnd)}</span>
       <span class="ss">${dayLabel(dot(plan.coolStart))}~${dayLabel(dot(plan.coolEnd))} · ${plan.retailDays}일</span>
       <span class="stag ok">이때만 주문 가능</span>
     </li>
     <li class="stop">
       <span class="sk">2단계</span>
-      <b>다시 생각하는 기간</b>
+      <b>숙려기간</b>
       <span class="sd">${dot(plan.coolingFrom)} ~ ${dot(plan.coolingTo)}</span>
-      <span class="ss">법으로 정해진 2영업일 이상(숙려기간) · 이때 "최대 얼마까지 잃을 수 있는지"를 따로 알려드립니다</span>
-      <span class="stag no">주문 못 받음</span>
+      <span class="ss">2영업일 이상 · 이 기간에 최대 원금손실 가능금액을 고지받습니다</span>
+      <span class="stag no">청약 불가</span>
     </li>
     <li class="stop">
       <span class="sk">3단계</span>
-      <b>정말 하실 건지 확인</b>
+      <b>가입의사 확인</b>
       <span class="sd">${dot(plan.confirmBy)}</span>
-      <span class="ss">${esc(plan.confirmNote || '')} · 이때 확인이 안 되면 넣으신 돈은 돌려드립니다</span>
-      <span class="stag no">주문 못 받음</span>
+      <span class="ss">${esc(plan.confirmNote || '')} · 확인을 못 받으면 청약금은 환불됩니다</span>
+      <span class="stag no">청약 불가</span>
     </li>
     <li>
       <span class="sk">4단계</span>
-      <b>상품 시작</b>
+      <b>발행</b>
       <span class="sd">${dot(plan.payDate)}</span>
-      <span class="ss">돈이 빠져나가고, 이날 종가가 앞으로 ${head.months}개월의 "처음 가격"이 됩니다</span>
+      <span class="ss">납입 · 배정 · 환불 · 최초기준가격 평가</span>
       <span class="stag">–</span>
     </li>
   </ol>
-  <p class="tlnote"><b>상담에서 이렇게 말씀하십시오</b> — "신청은 <b>${dayLabel(retailEnd)}까지</b> 넣으셔야 합니다. 그 뒤 이틀은 법으로 정해진 '다시 생각하는 기간'이라 주문을 받을 수 없고, 그 기간이 끝나면 저희가 다시 연락드려 정말 하실 건지 확인합니다. 그때 연락이 닿지 않으면 신청이 그대로 취소됩니다."</p>
-  <p class="tlsub">법인이나 전문투자자처럼 이 제도의 대상이 아닌 경우에만 ${offerTo}까지 신청할 수 있습니다. 만 65세 이상이시면 확인 절차가 하나 더 붙습니다.</p>
+  <p class="tlnote"><b>상담에서 이렇게 말씀하십시오</b> — "청약은 <b>${dayLabel(retailEnd)}까지</b> 넣으셔야 합니다. 그 뒤 이틀은 법으로 정해진 숙려기간이라 주문을 받을 수 없고, 숙려기간이 끝나면 저희가 다시 연락드려 최종 의사를 확인합니다. 그때 확인이 안 되면 청약이 집행되지 않습니다."</p>
+  <p class="tlsub">전문투자자·법인 등 숙려제도 대상이 아닌 경우에만 ${offerTo}까지 청약할 수 있습니다. 만 65세 이상 고령투자자는 별도 확인 절차가 더해질 수 있습니다.</p>
 </section>` : ''}
 
 <section>
@@ -735,8 +741,8 @@ ${cautionCards}
   <h2 class="stitle">가입 전에 꼭 짚어드릴 것</h2>
   <div class="checks">
     ${plan.hasCooling ? `<div class="chk warnbox">
-      <h4>1. 신청 마감은 ${dayLabel(retailEnd)}입니다</h4>
-      <p>홈페이지에는 ${offerFrom}~${offerTo}로 나오지만, 개인 고객은 <b>${dayLabel(retailEnd)}까지</b>만 신청할 수 있습니다. ${dot(plan.coolingFrom)}~${dot(plan.coolingTo)}은 다시 생각하는 기간, ${dot(plan.confirmBy)}은 확인하는 날이라 주문을 받을 수 없습니다. <b>마감일을 잘못 안내하면 고객이 기회를 놓칩니다.</b></p>
+      <h4>1. 청약 마감은 ${dayLabel(retailEnd)}입니다</h4>
+      <p>홈페이지에는 ${offerFrom}~${offerTo}로 나오지만, 개인 일반투자자는 <b>${dayLabel(retailEnd)}까지</b>만 청약할 수 있습니다. ${dot(plan.coolingFrom)}~${dot(plan.coolingTo)}은 숙려기간, ${dot(plan.confirmBy)}은 가입의사확인기간이라 주문을 받을 수 없습니다. <b>마감일을 잘못 안내하면 고객이 청약 기회를 놓칩니다.</b></p>
     </div>` : ''}
     <div class="chk">
       <h4>${plan.hasCooling ? 2 : 1}. 1만원을 넣어도 1만원어치가 아닙니다</h4>
@@ -756,20 +762,20 @@ ${cautionCards}
     </div>
     ${plan.recordingRight ? `<div class="chk">
       <h4>${plan.hasCooling ? 6 : 5}. 상담 내용은 녹음됩니다</h4>
-      <p>개인 고객은 상담 녹음 파일을 달라고 하실 수 있고, 위험을 한 장으로 정리한 설명서도 받습니다.${plan.maxLossNotice ? ' "최대 얼마까지 잃을 수 있는지"는 다시 생각하는 기간에 따로 알려드립니다.' : ''} <b>설명을 건너뛰면 그것도 그대로 기록에 남습니다.</b></p>
+      <p>개인 일반투자자는 상담 녹음 파일을 달라고 하실 수 있고, 위험을 한 장으로 정리한 설명서도 받습니다.${plan.maxLossNotice ? ' "최대 얼마까지 잃을 수 있는지"는 숙려기간에 따로 알려드립니다.' : ''} <b>설명을 건너뛰면 그것도 그대로 기록에 남습니다.</b></p>
     </div>` : ''}
   </div>
   <div class="script">
     <h4>상담할 때 이 순서로 말씀하시면 됩니다</h4>
     <ol>
-      ${plan.hasCooling ? `<li>"먼저 일정부터 말씀드리면, 신청은 <b>${dayLabel(retailEnd)}까지</b> 넣으셔야 합니다. 그 뒤 이틀은 법으로 정해진 '다시 생각하는 기간'이라 주문을 받을 수 없습니다."</li>` : ''}
+      ${plan.hasCooling ? `<li>"먼저 일정부터 말씀드리면, 청약은 <b>${dayLabel(retailEnd)}까지</b> 넣으셔야 합니다. 그 뒤 이틀은 법으로 정해진 숙려기간이라 주문을 받을 수 없습니다."</li>` : ''}
       <li>"이 상품은 최장 ${slots[0].pick.months}개월짜리인데, ${slots[0].pick.every}개월마다 끝날 기회가 옵니다. 지금까지는 대부분 첫 번째에 끝났습니다."</li>
       <li>"${judgeLine(slots[0].pick).replace(/<\/?b>/g, '')}"</li>
       <li>"<b>올라야 버는 게 아니라, 많이 안 떨어지면 버는 구조</b>입니다. 제자리여도 약속한 이자를 다 받습니다."</li>
       <li>"대신 ${slots[0].pick.knockIn ?? slots[0].pick.maturityBarrier}% 아래로 크게 떨어지면 <b>떨어진 만큼 그대로 손실</b>입니다. 원금은 보장되지 않습니다."</li>
       <li>"지난 ${slots[0].pick.simYearsWhole}년으로 돌려보면 손실은 ${f1(slots[0].pick.simLoss, 2)}%였는데, 그 기간이 좋았던 덕도 있습니다. 넉넉하게 잡으면 ${f1(slots[0].pick.mcLoss, 0)}% 정도로 봅니다."</li>
       <li>"${slots[0].pick.months}개월 동안 안 쓸 돈인지부터 확인해 주세요. 중간에 빼시면 그날 계산한 값어치의 95%만 받습니다."</li>
-      ${plan.hasCooling ? `<li>"신청하셨다고 바로 되는 게 아닙니다. 이틀 생각하실 시간을 드린 뒤 저희가 다시 연락드려 정말 하실 건지 확인합니다. 그때 연락이 안 닿으면 넣으신 돈은 ${dot(plan.payDate)}에 돌려드립니다."</li>` : ''}
+      ${plan.hasCooling ? `<li>"청약을 넣으셔도 바로 확정되는 게 아닙니다. 이틀 숙려기간을 거친 뒤 저희가 다시 연락드려 최종 의사를 확인합니다. 그때 확인이 안 되면 청약금은 ${dot(plan.payDate)}에 돌려드립니다."</li>` : ''}
     </ol>
     <p class="qa"><b>"개별 종목이 들어간 건 더 위험하지 않나요?"</b> 라고 물으시면 — "맞습니다. 이번 주도 종목만 담은 상품의 손해 볼 가능성이 지수만 담은 것의 ${f1(kindRatio, 1)}배입니다. 다만 제${slots[0].pick.no}회는 두 자산이 거의 같이 움직이고(${f1(slots[0].pick.rho, 2)}, 1이면 완전히 같이 움직임) 원금 지키는 선도 ${slots[0].pick.knockIn}%로 훨씬 아래에 있어서, 같은 잣대로 재면 지수 상품 대부분보다 오히려 낮게 나옵니다." 라고 답하시면 됩니다.</p>
   </div>
@@ -794,8 +800,8 @@ ${[
   ['같이 움직이는 정도', '상관계수', '두 자산이 얼마나 나란히 움직이는지. 1이면 완전히 같이, 0에 가까우면 따로 놉니다. <b>따로 놀수록 "더 나쁜 쪽" 판정에 불리</b>합니다.'],
   ['실제 값어치', '공정가액', '1만원을 넣는 순간 이 상품이 실제로 갖는 값. 나머지는 회사 몫과 비용으로 빠집니다.'],
   ['평균적으로 잃는 크기', '기대손실', '<b>손해 볼 가능성 × 손해 날 때 잃는 정도.</b> 회사는 이 값을 보고 수익률을 정합니다.'],
-  ['다시 생각하는 기간', '숙려기간', '개인 고객에게 법이 보장하는 2영업일 이상. 이 기간에는 신청을 넣을 수 없고, "최대 얼마까지 잃을 수 있는지"를 따로 안내받습니다.'],
-  ['정말 하실 건지 확인', '가입의사 확인기간', '다시 생각하는 기간이 끝난 뒤 회사가 연락해 최종 의사를 확인하는 날. 연락이 안 닿으면 신청은 취소됩니다.'],
+  ['숙려기간', '서류와 같은 말', '<b>다시 한 번 생각해 보시라고 법이 비워 둔 2영업일 이상.</b> 이 기간에는 청약을 넣을 수 없고, "최대 얼마까지 잃을 수 있는지"를 따로 안내받습니다.'],
+  ['가입의사 확인기간', '서류와 같은 말', '숙려기간이 끝난 뒤 회사가 연락해 <b>정말 하실 건지 최종 의사를 확인하는 날.</b> 연락이 안 닿으면 청약은 취소됩니다.'],
   ['중간에 빼기', '중도상환', '만기 전에 해지하는 것. 원금이 아니라 <b>그날 계산한 값어치의 95%</b>(가입 6개월 안이면 90%)를 받습니다.'],
 ].map(([a, b, c]) => `        <tr><td>${a}</td><td>${b}</td><td>${c}</td></tr>`).join('\n')}
       </tbody>
@@ -808,12 +814,12 @@ ${[
 
 <footer class="wrap">
   <p><b>어디서 가져온 숫자인가</b> — 금융감독원 전자공시시스템(DART)에 ${filedOn} 올라온 미래에셋증권 투자설명서(일괄신고추가서류 접수번호 ${RCP})입니다. 조건·값어치·가격 출렁임·회사가 돌려본 결과는 <b>사람이 옮겨 적지 않고 공시 원문에서 그대로 뽑았습니다.</b></p>
-  <p>일정(신청 받는 날 · 다시 생각하는 기간 · 확인하는 날)도 투자설명서 표에 적힌 날짜 그대로이며, 이번 주 ${items.length}종이 전부 같습니다. 법(자본시장법)상 개인 고객은 2영업일 이상 다시 생각하는 기간을 거쳐야 하고, 그 기간과 확인하는 날에는 신청할 수 없습니다.</p>
+  <p>청약 일정(숙려제도 대상청약기간 · 숙려기간 · 가입의사확인기간)도 투자설명서 상품개요 표에 적힌 날짜 그대로이며, 이번 주 ${items.length}종이 전부 같습니다. 자본시장법상 개인 일반투자자는 2영업일 이상의 숙려기간을 거쳐야 하고, 그 기간과 가입의사확인기간에는 청약할 수 없습니다.</p>
   <p>판매 중인지 여부는 ${stamp(checkedAt) || '–'}에 미래에셋증권 홈페이지 ELS/DLS 목록을 상태별로 조회해 확인했습니다. 공시는 판매 시작 며칠 전에 올라오므로, <b>문서에 실린 회차가 오늘 곧바로 살 수 있다는 뜻은 아닙니다.</b></p>
   <p>과거 최저점과 자체 검증 수치는 ${dot(String(H.dates[0]))}~${dot(String(H.dates[H.dates.length - 1]))} 기준 자산의 일별 종가로, 매 거래일 가입했다고 치고 끝까지 돌린 결과입니다. 늦게 상장한 자산이 섞인 상품은 그만큼 돌려본 기간이 짧으며, 상품마다 실제 기간을 적어 두었습니다.</p>
   <p><b>B(컴퓨터로 다시 돌린 손실)는 이 문서가 직접 계산한 값입니다.</b> 상품마다 앞으로 나올 법한 가격 흐름을 ${MC.paths.toLocaleString('ko-KR')}가지 만들어, 실제 확인일·원금 지키는 선·조기 종료 규칙을 그대로 적용해 셌습니다. 출렁임 정도와 두 자산이 같이 움직이는 정도는 지어내지 않고 <b>투자설명서에 회사가 적어 놓은 값</b>을 그대로 썼습니다(회사 표기 기준 — 해당 만기의 변동성, 같이 움직이는 정도는 최근 180영업일 실제 값). 어느 자산도 오르거나 내린다고 가정하지 않았고, 난수를 고정해 두어 같은 조건이면 언제 돌려도 같은 값이 나옵니다. 회사가 쓴 출렁임 수치는 실제보다 크게 잡히는 것이 보통이라 이 확률은 <b>넉넉하게 잡은 최대치</b>로 읽으셔야 하며, 회사의 상품 가격 계산이나 손익과는 무관한 별개 계산입니다.</p>
   <p>본 자료는 투자 권유를 위한 참고 자료입니다. 실제로 가입하시기 전에 <b>투자설명서와 간이투자설명서를 반드시 확인</b>하셔야 합니다. <b>원금 손실이 날 수 있는 상품입니다.</b></p>
-  <p>생성 ${filedOn} · scripts/build_els_proposal.mjs</p>
+  <p>생성 ${builtOn} · scripts/build_els_proposal.mjs</p>
 </footer>
 `;
 

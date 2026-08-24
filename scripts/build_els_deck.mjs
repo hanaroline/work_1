@@ -60,16 +60,16 @@ const slide = () => pres.addSlide();
   s.addText(`제${A.items[0].no}~${A.items[A.items.length - 1].no}회\nELS 제안서`, {
     x: M, y: 1.9, w: 7.6, h: 1.9, fontFace: F, fontSize: 42, bold: true, color: WHITE, lineSpacing: 50, margin: 0,
   });
-  s.addText(`${A.filedOn}에 공시된 투자설명서 원문을 그대로 읽어 ${A.items.length}종 전부를 견줬습니다`, {
+  s.addText(`투자설명서(일괄신고추가서류) ${A.filedOn} 공시 원문 기준 · 전 ${A.items.length}종 분석`, {
     x: M, y: 3.9, w: 7.6, h: 0.34, fontFace: F, fontSize: 14, color: WHITE, margin: 0,
   });
 
   s.addShape(pres.ShapeType.rect, { x: 8.7, y: 1.9, w: 4.0, h: 2.66, fill: { color: WHITE }, line: { width: 0 } });
   const P = A.plan;
   const box = [
-    ['개인 고객이 넣을 수 있는 기간', `${dot(P.start)} ~ ${dot(P.retailEnd)}`, ACTIVE, 17],
-    ['서류에 적힌 청약기간 (법인·전문투자자 기준)', `${dot(P.start)} ~ ${dot(P.end)}`, BODY, 14],
-    ['시작하는 날 / 끝나는 날', `${dot(A.head.issueDate)} / ${dot(A.head.maturityDate)}`, BODY, 14],
+    ['개인 일반투자자 청약', `${dot(P.start)} ~ ${dot(P.retailEnd)}`, ACTIVE, 17],
+    ['전체 청약기간 (숙려 대상 아닌 경우)', `${dot(P.start)} ~ ${dot(P.end)}`, BODY, 14],
+    ['발행일 / 만기', `${dot(A.head.issueDate)} / ${dot(A.head.maturityDate)}`, BODY, 14],
   ];
   box.forEach(([k, v, c, fs], i) => {
     s.addText(k, { x: 9.0, y: 2.1 + i * 0.84, w: 3.4, h: 0.24, fontFace: F, fontSize: 10, color: MUTED, margin: 0 });
@@ -78,25 +78,25 @@ const slide = () => pres.addSlide();
 
   // 부제와 안내문 사이가 통째로 비어 추천 요약을 얹는다
   s.addShape(pres.ShapeType.rect, { x: M, y: 4.52, w: 7.6, h: 0.02, fill: { color: WHITE }, line: { width: 0 } });
-  s.addText('이번 주 추천', { x: M, y: 4.64, w: 7.6, h: 0.26, fontFace: F, fontSize: 11, bold: true, color: WHITE, charSpacing: 1, margin: 0 });
+  s.addText('이번 회차 추천', { x: M, y: 4.64, w: 7.6, h: 0.26, fontFace: F, fontSize: 11, bold: true, color: WHITE, charSpacing: 1, margin: 0 });
   A.slots.forEach((sl, i) => {
     s.addText([
       { text: `제${sl.pick.no}회`, options: { bold: true, fontSize: 15 } },
-      { text: `  연 ${f1(sl.pick.annualRate)}%  ·  손해 볼 가능성 ${f1(sl.pick.mcLoss)}%`, options: { fontSize: 12 } },
+      { text: `  연 ${f1(sl.pick.annualRate)}%  ·  손실 ${f1(sl.pick.mcLoss)}%`, options: { fontSize: 12 } },
       { text: `\n${sl.label}`, options: { fontSize: 10.5 } },
     ], { x: M + i * 2.55, y: 4.96, w: 2.45, h: 0.62, fontFace: F, color: WHITE, valign: 'top', lineSpacing: 15, margin: 0 });
   });
 
   s.addText((A.onOfferNow === 0
-    ? `홈페이지 확인 ${stamp(A.checkedAt)} — 지금 청약 중인 상품 0건. 이 회차는 ${A.offer[0]}부터 열립니다.`
-    : `홈페이지 확인 ${stamp(A.checkedAt)} — 지금 청약 중인 상품 ${A.onOfferNow}건.`)
-    + (A.plan.hasCooling ? `  개인 고객 신청 마감은 ${dayLabel(A.plan.retailEnd)}입니다.` : ''), {
+    ? `홈페이지 확인 ${stamp(A.checkedAt)} — 현재 청약 진행중 0건. 이 회차는 ${A.offer[0]}부터 열립니다.`
+    : `홈페이지 확인 ${stamp(A.checkedAt)} — 현재 청약 진행중 ${A.onOfferNow}건.`)
+    + (A.plan.hasCooling ? `  개인 일반투자자 청약 마감은 ${dayLabel(A.plan.retailEnd)}입니다.` : ''), {
     x: M, y: 5.9, w: CW, h: 0.34, fontFace: F, fontSize: 12, color: WHITE, margin: 0,
   });
-  s.addText('원금을 잃을 수 있는 상품 · 위험등급 1등급(가장 위험) · 투자 권유 참고자료', {
+  s.addText('원금비보장 · 상품위험등급 1등급(매우높은위험) · 투자 권유 참고자료', {
     x: M, y: 6.26, w: CW, h: 0.3, fontFace: F, fontSize: 11, color: WHITE, margin: 0,
   });
-  s.addNotes(`이번 주 ${A.items.length}종. 신청 ${A.offer[0]}~${A.offer[1]}. 전부 원금을 잃을 수 있는 1등급 상품입니다.`);
+  s.addNotes(`이번 회차 ${A.items.length}종. 청약 ${A.offer[0]}~${A.offer[1]}. 전부 원금비보장 1등급입니다.`);
 }
 
 function dayLabel(iso) {
@@ -116,17 +116,17 @@ function stamp(iso) {
 if (A.plan.hasCooling) {
   const P = A.plan;
   const s = slide();
-  const y0 = head(s, '언제까지 신청해야 하나',
-    `홈페이지와 서류에 적힌 청약기간은 ${dot(P.start)}~${dot(P.end)}입니다. 그런데 개인 고객은 그 뒤쪽 절반을 쓸 수 없습니다 — 뒤쪽은 다시 한 번 생각해 보시라고 법이 비워 둔 기간이라 주문 자체를 받을 수 없습니다.`);
+  const y0 = head(s, '언제까지 청약해야 하나',
+    `홈페이지와 공시 표지의 청약기간은 ${dot(P.start)}~${dot(P.end)}입니다. 그런데 개인 일반투자자는 그 뒤쪽 절반을 쓸 수 없습니다 — 숙려기간과 가입의사확인기간에는 청약 자체가 불가능합니다.`);
 
   const steps = [
-    ['1단계', '신청 받는 날', `${dot(P.coolStart)} ~ ${dot(P.coolEnd)}`,
+    ['1단계', '청약 접수', `${dot(P.coolStart)} ~ ${dot(P.coolEnd)}`,
       `${dayLabel(P.coolStart)}~${dayLabel(P.coolEnd)} · ${P.retailDays}일`, '이때만 주문 가능', OK],
-    ['2단계', '다시 생각하는 기간', `${dot(P.coolingFrom)} ~ ${dot(P.coolingTo)}`,
-      '법으로 정해진 2영업일 이상(숙려기간) · "최대 얼마까지 잃을 수 있는지"를 따로 알려드립니다', '주문 못 받음', BAD],
-    ['3단계', '정말 하실 건지 확인', dot(P.confirmBy),
-      `${P.confirmNote || ''} · 이때 확인이 안 되면 넣으신 돈은 돌려드립니다`, '주문 못 받음', BAD],
-    ['4단계', '상품 시작', dot(P.payDate), `돈이 빠져나가고, 이날 종가가 앞으로 ${A.head.months}개월의 "처음 가격"이 됩니다`, '–', FAINT],
+    ['2단계', '숙려기간', `${dot(P.coolingFrom)} ~ ${dot(P.coolingTo)}`,
+      '2영업일 이상 · 최대 원금손실 가능금액을 고지받습니다', '청약 불가', BAD],
+    ['3단계', '가입의사 확인', dot(P.confirmBy),
+      `${P.confirmNote || ''} · 확인을 못 받으면 청약금은 환불됩니다`, '청약 불가', BAD],
+    ['4단계', '발행', dot(P.payDate), '납입 · 배정 · 환불 · 최초기준가격 평가', '–', FAINT],
   ];
   const rh = 0.78;
   steps.forEach(([k, name, date, note, tag, tc], i) => {
@@ -134,7 +134,7 @@ if (A.plan.hasCooling) {
     s.addShape(pres.ShapeType.rect, { x: M, y, w: CW, h: rh,
       fill: { color: i === 0 ? 'F4F8F5' : tc === BAD ? 'FDF6F6' : WHITE }, line: { color: HAIR, width: 1 } });
     s.addText(k, { x: M + 0.22, y, w: 0.7, h: rh, fontFace: F, fontSize: 10.5, color: FAINT, valign: 'middle', margin: 0 });
-    s.addText(name, { x: M + 1.0, y, w: 1.72, h: rh, fontFace: F, fontSize: 13, bold: true, color: INK, valign: 'middle', margin: 0 });
+    s.addText(name, { x: M + 1.0, y, w: 1.7, h: rh, fontFace: F, fontSize: 15, bold: true, color: INK, valign: 'middle', margin: 0 });
     s.addText(date, { x: M + 2.76, y, w: 2.5, h: rh, fontFace: F, fontSize: 14, bold: true, color: INK, valign: 'middle', margin: 0 });
     s.addText(note, { x: M + 5.34, y, w: CW - 6.9, h: rh, fontFace: F, fontSize: 11.5, color: MUTED, valign: 'middle', lineSpacing: 15, margin: 0 });
     s.addShape(pres.ShapeType.rect, { x: M + CW - 1.44, y: y + 0.23, w: 1.24, h: 0.32,
@@ -147,12 +147,12 @@ if (A.plan.hasCooling) {
   s.addShape(pres.ShapeType.rect, { x: M, y: by, w: CW, h: 0.74, fill: { color: TINT }, line: { width: 0 } });
   s.addText([
     { text: '상담에서 이렇게 말씀하십시오  ', options: { bold: true, color: INK } },
-    { text: `"신청은 ${dayLabel(P.retailEnd)}까지 넣으셔야 합니다. 그 뒤 이틀은 법으로 정해진 '다시 생각하는 기간'이라 주문을 받을 수 없고, 그 기간이 끝나면 저희가 다시 연락드려 정말 하실 건지 확인합니다. 그때 연락이 닿지 않으면 신청이 그대로 취소됩니다."` },
+    { text: `"청약은 ${dayLabel(P.retailEnd)}까지 넣으셔야 합니다. 그 뒤 이틀은 법으로 정해진 숙려기간이라 주문을 받을 수 없고, 숙려기간이 끝나면 저희가 다시 연락드려 최종 의사를 확인합니다. 그때 확인이 안 되면 청약이 집행되지 않습니다."` },
   ], { x: M + 0.22, y: by, w: CW - 0.44, h: 0.74, fontFace: F, fontSize: 11.5, color: BODY, valign: 'middle', lineSpacing: 16, margin: 0 });
-  s.addText(`법인이나 전문투자자처럼 이 제도의 대상이 아닌 경우에만 ${dot(P.end)}까지 신청할 수 있습니다. 만 65세 이상이시면 확인 절차가 하나 더 붙습니다.`, {
+  s.addText(`전문투자자·법인 등 숙려제도 대상이 아닌 경우에만 ${dot(P.end)}까지 청약할 수 있습니다. 만 65세 이상 고령투자자는 별도 확인 절차가 더해질 수 있습니다.`, {
     x: M, y: by + 0.84, w: CW, h: 0.3, fontFace: F, fontSize: 10.5, color: FAINT, margin: 0,
   });
-  s.addNotes(`마감일을 잘못 안내하면 고객이 기회를 놓칩니다. 홈페이지의 ${dot(P.end)}이 아니라 ${dayLabel(P.retailEnd)}이 개인 고객의 마감입니다.`);
+  s.addNotes(`마감일을 잘못 안내하면 고객이 청약 기회를 놓칩니다. 홈페이지의 ${dot(P.end)}이 아니라 ${dayLabel(P.retailEnd)}이 개인 일반투자자의 마감입니다.`);
 }
 
 // ══ 2. 이번 회차 한눈에 ════════════════════════════════════════════════════
@@ -583,8 +583,8 @@ function defence(it) {
 {
   const s = slide();
   const chk = [
-    ...(A.plan.hasCooling ? [[`신청 마감은 ${dayLabel(A.plan.retailEnd)}입니다`,
-      `홈페이지에는 ${dot(A.plan.start)}~${dot(A.plan.end)}로 나오지만 개인 고객은 ${dayLabel(A.plan.retailEnd)}까지만 신청할 수 있습니다. 이후는 다시 생각하는 기간과 확인하는 날이라 주문을 받을 수 없습니다.`]] : []),
+    ...(A.plan.hasCooling ? [[`청약 마감은 ${dayLabel(A.plan.retailEnd)}입니다`,
+      `홈페이지에는 ${dot(A.plan.start)}~${dot(A.plan.end)}로 나오지만 개인 일반투자자는 ${dayLabel(A.plan.retailEnd)}까지만 청약할 수 있습니다. 이후는 숙려·가입의사확인 기간이라 주문을 받을 수 없습니다.`]] : []),
     [`${baseOf(A.head)}을 넣어도 ${baseOf(A.head)}어치가 아닙니다`,
       `넣는 순간의 실제 값어치가 ${money(A.gapBest, A.gapBest.fairValue / 100)}부터 ${money(A.gapWorst, A.gapWorst.fairValue / 100)}까지 벌어집니다. 차액은 회사 몫과 비용이고, 이마저도 앞으로 들 비용을 이미 뺀 값입니다.`],
     ['중간에 빼면 손해입니다',
@@ -594,7 +594,7 @@ function defence(it) {
     ['서류의 손실 숫자를 그대로 옮기지 마십시오',
       `서류의 손실 숫자는 "지난 ${A.head.simYearsWhole}년이 되풀이된다면"의 답입니다. 추천 1번 제${A.slots[0].pick.no}회도 서류로는 ${f1(A.slots[0].pick.simLoss, 2)}%지만 똑같은 조건으로 다시 돌리면 ${f1(A.slots[0].pick.mcLoss)}%입니다.`],
     ...(A.plan.recordingRight ? [['상담 내용은 녹음됩니다',
-      `개인 고객은 녹음 파일을 달라고 하실 수 있고, 위험을 한 장으로 정리한 설명서도 받습니다.${A.plan.maxLossNotice ? ' "최대 얼마까지 잃을 수 있는지"는 다시 생각하는 기간에 따로 알려드립니다.' : ''} 설명을 건너뛰면 그것도 그대로 기록에 남습니다.`]] : []),
+      `개인 일반투자자는 녹음 파일을 달라고 하실 수 있고, 위험을 한 장으로 정리한 설명서도 받습니다.${A.plan.maxLossNotice ? ' "최대 얼마까지 잃을 수 있는지"는 숙려기간에 따로 알려드립니다.' : ''} 설명을 건너뛰면 그것도 그대로 기록에 남습니다.`]] : []),
   ];
   const NUM = ['한', '두', '세', '네', '다섯', '여섯', '일곱', '여덟'];
   const y0 = head(s, '가입 전에 꼭 짚어드릴 것', `상담에서 이 ${NUM[chk.length - 1] || chk.length} 가지를 빠뜨리면 나중에 문제가 됩니다.`);
@@ -611,7 +611,7 @@ function defence(it) {
     s.addText(v, { x: x + 0.2, y: y + 0.76, w: cw - 0.4, h: ch - 0.9, fontFace: F, fontSize: 11,
       color: BODY, valign: 'top', lineSpacing: 15, margin: 0 });
   });
-  s.addNotes('1번은 이번 주에만 해당하는 이야기가 아니라 매주 반복됩니다. 마감일을 잘못 안내하면 고객이 기회를 놓칩니다.');
+  s.addNotes('1번은 이번 주에만 해당하는 이야기가 아니라 매 회차 반복됩니다. 마감일을 잘못 안내하면 고객이 청약 기회를 놓칩니다.');
 }
 
 // ══ 11. 상담 순서 ══════════════════════════════════════════════════════════
@@ -620,14 +620,14 @@ function defence(it) {
   const it0 = A.slots[0].pick;
   const y0 = head(s, '상담할 때 이 순서로 말씀하시면 됩니다', `추천 1번 제${it0.no}회 기준입니다. 다른 상품이면 회차·기간·원금 지키는 선 숫자만 바꾸십시오.`);
   const script = [
-    ...(A.plan.hasCooling ? [`"먼저 일정부터 말씀드리면, 신청은 ${dayLabel(A.plan.retailEnd)}까지 넣으셔야 합니다. 그 뒤 이틀은 법으로 정해진 '다시 생각하는 기간'이라 주문을 받을 수 없습니다."`] : []),
+    ...(A.plan.hasCooling ? [`"먼저 일정부터 말씀드리면, 청약은 ${dayLabel(A.plan.retailEnd)}까지 넣으셔야 합니다. 그 뒤 이틀은 법으로 정해진 숙려기간이라 주문을 받을 수 없습니다."`] : []),
     `"이 상품은 최장 ${it0.months}개월짜리인데, ${it0.every}개월마다 끝날 기회가 옵니다. 지금까지는 대부분 첫 번째에 끝났습니다."`,
     `"${it0.underlyings.join(' · ')} 중 더 많이 떨어진 하나로 판정합니다."`,
     '"올라야 버는 게 아니라, 많이 안 떨어지면 버는 구조입니다. 제자리여도 약속한 이자를 다 받습니다."',
     `"대신 ${it0.knockIn ?? it0.maturityBarrier}% 아래로 크게 떨어지면 떨어진 만큼 그대로 손실입니다. 원금은 보장되지 않습니다."`,
     `"지난 ${it0.simYearsWhole}년으로 돌려보면 손실은 ${f1(it0.simLoss, 2)}%였는데 그 기간이 좋았던 덕도 있습니다. 넉넉하게 잡으면 ${f1(it0.mcLoss, 0)}% 정도로 봅니다."`,
     `"${it0.months}개월 동안 안 쓸 돈인지부터 확인해 주세요. 중간에 빼시면 그날 계산한 값어치의 95%만 받습니다."`,
-    ...(A.plan.hasCooling ? [`"신청하셨다고 바로 되는 게 아닙니다. 이틀 생각하실 시간을 드린 뒤 저희가 다시 연락드려 정말 하실 건지 확인합니다. 그때 연락이 안 닿으면 넣으신 돈은 ${dot(A.plan.payDate)}에 돌려드립니다."`] : []),
+    ...(A.plan.hasCooling ? [`"청약을 넣으셔도 바로 확정되는 게 아닙니다. 이틀 숙려기간을 거친 뒤 저희가 다시 연락드려 최종 의사를 확인합니다. 그때 확인이 안 되면 청약금은 ${dot(A.plan.payDate)}에 돌려드립니다."`] : []),
   ];
   const rh = 0.5;
   script.forEach((t, i) => {
@@ -664,8 +664,8 @@ function defence(it) {
     ['같이 움직이는 정도', '상관계수', '1이면 완전히 같이, 0에 가까우면 따로 놈'],
     ['실제 값어치', '공정가액', '1만원 넣는 순간 이 상품이 실제로 갖는 값'],
     ['평균적으로 잃는 크기', '기대손실', '손해 볼 가능성 × 손해 날 때 잃는 정도'],
-    ['다시 생각하는 기간', '숙려기간', '법이 정한 2영업일 이상. 이때는 주문 못 넣음'],
-    ['정말 하실 건지 확인', '가입의사 확인기간', '이때 연락이 안 닿으면 신청은 취소됨'],
+    ['숙려기간', '서류와 같은 말', '다시 생각해 보시라고 법이 비워 둔 2영업일 이상. 이때는 청약 못 넣음'],
+    ['가입의사 확인기간', '서류와 같은 말', '정말 하실 건지 회사가 연락해 확인. 안 닿으면 청약 취소'],
     ['중간에 빼기', '중도상환', '원금이 아니라 그날 값어치의 95%(6개월 내 90%)'],
     ['1등급', '위험등급 1등급', '제일 좋다가 아니라 가장 위험하다는 뜻'],
   ];
