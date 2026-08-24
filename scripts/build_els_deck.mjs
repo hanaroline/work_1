@@ -197,7 +197,7 @@ if (A.plan.hasCooling) {
         ['좋은 점', '지어낸 값이 아니라 실제로 있었던 가격입니다. 2008년 금융위기도 들어 있습니다.'],
         ['조심', `그 ${A.head.simYearsWhole}년은 대체로 오르는 장이었고, 상품마다 돌려본 기간도 다릅니다. 기간이 다른 두 상품을 나란히 놓고 비교하면 안 됩니다.`],
       ] },
-    { k: 'B. 컴퓨터로 다시 돌린 결과', q: '"회사가 값 매길 때 잡은 만큼 실제로 출렁인다면?"', tag: '직접 계산',
+    { k: 'B. 같은 조건 시뮬레이션', q: '"회사가 값 매길 때 잡은 만큼 실제로 출렁인다면?"', tag: '직접 계산',
       rows: [
         ['무엇', `${A.items.length}종 전부를 똑같은 횟수(40,000번)·똑같은 기간·똑같은 규칙으로. 출렁임과 같이 움직이는 정도는 투자설명서 값 그대로.`],
         ['좋은 점', '기간 차이가 없어져서 전 상품을 공평하게 줄 세울 수 있습니다.'],
@@ -462,7 +462,7 @@ A.slots.forEach((slot, idx) => {
   // 지표 4칸
   const stats = [
     [`A. 발행사 ${it.simYearsWhole}년 백테스트`, `${f1(it.simLoss, 2)}%`, `${it.simRuns?.toLocaleString('ko-KR')}번 중 ${Math.round((it.simLoss ?? 0) / 100 * (it.simRuns ?? 0))}번`],
-    ['B. 컴퓨터로 다시 돌린 손실', `${f1(it.mcLoss)}%`, `${A.items.length}종 평균 ${f1(A.mcAvgAll)}% · 낮은 쪽 ${A.safest.findIndex((x) => x.no === it.no) + 1}번째`],
+    ['B. 같은 조건 시뮬레이션 손실', `${f1(it.mcLoss)}%`, `${A.items.length}종 평균 ${f1(A.mcAvgAll)}% · 낮은 쪽 ${A.safest.findIndex((x) => x.no === it.no) + 1}번째`],
     [`${baseOf(it)}의 실제 값어치`, money(it, it.fairValue / 100), `제값보다 ${sgn(it.fairValueGap, 2)}%`],
     ['가격 출렁임', `${f1(it.vmax)}%`, it.rho != null ? `둘이 같이 움직임 ${f1(it.rho, 2)}` : '기준 자산 하나'],
   ];
@@ -506,7 +506,7 @@ function defence(it) {
   const s = slide();
   const y0 = head(s, `이번 회차 전체 ${A.items.length}종`,
     '같은 조건으로 돌린 손실 확률(B)이 낮은 순서. A 옆 괄호는 그 상품의 표본 구간 길이 — 10년에 못 미치면(빨강) 다른 상품과 나란히 비교할 수 없습니다. "만기만" = 낙인이 없어 만기 그날만 봅니다.');
-  const hdr = ['회차', '기초자산', '종류', '연 수익률', '조기상환', '원금 지키는 선', '적용 변동성', 'B. 손실 확률', '등급', 'A. 백테스트 손실', '출발 가치'];
+  const hdr = ['회차', '기초자산', '종류', '연 수익률', '조기상환', '원금 지키는 선', '적용 변동성', 'B. 시뮬레이션 손실 확률', '등급', `A. ${A.head.simYearsWhole}년 백테스트 손실`, '출발 가치'];
   const ALIGN = ['left', 'left', 'left', 'right', 'right', 'right', 'right', 'right', 'center', 'right', 'right'];
   const rows = [hdr.map((t, i) => ({
     text: t, options: { bold: true, color: INK, fill: { color: SOFT }, align: ALIGN[i] },
@@ -526,14 +526,14 @@ function defence(it) {
       { text: money(it, it.fairValue / 100), options: { align: 'right', color: (it.fairValueGap ?? 0) <= -10 ? BAD : (it.fairValueGap ?? 0) <= -5 ? WARN : BODY } },
     ]);
   }
-  const colW = [0.80, 2.85, 0.58, 0.92, 1.00, 1.12, 0.90, 1.10, 0.62, 1.28, 0.92];
+  const colW = [0.80, 2.85, 0.46, 0.92, 0.98, 1.10, 0.94, 1.10, 0.62, 1.40, 0.92];
   s.addTable(rows, {
     x: M, y: y0, w: CW, colW,
     fontFace: F, fontSize: 9, border: { type: 'solid', color: 'E5E4E1', pt: 1 },
     rowH: 0.24, valign: 'middle', margin: 2, autoPage: false,
   });
   s.addText(TIER_RULE, {
-    x: M, y: y0 + rows.length * 0.24 + 0.16, w: CW, h: 0.34,
+    x: M, y: y0 + rows.length * 0.24 + 0.26, w: CW, h: 0.34,
     fontFace: F, fontSize: 10.5, color: FAINT, valign: 'top', margin: 0,
   });
 }
@@ -647,45 +647,45 @@ function defence(it) {
 // ══ 12. 말 풀이 ════════════════════════════════════════════════════════════
 {
   const s = slide();
-  const y0 = head(s, '말 풀이 — 서류에 나오는 말과 맞춰 보기',
-    '이 자료는 어려운 말을 일부러 풀어서 썼습니다. 홈페이지와 투자설명서에는 원래 용어로 적혀 있으니, 고객이 서류를 펴 놓고 물으시면 두 말을 이어드리십시오.');
+  const y0 = head(s, '말 풀이 — 서류의 말을 쉬운 말로',
+    '고객이 투자설명서나 홈페이지를 펴 놓고 "여기 이건 무슨 말이냐" 물으실 때 쓰십시오. 왼쪽에서 그 말을 찾아, 가운데 말로 바꿔 말씀하시면 됩니다.');
 
   // 한 줄로 세우면 뜻풀이 칸이 너무 넓어져 읽는 눈이 흔들린다. 두 벌로 나눈다.
   const GLOSS = [
-    ['기준 자산', '기초자산', '이 상품의 성패를 정하는 주식·지수'],
-    ['처음 가격', '최초기준가격', '시작하는 날의 종가. 모든 %의 기준'],
-    ['미리 끝나는 기준선', '조기상환 배리어', '이 위에 있으면 이자까지 얹어 그 자리에서 끝남'],
-    ['뒤로 갈수록 기준이 낮아짐', '스텝다운', '시간이 갈수록 끝나기 쉬워지는 구조'],
-    ['원금 지키는 선', '낙인(KI) 배리어', '한 번도 이 밑으로 안 가면 원금·이자를 다 받음'],
-    ['더 떨어진 하나로 판정', '워스트 퍼포머', '잘 오른 쪽은 안 보고 제일 못한 하나만 봄'],
-    ['가격 출렁임', '(내재)변동성', '앞으로 1년간 얼마나 흔들릴지 시장이 보는 정도'],
-    ['같이 움직이는 정도', '상관계수', '1이면 완전히 같이, 0에 가까우면 따로 놈'],
-    ['실제 값어치', '공정가액', '1만원 넣는 순간 이 상품이 실제로 갖는 값'],
-    ['평균적으로 잃는 크기', '기대손실', '손해 볼 가능성 × 손해 날 때 잃는 정도'],
-    ['숙려기간', '서류와 같은 말', '다시 생각해 보시라고 법이 비워 둔 2영업일 이상. 이때는 청약 못 넣음'],
-    ['가입의사 확인기간', '서류와 같은 말', '정말 하실 건지 회사가 연락해 확인. 안 닿으면 청약 취소'],
-    ['중간에 빼기', '중도상환', '원금이 아니라 그날 값어치의 95%(6개월 내 90%)'],
-    ['1등급', '위험등급 1등급', '제일 좋다가 아니라 가장 위험하다는 뜻'],
+    ['기초자산', '기준 자산', '이 상품의 성패를 정하는 주식·지수'],
+    ['최초기준가격', '처음 가격', '시작하는 날의 종가. 모든 %의 기준'],
+    ['조기상환 배리어', '미리 끝나는 기준선', '이 위에 있으면 이자까지 얹어 그 자리에서 끝남'],
+    ['스텝다운', '뒤로 갈수록 낮아지는 기준', '시간이 갈수록 끝나기 쉬워지는 구조'],
+    ['낙인(KI) 배리어', '원금 지키는 선', '한 번도 이 밑으로 안 가면 원금·이자를 다 받음'],
+    ['워스트 퍼포머', '더 떨어진 하나로 판정', '잘 오른 쪽은 안 보고 제일 못한 하나만 봄'],
+    ['(내재)변동성', '가격 출렁임', '앞으로 1년간 얼마나 흔들릴지 시장이 보는 정도'],
+    ['상관계수', '같이 움직이는 정도', '1이면 완전히 같이, 0에 가까우면 따로 놈'],
+    ['공정가액', '실제 값어치', '1만원 넣는 순간 이 상품이 실제로 갖는 값'],
+    ['기대손실', '평균적으로 잃는 크기', '손해 볼 가능성 × 손해 날 때 잃는 정도'],
+    ['숙려기간', '다시 생각하는 기간', '법이 비워 둔 2영업일 이상. 이때는 청약 못 넣음'],
+    ['가입의사 확인기간', '정말 하실 건지 확인', '회사가 연락해 확인. 안 닿으면 청약 취소'],
+    ['중도상환', '중간에 빼기', '원금이 아니라 그날 값어치의 95%(6개월 내 90%)'],
+    ['위험등급 1등급', '가장 위험한 등급', '제일 좋다가 아니라 가장 위험하다는 뜻'],
   ];
   const half = Math.ceil(GLOSS.length / 2);
   const tw = (CW - 0.3) / 2;
   [GLOSS.slice(0, half), GLOSS.slice(half)].forEach((part, i) => {
     const rows = [[
-      { text: '이 자료에서 쓴 말', options: { bold: true, color: INK, fill: { color: SOFT } } },
-      { text: '서류 용어', options: { bold: true, color: INK, fill: { color: SOFT } } },
+      { text: '서류·홈페이지 용어', options: { bold: true, color: INK, fill: { color: SOFT } } },
+      { text: '쉬운 용어', options: { bold: true, color: INK, fill: { color: SOFT } } },
       { text: '무슨 뜻인가', options: { bold: true, color: INK, fill: { color: SOFT } } },
     ]].concat(part.map(([a, b, c]) => [
       { text: a, options: { bold: true, color: INK } },
-      { text: b, options: { color: MUTED } },
+      { text: b, options: { color: ACTIVE } },
       { text: c, options: { color: BODY } },
     ]));
     s.addTable(rows, {
-      x: M + i * (tw + 0.3), y: y0, w: tw, colW: [1.62, 1.44, tw - 3.06],
+      x: M + i * (tw + 0.3), y: y0, w: tw, colW: [1.56, 1.62, tw - 3.18],
       fontFace: F, fontSize: 10.5, border: { type: 'solid', color: 'E5E4E1', pt: 1 },
       rowH: 0.5, valign: 'middle', margin: 6, autoPage: false,
     });
   });
-  s.addNotes('고객이 서류의 "낙인", "공정가액" 같은 말을 짚으며 물으실 때 이 장을 펴십시오. 왼쪽이 우리가 쓰는 말, 가운데가 서류에 적힌 말입니다.');
+  s.addNotes('고객이 서류의 "낙인", "공정가액" 같은 말을 짚으며 물으실 때 이 장을 펴십시오. 왼쪽이 서류에 적힌 말, 가운데가 바꿔 말씀하실 쉬운 말입니다.');
 }
 
 // ══ 꼬리말 — 표지 빼고 전 장 ═══════════════════════════════════════════════
