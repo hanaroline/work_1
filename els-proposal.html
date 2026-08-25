@@ -235,7 +235,7 @@ footer a{color:var(--muted)}
   .mth p,.defend,.mnote,.qa{font-size:9pt;line-height:1.4}
   .mth{padding:10px 12px}
   .defend,.mnote,.qa{padding:8px 10px}
-  .sub3{font-size:12pt;margin-top:12px;padding-top:8px}
+  .sub3{font-size:12pt;margin-top:16px;padding-top:10px}
   /* 웹의 넉넉한 항목 간격을 인쇄에서 그대로 쓰면 절이 쪽을 조금씩 넘어간다.
      넘어간 꼬리 뒤에는 쪼개지지 않는 추천 카드가 오므로 그 쪽이 통째로 빈다. */
   .keys{gap:7px}
@@ -250,8 +250,11 @@ footer a{color:var(--muted)}
   .mast .sub,.offer dd{font-size:10pt}
   section{margin-bottom:16px}
   .stitle{font-size:15pt}
-  /* .slead2 가 빠져 있어 인쇄에서 본문(10pt)보다 큰 12pt 로 나오고 있었다 */
-  .slead,.slead2{margin-bottom:12px;font-size:9.5pt}
+  .slead{margin-bottom:12px;font-size:9.5pt}
+  /* 아래 두 줄은 쿠폰 절(.cx)에만 건다. 다른 절은 이미 확정된 판이라 건드리지 않는다.
+     .slead2 는 인쇄 글자 크기가 빠져 있어 본문(10pt)보다 큰 12pt 로 나온다. */
+  .cx .slead2{font-size:9.5pt}
+  .cx .sub3{margin-top:12px;padding-top:8px}
   .stat b{font-size:19pt}
   /* 강제 개쪽을 걸면 앞쪽 꼬리가 통째로 빈다. 절은 흐르게 두고, 쪼개지면 안 되는
      덩어리(추천 카드·주의 카드·확인사항)에만 break-inside 를 건다. */
@@ -410,7 +413,7 @@ footer a{color:var(--muted)}
   </ul>
 </section>
 
-<section class="page-break">
+<section class="page-break cx">
   <div class="rule"></div>
   <h2 class="stitle">수익률이 높으면 그만큼 위험한가</h2>
   <p class="slead">"수익률이 높으면 그만큼 위험한 것 아니냐"는 질문을 자주 받습니다. <b>맞는 말씀입니다.</b> 다만 <b>정확히 비례하지는 않고</b>, 그 어긋나는 자리가 바로 상품을 고르는 자리입니다. 이번 주 17종으로 직접 확인했습니다.</p>
