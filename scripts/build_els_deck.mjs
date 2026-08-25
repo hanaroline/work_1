@@ -299,24 +299,24 @@ if (A.plan.hasCooling) {
   });
   s.addTable([
     [hd('연 수익률과 무엇의 관계인가'), hd(`전체 ${C.n}종`, 'right'), hd(`값어치 멀쩡한 ${C.nFair}종`, 'right')],
-    [{ text: '가격 출렁임', options: { color: BODY } }, cell(CR.vol.all), cell(CR.vol.fair)],
-    [{ text: '손해 볼 가능성', options: { color: BODY } }, cell(CR.loss.all), cell(CR.loss.fair)],
-    [{ text: '평균적으로 잃는 크기 (가능성 × 잃을 때의 크기)', options: { bold: true, color: INK } }, cell(CR.expLoss.all, true), cell(CR.expLoss.fair, true)],
+    [{ text: '가격 출렁임 (적용 변동성)', options: { color: BODY } }, cell(CR.vol.all), cell(CR.vol.fair)],
+    [{ text: '손실 확률 — 이 문서가 등급을 매기는 기준', options: { bold: true, color: INK } }, cell(CR.loss.all, true), cell(CR.loss.fair, true)],
+    [{ text: '참고 · 손실 확률 × 잃을 때의 크기', options: { color: BODY } }, cell(CR.expLoss.all), cell(CR.expLoss.fair)],
   ], {
     x: M, y: y0, w: CW, colW: [5.50, 3.30, 3.293],
     fontFace: F, fontSize: 11.5, border: { type: 'solid', color: 'E5E4E1', pt: 1 },
     rowH: 0.4, valign: 'middle', margin: 5,
   });
-  s.addText(`숫자가 1에 가까울수록 "수익률 높은 상품이 위험도 크다"가 잘 들어맞고, 0이면 아무 관계가 없다는 뜻입니다(순서를 견주는 방식으로 쟀습니다).  `
+  s.addText(`숫자가 1에 가까울수록 "수익률 높은 상품이 손실 확률도 높다"가 잘 들어맞고, 0이면 아무 관계가 없다는 뜻입니다(순서를 견주는 방식으로 쟀습니다).  `
     + `값어치 멀쩡한 ${C.nFair}종 = 넣는 순간의 값어치가 제값보다 5% 넘게 깎이지는 않은 상품 — 나머지 ${C.n - C.nFair}종은 높은 수익률이 위험의 대가가 아니라 비용으로 빠져나간 상품이라 이 법칙 자체가 통하지 않습니다.`, {
     x: M, y: y0 + 1.78, w: CW, h: 0.44, fontFace: F, fontSize: 10, color: FAINT, valign: 'top', lineSpacing: 14, margin: 0,
   });
 
   const cw = (CW - 0.6) / 3;
   const stats = [
-    { k: '둘씩 짝지어 세면', v: `${f1(CP.all.pct, 0)}%`, d: `${C.n}종으로 만들 수 있는 ${CP.all.n}짝 중 ${CP.all.ok}짝에서 "수익률 높은 쪽이 잃는 크기도 컸다"가 맞았습니다`, c: BLUE },
-    { k: '그런데 수익률로 맞히는 건', v: `${f1(CG.r2 * 100, 0)}%`, d: `수익률 1%p당 손해 볼 가능성 +${f1(CG.slope, 2)}%p — 방향은 맞지만 상품마다 그 몇 배씩 들쭉날쭉합니다`, c: WARN },
-    { k: '같은 위험에 받는 수익률', v: `${f1(CE.spread, 1)}배`, d: `${f1(CE.ratio(CE.worst), 2)}(제${CE.worst.no}회) ~ ${f1(CE.ratio(CE.best), 2)}(제${CE.best.no}회). 정확히 비례한다면 전부 같아야 합니다`, c: ACTIVE },
+    { k: '둘씩 짝지어 세면', v: `${f1(CP.all.pct, 0)}%`, d: `${C.n}종으로 만들 수 있는 ${CP.all.n}짝 중 ${CP.all.ok}짝에서 "수익률 높은 쪽이 손실 확률도 높다"가 맞았습니다`, c: BLUE },
+    { k: '그런데 수익률로 맞히는 건', v: `${f1(CG.r2 * 100, 0)}%`, d: `수익률 1%p당 손실 확률 +${f1(CG.slope, 2)}%p — 방향은 맞지만 상품마다 그 몇 배씩 들쭉날쭉합니다`, c: WARN },
+    { k: '손실 확률 1%당 연 수익률', v: `${f1(CE.spread, 1)}배`, d: `${f1(CE.ratio(CE.worst), 2)}%(제${CE.worst.no}회) ~ ${f1(CE.ratio(CE.best), 2)}%(제${CE.best.no}회). 정확히 비례한다면 전부 같아야 합니다`, c: ACTIVE },
   ];
   stats.forEach((t, i) => {
     const x = M + i * (cw + 0.3);
@@ -329,7 +329,7 @@ if (A.plan.hasCooling) {
   const pw = (CW - 0.3) / 2;
   const panels = [
     { k: '왜 그런가', t: 'ELS의 수익률은 고객이 회사에 "많이 떨어지면 그 손해는 제가 떠안겠습니다"라는 약속을 팔고 받는 값입니다. "많이 안 떨어지면 이자를 드리겠다"를 뒤집으면 "떨어지면 고객이 부담한다"는 뜻이고, 그 약속의 가격이 곧 수익률입니다. 심하게 출렁일수록 그 약속이 비싸집니다. 관행이 아니라 값 매기는 계산식 자체가 그렇습니다.' },
-    { k: '수익률이 갚는 건 "가능성"이 아닙니다', t: `수익률은 손해 볼 가능성(${f1(CR.loss.fair.r, 2)})보다 평균적으로 잃는 크기(${f1(CR.expLoss.fair.r, 2)})와 훨씬 잘 붙습니다. 지수만 담은 상품은 잃을 때 ${f1(avgLossOf('지수'), 0)}% 남짓, 개별 종목 상품은 ${f1(avgLossOf('종목'), 0)}%가량 잃습니다. 회사는 "얼마나 자주"가 아니라 "자주 × 크게"로 값을 매깁니다.` },
+    { k: '확률만 보면 왜 느슨해지나', t: `손실 확률은 ${f1(CR.loss.fair.r, 2)}인데, 잃을 때 얼마나 잃는지까지 곱하면 ${f1(CR.expLoss.fair.r, 2)}로 올라갑니다. 확률이 못 잡는 부분이 손실의 크기입니다 — 지수만 담은 상품은 손해가 나면 ${f1(avgLossOf('지수'), 0)}% 남짓, 개별 종목 상품은 ${f1(avgLossOf('종목'), 0)}%가량 잃습니다. 등급이 같은 두 상품이면 개별 종목 쪽이 더 비싼 위험입니다.` },
   ];
   panels.forEach((p, i) => {
     const x = M + i * (pw + 0.3);
@@ -344,23 +344,23 @@ if (A.plan.hasCooling) {
 {
   const C = A.coupon, { eff: CE, why: CW2, sens: CS } = C;
   const s = slide();
-  const y0 = head(s, '그래서 어디서 갈라지나', '수익률과 위험이 어긋나는 이유는 셋입니다. 셋 다 이번 주 데이터에서 그대로 확인됩니다.');
+  const y0 = head(s, '그래서 어디서 갈라지나', '수익률과 손실 확률이 어긋나는 이유는 셋입니다. 셋 다 이번 회차 데이터에서 그대로 확인됩니다.');
 
   const cw = (CW - 0.6) / 3;
   const cards = [
     CW2.twin && { n: '①', k: '상품 조건이 달라서', c: BLUE,
-      t: `${CW2.group[0].underlyings.join('·')} ${CW2.group.length}종은 기준 자산도, 가격 출렁임(${f1(CW2.group[0].vmax)}%)도, 기간(${CW2.group[0].months}개월)도 똑같은데 수익률만 갈립니다.\n\n`
-        + `제${CW2.twin.hi.no}회 연 ${f1(CW2.twin.hi.annualRate)}% · 평균적으로 잃는 크기 ${f1(CW2.twin.hi.mcExpLoss)}%\n`
-        + `제${CW2.twin.lo.no}회 연 ${f1(CW2.twin.lo.annualRate)}% · 평균적으로 잃는 크기 ${f1(CW2.twin.lo.mcExpLoss)}%\n\n`
-        + `위험이 사실상 같은데 수익률이 ${f1(CW2.twin.d)}%p 차이 납니다. 끝날 기회를 ${CW2.twin.hi.every}개월마다 보느냐 ${CW2.twin.lo.every}개월마다 보느냐, 원금 지키는 선이 ${CW2.twin.hi.knockIn}%냐 ${CW2.twin.lo.knockIn}%냐가 갈랐습니다.` },
+      t: `${CW2.group[0].underlyings.join('·')} ${CW2.group.length}종은 기초자산도, 적용 변동성(${f1(CW2.group[0].vmax)}%)도, 기간(${CW2.group[0].months}개월)도 똑같은데 수익률만 갈립니다.\n\n`
+        + `제${CW2.twin.hi.no}회 손실 확률 ${f1(CW2.twin.hi.mcLoss)}% · 연 ${f1(CW2.twin.hi.annualRate)}%\n`
+        + `제${CW2.twin.lo.no}회 손실 확률 ${f1(CW2.twin.lo.mcLoss)}% · 연 ${f1(CW2.twin.lo.annualRate)}%\n\n`
+        + `손실 확률은 ${f1(Math.abs(CW2.twin.hi.mcLoss - CW2.twin.lo.mcLoss))}%p 차인데 수익률은 ${f1(CW2.twin.d)}%p 차입니다. 끝날 기회를 ${CW2.twin.hi.every}개월마다 보느냐 ${CW2.twin.lo.every}개월마다 보느냐, 낙인이 ${CW2.twin.hi.knockIn}%냐 ${CW2.twin.lo.knockIn}%냐가 갈랐습니다.` },
     { n: '②', k: '값어치가 깎여서', c: BAD,
-      t: `제${CW2.priced.no}회는 연 ${f1(CW2.priced.annualRate)}%인데 평균적으로 잃는 크기가 ${f1(CW2.priced.mcExpLoss)}%나 됩니다. 넣는 순간의 값어치가 제값보다 ${f1(CW2.priced.fairValueGap)}%나 깎여 있기 때문입니다.\n\n`
+      t: `제${CW2.priced.no}회는 연 ${f1(CW2.priced.annualRate)}%인데 손실 확률이 ${f1(CW2.priced.mcLoss)}%나 됩니다 — 손실 확률 1%당 ${f1(CE.ratio(CW2.priced), 2)}%로 이번 회차 꼴찌입니다. 넣는 순간의 값어치가 제값보다 ${f1(CW2.priced.fairValueGap)}%나 깎여 있기 때문입니다.\n\n`
         + `높은 수익률이 위험을 진 대가로 돌아오는 게 아니라 비용으로 새어나간 경우입니다.\n\n`
-        + `많이 깎인 ${C.n - C.nFair}종만 빼도 수익률과 출렁임의 관계가 ${f1(C.rho.vol.all.r, 2)} → ${f1(C.rho.vol.fair.r, 2)}로 올라갑니다. 이 법칙은 제값 받는 상품에서만 통합니다.` },
+        + `많이 깎인 ${C.n - C.nFair}종만 빼도 수익률과 변동성의 관계가 ${f1(C.rho.vol.all.r, 2)} → ${f1(C.rho.vol.fair.r, 2)}로 올라갑니다. 이 법칙은 제값 받는 상품에서만 통합니다.` },
     CW2.fx && { n: '③', k: '돈의 종류가 달라서', c: ACTIVE,
-      t: `제${CW2.fx.fx.no}회(${CW2.fx.fx.currency})는 연 ${f1(CW2.fx.fx.annualRate)}%에 평균적으로 잃는 크기가 ${f1(CW2.fx.fx.mcExpLoss)}%로, 기준 자산이 똑같은 원화 제${CW2.fx.krw.no}회(${f1(CW2.fx.krw.annualRate)}% · ${f1(CW2.fx.krw.mcExpLoss)}%)보다 더 주면서 덜 위험해 보입니다.\n\n`
-        + `${CW2.fx.fx.currency} 이자가 수익률에 섞여 들어간 것이고, 대신 이 손실 계산에 잡히지 않는 환율 위험이 따로 붙기 때문입니다.\n\n`
-        + `이 상품의 손해 볼 가능성은 환율을 뺀 숫자입니다.` },
+      t: `제${CW2.fx.fx.no}회(${CW2.fx.fx.currency})는 연 ${f1(CW2.fx.fx.annualRate)}%에 손실 확률이 ${f1(CW2.fx.fx.mcLoss)}%로, 기초자산이 똑같은 원화 제${CW2.fx.krw.no}회(${f1(CW2.fx.krw.annualRate)}% · ${f1(CW2.fx.krw.mcLoss)}%)보다 더 주면서 덜 위험해 보입니다.\n\n`
+        + `${CW2.fx.fx.currency} 이자가 수익률에 섞여 들어간 것이고, 대신 이 손실 확률에 잡히지 않는 환율 위험이 따로 붙기 때문입니다.\n\n`
+        + `이 상품의 손실 확률은 환율을 뺀 숫자입니다.` },
   ].filter(Boolean);
   cards.forEach((c, i) => {
     const x = M + i * (cw + 0.3);
@@ -373,8 +373,7 @@ if (A.plan.hasCooling) {
   });
 
   if (CS) {
-    s.addText(`가장 크게 어긋난 제${CS.no}회 — 그 우위가 "두 자산이 ${f1(CS.disclosed, 2)}만큼 같이 움직인다"는 서류 값 하나에 얹혀 있는지 흔들어 봤습니다`
-      + `${C.sensIsPick ? ' (이 문서가 추천하는 상품)' : ''}`, {
+    s.addText(`제${CS.no}회${C.sensIsPick ? '(추천 1번)' : ''} — 손실 확률 1%당 수익률 1등. 이 우위가 공시 상관 ${f1(CS.disclosed, 2)} 하나에 얹혀 있는지 흔들어 봤습니다`, {
       x: M, y: y0 + 2.46, w: CW, h: 0.26, fontFace: F, fontSize: 12, bold: true, color: INK, margin: 0,
     });
     const rhoHd = [{ text: '같이 움직이는 정도', options: { bold: true, color: INK, fill: { color: SOFT } } }]
@@ -386,25 +385,24 @@ if (A.plan.hasCooling) {
       .concat(CS.rows.map((r) => ({ text: f(r), options: { align: 'right', bold: Boolean(hi), color: hi ? ACTIVE : BODY } })));
     s.addTable([
       rhoHd,
-      rrow('손해 볼 가능성', (r) => `${f1(r.loss)}%`),
-      rrow('평균적으로 잃는 크기', (r) => `${f1(r.expLoss)}%`),
-      rrow('위험 한 단위당 수익률', (r) => f1(r.ratio, 2), true),
+      rrow('손실 확률', (r) => `${f1(r.loss)}%`),
+      rrow('손실 확률 1%당 연 수익률', (r) => `${f1(r.ratio, 2)}%`, true),
     ], {
-      x: M, y: y0 + 2.78, w: CW, colW: [2.4].concat(CS.rows.map(() => (CW - 2.4) / CS.rows.length)),
+      x: M, y: y0 + 2.78, w: CW, colW: [2.8].concat(CS.rows.map(() => (CW - 2.8) / CS.rows.length)),
       fontFace: F, fontSize: 11, border: { type: 'solid', color: 'E5E4E1', pt: 1 },
-      rowH: 0.3, valign: 'middle', margin: 4,
+      rowH: 0.34, valign: 'middle', margin: 4,
     });
     const last = CS.rows[CS.rows.length - 1];
-    s.addText(`같이 움직이는 정도를 ${f1(last.rho, 2)}까지 억지로 낮춰도 손해 볼 가능성은 ${f1(CS.rows[0].loss)}% → ${f1(last.loss)}% 오르는 데 그치고, 위험 대비 대가는 ${f1(last.ratio, 2)}로 여전히 이번 주 1등입니다. `
-      + `두 자산의 출렁임 정도가 ${f1(CS.volSpread)}%p나 벌어져 있어서, 같이 움직이든 말든 "더 나쁜 쪽"이 거의 항상 같은 자산이기 때문입니다. 출렁임이 비슷한 짝이었다면 이렇게 버티지 못합니다.`, {
-      x: M, y: y0 + 4.18, w: CW, h: 0.44, fontFace: F, fontSize: 10, color: FAINT, valign: 'top', lineSpacing: 13, margin: 0,
+    s.addText(`같이 움직이는 정도를 ${f1(last.rho, 2)}까지 억지로 낮춰도 손실 확률은 ${f1(CS.rows[0].loss)}% → ${f1(last.loss)}% 오르는 데 그치고, 손실 확률 1%당 수익률은 ${f1(last.ratio, 2)}%로 여전히 이번 회차 1등입니다. `
+      + `두 기초자산의 변동성이 ${f1(CS.volSpread)}%p나 벌어져 있어서, 같이 움직이든 말든 "더 나쁜 쪽"이 거의 항상 같은 자산이기 때문입니다. 변동성이 비슷한 짝이었다면 이렇게 버티지 못합니다.`, {
+      x: M, y: y0 + 3.94, w: CW, h: 0.62, fontFace: F, fontSize: 10, color: FAINT, valign: 'top', lineSpacing: 13, margin: 0,
     });
   }
 
   s.addShape(pres.ShapeType.rect, { x: M, y: y0 + 4.78, w: CW, h: 0.72, fill: { color: TINT }, line: { width: 0 } });
   s.addText([
     { text: `"연 ${f1(A.rateMax)}%짜리도 있는데 왜 ${f1(CE.fairBest.annualRate)}%짜리를 먼저 권하나요?"  `, options: { bold: true, color: INK } },
-    { text: `→ "수익률이 높으면 위험도 큰 것, 맞습니다. 다만 같은 위험을 지고도 남들보다 많이 받는 상품이 따로 있습니다. 이번 주는 그 차이가 ${f1(CE.fairSpread)}배까지 벌어집니다."` },
+    { text: `→ "수익률이 높으면 위험도 큰 것, 맞습니다. 다만 같은 손실 확률을 지고도 남들보다 많이 받는 상품이 따로 있습니다. 이번 회차는 그 차이가 ${f1(CE.fairSpread)}배까지 벌어집니다."` },
   ], { x: M + 0.22, y: y0 + 4.78, w: CW - 0.44, h: 0.72, fontFace: F, fontSize: 11.5, color: BODY, valign: 'middle', lineSpacing: 16, margin: 0 });
   s.addNotes('수익률만 유난히 높고 위험은 안 높아 보이면 셋 중 하나입니다 — 조건 덕이거나, 돈의 종류가 다르거나, 아직 못 본 위험이 있거나. 앞의 둘로 설명이 안 되면 세 번째입니다.');
 }

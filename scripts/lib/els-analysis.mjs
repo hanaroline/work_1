@@ -93,7 +93,8 @@ function enrich(item, H) {
     covAt, covYears,
     simYears, simYearsWhole, simShort, simWin,
     mcLoss: mc?.lossRate, mcKi: mc?.kiRate, mcFirst: mc?.firstRate, mcAvgLoss: mc?.avgLoss,
-    // 기대손실 = 손실 확률 × 평균 손실폭. 쿠폰이 실제로 보상하는 것은 확률이 아니라 이쪽이다.
+    // 기대손실 = 손실 확률 × 평균 손실폭. 줄 세우기는 손실 확률로 하되,
+    // 확률만으로 설명되지 않는 부분이 어디서 오는지 보려면 이 값이 필요하다.
     mcExpLoss: mc ? (mc.lossRate / 100) * Math.abs(mc.avgLoss) : null,
     vmax, rho,
     low: dd?.min,
@@ -122,14 +123,16 @@ function couponStudy(items, best) {
     loss: both(cp, (i) => i.mcLoss),
     expLoss: both(cp, (i) => i.mcExpLoss),
   };
+  // 짝 세기·효율은 이 문서가 줄 세우기에 쓰는 척도(손실 확률) 위에서 센다.
+  // 여기만 기대손실로 재면 등급·추천과 다른 잣대가 하나 더 생긴다.
   const pairs = {
-    all: pairAgreement(withMc, cp, (i) => i.mcExpLoss),
-    fair: pairAgreement(fair, cp, (i) => i.mcExpLoss),
+    all: pairAgreement(withMc, cp, (i) => i.mcLoss),
+    fair: pairAgreement(fair, cp, (i) => i.mcLoss),
   };
   const reg = regress(fair.map(cp), fair.map((i) => i.mcLoss));
 
-  // 위험 한 단위당 받는 쿠폰 — 완전 비례라면 모두 같은 값이어야 한다
-  const ratio = (i) => i.annualRate / i.mcExpLoss;
+  // 손실 확률 1%당 받는 연 수익률 — 완전 비례라면 모두 같은 값이어야 한다
+  const ratio = (i) => i.annualRate / i.mcLoss;
   const rank1 = [...withMc].sort((a, b) => ratio(b) - ratio(a));
   const fairRank = [...fair].sort((a, b) => ratio(b) - ratio(a));
   const eff = {
@@ -152,7 +155,8 @@ function couponStudy(items, best) {
   for (let a = 0; a < big.length; a++) {
     for (let b = a + 1; b < big.length; b++) {
       const [hi, lo] = big[a].annualRate >= big[b].annualRate ? [big[a], big[b]] : [big[b], big[a]];
-      if (Math.abs(hi.mcExpLoss - lo.mcExpLoss) > 1.5) continue;   // 위험이 사실상 같은 짝만
+      if (hi.currency !== lo.currency) continue;                   // 통화가 다르면 ③ 통화 이야기가 된다
+      if (Math.abs(hi.mcLoss - lo.mcLoss) > 1.5) continue;         // 위험이 사실상 같은 짝만
       const d = hi.annualRate - lo.annualRate;
       if (!twin || d > twin.d) twin = { hi, lo, d };
     }
@@ -184,7 +188,7 @@ function rhoSensitivity(it) {
   const rows = [null, 0.9, 0.8, 0.7, 0.6, 0.5].map((r) => {
     const mc = montecarlo(p, it.volatility, r == null ? it.correlation : it.correlation.map((c) => ({ ...c, rho: r })), MC);
     const exp = (mc.lossRate / 100) * Math.abs(mc.avgLoss);
-    return { rho: r, loss: mc.lossRate, expLoss: exp, ratio: it.annualRate / exp };
+    return { rho: r, loss: mc.lossRate, expLoss: exp, ratio: it.annualRate / mc.lossRate };
   });
   const vols = it.volatility.map((v) => v.vol).sort((a, b) => a - b);
   return { no: it.no, disclosed: Math.min(...it.correlation.map((c) => c.rho)), rows, volSpread: vols[vols.length - 1] - vols[0] };
