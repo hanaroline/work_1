@@ -1710,7 +1710,10 @@ _QUOTE_MARK = ("연구원", "애널리스트", "센터장", "리서치센터", "
 _SENT_END = re.compile(r"(?<![0-9])\.\s|\n")
 _FIRM_VERB = ("분석했", "전망했", "추정했", "평가했", "내다봤", "진단했",
               "제시했", "추천했", "권고했", "예상했", "리포트에서", "보고서에서",
-              "의견을 냈", "목표가를", "라고 했", "라고 밝혔", "라고 말했")
+              "의견을 냈", "목표가를", "라고 했", "라고 밝혔", "라고 말했",
+              # 8/26 에 새어 나간 꼴 — 「미래에셋증권은 자사주 매입 여력이 풍부한
+              # 기업의 조건으로 …를 꼽았다」. 이것도 그 회사가 **낸 분석**이다.
+              "꼽았", "짚었", "지목했", "거론했")
 
 
 def _firm_says(window):
@@ -1741,6 +1744,44 @@ def _looks_like_research_call(title, company):
     return named and any(w in t for w in _CALL_WORD)
 
 
+def _spans(text, company):
+    """회사 이름이 나온 자리를 (시작, 끝)으로 준다.
+
+    줄임말이 긴 이름 안에 들어 있으므로(「한국투자」 ⊂ 「한국투자증권」) 긴 것을
+    먼저 잡고 겹치는 짧은 것은 버린다. 안 그러면 「한국투자」의 뒷말이
+    「증권 등 대형…」으로 잡혀 뒷말 판단이 통째로 어긋난다.
+    """
+    t, out = text or "", []
+    for nm in sorted(_names_of(company), key=len, reverse=True):
+        for m in re.finditer(re.escape(nm), t):
+            if any(t[m.end():m.end() + 8].startswith(x) for x in _NOT_SAME):
+                continue
+            if any(m.start() < e and s < m.end() for s, e in out):
+                continue
+            out.append((m.start(), m.end()))
+    return sorted(out)
+
+
+def _listing_only(text, company):
+    """이름이 나올 때마다 「… 등 <다른 명사>」 꼴이면 참."""
+    sp = _spans(text, company)
+    return bool(sp) and all(re.match(r"\s*등\s+[가-힣]", (text or "")[e:e + 8])
+                            for _, e in sp)
+
+
+# 제목이 **업계 전체의 시각**을 인용하는 꼴. 「증권가」·「증권사」·「금융투자업계」는
+# 지침 4-2 절에 적어 둔 대로 **출처를 대는 말**이지 그 회사를 가리키는 말이
+# 아니다. 회사 이름이 제목에 없는데 이 말만 있으면, 그 기사는 업계가 무엇을
+# 보는지에 대한 것이지 이 회사가 무엇을 했는지에 대한 것이 아니다.
+#   「"자사주 소각 효과 증명"…**증권가** '제2의 SK하이닉스' 찾기 분주」 (8/26)
+_HOUSE_VIEW = ("증권가", "증권사", "금융투자업계", "증권업계", "여의도")
+
+
+def _looks_like_house_view(title, company):
+    t = title or ""
+    return (not _mentions(t, company)) and any(w in t for w in _HOUSE_VIEW)
+
+
 def _classify_broker(title, body, company):
     """그 회사 **자체** 기사인지, 그 회사 사람을 인용한 기사인지 가른다.
 
@@ -1754,6 +1795,8 @@ def _classify_broker(title, body, company):
     t, b = title or "", body or ""
     if _looks_like_research_call(t, company):
         return "quoted", -9, "리서치 콜 제목 — 이 회사가 낸 의견이지 이 회사 소식이 아니다"
+    if _looks_like_house_view(t, company):
+        return "quoted", -8, "업계 시각을 대는 제목 — 이 회사가 한 일이 아니다"
     score, why = 0, []
     if _mentions(t, company):                     # 가장 센 신호다 (줄임말 포함)
         score += 4
@@ -1762,7 +1805,22 @@ def _classify_broker(title, body, company):
     if not hits:
         return "quoted", score, "본문에 회사 이름 없음"
 
-    near = lambda w: any(w in b[max(0, i - 150):i + 200] for i in hits)
+    # **나열 속의 이름**은 그 회사 소식이 아니다.
+    #   「코인원 역시 **한국투자증권 등 대형 증권사** 자본을 확보하며」
+    # 여기서 주어는 코인원이고 증권사는 딸린 말이다. 「등」 뒤에 조사가 아니라
+    # 다른 명사가 이어지면 나열의 한 자리일 뿐이다. 반대로 「미래에셋증권
+    # 등도 … 주주환원에 나섰다」는 「등도」로 주어가 되니 그 회사 소식이 맞다.
+    if not _mentions(t, company) and _listing_only(b, company):
+        return "quoted", score, "나열 속의 이름 — 다른 회사 이야기에 딸려 나왔다"
+
+    # **창을 좁게 잡는다.** ±150/200 자로 두었더니 같은 문단에 있는 **다른
+    # 회사가 한 일**이 그대로 이 회사 것이 되었다. 8/26 에 이렇게 새어 나갔다 —
+    #   「자사주 소각 효과 증명…증권가 제2의 SK하이닉스 찾기」 → 미래에셋증권
+    #   「대기업이 스테이블코인에 뛰어든 이유」 → 삼성증권(「인수」가 걸렸다)
+    #   「[증시 인사이트] 주주환원에도 삼성전자 급락」 → 메리츠증권(「자사주」)
+    # 셋 다 그 증권사가 한 일이 아니다. 한 문장 안에서 이름과 붙어 있어야
+    # 그 회사가 한 행위다 — 「상장 주관 업무는 한국투자증권이다」처럼.
+    near = lambda w: any(w in b[max(0, i - 45):i + 45] for i in hits)
     act = sorted({w for w in _CORP_ACT if near(w)})
     biz = sorted({w for w in _CORP_BIZ if near(w)})
     weak = sorted({w for w in _CORP_WEAK if near(w)})
@@ -1781,6 +1839,11 @@ def _classify_broker(title, body, company):
 
     def _is_quote(i):
         w = b[i:i + 300]
+        # 「미래에셋증권**에 따르면** …」 — 회사 이름 바로 뒤의 「에 따르면」은
+        # 그 회사를 **출처로 대는** 말이다. 회사가 한 일이 아니라 회사가 낸 것.
+        for nm in sorted(_names_of(company), key=len, reverse=True):
+            if w.startswith(nm) and re.match(r"\s*에\s*따르면", w[len(nm):]):
+                return True
         return any(q in w[:80] for q in _QUOTE_MARK) or _firm_says(w)
 
     quoted = sum(1 for i in hits if _is_quote(i))
