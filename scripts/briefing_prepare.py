@@ -171,10 +171,14 @@ def _tables(C):
     C["inv_trend"] = tbl("코스피 투자자별 순매수 &mdash; 최근 10거래일, 단위 억원",
                          "KOSPI net buying by investor type &mdash; last 10 sessions",
                          ih, irows, cls="data compact",
-                         foot_ko="세 주체 합이 0 이 아닌 것은 <strong>기타법인이 빠져 있기 때문</strong>입니다. "
-                                 "코스닥은 포함하지 않은 코스피 기준입니다.",
-                         foot_en="The three columns do not sum to zero because <strong>other corporates are "
-                                 "excluded</strong>. KOSPI only.")
+                         foot_ko="<strong>하루치가 아니라 방향이 언제 바뀌었는지를 보십시오.</strong> 외국인이 "
+                                 "며칠째 같은 쪽인지, 그 흐름이 끊긴 날이 언제인지가 위 표의 하루치보다 "
+                                 "오래 갑니다 " + VF_MD + ". 개인과 외국인이 <strong>거울처럼 반대</strong>인 "
+                                 "구간은 손이 바뀌고 있다는 뜻입니다.",
+                         foot_en="<strong>Read the turn, not the day.</strong> How many sessions foreigners have "
+                                 "stayed on one side, and when that run broke, outlasts any single day&rsquo;s "
+                                 "figure " + VF_MD + ". Stretches where retail mirrors foreign flow are the "
+                                 "market changing hands.")
 
     C["supply_tbl"] = build_supply(C)
 
