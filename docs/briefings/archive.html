@@ -1,0 +1,176 @@
+<title data-en="Briefing Archive | Mirae Asset Securities Mapo WM">브리핑 목록 | 미래에셋증권 마포WM</title>
+<style>
+*,*::before,*::after{box-sizing:border-box}
+:root{
+  --primary:#F58220; --primary-active:#CB6015; --secondary:#043B72;
+  --canvas:#FFFFFF; --card:#FFFFFF; --surface-subtle:#F7F8FA;
+  --hairline:#CDCECB; --hairline-soft:#E5E4E1;
+  --ink:#1A1A1A; --body:#3D3D3D; --muted:#6C6C6C; --muted-soft:#84888B;
+  --on-primary:#FFFFFF;
+  --font-kr:'Pretendard','Apple SD Gothic Neo','Noto Sans KR','Malgun Gothic',system-ui,sans-serif;
+  --font-en:'Aptos','Segoe UI',system-ui,-apple-system,'Helvetica Neue',Arial,sans-serif;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --primary:#FF9A4A; --primary-active:#FFB169; --secondary:#82B7EA;
+  --canvas:#15171B; --card:#1A1E25; --surface-subtle:#1B1F26;
+  --hairline:#3A414C; --hairline-soft:#2A303A;
+  --ink:#F1F3F6; --body:#CDD3DB; --muted:#98A0AB; --muted-soft:#7F8794;
+  --on-primary:#241206;
+}}
+:root[data-theme="dark"]{
+  --primary:#FF9A4A; --primary-active:#FFB169; --secondary:#82B7EA;
+  --canvas:#15171B; --card:#1A1E25; --surface-subtle:#1B1F26;
+  --hairline:#3A414C; --hairline-soft:#2A303A;
+  --ink:#F1F3F6; --body:#CDD3DB; --muted:#98A0AB; --muted-soft:#7F8794;
+  --on-primary:#241206;
+}
+body{margin:0;background:var(--canvas);color:var(--body);font-family:var(--font-kr);
+  font-size:19px;line-height:1.65;font-variant-numeric:tabular-nums}
+html[lang="en"] body{font-family:var(--font-en)}
+.page{max-width:960px;margin:0 auto;padding:0 32px 72px}
+@media (max-width:768px){ .page{padding:0 20px 56px} }
+.top{display:flex;align-items:flex-start;justify-content:space-between;gap:19px;padding-top:24px}
+.chip{display:inline-block;font-size:14px;letter-spacing:.6px;font-weight:500;color:var(--muted);
+  border:1px solid var(--hairline);padding:4px 10px;border-radius:2px}
+.lang-toggle{display:inline-flex;border:1px solid var(--hairline);border-radius:2px;
+  overflow:hidden;background:var(--card);flex:none}
+.lang-toggle button{font-family:var(--font-en);font-size:14px;font-weight:500;letter-spacing:.5px;
+  padding:10px 17px;border:0;background:var(--card);color:var(--muted);cursor:pointer;line-height:1}
+.lang-toggle button + button{border-left:1px solid var(--hairline)}
+.lang-toggle button[aria-checked="true"]{background:var(--primary);color:var(--on-primary)}
+.hero{background:var(--primary);color:#FFFFFF;margin:24px -32px 0;padding:48px 32px 40px}
+@media (max-width:768px){ .hero{margin:24px -20px 0;padding:36px 20px 30px} }
+.hero h1{font-size:48px;font-weight:700;line-height:1.1;letter-spacing:-.5px;margin:0 0 12px}
+@media (max-width:768px){ .hero h1{font-size:34px} }
+.hero p{font-size:19px;line-height:1.55;margin:0;max-width:60ch;color:rgba(255,255,255,.92)}
+.facts{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1px;
+  background:var(--hairline);border:1px solid var(--hairline);margin-top:38px}
+@media (max-width:560px){ .facts{grid-template-columns:minmax(0,1fr)} }
+.fact{background:var(--card);padding:20px}
+.fact .l{font-size:15px;font-weight:500;letter-spacing:.6px;color:var(--muted);margin:0 0 8px}
+.fact .v{font-size:32px;font-weight:700;line-height:1;color:var(--ink);margin:0}
+.fact .s{font-size:14px;color:var(--muted-soft);margin:8px 0 0}
+.mon{font-size:22px;font-weight:600;color:var(--ink);margin:48px 0 0;padding-bottom:10px;
+  border-bottom:1px solid var(--primary)}
+.mon .cnt{font-size:15px;font-weight:400;color:var(--muted-soft);margin-left:8px}
+ul.ed{list-style:none;margin:0;padding:0}
+ul.ed li{border-bottom:1px solid var(--hairline-soft)}
+ul.ed a,ul.ed li.na{display:flex;align-items:baseline;gap:14px;flex-wrap:wrap;
+  padding:14px 12px;color:var(--body);text-decoration:none;border:0}
+ul.ed a:hover{background:var(--surface-subtle);color:var(--primary-active)}
+ul.ed a:focus-visible{outline:2px solid var(--primary);outline-offset:-2px}
+ul.ed .d{font-weight:700;color:var(--ink);min-width:9.5em}
+ul.ed a:hover .d{color:var(--primary-active)}
+ul.ed .k{font-size:16px;color:var(--muted)}
+ul.ed li.na{color:var(--muted-soft)}
+ul.ed li.na .d{color:var(--muted-soft)}
+ul.ed .no{font-size:14px;color:var(--muted-soft)}
+.foot{margin-top:56px;padding-top:19px;border-top:1px solid var(--hairline);
+  font-size:14px;line-height:1.6;color:var(--muted-soft)}
+.foot p{margin:0 0 8px}
+[data-lang-en]{display:none}
+html[lang="en"] [data-lang-ko]{display:none}
+html[lang="en"] [data-lang-en]{display:revert}
+@media print{ .lang-toggle{display:none!important} ul.ed li{break-inside:avoid} }
+</style>
+
+<div class="page">
+<div class="top">
+  <span class="chip">[사내한]</span>
+  <div class="lang-toggle" role="radiogroup" aria-label="언어">
+    <button type="button" data-lang="ko" role="radio" aria-checked="true">KO</button>
+    <button type="button" data-lang="en" role="radio" aria-checked="false">EN</button>
+  </div>
+</div>
+
+<div class="hero">
+  <h1><span data-lang-ko>브리핑 목록</span><span data-lang-en>Briefing Archive</span></h1>
+  <p><span data-lang-ko>미래에셋증권 마포WM 이 펴낸 시황 브리핑 전부입니다.
+    이 주소는 바뀌지 않고, 새 판이 나올 때마다 여기에 더해집니다.</span>
+    <span data-lang-en>Every market briefing published by Mirae Asset Securities Mapo WM.
+    This address does not change; each new edition is added here.</span></p>
+</div>
+
+<div class="facts">
+  <div class="fact">
+    <p class="l"><span data-lang-ko>펴낸 판</span><span data-lang-en>Editions</span></p>
+    <p class="v">24</p>
+    <p class="s"><span data-lang-ko>2026-08-06 부터</span><span data-lang-en>since 2026-08-06</span></p>
+  </div>
+  <div class="fact">
+    <p class="l"><span data-lang-ko>열리는 링크</span><span data-lang-en>Live links</span></p>
+    <p class="v">24</p>
+    <p class="s"><span data-lang-ko>1 개월치</span><span data-lang-en>across 1 months</span></p>
+  </div>
+  <div class="fact">
+    <p class="l"><span data-lang-ko>가장 새 판</span><span data-lang-en>Latest</span></p>
+    <p class="v">2026-08-27</p>
+    <p class="s"><span data-lang-ko>목록 갱신 2026년 8월 27일(목) 16:30 KST</span>
+      <span data-lang-en>list rebuilt 16:30 KST, Thursday 27 August 2026</span></p>
+  </div>
+</div>
+
+<h2 class="mon"><span data-lang-ko>2026년 8월</span><span data-lang-en>August 2026</span> <span class="cnt">24</span></h2>
+<ul class="ed">
+  <li><a href="https://claude.ai/code/artifact/0b5810db-861c-4b9e-85e9-b9fb54875967" target="_blank" rel="noopener"><span class="d"><span data-lang-ko>8월 27일(목)</span><span data-lang-en>27 Aug, Thu</span></span><span class="k"><span data-lang-ko>모닝 마켓</span><span data-lang-en>Morning</span></span></a></li>
+  <li><a href="https://claude.ai/code/artifact/b27f3cea-0283-4449-80ab-9652fb74394b" target="_blank" rel="noopener"><span class="d"><span data-lang-ko>8월 26일(수)</span><span data-lang-en>26 Aug, Wed</span></span><span class="k"><span data-lang-ko>모닝 마켓</span><span data-lang-en>Morning</span></span></a></li>
+  <li><a href="https://claude.ai/code/artifact/3dd838fd-0cb8-4449-81f0-f01839407935" target="_blank" rel="noopener"><span class="d"><span data-lang-ko>8월 25일(화)</span><span data-lang-en>25 Aug, Tue</span></span><span class="k"><span data-lang-ko>모닝 마켓</span><span data-lang-en>Morning</span></span></a></li>
+  <li><a href="https://claude.ai/code/artifact/1e8675b8-545c-4f3d-b5a6-2df772a122d1" target="_blank" rel="noopener"><span class="d"><span data-lang-ko>8월 24일(월)</span><span data-lang-en>24 Aug, Mon</span></span><span class="k"><span data-lang-ko>모닝 마켓</span><span data-lang-en>Morning</span></span></a></li>
+  <li><a href="https://claude.ai/code/artifact/66c51b57-6e3c-4287-92bf-b44d104a2e85" target="_blank" rel="noopener"><span class="d"><span data-lang-ko>8월 23일(일)</span><span data-lang-en>23 Aug, Sun</span></span><span class="k"><span data-lang-ko>해외 증시</span><span data-lang-en>Overseas</span></span></a></li>
+  <li><a href="https://claude.ai/code/artifact/13bd1e19-7f34-4332-9c17-7bf9f10b06e0" target="_blank" rel="noopener"><span class="d"><span data-lang-ko>8월 22일(토)</span><span data-lang-en>22 Aug, Sat</span></span><span class="k"><span data-lang-ko>해외 증시</span><span data-lang-en>Overseas</span></span></a></li>
+  <li><a href="https://claude.ai/code/artifact/3b765df8-e6b5-4b22-82c8-764a925692b7" target="_blank" rel="noopener"><span class="d"><span data-lang-ko>8월 21일(금)</span><span data-lang-en>21 Aug, Fri</span></span><span class="k"><span data-lang-ko>모닝 마켓</span><span data-lang-en>Morning</span></span></a></li>
+  <li><a href="https://claude.ai/code/artifact/402298bd-070a-44a5-97b5-9dca7fda8552" target="_blank" rel="noopener"><span class="d"><span data-lang-ko>8월 21일(금)</span><span data-lang-en>21 Aug, Fri</span></span><span class="k"><span data-lang-ko>장마감 시황</span><span data-lang-en>Close</span></span></a></li>
+  <li><a href="https://claude.ai/code/artifact/624996c3-aa73-4da4-9f69-79b2dba3a45c" target="_blank" rel="noopener"><span class="d"><span data-lang-ko>8월 20일(목)</span><span data-lang-en>20 Aug, Thu</span></span><span class="k"><span data-lang-ko>모닝 마켓</span><span data-lang-en>Morning</span></span></a></li>
+  <li><a href="https://claude.ai/code/artifact/864a091f-6152-44d7-ba4b-3a4c09857b50" target="_blank" rel="noopener"><span class="d"><span data-lang-ko>8월 20일(목)</span><span data-lang-en>20 Aug, Thu</span></span><span class="k"><span data-lang-ko>장마감 시황</span><span data-lang-en>Close</span></span></a></li>
+  <li><a href="https://claude.ai/code/artifact/dca66b4e-550e-42ed-96d9-b24918392756" target="_blank" rel="noopener"><span class="d"><span data-lang-ko>8월 19일(수)</span><span data-lang-en>19 Aug, Wed</span></span><span class="k"><span data-lang-ko>모닝 마켓</span><span data-lang-en>Morning</span></span></a></li>
+  <li><a href="https://claude.ai/code/artifact/c04b8081-7ddf-41a3-a693-d3f90acb6b71" target="_blank" rel="noopener"><span class="d"><span data-lang-ko>8월 18일(화)</span><span data-lang-en>18 Aug, Tue</span></span><span class="k"><span data-lang-ko>모닝 마켓</span><span data-lang-en>Morning</span></span></a></li>
+  <li><a href="https://claude.ai/code/artifact/87160ee2-f83f-495a-9d9a-c036dd3b3f14" target="_blank" rel="noopener"><span class="d"><span data-lang-ko>8월 17일(월)</span><span data-lang-en>17 Aug, Mon</span></span><span class="k"><span data-lang-ko>해외 증시</span><span data-lang-en>Overseas</span></span></a></li>
+  <li><a href="https://claude.ai/code/artifact/4498278f-4fa5-4ea1-aca1-dacb819f3ea7" target="_blank" rel="noopener"><span class="d"><span data-lang-ko>8월 15일(토)</span><span data-lang-en>15 Aug, Sat</span></span><span class="k"><span data-lang-ko>해외 증시</span><span data-lang-en>Overseas</span></span></a></li>
+  <li><a href="https://claude.ai/code/artifact/9ee323f2-2aac-4b76-86ac-968b1546caf9" target="_blank" rel="noopener"><span class="d"><span data-lang-ko>8월 14일(금)</span><span data-lang-en>14 Aug, Fri</span></span><span class="k"><span data-lang-ko>모닝 마켓</span><span data-lang-en>Morning</span></span></a></li>
+  <li><a href="https://claude.ai/code/artifact/4de32129-86ab-4daa-8a65-7658d2848765" target="_blank" rel="noopener"><span class="d"><span data-lang-ko>8월 13일(목)</span><span data-lang-en>13 Aug, Thu</span></span><span class="k"><span data-lang-ko>모닝 마켓</span><span data-lang-en>Morning</span></span></a></li>
+  <li><a href="https://claude.ai/code/artifact/2f4b11f0-6a38-4007-9afd-02cefca42228" target="_blank" rel="noopener"><span class="d"><span data-lang-ko>8월 12일(수)</span><span data-lang-en>12 Aug, Wed</span></span><span class="k"><span data-lang-ko>모닝 마켓</span><span data-lang-en>Morning</span></span></a></li>
+  <li><a href="https://claude.ai/code/artifact/81ed2f4f-4a38-4b60-911b-e42ee67c316a" target="_blank" rel="noopener"><span class="d"><span data-lang-ko>8월 11일(화)</span><span data-lang-en>11 Aug, Tue</span></span><span class="k"><span data-lang-ko>모닝 마켓</span><span data-lang-en>Morning</span></span></a></li>
+  <li><a href="https://claude.ai/code/artifact/f92ff123-0fc4-4931-b5cf-f9deb1fb7897" target="_blank" rel="noopener"><span class="d"><span data-lang-ko>8월 10일(월)</span><span data-lang-en>10 Aug, Mon</span></span><span class="k"><span data-lang-ko>모닝 마켓</span><span data-lang-en>Morning</span></span></a></li>
+  <li><a href="https://claude.ai/code/artifact/6bddc99f-2f51-4847-8707-a4b29c83a32f" target="_blank" rel="noopener"><span class="d"><span data-lang-ko>8월 10일(월)</span><span data-lang-en>10 Aug, Mon</span></span><span class="k"><span data-lang-ko>장마감 시황</span><span data-lang-en>Close</span></span></a></li>
+  <li><a href="https://claude.ai/code/artifact/46f66af2-cd8c-4d32-bbe6-9cddbea5dab9" target="_blank" rel="noopener"><span class="d"><span data-lang-ko>8월 8일(토)</span><span data-lang-en>8 Aug, Sat</span></span><span class="k"><span data-lang-ko>해외 증시 모닝</span><span data-lang-en>Global morning</span></span></a></li>
+  <li><a href="https://claude.ai/code/artifact/8692db99-79e8-43f5-9a8d-832e560effe9" target="_blank" rel="noopener"><span class="d"><span data-lang-ko>8월 7일(금)</span><span data-lang-en>7 Aug, Fri</span></span><span class="k"><span data-lang-ko>모닝 마켓</span><span data-lang-en>Morning</span></span></a></li>
+  <li><a href="https://claude.ai/code/artifact/e4224dd3-fbc3-4cd1-970c-1c8f9e9713ba" target="_blank" rel="noopener"><span class="d"><span data-lang-ko>8월 7일(금)</span><span data-lang-en>7 Aug, Fri</span></span><span class="k"><span data-lang-ko>장마감 시황</span><span data-lang-en>Close</span></span></a></li>
+  <li><a href="https://claude.ai/code/artifact/382fd976-d577-44b0-8380-3c5d378bada7" target="_blank" rel="noopener"><span class="d"><span data-lang-ko>8월 6일(목)</span><span data-lang-en>6 Aug, Thu</span></span><span class="k"><span data-lang-ko>모닝 마켓</span><span data-lang-en>Morning</span></span></a></li>
+</ul>
+
+<div class="foot">
+  <p><span data-lang-ko>각 줄을 누르면 그날 판이 새 창에서 열립니다. 판 안의 왼쪽 목차 아래에도
+    같은 목록이 있습니다.</span>
+    <span data-lang-en>Each row opens that edition in a new tab. The same list sits below the
+    contents in each edition&rsquo;s left-hand column.</span></p>
+  <p><span data-lang-ko>내부 참고용입니다. 특정 종목의 매매를 권유하지 않으며, 투자 판단의 최종
+    책임은 투자자 본인에게 있습니다.</span>
+    <span data-lang-en>An internal reference. It does not recommend the purchase or sale of any
+    security; investment decisions and their consequences rest with the investor.</span></p>
+</div>
+</div>
+
+<script>
+(function () {
+  var root = document.documentElement, KEY = 'mas-briefing-lang';
+  var tEl = document.querySelector('title');
+  var T_KO = tEl ? tEl.textContent : document.title;
+  var T_EN = (tEl && tEl.getAttribute('data-en')) || T_KO;
+  function applyLang(lang) {
+    root.setAttribute('lang', lang);
+    var b = document.querySelectorAll('.lang-toggle button');
+    for (var i = 0; i < b.length; i++) {
+      b[i].setAttribute('aria-checked', b[i].getAttribute('data-lang') === lang ? 'true' : 'false');
+    }
+    document.title = (lang === 'ko') ? T_KO : T_EN;
+    try { localStorage.setItem(KEY, lang); } catch (e) {}
+  }
+  var saved = null;
+  try { saved = localStorage.getItem(KEY); } catch (e) {}
+  applyLang(saved === 'en' ? 'en' : 'ko');
+  document.addEventListener('click', function (e) {
+    var b = e.target.closest ? e.target.closest('.lang-toggle button') : null;
+    if (b) applyLang(b.getAttribute('data-lang'));
+  });
+})();
+</script>

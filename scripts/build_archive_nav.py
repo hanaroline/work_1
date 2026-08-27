@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""사이드바 「지난 브리핑」 목록을 index.json 에서 다시 만든다.
+"""사이드바 「브리핑 목록」을 index.json 에서 다시 만든다.
 
 여태 이 목록은 판마다 손으로 적었다. 그래서 두 가지가 같이 썩었다.
 
@@ -9,9 +9,17 @@
    주소를 달고 있었다 — 전날 판에서 목록을 그대로 베끼면서 그 사이에
    같은 주소를 새 판이 덮어썼기 때문이다.
 
-이제 목록은 index.json 하나에서 나온다. 판 자신의 날짜보다 뒤에 나온
-브리핑은 넣지 않는다(「지난」 브리핑이므로). 자기 자신은 aria-current 로
-표시하고, url 이 없는 항목은 링크 없이 「보관본 없음」으로 남긴다.
+이제 목록은 index.json 하나에서 나온다. **모든 판을 싣는다** — 자기 날짜
+뒤에 나온 판까지 넣는다.
+
+    한때는 자기 날짜까지만 실었다(「지난」 브리핑이니까). 그러면 목록이
+    쓸모 있는 곳이 맨 앞 판 하나뿐이다. 8/19 판을 열면 8/19 까지밖에 안
+    보였고, 거기서 오늘 판으로 갈 길이 없었다. 어느 판을 열어도 오늘로
+    올 수 있어야 목록이다. 그래서 이름도 「지난 브리핑」이 아니라
+    「브리핑 목록」이다.
+
+자기 자신은 aria-current 로 표시하고, url 이 없는 항목은 링크 없이
+「보관본 없음」으로 남긴다.
 
     python3 scripts/build_archive_nav.py           # 전체 다시 만들기
     python3 scripts/build_archive_nav.py --check   # 고칠 곳만 알려 주고 안 고침
@@ -26,6 +34,13 @@ DIR = os.path.join(ROOT, "docs", "briefings")
 INDEX = os.path.join(DIR, "index.json")
 
 BLOCK = re.compile(r'<ul class="sidenav-dates">.*?</ul>', re.S)
+
+# 사이드바 머리글도 같이 고친다 — 목록이 더는 「지난」 것만이 아니다.
+LABEL = re.compile(r'<p class="sidenav-label">'
+                   r'<span data-lang-ko>지난 브리핑</span>'
+                   r'<span data-lang-en>Archive</span></p>')
+LABEL_NEW = ('<p class="sidenav-label"><span data-lang-ko>브리핑 목록</span>'
+             '<span data-lang-en>All editions</span></p>')
 
 # 인쇄본에도 같은 목록을 싣는다. 사이드바는 @media print 에서 숨으므로
 # PDF 에는 지난 판으로 가는 길이 하나도 남지 않았다. 아래 블록은 화면에서는
@@ -99,8 +114,8 @@ def print_block(visible, me):
     return ('<!-- archive-print:start -->\n'
             '%s'
             '<div class="archive-print">\n'
-            '  <p class="h"><span data-lang-ko>지난 브리핑</span>'
-            '<span data-lang-en>Archive</span></p>\n'
+            '  <p class="h"><span data-lang-ko>브리핑 목록</span>'
+            '<span data-lang-en>All editions</span></p>\n'
             '  <p class="s"><span data-lang-ko>날짜를 누르면 그 판이 열립니다. '
             '화면 왼쪽 목차 아래에도 같은 목록이 있습니다.</span>'
             '<span data-lang-en>Each date links to that edition; the same list sits '
@@ -124,23 +139,25 @@ def beta(path, briefings):
         return 1
     mine = m.group(1)
     ordered = sorted(briefings, key=key, reverse=True)
-    visible = [b for b in ordered if str(b.get("date", "")) <= mine]
-    if not visible:
-        print("  !! %s 이전의 판이 없다" % mine)
-        return 1
+    visible = list(ordered)
     src = open(path, encoding="utf-8").read()
     if len(BLOCK.findall(src)) != 1:
         print("  !! sidenav-dates 블록이 %d 개" % len(BLOCK.findall(src)))
         return 1
-    # 자기 자신을 맨 위에 「이 판」으로 세운다. 목록에 자기가 없으면 읽는 사람이
-    # 어디에 있는지 알 수 없고, 재검증도 현재 판 표시를 1 개 요구한다.
-    me = {"date": mine, "label_ko": "베타 시안", "label_en": "Beta draft",
-          "file": os.path.basename(path)}
-    visible = [me] + [b for b in visible if b.get("date") != mine
-                      or b.get("file") != me["file"]]
+    # 같은 날 판이 이미 목록에 있으면 **그것**을 「이 판」으로 표시한다. 예전에는
+    # 무조건 「베타 시안」 줄을 하나 새로 얹어서, 새 형식으로 다시 지은 8/27 판이
+    # 목록에 08-27 을 두 줄 — 「베타 시안」과 「모닝」 — 로 실었다.
+    same = [b for b in visible if b.get("date") == mine]
+    if same:
+        me = same[0]
+    else:
+        me = {"date": mine, "label_ko": "미발행 시안", "label_en": "Unpublished draft",
+              "file": os.path.basename(path)}
+        visible = [me] + visible
     rows = [row(b, b is me) for b in visible]
     out = BLOCK.sub(lambda _: '<ul class="sidenav-dates">\n%s\n  </ul>' % "\n".join(rows),
                     src, count=1)
+    out = LABEL.sub(LABEL_NEW, out, count=1)
     pb = print_block(visible, me)
     if PRINT.search(out):
         out = PRINT.sub(lambda _: pb, out, count=1)
@@ -180,11 +197,8 @@ def main():
             bad += 1
             continue
 
-        # 자기 날짜까지만. 뒤에 나온 판은 「지난 브리핑」이 아니다.
-        visible = [b for b in ordered if key(b) <= key(me)]
-        if len(visible) < 2:                            # 첫 판은 목록이 필요 없다
-            skipped.append(fn)
-            continue
+        # **자르지 않는다.** 어느 판을 열어도 최신 판으로 갈 수 있어야 한다.
+        visible = ordered
 
         rows = [row(b, b is me) for b in visible]
         new = '<ul class="sidenav-dates">\n%s\n  </ul>' % "\n".join(rows)
@@ -196,6 +210,7 @@ def main():
             bad += 1
             continue
         out = BLOCK.sub(lambda _: new, src, count=1)
+        out = LABEL.sub(LABEL_NEW, out, count=1)
 
         # 인쇄용 블록 — 있으면 갈아 끼우고, 없으면 </main> 바로 앞에 넣는다.
         pb = print_block(visible, me)
