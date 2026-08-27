@@ -93,8 +93,26 @@ gate_one() {
   # 못이 먼저다. 어느 수집본으로 쓴 판인지 모르면 그 뒤의 대조는 매번 다른
   # 답을 낸다 — 같은 판을 세 수집본으로 재면 어긋난 짝이 63 / 87 / 104 로
   # 갈렸다. 판이 변한 것이 아니라 기준이 흘러간 것이다.
-  step "못 — 수집본이 판에 박혀 있나" yes \
-    python3 scripts/gate/pin.py --check "$f"
+  #
+  # 다만 **지워진 근거를 요구할 수는 없다.** runs/ 를 남기기 시작한 것은
+  # 이 관문과 같은 때이므로, 그 앞의 판에는 박을 수 있는 참된 못이 없다.
+  # 그런 판은 막지 않고 알린다 — runs/ 가 그 날짜를 덮는 순간 자동으로
+  # 차단으로 바뀐다. 없는 근거를 만들어 붙이는 것이 더 나쁘다.
+  local pinnable=no
+  if ls data/market/runs/"$date"T*.json >/dev/null 2>&1 \
+     || python3 scripts/gate/pin.py --read "$f" 2>/dev/null | grep -q .; then
+    pinnable=yes
+  fi
+
+  if [ "$pinnable" = yes ]; then
+    step "못 — 수집본이 판에 박혀 있나" yes \
+      python3 scripts/gate/pin.py --check "$f"
+  else
+    printf '\n── 못 — 수집본이 판에 박혀 있나\n'
+    printf '   막지 않습니다 — %s 의 수집본이 runs/ 에 없습니다.\n' "$date"
+    printf '   이 판은 근거가 남기 전에 만들어졌으므로 소급 검산이 안 됩니다.\n'
+    printf '   판에 그렇게 적으십시오. 오늘 이후의 판은 못을 박습니다.\n'
+  fi
 
   # 신선도는 **오늘 판을 쓰는 중일 때** 의미가 있다. 「지금 읽고 있는 시세가
   # 낡았나」를 보는 검사이기 때문이다. 지난 판에 걸면 언제나 빨간불이 된다 —
@@ -107,8 +125,15 @@ gate_one() {
       "$(TZ=Asia/Seoul date +%F)"
   fi
 
-  step "거짓 칩 — MARKET DATA 라 붙은 값이 자료에 있나" yes \
-    python3 scripts/gate/audit2.py "$f"
+  # 칩 검사는 못이 있어야 뜻이 있다. 못이 없으면 무엇과 견줄지가 정해지지 않아
+  # 매번 다른 답이 나온다 — 그것을 빨간불로 쓰면 헛경보를 관문에 넣는 것이다.
+  if [ "$pinnable" = yes ]; then
+    step "거짓 칩 — MARKET DATA 라 붙은 값이 자료에 있나" yes \
+      python3 scripts/gate/audit2.py "$f"
+  else
+    printf '\n── 거짓 칩 — MARKET DATA 라 붙은 값이 자료에 있나\n'
+    printf '   건너뜀 — 못이 없어 견줄 수집본이 정해지지 않습니다.\n'
+  fi
 
   step "구조·파생계산 (recheck)" yes \
     python3 scripts/recheck.py "$f"
@@ -116,10 +141,15 @@ gate_one() {
   step "판 안 완전중복" yes \
     python3 scripts/dupcheck.py "$f" --strict
 
-  # 목록 정합성은 **이 판이 어긋났을 때만** 막는다. 저장소 전체로 재면 지금
-  # 25 개 판이 걸리고, 그것을 고치려면 발행된 판 25 개를 다시 쓰게 된다. 관문이
-  # 첫날부터 빨간불이면 사람은 관문을 안 보게 된다 — 그게 이 병의 시작이었다.
-  # 남은 판은 아래 [확인] 칸에서 알린다.
+  # 목록 정합성은 **이 판이 어긋났을 때만** 막는다.
+  #
+  # `--check` 는 저장소 전체를 재므로 index.json 에 주소 하나가 비어 있기만 해도
+  # 「고칠 곳 25개」가 된다. 실제로 이 관문을 만들면서 그것을 보고 판 25 개를
+  # 다시 만들었는데, 원인은 index.json 의 빠진 주소 **둘**이었고 그 사이 main
+  # 에서 이미 고쳐져 있었다. 판을 건드릴 일이 아니었다.
+  #
+  # 관문이 남의 판까지 빨갛게 물들이면 사람은 관문을 안 보게 된다 — 그게 이
+  # 병의 시작이었다. 그래서 차단은 이 판으로 좁히고, 나머지는 [확인]에 둔다.
   step "브리핑 목록 — 이 판이 어긋났나" yes \
     nav_check_one "$base"
 
@@ -149,7 +179,9 @@ gate_one() {
 }
 
 TARGETS=()
+SCAN=no
 if [ "${1:-}" = "--changed" ]; then
+  SCAN=yes
   git fetch -q origin main 2>/dev/null || true
   while IFS= read -r p; do
     [ -n "$p" ] && [ -f "$p" ] && TARGETS+=("$p")
@@ -174,6 +206,16 @@ for f in "${TARGETS[@]}"; do
   case "$f" in
     docs/briefings/archive.html|*/index.json) continue ;;
   esac
+  # --changed 로 훑을 때는 **글이 바뀐 판만** 본다. 빌더가 사이드바 목록을
+  # 갈아 끼우면 판 스물다섯 개가 한꺼번에 바뀌는데, 그것을 두고 이미 발행된
+  # 글을 지금 기준으로 다시 재면 관문이 첫날부터 빨간불이 된다.
+  # 판을 이름으로 직접 주면 언제나 온전히 돌린다.
+  if [ "$SCAN" = yes ]; then
+    if ! python3 scripts/gate/content_changed.py "$f" >/dev/null 2>&1; then
+      printf '\n건너뜀: %s — 생성 블록만 다릅니다(글은 그대로)\n' "$(basename "$f")"
+      continue
+    fi
+  fi
   gate_one "$f"
 done
 
