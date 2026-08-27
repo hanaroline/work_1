@@ -24,7 +24,7 @@ HEAD = '''<!doctype html>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="color-scheme" content="light dark">
-<title>%s</title>
+<title%s>%s</title>
 <style>*,*::before,*::after{box-sizing:border-box}html{-webkit-text-size-adjust:100%%}body{margin:0;padding:0}img{max-width:100%%}</style>
 </head>
 <body>
@@ -48,10 +48,11 @@ def main():
     body = open(src, encoding="utf-8").read()
 
     # 본문 첫머리의 <title> 을 <head> 로 옮긴다. 두면 글자가 그대로 찍힌다.
-    m = re.search(r"<title>(.*?)</title>\s*", body, re.S)
+    # 속성(data-en 영문 제목)도 함께 옮긴다 — 떨어뜨리면 EN 탭 제목이 사라진다.
+    m = re.search(r"<title([^>]*)>(.*?)</title>\s*", body, re.S)
     if not m:
         sys.exit("%s 에 <title> 이 없다." % src)
-    title = m.group(1)
+    attrs, title = m.group(1), m.group(2)
     body = (body[:m.start()] + body[m.end():]).lstrip()
 
     base = os.path.basename(src)[:-len(".html")]          # 2026-08-10-close
@@ -70,7 +71,7 @@ def main():
     out = os.path.join(outdir, name)
 
     with open(out, "w", encoding="utf-8") as f:
-        f.write(HEAD % title + body + "\n</body>\n</html>\n")
+        f.write(HEAD % (attrs, title) + body + "\n</body>\n</html>\n")
     print("만듦: %s (%d자)" % (out, len(body)))
     print("제목: %s" % title)
 

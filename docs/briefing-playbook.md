@@ -530,11 +530,12 @@ document.querySelectorAll('table.data tbody tr').forEach(tr => {
 @media (max-width:860px){ table.data .perf{display:none} }   /* 아래 fold_perf.py 를 반드시 같이 */
 table.data .perf{padding-left:8px;padding-right:8px}
 table.data.compact .perf{padding-left:5px;padding-right:5px}
-
-/* 1400px 위에서는 오른쪽 상세 패널이 열려 본문 칸이 오히려 ~720px 로 **좁아진다**.
-   넓은 화면이라고 표가 넓어지는 것이 아니다. */
-@media (min-width:1400px) and (max-width:1620px){ table.data .opt{display:none} }
 ```
+
+예전에는 여기에 `@media (min-width:1400px) and (max-width:1620px){ .opt{display:none} }`
+가 하나 더 있었습니다. 오른쪽 상세 패널이 자리를 340px 먹어서 **넓은 화면일수록 표가
+좁아졌기** 때문입니다. 패널을 걷어냈으므로 그 규칙도 없앴습니다 — 지금은 768px 위
+어디서나 `.opt` 가 섭니다.
 
 **`.perf` 를 `.opt` 로 달지 마십시오.** `.opt` 는 680px 에서 접히는데, 기간 수익률은
 그보다 훨씬 일찍 접어야 합니다.
@@ -771,12 +772,17 @@ pdftotext -layout out/미래에셋_마포WM_*_전체.pdf - | grep -E '삼성전�
 ## 6. 화면 규격
 
 - 외부 폰트·CDN·이미지를 넣지 않습니다(아티팩트 CSP가 차단합니다).
-- 좌측 목차 사이드바, 우측 상세 패널, 드릴다운, 요약/전체 PDF 버튼, 한/영
+- 좌측 목차 사이드바, 드릴다운(제자리 펼침), 요약/전체 PDF 버튼, 한/영
   토글, 다크 모드를 유지합니다.
+- **오른쪽 상세 패널은 없습니다(2026-08-27 제거).** 1400px 위에서만 켜지는 물건이라
+  같은 클릭이 화면 폭에 따라 다르게 동작했고 — 사무실 모니터에서는 패널이 열리고
+  노트북에서는 제자리에서 펼쳐졌습니다 — 자리를 만드느라 1400~1620px 에서 표의 설명
+  열까지 접혀 있었습니다. 인쇄에서는 어차피 숨었습니다. **상세는 어느 폭에서나
+  제자리에서 펼칩니다.**
 - 상단 카드가 5개면 `stat-grid`, 6개면 `stat-grid six`, 8개면 `stat-grid eight`.
   **카드 수가 열 수로 나누어떨어져야 합니다.** 8개를 3열(`six`)에 넣으면
   3+3+2 로 깨져 오른쪽 아래에 빈 칸이 남습니다. 클래스를 새로 만들 때는
-  좁은 화면·패널 모드(`.pane-mode`)용 규칙을 **함께** 넣으십시오. 두 클래스
+  좁은 화면용 규칙을 **함께** 넣으십시오. 두 클래스
   선택자(`.stat-grid.eight`)가 `.stat-grid` 하나짜리 미디어쿼리를 이기므로,
   빠뜨리면 휴대폰에서도 4열로 남습니다.
 - **표는 그 표가 다루는 대상의 이름을 단 섹션에 둡니다.** 국내 종목 표가

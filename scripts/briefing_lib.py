@@ -256,12 +256,17 @@ class Narrative(object):
 
 
 # ── 조립 ──────────────────────────────────────────────────────────
-def assemble(chrome_dir, doc, title, hero, now):
+def assemble(chrome_dir, doc, title, hero, now, title_en=None):
     head = open(chrome_dir + "/head.html", encoding="utf-8").read()
     tail = open(chrome_dir + "/tail.html", encoding="utf-8").read()
     nav = open(chrome_dir + "/nav.html", encoding="utf-8").read()
 
-    head = re.sub(r"<title>.*?</title>", "<title>" + title + "</title>",
+    # 제목도 한/영 쌍으로 심는다. 예전에는 영문 제목이 꼬리말 스크립트 안에
+    # 문자열로 박혀 있어서, 판을 물려 지을 때마다 8월 8일이 그대로 따라왔다
+    # (실제로 모든 판의 EN 탭 제목이 "Saturday 8 August 2026" 이었다).
+    ten = title_en or title
+    head = re.sub(r"<title[^>]*>.*?</title>",
+                  '<title data-en="%s">%s</title>' % (esc(ten), title),
                   head, count=1, flags=re.S)
 
     # 꼬리말 작성일 — 시계에서 읽는다. 손으로 적으면 예정 시각을 적게 된다.

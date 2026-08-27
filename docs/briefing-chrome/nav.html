@@ -1,43 +1,25 @@
 <div class="shell">
 
+<!-- 목차와 지난 브리핑 목록은 **비워 둔다**.
+
+     예전에는 여기에 지난 판의 목록이 그대로 남아 있었다. 목차는 8/19 판의
+     18절이, 지난 브리핑은 8/19 까지의 14건이 박혀 있었다. 목차는
+     briefing_lib.assemble() 이 절 목록에서 다시 만들어 덮으므로 티가 나지
+     않았지만, 지난 브리핑은 build_archive_nav.py 를 돌리지 않으면 그대로
+     실려 나갔다 — 8/27 을 지어도 사이드바는 8/19 까지만 보였다.
+
+     이제 둘 다 빈 채로 둔다. 채우는 자리는 하나뿐이다.
+       목차          → assemble() 이 doc.toc() 으로 채운다
+       지난 브리핑   → build_archive_nav.py 가 index.json 으로 채운다
+     비어 있으면 recheck.py 가 FAIL 을 낸다. 조용히 어제 것이 나가느니
+     소리를 내고 멈추는 편이 낫다. -->
+
 <nav class="sidenav" aria-label="목차">
   <p class="sidenav-label"><span data-lang-ko>목차</span><span data-lang-en>Contents</span></p>
   <ul class="sidenav-toc">
-    <li><a href="#keypoints"><span class="sn">01</span><span data-lang-ko>한눈에 보는 핵심</span><span data-lang-en>Key Takeaways</span></a></li>
-    <li><a href="#us"><span class="sn">02</span><span data-lang-ko>미국 증시 마감</span><span data-lang-en>US Equities Close</span></a></li>
-    <li><a href="#jobs"><span class="sn">03</span><span data-lang-ko>미 7월 소매판매</span><span data-lang-en>US July Retail Sales</span></a></li>
-    <li><a href="#rates"><span class="sn">04</span><span data-lang-ko>금리 &middot; 채권시장</span><span data-lang-en>Rates &amp; Bonds</span></a></li>
-    <li><a href="#fx"><span class="sn">05</span><span data-lang-ko>환율</span><span data-lang-en>Foreign Exchange</span></a></li>
-    <li><a href="#commodity"><span class="sn">06</span><span data-lang-ko>원자재 &middot; 기타 지표</span><span data-lang-en>Commodities &amp; Others</span></a></li>
-    <li><a href="#europe"><span class="sn">07</span><span data-lang-ko>유럽 증시</span><span data-lang-en>Europe</span></a></li>
-    <li><a href="#asia"><span class="sn">08</span><span data-lang-ko>아시아 증시</span><span data-lang-en>Asia</span></a></li>
-    <li><a href="#korea"><span class="sn">09</span><span data-lang-ko>국내 증시 되짚기</span><span data-lang-en>Korea in Review</span></a></li>
-    <li><a href="#issues"><span class="sn">10</span><span data-lang-ko>해외 시장 관심 이슈</span><span data-lang-en>Global Watchlist</span></a></li>
-    <li><a href="#reports"><span class="sn">11</span><span data-lang-ko>증권사 리포트 요약</span><span data-lang-en>Broker Research</span></a></li>
-    <li><a href="#views"><span class="sn">12</span><span data-lang-ko>하우스 시각</span><span data-lang-en>House View</span></a></li>
-    <li><a href="#calendar"><span class="sn">13</span><span data-lang-ko>일정 &middot; 휴장일</span><span data-lang-en>Calendar &amp; Holidays</span></a></li>
-    <li><a href="#risks"><span class="sn">14</span><span data-lang-ko>리스크 점검</span><span data-lang-en>Risk Check</span></a></li>
-    <li><a href="#wm"><span class="sn">15</span><span data-lang-ko>WM 업계</span><span data-lang-en>WM Industry</span></a></li>
-    <li><a href="#talking"><span class="sn">16</span><span data-lang-ko>고객 응대 포인트</span><span data-lang-en>Talking Points</span></a></li>
-    <li><a href="#verify"><span class="sn">17</span><span data-lang-ko>데이터 검증 노트</span><span data-lang-en>Verification Notes</span></a></li>
-    <li><a href="#sources"><span class="sn">18</span><span data-lang-ko>출처</span><span data-lang-en>Sources</span></a></li>
   </ul>
   <p class="sidenav-label"><span data-lang-ko>지난 브리핑</span><span data-lang-en>Archive</span></p>
   <ul class="sidenav-dates">
-    <li><a href="#" aria-current="page"><span class="d">08-19</span><span data-lang-ko>모닝 마켓</span><span data-lang-en>Morning brief</span></a></li>
-    <li><a href="https://claude.ai/code/artifact/c04b8081-7ddf-41a3-a693-d3f90acb6b71" target="_blank" rel="noopener"><span class="d">08-18</span><span data-lang-ko>모닝 마켓</span><span data-lang-en>Morning brief</span></a></li>
-    <li><a href="https://claude.ai/code/artifact/87160ee2-f83f-495a-9d9a-c036dd3b3f14" target="_blank" rel="noopener"><span class="d">08-17</span><span data-lang-ko>해외 증시</span><span data-lang-en>Global brief</span></a></li>
-    <li><a href="https://claude.ai/code/artifact/4498278f-4fa5-4ea1-aca1-dacb819f3ea7" target="_blank" rel="noopener"><span class="d">08-15</span><span data-lang-ko>해외 증시</span><span data-lang-en>Global brief</span></a></li>
-    <li><a href="https://claude.ai/code/artifact/9ee323f2-2aac-4b76-86ac-968b1546caf9" target="_blank" rel="noopener"><span class="d">08-14</span><span data-lang-ko>모닝 마켓</span><span data-lang-en>Morning brief</span></a></li>
-    <li><a href="https://claude.ai/code/artifact/4de32129-86ab-4daa-8a65-7658d2848765" target="_blank" rel="noopener"><span class="d">08-13</span><span data-lang-ko>모닝 마켓</span><span data-lang-en>Morning brief</span></a></li>
-    <li><a href="https://claude.ai/code/artifact/2f4b11f0-6a38-4007-9afd-02cefca42228" target="_blank" rel="noopener"><span class="d">08-12</span><span data-lang-ko>모닝 마켓</span><span data-lang-en>Morning brief</span></a></li>
-    <li><a href="https://claude.ai/code/artifact/81ed2f4f-4a38-4b60-911b-e42ee67c316a" target="_blank" rel="noopener"><span class="d">08-11</span><span data-lang-ko>모닝 마켓</span><span data-lang-en>Morning brief</span></a></li>
-    <li><a href="https://claude.ai/code/artifact/6bddc99f-2f51-4847-8707-a4b29c83a32f" target="_blank" rel="noopener"><span class="d">08-10</span><span data-lang-ko>장마감 시황</span><span data-lang-en>Close brief</span></a></li>
-    <li><a href="https://claude.ai/code/artifact/f92ff123-0fc4-4931-b5cf-f9deb1fb7897" target="_blank" rel="noopener"><span class="d">08-10</span><span data-lang-ko>모닝 마켓</span><span data-lang-en>Morning brief</span></a></li>
-    <li><a href="https://claude.ai/code/artifact/46f66af2-cd8c-4d32-bbe6-9cddbea5dab9" target="_blank" rel="noopener"><span class="d">08-08</span><span data-lang-ko>해외 증시 모닝</span><span data-lang-en>Global morning</span></a></li>
-    <li><a href="https://claude.ai/code/artifact/e4224dd3-fbc3-4cd1-970c-1c8f9e9713ba" target="_blank" rel="noopener"><span class="d">08-07</span><span data-lang-ko>장마감 시황</span><span data-lang-en>Close brief</span></a></li>
-    <li><a href="https://claude.ai/code/artifact/8692db99-79e8-43f5-9a8d-832e560effe9" target="_blank" rel="noopener"><span class="d">08-07</span><span data-lang-ko>모닝 마켓</span><span data-lang-en>Morning brief</span></a></li>
-    <li><a href="https://claude.ai/code/artifact/382fd976-d577-44b0-8380-3c5d378bada7" target="_blank" rel="noopener"><span class="d">08-06</span><span data-lang-ko>아침 브리핑</span><span data-lang-en>Morning brief</span></a></li>
   </ul>
 </nav>
 
