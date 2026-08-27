@@ -453,7 +453,13 @@ def sec_calendar(C):
                  "넣었습니다 &mdash; 매일 같은 시각에 열리는 개장&middot;마감은 넣지 않습니다.",
                  "Two weeks or more ahead. <strong>Only dated events that can move the market</strong> &mdash; "
                  "recurring opens and closes are left out.")
-    return lede(a, b) + "\n" + t
+    body = lede(a, b) + "\n" + t
+    # 휴장일은 **자료 파일**에서 온다(지침 7-3절). 이 절 안에 접어서 둔다.
+    if C.get("holiday_tbl"):
+        body += "\n" + exp("휴장일 &mdash; 국내&middot;해외 앞으로 넉 달",
+                           "Market holidays &mdash; Korea and overseas, next four months",
+                           C["holiday_tbl"])
+    return body
 
 
 def sec_talking(C):
