@@ -234,6 +234,14 @@ def main():
     for fn in skipped:
         print("  %s  건너뜀 (그 앞의 판이 없다)" % fn)
     print("%s %d 개 파일" % ("고칠 곳:" if check else "고침:", len(changed)))
+
+    # `--check --strict` 는 **고칠 곳이 남아 있는 것도** 실패로 본다.
+    # 종전에는 「고칠 곳: 3 개 파일」을 찍고도 끝 상태가 0 이어서, 목록이
+    # 어긋난 채로 발행되는 것을 아무것도 막지 못했다.
+    if check and "--strict" in sys.argv and changed:
+        print("!! 막습니다 — 목록을 다시 만들어야 합니다"
+              " (python3 scripts/build_archive_nav.py)")
+        return 1
     return 1 if bad else 0
 
 
