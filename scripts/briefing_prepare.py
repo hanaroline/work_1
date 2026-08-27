@@ -181,6 +181,7 @@ def _tables(C):
                                  "market changing hands.")
 
     C["supply_tbl"] = build_supply(C)
+    C["holiday_tbl"], C["holiday_note"] = _holidays(C)
 
     # 환율 — 원화 쪽만 본문에, 달러 상대는 상세로
     fh = [TH("통화쌍", "Pair", "wrap"), TH("읽는 법", "How to read it", "note wrap"),
@@ -502,3 +503,90 @@ def _hero(C):
             "Basis: closes of " + DE(C["prev_us"], True) + "; FX as of this morning; data collected "
             + C["D"]["generated_at_kst"][5:16] + "; compiled " + now.strftime("%H:%M") + " KST")
         + '</p>\n</div>')
+
+
+def _holidays(C):
+    """휴장일 표 — **자료 파일에서 읽는다**(`data/market/holidays.json`).
+
+    빌더에 문자열로 박아 두면 날마다 복사되면서 틀린 채로 굴러다닌다. 실제로
+    그랬다 — 중국 국경절이 10/1~10/8 로, 일본 9월 연휴가 이틀로 적혀 있었고
+    국내 10/5 대체공휴일은 아예 없었다.
+
+    **시장별이 아니라 날짜순으로 세운다** — 응대에서 필요한 것은 「어느 시장이
+    언제 쉬나」가 아니라 「그날 어디가 닫혀 있나」이기 때문이다.
+    """
+    import json as _json
+    import os as _os
+    path = _os.path.join(_os.path.dirname(_os.path.dirname(_os.path.abspath(__file__))),
+                         "data", "market", "holidays.json")
+    if not _os.path.exists(path):
+        return "", None
+    try:
+        HJ = _json.load(open(path, encoding="utf-8"))
+    except Exception:                                             # noqa: BLE001
+        return "", None
+
+    today = C["today"]
+    horizon = today + datetime.timedelta(days=126)                # 넉 달
+    rows = []
+    for m in HJ.get("markets", []):
+        for day in m.get("days", []):
+            try:
+                dt = d(day["date"])
+            except Exception:                                     # noqa: BLE001
+                continue
+            if dt < today or dt > horizon:
+                continue
+            rows.append((dt, m, day))
+    if not rows:
+        return "", None
+    rows.sort(key=lambda x: (x[0], x[1]["key"]))
+
+    KIND = {"full": ("종일 휴장", "Closed"),
+            "early": ("조기마감", "Early close"),
+            "weekend": ("주말과 겹침", "Falls on a weekend")}
+    out = []
+    for dt, m, day in rows:
+        kk, ke = KIND.get(day.get("kind"), ("휴장", "Closed"))
+        if day.get("close_local"):
+            kk += " (" + day["close_local"] + ")"
+            ke += " (" + day["close_local"] + ")"
+        extra_k = (" &mdash; " + day["note_ko"]) if day.get("note_ko") else ""
+        extra_e = (" &mdash; " + day["note_en"]) if day.get("note_en") else ""
+        is_kr = m["key"] == "kr"
+        out.append('      <tr' + (' class="hl"' if is_kr else '') + '>'
+                   '<th class="wrap">' + DS(dt) + " (" + "월화수목금토일"[dt.weekday()] + ")" + '</th>'
+                   '<td class="wrap">' + L(m["name_ko"], m["name_en"]) + '</td>'
+                   '<td class="wrap">' + L(day["ko"] + extra_k, day["en"] + extra_e) + '</td>'
+                   '<td class="n">' + L(kk, ke) + '</td>'
+                   '<td class="n opt">' + VF_1 + '</td></tr>')
+
+    # 국내가 쉬는 사이 해외가 몇 번 마감하는지 — 재개장 아침이 며칠치를 받는지
+    kr_off = sorted({x[0] for x in rows if x[1]["key"] == "kr" and x[2].get("kind") == "full"})
+    nxt = kr_off[0] if kr_off else None
+    note = None
+    if nxt:
+        # 국내 휴장일 그날 미국 장이 열리면 재개장 아침이 이틀치를 받는다
+        us_off = {x[0] for x in rows if x[1]["key"] == "us" and x[2].get("kind") == "full"}
+        opens = 0 if (nxt in us_off or nxt.weekday() >= 5) else 1
+        note = (nxt, opens)
+
+    head = [TH("날짜", "Date", "wrap"), TH("시장", "Market", "wrap"),
+            TH("무슨 날", "What", "wrap"), TH("구분", "Type", "n"),
+            TH("검증", "Verified", "n opt")]
+    foot_ko = ("<strong>국내 줄을 표시해 두었습니다</strong> &mdash; 국내가 쉬는 날 해외가 열리면 "
+               "<strong>재개장 아침에 이틀치를 한꺼번에 받습니다.</strong> ")
+    foot_en = ("<strong>Korean rows are highlighted</strong> &mdash; when Korea is shut and others trade, "
+               "<strong>the reopening morning takes in two sessions at once.</strong> ")
+    if note and note[1]:
+        foot_ko += ("다음 국내 휴장일은 <strong>" + DS(note[0]) + "(" + "월화수목금토일"[note[0].weekday()]
+                    + ")</strong> 이고, 그날 뉴욕은 <strong>열립니다</strong>. ")
+        foot_en += ("The next Korean closure is <strong>" + DE(note[0]) + "</strong>, and New York <strong>trades "
+                    "that day</strong>. ")
+    foot_ko += ("<strong>거래소가 일정을 바꿉니다 &mdash; 주문 직전 다시 확인하십시오.</strong> "
+                "확인 시점은 " + (HJ.get("verified_at") or "&mdash;") + " 입니다 " + VF_1 + ".")
+    foot_en += ("<strong>Exchanges move these dates &mdash; reconfirm before acting.</strong> Verified "
+                + (HJ.get("verified_at") or "&mdash;") + " " + VF_1 + ".")
+    return tbl("휴장일 &mdash; 앞으로 넉 달 (" + DK(today) + " 이후)",
+               "Market holidays &mdash; the next four months", head, out, cls="data compact",
+               foot_ko=foot_ko, foot_en=foot_en), note
