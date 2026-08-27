@@ -93,7 +93,12 @@ def check_tables(h):
         oh = len([c for c in CELL.finditer(head) if "opt" in (c.group(2) or "")])
         if oh:
             for i, r in enumerate(rows[1:], 1):
-                ot = len([c for c in CELL.finditer(r.group(0)) if "opt" in (c.group(2) or "")])
+                cells = list(CELL.finditer(r.group(0)))
+                # 표 안의 구분 행 — 칸 하나가 전체 폭을 덮는 줄(「오른 쪽」/「내린 쪽」)은
+                # 건너뛴다. 열 수 검사는 colspan 을 세므로 이미 통과한다.
+                if len(cells) == 1 and re.search(r'colspan="?(\d+)', cells[0].group(2) or ""):
+                    continue
+                ot = len([c for c in cells if "opt" in (c.group(2) or "")])
                 if ot != oh:
                     fail("opt 짝", "%s 행 %d: opt 가 머리 %d 개 대 몸 %d 개" % (cap, i, oh, ot))
                     break
