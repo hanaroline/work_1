@@ -36,6 +36,7 @@ const ASSETS = [
   [/SK\s?하이닉스/, 'SK하이닉스'],
   [/Micron|MU UW/i, '마이크론 테크놀로지'],
   [/Applied Materials|AMAT/i, '어플라이드 머티어리얼즈'],
+  [/Broadcom|AVGO|브로드컴/i, '브로드컴'],
   [/Palantir|PLTR/i, '팔란티어 테크'],
 ];
 const parseUnderlyings = (s) => {
@@ -105,8 +106,10 @@ function parseBlock(text) {
   p.correlation = [...corrLine.matchAll(/-\s*([^:]+?)\s*:\s*(-?[\d.]+)(?!%)/g)]
     .map((m) => ({ pair: clean(m[1]).split(',').map((x) => parseUnderlyings(x)[0] || clean(x)).join(' · '), rho: Number(m[2]) }));
 
-  // 조기상환 차수별 평가일·상환금액
-  const schedRows = [...text.matchAll(/(\d{1,2})차\s*\n\s*\t?\s*(\d{4}년\s*\d{2}월\s*\d{2}일)\s*\n\s*\t?\s*액면금액\s*×\s*([\d.]+)%/g)];
+  // 조기상환 차수별 평가일·상환금액.
+  // 리자드 회차는 한 칸에 두 갈래를 적어 "1)액면금액 × 110.00%" 처럼 번호가 앞에 붙는다.
+  // 이 번호를 건너뛰지 않으면 그 차수만 표에서 빠져 6회차가 5회차로 줄어든다 (제38048회).
+  const schedRows = [...text.matchAll(/(\d{1,2})차\s*\n\s*\t?\s*(\d{4}년\s*\d{2}월\s*\d{2}일)\s*\n\s*\t?\s*(?:\d\))?\s*액면금액\s*×\s*([\d.]+)%/g)];
   p.schedule = schedRows.map((m) => ({ step: Number(m[1]), date: ymd(m[2]), payout: Number(m[3]) }));
 
   // 차수별 배리어. 조건 번호가 (2-1)/(2-2) 로 갈라지는 리자드 상품이 있어
