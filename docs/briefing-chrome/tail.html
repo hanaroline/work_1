@@ -1,18 +1,5 @@
 </main>
 
-<aside class="detailpane" aria-label="상세">
-  <div class="dp-head">
-    <div>
-      <p class="dp-kicker"></p>
-      <p class="dp-title"><span data-lang-ko>상세 보기</span><span data-lang-en>Detail</span></p>
-    </div>
-    <button type="button" class="dp-close" aria-label="닫기" hidden>&times;</button>
-  </div>
-  <div class="dp-body">
-    <p class="dp-empty"><span data-lang-ko>왼쪽에서 항목을 클릭하면 근거 수치와 배경이 여기에 표시됩니다.</span><span data-lang-en>Click an item on the left and its figures and background appear here.</span></p>
-  </div>
-</aside>
-
 </div><!-- /shell -->
 
 <footer class="foot">
@@ -27,6 +14,11 @@
   var root = document.documentElement;
   var KEY = 'mas-briefing-lang';
 
+  /* 탭 제목은 <title> 에서 읽는다. 여기에 문자열로 적으면 판을 물릴 때 얼어붙는다. */
+  var tEl = document.querySelector('title');
+  var T_KO = tEl ? tEl.textContent : document.title;
+  var T_EN = (tEl && tEl.getAttribute('data-en')) || T_KO;
+
   /* ---- 한/영 ---- */
   function applyLang(lang) {
     root.setAttribute('lang', lang);
@@ -34,9 +26,7 @@
     for (var i = 0; i < btns.length; i++) {
       btns[i].setAttribute('aria-checked', btns[i].getAttribute('data-lang') === lang ? 'true' : 'false');
     }
-    document.title = (lang === 'ko')
-      ? '모닝 마켓 브리핑 · 2026년 8월 11일 (화) | 미래에셋증권 마포WM'
-      : 'Overseas Markets Morning Briefing · Saturday 8 August 2026 | Mirae Asset Securities Mapo WM';
+    document.title = (lang === 'ko') ? T_KO : T_EN;
     try { localStorage.setItem(KEY, lang); } catch (e) {}
   }
   var saved = null;
@@ -60,111 +50,17 @@
     if (open) { d.removeAttribute('hidden'); } else { d.setAttribute('hidden', ''); }
   }
 
-  /* ---- 오른쪽 상세 패널 ---- */
-  var pane = document.querySelector('.detailpane');
-  var mq = window.matchMedia('(min-width: 1400px)');
-  var paneOn = false, activeHost = null;
-  var dpBody, dpTitle, dpKicker, dpClose, emptyBody, emptyTitle;
-  if (pane) {
-    dpBody = pane.querySelector('.dp-body');
-    dpTitle = pane.querySelector('.dp-title');
-    dpKicker = pane.querySelector('.dp-kicker');
-    dpClose = pane.querySelector('.dp-close');
-    emptyBody = dpBody.innerHTML;
-    emptyTitle = dpTitle.innerHTML;
-    dpClose.addEventListener('click', closePane);
-  }
-  function closePane() {
-    if (!pane) return;
-    if (activeHost) { activeHost.classList.remove('pane-active'); activeHost = null; }
-    dpBody.innerHTML = emptyBody;
-    dpTitle.innerHTML = emptyTitle;
-    dpKicker.innerHTML = '';
-    dpClose.setAttribute('hidden', '');
-  }
-  function detailOf(host, isRow) {
-    if (isRow) {
-      var dr = detailRowOf(host);
-      return dr ? dr.querySelector('.detail') : null;
-    }
-    var kids = host.children;
-    for (var i = 0; i < kids.length; i++) {
-      if (kids[i].classList.contains('detail')) return kids[i];
-    }
-    return null;
-  }
-  function paneTitleOf(detailEl, host, isRow) {
-    var t = detailEl.querySelector('.detail-title');
-    if (t) return t.innerHTML;
-    if (isRow) {
-      var c0 = host.querySelector('th, td');
-      return c0 ? c0.innerHTML : '';
-    }
-    var sm = host.querySelector('summary');
-    if (!sm) return '';
-    var c = sm.cloneNode(true);
-    var m = c.querySelector('.exp-mark');
-    if (m) m.parentNode.removeChild(m);
-    return c.innerHTML;
-  }
-  function openPane(host, isRow) {
-    var detailEl = detailOf(host, isRow);
-    if (!detailEl) return;
-    if (activeHost === host) { closePane(); return; }
-    if (activeHost) activeHost.classList.remove('pane-active');
-    activeHost = host;
-    host.classList.add('pane-active');
-    dpTitle.innerHTML = paneTitleOf(detailEl, host, isRow);
-    var sec = host.closest ? host.closest('.section') : null;
-    var st = sec ? sec.querySelector('.section-title') : null;
-    dpKicker.innerHTML = st ? st.innerHTML : '';
-    var clone = detailEl.cloneNode(true);
-    var dt = clone.querySelector('.detail-title');
-    if (dt) dt.parentNode.removeChild(dt);
-    dpBody.innerHTML = '';
-    dpBody.appendChild(clone);
-    dpClose.removeAttribute('hidden');
-    pane.scrollTop = 0;
-  }
-  function syncPaneMode() {
-    if (!pane) return;
-    var b = document.querySelector('.expand-all');
-    var allOpen = !!b && b.getAttribute('aria-pressed') === 'true';
-    var on = mq.matches && !allOpen;
-    if (on === paneOn) return;
-    paneOn = on;
-    document.body.classList.toggle('pane-mode', on);
-    if (!on) closePane();
-  }
-  if (mq.addEventListener) { mq.addEventListener('change', syncPaneMode); }
-  else if (mq.addListener) { mq.addListener(syncPaneMode); }
-
+  /* 상세는 제자리에서 펼친다. 화면 폭에 따라 같은 클릭이 다르게 동작하지 않는다. */
   document.addEventListener('click', function (e) {
     if (!e.target.closest) return;
     if (e.target.closest('a')) return;
-    if (e.target.closest('.detailpane')) return;
     var tr = e.target.closest('tr.clickable');
-    if (tr) {
-      if (paneOn) { e.preventDefault(); openPane(tr, true); } else { toggleRow(tr); }
-      return;
-    }
-    if (paneOn) {
-      var sm = e.target.closest('summary');
-      var host = sm && sm.parentNode;
-      if (host && host.classList && host.classList.contains('exp')) {
-        e.preventDefault();
-        openPane(host, false);
-      }
-    }
+    if (tr) toggleRow(tr);
   });
   document.addEventListener('keydown', function (e) {
-    if (e.key === 'Escape') { closePane(); return; }
     if (e.key !== 'Enter' && e.key !== ' ') return;
     var tr = e.target.closest ? e.target.closest('tr.clickable') : null;
-    if (tr) {
-      e.preventDefault();
-      if (paneOn) { openPane(tr, true); } else { toggleRow(tr); }
-    }
+    if (tr) { e.preventDefault(); toggleRow(tr); }
   });
 
   /* ---- 전체 펼치기 / 접기 ---- */
@@ -175,7 +71,6 @@
     for (var j = 0; j < rows.length; j++) toggleRow(rows[j], open);
     var btn = document.querySelector('.expand-all');
     if (btn) btn.setAttribute('aria-pressed', open ? 'true' : 'false');
-    syncPaneMode();
   }
   var eb = document.querySelector('.expand-all');
   if (eb) {
@@ -206,23 +101,16 @@
       var allOpen = ds.length > 0 && document.querySelectorAll('details.exp[open]').length === ds.length;
       btn.setAttribute('aria-pressed', allOpen ? 'true' : 'false');
     }
-    syncPaneMode();
   }
   var pbs = document.querySelectorAll('.print-btn');
   for (var k = 0; k < pbs.length; k++) {
     pbs[k].addEventListener('click', function (ev) {
       var full = ev.currentTarget.getAttribute('data-print') === 'full';
       var before = snapshot();
-      var paneWas = activeHost;
       setAll(full);
       void document.body.offsetHeight;
       try { window.focus(); } catch (e) {}
-      try { window.print(); } finally {
-        restoreFrom(before);
-        if (paneWas && paneOn && !activeHost) {
-          openPane(paneWas, paneWas.tagName === 'TR');
-        }
-      }
+      try { window.print(); } finally { restoreFrom(before); }
     });
   }
 
@@ -263,9 +151,6 @@
     for (var j2 = 0; j2 < targets.length; j2++) io.observe(targets[j2]);
   }
 
-  syncPaneMode();
 })();
 </script>
-</body></html>
-
 </body></html>

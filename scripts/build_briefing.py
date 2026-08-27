@@ -480,6 +480,12 @@ def sec_talking(C):
     return lede(a, b) + '\n<div class="soft-grid">\n' + cards + '\n</div>'
 
 
+# 서술 슬롯 개수는 **판을 다 짓고 나서** 채운다. 검증 절 안에서 바로 세면
+# 그 절 자신의 서술(verify_lede)이 아직 비기 전이라 하나 적게 나온다 —
+# 실제로 「자료에서 만든 자리 2곳」이라 적고 3곳이 나갔다.
+NUSED, NFB = "<!--n-used-->", "<!--n-fb-->"
+
+
 def sec_verify(C):
     """10 데이터 · 검증 — **대부분 접는다**(지침 7절 압축)."""
     N, D = C["N"], C["D"]
@@ -501,14 +507,14 @@ def sec_verify(C):
         ("(b) 서술은 날마다 새로 씁니다", "(b) The prose is written fresh each day",
          "이 판은 <strong>어제 파일을 복사해 만들지 않습니다.</strong> 표&middot;날짜 이름표&middot;비율&middot;"
          "개수는 전부 <code>build_briefing.py</code> 가 시세 자료에서 만들고, 그날의 서술만 따로 받습니다. "
-         "오늘 <strong>손으로 쓴 자리가 " + str(len(N.used)) + "곳</strong>, <strong>자료에서 만든 문장이 대신 "
-         "나간 자리가 " + str(len(set(N.missing))) + "곳</strong>입니다 " + VF_C + ". "
+         "오늘 <strong>손으로 쓴 자리가 " + NUSED + "곳</strong>, <strong>자료에서 만든 문장이 대신 "
+         "나간 자리가 " + NFB + "곳</strong>입니다 " + VF_C + ". "
          "<strong>비면 어제 문장이 남는 것이 아니라 자료에서 계산한 한 줄이 나갑니다</strong> &mdash; 굳을 자리를 "
          "없앤 것입니다(지침 7-2-1).",
          "This edition is <strong>not built by copying yesterday&rsquo;s file.</strong> Tables, date labels, ratios "
          "and counts are all derived from the market data by <code>build_briefing.py</code>; only the day&rsquo;s "
-         "prose is supplied separately. Today <strong>" + str(len(N.used)) + " passages were written by hand</strong> "
-         "and <strong>" + str(len(set(N.missing))) + " fell back to a data-derived line</strong> " + VF_C + ". "
+         "prose is supplied separately. Today <strong>" + NUSED + " passages were written by hand</strong> "
+         "and <strong>" + NFB + " fell back to a data-derived line</strong> " + VF_C + ". "
          "<strong>A gap yields a computed sentence, never yesterday&rsquo;s</strong>."),
         ("(c) 매물대는 근사입니다", "(c) The supply bands are an approximation",
          "가격대별 거래량 분포를 주는 무료 원천이 없습니다. 그래서 <strong>일별 (종가, 거래대금)을 지수대로 "
@@ -662,8 +668,17 @@ def main():
     doc.sec("verify", "데이터 &middot; 검증", "Data and Verification", sec_verify(C))
 
     kindko = "모닝 마켓 브리핑" if a.kind == "morning" else "해외 증시 브리핑"
+    kinden = ("Morning Market Briefing" if a.kind == "morning"
+              else "Overseas Markets Briefing")
     title = "%s · %d년 %s | 미래에셋증권 마포WM" % (kindko, today.year, DK(today, True))
-    html = assemble(ROOT + "/docs/briefing-chrome", doc, title, C["hero"], now)
+    title_en = ("%s · %s %d | Mirae Asset Securities Mapo WM"
+                % (kinden, DE(today, True), today.year))
+    html = assemble(ROOT + "/docs/briefing-chrome", doc, title, C["hero"], now,
+                    title_en=title_en)
+
+    # 이제 모든 절이 서술을 다 꺼내 갔다. 그제서야 개수를 박는다.
+    html = html.replace(NUSED, str(len(N.used))).replace(NFB, str(len(set(N.missing))))
+    assert NUSED not in html and NFB not in html
 
     out = a.out or (ROOT + "/docs/briefings/%s-%s.html"
                     % (today.isoformat(), "morning" if a.kind == "morning" else "global"))

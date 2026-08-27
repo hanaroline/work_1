@@ -80,7 +80,7 @@ strong,b{color:var(--ink);font-weight:700}
 .page{max-width:1200px;margin:0 auto;padding:0 32px}
 @media (max-width:768px){ .page{padding:0 20px} }
 
-/* ============ shell / sidenav / pane ============ */
+/* ============ shell / sidenav ============ */
 .shell{display:block}
 @media (min-width:1080px){
   .shell{display:grid;grid-template-columns:208px minmax(0,1fr);gap:48px;align-items:start}
@@ -115,35 +115,11 @@ strong,b{color:var(--ink);font-weight:700}
   .sidenav a[aria-current] .sn{color:var(--on-primary);opacity:.7}
   .section{scroll-margin-top:96px}
 }
-.detailpane{display:none}
-@media (min-width:1400px){
-  .page.wide{max-width:1680px}
-  .page.wide .shell{grid-template-columns:200px minmax(0,1fr) 340px;gap:36px}
-  .detailpane{display:block;position:sticky;top:24px;align-self:start;
-    max-height:calc(100vh - 48px);overflow-y:auto;border-top:1px solid var(--primary);padding:14px 0 19px}
-  .pane-mode .stat-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
-  .hint-inline{display:none}
-  .hint-pane{display:inline}
-}
-@media (min-width:1680px){
-  .page.wide .shell{grid-template-columns:200px minmax(0,1fr) 380px;gap:40px}
-  .pane-mode .stat-grid{grid-template-columns:repeat(4,minmax(0,1fr))}
-}
-.hint-pane{display:none}
-.dp-head{display:flex;align-items:flex-start;gap:10px;padding-bottom:12px;
-  border-bottom:1px solid var(--hairline);margin-bottom:16px}
-.dp-head > div{min-width:0;flex:1 1 auto}
-.dp-kicker{font-size:13px;font-weight:500;letter-spacing:.5px;color:var(--primary-active);margin:0 0 3px}
-.dp-kicker:empty{display:none}
-.dp-title{font-size:17px;font-weight:700;line-height:1.4;color:var(--ink);margin:0}
-.dp-close{flex:none;width:26px;height:26px;padding:0;cursor:pointer;border:1px solid var(--hairline);
-  border-radius:2px;background:var(--card);font-family:var(--font-num);font-size:17px;line-height:22px;color:var(--muted)}
-.dp-close:hover{border-color:var(--primary);color:var(--primary-active)}
-.dp-empty{font-size:16px;line-height:1.6;color:var(--muted);margin:0}
-.detailpane .detail{margin:0;padding:0;background:none;border-left:0;border-radius:0}
-.detailpane .detail > p{font-size:16px;max-width:none}
-.detailpane .detail dd{font-size:16px}
-.detailpane .detail-label{display:none}
+/* 오른쪽 상세 패널은 걷어냈다. 상세는 어느 화면에서나 제자리에서 펼쳐진다 —
+   화면 폭에 따라 같은 클릭이 다르게 동작하면 읽는 사람이 두 가지를 배워야 하고,
+   패널 자리를 만드느라 1400~1620px 구간에서 표의 설명 열까지 접혀 있었다.
+   넓은 화면에서는 본문 칸만 조금 넓힌다. */
+@media (min-width:1400px){ .page.wide{max-width:1320px} }
 .detail-title{display:none}
 
 /* ============ topbar / hero ============ */
@@ -188,7 +164,6 @@ html[lang="en"] .expand-all,html[lang="en"] .print-btn{font-family:var(--font-en
 :root[data-theme="dark"] .tone.risk-off,:root[data-theme="dark"] .tone.risk-on{color:#12151A}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .tone.risk-off,
   :root:not([data-theme="light"]) .tone.risk-on{color:#12151A}}
-.hint{font-size:14px;color:var(--muted-soft);margin:14px 0 0}
 
 /* ============ sections ============ */
 .section{margin-top:var(--space-section)}
@@ -222,15 +197,10 @@ html[lang="en"] .expand-all,html[lang="en"] .print-btn{font-family:var(--font-en
 @media (max-width:560px){ .stat-grid{grid-template-columns:minmax(0,1fr)} }
 .stat{background:var(--card);padding:22px 20px;box-shadow:0 0 0 1px var(--hairline-soft)}
 @media (max-width:1279px){ .stat-grid > .stat:nth-child(5):last-child{grid-column:1/-1} }
-.pane-mode .stat-grid > .stat:nth-child(5):last-child{grid-column:1/-1}
 .stat-grid.six{grid-template-columns:repeat(3,minmax(0,1fr))}
 .stat-grid.eight{grid-template-columns:repeat(4,minmax(0,1fr))}
-.pane-mode .stat-grid.eight{grid-template-columns:repeat(2,minmax(0,1fr))}
-@media (min-width:1680px){ .pane-mode .stat-grid.eight{grid-template-columns:repeat(4,minmax(0,1fr))} }
 @media (max-width:1279px){ .stat-grid.eight{grid-template-columns:repeat(2,minmax(0,1fr))} }
 @media (max-width:560px){ .stat-grid.eight{grid-template-columns:minmax(0,1fr)} }
-.pane-mode .stat-grid.six{grid-template-columns:repeat(2,minmax(0,1fr))}
-@media (min-width:1680px){ .pane-mode .stat-grid.six{grid-template-columns:repeat(3,minmax(0,1fr))} }
 @media (max-width:1023px){ .stat-grid.six{grid-template-columns:repeat(2,minmax(0,1fr))} }
 @media (max-width:560px){ .stat-grid.six{grid-template-columns:minmax(0,1fr)} }
 .stat-label{font-size:15px;font-weight:500;letter-spacing:.6px;line-height:1.2;color:var(--muted);margin:0 0 10px}
@@ -307,18 +277,13 @@ table.data .why{display:block;margin-top:4px;padding-left:9px;color:var(--body);
 table.data .why .vf{margin-left:4px}
 
 /* 기간 수익률 열(.perf) 과 설명 열(.note) 은 함께 설 자리가 없다.
-   본문 칸은 아무리 넓어도 ~960px 이다 — 1400px 위에서는 오른쪽 패널이
-   열려 오히려 ~720px 로 좁아진다. 그래서 둘 중 하나만 세운다.
+   본문 칸은 아무리 넓어도 ~1000px 이다. 그래서 둘 중 하나만 세운다.
      1620px 위   설명 + 기간 수익률
      860~1620px  설명을 접고 숫자를 남긴다 (숫자가 표의 본론이다)
      860px 아래  기간 수익률도 접는다 */
 table.data .perf{padding-left:8px;padding-right:8px}
 @media (max-width:860px){ table.data .perf{display:none} }
 table.data.compact .perf{padding-left:5px;padding-right:5px}
-/* 1400px 위에서는 오른쪽 상세 패널이 열려 본문 칸이 오히려 ~720px 로 **좁아진다**.
-   넓은 화면이라고 표가 넓어지는 것이 아니다. 그 구간에서는 좁은 화면과 똑같이
-   부가 열을 접는다. */
-@media (min-width:1400px) and (max-width:1620px){ table.data .opt{display:none} }
 
 /* ============ verification flags ============ */
 .vf{display:inline-block;font-size:11px;font-weight:600;letter-spacing:.4px;padding:2px 7px;
@@ -434,19 +399,6 @@ table.data tr.detail-row:hover > td{background:var(--surface-subtle)}
 table.data tr.detail-row .detail{margin:0;border-radius:0}
 table.data tr.detail-row[hidden]{display:none}
 
-/* pane mode overrides */
-.pane-mode .exp > summary .exp-mark::after,
-.pane-mode .exp[open] > summary .exp-mark::after,
-.pane-mode .exp:not([open]) > summary .exp-mark::after{content:"\203A"}
-.pane-mode table.data tr.clickable > *:first-child::before,
-.pane-mode table.data tr.clickable[aria-expanded="true"] > *:first-child::before{content:"\203A"}
-.pane-mode .exp.pane-active > summary{background:var(--surface-subtle);box-shadow:inset 2px 0 0 var(--primary)}
-.pane-mode .exp.pane-active > summary .exp-mark{background:var(--primary);border-color:var(--primary);color:var(--on-primary)}
-.pane-mode table.data tr.pane-active > td,.pane-mode table.data tr.pane-active > th,
-.pane-mode table.data tr.pane-active:hover > td,.pane-mode table.data tr.pane-active:hover > th{background:var(--surface-soft)}
-.pane-mode table.data tr.pane-active > *:first-child{box-shadow:inset 2px 0 0 var(--primary)}
-.pane-mode table.data tr.pane-active > *:first-child::before{color:var(--primary)}
-
 /* ============ i18n ============ */
 [data-lang-en]{display:none}
 html[lang="en"] [data-lang-ko]{display:none}
@@ -466,7 +418,7 @@ html[lang="en"] [data-lang-en]{display:revert}
     --vf-bad-bg:#FBF0F0;--vf-bad-fg:#8F1F1F;
     --space-section:28px;--space-block:19px;--space-content:14px;
   }
-  .lang-toggle,.expand-all,.print-btn,.hint,.sidenav,.detailpane,.chip{display:none!important}
+  .lang-toggle,.expand-all,.print-btn,.sidenav,.chip{display:none!important}
   .shell,.page.wide .shell{display:block!important}
   .detail dl{display:grid;grid-template-columns:32% 1fr;column-gap:10px;row-gap:3px}
   .detail dt,.detail dd{margin:0!important;font-size:9.5pt}
