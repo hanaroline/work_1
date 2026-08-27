@@ -445,7 +445,17 @@ YAHOO_STOCKS = {
     # --- 조선·방산·기계·원전 ---
     "한화에어로스페이스": "012450.KS", "HD현대중공업": "329180.KS",
     "두산에너빌리티": "034020.KS",
+    # 조선은 HD현대중공업 하나로는 업종을 못 읽는다 — 삼사가 서로 다른 수주
+    # 잔고와 선종을 들고 있어 같은 날 방향이 갈린다.
+    "HD한국조선해양": "009540.KS", "한화오션": "042660.KS",
+    "삼성중공업": "010140.KS", "현대로템": "064350.KS",
+    # --- 반도체 소부장 --- HBM 이 이 판의 축인데 장비·기판이 통째로 빠져 있었다.
+    "한미반도체": "042700.KS", "이수페타시스": "007660.KS",
+    "HPSP": "403870.KQ", "주성엔지니어링": "036930.KQ",
+    # --- 건설·인프라 --- 금리 국면에서 가장 먼저 움직이는 쪽인데 없었다.
+    "현대건설": "000720.KS", "삼성E&A": "028050.KS",
     # --- 인터넷·게임·통신 ---
+    "카카오뱅크": "323410.KS", "LG디스플레이": "034220.KS", "엔씨소프트": "036570.KS",
     "NAVER": "035420.KS", "카카오": "035720.KS",
     "크래프톤": "259960.KS", "SK텔레콤": "017670.KS",
     # --- 지주·소비재·에너지·운송 ---
@@ -2751,6 +2761,126 @@ def build_fx(out):
     return res
 
 
+
+# ══════════════════════════════════════════════════════════════════
+# 매물대 근사 · 실적/컨퍼런스콜 — 브리핑이 계산하지 않고 그대로 쓰게 낸다
+# ══════════════════════════════════════════════════════════════════
+
+def supply_bands(series, n=6):
+    """거래대금이 **어느 지수대에 쌓여 있는지** 낸다 — 매물대 근사.
+
+    진짜 매물대(가격대별 거래량 분포)는 어느 무료 화면에도 없다. 대신 일별
+    시세의 (종가, 거래대금)을 지수대로 묶으면 「최근 어느 구간에서 손이
+    바뀌었나」를 낼 수 있다. **근사임을 이름에 박아 둔다** — 브리핑이 이것을
+    진짜 매물대라고 쓰면 안 된다.
+
+    되돌아보는 구간은 series 가 담고 있는 날수만큼이고, 지금 20영업일이다.
+    """
+    pts = [(r["close"], r.get("value_mn_krw") or 0) for r in series
+           if r.get("close") and r.get("value_mn_krw")]
+    if len(pts) < 5:
+        return None
+    lo, hi = min(p[0] for p in pts), max(p[0] for p in pts)
+    if hi <= lo:
+        return None
+    w = (hi - lo) / n
+    buckets = []
+    for i in range(n):
+        a, b = lo + w * i, lo + w * (i + 1)
+        inside = [v for c, v in pts if (a <= c < b or (i == n - 1 and c == b))]
+        buckets.append({"low": round(a, 2), "high": round(b, 2),
+                        "value_mn_krw": round(sum(inside)),
+                        "days": len(inside)})
+    tot = sum(x["value_mn_krw"] for x in buckets) or 1
+    for x in buckets:
+        x["share_pct"] = round(x["value_mn_krw"] / tot * 100, 1)
+    heaviest = max(buckets, key=lambda x: x["value_mn_krw"])
+    last = pts[0][0]
+    above = sum(x["value_mn_krw"] for x in buckets if x["low"] >= last)
+    return {
+        "bands": buckets,
+        "sessions": len(pts),
+        "last_close": last,
+        "heaviest": heaviest,
+        "overhead_share_pct": round(above / tot * 100, 1),
+        "basis": ("일별 종가를 지수대로 묶고 거래대금을 더한 값. **진짜 매물대가 "
+                  "아니라 근사**다 — 가격대별 거래량 분포는 무료 원천이 없다"),
+        "note_ko": "최근 %d영업일 거래대금이 어느 지수대에 쌓였는지",
+    }
+
+
+_EARN_PAT = re.compile(
+    r"(실적|매출|영업이익|어닝|컨퍼런스콜|컨콜|가이던스|잠정실적|분기\s*실적)")
+_CALL_PAT = re.compile(r"(컨퍼런스콜|컨콜|실적\s*발표\s*후|콜에서)")
+_BEAT_PAT = re.compile(r"(상회|웃돌|서프라이즈|어닝\s*서프)")
+_MISS_PAT = re.compile(r"(하회|밑돌|쇼크|어닝\s*쇼크|부진)")
+
+
+def earnings_from_news(articles, names):
+    """기사 본문에서 **실적·컨퍼런스콜** 대목만 뽑는다.
+
+    브리핑에 「주요 기업 실적발표 및 컨퍼런스콜」 절을 두려면 날마다 손으로
+    찾을 수 없다. 수집기가 기사에서 회사 이름과 실적 표현이 같은 문장에 있는
+    대목을 골라 두고, 브리핑은 고르기만 한다.
+
+    지어내지 않는다 — **문장을 그대로** 낸다. 판정(상회/하회)도 기사에 그
+    말이 있을 때만 붙인다.
+    """
+    out = []
+    for a in articles or []:
+        body = a.get("body") or ""
+        title = a.get("title") or ""
+        if not _EARN_PAT.search(title + " " + body[:1500]):
+            continue
+        # 기사의 **주인공**을 고른다. 이름 길이 순으로 먼저 걸리는 회사를 잡으면
+        # 엔비디아 실적 기사가 「마이크로소프트」로 잡힌다 — 본문에 고객사로 한 번
+        # 언급됐을 뿐인데. 제목에 있는 회사를 우선하고, 없으면 본문에 가장 많이
+        # 나온 회사를 고른다.
+        sents = [x.strip() for x in re.split(r"(?<=[다요])\.\s+|\n", body)]
+        sents = [x for x in sents if 20 <= len(x) <= 400]
+        cands = []
+        for nm in names:
+            if nm in title:
+                score = 1000 + body.count(nm)
+            elif nm in body:
+                score = body.count(nm)
+            else:
+                continue
+            hits = [x for x in sents if nm in x and _EARN_PAT.search(x)]
+            if hits:
+                cands.append((score, nm, hits))
+        if not cands:
+            continue
+        _, nm, hits = max(cands, key=lambda c: (c[0], len(c[2])))
+        # 컨퍼런스콜 대목은 회사 이름이 안 들어 있을 때가 많다(「CFO 는 콜에서…」).
+        # 기사 전체에서 따로 건져 붙인다 — 이 절의 본론이기 때문이다.
+        calls = [x for x in sents if _CALL_PAT.search(x)][:2]
+        quotes = hits[:3]
+        for c in calls:
+            if c not in quotes:
+                quotes.append(c)
+        # 판정은 **기사 전체**에서 본다 — 뽑은 문장 셋 안에 「웃돌았다」가
+        # 없을 뿐 기사에는 있는 일이 흔하다.
+        joined = title + " " + body[:3000]
+        out.append({
+            "company": nm,
+            "title": title,
+            "url": a.get("url"),
+            "quotes": quotes[:4],
+            "call_quotes": calls,
+            "has_call": bool(calls),
+            "verdict": ("beat" if _BEAT_PAT.search(joined) else
+                        ("miss" if _MISS_PAT.search(joined) else None)),
+        })
+    # 같은 회사가 여러 기사에 걸리면 인용이 가장 많은 것 하나만
+    best = {}
+    for e in out:
+        k = e["company"]
+        if k not in best or len(e["quotes"]) > len(best[k]["quotes"]):
+            best[k] = e
+    return sorted(best.values(), key=lambda e: (not e["has_call"], e["company"]))
+
+
 def main():
     now = datetime.now(KST)
     out = {
@@ -3087,6 +3217,35 @@ def main():
         attach_history_perf(out)
     except Exception as e:                                        # noqa: BLE001
         out["sources"]["derived:history_perf"] = {
+            "ok": False, "error": "%s: %s" % (type(e).__name__, e)}
+
+    # ── 매물대 근사 (요건 8) ──────────────────────────────────────
+    for mkt in ("kospi", "kosdaq"):
+        try:
+            ser = (out.get("index_daily", {}).get(mkt) or {}).get("series") or []
+            v = supply_bands(ser)
+            if v:
+                out.setdefault("supply_bands", {})[mkt] = v
+                out["sources"]["derived:supply_bands:" + mkt] = {"ok": True}
+        except Exception as e:                                    # noqa: BLE001
+            out["sources"]["derived:supply_bands:" + mkt] = {
+                "ok": False, "error": "%s: %s" % (type(e).__name__, e)}
+
+    # ── 실적·컨퍼런스콜 (요건 3) ─────────────────────────────────
+    try:
+        _names = sorted(set(list(YAHOO_STOCKS) + list(YAHOO_US_STOCKS)),
+                        key=len, reverse=True)
+        _ea = earnings_from_news((out.get("news") or {}).get("articles"), _names)
+        out["earnings"] = {
+            "items": _ea,
+            "count": len(_ea),
+            "with_call": sum(1 for x in _ea if x["has_call"]),
+            "basis": ("그날 수집한 기사 본문에서 회사 이름과 실적 표현이 같은 "
+                      "문장에 있는 대목만 뽑았다. 문장은 원문 그대로다"),
+        }
+        out["sources"]["derived:earnings"] = {"ok": True, "found": len(_ea)}
+    except Exception as e:                                        # noqa: BLE001
+        out["sources"]["derived:earnings"] = {
             "ok": False, "error": "%s: %s" % (type(e).__name__, e)}
 
     ok = sum(1 for s in out["sources"].values() if s["ok"])
