@@ -41,6 +41,21 @@ table.data .perfline{display:none}
   table.data .perfline .na{opacity:.45}
   table.data .perfline i{font-style:normal;opacity:.35;padding:0 4px}
 }
+/* **사이드바가 켜져 있는 좁은 구간**(대략 861~1199px)도 접는다. 이 띠에서는
+   화면이 넓은데 본문 칸은 좁아, 기간 열 넷을 세우면 표가 넘친다 — 10절 판을
+   재면서 1080~1140px 에서만 최대 +64px 넘쳤다. 접힌 자리는 이름 밑의 줄이
+   그대로 받으므로 정보는 사라지지 않는다. */
+@media (min-width:861px) and (max-width:1199px){
+  table.data .perf{display:none}
+  table.data .perfline{display:block;margin-top:4px;font-size:12px;font-weight:400;
+    line-height:1.5;color:var(--muted);white-space:normal;max-width:330px}
+  table.data .perfline .p{white-space:nowrap}
+  table.data .perfline .k{opacity:.72;margin-right:1px}
+  table.data .perfline .up{color:var(--up)}
+  table.data .perfline .down{color:var(--down)}
+  table.data .perfline .na{opacity:.45}
+  table.data .perfline i{font-style:normal;opacity:.35;padding:0 4px}
+}
 @media (max-width:520px){ table.data .perfline{font-size:11px;max-width:180px} }
 @media (max-width:400px){ table.data .perfline{max-width:150px} }
 @media (max-width:360px){ table.data .perfline{max-width:120px} }

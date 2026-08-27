@@ -1,0 +1,110 @@
+{
+  "_읽는 법": [
+    "그날의 **서술만** 담는 파일입니다. 표·날짜 이름표·비율·개수는 빌더가 시세 자료에서 만듭니다.",
+    "값은 [한국어, 영문] 두 칸짜리 배열입니다. HTML 을 그대로 쓸 수 있습니다(<strong>, &middot;, &mdash;).",
+    "키를 비우면 **어제 문장이 남는 것이 아니라** 자료에서 계산한 한 줄이 대신 나가고,",
+    "몇 개가 비었는지 검증 노트 (b) 에 숫자로 적힙니다. 굳을 자리를 없앤 구조입니다.",
+    "숫자를 손으로 적지 마십시오 — 표에 이미 있는 값을 문장에 옮겨 적으면 다음 날 어긋납니다.",
+    "파일 이름은 narrative-YYYY-MM-DD.json 입니다. 이 EXAMPLE 파일은 견본이라 읽히지 않습니다."
+  ],
+
+  "hero": [
+    "머리말 한 문단. <strong>그날의 축</strong>을 한 문장으로 세우고, 왜 그런지를 두세 문장으로 답니다.",
+    "The opening paragraph. State the day's axis in one sentence, then two or three on why."
+  ],
+  "tone": [
+    "머리말 옆 작은 딱지 — 열 자 안팎",
+    "A short tag beside the header"
+  ],
+
+  "today_1": [
+    "<strong>&#9312; 첫 번째로 볼 것.</strong> 오늘 09시에 손에 들고 갈 것 가운데 가장 큰 것.",
+    "<strong>&#9312; The first thing.</strong> The biggest item to carry into the open."
+  ],
+  "today_2": [
+    "<strong>&#9313; 두 번째.</strong> 수급이나 국내 쪽에서 달라진 것.",
+    "<strong>&#9313; The second.</strong> What changed in flows or at home."
+  ],
+  "today_3": [
+    "<strong>&#9314; 세 번째.</strong> 매크로 쪽에서 달라진 것과 오늘 남은 일정.",
+    "<strong>&#9314; The third.</strong> The macro change and what is still ahead today."
+  ],
+
+  "korea_lede": ["국내 절 머리말.", "Lede for the Korean equities section."],
+  "flows_lede": ["수급 절 머리말. <strong>잔액이 아니라 변화</strong>를 말하십시오.", "Lede for flows. Talk about the change, not the level."],
+  "global_lede": ["해외 절 머리말.", "Lede for the overseas section."],
+  "earnings_lede": ["실적 절 머리말. 없으면 빌더가 건수를 세어 적습니다.", "Lede for results."],
+  "macro_lede": ["금리·환율·원자재 절 머리말.", "Lede for rates, FX and commodities."],
+  "calendar_lede": ["일정 절 머리말.", "Lede for the calendar."],
+  "talking_lede": ["응대 절 머리말.", "Lede for talking points."],
+  "verify_lede": ["검증 절 머리말.", "Lede for verification."],
+
+  "why": {
+    "_설명": "종목 표의 「사유」 한 줄. **확인된 것만** 답니다 — 못 찾은 종목은 빼십시오. 지수를 따라 움직였을 뿐인 종목에 이야기를 붙이면 그 자체가 틀린 정보입니다.",
+    "SK이노베이션": ["SK아이이테크놀로지 흡수합병에 따른 희석과 자회사 부담", "Dilution and subsidiary burden from the SK IET merger"]
+  },
+
+  "calendar": [
+    {
+      "when_ko": "<strong>오늘 8/27 (목) 09:00</strong>",
+      "why_ko": "왜 보는가 — 한 줄", "why_en": "Why it matters",
+      "type_ko": "한국", "type_en": "Korea",
+      "what_ko": "한국은행 금융통화위원회", "what_en": "Bank of Korea rate decision",
+      "hl": true
+    },
+    {
+      "when_ko": "8/28 (금)",
+      "why_ko": "장기금리 경로를 다시 정할 수 있는 자리", "why_en": "It can reset the path for long yields",
+      "type_ko": "미국", "type_en": "US",
+      "what_ko": "잭슨홀 &mdash; 워시 의장 기조연설", "what_en": "Jackson Hole &mdash; Chair Warsh keynote",
+      "hl": true
+    }
+  ],
+
+  "talking": [
+    {
+      "q_ko": "고객이 실제로 물을 질문",
+      "q_en": "A question clients actually ask",
+      "a_ko": "이 판의 표에서 나온 숫자로만 답합니다. <strong>확정된 투자 판단이 아닙니다.</strong>",
+      "a_en": "Answered only from this edition's tables. <strong>Not a settled investment judgement.</strong>"
+    }
+  ],
+
+  "verify": [
+    {
+      "t_ko": "(그날에만 있는 검증 항목)", "t_en": "(A note specific to today)",
+      "b_ko": "고정 항목 (a)~(d) 는 빌더가 붙입니다. 여기에는 <strong>그날에만 있는 것</strong>만 적으십시오 — 걸러낸 검색 결과, 상충 수치와 채택 사유, 정정.",
+      "b_en": "Notes (a)-(d) are added by the builder. Put only today-specific items here."
+    }
+  ],
+
+  "deep": {
+    "_설명": "심층 분석 절 — **큰 이벤트가 있는 날만** 넣습니다(지침 7-4절). 이 키가 없으면 절 자체가 실리지 않습니다.",
+    "title_ko": "심층 분석 &mdash; (사건 이름)",
+    "title_en": "In Depth &mdash; (the event)",
+    "lede_ko": "무엇이 일어났고 왜 중요한지 한 문단.",
+    "lede_en": "What happened and why it matters.",
+    "blocks": [
+      {
+        "q_ko": "무엇이 나왔나", "q_en": "What was announced",
+        "a_ko": "확정된 숫자만. 컨센서스와 견줄 때는 어느 집계인지 밝힙니다.",
+        "a_en": "Only confirmed figures; name the consensus source."
+      },
+      {
+        "q_ko": "왜 시장이 그렇게 반응했나", "q_en": "Why the market reacted that way",
+        "a_ko": "시세는 「무엇이」를 말하지만 「왜」는 말하지 않습니다 — 기사 본문을 읽고 쓰십시오.",
+        "a_en": "Prices say what, not why &mdash; read the article text."
+      },
+      {
+        "q_ko": "국내에는 어떻게 닿나", "q_en": "How it reaches Korea",
+        "a_ko": "어느 종목·업종에 어떤 경로로 닿는지. <strong>이것이 이 절을 두는 이유입니다.</strong>",
+        "a_en": "Which names and sectors, through what channel."
+      },
+      {
+        "q_ko": "무엇이 아직 답해지지 않았나", "q_en": "What is still unanswered",
+        "a_ko": "다음에 볼 것. <strong>전망을 결과처럼 쓰지 마십시오.</strong>",
+        "a_en": "What to watch next. <strong>Do not write forecasts as results.</strong>"
+      }
+    ]
+  }
+}
