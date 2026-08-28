@@ -1,0 +1,107 @@
+name: ETF 편입종목 수집 (매일)
+
+# 브리핑 세션은 사내 이그레스 정책 때문에 네이버·야후에 직접 못 붙는다
+# (CONNECT 403). 러너는 그 정책 밖이므로 여기서 대신 받아 저장소에 커밋한다.
+#
+# 수집은 두 갈래로 나눠 둔다. 한쪽이 실패해도 다른 쪽 데이터는 그대로
+# 유지되어야 하기 때문이다 — 국내가 막힌 날 해외까지 지워질 이유가 없다.
+
+on:
+  workflow_dispatch:
+  schedule:
+    # 국내 마감(15:30 KST) 이후. 편입종목(PDF)은 직전 영업일 기준이라
+    # 장중에 받아도 어제 것이다. 마감 뒤 한 번이면 충분하다.
+    #   16:30 KST = 07:30 UTC
+    - cron: '30 7 * * 1-5'
+    # 미국 마감 반영분. 06:40 KST = 21:40 UTC 전일
+    - cron: '40 21 * * 1-5'
+  # 수집기를 고쳤을 때 바로 검증되도록
+  push:
+    branches:
+      - 'claude/etf-**'
+    paths:
+      - 'scripts/collect_etf_*.mjs'
+      - 'scripts/etf_lib.mjs'
+      - 'scripts/etf_universe.mjs'
+      - '.github/workflows/etf-daily.yml'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: etf-daily-${{ github.ref_name }}
+  cancel-in-progress: false
+
+jobs:
+  collect:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref_name }}
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      # 수집 실패는 잡을 실패시키지 않는다. 실패하면 그 데이터 파일을
+      # 건드리지 않고 끝나므로 직전 수집분이 그대로 남는다.
+      - name: 국내 ETF 수집 (네이버)
+        id: kr
+        continue-on-error: true
+        run: node scripts/collect_etf_kr.mjs
+
+      - name: 해외 ETF 수집 (야후)
+        id: global
+        continue-on-error: true
+        run: node scripts/collect_etf_global.mjs
+
+      # 분류 태깅과 병합. 수집이 둘 다 실패해도 기존 파일로 다시 만든다.
+      - name: 데이터 병합 · 분류
+        run: node scripts/build_etf_data.mjs
+
+      - name: 분류 사전 회귀 시험
+        run: node scripts/test_etf_taxonomy.mjs
+
+      - name: 단일 파일 빌드
+        run: node scripts/build_etf_page.mjs
+
+      # 실제 데이터를 넣은 화면이 열리는지 브라우저로 확인한다.
+      # 여기서 걸리면 커밋하지 않는다 — 깨진 화면을 배포하지 않으려는 것이다.
+      - name: 페이지 연기 시험
+        run: |
+          npm i -D playwright@1.56.1 --no-audit --no-fund
+          npx playwright install --with-deps chromium
+          node scripts/test_etf_page.mjs
+          node scripts/test_etf_page.mjs --built
+
+      - name: 진단 자료 업로드
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: etf-collect-debug
+          path: |
+            tools/discovery/etf_page.png
+            data/etf-kr.js
+            data/etf-global.js
+          retention-days: 7
+
+      - name: 커밋
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data/etf-kr.js data/etf-global.js data/etf.js etf-holdings-search.html 2>/dev/null || true
+          if git diff --cached --quiet; then
+            echo "변경 없음"
+          else
+            git commit -m "chore(etf): 편입종목 데이터 갱신 ($(TZ=Asia/Seoul date +%Y-%m-%d))"
+            git push
+          fi
+
+      # 수집이 둘 다 실패했으면 잡을 빨간불로 남긴다. 데이터는 지키되,
+      # 며칠씩 조용히 낡아 가는 것은 막아야 한다.
+      - name: 수집 실패 여부 확인
+        if: steps.kr.outcome == 'failure' && steps.global.outcome == 'failure'
+        run: |
+          echo "국내·해외 수집이 모두 실패했습니다. 원천이 바뀌었는지 확인이 필요합니다."
+          exit 1
