@@ -54,13 +54,36 @@ const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 // 매달려 되짚기 전체가 끝나지 않는다 — 못 받은 것은 못 받았다고 남기고 넘어간다.
 const TIMEOUT_MS = 15000;
 
+// 야후는 앞선 수집(약 1,160회) 직후라 429 로 막힌다. 한 번 튕겼다고 "자료가
+// 없다" 고 적으면 앞서 저지른 오진을 되풀이하게 된다 — 막힌 것과 없는 것은 다르다.
+// 그래서 429 는 기다렸다 다시 부른다.
+// 다만 기다림에는 총량을 둔다. 종목마다 끝까지 기다리면 되짚기가 몇십 분이
+// 되고, 그러면 또 단계가 매달린 것처럼 보인다.
+const RETRY_WAIT = [5000, 15000, 45000];
+const RETRY_BUDGET_MS = 180000;
+let retrySpent = 0;
+
 async function get(url, headers = {}) {
-  const res = await fetch(url, {
-    headers: { 'User-Agent': UA, ...headers },
-    signal: AbortSignal.timeout(TIMEOUT_MS),
-  });
-  if (!res.ok) throw new Error(`HTTP ${res.status}`);
-  return res.text();
+  let last;
+  for (let attempt = 0; ; attempt += 1) {
+    try {
+      const res = await fetch(url, {
+        headers: { 'User-Agent': UA, ...headers },
+        signal: AbortSignal.timeout(TIMEOUT_MS),
+      });
+      if (res.ok) return res.text();
+      last = new Error(`HTTP ${res.status}`);
+      if (res.status !== 429 || attempt >= RETRY_WAIT.length) throw last;
+    } catch (e) {
+      last = e;
+      if (!/429/.test(String(e.message)) || attempt >= RETRY_WAIT.length) throw last;
+    }
+    const wait = RETRY_WAIT[attempt];
+    if (retrySpent + wait > RETRY_BUDGET_MS) throw new Error('HTTP 429 (재시도 한도 소진)');
+    retrySpent += wait;
+    process.stdout.write(`  (429 — ${wait / 1000}초 쉬고 다시)\n`);
+    await sleep(wait);
+  }
 }
 
 /**
@@ -266,11 +289,35 @@ const statedIsTr = usable.filter((r) =>
 const noDiv = usable.filter((r) => (r.divs?.length ?? 0) === 0);
 const noDivStatedIsRaw = noDiv.filter((r) => near(r.stated.price, r.naverY1.pct, 2)).length;
 
+// 야후가 429 로 막혀도 답이 나와야 한다. 화면에 실린 값(data/etf.js)이
+// 이미 야후로 만든 것이므로, 네이버 원가격이 그 둘 중 **어느 계열**에
+// 붙는지는 실시간 야후 없이도 가려진다. 이것이 이 되짚기의 핵심 측정이다.
+const vsData = results.filter((r) => r.naverY1 && r.dataPrice != null && r.dataTr != null);
+const relNear = (a, b, tol) => Math.abs(a - b) / Math.max(Math.abs(b), 1) <= tol;
+const naverLooksLikePrice = vsData.filter((r) => relNear(r.naverY1.pct, r.dataPrice, 0.05)).length;
+const naverLooksLikeTr = vsData.filter((r) => relNear(r.naverY1.pct, r.dataTr, 0.05)).length;
+// 분배가 큰 종목만 따로 — 두 계열이 실제로 갈라지는 곳이 여기다.
+const payers = vsData.filter((r) => (r.yield ?? 0) >= 5);
+const payersLikePrice = payers.filter((r) => relNear(r.naverY1.pct, r.dataPrice, 0.05)).length;
+const payersLikeTr = payers.filter((r) => relNear(r.naverY1.pct, r.dataTr, 0.05)).length;
+
 const lines = [];
 const say = (s) => { lines.push(s); console.log(s); };
 
 console.log('');
 say(`## 판정 (표본 ${usable.length}종목)`);
+say('');
+say(`### 네이버 일별시세는 수정주가인가 (표본 ${vsData.length}종목, 실시간 야후 없이도 판정됨)`);
+say('');
+say(`- 네이버 원가격 계산이 화면의 **시장가**와 맞는 종목: ${naverLooksLikePrice}/${vsData.length} (상대 5% 이내)`);
+say(`- 네이버 원가격 계산이 화면의 **총수익률**과 맞는 종목: ${naverLooksLikeTr}/${vsData.length}`);
+say(`- 분배율 5% 이상만: 시장가와 맞음 ${payersLikePrice}/${payers.length} · 총수익률과 맞음 ${payersLikeTr}/${payers.length}`);
+if (payers.length >= 3 && payersLikeTr > payersLikePrice) {
+  say('');
+  say('→ **네이버 일별시세는 분배금을 반영한 수정주가다.** 분배가 큰 종목에서 ' +
+      '네이버 원가격이 우리 시장가가 아니라 총수익률 쪽에 붙는다. ' +
+      '네이버가 "시장가 기준" 이라 적어 놓은 값도 이 계열에서 나온 것이다.');
+}
 say('');
 say(`- 두 곳의 **종가 계열**이 사실상 같은 종목: ${seriesAgree}/${usable.length} (일별 차이 중앙값 0.1% 이하)`);
 say(`- 원가격으로 다시 계산한 1년 수익률이 서로 맞는 종목: ${rawAgree}/${usable.length} (±1%p)`);
