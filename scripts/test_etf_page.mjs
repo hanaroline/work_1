@@ -95,10 +95,22 @@ check('상세에 상위 편입종목이 그려진다', holdRows > 0, `${holdRows
 const retRows = await page.locator('#detail table tbody tr').count();
 check('상세에 기간수익률 표가 있다', retRows > 0, `${retRows}행`);
 
-// ── 수익률 기준 토글. 기본은 총수익률(업계 표준)이어야 한다.
+// ── 수익률 기준 토글.
+//    총수익률이 실려 있으면 그것이 기본이어야 한다(업계 표준). 아직 수집이
+//    그 계열을 못 채웠으면 시장가로 열리고 총수익률 버튼은 감춰져야 한다 —
+//    눌러도 빈칸만 나오는 기준을 내걸면 안 된다.
+const hasTr = await page.evaluate(() =>
+  (window.ETF_DATA?.etfs || []).some((e) => e.ret && e.ret.tr));
 const defaultBasis = await page.locator('#basis-seg button[aria-pressed="true"]')
   .getAttribute('data-basis');
-check('기본 기준이 총수익률이다', defaultBasis === 'tr', defaultBasis);
+const trHidden = await page.locator('#basis-seg button[data-basis="tr"]').isHidden();
+if (hasTr) {
+  check('총수익률이 있으면 그것이 기본이다', defaultBasis === 'tr', defaultBasis);
+  check('총수익률 버튼이 보인다', !trHidden);
+} else {
+  check('총수익률이 없으면 시장가로 연다', defaultBasis === 'price', defaultBasis);
+  check('총수익률 버튼이 감춰진다', trHidden, `hidden=${trHidden}`);
+}
 
 await page.locator('#basis-seg button[data-basis="price"]').click();
 await page.waitForTimeout(120);
@@ -108,10 +120,12 @@ const priceNote = await page.locator('#basis-note').textContent();
 check('시장가일 때 분배금 누락을 알린다', /분배금이 빠져|excludes/.test(priceNote || ''),
       (priceNote || '').trim().slice(0, 40));
 
-await page.locator('#basis-seg button[data-basis="tr"]').click();
-await page.waitForTimeout(120);
-const trHead = await page.locator('#list-head th[data-sort="ret"]').textContent();
-check('총수익률로 되돌리면 표 머리가 바뀐다', /총수익률|TR/.test(trHead || ''), trHead.trim());
+if (hasTr) {
+  await page.locator('#basis-seg button[data-basis="tr"]').click();
+  await page.waitForTimeout(120);
+  const trHead = await page.locator('#list-head th[data-sort="ret"]').textContent();
+  check('총수익률로 되돌리면 표 머리가 바뀐다', /총수익률|TR/.test(trHead || ''), trHead.trim());
+}
 
 // ── 정렬
 await page.locator('#list-head th[data-sort="ter"]').click();

@@ -138,6 +138,7 @@ async function main() {
 
   let withTr = 0;
   const trMissing = [];
+  const trMethod = {};        // 'dividends' / 'adjclose' 각각 몇 종목인가
 
   const etfs = [];
   let withHoldings = 0;
@@ -154,8 +155,10 @@ async function main() {
     // 네이버의 두 계열(시장가·기준가)에 야후 총수익률을 얹는다.
     const trRes = trRows[i];
     const tr = trRes?.ok ? trRes.value : null;
-    if (tr?.tr) withTr += 1;
-    else trMissing.push(item.itemcode);
+    if (tr?.tr) {
+      withTr += 1;
+      trMethod[tr.method] = (trMethod[tr.method] || 0) + 1;
+    } else trMissing.push(item.itemcode);
     const ret = (d?.ret || tr)
       ? Object.assign({}, d?.ret || {}, tr?.tr ? { tr: tr.tr } : {})
       : null;
@@ -208,6 +211,10 @@ async function main() {
   console.log(`[kr] 편입종목 확보 ${withHoldings}/${list.length}`);
   console.log(`[kr] 총수익률 확보 ${withTr}/${list.length}` +
               (trMissing.length ? ` (없는 종목 앞 5: ${trMissing.slice(0, 5).join(',')})` : ''));
+  // 배당으로 직접 만든 것이 몇이고 adjclose 로 물러선 것이 몇인가.
+  // adjclose 쪽이 많으면 국내 분배금이 야후에 없다는 뜻이고, 그러면 이 경로는
+  // 쓸 수 없다 — 검산이 잡겠지만 원인은 이 줄에 나온다.
+  console.log('[kr] 총수익률 산출 방식:', JSON.stringify(trMethod));
   if (failures.length) {
     console.log(`[kr] 실패 ${failures.length}종목 (앞 5개): ` +
                 failures.slice(0, 5).map((f) => `${f.code} ${f.error}`).join(' | '));
@@ -223,6 +230,7 @@ async function main() {
     count: etfs.length,
     withHoldings,
     withTr,
+    trMethod,
     trMissing: trMissing.slice(0, 80),
     failures: failures.slice(0, 50),
     etfs,

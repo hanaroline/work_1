@@ -172,15 +172,57 @@ export function weightMap(list) {
  * 마지막 봉**을 쓴다. 구간이 데이터 범위를 벗어나면 아예 값을 내지 않는다 —
  * 상장 초기 종목의 1년 수익률이 상장일 대비가 되어 엉뚱하게 커지는 것을 막는다.
  */
-export function computeReturns(timestamps, closes, adjcloses) {
+/**
+ * 총수익률 지수를 배당으로 직접 만든다.
+ *
+ * 야후의 수정종가(adjclose)를 믿으면 안 된다. 미국 종목에는 분배금이 반영돼
+ * 있지만 **국내 종목에는 반영되지 않는다** — 검산에서 국내 128종목의
+ * (adjclose 수익률 − close 수익률)이 분배율의 -0.11 배로 나왔다. 즉 국내는
+ * adjclose 가 close 와 사실상 같다.
+ *
+ * 그래서 배당 이벤트(events=div)로 직접 지수를 만든다. 배당락일 봉에서
+ * 분배금을 그날 종가에 재투자한 것으로 보고 이어 붙인다.
+ *
+ *   TR[0] = close[0]
+ *   TR[i] = TR[i-1] × (close[i] + div[i]) / close[i-1]
+ *
+ * 이 방식은 시장을 가리지 않으므로 국내와 해외가 같은 뜻의 값을 갖는다.
+ * 배당 자료가 아예 없으면 adjclose 로 물러선다(미국은 그쪽도 맞다).
+ */
+export function computeReturns(timestamps, closes, adjcloses, dividends) {
   if (!timestamps?.length) return null;
+  // 배당을 날짜(UTC)로 묶어 둔다. 이벤트 타임스탬프는 봉 시각과 정확히
+  // 같지 않을 수 있으므로 날짜로 맞춘다.
+  const divByDay = new Map();
+  for (const d of Object.values(dividends || {})) {
+    const amt = Number(d?.amount);
+    const at = Number(d?.date);
+    if (!Number.isFinite(amt) || !Number.isFinite(at) || amt <= 0) continue;
+    const key = new Date(at * 1000).toISOString().slice(0, 10);
+    divByDay.set(key, (divByDay.get(key) || 0) + amt);
+  }
+
   const rows = [];
   for (let i = 0; i < timestamps.length; i += 1) {
     const c = closes?.[i];
     const a = adjcloses?.[i] ?? c;
-    if (c != null && Number.isFinite(c)) rows.push({ t: timestamps[i] * 1000, c, a });
+    if (c == null || !Number.isFinite(c)) continue;
+    const day = new Date(timestamps[i] * 1000).toISOString().slice(0, 10);
+    rows.push({ t: timestamps[i] * 1000, c, a, div: divByDay.get(day) || 0 });
   }
   if (rows.length < 2) return null;
+
+  // 배당을 재투자한 지수를 만든다. 배당 자료가 없으면 adjclose 를 쓴다.
+  const paid = rows.reduce((n, r) => n + (r.div > 0 ? 1 : 0), 0);
+  const method = paid > 0 ? 'dividends' : 'adjclose';
+  if (paid > 0) {
+    let idx = rows[0].c;
+    rows[0].a = idx;
+    for (let i = 1; i < rows.length; i += 1) {
+      idx *= (rows[i].c + rows[i].div) / rows[i - 1].c;
+      rows[i].a = idx;
+    }
+  }
 
   const last = rows[rows.length - 1];
   const first = rows[0];
@@ -221,18 +263,24 @@ export function computeReturns(timestamps, closes, adjcloses) {
   }
   return { price: Object.keys(price).length ? price : null,
            tr: Object.keys(tr).length ? tr : null,
+           method,                       // 'dividends' | 'adjclose'
+           divCount: paid,
            asOf: new Date(last.t).toISOString().slice(0, 10) };
 }
 
-/** 야후 일봉으로 한 종목의 기간수익률을 받는다. chart 는 crumb 없이 열려 있다. */
+/**
+ * 야후 일봉으로 한 종목의 기간수익률을 받는다. chart 는 crumb 없이 열려 있다.
+ * events=div 를 반드시 붙인다 — 총수익률을 배당으로 직접 만들기 때문이다.
+ */
 export async function fetchYahooReturns(symbol, { headers = {}, range = '5y' } = {}) {
   const json = await getJson(
     `https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(symbol)}` +
-    `?range=${range}&interval=1d`, { headers });
+    `?range=${range}&interval=1d&events=div`, { headers });
   const r = json?.chart?.result?.[0];
   if (!r) return null;
   return computeReturns(r.timestamp, r.indicators?.quote?.[0]?.close,
-                        r.indicators?.adjclose?.[0]?.adjclose);
+                        r.indicators?.adjclose?.[0]?.adjclose,
+                        r.events?.dividends);
 }
 
 /** 브라우저가 <script> 로 읽을 수 있게 전역 하나를 정의하는 파일로 쓴다. */
