@@ -289,8 +289,9 @@
       body.pdf-summary #weekly-wrap { display: none !important; }
       body.pdf-full #hl-wrap { display: block !important; }
       /* 주간본은 주간 절만 담는다. 그날 판은 요약본이 이미 맡았다. */
-      body.pdf-weekly #stats, body.pdf-weekly #hl-wrap, body.pdf-weekly #moves-wrap,
-      body.pdf-weekly #listTop, body.pdf-weekly #list, body.pdf-weekly #hit { display: none !important; }
+      body.pdf-weekly #stats, body.pdf-weekly #ov-day, body.pdf-weekly #hl-wrap,
+      body.pdf-weekly #moves-wrap, body.pdf-weekly #listTop, body.pdf-weekly #list,
+      body.pdf-weekly #hit { display: none !important; }
       body.pdf-weekly #weekly-wrap { display: block !important; }
     }
   </style>
@@ -506,7 +507,9 @@
       h.innerHTML = esc(c) + '<span class="n">' + bag[c].length + "건</span>";
       frag.appendChild(h);
       var box = document.createElement("div");
-      box.className = "cards";
+      // 인쇄에서 두 단으로 흐르게 한다 — 한 단이면 마흔여덟 쪽이 되고,
+      // 블록 흐름은 쪽 끝에서 마지막 카드가 꼬리말 위로 넘친다.
+      box.className = "cards two";
       bag[c].forEach(function (el) { box.appendChild(el); });
       frag.appendChild(box);
     });
