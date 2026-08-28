@@ -342,11 +342,75 @@ for (const e of ETFS) {
   }
 }
 
+// ── 10. 한 종목이 무리 전체의 평균을 흔드는가 ─────────────────────────────
+// 화면의 "유형 평균 대비" 는 같은 유형 종목들의 평균을 뺀 값이다. 그런데
+// 값 하나가 깨지면 그 한 종목이 무리 전체의 파생 칸을 오염시킨다.
+//
+// 실제로 그랬다. HANARO Fn전기&수소차의 1년 총수익률 3,582% 가 국내 주식형
+// 479종목의 평균을 이렇게 밀어 올렸다.
+//
+//   6개월   +0.88%  ->  실제 -3.59%   (4.47%p · 부호가 뒤집힌다)
+//   연초이후 +43.96% ->  실제 +36.91%  (7.06%p)
+//   1년     +90.80% ->  실제 +81.59%  (9.21%p)
+//
+// TIGER 반도체의 "유형 평균 대비 +147.36%p" 도 그만큼 틀려 있었다. 한 종목의
+// 값을 고치는 것과 별개로, **한 종목이 무리를 흔들 수 있다는 사실 자체**를
+// 잡아야 한다. 앞으로 다른 값이 깨져도 여기서 먼저 걸린다.
+//
+// 재는 법은 간단하다. 그 종목을 뺐을 때 평균이 얼마나 움직이는가 —
+//   변화량 = (평균 - 그 종목 값) / (n - 1)
+const cohorts = {};
+for (const e of ETFS) {
+  if (e.suspended) continue;                      // 이미 무리에서 빼는 종목
+  // 화면과 같은 기준으로 묶는다. 배율 상품은 1배와 다른 유형이다 —
+  // 2배가 1배 무리의 평균에 섞이면 그 평균은 어느 쪽의 평균도 아니다.
+  const geared3 = (e.flags || []).some((f) => f === 'leverage' || f === 'inverse');
+  const key = `${e.market}|${e.assetClass || '?'}|${e.region || '?'}|${geared3 ? 'x' : '1'}`;
+  (cohorts[key] ??= []).push(e);
+}
+for (const [key, members] of Object.entries(cohorts)) {
+  if (members.length < 20) continue;              // 작은 무리는 원래 한둘에 휘둘린다
+  for (const period of Object.keys(YEARS)) {
+    const vals = [];
+    for (const e of members) {
+      const v = e.ret?.tr?.[period];
+      if (Number.isFinite(v)) vals.push({ e, v });
+    }
+    if (vals.length < 20) continue;
+    const mean = vals.reduce((s, x) => s + x.v, 0) / vals.length;
+    for (const { e, v } of vals) {
+      const shift = (mean - v) / (vals.length - 1);   // 이 종목을 빼면 평균이 이만큼 움직인다
+      // 이 규칙의 목적을 좁힌다. "평균이 흔들린다" 자체는 오류가 아니다 —
+      // 배율 상품처럼 정말로 크게 오른 종목이 있으면 평균은 원래 흔들리고,
+      // 무리가 작을수록 더 그렇다. 처음에 1%p 절대값으로 걸었더니 34종목이
+      // 잡혔는데 대부분이 진짜 값이었다.
+      //
+      // 잡아야 하는 것은 **깨진 값이 평균을 흔드는 경우**다. 그래서 다른
+      // 규칙이 이미 오류로 잡은 종목일 때만 오류로 올린다. 그러면 이 규칙은
+      // 검출이 아니라 **피해 규모**를 말한다 — 값 하나가 몇 종목의 화면을
+      // 함께 틀리게 했는지.
+      if (Math.abs(shift) > 1) {
+        const alreadyBroken = findings.some((f) => f.sev === 'error' && f.id === e.id
+          && /^tr-|^수익률-/.test(f.rule));
+        flag(alreadyBroken && Math.abs(shift) > 1 ? 'error' : 'warn', '유형평균-한종목이흔듦', e,
+             `${key} ${period}: 이 종목(${v}%)을 빼면 ${members.length}종목 평균이 ` +
+             `${mean.toFixed(2)}% → ${(mean + shift).toFixed(2)}% 로 ${shift > 0 ? '+' : ''}${shift.toFixed(2)}%p 움직인다`,
+             { period, cohort: key, cohortN: vals.length, value: v,
+               cohortMean: +mean.toFixed(2), shiftPp: +shift.toFixed(2) });
+      }
+    }
+  }
+}
+
 // ── 집계 ──────────────────────────────────────────────────────────────────
+// 규칙**과 심각도**로 묶는다. 규칙만으로 묶으면 같은 규칙의 오류와 경고가
+// 한 줄에 합쳐지고 심각도는 첫 건 것이 찍힌다 — 61건이 전부 오류인 줄 알았는데
+// 실은 오류 6건 + 경고 55건이었다. 집계가 거짓말을 하면 감사가 뜻이 없다.
 const byRule = {};
 for (const f of findings) {
-  byRule[f.rule] ??= { rule: f.rule, sev: f.sev, count: 0, etfs: new Set(), examples: [] };
-  const b = byRule[f.rule];
+  const gk = `${f.rule}|${f.sev}`;
+  byRule[gk] ??= { rule: f.rule, sev: f.sev, count: 0, etfs: new Set(), examples: [] };
+  const b = byRule[gk];
   b.count += 1; b.etfs.add(f.id);
   if (b.examples.length < 5) b.examples.push(f);
 }

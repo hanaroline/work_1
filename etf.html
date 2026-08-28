@@ -1065,6 +1065,9 @@ function marketSorted(market, period) {
     var arr = [];
     for (var i = 0; i < ETFS.length; i += 1) {
       if (ETFS[i].market !== market) continue;
+      // 거래가 멈춘 종목은 마지막 체결가가 그대로 남아 수익률이 튄다.
+      // 순위 모집단에 두면 멀쩡한 종목의 등수까지 흔든다.
+      if (ETFS[i].suspended) continue;
       var v = trOf(ETFS[i], period);
       if (v != null) arr.push(v);
     }
@@ -1084,18 +1087,37 @@ function betterCount(arr, v) {
   return lo;
 }
 
+/** 배율 상품인가. 유형을 가르는 데 쓴다. */
+function isGeared(etf) {
+  var f = etf.flags || [];
+  for (var i = 0; i < f.length; i += 1) if (f[i] === 'leverage' || f[i] === 'inverse') return true;
+  return false;
+}
+
 /**
- * 같은 유형 무리. 시장·자산군·지역이 같은 종목으로 잡고, 너무 적으면
+ * 같은 유형 무리. 시장·자산군·지역·배율이 같은 종목으로 잡고, 너무 적으면
  * 지역 조건을 푼다. 무리가 작으면 평균이 한두 종목에 휘둘려 뜻이 없어진다.
+ *
+ * **배율을 유형에 넣은 이유.** 국내 주식형 478종목 무리에 레버리지·인버스가
+ * 58종목 섞여 있었다. 2배 상품은 기초자산이 오른 해에 1배의 몇 배로 오른다
+ * (1년 기준 TIGER 200IT레버리지 +847%, KODEX 반도체레버리지 +535%). 그걸
+ * 같은 평균에 넣고 1배 ETF 더러 "유형 평균 대비" 라고 하면, 견주는 상대가
+ * 같은 종류의 상품이 아니다. 수치의 문제가 아니라 분류의 문제다.
  */
 var PEER_CACHE = {};
 function peersOf(etf) {
-  var key = etf.market + '|' + (etf.assetClass || '?') + '|' + (etf.region || '?');
+  var g = isGeared(etf);
+  var key = etf.market + '|' + (etf.assetClass || '?') + '|' + (etf.region || '?') + '|' + (g ? 'x' : '1');
   if (!PEER_CACHE[key]) {
-    var strict = ETFS.filter(function (e) {
+    // 거래가 멈춘 종목은 무리에서 뺀다. 평균을 끌어당기는 것이 값이 아니라
+    // 멈춘 시각이라면 그건 유형의 평균이 아니다.
+    var live = ETFS.filter(function (e) {
+      return !e.suspended && isGeared(e) === g;
+    });
+    var strict = live.filter(function (e) {
       return e.market === etf.market && e.assetClass === etf.assetClass && e.region === etf.region;
     });
-    PEER_CACHE[key] = strict.length >= 8 ? strict : ETFS.filter(function (e) {
+    PEER_CACHE[key] = strict.length >= 8 ? strict : live.filter(function (e) {
       return e.market === etf.market && e.assetClass === etf.assetClass;
     });
   }
@@ -1104,7 +1126,8 @@ function peersOf(etf) {
 
 var PEER_AVG_CACHE = {};
 function peerAvg(etf, period) {
-  var key = etf.market + '|' + (etf.assetClass || '?') + '|' + (etf.region || '?') + '|' + period;
+  var key = etf.market + '|' + (etf.assetClass || '?') + '|' + (etf.region || '?') + '|' +
+            (isGeared(etf) ? 'x' : '1') + '|' + period;
   if (!(key in PEER_AVG_CACHE)) {
     var pool = peersOf(etf);
     var sum = 0, n = 0;
@@ -1159,8 +1182,15 @@ function returnTable(etf) {
       var pa = peerAvg(etf, p[0]);
       if (pa) {
         var diff = v - pa.avg;
+        // 무리의 **전체 크기**가 아니라 그 기간에 실제로 평균에 쓴 수를 적는다.
+        // 3년 평균을 284종목으로 내놓고 머리말에 479종목이라고 적으면
+        // 읽는 사람은 479종목의 평균으로 읽는다.
         peerCell = '<td class="num ' + signClass(diff) + '">' +
-          (diff > 0 ? '+' : '') + diff.toFixed(2) + '%p</td>';
+          (diff > 0 ? '+' : '') + diff.toFixed(2) + '%p' +
+          '<span class="rank-raw">' + (lang === 'ko'
+            ? '평균 ' + pa.avg.toFixed(2) + '% · ' + pa.n.toLocaleString() + '종목'
+            : 'avg ' + pa.avg.toFixed(2) + '% · n=' + pa.n.toLocaleString()) +
+          '</span></td>';
       }
     }
 
@@ -1172,6 +1202,8 @@ function returnTable(etf) {
     return '<div class="empty">' + (lang === 'ko' ? '기간 수익률 자료가 없습니다.' : 'No return data.') + '</div>';
   }
 
+  // 머리말에는 무리를 어떻게 잡았는지만 적는다. 실제 종목 수는 기간마다
+  // 다르므로 칸마다 적는다(위).
   var peerN = peersOf(etf).length;
   var head = '<th>' + (lang === 'ko' ? '기간' : 'Period') + '</th>' +
     '<th class="num">' + (lang === 'ko'
@@ -1180,8 +1212,10 @@ function returnTable(etf) {
       ? '순위<span class="th-sub">' + esc(t(MARKET_LABEL[etf.market])) + ' 전체</span>'
       : 'Rank<span class="th-sub">within market</span>') + '</th>' +
     '<th class="num">' + (lang === 'ko'
-      ? '유형 평균 대비<span class="th-sub">' + peerN.toLocaleString() + '종목</span>'
-      : 'vs peer avg<span class="th-sub">' + peerN.toLocaleString() + ' funds</span>') + '</th>';
+      ? '유형 평균 대비<span class="th-sub">' + (isGeared(etf) ? '배율 상품 ' : '1배 ') +
+        '최대 ' + peerN.toLocaleString() + '종목</span>'
+      : 'vs peer avg<span class="th-sub">' + (isGeared(etf) ? 'geared' : '1x') +
+        ', up to ' + peerN.toLocaleString() + '</span>') + '</th>';
 
   var notes = '';
   if (etf.dividendYield != null && etf.dividendYield >= 5) {
