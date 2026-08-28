@@ -803,7 +803,7 @@ function renderList() {
             '</span></td>';
     html += '<td>' + esc(t(MARKET_LABEL[e.market])) + '</td>';
     html += '<td>' + esc(e.manager || '–') + '</td>';
-    html += '<td class="dim">' + esc(e.index || e.indexName || '–') + '</td>';
+    html += '<td class="dim">' + esc(e.index || e.indexName || e.categoryRaw || '–') + '</td>';
     html += '<td class="num ' + signClass(r) + '">' + fmtPct(r) + '</td>';
     var aumCell = fmtAmount(e.aum, e.currency || (e.market === 'KR' ? 'KRW' : null));
     // 시장을 안 좁혔으면 통화가 섞여 눈으로 비교가 안 된다. 원화 환산을 함께 적는다.
@@ -934,7 +934,9 @@ function renderDetail() {
   function kv(k, v) { html += '<div><div class="k">' + esc(k) + '</div><div class="v">' + v + '</div></div>'; }
   function kvt(k, v) { html += '<div><div class="k">' + esc(k) + '</div><div class="v txt">' + v + '</div></div>'; }
   kvt(lang === 'ko' ? '운용사' : 'Manager', esc(etf.manager || '–'));
-  kvt(lang === 'ko' ? '기초지수' : 'Index', esc(etf.index || etf.indexName || '–'));
+  kvt(lang === 'ko' ? '기초지수' : 'Index',
+      esc(etf.index || etf.indexName ||
+          (etf.categoryRaw ? etf.categoryRaw + (lang === 'ko' ? ' (분류)' : ' (category)') : '–')));
   kv(lang === 'ko' ? '설정액(순자산)' : 'AUM', fmtAmount(etf.aum, cur));
   kv(lang === 'ko' ? '총보수' : 'TER', etf.ter == null ? '–' : etf.ter.toFixed(3) + '%');
   kv(lang === 'ko' ? '현재가' : 'Price', fmtNum(etf.price) +
@@ -950,6 +952,8 @@ function renderDetail() {
     kvt(lang === 'ko' ? '상장일' : 'Listed',
         d.length === 8 ? d.slice(0, 4) + '.' + d.slice(4, 6) + '.' + d.slice(6) : esc(d));
   }
+  // 수익률 기준일. 시세는 오늘 것이어도 수익률은 전 영업일 기준일 수 있다.
+  if (etf.retAsOf) kvt(lang === 'ko' ? '수익률 기준일' : 'Returns as of', esc(etf.retAsOf));
   html += '</div>';
 
   html += '<div class="grid grid-2" style="margin-top:var(--space-content)">';
