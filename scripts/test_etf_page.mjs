@@ -116,18 +116,24 @@ check('기간수익률 표가 4열이다', retHeads.length === 4, retHeads.map((
 check('시장가·NAV 열이 사라졌다',
       !retHeads.some((h) => /시장가|NAV|Price/.test(h)), retHeads.join(' | '));
 check('순위 열이 있다', retHeads.some((h) => /순위|Rank/.test(h)));
-check('유형 평균 대비 열이 있다', retHeads.some((h) => /유형 평균|peer/.test(h)));
+check('동일 유형 안에서 순위를 매긴다고 밝힌다',
+      retHeads.some((h) => /동일 유형|in category/.test(h)), retHeads.join(' | '));
+check('유형 평균 대비 열이 있다', retHeads.some((h) => /유형 평균|category avg/.test(h)));
 
+// 상용 ETF 화면과 같은 표기 — 등수가 아니라 백분율 순위 하나이고,
+// 그 기간의 동일 유형 종목 수를 함께 적는다.
 const rankTxt = await page.locator('#detail .ret-table tbody tr').first()
   .locator('td').nth(2).textContent();
-check('순위가 계산된다', /상위|하위|Top|Bottom/.test(rankTxt || ''), (rankTxt || '').trim());
-
-// 절반 아래인 종목은 "상위 98%" 가 아니라 "하위 2%" 로 나와야 한다 — 앞엣말은
-// 눈으로 읽으면 좋아 보이지만 실제로는 꼴찌 언저리다.
+check('백분율 순위가 계산된다', /\d+%/.test(rankTxt || ''), (rankTxt || '').trim());
+check('순위 칸에 동일 유형 종목 수가 적힌다',
+      /동일 유형 [\d,]+개|of [\d,]+/.test(rankTxt || ''), (rankTxt || '').trim());
 const rankLabels = await page.locator('#detail .ret-table tbody tr td:nth-child(3) .rank-pct')
   .allTextContents();
-const badTop = rankLabels.filter((x) => /상위\s*(5[1-9]|[6-9]\d|100)%/.test(x));
-check('절반 아래는 하위로 적는다', badTop.length === 0, badTop.join(' | ') || '없음');
+const outOfRange = rankLabels.filter((x) => {
+  const m = /(\d+)%/.exec(x);
+  return !m || +m[1] < 1 || +m[1] > 100;
+});
+check('백분율이 1~100 안에 있다', outOfRange.length === 0, outOfRange.join(' | ') || '없음');
 const peerTxt = await page.locator('#detail .ret-table tbody tr').first()
   .locator('td').nth(3).textContent();
 check('유형 평균 대비가 계산된다', /%p/.test(peerTxt || ''), (peerTxt || '').trim());
