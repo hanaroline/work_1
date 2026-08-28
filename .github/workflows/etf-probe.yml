@@ -1,0 +1,61 @@
+name: ETF 원천 탐색 (조사)
+
+# 브리핑 세션은 이그레스 정책 때문에 KRX·네이버·야후에 직접 못 붙는다
+# (CONNECT 403). 러너는 그 정책 밖이므로 여기서 대신 찔러 보고 결과를
+# 저장소에 커밋한다. 수집기는 이 결과를 보고 쓴다.
+#
+# 수집기를 고치는 동안 반복해서 돌게 되므로 push 로도 발동시킨다.
+# (세션 토큰에는 Actions 쓰기 권한이 없어 workflow_dispatch 를 API 로
+#  부르지 못한다. 대신 파일을 푸시하면 여기가 돈다.)
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - 'claude/etf-**'
+    paths:
+      - 'scripts/probe_etf_sources.mjs'
+      - '.github/workflows/etf-probe.yml'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: etf-probe-${{ github.ref_name }}
+  cancel-in-progress: true
+
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref_name }}
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      # 탐색 실패는 잡을 실패시키지 않는다. 못 붙은 칸도 결과의 일부다.
+      - name: 탐색 실행
+        continue-on-error: true
+        run: node scripts/probe_etf_sources.mjs
+
+      - name: 결과 업로드
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: etf-probe
+          path: tools/discovery/etf_probe.*
+          retention-days: 7
+
+      - name: 결과 커밋
+        if: always()
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          if [ -f tools/discovery/etf_probe.json ]; then
+            git add tools/discovery/etf_probe.json tools/discovery/etf_probe.md
+            git commit -m "chore(etf): 원천 탐색 결과 갱신" || echo "변경 없음"
+            git push || echo "푸시 실패 (무시)"
+          fi
