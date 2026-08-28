@@ -532,8 +532,16 @@ def full_title(html, short):
 
     def keep(t):
         t = re.sub(r"\s+", " ", t).strip()
+        # 제목이 <meta content="…"/> 같은 **속성값** 안에 들어 있으면, 다음
+        # 태그까지 읽는 아래 길이 닫는 따옴표와 꺾쇠까지 물고 온다 —
+        # 「… 높을 수도... : Npay 증권"/>」 로 앞면에 뜬 판이 있었다.
+        t = re.sub(r"[\"']\s*/?>?\s*$", "", t).strip()
         # 브라우저 탭 제목에는 사이트 이름이 붙는다 — 「… : Npay 증권」.
         t = re.sub(r"\s*[:｜|]\s*(Npay|네이버(페이)?)\s*증권\s*$", "", t).strip()
+        # 잘린 제목에 말줄임표만 더 붙은 것은 되찾은 것이 아니다. 후보로
+        # 두면 「가장 짧은 것」 자리를 차지해 진짜 제목을 밀어낸다.
+        if re.sub(r"[.…]+\s*$", "", t).strip() == prefix:
+            return
         if t.startswith(prefix) and len(prefix) < len(t) < 200:
             cands.append(t)
 
