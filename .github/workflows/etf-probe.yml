@@ -17,7 +17,7 @@ on:
       - 'scripts/probe_etf_sources*.mjs'
       - 'scripts/probe_etf_dividends.mjs'
       - 'scripts/verify_etf_price_series.mjs'
-      - 'scripts/probe_fund_sources.mjs'
+      - 'scripts/probe_fund_sources*.mjs'
       - '.github/workflows/etf-probe.yml'
 
 permissions:
@@ -60,6 +60,21 @@ jobs:
         if: hashFiles('scripts/probe_fund_sources.mjs') != ''
         run: node scripts/probe_fund_sources.mjs
 
+      # 2차는 브라우저가 필요하다 — 화면이 실제로 무엇을 부르는지 봐야 한다.
+      - name: 브라우저 설치
+        continue-on-error: true
+        timeout-minutes: 6
+        if: hashFiles('scripts/probe_fund_sources2.mjs') != ''
+        run: |
+          npm i -D playwright@1.56.1 --no-audit --no-fund
+          npx playwright install --with-deps chromium
+
+      - name: 탐색 실행 (펀드 원천 2차 — 화면 관찰)
+        continue-on-error: true
+        timeout-minutes: 10
+        if: hashFiles('scripts/probe_fund_sources2.mjs') != ''
+        run: node scripts/probe_fund_sources2.mjs
+
       # 탐색 실패는 잡을 실패시키지 않는다. 못 붙은 칸도 결과의 일부다.
       - name: 탐색 실행 (1차)
         continue-on-error: true
@@ -97,7 +112,7 @@ jobs:
             tools/discovery/etf_probe*
             tools/discovery/etf_dividend_probe.*
             tools/discovery/etf_price_series.*
-            tools/discovery/fund_probe.*
+            tools/discovery/fund_probe*
             tools/discovery/naver_etf_analysis.json
           retention-days: 7
 
@@ -110,7 +125,7 @@ jobs:
             git add tools/discovery/etf_probe* || true
             git add tools/discovery/etf_dividend_probe.* 2>/dev/null || true
             git add tools/discovery/etf_price_series.* 2>/dev/null || true
-            git add tools/discovery/fund_probe.* 2>/dev/null || true
+            git add tools/discovery/fund_probe* 2>/dev/null || true
             git add tools/discovery/naver_etf_analysis.json 2>/dev/null || true
             git commit -m "chore(etf): 원천 탐색 결과 갱신" || echo "변경 없음"
             git push || echo "푸시 실패 (무시)"
