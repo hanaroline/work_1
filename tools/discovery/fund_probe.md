@@ -1,6 +1,6 @@
 # 펀드 원천 탐색
 
-조사 시각: 2026-08-28T15:00:05.166Z
+조사 시각: 2026-08-28T15:08:52.491Z
 
 ETF 화면이 가능했던 이유는 네이버 etfAnalysis 하나가 편입종목을 줬기 때문이다.
 펀드에도 그런 자리가 있는지 확인한 기록. **보유종목 상위 10을 못 구하면
@@ -8,8 +8,8 @@ ETF 화면이 가능했던 이유는 네이버 etfAnalysis 하나가 편입종�
 
 | 분류 | 대상 | 상태 | 크기 | 인코딩 | 보유종목 | 수익률 | 설정액 | 보수 |
 |---|---|---|---:|---|:-:|:-:|:-:|:-:|
-| naver | 펀드 메인 | 200 | 185762 | euc-kr | ○ | · | · | ○ |
-| naver | 펀드 검색 화면 | 200 | 185770 | euc-kr | ○ | · | · | ○ |
+| naver | 펀드 메인 | 200 | 185767 | euc-kr | ○ | · | · | ○ |
+| naver | 펀드 검색 화면 | 200 | 185767 | euc-kr | ○ | · | · | ○ |
 | naver | 펀드 목록 API 후보 | 404 | 2741 | euc-kr | · | · | · | ○ |
 | naver | 모바일 펀드 홈 | 404 | 4209 | utf-8 | · | · | · | · |
 | naver | 모바일 펀드 API 후보 | 404 | 4209 | utf-8 | · | · | · | · |
@@ -18,7 +18,7 @@ ETF 화면이 가능했던 이유는 네이버 etfAnalysis 하나가 편입종�
 | kofia | 펀드다모아 검색 API 후보 | ✗ fetch failed | – | – | · | · | · | · |
 | kofia | dis .wjson 후보 | 200 | 695 | utf-8 | · | · | · | · |
 | vendor | 펀드닥터(제로인) | 200 | 42168 | utf-8 | ○ | ○ | · | ○ |
-| vendor | 에프앤가이드 펀드 | 404 | 80828 | utf-8 | · | ○ | · | ○ |
+| vendor | 에프앤가이드 펀드 | ✗ fetch failed | – | – | · | · | · | · |
 | vendor | 한국포스증권(펀드슈퍼마켓) | ✗ fetch failed | – | – | · | · | · | · |
 | amc | 미래에셋자산운용 | 403 | 257 | utf-8 | · | · | · | · |
 | amc | 미래에셋 펀드 목록 후보 | 403 | 257 | utf-8 | · | · | · | · |
@@ -207,10 +207,10 @@ window.onload = function () {
 <pfmAppName>FS-COM</pfmAppName>
 <pfmSvcName>COMFundUnityInfoSO</pfmSvcName>
 <pfmFnName>select</pfmFnName>
-<pfmGlobalNo>48e25d250afe0096180672196c952f36</pfmGlobalNo>
-<pfmTrDate>20260828</pfmTrDate>
-<pfmTrTime>20260828235949669</pfmTrTime>
-<pfmClntIp>135.232.225.20</pfmClntIp>
+<pfmGlobalNo>48ea43210afe0096191a77ff58756ec9</pfmGlobalNo>
+<pfmTrDate>20260829</pfmTrDate>
+<pfmTrTime>20260829000827297</pfmTrTime>
+<pfmClntIp>64.236.153.147</pfmClntIp>
 <pfmResponseType>S</pfmResponseType>
 <pfmResponseCode>COMS9009</pfmResponseCode>
 <pfmResponseTitle>MODULE ERROR</pfmResponseTitle>
@@ -235,25 +235,6 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 <!-- 2019.12.26 김사랑 추가 Google Tag Manager >
 <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
 new Date().getTime(),event
-```
-
-### [vendor] 에프앤가이드 펀드
-
-```
-
-<!DOCTYPE html>
-<html lang="ko">
-<head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <!--Str : favicon -->
-    <link rel="icon" href="/favicon.ico?v=20251020">
-    <!--End : favicon -->
-    <!--Str : apple-touch-icon -->
-    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon-180.png">
-    <link rel="apple-touch-icon" sizes="167x167" href="/apple-touch-icon-167.png">
-    <link rel="apple-touch-icon" sizes="152x152" href="/apple-touch-icon-152.png">
-    <link rel="apple-touch-icon" href="/apple-touch
 ```
 
 ### [amc] 미래에셋자산운용
