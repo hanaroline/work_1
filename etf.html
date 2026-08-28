@@ -673,8 +673,12 @@ function renderFilters() {
     labelFromMap(L.region)), state.region, lang === 'ko' ? '전체' : 'All');
   fillSelect(el('f-asset'), optionsFrom(all, function (e) { return e.assetClass; },
     labelFromMap(L.assetClass)), state.asset, lang === 'ko' ? '전체' : 'All');
-  fillSelect(el('f-index'), optionsFrom(all, function (e) { return e.index; },
-    function (k) { return k; }), state.index, lang === 'ko' ? '전체' : 'All');
+  // 기초지수는 고유값이 800개가 넘는다(운용사마다 자체 지수를 쓴다). 그대로
+  // 넣으면 셀렉트가 못 쓰게 되므로, 2종목 이상이 따르는 지수만 남긴다.
+  // 나머지는 위 검색창에서 지수명으로 찾을 수 있다.
+  var indexOpts = optionsFrom(all, function (e) { return e.index; }, function (k) { return k; })
+    .filter(function (o) { return o[2] >= 2 || o[0] === state.index; });
+  fillSelect(el('f-index'), indexOpts, state.index, lang === 'ko' ? '전체' : 'All');
   fillSelect(el('f-sector'), optionsFrom(all, topSector,
     labelFromMap(SECTOR_LABEL)), state.sector, lang === 'ko' ? '전체' : 'All');
   fillSelect(el('f-theme'), optionsFrom(all, function (e) { return e.themes; },
@@ -801,7 +805,13 @@ function renderList() {
     html += '<td>' + esc(e.manager || '–') + '</td>';
     html += '<td class="dim">' + esc(e.index || e.indexName || '–') + '</td>';
     html += '<td class="num ' + signClass(r) + '">' + fmtPct(r) + '</td>';
-    html += '<td class="num">' + fmtAmount(e.aum, e.currency || (e.market === 'KR' ? 'KRW' : null)) + '</td>';
+    var aumCell = fmtAmount(e.aum, e.currency || (e.market === 'KR' ? 'KRW' : null));
+    // 시장을 안 좁혔으면 통화가 섞여 눈으로 비교가 안 된다. 원화 환산을 함께 적는다.
+    if (!state.market && e.market !== 'KR' && e.aumKrw != null) {
+      aumCell += '<br><span class="dim" style="font-size:13px">' +
+                 fmtAmount(e.aumKrw, 'KRW') + '</span>';
+    }
+    html += '<td class="num">' + aumCell + '</td>';
     html += '<td class="num">' + (e.ter == null ? '–' : e.ter.toFixed(2) + '%') + '</td>';
     html += '<td class="num">' + (e.top10Weight == null ? '–' : e.top10Weight.toFixed(1) + '%') + '</td>';
     html += '</tr>';
@@ -827,12 +837,29 @@ function holdingsBlock(etf, maxWeight) {
       ? '이 ETF는 편입종목이 제공되지 않습니다.<br><span class="dim" style="font-size:14px">중국 본토(상해·심천) 상장 종목은 편입종목 원천이 없습니다. 같은 지수를 따르는 홍콩·미국 상장 ETF를 보시면 됩니다.</span>'
       : 'Holdings are not available for this ETF.') + '</div>';
   }
-  var top = maxWeight || Math.max.apply(null, etf.holdings.map(function (h) { return h.weight || 0; }));
+  // 막대 길이의 기준은 현금이 아니라 종목 중 최대 비중으로 잡는다. 설정현금액
+  // 100% 짜리가 기준이 되면 나머지 막대가 전부 보이지 않는다.
+  var stocks = etf.holdings.filter(function (h) { return !h.cash; });
+  var top = maxWeight || Math.max.apply(null,
+    (stocks.length ? stocks : etf.holdings).map(function (h) { return h.weight || 0; }));
   var html = '';
-  etf.holdings.forEach(function (h, i) {
-    var pctOfMax = top > 0 ? Math.max(2, (h.weight || 0) / top * 100) : 0;
+  var seq = 0;
+  etf.holdings.forEach(function (h) {
+    var pctOfMax = top > 0 ? Math.max(2, Math.min(100, (h.weight || 0) / top * 100)) : 0;
+    if (h.cash) {
+      html += '<div class="hold-row" style="opacity:.6">' +
+        '<span class="seq">·</span>' +
+        '<span class="nm">' + esc(h.name) +
+          ' <span class="badge" style="font-size:11px">' +
+          (lang === 'ko' ? '현금성' : 'cash') + '</span></span>' +
+        '<span class="wbar"><i style="width:' + pctOfMax.toFixed(1) + '%;background:var(--neutral)"></i></span>' +
+        '<span class="wt">' + (h.weight == null ? '–' : h.weight.toFixed(2) + '%') + '</span>' +
+        '</div>';
+      return;
+    }
+    seq += 1;
     html += '<div class="hold-row">' +
-      '<span class="seq">' + (i + 1) + '</span>' +
+      '<span class="seq">' + seq + '</span>' +
       '<span class="nm">' + esc(h.name) +
         (h.code ? ' <span class="dim" style="font-size:13px">' + esc(h.code) + '</span>' : '') + '</span>' +
       '<span class="wbar"><i style="width:' + pctOfMax.toFixed(1) + '%"></i></span>' +
@@ -912,8 +939,9 @@ function renderDetail() {
   kv(lang === 'ko' ? '총보수' : 'TER', etf.ter == null ? '–' : etf.ter.toFixed(3) + '%');
   kv(lang === 'ko' ? '현재가' : 'Price', fmtNum(etf.price) +
      ' <span class="' + signClass(etf.changeRate) + '" style="font-size:14px">' + fmtPct(etf.changeRate) + '</span>');
-  kv(lang === 'ko' ? '상위10 합계' : 'Top-10 weight',
+  kv(lang === 'ko' ? '상위 종목 합계' : 'Top holdings wt.',
      etf.top10Weight == null ? '–' : etf.top10Weight.toFixed(1) + '%');
+  if (etf.cashWeight != null) kv(lang === 'ko' ? '현금성' : 'Cash', etf.cashWeight.toFixed(1) + '%');
   if (etf.dividendYield != null) kv(lang === 'ko' ? '분배율(TTM)' : 'Yield (TTM)', etf.dividendYield.toFixed(2) + '%');
   if (etf.premium != null) kv(lang === 'ko' ? '괴리율' : 'Premium', fmtPct(etf.premium));
   if (etf.trackingError != null) kv(lang === 'ko' ? '추적오차' : 'Tracking error', etf.trackingError.toFixed(2) + '%');
@@ -960,12 +988,14 @@ function overlap(a, b) {
   if (!a.holdings || !b.holdings) return null;
   var map = {};
   a.holdings.forEach(function (h) {
+    if (h.cash) return;                    // 둘 다 현금을 들고 있는 건 겹침이 아니다
     var key = (h.code || h.name || '').toLowerCase();
     if (key) map[key] = (map[key] || 0) + (h.weight || 0);
   });
   var sum = 0;
   var names = [];
   b.holdings.forEach(function (h) {
+    if (h.cash) return;
     var key = (h.code || h.name || '').toLowerCase();
     if (key && map[key] != null) {
       sum += Math.min(map[key], h.weight || 0);
@@ -1042,7 +1072,7 @@ function renderReverse() {
     ETFS.forEach(function (e) {
       (e.holdings || []).forEach(function (h) {
         var k = h.name;
-        if (!k) return;
+        if (!k || h.cash) return;          // 현금성 항목은 종목이 아니다
         if (!counts[k]) counts[k] = { name: k, n: 0, w: 0 };
         counts[k].n += 1;
         counts[k].w += (h.weight || 0);
@@ -1166,9 +1196,15 @@ function renderRank() {
     byRet.slice(0, 15), retFmt, lang === 'ko' ? '수익률' : 'Return');
   html += rankTable((lang === 'ko' ? periodLabel + ' 수익률 하위' : 'Bottom ' + periodLabel),
     byRet.slice(-15).reverse(), retFmt, lang === 'ko' ? '수익률' : 'Return');
-  html += rankTable(lang === 'ko' ? '설정액 상위' : 'Largest by AUM',
+  // 시장을 안 좁혔으면 통화가 섞인다. 이때는 정렬에 쓴 값(원화 환산)을
+  // 그대로 보여 준다 — 순위는 원화로 매겨 놓고 표시는 현지 통화로 하면
+  // "왜 이 순서인가"를 설명할 수 없다.
+  var showKrw = !state.rMarket;
+  html += rankTable(lang === 'ko' ? (showKrw ? '설정액 상위 (원화 환산)' : '설정액 상위')
+                                  : 'Largest by AUM' + (showKrw ? ' (KRW)' : ''),
     withAum.slice(0, 15), function (e) {
-      return fmtAmount(e.aum, e.currency || (e.market === 'KR' ? 'KRW' : null));
+      return showKrw ? fmtAmount(aumSortValue(e), 'KRW')
+                     : fmtAmount(e.aum, e.currency || (e.market === 'KR' ? 'KRW' : null));
     }, lang === 'ko' ? '설정액' : 'AUM');
   if (withFlow.length) {
     html += rankTable(lang === 'ko' ? '3개월 자금 유입 상위' : 'Top 3M inflows',
@@ -1180,9 +1216,18 @@ function renderRank() {
   html += '</div>';
 
   if (!state.rMarket) {
+    var fx = DATA.sources && DATA.sources.global && DATA.sources.global.fx;
+    var fxNote = '';
+    if (fx && fx.rates) {
+      var parts = [];
+      ['USD', 'HKD', 'JPY', 'CNY'].forEach(function (c) {
+        if (fx.rates[c]) parts.push(c + ' ' + fx.rates[c].toFixed(c === 'JPY' || c === 'CNY' ? 2 : 1));
+      });
+      if (parts.length) fxNote = ' ' + (lang === 'ko' ? '적용 환율: ' : 'FX used: ') + parts.join(' · ') + '.';
+    }
     html += '<div class="notice">' + (lang === 'ko'
-      ? '<strong>설정액 순위는 통화가 섞이면 뜻이 흐려집니다.</strong> 원화 환산값이 있는 종목만 한 줄로 세웁니다. 환산값이 없으면 상장 시장을 골라 같은 통화끼리 보십시오.'
-      : '<strong>AUM ranking mixes currencies.</strong> Pick a listing market to compare like with like.') + '</div>';
+      ? '<strong>설정액은 원화로 환산해 세웠습니다.</strong> 통화가 다른 시장을 한 줄로 세우려면 환산이 필요합니다. 환율을 못 받은 종목은 순위에서 빠집니다 — 틀린 환율로 환산하느니 빼는 편이 낫습니다. 같은 통화끼리만 보려면 위에서 상장 시장을 고르십시오.' + esc(fxNote)
+      : '<strong>AUM is converted to KRW</strong> so markets can be ranked together. ETFs without an FX rate are omitted.' + esc(fxNote)) + '</div>';
   }
   el('rank-body').innerHTML = html;
 }

@@ -48,6 +48,38 @@ async function authorize() {
 
 const yahooHeaders = () => ({ Cookie: cookie, Referer: 'https://finance.yahoo.com/' });
 
+// ─────────────────── 환율 ───────────────────
+/**
+ * 설정액을 한 줄로 세우려면 통화를 맞춰야 한다.
+ *
+ * 국내는 원, 미국은 달러, 홍콩은 홍콩달러, 일본은 엔이다. 그대로 두면
+ * "설정액 상위" 정렬이 통화 단위 크기 순이 되어 버린다(엔이 항상 1등).
+ * 그래서 원화 환산값(aumKrw)을 같이 붙인다. 쓴 환율과 시각을 함께 저장해
+ * 화면이 "무엇으로 환산했는지"를 말할 수 있게 한다.
+ *
+ * 환율을 못 받으면 환산값을 붙이지 않는다. 틀린 환율로 환산하느니
+ * 같은 시장끼리만 비교하게 두는 편이 낫다.
+ */
+async function fetchFx() {
+  const PAIRS = { USD: 'KRW=X', HKD: 'HKDKRW=X', JPY: 'JPYKRW=X', CNY: 'CNYKRW=X' };
+  const rates = { KRW: 1 };
+  for (const [cur, symbol] of Object.entries(PAIRS)) {
+    try {
+      const json = await getJson(
+        `https://query1.finance.yahoo.com/v8/finance/chart/${symbol}?range=5d&interval=1d`,
+        { headers: yahooHeaders() });
+      const meta = json?.chart?.result?.[0]?.meta;
+      const v = num(meta?.regularMarketPrice);
+      if (v && v > 0) rates[cur] = v;
+    } catch {
+      // 못 받은 통화는 비워 둔다. 아래에서 환산을 건너뛴다.
+    }
+  }
+  console.log('[global] 환율:', JSON.stringify(rates));
+  return { rates, asOf: new Date().toISOString() };
+}
+let FX = { rates: { KRW: 1 }, asOf: null };
+
 // ─────────────────── 개별 종목 ───────────────────
 async function fetchSummary(symbol) {
   const qs = new URLSearchParams({ modules: MODULES, crumb });
@@ -182,6 +214,7 @@ function shape(entry, summary, returns) {
       ? +(raw(price.regularMarketChangePercent) * 100).toFixed(2) : null,
     volume: raw(price.regularMarketVolume),
     aum: raw(detail.totalAssets) ?? raw(stats.totalAssets),
+    aumKrw: null,       // 아래 main 에서 환율이 있을 때만 채운다
     nav: raw(detail.navPrice),
     ter: raw(profile.feesExpensesInvestment?.annualReportExpenseRatio) != null
       ? +(raw(profile.feesExpensesInvestment.annualReportExpenseRatio) * 100).toFixed(3) : null,
@@ -206,6 +239,7 @@ function shape(entry, summary, returns) {
 // ─────────────────── 실행 ───────────────────
 async function main() {
   await authorize();
+  FX = await fetchFx();
   const list = universe();
   console.log(`[global] 유니버스 ${list.length}종목`);
 
@@ -228,7 +262,11 @@ async function main() {
       failures.push({ symbol: list[i].symbol, error: res.error });
       return;
     }
-    etfs.push(res.value);
+    // 설정액을 원화로 환산해 둔다. 환율이 없는 통화는 그대로 비워 둔다.
+    var row = res.value;
+    var rate = FX.rates[row.currency];
+    if (rate && row.aum != null) row.aumKrw = Math.round(row.aum * rate);
+    etfs.push(row);
     if (res.value.holdings) withHoldings += 1;
     else noHoldingsByMarket[res.value.market] = (noHoldingsByMarket[res.value.market] || 0) + 1;
   });
@@ -250,6 +288,7 @@ async function main() {
   await writeDataFile(OUT, 'ETF_GLOBAL', {
     updatedAt: new Date().toISOString(),
     source: 'yahoo',
+    fx: FX,                       // 환산에 쓴 환율. 화면이 근거를 말할 수 있어야 한다
     count: etfs.length,
     withHoldings,
     noHoldingsByMarket,
