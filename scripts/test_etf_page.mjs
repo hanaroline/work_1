@@ -95,12 +95,23 @@ check('상세에 상위 편입종목이 그려진다', holdRows > 0, `${holdRows
 const retRows = await page.locator('#detail table tbody tr').count();
 check('상세에 기간수익률 표가 있다', retRows > 0, `${retRows}행`);
 
-// ── 수익률 기준 토글
-await page.locator('#basis-seg button[data-basis="nav"]').click();
-await page.waitForTimeout(100);
-const navHead = await page.locator('#list-head th[data-sort="ret"]').textContent();
-check('NAV 기준으로 바뀌면 표 머리가 바뀐다', /NAV/.test(navHead || ''), navHead.trim());
+// ── 수익률 기준 토글. 기본은 총수익률(업계 표준)이어야 한다.
+const defaultBasis = await page.locator('#basis-seg button[aria-pressed="true"]')
+  .getAttribute('data-basis');
+check('기본 기준이 총수익률이다', defaultBasis === 'tr', defaultBasis);
+
 await page.locator('#basis-seg button[data-basis="price"]').click();
+await page.waitForTimeout(120);
+const priceHead = await page.locator('#list-head th[data-sort="ret"]').textContent();
+check('시장가로 바꾸면 표 머리가 바뀐다', /시장가|Price/.test(priceHead || ''), priceHead.trim());
+const priceNote = await page.locator('#basis-note').textContent();
+check('시장가일 때 분배금 누락을 알린다', /분배금이 빠져|excludes/.test(priceNote || ''),
+      (priceNote || '').trim().slice(0, 40));
+
+await page.locator('#basis-seg button[data-basis="tr"]').click();
+await page.waitForTimeout(120);
+const trHead = await page.locator('#list-head th[data-sort="ret"]').textContent();
+check('총수익률로 되돌리면 표 머리가 바뀐다', /총수익률|TR/.test(trHead || ''), trHead.trim());
 
 // ── 정렬
 await page.locator('#list-head th[data-sort="ter"]').click();

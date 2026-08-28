@@ -4,9 +4,9 @@
  *
  *   node scripts/check_etf_return_basis.mjs
  *
- * 이 화면은 기간수익률을 두 계열로 보여 준다. 문제는 계열의 **뜻이 시장마다
- * 다를 수 있다**는 것이다. 라벨은 하나인데 안에 든 것이 다르면, 국내와 해외를
- * 한 줄로 세우는 랭킹이 서로 다른 개념을 비교하게 된다. 눈으로는 못 잡는다.
+ * 이 화면은 총수익률(ret.tr)을 기본 기준으로 쓴다. 국내·해외 모두 야후 일별
+ * 수정종가로 같은 계산기를 돌린 값이어야 한다. 원천이 바뀌거나 한쪽만 다른
+ * 값으로 채워지면 랭킹이 서로 다른 개념을 비교하게 된다. 눈으로는 못 잡는다.
  *
  * 그래서 분배율을 지렛대로 삼아 판정한다.
  *
@@ -47,11 +47,11 @@ function diagnose(market) {
   const rows = etfs.filter((e) =>
     e.market === market &&
     e.dividendYield != null && e.dividendYield >= MIN_YIELD &&
-    e.ret?.price?.[PERIOD] != null && e.ret?.nav?.[PERIOD] != null);
+    e.ret?.price?.[PERIOD] != null && e.ret?.tr?.[PERIOD] != null);
   if (rows.length < MIN_SAMPLE) return { market, sample: rows.length, verdict: 'insufficient' };
 
   // 분배금이 반영됐다면 (2계열 - 1계열) 이 분배율만큼 나와야 한다.
-  const gaps = rows.map((e) => e.ret.nav[PERIOD] - e.ret.price[PERIOD]);
+  const gaps = rows.map((e) => e.ret.tr[PERIOD] - e.ret.price[PERIOD]);
   const yields = rows.map((e) => e.dividendYield);
   const medGap = median(gaps);
   const medYield = median(yields);
@@ -96,15 +96,18 @@ const kinds = [...new Set(decided.map((r) => r.verdict))];
 console.log('');
 if (kinds.length > 1) {
   console.error(
-    '[basis] 실패 — 두 번째 수익률 계열의 뜻이 시장마다 다르다.\n' +
+    '[basis] 실패 — 총수익률(ret.tr) 의 뜻이 시장마다 다르다.\n' +
     `        ${decided.map((r) => `${r.market}=${LABEL[r.verdict]}`).join(' / ')}\n` +
-    '        한 라벨 아래 서로 다른 개념이 들어 있으면, 국내와 해외를 한 줄로\n' +
-    '        세우는 랭킹이 다른 것끼리 비교하게 된다. 라벨을 시장별로 바로잡거나\n' +
-    '        계열 자체를 통일해야 한다.');
+    '        ret.tr 은 두 시장에서 같은 뜻이어야 한다. 한쪽이 분배금을 빼고\n' +
+    '        있으면 랭킹이 다른 것끼리 비교하게 된다.');
   process.exit(1);
 }
 if (!decided.length) {
   console.error('[basis] 실패 — 어느 시장도 판정되지 않았다. 표본이나 분배율 기준을 확인하라.');
   process.exit(1);
 }
-console.log(`[basis] 통과 — 두 번째 계열이 모든 시장에서 "${LABEL[kinds[0]]}" 로 일치한다.`);
+if (kinds[0] !== 'total_return') {
+  console.error('[basis] 실패 — ret.tr 이 분배금을 반영하지 않는다. 총수익률이 아니다.');
+  process.exit(1);
+}
+console.log('[basis] 통과 — ret.tr 이 모든 시장에서 분배금을 재투자한 총수익률이다.');
