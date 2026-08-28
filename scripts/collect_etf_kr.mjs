@@ -15,23 +15,26 @@
  *   기간수익률(시장가 기준과 NAV 기준), 섹터·국가·자산 비중,
  *   자금유입, 괴리율, 추적오차, 배당수익률.
  *
- * **총수익률(분배금 재투자)은 국내에서 구하지 못했다.**
+ * **기간수익률은 야후 일봉에서 계산한다. 네이버 값을 쓰지 않는다.**
  *
- * 네이버는 주지 않는다 — 시장가와 NAV 어느 쪽에도 분배금이 반영되지 않는다
- * (분배율 4.6% 표본에서 두 계열의 차이 중앙값이 0.02%p 로 괴리율뿐이었다).
+ * 처음에는 네이버의 시장가·NAV 수익률을 그대로 실었다. 그런데 그 둘 중
+ * 어느 쪽에도 분배금이 반영되지 않아, 분배율 20%가 넘는 커버드콜의 성과가
+ * 통째로 사라졌다.
  *
- * 야후 일봉으로 직접 만들어 보았다. 심볼은 잘 잡혔고(1,158/1,163), 배당
- * 이벤트도 943종목에서 나왔다. 그런데 검산은 여전히 "분배금 미반영"이었다
- * (분배율 4.59% 표본 128종목에서 차이 -0.53%p, 비율 -0.12). 야후의 국내
- * 분배금 자료가 **정작 분배율이 큰 상품에서 부족**하다는 뜻이다. 미국은 같은
- * 계산으로 비율 0.94 가 나오므로 계산기 문제가 아니다.
+ * 야후 배당 이력으로 총수익률을 만들 수 있다는 것을 확인했다
+ * (tools/discovery/etf_dividend_probe.md). 네 종목 표본에서 최근 12개월
+ * 배당을 현재가로 나눈 값이 표기 분배율과 거의 일치했다 —
+ * 0.8/0.78, 2.9/3.2, 20.9/21.4, 14.7/14.5.
  *
- * 그래서 국내에는 총수익률을 싣지 않는다. 틀린 총수익률을 "표준 기준" 이라는
- * 이름으로 내거는 것이 빈칸보다 나쁘다. 화면은 시장가를 기본으로 하고,
- * 분배율이 큰 상품에는 분배금이 빠져 있다고 경고한다.
+ * 그런데 **총수익률만 야후에서 받고 시장가는 네이버를 쓰면 안 된다.** 두
+ * 원천의 1년 수익률이 크게 다르기 때문이다(TIGER 배당커버드콜액티브에서
+ * 네이버 131.45% vs 야후 76.06%). 서로 다른 계열을 빼면 "분배금 효과" 가
+ * 아니라 원천 차이가 나온다 — 검산이 국내를 "분배금 미반영" 으로 판정한
+ * 것이 이 탓이었다.
  *
- * 제대로 채우려면 운용사 공시·KRX·에프앤가이드처럼 분배금 이력을 주는
- * 원천이 필요하다. 러너에서 KRX 가 막혀 있어 이번에는 확인하지 못했다.
+ * 그래서 price 와 tr 을 **한 원천(야후)에서 짝으로** 만든다. 해외 수집기와
+ * 같은 계산기를 쓰므로 두 시장의 두 계열이 모두 한 뜻이 된다.
+ * 네이버의 기준가 수익률은 nav 로만 남긴다 — 국내에만 있는 참고값이다.
  *
  * 호출 수는 종목 수만큼(약 1,160회)이다. 한꺼번에 던지면 막히므로 동시
  * 6개로 묶고, 실패한 종목은 건너뛴다. 수집률이 기준에 못 미치면 파일을
@@ -39,7 +42,8 @@
  */
 
 import { getJson, getJsonIn, mapLimit, num, parsePercent, parseKoreanAmount,
-         periodMap, weightMap, writeDataFile, assertEnough } from './etf_lib.mjs';
+         periodMap, weightMap, writeDataFile, assertEnough,
+         fetchYahooReturns, sleep } from './etf_lib.mjs';
 
 const LIST_URL = 'https://finance.naver.com/api/sise/etfItemList.nhn';
 const DETAIL = (code) => `https://m.stock.naver.com/api/stock/${code}/etfAnalysis`;
@@ -116,6 +120,9 @@ function shapeDetail(d) {
   };
 }
 
+// 국내 ETF 는 모두 유가증권시장 상장이라 .KS 를 붙인다.
+const yahooSymbol = (code) => `${code}.KS`;
+
 async function main() {
   const list = await fetchList();
   console.log(`[kr] 목록 ${list.length}종목`);
@@ -126,6 +133,19 @@ async function main() {
     });
     return shapeDetail(d);
   }, (done, total) => console.log(`[kr] 상세 ${done}/${total}`));
+
+  // ── 기간수익률 (야후 일봉). price 와 tr 을 한 원천에서 짝으로 만든다.
+  const retRows = await mapLimit(list, 5, async (item) => {
+    const r = await fetchYahooReturns(yahooSymbol(item.itemcode), {
+      headers: { Referer: 'https://finance.yahoo.com/' },
+    });
+    await sleep(80);
+    return r;
+  }, (done, total) => console.log(`[kr] 수익률 ${done}/${total}`));
+
+  let withTr = 0;
+  const trMethod = {};
+  const retMissing = [];
 
   const etfs = [];
   let withHoldings = 0;
@@ -138,6 +158,19 @@ async function main() {
 
     // 이름은 상세(UTF-8)를 정본으로 쓰고, 상세가 실패했을 때만 목록 값을 쓴다.
     const name = d?.name || item.itemname;
+
+    // 야후에서 온 시장가·총수익률 짝. 네이버 기준가는 nav 로 따로 붙인다.
+    const yRes = retRows[i];
+    const y = yRes?.ok ? yRes.value : null;
+    if (y?.tr) {
+      withTr += 1;
+      trMethod[y.method] = (trMethod[y.method] || 0) + 1;
+    } else retMissing.push(item.itemcode);
+    const navSeries = d?.ret?.nav || null;
+    const ret = (y || navSeries) ? Object.assign({},
+      y?.price ? { price: y.price } : {},
+      y?.tr ? { tr: y.tr } : {},
+      navSeries ? { nav: navSeries } : {}) : null;
     // 운용사 표기에서 "(ETF)" 꼬리를 뗀다. 필터 항목으로 쓰기에 지저분하다.
     const managerRaw = d?.manager ? d.manager.replace(/\s*\(ETF\)\s*$/, '') : null;
 
@@ -166,10 +199,9 @@ async function main() {
       premium: d?.premium ?? null,
       trackingError: d?.trackingError ?? null,
       dividendYield: d?.dividendYield ?? null,
-      retAsOf: d?.retAsOf ?? null,
-      // price = 네이버 시장가, nav = 네이버 기준가. 둘 다 분배금 미반영이다.
-      // 총수익률(tr)은 국내에서 구하지 못했다 — 파일 앞 설명 참고.
-      ret: d?.ret ?? null,
+      // price·tr = 야후 일봉(종가 / 배당 재투자), nav = 네이버 기준가
+      retAsOf: y?.asOf ?? d?.retAsOf ?? null,
+      ret: ret,
       flow: d?.flow ?? null,
       sectors: d?.sectors ?? null,
       countries: d?.countries ?? null,
@@ -184,6 +216,9 @@ async function main() {
   });
 
   console.log(`[kr] 편입종목 확보 ${withHoldings}/${list.length}`);
+  console.log(`[kr] 총수익률 확보 ${withTr}/${list.length} · 산출 방식 ` +
+              JSON.stringify(trMethod) +
+              (retMissing.length ? ` · 없는 종목 ${retMissing.length}` : ''));
   if (failures.length) {
     console.log(`[kr] 실패 ${failures.length}종목 (앞 5개): ` +
                 failures.slice(0, 5).map((f) => `${f.code} ${f.error}`).join(' | '));
@@ -198,6 +233,9 @@ async function main() {
     source: 'naver',
     count: etfs.length,
     withHoldings,
+    withTr,
+    trMethod,
+    retMissing: retMissing.slice(0, 80),
     failures: failures.slice(0, 50),
     etfs,
   }, `국내 ETF — 네이버 수집 ${new Date().toISOString()}`);
