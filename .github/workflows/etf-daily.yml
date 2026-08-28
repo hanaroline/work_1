@@ -74,6 +74,7 @@ jobs:
           npx playwright install --with-deps chromium
           node scripts/test_etf_page.mjs
           node scripts/test_etf_page.mjs --built
+          node scripts/test_etf_offline.mjs
 
       - name: 진단 자료 업로드
         if: always()
@@ -82,6 +83,7 @@ jobs:
           name: etf-collect-debug
           path: |
             tools/discovery/etf_page.png
+            tools/discovery/etf_offline.png
             data/etf-kr.js
             data/etf-global.js
           retention-days: 7
