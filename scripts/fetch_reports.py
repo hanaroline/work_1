@@ -342,7 +342,12 @@ MIRAE_LIST = "https://securities.miraeasset.com/bbs/board/message/list.do?catego
 MIRAE_PAGE_PARAMS = ("pageIndex", "page", "currentPageNo", "startPage")
 MIRAE_VIEW = ("https://securities.miraeasset.com/bbs/board/message/view.do"
               "?messageId=%s&categoryId=%s")
-MIRAE_BOARDS = [("리서치 리포트", "1521", 6)]        # 한 쪽에 다섯 줄쯤 온다
+# (판 이름, categoryId, 쪽 수, 해외물인가)
+# 1525 는 **글로벌 리서치** 판이다 — 「중국 반도체 기업 답사기」, 「글로벌
+# 로보틱스: 휴머노이드 붐은 온다」처럼 해외 기업·업종을 다룬다. 국내 리서치
+# 목록(네이버)에는 없는 것들이라, 이 판이 해외 리포트의 유일한 길이다.
+MIRAE_BOARDS = [("리서치 리포트", "1521", 6, False),
+                ("글로벌 리서치", "1525", 4, True)]
 
 _MIRAE_A = re.compile(
     r"""(?is)<a\s+href="javascript:view\('(\d+)','[^']*'\)"[^>]*>(.*?)</a>""")
@@ -351,7 +356,7 @@ _MIRAE_PDF = re.compile(r"""(?i)downConfirm\('([^']+\.pdf[^']*)'""")
 _MIRAE_HEAD = re.compile(r"^(.*?)\s*\(([0-9A-Z]{5,8})(?:\s+[A-Z]{2})?\s*/\s*([^)]+)\)\s*$")
 
 
-def parse_mirae(html, board, category_id):
+def parse_mirae(html, board, category_id, overseas=False):
     rows = []
     for row in _ROW.findall(html):
         m = _MIRAE_A.search(row)
@@ -364,10 +369,14 @@ def parse_mirae(html, board, category_id):
         tail = _text(part[1]).strip() if len(part) > 1 else ""
         stock, opinion = None, None
         hm = _MIRAE_HEAD.match(head) if tail else None
+        row_overseas = overseas
         if hm:
             stock = {"code": hm.group(2), "name": hm.group(1).strip()}
             opinion = hm.group(3).strip()
             title = tail
+            # 「SMIC (00981 HK/매수)」 — 시장 꼬리표가 붙으면 해외 종목이다.
+            if re.search(r"\(\s*[0-9A-Z]{5,8}\s+[A-Z]{2}\s*/", head):
+                row_overseas = True
         elif tail:
             # 종목물이 아니면 앞머리는 연재물 이름이다(「월스트리트파인더 Ep.202」).
             # 종목으로 앉히면 있지도 않은 종목이 생긴다.
@@ -386,21 +395,23 @@ def parse_mirae(html, board, category_id):
             "opinion": opinion, "date": date, "views": None,
             "pdf": pdf.group(1) if pdf else None,
             "source": "미래에셋증권 리서치", "via": "html",
+            "overseas": row_overseas or None,
         })
     return rows
 
 
-def _mirae_page(cid, board, param, page):
+def _mirae_page(cid, board, param, page, overseas=False):
     url = MIRAE_LIST % cid
     if page > 1:
         url += "&%s=%d" % (param, page)
     html = _get(url, encoding="cp949", referer="https://securities.miraeasset.com/")
-    return parse_mirae(html, board, cid), html
+    return parse_mirae(html, board, cid, overseas), html
 
 
 def fetch_mirae(dump_dir=None):
     """하우스 목록을 받는다. (줄 목록, 어떻게 받았는지) 를 돌려준다."""
-    rows, seen, used, first_n = [], set(), None, 0
+    rows, seen, first_n = [], set(), 0
+    used_by_board = {}
 
     def add(got):
         n = 0
@@ -412,8 +423,8 @@ def fetch_mirae(dump_dir=None):
             n += 1
         return n
 
-    for board, cid, pages in MIRAE_BOARDS:
-        first, html = _mirae_page(cid, board, "pageIndex", 1)
+    for board, cid, pages, overseas in MIRAE_BOARDS:
+        first, html = _mirae_page(cid, board, "pageIndex", 1, overseas)
         if not first:
             if dump_dir:
                 _dump(dump_dir, "mirae_%s_p1.html" % cid, html)
@@ -422,10 +433,12 @@ def fetch_mirae(dump_dir=None):
         add(first)
 
         # 두 쪽째를 후보 인자로 한 번씩 불러 본다. 새 줄이 오는 것이 진짜다.
+        # 판마다 따로 찾는다 — 게시판이 다르면 인자도 다를 수 있다.
+        used = used_by_board.get(cid)
         if used is None:
             for param in MIRAE_PAGE_PARAMS:
                 try:
-                    got, _ = _mirae_page(cid, board, param, 2)
+                    got, _ = _mirae_page(cid, board, param, 2, overseas)
                 except Exception:                               # noqa: BLE001
                     continue
                 if add(got):
@@ -433,9 +446,10 @@ def fetch_mirae(dump_dir=None):
                     break
             if used is None:
                 continue                     # 쪽 넘김이 없는 게시판 — 첫 쪽만 쓴다
+            used_by_board[cid] = used
         for page in range(3, pages + 1):
             try:
-                got, _ = _mirae_page(cid, board, used, page)
+                got, _ = _mirae_page(cid, board, used, page, overseas)
             except Exception:                                   # noqa: BLE001
                 break
             if not add(got):
@@ -466,6 +480,94 @@ def fetch_mirae(dump_dir=None):
 def _key(title):
     """같은 리포트인지 견주는 열쇠. 띄어쓰기·문장부호는 지운다."""
     return re.sub(r"[^0-9A-Za-z가-힣]", "", title or "").lower()
+
+
+# ---------------------------------------------------------------- 하나증권
+#
+# 세 번째 원천. 3차 탐색에서 증권사 자체 게시판 열한 곳을 찔러 본 결과
+# **여기만 열렸다**(삼성·NH·한투·유안타·메리츠 404, KB 500, 대신 403).
+# 표가 아니라 <ul><li> 얼개라 <tr> 세기로는 빈 쪽처럼 보였다.
+#
+# 목록에서 제목·날짜·작성부서·원문 PDF 를 얻는다. 목표주가는 목록에 없다.
+HANA_LIST = "https://www.hanaw.com/main/research/research/list.cmd"
+HANA_BASE = "https://www.hanaw.com"
+_HANA_ITEM = re.compile(
+    r'(?is)<h3>\s*<a[^>]*\bid="(\d+)_(\d+)"[^>]*>(.*?)</a>\s*</h3>(.*?)(?=<h3>|\Z)')
+_HANA_DATE = re.compile(r"(\d{4})\.(\d{2})\.(\d{2})")
+_HANA_NAME = re.compile(r'(?is)<span class="none m-name">(.*?)</span>')
+_HANA_DESC = re.compile(r'(?is)<li class="[^"]*j_bbsContn[^"]*">(.*?)</li>')
+# 「Nvidia (NVDA.US)」·「리더드라이브(688017.CH)」처럼 해외 종목을 다룬 줄이
+# 섞여 있다. 티커 꼬리표로 가려 낸다 — 국내 리포트 목록(네이버)에 없는 것들이라
+# 이 줄들이 해외 리포트의 큰 몫이다.
+_OVERSEAS = re.compile(r"\(([A-Z0-9]{1,8})\.(US|CH|HK|JP|TW|DE|LN|KS|KQ)\)", re.I)
+_HANA_PDF = re.compile(r'(?i)href="(/main/research/research/download\.cmd\?[^"]+)"')
+
+
+def parse_hana(html):
+    rows = []
+    for m in _HANA_ITEM.finditer(html):
+        bbs_cd, seq, title_raw, block = m.groups()
+        title = re.sub(r"\s+", " ", _text(title_raw)).strip()
+        if not title:
+            continue
+        d = _HANA_DATE.search(block)
+        date = "%s-%s-%s" % d.groups() if d else None
+        who = _HANA_NAME.search(block)
+        desc = _HANA_DESC.search(block)
+        pdf = _HANA_PDF.search(block)
+        ov = _OVERSEAS.search(title)
+        stock = None
+        if ov and ov.group(2).upper() not in ("KS", "KQ"):
+            stock = {"code": ov.group(1).upper(), "name": title.split("(")[0].strip()}
+        rows.append({
+            "nid": "hana-" + seq,
+            "category": "해외 리서치" if stock else "리서치 리포트",
+            "title": title,
+            "url": HANA_BASE + "/main/research/research/RC_000000_M.cmd",
+            "stock": stock, "broker": "하나증권",
+            "analyst": (_text(who.group(1)).strip() if who else None),
+            "opinion": None, "date": date, "views": None,
+            "pdf": (HANA_BASE + html_mod.unescape(pdf.group(1))) if pdf else None,
+            "desc": (re.sub(r"\s+", " ", _text(desc.group(1))).strip() if desc else None),
+            "overseas": bool(stock) or None,
+            "source": "하나증권 리서치", "via": "html",
+        })
+    return rows
+
+
+def fetch_hana(dump_dir=None):
+    html = _get(HANA_LIST, encoding="utf-8", referer=HANA_BASE + "/")
+    rows = parse_hana(html)
+    if not rows:
+        if dump_dir:
+            _dump(dump_dir, "hana_list.html", html)
+        raise ValueError("하나증권 목록에서 줄을 못 찾았다 (%d bytes)" % len(html))
+    return rows, {"rows": len(rows)}
+
+
+def merge_source(reports, rows, broker, label):
+    """다른 원천의 줄을 네이버 줄에 포갠다 — 겹치면 합치고, 없으면 세운다.
+
+    네이버 쪽에는 본문 요약과 조회수가, 증권사 쪽에는 실명과 원문 PDF가 있다.
+    """
+    idx = {}
+    for r in reports:
+        if r.get("broker") == broker and r.get("title"):
+            idx.setdefault(_key(r["title"]), r)
+    added, merged = 0, 0
+    for h in rows:
+        mate = idx.get(_key(h["title"]))
+        if mate:
+            merged += 1
+            if h.get("analyst") and not mate.get("analyst"):
+                mate["analyst"] = h["analyst"]
+            if h.get("pdf") and not mate.get("pdf"):
+                mate["pdf"] = h["pdf"]
+            mate["source"] = "네이버 리서치 + " + broker
+        else:
+            added += 1
+            reports.append(h)
+    return {"merged": merged, "added": added}
 
 
 def merge_house(reports, house):
@@ -852,6 +954,119 @@ def latest_day(reports):
     return max(days) if days else None
 
 
+# 리포트 무더기에서 「무슨 이야기가 많았나」를 뽑을 주제 사전.
+#
+# 낱말 빈도를 그냥 세면 「투자」·「전망」·「기업」 같은 말만 올라온다. 세는
+# 대상을 미리 정해 두어야 읽을 만한 것이 나온다. 사전이므로 여기 없는 주제는
+# 잡히지 않는다 — 새 주제가 뜨면 여기에 한 줄 더한다.
+THEMES = [
+    ("AI·데이터센터", r"\bAI\b|인공지능|데이터센터|가속기|HBM|추론|LLM|하이퍼스케일"),
+    ("반도체", r"반도체|파운드리|메모리|D램|DRAM|낸드|NAND|웨이퍼|팹리스|소부장"),
+    ("2차전지", r"2차\s*전지|이차전지|배터리|양극재|음극재|전해질|리튬|EV\b"),
+    ("ESS·전력", r"\bESS\b|전력망|송배전|변압기|전력기기|계통|신재생|태양광|풍력"),
+    ("원전", r"원전|원자력|SMR|웨스팅하우스"),
+    ("방산", r"방산|방위산업|무기|자주포|미사일|잠수함|K9|천궁"),
+    ("조선·해운", r"조선|해운|선박|LNG선|컨테이너선|수주잔고"),
+    ("바이오·제약", r"바이오|제약|신약|임상|FDA|비만|항체|CDMO|위탁생산"),
+    ("자동차", r"자동차|완성차|전기차|하이브리드|부품사|모빌리티"),
+    ("로봇", r"로봇|휴머노이드|협동로봇"),
+    ("인터넷·플랫폼", r"플랫폼|커머스|광고|인터넷|콘텐츠|게임"),
+    ("금융·은행", r"은행|증권주|보험|금융지주|카드사|캐피탈"),
+    ("주주환원", r"주주환원|자사주|배당|소각|밸류업|인적분할|물적분할|지배구조"),
+    ("금리·통화정책", r"금리|기준금리|연준|FOMC|한국은행|통화정책|국채|채권시장"),
+    ("환율·외환", r"환율|원/달러|달러화|외환|엔화|위안화"),
+    ("건설·부동산", r"건설|건자재|부동산|분양|리츠|주택"),
+    ("화학·정유", r"화학|정유|석유화학|정제마진|나프타|스프레드"),
+    ("철강·금속", r"철강|금속|알루미늄|구리|비철|원료탄"),
+    ("소비·유통", r"유통|소비재|화장품|음식료|면세|편의점|리테일"),
+    ("통신", r"통신|이동통신|5G|6G|광통신|네트워크\s*장비"),
+]
+THEMES = [(name, re.compile(pat)) for name, pat in THEMES]
+
+
+def theme_counts(rows, limit=8):
+    """리포트 무더기에 어떤 주제가 몇 건씩 있었는지."""
+    out = []
+    for name, pat in THEMES:
+        n = sum(1 for r in rows
+                if pat.search(r.get("title") or "")
+                or pat.search(r.get("summary") or "")
+                or pat.search((r.get("sector") or "")))
+        if n:
+            out.append({"theme": name, "count": n})
+    out.sort(key=lambda e: -e["count"])
+    return out[:limit]
+
+
+def _josa(word, pair="이/가"):
+    """받침을 보고 조사를 고른다 — 「종목분석가」·「16건가」로 나가지 않게."""
+    with_batchim, without = pair.split("/")
+    if not word:
+        return without
+    ch = word[-1]
+    if "가" <= ch <= "힣":
+        return with_batchim if (ord(ch) - 0xAC00) % 28 else without
+    if ch.isdigit():
+        # 숫자는 읽는 소리로 가른다 — 0·1·3·6·7·8 은 받침이 있다.
+        return with_batchim if ch in "013678" else without
+    return with_batchim
+
+
+def _ko_list(names, limit=4):
+    names = [n for n in names if n]
+    if not names:
+        return ""
+    head = "·".join(names[:limit])
+    return head + (" 외 %d" % (len(names) - limit) if len(names) > limit else "")
+
+
+def overview(rows, label, moves=None, crowd=None):
+    """리포트 무더기의 **서두 총평**.
+
+    PDF 로만 보는 사람은 카드를 하나하나 짚어 보기 전에 「오늘(이번 주)
+    무슨 이야기가 많았나」를 먼저 알고 싶어 한다. 새 사실을 지어내지 않고,
+    이미 센 것(건수·갈래·주제·목표주가·겹친 종목)을 문장으로 엮는다.
+    """
+    if not rows:
+        return None
+    cats = {}
+    for r in rows:
+        cats[r["category"]] = cats.get(r["category"], 0) + 1
+    top_cat = sorted(cats.items(), key=lambda t: -t[1])
+    themes = theme_counts(rows)
+    moves = moves or []
+    ups = [m for m in moves if m.get("move") == "상향"]
+    dns = [m for m in moves if m.get("move") == "하향"]
+    crowd = crowd or []
+
+    parts = ["%s 리포트는 %d건입니다." % (label, len(rows))]
+    if top_cat:
+        parts.append("갈래로는 %s%s %d건으로 가장 많습니다."
+                     % (top_cat[0][0], _josa(top_cat[0][0]), top_cat[0][1]))
+    if themes:
+        lst = _ko_list(["%s %d건" % (t["theme"], t["count"]) for t in themes[:3]], 3)
+        parts.append("주제로는 %s%s 앞섰습니다." % (lst, _josa(lst)))
+    if ups or dns:
+        bits = []
+        if ups:
+            bits.append("%d건 상향(%s)" % (len(ups), _ko_list([m.get("stock") for m in ups], 3)))
+        if dns:
+            bits.append("%d건 하향(%s)" % (len(dns), _ko_list([m.get("stock") for m in dns], 3)))
+        parts.append("목표주가는 " + ", ".join(bits) + "입니다.")
+    else:
+        parts.append("목표주가를 올리거나 내린 리포트는 없습니다.")
+    if crowd:
+        parts.append("여러 증권사가 함께 본 종목은 %s입니다."
+                     % _ko_list(["%s %d곳" % (c.get("name") or c.get("code"), c["count"])
+                                 for c in crowd], 3))
+    return {
+        "text": " ".join(parts),
+        "themes": themes,
+        "by_category": sorted(({"category": c, "count": n} for c, n in cats.items()),
+                              key=lambda e: -e["count"]),
+    }
+
+
 def digest(reports, day):
     """그날 판의 머리 요약. 화면 맨 위와 브리핑이 그대로 쓴다."""
     todays = [r for r in reports if r.get("date") == day]
@@ -895,6 +1110,8 @@ def digest(reports, day):
                             key=lambda e: -e["count"])[:20],
         "crowded_stocks": crowd,
         "target_moves": moves,
+        "overview": overview(todays or base, day + " 자", moves, crowd),
+        "count_overseas": sum(1 for r in (todays or base) if r.get("overseas")),
     }
 
 
@@ -1068,11 +1285,15 @@ def weekly(reports, day, out_dir):
 
     moves.sort(key=lambda m: (m["move"] != "상향", m.get("date") or ""), reverse=False)
     days = sorted({r["date"] for r in rows if r.get("date")})
+    crowd = sorted((e for e in stocks.values() if e["count"] >= 2),
+                   key=lambda e: -e["count"])[:12]
     return {
+        "overview": overview(rows, "%s~%s 한 주" % (since[5:], day[5:]), moves, crowd),
         "since": since, "until": day,
         "days": days,
         "count": len(rows),
         "count_summarized": sum(1 for r in rows if r.get("summary")),
+        "count_overseas": sum(1 for r in rows if r.get("overseas")),
         "top": top,
         "reports": [pool[n] for n in top],
         "by_broker": [{"broker": b, "count": c}
@@ -1143,6 +1364,21 @@ def main():
         out["sources"]["미래에셋증권 리서치"] = {"ok": False, "error": "HTTP %s" % e.code}
     except Exception as e:                                       # noqa: BLE001
         out["sources"]["미래에셋증권 리서치"] = {
+            "ok": False, "error": "%s: %s" % (type(e).__name__, e)}
+
+    # 하나증권 자체 게시판. 증권사 자체 게시판 열한 곳 가운데 유일하게
+    # 열린 곳이다(3차 탐색). 해외 종목 리포트(NVDA.US 등)가 여기에 있다.
+    try:
+        hana, how = fetch_hana(dump_dir=RAW_DIR)
+        stat = merge_source(reports, hana, "하나증권", "하나증권 리서치")
+        rec = {"ok": True, "count": len(hana), "via": "html",
+               "merged_into_naver": stat["merged"], "new": stat["added"]}
+        rec.update(how)
+        out["sources"]["하나증권 리서치"] = rec
+    except urllib.error.HTTPError as e:
+        out["sources"]["하나증권 리서치"] = {"ok": False, "error": "HTTP %s" % e.code}
+    except Exception as e:                                       # noqa: BLE001
+        out["sources"]["하나증권 리서치"] = {
             "ok": False, "error": "%s: %s" % (type(e).__name__, e)}
 
     if not reports:
