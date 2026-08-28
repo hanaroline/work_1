@@ -1,119 +1,126 @@
 리포트 원천 후보 탐색
 
-=== 네이버API marketInfo
-    https://m.stock.naver.com/api/research/marketInfo?page=1&pageSize=5
-    실패 HTTPError: HTTP Error 404: 404
-
-=== 네이버API market_info
-    https://m.stock.naver.com/api/research/market_info?page=1&pageSize=5
-    실패 HTTPError: HTTP Error 404: 404
-
-=== 네이버API market
-    https://m.stock.naver.com/api/research/market?page=1&pageSize=5
-    1163 bytes
-    찾던 글자: title, brokerName
-    <tr> 0개 · pdf 링크 0개
-    첫 글자: [{"researchCategory":"시황정보","category":"시황정보","researchId":37320,"title":"마켓레이더 - 7천피 입구에서 만난 복병(8월 28일)","brokerName":"신한투자증권","writeDate":"2026-08-28","readCount":"26","endUrl":"https://m.stock.naver.com/research/marke
-
-=== 네이버API invest
-    https://m.stock.naver.com/api/research/invest?page=1&pageSize=5
-    1177 bytes
-    찾던 글자: title, brokerName
-    <tr> 0개 · pdf 링크 0개
-    첫 글자: [{"researchCategory":"투자전략","category":"투자전략","researchId":40028,"title":"[QWER] 8월 4주차 - 리비전+성장경로 스크리닝","brokerName":"유안타증권","writeDate":"2026-08-28","readCount":"104","endUrl":"https://m.stock.naver.com/research/invest
-
-=== 네이버API economy
-    https://m.stock.naver.com/api/research/economy?page=1&pageSize=5
-    1156 bytes
-    찾던 글자: title, brokerName
-    <tr> 0개 · pdf 링크 0개
-    첫 글자: [{"researchCategory":"경제분석","category":"경제분석","researchId":13741,"title":"다시 시장의 축이 된 실질금리","brokerName":"DS투자증권","writeDate":"2026-08-28","readCount":"161","endUrl":"https://m.stock.naver.com/research/economy/13741"},{"
-
-=== 네이버API debenture
-    https://m.stock.naver.com/api/research/debenture?page=1&pageSize=5
-    1136 bytes
-    찾던 글자: title, brokerName
-    <tr> 0개 · pdf 링크 0개
-    첫 글자: [{"researchCategory":"채권분석","category":"채권분석","researchId":11181,"title":"[9월] 아직 풀어야 할 숙제들","brokerName":"신한투자증권","writeDate":"2026-08-28","readCount":"74","endUrl":"https://m.stock.naver.com/research/debenture/11181"},
-
-=== 네이버API bond
-    https://m.stock.naver.com/api/research/bond?page=1&pageSize=5
-    실패 HTTPError: HTTP Error 404: 404
-
-=== 한경 전체(인자 완비)
-    https://consensus.hankyung.com/analysis/list?sdate=&edate=&report_type=&business_code=&order_type=&now_page=1&search_text=&pagenum=40
+=== 한경 consensus http
+    http://consensus.hankyung.com/analysis/list?report_type=CO&pagenum=40&now_page=1
     실패 HTTPError: HTTP Error 500: Internal Server Error
 
-=== 한경 skinType
-    https://consensus.hankyung.com/analysis/list?skinType=business&sdate=&edate=&report_type=CO&now_page=1&pagenum=40
+=== 한경 hkconsensus
+    https://hkconsensus.hankyung.com/analysis/list?report_type=CO
+    실패 URLError: <urlopen error [Errno -2] Name or service not known>
+
+=== 한경 apps.hankyung
+    https://consensus.hankyung.com/apps.analysis/analysis.list?report_type=CO
     실패 HTTPError: HTTP Error 500: Internal Server Error
 
-=== 한경 첫 화면
-    https://consensus.hankyung.com/
+=== 한경 analysis.total
+    https://consensus.hankyung.com/analysis/total
     실패 HTTPError: HTTP Error 500: Internal Server Error
 
-=== 미래에셋 목록 pageIndex
-    https://securities.miraeasset.com/bbs/board/message/list.do?categoryId=1521&pageIndex=1
-    33027 bytes
-    찾던 글자: 증권, 리포트
-    <tr> 7개 · pdf 링크 0개
-    첫 글자: 전체 | 리서치 리포트 | 투자정보 | 미래에셋증권
-
-=== 미래에셋 리서치 첫 화면
-    https://securities.miraeasset.com/bbs/main/research/index.do
-    17118 bytes
-    찾던 글자: 리포트
-    <tr> 0개 · pdf 링크 0개
-    첫 글자: 정기리포트 | 투자정보 | KDB대우증권                                   w(categoryId, messageId) {    var listForm = nv.$("listForm");
-
-=== 한경컨센서스 기업
-    https://consensus.hankyung.com/analysis/list?report_type=CO&pagenum=40&now_page=1
-    실패 HTTPError: HTTP Error 500: Internal Server Error
-
-=== 한경컨센서스 산업
-    https://consensus.hankyung.com/analysis/list?report_type=IN&pagenum=40&now_page=1
-    실패 HTTPError: HTTP Error 500: Internal Server Error
-
-=== 한경컨센서스 시장
-    https://consensus.hankyung.com/analysis/list?report_type=MA&pagenum=40&now_page=1
-    실패 HTTPError: HTTP Error 500: Internal Server Error
-
-=== 한경컨센서스 경제
-    https://consensus.hankyung.com/analysis/list?report_type=EC&pagenum=40&now_page=1
-    실패 HTTPError: HTTP Error 500: Internal Server Error
-
-=== 한경컨센서스 채권
-    https://consensus.hankyung.com/analysis/list?report_type=DB&pagenum=40&now_page=1
-    실패 HTTPError: HTTP Error 500: Internal Server Error
-
-=== 미래에셋 리서치 목록
-    https://securities.miraeasset.com/bbs/board/message/list.do?messageId=&searchType=&searchText=&categoryId=1521
-    실패 URLError: <urlopen error [SSL: UNEXPECTED_EOF_WHILE_READING] EOF occurred in violation of protocol (_ssl.c:1010)>
-
-=== 미래에셋 투자정보
-    https://securities.miraeasset.com/bbs/board/message/list.do?categoryId=1571
-    실패 URLError: <urlopen error [SSL: UNEXPECTED_EOF_WHILE_READING] EOF occurred in violation of protocol (_ssl.c:1010)>
-
-=== 네이버 모바일 리서치 API
-    https://m.stock.naver.com/api/research/company?page=1&pageSize=30
-    7945 bytes
-    찾던 글자: title, brokerName, researchId
-    <tr> 0개 · pdf 링크 0개
-    첫 글자: [{"researchCategory":"종목분석","category":"종목분석","itemCode":"123890","itemName":"한국자산신탁","researchId":95921,"title":"정비 사업으로 체질 개선 기대","brokerName":"한화투자증권","writeDate":"2026-08-28","readCount":"907","endUrl":"https://m.sto
-
-=== 네이버 모바일 산업 리서치 API
-    https://m.stock.naver.com/api/research/industry?page=1&pageSize=30
-    6716 bytes
-    찾던 글자: title, brokerName
-    <tr> 0개 · pdf 링크 0개
-    첫 글자: [{"researchCategory":"산업분석","category":"유틸리티","researchId":45845,"title":"자본확충 이슈가 반갑지만은 않은 이유","brokerName":"하나증권","writeDate":"2026-08-28","readCount":"269","endUrl":"https://m.stock.naver.com/research/industry/45845"}
-
-=== 한국IR협의회 리서치
+=== IR협의회 기업리서치
     https://www.kirs.or.kr/information/tech_report.html
     실패 URLError: <urlopen error timed out>
 
-=== 다음 금융 리서치
+=== IR협의회 목록2
+    https://www.kirs.or.kr/information/tech_report2.html
+    실패 URLError: <urlopen error timed out>
+
+=== IR협의회 첫 화면
+    https://www.kirs.or.kr/
+    실패 URLError: <urlopen error timed out>
+
+=== 다음 리서치 api
     https://finance.daum.net/api/research/list?page=1&perPage=30
     실패 HTTPError: HTTP Error 500: 
 
-살아 있는 후보 8/23
+=== 다음 리서치 화면
+    https://finance.daum.net/domestic/research
+    실패 HTTPError: HTTP Error 404: 
+
+=== 삼성증권 리서치
+    https://www.samsungpop.com/mbw/research/reportList.do?cmd=W101100R
+    실패 HTTPError: HTTP Error 404: Not Found
+
+=== NH투자 리서치
+    https://www.nhqv.com/servlet/EQ/EQAA/EQAA0001R
+    실패 HTTPError: HTTP Error 404: Not Found
+
+=== 한국투자 리서치
+    https://securities.koreainvestment.com/main/research/report/list.jsp
+    실패 HTTPError: HTTP Error 404: Not Found
+
+=== 키움 리서치
+    https://www.kiwoom.com/h/invest/research/VAnalysisRVwList
+    14236 bytes
+    찾던 글자: (하나도 없음)
+    <tr> 0개 · pdf 링크 0개
+    첫 글자: 
+
+=== 신한투자 리서치
+    https://open.shinhansec.com/phls/rsch/imTot/list.do
+    실패 HTTPError: HTTP Error 404: 404
+
+=== 하나증권 리서치
+    https://www.hanaw.com/main/research/research/list.cmd
+    45112 bytes
+    찾던 글자: 리포트, 리서치
+    <tr> 0개 · pdf 링크 0개
+    첫 글자: Daily : Daily : 하나증권                       전체  62420   건 검색되었습니다.                                           0
+
+=== KB증권 리서치
+    https://rc.kbsec.com/rc/research/list.able
+    실패 HTTPError: HTTP Error 500: Internal Server Error
+
+=== 대신증권 리서치
+    https://www.daishin.com/g.ds?m=1400&p=3311&v=3312
+    실패 HTTPError: HTTP Error 403: Forbidden
+
+=== 유안타 리서치
+    https://www.myasset.com/myasset/research/main.cmd
+    실패 HTTPError: HTTP Error 404: Not Found
+
+=== 메리츠 리서치
+    https://home.imeritz.com/include/resource/research/main/list.do
+    실패 HTTPError: HTTP Error 404: Not Found
+
+=== 미래에셋 글로벌
+    https://securities.miraeasset.com/bbs/board/message/list.do?categoryId=1525
+    65027 bytes
+    찾던 글자: 리포트, 글로벌
+    <tr> 14개 · pdf 링크 0개
+    첫 글자: 산업분석 | 리서치 리포트 | 투자정보 | 미래에셋증권                               <meta
+
+=== 미래에셋 해외주식
+    https://securities.miraeasset.com/bbs/board/message/list.do?categoryId=1571
+    2840 bytes
+    찾던 글자: (하나도 없음)
+    <tr> 0개 · pdf 링크 0개
+    첫 글자: 미래에셋증권                                       <script type="text/java
+
+=== 네이버 해외 리서치
+    https://m.stock.naver.com/api/research/global?page=1&pageSize=10
+    실패 HTTPError: HTTP Error 404: 404
+
+=== 네이버 해외증시 리서치
+    https://m.stock.naver.com/api/research/overseas?page=1&pageSize=10
+    실패 HTTPError: HTTP Error 404: 404
+
+=== 네이버 worldResearch
+    https://m.stock.naver.com/api/research/world?page=1&pageSize=10
+    실패 HTTPError: HTTP Error 404: 404
+
+=== 네이버 해외 목록 html
+    https://finance.naver.com/research/global_list.naver
+    실패 HTTPError: HTTP Error 404: 404
+
+=== 한경 글로벌마켓
+    https://www.hankyung.com/globalmarket
+    104299 bytes
+    찾던 글자: 글로벌, 증시
+    <tr> 0개 · pdf 링크 0개
+    첫 글자: 한경글로벌마켓 | 한국경제                               <link rel="canonical" href="https://www.hankyung.
+
+=== KRX 기업분석보고서
+    https://kind.krx.co.kr/valueup/reportList.do?method=searchValueupReportMain
+    실패 HTTPError: HTTP Error 404: Not Found
+
+살아 있는 후보 5/27
