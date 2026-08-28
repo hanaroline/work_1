@@ -1,0 +1,1344 @@
+{
+  "at": "2026-08-28T16:23:11.821Z",
+  "listHunt": [
+    {
+      "group": "list",
+      "label": "펀드 목록",
+      "url": "https://stock.naver.com/api/fund/funds?page=0&size=20",
+      "status": 200,
+      "bytes": 10878,
+      "sample": "{\"funds\":[{\"fundCode\":\"K55309BY1419\",\"fundName\":\"골든브릿지으뜸단기증권투자신탁 1[채권]\",\"riskGrade\":\"veryLowRisk\",\"nav\":695165079,\"basePrice\":3361.5,\"returnIndex\":1.000062476,\"returnRate1m\":244.9390468,\"returnRate3m\":245.1728176,\"returnRate6m\":245.5098625,\"returnRate1y\":246.2037571,\"returnRate3y\":249.6136215,\"returnRate5y\":252.0595786,\"tradeDate\":\"2026-08-27\",\"changePrice\":0.21,\"totalFee\":null,\"preSalesFee\":null,\"postSalesFee\":null,\"pcUrl\":\"https://stock.naver.com/domestic/fund/K55309BY1419\",\"mobileUrl\":\"https://m.stock.naver.com/domestic/fund/K55309BY1419\"},{\"fundCode\":\"K55309BQ0684\",\"fundName\":\"골든브릿지스마트단기채증권투자신탁 1[채권]\",\"riskGrade\":\"veryLowRisk\",\"nav\":3646239358,\"basePrice\":3020.85,\"returnIndex\":1.000072832,\"returnRate1m\":215.0361353,\"returnRate3m\":215.2564127,\"returnRate6m\":215.5725715,\"returnRate1y\":216.2200354,\"returnRate3y\":219.4266739,\"returnRate5y\":221.6715825,\"tradeDate\":\"2026-08-27\",\"changePric",
+      "ok": true,
+      "json": {
+        "funds": [
+          {
+            "fundCode": "K55309BY1419",
+            "fundName": "골든브릿지으뜸단기증권투자신탁 1[채권]",
+            "riskGrade": "veryLowRisk",
+            "nav": 695165079,
+            "basePrice": 3361.5,
+            "returnIndex": 1.000062476,
+            "returnRate1m": 244.9390468,
+            "returnRate3m": 245.1728176,
+            "returnRate6m": 245.5098625,
+            "returnRate1y": 246.2037571,
+            "returnRate3y": 249.6136215,
+            "returnRate5y": 252.0595786,
+            "tradeDate": "2026-08-27",
+            "changePrice": 0.21,
+            "totalFee": null,
+            "preSalesFee": null,
+            "postSalesFee": null,
+            "pcUrl": "https://stock.naver.com/domestic/fund/K55309BY1419",
+            "mobileUrl": "https://m.stock.naver.com/domestic/fund/K55309BY1419"
+          },
+          {
+            "fundCode": "K55309BQ0684",
+            "fundName": "골든브릿지스마트단기채증권투자신탁 1[채권]",
+            "riskGrade": "veryLowRisk",
+            "nav": 3646239358,
+            "basePrice": 3020.85,
+            "returnIndex": 1.000072832,
+            "returnRate1m": 215.0361353,
+            "returnRate3m": 215.2564127,
+            "returnRate6m": 215.5725715,
+            "returnRate1y": 216.2200354,
+            "returnRate3y": 219.4266739,
+            "returnRate5y": 221.6715825,
+            "tradeDate": "2026-08-27",
+            "changePrice": 0.22,
+            "totalFee": null,
+            "preSalesFee": null,
+            "postSalesFee": null,
+            "pcUrl": "https://stock.naver.com/domestic/fund/K55309BQ0684",
+            "mobileUrl": "https://m.stock.naver.com/domestic/fund/K55309BQ0684"
+          },
+          {
+            "fundCode": "K55306B99307",
+            "fundName": "다올전단채증권투자신탁[채권](운)",
+            "riskGrade": "veryLowRisk",
+            "nav": 18175052226,
+            "basePrice": 1565.08,
+            "returnIndex": 0.999993611,
+            "returnRate1m": 55.5127187,
+            "returnRate3m": 56.0492153,
+            "returnRate6m": 56.0056616,
+            "returnRate1y": 57.6264045,
+            "returnRate3y": 73.8062595,
+            "returnRate5y": 76.8270327,
+            "tradeDate": "2026-08-27",
+            "changePrice": -0.01,
+            "totalFee": null,
+            "preSalesFee": null,
+            "postSalesFee": null,
+            "pcUrl": "https://stock.naver.com/domestic/fund/K55306B99307",
+            "mobileUrl": "https://m.stock.naver.com/domestic/fund/K55306B99307"
+          },
+          {
+            "fundCode": "K55306DL4955",
+            "fundName": "다올라자드디지털헬스1등주증권투자신탁[주식](운)",
+            "riskGrade": "veryHighRisk",
+            "nav": 4732581547,
+            "basePrice": 635.65,
+            "returnIndex": 1.015788549,
+            "returnRate1m": 19.6292463,
+            "returnRate3m": 37.9778159,
+            "returnRate6m": 33.9197303,
+            "returnRate1y": 34.6088687,
+            "returnRate3y": 22.2991823,
+            "returnRate5y": -36.5644086,
+            "tradeDate": "2026-08-27",
+            "changePrice": 9.88,
+            "totalFee": null,
+            "preSalesFee": null,
+            "postSalesFee": null,
+            "pcUrl": "https://stock.naver.com/domestic/fund/K55306DL4955",
+            "mobileUrl": "https://m.stock.naver.com/domestic/fund/K55306DL4955"
+          },
+          {
+            "fundCode": "K55232C29011",
+            "fundName": "NH-Amundi코스닥인버스증권투자신탁[주식-파생형]",
+            "riskGrade": "veryHighRisk",
+            "nav": 2041302051,
+            "basePrice": 395.02,
+            "returnIndex": 1.013053625,
+            "returnRate1m": -15.5254266,
+            "returnRate3m": 24.1537544,
+            "returnRate6m": 16.3020766,
+            "returnRate1y": -29.8166436,
+            "returnRate3y": -33.5866435,
+            "returnRate5y": -43.9338013,
+            "tradeDate": "2026-08-27",
+            "changePrice": 5.09,
+            "totalFee": null,
+            "preSalesFee": null,
+            "postSalesFee": null,
+            "pcUrl": "https://stock.naver.com/domestic/fund/K55232C29011",
+            "mobileUrl": "https://m.stock.naver.com/domestic/fund/K55232C29011"
+          },
+          {
+            "fundCode": "KR5366876831",
+            "fundName": "iM에셋월드골드증권자투자신탁(주식-재간접형)(H)",
+            "riskGrade": "veryHighRisk",
+            "nav": 131915146115,
+            "basePrice": 1766.91,
+            "returnIndex": 0.994383445,
+            "returnRate1m": 32.2418642,
+            "returnRate3m": 17.6684864,
+            "returnRate6m": -6.5201176,
+            "returnRate1y": 62.0141392,
+            "returnRate3y": 220.0228193,
+            "returnRate5y": 166.2974138,
+            "tradeDate": "2026-08-27",
+            "changePrice": -9.98,
+            "totalFee": null,
+            "preSalesFee": null,
+            "postSalesFee": null,
+            "pcUrl": "https://stock.naver.com/domestic/fund/KR5366876831",
+            "mobileUrl": "https://m.stock.naver.com/domestic/fund/KR5366876831"
+          },
+          {
+            "fundCode": "KR5217AH8161",
+            "fundName": "우리프랭클린미국바이오헬스케어증권자투자신탁(주식-재간접형)",
+            "riskGrade": "highRisk",
+            "nav": 36545276423,
+            "basePrice": 1709.87,
+            "returnIndex": 1.010292771,
+            "returnRate1m": 6.2473203,
+            "returnRate3m": 16.9805175,
+            "returnRate6m": 18.6445029,
+            "returnRate1y": 67.2565953,
+            "returnRate3y": 104.5882694,
+            "returnRate5y": 65.4533475,
+            "tradeDate": "2026-08-27",
+            "changePrice": 17.42,
+            "totalFee": null,
+            "preSalesFee": null,
+            "postSalesFee": null,
+            "pcUrl": "https://stock.naver.com/domestic/fund/KR5217AH8161",
+            "mobileUrl": "https://m.stock.naver.com/domestic/fund/KR5217AH8161"
+          },
+          {
+            "fundCode": "KR5234676157",
+            "fundName": "IBK골드마이닝증권자투자신탁 1[주식]",
+            "riskGrade": "veryHighRisk",
+            "nav": 96387289254,
+            "basePrice": 3956.27,
+            "returnIndex": 1.011642298,
+            "returnRate1m": 31.0426724,
+            "returnRate3m": 15.3149086,
+            "returnRate6m": -5.8044409,
+            "returnRate1y": 66.975609,
+            "returnRate3y": 245.5468887,
+            "returnRate5y": 271.5470359,
+            "tradeDate": "2026-08-27",
+            "changePrice": 45.53,
+            "totalFee": null,
+            "preSalesFee": null,
+            "postSalesFee": null,
+            "pcUrl": "https://stock.naver.com/domestic/fund/KR5234676157",
+            "mobileUrl": "https://m.stock.naver.com/domestic/fund/KR5234676157"
+          },
+          {
+            "fundCode": "K55229E40721",
+            "fundName": "카디안글로벌온콜로지증권자투자신탁(H)[주식-재간접형]",
+            "riskGrade": "highRisk",
+            "nav": 481605712,
+            "basePrice": 1349.75,
+            "returnIndex": 1.010382669,
+            "returnRate1m": 7.3897858,
+            "returnRate3m": 15.115177,
+            "returnRate6m": 10.2179883,
+            "returnRate1y": 34.3793078,
+            "returnRate3y": 37.9871254,
+            "returnRate5y": null,
+            "tradeDate": "2026-08-27",
+            "changePrice": 13.87,
+            "totalFee": null,
+            "preSalesFee": null,
+            "postSalesFee": null,
+            "pcUrl": "https://stock.naver.com/domestic/fund/K55229E40721",
+            "mobileUrl": "https://m.stock.naver.com/domestic/fund/K55229E40721"
+          },
+          {
+            "fundCode": "KR5234809295",
+            "fundName": "IBK골드마이닝증권자투자신탁 2 [주식]",
+            "riskGrade": "veryHighRisk",
+            "nav": 1020411471,
+            "basePrice": 5290.22,
+            "returnIndex": 1.011614922,
+            "returnRate1m": 30.9612753,
+            "returnRate3m": 14.9450615,
+            "returnRate6m": -6.184307,
+            "returnRate1y": 66.5272179,
+            "returnRate3y": 244.9386094,
+            "returnRate5y": 271.0169889,
+            "tradeDate": "2026-08-27",
+            "changePrice": 60.74,
+            "totalFee": null,
+            "preSalesFee": null,
+            "postSalesFee": null,
+            "pcUrl": "https://stock.naver.com/domestic/fund/KR5234809295",
+            "mobileUrl": "https://m.stock.naver.com/domestic/fund/KR5234809295"
+          },
+          {
+            "fundCode": "KR5219756164",
+            "fundName": "신한골드증권투자신탁 1[주식](종류)",
+            "riskGrade": "highRisk",
+            "nav": 103126592421,
+            "basePrice": 2223.47,
+            "returnIndex": 1.012306277,
+            "returnRate1m": 28.2492455,
+            "returnRate3m": 13.4805597,
+            "returnRate6m": -6.358919,
+            "returnRate1y": 56.9748324,
+            "returnRate3y": 196.2099047,
+            "returnRate5y": 194.7179385,
+            "tradeDate": "2026-08-27",
+            "changePrice": 27.03,
+            "totalFee": null,
+            "preSalesFee": null,
+            "postSalesFee": null,
+            "pcUrl": "https://stock.naver.com/domestic/fund/KR5219756164",
+            "mobileUrl": "https://m.stock.naver.com/domestic/fund/KR5219756164"
+          },
+          {
+            "fundCode": "KR5217704463",
+            "fundName": "우리템플턴이스턴유럽증권자투자신탁(주식-재간접형)",
+            "riskGrade": "moderatelyHighRisk",
+            "nav": 2756736423,
+            "basePrice": 1067.51,
+            "returnIndex": 1.004857156,
+            "returnRate1m": 6.1480788,
+            "returnRate3m": 12.8431673,
+            "returnRate6m": 15.8074577,
+            "returnRate1y": 31.2651947,
+            "returnRate3y": 109.1584346,
+            "returnRate5y": 2.216916,
+            "tradeDate": "2026-08-27",
+            "changePrice": 5.16,
+            "totalFee": null,
+            "preSalesFee": null,
+            "postSalesFee": null,
+            "pcUrl": "https://stock.naver.com/domestic/fund/KR5217704463",
+            "mobileUrl": "https://m.stock.naver.com/domestic/fund/KR5217704463"
+          },
+          {
+            "fundCode": "K55105ED1870",
+            "fundName": "삼성글로벌혁신바이오증권자투자신탁H[주식]",
+            "riskGrade": "highRisk",
+            "nav": 795988585,
+            "basePrice": 1284.36,
+            "returnIndex": 1.015352507,
+            "returnRate1m": 7.8460347,
+            "returnRate3m": 12.562444,
+            "returnRate6m": 12.6453719,
+            "returnRate1y": 38.6413929,
+            "returnRate3y": null,
+            "returnRate5y": null,
+            "tradeDate": "2026-08-27",
+            "changePrice": 19.42,
+            "totalFee": null,
+            "preSalesFee": null,
+            "postSalesFee": null,
+            "pcUrl": "https://stock.naver.com/domestic/fund/K55105ED1870",
+            "mobileUrl": "https://m.stock.naver.com/domestic/fund/K55105ED1870"
+          },
+          {
+            "fundCode": "K55224DL7122",
+            "fundName": "흥국글로벌이노베이션증권자투자신탁 1(H)[주식-재간접형]",
+            "riskGrade": "veryHighRisk",
+            "nav": 6715966498,
+            "basePrice": 716.54,
+            "returnIndex": 1.025988345,
+            "returnRate1m": 14.6152247,
+            "returnRate3m": 12.3843282,
+            "returnRate6m": 18.0247402,
+            "returnRate1y": 13.0706475,
+            "returnRate3y": 92.9866142,
+            "returnRate5y": null,
+            "tradeDate": "2026-08-27",
+            "changePrice": 18.15,
+            "totalFee": null,
+            "preSalesFee": null,
+            "postSalesFee": null,
+            "pcUrl": "https://stock.naver.com/domestic/fund/K55224DL7122",
+            "mobileUrl": "https://m.stock.naver.com/domestic/fund/K55224DL7122"
+          },
+          {
+            "fundCode": "K55105BT9746",
+            "fundName": "삼성로스차일드4차산업빅데이터증권자투자신탁H[주식-재간접형]",
+            "riskGrade": "moderatelyHighRisk",
+            "nav": 11045013362,
+            "basePrice": 2844.85,
+            "returnIndex": 0.999522172,
+            "returnRate1m": 9.5517192,
+            "returnRate3m": 12.1963246,
+            "returnRate6m": 21.2374973,
+            "returnRate1y": 22.384146,
+            "returnRate3y": 63.4912664,
+            "returnRate5y": 66.5274775,
+            "tradeDate": "2026-08-27",
+            "changePrice": -1.36,
+            "totalFee": null,
+            "preSalesFee": null,
+            "postSalesFee": null,
+            "pcUrl": "https://stock.naver.com/domestic/fund/K55105BT9746",
+            "mobileUrl": "https://m.stock.naver.com/domestic/fund/K55105BT9746"
+          },
+          {
+            "fundCode": "K55370DU9889",
+            "fundName": "AB인터내셔널헬스케어증권투자신탁(주식-재간접형)",
+            "riskGrade": "moderatelyHighRisk",
+            "nav": 40893110,
+            "basePrice": 1268.26,
+            "returnIndex": 1.005805193,
+            "returnRate1m": 7.6091568,
+            "returnRate3m": 12.1728595,
+            "returnRate6m": 6.273725,
+            "returnRate1y": 22.2372159,
+            "returnRate3y": 19.3847505,
+            "returnRate5y": null,
+            "tradeDate": "2026-08-27",
+            "changePrice": 7.32,
+            "totalFee": 1.565,
+            "preSalesFee": 0,
+            "postSalesFee": 0,
+            "pcUrl": "https://stock.naver.com/domestic/fund/K55370DU9889",
+            "mobileUrl": "https://m.stock.naver.com/domestic/fund/K55370DU9889"
+          },
+          {
+            "fundCode": "K55210BD3228",
+            "fundName": "신한커버드콜인덱스증권자투자신탁[주식혼합-파생형]",
+            "riskGrade": "highRisk",
+            "nav": 31998841067,
+            "basePrice": 2030.33,
+            "returnIndex": 1.000216761,
+            "returnRate1m": 5.4903203,
+            "returnRate3m": 12.1506218,
+            "returnRate6m": 28.2937269,
+            "returnRate1y": 56.8071239,
+            "returnRate3y": 93.3555955,
+            "returnRate5y": 75.2714645,
+            "tradeDate": "2026-08-27",
+            "changePrice": 0.44,
+            "totalFee": null,
+            "preSalesFee": null,
+            "postSalesFee": null,
+            "pcUrl": "https://stock.naver.com/domestic/fund/K55210BD3228",
+            "mobileUrl": "https://m.stock.naver.com/domestic/fund/K55210BD3228"
+          },
+          {
+            "fundCode": "K55216CJ3944",
+            "fundName": "DB차이나바이오헬스케어증권자투자신탁(H)[주식]_운용",
+            "riskGrade": "veryHighRisk",
+            "nav": 8453047425,
+            "basePrice": 1103.21,
+            "returnIndex": 1.024269546,
+            "returnRate1m": 4.2593607,
+            "returnRate3m": 12.0909152,
+            "returnRate6m": -0.3667645,
+            "returnRate1y": -25.2458254,
+            "returnRate3y": 17.620689,
+            "returnRate5y": -32.7883114,
+            "tradeDate": "2026-08-27",
+            "changePrice": 26.14,
+            "totalFee": null,
+            "preSalesFee": null,
+            "postSalesFee": null,
+            "pcUrl": "https://stock.naver.com/domestic/fund/K55216CJ3944",
+            "mobileUrl": "https://m.stock.naver.com/domestic/fund/K55216CJ3944"
+          },
+          {
+            "fundCode": "K55366B29092",
+            "fundName": "iM에셋월드헬스사이언스증권투자신탁(주식-재간접형)",
+            "riskGrade": "moderatelyHighRisk",
+            "nav": 16741633091,
+            "basePrice": 1930.47,
+            "returnIndex": 1.005243699,
+            "returnRate1m": 6.8683568,
+            "returnRate3m": 11.3705235,
+            "returnRate6m": 4.9731889,
+            "returnRate1y": 19.5608371,
+            "returnRate3y": 24.518023,
+            "returnRate5y": 23.4318165,
+            "tradeDate": "2026-08-27",
+            "changePrice": 10.07,
+            "totalFee": null,
+            "preSalesFee": null,
+            "postSalesFee": null,
+            "pcUrl": "https://stock.naver.com/domestic/fund/K55366B29092",
+            "mobileUrl": "https://m.stock.naver.com/domestic/fund/K55366B29092"
+          },
+          {
+            "fundCode": "KR5103585489",
+            "fundName": "한화글로벌헬스케어증권자투자신탁(주식)",
+            "riskGrade": "moderatelyHighRisk",
+            "nav": 54822836335,
+            "basePrice": 1565.27,
+            "returnIndex": 1.009291619,
+            "returnRate1m": 5.1851007,
+            "returnRate3m": 11.327151,
+            "returnRate6m": 5.9393719,
+            "returnRate1y": 21.4994726,
+            "returnRate3y": 19.2585748,
+            "returnRate5y": 13.1525219,
+            "tradeDate": "2026-08-27",
+            "changePrice": 14.41,
+            "totalFee": null,
+            "preSalesFee": null,
+            "postSalesFee": null,
+            "pcUrl": "https://stock.naver.com/domestic/fund/KR5103585489",
+            "mobileUrl": "https://m.stock.naver.com/domestic/fund/KR5103585489"
+          }
+        ],
+        "sort": "return3m",
+        "page": 0,
+        "size": 20,
+        "totalCount": 3196,
+        "hasNext": true
+      }
+    },
+    {
+      "group": "list",
+      "label": "펀드 랭킹",
+      "url": "https://stock.naver.com/api/fund/funds/ranking?page=0&size=20",
+      "status": 400,
+      "bytes": 108,
+      "sample": "{\"detailCode\":\"invalid_string\",\"message\":\"{\\\"formErrors\\\":[],\\\"fieldErrors\\\":{\\\"fundCode\\\":[\\\"Invalid\\\"]}}\"}",
+      "ok": false,
+      "json": {
+        "detailCode": "invalid_string",
+        "message": "{\"formErrors\":[],\"fieldErrors\":{\"fundCode\":[\"Invalid\"]}}"
+      }
+    },
+    {
+      "group": "list",
+      "label": "펀드 검색",
+      "url": "https://stock.naver.com/api/fund/funds/search?page=0&size=20",
+      "status": 400,
+      "bytes": 108,
+      "sample": "{\"detailCode\":\"invalid_string\",\"message\":\"{\\\"formErrors\\\":[],\\\"fieldErrors\\\":{\\\"fundCode\\\":[\\\"Invalid\\\"]}}\"}",
+      "ok": false,
+      "json": {
+        "detailCode": "invalid_string",
+        "message": "{\"formErrors\":[],\"fieldErrors\":{\"fundCode\":[\"Invalid\"]}}"
+      }
+    },
+    {
+      "group": "list",
+      "label": "펀드 홈",
+      "url": "https://stock.naver.com/api/fund/home",
+      "status": 404,
+      "bytes": 85,
+      "sample": "{\"message\":\"Route GET:/api/fund/home not found\",\"error\":\"Not Found\",\"statusCode\":404}",
+      "ok": false,
+      "json": {
+        "message": "Route GET:/api/fund/home not found",
+        "error": "Not Found",
+        "statusCode": 404
+      }
+    },
+    {
+      "group": "list",
+      "label": "펀드 유형별",
+      "url": "https://stock.naver.com/api/fund/peer-groups",
+      "status": 404,
+      "bytes": 92,
+      "sample": "{\"message\":\"Route GET:/api/fund/peer-groups not found\",\"error\":\"Not Found\",\"statusCode\":404}",
+      "ok": false,
+      "json": {
+        "message": "Route GET:/api/fund/peer-groups not found",
+        "error": "Not Found",
+        "statusCode": 404
+      }
+    },
+    {
+      "group": "list",
+      "label": "펀드 운용사",
+      "url": "https://stock.naver.com/api/fund/companies",
+      "status": 404,
+      "bytes": 90,
+      "sample": "{\"message\":\"Route GET:/api/fund/companies not found\",\"error\":\"Not Found\",\"statusCode\":404}",
+      "ok": false,
+      "json": {
+        "message": "Route GET:/api/fund/companies not found",
+        "error": "Not Found",
+        "statusCode": 404
+      }
+    },
+    {
+      "group": "list",
+      "label": "자동완성(전체)",
+      "url": "https://ac.stock.naver.com/ac?q=%EA%B8%80%EB%A1%9C%EB%B2%8C&target=index%2Cstock%2Cmarketindicator%2Cfund",
+      "status": 200,
+      "bytes": 2124,
+      "sample": "{\"query\":\"글로벌\",\"items\":[{\"code\":\"204620\",\"name\":\"글로벌텍스프리\",\"typeCode\":\"KOSDAQ\",\"typeName\":\"코스닥\",\"url\":\"/domestic/stock/204620/total\",\"reutersCode\":\"204620\",\"nationCode\":\"KOR\",\"nationName\":\"대한민국\",\"category\":\"stock\",\"hasDiscussion\":true},{\"code\":\"900070\",\"name\":\"글로벌에스엠\",\"typeCode\":\"KOSDAQ\",\"typeName\":\"코스닥\",\"url\":\"/domestic/stock/900070/total\",\"reutersCode\":\"900070\",\"nationCode\":\"KOR\",\"nationName\":\"대한민국\",\"category\":\"stock\",\"hasDiscussion\":true},{\"code\":\"GFS\",\"name\":\"글로벌파운드리\",\"typeCode\":\"NASDAQ\",\"typeName\":\"나스닥 증권거래소\",\"url\":\"/worldstock/stock/GFS.O/total\",\"reutersCode\":\"GFS.O\",\"nationCode\":\"USA\",\"nationName\":\"미국\",\"category\":\"stock\",\"hasDiscussion\":true},{\"code\":\"GPN\",\"name\":\"글로벌 페이먼츠\",\"typeCode\":\"NYSE\",\"typeName\":\"뉴욕 거래소\",\"url\":\"/worldstock/stock/GPN/total\",\"reutersCode\":\"GPN\",\"nationCode\":\"USA\",\"nationName\":\"미국\",\"category\":\"stock\",\"hasDiscussion\":true},{\"code\":\"GSAT\",\"name\":\"글로벌스타\",\"typeCode",
+      "ok": true,
+      "json": {
+        "query": "글로벌",
+        "items": [
+          {
+            "code": "204620",
+            "name": "글로벌텍스프리",
+            "typeCode": "KOSDAQ",
+            "typeName": "코스닥",
+            "url": "/domestic/stock/204620/total",
+            "reutersCode": "204620",
+            "nationCode": "KOR",
+            "nationName": "대한민국",
+            "category": "stock",
+            "hasDiscussion": true
+          },
+          {
+            "code": "900070",
+            "name": "글로벌에스엠",
+            "typeCode": "KOSDAQ",
+            "typeName": "코스닥",
+            "url": "/domestic/stock/900070/total",
+            "reutersCode": "900070",
+            "nationCode": "KOR",
+            "nationName": "대한민국",
+            "category": "stock",
+            "hasDiscussion": true
+          },
+          {
+            "code": "GFS",
+            "name": "글로벌파운드리",
+            "typeCode": "NASDAQ",
+            "typeName": "나스닥 증권거래소",
+            "url": "/worldstock/stock/GFS.O/total",
+            "reutersCode": "GFS.O",
+            "nationCode": "USA",
+            "nationName": "미국",
+            "category": "stock",
+            "hasDiscussion": true
+          },
+          {
+            "code": "GPN",
+            "name": "글로벌 페이먼츠",
+            "typeCode": "NYSE",
+            "typeName": "뉴욕 거래소",
+            "url": "/worldstock/stock/GPN/total",
+            "reutersCode": "GPN",
+            "nationCode": "USA",
+            "nationName": "미국",
+            "category": "stock",
+            "hasDiscussion": true
+          },
+          {
+            "code": "GSAT",
+            "name": "글로벌스타",
+            "typeCode": "NASDAQ",
+            "typeName": "나스닥 증권거래소",
+            "url": "/worldstock/stock/GSAT.O/total",
+            "reutersCode": "GSAT.O",
+            "nationCode": "USA",
+            "nationName": "미국",
+            "category": "stock",
+            "hasDiscussion": true
+          },
+          {
+            "code": "GLBE",
+            "name": "글로벌E 온라인",
+            "typeCode": "NASDAQ",
+            "typeName": "나스닥 증권거래소",
+            "url": "/worldstock/stock/GLBE.O/total",
+            "reutersCode": "GLBE.O",
+            "nationCode": "USA",
+            "nationName": "미국",
+            "category": "stock",
+            "hasDiscussion": true
+          },
+          {
+            "code": "GBTG",
+            "name": "글로벌 비지니스 트래블 그룹",
+            "typeCode": "NYSE",
+            "typeName": "뉴욕 거래소",
+            "url": "/worldstock/stock/GBTG.K/total",
+            "reutersCode": "GBTG.K",
+            "nationCode": "USA",
+            "nationName": "미국",
+            "category": "stock",
+            "hasDiscussion": true
+          },
+          {
+            "code": "GNL",
+            "name": "글로벌 네트 리스",
+            "typeCode": "NYSE",
+            "typeName": "뉴욕 거래소",
+            "url": "/worldstock/stock/GNL/total",
+            "reutersCode": "GNL",
+            "nationCode": "USA",
+            "nationName": "미국",
+            "category": "stock",
+            "hasDiscussion": true
+          },
+          {
+            "code": "GSL",
+            "name": "글로벌 십 리스",
+            "typeCode": "NYSE",
+            "typeName": "뉴욕 거래소",
+            "url": "/worldstock/stock/GSL/total",
+            "reutersCode": "GSL",
+            "nationCode": "USA",
+            "nationName": "미국",
+            "category": "stock",
+            "hasDiscussion": true
+          },
+          {
+            "code": "GIC",
+            "name": "글로벌 인더스트리얼",
+            "typeCode": "NYSE",
+            "typeName": "뉴욕 거래소",
+            "url": "/worldstock/stock/GIC/total",
+            "reutersCode": "GIC",
+            "nationCode": "USA",
+            "nationName": "미국",
+            "category": "stock",
+            "hasDiscussion": true
+          }
+        ]
+      }
+    },
+    {
+      "group": "list",
+      "label": "자동완성(펀드)",
+      "url": "https://ac.stock.naver.com/ac?q=%ED%94%BC%EB%8D%B8%EB%A6%AC%ED%8B%B0&target=fund",
+      "status": 200,
+      "bytes": 2457,
+      "sample": "{\"query\":\"피델리티\",\"items\":[{\"code\":\"K55235249622\",\"name\":\"피델리티글로벌인컴증권모투자신탁H(채권-재간접형)\",\"typeCode\":\"fund\",\"typeName\":\"펀드\",\"url\":\"/domestic/fund/K55235249622/total\",\"reutersCode\":\"K55235249622\",\"nationCode\":null,\"nationName\":null,\"category\":\"fund\",\"hasDiscussion\":true},{\"code\":\"K55235249630\",\"name\":\"피델리티글로벌인컴증권모투자신탁UH(채권-재간접형)\",\"typeCode\":\"fund\",\"typeName\":\"펀드\",\"url\":\"/domestic/fund/K55235249630/total\",\"reutersCode\":\"K55235249630\",\"nationCode\":null,\"nationName\":null,\"category\":\"fund\",\"hasDiscussion\":true},{\"code\":\"K55235B04290\",\"name\":\"피델리티글로벌금융주증권자투자신탁PRS(주식-재간접형)\",\"typeCode\":\"fund\",\"typeName\":\"펀드\",\"url\":\"/domestic/fund/K55235B04290/total\",\"reutersCode\":\"K55235B04290\",\"nationCode\":null,\"nationName\":null,\"category\":\"fund\",\"hasDiscussion\":true},{\"code\":\"K55235B04308\",\"name\":\"피델리티글로벌금융주증권자투자신탁(주식-재간접형)PRS-e\",\"typeCode\":\"fund\",\"typeName\":\"펀드\",\"url\":\"/domestic/fund/K55235B04308/total\",\"reutersCod",
+      "ok": true,
+      "json": {
+        "query": "피델리티",
+        "items": [
+          {
+            "code": "K55235249622",
+            "name": "피델리티글로벌인컴증권모투자신탁H(채권-재간접형)",
+            "typeCode": "fund",
+            "typeName": "펀드",
+            "url": "/domestic/fund/K55235249622/total",
+            "reutersCode": "K55235249622",
+            "nationCode": null,
+            "nationName": null,
+            "category": "fund",
+            "hasDiscussion": true
+          },
+          {
+            "code": "K55235249630",
+            "name": "피델리티글로벌인컴증권모투자신탁UH(채권-재간접형)",
+            "typeCode": "fund",
+            "typeName": "펀드",
+            "url": "/domestic/fund/K55235249630/total",
+            "reutersCode": "K55235249630",
+            "nationCode": null,
+            "nationName": null,
+            "category": "fund",
+            "hasDiscussion": true
+          },
+          {
+            "code": "K55235B04290",
+            "name": "피델리티글로벌금융주증권자투자신탁PRS(주식-재간접형)",
+            "typeCode": "fund",
+            "typeName": "펀드",
+            "url": "/domestic/fund/K55235B04290/total",
+            "reutersCode": "K55235B04290",
+            "nationCode": null,
+            "nationName": null,
+            "category": "fund",
+            "hasDiscussion": true
+          },
+          {
+            "code": "K55235B04308",
+            "name": "피델리티글로벌금융주증권자투자신탁(주식-재간접형)PRS-e",
+            "typeCode": "fund",
+            "typeName": "펀드",
+            "url": "/domestic/fund/K55235B04308/total",
+            "reutersCode": "K55235B04308",
+            "nationCode": null,
+            "nationName": null,
+            "category": "fund",
+            "hasDiscussion": true
+          },
+          {
+            "code": "K55235B04316",
+            "name": "피델리티글로벌금융주증권자투자신탁(주식-재간접형)S- PRS",
+            "typeCode": "fund",
+            "typeName": "펀드",
+            "url": "/domestic/fund/K55235B04316/total",
+            "reutersCode": "K55235B04316",
+            "nationCode": null,
+            "nationName": null,
+            "category": "fund",
+            "hasDiscussion": true
+          },
+          {
+            "code": "K55235B23779",
+            "name": "피델리티글로벌증권자투자신탁A(주식-재간접형)종류S-PRS",
+            "typeCode": "fund",
+            "typeName": "펀드",
+            "url": "/domestic/fund/K55235B23779/total",
+            "reutersCode": "K55235B23779",
+            "nationCode": null,
+            "nationName": null,
+            "category": "fund",
+            "hasDiscussion": true
+          },
+          {
+            "code": "K55235B39718",
+            "name": "피델리티글로벌인구테마증권모투자신탁(주식-재간접형)",
+            "typeCode": "fund",
+            "typeName": "펀드",
+            "url": "/domestic/fund/K55235B39718/total",
+            "reutersCode": "K55235B39718",
+            "nationCode": null,
+            "nationName": null,
+            "category": "fund",
+            "hasDiscussion": true
+          },
+          {
+            "code": "K55235B39726",
+            "name": "피델리티글로벌인구테마증권자투자신탁(주식-재간접형)",
+            "typeCode": "fund",
+            "typeName": "펀드",
+            "url": "/domestic/fund/K55235B39726/total",
+            "reutersCode": "K55235B39726",
+            "nationCode": null,
+            "nationName": null,
+            "category": "fund",
+            "hasDiscussion": true
+          },
+          {
+            "code": "K55235B39734",
+            "name": "피델리티글로벌인구테마증권자투자신탁(주식-재간접형)종류A",
+            "typeCode": "fund",
+            "typeName": "펀드",
+            "url": "/domestic/fund/K55235B39734/total",
+            "reutersCode": "K55235B39734",
+            "nationCode": null,
+            "nationName": null,
+            "category": "fund",
+            "hasDiscussion": true
+          },
+          {
+            "code": "K55235B39783",
+            "name": "피델리티글로벌인구테마증권자투자신탁(주식-재간접형)종류C4",
+            "typeCode": "fund",
+            "typeName": "펀드",
+            "url": "/domestic/fund/K55235B39783/total",
+            "reutersCode": "K55235B39783",
+            "nationCode": null,
+            "nationName": null,
+            "category": "fund",
+            "hasDiscussion": true
+          }
+        ]
+      }
+    }
+  ],
+  "subEndpoints": [
+    {
+      "group": "sub",
+      "label": "portfolio",
+      "url": "https://stock.naver.com/api/fund/funds/K55235B39916/portfolio",
+      "status": 404,
+      "bytes": 109,
+      "sample": "{\"message\":\"Route GET:/api/fund/funds/K55235B39916/portfolio not found\",\"error\":\"Not Found\",\"statusCode\":404}",
+      "ok": false,
+      "json": {
+        "message": "Route GET:/api/fund/funds/K55235B39916/portfolio not found",
+        "error": "Not Found",
+        "statusCode": 404
+      }
+    },
+    {
+      "group": "sub",
+      "label": "allocations",
+      "url": "https://stock.naver.com/api/fund/funds/K55235B39916/allocations",
+      "status": 200,
+      "bytes": 71,
+      "sample": "{\"status\":\"available\",\"assets\":false,\"portfolio\":false,\"sectors\":false}",
+      "ok": true,
+      "json": {
+        "status": "available",
+        "assets": false,
+        "portfolio": false,
+        "sectors": false
+      }
+    },
+    {
+      "group": "sub",
+      "label": "assets",
+      "url": "https://stock.naver.com/api/fund/funds/K55235B39916/assets",
+      "status": 404,
+      "bytes": 106,
+      "sample": "{\"message\":\"Route GET:/api/fund/funds/K55235B39916/assets not found\",\"error\":\"Not Found\",\"statusCode\":404}",
+      "ok": false,
+      "json": {
+        "message": "Route GET:/api/fund/funds/K55235B39916/assets not found",
+        "error": "Not Found",
+        "statusCode": 404
+      }
+    },
+    {
+      "group": "sub",
+      "label": "sectors",
+      "url": "https://stock.naver.com/api/fund/funds/K55235B39916/sectors",
+      "status": 404,
+      "bytes": 107,
+      "sample": "{\"message\":\"Route GET:/api/fund/funds/K55235B39916/sectors not found\",\"error\":\"Not Found\",\"statusCode\":404}",
+      "ok": false,
+      "json": {
+        "message": "Route GET:/api/fund/funds/K55235B39916/sectors not found",
+        "error": "Not Found",
+        "statusCode": 404
+      }
+    },
+    {
+      "group": "sub",
+      "label": "holdings",
+      "url": "https://stock.naver.com/api/fund/funds/K55235B39916/holdings",
+      "status": 404,
+      "bytes": 108,
+      "sample": "{\"message\":\"Route GET:/api/fund/funds/K55235B39916/holdings not found\",\"error\":\"Not Found\",\"statusCode\":404}",
+      "ok": false,
+      "json": {
+        "message": "Route GET:/api/fund/funds/K55235B39916/holdings not found",
+        "error": "Not Found",
+        "statusCode": 404
+      }
+    },
+    {
+      "group": "sub",
+      "label": "composition",
+      "url": "https://stock.naver.com/api/fund/funds/K55235B39916/composition",
+      "status": 404,
+      "bytes": 111,
+      "sample": "{\"message\":\"Route GET:/api/fund/funds/K55235B39916/composition not found\",\"error\":\"Not Found\",\"statusCode\":404}",
+      "ok": false,
+      "json": {
+        "message": "Route GET:/api/fund/funds/K55235B39916/composition not found",
+        "error": "Not Found",
+        "statusCode": 404
+      }
+    },
+    {
+      "group": "sub",
+      "label": "asset-allocation",
+      "url": "https://stock.naver.com/api/fund/funds/K55235B39916/asset-allocation",
+      "status": 404,
+      "bytes": 116,
+      "sample": "{\"message\":\"Route GET:/api/fund/funds/K55235B39916/asset-allocation not found\",\"error\":\"Not Found\",\"statusCode\":404}",
+      "ok": false,
+      "json": {
+        "message": "Route GET:/api/fund/funds/K55235B39916/asset-allocation not found",
+        "error": "Not Found",
+        "statusCode": 404
+      }
+    },
+    {
+      "group": "sub",
+      "label": "stock-holdings",
+      "url": "https://stock.naver.com/api/fund/funds/K55235B39916/stock-holdings",
+      "status": 404,
+      "bytes": 114,
+      "sample": "{\"message\":\"Route GET:/api/fund/funds/K55235B39916/stock-holdings not found\",\"error\":\"Not Found\",\"statusCode\":404}",
+      "ok": false,
+      "json": {
+        "message": "Route GET:/api/fund/funds/K55235B39916/stock-holdings not found",
+        "error": "Not Found",
+        "statusCode": 404
+      }
+    },
+    {
+      "group": "sub",
+      "label": "top-holdings",
+      "url": "https://stock.naver.com/api/fund/funds/K55235B39916/top-holdings",
+      "status": 404,
+      "bytes": 112,
+      "sample": "{\"message\":\"Route GET:/api/fund/funds/K55235B39916/top-holdings not found\",\"error\":\"Not Found\",\"statusCode\":404}",
+      "ok": false,
+      "json": {
+        "message": "Route GET:/api/fund/funds/K55235B39916/top-holdings not found",
+        "error": "Not Found",
+        "statusCode": 404
+      }
+    },
+    {
+      "group": "sub",
+      "label": "constituents",
+      "url": "https://stock.naver.com/api/fund/funds/K55235B39916/constituents",
+      "status": 404,
+      "bytes": 112,
+      "sample": "{\"message\":\"Route GET:/api/fund/funds/K55235B39916/constituents not found\",\"error\":\"Not Found\",\"statusCode\":404}",
+      "ok": false,
+      "json": {
+        "message": "Route GET:/api/fund/funds/K55235B39916/constituents not found",
+        "error": "Not Found",
+        "statusCode": 404
+      }
+    },
+    {
+      "group": "sub",
+      "label": "chart-price-panel",
+      "url": "https://stock.naver.com/api/fund/funds/K55235B39916/chart-price-panel",
+      "status": 200,
+      "bytes": 1722,
+      "sample": "{\"availability\":{\"status\":\"available\",\"assets\":false,\"portfolio\":false,\"sectors\":false},\"allocationsPortfolio\":null,\"allocationsAssets\":null,\"fundReturns\":{\"baseDate\":\"2026-08-27\",\"returns\":[{\"term\":\"1d\",\"fundReturn\":0.2365916,\"benchmarkReturn\":null,\"peerCompanyReturn\":null},{\"term\":\"1w\",\"fundReturn\":0.2512681,\"benchmarkReturn\":-1.6787722,\"peerCompanyReturn\":null},{\"term\":\"1m\",\"fundReturn\":7.249547,\"benchmarkReturn\":-1.9567338,\"peerCompanyReturn\":null},{\"term\":\"3m\",\"fundReturn\":-1.7180155,\"benchmarkReturn\":-5.9271424,\"peerCompanyReturn\":null},{\"term\":\"6m\",\"fundReturn\":13.6865533,\"benchmarkReturn\":5.661221,\"peerCompanyReturn\":null},{\"term\":\"9m\",\"fundReturn\":18.1521533,\"benchmarkReturn\":9.3286764,\"peerCompanyReturn\":null},{\"term\":\"ytd\",\"fundReturn\":14.0873147,\"benchmarkReturn\":10.5131027,\"peerCompanyReturn\":null},{\"term\":\"1y\",\"fundReturn\":24.7819029,\"benchmarkReturn\":22.4573935,\"peerCompan",
+      "ok": true,
+      "json": {
+        "availability": {
+          "status": "available",
+          "assets": false,
+          "portfolio": false,
+          "sectors": false
+        },
+        "allocationsPortfolio": null,
+        "allocationsAssets": null,
+        "fundReturns": {
+          "baseDate": "2026-08-27",
+          "returns": [
+            {
+              "term": "1d",
+              "fundReturn": 0.2365916,
+              "benchmarkReturn": null,
+              "peerCompanyReturn": null
+            },
+            {
+              "term": "1w",
+              "fundReturn": 0.2512681,
+              "benchmarkReturn": -1.6787722,
+              "peerCompanyReturn": null
+            },
+            {
+              "term": "1m",
+              "fundReturn": 7.249547,
+              "benchmarkReturn": -1.9567338,
+              "peerCompanyReturn": null
+            },
+            {
+              "term": "3m",
+              "fundReturn": -1.7180155,
+              "benchmarkReturn": -5.9271424,
+              "peerCompanyReturn": null
+            },
+            {
+              "term": "6m",
+              "fundReturn": 13.6865533,
+              "benchmarkReturn": 5.661221,
+              "peerCompanyReturn": null
+            },
+            {
+              "term": "9m",
+              "fundReturn": 18.1521533,
+              "benchmarkReturn": 9.3286764,
+              "peerCompanyReturn": null
+            },
+            {
+              "term": "ytd",
+              "fundReturn": 14.0873147,
+              "benchmarkReturn": 10.5131027,
+              "peerCompanyReturn": null
+            },
+            {
+              "term": "1y",
+              "fundReturn": 24.7819029,
+              "benchmarkReturn": 22.4573935,
+              "peerCompanyReturn": null
+            },
+            {
+              "term": "2y",
+              "fundReturn": 43.7491732,
+              "benchmarkReturn": 48.2065874,
+              "peerCompanyReturn": null
+            },
+            {
+              "term": "3y",
+              "fundReturn": 87.2107768,
+              "benchmarkReturn": 89.6235653,
+              "peerCompanyReturn": null
+            },
+            {
+              "term": "5y",
+              "fundReturn": 83.9115489,
+              "benchmarkReturn": 106.028332,
+              "peerCompanyReturn": null
+            },
+            {
+              "term": "dx",
+              "fundReturn": 6.715499971,
+              "benchmarkReturn": null,
+              "peerCompanyReturn": null
+            }
+          ]
+        },
+        "documents": [
+          {
+            "documentType": "terms",
+            "documentName": "약관",
+            "url": "https://stock.pstatic.net/stock-research/fund/K55235B39916/K55235B39916_Y_1783590217527.pdf",
+            "receiveDate": "2026-03-20"
+          }
+        ],
+        "metricsDetail": {
+          "fundCode": "K55235B39916",
+          "termWeeks": 52,
+          "fundMetric": {
+            "standardDeviation": 17.689973331,
+            "trackingError": 18.110737975,
+            "sharpRatio": 1.227047755,
+            "informationRatio": 0.242532675,
+            "jensenAlpha": 13.887205342,
+            "beta": 0.451613629
+          },
+          "peerMetric": null
+        }
+      }
+    },
+    {
+      "group": "sub",
+      "label": "left-panel",
+      "url": "https://stock.naver.com/api/fund/funds/K55235B39916/left-panel",
+      "status": 200,
+      "bytes": 1050,
+      "sample": "{\"detail\":{\"fundCode\":\"K55235B39916\",\"fundName\":\"피델리티글로벌테크놀로지증권모투자신탁(주식-재간접형)\",\"basePrice\":\"5956.79\",\"changePrice\":14.06,\"priceBandType\":\"RISING\",\"returnIndex\":0.2365916,\"returnRate3m\":-1.7180155,\"tradeDate\":\"2026-08-27\",\"riskGrade\":null,\"parentPeerGroupName\":\"해외주식형\",\"derivedAum\":\"774093701808\",\"derivedNav\":\"4611116881228\",\"inceptionDate\":\"2015-06-17\",\"companyCode\":\"235\",\"companyName\":\"피델리티자산운용\",\"benchmarkName\":\"MSCI AC WORLD INDEX (KRW Unhedged)\",\"totalFee\":null,\"managementFee\":null,\"salesFee\":null,\"custodyFee\":null,\"backOfficeFee\":null,\"preSalesFee\":null,\"postSalesFee\":null},\"returns\":{\"fund\":{\"fundCode\":\"K55235B39916\",\"fundName\":\"피델리티글로벌테크놀로지증권모투자신탁(주식-재간접형)\",\"totalFee\":null,\"returnRate1m\":7.249547,\"returnRate3m\":-1.7180155,\"returnRate1y\":24.7819029,\"returnRate3y\":87.2107768},\"classes\":[]},\"terms\":{\"infoObject\":null,\"standardTime\":null,\"buyStandardDaysBefore\":null,\"buyStandardDaysAfte",
+      "ok": true,
+      "json": {
+        "detail": {
+          "fundCode": "K55235B39916",
+          "fundName": "피델리티글로벌테크놀로지증권모투자신탁(주식-재간접형)",
+          "basePrice": "5956.79",
+          "changePrice": 14.06,
+          "priceBandType": "RISING",
+          "returnIndex": 0.2365916,
+          "returnRate3m": -1.7180155,
+          "tradeDate": "2026-08-27",
+          "riskGrade": null,
+          "parentPeerGroupName": "해외주식형",
+          "derivedAum": "774093701808",
+          "derivedNav": "4611116881228",
+          "inceptionDate": "2015-06-17",
+          "companyCode": "235",
+          "companyName": "피델리티자산운용",
+          "benchmarkName": "MSCI AC WORLD INDEX (KRW Unhedged)",
+          "totalFee": null,
+          "managementFee": null,
+          "salesFee": null,
+          "custodyFee": null,
+          "backOfficeFee": null,
+          "preSalesFee": null,
+          "postSalesFee": null
+        },
+        "returns": {
+          "fund": {
+            "fundCode": "K55235B39916",
+            "fundName": "피델리티글로벌테크놀로지증권모투자신탁(주식-재간접형)",
+            "totalFee": null,
+            "returnRate1m": 7.249547,
+            "returnRate3m": -1.7180155,
+            "returnRate1y": 24.7819029,
+            "returnRate3y": 87.2107768
+          },
+          "classes": []
+        },
+        "terms": {
+          "infoObject": null,
+          "standardTime": null,
+          "buyStandardDaysBefore": null,
+          "buyStandardDaysAfter": null,
+          "redeemStandardDaysBefore": null,
+          "redeemStandardDaysAfter": null,
+          "redeemPaymentDaysBefore": null,
+          "redeemPaymentDaysAfter": null,
+          "riskGrade": null
+        }
+      }
+    },
+    {
+      "group": "sub",
+      "label": "summary",
+      "url": "https://stock.naver.com/api/fund/funds/K55235B39916/summary",
+      "status": 404,
+      "bytes": 107,
+      "sample": "{\"message\":\"Route GET:/api/fund/funds/K55235B39916/summary not found\",\"error\":\"Not Found\",\"statusCode\":404}",
+      "ok": false,
+      "json": {
+        "message": "Route GET:/api/fund/funds/K55235B39916/summary not found",
+        "error": "Not Found",
+        "statusCode": 404
+      }
+    },
+    {
+      "group": "sub",
+      "label": "profile",
+      "url": "https://stock.naver.com/api/fund/funds/K55235B39916/profile",
+      "status": 404,
+      "bytes": 107,
+      "sample": "{\"message\":\"Route GET:/api/fund/funds/K55235B39916/profile not found\",\"error\":\"Not Found\",\"statusCode\":404}",
+      "ok": false,
+      "json": {
+        "message": "Route GET:/api/fund/funds/K55235B39916/profile not found",
+        "error": "Not Found",
+        "statusCode": 404
+      }
+    },
+    {
+      "group": "sub",
+      "label": "fees",
+      "url": "https://stock.naver.com/api/fund/funds/K55235B39916/fees",
+      "status": 404,
+      "bytes": 104,
+      "sample": "{\"message\":\"Route GET:/api/fund/funds/K55235B39916/fees not found\",\"error\":\"Not Found\",\"statusCode\":404}",
+      "ok": false,
+      "json": {
+        "message": "Route GET:/api/fund/funds/K55235B39916/fees not found",
+        "error": "Not Found",
+        "statusCode": 404
+      }
+    }
+  ],
+  "funds": [
+    {
+      "code": "K55235B39916",
+      "name": "피델리티글로벌테크놀로지증권모투자신탁(주식-재간접형)",
+      "type": "해외주식형",
+      "company": "피델리티자산운용",
+      "aum": "774093701808",
+      "totalFee": null,
+      "availability": {
+        "status": "available",
+        "assets": false,
+        "portfolio": false,
+        "sectors": false
+      },
+      "hasPortfolio": false,
+      "hasAssets": false
+    },
+    {
+      "code": "K55309BY1419",
+      "name": "골든브릿지으뜸단기증권투자신탁 1[채권]",
+      "type": "국내채권형",
+      "company": "골든브릿지자산운용",
+      "aum": "206802230",
+      "totalFee": null,
+      "availability": {
+        "status": "available",
+        "assets": true,
+        "portfolio": false,
+        "sectors": false
+      },
+      "hasPortfolio": false,
+      "hasAssets": true,
+      "assetsSample": "{\"assetTypes\":[{\"assetType\":\"LIQUID_ASSET\",\"assetTypeName\":\"유동자산\",\"weight\":0.194172008,\"marketEvaluationAmount\":null}]}"
+    },
+    {
+      "code": "K55309BQ0684",
+      "name": "골든브릿지스마트단기채증권투자신탁 1[채권]",
+      "type": "국내채권형",
+      "company": "골든브릿지자산운용",
+      "aum": "1207026292",
+      "totalFee": null,
+      "availability": {
+        "status": "available",
+        "assets": true,
+        "portfolio": false,
+        "sectors": false
+      },
+      "hasPortfolio": false,
+      "hasAssets": true,
+      "assetsSample": "{\"assetTypes\":[{\"assetType\":\"LIQUID_ASSET\",\"assetTypeName\":\"유동자산\",\"weight\":0.198934187,\"marketEvaluationAmount\":null}]}"
+    },
+    {
+      "code": "K55235249622",
+      "name": "피델리티글로벌인컴증권모투자신탁H(채권-재간접형)",
+      "type": "해외채권형",
+      "company": "피델리티자산운용",
+      "aum": "140833396",
+      "totalFee": null,
+      "availability": {
+        "status": "available",
+        "assets": false,
+        "portfolio": false,
+        "sectors": false
+      },
+      "hasPortfolio": false,
+      "hasAssets": false
+    },
+    {
+      "code": "K55235249630",
+      "name": "피델리티글로벌인컴증권모투자신탁UH(채권-재간접형)",
+      "type": "해외채권형",
+      "company": "피델리티자산운용",
+      "aum": "256674663",
+      "totalFee": null,
+      "availability": {
+        "status": "available",
+        "assets": false,
+        "portfolio": false,
+        "sectors": false
+      },
+      "hasPortfolio": false,
+      "hasAssets": false
+    },
+    {
+      "code": "K55235B04290",
+      "name": "피델리티글로벌금융주증권자투자신탁PRS(주식-재간접형)",
+      "type": "해외주식형",
+      "company": "피델리티자산운용",
+      "aum": "51675441817",
+      "totalFee": 0.757,
+      "availability": {
+        "status": "available",
+        "assets": false,
+        "portfolio": false,
+        "sectors": false
+      },
+      "hasPortfolio": false,
+      "hasAssets": false
+    },
+    {
+      "code": "K55235B04308",
+      "name": "피델리티글로벌금융주증권자투자신탁(주식-재간접형)PRS-e",
+      "type": "해외주식형",
+      "company": "피델리티자산운용",
+      "aum": "51675441817",
+      "totalFee": 0.457,
+      "availability": {
+        "status": "available",
+        "assets": false,
+        "portfolio": false,
+        "sectors": false
+      },
+      "hasPortfolio": false,
+      "hasAssets": false
+    },
+    {
+      "code": "K55105AS1091",
+      "name": "삼성클래식인디아연금증권자투자신탁UH[주식]",
+      "type": "해외주식형",
+      "company": "삼성자산운용",
+      "aum": "2935059495",
+      "totalFee": null,
+      "availability": {
+        "status": "available",
+        "assets": true,
+        "portfolio": true,
+        "sectors": false
+      },
+      "hasPortfolio": true,
+      "hasAssets": true,
+      "portfolioSample": "{\"result\":[{\"itemCode\":\"INE090A01021\",\"itemName\":\"ICICI BANK LTD\",\"weight\":0.090869256},{\"itemCode\":\"INE040A01034\",\"itemName\":\"HDFC BANK LIMITED\",\"weight\":0.085959615},{\"itemCode\":\"INE002A01018\",\"itemName\":\"RELIANCE INDUSTRIES LIMITED\",\"weight\":0.065519809},{\"itemCode\":\"INE062A01020\",\"itemName\":\"STATE BANK OF INDIA\",\"weight\":0.037130897},{\"itemCode\":\"INE238A01034\",\"itemName\":\"AXIS BANK LTD\",\"weight\":0.035564228},{\"itemCode\":\"INE018A01030\",\"itemName\":\"LARSEN & TOUBRO LTD\",\"weight\":0.030486672},{\"itemCode\":\"INE0AG901020\",\"itemName\":\"Ceigall India Ltd\",\"weight\":0.024840534},{\"itemCode\":\"INE497B01018\",\"itemName\":\"SEAMEC Ltd\",\"weight\":0.024349913},{\"itemCode\":\"INE397D01024\",\"itemName\":\"BHARTI AIRTEL LTD\",\"weight\":0.023733749},{\"itemCode\":\"INE009A01021\",\"itemName\":\"Infosys Ltd\",\"weight\":0.022006337},{\"itemCode\":\"INE721A01047\",\"itemName\":\"Shriram Finance Ltd\",\"weight\":0.020411678},{\"itemCode\":\"",
+      "assetsSample": "{\"assetTypes\":[{\"assetType\":\"STOCK\",\"assetTypeName\":\"주식\",\"weight\":3.272532385,\"marketEvaluationAmount\":34902835916},{\"assetType\":\"LIQUID_ASSET\",\"assetTypeName\":\"유동자산\",\"weight\":0.181866903,\"marketEvaluationAmount\":null}]}"
+    },
+    {
+      "code": "K55105AZ7255",
+      "name": "삼성스마트MMF법인 1Cp(퇴직연금)",
+      "type": "MMF",
+      "company": "삼성자산운용",
+      "aum": "4226570106235",
+      "totalFee": 0.08,
+      "availability": {
+        "status": "available",
+        "assets": true,
+        "portfolio": false,
+        "sectors": false
+      },
+      "hasPortfolio": false,
+      "hasAssets": true,
+      "assetsSample": "{\"assetTypes\":[{\"assetType\":\"BOND\",\"assetTypeName\":\"채권\",\"weight\":2.416859966,\"marketEvaluationAmount\":12410646},{\"assetType\":\"LIQUID_ASSET\",\"assetTypeName\":\"유동자산\",\"weight\":0.596754952,\"marketEvaluationAmount\":null}]}"
+    },
+    {
+      "code": "K55105B00244",
+      "name": "삼성KODEX단기채권PLUS증권상장지수투자신탁[채권]",
+      "type": "국내채권형",
+      "company": "삼성자산운용",
+      "aum": "1596900000000",
+      "totalFee": 0.15,
+      "availability": {
+        "status": "available",
+        "assets": true,
+        "portfolio": false,
+        "sectors": false
+      },
+      "hasPortfolio": false,
+      "hasAssets": true,
+      "assetsSample": "{\"assetTypes\":[{\"assetType\":\"BOND\",\"assetTypeName\":\"채권\",\"weight\":5.156018802,\"marketEvaluationAmount\":10227476160000},{\"assetType\":\"LIQUID_ASSET\",\"assetTypeName\":\"유동자산\",\"weight\":0.110558411,\"marketEvaluationAmount\":null}]}"
+    },
+    {
+      "code": "K55105B00640",
+      "name": "삼성아문디파이어니어스트래티직인컴증권모투자신탁[채권-재간접형]",
+      "type": "해외채권형",
+      "company": "삼성자산운용",
+      "aum": "83449165",
+      "totalFee": null,
+      "availability": {
+        "status": "available",
+        "assets": true,
+        "portfolio": false,
+        "sectors": false
+      },
+      "hasPortfolio": false,
+      "hasAssets": true,
+      "assetsSample": "{\"assetTypes\":[{\"assetType\":\"LIQUID_ASSET\",\"assetTypeName\":\"유동자산\",\"weight\":1.000056096,\"marketEvaluationAmount\":null}]}"
+    },
+    {
+      "code": "K55205AJ1893",
+      "name": "미래에셋안정증권자투자신탁 1[채권혼합]종류C",
+      "type": "국내혼합형",
+      "company": "미래에셋자산운용",
+      "aum": "535643806",
+      "totalFee": 1.2825,
+      "availability": {
+        "status": "available",
+        "assets": true,
+        "portfolio": true,
+        "sectors": true
+      },
+      "hasPortfolio": true,
+      "hasAssets": true,
+      "portfolioSample": "{\"result\":[{\"itemCode\":\"KR7388210007\",\"itemName\":\"씨엠티엑스\",\"weight\":0.0527492},{\"itemCode\":\"KR7098070006\",\"itemName\":\"한텍\",\"weight\":0.041046213},{\"itemCode\":\"KR7476830005\",\"itemName\":\"알지노믹스\",\"weight\":0.035839785}]}",
+      "assetsSample": "{\"assetTypes\":[{\"assetType\":\"BOND\",\"assetTypeName\":\"채권\",\"weight\":3.340189104,\"marketEvaluationAmount\":2119750026},{\"assetType\":\"STOCK\",\"assetTypeName\":\"주식\",\"weight\":0.518540792,\"marketEvaluationAmount\":329076236},{\"assetType\":\"LIQUID_ASSET\",\"assetTypeName\":\"유동자산\",\"weight\":0.313666616,\"marketEvaluationAmount\":null}]}"
+    }
+  ],
+  "verdict": "보유종목이 채워지는 펀드가 2/12개 있다. ETF 와 같은 화면을 만들 수 있다."
+}
