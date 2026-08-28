@@ -19,93 +19,78 @@ from fetch_market import _get, _text                          # noqa: E402
 RAW = "data/reports/raw"
 
 # (이름, URL, 인코딩, 리퍼러, 여기 있으면 반가운 글자)
+#
+# 3차 탐색 — 출처를 넓히려고 다시 돈다. 앞선 두 차례에서 네이버 모바일 API 와
+# 미래에셋 게시판만 살아남았다. 이번에는 (가) 앞서 죽었던 곳을 다른 길로 다시,
+# (나) 증권사 자체 리서치 게시판, (다) 외국계·해외 리포트를 본다.
 CANDIDATES = [
-    # --- 2차 탐색 ---
-    # 네이버 모바일 API 는 살아 있다(1차에서 확인). 나머지 넉 판의 길 이름을
-    # 모르니 그럴듯한 것을 다 넣어 본다. 목록이 JSON 이면 제목이 잘리지 않는다.
-    ("네이버API marketInfo", "https://m.stock.naver.com/api/research/marketInfo?page=1&pageSize=5",
-     "utf-8", "https://m.stock.naver.com/", ["title", "brokerName"]),
-    ("네이버API market_info", "https://m.stock.naver.com/api/research/market_info?page=1&pageSize=5",
-     "utf-8", "https://m.stock.naver.com/", ["title", "brokerName"]),
-    ("네이버API market", "https://m.stock.naver.com/api/research/market?page=1&pageSize=5",
-     "utf-8", "https://m.stock.naver.com/", ["title", "brokerName"]),
-    ("네이버API invest", "https://m.stock.naver.com/api/research/invest?page=1&pageSize=5",
-     "utf-8", "https://m.stock.naver.com/", ["title", "brokerName"]),
-    ("네이버API economy", "https://m.stock.naver.com/api/research/economy?page=1&pageSize=5",
-     "utf-8", "https://m.stock.naver.com/", ["title", "brokerName"]),
-    ("네이버API debenture", "https://m.stock.naver.com/api/research/debenture?page=1&pageSize=5",
-     "utf-8", "https://m.stock.naver.com/", ["title", "brokerName"]),
-    ("네이버API bond", "https://m.stock.naver.com/api/research/bond?page=1&pageSize=5",
-     "utf-8", "https://m.stock.naver.com/", ["title", "brokerName"]),
+    # ── (가) 앞서 죽었던 곳 다시 ────────────────────────────────
+    # 한경 컨센서스: 목표주가·투자의견을 **열로** 주는 유일한 곳이다.
+    # 앞서 https 로 500 이 났다. 호스트와 얼개를 바꿔 가며 찔러 본다.
+    ("한경 consensus http", "http://consensus.hankyung.com/analysis/list?report_type=CO&pagenum=40&now_page=1",
+     "utf-8", "http://consensus.hankyung.com/", ["목표주가", "투자의견"]),
+    ("한경 hkconsensus", "https://hkconsensus.hankyung.com/analysis/list?report_type=CO",
+     "utf-8", "https://www.hankyung.com/", ["목표주가", "투자의견"]),
+    ("한경 apps.hankyung", "https://consensus.hankyung.com/apps.analysis/analysis.list?report_type=CO",
+     "utf-8", "https://consensus.hankyung.com/", ["목표주가", "투자의견"]),
+    ("한경 analysis.total", "https://consensus.hankyung.com/analysis/total",
+     "utf-8", "https://www.hankyung.com/", ["리포트", "증권"]),
 
-    # 한경 컨센서스 — 1차에서 500 이 났다. 화면이 실제로 부르는 인자를 다
-    # 채워 다시 붙어 본다. 목표주가·투자의견을 열로 주는 유일한 곳이라
-    # 한 번 더 매달릴 값어치가 있다.
-    ("한경 전체(인자 완비)",
-     "https://consensus.hankyung.com/analysis/list?sdate=&edate=&report_type=&business_code="
-     "&order_type=&now_page=1&search_text=&pagenum=40",
-     "utf-8", "https://consensus.hankyung.com/", ["목표주가", "투자의견", "증권"]),
-    ("한경 skinType",
-     "https://consensus.hankyung.com/analysis/list?skinType=business&sdate=&edate="
-     "&report_type=CO&now_page=1&pagenum=40",
-     "utf-8", "https://consensus.hankyung.com/", ["목표주가", "투자의견", "증권"]),
-    ("한경 첫 화면",
-     "https://consensus.hankyung.com/", "utf-8", "https://www.hankyung.com/",
-     ["목표주가", "투자의견", "리포트"]),
+    ("IR협의회 기업리서치", "https://www.kirs.or.kr/information/tech_report.html",
+     "utf-8", "https://www.kirs.or.kr/", ["기업", "리서치"]),
+    ("IR협의회 목록2", "https://www.kirs.or.kr/information/tech_report2.html",
+     "utf-8", "https://www.kirs.or.kr/", ["기업", "리서치"]),
+    ("IR협의회 첫 화면", "https://www.kirs.or.kr/", "utf-8", "https://www.google.com/", ["IR", "협의회"]),
 
-    # 미래에셋 리서치 — 1차에서 표 껍데기만 왔다(줄은 스크립트가 채운다).
-    # 쪽 번호를 붙인 길과 JSON 길을 찔러 본다.
-    ("미래에셋 목록 pageIndex",
-     "https://securities.miraeasset.com/bbs/board/message/list.do?categoryId=1521&pageIndex=1",
-     "cp949", "https://securities.miraeasset.com/", ["증권", "리포트"]),
-    ("미래에셋 리서치 첫 화면",
-     "https://securities.miraeasset.com/bbs/main/research/index.do",
-     "cp949", "https://securities.miraeasset.com/", ["리서치", "리포트"]),
+    ("다음 리서치 api", "https://finance.daum.net/api/research/list?page=1&perPage=30",
+     "utf-8", "https://finance.daum.net/domestic/research", ["title", "brokerName"]),
+    ("다음 리서치 화면", "https://finance.daum.net/domestic/research",
+     "utf-8", "https://finance.daum.net/", ["리서치", "증권"]),
 
-    # 한경 컨센서스 — 증권사 리포트를 한자리에 모으고 **목표주가·투자의견을
-    # 열로 준다**. 네이버 리서치에 없는 값이라 붙일 값어치가 크다.
-    ("한경컨센서스 기업",
-     "https://consensus.hankyung.com/analysis/list?report_type=CO&pagenum=40&now_page=1",
-     "utf-8", "https://consensus.hankyung.com/", ["목표주가", "투자의견", "다운로드"]),
-    ("한경컨센서스 산업",
-     "https://consensus.hankyung.com/analysis/list?report_type=IN&pagenum=40&now_page=1",
-     "utf-8", "https://consensus.hankyung.com/", ["산업", "다운로드"]),
-    ("한경컨센서스 시장",
-     "https://consensus.hankyung.com/analysis/list?report_type=MA&pagenum=40&now_page=1",
-     "utf-8", "https://consensus.hankyung.com/", ["시장"]),
-    ("한경컨센서스 경제",
-     "https://consensus.hankyung.com/analysis/list?report_type=EC&pagenum=40&now_page=1",
-     "utf-8", "https://consensus.hankyung.com/", ["경제"]),
-    ("한경컨센서스 채권",
-     "https://consensus.hankyung.com/analysis/list?report_type=DB&pagenum=40&now_page=1",
-     "utf-8", "https://consensus.hankyung.com/", ["채권"]),
+    # ── (나) 증권사 자체 리서치 게시판 ───────────────────────────
+    # 미래에셋이 이 길로 붙었다. 같은 얼개를 쓰는 곳이 더 있는지 본다.
+    # 붙으면 애널리스트 실명과 원문 PDF 를 바로 얻는다.
+    ("삼성증권 리서치", "https://www.samsungpop.com/mbw/research/reportList.do?cmd=W101100R",
+     "utf-8", "https://www.samsungpop.com/", ["리포트", "리서치"]),
+    ("NH투자 리서치", "https://www.nhqv.com/servlet/EQ/EQAA/EQAA0001R",
+     "utf-8", "https://www.nhqv.com/", ["리포트", "리서치"]),
+    ("한국투자 리서치", "https://securities.koreainvestment.com/main/research/report/list.jsp",
+     "utf-8", "https://securities.koreainvestment.com/", ["리포트", "리서치"]),
+    ("키움 리서치", "https://www.kiwoom.com/h/invest/research/VAnalysisRVwList",
+     "utf-8", "https://www.kiwoom.com/", ["리포트", "리서치"]),
+    ("신한투자 리서치", "https://open.shinhansec.com/phls/rsch/imTot/list.do",
+     "utf-8", "https://open.shinhansec.com/", ["리포트", "리서치"]),
+    ("하나증권 리서치", "https://www.hanaw.com/main/research/research/list.cmd",
+     "utf-8", "https://www.hanaw.com/", ["리포트", "리서치"]),
+    ("KB증권 리서치", "https://rc.kbsec.com/rc/research/list.able",
+     "utf-8", "https://rc.kbsec.com/", ["리포트", "리서치"]),
+    ("대신증권 리서치", "https://www.daishin.com/g.ds?m=1400&p=3311&v=3312",
+     "utf-8", "https://www.daishin.com/", ["리포트", "리서치"]),
+    ("유안타 리서치", "https://www.myasset.com/myasset/research/main.cmd",
+     "utf-8", "https://www.myasset.com/", ["리포트", "리서치"]),
+    ("메리츠 리서치", "https://home.imeritz.com/include/resource/research/main/list.do",
+     "utf-8", "https://home.imeritz.com/", ["리포트", "리서치"]),
+    ("미래에셋 글로벌", "https://securities.miraeasset.com/bbs/board/message/list.do?categoryId=1525",
+     "cp949", "https://securities.miraeasset.com/", ["리포트", "글로벌", "해외"]),
+    ("미래에셋 해외주식", "https://securities.miraeasset.com/bbs/board/message/list.do?categoryId=1571",
+     "cp949", "https://securities.miraeasset.com/", ["리포트", "해외"]),
 
-    # 미래에셋증권 리서치 — 우리 하우스 리포트. 붙으면 「하우스 시각」을
-    # 남의 매체를 거치지 않고 바로 실을 수 있다.
-    ("미래에셋 리서치 목록",
-     "https://securities.miraeasset.com/bbs/board/message/list.do?messageId=&searchType=&searchText=&categoryId=1521",
-     "utf-8", "https://securities.miraeasset.com/", ["리포트", "기업분석", "종목"]),
-    ("미래에셋 투자정보",
-     "https://securities.miraeasset.com/bbs/board/message/list.do?categoryId=1571",
-     "utf-8", "https://securities.miraeasset.com/", ["리포트", "시황"]),
-
-    # 네이버 모바일 리서치 API — 목록이 JSON 이면 파싱이 훨씬 튼튼해진다.
-    ("네이버 모바일 리서치 API",
-     "https://m.stock.naver.com/api/research/company?page=1&pageSize=30",
-     "utf-8", "https://m.stock.naver.com/", ["title", "brokerName", "researchId"]),
-    ("네이버 모바일 산업 리서치 API",
-     "https://m.stock.naver.com/api/research/industry?page=1&pageSize=30",
+    # ── (다) 외국계·해외 리포트 ────────────────────────────────
+    # 외국계 IB 의 한국물 리포트는 대개 기관 전용이라 공개 목록이 없다.
+    # 그래도 (1) 해외 종목을 다루는 국내 리포트, (2) 해외 애널리스트 투자의견을
+    # 모아 주는 곳이 있는지 본다.
+    ("네이버 해외 리서치", "https://m.stock.naver.com/api/research/global?page=1&pageSize=10",
      "utf-8", "https://m.stock.naver.com/", ["title", "brokerName"]),
-
-    # 한국IR협의회 기업리서치 — 커버리지가 없는 중소형주를 메운다.
-    ("한국IR협의회 리서치",
-     "https://www.kirs.or.kr/information/tech_report.html",
-     "utf-8", "https://www.kirs.or.kr/", ["기업", "리서치", "보고서"]),
-
-    # 다음 금융 — 네이버가 막힐 때의 대비책.
-    ("다음 금융 리서치",
-     "https://finance.daum.net/api/research/list?page=1&perPage=30",
-     "utf-8", "https://finance.daum.net/", ["title", "brokerName"]),
+    ("네이버 해외증시 리서치", "https://m.stock.naver.com/api/research/overseas?page=1&pageSize=10",
+     "utf-8", "https://m.stock.naver.com/", ["title", "brokerName"]),
+    ("네이버 worldResearch", "https://m.stock.naver.com/api/research/world?page=1&pageSize=10",
+     "utf-8", "https://m.stock.naver.com/", ["title", "brokerName"]),
+    ("네이버 해외 목록 html", "https://finance.naver.com/research/global_list.naver",
+     "cp949", "https://finance.naver.com/research/", ["해외", "리포트"]),
+    ("한경 글로벌마켓", "https://www.hankyung.com/globalmarket",
+     "utf-8", "https://www.hankyung.com/", ["글로벌", "증시"]),
+    ("KRX 기업분석보고서", "https://kind.krx.co.kr/valueup/reportList.do?method=searchValueupReportMain",
+     "utf-8", "https://kind.krx.co.kr/", ["보고서", "기업"]),
 ]
 
 
