@@ -1,6 +1,6 @@
 # 펀드 원천 탐색 3차 — 금투협 호출 정의
 
-조사 시각: 2026-08-28T15:20:05.694Z
+조사 시각: 2026-08-28T15:27:57.661Z
 
 WebSquare 는 화면을 .xml 로 내려받아 그린다. 그 안에 서비스 이름과 보낼
 필드가 적혀 있으므로, 버튼을 눌러 가며 알아내는 것보다 이걸 읽는 편이 빠르다.
@@ -47,10 +47,10 @@ DTO:
 <pfmAppName>FS-COM</pfmAppName>
 <pfmSvcName>COMFundUnityInfoSO</pfmSvcName>
 <pfmFnName>select</pfmFnName>
-<pfmGlobalNo>48f50b660afe00975c03f5119a476913</pfmGlobalNo>
+<pfmGlobalNo>48fc40280afe009667ff91b0547adf2b</pfmGlobalNo>
 <pfmTrDate>20260829</pfmTrDate>
-<pfmTrTime>20260829002013926</pfmTrTime>
-<pfmClntIp>135.232.200.213</pfmClntIp>
+<pfmTrTime>20260829002806184</pfmTrTime>
+<pfmClntIp>130.131.215.209</pfmClntIp>
 <pfmResponseType>S</pfmResponseType>
 <pfmResponseCode>COMS9009</pfmResponseCode>
 <pfmResponseTitle>MODULE ERROR</pfmResponseTitle>
@@ -70,10 +70,10 @@ DTO:
 <pfmAppName>FS-COM</pfmAppName>
 <pfmSvcName>COMFundPriceModSO</pfmSvcName>
 <pfmFnName>select</pfmFnName>
-<pfmGlobalNo>48f50c1a0afe00977cb0291f6652fe4a</pfmGlobalNo>
+<pfmGlobalNo>48fc40cf0afe00965b04f5b448ce91ec</pfmGlobalNo>
 <pfmTrDate>20260829</pfmTrDate>
-<pfmTrTime>20260829002014106</pfmTrTime>
-<pfmClntIp>135.232.200.213</pfmClntIp>
+<pfmTrTime>20260829002806351</pfmTrTime>
+<pfmClntIp>130.131.215.209</pfmClntIp>
 <pfmResponseType>S</pfmResponseType>
 <pfmResponseCode>COMS9009</pfmResponseCode>
 <pfmResponseTitle>MODULE ERROR</pfmResponseTitle>

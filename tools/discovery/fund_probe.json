@@ -6,7 +6,7 @@
     "method": "GET",
     "status": 200,
     "type": "text/html",
-    "bytes": 185769,
+    "bytes": 185777,
     "encoding": "euc-kr",
     "sample": "\n\n\t\n\t\n\t\n<html lang='ko'>\n<head>\n\n\n\t\n\t\n\t\t\n\t\t\t\n\t\t\t\t<title>Npay 증권</title>\n\t\t\t\n\t\t\t\n\t\t\n\t\n\n\n\n\n<meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\" />\n\n<meta http-equiv=\"Content-Script-Type\" content=\"text/javascript\">\n<meta http-equiv=\"Content-Style-Type\" content=\"text/css\">\n<meta name=\"apple-mobile-web-app-title\" content=\"Npay 증권\" />\n\n\n\n\n\n\t\n\t\t<meta property=\"og:title\" content=\"Npay 증권\"/>\n\t\t<meta property=\"og:image\" content=\"https://ssl.pstatic.net/static/m/stock/im/2016/08/og_stock-200.png\"/>\n\t\t<meta property=\"og:url\" content=\"https://finance.naver.com\"/>\n\t\t<meta property=\"og:descript",
     "hasJson": false,
@@ -26,7 +26,7 @@
     "method": "GET",
     "status": 200,
     "type": "text/html",
-    "bytes": 185772,
+    "bytes": 185769,
     "encoding": "euc-kr",
     "sample": "\n\n\t\n\t\n\t\n<html lang='ko'>\n<head>\n\n\n\t\n\t\n\t\t\n\t\t\t\n\t\t\t\t<title>Npay 증권</title>\n\t\t\t\n\t\t\t\n\t\t\n\t\n\n\n\n\n<meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\" />\n\n<meta http-equiv=\"Content-Script-Type\" content=\"text/javascript\">\n<meta http-equiv=\"Content-Style-Type\" content=\"text/css\">\n<meta name=\"apple-mobile-web-app-title\" content=\"Npay 증권\" />\n\n\n\n\n\n\t\n\t\t<meta property=\"og:title\" content=\"Npay 증권\"/>\n\t\t<meta property=\"og:image\" content=\"https://ssl.pstatic.net/static/m/stock/im/2016/08/og_stock-200.png\"/>\n\t\t<meta property=\"og:url\" content=\"https://finance.naver.com\"/>\n\t\t<meta property=\"og:descript",
     "hasJson": false,
@@ -142,7 +142,7 @@
     "type": "text/xml",
     "bytes": 696,
     "encoding": "utf-8",
-    "sample": "<?xml version=\"1.0\" encoding=\"UTF-8\"?><root><message>\r\n<proframeHeader>\n<pfmAppName>FS-COM</pfmAppName>\n<pfmSvcName>COMFundUnityInfoSO</pfmSvcName>\n<pfmFnName>select</pfmFnName>\n<pfmGlobalNo>48f353550afe009764733bd63c29d1c8</pfmGlobalNo>\n<pfmTrDate>20260829</pfmTrDate>\n<pfmTrTime>20260829001821269</pfmTrTime>\n<pfmClntIp>135.232.200.213</pfmClntIp>\n<pfmResponseType>S</pfmResponseType>\n<pfmResponseCode>COMS9009</pfmResponseCode>\n<pfmResponseTitle>MODULE ERROR</pfmResponseTitle>\n<pfmResponseBasc>proframe application name [FS-COM] [COMFundUnityInfoSO] is not found.</pfmResponseBasc>\n<pfmResponseDt",
+    "sample": "<?xml version=\"1.0\" encoding=\"UTF-8\"?><root><message>\r\n<proframeHeader>\n<pfmAppName>FS-COM</pfmAppName>\n<pfmSvcName>COMFundUnityInfoSO</pfmSvcName>\n<pfmFnName>select</pfmFnName>\n<pfmGlobalNo>48fa6fd50afe0096231f2f16d1303302</pfmGlobalNo>\n<pfmTrDate>20260829</pfmTrDate>\n<pfmTrTime>20260829002607317</pfmTrTime>\n<pfmClntIp>130.131.215.209</pfmClntIp>\n<pfmResponseType>S</pfmResponseType>\n<pfmResponseCode>COMS9009</pfmResponseCode>\n<pfmResponseTitle>MODULE ERROR</pfmResponseTitle>\n<pfmResponseBasc>proframe application name [FS-COM] [COMFundUnityInfoSO] is not found.</pfmResponseBasc>\n<pfmResponseDt",
     "hasJson": false,
     "looksFrame": false,
     "mentions": {
@@ -158,7 +158,20 @@
     "name": "펀드닥터(제로인)",
     "url": "https://www.funddoctor.co.kr/",
     "method": "GET",
-    "error": "fetch failed"
+    "status": 200,
+    "type": "text/html",
+    "bytes": 42171,
+    "encoding": "utf-8",
+    "sample": "\r\n<!DOCTYPE html>\r\n<html>\r\n<body>\r\n<!-- Google Tag Manager -->\r\n<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':\r\nnew Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],\r\nj=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=\r\n'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);\r\n})(window,document,'script','dataLayer','GTM-WSBDNCL');</script>\r\n<!-- End Google Tag Manager -->\r\n<!-- 2019.12.26 김사랑 추가 Google Tag Manager >\r\n<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':\r\nnew Date().getTime(),event",
+    "hasJson": false,
+    "looksFrame": false,
+    "mentions": {
+      "보유종목": true,
+      "수익률": true,
+      "설정액": false,
+      "보수": true,
+      "펀드코드": false
+    }
   },
   {
     "group": "vendor",
@@ -297,7 +310,7 @@
   {
     "group": "yahoo",
     "name": "뮤추얼펀드 VFIAX",
-    "url": "https://query1.finance.yahoo.com/v10/finance/quoteSummary/VFIAX?modules=topHoldings,fundProfile,fundPerformance,defaultKeyStatistics,price&crumb=AmRuueguUvE",
+    "url": "https://query1.finance.yahoo.com/v10/finance/quoteSummary/VFIAX?modules=topHoldings,fundProfile,fundPerformance,defaultKeyStatistics,price&crumb=6qgSJNH4RNo",
     "method": "GET",
     "status": 200,
     "type": "application/json",
@@ -317,7 +330,7 @@
   {
     "group": "yahoo",
     "name": "뮤추얼펀드 FXAIX",
-    "url": "https://query1.finance.yahoo.com/v10/finance/quoteSummary/FXAIX?modules=topHoldings,fundProfile,fundPerformance,defaultKeyStatistics,price&crumb=AmRuueguUvE",
+    "url": "https://query1.finance.yahoo.com/v10/finance/quoteSummary/FXAIX?modules=topHoldings,fundProfile,fundPerformance,defaultKeyStatistics,price&crumb=6qgSJNH4RNo",
     "method": "GET",
     "status": 200,
     "type": "application/json",
@@ -337,7 +350,7 @@
   {
     "group": "yahoo",
     "name": "뮤추얼펀드 VTSAX",
-    "url": "https://query1.finance.yahoo.com/v10/finance/quoteSummary/VTSAX?modules=topHoldings,fundProfile,fundPerformance,defaultKeyStatistics,price&crumb=AmRuueguUvE",
+    "url": "https://query1.finance.yahoo.com/v10/finance/quoteSummary/VTSAX?modules=topHoldings,fundProfile,fundPerformance,defaultKeyStatistics,price&crumb=6qgSJNH4RNo",
     "method": "GET",
     "status": 200,
     "type": "application/json",
