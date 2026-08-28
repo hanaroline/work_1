@@ -1,111 +1,108 @@
 {
-  "probedAt": "2026-08-28T16:47:01.850Z",
+  "probedAt": "2026-08-28T22:25:26.715Z",
   "krxTradeDate": null,
   "results": [
     {
       "id": "krx.session",
       "note": "세션 쿠키 획득 (화면 선진입)",
-      "ok": true,
-      "summary": "쿠키 2개",
-      "ms": 581
+      "ok": false,
+      "summary": "쿠키 0개",
+      "ms": 495
     },
     {
       "id": "krx.etf.all",
       "note": "ETF 전종목 시세 (세션 있음)",
       "ok": false,
       "error": "영업일 10일 모두 빈 응답",
-      "ms": 3035
+      "ms": 4195
     },
     {
       "id": "krx2.stat.04301",
       "note": "MDCSTAT04301 — ETF 전종목 시세",
-      "status": 400,
-      "bytes": 6,
+      "status": 200,
+      "bytes": 1475,
       "ok": false,
-      "summary": "JSON 아님: LOGOUT",
-      "ms": 536
+      "summary": "JSON 아님: <!DOCTYPE HTML> <html> <head> <meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\"> <title>한국거래소</",
+      "ms": 526
     },
     {
       "id": "krx2.stat.04401",
       "note": "MDCSTAT04401 — ETF 개별 시세 추이",
-      "status": 400,
-      "bytes": 6,
+      "status": 200,
+      "bytes": 1475,
       "ok": false,
-      "summary": "JSON 아님: LOGOUT",
-      "ms": 255
+      "summary": "JSON 아님: <!DOCTYPE HTML> <html> <head> <meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\"> <title>한국거래소</",
+      "ms": 379
     },
     {
       "id": "krx2.stat.04501",
       "note": "MDCSTAT04501 — ETF 전종목 등락률",
-      "status": 400,
-      "bytes": 6,
+      "status": 200,
+      "bytes": 1475,
       "ok": false,
-      "summary": "JSON 아님: LOGOUT",
-      "ms": 370
+      "summary": "JSON 아님: <!DOCTYPE HTML> <html> <head> <meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\"> <title>한국거래소</",
+      "ms": 388
     },
     {
       "id": "krx2.stat.04601",
       "note": "MDCSTAT04601 — ETF 투자자별 거래",
-      "status": 400,
-      "bytes": 6,
+      "status": 200,
+      "bytes": 1475,
       "ok": false,
-      "summary": "JSON 아님: LOGOUT",
-      "ms": 570
+      "summary": "JSON 아님: <!DOCTYPE HTML> <html> <head> <meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\"> <title>한국거래소</",
+      "ms": 398
     },
     {
       "id": "krx2.stat.04701",
       "note": "MDCSTAT04701 — ETF 상세 정보",
-      "status": 400,
-      "bytes": 6,
+      "status": 200,
+      "bytes": 1475,
       "ok": false,
-      "summary": "JSON 아님: LOGOUT",
-      "ms": 334
+      "summary": "JSON 아님: <!DOCTYPE HTML> <html> <head> <meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\"> <title>한국거래소</",
+      "ms": 420
     },
     {
       "id": "krx2.stat.04801",
       "note": "MDCSTAT04801 — ETF 구성종목 후보 A",
-      "status": 400,
-      "bytes": 6,
+      "status": 200,
+      "bytes": 1475,
       "ok": false,
-      "summary": "JSON 아님: LOGOUT",
-      "ms": 571
+      "summary": "JSON 아님: <!DOCTYPE HTML> <html> <head> <meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\"> <title>한국거래소</",
+      "ms": 479
     },
     {
       "id": "krx2.stat.04901",
       "note": "MDCSTAT04901 — ETF 구성종목 후보 B",
-      "status": 400,
-      "bytes": 6,
+      "status": 200,
+      "bytes": 1475,
       "ok": false,
-      "summary": "JSON 아님: LOGOUT",
-      "ms": 584
+      "summary": "JSON 아님: <!DOCTYPE HTML> <html> <head> <meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\"> <title>한국거래소</",
+      "ms": 398
     },
     {
       "id": "krx2.stat.05001",
       "note": "MDCSTAT05001 — ETF 구성종목(PDF) 후보 C",
-      "status": 400,
-      "bytes": 6,
+      "status": 200,
+      "bytes": 1475,
       "ok": false,
-      "summary": "JSON 아님: LOGOUT",
-      "ms": 289
+      "summary": "JSON 아님: <!DOCTYPE HTML> <html> <head> <meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\"> <title>한국거래소</",
+      "ms": 380
     },
     {
       "id": "krx2.stat.05101",
       "note": "MDCSTAT05101 — ETF 후보 D",
-      "status": 400,
-      "bytes": 6,
+      "status": 200,
+      "bytes": 1475,
       "ok": false,
-      "summary": "JSON 아님: LOGOUT",
-      "ms": 599
+      "summary": "JSON 아님: <!DOCTYPE HTML> <html> <head> <meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\"> <title>한국거래소</",
+      "ms": 408
     },
     {
       "id": "krx.otp.csv",
       "note": "OTP → CSV 내려받기 (PDF 구성종목)",
-      "ok": true,
-      "status": 403,
-      "bytes": 2531,
-      "summary": "35행 · 헤더: \t\t<html>\r",
-      "sampleRow": "<head>\r",
-      "ms": 804
+      "ok": false,
+      "summary": "OTP 발급 실패 (1473B): <!DOCTYPE HTML>\r\n<html>\r\n<head>\r\n  <meta http-equiv=\"Content-Type\" content=\"text",
+      "ms": 463
     },
     {
       "id": "naver.analysis.full",
@@ -155,7 +152,7 @@
         "etfTop10MajorConstituentAssets[10]{seq,itemCode,itemName,stockCount,etfWeight}"
       ],
       "ok": true,
-      "ms": 661
+      "ms": 715
     },
     {
       "id": "naver.pdf.m.stock",
@@ -163,7 +160,7 @@
       "ok": false,
       "status": 404,
       "summary": "<!doctype html>\n<html lang=\"ko\">\n<head>\n    <meta charset=\"utf-8\">\n    <meta name=\"viewport\" content",
-      "ms": 657
+      "ms": 385
     },
     {
       "id": "naver.pdf.m.stock2",
@@ -171,7 +168,7 @@
       "ok": false,
       "status": 404,
       "summary": "<!doctype html>\n<html lang=\"ko\">\n<head>\n    <meta charset=\"utf-8\">\n    <meta name=\"viewport\" content",
-      "ms": 184
+      "ms": 144
     },
     {
       "id": "naver.pdf.m.stock3",
@@ -179,7 +176,7 @@
       "ok": false,
       "status": 404,
       "summary": "<!doctype html>\n<html lang=\"ko\">\n<head>\n    <meta charset=\"utf-8\">\n    <meta name=\"viewport\" content",
-      "ms": 174
+      "ms": 140
     },
     {
       "id": "naver.pdf.m.stock4",
@@ -187,7 +184,7 @@
       "ok": false,
       "status": 404,
       "summary": "<!doctype html>\n<html lang=\"ko\">\n<head>\n    <meta charset=\"utf-8\">\n    <meta name=\"viewport\" content",
-      "ms": 177
+      "ms": 133
     },
     {
       "id": "naver.pdf.m.stock5",
@@ -195,7 +192,7 @@
       "ok": false,
       "status": 404,
       "summary": "<!doctype html>\n<html lang=\"ko\">\n<head>\n    <meta charset=\"utf-8\">\n    <meta name=\"viewport\" content",
-      "ms": 168
+      "ms": 144
     },
     {
       "id": "naver.pdf.m.stock6",
@@ -203,23 +200,23 @@
       "ok": false,
       "status": 404,
       "summary": "<!doctype html>\n<html lang=\"ko\">\n<head>\n    <meta charset=\"utf-8\">\n    <meta name=\"viewport\" content",
-      "ms": 168
+      "ms": 144
     },
     {
       "id": "naver.pdf.api.etf",
       "note": "국내 구성종목 후보 — api.stock.naver.com/etf/069500/componentStocks",
       "ok": false,
       "status": 404,
-      "summary": "{\"timestamp\":\"2026-08-28T16:46:53.347+0000\",\"status\":404,\"error\":\"Not Found\",\"message\":\"No message a",
-      "ms": 1063
+      "summary": "{\"timestamp\":\"2026-08-28T22:25:20.135+0000\",\"status\":404,\"error\":\"Not Found\",\"message\":\"No message a",
+      "ms": 836
     },
     {
       "id": "naver.pdf.api.etf2",
       "note": "국내 구성종목 후보 — api.stock.naver.com/stock/069500/etfAnalysis",
       "ok": false,
       "status": 404,
-      "summary": "{\"timestamp\":\"2026-08-28T16:46:53.590+0000\",\"status\":404,\"error\":\"Not Found\",\"message\":\"No message a",
-      "ms": 241
+      "summary": "{\"timestamp\":\"2026-08-28T22:25:20.343+0000\",\"status\":404,\"error\":\"Not Found\",\"message\":\"No message a",
+      "ms": 208
     },
     {
       "id": "naver.pdf.pc.etf",
@@ -227,25 +224,25 @@
       "ok": false,
       "status": 404,
       "summary": "\n<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\" \"http://www.w3.org/TR/html4/loose.dt",
-      "ms": 662
+      "ms": 496
     },
     {
       "id": "naver.pdf.pc.coinfo",
       "note": "국내 구성종목 후보 — finance.naver.com/item/coinfo.naver?code=069500",
       "ok": false,
       "status": 200,
-      "bytes": 114084,
+      "bytes": 114079,
       "summary": "HTML · 구성종목 흔적 없음",
-      "ms": 395
+      "ms": 300
     },
     {
       "id": "naver.pdf.pc.main",
       "note": "국내 구성종목 후보 — finance.naver.com/item/main.naver?code=069500",
       "ok": false,
       "status": 200,
-      "bytes": 143057,
+      "bytes": 143058,
       "summary": "HTML · 구성종목 흔적 없음",
-      "ms": 341
+      "ms": 319
     },
     {
       "id": "naver.tabs",
@@ -263,14 +260,14 @@
       },
       "summary": "1163종목 · 탭 {\"1\":99,\"2\":336,\"3\":37,\"4\":376,\"5\":23,\"6\":171,\"7\":121}",
       "ok": true,
-      "ms": 287
+      "ms": 241
     },
     {
       "id": "yahoo.crumb2",
       "note": "쿠키 + crumb",
       "ok": true,
       "summary": "crumb O / 쿠키 1개",
-      "ms": 268
+      "ms": 85
     },
     {
       "id": "yahoo.cn.510300.SS",
@@ -280,7 +277,7 @@
       "holdingCount": 0,
       "summary": "holdings 0개 · sector 0개 · family - · AUM -",
       "sampleHolding": null,
-      "ms": 177
+      "ms": 58
     },
     {
       "id": "yahoo.cn.510500.SS",
@@ -290,7 +287,7 @@
       "holdingCount": 0,
       "summary": "holdings 0개 · sector 0개 · family - · AUM -",
       "sampleHolding": null,
-      "ms": 107
+      "ms": 43
     },
     {
       "id": "yahoo.cn.588000.SS",
@@ -300,7 +297,7 @@
       "holdingCount": 0,
       "summary": "holdings 0개 · sector 0개 · family - · AUM -",
       "sampleHolding": null,
-      "ms": 105
+      "ms": 38
     },
     {
       "id": "yahoo.cn.512880.SS",
@@ -310,7 +307,7 @@
       "holdingCount": 0,
       "summary": "holdings 0개 · sector 0개 · family - · AUM -",
       "sampleHolding": null,
-      "ms": 105
+      "ms": 36
     },
     {
       "id": "yahoo.cn.159915.SZ",
@@ -320,7 +317,7 @@
       "holdingCount": 0,
       "summary": "holdings 0개 · sector 0개 · family - · AUM -",
       "sampleHolding": null,
-      "ms": 102
+      "ms": 41
     },
     {
       "id": "yahoo.cn.159949.SZ",
@@ -330,7 +327,7 @@
       "holdingCount": 0,
       "summary": "holdings 0개 · sector 0개 · family - · AUM -",
       "sampleHolding": null,
-      "ms": 107
+      "ms": 42
     },
     {
       "id": "yahoo.cn.2823.HK",
@@ -347,7 +344,7 @@
           "fmt": "8.42%"
         }
       },
-      "ms": 101
+      "ms": 35
     },
     {
       "id": "yahoo.cn.3188.HK",
@@ -364,7 +361,7 @@
           "fmt": "5.28%"
         }
       },
-      "ms": 98
+      "ms": 36
     },
     {
       "id": "yahoo.cn.MCHI",
@@ -381,7 +378,7 @@
           "fmt": "14.47%"
         }
       },
-      "ms": 123
+      "ms": 40
     },
     {
       "id": "yahoo.cn.KWEB",
@@ -398,7 +395,7 @@
           "fmt": "9.96%"
         }
       },
-      "ms": 108
+      "ms": 51
     },
     {
       "id": "issuer.kr.tiger",
@@ -407,7 +404,7 @@
       "status": 403,
       "bytes": 261,
       "summary": "261B · <!DOCTYPE HTML PUBLIC \"-//IETF//DTD HTML 2.0//EN\"> <html><head> <title>301 Moved Permanent",
-      "ms": 387
+      "ms": 325
     },
     {
       "id": "issuer.kr.kodex",
@@ -416,7 +413,7 @@
       "status": 200,
       "bytes": 138726,
       "summary": "138726B · <!DOCTYPE html> <html lang=\"ko\" id=\"top-of-site\" class=\"\"> <head> ",
-      "ms": 2824
+      "ms": 2151
     },
     {
       "id": "issuer.kr.kodex.api",
@@ -425,7 +422,7 @@
       "status": 200,
       "bytes": 138726,
       "summary": "138726B · <!DOCTYPE html> <html lang=\"ko\" id=\"top-of-site\" class=\"\"> <head> ",
-      "ms": 804
+      "ms": 1148
     },
     {
       "id": "issuer.kr.seibro",
@@ -434,7 +431,7 @@
       "status": 200,
       "bytes": 1048,
       "summary": "1048B ·  <!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" \"http://www.w3.org",
-      "ms": 1073
+      "ms": 824
     }
   ]
 }
