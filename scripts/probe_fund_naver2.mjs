@@ -62,11 +62,42 @@ async function getJson(url, tries = 3) {
   throw last;
 }
 
-const out = { at: new Date().toISOString() };
+const out = { at: new Date().toISOString(), errors: [] };
+
+// 탐색이 조용히 죽으면 안 된다. 앞선 실행이 6초 만에 끝나고 출력 파일도
+// 남기지 않았는데, continue-on-error 가 실패를 가려 성공으로 보였다.
+// 그래서 무슨 일이 있어도 지금까지 알아낸 것은 파일로 남긴다.
+async function save() {
+  await mkdir('tools/discovery', { recursive: true });
+  await writeFile(OUT_JSON, JSON.stringify(out, null, 2));
+}
+process.on('unhandledRejection', async (e) => {
+  out.errors.push(`unhandledRejection: ${String(e?.message || e)}`);
+  await save();
+  console.error('[fund-naver2] 중단:', e?.message || e);
+  process.exit(1);
+});
+
+// ── 0. 페이지 크기 상한부터 확인한다 ──────────────────────────────────────
+// 7차는 size=20 으로 됐는데 100 으로 키우면서 확인을 안 했다. 상한을 넘기면
+// 400 이 오고, 그러면 첫 줄에서 통째로 죽는다. 되는 값을 찾아 쓴다.
+console.log('=== 0. 페이지 크기 상한 ===');
+let PAGE_SIZE = 20;
+for (const size of [100, 50, 20]) {
+  try {
+    const d = await getJson(`${API}?page=0&size=${size}`, 1);
+    if (d?.funds?.length) { PAGE_SIZE = size; console.log(`  size=${size} → ${d.funds.length}개 ✓`); break; }
+    console.log(`  size=${size} → 빈 응답`);
+  } catch (e) {
+    console.log(`  size=${size} → ${String(e.message || e)}`);
+    out.errors.push(`size=${size}: ${String(e.message || e)}`);
+  }
+}
+out.pageSize = PAGE_SIZE;
 
 // ── 1. 목록이 몇 개나 되나 ────────────────────────────────────────────────
-console.log('=== 1. 목록 크기 ===');
-const first = await getJson(`${API}?page=0&size=100`);
+console.log('\n=== 1. 목록 크기 ===');
+const first = await getJson(`${API}?page=0&size=${PAGE_SIZE}`);
 out.listKeys = Object.keys(first);
 out.listMeta = Object.fromEntries(Object.entries(first).filter(([k]) => k !== 'funds'));
 console.log(`  응답 키: ${out.listKeys.join(', ')}`);
@@ -77,9 +108,16 @@ console.log(`  첫 페이지 ${first.funds?.length ?? 0}개`);
 // 없으면 빈 페이지가 나올 때까지 센다.
 const all = [];
 let page = 0;
-const MAX_PAGES = 60;      // 100개씩 6,000개까지. 그보다 많으면 메타를 봐야 한다.
+const MAX_PAGES = 300;     // 상한을 넉넉히. 빈 페이지가 나오면 알아서 멈춘다.
 while (page < MAX_PAGES) {
-  const d = page === 0 ? first : await getJson(`${API}?page=${page}&size=100`);
+  let d;
+  try {
+    d = page === 0 ? first : await getJson(`${API}?page=${page}&size=${PAGE_SIZE}`);
+  } catch (e) {
+    // 한 페이지가 실패했다고 여태 모은 것을 버리지 않는다.
+    out.errors.push(`page ${page}: ${String(e.message || e)}`);
+    break;
+  }
   const rows = d.funds || [];
   if (!rows.length) break;
   all.push(...rows);
