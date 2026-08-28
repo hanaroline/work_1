@@ -231,10 +231,67 @@ async function probeYahooPerFund() {
   }
 }
 
+// ─────────────────── 5. 야후 배당이 정말 부족한가 (종목 단위 대조) ───────────────────
+/**
+ * 앞선 판단을 다시 검증한다.
+ *
+ * 처음에는 "2년치 분배금 합 ÷ 현재가 ÷ 2" 로 연분배율을 역산했다. 그 방식은
+ * 상장한 지 2년이 안 된 종목과, 최근 들어 분배금이 커진 종목을 모두 과소평가한다.
+ * 커버드콜은 둘 다에 해당한다. 그러니 그 숫자로 "자료가 부족하다" 고 단정한 것은
+ * 성급했다.
+ *
+ * 제대로 보려면 **최근 12개월 분배금 합**을 현재가로 나눠 TTM 분배율과 견줘야
+ * 한다. 그리고 우리 계산기가 만든 1년 총수익률이 1년 시장가 수익률보다
+ * 분배금만큼 위에 있는지도 같이 본다 — 자료가 문제인지 코드가 문제인지
+ * 여기서 갈린다.
+ */
+async function probeYahooDividendAdequacy() {
+  const { computeReturns } = await import('./etf_lib.mjs');
+  for (const s of SAMPLES) {
+    await probe(`yahoo.adequacy.${s.code}`, `배당 자료 충분한가 — ${s.name}`, async () => {
+      const raw = await get(
+        `https://query1.finance.yahoo.com/v8/finance/chart/${s.code}.KS` +
+        '?range=2y&interval=1d&events=div',
+        { headers: { Referer: 'https://finance.yahoo.com/' } });
+      if (!raw.ok) return { ok: false, status: raw.status, summary: `HTTP ${raw.status}` };
+      const r = JSON.parse(raw.text)?.chart?.result?.[0];
+      const divs = Object.values(r?.events?.dividends || {})
+        .map((d) => ({ date: new Date(d.date * 1000).toISOString().slice(0, 10),
+                       amount: Number(d.amount) }))
+        .sort((a, b) => a.date.localeCompare(b.date));
+      const price = r?.meta?.regularMarketPrice;
+      const cutoff = new Date(Date.now() - 365 * 864e5).toISOString().slice(0, 10);
+      const ttm = divs.filter((d) => d.date >= cutoff);
+      const ttmSum = ttm.reduce((a, d) => a + d.amount, 0);
+      const ttmYield = price ? (ttmSum / price) * 100 : null;
+
+      // 우리 계산기를 그대로 돌려 본다.
+      const calc = computeReturns(r.timestamp, r.indicators?.quote?.[0]?.close,
+                                  r.indicators?.adjclose?.[0]?.adjclose, r.events?.dividends);
+      const p1 = calc?.price?.Y1, t1 = calc?.tr?.Y1;
+      const gap = (p1 != null && t1 != null) ? +(t1 - p1).toFixed(2) : null;
+
+      // 자료가 충분하면 TTM 역산이 표기 분배율에 가깝고, 1년 격차도 그만큼 나온다.
+      const adequate = ttmYield != null && ttmYield >= s.yield * 0.7;
+      return {
+        ok: adequate,
+        divTotal: divs.length, ttmCount: ttm.length,
+        ttmSum: +ttmSum.toFixed(0), ttmYield: ttmYield == null ? null : +ttmYield.toFixed(2),
+        method: calc?.method, priceY1: p1, trY1: t1, gap,
+        summary: `TTM 배당 ${ttm.length}건 합 ${ttmSum.toFixed(0)}원 → 역산 ` +
+                 `${ttmYield == null ? '?' : ttmYield.toFixed(1)}% (표기 ${s.yield}%) · ` +
+                 `계산방식 ${calc?.method} · 1년 시장가 ${p1} vs 총수익률 ${t1} (격차 ${gap})`,
+        firstDivs: divs.slice(0, 3), lastDivs: divs.slice(-3),
+      };
+    });
+  }
+}
+
 // ─────────────────── 실행 ───────────────────
 await probeNaver();
 await probeNaverRendered();
 await probeYahooPerFund();
+await probeYahooDividendAdequacy();
 await probeOthers();
 
 await mkdir(OUT_DIR, { recursive: true });
