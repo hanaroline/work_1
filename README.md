@@ -306,6 +306,28 @@ node scripts/build_etf_data.mjs   # 수집분 병합 + 분류 태깅 -> data/etf
 node scripts/build_etf_page.mjs   # etf.html + data/etf.js -> etf-holdings-search.html
 ```
 
+### 링크로 공유하기 (아티팩트)
+
+파일을 주고받는 대신 링크 하나로 공유하려면 아티팩트로 올립니다.
+
+```bash
+node scripts/build_etf_artifact.mjs        # -> etf-artifact.html
+node scripts/test_etf_page.mjs --artifact  # 올리기 전에 브라우저로 확인
+```
+
+아티팩트 호스트가 `<!doctype>`·`<html>`·`<head>`·`<body>` 를 직접 씌우므로,
+올리는 파일은 **그 안에 들어갈 알맹이만** 담습니다(`<title>` + `<style>` +
+`<body>` 안쪽). 온전한 문서를 그대로 올리면 문서 안에 문서가 들어가 화면이
+깨집니다. `--artifact` 시험은 그 껍데기를 똑같이 씌운 상태로 확인합니다 —
+조각을 그냥 열면 브라우저가 알아서 감싸 주기 때문에 시험이 통과해 버립니다.
+
+폰트는 이쪽에서만 되살립니다. 배포용 단일 파일은 사내망·오프라인을 염두에
+두고 폰트 CDN 을 걷어내지만, 아티팩트는 브라우저로 여는 웹페이지이고 호스트가
+구글 폰트를 허용합니다(`<head>` 를 못 건드리므로 `@import` 로 넣습니다).
+
+**아티팩트는 기본이 비공개입니다.** 팀에 보이려면 페이지의 공유 메뉴에서
+직접 공개 범위를 여십시오. 대외 공유는 준법감시 확인 뒤에 하시기 바랍니다.
+
 ## 데이터 수집 (매일 자동)
 
 세션은 사내 이그레스 정책 때문에 네이버·야후·KRX 어디에도 직접 붙지 못합니다
@@ -319,6 +341,7 @@ node scripts/build_etf_page.mjs   # etf.html + data/etf.js -> etf-holdings-searc
 | `scripts/etf_universe.mjs` | 해외 ETF 유니버스 — **사람이 고치는 목록** |
 | `scripts/etf_taxonomy.mjs` | 분류 사전 — **사람이 고치는 규칙** |
 | `scripts/build_etf_data.mjs` | 병합 + 분류 태깅 → `data/etf.js` |
+| `scripts/build_etf_artifact.mjs` | 아티팩트(링크 공유)용 조각 빌드 |
 | `scripts/etf_lib.mjs` | 수집 공용 부품(동시성·재시도·단위 파싱) |
 | `scripts/probe_etf_sources*.mjs` | 원천 탐색. 원천이 바뀌었을 때 다시 돌린다 |
 | `tools/discovery/etf_probe*.md` | 위 탐색 결과 — **어느 원천이 살아 있는지의 기록** |

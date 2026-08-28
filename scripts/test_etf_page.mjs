@@ -4,6 +4,7 @@
  *
  *   node scripts/test_etf_page.mjs            # etf.html (분리 파일)
  *   node scripts/test_etf_page.mjs --built    # etf-holdings-search.html (단일 파일)
+ *   node scripts/test_etf_page.mjs --artifact # 아티팩트로 올릴 조각
  *
  * 화면을 그리는 코드는 눈으로 못 보면 틀린 줄도 모른다. 표가 비어 있어도,
  * 콘솔에 오류가 나도 페이지는 "열리기는" 하기 때문이다. 그래서 열어서
@@ -16,14 +17,26 @@ import { readFile } from 'node:fs/promises';
 import { extname, join, normalize } from 'node:path';
 
 const BUILT = process.argv.includes('--built');
-const PAGE = BUILT ? '/etf-holdings-search.html' : '/etf.html';
+const ARTIFACT = process.argv.includes('--artifact');
+const PAGE = ARTIFACT ? '/etf-artifact.html'
+  : BUILT ? '/etf-holdings-search.html' : '/etf.html';
 const TYPES = { '.html': 'text/html', '.js': 'text/javascript', '.css': 'text/css',
                 '.json': 'application/json' };
 
 const server = createServer(async (req, res) => {
   try {
     const path = normalize(decodeURIComponent(req.url.split('?')[0])).replace(/^(\.\.[/\\])+/, '');
-    const body = await readFile(join(process.cwd(), path));
+    let body = await readFile(join(process.cwd(), path));
+    // 아티팩트 호스트는 우리가 넘긴 조각에 <!doctype>·<head>·<body> 를 직접
+    // 씌운다. 그 껍데기를 여기서 똑같이 씌워야 올리기 전에 같은 화면을 본다.
+    // (조각을 그냥 열면 브라우저가 알아서 감싸 주므로 시험이 통과해 버린다 —
+    //  진짜로 확인해야 할 것은 "씌워진 상태" 다.)
+    if (ARTIFACT && path.endsWith('etf-artifact.html')) {
+      body = Buffer.from(
+        '<!doctype html>\n<html lang="ko">\n<head>\n<meta charset="utf-8">\n' +
+        '<meta name="viewport" content="width=device-width, initial-scale=1">\n' +
+        '</head>\n<body>\n' + body.toString('utf8') + '\n</body>\n</html>\n');
+    }
     res.writeHead(200, { 'Content-Type': TYPES[extname(path)] || 'application/octet-stream' });
     res.end(body);
   } catch {
