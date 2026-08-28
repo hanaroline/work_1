@@ -1,8 +1,8 @@
 {
-  "probedAt": "2026-08-28T16:46:41.573Z",
+  "probedAt": "2026-08-28T22:25:08.524Z",
   "runner": "linux node v22.23.2",
   "tradeDate": null,
-  "sampleIsuCd": "KR7069500007",
+  "sampleIsuCd": null,
   "yahoo": {
     "cookie": true,
     "crumb": true
@@ -13,134 +13,111 @@
       "note": "ETF 전종목 시세 (MDCSTAT04301)",
       "ok": false,
       "error": "최근 7 영업일 모두 빈 응답",
-      "ms": 3824
+      "ms": 3813
     },
     {
       "id": "krx.finder",
       "note": "ETF 종목 finder (finder_secuprodisu)",
-      "status": 200,
-      "bytes": 1163,
-      "contentType": "text/html; charset=utf-8",
-      "blocks": {
-        "block1": {
-          "rows": 14,
-          "columns": [
-            "full_code",
-            "short_code",
-            "codeName"
-          ]
-        }
-      },
-      "summary": "block1 14행 / 3열",
-      "sampleRow": {
-        "full_code": "KR7069500007",
-        "short_code": "069500",
-        "codeName": "KODEX 200"
-      },
-      "bld": "dbms/comm/finder/finder_secuprodisu",
-      "ok": true,
-      "ms": 676
+      "ok": false,
+      "error": "세 finder 모두 빈 응답",
+      "ms": 1442
     },
     {
       "id": "krx.stat.04302",
       "note": "MDCSTAT04302 필드 확인",
-      "status": 400,
-      "bytes": 6,
-      "contentType": "text/html; charset=utf-8",
-      "ok": false,
-      "body": "LOGOUT",
-      "ms": 868
+      "status": 200,
+      "bytes": 1475,
+      "contentType": "text/html",
+      "text": "<!DOCTYPE HTML>\r\n<html>\r\n<head>\r\n  <meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\">\r\n  <title>한국거래소</title>\r\n  <style>\r\n    *{font-family:\"Malgun Gothic\"; font-size:1em}\r\n    html, body, div, img, p, span {margin:0;padding:0}\r\n    html {height:100%}\r\n    body {display:table; width:100%; height:100%; overflow:hidden}\r\n    .wrap {display:table-cell; width:100%; height:100%;backgro",
+      "ok": true,
+      "ms": 466
     },
     {
       "id": "krx.stat.04401",
       "note": "MDCSTAT04401 필드 확인",
-      "status": 400,
-      "bytes": 6,
-      "contentType": "text/html; charset=utf-8",
-      "ok": false,
-      "body": "LOGOUT",
-      "ms": 210
+      "status": 200,
+      "bytes": 1475,
+      "contentType": "text/html",
+      "text": "<!DOCTYPE HTML>\r\n<html>\r\n<head>\r\n  <meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\">\r\n  <title>한국거래소</title>\r\n  <style>\r\n    *{font-family:\"Malgun Gothic\"; font-size:1em}\r\n    html, body, div, img, p, span {margin:0;padding:0}\r\n    html {height:100%}\r\n    body {display:table; width:100%; height:100%; overflow:hidden}\r\n    .wrap {display:table-cell; width:100%; height:100%;backgro",
+      "ok": true,
+      "ms": 394
     },
     {
       "id": "krx.stat.04501",
       "note": "MDCSTAT04501 필드 확인",
-      "status": 400,
-      "bytes": 6,
-      "contentType": "text/html; charset=utf-8",
-      "ok": false,
-      "body": "LOGOUT",
-      "ms": 586
+      "status": 200,
+      "bytes": 1475,
+      "contentType": "text/html",
+      "text": "<!DOCTYPE HTML>\r\n<html>\r\n<head>\r\n  <meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\">\r\n  <title>한국거래소</title>\r\n  <style>\r\n    *{font-family:\"Malgun Gothic\"; font-size:1em}\r\n    html, body, div, img, p, span {margin:0;padding:0}\r\n    html {height:100%}\r\n    body {display:table; width:100%; height:100%; overflow:hidden}\r\n    .wrap {display:table-cell; width:100%; height:100%;backgro",
+      "ok": true,
+      "ms": 487
     },
     {
       "id": "krx.stat.04601",
       "note": "MDCSTAT04601 필드 확인",
-      "status": 400,
-      "bytes": 6,
-      "contentType": "text/html; charset=utf-8",
-      "ok": false,
-      "body": "LOGOUT",
-      "ms": 604
+      "status": 200,
+      "bytes": 1475,
+      "contentType": "text/html",
+      "text": "<!DOCTYPE HTML>\r\n<html>\r\n<head>\r\n  <meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\">\r\n  <title>한국거래소</title>\r\n  <style>\r\n    *{font-family:\"Malgun Gothic\"; font-size:1em}\r\n    html, body, div, img, p, span {margin:0;padding:0}\r\n    html {height:100%}\r\n    body {display:table; width:100%; height:100%; overflow:hidden}\r\n    .wrap {display:table-cell; width:100%; height:100%;backgro",
+      "ok": true,
+      "ms": 444
     },
     {
       "id": "krx.stat.04701",
       "note": "MDCSTAT04701 필드 확인",
-      "status": 400,
-      "bytes": 6,
-      "contentType": "text/html; charset=utf-8",
-      "ok": false,
-      "body": "LOGOUT",
-      "ms": 579
+      "status": 200,
+      "bytes": 1475,
+      "contentType": "text/html",
+      "text": "<!DOCTYPE HTML>\r\n<html>\r\n<head>\r\n  <meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\">\r\n  <title>한국거래소</title>\r\n  <style>\r\n    *{font-family:\"Malgun Gothic\"; font-size:1em}\r\n    html, body, div, img, p, span {margin:0;padding:0}\r\n    html {height:100%}\r\n    body {display:table; width:100%; height:100%; overflow:hidden}\r\n    .wrap {display:table-cell; width:100%; height:100%;backgro",
+      "ok": true,
+      "ms": 343
     },
     {
       "id": "krx.stat.04801",
       "note": "MDCSTAT04801 필드 확인",
-      "status": 400,
-      "bytes": 6,
-      "contentType": "text/html; charset=utf-8",
-      "ok": false,
-      "body": "LOGOUT",
-      "ms": 709
+      "status": 200,
+      "bytes": 1475,
+      "contentType": "text/html",
+      "text": "<!DOCTYPE HTML>\r\n<html>\r\n<head>\r\n  <meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\">\r\n  <title>한국거래소</title>\r\n  <style>\r\n    *{font-family:\"Malgun Gothic\"; font-size:1em}\r\n    html, body, div, img, p, span {margin:0;padding:0}\r\n    html {height:100%}\r\n    body {display:table; width:100%; height:100%; overflow:hidden}\r\n    .wrap {display:table-cell; width:100%; height:100%;backgro",
+      "ok": true,
+      "ms": 439
     },
     {
       "id": "krx.stat.04901",
       "note": "MDCSTAT04901 필드 확인",
-      "status": 400,
-      "bytes": 6,
-      "contentType": "text/html; charset=utf-8",
-      "ok": false,
-      "body": "LOGOUT",
-      "ms": 580
+      "status": 200,
+      "bytes": 1475,
+      "contentType": "text/html",
+      "text": "<!DOCTYPE HTML>\r\n<html>\r\n<head>\r\n  <meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\">\r\n  <title>한국거래소</title>\r\n  <style>\r\n    *{font-family:\"Malgun Gothic\"; font-size:1em}\r\n    html, body, div, img, p, span {margin:0;padding:0}\r\n    html {height:100%}\r\n    body {display:table; width:100%; height:100%; overflow:hidden}\r\n    .wrap {display:table-cell; width:100%; height:100%;backgro",
+      "ok": true,
+      "ms": 390
     },
     {
       "id": "krx.stat.05001",
       "note": "MDCSTAT05001 필드 확인",
-      "status": 400,
-      "bytes": 6,
-      "contentType": "text/html; charset=utf-8",
-      "ok": false,
-      "body": "LOGOUT",
-      "ms": 615
+      "status": 200,
+      "bytes": 1475,
+      "contentType": "text/html",
+      "text": "<!DOCTYPE HTML>\r\n<html>\r\n<head>\r\n  <meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\">\r\n  <title>한국거래소</title>\r\n  <style>\r\n    *{font-family:\"Malgun Gothic\"; font-size:1em}\r\n    html, body, div, img, p, span {margin:0;padding:0}\r\n    html {height:100%}\r\n    body {display:table; width:100%; height:100%; overflow:hidden}\r\n    .wrap {display:table-cell; width:100%; height:100%;backgro",
+      "ok": true,
+      "ms": 444
     },
     {
       "id": "krx.stat.05101",
       "note": "MDCSTAT05101 필드 확인",
-      "status": 400,
-      "bytes": 6,
-      "contentType": "text/html; charset=utf-8",
-      "ok": false,
-      "body": "LOGOUT",
-      "ms": 538
+      "status": 200,
+      "bytes": 1475,
+      "contentType": "text/html",
+      "text": "<!DOCTYPE HTML>\r\n<html>\r\n<head>\r\n  <meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\">\r\n  <title>한국거래소</title>\r\n  <style>\r\n    *{font-family:\"Malgun Gothic\"; font-size:1em}\r\n    html, body, div, img, p, span {margin:0;padding:0}\r\n    html {height:100%}\r\n    body {display:table; width:100%; height:100%; overflow:hidden}\r\n    .wrap {display:table-cell; width:100%; height:100%;backgro",
+      "ok": true,
+      "ms": 442
     },
     {
       "id": "krx.pdf",
       "note": "ETF 구성종목 PDF (MDCSTAT05001)",
-      "status": 400,
-      "bytes": 6,
-      "contentType": "text/html; charset=utf-8",
       "ok": false,
-      "body": "LOGOUT",
-      "isuCd": "KR7069500007",
-      "ms": 583
+      "error": "finder 가 표준코드를 못 줘서 시도 불가",
+      "ms": 0
     },
     {
       "id": "naver.etf.list",
@@ -165,7 +142,7 @@
       },
       "count": 1163,
       "ok": true,
-      "ms": 1364
+      "ms": 822
     },
     {
       "id": "naver.m.etfAnalysis",
@@ -487,7 +464,7 @@
         "marketValueRaw": "25053325000000"
       },
       "ok": true,
-      "ms": 998
+      "ms": 761
     },
     {
       "id": "naver.m.integration",
@@ -967,7 +944,7 @@
         "irScheduleInfo": null
       },
       "ok": true,
-      "ms": 655
+      "ms": 502
     },
     {
       "id": "naver.m.basic",
@@ -1019,17 +996,17 @@
         },
         "stockExchangeName": "KOSPI",
         "imageCharts": {
+          "areaMonthThree": "https://financial-vn.pstatic.net/chart/mobile/area/month3/069500_end.png",
+          "areaYearThree": "https://financial-vn.pstatic.net/chart/mobile/area/year3/069500_end.png",
           "day_up_tablet": "https://financial-vn.pstatic.net/chart/mobile/mini/069500_end_up_tablet.png",
           "areaYear": "https://financial-vn.pstatic.net/chart/mobile/area/year/069500_end.png",
-          "day_up": "https://financial-vn.pstatic.net/chart/mobile/mini/069500_end_up.png",
-          "candleWeek": "https://financial-vn.pstatic.net/chart/mobile/candle/week/069500_end.png",
-          "areaYearThree": "https://financial-vn.pstatic.net/chart/mobile/area/year3/069500_end.png",
-          "areaYearTen": "https://financial-vn.pstatic.net/chart/mobile/area/year10/069500_end.png",
-          "day": "https://financial-vn.pstatic.net/chart/mobile/day/069500_end.png",
-          "areaMonthThree": "https://financial-vn.pstatic.net/chart/mobile/area/month3/069500_end.png",
           "transparent": "https://financial-vn.pstatic.net/chart/mobile/mini/069500_transparent.png",
+          "day_up": "https://financial-vn.pstatic.net/chart/mobile/mini/069500_end_up.png",
           "candleMonth": "https://financial-vn.pstatic.net/chart/mobile/candle/month/069500_end.png",
-          "candleDay": "https://financial-vn.pstatic.net/chart/mobile/candle/day/069500_end.png"
+          "day": "https://financial-vn.pstatic.net/chart/mobile/day/069500_end.png",
+          "candleWeek": "https://financial-vn.pstatic.net/chart/mobile/candle/week/069500_end.png",
+          "candleDay": "https://financial-vn.pstatic.net/chart/mobile/candle/day/069500_end.png",
+          "areaYearTen": "https://financial-vn.pstatic.net/chart/mobile/area/year10/069500_end.png"
         },
         "imageChartUrlInfo": {
           "line": {
@@ -1072,7 +1049,7 @@
         "nationName": "대한민국"
       },
       "ok": true,
-      "ms": 167
+      "ms": 133
     },
     {
       "id": "naver.m.etf.constituent",
@@ -1082,7 +1059,7 @@
       "contentType": "text/html;charset=UTF-8",
       "ok": false,
       "body": "<!doctype html>\n<html lang=\"ko\">\n<head>\n    <meta charset=\"utf-8\">\n    <meta name=\"viewport\" content=\"width=device-width,initial-scale=1.0,maximum-scale=1.0,minimum-scale=1.0,user-scalable=no\">\n    <title>Npay 증권</title>\n    <link rel=\"shortcut icon\" href=\"https://ssl.pstatic.net/imgstock/favicon.ic",
-      "ms": 177
+      "ms": 143
     },
     {
       "id": "yahoo.crumb",
@@ -1092,13 +1069,13 @@
       "crumbLen": 11,
       "summary": "cookie O / crumb O",
       "ok": true,
-      "ms": 383
+      "ms": 191
     },
     {
       "id": "yahoo.holdings.SPY",
       "note": "quoteSummary 미국 · S&P500",
       "status": 200,
-      "bytes": 8913,
+      "bytes": 9100,
       "contentType": "application/json;charset=utf-8",
       "summary": "modules: fundProfile,summaryDetail,defaultKeyStatistics,topHoldings,price | holdings 10개 | sectorWeightings 11개 | family State Street Investment Management | TER 0.000945 | AUM 795.31B",
       "sampleHolding": {
@@ -1112,13 +1089,13 @@
       "holdingCount": 10,
       "hasSector": true,
       "ok": true,
-      "ms": 193
+      "ms": 62
     },
     {
       "id": "yahoo.holdings.QQQ",
       "note": "quoteSummary 미국 · 나스닥100",
       "status": 200,
-      "bytes": 8821,
+      "bytes": 8995,
       "contentType": "application/json;charset=utf-8",
       "summary": "modules: fundProfile,summaryDetail,defaultKeyStatistics,topHoldings,price | holdings 10개 | sectorWeightings 11개 | family Invesco | TER 0.0018000001 | AUM 452.8B",
       "sampleHolding": {
@@ -1132,7 +1109,7 @@
       "holdingCount": 10,
       "hasSector": true,
       "ok": true,
-      "ms": 111
+      "ms": 41
     },
     {
       "id": "yahoo.holdings.2800.HK",
@@ -1152,13 +1129,13 @@
       "holdingCount": 10,
       "hasSector": true,
       "ok": true,
-      "ms": 115
+      "ms": 39
     },
     {
       "id": "yahoo.holdings.3033.HK",
       "note": "quoteSummary 홍콩 · 항셍테크",
       "status": 200,
-      "bytes": 8445,
+      "bytes": 8463,
       "contentType": "application/json;charset=utf-8",
       "summary": "modules: fundProfile,summaryDetail,defaultKeyStatistics,topHoldings,price | holdings 10개 | sectorWeightings 11개 | family CSOP Asset Management Limited | TER 0.0099 | AUM 68.58B",
       "sampleHolding": {
@@ -1172,13 +1149,13 @@
       "holdingCount": 10,
       "hasSector": true,
       "ok": true,
-      "ms": 98
+      "ms": 41
     },
     {
       "id": "yahoo.holdings.2823.HK",
       "note": "quoteSummary 홍콩 · CSI300 (본토 익스포저)",
       "status": 200,
-      "bytes": 8535,
+      "bytes": 8537,
       "contentType": "application/json;charset=utf-8",
       "summary": "modules: fundProfile,summaryDetail,defaultKeyStatistics,topHoldings,price | holdings 10개 | sectorWeightings 11개 | family BlackRock Asset Management North Asia Ltd - ETF | TER 0 | AUM 12.81B",
       "sampleHolding": {
@@ -1192,7 +1169,7 @@
       "holdingCount": 10,
       "hasSector": true,
       "ok": true,
-      "ms": 100
+      "ms": 39
     },
     {
       "id": "yahoo.holdings.1306.T",
@@ -1212,7 +1189,7 @@
       "holdingCount": 10,
       "hasSector": true,
       "ok": true,
-      "ms": 100
+      "ms": 37
     },
     {
       "id": "yahoo.holdings.1321.T",
@@ -1232,46 +1209,46 @@
       "holdingCount": 10,
       "hasSector": true,
       "ok": true,
-      "ms": 103
+      "ms": 36
     },
     {
       "id": "yahoo.holdings.510300.SS",
       "note": "quoteSummary 중국 · 상해 CSI300",
       "status": 200,
-      "bytes": 3505,
+      "bytes": 3513,
       "contentType": "application/json;charset=utf-8",
       "summary": "modules: summaryDetail,price | holdings 0개 | sectorWeightings 0개 | family - | TER - | AUM -",
       "sampleHolding": null,
       "holdingCount": 0,
       "hasSector": false,
       "ok": true,
-      "ms": 110
+      "ms": 39
     },
     {
       "id": "yahoo.holdings.510500.SS",
       "note": "quoteSummary 중국 · 상해 CSI500",
       "status": 200,
-      "bytes": 3474,
+      "bytes": 3459,
       "contentType": "application/json;charset=utf-8",
       "summary": "modules: summaryDetail,price | holdings 0개 | sectorWeightings 0개 | family - | TER - | AUM -",
       "sampleHolding": null,
       "holdingCount": 0,
       "hasSector": false,
       "ok": true,
-      "ms": 104
+      "ms": 37
     },
     {
       "id": "yahoo.holdings.588000.SS",
       "note": "quoteSummary 중국 · 과창판50(STAR50)",
       "status": 200,
-      "bytes": 3449,
+      "bytes": 3485,
       "contentType": "application/json;charset=utf-8",
       "summary": "modules: summaryDetail,price | holdings 0개 | sectorWeightings 0개 | family - | TER - | AUM -",
       "sampleHolding": null,
       "holdingCount": 0,
       "hasSector": false,
       "ok": true,
-      "ms": 109
+      "ms": 37
     },
     {
       "id": "yahoo.holdings.159915.SZ",
@@ -1284,7 +1261,7 @@
       "holdingCount": 0,
       "hasSector": false,
       "ok": true,
-      "ms": 98
+      "ms": 39
     },
     {
       "id": "yahoo.holdings.069500.KS",
@@ -1297,19 +1274,19 @@
       "holdingCount": 0,
       "hasSector": false,
       "ok": true,
-      "ms": 106
+      "ms": 37
     },
     {
       "id": "yahoo.chart",
       "note": "chart v8 (수익률 backfill)",
       "status": 200,
-      "bytes": 49551,
+      "bytes": 49617,
       "contentType": "application/json;charset=utf-8",
       "summary": "730봉 / 배당 12건 / adjclose O",
       "hasAdjClose": true,
       "hasDividends": true,
       "ok": true,
-      "ms": 124
+      "ms": 48
     },
     {
       "id": "issuer.ishares.us.ivv",
@@ -1320,7 +1297,7 @@
       "text": "<!DOCTYPE html>\n<html xmlns=\"http://www.w3.org/1999/xhtml\" prefix=\"og: http://ogp.me/ns#\" lang=\"en-US\" xml:lang=\"en-US\">\n<head>\n<link rel=\"preload\" href=\"/blk-one02-c-assets/include/bundles/minified-ad58682690f72ffa52b25d7f4076d635.css\" as=\"style\" />\n<link rel=\"preload\" href=\"/blk-one02-c-assets/include/bundles/minified-cf3bd4f8f7916e1f21479674299d9778.css\" as=\"style\" />\n<link rel=\"preload\" href=\"",
       "summary": "2225142B · <!DOCTYPE html> <html xmlns=\"http://www.w3.org/1999/xhtml\" prefix=\"og: http://og",
       "ok": true,
-      "ms": 892
+      "ms": 1112
     },
     {
       "id": "issuer.ishares.hk.2800",
@@ -1329,9 +1306,9 @@
       "bytes": 409,
       "contentType": "text/html",
       "ok": false,
-      "body": "<HTML><HEAD>\n<TITLE>Access Denied</TITLE>\n</HEAD><BODY>\n<H1>Access Denied</H1>\n \nYou don't have permission to access \"http&#58;&#47;&#47;www&#46;blackrock&#46;com&#47;hk&#47;en&#47;products&#47;251769&#47;\" on this server.<P>\nReference&#32;&#35;18&#46;cb06d217&#46;1787935596&#46;1feb1380\n<P>https&#5",
+      "body": "<HTML><HEAD>\n<TITLE>Access Denied</TITLE>\n</HEAD><BODY>\n<H1>Access Denied</H1>\n \nYou don't have permission to access \"http&#58;&#47;&#47;www&#46;blackrock&#46;com&#47;hk&#47;en&#47;products&#47;251769&#47;\" on this server.<P>\nReference&#32;&#35;18&#46;d237cb17&#46;1787955904&#46;3256858a\n<P>https&#5",
       "summary": "409B · text/html",
-      "ms": 415
+      "ms": 505
     },
     {
       "id": "issuer.csindex.510300",
@@ -1342,7 +1319,7 @@
       "ok": false,
       "body": "{\"timestamp\":\"2026-08-29\",\"status\":404,\"error\":\"Not Found\",\"message\":\"\",\"path\":\"/csindex-home/indexInfo/index-info-detail\"}",
       "summary": "123B · application/json",
-      "ms": 924
+      "ms": 773
     },
     {
       "id": "issuer.eastmoney.510300",
@@ -1353,7 +1330,7 @@
       "ok": false,
       "body": "<html>\r\n<head><title>502 Bad Gateway</title></head>\r\n<body>\r\n<center><h1>502 Bad Gateway</h1></center>\r\n<hr><center>nginx/1.26.2</center>\r\n</body>\r\n</html>\r\n<!-- a padding to disable MSIE and Chrome friendly error page -->\r\n<!-- a padding to disable MSIE and Chrome friendly error page -->\r\n<!-- a pa",
       "summary": "559B · text/html",
-      "ms": 1200
+      "ms": 757
     },
     {
       "id": "issuer.ssga.spy",
@@ -1364,7 +1341,7 @@
       "text": "PK\u0003\u0004\u0014\u0000\b\b\b\u0000�Q\u001c]\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0013\u0000\u0000\u0000[Content_Types].xml���n�0\f�_���\u0010+��P\fqz�\u00030`�\n�{\u0000F�c!:Ad���G9�ti�nɍe�?���\fͮ6�7\u000fXȥة�v�\u001a�&Y\u0017���y�ur�\u001ab�\u0016|�ة-�����\u0019���H�\u001a��G��\f\u0018�ڔ1J�O%\u0000˶,u\u0006��%����\u0007mRd�<�ZC�g��������{-�)��;\u0003,��C�ϊNR�;�6�u���rA�4 r�m.N*�;d�6H5_6Rx���E�����D[Џ\u001a\u001a\\�w\"�\u0003H��\"<O�{��!�Q��׭��\u0011��\u0003��\u001f�\u001e\u0016�ߙ���7\u0010$[ˠ���\u0002��^%�b��7\u0011_?\u0000�}X��\\DX��A\u0013�\u0012%-����t\u0010&\u0015<\nX���֬�S8\u000e=JO\t���i����K������zOpF\u001f��\u0007�P\r��S�Y�\u0019<�\u001a\u0003���9G.k\u001b��",
       "summary": "51934B · PK\u0003\u0004\u0014\u0000\b\b\b\u0000�Q\u001c]\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0013\u0000\u0000\u0000[Content_Types].xml���n�0 �_���\u0010+��P qz�\u00030`� �{\u0000F�",
       "ok": true,
-      "ms": 556
+      "ms": 570
     },
     {
       "id": "issuer.invesco.qqq",
@@ -1375,7 +1352,7 @@
       "ok": false,
       "body": "",
       "summary": "0B · ",
-      "ms": 188
+      "ms": 70
     },
     {
       "id": "issuer.nomura.1306",
@@ -1386,7 +1363,7 @@
       "text": "\n\n\n\n\n\n\n\n    \n\n\n\n\n\n\n\n<!doctype html>\n<html lang=ja>\n<head>\n  \n  <script>\n    (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src='https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);})(window,document,'script','dataLayer','G",
       "summary": "214982B ·  <!doctype html> <html lang=ja> <head> <script> (fun",
       "ok": true,
-      "ms": 1812
+      "ms": 1162
     },
     {
       "id": "issuer.tiger.kr",
@@ -1397,14 +1374,14 @@
       "ok": false,
       "body": "<!DOCTYPE HTML PUBLIC \"-//IETF//DTD HTML 2.0//EN\">\n<html><head>\n<title>301 Moved Permanently</title>\n</head><body>\n<h1>Moved Permanently</h1>\n<p>The document has moved <a href=\"http://investments.miraeasset.com/tigeretf/index.html\">here</a>.</p>\n</body></html>\n",
       "summary": "261B · text/html; charset=iso-8859-1",
-      "ms": 657
+      "ms": 463
     },
     {
       "id": "issuer.krx.etf.site",
       "note": "KRX ETF 전용 사이트",
       "ok": false,
       "error": "TypeError: fetch failed",
-      "ms": 147
+      "ms": 167
     }
   ]
 }
