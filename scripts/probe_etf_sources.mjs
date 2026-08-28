@@ -274,18 +274,21 @@ async function probeYahoo() {
     return out;
   }
 
-  // 미국 상장은 확실할 것으로 보지만, 이 도구의 진짜 관문은 홍콩·일본·유럽이다.
+  // 미국 상장은 확실할 것으로 보지만, 이 도구의 진짜 관문은 홍콩·일본·중국이다.
+  // 특히 본토(상해·심천) 상장은 야후 커버리지가 얕을 공산이 크다.
   // 여기서 편입종목이 안 나오면 그 시장은 발행사 폴백으로 가야 한다.
   const SYMBOLS = [
     ['SPY', '미국 · S&P500'],
     ['QQQ', '미국 · 나스닥100'],
     ['2800.HK', '홍콩 · 항셍'],
     ['3033.HK', '홍콩 · 항셍테크'],
+    ['2823.HK', '홍콩 · CSI300 (본토 익스포저)'],
     ['1306.T', '일본 · TOPIX'],
     ['1321.T', '일본 · 닛케이225'],
-    ['EXS1.DE', '독일 · DAX'],
-    ['IWDA.AS', '네덜란드 · MSCI World UCITS'],
-    ['CSPX.L', '런던 · S&P500 UCITS'],
+    ['510300.SS', '중국 · 상해 CSI300'],
+    ['510500.SS', '중국 · 상해 CSI500'],
+    ['588000.SS', '중국 · 과창판50(STAR50)'],
+    ['159915.SZ', '중국 · 심천 촹예반(ChiNext)'],
     ['069500.KS', '한국 · KODEX 200 (야후에도 있는지)'],
   ];
   for (const [sym, note] of SYMBOLS) {
@@ -315,9 +318,12 @@ async function probeIssuers() {
     ['ishares.us.ivv', 'iShares IVV (미국) holdings CSV',
      'https://www.ishares.com/us/products/239726/ishares-core-sp-500-etf/1467271812596.ajax' +
      '?fileType=csv&fileName=IVV_holdings&dataType=fund'],
-    ['ishares.ucits.cspx', 'iShares CSPX (UCITS) holdings CSV',
-     'https://www.ishares.com/uk/individual/en/products/253743/' +
-     '?fileType=csv&fileName=CSPX_holdings&dataType=fund'],
+    ['ishares.hk.2800', 'iShares 홍콩 사이트 (2800 등 편입종목)',
+     'https://www.blackrock.com/hk/en/products/251769/'],
+    ['csindex.510300', '중국 CSI 지수사 · 300 지수 구성종목',
+     'https://www.csindex.com.cn/csindex-home/indexInfo/index-info-detail?indexCode=000300'],
+    ['eastmoney.510300', '중국 동방재부 · ETF 편입종목',
+     'https://push2.eastmoney.com/api/qt/stock/get?secid=1.510300&fields=f57,f58,f43,f169'],
     ['ssga.spy', 'SPDR SPY holdings',
      'https://www.ssga.com/us/en/intermediary/library-content/products/fund-data/etfs/us/holdings-daily-us-en-spy.xlsx'],
     ['invesco.qqq', 'Invesco QQQ holdings CSV',
