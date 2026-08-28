@@ -1068,6 +1068,124 @@ def _ko_list(names, limit=4):
     return head + (" 외 %d" % (len(names) - limit) if len(names) > limit else "")
 
 
+THEME_PAT = dict(THEMES)
+
+
+def _pick_lines(rows, per=3, max_broker=1, used=None):
+    """리포트 무더기에서 **읽을 만한 문장**을 골라 온다.
+
+    문장은 짓지 않는다. 각 리포트가 이미 뽑아 둔 첫 줄(`lead`, 대개 판단
+    문장)을 증권사·종목과 함께 그대로 옮긴다. 한 증권사가 한 주제를 다
+    차지하지 않게 몫을 두고, 서로 닮은 문장은 버린다 — 같은 사건을 여러
+    곳이 같은 말로 쓰는 일이 흔하다.
+    """
+    picks, by_broker = [], {}
+    used = [] if used is None else used     # 주제끼리도 나눠 쓴다(아래 설명)
+    for r in sorted(rows, key=lambda r: (-(r.get("_w") or 1), -(r.get("views") or 0))):
+        line = (r.get("lead") or "").strip(" ■◆▶●○·-–—*")
+        if len(line) < 25:
+            continue
+        # 「KOSPI 6,912pt (+1.53%), KOSDAQ 837pt (+1.30%)」 같은 시세 나열은
+        # 주제 이야기가 아니다. 글자가 절반은 되어야 읽을 거리로 친다.
+        if len(re.sub(r"[^가-힣]", "", line)) < len(line) * 0.35:
+            continue
+        b = r.get("broker") or "-"
+        if by_broker.get(b, 0) >= max_broker:
+            continue
+        keys = _keyset(line)
+        if any(_too_alike(keys, k) for k in used):
+            continue
+        by_broker[b] = by_broker.get(b, 0) + 1
+        used.append(keys)
+        picks.append({
+            "broker": b,
+            "stock": (r.get("stock") or {}).get("name"),
+            "title": r["title"],
+            "url": r["url"],
+            "views": r.get("views"),
+            "text": line,
+        })
+        if len(picks) >= per:
+            break
+    return picks
+
+
+def theme_brief(rows, themes, top=5, per=3, used=None):
+    """주제마다 **실제 리포트 문장**을 붙여 읽을 거리로 만든다.
+
+    「한눈에」는 몇 건인지만 말한다. 정작 알고 싶은 것은 무슨 이야기인가다.
+    주제별로 그 주제를 다룬 리포트를 모아, 가장 많이 읽힌 것부터 판단
+    문장을 옮긴다. 어느 증권사가 무엇을 말했는지가 남아야 쓸모가 있다.
+    """
+    out = []
+    # 주제를 넘나들며 같은 문장이 되풀이되는 것을 막는다. 시황 리포트 한 건이
+    # 금리·반도체·금융에 다 걸려, 같은 줄이 세 주제에 실린 판이 있었다.
+    used = [] if used is None else used
+    for t in themes[:top]:
+        pat = THEME_PAT.get(t["theme"])
+        if not pat:
+            continue
+        hit = []
+        for r in rows:
+            in_title = bool(pat.search(r.get("title") or ""))
+            if not in_title and not pat.search(r.get("summary") or ""):
+                continue
+            # 제목에 든 것이 그 주제를 **다룬** 리포트다. 본문에 한 번 스친
+            # 것보다 앞세운다 — 그러지 않으면 시황 리포트가 모든 주제를
+            # 차지한다.
+            r = dict(r, _w=2 if in_title else 1)
+            hit.append(r)
+        lines = _pick_lines(hit, per=per, used=used)
+        if not lines:
+            continue
+        brokers = []
+        for r in hit:
+            if r.get("broker") and r["broker"] not in brokers:
+                brokers.append(r["broker"])
+        out.append({"theme": t["theme"], "count": t["count"],
+                    "brokers": brokers[:6], "points": lines})
+    return out
+
+
+def move_brief(rows, moves, limit=8):
+    """목표주가를 올리거나 내린 리포트마다 **그 까닭 한 줄**을 붙인다."""
+    by_url = {r["url"]: r for r in rows}
+    out = []
+    for mv in moves:
+        if mv.get("move") not in ("상향", "하향"):
+            continue
+        r = by_url.get(mv.get("url"))
+        why = ""
+        if r:
+            # 상향·하향이라는 말이 든 문장을 우선으로 고른다 — 그것이 까닭이다.
+            for s in re.split(r"(?<=다\.)\s+|(?<=[.!?])\s+", r.get("summary") or ""):
+                if re.search(r"상향|하향|목표\s*주가", s) and len(s) >= 20:
+                    why = s.strip()
+                    break
+            if not why:
+                why = r.get("lead") or ""
+        out.append({"move": mv["move"], "stock": mv.get("stock"),
+                    "target_price": mv.get("target_price"), "broker": mv.get("broker"),
+                    "title": mv.get("title"), "url": mv.get("url"), "why": why})
+        if len(out) >= limit:
+            break
+    return out
+
+
+def crowd_brief(rows, crowd, limit=4, per=3, used=None):
+    """여러 곳이 함께 본 종목마다 증권사별 한 줄 — 시각차가 드러나야 한다."""
+    out = []
+    for c in crowd[:limit]:
+        hit = [r for r in rows if (r.get("stock") or {}).get("code") == c.get("code")]
+        lines = _pick_lines(hit, per=per, used=used)
+        if len(lines) < 2:
+            continue
+        out.append({"name": c.get("name") or c.get("code"), "count": c["count"],
+                    "target_avg": c.get("target_avg"), "target_min": c.get("target_min"),
+                    "target_max": c.get("target_max"), "points": lines})
+    return out
+
+
 def overview(rows, label, moves=None, crowd=None):
     """리포트 무더기의 **서두 총평**.
 
@@ -1107,9 +1225,14 @@ def overview(rows, label, moves=None, crowd=None):
         parts.append("여러 증권사가 함께 본 종목은 %s입니다."
                      % _ko_list(["%s %d곳" % (c.get("name") or c.get("code"), c["count"])
                                  for c in crowd], 3))
+    shared = []                 # 논점·목표주가·종목이 같은 문장을 나눠 쓰지 않게
     return {
         "text": " ".join(parts),
         "themes": themes,
+        # 몇 건인지 다음에 **무슨 이야기인지**가 와야 한다. 아래 셋이 그것이다.
+        "brief": theme_brief(rows, themes, used=shared),
+        "moves": move_brief(rows, moves),
+        "crowd": crowd_brief(rows, crowd, used=shared),
         "by_category": sorted(({"category": c, "count": n} for c, n in cats.items()),
                               key=lambda e: -e["count"]),
     }
