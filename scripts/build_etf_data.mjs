@@ -244,6 +244,53 @@ if (!etfs.length) {
 // 테마 라벨은 사전에서 그대로 가져온다. 화면이 셀렉트 박스를 이것으로 만든다.
 const themeOrder = THEMES.map((t) => t.id);
 
+/**
+ * 수익률 기준 되짚기 결과를 데이터에 같이 싣는다.
+ *
+ * 화면이 "총수익률 하나" 를 기준으로 내걸었으니, **왜 그런지**도 같은 파일
+ * 안에 있어야 한다. 근거를 별도 문서로 빼 두면 배포할 파일이 둘이 되고,
+ * 언젠가 한쪽만 돌아다니게 된다.
+ *
+ * 여기서는 표에 필요한 만큼만 옮긴다. 원자료는 그대로 저장소에 남는다.
+ * 되짚기를 아직 안 돌렸으면 이 칸은 비고, 화면은 그 탭을 감춘다.
+ */
+async function basisEvidence() {
+  let raw;
+  try {
+    raw = JSON.parse(await readFile('tools/discovery/etf_price_series.json', 'utf8'));
+  } catch { return null; }
+  const withCmp = raw.filter((r) => r && r.cmp);
+  const control = withCmp.filter((r) => r.divCount === 0);
+  const payers = withCmp.filter((r) => (r.adj?.divsInWindow ?? 0) > 0);
+  if (!control.length || payers.length < 2) return null;
+
+  const slim = (r) => ({
+    code: r.code, name: r.name, yield: r.yield,
+    stated: r.stated?.price ?? null,
+    naverRaw: r.naverY1?.pct ?? null,
+    naverFrom: r.naverY1?.fromClose ?? null, naverTo: r.naverY1?.toClose ?? null,
+    yahooFrom: r.yahooY1?.fromClose ?? null, yahooTo: r.yahooY1?.toClose ?? null,
+    ourPrice: r.data?.price ?? null, ourTr: r.data?.tr ?? null,
+    days: r.cmp?.common ?? null,
+    medianDiff: r.cmp?.medianRelPct ?? null, maxDiff: r.cmp?.maxRelPct ?? null,
+    over1pct: r.cmp?.over1pct ?? null,
+    divs: r.adj?.divsInWindow ?? 0,
+    ratioEnd: r.adj?.ratioEnd ?? null,
+    ratioStart: r.adj?.ratioStart ?? null,
+    ratioPredicted: r.adj?.predictedStartRatio ?? null,
+  });
+  const hit = payers.filter((r) =>
+    Math.abs(r.adj.ratioEnd - 1) < 0.02 &&
+    Math.abs(r.adj.ratioStart - r.adj.predictedStartRatio) < 0.03).length;
+
+  return {
+    asOf: payers[0]?.adj?.endDay || null,
+    hit, payerCount: payers.length,
+    control: control.map(slim),
+    payers: payers.map(slim),
+  };
+}
+
 const payload = {
   updatedAt: new Date().toISOString(),
   source,                                   // 'live' | 'sample'
@@ -251,6 +298,7 @@ const payload = {
   labels: labels(),
   themeOrder,
   count: etfs.length,
+  basis: await basisEvidence(),
   etfs,
 };
 

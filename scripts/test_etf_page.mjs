@@ -340,6 +340,21 @@ await page.waitForTimeout(150);
 const tagRows = await page.locator('#tagging-body tbody tr').count();
 check('분류 점검 표가 그려진다', tagRows > 0, `${tagRows}행`);
 
+// ── 수익률 기준 탭. 근거가 도구 안에 같이 있어야 한다 — 별도 문서로 빼면
+//    배포할 파일이 둘이 되고 언젠가 한쪽만 돌아다닌다.
+await page.locator('.tabs button[data-tab="basis"]').click();
+await page.waitForTimeout(200);
+const basisTables = await page.locator('#basis-body table').count();
+check('수익률 기준 탭이 그려진다', basisTables >= 3, `${basisTables}개 표`);
+const basisTxt = await page.locator('#basis-body').textContent();
+check('결론을 먼저 말한다', /재는 대상이 달랐|measure different/.test(basisTxt || ''));
+check('대조군 관측이 있다', /분배가 없으면|no distributions/.test(basisTxt || ''));
+check('소급 수정 관측이 있다', /분배금과 맞|equals the distributions/.test(basisTxt || ''));
+const ratioCells = await page.locator('#basis-body table').nth(1)
+  .locator('tbody tr td:nth-child(4)').allTextContents();
+check('비율이 숫자로 채워진다', ratioCells.length > 0 && ratioCells.every((c) => /\d\.\d{4}/.test(c)),
+      ratioCells.join(' | '));
+
 // ── 영문 전환
 await page.locator('.lang-toggle button[data-lang="en"]').click();
 await page.waitForTimeout(200);
