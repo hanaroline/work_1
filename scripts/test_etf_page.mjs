@@ -147,6 +147,40 @@ const sampleName = await page.locator('#compare-body .cmp-grid .card .hold-row .
 check('종목명이 한 글자로 잘리지 않는다', (sampleName || '').trim().length >= 2,
       (sampleName || '').trim().slice(0, 24));
 
+// ── 카드끼리 순위가 같은 줄에 놓이는가.
+//    ETF 이름이 한 줄이냐 두 줄이냐, 메타 줄이 접히느냐에 따라 목록 시작
+//    높이가 달라지면 KODEX 200 의 1위와 TIGER 200 의 1위가 어긋난다.
+//
+//    8개는 그리드에서 두 줄로 접히므로, 아랫줄 카드는 당연히 아래에 있다.
+//    **같은 줄에 놓인 카드끼리** 맞는지를 본다 (카드의 top 으로 줄을 가른다).
+async function rowSpreadAt(nth) {
+  return page.locator('#compare-body .cmp-grid .card').evaluateAll((cards, n) => {
+    const lines = new Map();
+    for (const c of cards) {
+      const row = c.querySelectorAll('.hold-row')[n];
+      if (!row) continue;
+      const line = Math.round(c.getBoundingClientRect().top);
+      if (!lines.has(line)) lines.set(line, []);
+      lines.get(line).push(Math.round(row.getBoundingClientRect().top));
+    }
+    let worst = 0;
+    let lineCount = 0;
+    for (const tops of lines.values()) {
+      if (tops.length < 2) continue;          // 혼자 있는 줄은 견줄 대상이 없다
+      lineCount += 1;
+      worst = Math.max(worst, Math.max(...tops) - Math.min(...tops));
+    }
+    return { worst, lineCount };
+  }, nth);
+}
+const align1 = await rowSpreadAt(0);
+check('같은 줄 카드끼리 1순위가 나란하다', align1.worst <= 1 && align1.lineCount > 0,
+      `그리드 ${align1.lineCount}줄 · 편차 ${align1.worst}px`);
+// 머리만 맞고 줄 높이가 다르면 아래로 갈수록 벌어진다. 3순위도 본다.
+const align3 = await rowSpreadAt(2);
+check('같은 줄 카드끼리 3순위도 나란하다', align3.worst <= 1 && align3.lineCount > 0,
+      `편차 ${align3.worst}px`);
+
 // 담아 둔 것을 비우고 나머지 시험으로 넘어간다
 await page.locator('#compare-body [data-clear-basket]').click();
 await page.waitForTimeout(150);
