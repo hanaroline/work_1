@@ -30,12 +30,32 @@ import json
 import os
 import re
 import sys
+import time
 import urllib.error
 from datetime import datetime, timedelta, timezone
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 from fetch_market import _get, _slice_tag, _text            # noqa: E402
+
+
+def _get_retry(url, tries=3, **kw):
+    """몇 번 더 두드린다.
+
+    미래에셋 쪽은 이따금 TLS 를 끊는다 — 8/28 12:09 판에서 첫 쪽이
+    UNEXPECTED_EOF 로 죽자 하우스 원천이 통째로 날아갔고, 그 바람에 글로벌
+    판(해외 리포트의 유일한 길)까지 함께 잃었다. 한 번 실패로 원천을
+    통째로 놓치지 않게 한다.
+    """
+    last = None
+    for i in range(tries):
+        try:
+            return _get(url, **kw)
+        except Exception as e:                                 # noqa: BLE001
+            last = e
+            if i + 1 < tries:
+                time.sleep(1.5 * (i + 1))
+    raise last
 
 KST = timezone(timedelta(hours=9))
 OUT_DIR = "data/reports"
@@ -404,7 +424,7 @@ def _mirae_page(cid, board, param, page, overseas=False):
     url = MIRAE_LIST % cid
     if page > 1:
         url += "&%s=%d" % (param, page)
-    html = _get(url, encoding="cp949", referer="https://securities.miraeasset.com/")
+    html = _get_retry(url, encoding="cp949", referer="https://securities.miraeasset.com/")
     return parse_mirae(html, board, cid, overseas), html
 
 
@@ -423,12 +443,20 @@ def fetch_mirae(dump_dir=None):
             n += 1
         return n
 
+    board_err = {}
     for board, cid, pages, overseas in MIRAE_BOARDS:
-        first, html = _mirae_page(cid, board, "pageIndex", 1, overseas)
+        # 판 하나가 죽어도 나머지는 살린다. 예전에는 첫 판이 넘어지면
+        # 하우스 원천이 통째로 날아갔다.
+        try:
+            first, html = _mirae_page(cid, board, "pageIndex", 1, overseas)
+        except Exception as e:                                  # noqa: BLE001
+            board_err[board] = "%s: %s" % (type(e).__name__, e)
+            continue
         if not first:
             if dump_dir:
                 _dump(dump_dir, "mirae_%s_p1.html" % cid, html)
-            raise ValueError("미래에셋 목록에서 줄을 못 찾았다 (%d bytes)" % len(html))
+            board_err[board] = "줄을 못 찾았다 (%d bytes)" % len(html)
+            continue
         first_n = max(first_n, len(first))
         add(first)
 
@@ -474,7 +502,9 @@ def fetch_mirae(dump_dir=None):
         if r.get("pdf") and not mate.get("pdf"):
             mate["pdf"] = r["pdf"]
     return uniq, {"page_param": used or "(쪽 넘김 없음)",
-                  "first_page_rows": first_n, "rows_before_dedupe": len(rows)}
+                  "first_page_rows": first_n, "rows_before_dedupe": len(rows),
+                  "boards": len(MIRAE_BOARDS) - len(board_err),
+                  "board_errors": board_err or None}
 
 
 def _key(title):
@@ -535,14 +565,32 @@ def parse_hana(html):
     return rows
 
 
-def fetch_hana(dump_dir=None):
-    html = _get(HANA_LIST, encoding="utf-8", referer=HANA_BASE + "/")
-    rows = parse_hana(html)
+def fetch_hana(pages=5, dump_dir=None):
+    """한 쪽에 열 줄이다. `curPage` 로 넘긴다(목록 쪽의 doSearch 에서 확인).
+
+    한 쪽만 받으면 그날 자가 두어 건뿐이라 해외 리포트가 거의 안 잡힌다 —
+    NVDA.US·688017.CH 같은 줄은 하루 이틀 전 자리에 있다.
+    """
+    rows, seen, first_html = [], set(), None
+    for page in range(1, pages + 1):
+        url = HANA_LIST if page == 1 else HANA_LIST + "?curPage=%d" % page
+        try:
+            html = _get_retry(url, encoding="utf-8", referer=HANA_BASE + "/")
+        except Exception:                                      # noqa: BLE001
+            break
+        if page == 1:
+            first_html = html
+        got = [r for r in parse_hana(html) if r["nid"] not in seen]
+        if not got:
+            break                            # 쪽 넘김이 먹지 않거나 끝이다
+        for r in got:
+            seen.add(r["nid"])
+        rows.extend(got)
     if not rows:
-        if dump_dir:
-            _dump(dump_dir, "hana_list.html", html)
-        raise ValueError("하나증권 목록에서 줄을 못 찾았다 (%d bytes)" % len(html))
-    return rows, {"rows": len(rows)}
+        if dump_dir and first_html:
+            _dump(dump_dir, "hana_list.html", first_html)
+        raise ValueError("하나증권 목록에서 줄을 못 찾았다")
+    return rows, {"rows": len(rows), "pages": page}
 
 
 def merge_source(reports, rows, broker, label):
