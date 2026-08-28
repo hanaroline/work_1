@@ -17,6 +17,7 @@ on:
       - 'scripts/probe_etf_sources*.mjs'
       - 'scripts/probe_etf_dividends.mjs'
       - 'scripts/verify_etf_price_series.mjs'
+      - 'scripts/verify_etf_audit.mjs'
       - 'scripts/probe_fund_sources*.mjs'
       - 'scripts/probe_fund_naver*.mjs'
       - '.github/workflows/etf-probe.yml'
@@ -44,6 +45,14 @@ jobs:
       # 한 단계가 매달리면 뒤의 단계가 통째로 못 돈다 — 실제로 2차 탐색이
       # 13분 넘게 멈춰 그 뒤의 되짚기가 시작조차 못 했다. 그래서 단계마다
       # 시간을 끊고, **지금 답이 필요한 것을 앞에 둔다.**
+
+      # 감사에서 나온 의심을 원자료로 되짚는다. 지금 답이 필요한 것이라 맨 앞에
+      # 둔다 — 총수익률이 +1837% 로 찍힌 원인과, 그게 몇 종목에 퍼졌는지.
+      - name: 되짚기 실행 (감사 — 분배·분할·기준)
+        continue-on-error: true
+        timeout-minutes: 25
+        if: hashFiles('scripts/verify_etf_audit.mjs') != ''
+        run: node scripts/verify_etf_audit.mjs
 
       # 야후 시장가와 네이버 시장가가 왜 다른지 — 숫자가 아니라 원가격을 받아
       # 되짚는다. 화면 값을 고치지 않고 판정만 한다.
@@ -123,6 +132,7 @@ jobs:
             tools/discovery/etf_probe*
             tools/discovery/etf_dividend_probe.*
             tools/discovery/etf_price_series.*
+            tools/discovery/etf_audit*
             tools/discovery/fund_probe*
             tools/discovery/fund_naver*
             tools/discovery/naver_etf_analysis.json
@@ -137,6 +147,7 @@ jobs:
             git add tools/discovery/etf_probe* || true
             git add tools/discovery/etf_dividend_probe.* 2>/dev/null || true
             git add tools/discovery/etf_price_series.* 2>/dev/null || true
+            git add tools/discovery/etf_audit* 2>/dev/null || true
             git add tools/discovery/fund_probe* 2>/dev/null || true
             git add tools/discovery/fund_naver* 2>/dev/null || true
             git add tools/discovery/naver_etf_analysis.json 2>/dev/null || true
