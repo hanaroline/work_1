@@ -1,6 +1,6 @@
 # ETF 원천 탐색 2차
 
-- 탐색 시각: 2026-08-28T15:29:11.874Z
+- 탐색 시각: 2026-08-28T15:41:32.925Z
 - KRX 기준일: (못 찾음)
 
 | 결과 | 항목 | 설명 | 상태 | 요약 |
@@ -48,8 +48,8 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content |
-| ❌ | `naver.pdf.api.etf` | 국내 구성종목 후보 — api.stock.naver.com/etf/069500/componentStocks | 404 | {"timestamp":"2026-08-28T15:29:03.603+0000","status":404,"error":"Not Found","message":"No message a |
-| ❌ | `naver.pdf.api.etf2` | 국내 구성종목 후보 — api.stock.naver.com/stock/069500/etfAnalysis | 404 | {"timestamp":"2026-08-28T15:29:03.845+0000","status":404,"error":"Not Found","message":"No message a |
+| ❌ | `naver.pdf.api.etf` | 국내 구성종목 후보 — api.stock.naver.com/etf/069500/componentStocks | 404 | {"timestamp":"2026-08-28T15:41:24.269+0000","status":404,"error":"Not Found","message":"No message a |
+| ❌ | `naver.pdf.api.etf2` | 국내 구성종목 후보 — api.stock.naver.com/stock/069500/etfAnalysis | 404 | {"timestamp":"2026-08-28T15:41:24.536+0000","status":404,"error":"Not Found","message":"No message a |
 | ❌ | `naver.pdf.pc.etf` | 국내 구성종목 후보 — finance.naver.com/item/etf_component.naver?code=069500 | 404 | 
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dt |
 | ❌ | `naver.pdf.pc.coinfo` | 국내 구성종목 후보 — finance.naver.com/item/coinfo.naver?code=069500 | 200 | HTML · 구성종목 흔적 없음 |
