@@ -1,0 +1,390 @@
+[
+  {
+    "group": "naver",
+    "name": "펀드 메인",
+    "url": "https://finance.naver.com/fund/",
+    "method": "GET",
+    "status": 200,
+    "type": "text/html",
+    "bytes": 185762,
+    "encoding": "euc-kr",
+    "sample": "\n\n\t\n\t\n\t\n<html lang='ko'>\n<head>\n\n\n\t\n\t\n\t\t\n\t\t\t\n\t\t\t\t<title>Npay 증권</title>\n\t\t\t\n\t\t\t\n\t\t\n\t\n\n\n\n\n<meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\" />\n\n<meta http-equiv=\"Content-Script-Type\" content=\"text/javascript\">\n<meta http-equiv=\"Content-Style-Type\" content=\"text/css\">\n<meta name=\"apple-mobile-web-app-title\" content=\"Npay 증권\" />\n\n\n\n\n\n\t\n\t\t<meta property=\"og:title\" content=\"Npay 증권\"/>\n\t\t<meta property=\"og:image\" content=\"https://ssl.pstatic.net/static/m/stock/im/2016/08/og_stock-200.png\"/>\n\t\t<meta property=\"og:url\" content=\"https://finance.naver.com\"/>\n\t\t<meta property=\"og:descript",
+    "hasJson": false,
+    "looksFrame": false,
+    "mentions": {
+      "보유종목": true,
+      "수익률": false,
+      "설정액": false,
+      "보수": true,
+      "펀드코드": false
+    }
+  },
+  {
+    "group": "naver",
+    "name": "펀드 검색 화면",
+    "url": "https://finance.naver.com/fund/fundFinder.naver",
+    "method": "GET",
+    "status": 200,
+    "type": "text/html",
+    "bytes": 185770,
+    "encoding": "euc-kr",
+    "sample": "\n\n\t\n\t\n\t\n<html lang='ko'>\n<head>\n\n\n\t\n\t\n\t\t\n\t\t\t\n\t\t\t\t<title>Npay 증권</title>\n\t\t\t\n\t\t\t\n\t\t\n\t\n\n\n\n\n<meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\" />\n\n<meta http-equiv=\"Content-Script-Type\" content=\"text/javascript\">\n<meta http-equiv=\"Content-Style-Type\" content=\"text/css\">\n<meta name=\"apple-mobile-web-app-title\" content=\"Npay 증권\" />\n\n\n\n\n\n\t\n\t\t<meta property=\"og:title\" content=\"Npay 증권\"/>\n\t\t<meta property=\"og:image\" content=\"https://ssl.pstatic.net/static/m/stock/im/2016/08/og_stock-200.png\"/>\n\t\t<meta property=\"og:url\" content=\"https://finance.naver.com\"/>\n\t\t<meta property=\"og:descript",
+    "hasJson": false,
+    "looksFrame": false,
+    "mentions": {
+      "보유종목": true,
+      "수익률": false,
+      "설정액": false,
+      "보수": true,
+      "펀드코드": false
+    }
+  },
+  {
+    "group": "naver",
+    "name": "펀드 목록 API 후보",
+    "url": "https://finance.naver.com/api/fund/fundList.nhn",
+    "method": "GET",
+    "status": 404,
+    "type": "text/html",
+    "bytes": 2741,
+    "encoding": "euc-kr",
+    "sample": "\n<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\" \"http://www.w3.org/TR/html4/loose.dtd\">\n<html>\n<head>\n<meta http-equiv=\"Content-Type\" content=\"text/html; charset=euc-kr\">\n<title>네이버 :: 세상의 모든 지식, 네이버</title>\n\n<style type=\"text/css\">\n.error_content * {margin:0;padding:0;}\n.error_content img{border:none;}\n.error_content em {font-style:normal;}\n.error_content {width:410px; margin:80px auto 0; padding:57px 0 0 0; font-size:12px; font-family:\"나눔고딕\", \"NanumGothic\", \"돋움\", Dotum, AppleGothic, Sans-serif; text-align:left; line-height:14px; background:url(https://ssl.pstatic.net/static/c",
+    "hasJson": false,
+    "looksFrame": false,
+    "mentions": {
+      "보유종목": false,
+      "수익률": false,
+      "설정액": false,
+      "보수": true,
+      "펀드코드": false
+    }
+  },
+  {
+    "group": "naver",
+    "name": "모바일 펀드 홈",
+    "url": "https://m.stock.naver.com/fund",
+    "method": "GET",
+    "status": 404,
+    "type": "text/html",
+    "bytes": 4209,
+    "encoding": "utf-8",
+    "sample": "<!doctype html>\n<html lang=\"ko\">\n<head>\n    <meta charset=\"utf-8\">\n    <meta name=\"viewport\" content=\"width=device-width,initial-scale=1.0,maximum-scale=1.0,minimum-scale=1.0,user-scalable=no\">\n    <title>Npay 증권</title>\n    <link rel=\"shortcut icon\" href=\"https://ssl.pstatic.net/imgstock/favicon.ico\">\n    <link rel=\"stylesheet\" type=\"text/css\" href=\"https://ssl.pstatic.net/imgstock/static.mobile/css/finance/min/20260826170058/mstock_error.css\">\n</head>\n<body>\n<!-- header -->\n<header id=\"header\">\n    <div class=\"header\">\n        <h1>\n            <a href=\"/\" class=\"button\">\n                <spa",
+    "hasJson": false,
+    "looksFrame": false,
+    "mentions": {
+      "보유종목": false,
+      "수익률": false,
+      "설정액": false,
+      "보수": false,
+      "펀드코드": false
+    }
+  },
+  {
+    "group": "naver",
+    "name": "모바일 펀드 API 후보",
+    "url": "https://m.stock.naver.com/api/fund/ranking",
+    "method": "GET",
+    "status": 404,
+    "type": "text/html",
+    "bytes": 4209,
+    "encoding": "utf-8",
+    "sample": "<!doctype html>\n<html lang=\"ko\">\n<head>\n    <meta charset=\"utf-8\">\n    <meta name=\"viewport\" content=\"width=device-width,initial-scale=1.0,maximum-scale=1.0,minimum-scale=1.0,user-scalable=no\">\n    <title>Npay 증권</title>\n    <link rel=\"shortcut icon\" href=\"https://ssl.pstatic.net/imgstock/favicon.ico\">\n    <link rel=\"stylesheet\" type=\"text/css\" href=\"https://ssl.pstatic.net/imgstock/static.mobile/css/finance/min/20260826170058/mstock_error.css\">\n</head>\n<body>\n<!-- header -->\n<header id=\"header\">\n    <div class=\"header\">\n        <h1>\n            <a href=\"/\" class=\"button\">\n                <spa",
+    "hasJson": false,
+    "looksFrame": false,
+    "mentions": {
+      "보유종목": false,
+      "수익률": false,
+      "설정액": false,
+      "보수": false,
+      "펀드코드": false
+    }
+  },
+  {
+    "group": "kofia",
+    "name": "펀드다모아",
+    "url": "https://fundamoa.kofia.or.kr/",
+    "method": "GET",
+    "error": "fetch failed"
+  },
+  {
+    "group": "kofia",
+    "name": "전자공시 dis",
+    "url": "https://dis.kofia.or.kr/",
+    "method": "GET",
+    "status": 200,
+    "type": "text/html",
+    "bytes": 536,
+    "encoding": "utf-8",
+    "sample": "<!DOCTYPE html PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\" \"http://www.w3.org/TR/html4/loose.dtd\">\r\n<html>\r\n<head>\r\n<meta http-equiv=\"Content-Type\" content=\"text/html; charset=EUC-KR\">\r\n<title>Insert title here</title>\r\n<script type=\"text/javascript\" src=\"/js/com/disCommon.js\"></script>\r\n<script type=\"text/javascript\">\r\nwindow.onload = function () {\r\n\t//location.href = menuLinkUrl + \"?w2xPath=/wq/main/intro.xml\";\r\n\tlocation.href = menuLinkUrl + \"?w2xPath=/wq/main/main.xml\";  \r\n}\r\n</script>\r\n</head>\r\n<body>\r\n\r\n</body>\r\n</html>\n",
+    "hasJson": false,
+    "looksFrame": false,
+    "mentions": {
+      "보유종목": false,
+      "수익률": false,
+      "설정액": false,
+      "보수": false,
+      "펀드코드": false
+    }
+  },
+  {
+    "group": "kofia",
+    "name": "펀드다모아 검색 API 후보",
+    "url": "https://fundamoa.kofia.or.kr/fundamoa/websquare/websquare.html?w2xPath=/fundamoa/ui/main.xml",
+    "method": "GET",
+    "error": "fetch failed"
+  },
+  {
+    "group": "kofia",
+    "name": "dis .wjson 후보",
+    "url": "https://dis.kofia.or.kr/proframeWeb/XMLSERVICES/",
+    "method": "POST",
+    "status": 200,
+    "type": "text/xml",
+    "bytes": 695,
+    "encoding": "utf-8",
+    "sample": "<?xml version=\"1.0\" encoding=\"UTF-8\"?><root><message>\r\n<proframeHeader>\n<pfmAppName>FS-COM</pfmAppName>\n<pfmSvcName>COMFundUnityInfoSO</pfmSvcName>\n<pfmFnName>select</pfmFnName>\n<pfmGlobalNo>48e25d250afe0096180672196c952f36</pfmGlobalNo>\n<pfmTrDate>20260828</pfmTrDate>\n<pfmTrTime>20260828235949669</pfmTrTime>\n<pfmClntIp>135.232.225.20</pfmClntIp>\n<pfmResponseType>S</pfmResponseType>\n<pfmResponseCode>COMS9009</pfmResponseCode>\n<pfmResponseTitle>MODULE ERROR</pfmResponseTitle>\n<pfmResponseBasc>proframe application name [FS-COM] [COMFundUnityInfoSO] is not found.</pfmResponseBasc>\n<pfmResponseDta",
+    "hasJson": false,
+    "looksFrame": false,
+    "mentions": {
+      "보유종목": false,
+      "수익률": false,
+      "설정액": false,
+      "보수": false,
+      "펀드코드": false
+    }
+  },
+  {
+    "group": "vendor",
+    "name": "펀드닥터(제로인)",
+    "url": "https://www.funddoctor.co.kr/",
+    "method": "GET",
+    "status": 200,
+    "type": "text/html",
+    "bytes": 42168,
+    "encoding": "utf-8",
+    "sample": "\r\n<!DOCTYPE html>\r\n<html>\r\n<body>\r\n<!-- Google Tag Manager -->\r\n<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':\r\nnew Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],\r\nj=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=\r\n'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);\r\n})(window,document,'script','dataLayer','GTM-WSBDNCL');</script>\r\n<!-- End Google Tag Manager -->\r\n<!-- 2019.12.26 김사랑 추가 Google Tag Manager >\r\n<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':\r\nnew Date().getTime(),event",
+    "hasJson": false,
+    "looksFrame": false,
+    "mentions": {
+      "보유종목": true,
+      "수익률": true,
+      "설정액": false,
+      "보수": true,
+      "펀드코드": false
+    }
+  },
+  {
+    "group": "vendor",
+    "name": "에프앤가이드 펀드",
+    "url": "https://www.fnguide.com/fgdd/",
+    "method": "GET",
+    "status": 404,
+    "type": "text/html",
+    "bytes": 80828,
+    "encoding": "utf-8",
+    "sample": "\r\n<!DOCTYPE html>\r\n<html lang=\"ko\">\r\n<head>\r\n    <meta charset=\"utf-8\" />\r\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\" />\r\n    <!--Str : favicon -->\r\n    <link rel=\"icon\" href=\"/favicon.ico?v=20251020\">\r\n    <!--End : favicon -->\r\n    <!--Str : apple-touch-icon -->\r\n    <link rel=\"apple-touch-icon\" sizes=\"180x180\" href=\"/apple-touch-icon-180.png\">\r\n    <link rel=\"apple-touch-icon\" sizes=\"167x167\" href=\"/apple-touch-icon-167.png\">\r\n    <link rel=\"apple-touch-icon\" sizes=\"152x152\" href=\"/apple-touch-icon-152.png\">\r\n    <link rel=\"apple-touch-icon\" href=\"/apple-touch",
+    "hasJson": false,
+    "looksFrame": false,
+    "mentions": {
+      "보유종목": false,
+      "수익률": true,
+      "설정액": false,
+      "보수": true,
+      "펀드코드": false
+    }
+  },
+  {
+    "group": "vendor",
+    "name": "한국포스증권(펀드슈퍼마켓)",
+    "url": "https://www.fosskorea.com/",
+    "method": "GET",
+    "error": "fetch failed"
+  },
+  {
+    "group": "amc",
+    "name": "미래에셋자산운용",
+    "url": "https://investments.miraeasset.com/",
+    "method": "GET",
+    "status": 403,
+    "type": "text/html",
+    "bytes": 257,
+    "encoding": "utf-8",
+    "sample": "<!DOCTYPE HTML PUBLIC \"-//IETF//DTD HTML 2.0//EN\">\n<html><head>\n<title>301 Moved Permanently</title>\n</head><body>\n<h1>Moved Permanently</h1>\n<p>The document has moved <a href=\"http://investments.miraeasset.com/magi/index.html\">here</a>.</p>\n</body></html>\n",
+    "hasJson": false,
+    "looksFrame": false,
+    "mentions": {
+      "보유종목": false,
+      "수익률": false,
+      "설정액": false,
+      "보수": false,
+      "펀드코드": false
+    }
+  },
+  {
+    "group": "amc",
+    "name": "미래에셋 펀드 목록 후보",
+    "url": "https://investments.miraeasset.com/fund/fund_list.do",
+    "method": "GET",
+    "status": 403,
+    "type": "text/html",
+    "bytes": 257,
+    "encoding": "utf-8",
+    "sample": "<!DOCTYPE HTML PUBLIC \"-//IETF//DTD HTML 2.0//EN\">\n<html><head>\n<title>301 Moved Permanently</title>\n</head><body>\n<h1>Moved Permanently</h1>\n<p>The document has moved <a href=\"http://investments.miraeasset.com/magi/index.html\">here</a>.</p>\n</body></html>\n",
+    "hasJson": false,
+    "looksFrame": false,
+    "mentions": {
+      "보유종목": false,
+      "수익률": false,
+      "설정액": false,
+      "보수": false,
+      "펀드코드": false
+    }
+  },
+  {
+    "group": "amc",
+    "name": "삼성자산운용",
+    "url": "https://www.samsungfund.com/",
+    "method": "GET",
+    "status": 200,
+    "type": "text/html",
+    "bytes": 128503,
+    "encoding": "utf-8",
+    "sample": "<!DOCTYPE html>\r\n\r\n\r\n<html lang=\"ko\" id=\"top-of-site\" class=\"\">\r\n\t<head>\r\n\t\t\r\n\r\n\r\n\r\n\r\n<script>\r\n\tvar lang\t\t\t= \"ko\";\r\n\tvar langUri         = \"\";\r\n\tvar resourceDomain\t= \"/assets\";\r\n</script>\r\n\r\n\r\n\t\t\r\n\r\n\t\t\r\n\t\t\r\n\t\t\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n<script>\r\n\t(function() {\r\n\t\tconst hostname\t= location.hostname;\r\n\t\tconst isLocal\t= hostname.endsWith(\"localhost\");\r\n\t\tconst isMobPage\t= hostname.endsWith(\"m.samsungfund.com\");\r\n\r\n\t\tconst width\t\t= top.innerWidth;\r\n\t\tconst height\t= top.innerHeight;\r\n\t\tconst isDesktop\t= width > 1280;\r\n\t\tconst isTablet\t= width > 680 && !isDesktop;\r\n\t\tconst isMobile\t= !isDesktop && !isTablet;\r",
+    "hasJson": false,
+    "looksFrame": false,
+    "mentions": {
+      "보유종목": false,
+      "수익률": true,
+      "설정액": true,
+      "보수": true,
+      "펀드코드": false
+    }
+  },
+  {
+    "group": "amc",
+    "name": "KB자산운용",
+    "url": "https://www.kbam.co.kr/",
+    "method": "GET",
+    "error": "fetch failed"
+  },
+  {
+    "group": "open",
+    "name": "공공데이터포털 금투협 펀드",
+    "url": "https://api.odcloud.kr/api/GetFundInfoService/v1/getFundList?page=1&perPage=5",
+    "method": "GET",
+    "status": 401,
+    "type": "application/json",
+    "bytes": 60,
+    "encoding": "utf-8",
+    "sample": "{\"code\":-401,\"msg\":\"인증키는 필수 항목 입니다.\"}\n",
+    "hasJson": true,
+    "looksFrame": false,
+    "mentions": {
+      "보유종목": false,
+      "수익률": false,
+      "설정액": false,
+      "보수": false,
+      "펀드코드": false
+    }
+  },
+  {
+    "group": "open",
+    "name": "금감원 오픈API",
+    "url": "https://opendart.fss.or.kr/",
+    "method": "GET",
+    "status": 200,
+    "type": "text/html",
+    "bytes": 39661,
+    "encoding": "utf-8",
+    "sample": "\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n<!-- 시스템 공지사항 표출 여부 -->\r\n\r\n\r\n<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">\r\n<html lang=\"utf-8\">\r\n<head>\r\n<title>전자공시 OPENDART 시스템</title>\r\n<meta name=\"viewport\" content=\"user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, width=device-width\" />\r\n<meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\" />\r\n<meta http-equiv=\"x-ua-compatible\" content=\"ie=edge\" />\r\n<link rel=\"stylesheet\" type=\"text/css\" href=\"/css/common.css\" />\r\n<link rel=\"stylesheet\" type=\"text/css\" ",
+    "hasJson": false,
+    "looksFrame": false,
+    "mentions": {
+      "보유종목": false,
+      "수익률": false,
+      "설정액": false,
+      "보수": true,
+      "펀드코드": false
+    }
+  },
+  {
+    "group": "yahoo",
+    "name": "뮤추얼펀드 VFIAX",
+    "url": "https://query1.finance.yahoo.com/v10/finance/quoteSummary/VFIAX?modules=topHoldings,fundProfile,fundPerformance,defaultKeyStatistics,price&crumb=Ag8.IGW5LIO",
+    "method": "GET",
+    "status": 200,
+    "type": "application/json",
+    "bytes": 23253,
+    "encoding": "euc-kr",
+    "sample": "{\"quoteSummary\":{\"result\":[{\"fundProfile\":{\"maxAge\":1,\"styleBoxUrl\":\"https://s.yimg.com/lq/i/fi/3_0stylelargeeq2.gif\",\"family\":\"Vanguard\",\"categoryName\":\"Large Blend\",\"legalType\":null,\"managementInfo\":{\"managerName\":\"\",\"managerBio\":\"Aur챕lie Denis, CFA, Portfolio Manager at Vanguard. She has been with Vanguard since 2016, has worked in investment management since 2017, has managed investment portfolios since 2023, and has co-managed the Fund since February 2023. Education: B.S., Pennsylvania State University.\",\"startdate\":{\"raw\":1739836800,\"fmt\":\"2025-02-18\"}},\"feesExpensesInvestment\":{\"annualR",
+    "hasJson": true,
+    "looksFrame": false,
+    "mentions": {
+      "보유종목": true,
+      "수익률": true,
+      "설정액": true,
+      "보수": true,
+      "펀드코드": false
+    }
+  },
+  {
+    "group": "yahoo",
+    "name": "뮤추얼펀드 FXAIX",
+    "url": "https://query1.finance.yahoo.com/v10/finance/quoteSummary/FXAIX?modules=topHoldings,fundProfile,fundPerformance,defaultKeyStatistics,price&crumb=Ag8.IGW5LIO",
+    "method": "GET",
+    "status": 200,
+    "type": "application/json",
+    "bytes": 20631,
+    "encoding": "utf-8",
+    "sample": "{\"quoteSummary\":{\"result\":[{\"fundProfile\":{\"maxAge\":1,\"styleBoxUrl\":\"https://s.yimg.com/lq/i/fi/3_0stylelargeeq2.gif\",\"family\":\"Fidelity Investments\",\"categoryName\":\"Large Blend\",\"legalType\":null,\"managementInfo\":{\"managerName\":\"\",\"managerBio\":\"Robert Regan is a Portfolio Manager. He has been with Geode since 2016. Prior to joining Geode, Mr. Regan was a Senior Implementation Portfolio Manager at State Street Global Advisors from 2008 to 2016. Previously, Mr. Regan was employed by PanAgora Asset Management from 1997 to 2008, most recently as a Portfolio Manager. Mr. Regan began his career at I",
+    "hasJson": true,
+    "looksFrame": false,
+    "mentions": {
+      "보유종목": true,
+      "수익률": true,
+      "설정액": true,
+      "보수": true,
+      "펀드코드": false
+    }
+  },
+  {
+    "group": "yahoo",
+    "name": "뮤추얼펀드 VTSAX",
+    "url": "https://query1.finance.yahoo.com/v10/finance/quoteSummary/VTSAX?modules=topHoldings,fundProfile,fundPerformance,defaultKeyStatistics,price&crumb=Ag8.IGW5LIO",
+    "method": "GET",
+    "status": 200,
+    "type": "application/json",
+    "bytes": 23461,
+    "encoding": "utf-8",
+    "sample": "{\"quoteSummary\":{\"result\":[{\"fundProfile\":{\"maxAge\":1,\"styleBoxUrl\":\"https://s.yimg.com/lq/i/fi/3_0stylelargeeq2.gif\",\"family\":\"Vanguard\",\"categoryName\":\"Large Blend\",\"legalType\":null,\"managementInfo\":{\"managerName\":\"\",\"managerBio\":\"Nicholas Birkett, CFA, Portfolio Manager at Vanguard. He worked in investment banking from 2005 to 2016, has been with Vanguard since 2017, and has co-managed the Fund since August 2023. Education: B.S., University of Bath.\",\"startdate\":{\"raw\":1739836800,\"fmt\":\"2025-02-18\"}},\"feesExpensesInvestment\":{\"annualReportExpenseRatio\":{\"raw\":4.0E-4,\"fmt\":\"0.04%\"},\"frontEnd",
+    "hasJson": true,
+    "looksFrame": false,
+    "mentions": {
+      "보유종목": true,
+      "수익률": true,
+      "설정액": true,
+      "보수": true,
+      "펀드코드": false
+    }
+  },
+  {
+    "group": "yahoo",
+    "name": "국내 공모펀드 후보(KR)",
+    "url": "https://query1.finance.yahoo.com/v1/finance/search?q=%EB%AF%B8%EB%9E%98%EC%97%90%EC%85%8B&quotesCount=10",
+    "method": "GET",
+    "status": 400,
+    "type": "application/json",
+    "bytes": 95,
+    "encoding": "utf-8",
+    "sample": "{\"finance\":{\"result\":null,\"error\":{\"code\":\"Bad Request\",\"description\":\"Invalid Search Query\"}}}",
+    "hasJson": true,
+    "looksFrame": false,
+    "mentions": {
+      "보유종목": false,
+      "수익률": false,
+      "설정액": false,
+      "보수": false,
+      "펀드코드": false
+    }
+  }
+]

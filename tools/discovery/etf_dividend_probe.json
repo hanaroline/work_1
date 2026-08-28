@@ -1,5 +1,5 @@
 {
-  "probedAt": "2026-08-28T13:53:15.777Z",
+  "probedAt": "2026-08-28T15:01:53.964Z",
   "samples": [
     {
       "code": "069500",
@@ -29,7 +29,7 @@
       "ok": false,
       "status": 404,
       "summary": "HTTP 404",
-      "ms": 688
+      "ms": 742
     },
     {
       "id": "naver:m.stock.naver.com/api/stock/{code}/dividendList",
@@ -37,7 +37,7 @@
       "ok": false,
       "status": 404,
       "summary": "HTTP 404",
-      "ms": 670
+      "ms": 1035
     },
     {
       "id": "naver:m.stock.naver.com/api/stock/{code}/etfDividend",
@@ -45,7 +45,7 @@
       "ok": false,
       "status": 404,
       "summary": "HTTP 404",
-      "ms": 164
+      "ms": 176
     },
     {
       "id": "naver:m.stock.naver.com/api/stock/{code}/etfDividendList",
@@ -53,7 +53,7 @@
       "ok": false,
       "status": 404,
       "summary": "HTTP 404",
-      "ms": 181
+      "ms": 191
     },
     {
       "id": "naver:m.stock.naver.com/api/stock/{code}/dividendHistory",
@@ -61,7 +61,7 @@
       "ok": false,
       "status": 404,
       "summary": "HTTP 404",
-      "ms": 181
+      "ms": 183
     },
     {
       "id": "naver:m.stock.naver.com/api/stock/{code}/finance/dividend",
@@ -69,7 +69,7 @@
       "ok": false,
       "status": 404,
       "summary": "HTTP 404",
-      "ms": 192
+      "ms": 202
     },
     {
       "id": "naver:m.stock.naver.com/api/stock/{code}/distribution",
@@ -77,7 +77,7 @@
       "ok": false,
       "status": 404,
       "summary": "HTTP 404",
-      "ms": 192
+      "ms": 181
     },
     {
       "id": "naver:api.stock.naver.com/stock/{code}/dividend",
@@ -85,7 +85,7 @@
       "ok": false,
       "status": 404,
       "summary": "HTTP 404",
-      "ms": 983
+      "ms": 595
     },
     {
       "id": "naver:api.stock.naver.com/etf/{code}/dividend",
@@ -93,7 +93,7 @@
       "ok": false,
       "status": 404,
       "summary": "HTTP 404",
-      "ms": 260
+      "ms": 253
     },
     {
       "id": "naver.rendered",
@@ -104,7 +104,7 @@
       "allApiCalls": [
         "sentry-stock.naver.com/api/4/envelope/?sentry_version=7&sentry_key=470bdc83f341950b9dc087aa40f5db39&sentry_client=sentry.javascript.nextjs%2F10.68.0"
       ],
-      "ms": 10656
+      "ms": 11684
     },
     {
       "id": "yahoo.div.069500",
@@ -114,7 +114,7 @@
       "divCount": 8,
       "divSum": 1684,
       "summary": "배당 8건 · 합 1684원 · 역산 연분배율 0.8% (실제 0.78%)",
-      "ms": 201
+      "ms": 126
     },
     {
       "id": "yahoo.div.458730",
@@ -124,7 +124,7 @@
       "divCount": 24,
       "divSum": 880,
       "summary": "배당 24건 · 합 880원 · 역산 연분배율 2.9% (실제 3.2%)",
-      "ms": 85
+      "ms": 76
     },
     {
       "id": "yahoo.div.472150",
@@ -134,7 +134,7 @@
       "divCount": 23,
       "divSum": 5269,
       "summary": "배당 23건 · 합 5269원 · 역산 연분배율 13.1% (실제 21.4%)",
-      "ms": 85
+      "ms": 57
     },
     {
       "id": "yahoo.div.498400",
@@ -144,7 +144,7 @@
       "divCount": 20,
       "divSum": 4216,
       "summary": "배당 20건 · 합 4216원 · 역산 연분배율 10.4% (실제 14.5%)",
-      "ms": 92
+      "ms": 59
     },
     {
       "id": "yahoo.adequacy.069500",
@@ -155,10 +155,10 @@
       "ttmSum": 849,
       "ttmYield": 0.79,
       "method": "dividends",
-      "priceY1": 147.16,
-      "trY1": 149.63,
-      "gap": 2.47,
-      "summary": "TTM 배당 4건 합 849원 → 역산 0.8% (표기 0.78%) · 계산방식 dividends · 1년 시장가 147.16 vs 총수익률 149.63 (격차 2.47)",
+      "priceY1": 152.95,
+      "trY1": 155.48,
+      "gap": 2.53,
+      "summary": "TTM 배당 4건 합 849원 → 역산 0.8% (표기 0.78%) · 계산방식 dividends · 1년 시장가 152.95 vs 총수익률 155.48 (격차 2.53)",
       "firstDivs": [
         {
           "date": "2024-10-30",
@@ -187,7 +187,7 @@
           "amount": 183
         }
       ],
-      "ms": 41
+      "ms": 16
     },
     {
       "id": "yahoo.adequacy.458730",
@@ -198,10 +198,10 @@
       "ttmSum": 438,
       "ttmYield": 2.89,
       "method": "dividends",
-      "priceY1": 23.19,
-      "trY1": 26.82,
-      "gap": 3.63,
-      "summary": "TTM 배당 12건 합 438원 → 역산 2.9% (표기 3.2%) · 계산방식 dividends · 1년 시장가 23.19 vs 총수익률 26.82 (격차 3.63)",
+      "priceY1": 24.4,
+      "trY1": 28.43,
+      "gap": 4.03,
+      "summary": "TTM 배당 12건 합 438원 → 역산 2.9% (표기 3.2%) · 계산방식 dividends · 1년 시장가 24.4 vs 총수익률 28.43 (격차 4.03)",
       "firstDivs": [
         {
           "date": "2024-08-29",
@@ -230,7 +230,7 @@
           "amount": 37
         }
       ],
-      "ms": 30
+      "ms": 8
     },
     {
       "id": "yahoo.adequacy.472150",
@@ -241,10 +241,10 @@
       "ttmSum": 4202,
       "ttmYield": 20.93,
       "method": "dividends",
-      "priceY1": 76.06,
-      "trY1": 120.3,
-      "gap": 44.24,
-      "summary": "TTM 배당 12건 합 4202원 → 역산 20.9% (표기 21.4%) · 계산방식 dividends · 1년 시장가 76.06 vs 총수익률 120.3 (격차 44.24)",
+      "priceY1": 81.38,
+      "trY1": 131.52,
+      "gap": 50.14,
+      "summary": "TTM 배당 12건 합 4202원 → 역산 20.9% (표기 21.4%) · 계산방식 dividends · 1년 시장가 81.38 vs 총수익률 131.52 (격차 50.14)",
       "firstDivs": [
         {
           "date": "2024-08-29",
@@ -273,7 +273,7 @@
           "amount": 375
         }
       ],
-      "ms": 28
+      "ms": 8
     },
     {
       "id": "yahoo.adequacy.498400",
@@ -284,10 +284,10 @@
       "ttmSum": 2987,
       "ttmYield": 14.68,
       "method": "dividends",
-      "priceY1": 82.92,
-      "trY1": 116.82,
-      "gap": 33.9,
-      "summary": "TTM 배당 12건 합 2987원 → 역산 14.7% (표기 14.5%) · 계산방식 dividends · 1년 시장가 82.92 vs 총수익률 116.82 (격차 33.9)",
+      "priceY1": 86.97,
+      "trY1": 121.62,
+      "gap": 34.65,
+      "summary": "TTM 배당 12건 합 2987원 → 역산 14.7% (표기 14.5%) · 계산방식 dividends · 1년 시장가 86.97 vs 총수익률 121.62 (격차 34.65)",
       "firstDivs": [
         {
           "date": "2025-01-14",
@@ -316,7 +316,7 @@
           "amount": 270
         }
       ],
-      "ms": 29
+      "ms": 8
     },
     {
       "id": "site.fnguide.etf",
@@ -325,7 +325,7 @@
       "status": 200,
       "bytes": 1829,
       "summary": "200 · 1829B · 분배금 흔적 없음",
-      "ms": 1479
+      "ms": 1312
     },
     {
       "id": "site.fnguide.main",
@@ -334,7 +334,7 @@
       "status": 200,
       "bytes": 1829,
       "summary": "200 · 1829B · 분배금 흔적 없음",
-      "ms": 164
+      "ms": 173
     },
     {
       "id": "site.seibro",
@@ -343,7 +343,7 @@
       "status": 200,
       "bytes": 1048,
       "summary": "200 · 1048B · 분배금 흔적 없음",
-      "ms": 998
+      "ms": 1075
     },
     {
       "id": "site.kofia",
@@ -352,7 +352,7 @@
       "status": 200,
       "bytes": 536,
       "summary": "200 · 536B · 분배금 흔적 없음",
-      "ms": 1322
+      "ms": 1380
     },
     {
       "id": "site.krx.data",
@@ -361,14 +361,14 @@
       "status": 200,
       "bytes": 474,
       "summary": "200 · 474B · 분배금 흔적 없음",
-      "ms": 501
+      "ms": 387
     },
     {
       "id": "site.krx.etf",
       "note": "KRX ETF 전용 사이트",
       "ok": false,
       "error": "TypeError: fetch failed",
-      "ms": 847
+      "ms": 184
     },
     {
       "id": "site.kodex",
@@ -377,7 +377,7 @@
       "status": 200,
       "bytes": 138726,
       "summary": "200 · 138726B · 분배금 흔적 있음",
-      "ms": 1817
+      "ms": 1118
     },
     {
       "id": "site.tiger",
@@ -386,7 +386,7 @@
       "status": 403,
       "bytes": 261,
       "summary": "403 · 261B · 분배금 흔적 없음 · <!DOCTYPE HTML PUBLIC \"-//IETF//DTD HTML 2.0//EN\"> <html><he",
-      "ms": 450
+      "ms": 720
     },
     {
       "id": "site.ace",
@@ -395,7 +395,7 @@
       "status": 200,
       "bytes": 103788,
       "summary": "200 · 103788B · 분배금 흔적 없음",
-      "ms": 1284
+      "ms": 1282
     },
     {
       "id": "site.sol",
@@ -404,7 +404,7 @@
       "status": 200,
       "bytes": 982414,
       "summary": "200 · 982414B · 분배금 흔적 있음",
-      "ms": 4055
+      "ms": 4119
     },
     {
       "id": "site.rise",
@@ -413,7 +413,7 @@
       "status": 200,
       "bytes": 157645,
       "summary": "200 · 157645B · 분배금 흔적 있음",
-      "ms": 7544
+      "ms": 11634
     },
     {
       "id": "site.investing",
@@ -422,7 +422,7 @@
       "status": 403,
       "bytes": 3,
       "summary": "403 · 3B · 분배금 흔적 없음 · 403",
-      "ms": 62
+      "ms": 87
     }
   ]
 }
