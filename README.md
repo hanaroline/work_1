@@ -342,6 +342,7 @@ node scripts/test_etf_page.mjs --artifact  # 올리기 전에 브라우저로 �
 | `scripts/etf_taxonomy.mjs` | 분류 사전 — **사람이 고치는 규칙** |
 | `scripts/build_etf_data.mjs` | 병합 + 분류 태깅 → `data/etf.js` |
 | `scripts/build_etf_artifact.mjs` | 아티팩트(링크 공유)용 조각 빌드 |
+| `scripts/test_etf_offline.mjs` | 오프라인 동작 검증 (연결을 끊고 file:// 로 연다) |
 | `scripts/etf_lib.mjs` | 수집 공용 부품(동시성·재시도·단위 파싱) |
 | `scripts/probe_etf_sources*.mjs` | 원천 탐색. 원천이 바뀌었을 때 다시 돌린다 |
 | `tools/discovery/etf_probe*.md` | 위 탐색 결과 — **어느 원천이 살아 있는지의 기록** |
@@ -408,6 +409,32 @@ node scripts/build_etf_page.mjs      # 단일 파일 재빌드
 그래서 영문·숫자 키워드는 앞뒤가 영문·숫자가 아닐 때만 인정하고, 공백을 지운
 형태도 같이 봅니다("S&P 500" = "S&P500"). 공백만 지우면 이번에는 영문 이름의 단어
 경계가 사라져 "SPDR Gold Shares" 의 GOLD 를 놓칩니다.
+
+## 오프라인 동작
+
+`etf-holdings-search.html` 은 **인터넷 없이 동작합니다.** CSS·자바스크립트·
+ETF 데이터 1,348종목이 모두 한 파일 안에 들어 있고, 외부를 부르는 곳이
+하나도 없습니다(폰트 CDN 도 빌드에서 걷어냅니다). 받는 사람은 파일을
+더블클릭만 하면 됩니다 — 로컬 서버도 필요 없습니다.
+
+```bash
+node scripts/test_etf_offline.mjs
+```
+
+"외부 참조가 없으니 될 것이다" 는 확인이 아니므로, 이 시험은 실제로 끊어
+놓고 엽니다 — `file://` 로 열고(로컬 서버조차 없는 상태), http/https 요청을
+전부 막은 뒤, 하나라도 밖으로 나가면 실패로 칩니다. 그 상태에서 목록·검색·
+편입종목·랭킹·역조회가 실제로 도는지 봅니다.
+
+**단, 데이터는 파일을 만든 시점에 멈춰 있습니다.** 오프라인에서는 갱신되지
+않으므로, 최신 수치가 필요하면 새로 빌드한 파일을 다시 받아야 합니다.
+화면 상단의 "기준" 날짜가 그 파일의 데이터 시점입니다.
+
+폰트는 시스템 글꼴로 떨어집니다(맑은 고딕·Apple SD 고딕 등). 사내 PC 에
+Spoqa Han Sans Neo 가 깔려 있으면 그것을 씁니다.
+
+**아티팩트 링크는 인터넷이 있어야 합니다.** claude.ai 에서 받아오는
+웹페이지이기 때문입니다. 오프라인 환경에는 단일 파일을 쓰십시오.
 
 ## 화면 연기 시험
 
