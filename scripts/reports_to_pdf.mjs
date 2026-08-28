@@ -46,6 +46,8 @@ for (const [mode, suffix, label] of [
     const t = document.getElementById('title');
     const w = document.getElementById('weekHint');
     if (m === 'pdf-weekly' && t && w) t.textContent = '주간 인기 증권사 리포트';
+    // 전체본만 목록을 갈래로 묶고 차례를 세운다. 종이에는 걸러 보기가 없다.
+    if (m === 'pdf-full' && typeof window.__groupList__ === 'function') window.__groupList__();
     // 종이에서는 조회 상태가 남아 있으면 안 된다 — 걸러 낸 것만 실린다.
     const q = document.getElementById('q');
     if (q && q.value) { q.value = ''; q.dispatchEvent(new Event('input')); }
