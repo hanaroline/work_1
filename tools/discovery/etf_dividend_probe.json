@@ -1,0 +1,256 @@
+{
+  "probedAt": "2026-08-28T12:40:10.888Z",
+  "samples": [
+    {
+      "code": "069500",
+      "name": "KODEX 200",
+      "yield": 0.78
+    },
+    {
+      "code": "458730",
+      "name": "TIGER 미국배당다우존스",
+      "yield": 3.2
+    },
+    {
+      "code": "472150",
+      "name": "TIGER 배당커버드콜액티브",
+      "yield": 21.4
+    },
+    {
+      "code": "498400",
+      "name": "KODEX 200타겟위클리커버드콜",
+      "yield": 14.5
+    }
+  ],
+  "results": [
+    {
+      "id": "naver:m.stock.naver.com/api/stock/{code}/dividend",
+      "note": "네이버 분배금 후보",
+      "ok": false,
+      "status": 404,
+      "summary": "HTTP 404",
+      "ms": 490
+    },
+    {
+      "id": "naver:m.stock.naver.com/api/stock/{code}/dividendList",
+      "note": "네이버 분배금 후보",
+      "ok": false,
+      "status": 404,
+      "summary": "HTTP 404",
+      "ms": 598
+    },
+    {
+      "id": "naver:m.stock.naver.com/api/stock/{code}/etfDividend",
+      "note": "네이버 분배금 후보",
+      "ok": false,
+      "status": 404,
+      "summary": "HTTP 404",
+      "ms": 161
+    },
+    {
+      "id": "naver:m.stock.naver.com/api/stock/{code}/etfDividendList",
+      "note": "네이버 분배금 후보",
+      "ok": false,
+      "status": 404,
+      "summary": "HTTP 404",
+      "ms": 163
+    },
+    {
+      "id": "naver:m.stock.naver.com/api/stock/{code}/dividendHistory",
+      "note": "네이버 분배금 후보",
+      "ok": false,
+      "status": 404,
+      "summary": "HTTP 404",
+      "ms": 167
+    },
+    {
+      "id": "naver:m.stock.naver.com/api/stock/{code}/finance/dividend",
+      "note": "네이버 분배금 후보",
+      "ok": false,
+      "status": 404,
+      "summary": "HTTP 404",
+      "ms": 166
+    },
+    {
+      "id": "naver:m.stock.naver.com/api/stock/{code}/distribution",
+      "note": "네이버 분배금 후보",
+      "ok": false,
+      "status": 404,
+      "summary": "HTTP 404",
+      "ms": 262
+    },
+    {
+      "id": "naver:api.stock.naver.com/stock/{code}/dividend",
+      "note": "네이버 분배금 후보",
+      "ok": false,
+      "status": 404,
+      "summary": "HTTP 404",
+      "ms": 510
+    },
+    {
+      "id": "naver:api.stock.naver.com/etf/{code}/dividend",
+      "note": "네이버 분배금 후보",
+      "ok": false,
+      "status": 404,
+      "summary": "HTTP 404",
+      "ms": 226
+    },
+    {
+      "id": "naver.rendered",
+      "note": "네이버 ETF 화면이 부르는 분배금 API 관찰",
+      "ok": false,
+      "summary": "분배금 관련 호출 없음 (전체 API 호출 5건)",
+      "dividendCalls": [],
+      "allApiCalls": [
+        "sentry-stock.naver.com/api/4/envelope/?sentry_version=7&sentry_key=470bdc83f341950b9dc087aa40f5db39&sentry_client=sentry.javascript.nextjs%2F10.68.0"
+      ],
+      "ms": 9947
+    },
+    {
+      "id": "yahoo.div.069500",
+      "note": "야후 배당 이력 — KODEX 200 (분배율 0.78%)",
+      "ok": true,
+      "status": 200,
+      "divCount": 8,
+      "divSum": 1684,
+      "summary": "배당 8건 · 합 1684원 · 역산 연분배율 0.8% (실제 0.78%)",
+      "ms": 196
+    },
+    {
+      "id": "yahoo.div.458730",
+      "note": "야후 배당 이력 — TIGER 미국배당다우존스 (분배율 3.2%)",
+      "ok": true,
+      "status": 200,
+      "divCount": 24,
+      "divSum": 880,
+      "summary": "배당 24건 · 합 880원 · 역산 연분배율 2.9% (실제 3.2%)",
+      "ms": 71
+    },
+    {
+      "id": "yahoo.div.472150",
+      "note": "야후 배당 이력 — TIGER 배당커버드콜액티브 (분배율 21.4%)",
+      "ok": true,
+      "status": 200,
+      "divCount": 23,
+      "divSum": 5269,
+      "summary": "배당 23건 · 합 5269원 · 역산 연분배율 13.1% (실제 21.4%)",
+      "ms": 76
+    },
+    {
+      "id": "yahoo.div.498400",
+      "note": "야후 배당 이력 — KODEX 200타겟위클리커버드콜 (분배율 14.5%)",
+      "ok": true,
+      "status": 200,
+      "divCount": 20,
+      "divSum": 4216,
+      "summary": "배당 20건 · 합 4216원 · 역산 연분배율 10.4% (실제 14.5%)",
+      "ms": 104
+    },
+    {
+      "id": "site.fnguide.etf",
+      "note": "에프앤가이드 ETF 스냅샷",
+      "ok": true,
+      "status": 200,
+      "bytes": 1829,
+      "summary": "200 · 1829B · 분배금 흔적 없음",
+      "ms": 1165
+    },
+    {
+      "id": "site.fnguide.main",
+      "note": "에프앤가이드 종목 메인",
+      "ok": true,
+      "status": 200,
+      "bytes": 1829,
+      "summary": "200 · 1829B · 분배금 흔적 없음",
+      "ms": 149
+    },
+    {
+      "id": "site.seibro",
+      "note": "예탁결제원 SEIBRO",
+      "ok": true,
+      "status": 200,
+      "bytes": 1048,
+      "summary": "200 · 1048B · 분배금 흔적 없음",
+      "ms": 871
+    },
+    {
+      "id": "site.kofia",
+      "note": "금융투자협회 전자공시",
+      "ok": true,
+      "status": 200,
+      "bytes": 536,
+      "summary": "200 · 536B · 분배금 흔적 없음",
+      "ms": 1125
+    },
+    {
+      "id": "site.krx.data",
+      "note": "KRX 정보데이터시스템",
+      "ok": true,
+      "status": 200,
+      "bytes": 474,
+      "summary": "200 · 474B · 분배금 흔적 없음",
+      "ms": 221
+    },
+    {
+      "id": "site.krx.etf",
+      "note": "KRX ETF 전용 사이트",
+      "ok": false,
+      "error": "TypeError: fetch failed",
+      "ms": 188
+    },
+    {
+      "id": "site.kodex",
+      "note": "삼성 KODEX",
+      "ok": true,
+      "status": 200,
+      "bytes": 138726,
+      "summary": "200 · 138726B · 분배금 흔적 있음",
+      "ms": 1662
+    },
+    {
+      "id": "site.tiger",
+      "note": "미래에셋 TIGER",
+      "ok": false,
+      "status": 403,
+      "bytes": 261,
+      "summary": "403 · 261B · 분배금 흔적 없음 · <!DOCTYPE HTML PUBLIC \"-//IETF//DTD HTML 2.0//EN\"> <html><he",
+      "ms": 298
+    },
+    {
+      "id": "site.ace",
+      "note": "한국투자 ACE",
+      "ok": true,
+      "status": 200,
+      "bytes": 103788,
+      "summary": "200 · 103788B · 분배금 흔적 없음",
+      "ms": 1163
+    },
+    {
+      "id": "site.sol",
+      "note": "신한 SOL",
+      "ok": true,
+      "status": 200,
+      "bytes": 982414,
+      "summary": "200 · 982414B · 분배금 흔적 있음",
+      "ms": 3613
+    },
+    {
+      "id": "site.rise",
+      "note": "KB RISE",
+      "ok": true,
+      "status": 200,
+      "bytes": 157710,
+      "summary": "200 · 157710B · 분배금 흔적 있음",
+      "ms": 9309
+    },
+    {
+      "id": "site.investing",
+      "note": "Investing.com 국내 ETF 배당",
+      "ok": false,
+      "status": 403,
+      "bytes": 3,
+      "summary": "403 · 3B · 분배금 흔적 없음 · 403",
+      "ms": 72
+    }
+  ]
+}
