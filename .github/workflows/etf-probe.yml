@@ -75,6 +75,13 @@ jobs:
         if: hashFiles('scripts/probe_fund_sources2.mjs') != ''
         run: node scripts/probe_fund_sources2.mjs
 
+      # 3차는 브라우저가 필요 없다 — 레이아웃 xml 에 호출 정의가 적혀 있다.
+      - name: 탐색 실행 (펀드 원천 3차 — 금투협 호출 정의)
+        continue-on-error: true
+        timeout-minutes: 10
+        if: hashFiles('scripts/probe_fund_sources3.mjs') != ''
+        run: node scripts/probe_fund_sources3.mjs
+
       # 탐색 실패는 잡을 실패시키지 않는다. 못 붙은 칸도 결과의 일부다.
       - name: 탐색 실행 (1차)
         continue-on-error: true
