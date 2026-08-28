@@ -1,0 +1,67 @@
+{
+  "at": "2026-08-28T15:20:05.694Z",
+  "pages": [
+    {
+      "path": "/wq/fundann/DISFundAssetStst.xml",
+      "status": 200,
+      "bytes": 1580,
+      "title": null,
+      "sample": "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">\r\n<html>\r\n<head>\r\n<meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\" />\r\n<meta http-equiv=\"X-UA-Compatible\" content=\"IE=edge\"/>\r\n<title>요청하신 페이지에 오류가 발생하였습니다.</title>\r\n<link rel=\"stylesheet\" href=\"/css/common.css\" type=\"text/css\" />\r\n<link rel=\"stylesheet\" href=\""
+    },
+    {
+      "path": "/wq/fundann/DISFundFeeStstCom.xml",
+      "status": 200,
+      "bytes": 1580,
+      "title": null,
+      "sample": "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">\r\n<html>\r\n<head>\r\n<meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\" />\r\n<meta http-equiv=\"X-UA-Compatible\" content=\"IE=edge\"/>\r\n<title>요청하신 페이지에 오류가 발생하였습니다.</title>\r\n<link rel=\"stylesheet\" href=\"/css/common.css\" type=\"text/css\" />\r\n<link rel=\"stylesheet\" href=\""
+    },
+    {
+      "path": "/wq/fundann/DISFundStndPrcStst.xml",
+      "status": 200,
+      "bytes": 1580,
+      "title": null,
+      "sample": "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">\r\n<html>\r\n<head>\r\n<meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\" />\r\n<meta http-equiv=\"X-UA-Compatible\" content=\"IE=edge\"/>\r\n<title>요청하신 페이지에 오류가 발생하였습니다.</title>\r\n<link rel=\"stylesheet\" href=\"/css/common.css\" type=\"text/css\" />\r\n<link rel=\"stylesheet\" href=\""
+    },
+    {
+      "path": "/wq/fundann/DISFundAnnList.xml",
+      "status": 200,
+      "bytes": 1580,
+      "title": null,
+      "sample": "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">\r\n<html>\r\n<head>\r\n<meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\" />\r\n<meta http-equiv=\"X-UA-Compatible\" content=\"IE=edge\"/>\r\n<title>요청하신 페이지에 오류가 발생하였습니다.</title>\r\n<link rel=\"stylesheet\" href=\"/css/common.css\" type=\"text/css\" />\r\n<link rel=\"stylesheet\" href=\""
+    },
+    {
+      "path": "/wq/fundann/DISFundUnityInfo.xml",
+      "status": 200,
+      "bytes": 1580,
+      "title": null,
+      "sample": "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">\r\n<html>\r\n<head>\r\n<meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\" />\r\n<meta http-equiv=\"X-UA-Compatible\" content=\"IE=edge\"/>\r\n<title>요청하신 페이지에 오류가 발생하였습니다.</title>\r\n<link rel=\"stylesheet\" href=\"/css/common.css\" type=\"text/css\" />\r\n<link rel=\"stylesheet\" href=\""
+    }
+  ],
+  "services": [],
+  "calls": [
+    {
+      "svc": "COMFundUnityInfoSO",
+      "dto": "COMFundUnityInfoInputDTO",
+      "app": "FS-COM",
+      "status": 200,
+      "bytes": 696,
+      "sample": "<?xml version=\"1.0\" encoding=\"UTF-8\"?><root><message>\r\n<proframeHeader>\n<pfmAppName>FS-COM</pfmAppName>\n<pfmSvcName>COMFundUnityInfoSO</pfmSvcName>\n<pfmFnName>select</pfmFnName>\n<pfmGlobalNo>48f50b660afe00975c03f5119a476913</pfmGlobalNo>\n<pfmTrDate>20260829</pfmTrDate>\n<pfmTrTime>20260829002013926</pfmTrTime>\n<pfmClntIp>135.232.200.213</pfmClntIp>\n<pfmResponseType>S</pfmResponseType>\n<pfmResponseCode>COMS9009</pfmResponseCode>\n<pfmResponseTitle>MODULE ERROR</pfmResponseTitle>\n<pfmResponseBasc>proframe application name [FS-COM] [COMFundUnityInfoSO] is not found.</pfmResponseBasc>\n<pfmResponseDtal></pfmResponseDtal>\n</proframeHeader>\n<systemHeader>\n</systemHeader>\n<data /></message></root>",
+      "looksError": true,
+      "rows": 0,
+      "hasFundName": true
+    },
+    {
+      "svc": "COMFundPriceModSO",
+      "dto": "COMFundPriceModInputDTO",
+      "app": "FS-COM",
+      "status": 200,
+      "bytes": 704,
+      "sample": "<?xml version=\"1.0\" encoding=\"UTF-8\"?><root><message>\r\n<proframeHeader>\n<pfmAppName>FS-COM</pfmAppName>\n<pfmSvcName>COMFundPriceModSO</pfmSvcName>\n<pfmFnName>select</pfmFnName>\n<pfmGlobalNo>48f50c1a0afe00977cb0291f6652fe4a</pfmGlobalNo>\n<pfmTrDate>20260829</pfmTrDate>\n<pfmTrTime>20260829002014106</pfmTrTime>\n<pfmClntIp>135.232.200.213</pfmClntIp>\n<pfmResponseType>S</pfmResponseType>\n<pfmResponseCode>COMS9009</pfmResponseCode>\n<pfmResponseTitle>MODULE ERROR</pfmResponseTitle>\n<pfmResponseBasc>proframe service operation [FS-COM] [COMFundPriceModSO] [select] is not found.</pfmResponseBasc>\n<pfmResponseDtal></pfmResponseDtal>\n</proframeHeader>\n<systemHeader>\n</systemHeader>\n<data /></message></root>",
+      "looksError": true,
+      "rows": 0,
+      "hasFundName": true
+    }
+  ],
+  "dtos": [],
+  "actions": []
+}
