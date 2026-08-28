@@ -18,7 +18,7 @@ on:
       - 'scripts/probe_etf_dividends.mjs'
       - 'scripts/verify_etf_price_series.mjs'
       - 'scripts/probe_fund_sources*.mjs'
-      - 'scripts/probe_fund_naver.mjs'
+      - 'scripts/probe_fund_naver*.mjs'
       - '.github/workflows/etf-probe.yml'
 
 permissions:
@@ -78,6 +78,14 @@ jobs:
         if: hashFiles('scripts/probe_fund_naver.mjs') != ''
         run: node scripts/probe_fund_naver.mjs
 
+      # 만들 수 있는 것과 없는 것을 확정한다. 목록 수익률이 상세와 다른
+      # 것으로 보여, 그것부터 가른다.
+      - name: 탐색 실행 (네이버 펀드 — 규모·계열·채움비율)
+        continue-on-error: true
+        timeout-minutes: 20
+        if: hashFiles('scripts/probe_fund_naver2.mjs') != ''
+        run: node scripts/probe_fund_naver2.mjs
+
       # 탐색 실패는 잡을 실패시키지 않는다. 못 붙은 칸도 결과의 일부다.
       - name: 탐색 실행 (1차)
         continue-on-error: true
@@ -116,7 +124,7 @@ jobs:
             tools/discovery/etf_dividend_probe.*
             tools/discovery/etf_price_series.*
             tools/discovery/fund_probe*
-            tools/discovery/fund_naver.*
+            tools/discovery/fund_naver*
             tools/discovery/naver_etf_analysis.json
           retention-days: 7
 
@@ -130,7 +138,7 @@ jobs:
             git add tools/discovery/etf_dividend_probe.* 2>/dev/null || true
             git add tools/discovery/etf_price_series.* 2>/dev/null || true
             git add tools/discovery/fund_probe* 2>/dev/null || true
-            git add tools/discovery/fund_naver.* 2>/dev/null || true
+            git add tools/discovery/fund_naver* 2>/dev/null || true
             git add tools/discovery/naver_etf_analysis.json 2>/dev/null || true
             git commit -m "chore(etf): 원천 탐색 결과 갱신" || echo "변경 없음"
             git push || echo "푸시 실패 (무시)"
