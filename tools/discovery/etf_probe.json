@@ -1,5 +1,5 @@
 {
-  "probedAt": "2026-08-28T12:43:42.171Z",
+  "probedAt": "2026-08-28T13:14:27.748Z",
   "runner": "linux node v22.23.2",
   "tradeDate": null,
   "sampleIsuCd": "KR7069500007",
@@ -13,7 +13,7 @@
       "note": "ETF 전종목 시세 (MDCSTAT04301)",
       "ok": false,
       "error": "최근 7 영업일 모두 빈 응답",
-      "ms": 2719
+      "ms": 3169
     },
     {
       "id": "krx.finder",
@@ -39,7 +39,7 @@
       },
       "bld": "dbms/comm/finder/finder_secuprodisu",
       "ok": true,
-      "ms": 194
+      "ms": 823
     },
     {
       "id": "krx.stat.04302",
@@ -49,7 +49,7 @@
       "contentType": "text/html; charset=utf-8",
       "ok": false,
       "body": "LOGOUT",
-      "ms": 414
+      "ms": 297
     },
     {
       "id": "krx.stat.04401",
@@ -59,7 +59,7 @@
       "contentType": "text/html; charset=utf-8",
       "ok": false,
       "body": "LOGOUT",
-      "ms": 223
+      "ms": 265
     },
     {
       "id": "krx.stat.04501",
@@ -69,7 +69,7 @@
       "contentType": "text/html; charset=utf-8",
       "ok": false,
       "body": "LOGOUT",
-      "ms": 365
+      "ms": 613
     },
     {
       "id": "krx.stat.04601",
@@ -79,7 +79,7 @@
       "contentType": "text/html; charset=utf-8",
       "ok": false,
       "body": "LOGOUT",
-      "ms": 396
+      "ms": 638
     },
     {
       "id": "krx.stat.04701",
@@ -89,7 +89,7 @@
       "contentType": "text/html; charset=utf-8",
       "ok": false,
       "body": "LOGOUT",
-      "ms": 227
+      "ms": 631
     },
     {
       "id": "krx.stat.04801",
@@ -99,7 +99,7 @@
       "contentType": "text/html; charset=utf-8",
       "ok": false,
       "body": "LOGOUT",
-      "ms": 397
+      "ms": 622
     },
     {
       "id": "krx.stat.04901",
@@ -109,7 +109,7 @@
       "contentType": "text/html; charset=utf-8",
       "ok": false,
       "body": "LOGOUT",
-      "ms": 407
+      "ms": 565
     },
     {
       "id": "krx.stat.05001",
@@ -119,7 +119,7 @@
       "contentType": "text/html; charset=utf-8",
       "ok": false,
       "body": "LOGOUT",
-      "ms": 371
+      "ms": 621
     },
     {
       "id": "krx.stat.05101",
@@ -129,7 +129,7 @@
       "contentType": "text/html; charset=utf-8",
       "ok": false,
       "body": "LOGOUT",
-      "ms": 177
+      "ms": 551
     },
     {
       "id": "krx.pdf",
@@ -140,7 +140,7 @@
       "ok": false,
       "body": "LOGOUT",
       "isuCd": "KR7069500007",
-      "ms": 551
+      "ms": 676
     },
     {
       "id": "naver.etf.list",
@@ -165,15 +165,15 @@
       },
       "count": 1163,
       "ok": true,
-      "ms": 1113
+      "ms": 1349
     },
     {
       "id": "naver.m.etfAnalysis",
       "note": "m.stock 069500 etfAnalysis",
       "status": 200,
-      "bytes": 4412,
+      "bytes": 4378,
       "contentType": "application/json;charset=UTF-8",
-      "summary": "{itemCode, itemName, etfSummary, listedDate, issuerName, etfBaseIndex, marketValue, totalNav, nav, etfChaseEarningRateSymbol, etfChaseEarningRate, deviationSign, deviationRate, totalFee, chaseErrorRate, taxationTypeCode, themeReturns, returnPerformanceReferenceDate, returnPerformanceList, navPerformanceReferenceDate, navPerformanceList, cumulativeNetInflowList, assetPortfolioTotalWeight, assetPortfolioList, countryPortfolioTotalWeight, countryPortfolioList, sectorPortfolioTotalWeight, sectorPortfolioList, etfTop10MajorConstituentAssets, dividend, marketValueRaw}",
+      "summary": "{itemCode, itemName, etfSummary, listedDate, issuerName, etfBaseIndex, marketValue, totalNav, nav, etfChaseEarningRateSymbol, etfChaseEarningRate, deviationSign, deviationRate, totalFee, chaseErrorRate, taxationTypeCode, themeReturns, returnPerformanceReferenceDate, returnPerformanceList, navPerformanceReferenceDate, navPerformanceList, cumulativeNetInflowList, assetPortfolioTotalWeight, assetPortfolioList, countryPortfolioTotalWeight, countryPortfolioList, sectorPortfolioTotalWeight, sectorPortfolioList, etfTop10MajorConstituentAssets, dividend}",
       "sample": {
         "itemCode": "069500",
         "itemName": "KODEX 200",
@@ -483,17 +483,16 @@
           "dividendPerShareTtm": 849,
           "dividendCountThisYear": 3,
           "dividendMonthThisYear": "1,4,7"
-        },
-        "marketValueRaw": "25053325000000"
+        }
       },
       "ok": true,
-      "ms": 766
+      "ms": 655
     },
     {
       "id": "naver.m.integration",
       "note": "m.stock 069500 integration",
       "status": 200,
-      "bytes": 8801,
+      "bytes": 8835,
       "contentType": "application/json;charset=UTF-8",
       "summary": "{stockEndType, itemCode, reutersCode, stockName, totalInfos, iconInfos, description, etfKeyIndicator, dealTrendInfos, researches, industryCode, industryCompareInfo, consensusInfo, shareholdersMeetingInfo, irScheduleInfo}",
       "sample": {
@@ -646,7 +645,8 @@
           "totalFee": 0.15,
           "returnRate1m": 1.51,
           "returnRate3m": -16.27,
-          "returnRate1y": 155.48
+          "returnRate1y": 155.48,
+          "marketValueRaw": "25053325000000"
         },
         "dealTrendInfos": [
           {
@@ -967,7 +967,7 @@
         "irScheduleInfo": null
       },
       "ok": true,
-      "ms": 391
+      "ms": 655
     },
     {
       "id": "naver.m.basic",
@@ -1019,17 +1019,17 @@
         },
         "stockExchangeName": "KOSPI",
         "imageCharts": {
-          "areaYearThree": "https://financial-vn.pstatic.net/chart/mobile/area/year3/069500_end.png",
-          "candleMonth": "https://financial-vn.pstatic.net/chart/mobile/candle/month/069500_end.png",
           "day": "https://financial-vn.pstatic.net/chart/mobile/day/069500_end.png",
-          "candleWeek": "https://financial-vn.pstatic.net/chart/mobile/candle/week/069500_end.png",
-          "areaMonthThree": "https://financial-vn.pstatic.net/chart/mobile/area/month3/069500_end.png",
-          "areaYearTen": "https://financial-vn.pstatic.net/chart/mobile/area/year10/069500_end.png",
-          "day_up": "https://financial-vn.pstatic.net/chart/mobile/mini/069500_end_up.png",
-          "candleDay": "https://financial-vn.pstatic.net/chart/mobile/candle/day/069500_end.png",
-          "transparent": "https://financial-vn.pstatic.net/chart/mobile/mini/069500_transparent.png",
           "areaYear": "https://financial-vn.pstatic.net/chart/mobile/area/year/069500_end.png",
-          "day_up_tablet": "https://financial-vn.pstatic.net/chart/mobile/mini/069500_end_up_tablet.png"
+          "candleDay": "https://financial-vn.pstatic.net/chart/mobile/candle/day/069500_end.png",
+          "areaMonthThree": "https://financial-vn.pstatic.net/chart/mobile/area/month3/069500_end.png",
+          "day_up": "https://financial-vn.pstatic.net/chart/mobile/mini/069500_end_up.png",
+          "candleWeek": "https://financial-vn.pstatic.net/chart/mobile/candle/week/069500_end.png",
+          "areaYearTen": "https://financial-vn.pstatic.net/chart/mobile/area/year10/069500_end.png",
+          "day_up_tablet": "https://financial-vn.pstatic.net/chart/mobile/mini/069500_end_up_tablet.png",
+          "candleMonth": "https://financial-vn.pstatic.net/chart/mobile/candle/month/069500_end.png",
+          "transparent": "https://financial-vn.pstatic.net/chart/mobile/mini/069500_transparent.png",
+          "areaYearThree": "https://financial-vn.pstatic.net/chart/mobile/area/year3/069500_end.png"
         },
         "imageChartUrlInfo": {
           "line": {
@@ -1072,7 +1072,7 @@
         "nationName": "대한민국"
       },
       "ok": true,
-      "ms": 133
+      "ms": 172
     },
     {
       "id": "naver.m.etf.constituent",
@@ -1082,7 +1082,7 @@
       "contentType": "text/html;charset=UTF-8",
       "ok": false,
       "body": "<!doctype html>\n<html lang=\"ko\">\n<head>\n    <meta charset=\"utf-8\">\n    <meta name=\"viewport\" content=\"width=device-width,initial-scale=1.0,maximum-scale=1.0,minimum-scale=1.0,user-scalable=no\">\n    <title>Npay 증권</title>\n    <link rel=\"shortcut icon\" href=\"https://ssl.pstatic.net/imgstock/favicon.ic",
-      "ms": 145
+      "ms": 169
     },
     {
       "id": "yahoo.crumb",
@@ -1092,13 +1092,13 @@
       "crumbLen": 11,
       "summary": "cookie O / crumb O",
       "ok": true,
-      "ms": 341
+      "ms": 284
     },
     {
       "id": "yahoo.holdings.SPY",
       "note": "quoteSummary 미국 · S&P500",
       "status": 200,
-      "bytes": 9069,
+      "bytes": 9063,
       "contentType": "application/json;charset=utf-8",
       "summary": "modules: fundProfile,summaryDetail,defaultKeyStatistics,topHoldings,price | holdings 10개 | sectorWeightings 11개 | family State Street Investment Management | TER 0.000945 | AUM 795.31B",
       "sampleHolding": {
@@ -1112,13 +1112,13 @@
       "holdingCount": 10,
       "hasSector": true,
       "ok": true,
-      "ms": 59
+      "ms": 222
     },
     {
       "id": "yahoo.holdings.QQQ",
       "note": "quoteSummary 미국 · 나스닥100",
       "status": 200,
-      "bytes": 9001,
+      "bytes": 8995,
       "contentType": "application/json;charset=utf-8",
       "summary": "modules: fundProfile,summaryDetail,defaultKeyStatistics,topHoldings,price | holdings 10개 | sectorWeightings 11개 | family Invesco | TER 0.0018000001 | AUM 452.8B",
       "sampleHolding": {
@@ -1132,7 +1132,7 @@
       "holdingCount": 10,
       "hasSector": true,
       "ok": true,
-      "ms": 42
+      "ms": 116
     },
     {
       "id": "yahoo.holdings.2800.HK",
@@ -1152,7 +1152,7 @@
       "holdingCount": 10,
       "hasSector": true,
       "ok": true,
-      "ms": 37
+      "ms": 120
     },
     {
       "id": "yahoo.holdings.3033.HK",
@@ -1172,13 +1172,13 @@
       "holdingCount": 10,
       "hasSector": true,
       "ok": true,
-      "ms": 36
+      "ms": 107
     },
     {
       "id": "yahoo.holdings.2823.HK",
       "note": "quoteSummary 홍콩 · CSI300 (본토 익스포저)",
       "status": 200,
-      "bytes": 8539,
+      "bytes": 8537,
       "contentType": "application/json;charset=utf-8",
       "summary": "modules: fundProfile,summaryDetail,defaultKeyStatistics,topHoldings,price | holdings 10개 | sectorWeightings 11개 | family BlackRock Asset Management North Asia Ltd - ETF | TER 0 | AUM 12.81B",
       "sampleHolding": {
@@ -1192,7 +1192,7 @@
       "holdingCount": 10,
       "hasSector": true,
       "ok": true,
-      "ms": 37
+      "ms": 186
     },
     {
       "id": "yahoo.holdings.1306.T",
@@ -1212,7 +1212,7 @@
       "holdingCount": 10,
       "hasSector": true,
       "ok": true,
-      "ms": 33
+      "ms": 114
     },
     {
       "id": "yahoo.holdings.1321.T",
@@ -1232,7 +1232,7 @@
       "holdingCount": 10,
       "hasSector": true,
       "ok": true,
-      "ms": 34
+      "ms": 96
     },
     {
       "id": "yahoo.holdings.510300.SS",
@@ -1245,7 +1245,7 @@
       "holdingCount": 0,
       "hasSector": false,
       "ok": true,
-      "ms": 38
+      "ms": 115
     },
     {
       "id": "yahoo.holdings.510500.SS",
@@ -1258,7 +1258,7 @@
       "holdingCount": 0,
       "hasSector": false,
       "ok": true,
-      "ms": 33
+      "ms": 115
     },
     {
       "id": "yahoo.holdings.588000.SS",
@@ -1271,7 +1271,7 @@
       "holdingCount": 0,
       "hasSector": false,
       "ok": true,
-      "ms": 35
+      "ms": 108
     },
     {
       "id": "yahoo.holdings.159915.SZ",
@@ -1284,7 +1284,7 @@
       "holdingCount": 0,
       "hasSector": false,
       "ok": true,
-      "ms": 35
+      "ms": 111
     },
     {
       "id": "yahoo.holdings.069500.KS",
@@ -1297,30 +1297,30 @@
       "holdingCount": 0,
       "hasSector": false,
       "ok": true,
-      "ms": 42
+      "ms": 127
     },
     {
       "id": "yahoo.chart",
       "note": "chart v8 (수익률 backfill)",
       "status": 200,
-      "bytes": 49555,
+      "bytes": 49559,
       "contentType": "application/json;charset=utf-8",
       "summary": "730봉 / 배당 12건 / adjclose O",
       "hasAdjClose": true,
       "hasDividends": true,
       "ok": true,
-      "ms": 56
+      "ms": 199
     },
     {
       "id": "issuer.ishares.us.ivv",
       "note": "iShares IVV (미국) holdings CSV",
       "status": 200,
-      "bytes": 2225140,
+      "bytes": 2225142,
       "contentType": "text/csv;charset=UTF-8",
       "text": "<!DOCTYPE html>\n<html xmlns=\"http://www.w3.org/1999/xhtml\" prefix=\"og: http://ogp.me/ns#\" lang=\"en-US\" xml:lang=\"en-US\">\n<head>\n<link rel=\"preload\" href=\"/blk-one02-c-assets/include/bundles/minified-ad58682690f72ffa52b25d7f4076d635.css\" as=\"style\" />\n<link rel=\"preload\" href=\"/blk-one02-c-assets/include/bundles/minified-cf3bd4f8f7916e1f21479674299d9778.css\" as=\"style\" />\n<link rel=\"preload\" href=\"",
-      "summary": "2225140B · <!DOCTYPE html> <html xmlns=\"http://www.w3.org/1999/xhtml\" prefix=\"og: http://og",
+      "summary": "2225142B · <!DOCTYPE html> <html xmlns=\"http://www.w3.org/1999/xhtml\" prefix=\"og: http://og",
       "ok": true,
-      "ms": 946
+      "ms": 795
     },
     {
       "id": "issuer.ishares.hk.2800",
@@ -1329,9 +1329,9 @@
       "bytes": 409,
       "contentType": "text/html",
       "ok": false,
-      "body": "<HTML><HEAD>\n<TITLE>Access Denied</TITLE>\n</HEAD><BODY>\n<H1>Access Denied</H1>\n \nYou don't have permission to access \"http&#58;&#47;&#47;www&#46;blackrock&#46;com&#47;hk&#47;en&#47;products&#47;251769&#47;\" on this server.<P>\nReference&#32;&#35;18&#46;c537cb17&#46;1787921016&#46;499cda0c\n<P>https&#5",
+      "body": "<HTML><HEAD>\n<TITLE>Access Denied</TITLE>\n</HEAD><BODY>\n<H1>Access Denied</H1>\n \nYou don't have permission to access \"http&#58;&#47;&#47;www&#46;blackrock&#46;com&#47;hk&#47;en&#47;products&#47;251769&#47;\" on this server.<P>\nReference&#32;&#35;18&#46;2c51db17&#46;1787922861&#46;4109382f\n<P>https&#5",
       "summary": "409B · text/html",
-      "ms": 384
+      "ms": 567
     },
     {
       "id": "issuer.csindex.510300",
@@ -1342,7 +1342,7 @@
       "ok": false,
       "body": "{\"timestamp\":\"2026-08-28\",\"status\":404,\"error\":\"Not Found\",\"message\":\"\",\"path\":\"/csindex-home/indexInfo/index-info-detail\"}",
       "summary": "123B · application/json",
-      "ms": 745
+      "ms": 801
     },
     {
       "id": "issuer.eastmoney.510300",
@@ -1352,7 +1352,7 @@
       "contentType": "application/json; charset=UTF-8",
       "summary": "{rc, rt, svr, lt, full, dlmkts, dsc, data}",
       "ok": true,
-      "ms": 1858
+      "ms": 2107
     },
     {
       "id": "issuer.ssga.spy",
@@ -1363,7 +1363,7 @@
       "text": "PK\u0003\u0004\u0014\u0000\b\b\b\u0000�Q\u001c]\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0013\u0000\u0000\u0000[Content_Types].xml���n�0\f�_���\u0010+��P\fqz�\u00030`�\n�{\u0000F�c!:Ad���G9�ti�nɍe�?���\fͮ6�7\u000fXȥة�v�\u001a�&Y\u0017���y�ur�\u001ab�\u0016|�ة-�����\u0019���H�\u001a��G��\f\u0018�ڔ1J�O%\u0000˶,u\u0006��%����\u0007mRd�<�ZC�g��������{-�)��;\u0003,��C�ϊNR�;�6�u���rA�4 r�m.N*�;d�6H5_6Rx���E�����D[Џ\u001a\u001a\\�w\"�\u0003H��\"<O�{��!�Q��׭��\u0011��\u0003��\u001f�\u001e\u0016�ߙ���7\u0010$[ˠ���\u0002��^%�b��7\u0011_?\u0000�}X��\\DX��A\u0013�\u0012%-����t\u0010&\u0015<\nX���֬�S8\u000e=JO\t���i����K������zOpF\u001f��\u0007�P\r��S�Y�\u0019<�\u001a\u0003���9G.k\u001b��",
       "summary": "51934B · PK\u0003\u0004\u0014\u0000\b\b\b\u0000�Q\u001c]\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0013\u0000\u0000\u0000[Content_Types].xml���n�0 �_���\u0010+��P qz�\u00030`� �{\u0000F�",
       "ok": true,
-      "ms": 510
+      "ms": 567
     },
     {
       "id": "issuer.invesco.qqq",
@@ -1374,7 +1374,7 @@
       "ok": false,
       "body": "",
       "summary": "0B · ",
-      "ms": 84
+      "ms": 120
     },
     {
       "id": "issuer.nomura.1306",
@@ -1385,7 +1385,7 @@
       "text": "\n\n\n\n\n\n\n\n    \n\n\n\n\n\n\n\n<!doctype html>\n<html lang=ja>\n<head>\n  \n  <script>\n    (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src='https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);})(window,document,'script','dataLayer','G",
       "summary": "214982B ·  <!doctype html> <html lang=ja> <head> <script> (fun",
       "ok": true,
-      "ms": 1317
+      "ms": 1516
     },
     {
       "id": "issuer.tiger.kr",
@@ -1396,14 +1396,14 @@
       "ok": false,
       "body": "<!DOCTYPE HTML PUBLIC \"-//IETF//DTD HTML 2.0//EN\">\n<html><head>\n<title>301 Moved Permanently</title>\n</head><body>\n<h1>Moved Permanently</h1>\n<p>The document has moved <a href=\"http://investments.miraeasset.com/tigeretf/index.html\">here</a>.</p>\n</body></html>\n",
       "summary": "261B · text/html; charset=iso-8859-1",
-      "ms": 503
+      "ms": 585
     },
     {
       "id": "issuer.krx.etf.site",
       "note": "KRX ETF 전용 사이트",
       "ok": false,
       "error": "TypeError: fetch failed",
-      "ms": 377
+      "ms": 185
     }
   ]
 }
