@@ -122,6 +122,28 @@
       padding: 14px 16px; box-shadow: var(--shadow); cursor: pointer; position: relative;
     }
     .rp:hover { border-color: var(--mas-orange); }
+    /* 갈래마다 왼쪽에 띠를 둔다 — 마흔 쪽을 넘길 때 눈이 갈래를 먼저 잡는다.
+       색은 브랜드 차트 팔레트 차례를 그대로 쓴다. */
+    .rp[data-cat="종목분석"]   { border-left: 3px solid #F58220; }
+    .rp[data-cat="산업분석"]   { border-left: 3px solid #043B72; }
+    .rp[data-cat="시황정보"]   { border-left: 3px solid #FAB072; }
+    .rp[data-cat="투자정보"]   { border-left: 3px solid #0086B8; }
+    .rp[data-cat="경제분석"]   { border-left: 3px solid #AD624E; }
+    .rp[data-cat="채권분석"]   { border-left: 3px solid #00A9CE; }
+    .rp[data-cat="리서치 리포트"] { border-left: 3px solid #7E9FC3; }
+    .rp[data-cat="해외 리서치"]  { border-left: 3px solid #CB6015; }
+    .stat .v, .themes .c, .rp .foot { font-variant-numeric: tabular-nums; }
+
+    /* 전체본 PDF 의 차례. 마흔 쪽을 그냥 넘기게 두지 않는다. */
+    .toc { border: 1px solid var(--border); border-radius: 2px; padding: 12px 16px; margin: 12px 0; }
+    .toc b { display: block; font-size: 11px; letter-spacing: .06em; color: var(--mas-orange); margin-bottom: 6px; }
+    .toc ol { margin: 0; padding-left: 18px; font-size: 13px; color: var(--text-secondary); }
+    .toc li { margin: 2px 0; }
+    .grp {
+      margin: 16px 0 8px; font-size: 14px; font-weight: 700;
+      border-top: 1px solid var(--mas-orange); padding-top: 8px;
+    }
+    .grp .n { font-weight: 400; font-size: 12px; color: var(--text-muted); margin-left: 6px; }
     .rp .tags { display: flex; gap: 6px; flex-wrap: wrap; align-items: center; margin-bottom: 6px; }
     .tag {
       font-size: 11px; padding: 2px 8px; border-radius: 2px; border: 1px solid var(--border);
@@ -259,6 +281,9 @@
       .ov-k { font-size: 7.5pt; }
       .themes .th { grid-template-columns: 88px 1fr 26px; }
       .themes .n, .themes .c { font-size: 7.5pt; }
+      .toc { padding: 8px 11px; break-inside: avoid; }
+      .toc ol { font-size: 8.5pt; }
+      .grp { font-size: 10pt; margin: 10px 0 6px; break-after: avoid; page-break-after: avoid; }
       /* 요약본에서는 전체 목록과 주간을 뺀다 — 그날 판만 담는다. */
       body.pdf-summary #listTop, body.pdf-summary #list, body.pdf-summary #hit,
       body.pdf-summary #weekly-wrap { display: none !important; }
@@ -454,6 +479,41 @@
       + '<p class="ov-t">' + esc(ov.text) + "</p>" + bars + "</div>";
   }
 
+  /* 전체본 PDF 전용. 마흔 쪽짜리 목록을 갈래로 묶고 앞에 차례를 세운다 —
+     종이에는 걸러 보기가 없으니, 묶어 두지 않으면 찾을 길이 없다.
+     화면은 건드리지 않는다(reports_to_pdf.mjs 가 찍기 직전에만 부른다). */
+  window.__groupList__ = function () {
+    var host = els.list, cards = [].slice.call(host.children);
+    if (!cards.length) return 0;
+    var order = [], bag = {};
+    cards.forEach(function (el) {
+      var c = el.getAttribute("data-cat") || "그 밖";
+      if (!bag[c]) { bag[c] = []; order.push(c); }
+      bag[c].push(el);
+    });
+    var toc = document.createElement("div");
+    toc.className = "toc";
+    toc.innerHTML = "<b>차례</b><ol>" + order.map(function (c) {
+      return "<li>" + esc(c) + " — " + bag[c].length + "건</li>";
+    }).join("") + "</ol>";
+    host.parentNode.insertBefore(toc, host);
+    // 갈래 머리는 카드 격자 밖에 서야 단 흐름에서 제 몫으로 잡힌다.
+    var frag = document.createDocumentFragment();
+    order.forEach(function (c) {
+      var h = document.createElement("div");
+      h.className = "grp";
+      h.innerHTML = esc(c) + '<span class="n">' + bag[c].length + "건</span>";
+      frag.appendChild(h);
+      var box = document.createElement("div");
+      box.className = "cards";
+      bag[c].forEach(function (el) { box.appendChild(el); });
+      frag.appendChild(box);
+    });
+    host.innerHTML = "";
+    host.appendChild(frag);
+    return order.length;
+  };
+
   function stat(k, v) {
     return '<div class="stat"><div class="k">' + esc(k) + '</div><div class="v">' + v + "</div></div>";
   }
@@ -514,7 +574,7 @@
     if (st.code && !window.__NO_DASH__) links.push('<a class="go" href="../../index.html?code=' + esc(st.code) + '">종목 대시보드</a>');
     if (r.excerpt) links.push('<button type="button" data-more="1">본문 발췌</button>');
 
-    return '<article class="rp" data-url="' + esc(r.url) + '">' +
+    return '<article class="rp" data-cat="' + esc(r.category) + '" data-url="' + esc(r.url) + '">' +
       '<div class="tags">' + tags.join("") + "</div>" +
       '<a class="t" href="' + esc(r.url) + '" target="_blank" rel="noopener">' + esc(r.title) + "</a>" +
       sum +
