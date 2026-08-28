@@ -1,0 +1,440 @@
+{
+  "probedAt": "2026-08-28T08:00:52.372Z",
+  "krxTradeDate": null,
+  "results": [
+    {
+      "id": "krx.session",
+      "note": "세션 쿠키 획득 (화면 선진입)",
+      "ok": true,
+      "summary": "쿠키 2개",
+      "ms": 303
+    },
+    {
+      "id": "krx.etf.all",
+      "note": "ETF 전종목 시세 (세션 있음)",
+      "ok": false,
+      "error": "영업일 10일 모두 빈 응답",
+      "ms": 3468
+    },
+    {
+      "id": "krx2.stat.04301",
+      "note": "MDCSTAT04301 — ETF 전종목 시세",
+      "status": 400,
+      "bytes": 6,
+      "ok": false,
+      "summary": "JSON 아님: LOGOUT",
+      "ms": 963
+    },
+    {
+      "id": "krx2.stat.04401",
+      "note": "MDCSTAT04401 — ETF 개별 시세 추이",
+      "status": 400,
+      "bytes": 6,
+      "ok": false,
+      "summary": "JSON 아님: LOGOUT",
+      "ms": 232
+    },
+    {
+      "id": "krx2.stat.04501",
+      "note": "MDCSTAT04501 — ETF 전종목 등락률",
+      "status": 400,
+      "bytes": 6,
+      "ok": false,
+      "summary": "JSON 아님: LOGOUT",
+      "ms": 586
+    },
+    {
+      "id": "krx2.stat.04601",
+      "note": "MDCSTAT04601 — ETF 투자자별 거래",
+      "status": 400,
+      "bytes": 6,
+      "ok": false,
+      "summary": "JSON 아님: LOGOUT",
+      "ms": 253
+    },
+    {
+      "id": "krx2.stat.04701",
+      "note": "MDCSTAT04701 — ETF 상세 정보",
+      "status": 400,
+      "bytes": 6,
+      "ok": false,
+      "summary": "JSON 아님: LOGOUT",
+      "ms": 690
+    },
+    {
+      "id": "krx2.stat.04801",
+      "note": "MDCSTAT04801 — ETF 구성종목 후보 A",
+      "status": 400,
+      "bytes": 6,
+      "ok": false,
+      "summary": "JSON 아님: LOGOUT",
+      "ms": 249
+    },
+    {
+      "id": "krx2.stat.04901",
+      "note": "MDCSTAT04901 — ETF 구성종목 후보 B",
+      "status": 400,
+      "bytes": 6,
+      "ok": false,
+      "summary": "JSON 아님: LOGOUT",
+      "ms": 228
+    },
+    {
+      "id": "krx2.stat.05001",
+      "note": "MDCSTAT05001 — ETF 구성종목(PDF) 후보 C",
+      "status": 400,
+      "bytes": 6,
+      "ok": false,
+      "summary": "JSON 아님: LOGOUT",
+      "ms": 537
+    },
+    {
+      "id": "krx2.stat.05101",
+      "note": "MDCSTAT05101 — ETF 후보 D",
+      "status": 400,
+      "bytes": 6,
+      "ok": false,
+      "summary": "JSON 아님: LOGOUT",
+      "ms": 268
+    },
+    {
+      "id": "krx.otp.csv",
+      "note": "OTP → CSV 내려받기 (PDF 구성종목)",
+      "ok": true,
+      "status": 403,
+      "bytes": 2531,
+      "summary": "35행 · 헤더: \t\t<html>\r",
+      "sampleRow": "<head>\r",
+      "ms": 553
+    },
+    {
+      "id": "naver.analysis.full",
+      "note": "etfAnalysis 전문 저장 (구성종목이 섞여 있는가)",
+      "status": 200,
+      "bytes": 4856,
+      "summary": "키 31개 · 배열필드: returnPerformanceList[10]{periodTypeCode,value} | navPerformanceList[10]{periodTypeCode,value} | assetPortfolioList[5]{detailTypeCode,weight} | countryPortfolioList[6]{detailTypeCode,weight} | sectorPortfolioList[12]{detailTypeCode,weight} | etfTop10MajorConstituentAssets[10]{seq,itemCode,itemName,stockCount,etfWeight}",
+      "keys": [
+        "itemCode",
+        "itemName",
+        "etfSummary",
+        "listedDate",
+        "issuerName",
+        "etfBaseIndex",
+        "marketValue",
+        "totalNav",
+        "nav",
+        "etfChaseEarningRateSymbol",
+        "etfChaseEarningRate",
+        "deviationSign",
+        "deviationRate",
+        "totalFee",
+        "chaseErrorRate",
+        "taxationTypeCode",
+        "themeReturns",
+        "returnPerformanceReferenceDate",
+        "returnPerformanceList",
+        "navPerformanceReferenceDate",
+        "navPerformanceList",
+        "cumulativeNetInflowList",
+        "assetPortfolioTotalWeight",
+        "assetPortfolioList",
+        "countryPortfolioTotalWeight",
+        "countryPortfolioList",
+        "sectorPortfolioTotalWeight",
+        "sectorPortfolioList",
+        "etfTop10MajorConstituentAssets",
+        "dividend",
+        "marketValueRaw"
+      ],
+      "arrays": [
+        "returnPerformanceList[10]{periodTypeCode,value}",
+        "navPerformanceList[10]{periodTypeCode,value}",
+        "assetPortfolioList[5]{detailTypeCode,weight}",
+        "countryPortfolioList[6]{detailTypeCode,weight}",
+        "sectorPortfolioList[12]{detailTypeCode,weight}",
+        "etfTop10MajorConstituentAssets[10]{seq,itemCode,itemName,stockCount,etfWeight}"
+      ],
+      "ok": true,
+      "ms": 754
+    },
+    {
+      "id": "naver.pdf.m.stock",
+      "note": "국내 구성종목 후보 — m.stock.naver.com/api/stock/069500/etfComposition",
+      "ok": false,
+      "status": 404,
+      "summary": "<!doctype html>\n<html lang=\"ko\">\n<head>\n    <meta charset=\"utf-8\">\n    <meta name=\"viewport\" content",
+      "ms": 737
+    },
+    {
+      "id": "naver.pdf.m.stock2",
+      "note": "국내 구성종목 후보 — m.stock.naver.com/api/stock/069500/etfConstituent",
+      "ok": false,
+      "status": 404,
+      "summary": "<!doctype html>\n<html lang=\"ko\">\n<head>\n    <meta charset=\"utf-8\">\n    <meta name=\"viewport\" content",
+      "ms": 216
+    },
+    {
+      "id": "naver.pdf.m.stock3",
+      "note": "국내 구성종목 후보 — m.stock.naver.com/api/stock/069500/etfPortfolio",
+      "ok": false,
+      "status": 404,
+      "summary": "<!doctype html>\n<html lang=\"ko\">\n<head>\n    <meta charset=\"utf-8\">\n    <meta name=\"viewport\" content",
+      "ms": 199
+    },
+    {
+      "id": "naver.pdf.m.stock4",
+      "note": "국내 구성종목 후보 — m.stock.naver.com/api/stock/069500/etfComponent",
+      "ok": false,
+      "status": 404,
+      "summary": "<!doctype html>\n<html lang=\"ko\">\n<head>\n    <meta charset=\"utf-8\">\n    <meta name=\"viewport\" content",
+      "ms": 208
+    },
+    {
+      "id": "naver.pdf.m.stock5",
+      "note": "국내 구성종목 후보 — m.stock.naver.com/api/stock/069500/componentStock",
+      "ok": false,
+      "status": 404,
+      "summary": "<!doctype html>\n<html lang=\"ko\">\n<head>\n    <meta charset=\"utf-8\">\n    <meta name=\"viewport\" content",
+      "ms": 205
+    },
+    {
+      "id": "naver.pdf.m.stock6",
+      "note": "국내 구성종목 후보 — m.stock.naver.com/api/stock/069500/etf/component",
+      "ok": false,
+      "status": 404,
+      "summary": "<!doctype html>\n<html lang=\"ko\">\n<head>\n    <meta charset=\"utf-8\">\n    <meta name=\"viewport\" content",
+      "ms": 212
+    },
+    {
+      "id": "naver.pdf.api.etf",
+      "note": "국내 구성종목 후보 — api.stock.naver.com/etf/069500/componentStocks",
+      "ok": false,
+      "status": 404,
+      "summary": "{\"timestamp\":\"2026-08-28T08:00:44.128+0000\",\"status\":404,\"error\":\"Not Found\",\"message\":\"No message a",
+      "ms": 1205
+    },
+    {
+      "id": "naver.pdf.api.etf2",
+      "note": "국내 구성종목 후보 — api.stock.naver.com/stock/069500/etfAnalysis",
+      "ok": false,
+      "status": 404,
+      "summary": "{\"timestamp\":\"2026-08-28T08:00:44.404+0000\",\"status\":404,\"error\":\"Not Found\",\"message\":\"No message a",
+      "ms": 272
+    },
+    {
+      "id": "naver.pdf.pc.etf",
+      "note": "국내 구성종목 후보 — finance.naver.com/item/etf_component.naver?code=069500",
+      "ok": false,
+      "status": 404,
+      "summary": "\n<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\" \"http://www.w3.org/TR/html4/loose.dt",
+      "ms": 738
+    },
+    {
+      "id": "naver.pdf.pc.coinfo",
+      "note": "국내 구성종목 후보 — finance.naver.com/item/coinfo.naver?code=069500",
+      "ok": false,
+      "status": 200,
+      "bytes": 114099,
+      "summary": "HTML · 구성종목 흔적 없음",
+      "ms": 457
+    },
+    {
+      "id": "naver.pdf.pc.main",
+      "note": "국내 구성종목 후보 — finance.naver.com/item/main.naver?code=069500",
+      "ok": false,
+      "status": 200,
+      "bytes": 143148,
+      "summary": "HTML · 구성종목 흔적 없음",
+      "ms": 394
+    },
+    {
+      "id": "naver.tabs",
+      "note": "ETF 목록의 분류 탭 코드 분포",
+      "status": 200,
+      "count": 1163,
+      "tabs": {
+        "1": 99,
+        "2": 336,
+        "3": 37,
+        "4": 376,
+        "5": 23,
+        "6": 171,
+        "7": 121
+      },
+      "summary": "1163종목 · 탭 {\"1\":99,\"2\":336,\"3\":37,\"4\":376,\"5\":23,\"6\":171,\"7\":121}",
+      "ok": true,
+      "ms": 336
+    },
+    {
+      "id": "yahoo.crumb2",
+      "note": "쿠키 + crumb",
+      "ok": true,
+      "summary": "crumb O / 쿠키 1개",
+      "ms": 62
+    },
+    {
+      "id": "yahoo.cn.510300.SS",
+      "note": "quoteSummary 상해 · CSI300",
+      "ok": false,
+      "status": 200,
+      "holdingCount": 0,
+      "summary": "holdings 0개 · sector 0개 · family - · AUM -",
+      "sampleHolding": null,
+      "ms": 52
+    },
+    {
+      "id": "yahoo.cn.510500.SS",
+      "note": "quoteSummary 상해 · CSI500",
+      "ok": false,
+      "status": 200,
+      "holdingCount": 0,
+      "summary": "holdings 0개 · sector 0개 · family - · AUM -",
+      "sampleHolding": null,
+      "ms": 47
+    },
+    {
+      "id": "yahoo.cn.588000.SS",
+      "note": "quoteSummary 상해 · 과창판50",
+      "ok": false,
+      "status": 200,
+      "holdingCount": 0,
+      "summary": "holdings 0개 · sector 0개 · family - · AUM -",
+      "sampleHolding": null,
+      "ms": 51
+    },
+    {
+      "id": "yahoo.cn.512880.SS",
+      "note": "quoteSummary 상해 · 증권",
+      "ok": false,
+      "status": 200,
+      "holdingCount": 0,
+      "summary": "holdings 0개 · sector 0개 · family - · AUM -",
+      "sampleHolding": null,
+      "ms": 52
+    },
+    {
+      "id": "yahoo.cn.159915.SZ",
+      "note": "quoteSummary 심천 · 촹예반",
+      "ok": false,
+      "status": 200,
+      "holdingCount": 0,
+      "summary": "holdings 0개 · sector 0개 · family - · AUM -",
+      "sampleHolding": null,
+      "ms": 54
+    },
+    {
+      "id": "yahoo.cn.159949.SZ",
+      "note": "quoteSummary 심천 · 촹예반50",
+      "ok": false,
+      "status": 200,
+      "holdingCount": 0,
+      "summary": "holdings 0개 · sector 0개 · family - · AUM -",
+      "sampleHolding": null,
+      "ms": 53
+    },
+    {
+      "id": "yahoo.cn.2823.HK",
+      "note": "quoteSummary 홍콩 · CSI300 (본토 익스포저)",
+      "ok": true,
+      "status": 200,
+      "holdingCount": 10,
+      "summary": "holdings 10개 · sector 11개 · family BlackRock Asset Management North Asia Ltd - ETF · AUM 12.81B",
+      "sampleHolding": {
+        "symbol": "300750.SZ",
+        "holdingName": "Contemporary Amperex Technology Co Ltd Class A",
+        "holdingPercent": {
+          "raw": 0.0841959,
+          "fmt": "8.42%"
+        }
+      },
+      "ms": 53
+    },
+    {
+      "id": "yahoo.cn.3188.HK",
+      "note": "quoteSummary 홍콩 · CSI300 (다른 운용사)",
+      "ok": true,
+      "status": 200,
+      "holdingCount": 9,
+      "summary": "holdings 9개 · sector 11개 · family China Asset Management (HK) Limited · AUM 14.6B",
+      "sampleHolding": {
+        "symbol": "600519.SS",
+        "holdingName": "Kweichow Moutai Co Ltd Class A",
+        "holdingPercent": {
+          "raw": 0.052824304,
+          "fmt": "5.28%"
+        }
+      },
+      "ms": 48
+    },
+    {
+      "id": "yahoo.cn.MCHI",
+      "note": "quoteSummary 미국 상장 중국",
+      "ok": true,
+      "status": 200,
+      "holdingCount": 10,
+      "summary": "holdings 10개 · sector 11개 · family iShares · AUM 6.28B",
+      "sampleHolding": {
+        "symbol": "0700.HK",
+        "holdingName": "Tencent Holdings Ltd",
+        "holdingPercent": {
+          "raw": 0.1446703,
+          "fmt": "14.47%"
+        }
+      },
+      "ms": 59
+    },
+    {
+      "id": "yahoo.cn.KWEB",
+      "note": "quoteSummary 미국 상장 중국 인터넷",
+      "ok": true,
+      "status": 200,
+      "holdingCount": 10,
+      "summary": "holdings 10개 · sector 11개 · family KraneShares · AUM 5.58B",
+      "sampleHolding": {
+        "symbol": "0700.HK",
+        "holdingName": "Tencent Holdings Ltd",
+        "holdingPercent": {
+          "raw": 0.099580295,
+          "fmt": "9.96%"
+        }
+      },
+      "ms": 61
+    },
+    {
+      "id": "issuer.kr.tiger",
+      "note": "미래에셋 TIGER",
+      "ok": false,
+      "status": 403,
+      "bytes": 261,
+      "summary": "261B · <!DOCTYPE HTML PUBLIC \"-//IETF//DTD HTML 2.0//EN\"> <html><head> <title>301 Moved Permanent",
+      "ms": 445
+    },
+    {
+      "id": "issuer.kr.kodex",
+      "note": "삼성 KODEX",
+      "ok": true,
+      "status": 200,
+      "bytes": 138726,
+      "summary": "138726B · <!DOCTYPE html> <html lang=\"ko\" id=\"top-of-site\" class=\"\"> <head> ",
+      "ms": 2852
+    },
+    {
+      "id": "issuer.kr.kodex.api",
+      "note": "삼성 KODEX 상품 API",
+      "ok": true,
+      "status": 200,
+      "bytes": 138726,
+      "summary": "138726B · <!DOCTYPE html> <html lang=\"ko\" id=\"top-of-site\" class=\"\"> <head> ",
+      "ms": 842
+    },
+    {
+      "id": "issuer.kr.seibro",
+      "note": "예탁결제원 SEIBRO ETF",
+      "ok": true,
+      "status": 200,
+      "bytes": 1048,
+      "summary": "1048B ·  <!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" \"http://www.w3.org",
+      "ms": 1214
+    }
+  ]
+}
