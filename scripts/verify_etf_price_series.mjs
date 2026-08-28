@@ -50,8 +50,15 @@ const YAHOO_CHART = (sym) =>
 
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
+// 막힌 곳은 거절 대신 침묵하기도 한다. 시간을 끊지 않으면 한 종목에서
+// 매달려 되짚기 전체가 끝나지 않는다 — 못 받은 것은 못 받았다고 남기고 넘어간다.
+const TIMEOUT_MS = 15000;
+
 async function get(url, headers = {}) {
-  const res = await fetch(url, { headers: { 'User-Agent': UA, ...headers } });
+  const res = await fetch(url, {
+    headers: { 'User-Agent': UA, ...headers },
+    signal: AbortSignal.timeout(TIMEOUT_MS),
+  });
   if (!res.ok) throw new Error(`HTTP ${res.status}`);
   return res.text();
 }
