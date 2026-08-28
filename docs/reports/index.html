@@ -439,7 +439,8 @@
       stat("목표주가 상향 · 하향",
         '<span style="color:var(--up)">' + up + "</span> <small>·</small> " +
         '<span style="color:var(--down)">' + dn + "</span>") +
-      stat("리포트가 몰린 종목", nf.format((s.crowded_stocks || []).length) + "<small> 종목</small>");
+      stat("리포트가 몰린 종목", nf.format((s.crowded_stocks || []).length) + "<small> 종목</small>") +
+      stat("해외 리포트", nf.format(s.count_overseas || 0) + "<small> 건</small>");
 
     var hl = (d.highlights || []).map(byNid).filter(Boolean);
     els.hlWrap.style.display = hl.length ? "" : "none";
@@ -629,7 +630,8 @@
         '<span style="color:var(--down)">' + (w.moves_down || 0) + "</span>") +
       stat("가장 많이 낸 곳", topBroker
         ? esc(topBroker.broker) + "<small> " + topBroker.count + "건</small>" : "-") +
-      stat("한 주 다뤄진 종목", nf.format((w.top_stocks || []).length) + "<small> 종목 이상</small>");
+      stat("한 주 다뤄진 종목", nf.format((w.top_stocks || []).length) + "<small> 종목 이상</small>") +
+      stat("해외 리포트", nf.format(w.count_overseas || 0) + "<small> 건</small>");
 
     document.getElementById("weekStocks").innerHTML =
       (w.top_stocks || []).map(function (s) {
