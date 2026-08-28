@@ -476,12 +476,19 @@ def _fallbacks(C):
     ]
 
 
+# 판 이름은 한 곳에서만 정한다. 세 군데에 흩어 두면 하나만 고치고 지나간다.
+KIND_NAME = {
+    "morning": ("모닝 마켓 브리핑", "Morning Market Briefing"),
+    "close":   ("장마감 시황 브리핑", "Market Close Briefing"),
+    "global":  ("해외 증시 브리핑", "Global Market Briefing"),
+}
+
+
 def _hero(C):
     """머리말 — 날짜와 작성 시각은 **시계에서** 만든다."""
     now, today, I = C["now"], C["today"], C["I"]
     N, KS = C["N"], C["KS"]
-    kindko = "모닝 마켓 브리핑" if C["kind"] == "morning" else "해외 증시 브리핑"
-    kinden = "Morning Market Briefing" if C["kind"] == "morning" else "Global Market Briefing"
+    kindko, kinden = KIND_NAME[C["kind"]]
     a, b = N.get("hero", C["fallback_today"][0][0], C["fallback_today"][0][1])
     tone_ko, tone_en = N.get("tone",
                              "지수보다 <strong>무엇이 움직였는지</strong>를 보십시오",
@@ -495,12 +502,21 @@ def _hero(C):
         '  <h1 class="hero-title">' + L(kindko, kinden) + '</h1>\n'
         '  <p class="hero-lede">' + L(a, b) + '</p>\n'
         '  <p class="hero-meta"><span class="tone mixed">' + L(tone_ko, tone_en) + '</span> &nbsp; '
-        + L("기준: 국내&middot;해외 모두 " + DK(C["prev_us"], True) + " 마감 &middot; 환율은 오늘 아침 "
-            + DK(today) + " &middot; 시세 파일 " + C["D"]["generated_at_kst"][5:16] + " 수집 &middot; 작성 "
+        + L(("기준: 국내는 오늘 " + DK(today) + " 마감 &middot; 해외는 " + DK(C["prev_us"], True)
+             + " 마감(아직 열지 않았습니다) &middot; 환율은 오늘 마감"
+             if C["kind"] == "close" else
+             "기준: 국내&middot;해외 모두 " + DK(C["prev_us"], True) + " 마감 &middot; 환율은 오늘 아침 "
+             + DK(today))
+            + " &middot; 시세 파일 " + C["D"]["generated_at_kst"][5:16] + " 수집 &middot; 작성 "
             + now.strftime("%Y-%m-%d") + "(" + "월화수목금토일"[now.weekday()] + ") "
             + now.strftime("%H:%M") + " KST"
-            + (" &middot; <strong>오늘 09:00 국내 증시 개장</strong>" if C["kind"] == "morning" else ""),
-            "Basis: closes of " + DE(C["prev_us"], True) + "; FX as of this morning; data collected "
+            + (" &middot; <strong>오늘 09:00 국내 증시 개장</strong>" if C["kind"] == "morning" else "")
+            + (" &middot; <strong>오늘 15:30 국내 증시 마감</strong>" if C["kind"] == "close" else ""),
+            ("Basis: Korea closed today; overseas closes of " + DE(C["prev_us"], True)
+             + " (not yet open); FX at today&rsquo;s close"
+             if C["kind"] == "close" else
+             "Basis: closes of " + DE(C["prev_us"], True) + "; FX as of this morning")
+            + "; data collected "
             + C["D"]["generated_at_kst"][5:16] + "; compiled " + now.strftime("%H:%M") + " KST")
         + '</p>\n</div>')
 
