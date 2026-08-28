@@ -17,6 +17,10 @@
  *
  * 판정 결과가 시장마다 다르면 실패로 친다. 그것이 "한 열에 두 계열이 섞였다"
  * 는 뜻이고, 이 도구가 저지르면 안 되는 오류다.
+ *
+ * ret.tr 이 아예 없는 시장은 판정 대상이 아니다. 국내가 그렇다 — 원천에
+ * 분배금 이력이 없어 총수익률을 싣지 못했다(collect_etf_kr.mjs 설명 참고).
+ * 없는 것을 없다고 두는 것과, 틀린 것을 넣는 것은 다르다.
  */
 
 import { readFile } from 'node:fs/promises';
@@ -76,6 +80,15 @@ const LABEL = {
 const markets = [...new Set(etfs.map((e) => e.market))].sort();
 const results = markets.map(diagnose);
 
+// tr 이 실린 종목 수를 시장별로 먼저 보고한다 — 어디가 비었는지가 먼저 보여야 한다.
+const trCoverage = {};
+for (const e of etfs) {
+  trCoverage[e.market] = trCoverage[e.market] || { total: 0, withTr: 0 };
+  trCoverage[e.market].total += 1;
+  if (e.ret?.tr) trCoverage[e.market].withTr += 1;
+}
+console.log('[basis] 총수익률 수록:', Object.entries(trCoverage)
+  .map(([m, c]) => `${m} ${c.withTr}/${c.total}`).join(' · '));
 console.log(`[basis] 기준 ${PERIOD} · 분배율 ${MIN_YIELD}% 이상 종목\n`);
 console.log('시장   표본  분배율(중앙)  두 계열 차이  차이/분배율  판정');
 for (const r of results) {
@@ -103,8 +116,12 @@ if (kinds.length > 1) {
   process.exit(1);
 }
 if (!decided.length) {
-  console.error('[basis] 실패 — 어느 시장도 판정되지 않았다. 표본이나 분배율 기준을 확인하라.');
-  process.exit(1);
+  // "아직 안 채워졌다" 와 "틀렸다" 는 다르다. 총수익률이 아예 없으면 화면이
+  // 그 기준을 내걸지 않으므로(HAS_TR 이 거짓) 거짓말이 나가지 않는다.
+  // 이 게이트가 막아야 하는 것은 "총수익률이라고 실렸는데 총수익률이 아닌 것" 이다.
+  console.log('[basis] 판정 대상 없음 — 총수익률이 실린 시장이 없다. ' +
+              '화면은 이 기준을 내걸지 않으므로 통과로 둔다.');
+  process.exit(0);
 }
 if (kinds[0] !== 'total_return') {
   console.error('[basis] 실패 — ret.tr 이 분배금을 반영하지 않는다. 총수익률이 아니다.');

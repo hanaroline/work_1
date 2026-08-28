@@ -588,14 +588,15 @@ function topSector(etf) {
 // 8개면 1440px 에서 4개씩 두 줄로 떨어지고, 아래 매트릭스도 가로 스크롤 없이 읽힌다.
 var MAX_COMPARE = 8;
 
-// 데이터에 총수익률이 실려 있는가. 수집이 아직 그 계열을 안 채웠으면 그
-// 기준을 내걸어도 빈칸만 나온다. 그럴 때는 조용히 시장가로 연다.
+// 총수익률이 실린 종목이 있는가. 국내는 원천에 분배금 이력이 없어 비어 있고
+// 해외만 채워진다. 그래서 기본 기준은 두 시장에 다 있는 시장가로 두고,
+// 총수익률은 고를 수 있게만 해 둔다 — 고르면 무엇이 비는지 알려 준다.
 var HAS_TR = ETFS.some(function (e) { return e.ret && e.ret.tr; });
 
 var state = {
   q: '', market: '', region: '', asset: '', index: '', sector: '',
   theme: '', manager: '', aum: '',
-  period: 'M3', basis: HAS_TR ? 'tr' : 'price',
+  period: 'M3', basis: 'price',
   includeLeverage: false, holdingsOnly: true,
   sortKey: 'aum', sortDir: -1,
   limit: 60,
@@ -846,13 +847,20 @@ function renderBasisNote() {
   if (!node) return;
   var msg;
   if (state.basis === 'tr') {
-    var missing = ETFS.filter(function (e) { return !(e.ret && e.ret.tr); }).length;
+    var lack = {};
+    ETFS.forEach(function (e) {
+      if (!(e.ret && e.ret.tr)) lack[e.market] = (lack[e.market] || 0) + 1;
+    });
+    var lackTxt = Object.keys(lack).map(function (m) {
+      return t(MARKET_LABEL[m]) + ' ' + lack[m] + '종목';
+    }).join(', ');
     msg = lang === 'ko'
-      ? '<strong>총수익률 — 분배금을 재투자한 기준입니다.</strong> 펀드 성과를 재는 표준이며, ' +
-        '국내·해외 모두 같은 방식(일별 수정종가)으로 계산해 한 줄로 세울 수 있습니다.' +
-        (missing ? ' 다만 ' + missing + '종목은 원천에 자료가 없어 값이 비어 있습니다.' : '')
-      : '<strong>Total return — distributions reinvested.</strong> The standard basis, computed ' +
-        'the same way for every market.' + (missing ? ' ' + missing + ' funds lack data.' : '');
+      ? '<strong>총수익률 — 분배금을 재투자한 기준입니다.</strong> 펀드 성과를 재는 표준입니다. ' +
+        '다만 <u>국내는 원천에 분배금 이력이 없어 값이 비어 있습니다</u>' +
+        (lackTxt ? ' (' + esc(lackTxt) + ')' : '') +
+        '. 빈 종목은 순위에서 빠지므로, 국내를 보시려면 <b>시장가</b> 기준으로 바꾸십시오.'
+      : '<strong>Total return — distributions reinvested.</strong> Korean funds are blank: ' +
+        'the source has no distribution history' + (lackTxt ? ' (' + esc(lackTxt) + ')' : '') + '.';
   } else {
     msg = lang === 'ko'
       ? '<strong>시장가 — 분배금이 빠져 있습니다.</strong> 거래소 종가의 단순 등락률로, ' +
