@@ -1,26 +1,22 @@
 # ETF 원천 탐색 2차
 
-- 탐색 시각: 2026-08-28T15:10:28.204Z
+- 탐색 시각: 2026-08-28T15:20:54.656Z
 - KRX 기준일: (못 찾음)
 
 | 결과 | 항목 | 설명 | 상태 | 요약 |
 |---|---|---|---|---|
-| ❌ | `krx.session` | 세션 쿠키 획득 (화면 선진입) | - | 쿠키 0개 |
+| ✅ | `krx.session` | 세션 쿠키 획득 (화면 선진입) | - | 쿠키 2개 |
 | ❌ | `krx.etf.all` | ETF 전종목 시세 (세션 있음) | - | 영업일 10일 모두 빈 응답 |
-| ❌ | `krx2.stat.04301` | MDCSTAT04301 — ETF 전종목 시세 | 403 | JSON 아님: <HTML><HEAD> <TITLE>Access Denied</TITLE> </HEAD><BODY> <H1>Access Denied</H1> You don't have permission to access "ht |
-| ❌ | `krx2.stat.04401` | MDCSTAT04401 — ETF 개별 시세 추이 | 403 | JSON 아님: <HTML><HEAD> <TITLE>Access Denied</TITLE> </HEAD><BODY> <H1>Access Denied</H1> You don't have permission to access "ht |
-| ❌ | `krx2.stat.04501` | MDCSTAT04501 — ETF 전종목 등락률 | 403 | JSON 아님: <HTML><HEAD> <TITLE>Access Denied</TITLE> </HEAD><BODY> <H1>Access Denied</H1> You don't have permission to access "ht |
-| ❌ | `krx2.stat.04601` | MDCSTAT04601 — ETF 투자자별 거래 | 403 | JSON 아님: <HTML><HEAD> <TITLE>Access Denied</TITLE> </HEAD><BODY> <H1>Access Denied</H1> You don't have permission to access "ht |
-| ❌ | `krx2.stat.04701` | MDCSTAT04701 — ETF 상세 정보 | 403 | JSON 아님: <HTML><HEAD> <TITLE>Access Denied</TITLE> </HEAD><BODY> <H1>Access Denied</H1> You don't have permission to access "ht |
-| ❌ | `krx2.stat.04801` | MDCSTAT04801 — ETF 구성종목 후보 A | 403 | JSON 아님: <HTML><HEAD> <TITLE>Access Denied</TITLE> </HEAD><BODY> <H1>Access Denied</H1> You don't have permission to access "ht |
-| ❌ | `krx2.stat.04901` | MDCSTAT04901 — ETF 구성종목 후보 B | 403 | JSON 아님: <HTML><HEAD> <TITLE>Access Denied</TITLE> </HEAD><BODY> <H1>Access Denied</H1> You don't have permission to access "ht |
-| ❌ | `krx2.stat.05001` | MDCSTAT05001 — ETF 구성종목(PDF) 후보 C | 403 | JSON 아님: <HTML><HEAD> <TITLE>Access Denied</TITLE> </HEAD><BODY> <H1>Access Denied</H1> You don't have permission to access "ht |
-| ❌ | `krx2.stat.05101` | MDCSTAT05101 — ETF 후보 D | 403 | JSON 아님: <HTML><HEAD> <TITLE>Access Denied</TITLE> </HEAD><BODY> <H1>Access Denied</H1> You don't have permission to access "ht |
-| ❌ | `krx.otp.csv` | OTP → CSV 내려받기 (PDF 구성종목) | - | OTP 발급 실패 (426B): <HTML><HEAD>
-<TITLE>Access Denied</TITLE>
-</HEAD><BODY>
-<H1>Access Denied</H1>
-  |
+| ❌ | `krx2.stat.04301` | MDCSTAT04301 — ETF 전종목 시세 | 400 | JSON 아님: LOGOUT |
+| ❌ | `krx2.stat.04401` | MDCSTAT04401 — ETF 개별 시세 추이 | 400 | JSON 아님: LOGOUT |
+| ❌ | `krx2.stat.04501` | MDCSTAT04501 — ETF 전종목 등락률 | 400 | JSON 아님: LOGOUT |
+| ❌ | `krx2.stat.04601` | MDCSTAT04601 — ETF 투자자별 거래 | 400 | JSON 아님: LOGOUT |
+| ❌ | `krx2.stat.04701` | MDCSTAT04701 — ETF 상세 정보 | 400 | JSON 아님: LOGOUT |
+| ❌ | `krx2.stat.04801` | MDCSTAT04801 — ETF 구성종목 후보 A | 400 | JSON 아님: LOGOUT |
+| ❌ | `krx2.stat.04901` | MDCSTAT04901 — ETF 구성종목 후보 B | 400 | JSON 아님: LOGOUT |
+| ❌ | `krx2.stat.05001` | MDCSTAT05001 — ETF 구성종목(PDF) 후보 C | 400 | JSON 아님: LOGOUT |
+| ❌ | `krx2.stat.05101` | MDCSTAT05101 — ETF 후보 D | 400 | JSON 아님: LOGOUT |
+| ✅ | `krx.otp.csv` | OTP → CSV 내려받기 (PDF 구성종목) | 403 | 35행 · 헤더: 		<html> |
 | ✅ | `naver.analysis.full` | etfAnalysis 전문 저장 (구성종목이 섞여 있는가) | 200 | 키 31개 · 배열필드: returnPerformanceList[10]{periodTypeCode,value} \| navPerformanceList[10]{periodTypeCode,value} \| assetPortfolioList[5]{detailTypeCode,weight} \| countryPortfolioList[6]{detailTypeCode, |
 | ❌ | `naver.pdf.m.stock` | 국내 구성종목 후보 — m.stock.naver.com/api/stock/069500/etfComposition | 404 | <!doctype html>
 <html lang="ko">
@@ -52,8 +48,8 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content |
-| ❌ | `naver.pdf.api.etf` | 국내 구성종목 후보 — api.stock.naver.com/etf/069500/componentStocks | 404 | {"timestamp":"2026-08-28T15:10:20.854+0000","status":404,"error":"Not Found","message":"No message a |
-| ❌ | `naver.pdf.api.etf2` | 국내 구성종목 후보 — api.stock.naver.com/stock/069500/etfAnalysis | 404 | {"timestamp":"2026-08-28T15:10:21.033+0000","status":404,"error":"Not Found","message":"No message a |
+| ❌ | `naver.pdf.api.etf` | 국내 구성종목 후보 — api.stock.naver.com/etf/069500/componentStocks | 404 | {"timestamp":"2026-08-28T15:20:45.861+0000","status":404,"error":"Not Found","message":"No message a |
+| ❌ | `naver.pdf.api.etf2` | 국내 구성종목 후보 — api.stock.naver.com/stock/069500/etfAnalysis | 404 | {"timestamp":"2026-08-28T15:20:46.117+0000","status":404,"error":"Not Found","message":"No message a |
 | ❌ | `naver.pdf.pc.etf` | 국내 구성종목 후보 — finance.naver.com/item/etf_component.naver?code=069500 | 404 | 
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dt |
 | ❌ | `naver.pdf.pc.coinfo` | 국내 구성종목 후보 — finance.naver.com/item/coinfo.naver?code=069500 | 200 | HTML · 구성종목 흔적 없음 |

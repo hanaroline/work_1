@@ -1,6 +1,6 @@
 # 펀드 원천 탐색 2차 — 화면 관찰
 
-조사 시각: 2026-08-28T15:09:28.066Z
+조사 시각: 2026-08-28T15:19:07.595Z
 
 경로를 찍어 맞히는 대신 화면을 열어 **실제로 무엇을 부르는지** 기록했다.
 브라우저 없이 재현되는 것만 수집기에 쓸 수 있다.
@@ -15,7 +15,7 @@
 | 방식 | 주소 |
 |---|---|
 | POST | `https://finance.naver.com/item/item_right_ajax.naver?type=mystock&code=000000&page=1&pageSize=30` |
-| GET | `https://polling.finance.naver.com/api/realtime?_callback=window.__jindo2_callback._2386&query=SERVICE_INDEX%3AKOSPI%2CKOSDAQ%2CKPI200` |
+| GET | `https://polling.finance.naver.com/api/realtime?_callback=window.__jindo2_callback._6219&query=SERVICE_INDEX%3AKOSPI%2CKOSDAQ%2CKPI200` |
 | POST | `https://finance.naver.com/item/item_right_ajax.naver?type=recent&code=000000&page=1&pageSize=30` |
 
 화면에 보인 글:
@@ -56,12 +56,12 @@ MY STOCK
 최근조회 종목이 없습니다.
 
 주요뉴스
+9월 주총 앞두고 MBK·고려아연 공방…'최윤범 선행·원아시아 후속투자' 쟁점[주간사모펀드]
 한가인 "주식 폭락 전 다 팔아"…"포폴 잘 짰네" 최근 매입 종목은?
 “저희는 건강한 유증입니다”...확장 위해 3조 조달 선언한 삼바, 주가는 뚝
 이장한 종근당 회장, 지분 전량 세 자녀 증여…장남 지분 5.32%로
 "따따블은 무슨 본전도 못 건졌다"…쓴맛 본 개미들 '눈물' [분석+]
 “지식산업센터 거래 살아났다?”…속내 들여다보니 '부실 털기'
-"벌써 팔았다며, 배 아프겠네"…한 달 새 15% 오른 금, 배경엔 美국채 있었다[주末머니]
 주요뉴스 더보기
 TOP 종목
 KRX
@@ -79,14 +79,14 @@ NXT
 | 방식 | 주소 |
 |---|---|
 | GET | `https://dis.kofia.or.kr/websquare/index.jsp?w2xPath=/wq/main/main.xml` |
-| GET | `https://dis.kofia.or.kr/websquare/config.xml?postfix=17879297770433799.211696998844` |
-| GET | `https://dis.kofia.or.kr/wq/main/main.xml?postfix=17879297783608409.034962808553` |
-| GET | `https://dis.kofia.or.kr/wq/com/gnb.xml?postfix=17879297789289618.11706368354` |
-| GET | `https://dis.kofia.or.kr/wq/com/gnbTop.xml?postfix=17879297796516371.076634575988` |
-| GET | `https://dis.kofia.or.kr/wq/com/quick.xml?postfix=1787929779858821.2120939886236` |
-| GET | `https://dis.kofia.or.kr/wq/com/footer.xml?postfix=17879297800389952.539544687243` |
-| GET | `https://dis.kofia.or.kr/wq/com/popup/multiPop.xml?postfix=17879297802179623.950857546803` |
-| GET | `https://dis.kofia.or.kr/wq/com/popup/loading.xml?postfix=17879297803955809.61657772746` |
+| GET | `https://dis.kofia.or.kr/websquare/config.xml?postfix=17879303547814376.608421610072` |
+| GET | `https://dis.kofia.or.kr/wq/main/main.xml?postfix=17879303561063393.657603532073` |
+| GET | `https://dis.kofia.or.kr/wq/com/gnb.xml?postfix=17879303566741887.1975635741135` |
+| GET | `https://dis.kofia.or.kr/wq/com/gnbTop.xml?postfix=17879303573949434.922768646558` |
+| GET | `https://dis.kofia.or.kr/wq/com/quick.xml?postfix=17879303576031236.4875721065239` |
+| GET | `https://dis.kofia.or.kr/wq/com/footer.xml?postfix=17879303577816922.853435793285` |
+| GET | `https://dis.kofia.or.kr/wq/com/popup/multiPop.xml?postfix=17879303579623401.527374708576` |
+| GET | `https://dis.kofia.or.kr/wq/com/popup/loading.xml?postfix=17879303581408753.49882166562` |
 | GET | `https://dis.kofia.or.kr/js/cond/gnbTotalSearch.js?postfix=2026_08` |
 
 ## 금투협 펀드공시(통합검색)
@@ -99,8 +99,8 @@ NXT
 | 방식 | 주소 |
 |---|---|
 | GET | `https://dis.kofia.or.kr/websquare/index.jsp?w2xPath=/wq/fundann/DISFundFeeStstCom.xml` |
-| GET | `https://dis.kofia.or.kr/websquare/config.xml?postfix=17879297816741625.7831599083895` |
-| GET | `https://dis.kofia.or.kr/wq/fundann/DISFundFeeStstCom.xml?postfix=17879297831365568.173824445483` |
+| GET | `https://dis.kofia.or.kr/websquare/config.xml?postfix=1787930359468269.87658566932527` |
+| GET | `https://dis.kofia.or.kr/wq/fundann/DISFundFeeStstCom.xml?postfix=17879303609939124.340893476614` |
 
 ## 금투협 펀드 자산구성
 
@@ -112,8 +112,8 @@ NXT
 | 방식 | 주소 |
 |---|---|
 | GET | `https://dis.kofia.or.kr/websquare/index.jsp?w2xPath=/wq/fundann/DISFundAssetStst.xml` |
-| GET | `https://dis.kofia.or.kr/websquare/config.xml?postfix=17879297877449649.350245578982` |
-| GET | `https://dis.kofia.or.kr/wq/fundann/DISFundAssetStst.xml?postfix=17879297892303304.059161737689` |
+| GET | `https://dis.kofia.or.kr/websquare/config.xml?postfix=17879303655771933.6720903641935` |
+| GET | `https://dis.kofia.or.kr/wq/fundann/DISFundAssetStst.xml?postfix=17879303670378204.47460066953` |
 
 ## 펀드다모아
 
@@ -125,48 +125,15 @@ NXT
 ## 제로인 펀드닥터
 
 - 요청 주소: `https://www.funddoctor.co.kr/`
-- 최종 도착: `https://www.funddoctor.co.kr/#0`
-- 제목: 펀드닥터
-- 기록한 요청: 7건
+- 최종 도착: `(못 열림)` — page.goto: Timeout 30000ms exceeded.
+Call log:
+  - navigating to "https://www.funddoctor.co.kr/", waiting until "domcontentloaded"
 
-| 방식 | 주소 |
-|---|---|
-| GET | `https://www.google.com/recaptcha/api.js` |
-| POST | `https://analytics.google.com/g/collect?v=2&tid=G-D7RCDX73LB&gtm=45je68q1v9136902590za20g&_p=1787929798151&_gaz=1&gcd=13l3l3l3l1l1&npa=0&dma=0&_eu=AAAIAGAC&are=1&cid=1742370356.1787` |
-| GET | `https://www.funddoctor.co.kr/static/image/common/icon_search.svg` |
-| GET | `https://www.google.com/recaptcha/api2/anchor?ar=1&k=6LcqaAgpAAAAACv26quLzq3mkW_G2mlFrLl0Y3KY&co=aHR0cHM6Ly93d3cuZnVuZGRvY3Rvci5jby5rcjo0NDM.&hl=en&v=xg_pWYS8-HRESiV6Rdg4aY_R&size=n` |
-| GET | `https://www.google.com/recaptcha/api2/webworker.js?hl=en&v=xg_pWYS8-HRESiV6Rdg4aY_R` |
-| GET | `https://www.gstatic.com/recaptcha/api2/logo_48.png` |
-| GET | `https://www.google.com/recaptcha/api2/bframe?hl=en&v=xg_pWYS8-HRESiV6Rdg4aY_R&k=6LcqaAgpAAAAACv26quLzq3mkW_G2mlFrLl0Y3KY&bft=0dAFcWeA5NyVI90lWpbYrbd17voN-twt4L6OzU50jXDDJUsgD837rI6` |
-
-화면에 보인 글:
-
-```
-Home Fund My펀드 Contact 회원가입 로그인
-이전 이용약관 신규 이용약관
-오늘 이창 열지않음
--->
-펀드닥터는 데이터로 이야기합니다.
-펀드평가의 올바른 기준
-펀드 평가
-펀드시장에 대한 모니터링과 분석으로 양질의 정보를 제공하고자 노력합니다.
-더보기
-문의하기
-master@kggroup.co.kr
- 
-보내기
-footer menu
-제로인 소개
-개인정보처리방침
-약관 및 유의사항
-제휴 및 광고문의
-서울시 중구 통일로 92 케이지타워 17층 04517   대표이사 : 한수혁   사업자등록번호 : 207-81-45704   통신판매업신고번호 : 제19-2169   메일문의 : master@zeroin.co.kr
-개인정보관리책임자 : 김홍록 실장    (주)KG제로인은 자본시장과 금융투자업에 관한 법률 제258조 제1항의 규정에 의해 금융위원회에 등록(등록번호 : 2004-05-01)된 집합투자기구평가회사입니다.
-Copyright KG ZEROIN All rights reserved.
-```
+- 제목: –
+- 기록한 요청: 0건
 
 ## 재현 결과
 
 | 출처 | 방식 | 주소 | 결과 |
 |---|---|---|---|
-| 네이버 펀드 | GET | `https://polling.finance.naver.com/api/realtime?_callback=window.__jindo2_callback._2386&query=SERVICE_INDEX%3AKOSPI%2CKO` | ✓ 200 573B |
+| 네이버 펀드 | GET | `https://polling.finance.naver.com/api/realtime?_callback=window.__jindo2_callback._6219&query=SERVICE_INDEX%3AKOSPI%2CKO` | ✓ 200 573B |

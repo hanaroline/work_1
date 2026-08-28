@@ -1,6 +1,6 @@
 # 국내 ETF 분배금 이력 — 원천 탐색
 
-- 탐색 시각: 2026-08-28T15:11:13.476Z
+- 탐색 시각: 2026-08-28T15:21:30.868Z
 - 찾는 것: 분배율 한 숫자가 아니라 **지급일 + 주당 금액의 이력**
 
 | 결과 | 항목 | 설명 | 요약 |
@@ -27,11 +27,11 @@
 | ✅ | `site.fnguide.main` | 에프앤가이드 종목 메인 | 200 · 1829B · 분배금 흔적 없음 |
 | ✅ | `site.seibro` | 예탁결제원 SEIBRO | 200 · 1048B · 분배금 흔적 없음 |
 | ✅ | `site.kofia` | 금융투자협회 전자공시 | 200 · 536B · 분배금 흔적 없음 |
-| ❌ | `site.krx.data` | KRX 정보데이터시스템 | 403 · 370B · 분배금 흔적 없음 · <HTML><HEAD> <TITLE>Access Denied</TITLE> </HEAD><BODY> <H1> |
+| ✅ | `site.krx.data` | KRX 정보데이터시스템 | 200 · 474B · 분배금 흔적 없음 |
 | ❌ | `site.krx.etf` | KRX ETF 전용 사이트 | TypeError: fetch failed |
 | ✅ | `site.kodex` | 삼성 KODEX | 200 · 138726B · 분배금 흔적 있음 |
 | ❌ | `site.tiger` | 미래에셋 TIGER | 403 · 261B · 분배금 흔적 없음 · <!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML 2.0//EN"> <html><he |
 | ✅ | `site.ace` | 한국투자 ACE | 200 · 103788B · 분배금 흔적 없음 |
-| ❌ | `site.sol` | 신한 SOL | TypeError: fetch failed |
+| ✅ | `site.sol` | 신한 SOL | 200 · 982414B · 분배금 흔적 있음 |
 | ✅ | `site.rise` | KB RISE | 200 · 157645B · 분배금 흔적 있음 |
 | ❌ | `site.investing` | Investing.com 국내 ETF 배당 | 403 · 3B · 분배금 흔적 없음 · 403 |

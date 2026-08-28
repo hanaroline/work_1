@@ -1,8 +1,8 @@
 {
-  "probedAt": "2026-08-28T15:10:16.568Z",
+  "probedAt": "2026-08-28T15:20:32.503Z",
   "runner": "linux node v22.23.2",
   "tradeDate": null,
-  "sampleIsuCd": null,
+  "sampleIsuCd": "KR7069500007",
   "yahoo": {
     "cookie": true,
     "crumb": true
@@ -13,111 +13,134 @@
       "note": "ETF 전종목 시세 (MDCSTAT04301)",
       "ok": false,
       "error": "최근 7 영업일 모두 빈 응답",
-      "ms": 562
+      "ms": 3609
     },
     {
       "id": "krx.finder",
       "note": "ETF 종목 finder (finder_secuprodisu)",
-      "ok": false,
-      "error": "세 finder 모두 빈 응답",
-      "ms": 94
+      "status": 200,
+      "bytes": 1163,
+      "contentType": "text/html; charset=utf-8",
+      "blocks": {
+        "block1": {
+          "rows": 14,
+          "columns": [
+            "full_code",
+            "short_code",
+            "codeName"
+          ]
+        }
+      },
+      "summary": "block1 14행 / 3열",
+      "sampleRow": {
+        "full_code": "KR7069500007",
+        "short_code": "069500",
+        "codeName": "KODEX 200"
+      },
+      "bld": "dbms/comm/finder/finder_secuprodisu",
+      "ok": true,
+      "ms": 526
     },
     {
       "id": "krx.stat.04302",
       "note": "MDCSTAT04302 필드 확인",
-      "status": 403,
-      "bytes": 415,
-      "contentType": "text/html",
+      "status": 400,
+      "bytes": 6,
+      "contentType": "text/html; charset=utf-8",
       "ok": false,
-      "body": "<HTML><HEAD>\n<TITLE>Access Denied</TITLE>\n</HEAD><BODY>\n<H1>Access Denied</H1>\n \nYou don't have permission to access \"http&#58;&#47;&#47;data&#46;krx&#46;co&#46;kr&#47;comm&#47;bldAttendant&#47;getJsonData&#46;cmd\" on this server.<P>\nReference&#32;&#35;18&#46;e7263e17&#46;1787929805&#46;d196935\n<P>h",
-      "ms": 18
+      "body": "LOGOUT",
+      "ms": 252
     },
     {
       "id": "krx.stat.04401",
       "note": "MDCSTAT04401 필드 확인",
-      "status": 403,
-      "bytes": 415,
-      "contentType": "text/html",
+      "status": 400,
+      "bytes": 6,
+      "contentType": "text/html; charset=utf-8",
       "ok": false,
-      "body": "<HTML><HEAD>\n<TITLE>Access Denied</TITLE>\n</HEAD><BODY>\n<H1>Access Denied</H1>\n \nYou don't have permission to access \"http&#58;&#47;&#47;data&#46;krx&#46;co&#46;kr&#47;comm&#47;bldAttendant&#47;getJsonData&#46;cmd\" on this server.<P>\nReference&#32;&#35;18&#46;e7263e17&#46;1787929805&#46;d1969bb\n<P>h",
-      "ms": 19
+      "body": "LOGOUT",
+      "ms": 487
     },
     {
       "id": "krx.stat.04501",
       "note": "MDCSTAT04501 필드 확인",
-      "status": 403,
-      "bytes": 415,
-      "contentType": "text/html",
+      "status": 400,
+      "bytes": 6,
+      "contentType": "text/html; charset=utf-8",
       "ok": false,
-      "body": "<HTML><HEAD>\n<TITLE>Access Denied</TITLE>\n</HEAD><BODY>\n<H1>Access Denied</H1>\n \nYou don't have permission to access \"http&#58;&#47;&#47;data&#46;krx&#46;co&#46;kr&#47;comm&#47;bldAttendant&#47;getJsonData&#46;cmd\" on this server.<P>\nReference&#32;&#35;18&#46;e7263e17&#46;1787929805&#46;d196a42\n<P>h",
-      "ms": 19
+      "body": "LOGOUT",
+      "ms": 621
     },
     {
       "id": "krx.stat.04601",
       "note": "MDCSTAT04601 필드 확인",
-      "status": 403,
-      "bytes": 415,
-      "contentType": "text/html",
+      "status": 400,
+      "bytes": 6,
+      "contentType": "text/html; charset=utf-8",
       "ok": false,
-      "body": "<HTML><HEAD>\n<TITLE>Access Denied</TITLE>\n</HEAD><BODY>\n<H1>Access Denied</H1>\n \nYou don't have permission to access \"http&#58;&#47;&#47;data&#46;krx&#46;co&#46;kr&#47;comm&#47;bldAttendant&#47;getJsonData&#46;cmd\" on this server.<P>\nReference&#32;&#35;18&#46;f0263e17&#46;1787929805&#46;79fc9f9\n<P>h",
-      "ms": 18
+      "body": "LOGOUT",
+      "ms": 561
     },
     {
       "id": "krx.stat.04701",
       "note": "MDCSTAT04701 필드 확인",
-      "status": 403,
-      "bytes": 415,
-      "contentType": "text/html",
+      "status": 400,
+      "bytes": 6,
+      "contentType": "text/html; charset=utf-8",
       "ok": false,
-      "body": "<HTML><HEAD>\n<TITLE>Access Denied</TITLE>\n</HEAD><BODY>\n<H1>Access Denied</H1>\n \nYou don't have permission to access \"http&#58;&#47;&#47;data&#46;krx&#46;co&#46;kr&#47;comm&#47;bldAttendant&#47;getJsonData&#46;cmd\" on this server.<P>\nReference&#32;&#35;18&#46;f0263e17&#46;1787929805&#46;79fca90\n<P>h",
-      "ms": 19
+      "body": "LOGOUT",
+      "ms": 582
     },
     {
       "id": "krx.stat.04801",
       "note": "MDCSTAT04801 필드 확인",
-      "status": 403,
-      "bytes": 415,
-      "contentType": "text/html",
+      "status": 400,
+      "bytes": 6,
+      "contentType": "text/html; charset=utf-8",
       "ok": false,
-      "body": "<HTML><HEAD>\n<TITLE>Access Denied</TITLE>\n</HEAD><BODY>\n<H1>Access Denied</H1>\n \nYou don't have permission to access \"http&#58;&#47;&#47;data&#46;krx&#46;co&#46;kr&#47;comm&#47;bldAttendant&#47;getJsonData&#46;cmd\" on this server.<P>\nReference&#32;&#35;18&#46;e7263e17&#46;1787929805&#46;d196bb7\n<P>h",
-      "ms": 18
+      "body": "LOGOUT",
+      "ms": 526
     },
     {
       "id": "krx.stat.04901",
       "note": "MDCSTAT04901 필드 확인",
-      "status": 403,
-      "bytes": 415,
-      "contentType": "text/html",
+      "status": 400,
+      "bytes": 6,
+      "contentType": "text/html; charset=utf-8",
       "ok": false,
-      "body": "<HTML><HEAD>\n<TITLE>Access Denied</TITLE>\n</HEAD><BODY>\n<H1>Access Denied</H1>\n \nYou don't have permission to access \"http&#58;&#47;&#47;data&#46;krx&#46;co&#46;kr&#47;comm&#47;bldAttendant&#47;getJsonData&#46;cmd\" on this server.<P>\nReference&#32;&#35;18&#46;f0263e17&#46;1787929805&#46;79fcbf1\n<P>h",
-      "ms": 52
+      "body": "LOGOUT",
+      "ms": 261
     },
     {
       "id": "krx.stat.05001",
       "note": "MDCSTAT05001 필드 확인",
-      "status": 403,
-      "bytes": 415,
-      "contentType": "text/html",
+      "status": 400,
+      "bytes": 6,
+      "contentType": "text/html; charset=utf-8",
       "ok": false,
-      "body": "<HTML><HEAD>\n<TITLE>Access Denied</TITLE>\n</HEAD><BODY>\n<H1>Access Denied</H1>\n \nYou don't have permission to access \"http&#58;&#47;&#47;data&#46;krx&#46;co&#46;kr&#47;comm&#47;bldAttendant&#47;getJsonData&#46;cmd\" on this server.<P>\nReference&#32;&#35;18&#46;e7263e17&#46;1787929805&#46;d196d8e\n<P>h",
-      "ms": 21
+      "body": "LOGOUT",
+      "ms": 673
     },
     {
       "id": "krx.stat.05101",
       "note": "MDCSTAT05101 필드 확인",
-      "status": 403,
-      "bytes": 415,
-      "contentType": "text/html",
+      "status": 400,
+      "bytes": 6,
+      "contentType": "text/html; charset=utf-8",
       "ok": false,
-      "body": "<HTML><HEAD>\n<TITLE>Access Denied</TITLE>\n</HEAD><BODY>\n<H1>Access Denied</H1>\n \nYou don't have permission to access \"http&#58;&#47;&#47;data&#46;krx&#46;co&#46;kr&#47;comm&#47;bldAttendant&#47;getJsonData&#46;cmd\" on this server.<P>\nReference&#32;&#35;18&#46;f0263e17&#46;1787929805&#46;79fcd45\n<P>h",
-      "ms": 20
+      "body": "LOGOUT",
+      "ms": 398
     },
     {
       "id": "krx.pdf",
       "note": "ETF 구성종목 PDF (MDCSTAT05001)",
+      "status": 400,
+      "bytes": 6,
+      "contentType": "text/html; charset=utf-8",
       "ok": false,
-      "error": "finder 가 표준코드를 못 줘서 시도 불가",
-      "ms": 0
+      "body": "LOGOUT",
+      "isuCd": "KR7069500007",
+      "ms": 316
     },
     {
       "id": "naver.etf.list",
@@ -142,7 +165,7 @@
       },
       "count": 1163,
       "ok": true,
-      "ms": 1096
+      "ms": 1127
     },
     {
       "id": "naver.m.etfAnalysis",
@@ -464,7 +487,7 @@
         "marketValueRaw": "25053325000000"
       },
       "ok": true,
-      "ms": 713
+      "ms": 1033
     },
     {
       "id": "naver.m.integration",
@@ -945,7 +968,7 @@
         "irScheduleInfo": null
       },
       "ok": true,
-      "ms": 535
+      "ms": 708
     },
     {
       "id": "naver.m.basic",
@@ -997,17 +1020,17 @@
         },
         "stockExchangeName": "KOSPI",
         "imageCharts": {
-          "day_up": "https://financial-vn.pstatic.net/chart/mobile/mini/069500_end_up.png",
-          "candleDay": "https://financial-vn.pstatic.net/chart/mobile/candle/day/069500_end.png",
-          "areaYear": "https://financial-vn.pstatic.net/chart/mobile/area/year/069500_end.png",
+          "candleWeek": "https://financial-vn.pstatic.net/chart/mobile/candle/week/069500_end.png",
+          "day_up_tablet": "https://financial-vn.pstatic.net/chart/mobile/mini/069500_end_up_tablet.png",
+          "day": "https://financial-vn.pstatic.net/chart/mobile/day/069500_end.png",
           "candleMonth": "https://financial-vn.pstatic.net/chart/mobile/candle/month/069500_end.png",
+          "areaYear": "https://financial-vn.pstatic.net/chart/mobile/area/year/069500_end.png",
+          "areaYearThree": "https://financial-vn.pstatic.net/chart/mobile/area/year3/069500_end.png",
           "transparent": "https://financial-vn.pstatic.net/chart/mobile/mini/069500_transparent.png",
           "areaMonthThree": "https://financial-vn.pstatic.net/chart/mobile/area/month3/069500_end.png",
-          "day_up_tablet": "https://financial-vn.pstatic.net/chart/mobile/mini/069500_end_up_tablet.png",
-          "areaYearThree": "https://financial-vn.pstatic.net/chart/mobile/area/year3/069500_end.png",
-          "candleWeek": "https://financial-vn.pstatic.net/chart/mobile/candle/week/069500_end.png",
           "areaYearTen": "https://financial-vn.pstatic.net/chart/mobile/area/year10/069500_end.png",
-          "day": "https://financial-vn.pstatic.net/chart/mobile/day/069500_end.png"
+          "day_up": "https://financial-vn.pstatic.net/chart/mobile/mini/069500_end_up.png",
+          "candleDay": "https://financial-vn.pstatic.net/chart/mobile/candle/day/069500_end.png"
         },
         "imageChartUrlInfo": {
           "line": {
@@ -1050,7 +1073,7 @@
         "nationName": "대한민국"
       },
       "ok": true,
-      "ms": 185
+      "ms": 180
     },
     {
       "id": "naver.m.etf.constituent",
@@ -1060,7 +1083,7 @@
       "contentType": "text/html;charset=UTF-8",
       "ok": false,
       "body": "<!doctype html>\n<html lang=\"ko\">\n<head>\n    <meta charset=\"utf-8\">\n    <meta name=\"viewport\" content=\"width=device-width,initial-scale=1.0,maximum-scale=1.0,minimum-scale=1.0,user-scalable=no\">\n    <title>Npay 증권</title>\n    <link rel=\"shortcut icon\" href=\"https://ssl.pstatic.net/imgstock/favicon.ic",
-      "ms": 192
+      "ms": 180
     },
     {
       "id": "yahoo.crumb",
@@ -1070,13 +1093,13 @@
       "crumbLen": 11,
       "summary": "cookie O / crumb O",
       "ok": true,
-      "ms": 110
+      "ms": 104
     },
     {
       "id": "yahoo.holdings.SPY",
       "note": "quoteSummary 미국 · S&P500",
       "status": 200,
-      "bytes": 8908,
+      "bytes": 8907,
       "contentType": "application/json;charset=utf-8",
       "summary": "modules: fundProfile,summaryDetail,defaultKeyStatistics,topHoldings,price | holdings 10개 | sectorWeightings 11개 | family State Street Investment Management | TER 0.000945 | AUM 795.31B",
       "sampleHolding": {
@@ -1090,13 +1113,13 @@
       "holdingCount": 10,
       "hasSector": true,
       "ok": true,
-      "ms": 83
+      "ms": 69
     },
     {
       "id": "yahoo.holdings.QQQ",
       "note": "quoteSummary 미국 · 나스닥100",
       "status": 200,
-      "bytes": 8812,
+      "bytes": 8796,
       "contentType": "application/json;charset=utf-8",
       "summary": "modules: fundProfile,summaryDetail,defaultKeyStatistics,topHoldings,price | holdings 10개 | sectorWeightings 11개 | family Invesco | TER 0.0018000001 | AUM 452.8B",
       "sampleHolding": {
@@ -1110,7 +1133,7 @@
       "holdingCount": 10,
       "hasSector": true,
       "ok": true,
-      "ms": 56
+      "ms": 84
     },
     {
       "id": "yahoo.holdings.2800.HK",
@@ -1130,7 +1153,7 @@
       "holdingCount": 10,
       "hasSector": true,
       "ok": true,
-      "ms": 78
+      "ms": 77
     },
     {
       "id": "yahoo.holdings.3033.HK",
@@ -1150,7 +1173,7 @@
       "holdingCount": 10,
       "hasSector": true,
       "ok": true,
-      "ms": 85
+      "ms": 62
     },
     {
       "id": "yahoo.holdings.2823.HK",
@@ -1170,7 +1193,7 @@
       "holdingCount": 10,
       "hasSector": true,
       "ok": true,
-      "ms": 46
+      "ms": 83
     },
     {
       "id": "yahoo.holdings.1306.T",
@@ -1190,7 +1213,7 @@
       "holdingCount": 10,
       "hasSector": true,
       "ok": true,
-      "ms": 46
+      "ms": 65
     },
     {
       "id": "yahoo.holdings.1321.T",
@@ -1210,7 +1233,7 @@
       "holdingCount": 10,
       "hasSector": true,
       "ok": true,
-      "ms": 60
+      "ms": 72
     },
     {
       "id": "yahoo.holdings.510300.SS",
@@ -1223,7 +1246,7 @@
       "holdingCount": 0,
       "hasSector": false,
       "ok": true,
-      "ms": 62
+      "ms": 83
     },
     {
       "id": "yahoo.holdings.510500.SS",
@@ -1236,7 +1259,7 @@
       "holdingCount": 0,
       "hasSector": false,
       "ok": true,
-      "ms": 58
+      "ms": 72
     },
     {
       "id": "yahoo.holdings.588000.SS",
@@ -1249,7 +1272,7 @@
       "holdingCount": 0,
       "hasSector": false,
       "ok": true,
-      "ms": 53
+      "ms": 49
     },
     {
       "id": "yahoo.holdings.159915.SZ",
@@ -1275,19 +1298,19 @@
       "holdingCount": 0,
       "hasSector": false,
       "ok": true,
-      "ms": 56
+      "ms": 57
     },
     {
       "id": "yahoo.chart",
       "note": "chart v8 (수익률 backfill)",
       "status": 200,
-      "bytes": 49574,
+      "bytes": 49551,
       "contentType": "application/json;charset=utf-8",
       "summary": "730봉 / 배당 12건 / adjclose O",
       "hasAdjClose": true,
       "hasDividends": true,
       "ok": true,
-      "ms": 77
+      "ms": 80
     },
     {
       "id": "issuer.ishares.us.ivv",
@@ -1298,18 +1321,18 @@
       "text": "<!DOCTYPE html>\n<html xmlns=\"http://www.w3.org/1999/xhtml\" prefix=\"og: http://ogp.me/ns#\" lang=\"en-US\" xml:lang=\"en-US\">\n<head>\n<link rel=\"preload\" href=\"/blk-one02-c-assets/include/bundles/minified-ad58682690f72ffa52b25d7f4076d635.css\" as=\"style\" />\n<link rel=\"preload\" href=\"/blk-one02-c-assets/include/bundles/minified-cf3bd4f8f7916e1f21479674299d9778.css\" as=\"style\" />\n<link rel=\"preload\" href=\"",
       "summary": "2225142B · <!DOCTYPE html> <html xmlns=\"http://www.w3.org/1999/xhtml\" prefix=\"og: http://og",
       "ok": true,
-      "ms": 670
+      "ms": 498
     },
     {
       "id": "issuer.ishares.hk.2800",
       "note": "iShares 홍콩 사이트 (2800 등 편입종목)",
       "status": 403,
-      "bytes": 409,
+      "bytes": 407,
       "contentType": "text/html",
       "ok": false,
-      "body": "<HTML><HEAD>\n<TITLE>Access Denied</TITLE>\n</HEAD><BODY>\n<H1>Access Denied</H1>\n \nYou don't have permission to access \"http&#58;&#47;&#47;www&#46;blackrock&#46;com&#47;hk&#47;en&#47;products&#47;251769&#47;\" on this server.<P>\nReference&#32;&#35;18&#46;e818d017&#46;1787929810&#46;35d39fc2\n<P>https&#5",
-      "summary": "409B · text/html",
-      "ms": 59
+      "body": "<HTML><HEAD>\n<TITLE>Access Denied</TITLE>\n</HEAD><BODY>\n<H1>Access Denied</H1>\n \nYou don't have permission to access \"http&#58;&#47;&#47;www&#46;blackrock&#46;com&#47;hk&#47;en&#47;products&#47;251769&#47;\" on this server.<P>\nReference&#32;&#35;18&#46;e5623017&#46;1787930427&#46;ffd35c6\n<P>https&#58",
+      "summary": "407B · text/html",
+      "ms": 55
     },
     {
       "id": "issuer.csindex.510300",
@@ -1320,17 +1343,18 @@
       "ok": false,
       "body": "{\"timestamp\":\"2026-08-28\",\"status\":404,\"error\":\"Not Found\",\"message\":\"\",\"path\":\"/csindex-home/indexInfo/index-info-detail\"}",
       "summary": "123B · application/json",
-      "ms": 1054
+      "ms": 809
     },
     {
       "id": "issuer.eastmoney.510300",
       "note": "중국 동방재부 · ETF 편입종목",
-      "status": 200,
-      "bytes": 144,
-      "contentType": "application/json; charset=UTF-8",
-      "summary": "{rc, rt, svr, lt, full, dlmkts, dsc, data}",
-      "ok": true,
-      "ms": 2317
+      "status": 502,
+      "bytes": 559,
+      "contentType": "text/html",
+      "ok": false,
+      "body": "<html>\r\n<head><title>502 Bad Gateway</title></head>\r\n<body>\r\n<center><h1>502 Bad Gateway</h1></center>\r\n<hr><center>nginx/1.26.2</center>\r\n</body>\r\n</html>\r\n<!-- a padding to disable MSIE and Chrome friendly error page -->\r\n<!-- a padding to disable MSIE and Chrome friendly error page -->\r\n<!-- a pa",
+      "summary": "559B · text/html",
+      "ms": 1341
     },
     {
       "id": "issuer.ssga.spy",
@@ -1341,7 +1365,7 @@
       "text": "PK\u0003\u0004\u0014\u0000\b\b\b\u0000�Q\u001c]\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0013\u0000\u0000\u0000[Content_Types].xml���n�0\f�_���\u0010+��P\fqz�\u00030`�\n�{\u0000F�c!:Ad���G9�ti�nɍe�?���\fͮ6�7\u000fXȥة�v�\u001a�&Y\u0017���y�ur�\u001ab�\u0016|�ة-�����\u0019���H�\u001a��G��\f\u0018�ڔ1J�O%\u0000˶,u\u0006��%����\u0007mRd�<�ZC�g��������{-�)��;\u0003,��C�ϊNR�;�6�u���rA�4 r�m.N*�;d�6H5_6Rx���E�����D[Џ\u001a\u001a\\�w\"�\u0003H��\"<O�{��!�Q��׭��\u0011��\u0003��\u001f�\u001e\u0016�ߙ���7\u0010$[ˠ���\u0002��^%�b��7\u0011_?\u0000�}X��\\DX��A\u0013�\u0012%-����t\u0010&\u0015<\nX���֬�S8\u000e=JO\t���i����K������zOpF\u001f��\u0007�P\r��S�Y�\u0019<�\u001a\u0003���9G.k\u001b��",
       "summary": "51934B · PK\u0003\u0004\u0014\u0000\b\b\b\u0000�Q\u001c]\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0013\u0000\u0000\u0000[Content_Types].xml���n�0 �_���\u0010+��P qz�\u00030`� �{\u0000F�",
       "ok": true,
-      "ms": 342
+      "ms": 114
     },
     {
       "id": "issuer.invesco.qqq",
@@ -1352,7 +1376,7 @@
       "ok": false,
       "body": "",
       "summary": "0B · ",
-      "ms": 71
+      "ms": 89
     },
     {
       "id": "issuer.nomura.1306",
@@ -1363,7 +1387,7 @@
       "text": "\n\n\n\n\n\n\n\n    \n\n\n\n\n\n\n\n<!doctype html>\n<html lang=ja>\n<head>\n  \n  <script>\n    (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src='https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);})(window,document,'script','dataLayer','G",
       "summary": "214982B ·  <!doctype html> <html lang=ja> <head> <script> (fun",
       "ok": true,
-      "ms": 1683
+      "ms": 1572
     },
     {
       "id": "issuer.tiger.kr",
@@ -1374,14 +1398,14 @@
       "ok": false,
       "body": "<!DOCTYPE HTML PUBLIC \"-//IETF//DTD HTML 2.0//EN\">\n<html><head>\n<title>301 Moved Permanently</title>\n</head><body>\n<h1>Moved Permanently</h1>\n<p>The document has moved <a href=\"http://investments.miraeasset.com/tigeretf/index.html\">here</a>.</p>\n</body></html>\n",
       "summary": "261B · text/html; charset=iso-8859-1",
-      "ms": 540
+      "ms": 549
     },
     {
       "id": "issuer.krx.etf.site",
       "note": "KRX ETF 전용 사이트",
       "ok": false,
       "error": "TypeError: fetch failed",
-      "ms": 197
+      "ms": 183
     }
   ]
 }
