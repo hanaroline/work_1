@@ -1,6 +1,6 @@
 # 펀드 원천 탐색 2차 — 화면 관찰
 
-조사 시각: 2026-08-28T15:19:07.595Z
+조사 시각: 2026-08-28T15:27:21.964Z
 
 경로를 찍어 맞히는 대신 화면을 열어 **실제로 무엇을 부르는지** 기록했다.
 브라우저 없이 재현되는 것만 수집기에 쓸 수 있다.
@@ -15,7 +15,7 @@
 | 방식 | 주소 |
 |---|---|
 | POST | `https://finance.naver.com/item/item_right_ajax.naver?type=mystock&code=000000&page=1&pageSize=30` |
-| GET | `https://polling.finance.naver.com/api/realtime?_callback=window.__jindo2_callback._6219&query=SERVICE_INDEX%3AKOSPI%2CKOSDAQ%2CKPI200` |
+| GET | `https://polling.finance.naver.com/api/realtime?_callback=window.__jindo2_callback._3103&query=SERVICE_INDEX%3AKOSPI%2CKOSDAQ%2CKPI200` |
 | POST | `https://finance.naver.com/item/item_right_ajax.naver?type=recent&code=000000&page=1&pageSize=30` |
 
 화면에 보인 글:
@@ -79,14 +79,14 @@ NXT
 | 방식 | 주소 |
 |---|---|
 | GET | `https://dis.kofia.or.kr/websquare/index.jsp?w2xPath=/wq/main/main.xml` |
-| GET | `https://dis.kofia.or.kr/websquare/config.xml?postfix=17879303547814376.608421610072` |
-| GET | `https://dis.kofia.or.kr/wq/main/main.xml?postfix=17879303561063393.657603532073` |
-| GET | `https://dis.kofia.or.kr/wq/com/gnb.xml?postfix=17879303566741887.1975635741135` |
-| GET | `https://dis.kofia.or.kr/wq/com/gnbTop.xml?postfix=17879303573949434.922768646558` |
-| GET | `https://dis.kofia.or.kr/wq/com/quick.xml?postfix=17879303576031236.4875721065239` |
-| GET | `https://dis.kofia.or.kr/wq/com/footer.xml?postfix=17879303577816922.853435793285` |
-| GET | `https://dis.kofia.or.kr/wq/com/popup/multiPop.xml?postfix=17879303579623401.527374708576` |
-| GET | `https://dis.kofia.or.kr/wq/com/popup/loading.xml?postfix=17879303581408753.49882166562` |
+| GET | `https://dis.kofia.or.kr/websquare/config.xml?postfix=17879308515964654.7959050888885` |
+| GET | `https://dis.kofia.or.kr/wq/main/main.xml?postfix=17879308527864823.52976909284` |
+| GET | `https://dis.kofia.or.kr/wq/com/gnb.xml?postfix=17879308532999277.08770808781` |
+| GET | `https://dis.kofia.or.kr/wq/com/gnbTop.xml?postfix=17879308539579056.787448175875` |
+| GET | `https://dis.kofia.or.kr/wq/com/quick.xml?postfix=17879308541392988.1504553519135` |
+| GET | `https://dis.kofia.or.kr/wq/com/footer.xml?postfix=17879308543024435.630860546597` |
+| GET | `https://dis.kofia.or.kr/wq/com/popup/multiPop.xml?postfix=178793085446658.85271566183681` |
+| GET | `https://dis.kofia.or.kr/wq/com/popup/loading.xml?postfix=17879308546287414.113049197959` |
 | GET | `https://dis.kofia.or.kr/js/cond/gnbTotalSearch.js?postfix=2026_08` |
 
 ## 금투협 펀드공시(통합검색)
@@ -99,8 +99,8 @@ NXT
 | 방식 | 주소 |
 |---|---|
 | GET | `https://dis.kofia.or.kr/websquare/index.jsp?w2xPath=/wq/fundann/DISFundFeeStstCom.xml` |
-| GET | `https://dis.kofia.or.kr/websquare/config.xml?postfix=1787930359468269.87658566932527` |
-| GET | `https://dis.kofia.or.kr/wq/fundann/DISFundFeeStstCom.xml?postfix=17879303609939124.340893476614` |
+| GET | `https://dis.kofia.or.kr/websquare/config.xml?postfix=17879308558112784.9346392759335` |
+| GET | `https://dis.kofia.or.kr/wq/fundann/DISFundFeeStstCom.xml?postfix=17879308571573510.348554477092` |
 
 ## 금투협 펀드 자산구성
 
@@ -112,8 +112,8 @@ NXT
 | 방식 | 주소 |
 |---|---|
 | GET | `https://dis.kofia.or.kr/websquare/index.jsp?w2xPath=/wq/fundann/DISFundAssetStst.xml` |
-| GET | `https://dis.kofia.or.kr/websquare/config.xml?postfix=17879303655771933.6720903641935` |
-| GET | `https://dis.kofia.or.kr/wq/fundann/DISFundAssetStst.xml?postfix=17879303670378204.47460066953` |
+| GET | `https://dis.kofia.or.kr/websquare/config.xml?postfix=17879308616589648.076863108556` |
+| GET | `https://dis.kofia.or.kr/wq/fundann/DISFundAssetStst.xml?postfix=17879308629965884.927015983439` |
 
 ## 펀드다모아
 
@@ -125,15 +125,48 @@ NXT
 ## 제로인 펀드닥터
 
 - 요청 주소: `https://www.funddoctor.co.kr/`
-- 최종 도착: `(못 열림)` — page.goto: Timeout 30000ms exceeded.
-Call log:
-  - navigating to "https://www.funddoctor.co.kr/", waiting until "domcontentloaded"
+- 최종 도착: `https://www.funddoctor.co.kr/#0`
+- 제목: 펀드닥터
+- 기록한 요청: 7건
 
-- 제목: –
-- 기록한 요청: 0건
+| 방식 | 주소 |
+|---|---|
+| GET | `https://www.google.com/recaptcha/api.js` |
+| GET | `https://www.funddoctor.co.kr/static/image/common/icon_search.svg` |
+| POST | `https://analytics.google.com/g/collect?v=2&tid=G-D7RCDX73LB&gtm=45je68q1v9136902590za20g&_p=1787930871244&_gaz=1&gcd=13l3l3l3l1l1&npa=0&dma=0&_eu=AAAIAGAC&are=1&cid=1120126209.1787` |
+| GET | `https://www.google.com/recaptcha/api2/anchor?ar=1&k=6LcqaAgpAAAAACv26quLzq3mkW_G2mlFrLl0Y3KY&co=aHR0cHM6Ly93d3cuZnVuZGRvY3Rvci5jby5rcjo0NDM.&hl=en&v=xg_pWYS8-HRESiV6Rdg4aY_R&size=n` |
+| GET | `https://www.google.com/recaptcha/api2/webworker.js?hl=en&v=xg_pWYS8-HRESiV6Rdg4aY_R` |
+| GET | `https://www.gstatic.com/recaptcha/api2/logo_48.png` |
+| GET | `https://www.google.com/recaptcha/api2/bframe?hl=en&v=xg_pWYS8-HRESiV6Rdg4aY_R&k=6LcqaAgpAAAAACv26quLzq3mkW_G2mlFrLl0Y3KY&bft=0dAFcWeA745pJuNHORh5mE5tjTOqDT2soBSUaAP6vUCzPZ7Ww2Ivdhn` |
+
+화면에 보인 글:
+
+```
+Home Fund My펀드 Contact 회원가입 로그인
+이전 이용약관 신규 이용약관
+오늘 이창 열지않음
+-->
+펀드닥터는 데이터로 이야기합니다.
+펀드평가의 올바른 기준
+펀드 평가
+펀드시장에 대한 모니터링과 분석으로 양질의 정보를 제공하고자 노력합니다.
+더보기
+문의하기
+master@kggroup.co.kr
+ 
+보내기
+footer menu
+제로인 소개
+개인정보처리방침
+약관 및 유의사항
+제휴 및 광고문의
+서울시 중구 통일로 92 케이지타워 17층 04517   대표이사 : 한수혁   사업자등록번호 : 207-81-45704   통신판매업신고번호 : 제19-2169   메일문의 : master@zeroin.co.kr
+개인정보관리책임자 : 김홍록 실장    (주)KG제로인은 자본시장과 금융투자업에 관한 법률 제258조 제1항의 규정에 의해 금융위원회에 등록(등록번호 : 2004-05-01)된 집합투자기구평가회사입니다.
+Copyright KG ZEROIN All rights reserved.
+```
 
 ## 재현 결과
 
 | 출처 | 방식 | 주소 | 결과 |
 |---|---|---|---|
-| 네이버 펀드 | GET | `https://polling.finance.naver.com/api/realtime?_callback=window.__jindo2_callback._6219&query=SERVICE_INDEX%3AKOSPI%2CKO` | ✓ 200 573B |
+| 네이버 펀드 | GET | `https://polling.finance.naver.com/api/realtime?_callback=window.__jindo2_callback._3103&query=SERVICE_INDEX%3AKOSPI%2CKO` | ✓ 200 573B |
