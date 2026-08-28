@@ -860,9 +860,14 @@ function renderBasisNote() {
         'HTS에서 보는 숫자와 같습니다. 커버드콜·고배당처럼 분배율이 큰 상품은 ' +
         '실제 성과보다 낮게 보입니다 (분배율 5% 이상 ' +
         ETFS.filter(function (e) { return e.dividendYield >= 5; }).length +
-        '종목). 성과를 견주려면 <b>총수익률</b>로 보십시오.'
+        '종목). 성과를 견주려면 <b>총수익률</b>로 보십시오.' +
+        '<br><span class="muted">네이버·증권사 화면의 기간수익률은 대개 분배금을 ' +
+        '소급 반영한 <b>수정주가</b> 기준이라 이 값보다 높게 나옵니다. 그쪽 숫자와 ' +
+        '맞춰 보려면 <b>총수익률</b>이 견줄 상대입니다.</span>'
       : '<strong>Price — distributions excluded.</strong> Matches the exchange close change. ' +
-        'Understates high-distribution funds; use total return to compare performance.';
+        'Understates high-distribution funds; use total return to compare performance.' +
+        '<br><span class="muted">Portal sites usually quote returns from ' +
+        'distribution-adjusted prices, so their figures sit closer to total return.</span>';
   }
   node.innerHTML = '<div class="notice">' + msg + '</div>';
 }
