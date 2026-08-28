@@ -214,6 +214,33 @@ await page.waitForTimeout(150);
 const rankCards = await page.locator('#rank-body .card').count();
 check('랭킹 표가 그려진다', rankCards >= 3, `${rankCards}개 표`);
 
+// ── 랭킹에서 ETF 를 누르면 탭을 옮기지 않고 그 자리에서 상세가 열린다
+const rankGridTopBefore = await page.evaluate(() =>
+  document.querySelector('#rank-body .grid').getBoundingClientRect().top + window.scrollY);
+await page.locator('#rank-body tbody tr[data-id]').first().click();
+await page.waitForTimeout(300);
+const stillRank = await page.locator('.tabs button[data-tab="rank"]')
+  .getAttribute('aria-selected');
+check('랭킹 탭에 그대로 머문다', stillRank === 'true', `aria-selected=${stillRank}`);
+const rankHold = await page.locator('#rank-detail .hold-row').count();
+check('랭킹에서 ETF 상세가 열린다', rankHold > 0, `${rankHold}종목`);
+
+// 상세는 표 아래에 열려야 한다 — 위에 끼우면 읽던 순위표가 통째로 밀린다
+const [rankDetailTop, rankGridTopAfter] = await page.evaluate(() => [
+  document.querySelector('#rank-detail').getBoundingClientRect().top + window.scrollY,
+  document.querySelector('#rank-body .grid').getBoundingClientRect().top + window.scrollY,
+]);
+check('상세가 순위표 아래에 열린다', rankDetailTop > rankGridTopAfter,
+      `상세 ${Math.round(rankDetailTop)} > 표 ${Math.round(rankGridTopAfter)}`);
+check('순위표가 밀려나지 않는다', Math.abs(rankGridTopAfter - rankGridTopBefore) < 2,
+      `${Math.round(rankGridTopBefore)} -> ${Math.round(rankGridTopAfter)}`);
+
+// 다시 누르면 닫힌다
+await page.locator('#rank-body tbody tr.selected').first().click();
+await page.waitForTimeout(250);
+const rankClosed = await page.locator('#rank-detail .hold-row').count();
+check('다시 누르면 랭킹 상세가 닫힌다', rankClosed === 0, `${rankClosed}종목`);
+
 // ── 분류 점검
 await page.locator('.tabs button[data-tab="tagging"]').click();
 await page.waitForTimeout(150);
