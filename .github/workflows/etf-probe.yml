@@ -16,6 +16,7 @@ on:
     paths:
       - 'scripts/probe_etf_sources*.mjs'
       - 'scripts/probe_etf_dividends.mjs'
+      - 'scripts/verify_etf_price_series.mjs'
       - '.github/workflows/etf-probe.yml'
 
 permissions:
@@ -60,6 +61,13 @@ jobs:
         if: hashFiles('scripts/probe_etf_dividends.mjs') != ''
         run: node scripts/probe_etf_dividends.mjs
 
+      # 야후 시장가와 네이버 시장가가 왜 다른지 — 숫자가 아니라 원가격을 받아
+      # 되짚는다. 화면 값을 고치지 않고 판정만 한다.
+      - name: 되짚기 실행 (시장가 계열)
+        continue-on-error: true
+        if: hashFiles('scripts/verify_etf_price_series.mjs') != ''
+        run: node scripts/verify_etf_price_series.mjs
+
       - name: 결과 업로드
         if: always()
         uses: actions/upload-artifact@v4
@@ -68,6 +76,7 @@ jobs:
           path: |
             tools/discovery/etf_probe*
             tools/discovery/etf_dividend_probe.*
+            tools/discovery/etf_price_series.*
             tools/discovery/naver_etf_analysis.json
           retention-days: 7
 
@@ -79,6 +88,7 @@ jobs:
           if [ -f tools/discovery/etf_probe.json ] || [ -f tools/discovery/etf_dividend_probe.json ]; then
             git add tools/discovery/etf_probe* || true
             git add tools/discovery/etf_dividend_probe.* 2>/dev/null || true
+            git add tools/discovery/etf_price_series.* 2>/dev/null || true
             git add tools/discovery/naver_etf_analysis.json 2>/dev/null || true
             git commit -m "chore(etf): 원천 탐색 결과 갱신" || echo "변경 없음"
             git push || echo "푸시 실패 (무시)"
