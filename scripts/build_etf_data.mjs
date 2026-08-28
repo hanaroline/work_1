@@ -254,7 +254,30 @@ const payload = {
   etfs,
 };
 
-await writeDataFile(OUT, 'ETF_DATA', payload,
+/**
+ * 값이 없는 칸은 파일에서 아예 뺀다.
+ *
+ * 1,300종목 × 30여 개 필드라 null 만 모아도 200KB 가 넘는다. 이 파일은 매일
+ * 갱신되어 저장소에 쌓이므로 줄여 두는 편이 낫다. 자바스크립트에서 없는
+ * 키와 null 은 `== null` 로 똑같이 걸리므로 화면 쪽은 고칠 것이 없다.
+ */
+function prune(v) {
+  if (Array.isArray(v)) return v.map(prune);
+  if (v && typeof v === 'object') {
+    const out = {};
+    for (const [k, val] of Object.entries(v)) {
+      const p = prune(val);
+      if (p === null || p === undefined) continue;
+      if (Array.isArray(p) && !p.length) continue;
+      if (p && typeof p === 'object' && !Array.isArray(p) && !Object.keys(p).length) continue;
+      out[k] = p;
+    }
+    return out;
+  }
+  return v;
+}
+
+await writeDataFile(OUT, 'ETF_DATA', prune(payload),
   `ETF 통합 데이터 — ${source === 'live' ? '수집본' : '예시'} ${new Date().toISOString()}`);
 
 // 만들어 놓고 눈으로 확인할 수 있게 요약을 찍는다.
