@@ -252,6 +252,11 @@ td.num,th.num{text-align:right; font-family:var(--font-num); font-variant-numeri
 /* ---------- 비교 ---------- */
 .cmp-grid{display:grid; gap:16px; grid-template-columns:repeat(auto-fit,minmax(260px,1fr));}
 
+/* 표 안에서 ETF 를 가리키는 머리칸 — 누르면 상세가 열린다.
+   누를 수 있다는 것이 보여야 하므로 손가락 커서와 hover 를 준다. */
+.etf-link{cursor:pointer;}
+.etf-link:hover{color:var(--orange-active); text-decoration:underline;}
+
 /* 카드 머리의 높이를 고정한다.
    ETF 이름은 한 줄일 때도 두 줄일 때도 있고, 메타 줄("102110 · 미래에셋자산운용
    · 상위10 72.3%")도 카드 폭에 따라 접힌다. 그러면 목록이 시작하는 높이가
@@ -586,6 +591,7 @@ var state = {
   rq: '', rMarket: '', rPeriod: 'Y1', rLev: false,
   rSelected: null,             // 역조회 목록에서 펼쳐 본 ETF
   rankSelected: null,          // 랭킹 표에서 펼쳐 본 ETF
+  cmpSelected: null,           // 비교 탭의 표에서 펼쳐 본 ETF
   tab: 'browse'
 };
 
@@ -1108,7 +1114,8 @@ function holdingMatrix(picks) {
     '<th class="stock">' + (lang === 'ko' ? '종목' : 'Holding') + '</th>' +
     '<th class="num">' + (lang === 'ko' ? '겹침' : 'In') + '</th>';
   picks.forEach(function (e) {
-    html += '<th class="num etf" title="' + esc(etfName(e)) + '">' + esc(e.code) + '</th>';
+    html += '<th class="num etf etf-link" data-id="' + esc(e.id) + '" title="' +
+      esc(etfName(e)) + '">' + esc(e.code) + '</th>';
   });
   html += '</tr></thead><tbody>';
   list.slice(0, 60).forEach(function (r) {
@@ -1166,10 +1173,14 @@ function renderCompare() {
   if (picks.length >= 2) {
     html += '<h3>' + (lang === 'ko' ? '상위10 기준 겹침' : 'Top-10 overlap') + '</h3>';
     html += '<div class="table-wrap"><table><thead><tr><th></th>';
-    picks.forEach(function (e) { html += '<th class="num">' + esc(e.code) + '</th>'; });
+    picks.forEach(function (e) {
+      html += '<th class="num etf-link" data-id="' + esc(e.id) + '" title="' +
+              esc(etfName(e)) + '">' + esc(e.code) + '</th>';
+    });
     html += '</tr></thead><tbody>';
     picks.forEach(function (a) {
-      html += '<tr><th style="background:var(--surface-subtle);text-align:left">' +
+      html += '<tr><th class="etf-link" data-id="' + esc(a.id) +
+              '" style="background:var(--surface-subtle);text-align:left">' +
               esc(etfName(a)) + '</th>';
       picks.forEach(function (b) {
         if (a.id === b.id) { html += '<td class="num dim">–</td>'; return; }
@@ -1185,10 +1196,21 @@ function renderCompare() {
     });
     html += '</tbody></table></div>';
     html += '<div class="notice">' + (lang === 'ko'
-      ? '<strong>읽는 법.</strong> 겹치는 종목마다 두 ETF의 비중 중 작은 쪽을 더한 값입니다. 30% 이상이면 두 상품을 같이 담아도 분산 효과가 크지 않다는 뜻입니다. 상위 10종목만 보므로 실제 중복은 이보다 큽니다.'
-      : '<strong>How to read.</strong> For each shared holding we add the smaller of the two weights. Above 30% means limited diversification benefit. Top-10 only, so true overlap is higher.') + '</div>';
+      ? '<strong>읽는 법.</strong> 겹치는 종목마다 두 ETF의 비중 중 작은 쪽을 더한 값입니다. 30% 이상이면 두 상품을 같이 담아도 분산 효과가 크지 않다는 뜻입니다. 상위 10종목만 보므로 실제 중복은 이보다 큽니다. 표의 ETF 이름이나 코드를 누르면 상세가 아래에 열립니다.'
+      : '<strong>How to read.</strong> For each shared holding we add the smaller of the two weights. Above 30% means limited diversification benefit. Top-10 only, so true overlap is higher. Click an ETF name or code in the tables to open its details below.') + '</div>';
   }
+
+  // 상세는 맨 아래에 펼친다. 표들이 위에 있으므로, 위에 끼우면 방금 보던
+  // 겹침 표가 통째로 밀려 내려간다 — 랭킹 탭과 같은 이유다.
+  html += '<div id="compare-detail"></div>';
   node.innerHTML = html;
+
+  // 담아 둔 목록에서 빠진 ETF 의 상세가 남아 있으면 지금 비교와 무관한 화면이 된다.
+  var stillPicked = picks.some(function (e) { return e.id === state.cmpSelected; });
+  if (!stillPicked) state.cmpSelected = null;
+  var sel = byId(state.cmpSelected);
+  var slot = el('compare-detail');
+  if (slot) slot.innerHTML = sel ? detailHtml(sel) : '';
 }
 
 /* ══════════════════════════════════════════════════════════
@@ -1688,8 +1710,25 @@ function bind() {
   el('compare-body').addEventListener('click', function (ev) {
     if (ev.target.closest('[data-clear-basket]')) {
       state.basket = [];
+      state.cmpSelected = null;
       renderCompare();
       renderList();
+      return;
+    }
+    if (ev.target.closest('[data-close-detail]')) {
+      state.cmpSelected = null;
+      renderCompare();
+      return;
+    }
+    // 표 안의 ETF 이름·코드를 누르면 아래에서 상세가 열린다
+    var link = ev.target.closest('[data-id]');
+    if (!link) return;
+    var id = link.getAttribute('data-id');
+    state.cmpSelected = state.cmpSelected === id ? null : id;
+    renderCompare();
+    if (state.cmpSelected) {
+      var slot = el('compare-detail');
+      if (slot && slot.firstChild) slot.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
   });
 

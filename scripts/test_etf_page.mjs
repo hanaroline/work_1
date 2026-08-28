@@ -181,6 +181,35 @@ const align3 = await rowSpreadAt(2);
 check('같은 줄 카드끼리 3순위도 나란하다', align3.worst <= 1 && align3.lineCount > 0,
       `편차 ${align3.worst}px`);
 
+// ── 겹침 표의 ETF 이름·코드를 누르면 아래에서 상세가 열린다
+const cmpGridTopBefore = await page.evaluate(() =>
+  document.querySelector('#compare-body .cmp-grid').getBoundingClientRect().top + window.scrollY);
+await page.locator('#compare-body table tbody th.etf-link').first().click();
+await page.waitForTimeout(300);
+const cmpHold = await page.locator('#compare-detail .hold-row').count();
+check('겹침 표에서 ETF 상세가 열린다', cmpHold > 0, `${cmpHold}종목`);
+
+const [cmpDetailTop, cmpGridTopAfter] = await page.evaluate(() => [
+  document.querySelector('#compare-detail').getBoundingClientRect().top + window.scrollY,
+  document.querySelector('#compare-body .cmp-grid').getBoundingClientRect().top + window.scrollY,
+]);
+check('상세가 표들 아래에 열린다', cmpDetailTop > cmpGridTopAfter,
+      `상세 ${Math.round(cmpDetailTop)} > 카드 ${Math.round(cmpGridTopAfter)}`);
+check('위쪽 표가 밀려나지 않는다', Math.abs(cmpGridTopAfter - cmpGridTopBefore) < 2,
+      `${Math.round(cmpGridTopBefore)} -> ${Math.round(cmpGridTopAfter)}`);
+
+// 열 머리(코드)로도 열린다
+await page.locator('#compare-body table thead th.etf-link').nth(1).click();
+await page.waitForTimeout(300);
+const cmpHold2 = await page.locator('#compare-detail .hold-row').count();
+check('열 머리(코드)로도 상세가 열린다', cmpHold2 > 0, `${cmpHold2}종목`);
+
+// 다시 누르면 닫힌다
+await page.locator('#compare-body table thead th.etf-link').nth(1).click();
+await page.waitForTimeout(250);
+const cmpClosed = await page.locator('#compare-detail .hold-row').count();
+check('다시 누르면 비교 상세가 닫힌다', cmpClosed === 0, `${cmpClosed}종목`);
+
 // 담아 둔 것을 비우고 나머지 시험으로 넘어간다
 await page.locator('#compare-body [data-clear-basket]').click();
 await page.waitForTimeout(150);
