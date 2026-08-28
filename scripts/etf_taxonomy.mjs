@@ -79,30 +79,39 @@ export const GLOBAL_FAMILIES = [
 // ───────────────────────── 투자 지역 ─────────────────────────
 // "어디에 투자하는가"이지 "어디에 상장됐는가"가 아니다. 상장지는 따로 들고 간다.
 // 국내 ETF 이름에 지역이 없으면 한국으로 본다(국내 ETF 의 기본값).
+//
+// 다섯 번째 칸은 "이 단어가 있으면 아니다" 목록이다. 규칙이 틀렸을 때
+// 여기에 단어를 넣어 고친다.
+//
+// 홍콩은 따로 두지 않고 중국에 넣는다. 국내 투자자가 "중국" 으로 찾을 때
+// 항셍테크가 안 나오면 그게 더 이상하다.
 export const REGIONS = [
-  ['us',        '미국',        'United States',  ['미국', 'S&P', 'SNP', '나스닥', 'NASDAQ', '다우', 'DOW', '러셀', 'RUSSELL', 'US ', 'U.S.', 'AMERICA', 'S&P500', '필라델피아']],
-  ['china',     '중국',        'China',          ['중국', 'CHINA', 'CSI', '항셍', 'HANG SENG', 'HSCEI', '심천', 'SHENZHEN', '상해', 'SHANGHAI', 'A주', 'MSCI CHINA', 'KRAENZ']],
-  ['japan',     '일본',        'Japan',          ['일본', 'JAPAN', '닛케이', 'NIKKEI', 'TOPIX', 'JPX']],
-  ['europe',    '유럽',        'Europe',         ['유럽', 'EUROPE', 'EURO', 'DAX', 'STOXX', '독일', 'GERMANY', '프랑스', 'FRANCE', 'CAC', 'FTSE 100', '영국', 'UK ']],
+  ['us',        '미국',        'United States',  ['미국', 'S&P', 'SNP', '나스닥', 'NASDAQ', '다우', 'DOW', '러셀', 'RUSSELL', 'US', 'U.S.', 'AMERICA', 'AMERICAN', '필라델피아', 'NYSE', '뉴욕']],
+  ['china',     '중국·홍콩',   'China & HK',     ['중국', 'CHINA', 'CHINESE', 'CSI', '차이나', '항셍', 'HANG SENG', 'HSCEI', 'HSI', '홍콩', 'HONG KONG', '심천', 'SHENZHEN', '상해', 'SHANGHAI', 'A주', '과창판', 'STAR50', 'CHINEXT', 'TRACKER FUND']],
+  ['japan',     '일본',        'Japan',          ['일본', 'JAPAN', 'JAPANESE', '닛케이', 'NIKKEI', 'TOPIX', 'JPX']],
+  ['europe',    '유럽',        'Europe',         ['유럽', 'EUROPE', 'EUROPEAN', 'EUROZONE', 'DAX', 'STOXX', '독일', 'GERMANY', '프랑스', 'FRANCE', 'FTSE 100', '영국']],
   ['india',     '인도',        'India',          ['인도', 'INDIA', 'NIFTY', 'SENSEX']],
   ['vietnam',   '베트남',      'Vietnam',        ['베트남', 'VIETNAM', 'VN30']],
   ['taiwan',    '대만',        'Taiwan',         ['대만', 'TAIWAN', 'TWSE']],
-  ['emerging',  '신흥국',      'Emerging',       ['신흥국', 'EMERGING', 'EM ', '이머징']],
-  ['global',    '글로벌',      'Global',         ['글로벌', 'GLOBAL', '선진국', 'DEVELOPED', 'WORLD', '월드', 'ACWI', 'EAFE', '전세계']],
-  ['korea',     '한국',        'Korea',          ['코스피', 'KOSPI', '코스닥', 'KOSDAQ', 'KRX', '한국', 'KOREA', '200', '국고채', '국내']],
+  ['emerging',  '신흥국',      'Emerging',       ['신흥국', 'EMERGING', '이머징']],
+  ['global',    '글로벌',      'Global',         ['글로벌', 'GLOBAL', '선진국', 'DEVELOPED', 'WORLD', '월드', 'ACWI', 'EAFE', '전세계', 'INTERNATIONAL', 'TOTAL WORLD']],
+  ['korea',     '한국',        'Korea',          ['코스피', 'KOSPI', '코스닥', 'KOSDAQ', 'KRX', '한국', 'KOREA', '국고채', '국내', '200선물', 'K200']],
 ];
 
 // ───────────────────────── 자산군 ─────────────────────────
 // 위에서부터 먼저 걸리는 것으로 정한다. 채권·원자재가 주식보다 앞이어야
 // "국채 ETF" 가 주식으로 새지 않는다.
+//
+// 여기서 한 글자 단어는 쓰지 않는다. '금' 하나를 넣었더니 "TIGER 금융"과
+// "은행"이 원자재로 넘어갔다. '금현물'·'골드'처럼 길게 쓴다.
 export const ASSET_CLASSES = [
-  ['bond',      '채권',   'Bond',        ['채권', 'BOND', '국고채', '통안채', '회사채', 'TREASURY', '국채', 'CREDIT', 'AGGREGATE', '만기매칭', 'TIPS', '물가채']],
-  ['money',     '단기자금', 'Money Market', ['CD금리', 'KOFR', 'SOFR', 'MMF', '머니마켓', '초단기', '금리액티브', 'T-BILL', '단기통안']],
-  ['commodity', '원자재',  'Commodity',   ['금', 'GOLD', '은', 'SILVER', '원유', 'OIL', 'WTI', '구리', 'COPPER', '천연가스', 'GAS', '농산물', '원자재', 'COMMODITY', '팔라듐', '플래티넘']],
-  ['reit',      '리츠',    'REIT',        ['리츠', 'REIT', '부동산', 'REAL ESTATE', '인프라']],
-  ['currency',  '통화',    'Currency',    ['달러선물', '엔선물', '유로선물', 'CURRENCY', '외환']],
+  ['bond',      '채권',   'Bond',        ['채권', 'BOND', 'BONDS', '국고채', '통안채', '회사채', 'TREASURY', '국채', 'CREDIT', 'AGGREGATE', '만기매칭', 'TIPS', '물가채', 'HIGH YIELD', '하이일드'], ['채권혼합']],
+  ['money',     '단기자금', 'Money Market', ['CD금리', 'KOFR', 'SOFR', 'MMF', '머니마켓', '초단기', '금리액티브', 'T-BILL', 'BILL', '단기통안']],
+  ['commodity', '원자재',  'Commodity',   ['금현물', '금선물', '골드', 'GOLD', '은선물', '은현물', 'SILVER', '원유', 'OIL', 'WTI', '구리', 'COPPER', '천연가스', 'NATURAL GAS', '농산물', '원자재', 'COMMODITY', 'COMMODITIES', '팔라듐', '플래티넘', '귀금속']],
+  ['reit',      '리츠',    'REIT',        ['리츠', 'REIT', 'REITS', '부동산', 'REAL ESTATE']],
+  ['currency',  '통화',    'Currency',    ['달러선물', '엔선물', '유로선물', 'CURRENCY', '외환', '달러인덱스', 'DOLLAR INDEX']],
   ['crypto',    '디지털자산', 'Digital Asset', ['비트코인', 'BITCOIN', '이더리움', 'ETHEREUM', '가상자산', '암호화폐', 'CRYPTO', 'BLOCKCHAIN', '블록체인']],
-  ['multi',     '멀티에셋', 'Multi-Asset', ['자산배분', 'TDF', 'TRF', '멀티에셋', 'ALLOCATION', 'BALANCED', 'TARGET DATE']],
+  ['multi',     '멀티에셋', 'Multi-Asset', ['자산배분', 'TDF', 'TRF', '멀티에셋', 'ALLOCATION', 'BALANCED', 'TARGET DATE', '혼합']],
   ['equity',    '주식',    'Equity',      []],   // 마지막 기본값
 ];
 
@@ -111,8 +120,10 @@ export const ASSET_CLASSES = [
 // 화면이 쓸모없어지므로, 목록에서 접을 수 있어야 한다.
 export const FLAGS = [
   ['leverage', '레버리지', 'Leveraged', ['레버리지', '2X', '3X', '2배', 'LEVERAGED', 'ULTRA', 'BULL 3X']],
-  ['inverse',  '인버스',   'Inverse',   ['인버스', 'INVERSE', '-1X', '숏', 'SHORT', 'BEAR']],
-  ['covered',  '커버드콜', 'Covered Call', ['커버드콜', 'COVERED CALL', '프리미엄', 'BUYWRITE', '타겟위클리', 'DAILY OPTION']],
+  // 'SHORT' 는 채권 만기를 뜻할 때가 더 많다("Ultra Short Bond"). 그쪽은 뗀다.
+  ['inverse',  '인버스',   'Inverse',   ['인버스', 'INVERSE', '-1X', '숏', 'SHORT', 'BEAR'],
+                                        ['SHORT TERM', 'ULTRA SHORT', 'SHORT-TERM', 'SHORT DURATION']],
+  ['covered',  '커버드콜', 'Covered Call', ['커버드콜', 'COVERED CALL', '프리미엄', 'PREMIUM', 'BUYWRITE', '타겟위클리', 'DAILY OPTION']],
   ['hedged',   '환헤지',   'FX Hedged', ['(H)', '환헤지', 'HEDGED']],
   ['active',   '액티브',   'Active',    ['액티브', 'ACTIVE']],
   ['monthly',  '월배당',   'Monthly Dist.', ['월배당', '분배', 'MONTHLY']],
@@ -134,7 +145,7 @@ export const THEMES = [
   { id: 'battery', ko: '2차전지', en: 'Battery',
     any: ['2차전지', '이차전지', 'BATTERY', '배터리', '리튬', 'LITHIUM'] },
   { id: 'ev', ko: '전기차·자율주행', en: 'EV & Autonomous',
-    any: ['전기차', 'ELECTRIC VEHICLE', ' EV', '자율주행', 'AUTONOMOUS', '모빌리티', 'MOBILITY'] },
+    any: ['전기차', 'ELECTRIC VEHICLE', 'EV', '자율주행', 'AUTONOMOUS', '모빌리티', 'MOBILITY'] },
   { id: 'bio', ko: '바이오·헬스케어', en: 'Bio & Healthcare',
     any: ['바이오', 'BIO', '헬스케어', 'HEALTH', '제약', 'PHARMA', '의료기기', 'MEDICAL', '비만', 'GLP-1'] },
   { id: 'defense', ko: '방산·우주항공', en: 'Defense & Aerospace',
@@ -169,8 +180,10 @@ export const THEMES = [
     any: ['중소형', 'SMALL CAP', 'SMALLCAP', '러셀2000', 'RUSSELL 2000'] },
   { id: 'infra', ko: '인프라', en: 'Infrastructure',
     any: ['인프라', 'INFRASTRUCTURE', '건설', 'CONSTRUCTION', '전력', 'UTILITIES', '유틸리티', '전선', '변압기'] },
+  // 한 글자 '금' 은 쓰지 않는다. 금리·금융·기금·자금·현금·요금·세금·임금이
+  // 전부 걸려 들어온다. 실제로 "TIGER 금융"이 금 ETF 로 분류됐었다.
   { id: 'gold', ko: '금·귀금속', en: 'Precious Metals',
-    any: ['금', 'GOLD', '은선물', 'SILVER', '귀금속'], not: ['금리', '금융', '기금', '자금', '현금', '요금'] },
+    any: ['금현물', '금선물', '골드', 'GOLD', '은현물', '은선물', 'SILVER', '귀금속', '금광', 'MINERS'] },
   { id: 'energy', ko: '에너지·원자재', en: 'Energy',
     any: ['원유', 'OIL', 'WTI', '천연가스', 'ENERGY', '에너지', '원자재', 'COMMODITY', '구리', 'COPPER'] },
 ];
@@ -179,7 +192,7 @@ export const THEMES = [
 // KRX 는 기초지수명을 그대로 주고("코스피 200"), 해외는 이름에만 있다.
 // 표기가 제각각이라("KOSPI200", "코스피200", "KOSPI 200") 필터가 쪼개진다.
 export const INDEX_ALIASES = [
-  ['KOSPI 200',      ['코스피 200', '코스피200', 'KOSPI200', 'KOSPI 200', 'K200']],
+  ['KOSPI 200',      ['코스피 200', '코스피200', 'KOSPI200', 'KOSPI 200', 'K200', '200선물', '200TR', '200동일가중']],
   ['KOSPI',          ['코스피', 'KOSPI'], ['200', '코스닥']],
   ['KOSDAQ 150',     ['코스닥 150', '코스닥150', 'KOSDAQ150', 'KOSDAQ 150']],
   ['KRX 300',        ['KRX 300', 'KRX300']],
@@ -212,17 +225,61 @@ export const OVERRIDES = {
 
 // ───────────────────────── 분류기 ─────────────────────────
 
-/** 이름 비교는 대문자·공백 제거 기준으로 한다. "S&P 500" 과 "S&P500" 을 같게 보려고. */
-function norm(s) {
-  return String(s || '').toUpperCase();
+/**
+ * 이름 대조.
+ *
+ * 처음에는 "대문자로 바꾸고 공백 지운 뒤 부분문자열" 로 했다. 그랬더니
+ *
+ *   PLUS 고배당주                  -> 'US' 가 걸려 미국 ETF 로 분류됨
+ *   ... Dividend Equity ETF        -> 'EQUITY' 안의 'IT' 가 걸려 IT 테마가 붙음
+ *
+ * 처럼 단어 안에 우연히 박힌 글자를 먹었다. 그래서 **영문·숫자 키워드는
+ * 앞뒤가 영문·숫자가 아닐 때만** 인정한다. 한글은 단어 경계가 없으므로
+ * 그대로 부분문자열로 보고, 잘못 걸리는 칸은 각 규칙의 not 목록으로 뗀다.
+ *
+ * 공백도 무시해야 한다 — "S&P 500" 과 "S&P500" 은 같은 말이다. 그런데 공백을
+ * 지우면 이번에는 영문 이름의 단어 경계가 통째로 사라진다("SPDR Gold Shares"
+ * 가 한 단어가 되어 'GOLD' 가 안 걸렸다). 그래서 **공백을 살린 형태와 지운
+ * 형태를 둘 다** 본다. 둘 중 하나에서 경계를 만족하면 걸린 것으로 친다.
+ */
+function tidy(s) {
+  return String(s || '').toUpperCase().replace(/\s+/g, ' ').trim();
 }
 function squeeze(s) {
-  return norm(s).replace(/\s+/g, '');
+  return String(s || '').toUpperCase().replace(/\s+/g, '');
+}
+
+const WORDY = /[A-Z0-9]/;                       // 단어를 이루는 글자
+const ASCII_ONLY = /^[\x20-\x7E]+$/;            // 영문·숫자·기호만으로 된 키워드
+
+/** text 안에서 needle 이 단어 경계를 지키며 나타나는가. */
+function bounded(text, needle) {
+  if (!needle) return false;
+  // 한글이 섞인 키워드는 경계를 따지지 않는다 (한국어에 단어 경계가 없다).
+  if (!ASCII_ONLY.test(needle)) return text.includes(needle);
+  let from = 0;
+  for (;;) {
+    const i = text.indexOf(needle, from);
+    if (i < 0) return false;
+    const before = i > 0 ? text[i - 1] : '';
+    const after = i + needle.length < text.length ? text[i + needle.length] : '';
+    const okL = !before || !WORDY.test(before) || !WORDY.test(needle[0]);
+    const okR = !after || !WORDY.test(after) || !WORDY.test(needle[needle.length - 1]);
+    if (okL && okR) return true;
+    from = i + 1;
+  }
 }
 
 function hasAny(haystack, needles) {
+  if (!needles || !needles.length) return false;
+  const spaced = tidy(haystack);
   const flat = squeeze(haystack);
-  return needles.some((n) => flat.includes(squeeze(n)));
+  return needles.some((n) => bounded(spaced, tidy(n)) || bounded(flat, squeeze(n)));
+}
+
+/** any 중 하나가 걸리고 not 중 아무것도 안 걸릴 때만 참. */
+function matches(haystack, any, not) {
+  return hasAny(haystack, any) && !(not && hasAny(haystack, not));
 }
 
 /**
@@ -249,34 +306,34 @@ export function classify(etf) {
 
   // 2) 자산군 — 앞에서부터 먼저 걸리는 것
   let assetClass = 'equity';
-  for (const [id, , , words] of ASSET_CLASSES) {
-    if (words.length && hasAny(hay, words)) { assetClass = id; break; }
+  for (const [id, , , words, not] of ASSET_CLASSES) {
+    if (words.length && matches(hay, words, not)) { assetClass = id; break; }
   }
 
-  // 3) 투자 지역 — 마찬가지로 앞에서부터. 국내 상장인데 지역 단서가 없으면 한국.
+  // 3) 투자 지역 — 마찬가지로 앞에서부터.
+  //    상장지가 곧 투자 지역인 경우가 많다(홍콩 상장 항셍 ETF). 이름에서
+  //    단서를 못 찾으면 상장지로 메운다.
   let region = null;
-  for (const [id, , , words] of REGIONS) {
-    if (hasAny(hay, words)) { region = id; break; }
+  for (const [id, , , words, not] of REGIONS) {
+    if (matches(hay, words, not)) { region = id; break; }
   }
-  if (!region) region = etf.listedIn === 'KR' ? 'korea' : null;
+  if (!region) {
+    region = { KR: 'korea', US: 'us', HK: 'china', JP: 'japan',
+               SS: 'china', SZ: 'china' }[etf.listedIn] || null;
+  }
 
   // 4) 기초지수 정규화
   let index = null;
   for (const [canonical, aliases, exclude] of INDEX_ALIASES) {
-    if (!hasAny(hay, aliases)) continue;
-    if (exclude && hasAny(hay, exclude)) continue;
-    index = canonical;
-    break;
+    if (matches(hay, aliases, exclude)) { index = canonical; break; }
   }
   if (!index && etf.indexName) index = etf.indexName;
 
   // 5) 플래그
-  const flags = FLAGS.filter(([, , , words]) => hasAny(name, words)).map(([id]) => id);
+  const flags = FLAGS.filter(([, , , words, not]) => matches(name, words, not)).map(([id]) => id);
 
   // 6) 테마 — 여러 개 붙을 수 있다
-  const themes = THEMES
-    .filter((t) => hasAny(hay, t.any) && !(t.not && hasAny(hay, t.not)))
-    .map((t) => t.id);
+  const themes = THEMES.filter((t) => matches(hay, t.any, t.not)).map((t) => t.id);
 
   const out = { manager, managerEn, assetClass, region, index, flags, themes };
   const override = OVERRIDES[etf.code] || OVERRIDES[etf.ticker];
