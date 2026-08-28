@@ -355,6 +355,65 @@ const ratioCells = await page.locator('#basis-body table').nth(1)
 check('비율이 숫자로 채워진다', ratioCells.length > 0 && ratioCells.every((c) => /\d\.\d{4}/.test(c)),
       ratioCells.join(' | '));
 
+// ── 순위·유형평균 — 모집단이 정직한가
+//
+// 이 두 칸은 데이터가 아니라 화면이 그 자리에서 만드는 값이라, 틀려도
+// 감사에 걸리지 않는다. 실제로 세 가지가 틀려 있었다.
+//   1) 총수익률이 깨진 종목 하나가 국내 주식형 420종목의 평균을 9.21%p 밀었다
+//   2) 2배 레버리지가 1배와 같은 "유형" 으로 묶여 평균에 들어갔다
+//   3) 머리말에 무리 크기 479 를 적어 놓고 3년 평균은 252종목으로 냈다
+await page.locator('.tabs button[data-tab="browse"]').click();
+await page.waitForTimeout(150);
+{
+  // 국내 1배 주식형 하나를 골라 상세를 연다.
+  const target = await page.evaluate(() => {
+    const e = window.ETF_DATA.etfs.find((x) => x.market === 'KR' && x.assetClass === 'equity'
+      && x.region === 'korea' && !(x.flags || []).some((f) => f === 'leverage' || f === 'inverse')
+      && x.ret && x.ret.tr && x.ret.tr.Y1 != null);
+    return e ? e.code : null;
+  });
+  check('국내 1배 주식형 표본을 찾았다', !!target, String(target));
+  if (target) {
+    await page.locator('#q').fill(target);
+    await page.waitForTimeout(250);
+    await page.locator('#list-body tr').first().click();
+    await page.waitForTimeout(250);
+    const retTxt = await page.locator('#detail .ret-table').textContent();
+    check('유형 평균 대비 칸에 그 기간의 종목 수가 적힌다',
+          /평균 [-\d.]+% · [\d,]+종목/.test(retTxt || ''), (retTxt || '').slice(0, 140));
+    const headTxt = await page.locator('#detail .ret-table thead').textContent();
+    check('유형 머리말이 배율을 밝힌다', /1배|배율 상품/.test(headTxt || ''), headTxt || '');
+  }
+}
+// 화면의 무리 잡는 규칙이 배율과 거래정지를 실제로 가르는지 데이터로 확인한다.
+{
+  const r = await page.evaluate(() => {
+    const E = window.ETF_DATA.etfs;
+    const g = (e) => (e.flags || []).some((f) => f === 'leverage' || f === 'inverse');
+    const one = E.filter((e) => e.market === 'KR' && e.assetClass === 'equity'
+      && e.region === 'korea' && !e.suspended && !g(e)).length;
+    const both = E.filter((e) => e.market === 'KR' && e.assetClass === 'equity'
+      && e.region === 'korea' && !e.suspended).length;
+    return { one, both, suspended: E.filter((e) => e.suspended).length };
+  });
+  check('배율 상품이 1배 무리에서 빠져 있다', r.one < r.both, `1배 ${r.one} / 전체 ${r.both}`);
+}
+
+// ── 비중을 모르는 종목을 0 이라고 말하지 않는가
+{
+  const bad = await page.evaluate(() => {
+    const E = window.ETF_DATA.etfs;
+    // 편입종목의 비중이 하나라도 없는데 합계가 숫자로 적힌 종목
+    return E.filter((e) => {
+      const hs = (e.holdings || []).filter((h) => !h.cash);
+      if (!hs.length) return false;
+      const unknown = hs.some((h) => h.weight == null);
+      return unknown && e.top10Weight != null;
+    }).map((e) => e.code).slice(0, 5);
+  });
+  check('비중을 모르면 상위 종목 합계를 내지 않는다', bad.length === 0, bad.join(','));
+}
+
 // ── 영문 전환
 await page.locator('.lang-toggle button[data-lang="en"]').click();
 await page.waitForTimeout(200);
