@@ -568,6 +568,7 @@ var state = {
   selected: null,              // 상세로 펼친 ETF id
   basket: [],                  // 비교 대상 id 목록
   rq: '', rMarket: '', rPeriod: 'Y1', rLev: false,
+  rSelected: null,             // 역조회 목록에서 펼쳐 본 ETF
   tab: 'browse'
 };
 
@@ -903,8 +904,13 @@ function holdingsBlock(etf, maxWeight) {
 
 function donut(sectors) {
   if (!sectors) return '';
+  // 음수 비중은 도넛에 그릴 수 없다. 원천에 -0.04% 같은 값이 섞여 오는데
+  // 그대로 합계에 넣으면 나머지 조각 각도가 어긋나고, 범례에는 "미분류 -0.0%"
+  // 라는 읽을 수 없는 줄이 남는다. 도넛에서만 뺀다(데이터는 그대로 둔다).
   var entries = Object.keys(sectors).map(function (k) { return [k, sectors[k]]; })
+    .filter(function (e) { return e[1] > 0; })
     .sort(function (a, b) { return b[1] - a[1]; });
+  if (!entries.length) return '';
   var total = entries.reduce(function (s, e) { return s + e[1]; }, 0);
   if (!total) return '';
   var r = 56, c = 2 * Math.PI * r, offset = 0, ring = '', legend = '';
@@ -944,13 +950,14 @@ function returnTable(etf) {
     '</tr></thead><tbody>' + rows + '</tbody></table></div>';
 }
 
-function renderDetail() {
-  var node = el('detail');
-  if (!state.selected) { node.innerHTML = ''; return; }
-  var etf = null;
-  for (var i = 0; i < ETFS.length; i++) if (ETFS[i].id === state.selected) etf = ETFS[i];
-  if (!etf) { node.innerHTML = ''; return; }
-
+/**
+ * ETF 한 종목의 상세를 HTML 로 만든다.
+ *
+ * ETF 찾기와 종목→ETF 두 화면이 이것을 같이 쓴다. 역조회로 "삼성SDI 를 담은
+ * ETF 78개" 를 훑다가 하나가 눈에 들어왔을 때, 탭을 옮기고 다시 찾게 하는
+ * 대신 그 자리에서 펼쳐 보게 하려는 것이다.
+ */
+function detailHtml(etf) {
   var cur = etf.currency || (etf.market === 'KR' ? 'KRW' : null);
   var html = '<div class="section" style="padding-top:var(--space-block)">';
   html += '<div class="section-rule"></div>';
@@ -1002,7 +1009,12 @@ function renderDetail() {
           returnTable(etf) + '</div>';
   html += '</div></div>';
   html += '</div>';
-  node.innerHTML = html;
+  return html;
+}
+
+function renderDetail() {
+  var etf = byId(state.selected);
+  el('detail').innerHTML = etf ? detailHtml(etf) : '';
 }
 
 /* ══════════════════════════════════════════════════════════
@@ -1196,15 +1208,22 @@ function renderReverse() {
     return;
   }
 
+  // **ETF 하나가 한 줄이다.** 예전에는 걸린 편입종목마다 한 줄을 만들었다.
+  // 그래서 "삼성" 으로 찾으면 KODEX 200 이 삼성전자·삼성전기·삼성물산으로
+  // 세 번 나오고, 머리말에는 "770개 ETF" 라고 적혔다 — 실제로는 371개였다.
+  // 이 화면의 질문은 "이 종목을 담은 ETF 가 몇 개인가" 이므로 ETF 로 묶는다.
+  // 여러 종목이 걸리면 비중은 합계로 본다("삼성 들어간 종목을 합쳐 얼마").
   var hits = [];
   ETFS.forEach(function (e) {
-    (e.holdings || []).forEach(function (h) {
-      if (h.name && h.name.toLowerCase().indexOf(q) >= 0) {
-        hits.push({ etf: e, holding: h });
-      }
+    var matched = (e.holdings || []).filter(function (h) {
+      return h.name && !h.cash && h.name.toLowerCase().indexOf(q) >= 0;
     });
+    if (!matched.length) return;
+    var sum = 0;
+    matched.forEach(function (h) { sum += (h.weight || 0); });
+    hits.push({ etf: e, holdings: matched, weight: +sum.toFixed(2) });
   });
-  hits.sort(function (a, b) { return (b.holding.weight || 0) - (a.holding.weight || 0); });
+  hits.sort(function (a, b) { return b.weight - a.weight; });
 
   if (!hits.length) {
     node.innerHTML = '<div class="empty">' + (lang === 'ko'
@@ -1214,7 +1233,12 @@ function renderReverse() {
   }
 
   var html = '<div class="finder-bar"><span class="count">' + hits.length +
-    (lang === 'ko' ? '개 ETF' : ' ETFs') + '</span></div>';
+    (lang === 'ko' ? '개 ETF' : ' ETFs') + '</span>' +
+    '<span class="dim">' + (lang === 'ko' ? 'ETF를 누르면 상세가 열립니다'
+                                          : 'Click an ETF to see its details') + '</span></div>';
+  // 상세는 표 위에 펼친다. 결과가 200줄까지 가므로 표 아래에 두면
+  // 누른 뒤 한참을 내려가야 한다.
+  html += '<div id="reverse-detail"></div>';
   html += '<div class="table-wrap"><table><thead><tr>' +
     '<th>ETF</th><th>' + (lang === 'ko' ? '상장' : 'Listing') + '</th>' +
     '<th>' + (lang === 'ko' ? '운용사' : 'Manager') + '</th>' +
@@ -1224,12 +1248,25 @@ function renderReverse() {
     '</tr></thead><tbody>';
   hits.slice(0, 200).forEach(function (r) {
     var cur = r.etf.currency || (r.etf.market === 'KR' ? 'KRW' : null);
-    html += '<tr><td><strong>' + esc(etfName(r.etf)) + '</strong> ' +
+    var names = r.holdings.map(function (h) { return h.name; });
+    // 이름을 다 늘어놓으면 칸이 무너진다. 셋까지만 적고 나머지는 수로 줄인다.
+    var shown = names.length > 3
+      ? names.slice(0, 3).join(' · ') + (lang === 'ko' ? ' 외 ' + (names.length - 3) : ' +' + (names.length - 3))
+      : names.join(' · ');
+    html += '<tr class="clickable' + (state.rSelected === r.etf.id ? ' selected' : '') +
+      '" data-id="' + esc(r.etf.id) + '">' +
+      '<td><strong>' + esc(etfName(r.etf)) + '</strong> ' +
       '<span class="dim" style="font-size:13px">' + esc(r.etf.code) + '</span></td>' +
       '<td>' + esc(t(MARKET_LABEL[r.etf.market])) + '</td>' +
       '<td>' + esc(r.etf.manager || '–') + '</td>' +
-      '<td>' + esc(r.holding.name) + '</td>' +
-      '<td class="num"><strong>' + (r.holding.weight == null ? '–' : r.holding.weight.toFixed(2) + '%') + '</strong></td>' +
+      '<td' + (r.holdings.length > 1 ? ' title="' + esc(names.join(', ')) + '"' : '') + '>' +
+        esc(shown) + '</td>' +
+      '<td class="num"><strong>' + r.weight.toFixed(2) + '%</strong>' +
+        (r.holdings.length > 1
+          ? '<br><span class="dim" style="font-size:12px;font-weight:400">' +
+            (lang === 'ko' ? r.holdings.length + '종목 합계' : r.holdings.length + ' combined') +
+            '</span>'
+          : '') + '</td>' +
       '<td class="num">' + fmtAmount(r.etf.aum, cur) + '</td></tr>';
   });
   html += '</tbody></table></div>';
@@ -1238,6 +1275,14 @@ function renderReverse() {
       (lang === 'ko' ? '상위 200개만 표시합니다.' : 'Showing first 200.') + '</span></div>';
   }
   node.innerHTML = html;
+
+  // 고른 ETF 가 이번 검색 결과 안에 있을 때만 상세를 펼친다. 검색어를 바꾼
+  // 뒤에도 예전 상세가 남아 있으면 지금 목록과 관계없는 화면이 된다.
+  var stillHere = hits.some(function (r) { return r.etf.id === state.rSelected; });
+  if (!stillHere) state.rSelected = null;
+  var sel = byId(state.rSelected);
+  var slot = el('reverse-detail');
+  if (slot) slot.innerHTML = sel ? detailHtml(sel) : '';
 }
 
 /* ══════════════════════════════════════════════════════════
@@ -1505,7 +1550,11 @@ function bind() {
   });
 
   var rInput = el('rq');
-  rInput.addEventListener('input', function () { state.rq = rInput.value; renderReverse(); });
+  rInput.addEventListener('input', function () {
+    state.rq = rInput.value;
+    state.rSelected = null;
+    renderReverse();
+  });
 
   [['f-market', 'market'], ['f-region', 'region'], ['f-asset', 'asset'],
    ['f-index', 'index'], ['f-sector', 'sector'], ['f-theme', 'theme'],
@@ -1611,11 +1660,30 @@ function bind() {
   });
 
   el('reverse-body').addEventListener('click', function (ev) {
-    var tr = ev.target.closest('tr[data-stock]');
-    if (!tr) return;
-    state.rq = tr.getAttribute('data-stock');
-    el('rq').value = state.rq;
+    // "많은 ETF에 담긴 종목" 목록에서 종목을 고르면 그 종목으로 검색한다
+    var stockRow = ev.target.closest('tr[data-stock]');
+    if (stockRow) {
+      state.rq = stockRow.getAttribute('data-stock');
+      state.rSelected = null;
+      el('rq').value = state.rq;
+      renderReverse();
+      return;
+    }
+    if (ev.target.closest('[data-close-detail]')) {
+      state.rSelected = null;
+      renderReverse();
+      return;
+    }
+    // 결과 목록에서 ETF 를 고르면 그 자리에서 상세를 펼친다
+    var etfRow = ev.target.closest('tr[data-id]');
+    if (!etfRow) return;
+    var id = etfRow.getAttribute('data-id');
+    state.rSelected = state.rSelected === id ? null : id;
     renderReverse();
+    if (state.rSelected) {
+      var slot = el('reverse-detail');
+      if (slot && slot.firstChild) slot.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
   });
 
   el('rank-body').addEventListener('click', function (ev) {

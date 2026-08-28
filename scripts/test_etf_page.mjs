@@ -162,6 +162,52 @@ await page.waitForTimeout(150);
 const hits = await page.locator('#reverse-body tbody tr').count();
 check(`"${firstStock}" 역조회 결과가 나온다`, hits > 0, `${hits}건`);
 
+// ── 역조회 결과에서 ETF 를 누르면 그 자리에서 상세가 열린다
+await page.locator('#reverse-body tbody tr[data-id]').first().click();
+await page.waitForTimeout(250);
+const revHold = await page.locator('#reverse-detail .hold-row').count();
+check('역조회에서 ETF 상세가 열린다', revHold > 0, `${revHold}종목`);
+const revRet = await page.locator('#reverse-detail table tbody tr').count();
+check('역조회 상세에 기간수익률이 있다', revRet > 0, `${revRet}행`);
+const revSel = await page.locator('#reverse-body tbody tr.selected').count();
+check('고른 행이 표시된다', revSel === 1, `${revSel}행`);
+
+
+// 상세가 표 위에 있어야 한다 — 200줄 아래에 열리면 찾아 내려가야 한다
+const [detailTop, tableTop] = await page.evaluate(() => [
+  document.querySelector('#reverse-detail').getBoundingClientRect().top,
+  document.querySelector('#reverse-body .table-wrap').getBoundingClientRect().top,
+]);
+check('상세가 결과 표 위에 열린다', detailTop < tableTop,
+      `상세 ${Math.round(detailTop)} < 표 ${Math.round(tableTop)}`);
+
+// 다시 누르면 닫힌다
+await page.locator('#reverse-body tbody tr.selected').first().click();
+await page.waitForTimeout(200);
+const revClosed = await page.locator('#reverse-detail .hold-row').count();
+check('다시 누르면 상세가 닫힌다', revClosed === 0, `${revClosed}종목`);
+
+// 검색어를 바꾸면 열려 있던 상세도 닫힌다 (지금 목록과 무관한 화면이 남지 않게)
+await page.locator('#reverse-body tbody tr[data-id]').first().click();
+await page.waitForTimeout(200);
+await page.locator('#rq').fill('삼성');
+await page.waitForTimeout(250);
+const revAfterSearch = await page.locator('#reverse-detail .hold-row').count();
+check('검색어를 바꾸면 상세가 닫힌다', revAfterSearch === 0, `${revAfterSearch}종목`);
+// ETF 하나가 한 줄이어야 한다. 예전에는 걸린 편입종목마다 줄을 만들어
+// KODEX 200 이 삼성전자·삼성전기·삼성물산으로 세 번 나왔고, 머리말의
+// "N개 ETF" 도 그만큼 부풀려져 있었다.
+await page.locator('#rq').fill('삼성');
+await page.waitForTimeout(300);
+const rowIds = await page.locator('#reverse-body tbody tr[data-id]')
+  .evaluateAll((els) => els.map((el) => el.getAttribute('data-id')));
+check('ETF 하나가 한 줄이다', new Set(rowIds).size === rowIds.length,
+      `${rowIds.length}행 / 고유 ${new Set(rowIds).size}개`);
+const combined = await page.locator('#reverse-body tbody tr[data-id] td:nth-child(4)')
+  .first().textContent();
+check('여러 종목이 걸리면 함께 적는다', (combined || '').includes('·'),
+      (combined || '').trim().slice(0, 40));
+
 // ── 랭킹
 await page.locator('.tabs button[data-tab="rank"]').click();
 await page.waitForTimeout(150);
