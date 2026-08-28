@@ -130,6 +130,18 @@ h4{font-size:17px; font-weight:600; margin:var(--space-content) 0 10px;}
 
 /* 수익률 표는 머리말이 길다. 좁은 화면에서는 접혀야 읽힌다. */
 .ret-table thead th{white-space:normal; line-height:1.3;}
+/* 수익률 기준 탭 */
+.callout{background:var(--orange); color:#fff; border-radius:4px;
+  padding:26px 30px; margin:0 0 28px;}
+.callout h3{color:#fff; font-size:21px; font-weight:700; margin:0 0 12px;}
+.callout p{margin:0 0 10px; color:rgba(255,255,255,.95); line-height:1.6;}
+.callout p:last-child{margin-bottom:0;}
+.callout b{color:#fff;}
+.sub-head{font-size:18px; font-weight:700; color:var(--ink); margin:32px 0 8px;}
+.sub-lead{color:var(--muted); line-height:1.6; margin:0 0 14px;}
+.sub-lead code{background:var(--surface-subtle); padding:2px 6px; border-radius:2px;
+  font-size:13px; color:var(--ink);}
+td.hl{background:var(--gray-hl);}
 /* 순위 칸은 두 줄이다 — 읽는 값(상위 %)이 위, 원래 등수가 아래.
    등수만 있으면 규모를 모르고, 백분위만 있으면 근거를 못 본다. */
 .ret-table .rank-pct{display:block; font-weight:600; color:var(--ink);}
@@ -348,6 +360,7 @@ footer .disc + .disc{margin-top:12px;}
     <button type="button" role="tab" data-tab="reverse" aria-selected="false" data-ko="종목 → ETF" data-en="Stock → ETF">종목 → ETF</button>
     <button type="button" role="tab" data-tab="rank" aria-selected="false" data-ko="랭킹" data-en="Rankings">랭킹</button>
     <button type="button" role="tab" data-tab="tagging" aria-selected="false" data-ko="분류 점검" data-en="Tag Audit">분류 점검</button>
+    <button type="button" role="tab" data-tab="basis" aria-selected="false" data-ko="수익률 기준" data-en="Return Basis">수익률 기준</button>
   </div>
 
   <!-- ══════════════════ 1. ETF 찾기 ══════════════════ -->
@@ -457,6 +470,16 @@ footer .disc + .disc{margin-top:12px;}
     <div id="tagging-body"></div>
   </section>
 
+  <!-- ══════════════════ 6. 수익률 기준 ══════════════════ -->
+  <section class="section" id="tab-basis" hidden>
+    <div class="section-rule"></div>
+    <div class="section-eyebrow" data-ko="수익률 기준" data-en="Return basis">수익률 기준</div>
+    <h2 class="section-title" data-ko="네이버 숫자와 왜 다른가" data-en="Why these differ from portal figures">네이버 숫자와 왜 다른가</h2>
+    <p class="section-lead" data-ko="이 화면의 수익률은 총수익률 하나로 통일돼 있습니다. 같은 종목인데 네이버·증권사 화면과 숫자가 다르게 보일 수 있어, 두 곳의 발표값이 아니라 원가격을 받아 되짚은 결과를 여기 남깁니다."
+       data-en="This screen quotes total return only. Portal figures can differ, so here is what we found by pulling both sides' underlying daily prices.">이 화면의 수익률은 총수익률 하나로 통일돼 있습니다.</p>
+    <div id="basis-body"></div>
+  </section>
+
 </main>
 
 <footer>
@@ -464,8 +487,8 @@ footer .disc + .disc{margin-top:12px;}
     <p class="disc" id="disc-source"></p>
     <p class="disc" data-ko="<strong>편입종목은 상위 10개까지입니다.</strong> 나머지 비중은 이 화면에 없습니다. 비중은 직전 영업일 기준 납입자산 구성(PDF)이며, 실시간 보유 내역이 아닙니다. 여러 ETF의 겹침 비율도 상위 10종목만으로 계산하므로 실제 포트폴리오 중복의 하한입니다."
        data-en="<strong>Only the top 10 holdings are shown.</strong> Weights reflect the prior business day's portfolio deposit file, not live holdings. Overlap figures are computed on top-10 holdings only and are a lower bound."></p>
-    <p class="disc" data-ko="<strong>수익률 계열 정책.</strong> 기본은 <u>총수익률(Total Return)</u>입니다 — 분배금을 재투자한 기준으로, 펀드 성과를 재는 업계 표준입니다. 국내·해외 모두 일별 수정종가로 <u>같은 계산기</u>를 써서 산출하므로 두 시장을 한 줄로 세울 수 있습니다. <u>시장가</u> 기준은 거래소 종가의 단순 등락률이며 분배금이 빠져 있어, 커버드콜·고배당 상품은 실제 성과보다 낮게 보입니다. 국내 종목에는 네이버가 산출한 <u>NAV(기준가)</u> 수익률을 상세에 함께 싣는데, 여기에도 분배금은 반영되지 않습니다(시장가와의 차이는 괴리율뿐). 이 구분은 scripts/check_etf_return_basis.mjs 로 검산합니다. 3년·5년은 연율입니다."
-       data-en="<strong>Return series policy.</strong> Default is total return (distributions reinvested), computed identically for every market from daily adjusted closes. Price returns exclude distributions. Korean funds also show NAV returns, which likewise exclude distributions. Verified by scripts/check_etf_return_basis.mjs. 3Y/5Y annualised."></p>
+    <p class="disc" data-ko="<strong>수익률 기준.</strong> 이 화면의 수익률은 <u>총수익률(Total Return)</u> 하나입니다 — 분배금을 재투자한 기준으로, 펀드 성과를 재는 업계 표준입니다. 국내·해외 모두 일별 종가와 배당 이력으로 <u>같은 계산기</u>를 써서 산출하므로 두 시장을 한 줄로 세울 수 있습니다. 분배금이 빠진 시장가 등락률과 국내 NAV(기준가) 계열도 데이터에는 남아 있으나 화면에는 싣지 않습니다 — 열마다 숫자가 조금씩 달라 어느 것을 봐야 하는지가 매번 문제가 되기 때문입니다. 네이버·증권사 화면과 숫자가 다른 이유는 <u>수익률 기준</u> 탭에 되짚은 근거와 함께 있습니다. 이 기준은 scripts/check_etf_return_basis.mjs 로 매일 검산합니다. 3년·5년은 연율입니다."
+       data-en="<strong>Return basis.</strong> One basis only: total return, distributions reinvested — the standard for fund performance — computed identically for every market from daily closes and dividend history. Price and NAV series remain in the data but are not shown. See the Return Basis tab for why these differ from portal figures. Verified daily by scripts/check_etf_return_basis.mjs. 3Y/5Y annualised."></p>
     <p class="disc" data-ko="<strong>유의사항.</strong> 본 화면은 정보 제공 목적의 참고 자료이며 투자 권유가 아닙니다. 투자 판단과 그 결과에 대한 책임은 이용자에게 있습니다. 실제 상품 내용은 각 상품의 투자설명서와 운용사 공시가 우선합니다. 사내에서 고객 대상으로 활용할 경우 금융투자협회 광고 심의 및 준법감시 부서 확인을 권장합니다."
        data-en="<strong>Disclaimer.</strong> For information only; not investment advice. Fund prospectuses and manager disclosures prevail."></p>
   </div>
@@ -1772,6 +1795,147 @@ function applyLang() {
 }
 
 /* ══════════════════════════════════════════════════════════
+   수익률 기준 — 왜 총수익률 하나인가
+
+   화면이 "총수익률" 을 기준으로 내걸었으니 근거도 같은 파일 안에 있어야
+   한다. 별도 문서로 빼 두면 배포할 파일이 둘이 되고, 언젠가 한쪽만
+   돌아다니게 된다. 숫자는 되짚기 산출물에서 그대로 실려 온다(DATA.basis).
+   ══════════════════════════════════════════════════════════ */
+function ratio(v) { return v == null ? '–' : Number(v).toFixed(4); }
+function pctCell(v) { return v == null ? '–' : Number(v).toFixed(2) + '%'; }
+
+function renderBasis() {
+  var node = el('basis-body');
+  if (!node) return;
+  var B = DATA.basis;
+  if (!B || !B.control || !B.payers) {
+    node.innerHTML = '<div class="empty">' + (lang === 'ko'
+      ? '되짚기 결과가 아직 없습니다. node scripts/verify_etf_price_series.mjs 를 러너에서 돌리면 채워집니다.'
+      : 'No verification output yet.') + '</div>';
+    return;
+  }
+
+  var ko = lang === 'ko';
+  var html = '';
+
+  // ── 결론 먼저. 표를 다 읽어야 답이 나오면 아무도 안 읽는다.
+  html += '<div class="callout">' +
+    '<h3>' + (ko ? '둘 다 맞습니다. 재는 대상이 달랐습니다.' : 'Both are right — they measure different things.') + '</h3>' +
+    '<p>' + (ko
+      ? '<b>네이버 일별시세는 소급 수정된 수정주가</b>입니다. 분배금이 과거 가격에 이미 녹아 있습니다. ' +
+        '이 화면의 계산에 쓰는 시장가격은 <b>무보정 거래소 종가</b>입니다.'
+      : '<b>Naver&#39;s daily prices are back-adjusted for distributions.</b> Ours are the raw exchange close.') + '</p>' +
+    '<p>' + (ko
+      ? '그래서 네이버 화면의 &ldquo;시장가 기준&rdquo; 과 견줄 상대는 <b>총수익률</b>입니다. ' +
+        '이 화면이 총수익률만 싣는 이유이기도 합니다.'
+      : 'So the figure to compare against Naver is <b>total return</b> — which is what this screen shows.') + '</p>' +
+    '</div>';
+
+  // ── 관측 1: 대조군
+  html += '<h3 class="sub-head">' + (ko
+    ? '관측 1 — 분배가 없으면 종가가 완전히 같습니다'
+    : 'Finding 1 — With no distributions, the closes match exactly') + '</h3>';
+  html += '<p class="sub-lead">' + (ko
+    ? '분배를 하지 않는 종목의 일봉을 날짜별로 맞춰 한 줄씩 대조했습니다. 두 곳은 같은 거래소 종가를 봅니다.'
+    : 'Every matched trading day agrees for funds that paid nothing.') + '</p>';
+  html += '<div class="table-wrap"><table><thead><tr>' +
+    '<th>' + (ko ? '종목' : 'Fund') + '</th>' +
+    '<th class="num">' + (ko ? '대조한 거래일' : 'Days') + '</th>' +
+    '<th class="num">' + (ko ? '차이 중앙값' : 'Median diff') + '</th>' +
+    '<th class="num">' + (ko ? '차이 최대' : 'Max diff') + '</th>' +
+    '<th class="num">' + (ko ? '1% 초과한 날' : 'Days over 1%') + '</th>' +
+    '</tr></thead><tbody>';
+  B.control.forEach(function (r) {
+    html += '<tr><td>' + esc(r.name) + ' <span class="dim">' + esc(r.code) + '</span></td>' +
+      '<td class="num">' + (r.days == null ? '–' : r.days.toLocaleString()) + '</td>' +
+      '<td class="num"><b>' + pctCell(r.medianDiff) + '</b></td>' +
+      '<td class="num"><b>' + pctCell(r.maxDiff) + '</b></td>' +
+      '<td class="num">' + (r.over1pct == null ? '–' : r.over1pct) + '</td></tr>';
+  });
+  html += '</tbody></table></div>';
+
+  // ── 관측 2: 소급 수정
+  html += '<h3 class="sub-head">' + (ko
+    ? '관측 2 — 분배가 있으면, 벌어지는 폭이 분배금과 맞습니다'
+    : 'Finding 2 — Where they diverge, the gap equals the distributions') + '</h3>';
+  html += '<p class="sub-lead">' + (ko
+    ? '소급 수정이라면 오늘 값은 그대로 두고 과거만 낮춰야 합니다. 그러면 두 계열의 비율이 오늘 1, ' +
+      '1년 전에는 <code>Π(1 − 분배금 ÷ 그날 주가)</code> 가 되어야 합니다. 오른쪽은 배당 이력으로 ' +
+      '따로 계산할 수 있어, 예측과 관측을 맞대 볼 수 있습니다.'
+    : 'Back-adjustment predicts the ratio between the two series; the prediction is computable from dividend history alone.') + '</p>';
+  html += '<div class="table-wrap"><table><thead><tr>' +
+    '<th>' + (ko ? '종목' : 'Fund') + '</th>' +
+    '<th class="num">' + (ko ? '분배율' : 'Yield') + '</th>' +
+    '<th class="num">' + (ko ? '구간 분배' : 'Payouts') + '</th>' +
+    '<th class="num">' + (ko ? '오늘 비율' : 'Ratio today') + '</th>' +
+    '<th class="num">' + (ko ? '1년 전 (관측)' : '1Y ago (observed)') + '</th>' +
+    '<th class="num">' + (ko ? '1년 전 (예측)' : '1Y ago (predicted)') + '</th>' +
+    '</tr></thead><tbody>';
+  B.payers.forEach(function (r) {
+    html += '<tr><td>' + esc(r.name) + ' <span class="dim">' + esc(r.code) + '</span></td>' +
+      '<td class="num">' + pctCell(r.yield) + '</td>' +
+      '<td class="num">' + r.divs + '</td>' +
+      '<td class="num">' + ratio(r.ratioEnd) + '</td>' +
+      '<td class="num"><b>' + ratio(r.ratioStart) + '</b></td>' +
+      '<td class="num"><b>' + ratio(r.ratioPredicted) + '</b></td></tr>';
+  });
+  html += '</tbody></table></div>';
+  html += '<p class="sub-lead">' + (ko
+    ? '<b>' + B.payerCount + '종목 중 ' + B.hit + '종목이 맞았습니다.</b> 끝 가격은 같고 시작 가격만 다릅니다 — ' +
+      '소급 수정이 정확히 이런 모양을 만듭니다.'
+    : '<b>' + B.hit + ' of ' + B.payerCount + ' match.</b> Same end price, different start price.') + '</p>';
+
+  // ── 시작·끝 종가
+  html += '<div class="table-wrap"><table><thead><tr>' +
+    '<th>' + (ko ? '종목' : 'Fund') + '</th>' +
+    '<th class="num">' + (ko ? '시작 · 네이버' : 'Start · Naver') + '</th>' +
+    '<th class="num">' + (ko ? '시작 · 야후' : 'Start · Yahoo') + '</th>' +
+    '<th class="num">' + (ko ? '끝 · 네이버' : 'End · Naver') + '</th>' +
+    '<th class="num">' + (ko ? '끝 · 야후' : 'End · Yahoo') + '</th>' +
+    '</tr></thead><tbody>';
+  B.payers.concat(B.control).forEach(function (r) {
+    html += '<tr><td>' + esc(r.name) + ' <span class="dim">' + esc(r.code) + '</span></td>' +
+      '<td class="num">' + fmtNum(r.naverFrom) + '</td>' +
+      '<td class="num">' + fmtNum(r.yahooFrom) + '</td>' +
+      '<td class="num">' + fmtNum(r.naverTo) + '</td>' +
+      '<td class="num">' + fmtNum(r.yahooTo) + '</td></tr>';
+  });
+  html += '</tbody></table></div>';
+
+  // ── 어느 숫자를 봐야 하나
+  html += '<h3 class="sub-head">' + (ko ? '그래서 어느 숫자를 봐야 하나' : 'Which number to read') + '</h3>';
+  html += '<div class="table-wrap"><table><thead><tr>' +
+    '<th>' + (ko ? '종목' : 'Fund') + '</th>' +
+    '<th class="num">' + (ko ? '네이버 표기' : 'Naver published') + '</th>' +
+    '<th class="num">' + (ko ? '네이버 원가격 재계산' : 'Naver recomputed') + '</th>' +
+    '<th class="num">' + (ko ? '무보정 시장가' : 'Unadjusted price') + '</th>' +
+    '<th class="num">' + (ko ? '이 화면 (총수익률)' : 'This screen (TR)') + '</th>' +
+    '</tr></thead><tbody>';
+  B.payers.concat(B.control).forEach(function (r) {
+    html += '<tr><td>' + esc(r.name) + ' <span class="dim">' + esc(r.code) + '</span></td>' +
+      '<td class="num">' + pctCell(r.stated) + '</td>' +
+      '<td class="num">' + pctCell(r.naverRaw) + '</td>' +
+      '<td class="num">' + pctCell(r.ourPrice) + '</td>' +
+      '<td class="num hl"><b>' + pctCell(r.ourTr) + '</b></td></tr>';
+  });
+  html += '</tbody></table></div>';
+
+  html += '<div class="notice">' + (ko
+    ? '<strong>이름이 오해를 부릅니다.</strong> 네이버가 &ldquo;시장가 기준&rdquo; 이라 적어 둔 값에는 ' +
+      '분배금이 들어가 있습니다. 무보정 시장가격이 아닙니다.'
+    : '<strong>The label misleads.</strong> What Naver calls &ldquo;market price&rdquo; already contains distributions.') +
+    '</div>';
+
+  html += '<p class="sub-lead dim">' + (ko
+    ? '되짚기 기준일 ' + esc(B.asOf || '–') + ' · 대조군 ' + B.control.length + '종목 · 분배 종목 ' +
+      B.payerCount + '종목. 원자료는 tools/discovery/etf_price_series.json 에 있고, ' +
+      'node scripts/verify_etf_price_series.mjs 로 다시 돌릴 수 있습니다.'
+    : 'Verified as of ' + esc(B.asOf || '–') + '. Raw output in tools/discovery/etf_price_series.json.') + '</p>';
+
+  node.innerHTML = html;
+}
+
+/* ══════════════════════════════════════════════════════════
    그리기 · 사건
    ══════════════════════════════════════════════════════════ */
 function renderAll() {
@@ -1783,11 +1947,12 @@ function renderAll() {
   renderReverse();
   renderRank();
   renderTagging();
+  renderBasis();
 }
 
 function showTab(name) {
   state.tab = name;
-  ['browse', 'compare', 'reverse', 'rank', 'tagging'].forEach(function (n) {
+  ['browse', 'compare', 'reverse', 'rank', 'tagging', 'basis'].forEach(function (n) {
     el('tab-' + n).hidden = n !== name;
   });
   var btns = document.querySelectorAll('.tabs button');
