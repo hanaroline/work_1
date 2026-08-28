@@ -65,7 +65,7 @@ NAVER_API = "https://m.stock.naver.com/api/research/%s?page=%d&pageSize=%d"
 # 나머지는 제목·증권사·목표주가만 담긴 채로 목록에 남는다(요약은 비어 있다).
 #
 # 한 건에 0.6초쯤 걸린다. 120건이면 수집 전체가 2분 안쪽이라 넉넉하다.
-DETAIL_LIMIT = int(os.environ.get("REPORTS_DETAIL_LIMIT", "120"))
+DETAIL_LIMIT = int(os.environ.get("REPORTS_DETAIL_LIMIT", "150"))
 
 # 본문을 여는 차례에 판마다 몫을 준다. 조회수만으로 줄을 세우면 종목분석이
 # 상한을 다 먹고 시황·투자·경제·채권 판은 한 건도 못 연다 — 실제로 그랬고,
@@ -93,7 +93,10 @@ BROKER = re.compile(
 # 본문에서 걷어낼 꼬리말. 리포트 끝에는 어디나 고지 문구가 붙는다.
 _TAIL_CUT = re.compile(
     r"(본\s*조사분석자료는|본\s*자료는\s*투자|당사는\s*본|Compliance\s*Notice|"
-    r"준법감시인|투자등급\s*및\s*적용|본 자료에 게재된 내용)")
+    r"준법감시인|투자등급\s*및\s*적용|본 자료에 게재된 내용|"
+    # 네이버가 본문 아래 붙이는 고지. 요약이 세 줄일 때는 여기까지 닿지
+    # 않아 몰랐는데, 여섯 줄로 늘리자 요약 뒤쪽을 통째로 차지했다.
+    r"보고서의\s*내용은\s*투자판단|KRP\s*보고서는|네이버\(주\)와\s*작성)")
 
 # 요약에서 아예 뺄 줄 — 애널리스트 연락처, 등급표, 표 부스러기, 그리고
 # **쪽 머리글**. 「신한투자증권 | 2026.08.14 | 조회 3128」이 요약 첫 줄로
@@ -573,7 +576,7 @@ def full_title(html, short):
     return min(whole or cands, key=len)
 
 
-def fetch_detail(rep, dump_dir=None):
+def fetch_detail(rep, dump_dir=None, alien=()):
     """리포트 한 건의 본문을 받아 요약·목표주가·투자의견을 채운다."""
     html = _get(rep["url"], encoding="cp949", referer=BASE + "company_list.naver")
     if rep["title"].rstrip().endswith(".."):
@@ -596,7 +599,15 @@ def fetch_detail(rep, dump_dir=None):
             rep["pdf"] = _abs(m.group(1))
     rep["extracted"] = how
     rep["body_chars"] = len(body)
-    rep["summary"] = summarize(body)
+    lines = summarize(body, rep["title"], alien=alien)
+    if lines:
+        # 첫 줄은 대개 판단(목표주가·투자의견)이다. 따로 두어 카드에서
+        # 굵게 세운다 — 종이로 훑을 때 한 줄만 보고도 넘어갈 수 있게.
+        rep["lead"] = lines[0]
+        rep["summary"] = " ".join(lines)
+    facts = key_facts(body)
+    if facts:
+        rep["facts"] = facts
     rep["excerpt"] = body[:1200]
     tp = target_price(body, rep["title"])
     if tp:
@@ -633,26 +644,134 @@ def _sentences(body):
     return out
 
 
-def summarize(body, take=3):
-    """본문에서 **원문 문장 세 줄**을 골라 원래 순서대로 잇는다.
+# 요약을 채울 갈래와 그 몫. 점수만 보고 위에서 여섯 줄을 끊으면 목표주가
+# 이야기만 여섯 줄이 된다 — 실제로 「NDR 후기: 눈높이 하향 반영 완료」가
+# 한 카드 안에 두 번 실린 판이 있었다. 갈래마다 몫을 주어 판단·실적·전망·
+# 위험이 고루 들어가게 한다.
+BUCKETS = [
+    ("판단", re.compile(r"목표\s*(주가|가)|투자의견|TP\b|상향|하향|매수|중립|"
+                        r"비중\s*확대|비중\s*축소|밸류에이션|목표\s*배수"), 2),
+    ("실적", re.compile(r"영업이익|매출액|순이익|실적|어닝|EPS|BPS|OPM|마진|"
+                        r"컨센서스|가이던스"), 2),
+    ("전망", re.compile(r"전망|예상|추정|모멘텀|수혜|성장|확대|개선|회복|"
+                        r"수주|출시|증설"), 2),
+    ("위험", re.compile(r"리스크|우려|부진|둔화|감소|하락|불확실|경쟁\s*심화|"
+                        r"제한적"), 1),
+]
+
+_WORD = re.compile(r"[가-힣A-Za-z0-9]{2,}")
+
+
+def _keyset(s):
+    return set(_WORD.findall(s))
+
+
+def _too_alike(a_keys, b_keys):
+    """두 문장이 사실상 같은 말인지. 겹치는 낱말 비율로 본다."""
+    if not a_keys or not b_keys:
+        return False
+    common = len(a_keys & b_keys)
+    return common / min(len(a_keys), len(b_keys)) >= 0.75
+
+
+def summarize(body, title="", take=6, alien=()):
+    """본문에서 **원문 문장 여섯 줄**을 골라 원래 순서대로 잇는다.
 
     새 문장을 짓지 않는다. 목표주가·투자의견·실적처럼 사람이 먼저 보는 말이
     든 문장에 점수를 얹고, 리포트 첫머리에 가까울수록 조금 더 준다.
+
+    세 줄이던 것을 여섯 줄로 늘렸다 — PDF 로만 보는 사람은 「세부 리포트」를
+    누를 수 없어, 카드만 읽고도 무슨 이야기인지 알아야 하기 때문이다.
+    다만 길이만 늘리면 같은 말이 되풀이되므로 갈래별 몫(BUCKETS)을 두고,
+    제목과 겹치는 문장과 서로 비슷한 문장은 버린다.
+
+    `alien` 은 **다른 리포트들의 제목** 낱말꾸러미다. 상세 쪽 본문 상자에는
+    「이런 리포트도」 목록이 함께 들어 있어, 본문이 짧은 리포트에서는 옆
+    리포트의 제목이 요약으로 올라온다 — 대신증권 건설 리포트 요약에 엉뚱한
+    SK텔레콤 제목이 실렸다. 남의 제목과 닮은 문장은 버린다.
     """
     sents = _sentences(body)
     if not sents:
         return ""
+    tkeys = _keyset(title or "")
     scored = []
     for i, s in enumerate(sents):
+        keys = _keyset(s)
+        # 제목을 그대로 옮긴 문장은 한 줄을 버리는 셈이다.
+        if tkeys and _too_alike(keys, tkeys):
+            continue
+        if any(_too_alike(keys, a) for a in alien):
+            continue
         sc = 1.0 / (1 + i * 0.12)                    # 앞자리 가산
         for pat, w in WEIGHT:
             if pat.search(s):
                 sc += w
         if re.search(r"\d", s):
             sc += 0.4
-        scored.append((sc, i, s))
-    top = sorted(scored, reverse=True)[:take]
-    return " ".join(s for _, _, s in sorted(top, key=lambda t: t[1]))
+        scored.append((sc, i, s, keys))
+    if not scored:
+        return ""
+    scored.sort(key=lambda t: (-t[0], t[1]))
+
+    picked, used, quota = [], [], {b[0]: b[2] for b in BUCKETS}
+
+    def try_take(s, i, keys, respect_quota):
+        if len(picked) >= take:
+            return False
+        if any(_too_alike(keys, k) for k in used):
+            return False
+        if respect_quota:
+            for name, pat, _ in BUCKETS:
+                if pat.search(s):
+                    if quota[name] <= 0:
+                        return False
+                    quota[name] -= 1
+                    break
+        picked.append((i, s))
+        used.append(keys)
+        return True
+
+    for sc, i, s, keys in scored:
+        try_take(s, i, keys, True)
+    # 몫을 지키다 여섯 줄을 못 채우면 남은 자리는 점수순으로 메운다.
+    if len(picked) < take:
+        got = {i for i, _ in picked}
+        for sc, i, s, keys in scored:
+            if i not in got:
+                try_take(s, i, keys, False)
+    return [s for _, s in sorted(picked)]
+
+
+# 원문에 **적혀 있는** 값만 옮긴다. 셈은 하지 않는다 — 나눗셈 한 번이라도
+# 하면 그 숫자는 리포트가 한 말이 아니라 이 스크립트가 한 말이 된다.
+_FACTS = [
+    ("상승여력", re.compile(r"(?:상승\s*여력|업사이드|괴리율)[^\d%\n]{0,10}"
+                            r"([+-]?\d+(?:\.\d+)?\s*%)")),
+    ("배당수익률", re.compile(r"배당\s*수익률[^\d%\n]{0,10}([\d.]+\s*%)")),
+    ("목표배수", re.compile(r"(?:Target|목표|적용)\s*(PER|PBR|EV/EBITDA|P/E|P/B)"
+                            r"[^\d\n]{0,10}([\d.]+\s*배)", re.I)),
+    ("밸류에이션", re.compile(r"(?<![A-Za-z])(PER|PBR|EV/EBITDA)"
+                             r"[^\d\n]{0,10}([\d.]+\s*배)")),
+]
+
+
+def key_facts(body, limit=3):
+    """본문에 적힌 숫자 몇을 그대로 집어 온다 — 카드에 한 줄로 세울 것."""
+    out, seen = [], set()
+    for name, pat in _FACTS:
+        m = pat.search(body)
+        if not m:
+            continue
+        g = m.groups()
+        label = name if len(g) == 1 else g[0].upper()
+        value = re.sub(r"\s+", "", g[-1])
+        if label in seen:
+            continue
+        seen.add(label)
+        out.append({"k": label, "v": value})
+        if len(out) >= limit:
+            break
+    return out
 
 
 # 「목표주가 280만원」을 280 으로 읽으면 안 된다 — 만·억을 같이 집는다.
@@ -854,6 +973,117 @@ def pick_highlights(reports, day, n=12):
     return out
 
 
+# ---------------------------------------------------------------- 주간
+
+WEEK_SPAN = 7          # 오늘을 넣어 이레
+WEEKLY_TAKE = 18
+WEEKLY_CAT_CAP = 5
+
+# 여러 판을 합칠 때, 뒤늦게 채워진 것은 살리고 조회수는 큰 쪽을 남긴다.
+_CARRY = ("summary", "lead", "facts", "target_price", "opinion", "target_move",
+          "analyst", "pdf", "house_pdf", "sector", "stock")
+
+
+def _absorb(old, new):
+    if (new.get("views") or 0) > (old.get("views") or 0):
+        old["views"] = new["views"]
+    for k in _CARRY:
+        if not old.get(k) and new.get(k):
+            old[k] = new[k]
+    # 제목은 되찾은 쪽(잘리지 않은 쪽)이 낫다.
+    if old["title"].rstrip().endswith("..") and not new["title"].rstrip().endswith(".."):
+        old["title"] = new["title"]
+
+
+def load_history(out_dir, since):
+    """지난 판들에서 `since` 이후 리포트를 모아 온다.
+
+    한 판에 담기는 것은 네이버 목록의 앞쪽 몇 쪽뿐이라, 엿새 전 리포트는
+    이미 목록에서 밀려나 오늘 판에 없다. 날짜별로 남겨 둔 지난 판을 합쳐야
+    한 주가 온전해진다.
+    """
+    merged = {}
+    for f in sorted(os.listdir(out_dir)):
+        if not re.fullmatch(r"\d{4}-\d{2}-\d{2}\.json", f):
+            continue
+        try:
+            with open(os.path.join(out_dir, f), encoding="utf-8") as fh:
+                got = json.load(fh)
+        except (OSError, ValueError):
+            continue
+        for r in got.get("reports", []):
+            if not r.get("nid") or (r.get("date") or "") < since:
+                continue
+            old = merged.get(r["nid"])
+            if old is None:
+                merged[r["nid"]] = dict(r)
+            else:
+                _absorb(old, r)
+    return merged
+
+
+def weekly(reports, day, out_dir):
+    """한 주 동안 가장 많이 읽힌 리포트와 그 주의 셈."""
+    since = (datetime.strptime(day, "%Y-%m-%d")
+             - timedelta(days=WEEK_SPAN - 1)).strftime("%Y-%m-%d")
+    pool = load_history(out_dir, since)
+    for r in reports:                       # 오늘 판이 가장 새것이다
+        if not r.get("nid") or (r.get("date") or "") < since:
+            continue
+        old = pool.get(r["nid"])
+        if old is None:
+            pool[r["nid"]] = dict(r)
+        else:
+            _absorb(old, r)
+
+    rows = [r for r in pool.values() if since <= (r.get("date") or "") <= day]
+    rows.sort(key=lambda r: (-(r.get("views") or 0), r.get("date") or ""))
+
+    top, seen_cat = [], {}
+    for r in rows:
+        c = r.get("category") or "-"
+        if seen_cat.get(c, 0) >= WEEKLY_CAT_CAP:
+            continue
+        seen_cat[c] = seen_cat.get(c, 0) + 1
+        top.append(r["nid"])
+        if len(top) >= WEEKLY_TAKE:
+            break
+
+    brokers, stocks, moves = {}, {}, []
+    for r in rows:
+        b = r.get("broker")
+        if b:
+            brokers[b] = brokers.get(b, 0) + 1
+        st = r.get("stock") or {}
+        if st.get("code"):
+            e = stocks.setdefault(st["code"], {"code": st["code"], "name": st.get("name"),
+                                               "count": 0, "brokers": []})
+            e["count"] += 1
+            if r.get("broker") and r["broker"] not in e["brokers"]:
+                e["brokers"].append(r["broker"])
+        if r.get("target_move") in ("상향", "하향"):
+            moves.append({"move": r["target_move"], "stock": st.get("name"),
+                          "target_price": r.get("target_price"), "broker": r.get("broker"),
+                          "title": r["title"], "url": r["url"], "date": r.get("date")})
+
+    moves.sort(key=lambda m: (m["move"] != "상향", m.get("date") or ""), reverse=False)
+    days = sorted({r["date"] for r in rows if r.get("date")})
+    return {
+        "since": since, "until": day,
+        "days": days,
+        "count": len(rows),
+        "count_summarized": sum(1 for r in rows if r.get("summary")),
+        "top": top,
+        "reports": [pool[n] for n in top],
+        "by_broker": [{"broker": b, "count": c}
+                      for b, c in sorted(brokers.items(), key=lambda t: -t[1])[:8]],
+        "top_stocks": sorted(stocks.values(), key=lambda e: -e["count"])[:8],
+        "moves_up": sum(1 for m in moves if m["move"] == "상향"),
+        "moves_down": sum(1 for m in moves if m["move"] == "하향"),
+        "moves": moves[:20],
+    }
+
+
 # ---------------------------------------------------------------- 저장
 
 def _dump(dump_dir, name, text):
@@ -924,12 +1154,22 @@ def main():
     day = latest_day(reports) or today
     out["report_date"] = day
     order = detail_order(reports, day)
+    # 주간 인기 리포트도 본문이 있어야 한 장으로 읽힌다. 갈래마다 몫을 주어
+    # 도는 탓에 경제분석·시황정보의 주간 상위가 번번이 상한 밖으로 밀렸다
+    # — 열여덟 장 가운데 일곱 장이 요약 없이 남았다. 먼저 연다.
+    hot = set(weekly(reports, day, OUT_DIR)["top"])
+    order = ([r for r in order if r["nid"] in hot]
+             + [r for r in order if r["nid"] not in hot])
+    # 상세 쪽 본문 상자에는 「이런 리포트도」 목록이 딸려 온다. 다른 리포트의
+    # 제목을 미리 챙겨 두었다가, 요약으로 올라오려 하면 막는다.
+    title_keys = {r["nid"]: _keyset(r["title"]) for r in reports}
     opened, failed = 0, 0
     for r in order:
         if opened >= DETAIL_LIMIT:
             break
         try:
-            fetch_detail(r, dump_dir=RAW_DIR)
+            alien = [k for n, k in title_keys.items() if n != r["nid"]]
+            fetch_detail(r, dump_dir=RAW_DIR, alien=alien)
             opened += 1
         except Exception as e:                                   # noqa: BLE001
             r["detail_error"] = "%s: %s" % (type(e).__name__, e)
@@ -955,6 +1195,8 @@ def main():
     out["reports"] = reports
     out["summary"] = digest(reports, day)
     out["highlights"] = pick_highlights(reports, day)
+    # 주간은 오늘 판만으로는 안 된다 — 지난 판을 합쳐야 이레가 채워진다.
+    out["weekly"] = weekly(reports, day, OUT_DIR)
 
     day_path = os.path.join(OUT_DIR, today + ".json")
     for path in (day_path, os.path.join(OUT_DIR, "latest.json")):
