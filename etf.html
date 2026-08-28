@@ -201,18 +201,41 @@ td.num,th.num{text-align:right; font-family:var(--font-num); font-variant-numeri
 .chk input{accent-color:var(--orange);}
 
 /* ---------- 비중 막대 ---------- */
-.wbar{
-  position:relative; height:9px; background:var(--surface-soft); border-radius:2px;
-  min-width:70px; overflow:hidden;
+/* 비중 막대는 따로 칸을 차지하지 않고 줄 아래에 깔린다.
+   예전에는 막대가 82px 짜리 고정 컬럼이었다. 비교 탭처럼 카드가 좁은 자리
+   (4개를 나란히 놓으면 카드 안쪽이 250px 남짓)에서는 고정 컬럼 셋(22+82+96)과
+   간격이 230px 을 먹어 이름에 18px 밖에 안 남았다. 그래서 종목명이 "삼", "S·"
+   처럼 한 글자만 보였다. 막대를 밑줄로 내리면 그 82px 이 통째로 이름 몫이 된다. */
+.hold-row{
+  position:relative; display:grid; grid-template-columns:20px minmax(0,1fr) auto;
+  gap:8px; align-items:baseline;
+  padding:8px 0 10px; border-bottom:1px solid var(--hairline-soft); font-size:16px;
 }
-.wbar > i{position:absolute; inset:0 auto 0 0; background:var(--orange); border-radius:2px;}
-.wbar.blue > i{background:var(--blue-soft);}
-.hold-row{display:grid; grid-template-columns:22px 1fr 82px 96px; gap:10px; align-items:center;
-  padding:8px 0; border-bottom:1px solid var(--hairline-soft); font-size:16px;}
 .hold-row:last-child{border-bottom:0;}
 .hold-row .seq{color:var(--muted-soft); font-family:var(--font-num); font-size:14px;}
 .hold-row .nm{min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;}
-.hold-row .wt{text-align:right; font-family:var(--font-num); font-weight:600;}
+.hold-row .wt{text-align:right; font-family:var(--font-num); font-weight:600; white-space:nowrap;}
+.hold-row .hbar{
+  position:absolute; left:0; bottom:0; height:3px;
+  background:var(--orange); border-radius:2px; max-width:100%;
+}
+.hold-row.is-cash{opacity:.62;}
+.hold-row.is-cash .hbar{background:var(--neutral);}
+
+/* 종목 × ETF 매트릭스 — ETF 를 여럿 담았을 때 카드보다 이쪽이 읽힌다.
+   행이 40개까지 가므로 아래로 훑는 동안 머리행(어느 열이 어느 ETF인지)과
+   종목명 열이 붙어 있어야 한다. 둘 다 sticky 로 고정한다. */
+.matrix{max-height:70vh; overflow:auto;}
+.matrix table{min-width:520px;}
+.matrix thead th{position:sticky; top:0; z-index:2;}
+.matrix th.stock{
+  text-align:left; background:var(--surface-subtle); font-weight:600;
+  position:sticky; left:0; z-index:1; min-width:180px;
+}
+.matrix thead th.stock{z-index:3;}          /* 좌상단 모서리는 둘 다 넘어야 한다 */
+.matrix td.held{font-weight:700; color:var(--ink); background:#FFF6EE;}
+.matrix td.miss{color:var(--gray-hl);}
+.matrix th.etf{font-family:var(--font-num); font-size:14px;}
 
 /* ---------- 상세 ---------- */
 .detail-head{display:flex; flex-wrap:wrap; align-items:baseline; gap:10px 16px; margin-bottom:6px;}
@@ -352,8 +375,8 @@ footer .disc + .disc{margin-top:12px;}
     <div class="section-rule"></div>
     <div class="section-eyebrow" data-ko="비교" data-en="Compare">비교</div>
     <h2 class="section-title" data-ko="같이 담으면 얼마나 겹치나" data-en="How much do they overlap?">같이 담으면 얼마나 겹치나</h2>
-    <p class="section-lead" data-ko="ETF 찾기에서 ⊕ 를 눌러 최대 4개까지 담습니다. 상위 10종목만 비교하므로, 겹침 비율은 전체 포트폴리오가 아니라 상위 10종목 기준의 하한입니다."
-       data-en="Add up to four ETFs. Overlap is computed on top-10 holdings only, so it is a lower bound on true portfolio overlap.">ETF 찾기에서 ⊕ 를 눌러 최대 4개까지 담습니다.</p>
+    <p class="section-lead" data-ko="ETF 찾기에서 ⊕ 를 눌러 최대 8개까지 담습니다. 상위 10종목만 비교하므로, 겹침 비율은 전체 포트폴리오가 아니라 상위 10종목 기준의 하한입니다."
+       data-en="Add up to eight ETFs. Overlap is computed on top-10 holdings only, so it is a lower bound on true portfolio overlap.">ETF 찾기에서 ⊕ 를 눌러 최대 8개까지 담습니다.</p>
     <div id="compare-body"></div>
   </section>
 
@@ -530,6 +553,10 @@ function topSector(etf) {
 /* ══════════════════════════════════════════════════════════
    상태
    ══════════════════════════════════════════════════════════ */
+// 비교에 담을 수 있는 개수. 카드를 나란히 놓는 화면이라 무한정 늘릴 수는 없다.
+// 8개면 1440px 에서 4개씩 두 줄로 떨어지고, 아래 매트릭스도 가로 스크롤 없이 읽힌다.
+var MAX_COMPARE = 8;
+
 var state = {
   q: '', market: '', region: '', asset: '', index: '', sector: '',
   theme: '', manager: '', aum: '',
@@ -846,24 +873,28 @@ function holdingsBlock(etf, maxWeight) {
   var seq = 0;
   etf.holdings.forEach(function (h) {
     var pctOfMax = top > 0 ? Math.max(2, Math.min(100, (h.weight || 0) / top * 100)) : 0;
+    var wt = h.weight == null ? '\u2013' : h.weight.toFixed(2) + '%';
+    // 좁은 자리에서는 이름이 잘린다. 잘려도 마우스를 올리면 전체가 보이도록
+    // title 을 붙인다.
+    var full = h.name + (h.code ? ' (' + h.code + ')' : '');
     if (h.cash) {
-      html += '<div class="hold-row" style="opacity:.6">' +
-        '<span class="seq">·</span>' +
+      html += '<div class="hold-row is-cash" title="' + esc(full) + '">' +
+        '<span class="seq">\u00b7</span>' +
         '<span class="nm">' + esc(h.name) +
           ' <span class="badge" style="font-size:11px">' +
           (lang === 'ko' ? '현금성' : 'cash') + '</span></span>' +
-        '<span class="wbar"><i style="width:' + pctOfMax.toFixed(1) + '%;background:var(--neutral)"></i></span>' +
-        '<span class="wt">' + (h.weight == null ? '–' : h.weight.toFixed(2) + '%') + '</span>' +
+        '<span class="wt">' + wt + '</span>' +
+        '<i class="hbar" style="width:' + pctOfMax.toFixed(1) + '%"></i>' +
         '</div>';
       return;
     }
     seq += 1;
-    html += '<div class="hold-row">' +
+    html += '<div class="hold-row" title="' + esc(full) + '">' +
       '<span class="seq">' + seq + '</span>' +
       '<span class="nm">' + esc(h.name) +
         (h.code ? ' <span class="dim" style="font-size:13px">' + esc(h.code) + '</span>' : '') + '</span>' +
-      '<span class="wbar"><i style="width:' + pctOfMax.toFixed(1) + '%"></i></span>' +
-      '<span class="wt">' + (h.weight == null ? '–' : h.weight.toFixed(2) + '%') + '</span>' +
+      '<span class="wt">' + wt + '</span>' +
+      '<i class="hbar" style="width:' + pctOfMax.toFixed(1) + '%"></i>' +
       '</div>';
   });
   return html;
@@ -1009,13 +1040,75 @@ function overlap(a, b) {
   return { weight: +sum.toFixed(2), count: names.length, names: names };
 }
 
+/**
+ * 종목 × ETF 매트릭스.
+ *
+ * ETF 를 여럿 담으면 카드를 나란히 놓는 것만으로는 읽기 어렵다. "삼성전자를
+ * 이 다섯 개가 각각 얼마나 담고 있나" 를 보려면 카드 다섯 개를 눈으로 훑어야
+ * 한다. 행을 종목으로 두면 그게 한 줄로 읽힌다.
+ *
+ * 정렬은 담은 ETF 수 -> 최대 비중 순이다. 여러 ETF 에 겹쳐 있는 종목이
+ * 위로 올라와야 "무엇이 겹치는가" 가 먼저 보인다.
+ */
+function holdingMatrix(picks) {
+  var rows = {};
+  picks.forEach(function (e, ci) {
+    (e.holdings || []).forEach(function (h) {
+      if (h.cash) return;                       // 현금성은 종목이 아니다
+      var key = (h.code || h.name || '').toLowerCase();
+      if (!key) return;
+      if (!rows[key]) rows[key] = { name: h.name, code: h.code, w: [], n: 0, max: 0 };
+      rows[key].w[ci] = h.weight;
+      rows[key].n += 1;
+      if ((h.weight || 0) > rows[key].max) rows[key].max = h.weight || 0;
+    });
+  });
+  var list = Object.keys(rows).map(function (k) { return rows[k]; })
+    .sort(function (a, b) { return b.n - a.n || b.max - a.max; });
+  if (!list.length) return '';
+
+  var shared = list.filter(function (r) { return r.n > 1; }).length;
+  var html = '<h3>' + (lang === 'ko' ? '종목별로 보기' : 'By holding') + '</h3>';
+  html += '<p class="dim" style="font-size:15px;margin-bottom:10px">' + (lang === 'ko'
+    ? '행이 종목, 열이 ETF 입니다. 여러 ETF에 겹쳐 담긴 종목이 위로 옵니다 — ' +
+      list.length + '개 종목 중 ' + shared + '개가 둘 이상에 겹쳐 있습니다.'
+    : 'Rows are holdings, columns are ETFs. ' + shared + ' of ' + list.length +
+      ' names appear in more than one.') + '</p>';
+  html += '<div class="table-wrap matrix"><table><thead><tr>' +
+    '<th class="stock">' + (lang === 'ko' ? '종목' : 'Holding') + '</th>' +
+    '<th class="num">' + (lang === 'ko' ? '겹침' : 'In') + '</th>';
+  picks.forEach(function (e) {
+    html += '<th class="num etf" title="' + esc(etfName(e)) + '">' + esc(e.code) + '</th>';
+  });
+  html += '</tr></thead><tbody>';
+  list.slice(0, 60).forEach(function (r) {
+    html += '<tr><th class="stock">' + esc(r.name) +
+      (r.code ? ' <span class="dim" style="font-size:13px;font-weight:400">' +
+                esc(r.code) + '</span>' : '') + '</th>' +
+      '<td class="num' + (r.n > 1 ? '' : ' dim') + '">' + r.n + '</td>';
+    picks.forEach(function (e, ci) {
+      var w = r.w[ci];
+      html += w == null
+        ? '<td class="num miss">\u00b7</td>'
+        : '<td class="num held">' + w.toFixed(2) + '</td>';
+    });
+    html += '</tr>';
+  });
+  html += '</tbody></table></div>';
+  if (list.length > 60) {
+    html += '<div class="finder-bar"><span class="dim">' +
+      (lang === 'ko' ? '상위 60종목만 표시합니다.' : 'Showing first 60.') + '</span></div>';
+  }
+  return html;
+}
+
 function renderCompare() {
   var node = el('compare-body');
   var picks = state.basket.map(byId).filter(Boolean);
   if (picks.length < 1) {
     node.innerHTML = '<div class="empty">' + (lang === 'ko'
-      ? 'ETF 찾기 탭에서 ⊕ 를 눌러 담으면 여기에서 비교됩니다. 최대 4개.'
-      : 'Add ETFs with ⊕ in the Browse tab. Up to four.') + '</div>';
+      ? 'ETF 찾기 탭에서 ⊕ 를 눌러 담으면 여기에서 비교됩니다. 최대 8개.'
+      : 'Add ETFs with ⊕ in the Browse tab. Up to eight.') + '</div>';
     return;
   }
 
@@ -1034,6 +1127,9 @@ function renderCompare() {
       holdingsBlock(e) + '</div>';
   });
   html += '</div>';
+
+  // 종목별로 보기 — 담은 개수가 늘수록 카드보다 이쪽이 읽힌다
+  if (picks.length >= 2) html += holdingMatrix(picks);
 
   // 중복도 표
   if (picks.length >= 2) {
@@ -1478,8 +1574,9 @@ function bind() {
       var id = pick.getAttribute('data-pick');
       var at = state.basket.indexOf(id);
       if (at >= 0) state.basket.splice(at, 1);
-      else if (state.basket.length >= 4) {
-        alert(lang === 'ko' ? '비교는 최대 4개까지입니다.' : 'Up to four ETFs.');
+      else if (state.basket.length >= MAX_COMPARE) {
+        alert(lang === 'ko' ? '비교는 최대 ' + MAX_COMPARE + '개까지입니다.'
+                            : 'Up to ' + MAX_COMPARE + ' ETFs.');
         return;
       } else state.basket.push(id);
       renderList();

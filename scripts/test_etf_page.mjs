@@ -108,15 +108,48 @@ await page.waitForTimeout(100);
 const sortAttr = await page.locator('#list-head th[data-sort="ter"]').getAttribute('aria-sort');
 check('열 머리를 누르면 정렬된다', Boolean(sortAttr), sortAttr);
 
-// ── 비교 담기 -> 비교 탭
-await page.locator('#list-body button[data-pick]').nth(0).click();
-await page.locator('#list-body button[data-pick]').nth(1).click();
+// ── 비교 담기 -> 비교 탭 (8개까지 담긴다)
+for (let i = 0; i < 8; i += 1) {
+  await page.locator('#list-body button[data-pick]').nth(i).click();
+}
 await page.locator('.tabs button[data-tab="compare"]').click();
-await page.waitForTimeout(150);
+await page.waitForTimeout(250);
 const cmpCards = await page.locator('#compare-body .cmp-grid .card').count();
-check('비교 탭에 담은 ETF가 나온다', cmpCards === 2, `${cmpCards}개`);
+check('비교에 8개까지 담긴다', cmpCards === 8, `${cmpCards}개`);
 const overlapCells = await page.locator('#compare-body .overlap-cell').count();
 check('중복도 표가 계산된다', overlapCells > 0, `${overlapCells}칸`);
+
+// ── 종목 × ETF 매트릭스
+const matrixCols = await page.locator('#compare-body .matrix thead th.etf').count();
+check('매트릭스 열이 담은 ETF 수와 같다', matrixCols === 8, `${matrixCols}열`);
+const matrixRows = await page.locator('#compare-body .matrix tbody tr').count();
+check('매트릭스에 종목 행이 있다', matrixRows > 0, `${matrixRows}종목`);
+const heldCells = await page.locator('#compare-body .matrix td.held').count();
+check('매트릭스에 비중이 채워진다', heldCells > 0, `${heldCells}칸`);
+
+// 행이 40개까지 가므로 아래로 훑는 동안 머리행이 붙어 있어야 한다.
+const stickyHead = await page.locator('#compare-body .matrix thead th.etf').first()
+  .evaluate((el) => getComputedStyle(el).position);
+check('매트릭스 머리행이 고정된다', stickyHead === 'sticky', stickyHead);
+const stickyCol = await page.locator('#compare-body .matrix tbody th.stock').first()
+  .evaluate((el) => getComputedStyle(el).position);
+check('매트릭스 종목명 열이 고정된다', stickyCol === 'sticky', stickyCol);
+
+// ── 편입종목 이름이 좁은 카드에서도 읽히는가.
+//    막대가 고정폭 컬럼이던 때는 이름 칸이 18px 로 눌려 "삼" 한 글자만 보였다.
+const nameWidths = await page.locator('#compare-body .cmp-grid .card .hold-row .nm')
+  .evaluateAll((els) => els.slice(0, 12).map((el) => el.getBoundingClientRect().width));
+const minName = Math.min(...nameWidths);
+check('비교 카드에서 종목명 칸이 충분히 넓다', minName >= 90,
+      `가장 좁은 칸 ${Math.round(minName)}px`);
+const sampleName = await page.locator('#compare-body .cmp-grid .card .hold-row .nm')
+  .first().textContent();
+check('종목명이 한 글자로 잘리지 않는다', (sampleName || '').trim().length >= 2,
+      (sampleName || '').trim().slice(0, 24));
+
+// 담아 둔 것을 비우고 나머지 시험으로 넘어간다
+await page.locator('#compare-body [data-clear-basket]').click();
+await page.waitForTimeout(150);
 
 // ── 역조회
 await page.locator('.tabs button[data-tab="reverse"]').click();
