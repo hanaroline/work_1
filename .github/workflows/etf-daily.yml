@@ -23,6 +23,8 @@ on:
       - 'scripts/collect_etf_*.mjs'
       - 'scripts/etf_lib.mjs'
       - 'scripts/etf_universe.mjs'
+      - 'scripts/build_etf_data.mjs'
+      - 'scripts/audit_etf_data.mjs'
       - '.github/workflows/etf-daily.yml'
 
 permissions:
@@ -70,6 +72,22 @@ jobs:
       - name: 수익률 계열 검산
         run: node scripts/check_etf_return_basis.mjs
 
+      # 화면에 실리는 모든 숫자를 전수 감사한다. 계열 검산(위)이 "라벨이
+      # 맞나" 를 보는 것이라면, 이쪽은 "값이 서로 앞뒤가 맞나" 를 본다.
+      #
+      # 이걸 만든 이유: HANARO Fn전기&수소차의 6개월 총수익률이 +1837% 로
+      # 화면까지 나갔다. 야후가 18,475원 ETF 에 주당 287,320원 분배금을
+      # 기록해 둔 것이 원인이었는데, 사람이 볼 때까지 아무 시험도 걸리지
+      # 않았다. 값 하나가 이러면 나머지도 못 믿는다.
+      #
+      # 감사가 오류를 찾으면 잡을 실패시킨다. 오류가 있는 채로 커밋하면
+      # 다음 사람이 또 눈으로 찾아야 한다.
+      - name: 자료 전수 감사
+        run: node scripts/audit_etf_data.mjs
+
+      - name: 수익률 계산기 방어선 시험
+        run: node scripts/test_etf_returns.mjs
+
       - name: 단일 파일 빌드
         run: node scripts/build_etf_page.mjs
 
@@ -89,6 +107,8 @@ jobs:
         with:
           name: etf-collect-debug
           path: |
+            tools/discovery/etf_audit.md
+            tools/discovery/etf_audit.json
             tools/discovery/etf_page.png
             tools/discovery/etf_offline.png
             data/etf-kr.js
@@ -100,6 +120,7 @@ jobs:
           git config user.name  "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add data/etf-kr.js data/etf-global.js data/etf.js etf-holdings-search.html 2>/dev/null || true
+          git add tools/discovery/etf_audit.md tools/discovery/etf_audit.json 2>/dev/null || true
           if git diff --cached --quiet; then
             echo "변경 없음"
           else

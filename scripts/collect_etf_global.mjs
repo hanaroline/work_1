@@ -140,7 +140,10 @@ function shape(entry, summary, returns) {
     aum: raw(detail.totalAssets) ?? raw(stats.totalAssets),
     aumKrw: null,       // 아래 main 에서 환율이 있을 때만 채운다
     nav: raw(detail.navPrice),
-    ter: raw(profile.feesExpensesInvestment?.annualReportExpenseRatio) != null
+    // 야후는 일본·홍콩 상장 ETF 의 보수를 0 으로 준다(24종목에서 확인).
+    // 보수가 정말 0 인 ETF 는 없으므로 0 은 "모른다"로 읽는다 —
+    // 화면에 "총보수 0.000%" 라고 찍는 건 사실이 아니다.
+    ter: raw(profile.feesExpensesInvestment?.annualReportExpenseRatio)
       ? +(raw(profile.feesExpensesInvestment.annualReportExpenseRatio) * 100).toFixed(3) : null,
     dividendYield: raw(detail.yield) != null ? +(raw(detail.yield) * 100).toFixed(2) : null,
 
