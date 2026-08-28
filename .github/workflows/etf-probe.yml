@@ -15,6 +15,7 @@ on:
       - 'claude/etf-**'
     paths:
       - 'scripts/probe_etf_sources.mjs'
+      - 'scripts/probe_etf_sources2.mjs'
       - '.github/workflows/etf-probe.yml'
 
 permissions:
@@ -37,16 +38,23 @@ jobs:
           node-version: '22'
 
       # 탐색 실패는 잡을 실패시키지 않는다. 못 붙은 칸도 결과의 일부다.
-      - name: 탐색 실행
+      - name: 탐색 실행 (1차)
         continue-on-error: true
         run: node scripts/probe_etf_sources.mjs
+
+      - name: 탐색 실행 (2차 — 1차에서 남은 구멍)
+        continue-on-error: true
+        if: hashFiles('scripts/probe_etf_sources2.mjs') != ''
+        run: node scripts/probe_etf_sources2.mjs
 
       - name: 결과 업로드
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: etf-probe
-          path: tools/discovery/etf_probe.*
+          path: |
+            tools/discovery/etf_probe*
+            tools/discovery/naver_etf_analysis.json
           retention-days: 7
 
       - name: 결과 커밋
@@ -55,7 +63,8 @@ jobs:
           git config user.name  "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           if [ -f tools/discovery/etf_probe.json ]; then
-            git add tools/discovery/etf_probe.json tools/discovery/etf_probe.md
+            git add tools/discovery/etf_probe* || true
+            git add tools/discovery/naver_etf_analysis.json 2>/dev/null || true
             git commit -m "chore(etf): 원천 탐색 결과 갱신" || echo "변경 없음"
             git push || echo "푸시 실패 (무시)"
           fi
