@@ -402,7 +402,9 @@ if (payers.length >= 3 && payersLikeTr > payersLikePrice) {
       '네이버가 "시장가 기준" 이라 적어 놓은 값도 이 계열에서 나온 것이다.');
 }
 say('');
-say(`- 두 곳의 **종가 계열**이 사실상 같은 종목: ${seriesAgree}/${usable.length} (일별 차이 중앙값 0.1% 이하)`);
+say(`- 두 곳의 **종가 계열**이 사실상 같은 종목: ${seriesAgree}/${usable.length} ` +
+    '(일별 차이 중앙값 0.1% 이하 — 분배 종목이 여기서 빠지는 것은 정상이다. ' +
+    '아래 대조군을 봐야 한다)');
 say(`- 원가격으로 다시 계산한 1년 수익률이 서로 맞는 종목: ${rawAgree}/${usable.length} (±1%p)`);
 say(`- 네이버 **표기값**이 네이버 **원가격** 계산과 맞는 종목: ${statedIsRaw}/${usable.length} (±2%p)`);
 say(`- 네이버 표기값이 **분배금 재투자** 계산과 맞는 종목: ${statedIsTr}/${usable.length} (±3%p)`);
@@ -411,6 +413,7 @@ say('');
 
 // 소급 수정 관측 — 이것이 맞으면 위 판정은 추정이 아니라 관측이 된다.
 const adjRows = results.filter((r) => r.adj && r.adj.divsInWindow > 0);
+let adjHit = 0;
 if (adjRows.length) {
   say('### 소급 수정 관측 (네이버/야후 종가 비율)');
   say('');
@@ -420,12 +423,12 @@ if (adjRows.length) {
     say(`| ${r.code} ${r.name} | ${r.adj.ratioEnd} | ${r.adj.ratioStart} | ` +
         `${r.adj.predictedStartRatio} | ${r.adj.divsInWindow}건 |`);
   }
-  const hit = adjRows.filter((r) =>
+  adjHit = adjRows.filter((r) =>
     Math.abs(r.adj.ratioEnd - 1) < 0.02 &&
     Math.abs(r.adj.ratioStart - r.adj.predictedStartRatio) < 0.03).length;
   say('');
-  say(`- 오늘 비율이 1 이고 1년 전 비율이 분배 예상치와 맞는 종목: ${hit}/${adjRows.length}`);
-  if (hit >= Math.max(1, adjRows.length * 0.6)) {
+  say(`- 오늘 비율이 1 이고 1년 전 비율이 분배 예상치와 맞는 종목: ${adjHit}/${adjRows.length}`);
+  if (adjHit >= Math.max(1, adjRows.length * 0.6)) {
     say('');
     say('→ **관측됨.** 오늘 값은 두 곳이 같고 과거 값만 분배금만큼 낮다. ' +
         '네이버가 과거 주가를 소급해서 낮춰 잡는다는 뜻이다.');
@@ -441,29 +444,35 @@ if (ctrl.length) {
   say('');
 }
 
-const MIN_SAMPLE = 3;
+// ── 최종 판정 ─────────────────────────────────────────────────────────────
+//
+// 순서가 중요하다. **대조군이 먼저다.**
+//
+// 분배가 큰 종목에서 두 계열이 벌어지는 것은 당연하다 — 한쪽이 분배금을
+// 반영하면 그렇게 된다. 그것만 보고 "가격 원천이 다르다" 고 말하면 오진이다.
+// 정말 원천이 다른지는 **분배가 없어서 벌어질 이유가 없는 종목**에서 갈린다.
+// 거기서 같으면 두 곳은 같은 거래소 종가를 보고 있는 것이고, 남은 차이는
+// 전부 분배금 처리 방식의 차이다.
+const ctrlAgree = ctrl.filter((r) => r.cmp.medianRelPct <= 0.1).length;
+
 let verdict;
-if (usable.length < MIN_SAMPLE) {
-  // 비율은 0/0 에서도 참이 된다. 표본이 없는데 "맞다" 고 말하는 것이
-  // 이 되짚기가 저지르면 안 되는 오류다. 먼저 막는다.
-  verdict = `표본 부족 — 세 곳을 다 받은 종목이 ${usable.length}개뿐이다. ` +
+if (!ctrl.length || adjRows.length < 2) {
+  verdict = `표본 부족 — 대조군 ${ctrl.length}종목 · 분배 종목 ${adjRows.length}종목. ` +
             '판정하지 않는다. 위의 오류 칸을 봐야 한다.';
-} else if (seriesAgree >= usable.length * 0.8 && rawAgree >= usable.length * 0.8) {
-  if (statedIsRaw >= usable.length * 0.8) {
-    verdict = '두 곳의 가격도 같고 표기값도 원가격과 맞는다. 지금 화면 값이 맞다.';
-  } else if (noDivStatedIsRaw >= noDiv.length * 0.8 && statedIsTr > statedIsRaw) {
-    verdict = '가격 자체는 두 곳이 같다. 네이버 표기 "시장가" 는 실은 분배금을 ' +
-              '반영한 수정 계열이다 — 우리 price 가 진짜 시장가격 수익률이고, ' +
-              '네이버 표기와 견줄 상대는 우리 tr 이다.';
-  } else {
-    verdict = '가격은 같은데 표기값이 어느 계열과도 안 맞는다. 사람이 봐야 한다.';
-  }
-} else if (seriesAgree < usable.length * 0.5) {
-  verdict = '두 곳의 종가 계열 자체가 다르다. 분배금 문제가 아니라 가격 원천이 ' +
-            '다른 것이다 — 어느 쪽이 거래소 종가인지 따로 확인해야 한다.';
+} else if (ctrlAgree < ctrl.length) {
+  verdict = '분배가 없는 종목에서도 두 곳의 종가가 다르다. 분배금 문제가 아니라 ' +
+            '가격 원천이 다른 것이다 — 어느 쪽이 거래소 종가인지 따로 확인해야 한다.';
+} else if (adjHit >= Math.max(1, adjRows.length * 0.6)) {
+  verdict = '두 곳은 같은 거래소 종가를 본다(대조군 차이 0%). 벌어지는 곳은 ' +
+            '분배가 있는 종목뿐이고, 그 폭이 분배금 예상치와 맞는다. ' +
+            '**네이버 일별시세는 소급 수정된 수정주가이고, 우리 price 가 ' +
+            '무보정 시장가격이다.** 둘 다 맞는 값이며 재는 대상이 다르다 — ' +
+            '네이버 표기와 견줄 상대는 우리 tr 이다.';
 } else {
-  verdict = '엇갈린다. 종목별로 봐야 한다.';
+  verdict = '대조군은 같은데 분배 종목의 차이가 분배금으로 설명되지 않는다. ' +
+            '사람이 봐야 한다.';
 }
+say('');
 say(`**${verdict}**`);
 
 // ── 기록 ──────────────────────────────────────────────────────────────────
@@ -516,7 +525,8 @@ await writeFile(OUT_JSON, JSON.stringify(results.map((r) => ({
   code: r.code, name: r.name, yield: r.yield,
   stated: r.stated, naverY1: r.naverY1, naverTrY1: r.naverTrY1,
   yahooY1: r.yahooY1, yahooAdjY1: r.yahooAdjY1, yahooTrY1: r.yahooTrY1,
-  cmp: r.cmp, divCount: r.divs?.length ?? null, splits: r.splits ?? null,
+  cmp: r.cmp, adj: r.adj ?? null,
+  divCount: r.divs?.length ?? null, splits: r.splits ?? null,
   data: { price: r.dataPrice, tr: r.dataTr, nav: r.dataNav },
   naverError: r.naverError, yahooError: r.yahooError, statedError: r.statedError,
 })), null, 2));
