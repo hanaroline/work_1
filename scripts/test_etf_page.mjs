@@ -95,37 +95,42 @@ check('상세에 상위 편입종목이 그려진다', holdRows > 0, `${holdRows
 const retRows = await page.locator('#detail table tbody tr').count();
 check('상세에 기간수익률 표가 있다', retRows > 0, `${retRows}행`);
 
-// ── 수익률 기준 토글.
-//    총수익률이 실려 있으면 그것이 기본이어야 한다(업계 표준). 아직 수집이
-//    그 계열을 못 채웠으면 시장가로 열리고 총수익률 버튼은 감춰져야 한다 —
-//    눌러도 빈칸만 나오는 기준을 내걸면 안 된다.
+// ── 수익률 기준.
+//    기준은 총수익률 하나다. 고를 것이 없으므로 토글도 없다 — 남아 있으면
+//    상세 표(총수익률만)와 목록이 서로 다른 기준을 보여 주게 된다.
 const hasTr = await page.evaluate(() =>
   (window.ETF_DATA?.etfs || []).some((e) => e.ret && e.ret.tr));
-const defaultBasis = await page.locator('#basis-seg button[aria-pressed="true"]')
-  .getAttribute('data-basis');
-const trHidden = await page.locator('#basis-seg button[data-basis="tr"]').isHidden();
-if (hasTr) {
-  check('총수익률이 있으면 그것이 기본이다', defaultBasis === 'tr', defaultBasis);
-  check('총수익률 버튼이 보인다', !trHidden);
-} else {
-  check('총수익률이 없으면 시장가로 연다', defaultBasis === 'price', defaultBasis);
-  check('총수익률 버튼이 감춰진다', trHidden, `hidden=${trHidden}`);
-}
+check('기준 토글이 없다', (await page.locator('#basis-seg').count()) === 0);
 
-await page.locator('#basis-seg button[data-basis="price"]').click();
-await page.waitForTimeout(120);
-const priceHead = await page.locator('#list-head th[data-sort="ret"]').textContent();
-check('시장가로 바꾸면 표 머리가 바뀐다', /시장가|Price/.test(priceHead || ''), priceHead.trim());
-const priceNote = await page.locator('#basis-note').textContent();
-check('시장가일 때 분배금 누락을 알린다', /분배금이 빠져|excludes/.test(priceNote || ''),
-      (priceNote || '').trim().slice(0, 40));
-
+const listHead = await page.locator('#list-head th[data-sort="ret"]').textContent();
 if (hasTr) {
-  await page.locator('#basis-seg button[data-basis="tr"]').click();
-  await page.waitForTimeout(120);
-  const trHead = await page.locator('#list-head th[data-sort="ret"]').textContent();
-  check('총수익률로 되돌리면 표 머리가 바뀐다', /총수익률|TR/.test(trHead || ''), trHead.trim());
+  check('목록 표 머리가 총수익률이다', /총수익률|TR/.test(listHead || ''), (listHead || '').trim());
 }
+const basisNote = await page.locator('#basis-note').textContent();
+check('기준을 화면에 밝힌다', /총수익률|otal return/.test(basisNote || ''),
+      (basisNote || '').trim().slice(0, 40));
+
+// ── 상세 기간수익률 표: 총수익률 + 순위 + 유형 평균 대비 세 열
+const retHeads = await page.locator('#detail .ret-table thead th').allTextContents();
+check('기간수익률 표가 4열이다', retHeads.length === 4, retHeads.map((x) => x.trim()).join(' | '));
+check('시장가·NAV 열이 사라졌다',
+      !retHeads.some((h) => /시장가|NAV|Price/.test(h)), retHeads.join(' | '));
+check('순위 열이 있다', retHeads.some((h) => /순위|Rank/.test(h)));
+check('유형 평균 대비 열이 있다', retHeads.some((h) => /유형 평균|peer/.test(h)));
+
+const rankTxt = await page.locator('#detail .ret-table tbody tr').first()
+  .locator('td').nth(2).textContent();
+check('순위가 계산된다', /상위|하위|Top|Bottom/.test(rankTxt || ''), (rankTxt || '').trim());
+
+// 절반 아래인 종목은 "상위 98%" 가 아니라 "하위 2%" 로 나와야 한다 — 앞엣말은
+// 눈으로 읽으면 좋아 보이지만 실제로는 꼴찌 언저리다.
+const rankLabels = await page.locator('#detail .ret-table tbody tr td:nth-child(3) .rank-pct')
+  .allTextContents();
+const badTop = rankLabels.filter((x) => /상위\s*(5[1-9]|[6-9]\d|100)%/.test(x));
+check('절반 아래는 하위로 적는다', badTop.length === 0, badTop.join(' | ') || '없음');
+const peerTxt = await page.locator('#detail .ret-table tbody tr').first()
+  .locator('td').nth(3).textContent();
+check('유형 평균 대비가 계산된다', /%p/.test(peerTxt || ''), (peerTxt || '').trim());
 
 // ── 정렬
 await page.locator('#list-head th[data-sort="ter"]').click();

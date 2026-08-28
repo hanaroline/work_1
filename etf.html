@@ -130,6 +130,14 @@ h4{font-size:17px; font-weight:600; margin:var(--space-content) 0 10px;}
 
 /* 수익률 표는 머리말이 길다. 좁은 화면에서는 접혀야 읽힌다. */
 .ret-table thead th{white-space:normal; line-height:1.3;}
+/* 순위 칸은 두 줄이다 — 읽는 값(상위 %)이 위, 원래 등수가 아래.
+   등수만 있으면 규모를 모르고, 백분위만 있으면 근거를 못 본다. */
+.ret-table .rank-pct{display:block; font-weight:600; color:var(--ink);}
+.ret-table .rank-pct.low{color:var(--muted);}
+.ret-table .rank-raw{display:block; font-size:11px; color:var(--muted-soft);
+  font-variant-numeric:tabular-nums;}
+.ret-table .th-sub{display:block; font-size:11px; font-weight:400;
+  color:var(--ink); opacity:.72;}
 table{border-collapse:collapse; width:100%; font-size:16px; background:#fff;}
 thead th{
   background:var(--orange-soft); color:var(--ink); font-weight:700; font-size:15px;
@@ -372,11 +380,6 @@ footer .disc + .disc{margin-top:12px;}
     <div class="finder-bar">
       <span data-ko="수익률 기간" data-en="Return period">수익률 기간</span>
       <select id="f-period" style="font-family:inherit;font-size:14px;padding:6px 10px;border:1px solid var(--hairline);border-radius:2px;"></select>
-      <span data-ko="기준" data-en="Basis">기준</span>
-      <span class="seg" id="basis-seg">
-        <button type="button" data-basis="tr" aria-pressed="true" data-ko="총수익률" data-en="Total return">총수익률</button>
-        <button type="button" data-basis="price" aria-pressed="false" data-ko="시장가" data-en="Price">시장가</button>
-      </span>
       <label class="chk"><input type="checkbox" id="f-lev"> <span data-ko="레버리지 · 인버스 포함" data-en="Include leveraged / inverse">레버리지 · 인버스 포함</span></label>
       <label class="chk"><input type="checkbox" id="f-hold" checked> <span data-ko="편입종목 있는 것만" data-en="With holdings only">편입종목 있는 것만</span></label>
       <span style="flex:1"></span>
@@ -550,6 +553,22 @@ function fmtPct(v, digits) {
 function signClass(v) { return v == null ? 'dim' : (v > 0 ? 'pos' : (v < 0 ? 'neg' : '')); }
 function fmtNum(v) { return v == null || !isFinite(v) ? '–' : Math.round(v).toLocaleString(); }
 
+/**
+ * 이 화면의 수익률 기준은 **총수익률 하나**다.
+ *
+ * 한때 시장가·총수익률·NAV 세 계열을 나란히 놨다. 세 열이 조금씩 다른 숫자를
+ * 내놓으니 어느 것을 봐야 하는지가 매번 문제였다. 되짚어 확인한 결과
+ * (tools/discovery/etf_price_series.md) 셋 중 성과를 재는 기준은 하나다.
+ *
+ *   - 총수익률: 분배금을 재투자한 값. 펀드 성과의 업계 표준이다.
+ *   - 시장가:   분배금이 빠져 커버드콜·고배당이 실제보다 낮게 보인다.
+ *   - NAV:      국내에만 있고, 시장가와의 차이는 괴리율뿐이다.
+ *
+ * 그래서 화면에는 총수익률만 싣는다. price·nav 는 데이터에 그대로 남겨 두므로
+ * 필요하면 언제든 다시 꺼낼 수 있다.
+ */
+function trOf(etf, period) { return retOf(etf, period, 'tr'); }
+
 /** 이 ETF 의 선택 기준·기간 수익률. 없으면 다른 기준으로 대신하지 않는다. */
 function retOf(etf, period, basis) {
   if (!etf.ret) return null;
@@ -596,6 +615,8 @@ var HAS_TR = ETFS.some(function (e) { return e.ret && e.ret.tr; });
 var state = {
   q: '', market: '', region: '', asset: '', index: '', sector: '',
   theme: '', manager: '', aum: '',
+  // 기준은 총수익률 하나다. 원천에 총수익률이 아예 없는 상황(HAS_TR 거짓)에서만
+  // 시장가로 내려간다 — 그때는 화면이 그 사실을 안내문으로 밝힌다.
   period: 'M3', basis: HAS_TR ? 'tr' : 'price',
   includeLeverage: false, holdingsOnly: true,
   sortKey: 'aum', sortDir: -1,
@@ -1006,49 +1027,151 @@ function donut(sectors) {
          ring + '</svg><div class="legend">' + legend + '</div></div>';
 }
 
+/**
+ * 같은 기간 수익률을 시장 전체와 견주기 위한 정렬 배열. 한 번 만들어 둔다.
+ * (시장, 기간) 마다 내림차순 배열 하나. 순위는 여기서 이분 탐색으로 찾는다.
+ */
+var RANK_CACHE = {};
+function marketSorted(market, period) {
+  var key = market + '|' + period;
+  if (!RANK_CACHE[key]) {
+    var arr = [];
+    for (var i = 0; i < ETFS.length; i += 1) {
+      if (ETFS[i].market !== market) continue;
+      var v = trOf(ETFS[i], period);
+      if (v != null) arr.push(v);
+    }
+    arr.sort(function (a, b) { return b - a; });
+    RANK_CACHE[key] = arr;
+  }
+  return RANK_CACHE[key];
+}
+
+/** 내림차순 배열에서 v 보다 큰 값의 개수 — 곧 v 의 등수 − 1. */
+function betterCount(arr, v) {
+  var lo = 0, hi = arr.length;
+  while (lo < hi) {
+    var mid = (lo + hi) >> 1;
+    if (arr[mid] > v) lo = mid + 1; else hi = mid;
+  }
+  return lo;
+}
+
+/**
+ * 같은 유형 무리. 시장·자산군·지역이 같은 종목으로 잡고, 너무 적으면
+ * 지역 조건을 푼다. 무리가 작으면 평균이 한두 종목에 휘둘려 뜻이 없어진다.
+ */
+var PEER_CACHE = {};
+function peersOf(etf) {
+  var key = etf.market + '|' + (etf.assetClass || '?') + '|' + (etf.region || '?');
+  if (!PEER_CACHE[key]) {
+    var strict = ETFS.filter(function (e) {
+      return e.market === etf.market && e.assetClass === etf.assetClass && e.region === etf.region;
+    });
+    PEER_CACHE[key] = strict.length >= 8 ? strict : ETFS.filter(function (e) {
+      return e.market === etf.market && e.assetClass === etf.assetClass;
+    });
+  }
+  return PEER_CACHE[key];
+}
+
+var PEER_AVG_CACHE = {};
+function peerAvg(etf, period) {
+  var key = etf.market + '|' + (etf.assetClass || '?') + '|' + (etf.region || '?') + '|' + period;
+  if (!(key in PEER_AVG_CACHE)) {
+    var pool = peersOf(etf);
+    var sum = 0, n = 0;
+    for (var i = 0; i < pool.length; i += 1) {
+      var v = trOf(pool[i], period);
+      if (v != null) { sum += v; n += 1; }
+    }
+    PEER_AVG_CACHE[key] = n >= 5 ? { avg: sum / n, n: n } : null;
+  }
+  return PEER_AVG_CACHE[key];
+}
+
+/**
+ * 기간 수익률 표.
+ *
+ * 기준은 총수익률 하나다(trOf 설명 참고). 계열 세 개를 늘어놓는 대신, 남는
+ * 자리에 **그 숫자를 읽는 데 필요한 것**을 넣는다 — 같은 시장에서 몇 등인지,
+ * 같은 유형 평균보다 얼마나 나은지. 수익률 하나만으로는 좋은지 나쁜지를 알 수
+ * 없고, 사람은 결국 그 둘을 따로 찾아본다.
+ */
 function returnTable(etf) {
-  // 국내는 네이버가 주는 NAV(기준가) 계열이 하나 더 있다. 분배금이 반영되지
-  // 않아 총수익률과는 다른 것이므로 자리를 따로 둔다.
-  var cols = [
-    ['price', lang === 'ko' ? '시장가' : 'Price'],
-    ['tr', lang === 'ko' ? '총수익률' : 'Total return'],
-  ];
-  if (etf.ret && etf.ret.nav) cols.push(['nav', lang === 'ko' ? 'NAV(기준가)' : 'NAV']);
+  var hasTr = !!(etf.ret && etf.ret.tr);
+  // 총수익률을 못 구한 소수 종목은 시장가로 대신 보여 주되, 그 사실을 아래
+  // 안내문에 적는다. 다른 계열을 말없이 끼워 넣는 것이 제일 나쁘다.
+  var basis = hasTr ? 'tr' : 'price';
 
   var rows = '';
   var any = false;
   PERIODS.forEach(function (p) {
-    var vals = cols.map(function (c) {
-      return etf.ret && etf.ret[c[0]] ? etf.ret[c[0]][p[0]] : null;
-    });
-    if (vals.every(function (v) { return v == null; })) return;
+    var v = retOf(etf, p[0], basis);
+    if (v == null) return;
     any = true;
+
+    var rankCell = '<td class="num dim">–</td>';
+    var peerCell = '<td class="num dim">–</td>';
+    if (hasTr) {
+      var arr = marketSorted(etf.market, p[0]);
+      if (arr.length >= 20) {
+        var rank = betterCount(arr, v) + 1;
+        // "상위 98%" 는 눈으로 읽으면 좋아 보이지만 실은 꼴찌 언저리다.
+        // 절반을 넘어가면 아래에서부터 세어 준다.
+        var top = Math.max(1, Math.round((rank / arr.length) * 100));
+        var bottom = Math.max(1, Math.round(((arr.length - rank + 1) / arr.length) * 100));
+        var label = top <= 50
+          ? (lang === 'ko' ? '상위 ' + top + '%' : 'Top ' + top + '%')
+          : (lang === 'ko' ? '하위 ' + bottom + '%' : 'Bottom ' + bottom + '%');
+        rankCell = '<td class="num"><span class="rank-pct' + (top <= 50 ? '' : ' low') + '">' +
+          label + '</span>' +
+          '<span class="rank-raw">' + rank.toLocaleString() + ' / ' +
+          arr.length.toLocaleString() + '</span></td>';
+      }
+      var pa = peerAvg(etf, p[0]);
+      if (pa) {
+        var diff = v - pa.avg;
+        peerCell = '<td class="num ' + signClass(diff) + '">' +
+          (diff > 0 ? '+' : '') + diff.toFixed(2) + '%p</td>';
+      }
+    }
+
     rows += '<tr><td>' + esc(lang === 'ko' ? p[1] : p[2]) + '</td>' +
-      vals.map(function (v) {
-        return '<td class="num ' + signClass(v) + '">' + fmtPct(v) + '</td>';
-      }).join('') + '</tr>';
+      '<td class="num ' + signClass(v) + '">' + fmtPct(v) + '</td>' +
+      rankCell + peerCell + '</tr>';
   });
   if (!any) {
     return '<div class="empty">' + (lang === 'ko' ? '기간 수익률 자료가 없습니다.' : 'No return data.') + '</div>';
   }
 
+  var peerN = peersOf(etf).length;
   var head = '<th>' + (lang === 'ko' ? '기간' : 'Period') + '</th>' +
-    cols.map(function (c) { return '<th class="num">' + esc(c[1]) + '</th>'; }).join('');
+    '<th class="num">' + (lang === 'ko'
+      ? (hasTr ? '총수익률' : '시장가') : (hasTr ? 'Total return' : 'Price')) + '</th>' +
+    '<th class="num">' + (lang === 'ko'
+      ? '순위<span class="th-sub">' + esc(t(MARKET_LABEL[etf.market])) + ' 전체</span>'
+      : 'Rank<span class="th-sub">within market</span>') + '</th>' +
+    '<th class="num">' + (lang === 'ko'
+      ? '유형 평균 대비<span class="th-sub">' + peerN.toLocaleString() + '종목</span>'
+      : 'vs peer avg<span class="th-sub">' + peerN.toLocaleString() + ' funds</span>') + '</th>';
 
   var notes = '';
   if (etf.dividendYield != null && etf.dividendYield >= 5) {
     notes += '<div class="notice" style="margin:12px 0 0">' + (lang === 'ko'
       ? '<strong>분배율 ' + etf.dividendYield.toFixed(1) + '%.</strong> ' +
-        '<u>시장가</u> 열에는 분배금이 빠져 있어 실제 성과보다 낮게 보입니다. ' +
-        '<u>총수익률</u> 열이 분배금을 재투자한 값이며, 이것이 성과를 재는 표준입니다.'
+        '위 숫자는 분배금을 재투자한 <u>총수익률</u>입니다. ' +
+        'HTS 의 등락률에는 분배금이 빠져 있어 이보다 낮게 보입니다.'
       : '<strong>Yield ' + etf.dividendYield.toFixed(1) + '%.</strong> ' +
-        'The price column excludes distributions; total return reinvests them.') + '</div>';
+        'Figures reinvest distributions; a plain price change would look lower.') + '</div>';
   }
-  if (etf.ret && etf.ret.nav && !(etf.ret && etf.ret.tr)) {
+  if (!hasTr) {
     notes += '<div class="notice" style="margin:12px 0 0">' + (lang === 'ko'
-      ? '이 종목은 총수익률을 확보하지 못했습니다(원천에 일별 수정종가 없음). ' +
-        'NAV(기준가) 열에도 분배금은 반영되지 않습니다.'
-      : 'Total return unavailable for this fund.') + '</div>';
+      ? '<strong>이 종목만 시장가 기준입니다.</strong> 원천에 분배금 이력이 없어 ' +
+        '총수익률을 만들지 못했습니다. 다른 종목과 나란히 놓고 비교하지 마십시오 — ' +
+        '그래서 순위와 유형 평균 대비도 비워 두었습니다.'
+      : '<strong>Price basis for this fund only</strong> — no distribution history at the ' +
+        'source. Not comparable with the other funds, so rank and peer columns are blank.') + '</div>';
   }
 
   return '<div class="table-wrap ret-table"><table><thead><tr>' + head +
@@ -1110,7 +1233,7 @@ function detailHtml(etf) {
             (lang === 'ko' ? '섹터 비중' : 'Sector weights') + '</h4>' + donut(etf.sectors) + '</div>';
   }
   html += '<div class="card" style="margin-top:16px"><h4 style="margin-top:0">' +
-          (lang === 'ko' ? '기간 수익률 (두 기준)' : 'Returns (both bases)') + '</h4>' +
+          (lang === 'ko' ? '기간 수익률 (총수익률 기준)' : 'Returns (total return)') + '</h4>' +
           returnTable(etf) + '</div>';
   html += '</div></div>';
   html += '</div>';
@@ -1629,16 +1752,6 @@ function renderHero() {
                      : 'Collection has not run yet; the figures shown are placeholders.');
 }
 
-/** 총수익률 자료가 없으면 그 버튼을 감춘다 — 눌러도 빈칸만 나오기 때문이다. */
-function applyBasisAvailability() {
-  var btn = document.querySelector('#basis-seg button[data-basis="tr"]');
-  if (btn && !HAS_TR) btn.hidden = true;
-  var btns = el('basis-seg').querySelectorAll('button');
-  for (var i = 0; i < btns.length; i++) {
-    btns[i].setAttribute('aria-pressed', btns[i].getAttribute('data-basis') === state.basis ? 'true' : 'false');
-  }
-}
-
 function applyLang() {
   document.documentElement.lang = lang;
   var nodes = document.querySelectorAll('[data-ko]');
@@ -1726,18 +1839,6 @@ function bind() {
     state.period = ev.target.value;
     renderHead();
     renderList();
-  });
-  el('basis-seg').addEventListener('click', function (ev) {
-    var b = ev.target.closest('button[data-basis]');
-    if (!b) return;
-    state.basis = b.getAttribute('data-basis');
-    var btns = el('basis-seg').querySelectorAll('button');
-    for (var i = 0; i < btns.length; i++) {
-      btns[i].setAttribute('aria-pressed', btns[i].getAttribute('data-basis') === state.basis ? 'true' : 'false');
-    }
-    renderHead();
-    renderList();
-    renderRank();
   });
   el('f-lev').addEventListener('change', function (ev) {
     state.includeLeverage = ev.target.checked;
@@ -1881,7 +1982,6 @@ function bind() {
 }
 
 applyLang();
-applyBasisAvailability();
 renderAll();
 bind();
 showTab('browse');
