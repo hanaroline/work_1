@@ -42,6 +42,34 @@ export async function getJson(url, { headers = {}, tries = 3, timeoutMs = 15000 
 }
 
 /**
+ * 인코딩을 지정해 읽는 JSON GET.
+ *
+ * finance.naver.com 계열은 EUC-KR 로 내려온다. 그냥 res.json() 으로 읽으면
+ * 한글이 통째로 깨진다 — "TIGER 미국S&P500" 이 "TIGER \ufffd\ufffd\ufffd\ufffdS&P500" 이 된다.
+ * ASCII 만 있는 이름은 멀쩡해 보여서 한참 뒤에야 눈에 띈다.
+ * (이 저장소의 scripts/fetch_market.py 도 같은 이유로 cp949 로 읽는다.)
+ */
+export async function getJsonIn(url, encoding, { headers = {}, tries = 3, timeoutMs = 15000 } = {}) {
+  let lastErr;
+  for (let attempt = 1; attempt <= tries; attempt += 1) {
+    try {
+      const res = await fetch(url, {
+        headers: { 'User-Agent': UA, Accept: 'application/json,text/plain,*/*',
+                   'Accept-Language': 'ko-KR,ko;q=0.9,en;q=0.8', ...headers },
+        signal: AbortSignal.timeout(timeoutMs),
+      });
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const buf = Buffer.from(await res.arrayBuffer());
+      return JSON.parse(new TextDecoder(encoding, { fatal: false }).decode(buf));
+    } catch (err) {
+      lastErr = err;
+      if (attempt < tries) await sleep(400 * 2 ** (attempt - 1));
+    }
+  }
+  throw lastErr;
+}
+
+/**
  * 동시 실행 개수를 묶은 map.
  *
  * @param {Array}    items

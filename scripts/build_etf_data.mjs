@@ -34,6 +34,18 @@ async function loadDataFile(path, globalName) {
   return sandbox.window[globalName] || null;
 }
 
+/**
+ * 편입종목 중 현금성 항목.
+ *
+ * 국내 PDF 에는 "원화현금"·"설정현금액" 이 종목처럼 한 줄을 차지한다. 이걸
+ * 종목으로 세면 세 군데가 한꺼번에 망가진다.
+ *   - 집중도(상위10 합계): 설정현금액 100% 짜리가 있어 의미가 사라진다
+ *   - 중복도: 두 ETF 가 둘 다 현금을 들고 있다고 "겹친다" 고 말하게 된다
+ *   - 최다 편입 종목: 삼성전자(227)보다 원화현금(259)이 위로 온다
+ * 그래서 표시는 하되(실제로 PDF 에 있는 항목이다) 계산에서는 뺀다.
+ */
+const CASH_LIKE = /^(원화현금|외화현금|설정현금액|현금|예금|CASH|USD CASH|Cash( and| &)? Other)/i;
+
 /** 화면에서 정렬·필터에 쓸 수 있게 값을 다듬는다. */
 function finish(etf, listedIn) {
   const tag = classify({
@@ -45,9 +57,20 @@ function finish(etf, listedIn) {
     family: etf.familyRaw,
   });
 
+  // 현금성 항목에 표를 붙인다. 화면과 계산이 같은 판단을 쓰게 하려는 것이다.
+  const holdings = etf.holdings
+    ? etf.holdings.map((h) => (CASH_LIKE.test(h.name || '') ? { ...h, cash: true } : h))
+    : null;
+  const stocks = (holdings || []).filter((h) => !h.cash);
+  const cashRows = (holdings || []).filter((h) => h.cash);
+
   // 상위10 합계 = 집중도. "이 ETF 가 사실상 몇 종목짜리인가"를 한 숫자로 말해 준다.
-  const top10Weight = etf.holdings?.length
-    ? +etf.holdings.reduce((s, h) => s + (h.weight || 0), 0).toFixed(2)
+  // 현금은 뺀다 — 현금 100% 를 "집중도 100%" 라고 말하면 거짓말이 된다.
+  const top10Weight = stocks.length
+    ? +stocks.reduce((s, h) => s + (h.weight || 0), 0).toFixed(2)
+    : null;
+  const cashWeight = cashRows.length
+    ? +cashRows.reduce((s, h) => s + (h.weight || 0), 0).toFixed(2)
     : null;
 
   return {
@@ -59,8 +82,10 @@ function finish(etf, listedIn) {
     assetClass: tag.assetClass,
     themes: tag.themes,
     flags: tag.flags,
+    holdings,
     top10Weight,
-    holdingCount: etf.holdings?.length || 0,
+    cashWeight,
+    holdingCount: stocks.length,          // 종목 수. 현금 줄은 세지 않는다
   };
 }
 
@@ -207,6 +232,7 @@ if (global_?.etfs?.length) {
   sources.global = { updatedAt: global_.updatedAt, count: global_.count,
                      withHoldings: global_.withHoldings,
                      noHoldingsByMarket: global_.noHoldingsByMarket || null,
+                     fx: global_.fx || null,      // 설정액 원화 환산에 쓴 환율
                      source: 'Yahoo Finance' };
   source = 'live';
 }

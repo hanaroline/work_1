@@ -20,7 +20,7 @@
  * 쓰지 않고 끝낸다 — 반쪽짜리로 어제 데이터를 덮는 것이 제일 나쁘다.
  */
 
-import { getJson, mapLimit, num, parsePercent, parseKoreanAmount,
+import { getJson, getJsonIn, mapLimit, num, parsePercent, parseKoreanAmount,
          periodMap, weightMap, writeDataFile, assertEnough } from './etf_lib.mjs';
 
 const LIST_URL = 'https://finance.naver.com/api/sise/etfItemList.nhn';
@@ -35,7 +35,9 @@ const TAB_LABELS = {
 };
 
 async function fetchList() {
-  const json = await getJson(LIST_URL, { headers: { Referer: 'https://finance.naver.com/sise/etf.naver' } });
+  // 이 목록만 EUC-KR 이다. 상세(m.stock)는 UTF-8 이라 그쪽은 그냥 읽는다.
+  const json = await getJsonIn(LIST_URL, 'euc-kr',
+    { headers: { Referer: 'https://finance.naver.com/sise/etf.naver' } });
   const list = json?.result?.etfItemList;
   if (!Array.isArray(list) || !list.length) throw new Error('ETF 목록이 비어 있다');
   return list;
@@ -46,6 +48,7 @@ function shapeDetail(d) {
   if (!d || !d.itemCode) return null;
   return {
     // 기본 정보
+    name: d.itemName || null,               // 상세 쪽 이름이 정본이다(UTF-8)
     manager: d.issuerName || null,          // "삼성자산운용(ETF)" 꼴로 온다
     indexName: d.etfBaseIndex || null,
     listedDate: d.listedDate || null,       // "20021014"
@@ -115,7 +118,8 @@ async function main() {
     const d = res?.ok ? res.value : null;
     if (!res?.ok) failures.push({ code: item.itemcode, name: item.itemname, error: res?.error });
 
-    const name = item.itemname;
+    // 이름은 상세(UTF-8)를 정본으로 쓰고, 상세가 실패했을 때만 목록 값을 쓴다.
+    const name = d?.name || item.itemname;
     // 운용사 표기에서 "(ETF)" 꼬리를 뗀다. 필터 항목으로 쓰기에 지저분하다.
     const managerRaw = d?.manager ? d.manager.replace(/\s*\(ETF\)\s*$/, '') : null;
 
