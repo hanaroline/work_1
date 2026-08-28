@@ -30,12 +30,16 @@
  */
 
 import { mkdir, writeFile, readFile } from 'node:fs/promises';
+// 야후는 수집기와 **똑같은 부품**으로 부른다. 되짚기가 자체 fetch 를 쓰다가
+// 세 번 내리 429 를 맞았는데, 수집기는 같은 시각 같은 엔드포인트로 1,158종목을
+// 받아 냈다. 차이는 UA 와 Accept 헤더였다. 검증이 본 것과 수집기가 본 것이
+// 다르면 검증의 뜻이 없다 — 네트워크 경로는 하나여야 한다.
+import { getJson as libGetJson, UA as LIB_UA } from './etf_lib.mjs';
 
 const OUT_JSON = 'tools/discovery/etf_price_series.json';
 const OUT_MD = 'tools/discovery/etf_price_series.md';
 
-const UA = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 ' +
-           '(KHTML, like Gecko) Chrome/126.0 Safari/537.36';
+const UA = LIB_UA;
 
 const NAVER_SISE = (code, from, to) =>
   `https://api.finance.naver.com/siseJson.naver?symbol=${code}` +
@@ -128,11 +132,15 @@ async function naverDaily(code, from, to) {
  * 이 환산을 빼먹으면 모든 봉이 하루씩 어긋나 대조가 통째로 무의미해진다.
  */
 async function yahooDaily(sym) {
-  const text = await get(YAHOO_CHART(sym), {
-    Referer: 'https://finance.yahoo.com/',
-    ...(yahooCookie ? { Cookie: yahooCookie } : {}),
+  // 수집기의 getJson 을 그대로 쓴다 — UA·Accept·재시도가 모두 같아진다.
+  const json = await libGetJson(YAHOO_CHART(sym), {
+    headers: {
+      Referer: 'https://finance.yahoo.com/',
+      ...(yahooCookie ? { Cookie: yahooCookie } : {}),
+    },
+    tries: 4,
   });
-  const r = JSON.parse(text)?.chart?.result?.[0];
+  const r = json?.chart?.result?.[0];
   if (!r) throw new Error('빈 응답');
   const ts = r.timestamp || [];
   const close = r.indicators?.quote?.[0]?.close || [];
