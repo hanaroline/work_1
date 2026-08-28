@@ -17,13 +17,13 @@
  *     쪽에 편입종목이 있으므로 그쪽을 쓰면 된다.
  *   - 한국 상장은 야후에 편입종목이 없다. 국내는 collect_etf_kr.mjs 가 맡는다.
  *
- * 기간수익률은 야후가 따로 주지 않아 chart(adjclose)로 직접 계산한다.
- * adjclose 는 분배금이 반영된 값이라 **총수익률(TR)** 이 되고, close 는
- * 분배금이 빠진 **시장가격 수익률**이 된다. 국내(네이버)의 nav/price 두
- * 기준과 짝을 맞추려고 둘 다 계산한다.
+ * 기간수익률은 야후가 따로 주지 않아 chart 일봉으로 직접 계산한다(etf_lib).
+ * close 는 가격수익률(분배금 제외), adjclose 는 총수익률(분배금 재투자)이다.
+ * **국내 수집기도 같은 계산기를 쓴다** — 그래야 두 시장의 총수익률이 한 뜻이다.
  */
 
-import { getJson, mapLimit, num, sleep, writeDataFile, assertEnough, UA } from './etf_lib.mjs';
+import { getJson, mapLimit, num, sleep, writeDataFile, assertEnough, UA,
+         fetchYahooReturns } from './etf_lib.mjs';
 import { universe, EXCHANGES } from './etf_universe.mjs';
 
 const OUT = 'data/etf-global.js';
@@ -89,82 +89,6 @@ async function fetchSummary(symbol) {
   return json?.quoteSummary?.result?.[0] || null;
 }
 
-/**
- * 기간수익률을 일봉으로 직접 계산한다.
- *
- * 기준일에서 정확히 N개월 전 봉이 없을 수 있으므로(휴장) **그 날짜 이하의
- * 마지막 봉**을 쓴다. 앞에서부터 자르면 상장 초기 종목의 1년 수익률이
- * 상장일 대비가 되어 엉뚱하게 커진다 — 그래서 구간이 데이터 범위를 벗어나면
- * 아예 값을 내지 않는다.
- */
-function computeReturns(timestamps, closes, adjcloses) {
-  if (!timestamps?.length) return null;
-  const rows = [];
-  for (let i = 0; i < timestamps.length; i += 1) {
-    const c = closes?.[i];
-    const a = adjcloses?.[i] ?? c;
-    if (c != null && Number.isFinite(c)) rows.push({ t: timestamps[i] * 1000, c, a });
-  }
-  if (rows.length < 2) return null;
-
-  const last = rows[rows.length - 1];
-  const first = rows[0];
-  const end = new Date(last.t);
-
-  const back = (fn) => {
-    const d = new Date(last.t);
-    fn(d);
-    return d.getTime();
-  };
-  const PERIODS = {
-    D1: back((d) => d.setDate(d.getDate() - 1)),
-    W1: back((d) => d.setDate(d.getDate() - 7)),
-    M1: back((d) => d.setMonth(d.getMonth() - 1)),
-    M3: back((d) => d.setMonth(d.getMonth() - 3)),
-    M6: back((d) => d.setMonth(d.getMonth() - 6)),
-    YTD: new Date(Date.UTC(end.getUTCFullYear(), 0, 1)).getTime(),
-    Y1: back((d) => d.setFullYear(d.getFullYear() - 1)),
-    Y3: back((d) => d.setFullYear(d.getFullYear() - 3)),
-    Y5: back((d) => d.setFullYear(d.getFullYear() - 5)),
-  };
-  // 3년·5년은 연율로 환산한다. 국내(네이버)가 연율로 주므로 기준을 맞춘다.
-  const ANNUALIZE = { Y3: 3, Y5: 5 };
-
-  const price = {};
-  const nav = {};
-  for (const [key, cutoff] of Object.entries(PERIODS)) {
-    if (cutoff < first.t) continue;                      // 관측 범위 밖이면 내지 않는다
-    let base = null;
-    for (const row of rows) {
-      if (row.t <= cutoff) base = row; else break;
-    }
-    if (!base || base === last) continue;
-    const years = ANNUALIZE[key];
-    const pct = (a, b) => {
-      const r = a / b;
-      if (!Number.isFinite(r) || r <= 0) return null;
-      return +(((years ? r ** (1 / years) : r) - 1) * 100).toFixed(2);
-    };
-    const p = pct(last.c, base.c);
-    const n = pct(last.a, base.a);
-    if (p != null) price[key] = p;
-    if (n != null) nav[key] = n;
-  }
-  return { price: Object.keys(price).length ? price : null,
-           nav: Object.keys(nav).length ? nav : null,
-           asOf: new Date(last.t).toISOString().slice(0, 10) };
-}
-
-async function fetchReturns(symbol) {
-  const json = await getJson(
-    `https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(symbol)}` +
-    '?range=5y&interval=1d', { headers: yahooHeaders() });
-  const r = json?.chart?.result?.[0];
-  if (!r) return null;
-  return computeReturns(r.timestamp, r.indicators?.quote?.[0]?.close,
-                        r.indicators?.adjclose?.[0]?.adjclose);
-}
-
 /** 야후의 {raw, fmt} 봉투를 벗긴다. */
 const raw = (v) => (v && typeof v === 'object' && 'raw' in v ? num(v.raw) : num(v));
 
@@ -226,7 +150,9 @@ function shape(entry, summary, returns) {
     indexName: null,
 
     retAsOf: returns?.asOf || null,
-    ret: returns ? { price: returns.price, nav: returns.nav } : null,
+    // price = 가격수익률(분배금 제외), tr = 총수익률(분배금 재투자).
+    // 국내도 같은 계산기를 쓰므로 두 시장의 tr 이 한 뜻이다.
+    ret: returns ? { price: returns.price, tr: returns.tr } : null,
     sectors: Object.keys(sectors).length ? sectors : null,
     countries: null,
     assets: null,
@@ -248,7 +174,8 @@ async function main() {
     if (!summary) throw new Error('quoteSummary 결과 없음');
     // 같은 호스트를 연달아 때리지 않도록 살짝 쉰다. 야후는 조급하면 429 를 준다.
     await sleep(120);
-    const returns = await fetchReturns(entry.symbol).catch(() => null);
+    const returns = await fetchYahooReturns(entry.symbol, { headers: yahooHeaders() })
+      .catch(() => null);
     return shape(entry, summary, returns);
   }, (done, total) => console.log(`[global] ${done}/${total}`));
 

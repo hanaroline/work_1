@@ -374,8 +374,8 @@ footer .disc + .disc{margin-top:12px;}
       <select id="f-period" style="font-family:inherit;font-size:14px;padding:6px 10px;border:1px solid var(--hairline);border-radius:2px;"></select>
       <span data-ko="기준" data-en="Basis">기준</span>
       <span class="seg" id="basis-seg">
-        <button type="button" data-basis="price" aria-pressed="true" data-ko="시장가" data-en="Market">시장가</button>
-        <button type="button" data-basis="nav" aria-pressed="false" data-ko="NAV · 총수익률" data-en="NAV / TR">NAV · 총수익률</button>
+        <button type="button" data-basis="tr" aria-pressed="true" data-ko="총수익률" data-en="Total return">총수익률</button>
+        <button type="button" data-basis="price" aria-pressed="false" data-ko="시장가" data-en="Price">시장가</button>
       </span>
       <label class="chk"><input type="checkbox" id="f-lev"> <span data-ko="레버리지 · 인버스 포함" data-en="Include leveraged / inverse">레버리지 · 인버스 포함</span></label>
       <label class="chk"><input type="checkbox" id="f-hold" checked> <span data-ko="편입종목 있는 것만" data-en="With holdings only">편입종목 있는 것만</span></label>
@@ -461,8 +461,8 @@ footer .disc + .disc{margin-top:12px;}
     <p class="disc" id="disc-source"></p>
     <p class="disc" data-ko="<strong>편입종목은 상위 10개까지입니다.</strong> 나머지 비중은 이 화면에 없습니다. 비중은 직전 영업일 기준 납입자산 구성(PDF)이며, 실시간 보유 내역이 아닙니다. 여러 ETF의 겹침 비율도 상위 10종목만으로 계산하므로 실제 포트폴리오 중복의 하한입니다."
        data-en="<strong>Only the top 10 holdings are shown.</strong> Weights reflect the prior business day's portfolio deposit file, not live holdings. Overlap figures are computed on top-10 holdings only and are a lower bound."></p>
-    <p class="disc" data-ko="<strong>수익률 계열 정책.</strong> <u>시장가 기준</u>은 거래소 종가의 등락률이며 <u>분배금이 빠져 있습니다</u> — 국내·해외 모두 같은 방식이라 이 기준으로는 한 줄로 세울 수 있습니다. 두 번째 기준은 <u>시장마다 뜻이 다릅니다</u>: 국내는 네이버가 산출한 NAV(기준가) 수익률로 분배금이 반영되지 않고(시장가와의 차이는 괴리율뿐), 해외는 야후 수정종가로 이 페이지가 계산한 총수익률로 분배금이 재투자돼 있습니다. 이는 scripts/check_etf_return_basis.mjs 로 검산한 사실이며, 두 시장을 이 기준으로 맞대어 비교하면 다른 개념을 견주게 됩니다. 3년·5년은 연율입니다."
-       data-en="<strong>Return series policy.</strong> Market-price returns exclude distributions and are consistent across markets. The second basis differs by market: Korea = NAV (distributions not reinvested); overseas = total return from adjusted close (reinvested). Verified by scripts/check_etf_return_basis.mjs. 3Y/5Y annualised."></p>
+    <p class="disc" data-ko="<strong>수익률 계열 정책.</strong> 기본은 <u>총수익률(Total Return)</u>입니다 — 분배금을 재투자한 기준으로, 펀드 성과를 재는 업계 표준입니다. 국내·해외 모두 일별 수정종가로 <u>같은 계산기</u>를 써서 산출하므로 두 시장을 한 줄로 세울 수 있습니다. <u>시장가</u> 기준은 거래소 종가의 단순 등락률이며 분배금이 빠져 있어, 커버드콜·고배당 상품은 실제 성과보다 낮게 보입니다. 국내 종목에는 네이버가 산출한 <u>NAV(기준가)</u> 수익률을 상세에 함께 싣는데, 여기에도 분배금은 반영되지 않습니다(시장가와의 차이는 괴리율뿐). 이 구분은 scripts/check_etf_return_basis.mjs 로 검산합니다. 3년·5년은 연율입니다."
+       data-en="<strong>Return series policy.</strong> Default is total return (distributions reinvested), computed identically for every market from daily adjusted closes. Price returns exclude distributions. Korean funds also show NAV returns, which likewise exclude distributions. Verified by scripts/check_etf_return_basis.mjs. 3Y/5Y annualised."></p>
     <p class="disc" data-ko="<strong>유의사항.</strong> 본 화면은 정보 제공 목적의 참고 자료이며 투자 권유가 아닙니다. 투자 판단과 그 결과에 대한 책임은 이용자에게 있습니다. 실제 상품 내용은 각 상품의 투자설명서와 운용사 공시가 우선합니다. 사내에서 고객 대상으로 활용할 경우 금융투자협회 광고 심의 및 준법감시 부서 확인을 권장합니다."
        data-en="<strong>Disclaimer.</strong> For information only; not investment advice. Fund prospectuses and manager disclosures prevail."></p>
   </div>
@@ -591,7 +591,7 @@ var MAX_COMPARE = 8;
 var state = {
   q: '', market: '', region: '', asset: '', index: '', sector: '',
   theme: '', manager: '', aum: '',
-  period: 'M3', basis: 'price',
+  period: 'M3', basis: 'tr',
   includeLeverage: false, holdingsOnly: true,
   sortKey: 'aum', sortDir: -1,
   limit: 60,
@@ -755,7 +755,7 @@ function renderFilters() {
   var avail = {};
   all.forEach(function (e) {
     if (!e.ret) return;
-    ['price', 'nav'].forEach(function (b) {
+    ['price', 'tr', 'nav'].forEach(function (b) {
       if (e.ret[b]) for (var k in e.ret[b]) avail[k] = true;
     });
   });
@@ -803,8 +803,9 @@ function renderHead() {
     if (c[0] === 'ret') {
       var p = null;
       for (var i = 0; i < PERIODS.length; i++) if (PERIODS[i][0] === state.period) p = PERIODS[i];
-      label = (lang === 'ko' ? p[1] : p[2]) +
-              ' · ' + (state.basis === 'nav' ? 'NAV' : (lang === 'ko' ? '시장가' : 'Mkt'));
+      label = (lang === 'ko' ? p[1] : p[2]) + ' · ' +
+              (state.basis === 'tr' ? (lang === 'ko' ? '총수익률' : 'TR')
+                                    : (lang === 'ko' ? '시장가' : 'Price'));
     }
     var arrow = '';
     var sortAttr = '';
@@ -840,24 +841,23 @@ function renderBasisNote() {
   var node = el('basis-note');
   if (!node) return;
   var msg;
-  if (state.basis === 'price') {
+  if (state.basis === 'tr') {
+    var missing = ETFS.filter(function (e) { return !(e.ret && e.ret.tr); }).length;
     msg = lang === 'ko'
-      ? '<strong>시장가 기준 — 분배금이 빠져 있습니다.</strong> 거래소 종가의 등락률입니다. ' +
-        '두 시장 모두 같은 방식이라 한 줄로 세워도 됩니다. 다만 커버드콜·고배당처럼 ' +
-        '분배율이 큰 상품은 실제 성과보다 낮게 보입니다 (분배율 5% 이상 ' +
-        ETFS.filter(function (e) { return e.dividendYield >= 5; }).length + '종목).'
-      : '<strong>Market price — distributions excluded.</strong> Consistent across markets, ' +
-        'but understates high-distribution funds.';
+      ? '<strong>총수익률 — 분배금을 재투자한 기준입니다.</strong> 펀드 성과를 재는 표준이며, ' +
+        '국내·해외 모두 같은 방식(일별 수정종가)으로 계산해 한 줄로 세울 수 있습니다.' +
+        (missing ? ' 다만 ' + missing + '종목은 원천에 자료가 없어 값이 비어 있습니다.' : '')
+      : '<strong>Total return — distributions reinvested.</strong> The standard basis, computed ' +
+        'the same way for every market.' + (missing ? ' ' + missing + ' funds lack data.' : '');
   } else {
     msg = lang === 'ko'
-      ? '<strong>주의 — 이 기준은 시장마다 뜻이 다릅니다.</strong> ' +
-        '국내는 NAV(기준가) 기준으로 <u>분배금이 반영되지 않고</u>, 해외는 수정종가로 계산한 ' +
-        '<u>총수익률(분배금 재투자)</u>입니다. 같은 열에 다른 개념이 들어가므로 ' +
-        '국내와 해외를 이 기준으로 맞대어 비교하지 마십시오. ' +
-        '한 시장 안에서 보려면 위의 <b>상장 시장</b>을 고르십시오.'
-      : '<strong>Caution — this basis differs by market.</strong> Korea = NAV (distributions ' +
-        'not reinvested); overseas = total return (reinvested). Do not compare across markets ' +
-        'on this basis.';
+      ? '<strong>시장가 — 분배금이 빠져 있습니다.</strong> 거래소 종가의 단순 등락률로, ' +
+        'HTS에서 보는 숫자와 같습니다. 커버드콜·고배당처럼 분배율이 큰 상품은 ' +
+        '실제 성과보다 낮게 보입니다 (분배율 5% 이상 ' +
+        ETFS.filter(function (e) { return e.dividendYield >= 5; }).length +
+        '종목). 성과를 견주려면 <b>총수익률</b>로 보십시오.'
+      : '<strong>Price — distributions excluded.</strong> Matches the exchange close change. ' +
+        'Understates high-distribution funds; use total return to compare performance.';
   }
   node.innerHTML = '<div class="notice">' + msg + '</div>';
 }
@@ -996,55 +996,53 @@ function donut(sectors) {
          ring + '</svg><div class="legend">' + legend + '</div></div>';
 }
 
-/**
- * 두 번째 수익률 계열이 시장마다 다른 것이라는 사실.
- *
- * 검산(scripts/check_etf_return_basis.mjs)으로 확정한 것:
- *   국내 — 네이버의 기준가격 수익률. 분배금은 재투자되지 않는다. 시장가와의
- *          차이는 괴리율뿐이다(분배율 4.6% 표본에서 차이 중앙값 0.02%p).
- *   해외 — 야후 수정종가로 계산한 총수익률. 분배금이 재투자돼 있다
- *          (분배율 4.5% 표본에서 차이 중앙값 4.23%p, 비율 0.95).
- *
- * 둘을 "NAV 기준" 한 이름으로 묶어 두면 국내와 해외를 한 줄로 세울 때 서로
- * 다른 개념을 견주게 된다. 그래서 이름을 시장별로 나눠 적는다.
- */
-function basisLabel(market) {
-  if (market === 'KR') {
-    return lang === 'ko' ? 'NAV(기준가) 기준' : 'NAV (per-unit)';
-  }
-  return lang === 'ko' ? '총수익률 (분배금 재투자)' : 'Total return (dist. reinvested)';
-}
-
 function returnTable(etf) {
+  // 국내는 네이버가 주는 NAV(기준가) 계열이 하나 더 있다. 분배금이 반영되지
+  // 않아 총수익률과는 다른 것이므로 자리를 따로 둔다.
+  var cols = [
+    ['price', lang === 'ko' ? '시장가' : 'Price'],
+    ['tr', lang === 'ko' ? '총수익률' : 'Total return'],
+  ];
+  if (etf.ret && etf.ret.nav) cols.push(['nav', lang === 'ko' ? 'NAV(기준가)' : 'NAV']);
+
   var rows = '';
   var any = false;
   PERIODS.forEach(function (p) {
-    var pv = etf.ret && etf.ret.price ? etf.ret.price[p[0]] : null;
-    var nv = etf.ret && etf.ret.nav ? etf.ret.nav[p[0]] : null;
-    if (pv == null && nv == null) return;
+    var vals = cols.map(function (c) {
+      return etf.ret && etf.ret[c[0]] ? etf.ret[c[0]][p[0]] : null;
+    });
+    if (vals.every(function (v) { return v == null; })) return;
     any = true;
     rows += '<tr><td>' + esc(lang === 'ko' ? p[1] : p[2]) + '</td>' +
-      '<td class="num ' + signClass(pv) + '">' + fmtPct(pv) + '</td>' +
-      '<td class="num ' + signClass(nv) + '">' + fmtPct(nv) + '</td></tr>';
+      vals.map(function (v) {
+        return '<td class="num ' + signClass(v) + '">' + fmtPct(v) + '</td>';
+      }).join('') + '</tr>';
   });
-  if (!any) return '<div class="empty">' + (lang === 'ko' ? '기간 수익률 자료가 없습니다.' : 'No return data.') + '</div>';
-  return '<div class="table-wrap ret-table"><table><thead><tr>' +
-    '<th>' + (lang === 'ko' ? '기간' : 'Period') + '</th>' +
-    '<th class="num">' + (lang === 'ko' ? '시장가 기준' : 'Market') + '</th>' +
-    '<th class="num">' + esc(basisLabel(etf.market)) + '</th>' +
-    '</tr></thead><tbody>' + rows + '</tbody></table></div>' +
-    // 시장가 기준에는 분배금이 빠져 있다. 분배율이 큰 상품은 이 한 줄이 없으면
-    // 숫자를 그대로 믿게 된다 — 커버드콜에서 20%p 넘게 어긋난다.
-    (etf.dividendYield != null && etf.dividendYield >= 5
-      ? '<div class="notice" style="margin:12px 0 0">' + (lang === 'ko'
-          ? '<strong>이 상품은 분배율이 ' + etf.dividendYield.toFixed(1) + '% 입니다.</strong> ' +
-            '시장가 기준 수익률에는 분배금이 빠져 있어 실제 성과보다 낮게 보입니다.' +
-            (etf.market === 'KR'
-              ? ' 국내는 NAV(기준가) 기준에도 분배금이 반영되지 않습니다 — 두 기준의 차이는 괴리율뿐입니다.'
-              : ' 오른쪽 총수익률이 분배금을 반영한 값입니다.')
-          : '<strong>Distribution yield ' + etf.dividendYield.toFixed(1) + '%.</strong> ' +
-            'Market-price returns exclude distributions.') + '</div>'
-      : '');
+  if (!any) {
+    return '<div class="empty">' + (lang === 'ko' ? '기간 수익률 자료가 없습니다.' : 'No return data.') + '</div>';
+  }
+
+  var head = '<th>' + (lang === 'ko' ? '기간' : 'Period') + '</th>' +
+    cols.map(function (c) { return '<th class="num">' + esc(c[1]) + '</th>'; }).join('');
+
+  var notes = '';
+  if (etf.dividendYield != null && etf.dividendYield >= 5) {
+    notes += '<div class="notice" style="margin:12px 0 0">' + (lang === 'ko'
+      ? '<strong>분배율 ' + etf.dividendYield.toFixed(1) + '%.</strong> ' +
+        '<u>시장가</u> 열에는 분배금이 빠져 있어 실제 성과보다 낮게 보입니다. ' +
+        '<u>총수익률</u> 열이 분배금을 재투자한 값이며, 이것이 성과를 재는 표준입니다.'
+      : '<strong>Yield ' + etf.dividendYield.toFixed(1) + '%.</strong> ' +
+        'The price column excludes distributions; total return reinvests them.') + '</div>';
+  }
+  if (etf.ret && etf.ret.nav && !(etf.ret && etf.ret.tr)) {
+    notes += '<div class="notice" style="margin:12px 0 0">' + (lang === 'ko'
+      ? '이 종목은 총수익률을 확보하지 못했습니다(원천에 일별 수정종가 없음). ' +
+        'NAV(기준가) 열에도 분배금은 반영되지 않습니다.'
+      : 'Total return unavailable for this fund.') + '</div>';
+  }
+
+  return '<div class="table-wrap ret-table"><table><thead><tr>' + head +
+    '</tr></thead><tbody>' + rows + '</tbody></table></div>' + notes;
 }
 
 /**
@@ -1453,18 +1451,11 @@ function renderRank() {
   };
 
   var html = '';
-  if (state.basis === 'nav' && !state.rMarket) {
-    html += '<div class="notice">' + (lang === 'ko'
-      ? '<strong>지금 기준(NAV · 총수익률)은 시장마다 뜻이 다릅니다.</strong> 국내는 분배금이 빠진 기준가, ' +
-        '해외는 분배금을 재투자한 총수익률입니다. 순위를 이 기준으로 섞어 매기지 마십시오 — ' +
-        '위에서 대상 시장을 고르거나 시장가 기준으로 보십시오.'
-      : '<strong>This basis differs by market.</strong> Pick a market before ranking on it.') + '</div>';
-  }
   if (state.basis === 'price') {
     html += '<div class="notice">' + (lang === 'ko'
-      ? '<strong>시장가 기준에는 분배금이 빠져 있습니다.</strong> 커버드콜·고배당 상품은 실제 성과보다 ' +
-        '낮은 자리에 놓입니다. 상세를 열면 분배율을 함께 볼 수 있습니다.'
-      : '<strong>Market-price returns exclude distributions.</strong>') + '</div>';
+      ? '<strong>지금 순위는 시장가 기준입니다 — 분배금이 빠져 있습니다.</strong> 커버드콜·고배당 상품이 ' +
+        '실제보다 낮은 자리에 놓입니다. 위의 기준을 <b>총수익률</b>로 바꾸면 분배금을 포함해 매깁니다.'
+      : '<strong>Ranked on price returns — distributions excluded.</strong> Switch to total return.') + '</div>';
   }
   html += '<div class="grid grid-2" style="margin-top:var(--space-content)">';
   html += rankTable((lang === 'ko' ? periodLabel + ' 수익률 상위' : 'Top ' + periodLabel),

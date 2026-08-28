@@ -159,6 +159,82 @@ export function weightMap(list) {
   return Object.keys(out).length ? out : null;
 }
 
+// ─────────────────── 기간수익률 계산 (국내·해외 공용) ───────────────────
+/**
+ * 일봉으로 기간수익률을 계산한다. **국내와 해외가 같은 계산기를 쓴다.**
+ *
+ * 수익률 계열이 시장마다 다르면 랭킹이 다른 개념을 견주게 된다. 그래서 총수익률은
+ * 두 시장 모두 야후 일봉으로 여기서 계산한다.
+ *   close    -> 가격수익률 (분배금 제외)
+ *   adjclose -> 총수익률   (분배금 재투자) = 업계 표준
+ *
+ * 기준일에서 정확히 N개월 전 봉이 없을 수 있으므로(휴장) **그 날짜 이하의
+ * 마지막 봉**을 쓴다. 구간이 데이터 범위를 벗어나면 아예 값을 내지 않는다 —
+ * 상장 초기 종목의 1년 수익률이 상장일 대비가 되어 엉뚱하게 커지는 것을 막는다.
+ */
+export function computeReturns(timestamps, closes, adjcloses) {
+  if (!timestamps?.length) return null;
+  const rows = [];
+  for (let i = 0; i < timestamps.length; i += 1) {
+    const c = closes?.[i];
+    const a = adjcloses?.[i] ?? c;
+    if (c != null && Number.isFinite(c)) rows.push({ t: timestamps[i] * 1000, c, a });
+  }
+  if (rows.length < 2) return null;
+
+  const last = rows[rows.length - 1];
+  const first = rows[0];
+  const end = new Date(last.t);
+  const back = (fn) => { const d = new Date(last.t); fn(d); return d.getTime(); };
+
+  const PERIODS = {
+    D1: back((d) => d.setDate(d.getDate() - 1)),
+    W1: back((d) => d.setDate(d.getDate() - 7)),
+    M1: back((d) => d.setMonth(d.getMonth() - 1)),
+    M3: back((d) => d.setMonth(d.getMonth() - 3)),
+    M6: back((d) => d.setMonth(d.getMonth() - 6)),
+    YTD: new Date(Date.UTC(end.getUTCFullYear(), 0, 1)).getTime(),
+    Y1: back((d) => d.setFullYear(d.getFullYear() - 1)),
+    Y3: back((d) => d.setFullYear(d.getFullYear() - 3)),
+    Y5: back((d) => d.setFullYear(d.getFullYear() - 5)),
+  };
+  // 3년·5년은 연율로 환산한다. 국내(네이버)가 연율로 주므로 기준을 맞춘다.
+  const ANNUALIZE = { Y3: 3, Y5: 5 };
+
+  const price = {};
+  const tr = {};
+  for (const [key, cutoff] of Object.entries(PERIODS)) {
+    if (cutoff < first.t) continue;
+    let base = null;
+    for (const row of rows) { if (row.t <= cutoff) base = row; else break; }
+    if (!base || base === last) continue;
+    const years = ANNUALIZE[key];
+    const pct = (a, b) => {
+      const r = a / b;
+      if (!Number.isFinite(r) || r <= 0) return null;
+      return +(((years ? r ** (1 / years) : r) - 1) * 100).toFixed(2);
+    };
+    const p = pct(last.c, base.c);
+    const t = pct(last.a, base.a);
+    if (p != null) price[key] = p;
+    if (t != null) tr[key] = t;
+  }
+  return { price: Object.keys(price).length ? price : null,
+           tr: Object.keys(tr).length ? tr : null,
+           asOf: new Date(last.t).toISOString().slice(0, 10) };
+}
+
+/** 야후 일봉으로 한 종목의 기간수익률을 받는다. chart 는 crumb 없이 열려 있다. */
+export async function fetchYahooReturns(symbol, { headers = {}, range = '5y' } = {}) {
+  const json = await getJson(
+    `https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(symbol)}` +
+    `?range=${range}&interval=1d`, { headers });
+  const r = json?.chart?.result?.[0];
+  if (!r) return null;
+  return computeReturns(r.timestamp, r.indicators?.quote?.[0]?.close,
+                        r.indicators?.adjclose?.[0]?.adjclose);
+}
+
 /** 브라우저가 <script> 로 읽을 수 있게 전역 하나를 정의하는 파일로 쓴다. */
 export async function writeDataFile(path, globalName, value, banner) {
   await mkdir(dirname(path), { recursive: true });
