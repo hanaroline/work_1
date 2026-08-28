@@ -5,36 +5,42 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>증권사 리포트 다이제스트</title>
   <style>
-    /* 팔레트·타이포는 대시보드(index.html)와 같은 것을 쓴다 — 두 화면을 오가도
-       같은 자리에 있다는 느낌이 끊기지 않게. */
+    /* 표면·글자색은 대시보드(index.html)와 같은 것을 쓴다 — 두 화면을 오가도
+       같은 자리에 있다는 느낌이 끊기지 않게.
+       다만 **강조색은 미래에셋 브랜드**를 따른다. 이 화면은 고객·동료에게
+       건네는 산출물이고, 브랜드 자산은 이미 정해져 있다:
+       오렌지 #F58220(강조·섹션 룰·CTA), 블루 #043B72(링크·수치).
+       모서리는 4px 이하, 그림자는 쓰지 않는다. */
     :root {
+      --mas-orange: #F58220; --mas-orange-active: #CB6015; --mas-soft: #FAB072;
+      --mas-blue: #043B72;
       --surface-1: #fcfcfb; --page: #f9f9f7;
       --text-primary: #0b0b0b; --text-secondary: #52514e; --text-muted: #898781;
       --grid: #e1e0d9; --border: rgba(11,11,11,0.10);
-      --series-1: #2a78d6; --series-2: #1baf7a; --series-3: #eda100;
+      --series-1: #043B72; --series-2: #1baf7a; --series-3: #eda100;
       --series-5: #4a3aa7; --series-6: #e34948; --series-8: #eb6834;
-      --up: #d03b3b; --down: #2a78d6;
-      --shadow: 0 1px 2px rgba(11,11,11,.05), 0 4px 16px rgba(11,11,11,.04);
-      --radius: 14px;
+      --up: #d03b3b; --down: #043B72;
+      --shadow: none;
+      --radius: 4px;
     }
     :root[data-theme="dark"] {
       --surface-1: #1a1a19; --page: #0d0d0d;
       --text-primary: #ffffff; --text-secondary: #c3c2b7; --text-muted: #898781;
       --grid: #2c2c2a; --border: rgba(255,255,255,0.10);
-      --series-1: #3987e5; --series-2: #199e70; --series-3: #c98500;
+      --series-1: #7E9FC3; --series-2: #199e70; --series-3: #c98500;
       --series-5: #9085e9; --series-6: #e66767; --series-8: #d95926;
-      --up: #ff6b6b; --down: #5598e7;
-      --shadow: 0 1px 2px rgba(0,0,0,.4), 0 4px 16px rgba(0,0,0,.3);
+      --up: #ff6b6b; --down: #7E9FC3;
+      --shadow: none;
     }
     @media (prefers-color-scheme: dark) {
       :root:not([data-theme="light"]) {
         --surface-1: #1a1a19; --page: #0d0d0d;
         --text-primary: #ffffff; --text-secondary: #c3c2b7; --text-muted: #898781;
         --grid: #2c2c2a; --border: rgba(255,255,255,0.10);
-        --series-1: #3987e5; --series-2: #199e70; --series-3: #c98500;
+        --series-1: #7E9FC3; --series-2: #199e70; --series-3: #c98500;
         --series-5: #9085e9; --series-6: #e66767; --series-8: #d95926;
-        --up: #ff6b6b; --down: #5598e7;
-        --shadow: 0 1px 2px rgba(0,0,0,.4), 0 4px 16px rgba(0,0,0,.3);
+        --up: #ff6b6b; --down: #7E9FC3;
+        --shadow: none;
       }
     }
 
@@ -53,25 +59,25 @@
       display: flex; align-items: center; gap: 10px; padding: 12px 20px; flex-wrap: wrap;
     }
     .brand { font-weight: 700; font-size: 17px; letter-spacing: -.02em; white-space: nowrap; }
-    .brand .dot { color: var(--series-1); }
+    .brand .dot { color: var(--mas-orange); }
     .grow { flex: 1 1 240px; min-width: 160px; }
     input[type="search"], select {
       width: 100%; padding: 9px 12px; font-size: 14px; border: 1px solid var(--border);
-      border-radius: 10px; background: var(--page); color: var(--text-primary);
+      border-radius: 2px; background: var(--page); color: var(--text-primary);
     }
     /* 상단 바의 날짜 고르개는 글자만큼만 차지한다 — width:100% 를 물려받으면
        한 줄을 통째로 먹고 나머지 단추가 아래로 밀린다. */
     .topbar select { width: auto; min-width: 112px; }
     .search { display: flex; gap: 8px; align-items: center; }
-    .btn-primary { background: var(--series-1); color: #fff; border-color: transparent; font-weight: 600; }
+    .btn-primary { background: var(--mas-orange); color: #fff; border-color: transparent; font-weight: 600; }
     .btn-primary:hover { filter: brightness(1.08); }
-    input[type="search"]:focus, select:focus { outline: 2px solid var(--series-1); border-color: transparent; }
+    input[type="search"]:focus, select:focus { outline: 2px solid var(--mas-orange); border-color: transparent; }
     .btn {
       border: 1px solid var(--border); background: var(--page); color: var(--text-primary);
-      padding: 9px 12px; font-size: 14px; border-radius: 10px; cursor: pointer; white-space: nowrap;
+      padding: 9px 12px; font-size: 14px; border-radius: 2px; cursor: pointer; white-space: nowrap;
       text-decoration: none; display: inline-flex; align-items: center; gap: 6px;
     }
-    .btn:hover { border-color: var(--series-1); }
+    .btn:hover { border-color: var(--mas-orange); }
 
     .wrap { max-width: 1080px; margin: 0 auto; padding: 20px; }
 
@@ -92,17 +98,19 @@
       display: flex; align-items: center; gap: 8px; font-size: 15px; font-weight: 700;
       margin: 26px 0 12px;
     }
-    .section-title .accent { width: 4px; height: 15px; background: var(--series-1); border-radius: 2px; }
+    /* 섹션을 여는 1px 오렌지 룰 — 미래에셋 레이아웃 시그니처다. */
+    .section-title { border-top: 1px solid var(--mas-orange); padding-top: 10px; }
+    .section-title .accent { display: none; }
     .section-title .hint { font-weight: 400; font-size: 12px; color: var(--text-muted); }
 
     /* 걸러 보기 */
     .filters { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; margin-bottom: 12px; }
     .chip {
-      font-size: 13px; cursor: pointer; padding: 6px 12px; border-radius: 999px;
+      font-size: 13px; cursor: pointer; padding: 6px 12px; border-radius: 2px;
       border: 1px solid var(--border); background: var(--surface-1); color: var(--text-secondary);
     }
-    .chip:hover { border-color: var(--series-1); color: var(--text-primary); }
-    .chip.on { background: var(--series-1); color: #fff; border-color: transparent; }
+    .chip:hover { border-color: var(--mas-orange); color: var(--text-primary); }
+    .chip.on { background: var(--mas-orange); color: #fff; border-color: transparent; }
     .chip .n { opacity: .7; margin-left: 4px; font-size: 11px; }
     .filters select { width: auto; min-width: 130px; }
 
@@ -113,13 +121,13 @@
       background: var(--surface-1); border: 1px solid var(--border); border-radius: var(--radius);
       padding: 14px 16px; box-shadow: var(--shadow); cursor: pointer; position: relative;
     }
-    .rp:hover { border-color: var(--series-1); }
+    .rp:hover { border-color: var(--mas-orange); }
     .rp .tags { display: flex; gap: 6px; flex-wrap: wrap; align-items: center; margin-bottom: 6px; }
     .tag {
-      font-size: 11px; padding: 2px 8px; border-radius: 999px; border: 1px solid var(--border);
+      font-size: 11px; padding: 2px 8px; border-radius: 2px; border: 1px solid var(--border);
       color: var(--text-secondary); white-space: nowrap;
     }
-    .tag.cat { border-color: transparent; background: rgba(42,120,214,.12); color: var(--series-1); }
+    .tag.cat { border-color: transparent; background: rgba(4,59,114,.10); color: var(--series-1); font-weight: 600; }
     .tag.stock { border-color: transparent; background: var(--grid); color: var(--text-primary); font-weight: 600; }
     .tag.op { border-color: transparent; background: rgba(27,175,122,.15); color: var(--series-2); font-weight: 600; }
     .tag.op.hold { background: rgba(237,161,0,.15); color: var(--series-3); }
@@ -135,21 +143,40 @@
     .rp .sum { font-size: 13.5px; color: var(--text-secondary); margin: 4px 0 8px; }
     .rp .sum.none { color: var(--text-muted); font-style: italic; }
     .rp .sum .lead { color: var(--text-primary); font-weight: 600; }
-    .tag.fact { border-color: transparent; background: rgba(42,120,214,.09); color: var(--text-secondary); }
+    .tag.fact { border-color: transparent; background: rgba(245,130,32,.12); color: var(--text-secondary); }
     .wk-rank {
       display: inline-flex; align-items: center; justify-content: center;
-      min-width: 20px; height: 20px; padding: 0 5px; border-radius: 6px;
-      background: var(--series-1); color: #fff; font-size: 11px; font-weight: 700;
+      min-width: 20px; height: 20px; padding: 0 5px; border-radius: 2px;
+      background: var(--mas-orange); color: #fff; font-size: 11px; font-weight: 700;
     }
     .wk-stocks {
       display: flex; flex-wrap: wrap; gap: 6px; margin: 0 0 10px;
       font-size: 12.5px; color: var(--text-secondary);
     }
     .wk-stocks .s {
-      border: 1px solid var(--border); border-radius: 999px; padding: 3px 9px;
+      border: 1px solid var(--border); border-radius: 2px; padding: 3px 9px;
       background: var(--surface-1);
     }
     .wk-stocks .s b { color: var(--text-primary); }
+    .tag.ov { border-color: transparent; background: var(--mas-orange); color: #fff; font-weight: 700; }
+
+    /* 서두 총평 */
+    .ov {
+      border: 1px solid var(--border); border-left: 3px solid var(--mas-orange);
+      border-radius: 2px; background: var(--surface-1); padding: 12px 16px; margin: 12px 0 4px;
+    }
+    .ov-k {
+      font-size: 11px; font-weight: 700; letter-spacing: .06em; color: var(--mas-orange);
+      margin-bottom: 5px;
+    }
+    .ov-t { margin: 0; font-size: 14px; color: var(--text-primary); line-height: 1.65; }
+    .themes { margin-top: 10px; display: grid; gap: 3px; }
+    .themes .th { display: grid; grid-template-columns: 104px 1fr 34px; align-items: center; gap: 8px; }
+    .themes .n { font-size: 12px; color: var(--text-secondary); }
+    .themes .bar { height: 7px; background: var(--grid); border-radius: 1px; overflow: hidden; }
+    .themes .bar i { display: block; height: 100%; background: var(--mas-orange); }
+    .themes .c { font-size: 12px; color: var(--text-muted); text-align: right;
+                 font-variant-numeric: tabular-nums; }
     .rp .ex {
       display: none; font-size: 13px; color: var(--text-secondary); white-space: pre-wrap;
       border-left: 3px solid var(--grid); padding: 6px 0 6px 12px; margin: 8px 0;
@@ -227,6 +254,11 @@
       .rp .sum .lead { color: #000; }
       .wk-rank { background: #444; }
       .wk-stocks { font-size: 8pt; }
+      .ov { padding: 8px 11px; margin: 8px 0 4px; break-inside: avoid; }
+      .ov-t { font-size: 9pt; }
+      .ov-k { font-size: 7.5pt; }
+      .themes .th { grid-template-columns: 88px 1fr 26px; }
+      .themes .n, .themes .c { font-size: 7.5pt; }
       /* 요약본에서는 전체 목록과 주간을 뺀다 — 그날 판만 담는다. */
       body.pdf-summary #listTop, body.pdf-summary #list, body.pdf-summary #hit,
       body.pdf-summary #weekly-wrap { display: none !important; }
@@ -258,6 +290,7 @@
       <span class="sub" id="asof"></span>
     </div>
     <div class="stats" id="stats"></div>
+    <div id="ov-day"></div>
 
     <div id="hl-wrap" style="display:none;">
       <div class="section-title"><span class="accent"></span>오늘의 주요 리포트
@@ -278,6 +311,7 @@
         <span class="hint" id="weekHint"></span>
       </div>
       <div class="stats" id="weekStats"></div>
+      <div id="ov-week"></div>
       <div class="wk-stocks" id="weekStocks"></div>
       <div class="cards two" id="weekly"></div>
     </div>
@@ -296,7 +330,9 @@
   "use strict";
 
   var DATA_DIR = "../../data/reports/";
-  var state = { data: null, cat: "전체", broker: "전체", sort: "recent", q: "" };
+  // 첫 화면은 **인기순**이다. 그날 나온 것을 날짜순으로 늘어놓으면 위쪽이
+  // 새벽에 올라온 시황으로 채워져, 정작 많이 읽힌 리포트가 아래로 밀린다.
+  var state = { data: null, cat: "전체", broker: "전체", sort: "views", q: "" };
   var els = {
     q: document.getElementById("q"), day: document.getElementById("day"),
     title: document.getElementById("title"), asof: document.getElementById("asof"),
@@ -384,6 +420,7 @@
     els.hlWrap.style.display = hl.length ? "" : "none";
     els.highlights.innerHTML = hl.map(card).join("");
 
+    renderOverview("ov-day", s.overview, "오늘 한눈에");
     renderMoves(s.target_moves || []);
     renderWeekly(d.weekly);
     buildPickList();
@@ -397,6 +434,24 @@
       "목표주가·투자의견은 본문에서 기계로 뽑은 값이라 <b>원문과 다를 수 있습니다</b>. " +
       "본 화면은 정보 제공 목적의 참고 자료이며, 투자 판단과 그 결과에 대한 책임은 이용자에게 있습니다." +
       (d.extraction && d.extraction.warning ? "<br><b style='color:var(--series-6)'>⚠ " + esc(d.extraction.warning) + "</b>" : "");
+  }
+
+  /* 서두 총평. 카드를 하나하나 짚기 전에 「무슨 이야기가 많았나」를 먼저
+     알려 준다. 새 사실을 짓지 않고 이미 센 것을 문장으로 엮은 것이다. */
+  function renderOverview(el, ov, label) {
+    var box = document.getElementById(el);
+    if (!ov || !ov.text) { box.innerHTML = ""; return; }
+    var bars = "";
+    if (ov.themes && ov.themes.length) {
+      var max = ov.themes[0].count || 1;
+      bars = '<div class="themes">' + ov.themes.map(function (t) {
+        return '<div class="th"><span class="n">' + esc(t.theme) + "</span>"
+          + '<span class="bar"><i style="width:' + Math.round(t.count / max * 100) + '%"></i></span>'
+          + '<span class="c">' + t.count + "</span></div>";
+      }).join("") + "</div>";
+    }
+    box.innerHTML = '<div class="ov"><div class="ov-k">' + esc(label) + "</div>"
+      + '<p class="ov-t">' + esc(ov.text) + "</p>" + bars + "</div>";
   }
 
   function stat(k, v) {
@@ -419,6 +474,7 @@
     var st = r.stock || {};
     var tags = ['<span class="tag cat">' + esc(r.category) + "</span>"];
     if (r.sector) tags.push('<span class="tag">' + esc(r.sector) + "</span>");
+    if (r.overseas) tags.push('<span class="tag ov">해외</span>');
     if (st.name) tags.push('<span class="tag stock">' + esc(st.name) + "</span>");
     if (r.opinion) tags.push('<span class="tag op ' + opClass(r.opinion) + '">' + esc(r.opinion) + "</span>");
     if (r.target_price) {
@@ -501,6 +557,7 @@
     if (!reps.length) { delete wrap.dataset.has; return; }
     wrap.dataset.has = "1";
 
+    renderOverview("ov-week", w.overview, "이번 주 한눈에");
     document.getElementById("weekHint").textContent =
       w.since + " ~ " + w.until + " · 영업일 " + (w.days || []).length + "일 · 조회수 순";
 
@@ -605,8 +662,8 @@
           esc(b) + " (" + brokers[b] + ")</option>";
       }).join("") + "</select>");
     chips.push('<select id="sort">' +
+      '<option value="views">인기순(조회수)</option>' +
       '<option value="recent">최신순</option>' +
-      '<option value="views">조회순</option>' +
       '<option value="target">목표주가 변경 먼저</option>' +
       "</select>");
     els.filters.innerHTML = chips.join("");
@@ -651,7 +708,7 @@
     if (ww.dataset.has) ww.style.display = q ? "none" : "";
     els.list.innerHTML = reps.length
       ? reps.map(card).join("")
-      : '<div class="state"><div class="big">🔍</div>' +
+      : '<div class="state">' +
         "<div>" + (q ? '"' + esc(state.q.trim()) + '" 에 맞는 리포트가 이 판에 없습니다.' : "걸러 낸 조건에 맞는 리포트가 없습니다.") + "</div>" +
         '<div style="margin-top:12px;font-size:13px;">종목명·종목코드·증권사·제목의 일부로 찾습니다. ' +
         '그 종목에 이번 판 리포트가 없을 수도 있습니다 — ' +
