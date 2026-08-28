@@ -1,111 +1,108 @@
 {
-  "probedAt": "2026-08-28T15:00:49.764Z",
+  "probedAt": "2026-08-28T15:10:28.202Z",
   "krxTradeDate": null,
   "results": [
     {
       "id": "krx.session",
       "note": "세션 쿠키 획득 (화면 선진입)",
-      "ok": true,
-      "summary": "쿠키 2개",
-      "ms": 329
+      "ok": false,
+      "summary": "쿠키 0개",
+      "ms": 96
     },
     {
       "id": "krx.etf.all",
       "note": "ETF 전종목 시세 (세션 있음)",
       "ok": false,
       "error": "영업일 10일 모두 빈 응답",
-      "ms": 3316
+      "ms": 387
     },
     {
       "id": "krx2.stat.04301",
       "note": "MDCSTAT04301 — ETF 전종목 시세",
-      "status": 400,
-      "bytes": 6,
+      "status": 403,
+      "bytes": 415,
       "ok": false,
-      "summary": "JSON 아님: LOGOUT",
-      "ms": 504
+      "summary": "JSON 아님: <HTML><HEAD> <TITLE>Access Denied</TITLE> </HEAD><BODY> <H1>Access Denied</H1> You don't have permission to access \"ht",
+      "ms": 32
     },
     {
       "id": "krx2.stat.04401",
       "note": "MDCSTAT04401 — ETF 개별 시세 추이",
-      "status": 400,
-      "bytes": 6,
+      "status": 403,
+      "bytes": 415,
       "ok": false,
-      "summary": "JSON 아님: LOGOUT",
-      "ms": 512
+      "summary": "JSON 아님: <HTML><HEAD> <TITLE>Access Denied</TITLE> </HEAD><BODY> <H1>Access Denied</H1> You don't have permission to access \"ht",
+      "ms": 59
     },
     {
       "id": "krx2.stat.04501",
       "note": "MDCSTAT04501 — ETF 전종목 등락률",
-      "status": 400,
-      "bytes": 6,
+      "status": 403,
+      "bytes": 415,
       "ok": false,
-      "summary": "JSON 아님: LOGOUT",
-      "ms": 562
+      "summary": "JSON 아님: <HTML><HEAD> <TITLE>Access Denied</TITLE> </HEAD><BODY> <H1>Access Denied</H1> You don't have permission to access \"ht",
+      "ms": 27
     },
     {
       "id": "krx2.stat.04601",
       "note": "MDCSTAT04601 — ETF 투자자별 거래",
-      "status": 400,
-      "bytes": 6,
+      "status": 403,
+      "bytes": 415,
       "ok": false,
-      "summary": "JSON 아님: LOGOUT",
-      "ms": 208
+      "summary": "JSON 아님: <HTML><HEAD> <TITLE>Access Denied</TITLE> </HEAD><BODY> <H1>Access Denied</H1> You don't have permission to access \"ht",
+      "ms": 21
     },
     {
       "id": "krx2.stat.04701",
       "note": "MDCSTAT04701 — ETF 상세 정보",
-      "status": 400,
-      "bytes": 6,
+      "status": 403,
+      "bytes": 415,
       "ok": false,
-      "summary": "JSON 아님: LOGOUT",
-      "ms": 554
+      "summary": "JSON 아님: <HTML><HEAD> <TITLE>Access Denied</TITLE> </HEAD><BODY> <H1>Access Denied</H1> You don't have permission to access \"ht",
+      "ms": 21
     },
     {
       "id": "krx2.stat.04801",
       "note": "MDCSTAT04801 — ETF 구성종목 후보 A",
-      "status": 400,
-      "bytes": 6,
+      "status": 403,
+      "bytes": 415,
       "ok": false,
-      "summary": "JSON 아님: LOGOUT",
-      "ms": 628
+      "summary": "JSON 아님: <HTML><HEAD> <TITLE>Access Denied</TITLE> </HEAD><BODY> <H1>Access Denied</H1> You don't have permission to access \"ht",
+      "ms": 19
     },
     {
       "id": "krx2.stat.04901",
       "note": "MDCSTAT04901 — ETF 구성종목 후보 B",
-      "status": 400,
-      "bytes": 6,
+      "status": 403,
+      "bytes": 415,
       "ok": false,
-      "summary": "JSON 아님: LOGOUT",
-      "ms": 518
+      "summary": "JSON 아님: <HTML><HEAD> <TITLE>Access Denied</TITLE> </HEAD><BODY> <H1>Access Denied</H1> You don't have permission to access \"ht",
+      "ms": 21
     },
     {
       "id": "krx2.stat.05001",
       "note": "MDCSTAT05001 — ETF 구성종목(PDF) 후보 C",
-      "status": 400,
-      "bytes": 6,
+      "status": 403,
+      "bytes": 415,
       "ok": false,
-      "summary": "JSON 아님: LOGOUT",
-      "ms": 519
+      "summary": "JSON 아님: <HTML><HEAD> <TITLE>Access Denied</TITLE> </HEAD><BODY> <H1>Access Denied</H1> You don't have permission to access \"ht",
+      "ms": 19
     },
     {
       "id": "krx2.stat.05101",
       "note": "MDCSTAT05101 — ETF 후보 D",
-      "status": 400,
-      "bytes": 6,
+      "status": 403,
+      "bytes": 415,
       "ok": false,
-      "summary": "JSON 아님: LOGOUT",
-      "ms": 305
+      "summary": "JSON 아님: <HTML><HEAD> <TITLE>Access Denied</TITLE> </HEAD><BODY> <H1>Access Denied</H1> You don't have permission to access \"ht",
+      "ms": 33
     },
     {
       "id": "krx.otp.csv",
       "note": "OTP → CSV 내려받기 (PDF 구성종목)",
-      "ok": true,
-      "status": 403,
-      "bytes": 2531,
-      "summary": "35행 · 헤더: \t\t<html>\r",
-      "sampleRow": "<head>\r",
-      "ms": 771
+      "ok": false,
+      "summary": "OTP 발급 실패 (426B): <HTML><HEAD>\n<TITLE>Access Denied</TITLE>\n</HEAD><BODY>\n<H1>Access Denied</H1>\n ",
+      "ms": 36
     },
     {
       "id": "naver.analysis.full",
@@ -155,7 +152,7 @@
         "etfTop10MajorConstituentAssets[10]{seq,itemCode,itemName,stockCount,etfWeight}"
       ],
       "ok": true,
-      "ms": 712
+      "ms": 711
     },
     {
       "id": "naver.pdf.m.stock",
@@ -163,7 +160,7 @@
       "ok": false,
       "status": 404,
       "summary": "<!doctype html>\n<html lang=\"ko\">\n<head>\n    <meta charset=\"utf-8\">\n    <meta name=\"viewport\" content",
-      "ms": 528
+      "ms": 684
     },
     {
       "id": "naver.pdf.m.stock2",
@@ -171,7 +168,7 @@
       "ok": false,
       "status": 404,
       "summary": "<!doctype html>\n<html lang=\"ko\">\n<head>\n    <meta charset=\"utf-8\">\n    <meta name=\"viewport\" content",
-      "ms": 199
+      "ms": 198
     },
     {
       "id": "naver.pdf.m.stock3",
@@ -179,7 +176,7 @@
       "ok": false,
       "status": 404,
       "summary": "<!doctype html>\n<html lang=\"ko\">\n<head>\n    <meta charset=\"utf-8\">\n    <meta name=\"viewport\" content",
-      "ms": 193
+      "ms": 186
     },
     {
       "id": "naver.pdf.m.stock4",
@@ -187,7 +184,7 @@
       "ok": false,
       "status": 404,
       "summary": "<!doctype html>\n<html lang=\"ko\">\n<head>\n    <meta charset=\"utf-8\">\n    <meta name=\"viewport\" content",
-      "ms": 197
+      "ms": 196
     },
     {
       "id": "naver.pdf.m.stock5",
@@ -195,7 +192,7 @@
       "ok": false,
       "status": 404,
       "summary": "<!doctype html>\n<html lang=\"ko\">\n<head>\n    <meta charset=\"utf-8\">\n    <meta name=\"viewport\" content",
-      "ms": 180
+      "ms": 200
     },
     {
       "id": "naver.pdf.m.stock6",
@@ -203,23 +200,23 @@
       "ok": false,
       "status": 404,
       "summary": "<!doctype html>\n<html lang=\"ko\">\n<head>\n    <meta charset=\"utf-8\">\n    <meta name=\"viewport\" content",
-      "ms": 207
+      "ms": 196
     },
     {
       "id": "naver.pdf.api.etf",
       "note": "국내 구성종목 후보 — api.stock.naver.com/etf/069500/componentStocks",
       "ok": false,
       "status": 404,
-      "summary": "{\"timestamp\":\"2026-08-28T15:00:38.223+0000\",\"status\":404,\"error\":\"Not Found\",\"message\":\"No message a",
-      "ms": 1127
+      "summary": "{\"timestamp\":\"2026-08-28T15:10:20.854+0000\",\"status\":404,\"error\":\"Not Found\",\"message\":\"No message a",
+      "ms": 1117
     },
     {
       "id": "naver.pdf.api.etf2",
       "note": "국내 구성종목 후보 — api.stock.naver.com/stock/069500/etfAnalysis",
       "ok": false,
       "status": 404,
-      "summary": "{\"timestamp\":\"2026-08-28T15:00:38.495+0000\",\"status\":404,\"error\":\"Not Found\",\"message\":\"No message a",
-      "ms": 269
+      "summary": "{\"timestamp\":\"2026-08-28T15:10:21.033+0000\",\"status\":404,\"error\":\"Not Found\",\"message\":\"No message a",
+      "ms": 177
     },
     {
       "id": "naver.pdf.pc.etf",
@@ -227,7 +224,7 @@
       "ok": false,
       "status": 404,
       "summary": "\n<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\" \"http://www.w3.org/TR/html4/loose.dt",
-      "ms": 679
+      "ms": 680
     },
     {
       "id": "naver.pdf.pc.coinfo",
@@ -236,16 +233,16 @@
       "status": 200,
       "bytes": 114084,
       "summary": "HTML · 구성종목 흔적 없음",
-      "ms": 424
+      "ms": 402
     },
     {
       "id": "naver.pdf.pc.main",
       "note": "국내 구성종목 후보 — finance.naver.com/item/main.naver?code=069500",
       "ok": false,
       "status": 200,
-      "bytes": 143057,
+      "bytes": 143062,
       "summary": "HTML · 구성종목 흔적 없음",
-      "ms": 386
+      "ms": 385
     },
     {
       "id": "naver.tabs",
@@ -270,7 +267,7 @@
       "note": "쿠키 + crumb",
       "ok": true,
       "summary": "crumb O / 쿠키 1개",
-      "ms": 74
+      "ms": 78
     },
     {
       "id": "yahoo.cn.510300.SS",
@@ -280,7 +277,7 @@
       "holdingCount": 0,
       "summary": "holdings 0개 · sector 0개 · family - · AUM -",
       "sampleHolding": null,
-      "ms": 58
+      "ms": 72
     },
     {
       "id": "yahoo.cn.510500.SS",
@@ -290,7 +287,7 @@
       "holdingCount": 0,
       "summary": "holdings 0개 · sector 0개 · family - · AUM -",
       "sampleHolding": null,
-      "ms": 53
+      "ms": 51
     },
     {
       "id": "yahoo.cn.588000.SS",
@@ -300,7 +297,7 @@
       "holdingCount": 0,
       "summary": "holdings 0개 · sector 0개 · family - · AUM -",
       "sampleHolding": null,
-      "ms": 47
+      "ms": 53
     },
     {
       "id": "yahoo.cn.512880.SS",
@@ -310,7 +307,7 @@
       "holdingCount": 0,
       "summary": "holdings 0개 · sector 0개 · family - · AUM -",
       "sampleHolding": null,
-      "ms": 50
+      "ms": 52
     },
     {
       "id": "yahoo.cn.159915.SZ",
@@ -320,7 +317,7 @@
       "holdingCount": 0,
       "summary": "holdings 0개 · sector 0개 · family - · AUM -",
       "sampleHolding": null,
-      "ms": 51
+      "ms": 95
     },
     {
       "id": "yahoo.cn.159949.SZ",
@@ -330,7 +327,7 @@
       "holdingCount": 0,
       "summary": "holdings 0개 · sector 0개 · family - · AUM -",
       "sampleHolding": null,
-      "ms": 50
+      "ms": 63
     },
     {
       "id": "yahoo.cn.2823.HK",
@@ -347,7 +344,7 @@
           "fmt": "8.42%"
         }
       },
-      "ms": 49
+      "ms": 69
     },
     {
       "id": "yahoo.cn.3188.HK",
@@ -364,7 +361,7 @@
           "fmt": "5.28%"
         }
       },
-      "ms": 83
+      "ms": 80
     },
     {
       "id": "yahoo.cn.MCHI",
@@ -381,7 +378,7 @@
           "fmt": "14.47%"
         }
       },
-      "ms": 57
+      "ms": 91
     },
     {
       "id": "yahoo.cn.KWEB",
@@ -398,7 +395,7 @@
           "fmt": "9.96%"
         }
       },
-      "ms": 61
+      "ms": 76
     },
     {
       "id": "issuer.kr.tiger",
@@ -407,7 +404,7 @@
       "status": 403,
       "bytes": 261,
       "summary": "261B · <!DOCTYPE HTML PUBLIC \"-//IETF//DTD HTML 2.0//EN\"> <html><head> <title>301 Moved Permanent",
-      "ms": 422
+      "ms": 397
     },
     {
       "id": "issuer.kr.kodex",
@@ -416,7 +413,7 @@
       "status": 200,
       "bytes": 138726,
       "summary": "138726B · <!DOCTYPE html> <html lang=\"ko\" id=\"top-of-site\" class=\"\"> <head> ",
-      "ms": 2681
+      "ms": 2441
     },
     {
       "id": "issuer.kr.kodex.api",
@@ -425,7 +422,7 @@
       "status": 200,
       "bytes": 138726,
       "summary": "138726B · <!DOCTYPE html> <html lang=\"ko\" id=\"top-of-site\" class=\"\"> <head> ",
-      "ms": 1442
+      "ms": 738
     },
     {
       "id": "issuer.kr.seibro",
@@ -434,7 +431,7 @@
       "status": 200,
       "bytes": 1048,
       "summary": "1048B ·  <!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" \"http://www.w3.org",
-      "ms": 4228
+      "ms": 976
     }
   ]
 }

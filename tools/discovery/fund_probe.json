@@ -6,7 +6,7 @@
     "method": "GET",
     "status": 200,
     "type": "text/html",
-    "bytes": 185762,
+    "bytes": 185767,
     "encoding": "euc-kr",
     "sample": "\n\n\t\n\t\n\t\n<html lang='ko'>\n<head>\n\n\n\t\n\t\n\t\t\n\t\t\t\n\t\t\t\t<title>Npay 증권</title>\n\t\t\t\n\t\t\t\n\t\t\n\t\n\n\n\n\n<meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\" />\n\n<meta http-equiv=\"Content-Script-Type\" content=\"text/javascript\">\n<meta http-equiv=\"Content-Style-Type\" content=\"text/css\">\n<meta name=\"apple-mobile-web-app-title\" content=\"Npay 증권\" />\n\n\n\n\n\n\t\n\t\t<meta property=\"og:title\" content=\"Npay 증권\"/>\n\t\t<meta property=\"og:image\" content=\"https://ssl.pstatic.net/static/m/stock/im/2016/08/og_stock-200.png\"/>\n\t\t<meta property=\"og:url\" content=\"https://finance.naver.com\"/>\n\t\t<meta property=\"og:descript",
     "hasJson": false,
@@ -26,7 +26,7 @@
     "method": "GET",
     "status": 200,
     "type": "text/html",
-    "bytes": 185770,
+    "bytes": 185767,
     "encoding": "euc-kr",
     "sample": "\n\n\t\n\t\n\t\n<html lang='ko'>\n<head>\n\n\n\t\n\t\n\t\t\n\t\t\t\n\t\t\t\t<title>Npay 증권</title>\n\t\t\t\n\t\t\t\n\t\t\n\t\n\n\n\n\n<meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\" />\n\n<meta http-equiv=\"Content-Script-Type\" content=\"text/javascript\">\n<meta http-equiv=\"Content-Style-Type\" content=\"text/css\">\n<meta name=\"apple-mobile-web-app-title\" content=\"Npay 증권\" />\n\n\n\n\n\n\t\n\t\t<meta property=\"og:title\" content=\"Npay 증권\"/>\n\t\t<meta property=\"og:image\" content=\"https://ssl.pstatic.net/static/m/stock/im/2016/08/og_stock-200.png\"/>\n\t\t<meta property=\"og:url\" content=\"https://finance.naver.com\"/>\n\t\t<meta property=\"og:descript",
     "hasJson": false,
@@ -142,7 +142,7 @@
     "type": "text/xml",
     "bytes": 695,
     "encoding": "utf-8",
-    "sample": "<?xml version=\"1.0\" encoding=\"UTF-8\"?><root><message>\r\n<proframeHeader>\n<pfmAppName>FS-COM</pfmAppName>\n<pfmSvcName>COMFundUnityInfoSO</pfmSvcName>\n<pfmFnName>select</pfmFnName>\n<pfmGlobalNo>48e25d250afe0096180672196c952f36</pfmGlobalNo>\n<pfmTrDate>20260828</pfmTrDate>\n<pfmTrTime>20260828235949669</pfmTrTime>\n<pfmClntIp>135.232.225.20</pfmClntIp>\n<pfmResponseType>S</pfmResponseType>\n<pfmResponseCode>COMS9009</pfmResponseCode>\n<pfmResponseTitle>MODULE ERROR</pfmResponseTitle>\n<pfmResponseBasc>proframe application name [FS-COM] [COMFundUnityInfoSO] is not found.</pfmResponseBasc>\n<pfmResponseDta",
+    "sample": "<?xml version=\"1.0\" encoding=\"UTF-8\"?><root><message>\r\n<proframeHeader>\n<pfmAppName>FS-COM</pfmAppName>\n<pfmSvcName>COMFundUnityInfoSO</pfmSvcName>\n<pfmFnName>select</pfmFnName>\n<pfmGlobalNo>48ea43210afe0096191a77ff58756ec9</pfmGlobalNo>\n<pfmTrDate>20260829</pfmTrDate>\n<pfmTrTime>20260829000827297</pfmTrTime>\n<pfmClntIp>64.236.153.147</pfmClntIp>\n<pfmResponseType>S</pfmResponseType>\n<pfmResponseCode>COMS9009</pfmResponseCode>\n<pfmResponseTitle>MODULE ERROR</pfmResponseTitle>\n<pfmResponseBasc>proframe application name [FS-COM] [COMFundUnityInfoSO] is not found.</pfmResponseBasc>\n<pfmResponseDta",
     "hasJson": false,
     "looksFrame": false,
     "mentions": {
@@ -178,20 +178,7 @@
     "name": "에프앤가이드 펀드",
     "url": "https://www.fnguide.com/fgdd/",
     "method": "GET",
-    "status": 404,
-    "type": "text/html",
-    "bytes": 80828,
-    "encoding": "utf-8",
-    "sample": "\r\n<!DOCTYPE html>\r\n<html lang=\"ko\">\r\n<head>\r\n    <meta charset=\"utf-8\" />\r\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\" />\r\n    <!--Str : favicon -->\r\n    <link rel=\"icon\" href=\"/favicon.ico?v=20251020\">\r\n    <!--End : favicon -->\r\n    <!--Str : apple-touch-icon -->\r\n    <link rel=\"apple-touch-icon\" sizes=\"180x180\" href=\"/apple-touch-icon-180.png\">\r\n    <link rel=\"apple-touch-icon\" sizes=\"167x167\" href=\"/apple-touch-icon-167.png\">\r\n    <link rel=\"apple-touch-icon\" sizes=\"152x152\" href=\"/apple-touch-icon-152.png\">\r\n    <link rel=\"apple-touch-icon\" href=\"/apple-touch",
-    "hasJson": false,
-    "looksFrame": false,
-    "mentions": {
-      "보유종목": false,
-      "수익률": true,
-      "설정액": false,
-      "보수": true,
-      "펀드코드": false
-    }
+    "error": "fetch failed"
   },
   {
     "group": "vendor",
@@ -310,7 +297,7 @@
   {
     "group": "yahoo",
     "name": "뮤추얼펀드 VFIAX",
-    "url": "https://query1.finance.yahoo.com/v10/finance/quoteSummary/VFIAX?modules=topHoldings,fundProfile,fundPerformance,defaultKeyStatistics,price&crumb=Ag8.IGW5LIO",
+    "url": "https://query1.finance.yahoo.com/v10/finance/quoteSummary/VFIAX?modules=topHoldings,fundProfile,fundPerformance,defaultKeyStatistics,price&crumb=igkPZJe%2FGOw",
     "method": "GET",
     "status": 200,
     "type": "application/json",
@@ -330,7 +317,7 @@
   {
     "group": "yahoo",
     "name": "뮤추얼펀드 FXAIX",
-    "url": "https://query1.finance.yahoo.com/v10/finance/quoteSummary/FXAIX?modules=topHoldings,fundProfile,fundPerformance,defaultKeyStatistics,price&crumb=Ag8.IGW5LIO",
+    "url": "https://query1.finance.yahoo.com/v10/finance/quoteSummary/FXAIX?modules=topHoldings,fundProfile,fundPerformance,defaultKeyStatistics,price&crumb=igkPZJe%2FGOw",
     "method": "GET",
     "status": 200,
     "type": "application/json",
@@ -350,7 +337,7 @@
   {
     "group": "yahoo",
     "name": "뮤추얼펀드 VTSAX",
-    "url": "https://query1.finance.yahoo.com/v10/finance/quoteSummary/VTSAX?modules=topHoldings,fundProfile,fundPerformance,defaultKeyStatistics,price&crumb=Ag8.IGW5LIO",
+    "url": "https://query1.finance.yahoo.com/v10/finance/quoteSummary/VTSAX?modules=topHoldings,fundProfile,fundPerformance,defaultKeyStatistics,price&crumb=igkPZJe%2FGOw",
     "method": "GET",
     "status": 200,
     "type": "application/json",
