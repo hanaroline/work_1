@@ -1,6 +1,6 @@
 # 펀드 원천 탐색
 
-조사 시각: 2026-08-28T15:26:20.570Z
+조사 시각: 2026-08-28T15:37:18.010Z
 
 ETF 화면이 가능했던 이유는 네이버 etfAnalysis 하나가 편입종목을 줬기 때문이다.
 펀드에도 그런 자리가 있는지 확인한 기록. **보유종목 상위 10을 못 구하면
@@ -8,16 +8,16 @@ ETF 화면이 가능했던 이유는 네이버 etfAnalysis 하나가 편입종�
 
 | 분류 | 대상 | 상태 | 크기 | 인코딩 | 보유종목 | 수익률 | 설정액 | 보수 |
 |---|---|---|---:|---|:-:|:-:|:-:|:-:|
-| naver | 펀드 메인 | 200 | 185777 | euc-kr | ○ | · | · | ○ |
-| naver | 펀드 검색 화면 | 200 | 185769 | euc-kr | ○ | · | · | ○ |
+| naver | 펀드 메인 | 200 | 185771 | euc-kr | ○ | · | · | ○ |
+| naver | 펀드 검색 화면 | 200 | 185771 | euc-kr | ○ | · | · | ○ |
 | naver | 펀드 목록 API 후보 | 404 | 2741 | euc-kr | · | · | · | ○ |
 | naver | 모바일 펀드 홈 | 404 | 4209 | utf-8 | · | · | · | · |
 | naver | 모바일 펀드 API 후보 | 404 | 4209 | utf-8 | · | · | · | · |
 | kofia | 펀드다모아 | ✗ fetch failed | – | – | · | · | · | · |
 | kofia | 전자공시 dis | 200 | 536 | utf-8 | · | · | · | · |
 | kofia | 펀드다모아 검색 API 후보 | ✗ fetch failed | – | – | · | · | · | · |
-| kofia | dis .wjson 후보 | 200 | 696 | utf-8 | · | · | · | · |
-| vendor | 펀드닥터(제로인) | 200 | 42171 | utf-8 | ○ | ○ | · | ○ |
+| kofia | dis .wjson 후보 | 200 | 693 | utf-8 | · | · | · | · |
+| vendor | 펀드닥터(제로인) | 200 | 42162 | utf-8 | ○ | ○ | · | ○ |
 | vendor | 에프앤가이드 펀드 | 404 | 80828 | utf-8 | · | ○ | · | ○ |
 | vendor | 한국포스증권(펀드슈퍼마켓) | ✗ fetch failed | – | – | · | · | · | · |
 | amc | 미래에셋자산운용 | 403 | 257 | utf-8 | · | · | · | · |
@@ -27,7 +27,7 @@ ETF 화면이 가능했던 이유는 네이버 etfAnalysis 하나가 편입종�
 | open | 공공데이터포털 금투협 펀드 | 401 | 60 | utf-8 | · | · | · | · |
 | open | 금감원 오픈API | 200 | 39661 | utf-8 | · | · | · | ○ |
 | yahoo | 뮤추얼펀드 VFIAX | 200 | 23253 | euc-kr | ○ | ○ | ○ | ○ |
-| yahoo | 뮤추얼펀드 FXAIX | 200 | 20631 | utf-8 | ○ | ○ | ○ | ○ |
+| yahoo | 뮤추얼펀드 FXAIX | 200 | 20597 | utf-8 | ○ | ○ | ○ | ○ |
 | yahoo | 뮤추얼펀드 VTSAX | 200 | 23461 | utf-8 | ○ | ○ | ○ | ○ |
 | yahoo | 국내 공모펀드 후보(KR) | 400 | 95 | utf-8 | · | · | · | · |
 
@@ -207,15 +207,15 @@ window.onload = function () {
 <pfmAppName>FS-COM</pfmAppName>
 <pfmSvcName>COMFundUnityInfoSO</pfmSvcName>
 <pfmFnName>select</pfmFnName>
-<pfmGlobalNo>48fa6fd50afe0096231f2f16d1303302</pfmGlobalNo>
+<pfmGlobalNo>49046cb80afe00975f7359c51ad1076c</pfmGlobalNo>
 <pfmTrDate>20260829</pfmTrDate>
-<pfmTrTime>20260829002607317</pfmTrTime>
-<pfmClntIp>130.131.215.209</pfmClntIp>
+<pfmTrTime>20260829003701880</pfmTrTime>
+<pfmClntIp>9.234.151.22</pfmClntIp>
 <pfmResponseType>S</pfmResponseType>
 <pfmResponseCode>COMS9009</pfmResponseCode>
 <pfmResponseTitle>MODULE ERROR</pfmResponseTitle>
 <pfmResponseBasc>proframe application name [FS-COM] [COMFundUnityInfoSO] is not found.</pfmResponseBasc>
-<pfmResponseDt
+<pfmResponseDtal>
 ```
 
 ### [vendor] 펀드닥터(제로인)

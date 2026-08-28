@@ -1,6 +1,6 @@
 # 펀드 원천 탐색 2차 — 화면 관찰
 
-조사 시각: 2026-08-28T15:27:21.964Z
+조사 시각: 2026-08-28T15:37:39.590Z
 
 경로를 찍어 맞히는 대신 화면을 열어 **실제로 무엇을 부르는지** 기록했다.
 브라우저 없이 재현되는 것만 수집기에 쓸 수 있다.
@@ -15,7 +15,7 @@
 | 방식 | 주소 |
 |---|---|
 | POST | `https://finance.naver.com/item/item_right_ajax.naver?type=mystock&code=000000&page=1&pageSize=30` |
-| GET | `https://polling.finance.naver.com/api/realtime?_callback=window.__jindo2_callback._3103&query=SERVICE_INDEX%3AKOSPI%2CKOSDAQ%2CKPI200` |
+| GET | `https://polling.finance.naver.com/api/realtime?_callback=window.__jindo2_callback._5210&query=SERVICE_INDEX%3AKOSPI%2CKOSDAQ%2CKPI200` |
 | POST | `https://finance.naver.com/item/item_right_ajax.naver?type=recent&code=000000&page=1&pageSize=30` |
 
 화면에 보인 글:
@@ -79,14 +79,14 @@ NXT
 | 방식 | 주소 |
 |---|---|
 | GET | `https://dis.kofia.or.kr/websquare/index.jsp?w2xPath=/wq/main/main.xml` |
-| GET | `https://dis.kofia.or.kr/websquare/config.xml?postfix=17879308515964654.7959050888885` |
-| GET | `https://dis.kofia.or.kr/wq/main/main.xml?postfix=17879308527864823.52976909284` |
-| GET | `https://dis.kofia.or.kr/wq/com/gnb.xml?postfix=17879308532999277.08770808781` |
-| GET | `https://dis.kofia.or.kr/wq/com/gnbTop.xml?postfix=17879308539579056.787448175875` |
-| GET | `https://dis.kofia.or.kr/wq/com/quick.xml?postfix=17879308541392988.1504553519135` |
-| GET | `https://dis.kofia.or.kr/wq/com/footer.xml?postfix=17879308543024435.630860546597` |
-| GET | `https://dis.kofia.or.kr/wq/com/popup/multiPop.xml?postfix=178793085446658.85271566183681` |
-| GET | `https://dis.kofia.or.kr/wq/com/popup/loading.xml?postfix=17879308546287414.113049197959` |
+| GET | `https://dis.kofia.or.kr/websquare/config.xml?postfix=17879314662491211.652552360718` |
+| GET | `https://dis.kofia.or.kr/wq/main/main.xml?postfix=17879314676045741.223449884577` |
+| GET | `https://dis.kofia.or.kr/wq/com/gnb.xml?postfix=17879314681859182.70664350825` |
+| GET | `https://dis.kofia.or.kr/wq/com/gnbTop.xml?postfix=17879314689254872.460234492636` |
+| GET | `https://dis.kofia.or.kr/wq/com/quick.xml?postfix=17879314691366421.792933128722` |
+| GET | `https://dis.kofia.or.kr/wq/com/footer.xml?postfix=17879314693217870.649181504708` |
+| GET | `https://dis.kofia.or.kr/wq/com/popup/multiPop.xml?postfix=17879314695074491.944461598513` |
+| GET | `https://dis.kofia.or.kr/wq/com/popup/loading.xml?postfix=17879314696914222.190191897569` |
 | GET | `https://dis.kofia.or.kr/js/cond/gnbTotalSearch.js?postfix=2026_08` |
 
 ## 금투협 펀드공시(통합검색)
@@ -99,8 +99,8 @@ NXT
 | 방식 | 주소 |
 |---|---|
 | GET | `https://dis.kofia.or.kr/websquare/index.jsp?w2xPath=/wq/fundann/DISFundFeeStstCom.xml` |
-| GET | `https://dis.kofia.or.kr/websquare/config.xml?postfix=17879308558112784.9346392759335` |
-| GET | `https://dis.kofia.or.kr/wq/fundann/DISFundFeeStstCom.xml?postfix=17879308571573510.348554477092` |
+| GET | `https://dis.kofia.or.kr/websquare/config.xml?postfix=17879314710396088.586159371242` |
+| GET | `https://dis.kofia.or.kr/wq/fundann/DISFundFeeStstCom.xml?postfix=17879314725823232.511238407748` |
 
 ## 금투협 펀드 자산구성
 
@@ -112,8 +112,8 @@ NXT
 | 방식 | 주소 |
 |---|---|
 | GET | `https://dis.kofia.or.kr/websquare/index.jsp?w2xPath=/wq/fundann/DISFundAssetStst.xml` |
-| GET | `https://dis.kofia.or.kr/websquare/config.xml?postfix=17879308616589648.076863108556` |
-| GET | `https://dis.kofia.or.kr/wq/fundann/DISFundAssetStst.xml?postfix=17879308629965884.927015983439` |
+| GET | `https://dis.kofia.or.kr/websquare/config.xml?postfix=17879314772236284.579709615359` |
+| GET | `https://dis.kofia.or.kr/wq/fundann/DISFundAssetStst.xml?postfix=1787931478764723.6510284964081` |
 
 ## 펀드다모아
 
@@ -132,12 +132,12 @@ NXT
 | 방식 | 주소 |
 |---|---|
 | GET | `https://www.google.com/recaptcha/api.js` |
+| POST | `https://analytics.google.com/g/collect?v=2&tid=G-D7RCDX73LB&gtm=45je68q1h1v9136902590za20g&_p=1787931487648&_gaz=1&gcd=13l3l3l3l1l1&npa=0&dma=0&_eu=AAAIAGAC&are=1&cid=1688012500.17` |
 | GET | `https://www.funddoctor.co.kr/static/image/common/icon_search.svg` |
-| POST | `https://analytics.google.com/g/collect?v=2&tid=G-D7RCDX73LB&gtm=45je68q1v9136902590za20g&_p=1787930871244&_gaz=1&gcd=13l3l3l3l1l1&npa=0&dma=0&_eu=AAAIAGAC&are=1&cid=1120126209.1787` |
-| GET | `https://www.google.com/recaptcha/api2/anchor?ar=1&k=6LcqaAgpAAAAACv26quLzq3mkW_G2mlFrLl0Y3KY&co=aHR0cHM6Ly93d3cuZnVuZGRvY3Rvci5jby5rcjo0NDM.&hl=en&v=xg_pWYS8-HRESiV6Rdg4aY_R&size=n` |
-| GET | `https://www.google.com/recaptcha/api2/webworker.js?hl=en&v=xg_pWYS8-HRESiV6Rdg4aY_R` |
+| GET | `https://www.google.com/recaptcha/api2/anchor?ar=1&k=6LcqaAgpAAAAACv26quLzq3mkW_G2mlFrLl0Y3KY&co=aHR0cHM6Ly93d3cuZnVuZGRvY3Rvci5jby5rcjo0NDM.&hl=en&v=ox8dsmiqR62P1bqhciWOn7Fg&size=n` |
+| GET | `https://www.google.com/recaptcha/api2/webworker.js?hl=en&v=ox8dsmiqR62P1bqhciWOn7Fg` |
 | GET | `https://www.gstatic.com/recaptcha/api2/logo_48.png` |
-| GET | `https://www.google.com/recaptcha/api2/bframe?hl=en&v=xg_pWYS8-HRESiV6Rdg4aY_R&k=6LcqaAgpAAAAACv26quLzq3mkW_G2mlFrLl0Y3KY&bft=0dAFcWeA745pJuNHORh5mE5tjTOqDT2soBSUaAP6vUCzPZ7Ww2Ivdhn` |
+| GET | `https://www.google.com/recaptcha/api2/bframe?hl=en&v=ox8dsmiqR62P1bqhciWOn7Fg&k=6LcqaAgpAAAAACv26quLzq3mkW_G2mlFrLl0Y3KY&bft=0dAFcWeA4_SSmgEG1KV7V3mmYRb9oFRA3gxfDVn0tIwIF7NzYyz0ZIk` |
 
 화면에 보인 글:
 
@@ -169,4 +169,4 @@ Copyright KG ZEROIN All rights reserved.
 
 | 출처 | 방식 | 주소 | 결과 |
 |---|---|---|---|
-| 네이버 펀드 | GET | `https://polling.finance.naver.com/api/realtime?_callback=window.__jindo2_callback._3103&query=SERVICE_INDEX%3AKOSPI%2CKO` | ✓ 200 573B |
+| 네이버 펀드 | GET | `https://polling.finance.naver.com/api/realtime?_callback=window.__jindo2_callback._5210&query=SERVICE_INDEX%3AKOSPI%2CKO` | ✓ 200 573B |
