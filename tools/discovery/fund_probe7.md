@@ -1,6 +1,6 @@
 # 펀드 원천 탐색 7차 — 네이버는 살아 있었다
 
-조사 시각: 2026-08-28T16:22:12.521Z
+조사 시각: 2026-08-28T16:31:36.029Z
 
 앞선 판단을 정정한다. 1차에서 `finance.naver.com/fund/` 가 일반 증권 홈으로
 넘어가는 것을 보고 "펀드 서비스가 없어졌다" 고 적었는데 **틀렸다.**
@@ -29,17 +29,17 @@ https://stock.naver.com/domestic/fund/K55235B39916/total
 | 200 | 4000 | `https://stock.naver.com/api/securityService/integration/indicators?indicatorCodes=KOSPI%2CKOSDAQ%2CKPI200%2C.DJI%2C.INX%2CFX_USDKRW%2C.IXIC%2CGCcv1%2CCLcv1` |
 | 200 | 1050 | `https://stock.naver.com/api/fund/funds/K55235B39916/left-panel` |
 | 200 | 113 | `https://stock.naver.com/api/stockSecurity/notices/v2/banners?size=2&type=PC_TOP` |
-| 200 | 1399 | `https://stock.naver.com/api/fund/funds/K55235B39916/fund-performance` |
 | 200 | 4000 | `https://stock.naver.com/api/fund/funds/K55235B39916/base-price/chart?term=3m` |
+| 200 | 1399 | `https://stock.naver.com/api/fund/funds/K55235B39916/fund-performance` |
 | 200 | 1722 | `https://stock.naver.com/api/fund/funds/K55235B39916/chart-price-panel` |
 | 400 | 43 | `https://stock.naver.com/api/personal/guest/recent/products` |
 | 200 | 4000 | `https://stock.naver.com/api/personal/users/favorite/ranking?pageSize=10` |
 | 200 | 239 | `https://stock.naver.com/api/fund/funds/K55235B39916/metrics/detail?term=1y` |
 | 200 | 4000 | `https://stock.naver.com/api/polling/favorite-aggregate/favoritePolling` |
 | 200 | 2924 | `https://polling.finance.naver.com/api/realtime/domestic/index/KOSPI,KOSDAQ,KPI200` |
-| 200 | 2942 | `https://polling.finance.naver.com/api/realtime/worldstock/index/.DJI,.INX,.IXIC` |
-| 200 | 835 | `https://polling.finance.naver.com/api/realtime/marketindex/metals/GCcv1` |
-| 200 | 827 | `https://polling.finance.naver.com/api/realtime/marketindex/energy/CLcv1` |
+| 200 | 2933 | `https://polling.finance.naver.com/api/realtime/worldstock/index/.DJI,.INX,.IXIC` |
+| 200 | 836 | `https://polling.finance.naver.com/api/realtime/marketindex/metals/GCcv1` |
+| 200 | 829 | `https://polling.finance.naver.com/api/realtime/marketindex/energy/CLcv1` |
 
 ### 펀드 종합 + 자산구성 클릭
 
@@ -54,22 +54,22 @@ https://stock.naver.com/domestic/fund/K55235B39916/total
 | 200 | 2924 | `https://polling.finance.naver.com/api/realtime/domestic/index/KOSPI,KOSDAQ,KPI200` |
 | 200 | 28 | `https://stock.naver.com/api/personal/users/favorite/groups?includeItems=true&categoryTypes=stock%2Cipo%2Ccrypto%2Cfund` |
 | 200 | 113 | `https://stock.naver.com/api/stockSecurity/notices/v2/banners?size=2&type=PC_TOP` |
-| 200 | 4000 | `https://stock.naver.com/api/securityService/integration/indicators?indicatorCodes=KOSPI%2CKOSDAQ%2CKPI200%2C.DJI%2C.INX%2CFX_USDKRW%2C.IXIC%2CGCcv1%2CCLcv1` |
 | 200 | 1050 | `https://stock.naver.com/api/fund/funds/K55235B39916/left-panel` |
+| 200 | 4000 | `https://stock.naver.com/api/securityService/integration/indicators?indicatorCodes=KOSPI%2CKOSDAQ%2CKPI200%2C.DJI%2C.INX%2CFX_USDKRW%2C.IXIC%2CGCcv1%2CCLcv1` |
 | 200 | 4000 | `https://stock.naver.com/api/fund/funds/K55235B39916/base-price/chart?term=3m` |
-| 200 | 1399 | `https://stock.naver.com/api/fund/funds/K55235B39916/fund-performance` |
 | 200 | 4000 | `https://stock.naver.com/api/personal/users/favorite/ranking?pageSize=10` |
+| 200 | 1399 | `https://stock.naver.com/api/fund/funds/K55235B39916/fund-performance` |
 | 200 | 1722 | `https://stock.naver.com/api/fund/funds/K55235B39916/chart-price-panel` |
-| 200 | 2942 | `https://polling.finance.naver.com/api/realtime/worldstock/index/.DJI,.INX,.IXIC` |
+| 200 | 2933 | `https://polling.finance.naver.com/api/realtime/worldstock/index/.DJI,.INX,.IXIC` |
 | 200 | 16 | `https://stock.naver.com/api/personal/guest/recent/products` |
 | 200 | 4000 | `https://stock.naver.com/api/polling/favorite-aggregate/favoritePolling` |
 | 200 | 239 | `https://stock.naver.com/api/fund/funds/K55235B39916/metrics/detail?term=1y` |
-| 200 | 835 | `https://polling.finance.naver.com/api/realtime/marketindex/metals/GCcv1` |
-| 200 | 827 | `https://polling.finance.naver.com/api/realtime/marketindex/energy/CLcv1` |
+| 200 | 836 | `https://polling.finance.naver.com/api/realtime/marketindex/metals/GCcv1` |
+| 200 | 829 | `https://polling.finance.naver.com/api/realtime/marketindex/energy/CLcv1` |
 | 200 | 2924 | `https://polling.finance.naver.com/api/realtime/domestic/index/KOSPI,KOSDAQ,KPI200` |
-| 200 | 2942 | `https://polling.finance.naver.com/api/realtime/worldstock/index/.DJI,.INX,.IXIC` |
-| 200 | 835 | `https://polling.finance.naver.com/api/realtime/marketindex/metals/GCcv1` |
-| 200 | 827 | `https://polling.finance.naver.com/api/realtime/marketindex/energy/CLcv1` |
+| 200 | 2940 | `https://polling.finance.naver.com/api/realtime/worldstock/index/.DJI,.INX,.IXIC` |
+| 200 | 836 | `https://polling.finance.naver.com/api/realtime/marketindex/metals/GCcv1` |
+| 200 | 829 | `https://polling.finance.naver.com/api/realtime/marketindex/energy/CLcv1` |
 
 ### 펀드 하위 화면 /performance
 
@@ -84,18 +84,18 @@ https://stock.naver.com/domestic/fund/K55235B39916/total
 | 200 | 2924 | `https://polling.finance.naver.com/api/realtime/domestic/index/KOSPI,KOSDAQ,KPI200` |
 | 200 | 28 | `https://stock.naver.com/api/personal/users/favorite/groups?includeItems=true&categoryTypes=stock%2Cipo%2Ccrypto%2Cfund` |
 | 200 | 4000 | `https://stock.naver.com/api/securityService/integration/indicators?indicatorCodes=KOSPI%2CKOSDAQ%2CKPI200%2C.DJI%2C.INX%2CFX_USDKRW%2C.IXIC%2CGCcv1%2CCLcv1` |
-| 200 | 966 | `https://stock.naver.com/api/fund/funds/K55235B39916/prices/daily?date=2026-08-28&size=10` |
-| 200 | 113 | `https://stock.naver.com/api/stockSecurity/notices/v2/banners?size=2&type=PC_TOP` |
 | 200 | 1399 | `https://stock.naver.com/api/fund/funds/K55235B39916/fund-performance` |
 | 200 | 1050 | `https://stock.naver.com/api/fund/funds/K55235B39916/left-panel` |
+| 200 | 113 | `https://stock.naver.com/api/stockSecurity/notices/v2/banners?size=2&type=PC_TOP` |
+| 200 | 966 | `https://stock.naver.com/api/fund/funds/K55235B39916/prices/daily?date=2026-08-28&size=10` |
 | 200 | 209 | `https://stock.naver.com/api/fund/funds/K55235B39916/classes/returns` |
 | 200 | 4000 | `https://stock.naver.com/api/personal/users/favorite/ranking?pageSize=10` |
-| 200 | 2942 | `https://polling.finance.naver.com/api/realtime/worldstock/index/.DJI,.INX,.IXIC` |
+| 200 | 2938 | `https://polling.finance.naver.com/api/realtime/worldstock/index/.DJI,.INX,.IXIC` |
 | 200 | 16 | `https://stock.naver.com/api/personal/guest/recent/products` |
 | 200 | 239 | `https://stock.naver.com/api/fund/funds/K55235B39916/metrics/detail?term=1y` |
 | 200 | 4000 | `https://stock.naver.com/api/polling/favorite-aggregate/favoritePolling` |
-| 200 | 835 | `https://polling.finance.naver.com/api/realtime/marketindex/metals/GCcv1` |
-| 200 | 827 | `https://polling.finance.naver.com/api/realtime/marketindex/energy/CLcv1` |
+| 200 | 836 | `https://polling.finance.naver.com/api/realtime/marketindex/metals/GCcv1` |
+| 200 | 829 | `https://polling.finance.naver.com/api/realtime/marketindex/energy/CLcv1` |
 
 ### 펀드 하위 화면 /analysis
 
@@ -152,20 +152,20 @@ https://stock.naver.com/domestic/fund/K55235B39916/total
 | 주소 | 결과 | 보유종목 | 수익률 | 설정액 | 보수 | 자산구성 |
 |---|---|:-:|:-:|:-:|:-:|:-:|
 | `https://stock.naver.com/api/auth/userInfo` | ✓ 200 112B | · | · | · | · | · |
-| `https://stock.naver.com/api/securityService/integration/indicators?indicatorCodes=KOSPI%2CKOSDAQ%2CKPI200%2C.DJI%2C.INX%` | ✓ 200 5327B | ○ | · | · | · | · |
+| `https://stock.naver.com/api/securityService/integration/indicators?indicatorCodes=KOSPI%2CKOSDAQ%2CKPI200%2C.DJI%2C.INX%` | ✓ 200 5326B | ○ | · | · | · | · |
 | `https://stock.naver.com/api/fund/funds/K55235B39916/left-panel` | ✓ 200 1050B | · | ○ | ○ | ○ | · |
 | `https://stock.naver.com/api/stockSecurity/notices/v2/banners?size=2&type=PC_TOP` | ✓ 200 113B | · | · | · | · | · |
-| `https://stock.naver.com/api/fund/funds/K55235B39916/fund-performance` | ✓ 200 1399B | · | ○ | · | · | · |
 | `https://stock.naver.com/api/fund/funds/K55235B39916/base-price/chart?term=3m` | ✓ 200 5148B | · | · | · | · | · |
+| `https://stock.naver.com/api/fund/funds/K55235B39916/fund-performance` | ✓ 200 1399B | · | ○ | · | · | · |
 | `https://stock.naver.com/api/fund/funds/K55235B39916/chart-price-panel` | ✓ 200 1722B | · | · | · | · | ○ |
 | `https://stock.naver.com/api/personal/guest/recent/products` | △ 400 43B | · | · | · | · | · |
 | `https://stock.naver.com/api/personal/users/favorite/ranking?pageSize=10` | ✓ 200 5462B | ○ | · | · | · | · |
 | `https://stock.naver.com/api/fund/funds/K55235B39916/metrics/detail?term=1y` | ✓ 200 239B | · | · | · | · | · |
 | `https://stock.naver.com/api/polling/favorite-aggregate/favoritePolling` | △ 404 118B | · | · | · | · | · |
 | `https://polling.finance.naver.com/api/realtime/domestic/index/KOSPI,KOSDAQ,KPI200` | ✓ 200 2924B | ○ | · | · | · | · |
-| `https://polling.finance.naver.com/api/realtime/worldstock/index/.DJI,.INX,.IXIC` | ✓ 200 2942B | · | · | · | · | · |
+| `https://polling.finance.naver.com/api/realtime/worldstock/index/.DJI,.INX,.IXIC` | ✓ 200 2933B | · | · | · | · | · |
 | `https://polling.finance.naver.com/api/realtime/marketindex/metals/GCcv1` | ✓ 200 836B | · | · | · | · | · |
-| `https://polling.finance.naver.com/api/realtime/marketindex/energy/CLcv1` | ✓ 200 827B | · | · | · | · | · |
+| `https://polling.finance.naver.com/api/realtime/marketindex/energy/CLcv1` | ✓ 200 829B | · | · | · | · | · |
 | `https://stock.naver.com/api/personal/users/favorite/groups?includeItems=true&categoryTypes=stock%2Cipo%2Ccrypto%2Cfund` | △ 200 28B | · | · | · | · | · |
 | `https://stock.naver.com/api/fund/funds/K55235B39916/prices/daily?date=2026-08-28&size=10` | ✓ 200 966B | · | · | · | · | · |
 | `https://stock.naver.com/api/fund/funds/K55235B39916/classes/returns` | ✓ 200 209B | · | ○ | · | ○ | · |
@@ -196,16 +196,16 @@ https://stock.naver.com/domestic/fund/K55235B39916/total
 [{"noticeId":"150","title":"8월 해외주식 및 선물 휴장 안내"},{"noticeId":"149","title":"새롭게 변화될 Npay 증권 PC서비스를 먼저 만나보세요!  "}]
 ```
 
-### `https://stock.naver.com/api/fund/funds/K55235B39916/fund-performance`
-
-```json
-{"performance":{"tradeDate":"2026-08-27","returnRate1m":7.249547,"returnRate3m":-1.7180155,"returnRate1y":24.7819029,"standardDeviation":17.689973331,"trackingError":18.110737975,"sharpe":1.227047755},"periodReturns":{"baseDate":"2026-08-27","returns":[{"term":"1d","fundReturn":0.2365916,"benchmarkReturn":null,"peerCompanyReturn":null},{"term":"1w","fundReturn":0.2512681,"benchmarkReturn":-1.6787722,"peerCompanyReturn":null},{"term":"1m","fundReturn":7.249547,"benchmarkReturn":-1.9567338,"peerCompanyReturn":null},{"term":"3m","fundReturn":-1.7180155,"benchmarkReturn":-5.9271424,"peerCompanyReturn":null},{"term":"6m","fundReturn":13.6865533,"benchmarkReturn":5.661221,"peerCompanyReturn":null},{"term":"9m","fundReturn":18.1521533,"benchmarkReturn":9.3286764,"peerCompanyReturn":null},{"term":"ytd","fundReturn":14.0873147,"benchmarkReturn":10.5131027,"peerCompanyReturn":null},{"term":"1y","fundReturn":24.7819029,"benchmarkReturn":22.4573935,"peerCompanyReturn":null},{"term":"2y","fundReturn":43.7491732,"benchmarkReturn":48.2065874,"peerCompanyReturn":null},{"term":"3y","fundReturn":87.2107768,"benchmarkReturn":89.6235653,"peerCompanyReturn":null},{"term":"5y","fundReturn":83.9115489,"benchmarkReturn":106.028332,"peerCompanyReturn":null},{"term":"dx","fundReturn":6.715499971,"benchmarkReturn":null,"peerCompanyReturn":null}]},"metricsTerms":{"terms":["1m","3m","6m","1y","3y","5y"]}}
-```
-
 ### `https://stock.naver.com/api/fund/funds/K55235B39916/base-price/chart?term=3m`
 
 ```json
 {"basePrice":"5956.79","derivedNav":"4611116881228","latestTradeDate":"2026-08-27","series":[{"tradeDate":"2026-05-27","basePrice":"6105.15","derivedNav":"4862667956394"},{"tradeDate":"2026-05-28","basePrice":"6082.68","derivedNav":"4842947623000"},{"tradeDate":"2026-05-29","basePrice":"6035.87","derivedNav":"4796685946630"},{"tradeDate":"2026-06-01","basePrice":"6094.76","derivedNav":"4827999492874"},{"tradeDate":"2026-06-02","basePrice":"6150.03","derivedNav":"4861462881422"},{"tradeDate":"2026-06-04","basePrice":"6297.69","derivedNav":"4970115147991"},{"tradeDate":"2026-06-05","basePrice":"6207.73","derivedNav":"4887154844435"},{"tradeDate":"2026-06-08","basePrice":"6229.74","derivedNav":"4893600472925"},{"tradeDate":"2026-06-09","basePrice":"6033.05","derivedNav":"4725344923658"},{"tradeDate":"2026-06-10","basePrice":"6000.52","derivedNav":"4693567301737"},{"tradeDate":"2026-06-11","basePrice":"5847.05","derivedNav":"4571055132409"},{"tradeDate":"2026-06-12","basePrice":"5840.40","derivedNav":"4564281600338"},{"tradeDate":"2026-06-15","basePrice":"5800.90","derivedNav":"4526238588960"},{"tradeDate":"2026-06-16","basePrice":"5891.15","derivedNav":"4603245086501"},{"tradeDate":"2026-06-17","basePrice":"5981.10","derivedNav":"4676975496807"},{"tradeDate":"2026-06-18","basePrice":"5917.66","derivedNav":"4657127845588"},{"tradeDate":"2026-06-19","basePrice":"5910.72","derivedNav":"4650769271847"},{"tradeDate":"2026-06-22","basePrice":"5891.68","derivedNav":"4630933141316"},{"t
+```
+
+### `https://stock.naver.com/api/fund/funds/K55235B39916/fund-performance`
+
+```json
+{"performance":{"tradeDate":"2026-08-27","returnRate1m":7.249547,"returnRate3m":-1.7180155,"returnRate1y":24.7819029,"standardDeviation":17.689973331,"trackingError":18.110737975,"sharpe":1.227047755},"periodReturns":{"baseDate":"2026-08-27","returns":[{"term":"1d","fundReturn":0.2365916,"benchmarkReturn":null,"peerCompanyReturn":null},{"term":"1w","fundReturn":0.2512681,"benchmarkReturn":-1.6787722,"peerCompanyReturn":null},{"term":"1m","fundReturn":7.249547,"benchmarkReturn":-1.9567338,"peerCompanyReturn":null},{"term":"3m","fundReturn":-1.7180155,"benchmarkReturn":-5.9271424,"peerCompanyReturn":null},{"term":"6m","fundReturn":13.6865533,"benchmarkReturn":5.661221,"peerCompanyReturn":null},{"term":"9m","fundReturn":18.1521533,"benchmarkReturn":9.3286764,"peerCompanyReturn":null},{"term":"ytd","fundReturn":14.0873147,"benchmarkReturn":10.5131027,"peerCompanyReturn":null},{"term":"1y","fundReturn":24.7819029,"benchmarkReturn":22.4573935,"peerCompanyReturn":null},{"term":"2y","fundReturn":43.7491732,"benchmarkReturn":48.2065874,"peerCompanyReturn":null},{"term":"3y","fundReturn":87.2107768,"benchmarkReturn":89.6235653,"peerCompanyReturn":null},{"term":"5y","fundReturn":83.9115489,"benchmarkReturn":106.028332,"peerCompanyReturn":null},{"term":"dx","fundReturn":6.715499971,"benchmarkReturn":null,"peerCompanyReturn":null}]},"metricsTerms":{"terms":["1m","3m","6m","1y","3y","5y"]}}
 ```
 
 ### `https://stock.naver.com/api/fund/funds/K55235B39916/chart-price-panel`
@@ -229,25 +229,25 @@ https://stock.naver.com/domestic/fund/K55235B39916/total
 ### `https://polling.finance.naver.com/api/realtime/domestic/index/KOSPI,KOSDAQ,KPI200`
 
 ```json
-{"pollingInterval":70000,"datas":[{"itemCode":"KOSPI","stockName":"코스피","stockExchangeType":{"code":"KS","zoneId":"Asia/Seoul","nationType":"KOR","delayTime":0,"startTime":"0900","endTime":"1530","closePriceSendTime":"1630","nameKor":"코스피","nameEng":"KOSPI","name":"KOSPI","nationCode":"KOR","nationName":"대한민국","stockType":"domestic"},"closePrice":"6,788.88","compareToPreviousClosePrice":"-123.49","compareToPreviousPrice":{"code":"5","text":"하락","name":"FALLING"},"fluctuationsRatio":"-1.79","openPrice":"6,846.54","highPrice":"6,901.78","lowPrice":"6,780.13","accumulatedTradingVolume":"292,615천주","accumulatedTradingValue":"21,637,450백만","marketStatus":"CLOSE","localTradedAt":"2026-08-28T18:59:00+09:00","symbolCode":"KOSPI","fluctuationsRatioRaw":"-1.79","openPriceRaw":"6846.54","highPriceRaw":"6901.78","lowPriceRaw":"6780.13","accumulatedTradingVolumeRaw":"292615000","accumulatedTradingValueRaw":"21637450000000","compareToPreviousClosePriceRaw":"-123.49","closePriceRaw":"6788.88"},{"itemCode":"KOSDAQ","stockName":"코스닥","stockExchangeType":{"code":"KQ","zoneId":"Asia/Seoul","nationType":"KOR","delayTime":0,"startTime":"0900","endTime":"1530","closePriceSendTime":"1630","nameKor":"코스닥","nameEng":"KOSDAQ","name":"KOSDAQ","nationCode":"KOR","nationName":"대한민국","stockType":"domestic"},"closePrice":"838.41","compareToPreviousClosePrice":"0.76","compareToPreviousPrice":{"code":"2","text":"상승","name":"RISING"},"fluctuationsRatio":"0.09","openPrice":"835.23","highPrice":"840.85","lowPri
+{"pollingInterval":70000,"datas":[{"itemCode":"KOSPI","stockName":"코스피","stockExchangeType":{"code":"KS","zoneId":"Asia/Seoul","nationType":"KOR","delayTime":0,"startTime":"0900","endTime":"1530","closePriceSendTime":"1630","nameKor":"코스피","nameEng":"KOSPI","nationName":"대한민국","nationCode":"KOR","stockType":"domestic","name":"KOSPI"},"closePrice":"6,788.88","compareToPreviousClosePrice":"-123.49","compareToPreviousPrice":{"code":"5","text":"하락","name":"FALLING"},"fluctuationsRatio":"-1.79","openPrice":"6,846.54","highPrice":"6,901.78","lowPrice":"6,780.13","accumulatedTradingVolume":"292,615천주","accumulatedTradingValue":"21,637,450백만","marketStatus":"CLOSE","localTradedAt":"2026-08-28T18:59:00+09:00","symbolCode":"KOSPI","compareToPreviousClosePriceRaw":"-123.49","accumulatedTradingVolumeRaw":"292615000","accumulatedTradingValueRaw":"21637450000000","closePriceRaw":"6788.88","fluctuationsRatioRaw":"-1.79","openPriceRaw":"6846.54","highPriceRaw":"6901.78","lowPriceRaw":"6780.13"},{"itemCode":"KOSDAQ","stockName":"코스닥","stockExchangeType":{"code":"KQ","zoneId":"Asia/Seoul","nationType":"KOR","delayTime":0,"startTime":"0900","endTime":"1530","closePriceSendTime":"1630","nameKor":"코스닥","nameEng":"KOSDAQ","nationName":"대한민국","nationCode":"KOR","stockType":"domestic","name":"KOSDAQ"},"closePrice":"838.41","compareToPreviousClosePrice":"0.76","compareToPreviousPrice":{"code":"2","text":"상승","name":"RISING"},"fluctuationsRatio":"0.09","openPrice":"835.23","highPrice":"840.85","lowPri
 ```
 
 ### `https://polling.finance.naver.com/api/realtime/worldstock/index/.DJI,.INX,.IXIC`
 
 ```json
-{"pollingInterval":7000,"datas":[{"reutersCode":".DJI","indexName":"다우존스","stockExchangeType":{"code":"NYS","zoneId":"EST5EDT","nationType":"USA","delayTime":0,"startTime":"0930","endTime":"1600","closePriceSendTime":"2031","nameKor":"뉴욕 거래소","nameEng":"New York Stock Exchange","name":"NYSE","nationCode":"USA","nationName":"미국","stockType":"worldstock"},"closePrice":"53,543.70","compareToPreviousClosePrice":"-25.74","compareToPreviousPrice":{"code":"5","text":"하락","name":"FALLING"},"fluctuationsRatio":"-0.05","openPrice":"53,611.94","highPrice":"53,819.65","lowPrice":"53,498.73","accumulatedTradingVolume":"233,165천주","accumulatedTradingValue":"-","marketStatus":"OPEN","localTradedAt":"2026-08-28T12:23:09-04:00","symbolCode":"DJI","accumulatedTradingVolumeRaw":"233165000","accumulatedTradingValueRaw":"","closePriceRaw":"53543.70","fluctuationsRatioRaw":"-0.05","openPriceRaw":"53611.94","highPriceRaw":"53819.65","lowPriceRaw":"53498.73","compareToPreviousClosePriceRaw":"-25.74"},{"reutersCode":".INX","indexName":"S&P 500","stockExchangeType":{"code":"NYS","zoneId":"EST5EDT","nationType":"USA","delayTime":0,"startTime":"0930","endTime":"1600","closePriceSendTime":"2031","nameKor":"뉴욕 거래소","nameEng":"New York Stock Exchange","name":"NYSE","nationCode":"USA","nationName":"미국","stockType":"worldstock"},"closePrice":"7,715.09","compareToPreviousClosePrice":"-15.90","compareToPreviousPrice":{"code":"5","text":"하락","name":"FALLING"},"fluctuationsRatio":"-0.21","openPrice":"7,735.17","
+{"pollingInterval":7000,"datas":[{"reutersCode":".DJI","indexName":"다우존스","stockExchangeType":{"code":"NYS","zoneId":"EST5EDT","nationType":"USA","delayTime":0,"startTime":"0930","endTime":"1600","closePriceSendTime":"2031","nameKor":"뉴욕 거래소","nameEng":"New York Stock Exchange","nationCode":"USA","nationName":"미국","stockType":"worldstock","name":"NYSE"},"closePrice":"53,574.73","compareToPreviousClosePrice":"5.29","compareToPreviousPrice":{"code":"2","text":"상승","name":"RISING"},"fluctuationsRatio":"0.01","openPrice":"53,611.94","highPrice":"53,819.65","lowPrice":"53,498.73","accumulatedTradingVolume":"240,511천주","accumulatedTradingValue":"-","marketStatus":"OPEN","localTradedAt":"2026-08-28T12:32:34-04:00","symbolCode":"DJI","compareToPreviousClosePriceRaw":"5.29","accumulatedTradingVolumeRaw":"240511000","accumulatedTradingValueRaw":"","closePriceRaw":"53574.73","fluctuationsRatioRaw":"0.01","openPriceRaw":"53611.94","highPriceRaw":"53819.65","lowPriceRaw":"53498.73"},{"reutersCode":".INX","indexName":"S&P 500","stockExchangeType":{"code":"NYS","zoneId":"EST5EDT","nationType":"USA","delayTime":0,"startTime":"0930","endTime":"1600","closePriceSendTime":"2031","nameKor":"뉴욕 거래소","nameEng":"New York Stock Exchange","nationCode":"USA","nationName":"미국","stockType":"worldstock","name":"NYSE"},"closePrice":"7,719.84","compareToPreviousClosePrice":"-11.15","compareToPreviousPrice":{"code":"5","text":"하락","name":"FALLING"},"fluctuationsRatio":"-0.14","openPrice":"7,735.17","highPri
 ```
 
 ### `https://polling.finance.naver.com/api/realtime/marketindex/metals/GCcv1`
 
 ```json
-{"pollingInterval":7000,"datas":[{"reutersCode":"GCcv1","symbolCode":"GC","name":"국제 금","stockExchangeType":{"code":"CMX","zoneId":"CST6CDT","nationType":"USA","delayTime":10,"startTime":"1700","endTime":"1600","closePriceSendTime":"1600","nameKor":"뉴욕상품거래소","nameEng":"Commodity Exchange","nationCode":"USA","nationName":"미국","stockType":"worldstock","name":"COMEX"},"closePrice":"4,556.40","fluctuations":"-107.60","fluctuationsRatio":"-2.31","openPrice":"4,656.00","highPrice":"4,688.00","lowPrice":"4,556.00","accumulatedTradingVolume":"188,493","accumulatedTradingValue":"-","fluctuationsType":{"code":"5","text":"하락","name":"FALLING"},"marketStatus":"OPEN","localTradedAt":"2026-08-28T11:13:10-05:00","unit":"USD/OZS","tradeStopType":null,"accumulatedTradingVolumeRaw":"188493","closePriceRaw":"4556.40"}],"time":"20260829012310"}
+{"pollingInterval":7000,"datas":[{"reutersCode":"GCcv1","symbolCode":"GC","name":"국제 금","stockExchangeType":{"code":"CMX","zoneId":"CST6CDT","nationType":"USA","delayTime":10,"startTime":"1700","endTime":"1600","closePriceSendTime":"1600","nameKor":"뉴욕상품거래소","nameEng":"Commodity Exchange","nationCode":"USA","nationName":"미국","stockType":"worldstock","name":"COMEX"},"closePrice":"4,521.40","fluctuations":"-142.60","fluctuationsRatio":"-3.06","openPrice":"4,656.00","highPrice":"4,688.00","lowPrice":"4,518.50","accumulatedTradingVolume":"200,841","accumulatedTradingValue":"-","fluctuationsType":{"code":"5","text":"하락","name":"FALLING"},"marketStatus":"OPEN","localTradedAt":"2026-08-28T11:22:34-05:00","unit":"USD/OZS","tradeStopType":null,"closePriceRaw":"4521.40","accumulatedTradingVolumeRaw":"200841"}],"time":"20260829013234"}
 ```
 
 ### `https://polling.finance.naver.com/api/realtime/marketindex/energy/CLcv1`
 
 ```json
-{"pollingInterval":7000,"datas":[{"reutersCode":"CLcv1","symbolCode":"CL","name":"WTI","stockExchangeType":{"code":"NYM","zoneId":"CST6CDT","nationType":"USA","delayTime":10,"startTime":"1700","endTime":"1600","closePriceSendTime":"1600","nameKor":"뉴욕상업거래소","nameEng":"New York Mercantile Exchange","nationCode":"USA","nationName":"미국","stockType":"worldstock","name":"NYMEX"},"closePrice":"83.15","fluctuations":"-0.38","fluctuationsRatio":"-0.45","openPrice":"83.67","highPrice":"83.78","lowPrice":"82.25","accumulatedTradingVolume":"98,961","accumulatedTradingValue":"-","fluctuationsType":{"code":"5","text":"하락","name":"FALLING"},"marketStatus":"OPEN","localTradedAt":"2026-08-28T11:13:08-05:00","unit":"USD/BBL","tradeStopType":null,"closePriceRaw":"83.15","accumulatedTradingVolumeRaw":"98961"}],"time":"20260829012308"}
+{"pollingInterval":7000,"datas":[{"reutersCode":"CLcv1","symbolCode":"CL","name":"WTI","stockExchangeType":{"code":"NYM","zoneId":"CST6CDT","nationType":"USA","delayTime":10,"startTime":"1700","endTime":"1600","closePriceSendTime":"1600","nameKor":"뉴욕상업거래소","nameEng":"New York Mercantile Exchange","nationCode":"USA","nationName":"미국","stockType":"worldstock","name":"NYMEX"},"closePrice":"83.18","fluctuations":"-0.35","fluctuationsRatio":"-0.42","openPrice":"83.67","highPrice":"83.78","lowPrice":"82.25","accumulatedTradingVolume":"100,364","accumulatedTradingValue":"-","fluctuationsType":{"code":"5","text":"하락","name":"FALLING"},"marketStatus":"OPEN","localTradedAt":"2026-08-28T11:22:34-05:00","unit":"USD/BBL","tradeStopType":null,"accumulatedTradingVolumeRaw":"100364","closePriceRaw":"83.18"}],"time":"20260829013234"}
 ```
 
 ### `https://stock.naver.com/api/fund/funds/K55235B39916/prices/daily?date=2026-08-28&size=10`
