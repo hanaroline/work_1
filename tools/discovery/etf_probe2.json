@@ -1,5 +1,5 @@
 {
-  "probedAt": "2026-08-28T12:43:59.064Z",
+  "probedAt": "2026-08-28T13:19:56.242Z",
   "krxTradeDate": null,
   "results": [
     {
@@ -7,14 +7,14 @@
       "note": "세션 쿠키 획득 (화면 선진입)",
       "ok": true,
       "summary": "쿠키 2개",
-      "ms": 237
+      "ms": 422
     },
     {
       "id": "krx.etf.all",
       "note": "ETF 전종목 시세 (세션 있음)",
       "ok": false,
       "error": "영업일 10일 모두 빈 응답",
-      "ms": 3165
+      "ms": 5581
     },
     {
       "id": "krx2.stat.04301",
@@ -23,7 +23,7 @@
       "bytes": 6,
       "ok": false,
       "summary": "JSON 아님: LOGOUT",
-      "ms": 451
+      "ms": 532
     },
     {
       "id": "krx2.stat.04401",
@@ -32,7 +32,7 @@
       "bytes": 6,
       "ok": false,
       "summary": "JSON 아님: LOGOUT",
-      "ms": 176
+      "ms": 542
     },
     {
       "id": "krx2.stat.04501",
@@ -41,7 +41,7 @@
       "bytes": 6,
       "ok": false,
       "summary": "JSON 아님: LOGOUT",
-      "ms": 452
+      "ms": 739
     },
     {
       "id": "krx2.stat.04601",
@@ -50,7 +50,7 @@
       "bytes": 6,
       "ok": false,
       "summary": "JSON 아님: LOGOUT",
-      "ms": 365
+      "ms": 637
     },
     {
       "id": "krx2.stat.04701",
@@ -59,7 +59,7 @@
       "bytes": 6,
       "ok": false,
       "summary": "JSON 아님: LOGOUT",
-      "ms": 444
+      "ms": 597
     },
     {
       "id": "krx2.stat.04801",
@@ -68,7 +68,7 @@
       "bytes": 6,
       "ok": false,
       "summary": "JSON 아님: LOGOUT",
-      "ms": 440
+      "ms": 634
     },
     {
       "id": "krx2.stat.04901",
@@ -77,7 +77,7 @@
       "bytes": 6,
       "ok": false,
       "summary": "JSON 아님: LOGOUT",
-      "ms": 396
+      "ms": 603
     },
     {
       "id": "krx2.stat.05001",
@@ -86,7 +86,7 @@
       "bytes": 6,
       "ok": false,
       "summary": "JSON 아님: LOGOUT",
-      "ms": 387
+      "ms": 530
     },
     {
       "id": "krx2.stat.05101",
@@ -95,7 +95,7 @@
       "bytes": 6,
       "ok": false,
       "summary": "JSON 아님: LOGOUT",
-      "ms": 407
+      "ms": 541
     },
     {
       "id": "krx.otp.csv",
@@ -105,14 +105,14 @@
       "bytes": 2531,
       "summary": "35행 · 헤더: \t\t<html>\r",
       "sampleRow": "<head>\r",
-      "ms": 680
+      "ms": 1205
     },
     {
       "id": "naver.analysis.full",
       "note": "etfAnalysis 전문 저장 (구성종목이 섞여 있는가)",
       "status": 200,
-      "bytes": 4822,
-      "summary": "키 30개 · 배열필드: returnPerformanceList[10]{periodTypeCode,value} | navPerformanceList[10]{periodTypeCode,value} | assetPortfolioList[5]{detailTypeCode,weight} | countryPortfolioList[6]{detailTypeCode,weight} | sectorPortfolioList[12]{detailTypeCode,weight} | etfTop10MajorConstituentAssets[10]{seq,itemCode,itemName,stockCount,etfWeight}",
+      "bytes": 4856,
+      "summary": "키 31개 · 배열필드: returnPerformanceList[10]{periodTypeCode,value} | navPerformanceList[10]{periodTypeCode,value} | assetPortfolioList[5]{detailTypeCode,weight} | countryPortfolioList[6]{detailTypeCode,weight} | sectorPortfolioList[12]{detailTypeCode,weight} | etfTop10MajorConstituentAssets[10]{seq,itemCode,itemName,stockCount,etfWeight}",
       "keys": [
         "itemCode",
         "itemName",
@@ -143,7 +143,8 @@
         "sectorPortfolioTotalWeight",
         "sectorPortfolioList",
         "etfTop10MajorConstituentAssets",
-        "dividend"
+        "dividend",
+        "marketValueRaw"
       ],
       "arrays": [
         "returnPerformanceList[10]{periodTypeCode,value}",
@@ -154,7 +155,7 @@
         "etfTop10MajorConstituentAssets[10]{seq,itemCode,itemName,stockCount,etfWeight}"
       ],
       "ok": true,
-      "ms": 800
+      "ms": 655
     },
     {
       "id": "naver.pdf.m.stock",
@@ -162,7 +163,7 @@
       "ok": false,
       "status": 404,
       "summary": "<!doctype html>\n<html lang=\"ko\">\n<head>\n    <meta charset=\"utf-8\">\n    <meta name=\"viewport\" content",
-      "ms": 519
+      "ms": 643
     },
     {
       "id": "naver.pdf.m.stock2",
@@ -170,7 +171,7 @@
       "ok": false,
       "status": 404,
       "summary": "<!doctype html>\n<html lang=\"ko\">\n<head>\n    <meta charset=\"utf-8\">\n    <meta name=\"viewport\" content",
-      "ms": 153
+      "ms": 180
     },
     {
       "id": "naver.pdf.m.stock3",
@@ -178,7 +179,7 @@
       "ok": false,
       "status": 404,
       "summary": "<!doctype html>\n<html lang=\"ko\">\n<head>\n    <meta charset=\"utf-8\">\n    <meta name=\"viewport\" content",
-      "ms": 140
+      "ms": 164
     },
     {
       "id": "naver.pdf.m.stock4",
@@ -186,7 +187,7 @@
       "ok": false,
       "status": 404,
       "summary": "<!doctype html>\n<html lang=\"ko\">\n<head>\n    <meta charset=\"utf-8\">\n    <meta name=\"viewport\" content",
-      "ms": 148
+      "ms": 178
     },
     {
       "id": "naver.pdf.m.stock5",
@@ -194,7 +195,7 @@
       "ok": false,
       "status": 404,
       "summary": "<!doctype html>\n<html lang=\"ko\">\n<head>\n    <meta charset=\"utf-8\">\n    <meta name=\"viewport\" content",
-      "ms": 144
+      "ms": 176
     },
     {
       "id": "naver.pdf.m.stock6",
@@ -202,23 +203,23 @@
       "ok": false,
       "status": 404,
       "summary": "<!doctype html>\n<html lang=\"ko\">\n<head>\n    <meta charset=\"utf-8\">\n    <meta name=\"viewport\" content",
-      "ms": 153
+      "ms": 181
     },
     {
       "id": "naver.pdf.api.etf",
       "note": "국내 구성종목 후보 — api.stock.naver.com/etf/069500/componentStocks",
       "ok": false,
       "status": 404,
-      "summary": "{\"timestamp\":\"2026-08-28T12:43:52.783+0000\",\"status\":404,\"error\":\"Not Found\",\"message\":\"No message a",
-      "ms": 845
+      "summary": "{\"timestamp\":\"2026-08-28T13:14:43.475+0000\",\"status\":404,\"error\":\"Not Found\",\"message\":\"No message a",
+      "ms": 966
     },
     {
       "id": "naver.pdf.api.etf2",
       "note": "국내 구성종목 후보 — api.stock.naver.com/stock/069500/etfAnalysis",
       "ok": false,
       "status": 404,
-      "summary": "{\"timestamp\":\"2026-08-28T12:43:52.988+0000\",\"status\":404,\"error\":\"Not Found\",\"message\":\"No message a",
-      "ms": 205
+      "summary": "{\"timestamp\":\"2026-08-28T13:14:43.723+0000\",\"status\":404,\"error\":\"Not Found\",\"message\":\"No message a",
+      "ms": 245
     },
     {
       "id": "naver.pdf.pc.etf",
@@ -226,25 +227,25 @@
       "ok": false,
       "status": 404,
       "summary": "\n<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\" \"http://www.w3.org/TR/html4/loose.dt",
-      "ms": 568
+      "ms": 639
     },
     {
       "id": "naver.pdf.pc.coinfo",
       "note": "국내 구성종목 후보 — finance.naver.com/item/coinfo.naver?code=069500",
       "ok": false,
       "status": 200,
-      "bytes": 114096,
+      "bytes": 114084,
       "summary": "HTML · 구성종목 흔적 없음",
-      "ms": 298
+      "ms": 396
     },
     {
       "id": "naver.pdf.pc.main",
       "note": "국내 구성종목 후보 — finance.naver.com/item/main.naver?code=069500",
       "ok": false,
       "status": 200,
-      "bytes": 143128,
+      "bytes": 143113,
       "summary": "HTML · 구성종목 흔적 없음",
-      "ms": 335
+      "ms": 388
     },
     {
       "id": "naver.tabs",
@@ -262,14 +263,14 @@
       },
       "summary": "1163종목 · 탭 {\"1\":99,\"2\":336,\"3\":37,\"4\":376,\"5\":23,\"6\":171,\"7\":121}",
       "ok": true,
-      "ms": 245
+      "ms": 295
     },
     {
       "id": "yahoo.crumb2",
       "note": "쿠키 + crumb",
       "ok": true,
       "summary": "crumb O / 쿠키 1개",
-      "ms": 81
+      "ms": 242
     },
     {
       "id": "yahoo.cn.510300.SS",
@@ -279,7 +280,7 @@
       "holdingCount": 0,
       "summary": "holdings 0개 · sector 0개 · family - · AUM -",
       "sampleHolding": null,
-      "ms": 57
+      "ms": 142
     },
     {
       "id": "yahoo.cn.510500.SS",
@@ -289,7 +290,7 @@
       "holdingCount": 0,
       "summary": "holdings 0개 · sector 0개 · family - · AUM -",
       "sampleHolding": null,
-      "ms": 35
+      "ms": 87
     },
     {
       "id": "yahoo.cn.588000.SS",
@@ -299,7 +300,7 @@
       "holdingCount": 0,
       "summary": "holdings 0개 · sector 0개 · family - · AUM -",
       "sampleHolding": null,
-      "ms": 34
+      "ms": 107
     },
     {
       "id": "yahoo.cn.512880.SS",
@@ -309,7 +310,7 @@
       "holdingCount": 0,
       "summary": "holdings 0개 · sector 0개 · family - · AUM -",
       "sampleHolding": null,
-      "ms": 35
+      "ms": 85
     },
     {
       "id": "yahoo.cn.159915.SZ",
@@ -319,7 +320,7 @@
       "holdingCount": 0,
       "summary": "holdings 0개 · sector 0개 · family - · AUM -",
       "sampleHolding": null,
-      "ms": 34
+      "ms": 81
     },
     {
       "id": "yahoo.cn.159949.SZ",
@@ -329,7 +330,7 @@
       "holdingCount": 0,
       "summary": "holdings 0개 · sector 0개 · family - · AUM -",
       "sampleHolding": null,
-      "ms": 33
+      "ms": 122
     },
     {
       "id": "yahoo.cn.2823.HK",
@@ -346,7 +347,7 @@
           "fmt": "8.42%"
         }
       },
-      "ms": 34
+      "ms": 139
     },
     {
       "id": "yahoo.cn.3188.HK",
@@ -363,7 +364,7 @@
           "fmt": "5.28%"
         }
       },
-      "ms": 40
+      "ms": 81
     },
     {
       "id": "yahoo.cn.MCHI",
@@ -380,7 +381,7 @@
           "fmt": "14.47%"
         }
       },
-      "ms": 44
+      "ms": 92
     },
     {
       "id": "yahoo.cn.KWEB",
@@ -397,7 +398,7 @@
           "fmt": "9.96%"
         }
       },
-      "ms": 74
+      "ms": 88
     },
     {
       "id": "issuer.kr.tiger",
@@ -406,7 +407,7 @@
       "status": 403,
       "bytes": 261,
       "summary": "261B · <!DOCTYPE HTML PUBLIC \"-//IETF//DTD HTML 2.0//EN\"> <html><head> <title>301 Moved Permanent",
-      "ms": 312
+      "ms": 424
     },
     {
       "id": "issuer.kr.kodex",
@@ -415,7 +416,7 @@
       "status": 200,
       "bytes": 138726,
       "summary": "138726B · <!DOCTYPE html> <html lang=\"ko\" id=\"top-of-site\" class=\"\"> <head> ",
-      "ms": 1847
+      "ms": 3164
     },
     {
       "id": "issuer.kr.kodex.api",
@@ -424,16 +425,16 @@
       "status": 200,
       "bytes": 138726,
       "summary": "138726B · <!DOCTYPE html> <html lang=\"ko\" id=\"top-of-site\" class=\"\"> <head> ",
-      "ms": 1087
+      "ms": 821
     },
     {
       "id": "issuer.kr.seibro",
       "note": "예탁결제원 SEIBRO ETF",
       "ok": true,
       "status": 200,
-      "bytes": 1048,
-      "summary": "1048B ·  <!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" \"http://www.w3.org",
-      "ms": 816
+      "bytes": 545,
+      "summary": "545B · <!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" \"http://www.w3.org/TR/xhtml",
+      "ms": 305045
     }
   ]
 }
