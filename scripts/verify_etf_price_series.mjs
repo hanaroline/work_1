@@ -50,6 +50,19 @@ const YAHOO_CHART = (sym) =>
 
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
+// 야후는 쿠키 없이 부르면 이 러너 대역에서 429 를 잘 낸다. 해외 수집기가
+// 쓰는 것과 같은 흐름으로 먼저 쿠키를 받아 둔다.
+let yahooCookie = '';
+async function warmYahoo() {
+  try {
+    const res = await fetch('https://fc.yahoo.com/', {
+      headers: { 'User-Agent': UA }, signal: AbortSignal.timeout(TIMEOUT_MS),
+    });
+    yahooCookie = (res?.headers?.getSetCookie?.() || []).map((c) => c.split(';')[0]).join('; ');
+  } catch { /* 쿠키가 없어도 일단 시도는 한다 */ }
+  console.log(`[verify] 야후 쿠키 ${yahooCookie ? '확보' : '실패'}`);
+}
+
 // 막힌 곳은 거절 대신 침묵하기도 한다. 시간을 끊지 않으면 한 종목에서
 // 매달려 되짚기 전체가 끝나지 않는다 — 못 받은 것은 못 받았다고 남기고 넘어간다.
 const TIMEOUT_MS = 15000;
@@ -115,7 +128,10 @@ async function naverDaily(code, from, to) {
  * 이 환산을 빼먹으면 모든 봉이 하루씩 어긋나 대조가 통째로 무의미해진다.
  */
 async function yahooDaily(sym) {
-  const text = await get(YAHOO_CHART(sym), { Referer: 'https://finance.yahoo.com/' });
+  const text = await get(YAHOO_CHART(sym), {
+    Referer: 'https://finance.yahoo.com/',
+    ...(yahooCookie ? { Cookie: yahooCookie } : {}),
+  });
   const r = JSON.parse(text)?.chart?.result?.[0];
   if (!r) throw new Error('빈 응답');
   const ts = r.timestamp || [];
@@ -175,6 +191,53 @@ function y1WithDiv(rows, divs) {
   return y1(series);
 }
 
+/**
+ * 네이버가 정말 **소급 수정**을 하는지 본다.
+ *
+ * 수정주가는 오늘 값은 그대로 두고 과거 값을 낮춰 잡는다. 그래야 과거에서
+ * 오늘까지의 상승률 안에 분배금이 녹아든다. 그러면 두 계열의 비율은
+ *
+ *   오늘   네이버/야후 ≈ 1
+ *   1년 전 네이버/야후 ≈ Π(1 − 분배금/그날 주가)   ← 분배금만큼 낮다
+ *
+ * 이 되어야 한다. 오른쪽 값은 야후 배당 이력으로 따로 계산할 수 있으므로,
+ * 관측된 비율과 맞대 보면 추정이 아니라 관측이 된다.
+ */
+function adjustmentCheck(naver, yahoo, divs) {
+  const mn = new Map(naver.map((r) => [r.day, r.close]));
+  const common = yahoo.filter((r) => mn.has(r.day));
+  if (common.length < 200) return null;
+  const ratioAt = (r) => mn.get(r.day) / r.close;
+
+  const end = common[common.length - 1];
+  // 1년 전 언저리의 봉을 잡는다.
+  const d = new Date(`${end.day}T00:00:00Z`);
+  d.setUTCFullYear(d.getUTCFullYear() - 1);
+  const cutoff = d.toISOString().slice(0, 10);
+  let start = null;
+  for (const r of common) { if (r.day <= cutoff) start = r; else break; }
+  if (!start) return null;
+
+  // 구간 안의 분배로 예상되는 낙폭 배수.
+  const yc = new Map(yahoo.map((r) => [r.day, r.close]));
+  let predicted = 1;
+  let used = 0;
+  for (const dv of divs) {
+    if (dv.day <= start.day || dv.day > end.day) continue;
+    const px = yc.get(dv.day);
+    if (!px) continue;
+    predicted *= 1 - dv.amount / px;
+    used += 1;
+  }
+  return {
+    ratioEnd: +ratioAt(end).toFixed(4),
+    ratioStart: +ratioAt(start).toFixed(4),
+    predictedStartRatio: +predicted.toFixed(4),
+    divsInWindow: used,
+    startDay: start.day, endDay: end.day,
+  };
+}
+
 /** 두 종가 계열을 날짜로 맞춰 얼마나 어긋나는지 센다. */
 function compare(a, b) {
   const mb = new Map(b.map((r) => [r.day, r.close]));
@@ -211,8 +274,13 @@ async function pickSample() {
   const low = kr.filter((e) => e.dividendYield > 0 && e.dividendYield < 1).sort(byAum).slice(0, 4);
   const mid = kr.filter((e) => e.dividendYield >= 2 && e.dividendYield < 8).sort(byAum).slice(0, 3);
   const high = kr.filter((e) => e.dividendYield >= 8).sort(byAum).slice(0, 5);
-  return [...none, ...low, ...mid, ...high].map((e) => ({
+  const all = [...none, ...low, ...mid, ...high];
+  // 야후는 부를수록 429 를 맞는다. 날짜별 종가 대조는 지렛대의 양 끝에서만
+  // 하면 충분하므로, 분배 없는 둘과 분배 큰 셋에만 붙인다.
+  const wanted = new Set([...none.slice(0, 2), ...high.slice(0, 3)].map((e) => e.code));
+  return all.map((e) => ({
     code: e.code, name: e.name, yield: e.dividendYield,
+    wantYahoo: wanted.has(e.code),
     dataPrice: e.ret?.price?.Y1 ?? null, dataTr: e.ret?.tr?.Y1 ?? null,
     dataNav: e.ret?.nav?.Y1 ?? null,
   }));
@@ -224,6 +292,7 @@ const to = today.toISOString().slice(0, 10).replace(/-/g, '');
 const fromD = new Date(today); fromD.setFullYear(fromD.getFullYear() - 2);
 const from = fromD.toISOString().slice(0, 10).replace(/-/g, '');
 
+await warmYahoo();
 const sample = await pickSample();
 console.log(`[verify] 표본 ${sample.length}종목 · ${from}~${to}\n`);
 
@@ -234,10 +303,13 @@ for (const s of sample) {
     row.naver = await naverDaily(s.code, from, to);
   } catch (e) { row.naverError = String(e.message || e); }
   await sleep(200);
-  try {
-    const y = await yahooDaily(`${s.code}.KS`);
-    row.yahoo = y.rows; row.divs = y.divs; row.splits = y.splits;
-  } catch (e) { row.yahooError = String(e.message || e); }
+  if (s.wantYahoo) {
+    try {
+      const y = await yahooDaily(`${s.code}.KS`);
+      row.yahoo = y.rows; row.divs = y.divs; row.splits = y.splits;
+    } catch (e) { row.yahooError = String(e.message || e); }
+    await sleep(3000);   // 야후는 사이를 넉넉히 둔다
+  }
   await sleep(200);
   try {
     const j = JSON.parse(await get(NAVER_ANALYSIS(s.code),
@@ -258,7 +330,10 @@ for (const s of sample) {
     row.yahooAdjY1 = y1(row.yahoo, 'adj');
     row.yahooTrY1 = y1WithDiv(row.yahoo, row.divs || []);
   }
-  if (row.naver?.length && row.yahoo?.length) row.cmp = compare(row.naver, row.yahoo);
+  if (row.naver?.length && row.yahoo?.length) {
+    row.cmp = compare(row.naver, row.yahoo);
+    row.adj = adjustmentCheck(row.naver, row.yahoo, row.divs || []);
+  }
   if (row.naver?.length && row.divs?.length) {
     row.naverTrY1 = y1WithDiv(row.naver, row.divs);
   }
@@ -326,7 +401,39 @@ say(`- 네이버 표기값이 **분배금 재투자** 계산과 맞는 종목: $
 say(`- 구간 중 분배를 한 번도 안 한 종목에서 표기=원가격: ${noDivStatedIsRaw}/${noDiv.length}`);
 say('');
 
-const MIN_SAMPLE = 5;
+// 소급 수정 관측 — 이것이 맞으면 위 판정은 추정이 아니라 관측이 된다.
+const adjRows = results.filter((r) => r.adj && r.adj.divsInWindow > 0);
+if (adjRows.length) {
+  say('### 소급 수정 관측 (네이버/야후 종가 비율)');
+  say('');
+  say('| 종목 | 오늘 비율 | 1년 전 비율 | 분배로 예상되는 값 | 구간 분배 |');
+  say('|---|---:|---:|---:|---:|');
+  for (const r of adjRows) {
+    say(`| ${r.code} ${r.name} | ${r.adj.ratioEnd} | ${r.adj.ratioStart} | ` +
+        `${r.adj.predictedStartRatio} | ${r.adj.divsInWindow}건 |`);
+  }
+  const hit = adjRows.filter((r) =>
+    Math.abs(r.adj.ratioEnd - 1) < 0.02 &&
+    Math.abs(r.adj.ratioStart - r.adj.predictedStartRatio) < 0.03).length;
+  say('');
+  say(`- 오늘 비율이 1 이고 1년 전 비율이 분배 예상치와 맞는 종목: ${hit}/${adjRows.length}`);
+  if (hit >= Math.max(1, adjRows.length * 0.6)) {
+    say('');
+    say('→ **관측됨.** 오늘 값은 두 곳이 같고 과거 값만 분배금만큼 낮다. ' +
+        '네이버가 과거 주가를 소급해서 낮춰 잡는다는 뜻이다.');
+  }
+  say('');
+}
+
+// 분배가 없는 종목에서도 두 계열이 갈리면 원인은 분배금이 아니다.
+const ctrl = results.filter((r) => r.cmp && (r.divs?.length ?? 0) === 0);
+if (ctrl.length) {
+  say(`- 대조군(구간 중 분배 없음) ${ctrl.length}종목의 일별 종가 차이 중앙값: ` +
+      `${ctrl.map((r) => `${r.code} ${r.cmp.medianRelPct}%`).join(' · ')}`);
+  say('');
+}
+
+const MIN_SAMPLE = 3;
 let verdict;
 if (usable.length < MIN_SAMPLE) {
   // 비율은 0/0 에서도 참이 된다. 표본이 없는데 "맞다" 고 말하는 것이
