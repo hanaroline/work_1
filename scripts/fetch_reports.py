@@ -1147,9 +1147,10 @@ def theme_brief(rows, themes, top=5, per=3, used=None):
     return out
 
 
-def move_brief(rows, moves, limit=8):
+def move_brief(rows, moves, limit=8, used=None):
     """목표주가를 올리거나 내린 리포트마다 **그 까닭 한 줄**을 붙인다."""
     by_url = {r["url"]: r for r in rows}
+    used = [] if used is None else used
     out = []
     for mv in moves:
         if mv.get("move") not in ("상향", "하향"):
@@ -1164,6 +1165,8 @@ def move_brief(rows, moves, limit=8):
                     break
             if not why:
                 why = r.get("lead") or ""
+        if why:
+            used.append(_keyset(why))
         out.append({"move": mv["move"], "stock": mv.get("stock"),
                     "target_price": mv.get("target_price"), "broker": mv.get("broker"),
                     "title": mv.get("title"), "url": mv.get("url"), "why": why})
@@ -1225,13 +1228,17 @@ def overview(rows, label, moves=None, crowd=None):
         parts.append("여러 증권사가 함께 본 종목은 %s입니다."
                      % _ko_list(["%s %d곳" % (c.get("name") or c.get("code"), c["count"])
                                  for c in crowd], 3))
-    shared = []                 # 논점·목표주가·종목이 같은 문장을 나눠 쓰지 않게
+    # 논점·목표주가·종목이 같은 문장을 나눠 쓰지 않게 한 자리에 모아 둔다.
+    # **목표주가를 먼저 짓는다** — 그 줄이 그날 가장 중요한 대목이고, 주제
+    # 쪽에서 먼저 집어 가면 한 쪽에 같은 문장이 두 번 실린다(실제로 그랬다).
+    shared = []
+    mv = move_brief(rows, moves, used=shared)
     return {
         "text": " ".join(parts),
         "themes": themes,
         # 몇 건인지 다음에 **무슨 이야기인지**가 와야 한다. 아래 셋이 그것이다.
+        "moves": mv,
         "brief": theme_brief(rows, themes, used=shared),
-        "moves": move_brief(rows, moves),
         "crowd": crowd_brief(rows, crowd, used=shared),
         "by_category": sorted(({"category": c, "count": n} for c, n in cats.items()),
                               key=lambda e: -e["count"]),
