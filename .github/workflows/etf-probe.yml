@@ -52,65 +52,23 @@ jobs:
         if: hashFiles('scripts/verify_etf_price_series.mjs') != ''
         run: node scripts/verify_etf_price_series.mjs
 
-      # 펀드 원천 찾기. ETF 는 네이버 etfAnalysis 하나로 됐는데, 펀드에도
-      # 그런 자리가 있는지는 확인 전이다. 없으면 화면의 본체가 없다.
-      - name: 탐색 실행 (펀드 원천)
-        continue-on-error: true
-        timeout-minutes: 8
-        if: hashFiles('scripts/probe_fund_sources.mjs') != ''
-        run: node scripts/probe_fund_sources.mjs
-
-      # 2차는 브라우저가 필요하다 — 화면이 실제로 무엇을 부르는지 봐야 한다.
+      # 펀드 원천 — 네이버가 stock.naver.com 으로 옮겨간 것을 확인한 뒤로는
+      # 이쪽 하나만 본다. 앞서 금투협을 여섯 차례 판 것은 "네이버 펀드가
+      # 없어졌다" 는 오판에서 나왔고, 그 결과는 tools/discovery/fund_probe*.md
+      # 에 남아 있다. 다시 돌릴 이유가 없으므로 워크플로에서 뺀다.
       - name: 브라우저 설치
         continue-on-error: true
         timeout-minutes: 6
-        if: hashFiles('scripts/probe_fund_sources2.mjs') != ''
+        if: hashFiles('scripts/probe_fund_sources7.mjs') != ''
         run: |
           npm i -D playwright@1.56.1 --no-audit --no-fund
           npx playwright install --with-deps chromium
 
-      - name: 탐색 실행 (펀드 원천 2차 — 화면 관찰)
-        continue-on-error: true
-        timeout-minutes: 10
-        if: hashFiles('scripts/probe_fund_sources2.mjs') != ''
-        run: node scripts/probe_fund_sources2.mjs
-
-      # 3차는 브라우저가 필요 없다 — 레이아웃 xml 에 호출 정의가 적혀 있다.
-      - name: 탐색 실행 (펀드 원천 3차 — 금투협 호출 정의)
-        continue-on-error: true
-        timeout-minutes: 10
-        if: hashFiles('scripts/probe_fund_sources3.mjs') != ''
-        run: node scripts/probe_fund_sources3.mjs
-
-      # 4차 — 화면에서 조회를 눌러 진짜 호출을 잡는다. 3차가 엔드포인트를
-      # 확인했으니 이제 이름만 알면 된다.
-      - name: 탐색 실행 (펀드 원천 4차 — 조회 눌러 잡기)
-        continue-on-error: true
-        timeout-minutes: 12
-        if: hashFiles('scripts/probe_fund_sources4.mjs') != ''
-        run: node scripts/probe_fund_sources4.mjs
-
-      # 5차 — 4차에서 경로를 지어냈던 것이 드러났다. 메뉴에서 받아 온다.
-      - name: 탐색 실행 (펀드 원천 5차 — 메뉴에서 경로 얻기)
-        continue-on-error: true
-        timeout-minutes: 12
-        if: hashFiles('scripts/probe_fund_sources5.mjs') != ''
-        run: node scripts/probe_fund_sources5.mjs
-
-      # 7차 — 네이버 펀드는 살아 있었다. stock.naver.com 으로 옮겨간 것뿐이다.
-      # 금투협보다 이쪽이 훨씬 유망하므로 앞에 둔다.
-      - name: 탐색 실행 (펀드 원천 7차 — 네이버 새 주소)
+      - name: 탐색 실행 (펀드 원천 — 네이버)
         continue-on-error: true
         timeout-minutes: 14
         if: hashFiles('scripts/probe_fund_sources7.mjs') != ''
         run: node scripts/probe_fund_sources7.mjs
-
-      # 6차 — 금투협에 보유종목이 있는가. 7차가 되면 이쪽은 대조군이 된다.
-      - name: 탐색 실행 (펀드 원천 6차 — 금투협 보유종목 확인)
-        continue-on-error: true
-        timeout-minutes: 14
-        if: hashFiles('scripts/probe_fund_sources6.mjs') != ''
-        run: node scripts/probe_fund_sources6.mjs
 
       # 탐색 실패는 잡을 실패시키지 않는다. 못 붙은 칸도 결과의 일부다.
       - name: 탐색 실행 (1차)
