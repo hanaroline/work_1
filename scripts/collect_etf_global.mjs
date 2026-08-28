@@ -150,6 +150,7 @@ function shape(entry, summary, returns) {
     indexName: null,
 
     retAsOf: returns?.asOf || null,
+    trMethod: returns?.method || null,
     // price = 가격수익률(분배금 제외), tr = 총수익률(분배금 재투자).
     // 국내도 같은 계산기를 쓰므로 두 시장의 tr 이 한 뜻이다.
     ret: returns ? { price: returns.price, tr: returns.tr } : null,
@@ -199,6 +200,11 @@ async function main() {
   });
 
   console.log(`[global] 수집 ${etfs.length}/${list.length} · 편입종목 ${withHoldings}`);
+  const gMethod = {};
+  rows.forEach(function (res) {
+    if (res.ok && res.value.trMethod) gMethod[res.value.trMethod] = (gMethod[res.value.trMethod] || 0) + 1;
+  });
+  console.log('[global] 총수익률 산출 방식:', JSON.stringify(gMethod));
   if (Object.keys(noHoldingsByMarket).length) {
     console.log('[global] 편입종목 없는 시장:', JSON.stringify(noHoldingsByMarket));
   }

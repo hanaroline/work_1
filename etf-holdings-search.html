@@ -589,10 +589,14 @@ function topSector(etf) {
 // 8개면 1440px 에서 4개씩 두 줄로 떨어지고, 아래 매트릭스도 가로 스크롤 없이 읽힌다.
 var MAX_COMPARE = 8;
 
+// 데이터에 총수익률이 실려 있는가. 수집이 아직 그 계열을 안 채웠으면 그
+// 기준을 내걸어도 빈칸만 나온다. 그럴 때는 조용히 시장가로 연다.
+var HAS_TR = ETFS.some(function (e) { return e.ret && e.ret.tr; });
+
 var state = {
   q: '', market: '', region: '', asset: '', index: '', sector: '',
   theme: '', manager: '', aum: '',
-  period: 'M3', basis: 'tr',
+  period: 'M3', basis: HAS_TR ? 'tr' : 'price',
   includeLeverage: false, holdingsOnly: true,
   sortKey: 'aum', sortDir: -1,
   limit: 60,
@@ -1620,6 +1624,16 @@ function renderHero() {
                      : 'Collection has not run yet; the figures shown are placeholders.');
 }
 
+/** 총수익률 자료가 없으면 그 버튼을 감춘다 — 눌러도 빈칸만 나오기 때문이다. */
+function applyBasisAvailability() {
+  var btn = document.querySelector('#basis-seg button[data-basis="tr"]');
+  if (btn && !HAS_TR) btn.hidden = true;
+  var btns = el('basis-seg').querySelectorAll('button');
+  for (var i = 0; i < btns.length; i++) {
+    btns[i].setAttribute('aria-pressed', btns[i].getAttribute('data-basis') === state.basis ? 'true' : 'false');
+  }
+}
+
 function applyLang() {
   document.documentElement.lang = lang;
   var nodes = document.querySelectorAll('[data-ko]');
@@ -1862,6 +1876,7 @@ function bind() {
 }
 
 applyLang();
+applyBasisAvailability();
 renderAll();
 bind();
 showTab('browse');
