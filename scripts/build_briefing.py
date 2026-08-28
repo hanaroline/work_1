@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """마포WM 브리핑을 짓는다 — 10절 구조.
 
-  python3 scripts/build_briefing.py [--date YYYY-MM-DD] [--kind morning|global]
+  python3 scripts/build_briefing.py [--date YYYY-MM-DD] [--kind morning|close|global]
 
 **판을 물려 짓지 않는다.** 어제 파일을 복사해 고치는 방식이 글을 굳게 만들었으므로
 (지침 7-2-1), 표와 날짜 이름표와 파생 수치는 전부 이 파일이 시세 자료에서 만들고,
@@ -37,7 +37,7 @@ from briefing_lib import (  # noqa: E402
     d, DK, DE, DD, DS, n, pct, bp, eok, jo, esc,
     L, TH, THP, perf_cells, tbl, exp, P, lede, stat, card, callout,
     sparkline, bar, Doc, Narrative, assemble)
-from briefing_prepare import prepare  # noqa: E402
+from briefing_prepare import prepare, KIND_NAME  # noqa: E402
 
 
 # ══════════════════════════════════════════════════════════════════
@@ -643,7 +643,7 @@ def build_supply(C):
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--date", default=None)
-    ap.add_argument("--kind", default="morning", choices=("morning", "global"))
+    ap.add_argument("--kind", default="morning", choices=("morning", "close", "global"))
     ap.add_argument("--out", default=None)
     a = ap.parse_args()
 
@@ -667,9 +667,7 @@ def main():
     doc.sec("talking", "고객 응대", "Talking Points", sec_talking(C))
     doc.sec("verify", "데이터 &middot; 검증", "Data and Verification", sec_verify(C))
 
-    kindko = "모닝 마켓 브리핑" if a.kind == "morning" else "해외 증시 브리핑"
-    kinden = ("Morning Market Briefing" if a.kind == "morning"
-              else "Overseas Markets Briefing")
+    kindko, kinden = KIND_NAME[a.kind]
     title = "%s · %d년 %s | 미래에셋증권 마포WM" % (kindko, today.year, DK(today, True))
     title_en = ("%s · %s %d | Mirae Asset Securities Mapo WM"
                 % (kinden, DE(today, True), today.year))
@@ -681,7 +679,7 @@ def main():
     assert NUSED not in html and NFB not in html
 
     out = a.out or (ROOT + "/docs/briefings/%s-%s.html"
-                    % (today.isoformat(), "morning" if a.kind == "morning" else "global"))
+                    % (today.isoformat(), a.kind))
     io.open(out, "w", encoding="utf-8").write(html)
     rep = N.report()
     print("만듦: %s (%d자, 절 %d개, 상세 %d개)"
