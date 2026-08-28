@@ -66,15 +66,40 @@ function finish(etf, listedIn) {
 
   // 상위10 합계 = 집중도. "이 ETF 가 사실상 몇 종목짜리인가"를 한 숫자로 말해 준다.
   // 현금은 뺀다 — 현금 100% 를 "집중도 100%" 라고 말하면 거짓말이 된다.
-  const top10Weight = stocks.length
-    ? +stocks.reduce((s, h) => s + (h.weight || 0), 0).toFixed(2)
-    : null;
-  const cashWeight = cashRows.length
-    ? +cashRows.reduce((s, h) => s + (h.weight || 0), 0).toFixed(2)
-    : null;
+  //
+  // 비중이 없는 종목이 하나라도 있으면 합계를 내지 않는다. 네이버는 해외주식·
+  // 채권·원자재 ETF 의 편입종목에 **수량만 주고 비중을 주지 않는다**(668종목).
+  // 예전에는 `h.weight || 0` 으로 null 을 0 으로 삼켜 화면에 "상위 종목 합계
+  // 0.0%" 라고 찍었다. 없는 것을 0 이라고 말하는 건 거짓이다. 빈칸이 맞다.
+  // null 을 그냥 Number() 에 넣으면 안 된다 — Number(null) 은 0 이고
+  // Number.isFinite(0) 은 true 다. 네이버가 주는 weight:null 이 "아는 0" 으로
+  // 둔갑해 합계가 다시 0 이 됐다. null 여부를 먼저 본다.
+  const known = (h) => h.weight != null && Number.isFinite(Number(h.weight));
+  const sumWeights = (rows) => {
+    if (!rows.length) return null;
+    if (!rows.every(known)) return null;
+    return +rows.reduce((s, h) => s + Number(h.weight), 0).toFixed(2);
+  };
+  const top10Weight = sumWeights(stocks);
+  const cashWeight = sumWeights(cashRows);
+  // 화면이 "비중은 원천에 없다" 와 "비중이 0 이다" 를 구별할 수 있게 표를 붙인다.
+  const weightsKnown = stocks.length > 0 && top10Weight != null;
+
+  // ── 거래가 멈춘 종목 ──────────────────────────────────────────────────
+  // ACE 러시아MSCI(합성) 은 현재가 8,535원에 기준가 48.38원, 거래량 0 이다.
+  // 제재로 평가가 동결된 뒤 마지막 체결가만 남아 괴리율이 17,541% 로 찍힌다.
+  // 계산이 틀린 게 아니라 그 상태를 그대로 비춘 것이다.
+  //
+  // 이런 종목을 순위·유형평균에 섞으면 멀쩡한 종목의 등수까지 흔들린다.
+  // 그렇다고 목록에서 지우면 "보유 중인데 화면에 없다" 가 되어 더 나쁘다.
+  // 그래서 **표시하되 표를 붙이고, 계산에서만 뺀다.**
+  const px = Number(etf.price), navv = Number(etf.nav);
+  const suspended = (Math.abs(Number(etf.premium) || 0) > 50)
+    || (Number(etf.volume) === 0 && px > 0 && navv > 0 && Math.abs(px / navv - 1) > 0.5);
 
   return {
     ...etf,
+    suspended: suspended || undefined,
     // 국내는 수집기가 운용사를 직접 받아 온다(네이버 issuerName). 없으면 규칙으로.
     manager: etf.manager || tag.manager,
     index: tag.index,
@@ -85,6 +110,7 @@ function finish(etf, listedIn) {
     holdings,
     top10Weight,
     cashWeight,
+    weightsKnown,                         // false 면 편입종목은 순위만 뜻이 있다
     holdingCount: stocks.length,          // 종목 수. 현금 줄은 세지 않는다
   };
 }

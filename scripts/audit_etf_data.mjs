@@ -58,9 +58,13 @@ for (const e of ETFS) {
     if (!Number.isFinite(p) || !Number.isFinite(t)) continue;
     const denom = 1 + p / 100;
     if (denom <= 0) continue;                     // 반토막 이하 구간은 비율이 뜻을 잃는다
-    let implied = (1 + t / 100) / denom - 1;      // 구간 전체의 내포분배율
-    const yrs = ANNUALIZED.has(k) ? 1 : YEARS[k]; // 연율 저장분은 이미 연 단위
-    if (yrs) implied = (1 + implied) ** (1 / yrs) - 1;   // 연율로 환산
+    // **누적**으로 본다. 연율로 환산하면 국내 ETF 의 연 1회 분배가
+    // 1개월 구간에서 연 56% 로 튀어 정상값이 오류로 잡힌다 —
+    // TIGER 증권(분배율 3.52%)의 1개월 격차 3.8%p 가 실은 한 해치를
+    // 한 번에 준 것이었다. 처음에 29건을 오류로 잡은 것이 이 착각이었다.
+    const span = YEARS[k] ?? 1;
+    const ratio = ANNUALIZED.has(k) ? ((1 + t / 100) / denom) ** span : (1 + t / 100) / denom;
+    const implied = ratio - 1;                   // 구간 전체의 누적 내포분배율
     const impliedPct = +(implied * 100).toFixed(2);
 
     // 총수익률이 시장가수익률보다 **낮으면** 분배금을 음수로 먹은 것이다.
@@ -69,15 +73,21 @@ for (const e of ETFS) {
            { period: k, price: p, tr: t, impliedYieldPct: impliedPct, dividendYield: dy });
       continue;
     }
-    // 연율 30% 를 넘는 내포분배율은 국내·해외 어느 ETF 에도 없다.
-    // 분배율(TTM)이 있으면 그 5배 + 5%p 를 넘는지도 같이 본다.
-    const hardCap = 30;
-    const softCap = dy != null ? Math.max(dy * 5 + 5, 15) : hardCap;
-    if (impliedPct > hardCap || impliedPct > softCap) {
+    // 계산이 깨진 것 — 어느 구간이든 100% + 해마다 100% 를 넘는 격차는
+    // 분배금으로 설명되지 않는다. 계산기의 방어선과 같은 잣대다.
+    const hardCap = (1 + span) * 100;
+    // 눈여겨볼 것 — 공시 분배율로 설명되는 크기를 크게 넘는 경우.
+    // 한 해치를 한 번에 주는 것을 감안해 최소 1년치는 허용한다.
+    const softCap = dy != null ? dy * Math.max(1, span) * 2 + 5 : hardCap;
+    if (impliedPct > hardCap) {
       flag('error', 'tr-내포분배율-과다', e,
-           `${k}: 총수익률 ${t}% vs 시장가 ${p}% → 내포분배율 연 ${impliedPct}%` +
+           `${k}: 총수익률 ${t}% vs 시장가 ${p}% → 누적 내포분배율 ${impliedPct}% (한도 ${hardCap}%)`,
+           { period: k, price: p, tr: t, impliedCumPct: impliedPct, dividendYield: dy });
+    } else if (impliedPct > softCap) {
+      flag('warn', 'tr-내포분배율-큼', e,
+           `${k}: 총수익률 ${t}% vs 시장가 ${p}% → 누적 내포분배율 ${impliedPct}%` +
            (dy != null ? ` (공시 분배율 ${dy}%)` : ' (분배율 미상)'),
-           { period: k, price: p, tr: t, impliedYieldPct: impliedPct, dividendYield: dy });
+           { period: k, price: p, tr: t, impliedCumPct: impliedPct, dividendYield: dy });
     }
   }
 
@@ -102,9 +112,18 @@ for (const e of ETFS) {
     for (const [k, v] of Object.entries(obj)) {
       if (!Number.isFinite(v)) { flag('error', '수익률-비수치', e, `${basis}.${k} = ${v}`); continue; }
       if (v <= -100) flag('error', '수익률-전손이하', e, `${basis}.${k} = ${v}% (-100% 이하)`, { period: k });
-      const cap = k === 'D1' ? 40 : k === 'W1' ? 80 : 500;
+      // 2배 레버리지는 기초자산이 크게 오른 해에 정말로 이만큼 오른다 —
+      // KODEX 반도체레버리지 1년 +535%(기준가 +572%), TIGER 200IT레버리지
+      // +843%(기준가 +903%). 시장가와 기준가가 같이 움직였으므로 계산이
+      // 아니라 실제 값이다. 그래서 배율 상품은 한도를 넓게 잡는다.
+      const geared2 = (e.flags || []).some((f) => f === 'leverage' || f === 'inverse');
+      const cap = k === 'D1' ? (geared2 ? 65 : 40)
+                : k === 'W1' ? (geared2 ? 130 : 80)
+                : (geared2 ? 1500 : 500);
       if (Math.abs(v) > cap) {
-        flag(basis === 'tr' ? 'error' : 'warn', '수익률-범위밖', e,
+        // 거래가 멈춘 종목은 마지막 체결가가 그대로 남아 수익률이 튄다.
+        // 이미 suspended 표를 붙여 계산에서 빼고 있으므로 오류가 아니다.
+        flag(basis === 'tr' && !e.suspended ? 'error' : 'warn', '수익률-범위밖', e,
              `${basis}.${k} = ${v}% (${cap}% 초과)`, { period: k, value: v });
       }
     }
@@ -131,34 +150,70 @@ for (const e of ETFS) {
   // ── 5. 보유종목 ─────────────────────────────────────────────────────────
   const hs = Array.isArray(e.holdings) ? e.holdings : [];
   if (hs.length) {
-    const sum = hs.reduce((s, h) => s + (Number(h.weight) || 0), 0);
-    // 상위 10개만 받으므로 합이 100 을 넘으면 안 된다(반올림 여유 0.5%p).
-    if (sum > 100.5) flag('error', '보유비중-합초과', e, `상위 ${hs.length}개 비중 합 ${sum.toFixed(2)}%`, { sumWeight: +sum.toFixed(2) });
-    if (sum <= 0) flag('error', '보유비중-영', e, `비중 합이 ${sum}`);
+    // Number(null) 은 0 이므로 null 을 먼저 걸러야 한다. 이걸 빠뜨리면
+    // "비중 없음" 이 "비중 0" 으로 둔갑한다.
+    const known = hs.filter((h) => h.weight != null && Number.isFinite(Number(h.weight)));
+    const sum = known.reduce((s, h) => s + Number(h.weight), 0);
+    // 레버리지·인버스는 스왑·선물로 200% 노출을 만든다. 합이 200% 인 것이
+    // 정상이므로 여기에 100% 잣대를 들이대면 안 된다 — 처음에 67건을
+    // 오류로 잡았던 것이 이 착각이었다.
+    // 레버리지·인버스뿐 아니라 **선물형**도 합이 200% 다 — 기초자산 선물
+    // 100% 와 증거금으로 맡긴 원화현금 100% 가 나란히 한 줄씩 잡히기 때문이다
+    // (KODEX 국채선물10년·TIGER 일본엔선물 등 9종목). 담보와 노출을 각각
+    // 적은 것이라 합이 100 을 넘는 게 맞다.
+    const geared = (e.flags || []).some((f) => f === 'leverage' || f === 'inverse' || f === 'synthetic')
+                || /선물|레버리지|인버스/.test(e.name || '');
+    const cap = geared ? 310 : 100.5;
+    if (known.length && sum > cap) {
+      flag('error', '보유비중-합초과', e, `상위 ${hs.length}개 비중 합 ${sum.toFixed(2)}% (한도 ${cap}%)`, { sumWeight: +sum.toFixed(2) });
+    }
+    // 비중이 아예 안 오는 무리(네이버는 해외주식·채권·원자재에 수량만 준다)와
+    // "비중이 0" 은 다른 이야기다. 앞엣것은 원천의 한계이므로 참고로만 남긴다.
+    if (!known.length) flag('info', '보유비중-미공시', e, `${hs.length}종목 모두 비중 없음 (수량만)`);
+    else if (known.length < hs.length) flag('warn', '보유비중-일부없음', e, `${hs.length}종목 중 ${hs.length - known.length}개 비중 없음`);
+    else if (sum <= 0) flag('error', '보유비중-영', e, `비중 합이 ${sum}`);
     for (const h of hs) {
       const w = Number(h.weight);
-      if (!Number.isFinite(w) || w < 0 || w > 100) flag('error', '보유비중-범위밖', e, `${h.name || h.code}: ${h.weight}`);
+      // 비중이 없는 것은 위에서 무리 단위로 한 번만 적었다. 여기서 종목마다
+      // 다시 적으면 5,953건이 되어 진짜 오류가 묻힌다.
+      // 현금 줄은 음수일 수 있다 — 레버리지가 차입으로 노출을 만들면
+      // 원화현금이 -18% 로 잡힌다. 종목 줄이 음수인 것만 오류다.
+      const lo = h.cash ? -100 : 0;
+      if (h.weight != null && (!Number.isFinite(w) || w < lo || w > 310)) {
+        flag('error', '보유비중-범위밖', e, `${h.name || h.code}: ${h.weight}`);
+      }
       if (!h.name && !h.code) flag('warn', '보유종목-이름없음', e, JSON.stringify(h).slice(0, 80));
     }
     // 내림차순이어야 화면의 "상위 10개"가 말이 된다.
-    for (let i = 1; i < hs.length; i += 1) {
-      if ((Number(hs[i].weight) || 0) > (Number(hs[i - 1].weight) || 0) + 1e-9) {
-        flag('error', '보유종목-정렬어긋남', e, `${i}번째(${hs[i].name}) 가 앞보다 크다`);
+    for (let i = 1; i < known.length; i += 1) {
+      if (Number(known[i].weight) > Number(known[i - 1].weight) + 1e-9) {
+        flag('error', '보유종목-정렬어긋남', e, `${i}번째(${known[i].name}) 가 앞보다 크다`);
         break;
       }
     }
     const codes = hs.map((h) => h.code).filter(Boolean);
     if (new Set(codes).size !== codes.length) flag('error', '보유종목-중복', e, codes.join(','));
     // 화면이 쓰는 파생값이 실제 배열과 맞는지
-    if (Number.isFinite(e.top10Weight)) {
-      const top10 = hs.slice(0, 10).reduce((s, h) => s + (Number(h.weight) || 0), 0);
+    // 비중을 모르는데 합계를 0 으로 적어 두면 화면이 "상위 종목 합계 0.0%"
+    // 라고 말한다. 없는 것을 0 이라고 하는 건 거짓이다 — 빈칸이어야 한다.
+    if (known.length < hs.length && e.top10Weight != null) {
+      flag('error', 'top10Weight-거짓', e,
+           `비중을 모르는 종목이 ${hs.length - known.length}개인데 합계를 ${e.top10Weight}% 로 적었다`,
+           { stored: e.top10Weight });
+    } else if (Number.isFinite(e.top10Weight) && known.length === hs.length) {
+      // 빌드는 현금 줄을 빼고 합한다(현금 100% 를 "집중도 100%" 라고 말하면
+      // 거짓이 되므로). 감사도 같은 규칙으로 세야 견줄 수 있다.
+      const top10 = known.filter((h) => !h.cash).slice(0, 10).reduce((s, h) => s + Number(h.weight), 0);
       if (Math.abs(top10 - e.top10Weight) > 0.05) {
         flag('error', 'top10Weight-불일치', e, `저장 ${e.top10Weight}% vs 재계산 ${top10.toFixed(2)}%`,
              { stored: e.top10Weight, recomputed: +top10.toFixed(2) });
       }
     }
-    if (Number.isFinite(e.holdingCount) && e.holdingCount !== hs.length) {
-      flag('warn', 'holdingCount-불일치', e, `저장 ${e.holdingCount} vs 실제 ${hs.length}`);
+    // 빌드는 현금 줄을 세지 않는다. 감사도 같은 규칙으로 세야 한다 —
+    // 전부를 세면 현금이 있는 262종목이 통째로 어긋난 것처럼 보인다.
+    const stockRows = hs.filter((h) => !h.cash).length;
+    if (Number.isFinite(e.holdingCount) && e.holdingCount !== stockRows) {
+      flag('warn', 'holdingCount-불일치', e, `저장 ${e.holdingCount} vs 종목 줄 ${stockRows} (현금 제외)`);
     }
   } else {
     flag('info', '보유종목-없음', e, '상위 편입종목이 비어 있다');
@@ -169,8 +224,30 @@ for (const e of ETFS) {
     if (!obj) continue;
     const vals = Object.values(obj).map(Number);
     const sum = vals.reduce((s, v) => s + (Number.isFinite(v) ? v : 0), 0);
-    if (vals.some((v) => !Number.isFinite(v) || v < 0)) flag('error', `${label}비중-비정상`, e, JSON.stringify(obj).slice(0, 120));
-    else if (sum > 101 || (sum > 0 && sum < 90)) flag('warn', `${label}비중-합이상`, e, `합 ${sum.toFixed(2)}%`, { sum: +sum.toFixed(2) });
+    // 음수 비중은 이 자산군들에서 **구조 그 자체**다. 처음에 461건을 오류로
+    // 잡았다가 실물을 보고 두 번 물러섰다.
+    //   현금 -0.5%   선물 증거금·미수금 (TIGER 200)
+    //   현금 -22%    환매조건부로 채권을 120% 담은 액티브 채권형
+    //   파생 -100%   환헤지형의 통화선도 (KODEX 미국S&P500(H))
+    // 그래서 현금·파생이 아닌 칸이 음수일 때만 오류로 본다.
+    // 음수로 잡히는 현금이 국가표에서는 KR, 섹터표에서는 UNCLASSIFIED 로
+    // 나타난다(해외 ETF 의 KR=-0.21 등). 같은 한 줄이 표마다 다른 이름을
+    // 쓸 뿐이므로 이것도 구조에 속한다. 1%p 안쪽의 음수는 넘긴다.
+    // 국가표에는 현금 줄이 따로 없다. 그래서 음수 현금·차입·숏 노출이
+    // **어느 나라 칸에든** 들어간다 — 해외 ETF 의 KR=-5.97(원화 미수금),
+    // KODEX 200선물인버스2X 의 KR=-76.27(숏 노출)이 그것이다. 나라 이름이
+    // 붙었을 뿐 자산표의 CASH·DERIVATIVES 와 같은 줄이므로 참고로만 남긴다.
+    const NEG_OK = label === '국가'
+      ? null
+      : new Set(['CASH', 'DERIVATIVES', 'OTHERS', 'UNCLASSIFIED', 'MISC']);
+    const negBad = NEG_OK
+      ? Object.entries(obj).filter(([k, v]) => Number(v) < 0 && !NEG_OK.has(k) && Number(v) < -1)
+      : [];
+    const negInfo = !NEG_OK && Object.entries(obj).some(([, v]) => Number(v) < -1);
+    if (negInfo) flag('info', '국가비중-음수', e, JSON.stringify(obj).slice(0, 120));
+    if (vals.some((v) => !Number.isFinite(v))) flag('error', `${label}비중-비수치`, e, JSON.stringify(obj).slice(0, 120));
+    else if (negBad.length) flag('error', `${label}비중-음수`, e, negBad.map(([k, v]) => `${k}=${v}`).join(' '));
+    else if (sum > 101 || (sum > 0 && sum < 90)) flag('info', `${label}비중-합이상`, e, `합 ${sum.toFixed(2)}%`, { sum: +sum.toFixed(2) });
   }
 
   // ── 6. 설정액·순자산·시가총액 ───────────────────────────────────────────
@@ -185,8 +262,10 @@ for (const e of ETFS) {
     const r = mcap / aum;
     // 순자산과 시가총액은 괴리율만큼만 차이 나야 한다. 2배 넘게 벌어지면
     // 한쪽이 다른 단위이거나 다른 종목의 값이다.
+    // 거래가 멈춘 종목은 마지막 체결가로 시총이 잡혀 순자산과 벌어진다.
+    // 이미 표를 붙였으면 아는 상태이므로 오류가 아니다.
     if (r > 2 || r < 0.5) {
-      flag('error', '시총-설정액-괴리', e, `시총 ${mcap} / 설정액 ${aum} = ${r.toFixed(2)}배`,
+      flag(e.suspended ? 'info' : 'error', '시총-설정액-괴리', e, `시총 ${mcap} / 설정액 ${aum} = ${r.toFixed(2)}배`,
            { marketCap: mcap, aum, ratio: +r.toFixed(2) });
     }
   }
@@ -215,15 +294,36 @@ for (const e of ETFS) {
     // 국내 ETF 총보수는 0.01%~1.5% 안에 있다. 소수/퍼센트 혼동은 여기서 걸린다.
     if (ter < 0) flag('error', '총보수-음수', e, `ter=${ter}`);
     else if (ter > 3) flag('error', '총보수-과다', e, `ter=${ter}% (3% 초과)`, { ter });
-    else if (ter === 0) flag('warn', '총보수-영', e, 'ter=0 (무보수는 드물다)');
+    // 보수가 정말 0 인 ETF 는 없다. 야후가 일본·홍콩 상장에 0 을 준다.
+    // 화면은 이걸 "총보수 0.000%" 로 찍는다 — 모르는 것을 안다고 말하는 셈이다.
+    else if (ter === 0) flag('error', '총보수-영', e, 'ter=0 → 화면에 "0.000%" 로 찍힌다. 빈칸이어야 한다');
   } else flag('info', '총보수-없음', e, 'ter 없음');
   if (Number.isFinite(Number(e.premium)) && Math.abs(e.premium) > 10) {
     flag('warn', '괴리율-과다', e, `premium=${e.premium}%`, { premium: e.premium });
   }
-  if (Number.isFinite(Number(e.trackingError)) && (e.trackingError < 0 || e.trackingError > 20)) {
-    flag('warn', '추적오차-범위밖', e, `trackingError=${e.trackingError}%`);
+  // 액티브·레버리지는 지수를 그대로 따라가지 않으므로 추적오차가 크다.
+  // 20% 잣대는 그 종목들만 62건 잡아 냈다 — 규칙이 틀린 것이었다.
+  const gearedOrActive = (e.flags || []).some((f) => f === 'active' || f === 'leverage' || f === 'inverse');
+  if (Number.isFinite(Number(e.trackingError))) {
+    if (e.trackingError < 0) flag('error', '추적오차-음수', e, `trackingError=${e.trackingError}%`);
+    else if (e.trackingError > (gearedOrActive ? 50 : 20)) {
+      flag('warn', '추적오차-범위밖', e, `trackingError=${e.trackingError}%`);
+    }
   }
   if (dy != null && (dy < 0 || dy > 60)) flag('error', '분배율-범위밖', e, `dividendYield=${dy}%`, { dividendYield: dy });
+
+  // ── 8-2. 거래가 멈춘 종목 ────────────────────────────────────────────────
+  // ACE 러시아MSCI(합성) 은 가격 8,535 원에 기준가 48.38 원, 거래량 0 이다.
+  // 제재로 평가가 동결된 뒤 마지막 체결가만 남은 것이다. 괴리율 17,541% 는
+  // 계산이 틀린 게 아니라 그 상태를 그대로 비춘 것이다. 이런 종목을 순위와
+  // 유형평균에 섞으면 멀쩡한 종목의 등수까지 흔든다.
+  // 빌드가 이미 suspended 표를 붙였으면 알고 있다는 뜻이므로 참고로만 남긴다.
+  // 모르고 지나간 것만 오류다.
+  if (Math.abs(Number(e.premium) || 0) > 50 || (Number(e.volume) === 0 && Number(e.aum) > 0 && Math.abs(Number(e.premium) || 0) > 10)) {
+    flag(e.suspended ? 'info' : 'error', '거래정지-의심', e,
+         `괴리율 ${e.premium}% · 거래량 ${e.volume} · 현재가 ${e.price} vs 기준가 ${e.nav}`,
+         { premium: e.premium, volume: e.volume, price: e.price, nav: e.nav });
+  }
 
   // ── 9. 현재가와 등락률의 앞뒤 ───────────────────────────────────────────
   const px = Number(e.price), chg = Number(e.change), rate = Number(e.changeRate);

@@ -146,6 +146,7 @@ async function main() {
   let withTr = 0;
   const trMethod = {};
   const retMissing = [];
+  const anomalyRows = [];
 
   const etfs = [];
   let withHoldings = 0;
@@ -166,11 +167,19 @@ async function main() {
       withTr += 1;
       trMethod[y.method] = (trMethod[y.method] || 0) + 1;
     } else retMissing.push(item.itemcode);
+    if (y?.anomalies) anomalyRows.push({ code: item.itemcode, name: item.itemname, anomalies: y.anomalies });
     const navSeries = d?.ret?.nav || null;
-    const ret = (y || navSeries) ? Object.assign({},
+    // 네이버가 자기 화면에 싣는 시장가수익률. 예전에는 받아 놓고 버렸는데,
+    // 그 바람에 화면의 price(야후) 와 nav(네이버) 가 **서로 다른 원천**이
+    // 되어 나란히 놓였다. 사용자의 브리핑 화면(네이버)이 1개월 +23.79% 일 때
+    // 이 도구(야후)는 +18.13% 였다. 이제 네이버 값도 들고 가서
+    // 감사와 화면이 둘을 견줄 수 있게 한다.
+    const naverPrice = d?.ret?.price || null;
+    const ret = (y || navSeries || naverPrice) ? Object.assign({},
       y?.price ? { price: y.price } : {},
       y?.tr ? { tr: y.tr } : {},
-      navSeries ? { nav: navSeries } : {}) : null;
+      navSeries ? { nav: navSeries } : {},
+      naverPrice ? { naverPrice } : {}) : null;
     // 운용사 표기에서 "(ETF)" 꼬리를 뗀다. 필터 항목으로 쓰기에 지저분하다.
     const managerRaw = d?.manager ? d.manager.replace(/\s*\(ETF\)\s*$/, '') : null;
 
@@ -201,6 +210,9 @@ async function main() {
       dividendYield: d?.dividendYield ?? null,
       // price·tr = 야후 일봉(종가 / 배당 재투자), nav = 네이버 기준가
       retAsOf: y?.asOf ?? d?.retAsOf ?? null,
+      // 계산기가 버린 레코드(주가 대비 30% 넘는 분배금, 내포분배율이 한도를
+      // 넘은 구간). 빈칸이 왜 빈칸인지 화면과 감사가 말할 수 있어야 한다.
+      retAnomalies: y?.anomalies ?? null,
       ret: ret,
       flow: d?.flow ?? null,
       sectors: d?.sectors ?? null,
@@ -216,6 +228,10 @@ async function main() {
   });
 
   console.log(`[kr] 편입종목 확보 ${withHoldings}/${list.length}`);
+  if (anomalyRows.length) {
+    console.log(`[kr] 버린 레코드가 있는 종목 ${anomalyRows.length}: ` +
+                anomalyRows.slice(0, 8).map((a) => `${a.code} ${a.name}(${a.anomalies.length})`).join(' | '));
+  }
   console.log(`[kr] 총수익률 확보 ${withTr}/${list.length} · 산출 방식 ` +
               JSON.stringify(trMethod) +
               (retMissing.length ? ` · 없는 종목 ${retMissing.length}` : ''));
@@ -236,6 +252,7 @@ async function main() {
     withTr,
     trMethod,
     retMissing: retMissing.slice(0, 80),
+    anomalies: anomalyRows,
     failures: failures.slice(0, 50),
     etfs,
   }, `국내 ETF — 네이버 수집 ${new Date().toISOString()}`);
