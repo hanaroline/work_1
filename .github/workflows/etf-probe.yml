@@ -90,6 +90,13 @@ jobs:
         if: hashFiles('scripts/probe_fund_sources4.mjs') != ''
         run: node scripts/probe_fund_sources4.mjs
 
+      # 5차 — 4차에서 경로를 지어냈던 것이 드러났다. 메뉴에서 받아 온다.
+      - name: 탐색 실행 (펀드 원천 5차 — 메뉴에서 경로 얻기)
+        continue-on-error: true
+        timeout-minutes: 12
+        if: hashFiles('scripts/probe_fund_sources5.mjs') != ''
+        run: node scripts/probe_fund_sources5.mjs
+
       # 탐색 실패는 잡을 실패시키지 않는다. 못 붙은 칸도 결과의 일부다.
       - name: 탐색 실행 (1차)
         continue-on-error: true
