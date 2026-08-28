@@ -28,7 +28,8 @@ const made = [];
 
 for (const [mode, suffix, label] of [
   ['pdf-summary', '_요약', '요약본 — 머리 요약 · 주요 리포트 · 목표주가 변경'],
-  ['pdf-full', '_전체', '전체본 — 위의 것 + 전체 리포트 목록'],
+  ['pdf-weekly', '_주간인기', '주간본 — 한 주 인기 리포트 · 주간 셈'],
+  ['pdf-full', '_전체', '전체본 — 위의 것 + 주간 + 전체 리포트 목록'],
 ]) {
   const name = path.join(outdir, base + suffix + '.pdf');
   const p = await b.newPage({ viewport: { width: 1280, height: 1000 } });
@@ -38,8 +39,13 @@ for (const [mode, suffix, label] of [
                           null, { timeout: 15000 });
   await p.addStyleTag({ content: FONT });
   await p.evaluate((m) => {
-    document.body.classList.remove('pdf-summary', 'pdf-full');
+    document.body.classList.remove('pdf-summary', 'pdf-full', 'pdf-weekly');
     document.body.classList.add(m);
+    // 주간본은 표지 제목도 주간이어야 한다 — 「2026-08-28 증권사 리포트」가
+    // 붙어 있으면 그날 판으로 오해한다.
+    const t = document.getElementById('title');
+    const w = document.getElementById('weekHint');
+    if (m === 'pdf-weekly' && t && w) t.textContent = '주간 인기 증권사 리포트';
     // 종이에서는 조회 상태가 남아 있으면 안 된다 — 걸러 낸 것만 실린다.
     const q = document.getElementById('q');
     if (q && q.value) { q.value = ''; q.dispatchEvent(new Event('input')); }
@@ -51,6 +57,7 @@ for (const [mode, suffix, label] of [
   const seen = await p.evaluate(() => ({
     highlights: document.querySelectorAll('#highlights .rp').length,
     moves: document.querySelectorAll('#moves .rp').length,
+    weekly: document.querySelectorAll('#weekly .rp').length,
     list: document.querySelectorAll('#list .rp').length,
     title: (document.getElementById('title') || {}).textContent || '',
   }));
@@ -71,10 +78,13 @@ for (const [mode, suffix, label] of [
   });
   const kb = Math.round(fs.statSync(name).size / 1024);
   console.log('만듦: %s (%dKB · %s)', name, kb, label);
-  console.log('       주요 %d · 목표주가변경 %d · 목록 %d',
-              seen.highlights, seen.moves, mode === 'pdf-summary' ? 0 : seen.list);
+  console.log('       주요 %d · 목표주가변경 %d · 주간 %d · 목록 %d',
+              mode === 'pdf-weekly' ? 0 : seen.highlights,
+              mode === 'pdf-weekly' ? 0 : seen.moves,
+              mode === 'pdf-summary' ? 0 : seen.weekly,
+              mode === 'pdf-full' ? seen.list : 0);
   made.push(name);
   await p.close();
 }
 await b.close();
-if (made.length !== 2) process.exit(1);
+if (made.length !== 3) process.exit(1);
