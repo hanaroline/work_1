@@ -210,8 +210,13 @@
       .section-title .hint { font-size: 7.5pt; }
       /* 카드는 쪽 경계에서 자르지 않는다 — 제목만 남고 넘어가면 못 읽는다. */
       .rp { break-inside: avoid; page-break-inside: avoid; padding: 8px 10px; box-shadow: none; }
-      .cards { gap: 6px; }
-      .cards.two { grid-template-columns: 1fr 1fr; }
+      /* 격자(grid)는 쪽 경계에서 제대로 쪼개지지 않는다 — 요약을 여섯 줄로
+         늘리자 마지막 줄의 카드가 꼬리말 위로 넘쳐 겹쳤다. 인쇄에서는
+         흐르는 단(multi-column)으로 바꾼다. 단은 쪽을 넘어 이어지고
+         break-inside 도 제대로 듣는다. */
+      .cards { display: block; gap: 0; }
+      .cards.two { display: block; columns: 2; column-gap: 8px; }
+      .cards > .rp { display: block; width: 100%; margin: 0 0 6px; }
       .rp .t { font-size: 10pt; }
       .rp .sum { font-size: 8.5pt; margin: 3px 0 5px; }
       .rp .ex { display: none !important; }          /* 발췌는 종이에서 뺀다 */
