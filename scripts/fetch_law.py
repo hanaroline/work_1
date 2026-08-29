@@ -479,17 +479,28 @@ def main():
     print("=== 국가법령정보센터 수집 (%d건) ==="
           % len(targets))
     laws, sources = [], {}
+    dead = 0
     for t in targets:
         name, target = t["이름"], t.get("target", "law")
+        if dead >= 2:
+            # 앞의 둘이 연달아 '접속 실패' 면 서버에 못 닿는 것이지 법령마다
+            # 사정이 다른 것이 아니다. 나머지를 다 돌면 건당 50초씩(https+http
+            # 타임아웃) 헛되이 쓴다 — 실제로 한 번 10분 36초를 버렸다.
+            msg = "RuntimeError: 접속 실패 (앞선 실패로 건너뜀)"
+            print("  SKIP %s  <- 서버에 닿지 않아 남은 대상을 건너뛴다" % name)
+            sources[name] = {"ok": False, "error": msg}
+            continue
         try:
             laws.append(collect_one(oc, name, target, print))
             sources[name] = {"ok": True}
+            dead = 0
         except Exception as e:                                    # noqa: BLE001
             # 한 건이 실패해도 나머지는 받는다. 무엇이 비었는지는 index.json 에
             # 그대로 남기므로, 인용하는 쪽이 확보된 것과 아닌 것을 구별할 수 있다.
             msg = "%s: %s" % (type(e).__name__, e)
             print("  FAIL %s  <- %s" % (name, msg))
             sources[name] = {"ok": False, "error": msg}
+            dead = dead + 1 if "접속 실패" in msg else 0
         time.sleep(PAUSE)
 
     # 이번에 못 받은 법령의 지난 기록은 지우지 않는다. 어제 받아 둔 조문이

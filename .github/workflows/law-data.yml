@@ -56,6 +56,22 @@ jobs:
         # 망을 쓰지 않는다. 응답을 뜯는 부분이 성한지 먼저 보고 나서 부른다.
         run: python scripts/fetch_law.py --selftest
 
+      - name: 망 점검
+        # 1회차 수집이 12건 전부 "urlopen error timed out" 으로 죽었다. 인증키도
+        # 파서도 통과한 뒤였으므로 남는 원인은 접속이다. 연결 거부도 TLS 오류도
+        # 아닌 무응답이라 해외 IP 차단이 의심되는데, 로그만 봐서는 러너 쪽 망이
+        # 통째로 막힌 것인지 law.go.kr 만 막힌 것인지 구별되지 않는다.
+        # 대조군(github.com)과 나란히 찍어 그 둘을 갈라 놓는다. 진단이므로
+        # 실패해도 수집을 막지 않는다.
+        continue-on-error: true
+        run: |
+          for host in api.github.com www.law.go.kr open.law.go.kr; do
+            code=$(curl -sS -o /dev/null -w '%{http_code}' -m 12 "https://$host/" 2>&1 || echo "실패")
+            echo "  https://$host  -> $code"
+          done
+          echo "--- 러너 위치(차단 여부 판단용) ---"
+          curl -sS -m 12 https://api.github.com/meta >/dev/null && echo "  github 연결 정상"
+
       - name: 법령 수집
         env:
           LAW_OC: ${{ secrets.LAW_OC }}
