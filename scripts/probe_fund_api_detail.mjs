@@ -88,13 +88,29 @@ async function open(url, wait = 5000, tries = 3) {
     try {
       const res = await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 60000 });
       await page.waitForTimeout(wait);
-      return { status: res ? res.status() : null, url: page.url(), html: await page.content(), tries: i + 1 };
+      return { status: res ? res.status() : null, url: page.url(), html: await page.content(), tries: i + 1, how: '브라우저' };
     } catch (e) {
       last = e;
       console.log(`[detail] ${i + 1}번째 실패: ${String(e.message).split('\n')[0]}`);
     } finally {
       await page.close();
     }
+  }
+
+  // 브라우저로 아홉 번 다 끊겼다. 브라우저는 문서 말고도 여럿 받으려 하므로
+  // 문서 하나만 달라고 다시 물어본다. 이것도 끊기면 **길이 없는 것이 맞다.**
+  // 다만 이 화면은 목록을 자바스크립트로 그리므로, 받아져도 상세링크가
+  // 0개일 수 있다. 그때는 "없다" 가 아니라 "이 방식으로는 안 보인다" 이다.
+  try {
+    const res = await fetch(url, {
+      redirect: 'follow',
+      headers: { 'User-Agent': UA, 'Accept-Language': 'ko-KR,ko;q=0.9' },
+      signal: AbortSignal.timeout(40000),
+    });
+    console.log(`[detail] 브라우저 대신 fetch — HTTP ${res.status}`);
+    return { status: res.status, url: res.url, html: await res.text(), tries, how: 'fetch(문서만)' };
+  } catch (e) {
+    console.log(`[detail] fetch 도 실패: ${String(e.message).split('\n')[0]}`);
   }
   throw last;
 }
@@ -116,7 +132,7 @@ for (const kw of KEYWORDS) {
     // 링크가 하나도 안 걸렸는데 화면은 받은 경우 — 규칙(정규식)이 틀린 것이다.
     // 그때는 원문을 남겨 사람이 실제 href 모양을 보게 한다.
     const anchors = (r.html.match(/\/data\/\d+\/(?:openapi|fileData|standard)\.do/g) || []).length;
-    lists.push({ kw, ok: true, status: r.status, tries: r.tries, anchors,
+    lists.push({ kw, ok: true, status: r.status, tries: r.tries, how: r.how, anchors,
                  added: found.size - before,
                  sample: anchors ? null : (r.html.match(/<a[^>]+href="[^"]*data[^"]*"[^>]*>/i) || [null])[0] });
     console.log(`[detail] "${kw}" 목록 HTTP ${r.status} — 상세링크 ${anchors}개, 후보 누적 ${found.size}개`);
@@ -170,16 +186,19 @@ const md = [
   '**이 표를 먼저 본다.** 목록을 못 받으면 아래 후보 수 0 은 "없다" 가 아니라',
   '"못 봤다" 이다. 둘을 섞으면 없는 것을 있다고 말하는 것만큼 나쁜 거짓이 된다.',
   '',
-  '| 검색어 | 받았나 | HTTP | 시도 | 상세링크 | 새 후보 |',
+  '| 검색어 | 받았나 | 어떻게 | HTTP | 상세링크 | 새 후보 |',
   '|---|:--:|:--:|:--:|:--:|:--:|',
   ...lists.map((l) => (l.ok
-    ? `| ${l.kw} | 받음 | ${l.status} | ${l.tries} | ${l.anchors} | ${l.added} |`
-    : `| ${l.kw} | **못 받음** | — | 3 | — | — |`)),
+    ? `| ${l.kw} | 받음 | ${l.how} | ${l.status} | ${l.anchors} | ${l.added} |`
+    : `| ${l.kw} | **못 받음** | 브라우저 3회 + fetch 1회 모두 실패 | — | — | — |`)),
   '',
   ...lists.filter((l) => !l.ok).map((l) => `- \`${l.kw}\` 실패: ${l.error}`),
   ...lists.filter((l) => l.ok && l.anchors === 0)
-          .map((l) => `- \`${l.kw}\` 화면은 받았는데 상세링크가 0개다 — **내 정규식이 틀렸을 수 있다.** ` +
-                      `본 것: \`${(l.sample || '없음').slice(0, 120)}\``),
+          .map((l) => `- \`${l.kw}\` 화면은 받았는데 상세링크가 0개다 — ` +
+                      (l.how === 'fetch(문서만)'
+                        ? '**이 목록은 자바스크립트로 그린다.** 문서만 받아서는 안 보이는 것이지 없는 것이 아니다.'
+                        : '**내 정규식이 틀렸을 수 있다.**') +
+                      ` 본 것: \`${(l.sample || '없음').slice(0, 120)}\``),
   '',
   gotAnyList
     ? (found.size === 0
