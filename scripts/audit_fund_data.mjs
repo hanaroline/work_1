@@ -562,6 +562,71 @@ for (const f of FUNDS) {
     flag('warn', '위험등급-모르는값', f,
          `riskGrade=${f.riskGrade} (아는 값: ${[...RISK_GRADES].join(', ')})`);
   }
+
+  // ── 자금유입 ────────────────────────────────────────────────────────────
+  //
+  // 유입은 원천이 준 값이 아니라 **우리가 뺀 값**이다.
+  //
+  //   flow[k] = 오늘 설정원본 − k 기간 전 설정원본
+  //
+  // 그래서 원천을 볼 것 없이 산술로 반증되는 규칙이 하나 있다. 과거 설정원본은
+  // 음수가 될 수 없으므로(좌수 × 1,000),
+  //
+  //   flow ≤ 오늘 설정원본
+  //
+  // 이 부등식이 깨지면 뺀 값이 설정원본이 아니거나 축이 어긋난 것이다.
+  // 이력의 코드 축이 밀리면 **남의 펀드 값을 빼게 되는데**, 그 사고가
+  // 여기서 잡힌다.
+  if (f.flow && typeof f.flow === 'object') {
+    const aum = f.aum == null ? null : Number(f.aum);
+
+    // 오늘 값을 모르면 차이도 못 낸다. 빌드가 걸러야 하는데 새어 나왔다면 오류다.
+    if (aum == null || !Number.isFinite(aum)) {
+      flag('error', '유입-설정액없음', f, `flow 는 있는데 aum=${f.aum ?? '없음'} 이다`);
+    }
+
+    for (const [k, v] of Object.entries(f.flow)) {
+      const n = Number(v);
+      if (v == null || !Number.isFinite(n)) {
+        flag('error', '유입-숫자아님', f, `flow.${k}=${v}`);
+        continue;
+      }
+      // 기준일 없는 유입은 "무엇 대비" 가 없는 숫자다. 화면에 못 쓴다.
+      const asOf = f.flowAsOf?.[k];
+      if (!asOf || !/^\d{4}-\d{2}-\d{2}$/.test(String(asOf))) {
+        flag('error', '유입-기준일없음', f, `flow.${k}=${n} 인데 flowAsOf.${k}=${asOf ?? '없음'}`);
+      } else if (f.tradeDate && String(asOf) >= String(f.tradeDate)) {
+        // 과거와 비교해야 유입이다. 같은 날이거나 미래면 0 또는 거꾸로가 된다.
+        flag('error', '유입-기준일뒤집힘', f,
+             `flowAsOf.${k}=${asOf} 가 기준일 ${f.tradeDate} 보다 뒤(또는 같음)다`);
+      }
+
+      if (Number.isFinite(aum) && n > aum + 1) {
+        // +1 은 반올림 여유다. flow 는 Math.round 를 거친다.
+        flag('error', '유입-설정액초과', f,
+             `flow.${k}=${n} 이 설정원본 ${aum} 보다 크다 — 과거 설정원본이 음수라야 가능한 값이다`,
+             { flow: n, aum });
+      }
+
+      // 설정일 이후라 과거를 0 으로 본 경우, 유입은 오늘 설정원본과 같아야 한다.
+      // 다르면 0 을 넣은 자리와 뺀 자리가 어긋난 것이다.
+      if (f.flowSince?.[k] === 'inception' && Number.isFinite(aum) && Math.abs(n - aum) > 1) {
+        flag('error', '유입-설정이후불일치', f,
+             `flowSince.${k}='inception' 인데 flow.${k}=${n} ≠ aum=${aum}`,
+             { flow: n, aum });
+      }
+      // 반대로, 설정일이 기준일보다 앞인데 'inception' 이라고 적혀 있으면
+      // 판정 자체가 틀린 것이다.
+      if (f.flowSince?.[k] === 'inception' && f.inceptionDate && asOf &&
+          String(f.inceptionDate) <= String(asOf)) {
+        flag('error', '유입-설정이후오판', f,
+             `설정일 ${f.inceptionDate} 이 기준일 ${asOf} 보다 앞인데 'inception' 으로 뒀다`);
+      }
+    }
+  } else if (f.flowAsOf || f.flowSince) {
+    // 유입 없이 곁다리만 남으면 화면이 "기준일은 있는데 값이 없다" 를 그린다.
+    flag('warn', '유입-곁다리만', f, 'flow 없이 flowAsOf/flowSince 만 있다');
+  }
 }
 
 // ── 12. 한 종목이 유형 전체의 평균을 흔드는가 ─────────────────────────────
@@ -611,6 +676,25 @@ if (dupCodes.length) {
   meta.push({ sev: 'error', rule: '표준코드-중복',
               detail: [...new Set(dupCodes)].slice(0, 10).join(', ') });
 }
+
+// 유입을 실었으면 그 근거(이력 축)도 함께 실려야 한다. 화면 각주가 "무엇
+// 대비인가" 를 여기서 읽는다 — 없으면 숫자만 있고 뜻이 없는 칸이 된다.
+// sources.history.dates 는 **열의 개수(숫자)** 다. 배열이 아니다 — 처음에
+// `.length` 로 걸었다가 2,370건을 헛잡았다. 모양은 짐작하지 말고 실물을 본다.
+const withFlow = FUNDS.filter((f) => f.flow && Object.keys(f.flow).length);
+const histCols = Number(DATA.sources?.history?.dates ?? 0);
+if (withFlow.length && !(histCols >= 2 && DATA.sources?.history?.anchors)) {
+  meta.push({ sev: 'error', rule: '유입-근거없음',
+              detail: `${withFlow.length}개에 flow 가 있는데 sources.history 가 ` +
+                      `열 ${histCols}개 · 기준 ${JSON.stringify(DATA.sources?.history?.anchors ?? null)} 이다` });
+}
+// 반대쪽 — 이력이 두 열 이상인데 유입이 하나도 없으면 조용히 빠진 것이다.
+// 오류는 아니다(기간 허용오차 밖일 수 있다). 왜 안 나왔는지 눈에 띄게만 한다.
+if (!withFlow.length && histCols >= 2) {
+  meta.push({ sev: 'warn', rule: '유입-이력있는데없음',
+              detail: `이력 열 ${histCols}개인데 flow 가 한 개도 없다` });
+}
+
 for (const m of meta) findings.push({ ...m, id: null, code: null, name: null });
 
 // ── 집계 ──────────────────────────────────────────────────────────────────

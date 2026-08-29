@@ -17,6 +17,7 @@ on:
     paths:
       - 'scripts/collect_fund_kr.mjs'
       - 'scripts/collect_fund_region.mjs'
+      - 'scripts/append_fund_history.mjs'
       - 'scripts/build_fund_data.mjs'
       - 'scripts/audit_fund_data.mjs'
       - 'scripts/build_fund_page.mjs'
@@ -77,6 +78,21 @@ jobs:
           npx playwright install --with-deps chromium
           node scripts/collect_fund_region.mjs
 
+      # ── 설정원본 이력 적립 ──────────────────────────────────────────────
+      # 빌드 **앞**에 둔다. 빌드가 이 파일을 읽어 자금유입(3개월 순유입 등)을
+      # 내기 때문이다. 순서가 뒤바뀌면 오늘 열이 빠진 채로 계산된다.
+      #
+      # 왜 따로 쌓나 — 아래 커밋 단계가 자료 파일을 **덮어쓰기** 때문에 git
+      # 이력에서 어제 설정액을 꺼낼 수가 없다. 그래서 시계열은 스스로 쌓는다.
+      # 펀드당 숫자 하나뿐이라 하루 30KB 안팎이고 내용이 누적되므로 덮어쓰기와
+      # 부딪히지 않는다.
+      #
+      # 실패해도 잡을 세우지 않는다. 오늘 열이 없으면 그날 유입이 빈칸이 될
+      # 뿐이고, 빈칸은 틀린 숫자보다 낫다.
+      - name: 설정원본 이력 적립
+        continue-on-error: true
+        run: node scripts/append_fund_history.mjs
+
       # 수집이 실패해도 기존 파일로 다시 만든다. 파일이 아예 없으면 예시
       # 데이터로 만들고 화면에 "예시 데이터" 배지가 붙는다.
       - name: 데이터 빌드
@@ -132,6 +148,9 @@ jobs:
           git config user.name  "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add data/fund-kr.js data/fund-region.js data/fund.js fund-search.html 2>/dev/null || true
+          # 이력은 **누적** 파일이다. 덮어쓰기 커밋에 같이 실려도 최신 blob 하나에
+          # 전체 이력이 들어 있으므로 과거를 잃지 않는다.
+          git add data/fund-history.js 2>/dev/null || true
           git add tools/discovery/fund_audit.md tools/discovery/fund_audit.json 2>/dev/null || true
           if git diff --cached --quiet; then
             echo "변경 없음"

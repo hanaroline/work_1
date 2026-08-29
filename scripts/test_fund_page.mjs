@@ -270,6 +270,30 @@ await page.waitForTimeout(200);
 const rankTables = await page.locator('#rank-body table').count();
 check('랭킹 표가 그려진다', rankTables >= 2, `${rankTables}개`);
 
+// ── 자금 유입
+//
+// 이력이 두 열 이상이라야 낼 수 있는 값이다. 둘 중 어느 쪽이든 **말은 해야
+// 한다** — 표를 그리든가, 왜 못 내는지 적든가. 조용히 빠지는 것만 막는다.
+const rankTxtAll = (await page.locator('#rank-body').textContent()) || '';
+const flowTables = await page.locator('#rank-body table').evaluateAll(
+  // 표는 <h3>제목</h3><div class="table-wrap"><table> 꼴이다. 표의 형은
+  // .table-wrap 이지 제목이 아니다 — 처음에 table.previousElementSibling 로
+  // 짚었다가 0개를 세었다.
+  (ts) => ts.filter((t) => /자금 유(입|출)/.test(
+    t.closest('.table-wrap')?.previousElementSibling?.textContent || '')).length);
+if (flowTables) {
+  check('3개월 자금 유입·유출 표가 그려진다', flowTables >= 2, `${flowTables}개`);
+  // 유입은 원천이 준 값이 아니다. 무엇으로 낸 값인지 화면이 말해야 한다.
+  check('유입이 설정원본 차이임을 밝힌다', /설정원본/.test(rankTxtAll), '');
+  check('유입 기준일을 밝힌다', /\d{4}-\d{2}-\d{2}\s*대비/.test(rankTxtAll), '');
+  // 부호가 붙어야 유입인지 유출인지 읽힌다.
+  const flowSigned = await page.locator('#rank-body table .pos, #rank-body table .neg').count();
+  check('유입·유출에 부호가 붙는다', flowSigned > 0, `${flowSigned}칸`);
+} else {
+  check('유입을 못 낼 때는 이유를 적는다',
+    /자금 유입[\s\S]{0,80}(아직 낼 수 없|not available)/.test(rankTxtAll), '');
+}
+
 // ── 수익률 검산 탭
 await page.locator('.tabs button[data-tab="basis"]').click();
 await page.waitForTimeout(200);
