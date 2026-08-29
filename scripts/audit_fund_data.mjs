@@ -190,6 +190,15 @@ for (const f of FUNDS) {
   // ── 4. 수익률 자체의 범위 ───────────────────────────────────────────────
   // 펀드는 바스켓이라 개별 종목보다 훨씬 둔하다. 국내 가격제한폭이 ±30% 인데
   // 그것을 하루에 다 먹는 펀드는 없다. 2배 레버리지·파생형은 넓게 잡는다.
+  //
+  // **다만 한도를 넘었다고 곧바로 오류로 치지 않는다.** ETF 에서 2배
+  // 레버리지의 1년 +843% 를 한도로 잡았다가, 기준가 +903% 와 맞는 실제
+  // 값이었던 자리가 있다. 큰 수가 진짜인지 아닌지는 임의의 한도가 아니라
+  // **그 펀드 자신의 기준가**가 말해 준다.
+  //
+  //   생값(retRaw)이 그 값을 뒷받침하면 → 경고. 크지만 실제 값이다.
+  //   생값이 없거나 크게 어긋나면      → 오류. 뒷받침할 것이 없다.
+  const rawRet = f.retRaw || {};
   const geared = /레버리지|인버스|선물|파생/.test(f.name || '');
   for (const [k, v] of Object.entries(ret)) {
     if (!Number.isFinite(Number(v))) {
@@ -201,8 +210,34 @@ for (const f of FUNDS) {
               : k === '1w' ? (geared ? 60 : 30)
               : k === '1m' ? (geared ? 120 : 60)
               : (geared ? 900 : 400);
-    if (Math.abs(v) > cap) {
-      flag('error', '수익률-범위밖', f, `${k} = ${v}% (한도 ${cap}%)`, { period: k, value: v, cap });
+    if (Math.abs(v) <= cap) continue;
+
+    const raw = rawRet[k];
+    // 긴 구간은 계열이 성기게 솎여 와 기준일이 한 달까지 어긋난다. 그래서
+    // "뒷받침한다" 를 넉넉히 본다 — 부호가 같고 크기가 자릿수로 맞으면 된다.
+    const byRaw = raw != null && Number.isFinite(Number(raw))
+      && Math.sign(Number(raw)) === Math.sign(Number(v))
+      && Math.abs(Number(raw)) > Math.abs(Number(v)) * 0.5
+      && Math.abs(Number(raw)) < Math.abs(Number(v)) * 2;
+    // 되풀이되는 결산·분배가 있으면 큰 **누적** 수익률은 당연한 것이다.
+    // 하나클래스원특별자산투자신탁3 은 해마다 2월·8월에 기준가가 0.61~0.90배로
+    // 떨어진다(5년에 8번). 그래서 원천 5년은 +1,517% 인데 기준가를 그냥
+    // 나누면 −1.07% 다. 둘 다 맞다 — 네이버는 분배금을 재투자한 값을 주고
+    // 기준가는 나눠 준 만큼 도로 내려간다. 구간을 이어 붙이면 +823% 로
+    // 원천 쪽에 가깝다. 이걸 한도로 잡으면 정상값을 버린다.
+    const byResets = Number(f.resets) >= 2 && Number(v) > 0;
+    if (byRaw || byResets) {
+      flag('warn', '수익률-크지만-근거있음', f,
+           `${k} = ${v}% (한도 ${cap}%) — ` +
+           (byRaw ? `기준가 계열의 생값 ${raw}% 와 맞는다`
+                  : `5년 계열에 결산 계단이 ${f.resets}번 있다 (분배 재투자분)`),
+           { period: k, value: v, raw: raw ?? null, resets: f.resets ?? null, cap });
+    } else {
+      flag('error', '수익률-범위밖', f,
+           `${k} = ${v}% (한도 ${cap}%)` +
+           (raw == null ? ' — 기준가 계열로 뒷받침할 수 없다'
+                        : ` — 기준가 계열의 생값은 ${raw}% 이고 결산 계단도 없다`),
+           { period: k, value: v, raw: raw ?? null, cap });
     }
   }
 
@@ -303,6 +338,18 @@ for (const f of FUNDS) {
   }
 
   // ── 8. 설정액·순자산 ────────────────────────────────────────────────────
+  //
+  // 처음에는 "순자산이 설정액의 20배 밖이면 단위가 어긋난 것" 으로 걸었다.
+  // **틀린 규칙이었다.** 전수 수집에서 7개가 걸렸는데 대부분이 인버스·2배
+  // 레버리지였다. 인버스 2배가 설정 이후 99% 빠지는 것은 이상한 일이 아니다.
+  //
+  // 407종목으로 두 필드의 뜻을 확인했다(tools/discovery/fund_fields_verify.md).
+  //
+  //   derivedNav / derivedAum == basePrice / 1000     (393/407 이 1% 안)
+  //
+  // 곧 aum 은 **설정원본**(액면 1,000 기준)이고 nav 는 현재 순자산이며 둘의
+  // 비가 곧 기준가다. 20배라는 헐렁한 한도 대신 이 항등식을 직접 검산한다.
+  // 훨씬 센 규칙이고, 인버스 2배의 0.0089배도 기준가 8.85 와 정확히 맞는다.
   const aum = Number(f.aum), nav = Number(f.nav);
   if (f.aum != null) {
     if (!(aum > 0)) flag('error', '설정액-영이하', f, `aum=${f.aum}`);
@@ -310,14 +357,28 @@ for (const f of FUNDS) {
     else if (aum > 1e14) flag('error', '설정액-단위의심', f, `aum=${aum} (100조 초과)`, { aum });
     else if (aum < 1e6) flag('warn', '설정액-과소', f, `aum=${aum} (100만원 미만)`, { aum });
   }
-  // 순자산은 설정액에 평가손익이 얹힌 것이다. 자릿수로 벌어지면 한쪽이
-  // 다른 단위이거나 다른 펀드의 값이다.
-  if (aum > 0 && nav > 0) {
-    const r = nav / aum;
-    if (r > 20 || r < 0.05) {
-      flag('error', '순자산-설정액-괴리', f, `순자산 ${nav} / 설정액 ${aum} = ${r.toFixed(2)}배`,
-           { nav, aum, ratio: +r.toFixed(3) });
+  const bpv = Number(f.basePrice);
+  if (aum > 0 && nav > 0 && f.basePrice != null && bpv > 0) {
+    const lhs = nav / aum;
+    const rhs = bpv / 1000;
+    const relErr = Math.abs(lhs - rhs) / rhs;
+    // 수집기가 20% 밖은 이미 비우고 나온다. 여기서 걸리면 그 관문이 샌 것이다.
+    if (!Number.isFinite(relErr) || relErr > 0.2) {
+      flag('error', '순자산-설정액-기준가-어긋남', f,
+           `순자산/설정액 ${lhs.toExponential(4)} vs 기준가/1000 ${rhs.toExponential(4)} ` +
+           `(상대오차 ${(relErr * 100).toFixed(1)}%)`,
+           { nav, aum, basePrice: bpv, relErr: +relErr.toFixed(4) });
+    } else if (relErr > 0.1) {
+      flag('warn', '순자산-설정액-기준가-느슨함', f,
+           `상대오차 ${(relErr * 100).toFixed(1)}%`, { relErr: +relErr.toFixed(4) });
     }
+  }
+  // 수집기가 비운 값이 어떤 것이었는지 참고로 남긴다.
+  if (f.aumDropped) {
+    flag('info', '설정액-싣지않음', f,
+         `설정액 ${f.aumDropped.aum} · 순자산 ${f.aumDropped.nav} 이 기준가 ` +
+         `${f.aumDropped.basePrice} 와 앞뒤가 안 맞아(상대오차 ` +
+         `${(f.aumDropped.relErr * 100).toFixed(0)}%) 싣지 않았다`);
   }
 
   // ── 9. 총보수 ───────────────────────────────────────────────────────────

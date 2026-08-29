@@ -190,6 +190,35 @@ function findSteps(rows, floorRatio) {
   return steps;
 }
 
+/**
+ * 되풀이되는 하락 계단 — **결산·분배**를 센다.
+ *
+ * 계단 탐지(findSteps)가 잡는 것은 계열을 끊는 큰 사건이지만, 결산은 그보다
+ * 작게 나기도 한다. 하나클래스원특별자산투자신탁3 의 5년 계열이 그렇다 —
+ * 해마다 2월과 8월에 기준가가 0.61~0.90배로 떨어지고 다시 오른다.
+ *
+ *   2022-02 →03  0.790     2023-08 →09  0.708     2025-02 →03  0.852
+ *   2022-08 →09  0.708     2024-02 →03  0.780     2025-08 →09  0.898
+ *   2023-02 →03  0.611     2024-08 →09  0.808
+ *
+ * 이 펀드의 원천 5년 수익률은 **+1,517%** 인데 기준가 계열을 그냥 나누면
+ * **−1.07%** 다. 둘 다 맞다 — 네이버는 분배금을 재투자한 값을 주고, 기준가는
+ * 나눠 준 만큼 도로 내려가기 때문이다. 구간을 이어 붙이면 +823% 로 원천 쪽에
+ * 가깝다(달 간격이라 분배 직전의 고점을 놓쳐 낮게 나온다).
+ *
+ * 그래서 이 수를 세어 둔다. 감사가 "이 큰 수가 진짜인가" 를 물을 때,
+ * **되풀이되는 결산이 있으면 큰 누적수익률은 당연한 것**이라고 답할 근거가 된다.
+ * 이것이 없으면 +1,517% 를 한도로 잡아 버리게 된다 — ETF 에서 2배 레버리지의
+ * 1년 +843% 를 잡을 뻔했던 자리와 같다.
+ */
+function countResets(rows, maxRatio) {
+  let n = 0;
+  for (let i = 1; i < rows.length; i += 1) {
+    if (rows[i].v / rows[i - 1].v <= maxRatio) n += 1;
+  }
+  return n;
+}
+
 // 계열마다 한 칸이 덮는 기간이 다르므로 바닥을 달리 잡는다.
 //   3m 은 하루 간격, 1y 는 주 간격, 5y 는 달 간격으로 솎여 온다.
 const SERIES_SPEC = [
@@ -268,7 +297,12 @@ function verifyReturns(src, sets) {
   // 근거(생값)를 같이 남긴다. 근거 없이 "괜찮다고 봤다" 만 남기면 감사가
   // 수집기의 판단을 믿는 수밖에 없고, 그러면 관문이 하나로 줄어든다.
   const checked = [];
-  if (!src) return { kept: null, dropped, checked, steps: null };
+  // 남긴 칸마다 **생값**(계열을 그대로 나눈 값)을 같이 적는다. 감사가
+  // "이 큰 수가 진짜인가" 를 임의의 한도가 아니라 그 펀드 자신의 기준가로
+  // 판정할 수 있게 하려는 것이다 — ETF 에서 2배 레버리지의 1년 +843% 를
+  // 한도로 잡았다가 기준가 +903% 와 맞는 실제 값이었던 자리가 있다.
+  const raws = {};
+  if (!src) return { kept: null, dropped, checked, raws, steps: null };
 
   // 세 계열에서 각각 계단을 찾아 날짜로 합친다. 같은 계단이 여럿에 잡힐 수 있다.
   const steps = [];
@@ -304,14 +338,20 @@ function verifyReturns(src, sets) {
       cutoff = `${anchor.day.slice(0, 4)}-01-01`;    // ytd
     }
 
+    // 그 구간을 덮는 **가장 촘촘한** 계열로 생값을 구한다. 기준일이 덜 어긋난다.
+    const rows = [sets['3m'], sets['1y'], sets['5y']]
+      .find((r) => r && r.length > 1 && r[0].day <= cutoff);
+    if (rows) {
+      let b = null;
+      for (const s2 of rows) { if (s2.day <= cutoff) b = s2; else break; }
+      if (b && b.v > 0) raws[p.key] = +((anchor.v / b.v - 1) * 100).toFixed(4);
+    }
+
     // 계단이 이 구간을 가로지르는가. 안 가로지르면 그대로 싣는다.
     const crossing = stepDays.filter((d) => d > cutoff && d <= anchor.day);
     if (!crossing.length) { kept[p.key] = val; continue; }
 
     // 가로지른다면 — 원천이 그 계단을 먹었는지 본다.
-    // 그 구간을 덮는 **가장 촘촘한** 계열을 쓴다. 기준일이 덜 어긋난다.
-    const rows = [sets['3m'], sets['1y'], sets['5y']]
-      .find((r) => r && r.length > 1 && r[0].day <= cutoff);
     if (!rows) {
       // 계열이 구간을 못 덮으니 판정할 수 없다. 모르는 것을 안다고 하지 않는다 —
       // 계단이 가로지르는 것은 아는데 원천이 먹었는지는 모르므로 비운다.
@@ -336,7 +376,14 @@ function verifyReturns(src, sets) {
     checked.push({ period: p.key, at: crossing[0], raw: +raw.toFixed(4) });
   }
 
+  // 남긴 칸의 생값만 넘긴다. 버린 칸의 생값은 dropped 에 이미 있다.
+  const rawsKept = {};
+  for (const k of Object.keys(kept)) if (raws[k] != null) rawsKept[k] = raws[k];
+
   return { kept: Object.keys(kept).length ? kept : null, dropped, checked,
+           raws: Object.keys(rawsKept).length ? rawsKept : null,
+           // 되풀이되는 결산·분배의 수. 큰 누적수익률의 근거가 된다.
+           resets: countResets(sets['5y'] || [], 0.9),
            steps: steps.length ? steps : null,
            // 구간을 잰 기준일. 감사가 **같은 자**로 다시 재야 한다 —
            // 감사가 retAsOf 로 재면 하루이틀 어긋나고, 계단이 그 경계에 놓인
@@ -394,7 +441,7 @@ async function fetchDetail(code) {
   // 네이버가 점을 솎아 준다 — 3m 은 하루 간격 64점, 1y 는 주 간격 52점,
   // 5y 는 달 간격 60점이다. 하나만 받으면 계단을 놓치거나 구간을 못 덮는다.
   const sets = { '3m': toSeries(s3m), '1y': toSeries(s1y), '5y': toSeries(s5y) };
-  const { kept, dropped, checked, steps, anchorDay } = verifyReturns(srcRet, sets);
+  const { kept, dropped, checked, raws, resets, steps, anchorDay } = verifyReturns(srcRet, sets);
   const dailyS = sets['3m'];
   const longS = sets['5y'];
 
@@ -407,19 +454,73 @@ async function fetchDetail(code) {
   }
 
   const pf = cp?.allocationsPortfolio?.result || null;
+  const badWeights = [];
   const holdings = pf ? pf.map((h) => {
     const w = num(h.weight);
+    // 원천은 비중을 **소수**(0.090869 = 9.09%)로 준다. 그런데 그 자리에
+    // 비중일 수 없는 값이 오는 레코드가 있다 —
+    //   이지스글로벌부동산 229 · LUXEMBOURG INVESTMENT 271 · weight 777,216,227
+    // 100 을 곱하면 화면에 "777억%" 가 찍힌다. 같은 펀드의 derivedNav 는 1 이라
+    // 원천 레코드 자체가 깨진 것으로 보인다.
+    //
+    // 이럴 때 **0 으로 바꾸지 않는다.** 없는 것을 0 이라고 말하면 "안 담았다"
+    // 는 거짓 진술이 되고, 그 함정이 ETF 화면 731종목을 거짓말하게 만들었다.
+    // 모르는 것은 모르는 채로 둔다 — null 이면 화면이 "–" 로 찍는다.
+    //
+    // 한도를 1.5 로 잡은 것은, 소수 표기에서 1.0 이 100% 이므로 그보다 크면
+    // 비중이 아니기 때문이다. 담보와 노출을 각각 적는 파생형을 감안해 조금
+    // 여유를 뒀다.
+    const usable = w != null && w >= -1.5 && w <= 1.5;
+    if (w != null && !usable) badWeights.push({ name: h.itemName || null, weight: w });
     return {
       code: h.itemCode || null,
       name: h.itemName || null,
-      // 원천은 소수(0.090869)로 준다. % 로 옮기되 **없는 것은 없는 채로 둔다.**
-      // Number(null) 이 0 이 되어 "비중 0%" 로 둔갑하는 것이 ETF 화면
-      // 731종목을 거짓말하게 만든 자리다.
-      weight: w == null ? null : +(w * 100).toFixed(4),
+      weight: usable ? +(w * 100).toFixed(4) : null,
     };
   }).filter((h) => h.name || h.code) : null;
 
   const m = cp?.metricsDetail?.fundMetric || null;
+
+  // ── 설정액·순자산이 그 펀드의 기준가와 앞뒤가 맞는가 ──────────────────────
+  //
+  // 원천의 두 필드가 무엇인지 407종목으로 확인했다
+  // (tools/discovery/fund_fields_verify.md).
+  //
+  //   derivedNav / derivedAum == basePrice / 1000
+  //
+  // 407종목 중 393종목이 상대오차 1% 안, 402종목이 5% 안이었다. 곧
+  // derivedAum 은 **설정원본**(액면 1,000 기준)이고 derivedNav 는 현재
+  // 순자산이며, 둘의 비가 곧 기준가다.
+  //
+  // 이 항등식이 크게 깨지면 두 값 중 하나가 그 펀드의 것이 아니거나 단위가
+  // 다르다. 실제로 이지스글로벌부동산 229 는 derivedNav 가 **1원**인데
+  // derivedAum 은 1,869억이다(기준가 0.01).
+  //
+  // 그럴 때 **싣지 않는다.** 화면의 설정액 필터·랭킹이 그 값을 쓰기 때문에,
+  // 틀린 값을 실으면 그 펀드만 틀리는 것이 아니라 순위 전체가 틀린다.
+  // 0 으로 바꾸지도 않는다 — 없는 것을 0 이라고 말하면 "설정액이 0원" 이라는
+  // 거짓 진술이 된다. 빈칸이 맞다.
+  //
+  // 한도 20% 는 정상 무리(대부분 3% 안)에서 넉넉히 떨어져 있으면서, 깨진
+  // 레코드(80%·93%·100%)는 잡는 자리다.
+  const rawAum = num(d.derivedAum);
+  const rawNav = num(d.derivedNav);
+  const bp = num(d.basePrice);
+  let aum = rawAum;
+  let nav = rawNav;
+  let aumDropped = null;
+  if (rawAum != null && rawNav != null && bp != null && rawAum > 0 && bp > 0) {
+    const lhs = rawNav / rawAum;
+    const rhs = bp / 1000;
+    const relErr = Math.abs(lhs - rhs) / rhs;
+    if (!Number.isFinite(relErr) || relErr > 0.2) {
+      aumDropped = { aum: rawAum, nav: rawNav, basePrice: bp,
+                     navOverAum: +lhs.toFixed(8), bpOver1000: +rhs.toFixed(8),
+                     relErr: +relErr.toFixed(4) };
+      aum = null;
+      nav = null;
+    }
+  }
 
   return {
     name: d.fundName || null,
@@ -435,8 +536,11 @@ async function fetchDetail(code) {
     changePrice: num(d.changePrice),
     changeRate: num(d.returnIndex),        // 원천이 1일 등락률을 returnIndex 로 준다
     tradeDate: d.tradeDate || null,
-    aum: num(d.derivedAum),                // 설정액
-    nav: num(d.derivedNav),                // 순자산
+    // 설정액(설정원본, 액면 1,000 기준)과 순자산. 기준가와 앞뒤가 안 맞으면
+    // 둘 다 싣지 않는다 — 위의 항등식 참고.
+    aum,
+    nav,
+    aumDropped,
     // 총보수는 원천에 없다(표본 60 중 59가 null). 받아 두되 지어내지 않는다.
     totalFee: num(d.totalFee),
     managementFee: num(d.managementFee),
@@ -448,6 +552,12 @@ async function fetchDetail(code) {
     retDropped: dropped.length ? dropped : null,
     // 계단을 가로지르는데도 남긴 칸과 그 근거. 감사가 다시 셈해 본다.
     retChecked: checked.length ? checked : null,
+    // 남긴 칸을 기준가 계열로 그대로 나눈 값. 감사가 큰 수를 임의의 한도가
+    // 아니라 그 펀드 자신의 기준가로 판정하는 데 쓴다.
+    retRaw: raws,
+    // 5년 계열에서 되풀이된 결산·분배의 수. 분배가 잦은 펀드는 원천 수익률이
+    // 기준가 계열보다 훨씬 클 수밖에 없고, 감사가 그것을 근거로 삼는다.
+    resets: resets || null,
     retAsOf: cp?.fundReturns?.baseDate || d.tradeDate || null,
     // 검산이 구간을 잰 기준일. 감사가 같은 자로 다시 잰다.
     retAnchor: anchorDay,
@@ -465,6 +575,8 @@ async function fetchDetail(code) {
     } : null,
 
     holdings,
+    // 비중일 수 없는 값이 와서 싣지 않은 레코드. 왜 빈칸인지 남긴다.
+    badWeights: badWeights.length ? badWeights : null,
     holdingsAvailable: !!cp?.availability?.portfolio,
     assets: shapeAssets(cp?.allocationsAssets),
 
