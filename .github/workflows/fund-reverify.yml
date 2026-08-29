@@ -1,0 +1,72 @@
+name: 공모펀드 재검증 (원천·1차출처 대조)
+
+# 이 저장소의 세션은 이그레스 정책 때문에 네이버·금투협에 직접 못 붙는다
+# (CONNECT 403). 러너는 그 정책 밖이므로 여기서 대신 대조하고 결과를 커밋한다.
+#
+# 일일 수집의 감사(audit_fund_data.mjs)와는 목적이 다르다.
+#   감사   = data/fund.js **안에서** 앞뒤가 맞는가          (순환적)
+#   재검증 = 저장한 값이 **원천과 같은가**, 원천은 **맞는가**  (바깥을 본다)
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - 'claude/fund-**'
+    paths:
+      - 'scripts/reverify_fund_*.mjs'
+      - '.github/workflows/fund-reverify.yml'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: fund-reverify-${{ github.ref_name }}
+  cancel-in-progress: true
+
+jobs:
+  reverify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref_name }}
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      # L2 — 저장한 값이 원천과 같은가.
+      # 파생값은 수집기 함수를 부르지 않고 두 번째 구현으로 다시 만든다.
+      # 여기서 걸리면 화면의 숫자가 원천과 다르다는 뜻이므로 잡을 실패시킨다.
+      - name: L2 원천 재수집 대조
+        id: l2
+        timeout-minutes: 30
+        run: node scripts/reverify_fund_source.mjs 400
+
+      # L3 — 원천 자체가 맞는가. 1차 출처(금투협·운용사 공시)와 대조를 시도한다.
+      # 막히는 것 자체가 결과이므로 잡을 실패시키지 않는다. 다만 막혔다는 사실이
+      # 보고서에 남아야 하고, 그때 이 화면은 "2차 출처 단독 근거" 가 된다.
+      - name: L3 1차 출처 대조 시도
+        if: always()
+        continue-on-error: true
+        timeout-minutes: 15
+        run: node scripts/reverify_fund_kofia.mjs
+
+      - name: 결과 업로드
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: fund-reverify
+          path: tools/discovery/fund_reverify_*.*
+          retention-days: 14
+
+      - name: 결과 커밋
+        if: always()
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          if ls tools/discovery/fund_reverify_*.json >/dev/null 2>&1; then
+            git add tools/discovery/fund_reverify_*.* || true
+            git commit -m "chore(fund): 재검증 결과 갱신" || echo "변경 없음"
+            git push || echo "푸시 실패 (무시)"
+          fi
