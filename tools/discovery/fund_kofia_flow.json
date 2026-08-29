@@ -1,5 +1,5 @@
 {
-  "at": "2026-08-29T10:49:59.741Z",
+  "at": "2026-08-29T10:58:32.764Z",
   "steps": [
     "표본 8개 (설정액 1.22e+13 ~ 2.41e+8)",
     "오늘 기준일 2026-08-27",
@@ -7,60 +7,319 @@
     "POST 8건을 잡았다",
     "설정원본으로 보이는 태그: uOriginalAmt(백만원), netAsstotAmt(백만원)",
     "순자산으로 보이는 태그: netAsstotAmt(백만원)",
-    "본문 안의 날짜꼴 토큰: (없음)",
+    "응답이 밝힌 기준일 칸: pfmTrDate=20260829, standardDt=20260828",
+    "요청에도 있는 것(= 넣을 수 있는 칸): standardDt",
     "재생 확인 — KR5105409225 설정원본 12032812000000 (우리 값 12245199995973)",
-    "판정 보류 — 본문에 날짜꼴이 없다. 기준일자를 어디에 넣는지 본문만으로는 알 수 없다. 잡아 둔 본문 원본을 사람이 읽어야 한다."
+    "기준일 칸 `standardDt` 을 채워 표본 8개 × 기간 4개를 받는다…",
+    "  KR5105409225 오늘(20260828) 12032812000000 · m1→20260828:12032812000000 · m3→20260828:12032812000000 · m6→20260828:12032812000000 · y1→20260828:12032812000000",
+    "  K55213EM6174 오늘(20260828) 82275000000 · m1→20260828:82275000000 · m3→20260828:82275000000 · m6→20260828:82275000000 · y1→20260828:82275000000",
+    "  KR5366876898 오늘(20260828) 28371000000 · m1→20260828:28371000000 · m3→20260828:28371000000 · m6→20260828:28371000000 · y1→20260828:28371000000",
+    "  K55105ED8933 오늘(20260828) 12704000000 · m1→20260828:12704000000 · m3→20260828:12704000000 · m6→20260828:12704000000 · y1→20260828:12704000000",
+    "  KR5302611466 오늘(20260828) 5834000000 · m1→20260828:5834000000 · m3→20260828:5834000000 · m6→20260828:5834000000 · y1→20260828:5834000000",
+    "  KR5366A22160 오늘(20260828) 2554000000 · m1→20260828:2554000000 · m3→20260828:2554000000 · m6→20260828:2554000000 · y1→20260828:2554000000",
+    "  K55240EO9850 오늘(20260828) 992000000 · m1→20260828:992000000 · m3→20260828:992000000 · m6→20260828:992000000 · y1→20260828:992000000",
+    "  KR5207735709 오늘(20260828) 241000000 · m1→20260828:241000000 · m3→20260828:241000000 · m6→20260828:241000000 · y1→20260828:241000000",
+    "막힘 — 기준일을 넣어도 서버가 늘 최신치를 준다(무시 m1, m3, m6, y1). 소급은 못 한다 — 오늘부터 쌓는 수밖에 없다."
   ],
-  "funds": [],
-  "verdict": "판정 보류 — 본문에 날짜꼴이 없다. 기준일자를 어디에 넣는지 본문만으로는 알 수 없다. 잡아 둔 본문 원본을 사람이 읽어야 한다.",
+  "funds": [
+    {
+      "code": "KR5105409225",
+      "name": "삼성MMF법인 1",
+      "ours": 12245199995973,
+      "asked": {
+        "m1": "20260728",
+        "m3": "20260528",
+        "m6": "20260226",
+        "y1": "20250827"
+      },
+      "got": {
+        "m1": {
+          "date": "20260828",
+          "aum": 12032812000000
+        },
+        "m3": {
+          "date": "20260828",
+          "aum": 12032812000000
+        },
+        "m6": {
+          "date": "20260828",
+          "aum": 12032812000000
+        },
+        "y1": {
+          "date": "20260828",
+          "aum": 12032812000000
+        }
+      },
+      "now": 12032812000000,
+      "nowDate": "20260828"
+    },
+    {
+      "code": "K55213EM6174",
+      "name": "한화K방산조선원전증권자투자신탁(주식)",
+      "ours": 82206109728,
+      "asked": {
+        "m1": "20260728",
+        "m3": "20260528",
+        "m6": "20260226",
+        "y1": "20250827"
+      },
+      "got": {
+        "m1": {
+          "date": "20260828",
+          "aum": 82275000000
+        },
+        "m3": {
+          "date": "20260828",
+          "aum": 82275000000
+        },
+        "m6": {
+          "date": "20260828",
+          "aum": 82275000000
+        },
+        "y1": {
+          "date": "20260828",
+          "aum": 82275000000
+        }
+      },
+      "now": 82275000000,
+      "nowDate": "20260828"
+    },
+    {
+      "code": "KR5366876898",
+      "name": "iM에셋월드에너지증권자투자신탁(주식-재간접형)(H)",
+      "ours": 28394520796,
+      "asked": {
+        "m1": "20260728",
+        "m3": "20260528",
+        "m6": "20260226",
+        "y1": "20250827"
+      },
+      "got": {
+        "m1": {
+          "date": "20260828",
+          "aum": 28371000000
+        },
+        "m3": {
+          "date": "20260828",
+          "aum": 28371000000
+        },
+        "m6": {
+          "date": "20260828",
+          "aum": 28371000000
+        },
+        "y1": {
+          "date": "20260828",
+          "aum": 28371000000
+        }
+      },
+      "now": 28371000000,
+      "nowDate": "20260828"
+    },
+    {
+      "code": "K55105ED8933",
+      "name": "삼성ETF를담아차곡차곡증권자투자신탁[채권혼합-재간접형]",
+      "ours": 12746470229,
+      "asked": {
+        "m1": "20260728",
+        "m3": "20260528",
+        "m6": "20260226",
+        "y1": "20250827"
+      },
+      "got": {
+        "m1": {
+          "date": "20260828",
+          "aum": 12704000000
+        },
+        "m3": {
+          "date": "20260828",
+          "aum": 12704000000
+        },
+        "m6": {
+          "date": "20260828",
+          "aum": 12704000000
+        },
+        "y1": {
+          "date": "20260828",
+          "aum": 12704000000
+        }
+      },
+      "now": 12704000000,
+      "nowDate": "20260828"
+    },
+    {
+      "code": "KR5302611466",
+      "name": "베어링가치형증권자투자신탁(주식)",
+      "ours": 5833890755,
+      "asked": {
+        "m1": "20260728",
+        "m3": "20260528",
+        "m6": "20260226",
+        "y1": "20250827"
+      },
+      "got": {
+        "m1": {
+          "date": "20260828",
+          "aum": 5834000000
+        },
+        "m3": {
+          "date": "20260828",
+          "aum": 5834000000
+        },
+        "m6": {
+          "date": "20260828",
+          "aum": 5834000000
+        },
+        "y1": {
+          "date": "20260828",
+          "aum": 5834000000
+        }
+      },
+      "now": 5834000000,
+      "nowDate": "20260828"
+    },
+    {
+      "code": "KR5366A22160",
+      "name": "iM에셋월지급미국달러하이일드증권투자신탁(채권-재간접형)(H)",
+      "ours": 2562483913,
+      "asked": {
+        "m1": "20260728",
+        "m3": "20260528",
+        "m6": "20260226",
+        "y1": "20250827"
+      },
+      "got": {
+        "m1": {
+          "date": "20260828",
+          "aum": 2554000000
+        },
+        "m3": {
+          "date": "20260828",
+          "aum": 2554000000
+        },
+        "m6": {
+          "date": "20260828",
+          "aum": 2554000000
+        },
+        "y1": {
+          "date": "20260828",
+          "aum": 2554000000
+        }
+      },
+      "now": 2554000000,
+      "nowDate": "20260828"
+    },
+    {
+      "code": "K55240EO9850",
+      "name": "BNK글로벌월배당ETF담는증권자투자신탁UH(채권혼합-재간접형)",
+      "ours": 991106778,
+      "asked": {
+        "m1": "20260728",
+        "m3": "20260528",
+        "m6": "20260226",
+        "y1": "20250827"
+      },
+      "got": {
+        "m1": {
+          "date": "20260828",
+          "aum": 992000000
+        },
+        "m3": {
+          "date": "20260828",
+          "aum": 992000000
+        },
+        "m6": {
+          "date": "20260828",
+          "aum": 992000000
+        },
+        "y1": {
+          "date": "20260828",
+          "aum": 992000000
+        }
+      },
+      "now": 992000000,
+      "nowDate": "20260828"
+    },
+    {
+      "code": "KR5207735709",
+      "name": "교보악사퇴직연금증권자투자신탁 1(채권혼합)(운용)",
+      "ours": 240622594,
+      "asked": {
+        "m1": "20260728",
+        "m3": "20260528",
+        "m6": "20260226",
+        "y1": "20250827"
+      },
+      "got": {
+        "m1": {
+          "date": "20260828",
+          "aum": 241000000
+        },
+        "m3": {
+          "date": "20260828",
+          "aum": 241000000
+        },
+        "m6": {
+          "date": "20260828",
+          "aum": 241000000
+        },
+        "y1": {
+          "date": "20260828",
+          "aum": 241000000
+        }
+      },
+      "now": 241000000,
+      "nowDate": "20260828"
+    }
+  ],
+  "verdict": "막힘 — 기준일을 넣어도 서버가 늘 최신치를 준다(무시 m1, m3, m6, y1). 소급은 못 한다 — 오늘부터 쌓는 수밖에 없다.",
   "captured": [
     {
       "bodyLen": 327,
       "body": "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<message>\n  <proframeHeader>\n    <pfmAppName>FS-DIS2</pfmAppName>\n    <pfmSvcName>DISComFundNmSO</pfmSvcName>\n    <pfmFnName>select</pfmFnName>\n  </proframeHeader>\n  <systemHeader></systemHeader>\n    <DISComStdCdDTO>\n    <standardCd>KR5105409225</standardCd>\n</DISComStdCdDTO>\n</message>\n",
       "resLen": 777,
-      "res": "<?xml version=\"1.0\" encoding=\"UTF-8\"?><root><message><proframeHeader>\n<pfmAppName>FS-DIS2</pfmAppName>\n<pfmSvcName>DISComFundNmSO</pfmSvcName>\n<pfmFnName>select</pfmFnName>\n<pfmGlobalNo>4d2413dd0afe009618aeeb351c17b701</pfmGlobalNo>\n<pfmTrDate>20260829</pfmTrDate>\n<pfmTrTime>20260829195005149</pfmTrTime>\n<pfmClntIp>172.182.226.64</pfmClntIp>\n<pfmResponseDtal></pfmResponseDtal>\n</proframeHeader>\n<systemHeader>\n</systemHeader>\n<DISComStdCdListDTO>\n<dbio_total_count_>1</dbio_total_count_>\n<dbio_fetch_seq_>0</dbio_fetch_seq_>\n<dbio_fetch_size_>0</dbio_fetch_size_>\n<dbio_affected_count_>0</dbio_affected_count_>\n<list>\n<txCd />\n<txVsn>0</txVsn>\n<tsCd />\n<standardDt />\n<serviceCompCd />\n<standardCd />\n<fundNm>삼성MMF법인 1</fundNm>\n</list>\n</DISComStdCdListDTO></message></root>"
+      "res": "<?xml version=\"1.0\" encoding=\"UTF-8\"?><root><message><proframeHeader>\n<pfmAppName>FS-DIS2</pfmAppName>\n<pfmSvcName>DISComFundNmSO</pfmSvcName>\n<pfmFnName>select</pfmFnName>\n<pfmGlobalNo>4d2be5930afe00960292752274a2cfdd</pfmGlobalNo>\n<pfmTrDate>20260829</pfmTrDate>\n<pfmTrTime>20260829195837587</pfmTrTime>\n<pfmClntIp>128.24.160.226</pfmClntIp>\n<pfmResponseDtal></pfmResponseDtal>\n</proframeHeader>\n<systemHeader>\n</systemHeader>\n<DISComStdCdListDTO>\n<dbio_total_count_>1</dbio_total_count_>\n<dbio_fetch_seq_>0</dbio_fetch_seq_>\n<dbio_fetch_size_>0</dbio_fetch_size_>\n<dbio_affected_count_>0</dbio_affected_count_>\n<list>\n<txCd />\n<txVsn>0</txVsn>\n<tsCd />\n<standardDt />\n<serviceCompCd />\n<standardCd />\n<fundNm>삼성MMF법인 1</fundNm>\n</list>\n</DISComStdCdListDTO></message></root>"
     },
     {
       "bodyLen": 368,
       "body": "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<message>\n  <proframeHeader>\n    <pfmAppName>FS-COM</pfmAppName>\n    <pfmSvcName>COMFundUnityBasInfoSO</pfmSvcName>\n    <pfmFnName>srchFile</pfmFnName>\n  </proframeHeader>\n  <systemHeader></systemHeader>\n    <COMFundInfoFileListDTO>\n    <standardCd>KR5105409225</standardCd>\n    <uGb>Y</uGb>\n</COMFundInfoFileListDTO>\n</message>\n",
       "resLen": 967,
-      "res": "<?xml version=\"1.0\" encoding=\"UTF-8\"?><root><message><proframeHeader>\n<pfmAppName>FS-COM</pfmAppName>\n<pfmSvcName>COMFundUnityBasInfoSO</pfmSvcName>\n<pfmFnName>srchFile</pfmFnName>\n<pfmGlobalNo>4d24143b0afe00963941d7374e2c3860</pfmGlobalNo>\n<pfmTrDate>20260829</pfmTrDate>\n<pfmTrTime>20260829195005243</pfmTrTime>\n<pfmClntIp>172.182.226.64</pfmClntIp>\n<pfmResponseDtal></pfmResponseDtal>\n</proframeHeader>\n<systemHeader>\n</systemHeader>\n<COMFundInfoFileListDTO>\n<dbio_total_count_>1</dbio_total_count_>\n<dbio_fetch_seq_>0</dbio_fetch_seq_>\n<dbio_fetch_size_>0</dbio_fetch_size_>\n<dbio_affected_count_>0</dbio_affected_count_>\n<standardCd />\n<uGb />\n<list>\n<fileNm>1e8761fba739f672-689df773195c6c4a9e6-73e9-20250328095705.pdf</fileNm>\n<serverPath>/fsfile/report/distribution/2025/2OF0400</serverPath>\n<originalFileNm>규약_123604_삼성MMF법인 제1호_Ce클래스신설및S클래스보수인하_250328.pdf</originalFileNm>\n<standardDt>20250328</standardDt>\n</list>\n</COMFundInfoFileListDTO></message></root>"
+      "res": "<?xml version=\"1.0\" encoding=\"UTF-8\"?><root><message><proframeHeader>\n<pfmAppName>FS-COM</pfmAppName>\n<pfmSvcName>COMFundUnityBasInfoSO</pfmSvcName>\n<pfmFnName>srchFile</pfmFnName>\n<pfmGlobalNo>4d2be6020afe00967e54aac455e24fad</pfmGlobalNo>\n<pfmTrDate>20260829</pfmTrDate>\n<pfmTrTime>20260829195837698</pfmTrTime>\n<pfmClntIp>128.24.160.226</pfmClntIp>\n<pfmResponseDtal></pfmResponseDtal>\n</proframeHeader>\n<systemHeader>\n</systemHeader>\n<COMFundInfoFileListDTO>\n<dbio_total_count_>1</dbio_total_count_>\n<dbio_fetch_seq_>0</dbio_fetch_seq_>\n<dbio_fetch_size_>0</dbio_fetch_size_>\n<dbio_affected_count_>0</dbio_affected_count_>\n<standardCd />\n<uGb />\n<list>\n<fileNm>1e8761fba739f672-689df773195c6c4a9e6-73e9-20250328095705.pdf</fileNm>\n<serverPath>/fsfile/report/distribution/2025/2OF0400</serverPath>\n<originalFileNm>규약_123604_삼성MMF법인 제1호_Ce클래스신설및S클래스보수인하_250328.pdf</originalFileNm>\n<standardDt>20250328</standardDt>\n</list>\n</COMFundInfoFileListDTO></message></root>"
     },
     {
       "bodyLen": 368,
       "body": "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<message>\n  <proframeHeader>\n    <pfmAppName>FS-COM</pfmAppName>\n    <pfmSvcName>COMFundUnityBasInfoSO</pfmSvcName>\n    <pfmFnName>srchFile</pfmFnName>\n  </proframeHeader>\n  <systemHeader></systemHeader>\n    <COMFundInfoFileListDTO>\n    <standardCd>KR5105409225</standardCd>\n    <uGb>T</uGb>\n</COMFundInfoFileListDTO>\n</message>\n",
       "resLen": 963,
-      "res": "<?xml version=\"1.0\" encoding=\"UTF-8\"?><root><message><proframeHeader>\n<pfmAppName>FS-COM</pfmAppName>\n<pfmSvcName>COMFundUnityBasInfoSO</pfmSvcName>\n<pfmFnName>srchFile</pfmFnName>\n<pfmGlobalNo>4d24143f0afe0096104fd28e0a47db70</pfmGlobalNo>\n<pfmTrDate>20260829</pfmTrDate>\n<pfmTrTime>20260829195005247</pfmTrTime>\n<pfmClntIp>172.182.226.64</pfmClntIp>\n<pfmResponseDtal></pfmResponseDtal>\n</proframeHeader>\n<systemHeader>\n</systemHeader>\n<COMFundInfoFileListDTO>\n<dbio_total_count_>1</dbio_total_count_>\n<dbio_fetch_seq_>0</dbio_fetch_seq_>\n<dbio_fetch_size_>0</dbio_fetch_size_>\n<dbio_affected_count_>0</dbio_affected_count_>\n<standardCd />\n<uGb />\n<list>\n<fileNm>e4d388e657fcc4ea-177a8fc519ba1c6a113-4b0e-20260130130716.pdf</fileNm>\n<serverPath>/fsfile/report/distribution/2026/2OF0401</serverPath>\n<originalFileNm>투자설명서(개편)_123604_삼성MMF법인 제1호_KR5105409225.pdf</originalFileNm>\n<standardDt>20260130</standardDt>\n</list>\n</COMFundInfoFileListDTO></message></root>"
+      "res": "<?xml version=\"1.0\" encoding=\"UTF-8\"?><root><message><proframeHeader>\n<pfmAppName>FS-COM</pfmAppName>\n<pfmSvcName>COMFundUnityBasInfoSO</pfmSvcName>\n<pfmFnName>srchFile</pfmFnName>\n<pfmGlobalNo>4d2be6010afe009674fb973e7f4b38bb</pfmGlobalNo>\n<pfmTrDate>20260829</pfmTrDate>\n<pfmTrTime>20260829195837697</pfmTrTime>\n<pfmClntIp>128.24.160.226</pfmClntIp>\n<pfmResponseDtal></pfmResponseDtal>\n</proframeHeader>\n<systemHeader>\n</systemHeader>\n<COMFundInfoFileListDTO>\n<dbio_total_count_>1</dbio_total_count_>\n<dbio_fetch_seq_>0</dbio_fetch_seq_>\n<dbio_fetch_size_>0</dbio_fetch_size_>\n<dbio_affected_count_>0</dbio_affected_count_>\n<standardCd />\n<uGb />\n<list>\n<fileNm>e4d388e657fcc4ea-177a8fc519ba1c6a113-4b0e-20260130130716.pdf</fileNm>\n<serverPath>/fsfile/report/distribution/2026/2OF0401</serverPath>\n<originalFileNm>투자설명서(개편)_123604_삼성MMF법인 제1호_KR5105409225.pdf</originalFileNm>\n<standardDt>20260130</standardDt>\n</list>\n</COMFundInfoFileListDTO></message></root>"
     },
     {
       "bodyLen": 368,
       "body": "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<message>\n  <proframeHeader>\n    <pfmAppName>FS-COM</pfmAppName>\n    <pfmSvcName>COMFundUnityBasInfoSO</pfmSvcName>\n    <pfmFnName>srchFile</pfmFnName>\n  </proframeHeader>\n  <systemHeader></systemHeader>\n    <COMFundInfoFileListDTO>\n    <standardCd>KR5105409225</standardCd>\n    <uGb>G</uGb>\n</COMFundInfoFileListDTO>\n</message>\n",
       "resLen": 965,
-      "res": "<?xml version=\"1.0\" encoding=\"UTF-8\"?><root><message><proframeHeader>\n<pfmAppName>FS-COM</pfmAppName>\n<pfmSvcName>COMFundUnityBasInfoSO</pfmSvcName>\n<pfmFnName>srchFile</pfmFnName>\n<pfmGlobalNo>4d2414400afe009655b2aaf6c12054e9</pfmGlobalNo>\n<pfmTrDate>20260829</pfmTrDate>\n<pfmTrTime>20260829195005248</pfmTrTime>\n<pfmClntIp>172.182.226.64</pfmClntIp>\n<pfmResponseDtal></pfmResponseDtal>\n</proframeHeader>\n<systemHeader>\n</systemHeader>\n<COMFundInfoFileListDTO>\n<dbio_total_count_>1</dbio_total_count_>\n<dbio_fetch_seq_>0</dbio_fetch_seq_>\n<dbio_fetch_size_>0</dbio_fetch_size_>\n<dbio_affected_count_>0</dbio_affected_count_>\n<standardCd />\n<uGb />\n<list>\n<fileNm>e4d388e657fcc4ea-177a8fc519ba1c6a113-4b0f-20260130130708.pdf</fileNm>\n<serverPath>/fsfile/report/distribution/2026/2OF0401</serverPath>\n<originalFileNm>간이투자설명서(개편)_123604_삼성MMF법인 제1호_KR5105409225.pdf</originalFileNm>\n<standardDt>20260130</standardDt>\n</list>\n</COMFundInfoFileListDTO></message></root>"
+      "res": "<?xml version=\"1.0\" encoding=\"UTF-8\"?><root><message><proframeHeader>\n<pfmAppName>FS-COM</pfmAppName>\n<pfmSvcName>COMFundUnityBasInfoSO</pfmSvcName>\n<pfmFnName>srchFile</pfmFnName>\n<pfmGlobalNo>4d2be6020afe00962cdb2f967500f998</pfmGlobalNo>\n<pfmTrDate>20260829</pfmTrDate>\n<pfmTrTime>20260829195837698</pfmTrTime>\n<pfmClntIp>128.24.160.226</pfmClntIp>\n<pfmResponseDtal></pfmResponseDtal>\n</proframeHeader>\n<systemHeader>\n</systemHeader>\n<COMFundInfoFileListDTO>\n<dbio_total_count_>1</dbio_total_count_>\n<dbio_fetch_seq_>0</dbio_fetch_seq_>\n<dbio_fetch_size_>0</dbio_fetch_size_>\n<dbio_affected_count_>0</dbio_affected_count_>\n<standardCd />\n<uGb />\n<list>\n<fileNm>e4d388e657fcc4ea-177a8fc519ba1c6a113-4b0f-20260130130708.pdf</fileNm>\n<serverPath>/fsfile/report/distribution/2026/2OF0401</serverPath>\n<originalFileNm>간이투자설명서(개편)_123604_삼성MMF법인 제1호_KR5105409225.pdf</originalFileNm>\n<standardDt>20260130</standardDt>\n</list>\n</COMFundInfoFileListDTO></message></root>"
     },
     {
       "bodyLen": 393,
       "body": "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<message>\n  <proframeHeader>\n    <pfmAppName>FS-DIS2</pfmAppName>\n    <pfmSvcName>DISComConnLogSO</pfmSvcName>\n    <pfmFnName>insertFndInqLog</pfmFnName>\n  </proframeHeader>\n  <systemHeader></systemHeader>\n    <DISFndInqStatDTO>\n    <standardCd>KR5105409225</standardCd>\n    <userGb>01</userGb>\n    <companyCd></companyCd>\n</DISFndInqStatDTO>\n</message>\n",
       "resLen": 635,
-      "res": "<?xml version=\"1.0\" encoding=\"UTF-8\"?><root><message><proframeHeader>\n<pfmAppName>FS-DIS2</pfmAppName>\n<pfmSvcName>DISComConnLogSO</pfmSvcName>\n<pfmFnName>insertFndInqLog</pfmFnName>\n<pfmGlobalNo>4d2414c80afe0096411b2ebba343a6bf</pfmGlobalNo>\n<pfmTrDate>20260829</pfmTrDate>\n<pfmTrTime>20260829195005384</pfmTrTime>\n<pfmClntIp>172.182.226.64</pfmClntIp>\n<pfmResponseDtal></pfmResponseDtal>\n</proframeHeader>\n<systemHeader>\n</systemHeader>\n<DISFndInqStatDTO>\n<standardDt />\n<userGb />\n<standardCd />\n<inquiryCnt />\n<registDate />\n<registUser />\n<modifyDate />\n<modifyUser />\n<fundNm />\n<companyCd />\n</DISFndInqStatDTO></message></root>"
+      "res": "<?xml version=\"1.0\" encoding=\"UTF-8\"?><root><message><proframeHeader>\n<pfmAppName>FS-DIS2</pfmAppName>\n<pfmSvcName>DISComConnLogSO</pfmSvcName>\n<pfmFnName>insertFndInqLog</pfmFnName>\n<pfmGlobalNo>4d2be69d0afe00967bfab330612ab6d4</pfmGlobalNo>\n<pfmTrDate>20260829</pfmTrDate>\n<pfmTrTime>20260829195837853</pfmTrTime>\n<pfmClntIp>128.24.160.226</pfmClntIp>\n<pfmResponseDtal></pfmResponseDtal>\n</proframeHeader>\n<systemHeader>\n</systemHeader>\n<DISFndInqStatDTO>\n<standardDt />\n<userGb />\n<standardCd />\n<inquiryCnt />\n<registDate />\n<registUser />\n<modifyDate />\n<modifyUser />\n<fundNm />\n<companyCd />\n</DISFndInqStatDTO></message></root>"
     },
     {
       "bodyLen": 420,
       "body": "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<message>\n  <proframeHeader>\n    <pfmAppName>FS-COM</pfmAppName>\n    <pfmSvcName>COMFundUnityBasInfoSO</pfmSvcName>\n    <pfmFnName>fundBasInfoSrch</pfmFnName>\n  </proframeHeader>\n  <systemHeader></systemHeader>\n    <COMFundUnityInfoInputDTO>\n    <standardCd>KR5105409225</standardCd>\n    <companyCd></companyCd>\n    <standardDt></standardDt>\n</COMFundUnityInfoInputDTO>\n</message>\n",
       "resLen": 1802,
-      "res": "<?xml version=\"1.0\" encoding=\"UTF-8\"?><root><message><proframeHeader>\n<pfmAppName>FS-COM</pfmAppName>\n<pfmSvcName>COMFundUnityBasInfoSO</pfmSvcName>\n<pfmFnName>fundBasInfoSrch</pfmFnName>\n<pfmGlobalNo>4d2414d00afe0096519241b079d1ec79</pfmGlobalNo>\n<pfmTrDate>20260829</pfmTrDate>\n<pfmTrTime>20260829195005392</pfmTrTime>\n<pfmClntIp>172.182.226.64</pfmClntIp>\n<pfmResponseDtal></pfmResponseDtal>\n</proframeHeader>\n<systemHeader>\n</systemHeader>\n<COMFundBasInfoOutDTO>\n<vFundGbNm>투자신탁</vFundGbNm>\n<uFundTypNm>단기금융(MMF)</uFundTypNm>\n<vAdditionalEstMtdNm>추가</vAdditionalEstMtdNm>\n<establishmentDt>20031230</establishmentDt>\n<classCd>1EE111120010182ZZZZ6</classCd>\n<subClassCd>001ZZZZ</subClassCd>\n<shortCd>40922</shortCd>\n<trustAccTrm>0</trustAccTrm>\n<vInvestRgnGbNm>국내</vInvestRgnGbNm>\n<vSaleRgnGbNm>국내위탁</vSaleRgnGbNm>\n<vProfitTypeCdNm>(MMF)일반형</vProfitTypeCdNm>\n<vTraitDivNm>종류형 FUND</vTraitDivNm>\n<vPriPubGBNm>공모</vPriPubGBNm>\n<establishmentCot>1000</establishmentCot>\n<trustTrm>0</trustTrm>\n<manageRewRate>0</manageRewRate>\n<saleRewRate>0</saleRewRate>\n<trustRewRate>0</trustRewRate>\n<generalOfctrtrewRate>0</generalOfctrtrewRate>\n<rewSum>0</rewSum>\n<ter>0.0031</ter>\n<frontendCmsRate>0</frontendCmsRate>\n<backendCmsRate>0</backendCmsRate>\n<vManageCompNm>삼성자산운용</vManageCompNm>\n<vImg>e4d388e657fcc4ea4433b134193234243c5-7fc2-20241216092615.jpg</vImg>\n<vGeneralOfctrtcompNm>삼성자산운용</vGeneralOfctrtcompNm>\n<vTrustCompNm>한국증권금융</vTrustCompNm>\n<standardDt>20260731</standardDt>\n<companyCd>A01005</companyCd>\n<uNoVal5>0.049</uNoVal5>\n<uNoVal6>0.067</uNoVal6>\n<uNoVal7>0</uNoVal7>\n<uNoVal8>0.009</uNoVal8>\n<uNoVal9>0.135</uNoVal9>\n<uNoVal10>0.14</uNoVal10>\n<val1>www.samsungfund.com</val1>\n<val2>www.samsungfund.com</val2>\n<val3>www.ksfc.co.kr</val3>\n<val4>운용중</val4>\n</COMFundBasInfoOutDTO></message></root>"
+      "res": "<?xml version=\"1.0\" encoding=\"UTF-8\"?><root><message><proframeHeader>\n<pfmAppName>FS-COM</pfmAppName>\n<pfmSvcName>COMFundUnityBasInfoSO</pfmSvcName>\n<pfmFnName>fundBasInfoSrch</pfmFnName>\n<pfmGlobalNo>4d2be69d0afe0096080a53e7c6d76bfa</pfmGlobalNo>\n<pfmTrDate>20260829</pfmTrDate>\n<pfmTrTime>20260829195837853</pfmTrTime>\n<pfmClntIp>128.24.160.226</pfmClntIp>\n<pfmResponseDtal></pfmResponseDtal>\n</proframeHeader>\n<systemHeader>\n</systemHeader>\n<COMFundBasInfoOutDTO>\n<vFundGbNm>투자신탁</vFundGbNm>\n<uFundTypNm>단기금융(MMF)</uFundTypNm>\n<vAdditionalEstMtdNm>추가</vAdditionalEstMtdNm>\n<establishmentDt>20031230</establishmentDt>\n<classCd>1EE111120010182ZZZZ6</classCd>\n<subClassCd>001ZZZZ</subClassCd>\n<shortCd>40922</shortCd>\n<trustAccTrm>0</trustAccTrm>\n<vInvestRgnGbNm>국내</vInvestRgnGbNm>\n<vSaleRgnGbNm>국내위탁</vSaleRgnGbNm>\n<vProfitTypeCdNm>(MMF)일반형</vProfitTypeCdNm>\n<vTraitDivNm>종류형 FUND</vTraitDivNm>\n<vPriPubGBNm>공모</vPriPubGBNm>\n<establishmentCot>1000</establishmentCot>\n<trustTrm>0</trustTrm>\n<manageRewRate>0</manageRewRate>\n<saleRewRate>0</saleRewRate>\n<trustRewRate>0</trustRewRate>\n<generalOfctrtrewRate>0</generalOfctrtrewRate>\n<rewSum>0</rewSum>\n<ter>0.0031</ter>\n<frontendCmsRate>0</frontendCmsRate>\n<backendCmsRate>0</backendCmsRate>\n<vManageCompNm>삼성자산운용</vManageCompNm>\n<vImg>e4d388e657fcc4ea4433b134193234243c5-7fc2-20241216092615.jpg</vImg>\n<vGeneralOfctrtcompNm>삼성자산운용</vGeneralOfctrtcompNm>\n<vTrustCompNm>한국증권금융</vTrustCompNm>\n<standardDt>20260731</standardDt>\n<companyCd>A01005</companyCd>\n<uNoVal5>0.049</uNoVal5>\n<uNoVal6>0.067</uNoVal6>\n<uNoVal7>0</uNoVal7>\n<uNoVal8>0.009</uNoVal8>\n<uNoVal9>0.135</uNoVal9>\n<uNoVal10>0.14</uNoVal10>\n<val1>www.samsungfund.com</val1>\n<val2>www.samsungfund.com</val2>\n<val3>www.ksfc.co.kr</val3>\n<val4>운용중</val4>\n</COMFundBasInfoOutDTO></message></root>"
     },
     {
       "bodyLen": 431,
       "body": "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<message>\n  <proframeHeader>\n    <pfmAppName>FS-COM</pfmAppName>\n    <pfmSvcName>COMFundUnityBasInfoSO</pfmSvcName>\n    <pfmFnName>fundSaleCompInfoSrch</pfmFnName>\n  </proframeHeader>\n  <systemHeader></systemHeader>\n    <COMFundUnityInfoInputDTO>\n    <standardCd>KR5105409225</standardCd>\n    <companyCd>A01005</companyCd>\n    <standardDt></standardDt>\n</COMFundUnityInfoInputDTO>\n</message>\n",
       "resLen": 2280,
-      "res": "<?xml version=\"1.0\" encoding=\"UTF-8\"?><root><message><proframeHeader>\n<pfmAppName>FS-COM</pfmAppName>\n<pfmSvcName>COMFundUnityBasInfoSO</pfmSvcName>\n<pfmFnName>fundSaleCompInfoSrch</pfmFnName>\n<pfmGlobalNo>4d2415680afe009603030124e84e4543</pfmGlobalNo>\n<pfmTrDate>20260829</pfmTrDate>\n<pfmTrTime>20260829195005544</pfmTrTime>\n<pfmClntIp>172.182.226.64</pfmClntIp>\n<pfmResponseDtal></pfmResponseDtal>\n</proframeHeader>\n<systemHeader>\n</systemHeader>\n<COMFundSaleCompListDTO>\n<dbio_total_count_>15</dbio_total_count_>\n<dbio_affected_count_>0</dbio_affected_count_>\n<fundSaleCompList>\n<uSaleCompNm>에스케이증권</uSaleCompNm>\n<homepage>www.sks.co.kr</homepage>\n</fundSaleCompList>\n<fundSaleCompList>\n<uSaleCompNm>메리츠증권</uSaleCompNm>\n<homepage>www.imeritz.com</homepage>\n</fundSaleCompList>\n<fundSaleCompList>\n<uSaleCompNm>하나증권</uSaleCompNm>\n<homepage>www.hanaw.com</homepage>\n</fundSaleCompList>\n<fundSaleCompList>\n<uSaleCompNm>NH투자증권</uSaleCompNm>\n<homepage>www.nhqv.com</homepage>\n</fundSaleCompList>\n<fundSaleCompList>\n<uSaleCompNm>엔에이치농협선물</uSaleCompNm>\n<homepage>www.nhfutures.co.kr</homepage>\n</fundSaleCompList>\n<fundSaleCompList>\n<uSaleCompNm>유안타증권</uSaleCompNm>\n<homepage>www.myasset.com/myasset/main/index.cmd</homepage>\n</fundSaleCompList>\n<fundSaleCompList>\n<uSaleCompNm>다올투자증권</uSaleCompNm>\n<homepage>www.ktb.co.kr</homepage>\n</fundSaleCompList>\n<fundSaleCompList>\n<uSaleCompNm>삼성생명보험</uSaleCompNm>\n<homepage>www.samsunglife.com</homepage>\n</fundSaleCompList>\n<fundSaleCompList>\n<uSaleCompNm>삼성증권</uSaleCompNm>\n<homepage>www.samsungpop.com</homepage>\n</fundSaleCompList>\n<fundSaleCompList>\n<uSaleCompNm>미래에셋증권</uSaleCompNm>\n<homepage>securities.miraeasset.com</homepage>\n</fundSaleCompList>\n<fundSaleCompList>\n<uSaleCompNm>대신증권</uSaleCompNm>\n<homepage>www.daishin.com</homepage>\n</fundSaleCompList>\n<fundSaleCompList>\n<uSaleCompNm>한국투자증권</uSaleCompNm>\n<homepage>www.truefriend.com</homepage>\n</fundSaleCompList>\n<fundSaleCompList>\n<uSaleCompNm>교보증권</uSaleCompNm>\n<homepage>www.iprovest.com</homepage>\n</fundSaleCompList>\n<fundSaleCompList>\n<uSaleCompNm>아이엠증권</uSaleCompNm>\n<homepage>www.hi-ib.com</homepage>\n</fundSaleCompList>\n<fundSaleCompList>\n<uSaleCompNm>키움증권</uSaleCompNm>\n<homepage>www.kiwoom.com</homepage>\n</fundSaleCompList>\n</COMFundSaleCompListDTO></message></root>"
+      "res": "<?xml version=\"1.0\" encoding=\"UTF-8\"?><root><message><proframeHeader>\n<pfmAppName>FS-COM</pfmAppName>\n<pfmSvcName>COMFundUnityBasInfoSO</pfmSvcName>\n<pfmFnName>fundSaleCompInfoSrch</pfmFnName>\n<pfmGlobalNo>4d2be7400afe00964d2920c11a77f653</pfmGlobalNo>\n<pfmTrDate>20260829</pfmTrDate>\n<pfmTrTime>20260829195838016</pfmTrTime>\n<pfmClntIp>128.24.160.226</pfmClntIp>\n<pfmResponseDtal></pfmResponseDtal>\n</proframeHeader>\n<systemHeader>\n</systemHeader>\n<COMFundSaleCompListDTO>\n<dbio_total_count_>15</dbio_total_count_>\n<dbio_affected_count_>0</dbio_affected_count_>\n<fundSaleCompList>\n<uSaleCompNm>에스케이증권</uSaleCompNm>\n<homepage>www.sks.co.kr</homepage>\n</fundSaleCompList>\n<fundSaleCompList>\n<uSaleCompNm>메리츠증권</uSaleCompNm>\n<homepage>www.imeritz.com</homepage>\n</fundSaleCompList>\n<fundSaleCompList>\n<uSaleCompNm>하나증권</uSaleCompNm>\n<homepage>www.hanaw.com</homepage>\n</fundSaleCompList>\n<fundSaleCompList>\n<uSaleCompNm>NH투자증권</uSaleCompNm>\n<homepage>www.nhqv.com</homepage>\n</fundSaleCompList>\n<fundSaleCompList>\n<uSaleCompNm>엔에이치농협선물</uSaleCompNm>\n<homepage>www.nhfutures.co.kr</homepage>\n</fundSaleCompList>\n<fundSaleCompList>\n<uSaleCompNm>유안타증권</uSaleCompNm>\n<homepage>www.myasset.com/myasset/main/index.cmd</homepage>\n</fundSaleCompList>\n<fundSaleCompList>\n<uSaleCompNm>다올투자증권</uSaleCompNm>\n<homepage>www.ktb.co.kr</homepage>\n</fundSaleCompList>\n<fundSaleCompList>\n<uSaleCompNm>삼성생명보험</uSaleCompNm>\n<homepage>www.samsunglife.com</homepage>\n</fundSaleCompList>\n<fundSaleCompList>\n<uSaleCompNm>삼성증권</uSaleCompNm>\n<homepage>www.samsungpop.com</homepage>\n</fundSaleCompList>\n<fundSaleCompList>\n<uSaleCompNm>미래에셋증권</uSaleCompNm>\n<homepage>securities.miraeasset.com</homepage>\n</fundSaleCompList>\n<fundSaleCompList>\n<uSaleCompNm>대신증권</uSaleCompNm>\n<homepage>www.daishin.com</homepage>\n</fundSaleCompList>\n<fundSaleCompList>\n<uSaleCompNm>한국투자증권</uSaleCompNm>\n<homepage>www.truefriend.com</homepage>\n</fundSaleCompList>\n<fundSaleCompList>\n<uSaleCompNm>교보증권</uSaleCompNm>\n<homepage>www.iprovest.com</homepage>\n</fundSaleCompList>\n<fundSaleCompList>\n<uSaleCompNm>아이엠증권</uSaleCompNm>\n<homepage>www.hi-ib.com</homepage>\n</fundSaleCompList>\n<fundSaleCompList>\n<uSaleCompNm>키움증권</uSaleCompNm>\n<homepage>www.kiwoom.com</homepage>\n</fundSaleCompList>\n</COMFundSaleCompListDTO></message></root>"
     },
     {
       "bodyLen": 429,
       "body": "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<message>\n  <proframeHeader>\n    <pfmAppName>FS-COM</pfmAppName>\n    <pfmSvcName>COMFundUnityBasInfoSO</pfmSvcName>\n    <pfmFnName>fundStdcotInfoSrch</pfmFnName>\n  </proframeHeader>\n  <systemHeader></systemHeader>\n    <COMFundUnityInfoInputDTO>\n    <standardCd>KR5105409225</standardCd>\n    <companyCd>A01005</companyCd>\n    <standardDt></standardDt>\n</COMFundUnityInfoInputDTO>\n</message>\n",
       "resLen": 835,
-      "res": "<?xml version=\"1.0\" encoding=\"UTF-8\"?><root><message><proframeHeader>\n<pfmAppName>FS-COM</pfmAppName>\n<pfmSvcName>COMFundUnityBasInfoSO</pfmSvcName>\n<pfmFnName>fundStdcotInfoSrch</pfmFnName>\n<pfmGlobalNo>4d2416000afe009610b5bbebfbc274c9</pfmGlobalNo>\n<pfmTrDate>20260829</pfmTrDate>\n<pfmTrTime>20260829195005696</pfmTrTime>\n<pfmClntIp>172.182.226.64</pfmClntIp>\n<pfmResponseDtal></pfmResponseDtal>\n</proframeHeader>\n<systemHeader>\n</systemHeader>\n<COMFundStdcotInfoDTO>\n<standardCot>1019.82</standardCot>\n<vBefDayFltstdcot>0.1465</vBefDayFltstdcot>\n<vBeDayFltstdcotRt>0.01</vBeDayFltstdcotRt>\n<vBefWeekFltstdcot>1.0987</vBefWeekFltstdcot>\n<vBefWeeFltstdcotRt>0.06</vBefWeeFltstdcotRt>\n<uOriginalAmt>12032812</uOriginalAmt>\n<netAsstotAmt>12271348</netAsstotAmt>\n<standardDt>20260828</standardDt>\n</COMFundStdcotInfoDTO></message></root>"
+      "res": "<?xml version=\"1.0\" encoding=\"UTF-8\"?><root><message><proframeHeader>\n<pfmAppName>FS-COM</pfmAppName>\n<pfmSvcName>COMFundUnityBasInfoSO</pfmSvcName>\n<pfmFnName>fundStdcotInfoSrch</pfmFnName>\n<pfmGlobalNo>4d2be7e50afe009657fbfc1a2c6be3d2</pfmGlobalNo>\n<pfmTrDate>20260829</pfmTrDate>\n<pfmTrTime>20260829195838181</pfmTrTime>\n<pfmClntIp>128.24.160.226</pfmClntIp>\n<pfmResponseDtal></pfmResponseDtal>\n</proframeHeader>\n<systemHeader>\n</systemHeader>\n<COMFundStdcotInfoDTO>\n<standardCot>1019.82</standardCot>\n<vBefDayFltstdcot>0.1465</vBefDayFltstdcot>\n<vBeDayFltstdcotRt>0.01</vBeDayFltstdcotRt>\n<vBefWeekFltstdcot>1.0987</vBefWeekFltstdcot>\n<vBefWeeFltstdcotRt>0.06</vBefWeeFltstdcotRt>\n<uOriginalAmt>12032812</uOriginalAmt>\n<netAsstotAmt>12271348</netAsstotAmt>\n<standardDt>20260828</standardDt>\n</COMFundStdcotInfoDTO></message></root>"
     }
   ],
   "aumTags": [
@@ -85,10 +344,56 @@
       "unit": "백만원"
     }
   ],
-  "dateTokensInBody": [],
+  "dateFieldEvidence": {
+    "inRequest": [
+      "message",
+      "proframeHeader",
+      "pfmAppName",
+      "pfmSvcName",
+      "pfmFnName",
+      "systemHeader",
+      "COMFundUnityInfoInputDTO",
+      "standardCd",
+      "companyCd",
+      "standardDt"
+    ],
+    "datesInResponse": {
+      "pfmTrDate": "20260829",
+      "standardDt": "20260828"
+    },
+    "chosen": [
+      "standardDt"
+    ]
+  },
   "replay": {
     "value": 12032812000000,
     "known": 12245199995973,
     "ok": true
+  },
+  "perPeriod": {
+    "m1": {
+      "honored": 0,
+      "ignored": 8,
+      "empty": 0,
+      "failed": 0
+    },
+    "m3": {
+      "honored": 0,
+      "ignored": 8,
+      "empty": 0,
+      "failed": 0
+    },
+    "m6": {
+      "honored": 0,
+      "ignored": 8,
+      "empty": 0,
+      "failed": 0
+    },
+    "y1": {
+      "honored": 0,
+      "ignored": 8,
+      "empty": 0,
+      "failed": 0
+    }
   }
 }
