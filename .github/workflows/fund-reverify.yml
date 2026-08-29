@@ -63,6 +63,21 @@ jobs:
           npx playwright install --with-deps chromium
           node scripts/reverify_fund_primary.mjs
 
+      # L3 본 대조 — 브라우저 탐색으로 찾은 경로로 1차 출처의 값을 실제로 맞댄다.
+      # 이 화면의 숫자가 2차 출처 단독인지 아닌지가 여기서 갈린다.
+      - name: L3 1차 출처 값 대조
+        if: always()
+        continue-on-error: true
+        timeout-minutes: 25
+        run: node scripts/reverify_fund_kofia_compare.mjs 12
+
+      # L1-b — 화면이 그 자리에서 만드는 주장(필터·랭킹·중복도·역조회).
+      # 데이터에 없는 값이라 어떤 감사도 본 적이 없다.
+      - name: L1-b 화면 계산 대조
+        if: always()
+        timeout-minutes: 20
+        run: node scripts/reverify_fund_logic.mjs
+
       # L1 — 화면에 찍힌 글자가 데이터와 같은가. 순위·유형평균은 데이터에 없고
       # 브라우저가 그 자리에서 만드는 값이라, 이 검증만이 그 두 칸을 본다.
       - name: L1 화면 표기 대조
