@@ -268,3 +268,21 @@ window.ELS_DATA = {
 
 본 화면은 정보 제공 목적의 참고 자료이며, 투자 판단과 그 결과에 대한 책임은 이용자에게 있습니다.
 샘플 데이터는 실제 수치가 아닌 예시입니다.
+
+---
+
+# 법령 조회 (국가법령정보센터)
+
+자료에 법 조문을 인용할 때 검색 요약이 아니라 **국가법령정보센터 원문**을 쓰기 위한
+경로입니다. 세션은 `law.go.kr` 에 직접 붙지 못하므로(사내 이그레스 정책) 러너가 OPEN API 로
+받아 `data/law/` 에 커밋하고, 조회는 커밋된 파일에서 합니다 — 시세 수집과 같은 구조입니다.
+
+```bash
+python3 scripts/law_lookup.py --list          # 무엇을 받아 뒀는지
+python3 scripts/law_lookup.py 자본시장법 55    # 조문 원문 (머리글에 시행일자)
+python3 scripts/law_lookup.py --grep 손실보전  # 받아 둔 전부에서 찾기
+bash scripts/request_law_refresh.sh           # 지금 다시 받아 오라고 부른다
+```
+
+인증키(`LAW_OC`) 등록, 받을 법령 늘리기, 저장 구조는 **[docs/law-lookup.md](docs/law-lookup.md)**
+를 보십시오. 조문을 옮길 때는 **시행일자를 같이 적습니다** — 시행일이 다르면 다른 조문입니다.

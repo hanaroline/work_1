@@ -1,0 +1,91 @@
+name: 법령 수집
+
+# 자료를 만드는 Claude 세션은 사내 이그레스 정책 때문에 law.go.kr 에 직접
+# 붙지 못한다(CONNECT 403). GitHub 러너는 그 정책 밖에서 돌므로 여기서
+# 국가법령정보센터 OPEN API 로 받아 저장소에 커밋하고, 세션은 커밋된
+# data/law/ 를 scripts/law_lookup.py 로 읽는다. 시세 수집과 같은 구조다.
+#
+# 인증키: 저장소 Secrets 의 LAW_OC (open.law.go.kr 에서 직접 정한 OC 값).
+# 없으면 아래 첫 단계에서 이유를 찍고 멈춘다.
+
+on:
+  schedule:
+    # 매주 월요일 07:00 KST = 일요일 22:00 UTC.
+    # 시세와 달리 법령은 매일 바뀌지 않는다. 개정이 잦지 않으므로 주 1회면
+    # 충분하고, 급하면 아래 두 갈래로 직접 부른다.
+    - cron: '0 22 * * 0'
+
+  # 받을 법령을 늘리거나 고쳤을 때, 그리고 세션이 수집을 부를 때.
+  # 세션 토큰에는 Actions 쓰기 권한이 없어 workflow_dispatch 를 API 로
+  # 부르지 못하지만(403) git push 는 된다. scripts/request_law_refresh.sh 가
+  # data/law/REFRESH 한 줄을 밀어 넣어 발동시킨다.
+  push:
+    paths:
+      - 'data/law/REFRESH'
+      - 'data/law/targets.json'
+
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: law-data
+  cancel-in-progress: false
+
+jobs:
+  fetch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: 인증키 확인
+        # 키가 없으면 수집이 전부 "JSON 이 아닌 응답" 으로 실패한다. 그 로그를
+        # 스무 번 읽느니 여기서 한 줄로 끝낸다.
+        run: |
+          if [ -z "${{ secrets.LAW_OC }}" ]; then
+            echo "::error::저장소 Secrets 에 LAW_OC 가 없다. open.law.go.kr 에서 정한 OC 값을 넣어야 한다."
+            exit 1
+          fi
+
+      - name: 파서 자체 점검
+        # 망을 쓰지 않는다. 응답을 뜯는 부분이 성한지 먼저 보고 나서 부른다.
+        run: python scripts/fetch_law.py --selftest
+
+      - name: 법령 수집
+        env:
+          LAW_OC: ${{ secrets.LAW_OC }}
+        run: python scripts/fetch_law.py
+
+      - name: 커밋
+        run: |
+          git config user.name  'github-actions[bot]'
+          git config user.email 'github-actions[bot]@users.noreply.github.com'
+          git add data/law
+          if git diff --staged --quiet; then
+            echo "변경 없음 — 개정된 법령이 없다"
+          else
+            git commit -m "법령 수집 $(TZ=Asia/Seoul date '+%Y-%m-%d %H:%M KST')"
+            git push
+          fi
+
+      - name: 요약
+        if: always()
+        run: |
+          if [ -f data/law/index.json ]; then
+            python - <<'PY'
+          import json
+          d = json.load(open('data/law/index.json', encoding='utf-8'))
+          s = d['요약']
+          print(f"::notice::법령 {s['성공']}/{s['시도']} 확보")
+          for k, v in sorted(d['sources'].items()):
+              if not v['ok']:
+                  print(f"::warning::{k} 실패 — {v.get('error', '사유 없음')}")
+          for l in d['법령']:
+              print(f"  {l['법령명']}  시행 {l['시행일자']}  조문 {l['조문수']}")
+          PY
+          fi
