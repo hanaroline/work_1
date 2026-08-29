@@ -71,15 +71,26 @@ jobs:
       # 네이버가 그 계단을 보정하는지 실물로 가른다.
       - name: 검산 실행 4차 (네이버가 계단을 보정하는가)
         timeout-minutes: 20
-        if: hashFiles('scripts/verify_fund_returns4.mjs') != ''
+        # 결과가 저장소에 남았다. 다시 볼 일이 있으면 수동 실행으로 돌린다.
+        if: github.event_name == 'workflow_dispatch' && hashFiles('scripts/verify_fund_returns4.mjs') != ''
         run: node scripts/verify_fund_returns4.mjs
+
+      # 첫 전수 수집에서 감사가 39건을 잡아 커밋을 막았다. 8개 펀드에 몰려
+      # 있는데, ETF 에서 처음 잡은 7,252건 중 대부분이 규칙의 잘못이었으므로
+      # 고치기 전에 실물을 본다.
+      - name: 검산 실행 5차 (필드의 뜻·이상 레코드)
+        timeout-minutes: 25
+        if: hashFiles('scripts/verify_fund_fields.mjs') != ''
+        run: node scripts/verify_fund_fields.mjs
 
       - name: 결과 업로드
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: fund-probe
-          path: tools/discovery/fund_returns_verify*.*
+          path: |
+            tools/discovery/fund_returns_verify*.*
+            tools/discovery/fund_fields_verify.*
           retention-days: 7
 
       - name: 결과 커밋
@@ -87,8 +98,9 @@ jobs:
         run: |
           git config user.name  "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          if ls tools/discovery/fund_returns_verify*.json >/dev/null 2>&1; then
-            git add tools/discovery/fund_returns_verify*.* || true
+          if ls tools/discovery/fund_*_verify*.json >/dev/null 2>&1; then
+            git add tools/discovery/fund_returns_verify*.* 2>/dev/null || true
+            git add tools/discovery/fund_fields_verify.* 2>/dev/null || true
             git commit -m "chore(fund): 기간수익률 검산 결과 갱신" || echo "변경 없음"
             git push || echo "푸시 실패 (무시)"
           fi
