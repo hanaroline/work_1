@@ -55,6 +55,14 @@ jobs:
         if: hashFiles('scripts/verify_fund_returns2.mjs') != ''
         run: node scripts/verify_fund_returns2.mjs
 
+      # 2차의 탐지 규칙이 계단 하나를 놓쳤다(주말이 낀 3.147배). 고친 규칙이
+      # 무엇을 잡고 무엇을 놓치는지 700종목에서 센다. 이 결과가 수집기의
+      # 방어선을 정하므로, 여기가 죽으면 잡도 같이 실패해야 한다.
+      - name: 검산 실행 3차 (계단 탐지 규칙 검증)
+        timeout-minutes: 30
+        if: hashFiles('scripts/verify_fund_returns3.mjs') != ''
+        run: node scripts/verify_fund_returns3.mjs
+
       - name: 결과 업로드
         if: always()
         uses: actions/upload-artifact@v4
