@@ -52,10 +52,22 @@ def load():
     return D, H
 
 
-def narrative_for(day):
-    p = ROOT + "/data/briefing/narrative-%s.json" % day.isoformat()
-    if os.path.exists(p):
-        return json.load(io.open(p, encoding="utf-8"))
+def narrative_for(day, kind="morning"):
+    """그날의 서술 파일을 읽는다 — **판 이름을 붙인 것을 먼저 본다.**
+
+    예전에는 `narrative-<날짜>.json` 하나뿐이었다. 그런데 모닝과 장마감은
+    서로 다른 예약이 서로 다른 창에서 돌고, 같은 날 둘 다 나온다. 2026-08-28
+    에 실제로 장마감 판의 서술이 모닝 판의 서술 파일을 덮어썼다 — 같은
+    이름이었기 때문이다. 발행된 판은 이미 만들어진 뒤라 무사했지만, 그날
+    아침에 무엇을 썼는지는 저장소에서 사라졌다.
+
+    이제 `narrative-<날짜>-<판>.json` 을 먼저 찾고, 없으면 옛 이름으로
+    떨어진다(지난 판들이 그 이름으로 남아 있다).
+    """
+    base = ROOT + "/data/briefing/narrative-%s" % day.isoformat()
+    for p in ("%s-%s.json" % (base, kind), "%s.json" % base):
+        if os.path.exists(p):
+            return json.load(io.open(p, encoding="utf-8"))
     return {}
 
 
@@ -650,7 +662,7 @@ def main():
     now = datetime.datetime.now(KST)
     today = d(a.date) if a.date else now.date()
     D, H = load()
-    N = Narrative(narrative_for(today))
+    N = Narrative(narrative_for(today, a.kind))
 
     C = prepare(D, H, N, today, now, a.kind)
     doc = Doc()
