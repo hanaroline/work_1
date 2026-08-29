@@ -237,8 +237,8 @@ def texts_in(node, depth=0):
     out = []
     if isinstance(node, dict):
         for k, v in node.items():
-            if isinstance(v, str) and k.endswith("내용"):
-                t = clean(v)
+            if k.endswith("내용") and isinstance(v, (str, list)):
+                t = flat_text(v)
                 if t.strip():
                     pad = "  " * depth
                     out.append("\n".join(pad + ln if ln.strip() else ln
@@ -257,6 +257,22 @@ def as_list(v):
     return v if isinstance(v, list) else [v]
 
 
+def flat_text(v):
+    """본문 값을 글자로 편다.
+
+    「…내용」 이 늘 문자열인 것이 아니다. 소득세법 제104조제1항제11호의
+    목내용은 [["가. …", "  1) … 100분의 30", …]] 로 두 겹 리스트다.
+    clean() 이 문자열만 받아 그 자리가 통째로 비었고, 세율 본문이 조용히
+    사라졌다 — 조문 수는 멀쩡해서 눈에 띄지도 않았다.
+    """
+    if isinstance(v, str):
+        return clean(v)
+    if isinstance(v, list):
+        parts = [flat_text(x) for x in v]
+        return "\n".join(p for p in parts if p.strip())
+    return ""
+
+
 def article_body(node):
     """조문 하나의 본문을 **법조문 차례대로** 짓는다.
 
@@ -266,25 +282,25 @@ def article_body(node):
     못 박는다. 겉모양을 모르는 법령만 texts_in 으로 되돌린다.
     """
     out = []
-    head = clean(node.get("조문내용", ""))
+    head = flat_text(node.get("조문내용", ""))
     if head.strip():
         out.append(head)
     for hang in as_list(node.get("항")):
         if not isinstance(hang, dict):
             continue
-        t = clean(hang.get("항내용", ""))
+        t = flat_text(hang.get("항내용", ""))
         if t.strip():
             out.append(indent(t, 1))
         for ho in as_list(hang.get("호")):
             if not isinstance(ho, dict):
                 continue
-            t = clean(ho.get("호내용", ""))
+            t = flat_text(ho.get("호내용", ""))
             if t.strip():
                 out.append(indent(t, 2))
             for mok in as_list(ho.get("목")):
                 if not isinstance(mok, dict):
                     continue
-                t = clean(mok.get("목내용", ""))
+                t = flat_text(mok.get("목내용", ""))
                 if t.strip():
                     out.append(indent(t, 3))
     if not out:
