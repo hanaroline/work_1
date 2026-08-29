@@ -1485,7 +1485,18 @@ function renderReverse() {
         : fmtWeight(Number(r.h.weight))) + '</td>' +
       '<td class="num">' + esc(fmtAmount(r.fund.aum)) + '</td></tr>';
   }
-  html += '</tbody></table></div><div id="reverse-detail"></div>';
+  html += '</tbody></table></div>';
+  // 200개까지만 그린다. **잘렸다는 것을 말하지 않으면** 위의 "1,105개 펀드" 를
+  // 보고 표가 그 전부라고 읽게 된다. 목록 탭은 "60 / 3,196개 표시 중" 이라고
+  // 밝히는데 여기만 빠져 있었다(재검증에서 드러났다).
+  if (hits.length > 200) {
+    html += '<div class="dim" style="font-size:13px;margin-top:8px">' + esc(lang === 'ko'
+      ? hits.length.toLocaleString() + '개 중 비중이 큰 200개만 표시했습니다. ' +
+        '조건을 좁히려면 종목 이름을 더 정확히 적어 주세요.'
+      : 'Showing the 200 largest weights of ' + hits.length.toLocaleString() + '. ' +
+        'Narrow the search to see fewer.') + '</div>';
+  }
+  html += '<div id="reverse-detail"></div>';
   body.innerHTML = html;
 }
 
