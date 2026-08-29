@@ -80,8 +80,16 @@ jobs:
       # 고치기 전에 실물을 본다.
       - name: 검산 실행 5차 (필드의 뜻·이상 레코드)
         timeout-minutes: 25
-        if: hashFiles('scripts/verify_fund_fields.mjs') != ''
+        # 결과가 저장소에 남았다. 다시 볼 일이 있으면 수동 실행으로 돌린다.
+        if: github.event_name == 'workflow_dispatch' && hashFiles('scripts/verify_fund_fields.mjs') != ''
         run: node scripts/verify_fund_fields.mjs
+
+      # 화면 시험이 걸렸다 — 원천이 비중을 정확히 0 으로 주는 펀드가 있다.
+      # 진짜 0 인지 "모름" 인지 갈려야 화면에 무엇을 찍을지 정해진다.
+      - name: 검산 실행 6차 (비중 0 은 0 인가 모름인가)
+        timeout-minutes: 20
+        if: hashFiles('scripts/verify_fund_zero_weight.mjs') != ''
+        run: node scripts/verify_fund_zero_weight.mjs
 
       - name: 결과 업로드
         if: always()
@@ -91,6 +99,7 @@ jobs:
           path: |
             tools/discovery/fund_returns_verify*.*
             tools/discovery/fund_fields_verify.*
+            tools/discovery/fund_zero_weight.*
           retention-days: 7
 
       - name: 결과 커밋
@@ -101,6 +110,7 @@ jobs:
           if ls tools/discovery/fund_*_verify*.json >/dev/null 2>&1; then
             git add tools/discovery/fund_returns_verify*.* 2>/dev/null || true
             git add tools/discovery/fund_fields_verify.* 2>/dev/null || true
+            git add tools/discovery/fund_zero_weight.* 2>/dev/null || true
             git commit -m "chore(fund): 기간수익률 검산 결과 갱신" || echo "변경 없음"
             git push || echo "푸시 실패 (무시)"
           fi
