@@ -179,9 +179,20 @@ function sampleData() {
       return { code: null, name: hn, weight: +w.toFixed(4) };
     });
 
+    // 설정일을 먼저 정한다. 수익률은 설정일이 허락하는 기간까지만 만든다 —
+    // 설정 4년 된 펀드에 5년 수익률을 채워 넣으면 감사가 (옳게) 오류로 잡는다.
+    // 예시가 감사를 통과하지 못하면, 수집이 한 번도 안 돈 저장소에서 관문이
+    // 막혀 버린다.
+    const ageYears = 1 + rand() * 12;
+    const inception = new Date(Date.UTC(2026, 7, 27) - ageYears * 365.25 * 864e5)
+      .toISOString().slice(0, 10);
+    const NEED = { '1d': 0, '1w': 0.02, '1m': 1 / 12, '3m': 0.25, '6m': 0.5, '9m': 0.75,
+                   ytd: 0.65, '1y': 1, '2y': 2, '3y': 3, '5y': 5 };
+
     const ret = {};
     const retBenchmark = {};
     for (const [k] of PERIODS) {
+      if ((NEED[k] ?? 0) > ageYears) continue;
       const scale = k === '1d' ? 1 : k === '1w' ? 3 : k === '1m' ? 8
                   : k === '3m' ? 15 : k === '6m' ? 25 : k === '1y' ? 40 : 70;
       const base = (rand() - 0.38) * scale;
@@ -189,18 +200,29 @@ function sampleData() {
       if (benchmarkName) retBenchmark[k] = +(base + (rand() - 0.5) * scale * 0.4).toFixed(4);
     }
 
+    // 설정액과 순자산은 평가손익만큼만 차이 난다. 따로 뽑으면 자릿수로 벌어져
+    // 감사의 "순자산-설정액-괴리" 에 걸린다.
+    const aum = Math.round((0.005 + rand() * 3) * 1e12);
+    const nav = Math.round(aum * (0.8 + rand() * 0.6));
+
     return {
       id: `FUND:${code}`,
       code, name, company, type, region, assetClass, benchmarkName,
       riskGrade: 1 + Math.floor(rand() * 6),
-      inceptionDate: `20${10 + Math.floor(rand() * 14)}-0${1 + Math.floor(rand() * 9)}-15`,
+      inceptionDate: inception,
       basePrice: +(1000 + rand() * 5000).toFixed(2),
-      changeRate: +((rand() - 0.45) * 1.5).toFixed(4),
+      // 등락률은 1일 수익률과 같은 값이어야 한다. 원천에서도 같은 값이고,
+      // 감사가 둘을 대조한다.
+      changeRate: ret['1d'] ?? null,
       tradeDate: '2026-08-27',
-      aum: Math.round((0.005 + rand() * 3) * 1e12),
-      nav: Math.round((0.005 + rand() * 3) * 1e12),
+      aum,
+      nav,
       totalFee: null,                       // 원천에 없다. 예시에서도 지어내지 않는다.
-      ret, retBenchmark: benchmarkName ? retBenchmark : null,
+      ret,
+      // 예시에서도 원천 값과 실은 값이 같아야 한다. 감사가 둘을 대조하는데
+      // 한쪽이 비면 "원천 없음" 경고가 예시에서만 잔뜩 나온다.
+      retSrc: Object.assign({}, ret),
+      retBenchmark: benchmarkName ? retBenchmark : null,
       retAsOf: '2026-08-27',
       metrics: assetClass === 'mmf' ? null : {
         standardDeviation: +(rand() * 25).toFixed(3),

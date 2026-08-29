@@ -85,18 +85,38 @@ for (const f of FUNDS) {
   const asOf = f.retAsOf || f.tradeDate || null;
 
   // ── 1. 수집기가 제 관문을 지켰는가 ──────────────────────────────────────
-  // 계단이 있다고 적어 놓고 그 구간의 수익률을 그대로 실었으면 관문이 샌 것이다.
-  // 이것이 244.9% 를 막는 관문이므로, 새면 곧바로 오류다.
+  //
+  // 수집기의 규칙은 "계단이 있으면 비운다" 가 **아니다.** 계단에는 두 가지가
+  // 있고 네이버는 그중 하나만 흘려 넣는다.
+  //
+  //   위로 나는 계단(기준가 재산정) → 네이버가 그대로 수익률로 낸다. 거짓이다.
+  //   아래로 나는 계단(결산·분배)   → 네이버가 보정한다. 값은 멀쩡하다.
+  //
+  // 그래서 수집기는 "그 숫자가 계단을 먹었는가" 로 가른다. 계단을 가로지르는데
+  // 남긴 칸은 `retChecked` 에 근거(생값)를 남기게 되어 있다. 감사는 그 셈을
+  // **다시 해 본다** — 근거 없이 남긴 칸과, 근거가 셈에 안 맞는 칸을 잡는다.
   const stepDays = (f.steps || []).map((s) => s.day).filter(Boolean);
+  const checkedOf = {};
+  for (const c of f.retChecked || []) checkedOf[c.period] = c;
   if (stepDays.length && asOf) {
     for (const [k, v] of Object.entries(ret)) {
       const cutoff = cutoffOf(k, asOf);
       if (!cutoff) continue;
       const hit = stepDays.filter((d) => d > cutoff && d <= asOf);
-      if (hit.length) {
-        flag('error', '계단구간-수익률남음', f,
-             `${k} = ${v}% 인데 ${hit[0]} 에 기준가 재산정 계단이 있다 (구간 ${cutoff}~${asOf})`,
+      if (!hit.length) continue;
+      const c = checkedOf[k];
+      if (!c) {
+        flag('error', '계단구간-근거없이남김', f,
+             `${k} = ${v}% 가 ${hit[0]} 계단을 가로지르는데 남긴 근거가 없다 (구간 ${cutoff}~${asOf})`,
              { period: k, value: v, stepAt: hit[0] });
+      } else if (c.raw == null || !Number.isFinite(Number(c.raw))) {
+        flag('error', '계단구간-근거없음', f, `${k}: retChecked 에 생값이 없다`, { period: k });
+      } else if (Math.abs(Number(v) - Number(c.raw)) <= 20) {
+        // 생값과 원천이 붙어 있다 = 원천이 계단을 흘려 넣었다. 비웠어야 한다.
+        flag('error', '계단구간-흘려넣은값남김', f,
+             `${k} = ${v}% 가 생값 ${c.raw}% 와 ${Math.abs(Number(v) - Number(c.raw)).toFixed(2)}%p 차로 붙어 있다 ` +
+             `— 원천이 ${c.at} 계단을 그대로 흘려 넣은 값이다`,
+             { period: k, value: v, raw: c.raw, stepAt: c.at });
       }
     }
   }
@@ -109,9 +129,17 @@ for (const f of FUNDS) {
   }
 
   // ── 2. 원천 스스로의 앞뒤 ───────────────────────────────────────────────
-  // 계열을 보지 않고도 말할 수 있는 것. 짧은 구간이 거의 0 인데 그것을 품은
-  // 긴 구간이 통째로 튀면, 그 사이 어딘가에서 값이 아닌 것이 끼어든 것이다.
-  // 수집기의 계단 탐지가 실패해도 여기서 걸린다.
+  // 짧은 구간이 거의 0 인데 그것을 품은 긴 구간이 통째로 튀면 눈여겨볼 일이다.
+  // 수집기의 계단 탐지가 실패해도 여기서 보인다.
+  //
+  // **다만 오류가 아니라 경고다.** 처음에는 오류로 걸었는데, 이 규칙이 잡은
+  // 두 펀드(한화천연자원 6개월 0.19% → 1년 50.60%, 에셋플러스코리아리치투게더
+  // 1.04% → 50.47%)를 실물로 확인해 보니 **계단이 하나도 없었다.** 최근
+  // 6개월이 잠잠하고 그 앞 6개월에 50% 오른 것뿐이다. 그건 정상적인 수익률
+  // 모양이지 오류가 아니다(tools/discovery/fund_returns_verify4.md).
+  //
+  // 규칙이 틀릴 수 있다. 오류로 걸어 커밋을 막으면 멀쩡한 자료가 못 나간다.
+  // 그래서 보고만 하고, 새로운 실패 방식이 나타나면 사람이 보게 한다.
   const PAIRS = [['1d', '1w'], ['1w', '1m'], ['1m', '3m'], ['3m', '6m'], ['6m', '1y'], ['1y', '2y']];
   for (const [shortK, longK] of PAIRS) {
     const s = ret[shortK], l = ret[longK];
@@ -120,7 +148,7 @@ for (const f of FUNDS) {
     if (s == null || l == null) continue;
     if (!Number.isFinite(Number(s)) || !Number.isFinite(Number(l))) continue;
     if (Math.abs(s) < 3 && Math.abs(l) > 50) {
-      flag('error', '수익률-앞뒤안맞음', f,
+      flag('warn', '수익률-앞뒤안맞음', f,
            `${shortK} ${s}% 인데 ${longK} ${l}% — 짧은 구간을 품은 긴 구간이 혼자 튄다`,
            { shortPeriod: shortK, short: s, longPeriod: longK, long: l });
     }
