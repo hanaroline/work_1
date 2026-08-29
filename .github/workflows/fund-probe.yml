@@ -91,6 +91,17 @@ jobs:
         if: hashFiles('scripts/verify_fund_zero_weight.mjs') != ''
         run: node scripts/verify_fund_zero_weight.mjs
 
+      # 사용자가 준 주소가 클래스 코드였다 — 우리 화면이 못 여는 코드다.
+      # 클래스가 부모와 다른 상품인지, 목록에 섞여 한 펀드가 둘로 세어지고
+      # 있는지를 실물로 가른다. 여기서 화면을 어떻게 고칠지가 갈린다.
+      - name: 검산 실행 8차 (클래스 코드로 화면이 열리는가)
+        timeout-minutes: 25
+        if: hashFiles('scripts/probe_fund_class_page.mjs') != ''
+        run: |
+          npm i -D playwright@1.56.1 --no-audit --no-fund
+          npx playwright install --with-deps chromium
+          node scripts/probe_fund_class_page.mjs
+
       - name: 결과 업로드
         if: always()
         uses: actions/upload-artifact@v4
@@ -100,6 +111,8 @@ jobs:
             tools/discovery/fund_returns_verify*.*
             tools/discovery/fund_fields_verify.*
             tools/discovery/fund_zero_weight.*
+            tools/discovery/fund_class_probe.*
+            tools/discovery/fund_class_page_*.png
           retention-days: 7
 
       - name: 결과 커밋
@@ -107,10 +120,11 @@ jobs:
         run: |
           git config user.name  "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          if ls tools/discovery/fund_*_verify*.json >/dev/null 2>&1; then
-            git add tools/discovery/fund_returns_verify*.* 2>/dev/null || true
-            git add tools/discovery/fund_fields_verify.* 2>/dev/null || true
-            git add tools/discovery/fund_zero_weight.* 2>/dev/null || true
-            git commit -m "chore(fund): 기간수익률 검산 결과 갱신" || echo "변경 없음"
-            git push || echo "푸시 실패 (무시)"
-          fi
+          git add tools/discovery/fund_returns_verify*.* 2>/dev/null || true
+          git add tools/discovery/fund_fields_verify.* 2>/dev/null || true
+          git add tools/discovery/fund_zero_weight.* 2>/dev/null || true
+          git add tools/discovery/fund_class_probe.* 2>/dev/null || true
+          git add tools/discovery/fund_class_page_*.png 2>/dev/null || true
+          git commit -m "chore(fund): 원천 조사 결과 갱신" || echo "변경 없음"
+          git pull --rebase --autostash origin "${GITHUB_REF_NAME}" || true
+          git push || echo "푸시 실패 (무시)"
