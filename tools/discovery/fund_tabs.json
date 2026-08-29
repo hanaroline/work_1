@@ -1,0 +1,233 @@
+{
+  "at": "2026-08-29T08:21:39.352Z",
+  "calls": [
+    {
+      "code": "KR5207698899",
+      "tab": "allocation",
+      "url": "https://stock.naver.com/domestic/fund/KR5207698899/allocation",
+      "seen": [
+        {
+          "status": 200,
+          "url": "https://stock.naver.com/api/fund/funds/KR5207698899/fund-allocation",
+          "body": "{\"availability\":{\"status\":\"available\",\"assets\":true,\"portfolio\":true,\"sectors\":true},\"allocationsPortfolio\":{\"result\":[{\"itemCode\":\"KR7005930003\",\"itemName\":\"삼성전자\",\"weight\":0.290975817},{\"itemCode\":\"KR7000660001\",\"itemName\":\"SK하이닉스\",\"weight\":0.281715894},{\"itemCode\":\"KR7402340004\",\"itemName\":\"SK스퀘어\",\"weight\":0.030209806},{\"itemCode\":\"KR7009150004\",\"itemName\":\"삼성전기\",\"weight\":0.025290458},{\"itemCode\":\"KR7005380001\",\"itemName\":\"현대차\",\"weight\":0.010244544},{\"itemCode\":\"KR7105560007\",\"itemName\":\"KB금융\",\"weight\":0.009657492},{\"itemCode\":\"KR7028260008\",\"itemName\":\"삼성물산\",\"weight\":0.008485353},{\"itemCode\":\"KR7034020008\",\"itemName\":\"두산에너빌리티\",\"weight\":0.007684433},{\"itemCode\":\"KR7055550008\",\"itemName\":\"신한지주\",\"weight\":0.00738268},{\"itemCode\":\"KR7032830002\",\"itemName\":\"삼성생명\",\"weight\":0.006369623},{\"itemCode\":\"KR7005931001\",\"itemName\":\"삼성전자우\",\"weight\":0.006355041},{\"itemCode\":\"KR7012330007\",\"itemName\":\"현대모비스\",\"weight\":0.006320157},{\"itemCode\":\"KR7000270009\",\"itemName\":\"기아\",\"weight\":0.006251052},{\"itemCode\":\"KR7012450003\",\"itemName\":\"한화에어로스페이스\",\"weight\":0.006130098},{\"itemCode\":\"KR7034730002\",\"itemName\":\"SK\",\"weight\":0.00604289},{\"itemCode\":\"KR7086790003\",\"itemName\":\"하나금융지주\",\"weight\":0.005304437},{\"itemCode\":\"KR7006400006\",\"itemName\":\"삼성SDI\",\"weight\":0.004766656},{\"itemCode\":\"KR7068270008\",\"itemName\":\"셀트리온\",\"weight\":0.00459049},{\"itemCode\":\"KR7267260008\",\"itemName\":\"HD현대일렉트릭\",\"weight\":0.004573426},{\"itemCode\":\"KR7373220003\",\"itemName\":\"LG에너지솔루션\",\"weight\":0.004150025},{\"itemCode\":\"KR7017670001\",\"itemName\":\"SK텔레콤\",\"weight\":0.004143596},{\"itemCode\":\"KR7035420009\",\"itemName\":\"NAVER\",\"weight\":0.004095054},{\"itemCode\":\"KR7010120004\",\"itemName\":\"LS ELECTRIC\",\"weight\":0.004050104},{\"itemCode\":\"KR7005490008\",\"itemName\":\"POSCO홀딩스\",\"weight\":0.004048464},{\"itemCode\":\"KR7329180004\",\"itemName\":\"HD현대중공업\",\"weight\":0.00395266},{\"itemCode\":\"KR7298040007\",\"itemName\":\"효성중공업\",\"weight\":0.003634619},{\"itemCode\":\"KR7066570003\",\"itemName\":\"LG전자\",\"weight\":0.003533209},{\"itemCode\":\"KR7000810002\",\"itemName\":\"삼성화재\",\"weight\":0.003382013},{\"itemCode\":\"KR7316140003\",\"itemName\":\"우리금융지주\",\"weight\":0.003366383},{\"itemCode\":\"KR7009540006\",\"itemName\":\"HD한국조선해양\",\"weight\":0.003093186},{\"itemCode\":\"KR7010140002\",\"itemName\":\"삼성중공업\",\"weight\":0.00291067},{\"itemCode\":\"KR7006800007\",\"itemName\":\"미래에셋증권\",\"weight\":0.002904123},{\"itemCode\":\"KR7033780008\",\"itemName\":\"KT&G\",\"weight\":0.00286103},{\"itemCode\":\"KR7207940008\",\"itemName\":\"삼성바이오로직스\",\"weight\":0.002679337},{\"itemCode\":\"KR7011070000\",\"itemName\":\"LG이노텍\",\"weight\":0.002639176},{\"itemCode\":\"KR7042660001\",\"itemName\":\"한화오션\",\"weight\":0.002633547},{\"itemCode\":\"KR7064350002\",\"itemName\":\"현대로템\",\"weight\":0.00239343},{\"itemCode\":\"KR7071050009\",\"itemName\":\"한국금융지주\",\"weight\":0.002256917},{\"itemCode\":\"KR7051910008\",\"itemName\":\"LG화학\",\"weight\":0.002236981},{\"itemCode\":\"KR7015760002\",\"itemName\":\"한국전력\",\"weight\":0.002170549},{\"itemCode\":\"KR7047810007\",\"itemName\":\"한국항공우주\",\"weight\":0.001961693},{\"itemCode\":\"KR7000150003\",\"itemName\":\"두산\",\"weight\":0.00195882},{\"itemCode\":\"KR70053820"
+        },
+        {
+          "status": 200,
+          "url": "https://stock.naver.com/api/fund/funds/KR5207698899/left-panel",
+          "body": "{\"detail\":{\"fundCode\":\"KR5207698899\",\"fundName\":\"교보악사파워인덱스증권자투자신탁 2(주식)(운용)\",\"basePrice\":\"4000.71\",\"changePrice\":39.59,\"priceBandType\":\"RISING\",\"returnIndex\":0.9994648,\"returnRate3m\":-15.0923815,\"tradeDate\":\"2026-08-27\",\"riskGrade\":\"highRisk\",\"parentPeerGroupName\":\"국내주식형\",\"derivedAum\":\"19187006847\",\"derivedNav\":\"76761726785\",\"inceptionDate\":\"2007-06-04\",\"companyCode\":\"207\",\"companyName\":\"교보악사자산운용\",\"benchmarkName\":\"KOSPI200 TR\",\"totalFee\":null,\"managementFee\":null,\"salesFee\":null,\"custodyFee\":null,\"backOfficeFee\":null,\"preSalesFee\":null,\"postSalesFee\":null},\"returns\":{\"fund\":{\"fundCode\":\"KR5207698899\",\"fundName\":\"교보악사파워인덱스증권자투자신탁 2(주식)(운용)\",\"totalFee\":null,\"returnRate1m\":1.392891,\"returnRate3m\":-15.0923815,\"returnRate1y\":153.1142873,\"returnRate3y\":249.4690989},\"classes\":[{\"fundCode\":\"K55207BJ1791\",\"fundName\":\"교보악사파워인덱스증권자투자신탁 2[주식]ClassAe\",\"totalFee\":0.275,\"returnRate1m\":1.3707055,\"returnRate3m\":-15.1521495,\"returnRate1y\":152.4938972,\"returnRate3y\":246.7199808},{\"fundCode\":\"K55207BJ1809\",\"fundName\":\"교보악사파워인덱스증권자투자신탁 2[주식]ClassCe\",\"totalFee\":0.665,\"returnRate1m\":1.339487,\"returnRate3m\":-15.2364159,\"returnRate1y\":151.6203301,\"returnRate3y\":242.8808206},{\"fundCode\":\"K55207BT7598\",\"fundName\":\"교보악사파워인덱스증권자투자신탁 2[주식]ClassC-R\",\"totalFee\":0.865,\"returnRate1m\":1.3233494,\"returnRate3m\":-15.2798886,\"returnRate1y\":151.1915701,\"returnRate3y\":240.9312367},{\"fundCode\":\"K55207BT7606\",\"fundName\":\"교보악사파워인덱스증권자투자신탁 2[주식]ClassC-Re\",\"totalFee\":0.515,\"returnRate1m\":1.3514411,\"returnRate3m\":-15.2042,\"returnRate1y\":151.9538698,\"returnRate3y\":244.3312751},{\"fundCode\":\"KR5207698907\",\"fundName\":\"교보악사파워인덱스증권자투자신탁 2(주식)ClassA1\",\"totalFee\":0.385,\"returnRate1m\":1.3620599,\"returnRate3m\":-15.175929,\"returnRate1y\":152.2557038,\"returnRate3y\":245.6321362},{\"fundCode\":\"KR5207698915\",\"fundName\":\"교보악사파워인덱스증권자투자신탁 2(주식)ClassC1\",\"totalFee\":1.165,\"returnRate1m\":1.2993108,\"returnRate3m\":-15.3444471,\"returnRate1y\":150.5299755,\"returnRate3y\":238.0312606}]},\"terms\":{\"infoObject\":\"이 투자신탁은 국내 주식에 주로 투자하는 증권(주식형) 모투자신탁을 시행령 제94조제2항제4호에서 규정하는 주된 투자대상자산으로 하여 벤치마크인 KOSPI200 지수 수익을 추구하는 것을 목적으로합니다. 또한, 이 투자신탁의 Class C-H 수익증권은 조세특례제한법 제87조 및 동법시행령 제81조에 의해 수익자의 주택자금마련 및 재산 형성을 목적으로 합니다.\",\"standardTime\":\"3:30\",\"buyStandardDaysBefore\":1,\"buyStandardDaysAfter\":2,\"redeemStandardDaysBefore\":1,\"redeemStandardDaysAfter\":2,\"redeemPaymentDaysBefore\":3,\"redeemPaymentDaysAfter\":3,\"riskGrade\":\"highRisk\"}}"
+        }
+      ]
+    },
+    {
+      "code": "KR5207698899",
+      "tab": "performance",
+      "url": "https://stock.naver.com/domestic/fund/KR5207698899/performance",
+      "seen": [
+        {
+          "status": 200,
+          "url": "https://stock.naver.com/api/fund/funds/KR5207698899/left-panel",
+          "body": "{\"detail\":{\"fundCode\":\"KR5207698899\",\"fundName\":\"교보악사파워인덱스증권자투자신탁 2(주식)(운용)\",\"basePrice\":\"4000.71\",\"changePrice\":39.59,\"priceBandType\":\"RISING\",\"returnIndex\":0.9994648,\"returnRate3m\":-15.0923815,\"tradeDate\":\"2026-08-27\",\"riskGrade\":\"highRisk\",\"parentPeerGroupName\":\"국내주식형\",\"derivedAum\":\"19187006847\",\"derivedNav\":\"76761726785\",\"inceptionDate\":\"2007-06-04\",\"companyCode\":\"207\",\"companyName\":\"교보악사자산운용\",\"benchmarkName\":\"KOSPI200 TR\",\"totalFee\":null,\"managementFee\":null,\"salesFee\":null,\"custodyFee\":null,\"backOfficeFee\":null,\"preSalesFee\":null,\"postSalesFee\":null},\"returns\":{\"fund\":{\"fundCode\":\"KR5207698899\",\"fundName\":\"교보악사파워인덱스증권자투자신탁 2(주식)(운용)\",\"totalFee\":null,\"returnRate1m\":1.392891,\"returnRate3m\":-15.0923815,\"returnRate1y\":153.1142873,\"returnRate3y\":249.4690989},\"classes\":[{\"fundCode\":\"K55207BJ1791\",\"fundName\":\"교보악사파워인덱스증권자투자신탁 2[주식]ClassAe\",\"totalFee\":0.275,\"returnRate1m\":1.3707055,\"returnRate3m\":-15.1521495,\"returnRate1y\":152.4938972,\"returnRate3y\":246.7199808},{\"fundCode\":\"K55207BJ1809\",\"fundName\":\"교보악사파워인덱스증권자투자신탁 2[주식]ClassCe\",\"totalFee\":0.665,\"returnRate1m\":1.339487,\"returnRate3m\":-15.2364159,\"returnRate1y\":151.6203301,\"returnRate3y\":242.8808206},{\"fundCode\":\"K55207BT7598\",\"fundName\":\"교보악사파워인덱스증권자투자신탁 2[주식]ClassC-R\",\"totalFee\":0.865,\"returnRate1m\":1.3233494,\"returnRate3m\":-15.2798886,\"returnRate1y\":151.1915701,\"returnRate3y\":240.9312367},{\"fundCode\":\"K55207BT7606\",\"fundName\":\"교보악사파워인덱스증권자투자신탁 2[주식]ClassC-Re\",\"totalFee\":0.515,\"returnRate1m\":1.3514411,\"returnRate3m\":-15.2042,\"returnRate1y\":151.9538698,\"returnRate3y\":244.3312751},{\"fundCode\":\"KR5207698907\",\"fundName\":\"교보악사파워인덱스증권자투자신탁 2(주식)ClassA1\",\"totalFee\":0.385,\"returnRate1m\":1.3620599,\"returnRate3m\":-15.175929,\"returnRate1y\":152.2557038,\"returnRate3y\":245.6321362},{\"fundCode\":\"KR5207698915\",\"fundName\":\"교보악사파워인덱스증권자투자신탁 2(주식)ClassC1\",\"totalFee\":1.165,\"returnRate1m\":1.2993108,\"returnRate3m\":-15.3444471,\"returnRate1y\":150.5299755,\"returnRate3y\":238.0312606}]},\"terms\":{\"infoObject\":\"이 투자신탁은 국내 주식에 주로 투자하는 증권(주식형) 모투자신탁을 시행령 제94조제2항제4호에서 규정하는 주된 투자대상자산으로 하여 벤치마크인 KOSPI200 지수 수익을 추구하는 것을 목적으로합니다. 또한, 이 투자신탁의 Class C-H 수익증권은 조세특례제한법 제87조 및 동법시행령 제81조에 의해 수익자의 주택자금마련 및 재산 형성을 목적으로 합니다.\",\"standardTime\":\"3:30\",\"buyStandardDaysBefore\":1,\"buyStandardDaysAfter\":2,\"redeemStandardDaysBefore\":1,\"redeemStandardDaysAfter\":2,\"redeemPaymentDaysBefore\":3,\"redeemPaymentDaysAfter\":3,\"riskGrade\":\"highRisk\"}}"
+        },
+        {
+          "status": 200,
+          "url": "https://stock.naver.com/api/fund/funds/KR5207698899/classes/returns",
+          "body": "{\"fund\":{\"fundCode\":\"KR5207698899\",\"fundName\":\"교보악사파워인덱스증권자투자신탁 2(주식)(운용)\",\"totalFee\":null,\"returnRate1m\":1.392891,\"returnRate3m\":-15.0923815,\"returnRate1y\":153.1142873,\"returnRate3y\":249.4690989},\"classes\":[{\"fundCode\":\"K55207BJ1791\",\"fundName\":\"교보악사파워인덱스증권자투자신탁 2[주식]ClassAe\",\"totalFee\":0.275,\"returnRate1m\":1.3707055,\"returnRate3m\":-15.1521495,\"returnRate1y\":152.4938972,\"returnRate3y\":246.7199808},{\"fundCode\":\"K55207BJ1809\",\"fundName\":\"교보악사파워인덱스증권자투자신탁 2[주식]ClassCe\",\"totalFee\":0.665,\"returnRate1m\":1.339487,\"returnRate3m\":-15.2364159,\"returnRate1y\":151.6203301,\"returnRate3y\":242.8808206},{\"fundCode\":\"K55207BT7598\",\"fundName\":\"교보악사파워인덱스증권자투자신탁 2[주식]ClassC-R\",\"totalFee\":0.865,\"returnRate1m\":1.3233494,\"returnRate3m\":-15.2798886,\"returnRate1y\":151.1915701,\"returnRate3y\":240.9312367},{\"fundCode\":\"K55207BT7606\",\"fundName\":\"교보악사파워인덱스증권자투자신탁 2[주식]ClassC-Re\",\"totalFee\":0.515,\"returnRate1m\":1.3514411,\"returnRate3m\":-15.2042,\"returnRate1y\":151.9538698,\"returnRate3y\":244.3312751},{\"fundCode\":\"KR5207698907\",\"fundName\":\"교보악사파워인덱스증권자투자신탁 2(주식)ClassA1\",\"totalFee\":0.385,\"returnRate1m\":1.3620599,\"returnRate3m\":-15.175929,\"returnRate1y\":152.2557038,\"returnRate3y\":245.6321362},{\"fundCode\":\"KR5207698915\",\"fundName\":\"교보악사파워인덱스증권자투자신탁 2(주식)ClassC1\",\"totalFee\":1.165,\"returnRate1m\":1.2993108,\"returnRate3m\":-15.3444471,\"returnRate1y\":150.5299755,\"returnRate3y\":238.0312606}]}"
+        },
+        {
+          "status": 200,
+          "url": "https://stock.naver.com/api/fund/funds/KR5207698899/prices/daily?date=2026-08-29&size=10",
+          "body": "{\"fundCode\":\"KR5207698899\",\"prices\":[{\"tradeDate\":\"2026-08-27\",\"basePrice\":\"4000.71\",\"changePrice\":39.59,\"changeRate\":0.9994648},{\"tradeDate\":\"2026-08-26\",\"basePrice\":\"3961.12\",\"changePrice\":27.16,\"changeRate\":0.6903985},{\"tradeDate\":\"2026-08-25\",\"basePrice\":\"3933.96\",\"changePrice\":-164.24,\"changeRate\":-4.0076131},{\"tradeDate\":\"2026-08-24\",\"basePrice\":\"4098.20\",\"changePrice\":60.95,\"changeRate\":1.509691},{\"tradeDate\":\"2026-08-21\",\"basePrice\":\"4037.25\",\"changePrice\":256.69,\"changeRate\":6.7897349},{\"tradeDate\":\"2026-08-20\",\"basePrice\":\"3780.56\",\"changePrice\":-258.95,\"changeRate\":-6.410431},{\"tradeDate\":\"2026-08-19\",\"basePrice\":\"4039.51\",\"changePrice\":-60.54,\"changeRate\":-1.4765674},{\"tradeDate\":\"2026-08-18\",\"basePrice\":\"4100.05\",\"changePrice\":101.46,\"changeRate\":2.5373944},{\"tradeDate\":\"2026-08-14\",\"basePrice\":\"3998.59\",\"changePrice\":156.19,\"changeRate\":4.0649073},{\"tradeDate\":\"2026-08-13\",\"basePrice\":\"3842.40\",\"changePrice\":159.59,\"changeRate\":4.3333759}]}"
+        },
+        {
+          "status": 200,
+          "url": "https://stock.naver.com/api/fund/funds/KR5207698899/fund-performance",
+          "body": "{\"performance\":{\"tradeDate\":\"2026-08-27\",\"returnRate1m\":1.392891,\"returnRate3m\":-15.0923815,\"returnRate1y\":153.1142873,\"standardDeviation\":41.778951389,\"trackingError\":0.686723407,\"sharpe\":2.225175208},\"periodReturns\":{\"baseDate\":\"2026-08-27\",\"returns\":[{\"term\":\"1d\",\"fundReturn\":0.9994648,\"benchmarkReturn\":null,\"peerCompanyReturn\":0.9972167},{\"term\":\"1w\",\"fundReturn\":5.8232114,\"benchmarkReturn\":5.7959359,\"peerCompanyReturn\":5.8164088},{\"term\":\"1m\",\"fundReturn\":1.392891,\"benchmarkReturn\":1.5669114,\"peerCompanyReturn\":1.311028},{\"term\":\"3m\",\"fundReturn\":-15.0923815,\"benchmarkReturn\":-14.8972495,\"peerCompanyReturn\":-15.2386686},{\"term\":\"6m\",\"fundReturn\":14.3158461,\"benchmarkReturn\":14.1079998,\"peerCompanyReturn\":14.0196759},{\"term\":\"9m\",\"fundReturn\":93.8202175,\"benchmarkReturn\":93.4524209,\"peerCompanyReturn\":93.3129889},{\"term\":\"ytd\",\"fundReturn\":78.2398697,\"benchmarkReturn\":78.1518394,\"peerCompanyReturn\":77.8524003},{\"term\":\"1y\",\"fundReturn\":153.1142873,\"benchmarkReturn\":152.61801,\"peerCompanyReturn\":152.4450268},{\"term\":\"2y\",\"fundReturn\":205.6423579,\"benchmarkReturn\":203.1922837,\"peerCompanyReturn\":203.6817005},{\"term\":\"3y\",\"fundReturn\":249.4690989,\"benchmarkReturn\":243.6819675,\"peerCompanyReturn\":245.603541},{\"term\":\"5y\",\"fundReturn\":195.1240018,\"benchmarkReturn\":191.3029863,\"peerCompanyReturn\":189.1970107},{\"term\":\"dx\",\"fundReturn\":7.276843783,\"benchmarkReturn\":null,\"peerCompanyReturn\":8.918537881}]},\"metricsTerms\":{\"terms\":[\"1m\",\"3m\",\"6m\",\"1y\",\"3y\",\"5y\"]}}"
+        },
+        {
+          "status": 200,
+          "url": "https://stock.naver.com/api/fund/funds/KR5207698899/metrics/detail?term=1y",
+          "body": "{\"fundCode\":\"KR5207698899\",\"termWeeks\":52,\"fundMetric\":{\"standardDeviation\":41.778951389,\"trackingError\":0.686723407,\"sharpRatio\":2.225175208,\"informationRatio\":0.415846727,\"jensenAlpha\":0.057734043,\"beta\":1.002458328},\"peerMetric\":{\"standardDeviation\":41.840270552,\"trackingError\":0.707949023,\"sharpRatio\":2.215737382,\"informationRatio\":0.038330953,\"jensenAlpha\":-0.336762599,\"beta\":1.003926406}}"
+        }
+      ]
+    },
+    {
+      "code": "K55301BM7814",
+      "tab": "allocation",
+      "url": "https://stock.naver.com/domestic/fund/K55301BM7814/allocation",
+      "seen": [
+        {
+          "status": 200,
+          "url": "https://stock.naver.com/api/fund/funds/K55301BM7814/left-panel",
+          "body": "{\"detail\":{\"fundCode\":\"K55301BM7814\",\"fundName\":\"미래에셋평생소득TIF혼합자산자투자신탁\",\"basePrice\":\"1369.32\",\"changePrice\":3.8,\"priceBandType\":\"RISING\",\"returnIndex\":0.2782823,\"returnRate3m\":-2.6074342,\"tradeDate\":\"2026-08-27\",\"riskGrade\":\"moderateRisk\",\"parentPeerGroupName\":\"해외혼합형\",\"derivedAum\":\"397275109227\",\"derivedNav\":\"543995737615\",\"inceptionDate\":\"2017-03-13\",\"companyCode\":\"301\",\"companyName\":\"미래에셋자산운용\",\"benchmarkName\":\"MSCI ACWI(KRW unhedged) 30% + KIS채권종합 70%\",\"totalFee\":null,\"managementFee\":null,\"salesFee\":null,\"custodyFee\":null,\"backOfficeFee\":null,\"preSalesFee\":null,\"postSalesFee\":null},\"returns\":{\"fund\":{\"fundCode\":\"K55301BM7814\",\"fundName\":\"미래에셋평생소득TIF혼합자산자투자신탁\",\"totalFee\":null,\"returnRate1m\":0.1704474,\"returnRate3m\":-2.6074342,\"returnRate1y\":13.1212435,\"returnRate3y\":33.8845743},\"classes\":[{\"fundCode\":\"K55301BM7921\",\"fundName\":\"미래에셋평생소득TIF혼합자산자투자신탁종류F\",\"totalFee\":0.34,\"returnRate1m\":0.1411488,\"returnRate3m\":-2.693748,\"returnRate1y\":12.7480445,\"returnRate3y\":null},{\"fundCode\":\"K55301BM7988\",\"fundName\":\"미래에셋평생소득TIF혼합자산자투자신탁종류C-P\",\"totalFee\":0.82,\"returnRate1m\":0.1032553,\"returnRate3m\":-2.8419276,\"returnRate1y\":12.3616919,\"returnRate3y\":31.0159204},{\"fundCode\":\"K55301BM8002\",\"fundName\":\"미래에셋평생소득TIF혼합자산자투자신탁종류C-Pe\",\"totalFee\":0.58,\"returnRate1m\":0.121638,\"returnRate3m\":-2.7654268,\"returnRate1y\":12.5461292,\"returnRate3y\":31.763177},{\"fundCode\":\"K55301BM8010\",\"fundName\":\"미래에셋평생소득TIF혼합자산자투자신탁종류C-P2\",\"totalFee\":0.74,\"returnRate1m\":0.1085244,\"returnRate3m\":-2.8142992,\"returnRate1y\":12.4074089,\"returnRate3y\":31.2265433},{\"fundCode\":\"K55301BU5453\",\"fundName\":\"미래에셋평생소득TIF혼합자산자투자신탁종류C-P2e\",\"totalFee\":0.54,\"returnRate1m\":0.1250125,\"returnRate3m\":-2.7512271,\"returnRate1y\":12.5742915,\"returnRate3y\":31.8866442},{\"fundCode\":\"K55301D12760\",\"fundName\":\"미래에셋평생소득TIF혼합자산자투자신탁 종류C-P2K\",\"totalFee\":0.61,\"returnRate1m\":0.1188977,\"returnRate3m\":-2.7628806,\"returnRate1y\":12.4723144,\"returnRate3y\":31.5667787},{\"fundCode\":\"K55301DW1730\",\"fundName\":\"미래에셋평생소득TIF혼합자산자투자신탁종류O\",\"totalFee\":0.46,\"returnRate1m\":0.1308882,\"returnRate3m\":-2.7246473,\"returnRate1y\":12.6210635,\"returnRate3y\":32.0887079}]},\"terms\":{\"infoObject\":\"이 투자신탁은 모투자신탁을 법 시행령 제94조 제2항 제4호에서 규정하는 주된 투자대상자산으로 하여 수익을 추구하는 것을 목적으로 합니다.\",\"standardTime\":\"5:00\",\"buyStandardDaysBefore\":2,\"buyStandardDaysAfter\":3,\"redeemStandardDaysBefore\":4,\"redeemStandardDaysAfter\":5,\"redeemPaymentDaysBefore\":7,\"redeemPaymentDaysAfter\":8,\"riskGrade\":\"moderateRisk\"}}"
+        },
+        {
+          "status": 200,
+          "url": "https://stock.naver.com/api/fund/funds/K55301BM7814/fund-allocation",
+          "body": "{\"availability\":{\"status\":\"available\",\"assets\":true,\"portfolio\":true,\"sectors\":true},\"allocationsPortfolio\":{\"result\":[{\"itemCode\":\"KR7000660001\",\"itemName\":\"SK하이닉스\",\"weight\":0.026450779},{\"itemCode\":\"KR7005930003\",\"itemName\":\"삼성전자\",\"weight\":0.023515786},{\"itemCode\":\"KR7088980008\",\"itemName\":\"맥쿼리인프라\",\"weight\":0.010234828},{\"itemCode\":\"KR7005931001\",\"itemName\":\"삼성전자우\",\"weight\":0.005324483},{\"itemCode\":\"US67066G1040\",\"itemName\":\"NVIDIA Corp\",\"weight\":0.005190685},{\"itemCode\":\"KR7009150004\",\"itemName\":\"삼성전기\",\"weight\":0.005123979},{\"itemCode\":\"US8740391003\",\"itemName\":\"Taiwan Semiconductor Manufacturing Co Ltd\",\"weight\":0.004475073},{\"itemCode\":\"KR7395400005\",\"itemName\":\"SK리츠\",\"weight\":0.003907471},{\"itemCode\":\"US0378331005\",\"itemName\":\"Apple Inc\",\"weight\":0.003854459},{\"itemCode\":\"US95040Q1040\",\"itemName\":\"Welltower Inc\",\"weight\":0.003827996},{\"itemCode\":\"US02079K3059\",\"itemName\":\"Alphabet Inc\",\"weight\":0.003504388},{\"itemCode\":\"KR7094800000\",\"itemName\":\"맵스리얼티\",\"weight\":0.003347868},{\"itemCode\":\"KR7365550003\",\"itemName\":\"ESR켄달스퀘어리츠\",\"weight\":0.003027782},{\"itemCode\":\"US5949181045\",\"itemName\":\"Microsoft Corp\",\"weight\":0.002570952},{\"itemCode\":\"US46625H1005\",\"itemName\":\"JPMorgan Chase & Co\",\"weight\":0.002343602},{\"itemCode\":\"US11135F1012\",\"itemName\":\"Broadcom Inc\",\"weight\":0.002329345},{\"itemCode\":\"US88160R1014\",\"itemName\":\"Tesla Inc\",\"weight\":0.002233812},{\"itemCode\":\"US0231351067\",\"itemName\":\"Amazon.com Inc\",\"weight\":0.002194905},{\"itemCode\":\"US5324571083\",\"itemName\":\"Eli Lilly & Co\",\"weight\":0.002193343},{\"itemCode\":\"US02079K1079\",\"itemName\":\"Alphabet Inc\",\"weight\":0.001812401},{\"itemCode\":\"US0079031078\",\"itemName\":\"Advanced Micro Devices Inc\",\"weight\":0.001515121},{\"itemCode\":\"US5951121038\",\"itemName\":\"Micron Technology Inc\",\"weight\":0.00150962},{\"itemCode\":\"KR7402340004\",\"itemName\":\"SK스퀘어\",\"weight\":0.00138532},{\"itemCode\":\"KR5744017777\",\"itemName\":\"맵스미국11호\",\"weight\":0.001368799},{\"itemCode\":\"KR7396690000\",\"itemName\":\"미래에셋글로벌리츠\",\"weight\":0.001349016},{\"itemCode\":\"KR7293940003\",\"itemName\":\"신한알파리츠\",\"weight\":0.001280428},{\"itemCode\":\"US4824801009\",\"itemName\":\"KLA Corp\",\"weight\":0.001255277},{\"itemCode\":\"NL0010273215\",\"itemName\":\"ASML Holding NV\",\"weight\":0.00121817},{\"itemCode\":\"US1491231015\",\"itemName\":\"Caterpillar Inc\",\"weight\":0.001189862},{\"itemCode\":\"US30303M1027\",\"itemName\":\"Meta Platforms Inc\",\"weight\":0.001083464},{\"itemCode\":\"US92343V1044\",\"itemName\":\"Verizon Communications Inc\",\"weight\":0.000973637},{\"itemCode\":\"US36828A1016\",\"itemName\":\"GE Vernova Inc\",\"weight\":0.000966814},{\"itemCode\":\"US92826C8394\",\"itemName\":\"Visa Inc\",\"weight\":0.000929048},{\"itemCode\":\"US29444U7000\",\"itemName\":\"Equinix Inc\",\"weight\":0.000909364},{\"itemCode\":\"IE000S9YS762\",\"itemName\":\"Linde PLC\",\"weight\":0.000881227},{\"itemCode\":\"US58933Y1055\",\"itemName\":\"Merck & Co Inc\",\"weight\":0.000878648},{\"itemCode\":\"US00215W1009\",\"itemName\":\"ASE Technology Holding Co Ltd\",\"weight\":0.000858198},{\"itemCode\":\"US4781601046\",\"itemName\":\"Johnson & Johnson\",\"weight\":0.000837229},{\"itemCo"
+        }
+      ]
+    },
+    {
+      "code": "K55301BM7814",
+      "tab": "performance",
+      "url": "https://stock.naver.com/domestic/fund/K55301BM7814/performance",
+      "seen": [
+        {
+          "status": 200,
+          "url": "https://stock.naver.com/api/fund/funds/K55301BM7814/left-panel",
+          "body": "{\"detail\":{\"fundCode\":\"K55301BM7814\",\"fundName\":\"미래에셋평생소득TIF혼합자산자투자신탁\",\"basePrice\":\"1369.32\",\"changePrice\":3.8,\"priceBandType\":\"RISING\",\"returnIndex\":0.2782823,\"returnRate3m\":-2.6074342,\"tradeDate\":\"2026-08-27\",\"riskGrade\":\"moderateRisk\",\"parentPeerGroupName\":\"해외혼합형\",\"derivedAum\":\"397275109227\",\"derivedNav\":\"543995737615\",\"inceptionDate\":\"2017-03-13\",\"companyCode\":\"301\",\"companyName\":\"미래에셋자산운용\",\"benchmarkName\":\"MSCI ACWI(KRW unhedged) 30% + KIS채권종합 70%\",\"totalFee\":null,\"managementFee\":null,\"salesFee\":null,\"custodyFee\":null,\"backOfficeFee\":null,\"preSalesFee\":null,\"postSalesFee\":null},\"returns\":{\"fund\":{\"fundCode\":\"K55301BM7814\",\"fundName\":\"미래에셋평생소득TIF혼합자산자투자신탁\",\"totalFee\":null,\"returnRate1m\":0.1704474,\"returnRate3m\":-2.6074342,\"returnRate1y\":13.1212435,\"returnRate3y\":33.8845743},\"classes\":[{\"fundCode\":\"K55301BM7921\",\"fundName\":\"미래에셋평생소득TIF혼합자산자투자신탁종류F\",\"totalFee\":0.34,\"returnRate1m\":0.1411488,\"returnRate3m\":-2.693748,\"returnRate1y\":12.7480445,\"returnRate3y\":null},{\"fundCode\":\"K55301BM7988\",\"fundName\":\"미래에셋평생소득TIF혼합자산자투자신탁종류C-P\",\"totalFee\":0.82,\"returnRate1m\":0.1032553,\"returnRate3m\":-2.8419276,\"returnRate1y\":12.3616919,\"returnRate3y\":31.0159204},{\"fundCode\":\"K55301BM8002\",\"fundName\":\"미래에셋평생소득TIF혼합자산자투자신탁종류C-Pe\",\"totalFee\":0.58,\"returnRate1m\":0.121638,\"returnRate3m\":-2.7654268,\"returnRate1y\":12.5461292,\"returnRate3y\":31.763177},{\"fundCode\":\"K55301BM8010\",\"fundName\":\"미래에셋평생소득TIF혼합자산자투자신탁종류C-P2\",\"totalFee\":0.74,\"returnRate1m\":0.1085244,\"returnRate3m\":-2.8142992,\"returnRate1y\":12.4074089,\"returnRate3y\":31.2265433},{\"fundCode\":\"K55301BU5453\",\"fundName\":\"미래에셋평생소득TIF혼합자산자투자신탁종류C-P2e\",\"totalFee\":0.54,\"returnRate1m\":0.1250125,\"returnRate3m\":-2.7512271,\"returnRate1y\":12.5742915,\"returnRate3y\":31.8866442},{\"fundCode\":\"K55301D12760\",\"fundName\":\"미래에셋평생소득TIF혼합자산자투자신탁 종류C-P2K\",\"totalFee\":0.61,\"returnRate1m\":0.1188977,\"returnRate3m\":-2.7628806,\"returnRate1y\":12.4723144,\"returnRate3y\":31.5667787},{\"fundCode\":\"K55301DW1730\",\"fundName\":\"미래에셋평생소득TIF혼합자산자투자신탁종류O\",\"totalFee\":0.46,\"returnRate1m\":0.1308882,\"returnRate3m\":-2.7246473,\"returnRate1y\":12.6210635,\"returnRate3y\":32.0887079}]},\"terms\":{\"infoObject\":\"이 투자신탁은 모투자신탁을 법 시행령 제94조 제2항 제4호에서 규정하는 주된 투자대상자산으로 하여 수익을 추구하는 것을 목적으로 합니다.\",\"standardTime\":\"5:00\",\"buyStandardDaysBefore\":2,\"buyStandardDaysAfter\":3,\"redeemStandardDaysBefore\":4,\"redeemStandardDaysAfter\":5,\"redeemPaymentDaysBefore\":7,\"redeemPaymentDaysAfter\":8,\"riskGrade\":\"moderateRisk\"}}"
+        },
+        {
+          "status": 200,
+          "url": "https://stock.naver.com/api/fund/funds/K55301BM7814/classes/returns",
+          "body": "{\"fund\":{\"fundCode\":\"K55301BM7814\",\"fundName\":\"미래에셋평생소득TIF혼합자산자투자신탁\",\"totalFee\":null,\"returnRate1m\":0.1704474,\"returnRate3m\":-2.6074342,\"returnRate1y\":13.1212435,\"returnRate3y\":33.8845743},\"classes\":[{\"fundCode\":\"K55301BM7921\",\"fundName\":\"미래에셋평생소득TIF혼합자산자투자신탁종류F\",\"totalFee\":0.34,\"returnRate1m\":0.1411488,\"returnRate3m\":-2.693748,\"returnRate1y\":12.7480445,\"returnRate3y\":null},{\"fundCode\":\"K55301BM7988\",\"fundName\":\"미래에셋평생소득TIF혼합자산자투자신탁종류C-P\",\"totalFee\":0.82,\"returnRate1m\":0.1032553,\"returnRate3m\":-2.8419276,\"returnRate1y\":12.3616919,\"returnRate3y\":31.0159204},{\"fundCode\":\"K55301BM8002\",\"fundName\":\"미래에셋평생소득TIF혼합자산자투자신탁종류C-Pe\",\"totalFee\":0.58,\"returnRate1m\":0.121638,\"returnRate3m\":-2.7654268,\"returnRate1y\":12.5461292,\"returnRate3y\":31.763177},{\"fundCode\":\"K55301BM8010\",\"fundName\":\"미래에셋평생소득TIF혼합자산자투자신탁종류C-P2\",\"totalFee\":0.74,\"returnRate1m\":0.1085244,\"returnRate3m\":-2.8142992,\"returnRate1y\":12.4074089,\"returnRate3y\":31.2265433},{\"fundCode\":\"K55301BU5453\",\"fundName\":\"미래에셋평생소득TIF혼합자산자투자신탁종류C-P2e\",\"totalFee\":0.54,\"returnRate1m\":0.1250125,\"returnRate3m\":-2.7512271,\"returnRate1y\":12.5742915,\"returnRate3y\":31.8866442},{\"fundCode\":\"K55301D12760\",\"fundName\":\"미래에셋평생소득TIF혼합자산자투자신탁 종류C-P2K\",\"totalFee\":0.61,\"returnRate1m\":0.1188977,\"returnRate3m\":-2.7628806,\"returnRate1y\":12.4723144,\"returnRate3y\":31.5667787},{\"fundCode\":\"K55301DW1730\",\"fundName\":\"미래에셋평생소득TIF혼합자산자투자신탁종류O\",\"totalFee\":0.46,\"returnRate1m\":0.1308882,\"returnRate3m\":-2.7246473,\"returnRate1y\":12.6210635,\"returnRate3y\":32.0887079}]}"
+        },
+        {
+          "status": 200,
+          "url": "https://stock.naver.com/api/fund/funds/K55301BM7814/prices/daily?date=2026-08-29&size=10",
+          "body": "{\"fundCode\":\"K55301BM7814\",\"prices\":[{\"tradeDate\":\"2026-08-27\",\"basePrice\":\"1369.32\",\"changePrice\":3.8,\"changeRate\":0.2782823},{\"tradeDate\":\"2026-08-26\",\"basePrice\":\"1365.52\",\"changePrice\":0.5,\"changeRate\":0.0366295},{\"tradeDate\":\"2026-08-25\",\"basePrice\":\"1365.02\",\"changePrice\":-3.99,\"changeRate\":-0.2914515},{\"tradeDate\":\"2026-08-24\",\"basePrice\":\"1369.01\",\"changePrice\":-1.1,\"changeRate\":-0.0802855},{\"tradeDate\":\"2026-08-21\",\"basePrice\":\"1370.11\",\"changePrice\":8.32,\"changeRate\":0.6109606},{\"tradeDate\":\"2026-08-20\",\"basePrice\":\"1361.79\",\"changePrice\":-16.84,\"changeRate\":-1.2215025},{\"tradeDate\":\"2026-08-19\",\"basePrice\":\"1378.63\",\"changePrice\":-5.5,\"changeRate\":-0.3973615},{\"tradeDate\":\"2026-08-18\",\"basePrice\":\"1384.13\",\"changePrice\":7.92,\"changeRate\":0.5754936},{\"tradeDate\":\"2026-08-14\",\"basePrice\":\"1376.21\",\"changePrice\":9.76,\"changeRate\":0.7142596},{\"tradeDate\":\"2026-08-13\",\"basePrice\":\"1366.45\",\"changePrice\":4.74,\"changeRate\":0.3480917}]}"
+        },
+        {
+          "status": 200,
+          "url": "https://stock.naver.com/api/fund/funds/K55301BM7814/fund-performance",
+          "body": "{\"performance\":{\"tradeDate\":\"2026-08-27\",\"returnRate1m\":0.1704474,\"returnRate3m\":-2.6074342,\"returnRate1y\":13.1212435,\"standardDeviation\":6.902789914,\"trackingError\":6.158570909,\"sharpe\":1.48902012},\"periodReturns\":{\"baseDate\":\"2026-08-27\",\"returns\":[{\"term\":\"1d\",\"fundReturn\":0.2782823,\"benchmarkReturn\":null,\"peerCompanyReturn\":0.3167539},{\"term\":\"1w\",\"fundReturn\":0.5529488,\"benchmarkReturn\":-0.1974831,\"peerCompanyReturn\":-0.0434137},{\"term\":\"1m\",\"fundReturn\":0.1704474,\"benchmarkReturn\":0.0037632,\"peerCompanyReturn\":-0.3192386},{\"term\":\"3m\",\"fundReturn\":-2.6074342,\"benchmarkReturn\":-2.3263382,\"peerCompanyReturn\":-3.762564},{\"term\":\"6m\",\"fundReturn\":2.2304433,\"benchmarkReturn\":-0.4865531,\"peerCompanyReturn\":2.1191815},{\"term\":\"9m\",\"fundReturn\":8.5754417,\"benchmarkReturn\":0.1425589,\"peerCompanyReturn\":4.8588216},{\"term\":\"ytd\",\"fundReturn\":7.4858108,\"benchmarkReturn\":0.6067526,\"peerCompanyReturn\":4.5214522},{\"term\":\"1y\",\"fundReturn\":13.1212435,\"benchmarkReturn\":2.4129318,\"peerCompanyReturn\":8.7417317},{\"term\":\"2y\",\"fundReturn\":20.934024,\"benchmarkReturn\":11.9784566,\"peerCompanyReturn\":17.3543432},{\"term\":\"3y\",\"fundReturn\":33.8845743,\"benchmarkReturn\":28.3513106,\"peerCompanyReturn\":30.1436038},{\"term\":\"5y\",\"fundReturn\":26.3893585,\"benchmarkReturn\":28.4180149,\"peerCompanyReturn\":19.0920384},{\"term\":\"dx\",\"fundReturn\":1.681691637,\"benchmarkReturn\":null,\"peerCompanyReturn\":2.562347188}]},\"metricsTerms\":{\"terms\":[\"1m\",\"3m\",\"6m\",\"1y\",\"3y\",\"5y\"]}}"
+        },
+        {
+          "status": 200,
+          "url": "https://stock.naver.com/api/fund/funds/K55301BM7814/metrics/detail?term=1y",
+          "body": "{\"fundCode\":\"K55301BM7814\",\"termWeeks\":52,\"fundMetric\":{\"standardDeviation\":6.902789914,\"trackingError\":6.158570909,\"sharpRatio\":1.48902012,\"informationRatio\":2.055693936,\"jensenAlpha\":11.857748482,\"beta\":0.762790439},\"peerMetric\":{\"standardDeviation\":7.171253081,\"trackingError\":6.523764879,\"sharpRatio\":0.903443184,\"informationRatio\":1.358197864,\"jensenAlpha\":8.125274916,\"beta\":0.744340639}}"
+        }
+      ]
+    }
+  ],
+  "guesses": [
+    {
+      "ok": true,
+      "value": {
+        "url": "https://stock.naver.com/api/fund/funds/KR5207698899/fund-allocation",
+        "ok": true,
+        "keys": [
+          "availability",
+          "allocationsPortfolio",
+          "allocationsAssets",
+          "allocationsSectors"
+        ],
+        "sample": "{\"availability\":{\"status\":\"available\",\"assets\":true,\"portfolio\":true,\"sectors\":true},\"allocationsPortfolio\":{\"result\":[{\"itemCode\":\"KR7005930003\",\"itemName\":\"삼성전자\",\"weight\":0.290975817},{\"itemCode\":\"KR7000660001\",\"itemName\":\"SK하이닉스\",\"weight\":0.281715894},{\"itemCode\":\"KR7402340004\",\"itemName\":\"SK스퀘어\",\"weight\":0.030209806},{\"itemCode\":\"KR7009150004\",\"itemName\":\"삼성전기\",\"weight\":0.025290458},{\"itemCode\":\"KR7005380001\",\"itemName\":\"현대차\",\"weight\":0.010244544},{\"itemCode\":\"KR7105560007\",\"itemName\":\"KB금융\",\"weight\":0.009657492},{\"itemCode\":\"KR7028260008\",\"itemName\":\"삼성물산\",\"weight\":0.008485353},{\"itemCode\":\"KR7034020008\",\"itemName\":\"두산에너빌리티\",\"weight\":0.007684433},{\"itemCode\":\"KR7055550008\",\"itemName\":\"신한지주\",\"weight\":0.00738268},{\"itemCode\":\"KR7032830002\",\"itemName\":\"삼성생명\",\"weight\":0.006369623},{\"itemCode\":\"KR7005931001\",\"itemName\":\"삼성전자우\",\"weight\":0.006355041},{\"itemCode\":\"KR7012330007\",\"itemName\":\"현대모비스\",\"weight\":0.006320157},{\"itemCode\":\"KR7000270009\",\"itemName\":\"기아\",\"weight\":0.006251052},{\"itemCode\":\"KR7012450003\",\"itemName\":\"한화에어로스페이스\",\"weight\":0.006130098},{\"itemCode\":\"KR7034730002\",\"itemName\":\"SK\",\"weight\":0.00604289},{\"itemCode\":\"KR7086790003\",\"itemName\":\"하나금융지주\",\"weight\":0.005304437},{"
+      }
+    },
+    {
+      "ok": true,
+      "value": {
+        "url": "https://stock.naver.com/api/fund/funds/KR5207698899/classes/returns",
+        "ok": true,
+        "keys": [
+          "fund",
+          "classes"
+        ],
+        "sample": "{\"fund\":{\"fundCode\":\"KR5207698899\",\"fundName\":\"교보악사파워인덱스증권자투자신탁 2(주식)(운용)\",\"totalFee\":null,\"returnRate1m\":1.392891,\"returnRate3m\":-15.0923815,\"returnRate1y\":153.1142873,\"returnRate3y\":249.4690989},\"classes\":[{\"fundCode\":\"K55207BJ1791\",\"fundName\":\"교보악사파워인덱스증권자투자신탁 2[주식]ClassAe\",\"totalFee\":0.275,\"returnRate1m\":1.3707055,\"returnRate3m\":-15.1521495,\"returnRate1y\":152.4938972,\"returnRate3y\":246.7199808},{\"fundCode\":\"K55207BJ1809\",\"fundName\":\"교보악사파워인덱스증권자투자신탁 2[주식]ClassCe\",\"totalFee\":0.665,\"returnRate1m\":1.339487,\"returnRate3m\":-15.2364159,\"returnRate1y\":151.6203301,\"returnRate3y\":242.8808206},{\"fundCode\":\"K55207BT7598\",\"fundName\":\"교보악사파워인덱스증권자투자신탁 2[주식]ClassC-R\",\"totalFee\":0.865,\"returnRate1m\":1.3233494,\"returnRate3m\":-15.2798886,\"returnRate1y\":151.1915701,\"returnRate3y\":240.9312367},{\"fundCode\":\"K55207BT7606\",\"fundName\":\"교보악사파워인덱스증권자투자신탁 2[주식]ClassC-Re\",\"totalFee\":0.515,\"returnRate1m\":1.3514411,\"returnRate3m\":-15.2042,\"returnRate1y\":151.9538698,\"returnRate3y\":244.3312751},{\"fundCode\":\"KR5207698907\",\"fundName\":\"교보악사파워인덱스증권자투자신탁 2(주식)ClassA1\",\"totalFee\":0.385,\"returnRate1m\":1.3620599,\"returnRate3m\":-15.175929,\"returnRate1y\":152.2557038,\"returnRate3y\":245.6321362},{\"fundCode\":\"KR520769891"
+      }
+    },
+    {
+      "ok": true,
+      "value": {
+        "url": "https://stock.naver.com/api/fund/funds/KR5207698899/fund-performance",
+        "ok": true,
+        "keys": [
+          "performance",
+          "periodReturns",
+          "metricsTerms"
+        ],
+        "sample": "{\"performance\":{\"tradeDate\":\"2026-08-27\",\"returnRate1m\":1.392891,\"returnRate3m\":-15.0923815,\"returnRate1y\":153.1142873,\"standardDeviation\":41.778951389,\"trackingError\":0.686723407,\"sharpe\":2.225175208},\"periodReturns\":{\"baseDate\":\"2026-08-27\",\"returns\":[{\"term\":\"1d\",\"fundReturn\":0.9994648,\"benchmarkReturn\":null,\"peerCompanyReturn\":0.9972167},{\"term\":\"1w\",\"fundReturn\":5.8232114,\"benchmarkReturn\":5.7959359,\"peerCompanyReturn\":5.8164088},{\"term\":\"1m\",\"fundReturn\":1.392891,\"benchmarkReturn\":1.5669114,\"peerCompanyReturn\":1.311028},{\"term\":\"3m\",\"fundReturn\":-15.0923815,\"benchmarkReturn\":-14.8972495,\"peerCompanyReturn\":-15.2386686},{\"term\":\"6m\",\"fundReturn\":14.3158461,\"benchmarkReturn\":14.1079998,\"peerCompanyReturn\":14.0196759},{\"term\":\"9m\",\"fundReturn\":93.8202175,\"benchmarkReturn\":93.4524209,\"peerCompanyReturn\":93.3129889},{\"term\":\"ytd\",\"fundReturn\":78.2398697,\"benchmarkReturn\":78.1518394,\"peerCompanyReturn\":77.8524003},{\"term\":\"1y\",\"fundReturn\":153.1142873,\"benchmarkReturn\":152.61801,\"peerCompanyReturn\":152.4450268},{\"term\":\"2y\",\"fundReturn\":205.6423579,\"benchmarkReturn\":203.1922837,\"peerCompanyReturn\":203.6817005},{\"term\":\"3y\",\"fundReturn\":249.4690989,\"benchmarkReturn\":243.6819675,\"pee"
+      }
+    },
+    {
+      "ok": true,
+      "value": {
+        "url": "https://stock.naver.com/api/fund/funds/KR5207698899/metrics/detail?term=1y",
+        "ok": true,
+        "keys": [
+          "fundCode",
+          "termWeeks",
+          "fundMetric",
+          "peerMetric"
+        ],
+        "sample": "{\"fundCode\":\"KR5207698899\",\"termWeeks\":52,\"fundMetric\":{\"standardDeviation\":41.778951389,\"trackingError\":0.686723407,\"sharpRatio\":2.225175208,\"informationRatio\":0.415846727,\"jensenAlpha\":0.057734043,\"beta\":1.002458328},\"peerMetric\":{\"standardDeviation\":41.840270552,\"trackingError\":0.707949023,\"sharpRatio\":2.215737382,\"informationRatio\":0.038330953,\"jensenAlpha\":-0.336762599,\"beta\":1.003926406}}"
+      }
+    },
+    {
+      "ok": true,
+      "value": {
+        "url": "https://stock.naver.com/api/fund/funds/K55301BM7814/fund-allocation",
+        "ok": true,
+        "keys": [
+          "availability",
+          "allocationsPortfolio",
+          "allocationsAssets",
+          "allocationsSectors"
+        ],
+        "sample": "{\"availability\":{\"status\":\"available\",\"assets\":true,\"portfolio\":true,\"sectors\":true},\"allocationsPortfolio\":{\"result\":[{\"itemCode\":\"KR7000660001\",\"itemName\":\"SK하이닉스\",\"weight\":0.026450779},{\"itemCode\":\"KR7005930003\",\"itemName\":\"삼성전자\",\"weight\":0.023515786},{\"itemCode\":\"KR7088980008\",\"itemName\":\"맥쿼리인프라\",\"weight\":0.010234828},{\"itemCode\":\"KR7005931001\",\"itemName\":\"삼성전자우\",\"weight\":0.005324483},{\"itemCode\":\"US67066G1040\",\"itemName\":\"NVIDIA Corp\",\"weight\":0.005190685},{\"itemCode\":\"KR7009150004\",\"itemName\":\"삼성전기\",\"weight\":0.005123979},{\"itemCode\":\"US8740391003\",\"itemName\":\"Taiwan Semiconductor Manufacturing Co Ltd\",\"weight\":0.004475073},{\"itemCode\":\"KR7395400005\",\"itemName\":\"SK리츠\",\"weight\":0.003907471},{\"itemCode\":\"US0378331005\",\"itemName\":\"Apple Inc\",\"weight\":0.003854459},{\"itemCode\":\"US95040Q1040\",\"itemName\":\"Welltower Inc\",\"weight\":0.003827996},{\"itemCode\":\"US02079K3059\",\"itemName\":\"Alphabet Inc\",\"weight\":0.003504388},{\"itemCode\":\"KR7094800000\",\"itemName\":\"맵스리얼티\",\"weight\":0.003347868},{\"itemCode\":\"KR7365550003\",\"itemName\":\"ESR켄달스퀘어리츠\",\"weight\":0.003027782},{\"itemCode\":\"US5949181045\",\"itemName\":\"Microsoft Corp\",\"weight\":0.002570952},{\"itemCode\":\"US46625H1005\",\"itemName\":\"JPMorgan Chase &"
+      }
+    },
+    {
+      "ok": true,
+      "value": {
+        "url": "https://stock.naver.com/api/fund/funds/K55301BM7814/classes/returns",
+        "ok": true,
+        "keys": [
+          "fund",
+          "classes"
+        ],
+        "sample": "{\"fund\":{\"fundCode\":\"K55301BM7814\",\"fundName\":\"미래에셋평생소득TIF혼합자산자투자신탁\",\"totalFee\":null,\"returnRate1m\":0.1704474,\"returnRate3m\":-2.6074342,\"returnRate1y\":13.1212435,\"returnRate3y\":33.8845743},\"classes\":[{\"fundCode\":\"K55301BM7921\",\"fundName\":\"미래에셋평생소득TIF혼합자산자투자신탁종류F\",\"totalFee\":0.34,\"returnRate1m\":0.1411488,\"returnRate3m\":-2.693748,\"returnRate1y\":12.7480445,\"returnRate3y\":null},{\"fundCode\":\"K55301BM7988\",\"fundName\":\"미래에셋평생소득TIF혼합자산자투자신탁종류C-P\",\"totalFee\":0.82,\"returnRate1m\":0.1032553,\"returnRate3m\":-2.8419276,\"returnRate1y\":12.3616919,\"returnRate3y\":31.0159204},{\"fundCode\":\"K55301BM8002\",\"fundName\":\"미래에셋평생소득TIF혼합자산자투자신탁종류C-Pe\",\"totalFee\":0.58,\"returnRate1m\":0.121638,\"returnRate3m\":-2.7654268,\"returnRate1y\":12.5461292,\"returnRate3y\":31.763177},{\"fundCode\":\"K55301BM8010\",\"fundName\":\"미래에셋평생소득TIF혼합자산자투자신탁종류C-P2\",\"totalFee\":0.74,\"returnRate1m\":0.1085244,\"returnRate3m\":-2.8142992,\"returnRate1y\":12.4074089,\"returnRate3y\":31.2265433},{\"fundCode\":\"K55301BU5453\",\"fundName\":\"미래에셋평생소득TIF혼합자산자투자신탁종류C-P2e\",\"totalFee\":0.54,\"returnRate1m\":0.1250125,\"returnRate3m\":-2.7512271,\"returnRate1y\":12.5742915,\"returnRate3y\":31.8866442},{\"fundCode\":\"K55301D12760\",\"fundName\":\"미래에셋평생소득TIF혼합자산자투자신탁 종류C-P2K\",\"totalFe"
+      }
+    },
+    {
+      "ok": true,
+      "value": {
+        "url": "https://stock.naver.com/api/fund/funds/K55301BM7814/fund-performance",
+        "ok": true,
+        "keys": [
+          "performance",
+          "periodReturns",
+          "metricsTerms"
+        ],
+        "sample": "{\"performance\":{\"tradeDate\":\"2026-08-27\",\"returnRate1m\":0.1704474,\"returnRate3m\":-2.6074342,\"returnRate1y\":13.1212435,\"standardDeviation\":6.902789914,\"trackingError\":6.158570909,\"sharpe\":1.48902012},\"periodReturns\":{\"baseDate\":\"2026-08-27\",\"returns\":[{\"term\":\"1d\",\"fundReturn\":0.2782823,\"benchmarkReturn\":null,\"peerCompanyReturn\":0.3167539},{\"term\":\"1w\",\"fundReturn\":0.5529488,\"benchmarkReturn\":-0.1974831,\"peerCompanyReturn\":-0.0434137},{\"term\":\"1m\",\"fundReturn\":0.1704474,\"benchmarkReturn\":0.0037632,\"peerCompanyReturn\":-0.3192386},{\"term\":\"3m\",\"fundReturn\":-2.6074342,\"benchmarkReturn\":-2.3263382,\"peerCompanyReturn\":-3.762564},{\"term\":\"6m\",\"fundReturn\":2.2304433,\"benchmarkReturn\":-0.4865531,\"peerCompanyReturn\":2.1191815},{\"term\":\"9m\",\"fundReturn\":8.5754417,\"benchmarkReturn\":0.1425589,\"peerCompanyReturn\":4.8588216},{\"term\":\"ytd\",\"fundReturn\":7.4858108,\"benchmarkReturn\":0.6067526,\"peerCompanyReturn\":4.5214522},{\"term\":\"1y\",\"fundReturn\":13.1212435,\"benchmarkReturn\":2.4129318,\"peerCompanyReturn\":8.7417317},{\"term\":\"2y\",\"fundReturn\":20.934024,\"benchmarkReturn\":11.9784566,\"peerCompanyReturn\":17.3543432},{\"term\":\"3y\",\"fundReturn\":33.8845743,\"benchmarkReturn\":28.3513106,\"peerCompanyReturn\":30."
+      }
+    },
+    {
+      "ok": true,
+      "value": {
+        "url": "https://stock.naver.com/api/fund/funds/K55301BM7814/metrics/detail?term=1y",
+        "ok": true,
+        "keys": [
+          "fundCode",
+          "termWeeks",
+          "fundMetric",
+          "peerMetric"
+        ],
+        "sample": "{\"fundCode\":\"K55301BM7814\",\"termWeeks\":52,\"fundMetric\":{\"standardDeviation\":6.902789914,\"trackingError\":6.158570909,\"sharpRatio\":1.48902012,\"informationRatio\":2.055693936,\"jensenAlpha\":11.857748482,\"beta\":0.762790439},\"peerMetric\":{\"standardDeviation\":7.171253081,\"trackingError\":6.523764879,\"sharpRatio\":0.903443184,\"informationRatio\":1.358197864,\"jensenAlpha\":8.125274916,\"beta\":0.744340639}}"
+      }
+    }
+  ],
+  "fees": {
+    "목록표본": 400,
+    "목록선취있음": 25,
+    "목록후취있음": 25,
+    "목록총보수있음": 25,
+    "상세표본": 200,
+    "상세보수자리": {
+      "managementFee": 0,
+      "salesFee": 0,
+      "custodyFee": 0,
+      "backOfficeFee": 0,
+      "totalFee": 0,
+      "preSalesFee": 0,
+      "postSalesFee": 0
+    }
+  },
+  "notes": [
+    {
+      "물음": "선취·후취 판매수수료를 받을 수 있는가",
+      "답": "표본 400개 중 선취 25개 · 후취 25개가 채워져 있다."
+    }
+  ]
+}
