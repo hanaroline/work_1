@@ -16,6 +16,7 @@ on:
       - 'claude/fund-**'
     paths:
       - 'scripts/collect_fund_kr.mjs'
+      - 'scripts/collect_fund_region.mjs'
       - 'scripts/build_fund_data.mjs'
       - 'scripts/audit_fund_data.mjs'
       - 'scripts/build_fund_page.mjs'
@@ -54,6 +55,24 @@ jobs:
         continue-on-error: true
         timeout-minutes: 45
         run: node scripts/collect_fund_kr.mjs
+
+      # 투자지역은 **1차 출처(금융투자협회)** 에서 따로 받는다.
+      #
+      # 처음에는 네이버 유형명 앞머리에서 읽었는데 재검증에서 표본 318개 중
+      # 34개(10.7%)가 1차 출처와 어긋났다. 금투협은 지역을 국내·해외·혼합
+      # 셋으로 나누는데 네이버 유형명의 "혼합" 은 자산을 뜻하기 때문이다.
+      # 투자지역은 이 화면의 주축이므로 1차 출처를 쓴다.
+      #
+      # 실패하면 빌드가 지역을 비운다 — 네이버 값으로 되돌아가지 않는다.
+      # 10.7% 틀린다는 것을 알면서 쓰는 것은 아는 거짓을 싣는 것이다.
+      - name: 투자지역 수집 (금융투자협회)
+        id: region
+        continue-on-error: true
+        timeout-minutes: 30
+        run: |
+          npm i -D playwright@1.56.1 --no-audit --no-fund
+          npx playwright install --with-deps chromium
+          node scripts/collect_fund_region.mjs
 
       # 수집이 실패해도 기존 파일로 다시 만든다. 파일이 아예 없으면 예시
       # 데이터로 만들고 화면에 "예시 데이터" 배지가 붙는다.
@@ -109,7 +128,7 @@ jobs:
         run: |
           git config user.name  "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add data/fund-kr.js data/fund.js fund-search.html 2>/dev/null || true
+          git add data/fund-kr.js data/fund-region.js data/fund.js fund-search.html 2>/dev/null || true
           git add tools/discovery/fund_audit.md tools/discovery/fund_audit.json 2>/dev/null || true
           if git diff --cached --quiet; then
             echo "변경 없음"

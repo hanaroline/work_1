@@ -13,9 +13,14 @@
  *
  * **분류는 여기서 만들지 않는다.** ETF 는 이름과 기초지수를 보고 우리가
  * 지역·자산군을 지어내야 했지만, 펀드는 원천이 `parentPeerGroupName` 으로
- * 이미 유형을 준다(국내주식형·해외채권형·MMF·국내대체 …). 그 이름 앞머리가
- * 곧 투자 지역이다. 원천이 주는 것을 우리 규칙으로 덮으면 어긋나기만 한다.
- * 수집기의 splitType 이 그 일을 하고, 여기서는 이름표만 붙인다.
+ * 이미 유형을 준다(국내주식형·해외채권형·MMF·국내대체 …).
+ *
+ * **다만 투자지역은 그 유형명에서 읽으면 안 된다.** 처음에는 앞머리에서
+ * 읽었는데(“해외주식형” → 해외) 재검증에서 표본 318개 중 34개(10.7%)가
+ * 1차 출처와 어긋났다. 금투협은 투자지역을 국내·해외·**혼합** 셋으로
+ * 분류하는데 네이버 유형명의 “혼합” 은 자산(주식+채권)을 뜻하기 때문이다.
+ * 그래서 투자지역만 금투협에서 직접 받아 여기서 덮는다
+ * (tools/discovery/fund_reverify_region.md).
  */
 
 import { readFile, access } from 'node:fs/promises';
@@ -56,9 +61,13 @@ const RISK_ORDER = ['veryHighRisk', 'highRisk', 'moderatelyHighRisk',
                     'moderateRisk', 'lowRisk', 'veryLowRisk'];
 
 const LABELS = {
+  // 투자지역은 **1차 출처(금융투자협회)** 가 국내·해외·혼합 셋으로 나눈다.
+  // 네이버 유형명 앞머리에서 읽던 방식은 "혼합" 을 표현하지 못해 10.7% 가
+  // 틀렸다(tools/discovery/fund_reverify_region.md).
   region: {
     domestic: { ko: '국내 투자', en: 'Domestic' },
     overseas: { ko: '해외 투자', en: 'Overseas' },
+    mixed: { ko: '국내·해외 혼합', en: 'Domestic & overseas' },
   },
   assetClass: {
     equity: { ko: '주식형', en: 'Equity' },
@@ -302,14 +311,45 @@ let funds = [];
 let source = 'sample';
 const sources = {};
 
+// ── 투자지역을 1차 출처로 덮는다 ───────────────────────────────────────────
+//
+// 네이버 유형명 앞머리에서 읽던 값은 재검증에서 **10.7% 가 틀렸다.**
+// 금투협은 투자지역을 국내·해외·혼합 셋으로 분류하는데, 네이버 유형명의
+// "혼합" 은 자산(주식+채권)을 뜻해서 지역의 혼합을 표현할 수 없다.
+// MMF·기타형 344개는 유형명에 지역이 없어 비어 있었는데 금투협에는 값이 있다.
+//
+// 그래서 금투협 값이 있으면 그것을 쓰고, 어디서 온 값인지 표시한다.
+// 금투협이 막혀 값이 없으면 **비운다** — 네이버 값으로 되돌아가지 않는다.
+// 10.7% 틀린다는 것을 이미 알면서 쓰는 것은 아는 거짓을 싣는 것이다.
+const regionData = await loadDataFile('data/fund-region.js', 'FUND_REGION');
+const REGION = regionData?.region || null;
+function applyRegion(f) {
+  if (!REGION) {
+    // 1차 출처를 아직 못 받았다. 네이버 유형명에서 읽은 값을 쓰되 그렇게 밝힌다.
+    return { ...f, regionSource: f.region ? 'naver-type' : null };
+  }
+  const k = REGION[f.code];
+  if (k) return { ...f, region: k, regionSource: 'kofia' };
+  return { ...f, region: null, regionSource: null, regionMissing: true };
+}
+
 if (kr?.funds?.length) {
-  funds = kr.funds.map(finish);
+  funds = kr.funds.map(applyRegion).map(finish);
   sources.kr = {
     updatedAt: kr.updatedAt, count: kr.count, listCount: kr.listCount,
     withHoldings: kr.withHoldings, withRet: kr.withRet,
     withStep: kr.withStep, droppedCells: kr.droppedCells,
     source: '네이버 Npay 증권',
   };
+  if (regionData) {
+    sources.region = {
+      updatedAt: regionData.updatedAt, count: regionData.count, total: regionData.total,
+      distribution: regionData.distribution,
+      changedFromNaver: regionData.changedFromNaver,
+      filledFromBlank: regionData.filledFromBlank,
+      source: '금융투자협회 전자공시 (1차 출처)',
+    };
+  }
   source = 'live';
 } else {
   console.log('[build] 수집 파일이 없다 — 예시 데이터로 만든다');
@@ -356,6 +396,19 @@ const payload = {
           'fees are present** — 18,712 of 19,092 classes (98%). Korean fund fees differ ' +
           'by share class, so a single number would be wrong for every class but one. ' +
           'The range (lowest to highest) is shown, with the per-class table beside it.',
+    },
+    region: {
+      ko: '투자지역은 **금융투자협회 전자공시(1차 출처)** 에서 직접 받습니다. ' +
+          '국내·해외·**혼합** 셋으로 나뉩니다. 처음에는 네이버 유형명의 앞머리에서 ' +
+          '읽었는데(“해외주식형” → 해외), 재검증에서 표본 318개 중 34개(10.7%)가 ' +
+          '1차 출처와 어긋났습니다 — 네이버 유형명의 “혼합” 은 자산(주식+채권)을 ' +
+          '뜻해서 지역의 혼합을 표현할 수 없기 때문입니다. 특히 해외혼합형은 ' +
+          '표본 35개 중 20개가 실제로는 “혼합” 이었습니다.',
+      en: 'Investment region comes directly from KOFIA electronic disclosure (primary ' +
+          'source), split into domestic / overseas / **mixed**. It was previously read ' +
+          'from the head of Naver’s category name, which disagreed with the primary ' +
+          'source in 34 of 318 sampled funds (10.7%) — Naver’s "mixed" refers to the ' +
+          'asset mix, not the region.',
     },
     step: {
       ko: '기준가 계열에 재산정 계단이 있는 펀드는 그 구간의 수익률을 ' +
