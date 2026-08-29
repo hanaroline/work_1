@@ -751,13 +751,36 @@ node scripts/build_fund_page.mjs   # fund.html + data/fund.js → fund-search.ht
 
 | 파일 | 역할 |
 |------|------|
-| `.github/workflows/fund-daily.yml` | **매일 08:30 KST** 수집 → 빌드 → **전수 감사(관문)** → 단일 파일 → 화면 시험 → 커밋 |
+| `.github/workflows/fund-daily.yml` | **매일 08:30 KST** 수집 → 빌드 → 회귀 시험 → **전수 감사(관문)** → 단일 파일 → 화면 시험 → 커밋 |
 | `scripts/collect_fund_kr.mjs` | 수집기 (네이버 Npay 증권). 목록 160 + 펀드당 5회 ≈ 16,000회 |
 | `scripts/build_fund_data.mjs` | 파생값·이름표 → `data/fund.js` |
 | `scripts/audit_fund_data.mjs` | **전수 감사.** 오류가 있으면 종료 코드 1 로 커밋을 막는다 |
+| `scripts/test_fund_lib.mjs` | **수집기 회귀 시험.** 값을 만드는 함수를 실물 값으로 고정한다 |
 | `scripts/test_fund_page.mjs` | 브라우저 연기 시험 (없는 것을 0 이라 말하지 않는지 전수 확인 포함) |
 | `scripts/verify_fund_returns*.mjs` | 수익률 계열 검산 1~4차. 원천이 바뀌었을 때 다시 돌린다 |
 | `tools/discovery/fund_returns_verify*.md` | 위 검산 결과 — **왜 이 방어선인지의 기록** |
 
 감사는 바깥 자료에 붙지 않습니다. `data/fund.js` 안에서 서로 어긋나는 것만 잡습니다 —
 안에서 앞뒤가 안 맞는 숫자는 바깥을 볼 것도 없이 틀린 것입니다.
+
+### 지켜야 할 것 하나
+
+**없는 것을 0 이라고 말하지 않습니다.** ETF 화면에서는 `Number(null) === 0` 이
+입구였고, 이 화면에서는 **반올림**이 같은 거짓을 만들었습니다 — 원천의
+`0.000000045` 를 `toFixed(4)` 로 뭉개 `0` 으로 저장했고, 화면에 `0.00%` 로
+찍혀 "담지 않았다" 는 뜻이 되었습니다.
+
+0 이 되는 경로는 하나가 아닙니다. null 강제변환, 반올림, 기본값, 빈 배열 합계
+모두를 봐야 합니다. 지금은 `scripts/test_fund_lib.mjs` 가 그 자리를 실물 값으로
+붙잡고 있습니다.
+
+반대쪽도 있습니다 — **원천이 정말 0 을 주는 자리**가 있습니다. 제재로 평가가
+0 이 된 러시아 종목(GAZPROM·MMC NORILSK NICKEL)과 공모주 배정분이 그렇습니다.
+그건 참인 0 이므로 빈칸으로 바꾸면 그것대로 거짓이 됩니다. 화면은 셋을
+구별해 찍습니다.
+
+| 값 | 화면 |
+|---|---|
+| 비중을 모름 (`null`) | `–` |
+| 원천이 준 0 | `0.00%` |
+| 0 이 아니지만 아주 작음 | `<0.01%` |
