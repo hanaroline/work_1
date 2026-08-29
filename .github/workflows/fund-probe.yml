@@ -172,7 +172,8 @@ jobs:
       # 정말 안 움직였을 수도 있기 때문이다.
       - name: 검산 실행 13차 (금투협 소급 설정원본이 되는가)
         timeout-minutes: 30
-        if: hashFiles('scripts/probe_fund_kofia_flow.mjs') != ''
+        # 결과가 저장소에 남았다. 다시 볼 일이 있으면 수동 실행으로 돌린다.
+        if: github.event_name == 'workflow_dispatch' && hashFiles('scripts/probe_fund_kofia_flow.mjs') != ''
         run: |
           npm i -D playwright@1.56.1 --no-audit --no-fund
           npx playwright install --with-deps chromium
@@ -185,7 +186,8 @@ jobs:
       - name: 검산 실행 14차 (금투협 오픈API 이용안내 원문)
         timeout-minutes: 10
         continue-on-error: true
-        if: hashFiles('scripts/probe_kofia_openapi_docs.mjs') != ''
+        # 결과가 저장소에 남았다. 다시 볼 일이 있으면 수동 실행으로 돌린다.
+        if: github.event_name == 'workflow_dispatch' && hashFiles('scripts/probe_kofia_openapi_docs.mjs') != ''
         run: node scripts/probe_kofia_openapi_docs.mjs
 
       # 14차가 금투협 오픈API 는 펀드를 안 준다는 것을 원문으로 밝혔다
@@ -196,8 +198,28 @@ jobs:
       - name: 검산 실행 15차 (펀드 API 를 주는 다른 기관 목록 원문)
         timeout-minutes: 20
         continue-on-error: true
-        if: hashFiles('scripts/probe_fund_api_catalogs.mjs') != ''
-        run: node scripts/probe_fund_api_catalogs.mjs
+        # 결과가 저장소에 남았다. 다시 볼 일이 있으면 수동 실행으로 돌린다.
+        if: github.event_name == 'workflow_dispatch' && hashFiles('scripts/probe_fund_api_catalogs.mjs') != ''
+        run: |
+          npm i -D playwright@1.56.1 --no-audit --no-fund
+          npx playwright install --with-deps chromium
+          node scripts/probe_fund_api_catalogs.mjs
+
+      # 15차가 공공데이터포털에서 이름이 그럴듯한 것을 셋 찾았다:
+      #   집합투자증권 설정, 환매 및 인수도대금 현황
+      #   증권관리현황 ; 집합투자증권 잔고현황
+      #   금융위원회_펀드상품 판매현황정보 (키워드: 판매, 잔액)
+      # 이름은 근거가 아니다. 상세 화면을 열어 **출력 항목**을 본다.
+      # 표준코드·기준일자·설정원본(좌수)이 셋 다 있어야 쓸 수 있다.
+      # 합계 통계거나 분기 자료거나 오늘치만 주면 못 쓴다.
+      - name: 검산 실행 16차 (후보가 펀드별 일별 설정원본을 주는가)
+        timeout-minutes: 25
+        continue-on-error: true
+        if: hashFiles('scripts/probe_fund_api_detail.mjs') != ''
+        run: |
+          npm i -D playwright@1.56.1 --no-audit --no-fund
+          npx playwright install --with-deps chromium
+          node scripts/probe_fund_api_detail.mjs
 
       - name: 결과 업로드
         if: always()
@@ -218,6 +240,7 @@ jobs:
             tools/discovery/fund_kofia_flow.*
             tools/discovery/kofia_openapi_docs.md
             tools/discovery/fund_api_catalogs.md
+            tools/discovery/fund_api_detail.md
           retention-days: 7
 
       - name: 결과 커밋
@@ -238,6 +261,7 @@ jobs:
           git add tools/discovery/fund_kofia_flow.* 2>/dev/null || true
           git add tools/discovery/kofia_openapi_docs.md 2>/dev/null || true
           git add tools/discovery/fund_api_catalogs.md 2>/dev/null || true
+          git add tools/discovery/fund_api_detail.md 2>/dev/null || true
           git commit -m "chore(fund): 원천 조사 결과 갱신" || echo "변경 없음"
           git pull --rebase --autostash origin "${GITHUB_REF_NAME}" || true
           git push || echo "푸시 실패 (무시)"
