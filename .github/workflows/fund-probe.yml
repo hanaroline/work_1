@@ -226,10 +226,13 @@ jobs:
       # 20차가 연 넉 줄은 전부 **연계데이터**였다. 포털은 항목도 파일도
       # 안 들고 바깥 주소만 걸어 둔다(전체 행 `-`, 확장자 빈칸). 그러니
       # 포털 화면으로는 판정을 못 한다. 실물이 있는 광주 쪽을 연다.
+      # 21차가 넷 다 200 으로 받아 왔고 판정이 끝났다(→ fund_sources_verdict.md).
+      # 16차와 같은 이유로 자동으로는 안 돌린다 — 다시 돌려서 한 번이라도
+      # 못 받으면 끝난 판정이 빈 표로 덮인다.
       - name: 검산 실행 21차 (광주 연계 4건이 무엇을 주는가)
         timeout-minutes: 20
         continue-on-error: true
-        if: hashFiles('scripts/probe_fund_gwangju.mjs') != ''
+        if: github.event_name == 'workflow_dispatch' && hashFiles('scripts/probe_fund_gwangju.mjs') != ''
         run: |
           npm i -D playwright@1.56.1 --no-audit --no-fund
           npx playwright install --with-deps chromium
