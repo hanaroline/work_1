@@ -178,6 +178,10 @@ function sampleData() {
       remaining -= w;
       return { code: null, name: hn, weight: +w.toFixed(4) };
     });
+    // 마지막 종목은 **아주 작은 비중**으로 둔다. 원천에는 0.000000045 같은
+    // 값이 실제로 있고, 화면이 그것을 "0.00%" 로 뭉개면 담은 것을 안 담았다고
+    // 말하는 셈이다. 예시에도 그 자리를 만들어 두어야 시험이 늘 돈다.
+    if (holdings.length) holdings[holdings.length - 1].weight = 0.0000045;
 
     // 설정일을 먼저 정한다. 수익률은 설정일이 허락하는 기간까지만 만든다 —
     // 설정 4년 된 펀드에 5년 수익률을 채워 넣으면 감사가 (옳게) 오류로 잡는다.

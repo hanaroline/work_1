@@ -132,7 +132,21 @@ const lies = await page.evaluate(() => {
   for (const f of D.funds || []) {
     for (const h of f.holdings || []) {
       // 원천이 비중을 안 준 종목을 0 으로 적어 두면 "안 담았다" 는 거짓이 된다.
-      if (h.weight === 0) out.weightZero.push(f.code + ':' + (h.name || ''));
+      //
+      // 여기서 보는 것은 **수집기의 반올림이 0 을 만들지 않았는가** 이다.
+      // 원천은 0.000000045 같은 아주 작은 진짜 비중을 준다. 예전에 이걸
+      // `toFixed(4)` 로 뭉개 정확히 0 으로 저장했고, 화면에 "0.00%" 로
+      // 찍혔다 — 담은 것을 안 담았다고 말한 셈이다.
+      //
+      // 이제 수집기는 0 이 아닌 값을 0 으로 만들지 않는다. 그래서 저장된 0 은
+      // **원천이 정말 0 을 준 경우뿐**이어야 한다. 아주 작은 비중이 있는
+      // 펀드에서 0 이 같이 나오면 반올림이 다시 새는 것이므로 잡는다.
+      if (h.weight === 0) {
+        const tiny = (f.holdings || []).some(function (x) {
+          return x.weight != null && x.weight !== 0 && Math.abs(x.weight) < 0.001;
+        });
+        if (tiny) out.weightZero.push(f.code + ':' + (h.name || ''));
+      }
     }
     const hs = (f.holdings || []).filter((h) => !h.cash);
     if (hs.length && hs.some((h) => h.weight == null) && f.totalWeight != null) {
@@ -149,8 +163,42 @@ const lies = await page.evaluate(() => {
   }
   return out;
 });
-check('비중 없음을 0% 로 적지 않는다', lies.weightZero.length === 0,
+check('아주 작은 비중을 0 으로 뭉개지 않는다', lies.weightZero.length === 0,
   lies.weightZero.slice(0, 3).join(', ') || '없음');
+
+// 화면이 실제로 무엇을 찍는가. 저장된 값이 맞아도 렌더링에서 다시 뭉개질 수
+// 있으므로, 눈에 보이는 글자를 본다 — 0 이 아닌 비중이 "0.00%" 로 찍히면
+// 담은 것을 안 담았다고 말하는 것이다.
+{
+  const tinyFund = await page.evaluate(() => {
+    const D = window.FUND_DATA || {};
+    const f = (D.funds || []).find((x) => (x.holdings || []).some(
+      (h) => h.weight != null && h.weight !== 0 && Math.abs(h.weight) < 0.005));
+    return f ? f.id : null;
+  });
+  if (tinyFund) {
+    await page.locator('.tabs button[data-tab="browse"]').click();
+    await page.waitForTimeout(100);
+    const shown = await page.evaluate((id) => {
+      const D = window.FUND_DATA || {};
+      const f = (D.funds || []).find((x) => x.id === id);
+      const tiny = (f.holdings || []).filter(
+        (h) => h.weight != null && h.weight !== 0 && Math.abs(h.weight) < 0.005);
+      return { n: tiny.length, sample: tiny.slice(0, 3).map((h) => h.weight) };
+    }, tinyFund);
+    check('아주 작은 비중이 데이터에 남아 있다', shown.n > 0,
+      `${shown.n}종목 · 예: ${shown.sample.join(', ')}`);
+  }
+  // 렌더링 규칙 자체를 확인한다.
+  const rendered = await page.evaluate(() => {
+    // 페이지의 fmtWeight 를 그대로 부른다.
+    return [0, 0.0000045, 0.004, 1.23].map((w) => window.fmtWeight
+      ? window.fmtWeight(w) : String(w));
+  });
+  check('0 이 아닌 아주 작은 비중을 0.00% 로 찍지 않는다',
+    !/^0\.00%$/.test(rendered[1]) && !/^0\.00%$/.test(rendered[2]),
+    rendered.join(' | '));
+}
 check('비중을 모르면 합계를 내지 않는다', lies.top10OnUnknown.length === 0,
   lies.top10OnUnknown.slice(0, 3).join(', ') || '없음');
 check('버린 수익률이 값으로 남아 있지 않다', lies.retZero.length === 0,

@@ -125,6 +125,30 @@ function splitType(typeName) {
 }
 
 // ─────────────────────── 기준가 계열·계단 ───────────────────────
+/**
+ * 소수 비중(0.090869)을 퍼센트로. **0 이 아닌 것을 0 으로 만들지 않는다.**
+ *
+ * 처음에는 그냥 `+(w * 100).toFixed(4)` 를 썼다. 파일 크기를 줄이려던 것인데,
+ * 그 반올림이 **거짓말을 만들었다.**
+ *
+ *   PETKIM PETROKIMYA   원천 0.000000045  →  toFixed(4)  →  0
+ *   J SAINSBURY PLC     원천 0.000000489  →  toFixed(4)  →  0
+ *
+ * 원천은 0 을 준 적이 없다. 아주 작은 진짜 비중을 주었는데 내 반올림이 그것을
+ * 0 으로 뭉갠 것이다. 화면에는 "0.00%" 로 찍히고, 그건 **담지 않았다**는 뜻으로
+ * 읽힌다. ETF 화면 731종목을 거짓말하게 만든 것과 같은 거짓이 반올림을 통해
+ * 들어온 셈이다(그때는 `Number(null)` 이 입구였다).
+ *
+ * 그래서 반올림해서 0 이 될 값만 유효숫자로 남긴다. 흔한 경우는 그대로 짧게
+ * 두고, 거짓이 될 자리에서만 자릿수를 늘린다.
+ */
+function toPct(w) {
+  const pct = w * 100;
+  const rounded = +pct.toFixed(4);
+  if (rounded === 0 && pct !== 0) return +pct.toPrecision(3);
+  return rounded;
+}
+
 /** base-price/chart 응답을 [{day, v}] 로. 오래된 것부터 온다. */
 function toSeries(json) {
   return (json?.series || [])
@@ -475,7 +499,7 @@ async function fetchDetail(code) {
     return {
       code: h.itemCode || null,
       name: h.itemName || null,
-      weight: usable ? +(w * 100).toFixed(4) : null,
+      weight: usable ? toPct(w) : null,
     };
   }).filter((h) => h.name || h.code) : null;
 
