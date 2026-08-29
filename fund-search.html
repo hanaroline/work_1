@@ -156,6 +156,8 @@ tbody tr:last-child td{border-bottom:0;}
 tbody tr:hover{background:var(--surface-subtle);}
 tbody tr.clickable{cursor:pointer;}
 tbody tr.selected{background:#FFF3E8;}
+/* 검색어가 이 클래스에 걸려 펀드가 나온 것이다. 어느 줄인지 짚어 준다. */
+tbody tr.hit{background:#FFF3E8;box-shadow:inset 3px 0 0 var(--brand-orange,#FF6C0C);}
 td.num,th.num{text-align:right; font-family:var(--font-num); font-variant-numeric:tabular-nums;}
 .pos{color:var(--error);}   /* 국내 관행: 상승 빨강 */
 .neg{color:var(--blue-soft);}
@@ -351,8 +353,8 @@ footer .disc + .disc{margin-top:12px;}
         <path d="M14 14l4 4" stroke="#84888B" stroke-width="1.8" stroke-linecap="round"/>
       </svg>
       <input type="search" id="q" autocomplete="off"
-             data-ko-ph="펀드 이름 · 표준코드 · 운용사 · 보유종목으로 검색 (예: 배당, K55301, 삼성전자)"
-             data-en-ph="Search by fund name, code, manager or holding">
+             data-ko-ph="펀드 이름 · 표준코드 · 클래스 코드 · 운용사 · 보유종목으로 검색 (예: 배당, K55207BJ1791, 삼성전자)"
+             data-en-ph="Search by fund name, code, share-class code, manager or holding">
     </div>
 
     <div class="finder-filters">
@@ -661,7 +663,13 @@ function matches(f) {
               (f.type || '') + ' ' + (f.benchmarkName || '');
     if (hay.toLowerCase().indexOf(q) < 0) {
       var hit = false;
-      var hs = f.holdings || [];
+      // **클래스를 먼저 훑는다.** 사람이 손에 든 코드는 대개 클래스 코드다 —
+      // 통장·HTS·판매사 화면에 찍히는 것이 그것이고, 네이버도 클래스 코드로
+      // 화면을 연다. 여기를 안 훑는 동안 K55207BJ1791 을 붙여넣으면 결과가
+      // 0건이었다. 그 코드는 우리 자료에 분명히 있다 — 교보악사파워인덱스
+      // 증권자투자신탁 2 의 ClassAe 로, 다만 classes[] 안에 있었다.
+      if (matchClass(f, q)) hit = true;
+      var hs = hit ? [] : (f.holdings || []);
       for (var j = 0; j < hs.length; j += 1) {
         if ((hs[j].name || '').toLowerCase().indexOf(q) >= 0) { hit = true; break; }
       }
@@ -669,6 +677,40 @@ function matches(f) {
     }
   }
   return true;
+}
+/**
+ * 검색어가 펀드 자신이 아니라 클래스에 걸렸을 때, 목록에서 그 사실을 밝힌다.
+ *
+ * 사용자가 손에 든 코드(예 K55207BJ1791)를 쳤는데 목록에는 그 코드가 아니라
+ * 부모 펀드 코드(KR5207698899)가 찍힌다. 왜 이게 나왔는지 말해 주지 않으면
+ * 엉뚱한 펀드가 나온 것으로 읽힌다.
+ */
+function classHint(f) {
+  var q = (state.q || '').trim().toLowerCase();
+  if (!q) return '';
+  var self = (f.name || '') + ' ' + (f.code || '') + ' ' + (f.company || '') + ' ' +
+             (f.type || '') + ' ' + (f.benchmarkName || '');
+  if (self.toLowerCase().indexOf(q) >= 0) return '';       // 펀드 자신이 걸렸다
+  var cs = f.classes || [];
+  for (var i = 0; i < cs.length; i += 1) {
+    var c = cs[i];
+    if ((c.code || '').toLowerCase().indexOf(q) < 0 &&
+        (c.name || '').toLowerCase().indexOf(q) < 0) continue;
+    return '<div class="dim" style="font-size:12px;margin-top:2px">' +
+      esc(lang === 'ko' ? '클래스에서 일치 · ' : 'matched a share class · ') +
+      '<strong>' + esc(c.code || '') + '</strong> ' + esc(c.name || '') + '</div>';
+  }
+  return '';
+}
+
+/** 검색어가 이 펀드의 클래스(코드·이름)에 걸리는가. */
+function matchClass(f, q) {
+  var cs = f.classes || [];
+  for (var i = 0; i < cs.length; i += 1) {
+    if ((cs[i].code || '').toLowerCase().indexOf(q) >= 0) return true;
+    if ((cs[i].name || '').toLowerCase().indexOf(q) >= 0) return true;
+  }
+  return false;
 }
 function filtered() { return FUNDS.filter(matches); }
 
@@ -855,7 +897,10 @@ function renderList() {
         (picked ? '✓' : '⊕') + '</button></td>' +
       '<td><div style="font-weight:600;color:var(--ink)">' + esc(f.name || f.code) + '</div>' +
         '<div class="dim" style="font-size:13px">' + esc(f.code) +
-        (f.region ? ' · ' + esc(regionLabel(f)) : '') + '</div></td>' +
+        (f.region ? ' · ' + esc(regionLabel(f)) : '') + '</div>' +
+        // 검색어가 펀드가 아니라 **클래스**에 걸린 것이면 그렇게 말한다.
+        // 안 말하면 "내가 친 코드는 어디 갔지" 가 된다.
+        classHint(f) + '</td>' +
       '<td>' + esc(f.type || '–') + '</td>' +
       '<td>' + esc(f.company || '–') + '</td>' +
       '<td>' + (f.riskGrade == null ? '<span class="dim">–</span>' : esc(labelOf('riskGrade', f.riskGrade))) + '</td>' +
@@ -1176,19 +1221,108 @@ function metricsBlock(f) {
     ['informationRatio', '정보비율', 'Information ratio', ''],
     ['trackingError', '추적오차', 'Tracking error', '%'],
   ];
-  var cells = '';
+  // 유형평균은 **원천이 준 값**이다. 우리가 같은 유형의 펀드를 평균 내서
+  // 만든 것이 아니다 — 표 아래에 그 사실을 적는다. 둘을 섞으면 무엇과
+  // 견준 것인지 알 수 없게 된다.
+  var p = f.metricsPeer || null;
+  var rows = '';
   var n = 0;
   for (var i = 0; i < ROWS.length; i += 1) {
     var r = ROWS[i];
     var v = m[r[0]];
     if (v == null || !isFinite(Number(v))) continue;   // 없는 것은 칸을 만들지 않는다
     n += 1;
-    cells += '<div><div class="k">' + esc(lang === 'ko' ? r[1] : r[2]) + '</div>' +
-      '<div class="v">' + Number(v).toFixed(2) + esc(r[3]) + '</div></div>';
+    var pv = p ? p[r[0]] : null;
+    rows += '<tr><td>' + esc(lang === 'ko' ? r[1] : r[2]) + '</td>' +
+      '<td class="num">' + Number(v).toFixed(2) + esc(r[3]) + '</td>' +
+      '<td class="num">' + (pv == null || !isFinite(Number(pv))
+        ? '<span class="dim">–</span>'
+        : Number(pv).toFixed(2) + esc(r[3])) + '</td></tr>';
   }
   if (!n) return '';
-  return '<h4>' + esc(lang === 'ko' ? '위험 · 성과 지표 (1년)' : 'Risk metrics (1Y)') + '</h4>' +
-    '<div class="kv">' + cells + '</div>';
+  var weeks = Number(f.metricsWeeks);
+  var basis = isFinite(weeks) && weeks > 0
+    ? (lang === 'ko' ? weeks + '주(약 ' + Math.round(weeks / 52 * 12) + '개월) · 연환산'
+                     : weeks + ' weeks, annualised')
+    : (lang === 'ko' ? '1년 · 연환산' : '1Y, annualised');
+  return '<h4>' + esc(lang === 'ko' ? '위험 · 성과 지표' : 'Risk metrics') +
+    ' <span class="dim" style="font-weight:400;font-size:15px">(' + esc(basis) + ')</span></h4>' +
+    '<div class="table-wrap"><table><thead><tr>' +
+    '<th>' + esc(lang === 'ko' ? '지표' : 'Metric') + '</th>' +
+    '<th class="num">' + esc(lang === 'ko' ? '이 펀드' : 'This fund') + '</th>' +
+    '<th class="num">' + esc(lang === 'ko' ? '유형평균' : 'Category avg') + '</th>' +
+    '</tr></thead><tbody>' + rows + '</tbody></table></div>' +
+    '<div class="dim" style="font-size:13px;margin-top:8px;line-height:1.6">' +
+    (lang === 'ko'
+      ? '※ 유형평균은 <strong>원천(네이버 증권)이 준 값</strong>입니다. 우리가 같은 유형의 ' +
+        '펀드를 평균 내서 만든 값이 아닙니다 — 아래 수익률 표의 “유형 평균 대비” 는 ' +
+        '우리가 낸 값이므로 서로 다른 기준입니다.'
+      : '※ The category average comes <strong>from the source</strong> (Naver), not from ' +
+        'averaging our own universe. The “vs category avg” column in the returns table above ' +
+        'is ours, so the two are on different bases.') + '</div>';
+}
+
+/** 이 펀드를 원천에서 직접 여는 링크. 값을 옮겨 적는 것과 확인할 길을 주는 것은 다르다. */
+function sourceLinks(f) {
+  var code = f.code || '';
+  if (!code) return '';
+  var naver = 'https://stock.naver.com/domestic/fund/' + encodeURIComponent(code) + '/total';
+  var kofia = 'https://dis.kofia.or.kr/websquare/index.jsp?w2xPath=/wq/com/popup/' +
+              'DISComFundSmryInfo.xml&standardCd=' + encodeURIComponent(code);
+  function a(href, label, tag) {
+    return '<a href="' + esc(href) + '" target="_blank" rel="noopener noreferrer">' +
+      esc(label) + '</a> <span class="dim">' + esc(tag) + '</span>';
+  }
+  var links = [
+    a(naver, lang === 'ko' ? '네이버 증권' : 'Naver', lang === 'ko' ? '2차 출처 · 이 화면의 값이 온 곳' : 'secondary'),
+    a(kofia, lang === 'ko' ? '금융투자협회 전자공시' : 'KOFIA', lang === 'ko' ? '1차 출처 · 투자지역의 근거' : 'primary'),
+  ];
+  // 운용보고서·투자설명서는 운용사가 법정 서식으로 낸 **1차 출처**다.
+  // 재검증 보고에서 "보유종목은 운용보고서에서, 보수는 투자설명서에서
+  // 직접 확인하시라" 고 적어 놓고 정작 링크는 안 걸어 두었다. 그 주소가
+  // 우리가 이미 받고 있던 응답 안에 있었다.
+  var docs = f.documents || [];
+  for (var i = 0; i < docs.length; i += 1) {
+    if (!docs[i].url) continue;
+    links.push(a(docs[i].url, docs[i].name || '문서',
+      (docs[i].receivedAt ? docs[i].receivedAt + ' · ' : '') + (lang === 'ko' ? '1차 출처' : 'primary')));
+  }
+  return '<h4>' + esc(lang === 'ko' ? '원천에서 직접 보기' : 'Check at the source') + '</h4>' +
+    '<div class="dim" style="font-size:14px;line-height:2">' + links.join('<br>') + '</div>';
+}
+
+/** 투자목적. 원천의 문장을 그대로 옮긴다 — 요약하면 우리 말이 된다. */
+function objectiveBlock(f) {
+  if (!f.objective) return '';
+  return '<div class="dim" style="font-size:14px;line-height:1.7;margin-top:12px">' +
+    esc(f.objective) + '</div>';
+}
+
+/** 매매 기준일. 환매 대금이 며칠 뒤에 나오는지는 고를 때 실제로 갈리는 조건이다. */
+function termsBlock(f) {
+  var t = f.terms;
+  if (!t) return '';
+  var time = t.standardTime ? String(t.standardTime) : null;
+  function day(n) {
+    if (n == null || !isFinite(Number(n))) return null;
+    return lang === 'ko' ? '제' + (Number(n) + 1) + '영업일' : 'T+' + (Number(n) + 1);
+  }
+  var rows = '';
+  function row(k, before, after) {
+    if (before == null && after == null) return;
+    rows += '<tr><td>' + esc(k) + '</td><td>' + (before == null ? '<span class="dim">–</span>' : esc(before)) +
+      '</td><td>' + (after == null ? '<span class="dim">–</span>' : esc(after)) + '</td></tr>';
+  }
+  row(lang === 'ko' ? '매수 (기준가 적용)' : 'Buy (NAV applied)', day(t.buyBefore), day(t.buyAfter));
+  row(lang === 'ko' ? '환매 (기준가 적용)' : 'Redeem (NAV applied)', day(t.redeemBefore), day(t.redeemAfter));
+  row(lang === 'ko' ? '환매 대금 지급' : 'Redemption paid', day(t.payBefore), day(t.payAfter));
+  if (!rows) return '';
+  return '<h4>' + esc(lang === 'ko' ? '매매 기준일' : 'Dealing terms') + '</h4>' +
+    '<div class="table-wrap"><table><thead><tr>' +
+    '<th>' + esc(lang === 'ko' ? '구분' : '') + '</th>' +
+    '<th>' + esc(time ? (lang === 'ko' ? time + ' 이전 주문' : 'before ' + time) : (lang === 'ko' ? '이른 주문' : 'early')) + '</th>' +
+    '<th>' + esc(time ? (lang === 'ko' ? time + ' 이후 주문' : 'after ' + time) : (lang === 'ko' ? '늦은 주문' : 'late')) + '</th>' +
+    '</tr></thead><tbody>' + rows + '</tbody></table></div>';
 }
 
 // ───────────────────────── 상세 ─────────────────────────
@@ -1225,9 +1359,22 @@ function detailHtml(f) {
   var classes = '';
   if (f.classes && f.classes.length) {
     var crows = '';
+    // 검색어가 클래스에 걸려 이 펀드가 나온 것이라면 그 줄을 짚어 준다.
+    // 사람이 손에 든 코드로 찾아왔는데 어느 줄이 자기 것인지 안 보이면
+    // 찾아 준 보람이 없다.
+    var cq = (state.q || '').trim().toLowerCase();
     for (var i = 0; i < f.classes.length; i += 1) {
       var c = f.classes[i];
-      crows += '<tr><td>' + esc(c.name || c.code) + '</td>' +
+      var hitC = cq && ((c.code || '').toLowerCase().indexOf(cq) >= 0 ||
+                        (c.name || '').toLowerCase().indexOf(cq) >= 0);
+      var cUrl = c.code
+        ? 'https://stock.naver.com/domestic/fund/' + encodeURIComponent(c.code) + '/total' : null;
+      crows += '<tr' + (hitC ? ' class="hit"' : '') + '><td>' + esc(c.name || c.code) +
+        // **클래스의 표준코드를 찍는다.** 통장·HTS·판매사 화면에 찍히는
+        // 코드가 이것이고, 원천도 이 코드로 화면을 연다.
+        (c.code ? '<br><span class="dim" style="font-size:12px">' +
+          (cUrl ? '<a href="' + esc(cUrl) + '" target="_blank" rel="noopener noreferrer">' +
+                  esc(c.code) + '</a>' : esc(c.code)) + '</span>' : '') + '</td>' +
         '<td class="num ' + signClass(c.ret && c.ret['1m']) + '">' + fmtPct(c.ret && c.ret['1m']) + '</td>' +
         '<td class="num ' + signClass(c.ret && c.ret['1y']) + '">' + fmtPct(c.ret && c.ret['1y']) + '</td>' +
         '<td class="num">' + (c.totalFee == null ? '<span class="dim">–</span>' : Number(c.totalFee).toFixed(3) + '%') + '</td></tr>';
@@ -1236,13 +1383,20 @@ function detailHtml(f) {
       (lang === 'ko'
         ? '※ 총보수는 <strong>클래스마다 다릅니다.</strong> 위의 범위는 이 표의 최저~최고이며, ' +
           '실제로 내는 보수는 어느 클래스를 사느냐에 따라 달라집니다.<br>' +
-          '※ 펀드 단위의 총보수는 원천에 없습니다. 이 값들은 클래스별로 온 것입니다.'
+          '※ 펀드 단위의 총보수는 원천에 없습니다. 이 값들은 클래스별로 온 것입니다.<br>' +
+          '※ <strong>이 화면의 기준가·설정액·설정일은 위 펀드(모·운용) 단위 값입니다.</strong> ' +
+          '클래스마다 기준가와 설정일이 다릅니다 — 예를 들어 한 클래스가 펀드보다 10년 늦게 ' +
+          '설정되기도 합니다. 클래스 단위 값은 위 코드를 눌러 원천에서 확인하십시오. ' +
+          '수익률과 총보수만 클래스별로 실었습니다.'
         : '※ Fees <strong>differ by share class.</strong> The range above is the lowest and ' +
           'highest in this table; what you actually pay depends on the class you buy.<br>' +
-          '※ The source gives no fund-level fee — these are per-class figures.') + '</div>';
+          '※ The source gives no fund-level fee — these are per-class figures.<br>' +
+          '※ <strong>Base price, AUM and inception on this page are the parent fund’s.</strong> ' +
+          'Each class has its own base price and inception date — click a class code to see ' +
+          'them at the source. Only returns and fees are carried per class.') + '</div>';
     classes = '<h4>' + esc(lang === 'ko' ? '클래스별' : 'Share classes') + '</h4>' +
       '<div class="table-wrap"><table><thead><tr>' +
-      '<th>' + esc(lang === 'ko' ? '클래스' : 'Class') + '</th>' +
+      '<th>' + esc(lang === 'ko' ? '클래스 · 표준코드' : 'Class · code') + '</th>' +
       '<th class="num">' + esc(lang === 'ko' ? '1개월' : '1M') + '</th>' +
       '<th class="num">' + esc(lang === 'ko' ? '1년' : '1Y') + '</th>' +
       '<th class="num">' + esc(lang === 'ko' ? '총보수' : 'TER') + '</th>' +
@@ -1278,14 +1432,31 @@ function detailHtml(f) {
         'far larger than the bare base-price change.') + '</div>';
   }
 
+  // 원천이 보유종목의 기준일을 주지 않는다. 그 사실을 표 위에 적는다 —
+  // 안 적으면 바로 위의 기준가(오늘)와 같은 날 것으로 읽힌다. 보유종목은
+  // 분기 공시라 실제로는 몇 달 묵어 있을 수 있다.
+  var holdNote = f.holdingCount
+    ? '<div class="notice">' + (lang === 'ko'
+        ? '<strong>이 보유종목이 언제 기준인지 원천이 알려 주지 않습니다.</strong> ' +
+          '기준가·수익률은 ' + esc(f.tradeDate || '') + ' 기준이지만, 보유종목에는 날짜가 ' +
+          '함께 오지 않습니다. 공모펀드의 보유종목은 분기 단위로 공시되므로 몇 달 앞선 ' +
+          '것일 수 있습니다. 정확한 기준일은 아래 <strong>운용보고서</strong>에서 ' +
+          '확인하십시오.'
+        : '<strong>The source does not say when these holdings were measured.</strong> ' +
+          'Prices and returns are as of ' + esc(f.tradeDate || '') + ', but holdings arrive ' +
+          'without a date. Korean fund holdings are disclosed quarterly, so these may be ' +
+          'months older. See the <strong>asset report</strong> below for the actual date.') +
+      '</div>'
+    : '';
+
   return '<div class="tint" style="margin-top:var(--space-block)">' + head +
-    '<div class="kv">' + kv + '</div>' + aumNote +
+    '<div class="kv">' + kv + '</div>' + aumNote + objectiveBlock(f) +
     '<h4>' + esc(lang === 'ko' ? '기간 수익률' : 'Returns') + '</h4>' + returnTable(f) + resetNote +
     metricsBlock(f) +
     '<h4>' + esc(lang === 'ko' ? '보유종목' : 'Holdings') +
       (f.holdingCount ? ' <span class="dim" style="font-weight:400;font-size:15px">(' +
         fmtNum(f.holdingCount) + (lang === 'ko' ? '종목' : '') + ')</span>' : '') + '</h4>' +
-    holdingsBlock(f) + classes + '</div>';
+    holdNote + holdingsBlock(f) + classes + termsBlock(f) + sourceLinks(f) + '</div>';
 }
 
 function byId(id) {
