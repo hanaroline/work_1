@@ -16,9 +16,10 @@
  *   상세   /api/fund/funds/{표준코드}/left-panel       유형·운용사·설정액
  *          .../chart-price-panel                      보유종목·자산구성·지표
  *          .../base-price/chart?term=3m               기준가 (하루 간격)
- *          .../base-price/chart?term=5y               기준가 (5년, 성김)
+ *          .../base-price/chart?term=1y               기준가 (주 간격)
+ *          .../base-price/chart?term=5y               기준가 (달 간격)
  *
- * ── 기준가 계열을 왜 두 번 받나 ─────────────────────────────────────────────
+ * ── 기준가 계열을 왜 세 번 받나 ─────────────────────────────────────────────
  *
  * 이 수집기의 핵심이다. 원천의 기간수익률을 그대로 실으면 안 된다.
  *
@@ -33,16 +34,23 @@
  *   2026-08-27  3361.50   ← 3.45배
  *
  * 곧 계산이 아니라 **계열에 계단이 있다.** 계단 앞뒤의 기준가는 같은 자로 잰
- * 것이 아니므로 나누어도 수익률이 아니다. 그래서 계열을 직접 받아 계단을 찾고,
- * **계단을 건너뛰는 구간은 값을 내지 않는다.**
+ * 것이 아니므로 나누어도 수익률이 아니다. 그래서 계열을 직접 받아 계단을 찾는다.
+ *
+ * 다만 **계단이 있다고 무조건 비우면 안 된다.** 아래로 나는 계단(결산·분배로
+ * 기준가를 1,000 으로 되돌리는 것)은 네이버가 보정해서 수익률을 낸다. 실물
+ * 20종목을 재어 보니 계단을 가로지르는 82개 칸 중 53개가 그런 경우였다.
+ * 계단만 보고 비웠으면 멀쩡한 값을 대량으로 버렸다.
+ *
+ * 그래서 판정할 것은 하나뿐이다 — **화면에 실릴 그 숫자가 계단을 먹었는가.**
+ * 자세한 것은 verifyReturns 에 적었다.
  *
  * 틀린 숫자를 내보내느니 빈칸이 낫다. 빈칸은 모른다는 뜻이지만 틀린 숫자는
  * 거짓말이다. ETF 에서 이 검산을 건너뛰었다가 화면에 +1,837% 가 나갔다.
  *
- * 짧은 구간과 긴 구간에 계열이 따로 필요하다. `term` 이 길수록 네이버가 점을
- * 성기게 솎아 주기 때문이다 — 3m 은 하루 간격 64점, 5y 는 한 달 간격 60점이다.
- * 계단은 하루 간격 계열에서 잡아야 정확하고, 1년·3년·5년 구간은 긴 계열이라야
- * 덮인다.
+ * 계열이 셋 필요한 것은 `term` 이 길수록 네이버가 점을 성기게 솎아 주기
+ * 때문이다 — 3m 은 하루 간격 64점, 1y 는 주 간격 52점, 5y 는 달 간격 60점이다.
+ * 계단은 촘촘한 계열에서 잡아야 정확하고, 1년·3년·5년 구간은 긴 계열이라야
+ * 덮인다. 하나만 받으면 계단을 놓치거나 구간을 못 덮는다.
  *
  * ── 못 만드는 것 ────────────────────────────────────────────────────────────
  *
@@ -50,7 +58,7 @@
  * 목록·상세가 모두 그렇다. 보수 비교는 이 원천으로 만들 수 없다. 지어내지
  * 않고 빈칸으로 둔다.
  *
- * 호출 수는 목록 160 + 펀드당 4회 ≈ 13,000회다. 동시 6개로 15~20분 걸린다.
+ * 호출 수는 목록 160 + 펀드당 5회 ≈ 16,000회다. 동시 6개로 15~20분 걸린다.
  * 수집률이 기준에 못 미치면 파일을 쓰지 않고 끝낸다 — 반쪽짜리로 어제 데이터를
  * 덮는 것이 제일 나쁘다.
  */
@@ -124,33 +132,71 @@ function toSeries(json) {
     .filter((p) => p.day && p.v != null && p.v > 0);
 }
 
+/** 중앙값. */
+function median(a) {
+  if (!a.length) return null;
+  const s = [...a].sort((x, y) => x - y);
+  const m = s.length >> 1;
+  return s.length % 2 ? s[m] : (s[m - 1] + s[m]) / 2;
+}
+
 /**
  * 기준가 계열의 계단을 찾는다.
  *
- * 계단은 수익률이 아니라 **기준가 재산정**이다. 펀드 합병·클래스 통합·액면
- * 재조정에서 생기고, 그 앞뒤 값은 같은 자로 잰 것이 아니다.
+ * 계단은 수익률이 아니다. 두 가지가 있다.
+ *   위로 나는 계단 — 기준가 **재산정**. 974.57 → 3,356.48 (3.44배)
+ *   아래로 나는 계단 — **결산·분배**. 쌓인 이익을 나눠 주고 기준가를 1,000 으로
+ *                     되돌린다. 3,000 → 1,000 (0.33배)
+ * 어느 쪽이든 앞뒤 값은 같은 자로 잰 것이 아니다.
  *
- * 성긴 계열(5년치는 한 달 간격)에서는 두 점 사이가 벌어지므로 배율만 보면
- * 정상적인 등락도 계단으로 잡힌다. 그래서 **하루당** 배율로 본다. 국내
- * 가격제한폭이 ±30% 이고 펀드는 그보다 훨씬 둔하다 — 하루 1.5배는 어떤
- * 펀드에서도 수익률일 수 없다.
+ * ── 규칙을 두 번 고쳤다 ────────────────────────────────────────────────────
+ *
+ * 처음에는 배율을 **하루당으로 환산**해 1.5배를 문턱으로 삼았다. 그러다
+ * 골든브릿지스마트단기채(3.147배)를 놓쳤다 — 사이에 주말이 끼어 사흘로
+ * 나뉘자 3.147^(1/3) = 1.466 이 되어 문턱 아래로 내려갔다. 주말은 사흘어치
+ * 복리가 아니다. 하필 **놓치는 쪽**으로 틀려서, 그대로 두었으면 화면에
+ * +215% 가 나갔다(tools/discovery/fund_returns_verify3.md).
+ *
+ * 그래서 보편 상수 하나를 모든 펀드에 들이대지 않고 **그 펀드 자신의 평소
+ * 폭**과 견준다. 하루 0.002% 씩 움직이던 채권형의 3.15배와, 하루 3% 씩
+ * 움직이는 2배 레버리지의 35% 는 크기가 비슷해도 뜻이 다르다.
+ *
+ *   로그수익률의 중앙값절대편차(MAD)로 그 펀드의 평소 폭을 잰다.
+ *   |로그수익률| 이 (가) 절대 바닥을 넘고 (나) 평소 폭의 8배를 넘으면 계단.
+ *
+ * 둘 다 있어야 한다. 바닥만 쓰면 변동이 큰 펀드의 정상적인 하루가 잡히고,
+ * 평소 폭만 쓰면 하루 0.001% 씩 움직이는 채권형이 0.5% 만 움직여도 500σ 가 된다.
  */
-const STEP_PER_DAY = 1.5;
-function findSteps(rows) {
+const STEP_K = 8;
+function findSteps(rows, floorRatio) {
+  if (rows.length < 5) return [];
+  const lr = [];
+  for (let i = 1; i < rows.length; i += 1) lr.push(Math.log(rows[i].v / rows[i - 1].v));
+  const med = median(lr) ?? 0;
+  // MAD 를 정규분포의 표준편차로 되돌리는 상수. 0 이면(완전히 평평한 계열)
+  // 평소 폭 조건이 무의미하므로 바닥만 본다.
+  const sigma = (median(lr.map((x) => Math.abs(x - med))) ?? 0) * 1.4826;
+  const floor = Math.log(floorRatio);
   const steps = [];
-  for (let i = 1; i < rows.length; i += 1) {
-    const ratio = rows[i].v / rows[i - 1].v;
-    const days = Math.max(1,
-      Math.round((Date.parse(rows[i].day) - Date.parse(rows[i - 1].day)) / 864e5));
-    const perDay = Math.pow(ratio, 1 / days);
-    if (perDay > STEP_PER_DAY || perDay < 1 / STEP_PER_DAY) {
-      steps.push({ day: rows[i].day, prevDay: rows[i - 1].day,
-                   from: +rows[i - 1].v.toFixed(2), to: +rows[i].v.toFixed(2),
-                   ratio: +ratio.toFixed(4) });
-    }
+  for (let i = 0; i < lr.length; i += 1) {
+    const x = Math.abs(lr[i] - med);
+    if (x <= floor) continue;                       // (가) 절대 바닥
+    if (sigma > 0 && x <= STEP_K * sigma) continue; // (나) 평소 폭의 8배
+    steps.push({ day: rows[i + 1].day, prevDay: rows[i].day,
+                 from: +rows[i].v.toFixed(2), to: +rows[i + 1].v.toFixed(2),
+                 ratio: +(rows[i + 1].v / rows[i].v).toFixed(4),
+                 sigmas: sigma > 0 ? +(x / sigma).toFixed(1) : null });
   }
   return steps;
 }
+
+// 계열마다 한 칸이 덮는 기간이 다르므로 바닥을 달리 잡는다.
+//   3m 은 하루 간격, 1y 는 주 간격, 5y 는 달 간격으로 솎여 온다.
+const SERIES_SPEC = [
+  { term: '3m', floorRatio: 1.25 },
+  { term: '1y', floorRatio: 1.6 },
+  { term: '5y', floorRatio: 2.2 },
+];
 
 // 화면에 싣는 기간. 원천이 주는 term 이름을 그대로 쓴다 —
 // 이름을 갈아 끼우면 원천과 대조할 때 한 번 더 옮겨야 하고, 그때 어긋난다.
@@ -168,9 +214,18 @@ const PERIODS = [
   { key: '5y',  back: (d) => d.setFullYear(d.getFullYear() - 5), long: true },
 ];
 
-// 하루 간격 계열로 재계산한 값이 원천과 이만큼 넘게 다르면 값을 내지 않는다.
-// 기준가는 소수 둘째 자리까지 오므로 반올림 오차가 남는다. 0.5%p 는 넉넉하다.
-const NEAR_DAILY = 0.5;
+/**
+ * 원천이 계단을 수익률에 흘려 넣었다고 볼 격차(%p).
+ *
+ * 임의로 고른 수가 아니다. 실물 20종목의 82개 칸을 재어 보니 두 무리가
+ * 뚜렷하게 갈렸다(tools/discovery/fund_returns_verify4.md).
+ *
+ *   흘려 넣은 칸 29개 — |차| 0.00 … 5.04 · 12.51 · 17.04
+ *   보정한 칸   53개 — |차| 30.07 · 30.47 · 35.80 … 198.98
+ *
+ * 17 과 30 사이가 비어 있다. 20 은 그 빈자리에 놓은 값이다.
+ */
+const PROPAGATED_MAX = 20;
 
 /**
  * 원천 기간수익률을 기준가 계열로 검산한다.
@@ -178,76 +233,111 @@ const NEAR_DAILY = 0.5;
  * 통과한 것만 화면으로 보낸다. 버린 것은 **왜 버렸는지** 같이 남긴다 —
  * 화면과 감사가 "빈칸인 이유" 를 말할 수 있어야 한다.
  *
- * 두 개의 관문이 있다.
+ * ── 관문은 하나뿐이다 ──────────────────────────────────────────────────────
  *
- *   (가) 계단이 구간 안에 있으면 버린다. 계단 앞뒤는 같은 자로 잰 것이
- *        아니므로 나누어도 수익률이 아니다. 이것이 244.9% 를 막는 관문이다.
- *   (나) 하루 간격 계열로 다시 계산한 값이 원천과 다르면 버린다. 어느 쪽이
- *        맞는지 모르니 둘 다 내지 않는다.
+ * 처음에는 "계단이 구간 안에 있으면 버린다" 로 짰다. **그러면 멀쩡한 값을
+ * 대량으로 버린다.** 703종목에서 21종목이 계단으로 잡혔는데 그중 18종목은
+ * 원천 수익률의 앞뒤가 멀쩡했고, 그 계단은 거의 다 아래로 난 결산·분배였다.
+ * 실물로 재어 보니 **네이버는 그런 계단을 보정해서 수익률을 낸다.**
  *
- * 긴 구간(6개월~5년)은 (나)를 걸지 않는다. 5년 계열이 한 달 간격으로 솎여
- * 와서 기준일이 최대 한 달까지 어긋나기 때문이다 — 그 어긋남을 오류로 세면
- * 멀쩡한 값을 통째로 버리게 된다. ETF 에서 연율 잣대로 정상값을 버릴 뻔한
- * 것과 같은 자리다. 긴 구간은 (가)만 건다.
+ *   KB연금미국S&P500  1년   원천 +17.49%   생값 −60.12%
+ *
+ * 결산으로 기준가가 3분의 1이 됐지만 원천의 1년 수익률은 +17.49% 다.
+ * 계단이 있다는 이유로 이걸 비웠으면 이 펀드에서만 멀쩡한 칸 5개를 버렸다.
+ *
+ * 그래서 계단의 방향이나 원인을 우리가 판정하지 않는다. 판정할 것은
+ * 하나뿐이다 — **화면에 실릴 그 숫자가 계단을 먹었는가.**
+ *
+ *   생값 = (마지막 기준가 / 구간 시작 기준가 − 1) × 100   ← 계단이 그대로 들어간다
+ *
+ *   생값 ≈ 원천 → 네이버가 계단을 그대로 흘려 넣었다. 거짓이다. **비운다.**
+ *   생값 ≠ 원천 → 네이버가 보정했다. 쓸 수 있다. **남긴다.**
+ *
+ * 계단이 없는 구간은 건드리지 않는다. 원천과 생값이 조금 달라도 그것은
+ * 대개 기준일이 하루이틀 어긋난 것이다 — 3개월 구간에서 표본의 18% 가 그렇게
+ * 어긋났는데, 그걸 오류로 세면 멀쩡한 값을 통째로 버리게 된다.
+ *
+ * 큰 격차도 계단 없이는 버리지 않는다. 격차가 크다는 것은 (가) 원천이
+ * 틀렸거나 (나) **내 탐지기가 놓친 사건을 원천이 보정한** 것인데, 실물에서는
+ * 늘 (나)였다. 모르는 쪽으로 버리면 멀쩡한 값을 버린다.
  */
-function verifyReturns(src, daily, long) {
+function verifyReturns(src, sets) {
   const kept = {};
   const dropped = [];
-  if (!src) return { kept: null, dropped };
+  // 계단을 가로지르는데도 **남긴** 칸. 감사가 그 판단을 다시 셈해 볼 수 있게
+  // 근거(생값)를 같이 남긴다. 근거 없이 "괜찮다고 봤다" 만 남기면 감사가
+  // 수집기의 판단을 믿는 수밖에 없고, 그러면 관문이 하나로 줄어든다.
+  const checked = [];
+  if (!src) return { kept: null, dropped, checked, steps: null };
 
-  const stepsDaily = findSteps(daily);
-  const stepsLong = findSteps(long);
-  // 두 계열에서 찾은 계단을 날짜로 합친다. 같은 계단이 양쪽에 잡힐 수 있다.
-  const stepDays = [...new Set([...stepsDaily, ...stepsLong].map((s) => s.day))].sort();
+  // 세 계열에서 각각 계단을 찾아 날짜로 합친다. 같은 계단이 여럿에 잡힐 수 있다.
+  const steps = [];
+  for (const spec of SERIES_SPEC) {
+    for (const s of findSteps(sets[spec.term] || [], spec.floorRatio)) {
+      steps.push({ ...s, term: spec.term });
+    }
+  }
+  const stepDays = [...new Set(steps.map((s) => s.day))].sort();
 
-  const anchor = daily[daily.length - 1] || long[long.length - 1];
+  // 끝점은 가장 촘촘한 계열의 마지막 값으로 고정한다. 긴 계열은 한 달 간격이라
+  // 마지막 점이 몇 주 묵어 있다 — 그걸 끝점으로 쓰면 생값이 통째로 어긋난다.
+  const daily = sets['3m'] || [];
+  const anchor = daily[daily.length - 1]
+              || (sets['1y'] || [])[(sets['1y'] || []).length - 1]
+              || (sets['5y'] || [])[(sets['5y'] || []).length - 1];
 
   for (const p of PERIODS) {
     const v = src[p.key];
     // Number(null) 은 0 이고 Number.isFinite(0) 은 true 다. null 을 먼저 본다 —
     // 없는 것을 0 이라고 말하면 "수익률이 0% 였다" 는 거짓 진술이 된다.
     if (v == null || !Number.isFinite(Number(v))) continue;
+    const val = +Number(v).toFixed(4);
 
-    const rows = p.long ? long : daily;
-    if (!anchor || rows.length < 2) { kept[p.key] = +Number(v).toFixed(4); continue; }
+    if (!anchor) { kept[p.key] = val; continue; }
 
-    const last = rows[rows.length - 1];
     let cutoff;
     if (p.back) {
-      const dt = new Date(`${last.day}T00:00:00Z`);
+      const dt = new Date(`${anchor.day}T00:00:00Z`);
       p.back(dt);
       cutoff = dt.toISOString().slice(0, 10);
     } else {
-      cutoff = `${last.day.slice(0, 4)}-01-01`;    // ytd
+      cutoff = `${anchor.day.slice(0, 4)}-01-01`;    // ytd
     }
 
-    // (가) 계단이 구간 안에 있는가. 계열이 그 구간을 못 덮으면 판단하지
-    //      않는다 — 모르는 것을 안다고 하지 않는다.
-    const covered = rows[0].day <= cutoff;
-    const hit = stepDays.filter((d) => d > cutoff && d <= last.day);
-    if (hit.length) {
-      dropped.push({ period: p.key, reason: 'step', source: +Number(v).toFixed(4),
-                     at: hit[0] });
+    // 계단이 이 구간을 가로지르는가. 안 가로지르면 그대로 싣는다.
+    const crossing = stepDays.filter((d) => d > cutoff && d <= anchor.day);
+    if (!crossing.length) { kept[p.key] = val; continue; }
+
+    // 가로지른다면 — 원천이 그 계단을 먹었는지 본다.
+    // 그 구간을 덮는 **가장 촘촘한** 계열을 쓴다. 기준일이 덜 어긋난다.
+    const rows = [sets['3m'], sets['1y'], sets['5y']]
+      .find((r) => r && r.length > 1 && r[0].day <= cutoff);
+    if (!rows) {
+      // 계열이 구간을 못 덮으니 판정할 수 없다. 모르는 것을 안다고 하지 않는다 —
+      // 계단이 가로지르는 것은 아는데 원천이 먹었는지는 모르므로 비운다.
+      dropped.push({ period: p.key, reason: 'step', source: val, at: crossing[0] });
       continue;
     }
-
-    // (나) 하루 간격 계열로 다시 계산해 원천과 맞대 본다.
-    if (!p.long && covered) {
-      let base = null;
-      for (const s of rows) { if (s.day <= cutoff) base = s; else break; }
-      if (base && base !== last) {
-        const cum = (last.v / base.v - 1) * 100;
-        if (Math.abs(Number(v) - cum) > NEAR_DAILY) {
-          dropped.push({ period: p.key, reason: 'mismatch',
-                         source: +Number(v).toFixed(4), recomputed: +cum.toFixed(4) });
-          continue;
-        }
-      }
+    let base = null;
+    for (const s of rows) { if (s.day <= cutoff) base = s; else break; }
+    if (!base || base.v <= 0) {
+      dropped.push({ period: p.key, reason: 'step', source: val, at: crossing[0] });
+      continue;
     }
-    kept[p.key] = +Number(v).toFixed(4);
+    const raw = (anchor.v / base.v - 1) * 100;
+    if (Math.abs(Number(v) - raw) <= PROPAGATED_MAX) {
+      // 원천이 계단을 그대로 흘려 넣었다. 이 숫자는 수익률이 아니다.
+      dropped.push({ period: p.key, reason: 'step', source: val,
+                     at: crossing[0], raw: +raw.toFixed(4) });
+      continue;
+    }
+    // 원천이 보정했다. 남기되, 왜 남겼는지 근거를 적어 둔다.
+    kept[p.key] = val;
+    checked.push({ period: p.key, at: crossing[0], raw: +raw.toFixed(4) });
   }
-  return { kept: Object.keys(kept).length ? kept : null, dropped,
-           steps: stepDays.length ? [...stepsDaily, ...stepsLong] : null };
+
+  return { kept: Object.keys(kept).length ? kept : null, dropped, checked,
+           steps: steps.length ? steps : null };
 }
 
 // ─────────────────────────── 상세 ───────────────────────────
@@ -274,10 +364,11 @@ function shapeAssets(a) {
 }
 
 async function fetchDetail(code) {
-  const [lp, cp, daily, long] = await Promise.all([
+  const [lp, cp, s3m, s1y, s5y] = await Promise.all([
     getJson(`${API}/${code}/left-panel`, { headers }),
     getJson(`${API}/${code}/chart-price-panel`, { headers }),
     getJson(`${API}/${code}/base-price/chart?term=3m`, { headers }),
+    getJson(`${API}/${code}/base-price/chart?term=1y`, { headers }),
     getJson(`${API}/${code}/base-price/chart?term=5y`, { headers }),
   ]);
   const d = lp?.detail || {};
@@ -295,9 +386,13 @@ async function fetchDetail(code) {
     if (r.benchmarkReturn != null) benchRet[r.term] = r.benchmarkReturn;
   }
 
-  const dailyS = toSeries(daily);
-  const longS = toSeries(long);
-  const { kept, dropped, steps } = verifyReturns(srcRet, dailyS, longS);
+  // 짧은 구간은 촘촘한 계열로, 긴 구간은 성긴 계열로 본다. term 이 길수록
+  // 네이버가 점을 솎아 준다 — 3m 은 하루 간격 64점, 1y 는 주 간격 52점,
+  // 5y 는 달 간격 60점이다. 하나만 받으면 계단을 놓치거나 구간을 못 덮는다.
+  const sets = { '3m': toSeries(s3m), '1y': toSeries(s1y), '5y': toSeries(s5y) };
+  const { kept, dropped, checked, steps } = verifyReturns(srcRet, sets);
+  const dailyS = sets['3m'];
+  const longS = sets['5y'];
 
   // 벤치마크 수익률도 같은 관문을 지나게 한다. 펀드 값은 버리고 벤치마크만
   // 남기면 화면에서 "펀드 –, 벤치마크 +12%" 가 되어 견줄 수 없는 두 칸이
@@ -347,6 +442,8 @@ async function fetchDetail(code) {
     retBenchmark: Object.keys(bench).length ? bench : null,
     retSrc: Object.keys(srcRet).length ? srcRet : null,   // 감사가 원천과 대조한다
     retDropped: dropped.length ? dropped : null,
+    // 계단을 가로지르는데도 남긴 칸과 그 근거. 감사가 다시 셈해 본다.
+    retChecked: checked.length ? checked : null,
     retAsOf: cp?.fundReturns?.baseDate || d.tradeDate || null,
     steps: steps && steps.length ? steps : null,
     seriesFrom: longS[0]?.day ?? dailyS[0]?.day ?? null,
