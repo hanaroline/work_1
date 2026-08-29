@@ -1781,6 +1781,63 @@ function renderRank() {
     byAum.slice(0, 20), function (f) { return esc(fmtAmount(f.aum)); },
     lang === 'ko' ? '설정액' : 'AUM');
 
+  // ── 자금 유입·유출 ────────────────────────────────────────────────────
+  //
+  // 원천은 펀드에 유입액을 주지 않는다(ETF 에는 준다). 여기 숫자는 우리가
+  // **설정원본의 차이**로 낸 것이다 — 설정원본은 좌수 × 1,000 이라 설정·해지
+  // 로만 움직인다. 순자산 차이를 쓰면 값이 오른 것과 돈이 들어온 것이
+  // 섞여서, 아무도 안 산 펀드가 "유입 상위" 에 오른다.
+  //
+  // 이력이 모자라면 표를 만들지 않는다. 하루치 차이에 "3개월" 이라는 이름을
+  // 붙이지 않는다.
+  var withFlow = pool.filter(function (f) {
+    return f.flow && f.flow.m3 != null && isFinite(f.flow.m3);
+  });
+  var histSrc = (DATA.sources && DATA.sources.history) || null;
+
+  if (withFlow.length) {
+    withFlow.sort(function (a, b) { return Number(b.flow.m3) - Number(a.flow.m3); });
+    // 기준일은 펀드마다 같지만, 화면이 아는 척하지 않도록 실제 값에서 읽는다.
+    var flowAsOf = (withFlow[0].flowAsOf && withFlow[0].flowAsOf.m3) || null;
+    var flowCell = function (f) {
+      var v = Number(f.flow.m3);
+      // fmtAmount 가 음수에는 '-' 를 붙인다. 양수에만 '+' 를 더한다.
+      return '<span class="' + signClass(v) + '">' + (v > 0 ? '+' : '') +
+             esc(fmtAmount(v)) + '</span>';
+    };
+
+    html += '<div class="notice">' + (lang === 'ko'
+      ? '아래 두 표의 <strong>자금 유입</strong>은 원천이 준 값이 아니라 ' +
+        '<strong>설정원본의 차이</strong>입니다' +
+        (flowAsOf ? ' (' + esc(flowAsOf) + ' 대비)' : '') + '. ' +
+        '설정원본은 좌수 × 1,000 이라 설정·해지로만 움직입니다 — ' +
+        '순자산 차이를 쓰면 수익률이 섞여 값이 오른 펀드가 유입 상위로 올라옵니다. ' +
+        '설정원본을 모르는 펀드와 그날 자료가 없는 펀드는 순위에 넣지 않습니다 (' +
+        withFlow.length.toLocaleString() + '개 대상).'
+      : 'Net flow below is <strong>not</strong> given by the source — it is the change in ' +
+        'units-at-par (설정원본)' + (flowAsOf ? ' vs ' + esc(flowAsOf) : '') + ', which moves only on ' +
+        'creations and redemptions. Using net-asset differences would mix in performance. ' +
+        'Funds without a known figure on either date are excluded (' +
+        withFlow.length.toLocaleString() + ' ranked).') + '</div>';
+
+    html += rankTable(lang === 'ko' ? '3개월 자금 유입 상위 20' : 'Top 20 by 3M net inflow',
+      withFlow.slice(0, 20), flowCell, lang === 'ko' ? '3개월 순유입' : '3M net inflow');
+    html += rankTable(lang === 'ko' ? '3개월 자금 유출 상위 20' : 'Top 20 by 3M net outflow',
+      withFlow.slice(-20).reverse(), flowCell, lang === 'ko' ? '3개월 순유입' : '3M net inflow');
+  } else {
+    // 왜 없는지 말한다. 조용히 빼면 "왜 ETF 에는 있고 펀드에는 없나" 를
+    // 다시 묻게 된다.
+    html += '<div class="notice">' + (lang === 'ko'
+      ? '<strong>3개월 자금 유입</strong>은 아직 낼 수 없습니다. 원천이 펀드에는 ' +
+        '유입액을 주지 않아(ETF 에는 줍니다) 설정원본의 차이로 내야 하는데, ' +
+        '설정원본 이력이 ' + (histSrc ? histSrc.dates + '일치' : '아직 없') + '이라 ' +
+        '3개월 전과 견줄 수가 없습니다. 하루치 차이에 "3개월" 이라는 이름을 붙이지 않습니다.'
+      : '<strong>3-month net flow</strong> is not available yet. The source does not provide ' +
+        'fund-level flows (it does for ETFs), so it must be derived from changes in units-at-par, ' +
+        'and only ' + (histSrc ? histSrc.dates + ' day(s)' : 'no') + ' of history has been ' +
+        'accumulated so far.') + '</div>';
+  }
+
   html += '<div id="rank-detail"></div>';
   body.innerHTML = html;
 }

@@ -338,8 +338,101 @@ function applyRegion(f) {
   return { ...f, region: null, regionSource: null, regionMissing: true };
 }
 
+// ── 자금 유입 ───────────────────────────────────────────────────────────────
+//
+// 원천은 펀드에 유입액을 주지 않는다. ETF 에는 `cumulativeNetInflowList` 가
+// 있지만 펀드 응답에는 그 필드가 없다(응답 원본 5건을 훑어 0건).
+//
+// 그래서 **설정원본의 차이**로 낸다. 407종목으로 확인한 항등식이 근거다:
+//
+//   derivedNav / derivedAum == basePrice / 1000
+//
+// 곧 derivedAum 은 설정원본(좌수 × 1,000)이고 수익률로 움직이지 않는다.
+// 설정·해지로만 움직이므로 그 차이가 곧 자금 순유입이다. **순자산 차이를
+// 쓰면 안 된다** — 아무도 안 샀는데 지수가 오른 펀드가 유입 상위에 오른다.
+//
+// 지난 설정원본은 data/fund-history.js 가 쌓는다. 3개월치가 차기 전에는
+// 3개월 유입이 안 나온다. 그때는 **비운다.** 있는 날짜만큼으로 3개월인 척
+// 하지 않는다 — 한 달 반짜리 차이를 3개월이라고 부르면 그냥 틀린 숫자다.
+const histData = await loadDataFile('data/fund-history.js', 'FUND_HISTORY');
+
+// 기간마다 며칠 전을 기준으로 삼는가, 그리고 며칠까지 어긋나도 되는가.
+// 영업일이 아니라 달력일로 잡고, 가장 가까운 열을 고른 뒤 **실제로 고른
+// 날짜를 같이 싣는다** — 화면이 "언제 대비" 인지 말할 수 있어야 한다.
+const FLOW_PERIODS = [
+  ['m1', 30, 5], ['m3', 91, 10], ['m6', 182, 14], ['y1', 365, 21],
+];
+
+function buildFlow() {
+  if (!histData?.dates?.length || !histData?.codes?.length) return null;
+  const base = kr?.funds?.[0]?.tradeDate || null;
+  if (!base) return null;
+  const baseMs = Date.parse(base);
+  if (!Number.isFinite(baseMs)) return null;
+
+  const idx = new Map(histData.codes.map((c, i) => [c, i]));
+  const anchors = {};
+  for (const [key, days, tol] of FLOW_PERIODS) {
+    const targetMs = baseMs - days * 86400000;
+    let best = null;
+    for (let i = 0; i < histData.dates.length; i += 1) {
+      const d = Date.parse(histData.dates[i]);
+      if (!Number.isFinite(d)) continue;
+      const off = Math.abs(d - targetMs) / 86400000;
+      if (off > tol) continue;
+      if (!best || off < best.off) best = { i, off, date: histData.dates[i] };
+    }
+    if (best) anchors[key] = best;
+  }
+  if (!Object.keys(anchors).length) return null;
+  const aumAt = (row, col) => {
+    const v = histData.aum?.[row]?.[col];
+    return v == null || !Number.isFinite(Number(v)) ? null : Number(v);
+  };
+  return { idx, anchors, base, aumAt };
+}
+
+const FLOW = buildFlow();
+if (FLOW) {
+  console.log('[build] 자금유입 기준:', Object.entries(FLOW.anchors)
+    .map(([k, v]) => `${k}←${v.date}`).join(' '));
+} else {
+  console.log(`[build] 자금유입: 이력이 모자라 못 낸다` +
+    (histData?.dates?.length ? ` (열 ${histData.dates.length}개: ${histData.dates.join(', ')})` : ' (이력 없음)'));
+}
+
+function applyFlow(f) {
+  if (!FLOW) return f;
+  const now = f.aum;
+  // 오늘 설정원본을 모르면 차이도 모른다. 0 으로 두지 않는다.
+  if (now == null || !Number.isFinite(Number(now))) return f;
+  const i = FLOW.idx.get(f.code);
+
+  const flow = {};
+  const flowAsOf = {};
+  const flowSince = {};
+  for (const [key, a] of Object.entries(FLOW.anchors)) {
+    let then = i == null ? null : FLOW.aumAt(a.i, i);
+    // 그날 값이 없다. 두 경우가 섞여 있으니 갈라야 한다.
+    //   ① 그때 그 펀드가 아직 없었다  → 그날 설정원본은 참으로 0 이다
+    //   ② 그날 못 받았다              → 모르는 것이다. 0 이 아니다
+    // 설정일로 가른다. 설정일이 기준일보다 뒤면 ①이다.
+    if (then == null) {
+      const inc = f.inceptionDate ? Date.parse(f.inceptionDate) : NaN;
+      if (Number.isFinite(inc) && inc > Date.parse(a.date)) {
+        then = 0;
+        flowSince[key] = 'inception';
+      } else continue;                       // 모르면 비운다
+    }
+    flow[key] = Math.round(Number(now) - Number(then));
+    flowAsOf[key] = a.date;
+  }
+  if (!Object.keys(flow).length) return f;
+  return { ...f, flow, flowAsOf, flowSince, flowBase: FLOW.base };
+}
+
 if (kr?.funds?.length) {
-  funds = kr.funds.map(applyRegion).map(finish);
+  funds = kr.funds.map(applyRegion).map(applyFlow).map(finish);
   sources.kr = {
     updatedAt: kr.updatedAt, count: kr.count, listCount: kr.listCount,
     withHoldings: kr.withHoldings, withRet: kr.withRet,
@@ -353,6 +446,18 @@ if (kr?.funds?.length) {
       changedFromNaver: regionData.changedFromNaver,
       filledFromBlank: regionData.filledFromBlank,
       source: '금융투자협회 전자공시 (1차 출처)',
+    };
+  }
+  if (histData) {
+    sources.history = {
+      updatedAt: histData.updatedAt,
+      dates: histData.dates?.length || 0,
+      from: histData.dates?.[0] || null,
+      to: histData.dates?.[histData.dates.length - 1] || null,
+      codes: histData.codes?.length || 0,
+      anchors: FLOW ? Object.fromEntries(
+        Object.entries(FLOW.anchors).map(([k, v]) => [k, v.date])) : null,
+      source: '설정원본 이력 (스스로 쌓음)',
     };
   }
   source = 'live';
@@ -414,6 +519,23 @@ const payload = {
           'from the head of Naver’s category name, which disagreed with the primary ' +
           'source in 34 of 318 sampled funds (10.7%) — Naver’s "mixed" refers to the ' +
           'asset mix, not the region.',
+    },
+    flow: {
+      ko: '자금 유입은 원천이 주는 값이 **아닙니다**. ETF 에는 유입액 필드가 ' +
+          '있지만 펀드 응답에는 없습니다. 그래서 **설정원본(좌수 × 1,000)의 ' +
+          '차이**로 냅니다 — 설정원본은 수익률로 움직이지 않고 설정·해지로만 ' +
+          '움직이므로 그 차이가 곧 순유입입니다. **순자산의 차이를 쓰면 ' +
+          '안 됩니다**: 아무도 사지 않았는데 지수가 오른 펀드가 유입 상위로 ' +
+          '올라오기 때문입니다. 지난 설정원본은 이 화면이 날마다 스스로 ' +
+          '쌓습니다. 쌓인 기간이 모자라면 그 기간의 유입은 **비웁니다** — ' +
+          '한 달치 차이를 3개월이라고 부르지 않습니다.',
+      en: 'Net flows are **not** given by the source. ETFs carry an inflow field; ' +
+          'fund responses do not. Flows are therefore derived as the change in ' +
+          'units-at-par (units × 1,000), which moves only on creations and ' +
+          'redemptions, never with returns. Net-asset differences are deliberately ' +
+          'not used — they would rank a fund that merely rose in price as a top ' +
+          'inflow. The prior figures are accumulated daily by this project; where ' +
+          'the history is too short for a period, that period is left blank.',
     },
     step: {
       ko: '기준가 계열에 재산정 계단이 있는 펀드는 그 구간의 수익률을 ' +

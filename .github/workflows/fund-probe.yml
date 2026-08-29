@@ -16,6 +16,7 @@ on:
     paths:
       - 'scripts/verify_fund_returns.mjs'
       - 'scripts/probe_fund_*.mjs'
+      - 'scripts/probe_kofia_*.mjs'
       - '.github/workflows/fund-probe.yml'
 
 permissions:
@@ -148,6 +149,35 @@ jobs:
         if: hashFiles('scripts/probe_fund_sectors.mjs') != ''
         run: node scripts/probe_fund_sectors.mjs
 
+      # 사용자가 "ETF 처럼 3개월 자금유입 상위" 를 물었다. 펀드에는 그 값이
+      # 원천에 없다 — ETF 는 네이버가 `cumulativeNetInflowList` 로 얹어 주지만
+      # 펀드 응답 다섯 갈래 어디에도 그 항목이 없었다.
+      #
+      # 대신 **설정원본의 차이**가 곧 순유입이다(407종목으로 확인한 항등식:
+      # 순자산 = 설정원본 × 기준가/1000). 문제는 과거 설정원본이 없다는 것.
+      # 지금부터 쌓으면 3개월을 기다려야 한다.
+      #
+      # 금투협 펀드 요약 팝업에 `standardDt`(기준일자) 인자가 있다. 이것이
+      # 실제로 먹으면 소급해서 한 번에 채울 수 있다. **인자를 받아 준다는 것과
+      # 값이 바뀐다는 것은 다르다** — 그래서 값이 바뀌는지로 판정한다.
+      - name: 검산 실행 13차 (금투협 소급 설정원본이 되는가)
+        timeout-minutes: 30
+        if: hashFiles('scripts/probe_fund_kofia_flow.mjs') != ''
+        run: |
+          npm i -D playwright@1.56.1 --no-audit --no-fund
+          npx playwright install --with-deps chromium
+          node scripts/probe_fund_kofia_flow.mjs
+
+      # 같은 물음의 다른 갈래 — 금투협 공식 오픈API 로 받을 수 있는가.
+      # 세션에서는 openapi.kofia.or.kr 이 막혀(EGRESS_BLOCKED) 이용안내를
+      # 열지 못한다. 신청 절차를 검색 요약만 보고 적으면 지어내는 것이 된다.
+      # 러너가 원문을 받아 저장소에 남긴다.
+      - name: 검산 실행 14차 (금투협 오픈API 이용안내 원문)
+        timeout-minutes: 10
+        continue-on-error: true
+        if: hashFiles('scripts/probe_kofia_openapi_docs.mjs') != ''
+        run: node scripts/probe_kofia_openapi_docs.mjs
+
       - name: 결과 업로드
         if: always()
         uses: actions/upload-artifact@v4
@@ -164,6 +194,8 @@ jobs:
             tools/discovery/fund_funddoctor.*
             tools/discovery/fund_tabs.*
             tools/discovery/fund_sectors.*
+            tools/discovery/fund_kofia_flow.*
+            tools/discovery/kofia_openapi_docs.md
           retention-days: 7
 
       - name: 결과 커밋
@@ -181,6 +213,8 @@ jobs:
           git add tools/discovery/fund_funddoctor.* 2>/dev/null || true
           git add tools/discovery/fund_tabs.* 2>/dev/null || true
           git add tools/discovery/fund_sectors.* 2>/dev/null || true
+          git add tools/discovery/fund_kofia_flow.* 2>/dev/null || true
+          git add tools/discovery/kofia_openapi_docs.md 2>/dev/null || true
           git commit -m "chore(fund): 원천 조사 결과 갱신" || echo "변경 없음"
           git pull --rebase --autostash origin "${GITHUB_REF_NAME}" || true
           git push || echo "푸시 실패 (무시)"
