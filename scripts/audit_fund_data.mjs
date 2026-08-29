@@ -71,6 +71,11 @@ const BACK = {
   '3y': (d) => d.setFullYear(d.getFullYear() - 3),
   '5y': (d) => d.setFullYear(d.getFullYear() - 5),
 };
+// 원천이 주는 위험등급. 숫자가 아니라 문자열이고 여섯 가지뿐이다.
+// 새로운 값이 오면 원천이 바뀐 것이므로 알아야 한다.
+const RISK_GRADES = new Set(['veryHighRisk', 'highRisk', 'moderatelyHighRisk',
+                             'moderateRisk', 'lowRisk', 'veryLowRisk']);
+
 // 구간이 몇 해치인가. 설정일보다 긴 구간이 있는지 보는 데 쓴다.
 const YEARS = { '1d': 1 / 252, '1w': 1 / 52, '1m': 1 / 12, '3m': 0.25, '6m': 0.5,
                 '9m': 0.75, ytd: null, '1y': 1, '2y': 2, '3y': 3, '5y': 5 };
@@ -391,6 +396,42 @@ for (const f of FUNDS) {
     else if (fee === 0) flag('error', '총보수-영', f, 'totalFee=0 → 화면에 "0.000%" 로 찍힌다. 빈칸이어야 한다');
     else if (fee > 5) flag('error', '총보수-과다', f, `totalFee=${fee}% (5% 초과)`, { totalFee: fee });
   }
+  // 화면이 실제로 쓰는 것은 **클래스별** 총보수다. 펀드 단위 값은 거의 다
+  // 비어 있고, 클래스에는 채워져 있다(19,092개 중 18,712개).
+  const cls = Array.isArray(f.classes) ? f.classes : [];
+  for (const c of cls) {
+    if (c.totalFee == null) continue;
+    const fee = Number(c.totalFee);
+    if (!Number.isFinite(fee)) {
+      flag('error', '클래스보수-비수치', f, `${c.name || c.code}: ${c.totalFee}`);
+    } else if (fee < 0) {
+      flag('error', '클래스보수-음수', f, `${c.name || c.code}: ${fee}%`);
+    } else if (fee > 5) {
+      // 국내 공모펀드 총보수는 5% 를 넘지 않는다. 넘으면 단위가 어긋난 것이다.
+      flag('error', '클래스보수-과다', f, `${c.name || c.code}: ${fee}% (5% 초과)`, { fee });
+    }
+  }
+  // 화면이 쓰는 파생값(범위)이 실제 클래스와 맞는가.
+  const clsFees = cls.map((c) => c.totalFee)
+    .filter((v) => v != null && Number.isFinite(Number(v)) && Number(v) > 0).map(Number);
+  if (clsFees.length) {
+    const lo = Math.min(...clsFees), hi = Math.max(...clsFees);
+    if (f.feeMin == null || Math.abs(Number(f.feeMin) - lo) > 0.0011) {
+      flag('error', '총보수범위-최저불일치', f,
+           `저장 ${f.feeMin} vs 재계산 ${lo.toFixed(3)}`, { stored: f.feeMin, recomputed: +lo.toFixed(3) });
+    }
+    if (f.feeMax == null || Math.abs(Number(f.feeMax) - hi) > 0.0011) {
+      flag('error', '총보수범위-최고불일치', f,
+           `저장 ${f.feeMax} vs 재계산 ${hi.toFixed(3)}`, { stored: f.feeMax, recomputed: +hi.toFixed(3) });
+    }
+    if (Number(f.feeCount) !== clsFees.length) {
+      flag('warn', '총보수-개수불일치', f, `저장 ${f.feeCount} vs 실제 ${clsFees.length}`);
+    }
+  } else if (f.feeMin != null || f.feeMax != null) {
+    // 보수를 아는 클래스가 하나도 없는데 범위를 적어 두면 지어낸 것이다.
+    flag('error', '총보수범위-근거없음', f,
+         `클래스에 보수가 하나도 없는데 범위를 ${f.feeMin}~${f.feeMax} 로 적었다`);
+  }
 
   // ── 10. 위험지표 ────────────────────────────────────────────────────────
   const m = f.metrics;
@@ -423,11 +464,12 @@ for (const f of FUNDS) {
   } else {
     flag('warn', '유형-없음', f, 'parentPeerGroupName 이 없다');
   }
-  if (f.riskGrade != null) {
-    const g = Number(f.riskGrade);
-    if (!Number.isFinite(g) || g < 1 || g > 6) {
-      flag('warn', '위험등급-범위밖', f, `riskGrade=${f.riskGrade}`);
-    }
+  // 위험등급은 **문자열**로 온다. 처음에 1~6 의 숫자로 짐작하고 규칙을
+  // 걸었다가 3,196개 중 3,195개를 헛잡았다. 규칙이 대량으로 잡으면 자료가
+  // 아니라 규칙을 의심해야 한다 — 실제 값은 여섯 가지 문자열뿐이었다.
+  if (f.riskGrade != null && !RISK_GRADES.has(String(f.riskGrade))) {
+    flag('warn', '위험등급-모르는값', f,
+         `riskGrade=${f.riskGrade} (아는 값: ${[...RISK_GRADES].join(', ')})`);
   }
 }
 
