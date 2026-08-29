@@ -1,0 +1,67 @@
+name: 펀드 원천 검산 (조사)
+
+# 이 저장소의 세션은 이그레스 정책 때문에 네이버에 직접 못 붙는다
+# (CONNECT 403). 러너는 그 정책 밖이므로 여기서 대신 찔러 보고 결과를
+# 저장소에 커밋한다. 화면과 수집기는 이 결과를 보고 쓴다.
+#
+# 검산을 고치는 동안 반복해서 돌게 되므로 push 로도 발동시킨다.
+# (세션 토큰에 Actions 쓰기 권한이 없어 workflow_dispatch 를 API 로 부르지
+#  못한다. 대신 파일을 푸시하면 여기가 돈다.)
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - 'claude/fund-**'
+    paths:
+      - 'scripts/verify_fund_returns.mjs'
+      - 'scripts/probe_fund_*.mjs'
+      - '.github/workflows/fund-probe.yml'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: fund-probe-${{ github.ref_name }}
+  cancel-in-progress: true
+
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref_name }}
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      # 지금 답이 필요한 것 하나다 — 목록·상세에 실린 244.9% 가 기간수익률인가,
+      # 설정 이후 누적인가. 여기서 계열의 뜻이 갈린다.
+      #
+      # continue-on-error 를 쓰지 않는다. 이 단계가 죽으면 화면을 만들 근거가
+      # 없으므로 잡도 같이 실패해야 한다 — 0초 만에 success 로 찍히는 것을
+      # ETF 세션에서 두 번 겪었다.
+      - name: 검산 실행 (기간수익률 계열)
+        timeout-minutes: 25
+        run: node scripts/verify_fund_returns.mjs
+
+      - name: 결과 업로드
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: fund-probe
+          path: tools/discovery/fund_returns_verify.*
+          retention-days: 7
+
+      - name: 결과 커밋
+        if: always()
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          if [ -f tools/discovery/fund_returns_verify.json ]; then
+            git add tools/discovery/fund_returns_verify.* || true
+            git commit -m "chore(fund): 기간수익률 검산 결과 갱신" || echo "변경 없음"
+            git push || echo "푸시 실패 (무시)"
+          fi
