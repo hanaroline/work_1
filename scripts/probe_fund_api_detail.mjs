@@ -72,20 +72,38 @@ function toText(html) {
 const browser = await chromium.launch();
 const ctx = await browser.newContext({ userAgent: UA, locale: 'ko-KR' });
 
-async function open(url, wait = 5000) {
-  const page = await ctx.newPage();
-  try {
-    const res = await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 45000 });
-    await page.waitForTimeout(wait);
-    return { status: res ? res.status() : null, url: page.url(), html: await page.content() };
-  } finally {
-    await page.close();
+const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+
+/**
+ * 첫 판은 한 번 부르고 실패하면 그냥 넘어갔다. 세 번 다 끊겨서
+ * "후보 0개" 라고만 적힌 파일이 남았다 — **못 받은 것을 없는 것처럼**
+ * 적은 것이다. 20분 전 15차는 같은 주소를 200 으로 열었으므로 원천이
+ * 없는 게 아니라 연달아 두드려서 끊긴 것이다. 물러섰다가 다시 부른다.
+ */
+async function open(url, wait = 5000, tries = 3) {
+  let last = null;
+  for (let i = 0; i < tries; i += 1) {
+    if (i) await sleep(8000 * i);
+    const page = await ctx.newPage();
+    try {
+      const res = await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 60000 });
+      await page.waitForTimeout(wait);
+      return { status: res ? res.status() : null, url: page.url(), html: await page.content(), tries: i + 1 };
+    } catch (e) {
+      last = e;
+      console.log(`[detail] ${i + 1}번째 실패: ${String(e.message).split('\n')[0]}`);
+    } finally {
+      await page.close();
+    }
   }
+  throw last;
 }
 
 // ── 1. 목록에서 후보의 주소를 모은다 ────────────────────────────────────────
 const found = new Map();   // href -> title
+const lists = [];          // 목록 화면을 받았는가. 이것을 안 적으면 0 이 거짓말이 된다.
 for (const kw of KEYWORDS) {
+  const before = found.size;
   try {
     const r = await open(LIST(kw), 6000);
     for (const m of r.html.matchAll(
@@ -95,11 +113,19 @@ for (const kw of KEYWORDS) {
       const href = new URL(m[1], r.url).href;
       if (!found.has(href)) found.set(href, title);
     }
-    console.log(`[detail] "${kw}" 목록 — 지금까지 후보 ${found.size}개`);
+    // 링크가 하나도 안 걸렸는데 화면은 받은 경우 — 규칙(정규식)이 틀린 것이다.
+    // 그때는 원문을 남겨 사람이 실제 href 모양을 보게 한다.
+    const anchors = (r.html.match(/\/data\/\d+\/(?:openapi|fileData|standard)\.do/g) || []).length;
+    lists.push({ kw, ok: true, status: r.status, tries: r.tries, anchors,
+                 added: found.size - before,
+                 sample: anchors ? null : (r.html.match(/<a[^>]+href="[^"]*data[^"]*"[^>]*>/i) || [null])[0] });
+    console.log(`[detail] "${kw}" 목록 HTTP ${r.status} — 상세링크 ${anchors}개, 후보 누적 ${found.size}개`);
   } catch (e) {
+    lists.push({ kw, ok: false, error: String(e.message || e).split('\n')[0].slice(0, 160) });
     console.log(`[detail] "${kw}" 목록 실패: ${e.message}`);
   }
 }
+const gotAnyList = lists.some((l) => l.ok);
 
 // ── 2. 상세 화면을 열어 출력 항목을 본다 ────────────────────────────────────
 const results = [];
@@ -119,6 +145,7 @@ for (const [href, title] of [...found].slice(0, MAX_OPEN)) {
   }
   results.push(rec);
   console.log(`[detail] ${rec.status ?? '실패'} ${title}`);
+  await sleep(3000);   // 남의 서버다. 몰아치지 않는다.
 }
 
 await browser.close();
@@ -137,6 +164,30 @@ const md = [
   '유입을 못 낸다 — 순자산 차이에는 수익률이 섞이기 때문이다.',
   '',
   `후보 ${found.size}개를 찾아 ${results.length}개를 열었다.`,
+  '',
+  '## 목록 화면을 받았는가',
+  '',
+  '**이 표를 먼저 본다.** 목록을 못 받으면 아래 후보 수 0 은 "없다" 가 아니라',
+  '"못 봤다" 이다. 둘을 섞으면 없는 것을 있다고 말하는 것만큼 나쁜 거짓이 된다.',
+  '',
+  '| 검색어 | 받았나 | HTTP | 시도 | 상세링크 | 새 후보 |',
+  '|---|:--:|:--:|:--:|:--:|:--:|',
+  ...lists.map((l) => (l.ok
+    ? `| ${l.kw} | 받음 | ${l.status} | ${l.tries} | ${l.anchors} | ${l.added} |`
+    : `| ${l.kw} | **못 받음** | — | 3 | — | — |`)),
+  '',
+  ...lists.filter((l) => !l.ok).map((l) => `- \`${l.kw}\` 실패: ${l.error}`),
+  ...lists.filter((l) => l.ok && l.anchors === 0)
+          .map((l) => `- \`${l.kw}\` 화면은 받았는데 상세링크가 0개다 — **내 정규식이 틀렸을 수 있다.** ` +
+                      `본 것: \`${(l.sample || '없음').slice(0, 120)}\``),
+  '',
+  gotAnyList
+    ? (found.size === 0
+        ? '> 목록은 받았으나 후보가 안 걸렸다. 링크 추출 규칙부터 의심할 것.'
+        : '')
+    : '> **판정 못 함.** 목록 화면을 하나도 못 받았다. 후보가 없다는 뜻이 아니다.\n' +
+      '> data.go.kr 이 연달아 두드리면 끊는 것으로 보인다(15차는 같은 주소를 200 으로 열었다).\n' +
+      '> 다시 돌려야 한다 — 이 파일의 빈 표를 근거로 아무것도 말하지 말 것.',
   '',
   '## 한눈에',
   '',
