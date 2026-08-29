@@ -121,11 +121,23 @@ jobs:
       # 자리를 메울 수 있는지 본다. robots 가 막으면 거기서 멈춘다.
       - name: 검산 실행 10차 (제로인이 세 번째 출처가 되는가)
         timeout-minutes: 20
-        if: hashFiles('scripts/probe_fund_funddoctor.mjs') != ''
+        # 결과가 저장소에 남았다. 다시 볼 일이 있으면 수동 실행으로 돌린다.
+        if: github.event_name == 'workflow_dispatch' && hashFiles('scripts/probe_fund_funddoctor.mjs') != ''
         run: |
           npm i -D playwright@1.56.1 --no-audit --no-fund
           npx playwright install --with-deps chromium
           node scripts/probe_fund_funddoctor.mjs
+
+      # 사용자가 미래에셋증권 펀드 화면을 보여 주었다. 거기 있는데 우리에게
+      # 없는 것 — 업종구성, 보유종목 기준일, 자산구분, 보수 내역, 수수료.
+      # 네이버 탭 셋 중 우리는 첫 탭만 봤다. 나머지 둘을 연다.
+      - name: 검산 실행 11차 (안 열어 본 탭 둘)
+        timeout-minutes: 25
+        if: hashFiles('scripts/probe_fund_tabs.mjs') != ''
+        run: |
+          npm i -D playwright@1.56.1 --no-audit --no-fund
+          npx playwright install --with-deps chromium
+          node scripts/probe_fund_tabs.mjs
 
       - name: 결과 업로드
         if: always()
@@ -141,6 +153,7 @@ jobs:
             tools/discovery/fund_class_probe2.*
             tools/discovery/fund_class_page2_*.png
             tools/discovery/fund_funddoctor.*
+            tools/discovery/fund_tabs.*
           retention-days: 7
 
       - name: 결과 커밋
@@ -156,6 +169,7 @@ jobs:
           git add tools/discovery/fund_class_probe2.* 2>/dev/null || true
           git add tools/discovery/fund_class_page2_*.png 2>/dev/null || true
           git add tools/discovery/fund_funddoctor.* 2>/dev/null || true
+          git add tools/discovery/fund_tabs.* 2>/dev/null || true
           git commit -m "chore(fund): 원천 조사 결과 갱신" || echo "변경 없음"
           git pull --rebase --autostash origin "${GITHUB_REF_NAME}" || true
           git push || echo "푸시 실패 (무시)"

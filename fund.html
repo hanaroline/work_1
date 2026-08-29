@@ -660,7 +660,13 @@ function matches(f) {
               (f.type || '') + ' ' + (f.benchmarkName || '');
     if (hay.toLowerCase().indexOf(q) < 0) {
       var hit = false;
-      var hs = f.holdings || [];
+      // **클래스를 먼저 훑는다.** 사람이 손에 든 코드는 대개 클래스 코드다 —
+      // 통장·HTS·판매사 화면에 찍히는 것이 그것이고, 네이버도 클래스 코드로
+      // 화면을 연다. 여기를 안 훑는 동안 K55207BJ1791 을 붙여넣으면 결과가
+      // 0건이었다. 그 코드는 우리 자료에 분명히 있다 — 교보악사파워인덱스
+      // 증권자투자신탁 2 의 ClassAe 로, 다만 classes[] 안에 있었다.
+      if (matchClass(f, q)) hit = true;
+      var hs = hit ? [] : (f.holdings || []);
       for (var j = 0; j < hs.length; j += 1) {
         if ((hs[j].name || '').toLowerCase().indexOf(q) >= 0) { hit = true; break; }
       }
@@ -668,6 +674,15 @@ function matches(f) {
     }
   }
   return true;
+}
+/** 검색어가 이 펀드의 클래스(코드·이름)에 걸리는가. */
+function matchClass(f, q) {
+  var cs = f.classes || [];
+  for (var i = 0; i < cs.length; i += 1) {
+    if ((cs[i].code || '').toLowerCase().indexOf(q) >= 0) return true;
+    if ((cs[i].name || '').toLowerCase().indexOf(q) >= 0) return true;
+  }
+  return false;
 }
 function filtered() { return FUNDS.filter(matches); }
 
