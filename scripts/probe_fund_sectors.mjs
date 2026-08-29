@@ -41,32 +41,39 @@ const headers = { Referer: 'https://stock.naver.com/domestic/fund' };
 
 const out = { at: new Date().toISOString(), raw: [], shapes: {}, sums: [], notes: [] };
 
-/** 목록에서 여러 유형이 섞이도록 뽑는다. 주식형만 보면 "업종은 주식형에만
- *  있다" 는 말을 확인할 수 없다 — 없는 쪽도 봐야 한다. */
+/** 12차 1회차는 표본 3개에 그쳤다. 목록 항목에는 `parentPeerGroupName` 이
+ *  없는데(유형은 상세인 left-panel 에 있다) 그것으로 묶으려 했으니 전부
+ *  한 칸에 몰렸고, 칸마다 3개씩만 뽑는 규칙에 걸려 3개가 됐다. 게다가 그
+ *  3개는 `availability.sectors` 가 **false** 인 펀드였다 — 업종이 원래
+ *  없는 펀드를 들여다보고 "업종구성이 안 온다" 고 적을 뻔했다.
+ *
+ *  이번엔 유형으로 묶지 않는다. 넓게 훑어 `availability.sectors` 가 true 인
+ *  펀드만 골라 본다. 그것이 업종을 준다고 원천이 말한 펀드다. */
 const list = [];
-for (let page = 1; page <= 6; page += 1) {
+for (let page = 1; page <= 12; page += 1) {
   const r = await getJson(`${API}?page=${page}&size=20`, { headers }).catch(() => null);
-  for (const it of (r?.funds || r?.result || [])) list.push(it);
+  for (const it of (r?.funds || [])) list.push(it);
 }
 out.notes.push(`목록 ${list.length}개 확보`);
 
-const byType = new Map();
-for (const it of list) {
-  const t = it.parentPeerGroupName || '(유형없음)';
-  if (!byType.has(t)) byType.set(t, []);
-  byType.get(t).push(it);
-}
-// 유형마다 최대 3개씩, 전부 합쳐 60개 안쪽으로.
-const picks = [];
-for (const [t, arr] of byType) for (const it of arr.slice(0, 3)) picks.push({ type: t, item: it });
-out.notes.push(`유형 ${byType.size}종에서 ${picks.length}개 표본`);
+const avails = await mapLimit(list, 4, async (it) => {
+  const cp = await getJson(`${API}/${it.fundCode}/chart-price-panel`, { headers }).catch(() => null);
+  return { code: it.fundCode, name: it.fundName, avail: cp?.availability ?? null,
+           basePrice: cp?.basePrice ?? it.basePrice ?? null };
+});
+const flat = avails.map((r) => r?.value ?? r).filter(Boolean);
+const withSec = flat.filter((r) => r.avail?.sectors === true);
+const noSec = flat.filter((r) => r.avail?.sectors === false);
+out.notes.push(`availability.sectors=true ${withSec.length}개 · false ${noSec.length}개 / ${flat.length}개`);
 
-const res = await mapLimit(picks.slice(0, 60), 4, async ({ type, item }) => {
-  const code = item.fundCode;
-  const fa = await getJson(`${API}/${code}/fund-allocation`, { headers }).catch(() => null);
-  const cp = await getJson(`${API}/${code}/chart-price-panel`, { headers }).catch(() => null);
-  return { code, type, name: item.fundName, fa, avail: cp?.availability ?? null,
-           basePrice: cp?.basePrice ?? item.basePrice ?? null };
+// sectors 가 true 라는 것만 본다. false 인 펀드는 애초에 업종이 없다.
+const picks = withSec.slice(0, 40);
+if (!picks.length) out.notes.push('sectors=true 인 펀드를 못 찾았다. 표본을 넓혀야 한다.');
+
+const res = await mapLimit(picks, 4, async (p) => {
+  const fa = await getJson(`${API}/${p.fundCode ?? p.code}/fund-allocation`, { headers }).catch(() => null);
+  return { code: p.code, type: p.avail?.sectors === true ? 'sectors:true' : 'sectors:false',
+           name: p.name, fa, avail: p.avail, basePrice: p.basePrice };
 });
 
 for (const r of res) {
