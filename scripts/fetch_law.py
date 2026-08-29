@@ -251,6 +251,52 @@ def texts_in(node, depth=0):
     return out
 
 
+def as_list(v):
+    if v is None:
+        return []
+    return v if isinstance(v, list) else [v]
+
+
+def article_body(node):
+    """조문 하나의 본문을 **법조문 차례대로** 짓는다.
+
+    응답의 열쇠 선언 순서는 항이 조문내용보다 앞이다. 자본시장법 제55조가
+    실제로 그랬다 — 나무를 훑는 순서를 그대로 믿었더니 각 호 네 줄이 조문
+    본문보다 먼저 찍혔다. 그래서 조문내용 → 항 → 호 → 목 차례를 여기에
+    못 박는다. 겉모양을 모르는 법령만 texts_in 으로 되돌린다.
+    """
+    out = []
+    head = clean(node.get("조문내용", ""))
+    if head.strip():
+        out.append(head)
+    for hang in as_list(node.get("항")):
+        if not isinstance(hang, dict):
+            continue
+        t = clean(hang.get("항내용", ""))
+        if t.strip():
+            out.append(indent(t, 1))
+        for ho in as_list(hang.get("호")):
+            if not isinstance(ho, dict):
+                continue
+            t = clean(ho.get("호내용", ""))
+            if t.strip():
+                out.append(indent(t, 2))
+            for mok in as_list(ho.get("목")):
+                if not isinstance(mok, dict):
+                    continue
+                t = clean(mok.get("목내용", ""))
+                if t.strip():
+                    out.append(indent(t, 3))
+    if not out:
+        out = texts_in(node)
+    return "\n".join(out).strip()
+
+
+def indent(text, depth):
+    pad = "  " * depth
+    return "\n".join(pad + ln if ln.strip() else ln for ln in text.split("\n"))
+
+
 def articles(data):
     """조문 단위로 끊는다. [{조문번호, 가지번호, 제목, 본문}, ...]"""
     out = []
@@ -258,13 +304,17 @@ def articles(data):
     for node in walk(data):
         if not isinstance(node, dict) or "조문번호" not in node:
             continue
+        # 조문여부가 '전문' 인 마디는 편·장·절 제목이다. 조문 번호를 달고
+        # 있어서 그냥 두면 제55조를 찾을 때 장 제목이 같이 걸린다.
+        if str(node.get("조문여부", "")).strip() == "전문":
+            continue
         no = str(node.get("조문번호", "")).strip()
         branch = str(node.get("조문가지번호", "") or "").strip()
         key = (no, branch, str(node.get("조문제목", "")))
         if key in seen:
             continue
         seen.add(key)
-        body = "\n".join(texts_in(node)).strip()
+        body = article_body(node)
         if not body:
             continue
         out.append({
@@ -276,6 +326,74 @@ def articles(data):
             "본문": body,
         })
     return out
+
+
+ADMRUL_HEAD = re.compile(r"제(\d+(?:-\d+)*)조(?:의(\d+))?(?=\s*[(（①])")
+
+
+def admrul_articles(data):
+    """행정규칙(고시·규정)을 조문으로 끊는다.
+
+    법령과 겉모양이 아예 다르다. 조문단위 목록이 없고 「조문내용」 하나에
+    전문이 통째로 들어 있거나(금융투자업규정 35만 자), 조문별 글줄의
+    목록으로 온다(금융소비자 감독규정 36개). 조문번호 열쇠가 없어서
+    articles() 로는 0개가 나온다.
+
+    통글은 조문 머리글에서 자른다. 다만 본문에는 「법 제13조제4항」 같은
+    인용이 널려 있어 머리글 모양만 보면 잘못 자른다. 그래서 번호가 앞으로만
+    나아가는 것을 조건으로 건다 — 인용은 번호가 되돌아가므로 걸러진다.
+    """
+    root = data[list(data)[0]] if len(data) == 1 and isinstance(data, dict) else data
+    if not isinstance(root, dict):
+        return []
+    body = root.get("조문내용")
+    if isinstance(body, list):
+        # 이미 조문별로 끊겨 온 경우 — 머리글만 읽어 번호를 뗀다
+        out = []
+        for t in body:
+            t = clean(str(t)).strip()
+            if not t:
+                continue
+            m = ADMRUL_HEAD.match(t)
+            out.append({
+                "조문번호": m.group(1) if m else "",
+                "조문가지번호": (m.group(2) or "") if m else "",
+                "조문제목": title_of(t),
+                "조문여부": "조문",
+                "시행일자": "",
+                "본문": t,
+            })
+        return out
+    if not isinstance(body, str) or not body.strip():
+        return []
+
+    text = clean(body)
+    kept, last = [], None
+    for m in ADMRUL_HEAD.finditer(text):
+        k = [int(x) for x in m.group(1).split("-")] + [int(m.group(2) or 0)]
+        if last is not None and (len(k) != len(last) or k <= last):
+            continue
+        kept.append((m, k))
+        last = k
+    out = []
+    for i, (m, _) in enumerate(kept):
+        end = kept[i + 1][0].start() if i + 1 < len(kept) else len(text)
+        chunk = text[m.start():end].strip()
+        out.append({
+            "조문번호": m.group(1),
+            "조문가지번호": m.group(2) or "",
+            "조문제목": title_of(chunk),
+            "조문여부": "조문",
+            "시행일자": "",
+            "본문": chunk,
+        })
+    return out
+
+
+def title_of(chunk):
+    """"제1-1조(목적) 이 규정은…" 에서 괄호 안 제목만 뗀다."""
+    m = re.match(r"제\d+(?:-\d+)*조(?:의\d+)?\s*[(（]([^)）]{1,60})[)）]", chunk)
+    return m.group(1).strip() if m else ""
 
 
 def label(a):
@@ -297,6 +415,63 @@ def render(a):
 
 
 # ── 한 건 받기 ────────────────────────────────────────────────────
+def reparse():
+    """받아 둔 응답 원문을 다시 뜯어 조문·전문을 새로 쓴다.
+
+    파서를 고쳤을 때 망을 다시 타지 않기 위한 것이다. raw/ 를 1차 출처로
+    남겨 둔 값이 여기서 나온다 — law.go.kr 에 못 붙는 세션에서도 뜯는
+    방식이 고쳐졌는지 그 자리에서 확인할 수 있다.
+    """
+    index_path = os.path.join(OUT, "index.json")
+    if not os.path.exists(index_path):
+        print("!! data/law/index.json 이 없다. 먼저 수집을 돌려야 한다.", file=sys.stderr)
+        return 2
+    with open(index_path, encoding="utf-8") as f:
+        index = json.load(f)
+
+    print("=== 받아 둔 원문 다시 뜯기 ===")
+    changed = 0
+    for law in index.get("법령", []):
+        slug = slugify(law["법령명"])
+        raw_path = os.path.join(OUT, "raw", slug + ".json")
+        if not os.path.exists(raw_path):
+            print("  건너뜀 %s — 원문이 없다" % law["법령명"])
+            continue
+        with open(raw_path, encoding="utf-8") as f:
+            detail = json.load(f)
+        arts = articles(detail) or admrul_articles(detail)
+        before = law.get("조문수", 0)
+        with open(os.path.join(OUT, "articles", slug + ".json"), "w",
+                  encoding="utf-8") as f:
+            json.dump(arts, f, ensure_ascii=False, indent=2)
+        write_text(os.path.join(OUT, "text", slug + ".txt"), law, arts,
+                   index.get("수집시각", "?"))
+        law["조문수"] = len(arts)
+        mark = "" if len(arts) == before else "  (%d → %d)" % (before, len(arts))
+        if mark:
+            changed += 1
+        print("  %s  조문 %d개%s" % (law["법령명"], len(arts), mark))
+
+    with open(index_path, "w", encoding="utf-8") as f:
+        json.dump(index, f, ensure_ascii=False, indent=2)
+    print("\n%d건의 조문 수가 달라졌다." % changed)
+    return 0
+
+
+def write_text(path, law, arts, taken):
+    """사람이 읽는 전문. 머리글에 시행일자를 박아 인용 표기가 되게 한다."""
+    head = ["%s (%s)" % (law["법령명"], law.get("구분", "")),
+            "시행일자 %s / 공포일자 %s / 공포번호 %s"
+            % (law.get("시행일자", "?"), law.get("공포일자", "?"),
+               law.get("공포번호", "?")),
+            "출처 국가법령정보센터 OPEN API — 받은 때 %s" % taken,
+            "=" * 60, ""]
+    with open(path, "w", encoding="utf-8") as f:
+        f.write("\n".join(head))
+        for a in arts:
+            f.write("\n" + render(a) + "\n")
+
+
 def collect_one(oc, name, target, log):
     items = search(oc, name, target)
     time.sleep(PAUSE)
@@ -311,6 +486,12 @@ def collect_one(oc, name, target, log):
     detail, used = fetch_detail(oc, item, target)
     info = basic_info(detail)
     arts = articles(detail)
+    if not arts:
+        # 행정규칙은 조문단위 목록 없이 전문 한 덩이로 온다 — 조문 0개가
+        # 조용히 나오던 자리다. 겉모양으로 갈라 다시 끊는다.
+        arts = admrul_articles(detail)
+    if not arts:
+        raise RuntimeError("조문을 하나도 뜯지 못했다 (응답 겉모양이 낯설다)")
 
     title = (item.get("법령명한글") or item.get("행정규칙명")
              or info.get("법령명_한글") or info.get("법령명한글") or name)
@@ -453,10 +634,14 @@ def main():
                     help="목록에 없는 법령을 즉석에서 받는다 (여러 번 쓸 수 있다)")
     ap.add_argument("--target", default="law", help="--query 의 종류 (law/admrul/ordin)")
     ap.add_argument("--selftest", action="store_true", help="망 없이 파서만 점검한다")
+    ap.add_argument("--reparse", action="store_true",
+                    help="받아 둔 raw/ 를 다시 뜯는다 (망을 쓰지 않는다)")
     args = ap.parse_args()
 
     if args.selftest:
         return selftest()
+    if args.reparse:
+        return reparse()
 
     oc = os.environ.get("LAW_OC", "").strip()
     if not oc:
