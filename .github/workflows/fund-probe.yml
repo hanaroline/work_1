@@ -45,14 +45,16 @@ jobs:
       # ETF 세션에서 두 번 겪었다.
       - name: 검산 실행 (기간수익률 계열)
         timeout-minutes: 25
-        if: hashFiles('scripts/verify_fund_returns.mjs') != ''
+        # 결과가 저장소에 남았다. 다시 볼 일이 있으면 수동 실행으로 돌린다.
+        if: github.event_name == 'workflow_dispatch' && hashFiles('scripts/verify_fund_returns.mjs') != ''
         run: node scripts/verify_fund_returns.mjs
 
       # 1차에서 "원천 값 = 원천 계열" 임이 갈렸다. 남은 것은 계열 자체의
       # 계단이다 — 실물을 찍어 보고, 몇 종목이나 되는지 센다.
       - name: 검산 실행 2차 (계단의 실물·규모)
         timeout-minutes: 25
-        if: hashFiles('scripts/verify_fund_returns2.mjs') != ''
+        # 결과가 저장소에 남았다. 다시 볼 일이 있으면 수동 실행으로 돌린다.
+        if: github.event_name == 'workflow_dispatch' && hashFiles('scripts/verify_fund_returns2.mjs') != ''
         run: node scripts/verify_fund_returns2.mjs
 
       # 2차의 탐지 규칙이 계단 하나를 놓쳤다(주말이 낀 3.147배). 고친 규칙이
@@ -60,8 +62,17 @@ jobs:
       # 방어선을 정하므로, 여기가 죽으면 잡도 같이 실패해야 한다.
       - name: 검산 실행 3차 (계단 탐지 규칙 검증)
         timeout-minutes: 30
-        if: hashFiles('scripts/verify_fund_returns3.mjs') != ''
+        # 결과가 저장소에 남았다. 다시 볼 일이 있으면 수동 실행으로 돌린다.
+        if: github.event_name == 'workflow_dispatch' && hashFiles('scripts/verify_fund_returns3.mjs') != ''
         run: node scripts/verify_fund_returns3.mjs
+
+      # 3차가 잡은 21종목 중 18종목은 원천 앞뒤가 멀쩡했고 계단이 아래로 났다
+      # (결산·분배로 보인다). 계단이 있다고 무조건 비우면 멀쩡한 값을 버린다.
+      # 네이버가 그 계단을 보정하는지 실물로 가른다.
+      - name: 검산 실행 4차 (네이버가 계단을 보정하는가)
+        timeout-minutes: 20
+        if: hashFiles('scripts/verify_fund_returns4.mjs') != ''
+        run: node scripts/verify_fund_returns4.mjs
 
       - name: 결과 업로드
         if: always()
