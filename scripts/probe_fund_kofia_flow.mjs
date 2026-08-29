@@ -162,16 +162,51 @@ if (!withRes.length) {
     say(`순자산으로 보이는 태그: ${found.navHits.map((h) => `${h.tag}(${h.unit})`).join(', ') || '(못 찾음)'}`);
 
     // ── 3. 기준일자를 갈아 끼워 본다 ────────────────────────────────────────
-    // 본문에서 오늘 날짜꼴(yyyymmdd) 을 찾아 바꾼다. 어느 태그가 기준일자인지
-    // 이름으로 짐작하지 않고, **날짜꼴 문자열을 전부 바꿔** 값이 변하는지 본다.
+    //
+    // 처음에는 본문에서 날짜꼴(yyyymmdd) 문자열을 찾아 바꾸려 했다. 그런데
+    // 실제 본문의 기준일자 칸은 **비어 있었다**(`<standardDt></standardDt>`).
+    // 바꿀 토큰이 없으니 "판정 보류" 가 났다 — 원천이 아니라 **규칙이 틀렸다.**
+    // 빈 칸은 지우는 게 아니라 채우는 것이다.
+    //
+    // 그렇다고 이름으로 짐작하지도 않는다. 근거는 이것이다:
+    //   응답이 <standardDt>20260828</standardDt> 로 **서버가 실제로 쓴 기준일을
+    //   되돌려준다.** 요청 본문에 같은 이름의 칸이 있다. 이 둘의 교집합이
+    //   기준일자 칸이다 — 이름을 외운 게 아니라 실물 두 개를 맞춰 본 것이다.
+    //
+    // 그리고 판정은 값이 변하는지가 아니라 **되돌아온 기준일이 우리가 부른
+    // 날짜인지**로 한다. 값은 그 펀드가 정말 안 움직였으면 같을 수 있다.
+    // 되돌아온 날짜는 거짓말을 못 한다.
     const ymd = (d) => `${d.getFullYear()}${String(d.getMonth() + 1).padStart(2, '0')}` +
                        `${String(d.getDate()).padStart(2, '0')}`;
     const base = today ? new Date(today) : new Date();
-    const past = new Date(base); past.setMonth(past.getMonth() - 3);
+    const daysBack = (n) => { const d = new Date(base); d.setDate(d.getDate() - n); return ymd(d); };
 
-    const dateTokens = [...new Set(found.body.match(/\b20\d{6}\b/g) || [])];
-    out.dateTokensInBody = dateTokens;
-    say(`본문 안의 날짜꼴 토큰: ${dateTokens.join(', ') || '(없음)'}`);
+    /** `<X>...</X>` 와 `<X/>` 를 모두 본다. 빈 칸도 칸이다. */
+    function elemNames(xml) {
+      const s = new Set();
+      for (const m of xml.matchAll(/<([A-Za-z][\w.]*)\s*(?:\/>|>)/g)) s.add(m[1]);
+      return s;
+    }
+    /** 응답에서 yyyymmdd 를 담고 있는 칸 이름들. */
+    function dateElems(xml) {
+      const map = {};
+      for (const m of xml.matchAll(/<([A-Za-z][\w.]*)>\s*(20\d{6})\s*<\/\1>/g)) map[m[1]] = m[2];
+      return map;
+    }
+    const reqNames = elemNames(found.body);
+    const resDates = dateElems(found.res);
+    const dateFields = Object.keys(resDates).filter((n) => reqNames.has(n));
+    out.dateFieldEvidence = { inRequest: [...reqNames], datesInResponse: resDates, chosen: dateFields };
+    say(`응답이 밝힌 기준일 칸: ${Object.entries(resDates).map(([k, v]) => `${k}=${v}`).join(', ') || '(없음)'}`);
+    say(`요청에도 있는 것(= 넣을 수 있는 칸): ${dateFields.join(', ') || '(없음)'}`);
+
+    /** 그 칸을 값으로 채운다. 비어 있든(`<X></X>`, `<X/>`) 차 있든 같이 다룬다. */
+    function setField(body, name, value) {
+      const filled = new RegExp(`<${name}>[^<]*</${name}>`, 'g');
+      const selfClosing = new RegExp(`<${name}\\s*/>`, 'g');
+      if (filled.test(body)) return body.replace(filled, `<${name}>${value}</${name}>`);
+      return body.replace(selfClosing, `<${name}>${value}</${name}>`);
+    }
 
     const aumTag = found.aumHits[0];
 
@@ -199,6 +234,11 @@ if (!withRes.length) {
       if (!vals || !vals.length) return null;
       return vals[0] * aumTag.scale;
     }
+    /** 서버가 실제로 쓴 기준일. 이것이 판정의 근거다. */
+    function readDate(xml, field) {
+      const m = new RegExp(`<${field}>\\s*(20\\d{6})\\s*</${field}>`).exec(xml);
+      return m ? m[1] : null;
+    }
 
     // 먼저 재생이 되는지 본다 — 기준일자를 안 건드린 그대로.
     let replayOk = false;
@@ -215,48 +255,70 @@ if (!withRes.length) {
     if (!replayOk) {
       out.verdict = '막힘 — 본문 재생이 안 된다. 브라우저 밖에서는 못 부른다.';
       say(out.verdict);
-    } else if (!dateTokens.length) {
-      out.verdict = '판정 보류 — 본문에 날짜꼴이 없다. 기준일자를 어디에 넣는지 ' +
-                    '본문만으로는 알 수 없다. 잡아 둔 본문 원본을 사람이 읽어야 한다.';
+    } else if (!dateFields.length) {
+      out.verdict = '판정 보류 — 요청에 넣을 수 있는 기준일 칸이 없다. ' +
+                    '응답이 기준일을 되돌려주지 않거나 요청에 같은 칸이 없다. ' +
+                    '잡아 둔 본문 원본을 사람이 읽어야 한다.';
       say(out.verdict);
     } else {
-      // 표본 전체로, 오늘치와 3개월 전치를 나란히 받아 본다.
-      const pastYmd = ymd(past);
-      say(`기준일자를 ${pastYmd} 로 바꿔 표본 ${picks.length}개를 받는다…`);
-      let changed = 0, same = 0, failed = 0;
+      const dateField = dateFields[0];
+      // 얼마나 거슬러 올라가는지도 같이 잰다. 화면이 쓰는 기간 그대로다.
+      // 1개월만 되고 1년은 안 될 수 있으므로 기간별로 따로 판정한다.
+      const WANT = [['m1', 30], ['m3', 91], ['m6', 182], ['y1', 365]];
+      say(`기준일 칸 \`${dateField}\` 을 채워 표본 ${picks.length}개 × 기간 ${WANT.length}개를 받는다…`);
+
+      const per = Object.fromEntries(WANT.map(([k]) => [k, { honored: 0, ignored: 0, empty: 0, failed: 0 }]));
       for (const f of picks) {
-        const nowBody = found.body.split(seed.code).join(f.code);
-        let pastBody = nowBody;
-        for (const t of dateTokens) pastBody = pastBody.split(t).join(pastYmd);
+        const nowBody = setField(found.body.split(seed.code).join(f.code), dateField, '');
+        const rec = { code: f.code, name: f.name, ours: Number(f.aum), asked: {}, got: {} };
         try {
-          const a = readAum(await post(nowBody));
-          const b = readAum(await post(pastBody));
-          const rec = { code: f.code, name: f.name, ours: Number(f.aum), now: a, past: b };
-          if (a != null && b != null) {
-            rec.diff = b === a ? 0 : a - b;
-            if (a === b) same += 1; else changed += 1;
-          } else failed += 1;
-          out.funds.push(rec);
-          say(`  ${f.code} 오늘 ${a} · ${pastYmd} ${b}` +
-              (a != null && b != null ? (a === b ? ' — 같다' : ` — 다르다 (${a - b})`) : ' — 못 읽음'));
-        } catch (e) {
-          failed += 1;
-          out.funds.push({ code: f.code, error: String(e.message || e).slice(0, 80) });
+          const nowXml = await post(nowBody);
+          rec.now = readAum(nowXml);
+          rec.nowDate = readDate(nowXml, dateField);
+        } catch (e) { rec.error = String(e.message || e).slice(0, 80); }
+
+        for (const [key, days] of WANT) {
+          const want = daysBack(days);
+          rec.asked[key] = want;
+          try {
+            const xml = await post(setField(nowBody, dateField, want));
+            const gotDate = readDate(xml, dateField);
+            const gotAum = readAum(xml);
+            rec.got[key] = { date: gotDate, aum: gotAum };
+            if (gotAum == null) { per[key].empty += 1; }
+            // 휴장일을 부르면 서버가 직전 영업일로 물러설 수 있다. 그것도 존중이다.
+            // 다만 **오늘치로 되돌아오면** 무시한 것이다.
+            else if (gotDate && gotDate <= want && Number(want) - Number(gotDate) <= 15) per[key].honored += 1;
+            else if (gotDate && rec.nowDate && gotDate === rec.nowDate) per[key].ignored += 1;
+            else per[key].failed += 1;
+          } catch (e) {
+            per[key].failed += 1;
+            rec.got[key] = { error: String(e.message || e).slice(0, 60) };
+          }
+          await new Promise((r) => setTimeout(r, 200));
         }
-        await new Promise((r) => setTimeout(r, 200));
+        out.funds.push(rec);
+        say(`  ${f.code} 오늘(${rec.nowDate}) ${rec.now} · ` +
+            WANT.map(([k]) => `${k}→${rec.got[k]?.date ?? '없음'}:${rec.got[k]?.aum ?? '없음'}`).join(' · '));
       }
 
-      out.counts = { changed, same, failed, total: picks.length };
-      if (changed >= Math.ceil(picks.length * 0.5)) {
-        out.verdict = `됨 — 표본 ${picks.length}개 중 ${changed}개가 기준일자에 따라 값이 ` +
-                      '달라진다. 과거 설정원본을 소급해서 받을 수 있다. ' +
-                      '다음 할 일: 3,196개 × 필요한 날짜만큼 부르는 비용을 재고 수집기를 만든다.';
-      } else if (same >= Math.ceil(picks.length * 0.5)) {
-        out.verdict = `막힘 — 표본 ${picks.length}개 중 ${same}개가 기준일자를 바꿔도 ` +
-                      '같은 값이다. 파라미터는 있으나 무시된다. 소급은 못 한다 — ' +
-                      '오늘부터 쌓는 수밖에 없다.';
+      out.perPeriod = per;
+      const need = Math.ceil(picks.length * 0.5);
+      const ok = WANT.filter(([k]) => per[k].honored >= need).map(([k]) => k);
+      const no = WANT.filter(([k]) => per[k].ignored >= need).map(([k]) => k);
+      if (ok.length === WANT.length) {
+        out.verdict = `됨 — 기준일 칸 \`${dateField}\` 이 기간 전부(${ok.join(', ')})에서 존중된다. ` +
+                      '과거 설정원본을 소급해서 받을 수 있다. 다음 할 일: ' +
+                      `3,196개 × ${WANT.length}일 = 약 ${3196 * WANT.length}회 호출 비용을 재고 수집기를 만든다.`;
+      } else if (ok.length) {
+        out.verdict = `일부만 됨 — ${ok.join(', ')} 는 소급되고 ` +
+                      `${WANT.filter(([k]) => !ok.includes(k)).map(([k]) => k).join(', ')} 는 안 된다. ` +
+                      '되는 기간만 소급하고 나머지는 쌓는다.';
+      } else if (no.length) {
+        out.verdict = `막힘 — 기준일을 넣어도 서버가 늘 최신치를 준다(무시 ${no.join(', ')}). ` +
+                      '소급은 못 한다 — 오늘부터 쌓는 수밖에 없다.';
       } else {
-        out.verdict = `판정 못 함 — 성공 ${changed + same}, 실패 ${failed}. 표본을 늘려 다시 본다.`;
+        out.verdict = '판정 못 함 — 존중도 무시도 과반이 안 된다. 표본별 결과를 사람이 읽어야 한다.';
       }
       say(out.verdict);
     }
@@ -286,12 +348,31 @@ const md = [
   ...(out.funds.length ? [
     '## 표본',
     '',
-    '| 표준코드 | 우리 값 | 오늘 | 3개월 전 | 차이 |',
-    '|---|---:|---:|---:|---:|',
-    ...out.funds.map((f) => (f.error
-      ? `| ${f.code} | | | | ${f.error} |`
-      : `| ${f.code} | ${f.ours ?? ''} | ${f.now ?? ''} | ${f.past ?? ''} | ${f.diff ?? ''} |`)),
+    '되돌아온 기준일이 우리가 부른 날짜인지가 판정 근거다. 값이 같은 것은',
+    '그 펀드가 안 움직였을 수도 있으므로 근거로 삼지 않는다.',
     '',
+    '| 표준코드 | 우리 값 | 오늘(기준일) | 1개월 전 | 3개월 전 | 6개월 전 | 1년 전 |',
+    '|---|---:|---:|---:|---:|---:|---:|',
+    ...out.funds.map((f) => {
+      const cell = (k) => {
+        const g = f.got?.[k];
+        if (!g) return '';
+        if (g.error) return g.error;
+        return `${g.date ?? '날짜없음'}<br>${g.aum ?? '값없음'}`;
+      };
+      return `| ${f.code} | ${f.ours ?? ''} | ${f.nowDate ?? ''}<br>${f.now ?? ''} | ` +
+             `${cell('m1')} | ${cell('m3')} | ${cell('m6')} | ${cell('y1')} |`;
+    }),
+    '',
+    ...(out.perPeriod ? [
+      '## 기간별 판정',
+      '',
+      '| 기간 | 존중 | 무시 | 값없음 | 실패 |',
+      '|---|---:|---:|---:|---:|',
+      ...Object.entries(out.perPeriod).map(([k, v]) =>
+        `| ${k} | ${v.honored} | ${v.ignored} | ${v.empty} | ${v.failed} |`),
+      '',
+    ] : []),
   ] : []),
   '원본 응답과 본문은 `fund_kofia_flow.json` 에 있다.',
   '',
