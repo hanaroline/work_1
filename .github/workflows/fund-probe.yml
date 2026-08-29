@@ -109,11 +109,23 @@ jobs:
       # 수수료가 어느 자리에 있는지. 8차는 요약만 남겨 답을 못 했다.
       - name: 검산 실행 9차 (클래스 화면·유형평균·안 싣는 항목)
         timeout-minutes: 20
-        if: hashFiles('scripts/probe_fund_class_page2.mjs') != ''
+        # 결과가 저장소에 남았다. 다시 볼 일이 있으면 수동 실행으로 돌린다.
+        if: github.event_name == 'workflow_dispatch' && hashFiles('scripts/probe_fund_class_page2.mjs') != ''
         run: |
           npm i -D playwright@1.56.1 --no-audit --no-fund
           npx playwright install --with-deps chromium
           node scripts/probe_fund_class_page2.mjs
+
+      # 사용자가 제로인(FUND DOCTOR) 화면을 하나 더 주었다. 네이버가 아닌
+      # 세 번째 출처다 — 수익률·위험지표가 2차 출처 단독 근거로 남아 있는
+      # 자리를 메울 수 있는지 본다. robots 가 막으면 거기서 멈춘다.
+      - name: 검산 실행 10차 (제로인이 세 번째 출처가 되는가)
+        timeout-minutes: 20
+        if: hashFiles('scripts/probe_fund_funddoctor.mjs') != ''
+        run: |
+          npm i -D playwright@1.56.1 --no-audit --no-fund
+          npx playwright install --with-deps chromium
+          node scripts/probe_fund_funddoctor.mjs
 
       - name: 결과 업로드
         if: always()
@@ -128,6 +140,7 @@ jobs:
             tools/discovery/fund_class_page_*.png
             tools/discovery/fund_class_probe2.*
             tools/discovery/fund_class_page2_*.png
+            tools/discovery/fund_funddoctor.*
           retention-days: 7
 
       - name: 결과 커밋
@@ -142,6 +155,7 @@ jobs:
           git add tools/discovery/fund_class_page_*.png 2>/dev/null || true
           git add tools/discovery/fund_class_probe2.* 2>/dev/null || true
           git add tools/discovery/fund_class_page2_*.png 2>/dev/null || true
+          git add tools/discovery/fund_funddoctor.* 2>/dev/null || true
           git commit -m "chore(fund): 원천 조사 결과 갱신" || echo "변경 없음"
           git pull --rebase --autostash origin "${GITHUB_REF_NAME}" || true
           git push || echo "푸시 실패 (무시)"
