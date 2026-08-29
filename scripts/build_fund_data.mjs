@@ -325,8 +325,13 @@ const regionData = await loadDataFile('data/fund-region.js', 'FUND_REGION');
 const REGION = regionData?.region || null;
 function applyRegion(f) {
   if (!REGION) {
-    // 1차 출처를 아직 못 받았다. 네이버 유형명에서 읽은 값을 쓰되 그렇게 밝힌다.
-    return { ...f, regionSource: f.region ? 'naver-type' : null };
+    // 1차 출처를 못 받았다. **네이버 값으로 되돌아가지 않는다.**
+    //
+    // 처음에는 여기서 네이버 유형명 값을 쓰고 출처만 'naver-type' 으로
+    // 밝혔다. 바로 위 주석이 "비운다" 라고 적혀 있는데 코드가 반대였다 —
+    // 주석과 코드가 어긋났고, 어긋난 쪽이 코드였다. 10.7% 틀린다는 것을
+    // 이미 알면서 싣는 것은 아는 거짓을 싣는 것이다. 빈칸이 낫다.
+    return { ...f, region: null, regionSource: null, regionMissing: true };
   }
   const k = REGION[f.code];
   if (k) return { ...f, region: k, regionSource: 'kofia' };

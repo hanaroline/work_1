@@ -462,8 +462,14 @@ for (const f of FUNDS) {
   if (f.region != null && !['domestic', 'overseas', 'mixed'].includes(f.region)) {
     flag('error', '지역-모르는값', f, `region=${f.region}`);
   }
-  if (f.region != null && f.regionSource == null) {
-    flag('warn', '지역-출처없음', f, `지역 ${f.region} 인데 어디서 왔는지 표시가 없다`);
+  // 지역이 있으면 그 값은 **1차 출처에서 온 것이어야 한다.** 예전 방식으로
+  // 되돌아간 값이 조용히 실리는 길을 막는다 — 빌드가 1차 출처를 못 받았을 때
+  // 네이버 유형명 값으로 되돌아가는 코드가 실제로 있었다(regionSource
+  // 'naver-type'). 그건 10.7% 틀린다는 것을 알면서 싣는 것이므로 오류다.
+  // 못 받았으면 빈칸이어야지 옛 값이어서는 안 된다.
+  if (f.region != null && f.regionSource !== 'kofia') {
+    flag('error', '지역-1차출처아님', f,
+         `지역 ${f.region} 의 출처가 ${f.regionSource ?? '표시없음'} 이다`);
   }
   // 1차 출처에서 못 받은 펀드는 화면이 그렇게 말해야 한다.
   if (f.regionMissing && f.region != null) {

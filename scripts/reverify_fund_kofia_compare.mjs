@@ -161,12 +161,18 @@ for (const f of pick) {
     put('설정일', row.mine.inception, kInc,
         kInc && row.mine.inception ? kInc === row.mine.inception : null);
 
-    // 투자지역 — 여기서 갈린다. 금투협은 명시하고 네이버 유형명에는 없다.
-    const mineR = row.mine.region === 'domestic' ? '국내'
-                : row.mine.region === 'overseas' ? '해외' : null;
+    // 투자지역 — 이 대조가 옛 방식(네이버 유형명 읽기)의 10.7% 오류를 처음
+    // 잡아낸 자리다. 지금은 금투협에서 직접 받으므로 값이 셋이다.
+    //
+    // **'혼합' 을 여기 빠뜨렸다가 검증에 구멍이 났다.** 지역이 혼합인 펀드가
+    // mineR=null 이 되어 "판정보류" 로 빠졌고, 하필 이 대조를 시작하게 만든
+    // 그 펀드(K55301BM7814)가 그렇게 빠졌다. 고친 것이 고쳐졌는지 확인할
+    // 자리에서 그 칸만 안 보이고 있었다.
+    const REGION_KO = { domestic: '국내', overseas: '해외', mixed: '혼합' };
+    const mineR = REGION_KO[row.mine.region] ?? null;
     put('투자지역', mineR, k.region,
         (mineR && k.region) ? mineR === k.region : null,
-        mineR == null && k.region ? '내 자료는 "미상" — 유형명에 지역이 없어 지어내지 않았다' : null);
+        mineR == null && k.region ? '내 자료에 지역이 없다 — 1차 출처 수집이 이 펀드를 놓쳤다' : null);
 
     // 총보수 — 금투협의 펀드 단위 총보수는 종류형에서 0 이다(보수는 클래스가 진다)
     put('총보수(펀드단위)', null, k.totalFee, null,
