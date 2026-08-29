@@ -1,61 +1,461 @@
 {
- "at": "2026-08-29T08:46:45.806Z",
+ "at": "2026-08-29T08:48:00.273Z",
  "raw": [
   {
-   "code": "K55213D17915",
-   "type": "(유형없음)",
-   "name": "한화차이나셀렉트헬스케어증권자투자신탁(H)(주식)",
+   "code": "K55224EM9100",
+   "type": "sectors:true",
+   "name": "흥국K뷰티엔터목표전환형증권투자신탁 1[주식]",
    "avail": {
     "status": "available",
     "assets": true,
     "portfolio": true,
-    "sectors": false
+    "sectors": true
    },
-   "basePrice": 989.72,
-   "allocationsSectors": null,
+   "basePrice": 804.61,
+   "allocationsSectors": {
+    "result": [
+     {
+      "sectorName": "필수소비재",
+      "weight": 0.395627224
+     },
+     {
+      "sectorName": "경기소비재",
+      "weight": 0.305548419
+     },
+     {
+      "sectorName": "의료",
+      "weight": 0.200298263
+     },
+     {
+      "sectorName": "금융",
+      "weight": 0.098526094
+     }
+    ]
+   },
    "allocationsAssetsKeys": [
     "assetTypes"
    ]
   },
   {
-   "code": "KR5213AI2316",
-   "type": "(유형없음)",
-   "name": "한화연금저축글로벌헬스케어증권자투자신탁(주식)",
+   "code": "K55210CL5818",
+   "type": "sectors:true",
+   "name": "신한커버드콜마일드증권자투자신탁[주식혼합-파생형]",
    "avail": {
     "status": "available",
     "assets": true,
     "portfolio": true,
-    "sectors": false
+    "sectors": true
    },
-   "basePrice": 1126.8,
-   "allocationsSectors": null,
+   "basePrice": 1655.17,
+   "allocationsSectors": {
+    "result": [
+     {
+      "sectorName": "IT",
+      "weight": 0.751803322
+     },
+     {
+      "sectorName": "산업재",
+      "weight": 0.08663662
+     },
+     {
+      "sectorName": "금융",
+      "weight": 0.058280898
+     },
+     {
+      "sectorName": "경기소비재",
+      "weight": 0.042894362
+     },
+     {
+      "sectorName": "소재",
+      "weight": 0.015935003
+     },
+     {
+      "sectorName": "의료",
+      "weight": 0.013101544
+     },
+     {
+      "sectorName": "에너지",
+      "weight": 0.011141865
+     },
+     {
+      "sectorName": "필수소비재",
+      "weight": 0.010704992
+     },
+     {
+      "sectorName": "통신서비스",
+      "weight": 0.006244873
+     },
+     {
+      "sectorName": "유틸리티",
+      "weight": 0.00305829
+     }
+    ]
+   },
    "allocationsAssetsKeys": [
     "assetTypes"
    ]
   },
   {
-   "code": "KR5366876856",
-   "type": "(유형없음)",
-   "name": "iM에셋월드골드증권자투자신탁(주식-재간접형)(UH)",
+   "code": "K55229ET4695",
+   "type": "sectors:true",
+   "name": "카디안글로벌디지털자산밸류체인증권자투자신탁(H)[주식]",
    "avail": {
     "status": "available",
     "assets": true,
-    "portfolio": false,
-    "sectors": false
+    "portfolio": true,
+    "sectors": true
    },
-   "basePrice": 2405.71,
-   "allocationsSectors": null,
+   "basePrice": 1092.03,
+   "allocationsSectors": {
+    "result": [
+     {
+      "sectorName": "IT",
+      "weight": 0.084329331
+     },
+     {
+      "sectorName": "금융",
+      "weight": 0.008998294
+     },
+     {
+      "sectorName": "통신서비스",
+      "weight": 0.004877663
+     },
+     {
+      "sectorName": "산업재",
+      "weight": 0.001348846
+     }
+    ]
+   },
+   "allocationsAssetsKeys": [
+    "assetTypes"
+   ]
+  },
+  {
+   "code": "K55210BL5223",
+   "type": "sectors:true",
+   "name": "신한퇴직연금커버드콜인덱스증권자투자신탁[주식혼합-파생형] (종류)",
+   "avail": {
+    "status": "available",
+    "assets": true,
+    "portfolio": true,
+    "sectors": true
+   },
+   "basePrice": 1488.88,
+   "allocationsSectors": {
+    "result": [
+     {
+      "sectorName": "IT",
+      "weight": 0.751803292
+     },
+     {
+      "sectorName": "산업재",
+      "weight": 0.086636613
+     },
+     {
+      "sectorName": "금융",
+      "weight": 0.058280899
+     },
+     {
+      "sectorName": "경기소비재",
+      "weight": 0.04289437
+     },
+     {
+      "sectorName": "소재",
+      "weight": 0.015934997
+     },
+     {
+      "sectorName": "의료",
+      "weight": 0.01310154
+     },
+     {
+      "sectorName": "에너지",
+      "weight": 0.011141855
+     },
+     {
+      "sectorName": "필수소비재",
+      "weight": 0.010705004
+     },
+     {
+      "sectorName": "통신서비스",
+      "weight": 0.006244884
+     },
+     {
+      "sectorName": "유틸리티",
+      "weight": 0.003058304
+     }
+    ]
+   },
+   "allocationsAssetsKeys": [
+    "assetTypes"
+   ]
+  },
+  {
+   "code": "K55229DL4512",
+   "type": "sectors:true",
+   "name": "카디안변액보험코리아원자재지수연계증권투자신탁4[주식혼합-파생형]",
+   "avail": {
+    "status": "available",
+    "assets": true,
+    "portfolio": true,
+    "sectors": true
+   },
+   "basePrice": 1823.94,
+   "allocationsSectors": {
+    "result": [
+     {
+      "sectorName": "IT",
+      "weight": 0.757630358
+     },
+     {
+      "sectorName": "산업재",
+      "weight": 0.086955992
+     },
+     {
+      "sectorName": "금융",
+      "weight": 0.055763199
+     },
+     {
+      "sectorName": "경기소비재",
+      "weight": 0.04238307
+     },
+     {
+      "sectorName": "의료",
+      "weight": 0.01528606
+     },
+     {
+      "sectorName": "소재",
+      "weight": 0.012690086
+     },
+     {
+      "sectorName": "에너지",
+      "weight": 0.011958286
+     },
+     {
+      "sectorName": "필수소비재",
+      "weight": 0.007342652
+     },
+     {
+      "sectorName": "통신서비스",
+      "weight": 0.006913443
+     },
+     {
+      "sectorName": "유틸리티",
+      "weight": 0.003076857
+     }
+    ]
+   },
    "allocationsAssetsKeys": [
     "assetTypes"
    ]
   }
  ],
  "shapes": {
-  "null": 3
+  "object:result": 25
  },
- "sums": [],
+ "sums": [
+  {
+   "code": "K55224EM9100",
+   "type": "sectors:true",
+   "n": 4,
+   "sum": 1,
+   "basePrice": 804.61,
+   "perMil": 1.2428381451883521
+  },
+  {
+   "code": "K55210CL5818",
+   "type": "sectors:true",
+   "n": 10,
+   "sum": 0.9998017689999998,
+   "basePrice": 1655.17,
+   "perMil": 0.6040477830071834
+  },
+  {
+   "code": "K55229ET4695",
+   "type": "sectors:true",
+   "n": 4,
+   "sum": 0.099554134,
+   "basePrice": 1092.03,
+   "perMil": 0.09116428486396894
+  },
+  {
+   "code": "K55210BL5223",
+   "type": "sectors:true",
+   "n": 10,
+   "sum": 0.9998017579999998,
+   "basePrice": 1488.88,
+   "perMil": 0.6715126524635966
+  },
+  {
+   "code": "K55229DL4512",
+   "type": "sectors:true",
+   "n": 10,
+   "sum": 1.000000003,
+   "basePrice": 1823.94,
+   "perMil": 0.5482636506683334
+  },
+  {
+   "code": "K55229DC7680",
+   "type": "sectors:true",
+   "n": 10,
+   "sum": 0.9999330860000001,
+   "basePrice": 1902.64,
+   "perMil": 0.5255503332212085
+  },
+  {
+   "code": "K55105DR1537",
+   "type": "sectors:true",
+   "n": 1,
+   "sum": 0.01203161,
+   "basePrice": 1256.64,
+   "perMil": 0.009574428635090398
+  },
+  {
+   "code": "K55229DC7722",
+   "type": "sectors:true",
+   "n": 10,
+   "sum": 0.9999052319999999,
+   "basePrice": 1863.74,
+   "perMil": 0.5365046798373163
+  },
+  {
+   "code": "K55364BQ3334",
+   "type": "sectors:true",
+   "n": 10,
+   "sum": 0.999999999,
+   "basePrice": 1971.98,
+   "perMil": 0.5071045340216432
+  },
+  {
+   "code": "K55364BQ3193",
+   "type": "sectors:true",
+   "n": 10,
+   "sum": 0.9999999989999998,
+   "basePrice": 1966.44,
+   "perMil": 0.5085331863672422
+  },
+  {
+   "code": "K55105ED1888",
+   "type": "sectors:true",
+   "n": 1,
+   "sum": 0.018503982,
+   "basePrice": 1335.02,
+   "perMil": 0.013860453026920945
+  },
+  {
+   "code": "K55229DL4611",
+   "type": "sectors:true",
+   "n": 10,
+   "sum": 1.000000001,
+   "basePrice": 1619.13,
+   "perMil": 0.6176156337045203
+  },
+  {
+   "code": "KR5363AP6407",
+   "type": "sectors:true",
+   "n": 6,
+   "sum": 1,
+   "basePrice": 1300.73,
+   "perMil": 0.7687990589899518
+  },
+  {
+   "code": "KR5363AH5607",
+   "type": "sectors:true",
+   "n": 6,
+   "sum": 1,
+   "basePrice": 1295.7,
+   "perMil": 0.7717835918808366
+  },
+  {
+   "code": "KR5363A43940",
+   "type": "sectors:true",
+   "n": 6,
+   "sum": 1.000000001,
+   "basePrice": 1297.6,
+   "perMil": 0.7706535149506784
+  },
+  {
+   "code": "KR5363AF6839",
+   "type": "sectors:true",
+   "n": 7,
+   "sum": 0.9909305480000001,
+   "basePrice": 1478.36,
+   "perMil": 0.6702904218187723
+  },
+  {
+   "code": "KR5363A44260",
+   "type": "sectors:true",
+   "n": 7,
+   "sum": 0.9909305480000001,
+   "basePrice": 1481.41,
+   "perMil": 0.6689103948265505
+  },
+  {
+   "code": "KR5363AG8636",
+   "type": "sectors:true",
+   "n": 7,
+   "sum": 0.9909305480000001,
+   "basePrice": 1477.57,
+   "perMil": 0.6706488003952437
+  },
+  {
+   "code": "K55206B62216",
+   "type": "sectors:true",
+   "n": 2,
+   "sum": 0.968880717,
+   "basePrice": 1574.87,
+   "perMil": 0.6152131394972283
+  },
+  {
+   "code": "K55301CH3124",
+   "type": "sectors:true",
+   "n": 7,
+   "sum": 0.9878744180000001,
+   "basePrice": 1089.18,
+   "perMil": 0.9069891276005803
+  },
+  {
+   "code": "KR5303AL4201",
+   "type": "sectors:true",
+   "n": 8,
+   "sum": 0.9994747350000001,
+   "basePrice": 2280.54,
+   "perMil": 0.43826231287326695
+  },
+  {
+   "code": "KR5303AP5485",
+   "type": "sectors:true",
+   "n": 8,
+   "sum": 0.9994747360000001,
+   "basePrice": 2022.15,
+   "perMil": 0.4942634008357442
+  },
+  {
+   "code": "KR5303AL0068",
+   "type": "sectors:true",
+   "n": 8,
+   "sum": 0.9994747360000001,
+   "basePrice": 1980.53,
+   "perMil": 0.5046501370845179
+  },
+  {
+   "code": "KRM226538606",
+   "type": "sectors:true",
+   "n": 7,
+   "sum": 0.9999999980000001,
+   "basePrice": 1029.29,
+   "perMil": 0.9715434892012941
+  },
+  {
+   "code": "K55301BO7531",
+   "type": "sectors:true",
+   "n": 1,
+   "sum": 0.011436891,
+   "basePrice": 2352.96,
+   "perMil": 0.004860639789881681
+  }
+ ],
  "notes": [
-  "목록 120개 확보",
-  "유형 1종에서 3개 표본"
+  "목록 240개 확보",
+  "availability.sectors=true 25개 · false 215개 / 240개"
  ]
 }
