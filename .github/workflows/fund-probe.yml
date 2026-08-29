@@ -133,11 +133,20 @@ jobs:
       # 네이버 탭 셋 중 우리는 첫 탭만 봤다. 나머지 둘을 연다.
       - name: 검산 실행 11차 (안 열어 본 탭 둘)
         timeout-minutes: 25
-        if: hashFiles('scripts/probe_fund_tabs.mjs') != ''
+        if: github.event_name == 'workflow_dispatch' && hashFiles('scripts/probe_fund_tabs.mjs') != ''
         run: |
           npm i -D playwright@1.56.1 --no-audit --no-fund
           npx playwright install --with-deps chromium
           node scripts/probe_fund_tabs.mjs
+
+      # 11차는 `allocationsSectors` 라는 열쇠 이름만 남기고 본문은 잘렸다.
+      # 그 상태로 모양을 짐작해 수집기에 넣었다가 3,196개 전부 빈칸이 났다.
+      # 이번엔 본문을 통째로 찍어 놓고 모양과 분모를 읽는다. 브라우저는
+      # 필요 없다 — 주소를 이미 안다.
+      - name: 검산 실행 12차 (업종구성의 모양)
+        timeout-minutes: 15
+        if: hashFiles('scripts/probe_fund_sectors.mjs') != ''
+        run: node scripts/probe_fund_sectors.mjs
 
       - name: 결과 업로드
         if: always()
@@ -154,6 +163,7 @@ jobs:
             tools/discovery/fund_class_page2_*.png
             tools/discovery/fund_funddoctor.*
             tools/discovery/fund_tabs.*
+            tools/discovery/fund_sectors.*
           retention-days: 7
 
       - name: 결과 커밋
@@ -170,6 +180,7 @@ jobs:
           git add tools/discovery/fund_class_page2_*.png 2>/dev/null || true
           git add tools/discovery/fund_funddoctor.* 2>/dev/null || true
           git add tools/discovery/fund_tabs.* 2>/dev/null || true
+          git add tools/discovery/fund_sectors.* 2>/dev/null || true
           git commit -m "chore(fund): 원천 조사 결과 갱신" || echo "변경 없음"
           git pull --rebase --autostash origin "${GITHUB_REF_NAME}" || true
           git push || echo "푸시 실패 (무시)"
