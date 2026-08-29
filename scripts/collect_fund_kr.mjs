@@ -337,7 +337,11 @@ function verifyReturns(src, sets) {
   }
 
   return { kept: Object.keys(kept).length ? kept : null, dropped, checked,
-           steps: steps.length ? steps : null };
+           steps: steps.length ? steps : null,
+           // 구간을 잰 기준일. 감사가 **같은 자**로 다시 재야 한다 —
+           // 감사가 retAsOf 로 재면 하루이틀 어긋나고, 계단이 그 경계에 놓인
+           // 펀드에서 없던 오류가 생겨 커밋 관문이 헛되이 막힌다.
+           anchorDay: anchor ? anchor.day : null };
 }
 
 // ─────────────────────────── 상세 ───────────────────────────
@@ -390,7 +394,7 @@ async function fetchDetail(code) {
   // 네이버가 점을 솎아 준다 — 3m 은 하루 간격 64점, 1y 는 주 간격 52점,
   // 5y 는 달 간격 60점이다. 하나만 받으면 계단을 놓치거나 구간을 못 덮는다.
   const sets = { '3m': toSeries(s3m), '1y': toSeries(s1y), '5y': toSeries(s5y) };
-  const { kept, dropped, checked, steps } = verifyReturns(srcRet, sets);
+  const { kept, dropped, checked, steps, anchorDay } = verifyReturns(srcRet, sets);
   const dailyS = sets['3m'];
   const longS = sets['5y'];
 
@@ -445,6 +449,8 @@ async function fetchDetail(code) {
     // 계단을 가로지르는데도 남긴 칸과 그 근거. 감사가 다시 셈해 본다.
     retChecked: checked.length ? checked : null,
     retAsOf: cp?.fundReturns?.baseDate || d.tradeDate || null,
+    // 검산이 구간을 잰 기준일. 감사가 같은 자로 다시 잰다.
+    retAnchor: anchorDay,
     steps: steps && steps.length ? steps : null,
     seriesFrom: longS[0]?.day ?? dailyS[0]?.day ?? null,
     seriesTo: (longS[longS.length - 1] || dailyS[dailyS.length - 1])?.day ?? null,

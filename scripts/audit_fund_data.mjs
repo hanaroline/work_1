@@ -18,17 +18,25 @@
  * 이 감사는 바깥에 붙지 않는다. `data/fund.js` 안에서 서로 어긋나는 것만
  * 잡는다 — 안에서 앞뒤가 안 맞는 숫자는 바깥을 볼 것도 없이 틀린 것이다.
  *
- * 가장 센 규칙 둘은 계열을 보지 않고도 도는 것들이다.
+ * 가장 센 규칙은 **수집기가 제 관문을 지켰는가** 이다.
  *
- *   (가) **원천 스스로의 앞뒤.** 한 주에 0.04% 움직인 펀드가 그 주를 품은
- *        한 달에 245% 오를 수는 없다. 수집기의 계단 탐지가 실패해도 여기서
- *        걸린다 — 실제로 탐지 규칙이 한 번 틀렸고(주말이 낀 3.147배가 하루당
- *        환산에서 문턱 아래로 내려갔다) 그때 이 규칙이 대조군이었다.
- *   (나) **수집기가 제 관문을 지켰는가.** 계단이 있다고 적어 놓고 그 구간의
- *        수익률을 그대로 실었으면 관문이 새는 것이다.
+ * 수집기는 계단이 있다고 무조건 비우지 않는다. 계단에는 두 가지가 있고
+ * 네이버는 그중 하나만 수익률에 흘려 넣기 때문이다.
+ *
+ *   위로 나는 계단(기준가 재산정) → 네이버가 그대로 수익률로 낸다. 거짓이다.
+ *   아래로 나는 계단(결산·분배)   → 네이버가 보정한다. 값은 멀쩡하다.
+ *
+ * 그래서 수집기는 "그 숫자가 계단을 먹었는가" 로 가르고, 남긴 칸에는
+ * 근거(생값)를 `retChecked` 에 적어 둔다. 감사는 **그 셈을 다시 해 본다.**
+ * 근거 없이 남긴 칸과, 근거가 셈에 안 맞는 칸을 잡는다. 수집기의 판단을
+ * 그냥 믿으면 관문이 하나로 줄어든다.
  *
  * ── 규칙이 틀릴 수 있다 ────────────────────────────────────────────────────
  * ETF 감사에서 처음 잡은 7,252건 중 대부분이 규칙이 틀린 오탐이었다.
+ * 이 감사에서도 한 번 겪었다 — "짧은 구간이 거의 0 인데 긴 구간이 튄다" 는
+ * 규칙을 오류로 걸었다가, 그 규칙이 잡은 두 펀드를 실물로 보니 계단이
+ * 하나도 없는 정상적인 수익률 모양이었다. 지금은 경고다.
+ *
  * 대량으로 잡히면 규칙부터 의심하고 실물을 봐야 한다. 그래서 이 감사는
  * 심각도를 셋으로 나눈다 — error 만 커밋을 막고, warn·info 는 보고만 한다.
  */
@@ -83,6 +91,11 @@ for (const f of FUNDS) {
   const srcRet = f.retSrc || {};
   const bench = f.retBenchmark || {};
   const asOf = f.retAsOf || f.tradeDate || null;
+  // 계단 구간을 다시 잴 때는 **수집기가 쓴 기준일**을 쓴다. 수집기는 기준가
+  // 계열의 마지막 날을 기준으로 재는데, 그것이 retAsOf 와 하루이틀 다를 수
+  // 있다. 다른 자로 재면 계단이 경계에 놓인 펀드에서 없던 오류가 생겨
+  // 커밋 관문이 헛되이 막힌다.
+  const anchor = f.retAnchor || asOf;
 
   // ── 1. 수집기가 제 관문을 지켰는가 ──────────────────────────────────────
   //
@@ -98,16 +111,16 @@ for (const f of FUNDS) {
   const stepDays = (f.steps || []).map((s) => s.day).filter(Boolean);
   const checkedOf = {};
   for (const c of f.retChecked || []) checkedOf[c.period] = c;
-  if (stepDays.length && asOf) {
+  if (stepDays.length && anchor) {
     for (const [k, v] of Object.entries(ret)) {
-      const cutoff = cutoffOf(k, asOf);
+      const cutoff = cutoffOf(k, anchor);
       if (!cutoff) continue;
-      const hit = stepDays.filter((d) => d > cutoff && d <= asOf);
+      const hit = stepDays.filter((d) => d > cutoff && d <= anchor);
       if (!hit.length) continue;
       const c = checkedOf[k];
       if (!c) {
         flag('error', '계단구간-근거없이남김', f,
-             `${k} = ${v}% 가 ${hit[0]} 계단을 가로지르는데 남긴 근거가 없다 (구간 ${cutoff}~${asOf})`,
+             `${k} = ${v}% 가 ${hit[0]} 계단을 가로지르는데 남긴 근거가 없다 (구간 ${cutoff}~${anchor})`,
              { period: k, value: v, stepAt: hit[0] });
       } else if (c.raw == null || !Number.isFinite(Number(c.raw))) {
         flag('error', '계단구간-근거없음', f, `${k}: retChecked 에 생값이 없다`, { period: k });
