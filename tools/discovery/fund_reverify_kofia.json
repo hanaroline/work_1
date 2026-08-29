@@ -1,5 +1,5 @@
 {
-  "at": "2026-08-29T05:02:43.515Z",
+  "at": "2026-08-29T05:15:46.372Z",
   "attempts": [
     {
       "label": "전자공시 첫 화면",
@@ -12,7 +12,7 @@
       "encoding": "utf8",
       "head": "<!DOCTYPE html PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\" \"http://www.w3.org/TR/html4/loose.dtd\">\r\n<html>\r\n<head>\r\n<meta http-equiv=\"Content-Type\" content=\"text/html; charset=EUC-KR\">\r\n<title>Insert title here</title>\r\n<script type=\"text/javascript\" src=\"/js/com/disCommon.js\"></script>\r\n<script type=\"text/javascript\">\r\nwindow.onload = function () {\r\n\t//location.href = menuLinkUrl + \"?w2xPath=/wq/main/intro.xml\";\r\n\tlocation.href = menuLinkUrl + \"?w2xPath=/wq/main/main.xml\";  \r\n}\r\n</script>\r\n</head>\r\n<body>\r\n\r\n</body>\r\n</html>\n",
       "ok": true,
-      "ms": 1112
+      "ms": 1060
     },
     {
       "label": "전자공시 펀드공시",
@@ -25,7 +25,7 @@
       "encoding": "utf8",
       "head": "\n\n\n\n\n\n<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">\n<html xmlns='http://www.w3.org/1999/xhtml' xmlns:ev='http://www.w3.org/2001/xml-events' xmlns:w2='http://www.inswave.com/websquare' xmlns:xf='http://www.w3.org/2002/xforms' lang=\"ko\" xml:lang=\"ko\">\n\t<head>\n\t\t<meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\"/>\n\t\t<meta http-equiv=\"X-UA-Compatible\" content=\"IE=Edge\"/>\n\t\t<meta name=\"viewport\" content=\"width=1095\"/>\n\t\t<title>\t금융투자협회 </title>\n\t\t\n\t\t<script type=\"text/javascript\">\n\t\t\n\t\t</script>\n\t\t\n\t\t\n\t\t\n\t\t<script type=\"text/javascript\">\n\t\t\ttry{\n\t\t\t\n\t\t\t\t\tif( !!document.implementation && !!document.implementation.createDocument && navigator.userAgent.match(/Opera/i) == null && document.implementation.hasFeature(\"XPath\", \"3.0\") ) {\n\t\t\t\t\t\t\tDocument.prototype.selectNodes = function(path, xNode)\t{\n\t\t\t\t\t\t\t\tif",
       "ok": true,
-      "ms": 176
+      "ms": 170
     },
     {
       "label": "펀드다모아 첫 화면",
@@ -33,7 +33,7 @@
       "method": "GET",
       "ok": false,
       "error": "TypeError: fetch failed",
-      "ms": 1211
+      "ms": 859
     },
     {
       "label": "펀드다모아 검색(추정)",
@@ -41,7 +41,7 @@
       "method": "GET",
       "ok": false,
       "error": "TypeError: fetch failed",
-      "ms": 1201
+      "ms": 1277
     },
     {
       "label": "금투협 본사이트",
@@ -54,7 +54,7 @@
       "encoding": "utf8",
       "head": "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">\r<html xmlns=\"http://www.w3.org/1999/xhtml\" lang=\"ko\">\r<head>\r\t<title>금융투자협회</title>\r\t<meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\" />\r\t<meta http-equiv='refresh' content='0;url=./index.do' />\r</head><body></body></html>",
       "ok": true,
-      "ms": 1391
+      "ms": 984
     },
     {
       "label": "전자공시 조회 API(추정, POST)",
@@ -63,11 +63,11 @@
       "status": 200,
       "finalUrl": "https://dis.kofia.or.kr/proframeWeb/XMLSERVICES/",
       "contentType": "text/xml;charset=UTF-8",
-      "bytes": 695,
+      "bytes": 694,
       "encoding": "utf8",
-      "head": "<?xml version=\"1.0\" encoding=\"UTF-8\"?><root><message>\r\n<proframeHeader>\n<pfmAppName>FS-COM</pfmAppName>\n<pfmSvcName>COMFundUnityInfoSO</pfmSvcName>\n<pfmFnName>select</pfmFnName>\n<pfmGlobalNo>4be62e3f0afe0096485f616193b4fb16</pfmGlobalNo>\n<pfmTrDate>20260829</pfmTrDate>\n<pfmTrTime>20260829140251455</pfmTrTime>\n<pfmClntIp>135.232.200.34</pfmClntIp>\n<pfmResponseType>S</pfmResponseType>\n<pfmResponseCode>COMS9009</pfmResponseCode>\n<pfmResponseTitle>MODULE ERROR</pfmResponseTitle>\n<pfmResponseBasc>proframe application name [FS-COM] [COMFundUnityInfoSO] is not found.</pfmResponseBasc>\n<pfmResponseDtal></pfmResponseDtal>\n</proframeHeader>\n<systemHeader>\n</systemHeader>\n<data /></message></root>",
+      "head": "<?xml version=\"1.0\" encoding=\"UTF-8\"?><root><message>\r\n<proframeHeader>\n<pfmAppName>FS-COM</pfmAppName>\n<pfmSvcName>COMFundUnityInfoSO</pfmSvcName>\n<pfmFnName>select</pfmFnName>\n<pfmGlobalNo>4bf21bb10afe00974b54cdb85dc04207</pfmGlobalNo>\n<pfmTrDate>20260829</pfmTrDate>\n<pfmTrTime>20260829141553137</pfmTrTime>\n<pfmClntIp>52.230.164.49</pfmClntIp>\n<pfmResponseType>S</pfmResponseType>\n<pfmResponseCode>COMS9009</pfmResponseCode>\n<pfmResponseTitle>MODULE ERROR</pfmResponseTitle>\n<pfmResponseBasc>proframe application name [FS-COM] [COMFundUnityInfoSO] is not found.</pfmResponseBasc>\n<pfmResponseDtal></pfmResponseDtal>\n</proframeHeader>\n<systemHeader>\n</systemHeader>\n<data /></message></root>",
       "ok": true,
-      "ms": 1212
+      "ms": 776
     },
     {
       "label": "미래에셋자산운용",
@@ -80,7 +80,7 @@
       "encoding": "utf8",
       "head": "<!DOCTYPE HTML PUBLIC \"-//IETF//DTD HTML 2.0//EN\">\n<html><head>\n<title>301 Moved Permanently</title>\n</head><body>\n<h1>Moved Permanently</h1>\n<p>The document has moved <a href=\"http://investments.miraeasset.com/magi/index.html\">here</a>.</p>\n</body></html>\n",
       "ok": false,
-      "ms": 773
+      "ms": 806
     },
     {
       "label": "삼성자산운용",
@@ -93,7 +93,7 @@
       "encoding": "utf8",
       "head": "<!DOCTYPE html>\r\n\r\n\r\n<html lang=\"ko\" id=\"top-of-site\" class=\"\">\r\n\t<head>\r\n\t\t\r\n\r\n\r\n\r\n\r\n<script>\r\n\tvar lang\t\t\t= \"ko\";\r\n\tvar langUri         = \"\";\r\n\tvar resourceDomain\t= \"/assets\";\r\n</script>\r\n\r\n\r\n\t\t\r\n\r\n\t\t\r\n\t\t\r\n\t\t\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n<script>\r\n\t(function() {\r\n\t\tconst hostname\t= location.hostname;\r\n\t\tconst isLocal\t= hostname.endsWith(\"localhost\");\r\n\t\tconst isMobPage\t= hostname.endsWith(\"m.samsungfund.com\");\r\n\r\n\t\tconst width\t\t= top.innerWidth;\r\n\t\tconst height\t= top.innerHeight;\r\n\t\tconst isDesktop\t= width > 1280;\r\n\t\tconst isTablet\t= width > 680 && !isDesktop;\r\n\t\tconst isMobile\t= !isDesktop && !isTablet;\r\n\r\n\t\tconsole.log('width:',width)\r\n\t\tconsole.log('height:',height)\r\n\t\tconsole.log('isDesktop:',isDesktop)\r\n\t\tconsole.log('isTablet:',isTablet)\r\n\t\tconsole.log('isMobile:',isMobile)\r\n\r\n\t\t////////////////////////////////////////////////////////////////////////\r\n\t\tconst isPortrait = width <= height;\r\n\t\tf",
       "ok": true,
-      "ms": 2129
+      "ms": 1572
     },
     {
       "label": "네이버 펀드 화면(원천 자체)",
@@ -106,7 +106,7 @@
       "encoding": "utf8",
       "head": "<!DOCTYPE html><html lang=\"ko\" class=\"\" data-theme=\"light\"><head><meta charSet=\"utf-8\"/><meta name=\"viewport\" content=\"width=1366, initial-scale=1.0, user-scalable=yes\"/><meta name=\"viewport\" content=\"width=device-width, initial-scale=1\"/><link rel=\"preload\" as=\"image\" href=\"https://ssl.pstatic.net/imgstock/fn/real/logo/brand/domestic/StockCommonFUND.svg\"/><link rel=\"stylesheet\" href=\"https://ssl.pstatic.net/imgstock/fn/real/pc/_next/static/css/9349f3b462cc41d1.css\" data-precedence=\"next\"/><link rel=\"stylesheet\" href=\"https://ssl.pstatic.net/imgstock/fn/real/pc/_next/static/css/5ba9bd4cf4a98f04.css\" data-precedence=\"next\"/><link rel=\"stylesheet\" href=\"https://ssl.pstatic.net/imgstock/fn/real/pc/_next/static/css/565ebc329ee006e0.css\" data-precedence=\"next\"/><link rel=\"stylesheet\" href=\"https://ssl.pstatic.net/imgstock/fn/real/pc/_next/static/css/0b92487b5595d2e7.css\" data-precedence=\"next",
       "ok": true,
-      "ms": 1080
+      "ms": 1025
     },
     {
       "label": "FnGuide 펀드",
@@ -115,11 +115,11 @@
       "status": 200,
       "finalUrl": "https://www.fnguide.com/",
       "contentType": "text/html; charset=utf-8",
-      "bytes": 111777,
+      "bytes": 111849,
       "encoding": "utf8",
       "head": "\r\n<!DOCTYPE html>\r\n<html lang=\"ko\">\r\n<head>\r\n    <meta charset=\"utf-8\" />\r\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\" />\r\n    <!--Str : favicon -->\r\n    <link rel=\"icon\" href=\"/favicon.ico?v=20251020\">\r\n    <!--End : favicon -->\r\n    <!--Str : apple-touch-icon -->\r\n    <link rel=\"apple-touch-icon\" sizes=\"180x180\" href=\"/apple-touch-icon-180.png\">\r\n    <link rel=\"apple-touch-icon\" sizes=\"167x167\" href=\"/apple-touch-icon-167.png\">\r\n    <link rel=\"apple-touch-icon\" sizes=\"152x152\" href=\"/apple-touch-icon-152.png\">\r\n    <link rel=\"apple-touch-icon\" href=\"/apple-touch-icon.png\"> <!-- fallback -->\r\n    <!--End : apple-touch-icon -->\r\n    <!--Str : og Setting-->\r\n    <meta property=\"og:title\" content=\"FnGuide\">\r\n    <meta property=\"og:description\" content=\"FnGuide\">\r\n    <meta property=\"og:image\" content=\"https://www.fnguide.com/images/img/og-img.png\">\r\n    <meta ",
       "ok": true,
-      "ms": 2182
+      "ms": 2010
     },
     {
       "label": "에프앤가이드 펀드닥터",
@@ -127,7 +127,7 @@
       "method": "GET",
       "ok": false,
       "error": "TypeError: fetch failed",
-      "ms": 10193
+      "ms": 10191
     }
   ],
   "errors": [],

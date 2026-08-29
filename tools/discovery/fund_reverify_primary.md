@@ -1,6 +1,6 @@
 # 재검증 L3 (2차 시도) — 브라우저로 1차 출처를 연다
 
-검증 시각: 2026-08-29T05:03:29.923Z
+검증 시각: 2026-08-29T05:16:36.874Z
 
 **1차 출처에서 조회 경로를 찾음 (전자공시 펀드검색(표준코드))**
 
@@ -33,19 +33,19 @@
 
 ### 전자공시 펀드공시
 
-- `GET https://dis.kofia.or.kr/websquare/config.xml?postfix=17879798122061129.2627110091369` → 200
-- `GET https://dis.kofia.or.kr/wq/fundann/DISFundAnnList.xml?postfix=1787979813673942.9793572333745` → 307
+- `GET https://dis.kofia.or.kr/websquare/config.xml?postfix=17879805990115046.066602276299` → 200
+- `GET https://dis.kofia.or.kr/wq/fundann/DISFundAnnList.xml?postfix=17879806004187331.943446827994` → 307
 - `GET https://dis.kofia.or.kr/common/error.html` → 200
-- `GET https://dis.kofia.or.kr/websquare/skin/stylesheet.css?postfix=17879798140235306.402371229329` → 200
+- `GET https://dis.kofia.or.kr/websquare/skin/stylesheet.css?postfix=17879806007493378.7371465624096` → 200
 
 ### 전자공시 펀드검색(표준코드)
 
-- `GET https://dis.kofia.or.kr/websquare/config.xml?postfix=17879798208112388.2677150850263` → 200
-- `GET https://dis.kofia.or.kr/wq/com/popup/DISComFundSmryInfo.xml?postfix=17879798222766978.0835904766955` → 200
-- `GET https://dis.kofia.or.kr/websquare/skin/stylesheet.css?postfix=17879798224727350.546463586965` → 200
-- `GET https://dis.kofia.or.kr/css/pop.css?postfix=17879798226543626.534130194642` → 200
-- `GET https://dis.kofia.or.kr/css/common.css?postfix=17879798228309086.035529037295` → 200
-- `GET https://dis.kofia.or.kr/wq/com/popup/loading.xml?postfix=17879798230292549.8270478093764` → 200
+- `GET https://dis.kofia.or.kr/websquare/config.xml?postfix=17879806074631318.8451952496482` → 200
+- `GET https://dis.kofia.or.kr/wq/com/popup/DISComFundSmryInfo.xml?postfix=17879806088438782.869636489757` → 200
+- `GET https://dis.kofia.or.kr/websquare/skin/stylesheet.css?postfix=17879806090263490.1385948551942` → 200
+- `GET https://dis.kofia.or.kr/css/pop.css?postfix=17879806092015394.238473825245` → 200
+- `GET https://dis.kofia.or.kr/css/common.css?postfix=17879806093664271.058729390265` → 200
+- `GET https://dis.kofia.or.kr/wq/com/popup/loading.xml?postfix=17879806095532652.8854885124465` → 200
 - `POST https://dis.kofia.or.kr/proframeWeb/XMLSERVICES/` → 200
   - POST: `<?xml version="1.0" encoding="utf-8"?>
 <message>
