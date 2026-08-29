@@ -404,6 +404,68 @@ check('총보수를 0 으로 지어내지 않는다', !feeInvented);
   }
 }
 
+// ── 업종구성: 있으면 싣고, 없으면 자리를 만들지 않는가
+//
+// 두 가지를 함께 본다. 값이 있는 펀드에서 표가 그려지는가, 그리고 값이 없는
+// 펀드에서 빈 표나 "0.00%" 가 나오지 않는가. 3,196개 전부 빈칸이던 것을
+// 못 알아챘던 자리라 **없는 쪽도 함께 시험한다.**
+//
+// 합을 100 으로 맞추지 않는 것도 확인한다. 합이 10% 인 펀드는 자료가
+// 모자란 것이 아니라 나머지가 업종 없는 자산(채권·유동성)이라는 뜻이다.
+{
+  const picks = await page.evaluate(() => {
+    const fs = window.FUNDS || [];
+    const has = fs.find((f) => f.sectors && Object.keys(f.sectors).length);
+    const none = fs.find((f) => !f.sectors || !Object.keys(f.sectors).length);
+    return {
+      has: has ? { id: has.id, n: Object.keys(has.sectors).length,
+                   sum: Object.values(has.sectors).reduce((a, b) => a + b, 0) } : null,
+      none: none ? none.id : null,
+    };
+  });
+
+  check('업종구성이 있는 펀드가 존재한다', picks.has != null,
+    picks.has ? `${picks.has.n}개 업종 · 합 ${picks.has.sum.toFixed(2)}%` : '한 펀드도 없다');
+
+  if (picks.has) {
+    await page.evaluate((id) => { window.state.selected = id; window.renderDetail(); }, picks.has.id);
+    await page.waitForTimeout(200);
+    const t = await page.locator('#detail').innerText().catch(() => '');
+    check('업종구성 표가 그려진다', /업종구성/.test(t), t.includes('업종구성') ? '표시됨' : t.slice(0, 120));
+    check('업종 비중이 순자산 대비라고 밝힌다', /순자산 대비/.test(t),
+      /순자산 대비/.test(t) ? '표시됨' : '문구 없음');
+    check('합이 100 이 아닌 것을 결손이 아니라고 밝힌다', /빠진 자료가 아닙니다/.test(t),
+      /빠진 자료가/.test(t) ? '표시됨' : '문구 없음');
+  }
+
+  if (picks.none) {
+    await page.evaluate((id) => { window.state.selected = id; window.renderDetail(); }, picks.none);
+    await page.waitForTimeout(200);
+    const t = await page.locator('#detail').innerText().catch(() => '');
+    check('업종이 없는 펀드에는 업종구성 자리를 만들지 않는다', !/업종구성/.test(t),
+      /업종구성/.test(t) ? '빈 표가 나왔다' : '자리 없음');
+  }
+}
+
+// ── 자산구성은 싣지 않는다
+//
+// 같은 응답에서 오지만 비중의 분모를 우리가 모른다 — 3,106개 중 합이 100
+// 근처인 것 21.9%, 기준가로 나눠야 100 근처인 것 5.9%, 나머지 72.2%는 어느
+// 쪽도 아니다. 뜻을 모르는 숫자가 화면에 새어 나가지 않는지 지킨다.
+{
+  const withAssets = await page.evaluate(() => {
+    const f = (window.FUNDS || []).find((x) => x.assets && Object.keys(x.assets).length);
+    return f ? f.id : null;
+  });
+  if (withAssets) {
+    await page.evaluate((id) => { window.state.selected = id; window.renderDetail(); }, withAssets);
+    await page.waitForTimeout(200);
+    const t = await page.locator('#detail').innerText().catch(() => '');
+    check('자산구성은 화면에 싣지 않는다', !/자산구성/.test(t),
+      /자산구성/.test(t) ? '새어 나갔다' : '싣지 않음');
+  }
+}
+
 // ── 영문 전환
 await page.locator('.lang-toggle button[data-lang="en"]').click();
 await page.waitForTimeout(200);

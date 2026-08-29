@@ -428,18 +428,21 @@ function verifyReturns(src, sets) {
  * 모르는 모양을 세는 카운터는 rows 가 null 이라 아예 돌지 않아 로그도 조용했다.
  * 없는 것을 못 알아챈 것이 아니라 **못 알아채게 만들어 놓았다.**
  *
- * 그리고 이 값은 **그대로 쓰면 안 된다.** 네이버가 화면에 찍는 수치가
- * 순자산 대비가 아니다. 교보악사파워인덱스 2 에서
+ * 그리고 이 값은 **그대로 쓰면 안 된다.** 교보악사파워인덱스 2 에서
  *
  *   우리 보유종목 비중 합   86.96%
  *   × 기준가/1000 (4.00071)
  *   = 347.90%   ←  네이버 자산구성 '주식' 347.86% 와 0.05%p 차
  *
- * 곧 분모가 순자산이 아니라 **설정원본(derivedAum)** 이다. 기준가가 1,000
- * 근처인 펀드에서는 멀쩡해 보이므로 눈에 안 띈다. 원천 값을 그대로 옮기되
- * 화면에는 아직 싣지 않는다 — 이 관계가 전수에서 성립하는지 감사가 먼저
- * 판정해야 한다. 우리가 고쳐서 싣는 것도, 부풀려진 값을 그대로 싣는 것도
- * 지금은 이르다.
+ * 가 맞기에 분모가 설정원본이라고 적었었다. **전수에서는 안 맞는다.**
+ * 보유종목이 전량 공시된 펀드 639개 중 이 관계가 오차 5% 안에 드는 것은
+ * 44개(7%)뿐이고, 자산구성 합만 직접 봐도 순자산 대비(21.9%)와 그 밖
+ * (72.2%)으로 갈린다. 한 자리에 두 가지 이상이 섞여 있고 가릴 근거가 없다.
+ *
+ * 그래서 **자산구성은 받아만 두고 화면에 싣지 않는다.** 뜻을 모르는 숫자를
+ * 싣느니 빈칸이 낫다. 감사가 이 판단을 매일 다시 센다.
+ *
+ * 업종구성은 사정이 다르다 — `shapeSectors` 를 보라.
  */
 const assetShapes = new Map();      // 모르는 모양은 세어 두고 로그로 알린다
 function shapeAssets(a) {
@@ -466,6 +469,56 @@ function shapeAssets(a) {
       continue;
     }
     // 비중은 소수(0.0908)로 온다. 보유종목과 같은 자로 맞춘다.
+    out[name] = +(w * 100).toFixed(4);
+  }
+  return Object.keys(out).length ? out : null;
+}
+
+/**
+ * 업종구성(allocationsSectors).
+ *
+ * 11차 조사는 이 열쇠의 **이름만** 남기고 본문은 잘렸다. 그 상태로
+ * `shapeAssets` 를 그냥 갖다 붙였고 3,196개 전부 빈칸이 나왔다. 12차에서
+ * 본문을 찍어 보니 모양이 이랬다.
+ *
+ *   { result: [ { sectorName: "필수소비재", weight: 0.395627224 }, ... ] }
+ *
+ * `shapeAssets` 는 `a.result` 까지는 읽지만 이름 열쇠 후보에 `sectorName`
+ * 이 없어 한 줄도 못 옮겼다. 값이 아주 조금 모자란 것이지 자리가 없는
+ * 것이 아니었다.
+ *
+ * **자산구성과 달리 이 값은 뜻이 분명하다.** 12차 표본 25개에서 비중 합이
+ * 1.00 · 0.99 · 0.97 로 모이고, 소수 그대로 순자산 대비다. 합이 0.10 이나
+ * 0.01 인 펀드도 있는데 그것은 자료가 모자란 것이 아니라 **분류되는 업종에
+ * 그만큼만 들어 있다**는 뜻이다(나머지는 채권·유동성). 그래서 합을 100 으로
+ * 맞추지 않는다. 맞추면 없는 비중을 지어내는 것이 된다.
+ *
+ * 업종을 주는 펀드는 많지 않다 — 240개 표본에서 `availability.sectors` 가
+ * true 인 것은 25개(10.4%)다. 나머지는 원천이 업종이 없다고 말한 펀드지
+ * 우리가 못 받은 펀드가 아니다.
+ */
+const sectorShapes = new Map();
+function shapeSectors(a) {
+  if (!a) return null;
+  const rows = Array.isArray(a) ? a
+    : Array.isArray(a.result) ? a.result
+    : Array.isArray(a.sectors) ? a.sectors : null;
+  if (!rows?.length) {
+    if (a && typeof a === 'object') {
+      const k = 'top:' + Object.keys(a).sort().join(',');
+      sectorShapes.set(k, (sectorShapes.get(k) || 0) + 1);
+    }
+    return null;
+  }
+  const out = {};
+  for (const r of rows) {
+    const name = r.sectorName ?? r.itemName ?? r.name ?? null;
+    const w = num(r.weight ?? r.ratio ?? r.value);
+    if (name == null || w == null) {
+      sectorShapes.set(Object.keys(r).sort().join(','),
+                       (sectorShapes.get(Object.keys(r).sort().join(',')) || 0) + 1);
+      continue;
+    }
     out[name] = +(w * 100).toFixed(4);
   }
   return Object.keys(out).length ? out : null;
@@ -736,7 +789,7 @@ async function fetchDetail(code) {
     // 받아만 두고 화면에는 아직 안 싣는다.
     assets: shapeAssets(fa?.allocationsAssets ?? cp?.allocationsAssets),
     // 업종구성. /fund-allocation 에만 있다.
-    sectors: shapeAssets(fa?.allocationsSectors),
+    sectors: shapeSectors(fa?.allocationsSectors),
     // 원천이 보유종목·자산구성의 **기준일을 주지 않는다.** 응답 어디에도
     // 날짜가 없다(9·11차에서 응답을 통째로 뒤졌다). 미래에셋 화면은 같은
     // 자리에 "기준일 2026.07.01" 이라고 적어 두는데, 그 날짜는 기준가
@@ -840,6 +893,16 @@ async function main() {
   if (assetShapes.size) {
     console.log('\n[fund] 자산구성에서 모르는 모양:');
     for (const [k, n] of assetShapes) console.log(`  ${n}건  {${k}}`);
+  }
+  if (sectorShapes.size) {
+    console.log('\n[fund] 업종구성에서 모르는 모양:');
+    for (const [k, n] of sectorShapes) console.log(`  ${n}건  {${k}}`);
+  }
+  // 업종을 받은 펀드 수를 항상 적는다. 지난번에는 0개였는데도 아무 말이
+  // 없어서 화면을 만들 때까지 몰랐다. 0 이면 0 이라고 말해야 한다.
+  {
+    const n = funds.filter((f) => f.sectors && Object.keys(f.sectors).length).length;
+    console.log(`\n[fund] 업종구성 있는 펀드 ${n} / ${funds.length}`);
   }
 
   // 반쪽짜리 결과로 어제 파일을 덮는 것이 제일 나쁘다.
