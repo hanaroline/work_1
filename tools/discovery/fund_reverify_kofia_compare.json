@@ -1,5 +1,5 @@
 {
-  "at": "2026-08-29T04:44:15.938Z",
+  "at": "2026-08-29T05:05:16.061Z",
   "rows": [
     {
       "code": "KR5105409225",
@@ -8,6 +8,7 @@
       "mine": {
         "basePrice": 1019.74,
         "baseDate": "2026-08-27",
+        "region": "domestic",
         "aum": 12245199995973,
         "nav": 12486859599809,
         "inception": "2003-12-30",
@@ -56,10 +57,10 @@
           "ok": true
         },
         "투자지역": {
-          "mine": null,
+          "mine": "국내",
           "theirs": "국내",
-          "ok": null,
-          "note": "내 자료는 \"미상\" — 유형명에 지역이 없어 지어내지 않았다"
+          "ok": true,
+          "note": null
         },
         "총보수(펀드단위)": {
           "mine": null,
@@ -232,6 +233,7 @@
       "mine": {
         "basePrice": 975.49,
         "baseDate": "2026-08-27",
+        "region": "domestic",
         "aum": 1133550179266,
         "nav": 1105767870765,
         "inception": "2019-09-23",
@@ -280,10 +282,10 @@
           "ok": true
         },
         "투자지역": {
-          "mine": null,
+          "mine": "국내",
           "theirs": "국내",
-          "ok": null,
-          "note": "내 자료는 \"미상\" — 유형명에 지역이 없어 지어내지 않았다"
+          "ok": true,
+          "note": null
         },
         "총보수(펀드단위)": {
           "mine": null,
@@ -606,7 +608,7 @@
       "mine": {
         "basePrice": 1369.32,
         "baseDate": "2026-08-27",
-        "region": "overseas",
+        "region": "mixed",
         "aum": 397275109227,
         "nav": 543995737615,
         "inception": "2017-03-13",
@@ -655,10 +657,10 @@
           "ok": true
         },
         "투자지역": {
-          "mine": "해외",
+          "mine": null,
           "theirs": "혼합",
-          "ok": false,
-          "note": null
+          "ok": null,
+          "note": "내 자료는 \"미상\" — 유형명에 지역이 없어 지어내지 않았다"
         },
         "총보수(펀드단위)": {
           "mine": null,
@@ -751,7 +753,7 @@
     }
   ],
   "errors": [],
-  "dataUpdatedAt": "2026-08-29T01:45:19.205Z",
+  "dataUpdatedAt": "2026-08-29T04:58:09.150Z",
   "tally": {
     "기준가": {
       "same": 0,
@@ -774,9 +776,9 @@
       "na": 0
     },
     "투자지역": {
-      "same": 7,
-      "diff": 1,
-      "na": 2
+      "same": 9,
+      "diff": 0,
+      "na": 1
     },
     "총보수(펀드단위)": {
       "same": 0,
@@ -793,16 +795,6 @@
     "targets": 10,
     "found": 10
   },
-  "diffs": [
-    {
-      "code": "K55301BM7814",
-      "name": "미래에셋평생소득TIF혼합자산자투자신탁",
-      "field": "투자지역",
-      "mine": "해외",
-      "theirs": "혼합",
-      "ok": false,
-      "note": null
-    }
-  ],
-  "verdict": "1차 출처 10개 대조 · 불일치 1건"
+  "diffs": [],
+  "verdict": "1차 출처 10개 대조 · 불일치 0건"
 }
