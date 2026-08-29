@@ -518,6 +518,23 @@ function signClass(v) { return v == null ? 'dim' : (v > 0 ? 'pos' : (v < 0 ? 'ne
 function fmtNum(v) { return v == null || !isFinite(v) ? '–' : Math.round(v).toLocaleString(); }
 
 /**
+ * 보유 비중.
+ *
+ * 소수 둘째 자리까지 찍으면 아주 작은 비중이 "0.00%" 가 된다. 그건
+ * **담지 않았다**는 뜻으로 읽히므로 거짓이다. 원천에는 0.000000045 처럼
+ * 아주 작은 진짜 비중이 실제로 있다(KB이머징유럽의 PETKIM PETROKIMYA).
+ *
+ * 그래서 0 이 아닌데 0.00% 로 반올림될 값은 "<0.01%" 로 찍는다.
+ * 원천이 정말 0 을 준 경우에만 "0.00%" 다.
+ */
+function fmtWeight(w) {
+  if (w == null || !isFinite(w)) return '<span class="dim">–</span>';
+  if (w === 0) return '0.00%';
+  if (Math.abs(w) < 0.005) return (w < 0 ? '>-0.01%' : '&lt;0.01%');
+  return w.toFixed(2) + '%';
+}
+
+/**
  * 한 펀드의 한 기간 수익률.
  *
  * **없는 것과 0 을 구별한다.** `Number(null)` 은 `0` 이고 `Number.isFinite(0)`
@@ -838,7 +855,7 @@ function holdingsBlock(f) {
       '<span class="seq">' + (j + 1) + '</span>' +
       '<span class="nm" title="' + esc(h.name || h.code || '') + '">' + esc(h.name || h.code || '–') + '</span>' +
       // 비중이 없으면 "–" 다. 0.00% 로 찍으면 "안 담았다" 는 거짓말이 된다.
-      '<span class="wt">' + (w == null ? '<span class="dim">–</span>' : w.toFixed(2) + '%') + '</span>' +
+      '<span class="wt">' + fmtWeight(w) + '</span>' +
       (bar > 0 ? '<span class="hbar" style="width:' + bar.toFixed(1) + '%"></span>' : '') +
       '</div>';
   }
@@ -1326,7 +1343,10 @@ function renderCompare() {
         if (!found) html += '<td class="num miss">·</td>';
         else if (found.weight == null) html += '<td class="num unw" title="' +
           esc(lang === 'ko' ? '담았으나 비중이 원천에 없습니다' : 'held; weight not published') + '">○</td>';
-        else html += '<td class="num held">' + Number(found.weight).toFixed(1) + '</td>';
+        // 아주 작은 비중을 0.0 으로 뭉개지 않는다 — 담은 것을 안 담았다고 하는 셈이다.
+        else html += '<td class="num held">' +
+          (Number(found.weight) !== 0 && Math.abs(Number(found.weight)) < 0.05
+            ? '&lt;0.1' : Number(found.weight).toFixed(1)) + '</td>';
       }
       html += '</tr>';
     }
@@ -1386,7 +1406,7 @@ function renderReverse() {
       '<td>' + esc(r.h.name || '') + '</td>' +
       '<td class="num">' + (r.h.weight == null
         ? '<span class="dim" title="' + esc(lang === 'ko' ? '비중이 원천에 없습니다' : 'not published') + '">–</span>'
-        : Number(r.h.weight).toFixed(2) + '%') + '</td>' +
+        : fmtWeight(Number(r.h.weight))) + '</td>' +
       '<td class="num">' + esc(fmtAmount(r.fund.aum)) + '</td></tr>';
   }
   html += '</tbody></table></div><div id="reverse-detail"></div>';
