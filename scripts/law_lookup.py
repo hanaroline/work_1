@@ -71,11 +71,23 @@ def load_articles(law):
         return json.load(f)
 
 
+def ymd(s):
+    """20260804 → 2026. 8. 4. — 인용 표기에 쓰는 꼴."""
+    s = str(s or "").strip()
+    if re.fullmatch(r"\d{8}", s):
+        return "%s. %d. %d." % (s[:4], int(s[4:6]), int(s[6:]))
+    return s or "?"
+
+
 def header(law, index):
-    return ("%s (%s) — 시행 %s, %s %s호\n출처 국가법령정보센터 · 받은 때 %s"
-            % (law["법령명"], law.get("구분", ""), law.get("시행일자", "?"),
-               law.get("공포일자", "?"), law.get("공포번호", "?"),
-               index.get("수집시각", "?")))
+    # 행정규칙은 공포일자·공포번호가 비어 온다(발령으로 갈음). 빈 자리를
+    # "? ?호" 로 찍으면 인용문에 그대로 섞여 들어가므로 아예 뺀다.
+    pub = ""
+    if law.get("공포일자"):
+        pub = ", %s %s호" % (ymd(law["공포일자"]), law.get("공포번호", "?"))
+    return ("%s (%s) — 시행 %s%s\n출처 국가법령정보센터 · 받은 때 %s"
+            % (law["법령명"], law.get("구분", ""), ymd(law.get("시행일자")),
+               pub, index.get("수집시각", "?")))
 
 
 def label(a):
@@ -97,8 +109,20 @@ def branch_of(a):
     return str(a.get("조문가지번호", "") or "").lstrip("0")
 
 
-def want_numbers(spec):
-    """'55' / '55의2' / '55-58' 을 조문을 고르는 조건으로 바꾼다."""
+def want_numbers(spec, arts):
+    """'55' / '55의2' / '55-58' / '1-1' 을 조문을 고르는 조건으로 바꾼다.
+
+    행정규칙은 조문번호가 '1-1'(편-조) 꼴이라 범위 표기와 생김새가 겹친다.
+    그래서 **받아 둔 조문에 그 번호가 실제로 있으면 글자 그대로** 보고,
+    없을 때만 범위로 읽는다. 자본시장법에서 55-58 은 범위지만 금융투자업규정
+    에서 1-1 은 제1-1조다 — 자료가 갈라 준다.
+    """
+    m = re.fullmatch(r"제?([\d-]+)조?(?:의(\d+))?", spec)
+    if m:
+        no, br = m.group(1), (m.group(2) or "")
+        if any(a.get("조문번호") == no and branch_of(a) == br for a in arts):
+            return lambda a: a.get("조문번호") == no and branch_of(a) == br
+
     m = re.fullmatch(r"제?(\d+)조?의(\d+)", spec)
     if m:
         return lambda a: (a.get("조문번호") == m.group(1)
@@ -184,7 +208,7 @@ def main():
               "python3 scripts/law_lookup.py %s 55" % (len(arts), args.법령))
         return 0
 
-    match = want_numbers(args.조문)
+    match = want_numbers(args.조문, arts)
     if match is None:
         print("!! 조문 지정을 알아듣지 못했다: %s (보기: 55, 55의2, 55-58)" % args.조문,
               file=sys.stderr)
