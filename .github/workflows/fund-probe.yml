@@ -212,14 +212,28 @@ jobs:
       # 이름은 근거가 아니다. 상세 화면을 열어 **출력 항목**을 본다.
       # 표준코드·기준일자·설정원본(좌수)이 셋 다 있어야 쓸 수 있다.
       # 합계 통계거나 분기 자료거나 오늘치만 주면 못 쓴다.
+      # 20차에서 넉 줄을 다 열었다. 결과가 저장소에 남았으므로 자동으로는
+      # 안 돌린다 — 다시 돌리면 성공한 결과가 실패 결과로 덮인다.
       - name: 검산 실행 16차 (후보가 펀드별 일별 설정원본을 주는가)
         timeout-minutes: 25
         continue-on-error: true
-        if: hashFiles('scripts/probe_fund_api_detail.mjs') != ''
+        if: github.event_name == 'workflow_dispatch' && hashFiles('scripts/probe_fund_api_detail.mjs') != ''
         run: |
           npm i -D playwright@1.56.1 --no-audit --no-fund
           npx playwright install --with-deps chromium
           node scripts/probe_fund_api_detail.mjs
+
+      # 20차가 연 넉 줄은 전부 **연계데이터**였다. 포털은 항목도 파일도
+      # 안 들고 바깥 주소만 걸어 둔다(전체 행 `-`, 확장자 빈칸). 그러니
+      # 포털 화면으로는 판정을 못 한다. 실물이 있는 광주 쪽을 연다.
+      - name: 검산 실행 21차 (광주 연계 4건이 무엇을 주는가)
+        timeout-minutes: 20
+        continue-on-error: true
+        if: hashFiles('scripts/probe_fund_gwangju.mjs') != ''
+        run: |
+          npm i -D playwright@1.56.1 --no-audit --no-fund
+          npx playwright install --with-deps chromium
+          node scripts/probe_fund_gwangju.mjs
 
       - name: 결과 업로드
         if: always()
@@ -241,6 +255,7 @@ jobs:
             tools/discovery/kofia_openapi_docs.md
             tools/discovery/fund_api_catalogs.md
             tools/discovery/fund_api_detail.md
+            tools/discovery/fund_gwangju.md
           retention-days: 7
 
       - name: 결과 커밋
@@ -262,6 +277,7 @@ jobs:
           git add tools/discovery/kofia_openapi_docs.md 2>/dev/null || true
           git add tools/discovery/fund_api_catalogs.md 2>/dev/null || true
           git add tools/discovery/fund_api_detail.md 2>/dev/null || true
+          git add tools/discovery/fund_gwangju.md 2>/dev/null || true
           git commit -m "chore(fund): 원천 조사 결과 갱신" || echo "변경 없음"
           git pull --rebase --autostash origin "${GITHUB_REF_NAME}" || true
           git push || echo "푸시 실패 (무시)"
