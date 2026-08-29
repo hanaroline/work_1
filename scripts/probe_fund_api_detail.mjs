@@ -37,7 +37,9 @@ const OUT = 'tools/discovery/fund_api_detail.md';
 const UA = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 ' +
            '(KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36';
 
-const KEYWORDS = ['펀드', '집합투자', '수익증권'];
+// 봐야 할 것이 `집합투자증권 …` 넉 줄이므로 그 검색어부터 부른다. 뒤로
+// 갈수록 끊길 확률이 높으니, 끊기더라도 제일 중요한 것은 이미 받아 둔다.
+const KEYWORDS = ['집합투자', '수익증권', '펀드'];
 const LIST = (kw) =>
   `https://www.data.go.kr/tcs/dss/selectDataSetList.do?keyword=${encodeURIComponent(kw)}`;
 
@@ -83,12 +85,13 @@ const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
  * 적은 것이다. 20분 전 15차는 같은 주소를 200 으로 열었으므로 원천이
  * 없는 게 아니라 연달아 두드려서 끊긴 것이다. 물러섰다가 다시 부른다.
  */
-async function open(url, wait = 5000, tries = 3) {
+async function open(url, wait = 5000, tries = 5) {
   let last = null;
   for (let i = 0; i < tries; i += 1) {
-    // 16차는 8초·16초 쉬고 다시 불렀는데 세 번 다 끊겼다. 같은 주소를 20분 전
-    // 15차는 열었으니 문턱이 시간에 있다고 보고 더 길게 물러선다.
-    if (i) await sleep(20000 * i);
+    // 18·19차는 세 검색어 스무 번이 다 ERR_CONNECTION_TIMED_OUT 이었다.
+    // 두 판 앞(17차)은 같은 주소를 200 으로 열었으니 원천이 막힌 게 아니라
+    // 대역이 간헐적으로 끊긴다. 짧게 여러 번 두드리지 말고 길게 물러선다.
+    if (i) await sleep(30000 * i);
     const page = await ctx.newPage();
     try {
       const res = await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 90000 });
@@ -125,6 +128,10 @@ const found = new Map();   // href -> title
 const lists = [];          // 목록 화면을 받았는가. 이것을 안 적으면 0 이 거짓말이 된다.
 const dropped = [];        // 왜 안 골랐는가. 이유를 안 적으면 "없다" 로 읽힌다.
 const unopenable = [];     // 제목은 맞는데 열 주소를 못 얻은 줄. 이게 진짜 구멍이었다.
+// 러너가 뜨자마자 두드리면 앞선 판의 흔적이 아직 남아 있을 수 있다. 식힌다.
+console.log('[detail] 2분 식히고 시작한다.');
+await sleep(120000);
+
 for (const kw of KEYWORDS) {
   const before = found.size;
   try {
@@ -236,7 +243,7 @@ const md = [
   '|---|:--:|:--:|:--:|:--:|:--:|',
   ...lists.map((l) => (l.ok
     ? `| ${l.kw} | 받음 | ${l.how} | ${l.status} | ${l.anchors} | ${l.added} |`
-    : `| ${l.kw} | **못 받음** | 브라우저 3회 + fetch 1회 모두 실패 | — | — | — |`)),
+    : `| ${l.kw} | **못 받음** | 브라우저 5회 + fetch 1회 모두 실패 | — | — | — |`)),
   '',
   ...lists.filter((l) => !l.ok).map((l) => `- \`${l.kw}\` 실패: ${l.error}`),
   ...lists.filter((l) => l.ok && l.anchors === 0)
