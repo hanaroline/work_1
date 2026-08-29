@@ -40,6 +40,9 @@ jobs:
       - uses: actions/checkout@v4
         with:
           ref: ${{ github.ref_name }}
+          # 데이터 커밋을 쌓지 않고 덮어쓰기 때문에 직전 커밋(--amend 의 부모)이
+          # 있어야 한다. 기본값 1 은 HEAD 하나뿐이라 amend 뒤 밀어넣지 못한다.
+          fetch-depth: 2
 
       - uses: actions/setup-node@v4
         with:
@@ -132,8 +135,31 @@ jobs:
           git add tools/discovery/fund_audit.md tools/discovery/fund_audit.json 2>/dev/null || true
           if git diff --cached --quiet; then
             echo "변경 없음"
+            exit 0
+          fi
+
+          MSG="chore(fund): 공모펀드 데이터 갱신 ($(TZ=Asia/Seoul date +%Y-%m-%d))"
+
+          # 데이터는 **최신본만 남긴다.**
+          #
+          # data/fund.js 24MB + data/fund-kr.js 25MB + fund-search.html 25MB 다.
+          # 날마다 새 커밋으로 쌓으면 내용이 거의 안 바뀌어도 blob 이 통째로 새로
+          # 생긴다(줄 단위 델타가 아니라 파일 단위다). 하루 70MB 씩 늘었고
+          # .git 이 이미 129MB 다.
+          #
+          # 그래서 직전 커밋이 데이터 갱신 커밋이면 그 위에 쌓지 않고 **덮어쓴다.**
+          # 어제 blob 은 도달 불가가 되어 원격 GC 때 회수된다.
+          #
+          # 사람이나 다른 잡이 그 사이에 코드를 올렸으면 끝 커밋이 데이터 커밋이
+          # 아니므로 덮어쓰지 않고 새로 쌓는다 — 남의 커밋을 삼키지 않는다.
+          # --force-with-lease 도 원격이 우리가 아는 상태일 때만 나간다.
+          if git log -1 --pretty=%s | grep -q '^chore(fund): 공모펀드 데이터 갱신'; then
+            echo "직전이 데이터 커밋이다 — 덮어쓴다"
+            git commit --amend -m "$MSG"
+            git push --force-with-lease
           else
-            git commit -m "chore(fund): 공모펀드 데이터 갱신 ($(TZ=Asia/Seoul date +%Y-%m-%d))"
+            echo "직전이 데이터 커밋이 아니다 — 새로 쌓는다"
+            git commit -m "$MSG"
             git push
           fi
 
