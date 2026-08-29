@@ -419,15 +419,45 @@ function verifyReturns(src, sets) {
 }
 
 // ─────────────────────────── 상세 ───────────────────────────
-/** allocationsAssets 의 모양을 아직 표본에서 못 봤다. 아는 모양만 옮긴다. */
+/**
+ * 자산구성(allocationsAssets).
+ *
+ * **이 함수는 지금까지 한 번도 값을 낸 적이 없다.** `a.result` 나 배열만 보는데
+ * 실제 모양은 `{ assetTypes: [{ assetType, assetTypeName, weight,
+ * marketEvaluationAmount }] }` 였다(11차 조사). 3,196개 전부 null 이 나왔고,
+ * 모르는 모양을 세는 카운터는 rows 가 null 이라 아예 돌지 않아 로그도 조용했다.
+ * 없는 것을 못 알아챈 것이 아니라 **못 알아채게 만들어 놓았다.**
+ *
+ * 그리고 이 값은 **그대로 쓰면 안 된다.** 네이버가 화면에 찍는 수치가
+ * 순자산 대비가 아니다. 교보악사파워인덱스 2 에서
+ *
+ *   우리 보유종목 비중 합   86.96%
+ *   × 기준가/1000 (4.00071)
+ *   = 347.90%   ←  네이버 자산구성 '주식' 347.86% 와 0.05%p 차
+ *
+ * 곧 분모가 순자산이 아니라 **설정원본(derivedAum)** 이다. 기준가가 1,000
+ * 근처인 펀드에서는 멀쩡해 보이므로 눈에 안 띈다. 원천 값을 그대로 옮기되
+ * 화면에는 아직 싣지 않는다 — 이 관계가 전수에서 성립하는지 감사가 먼저
+ * 판정해야 한다. 우리가 고쳐서 싣는 것도, 부풀려진 값을 그대로 싣는 것도
+ * 지금은 이르다.
+ */
 const assetShapes = new Map();      // 모르는 모양은 세어 두고 로그로 알린다
 function shapeAssets(a) {
   if (!a) return null;
-  const rows = Array.isArray(a) ? a : Array.isArray(a.result) ? a.result : null;
-  if (!rows?.length) return null;
+  const rows = Array.isArray(a) ? a
+    : Array.isArray(a.assetTypes) ? a.assetTypes
+    : Array.isArray(a.result) ? a.result : null;
+  if (!rows?.length) {
+    // rows 가 없으면 조용히 null 을 내던 자리다. 무슨 키가 왔는지 세어 둔다.
+    if (a && typeof a === 'object') {
+      const k = 'top:' + Object.keys(a).sort().join(',');
+      assetShapes.set(k, (assetShapes.get(k) || 0) + 1);
+    }
+    return null;
+  }
   const out = {};
   for (const r of rows) {
-    const name = r.itemName ?? r.assetName ?? r.name ?? r.typeName ?? null;
+    const name = r.assetTypeName ?? r.itemName ?? r.assetName ?? r.name ?? r.typeName ?? null;
     const w = num(r.weight ?? r.ratio ?? r.value);
     if (name == null || w == null) {
       // 모양을 모르면 지어내지 않는다. 무슨 키가 왔는지만 세어 둔다.
@@ -442,12 +472,20 @@ function shapeAssets(a) {
 }
 
 async function fetchDetail(code) {
-  const [lp, cp, s3m, s1y, s5y] = await Promise.all([
+  const [lp, cp, s3m, s1y, s5y, fp, fa] = await Promise.all([
     getJson(`${API}/${code}/left-panel`, { headers }),
     getJson(`${API}/${code}/chart-price-panel`, { headers }),
     getJson(`${API}/${code}/base-price/chart?term=3m`, { headers }),
     getJson(`${API}/${code}/base-price/chart?term=1y`, { headers }),
     getJson(`${API}/${code}/base-price/chart?term=5y`, { headers }),
+    // 유형평균 수익률이 여기 있다. chart-price-panel 의 같은 이름 자리는
+    // peerCompanyReturn 이 전부 null 인데 이쪽은 차 있다(9차 조사).
+    // 우리는 유형평균을 우리가 셈해서 화면에 쓰고 있었다 — 원천이 주는
+    // 값이 있으면 그것이 먼저다.
+    getJson(`${API}/${code}/fund-performance`, { headers }).catch(() => null),
+    // 업종구성. availability.sectors 는 true 인데 chart-price-panel 에는
+    // 없었다. /allocation 탭을 열어 보고서야 이 주소를 찾았다(11차).
+    getJson(`${API}/${code}/fund-allocation`, { headers }).catch(() => null),
   ]);
   const d = lp?.detail || {};
   const { region, assetClass } = splitType(d.parentPeerGroupName);
@@ -462,6 +500,26 @@ async function fetchDetail(code) {
   for (const r of retRows) {
     if (r.fundReturn != null) srcRet[r.term] = r.fundReturn;
     if (r.benchmarkReturn != null) benchRet[r.term] = r.benchmarkReturn;
+  }
+
+  // ── 원천이 주는 유형평균 수익률 ──────────────────────────────────────────
+  //
+  // 화면은 지금 "유형 평균 대비" 를 **우리가 셈해서** 찍는다. 같은 유형의
+  // 펀드들을 우리 자료 안에서 평균 낸 값이다. 그런데 원천이 자기 유형평균을
+  // 갖고 있었다 — chart-price-panel 의 peerCompanyReturn 은 전부 null 인데
+  // fund-performance 의 같은 이름 자리는 차 있다.
+  //
+  // **기준일이 다르면 안 받는다.** 수익률과 유형평균이 다른 날을 보면
+  // "이 펀드가 유형평균을 이겼다" 는 진술 자체가 성립하지 않는다. 두
+  // 응답의 기준일이 같을 때만 옮긴다.
+  const peerRet = {};
+  const fpBase = fp?.periodReturns?.baseDate ?? null;
+  const cpBase = cp?.fundReturns?.baseDate ?? null;
+  const peerSameDay = fpBase != null && cpBase != null && fpBase === cpBase;
+  if (peerSameDay) {
+    for (const r of (fp?.periodReturns?.returns || [])) {
+      if (r.peerCompanyReturn != null) peerRet[r.term] = r.peerCompanyReturn;
+    }
   }
 
   // 짧은 구간은 촘촘한 계열로, 긴 구간은 성긴 계열로 본다. term 이 길수록
@@ -577,13 +635,26 @@ async function fetchDetail(code) {
     aum,
     nav,
     aumDropped,
-    // 총보수는 원천에 없다(표본 60 중 59가 null). 받아 두되 지어내지 않는다.
+    // 총보수는 펀드 자리에서는 거의 다 비어 있다(표본 60 중 59가 null).
+    // 클래스 자리에는 차 있다 — classes[] 참고. 받아 두되 지어내지 않는다.
     totalFee: num(d.totalFee),
+    // 보수를 쪼갠 네 자리. 미래에셋 화면이 "연 0.83% = 판매 0.45 / 운용 0.35 /
+    // 수탁 0.015 / 사무수탁 0.015" 로 적는 그것이고, 네이버 detail 에 같은
+    // 네 자리가 있다. 앞의 둘만 받고 있었다. 표본에서 비어 있다고 안 받으면
+    // 차 있는 펀드까지 통째로 버리게 된다 — 이미 세 번 밟은 함정이다.
     managementFee: num(d.managementFee),
     salesFee: num(d.salesFee),
+    custodyFee: num(d.custodyFee),
+    backOfficeFee: num(d.backOfficeFee),
+    preSalesFee: num(d.preSalesFee),
+    postSalesFee: num(d.postSalesFee),
 
     ret: kept,
     retBenchmark: Object.keys(bench).length ? bench : null,
+    // 원천이 준 유형평균. 우리가 셈한 것과 구별해 이름을 따로 둔다 —
+    // 화면이 "원천 유형평균" 과 "우리가 낸 평균" 을 섞어 찍으면 안 된다.
+    retPeerSrc: Object.keys(peerRet).length ? peerRet : null,
+    retPeerSameDay: Object.keys(peerRet).length ? peerSameDay : null,
     retSrc: Object.keys(srcRet).length ? srcRet : null,   // 감사가 원천과 대조한다
     retDropped: dropped.length ? dropped : null,
     // 계단을 가로지르는데도 남긴 칸과 그 근거. 감사가 다시 셈해 본다.
@@ -661,7 +732,21 @@ async function fetchDetail(code) {
     // 비중일 수 없는 값이 와서 싣지 않은 레코드. 왜 빈칸인지 남긴다.
     badWeights: badWeights.length ? badWeights : null,
     holdingsAvailable: !!cp?.availability?.portfolio,
-    assets: shapeAssets(cp?.allocationsAssets),
+    // 자산구성. **분모가 순자산이 아니다** — 위 shapeAssets 주석 참고.
+    // 받아만 두고 화면에는 아직 안 싣는다.
+    assets: shapeAssets(fa?.allocationsAssets ?? cp?.allocationsAssets),
+    // 업종구성. /fund-allocation 에만 있다.
+    sectors: shapeAssets(fa?.allocationsSectors),
+    // 원천이 보유종목·자산구성의 **기준일을 주지 않는다.** 응답 어디에도
+    // 날짜가 없다(9·11차에서 응답을 통째로 뒤졌다). 미래에셋 화면은 같은
+    // 자리에 "기준일 2026.07.01" 이라고 적어 두는데, 그 날짜는 기준가
+    // 날짜보다 두 달 앞선다. 보유종목은 분기 단위 공시라 그럴 수밖에 없다.
+    //
+    // 우리 화면은 보유종목을 기준가(8월 27일) 바로 옆에 날짜 없이 놓는다.
+    // **그러면 오늘 자료로 읽힌다.** 틀린 숫자를 쓴 것이 아니라 날짜를
+    // 안 적어서 생기는 거짓이다. 모르면 모른다고 적어야 한다.
+    holdingsAsOf: null,
+    holdingsAsOfKnown: false,
 
     // 클래스(A/C/S 등)는 left-panel 이 같이 준다. 따로 부르지 않는다.
     classes: (lp?.returns?.classes || []).map((c) => ({
@@ -713,10 +798,24 @@ async function main() {
     }
     droppedCells += d.retDropped?.length || 0;
 
+    // 판매수수료는 **목록 행에만** 있다. 상세 200개에서는 preSalesFee·
+    // postSalesFee·totalFee 가 전부 null 인데 목록 400개 중 25개는 차 있다
+    // (11차 조사). 상세만 보고 "이 원천에 수수료가 없다" 로 넘길 뻔했다 —
+    // 같은 함정을 총보수(클래스 자리)·유형평균(peerMetric)·업종구성
+    // (/fund-allocation)에서 이미 세 번 밟았다. **없다고 말하려면 어느
+    // 자리에서 없는지까지 봐야 한다.**
+    const listFee = {
+      preSalesFee: num(item.preSalesFee),
+      postSalesFee: num(item.postSalesFee),
+    };
     funds.push({
       id: `FUND:${item.fundCode}`,
       code: item.fundCode,
       ...d,
+      // 상세가 준 값이 있으면 그것을 쓰고, 없을 때만 목록 값을 쓴다.
+      preSalesFee: d.preSalesFee ?? listFee.preSalesFee,
+      postSalesFee: d.postSalesFee ?? listFee.postSalesFee,
+      totalFee: d.totalFee ?? num(item.totalFee),
     });
   });
 

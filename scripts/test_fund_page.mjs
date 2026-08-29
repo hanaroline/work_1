@@ -324,6 +324,86 @@ const feeInvented = await page.evaluate(() => {
 });
 check('총보수를 0 으로 지어내지 않는다', !feeInvented);
 
+// ── 클래스 코드로 찾을 수 있는가
+//
+// 사용자가 준 주소가 클래스 코드였고(K55207BJ1791) 그 코드로는 결과가
+// 0건이었다. 사람이 손에 든 코드는 대개 클래스 코드다 — 통장·HTS·판매사
+// 화면에 찍히는 것이 그것이고 원천도 그 코드로 화면을 연다.
+{
+  // 자료에서 클래스 코드 하나를 실제로 집어 온다. 상수로 박아 두면 그
+  // 펀드가 사라진 날 시험이 조용히 무의미해진다.
+  const picked = await page.evaluate(() => {
+    for (const f of (window.FUNDS || [])) {
+      for (const c of (f.classes || [])) {
+        if (c.code && c.code !== f.code) return { parent: f.code, cls: c.code, name: c.name || '' };
+      }
+    }
+    return null;
+  });
+  check('자료에 클래스 코드가 있다', !!picked, picked ? `${picked.cls} ⊂ ${picked.parent}` : '없음');
+
+  if (picked) {
+    await page.locator('.tabs button[data-tab="browse"]').click();
+    await page.waitForTimeout(120);
+    // 앞선 시험이 걸어 둔 조건을 먼저 푼다. 안 풀면 "보유종목 있는 것만"
+    // 같은 조건에 걸려 검색이 0건이 되고, 검색이 고장난 것으로 읽힌다.
+    await page.locator('#f-reset').click();
+    await page.waitForTimeout(150);
+    await page.fill('#q', picked.cls);
+    await page.waitForTimeout(250);
+    const n = await page.locator('#list-body tr.clickable').count();
+    check('클래스 코드로 검색하면 그 펀드가 나온다', n >= 1, `${n}건 (${picked.cls})`);
+
+    const codeShown = await page.locator('#list-body tr.clickable').first()
+      .innerText().catch(() => '');
+    check('나온 펀드가 그 클래스의 부모다', codeShown.includes(picked.parent),
+      codeShown.split('\n').slice(0, 2).join(' / '));
+    check('왜 나왔는지 클래스 일치를 밝힌다', /클래스에서 일치/.test(codeShown),
+      codeShown.includes('클래스에서 일치') ? '표시됨' : codeShown.slice(0, 80));
+
+    // 상세를 열어 클래스 표에 표준코드가 찍히는지 본다. 사람이 든 코드로
+    // 어느 줄이 자기 것인지 대조할 수 있어야 한다.
+    await page.locator('#list-body tr.clickable').first().click();
+    await page.waitForTimeout(250);
+    const detailTxt = await page.locator('#detail').innerText().catch(() => '');
+    check('클래스 표에 표준코드가 찍힌다', detailTxt.includes(picked.cls),
+      detailTxt.includes(picked.cls) ? picked.cls : '없음');
+    const hit = await page.locator('#detail tr.hit').count();
+    check('찾아온 클래스 줄을 짚어 준다', hit >= 1, `${hit}줄`);
+    check('클래스 단위 값이 아님을 밝힌다',
+      /모·운용\) 단위 값|클래스마다 기준가와 설정일이 다릅니다/.test(detailTxt));
+
+    // 원천으로 나가는 길. 값을 옮기는 것과 확인할 길을 주는 것은 다르다.
+    const naverLink = await page.locator('#detail a[href*="stock.naver.com"]').count();
+    const kofiaLink = await page.locator('#detail a[href*="dis.kofia.or.kr"]').count();
+    check('네이버(2차 출처) 링크가 있다', naverLink >= 1, `${naverLink}개`);
+    check('금투협(1차 출처) 링크가 있다', kofiaLink >= 1, `${kofiaLink}개`);
+
+    await page.fill('#q', '');
+    await page.waitForTimeout(200);
+  }
+}
+
+// ── 보유종목의 기준일을 모른다고 말하는가
+//
+// 원천이 보유종목에 날짜를 주지 않는다. 기준가(오늘) 바로 옆에 날짜 없이
+// 놓으면 오늘 자료로 읽힌다. 공모펀드 보유종목은 분기 공시라 몇 달 묵어
+// 있을 수 있다. 틀린 숫자를 쓴 것이 아니라 날짜를 안 적어서 생기는 거짓이다.
+{
+  const withHold = await page.evaluate(() => {
+    const f = (window.FUNDS || []).find((x) => x.holdingCount > 0);
+    return f ? f.id : null;
+  });
+  if (withHold) {
+    await page.evaluate((id) => { window.state.selected = id; window.renderDetail(); }, withHold);
+    await page.waitForTimeout(200);
+    const t = await page.locator('#detail').innerText().catch(() => '');
+    check('보유종목의 기준일을 모른다고 밝힌다',
+      /언제 기준인지 원천이 알려 주지 않습니다/.test(t),
+      /언제 기준인지/.test(t) ? '표시됨' : t.slice(0, 100));
+  }
+}
+
 // ── 영문 전환
 await page.locator('.lang-toggle button[data-lang="en"]').click();
 await page.waitForTimeout(200);

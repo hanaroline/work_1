@@ -478,6 +478,71 @@ for (const f of FUNDS) {
   if (!f.type) {
     flag('warn', '유형-없음', f, 'parentPeerGroupName 이 없다');
   }
+
+  // ── 자산구성의 분모가 순자산이 아니다 ───────────────────────────────────
+  //
+  // 원천이 주는 자산구성 비중은 순자산 대비가 아니라 **설정원본 대비**로
+  // 보인다. 교보악사파워인덱스 2 에서
+  //
+  //   보유종목 비중 합 86.96% × (기준가 4000.71 / 1000) = 347.90%
+  //   원천 자산구성 '주식'                                = 347.86%
+  //
+  // 0.05%p 차로 맞는다. 기준가가 1,000 근처인 펀드에서는 티가 안 나므로
+  // 그냥 넘어가기 쉽다. 이 관계가 **전수에서 성립하는지** 여기서 센다.
+  // 성립하면 자산구성을 화면에 실을 때 무엇으로 나눈 값인지 적을 수 있고,
+  // 성립하지 않으면 우리가 뜻을 모르는 값이므로 싣지 않는다.
+  //
+  // 오류가 아니라 참고로 센다 — 원천이 그렇게 주는 것이지 우리 자료가
+  // 깨진 것이 아니다.
+  if (f.assets && f.totalWeight != null && f.basePrice > 0) {
+    const assetSum = Object.values(f.assets)
+      .filter((v) => typeof v === 'number' && Number.isFinite(v))
+      .reduce((a, b) => a + b, 0);
+    const expect = f.totalWeight * (f.basePrice / 1000);
+    if (assetSum > 0) {
+      const rel = Math.abs(assetSum - expect) / Math.max(expect, 1e-9);
+      flag(rel <= 0.15 ? 'info' : 'warn',
+           rel <= 0.15 ? '자산구성-설정원본대비확인' : '자산구성-뜻모름', f,
+           `자산구성 합 ${assetSum.toFixed(2)}% vs 보유종목합×기준가/1000 ${expect.toFixed(2)}%`,
+           { assetSum: +assetSum.toFixed(2), expect: +expect.toFixed(2), rel: +rel.toFixed(4) });
+    }
+  }
+
+  // ── 원천이 준 유형평균은 같은 날 것이어야 한다 ──────────────────────────
+  //
+  // 수익률과 유형평균의 기준일이 다르면 "유형평균을 이겼다" 는 진술이
+  // 성립하지 않는다. 수집기가 기준일이 같을 때만 옮기도록 해 두었으니,
+  // 값이 있는데 같은 날이 아니라고 적혀 있으면 수집기가 샌 것이다.
+  if (f.retPeerSrc && f.retPeerSameDay !== true) {
+    flag('error', '유형평균-기준일다름', f,
+         `retPeerSrc 가 있는데 retPeerSameDay=${f.retPeerSameDay}`);
+  }
+  // 유형평균만 있고 펀드 값이 없는 칸은 화면에서 짝 없는 숫자가 된다.
+  if (f.retPeerSrc) {
+    for (const k of Object.keys(f.retPeerSrc)) {
+      if (k === 'dx') continue;
+      if (f.ret && f.ret[k] != null) continue;
+      if (f.retDropped?.some((d) => d.period === k)) continue;   // 우리가 일부러 비운 칸
+      flag('info', '유형평균-짝없음', f, `${k}: 펀드 값 없이 유형평균만 있다`, { period: k });
+    }
+  }
+
+  // ── 보유종목의 기준일을 안다고 말하지 않는가 ────────────────────────────
+  //
+  // 원천이 날짜를 안 준다. 안 주는데 아는 척하면 그것이 거짓이다.
+  if (f.holdingsAsOf != null && f.holdingsAsOfKnown !== true) {
+    flag('error', '보유종목기준일-근거없음', f,
+         `holdingsAsOf=${f.holdingsAsOf} 인데 근거 표시가 없다`);
+  }
+
+  // ── 문서 링크는 주소가 있어야 링크다 ────────────────────────────────────
+  if (Array.isArray(f.documents)) {
+    for (const doc of f.documents) {
+      if (!doc.url || !/^https:\/\//.test(doc.url)) {
+        flag('warn', '문서-주소이상', f, `${doc.name || doc.type}: ${doc.url ?? '없음'}`);
+      }
+    }
+  }
   // 위험등급은 **문자열**로 온다. 처음에 1~6 의 숫자로 짐작하고 규칙을
   // 걸었다가 3,196개 중 3,195개를 헛잡았다. 규칙이 대량으로 잡으면 자료가
   // 아니라 규칙을 의심해야 한다 — 실제 값은 여섯 가지 문자열뿐이었다.
