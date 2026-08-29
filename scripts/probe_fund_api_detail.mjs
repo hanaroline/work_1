@@ -83,10 +83,12 @@ const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 async function open(url, wait = 5000, tries = 3) {
   let last = null;
   for (let i = 0; i < tries; i += 1) {
-    if (i) await sleep(8000 * i);
+    // 16차는 8초·16초 쉬고 다시 불렀는데 세 번 다 끊겼다. 같은 주소를 20분 전
+    // 15차는 열었으니 문턱이 시간에 있다고 보고 더 길게 물러선다.
+    if (i) await sleep(20000 * i);
     const page = await ctx.newPage();
     try {
-      const res = await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 60000 });
+      const res = await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 90000 });
       await page.waitForTimeout(wait);
       return { status: res ? res.status() : null, url: page.url(), html: await page.content(), tries: i + 1, how: '브라우저' };
     } catch (e) {
@@ -119,30 +121,46 @@ async function open(url, wait = 5000, tries = 3) {
 const found = new Map();   // href -> title
 const lists = [];          // 목록 화면을 받았는가. 이것을 안 적으면 0 이 거짓말이 된다.
 const dropped = [];        // 왜 안 골랐는가. 이유를 안 적으면 "없다" 로 읽힌다.
+const unopenable = [];     // 제목은 맞는데 열 주소를 못 얻은 줄. 이게 진짜 구멍이었다.
 for (const kw of KEYWORDS) {
   const before = found.size;
   try {
     const r = await open(LIST(kw), 6000);
-    // 첫 판은 openapi|fileData|standard 세 가지만 링크로 봤다. "집합투자" 에서
-    // 링크 6개를 보고도 후보가 0개였는데, 15차 원문에는 예탁결제원 계열
-    // 제목이 넷 실려 있었다. 유형을 좁게 잡아 놓친 것일 수 있으므로 넓힌다.
-    for (const m of r.html.matchAll(
-      /<a[^>]+href\s*=\s*["']([^"']*\/data\/\d+\/([A-Za-z]+)\.do[^"']*)["'][^>]*>([\s\S]*?)<\/a>/gi)) {
-      const title = toText(m[3]).replace(/\s+/g, ' ').trim();
-      if (!title) continue;
+    // ── 두 번 좁게 잡아 두 번 놓쳤다 ──────────────────────────────────────
+    // 첫 판은 `openapi|fileData|standard` 만 링크로 봤다. 안 걸리자 유형을
+    // `[A-Za-z]+\.do` 로 넓혔는데, **그것도 틀린 고침이었다.** 15차가 저장해
+    // 둔 목록 본문을 다시 읽어 보니 못 찾던 넷은 예탁결제원 것이 아니라
+    // 광주광역시 빅데이터 통합플랫폼이 연계한 XML 이었다. 연계 자료는
+    // 포털 안의 `/data/숫자/…do` 주소를 아예 안 쓴다. 주소 모양을 지어내는
+    // 짓을 그만두고, **닻을 전부 긁어 제목으로만 거른 뒤 주소는 본 대로 적는다.**
+    for (const m of r.html.matchAll(/<a\b([^>]*)>([\s\S]*?)<\/a>/gi)) {
+      const attrs = m[1];
+      const title = toText(m[2]).replace(/\s+/g, ' ').trim();
+      if (!title || title.length < 6) continue;
+      if (!WANT_TITLE.test(title)) continue;   // 목록에는 메뉴·푸터 링크가 훨씬 많다
       // 왜 안 골랐는지를 남긴다. 이유 없는 0 은 "없다" 로 읽히기 때문이다.
-      if (!WANT_TITLE.test(title)) { dropped.push([kw, title, '제목에 펀드/집합투자/수익증권 없음']); continue; }
       if (SKIP_TITLE.test(title)) { dropped.push([kw, title, '우리 것이 아님(모태·벤처·퇴직연금 등)']); continue; }
-      const href = new URL(m[1], r.url).href;
-      if (!found.has(href)) found.set(href, `${title}  [${m[2]}]`);
+      const hrefRaw = (attrs.match(/href\s*=\s*["']([^"']*)["']/i) || [, ''])[1];
+      let href = '';
+      try { href = hrefRaw ? new URL(hrefRaw, r.url).href : ''; } catch { href = hrefRaw; }
+      // 자바스크립트로 여는 줄은 href 가 `#` 이거나 비어 있다. 그때 쓸 수 있는
+      // 값이 속성에 남아 있는지 그대로 적어 둔다 — 없으면 없다고 적는다.
+      const dataAttrs = (attrs.match(/\b(data-[\w-]+|onclick)\s*=\s*["'][^"']{0,120}["']/gi) || []).join(' ');
+      const openable = /^https?:/i.test(href) && !/#$/.test(href);
+      if (!openable) {
+        unopenable.push([kw, title, hrefRaw || '(href 없음)', dataAttrs.slice(0, 160)]);
+        continue;
+      }
+      if (!found.has(href)) found.set(href, title);
     }
-    // 링크가 하나도 안 걸렸는데 화면은 받은 경우 — 규칙(정규식)이 틀린 것이다.
-    // 그때는 원문을 남겨 사람이 실제 href 모양을 보게 한다.
-    const anchors = (r.html.match(/\/data\/\d+\/[A-Za-z]+\.do/g) || []).length;
+    // 제목이 걸린 닻이 몇 개였나. 이 수와 후보 수가 다르면 왜 다른지는
+    // 아래 '주소를 못 얻은 줄' 표가 말한다. 0 을 이유 없이 적지 않는다.
+    const anchors = (r.html.match(/<a\b[^>]*>/gi) || []).length;
     lists.push({ kw, ok: true, status: r.status, tries: r.tries, how: r.how, anchors,
                  added: found.size - before,
                  sample: anchors ? null : (r.html.match(/<a[^>]+href="[^"]*data[^"]*"[^>]*>/i) || [null])[0] });
-    console.log(`[detail] "${kw}" 목록 HTTP ${r.status} — 상세링크 ${anchors}개, 후보 누적 ${found.size}개`);
+    console.log(`[detail] "${kw}" 목록 HTTP ${r.status} — 닻 ${anchors}개, 후보 누적 ${found.size}개`);
+    await sleep(15000);   // 남의 서버다. 목록 사이도 넉넉히 쉰다.
   } catch (e) {
     lists.push({ kw, ok: false, error: String(e.message || e).split('\n')[0].slice(0, 160) });
     console.log(`[detail] "${kw}" 목록 실패: ${e.message}`);
@@ -214,6 +232,20 @@ const md = [
     : '> **판정 못 함.** 목록 화면을 하나도 못 받았다. 후보가 없다는 뜻이 아니다.\n' +
       '> data.go.kr 이 연달아 두드리면 끊는 것으로 보인다(15차는 같은 주소를 200 으로 열었다).\n' +
       '> 다시 돌려야 한다 — 이 파일의 빈 표를 근거로 아무것도 말하지 말 것.',
+  '',
+  '## 제목은 맞는데 주소를 못 얻은 줄',
+  '',
+  '**16차가 "후보 0개" 를 두 번 낸 진짜 까닭이 여기다.** 15차 목록에는',
+  '`집합투자증권 …` 네 줄이 분명히 있었는데 나는 주소 모양을 `/data/숫자/…do`',
+  '로 지어내 놓고 안 걸리자 "정규식이 틀렸다" 고만 적었다. 실제로는 그 넷이',
+  '광주광역시 빅데이터 통합플랫폼이 연계한 XML 이라 포털 안 주소를 안 쓴다.',
+  '아래 줄들은 **없는 것이 아니라 이 방식으로 못 여는 것**이다.',
+  '',
+  unopenable.length
+    ? ['| 검색어 | 제목 | href | 속성에 남은 것 |', '|---|---|---|---|',
+       ...unopenable.slice(0, 40).map(([kw, t, h, d]) =>
+         `| ${kw} | ${t.slice(0, 60)} | \`${String(h).slice(0, 50)}\` | \`${(d || '없음').slice(0, 60)}\` |`)].join('\n')
+    : '_없다 — 제목이 걸린 줄은 모두 주소를 얻었다._',
   '',
   '## 목록에 있었으나 안 연 것',
   '',
