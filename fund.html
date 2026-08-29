@@ -586,7 +586,11 @@ function labelOf(group, key) {
   var m = L[group];
   return m && m[key] ? t(m[key]) : key;
 }
-function regionLabel(f) { return f.region ? labelOf('region', f.region) : (lang === 'ko' ? '미상' : 'Unknown'); }
+function regionLabel(f) {
+  if (f.region) return labelOf('region', f.region);
+  // 1차 출처에서 못 받은 것과, 아직 안 받은 것을 구별해 말한다.
+  return lang === 'ko' ? '미상' : 'Unknown';
+}
 function assetLabel(f) { return f.assetClass ? labelOf('assetClass', f.assetClass) : '–'; }
 
 function aumSortValue(f) {
@@ -722,9 +726,14 @@ function renderFilters() {
   var all = FUNDS;
   var allLabel = lang === 'ko' ? '전체' : 'All';
 
+  // 투자지역은 1차 출처(금투협)가 국내·해외·혼합 셋으로 나눈다.
+  // 알파벳순이 아니라 이 차례로 세운다.
   var regionCounts = countsBy(all, function (f) { return f.region; });
+  var REGION_ORDER = ['domestic', 'overseas', 'mixed'];
+  var regionKeys = REGION_ORDER.filter(function (k) { return regionCounts[k]; });
+  for (var rgk in regionCounts) if (regionKeys.indexOf(rgk) < 0) regionKeys.push(rgk);
   fillSelect(el('f-region'),
-    Object.keys(regionCounts).sort().map(function (k) {
+    regionKeys.map(function (k) {
       return [k, labelOf('region', k) + ' (' + regionCounts[k].toLocaleString() + ')'];
     }), state.region, allLabel);
 
@@ -1746,14 +1755,22 @@ function renderHero() {
         : '<strong>Sample data.</strong> No collection has run yet; these are placeholder values, not real figures.');
   el('disc-source').innerHTML = srcText;
 
+  var regionSrc = (DATA.sources && DATA.sources.region) || null;
   el('disc-scope').innerHTML = lang === 'ko'
-    ? '<strong>범위.</strong> 이 화면은 국내에 설정된 공모펀드를 <u>투자 지역</u>(국내·해외)으로 가릅니다. ' +
-      '투자 지역과 자산군은 원천이 부여한 유형 이름(국내주식형·해외채권형 등)에서 읽은 것이며, ' +
-      '이 화면이 지어낸 분류가 아닙니다. 유형 이름에 지역이 없는 MMF·기타형은 지역을 <u>미상</u>으로 둡니다 — ' +
-      '국내로 밀어 넣으면 "국내에 투자한다" 는 거짓 진술이 되기 때문입니다.'
-    : '<strong>Scope.</strong> Korean-domiciled public funds, split by where they invest. Region and asset ' +
-      'class are read from the category name assigned by the source, not derived here. MMF and "other" ' +
-      'categories carry no region in their name and are left <u>unknown</u> rather than assumed domestic.';
+    ? '<strong>범위.</strong> 이 화면은 국내에 설정된 공모펀드를 <u>투자 지역</u>으로 가릅니다. ' +
+      '투자 지역은 <u>금융투자협회 전자공시(1차 출처)</u>에서 직접 받으며 <u>국내·해외·혼합</u> ' +
+      '셋으로 나뉩니다' +
+      (regionSrc ? ' (' + (regionSrc.count || 0).toLocaleString() + ' / ' +
+        (regionSrc.total || 0).toLocaleString() + '개 확보)' : '') + '. ' +
+      '처음에는 네이버 유형명의 앞머리에서 읽었는데(“해외주식형” → 해외), 재검증에서 표본 318개 중 ' +
+      '<u>34개(10.7%)</u>가 1차 출처와 어긋났습니다 — 네이버 유형명의 “혼합”은 자산(주식+채권)을 ' +
+      '뜻해서 지역의 혼합을 표현할 수 없기 때문입니다. 자산군은 여전히 유형 이름에서 읽습니다.'
+    : '<strong>Scope.</strong> Korean-domiciled public funds, split by where they invest. The investment ' +
+      'region comes directly from <u>KOFIA electronic disclosure (primary source)</u> and has three ' +
+      'values: domestic, overseas and <u>mixed</u>' +
+      (regionSrc ? ` (${(regionSrc.count || 0).toLocaleString()} of ${(regionSrc.total || 0).toLocaleString()})` : '') +
+      '. It was previously read from the head of Naver’s category name, which disagreed with the ' +
+      'primary source in 34 of 318 sampled funds (10.7%). Asset class is still read from the category name.';
 
   el('disc-fee').innerHTML = lang === 'ko'
     ? '<strong>총보수는 클래스별입니다.</strong> 펀드 단위의 총보수는 원천에 없지만 ' +

@@ -452,16 +452,24 @@ for (const f of FUNDS) {
   }
 
   // ── 11. 유형·지역·자산군의 앞뒤 ─────────────────────────────────────────
-  // 지역은 유형 이름 앞머리에서 읽은 것이다. 둘이 어긋나면 어딘가에서
-  // 분류를 지어낸 것이다.
-  if (f.type) {
-    const expect = f.type.startsWith('국내') ? 'domestic'
-                 : f.type.startsWith('해외') ? 'overseas' : null;
-    if ((f.region ?? null) !== expect) {
-      flag('error', '지역-유형과어긋남', f, `유형 "${f.type}" 인데 지역이 ${f.region ?? '없음'}`,
-           { region: f.region ?? null, expect });
-    }
-  } else {
+  // 투자지역은 **1차 출처(금투협)** 에서 온다. 유형 이름 앞머리와 다를 수
+  // 있고, 다른 것이 정상이다 — 금투협은 지역을 국내·해외·혼합 셋으로
+  // 나누는데 네이버 유형명의 "혼합" 은 자산을 뜻하기 때문이다.
+  //
+  // 처음에는 "지역은 유형명 앞머리와 같아야 한다" 를 오류로 걸었다.
+  // **그 규칙이 틀렸다.** 재검증에서 표본의 10.7% 가 어긋났고, 어긋난
+  // 쪽이 1차 출처였다. 지금은 값의 범위와 출처 표시만 본다.
+  if (f.region != null && !['domestic', 'overseas', 'mixed'].includes(f.region)) {
+    flag('error', '지역-모르는값', f, `region=${f.region}`);
+  }
+  if (f.region != null && f.regionSource == null) {
+    flag('warn', '지역-출처없음', f, `지역 ${f.region} 인데 어디서 왔는지 표시가 없다`);
+  }
+  // 1차 출처에서 못 받은 펀드는 화면이 그렇게 말해야 한다.
+  if (f.regionMissing && f.region != null) {
+    flag('error', '지역-못받았는데값있음', f, `regionMissing 인데 region=${f.region}`);
+  }
+  if (!f.type) {
     flag('warn', '유형-없음', f, 'parentPeerGroupName 이 없다');
   }
   // 위험등급은 **문자열**로 온다. 처음에 1~6 의 숫자로 짐작하고 규칙을
