@@ -105,7 +105,15 @@ function toNum(v) {
   return Number.isFinite(n) ? n : null;
 }
 
-/** 유형 이름 → 투자지역. 앞머리 두 글자만 본다. */
+/**
+ * 유형 이름 → 투자지역. 앞머리 두 글자만 본다.
+ *
+ * **이제 이것은 정답이 아니다.** 예전에는 저장값을 이렇게 만들었고 여기서도
+ * 이 값으로 대조했다. 재검증에서 이 방식이 10.7% 틀린다는 것이 드러나(표본
+ * 318개) 투자지역을 금투협에서 직접 받게 고쳤다. 곧 이 함수는 이제 "네이버
+ * 유형명으로 읽으면 뭐가 나오나" 를 세는 참고용이지 기대값이 아니다.
+ * 실제 대조는 아래 '투자지역' 절에서 1차 출처 수집물과 맞댄다.
+ */
 function regionOf(typeName) {
   if (typeof typeName !== 'string' || !typeName) return null;
   const head = typeName.slice(0, 2);
@@ -149,6 +157,20 @@ const byCode = new Map(FUNDS.map((f) => [f.code, f]));
 console.log(`저장된 자료 ${FUNDS.length}개 (기준 ${DATA.updatedAt})`);
 out.dataUpdatedAt = DATA.updatedAt;
 out.dataCount = FUNDS.length;
+
+// 투자지역의 1차 출처 수집물. 이 층은 "이것이 화면 자료로 그대로 옮겨졌는가"
+// 까지만 본다. 없으면 그 대조를 건너뛰고 그렇게 적는다 — 없는 것을 통과로
+// 세지 않는다.
+let REGION = null;
+try {
+  const rs = await readFile('data/fund-region.js', 'utf8');
+  REGION = JSON.parse(rs.slice(rs.indexOf('{'), rs.lastIndexOf('}') + 1)).region || null;
+  console.log(`투자지역 1차 출처 수집물 ${Object.keys(REGION).length}개`);
+} catch {
+  console.log('투자지역 1차 출처 수집물 없음 — 지역 대조를 건너뛴다');
+}
+out.regionCollected = REGION ? Object.keys(REGION).length : null;
+const naverWouldSay = { checked: 0, differs: 0, filled: 0 };
 
 // ── 0. 목록이 그대로인가 ────────────────────────────────────────────────────
 // 원천의 펀드 수가 달라졌으면 표본 대조 전에 알아야 한다.
@@ -269,17 +291,47 @@ for (const r of rows) {
     }
   }
 
-  // ── 투자지역·자산군 (두 번째 구현으로 다시 읽는다) ──────────────────────
+  // ── 자산군 (두 번째 구현으로 다시 읽는다) ────────────────────────────────
+  // 자산군은 네이버 유형명에서 나온다. 그러니 네이버를 다시 받아 대조하는 것이
+  // 맞다.
   {
-    const wantR = regionOf(d.parentPeerGroupName);
     const wantA = assetOf(d.parentPeerGroupName);
-    const okR = (wantR ?? null) === (stored.region ?? null);
     const okA = (wantA ?? null) === (stored.assetClass ?? null);
-    score('region', okR); score('assetClass', okA);
-    if (!okR) flag('error', 'region-불일치', code, nm,
-      `유형 "${d.parentPeerGroupName}" → 기대 ${wantR} vs 저장 ${stored.region ?? null}`);
+    score('assetClass', okA);
     if (!okA) flag('error', 'assetClass-불일치', code, nm,
       `유형 "${d.parentPeerGroupName}" → 기대 ${wantA} vs 저장 ${stored.assetClass ?? null}`);
+  }
+
+  // ── 투자지역 ──────────────────────────────────────────────────────────────
+  // **투자지역의 출처는 네이버가 아니다.** 금융투자협회(1차 출처)에서 따로
+  // 받는다. 그러므로 이 층에서 네이버 유형명과 맞대면 안 된다 — 그렇게 걸었을
+  // 때 659건이 잡혔는데, 어긋난 쪽이 규칙이었지 자료가 아니었다.
+  //
+  // 이 층이 볼 수 있는 것은 "1차 출처 수집물이 화면 자료로 그대로 옮겨졌는가"
+  // 까지다. 금투협이 준 값 자체가 맞는지는 L3-c(reverify_fund_region.mjs)가
+  // 금투협을 다시 받아 확인한다. 층을 섞지 않는다.
+  {
+    const want = REGION ? (REGION[code] ?? null) : null;
+    const got = stored.region ?? null;
+    const okR = REGION ? want === got : true;
+    score('region(1차출처 옮김)', okR);
+    if (!okR) flag('error', 'region-옮김어긋남', code, nm,
+      `금투협 수집물 ${want} vs 저장 ${got}`);
+
+    // 출처 표시가 값과 앞뒤가 맞아야 한다. 값이 있는데 출처가 없으면
+    // 그 값이 어디서 왔는지 아무도 모른다.
+    const okSrc = got == null ? true : stored.regionSource === 'kofia';
+    score('region.출처표시', okSrc);
+    if (!okSrc) flag('error', 'region-출처표시없음', code, nm,
+      `지역 ${got} 인데 출처 ${stored.regionSource ?? 'null'}`);
+
+    // 네이버 유형명으로 읽었으면 뭐가 나왔을지 세어 둔다. 오류가 아니라
+    // **고친 값어치의 기록**이다. 이 수가 0 에 가까워지면 오히려 1차 출처
+    // 수집이 네이버로 되돌아간 것은 아닌지 의심해야 한다.
+    naverWouldSay.checked += 1;
+    const naverR = regionOf(d.parentPeerGroupName);
+    if (naverR == null && got != null) naverWouldSay.filled += 1;
+    else if (naverR != null && got != null && naverR !== got) naverWouldSay.differs += 1;
   }
 
   // ── 위험지표 ────────────────────────────────────────────────────────────
@@ -478,6 +530,19 @@ for (const [k, v] of rowsT) {
   md.push(`| ${k} | ${v.same} | ${v.checked} | ${v.checked ? (v.same / v.checked * 100).toFixed(1) : '–'}% |`);
 }
 md.push('', `**오류 ${errs.length}건 · 경고 ${warns.length}건**`, '');
+
+// 투자지역은 층이 다르다. 그 사실을 표에 묻지 말고 따로 적는다.
+out.naverWouldSay = naverWouldSay;
+md.push('## 투자지역은 이 층에서 대조하지 않습니다', '',
+  '투자지역의 출처는 네이버가 아니라 **금융투자협회(1차 출처)** 입니다. 그래서 여기서는',
+  '"1차 출처에서 받은 값이 화면 자료로 그대로 옮겨졌는가" 까지만 봅니다. 금투협이 준 값',
+  '자체가 맞는지는 `reverify_fund_region.mjs`(L3-c)가 금투협을 **다시 받아** 확인합니다.', '',
+  '처음에는 이 층에서 네이버 유형명과 맞댔습니다. 그 규칙이 틀렸습니다 — 유형명에서 읽는',
+  '방식이 10.7% 어긋난다는 것을 확인하고 수집을 고쳤는데 대조 규칙만 옛것으로 남아 있었고,',
+  '그래서 고쳐진 값들이 통째로 오류로 잡혔습니다. **어긋난 쪽이 규칙이었습니다.**', '',
+  `표본 ${naverWouldSay.checked}개를 네이버 유형명으로 읽었다면 **${naverWouldSay.differs}개가 다른 값**이 되고`,
+  `**${naverWouldSay.filled}개는 빈칸**이 됩니다. 그만큼이 1차 출처로 바로잡힌 몫입니다.`, '',
+  '이 수가 0 에 가까워지면 오히려 의심해야 합니다 — 1차 출처 수집이 네이버로 되돌아갔다는', '뜻일 수 있습니다.', '');
 if (errs.length) {
   md.push('## 오류', '', '| 표준코드 | 펀드 | 규칙 | 내용 |', '|---|---|---|---|');
   for (const f of errs.slice(0, 200)) {
