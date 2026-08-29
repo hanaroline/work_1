@@ -118,20 +118,27 @@ async function open(url, wait = 5000, tries = 3) {
 // ── 1. 목록에서 후보의 주소를 모은다 ────────────────────────────────────────
 const found = new Map();   // href -> title
 const lists = [];          // 목록 화면을 받았는가. 이것을 안 적으면 0 이 거짓말이 된다.
+const dropped = [];        // 왜 안 골랐는가. 이유를 안 적으면 "없다" 로 읽힌다.
 for (const kw of KEYWORDS) {
   const before = found.size;
   try {
     const r = await open(LIST(kw), 6000);
+    // 첫 판은 openapi|fileData|standard 세 가지만 링크로 봤다. "집합투자" 에서
+    // 링크 6개를 보고도 후보가 0개였는데, 15차 원문에는 예탁결제원 계열
+    // 제목이 넷 실려 있었다. 유형을 좁게 잡아 놓친 것일 수 있으므로 넓힌다.
     for (const m of r.html.matchAll(
-      /<a[^>]+href\s*=\s*["']([^"']*\/data\/\d+\/(?:openapi|fileData|standard)\.do[^"']*)["'][^>]*>([\s\S]*?)<\/a>/gi)) {
-      const title = toText(m[2]).replace(/\s+/g, ' ').trim();
-      if (!title || !WANT_TITLE.test(title) || SKIP_TITLE.test(title)) continue;
+      /<a[^>]+href\s*=\s*["']([^"']*\/data\/\d+\/([A-Za-z]+)\.do[^"']*)["'][^>]*>([\s\S]*?)<\/a>/gi)) {
+      const title = toText(m[3]).replace(/\s+/g, ' ').trim();
+      if (!title) continue;
+      // 왜 안 골랐는지를 남긴다. 이유 없는 0 은 "없다" 로 읽히기 때문이다.
+      if (!WANT_TITLE.test(title)) { dropped.push([kw, title, '제목에 펀드/집합투자/수익증권 없음']); continue; }
+      if (SKIP_TITLE.test(title)) { dropped.push([kw, title, '우리 것이 아님(모태·벤처·퇴직연금 등)']); continue; }
       const href = new URL(m[1], r.url).href;
-      if (!found.has(href)) found.set(href, title);
+      if (!found.has(href)) found.set(href, `${title}  [${m[2]}]`);
     }
     // 링크가 하나도 안 걸렸는데 화면은 받은 경우 — 규칙(정규식)이 틀린 것이다.
     // 그때는 원문을 남겨 사람이 실제 href 모양을 보게 한다.
-    const anchors = (r.html.match(/\/data\/\d+\/(?:openapi|fileData|standard)\.do/g) || []).length;
+    const anchors = (r.html.match(/\/data\/\d+\/[A-Za-z]+\.do/g) || []).length;
     lists.push({ kw, ok: true, status: r.status, tries: r.tries, how: r.how, anchors,
                  added: found.size - before,
                  sample: anchors ? null : (r.html.match(/<a[^>]+href="[^"]*data[^"]*"[^>]*>/i) || [null])[0] });
@@ -207,6 +214,17 @@ const md = [
     : '> **판정 못 함.** 목록 화면을 하나도 못 받았다. 후보가 없다는 뜻이 아니다.\n' +
       '> data.go.kr 이 연달아 두드리면 끊는 것으로 보인다(15차는 같은 주소를 200 으로 열었다).\n' +
       '> 다시 돌려야 한다 — 이 파일의 빈 표를 근거로 아무것도 말하지 말 것.',
+  '',
+  '## 목록에 있었으나 안 연 것',
+  '',
+  dropped.length
+    ? '고른 것만 적으면 나머지가 "없었다" 로 읽힌다. 무엇을 왜 뺐는지 적는다.'
+    : '_뺀 것이 없다._',
+  '',
+  ...(dropped.length
+    ? ['| 검색어 | 제목 | 뺀 까닭 |', '|---|---|---|',
+       ...dropped.slice(0, 60).map(([kw, t, why]) => `| ${kw} | ${t.slice(0, 60)} | ${why} |`)]
+    : []),
   '',
   '## 한눈에',
   '',
