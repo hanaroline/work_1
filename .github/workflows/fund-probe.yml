@@ -45,14 +45,22 @@ jobs:
       # ETF 세션에서 두 번 겪었다.
       - name: 검산 실행 (기간수익률 계열)
         timeout-minutes: 25
+        if: hashFiles('scripts/verify_fund_returns.mjs') != ''
         run: node scripts/verify_fund_returns.mjs
+
+      # 1차에서 "원천 값 = 원천 계열" 임이 갈렸다. 남은 것은 계열 자체의
+      # 계단이다 — 실물을 찍어 보고, 몇 종목이나 되는지 센다.
+      - name: 검산 실행 2차 (계단의 실물·규모)
+        timeout-minutes: 25
+        if: hashFiles('scripts/verify_fund_returns2.mjs') != ''
+        run: node scripts/verify_fund_returns2.mjs
 
       - name: 결과 업로드
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: fund-probe
-          path: tools/discovery/fund_returns_verify.*
+          path: tools/discovery/fund_returns_verify*.*
           retention-days: 7
 
       - name: 결과 커밋
@@ -60,8 +68,8 @@ jobs:
         run: |
           git config user.name  "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          if [ -f tools/discovery/fund_returns_verify.json ]; then
-            git add tools/discovery/fund_returns_verify.* || true
+          if ls tools/discovery/fund_returns_verify*.json >/dev/null 2>&1; then
+            git add tools/discovery/fund_returns_verify*.* || true
             git commit -m "chore(fund): 기간수익률 검산 결과 갱신" || echo "변경 없음"
             git push || echo "푸시 실패 (무시)"
           fi
