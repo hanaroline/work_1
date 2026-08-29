@@ -196,7 +196,11 @@ for (const [type, list] of byType) {
 console.log(`  표본 ${pick.length}개 (유형 ${byType.size}종)`);
 out.sampleSize = pick.length;
 
-const MAP = { domestic: '국내', overseas: '해외' };
+// 셋 다 적는다. **'혼합' 을 빠뜨렸다가 검증에 구멍이 났다** — 지역이 혼합인
+// 369개가 mine=null 이 되어 "내 자료가 미상" 으로 세어지고 대조에서 통째로
+// 빠졌다. 하필 혼합은 옛 방식이 표현하지 못하던 값이라 **가장 봐야 할 것이
+// 안 보이고 있었다.** 대조가 건너뛴 것을 일치로 세면 안 된다.
+const MAP = { domestic: '국내', overseas: '해외', mixed: '혼합' };
 let done = 0;
 for (const f of pick) {
   const row = { code: f.code, name: f.name, type: f.type,
@@ -255,9 +259,15 @@ if (diff.length) {
 }
 
 const rate = out.summary.diffRate;
+// 대조하지 못한 것이 있으면 판정문에 그대로 적는다. "전부 일치" 라는 말이
+// "빼고 남은 것끼리 일치" 를 덮으면 안 된다.
+const skipped = mineNull.length;
+const compared = same.length + diff.length;
 out.verdict = diff.length === 0
-  ? `투자지역 ${got.length}개 전부 1차 출처와 일치`
-  : `투자지역 불일치 ${diff.length}/${got.length} (${rate}%) — 전체 3,196개로 환산하면 약 ${Math.round(FUNDS.length * diff.length / got.length)}개`;
+  ? (skipped
+      ? `대조한 ${compared}개는 1차 출처와 일치 · 대조 못 한 것 ${skipped}개(내 자료에 지역 없음)`
+      : `투자지역 ${got.length}개 전부 1차 출처와 일치`)
+  : `투자지역 불일치 ${diff.length}/${compared} (${rate}%) — 전체 3,196개로 환산하면 약 ${Math.round(FUNDS.length * diff.length / compared)}개`;
 console.log(`\n판정: ${out.verdict}`);
 await save();
 
@@ -267,17 +277,21 @@ const md = ['# 재검증 L3-b — 투자지역을 1차 출처와 대조한다', 
   '이 화면의 **주축**입니다. 사용자가 정한 범위가 "국내에 설정된 공모펀드를 투자',
   '지역으로 가른다" 였고 화면의 첫 필터가 투자지역입니다. 이 한 칸이 틀리면 화면이',
   '하는 일 자체가 틀립니다.', '',
-  '내 자료는 네이버 유형명의 앞머리(국내/해외)에서 지역을 읽습니다. 금투협은',
-  '투자지역을 **국내·해외·혼합** 셋으로 따로 분류합니다. 곧 네이버 유형명에서',
-  '읽는 방식은 "지역이 혼합인 펀드" 를 표현할 수 없습니다.', '',
+  '한때 이 값을 네이버 유형명의 앞머리(국내/해외)에서 읽었습니다. 금투협은 투자지역을',
+  '**국내·해외·혼합** 셋으로 따로 분류하고, 네이버 유형명의 "혼합" 은 **자산**(주식+채권)을',
+  '뜻합니다. 곧 유형명에서 읽는 방식은 "지역이 혼합인 펀드" 를 표현할 수 없었습니다.',
+  '이 검증이 그것을 잡아내서(표본 318개 중 34개, 10.7%) 지금은 금투협에서 직접 받습니다.', '',
+  '**그래서 이 검증은 고친 뒤에도 남겨 둡니다.** 이제는 0 이 나와야 하고, 0 이 아니면',
+  '1차 출처 수집이 새고 있다는 뜻입니다.', '',
   '## 결과', '', '| 항목 | 수 |', '|---|---:|',
   `| 물어본 펀드 | ${out.summary.asked} |`,
   `| 답이 온 펀드 | ${out.summary.answered} |`,
+  `| 대조한 펀드 | ${compared} |`,
   `| 일치 | ${out.summary.same} |`,
   `| **불일치** | **${out.summary.diff}** (${rate}%) |`,
-  `| 내 자료가 "미상" | ${out.summary.mineUnknown} |`, '',
+  `| 대조 못 함 (내 자료에 지역 없음) | ${out.summary.mineUnknown} |`, '',
   '## 유형별', '',
-  '| 유형 | 표본 | 일치 | 불일치 | 내가 미상 | 금투협 분포 |',
+  '| 유형 | 표본 | 일치 | 불일치 | 대조 못 함 | 금투협 분포 |',
   '|---|---:|---:|---:|---:|---|'];
 for (const [k, v] of Object.entries(byTypeStat).sort((a, b) => b[1].diff - a[1].diff)) {
   md.push(`| ${k} | ${v.n} | ${v.same} | ${v.diff} | ${v.mineNull} | ${JSON.stringify(v.kofia)} |`);
@@ -298,8 +312,13 @@ if (diff.length) {
     '고치는 길은 하나뿐입니다 — 투자지역을 네이버 유형명에서 읽지 말고',
     '**금투협에서 직접 받아** 싣는 것입니다. 그러면 "혼합" 이라는 셋째 값도',
     '표현할 수 있고, 지금 "미상" 인 MMF·기타형 344개도 채워집니다.', '');
+} else if (skipped) {
+  md.push(`대조한 ${compared}개는 모두 맞았습니다. 다만 **${skipped}개는 대조하지 못했습니다** —`,
+    '내 자료에 투자지역이 비어 있어 맞댈 것이 없었습니다. 이것은 "맞았다" 가 아니라',
+    '"확인하지 못했다" 입니다. 1차 출처 수집이 그만큼 새고 있다는 뜻이므로,',
+    '`collect_fund_region.mjs` 의 실패 목록부터 봐야 합니다.', '');
 } else {
-  md.push('표본 안에서는 어긋남이 없었습니다.', '');
+  md.push(`표본 ${compared}개를 빠짐없이 대조했고 어긋남이 없었습니다.`, '');
 }
 if (out.errors.length) {
   md.push('## 오류', '');
