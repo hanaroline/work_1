@@ -507,6 +507,15 @@ async function fetchDetail(code) {
   }).filter((h) => h.name || h.code) : null;
 
   const m = cp?.metricsDetail?.fundMetric || null;
+  // 유형평균 위험지표. **인수인계 문서가 "표본에서 null" 이라고 적어 둔 자리다.**
+  // 그 말은 맞았지만(그 표본에서는 비어 있었다) 그것을 "이 원천에는 없다" 로
+  // 읽고 여기를 안 받았다. 실물을 보니 fundMetric 바로 옆에 차 있고, 네이버
+  // 화면도 변동성 41.78 옆에 41.84 를 찍고 있었다
+  // (tools/discovery/fund_class_probe2.md).
+  //
+  // 클래스별 총보수를 같은 식으로 놓칠 뻔했고, 이번이 같은 함정의 세 번째다.
+  // **"표본에서 안 보였다" 는 "없다" 가 아니다.**
+  const pm = cp?.metricsDetail?.peerMetric || null;
 
   // ── 설정액·순자산이 그 펀드의 기준가와 앞뒤가 맞는가 ──────────────────────
   //
@@ -600,6 +609,53 @@ async function fetchDetail(code) {
       jensenAlpha: num(m.jensenAlpha),
       beta: num(m.beta),
     } : null,
+    // 같은 응답이 주는 유형평균. 우리가 셈해서 만든 것이 아니라 원천이 준
+    // 값이다 — 화면에서 그렇게 밝힌다.
+    metricsPeer: pm ? {
+      standardDeviation: num(pm.standardDeviation),
+      trackingError: num(pm.trackingError),
+      sharpe: num(pm.sharpRatio),
+      informationRatio: num(pm.informationRatio),
+      jensenAlpha: num(pm.jensenAlpha),
+      beta: num(pm.beta),
+    } : null,
+    // 위험지표가 몇 주짜리인가. 네이버 화면은 "1년, 연환산 기준" 이라고
+    // 적는다. 기준을 안 적으면 그 숫자가 무엇인지 알 수 없다.
+    metricsWeeks: num(cp?.metricsDetail?.termWeeks),
+
+    // ── 원천이 거는 문서 링크 ────────────────────────────────────────────
+    // chart-price-panel 이 documents[] 로 운용보고서·투자설명서·간이투자
+    // 설명서·약관의 PDF 주소와 접수일을 준다. **이미 부르고 있던 응답이다.**
+    //
+    // 이것이 중요한 까닭은 재검증 보고에서 사용자에게 "보유종목은 운용
+    // 보고서에서, 클래스별 보수는 투자설명서에서 직접 확인하시라" 고 적어
+    // 보냈기 때문이다. 그 문서들의 주소가 우리가 이미 받고 있던 응답 안에
+    // 들어 있었다. 확인할 곳을 말로만 알려 주는 것과 링크를 거는 것은 다르다.
+    //
+    // 운용보고서·투자설명서는 **1차 출처**다(운용사·판매사가 법정 서식으로
+    // 낸 것). 네이버는 그 파일을 옮겨 놓는 자리일 뿐이므로, 화면에서도
+    // 2차 출처인 시세와 구분해 적는다.
+    documents: Array.isArray(cp?.documents) ? cp.documents.map((x) => ({
+      type: x.documentType || null,
+      name: x.documentName || null,
+      url: x.url || null,
+      receivedAt: x.receiveDate || null,
+    })).filter((x) => x.url) : null,
+
+    // ── 매매 기준일·투자목적 ─────────────────────────────────────────────
+    // left-panel.terms 를 통째로 안 보고 있었다. 환매 대금이 며칠 뒤에
+    // 나오는지는 공모펀드를 고를 때 실제로 갈리는 조건인데 화면에 없었다.
+    terms: lp?.terms ? {
+      standardTime: lp.terms.standardTime || null,      // 기준시각 "3:30"
+      buyBefore: num(lp.terms.buyStandardDaysBefore),
+      buyAfter: num(lp.terms.buyStandardDaysAfter),
+      redeemBefore: num(lp.terms.redeemStandardDaysBefore),
+      redeemAfter: num(lp.terms.redeemStandardDaysAfter),
+      payBefore: num(lp.terms.redeemPaymentDaysBefore),
+      payAfter: num(lp.terms.redeemPaymentDaysAfter),
+    } : null,
+    // 투자목적. 원천의 문장을 그대로 옮긴다 — 요약하지 않는다.
+    objective: lp?.terms?.infoObject || null,
 
     holdings,
     // 비중일 수 없는 값이 와서 싣지 않은 레코드. 왜 빈칸인지 남긴다.
