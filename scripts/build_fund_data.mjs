@@ -50,6 +50,11 @@ const PERIODS = [
   ['3y', '3년', '3Y'], ['5y', '5년', '5Y'],
 ];
 
+// 위험이 높은 것부터. 화면의 셀렉트 박스가 이 차례를 쓴다 —
+// 알파벳순으로 두면 "낮은 위험" 이 "높은 위험" 앞에 와서 읽히지 않는다.
+const RISK_ORDER = ['veryHighRisk', 'highRisk', 'moderatelyHighRisk',
+                    'moderateRisk', 'lowRisk', 'veryLowRisk'];
+
 const LABELS = {
   region: {
     domestic: { ko: '국내 투자', en: 'Domestic' },
@@ -62,6 +67,20 @@ const LABELS = {
     alternative: { ko: '대체', en: 'Alternative' },
     mmf: { ko: 'MMF', en: 'MMF' },
     other: { ko: '기타', en: 'Other' },
+  },
+  // 위험등급은 숫자가 아니라 **문자열**로 온다. 처음에 1~6 의 숫자로 짐작하고
+  // 감사 규칙을 걸었다가 3,196개 중 3,195개를 헛잡았다 — 규칙이 대량으로
+  // 잡으면 자료가 아니라 규칙을 의심해야 한다는 것을 다시 확인한 자리다.
+  //
+  // 실제 값은 여섯 가지뿐이고, 국내 공모펀드의 6단계 위험등급과 하나씩 맞는다.
+  // 다만 **등급 번호는 원천이 주지 않으므로 붙이지 않는다.** 이름만 옮긴다.
+  riskGrade: {
+    veryHighRisk: { ko: '매우 높은 위험', en: 'Very high risk' },
+    highRisk: { ko: '높은 위험', en: 'High risk' },
+    moderatelyHighRisk: { ko: '다소 높은 위험', en: 'Moderately high risk' },
+    moderateRisk: { ko: '보통 위험', en: 'Moderate risk' },
+    lowRisk: { ko: '낮은 위험', en: 'Low risk' },
+    veryLowRisk: { ko: '매우 낮은 위험', en: 'Very low risk' },
   },
   dropReason: {
     step: { ko: '기준가 재산정 구간', en: 'base-price restatement' },
@@ -105,6 +124,28 @@ function finish(f) {
   // 수익률이 하나라도 남았는가. 계단 때문에 통째로 비는 펀드가 있다.
   const retCount = f.ret ? Object.keys(f.ret).length : 0;
 
+  // ── 총보수 ────────────────────────────────────────────────────────────
+  //
+  // 인수인계 문서는 "총보수를 못 받는다" 고 적었고 나도 그렇게 믿었다.
+  // **절반만 맞았다.** 펀드 자체의 `detail.totalFee` 는 거의 다 null 이지만,
+  // `left-panel.returns.classes[]` 의 **클래스별 총보수는 채워져 있다** —
+  // 19,092개 클래스 중 18,712개(98%).
+  //
+  // 국내 공모펀드의 보수는 원래 클래스마다 다르다. 신한골드증권투자신탁 1 은
+  // 클래스가 18개이고 종류C-pe 가 1.04%, 종류C-p 가 1.39% 다. 그래서
+  // **하나의 숫자로 줄이면 거짓**이 된다 — 어느 클래스를 산 사람에게도
+  // 맞지 않는 값이 되기 때문이다.
+  //
+  // 범위로 싣는다. 화면은 "1.04% ~ 1.39%" 로 찍고 클래스별 표를 함께 둔다.
+  const classes = Array.isArray(f.classes) ? f.classes : [];
+  const fees = classes
+    .map((c) => c.totalFee)
+    .filter((v) => v != null && Number.isFinite(Number(v)) && Number(v) > 0)
+    .map(Number)
+    .sort((a, b) => a - b);
+  const feeMin = fees.length ? +fees[0].toFixed(3) : null;
+  const feeMax = fees.length ? +fees[fees.length - 1].toFixed(3) : null;
+
   return {
     ...f,
     holdings,
@@ -115,6 +156,12 @@ function finish(f) {
     // false 면 화면은 비중 칸을 비우고 순서만 뜻이 있다고 밝혀야 한다
     weightsKnown: stocks.length > 0 && totalWeight != null,
     retCount,
+    // 클래스별 총보수의 범위. 하나의 숫자로 줄이지 않는다 — 클래스마다
+    // 다른 값이라 어느 하나를 고르면 나머지 클래스에 대해 거짓이 된다.
+    feeMin,
+    feeMax,
+    feeCount: fees.length,
+    classCount: classes.length,
     // 계단이 있는 펀드는 화면이 그 사실을 밝혀야 한다. 빈칸이 왜 빈칸인지
     // 말하지 않으면 "자료가 없나 보다" 로 읽히고, 그건 사실과 다르다.
     hasStep: !!(f.steps && f.steps.length),
@@ -218,7 +265,7 @@ function sampleData() {
     return {
       id: `FUND:${code}`,
       code, name, company, type, region, assetClass, benchmarkName,
-      riskGrade: 1 + Math.floor(rand() * 6),
+      riskGrade: RISK_ORDER[Math.floor(rand() * RISK_ORDER.length)],
       inceptionDate: inception,
       basePrice,
       // 등락률은 1일 수익률과 같은 값이어야 한다. 원천에서도 같은 값이고,
@@ -290,6 +337,7 @@ const payload = {
   sources,
   labels: LABELS,
   periods: PERIODS,
+  riskOrder: RISK_ORDER,
   typeOrder,
   typeCounts,
   companyOrder: Object.entries(companyCounts).sort((a, b) => b[1] - a[1]).map(([c]) => c),
@@ -299,12 +347,15 @@ const payload = {
   // 돌아다니게 된다.
   notes: {
     totalFee: {
-      ko: '총보수는 이 원천(네이버 Npay 증권)에 없습니다. 목록·상세 모두 ' +
-          'totalFee 가 null 로 옵니다(표본 60종목 중 59종목). 보수 비교는 ' +
-          '이 화면에서 만들 수 없어 항목 자체를 두지 않았습니다.',
-      en: 'Total expense ratio is absent from the source (Naver Npay). Both the ' +
-          'list and detail endpoints return totalFee: null (59 of 60 sampled). ' +
-          'No fee comparison is offered rather than a fabricated one.',
+      ko: '총보수는 **펀드 단위로는** 원천에 없습니다(목록·상세 모두 null). ' +
+          '다만 **클래스별 총보수는 있습니다** — 클래스 19,092개 중 18,712개(98%). ' +
+          '국내 공모펀드의 보수는 원래 클래스마다 다르므로, 하나의 숫자로 줄이지 ' +
+          '않고 클래스별 범위(최저~최고)로 싣고 클래스별 표를 함께 둡니다. ' +
+          '어느 클래스를 사느냐에 따라 실제 보수가 달라집니다.',
+      en: 'A fund-level expense ratio is absent from the source, but **per-share-class ' +
+          'fees are present** — 18,712 of 19,092 classes (98%). Korean fund fees differ ' +
+          'by share class, so a single number would be wrong for every class but one. ' +
+          'The range (lowest to highest) is shown, with the per-class table beside it.',
     },
     step: {
       ko: '기준가 계열에 재산정 계단이 있는 펀드는 그 구간의 수익률을 ' +

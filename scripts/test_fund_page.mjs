@@ -276,18 +276,53 @@ await page.waitForTimeout(200);
 const basisTxt = await page.locator('#basis-body').textContent();
 check('검산 탭이 무엇을 왜 비웠는지 설명한다',
   /기준가|base-price/.test(basisTxt || ''), '');
-check('검산 탭이 총보수 없음을 밝힌다',
-  /총보수|expense ratio/i.test(basisTxt || ''), '');
+check('검산 탭이 총보수가 클래스별임을 밝힌다',
+  /클래스별|per share class/i.test(basisTxt || ''), '');
 const stepStat = await page.locator('#basis-body .card .stat').count();
 check('검산 탭에 집계가 있다', stepStat >= 3, `${stepStat}개`);
 
-// ── 총보수를 지어내지 않는가
-const feeShown = await page.evaluate(() => {
-  const txt = document.body.innerText;
-  // 화면 어디에도 "총보수 0.000%" 같은 지어낸 값이 없어야 한다.
-  return /총보수[^\n]*0\.000\s*%/.test(txt);
+// ── 총보수 ─────────────────────────────────────────────────────────────
+// 인수인계 문서는 "총보수를 못 받는다" 고 적었지만 클래스별로는 있었다.
+// 다만 클래스마다 다르므로 **하나의 숫자로 줄이면 거짓**이다.
+await page.locator('.tabs button[data-tab="browse"]').click();
+await page.waitForTimeout(150);
+const feeHead = await page.locator('#list-head th').allTextContents();
+check('목록에 총보수 열이 있다', feeHead.some((h) => /총보수|Fee/i.test(h)),
+  feeHead.map((x) => x.trim()).join(' | '));
+
+const feeData = await page.evaluate(() => {
+  const D = window.FUND_DATA || {};
+  const funds = D.funds || [];
+  const withFee = funds.filter((f) => f.feeMin != null);
+  const spread = withFee.filter((f) => f.feeMax != null && f.feeMax > f.feeMin);
+  // 보수를 모르는데 숫자를 적어 둔 펀드가 있으면 지어낸 것이다.
+  const invented = funds.filter((f) => f.feeMin == null && f.feeMax != null).length;
+  // 0 이나 음수는 보수가 아니다.
+  const bad = withFee.filter((f) => !(f.feeMin > 0) || !(f.feeMax > 0)).length;
+  return { total: funds.length, withFee: withFee.length, spread: spread.length,
+           invented, bad, sample: spread[0] ? { min: spread[0].feeMin, max: spread[0].feeMax } : null };
 });
-check('총보수를 0 으로 지어내지 않는다', !feeShown);
+check('총보수가 대부분의 펀드에 있다', feeData.withFee > feeData.total * 0.9,
+  `${feeData.withFee}/${feeData.total}`);
+check('보수를 모르는데 지어내지 않는다', feeData.invented === 0, `${feeData.invented}건`);
+check('보수가 0 이나 음수인 펀드가 없다', feeData.bad === 0, `${feeData.bad}건`);
+check('클래스마다 다른 보수를 범위로 남긴다', feeData.spread > 0,
+  `${feeData.spread}개 · 예 ${feeData.sample ? feeData.sample.min + '~' + feeData.sample.max + '%' : '–'}`);
+
+// 범위를 하나의 숫자로 줄여 찍으면 그 클래스를 사지 않은 사람에게 거짓이 된다.
+const feeRendered = await page.evaluate(() => {
+  const D = window.FUND_DATA || {};
+  const f = (D.funds || []).find((x) => x.feeMin != null && x.feeMax > x.feeMin);
+  return f && window.fmtFee ? window.fmtFee(f) : null;
+});
+check('클래스마다 다르면 범위로 찍는다', feeRendered != null && /~/.test(feeRendered),
+  feeRendered || '없음');
+
+const feeInvented = await page.evaluate(() => {
+  // 화면 어디에도 "총보수 0.000%" 같은 지어낸 값이 없어야 한다.
+  return /총보수[^\n]*\b0\.00\s*%/.test(document.body.innerText);
+});
+check('총보수를 0 으로 지어내지 않는다', !feeInvented);
 
 // ── 영문 전환
 await page.locator('.lang-toggle button[data-lang="en"]').click();

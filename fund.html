@@ -366,6 +366,7 @@ footer .disc + .disc{margin-top:12px;}
       <label class="f"><span data-ko="운용사" data-en="Manager">운용사</span><select id="f-company"></select></label>
       <label class="f"><span data-ko="설정액" data-en="AUM">설정액</span><select id="f-aum"></select></label>
       <label class="f"><span data-ko="위험등급" data-en="Risk grade">위험등급</span><select id="f-risk"></select></label>
+      <label class="f"><span data-ko="총보수 (최저 클래스)" data-en="Fee (cheapest class)">총보수 (최저 클래스)</span><select id="f-fee"></select></label>
     </div>
 
     <div class="finder-bar">
@@ -518,6 +519,22 @@ function signClass(v) { return v == null ? 'dim' : (v > 0 ? 'pos' : (v < 0 ? 'ne
 function fmtNum(v) { return v == null || !isFinite(v) ? '–' : Math.round(v).toLocaleString(); }
 
 /**
+ * 총보수 — **범위**로 찍는다.
+ *
+ * 국내 공모펀드의 보수는 클래스마다 다르다. 신한골드증권투자신탁 1 은
+ * 클래스가 18개이고 종류C-pe 가 1.04%, 종류C-p 가 1.39% 다. 표본 3,196개
+ * 중 2,885개가 클래스마다 보수가 다르다.
+ *
+ * 그래서 **하나의 숫자로 줄이지 않는다.** 하나를 고르면 그 클래스를 사지
+ * 않은 사람 모두에게 거짓이 된다. 범위로 적고 클래스별 표를 함께 둔다.
+ */
+function fmtFee(f) {
+  if (f.feeMin == null) return null;
+  if (f.feeMax == null || f.feeMax === f.feeMin) return f.feeMin.toFixed(2) + '%';
+  return f.feeMin.toFixed(2) + '~' + f.feeMax.toFixed(2) + '%';
+}
+
+/**
  * 보유 비중.
  *
  * 소수 둘째 자리까지 찍으면 아주 작은 비중이 "0.00%" 가 된다. 그건
@@ -582,7 +599,7 @@ var MAX_COMPARE = 8;
 var PAGE = 60;
 
 var state = {
-  q: '', region: '', asset: '', type: '', company: '', aum: '', risk: '',
+  q: '', region: '', asset: '', type: '', company: '', aum: '', risk: '', fee: '',
   period: '1y', holdOnly: false,
   sort: 'aum', dir: -1,
   limit: PAGE,
@@ -592,6 +609,16 @@ var state = {
   rType: '', rPeriod: '1y',
   tab: 'browse',
 };
+
+// 총보수 구간. **최저 클래스** 기준이다 — 같은 펀드라도 클래스마다 보수가
+// 달라서, 어느 하나를 고르지 않으면 구간에 넣을 수가 없다. 화면 머리말에
+// "최저 클래스" 라고 밝힌다.
+var FEE_BUCKETS = [
+  ['lt03', function (v) { return v < 0.3; }, { ko: '0.3% 미만', en: '< 0.3%' }],
+  ['03to07', function (v) { return v >= 0.3 && v < 0.7; }, { ko: '0.3 ~ 0.7%', en: '0.3 – 0.7%' }],
+  ['07to12', function (v) { return v >= 0.7 && v < 1.2; }, { ko: '0.7 ~ 1.2%', en: '0.7 – 1.2%' }],
+  ['gte12', function (v) { return v >= 1.2; }, { ko: '1.2% 이상', en: '≥ 1.2%' }],
+];
 
 var AUM_BUCKETS = [
   ['1t', function (v) { return v >= 1e12; }, { ko: '1조 이상', en: '≥ 1T' }],
@@ -608,6 +635,14 @@ function matches(f) {
   if (state.company && (f.company || '') !== state.company) return false;
   if (state.risk && String(f.riskGrade == null ? '' : f.riskGrade) !== state.risk) return false;
   if (state.holdOnly && !(f.holdingCount > 0)) return false;
+  if (state.fee) {
+    // 보수를 모르는 펀드는 구간에 넣지 않는다. 모르는 것을 "싸다" 나
+    // "비싸다" 어느 쪽에도 넣으면 거짓이 된다.
+    if (f.feeMin == null) return false;
+    var fb = null;
+    for (var k = 0; k < FEE_BUCKETS.length; k += 1) if (FEE_BUCKETS[k][0] === state.fee) fb = FEE_BUCKETS[k];
+    if (fb && !fb[1](f.feeMin)) return false;
+  }
   if (state.aum) {
     var v = Number(f.aum);
     if (!isFinite(v)) return false;
@@ -639,7 +674,15 @@ var SORTERS = {
   aum: aumSortValue,
   ret: function (f) { var v = retOf(f, state.period); return v == null ? -1e9 : v; },
   holdings: function (f) { return f.holdingCount || 0; },
-  risk: function (f) { return f.riskGrade == null ? 99 : Number(f.riskGrade); },
+  // 보수는 **최저 클래스** 기준으로 세운다. 범위를 하나로 줄여 세워야
+  // 하는데, 사는 쪽에서 고를 수 있는 가장 싼 값이 견주기에 맞다.
+  fee: function (f) { return f.feeMin == null ? 1e9 : f.feeMin; },
+  risk: function (f) {
+    // 위험이 높은 것부터. 모르는 것은 맨 뒤로.
+    var order = DATA.riskOrder || [];
+    var at = order.indexOf(f.riskGrade);
+    return at < 0 ? 99 : at;
+  },
 };
 function sorted(list) {
   var key = SORTERS[state.sort] || SORTERS.aum;
@@ -708,10 +751,25 @@ function renderFilters() {
   fillSelect(el('f-aum'), AUM_BUCKETS.map(function (b) { return [b[0], t(b[2])]; }),
     state.aum, allLabel);
 
+  fillSelect(el('f-fee'), FEE_BUCKETS.map(function (b) {
+    var n = 0;
+    for (var i = 0; i < all.length; i += 1) if (all[i].feeMin != null && b[1](all[i].feeMin)) n += 1;
+    return [b[0], t(b[2]) + ' (' + n.toLocaleString() + ')'];
+  }), state.fee, allLabel);
+
+  // 위험등급은 원천이 문자열로 준다(veryHighRisk 등). 그대로 찍으면 영어
+  // 열거값이 화면에 나오므로 이름표를 붙이고, **위험이 높은 것부터** 세운다 —
+  // 알파벳순으로 두면 "낮은 위험" 이 "높은 위험" 앞에 와서 읽히지 않는다.
+  // 등급 번호(1~6)는 원천이 주지 않으므로 붙이지 않는다.
   var riskCounts = countsBy(all, function (f) { return f.riskGrade; });
+  var riskKeys = (DATA.riskOrder || Object.keys(riskCounts))
+    .filter(function (k) { return riskCounts[k]; });
+  for (var rk in riskCounts) {
+    if (riskKeys.indexOf(rk) < 0) riskKeys.push(rk);   // 모르는 값도 빠뜨리지 않는다
+  }
   fillSelect(el('f-risk'),
-    Object.keys(riskCounts).sort().map(function (k) {
-      return [k, (lang === 'ko' ? k + '등급' : 'Grade ' + k) + ' (' + riskCounts[k].toLocaleString() + ')'];
+    riskKeys.map(function (k) {
+      return [k, labelOf('riskGrade', k) + ' (' + riskCounts[k].toLocaleString() + ')'];
     }), state.risk, allLabel);
 
   var periodOpts = PERIODS.map(function (p) { return '<option value="' + p[0] + '"' +
@@ -739,8 +797,9 @@ var COLUMNS = [
   ['name', '펀드', 'Fund', true],
   ['type', '유형', 'Category', true],
   ['company', '운용사', 'Manager', true],
-  ['risk', '위험등급', 'Risk', true],
+  ['risk', '위험등급', 'Risk', true],   // 숫자가 아니라 문자열 등급이다
   ['aum', '설정액', 'AUM', true],
+  ['fee', '총보수', 'Fee', true],
   ['ret', '수익률', 'Return', true],
   ['holdings', '보유종목', 'Holdings', true],
 ];
@@ -752,7 +811,7 @@ function renderHead() {
     var label = c[0] === 'ret'
       ? (lang === 'ko' ? periodLabel(state.period) + ' 수익률' : periodLabel(state.period) + ' return')
       : (lang === 'ko' ? c[1] : c[2]);
-    var isNum = c[0] === 'aum' || c[0] === 'ret' || c[0] === 'holdings' || c[0] === 'risk';
+    var isNum = c[0] === 'aum' || c[0] === 'ret' || c[0] === 'holdings' || c[0] === 'fee';
     html += '<th' + (isNum ? ' class="num' + (c[3] ? ' sortable' : '') + '"' : (c[3] ? ' class="sortable"' : '')) +
       (c[3] ? ' data-sort="' + c[0] + '"' : '') +
       (state.sort === c[0] ? ' aria-sort="' + (state.dir < 0 ? 'descending' : 'ascending') + '"' : '') +
@@ -789,8 +848,14 @@ function renderList() {
         (f.region ? ' · ' + esc(regionLabel(f)) : '') + '</div></td>' +
       '<td>' + esc(f.type || '–') + '</td>' +
       '<td>' + esc(f.company || '–') + '</td>' +
-      '<td class="num">' + (f.riskGrade == null ? '<span class="dim">–</span>' : esc(f.riskGrade)) + '</td>' +
+      '<td>' + (f.riskGrade == null ? '<span class="dim">–</span>' : esc(labelOf('riskGrade', f.riskGrade))) + '</td>' +
       '<td class="num">' + esc(fmtAmount(f.aum)) + '</td>' +
+      '<td class="num">' + (fmtFee(f) == null
+        ? '<span class="dim">–</span>'
+        : '<span title="' + esc(lang === 'ko'
+            ? '클래스 ' + (f.feeCount || 0) + '개의 총보수 범위'
+            : 'range across ' + (f.feeCount || 0) + ' share classes') + '">' +
+          esc(fmtFee(f)) + '</span>') + '</td>' +
       '<td class="num ' + (v == null ? 'blanked' : signClass(v)) + '">' +
         (v == null
           ? '–' + (drop ? '<span class="why">' + esc(shortReason(drop)) + '</span>' : '')
@@ -1132,10 +1197,13 @@ function detailHtml(f) {
   add(lang === 'ko' ? '설정액' : 'AUM', esc(fmtAmount(f.aum)));
   add(lang === 'ko' ? '순자산' : 'Net assets', esc(fmtAmount(f.nav)));
   add(lang === 'ko' ? '설정일' : 'Inception', esc(f.inceptionDate || ''), true);
-  add(lang === 'ko' ? '위험등급' : 'Risk grade', f.riskGrade == null ? null : esc(f.riskGrade));
+  add(lang === 'ko' ? '위험등급' : 'Risk grade',
+      f.riskGrade == null ? null : esc(labelOf('riskGrade', f.riskGrade)), true);
   add(lang === 'ko' ? '보유종목 수' : 'Holdings', f.holdingCount ? fmtNum(f.holdingCount) : null);
   add(lang === 'ko' ? '상위 10종목 비중' : 'Top 10 weight',
       f.top10Weight == null ? null : Number(f.top10Weight).toFixed(2) + '%');
+  add(lang === 'ko' ? '총보수 (클래스별 범위)' : 'Fee (range across classes)',
+      fmtFee(f) == null ? null : esc(fmtFee(f)));
   add(lang === 'ko' ? '벤치마크' : 'Benchmark', esc(f.benchmarkName || ''), true);
 
   var head = '<div class="detail-head"><h3>' + esc(f.name || f.code) + '</h3>' +
@@ -1154,13 +1222,21 @@ function detailHtml(f) {
         '<td class="num ' + signClass(c.ret && c.ret['1y']) + '">' + fmtPct(c.ret && c.ret['1y']) + '</td>' +
         '<td class="num">' + (c.totalFee == null ? '<span class="dim">–</span>' : Number(c.totalFee).toFixed(3) + '%') + '</td></tr>';
     }
+    var feeNote = '<div class="dim" style="font-size:13px;margin-top:8px;line-height:1.6">' +
+      (lang === 'ko'
+        ? '※ 총보수는 <strong>클래스마다 다릅니다.</strong> 위의 범위는 이 표의 최저~최고이며, ' +
+          '실제로 내는 보수는 어느 클래스를 사느냐에 따라 달라집니다.<br>' +
+          '※ 펀드 단위의 총보수는 원천에 없습니다. 이 값들은 클래스별로 온 것입니다.'
+        : '※ Fees <strong>differ by share class.</strong> The range above is the lowest and ' +
+          'highest in this table; what you actually pay depends on the class you buy.<br>' +
+          '※ The source gives no fund-level fee — these are per-class figures.') + '</div>';
     classes = '<h4>' + esc(lang === 'ko' ? '클래스별' : 'Share classes') + '</h4>' +
       '<div class="table-wrap"><table><thead><tr>' +
       '<th>' + esc(lang === 'ko' ? '클래스' : 'Class') + '</th>' +
       '<th class="num">' + esc(lang === 'ko' ? '1개월' : '1M') + '</th>' +
       '<th class="num">' + esc(lang === 'ko' ? '1년' : '1Y') + '</th>' +
       '<th class="num">' + esc(lang === 'ko' ? '총보수' : 'TER') + '</th>' +
-      '</tr></thead><tbody>' + crows + '</tbody></table></div>';
+      '</tr></thead><tbody>' + crows + '</tbody></table></div>' + feeNote;
   }
 
   // 설정액·순자산을 싣지 않은 펀드는 왜 빈칸인지 그 자리에서 말한다.
@@ -1597,10 +1673,29 @@ function renderBasis() {
     }
   }
 
-  html += '<h3>' + esc(lang === 'ko' ? '이 원천으로 만들 수 없는 것' : 'What this source cannot give') + '</h3>';
-  html += '<div class="notice warn">' + (DATA.notes && DATA.notes.totalFee
-    ? esc(t(DATA.notes.totalFee))
-    : esc(lang === 'ko' ? '총보수는 원천에 없습니다.' : 'No expense ratio at the source.')) + '</div>';
+  html += '<h3>' + esc(lang === 'ko' ? '총보수는 어디까지 되나' : 'How far the fee data goes') + '</h3>';
+  var feeFunds = FUNDS.filter(function (x) { return x.feeMin != null; }).length;
+  var feeSpread = FUNDS.filter(function (x) {
+    return x.feeMin != null && x.feeMax != null && x.feeMax > x.feeMin; }).length;
+  html += '<div class="notice">' + (lang === 'ko'
+    ? '<strong>펀드 단위로는 없고, 클래스별로는 있습니다.</strong> ' +
+      '이 화면을 만들 때 넘겨받은 인수인계 문서는 "총보수를 못 받는다" 고 적었고 ' +
+      '실제로 <code>detail.totalFee</code> 는 거의 다 비어 있습니다. 그런데 ' +
+      '<code>left-panel.returns.classes[]</code> 의 클래스별 총보수는 채워져 있었습니다 — ' +
+      '이 자료에서 <strong>' + feeFunds.toLocaleString() + ' / ' + FUNDS.length.toLocaleString() +
+      '개 펀드</strong>에 보수가 있습니다.<br><br>' +
+      '다만 <strong>하나의 숫자로 줄이지 않았습니다.</strong> ' + feeSpread.toLocaleString() +
+      '개 펀드가 클래스마다 보수가 다릅니다(예: 신한골드증권투자신탁 1 은 클래스 18개, ' +
+      '1.04% ~ 1.39%). 하나를 고르면 그 클래스를 사지 않은 사람 모두에게 거짓이 되므로 ' +
+      '범위로 싣고 클래스별 표를 함께 둡니다.'
+    : '<strong>Not per fund, but per share class.</strong> The handoff for this screen said ' +
+      'expense ratios were unavailable, and <code>detail.totalFee</code> is indeed almost always ' +
+      'null — but <code>left-panel.returns.classes[]</code> carries per-class fees. ' +
+      '<strong>' + feeFunds.toLocaleString() + ' of ' + FUNDS.length.toLocaleString() +
+      ' funds</strong> here have them.<br><br>' +
+      'They are <strong>not reduced to one number</strong>: ' + feeSpread.toLocaleString() +
+      ' funds charge different fees by class. A single figure would be wrong for every class ' +
+      'but one, so the range is shown with the per-class table.') + '</div>';
 
   body.innerHTML = html;
 }
@@ -1649,8 +1744,17 @@ function renderHero() {
       'class are read from the category name assigned by the source, not derived here. MMF and "other" ' +
       'categories carry no region in their name and are left <u>unknown</u> rather than assumed domestic.';
 
-  el('disc-fee').innerHTML = '<strong>' + esc(lang === 'ko' ? '총보수는 없습니다.' : 'No expense ratios.') +
-    '</strong> ' + (DATA.notes && DATA.notes.totalFee ? esc(t(DATA.notes.totalFee)) : '');
+  el('disc-fee').innerHTML = lang === 'ko'
+    ? '<strong>총보수는 클래스별입니다.</strong> 펀드 단위의 총보수는 원천에 없지만 ' +
+      '<u>클래스별 총보수</u>는 있습니다(클래스 19,092개 중 18,712개). 국내 공모펀드의 보수는 ' +
+      '원래 클래스마다 다르고, 이 자료에서도 3,196개 중 2,885개가 클래스마다 다릅니다. ' +
+      '그래서 하나의 숫자로 줄이지 않고 <u>최저~최고 범위</u>로 싣고 클래스별 표를 함께 둡니다. ' +
+      '목록의 총보수 열과 필터는 <u>최저 클래스</u> 기준입니다.'
+    : '<strong>Fees are per share class.</strong> The source has no fund-level fee, but ' +
+      'per-class fees are present (18,712 of 19,092 classes). Korean fund fees differ by class ' +
+      '— 2,885 of 3,196 funds here do. Rather than reduce that to one number, the range ' +
+      '(lowest–highest) is shown with the per-class table. The list column and filter use the ' +
+      'cheapest class.';
 
   el('disc-returns').innerHTML = lang === 'ko'
     ? '<strong>수익률 기준.</strong> 기준가(NAV) 기준의 <u>누적</u> 수익률입니다 — 3년·5년도 연율로 ' +
@@ -1738,7 +1842,8 @@ function bind() {
   });
 
   var FILTER_IDS = [['f-region', 'region'], ['f-asset', 'asset'], ['f-type', 'type'],
-                    ['f-company', 'company'], ['f-aum', 'aum'], ['f-risk', 'risk']];
+                    ['f-company', 'company'], ['f-aum', 'aum'], ['f-risk', 'risk'],
+                    ['f-fee', 'fee']];
   for (var i = 0; i < FILTER_IDS.length; i += 1) {
     (function (pair) {
       el(pair[0]).addEventListener('change', function () {
@@ -1755,7 +1860,7 @@ function bind() {
   });
   el('f-reset').addEventListener('click', function () {
     state.q = ''; state.region = ''; state.asset = ''; state.type = '';
-    state.company = ''; state.aum = ''; state.risk = ''; state.holdOnly = false;
+    state.company = ''; state.aum = ''; state.risk = ''; state.fee = ''; state.holdOnly = false;
     state.limit = PAGE;
     el('q').value = ''; el('f-hold').checked = false;
     renderFilters(); renderList();
