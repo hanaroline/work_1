@@ -52,6 +52,24 @@ jobs:
         timeout-minutes: 15
         run: node scripts/reverify_fund_kofia.mjs
 
+      # L3 2차 시도 — 주소를 추측하는 대신 브라우저로 열어 무엇을 부르는지 본다.
+      # 앞선 세션에서 네이버를 뚫은 방법이 이것이었다.
+      - name: L3 1차 출처 대조 (브라우저)
+        if: always()
+        continue-on-error: true
+        timeout-minutes: 20
+        run: |
+          npm i -D playwright@1.56.1 --no-audit --no-fund
+          npx playwright install --with-deps chromium
+          node scripts/reverify_fund_primary.mjs
+
+      # L1 — 화면에 찍힌 글자가 데이터와 같은가. 순위·유형평균은 데이터에 없고
+      # 브라우저가 그 자리에서 만드는 값이라, 이 검증만이 그 두 칸을 본다.
+      - name: L1 화면 표기 대조
+        if: always()
+        timeout-minutes: 20
+        run: node scripts/reverify_fund_render.mjs 60
+
       - name: 결과 업로드
         if: always()
         uses: actions/upload-artifact@v4
