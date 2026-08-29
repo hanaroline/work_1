@@ -200,17 +200,23 @@ function sampleData() {
       if (benchmarkName) retBenchmark[k] = +(base + (rand() - 0.5) * scale * 0.4).toFixed(4);
     }
 
-    // 설정액과 순자산은 평가손익만큼만 차이 난다. 따로 뽑으면 자릿수로 벌어져
-    // 감사의 "순자산-설정액-괴리" 에 걸린다.
+    // 설정액·순자산·기준가는 원천에서 하나의 항등식으로 묶여 있다.
+    //
+    //   순자산 / 설정액 == 기준가 / 1000        (407종목 중 393종목이 1% 안)
+    //
+    // 설정액이 **설정원본**(액면 1,000 기준)이기 때문이다. 셋을 따로 뽑으면
+    // 감사가 (옳게) 오류로 잡는다. 예시가 감사를 통과하지 못하면 수집이 한
+    // 번도 안 돈 저장소에서 관문이 막혀 버린다.
+    const basePrice = +(1000 + rand() * 5000).toFixed(2);
     const aum = Math.round((0.005 + rand() * 3) * 1e12);
-    const nav = Math.round(aum * (0.8 + rand() * 0.6));
+    const nav = Math.round(aum * (basePrice / 1000));
 
     return {
       id: `FUND:${code}`,
       code, name, company, type, region, assetClass, benchmarkName,
       riskGrade: 1 + Math.floor(rand() * 6),
       inceptionDate: inception,
-      basePrice: +(1000 + rand() * 5000).toFixed(2),
+      basePrice,
       // 등락률은 1일 수익률과 같은 값이어야 한다. 원천에서도 같은 값이고,
       // 감사가 둘을 대조한다.
       changeRate: ret['1d'] ?? null,
