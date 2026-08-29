@@ -44,7 +44,10 @@ const LIST = (kw) =>
 // 제목이 이것에 걸리는 것만 연다. 벤처·모태·산단 펀드는 우리 것이 아니다.
 const WANT_TITLE = /(펀드|집합투자|수익증권)/;
 const SKIP_TITLE = /(모태|벤처|산단|퇴직연금|우체국|대학|보증공사|중소기업은행)/;
-const MAX_OPEN = 12;
+// 이름이 아니라 **원문을 열어 본 결과**로 뺀다. 17차가 넷을 열었고 표준코드·
+// 기준일자·설정원본이 하나도 없었다. 자리를 넷 비워 안 열어 본 것을 연다.
+const SEEN_EMPTY = /(혁신활동저해정도|금융자산운용예치금융기관|펀드,신탁등운용비중)/;
+const MAX_OPEN = 16;
 
 // 상세 화면에서 이것들이 다 있어야 쓸모가 있다. 하나라도 없으면 못 쓴다.
 const NEED = {
@@ -137,9 +140,15 @@ for (const kw of KEYWORDS) {
       const attrs = m[1];
       const title = toText(m[2]).replace(/\s+/g, ' ').trim();
       if (!title || title.length < 6) continue;
-      if (!WANT_TITLE.test(title)) continue;   // 목록에는 메뉴·푸터 링크가 훨씬 많다
+      // 목록은 찾은 낱말을 강조 태그로 감싼다. 태그를 지우면 그 자리에 빈칸이
+      // 남아 `집합투자증권` 이 `집합 투자 증권` 이 된다. 그래서 `집합투자`·
+      // `수익증권` 검색은 네 판 내내 0 개였고, 한 낱말인 `펀드` 만 걸렸다.
+      // **화면에 있던 것을 내 규칙이 지운 것이다.** 빈칸을 떼고 견준다.
+      const flat = title.replace(/\s+/g, '');
+      if (!WANT_TITLE.test(flat)) continue;   // 목록에는 메뉴·푸터 링크가 훨씬 많다
       // 왜 안 골랐는지를 남긴다. 이유 없는 0 은 "없다" 로 읽히기 때문이다.
-      if (SKIP_TITLE.test(title)) { dropped.push([kw, title, '우리 것이 아님(모태·벤처·퇴직연금 등)']); continue; }
+      if (SKIP_TITLE.test(flat)) { dropped.push([kw, title, '우리 것이 아님(모태·벤처·퇴직연금 등)']); continue; }
+      if (SEEN_EMPTY.test(flat)) { dropped.push([kw, title, '17차에 원문을 열어 봤다 — 표준코드·기준일자·설정원본 모두 없음']); continue; }
       const hrefRaw = (attrs.match(/href\s*=\s*["']([^"']*)["']/i) || [, ''])[1];
       let href = '';
       try { href = hrefRaw ? new URL(hrefRaw, r.url).href : ''; } catch { href = hrefRaw; }
@@ -169,8 +178,20 @@ for (const kw of KEYWORDS) {
 const gotAnyList = lists.some((l) => l.ok);
 
 // ── 2. 상세 화면을 열어 출력 항목을 본다 ────────────────────────────────────
+// 같은 자료가 주소만 달리해 여러 번 걸린다(17차는 한 제목을 셋이나 열었다).
+// 제목이 같으면 한 번만 연다. 그리고 우리가 찾는 낱말이 든 것부터 연다 —
+// 자리를 다 쓰고 정작 볼 것을 못 여는 일이 없게.
+const RANK = /(집합투자|수익증권|설정|환매|잔고|좌수|판매|보관)/;
+const uniq = new Map();
+for (const [href, title] of found) {
+  const key = title.replace(/\s+/g, '');
+  if (!uniq.has(key)) uniq.set(key, [href, title]);
+}
+const queue = [...uniq.values()].sort(
+  (a, b) => (RANK.test(b[1].replace(/\s+/g, '')) ? 1 : 0) - (RANK.test(a[1].replace(/\s+/g, '')) ? 1 : 0));
+
 const results = [];
-for (const [href, title] of [...found].slice(0, MAX_OPEN)) {
+for (const [href, title] of queue.slice(0, MAX_OPEN)) {
   const rec = { title, href, status: null, has: {}, error: null };
   try {
     const r = await open(href, 5000);
@@ -204,7 +225,7 @@ const md = [
   '**설정원본/좌수**(수익률이 안 섞인 값). 순자산·잔액만 있으면 3개월',
   '유입을 못 낸다 — 순자산 차이에는 수익률이 섞이기 때문이다.',
   '',
-  `후보 ${found.size}개를 찾아 ${results.length}개를 열었다.`,
+  `후보 ${found.size}개(제목 겹침을 빼면 ${uniq.size}개)를 찾아 ${results.length}개를 열었다.`,
   '',
   '## 목록 화면을 받았는가',
   '',
