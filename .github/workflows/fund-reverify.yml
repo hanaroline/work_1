@@ -71,6 +71,14 @@ jobs:
         timeout-minutes: 25
         run: node scripts/reverify_fund_kofia_compare.mjs 12
 
+      # L3-c 투자지역 — 이 화면의 주축이다. 1차 출처 대조에서 하나가 어긋났고
+      # (내 자료 "해외" vs 금투협 "혼합"), 얼마나 퍼졌는지 세야 한다.
+      - name: L3-c 투자지역 대조
+        if: always()
+        continue-on-error: true
+        timeout-minutes: 30
+        run: node scripts/reverify_fund_region.mjs 300
+
       # L1-b — 화면이 그 자리에서 만드는 주장(필터·랭킹·중복도·역조회).
       # 데이터에 없는 값이라 어떤 감사도 본 적이 없다.
       - name: L1-b 화면 계산 대조
