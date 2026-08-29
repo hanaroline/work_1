@@ -63,6 +63,9 @@
  * 덮는 것이 제일 나쁘다.
  */
 
+import { fileURLToPath } from 'node:url';
+import { resolve } from 'node:path';
+
 import { getJson, mapLimit, num, writeDataFile, assertEnough, sleep } from './etf_lib.mjs';
 
 const API = 'https://stock.naver.com/api/fund/funds';
@@ -714,4 +717,12 @@ process.on('unhandledRejection', (e) => {
   process.exit(1);
 });
 
-await main();
+// 직접 실행할 때만 수집한다. 시험이 이 파일을 읽어 함수 하나를 검사할 수
+// 있어야 하는데, 읽는 것만으로 16,000회를 부르면 안 된다.
+const invokedDirectly = process.argv[1]
+  && resolve(process.argv[1]) === fileURLToPath(import.meta.url);
+if (invokedDirectly) await main();
+
+// 시험이 부를 수 있게 내놓는다. 화면에 실리는 값을 만드는 자리들이라
+// 회귀 시험을 걸어 둘 값어치가 있다.
+export { toPct, findSteps, countResets, verifyReturns, splitType, SERIES_SPEC };

@@ -131,21 +131,18 @@ const lies = await page.evaluate(() => {
   const out = { weightZero: [], top10OnUnknown: [], retZero: [], benchOrphan: [] };
   for (const f of D.funds || []) {
     for (const h of f.holdings || []) {
-      // 원천이 비중을 안 준 종목을 0 으로 적어 두면 "안 담았다" 는 거짓이 된다.
+      // 저장된 0 자체는 잘못이 아니다. 원천이 정말 0 을 주는 자리가 있다 —
+      // 제재로 평가가 0 이 된 러시아 종목(GAZPROM·MMC NORILSK NICKEL)과
+      // 공모주 배정분이 그렇다. 담고는 있으나 값이 0 인 것이고, 그건 참이다.
       //
-      // 여기서 보는 것은 **수집기의 반올림이 0 을 만들지 않았는가** 이다.
-      // 원천은 0.000000045 같은 아주 작은 진짜 비중을 준다. 예전에 이걸
-      // `toFixed(4)` 로 뭉개 정확히 0 으로 저장했고, 화면에 "0.00%" 로
-      // 찍혔다 — 담은 것을 안 담았다고 말한 셈이다.
+      // 잘못은 **0 이 아닌 것을 0 으로 만드는 것**인데, 그것은 결과 파일만
+      // 보고는 원천의 0 과 구별할 수 없다. 그래서 그 성질은 수집기 함수에
+      // 직접 시험을 건다 — scripts/test_fund_lib.mjs 의 toPct 시험.
       //
-      // 이제 수집기는 0 이 아닌 값을 0 으로 만들지 않는다. 그래서 저장된 0 은
-      // **원천이 정말 0 을 준 경우뿐**이어야 한다. 아주 작은 비중이 있는
-      // 펀드에서 0 이 같이 나오면 반올림이 다시 새는 것이므로 잡는다.
-      if (h.weight === 0) {
-        const tiny = (f.holdings || []).some(function (x) {
-          return x.weight != null && x.weight !== 0 && Math.abs(x.weight) < 0.001;
-        });
-        if (tiny) out.weightZero.push(f.code + ':' + (h.name || ''));
+      // 여기서는 결과 파일에서 볼 수 있는 것만 본다: 비중이 비수치이면
+      // 그건 어느 쪽으로도 뜻이 없다.
+      if (h.weight != null && !isFinite(Number(h.weight))) {
+        out.weightZero.push(f.code + ':' + (h.name || '') + '=' + h.weight);
       }
     }
     const hs = (f.holdings || []).filter((h) => !h.cash);
@@ -163,7 +160,7 @@ const lies = await page.evaluate(() => {
   }
   return out;
 });
-check('아주 작은 비중을 0 으로 뭉개지 않는다', lies.weightZero.length === 0,
+check('비중이 모두 수치다', lies.weightZero.length === 0,
   lies.weightZero.slice(0, 3).join(', ') || '없음');
 
 // 화면이 실제로 무엇을 찍는가. 저장된 값이 맞아도 렌더링에서 다시 뭉개질 수
@@ -198,6 +195,9 @@ check('아주 작은 비중을 0 으로 뭉개지 않는다', lies.weightZero.le
   check('0 이 아닌 아주 작은 비중을 0.00% 로 찍지 않는다',
     !/^0\.00%$/.test(rendered[1]) && !/^0\.00%$/.test(rendered[2]),
     rendered.join(' | '));
+  // 원천이 정말 0 을 준 자리는 0.00% 로 찍어야 한다. 제재로 평가가 0 이 된
+  // 종목을 빈칸으로 두면 "비중을 모른다" 는 다른 거짓이 된다.
+  check('원천이 준 0 은 0.00% 로 찍는다', rendered[0] === '0.00%', rendered[0]);
 }
 check('비중을 모르면 합계를 내지 않는다', lies.top10OnUnknown.length === 0,
   lies.top10OnUnknown.slice(0, 3).join(', ') || '없음');

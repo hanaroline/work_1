@@ -20,6 +20,7 @@ on:
       - 'scripts/audit_fund_data.mjs'
       - 'scripts/build_fund_page.mjs'
       - 'scripts/test_fund_page.mjs'
+      - 'scripts/test_fund_lib.mjs'
       - 'scripts/etf_lib.mjs'
       - 'fund.html'
       - '.github/workflows/fund-daily.yml'
@@ -58,6 +59,12 @@ jobs:
       # 데이터로 만들고 화면에 "예시 데이터" 배지가 붙는다.
       - name: 데이터 빌드
         run: node scripts/build_fund_data.mjs
+
+      # 값을 만드는 함수들의 회귀 시험. 원자료 없이 몇 밀리초면 끝나고,
+      # 이번에 값을 치르고 알아낸 것(주말이 낀 계단, 아주 작은 비중, 계단을
+      # 먹은 값과 보정한 값의 구별)을 계속 지키는지 붙잡아 둔다.
+      - name: 수집기 회귀 시험
+        run: node scripts/test_fund_lib.mjs
 
       # ── 관문 ────────────────────────────────────────────────────────────
       # 화면에 실리는 모든 숫자를 전수 감사한다. **커밋 앞**에 둔다 — 오류가
