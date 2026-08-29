@@ -1,6 +1,6 @@
 # 탐침 — 후보 데이터셋이 펀드별 일별 설정원본을 주는가
 
-받은 때: 2026-08-29T11:09:45.973Z
+받은 때: 2026-08-29T11:23:38.290Z
 
 이름이 그럴듯한 것과 쓸 수 있는 것은 다르다. 셋이 다 있어야 쓸모가 있다:
 **표준코드**(어느 펀드인지) · **기준일자**(과거를 부를 수 있는지) ·
@@ -8,6 +8,25 @@
 유입을 못 낸다 — 순자산 차이에는 수익률이 섞이기 때문이다.
 
 후보 0개를 찾아 0개를 열었다.
+
+## 목록 화면을 받았는가
+
+**이 표를 먼저 본다.** 목록을 못 받으면 아래 후보 수 0 은 "없다" 가 아니라
+"못 봤다" 이다. 둘을 섞으면 없는 것을 있다고 말하는 것만큼 나쁜 거짓이 된다.
+
+| 검색어 | 받았나 | HTTP | 시도 | 상세링크 | 새 후보 |
+|---|:--:|:--:|:--:|:--:|:--:|
+| 펀드 | **못 받음** | — | 3 | — | — |
+| 집합투자 | **못 받음** | — | 3 | — | — |
+| 수익증권 | **못 받음** | — | 3 | — | — |
+
+- `펀드` 실패: page.goto: net::ERR_CONNECTION_TIMED_OUT at https://www.data.go.kr/tcs/dss/selectDataSetList.do?keyword=%ED%8E%80%EB%93%9C
+- `집합투자` 실패: page.goto: net::ERR_CONNECTION_TIMED_OUT at https://www.data.go.kr/tcs/dss/selectDataSetList.do?keyword=%EC%A7%91%ED%95%A9%ED%88%AC%EC%9E%90
+- `수익증권` 실패: page.goto: net::ERR_CONNECTION_TIMED_OUT at https://www.data.go.kr/tcs/dss/selectDataSetList.do?keyword=%EC%88%98%EC%9D%B5%EC%A6%9D%EA%B6%8C
+
+> **판정 못 함.** 목록 화면을 하나도 못 받았다. 후보가 없다는 뜻이 아니다.
+> data.go.kr 이 연달아 두드리면 끊는 것으로 보인다(15차는 같은 주소를 200 으로 열었다).
+> 다시 돌려야 한다 — 이 파일의 빈 표를 근거로 아무것도 말하지 말 것.
 
 ## 한눈에
 
