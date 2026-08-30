@@ -1,0 +1,62 @@
+name: ETF 랭킹 네 칸 되짚기 (검증)
+
+# 랭킹 화면의 설정액·순유입·총보수·수익률을 원자료와 대조한다.
+#
+# 세션은 이그레스 정책 때문에 네이버·야후에 못 붙는다(CONNECT 403).
+# 러너는 그 정책 밖이라 여기서 대신 받는다.
+#
+# 탐색 워크플로(etf-probe.yml)에 얹지 않고 따로 둔 이유가 둘이다.
+#   - 거기는 앞 단계들이 최대 48분까지 매달릴 수 있어 결과를 늦게 본다.
+#   - 거기는 모든 단계가 continue-on-error 다. 검증은 반대여야 한다 —
+#     스크립트가 0초 만에 죽어도 초록으로 지나가면 검증이 아니다.
+#     이 잡은 일부러 continue-on-error 를 쓰지 않는다.
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - 'claude/etf-**'
+    paths:
+      - 'scripts/verify_rank_fields.mjs'
+      - '.github/workflows/etf-verify-rank.yml'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: etf-verify-rank-${{ github.ref_name }}
+  cancel-in-progress: true
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref_name }}
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      # 여기서 실패하면 잡이 빨갛게 죽어야 한다.
+      - name: 되짚기 실행
+        run: node scripts/verify_rank_fields.mjs
+
+      - name: 결과 업로드
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: rank-fields-verify
+          path: tools/discovery/rank_fields_verify.*
+          retention-days: 14
+
+      - name: 결과 커밋
+        if: always()
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add tools/discovery/rank_fields_verify.* 2>/dev/null || true
+          git commit -m "chore(etf): 랭킹 네 칸 되짚기 결과" || echo "변경 없음"
+          git push || echo "푸시 실패 (무시)"
