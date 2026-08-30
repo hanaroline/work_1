@@ -1,14 +1,67 @@
 {
-  "at": "2026-08-30T06:00:53.003Z",
+  "at": "2026-08-30T23:06:01.087Z",
   "dataUpdatedAt": "2026-08-30T06:00:52.631Z",
   "total": 1348,
   "counts": {
-    "error": 0,
+    "error": 5,
     "warn": 1229,
     "info": 1266
   },
-  "errorEtfCount": 0,
+  "errorEtfCount": 5,
   "rules": [
+    {
+      "rule": "기준일-형식",
+      "sev": "error",
+      "count": 5,
+      "examples": [
+        {
+          "sev": "error",
+          "rule": "기준일-형식",
+          "id": "KR:310970",
+          "code": "310970",
+          "market": "KR",
+          "name": "TIGER MSCI Korea TR",
+          "detail": "retAsOf=\"2026.08.27\" — YYYY-MM-DD 여야 한다"
+        },
+        {
+          "sev": "error",
+          "rule": "기준일-형식",
+          "id": "KR:475720",
+          "code": "475720",
+          "market": "KR",
+          "name": "RISE 200위클리커버드콜",
+          "detail": "retAsOf=\"2026.08.27\" — YYYY-MM-DD 여야 한다"
+        },
+        {
+          "sev": "error",
+          "rule": "기준일-형식",
+          "id": "KR:310960",
+          "code": "310960",
+          "market": "KR",
+          "name": "TIGER 200TR",
+          "detail": "retAsOf=\"2026.08.27\" — YYYY-MM-DD 여야 한다"
+        },
+        {
+          "sev": "error",
+          "rule": "기준일-형식",
+          "id": "KR:265690",
+          "code": "265690",
+          "market": "KR",
+          "name": "ACE 러시아MSCI(합성)",
+          "detail": "retAsOf=\"2026.08.27\" — YYYY-MM-DD 여야 한다"
+        },
+        {
+          "sev": "error",
+          "rule": "기준일-형식",
+          "id": "KR:301400",
+          "code": "301400",
+          "market": "KR",
+          "name": "PLUS 코스닥150",
+          "detail": "retAsOf=\"2026.08.27\" — YYYY-MM-DD 여야 한다"
+        }
+      ],
+      "etfCount": 5
+    },
     {
       "rule": "price-nav-괴리",
       "sev": "warn",
@@ -1246,6 +1299,15 @@
       "price": 11.9,
       "navRet": 1.91,
       "gapPp": 9.99
+    },
+    {
+      "sev": "error",
+      "rule": "기준일-형식",
+      "id": "KR:310970",
+      "code": "310970",
+      "market": "KR",
+      "name": "TIGER MSCI Korea TR",
+      "detail": "retAsOf=\"2026.08.27\" — YYYY-MM-DD 여야 한다"
     },
     {
       "sev": "info",
@@ -3323,6 +3385,15 @@
       "name": "RISE 200위클리커버드콜",
       "detail": "합 103.59%",
       "sum": 103.59
+    },
+    {
+      "sev": "error",
+      "rule": "기준일-형식",
+      "id": "KR:475720",
+      "code": "475720",
+      "market": "KR",
+      "name": "RISE 200위클리커버드콜",
+      "detail": "retAsOf=\"2026.08.27\" — YYYY-MM-DD 여야 한다"
     },
     {
       "sev": "warn",
@@ -5780,6 +5851,15 @@
       "detail": "등락률 -1.39% vs price.D1 -3.25%",
       "changeRate": -1.39,
       "d1": -3.25
+    },
+    {
+      "sev": "error",
+      "rule": "기준일-형식",
+      "id": "KR:310960",
+      "code": "310960",
+      "market": "KR",
+      "name": "TIGER 200TR",
+      "detail": "retAsOf=\"2026.08.27\" — YYYY-MM-DD 여야 한다"
     },
     {
       "sev": "warn",
@@ -19579,6 +19659,15 @@
       "nav": 48.38
     },
     {
+      "sev": "error",
+      "rule": "기준일-형식",
+      "id": "KR:265690",
+      "code": "265690",
+      "market": "KR",
+      "name": "ACE 러시아MSCI(합성)",
+      "detail": "retAsOf=\"2026.08.27\" — YYYY-MM-DD 여야 한다"
+    },
+    {
       "sev": "info",
       "rule": "보유비중-미공시",
       "id": "KR:432840",
@@ -21521,6 +21610,15 @@
       "name": "RISE 중장기국공채액티브",
       "detail": "합 103.51%",
       "sum": 103.51
+    },
+    {
+      "sev": "error",
+      "rule": "기준일-형식",
+      "id": "KR:301400",
+      "code": "301400",
+      "market": "KR",
+      "name": "PLUS 코스닥150",
+      "detail": "retAsOf=\"2026.08.27\" — YYYY-MM-DD 여야 한다"
     },
     {
       "sev": "warn",

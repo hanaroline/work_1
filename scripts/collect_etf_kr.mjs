@@ -212,7 +212,10 @@ async function main() {
       trackingError: d?.trackingError ?? null,
       dividendYield: d?.dividendYield ?? null,
       // price·tr = 야후 일봉(종가 / 배당 재투자), nav = 네이버 기준가
-      retAsOf: y?.asOf ?? d?.retAsOf ?? null,
+      // 야후를 못 받으면 네이버 날짜로 물러서는데, 네이버는 "2026.08.27" 이고
+      // 야후는 "2026-08-28" 이다. 그대로 두면 화면의 같은 칸에 두 형식이
+      // 섞인다(실제로 5종목이 그랬다). 물러설 때도 형식은 맞춘다.
+      retAsOf: y?.asOf ?? (d?.retAsOf ? String(d.retAsOf).replace(/\./g, '-') : null),
       // 기준가(NAV) 칸은 네이버 값이라 야후 기준일과 하루 어긋날 수 있다.
       // 두 계열의 기준일이 다른 채로 한 표에 놓이면 읽는 사람이 속는다 —
       // 442580 은 총수익률이 8/28, 기준가가 8/27 이었다. 날짜를 같이 싣는다.
