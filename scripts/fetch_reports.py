@@ -549,15 +549,20 @@ def parse_hana(html):
         stock = None
         if ov and ov.group(2).upper() not in ("KS", "KQ"):
             stock = {"code": ov.group(1).upper(), "name": title.split("(")[0].strip()}
+        # 목록 쪽에는 리포트마다 따로 열리는 주소가 없다 — 제목을 누르면 그
+        # 자리에서 펼쳐질 뿐이라, 걸개 주소를 그대로 쓰면 마흔아홉 장의 카드가
+        # 모두 같은 곳을 가리킨다(8/29 판이 그랬다). 내려받기 주소가 곧 그
+        # 리포트이므로 그것을 원문 자리로 삼는다.
+        pdf_url = (HANA_BASE + html_mod.unescape(pdf.group(1))) if pdf else None
         rows.append({
             "nid": "hana-" + seq,
             "category": "해외 리서치" if stock else "리서치 리포트",
             "title": title,
-            "url": HANA_BASE + "/main/research/research/RC_000000_M.cmd",
+            "url": pdf_url or (HANA_BASE + "/main/research/research/RC_000000_M.cmd"),
             "stock": stock, "broker": "하나증권",
             "analyst": (_text(who.group(1)).strip() if who else None),
             "opinion": None, "date": date, "views": None,
-            "pdf": (HANA_BASE + html_mod.unescape(pdf.group(1))) if pdf else None,
+            "pdf": pdf_url,
             "desc": (re.sub(r"\s+", " ", _text(desc.group(1))).strip() if desc else None),
             "overseas": bool(stock) or None,
             "source": "하나증권 리서치", "via": "html",
@@ -1390,6 +1395,16 @@ def _absorb(old, new):
         old["title"] = new["title"]
 
 
+def pool_key(r):
+    """한 주 무더기에서 리포트를 가리키는 이름.
+
+    nid 하나로는 모자란다. 원천마다 매기는 번호가 따로라 네이버의 95903 과
+    다른 곳의 95903 이 같은 칸을 다투고, 그러면 한 건이 조용히 사라진다
+    (8/29 판에서 한 주 셈이 347 이어야 할 자리에 346 이 찍혔다).
+    """
+    return "%s|%s" % (r.get("source") or "-", r.get("nid"))
+
+
 def load_history(out_dir, since):
     """지난 판들에서 `since` 이후 리포트를 모아 온다.
 
@@ -1409,9 +1424,10 @@ def load_history(out_dir, since):
         for r in got.get("reports", []):
             if not r.get("nid") or (r.get("date") or "") < since:
                 continue
-            old = merged.get(r["nid"])
+            k = pool_key(r)
+            old = merged.get(k)
             if old is None:
-                merged[r["nid"]] = dict(r)
+                merged[k] = dict(r)
             else:
                 _absorb(old, r)
     return merged
@@ -1425,9 +1441,9 @@ def weekly(reports, day, out_dir):
     for r in reports:                       # 오늘 판이 가장 새것이다
         if not r.get("nid") or (r.get("date") or "") < since:
             continue
-        old = pool.get(r["nid"])
+        old = pool.get(pool_key(r))
         if old is None:
-            pool[r["nid"]] = dict(r)
+            pool[pool_key(r)] = dict(r)
         else:
             _absorb(old, r)
 
@@ -1440,7 +1456,7 @@ def weekly(reports, day, out_dir):
         if seen_cat.get(c, 0) >= WEEKLY_CAT_CAP:
             continue
         seen_cat[c] = seen_cat.get(c, 0) + 1
-        top.append(r["nid"])
+        top.append(pool_key(r))
         if len(top) >= WEEKLY_TAKE:
             break
 
@@ -1572,8 +1588,8 @@ def main():
     # 도는 탓에 경제분석·시황정보의 주간 상위가 번번이 상한 밖으로 밀렸다
     # — 열여덟 장 가운데 일곱 장이 요약 없이 남았다. 먼저 연다.
     hot = set(weekly(reports, day, OUT_DIR)["top"])
-    order = ([r for r in order if r["nid"] in hot]
-             + [r for r in order if r["nid"] not in hot])
+    order = ([r for r in order if pool_key(r) in hot]
+             + [r for r in order if pool_key(r) not in hot])
     # 상세 쪽 본문 상자에는 「이런 리포트도」 목록이 딸려 온다. 다른 리포트의
     # 제목을 미리 챙겨 두었다가, 요약으로 올라오려 하면 막는다.
     title_keys = {r["nid"]: _keyset(r["title"]) for r in reports}
