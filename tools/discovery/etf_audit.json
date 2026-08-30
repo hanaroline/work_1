@@ -1,10 +1,10 @@
 {
-  "at": "2026-08-30T05:24:46.629Z",
-  "dataUpdatedAt": "2026-08-30T05:24:41.735Z",
+  "at": "2026-08-30T05:27:38.181Z",
+  "dataUpdatedAt": "2026-08-30T05:27:37.699Z",
   "total": 1348,
   "counts": {
     "error": 0,
-    "warn": 1249,
+    "warn": 1229,
     "info": 1266
   },
   "errorEtfCount": 0,
@@ -85,7 +85,7 @@
     {
       "rule": "D1-등락률-불일치",
       "sev": "warn",
-      "count": 174,
+      "count": 154,
       "examples": [
         {
           "sev": "warn",
@@ -143,7 +143,7 @@
           "d1": -0.26
         }
       ],
-      "etfCount": 174
+      "etfCount": 154
     },
     {
       "rule": "유형평균-한종목이흔듦",
@@ -837,7 +837,7 @@
           "id": "HK:3040",
           "code": "3040",
           "market": "HK",
-          "name": "Global X ETF Series - Global X MSCI China ETF",
+          "name": "Global X MSCI China ETF",
           "detail": "aum 없음"
         },
         {
@@ -846,7 +846,7 @@
           "id": "HK:3110",
           "code": "3110",
           "market": "HK",
-          "name": "Global X ETF Series - Global X Hang Seng High Dividend Yield ETF",
+          "name": "Global X Hang Seng High Dividend Yield ETF",
           "detail": "aum 없음"
         },
         {
@@ -855,7 +855,7 @@
           "id": "SS:510300",
           "code": "510300",
           "market": "SS",
-          "name": "Huatai-PineBridge CSI 300 ETF",
+          "name": "Huatai-PB CSI 300 ETF",
           "detail": "aum 없음"
         },
         {
@@ -873,7 +873,7 @@
           "id": "SS:510500",
           "code": "510500",
           "market": "SS",
-          "name": "China CSI 500 ETF",
+          "name": "China Southern CSI 500 Index ETF",
           "detail": "aum 없음"
         }
       ],
@@ -5858,7 +5858,7 @@
       "code": "0046A0",
       "market": "KR",
       "name": "TIGER 미국초단기(3개월이하)국채",
-      "detail": "9종목 모두 비중 없음 (수량만)"
+      "detail": "8종목 모두 비중 없음 (수량만)"
     },
     {
       "sev": "warn",
@@ -10706,7 +10706,7 @@
       "code": "475280",
       "market": "KR",
       "name": "ACE 8월만기자동연장회사채AA-이상액티브",
-      "detail": "8종목 모두 비중 없음 (수량만)"
+      "detail": "9종목 모두 비중 없음 (수량만)"
     },
     {
       "sev": "warn",
@@ -10935,7 +10935,7 @@
       "code": "308620",
       "market": "KR",
       "name": "KODEX 미국10년국채선물",
-      "detail": "4종목 모두 비중 없음 (수량만)"
+      "detail": "3종목 모두 비중 없음 (수량만)"
     },
     {
       "sev": "info",
@@ -24436,7 +24436,7 @@
       "code": "252410",
       "market": "KR",
       "name": "RISE 200선물인버스",
-      "detail": "5종목 중 2개 비중 없음"
+      "detail": "4종목 중 1개 비중 없음"
     },
     {
       "sev": "info",
@@ -25177,9 +25177,9 @@
       "code": "2800",
       "market": "HK",
       "name": "Tracker Fund Of Hong Kong",
-      "detail": "등락률 0.08% vs price.D1 0.46%",
+      "detail": "등락률 0.08% vs price.D1 -0.15%",
       "changeRate": 0.08,
-      "d1": 0.46
+      "d1": -0.15
     },
     {
       "sev": "warn",
@@ -25188,9 +25188,9 @@
       "code": "2828",
       "market": "HK",
       "name": "Hang Seng China Enterprises Index ETF",
-      "detail": "등락률 0.07% vs price.D1 -1.13%",
+      "detail": "등락률 0.07% vs price.D1 1.75%",
       "changeRate": 0.07,
-      "d1": -1.13
+      "d1": 1.75
     },
     {
       "sev": "warn",
@@ -25198,10 +25198,10 @@
       "id": "HK:3033",
       "code": "3033",
       "market": "HK",
-      "name": "CSOP ETF Series - CSOP Hang Seng TECH Index ETF",
-      "detail": "등락률 -0.31% vs price.D1 0.76%",
+      "name": "CSOP Hang Seng TECH Index ETF",
+      "detail": "등락률 -0.31% vs price.D1 0.09%",
       "changeRate": -0.31,
-      "d1": 0.76
+      "d1": 0.09
     },
     {
       "sev": "warn",
@@ -25210,9 +25210,9 @@
       "code": "3067",
       "market": "HK",
       "name": "iShares Hang Seng TECH ETF",
-      "detail": "등락률 -0.26% vs price.D1 0.88%",
+      "detail": "등락률 -0.26% vs price.D1 -0.1%",
       "changeRate": -0.26,
-      "d1": 0.88
+      "d1": -0.1
     },
     {
       "sev": "info",
@@ -25230,9 +25230,9 @@
       "code": "2823",
       "market": "HK",
       "name": "iShares Asia Trust - iShares FTSE A50 China Index ETF",
-      "detail": "등락률 -0.06% vs price.D1 1.03%",
+      "detail": "등락률 -0.06% vs price.D1 0.36%",
       "changeRate": -0.06,
-      "d1": 1.03
+      "d1": 0.36
     },
     {
       "sev": "warn",
@@ -25240,10 +25240,10 @@
       "id": "HK:3188",
       "code": "3188",
       "market": "HK",
-      "name": "ChinaAMC ETF Series - ChinaAMC CSI 300 Index ETF",
-      "detail": "등락률 0% vs price.D1 0.84%",
+      "name": "ChinaAMC CSI 300 Index ETF",
+      "detail": "등락률 0% vs price.D1 0.36%",
       "changeRate": 0,
-      "d1": 0.84
+      "d1": 0.36
     },
     {
       "sev": "warn",
@@ -25251,10 +25251,10 @@
       "id": "HK:2822",
       "code": "2822",
       "market": "HK",
-      "name": "CSOP ETF Series - CSOP FTSE China A50 ETF",
-      "detail": "등락률 -0.19% vs price.D1 1.04%",
+      "name": "CSOP FTSE China A50 ETF",
+      "detail": "등락률 -0.19% vs price.D1 0.39%",
       "changeRate": -0.19,
-      "d1": 1.04
+      "d1": 0.39
     },
     {
       "sev": "info",
@@ -25262,19 +25262,8 @@
       "id": "HK:3040",
       "code": "3040",
       "market": "HK",
-      "name": "Global X ETF Series - Global X MSCI China ETF",
+      "name": "Global X MSCI China ETF",
       "detail": "aum 없음"
-    },
-    {
-      "sev": "warn",
-      "rule": "D1-등락률-불일치",
-      "id": "HK:3040",
-      "code": "3040",
-      "market": "HK",
-      "name": "Global X ETF Series - Global X MSCI China ETF",
-      "detail": "등락률 0% vs price.D1 1.23%",
-      "changeRate": 0,
-      "d1": 1.23
     },
     {
       "sev": "warn",
@@ -25283,9 +25272,9 @@
       "code": "2836",
       "market": "HK",
       "name": "iShares Asia Trust - iShares Core SENSEX India ETF",
-      "detail": "등락률 -0.45% vs price.D1 0.51%",
+      "detail": "등락률 -0.45% vs price.D1 -0.11%",
       "changeRate": -0.45,
-      "d1": 0.51
+      "d1": -0.11
     },
     {
       "sev": "warn",
@@ -25294,9 +25283,9 @@
       "code": "3010",
       "market": "HK",
       "name": "iShares Asia Trust - iShares Core MSCI AC Asia ex Japan Index ETF",
-      "detail": "등락률 0.51% vs price.D1 1.15%",
+      "detail": "등락률 0.51% vs price.D1 0.04%",
       "changeRate": 0.51,
-      "d1": 1.15
+      "d1": 0.04
     },
     {
       "sev": "info",
@@ -25308,6 +25297,17 @@
       "detail": "상위 편입종목이 비어 있다"
     },
     {
+      "sev": "warn",
+      "rule": "D1-등락률-불일치",
+      "id": "HK:2840",
+      "code": "2840",
+      "market": "HK",
+      "name": "SPDR Gold Shares",
+      "detail": "등락률 -0.12% vs price.D1 -0.33%",
+      "changeRate": -0.12,
+      "d1": -0.33
+    },
+    {
       "sev": "info",
       "rule": "보유종목-없음",
       "id": "HK:3081",
@@ -25323,9 +25323,9 @@
       "code": "3081",
       "market": "HK",
       "name": "Value Gold ETF",
-      "detail": "등락률 0.28% vs price.D1 -0.09%",
+      "detail": "등락률 0.28% vs price.D1 -0.55%",
       "changeRate": 0.28,
-      "d1": -0.09
+      "d1": -0.55
     },
     {
       "sev": "warn",
@@ -25334,9 +25334,9 @@
       "code": "9067",
       "market": "HK",
       "name": "iShares Hang Seng TECH ETF",
-      "detail": "등락률 -0.32% vs price.D1 0.81%",
+      "detail": "등락률 -0.32% vs price.D1 0%",
       "changeRate": -0.32,
-      "d1": 0.81
+      "d1": 0
     },
     {
       "sev": "info",
@@ -25344,7 +25344,7 @@
       "id": "HK:3110",
       "code": "3110",
       "market": "HK",
-      "name": "Global X ETF Series - Global X Hang Seng High Dividend Yield ETF",
+      "name": "Global X Hang Seng High Dividend Yield ETF",
       "detail": "aum 없음"
     },
     {
@@ -25353,10 +25353,10 @@
       "id": "HK:3110",
       "code": "3110",
       "market": "HK",
-      "name": "Global X ETF Series - Global X Hang Seng High Dividend Yield ETF",
-      "detail": "등락률 0.19% vs price.D1 -0.38%",
+      "name": "Global X Hang Seng High Dividend Yield ETF",
+      "detail": "등락률 0.19% vs price.D1 -0.7%",
       "changeRate": 0.19,
-      "d1": -0.38
+      "d1": -0.7
     },
     {
       "sev": "info",
@@ -25374,9 +25374,9 @@
       "code": "2801",
       "market": "HK",
       "name": "iShares Asia Trust - iShares Core MSCI China Index ETF",
-      "detail": "등락률 0.16% vs price.D1 1.15%",
+      "detail": "등락률 0.16% vs price.D1 -0.49%",
       "changeRate": 0.16,
-      "d1": 1.15
+      "d1": -0.49
     },
     {
       "sev": "warn",
@@ -25384,10 +25384,10 @@
       "id": "HK:3037",
       "code": "3037",
       "market": "HK",
-      "name": "CSOP ETF Series III - CSOP Hang Seng Index ETF",
-      "detail": "등락률 0.08% vs price.D1 0.69%",
+      "name": "CSOP Hang Seng Index ETF",
+      "detail": "등락률 0.08% vs price.D1 -0.31%",
       "changeRate": 0.08,
-      "d1": 0.69
+      "d1": -0.31
     },
     {
       "sev": "info",
@@ -25399,17 +25399,6 @@
       "detail": "ter 없음"
     },
     {
-      "sev": "warn",
-      "rule": "D1-등락률-불일치",
-      "id": "JP:1306",
-      "code": "1306",
-      "market": "JP",
-      "name": "NEXT FUNDS TOPIX Exchange Traded Fund",
-      "detail": "등락률 0.61% vs price.D1 0.28%",
-      "changeRate": 0.61,
-      "d1": 0.28
-    },
-    {
       "sev": "info",
       "rule": "총보수-없음",
       "id": "JP:1305",
@@ -25417,17 +25406,6 @@
       "market": "JP",
       "name": "iFreeETF TOPIX (Yearly Dividend Type)",
       "detail": "ter 없음"
-    },
-    {
-      "sev": "warn",
-      "rule": "D1-등락률-불일치",
-      "id": "JP:1305",
-      "code": "1305",
-      "market": "JP",
-      "name": "iFreeETF TOPIX (Yearly Dividend Type)",
-      "detail": "등락률 0.46% vs price.D1 0.21%",
-      "changeRate": 0.46,
-      "d1": 0.21
     },
     {
       "sev": "info",
@@ -25439,17 +25417,6 @@
       "detail": "ter 없음"
     },
     {
-      "sev": "warn",
-      "rule": "D1-등락률-불일치",
-      "id": "JP:1348",
-      "code": "1348",
-      "market": "JP",
-      "name": "MAXIS TOPIX ETF",
-      "detail": "등락률 0.68% vs price.D1 0.14%",
-      "changeRate": 0.68,
-      "d1": 0.14
-    },
-    {
       "sev": "info",
       "rule": "총보수-없음",
       "id": "JP:1321",
@@ -25457,17 +25424,6 @@
       "market": "JP",
       "name": "NEXT FUNDS Nikkei 225 Exchange Traded Fund",
       "detail": "ter 없음"
-    },
-    {
-      "sev": "warn",
-      "rule": "D1-등락률-불일치",
-      "id": "JP:1321",
-      "code": "1321",
-      "market": "JP",
-      "name": "NEXT FUNDS Nikkei 225 Exchange Traded Fund",
-      "detail": "등락률 0.37% vs price.D1 -0.23%",
-      "changeRate": 0.37,
-      "d1": -0.23
     },
     {
       "sev": "info",
@@ -25479,17 +25435,6 @@
       "detail": "ter 없음"
     },
     {
-      "sev": "warn",
-      "rule": "D1-등락률-불일치",
-      "id": "JP:1320",
-      "code": "1320",
-      "market": "JP",
-      "name": "iFreeETF Nikkei225 (Yearly Dividend Type)",
-      "detail": "등락률 0.4% vs price.D1 -0.07%",
-      "changeRate": 0.4,
-      "d1": -0.07
-    },
-    {
       "sev": "info",
       "rule": "총보수-없음",
       "id": "JP:1330",
@@ -25497,17 +25442,6 @@
       "market": "JP",
       "name": "Amova Exchange Traded Index Fund 225",
       "detail": "ter 없음"
-    },
-    {
-      "sev": "warn",
-      "rule": "D1-등락률-불일치",
-      "id": "JP:1330",
-      "code": "1330",
-      "market": "JP",
-      "name": "Amova Exchange Traded Index Fund 225",
-      "detail": "등락률 0.31% vs price.D1 -2.82%",
-      "changeRate": 0.31,
-      "d1": -2.82
     },
     {
       "sev": "info",
@@ -25519,17 +25453,6 @@
       "detail": "ter 없음"
     },
     {
-      "sev": "warn",
-      "rule": "D1-등락률-불일치",
-      "id": "JP:1329",
-      "code": "1329",
-      "market": "JP",
-      "name": "iShares Core Nikkei 225 ETF",
-      "detail": "등락률 0.2% vs price.D1 -0.1%",
-      "changeRate": 0.2,
-      "d1": -0.1
-    },
-    {
       "sev": "info",
       "rule": "총보수-없음",
       "id": "JP:2516",
@@ -25539,17 +25462,6 @@
       "detail": "ter 없음"
     },
     {
-      "sev": "warn",
-      "rule": "D1-등락률-불일치",
-      "id": "JP:2516",
-      "code": "2516",
-      "market": "JP",
-      "name": "TSE Growth 250 ETF",
-      "detail": "등락률 2.99% vs price.D1 2.45%",
-      "changeRate": 2.99,
-      "d1": 2.45
-    },
-    {
       "sev": "info",
       "rule": "총보수-없음",
       "id": "JP:1545",
@@ -25557,17 +25469,6 @@
       "market": "JP",
       "name": "NEXT FUNDS NASDAQ-100(R) (Unhedged) Exchange Traded Fund",
       "detail": "ter 없음"
-    },
-    {
-      "sev": "warn",
-      "rule": "D1-등락률-불일치",
-      "id": "JP:1545",
-      "code": "1545",
-      "market": "JP",
-      "name": "NEXT FUNDS NASDAQ-100(R) (Unhedged) Exchange Traded Fund",
-      "detail": "등락률 0.89% vs price.D1 0.64%",
-      "changeRate": 0.89,
-      "d1": 0.64
     },
     {
       "sev": "info",
@@ -25597,17 +25498,6 @@
       "detail": "ter 없음"
     },
     {
-      "sev": "warn",
-      "rule": "D1-등락률-불일치",
-      "id": "JP:2558",
-      "code": "2558",
-      "market": "JP",
-      "name": "MAXIS S&P500 US Equity ETF",
-      "detail": "등락률 0.31% vs price.D1 0.6%",
-      "changeRate": 0.31,
-      "d1": 0.6
-    },
-    {
       "sev": "info",
       "rule": "총보수-없음",
       "id": "JP:1655",
@@ -25617,17 +25507,6 @@
       "detail": "ter 없음"
     },
     {
-      "sev": "warn",
-      "rule": "D1-등락률-불일치",
-      "id": "JP:1655",
-      "code": "1655",
-      "market": "JP",
-      "name": "iShares S&P 500 ETF",
-      "detail": "등락률 0.36% vs price.D1 0.65%",
-      "changeRate": 0.36,
-      "d1": 0.65
-    },
-    {
       "sev": "info",
       "rule": "총보수-없음",
       "id": "JP:1657",
@@ -25635,17 +25514,6 @@
       "market": "JP",
       "name": "iShares Core MSCI Kokusai ETF",
       "detail": "ter 없음"
-    },
-    {
-      "sev": "warn",
-      "rule": "D1-등락률-불일치",
-      "id": "JP:1657",
-      "code": "1657",
-      "market": "JP",
-      "name": "iShares Core MSCI Kokusai ETF",
-      "detail": "등락률 0.24% vs price.D1 0.63%",
-      "changeRate": 0.24,
-      "d1": 0.63
     },
     {
       "sev": "info",
@@ -25675,17 +25543,6 @@
       "detail": "ter 없음"
     },
     {
-      "sev": "warn",
-      "rule": "D1-등락률-불일치",
-      "id": "JP:1343",
-      "code": "1343",
-      "market": "JP",
-      "name": "NEXT FUNDS REIT INDEX ETF",
-      "detail": "등락률 -1.1% vs price.D1 0.15%",
-      "changeRate": -1.1,
-      "d1": 0.15
-    },
-    {
       "sev": "info",
       "rule": "총보수-없음",
       "id": "JP:1476",
@@ -25693,17 +25550,6 @@
       "market": "JP",
       "name": "iShares Core Japan REIT ETF",
       "detail": "ter 없음"
-    },
-    {
-      "sev": "warn",
-      "rule": "D1-등락률-불일치",
-      "id": "JP:1476",
-      "code": "1476",
-      "market": "JP",
-      "name": "iShares Core Japan REIT ETF",
-      "detail": "등락률 -1.01% vs price.D1 0.21%",
-      "changeRate": -1.01,
-      "d1": 0.21
     },
     {
       "sev": "info",
@@ -25724,17 +25570,6 @@
       "detail": "ter 없음"
     },
     {
-      "sev": "warn",
-      "rule": "D1-등락률-불일치",
-      "id": "JP:1540",
-      "code": "1540",
-      "market": "JP",
-      "name": "Japan Physical Gold ETF",
-      "detail": "등락률 -0.79% vs price.D1 -0.07%",
-      "changeRate": -0.79,
-      "d1": -0.07
-    },
-    {
       "sev": "info",
       "rule": "보유종목-없음",
       "id": "JP:1671",
@@ -25751,17 +25586,6 @@
       "market": "JP",
       "name": "Simplex WTI ETF",
       "detail": "ter 없음"
-    },
-    {
-      "sev": "warn",
-      "rule": "D1-등락률-불일치",
-      "id": "JP:1671",
-      "code": "1671",
-      "market": "JP",
-      "name": "Simplex WTI ETF",
-      "detail": "등락률 1.91% vs price.D1 0.7%",
-      "changeRate": 1.91,
-      "d1": 0.7
     },
     {
       "sev": "info",
@@ -25773,17 +25597,6 @@
       "detail": "ter 없음"
     },
     {
-      "sev": "warn",
-      "rule": "D1-등락률-불일치",
-      "id": "JP:1489",
-      "code": "1489",
-      "market": "JP",
-      "name": "NEXT FUNDS Nikkei 225 High Dividend Yield Stock 50 Index Exchange Traded Fd",
-      "detail": "등락률 0.59% vs price.D1 -0.22%",
-      "changeRate": 0.59,
-      "d1": -0.22
-    },
-    {
       "sev": "info",
       "rule": "총보수-없음",
       "id": "JP:1478",
@@ -25791,17 +25604,6 @@
       "market": "JP",
       "name": "iShares MSCI Japan High Dividend ETF",
       "detail": "ter 없음"
-    },
-    {
-      "sev": "warn",
-      "rule": "D1-등락률-불일치",
-      "id": "JP:1478",
-      "code": "1478",
-      "market": "JP",
-      "name": "iShares MSCI Japan High Dividend ETF",
-      "detail": "등락률 0.69% vs price.D1 -0.28%",
-      "changeRate": 0.69,
-      "d1": -0.28
     },
     {
       "sev": "info",
@@ -25822,17 +25624,6 @@
       "detail": "ter 없음"
     },
     {
-      "sev": "warn",
-      "rule": "D1-등락률-불일치",
-      "id": "JP:1570",
-      "code": "1570",
-      "market": "JP",
-      "name": "NEXT FUNDS Nikkei 225 Leveraged Index Exchange Traded Fund",
-      "detail": "등락률 0.77% vs price.D1 -0.56%",
-      "changeRate": 0.77,
-      "d1": -0.56
-    },
-    {
       "sev": "info",
       "rule": "보유종목-없음",
       "id": "JP:1357",
@@ -25849,17 +25640,6 @@
       "market": "JP",
       "name": "NEXT FUNDS Nikkei 225 Double Inverse Index ETF",
       "detail": "ter 없음"
-    },
-    {
-      "sev": "warn",
-      "rule": "D1-등락률-불일치",
-      "id": "JP:1357",
-      "code": "1357",
-      "market": "JP",
-      "name": "NEXT FUNDS Nikkei 225 Double Inverse Index ETF",
-      "detail": "등락률 -0.73% vs price.D1 0.48%",
-      "changeRate": -0.73,
-      "d1": 0.48
     },
     {
       "sev": "info",
@@ -25867,7 +25647,7 @@
       "id": "SS:510300",
       "code": "510300",
       "market": "SS",
-      "name": "Huatai-PineBridge CSI 300 ETF",
+      "name": "Huatai-PB CSI 300 ETF",
       "detail": "상위 편입종목이 비어 있다"
     },
     {
@@ -25876,7 +25656,7 @@
       "id": "SS:510300",
       "code": "510300",
       "market": "SS",
-      "name": "Huatai-PineBridge CSI 300 ETF",
+      "name": "Huatai-PB CSI 300 ETF",
       "detail": "aum 없음"
     },
     {
@@ -25885,7 +25665,7 @@
       "id": "SS:510300",
       "code": "510300",
       "market": "SS",
-      "name": "Huatai-PineBridge CSI 300 ETF",
+      "name": "Huatai-PB CSI 300 ETF",
       "detail": "ter 없음"
     },
     {
@@ -25894,714 +25674,714 @@
       "id": "SS:510300",
       "code": "510300",
       "market": "SS",
-      "name": "Huatai-PineBridge CSI 300 ETF",
-      "detail": "등락률 -0.26% vs price.D1 0.78%",
+      "name": "Huatai-PB CSI 300 ETF",
+      "detail": "등락률 -0.26% vs price.D1 0.84%",
       "changeRate": -0.26,
+      "d1": 0.84
+    },
+    {
+      "sev": "info",
+      "rule": "보유종목-없음",
+      "id": "SS:510050",
+      "code": "510050",
+      "market": "SS",
+      "name": "China 50 ETF",
+      "detail": "상위 편입종목이 비어 있다"
+    },
+    {
+      "sev": "info",
+      "rule": "설정액-없음",
+      "id": "SS:510050",
+      "code": "510050",
+      "market": "SS",
+      "name": "China 50 ETF",
+      "detail": "aum 없음"
+    },
+    {
+      "sev": "info",
+      "rule": "총보수-없음",
+      "id": "SS:510050",
+      "code": "510050",
+      "market": "SS",
+      "name": "China 50 ETF",
+      "detail": "ter 없음"
+    },
+    {
+      "sev": "warn",
+      "rule": "D1-등락률-불일치",
+      "id": "SS:510050",
+      "code": "510050",
+      "market": "SS",
+      "name": "China 50 ETF",
+      "detail": "등락률 -0.1% vs price.D1 0.9%",
+      "changeRate": -0.1,
+      "d1": 0.9
+    },
+    {
+      "sev": "info",
+      "rule": "보유종목-없음",
+      "id": "SS:510500",
+      "code": "510500",
+      "market": "SS",
+      "name": "China Southern CSI 500 Index ETF",
+      "detail": "상위 편입종목이 비어 있다"
+    },
+    {
+      "sev": "info",
+      "rule": "설정액-없음",
+      "id": "SS:510500",
+      "code": "510500",
+      "market": "SS",
+      "name": "China Southern CSI 500 Index ETF",
+      "detail": "aum 없음"
+    },
+    {
+      "sev": "info",
+      "rule": "총보수-없음",
+      "id": "SS:510500",
+      "code": "510500",
+      "market": "SS",
+      "name": "China Southern CSI 500 Index ETF",
+      "detail": "ter 없음"
+    },
+    {
+      "sev": "warn",
+      "rule": "D1-등락률-불일치",
+      "id": "SS:510500",
+      "code": "510500",
+      "market": "SS",
+      "name": "China Southern CSI 500 Index ETF",
+      "detail": "등락률 -0.63% vs price.D1 2.36%",
+      "changeRate": -0.63,
+      "d1": 2.36
+    },
+    {
+      "sev": "info",
+      "rule": "보유종목-없음",
+      "id": "SS:512100",
+      "code": "512100",
+      "market": "SS",
+      "name": "China Southern CSI 1000 Index ETF",
+      "detail": "상위 편입종목이 비어 있다"
+    },
+    {
+      "sev": "info",
+      "rule": "설정액-없음",
+      "id": "SS:512100",
+      "code": "512100",
+      "market": "SS",
+      "name": "China Southern CSI 1000 Index ETF",
+      "detail": "aum 없음"
+    },
+    {
+      "sev": "info",
+      "rule": "총보수-없음",
+      "id": "SS:512100",
+      "code": "512100",
+      "market": "SS",
+      "name": "China Southern CSI 1000 Index ETF",
+      "detail": "ter 없음"
+    },
+    {
+      "sev": "warn",
+      "rule": "D1-등락률-불일치",
+      "id": "SS:512100",
+      "code": "512100",
+      "market": "SS",
+      "name": "China Southern CSI 1000 Index ETF",
+      "detail": "등락률 -0.32% vs price.D1 2.55%",
+      "changeRate": -0.32,
+      "d1": 2.55
+    },
+    {
+      "sev": "info",
+      "rule": "보유종목-없음",
+      "id": "SS:588000",
+      "code": "588000",
+      "market": "SS",
+      "name": "ChinaAMC SSE STAR 50 ETF",
+      "detail": "상위 편입종목이 비어 있다"
+    },
+    {
+      "sev": "info",
+      "rule": "설정액-없음",
+      "id": "SS:588000",
+      "code": "588000",
+      "market": "SS",
+      "name": "ChinaAMC SSE STAR 50 ETF",
+      "detail": "aum 없음"
+    },
+    {
+      "sev": "info",
+      "rule": "총보수-없음",
+      "id": "SS:588000",
+      "code": "588000",
+      "market": "SS",
+      "name": "ChinaAMC SSE STAR 50 ETF",
+      "detail": "ter 없음"
+    },
+    {
+      "sev": "warn",
+      "rule": "D1-등락률-불일치",
+      "id": "SS:588000",
+      "code": "588000",
+      "market": "SS",
+      "name": "ChinaAMC SSE STAR 50 ETF",
+      "detail": "등락률 -1.79% vs price.D1 3.89%",
+      "changeRate": -1.79,
+      "d1": 3.89
+    },
+    {
+      "sev": "info",
+      "rule": "보유종목-없음",
+      "id": "SS:588080",
+      "code": "588080",
+      "market": "SS",
+      "name": "E Fund SSE STAR 50 ETF",
+      "detail": "상위 편입종목이 비어 있다"
+    },
+    {
+      "sev": "info",
+      "rule": "설정액-없음",
+      "id": "SS:588080",
+      "code": "588080",
+      "market": "SS",
+      "name": "E Fund SSE STAR 50 ETF",
+      "detail": "aum 없음"
+    },
+    {
+      "sev": "info",
+      "rule": "총보수-없음",
+      "id": "SS:588080",
+      "code": "588080",
+      "market": "SS",
+      "name": "E Fund SSE STAR 50 ETF",
+      "detail": "ter 없음"
+    },
+    {
+      "sev": "warn",
+      "rule": "D1-등락률-불일치",
+      "id": "SS:588080",
+      "code": "588080",
+      "market": "SS",
+      "name": "E Fund SSE STAR 50 ETF",
+      "detail": "등락률 -1.67% vs price.D1 3.65%",
+      "changeRate": -1.67,
+      "d1": 3.65
+    },
+    {
+      "sev": "info",
+      "rule": "보유종목-없음",
+      "id": "SS:512880",
+      "code": "512880",
+      "market": "SS",
+      "name": "Guotai CSI Security Agency ETF",
+      "detail": "상위 편입종목이 비어 있다"
+    },
+    {
+      "sev": "info",
+      "rule": "설정액-없음",
+      "id": "SS:512880",
+      "code": "512880",
+      "market": "SS",
+      "name": "Guotai CSI Security Agency ETF",
+      "detail": "aum 없음"
+    },
+    {
+      "sev": "info",
+      "rule": "총보수-없음",
+      "id": "SS:512880",
+      "code": "512880",
+      "market": "SS",
+      "name": "Guotai CSI Security Agency ETF",
+      "detail": "ter 없음"
+    },
+    {
+      "sev": "warn",
+      "rule": "D1-등락률-불일치",
+      "id": "SS:512880",
+      "code": "512880",
+      "market": "SS",
+      "name": "Guotai CSI Security Agency ETF",
+      "detail": "등락률 -0.18% vs price.D1 0.91%",
+      "changeRate": -0.18,
+      "d1": 0.91
+    },
+    {
+      "sev": "info",
+      "rule": "보유종목-없음",
+      "id": "SS:512480",
+      "code": "512480",
+      "market": "SS",
+      "name": "CPIC CSI Fully Semiconductor ETF",
+      "detail": "상위 편입종목이 비어 있다"
+    },
+    {
+      "sev": "info",
+      "rule": "설정액-없음",
+      "id": "SS:512480",
+      "code": "512480",
+      "market": "SS",
+      "name": "CPIC CSI Fully Semiconductor ETF",
+      "detail": "aum 없음"
+    },
+    {
+      "sev": "info",
+      "rule": "총보수-없음",
+      "id": "SS:512480",
+      "code": "512480",
+      "market": "SS",
+      "name": "CPIC CSI Fully Semiconductor ETF",
+      "detail": "ter 없음"
+    },
+    {
+      "sev": "warn",
+      "rule": "D1-등락률-불일치",
+      "id": "SS:512480",
+      "code": "512480",
+      "market": "SS",
+      "name": "CPIC CSI Fully Semiconductor ETF",
+      "detail": "등락률 -2.26% vs price.D1 4.52%",
+      "changeRate": -2.26,
+      "d1": 4.52
+    },
+    {
+      "sev": "info",
+      "rule": "보유종목-없음",
+      "id": "SS:512690",
+      "code": "512690",
+      "market": "SS",
+      "name": "Penghua China Secs Wine ETF",
+      "detail": "상위 편입종목이 비어 있다"
+    },
+    {
+      "sev": "info",
+      "rule": "설정액-없음",
+      "id": "SS:512690",
+      "code": "512690",
+      "market": "SS",
+      "name": "Penghua China Secs Wine ETF",
+      "detail": "aum 없음"
+    },
+    {
+      "sev": "info",
+      "rule": "총보수-없음",
+      "id": "SS:512690",
+      "code": "512690",
+      "market": "SS",
+      "name": "Penghua China Secs Wine ETF",
+      "detail": "ter 없음"
+    },
+    {
+      "sev": "warn",
+      "rule": "D1-등락률-불일치",
+      "id": "SS:512690",
+      "code": "512690",
+      "market": "SS",
+      "name": "Penghua China Secs Wine ETF",
+      "detail": "등락률 0.48% vs price.D1 -0.47%",
+      "changeRate": 0.48,
+      "d1": -0.47
+    },
+    {
+      "sev": "info",
+      "rule": "보유종목-없음",
+      "id": "SS:512170",
+      "code": "512170",
+      "market": "SS",
+      "name": "Hwabao WP CSI Medical ETF",
+      "detail": "상위 편입종목이 비어 있다"
+    },
+    {
+      "sev": "info",
+      "rule": "설정액-없음",
+      "id": "SS:512170",
+      "code": "512170",
+      "market": "SS",
+      "name": "Hwabao WP CSI Medical ETF",
+      "detail": "aum 없음"
+    },
+    {
+      "sev": "info",
+      "rule": "총보수-없음",
+      "id": "SS:512170",
+      "code": "512170",
+      "market": "SS",
+      "name": "Hwabao WP CSI Medical ETF",
+      "detail": "ter 없음"
+    },
+    {
+      "sev": "warn",
+      "rule": "D1-등락률-불일치",
+      "id": "SS:512170",
+      "code": "512170",
+      "market": "SS",
+      "name": "Hwabao WP CSI Medical ETF",
+      "detail": "등락률 -1.16% vs price.D1 0.29%",
+      "changeRate": -1.16,
+      "d1": 0.29
+    },
+    {
+      "sev": "info",
+      "rule": "보유종목-없음",
+      "id": "SS:515790",
+      "code": "515790",
+      "market": "SS",
+      "name": "Huatai-PB CSI Photovoltaic Industry ETF",
+      "detail": "상위 편입종목이 비어 있다"
+    },
+    {
+      "sev": "info",
+      "rule": "설정액-없음",
+      "id": "SS:515790",
+      "code": "515790",
+      "market": "SS",
+      "name": "Huatai-PB CSI Photovoltaic Industry ETF",
+      "detail": "aum 없음"
+    },
+    {
+      "sev": "info",
+      "rule": "총보수-없음",
+      "id": "SS:515790",
+      "code": "515790",
+      "market": "SS",
+      "name": "Huatai-PB CSI Photovoltaic Industry ETF",
+      "detail": "ter 없음"
+    },
+    {
+      "sev": "warn",
+      "rule": "D1-등락률-불일치",
+      "id": "SS:515790",
+      "code": "515790",
+      "market": "SS",
+      "name": "Huatai-PB CSI Photovoltaic Industry ETF",
+      "detail": "등락률 0% vs price.D1 -0.59%",
+      "changeRate": 0,
+      "d1": -0.59
+    },
+    {
+      "sev": "info",
+      "rule": "보유종목-없음",
+      "id": "SS:516160",
+      "code": "516160",
+      "market": "SS",
+      "name": "China Southern CSI New Energy ETF",
+      "detail": "상위 편입종목이 비어 있다"
+    },
+    {
+      "sev": "info",
+      "rule": "설정액-없음",
+      "id": "SS:516160",
+      "code": "516160",
+      "market": "SS",
+      "name": "China Southern CSI New Energy ETF",
+      "detail": "aum 없음"
+    },
+    {
+      "sev": "info",
+      "rule": "총보수-없음",
+      "id": "SS:516160",
+      "code": "516160",
+      "market": "SS",
+      "name": "China Southern CSI New Energy ETF",
+      "detail": "ter 없음"
+    },
+    {
+      "sev": "info",
+      "rule": "보유종목-없음",
+      "id": "SS:518880",
+      "code": "518880",
+      "market": "SS",
+      "name": "Huaan Gold ETF Fund",
+      "detail": "상위 편입종목이 비어 있다"
+    },
+    {
+      "sev": "info",
+      "rule": "설정액-없음",
+      "id": "SS:518880",
+      "code": "518880",
+      "market": "SS",
+      "name": "Huaan Gold ETF Fund",
+      "detail": "aum 없음"
+    },
+    {
+      "sev": "info",
+      "rule": "총보수-없음",
+      "id": "SS:518880",
+      "code": "518880",
+      "market": "SS",
+      "name": "Huaan Gold ETF Fund",
+      "detail": "ter 없음"
+    },
+    {
+      "sev": "warn",
+      "rule": "D1-등락률-불일치",
+      "id": "SS:518880",
+      "code": "518880",
+      "market": "SS",
+      "name": "Huaan Gold ETF Fund",
+      "detail": "등락률 0.31% vs price.D1 -0.75%",
+      "changeRate": 0.31,
+      "d1": -0.75
+    },
+    {
+      "sev": "info",
+      "rule": "보유종목-없음",
+      "id": "SS:511990",
+      "code": "511990",
+      "market": "SS",
+      "name": "Fortune SG Listed Money Market Fund",
+      "detail": "상위 편입종목이 비어 있다"
+    },
+    {
+      "sev": "info",
+      "rule": "설정액-없음",
+      "id": "SS:511990",
+      "code": "511990",
+      "market": "SS",
+      "name": "Fortune SG Listed Money Market Fund",
+      "detail": "aum 없음"
+    },
+    {
+      "sev": "info",
+      "rule": "총보수-없음",
+      "id": "SS:511990",
+      "code": "511990",
+      "market": "SS",
+      "name": "Fortune SG Listed Money Market Fund",
+      "detail": "ter 없음"
+    },
+    {
+      "sev": "info",
+      "rule": "보유종목-없음",
+      "id": "SS:513050",
+      "code": "513050",
+      "market": "SS",
+      "name": "E Fund CSI China Ovsea Net 50 QDII-ETF",
+      "detail": "상위 편입종목이 비어 있다"
+    },
+    {
+      "sev": "info",
+      "rule": "설정액-없음",
+      "id": "SS:513050",
+      "code": "513050",
+      "market": "SS",
+      "name": "E Fund CSI China Ovsea Net 50 QDII-ETF",
+      "detail": "aum 없음"
+    },
+    {
+      "sev": "info",
+      "rule": "총보수-없음",
+      "id": "SS:513050",
+      "code": "513050",
+      "market": "SS",
+      "name": "E Fund CSI China Ovsea Net 50 QDII-ETF",
+      "detail": "ter 없음"
+    },
+    {
+      "sev": "warn",
+      "rule": "D1-등락률-불일치",
+      "id": "SS:513050",
+      "code": "513050",
+      "market": "SS",
+      "name": "E Fund CSI China Ovsea Net 50 QDII-ETF",
+      "detail": "등락률 0.09% vs price.D1 -0.46%",
+      "changeRate": 0.09,
+      "d1": -0.46
+    },
+    {
+      "sev": "info",
+      "rule": "보유종목-없음",
+      "id": "SS:513100",
+      "code": "513100",
+      "market": "SS",
+      "name": "Guotai NASDAQ 100 ETF(QDII-ETF)",
+      "detail": "상위 편입종목이 비어 있다"
+    },
+    {
+      "sev": "info",
+      "rule": "설정액-없음",
+      "id": "SS:513100",
+      "code": "513100",
+      "market": "SS",
+      "name": "Guotai NASDAQ 100 ETF(QDII-ETF)",
+      "detail": "aum 없음"
+    },
+    {
+      "sev": "info",
+      "rule": "총보수-없음",
+      "id": "SS:513100",
+      "code": "513100",
+      "market": "SS",
+      "name": "Guotai NASDAQ 100 ETF(QDII-ETF)",
+      "detail": "ter 없음"
+    },
+    {
+      "sev": "warn",
+      "rule": "D1-등락률-불일치",
+      "id": "SS:513100",
+      "code": "513100",
+      "market": "SS",
+      "name": "Guotai NASDAQ 100 ETF(QDII-ETF)",
+      "detail": "등락률 0.27% vs price.D1 1.18%",
+      "changeRate": 0.27,
+      "d1": 1.18
+    },
+    {
+      "sev": "info",
+      "rule": "보유종목-없음",
+      "id": "SZ:159915",
+      "code": "159915",
+      "market": "SZ",
+      "name": "E Fund ChiNext ETF",
+      "detail": "상위 편입종목이 비어 있다"
+    },
+    {
+      "sev": "info",
+      "rule": "설정액-없음",
+      "id": "SZ:159915",
+      "code": "159915",
+      "market": "SZ",
+      "name": "E Fund ChiNext ETF",
+      "detail": "aum 없음"
+    },
+    {
+      "sev": "info",
+      "rule": "총보수-없음",
+      "id": "SZ:159915",
+      "code": "159915",
+      "market": "SZ",
+      "name": "E Fund ChiNext ETF",
+      "detail": "ter 없음"
+    },
+    {
+      "sev": "warn",
+      "rule": "D1-등락률-불일치",
+      "id": "SZ:159915",
+      "code": "159915",
+      "market": "SZ",
+      "name": "E Fund ChiNext ETF",
+      "detail": "등락률 -1.46% vs price.D1 1.81%",
+      "changeRate": -1.46,
+      "d1": 1.81
+    },
+    {
+      "sev": "info",
+      "rule": "보유종목-없음",
+      "id": "SZ:159949",
+      "code": "159949",
+      "market": "SZ",
+      "name": "Huaan ChiNext 50 ETF",
+      "detail": "상위 편입종목이 비어 있다"
+    },
+    {
+      "sev": "info",
+      "rule": "설정액-없음",
+      "id": "SZ:159949",
+      "code": "159949",
+      "market": "SZ",
+      "name": "Huaan ChiNext 50 ETF",
+      "detail": "aum 없음"
+    },
+    {
+      "sev": "info",
+      "rule": "총보수-없음",
+      "id": "SZ:159949",
+      "code": "159949",
+      "market": "SZ",
+      "name": "Huaan ChiNext 50 ETF",
+      "detail": "ter 없음"
+    },
+    {
+      "sev": "warn",
+      "rule": "D1-등락률-불일치",
+      "id": "SZ:159949",
+      "code": "159949",
+      "market": "SZ",
+      "name": "Huaan ChiNext 50 ETF",
+      "detail": "등락률 -1.47% vs price.D1 1.43%",
+      "changeRate": -1.47,
+      "d1": 1.43
+    },
+    {
+      "sev": "info",
+      "rule": "보유종목-없음",
+      "id": "SZ:159919",
+      "code": "159919",
+      "market": "SZ",
+      "name": "Harvest CSI 300 ETF",
+      "detail": "상위 편입종목이 비어 있다"
+    },
+    {
+      "sev": "info",
+      "rule": "설정액-없음",
+      "id": "SZ:159919",
+      "code": "159919",
+      "market": "SZ",
+      "name": "Harvest CSI 300 ETF",
+      "detail": "aum 없음"
+    },
+    {
+      "sev": "info",
+      "rule": "총보수-없음",
+      "id": "SZ:159919",
+      "code": "159919",
+      "market": "SZ",
+      "name": "Harvest CSI 300 ETF",
+      "detail": "ter 없음"
+    },
+    {
+      "sev": "warn",
+      "rule": "D1-등락률-불일치",
+      "id": "SZ:159919",
+      "code": "159919",
+      "market": "SZ",
+      "name": "Harvest CSI 300 ETF",
+      "detail": "등락률 -0.29% vs price.D1 0.86%",
+      "changeRate": -0.29,
+      "d1": 0.86
+    },
+    {
+      "sev": "info",
+      "rule": "보유종목-없음",
+      "id": "SZ:159901",
+      "code": "159901",
+      "market": "SZ",
+      "name": "E Fund SZSE 100 Index Tradable Open-Ended ETF Securities Investment Fund",
+      "detail": "상위 편입종목이 비어 있다"
+    },
+    {
+      "sev": "info",
+      "rule": "설정액-없음",
+      "id": "SZ:159901",
+      "code": "159901",
+      "market": "SZ",
+      "name": "E Fund SZSE 100 Index Tradable Open-Ended ETF Securities Investment Fund",
+      "detail": "aum 없음"
+    },
+    {
+      "sev": "info",
+      "rule": "총보수-없음",
+      "id": "SZ:159901",
+      "code": "159901",
+      "market": "SZ",
+      "name": "E Fund SZSE 100 Index Tradable Open-Ended ETF Securities Investment Fund",
+      "detail": "ter 없음"
+    },
+    {
+      "sev": "warn",
+      "rule": "D1-등락률-불일치",
+      "id": "SZ:159901",
+      "code": "159901",
+      "market": "SZ",
+      "name": "E Fund SZSE 100 Index Tradable Open-Ended ETF Securities Investment Fund",
+      "detail": "등락률 -0.44% vs price.D1 0.78%",
+      "changeRate": -0.44,
       "d1": 0.78
     },
     {
       "sev": "info",
       "rule": "보유종목-없음",
-      "id": "SS:510050",
-      "code": "510050",
-      "market": "SS",
-      "name": "China 50 ETF",
-      "detail": "상위 편입종목이 비어 있다"
-    },
-    {
-      "sev": "info",
-      "rule": "설정액-없음",
-      "id": "SS:510050",
-      "code": "510050",
-      "market": "SS",
-      "name": "China 50 ETF",
-      "detail": "aum 없음"
-    },
-    {
-      "sev": "info",
-      "rule": "총보수-없음",
-      "id": "SS:510050",
-      "code": "510050",
-      "market": "SS",
-      "name": "China 50 ETF",
-      "detail": "ter 없음"
-    },
-    {
-      "sev": "warn",
-      "rule": "D1-등락률-불일치",
-      "id": "SS:510050",
-      "code": "510050",
-      "market": "SS",
-      "name": "China 50 ETF",
-      "detail": "등락률 -0.1% vs price.D1 1.04%",
-      "changeRate": -0.1,
-      "d1": 1.04
-    },
-    {
-      "sev": "info",
-      "rule": "보유종목-없음",
-      "id": "SS:510500",
-      "code": "510500",
-      "market": "SS",
-      "name": "China CSI 500 ETF",
-      "detail": "상위 편입종목이 비어 있다"
-    },
-    {
-      "sev": "info",
-      "rule": "설정액-없음",
-      "id": "SS:510500",
-      "code": "510500",
-      "market": "SS",
-      "name": "China CSI 500 ETF",
-      "detail": "aum 없음"
-    },
-    {
-      "sev": "info",
-      "rule": "총보수-없음",
-      "id": "SS:510500",
-      "code": "510500",
-      "market": "SS",
-      "name": "China CSI 500 ETF",
-      "detail": "ter 없음"
-    },
-    {
-      "sev": "warn",
-      "rule": "D1-등락률-불일치",
-      "id": "SS:510500",
-      "code": "510500",
-      "market": "SS",
-      "name": "China CSI 500 ETF",
-      "detail": "등락률 -0.63% vs price.D1 0.82%",
-      "changeRate": -0.63,
-      "d1": 0.82
-    },
-    {
-      "sev": "info",
-      "rule": "보유종목-없음",
-      "id": "SS:512100",
-      "code": "512100",
-      "market": "SS",
-      "name": "China Southern CSI 1000 ETF Fund",
-      "detail": "상위 편입종목이 비어 있다"
-    },
-    {
-      "sev": "info",
-      "rule": "설정액-없음",
-      "id": "SS:512100",
-      "code": "512100",
-      "market": "SS",
-      "name": "China Southern CSI 1000 ETF Fund",
-      "detail": "aum 없음"
-    },
-    {
-      "sev": "info",
-      "rule": "총보수-없음",
-      "id": "SS:512100",
-      "code": "512100",
-      "market": "SS",
-      "name": "China Southern CSI 1000 ETF Fund",
-      "detail": "ter 없음"
-    },
-    {
-      "sev": "warn",
-      "rule": "D1-등락률-불일치",
-      "id": "SS:512100",
-      "code": "512100",
-      "market": "SS",
-      "name": "China Southern CSI 1000 ETF Fund",
-      "detail": "등락률 -0.32% vs price.D1 0.36%",
-      "changeRate": -0.32,
-      "d1": 0.36
-    },
-    {
-      "sev": "info",
-      "rule": "보유종목-없음",
-      "id": "SS:588000",
-      "code": "588000",
-      "market": "SS",
-      "name": "China AMC SSE Science and Technology Innovation Board 50 ETF",
-      "detail": "상위 편입종목이 비어 있다"
-    },
-    {
-      "sev": "info",
-      "rule": "설정액-없음",
-      "id": "SS:588000",
-      "code": "588000",
-      "market": "SS",
-      "name": "China AMC SSE Science and Technology Innovation Board 50 ETF",
-      "detail": "aum 없음"
-    },
-    {
-      "sev": "info",
-      "rule": "총보수-없음",
-      "id": "SS:588000",
-      "code": "588000",
-      "market": "SS",
-      "name": "China AMC SSE Science and Technology Innovation Board 50 ETF",
-      "detail": "ter 없음"
-    },
-    {
-      "sev": "warn",
-      "rule": "D1-등락률-불일치",
-      "id": "SS:588000",
-      "code": "588000",
-      "market": "SS",
-      "name": "China AMC SSE Science and Technology Innovation Board 50 ETF",
-      "detail": "등락률 -1.79% vs price.D1 1.65%",
-      "changeRate": -1.79,
-      "d1": 1.65
-    },
-    {
-      "sev": "info",
-      "rule": "보유종목-없음",
-      "id": "SS:588080",
-      "code": "588080",
-      "market": "SS",
-      "name": "E Fund Management Company - Star 50 ETF",
-      "detail": "상위 편입종목이 비어 있다"
-    },
-    {
-      "sev": "info",
-      "rule": "설정액-없음",
-      "id": "SS:588080",
-      "code": "588080",
-      "market": "SS",
-      "name": "E Fund Management Company - Star 50 ETF",
-      "detail": "aum 없음"
-    },
-    {
-      "sev": "info",
-      "rule": "총보수-없음",
-      "id": "SS:588080",
-      "code": "588080",
-      "market": "SS",
-      "name": "E Fund Management Company - Star 50 ETF",
-      "detail": "ter 없음"
-    },
-    {
-      "sev": "warn",
-      "rule": "D1-등락률-불일치",
-      "id": "SS:588080",
-      "code": "588080",
-      "market": "SS",
-      "name": "E Fund Management Company - Star 50 ETF",
-      "detail": "등락률 -1.67% vs price.D1 1.7%",
-      "changeRate": -1.67,
-      "d1": 1.7
-    },
-    {
-      "sev": "info",
-      "rule": "보유종목-없음",
-      "id": "SS:512880",
-      "code": "512880",
-      "market": "SS",
-      "name": "Guotai CSI All Share Investment Banking and Brokerage ETF",
-      "detail": "상위 편입종목이 비어 있다"
-    },
-    {
-      "sev": "info",
-      "rule": "설정액-없음",
-      "id": "SS:512880",
-      "code": "512880",
-      "market": "SS",
-      "name": "Guotai CSI All Share Investment Banking and Brokerage ETF",
-      "detail": "aum 없음"
-    },
-    {
-      "sev": "info",
-      "rule": "총보수-없음",
-      "id": "SS:512880",
-      "code": "512880",
-      "market": "SS",
-      "name": "Guotai CSI All Share Investment Banking and Brokerage ETF",
-      "detail": "ter 없음"
-    },
-    {
-      "sev": "warn",
-      "rule": "D1-등락률-불일치",
-      "id": "SS:512880",
-      "code": "512880",
-      "market": "SS",
-      "name": "Guotai CSI All Share Investment Banking and Brokerage ETF",
-      "detail": "등락률 -0.18% vs price.D1 2.72%",
-      "changeRate": -0.18,
-      "d1": 2.72
-    },
-    {
-      "sev": "info",
-      "rule": "보유종목-없음",
-      "id": "SS:512480",
-      "code": "512480",
-      "market": "SS",
-      "name": "GTJA Allianz CSI All-share Semi-conductor Product and Equipment ETF",
-      "detail": "상위 편입종목이 비어 있다"
-    },
-    {
-      "sev": "info",
-      "rule": "설정액-없음",
-      "id": "SS:512480",
-      "code": "512480",
-      "market": "SS",
-      "name": "GTJA Allianz CSI All-share Semi-conductor Product and Equipment ETF",
-      "detail": "aum 없음"
-    },
-    {
-      "sev": "info",
-      "rule": "총보수-없음",
-      "id": "SS:512480",
-      "code": "512480",
-      "market": "SS",
-      "name": "GTJA Allianz CSI All-share Semi-conductor Product and Equipment ETF",
-      "detail": "ter 없음"
-    },
-    {
-      "sev": "warn",
-      "rule": "D1-등락률-불일치",
-      "id": "SS:512480",
-      "code": "512480",
-      "market": "SS",
-      "name": "GTJA Allianz CSI All-share Semi-conductor Product and Equipment ETF",
-      "detail": "등락률 -2.26% vs price.D1 0.89%",
-      "changeRate": -2.26,
-      "d1": 0.89
-    },
-    {
-      "sev": "info",
-      "rule": "보유종목-없음",
-      "id": "SS:512690",
-      "code": "512690",
-      "market": "SS",
-      "name": "Penghua CSI Alcohol ETF",
-      "detail": "상위 편입종목이 비어 있다"
-    },
-    {
-      "sev": "info",
-      "rule": "설정액-없음",
-      "id": "SS:512690",
-      "code": "512690",
-      "market": "SS",
-      "name": "Penghua CSI Alcohol ETF",
-      "detail": "aum 없음"
-    },
-    {
-      "sev": "info",
-      "rule": "총보수-없음",
-      "id": "SS:512690",
-      "code": "512690",
-      "market": "SS",
-      "name": "Penghua CSI Alcohol ETF",
-      "detail": "ter 없음"
-    },
-    {
-      "sev": "warn",
-      "rule": "D1-등락률-불일치",
-      "id": "SS:512690",
-      "code": "512690",
-      "market": "SS",
-      "name": "Penghua CSI Alcohol ETF",
-      "detail": "등락률 0.48% vs price.D1 0.24%",
-      "changeRate": 0.48,
-      "d1": 0.24
-    },
-    {
-      "sev": "info",
-      "rule": "보유종목-없음",
-      "id": "SS:512170",
-      "code": "512170",
-      "market": "SS",
-      "name": "Hwabao CSI Medical ETF",
-      "detail": "상위 편입종목이 비어 있다"
-    },
-    {
-      "sev": "info",
-      "rule": "설정액-없음",
-      "id": "SS:512170",
-      "code": "512170",
-      "market": "SS",
-      "name": "Hwabao CSI Medical ETF",
-      "detail": "aum 없음"
-    },
-    {
-      "sev": "info",
-      "rule": "총보수-없음",
-      "id": "SS:512170",
-      "code": "512170",
-      "market": "SS",
-      "name": "Hwabao CSI Medical ETF",
-      "detail": "ter 없음"
-    },
-    {
-      "sev": "warn",
-      "rule": "D1-등락률-불일치",
-      "id": "SS:512170",
-      "code": "512170",
-      "market": "SS",
-      "name": "Hwabao CSI Medical ETF",
-      "detail": "등락률 -1.16% vs price.D1 -0.58%",
-      "changeRate": -1.16,
-      "d1": -0.58
-    },
-    {
-      "sev": "info",
-      "rule": "보유종목-없음",
-      "id": "SS:515790",
-      "code": "515790",
-      "market": "SS",
-      "name": "Pinebridge CSI Photovaltic Index ETF",
-      "detail": "상위 편입종목이 비어 있다"
-    },
-    {
-      "sev": "info",
-      "rule": "설정액-없음",
-      "id": "SS:515790",
-      "code": "515790",
-      "market": "SS",
-      "name": "Pinebridge CSI Photovaltic Index ETF",
-      "detail": "aum 없음"
-    },
-    {
-      "sev": "info",
-      "rule": "총보수-없음",
-      "id": "SS:515790",
-      "code": "515790",
-      "market": "SS",
-      "name": "Pinebridge CSI Photovaltic Index ETF",
-      "detail": "ter 없음"
-    },
-    {
-      "sev": "warn",
-      "rule": "D1-등락률-불일치",
-      "id": "SS:515790",
-      "code": "515790",
-      "market": "SS",
-      "name": "Pinebridge CSI Photovaltic Index ETF",
-      "detail": "등락률 0% vs price.D1 1.55%",
-      "changeRate": 0,
-      "d1": 1.55
-    },
-    {
-      "sev": "info",
-      "rule": "보유종목-없음",
-      "id": "SS:516160",
-      "code": "516160",
-      "market": "SS",
-      "name": "China Southern Asset Management Co. Ltd. - China Southern CSI New Energy ETF",
-      "detail": "상위 편입종목이 비어 있다"
-    },
-    {
-      "sev": "info",
-      "rule": "설정액-없음",
-      "id": "SS:516160",
-      "code": "516160",
-      "market": "SS",
-      "name": "China Southern Asset Management Co. Ltd. - China Southern CSI New Energy ETF",
-      "detail": "aum 없음"
-    },
-    {
-      "sev": "info",
-      "rule": "총보수-없음",
-      "id": "SS:516160",
-      "code": "516160",
-      "market": "SS",
-      "name": "China Southern Asset Management Co. Ltd. - China Southern CSI New Energy ETF",
-      "detail": "ter 없음"
-    },
-    {
-      "sev": "warn",
-      "rule": "D1-등락률-불일치",
-      "id": "SS:516160",
-      "code": "516160",
-      "market": "SS",
-      "name": "China Southern Asset Management Co. Ltd. - China Southern CSI New Energy ETF",
-      "detail": "등락률 -0.36% vs price.D1 1.42%",
-      "changeRate": -0.36,
-      "d1": 1.42
-    },
-    {
-      "sev": "info",
-      "rule": "보유종목-없음",
-      "id": "SS:518880",
-      "code": "518880",
-      "market": "SS",
-      "name": "Huaan Yifu Gold Exchange Traded Fund",
-      "detail": "상위 편입종목이 비어 있다"
-    },
-    {
-      "sev": "info",
-      "rule": "설정액-없음",
-      "id": "SS:518880",
-      "code": "518880",
-      "market": "SS",
-      "name": "Huaan Yifu Gold Exchange Traded Fund",
-      "detail": "aum 없음"
-    },
-    {
-      "sev": "info",
-      "rule": "총보수-없음",
-      "id": "SS:518880",
-      "code": "518880",
-      "market": "SS",
-      "name": "Huaan Yifu Gold Exchange Traded Fund",
-      "detail": "ter 없음"
-    },
-    {
-      "sev": "warn",
-      "rule": "D1-등락률-불일치",
-      "id": "SS:518880",
-      "code": "518880",
-      "market": "SS",
-      "name": "Huaan Yifu Gold Exchange Traded Fund",
-      "detail": "등락률 0.31% vs price.D1 -0.17%",
-      "changeRate": 0.31,
-      "d1": -0.17
-    },
-    {
-      "sev": "info",
-      "rule": "보유종목-없음",
-      "id": "SS:511990",
-      "code": "511990",
-      "market": "SS",
-      "name": "Fortune SG Listed Money Market Fund",
-      "detail": "상위 편입종목이 비어 있다"
-    },
-    {
-      "sev": "info",
-      "rule": "설정액-없음",
-      "id": "SS:511990",
-      "code": "511990",
-      "market": "SS",
-      "name": "Fortune SG Listed Money Market Fund",
-      "detail": "aum 없음"
-    },
-    {
-      "sev": "info",
-      "rule": "총보수-없음",
-      "id": "SS:511990",
-      "code": "511990",
-      "market": "SS",
-      "name": "Fortune SG Listed Money Market Fund",
-      "detail": "ter 없음"
-    },
-    {
-      "sev": "info",
-      "rule": "보유종목-없음",
-      "id": "SS:513050",
-      "code": "513050",
-      "market": "SS",
-      "name": "E Fund CSI Overseas China Internet 50 ETF Index Fund",
-      "detail": "상위 편입종목이 비어 있다"
-    },
-    {
-      "sev": "info",
-      "rule": "설정액-없음",
-      "id": "SS:513050",
-      "code": "513050",
-      "market": "SS",
-      "name": "E Fund CSI Overseas China Internet 50 ETF Index Fund",
-      "detail": "aum 없음"
-    },
-    {
-      "sev": "info",
-      "rule": "총보수-없음",
-      "id": "SS:513050",
-      "code": "513050",
-      "market": "SS",
-      "name": "E Fund CSI Overseas China Internet 50 ETF Index Fund",
-      "detail": "ter 없음"
-    },
-    {
-      "sev": "warn",
-      "rule": "D1-등락률-불일치",
-      "id": "SS:513050",
-      "code": "513050",
-      "market": "SS",
-      "name": "E Fund CSI Overseas China Internet 50 ETF Index Fund",
-      "detail": "등락률 0.09% vs price.D1 1.21%",
-      "changeRate": 0.09,
-      "d1": 1.21
-    },
-    {
-      "sev": "info",
-      "rule": "보유종목-없음",
-      "id": "SS:513100",
-      "code": "513100",
-      "market": "SS",
-      "name": "Guotai Nasdaq 100 Exchange Traded Fund (QDII-ETF)",
-      "detail": "상위 편입종목이 비어 있다"
-    },
-    {
-      "sev": "info",
-      "rule": "설정액-없음",
-      "id": "SS:513100",
-      "code": "513100",
-      "market": "SS",
-      "name": "Guotai Nasdaq 100 Exchange Traded Fund (QDII-ETF)",
-      "detail": "aum 없음"
-    },
-    {
-      "sev": "info",
-      "rule": "총보수-없음",
-      "id": "SS:513100",
-      "code": "513100",
-      "market": "SS",
-      "name": "Guotai Nasdaq 100 Exchange Traded Fund (QDII-ETF)",
-      "detail": "ter 없음"
-    },
-    {
-      "sev": "info",
-      "rule": "보유종목-없음",
-      "id": "SZ:159915",
-      "code": "159915",
-      "market": "SZ",
-      "name": "E Fund ChiNext ETF",
-      "detail": "상위 편입종목이 비어 있다"
-    },
-    {
-      "sev": "info",
-      "rule": "설정액-없음",
-      "id": "SZ:159915",
-      "code": "159915",
-      "market": "SZ",
-      "name": "E Fund ChiNext ETF",
-      "detail": "aum 없음"
-    },
-    {
-      "sev": "info",
-      "rule": "총보수-없음",
-      "id": "SZ:159915",
-      "code": "159915",
-      "market": "SZ",
-      "name": "E Fund ChiNext ETF",
-      "detail": "ter 없음"
-    },
-    {
-      "sev": "warn",
-      "rule": "D1-등락률-불일치",
-      "id": "SZ:159915",
-      "code": "159915",
-      "market": "SZ",
-      "name": "E Fund ChiNext ETF",
-      "detail": "등락률 -1.46% vs price.D1 0.38%",
-      "changeRate": -1.46,
-      "d1": 0.38
-    },
-    {
-      "sev": "info",
-      "rule": "보유종목-없음",
-      "id": "SZ:159949",
-      "code": "159949",
-      "market": "SZ",
-      "name": "Huaan ChiNext 50 Exchange-traded Open-ended Index Securities Investment Fund",
-      "detail": "상위 편입종목이 비어 있다"
-    },
-    {
-      "sev": "info",
-      "rule": "설정액-없음",
-      "id": "SZ:159949",
-      "code": "159949",
-      "market": "SZ",
-      "name": "Huaan ChiNext 50 Exchange-traded Open-ended Index Securities Investment Fund",
-      "detail": "aum 없음"
-    },
-    {
-      "sev": "info",
-      "rule": "총보수-없음",
-      "id": "SZ:159949",
-      "code": "159949",
-      "market": "SZ",
-      "name": "Huaan ChiNext 50 Exchange-traded Open-ended Index Securities Investment Fund",
-      "detail": "ter 없음"
-    },
-    {
-      "sev": "warn",
-      "rule": "D1-등락률-불일치",
-      "id": "SZ:159949",
-      "code": "159949",
-      "market": "SZ",
-      "name": "Huaan ChiNext 50 Exchange-traded Open-ended Index Securities Investment Fund",
-      "detail": "등락률 -1.47% vs price.D1 0.62%",
-      "changeRate": -1.47,
-      "d1": 0.62
-    },
-    {
-      "sev": "info",
-      "rule": "보유종목-없음",
-      "id": "SZ:159919",
-      "code": "159919",
-      "market": "SZ",
-      "name": "Harvest SZSE SME-CHINEXT 300 Transactional Open-End Index Fund",
-      "detail": "상위 편입종목이 비어 있다"
-    },
-    {
-      "sev": "info",
-      "rule": "설정액-없음",
-      "id": "SZ:159919",
-      "code": "159919",
-      "market": "SZ",
-      "name": "Harvest SZSE SME-CHINEXT 300 Transactional Open-End Index Fund",
-      "detail": "aum 없음"
-    },
-    {
-      "sev": "info",
-      "rule": "총보수-없음",
-      "id": "SZ:159919",
-      "code": "159919",
-      "market": "SZ",
-      "name": "Harvest SZSE SME-CHINEXT 300 Transactional Open-End Index Fund",
-      "detail": "ter 없음"
-    },
-    {
-      "sev": "warn",
-      "rule": "D1-등락률-불일치",
-      "id": "SZ:159919",
-      "code": "159919",
-      "market": "SZ",
-      "name": "Harvest SZSE SME-CHINEXT 300 Transactional Open-End Index Fund",
-      "detail": "등락률 -0.29% vs price.D1 0.81%",
-      "changeRate": -0.29,
-      "d1": 0.81
-    },
-    {
-      "sev": "info",
-      "rule": "보유종목-없음",
-      "id": "SZ:159901",
-      "code": "159901",
-      "market": "SZ",
-      "name": "E Fund SZSE 100 Index Tradable Open-Ended ETF Securities Investment Fund",
-      "detail": "상위 편입종목이 비어 있다"
-    },
-    {
-      "sev": "info",
-      "rule": "설정액-없음",
-      "id": "SZ:159901",
-      "code": "159901",
-      "market": "SZ",
-      "name": "E Fund SZSE 100 Index Tradable Open-Ended ETF Securities Investment Fund",
-      "detail": "aum 없음"
-    },
-    {
-      "sev": "info",
-      "rule": "총보수-없음",
-      "id": "SZ:159901",
-      "code": "159901",
-      "market": "SZ",
-      "name": "E Fund SZSE 100 Index Tradable Open-Ended ETF Securities Investment Fund",
-      "detail": "ter 없음"
-    },
-    {
-      "sev": "warn",
-      "rule": "D1-등락률-불일치",
-      "id": "SZ:159901",
-      "code": "159901",
-      "market": "SZ",
-      "name": "E Fund SZSE 100 Index Tradable Open-Ended ETF Securities Investment Fund",
-      "detail": "등락률 -0.44% vs price.D1 0.81%",
-      "changeRate": -0.44,
-      "d1": 0.81
-    },
-    {
-      "sev": "info",
-      "rule": "보유종목-없음",
       "id": "SZ:159928",
       "code": "159928",
       "market": "SZ",
@@ -26633,93 +26413,93 @@
       "code": "159928",
       "market": "SZ",
       "name": "China Universal Consumer Staples Index ETF",
-      "detail": "등락률 0.9% vs price.D1 0.15%",
+      "detail": "등락률 0.9% vs price.D1 0%",
       "changeRate": 0.9,
-      "d1": 0.15
-    },
-    {
-      "sev": "info",
-      "rule": "보유종목-없음",
-      "id": "SZ:159995",
-      "code": "159995",
-      "market": "SZ",
-      "name": "ChinaAMC CNI Semi-conductor Chip ETF",
-      "detail": "상위 편입종목이 비어 있다"
-    },
-    {
-      "sev": "info",
-      "rule": "설정액-없음",
-      "id": "SZ:159995",
-      "code": "159995",
-      "market": "SZ",
-      "name": "ChinaAMC CNI Semi-conductor Chip ETF",
-      "detail": "aum 없음"
-    },
-    {
-      "sev": "info",
-      "rule": "총보수-없음",
-      "id": "SZ:159995",
-      "code": "159995",
-      "market": "SZ",
-      "name": "ChinaAMC CNI Semi-conductor Chip ETF",
-      "detail": "ter 없음"
-    },
-    {
-      "sev": "warn",
-      "rule": "D1-등락률-불일치",
-      "id": "SZ:159995",
-      "code": "159995",
-      "market": "SZ",
-      "name": "ChinaAMC CNI Semi-conductor Chip ETF",
-      "detail": "등락률 -2.29% vs price.D1 1.16%",
-      "changeRate": -2.29,
-      "d1": 1.16
-    },
-    {
-      "sev": "info",
-      "rule": "보유종목-없음",
-      "id": "SZ:159992",
-      "code": "159992",
-      "market": "SZ",
-      "name": "Yinhua Fund Management Co Ltd - Yinhua CSI Brand Name Drug Industry ETF",
-      "detail": "상위 편입종목이 비어 있다"
-    },
-    {
-      "sev": "info",
-      "rule": "설정액-없음",
-      "id": "SZ:159992",
-      "code": "159992",
-      "market": "SZ",
-      "name": "Yinhua Fund Management Co Ltd - Yinhua CSI Brand Name Drug Industry ETF",
-      "detail": "aum 없음"
-    },
-    {
-      "sev": "info",
-      "rule": "총보수-없음",
-      "id": "SZ:159992",
-      "code": "159992",
-      "market": "SZ",
-      "name": "Yinhua Fund Management Co Ltd - Yinhua CSI Brand Name Drug Industry ETF",
-      "detail": "ter 없음"
-    },
-    {
-      "sev": "warn",
-      "rule": "D1-등락률-불일치",
-      "id": "SZ:159992",
-      "code": "159992",
-      "market": "SZ",
-      "name": "Yinhua Fund Management Co Ltd - Yinhua CSI Brand Name Drug Industry ETF",
-      "detail": "등락률 -1.49% vs price.D1 0%",
-      "changeRate": -1.49,
       "d1": 0
     },
     {
       "sev": "info",
       "rule": "보유종목-없음",
+      "id": "SZ:159995",
+      "code": "159995",
+      "market": "SZ",
+      "name": "ChinaAMC CNI Semiconductor Chips ETF",
+      "detail": "상위 편입종목이 비어 있다"
+    },
+    {
+      "sev": "info",
+      "rule": "설정액-없음",
+      "id": "SZ:159995",
+      "code": "159995",
+      "market": "SZ",
+      "name": "ChinaAMC CNI Semiconductor Chips ETF",
+      "detail": "aum 없음"
+    },
+    {
+      "sev": "info",
+      "rule": "총보수-없음",
+      "id": "SZ:159995",
+      "code": "159995",
+      "market": "SZ",
+      "name": "ChinaAMC CNI Semiconductor Chips ETF",
+      "detail": "ter 없음"
+    },
+    {
+      "sev": "warn",
+      "rule": "D1-등락률-불일치",
+      "id": "SZ:159995",
+      "code": "159995",
+      "market": "SZ",
+      "name": "ChinaAMC CNI Semiconductor Chips ETF",
+      "detail": "등락률 -2.29% vs price.D1 4.42%",
+      "changeRate": -2.29,
+      "d1": 4.42
+    },
+    {
+      "sev": "info",
+      "rule": "보유종목-없음",
+      "id": "SZ:159992",
+      "code": "159992",
+      "market": "SZ",
+      "name": "Yinhua CSI Brand Name Drug Industry ETF",
+      "detail": "상위 편입종목이 비어 있다"
+    },
+    {
+      "sev": "info",
+      "rule": "설정액-없음",
+      "id": "SZ:159992",
+      "code": "159992",
+      "market": "SZ",
+      "name": "Yinhua CSI Brand Name Drug Industry ETF",
+      "detail": "aum 없음"
+    },
+    {
+      "sev": "info",
+      "rule": "총보수-없음",
+      "id": "SZ:159992",
+      "code": "159992",
+      "market": "SZ",
+      "name": "Yinhua CSI Brand Name Drug Industry ETF",
+      "detail": "ter 없음"
+    },
+    {
+      "sev": "warn",
+      "rule": "D1-등락률-불일치",
+      "id": "SZ:159992",
+      "code": "159992",
+      "market": "SZ",
+      "name": "Yinhua CSI Brand Name Drug Industry ETF",
+      "detail": "등락률 -1.49% vs price.D1 0.81%",
+      "changeRate": -1.49,
+      "d1": 0.81
+    },
+    {
+      "sev": "info",
+      "rule": "보유종목-없음",
       "id": "SZ:159781",
       "code": "159781",
       "market": "SZ",
-      "name": "E Fund CSI STAR&CHINEXT 50 Index ETF",
+      "name": "E Fund CSI STAR&CHINEXT 50 ETF",
       "detail": "상위 편입종목이 비어 있다"
     },
     {
@@ -26728,7 +26508,7 @@
       "id": "SZ:159781",
       "code": "159781",
       "market": "SZ",
-      "name": "E Fund CSI STAR&CHINEXT 50 Index ETF",
+      "name": "E Fund CSI STAR&CHINEXT 50 ETF",
       "detail": "aum 없음"
     },
     {
@@ -26737,7 +26517,7 @@
       "id": "SZ:159781",
       "code": "159781",
       "market": "SZ",
-      "name": "E Fund CSI STAR&CHINEXT 50 Index ETF",
+      "name": "E Fund CSI STAR&CHINEXT 50 ETF",
       "detail": "ter 없음"
     },
     {
@@ -26746,10 +26526,10 @@
       "id": "SZ:159781",
       "code": "159781",
       "market": "SZ",
-      "name": "E Fund CSI STAR&CHINEXT 50 Index ETF",
-      "detail": "등락률 -1.55% vs price.D1 1.13%",
+      "name": "E Fund CSI STAR&CHINEXT 50 ETF",
+      "detail": "등락률 -1.55% vs price.D1 2.42%",
       "changeRate": -1.55,
-      "d1": 1.13
+      "d1": 2.42
     },
     {
       "sev": "info",
@@ -26757,7 +26537,7 @@
       "id": "SZ:159941",
       "code": "159941",
       "market": "SZ",
-      "name": "GF NASDAQ-100 Etf",
+      "name": "GF NASDAQ 100 ETF QDII",
       "detail": "상위 편입종목이 비어 있다"
     },
     {
@@ -26766,7 +26546,7 @@
       "id": "SZ:159941",
       "code": "159941",
       "market": "SZ",
-      "name": "GF NASDAQ-100 Etf",
+      "name": "GF NASDAQ 100 ETF QDII",
       "detail": "aum 없음"
     },
     {
@@ -26775,7 +26555,7 @@
       "id": "SZ:159941",
       "code": "159941",
       "market": "SZ",
-      "name": "GF NASDAQ-100 Etf",
+      "name": "GF NASDAQ 100 ETF QDII",
       "detail": "ter 없음"
     },
     {
@@ -26784,10 +26564,10 @@
       "id": "SZ:159941",
       "code": "159941",
       "market": "SZ",
-      "name": "GF NASDAQ-100 Etf",
-      "detail": "등락률 -0.12% vs price.D1 0.18%",
+      "name": "GF NASDAQ 100 ETF QDII",
+      "detail": "등락률 -0.12% vs price.D1 1.03%",
       "changeRate": -0.12,
-      "d1": 0.18
+      "d1": 1.03
     },
     {
       "sev": "info",
@@ -28548,12 +28328,12 @@
       "code": "SMH",
       "market": "US",
       "name": "VanEck Semiconductor ETF",
-      "detail": "US|equity|us|1 Y1: 이 종목(85.63%)을 빼면 67종목 평균이 25.98% → 24.88% 로 -1.10%p 움직인다",
+      "detail": "US|equity|us|1 Y1: 이 종목(85.63%)을 빼면 67종목 평균이 25.99% → 24.89% 로 -1.10%p 움직인다",
       "period": "Y1",
       "cohort": "US|equity|us|1",
       "cohortN": 55,
       "value": 85.63,
-      "cohortMean": 25.98,
+      "cohortMean": 25.99,
       "shiftPp": -1.1
     },
     {
@@ -28563,12 +28343,12 @@
       "code": "SOXX",
       "market": "US",
       "name": "iShares Semiconductor ETF",
-      "detail": "US|equity|us|1 Y1: 이 종목(102.33%)을 빼면 67종목 평균이 25.98% → 24.57% 로 -1.41%p 움직인다",
+      "detail": "US|equity|us|1 Y1: 이 종목(102.33%)을 빼면 67종목 평균이 25.99% → 24.58% 로 -1.41%p 움직인다",
       "period": "Y1",
       "cohort": "US|equity|us|1",
       "cohortN": 55,
       "value": 102.33,
-      "cohortMean": 25.98,
+      "cohortMean": 25.99,
       "shiftPp": -1.41
     },
     {
@@ -28578,12 +28358,12 @@
       "code": "ARKG",
       "market": "US",
       "name": "ARK Genomic Revolution ETF",
-      "detail": "US|equity|us|1 Y1: 이 종목(92.41%)을 빼면 67종목 평균이 25.98% → 24.75% 로 -1.23%p 움직인다",
+      "detail": "US|equity|us|1 Y1: 이 종목(92.41%)을 빼면 67종목 평균이 25.99% → 24.76% 로 -1.23%p 움직인다",
       "period": "Y1",
       "cohort": "US|equity|us|1",
       "cohortN": 55,
       "value": 92.41,
-      "cohortMean": 25.98,
+      "cohortMean": 25.99,
       "shiftPp": -1.23
     },
     {
@@ -28593,12 +28373,12 @@
       "code": "XBI",
       "market": "US",
       "name": "State Street SPDR S&P Biotech ETF",
-      "detail": "US|equity|us|1 Y1: 이 종목(80.64%)을 빼면 67종목 평균이 25.98% → 24.97% 로 -1.01%p 움직인다",
+      "detail": "US|equity|us|1 Y1: 이 종목(80.64%)을 빼면 67종목 평균이 25.99% → 24.98% 로 -1.01%p 움직인다",
       "period": "Y1",
       "cohort": "US|equity|us|1",
       "cohortN": 55,
       "value": 80.64,
-      "cohortMean": 25.98,
+      "cohortMean": 25.99,
       "shiftPp": -1.01
     }
   ]
