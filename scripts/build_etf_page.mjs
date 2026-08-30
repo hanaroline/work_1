@@ -25,6 +25,20 @@ let out = html.replace(
   '<script>\n/* ==== data/etf.js (인라인) ==== */\n' + data + '\n</script>'
 );
 
+// 사용법 PDF 도 같이 담는다. 없으면 태그만 지우고 넘어간다 —
+// PDF 를 아직 안 만들었다고 도구가 안 만들어질 이유는 없다.
+try {
+  const pdfJs = await readFile('data/etf-howto-pdf.js', 'utf8');
+  out = out.replace(
+    /<script src="data\/etf-howto-pdf\.js"><\/script>/,
+    '<script>\n/* ==== data/etf-howto-pdf.js (인라인) ==== */\n' + pdfJs + '\n</script>'
+  );
+  console.log(`[build] 사용법 PDF 포함 (${(pdfJs.length / 1024).toFixed(0)} KB)`);
+} catch {
+  out = out.replace(/\s*<script src="data\/etf-howto-pdf\.js"><\/script>\n?/, '\n');
+  console.log('[build] 사용법 PDF 없음 — 단추를 띄우지 않는다');
+}
+
 if (out === html) {
   console.error(`[build] ${SRC} 안에서 data/etf.js 스크립트 태그를 찾지 못했습니다.`);
   process.exit(1);

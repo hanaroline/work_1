@@ -517,6 +517,7 @@ footer .disc + .disc{margin-top:12px;}
 
     <div class="take-row">
       <button type="button" id="howto-print" data-ko="이 화면만 인쇄 · PDF 저장" data-en="Print this screen / save as PDF">이 화면만 인쇄 · PDF 저장</button>
+      <button type="button" id="howto-pdf" hidden data-ko="PDF 파일로 내려받기" data-en="Download as PDF">PDF 파일로 내려받기</button>
       <button type="button" id="howto-save" data-ko="HTML 파일로 내려받기" data-en="Download as HTML">HTML 파일로 내려받기</button>
       <span class="hint" id="howto-hint" data-ko="내려받은 파일은 혼자서도 열립니다 — 인터넷 연결이 없어도 됩니다." data-en="The saved file opens on its own — no internet needed.">내려받은 파일은 혼자서도 열립니다 — 인터넷 연결이 없어도 됩니다.</span>
     </div>
@@ -642,6 +643,8 @@ footer .disc + .disc{margin-top:12px;}
 </footer>
 
 <script src="data/etf.js"></script>
+<!-- 사용법 PDF(base64). 없으면 단추가 뜨지 않는다. -->
+<script src="data/etf-howto-pdf.js"></script>
 <script>
 (function () {
 'use strict';
@@ -2372,6 +2375,30 @@ function howtoStandalone() {
 }
 
 function bind() {
+  // PDF 는 미리 만들어 파일 안에 넣어 둔다(base64). 브라우저에서 PDF 를
+  // 만들려면 바깥 라이브러리가 필요한데, 사내망에서는 그게 안 온다.
+  // 파일이 안 실렸으면 단추를 아예 띄우지 않는다 — 눌러도 안 되는 단추가
+  // 제일 나쁘다.
+  var btnPdf = el('howto-pdf');
+  if (btnPdf && typeof window.ETF_HOWTO_PDF === 'string' && window.ETF_HOWTO_PDF.length > 1000) {
+    btnPdf.hidden = false;
+    btnPdf.addEventListener('click', function () {
+      var bin = atob(window.ETF_HOWTO_PDF);
+      var buf = new Uint8Array(bin.length);
+      for (var i = 0; i < bin.length; i++) buf[i] = bin.charCodeAt(i);
+      var url = URL.createObjectURL(new Blob([buf], { type: 'application/pdf' }));
+      var a = document.createElement('a');
+      a.href = url;
+      // 이름은 ASCII 로만. 한글을 넣으면 크로미움이 이름을 통째로 버린다.
+      a.download = 'etf-holdings-lookup-howto' +
+        (window.ETF_HOWTO_PDF_AT ? '-' + window.ETF_HOWTO_PDF_AT : '') + '.pdf';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      setTimeout(function () { URL.revokeObjectURL(url); }, 1000);
+    });
+  }
+
   var btnSave = el('howto-save');
   if (btnSave) {
     btnSave.addEventListener('click', function () {

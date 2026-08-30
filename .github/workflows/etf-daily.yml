@@ -97,6 +97,29 @@ jobs:
         continue-on-error: true
         run: node scripts/audit_etf_rank.mjs 091230 069500 360750
 
+      - name: 브라우저 설치
+        run: |
+          npm i -D playwright@1.56.1 --no-audit --no-fund
+          npx playwright install --with-deps chromium
+
+      # 사용법 산출물(HTML·PDF·PNG)을 다시 만든다.
+      #
+      # 안 만들면 PDF 안의 "자료 기준일" 이 만들던 날에 멈춘다 — 도구는 오늘
+      # 것인데 딸려 나가는 PDF 는 지난달 것이 된다. 이 화면에서 계속 경계해 온
+      # 바로 그 종류의 거짓말이다.
+      #
+      # 한글 폰트가 없으면 두부(ㅁ)만 박히므로 먼저 깐다. 이 단계는 데이터와
+      # 무관한 곁가지라 실패해도 수집·빌드를 막지 않는다. 대신 아래 요약에
+      # 결과를 남겨 조용히 지나가지 않게 한다.
+      - name: 사용법 산출물 (HTML · PDF · 이미지)
+        id: howto
+        continue-on-error: true
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y fonts-nanum
+          fc-cache -f
+          node scripts/make_etf_howto.mjs
+
       - name: 단일 파일 빌드
         run: node scripts/build_etf_page.mjs
 
@@ -104,8 +127,6 @@ jobs:
       # 여기서 걸리면 커밋하지 않는다 — 깨진 화면을 배포하지 않으려는 것이다.
       - name: 페이지 연기 시험
         run: |
-          npm i -D playwright@1.56.1 --no-audit --no-fund
-          npx playwright install --with-deps chromium
           node scripts/test_etf_page.mjs
           node scripts/test_etf_page.mjs --built
           node scripts/test_etf_offline.mjs
@@ -130,12 +151,20 @@ jobs:
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add data/etf-kr.js data/etf-global.js data/etf.js etf-holdings-search.html 2>/dev/null || true
           git add tools/discovery/etf_audit.md tools/discovery/etf_audit.json 2>/dev/null || true
+          git add data/etf-howto-pdf.js docs/etf-howto.html docs/etf-howto-en.html \
+                  docs/etf-howto.pdf docs/etf-howto.png 2>/dev/null || true
           if git diff --cached --quiet; then
             echo "변경 없음"
           else
             git commit -m "chore(etf): 편입종목 데이터 갱신 ($(TZ=Asia/Seoul date +%Y-%m-%d))"
             git push
           fi
+
+      - name: 사용법 산출 결과 알림
+        if: steps.howto.outcome == 'failure'
+        run: |
+          echo "::warning::사용법 산출물(PDF·이미지) 생성에 실패했습니다. \
+          도구와 데이터는 갱신됐지만 딸려 나가는 PDF 는 직전 것이 남습니다."
 
       # 수집이 둘 다 실패했으면 잡을 빨간불로 남긴다. 데이터는 지키되,
       # 며칠씩 조용히 낡아 가는 것은 막아야 한다.
