@@ -404,7 +404,14 @@ def parse_mirae(html, board, category_id, overseas=False):
         else:
             title = head
         cells = [_text(c).strip() for c in _TD.findall(row)]
-        date = next((c for c in cells if re.fullmatch(r"\d{4}-\d{2}-\d{2}", c)), None)
+        # 날짜 칸이 늘 붙임표 꼴은 아니다 — 글로벌 판의 한 줄이 점 꼴로 와서
+        # 날짜 없는 리포트가 됐고, 그러면 그날 셈에도 한 주 셈에도 들지 못한다.
+        date = None
+        for c in cells:
+            dm = re.fullmatch(r"(\d{4})[-./](\d{2})[-./](\d{2})", c)
+            if dm:
+                date = "%s-%s-%s" % dm.groups()
+                break
         # 마지막 칸이 작성자다 — 애널리스트 실명.
         analyst = cells[-1] if cells and 1 <= len(cells[-1]) <= 12 else None
         pdf = _MIRAE_PDF.search(row)
@@ -1405,6 +1412,38 @@ def pool_key(r):
     return "%s|%s" % (r.get("source") or "-", r.get("nid"))
 
 
+def merge_today(reports, out_dir, today):
+    """오늘 앞선 판에서 받아 둔 줄을 이번 판에 포갠다.
+
+    목록에서 밀려난 리포트를 잃지 않기 위한 것이다. 새로 받은 것을 앞에
+    두고, 지난 판에만 있던 줄을 뒤에 잇는다(요약·조회수는 `_absorb` 가
+    좋은 쪽을 남긴다).
+    """
+    path = os.path.join(out_dir, today + ".json")
+    if not os.path.exists(path):
+        return reports
+    try:
+        with open(path, encoding="utf-8") as f:
+            old = json.load(f).get("reports", [])
+    except (OSError, ValueError):
+        return reports
+    seen = {pool_key(r): r for r in reports}
+    added = 0
+    for r in old:
+        if not r.get("nid"):
+            continue
+        cur = seen.get(pool_key(r))
+        if cur is None:
+            seen[pool_key(r)] = dict(r)
+            reports.append(dict(r))
+            added += 1
+        else:
+            _absorb(cur, r)
+    if added:
+        print("오늘 앞선 판에서 %d건을 이어 받았다" % added)
+    return reports
+
+
 def load_history(out_dir, since):
     """지난 판들에서 `since` 이후 리포트를 모아 온다.
 
@@ -1578,6 +1617,13 @@ def main():
     if not reports:
         raise SystemExit("리포트를 한 건도 받지 못했다 — 목록 구조가 바뀌었을 수 있다. "
                          "data/reports/raw 의 덤프를 보십시오.")
+
+    # 하루에 네 번 돈다. 그때마다 그날 판을 덮어써 왔는데, 목록은 흐르는
+    # 물이라 아침에 앞쪽에 있던 리포트가 저녁 목록에서는 밀려나 있다 —
+    # 덮어쓰면 그 리포트가 기록에서 사라진다. 8/31 08:12 판에서 한 주 셈이
+    # 334 로 찍혔는데 그 파일로 다시 세면 333 이었던 것이 그 자국이다.
+    # 오늘 몫은 **더해서** 남긴다. 조회수는 큰 쪽, 요약은 있는 쪽을 살린다.
+    reports = merge_today(reports, OUT_DIR, today)
 
     # 가장 최근 날짜 것부터, 그다음 조회수 순으로 본문을 연다. 상한에 걸린
     # 나머지는 목록 정보(제목·증권사·PDF 링크)만 담긴 채로 남는다.
