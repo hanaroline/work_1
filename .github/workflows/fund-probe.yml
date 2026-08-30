@@ -265,6 +265,19 @@ jobs:
           npx playwright install --with-deps chromium
           node scripts/probe_kofia_openapi_list2.mjs
 
+      # 24차. 앞의 것들과 성격이 다르다 — 원천을 찾는 탐침이 아니라 **이미
+      # 만든 화면의 숫자를 1차 출처와 맞춰 보는 재검증**이다. 안에서만 도는
+      # 감사(audit_fund_data.mjs)는 오류 0으로 통과하지만, 그건 바깥에 안
+      # 붙는다. 수집기가 통째로 밀린 값을 받아 왔다면 안에서는 완벽히 일관된다.
+      #
+      # 결과가 아직 저장소에 없으므로 이번에는 push 로도 돌게 둔다.
+      # (세션에 Actions 쓰기 권한이 없어 수동 실행을 부르지 못한다.)
+      # 결과가 남은 뒤에는 위 단계들처럼 workflow_dispatch 로 잠근다.
+      - name: 재검증 24차 (화면의 숫자 vs 금투협 전자공시, 전수)
+        timeout-minutes: 45
+        if: hashFiles('scripts/probe_fund_verify_kofia.mjs') != ''
+        run: node scripts/probe_fund_verify_kofia.mjs
+
       - name: 결과 업로드
         if: always()
         uses: actions/upload-artifact@v4
@@ -288,6 +301,7 @@ jobs:
             tools/discovery/fund_gwangju.md
             tools/discovery/kofia_openapi_list.md
             tools/discovery/kofia_openapi_list2.md
+            tools/discovery/fund_verify_kofia.*
           retention-days: 7
 
       - name: 결과 커밋
@@ -312,6 +326,7 @@ jobs:
           git add tools/discovery/fund_gwangju.md 2>/dev/null || true
           git add tools/discovery/kofia_openapi_list.md 2>/dev/null || true
           git add tools/discovery/kofia_openapi_list2.md 2>/dev/null || true
+          git add tools/discovery/fund_verify_kofia.* 2>/dev/null || true
           git commit -m "chore(fund): 원천 조사 결과 갱신" || echo "변경 없음"
           git pull --rebase --autostash origin "${GITHUB_REF_NAME}" || true
           git push || echo "푸시 실패 (무시)"
