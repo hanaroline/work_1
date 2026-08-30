@@ -540,6 +540,34 @@ if (download) {
   await p2.close();
 }
 
+// ── 사용법 PDF 내려받기.
+//    단일 파일에만 심겨 있다(원본은 data/etf-howto-pdf.js 를 따로 읽는다).
+//    받은 바이트가 진짜 PDF 인지까지 본다 — 빈 파일도 "받아지기는" 한다.
+const pdfBtnShown = await page.locator('#howto-pdf').isVisible();
+if (pdfBtnShown) {
+  const [pdfDl] = await Promise.all([
+    page.waitForEvent('download', { timeout: 10000 }).catch(() => null),
+    page.locator('#howto-pdf').click(),
+  ]);
+  check('PDF 내려받기가 파일을 만든다', pdfDl != null,
+        pdfDl ? pdfDl.suggestedFilename() : '받지 못함');
+  if (pdfDl) {
+    const fn = pdfDl.suggestedFilename();
+    check('PDF 이름에 .pdf 가 붙고 ASCII 다',
+          /\.pdf$/.test(fn) && /^[\x20-\x7E]+$/.test(fn), fn);
+    const buf = await readFile(await pdfDl.path());
+    check('받은 것이 진짜 PDF 다',
+          buf.subarray(0, 5).toString() === '%PDF-' && buf.includes('%%EOF'),
+          `${(buf.length / 1024).toFixed(0)}KB · ${buf.subarray(0, 8).toString()}`);
+    // 글자가 아니라 그림으로 박히면 검색도 복사도 안 된다.
+    check('PDF 안에 글자가 들어 있다', buf.includes('/ToUnicode'),
+          `/ToUnicode ${(buf.toString('latin1').match(/\/ToUnicode/g) || []).length}개`);
+    check('PDF 가 비어 있지 않다', buf.length > 50 * 1024, `${(buf.length / 1024).toFixed(0)}KB`);
+  }
+} else {
+  check('PDF 단추는 PDF 가 실렸을 때만 뜬다', true, '이 파일에는 PDF 가 없다 — 단추 숨김');
+}
+
 // ── 가로 스크롤이 생기지 않는가 (표는 자기 상자 안에서 스크롤해야 한다)
 for (const width of [1440, 768, 390]) {
   await page.setViewportSize({ width, height: 900 });
