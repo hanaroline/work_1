@@ -1,6 +1,6 @@
 # 랭킹 네 칸 되짚기
 
-- 시각: 2026-08-30T05:40:08.313Z
+- 시각: 2026-08-30T05:43:01.994Z
 - 대상: 1348종목 (화면이 쓰는 data/etf.js 그대로)
 
 ## 가. 설정액 — `totalAssets` 는 ETF 인가 펀드 전체인가
@@ -148,7 +148,8 @@ itemCode, itemName, etfSummary, listedDate, issuerName, etfBaseIndex, marketValu
     "dividendPerShareTtm",
     "dividendCountThisYear",
     "dividendMonthThisYear"
-  ]
+  ],
+  "marketValueRaw": "25053325000000"
 }
 ```
 
