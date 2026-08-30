@@ -364,6 +364,7 @@ footer .disc + .disc{margin-top:12px;}
     <button type="button" role="tab" data-tab="rank" aria-selected="false" data-ko="랭킹" data-en="Rankings">랭킹</button>
     <button type="button" role="tab" data-tab="tagging" aria-selected="false" data-ko="분류 점검" data-en="Tag Audit">분류 점검</button>
     <button type="button" role="tab" data-tab="basis" aria-selected="false" data-ko="수익률 기준" data-en="Return Basis">수익률 기준</button>
+    <button type="button" role="tab" data-tab="howto" aria-selected="false" data-ko="사용법" data-en="How to use">사용법</button>
   </div>
 
   <!-- ══════════════════ 1. ETF 찾기 ══════════════════ -->
@@ -481,6 +482,122 @@ footer .disc + .disc{margin-top:12px;}
     <p class="section-lead" data-ko="이 화면의 수익률은 총수익률 하나로 통일돼 있습니다. 같은 종목인데 네이버·증권사 화면과 숫자가 다르게 보일 수 있어, 두 곳의 발표값이 아니라 원가격을 받아 되짚은 결과를 여기 남깁니다."
        data-en="This screen quotes total return only. Portal figures can differ, so here is what we found by pulling both sides' underlying daily prices.">이 화면의 수익률은 총수익률 하나로 통일돼 있습니다.</p>
     <div id="basis-body"></div>
+  </section>
+
+  <!-- ══════════════════ 7. 사용법 ══════════════════ -->
+  <section class="section" id="tab-howto" hidden>
+    <div class="section-rule"></div>
+    <div class="section-eyebrow" data-ko="사용법" data-en="How to use">사용법</div>
+    <h2 class="section-title" data-ko="무엇을 할 수 있고, 숫자를 어떻게 읽나"
+        data-en="What you can do, and how to read the numbers">무엇을 할 수 있고, 숫자를 어떻게 읽나</h2>
+    <p class="section-lead"
+       data-ko="이 도구는 <strong>ETF가 실제로 무엇을 담고 있는지</strong>에서 출발합니다. 이름이 비슷해도 속은 다르고, 이름이 달라도 속은 같습니다. 그래서 편입종목을 먼저 보여 주고, 그 위에 비교·역조회·랭킹을 얹었습니다."
+       data-en="This tool starts from what an ETF actually holds. Similar names can hold different things, and different names can hold the same things.">이 도구는 <strong>ETF가 실제로 무엇을 담고 있는지</strong>에서 출발합니다.</p>
+
+    <h3 style="margin-top:34px" data-ko="네 개의 화면" data-en="Four screens">네 개의 화면</h3>
+    <div class="grid grid-2" style="margin-top:14px">
+      <div class="card">
+        <div class="label" data-ko="탭 1" data-en="Tab 1">탭 1</div>
+        <div class="stat sm" data-ko="ETF 찾기" data-en="Browse">ETF 찾기</div>
+        <p class="note" data-ko="검색창에 <b>ETF 이름·종목코드·기초지수</b>는 물론 <b>편입종목 이름</b>도 넣을 수 있습니다. &quot;삼성전자&quot;로 찾으면 삼성전자를 담은 ETF가 나옵니다. 왼쪽 필터로 좁힌 뒤 <b>행을 누르면</b> 그 자리에서 상위 10종목·섹터 비중·기간 수익률이 펼쳐집니다."
+           data-en="Search by ETF name, code, index — or by a holding's name. Click a row to expand its top 10 holdings, sector mix and period returns.">검색창에 ETF 이름·종목코드·기초지수는 물론 편입종목 이름도 넣을 수 있습니다.</p>
+      </div>
+      <div class="card">
+        <div class="label" data-ko="탭 2" data-en="Tab 2">탭 2</div>
+        <div class="stat sm" data-ko="비교 · 중복도" data-en="Compare">비교 · 중복도</div>
+        <p class="note" data-ko="찾기 화면에서 <b>⊕</b> 를 눌러 최대 8개까지 담습니다. 두 ETF가 <b>얼마나 겹치는지</b>를 비중 기준으로 계산하고, 아래에는 <b>종목 × ETF 표</b>가 나와 어느 종목이 어디에 들었는지 한눈에 보입니다."
+           data-en="Add up to 8 funds with the ⊕ button. See pairwise overlap by weight, plus a stock-by-fund matrix.">찾기 화면에서 ⊕ 를 눌러 최대 8개까지 담습니다.</p>
+      </div>
+      <div class="card">
+        <div class="label" data-ko="탭 3" data-en="Tab 3">탭 3</div>
+        <div class="stat sm" data-ko="종목 → ETF" data-en="Stock → ETF">종목 → ETF</div>
+        <p class="note" data-ko="반대 방향입니다. <b>개별 종목 이름</b>을 넣으면 그 종목을 상위 10위 안에 담은 ETF가 <b>비중 순</b>으로 나옵니다. 이미 들고 있는 종목과 겹치지 않는 ETF를 고를 때 씁니다."
+           data-en="The reverse lookup: enter a stock and see which ETFs hold it in their top 10, ranked by weight.">개별 종목 이름을 넣으면 그 종목을 담은 ETF가 비중 순으로 나옵니다.</p>
+      </div>
+      <div class="card">
+        <div class="label" data-ko="탭 4" data-en="Tab 4">탭 4</div>
+        <div class="stat sm" data-ko="랭킹" data-en="Rankings">랭킹</div>
+        <p class="note" data-ko="기간 수익률 <b>상위·하위</b>, 설정액, 3개월 자금 유입, 총보수를 줄 세웁니다. 위에서 <b>상장 시장</b>과 <b>기간</b>을 고를 수 있고, 레버리지·인버스는 기본으로 빠져 있습니다."
+           data-en="Top and bottom returns, AUM, 3-month flows and TER. Filter by listing market and period; leveraged and inverse funds are excluded by default.">기간 수익률 상위·하위, 설정액, 3개월 자금 유입, 총보수를 줄 세웁니다.</p>
+      </div>
+    </div>
+
+    <h3 style="margin-top:38px" data-ko="이렇게 씁니다" data-en="Three ways in">이렇게 씁니다</h3>
+    <div class="grid grid-3" style="margin-top:14px">
+      <div class="card">
+        <div class="label" data-ko="상황 1" data-en="Case 1">상황 1</div>
+        <p style="font-weight:600;margin:6px 0 10px" data-ko="&quot;반도체 ETF, 뭐가 다른가&quot;" data-en="&quot;How do these semis differ?&quot;">&quot;반도체 ETF, 뭐가 다른가&quot;</p>
+        <p class="note" data-ko="<b>찾기</b>에서 테마 = 반도체 → 마음에 드는 서너 개를 <b>⊕</b> 로 담기 → <b>비교</b> 탭. 이름은 비슷해도 상위 10종목이 얼마나 다른지, 겹침이 몇 %인지 바로 보입니다."
+           data-en="Browse → theme = semiconductors → add a few with ⊕ → Compare tab.">찾기에서 테마 = 반도체 → ⊕ 로 담기 → 비교 탭.</p>
+      </div>
+      <div class="card">
+        <div class="label" data-ko="상황 2" data-en="Case 2">상황 2</div>
+        <p style="font-weight:600;margin:6px 0 10px" data-ko="&quot;삼성전자를 이미 많이 들고 있다&quot;" data-en="&quot;I already hold a lot of one stock&quot;">&quot;삼성전자를 이미 많이 들고 있다&quot;</p>
+        <p class="note" data-ko="<b>종목 → ETF</b> 에서 삼성전자를 찾습니다. 비중 순으로 나오므로, 위쪽은 피하고 아래쪽이나 목록에 없는 ETF를 고르면 중복 노출이 줄어듭니다."
+           data-en="Use Stock → ETF. Funds are ranked by weight, so avoid the top of the list to reduce doubling up.">종목 → ETF 에서 찾으면 비중 순으로 나옵니다. 위쪽을 피하면 중복이 줄어듭니다.</p>
+      </div>
+      <div class="card">
+        <div class="label" data-ko="상황 3" data-en="Case 3">상황 3</div>
+        <p style="font-weight:600;margin:6px 0 10px" data-ko="&quot;성과가 좋은 게 뭔가&quot;" data-en="&quot;What performed well?&quot;">&quot;성과가 좋은 게 뭔가&quot;</p>
+        <p class="note" data-ko="<b>랭킹</b> 에서 기간을 고릅니다. 마음에 드는 종목을 눌러 상세로 들어가면 <b>동일 유형 안에서 몇 %</b> 인지, <b>유형 평균보다 얼마나</b> 나은지가 기간별로 나옵니다."
+           data-en="Rankings → pick a period, then click a fund to see its percentile and gap vs the category average.">랭킹에서 기간을 고르고, 종목을 눌러 백분율 순위와 유형 평균 대비를 봅니다.</p>
+      </div>
+    </div>
+
+    <h3 style="margin-top:38px" data-ko="숫자를 읽기 전에" data-en="Before you read the numbers">숫자를 읽기 전에</h3>
+    <p class="section-lead" style="font-size:15px"
+       data-ko="이 도구를 만들면서 실제로 틀렸던 것들입니다. 여기 적힌 것만 알면 다른 화면과 숫자가 달라도 당황하지 않습니다."
+       data-en="These are the things that actually went wrong while building this tool.">이 도구를 만들면서 실제로 틀렸던 것들입니다.</p>
+
+    <div class="notice">
+      <strong data-ko="기간 옆의 날짜가 기준일입니다." data-en="The date beside each period is the base date.">기간 옆의 날짜가 기준일입니다.</strong>
+      <span data-ko="다른 화면과 값이 다르면 <u>먼저 이 날짜를 견주십시오</u>. 2026-07-28 처럼 시장이 하루에 -10.84% 움직인 날이 기준일에 걸리면, 기준일 하루 차이로 1개월 수익률이 -4.98% 와 +5.14% 로 갈립니다. 둘 다 맞는 값입니다."
+            data-en="Compare it first when another screen shows a different figure. One day of difference can flip a 1-month return when the market moved 10% that day."></span>
+    </div>
+
+    <div class="notice">
+      <strong data-ko="수익률은 총수익률 하나입니다." data-en="One basis only: total return.">수익률은 총수익률 하나입니다.</strong>
+      <span data-ko="분배금을 재투자한 기준이라, 분배금이 빠진 HTS 등락률보다 높게 보입니다. 커버드콜처럼 분배율이 20%를 넘는 상품은 <u>차이가 20%p 이상</u> 납니다. 국내·해외 모두 같은 계산기를 쓰므로 두 시장을 한 줄로 세울 수 있습니다. 3년·5년은 연율입니다."
+            data-en="Distributions are reinvested, so figures run higher than a plain price change — by 20pp or more for high-distribution covered-call funds. 3Y/5Y are annualised."></span>
+    </div>
+
+    <div class="notice">
+      <strong data-ko="편입종목은 상위 10개까지입니다." data-en="Only the top 10 holdings.">편입종목은 상위 10개까지입니다.</strong>
+      <span data-ko="나머지는 이 화면에 없습니다. 그래서 <u>겹침 비율은 실제 중복의 하한</u>입니다 — 11위 아래에서 더 겹칠 수 있습니다. 비중을 아예 안 주는 상품(해외 기초자산·채권·원자재)은 순위만 뜻이 있고 합계는 내지 않습니다."
+            data-en="Overlap figures are therefore a lower bound. Where the source gives no weights, only the ranking is meaningful."></span>
+    </div>
+
+    <div class="notice">
+      <strong data-ko="&quot;동일 유형&quot; 은 상장 시장 · 자산군 · 투자 지역 · 배율 입니다." data-en="Category = market, asset class, region and gearing.">&quot;동일 유형&quot; 은 상장 시장 · 자산군 · 투자 지역 · 배율 입니다.</strong>
+      <span data-ko="백분율 순위는 <u>1이 가장 좋고 100이 가장 나쁩니다</u>. 유형 평균은 그 무리의 산술평균이라 오른쪽 꼬리에 끌립니다. 레버리지·인버스는 1배 상품과 다른 무리로 셉니다. 거래가 멈춘 종목은 어느 순위에도 넣지 않습니다."
+            data-en="Percentile rank: 1 is best, 100 is worst. The average is arithmetic. Geared funds are counted separately; suspended funds are excluded from all rankings."></span>
+    </div>
+
+    <div class="notice">
+      <strong data-ko="설정액은 같은 잣대끼리만 세웁니다." data-en="AUM is ranked only among like measures.">설정액은 같은 잣대끼리만 세웁니다.</strong>
+      <span data-ko="일부 해외 ETF는 자료 제공처가 <u>펀드 전체</u>(뮤추얼펀드 클래스 포함) 순자산을 줍니다. 그 종목은 설정액 순위에서 빼고, 상세와 목록에 <b>펀드 전체 기준</b>이라고 적어 둡니다. 통화가 다른 시장은 원화로 환산해 세우고, 환율을 못 받은 종목은 순위에서 뺍니다."
+            data-en="For some foreign ETFs the source reports the whole fund's assets across all share classes. Those are excluded from the AUM ranking and labelled in the detail view."></span>
+    </div>
+
+    <div class="notice">
+      <strong data-ko="일부 종목은 분배금이 빠져 있습니다." data-en="A few funds are missing distributions.">일부 종목은 분배금이 빠져 있습니다.</strong>
+      <span data-ko="원천에 분배 이력이 없으면 총수익률이 시장가와 같은 값이 되어, <u>실제보다 분배율만큼 낮게</u> 나옵니다. 주로 채권형이고 1~3.6%p 수준입니다. 해당 종목 상세에는 그 사실을 적어 두었으니, 옆의 <b>기준가 칸</b>을 함께 보십시오."
+            data-en="Where the source has no distribution history, total return equals price return and understates by roughly the yield — mostly bond funds, 1–3.6pp. Such funds are flagged in the detail view."></span>
+    </div>
+
+    <h3 style="margin-top:38px" data-ko="자료는 어디서 오고 언제 것인가" data-en="Where the data comes from">자료는 어디서 오고 언제 것인가</h3>
+    <div id="howto-source" class="notice" style="border-left-color:var(--blue)"></div>
+    <p class="section-lead" style="font-size:15px"
+       data-ko="편입종목 비중은 <b>직전 영업일 기준 납입자산 구성(PDF)</b>이며 실시간 보유 내역이 아닙니다. 화면에 실리는 모든 숫자는 매일 전수 감사를 통과한 것만 나갑니다 — 감사에 오류가 하나라도 있으면 자료를 갱신하지 않고, 직전 자료를 그대로 둡니다."
+       data-en="Weights come from the prior business day's portfolio deposit file, not live holdings. Every figure passes a full audit before publication; if the audit finds an error the data is not updated.">편입종목 비중은 직전 영업일 기준 납입자산 구성이며 실시간 보유 내역이 아닙니다.</p>
+
+    <div class="callout" style="margin-top:30px">
+      <h3 data-ko="찾는 ETF가 안 보인다면" data-en="Can't find a fund?">찾는 ETF가 안 보인다면</h3>
+      <p data-ko="찾기 화면 아래쪽의 <b>&quot;편입종목 있는 것만&quot;</b> 체크를 풀어 보십시오. 원천이 편입종목을 주지 않는 상품(중국 본토 상장 등)이 기본으로 빠져 있습니다. <b>&quot;레버리지 · 인버스 포함&quot;</b> 도 기본으로 꺼져 있습니다."
+         data-en="Untick &quot;with holdings only&quot; — funds whose source provides no holdings are hidden by default. Leveraged and inverse funds are also off by default."></p>
+      <p data-ko="그래도 없으면 이 도구가 다루는 범위 밖입니다. 국내 상장 전 종목과, 해외는 주요 상장분만 싣습니다."
+         data-en="Otherwise it is outside this tool's universe: all Korean listings, plus major foreign listings only."></p>
+    </div>
   </section>
 
 </main>
@@ -1970,6 +2087,30 @@ function renderHero() {
       ? '해외 ' + DATA.sources.global.count + '종목은 Yahoo Finance에서 수집합니다'
       : 'Overseas ETFs from Yahoo Finance');
   }
+  // 사용법 화면의 출처 줄. "언제 것인가" 를 글로 적어 두면 자료가 낡아도
+  // 화면은 최신인 척한다. 실제 값에서 만들어 그럴 일이 없게 한다.
+  var howtoSrc = el('howto-source');
+  if (howtoSrc) {
+    var days = [];
+    for (var hi = 0; hi < ETFS.length; hi++) {
+      var ha = ETFS[hi].retAsOf;
+      if (/^\d{4}-\d{2}-\d{2}$/.test(String(ha))) days.push(ha);
+    }
+    days.sort();
+    var newest = days.length ? days[days.length - 1] : null;
+    var atNewest = 0;
+    for (var hj = 0; hj < ETFS.length; hj++) if (ETFS[hj].retAsOf === newest) atNewest += 1;
+    howtoSrc.innerHTML = lang === 'ko'
+      ? '<strong>수익률 기준일 ' + esc(newest || '미상') + '</strong> · ' +
+        atNewest.toLocaleString() + ' / ' + ETFS.length.toLocaleString() + '종목이 이 날짜입니다. ' +
+        '나머지는 그날 체결이 없어 직전 영업일로 남습니다. ' +
+        (srcBits.length ? esc(srcBits.join('. ')) + '.' : '') +
+        ' 국내장 마감(15:30)과 미국장 마감 뒤 하루 두 번 받습니다.'
+      : '<strong>Returns as of ' + esc(newest || 'n/a') + '</strong> · ' +
+        atNewest.toLocaleString() + ' of ' + ETFS.length.toLocaleString() + ' funds carry this date; ' +
+        'the rest had no trade that day. ' + (srcBits.length ? esc(srcBits.join('. ')) + '.' : '');
+  }
+
   el('disc-source').innerHTML = srcBits.length
     ? '<strong>' + (lang === 'ko' ? '데이터 출처.' : 'Sources.') + '</strong> ' + esc(srcBits.join('. ')) + '.'
     : '<strong>' + (lang === 'ko' ? '예시 데이터입니다.' : 'Sample data.') + '</strong> ' +
@@ -2154,9 +2295,14 @@ function renderAll() {
 
 function showTab(name) {
   state.tab = name;
-  ['browse', 'compare', 'reverse', 'rank', 'tagging', 'basis'].forEach(function (n) {
-    el('tab-' + n).hidden = n !== name;
-  });
+  // 탭 이름을 손으로 적어 두면 탭을 더할 때마다 잊는다 — 실제로 사용법 탭을
+  // 붙였더니 버튼은 눌리는데 화면이 안 바뀌었다. 버튼에서 끌어온다.
+  var btnsAll = document.querySelectorAll('.tabs button[data-tab]');
+  for (var t = 0; t < btnsAll.length; t++) {
+    var n = btnsAll[t].getAttribute('data-tab');
+    var sec = el('tab-' + n);
+    if (sec) sec.hidden = n !== name;
+  }
   var btns = document.querySelectorAll('.tabs button');
   for (var i = 0; i < btns.length; i++) {
     btns[i].setAttribute('aria-selected', btns[i].getAttribute('data-tab') === name ? 'true' : 'false');

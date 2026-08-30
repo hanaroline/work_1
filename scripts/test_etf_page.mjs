@@ -467,6 +467,33 @@ const rowsEn = await page.locator('#list-body tr').count();
 check('영문 상태에서도 목록이 그려진다', rowsEn > 0, `${rowsEn}행`);
 await page.locator('.lang-toggle button[data-lang="ko"]').click();
 
+// ── 사용법 화면
+await page.locator('.tabs button[data-tab="howto"]').click();
+await page.waitForTimeout(200);
+const howtoVisible = await page.locator('#tab-howto').isVisible();
+check('사용법 탭이 열린다', howtoVisible);
+const howtoCards = await page.locator('#tab-howto .card').count();
+check('사용법에 안내 카드가 있다', howtoCards >= 6, `${howtoCards}개`);
+// 자료가 언제 것인지는 글로 적으면 낡아도 최신인 척한다. 실제 값에서 만든다.
+const howtoSrc = await page.locator('#howto-source').textContent();
+check('사용법이 실제 기준일을 적는다', /\d{4}-\d{2}-\d{2}/.test(howtoSrc || ''),
+      (howtoSrc || '').trim().slice(0, 60));
+const howtoAsOf = (/\d{4}-\d{2}-\d{2}/.exec(howtoSrc || '') || [])[0];
+const realNewest = await page.evaluate(() => {
+  const ds = (window.ETF_DATA?.etfs || ETFS).map((e) => e.retAsOf)
+    .filter((d) => /^\d{4}-\d{2}-\d{2}$/.test(String(d))).sort();
+  return ds[ds.length - 1] || null;
+});
+check('적힌 기준일이 자료의 최신 기준일과 같다', howtoAsOf === realNewest,
+      `화면 ${howtoAsOf} vs 자료 ${realNewest}`);
+// 영문으로 바꿔도 내용이 남아야 한다(빈 탭이 되면 안 된다).
+await page.locator('.lang-toggle button[data-lang="en"]').click();
+await page.waitForTimeout(200);
+const howtoEn = await page.locator('#tab-howto .card').count();
+check('영문에서도 사용법이 그려진다', howtoEn >= 6, `${howtoEn}개`);
+await page.locator('.lang-toggle button[data-lang="ko"]').click();
+await page.waitForTimeout(150);
+
 // ── 가로 스크롤이 생기지 않는가 (표는 자기 상자 안에서 스크롤해야 한다)
 for (const width of [1440, 768, 390]) {
   await page.setViewportSize({ width, height: 900 });
