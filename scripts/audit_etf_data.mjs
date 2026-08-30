@@ -325,6 +325,24 @@ for (const e of ETFS) {
          { premium: e.premium, volume: e.volume, price: e.price, nav: e.nav });
   }
 
+  // ── 8-2. 설정액이 무엇을 센 값인지 ─────────────────────────────────────
+  // 야후 totalAssets 는 **펀드 전체**를 센다. 뱅가드 ETF 는 인덱스펀드의 한
+  // 클래스라 뮤추얼펀드 클래스까지 합친 값이 온다 — VTI 와 VTSAX 가 똑같이
+  // $2,290.0B 였고 여덟 쌍 모두 그랬다. 국내는 그 ETF 하나의 순자산총액이다.
+  // 잣대를 적어 두지 않으면 화면이 둘을 한 줄로 세워 뱅가드만 서너 배 크게
+  // 나온다. 실제로 설정액 상위 열다섯 중 아홉이 그랬다.
+  if (e.aum != null && !e.aumScope) {
+    flag('error', '설정액-잣대없음', e,
+         `aum=${e.aum} 인데 aumScope 가 비어 있다 — 무엇을 센 값인지 알 수 없다`);
+  }
+  if (e.aumScope && !['etf', 'fund', 'unknown'].includes(e.aumScope)) {
+    flag('error', '설정액-잣대이상', e, `aumScope=${e.aumScope}`);
+  }
+  if (e.market === 'KR' && e.aumScope && e.aumScope !== 'etf') {
+    flag('error', '설정액-국내잣대틀림', e,
+         `국내는 네이버 totalNav(그 ETF 하나)라 언제나 'etf' 여야 한다: ${e.aumScope}`);
+  }
+
   // ── 9. 현재가와 등락률의 앞뒤 ───────────────────────────────────────────
   const px = Number(e.price), chg = Number(e.change), rate = Number(e.changeRate);
   if (Number.isFinite(px) && px <= 0) flag('error', '현재가-영이하', e, `price=${px}`);

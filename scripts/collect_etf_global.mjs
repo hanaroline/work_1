@@ -166,6 +166,57 @@ function shape(entry, summary, returns) {
   };
 }
 
+// ─────────────────── 설정액이 무엇을 세는가 ───────────────────
+// 야후 `totalAssets` 는 **펀드 전체**를 센다. 클래스가 하나뿐인 ETF(SPY·IVV·QQQ)
+// 는 그게 곧 ETF 순자산이라 문제가 없다. 그런데 뱅가드 ETF 는 인덱스펀드의 한
+// 클래스라서, 같은 펀드의 뮤추얼펀드 클래스까지 합친 값이 온다.
+//
+// 실증: VTI 와 VTSAX 는 같은 펀드다. 두 티커의 totalAssets 가 $2,290.0B 로
+// 완전히 같았다. 여덟 쌍을 봤고 여덟 쌍 모두 같았다
+// (tools/discovery/rank_fields_verify.md).
+//
+// 그대로 두면 화면의 "설정액 상위 15" 중 아홉 자리를 뱅가드가 차지한다 —
+// ETF 로 들어온 돈이 아니라 뮤추얼펀드까지 합친 돈으로 줄을 세운 것이다.
+// 국내 ETF 는 네이버 totalNav(그 ETF 만의 순자산)를 쓰므로 아예 다른 잣대다.
+//
+// 그래서 종목마다 **그 값이 무엇을 센 것인지**를 같이 저장한다. 짐작으로
+// 붙이지 않고, 뮤추얼펀드 클래스를 실제로 불러 같은 값인지 확인한 뒤 붙인다.
+// 티커를 모르거나 확인이 실패하면 'unknown' 으로 둔다 — 이 프로젝트는 환율을
+// 모르면 순위에서 빼 왔고, 잣대를 모르는 것도 같게 다룬다.
+const SHARE_CLASS_SIBLING = {
+  VTI: 'VTSAX', VOO: 'VFIAX', VXUS: 'VTIAX', BND: 'VBTLX', VUG: 'VIGAX',
+  VEA: 'VTMGX', VTV: 'VVIAX', VWO: 'VEMAX', VGT: 'VITAX', VIG: 'VDADX',
+  VYM: 'VHYAX', VT: 'VTWAX', VNQ: 'VGSLX', VHT: 'VHCIX', MGK: 'VMGAX',
+};
+
+async function classifyAumScope(rows) {
+  const targets = rows.filter((r) => r.aum != null && SHARE_CLASS_SIBLING[r.code]);
+  const checked = await mapLimit(targets, 2, async (r) => {
+    const sib = SHARE_CLASS_SIBLING[r.code];
+    const s = await fetchSummary(sib);
+    await sleep(200);
+    const v = raw(s?.defaultKeyStatistics?.totalAssets) ?? raw(s?.summaryDetail?.totalAssets);
+    return { code: r.code, sib, sibAssets: v };
+  });
+  const verdict = new Map();
+  checked.forEach((res, i) => {
+    const code = targets[i].code;
+    if (!res.ok || res.value.sibAssets == null) { verdict.set(code, 'unknown'); return; }
+    const mine = targets[i].aum;
+    const same = Math.abs(mine - res.value.sibAssets) / mine < 0.001;
+    verdict.set(code, same ? 'fund' : 'etf');
+  });
+  let fund = 0, unknown = 0;
+  for (const r of rows) {
+    if (r.aum == null) { r.aumScope = null; continue; }
+    r.aumScope = verdict.get(r.code) ?? 'etf';
+    if (r.aumScope === 'fund') fund += 1;
+    if (r.aumScope === 'unknown') unknown += 1;
+  }
+  console.log(`[global] 설정액 잣대 — 펀드 전체 ${fund}종목 · 확인 실패 ${unknown}종목 ` +
+              `· 나머지는 ETF 순자산`);
+}
+
 // ─────────────────── 실행 ───────────────────
 async function main() {
   await authorize();
@@ -201,6 +252,8 @@ async function main() {
     if (res.value.holdings) withHoldings += 1;
     else noHoldingsByMarket[res.value.market] = (noHoldingsByMarket[res.value.market] || 0) + 1;
   });
+
+  await classifyAumScope(etfs);
 
   console.log(`[global] 수집 ${etfs.length}/${list.length} · 편입종목 ${withHoldings}`);
   const gMethod = {};
