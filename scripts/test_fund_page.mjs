@@ -262,6 +262,74 @@ if (firstStock) {
   await page.waitForTimeout(200);
   const hits = await page.locator('#reverse-body tbody tr').count();
   check(`"${firstStock.slice(0, 6)}" 역조회 결과가 나온다`, hits > 0, `${hits}건`);
+
+  // 보유종목 비중에는 기준일이 없다. 실제로 없다 — 원천이 code·name·weight
+  // 셋만 주고, 178,352행 중 날짜가 붙은 것이 0개다. 그런데 이 표는 그 비중
+  // 옆에 **오늘 기준의** 설정액을 나란히 놓는다. 날짜를 안 적으면 둘 다
+  // 오늘 것으로 읽히므로, 고지가 조용히 빠지는 것을 막는다.
+  const revNotice = (await page.locator('#reverse-body .notice').first().textContent()) || '';
+  check('역조회에 보유종목 기준일 고지가 있다',
+    /기준일|분기/.test(revNotice), revNotice.slice(0, 40) || '(없음)');
+}
+
+// 한 펀드가 검색어에 걸리는 종목을 여럿 담고 있을 때, 표는 그중 하나만 싣는다.
+// 몇 개를 감췄는지 말하지 않으면 그 하나가 전부로 읽힌다. 배지가 그 수를
+// 밝히는지, 그리고 그 수와 실린 비중이 **자료와 맞는지** 함께 본다.
+const multi = await page.evaluate(() => {
+  const D = window.FUND_DATA || {};
+  // 걸리는 종목을 둘 이상 담은 펀드가 가장 많은 검색어를 자료에서 직접 고른다.
+  // 화면에 넣을 말을 시험에 적어 두면 시험이 아니라 메아리가 된다.
+  const cand = ['삼성', '현대', 'SK', 'LG', '전자', '은행'];
+  let best = null;
+  for (const q of cand) {
+    const k = q.toLowerCase();
+    let withMore = 0, total = 0;
+    for (const f of D.funds || []) {
+      const ms = (f.holdings || []).filter((h) => (h.name || '').toLowerCase().includes(k));
+      if (ms.length) total += 1;
+      if (ms.length > 1) withMore += 1;
+    }
+    if (withMore && (!best || withMore > best.withMore)) best = { q, withMore, total };
+  }
+  return best;
+});
+if (multi) {
+  await page.fill('#rq', multi.q);
+  await page.waitForTimeout(300);
+  const badges = await page.locator('#reverse-body tbody tr td:nth-child(3) span[title]').count();
+  check(`"${multi.q}" 역조회에 "+N개 더" 배지가 붙는다`,
+    badges > 0, `${badges}개 행 (자료상 여러 종목 보유 ${multi.withMore}/${multi.total}개 펀드)`);
+
+  // 배지의 수와 옆칸 비중이 자료와 일치하는지 — 표에 실린 행을 자료로 되짚는다.
+  const mismatch = await page.evaluate((q) => {
+    const k = q.toLowerCase();
+    const D = window.FUND_DATA || {};
+    const byName = new Map();
+    for (const f of D.funds || []) byName.set(f.name || f.code, f);
+    const bad = [];
+    for (const tr of document.querySelectorAll('#reverse-body tbody tr')) {
+      const td = tr.querySelectorAll('td');
+      if (td.length < 4) continue;
+      const fund = byName.get(td[0].querySelector('div')?.textContent || '');
+      if (!fund) continue;
+      const ms = (fund.holdings || []).filter((h) => (h.name || '').toLowerCase().includes(k));
+      const badge = td[2].querySelector('span[title]');
+      const shown = badge ? Number((badge.textContent || '').replace(/\D/g, '')) : 0;
+      if (shown !== ms.length - 1) { bad.push(`${fund.name}: 배지 ${shown} ≠ 자료 ${ms.length - 1}`); continue; }
+      // 실린 것은 걸린 종목 중 비중이 가장 큰 것이라야 한다.
+      const wts = ms.map((h) => h.weight).filter((w) => Number.isFinite(w));
+      const head = ms[0];
+      if (wts.length && Number.isFinite(head.weight) && head.weight < Math.max(...wts) - 1e-9) {
+        bad.push(`${fund.name}: 실린 비중이 최대가 아님`);
+      }
+      if ((td[2].textContent || '').indexOf(head.name) !== 0) bad.push(`${fund.name}: 종목명 불일치`);
+    }
+    return bad;
+  }, multi.q);
+  check('배지 개수와 실린 종목이 자료와 일치한다',
+    mismatch.length === 0, mismatch.length ? mismatch.slice(0, 3).join(' / ') : '어긋남 0');
+  await page.fill('#rq', '');
+  await page.waitForTimeout(100);
 }
 
 // ── 랭킹
@@ -545,6 +613,20 @@ check('총보수를 0 으로 지어내지 않는다', !feeInvented);
   check('확인 안 된 수익률 구간을 확인한 것처럼 말하지 않는다',
     /확인되지 않았습니다/.test(foot) && /1M/.test(foot),
     /확인되지 않았습니다/.test(foot) ? '표시됨' : '문구 없음');
+
+  // 이 문단은 대조를 돌린 날의 결과를 적은 고정된 글인데, 자료는 매일 다시
+  // 걷히고 펀드 수도 바뀐다. 대조한 집합과 지금 화면의 집합이 어긋나는 날
+  // "이 화면을 전수 대조했다" 는 말이 조용히 거짓이 되므로, 어긋나면 어긋난다고
+  // 적혀 있어야 한다. 사람이 갱신을 잊는 것을 시험이 대신 잡는다.
+  const shownN = await page.evaluate(() => (window.FUND_DATA?.funds || []).length);
+  const verifiedN = Number((foot.match(/([\d,]+)개를/) || [])[1]?.replace(/,/g, ''));
+  if (Number.isFinite(verifiedN) && verifiedN !== shownN) {
+    check('대조한 집합이 지금 화면과 다르면 그렇다고 밝힌다',
+      /지금 화면은/.test(foot) && foot.includes(shownN.toLocaleString()),
+      `대조 ${verifiedN} vs 화면 ${shownN} — ${/지금 화면은/.test(foot) ? '밝힘' : '밝히지 않음'}`);
+  } else {
+    check('대조 집합과 화면 집합이 같다', verifiedN === shownN, `${verifiedN} = ${shownN}`);
+  }
 }
 
 // ── 영문 전환
