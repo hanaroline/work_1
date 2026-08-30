@@ -457,6 +457,7 @@ footer .disc + .disc{margin-top:12px;}
     <p class="disc" id="disc-scope"></p>
     <p class="disc" id="disc-fee"></p>
     <p class="disc" id="disc-returns"></p>
+    <p class="disc" id="disc-verify"></p>
     <p class="disc" data-ko="<strong>유의사항.</strong> 본 화면은 정보 제공 목적의 참고 자료이며 투자 권유가 아닙니다. 투자 판단과 그 결과에 대한 책임은 이용자에게 있습니다. 실제 상품 내용은 각 펀드의 투자설명서와 운용사 공시가 우선합니다. 사내에서 고객 대상으로 활용할 경우 금융투자협회 광고 심의 및 준법감시 부서 확인을 권장합니다."
        data-en="<strong>Disclaimer.</strong> For information only; not investment advice. Fund prospectuses and manager disclosures prevail."></p>
   </div>
@@ -1209,6 +1210,32 @@ function dropText(drop) {
 }
 
 // ───────────────────────── 위험지표 ─────────────────────────
+
+/**
+ * 자릿수가 깨진 위험지표인가.
+ *
+ * 원천이 주는 위험지표 중 일부가 계산이 깨진 채로 온다 — 샤프 −2049.22
+ * (베어링글로벌하이일드[USD]), 베타 +95.88(골든브릿지스마트단기채) 같은
+ * 것들이다. 그대로 찍으면 화면이 그 숫자를 보증하는 꼴이 된다. 틀린 숫자를
+ * 싣느니 빈칸이 낫다. 다만 **왜 비었는지는 적는다** — 말없이 지우면 원천에
+ * 값이 아예 없는 것과 구별되지 않는다.
+ *
+ * 한도는 저장소 감사(scripts/audit_fund_data.mjs)가 쓰는 것과 같은
+ * "자릿수 밖" 기준이다. **여기를 느슨하게 잡으면 안 된다.** |샤프|>5 로
+ * 잡으면 72건이 걸리는데 대부분이 MMF·초단기채이고, 변동성이 거의 0인
+ * MMF 의 샤프 5~6 은 정상이다(분모가 작다). 그건 자료가 틀린 게 아니라
+ * 규칙이 틀린 것이다. (→ tools/discovery/fund_verify_verdict.md 7절)
+ *
+ * 젠센알파·정보비율에는 감사가 한도를 두지 않는다. 없는 기준을 여기서
+ * 지어내지 않는다.
+ */
+function metricOutOfRange(key, v) {
+  if (key === 'standardDeviation' || key === 'trackingError') return v < 0;
+  if (key === 'beta') return Math.abs(v) > 10;
+  if (key === 'sharpe') return Math.abs(v) > 20;
+  return false;
+}
+
 function metricsBlock(f) {
   var m = f.metrics;
   if (!m) return '';
@@ -1226,24 +1253,63 @@ function metricsBlock(f) {
   var p = f.metricsPeer || null;
   var rows = '';
   var n = 0;
+  var held = [];        // 자릿수 밖이라 비운 지표 이름
+  var heldPeer = false; // 유형평균 쪽에서 비운 것이 있는가
   for (var i = 0; i < ROWS.length; i += 1) {
     var r = ROWS[i];
     var v = m[r[0]];
     if (v == null || !isFinite(Number(v))) continue;   // 없는 것은 칸을 만들지 않는다
-    n += 1;
+    var vBad = metricOutOfRange(r[0], Number(v));
+    if (vBad) held.push(lang === 'ko' ? r[1] : r[2]);
     var pv = p ? p[r[0]] : null;
+    var pvOk = pv != null && isFinite(Number(pv));
+    var pvBad = pvOk && metricOutOfRange(r[0], Number(pv));
+    if (pvBad) heldPeer = true;
+    // 자기 값과 유형평균이 둘 다 못 쓸 값이면 줄 자체를 만들지 않는다.
+    if (vBad && (!pvOk || pvBad)) continue;
+    n += 1;
     rows += '<tr><td>' + esc(lang === 'ko' ? r[1] : r[2]) + '</td>' +
-      '<td class="num">' + Number(v).toFixed(2) + esc(r[3]) + '</td>' +
-      '<td class="num">' + (pv == null || !isFinite(Number(pv))
+      '<td class="num">' + (vBad
+        ? '<span class="dim" title="' + esc(lang === 'ko' ? '원천 값이 자릿수 밖이라 비웠습니다'
+                                                          : 'source value out of range; withheld') + '">–</span>'
+        : Number(v).toFixed(2) + esc(r[3])) + '</td>' +
+      '<td class="num">' + (!pvOk || pvBad
         ? '<span class="dim">–</span>'
         : Number(pv).toFixed(2) + esc(r[3])) + '</td></tr>';
   }
-  if (!n) return '';
+  if (!n && !held.length) return '';
   var weeks = Number(f.metricsWeeks);
   var basis = isFinite(weeks) && weeks > 0
     ? (lang === 'ko' ? weeks + '주(약 ' + Math.round(weeks / 52 * 12) + '개월) · 연환산'
                      : weeks + ' weeks, annualised')
     : (lang === 'ko' ? '1년 · 연환산' : '1Y, annualised');
+
+  // 비운 것을 밝히는 줄. 비운 사실을 안 적으면 원천에 값이 없는 것과 같아 보인다.
+  var heldNote = '';
+  if (held.length || heldPeer) {
+    // 조사(을/를·은/는)가 지표 이름의 받침에 따라 갈리므로 이름 뒤에 조사를
+    // 붙이지 않는 문장으로 쓴다. "샤프지수 은(는)" 같은 자국을 남기지 않는다.
+    var whatKo = [], whatEn = [];
+    if (held.length) {
+      whatKo.push('이 펀드의 <u>' + esc(held.join(' · ')) + '</u>');
+      whatEn.push('this fund’s <u>' + esc(held.join(' · ')) + '</u>');
+    }
+    if (heldPeer) { whatKo.push('유형평균'); whatEn.push('the category average'); }
+    heldNote = '<div class="notice warn" style="margin-top:10px">' + (lang === 'ko'
+      ? '<strong>비운 칸이 있습니다.</strong> 원천이 준 값 자체가 자릿수 밖' +
+        '(|샤프|&gt;20 · |베타|&gt;10 · 표준편차·추적오차 음수)이라 싣지 않았습니다 — ' +
+        whatKo.join(' · ') + '. 계산이 깨진 값을 그대로 찍는 대신 비웠습니다. ' +
+        '값이 필요하시면 아래 원천 링크에서 직접 확인하십시오.'
+      : '<strong>Some cells are withheld.</strong> The source’s own figures for ' +
+        whatEn.join(' and ') + ' are out of range (|Sharpe|&gt;20, |beta|&gt;10, negative ' +
+        'std. deviation or tracking error), so they are not shown. Rather than print a broken ' +
+        'calculation, the cell is left blank — use the source link below if you need the value.') +
+      '</div>';
+  }
+  if (!n) {
+    return '<h4>' + esc(lang === 'ko' ? '위험 · 성과 지표' : 'Risk metrics') + '</h4>' + heldNote;
+  }
+
   return '<h4>' + esc(lang === 'ko' ? '위험 · 성과 지표' : 'Risk metrics') +
     ' <span class="dim" style="font-weight:400;font-size:15px">(' + esc(basis) + ')</span></h4>' +
     '<div class="table-wrap"><table><thead><tr>' +
@@ -1258,7 +1324,7 @@ function metricsBlock(f) {
         '우리가 낸 값이므로 서로 다른 기준입니다.'
       : '※ The category average comes <strong>from the source</strong> (Naver), not from ' +
         'averaging our own universe. The “vs category avg” column in the returns table above ' +
-        'is ours, so the two are on different bases.') + '</div>';
+        'is ours, so the two are on different bases.') + '</div>' + heldNote;
 }
 
 /** 이 펀드를 원천에서 직접 여는 링크. 값을 옮겨 적는 것과 확인할 길을 주는 것은 다르다. */
@@ -2070,6 +2136,29 @@ function renderHero() {
       'not annualised. Source figures are checked against the same source’s base-price series; those ' +
       'that fail are withheld and listed in the <u>Return Audit</u> tab. The source does not state whether ' +
       'distributions are reinvested, so neither does this screen.';
+
+  // 교차 검증 결과. **확인된 것과 확인되지 않은 것을 나눠 적는다** — 확인 못 한
+  // 구간을 말하지 않고 넘어가면 확인된 것처럼 전달된다.
+  // (근거: tools/discovery/fund_verify_verdict.md)
+  el('disc-verify').innerHTML = lang === 'ko'
+    ? '<strong>교차 검증(2026-08-30).</strong> 이 화면의 3,196개를 계보가 다른 1차 출처인 ' +
+      '<u>금융투자협회 전자공시</u>에 전수 다시 물었습니다(응답 3,196건 · 실패 0건). ' +
+      '<u>투자지역</u>과 <u>공모 여부</u>는 3,196건 전건 일치했고, <u>설정액</u>은 양쪽 다 있는 ' +
+      '3,121건 중 <u>95.4%</u>가 일치했습니다(순자산 어긋남의 92%도 하루치 변동 폭 안이었습니다). ' +
+      '반면 <strong>1개월 이상 9개 구간(1M·3M·6M·9M·YTD·1Y·2Y·3Y·5Y)의 수익률은 금투협이 주지 않아 ' +
+      '외부 원천으로 확인되지 않았습니다</strong> — 그 값들에 대한 검증은 원천 자체의 기준가 ' +
+      '시계열로 검산한 데까지입니다. <u>기준가</u>는 양쪽 기준일이 하루 어긋나는데 금투협이 소급 ' +
+      '조회를 주지 않아 어느 쪽이 옳은지 가르지 못했고, <u>외화표시 66개</u>는 표시 통화가 달라 ' +
+      '비교 자체가 성립하지 않습니다.'
+    : '<strong>Cross-check (2026-08-30).</strong> All 3,196 funds on this screen were re-queried ' +
+      'against an independent primary source, <u>KOFIA electronic disclosure</u> (3,196 responses, ' +
+      '0 failures). <u>Investment region</u> and <u>public-offering status</u> matched on all 3,196; ' +
+      '<u>fund size</u> matched on <u>95.4%</u> of the 3,121 present on both sides. However, ' +
+      '<strong>the nine return windows of one month and longer (1M–5Y) are not covered by KOFIA and ' +
+      'therefore remain unverified against any outside source</strong> — they are checked only against ' +
+      'the originating source’s own base-price series. <u>Base price</u> could not be adjudicated (the ' +
+      'two as-of dates differ by a day and KOFIA serves no retrospective query), and <u>66 ' +
+      'foreign-currency funds</u> are quoted in another currency, so no comparison is possible.';
 }
 
 function renderScopeNote() {

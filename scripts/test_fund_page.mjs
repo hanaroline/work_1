@@ -490,6 +490,63 @@ check('총보수를 0 으로 지어내지 않는다', !feeInvented);
   }
 }
 
+// ── 자릿수가 깨진 위험지표를 그대로 찍지 않는다
+//
+// 원천이 샤프 −2049.22(베어링글로벌하이일드[USD]), 베타 +95.88(골든브릿지
+// 스마트단기채) 같은 값을 준다. 그대로 찍으면 화면이 그 숫자를 보증하는
+// 꼴이 된다. 비우되 **왜 비웠는지 적는가**까지 지킨다 — 말없이 지우면
+// 원천에 값이 없는 것과 구별되지 않는다.
+// (근거: tools/discovery/fund_verify_verdict.md 7절)
+{
+  const OUT = (k, v) => (k === 'standardDeviation' || k === 'trackingError' ? v < 0
+    : k === 'beta' ? Math.abs(v) > 10
+    : k === 'sharpe' ? Math.abs(v) > 20 : false);
+  const picked = await page.evaluate((src) => {
+    const bad = new Function('k', 'v', `return (${src})(k, v);`);
+    const KEYS = ['standardDeviation', 'sharpe', 'beta', 'jensenAlpha',
+                  'informationRatio', 'trackingError'];
+    const hits = [];
+    for (const f of window.FUNDS || []) {
+      if (!f.metrics) continue;
+      for (const k of KEYS) {
+        const v = f.metrics[k];
+        if (v == null || !isFinite(Number(v))) continue;
+        if (bad(k, Number(v))) hits.push({ id: f.id, name: f.name, k, v: Number(v) });
+      }
+    }
+    hits.sort((a, b) => Math.abs(b.v) - Math.abs(a.v));
+    return { n: hits.length, worst: hits[0] || null };
+  }, OUT.toString());
+
+  check('자릿수가 깨진 위험지표가 자료에 남아 있다', picked.worst != null,
+    picked.worst ? `${picked.n}건 · 최악 ${picked.worst.k}=${picked.worst.v.toFixed(2)}` : '한 건도 없다');
+
+  if (picked.worst) {
+    await page.evaluate((id) => { window.state.selected = id; window.renderDetail(); }, picked.worst.id);
+    await page.waitForTimeout(200);
+    const t = await page.locator('#detail').innerText().catch(() => '');
+    const printed = picked.worst.v.toFixed(2);
+    check('깨진 값을 화면에 찍지 않는다', !t.includes(printed),
+      t.includes(printed) ? `${printed} 가 그대로 나왔다` : `${printed} 없음`);
+    check('왜 비웠는지 밝힌다', /자릿수 밖/.test(t) && /비운 칸이 있습니다/.test(t),
+      /자릿수 밖/.test(t) ? '표시됨' : '문구 없음');
+    check('멀쩡한 지표까지 지우지는 않는다',
+      /위험 · 성과 지표/.test(t) &&
+      (await page.locator('#detail table tbody tr').count()) > 0,
+      '표 유지됨');
+  }
+}
+
+// ── 교차 검증에서 확인 못 한 것을 확인한 것처럼 말하지 않는다
+{
+  const foot = await page.locator('#disc-verify').innerText().catch(() => '');
+  check('교차 검증 결과를 밝힌다', /금융투자협회 전자공시/.test(foot) && /3,196/.test(foot),
+    foot ? foot.slice(0, 60) + '…' : '비어 있다');
+  check('확인 안 된 수익률 구간을 확인한 것처럼 말하지 않는다',
+    /확인되지 않았습니다/.test(foot) && /1M/.test(foot),
+    /확인되지 않았습니다/.test(foot) ? '표시됨' : '문구 없음');
+}
+
 // ── 영문 전환
 await page.locator('.lang-toggle button[data-lang="en"]').click();
 await page.waitForTimeout(200);
