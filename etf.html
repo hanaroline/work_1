@@ -105,7 +105,12 @@ h3{font-size:21px; font-weight:600; margin:var(--space-block) 0 var(--space-tigh
 h4{font-size:17px; font-weight:600; margin:var(--space-content) 0 10px;}
 
 /* ---------- 카드 ---------- */
+/* 그리드 칸의 기본 최소 너비는 내용 크기다(min-width:auto). 안에 넓은 표가
+   들어가면 칸이 그만큼 벌어지고, 옆 칸까지 밀려 페이지에 가로 스크롤이
+   생긴다 — 수익률 표에 열을 하나 더했더니 390px 에서 107px 이 넘쳤다.
+   칸을 0 까지 줄일 수 있게 해 두면 표는 제 상자 안에서 스크롤한다. */
 .grid{display:grid; gap:16px;}
+.grid > *{min-width:0;}
 .grid-4{grid-template-columns:repeat(4,1fr);}
 .grid-3{grid-template-columns:repeat(3,1fr);}
 .grid-2{grid-template-columns:repeat(2,1fr);}
@@ -1230,9 +1235,30 @@ function returnTable(etf) {
       }
     }
 
-    rows += '<tr><td>' + esc(lang === 'ko' ? p[1] : p[2]) + '</td>' +
+    // 어느 날과 견준 값인지 적는다.
+    //
+    // 2026-07-28 에 코스피가 -10.84% 떨어지고 07-31 에 +17.91% 돌아왔다.
+    // 그 바람에 1개월 수익률이 기준일 하루 차이로 갈렸다 — 기준일이 8/27 이면
+    // 기준봉이 폭락 전(7/27)이고 8/28 이면 폭락 당일(7/28)이다. 442580 은
+    // 그 하루로 -4.98% 와 +5.14% 를 오갔다. 양쪽 다 맞는 값이다.
+    //
+    // 숫자만 놓으면 다른 화면과 견줄 때 "틀렸다" 로 읽힌다. 기준일을 적으면
+    // 그 자리에서 설명된다.
+    var bd = etf.ret && etf.ret.baseDays ? etf.ret.baseDays[p[0]] : null;
+    var periodCell = esc(lang === 'ko' ? p[1] : p[2]) +
+      (bd ? '<span class="rank-raw">' + esc(bd.slice(5)) + (lang === 'ko' ? ' 대비' : ' base') + '</span>' : '');
+
+    // 기준가(NAV) 수익률. 네이버 종목분석 화면이 "평균 ETF 수익률" 이라는
+    // 이름으로 싣는 값이 바로 이것이다 — 무리의 평균이 아니라 그 ETF 자신의
+    // 기준가 수익률이다(442580 의 여덟 기간이 소수점까지 일치했다).
+    // 그쪽 화면과 나란히 놓고 보려면 이 칸이 있어야 한다.
+    var nv = etf.ret && etf.ret.nav ? etf.ret.nav[p[0]] : null;
+    var navCell = nv == null ? '<td class="num dim">–</td>'
+      : '<td class="num ' + signClass(nv) + '">' + fmtPct(nv) + '</td>';
+
+    rows += '<tr><td>' + periodCell + '</td>' +
       '<td class="num ' + signClass(v) + '">' + fmtPct(v) + '</td>' +
-      rankCell + peerCell + '</tr>';
+      navCell + rankCell + peerCell + '</tr>';
   });
   if (!any) {
     return '<div class="empty">' + (lang === 'ko' ? '기간 수익률 자료가 없습니다.' : 'No return data.') + '</div>';
@@ -1244,6 +1270,9 @@ function returnTable(etf) {
   var head = '<th>' + (lang === 'ko' ? '기간' : 'Period') + '</th>' +
     '<th class="num">' + (lang === 'ko'
       ? (hasTr ? '총수익률' : '시장가') : (hasTr ? 'Total return' : 'Price')) + '</th>' +
+    '<th class="num">' + (lang === 'ko'
+      ? '기준가 기준<span class="th-sub">분배금 제외</span>'
+      : 'NAV return<span class="th-sub">excl. distributions</span>') + '</th>' +
     '<th class="num">' + (lang === 'ko'
       ? '동일 유형 내<br>백분율 순위<span class="th-sub">1 이 가장 좋음</span>'
       : 'Percentile rank<br>in category<span class="th-sub">1 = best</span>') + '</th>' +
@@ -1257,10 +1286,15 @@ function returnTable(etf) {
   var notes = '<div class="dim" style="font-size:13px;margin-top:8px;line-height:1.6">' + (lang === 'ko'
     ? '※ 총수익률은 분배금을 재투자한 기준입니다(상용 화면의 &quot;수정주가 기준&quot;과 같은 계열).<br>' +
       '※ 동일 유형은 <strong>' + esc(peerLabel(etf)) + '</strong> 이며, 유형 평균은 그 무리의 산술평균입니다.<br>' +
-      '※ 백분율 순위는 1이 가장 좋고 100이 가장 나쁩니다. 종목 수는 그 기간에 값이 있는 것만 셉니다.'
+      '※ 백분율 순위는 1이 가장 좋고 100이 가장 나쁩니다. 종목 수는 그 기간에 값이 있는 것만 셉니다.<br>' +
+      '※ 기간 옆의 날짜가 <strong>기준일</strong>입니다. 다른 화면과 값이 다르면 먼저 이 날짜를 견주십시오 — ' +
+      '2026-07-28 처럼 시장이 하루에 -10.84% 움직인 날이 기준일에 걸리면 하루 차이로 값이 크게 갈립니다.<br>' +
+      '※ 네이버 종목분석 화면의 &quot;평균 ETF 수익률&quot; 은 무리의 평균이 아니라 <strong>그 ETF 자신의 기준가 수익률</strong>입니다. ' +
+      '위의 기준가 칸과 같은 값입니다.'
     : '※ Total return reinvests distributions.<br>' +
       '※ Category is <strong>' + esc(peerLabel(etf)) + '</strong>; the average is the arithmetic mean of that group.<br>' +
-      '※ Percentile rank: 1 = best, 100 = worst. Counts include only funds with data for that period.')
+      '※ Percentile rank: 1 = best, 100 = worst. Counts include only funds with data for that period.<br>' +
+      '※ The date beside each period is the base date. Compare it first when another screen shows a different number.')
     + '</div>';
   if (etf.dividendYield != null && etf.dividendYield >= 5) {
     notes += '<div class="notice" style="margin:12px 0 0">' + (lang === 'ko'

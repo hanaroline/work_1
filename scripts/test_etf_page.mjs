@@ -110,11 +110,21 @@ const basisNote = await page.locator('#basis-note').textContent();
 check('기준을 화면에 밝힌다', /총수익률|otal return/.test(basisNote || ''),
       (basisNote || '').trim().slice(0, 40));
 
-// ── 상세 기간수익률 표: 총수익률 + 순위 + 유형 평균 대비 세 열
+// ── 상세 기간수익률 표: 기간 + 총수익률 + 기준가 + 순위 + 유형 평균 대비
 const retHeads = await page.locator('#detail .ret-table thead th').allTextContents();
-check('기간수익률 표가 4열이다', retHeads.length === 4, retHeads.map((x) => x.trim()).join(' | '));
-check('시장가·NAV 열이 사라졌다',
-      !retHeads.some((h) => /시장가|NAV|Price/.test(h)), retHeads.join(' | '));
+check('기간수익률 표가 5열이다', retHeads.length === 5, retHeads.map((x) => x.trim()).join(' | '));
+check('기준가 기준 열이 있다', retHeads.some((h) => /기준가|NAV/.test(h)),
+      retHeads.map((x) => x.trim()).join(' | '));
+// 다른 화면과 값이 다를 때 먼저 견줘야 하는 것이 기준일이다. 2026-07-28 처럼
+// 시장이 하루에 -10.84% 움직인 날이 기준일에 걸리면 하루 차이로 크게 갈린다.
+const periodTxt = await page.locator('#detail .ret-table tbody tr').first()
+  .locator('td').nth(0).textContent();
+check('기간 칸에 기준일이 적힌다', /\d{2}-\d{2}/.test(periodTxt || ''), (periodTxt || '').trim());
+// 기준은 여전히 총수익률 하나다 — 고르는 토글은 없고, 순위와 유형 평균도
+// 총수익률로만 낸다. 기준가 열은 고를 대상이 아니라 **다른 화면과 맞춰 보는
+// 참고값**이다(네이버 종목분석의 "평균 ETF 수익률" 이 바로 이 값이다).
+check('첫 숫자 열이 총수익률이다', /총수익률|Total return/.test(retHeads[1] || ''),
+      (retHeads[1] || '').trim());
 check('순위 열이 있다', retHeads.some((h) => /순위|Rank/.test(h)));
 check('동일 유형 안에서 순위를 매긴다고 밝힌다',
       retHeads.some((h) => /동일 유형|in category/.test(h)), retHeads.join(' | '));
@@ -123,11 +133,11 @@ check('유형 평균 대비 열이 있다', retHeads.some((h) => /유형 평균|
 // 상용 ETF 화면과 같은 표기 — 등수가 아니라 백분율 순위 하나이고,
 // 그 기간의 동일 유형 종목 수를 함께 적는다.
 const rankTxt = await page.locator('#detail .ret-table tbody tr').first()
-  .locator('td').nth(2).textContent();
+  .locator('td').nth(3).textContent();
 check('백분율 순위가 계산된다', /\d+%/.test(rankTxt || ''), (rankTxt || '').trim());
 check('순위 칸에 동일 유형 종목 수가 적힌다',
       /동일 유형 [\d,]+개|of [\d,]+/.test(rankTxt || ''), (rankTxt || '').trim());
-const rankLabels = await page.locator('#detail .ret-table tbody tr td:nth-child(3) .rank-pct')
+const rankLabels = await page.locator('#detail .ret-table tbody tr td:nth-child(4) .rank-pct')
   .allTextContents();
 const outOfRange = rankLabels.filter((x) => {
   const m = /(\d+)%/.exec(x);
@@ -135,7 +145,7 @@ const outOfRange = rankLabels.filter((x) => {
 });
 check('백분율이 1~100 안에 있다', outOfRange.length === 0, outOfRange.join(' | ') || '없음');
 const peerTxt = await page.locator('#detail .ret-table tbody tr').first()
-  .locator('td').nth(3).textContent();
+  .locator('td').nth(4).textContent();
 check('유형 평균 대비가 계산된다', /%p/.test(peerTxt || ''), (peerTxt || '').trim());
 
 // ── 정렬
