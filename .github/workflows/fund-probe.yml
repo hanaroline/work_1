@@ -238,6 +238,18 @@ jobs:
           npx playwright install --with-deps chromium
           node scripts/probe_fund_gwangju.mjs
 
+      # 앞선 탐침이 오픈API 서비스 목록을 머리글까지만 받아 왔다. 그걸 근거로
+      # "펀드 API 는 없다" 고 적었는데 그건 **못 읽은 것이지 없는 것이 아니다.**
+      # 목록을 JS 로 채우는 화면이므로 브라우저로 열어 렌더 뒤에 읽는다.
+      - name: 검산 실행 22차 (금투협 오픈API 가 실제로 무엇을 주는가)
+        timeout-minutes: 20
+        continue-on-error: true
+        if: hashFiles('scripts/probe_kofia_openapi_list.mjs') != ''
+        run: |
+          npm i -D playwright@1.56.1 --no-audit --no-fund
+          npx playwright install --with-deps chromium
+          node scripts/probe_kofia_openapi_list.mjs
+
       - name: 결과 업로드
         if: always()
         uses: actions/upload-artifact@v4
@@ -259,6 +271,7 @@ jobs:
             tools/discovery/fund_api_catalogs.md
             tools/discovery/fund_api_detail.md
             tools/discovery/fund_gwangju.md
+            tools/discovery/kofia_openapi_list.md
           retention-days: 7
 
       - name: 결과 커밋
@@ -281,6 +294,7 @@ jobs:
           git add tools/discovery/fund_api_catalogs.md 2>/dev/null || true
           git add tools/discovery/fund_api_detail.md 2>/dev/null || true
           git add tools/discovery/fund_gwangju.md 2>/dev/null || true
+          git add tools/discovery/kofia_openapi_list.md 2>/dev/null || true
           git commit -m "chore(fund): 원천 조사 결과 갱신" || echo "변경 없음"
           git pull --rebase --autostash origin "${GITHUB_REF_NAME}" || true
           git push || echo "푸시 실패 (무시)"
