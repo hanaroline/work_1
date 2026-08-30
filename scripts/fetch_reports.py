@@ -1408,6 +1408,9 @@ def _absorb(old, new):
         old["title"] = new["title"]
 
 
+_KEY_STRIP = re.compile(r"[?&]categoryId=\d+")
+
+
 def pool_key(r):
     """한 주 무더기에서 리포트를 가리키는 이름 — 원문 주소.
 
@@ -1420,9 +1423,14 @@ def pool_key(r):
     + 하나증권」이 된다. 판마다 이름이 달라지면 한 리포트가 두 칸을 차지해
     한 주 셈이 부풀었다(8/31 판 344 대 343).
 
-    주소는 변하지 않고 리포트마다 하나뿐이다. 그것을 이름으로 쓴다.
+    주소는 변하지 않고 리포트마다 하나뿐이다. 그것을 이름으로 쓴다. 다만
+    하우스 목록은 같은 리포트를 두 게시판에 함께 올리기도 해서 주소 끝의
+    게시판 번호만 다른 쌍둥이가 생긴다 — 그 자리는 지우고 견준다.
     """
-    return r.get("url") or ("%s|%s" % (r.get("source") or "-", r.get("nid")))
+    u = r.get("url")
+    if u:
+        return _KEY_STRIP.sub("", u)
+    return "%s|%s" % (r.get("source") or "-", r.get("nid"))
 
 
 def drop_unsourced(r):
@@ -1646,6 +1654,17 @@ def main():
     if not reports:
         raise SystemExit("리포트를 한 건도 받지 못했다 — 목록 구조가 바뀌었을 수 있다. "
                          "data/reports/raw 의 덤프를 보십시오.")
+
+    # 날짜가 없는 줄은 싣지 않는다. 언제 나온 리포트인지 모르면 그날 것도
+    # 이번 주 것도 아니어서 어느 셈에도 들지 못하고, 목록에서는 날짜 칸이 빈
+    # 카드로만 남는다. 하우스 목록에서 이따금 한 줄씩 이렇게 온다(8/31 판의
+    # 글로벌 로보틱스). 몇 건을 뺐는지는 남겨 두어 늘어나면 눈에 띄게 한다.
+    undated = [r for r in reports if not r.get("date")]
+    if undated:
+        reports = [r for r in reports if r.get("date")]
+        out["sources"]["날짜 없어 뺀 줄"] = {
+            "count": len(undated),
+            "urls": [r.get("url") for r in undated[:5]]}
 
     # 하루에 네 번 돈다. 그때마다 그날 판을 덮어써 왔는데, 목록은 흐르는
     # 물이라 아침에 앞쪽에 있던 리포트가 저녁 목록에서는 밀려나 있다 —
