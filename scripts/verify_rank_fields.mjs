@@ -25,14 +25,29 @@
  */
 
 import { readFile, writeFile, mkdir } from 'node:fs/promises';
-import { getJson, mapLimit, computeReturns, sleep } from './etf_lib.mjs';
+import { getJson, mapLimit, computeReturns, sleep, UA } from './etf_lib.mjs';
 
 const OUT_MD = 'tools/discovery/rank_fields_verify.md';
 const OUT_JSON = 'tools/discovery/rank_fields_verify.json';
 
 const NAVER_DETAIL = (c) => `https://m.stock.naver.com/api/stock/${c}/etfAnalysis`;
-const YQ = (s, mods) =>
-  `https://query2.finance.yahoo.com/v10/finance/quoteSummary/${encodeURIComponent(s)}?modules=${mods}`;
+// quoteSummary 는 쿠키+crumb 를 요구한다. 수집기와 같은 방식으로 받는다 —
+// 이걸 빼먹어서 1차 실행이 상장주식수를 통째로 못 받았다.
+let cookie = '';
+let crumb = '';
+async function authorize() {
+  const res = await fetch('https://fc.yahoo.com/', { headers: { 'User-Agent': UA }, redirect: 'follow' })
+    .catch(() => null);
+  cookie = (res?.headers?.getSetCookie?.() || []).map((c) => c.split(';')[0]).join('; ');
+  const cr = await fetch('https://query1.finance.yahoo.com/v1/test/getcrumb',
+    { headers: { 'User-Agent': UA, Cookie: cookie } });
+  crumb = (await cr.text()).trim();
+  if (!crumb) throw new Error('crumb 발급 실패 — quoteSummary 를 부를 수 없다');
+}
+const YQ = (sym, mods) =>
+  `https://query1.finance.yahoo.com/v10/finance/quoteSummary/${encodeURIComponent(sym)}` +
+  `?modules=${mods}&crumb=${encodeURIComponent(crumb)}`;
+const YHDR = () => ({ Cookie: cookie, Referer: 'https://finance.yahoo.com/' });
 const YCHART = (s, range) =>
   `https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(s)}` +
   `?range=${range}&interval=1d&events=div,split`;
@@ -77,13 +92,19 @@ say('`totalAssets` 가 **펀드 전체**를 세고 있다는 뜻이고, 그러�
 say('순자산총액과 한 줄로 세울 수 없다.');
 say('');
 
-const globals = ETFS.filter((e) => e.market !== 'KR' && e.aum != null)
+await authorize();
+
+// 통화가 섞이면 "몇 배냐" 만 보면 되므로 상관없다. 다만 화면 상위에 실제로
+// 오르는 것은 미국 상장분이므로 그쪽을 본다 — 일본 ETF 는 엔화 표기라
+// 액면 숫자가 커 보일 뿐 원화로 환산하면 상위에 오지 않는다.
+const globals = ETFS.filter((e) => e.market === 'US' && e.aum != null)
   .sort((a, b) => b.aum - a.aum).slice(0, 20);
 
 const aumRows = unwrap(await mapLimit(globals, 3, async (e) => {
   const row = { code: e.code, name: e.name, aum: e.aum, shares: null, px: null, err: null };
   try {
-    const j = await getJson(YQ(e.symbol || e.code, 'defaultKeyStatistics,price,summaryDetail'));
+    const j = await getJson(YQ(e.symbol || e.code, 'defaultKeyStatistics,price,summaryDetail,fundProfile'),
+      { headers: YHDR() });
     const r = j?.quoteSummary?.result?.[0];
     row.shares = r?.defaultKeyStatistics?.sharesOutstanding?.raw
               ?? r?.price?.sharesOutstanding?.raw ?? null;
@@ -91,6 +112,8 @@ const aumRows = unwrap(await mapLimit(globals, 3, async (e) => {
     row.totalAssets = r?.defaultKeyStatistics?.totalAssets?.raw
                    ?? r?.summaryDetail?.totalAssets?.raw ?? null;
     row.longName = r?.price?.longName ?? null;
+    row.legalType = r?.price?.quoteType ?? null;
+    row.family = r?.fundProfile?.family ?? null;
   } catch (err) { row.err = err.message; }
   await sleep(150);
   return row;
@@ -107,9 +130,10 @@ for (const r of aumRows) {
     : mult > 1.3 ? '**펀드 전체** — ETF 순자산이 아니다'
     : mult < 0.77 ? '역방향 — 따로 볼 것'
     : 'ETF 순자산과 일치';
-  say(`| ${r.code} ${r.name?.slice(0, 34) ?? ''} | ${r.aum == null ? '—' : '$' + (r.aum / 1e9).toFixed(0) + 'B'}` +
+  say(`| ${r.code ?? '?'} ${(r.longName || r.name || '').slice(0, 34)}` +
+      ` | ${r.aum == null ? '—' : '$' + (r.aum / 1e9).toFixed(0) + 'B'}` +
       ` | ${mktCap == null ? '—' : '$' + (mktCap / 1e9).toFixed(0) + 'B'}` +
-      ` | ${mult == null ? '—' : mult.toFixed(2) + '×'} | ${r.verdict} |`);
+      ` | ${mult == null ? '—' : mult.toFixed(2) + '×'} | ${r.verdict}${r.err ? ' (' + r.err + ')' : ''} |`);
 }
 result.aum = aumRows;
 const mismatched = aumRows.filter((r) => r.mult != null && r.mult > 1.3);
