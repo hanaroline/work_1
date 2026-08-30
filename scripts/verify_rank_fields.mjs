@@ -81,6 +81,7 @@ say('# 랭킹 네 칸 되짚기');
 say('');
 say(`- 시각: ${result.at}`);
 say(`- 대상: ${ETFS.length}종목 (화면이 쓰는 data/etf.js 그대로)`);
+say(`- 자료 기준: ${DATA.updatedAt}`);
 say('');
 
 /* ── 가. 설정액 — 야후 totalAssets 가 무엇을 세는가 ────────────────────── */
