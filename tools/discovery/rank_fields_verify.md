@@ -1,6 +1,6 @@
 # 랭킹 네 칸 되짚기
 
-- 시각: 2026-08-30T05:15:35.617Z
+- 시각: 2026-08-30T05:19:01.846Z
 - 대상: 1348종목 (화면이 쓰는 data/etf.js 그대로)
 
 ## 가. 설정액 — `totalAssets` 는 ETF 인가 펀드 전체인가
@@ -12,26 +12,26 @@
 
 | 종목 | totalAssets | 상장주식수×가격 | 배수 | 판정 |
 | --- | ---: | ---: | ---: | --- |
-| 1306 NEXT FUNDS TOPIX Exchange Traded F | $33637B | — | — | 확인 못 함 |
-| 1321 NEXT FUNDS Nikkei 225 Exchange Tra | $17148B | — | — | 확인 못 함 |
-| 1305 iFreeETF TOPIX (Yearly Dividend Ty | $15175B | — | — | 확인 못 함 |
-| 1330 Amova Exchange Traded Index Fund 2 | $8325B | — | — | 확인 못 함 |
-| 1320 iFreeETF Nikkei225 (Yearly Dividen | $7715B | — | — | 확인 못 함 |
-| 1348 MAXIS TOPIX ETF | $4817B | — | — | 확인 못 함 |
 | VTI Vanguard Morningstar Total Stock M | $2290B | — | — | 확인 못 함 |
-| 1329 iShares Core Nikkei 225 ETF | $2074B | — | — | 확인 못 함 |
 | VOO Vanguard S&P 500 ETF | $1687B | — | — | 확인 못 함 |
-| 1540 Japan Physical Gold ETF | $1476B | — | — | 확인 못 함 |
 | IVV iShares Core S&P 500 ETF | $869B | — | — | 확인 못 함 |
 | SPY State Street SPDR S&P 500 ETF Trus | $795B | — | — | 확인 못 함 |
-| 1570 NEXT FUNDS Nikkei 225 Leveraged In | $726B | — | — | 확인 못 함 |
 | VXUS Vanguard Total International Stock | $646B | — | — | 확인 못 함 |
-| 1343 NEXT FUNDS REIT INDEX ETF | $551B | — | — | 확인 못 함 |
-| 1489 NEXT FUNDS Nikkei 225 High Dividen | $537B | — | — | 확인 못 함 |
 | QQQ Invesco QQQ Trust | $453B | — | — | 확인 못 함 |
 | BND Vanguard Total Bond Market Index F | $397B | — | — | 확인 못 함 |
-| 1476 iShares Core Japan REIT ETF | $386B | — | — | 확인 못 함 |
 | VUG Vanguard Morningstar Growth ETF | $372B | — | — | 확인 못 함 |
+| VEA Vanguard FTSE Developed Markets In | $315B | — | — | 확인 못 함 |
+| VTV Vanguard Morningstar Value ETF | $256B | — | — | 확인 못 함 |
+| IEFA iShares Core MSCI EAFE ETF | $190B | — | — | 확인 못 함 |
+| VWO Vanguard FTSE Emerging Markets Ind | $162B | — | — | 확인 못 함 |
+| VGT Vanguard Information Technology In | $161B | — | — | 확인 못 함 |
+| IEMG iShares Core MSCI Emerging Markets | $152B | — | — | 확인 못 함 |
+| AGG iShares Core U.S. Aggregate Bond E | $137B | — | — | 확인 못 함 |
+| VIG Vanguard Dividend Appreciation Ind | $131B | — | — | 확인 못 함 |
+| GLD SPDR Gold Shares | $130B | — | — | 확인 못 함 |
+| IJH iShares Core S&P Mid-Cap ETF | $122B | — | — | 확인 못 함 |
+| IWF iShares Russell 1000 Growth ETF | $121B | — | — | 확인 못 함 |
+| XLK State Street Technology Select Sec | $115B | — | — | 확인 못 함 |
 
 **배수가 1.3 을 넘는 종목: 0 / 0**
 
