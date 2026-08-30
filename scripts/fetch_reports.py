@@ -1418,6 +1418,20 @@ def pool_key(r):
     return "%s|%s" % (r.get("source") or "-", r.get("nid"))
 
 
+def drop_unsourced(r):
+    """근거 없는 요약은 지운다.
+
+    지난 판에서 넘어온 줄 가운데, 요약은 있는데 그 요약을 떠온 본문 발췌가
+    없는 것이 있다(발췌를 딸려 보내기 전에 만들어진 판이다). 그런 문장은
+    어디서 왔는지 댈 수 없다 — 지우면 다음 판에서 본문을 다시 열어 제대로
+    채운다. 남겨 두면 근거 없이 인쇄된다.
+    """
+    if r.get("summary") and not r.get("excerpt"):
+        for k in ("summary", "lead", "facts", "extracted", "body_chars"):
+            r.pop(k, None)
+    return r
+
+
 def merge_today(reports, out_dir, today):
     """오늘 앞선 판에서 받아 둔 줄을 이번 판에 포갠다.
 
@@ -1438,6 +1452,7 @@ def merge_today(reports, out_dir, today):
     for r in old:
         if not r.get("nid"):
             continue
+        drop_unsourced(r)
         cur = seen.get(pool_key(r))
         if cur is None:
             seen[pool_key(r)] = dict(r)
@@ -1469,6 +1484,7 @@ def load_history(out_dir, since):
         for r in got.get("reports", []):
             if not r.get("nid") or (r.get("date") or "") < since:
                 continue
+            drop_unsourced(r)
             k = pool_key(r)
             old = merged.get(k)
             if old is None:
