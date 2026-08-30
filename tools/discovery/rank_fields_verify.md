@@ -1,39 +1,36 @@
 # 랭킹 네 칸 되짚기
 
-- 시각: 2026-08-30T05:19:01.846Z
+- 시각: 2026-08-30T05:20:28.652Z
 - 대상: 1348종목 (화면이 쓰는 data/etf.js 그대로)
 
 ## 가. 설정액 — `totalAssets` 는 ETF 인가 펀드 전체인가
 
-상장주식수 × 가격 으로 ETF 클래스의 순자산을 따로 구해 `totalAssets` 와 나눈다.
-클래스가 하나뿐인 상품(SPY·IVV·QQQ)은 1배 근처여야 한다. 크게 넘으면
-`totalAssets` 가 **펀드 전체**를 세고 있다는 뜻이고, 그러면 국내 ETF 의
-순자산총액과 한 줄로 세울 수 없다.
+상장주식수는 ETF 에 붙지 않아 그 길이 막혔다. 대신 **같은 펀드의 다른 클래스**를 쓴다.
+뱅가드 ETF 는 인덱스펀드의 한 클래스이고, 같은 펀드의 뮤추얼펀드 클래스에는 따로
+티커가 있다(VTI ↔ VTSAX). 두 티커의 `totalAssets` 가 **같은 값**으로 나오면 그것은
+클래스별 순자산이 아니라 **펀드 전체**를 세는 값이라는 뜻이다. 그러면 국내 ETF 의
+순자산총액과 한 줄로 세울 수 없다. 클래스가 하나뿐인 SPY·IVV·QQQ 는 대조군이다.
 
-| 종목 | totalAssets | 상장주식수×가격 | 배수 | 판정 |
-| --- | ---: | ---: | ---: | --- |
-| VTI Vanguard Morningstar Total Stock M | $2290B | — | — | 확인 못 함 |
-| VOO Vanguard S&P 500 ETF | $1687B | — | — | 확인 못 함 |
-| IVV iShares Core S&P 500 ETF | $869B | — | — | 확인 못 함 |
-| SPY State Street SPDR S&P 500 ETF Trus | $795B | — | — | 확인 못 함 |
-| VXUS Vanguard Total International Stock | $646B | — | — | 확인 못 함 |
-| QQQ Invesco QQQ Trust | $453B | — | — | 확인 못 함 |
-| BND Vanguard Total Bond Market Index F | $397B | — | — | 확인 못 함 |
-| VUG Vanguard Morningstar Growth ETF | $372B | — | — | 확인 못 함 |
-| VEA Vanguard FTSE Developed Markets In | $315B | — | — | 확인 못 함 |
-| VTV Vanguard Morningstar Value ETF | $256B | — | — | 확인 못 함 |
-| IEFA iShares Core MSCI EAFE ETF | $190B | — | — | 확인 못 함 |
-| VWO Vanguard FTSE Emerging Markets Ind | $162B | — | — | 확인 못 함 |
-| VGT Vanguard Information Technology In | $161B | — | — | 확인 못 함 |
-| IEMG iShares Core MSCI Emerging Markets | $152B | — | — | 확인 못 함 |
-| AGG iShares Core U.S. Aggregate Bond E | $137B | — | — | 확인 못 함 |
-| VIG Vanguard Dividend Appreciation Ind | $131B | — | — | 확인 못 함 |
-| GLD SPDR Gold Shares | $130B | — | — | 확인 못 함 |
-| IJH iShares Core S&P Mid-Cap ETF | $122B | — | — | 확인 못 함 |
-| IWF iShares Russell 1000 Growth ETF | $121B | — | — | 확인 못 함 |
-| XLK State Street Technology Select Sec | $115B | — | — | 확인 못 함 |
+| 펀드 | ETF 클래스 | totalAssets | 뮤추얼펀드 클래스 | totalAssets | 같은가 |
+| --- | --- | ---: | --- | ---: | --- |
+| Vanguard Total Stock Market Index | VTI (ETF) | $2290.0B | VTSAX (MUTUALFUND) | $2290.0B | **같다 — 펀드 전체 값이다** |
+| Vanguard 500 Index | VOO (ETF) | $1686.9B | VFIAX (MUTUALFUND) | $1686.9B | **같다 — 펀드 전체 값이다** |
+| Vanguard Total International Stock Index | VXUS (ETF) | $645.8B | VTIAX (MUTUALFUND) | $645.8B | **같다 — 펀드 전체 값이다** |
+| Vanguard Total Bond Market Index | BND (ETF) | $396.7B | VBTLX (MUTUALFUND) | $396.7B | **같다 — 펀드 전체 값이다** |
+| Vanguard Growth Index | VUG (ETF) | $372.0B | VIGAX (MUTUALFUND) | $372.0B | **같다 — 펀드 전체 값이다** |
+| Vanguard Value Index | VTV (ETF) | $256.4B | VVIAX (MUTUALFUND) | $256.4B | **같다 — 펀드 전체 값이다** |
+| Vanguard Developed Markets Index | VEA (ETF) | $314.9B | VTMGX (MUTUALFUND) | $314.9B | **같다 — 펀드 전체 값이다** |
+| Vanguard Emerging Markets Stock Index | VWO (ETF) | $162.0B | VEMAX (MUTUALFUND) | $162.0B | **같다 — 펀드 전체 값이다** |
+| SPDR S&P 500 (클래스 하나 — 대조군) | SPY (ETF) | $795.3B | 없음 | — | 대조군 |
+| iShares Core S&P 500 (클래스 하나 — 대조군) | IVV (ETF) | $869.2B | 없음 | — | 대조군 |
+| Invesco QQQ (클래스 하나 — 대조군) | QQQ (ETF) | $452.8B | 없음 | — | 대조군 |
 
-**배수가 1.3 을 넘는 종목: 0 / 0**
+**클래스가 둘인 8개 펀드 중 8개에서 두 티커의 totalAssets 가 같다.**
+
+> 야후 `totalAssets` 는 **펀드 전체**를 센다. 뱅가드 ETF 의 설정액은 ETF 로 들어온
+> 돈이 아니라 같은 펀드의 뮤추얼펀드 클래스까지 합친 값이다. 국내 ETF 는
+> 네이버 `totalNav`(그 ETF 만의 순자산총액)를 쓰므로, 둘을 한 표에 세우면
+> 뱅가드 상품만 실제보다 서너 배 크게 나온다.
 
 ## 나. 순유입 — `cumulativeNetInflow3m` 이 정말 설정·환매 순액인가
 

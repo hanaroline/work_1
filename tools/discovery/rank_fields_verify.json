@@ -1,305 +1,177 @@
 {
-  "at": "2026-08-30T05:19:01.846Z",
+  "at": "2026-08-30T05:20:28.652Z",
   "aum": [
     {
-      "code": "VTI",
-      "name": "Vanguard Morningstar Total Stock Market ETF",
-      "aum": 2289978572800,
-      "shares": null,
-      "px": 379.36,
+      "etf": "VTI",
+      "mf": "VTSAX",
+      "label": "Vanguard Total Stock Market Index",
       "err": null,
-      "totalAssets": 2289978572800,
-      "longName": "Vanguard Morningstar Total Stock Market ETF",
-      "legalType": "ETF",
-      "family": "Vanguard",
-      "etfAum": null,
-      "mult": null,
-      "verdict": "확인 못 함"
+      "a": {
+        "totalAssets": 2289978572800,
+        "longName": "Vanguard Morningstar Total Stock Market ETF",
+        "quoteType": "ETF"
+      },
+      "b": {
+        "totalAssets": 2289978572800,
+        "longName": "Vanguard MStar Total Stk Mkt Idx Admiral",
+        "quoteType": "MUTUALFUND"
+      },
+      "same": true
     },
     {
-      "code": "VOO",
-      "name": "Vanguard S&P 500 ETF",
-      "aum": 1686884319232,
-      "shares": null,
-      "px": 707.24,
+      "etf": "VOO",
+      "mf": "VFIAX",
+      "label": "Vanguard 500 Index",
       "err": null,
-      "totalAssets": 1686884319232,
-      "longName": "Vanguard S&P 500 ETF",
-      "legalType": "ETF",
-      "family": "Vanguard",
-      "etfAum": null,
-      "mult": null,
-      "verdict": "확인 못 함"
+      "a": {
+        "totalAssets": 1686884319232,
+        "longName": "Vanguard S&P 500 ETF",
+        "quoteType": "ETF"
+      },
+      "b": {
+        "totalAssets": 1686884319232,
+        "longName": "Vanguard 500 Index Admiral",
+        "quoteType": "MUTUALFUND"
+      },
+      "same": true
     },
     {
-      "code": "IVV",
-      "name": "iShares Core S&P 500 ETF",
-      "aum": 869199904768,
-      "shares": null,
-      "px": 773,
+      "etf": "VXUS",
+      "mf": "VTIAX",
+      "label": "Vanguard Total International Stock Index",
       "err": null,
-      "totalAssets": 869199904768,
-      "longName": "iShares Core S&P 500 ETF",
-      "legalType": "ETF",
-      "family": "iShares",
-      "etfAum": null,
-      "mult": null,
-      "verdict": "확인 못 함"
+      "a": {
+        "totalAssets": 645815664640,
+        "longName": "Vanguard Total International Stock Index Fund ETF Shares",
+        "quoteType": "ETF"
+      },
+      "b": {
+        "totalAssets": 645815664640,
+        "longName": "Vanguard Total Intl Stock Index Admiral",
+        "quoteType": "MUTUALFUND"
+      },
+      "same": true
     },
     {
-      "code": "SPY",
-      "name": "State Street SPDR S&P 500 ETF Trust",
-      "aum": 795306885120,
-      "shares": null,
-      "px": 769.35,
+      "etf": "BND",
+      "mf": "VBTLX",
+      "label": "Vanguard Total Bond Market Index",
       "err": null,
-      "totalAssets": 795306885120,
-      "longName": "State Street SPDR S&P 500 ETF Trust",
-      "legalType": "ETF",
-      "family": "State Street Investment Management",
-      "etfAum": null,
-      "mult": null,
-      "verdict": "확인 못 함"
+      "a": {
+        "totalAssets": 396675153920,
+        "longName": "Vanguard Total Bond Market Index Fund ETF Shares",
+        "quoteType": "ETF"
+      },
+      "b": {
+        "totalAssets": 396675153920,
+        "longName": "Vanguard Total Bond Market Index Adm",
+        "quoteType": "MUTUALFUND"
+      },
+      "same": true
     },
     {
-      "code": "VXUS",
-      "name": "Vanguard Total International Stock Index Fund ETF Shares",
-      "aum": 645815664640,
-      "shares": null,
-      "px": 87.52,
+      "etf": "VUG",
+      "mf": "VIGAX",
+      "label": "Vanguard Growth Index",
       "err": null,
-      "totalAssets": 645815664640,
-      "longName": "Vanguard Total International Stock Index Fund ETF Shares",
-      "legalType": "ETF",
-      "family": "Vanguard",
-      "etfAum": null,
-      "mult": null,
-      "verdict": "확인 못 함"
+      "a": {
+        "totalAssets": 371990364160,
+        "longName": "Vanguard Morningstar Growth ETF",
+        "quoteType": "ETF"
+      },
+      "b": {
+        "totalAssets": 371990364160,
+        "longName": "Vanguard MStar Growth Index Admiral",
+        "quoteType": "MUTUALFUND"
+      },
+      "same": true
     },
     {
-      "code": "QQQ",
-      "name": "Invesco QQQ Trust",
-      "aum": 452800643072,
-      "shares": null,
-      "px": 716.43,
+      "etf": "VTV",
+      "mf": "VVIAX",
+      "label": "Vanguard Value Index",
       "err": null,
-      "totalAssets": 452800643072,
-      "longName": "Invesco QQQ Trust",
-      "legalType": "ETF",
-      "family": "Invesco",
-      "etfAum": null,
-      "mult": null,
-      "verdict": "확인 못 함"
+      "a": {
+        "totalAssets": 256410894336,
+        "longName": "Vanguard Morningstar Value ETF",
+        "quoteType": "ETF"
+      },
+      "b": {
+        "totalAssets": 256410894336,
+        "longName": "Vanguard MStar Value Index Admiral",
+        "quoteType": "MUTUALFUND"
+      },
+      "same": true
     },
     {
-      "code": "BND",
-      "name": "Vanguard Total Bond Market Index Fund ETF Shares",
-      "aum": 396675153920,
-      "shares": null,
-      "px": 72.31,
+      "etf": "VEA",
+      "mf": "VTMGX",
+      "label": "Vanguard Developed Markets Index",
       "err": null,
-      "totalAssets": 396675153920,
-      "longName": "Vanguard Total Bond Market Index Fund ETF Shares",
-      "legalType": "ETF",
-      "family": "Vanguard",
-      "etfAum": null,
-      "mult": null,
-      "verdict": "확인 못 함"
+      "a": {
+        "totalAssets": 314947534848,
+        "longName": "Vanguard FTSE Developed Markets Index Fund ETF Shares",
+        "quoteType": "ETF"
+      },
+      "b": {
+        "totalAssets": 314947534848,
+        "longName": "Vanguard Developed Markets Index Admiral",
+        "quoteType": "MUTUALFUND"
+      },
+      "same": true
     },
     {
-      "code": "VUG",
-      "name": "Vanguard Morningstar Growth ETF",
-      "aum": 371990364160,
-      "shares": null,
-      "px": 88.54,
+      "etf": "VWO",
+      "mf": "VEMAX",
+      "label": "Vanguard Emerging Markets Stock Index",
       "err": null,
-      "totalAssets": 371990364160,
-      "longName": "Vanguard Morningstar Growth ETF",
-      "legalType": "ETF",
-      "family": "Vanguard",
-      "etfAum": null,
-      "mult": null,
-      "verdict": "확인 못 함"
+      "a": {
+        "totalAssets": 162032336896,
+        "longName": "Vanguard FTSE Emerging Markets Index Fund ETF Shares",
+        "quoteType": "ETF"
+      },
+      "b": {
+        "totalAssets": 162032336896,
+        "longName": "Vanguard Emerging Mkts Stock Idx Adm",
+        "quoteType": "MUTUALFUND"
+      },
+      "same": true
     },
     {
-      "code": "VEA",
-      "name": "Vanguard FTSE Developed Markets Index Fund ETF Shares",
-      "aum": 314947534848,
-      "shares": null,
-      "px": 73.06,
+      "etf": "SPY",
+      "mf": null,
+      "label": "SPDR S&P 500 (클래스 하나 — 대조군)",
       "err": null,
-      "totalAssets": 314947534848,
-      "longName": "Vanguard FTSE Developed Markets Index Fund ETF Shares",
-      "legalType": "ETF",
-      "family": "Vanguard",
-      "etfAum": null,
-      "mult": null,
-      "verdict": "확인 못 함"
+      "a": {
+        "totalAssets": 795306885120,
+        "longName": "State Street SPDR S&P 500 ETF Trust",
+        "quoteType": "ETF"
+      },
+      "same": null
     },
     {
-      "code": "VTV",
-      "name": "Vanguard Morningstar Value ETF",
-      "aum": 256410894336,
-      "shares": null,
-      "px": 225.29,
+      "etf": "IVV",
+      "mf": null,
+      "label": "iShares Core S&P 500 (클래스 하나 — 대조군)",
       "err": null,
-      "totalAssets": 256410894336,
-      "longName": "Vanguard Morningstar Value ETF",
-      "legalType": "ETF",
-      "family": "Vanguard",
-      "etfAum": null,
-      "mult": null,
-      "verdict": "확인 못 함"
+      "a": {
+        "totalAssets": 869199904768,
+        "longName": "iShares Core S&P 500 ETF",
+        "quoteType": "ETF"
+      },
+      "same": null
     },
     {
-      "code": "IEFA",
-      "name": "iShares Core MSCI EAFE ETF",
-      "aum": 190108827648,
-      "shares": null,
-      "px": 100.49,
+      "etf": "QQQ",
+      "mf": null,
+      "label": "Invesco QQQ (클래스 하나 — 대조군)",
       "err": null,
-      "totalAssets": 190108827648,
-      "longName": "iShares Core MSCI EAFE ETF",
-      "legalType": "ETF",
-      "family": "iShares",
-      "etfAum": null,
-      "mult": null,
-      "verdict": "확인 못 함"
-    },
-    {
-      "code": "VWO",
-      "name": "Vanguard FTSE Emerging Markets Index Fund ETF Shares",
-      "aum": 162032336896,
-      "shares": null,
-      "px": 60.79,
-      "err": null,
-      "totalAssets": 162032336896,
-      "longName": "Vanguard FTSE Emerging Markets Index Fund ETF Shares",
-      "legalType": "ETF",
-      "family": "Vanguard",
-      "etfAum": null,
-      "mult": null,
-      "verdict": "확인 못 함"
-    },
-    {
-      "code": "VGT",
-      "name": "Vanguard Information Technology Index Fund ETF Shares",
-      "aum": 160616972288,
-      "shares": null,
-      "px": 120.07,
-      "err": null,
-      "totalAssets": 160616972288,
-      "longName": "Vanguard Information Technology Index Fund ETF Shares",
-      "legalType": "ETF",
-      "family": "Vanguard",
-      "etfAum": null,
-      "mult": null,
-      "verdict": "확인 못 함"
-    },
-    {
-      "code": "IEMG",
-      "name": "iShares Core MSCI Emerging Markets ETF",
-      "aum": 152217387008,
-      "shares": null,
-      "px": 81.82,
-      "err": null,
-      "totalAssets": 152217387008,
-      "longName": "iShares Core MSCI Emerging Markets ETF",
-      "legalType": "ETF",
-      "family": "iShares",
-      "etfAum": null,
-      "mult": null,
-      "verdict": "확인 못 함"
-    },
-    {
-      "code": "AGG",
-      "name": "iShares Core U.S. Aggregate Bond ETF",
-      "aum": 137109602304,
-      "shares": null,
-      "px": 97.49,
-      "err": null,
-      "totalAssets": 137109602304,
-      "longName": "iShares Core U.S. Aggregate Bond ETF",
-      "legalType": "ETF",
-      "family": "iShares",
-      "etfAum": null,
-      "mult": null,
-      "verdict": "확인 못 함"
-    },
-    {
-      "code": "VIG",
-      "name": "Vanguard Dividend Appreciation Index Fund ETF Shares",
-      "aum": 130902130688,
-      "shares": null,
-      "px": 243.07,
-      "err": null,
-      "totalAssets": 130902130688,
-      "longName": "Vanguard Dividend Appreciation Index Fund ETF Shares",
-      "legalType": "ETF",
-      "family": "Vanguard",
-      "etfAum": null,
-      "mult": null,
-      "verdict": "확인 못 함"
-    },
-    {
-      "code": "GLD",
-      "name": "SPDR Gold Shares",
-      "aum": 130322653184,
-      "shares": null,
-      "px": 408.89,
-      "err": null,
-      "totalAssets": 130322653184,
-      "longName": "SPDR Gold Shares",
-      "legalType": "ETF",
-      "family": "State Street Investment Management",
-      "etfAum": null,
-      "mult": null,
-      "verdict": "확인 못 함"
-    },
-    {
-      "code": "IJH",
-      "name": "iShares Core S&P Mid-Cap ETF",
-      "aum": 122394140672,
-      "shares": null,
-      "px": 75.76,
-      "err": null,
-      "totalAssets": 122394140672,
-      "longName": "iShares Core S&P Mid-Cap ETF",
-      "legalType": "ETF",
-      "family": "iShares",
-      "etfAum": null,
-      "mult": null,
-      "verdict": "확인 못 함"
-    },
-    {
-      "code": "IWF",
-      "name": "iShares Russell 1000 Growth ETF",
-      "aum": 121217597440,
-      "shares": null,
-      "px": 122.75,
-      "err": null,
-      "totalAssets": 121217597440,
-      "longName": "iShares Russell 1000 Growth ETF",
-      "legalType": "ETF",
-      "family": "iShares",
-      "etfAum": null,
-      "mult": null,
-      "verdict": "확인 못 함"
-    },
-    {
-      "code": "XLK",
-      "name": "State Street Technology Select Sector SPDR ETF",
-      "aum": 115410993152,
-      "shares": null,
-      "px": 185.69,
-      "err": null,
-      "totalAssets": 115410993152,
-      "longName": "State Street Technology Select Sector SPDR ETF",
-      "legalType": "ETF",
-      "family": "State Street Investment Management",
-      "etfAum": null,
-      "mult": null,
-      "verdict": "확인 못 함"
+      "a": {
+        "totalAssets": 452800643072,
+        "longName": "Invesco QQQ Trust",
+        "quoteType": "ETF"
+      },
+      "same": null
     }
   ],
   "flow": [
