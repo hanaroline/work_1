@@ -241,14 +241,27 @@ jobs:
       # 앞선 탐침이 오픈API 서비스 목록을 머리글까지만 받아 왔다. 그걸 근거로
       # "펀드 API 는 없다" 고 적었는데 그건 **못 읽은 것이지 없는 것이 아니다.**
       # 목록을 JS 로 채우는 화면이므로 브라우저로 열어 렌더 뒤에 읽는다.
+      # 22차가 목록 AJAX 두 건이 방화벽에 막힌 것을 잡았다. 결과가 저장소에
+      # 남았으므로 자동으로는 안 돌린다 - 다시 돌리면 잡아 둔 증거가 덮인다.
       - name: 검산 실행 22차 (금투협 오픈API 가 실제로 무엇을 주는가)
         timeout-minutes: 20
         continue-on-error: true
-        if: hashFiles('scripts/probe_kofia_openapi_list.mjs') != ''
+        if: github.event_name == 'workflow_dispatch' && hashFiles('scripts/probe_kofia_openapi_list.mjs') != ''
         run: |
           npm i -D playwright@1.56.1 --no-audit --no-fund
           npx playwright install --with-deps chromium
           node scripts/probe_kofia_openapi_list.mjs
+
+      # 막힌 요청은 http:// 로 나갔고 메인은 https:// 였다. 스킴만 바꿔 한 번
+      # 더 연다. 또 막히면 확인 실패로 닫는다 - 더 두드리지 않는다.
+      - name: 검산 실행 23차 (오픈API 목록, https 로 한 번 더)
+        timeout-minutes: 15
+        continue-on-error: true
+        if: hashFiles('scripts/probe_kofia_openapi_list2.mjs') != ''
+        run: |
+          npm i -D playwright@1.56.1 --no-audit --no-fund
+          npx playwright install --with-deps chromium
+          node scripts/probe_kofia_openapi_list2.mjs
 
       - name: 결과 업로드
         if: always()
@@ -272,6 +285,7 @@ jobs:
             tools/discovery/fund_api_detail.md
             tools/discovery/fund_gwangju.md
             tools/discovery/kofia_openapi_list.md
+            tools/discovery/kofia_openapi_list2.md
           retention-days: 7
 
       - name: 결과 커밋
@@ -295,6 +309,7 @@ jobs:
           git add tools/discovery/fund_api_detail.md 2>/dev/null || true
           git add tools/discovery/fund_gwangju.md 2>/dev/null || true
           git add tools/discovery/kofia_openapi_list.md 2>/dev/null || true
+          git add tools/discovery/kofia_openapi_list2.md 2>/dev/null || true
           git commit -m "chore(fund): 원천 조사 결과 갱신" || echo "변경 없음"
           git pull --rebase --autostash origin "${GITHUB_REF_NAME}" || true
           git push || echo "푸시 실패 (무시)"
