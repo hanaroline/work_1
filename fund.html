@@ -1737,15 +1737,29 @@ function renderReverse() {
       ? '종목 이름을 두 글자 이상 입력해 주세요.' : 'Type at least two characters.') + '</div>';
     return;
   }
+  // 한 펀드가 검색어에 걸리는 종목을 여럿 담고 있을 수 있다("삼성" → 삼성전자·
+  // 삼성SDI·삼성물산). 표에는 그중 하나만 싣는데, **몇 개를 안 보여 주는지
+  // 말하지 않으면 그 하나가 전부라고 읽힌다** — 아래 200행 자르기에 말을
+  // 붙여 둔 것과 같은 이야기다. 그래서 걸린 개수를 함께 센다.
+  //
+  // 싣는 것은 첫 매칭이다. 원천의 보유종목이 이미 비중 내림차순이라 첫 매칭이
+  // 곧 비중이 가장 큰 매칭이다(전수로 확인했다 — "삼성"·"현대"·"SK"·"LG" 어느
+  // 검색어에서도 첫 매칭이 최대가 아닌 펀드는 0개였다). 그러니 따로 고르지
+  // 않는다. 다만 그 값은 **그 한 종목의 비중**이지 검색어에 걸린 종목들의
+  // 합이 아니다. 합을 내지 않는다 — 비중이 없는 종목이 섞이면 합계 자체가
+  // 거짓이 되고, 사용자가 묻지도 않은 "삼성 계열 합계" 를 지어내는 셈이 된다.
   var hits = [];
   for (var i = 0; i < FUNDS.length; i += 1) {
     var hs = FUNDS[i].holdings || [];
+    var first = null;
+    var nMatch = 0;
     for (var j = 0; j < hs.length; j += 1) {
       if ((hs[j].name || '').toLowerCase().indexOf(q) >= 0) {
-        hits.push({ fund: FUNDS[i], h: hs[j] });
-        break;
+        if (!first) first = hs[j];
+        nMatch += 1;
       }
     }
+    if (first) hits.push({ fund: FUNDS[i], h: first, more: nMatch - 1 });
   }
   if (!hits.length) {
     body.innerHTML = '<div class="empty">' + esc(lang === 'ko'
@@ -1761,6 +1775,23 @@ function renderReverse() {
 
   var html = '<div class="finder-bar"><span class="count">' + esc(lang === 'ko'
     ? hits.length.toLocaleString() + '개 펀드' : hits.length.toLocaleString() + ' funds') + '</span></div>';
+
+  // 상세에는 적어 두고 **이 탭에는 빠져 있던** 고지다. 여기가 보유종목을
+  // 보러 오는 자리인데, 표는 날짜 없는 비중 옆에 오늘 기준의 설정액을
+  // 나란히 놓는다. 날짜를 안 적으면 둘 다 오늘 것으로 읽힌다 — 틀린 숫자를
+  // 쓴 것이 아니라 날짜를 안 적어서 생기는 거짓이고, 이 저장소가 이미 상세
+  // 화면에서 같은 이유로 고쳐 둔 것이다.
+  html += '<div class="notice">' + (lang === 'ko'
+    ? '<strong>이 비중이 언제 기준인지 원천이 알려 주지 않습니다.</strong> ' +
+      '공모펀드의 보유종목은 분기 단위로 공시되므로 몇 달 앞선 것일 수 있습니다. ' +
+      '표 오른쪽의 설정액은 오늘 기준이라 <strong>두 열의 기준일이 서로 다릅니다.</strong> ' +
+      '정확한 기준일은 펀드를 눌러 상세의 운용보고서에서 확인하십시오.'
+    : '<strong>The source does not say when these weights were measured.</strong> ' +
+      'Korean fund holdings are disclosed quarterly, so they may be months old. ' +
+      'The AUM column on the right is as of today — <strong>the two columns have ' +
+      'different as-of dates.</strong> Open a fund and see its asset report for the actual date.') +
+    '</div>';
+
   html += '<div class="table-wrap"><table><thead><tr>' +
     '<th>' + esc(lang === 'ko' ? '펀드' : 'Fund') + '</th>' +
     '<th>' + esc(lang === 'ko' ? '유형' : 'Category') + '</th>' +
@@ -1774,7 +1805,15 @@ function renderReverse() {
       '<td><div style="font-weight:600;color:var(--ink)">' + esc(r.fund.name || r.fund.code) + '</div>' +
       '<div class="dim" style="font-size:13px">' + esc(r.fund.company || '') + '</div></td>' +
       '<td>' + esc(r.fund.type || '–') + '</td>' +
-      '<td>' + esc(r.h.name || '') + '</td>' +
+      '<td>' + esc(r.h.name || '') +
+        (r.more > 0
+          ? ' <span class="dim" style="font-size:13px" title="' + esc(lang === 'ko'
+              ? '이 펀드는 검색어에 걸리는 종목을 ' + (r.more + 1) + '개 담고 있습니다. ' +
+                '표에는 비중이 가장 큰 하나만 실었습니다 — 옆의 비중은 그 한 종목의 것입니다.'
+              : 'This fund holds ' + (r.more + 1) + ' matching securities; only the largest is shown. ' +
+                'The weight beside it is that one security’s.') + '">+' +
+            esc(lang === 'ko' ? r.more + '개 더' : r.more) + '</span>'
+          : '') + '</td>' +
       '<td class="num">' + (r.h.weight == null
         ? '<span class="dim" title="' + esc(lang === 'ko' ? '비중이 원천에 없습니다' : 'not published') + '">–</span>'
         : fmtWeight(Number(r.h.weight))) + '</td>' +
@@ -2140,8 +2179,25 @@ function renderHero() {
   // 교차 검증 결과. **확인된 것과 확인되지 않은 것을 나눠 적는다** — 확인 못 한
   // 구간을 말하지 않고 넘어가면 확인된 것처럼 전달된다.
   // (근거: tools/discovery/fund_verify_verdict.md)
-  el('disc-verify').innerHTML = lang === 'ko'
-    ? '<strong>교차 검증(2026-08-30).</strong> 이 화면의 3,196개를 계보가 다른 1차 출처인 ' +
+  //
+  // 이 문단은 대조를 돌린 날의 결과를 적은 **고정된 글**이다. 그런데 자료는
+  // 매일 다시 걷히고 펀드 수도 바뀐다(3,196 → 3,192). 그러면 "이 화면의
+  // 3,196개를 전수 대조했다" 는 문장이 어느 날부터 조용히 거짓이 된다 —
+  // 대조한 3,196개와 지금 화면의 3,192개는 같은 집합이 아니다.
+  // 그래서 대조 당시의 수를 상수로 두고 지금 화면과 맞춰 본 뒤, 어긋나면
+  // 어긋난다고 화면이 스스로 적게 한다. 사람이 날짜를 갱신하는 것을 잊어도
+  // 문장이 거짓말은 하지 않도록 하는 것이 목적이다.
+  var VERIFIED_ON = '2026-08-30';
+  var VERIFIED_N = 3196;
+  var staleNote = FUNDS.length === VERIFIED_N ? '' : (lang === 'ko'
+    ? ' <strong>이 대조는 ' + VERIFIED_ON + ' 수집본(' + VERIFIED_N.toLocaleString() +
+      '개) 기준이고, 지금 화면은 ' + FUNDS.length.toLocaleString() + '개입니다.</strong> ' +
+      '그 사이 설정·해지된 펀드는 이 대조에 포함되지 않았습니다.'
+    : ' <strong>This cross-check covers the ' + VERIFIED_ON + ' collection (' +
+      VERIFIED_N.toLocaleString() + ' funds); this screen now shows ' +
+      FUNDS.length.toLocaleString() + '.</strong> Funds launched or closed since then were not in it.');
+  el('disc-verify').innerHTML = (lang === 'ko'
+    ? '<strong>교차 검증(2026-08-30).</strong> 그날 수집본 3,196개를 계보가 다른 1차 출처인 ' +
       '<u>금융투자협회 전자공시</u>에 전수 다시 물었습니다(응답 3,196건 · 실패 0건). ' +
       '<u>투자지역</u>과 <u>공모 여부</u>는 3,196건 전건 일치했고, <u>설정액</u>은 양쪽 다 있는 ' +
       '3,121건 중 <u>95.4%</u>가 일치했습니다(순자산 어긋남의 92%도 하루치 변동 폭 안이었습니다). ' +
@@ -2150,7 +2206,7 @@ function renderHero() {
       '시계열로 검산한 데까지입니다. <u>기준가</u>는 양쪽 기준일이 하루 어긋나는데 금투협이 소급 ' +
       '조회를 주지 않아 어느 쪽이 옳은지 가르지 못했고, <u>외화표시 66개</u>는 표시 통화가 달라 ' +
       '비교 자체가 성립하지 않습니다.'
-    : '<strong>Cross-check (2026-08-30).</strong> All 3,196 funds on this screen were re-queried ' +
+    : '<strong>Cross-check (2026-08-30).</strong> All 3,196 funds in that day’s collection were re-queried ' +
       'against an independent primary source, <u>KOFIA electronic disclosure</u> (3,196 responses, ' +
       '0 failures). <u>Investment region</u> and <u>public-offering status</u> matched on all 3,196; ' +
       '<u>fund size</u> matched on <u>95.4%</u> of the 3,121 present on both sides. However, ' +
@@ -2158,7 +2214,8 @@ function renderHero() {
       'therefore remain unverified against any outside source</strong> — they are checked only against ' +
       'the originating source’s own base-price series. <u>Base price</u> could not be adjudicated (the ' +
       'two as-of dates differ by a day and KOFIA serves no retrospective query), and <u>66 ' +
-      'foreign-currency funds</u> are quoted in another currency, so no comparison is possible.';
+      'foreign-currency funds</u> are quoted in another currency, so no comparison is possible.') +
+    staleNote;
 }
 
 function renderScopeNote() {

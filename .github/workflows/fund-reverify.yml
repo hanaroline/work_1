@@ -38,10 +38,12 @@ jobs:
       # L2 — 저장한 값이 원천과 같은가.
       # 파생값은 수집기 함수를 부르지 않고 두 번째 구현으로 다시 만든다.
       # 여기서 걸리면 화면의 숫자가 원천과 다르다는 뜻이므로 잡을 실패시킨다.
-      - name: L2 원천 재수집 대조
+      # 표본이 아니라 **전수**로 돈다. 요청은 펀드당 2개이고 동시 6개라
+      # 3,196개가 5분 안쪽이다 — 표본으로 줄일 이유가 없었다.
+      - name: L2 원천 재수집 대조 (전수)
         id: l2
-        timeout-minutes: 30
-        run: node scripts/reverify_fund_source.mjs 400
+        timeout-minutes: 45
+        run: node scripts/reverify_fund_source.mjs 3196
 
       # L3 — 원천 자체가 맞는가. 1차 출처(금투협·운용사 공시)와 대조를 시도한다.
       # 막히는 것 자체가 결과이므로 잡을 실패시키지 않는다. 다만 막혔다는 사실이
@@ -71,13 +73,33 @@ jobs:
         timeout-minutes: 25
         run: node scripts/reverify_fund_kofia_compare.mjs 12
 
-      # L3-c 투자지역 — 이 화면의 주축이다. 1차 출처 대조에서 하나가 어긋났고
-      # (내 자료 "해외" vs 금투협 "혼합"), 얼마나 퍼졌는지 세야 한다.
-      - name: L3-c 투자지역 대조
+      # L3-d 전수 1차 출처 대조 — 위의 브라우저 대조는 **유형마다 가장 큰 것
+      # 하나씩**이라 구조적으로 10개가 상한이다(유형이 10종). 표본을 키워도
+      # 늘지 않는다. 전수를 보려면 브라우저가 아니라 금투협 전자공시의 POST 를
+      # 직접 부르는 이 탐침이라야 한다 — 펀드당 1회, 3,196개에 20분 안팎이다.
+      #
+      # 여태 fund-probe.yml 에만 있어서 "모든 자료 재검증" 을 돌려도 이 층이
+      # 빠져 있었다. 기준가·설정원본·순자산·설정일·투자지역·공모여부를
+      # 표준코드 단위로 맞댄다.
+      #
+      # 이 대조에는 걷어낼 수 없는 오염이 둘 있다. 탐침이 그것을 스스로 적는다.
+      #   - 금투협은 standardDt 를 받아 주기만 하고 늘 최신 영업일로 답한다
+      #   - 외화표시 66개는 기준 좌수가 달라 애초에 맞댈 수 없다
+      - name: L3-d 전수 1차 출처 대조 (금투협 3,196건)
         if: always()
         continue-on-error: true
-        timeout-minutes: 30
-        run: node scripts/reverify_fund_region.mjs 300
+        timeout-minutes: 45
+        run: node scripts/probe_fund_verify_kofia.mjs
+
+      # L3-c 투자지역 — 이 화면의 주축이다. 1차 출처 대조에서 하나가 어긋났고
+      # (내 자료 "해외" vs 금투협 "혼합"), 얼마나 퍼졌는지 세야 한다.
+      # 표본 300 이 아니라 전수로 본다. 유형마다 비례로 뽑는 코드라 넉넉한
+      # 수를 주면 각 유형의 목록을 통째로 가져간다.
+      - name: L3-c 투자지역 대조 (전수)
+        if: always()
+        continue-on-error: true
+        timeout-minutes: 45
+        run: node scripts/reverify_fund_region.mjs 4000
 
       # L1-b — 화면이 그 자리에서 만드는 주장(필터·랭킹·중복도·역조회).
       # 데이터에 없는 값이라 어떤 감사도 본 적이 없다.
@@ -88,17 +110,22 @@ jobs:
 
       # L1 — 화면에 찍힌 글자가 데이터와 같은가. 순위·유형평균은 데이터에 없고
       # 브라우저가 그 자리에서 만드는 값이라, 이 검증만이 그 두 칸을 본다.
+      # 표본 60 → 300. 브라우저로 상세를 하나씩 열어 글자를 읽어 오는 층이라
+      # 전수는 시간이 안 맞는다. 늘릴 수 있는 만큼 늘리고, 표본이라는 것을
+      # 보고서가 그대로 밝힌다 — 전수인 척하지 않는다.
       - name: L1 화면 표기 대조
         if: always()
-        timeout-minutes: 20
-        run: node scripts/reverify_fund_render.mjs 60
+        timeout-minutes: 40
+        run: node scripts/reverify_fund_render.mjs 300
 
       - name: 결과 업로드
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: fund-reverify
-          path: tools/discovery/fund_reverify_*.*
+          path: |
+            tools/discovery/fund_reverify_*.*
+            tools/discovery/fund_verify_kofia.*
           retention-days: 14
 
       - name: 결과 커밋
@@ -108,6 +135,14 @@ jobs:
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           if ls tools/discovery/fund_reverify_*.json >/dev/null 2>&1; then
             git add tools/discovery/fund_reverify_*.* || true
+            # 전수 1차 출처 대조 결과도 같이 남긴다. 여태 fund-probe.yml 에만
+            # 있어서 재검증 결과 옆에 안 놓였다.
+            git add tools/discovery/fund_verify_kofia.* 2>/dev/null || true
             git commit -m "chore(fund): 재검증 결과 갱신" || echo "변경 없음"
-            git push || echo "푸시 실패 (무시)"
+            # 일일 수집이 같은 가지에 덮어쓰기로 밀어 넣는다. 그 사이에 끼면
+            # non-fast-forward 로 튕기므로 한 번 당겨 붙이고 다시 민다.
+            git push || {
+              git pull --rebase --autostash origin "${{ github.ref_name }}" || true
+              git push || echo "푸시 실패 (무시)"
+            }
           fi
