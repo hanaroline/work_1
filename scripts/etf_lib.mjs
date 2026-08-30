@@ -351,6 +351,16 @@ export function computeReturns(timestamps, closes, adjcloses, dividends, splits)
 
   const price = {};
   const tr = {};
+  // 각 기간이 **어느 날을 기준으로** 잰 것인지 같이 낸다.
+  //
+  // 2026-07-28 에 코스피가 -10.84% 떨어지고 07-31 에 +17.91% 돌아왔다.
+  // 그 바람에 1개월 수익률이 기준일 하루 차이로 크게 갈렸다 — 8/27 기준이면
+  // 기준봉이 폭락 전(7/27)이고, 8/28 기준이면 폭락 당일(7/28)이다.
+  // 442580 은 그 하루로 -4.98% 와 +5.14% 를 오갔고, 국내 1,137종목 중
+  // 477종목이 5%p 넘게 벌어졌다. 값은 양쪽 다 맞다.
+  //
+  // 숫자만 보여 주면 "틀렸다"로 읽힌다. 어느 날과 견준 것인지 적어야 한다.
+  const baseDays = {};
   for (const [key, cutoff] of Object.entries(PERIODS)) {
     if (cutoff < first.t) continue;
     let base = null;
@@ -391,9 +401,11 @@ export function computeReturns(timestamps, closes, adjcloses, dividends, splits)
     }
     if (p != null) price[key] = p;
     if (t != null) tr[key] = t;
+    if (p != null || t != null) baseDays[key] = base.day;
   }
   return { price: Object.keys(price).length ? price : null,
            tr: Object.keys(tr).length ? tr : null,
+           baseDays: Object.keys(baseDays).length ? baseDays : null,
            method,                       // 'dividends' | 'adjclose'
            divCount: paid,
            anomalies: anomalies.length ? anomalies : null,

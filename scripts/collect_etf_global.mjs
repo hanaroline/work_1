@@ -156,7 +156,7 @@ function shape(entry, summary, returns) {
     trMethod: returns?.method || null,
     // price = 가격수익률(분배금 제외), tr = 총수익률(분배금 재투자).
     // 국내도 같은 계산기를 쓰므로 두 시장의 tr 이 한 뜻이다.
-    ret: returns ? { price: returns.price, tr: returns.tr } : null,
+    ret: returns ? { price: returns.price, tr: returns.tr, baseDays: returns.baseDays } : null,
     sectors: Object.keys(sectors).length ? sectors : null,
     countries: null,
     assets: null,

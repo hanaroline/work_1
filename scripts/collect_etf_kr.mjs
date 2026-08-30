@@ -178,6 +178,9 @@ async function main() {
     const ret = (y || navSeries || naverPrice) ? Object.assign({},
       y?.price ? { price: y.price } : {},
       y?.tr ? { tr: y.tr } : {},
+      // 어느 날과 견준 값인지. 하루 차이로 1개월 수익률이 -4.98% 와 +5.14%
+      // 를 오간 일이 있어(2026-07-28 코스피 -10.84%) 화면이 이걸 밝힌다.
+      y?.baseDays ? { baseDays: y.baseDays } : {},
       navSeries ? { nav: navSeries } : {},
       naverPrice ? { naverPrice } : {}) : null;
     // 운용사 표기에서 "(ETF)" 꼬리를 뗀다. 필터 항목으로 쓰기에 지저분하다.
