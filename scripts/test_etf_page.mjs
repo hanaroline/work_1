@@ -494,6 +494,52 @@ check('영문에서도 사용법이 그려진다', howtoEn >= 6, `${howtoEn}개`
 await page.locator('.lang-toggle button[data-lang="ko"]').click();
 await page.waitForTimeout(150);
 
+// ── 사용법 내려받기 — 단추가 눌리는지가 아니라 **받은 파일이 열리는지** 본다.
+await page.locator('.tabs button[data-tab="howto"]').click();
+await page.waitForTimeout(200);
+const [download] = await Promise.all([
+  page.waitForEvent('download', { timeout: 10000 }).catch(() => null),
+  page.locator('#howto-save').click(),
+]);
+check('사용법 내려받기가 파일을 만든다', download != null,
+      download ? download.suggestedFilename() : '받지 못함');
+// 크로미움은 download 값에 한글이 있으면 이름을 통째로 버리고 "download"
+// (확장자 없음)로 떨어뜨린다. 확장자가 없으면 HTML 로 열리지 않는다.
+if (download) {
+  const fn = download.suggestedFilename();
+  check('파일 이름에 .html 이 붙는다', /\.html$/.test(fn), fn);
+  check('파일 이름이 ASCII 다', /^[\x20-\x7E]+$/.test(fn), fn);
+}
+if (download) {
+  const saved = await download.path();
+  const html = await readFile(saved, 'utf8');
+  check('받은 파일이 온전한 HTML 이다',
+        /^<!doctype html>/i.test(html) && /<\/html>\s*$/i.test(html), `${html.length}바이트`);
+  // 바깥 자원을 물면 사내망에서 안 열린다. 스타일이 안에 들어 있어야 한다.
+  check('스타일이 파일 안에 들어 있다', /<style>[\s\S]{2000,}<\/style>/.test(html));
+  check('바깥 자원을 물지 않는다',
+        !/<link[^>]+href=["']https?:/i.test(html) && !/<script[^>]+src=["']https?:/i.test(html));
+  // CSS 에는 .take-row 규칙이 남는다(스타일을 통째로 넣으므로). 지워야 하는
+  // 것은 **단추 자체**이므로 마크업을 본다.
+  check('내려받기 단추는 빠져 있다',
+        !/<div class="take-row"/.test(html) && !/id="howto-save"/.test(html));
+  // 진짜로 열리는지 — 띄워서 글자가 그려지는지 센다.
+  const p2 = await browser.newPage();
+  await p2.setContent(html, { waitUntil: 'domcontentloaded' });
+  const txt = (await p2.locator('body').innerText()).replace(/\s+/g, '');
+  check('받은 파일을 열면 내용이 보인다', txt.length > 400, `${txt.length}자`);
+  // 본문에는 2026-07-28 같은 설명용 날짜도 있다. 확인해야 하는 것은
+  // **자료의 기준일**이므로 그 값이 실제로 들어갔는지 본다.
+  const realAsOf = await page.evaluate(() => {
+    const ds = (window.ETF_DATA?.etfs || ETFS).map((e) => e.retAsOf)
+      .filter((d) => /^\d{4}-\d{2}-\d{2}$/.test(String(d))).sort();
+    return ds[ds.length - 1] || null;
+  });
+  check('받은 파일에도 자료 기준일이 남는다', realAsOf != null && txt.includes(realAsOf),
+        `자료 ${realAsOf}`);
+  await p2.close();
+}
+
 // ── 가로 스크롤이 생기지 않는가 (표는 자기 상자 안에서 스크롤해야 한다)
 for (const width of [1440, 768, 390]) {
   await page.setViewportSize({ width, height: 900 });
