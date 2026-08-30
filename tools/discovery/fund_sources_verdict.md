@@ -52,10 +52,23 @@
 
 **단서 둘. 둘 다 "확인 실패"이지 "확인된 부정" 이 아니다.**
 
-1. 오픈API 서비스 현황(`apiStut/OPENAPISvcStut.jsp`)은 받아 온 본문이 머리글
-   (`분류 / 오픈API명 / 설명`)까지만이고 **줄이 하나도 없었다.** 목록을 JS 로
-   채우는 화면으로 보인다. 위 판정의 근거는 **소개 문구 한 줄**뿐이고,
-   목록은 못 읽었다. → 22차(`probe_kofia_openapi_list.mjs`)로 다시 연다.
+1. 오픈API 서비스 현황(`apiStut/OPENAPISvcStut.jsp`)의 목록을 **끝내 못 읽었다.**
+   위 판정의 근거는 **소개 문구 한 줄**뿐이다.
+
+   목록은 페이지가 뜬 뒤 AJAX 두 건이 채운다 — `FS-OPENAPI` /
+   `OPENAPISvcStutSO` / `getApiBrnList`·`getApiInfoList` →
+   `openapi.kofia.or.kr/proframeWeb/XMLSERVICES/`. 22·23차에서 그 두 건이
+   **웹방화벽 차단 페이지**로 회신됐다(HTTP 200, 310바이트,
+   "The request / response that are contrary to the Web firewall security
+   policies have been blocked"). 23차는 `https://` 로 바꿔 봤지만 3건 중
+   2건이 같은 식으로 막혔고, 분류 드롭다운도 `전체` 한 줄뿐이었다.
+
+   즉 **빈 표는 "목록이 비었다" 가 아니라 "러너가 막혔다" 이다.**
+   같은 `proframeWeb/XMLSERVICES/` 라도 `dis.kofia.or.kr` 쪽은 러너에서
+   정상 응답했으므로(→ `fund_kofia_flow.md`), 호스트별 방화벽 문제로 보인다.
+   **더 두드리지 않고 확인 실패로 닫는다.** 사람이 브라우저에서 위 주소를
+   열면 목록이 바로 보일 것이다. 근거 파일: `kofia_openapi_list.md`,
+   `kofia_openapi_list2.md`
 2. 인증 상태로는 시험하지 못했다. 키가 없으니 "키가 있으면 `standardDt` 가
    달라지는가"는 **모른다.** 다만 위 표대로 키가 적용되는 시스템이 다르다.
 
@@ -114,6 +127,8 @@
 - 유료 상용 피드(에프앤가이드·제로인 등). 원문 확인을 안 했으므로 되는지
   안 되는지 **모른다**. 이름으로 판정하지 않는다.
 - 금투협 회원 전용 조회 화면. 로그인 뒤 화면은 못 봤다.
+- **금투협 오픈API 서비스 목록**(위 단서 1). 방화벽에 막혀 못 읽었다.
+  사람이 직접 열어 보면 5초면 끝나는 확인이다.
 
 ## 그래서 지금 쓰는 방법
 
