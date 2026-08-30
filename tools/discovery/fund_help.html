@@ -1,0 +1,342 @@
+<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>공모펀드 조회 사용법</title><style>
+/* ============================================================
+   미래에셋증권 디자인 시스템
+   Orange #F58220 / Blue #043B72 / 1px 섹션 룰 / FAB072 테이블 헤더
+   ============================================================ */
+:root{
+  --orange:#F58220; --orange-active:#CB6015; --orange-soft:#FAB072;
+  --blue:#043B72; --blue-soft:#0086B8; --cyan:#00A9CE;
+  --gray-hl:#D7D7D7; --tan:#F0B26B; --terracotta:#AD624E; --neutral:#84888B;
+  --canvas:#FFFFFF; --surface-soft:#ECEFF4; --surface-subtle:#F7F8FA;
+  --hairline:#CDCECB; --hairline-soft:#E5E4E1;
+  --line-dark:#49535B; --line-mid:#84888B; --line-soft:#A0A6A8;
+  --ink:#1A1A1A; --body-strong:#2C2C2C; --body:#3D3D3D; --muted:#6C6C6C; --muted-soft:#84888B;
+  --success:#2E8540; --warning:#D4A017; --error:#C62828;
+
+  --font-kr:'Spoqa Han Sans Neo','Noto Sans KR','Apple SD Gothic Neo','Malgun Gothic',sans-serif;
+  --font-en:'Inter','Aptos','Segoe UI',system-ui,-apple-system,sans-serif;
+  --font-num:'Inter','SF Mono',ui-monospace,monospace;
+
+  --space-section:80px; --space-block:48px; --space-content:24px; --space-tight:14px;
+}
+@media (max-width:768px){ :root{ --space-section:56px; --space-block:32px; } }
+
+*{box-sizing:border-box;}
+html{-webkit-text-size-adjust:100%;}
+body{
+  margin:0; background:var(--canvas); color:var(--body);
+  font-family:var(--font-kr); font-size:17px; line-height:1.6;
+  font-variant-numeric:tabular-nums;
+}
+html[lang="en"] body{font-family:var(--font-en);}
+h1,h2,h3,h4{color:var(--ink); margin:0;}
+p{margin:0 0 var(--space-content);}
+a{color:var(--blue);}
+:focus-visible{outline:2px solid var(--orange); outline-offset:2px;}
+
+.page{max-width:1280px; margin:0 auto; padding:0 32px;}
+@media (max-width:768px){ .page{padding:0 18px;} }
+
+/* ---------- 툴바 ---------- */
+.toolbar{
+  max-width:1280px; margin:0 auto; padding:18px 32px 0;
+  display:flex; justify-content:flex-end; gap:10px; align-items:center;
+}
+@media (max-width:768px){ .toolbar{padding:14px 18px 0;} }
+.lang-toggle{
+  display:inline-flex; border:1px solid var(--hairline); border-radius:2px;
+  overflow:hidden; background:#fff; box-shadow:0 2px 8px rgba(0,0,0,.06);
+}
+.lang-toggle button{
+  font-family:var(--font-en); font-size:14px; font-weight:500; letter-spacing:.5px;
+  padding:9px 16px; border:0; background:#fff; color:var(--muted); cursor:pointer;
+}
+.lang-toggle button + button{border-left:1px solid var(--hairline);}
+.lang-toggle button[aria-checked="true"]{background:var(--orange); color:#fff;}
+.lang-toggle button[aria-checked="false"]:hover{background:var(--surface-subtle); color:var(--ink);}
+.btn-print{
+  font-size:14px; padding:9px 15px; border:1px solid var(--hairline); border-radius:2px;
+  background:#fff; color:var(--muted); cursor:pointer; box-shadow:0 2px 8px rgba(0,0,0,.06);
+}
+.btn-print:hover{background:var(--surface-subtle); color:var(--ink);}
+.help-dl{display:flex; flex-wrap:wrap; gap:10px 14px; align-items:center; margin:18px 0 26px;}
+.help-dl .dim{font-size:13px; line-height:1.5;}
+/* PDF 를 못 내주는 이유는 옅은 회색으로 흘리지 않는다. 단추가 사라진 자리에
+   설명이 없으면 "고장" 으로 읽힌다. */
+.help-dl .warn-note{color:#8a6a0a; background:#FDF6E3; border:1px solid var(--warning);
+  border-radius:4px; padding:6px 10px;}
+
+/* ---------- Hero ---------- */
+.hero{background:var(--orange); color:#fff; padding:52px 0 56px; margin-top:18px;}
+.hero .tag{
+  display:inline-block; font-size:13px; letter-spacing:.6px; font-weight:500;
+  border:1px solid rgba(255,255,255,.6); padding:4px 10px; border-radius:2px; margin-bottom:22px;
+}
+.hero h1{font-size:56px; font-weight:700; line-height:1.1; letter-spacing:-1px; color:#fff;}
+.hero .sub{font-size:21px; line-height:1.5; margin-top:16px; max-width:820px; color:rgba(255,255,255,.94);}
+.hero .meta{margin-top:30px; font-size:15px; color:rgba(255,255,255,.9); display:flex; flex-wrap:wrap; gap:8px 26px; align-items:center;}
+/* .dim 은 흰 바탕에 쓰라고 만든 옅은 회색이라, 주황 머리말에 그대로 얹으면
+   글자가 배경에 묻혀 사라진다. 실제로 "수집 2026-08-31" 이 안 보였다.
+   덜 중요하다는 뜻은 살리되 읽을 수는 있게 흰색을 옅게 쓴다. */
+.hero .meta .dim{color:rgba(255,255,255,.78);}
+@media (max-width:768px){ .hero h1{font-size:38px;} .hero .sub{font-size:18px;} .hero{padding:36px 0 42px;} }
+
+/* ---------- 탭 ---------- */
+.tabs{
+  display:flex; gap:0; border-bottom:1px solid var(--hairline);
+  margin-top:var(--space-block); overflow-x:auto;
+}
+.tabs button{
+  font-family:inherit; font-size:17px; font-weight:500; padding:14px 22px; cursor:pointer;
+  border:0; border-bottom:3px solid transparent; background:none; color:var(--muted);
+  white-space:nowrap;
+}
+.tabs button:hover{color:var(--ink);}
+.tabs button[aria-selected="true"]{color:var(--orange-active); border-bottom-color:var(--orange); font-weight:700;}
+
+/* ---------- 섹션 ---------- */
+.section{padding-top:var(--space-block);}
+.section[hidden]{display:none;}
+.section-rule{height:1px; background:var(--orange); margin-bottom:18px;}
+.section-eyebrow{font-size:15px; font-weight:500; letter-spacing:.6px; color:var(--orange); margin-bottom:6px;}
+.section-title{font-size:30px; font-weight:700; line-height:1.25; letter-spacing:-.3px;}
+@media (max-width:768px){ .section-title{font-size:24px;} }
+.section-lead{font-size:17px; color:var(--body); margin-top:12px; max-width:880px;}
+h3{font-size:21px; font-weight:600; margin:var(--space-block) 0 var(--space-tight);}
+h4{font-size:17px; font-weight:600; margin:var(--space-content) 0 10px;}
+
+/* ---------- 카드 ---------- */
+.grid{display:grid; gap:16px;}
+.grid-4{grid-template-columns:repeat(4,1fr);}
+.grid-3{grid-template-columns:repeat(3,1fr);}
+.grid-2{grid-template-columns:repeat(2,1fr);}
+@media (max-width:1000px){ .grid-4{grid-template-columns:repeat(2,1fr);} }
+@media (max-width:900px){ .grid-3{grid-template-columns:repeat(2,1fr);} }
+@media (max-width:680px){ .grid-4,.grid-3,.grid-2{grid-template-columns:1fr;} }
+
+.card{border:1px solid var(--hairline); border-radius:4px; padding:22px; background:#fff;}
+.card .label{font-size:14px; font-weight:500; letter-spacing:.5px; color:var(--muted); margin-bottom:6px;}
+.card .stat{font-size:36px; font-weight:700; line-height:1.05; color:var(--blue); font-family:var(--font-num);}
+.card .stat.orange{color:var(--orange);}
+.card .stat.sm{font-size:26px;}
+.card .note{font-size:15px; color:var(--muted); margin-top:10px; line-height:1.5;}
+.tint{background:var(--surface-soft); border-radius:4px; padding:22px;}
+
+/* ---------- 표 ---------- */
+/* min-width:0 이 없으면 그리드·플렉스 안에서 표가 상자를 밀어낸다. */
+.table-wrap{overflow-x:auto; border:1px solid var(--hairline); border-radius:4px; min-width:0;}
+.ret-table thead th{white-space:normal; line-height:1.3;}
+.callout{background:var(--orange); color:#fff; border-radius:4px;
+  padding:26px 30px; margin:0 0 28px;}
+.callout h3{color:#fff; font-size:21px; font-weight:700; margin:0 0 12px;}
+.callout p{margin:0 0 10px; color:rgba(255,255,255,.95); line-height:1.6;}
+.callout p:last-child{margin-bottom:0;}
+.callout b{color:#fff;}
+.sub-head{font-size:18px; font-weight:700; color:var(--ink); margin:32px 0 8px;}
+.sub-lead{color:var(--muted); line-height:1.6; margin:0 0 14px;}
+.sub-lead code{background:var(--surface-subtle); padding:2px 6px; border-radius:2px;
+  font-size:13px; color:var(--ink);}
+td.hl{background:var(--gray-hl);}
+/* 순위 칸은 두 줄이다 — 읽는 값(백분율 순위)이 위, 모집단 크기가 아래. */
+.ret-table .rank-pct{display:block; font-weight:600; color:var(--ink);}
+.ret-table .rank-pct.low{color:var(--muted);}
+.ret-table .rank-raw{display:block; font-size:11px; color:var(--muted-soft);
+  font-variant-numeric:tabular-nums;}
+.ret-table .th-sub{display:block; font-size:11px; font-weight:400;
+  color:var(--ink); opacity:.72;}
+/* 검산에서 비운 칸. 빈칸이 왜 빈칸인지 그 자리에서 말한다. */
+.ret-table td.blanked{color:var(--muted-soft);}
+.ret-table td.blanked .why{display:block; font-size:11px; color:var(--orange-active);}
+table{border-collapse:collapse; width:100%; font-size:16px; background:#fff;}
+thead th{
+  background:var(--orange-soft); color:var(--ink); font-weight:700; font-size:15px;
+  text-align:left; padding:11px 13px; border-bottom:1px solid var(--hairline); white-space:nowrap;
+}
+thead th.sortable{cursor:pointer; user-select:none;}
+thead th.sortable:hover{background:var(--tan);}
+thead th .arrow{opacity:.4; font-size:12px;}
+thead th[aria-sort] .arrow{opacity:1;}
+tbody td{padding:10px 13px; border-bottom:1px solid var(--hairline-soft); vertical-align:middle;}
+tbody tr:last-child td{border-bottom:0;}
+tbody tr:hover{background:var(--surface-subtle);}
+tbody tr.clickable{cursor:pointer;}
+tbody tr.selected{background:#FFF3E8;}
+/* 검색어가 이 클래스에 걸려 펀드가 나온 것이다. 어느 줄인지 짚어 준다. */
+tbody tr.hit{background:#FFF3E8;box-shadow:inset 3px 0 0 var(--brand-orange,#FF6C0C);}
+td.num,th.num{text-align:right; font-family:var(--font-num); font-variant-numeric:tabular-nums;}
+.pos{color:var(--error);}   /* 국내 관행: 상승 빨강 */
+.neg{color:var(--blue-soft);}
+.dim{color:var(--muted-soft);}
+
+/* ---------- 배지 ---------- */
+.badge{
+  display:inline-block; font-size:12px; font-weight:600; letter-spacing:.3px;
+  padding:2px 7px; border-radius:2px; border:1px solid var(--hairline); color:var(--muted);
+  background:#fff; vertical-align:middle; white-space:nowrap;
+}
+.badge + .badge{margin-left:4px;}
+.badge.live{border-color:var(--success); color:var(--success);}
+.badge.sample{border-color:var(--warning); color:#8a6a0a; background:#FDF6E3;}
+.badge.orange{border-color:var(--orange); color:var(--orange-active);}
+.badge.blue{border-color:var(--blue); color:var(--blue);}
+.badge.warn{border-color:var(--error); color:var(--error);}
+
+/* ---------- 검색 · 필터 ---------- */
+.finder-search{position:relative; margin-top:var(--space-content);}
+.finder-search input{
+  width:100%; font-family:inherit; font-size:18px;
+  padding:15px 17px 15px 46px; color:var(--ink); background:#fff;
+  border:1px solid var(--hairline); border-radius:4px;
+}
+.finder-search input:focus{outline:2px solid var(--orange); outline-offset:-1px; border-color:var(--orange);}
+.finder-search svg{position:absolute; left:16px; top:50%; transform:translateY(-50%); pointer-events:none;}
+
+.finder-filters{
+  display:grid; grid-template-columns:repeat(4, minmax(0,1fr)); gap:12px;
+  margin-top:14px; align-items:end;
+}
+@media (max-width:900px){ .finder-filters{grid-template-columns:repeat(2, minmax(0,1fr));} }
+@media (max-width:520px){ .finder-filters{grid-template-columns:1fr;} }
+.finder-filters .f{display:flex; flex-direction:column; gap:5px; min-width:0;}
+.finder-filters .f > span{font-size:13px; font-weight:500; letter-spacing:.4px; color:var(--muted);}
+.finder-filters select{
+  font-family:inherit; font-size:15px; padding:10px 12px; width:100%;
+  border:1px solid var(--hairline); border-radius:2px; background:#fff; color:var(--body-strong);
+  cursor:pointer; appearance:none;
+  background-image:url("data:image/svg+xml;charset=utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M1 1l5 5 5-5' fill='none' stroke='%23666' stroke-width='1.6'/%3E%3C/svg%3E");
+  background-repeat:no-repeat; background-position:right 12px center;
+}
+.finder-filters select:focus{outline:2px solid var(--orange); outline-offset:-1px;}
+.finder-filters select.on{border-color:var(--orange); color:var(--orange-active); font-weight:600;}
+
+.finder-bar{
+  display:flex; flex-wrap:wrap; align-items:center; gap:10px 16px;
+  margin:16px 0 10px; font-size:15px; color:var(--muted);
+}
+.finder-bar .count{color:var(--ink); font-weight:600;}
+.finder-bar button{
+  font-family:inherit; font-size:14px; padding:7px 13px; cursor:pointer;
+  border:1px solid var(--hairline); border-radius:2px; background:#fff; color:var(--muted);
+}
+.finder-bar button:hover{background:var(--surface-subtle); color:var(--ink);}
+.finder-bar select{
+  font-family:inherit; font-size:14px; padding:6px 10px;
+  border:1px solid var(--hairline); border-radius:2px; background:#fff; color:var(--body-strong);
+}
+.chk{display:inline-flex; align-items:center; gap:6px; font-size:14px; cursor:pointer; color:var(--muted);}
+.chk input{accent-color:var(--orange);}
+
+/* ---------- 비중 막대 ---------- */
+.hold-row{
+  position:relative; display:grid; grid-template-columns:24px minmax(0,1fr) auto;
+  gap:8px; align-items:baseline;
+  padding:8px 0 10px; border-bottom:1px solid var(--hairline-soft); font-size:16px;
+}
+.hold-row:last-child{border-bottom:0;}
+.hold-row .seq{color:var(--muted-soft); font-family:var(--font-num); font-size:14px;}
+.hold-row .nm{min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;}
+.hold-row .wt{text-align:right; font-family:var(--font-num); font-weight:600; white-space:nowrap;}
+.hold-row .hbar{
+  position:absolute; left:0; bottom:0; height:3px;
+  background:var(--orange); border-radius:2px; max-width:100%;
+}
+.hold-row.is-cash{opacity:.62;}
+.hold-row.is-cash .hbar{background:var(--neutral);}
+.hold-more{margin-top:12px;}
+
+/* 종목 × 펀드 매트릭스 */
+.matrix{max-height:70vh; overflow:auto;}
+.matrix table{min-width:520px;}
+.matrix thead th{position:sticky; top:0; z-index:2;}
+.matrix th.stock{
+  text-align:left; background:var(--surface-subtle); font-weight:600;
+  position:sticky; left:0; z-index:1; min-width:180px;
+}
+.matrix thead th.stock{z-index:3;}
+.matrix td.held{font-weight:700; color:var(--ink); background:#FFF6EE;}
+.matrix td.miss{color:var(--gray-hl);}
+.matrix td.unw{color:var(--orange); font-weight:400;}
+.matrix th.fund{font-family:var(--font-num); font-size:14px;}
+
+/* ---------- 상세 ---------- */
+.detail-head{display:flex; flex-wrap:wrap; align-items:baseline; gap:10px 16px; margin-bottom:6px;}
+.detail-head h3{margin:0; font-size:26px;}
+.kv{display:grid; grid-template-columns:repeat(auto-fit,minmax(160px,1fr)); gap:2px 20px; margin-top:14px;}
+.kv .k{font-size:13px; color:var(--muted); letter-spacing:.4px;}
+.kv .v{font-size:17px; color:var(--ink); font-weight:600; font-family:var(--font-num); margin-bottom:12px;}
+.kv .v.txt{font-family:inherit; font-weight:500;}
+
+.donut-wrap{display:flex; gap:20px; align-items:center; flex-wrap:wrap;}
+.legend{font-size:14px; line-height:1.9;}
+.legend i{display:inline-block; width:10px; height:10px; border-radius:2px; margin-right:7px;}
+
+/* ---------- 비교 ---------- */
+.cmp-grid{display:grid; gap:16px; grid-template-columns:repeat(auto-fit,minmax(260px,1fr));}
+.fund-link{cursor:pointer;}
+.fund-link:hover{color:var(--orange-active); text-decoration:underline;}
+.cmp-grid .cmp-title{
+  margin:0; font-size:17px; line-height:1.35; font-weight:600; color:var(--ink);
+  min-height:calc(1.35em * 2);
+  display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden;
+}
+.cmp-grid .cmp-meta{
+  font-size:14px; line-height:1.5; height:1.5em; margin:4px 0 10px;
+  color:var(--muted-soft); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+}
+.overlap-cell{font-family:var(--font-num); font-weight:600;}
+
+/* ---------- 안내 ---------- */
+.empty{padding:44px 20px; text-align:center; color:var(--muted); border:1px dashed var(--hairline); border-radius:4px;}
+.notice{
+  border-left:3px solid var(--orange); background:var(--surface-subtle);
+  padding:14px 18px; font-size:15px; color:var(--body); margin:16px 0; border-radius:0 4px 4px 0;
+}
+.notice strong{color:var(--ink);}
+.notice.warn{border-left-color:var(--error);}
+
+/* ---------- 푸터 ---------- */
+footer{margin-top:var(--space-section); border-top:1px solid var(--hairline); padding:32px 0 64px;}
+footer .disc{font-size:14px; color:var(--muted); line-height:1.7; max-width:980px;}
+footer .disc strong{color:var(--body-strong);}
+footer .disc + .disc{margin-top:12px;}
+
+/* ---------- 인쇄 ---------- */
+@media print{
+  .toolbar,.tabs,.finder-search,.finder-filters,.finder-bar,.btn-print{display:none !important;}
+  body{font-size:11pt; line-height:1.4;}
+  .page{max-width:100%; padding:0;}
+  .hero{background:#fff !important; color:var(--ink); padding:0 0 18px; border-bottom:2px solid var(--orange); margin:0;}
+  .hero h1,.hero .sub,.hero .meta{color:var(--ink) !important;}
+  .hero .tag{border-color:var(--hairline); color:var(--muted);}
+  /* 인쇄하면 머리말이 흰 바탕이 되므로 흰 글씨를 되돌린다. */
+  .hero .meta .dim{color:var(--muted) !important;}
+  .section{padding-top:24px;}
+  .section[hidden]{display:block !important;}
+  /* "사용법만 인쇄" 를 누른 경우. 평소 인쇄는 모든 절을 펼치지만, 이때는
+     사용법 한 절만 남긴다 — 사용법을 뽑겠다는데 3,192행이 딸려 나오면 안 된다. */
+  body.print-help .section{display:none !important;}
+  body.print-help #tab-help{display:block !important;}
+  .help-dl{display:none !important;}
+  table,.card,.hold-row{page-break-inside:avoid;}
+  /* 사용법의 "숫자를 읽는 법" 은 7행짜리 한 덩어리라 위의 "표는 쪼개지 않는다"
+     규칙에 걸려 통째로 다음 장으로 밀렸다 — 앞 장이 카드 하나만 남고 텅 비었다.
+     여기서는 줄 단위로 끊고, 줄 자체만 쪼개지지 않게 한다. */
+  #tab-help table{page-break-inside:auto;}
+  #tab-help tr{page-break-inside:avoid;}
+  .section-title,h3,h4{page-break-after:avoid;}
+  .table-wrap{overflow:visible;}
+}
+
+</style></head><body><div class="hero"><div class="page"><div class="tag">국내 설정 공모펀드 조회</div><h1>사용법</h1><div class="meta"><span>펀드 3,192개</span><span>기준일 2026-08-28</span><span class="dim">수집 2026-08-31</span></div></div></div><main class="page"><section class="section" id="tab-help">
+    <div class="section-rule"></div>
+    <div class="section-eyebrow" data-ko="사용법" data-en="How to use">사용법</div>
+    <h2 class="section-title" data-ko="무엇을 할 수 있고, 숫자를 어떻게 읽나" data-en="What this screen does, and how to read its numbers">무엇을 할 수 있고, 숫자를 어떻게 읽나</h2>
+    <p class="section-lead" data-ko="탭마다 하는 일이 다릅니다. 아래에 각 탭의 쓰임과, 이 화면의 숫자를 읽을 때 반드시 알아야 할 것들을 적었습니다." data-en="Each tab does a different job. Below: what each is for, and what you must know to read these numbers correctly.">탭마다 하는 일이 다릅니다. 아래에 각 탭의 쓰임과, 이 화면의 숫자를 읽을 때 반드시 알아야 할 것들을 적었습니다.</p>
+    <!--
+      사용법은 화면을 못 여는 자리(메신저·메일·사내 공유)에 따로 붙일 일이
+      많다. 그래서 이 절만 따로 내려받을 수 있게 둔다. 21MB 짜리 본 화면을
+      통째로 보내지 않아도 되고, 받는 쪽은 브라우저만 있으면 열린다.
+    -->
+    
+    <div id="help-body"><div class="grid grid-2" style="margin-top:20px"><div class="card"><div class="label">펀드 찾기</div><div class="note" style="margin-top:8px;font-size:15px;color:var(--ink)">투자 지역·자산군·유형·운용사·설정액·위험등급·총보수로 좁힙니다. 검색창에는 펀드 이름뿐 아니라 <strong>표준코드·클래스 코드·운용사·보유종목</strong>도 넣을 수 있습니다 — "삼성전자" 를 넣으면 그 종목을 담은 펀드가 나옵니다. 줄을 누르면 보유종목·업종구성·수익률·위험지표·클래스별 보수가 펼쳐집니다.</div></div><div class="card"><div class="label">비교 · 중복도</div><div class="note" style="margin-top:8px;font-size:15px;color:var(--ink)">펀드를 여럿 골라 나란히 놓고, <strong>서로 얼마나 겹치는지</strong>를 봅니다. 겹침은 두 펀드가 같은 종목에 함께 준 비중으로 계산합니다. 분산이 되고 있다고 생각한 조합이 실은 같은 것을 두 번 산 것인지 여기서 갈립니다.</div></div><div class="card"><div class="label">종목 → 펀드</div><div class="note" style="margin-top:8px;font-size:15px;color:var(--ink)">거꾸로 찾습니다. 종목 이름을 넣으면 <strong>그 종목을 담은 펀드</strong>가 나옵니다. 한 펀드가 검색어에 걸리는 종목을 여럿 담고 있으면 비중이 가장 큰 하나만 싣고 <strong>"+N개 더"</strong> 로 나머지 수를 밝힙니다.</div></div><div class="card"><div class="label">랭킹</div><div class="note" style="margin-top:8px;font-size:15px;color:var(--ink)">수익률·설정액 상위를 봅니다. 순위는 저장된 값이 아니라 <strong>화면이 그 자리에서 매깁니다</strong> — 비운 칸은 순위에 넣지 않습니다.</div></div><div class="card"><div class="label">수익률 검산</div><div class="note" style="margin-top:8px;font-size:15px;color:var(--ink)">원천이 준 기간수익률을 그대로 싣지 않고 기준가 시계열로 검산합니다. <strong>무엇을 왜 비웠는지</strong>가 여기 남습니다.</div></div></div><h3 style="margin-top:34px">숫자를 읽는 법</h3><div class="table-wrap"><table><thead><tr><th style="width:26%">알아야 할 것</th><th>왜</th></tr></thead><tbody><tr><td style="font-weight:600;color:var(--ink)">빈칸은 0이 아닙니다</td><td style="line-height:1.6">값이 없어서 비운 칸과 값이 0인 칸은 다릅니다. 이 화면은 <strong>확인하지 못한 값을 0으로 채우지 않고 비웁니다.</strong> 지금 설정액이 빈 펀드가 60개, 총보수가 빈 펀드가 42개이며, 수익률에서 한 칸이라도 비운 펀드가 88개입니다. 빈칸을 0으로 읽으면 순위와 평균이 전부 틀어집니다.</td></tr><tr><td style="font-weight:600;color:var(--ink)">기준일과 수집일은 다릅니다</td><td style="line-height:1.6">머리말에 <strong>기준일</strong>과 <strong>수집</strong>을 따로 적어 둔 이유입니다. 자료를 오늘 걷어 왔다고 해서 그 안의 값이 오늘 것이 되지는 않습니다 — 주말·공휴일 다음에는 그 앞 영업일 값입니다.</td></tr><tr><td style="font-weight:600;color:var(--ink)">보유종목에는 기준일이 없습니다</td><td style="line-height:1.6">원천이 종목명과 비중만 주고 <strong>언제 기준인지는 알려 주지 않습니다</strong>(3,192개 중 기준일이 붙은 것 0개). 공모펀드 보유종목은 분기 공시라 몇 달 앞선 것일 수 있습니다. 설정액 같은 값은 최근 영업일 기준이므로 <strong>한 표 안에서 열마다 기준일이 다릅니다.</strong> 정확한 기준일은 펀드 상세의 운용보고서에서 확인하십시오.</td></tr><tr><td style="font-weight:600;color:var(--ink)">총보수는 하나의 숫자가 아니라 범위입니다</td><td style="line-height:1.6">국내 공모펀드의 보수는 클래스마다 다릅니다. 이 자료에서도 2,882개 펀드가 그렇습니다. 그래서 <strong>최저~최고 범위</strong>로 싣고 클래스별 표를 함께 둡니다. 목록의 총보수 열과 필터는 <strong>최저 클래스</strong> 기준이므로, 실제로 가입하는 클래스의 보수는 더 높을 수 있습니다.</td></tr><tr><td style="font-weight:600;color:var(--ink)">수익률은 누적이며 연율이 아닙니다</td><td style="line-height:1.6">3년·5년도 <strong>연 환산하지 않은 누적</strong> 수익률입니다. 3년 30%를 연 30%로 읽으면 안 됩니다. 분배금 재투자 여부는 원천이 밝히지 않으므로 이 화면도 단정하지 않습니다.</td></tr><tr><td style="font-weight:600;color:var(--ink)">투자지역의 "혼합" 은 자산이 아니라 지역입니다</td><td style="line-height:1.6">투자지역은 1차 출처인 금융투자협회 전자공시에서 직접 받아 국내·해외·<strong>혼합</strong> 셋으로 가릅니다(지금 혼합 369개). 유형 이름에 나오는 "혼합" 은 <strong>주식+채권</strong>이라는 자산 이야기라 서로 다른 말입니다.</td></tr><tr><td style="font-weight:600;color:var(--ink)">표가 잘릴 때는 잘렸다고 적습니다</td><td style="line-height:1.6">역조회 결과는 200행까지만 그립니다. 그럴 때 위에 <strong>몇 개 중 몇 개를 보여 주는지</strong> 적어 둡니다. 표에 보이는 것이 전부가 아닐 수 있다는 뜻입니다.</td></tr></tbody></table></div><h3 style="margin-top:34px">어디까지 확인됐나</h3><div class="notice">이 화면의 값은 <strong>2차 출처(네이버 Npay 증권)</strong>에서 걷은 뒤, 계보가 다른 <strong>1차 출처(금융투자협회 전자공시)</strong>에 다시 물어 맞대 봅니다. <u>투자지역</u>과 <u>공모 여부</u>는 전건 일치했고 <u>설정액</u>도 대부분 일치했습니다. 반면 <strong>1개월 이상 기간수익률·보유종목·위험지표는 금투협이 주지 않아 외부 원천으로 확인되지 않았습니다</strong> — 그 셋은 2차 출처 단독 근거이며, 원천 자체의 기준가 시계열로 검산한 데까지입니다. 자세한 것은 화면 맨 아래 <strong>교차 검증</strong> 문단과 <strong>수익률 검산</strong> 탭에 있습니다. 실제 상품 내용은 각 펀드의 <strong>투자설명서와 운용사 공시가 우선</strong>합니다.</div><div class="kv" style="margin-top:26px"><div><div class="k">펀드</div><div class="v">3,192</div></div><div><div class="k">보유종목이 있는 펀드</div><div class="v">1,932</div></div><div><div class="k">실린 종목 수</div><div class="v">9,791</div></div><div><div class="k">클래스</div><div class="v">19,071</div></div></div></div>
+  </section></main><footer><div class="page"><p class="disc"><strong>자료 출처.</strong> 네이버 Npay 증권(stock.naver.com) 펀드 API 에서 2026-08-31(한국 시간)에 수집했습니다. 자료 자체의 기준일은 2026-08-28 이라 <u>수집일과 기준일이 다릅니다</u>. 대상은 <u>국내에 설정된 공모펀드</u> 3,192개이며, 해외에 설정된 뮤추얼펀드는 포함하지 않습니다.</p><p class="disc"><strong>범위.</strong> 이 화면은 국내에 설정된 공모펀드를 <u>투자 지역</u>으로 가릅니다. 투자 지역은 <u>금융투자협회 전자공시(1차 출처)</u>에서 직접 받으며 <u>국내·해외·혼합</u> 셋으로 나뉩니다 (3,192 / 3,192개 확보). 처음에는 네이버 유형명의 앞머리에서 읽었는데(“해외주식형” → 해외), 재검증에서 표본 318개 중 <u>34개(10.7%)</u>가 1차 출처와 어긋났습니다 — 네이버 유형명의 “혼합”은 자산(주식+채권)을 뜻해서 지역의 혼합을 표현할 수 없기 때문입니다. 자산군은 여전히 유형 이름에서 읽습니다.</p></div></footer></body></html>

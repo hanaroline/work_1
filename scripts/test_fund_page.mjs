@@ -605,6 +605,247 @@ check('총보수를 0 으로 지어내지 않는다', !feeInvented);
   }
 }
 
+// ── 사용법
+//
+// 사용법 문서는 본문보다 먼저 낡는다. 그래서 이 탭의 수는 글로 박지 않고
+// 자료에서 세어 그린다. 시험도 화면의 글자가 아니라 **자료를 다시 세어** 맞댄다.
+{
+  await page.locator('.tabs button[data-tab="help"]').click();
+  await page.waitForTimeout(200);
+  const help = (await page.locator('#help-body').innerText().catch(() => '')) || '';
+  check('사용법 탭이 그려진다', help.length > 400, `${help.length}자`);
+
+  const cards = await page.locator('#help-body .card').count();
+  const tabCount = await page.locator('.tabs button[data-tab]').count();
+  check('탭마다 설명이 있다', cards === tabCount - 1, `설명 ${cards}개 / 탭 ${tabCount}개(사용법 제외)`);
+
+  // 빈칸을 0으로 읽지 말라는 것이 이 화면의 가장 중요한 약속이다. 그 약속이
+  // 사용법에서 빠지면 사용자는 빈칸을 0으로 읽는다.
+  check('빈칸이 0이 아니라고 밝힌다', /빈칸은 0이 아닙니다/.test(help), '표시됨');
+  check('보유종목 기준일이 없다고 밝힌다', /기준일이 없습니다/.test(help), '표시됨');
+  check('총보수가 범위라고 밝힌다', /범위입니다/.test(help), '표시됨');
+  check('수익률이 누적이라고 밝힌다', /누적이며 연율이 아닙니다/.test(help), '표시됨');
+  check('확인 안 된 것을 사용법에도 적는다',
+    /확인되지 않았습니다/.test(help), '표시됨');
+
+  // 적힌 수가 자료와 같은가 — 사용법이 본문과 어긋나면 사용법 쪽이 거짓이다.
+  const truth = await page.evaluate(() => {
+    const F = (window.FUND_DATA || {}).funds || [];
+    const secs = new Set();
+    for (const f of F) for (const h of f.holdings || []) if (h.name) secs.add(h.name);
+    return {
+      total: F.length,
+      withHold: F.filter((f) => f.holdingCount > 0).length,
+      secs: secs.size,
+      noAum: F.filter((f) => f.aum == null).length,
+      mixed: F.filter((f) => f.region === 'mixed').length,
+    };
+  });
+  const bad = Object.entries(truth)
+    .filter(([, v]) => !help.includes(v.toLocaleString()))
+    .map(([k, v]) => `${k}=${v.toLocaleString()}`);
+  check('사용법의 수가 자료와 일치한다', bad.length === 0,
+    bad.length ? `화면에 없는 값: ${bad.join(', ')}` : `펀드 ${truth.total.toLocaleString()} 등 일치`);
+
+  // ── 사용법을 따로 내려받을 수 있어야 한다
+  //
+  // 21MB 짜리 본 화면을 통째로 보내지 않고 사용법만 붙일 자리가 있다.
+  // 단추가 있는지만 보지 않고 **실제로 내려받아 그 파일을 열어** 확인한다 —
+  // 눌리기만 하고 빈 파일이 떨어지는 것이 이런 기능의 흔한 결말이다.
+  check('사용법 내려받기 단추가 있다',
+    (await page.locator('#help-dl-html').count()) === 1 &&
+    (await page.locator('#help-dl-print').count()) === 1);
+
+  // 날짜는 화면이 자료에서 뽑은 값을 그대로 쓴다. 여기서 따로 지어내면
+  // 시험이 화면을 보는 것이 아니라 제 짐작을 보는 것이 된다.
+  const dates = await page.evaluate(() => ({
+    asOf: (window.DATES || {}).asOf || '', got: (window.DATES || {}).got || '',
+  }));
+
+  const dlNote = await page.locator('#help-dl-note').innerText().catch(() => '');
+  check('내려받은 파일이 언제 것인지 밝힌다',
+    /기준일/.test(dlNote) && (dates.asOf ? dlNote.includes(dates.asOf) : true),
+    dlNote.slice(0, 60));
+
+  const [download] = await Promise.all([
+    page.waitForEvent('download', { timeout: 15000 }).catch(() => null),
+    page.locator('#help-dl-html').click(),
+  ]);
+  check('누르면 파일이 떨어진다', !!download, download ? download.suggestedFilename() : '없음');
+
+  if (download) {
+    // 이름이 로마자라야 한다. 한글 이름을 주면 브라우저가 통째로 버리고
+    // 확장자 없는 "download" 로 떨어뜨리는 환경이 있다 — 그러면 못 연다.
+    const fname = download.suggestedFilename();
+    check('파일 이름이 성하게 떨어진다',
+      /^[\x20-\x7E]+\.html$/.test(fname) && /how-to-use/.test(fname) &&
+      (dates.got ? fname.includes(dates.got) : true), fname);
+
+    const saved = await download.path();
+    const doc = saved ? await readFile(saved, 'utf8') : '';
+    check('받은 파일이 홀로 서는 문서다',
+      /^<!doctype html>/i.test(doc) && /<style>/.test(doc) && doc.length > 5000,
+      `${(doc.length / 1024).toFixed(0)} KB`);
+    check('받은 파일에 사용법 본문이 들어 있다',
+      doc.includes('빈칸은 0이 아닙니다') && doc.includes('보유종목에는 기준일이 없습니다'));
+    check('받은 파일에 기준일과 출처가 남는다',
+      (dates.asOf ? doc.includes(dates.asOf) : true) && /자료 출처/.test(doc));
+    // 받은 파일 안에서 누를 것이 없는 단추가 남아 있으면 안 된다.
+    check('받은 파일에 죽은 단추가 없다', !doc.includes('id="help-dl"'));
+  }
+
+  // ── 사용법 PDF
+  //
+  // PDF 는 화면이 그 자리에서 만들지 못한다(브라우저에 PDF 를 짜는 기능이
+  // 없다). 그래서 빌드가 미리 만들어 base64 로 실어 두고, 화면은 그것을
+  // 그대로 내려준다. 미리 실은 것은 낡을 수 있으므로 화면이 지금 센 수와
+  // 맞을 때만 단추를 연다 — 그 규칙이 실제로 지켜지는지를 본다.
+  const pdfState = await page.evaluate(() => ({
+    has: !!(window.HELP_PDF && window.HELP_PDF.b64),
+    stamp: (window.HELP_PDF || {}).stamp || '',
+    live: window.HELP_STAMP || '',
+    bytes: (window.HELP_PDF || {}).bytes || 0,
+    got: (window.HELP_PDF || {}).got || '',
+  }));
+  const pdfShown = await page.locator('#help-dl-pdf').isVisible();
+  const whyShown = await page.locator('#help-dl-why').isVisible();
+
+  // 실려 있고 자료가 같으면 단추가 열려 있어야 하고, 아니면 단추 대신
+  // **이유가 적혀** 있어야 한다. 둘 다 없는 것(조용히 사라지는 것)이 제일 나쁘다.
+  const fresh = pdfState.has && pdfState.stamp === pdfState.live;
+  check('실린 PDF 가 지금 자료와 같을 때만 단추가 열린다', pdfShown === fresh,
+    `단추 ${pdfShown ? '보임' : '감춤'} · 실린 표시 ${pdfState.stamp || '없음'} · 화면 ${pdfState.live}`);
+  check('PDF 를 못 내줄 때는 이유를 적는다', fresh ? !whyShown : whyShown,
+    whyShown ? (await page.locator('#help-dl-why').innerText()).slice(0, 70) : '(이유 없음)');
+
+  if (fresh) {
+    const [pdfDl] = await Promise.all([
+      page.waitForEvent('download', { timeout: 15000 }).catch(() => null),
+      page.locator('#help-dl-pdf').click(),
+    ]);
+    check('누르면 PDF 가 떨어진다', !!pdfDl, pdfDl ? pdfDl.suggestedFilename() : '없음');
+
+    if (pdfDl) {
+      const fname = pdfDl.suggestedFilename();
+      check('PDF 이름이 성하게 떨어진다',
+        /^[\x20-\x7E]+\.pdf$/.test(fname) && /how-to-use/.test(fname) &&
+        (pdfState.got ? fname.includes(pdfState.got) : true), fname);
+
+      // 단추가 눌리기만 하고 깨진 파일이 떨어지는 것이 이런 기능의 흔한 결말이다.
+      // 이름만 보지 않고 **바이트를 열어** PDF 인지 확인한다.
+      const saved = await pdfDl.path();
+      const buf = saved ? await readFile(saved) : Buffer.alloc(0);
+      check('받은 PDF 가 진짜 PDF 다',
+        buf.slice(0, 5).toString() === '%PDF-' && buf.length === pdfState.bytes,
+        `${(buf.length / 1024).toFixed(0)} KB · 실린 크기 ${(pdfState.bytes / 1024).toFixed(0)} KB`);
+      // base64 를 문자열째로 Blob 에 넣으면 UTF-8 로 다시 부호화되어 바이트가
+      // 불어난다. 크기가 실린 값과 정확히 같아야 그 함정을 피한 것이다.
+      check('PDF 끝맺음이 온전하다', buf.slice(-1024).includes('%%EOF'));
+    }
+
+    // 낡은 PDF 를 걸러내는 장치가 실제로 도는지 본다. 자료가 갱신되는 날에만
+    // 발동하는 갈래라, 일부러 표시를 어긋내지 않으면 영영 시험되지 않는다 —
+    // 그러다 정작 그날 낡은 PDF 가 그대로 나가는 것이 이런 장치의 결말이다.
+    const stale = await page.evaluate(() => {
+      const keep = window.HELP_PDF.stamp;
+      window.HELP_PDF.stamp = keep + '|어긋남';
+      renderHelp();
+      const out = {
+        shown: !document.getElementById('help-dl-pdf').hidden,
+        why: document.getElementById('help-dl-why').textContent,
+      };
+      window.HELP_PDF.stamp = keep;
+      renderHelp();
+      return out;
+    });
+    check('자료가 갱신되면 낡은 PDF 를 내주지 않는다',
+      !stale.shown && /기준일/.test(stale.why), stale.why.slice(0, 60));
+    check('되돌리면 단추가 다시 열린다', await page.locator('#help-dl-pdf').isVisible());
+  }
+
+  await page.locator('.tabs button[data-tab="browse"]').click();
+  await page.waitForTimeout(150);
+}
+
+// ── 머리말의 기준일은 수집 시각이 아니라 자료의 기준일이라야 한다
+//
+// 값은 수집 시각인데 이름만 "기준일" 이었고, ISO 를 그대로 잘라 UTC 날짜를
+// 찍었다. 일일 수집이 23:30 UTC(= 다음날 08:30 KST)에 도니 한국 시간으로
+// 매일 하루씩 밀린 날짜가 나왔다. 자료에는 진짜 기준일(tradeDate)이 있다.
+{
+  const hero = (await page.locator('#hero-meta').innerText().catch(() => '')) || '';
+  const truth = await page.evaluate(() => {
+    const D = window.FUND_DATA || {};
+    const s = new Set();
+    for (const f of D.funds || []) if (f.tradeDate) s.add(f.tradeDate);
+    const kst = (v) => new Date(new Date(v).getTime() + 9 * 3600 * 1000).toISOString().slice(0, 10);
+    return {
+      days: [...s].sort(),
+      utcDay: String(D.sources?.kr?.updatedAt || D.updatedAt || '').slice(0, 10),
+      kstDay: kst(D.sources?.kr?.updatedAt || D.updatedAt),
+    };
+  });
+  if (truth.days.length === 1) {
+    check('머리말 기준일이 자료의 기준일과 같다',
+      hero.includes(truth.days[0]), `화면 "${hero.replace(/\s+/g, ' ')}" / 자료 ${truth.days[0]}`);
+    // 수집 시각을 기준일 자리에 앉히지 않는다. 둘이 우연히 같은 날이면
+    // 이 시험으로는 못 가르므로, 다를 때만 본다.
+    if (truth.utcDay !== truth.days[0]) {
+      check('수집 시각을 기준일로 내세우지 않는다',
+        !new RegExp('기준일\\s*' + truth.utcDay).test(hero), `수집 UTC ${truth.utcDay}`);
+    }
+  }
+  check('수집일을 한국 시간으로 적는다',
+    hero.includes(truth.kstDay), `KST ${truth.kstDay} / UTC ${truth.utcDay}`);
+
+  // 적어 놓기만 하고 안 보이면 안 적은 것과 같다. 실제로 수집일에 흰 바탕용
+  // 옅은 회색(.dim)을 그대로 얹어 주황 머리말에서 글자가 사라졌었다. 눈으로
+  // 보지 않으면 못 잡는 종류라 명암비를 재서 잡는다.
+  const contrast = await page.evaluate(() => {
+    const lum = (c) => {
+      const [r, g, b] = c.match(/[\d.]+/g).slice(0, 3).map((v) => {
+        const s = Number(v) / 255;
+        return s <= 0.03928 ? s / 12.92 : ((s + 0.055) / 1.055) ** 2.4;
+      });
+      return 0.2126 * r + 0.7152 * g + 0.0722 * b;
+    };
+    // 머리말 배경은 조상에서 찾는다(칸 자체는 배경이 없다).
+    const bgOf = (node) => {
+      for (let e = node; e; e = e.parentElement) {
+        const c = getComputedStyle(e).backgroundColor;
+        if (c && !/rgba\(0, 0, 0, 0\)|transparent/.test(c)) return c;
+      }
+      return 'rgb(255,255,255)';
+    };
+    const out = [];
+    for (const s of document.querySelectorAll('#hero-meta span')) {
+      const st = getComputedStyle(s);
+      // 배지처럼 제 바탕을 가진 칸은 빼고 본다. 그것은 주황 위의 흰 글씨가
+      // 아니라 다른 바탕 위의 글씨라, 같은 줄의 기준으로 삼으면 안 된다.
+      if (!/rgba\(0, 0, 0, 0\)|transparent/.test(st.backgroundColor)) continue;
+      // 흰 글씨를 반투명으로 쓴 경우 실제로 눈에 닿는 색은 배경과 섞인 색이다.
+      const fg = st.color.match(/[\d.]+/g).map(Number);
+      const bg = bgOf(s).match(/[\d.]+/g).map(Number);
+      const a = fg.length > 3 ? fg[3] : 1;
+      const mix = [0, 1, 2].map((i) => fg[i] * a + bg[i] * (1 - a));
+      const l1 = lum(`rgb(${mix.join(',')})`);
+      const l2 = lum(`rgb(${bg.slice(0, 3).join(',')})`);
+      const ratio = (Math.max(l1, l2) + 0.05) / (Math.min(l1, l2) + 0.05);
+      out.push({ text: s.textContent.trim().slice(0, 24), ratio: Math.round(ratio * 100) / 100 });
+    }
+    return out;
+  });
+  // 절대 기준(명암비 3 이상)으로 재면 안 된다. 이 머리말은 브랜드 주황 바탕에
+  // 흰 글씨라 **순백조차 2.59** 다 — 규칙을 그렇게 두면 멀쩡한 디자인이 통째로
+  // 걸린다. 잡아야 할 것은 낮은 명암비가 아니라 **한 칸만 유독 옅은 것**이다.
+  // 흰 바탕용 회색을 얹었던 그 칸은 1.38 로, 같은 줄 기준(2.36)의 58% 였다.
+  const best = Math.max(...contrast.map((c) => c.ratio));
+  const worst = contrast.slice().sort((a, b) => a.ratio - b.ratio)[0];
+  check('머리말에 유독 옅어 묻히는 칸이 없다',
+    contrast.length > 0 && worst.ratio >= best * 0.8,
+    worst ? `가장 옅은 칸 "${worst.text}" ${worst.ratio} / 같은 줄 기준 ${best}` : '칸 없음');
+}
+
 // ── 교차 검증에서 확인 못 한 것을 확인한 것처럼 말하지 않는다
 {
   const foot = await page.locator('#disc-verify').innerText().catch(() => '');
