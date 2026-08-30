@@ -325,6 +325,23 @@ for (const e of ETFS) {
          { premium: e.premium, volume: e.volume, price: e.price, nav: e.nav });
   }
 
+  // ── 8-1. 기준일 표기 ──────────────────────────────────────────────────
+  // 화면에 그대로 찍히는 칸이다. 야후는 "2026-08-28", 네이버는 "2026.08.27"
+  // 로 준다. 야후를 못 받은 종목이 네이버 날짜로 물러서면서 같은 칸에 두
+  // 형식이 섞였다(5종목). 사람이 보면 오타로 읽고, 코드가 비교하면 같은 날도
+  // 다르다고 판정한다.
+  for (const [k, v] of [['retAsOf', e.retAsOf], ['navAsOf', e.navAsOf]]) {
+    if (v != null && !/^\d{4}-\d{2}-\d{2}$/.test(String(v))) {
+      flag('error', '기준일-형식', e, `${k}=${JSON.stringify(v)} — YYYY-MM-DD 여야 한다`);
+    }
+  }
+  // 기간 수익률에 기준일이 붙어 있어야 다른 화면과 견줄 수 있다.
+  // 2026-07-28 처럼 시장이 하루에 -10.84% 움직인 날이 기준봉에 걸리면
+  // 하루 차이로 값이 크게 갈리는데, 날짜가 없으면 그걸 설명할 방법이 없다.
+  if (e.ret?.tr && !e.ret?.baseDays) {
+    flag('warn', '기준일-기간별없음', e, '총수익률은 있는데 기간별 기준일이 없다');
+  }
+
   // ── 8-2. 설정액이 무엇을 센 값인지 ─────────────────────────────────────
   // 야후 totalAssets 는 **펀드 전체**를 센다. 뱅가드 ETF 는 인덱스펀드의 한
   // 클래스라 뮤추얼펀드 클래스까지 합친 값이 온다 — VTI 와 VTSAX 가 똑같이
@@ -420,6 +437,51 @@ for (const [key, members] of Object.entries(cohorts)) {
   }
 }
 
+// ── 자료가 낡았는가 ───────────────────────────────────────────────────────
+// 여기까지의 규칙은 전부 **파일 안에서** 앞뒤가 맞는지만 본다. 그래서 한 달
+// 묵은 자료도 전부 통과한다 — 수집이 조용히 멈춰도 감사는 초록이다.
+// 그것이 이 감사의 가장 큰 구멍이므로 마지막에 날짜를 본다.
+//
+// 국내장 마감은 15:30 KST 다. 그 전에 돌면 최신 종가는 직전 영업일 것이므로,
+// "오늘 날짜"가 아니라 **직전 영업일**과 견준다. 주말·공휴일도 같은 이유로
+// 뒤로 물러난다. 사흘을 넘게 벌어지면 수집이 멈춘 것으로 본다.
+{
+  const nowKst = new Date(Date.now() + 9 * 3600e3);
+  const dayMs = 864e5;
+  let probe = new Date(nowKst);
+  // 오늘 15:30 KST 이전이면 오늘 종가는 아직 없다.
+  if (probe.getUTCHours() < 15 || (probe.getUTCHours() === 15 && probe.getUTCMinutes() < 30)) {
+    probe = new Date(probe.getTime() - dayMs);
+  }
+  while (probe.getUTCDay() === 0 || probe.getUTCDay() === 6) probe = new Date(probe.getTime() - dayMs);
+  const expected = probe.toISOString().slice(0, 10);
+
+  const days = ETFS.map((e) => e.retAsOf).filter((d) => /^\d{4}-\d{2}-\d{2}$/.test(String(d))).sort();
+  const newest = days[days.length - 1] ?? null;
+  const lagDays = newest ? Math.round((Date.parse(expected) - Date.parse(newest)) / dayMs) : null;
+  const stale = { expected, newest, lagDays };
+  console.log(`\n=== 자료 신선도 ===\n  직전 영업일 ${expected} · 자료 최신 기준일 ${newest ?? '없음'}` +
+              ` · 차이 ${lagDays ?? '—'}일`);
+  if (newest == null) {
+    findings.push({ sev: 'error', rule: '자료-기준일없음', id: '-', code: '-', market: '-',
+                    name: '(전체)', detail: '수익률 기준일을 가진 종목이 하나도 없다' });
+  } else if (lagDays > 3) {
+    findings.push({ sev: 'error', rule: '자료-낡음', id: '-', code: '-', market: '-', name: '(전체)',
+                    detail: `최신 기준일 ${newest} 가 직전 영업일 ${expected} 보다 ${lagDays}일 뒤졌다 — 수집이 멈췄을 수 있다` });
+  } else if (lagDays > 0) {
+    findings.push({ sev: 'info', rule: '자료-하루뒤', id: '-', code: '-', market: '-', name: '(전체)',
+                    detail: `최신 기준일 ${newest} · 직전 영업일 ${expected} (차이 ${lagDays}일)` });
+  }
+  // 대다수가 최신인지도 본다. 일부만 갱신되면 화면에서 서로 다른 날을 견주게 된다.
+  const atNewest = ETFS.filter((e) => e.retAsOf === newest).length;
+  const ratio = ETFS.length ? atNewest / ETFS.length : 0;
+  if (newest && ratio < 0.8) {
+    findings.push({ sev: 'error', rule: '자료-기준일제각각', id: '-', code: '-', market: '-', name: '(전체)',
+                    detail: `최신 기준일(${newest}) 종목이 ${atNewest}/${ETFS.length} (${(ratio * 100).toFixed(0)}%) 뿐이다` });
+  }
+  globalThis.__staleness = stale;
+}
+
 // ── 집계 ──────────────────────────────────────────────────────────────────
 // 규칙**과 심각도**로 묶는다. 규칙만으로 묶으면 같은 규칙의 오류와 경고가
 // 한 줄에 합쳐지고 심각도는 첫 건 것이 찍힌다 — 61건이 전부 오류인 줄 알았는데
@@ -435,6 +497,7 @@ for (const f of findings) {
 const rules = Object.values(byRule)
   .map((b) => ({ ...b, etfCount: b.etfs.size, etfs: undefined }))
   .sort((a, b) => (a.sev === b.sev ? b.count - a.count : (a.sev === 'error' ? -1 : b.sev === 'error' ? 1 : a.sev === 'warn' ? -1 : 1)));
+
 
 const errorIds = new Set(findings.filter((f) => f.sev === 'error').map((f) => f.id));
 const counts = { error: 0, warn: 0, info: 0 };
