@@ -213,6 +213,10 @@ async function main() {
       dividendYield: d?.dividendYield ?? null,
       // price·tr = 야후 일봉(종가 / 배당 재투자), nav = 네이버 기준가
       retAsOf: y?.asOf ?? d?.retAsOf ?? null,
+      // 기준가(NAV) 칸은 네이버 값이라 야후 기준일과 하루 어긋날 수 있다.
+      // 두 계열의 기준일이 다른 채로 한 표에 놓이면 읽는 사람이 속는다 —
+      // 442580 은 총수익률이 8/28, 기준가가 8/27 이었다. 날짜를 같이 싣는다.
+      navAsOf: d?.retAsOf ?? null,
       // 계산기가 버린 레코드(주가 대비 30% 넘는 분배금, 내포분배율이 한도를
       // 넘은 구간). 빈칸이 왜 빈칸인지 화면과 감사가 말할 수 있어야 한다.
       retAnomalies: y?.anomalies ?? null,

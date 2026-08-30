@@ -1271,8 +1271,10 @@ function returnTable(etf) {
     '<th class="num">' + (lang === 'ko'
       ? (hasTr ? '총수익률' : '시장가') : (hasTr ? 'Total return' : 'Price')) + '</th>' +
     '<th class="num">' + (lang === 'ko'
-      ? '기준가 기준<span class="th-sub">분배금 제외</span>'
-      : 'NAV return<span class="th-sub">excl. distributions</span>') + '</th>' +
+      ? '기준가 기준<span class="th-sub">' +
+        (etf.navAsOf && etf.navAsOf !== etf.retAsOf ? esc(etf.navAsOf) + ' 기준' : '분배금 제외') + '</span>'
+      : 'NAV return<span class="th-sub">' +
+        (etf.navAsOf && etf.navAsOf !== etf.retAsOf ? esc(etf.navAsOf) : 'excl. distributions') + '</span>') + '</th>' +
     '<th class="num">' + (lang === 'ko'
       ? '동일 유형 내<br>백분율 순위<span class="th-sub">1 이 가장 좋음</span>'
       : 'Percentile rank<br>in category<span class="th-sub">1 = best</span>') + '</th>' +
@@ -1290,7 +1292,11 @@ function returnTable(etf) {
       '※ 기간 옆의 날짜가 <strong>기준일</strong>입니다. 다른 화면과 값이 다르면 먼저 이 날짜를 견주십시오 — ' +
       '2026-07-28 처럼 시장이 하루에 -10.84% 움직인 날이 기준일에 걸리면 하루 차이로 값이 크게 갈립니다.<br>' +
       '※ 네이버 종목분석 화면의 &quot;평균 ETF 수익률&quot; 은 무리의 평균이 아니라 <strong>그 ETF 자신의 기준가 수익률</strong>입니다. ' +
-      '위의 기준가 칸과 같은 값입니다.'
+      '위의 기준가 칸과 같은 값입니다.' +
+      (etf.navAsOf && etf.navAsOf !== etf.retAsOf
+        ? '<br>※ <strong>기준가 칸만 ' + esc(etf.navAsOf) + ' 기준</strong>입니다(원천이 다릅니다). ' +
+          '나머지 칸은 ' + esc(etf.retAsOf || '') + ' 기준이라 하루치가 더 반영돼 있습니다.'
+        : '')
     : '※ Total return reinvests distributions.<br>' +
       '※ Category is <strong>' + esc(peerLabel(etf)) + '</strong>; the average is the arithmetic mean of that group.<br>' +
       '※ Percentile rank: 1 = best, 100 = worst. Counts include only funds with data for that period.<br>' +
