@@ -54,6 +54,8 @@ const fmtKrw = (v) => {
 
 const out = [];
 const say = (s = '') => { out.push(s); console.log(s); };
+/** mapLimit 은 결과를 {ok, value} 로 감싸 돌려준다. 벗겨서 쓴다. */
+const unwrap = (rows) => rows.map((r) => (r && r.ok ? r.value : { err: r?.error ?? '알 수 없는 실패' }));
 const result = { at: new Date().toISOString(), aum: [], flow: [], fee: [], ret: [] };
 
 const DATA = await load('data/etf.js');
@@ -78,7 +80,7 @@ say('');
 const globals = ETFS.filter((e) => e.market !== 'KR' && e.aum != null)
   .sort((a, b) => b.aum - a.aum).slice(0, 20);
 
-const aumRows = await mapLimit(globals, 3, async (e) => {
+const aumRows = unwrap(await mapLimit(globals, 3, async (e) => {
   const row = { code: e.code, name: e.name, aum: e.aum, shares: null, px: null, err: null };
   try {
     const j = await getJson(YQ(e.symbol || e.code, 'defaultKeyStatistics,price,summaryDetail'));
@@ -92,7 +94,7 @@ const aumRows = await mapLimit(globals, 3, async (e) => {
   } catch (err) { row.err = err.message; }
   await sleep(150);
   return row;
-});
+}));
 
 say('| 종목 | totalAssets | 상장주식수×가격 | 배수 | 판정 |');
 say('| --- | ---: | ---: | ---: | --- |');
@@ -127,7 +129,7 @@ const flowTop = ETFS.filter((e) => e.market === 'KR' && e.flow?.m3 != null)
   .sort((a, b) => b.flow.m3 - a.flow.m3).slice(0, 8);
 const flowTargets = [...new Set([...overflow.slice(0, 8), ...flowTop].map((e) => e.code))];
 
-const flowRows = await mapLimit(flowTargets, 2, async (code) => {
+const flowRows = unwrap(await mapLimit(flowTargets, 2, async (code) => {
   const e = byCode.get(code);
   const row = { code, name: e?.name, storedAum: e?.aum, storedM3: e?.flow?.m3, err: null };
   try {
@@ -139,7 +141,7 @@ const flowRows = await mapLimit(flowTargets, 2, async (code) => {
   } catch (err) { row.err = err.message; }
   await sleep(250);
   return row;
-});
+}));
 
 say('| 종목 | 저장 설정액 | 저장 3M순유입 | 네이버 원값(3M) | 네이버 totalNav | 상장일 |');
 say('| --- | ---: | ---: | --- | --- | --- |');
@@ -171,28 +173,43 @@ say('## 다. 총보수 — 원값과 단위');
 say('');
 
 const feeTargets = ['265690', '360200', '379780', '069500', '102110', '133690', '360750'];
-const feeRows = await mapLimit(feeTargets, 2, async (code) => {
+const feeRows = unwrap(await mapLimit(feeTargets, 2, async (code) => {
   const e = byCode.get(code);
   const row = { code, name: e?.name, storedTer: e?.ter, storedSuspended: !!e?.suspended, err: null };
   try {
     const j = await getJson(NAVER_DETAIL(code), { headers: NAVER_HDR });
     row.raw = {};
     for (const [k, v] of Object.entries(j || {})) {
-      if (/fee|expense|보수/i.test(k) && (typeof v === 'string' || typeof v === 'number')) row.raw[k] = v;
+      if ((typeof v === 'string' || typeof v === 'number') &&
+          /fee|expense|ratio|nav|inflow|listed|date/i.test(k)) row.raw[k] = v;
     }
-    row.rawAll = JSON.stringify(j?.totalFee ?? null);
+    row.totalFee = j?.totalFee ?? null;   // 수집기가 실제로 읽는 칸
+    if (code === '069500') row.fullResponse = j;   // 한 종목은 통째로 남긴다
   } catch (err) { row.err = err.message; }
   await sleep(250);
   return row;
-});
+}));
 
 say('| 종목 | 저장 TER | 거래정지 | 네이버 원값 |');
 say('| --- | ---: | --- | --- |');
 for (const r of feeRows) {
   say(`| ${r.code} ${r.name?.slice(0, 26) ?? ''} | ${r.storedTer ?? '—'} | ${r.storedSuspended ? '예' : '아니오'}` +
-      ` | ${r.err ? '오류: ' + r.err : JSON.stringify(r.raw)} |`);
+      ` | ${r.err ? '오류: ' + r.err : 'totalFee=' + JSON.stringify(r.totalFee) + ' · ' + JSON.stringify(r.raw)} |`);
 }
 result.fee = feeRows;
+say('');
+const full = feeRows.find((r) => r.fullResponse);
+if (full) {
+  say('069500 (KODEX 200) 응답의 최상위 칸 전부 — 총보수·순유입이 실제로 어느 칸에 있는지:');
+  say('');
+  say('```json');
+  say(JSON.stringify(Object.fromEntries(Object.entries(full.fullResponse)
+    .map(([k, v]) => [k, (v && typeof v === 'object') ? (Array.isArray(v) ? `[배열 ${v.length}]` : Object.keys(v)) : v])), null, 2));
+  say('```');
+  say('');
+}
+const naverDown = feeRows.every((r) => r.err) && flowRows.every((r) => r.err);
+if (naverDown) say('> **네이버가 러너에서도 안 열렸다.** 아래 판정은 전부 보류다.');
 say('');
 
 /* ── 라. 수익률 — 상위·하위 열다섯을 원가격에서 다시 ────────────────── */
@@ -204,7 +221,7 @@ const pool = ETFS.filter((e) => !geared(e) && e.ret?.tr?.Y1 != null);
 const sorted = pool.slice().sort((a, b) => b.ret.tr.Y1 - a.ret.tr.Y1);
 const retTargets = [...sorted.slice(0, 15), ...sorted.slice(-15)];
 
-const retRows = await mapLimit(retTargets, 3, async (e) => {
+const retRows = unwrap(await mapLimit(retTargets, 3, async (e) => {
   const row = { code: e.code, name: e.name, market: e.market, stored: e.ret.tr.Y1, recomputed: null, err: null };
   const sym = e.market === 'KR' ? `${e.code}.KS` : (e.symbol || e.code);
   try {
@@ -232,16 +249,16 @@ const retRows = await mapLimit(retTargets, 3, async (e) => {
   }
   await sleep(150);
   return row;
-});
+}));
 
 say('| 종목 | 화면 1년 | 야후 원가격 재계산 | 차이 |');
 say('| --- | ---: | ---: | ---: |');
 let big = 0;
 for (const r of retRows) {
-  const d = r.recomputed != null ? r.stored - r.recomputed : null;
+  const d = r.recomputed != null && r.stored != null ? r.stored - r.recomputed : null;
   if (d != null && Math.abs(d) > 2) big += 1;
   r.diff = d;
-  say(`| ${r.code} ${r.name?.slice(0, 26) ?? ''} | ${r.stored.toFixed(2)}%` +
+  say(`| ${r.code ?? '?'} ${r.name?.slice(0, 26) ?? ''} | ${r.stored == null ? '—' : r.stored.toFixed(2) + '%'}` +
       ` | ${r.recomputed == null ? (r.err ? '오류: ' + r.err.slice(0, 30) : '—') : r.recomputed.toFixed(2) + '%'}` +
       ` | ${d == null ? '—' : (d >= 0 ? '+' : '') + d.toFixed(2) + '%p'} |`);
 }
