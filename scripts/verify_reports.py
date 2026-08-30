@@ -29,7 +29,7 @@ import os
 import glob
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from fetch_reports import THEMES, theme_counts, _sentences  # noqa: E402
+from fetch_reports import THEMES, theme_counts, _sentences, pool_key  # noqa: E402
 
 OK, BAD, WARN = [], [], []
 
@@ -71,7 +71,7 @@ def keep(box, r):
     나중 판이 그 리포트의 본문을 다시 열지 않았으면 요약이 비어 있다. 뒤엣
     것으로 덮으면 멀쩡히 인용된 문장이 「어디에도 없는 문장」으로 몰린다.
     """
-    k = (r.get("source"), r.get("nid"))
+    k = pool_key(r)
     cur = box.get(k)
     if cur is None or (not cur.get("summary") and r.get("summary")):
         box[k] = r
