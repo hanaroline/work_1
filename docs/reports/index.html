@@ -789,7 +789,9 @@
           esc(b) + " (" + brokers[b] + ")</option>";
       }).join("") + "</select>");
     chips.push('<select id="sort">' +
-      '<option value="views">인기순(조회수)</option>' +
+      // 조회수는 네이버에만 있다. 증권사 제 목록에서 온 줄에는 없는 값이라
+      // 뒤로 밀리는데, 그것이 「안 읽힌 리포트」로 보이면 안 된다.
+      '<option value="views">인기순(네이버 조회수)</option>' +
       '<option value="recent">최신순</option>' +
       '<option value="target">목표주가 변경 먼저</option>' +
       "</select>");
