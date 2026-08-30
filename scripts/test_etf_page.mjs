@@ -313,6 +313,33 @@ await page.waitForTimeout(150);
 const rankCards = await page.locator('#rank-body .card').count();
 check('랭킹 표가 그려진다', rankCards >= 3, `${rankCards}개 표`);
 
+// 거래가 멈춘 종목은 어느 순위에도 들면 안 된다. 값이 멈춘 날에 얼어붙어
+// 있어서다 — ACE 러시아MSCI(합성)이 거래량 0, 순자산 9천만원인 채로
+// "총보수 가장 낮은 ETF" 1위에 앉아 있었다.
+const suspInRank = await page.evaluate(() => {
+  const ids = new Set([...document.querySelectorAll('#rank-body tbody tr[data-id]')]
+    .map((tr) => tr.getAttribute('data-id')));
+  return (window.ETF_DATA?.etfs || ETFS).filter((e) => e.suspended && ids.has(e.id))
+    .map((e) => e.code);
+});
+check('거래정지 종목이 순위에 없다', suspInRank.length === 0, suspInRank.join(',') || '없음');
+
+// 설정액은 같은 잣대끼리만 세운다. 야후는 뱅가드 ETF 의 순자산으로 펀드
+// 전체(뮤추얼펀드 클래스 포함)를 준다 — VTI 와 VTSAX 가 똑같이 $2,290.0B
+// 였고 여덟 쌍 모두 그랬다. 섞어 세우면 상위 열다섯 중 아홉이 뱅가드가 된다.
+const aumScopes = await page.evaluate(() => {
+  const cards = [...document.querySelectorAll('#rank-body .card')];
+  const card = cards.find((c) => /설정액|AUM/.test(c.querySelector('h4')?.textContent || ''));
+  if (!card) return null;
+  const ids = new Set([...card.querySelectorAll('tbody tr[data-id]')]
+    .map((tr) => tr.getAttribute('data-id')));
+  const all = window.ETF_DATA?.etfs || ETFS;
+  return all.filter((e) => ids.has(e.id)).map((e) => e.aumScope ?? null);
+});
+check('설정액 순위에 잣대가 다른 값이 없다',
+      aumScopes != null && aumScopes.every((s) => s === 'etf'),
+      aumScopes == null ? '표를 못 찾음' : [...new Set(aumScopes)].join(','));
+
 // ── 랭킹에서 ETF 를 누르면 탭을 옮기지 않고 그 자리에서 상세가 열린다
 const rankGridTopBefore = await page.evaluate(() =>
   document.querySelector('#rank-body .grid').getBoundingClientRect().top + window.scrollY);

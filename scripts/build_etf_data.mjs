@@ -97,8 +97,15 @@ function finish(etf, listedIn) {
   const suspended = (Math.abs(Number(etf.premium) || 0) > 50)
     || (Number(etf.volume) === 0 && px > 0 && navv > 0 && Math.abs(px / navv - 1) > 0.5);
 
+  // 설정액이 무엇을 센 값인지. 국내는 네이버 totalNav — 그 ETF 하나의
+  // 순자산총액이므로 언제나 'etf' 다. 해외는 수집기가 뮤추얼펀드 클래스와
+  // 대조해 붙여 준다('fund' 면 같은 펀드의 다른 클래스까지 합친 값이다).
+  // 잣대가 다른 값을 한 줄로 세우면 안 되므로 화면이 이 표를 보고 가른다.
+  const aumScope = etf.aum == null ? null : (etf.aumScope || (etf.market === 'KR' ? 'etf' : 'unknown'));
+
   return {
     ...etf,
+    aumScope,
     suspended: suspended || undefined,
     // 국내는 수집기가 운용사를 직접 받아 온다(네이버 issuerName). 없으면 규칙으로.
     manager: etf.manager || tag.manager,

@@ -962,6 +962,12 @@ function renderList() {
       aumCell += '<br><span class="dim" style="font-size:13px">' +
                  fmtAmount(e.aumKrw, 'KRW') + '</span>';
     }
+    // 펀드 전체를 센 값이면 그렇다고 적는다. 이 표는 설정액으로 정렬할 수
+    // 있어서, 표시 없이 두면 잣대가 다른 값이 맨 위에 올라온다.
+    if (e.aumScope === 'fund') {
+      aumCell += '<br><span class="dim" style="font-size:12px">' +
+                 (lang === 'ko' ? '펀드 전체 기준' : 'whole fund') + '</span>';
+    }
     html += '<td class="num">' + aumCell + '</td>';
     html += '<td class="num">' + (e.ter == null ? '–' : e.ter.toFixed(2) + '%') + '</td>';
     html += '<td class="num">' + (e.top10Weight == null ? '–' : e.top10Weight.toFixed(1) + '%') + '</td>';
@@ -1303,7 +1309,16 @@ function detailHtml(etf) {
   kvt(lang === 'ko' ? '기초지수' : 'Index',
       esc(etf.index || etf.indexName ||
           (etf.categoryRaw ? etf.categoryRaw + (lang === 'ko' ? ' (분류)' : ' (category)') : '–')));
-  kv(lang === 'ko' ? '설정액(순자산)' : 'AUM', fmtAmount(etf.aum, cur));
+  // 값을 숨기지 않는다. 대신 그 값이 무엇을 센 것인지 옆에 적는다 —
+  // 'fund' 는 같은 펀드의 뮤추얼펀드 클래스까지 합친 값이라 다른 ETF 의
+  // 순자산과 곧바로 견줄 수 없다.
+  kv(lang === 'ko' ? '설정액(순자산)' : 'AUM',
+     fmtAmount(etf.aum, cur) +
+     (etf.aumScope === 'fund'
+       ? '<span class="rank-raw">' + (lang === 'ko' ? '펀드 전체 기준 (ETF 외 클래스 포함)' : 'whole fund, all share classes') + '</span>'
+       : etf.aumScope === 'unknown'
+         ? '<span class="rank-raw">' + (lang === 'ko' ? '기준 미확인' : 'scope unverified') + '</span>'
+         : ''));
   kv(lang === 'ko' ? '총보수' : 'TER', etf.ter == null ? '–' : etf.ter.toFixed(3) + '%');
   kv(lang === 'ko' ? '현재가' : 'Price', fmtNum(etf.price) +
      ' <span class="' + signClass(etf.changeRate) + '" style="font-size:14px">' + fmtPct(etf.changeRate) + '</span>');
@@ -1683,6 +1698,10 @@ function rankTable(title, rows, valueFn, valueLabel) {
 function renderRank() {
   var pool = ETFS.filter(function (e) {
     if (state.rMarket && e.market !== state.rMarket) return false;
+    // 거래가 멈춘 종목은 어느 순위에도 넣지 않는다. 값이 멈춘 날에 얼어붙어
+    // 있어서 상위·하위 어디에 놓든 거짓이 된다. 실제로 ACE 러시아MSCI(합성)이
+    // 거래량 0, 순자산 9천만원인 채로 "총보수 가장 낮은 ETF" 1위에 앉아 있었다.
+    if (e.suspended) return false;
     if (!state.rLev) {
       var f = e.flags || [];
       if (f.indexOf('leverage') >= 0 || f.indexOf('inverse') >= 0) return false;
@@ -1699,8 +1718,18 @@ function renderRank() {
     return retOf(b, p, state.basis) - retOf(a, p, state.basis);
   });
 
-  var withAum = pool.filter(function (e) { return aumSortValue(e) != null; })
-    .sort(function (a, b) { return aumSortValue(b) - aumSortValue(a); });
+  // 설정액은 **같은 잣대끼리만** 세운다. 야후가 주는 해외 설정액은 펀드 전체를
+  // 세는 경우가 있다 — 뱅가드 ETF 는 인덱스펀드의 한 클래스라 뮤추얼펀드
+  // 클래스까지 합친 값이 온다. VTI 와 VTSAX 의 값이 $2,290.0B 로 똑같았고,
+  // 여덟 쌍을 확인해 여덟 쌍 모두 같았다. 그대로 세우면 상위 열다섯 자리 중
+  // 아홉을 뱅가드가 차지한다 — ETF 로 들어온 돈으로 줄을 세운 것이 아니다.
+  // 잣대를 모르는 종목('unknown')도 뺀다. 환율을 모르면 빼는 것과 같은 이유다.
+  var aumExcluded = 0;
+  var withAum = pool.filter(function (e) {
+    if (aumSortValue(e) == null) return false;
+    if (e.aumScope && e.aumScope !== 'etf') { aumExcluded += 1; return false; }
+    return true;
+  }).sort(function (a, b) { return aumSortValue(b) - aumSortValue(a); });
 
   var withFlow = pool.filter(function (e) { return e.flow && e.flow.m3 != null; })
     .sort(function (a, b) { return b.flow.m3 - a.flow.m3; });
@@ -1757,6 +1786,17 @@ function renderRank() {
     html += '<div class="notice">' + (lang === 'ko'
       ? '<strong>설정액은 원화로 환산해 세웠습니다.</strong> 통화가 다른 시장을 한 줄로 세우려면 환산이 필요합니다. 환율을 못 받은 종목은 순위에서 빠집니다 — 틀린 환율로 환산하느니 빼는 편이 낫습니다. 같은 통화끼리만 보려면 위에서 상장 시장을 고르십시오.' + esc(fxNote)
       : '<strong>AUM is converted to KRW</strong> so markets can be ranked together. ETFs without an FX rate are omitted.' + esc(fxNote)) + '</div>';
+  }
+  if (aumExcluded) {
+    html += '<div class="notice">' + (lang === 'ko'
+      ? '<strong>설정액 순위에서 ' + aumExcluded + '종목을 뺐습니다 — 잣대가 다릅니다.</strong> ' +
+        '뱅가드 ETF 는 인덱스펀드의 한 클래스라, 자료 제공처가 주는 순자산이 같은 펀드의 ' +
+        '뮤추얼펀드 클래스까지 합친 값입니다. VTI 와 VTSAX 는 같은 펀드인데 두 값이 ' +
+        '$2,290.0B 로 똑같았고, 여덟 쌍을 확인해 여덟 쌍 모두 같았습니다. 국내 ETF 는 ' +
+        '그 ETF 하나의 순자산총액을 쓰므로 한 줄로 세우면 뱅가드 상품만 서너 배 크게 나옵니다. ' +
+        '해당 종목의 값은 상세 화면에서 <b>펀드 전체 기준</b>이라고 밝혀 그대로 보여 줍니다.'
+      : '<strong>' + aumExcluded + ' ETFs are excluded from the AUM ranking</strong> because their ' +
+        'reported net assets cover the whole fund (all share classes), not the ETF alone.') + '</div>';
   }
   // 상세는 순위표 **아래**에 펼친다.
   //
