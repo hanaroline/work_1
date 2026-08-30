@@ -68,6 +68,12 @@ a{color:var(--blue);}
   background:#fff; color:var(--muted); cursor:pointer; box-shadow:0 2px 8px rgba(0,0,0,.06);
 }
 .btn-print:hover{background:var(--surface-subtle); color:var(--ink);}
+.help-dl{display:flex; flex-wrap:wrap; gap:10px 14px; align-items:center; margin:18px 0 26px;}
+.help-dl .dim{font-size:13px; line-height:1.5;}
+/* PDF 를 못 내주는 이유는 옅은 회색으로 흘리지 않는다. 단추가 사라진 자리에
+   설명이 없으면 "고장" 으로 읽힌다. */
+.help-dl .warn-note{color:#8a6a0a; background:#FDF6E3; border:1px solid var(--warning);
+  border-radius:4px; padding:6px 10px;}
 
 /* ---------- Hero ---------- */
 .hero{background:var(--orange); color:#fff; padding:52px 0 56px; margin-top:18px;}
@@ -78,6 +84,10 @@ a{color:var(--blue);}
 .hero h1{font-size:56px; font-weight:700; line-height:1.1; letter-spacing:-1px; color:#fff;}
 .hero .sub{font-size:21px; line-height:1.5; margin-top:16px; max-width:820px; color:rgba(255,255,255,.94);}
 .hero .meta{margin-top:30px; font-size:15px; color:rgba(255,255,255,.9); display:flex; flex-wrap:wrap; gap:8px 26px; align-items:center;}
+/* .dim 은 흰 바탕에 쓰라고 만든 옅은 회색이라, 주황 머리말에 그대로 얹으면
+   글자가 배경에 묻혀 사라진다. 실제로 "수집 2026-08-31" 이 안 보였다.
+   덜 중요하다는 뜻은 살리되 읽을 수는 있게 흰색을 옅게 쓴다. */
+.hero .meta .dim{color:rgba(255,255,255,.78);}
 @media (max-width:768px){ .hero h1{font-size:38px;} .hero .sub{font-size:18px;} .hero{padding:36px 0 42px;} }
 
 /* ---------- 탭 ---------- */
@@ -307,9 +317,21 @@ footer .disc + .disc{margin-top:12px;}
   .hero{background:#fff !important; color:var(--ink); padding:0 0 18px; border-bottom:2px solid var(--orange); margin:0;}
   .hero h1,.hero .sub,.hero .meta{color:var(--ink) !important;}
   .hero .tag{border-color:var(--hairline); color:var(--muted);}
+  /* 인쇄하면 머리말이 흰 바탕이 되므로 흰 글씨를 되돌린다. */
+  .hero .meta .dim{color:var(--muted) !important;}
   .section{padding-top:24px;}
   .section[hidden]{display:block !important;}
+  /* "사용법만 인쇄" 를 누른 경우. 평소 인쇄는 모든 절을 펼치지만, 이때는
+     사용법 한 절만 남긴다 — 사용법을 뽑겠다는데 3,192행이 딸려 나오면 안 된다. */
+  body.print-help .section{display:none !important;}
+  body.print-help #tab-help{display:block !important;}
+  .help-dl{display:none !important;}
   table,.card,.hold-row{page-break-inside:avoid;}
+  /* 사용법의 "숫자를 읽는 법" 은 7행짜리 한 덩어리라 위의 "표는 쪼개지 않는다"
+     규칙에 걸려 통째로 다음 장으로 밀렸다 — 앞 장이 카드 하나만 남고 텅 비었다.
+     여기서는 줄 단위로 끊고, 줄 자체만 쪼개지지 않게 한다. */
+  #tab-help table{page-break-inside:auto;}
+  #tab-help tr{page-break-inside:avoid;}
   .section-title,h3,h4{page-break-after:avoid;}
   .table-wrap{overflow:visible;}
 }
@@ -343,6 +365,7 @@ footer .disc + .disc{margin-top:12px;}
     <button type="button" role="tab" data-tab="reverse" aria-selected="false" data-ko="종목 → 펀드" data-en="Stock → Fund">종목 → 펀드</button>
     <button type="button" role="tab" data-tab="rank" aria-selected="false" data-ko="랭킹" data-en="Rankings">랭킹</button>
     <button type="button" role="tab" data-tab="basis" aria-selected="false" data-ko="수익률 검산" data-en="Return Audit">수익률 검산</button>
+    <button type="button" role="tab" data-tab="help" aria-selected="false" data-ko="사용법" data-en="How to use">사용법</button>
   </div>
 
   <!-- ══════════════════ 1. 펀드 찾기 ══════════════════ -->
@@ -449,6 +472,44 @@ footer .disc + .disc{margin-top:12px;}
     <div id="basis-body"></div>
   </section>
 
+  <!-- ══════════════════ 6. 사용법 ══════════════════ -->
+  <!--
+    이 탭의 숫자는 글로 박아 두지 않고 자료에서 읽어 그린다. 사용법 문서가
+    본문보다 먼저 낡는 것이 흔한 일이라, 낡을 수 있는 것은 아예 적지 않는다.
+  -->
+  <section class="section" id="tab-help" hidden>
+    <div class="section-rule"></div>
+    <div class="section-eyebrow" data-ko="사용법" data-en="How to use">사용법</div>
+    <h2 class="section-title" data-ko="무엇을 할 수 있고, 숫자를 어떻게 읽나" data-en="What this screen does, and how to read its numbers">무엇을 할 수 있고, 숫자를 어떻게 읽나</h2>
+    <p class="section-lead" data-ko="탭마다 하는 일이 다릅니다. 아래에 각 탭의 쓰임과, 이 화면의 숫자를 읽을 때 반드시 알아야 할 것들을 적었습니다."
+       data-en="Each tab does a different job. Below: what each is for, and what you must know to read these numbers correctly.">탭마다 하는 일이 다릅니다.</p>
+    <!--
+      사용법은 화면을 못 여는 자리(메신저·메일·사내 공유)에 따로 붙일 일이
+      많다. 그래서 이 절만 따로 내려받을 수 있게 둔다. 21MB 짜리 본 화면을
+      통째로 보내지 않아도 되고, 받는 쪽은 브라우저만 있으면 열린다.
+    -->
+    <div class="help-dl" id="help-dl">
+      <button type="button" class="btn-print" id="help-dl-html"
+              data-ko="사용법 내려받기 (HTML)" data-en="Download (HTML)">사용법 내려받기 (HTML)</button>
+      <!--
+        PDF 는 브라우저의 인쇄창을 거치지 않고 **완성된 파일**을 바로 내려준다.
+        받는 쪽이 인쇄 설정을 만질 필요도, 여백·배경이 사람마다 달라질 일도 없다.
+        그래서 이 파일은 화면 안에 미리 실어 둔다(빌드 때 만들어 넣는다).
+
+        미리 실은 파일은 낡을 수 있다 — 자료가 갱신되면 사용법의 수도 바뀐다.
+        그래서 실을 때 자료의 표시를 같이 넣어 두고, 화면이 지금 세는 수와
+        다르면 이 단추를 **감춘다**. 낡은 PDF 를 내주느니 안 내주는 편이 낫다.
+      -->
+      <button type="button" class="btn-print" id="help-dl-pdf" hidden
+              data-ko="사용법 내려받기 (PDF)" data-en="Download (PDF)">사용법 내려받기 (PDF)</button>
+      <button type="button" class="btn-print" id="help-dl-print"
+              data-ko="사용법만 인쇄 · PDF 저장" data-en="Print this page only / PDF">사용법만 인쇄 · PDF 저장</button>
+      <span class="dim" id="help-dl-note"></span>
+      <span class="dim warn-note" id="help-dl-why" hidden></span>
+    </div>
+    <div id="help-body"></div>
+  </section>
+
 </main>
 
 <footer>
@@ -464,6 +525,11 @@ footer .disc + .disc{margin-top:12px;}
 </footer>
 
 <script src="data/fund.js"></script>
+<!--
+  미리 만들어 둔 사용법 PDF(base64). 빌드가 만들어 넣으므로 없을 수도 있다 —
+  없으면 PDF 단추가 그냥 나오지 않는다. 여기서 404 가 나도 화면은 멀쩡히 뜬다.
+-->
+<script src="data/fund-help-pdf.js"></script>
 <script>
 'use strict';
 
@@ -2103,11 +2169,54 @@ function renderBasis() {
 }
 
 // ───────────────────────── Hero · 안내문 ─────────────────────────
+// 머리말이 계산한 기준일·수집일. 사용법을 파일로 내려받을 때 같이 적어야 해서
+// 밖에서도 읽을 수 있게 남긴다 — 내려받은 파일에 날짜가 없으면, 그 파일은
+// 언제 것인지 알 수 없는 숫자 뭉치가 된다.
+var DATES = { asOf: '', got: '' };
+
+// 사용법이 지금 무슨 자료를 세고 있는지를 한 줄로 적은 것. 미리 실어 둔 PDF 가
+// 그 자료로 만든 것인지 가릴 때 쓴다.
+//
+// 화면 글자가 아니라 **수**로 만든다. 사용법 본문은 한국어와 영어가 다르지만
+// 자료가 바뀌었는지는 언어와 상관없는 사실이기 때문이다.
+var HELP_STAMP = '';
+
 function renderHero() {
   var live = DATA.source === 'live';
   var src = DATA.sources && DATA.sources.kr;
   var when = (src && src.updatedAt) || DATA.updatedAt;
-  var day = when ? String(when).slice(0, 10) : '';
+
+  // 여기서 두 가지를 섞어 쓰고 있었다. 값은 **수집 시각**인데 이름은
+  // "기준일" 이었고, 게다가 ISO 문자열을 그대로 잘라 **UTC 날짜**를 찍었다.
+  // 일일 수집이 23:30 UTC(= 다음날 08:30 KST)에 도는 탓에, 한국 시간으로
+  // 08-31 아침에 걷은 자료가 화면에는 늘 08-30 으로 나왔다 — 매일 하루씩
+  // 밀린 날짜를 보여 주고 있었다.
+  //
+  // 진짜 기준일은 자료 안에 있다. 펀드마다 tradeDate 를 갖고 있고 오늘
+  // 수집본은 3,192개가 전부 2026-08-28 이다(29·30 은 주말이라 그 앞
+  // 영업일이다). 곧 화면이 찍던 08-30 은 기준일도 수집일도 아닌 날짜였다.
+  //
+  // 그러니 짐작하지 않고 자료에서 읽는다. 펀드마다 다르면 하나로 줄이지
+  // 않고 다르다고 적는다 — 모르는 것을 아는 척하지 않는다.
+  var days = {};
+  for (var d = 0; d < FUNDS.length; d += 1) {
+    if (FUNDS[d].tradeDate) days[FUNDS[d].tradeDate] = (days[FUNDS[d].tradeDate] || 0) + 1;
+  }
+  var dayKeys = Object.keys(days).sort();
+  var asOf = dayKeys.length === 1 ? dayKeys[0]
+    : (dayKeys.length > 1 ? dayKeys[0] + '~' + dayKeys[dayKeys.length - 1] : '');
+
+  // 수집 시각은 한국 시간으로 적는다. 한국 자료이고 읽는 사람도 한국 시간을 쓴다.
+  var got = '';
+  if (when) {
+    var t = new Date(when);
+    got = isFinite(t.getTime())
+      ? new Date(t.getTime() + 9 * 3600 * 1000).toISOString().slice(0, 10)
+      : String(when).slice(0, 10);
+  }
+  DATES.asOf = asOf;
+  DATES.got = got;
+
   var withHold = 0, withRet = 0;
   for (var i = 0; i < FUNDS.length; i += 1) {
     if (FUNDS[i].holdingCount) withHold += 1;
@@ -2121,15 +2230,26 @@ function renderHero() {
                                  : FUNDS.length.toLocaleString() + ' funds') + '</span>' +
     '<span>' + esc(lang === 'ko' ? '보유종목 ' + withHold.toLocaleString() + '개'
                                  : withHold.toLocaleString() + ' with holdings') + '</span>' +
-    '<span>' + esc(lang === 'ko' ? '기준일 ' + day : 'As of ' + day) + '</span>';
+    (asOf ? '<span title="' + esc(lang === 'ko'
+        ? '원천이 이 자료에 붙여 둔 기준일입니다. 주말·공휴일 다음에는 그 앞 영업일이 됩니다.'
+        : 'The as-of date the source attaches to this data; after a weekend it is the previous business day.') +
+      '">' + esc(lang === 'ko' ? '기준일 ' + asOf : 'As of ' + asOf) + '</span>' : '') +
+    (got ? '<span class="dim" title="' + esc(lang === 'ko'
+        ? '자료를 걷어 온 날(한국 시간)입니다. 위의 기준일과 다릅니다 — 오늘 걷었다고 자료가 오늘 것이 되지는 않습니다.'
+        : 'The day the data was collected (KST). This differs from the as-of date above.') +
+      '">' + esc(lang === 'ko' ? '수집 ' + got : 'Collected ' + got) + '</span>' : '');
 
   var srcText = live
     ? (lang === 'ko'
-        ? '<strong>자료 출처.</strong> 네이버 Npay 증권(stock.naver.com) 펀드 API 에서 ' + day +
-          ' 기준으로 수집했습니다. 대상은 <u>국내에 설정된 공모펀드</u> ' + FUNDS.length.toLocaleString() +
+        ? '<strong>자료 출처.</strong> 네이버 Npay 증권(stock.naver.com) 펀드 API 에서 ' + got +
+          '(한국 시간)에 수집했습니다. 자료 자체의 기준일은 ' + (asOf || '원천 미상') +
+          ' 이라 <u>수집일과 기준일이 다릅니다</u>. 대상은 <u>국내에 설정된 공모펀드</u> ' +
+          FUNDS.length.toLocaleString() +
           '개이며, 해외에 설정된 뮤추얼펀드는 포함하지 않습니다.'
-        : '<strong>Source.</strong> Naver Npay (stock.naver.com) fund API, collected ' + day +
-          '. Scope is ' + FUNDS.length.toLocaleString() + ' <u>public funds domiciled in Korea</u>; ' +
+        : '<strong>Source.</strong> Naver Npay (stock.naver.com) fund API, collected ' + got +
+          ' (KST). The data itself is as of ' + (asOf || 'an unstated date') +
+          ', so <u>the collection date and the as-of date differ</u>. Scope is ' +
+          FUNDS.length.toLocaleString() + ' <u>public funds domiciled in Korea</u>; ' +
           'funds domiciled abroad are not included.')
     : (lang === 'ko'
         ? '<strong>예시 데이터입니다.</strong> 아직 수집이 돌지 않아 화면 확인용 임의 값이 들어 있습니다. ' +
@@ -2247,6 +2367,285 @@ function applyLang() {
   }
 }
 
+// ───────────────────────── 사용법 ─────────────────────────
+//
+// 사용법 문서는 본문보다 먼저 낡는다. 그래서 여기 나오는 수는 하나도 글로
+// 박아 두지 않고 **그 자리에서 자료를 세어** 그린다. 자료가 바뀌면 사용법도
+// 같이 바뀌고, 사람이 갱신을 잊어서 생기는 거짓이 아예 생기지 않는다.
+function renderHelp() {
+  var node = el('help-body');
+  if (!node) return;
+  var ko = lang === 'ko';
+  var n = function (p) { var c = 0; for (var i = 0; i < FUNDS.length; i += 1) if (p(FUNDS[i])) c += 1; return c; };
+  var fmtN = function (v) { return Number(v).toLocaleString(); };
+
+  var withHold = n(function (f) { return f.holdingCount > 0; });
+  var noAum = n(function (f) { return f.aum == null; });
+  var feeVaries = n(function (f) { return f.feeMin != null && f.feeMax != null && f.feeMax > f.feeMin; });
+  var noFee = n(function (f) { return f.feeMin == null; });
+  var mixed = n(function (f) { return f.region === 'mixed'; });
+  var dropped = n(function (f) { return f.retDropped && Object.keys(f.retDropped).length > 0; });
+  var datedHold = n(function (f) { return f.holdingsAsOfKnown; });
+
+  var secs = new Set();
+  for (var i = 0; i < FUNDS.length; i += 1) {
+    var hs = FUNDS[i].holdings || [];
+    for (var j = 0; j < hs.length; j += 1) if (hs[j].name) secs.add(hs[j].name);
+  }
+
+  // 사용법에 찍히는 수를 그대로 이어 붙인다. 이 줄이 달라졌다는 것은
+  // 사용법 본문이 달라졌다는 것이고, 미리 실어 둔 PDF 는 그 순간 낡은 것이 된다.
+  HELP_STAMP = [FUNDS.length, withHold, noAum, feeVaries, noFee, mixed, dropped,
+                datedHold, secs.size, DATES.asOf, DATES.got].join('|');
+
+  var tabs = ko ? [
+    ['펀드 찾기', '투자 지역·자산군·유형·운용사·설정액·위험등급·총보수로 좁힙니다. 검색창에는 펀드 이름뿐 아니라 <strong>표준코드·클래스 코드·운용사·보유종목</strong>도 넣을 수 있습니다 — "삼성전자" 를 넣으면 그 종목을 담은 펀드가 나옵니다. 줄을 누르면 보유종목·업종구성·수익률·위험지표·클래스별 보수가 펼쳐집니다.'],
+    ['비교 · 중복도', '펀드를 여럿 골라 나란히 놓고, <strong>서로 얼마나 겹치는지</strong>를 봅니다. 겹침은 두 펀드가 같은 종목에 함께 준 비중으로 계산합니다. 분산이 되고 있다고 생각한 조합이 실은 같은 것을 두 번 산 것인지 여기서 갈립니다.'],
+    ['종목 → 펀드', '거꾸로 찾습니다. 종목 이름을 넣으면 <strong>그 종목을 담은 펀드</strong>가 나옵니다. 한 펀드가 검색어에 걸리는 종목을 여럿 담고 있으면 비중이 가장 큰 하나만 싣고 <strong>"+N개 더"</strong> 로 나머지 수를 밝힙니다.'],
+    ['랭킹', '수익률·설정액 상위를 봅니다. 순위는 저장된 값이 아니라 <strong>화면이 그 자리에서 매깁니다</strong> — 비운 칸은 순위에 넣지 않습니다.'],
+    ['수익률 검산', '원천이 준 기간수익률을 그대로 싣지 않고 기준가 시계열로 검산합니다. <strong>무엇을 왜 비웠는지</strong>가 여기 남습니다.'],
+  ] : [
+    ['Browse', 'Filter by region, asset class, category, manager, size, risk grade and fee. The search box also accepts <strong>fund codes, share-class codes, manager names and holdings</strong> — typing a stock name finds funds holding it. Click a row for holdings, sector mix, returns, risk metrics and per-class fees.'],
+    ['Compare', 'Put several funds side by side and see <strong>how much they overlap</strong>, computed from the weight both give the same security. This is where a "diversified" pair turns out to be the same bet twice.'],
+    ['Stock → Fund', 'The reverse lookup: type a security and get <strong>the funds holding it</strong>. When a fund holds several matching securities, the largest is shown and <strong>"+N"</strong> states how many more.'],
+    ['Rankings', 'Top funds by return and by size. Ranks are <strong>computed in the browser</strong>, not stored — withheld cells are excluded rather than ranked as zero.'],
+    ['Return Audit', 'Source returns are re-checked against each fund’s own base-price series. This tab records <strong>what was withheld and why</strong>.'],
+  ];
+
+  var html = '<div class="grid grid-2" style="margin-top:20px">';
+  for (var t = 0; t < tabs.length; t += 1) {
+    html += '<div class="card"><div class="label">' + esc(tabs[t][0]) + '</div>' +
+      '<div class="note" style="margin-top:8px;font-size:15px;color:var(--ink)">' + tabs[t][1] + '</div></div>';
+  }
+  html += '</div>';
+
+  // ── 숫자를 읽는 법. 이 화면이 조용히 오해를 부를 수 있는 지점만 모았다.
+  html += '<h3 style="margin-top:34px">' + esc(ko ? '숫자를 읽는 법' : 'How to read the numbers') + '</h3>';
+
+  var rules = ko ? [
+    ['빈칸은 0이 아닙니다',
+     '값이 없어서 비운 칸과 값이 0인 칸은 다릅니다. 이 화면은 <strong>확인하지 못한 값을 0으로 채우지 않고 비웁니다.</strong> ' +
+     '지금 설정액이 빈 펀드가 ' + fmtN(noAum) + '개, 총보수가 빈 펀드가 ' + fmtN(noFee) + '개이며, ' +
+     '수익률에서 한 칸이라도 비운 펀드가 ' + fmtN(dropped) + '개입니다. 빈칸을 0으로 읽으면 순위와 평균이 전부 틀어집니다.'],
+    ['기준일과 수집일은 다릅니다',
+     '머리말에 <strong>기준일</strong>과 <strong>수집</strong>을 따로 적어 둔 이유입니다. 자료를 오늘 걷어 왔다고 해서 ' +
+     '그 안의 값이 오늘 것이 되지는 않습니다 — 주말·공휴일 다음에는 그 앞 영업일 값입니다.'],
+    ['보유종목에는 기준일이 없습니다',
+     '원천이 종목명과 비중만 주고 <strong>언제 기준인지는 알려 주지 않습니다</strong>(' + fmtN(FUNDS.length) + '개 중 기준일이 붙은 것 ' +
+     fmtN(datedHold) + '개). 공모펀드 보유종목은 분기 공시라 몇 달 앞선 것일 수 있습니다. ' +
+     '설정액 같은 값은 최근 영업일 기준이므로 <strong>한 표 안에서 열마다 기준일이 다릅니다.</strong> ' +
+     '정확한 기준일은 펀드 상세의 운용보고서에서 확인하십시오.'],
+    ['총보수는 하나의 숫자가 아니라 범위입니다',
+     '국내 공모펀드의 보수는 클래스마다 다릅니다. 이 자료에서도 ' + fmtN(feeVaries) + '개 펀드가 그렇습니다. ' +
+     '그래서 <strong>최저~최고 범위</strong>로 싣고 클래스별 표를 함께 둡니다. 목록의 총보수 열과 필터는 ' +
+     '<strong>최저 클래스</strong> 기준이므로, 실제로 가입하는 클래스의 보수는 더 높을 수 있습니다.'],
+    ['수익률은 누적이며 연율이 아닙니다',
+     '3년·5년도 <strong>연 환산하지 않은 누적</strong> 수익률입니다. 3년 30%를 연 30%로 읽으면 안 됩니다. ' +
+     '분배금 재투자 여부는 원천이 밝히지 않으므로 이 화면도 단정하지 않습니다.'],
+    ['투자지역의 "혼합" 은 자산이 아니라 지역입니다',
+     '투자지역은 1차 출처인 금융투자협회 전자공시에서 직접 받아 국내·해외·<strong>혼합</strong> 셋으로 가릅니다' +
+     '(지금 혼합 ' + fmtN(mixed) + '개). 유형 이름에 나오는 "혼합" 은 <strong>주식+채권</strong>이라는 자산 이야기라 ' +
+     '서로 다른 말입니다.'],
+    ['표가 잘릴 때는 잘렸다고 적습니다',
+     '역조회 결과는 200행까지만 그립니다. 그럴 때 위에 <strong>몇 개 중 몇 개를 보여 주는지</strong> 적어 둡니다. ' +
+     '표에 보이는 것이 전부가 아닐 수 있다는 뜻입니다.'],
+  ] : [
+    ['A blank is not a zero',
+     'A cell left blank means the value could not be established — it is <strong>never filled with 0</strong>. ' +
+     'Right now ' + fmtN(noAum) + ' funds have no size, ' + fmtN(noFee) + ' have no fee, and ' + fmtN(dropped) +
+     ' had at least one return cell withheld. Reading blanks as zero corrupts every ranking and average.'],
+    ['The as-of date is not the collection date',
+     'The header states both. Collecting data today does not make the data today’s — after a weekend or ' +
+     'holiday it is the previous business day’s.'],
+    ['Holdings carry no as-of date',
+     'The source gives security names and weights but <strong>never says when they were measured</strong> (' +
+     fmtN(datedHold) + ' of ' + fmtN(FUNDS.length) + ' funds carry one). Korean fund holdings are disclosed ' +
+     'quarterly and may be months old, while fund size is current — so <strong>columns in one table can have ' +
+     'different as-of dates.</strong>'],
+    ['Fees are a range, not a number',
+     'Korean fund fees differ by share class — ' + fmtN(feeVaries) + ' funds here do. The <strong>lowest–highest ' +
+     'range</strong> is shown with a per-class table. The list column and filter use the <strong>cheapest ' +
+     'class</strong>, so the class you can actually buy may cost more.'],
+    ['Returns are cumulative, not annualised',
+     '3Y and 5Y figures are <strong>cumulative</strong>. The source does not state whether distributions are ' +
+     'reinvested, so neither does this screen.'],
+    ['"Mixed" region means geography, not assets',
+     'Investment region comes from KOFIA electronic disclosure (a primary source) as domestic, overseas or ' +
+     '<strong>mixed</strong> (' + fmtN(mixed) + ' now). The word "mixed" inside a category name means ' +
+     '<strong>equity + bond</strong> — a different thing entirely.'],
+    ['When a table is truncated, it says so',
+     'The reverse lookup draws at most 200 rows and states how many of the total are shown.'],
+  ];
+
+  html += '<div class="table-wrap"><table><thead><tr>' +
+    '<th style="width:26%">' + esc(ko ? '알아야 할 것' : 'What to know') + '</th>' +
+    '<th>' + esc(ko ? '왜' : 'Why') + '</th></tr></thead><tbody>';
+  for (var r = 0; r < rules.length; r += 1) {
+    html += '<tr><td style="font-weight:600;color:var(--ink)">' + esc(rules[r][0]) + '</td>' +
+      '<td style="line-height:1.6">' + rules[r][1] + '</td></tr>';
+  }
+  html += '</tbody></table></div>';
+
+  // ── 어디까지 확인됐나. 확인된 것과 확인 안 된 것을 나눠 적는다 —
+  //    확인 못 한 것을 말하지 않고 넘어가면 확인된 것처럼 전달된다.
+  html += '<h3 style="margin-top:34px">' + esc(ko ? '어디까지 확인됐나' : 'How far this has been verified') + '</h3>';
+  html += '<div class="notice">' + (ko
+    ? '이 화면의 값은 <strong>2차 출처(네이버 Npay 증권)</strong>에서 걷은 뒤, 계보가 다른 <strong>1차 출처' +
+      '(금융투자협회 전자공시)</strong>에 다시 물어 맞대 봅니다. <u>투자지역</u>과 <u>공모 여부</u>는 전건 일치했고 ' +
+      '<u>설정액</u>도 대부분 일치했습니다. 반면 <strong>1개월 이상 기간수익률·보유종목·위험지표는 금투협이 주지 않아 ' +
+      '외부 원천으로 확인되지 않았습니다</strong> — 그 셋은 2차 출처 단독 근거이며, 원천 자체의 기준가 시계열로 ' +
+      '검산한 데까지입니다. 자세한 것은 화면 맨 아래 <strong>교차 검증</strong> 문단과 <strong>수익률 검산</strong> 탭에 있습니다. ' +
+      '실제 상품 내용은 각 펀드의 <strong>투자설명서와 운용사 공시가 우선</strong>합니다.'
+    : 'Values are collected from a <strong>secondary source (Naver Npay)</strong> and cross-checked against an ' +
+      'independent <strong>primary source (KOFIA electronic disclosure)</strong>. <u>Region</u> and ' +
+      '<u>public-offering status</u> matched on every fund, and <u>size</u> matched on nearly all. However ' +
+      '<strong>returns of one month and longer, holdings and risk metrics are not covered by KOFIA and remain ' +
+      'unverified against any outside source</strong> — they rest on the secondary source alone, checked only ' +
+      'against its own base-price series. See the <strong>cross-check</strong> note in the footer and the ' +
+      '<strong>Return Audit</strong> tab. Fund prospectuses and manager disclosures prevail.') +
+    '</div>';
+
+  html += '<div class="kv" style="margin-top:26px">' +
+    '<div><div class="k">' + esc(ko ? '펀드' : 'Funds') + '</div><div class="v">' + esc(fmtN(FUNDS.length)) + '</div></div>' +
+    '<div><div class="k">' + esc(ko ? '보유종목이 있는 펀드' : 'With holdings') + '</div><div class="v">' + esc(fmtN(withHold)) + '</div></div>' +
+    '<div><div class="k">' + esc(ko ? '실린 종목 수' : 'Distinct securities') + '</div><div class="v">' + esc(fmtN(secs.size)) + '</div></div>' +
+    '<div><div class="k">' + esc(ko ? '클래스' : 'Share classes') + '</div><div class="v">' +
+      esc(fmtN(FUNDS.reduce(function (a, f) { return a + (f.classCount || 0); }, 0))) + '</div></div>' +
+    '</div>';
+
+  node.innerHTML = html;
+
+  var note = el('help-dl-note');
+  if (note) {
+    note.textContent = ko
+      ? '받은 파일은 브라우저만 있으면 열립니다. 기준일 ' + (DATES.asOf || '미상') +
+        ' 자료로 만든 사용법이며, 자료가 바뀌면 다시 받아야 합니다.'
+      : 'The saved file opens in any browser. It describes the data as of ' +
+        (DATES.asOf || 'an unstated date') + '; download again when the data changes.';
+  }
+
+  syncHelpPdf();
+}
+
+// 미리 실어 둔 PDF 를 내줄지 말지 여기서 가른다.
+//
+// 실은 PDF 는 빌드 때 만든 것이라 자료가 갱신되면 낡는다. 낡은 것을 그대로
+// 내주면 받은 사람은 그것이 낡았다는 사실을 알 길이 없다 — 파일에는 그때의
+// 기준일이 적혀 있고, 그 날짜가 맞다고 믿을 것이기 때문이다. 그래서 화면이
+// 지금 센 수와 PDF 에 적힌 수가 다르면 단추를 감추고 **왜 없는지를 적는다.**
+function syncHelpPdf() {
+  var btn = el('help-dl-pdf');
+  var why = el('help-dl-why');
+  if (!btn) return;
+  var ko = lang === 'ko';
+  var pdf = window.HELP_PDF;
+  var ok = !!(pdf && pdf.b64 && pdf.stamp && pdf.stamp === HELP_STAMP);
+
+  btn.hidden = !ok;
+  if (!why) return;
+  why.hidden = ok;
+  if (ok) { why.textContent = ''; return; }
+  why.textContent = !pdf || !pdf.b64
+    ? (ko ? 'PDF 는 이 화면에 실려 있지 않습니다. 옆의 “사용법만 인쇄”로 PDF 로 저장하십시오.'
+          : 'No PDF is bundled with this page. Use “Print this page only” to save one.')
+    : (ko ? 'PDF 는 다른 기준일 자료로 만든 것이라 내려받기를 열지 않았습니다'
+            + (pdf.asOf ? ' (실린 PDF 기준일 ' + pdf.asOf + ')' : '')
+            + '. 옆의 “사용법만 인쇄”로 지금 자료 그대로 저장하십시오.'
+          : 'The bundled PDF was built from a different data date'
+            + (pdf.asOf ? ' (' + pdf.asOf + ')' : '')
+            + ', so it is withheld. Use “Print this page only” to save the current one.');
+}
+
+// 사용법 절만 따로 파일로 만든다.
+//
+// 화면의 <style> 을 그대로 가져다 붙이므로 받은 파일도 같은 모습으로 열린다.
+// 사용법에 적힌 수는 이 화면이 방금 자료에서 센 값이라, 글로 옮겨 적는 것이
+// 아니라 **그려진 것을 그대로 뜬다** — 옮겨 적는 순간 화면과 어긋날 수 있다.
+function helpDoc() {
+  var ko = lang === 'ko';
+  var css = '';
+  var styles = document.querySelectorAll('style');
+  for (var i = 0; i < styles.length; i += 1) css += styles[i].textContent + '\n';
+
+  var sec = el('tab-help').cloneNode(true);
+  sec.removeAttribute('hidden');
+  // 내려받기 단추는 뺀다. 받은 파일 안에서는 누를 것이 없다.
+  var dl = sec.querySelector('#help-dl');
+  if (dl) dl.parentNode.removeChild(dl);
+
+  // 날짜와 출처를 같이 싣는다. 이것이 빠지면 언제 것인지 모르는 숫자가 된다.
+  var head = '<div class="hero"><div class="page">' +
+    '<div class="tag">' + esc(ko ? '국내 설정 공모펀드 조회' : 'Korea-domiciled public funds') + '</div>' +
+    '<h1>' + esc(ko ? '사용법' : 'How to use') + '</h1>' +
+    '<div class="meta">' +
+      '<span>' + esc(ko ? '펀드 ' + FUNDS.length.toLocaleString() + '개'
+                        : FUNDS.length.toLocaleString() + ' funds') + '</span>' +
+      (DATES.asOf ? '<span>' + esc(ko ? '기준일 ' + DATES.asOf : 'As of ' + DATES.asOf) + '</span>' : '') +
+      (DATES.got ? '<span class="dim">' + esc(ko ? '수집 ' + DATES.got : 'Collected ' + DATES.got) + '</span>' : '') +
+    '</div></div></div>';
+
+  var foot = '<footer><div class="page"><p class="disc">' +
+    (el('disc-source') ? el('disc-source').innerHTML : '') + '</p><p class="disc">' +
+    (el('disc-scope') ? el('disc-scope').innerHTML : '') + '</p></div></footer>';
+
+  return '<!doctype html><html lang="' + (ko ? 'ko' : 'en') + '"><head><meta charset="utf-8">' +
+    '<meta name="viewport" content="width=device-width, initial-scale=1">' +
+    '<title>' + esc(ko ? '공모펀드 조회 사용법' : 'Fund search — how to use') + '</title>' +
+    '<style>' + css + '</style></head><body>' +
+    head + '<main class="page">' + sec.outerHTML + '</main>' + foot +
+    '</body></html>';
+}
+
+function bindHelpDownload() {
+  var a = el('help-dl-html');
+  if (a) a.onclick = function () {
+    // 파일 이름은 한글을 쓰지 않는다. 한글 이름을 주면 브라우저·환경에 따라
+    // 통째로 버리고 확장자 없는 "download" 로 떨어뜨린다(이 저장소의 크로미움에서
+    // 실제로 그랬다). 그러면 받은 사람은 열 수도 없다. 문서 안의 제목은 한글이니
+    // 열면 무엇인지 바로 보인다 — 이름만 로마자로 둔다.
+    var name = 'fund-search-how-to-use' + (DATES.got ? '-' + DATES.got : '') + '.html';
+    var url = URL.createObjectURL(new Blob([helpDoc()], { type: 'text/html;charset=utf-8' }));
+    var link = document.createElement('a');
+    link.href = url; link.download = name;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    // 바로 거두면 브라우저가 아직 못 읽은 채로 사라지는 일이 있다.
+    setTimeout(function () { URL.revokeObjectURL(url); }, 4000);
+  };
+
+  var d = el('help-dl-pdf');
+  if (d) d.onclick = function () {
+    var pdf = window.HELP_PDF;
+    // 감춰 둔 단추가 눌릴 일은 없지만, 없는 것을 있는 척 내려주지는 않는다.
+    if (!pdf || !pdf.b64 || pdf.stamp !== HELP_STAMP) return;
+    // base64 를 바이트로 되돌린다. Blob 에 문자열을 그대로 주면 UTF-8 로
+    // 다시 부호화되어 PDF 가 깨진다 — 반드시 바이트 배열로 넘긴다.
+    var bin = atob(pdf.b64);
+    var buf = new Uint8Array(bin.length);
+    for (var i = 0; i < bin.length; i += 1) buf[i] = bin.charCodeAt(i);
+    var name = 'fund-search-how-to-use' + (pdf.got ? '-' + pdf.got : '') + '.pdf';
+    var url = URL.createObjectURL(new Blob([buf], { type: 'application/pdf' }));
+    var link = document.createElement('a');
+    link.href = url; link.download = name;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    setTimeout(function () { URL.revokeObjectURL(url); }, 4000);
+  };
+
+  var p = el('help-dl-print');
+  if (p) p.onclick = function () {
+    document.body.classList.add('print-help');
+    window.print();
+    // 인쇄창이 닫힌 뒤에 되돌린다. onafterprint 를 안 부르는 브라우저가 있어
+    // 시간으로도 한 번 더 되돌려 둔다 — 화면이 사용법만 남은 채로 잠기면 안 된다.
+    var back = function () { document.body.classList.remove('print-help'); };
+    window.addEventListener('afterprint', back, { once: true });
+    setTimeout(back, 3000);
+  };
+}
+
 // ───────────────────────── 그리기 ─────────────────────────
 function renderAll() {
   applyLang();
@@ -2260,6 +2659,7 @@ function renderAll() {
   if (state.tab === 'reverse') renderReverse();
   if (state.tab === 'rank') renderRank();
   if (state.tab === 'basis') renderBasis();
+  if (state.tab === 'help') renderHelp();
 }
 
 function showTab(name) {
@@ -2371,6 +2771,7 @@ function bind() {
 }
 
 bind();
+bindHelpDownload();
 renderAll();
 </script>
 </body>
