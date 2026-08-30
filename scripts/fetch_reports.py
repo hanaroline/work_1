@@ -1387,7 +1387,13 @@ WEEKLY_TAKE = 18
 WEEKLY_CAT_CAP = 5
 
 # 여러 판을 합칠 때, 뒤늦게 채워진 것은 살리고 조회수는 큰 쪽을 남긴다.
-_CARRY = ("summary", "lead", "facts", "target_price", "opinion", "target_move",
+#
+# excerpt·body_chars 가 함께 따라와야 한다. 요약만 옮기고 근거를 두고 오면,
+# 그 줄은 「본문에 없는 문장」이 되어 검산에서 걸린다 — 실제로 8/31 판에서
+# 앞선 판의 요약이 발췌 없이 건너와 한 건이 그렇게 잡혔다. 옮긴 문장의
+# 출처를 대지 못하는 자료는 내지 않는다.
+_CARRY = ("summary", "lead", "facts", "excerpt", "body_chars", "extracted",
+          "target_price", "opinion", "target_move",
           "analyst", "pdf", "house_pdf", "sector", "stock")
 
 
