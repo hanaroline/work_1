@@ -123,6 +123,9 @@ h4{font-size:17px; font-weight:600; margin:var(--space-content) 0 10px;}
 .card .stat{font-size:36px; font-weight:700; line-height:1.05; color:var(--blue); font-family:var(--font-num);}
 .card .stat.orange{color:var(--orange);}
 .card .stat.sm{font-size:26px;}
+/* 탭 이름 같은 한글 제목에 숫자용 폰트를 쓰면 자간이 벌어진다.
+   폰트 CDN 이 막힌 환경(사내망)에서 특히 두드러진다. */
+.card .stat.txt{font-family:var(--font-kr); letter-spacing:-.01em;}
 .card .note{font-size:15px; color:var(--muted); margin-top:10px; line-height:1.5;}
 .tint{background:var(--surface-soft); border-radius:4px; padding:22px;}
 
@@ -502,25 +505,25 @@ footer .disc + .disc{margin-top:12px;}
     <div class="grid grid-2" style="margin-top:14px">
       <div class="card">
         <div class="label" data-ko="탭 1" data-en="Tab 1">탭 1</div>
-        <div class="stat sm" data-ko="ETF 찾기" data-en="Browse">ETF 찾기</div>
+        <div class="stat sm txt" data-ko="ETF 찾기" data-en="Browse">ETF 찾기</div>
         <p class="note" data-ko="검색창에 <b>ETF 이름·종목코드·기초지수</b>는 물론 <b>편입종목 이름</b>도 넣을 수 있습니다. &quot;삼성전자&quot;로 찾으면 삼성전자를 담은 ETF가 나옵니다. 왼쪽 필터로 좁힌 뒤 <b>행을 누르면</b> 그 자리에서 상위 10종목·섹터 비중·기간 수익률이 펼쳐집니다."
            data-en="Search by ETF name, code, index — or by a holding's name. Click a row to expand its top 10 holdings, sector mix and period returns.">검색창에 ETF 이름·종목코드·기초지수는 물론 편입종목 이름도 넣을 수 있습니다.</p>
       </div>
       <div class="card">
         <div class="label" data-ko="탭 2" data-en="Tab 2">탭 2</div>
-        <div class="stat sm" data-ko="비교 · 중복도" data-en="Compare">비교 · 중복도</div>
+        <div class="stat sm txt" data-ko="비교 · 중복도" data-en="Compare">비교 · 중복도</div>
         <p class="note" data-ko="찾기 화면에서 <b>⊕</b> 를 눌러 최대 8개까지 담습니다. 두 ETF가 <b>얼마나 겹치는지</b>를 비중 기준으로 계산하고, 아래에는 <b>종목 × ETF 표</b>가 나와 어느 종목이 어디에 들었는지 한눈에 보입니다."
            data-en="Add up to 8 funds with the ⊕ button. See pairwise overlap by weight, plus a stock-by-fund matrix.">찾기 화면에서 ⊕ 를 눌러 최대 8개까지 담습니다.</p>
       </div>
       <div class="card">
         <div class="label" data-ko="탭 3" data-en="Tab 3">탭 3</div>
-        <div class="stat sm" data-ko="종목 → ETF" data-en="Stock → ETF">종목 → ETF</div>
+        <div class="stat sm txt" data-ko="종목 → ETF" data-en="Stock → ETF">종목 → ETF</div>
         <p class="note" data-ko="반대 방향입니다. <b>개별 종목 이름</b>을 넣으면 그 종목을 상위 10위 안에 담은 ETF가 <b>비중 순</b>으로 나옵니다. 이미 들고 있는 종목과 겹치지 않는 ETF를 고를 때 씁니다."
            data-en="The reverse lookup: enter a stock and see which ETFs hold it in their top 10, ranked by weight.">개별 종목 이름을 넣으면 그 종목을 담은 ETF가 비중 순으로 나옵니다.</p>
       </div>
       <div class="card">
         <div class="label" data-ko="탭 4" data-en="Tab 4">탭 4</div>
-        <div class="stat sm" data-ko="랭킹" data-en="Rankings">랭킹</div>
+        <div class="stat sm txt" data-ko="랭킹" data-en="Rankings">랭킹</div>
         <p class="note" data-ko="기간 수익률 <b>상위·하위</b>, 설정액, 3개월 자금 유입, 총보수를 줄 세웁니다. 위에서 <b>상장 시장</b>과 <b>기간</b>을 고를 수 있고, 레버리지·인버스는 기본으로 빠져 있습니다."
            data-en="Top and bottom returns, AUM, 3-month flows and TER. Filter by listing market and period; leveraged and inverse funds are excluded by default.">기간 수익률 상위·하위, 설정액, 3개월 자금 유입, 총보수를 줄 세웁니다.</p>
       </div>
