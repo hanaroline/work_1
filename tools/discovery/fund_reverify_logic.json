@@ -1,6 +1,17 @@
 {
-  "at": "2026-08-29T05:30:50.394Z",
-  "findings": [],
+  "at": "2026-08-30T23:45:16.477Z",
+  "findings": [
+    {
+      "sev": "error",
+      "rule": "검색-개수불일치",
+      "detail": "\"배당\": 화면 288 vs 재계산 287"
+    },
+    {
+      "sev": "error",
+      "rule": "검색-개수불일치",
+      "detail": "\"K55301\": 화면 298 vs 재계산 148"
+    }
+  ],
   "errors": [],
   "filters": [
     {
@@ -11,8 +22,8 @@
     },
     {
       "label": "투자지역 해외",
-      "shown": 1316,
-      "recomputed": 1316,
+      "shown": 1312,
+      "recomputed": 1312,
       "ok": true
     },
     {
@@ -23,8 +34,8 @@
     },
     {
       "label": "자산군 채권형",
-      "shown": 425,
-      "recomputed": 425,
+      "shown": 421,
+      "recomputed": 421,
       "ok": true
     },
     {
@@ -53,14 +64,14 @@
     },
     {
       "label": "설정액 1조 이상",
-      "shown": 46,
-      "recomputed": 46,
+      "shown": 48,
+      "recomputed": 48,
       "ok": true
     },
     {
       "label": "설정액 100억 미만",
-      "shown": 1830,
-      "recomputed": 1830,
+      "shown": 1827,
+      "recomputed": 1827,
       "ok": true
     },
     {
@@ -71,8 +82,8 @@
     },
     {
       "label": "총보수 0.3% 미만",
-      "shown": 659,
-      "recomputed": 659,
+      "shown": 657,
+      "recomputed": 657,
       "ok": true
     },
     {
@@ -83,21 +94,21 @@
     },
     {
       "label": "검색 \"삼성\"",
-      "shown": 1435,
-      "recomputed": 1435,
+      "shown": 1434,
+      "recomputed": 1434,
       "ok": true
     },
     {
       "label": "검색 \"배당\"",
-      "shown": 287,
+      "shown": 288,
       "recomputed": 287,
-      "ok": true
+      "ok": false
     },
     {
       "label": "검색 \"K55301\"",
-      "shown": 148,
+      "shown": 298,
       "recomputed": 148,
-      "ok": true
+      "ok": false
     }
   ],
   "rank": [
@@ -106,14 +117,14 @@
       "okTop": true,
       "okBottom": true,
       "okAum": true,
-      "n": 2891
+      "n": 2890
     },
     {
       "label": "해외주식형 1y",
       "okTop": true,
       "okBottom": true,
       "okAum": true,
-      "n": 748
+      "n": 751
     },
     {
       "label": "국내주식형 3m",
@@ -127,7 +138,7 @@
       "okTop": true,
       "okBottom": true,
       "okAum": true,
-      "n": 2297
+      "n": 2293
     }
   ],
   "overlap": [
@@ -250,7 +261,7 @@
     },
     "검색.개수": {
       "checked": 3,
-      "same": 3
+      "same": 1
     },
     "랭킹.수익률상위": {
       "checked": 4,
@@ -274,7 +285,7 @@
     }
   },
   "counts": {
-    "error": 0
+    "error": 2
   },
-  "verdict": "필터·검색·랭킹·중복도·역조회가 모두 재계산과 일치"
+  "verdict": "오류 2건"
 }
