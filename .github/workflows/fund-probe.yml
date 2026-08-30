@@ -254,10 +254,12 @@ jobs:
 
       # 막힌 요청은 http:// 로 나갔고 메인은 https:// 였다. 스킴만 바꿔 한 번
       # 더 연다. 또 막히면 확인 실패로 닫는다 - 더 두드리지 않는다.
+      # 23차도 3건 중 2건이 막혔다. https 로도 안 된다. 확인 실패로 닫는다 -
+      # 더 두드리지 않는다. 결과가 남았으므로 자동으로는 안 돌린다.
       - name: 검산 실행 23차 (오픈API 목록, https 로 한 번 더)
         timeout-minutes: 15
         continue-on-error: true
-        if: hashFiles('scripts/probe_kofia_openapi_list2.mjs') != ''
+        if: github.event_name == 'workflow_dispatch' && hashFiles('scripts/probe_kofia_openapi_list2.mjs') != ''
         run: |
           npm i -D playwright@1.56.1 --no-audit --no-fund
           npx playwright install --with-deps chromium
