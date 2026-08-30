@@ -64,6 +64,16 @@ jobs:
       - name: 리포트 수집
         run: python scripts/fetch_reports.py
 
+      - name: 재검산
+        # 실린 숫자를 원자료에서 다시 세고, 실린 문장이 리포트 본문에 그대로
+        # 있는지 대조한다. 흠이 있어도 수집물은 커밋한다 — 어긋난 자리를
+        # 눈으로 봐야 고칠 수 있고, 결과는 verify.txt 에 남는다.
+        continue-on-error: true
+        run: |
+          python scripts/verify_reports.py data/reports/latest.json \
+            > data/reports/verify.txt 2>&1 || true
+          tail -25 data/reports/verify.txt
+
       - name: 오래된 덤프 정리
         run: |
           # 파싱 실패 시에만 남기는 원본이다. 7일 지난 것은 지운다.
