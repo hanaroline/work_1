@@ -86,61 +86,74 @@ say('');
 /* ── 가. 설정액 — 야후 totalAssets 가 무엇을 세는가 ────────────────────── */
 say('## 가. 설정액 — `totalAssets` 는 ETF 인가 펀드 전체인가');
 say('');
-say('상장주식수 × 가격 으로 ETF 클래스의 순자산을 따로 구해 `totalAssets` 와 나눈다.');
-say('클래스가 하나뿐인 상품(SPY·IVV·QQQ)은 1배 근처여야 한다. 크게 넘으면');
-say('`totalAssets` 가 **펀드 전체**를 세고 있다는 뜻이고, 그러면 국내 ETF 의');
-say('순자산총액과 한 줄로 세울 수 없다.');
+say('상장주식수는 ETF 에 붙지 않아 그 길이 막혔다. 대신 **같은 펀드의 다른 클래스**를 쓴다.');
+say('뱅가드 ETF 는 인덱스펀드의 한 클래스이고, 같은 펀드의 뮤추얼펀드 클래스에는 따로');
+say('티커가 있다(VTI ↔ VTSAX). 두 티커의 `totalAssets` 가 **같은 값**으로 나오면 그것은');
+say('클래스별 순자산이 아니라 **펀드 전체**를 세는 값이라는 뜻이다. 그러면 국내 ETF 의');
+say('순자산총액과 한 줄로 세울 수 없다. 클래스가 하나뿐인 SPY·IVV·QQQ 는 대조군이다.');
 say('');
 
 await authorize();
 
-// 통화가 섞이면 "몇 배냐" 만 보면 되므로 상관없다. 다만 화면 상위에 실제로
-// 오르는 것은 미국 상장분이므로 그쪽을 본다 — 일본 ETF 는 엔화 표기라
-// 액면 숫자가 커 보일 뿐 원화로 환산하면 상위에 오지 않는다.
-const globals = ETFS.filter((e) => e.market === 'US' && e.aum != null)
-  .sort((a, b) => b.aum - a.aum).slice(0, 20);
+// ETF 클래스 ↔ 같은 펀드의 뮤추얼펀드 클래스
+const PAIRS = [
+  ['VTI', 'VTSAX', 'Vanguard Total Stock Market Index'],
+  ['VOO', 'VFIAX', 'Vanguard 500 Index'],
+  ['VXUS', 'VTIAX', 'Vanguard Total International Stock Index'],
+  ['BND', 'VBTLX', 'Vanguard Total Bond Market Index'],
+  ['VUG', 'VIGAX', 'Vanguard Growth Index'],
+  ['VTV', 'VVIAX', 'Vanguard Value Index'],
+  ['VEA', 'VTMGX', 'Vanguard Developed Markets Index'],
+  ['VWO', 'VEMAX', 'Vanguard Emerging Markets Stock Index'],
+  ['SPY', null, 'SPDR S&P 500 (클래스 하나 — 대조군)'],
+  ['IVV', null, 'iShares Core S&P 500 (클래스 하나 — 대조군)'],
+  ['QQQ', null, 'Invesco QQQ (클래스 하나 — 대조군)'],
+];
 
-const aumRows = unwrap(await mapLimit(globals, 3, async (e) => {
-  const row = { code: e.code, name: e.name, aum: e.aum, shares: null, px: null, err: null };
+const askAssets = async (sym) => {
+  const j = await getJson(YQ(sym, 'defaultKeyStatistics,price,summaryDetail'), { headers: YHDR() });
+  const r = j?.quoteSummary?.result?.[0];
+  return {
+    totalAssets: r?.defaultKeyStatistics?.totalAssets?.raw ?? r?.summaryDetail?.totalAssets?.raw ?? null,
+    longName: r?.price?.longName ?? null,
+    quoteType: r?.price?.quoteType ?? null,
+  };
+};
+
+const aumRows = unwrap(await mapLimit(PAIRS, 2, async ([etf, mf, label]) => {
+  const row = { etf, mf, label, err: null };
   try {
-    const j = await getJson(YQ(e.symbol || e.code, 'defaultKeyStatistics,price,summaryDetail,fundProfile'),
-      { headers: YHDR() });
-    const r = j?.quoteSummary?.result?.[0];
-    row.shares = r?.defaultKeyStatistics?.sharesOutstanding?.raw
-              ?? r?.price?.sharesOutstanding?.raw ?? null;
-    row.px = r?.price?.regularMarketPrice?.raw ?? e.price ?? null;
-    row.totalAssets = r?.defaultKeyStatistics?.totalAssets?.raw
-                   ?? r?.summaryDetail?.totalAssets?.raw ?? null;
-    row.longName = r?.price?.longName ?? null;
-    row.legalType = r?.price?.quoteType ?? null;
-    row.family = r?.fundProfile?.family ?? null;
+    row.a = await askAssets(etf);
+    await sleep(200);
+    if (mf) { row.b = await askAssets(mf); await sleep(200); }
   } catch (err) { row.err = err.message; }
-  await sleep(150);
   return row;
 }));
 
-say('| 종목 | totalAssets | 상장주식수×가격 | 배수 | 판정 |');
-say('| --- | ---: | ---: | ---: | --- |');
+say('| 펀드 | ETF 클래스 | totalAssets | 뮤추얼펀드 클래스 | totalAssets | 같은가 |');
+say('| --- | --- | ---: | --- | ---: | --- |');
+let sameCount = 0, pairCount = 0;
 for (const r of aumRows) {
-  const mktCap = r.shares != null && r.px != null ? r.shares * r.px : null;
-  const mult = mktCap ? r.aum / mktCap : null;
-  r.etfAum = mktCap;
-  r.mult = mult;
-  r.verdict = mult == null ? '확인 못 함'
-    : mult > 1.3 ? '**펀드 전체** — ETF 순자산이 아니다'
-    : mult < 0.77 ? '역방향 — 따로 볼 것'
-    : 'ETF 순자산과 일치';
-  say(`| ${r.code ?? '?'} ${(r.longName || r.name || '').slice(0, 34)}` +
-      ` | ${r.aum == null ? '—' : '$' + (r.aum / 1e9).toFixed(0) + 'B'}` +
-      ` | ${mktCap == null ? '—' : '$' + (mktCap / 1e9).toFixed(0) + 'B'}` +
-      ` | ${mult == null ? '—' : mult.toFixed(2) + '×'} | ${r.verdict}${r.err ? ' (' + r.err + ')' : ''} |`);
+  const av = r.a?.totalAssets, bv = r.b?.totalAssets;
+  const same = av != null && bv != null && Math.abs(av - bv) / av < 0.001;
+  if (r.mf && av != null && bv != null) { pairCount += 1; if (same) sameCount += 1; }
+  r.same = r.mf ? same : null;
+  say(`| ${r.label} | ${r.etf} (${r.a?.quoteType ?? '?'}) | ${av == null ? '—' : '$' + (av / 1e9).toFixed(1) + 'B'}` +
+      ` | ${r.mf ? r.mf + ' (' + (r.b?.quoteType ?? '?') + ')' : '없음'}` +
+      ` | ${bv == null ? '—' : '$' + (bv / 1e9).toFixed(1) + 'B'}` +
+      ` | ${r.mf ? (same ? '**같다 — 펀드 전체 값이다**' : '다르다') : '대조군'}${r.err ? ' (' + r.err + ')' : ''} |`);
 }
 result.aum = aumRows;
-const mismatched = aumRows.filter((r) => r.mult != null && r.mult > 1.3);
 say('');
-say(`**배수가 1.3 을 넘는 종목: ${mismatched.length} / ${aumRows.filter((r) => r.mult != null).length}**` +
-    (mismatched.length ? ` — ${mismatched.map((r) => r.code).join(', ')}` : ''));
+say(`**클래스가 둘인 ${pairCount}개 펀드 중 ${sameCount}개에서 두 티커의 totalAssets 가 같다.**`);
 say('');
+if (pairCount && sameCount === pairCount) {
+  say('> 야후 `totalAssets` 는 **펀드 전체**를 센다. 뱅가드 ETF 의 설정액은 ETF 로 들어온');
+  say('> 돈이 아니라 같은 펀드의 뮤추얼펀드 클래스까지 합친 값이다. 국내 ETF 는');
+  say('> 네이버 `totalNav`(그 ETF 만의 순자산총액)를 쓰므로, 둘을 한 표에 세우면');
+  say('> 뱅가드 상품만 실제보다 서너 배 크게 나온다.');
+  say('');
+}
 
 /* ── 나. 순유입 — 누적 순유입이 설정액을 넘는 게 말이 되는가 ──────────── */
 say('## 나. 순유입 — `cumulativeNetInflow3m` 이 정말 설정·환매 순액인가');
