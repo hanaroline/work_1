@@ -275,7 +275,9 @@ jobs:
       # 결과가 남은 뒤에는 위 단계들처럼 workflow_dispatch 로 잠근다.
       - name: 재검증 24차 (화면의 숫자 vs 금투협 전자공시, 전수)
         timeout-minutes: 45
-        if: hashFiles('scripts/probe_fund_verify_kofia.mjs') != ''
+        # 결과가 들어왔으므로 잠근다. push 로 다시 돌면 증거가 덮인다.
+        # 판정은 tools/discovery/fund_verify_verdict.md 에 따로 남겼다.
+        if: github.event_name == 'workflow_dispatch' && hashFiles('scripts/probe_fund_verify_kofia.mjs') != ''
         run: node scripts/probe_fund_verify_kofia.mjs
 
       - name: 결과 업로드
