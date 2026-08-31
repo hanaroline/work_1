@@ -114,6 +114,10 @@ for (const [label, sel, pred] of filterCases) {
 // 검색어
 await page.evaluate(() => { window.el('f-reset').click(); });
 await page.waitForTimeout(120);
+// 화면의 검색은 네 군데를 훑는다: 펀드 본체 · **클래스(코드·이름)** · 보유종목.
+// 여기 재계산이 클래스를 빠뜨려서 "배당" 288 vs 287, "K55301" 298 vs 148 로
+// 어긋났다 — 틀린 쪽은 화면이 아니라 이 규칙이었다. 사람이 손에 든 코드는
+// 대개 클래스 코드(K55301...)라서 클래스를 빼면 절반이 사라진다.
 for (const q of ['삼성', '배당', 'K55301']) {
   await page.fill('#q', q);
   await page.waitForTimeout(350);
@@ -122,6 +126,8 @@ for (const q of ['삼성', '배당', 'K55301']) {
   const want = FUNDS.filter((f) => {
     const hay = `${f.name || ''} ${f.code || ''} ${f.company || ''} ${f.type || ''} ${f.benchmarkName || ''}`.toLowerCase();
     if (hay.includes(lq)) return true;
+    if ((f.classes || []).some((c) => (c.code || '').toLowerCase().includes(lq)
+      || (c.name || '').toLowerCase().includes(lq))) return true;
     return (f.holdings || []).some((h) => (h.name || '').toLowerCase().includes(lq));
   }).length;
   const ok = got === want;

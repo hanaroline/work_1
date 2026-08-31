@@ -2274,15 +2274,40 @@ function renderHero() {
       '. It was previously read from the head of Naver’s category name, which disagreed with the ' +
       'primary source in 34 of 318 sampled funds (10.7%). Asset class is still read from the category name.';
 
+  // 이 문단의 수는 **세어서 넣는다.**
+  //
+  // 전에는 "클래스 19,092개 중 18,712개", "3,196개 중 2,885개" 라고 박아 두었다.
+  // 자료는 날마다 다시 걷히므로 그 수는 다음 날 아침에 바로 틀린 수가 된다 —
+  // 아무도 고치라고 알려 주지 않고, 화면은 태연히 옛날 수를 계속 말한다.
+  // 위의 교차 검증 문단은 그래서 상수와 실제 수를 맞춰 보는 장치를 달았는데,
+  // 여기는 애초에 지금 자료에서 셀 수 있는 수다. 세는 편이 낫다.
+  var clsAll = 0;
+  var clsFee = 0;
+  var feeVariesN = 0;
+  for (var ci = 0; ci < FUNDS.length; ci += 1) {
+    var ccs = FUNDS[ci].classes || [];
+    clsAll += ccs.length;
+    var seen = {};
+    var nSeen = 0;
+    for (var cj = 0; cj < ccs.length; cj += 1) {
+      if (ccs[cj].totalFee == null) continue;
+      clsFee += 1;
+      if (!seen[ccs[cj].totalFee]) { seen[ccs[cj].totalFee] = 1; nSeen += 1; }
+    }
+    if (nSeen > 1) feeVariesN += 1;
+  }
   el('disc-fee').innerHTML = lang === 'ko'
     ? '<strong>총보수는 클래스별입니다.</strong> 펀드 단위의 총보수는 원천에 없지만 ' +
-      '<u>클래스별 총보수</u>는 있습니다(클래스 19,092개 중 18,712개). 국내 공모펀드의 보수는 ' +
-      '원래 클래스마다 다르고, 이 자료에서도 3,196개 중 2,885개가 클래스마다 다릅니다. ' +
+      '<u>클래스별 총보수</u>는 있습니다(클래스 ' + clsAll.toLocaleString() + '개 중 ' +
+      clsFee.toLocaleString() + '개). 국내 공모펀드의 보수는 원래 클래스마다 다르고, ' +
+      '이 자료에서도 ' + FUNDS.length.toLocaleString() + '개 중 ' + feeVariesN.toLocaleString() +
+      '개가 클래스마다 다릅니다. ' +
       '그래서 하나의 숫자로 줄이지 않고 <u>최저~최고 범위</u>로 싣고 클래스별 표를 함께 둡니다. ' +
       '목록의 총보수 열과 필터는 <u>최저 클래스</u> 기준입니다.'
     : '<strong>Fees are per share class.</strong> The source has no fund-level fee, but ' +
-      'per-class fees are present (18,712 of 19,092 classes). Korean fund fees differ by class ' +
-      '— 2,885 of 3,196 funds here do. Rather than reduce that to one number, the range ' +
+      'per-class fees are present (' + clsFee.toLocaleString() + ' of ' + clsAll.toLocaleString() +
+      ' classes). Korean fund fees differ by class — ' + feeVariesN.toLocaleString() + ' of ' +
+      FUNDS.length.toLocaleString() + ' funds here do. Rather than reduce that to one number, the range ' +
       '(lowest–highest) is shown with the per-class table. The list column and filter use the ' +
       'cheapest class.';
 
@@ -2307,8 +2332,8 @@ function renderHero() {
   // 그래서 대조 당시의 수를 상수로 두고 지금 화면과 맞춰 본 뒤, 어긋나면
   // 어긋난다고 화면이 스스로 적게 한다. 사람이 날짜를 갱신하는 것을 잊어도
   // 문장이 거짓말은 하지 않도록 하는 것이 목적이다.
-  var VERIFIED_ON = '2026-08-30';
-  var VERIFIED_N = 3196;
+  var VERIFIED_ON = '2026-08-31';
+  var VERIFIED_N = 3192;
   var staleNote = FUNDS.length === VERIFIED_N ? '' : (lang === 'ko'
     ? ' <strong>이 대조는 ' + VERIFIED_ON + ' 수집본(' + VERIFIED_N.toLocaleString() +
       '개) 기준이고, 지금 화면은 ' + FUNDS.length.toLocaleString() + '개입니다.</strong> ' +
@@ -2317,24 +2342,30 @@ function renderHero() {
       VERIFIED_N.toLocaleString() + ' funds); this screen now shows ' +
       FUNDS.length.toLocaleString() + '.</strong> Funds launched or closed since then were not in it.');
   el('disc-verify').innerHTML = (lang === 'ko'
-    ? '<strong>교차 검증(2026-08-30).</strong> 그날 수집본 3,196개를 계보가 다른 1차 출처인 ' +
-      '<u>금융투자협회 전자공시</u>에 전수 다시 물었습니다(응답 3,196건 · 실패 0건). ' +
-      '<u>투자지역</u>과 <u>공모 여부</u>는 3,196건 전건 일치했고, <u>설정액</u>은 양쪽 다 있는 ' +
-      '3,121건 중 <u>95.4%</u>가 일치했습니다(순자산 어긋남의 92%도 하루치 변동 폭 안이었습니다). ' +
+    ? '<strong>교차 검증(2026-08-31).</strong> 수집본 3,192개를 계보가 다른 1차 출처인 ' +
+      '<u>금융투자협회 전자공시</u>에 전수 다시 물었습니다(응답 3,192건 · 실패 0건). ' +
+      '이번에는 <strong>양쪽 기준일이 2026-08-28 로 같아</strong> 기준가를 그대로 맞댈 수 있었습니다 ' +
+      '— <u>기준가</u> 3,192건 중 <u>3,131건(98.1%)</u>이 0.1% 안에서 일치했고, 어긋난 61건 중 ' +
+      '53건은 원화환산과 현지통화 표시의 차이(배율이 원/달러 환율대에 그대로 들어맞습니다)이며 ' +
+      '<strong>나머지 8건(외화표시)은 어느 쪽이 옳은지 가리지 못했습니다.</strong> ' +
+      '<u>투자지역</u>(3,192건)과 <u>공모 여부</u>(3,192건)는 전건 일치, <u>설정액</u>은 3,116건 중 ' +
+      '3,112건, <u>순자산</u>은 3,118건 중 3,111건이 일치했습니다. <u>설정일</u>은 13건이 다릅니다. ' +
       '반면 <strong>1개월 이상 9개 구간(1M·3M·6M·9M·YTD·1Y·2Y·3Y·5Y)의 수익률은 금투협이 주지 않아 ' +
       '외부 원천으로 확인되지 않았습니다</strong> — 그 값들에 대한 검증은 원천 자체의 기준가 ' +
-      '시계열로 검산한 데까지입니다. <u>기준가</u>는 양쪽 기준일이 하루 어긋나는데 금투협이 소급 ' +
-      '조회를 주지 않아 어느 쪽이 옳은지 가르지 못했고, <u>외화표시 66개</u>는 표시 통화가 달라 ' +
-      '비교 자체가 성립하지 않습니다.'
-    : '<strong>Cross-check (2026-08-30).</strong> All 3,196 funds in that day’s collection were re-queried ' +
-      'against an independent primary source, <u>KOFIA electronic disclosure</u> (3,196 responses, ' +
-      '0 failures). <u>Investment region</u> and <u>public-offering status</u> matched on all 3,196; ' +
-      '<u>fund size</u> matched on <u>95.4%</u> of the 3,121 present on both sides. However, ' +
-      '<strong>the nine return windows of one month and longer (1M–5Y) are not covered by KOFIA and ' +
-      'therefore remain unverified against any outside source</strong> — they are checked only against ' +
-      'the originating source’s own base-price series. <u>Base price</u> could not be adjudicated (the ' +
-      'two as-of dates differ by a day and KOFIA serves no retrospective query), and <u>66 ' +
-      'foreign-currency funds</u> are quoted in another currency, so no comparison is possible.') +
+      '시계열로 검산한 데까지입니다. 금투협이 함께 주는 1주 등락률은 3,188건 중 3%p 넘게 ' +
+      '벌어진 것이 없었습니다.'
+    : '<strong>Cross-check (2026-08-31).</strong> All 3,192 collected funds were re-queried against an ' +
+      'independent primary source, <u>KOFIA electronic disclosure</u> (3,192 responses, 0 failures). ' +
+      'This time <strong>both sides carry the same as-of date (2026-08-28)</strong>, so base prices could ' +
+      'be compared directly — <u>3,131 of 3,192 (98.1%)</u> agree within 0.1%. Of the 61 that differ, 53 ' +
+      'are a won-converted vs. local-currency difference (the ratios land squarely on the KRW/USD rate); ' +
+      '<strong>the remaining 8 (foreign-currency funds) could not be adjudicated.</strong> ' +
+      '<u>Investment region</u> and <u>public-offering status</u> matched on all 3,192; <u>fund size</u> on ' +
+      '3,112 of 3,116 and <u>net assets</u> on 3,111 of 3,118. <u>Inception dates</u> differ on 13. ' +
+      'However, <strong>the nine return windows of one month and longer (1M–5Y) are not covered by KOFIA ' +
+      'and therefore remain unverified against any outside source</strong> — they are checked only ' +
+      'against the originating source’s own base-price series. Of the one-week changes KOFIA does serve, ' +
+      'none of the 3,188 comparable funds diverged by more than 3pp.') +
     staleNote;
 }
 

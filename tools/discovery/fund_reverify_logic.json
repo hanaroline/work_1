@@ -1,17 +1,6 @@
 {
-  "at": "2026-08-30T23:45:16.477Z",
-  "findings": [
-    {
-      "sev": "error",
-      "rule": "검색-개수불일치",
-      "detail": "\"배당\": 화면 288 vs 재계산 287"
-    },
-    {
-      "sev": "error",
-      "rule": "검색-개수불일치",
-      "detail": "\"K55301\": 화면 298 vs 재계산 148"
-    }
-  ],
+  "at": "2026-08-30T23:56:17.690Z",
+  "findings": [],
   "errors": [],
   "filters": [
     {
@@ -101,14 +90,14 @@
     {
       "label": "검색 \"배당\"",
       "shown": 288,
-      "recomputed": 287,
-      "ok": false
+      "recomputed": 288,
+      "ok": true
     },
     {
       "label": "검색 \"K55301\"",
       "shown": 298,
-      "recomputed": 148,
-      "ok": false
+      "recomputed": 298,
+      "ok": true
     }
   ],
   "rank": [
@@ -261,7 +250,7 @@
     },
     "검색.개수": {
       "checked": 3,
-      "same": 1
+      "same": 3
     },
     "랭킹.수익률상위": {
       "checked": 4,
@@ -285,7 +274,7 @@
     }
   },
   "counts": {
-    "error": 2
+    "error": 0
   },
-  "verdict": "오류 2건"
+  "verdict": "필터·검색·랭킹·중복도·역조회가 모두 재계산과 일치"
 }
