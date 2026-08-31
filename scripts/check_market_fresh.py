@@ -85,6 +85,32 @@ CHECKS = {
                 ("국내 직전 마감", prev_business_day, kr_close)],
 }
 
+# 수집 «시각» 의 하한. 날짜만 보면 장중 스냅숏이 통과한다.
+#
+# 날짜 검사만으로는 부족하다는 것이 사흘 연속 드러났다. 8/27 에는 12:03,
+# 8/28 에는 15:03, 8/31 에는 09:24 에 찍힌 파일이 모두 「쓸 수 있다」로
+# 통과했다 — 셋 다 15:30 마감 «전» 이라 종가도 수급도 그날 것이 아니었다.
+# 8/27 판은 거래대금이 13.23조(정상 22~26조)인 것과 index_daily 와 indices
+# 의 종가가 어긋난 것으로 겨우 알아챘다. 사람이 알아채는 데 기대면 안 된다.
+#
+# 기준은 «그 판이 다루는 장» 의 마감이다. 토요일에 도는 주말 판은 기대
+# 날짜가 금요일이므로 금요일 15:30 이 하한이 되어 그대로 통과한다.
+SESSION_FLOOR = {
+    "close": datetime.time(15, 30),   # 국내 정규장 마감
+    "morning": None,                  # 간밤 미국 마감이 날짜로 이미 걸러진다
+}
+
+
+def capture_time(j):
+    """`generated_at_kst` 를 datetime 으로. 못 읽으면 None."""
+    s = (j.get("generated_at_kst") or "").strip()
+    for fmt in ("%Y-%m-%d %H:%M:%S", "%Y-%m-%d %H:%M"):
+        try:
+            return datetime.datetime.strptime(s, fmt).replace(tzinfo=KST)
+        except ValueError:
+            pass
+    return None
+
 
 def load(use_main=True):
     """origin/main 의 시세 파일을 읽는다. 실패하면 작업본으로 물러선다."""
@@ -112,8 +138,11 @@ def inspect(session, today, use_main=True):
 
     lines = ["수집 시각 %s (origin/main)" % j.get("generated_at_kst", "?")]
     ok = True
+    last_want = None
     for label, want_fn, pick in CHECKS[session]:
-        want = want_fn(today).isoformat()
+        want_d = want_fn(today)
+        last_want = want_d
+        want = want_d.isoformat()
         lines.append("%s — 기대 %s" % (label, want))
         for name, got, required in pick(j):
             hit = (got == want)
@@ -122,6 +151,23 @@ def inspect(session, today, use_main=True):
             mark = "O" if hit else ("X" if required else "~")
             lines.append("  %s %-22s %s%s"
                          % (mark, name, got, "" if hit or required else "  (참고 항목)"))
+
+    # 날짜가 맞아도 **마감 전에 찍힌 것**이면 그날 값이 아니다.
+    floor_t = SESSION_FLOOR.get(session)
+    if floor_t is not None and last_want is not None:
+        cap = capture_time(j)
+        floor = datetime.datetime.combine(last_want, floor_t, tzinfo=KST)
+        if cap is None:
+            ok = False
+            lines.append("  X 수집 시각을 읽지 못했다 — 마감 전 자료인지 가릴 수 없다")
+        elif cap < floor:
+            ok = False
+            lines.append("  X 마감 전 스냅숏 — %s 에 찍혔고 하한은 %s 다"
+                         % (cap.strftime("%m-%d %H:%M"), floor.strftime("%m-%d %H:%M")))
+            lines.append("    날짜만 맞고 종가&middot;수급은 그날 것이 아니다.".replace("&middot;", "·"))
+        else:
+            lines.append("  O 마감 뒤 수집          %s (하한 %s)"
+                         % (cap.strftime("%m-%d %H:%M"), floor.strftime("%H:%M")))
     return ok, lines, raw
 
 
