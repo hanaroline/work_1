@@ -617,6 +617,46 @@ for k in ('indices','stocks','kr_etf','us_sectors','us_stocks','eu_stocks','jp_s
    걸린 문장을 하나씩 「오늘 기준으로 맞는가」로 되물으십시오. 8/19 판에서는
    **43곳이 걸렸고 그중 30곳이 실제로 낡은 문장**이었습니다.
 
+### 작업 중에 자료가 갱신되면 **글만 뒤에 남습니다**
+
+4-3절의 「표는 자료에서 나오고 글은 안 나온다」는 휴장 뒤에만 터지는 것이 아닙니다.
+**한 판을 만드는 동안에도 터집니다.** 2026-09-01 아침이 그랬습니다 &mdash; 07:45 에
+스냅샷을 읽고 「예탁금은 줄고 신용융자는 늘었다」고 썼는데, 그 사이 수집이 갱신되면서
+표는 **8/27 96조 7,091억(&minus;2조 2,086억) → 8/28 99조 8,138억(+3조 1,047억)** 으로
+굴러갔습니다. **부호가 뒤집혔는데** 표만 바뀌고 문장은 그대로였고, `recheck.py`&middot;
+`audit_numbers.py`&middot;`stale.py` 셋 다 잡지 못했습니다 &mdash; 표의 숫자는 맞고,
+문장에는 숫자가 없었기 때문입니다.
+
+**그래서 발행 직전에 「내가 글을 쓸 때 본 값」과 「판이 쓴 값」을 견주십시오.**
+
+```bash
+git show <초고 때 쓰던 수집 커밋>:data/market/latest.json > /tmp/old.json
+python3 - <<'EOF'
+import json
+A=json.load(open('/tmp/old.json')); B=json.load(open('data/market/latest.json'))
+for lab, ks in [("예탁금",("money_flow","latest","deposit")),
+                ("예탁금 증감",("money_flow","latest","deposit_delta")),
+                ("신용 증감",("money_flow","latest","credit_balance_delta")),
+                ("재무부 date",("rates_us","date")),
+                ("S&P500",("indices","sp500","change_pct"))]:
+    a=b=None
+    for D,box in ((A,'a'),(B,'b')):
+        x=D
+        for k in ks: x=(x or {}).get(k) if isinstance(x,dict) else None
+        if box=='a': a=x
+        else: b=x
+    if a!=b: print("★바뀜", lab, a, "→", b)
+EOF
+```
+
+**바뀐 항목마다 그 값을 말한 문장을 찾아 다시 읽으십시오.** 특히 **증감(`*_delta`)**
+은 부호가 통째로 뒤집힐 수 있어 가장 위험합니다.
+
+**그리고 이것을 「숨겨야 할 사고」로 다루지 마십시오.** 09-01 판은 고친 뒤 검증 노트에
+경위를 그대로 적었고, 고친 값이 그날 기사가 금융투자협회를 인용해 전한 수치와 정확히
+같아 **어긋나 보이던 두 원천이 오히려 만났습니다.** 무엇을 언제 왜 고쳤는지 적는 것이
+받는 쪽에 더 쓸모 있습니다.
+
 ### 원인을 쓰기 전에 **수집된 기사 본문을 읽으십시오**
 
 8/19 판 첫 발행에서 간밤 하락을 「반도체가 무너졌다」로 썼습니다. 표만 보면
