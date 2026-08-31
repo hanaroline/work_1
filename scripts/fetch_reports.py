@@ -464,6 +464,11 @@ def fetch_mirae(dump_dir=None):
                 _dump(dump_dir, "mirae_%s_p1.html" % cid, html)
             board_err[board] = "줄을 못 찾았다 (%d bytes)" % len(html)
             continue
+        # 같은 리포트의 날짜가 판마다 다르게 읽힌 일이 있다(9/1 판에서 두 건이
+        # 사흘씩 당겨졌다). 어느 칸을 집었는지는 마크업을 봐야 알 수 있으므로
+        # 첫 쪽을 남긴다. 오래된 덤프는 워크플로가 이레 뒤 지운다.
+        if dump_dir:
+            _dump(dump_dir, "mirae_%s_p1.html" % cid, html)
         first_n = max(first_n, len(first))
         add(first)
 
@@ -1480,7 +1485,7 @@ def merge_today(reports, out_dir, today):
     return reports
 
 
-def load_history(out_dir, since):
+def load_history(out_dir, since, skip=None):
     """지난 판들에서 `since` 이후 리포트를 모아 온다.
 
     한 판에 담기는 것은 네이버 목록의 앞쪽 몇 쪽뿐이라, 엿새 전 리포트는
@@ -1490,6 +1495,12 @@ def load_history(out_dir, since):
     merged = {}
     for f in sorted(os.listdir(out_dir)):
         if not re.fullmatch(r"\d{4}-\d{2}-\d{2}\.json", f):
+            continue
+        # 오늘 파일은 읽지 않는다. 그 안의 줄은 이미 `merge_today` 로 이번 판에
+        # 들어와 있고, 옛 사본을 다시 들이면 **셈이 저장본과 어긋난다** — 판마다
+        # 날짜가 달리 읽힌 줄이 하나라도 있으면 옛 날짜 사본이 창 안에 남아
+        # 한 주 셈이 저장된 파일로는 재현되지 않는다(9/1 판 424 대 423).
+        if skip and f == skip + ".json":
             continue
         try:
             with open(os.path.join(out_dir, f), encoding="utf-8") as fh:
@@ -1509,11 +1520,11 @@ def load_history(out_dir, since):
     return merged
 
 
-def weekly(reports, day, out_dir):
+def weekly(reports, day, out_dir, skip=None):
     """한 주 동안 가장 많이 읽힌 리포트와 그 주의 셈."""
     since = (datetime.strptime(day, "%Y-%m-%d")
              - timedelta(days=WEEK_SPAN - 1)).strftime("%Y-%m-%d")
-    pool = load_history(out_dir, since)
+    pool = load_history(out_dir, since, skip=skip)
     for r in reports:                       # 오늘 판이 가장 새것이다
         if not r.get("nid") or (r.get("date") or "") < since:
             continue
@@ -1681,7 +1692,7 @@ def main():
     # 주간 인기 리포트도 본문이 있어야 한 장으로 읽힌다. 갈래마다 몫을 주어
     # 도는 탓에 경제분석·시황정보의 주간 상위가 번번이 상한 밖으로 밀렸다
     # — 열여덟 장 가운데 일곱 장이 요약 없이 남았다. 먼저 연다.
-    hot = set(weekly(reports, day, OUT_DIR)["top"])
+    hot = set(weekly(reports, day, OUT_DIR, skip=today)["top"])
     order = ([r for r in order if pool_key(r) in hot]
              + [r for r in order if pool_key(r) not in hot])
     # 상세 쪽 본문 상자에는 「이런 리포트도」 목록이 딸려 온다. 다른 리포트의
@@ -1720,7 +1731,7 @@ def main():
     out["summary"] = digest(reports, day)
     out["highlights"] = pick_highlights(reports, day)
     # 주간은 오늘 판만으로는 안 된다 — 지난 판을 합쳐야 이레가 채워진다.
-    out["weekly"] = weekly(reports, day, OUT_DIR)
+    out["weekly"] = weekly(reports, day, OUT_DIR, skip=today)
 
     day_path = os.path.join(OUT_DIR, today + ".json")
     for path in (day_path, os.path.join(OUT_DIR, "latest.json")):
