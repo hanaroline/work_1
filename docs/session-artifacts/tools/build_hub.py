@@ -27,16 +27,22 @@ GROUPS = [
              'The edition that established the bilingual layout and per-item evidence panel.',
              '자동 증시시황 수집 및 브리핑', 'Auto market briefing',
              '2026-08-06', '52dcf057-d3b2-421c-a418-1741e617e27f', True),
-            ('모닝 · 장마감 브리핑 (8/6~8/22)', 'Morning & Close Briefings (Aug 6–22)',
-             '일자별 발행본 21건이 이미 아티팩트로 올라가 있어 다시 올리지 않았습니다. '
-             '아래 브리핑 아카이브에서 한 번에 찾습니다.',
-             'Twenty-one dated editions already exist as artifacts and were not republished; '
-             'the briefing archive below indexes them all.',
-             '모닝 시황 브리핑 · 마포WM 장마감 브리핑', 'Morning / close briefing sessions',
-             '2026-08-22', None, False),
-            ('브리핑 아카이브', 'Briefing Archive',
-             '발행한 모든 브리핑을 날짜·판·소제목으로 검색하는 색인 화면.',
-             'Searchable index of every published briefing by date, edition and headline.',
+            ('모닝 마켓 브리핑 · 8/31', 'Morning Market Briefing · Aug 31',
+             '가장 최신 발행본. 매 영업일 아침 새 아티팩트로 올라옵니다.',
+             'The latest edition. A new artifact goes up each business morning.',
+             '모닝 시황 브리핑', 'Morning briefing',
+             '2026-08-31', '56daa887-4ba0-4487-9576-c5adb553116a', False),
+            ('브리핑 목록', 'Briefing Index',
+             '발행한 브리핑을 날짜·판별로 늘어놓은 최신 목록 화면. 일자별 발행본은 '
+             '이미 각각 아티팩트로 올라가 있어 다시 올리지 않았고, 여기서 찾습니다.',
+             'The current list of every published briefing by date and edition. Each dated '
+             'edition already has its own artifact and was not republished — find them here.',
+             '모닝 시황 브리핑', 'Morning briefing',
+             '2026-08-30', 'd71cdafd-9cd4-4eea-8500-a37da78b8f47', False),
+            ('브리핑 아카이브 (8월 중순판)', 'Briefing Archive (mid-Aug)',
+             '검색으로 찾는 초기 아카이브 화면. 8/17 이후 발행분은 위 브리핑 목록이 최신입니다.',
+             'The earlier searchable archive. For anything after Aug 17 the briefing index '
+             'above is current.',
              '새로운 프로젝트 추천', 'New project recommendation',
              '2026-08-17', 'c33e2992-1bc7-47ef-98ed-25dc750b7965', True),
             ('주간 마켓 다이제스트 · 2026-W33', 'Weekly Market Digest · 2026-W33',
@@ -97,21 +103,26 @@ GROUPS = [
         leaden='ELS issue analysis and client proposals, with terms, fair value and '
                'knock-in headroom taken from the filings.',
         items=[
-            ('ELS 상품 조회 · 8/21판', 'ELS Product Finder · Aug 21',
-             '구조 설명·조건 필터·상환 시뮬레이터를 갖춘 최신판.',
-             'Latest edition with structure explainer, term filters and redemption simulator.',
+            ('ELS 상품 조회 · 8/25 데이터', 'ELS Product Finder · Aug 25 data',
+             '구조 설명·조건 필터·상환 시뮬레이터를 갖춘 최신판. 상품 데이터를 '
+             '8/25 수집분 36건으로 갈아 끼웠습니다.',
+             'Structure explainer, term filters and redemption simulator, with the product '
+             'table refreshed to the 36 notes collected on Aug 25.',
              'ELS 상품 통합 조회', 'ELS product search',
-             '2026-08-21', 'e8a6b160-154a-4cfa-921f-edc368cf58a4', True),
+             '2026-08-25', 'e8a6b160-154a-4cfa-921f-edc368cf58a4', True),
             ('ELS 상품 구조 한눈에 보기', 'ELS Structures at a Glance',
              '기초자산·조기상환·손익 구조를 처음 배우는 사람 기준으로 설명합니다.',
              'Underlyings, early redemption and payoff explained for a first-time reader.',
              'ELS 상품 구조 설명 페이지', 'ELS structure page',
              '2026-08-20', 'c3969a8b-8ddc-4f39-aba4-77677e8d3aff', False),
-            ('ELS 주간 제안서', 'ELS Weekly Proposal',
-             '제38031~38047회 17종을 조건·가격·과거 성과로 갈라 추천 3종을 골랐습니다.',
-             'Seventeen notes (series 38031–38047) split by terms, price and history, with three picks.',
+            ('ELS 주간 제안서 · 8/24 판매분', 'ELS Weekly Proposal · Aug 24 offering',
+             '제38031~38047회 17종. 쿠폰이 높으면 정말 더 위험한지 손실 확률로 검증한 절과 '
+             '숙려기간을 감안한 실제 청약 마감일(8/25)을 앞세운 판. 추천 3종.',
+             'Seventeen notes (series 38031–38047), now testing whether a higher coupon really '
+             'means more risk using loss probability, and leading with the real subscription '
+             'deadline (Aug 25) once the cooling-off period is counted. Three picks.',
              'ELS 상품 구조 설명 페이지', 'ELS structure page',
-             '2026-08-21', '292b0dbd-65ef-405c-b8fd-d7843d8f61d3', False),
+             '2026-08-25', '292b0dbd-65ef-405c-b8fd-d7843d8f61d3', False),
             ('ELS 세일즈 분석 8월 4주', 'ELS Sales Analysis · Aug W4',
              '투자설명서에서 공정가액·적용 변동성·리자드 조항을 꺼내 16건을 다시 읽었습니다.',
              'Sixteen notes re-read from the prospectus: fair value, applied vol, lizard clauses.',
@@ -167,10 +178,30 @@ GROUPS = [
              '데이터센터 밸류체인 맵', 'Data center value chain map',
              '2026-08-05', 'b563f426-4248-467e-af3f-bc6c750de2b5', True),
             ('증권사 리포트 다이제스트', 'Broker Report Digest',
-             '조회수·목표주가 변경·복수 커버리지로 오늘의 리포트를 고릅니다.',
-             'Picks the day\'s reports by views, target-price changes and shared coverage.',
+             '조회수·목표주가 변경·복수 커버리지로 그날 리포트를 고릅니다. 8/31 자 18건, '
+             '수집 전체 333건을 파일에 담아 갱신했습니다. 주간 인기와 주제별 논점이 붙었습니다.',
+             'Picks the day\'s reports by views, target-price changes and shared coverage. '
+             'Refreshed with the Aug 31 edition (18 reports, 333 collected) embedded in the '
+             'file, plus weekly rankings and per-theme arguments.',
              '증권사 리포트 자동 요약', 'Report auto-summary',
-             '2026-08-21', 'e0d4d73a-22db-4d93-a0c5-6ab177711daa', True),
+             '2026-08-31', 'e0d4d73a-22db-4d93-a0c5-6ab177711daa', True),
+            ('ETF 편입종목 조회', 'ETF Holdings Lookup',
+             '국내·미국·홍콩·일본·중국 상장 ETF 1,348종목의 상위 10개 편입종목과 비중. '
+             '겹침 비교·종목 역조회·랭킹까지. 8/30 수집분, 총수익률 단일 기준.',
+             'Top-10 holdings and weights for 1,348 ETFs listed in Korea, the US, Hong Kong, '
+             'Japan and China, with overlap comparison, reverse lookup and rankings. Aug 30 '
+             'data, total-return basis only.',
+             'ETF 편입종목 조회 도구', 'ETF holdings lookup tool',
+             '2026-08-30', 'c3f08597-8d47-45ce-ba27-17fd26a63dc7', True),
+            ('국내 설정 공모펀드 조회', 'Korean Public Fund Finder',
+             '공모펀드 3,192개를 투자 지역·유형으로 가른 화면. 데이터 파일만 25.9MB 라 '
+             '아티팩트 상한(16MB)을 넘어 올릴 수 없습니다. 저장소 '
+             'claude/fund-search-tool 의 fund-search.html 을 내려받아 열면 됩니다.',
+             '3,192 Korean public funds split by investment region and type. Its data file '
+             'alone is 25.9MB — past the 16MB artifact limit, so it cannot be published here. '
+             'Download fund-search.html from the claude/fund-search-tool branch.',
+             '펀드조회 화면', 'Fund search screen',
+             '2026-08-31', None, ('아티팩트 불가 · 저장소', 'Too large · in repo')),
         ]),
     dict(
         ko='세금 · 계산기 · 영업 도구', en='Tax, Calculators & Sales Tools',
@@ -189,11 +220,62 @@ GROUPS = [
              'risk calculator in one file.',
              '작업 검토 및 제안', 'Work review & recommendations',
              '2026-07-29', 'a86d0d0e-b723-42c5-b7d8-5a64262489b9', True),
+            ('대주주 양도세 원문 대조', 'Major-Shareholder CGT · Source Check',
+             '국가법령정보센터에서 소득세법·조세특례제한법 등 원문을 받아 대주주 양도세 '
+             '설명을 조문과 한 줄씩 맞춰 본 자료. 오류 2건을 고치고 빠진 3건을 채웠습니다.',
+             'Major-shareholder capital gains tax checked line by line against the statutes '
+             'pulled from the national law database. Two errors corrected, three gaps closed.',
+             '국가법령정보센터 법령 조회', 'National law database lookup',
+             '2026-08-30', '2e47eb36-ab99-4c84-9390-55c52527e1a4', False),
             ('2026 세제 세미나 검증본', '2026 Tax Seminar · Verified',
              '세무·부동산 세제 자료를 원문 대조로 검증한 판.',
              'Tax and property-tax material verified line by line against the source.',
              '세무 자료 검증 · 부동산 세제 자료 검증', 'Tax document verification',
              '2026-08-22', '80f98891-6920-42a0-9cdc-a548f564db29', False),
+        ]),
+    dict(
+        ko='엑셀 산식 · 업무 매뉴얼', en='Excel Formulas & Work Manuals',
+        leadko='영업점에서 쓰는 엑셀 산식을 한 벌로 묶은 자료입니다. 이 세션은 브랜치를 '
+               '푸시하지 않아 저장소에 파일이 없고, 아티팩트가 원본입니다.',
+        leaden='One coherent set of the Excel formulas used at a branch. This session never '
+               'pushed a branch, so no file exists in the repository — the artifacts are the '
+               'original.',
+        items=[
+            ('산식 길잡이', 'Formula Wayfinder',
+             '함수 이름을 몰라도 하려는 일을 문장으로 고르면 산식을 순서대로 꺼내 줍니다. '
+             '41개 업무 8분류. 이 묶음의 입구로 쓰는 최종본.',
+             'Pick what you are trying to do in plain language and it lays out the formulas in '
+             'order — no function names needed. 41 tasks in 8 groups; the finished entry point '
+             'to this set.',
+             '엑셀 함수 및 계산식 정리', 'Excel functions & formulas',
+             '2026-08-25', '4188685b-2521-4240-a3ef-987a8fd0b034', False),
+            ('엑셀 산식 원장 합본', 'Formula Ledger · Combined',
+             '1권·2권을 한 권으로 묶은 전체 참조. 21분류 169항목. 검색이 유사어·오타·초성'
+             '(ㅁㅋㄹ → 매크로)을 받아 줍니다.',
+             'Volumes 1 and 2 merged into the full reference — 21 groups, 169 entries. Search '
+             'tolerates synonyms, typos and Korean initials.',
+             '엑셀 함수 및 계산식 정리', 'Excel functions & formulas',
+             '2026-08-25', '94e6f911-801c-40f6-8099-196a8c7d0c9c', False),
+            ('엑셀 산식 도해', 'Formula Diagrams',
+             '수식이 어느 칸을 집고 무슨 일을 하는지 18장의 그림으로 먼저 보여 줍니다. '
+             '초록이 수식이 실제로 건드리는 곳입니다.',
+             'Eighteen diagrams showing which cells a formula touches and what it does, before '
+             'the syntax. Green marks what the formula actually reads.',
+             '엑셀 함수 및 계산식 정리', 'Excel functions & formulas',
+             '2026-08-25', 'c2ddc566-2f52-42b9-b549-bdb8b86ba271', False),
+            ('엑셀 산식 원장 · 제1권', 'Formula Ledger · Volume 1',
+             '함수·재무 계산 기본편. 내용은 위 합본에 그대로 들어가 있습니다.',
+             'The functions and financial-calculation volume. Its content is carried in the '
+             'combined edition above.',
+             '엑셀 함수 및 계산식 정리', 'Excel functions & formulas',
+             '2026-08-24', 'ccb64920-9f9e-4045-91ac-d5809128a878', False),
+            ('영업점 산식 원장 · 제2권', 'Branch Formula Ledger · Volume 2',
+             '파워 쿼리·매크로 자동화와 고객·만기·실적 관리 산식. 6분류 48항목. '
+             '내용은 위 합본에 그대로 들어가 있습니다.',
+             'Power Query and macro automation plus client, maturity and performance formulas — '
+             '6 groups, 48 entries. Also carried in the combined edition above.',
+             '엑셀 함수 및 계산식 정리', 'Excel functions & formulas',
+             '2026-08-25', '23202724-7f0d-4318-93d5-f9b438106ff3', False),
         ]),
     dict(
         ko='세미나 · 발표자료 · 영상', en='Seminars, Decks & Video',
@@ -202,6 +284,21 @@ GROUPS = [
         leaden='PPTX and MP4 originals cannot open as an artifact, so each page carries the '
                'extracted slide text and charts with the original file attached.',
         items=[
+            ('2026 하반기 시장 팩트시트', 'H2 2026 Market Factsheet',
+             '세미나 의뢰서가 전제한 “2026년 금리인하”가 1차 자료와 반대라는 점부터 짚고, '
+             '미국·한국 매크로·섹터·리스크를 확인된 수치로만 정리했습니다. 출처 30건.',
+             'Opens by flagging that the seminar brief\'s premise of 2026 rate cuts contradicts '
+             'the primary sources, then sets out US and Korean macro, sectors and risks using '
+             'only verified figures. Thirty sources.',
+             '투자 세미나 팩트시트', 'Investment seminar factsheet',
+             '2026-08-26', '7b47b6a1-ed09-4e4c-a5c6-5cc8b2da293b', False),
+            ('반도체·코스피 팩트시트', 'Semiconductor & KOSPI Factsheet',
+             '7월 급락을 통과한 시점의 반도체 사이클 위치. 목표주가가 210만~470만원으로 '
+             '2.2배 벌어져 컨센서스가 없다는 사실까지 그대로 실었습니다. 출처 33건.',
+             'Where the semiconductor cycle stands after the July selloff — including that '
+             'target prices span 2.1–4.7m won, a 2.2× spread with no consensus. 33 sources.',
+             '투자 세미나 팩트시트', 'Investment seminar factsheet',
+             '2026-08-26', '03bc8628-27ec-48d8-8e15-634043688b66', False),
             ('반도체 프라이머 2026', 'Semiconductor Primer 2026',
              '산업 구조·밸류체인·사이클을 30장으로 정리한 교육 자료. 검증본 두 판 모두 첨부.',
              'Industry structure, value chain and cycle in 30 slides. Both verified '
@@ -295,6 +392,11 @@ NOARTIFACT = [
     ('최종본 파일 확인', 'Final file check',
      '어느 파일이 최종본인지 가려낸 점검 작업입니다.',
      'A check to establish which file was the final version.'),
+    ('초기 작업 검증 프로세스', 'Initial work validation process',
+     '브리핑 생성 파이프라인에 검증 관문을 붙인 작업입니다. 훅·워크플로·점검 스크립트가 '
+     '결과물이라 화면으로 볼 산출물이 없습니다.',
+     'Added a validation gate to the briefing pipeline. The output is hooks, a workflow and '
+     'check scripts — nothing to view as a page.'),
 ]
 
 CSS = """
@@ -508,13 +610,13 @@ h.append('<div class="lang" role="radiogroup" aria-label="언어 선택 / Langua
 h.append('</div>')
 
 h.append(bi('세션 산출물 자료실', 'Session Work Library', 'h1'))
-h.append(bi('클로드 코드 세션 35개가 남긴 최종 작업본을 주제별로 모았습니다. '
+h.append(bi('클로드 코드 세션 40개가 남긴 최종 작업본을 주제별로 모았습니다. '
             '제목을 누르면 해당 아티팩트가 열립니다.',
-            'The final deliverable of every one of 35 Claude Code sessions, grouped by '
+            'The final deliverable of every one of 40 Claude Code sessions, grouped by '
             'subject. Each title opens its artifact.', 'p', 'sub'))
 
 h.append('<div class="stats">')
-for kolab, enlab, val in [('세션', 'Sessions', '35'),
+for kolab, enlab, val in [('세션', 'Sessions', '40'),
                           ('주제', 'Subjects', str(len(GROUPS))),
                           ('새로 올린 아티팩트', 'Newly published', str(new_count)),
                           ('색인에 실은 항목', 'Indexed items', str(rows_total))]:
@@ -559,7 +661,10 @@ for g in GROUPS:
                      % ('new' if is_new else 'old',
                         bi('신규', 'New') if is_new else bi('기존', 'Existing')))
         else:
-            h.append('<span class="chip old">%s</span>' % bi('아래 아카이브', 'See archive'))
+            # 아티팩트가 없는 항목의 꼬리표. is_new 에 (한글, 영문) 짝을 넣어
+            # 두면 그것을 쓰고, 아니면 기본값(아카이브 참조)을 쓴다.
+            lab = is_new if isinstance(is_new, tuple) else ('아래 아카이브', 'See archive')
+            h.append('<span class="chip old">%s</span>' % bi(lab[0], lab[1]))
         h.append('</div></div>')
     h.append('</div></section>')
 
@@ -597,16 +702,23 @@ for (tko, ten, dko, den) in NOARTIFACT:
 h.append('</div></section>')
 
 h.append('<footer>')
-h.append(bi('기준 2026-08-22 · 저장소 <code>hanaroline/work_1</code> · '
-            '세션별 브랜치의 마지막 커밋에서 산출물을 뽑았습니다.',
-            'As of 2026-08-22 · repository <code>hanaroline/work_1</code> · deliverables taken '
-            'from the last commit on each session branch.', 'p'))
+h.append(bi('기준 2026-08-31 · 저장소 <code>hanaroline/work_1</code> · '
+            '세션별 브랜치의 마지막 커밋에서 산출물을 뽑았습니다. 이 색인은 월·목 아침에 '
+            '스스로 갱신됩니다.',
+            'As of 2026-08-31 · repository <code>hanaroline/work_1</code> · deliverables taken '
+            'from the last commit on each session branch. This index refreshes itself on '
+            'Monday and Thursday mornings.', 'p'))
 h.append(bi('세션 목록에는 최근 35개가 잡힙니다. 그보다 앞선 브랜치 두 개'
             '(<code>singgil-parkzai-brochure</code>, <code>new-session-5tllo8</code>)의 '
-            '산출물도 함께 실었습니다.',
+            '산출물도 함께 실었습니다. 엑셀 산식 계열은 브랜치가 푸시되지 않아 아티팩트가 '
+            '원본이고, 팩트시트 2건은 아티팩트 목록에서 찾았으나 어느 세션이 만들었는지는 '
+            '세션 목록으로 확인되지 않았습니다.',
             'The session list returns the most recent 35. Two older branches '
             '(<code>singgil-parkzai-brochure</code>, <code>new-session-5tllo8</code>) are '
-            'included here as well.', 'p'))
+            'included here as well. The Excel formula set has no pushed branch, so its '
+            'artifacts are the original; the two factsheets were found in the artifact list '
+            'but the session that produced them could not be identified from the session '
+            'listing.', 'p'))
 h.append(bi('모든 아티팩트는 기본이 비공개입니다. 부서 밖으로 링크를 돌리기 전에 각 '
             '아티팩트의 공유 설정을 확인하십시오.',
             'Every artifact is private by default. Check each artifact\'s sharing setting '
