@@ -21,7 +21,7 @@ on:
       - 'scripts/build_fund_data.mjs'
       - 'scripts/audit_fund_data.mjs'
       - 'scripts/build_fund_page.mjs'
-      - 'scripts/build_fund_help_pdf.mjs'
+      - 'scripts/build_fund_howto.mjs'
       - 'scripts/test_fund_page.mjs'
       - 'scripts/test_fund_lib.mjs'
       - 'scripts/etf_lib.mjs'
@@ -124,6 +124,12 @@ jobs:
       # 그래서 여기서 미리 뽑아 base64 로 화면에 실어 둔다. **단일 파일 빌드
       # 앞**에 둬야 오늘 자료로 만든 PDF 가 오늘 배포본에 들어간다.
       #
+      # 이 단계는 실제 화면을 브라우저로 몰아 보면서 단계마다 그 화면을 찍는다.
+      # 그림이 붙은 사용법이라 글만 있는 것보다 훨씬 무겁지만(2MB 남짓),
+      # 처음 여는 사람에게 "어느 칸이 그 칸인가" 를 알려 주는 것은 글이 아니라
+      # 그림이다. 그림이 여덟 장 미만이거나 PDF 서명이 없으면 스스로 실패한다 —
+      # 반쯤 찍힌 사용법을 내보내느니 어제 것을 두는 편이 낫다.
+      #
       # 실패해도 잡을 세우지 않는다 — 어제 PDF 가 남아 있고, 화면은 실린 PDF 가
       # 오늘 자료와 다르면 스스로 단추를 감추고 왜 없는지를 적는다. 낡은 PDF 를
       # 내주는 일은 없고, 자료 갱신은 PDF 하나 때문에 멈추지 않는다.
@@ -135,7 +141,7 @@ jobs:
         run: |
           npm i -D playwright@1.56.1 --no-audit --no-fund
           npx playwright install --with-deps chromium
-          node scripts/build_fund_help_pdf.mjs
+          node scripts/build_fund_howto.mjs
 
       - name: 단일 파일 빌드
         run: node scripts/build_fund_page.mjs
@@ -169,7 +175,7 @@ jobs:
           git add data/fund-kr.js data/fund-region.js data/fund.js fund-search.html 2>/dev/null || true
           # 사용법 PDF 는 화면 안에 실리는 자료다. 같이 덮어써야 배포본과
           # 어긋나지 않는다.
-          git add data/fund-help-pdf.js tools/discovery/fund_help.pdf 2>/dev/null || true
+          git add data/fund-help-pdf.js tools/discovery/fund_help.pdf tools/discovery/fund_howto.html 2>/dev/null || true
           # 이력은 **누적** 파일이다. 덮어쓰기 커밋에 같이 실려도 최신 blob 하나에
           # 전체 이력이 들어 있으므로 과거를 잃지 않는다.
           git add data/fund-history.js 2>/dev/null || true

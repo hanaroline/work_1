@@ -501,7 +501,7 @@ footer .disc + .disc{margin-top:12px;}
         다르면 이 단추를 **감춘다**. 낡은 PDF 를 내주느니 안 내주는 편이 낫다.
       -->
       <button type="button" class="btn-print" id="help-dl-pdf" hidden
-              data-ko="사용법 내려받기 (PDF)" data-en="Download (PDF)">사용법 내려받기 (PDF)</button>
+              data-ko="사용법 내려받기 (PDF · 화면 그림)" data-en="Download (PDF, with screenshots)">사용법 내려받기 (PDF · 화면 그림)</button>
       <button type="button" class="btn-print" id="help-dl-print"
               data-ko="사용법만 인쇄 · PDF 저장" data-en="Print this page only / PDF">사용법만 인쇄 · PDF 저장</button>
       <span class="dim" id="help-dl-note"></span>
@@ -2819,11 +2819,15 @@ function renderHelp() {
 
   var note = el('help-dl-note');
   if (note) {
+    // HTML 과 PDF 는 같은 사용법이 아니다. PDF 쪽에는 **실제 화면을 찍은
+    // 그림**이 단계마다 붙는다 — 처음 여는 사람에게는 "어느 칸이 그 칸인가"
+    // 가 글보다 그림으로 훨씬 빨리 전해진다. 둘을 같은 것처럼 적어 두면
+    // 그림이 필요한 사람이 글만 든 파일을 받아 간다.
     note.textContent = ko
-      ? '받은 파일은 브라우저만 있으면 열립니다. 기준일 ' + (DATES.asOf || '미상') +
-        ' 자료로 만든 사용법이며, 자료가 바뀌면 다시 받아야 합니다.'
-      : 'The saved file opens in any browser. It describes the data as of ' +
-        (DATES.asOf || 'an unstated date') + '; download again when the data changes.';
+      ? 'HTML 은 이 절의 글 그대로이고, PDF 에는 각 단계마다 실제 화면을 찍은 그림이 붙습니다. ' +
+        '기준일 ' + (DATES.asOf || '미상') + ' 자료로 만든 사용법이며, 자료가 바뀌면 다시 받아야 합니다.'
+      : 'The HTML file is this section as text; the PDF adds a screenshot of the real screen at each step. ' +
+        'It describes the data as of ' + (DATES.asOf || 'an unstated date') + '; download again when the data changes.';
   }
 
   syncHelpPdf();
