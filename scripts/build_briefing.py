@@ -38,6 +38,7 @@ from briefing_lib import (  # noqa: E402
     d, DK, DE, DD, DS, n, pct, bp, eok, jo, esc,
     L, TH, THP, perf_cells, tbl, exp as _exp, P, lede, stat, card, callout,
     sparkline, bar, Doc, Narrative, assemble)
+import briefing_lib as _lib  # noqa: E402
 from briefing_prepare import prepare, KIND_NAME  # noqa: E402
 
 
@@ -55,7 +56,7 @@ from briefing_prepare import prepare, KIND_NAME  # noqa: E402
 #
 # **서술은 한 글자도 줄이지 않는다.** 그날 손으로 쓴 문장이 핵심본의
 # 본론이고, 걷어내는 것은 근거 표 쪽이다.
-CORE = [False]
+CORE = _lib.CORE      # 표를 만드는 쪽 전부가 같은 스위치를 본다
 
 CORE_CSS = """
 <style id="core-density">
@@ -67,6 +68,41 @@ CORE_CSS = """
 
    껍데기 CSS 뒤에 붙이므로 같은 우선순위에서 이긴다(지침 6절).        */
 .section{margin-top:30px}
+/* 좁은 표를 나란히 세운다. 화면이 좁아지면 스스로 한 단으로 풀린다 —
+   폭 훑기에서 340px 까지 넘침 0 이어야 하므로 고정 2·3단을 쓰지 않는다. */
+.duo{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(430px,100%),1fr));gap:0 14px}
+.trio{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(232px,100%),1fr));gap:0 12px}
+.duo > *,.trio > *{min-width:0}
+/* 격자 칸 안에서는 표가 min-width 를 고집하면 안 된다 — 칸보다 넓어져
+   700~1080px 구간에서 62 곳이 넘쳤다. 폭을 풀고 글자를 한 치수 줄인다. */
+.duo table.data,.trio table.data{min-width:0!important;width:100%}
+.duo .table-wrap,.trio .table-wrap{overflow-x:visible}
+.trio table.data th,.trio table.data td{padding:3px 5px;font-size:12px}
+.trio table.data caption{font-size:12.5px}
+/* 반 칸에 들어가려면 표가 350px 안쪽이어야 한다. 글자와 여백을 한 치수 줄이고,
+   스파크라인 칸은 통째로 뺀다 &mdash; 132px 짜리 그림 하나가 표를 574px 로
+   밀어 올려 혼자 223px 넘쳤다. 추이 그림은 전체 판에 그대로 있다.        */
+.duo table.data th,.duo table.data td{padding:2px 5px;font-size:11.5px;line-height:1.3}
+.duo table.data caption{font-size:12.5px}
+.duo table.data .sparkcell,.duo table.data th.sparkcell{display:none}
+.duo table.data .sub{font-size:10.5px}
+.duo table.data .wrap,.trio table.data .wrap{white-space:normal;word-break:keep-all;overflow-wrap:anywhere}
+.duo table.data .n,.trio table.data .n{overflow-wrap:normal;white-space:nowrap}
+.hol{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(180px,100%),1fr));gap:2px 14px;
+  margin:0 0 10px;padding:0;list-style:none}
+.hol li{font-size:12.5px;line-height:1.45;padding:1px 0;border-bottom:1px solid var(--hairline-soft)}
+.hol li b{font-weight:600;color:var(--ink)}
+.hol li em{font-style:normal;color:var(--primary-active);font-weight:600}
+h3.mini{font-size:15px;font-weight:600;color:var(--ink);margin:14px 0 6px}
+@media print{ h3.mini{font-size:10pt;margin:9px 0 4px;break-after:avoid} }
+@media print{
+  .duo{grid-template-columns:1fr 1fr;gap:0 10px}
+  .duo table.data th,.duo table.data td{padding:1.5px 4px;font-size:7.6pt}
+  .duo table.data caption{font-size:8.4pt}
+  .trio{grid-template-columns:1fr 1fr 1fr;gap:0 9px}
+  .hol{grid-template-columns:1fr 1fr 1fr;gap:1px 10px}
+  .hol li{font-size:7.6pt;line-height:1.3}
+}
 .shell > main > .section:first-child{margin-top:14px}
 .sec-num{font-size:12px;letter-spacing:1px}
 .section-title{font-size:20px}
@@ -123,6 +159,9 @@ footer.foot{margin-top:22px;padding:16px 0 24px;font-size:11px}
   /* 인쇄용 「브리핑 목록」은 전체 판의 기능이다. 핵심본은 다섯 쪽짜리 시트라
      서른 줄짜리 목록을 실을 자리가 없다 — 화면에서는 사이드바에 그대로 있다. */
   .archive-print{display:none!important}
+  /* 나란히 세우기 — 좁은 표는 한 단씩 쓰면 자리가 아깝다. 유럽·일본·중화권
+     셋을 3단으로 세우면 셋이 한 표 높이에 들어간다.                     */
+  .duo,.trio{break-inside:auto!important}
 }
 </style>
 """
@@ -139,26 +178,26 @@ def _cut(seq, k=2):
     return seq[:k] if CORE[0] else seq
 
 
-def THP_():
-    """기간 수익률 머리 — 핵심본에서는 세우지 않는다.
-
-    1주·1개월·3개월·연초는 「지금이 신고가인지 되돌림인지」를 말해 주는
-    값이라 전체 판에는 반드시 있어야 한다(지침 4-3절). 다만 개장 전에 한 번
-    훑는 시트에서는 **오늘 결정에 닿는 것이 전일 대비**이고, 기간 사다리는
-    같은 날짜의 전체 판에 그대로 있다.
-    """
-    return "" if CORE[0] else THP()
-
-
-def perf_cells_(pf):
-    return "" if CORE[0] else perf_cells(pf)
-
-
 # ══════════════════════════════════════════════════════════════════
 # 자료
 # ══════════════════════════════════════════════════════════════════
+MARKET = [None]     # --market 로 지정한 시세 파일. 없으면 latest.json
+
+
 def load():
-    D = json.load(io.open(ROOT + "/data/market/latest.json", encoding="utf-8"))
+    """시세를 읽는다.
+
+    **판을 다시 지을 때는 그 판의 기준 시각 스냅샷을 쓰십시오.** `latest.json` 은
+    수집이 돌 때마다 덮어써지므로, 개장 뒤에 아침 판을 다시 지으면 표만 조용히
+    **장중값**으로 굴러가고 글은 종가 이야기에 멈춰 있습니다 &mdash; 2026-08-31 에
+    실제로 그랬습니다(07:40 수집분은 삼성전자 &minus;3.38%, 09:24 수집분은
+    &minus;3.70%). 지침 4-3절의 「표는 자료에서 나오고 글은 안 나온다」가 휴장이
+    아니라 **같은 날 안에서** 터지는 경우입니다.
+
+        git show <수집 커밋>:data/market/latest.json > /tmp/snap.json
+        python3 scripts/build_briefing.py --market /tmp/snap.json
+    """
+    D = json.load(io.open(MARKET[0] or (ROOT + "/data/market/latest.json"), encoding="utf-8"))
     try:
         H = json.load(io.open(ROOT + "/data/market/history.json", encoding="utf-8"))
     except Exception:                                             # noqa: BLE001
@@ -227,9 +266,7 @@ def sec_today(C):
         a, b = N.get(key, fb_ko, fb_en)
         paras.append(P(a, b))
 
-    if CORE[0]:
-        cards = [cards[0], cards[1], cards[4], cards[5]]
-    grid = "stat-grid" if CORE[0] else "stat-grid six"
+    grid = "stat-grid six"
     return ('<div class="' + grid + '">\n' + "\n".join(cards) + '\n</div>\n'
             + callout("오늘 09시 개장에 들고 갈 것",
                       "What to carry into the 09:00 open", paras))
@@ -239,7 +276,7 @@ def sec_korea(C):
     """02 국내 증시 — 지수·폭·종목. 종목표는 **주도와 부진 여덟씩**으로 줄인다."""
     I, KS, KQ, ksb, kqb, N, S = C["I"], C["KS"], C["KQ"], C["ksb"], C["kqb"], C["N"], C["S"]
     idx_head = [TH("지수", "Index", "wrap"), TH("설명", "What it says", "note wrap"),
-                TH("종가", "Close", "n"), TH("등락률", "Change %", "n"), THP_(),
+                TH("종가", "Close", "n"), TH("등락률", "Change %", "n"), THP(),
                 TH("검증", "Verified", "n opt")]
     rows = []
     for k, ko, en, nk, ne in (
@@ -251,7 +288,7 @@ def sec_korea(C):
         rows.append('      <tr><th class="wrap">' + L(ko, en) + '</th>'
                     '<td class="n note">' + L(nk, ne) + '</td>'
                     '<td class="n">' + n(v["close"]) + '</td>' + _cell(v["change_pct"])
-                    + perf_cells_(v.get("perf")) + '<td class="n opt">' + VF_MD + '</td></tr>')
+                    + perf_cells(v.get("perf")) + '<td class="n opt">' + VF_MD + '</td></tr>')
     kr_idx = tbl("국내 지수 &mdash; " + DK(C["prev_kr"], True) + " 마감",
                  "Korean indices &mdash; " + DE(C["prev_kr"], True) + " close",
                  idx_head, rows, cls="data compact",
@@ -293,7 +330,10 @@ def sec_korea(C):
 
     a, b = N.get("korea_lede", C["fb_korea"][0], C["fb_korea"][1])
     if CORE[0]:
-        return lede(a, b) + "\n" + kr_idx + "\n" + kr_stk
+        # 「시장의 폭」을 되살렸다 — 52주 구간 내 위치는 「지금이 비싼 자리인가」에
+        # 답하는 유일한 값이고, 카드로는 담기지 않는다(재검증기도 이 값을 찾는다).
+        return (lede(a, b) + '\n<div class="duo">\n' + kr_idx + "\n" + breadth
+                + '\n</div>\n' + kr_stk)
     return (lede(a, b) + "\n" + kr_idx + "\n" + breadth + "\n" + kr_stk + "\n"
             + exp("업종 상위·하위와 등락 종목 수 추이",
                   "Sector leaders and laggards, and breadth over time",
@@ -366,11 +406,12 @@ def sec_flows(C):
                             "<strong>Each sparkline is scaled to its own row</strong> &mdash; do not compare heights.")
 
     body = lede(*N.get("flows_lede", C["fb_flows"][0], C["fb_flows"][1]))
-    body += "\n" + flow_tbl
+    if CORE[0]:
+        body += '\n<div class="duo">\n' + flow_tbl + "\n" + money_tbl + '\n</div>'
+    else:
+        body += "\n" + flow_tbl + "\n" + money_tbl
     if not CORE[0]:
-        # 핵심본에서는 「누가 사고 팔았나」 한 표만 남긴다. 주변자금과 매물대는
-        # 그날의 결정을 바꾸지 않고 추이로 읽는 것이라 전체 판에 둔다.
-        body += "\n" + money_tbl
+        # 매물대만 전체 판에 둔다 — 근사이고, 그날의 결정보다 추이로 읽는 값이다.
         if C["supply_tbl"]:
             body += "\n" + C["supply_tbl"]
     body += "\n" + exp("투자자별 순매수 추이 &mdash; 최근 10거래일",
@@ -382,7 +423,7 @@ def sec_global(C):
     """04 간밤 해외 — 미국·유럽·아시아를 **한 절에** 넣는다(지침 7절 압축)."""
     I, N = C["I"], C["N"]
     idx_head = [TH("지수", "Index", "wrap"), TH("지역", "Region", "wrap"),
-                TH("종가", "Close", "n"), TH("등락률", "Change %", "n"), THP_(),
+                TH("종가", "Close", "n"), TH("등락률", "Change %", "n"), THP(),
                 TH("검증", "Verified", "n opt")]
     CORE_KEYS = ("dow", "sp500", "nasdaq", "sox", "stoxx600", "nikkei")
     SPEC = [("dow", "다우", "Dow", "미국", "US"), ("sp500", "S&amp;P 500", "S&amp;P 500", "미국", "US"),
@@ -405,7 +446,7 @@ def sec_global(C):
         rows.append('      <tr' + hl + '><th class="wrap">' + L(ko, en) + '</th>'
                     '<td class="wrap">' + L(rk, re_) + '</td>'
                     '<td class="n">' + n(v["close"]) + '</td>' + _cell(v["change_pct"])
-                    + perf_cells_(v.get("perf")) + '<td class="n opt">' + VF_MD + '</td></tr>')
+                    + perf_cells(v.get("perf")) + '<td class="n opt">' + VF_MD + '</td></tr>')
     gidx = tbl("해외 지수 &mdash; " + DK(C["prev_us"]) + " 현지 마감",
                "Overseas indices &mdash; local close, " + DE(C["prev_us"]),
                idx_head, rows, cls="data compact",
@@ -422,6 +463,26 @@ def sec_global(C):
                           foot_ko=C["us_stk_foot_ko"], foot_en=C["us_stk_foot_en"])
 
     a, b = N.get("global_lede", C["fb_global"][0], C["fb_global"][1])
+    if CORE[0]:
+        trio = "".join(x for x in (
+            _region_core(C, "eu_stocks", "유럽 &mdash; 거래 통화 기준", "Europe &mdash; local currency",
+                         "통화가 섞여 있습니다(EUR&middot;GBp&middot;CHF&middot;DKK). <strong>등락률로 견주십시오.</strong>",
+                         "Mixed currencies (EUR, GBp, CHF, DKK). <strong>Compare by percentage.</strong>"),
+            _region_core(C, "jp_stocks", "일본 &mdash; 단위 엔", "Japan &mdash; in yen",
+                         "도쿄는 15:30 KST 마감 &mdash; <strong>미국 장중 소식을 모르는 값</strong>입니다.",
+                         "Tokyo closes 15:30 KST &mdash; <strong>before the US session</strong>."),
+            _region_core(C, "cn_stocks", "중화권 &mdash; 본토 CNY &middot; 홍콩 HKD",
+                         "Greater China &mdash; CNY and HKD",
+                         "<strong>통화가 달라 종가는 견주지 마십시오.</strong>",
+                         "<strong>Different currencies &mdash; do not compare price levels.</strong>"),
+        ) if x)
+        # 업종 ETF 는 「어느 업종에 돈이 붙었나」를 한 표로 말한다 &mdash; 금리가
+        # 움직인 날에는 이것이 지수보다 많은 것을 설명한다(은행↑ 유틸리티↓).
+        # 해외 지수와 업종 ETF 는 둘 다 열이 적어 나란히 세운다 &mdash; 「어디가
+        # 얼마나」와 「어느 업종에 돈이 붙었나」를 한눈에 붙여 읽게 된다.
+        return (lede(a, b) + '\n<div class="duo">\n' + gidx + "\n"
+                + (C.get("us_sec_tbl") or "") + '\n</div>\n' + us_stk
+                + ("\n<div class=\"trio\">\n" + trio + "\n</div>" if trio else ""))
     return (lede(a, b) + "\n" + gidx + "\n" + us_stk + "\n"
             + exp("미국 업종 ETF &middot; 유럽 &middot; 일본 &middot; 중국 개별 종목",
                   "US sector ETFs, and single stocks in Europe, Japan and China",
@@ -535,8 +596,12 @@ def sec_macro(C):
 
     a, b = N.get("macro_lede", C["fb_macro"][0], C["fb_macro"][1])
     if CORE[0]:
-        # 원자재 표는 그날 결정에 직접 닿는 일이 드물다 — 본문이 필요한 값을 말한다.
-        return lede(a, b) + "\n" + rates + "\n" + C["fx_tbl"]
+        # 환율과 원자재는 나란히 세워 봤지만 열이 여덟이라 반 칸에 들어가지 않는다
+        # (700~1600px 에서 표가 최대 246px 넘쳤다). 높이도 세로로 둔 것과 같아
+        # 얻는 것이 없었으므로 **세로로 둔다.** 나란히 세우는 것은 열이 서넛인
+        # 표에만 쓴다(유럽·일본·중화권 3단).
+        return (lede(a, b) + '\n<div class="duo">\n' + rates + "\n" + C["fx_tbl"]
+                + '\n</div>\n' + (C.get("cm_tbl") or ""))
     return (lede(a, b) + "\n" + rates + "\n" + C["fx_tbl"] + "\n" + C["cm_tbl"] + "\n"
             + exp("미 재무부 곡선 만기 11개 &middot; 달러 상대 통화",
                   "The full US curve and the dollar crosses",
@@ -579,9 +644,7 @@ def sec_calendar(C):
                     '<td class="wrap">' + L(r.get("what_ko", ""), r.get("what_en", "")) + '</td>'
                     '<td class="n opt">' + VF_1 + '</td></tr>')
     C["cal_dropped"] = dropped
-    if CORE[0]:
-        # 핵심본은 **가까운 여섯 줄**만. 뒤엣것은 다음 판에서 저절로 앞으로 온다.
-        kept = kept[:2]
+
     if not kept:
         return lede("<strong>오늘 실을 예정 일정이 서술 파일에 없습니다</strong> " + VF_N
                     + " &mdash; 지어내지 않고 비워 둡니다.",
@@ -601,6 +664,12 @@ def sec_calendar(C):
                  "recurring opens and closes are left out.")
     body = lede(a, b) + "\n" + t
     # 휴장일은 **자료 파일**에서 온다(지침 7-3절). 이 절 안에 접어서 둔다.
+    if CORE[0]:
+        hol = _holidays_core(C)
+        if hol:
+            body += ('\n<h3 class="mini">' + L("휴장일 &mdash; 국내&middot;해외 가까운 순",
+                                              "Market holidays &mdash; Korea and overseas") + "</h3>\n" + hol)
+        return body
     if C.get("holiday_tbl"):
         body += "\n" + exp("휴장일 &mdash; 국내&middot;해외 앞으로 넉 달",
                            "Market holidays &mdash; Korea and overseas, next four months",
@@ -617,7 +686,7 @@ def sec_talking(C):
     else:
         qs = C["fb_talking"]
     cards = "\n".join(card("Q. " + q.get("q_ko", ""), "Q. " + q.get("q_en", ""),
-                           q.get("a_ko", ""), q.get("a_en", "")) for q in qs[:2 if CORE[0] else 4])
+                           q.get("a_ko", ""), q.get("a_en", "")) for q in qs[:3 if CORE[0] else 4])
     a, b = N.get("talking_lede",
                  "아래 답변은 <strong>모두 이 판의 표에서 나온 숫자로만</strong> 만들었습니다. "
                  "<strong>확정된 투자 판단이 아닙니다.</strong>",
@@ -786,17 +855,92 @@ def _ncols(head):
     return max(1, total)
 
 
+def _region_core(C, key, tko, ten, foot_ko="", foot_en=""):
+    """핵심본용 지역 종목 표 — **좁게** 만든다.
+
+    전체 판의 지역 표는 종목 열두 개에 「핵심」 설명까지 달려 한 표가 400px 을
+    넘는다. 셋을 그대로 실으면 여섯 쪽에 들어가지 않는다. 그래서 핵심본에서는
+    **가장 오른 셋과 가장 내린 셋**만, 이름&middot;종가&middot;등락률 세 칸으로
+    세우고 3단으로 나란히 놓는다. 설명과 나머지 종목은 전체 판에 그대로 있다.
+    """
+    dct = (C["D"].get(key) or {})
+    if not dct:
+        return ""
+    order = sorted(dct.items(), key=lambda kv: -(kv[1].get("change_pct") or 0))
+    if len(order) < 4:
+        return ""
+    head = [TH("종목", "Name", "wrap"), TH("종가", "Close", "n"), TH("등락률", "Change %", "n")]
+    rows = []
+    for label_ko, label_en, grp in (("오른 쪽", "Up", order[:3]), ("내린 쪽", "Down", order[-3:])):
+        rows.append('      <tr class="grp"><th class="wrap" colspan="3">'
+                    + L(label_ko, label_en) + '</th></tr>')
+        for k, v in grp:
+            rows.append('      <tr><th class="wrap">' + esc(k) + '</th>'
+                        '<td class="n">' + n(v["close"]) + '</td>' + _cell(v.get("change_pct"))
+                        + '</tr>')
+    return tbl(tko, ten, head, rows, cls="data compact",
+               foot_ko=foot_ko + " " + VF_MD, foot_en=foot_en + " " + VF_MD)
+
+
+def _holidays_core(C):
+    """핵심본용 휴장일 — 표가 아니라 **촘촘한 목록**으로.
+
+    전체 판의 휴장일 표는 넉 달치 서른두 줄이라 그것만으로 한 쪽 가까이 먹는다.
+    핵심본은 「그날 어디가 닫혀 있나」만 알면 되므로 <날짜 · 시장 · 이름> 한 줄로
+    줄여 3단으로 세운다. 조기마감도 함께 싣는다 &mdash; 주문 시각이 달라진다.
+    """
+    import json as _json
+    path = ROOT + "/data/market/holidays.json"
+    if not os.path.exists(path):
+        return ""
+    try:
+        HJ = _json.load(io.open(path, encoding="utf-8"))
+    except Exception:                                             # noqa: BLE001
+        return ""
+    today, out = C["today"], []
+    horizon = today + datetime.timedelta(days=126)
+    for m in HJ.get("markets", []):
+        for day in m.get("days", []):
+            try:
+                dt = d(day["date"])
+            except Exception:                                     # noqa: BLE001
+                continue
+            if dt < today or dt > horizon or day.get("kind") == "weekend":
+                continue
+            out.append((dt, m.get("name_ko", ""), m.get("name_en", ""),
+                        day.get("ko", ""), day.get("en", ""), day.get("kind")))
+    if not out:
+        return ""
+    out.sort(key=lambda r: r[0])
+    items = []
+    for dt, mk, me, ko, en, kind in out[:18]:
+        mark = " <em>조기마감</em>" if kind == "early" else ""
+        mark_en = " <em>early close</em>" if kind == "early" else ""
+        items.append('  <li><b>' + DS(dt) + '</b> '
+                     + L(mk.split(" (")[0] + " &middot; " + ko + mark,
+                         me.split(" (")[0] + " &middot; " + en + mark_en) + '</li>')
+    more = len(out) - len(items)
+    tail = L("앞으로 넉 달 가운데 가까운 " + str(len(items)) + "건입니다"
+             + ((" (나머지 " + str(more) + "건은 전체 판에)") if more > 0 else "")
+             + ". <strong>거래소가 나중에 바꾸므로 주문 직전 다시 확인하십시오.</strong> " + VF_1,
+             "The nearest " + str(len(items)) + " of the next four months"
+             + ((", with " + str(more) + " more in the full edition") if more > 0 else "")
+             + ". <strong>Exchanges revise these &mdash; reconfirm before acting.</strong> " + VF_1)
+    return ('<ul class="hol">\n' + "\n".join(items) + '\n</ul>\n'
+            + '<p class="tbl-foot">' + tail + '</p>')
+
+
 def _stock_table(tko, ten, top, bot, why, foot_ko="", foot_en=""):
     """주도 여덟 · 부진 여덟만 싣는다. **표 하나에 마흔 줄을 싣지 않는다**(압축)."""
     head = [TH("종목", "Name", "wrap"), TH("핵심 &middot; 사유", "What it does / why", "note wrap"),
-            TH("종가", "Close", "n"), TH("등락률", "Change %", "n"), THP_(),
+            TH("종가", "Close", "n"), TH("등락률", "Change %", "n"), THP(),
             TH("검증", "Verified", "n opt")]
     rows = []
     for label_ko, label_en, group in (("오른 쪽", "Gainers", _cut(top)), ("내린 쪽", "Losers", _cut(bot))):
         # colspan 은 **머리행에서 센다.** 9 로 박아 두면 핵심본처럼 열이 줄었을 때
         # 머리행과 어긋나 재검증기가 FAIL 을 낸다(실제로 났다).
         # colspan 은 **실제로 서는 머리 칸 수**에서 센다. 9 로 박아 두면 핵심본처럼
-        # 열이 줄었을 때 어긋나고, len(head) 로 세면 빈 칸(THP_() = "")까지 세어
+        # 열이 줄었을 때 어긋나고, len(head) 로 세면 빈 칸(THP() = "")까지 세어
         # 한 칸이 남는다. 둘 다 재검증기가 FAIL 로 잡았다.
         rows.append('      <tr class="grp"><th class="wrap" colspan="'
                     + str(_ncols(head))
@@ -811,7 +955,7 @@ def _stock_table(tko, ten, top, bot, why, foot_ko="", foot_en=""):
             rows.append('      <tr><th class="wrap">' + esc(name) + '</th>'
                         '<td class="n note">' + L(nk or "&nbsp;", ne or "&nbsp;") + '</td>'
                         '<td class="n">' + n(v["close"]) + '</td>' + _cell(v.get("change_pct"))
-                        + perf_cells_(v.get("perf")) + '<td class="n opt">' + VF_MD + '</td></tr>')
+                        + perf_cells(v.get("perf")) + '<td class="n opt">' + VF_MD + '</td></tr>')
     return tbl(tko, ten, head, rows, cls="data compact", foot_ko=foot_ko, foot_en=foot_en)
 
 
@@ -855,10 +999,13 @@ def main():
     ap.add_argument("--date", default=None)
     ap.add_argument("--kind", default="morning", choices=("morning", "close", "global"))
     ap.add_argument("--out", default=None)
+    ap.add_argument("--market", default=None,
+                    help="시세 파일 경로 — 판을 다시 지을 때 그 시각의 스냅샷을 박는다")
     ap.add_argument("--core", action="store_true",
                     help="핵심본 — 같은 자료·같은 서술을 다섯 쪽으로")
     a = ap.parse_args()
     CORE[0] = a.core
+    MARKET[0] = a.market
 
     now = datetime.datetime.now(KST)
     today = d(a.date) if a.date else now.date()
