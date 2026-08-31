@@ -29,10 +29,14 @@ import { execFileSync } from 'node:child_process';
 
 const run = (cmd, args) => execFileSync(cmd, args, { stdio: 'inherit' });
 
-console.log('\n[1/4] 도구 빌드');
+console.log('\n[1/5] 도구 빌드');
 run('node', ['scripts/build_etf_page.mjs']);
 
-console.log('\n[2/4] 사용법 떠 오기 (도구의 내려받기 단추를 그대로 누른다)');
+console.log('\n[2/5] 화면 그림 (실제로 눌러 가며 찍는다)');
+run('node', ['scripts/shoot_etf_screens.mjs']);
+run('node', ['scripts/build_etf_page.mjs']);   // 그림을 담아 다시 빌드
+
+console.log('\n[3/5] 사용법 떠 오기 (도구의 내려받기 단추를 그대로 누른다)');
 const TYPES = { '.html': 'text/html', '.js': 'text/javascript' };
 const server = createServer(async (q, r) => {
   try {
@@ -63,11 +67,11 @@ for (const [lang, out] of [['ko', 'docs/etf-howto.html'], ['en', 'docs/etf-howto
 await browser.close();
 server.close();
 
-console.log('\n[3/4] PDF · 이미지');
+console.log('\n[4/5] PDF · 이미지');
 run('node', ['scripts/make_etf_howto_pdf.mjs']);
 run('node', ['scripts/shoot_etf_howto.mjs', '--out', 'docs/etf-howto.png', '--width', '1280']);
 
-console.log('\n[4/4] PDF 를 도구에 심고 다시 빌드');
+console.log('\n[5/5] PDF 를 도구에 심고 다시 빌드');
 const pdf = await readFile('docs/etf-howto.pdf');
 // 자료 기준일을 같이 심는다 — 내려받은 PDF 이름에 붙여 언제 것인지 알게 한다.
 const src = await readFile('data/etf.js', 'utf8');
