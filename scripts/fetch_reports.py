@@ -404,14 +404,18 @@ def parse_mirae(html, board, category_id, overseas=False):
         else:
             title = head
         cells = [_text(c).strip() for c in _TD.findall(row)]
-        # 날짜 칸이 늘 붙임표 꼴은 아니다 — 글로벌 판의 한 줄이 점 꼴로 와서
-        # 날짜 없는 리포트가 됐고, 그러면 그날 셈에도 한 주 셈에도 들지 못한다.
+        # 날짜는 **그 줄의 첫 칸**이다. 러너가 남긴 두 판의 목록을 열어 스무
+        # 줄을 세어 보니 예외가 없었다(날짜·제목·빈칸·작성자).
+        #
+        # 아무 칸에서나 날짜꼴을 찾으면 안 된다. 줄 나누기가 어긋난 판에서는
+        # 옆줄의 날짜를 물고 오고, 그러면 리포트가 조용히 며칠 당겨진다 —
+        # 9/1 판에서 미래에셋 두 건이 08-31 대신 08-28 로, 08-28 대신 08-25 로
+        # 읽혔다. 틀린 날짜보다 없는 날짜가 낫다. 첫 칸이 날짜가 아니면 비운다.
         date = None
-        for c in cells:
-            dm = re.fullmatch(r"(\d{4})[-./](\d{2})[-./](\d{2})", c)
+        if cells:
+            dm = re.fullmatch(r"(\d{4})[-./](\d{2})[-./](\d{2})", cells[0])
             if dm:
                 date = "%s-%s-%s" % dm.groups()
-                break
         # 마지막 칸이 작성자다 — 애널리스트 실명.
         analyst = cells[-1] if cells and 1 <= len(cells[-1]) <= 12 else None
         pdf = _MIRAE_PDF.search(row)
