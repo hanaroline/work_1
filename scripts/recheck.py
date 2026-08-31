@@ -141,8 +141,18 @@ def check_minus(h):
     return len(hits)
 
 
-def check_details(h):
+def check_details(h, core=False):
+    """접는 상세 개수.
+
+    **핵심본(`-core`)은 예외다.** 그 판은 다섯 쪽짜리 한 장 시트라 접을 것을
+    두지 않는 것이 설계이고, PDF 도 하나만 낸다. 전체 판에서만 「요약과 전체가
+    같은 파일이 된다」가 사고이므로, 파일 이름으로 갈라 본다.
+    """
     n = h.count('<details class="exp"')
+    if core:
+        if n:
+            warn("상세 블록", "핵심본에 접는 상세가 %d 개 있습니다 — 핵심본은 펼친 채 한 장으로 냅니다" % n)
+        return n
     if n == 0:
         fail("상세 블록", "접는 상세가 하나도 없습니다 — 요약 PDF 와 전체 PDF 가 같은 파일이 됩니다")
     elif n < 3:
@@ -335,7 +345,7 @@ def main(argv):
     check_dupe_lines(h)
     ko, en = check_lang_pairs(h)
     check_minus(h)
-    nd = check_details(h)
+    nd = check_details(h, core=path.endswith("-core.html"))
     na = check_archive(h)
     check_limits(h, d)
     check_dates(h, d, path)
