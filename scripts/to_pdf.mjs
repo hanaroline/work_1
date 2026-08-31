@@ -15,6 +15,8 @@ if (!src || !outdir) {
 }
 fs.mkdirSync(outdir, { recursive: true });
 const base = path.basename(src).replace(/\.html$/, '');
+// 핵심본(-core)은 다섯 쪽에 맞추는 시트라 여백과 꼬리말을 좁힌다.
+const DENSE = /-core\b/.test(base);
 
 // 이 컨테이너에는 프리텐다드·맑은고딕이 없다. HTML 의 글꼴 스택은 고객 PC 를
 // 겨냥한 것이므로 건드리지 않고, PDF 를 뽑을 때만 여기 있는 한글 글꼴로 바꾼다.
@@ -72,11 +74,15 @@ for (const [full, suffix] of [[false, '_요약'], [true, '_전체']]) {
   // 글꼴을 여기서 따로 지정하지 않으면 한글이 중국어 글꼴로 나온다.
   await p.pdf({
     path: name, format: 'A4', printBackground: true,
-    margin: { top: '14mm', bottom: '16mm', left: '12mm', right: '12mm' },
+    // 핵심본은 다섯 쪽에 맞추는 것이 목적이라 여백을 좁힌다. 전체 판은 앉아서
+    // 읽는 문서이므로 종전 여백 그대로 둔다.
+    margin: DENSE
+      ? { top: '10mm', bottom: '11mm', left: '10mm', right: '10mm' }
+      : { top: '14mm', bottom: '16mm', left: '12mm', right: '12mm' },
     displayHeaderFooter: true,
     headerTemplate: '<div></div>',
     footerTemplate: '<div style="width:100%;font-size:8pt;color:#777;'
-      + "font-family:'Noto Sans CJK KR',sans-serif;padding:0 12mm;display:flex;justify-content:space-between\">"
+      + "font-family:'Noto Sans CJK KR',sans-serif;padding:0 ' + (DENSE ? '10mm' : '12mm') + ';display:flex;justify-content:space-between\">"
       + '<span>' + (footer || '미래에셋증권 마포WM') + '</span>'
       + '<span class="pageNumber"></span>/<span class="totalPages"></span></div>',
   });

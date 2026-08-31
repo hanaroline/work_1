@@ -27,6 +27,7 @@ import datetime
 import io
 import json
 import os
+import re
 import sys
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -35,9 +36,122 @@ sys.path.insert(0, os.path.join(ROOT, "scripts"))
 from briefing_lib import (  # noqa: E402
     KST, WD, VF_OK, VF_MD, VF_C, VF_1, VF_N,
     d, DK, DE, DD, DS, n, pct, bp, eok, jo, esc,
-    L, TH, THP, perf_cells, tbl, exp, P, lede, stat, card, callout,
+    L, TH, THP, perf_cells, tbl, exp as _exp, P, lede, stat, card, callout,
     sparkline, bar, Doc, Narrative, assemble)
 from briefing_prepare import prepare, KIND_NAME  # noqa: E402
+
+
+# ══════════════════════════════════════════════════════════════════
+# 핵심본 (--core) — 같은 자료, 같은 서술, **다섯 쪽**
+# ══════════════════════════════════════════════════════════════════
+# 전체 판은 브리핑을 준비하는 사람이 읽는 것이고, 핵심본은 **개장 전에
+# 한 번 훑는 것**이다. 그래서 줄이는 기준이 「덜 중요한 것」이 아니라
+# **「지금 결정에 닿지 않는 것」** 이다.
+#
+#   접는 상세(exp)   → 통째로 뺀다. 근거는 전체 판에 그대로 있다
+#   종목 표          → 위아래 여덟씩에서 **넷씩**으로
+#   05 실적          → 절을 빼고 01 에 한 줄로 남긴다
+#   10 검증          → 노트 전체 대신 **한 문단** + 전체 판으로 가는 길
+#
+# **서술은 한 글자도 줄이지 않는다.** 그날 손으로 쓴 문장이 핵심본의
+# 본론이고, 걷어내는 것은 근거 표 쪽이다.
+CORE = [False]
+
+CORE_CSS = """
+<style id="core-density">
+/* ── 핵심본 밀도 ────────────────────────────────────────────────
+   전체 판은 앉아서 읽는 문서라 호흡이 넓다. 핵심본은 **개장 전에 한 번
+   훑는 시트**라 같은 내용을 절반의 자리에 넣는다. 줄인 것은 여백과 글자
+   크기이지 내용이 아니다 — 표의 설명 줄(.sub)은 그대로 둔다. 그것을
+   없애면 「이 지수가 무엇인지」가 PDF 에서 통째로 사라진다(지침 4-3절).
+
+   껍데기 CSS 뒤에 붙이므로 같은 우선순위에서 이긴다(지침 6절).        */
+.section{margin-top:30px}
+.shell > main > .section:first-child{margin-top:14px}
+.sec-num{font-size:12px;letter-spacing:1px}
+.section-title{font-size:20px}
+p.lede{font-size:15.5px;line-height:1.5;margin:0 0 11px}
+.section > p{font-size:15.5px;line-height:1.55;margin:0 0 9px}
+.stat-grid{margin:0 0 13px}
+.stat{padding:10px 12px}
+.stat-label{font-size:12.5px;margin:0 0 2px}
+.stat-value{font-size:23px;line-height:1.05;margin:0}
+.stat-chg{font-size:13px;margin:1px 0 0}
+.stat-note{font-size:11.5px;line-height:1.35;margin:4px 0 0}
+.callout{padding:16px 18px;margin:0}
+.callout-title{font-size:16.5px;margin:0 0 7px}
+.callout p{font-size:15px;line-height:1.55;margin:0 0 8px}
+.callout p:last-child{margin-bottom:0}
+.table-wrap{margin:0 0 11px}
+table.data caption{font-size:13.5px;padding-bottom:4px}
+table.data th,table.data td{padding:4px 8px;font-size:13px;line-height:1.35}
+table.data .sub{font-size:11px;line-height:1.28}
+.tbl-foot,table.data tfoot td{font-size:11px;line-height:1.4;padding:5px 8px}
+.soft-grid{gap:9px}
+.soft-card{padding:12px 14px}
+.soft-card .q{font-size:15px;margin:0 0 5px}
+.soft-card p{font-size:14px;line-height:1.5;margin:0}
+footer.foot{margin-top:22px;padding:16px 0 24px;font-size:11px}
+@media print{
+  .section{margin-top:22px}
+  .section{margin-top:7px}
+  table.data th,table.data td{padding:1.5px 5px;font-size:8.1pt;line-height:1.16}
+  table.data .sub{font-size:6.9pt;line-height:1.13}
+  table.data caption{font-size:8.7pt;padding-bottom:2px}
+  .tbl-foot,table.data tfoot td{font-size:6.8pt;line-height:1.28}
+  p.lede{font-size:9.3pt;line-height:1.36;margin-bottom:5px}
+  .section > p{font-size:9.3pt;line-height:1.36;margin-bottom:4px}
+  .stat-grid{margin-bottom:7px}
+  .callout{padding:12px 14px}
+  .callout p{font-size:9.2pt;line-height:1.4;margin-bottom:5px}
+  .soft-card{padding:9px 11px}
+  .soft-card p{font-size:8.8pt;line-height:1.38}
+  .soft-card .q{font-size:9.6pt}
+  .stat{padding:7px 9px}
+  .stat-value{font-size:14.5pt}
+  .stat-note{font-size:7pt;line-height:1.25}
+  .section-title{font-size:14.5pt}
+  .table-wrap{margin-bottom:5px}
+  footer.foot{margin-top:10px;padding:8px 0 6px;break-before:avoid}
+  /* 다섯 쪽에 맞추려면 **블록을 통째로 붙들면 안 된다.** 전체 판은 짧은 표를
+     붙들어 쪽 가운데가 갈리지 않게 하지만, 그 대가로 앞 쪽에 빈 띠가 남는다.
+     핵심본은 자리가 없으므로 이어붙이고, **줄만 쪼개지지 않게** 한다.     */
+  table.data,.table-wrap,.callout,.soft-grid,.soft-card,.stat-grid{break-inside:auto!important}
+  table.data tbody tr,table.data thead tr{break-inside:avoid}
+  table.data thead{display:table-header-group}
+  table.data caption{break-after:avoid}
+  /* 인쇄용 「브리핑 목록」은 전체 판의 기능이다. 핵심본은 다섯 쪽짜리 시트라
+     서른 줄짜리 목록을 실을 자리가 없다 — 화면에서는 사이드바에 그대로 있다. */
+  .archive-print{display:none!important}
+}
+</style>
+"""
+
+
+
+def exp(tko, ten, body):
+    """핵심본에서는 접는 상세를 아예 싣지 않는다."""
+    return "" if CORE[0] else _exp(tko, ten, body)
+
+
+def _cut(seq, k=2):
+    """핵심본이면 앞에서 k 개만. 전체 판은 그대로 둔다."""
+    return seq[:k] if CORE[0] else seq
+
+
+def THP_():
+    """기간 수익률 머리 — 핵심본에서는 세우지 않는다.
+
+    1주·1개월·3개월·연초는 「지금이 신고가인지 되돌림인지」를 말해 주는
+    값이라 전체 판에는 반드시 있어야 한다(지침 4-3절). 다만 개장 전에 한 번
+    훑는 시트에서는 **오늘 결정에 닿는 것이 전일 대비**이고, 기간 사다리는
+    같은 날짜의 전체 판에 그대로 있다.
+    """
+    return "" if CORE[0] else THP()
+
+
+def perf_cells_(pf):
+    return "" if CORE[0] else perf_cells(pf)
 
 
 # ══════════════════════════════════════════════════════════════════
@@ -113,7 +227,10 @@ def sec_today(C):
         a, b = N.get(key, fb_ko, fb_en)
         paras.append(P(a, b))
 
-    return ('<div class="stat-grid six">\n' + "\n".join(cards) + '\n</div>\n'
+    if CORE[0]:
+        cards = [cards[0], cards[1], cards[4], cards[5]]
+    grid = "stat-grid" if CORE[0] else "stat-grid six"
+    return ('<div class="' + grid + '">\n' + "\n".join(cards) + '\n</div>\n'
             + callout("오늘 09시 개장에 들고 갈 것",
                       "What to carry into the 09:00 open", paras))
 
@@ -122,7 +239,7 @@ def sec_korea(C):
     """02 국내 증시 — 지수·폭·종목. 종목표는 **주도와 부진 여덟씩**으로 줄인다."""
     I, KS, KQ, ksb, kqb, N, S = C["I"], C["KS"], C["KQ"], C["ksb"], C["kqb"], C["N"], C["S"]
     idx_head = [TH("지수", "Index", "wrap"), TH("설명", "What it says", "note wrap"),
-                TH("종가", "Close", "n"), TH("등락률", "Change %", "n"), THP(),
+                TH("종가", "Close", "n"), TH("등락률", "Change %", "n"), THP_(),
                 TH("검증", "Verified", "n opt")]
     rows = []
     for k, ko, en, nk, ne in (
@@ -134,7 +251,7 @@ def sec_korea(C):
         rows.append('      <tr><th class="wrap">' + L(ko, en) + '</th>'
                     '<td class="n note">' + L(nk, ne) + '</td>'
                     '<td class="n">' + n(v["close"]) + '</td>' + _cell(v["change_pct"])
-                    + perf_cells(v.get("perf")) + '<td class="n opt">' + VF_MD + '</td></tr>')
+                    + perf_cells_(v.get("perf")) + '<td class="n opt">' + VF_MD + '</td></tr>')
     kr_idx = tbl("국내 지수 &mdash; " + DK(C["prev_kr"], True) + " 마감",
                  "Korean indices &mdash; " + DE(C["prev_kr"], True) + " close",
                  idx_head, rows, cls="data compact",
@@ -175,6 +292,8 @@ def sec_korea(C):
                           foot_ko=C["kr_stk_foot_ko"], foot_en=C["kr_stk_foot_en"])
 
     a, b = N.get("korea_lede", C["fb_korea"][0], C["fb_korea"][1])
+    if CORE[0]:
+        return lede(a, b) + "\n" + kr_idx + "\n" + kr_stk
     return (lede(a, b) + "\n" + kr_idx + "\n" + breadth + "\n" + kr_stk + "\n"
             + exp("업종 상위·하위와 등락 종목 수 추이",
                   "Sector leaders and laggards, and breadth over time",
@@ -247,9 +366,13 @@ def sec_flows(C):
                             "<strong>Each sparkline is scaled to its own row</strong> &mdash; do not compare heights.")
 
     body = lede(*N.get("flows_lede", C["fb_flows"][0], C["fb_flows"][1]))
-    body += "\n" + flow_tbl + "\n" + money_tbl
-    if C["supply_tbl"]:
-        body += "\n" + C["supply_tbl"]
+    body += "\n" + flow_tbl
+    if not CORE[0]:
+        # 핵심본에서는 「누가 사고 팔았나」 한 표만 남긴다. 주변자금과 매물대는
+        # 그날의 결정을 바꾸지 않고 추이로 읽는 것이라 전체 판에 둔다.
+        body += "\n" + money_tbl
+        if C["supply_tbl"]:
+            body += "\n" + C["supply_tbl"]
     body += "\n" + exp("투자자별 순매수 추이 &mdash; 최근 10거래일",
                        "Net buying by investor type &mdash; last 10 sessions", C["inv_trend"])
     return body
@@ -259,8 +382,9 @@ def sec_global(C):
     """04 간밤 해외 — 미국·유럽·아시아를 **한 절에** 넣는다(지침 7절 압축)."""
     I, N = C["I"], C["N"]
     idx_head = [TH("지수", "Index", "wrap"), TH("지역", "Region", "wrap"),
-                TH("종가", "Close", "n"), TH("등락률", "Change %", "n"), THP(),
+                TH("종가", "Close", "n"), TH("등락률", "Change %", "n"), THP_(),
                 TH("검증", "Verified", "n opt")]
+    CORE_KEYS = ("dow", "sp500", "nasdaq", "sox", "stoxx600", "nikkei")
     SPEC = [("dow", "다우", "Dow", "미국", "US"), ("sp500", "S&amp;P 500", "S&amp;P 500", "미국", "US"),
             ("nasdaq", "나스닥", "NASDAQ", "미국", "US"), ("sox", "SOX (반도체)", "SOX", "미국", "US"),
             ("vix", "VIX", "VIX", "미국", "US"),
@@ -275,11 +399,13 @@ def sec_global(C):
         v = I.get(k)
         if not v:
             continue
+        if CORE[0] and k not in CORE_KEYS:
+            continue
         hl = ' class="hl"' if k in ("sox", "taiwan") else ''
         rows.append('      <tr' + hl + '><th class="wrap">' + L(ko, en) + '</th>'
                     '<td class="wrap">' + L(rk, re_) + '</td>'
                     '<td class="n">' + n(v["close"]) + '</td>' + _cell(v["change_pct"])
-                    + perf_cells(v.get("perf")) + '<td class="n opt">' + VF_MD + '</td></tr>')
+                    + perf_cells_(v.get("perf")) + '<td class="n opt">' + VF_MD + '</td></tr>')
     gidx = tbl("해외 지수 &mdash; " + DK(C["prev_us"]) + " 현지 마감",
                "Overseas indices &mdash; local close, " + DE(C["prev_us"]),
                idx_head, rows, cls="data compact",
@@ -392,8 +518,10 @@ def sec_macro(C):
         _brow("COFIX (신규취급액)", "COFIX, new loans",
               "<strong>고객 대출금리에 직결</strong>됩니다", "Feeds directly into retail loan rates",
               n(rk.get("cofix_new"), 2) + "%", "&mdash;"),
+    ] + ([] if CORE[0] else [
         _brow("MOVE", "MOVE", "채권판 VIX. 금리가 움직여도 이게 죽어 있으면 안도입니다",
-              "The VIX of bonds", n(I["move"]["close"]), pct(I["move"]["change_pct"])),
+              "The VIX of bonds", n(I["move"]["close"]), pct(I["move"]["change_pct"]))
+    ]) + [
     ]
     rates = tbl("금리 &mdash; " + DK(C["prev_us"]) + " 확정",
                 "Rates &mdash; official fixings, " + DE(C["prev_us"]), h, rows,
@@ -406,6 +534,9 @@ def sec_macro(C):
                         "The full eleven-point curve is in the detail below.")
 
     a, b = N.get("macro_lede", C["fb_macro"][0], C["fb_macro"][1])
+    if CORE[0]:
+        # 원자재 표는 그날 결정에 직접 닿는 일이 드물다 — 본문이 필요한 값을 말한다.
+        return lede(a, b) + "\n" + rates + "\n" + C["fx_tbl"]
     return (lede(a, b) + "\n" + rates + "\n" + C["fx_tbl"] + "\n" + C["cm_tbl"] + "\n"
             + exp("미 재무부 곡선 만기 11개 &middot; 달러 상대 통화",
                   "The full US curve and the dollar crosses",
@@ -448,6 +579,9 @@ def sec_calendar(C):
                     '<td class="wrap">' + L(r.get("what_ko", ""), r.get("what_en", "")) + '</td>'
                     '<td class="n opt">' + VF_1 + '</td></tr>')
     C["cal_dropped"] = dropped
+    if CORE[0]:
+        # 핵심본은 **가까운 여섯 줄**만. 뒤엣것은 다음 판에서 저절로 앞으로 온다.
+        kept = kept[:2]
     if not kept:
         return lede("<strong>오늘 실을 예정 일정이 서술 파일에 없습니다</strong> " + VF_N
                     + " &mdash; 지어내지 않고 비워 둡니다.",
@@ -483,12 +617,14 @@ def sec_talking(C):
     else:
         qs = C["fb_talking"]
     cards = "\n".join(card("Q. " + q.get("q_ko", ""), "Q. " + q.get("q_en", ""),
-                           q.get("a_ko", ""), q.get("a_en", "")) for q in qs[:4])
+                           q.get("a_ko", ""), q.get("a_en", "")) for q in qs[:2 if CORE[0] else 4])
     a, b = N.get("talking_lede",
                  "아래 답변은 <strong>모두 이 판의 표에서 나온 숫자로만</strong> 만들었습니다. "
                  "<strong>확정된 투자 판단이 아닙니다.</strong>",
                  "Every answer below is built only from the tables in this edition. "
                  "<strong>None of it is a settled investment judgement.</strong>")
+    if CORE[0]:
+        return '<div class="soft-grid">\n' + cards + '\n</div>'
     return lede(a, b) + '\n<div class="soft-grid">\n' + cards + '\n</div>'
 
 
@@ -496,6 +632,45 @@ def sec_talking(C):
 # 그 절 자신의 서술(verify_lede)이 아직 비기 전이라 하나 적게 나온다 —
 # 실제로 「자료에서 만든 자리 2곳」이라 적고 3곳이 나갔다.
 NUSED, NFB = "<!--n-used-->", "<!--n-fb-->"
+
+
+def sec_verify_core(C):
+    """핵심본의 10절 — 노트 전체 대신 **한 문단**.
+
+    줄인다고 검증을 감추지는 않는다. 무엇을 어디서 가져왔는지, 오늘 무엇을
+    확인하지 못했는지, 그리고 **전체 판 어디를 보면 되는지**는 남긴다.
+    """
+    N = C["N"]
+    notes = N.d.get("verify") or []
+    if notes:
+        N.used.add("verify")
+    heads_ko = "; ".join(re.sub(r"<[^>]+>", "", x.get("t_ko", "")) for x in notes[:4])
+    heads_en = "; ".join(re.sub(r"<[^>]+>", "", x.get("t_en", "")) for x in notes[:4])
+    more_ko = (" 외 %d건" % (len(notes) - 4)) if len(notes) > 4 else ""
+    more_en = (" and %d more" % (len(notes) - 4)) if len(notes) > 4 else ""
+    return "\n".join((
+        lede("<strong>이것은 핵심본입니다 &mdash; 다섯 쪽 안에 그날의 결론만 담았습니다.</strong> "
+             "표의 근거, 만기별 곡선, 지역별 종목표, 검증 노트 전체는 <strong>같은 날짜의 전체 판</strong>에 "
+             "그대로 있습니다.",
+             "<strong>This is the core edition &mdash; the day's conclusions in five pages.</strong> "
+             "Supporting tables, the full maturity curve, regional stock tables and the complete "
+             "verification notes remain in <strong>the full edition of the same date</strong>."),
+        P("<strong>어디서 왔나.</strong> 시세는 야후&middot;네이버&middot;한국은행 ECOS, 미 국채는 "
+          "<strong>재무부 일별 고시 확정치</strong>, 사유&middot;일정은 그날 수집한 기사 본문입니다 "
+          + VF_MD + ". 누적&middot;스프레드&middot;비율은 <strong>계산</strong>입니다 " + VF_C + ".",
+          "<strong>Where it comes from.</strong> Prices from Yahoo, Naver and the Bank of Korea's ECOS; US "
+          "Treasuries from <strong>Treasury's official daily par yields</strong>; reasons and calendar items "
+          "from article text collected that morning " + VF_MD + ". Cumulative figures, spreads and ratios are "
+          "<strong>computed</strong> " + VF_C + "."),
+        P("<strong>오늘 짚어 둔 것.</strong> " + (heads_ko + more_ko if notes else
+          "그날에만 있는 검증 항목은 없습니다") + ". <strong>받지 못하는 항목</strong>은 VKOSPI("
+          "무료 원천 없음, VIX 로 대신합니다)와 미수금&middot;반대매매(금융투자협회 방화벽, 신용융자로 "
+          "대신합니다), 한국은행 기준금리(ECOS 샘플 인증키가 0행을 돌려줍니다)입니다 " + VF_N + ".",
+          "<strong>Flagged today.</strong> " + (heads_en + more_en if notes else
+          "No date-specific verification items") + ". <strong>Still unavailable</strong>: VKOSPI (no free source; "
+          "we use the VIX), unpaid balances and forced liquidations (KOFIA firewall; we use margin loans), and the "
+          "BOK policy rate (ECOS returns zero rows on the sample key) " + VF_N + "."),
+    ))
 
 
 def sec_verify(C):
@@ -595,14 +770,37 @@ def _cal_last(txt, year):
     return max(days) if days else None
 
 
+def _ncols(head):
+    """머리행이 **실제로 세우는 열 수**를 마크업에서 센다.
+
+    항목 개수로 세면 안 된다 &mdash; `THP()` 는 한 항목이 네 열(1주·1개월·
+    3개월·연초)을 내고, 핵심본에서는 빈 문자열이라 아예 열을 내지 않는다.
+    구분 행의 colspan 을 이 값으로 맞추지 않으면 재검증기가 열 수 불일치를
+    낸다(전체 판 8칸, 핵심본 4칸 — 둘 다 실제로 걸렸다).
+    """
+    h = "".join(head)
+    total = 0
+    for m in re.finditer(r'(?is)<th\b([^>]*)>', h):
+        cs = re.search(r'(?i)\bcolspan\s*=\s*"?(\d+)"?', m.group(1))
+        total += int(cs.group(1)) if cs else 1
+    return max(1, total)
+
+
 def _stock_table(tko, ten, top, bot, why, foot_ko="", foot_en=""):
     """주도 여덟 · 부진 여덟만 싣는다. **표 하나에 마흔 줄을 싣지 않는다**(압축)."""
     head = [TH("종목", "Name", "wrap"), TH("핵심 &middot; 사유", "What it does / why", "note wrap"),
-            TH("종가", "Close", "n"), TH("등락률", "Change %", "n"), THP(),
+            TH("종가", "Close", "n"), TH("등락률", "Change %", "n"), THP_(),
             TH("검증", "Verified", "n opt")]
     rows = []
-    for label_ko, label_en, group in (("오른 쪽", "Gainers", top), ("내린 쪽", "Losers", bot)):
-        rows.append('      <tr class="grp"><th class="wrap" colspan="9">' + L(label_ko, label_en) + '</th></tr>')
+    for label_ko, label_en, group in (("오른 쪽", "Gainers", _cut(top)), ("내린 쪽", "Losers", _cut(bot))):
+        # colspan 은 **머리행에서 센다.** 9 로 박아 두면 핵심본처럼 열이 줄었을 때
+        # 머리행과 어긋나 재검증기가 FAIL 을 낸다(실제로 났다).
+        # colspan 은 **실제로 서는 머리 칸 수**에서 센다. 9 로 박아 두면 핵심본처럼
+        # 열이 줄었을 때 어긋나고, len(head) 로 세면 빈 칸(THP_() = "")까지 세어
+        # 한 칸이 남는다. 둘 다 재검증기가 FAIL 로 잡았다.
+        rows.append('      <tr class="grp"><th class="wrap" colspan="'
+                    + str(_ncols(head))
+                    + '">' + L(label_ko, label_en) + '</th></tr>')
         for name, v in group:
             nk = (v.get("note_ko") or "")
             ne = (v.get("note_en") or "")
@@ -613,7 +811,7 @@ def _stock_table(tko, ten, top, bot, why, foot_ko="", foot_en=""):
             rows.append('      <tr><th class="wrap">' + esc(name) + '</th>'
                         '<td class="n note">' + L(nk or "&nbsp;", ne or "&nbsp;") + '</td>'
                         '<td class="n">' + n(v["close"]) + '</td>' + _cell(v.get("change_pct"))
-                        + perf_cells(v.get("perf")) + '<td class="n opt">' + VF_MD + '</td></tr>')
+                        + perf_cells_(v.get("perf")) + '<td class="n opt">' + VF_MD + '</td></tr>')
     return tbl(tko, ten, head, rows, cls="data compact", foot_ko=foot_ko, foot_en=foot_en)
 
 
@@ -657,7 +855,10 @@ def main():
     ap.add_argument("--date", default=None)
     ap.add_argument("--kind", default="morning", choices=("morning", "close", "global"))
     ap.add_argument("--out", default=None)
+    ap.add_argument("--core", action="store_true",
+                    help="핵심본 — 같은 자료·같은 서술을 다섯 쪽으로")
     a = ap.parse_args()
+    CORE[0] = a.core
 
     now = datetime.datetime.now(KST)
     today = d(a.date) if a.date else now.date()
@@ -670,28 +871,44 @@ def main():
     doc.sec("korea", "국내 증시", "Korean Equities", sec_korea(C))
     doc.sec("flows", "수급 &middot; 증시 주변자금", "Flows and Money Around the Market", sec_flows(C))
     doc.sec("global", "간밤 해외", "Overnight Overseas", sec_global(C))
-    doc.sec("earnings", "실적 &middot; 컨퍼런스콜", "Results and Calls", sec_earnings(C))
+    if not CORE[0]:
+        doc.sec("earnings", "실적 &middot; 컨퍼런스콜", "Results and Calls", sec_earnings(C))
+    else:
+        # 절은 빼되 서술은 버리지 않는다 — 실적 머리말이 04 뒤에 한 문단으로 남는다.
+        el = C["N"].get("earnings_lede", "", "")
+        if el[0]:
+            sid, tko, ten, body = doc.secs[-1]
+            doc.secs[-1] = (sid, tko, ten, body + "\n" + P(el[0], el[1]))
     doc.sec("macro", "금리 &middot; 환율 &middot; 원자재", "Rates, FX and Commodities", sec_macro(C))
     deep = sec_deep(C)
-    if deep:
+    if deep and not CORE[0]:
         doc.sec("deep", deep[0], deep[1], deep[2])
     doc.sec("calendar", "일정 &middot; 체크포인트", "Calendar", sec_calendar(C))
     doc.sec("talking", "고객 응대", "Talking Points", sec_talking(C))
-    doc.sec("verify", "데이터 &middot; 검증", "Data and Verification", sec_verify(C))
+    doc.sec("verify", "데이터 &middot; 검증", "Data and Verification",
+            sec_verify_core(C) if CORE[0] else sec_verify(C))
 
     kindko, kinden = KIND_NAME[a.kind]
-    title = "%s · %d년 %s | 미래에셋증권 마포WM" % (kindko, today.year, DK(today, True))
-    title_en = ("%s · %s %d | Mirae Asset Securities Mapo WM"
-                % (kinden, DE(today, True), today.year))
+    suffix_ko = " 핵심본" if CORE[0] else ""
+    suffix_en = " (Core)" if CORE[0] else ""
+    title = "%s%s · %d년 %s | 미래에셋증권 마포WM" % (kindko, suffix_ko, today.year, DK(today, True))
+    title_en = ("%s%s · %s %d | Mirae Asset Securities Mapo WM"
+                % (kinden, suffix_en, DE(today, True), today.year))
     html = assemble(ROOT + "/docs/briefing-chrome", doc, title, C["hero"], now,
                     title_en=title_en)
+    if CORE[0]:
+        # 이 판은 <head> 없는 아티팩트 본문이다. 껍데기 CSS 가 끝나는 자리
+        # 바로 뒤에 붙여야 같은 우선순위에서 이긴다(지침 6절).
+        i = html.find("</style>")
+        assert i > 0, "껍데기 CSS 를 찾지 못했다"
+        html = html[:i + 8] + "\n" + CORE_CSS + html[i + 8:]
 
     # 이제 모든 절이 서술을 다 꺼내 갔다. 그제서야 개수를 박는다.
     html = html.replace(NUSED, str(len(N.used))).replace(NFB, str(len(set(N.missing))))
     assert NUSED not in html and NFB not in html
 
-    out = a.out or (ROOT + "/docs/briefings/%s-%s.html"
-                    % (today.isoformat(), a.kind))
+    out = a.out or (ROOT + "/docs/briefings/%s-%s%s.html"
+                    % (today.isoformat(), a.kind, "-core" if CORE[0] else ""))
     io.open(out, "w", encoding="utf-8").write(html)
     rep = N.report()
     print("만듦: %s (%d자, 절 %d개, 상세 %d개)"
