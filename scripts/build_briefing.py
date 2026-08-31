@@ -114,7 +114,7 @@ h3.mini{font-size:15px;font-weight:600;color:var(--ink);margin:14px 0 6px}
   .duo table.data th,.duo table.data td{padding:1.5px 4px;font-size:7.6pt}
   .duo table.data caption{font-size:8.4pt}
   .trio{grid-template-columns:1fr 1fr 1fr;gap:0 9px}
-  .hol{grid-template-columns:1fr 1fr 1fr;gap:1px 10px}
+  .hol{grid-template-columns:1fr 1fr 1fr 1fr;gap:1px 9px}
   .hol li{font-size:7.3pt;line-height:1.22}
 }
 /* 머리말 — 큰 글자가 그날의 한마디를 하므로 46px 은 두 줄로 넘친다.
@@ -158,25 +158,25 @@ table.data .sub{font-size:11px;line-height:1.28}
 footer.foot{margin-top:22px;padding:16px 0 24px;font-size:11px}
 @media print{
   .section{margin-top:22px}
-  .section{margin-top:5px}
-  table.data th,table.data td{padding:1.2px 4.5px;font-size:7.9pt;line-height:1.12}
+  .section{margin-top:4px}
+  table.data th,table.data td{padding:1.1px 4.5px;font-size:7.9pt;line-height:1.08}
   table.data .sub{font-size:6.7pt;line-height:1.1}
   table.data caption{font-size:8.7pt;padding-bottom:2px}
-  .tbl-foot,table.data tfoot td{font-size:6.4pt;line-height:1.24}
+  .tbl-foot,table.data tfoot td{font-size:6.4pt;line-height:1.2}
   p.lede{font-size:9.1pt;line-height:1.33;margin-bottom:4px}
   .section > p{font-size:9.1pt;line-height:1.33;margin-bottom:3px}
-  .stat-grid{margin-bottom:7px}
-  .callout{padding:9px 12px}
+  .stat-grid{margin-bottom:5px}
+  .callout{padding:8px 11px}
   .callout p{font-size:9.0pt;line-height:1.36;margin-bottom:4px}
-  .soft-card{padding:7px 9px}
-  .soft-card p{font-size:8.5pt;line-height:1.34}
+  .soft-card{padding:6px 8px}
+  .soft-card p{font-size:8.5pt;line-height:1.3}
   .soft-card .q{font-size:9.6pt}
   .stat{padding:7px 9px}
   .stat-value{font-size:14.5pt}
   .stat-note{font-size:7pt;line-height:1.25}
   .section-title{font-size:14.5pt}
-  .table-wrap{margin-bottom:4px}
-  footer.foot{margin-top:10px;padding:8px 0 6px;break-before:avoid}
+  .table-wrap{margin-bottom:3px}
+  footer.foot{margin-top:6px;padding:5px 0 2px;break-before:avoid}
   /* 다섯 쪽에 맞추려면 **블록을 통째로 붙들면 안 된다.** 전체 판은 짧은 표를
      붙들어 쪽 가운데가 갈리지 않게 하지만, 그 대가로 앞 쪽에 빈 띠가 남는다.
      핵심본은 자리가 없으므로 이어붙이고, **줄만 쪼개지지 않게** 한다.     */
@@ -361,8 +361,13 @@ def sec_korea(C):
         # 「시장의 폭」을 되살렸다 — 52주 구간 내 위치는 「지금이 비싼 자리인가」에
         # 답하는 유일한 값이고, 카드로는 담기지 않는다(재검증기도 이 값을 찾는다).
         # 종목은 **옆으로 세워 스무 개**를 싣는다(네 개로는 아무 말도 못 한다).
-        return (lede(a, b) + '\n<div class="duo">\n' + kr_idx + "\n" + breadth
-                + '\n</div>\n'
+        # **지수표와 폭표를 하나로 합친다.** 둘 다 「코스피/코스닥이 지금 어떤
+        # 상태인가」를 말하는데 캡션과 꼬리말을 따로 달고 있었고, 지수표가 두
+        # 줄뿐이라 옆 칸에 맞춰 늘어나며 103px 이 비었다. 한 표로 합치면 그
+        # 빈자리가 사라지고, 옆 칸에는 업종표가 들어간다.
+        snap = _kr_snapshot_core(C, kr_idx, breadth)
+        return (lede(a, b) + '\n<div class="duo">\n' + snap + "\n"
+                + (_sector_kr_core(C) or "") + '\n</div>\n'
                 + _stock_core("국내 종목 &mdash; " + DK(C["prev_kr"]) + " 마감, 원",
                               "Korean stocks &mdash; " + DE(C["prev_kr"]) + ", in won",
                               *_wide(C["S"], 10), why=C["why"],
@@ -458,7 +463,12 @@ def sec_global(C):
     idx_head = [TH("지수", "Index", "wrap"), TH("지역", "Region", "wrap"),
                 TH("종가", "Close", "n"), TH("등락률", "Change %", "n"), THP(),
                 TH("검증", "Verified", "n opt")]
-    CORE_KEYS = ("dow", "sp500", "nasdaq", "sox", "stoxx600", "nikkei")
+    # 핵심본에서도 **아시아와 유럽 지수를 빼지 않는다.** 여섯 개만 세웠더니
+    # 옆의 업종표보다 65px 짧아 칸 아래가 비었는데, 정작 홍콩&middot;상하이
+    # &middot;가권&middot;DAX 는 실려 있지도 않았다 &mdash; 중화권 개별 종목은
+    # 3단에 있으면서 그 지수가 없는 판이었다. 빈자리에 그것을 넣는다.
+    CORE_KEYS = ("dow", "sp500", "nasdaq", "sox", "vix", "stoxx600", "dax",
+                 "nikkei", "hangseng", "shanghai", "taiwan")
     SPEC = [("dow", "다우", "Dow", "미국", "US"), ("sp500", "S&amp;P 500", "S&amp;P 500", "미국", "US"),
             ("nasdaq", "나스닥", "NASDAQ", "미국", "US"), ("sox", "SOX (반도체)", "SOX", "미국", "US"),
             ("vix", "VIX", "VIX", "미국", "US"),
@@ -498,29 +508,30 @@ def sec_global(C):
     a, b = N.get("global_lede", C["fb_global"][0], C["fb_global"][1])
     if CORE[0]:
         trio = "".join(x for x in (
-            _region_core(C, "eu_stocks", "유럽 &mdash; 거래 통화 기준", "Europe &mdash; local currency",
-                         "통화가 섞여 있습니다(EUR&middot;GBp&middot;CHF&middot;DKK). <strong>등락률로 견주십시오.</strong>",
-                         "Mixed currencies (EUR, GBp, CHF, DKK). <strong>Compare by percentage.</strong>"),
-            _region_core(C, "jp_stocks", "일본 &mdash; 단위 엔", "Japan &mdash; in yen",
-                         "도쿄는 15:30 KST 마감 &mdash; <strong>미국 장중 소식을 모르는 값</strong>입니다.",
-                         "Tokyo closes 15:30 KST &mdash; <strong>before the US session</strong>."),
+            _region_core(C, "eu_stocks", "유럽 &mdash; 거래 통화 기준", "Europe &mdash; local currency"),
+            _region_core(C, "jp_stocks", "일본 &mdash; 단위 엔", "Japan &mdash; in yen"),
             _region_core(C, "cn_stocks", "중화권 &mdash; 본토 CNY &middot; 홍콩 HKD",
-                         "Greater China &mdash; CNY and HKD",
-                         "<strong>통화가 달라 종가는 견주지 마십시오.</strong>",
-                         "<strong>Different currencies &mdash; do not compare price levels.</strong>"),
+                         "Greater China &mdash; CNY and HKD"),
         ) if x)
+        trio_foot = ('<p class="tbl-foot">' + L(
+            "세 표는 <strong>통화가 다 다릅니다</strong>(EUR&middot;GBp&middot;CHF&middot;JPY&middot;CNY"
+            "&middot;HKD) &mdash; <strong>종가는 견주지 말고 등락률로 견주십시오.</strong> 도쿄와 홍콩은 "
+            "국내 오후에 닫으므로 <strong>미국 장중 소식을 모르는 값</strong>입니다 " + VF_MD + ".",
+            "The three tables are in <strong>different currencies</strong> (EUR, GBp, CHF, JPY, CNY, HKD) "
+            "&mdash; <strong>compare percentages, not price levels.</strong> Tokyo and Hong Kong close "
+            "before the US session " + VF_MD + ".") + '</p>')
         # 업종 ETF 는 「어느 업종에 돈이 붙었나」를 한 표로 말한다 &mdash; 금리가
         # 움직인 날에는 이것이 지수보다 많은 것을 설명한다(은행↑ 유틸리티↓).
         # 해외 지수와 업종 ETF 는 둘 다 열이 적어 나란히 세운다 &mdash; 「어디가
         # 얼마나」와 「어느 업종에 돈이 붙었나」를 한눈에 붙여 읽게 된다.
         # 업종은 **여섯으로 줄여 왼쪽 지수표와 줄 수를 맞춘다**(_sector_core).
         return (lede(a, b) + '\n<div class="duo">\n' + gidx + "\n"
-                + (_sector_core(C, keep=len(rows)) or "") + '\n</div>\n'
+                + (_sector_core(C, keep=8) or "") + '\n</div>\n'
                 + _stock_core("미국 종목 &mdash; " + DK(C["prev_us"]) + ", 달러",
                               "US stocks &mdash; " + DE(C["prev_us"]) + ", in dollars",
                               C["us_top"], C["us_bot"], C["why"],
                               foot_ko=C["us_stk_foot_ko"], foot_en=C["us_stk_foot_en"])
-                + ("\n<div class=\"trio\">\n" + trio + "\n</div>" if trio else ""))
+                + ("\n<div class=\"trio\">\n" + trio + "\n</div>\n" + trio_foot if trio else ""))
     return (lede(a, b) + "\n" + gidx + "\n" + us_stk + "\n"
             + exp("미국 업종 ETF &middot; 유럽 &middot; 일본 &middot; 중국 개별 종목",
                   "US sector ETFs, and single stocks in Europe, Japan and China",
@@ -627,10 +638,12 @@ def sec_macro(C):
                 cls="data compact",
                 foot_ko="미 국채는 <strong>재무부 확정 고시</strong>이고 " + VF_OK + ", 국고채는 한국은행 "
                         "ECOS 입니다. <strong>한미 금리차는 같은 만기끼리 뺀 값</strong>입니다 " + VF_C + ". "
-                        "만기 열한 개 전부는 아래 상세에 있습니다.",
+                        + ("만기 열한 개 전부는 <strong>오른쪽 곡선표</strong>에 있습니다."
+                           if CORE[0] else "만기 열한 개 전부는 아래 상세에 있습니다."),
                 foot_en="US yields are <strong>Treasury official fixings</strong> " + VF_OK + "; Korean yields come "
                         "from ECOS. <strong>The gap is same-maturity subtraction</strong> " + VF_C + ". "
-                        "The full eleven-point curve is in the detail below.")
+                        + ("The full eleven-point curve is <strong>in the right-hand column</strong>."
+                           if CORE[0] else "The full eleven-point curve is in the detail below."))
 
     a, b = N.get("macro_lede", C["fb_macro"][0], C["fb_macro"][1])
     if CORE[0]:
@@ -639,8 +652,9 @@ def sec_macro(C):
         # 246px) **이름·종가·등락률 셋으로 줄인 판**을 따로 만들어 오른 칸에
         # 환율 밑으로 세운다. 왼쪽은 금리(일곱 줄), 오른쪽은 환율(다섯) + 원자재
         # (일곱) — 두 칸의 높이가 얼추 맞는다.
-        return (lede(a, b) + '\n<div class="duo">\n' + rates
-                + '\n<div>\n' + C["fx_tbl"] + "\n" + (_cm_core(C) or "") + '\n</div>\n</div>')
+        return (lede(a, b) + '\n<div class="duo">\n'
+                + '<div>\n' + rates + "\n" + (_cm_core(C) or "") + '\n</div>\n'
+                + '<div>\n' + C["fx_tbl"] + "\n" + (_curve_core(C) or "") + '\n</div>\n</div>')
     return (lede(a, b) + "\n" + rates + "\n" + C["fx_tbl"] + "\n" + C["cm_tbl"] + "\n"
             + exp("미 재무부 곡선 만기 11개 &middot; 달러 상대 통화",
                   "The full US curve and the dollar crosses",
@@ -899,7 +913,7 @@ def _ncols(head):
     return max(1, total)
 
 
-def _region_core(C, key, tko, ten, foot_ko="", foot_en=""):
+def _region_core(C, key, tko, ten):
     """핵심본용 지역 종목 표 — **좁게** 만든다.
 
     전체 판의 지역 표는 종목 열두 개에 「핵심」 설명까지 달려 한 표가 400px 을
@@ -922,8 +936,10 @@ def _region_core(C, key, tko, ten, foot_ko="", foot_en=""):
             rows.append('      <tr><th class="wrap">' + esc(k) + '</th>'
                         '<td class="n">' + n(v["close"]) + '</td>' + _cell(v.get("change_pct"))
                         + '</tr>')
-    return tbl(tko, ten, head, rows, cls="data compact",
-               foot_ko=foot_ko + " " + VF_MD, foot_en=foot_en + " " + VF_MD)
+    # 꼬리말은 표마다 달지 않는다 &mdash; 세 표가 각자 두 줄씩 달면 여섯 줄이
+    # 되는데, 하는 말은 「통화가 다르니 등락률로 견주라」 하나다. 부르는 쪽이
+    # 3단 아래에 한 문단으로 붙인다.
+    return tbl(tko, ten, head, rows, cls="data compact")
 
 
 def _wide(dct, k=10):
@@ -994,6 +1010,117 @@ def _sector_core(C, keep=6):
                        "배당으로 사는 자산이기 때문입니다. 열한 업종 전부는 전체 판에 있습니다 " + VF_C + ".",
                foot_en="<strong>When yields rise, real estate and utilities give way first</strong> &mdash; "
                        "they are bought for yield. All eleven sectors are in the full edition " + VF_C + ".")
+
+
+def _curve_core(C):
+    """핵심본용 미 국채 곡선 &mdash; **금리표 밑의 빈자리를 채운다.**
+
+    금리표는 일곱 줄이고 오른 칸의 환율+원자재는 열두 줄이라, 격자가 두 칸을
+    같은 높이로 늘리면서 왼쪽 아래에 173px 이 비어 있었다. 거기에 들어갈 것이
+    마침 있다 &mdash; 금리표 꼬리말이 「만기 열한 개 전부는 아래 상세에」라고
+    가리키는데 **핵심본에는 상세가 없다.** 가리키는 곳이 없는 문장이었다.
+    만기&middot;수익률&middot;전일 대비 셋으로 줄여 그 자리에 세운다.
+    """
+    ru = C["ru"]
+    LAB = [("ust1m", "1개월", "1M"), ("ust3m", "3개월", "3M"), ("ust6m", "6개월", "6M"),
+           ("ust1y", "1년", "1Y"), ("ust2y", "2년", "2Y"), ("ust3y", "3년", "3Y"),
+           ("ust5y", "5년", "5Y"), ("ust7y", "7년", "7Y"), ("ust10y", "10년", "10Y"),
+           ("ust20y", "20년", "20Y"), ("ust30y", "30년", "30Y")]
+    rows = []
+    for k, ko, en in LAB:
+        if k not in ru["curve"]:
+            continue
+        rows.append('      <tr' + (' class="hl"' if k in ("ust2y", "ust10y", "ust30y") else '') + '>'
+                    '<th class="wrap">' + L(ko, en) + '</th>'
+                    '<td class="n">' + n(ru["curve"][k], 3) + '%</td>'
+                    '<td class="n">' + bp(ru["change_bp"].get(k)) + '</td></tr>')
+    if not rows:
+        return ""
+    return tbl("미 재무부 확정 곡선 &mdash; 만기 " + str(len(rows)) + "개",
+               "US Treasury official curve &mdash; " + str(len(rows)) + " maturities",
+               [TH("만기", "Maturity", "wrap"), TH("수익률", "Yield", "n"),
+                TH("전일 대비", "Change", "n")], rows, cls="data compact",
+               foot_ko="<strong>짧은 쪽이 더 움직였으면 정책 기대</strong>, 장기물까지 같이 움직였으면 "
+                       "<strong>성장&middot;물가 전망</strong>이 움직인 것입니다 " + VF_OK + ".",
+               foot_en="<strong>The front end moving means policy expectations</strong>; the long end moving "
+                       "means the growth and inflation view " + VF_OK + ".")
+
+
+def _kr_snapshot_core(C, kr_idx, breadth):
+    """핵심본용 국내 상태표 &mdash; **지수와 폭을 한 표로.**
+
+    두 표는 같은 질문에 답한다 &mdash; 「코스피&middot;코스닥이 지금 어떤 상태인가」.
+    그런데 캡션 둘, 꼬리말 둘을 달고 있었고, 지수표는 두 줄뿐이라 옆 칸(네 줄)에
+    맞춰 늘어나며 103px 을 비웠다. 종가&middot;등락률을 폭표와 같은
+    「항목 &times; 코스피&middot;코스닥」 꼴로 바꿔 한 표에 넣는다.
+
+    `kr_idx`&middot;`breadth` 는 전체 판이 쓰는 두 표다 &mdash; 받아만 두고 쓰지
+    않는다. 인자로 받는 것은 **부르는 쪽이 둘 다 만들었다는 것을 드러내기 위해서**다.
+    """
+    KS, KQ, ksb, kqb = C["KS"], C["KQ"], C["ksb"], C["kqb"]
+    rows = [
+        _brow("종가", "Close", "코스피는 대형주 중심 &mdash; <strong>삼성전자&middot;SK하이닉스가 절반 "
+                              "가까이</strong>입니다. 코스닥은 중소형&middot;성장주 중심입니다",
+              "KOSPI is large-cap heavy; KOSDAQ is small and mid-cap growth",
+              n(KS["close"]), n(KQ["close"]), True),
+        _brow("등락률", "Change %", "&nbsp;", "&nbsp;",
+              pct(KS["change_pct"]), pct(KQ["change_pct"])),
+        _brow("상승 / 하락 종목", "Advancing / declining",
+              "지수 방향과 어긋나면 대형주 몇 개가 지수를 움직인 것입니다",
+              "If it disagrees with the index, a few heavyweights moved it",
+              n(ksb["advancing"], 0) + " / " + n(ksb["declining"], 0),
+              n(kqb["advancing"], 0) + " / " + n(kqb["declining"], 0)),
+        _brow("오른 종목 비율", "Share advancing", "열 종목 가운데 몇 개가 올랐는지",
+              "How many in ten rose",
+              "열에 " + n(C["adv_per_ten"], 0), "열에 " + n(C["adv_per_ten_q"], 0)),
+        _brow("52주 구간 내 위치", "Position in the 52-week range",
+              "(종가 &minus; 저) &divide; (고 &minus; 저). <strong>지금이 비싼 자리인지</strong>",
+              "(close &minus; low) / (high &minus; low)",
+              n(C["pos52_ks"], 1) + "%", n(C["pos52_kq"], 1) + "%"),
+        _brow("상한 / 하한", "Limit up / down", "&nbsp;", "&nbsp;",
+              n(ksb.get("limit_up"), 0) + " / " + n(ksb.get("limit_down"), 0),
+              n(kqb.get("limit_up"), 0) + " / " + n(kqb.get("limit_down"), 0)),
+    ]
+    head = [TH("항목", "Measure", "wrap"), TH("읽는 법", "How to read it", "note wrap"),
+            TH("코스피", "KOSPI", "n"), TH("코스닥", "KOSDAQ", "n"),
+            TH("검증", "Verified", "n opt")]
+    return tbl("국내 지수 &mdash; " + DK(C["prev_kr"], True) + " 마감",
+               "Korean indices &mdash; " + DE(C["prev_kr"], True) + " close",
+               head, rows, cls="data compact",
+               foot_ko="<strong>52주 최고는 네이버 지수 페이지 표기 그대로</strong>이며 최근 종가 흐름과 "
+                       "차이가 큽니다 &mdash; 검증 노트를 보십시오 " + VF_N + ".",
+               foot_en="<strong>The 52-week high is as published by Naver</strong> and sits far above recent "
+                       "closes &mdash; see the verification notes " + VF_N + ".")
+
+
+def _sector_kr_core(C, k=5):
+    """핵심본용 국내 업종 상위&middot;하위 &mdash; **국내 지수표 밑의 빈자리를 채운다.**
+
+    국내 지수표는 두 줄뿐이라 옆의 「시장의 폭」(네 줄)에 맞춰 늘어나면서 73px 이
+    비었다. 업종 표는 전체 판에서 접힌 상세 안에 들어 있어 PDF 를 받는 쪽은 보지
+    못했다 &mdash; 「지수가 아니라 무엇이 올랐나」에 가장 곧바로 답하는 표다.
+    오른 셋&middot;내린 셋만 세 열로 세운다.
+    """
+    top, bot = C["sec_top"][:k], list(reversed(C["sec_bot"]))[:k]
+    if not top and not bot:
+        return ""
+    head = [TH("업종", "Sector", "wrap"), TH("등락", "Chg %", "n"), TH("1주 누적", "1W", "n")]
+
+    rows = []
+    for label_ko, label_en, grp in (("오른 업종", "Leaders", top), ("내린 업종", "Laggards", bot)):
+        if not grp:
+            continue
+        rows.append('      <tr class="grp"><th class="wrap" colspan="3">'
+                    + L(label_ko, label_en) + '</th></tr>')
+        rows += ['      <tr><th class="wrap">' + esc(x["name"]) + '</th>'
+                 '<td class="n">' + pct(x["change_pct"]) + '</td>'
+                 '<td class="n">' + pct((x.get("perf") or {}).get("w1")) + '</td></tr>' for x in grp]
+    return tbl("업종 &mdash; " + DK(C["prev_kr"]), "Sectors &mdash; " + DE(C["prev_kr"]),
+               head, rows, cls="data compact",
+               foot_ko="「1주 누적」은 <strong>일간 등락률을 더한 값</strong>이지 지수 계열이 아닙니다 "
+                       "&mdash; 네이버는 업종 지수를 주지 않습니다 " + VF_C + ".",
+               foot_en="The weekly column <strong>sums daily moves</strong>; Naver publishes no sector "
+                       "index series " + VF_C + ".")
 
 
 def _cm_core(C):
