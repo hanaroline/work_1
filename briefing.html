@@ -27,6 +27,7 @@
   .btn:hover{border-color:var(--accent)}
   .btn.primary{background:var(--accent);border-color:var(--accent);color:#fff}
   .btn.sm{padding:5px 10px;font-size:12px}
+  a.btn.alink{display:inline-block;text-decoration:none;line-height:1.5}
 
   .card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:18px;box-shadow:var(--shadow)}
   .card+.card{margin-top:14px}
@@ -248,6 +249,8 @@
     <div class="spacer"></div>
     <button class="icon-btn" id="btnTheme" title="다크/라이트 테마 전환">◐</button>
     <button class="btn sm" id="btnSample" title="체험용 예시 종목(삼성전자·SK하이닉스·KODEX 200·AAPL·미래에셋)을 자동으로 채웁니다" style="display:none">예시 채우기</button>
+    <a class="btn sm alink" id="btnPension" href="./search2.html" target="_blank" rel="noopener"
+       title="연금 제안서용 상품 조회 화면을 같은 서버 주소로 엽니다(포트가 자동으로 맞습니다)">연금 상품조회</a>
     <button class="btn sm" id="btnScreen" title="기간별 수익률 상위 종목을 조회하고 대시보드에 추가합니다">🔎 수익률 상위</button>
     <button class="btn sm" id="btnCSV" title="종목명·코드를 줄바꿈/쉼표로 붙여넣어 여러 종목을 한 번에 추가합니다 (수량·매입가는 제외)">여러 종목 추가</button>
     <button class="btn sm" id="btnCopy" title="현재 보유목록 요약표를 클립보드에 복사(메신저·메일 붙여넣기용)">표 복사</button>
