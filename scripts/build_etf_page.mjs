@@ -39,6 +39,19 @@ try {
   console.log('[build] 사용법 PDF 없음 — 단추를 띄우지 않는다');
 }
 
+// 화면 그림도 담는다.
+try {
+  const shotsJs = await readFile('data/etf-howto-shots.js', 'utf8');
+  out = out.replace(
+    /<script src="data\/etf-howto-shots\.js"><\/script>/,
+    '<script>\n/* ==== data/etf-howto-shots.js (인라인) ==== */\n' + shotsJs + '\n</script>'
+  );
+  console.log(`[build] 화면 그림 포함 (${(shotsJs.length / 1024).toFixed(0)} KB)`);
+} catch {
+  out = out.replace(/\s*<script src="data\/etf-howto-shots\.js"><\/script>\n?/, '\n');
+  console.log('[build] 화면 그림 없음 — 그림 자리를 접는다');
+}
+
 if (out === html) {
   console.error(`[build] ${SRC} 안에서 data/etf.js 스크립트 태그를 찾지 못했습니다.`);
   process.exit(1);

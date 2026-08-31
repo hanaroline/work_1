@@ -472,8 +472,31 @@ await page.locator('.tabs button[data-tab="howto"]').click();
 await page.waitForTimeout(200);
 const howtoVisible = await page.locator('#tab-howto').isVisible();
 check('사용법 탭이 열린다', howtoVisible);
-const howtoCards = await page.locator('#tab-howto .card').count();
-check('사용법에 안내 카드가 있다', howtoCards >= 6, `${howtoCards}개`);
+const howtoGuides = await page.locator('#tab-howto .guide').count();
+check('화면별 안내가 그려진다', howtoGuides >= 6, `${howtoGuides}개`);
+const howtoSteps = await page.locator('#tab-howto .steps li').count();
+check('화면마다 순서가 적혀 있다', howtoSteps >= 12, `${howtoSteps}단계`);
+// 그림은 파일에 실렸을 때만 나온다. 실렸는데 안 그려지면(자리만 남으면) 결함이다.
+const shotState = await page.evaluate(() => {
+  const figs = [...document.querySelectorAll('#tab-howto .shot[data-shot]')];
+  const has = typeof window.ETF_HOWTO_SHOTS === 'object' && window.ETF_HOWTO_SHOTS
+    ? Object.keys(window.ETF_HOWTO_SHOTS).length : 0;
+  return {
+    has,
+    figs: figs.length,
+    withImg: figs.filter((f) => f.querySelector('img')).length,
+    // 자료에 있는데 그림이 안 붙은 자리 — 이게 있으면 안 된다
+    orphan: figs.filter((f) => window.ETF_HOWTO_SHOTS
+      && window.ETF_HOWTO_SHOTS[f.getAttribute('data-shot')] && !f.querySelector('img')).length,
+    hiddenEmpty: figs.filter((f) => !f.querySelector('img')
+      && f.classList.contains('missing')).length,
+  };
+});
+check('실린 그림은 모두 붙는다', shotState.orphan === 0,
+      `자료 ${shotState.has}장 · 자리 ${shotState.figs} · 붙음 ${shotState.withImg}`);
+check('없는 그림 자리는 접힌다',
+      shotState.withImg + shotState.hiddenEmpty === shotState.figs,
+      `붙음 ${shotState.withImg} + 접힘 ${shotState.hiddenEmpty} / ${shotState.figs}`);
 // 자료가 언제 것인지는 글로 적으면 낡아도 최신인 척한다. 실제 값에서 만든다.
 const howtoSrc = await page.locator('#howto-source').textContent();
 check('사용법이 실제 기준일을 적는다', /\d{4}-\d{2}-\d{2}/.test(howtoSrc || ''),
@@ -489,8 +512,10 @@ check('적힌 기준일이 자료의 최신 기준일과 같다', howtoAsOf === 
 // 영문으로 바꿔도 내용이 남아야 한다(빈 탭이 되면 안 된다).
 await page.locator('.lang-toggle button[data-lang="en"]').click();
 await page.waitForTimeout(200);
-const howtoEn = await page.locator('#tab-howto .card').count();
-check('영문에서도 사용법이 그려진다', howtoEn >= 6, `${howtoEn}개`);
+const howtoEn = await page.locator('#tab-howto .guide').count();
+const howtoEnSteps = await page.locator('#tab-howto .steps li').count();
+check('영문에서도 사용법이 그려진다', howtoEn >= 6 && howtoEnSteps >= 12,
+      `${howtoEn}개 · ${howtoEnSteps}단계`);
 await page.locator('.lang-toggle button[data-lang="ko"]').click();
 await page.waitForTimeout(150);
 
