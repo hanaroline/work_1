@@ -480,9 +480,9 @@ footer .disc + .disc{margin-top:12px;}
   <section class="section" id="tab-help" hidden>
     <div class="section-rule"></div>
     <div class="section-eyebrow" data-ko="사용법" data-en="How to use">사용법</div>
-    <h2 class="section-title" data-ko="무엇을 할 수 있고, 숫자를 어떻게 읽나" data-en="What this screen does, and how to read its numbers">무엇을 할 수 있고, 숫자를 어떻게 읽나</h2>
-    <p class="section-lead" data-ko="탭마다 하는 일이 다릅니다. 아래에 각 탭의 쓰임과, 이 화면의 숫자를 읽을 때 반드시 알아야 할 것들을 적었습니다."
-       data-en="Each tab does a different job. Below: what each is for, and what you must know to read these numbers correctly.">탭마다 하는 일이 다릅니다.</p>
+    <h2 class="section-title" data-ko="화면마다 어떻게 쓰고, 숫자를 어떻게 읽나" data-en="How to use each screen, and how to read its numbers">화면마다 어떻게 쓰고, 숫자를 어떻게 읽나</h2>
+    <p class="section-lead" data-ko="화면마다 하는 일이 다릅니다. 아래에 먼저 여섯 화면이 각각 무엇을 위한 것인지 한눈에 적고, 이어서 화면별로 쓰는 순서 · 조작 항목이 하는 일 · 해보기 · 주의를 적었습니다. 끝에는 이 화면의 숫자를 읽을 때 반드시 알아야 할 것들이 나옵니다."
+       data-en="Each screen does a different job. Below: first what all six are for, then for each one the steps, what every control does, a worked example and its caution — and finally what you must know to read these numbers correctly.">화면마다 하는 일이 다릅니다.</p>
     <!--
       사용법은 화면을 못 여는 자리(메신저·메일·사내 공유)에 따로 붙일 일이
       많다. 그래서 이 절만 따로 내려받을 수 있게 둔다. 21MB 짜리 본 화면을
@@ -2424,31 +2424,302 @@ function renderHelp() {
     for (var j = 0; j < hs.length; j += 1) if (hs[j].name) secs.add(hs[j].name);
   }
 
+  // 화면별 사용법에 찍히는 수. 이것도 세어서 넣는다 — "운용사 60개사" 처럼
+  // 박아 두면 운용사가 하나 늘어난 날 아침에 조용히 거짓이 된다.
+  var comps = new Set();
+  var types = new Set();
+  for (var ci = 0; ci < FUNDS.length; ci += 1) {
+    if (FUNDS[ci].company) comps.add(FUNDS[ci].company);
+    if (FUNDS[ci].type) types.add(FUNDS[ci].type);
+  }
+  var stepped = n(function (f) { return !!f.hasStep; });
+  var withFlow = n(function (f) { return f.flow && f.flow.m3 != null && isFinite(Number(f.flow.m3)); });
+  // 랭킹 탭의 자금 유입 표는 설정원본 이력이 3개월치 쌓여야 나온다. 아직
+  // 없는 날에는 화면에도 표 대신 "왜 아직 없나" 가 뜬다. 사용법이 "나옵니다"
+  // 라고 적어 두면 사람은 없는 표를 찾다가 자기가 잘못 보고 있다고 여긴다.
+  var flowOn = withFlow > 0;
+
   // 사용법에 찍히는 수를 그대로 이어 붙인다. 이 줄이 달라졌다는 것은
   // 사용법 본문이 달라졌다는 것이고, 미리 실어 둔 PDF 는 그 순간 낡은 것이 된다.
+  // **사용법에 수를 하나 더 찍게 되면 여기에도 반드시 더한다.** 빠뜨리면
+  // 본문은 바뀌었는데 표시는 그대로라 낡은 PDF 가 최신인 척 내려간다.
   HELP_STAMP = [FUNDS.length, withHold, noAum, feeVaries, noFee, mixed, dropped,
-                datedHold, secs.size, DATES.asOf, DATES.got].join('|');
+                datedHold, secs.size, comps.size, types.size, stepped, withFlow,
+                DATES.asOf, DATES.got].join('|');
 
-  var tabs = ko ? [
-    ['펀드 찾기', '투자 지역·자산군·유형·운용사·설정액·위험등급·총보수로 좁힙니다. 검색창에는 펀드 이름뿐 아니라 <strong>표준코드·클래스 코드·운용사·보유종목</strong>도 넣을 수 있습니다 — "삼성전자" 를 넣으면 그 종목을 담은 펀드가 나옵니다. 줄을 누르면 보유종목·업종구성·수익률·위험지표·클래스별 보수가 펼쳐집니다.'],
-    ['비교 · 중복도', '펀드를 여럿 골라 나란히 놓고, <strong>서로 얼마나 겹치는지</strong>를 봅니다. 겹침은 두 펀드가 같은 종목에 함께 준 비중으로 계산합니다. 분산이 되고 있다고 생각한 조합이 실은 같은 것을 두 번 산 것인지 여기서 갈립니다.'],
-    ['종목 → 펀드', '거꾸로 찾습니다. 종목 이름을 넣으면 <strong>그 종목을 담은 펀드</strong>가 나옵니다. 한 펀드가 검색어에 걸리는 종목을 여럿 담고 있으면 비중이 가장 큰 하나만 싣고 <strong>"+N개 더"</strong> 로 나머지 수를 밝힙니다.'],
-    ['랭킹', '수익률·설정액 상위를 봅니다. 순위는 저장된 값이 아니라 <strong>화면이 그 자리에서 매깁니다</strong> — 비운 칸은 순위에 넣지 않습니다.'],
-    ['수익률 검산', '원천이 준 기간수익률을 그대로 싣지 않고 기준가 시계열로 검산합니다. <strong>무엇을 왜 비웠는지</strong>가 여기 남습니다.'],
+  // ── 화면별 사용법.
+  //
+  // 전에는 탭당 한 문단짜리 요약 카드였다. 요약은 "무슨 화면인가" 는 알려
+  // 주지만 "어떻게 쓰나" 는 알려 주지 않는다 — 어느 칸을 먼저 건드리는지,
+  // 저 단추가 무엇을 하는지, 안 나올 때 무엇을 바꿔 보는지가 빠져 있었다.
+  // 그래서 화면마다 **순서 · 조작 항목 · 해보기 · 주의** 넷을 적는다.
+  //
+  // 여기 나오는 조작 항목 이름은 화면에 실제로 있는 것만 쓴다. 없는 단추를
+  // 사용법에 적으면 사람은 그것을 찾다가 자기가 잘못 보고 있다고 생각한다.
+  var screens = ko ? [
+    {
+      tab: '펀드 찾기',
+      when: '조건에 맞는 펀드를 추리고, 한 펀드가 <strong>무엇을 담고 있는지</strong>를 볼 때 씁니다. 이 화면의 출발점입니다.',
+      steps: [
+        '검색창에 <strong>아는 것</strong>을 넣습니다 — 펀드 이름, 표준코드(KR…), 통장·HTS 에 찍히는 <strong>클래스 코드(K55…)</strong>, 운용사, 또는 담고 있을 법한 <strong>종목 이름</strong>. 네 가지가 모두 걸립니다.',
+        '아래 일곱 칸(투자 지역 · 자산군 · 유형 · 운용사 · 설정액 · 위험등급 · 총보수)으로 좁힙니다. 고른 조건은 <strong>동시에</strong> 걸립니다. 칸 안에 적힌 괄호 수는 <strong>전체 ' + fmtN(FUNDS.length) + '개 기준</strong>으로 그 값에 해당하는 펀드 수이며, 다른 조건을 함께 건 뒤의 수가 아닙니다 — 지금 몇 개가 남았는지는 표 위의 <strong>건수</strong>에서 보십시오.',
+        '<strong>수익률 기간</strong>을 바꾸면 목록의 수익률 열이 그 기간 값으로 바뀝니다(1일부터 5년까지 ' + fmtN(PERIODS.length) + '가지).',
+        '열 제목의 <strong>▽</strong> 를 누르면 그 열로 정렬하고, 한 번 더 누르면 반대 방향으로 정렬합니다.',
+        '<strong>줄을 누르면</strong> 바로 아래에 상세가 펼쳐집니다 — 기준가 · 설정액 · 설정일 · 위험등급, 기간 수익률, 위험지표, 보유종목 전체, 업종구성, <strong>클래스별 보수와 코드</strong>, 매매 기준일, 그리고 원천으로 바로 가는 링크.',
+        '비교하고 싶은 것은 줄 맨 왼쪽 <strong>⊕</strong> 로 담습니다. 담은 것은 다음 탭에서 봅니다.',
+      ],
+      controls: [
+        ['검색창', '한 군데가 아니라 <strong>네 군데</strong>를 훑습니다 — 펀드 본체(이름 · 표준코드 · 운용사 · 유형 · 벤치마크), <strong>클래스 코드</strong>, <strong>클래스 이름</strong>, 그리고 <strong>보유종목 이름</strong>.'],
+        ['투자 지역', '돈이 <strong>어디에</strong> 투자되는지입니다(국내 · 해외 · 혼합). 유형 이름에 나오는 "혼합" 은 주식+채권이라는 <strong>자산</strong> 이야기라 서로 다른 말입니다.'],
+        ['자산군 · 유형', '유형은 원천이 준 이름을 <strong>그대로</strong> 씁니다(지금 ' + fmtN(types.size) + '가지). 이 화면이 지어낸 분류가 아닙니다.'],
+        ['운용사', '지금 ' + fmtN(comps.size) + '개 운용사가 실려 있습니다.'],
+        ['설정액 · 위험등급 · 총보수', '총보수 칸은 <strong>가장 싼 클래스</strong> 기준으로 거릅니다. 위험등급은 숫자가 아니라 원천이 준 문자열 등급입니다.'],
+        ['수익률 기간', '목록의 수익률 열을 바꿉니다. 수익률로 정렬해 두었다면 정렬 기준도 같이 바뀝니다.'],
+        ['보유종목 있는 것만', '체크하면 보유종목이 실제로 온 ' + fmtN(withHold) + '개만 남습니다. 채권형 · MMF 는 대개 여기서 빠집니다.'],
+        ['조건 초기화', '검색어와 모든 칸을 한 번에 되돌립니다.'],
+        ['더 보기', '목록은 ' + fmtN(PAGE) + '개씩 그립니다. 위에 적힌 건수는 <strong>조건에 맞는 전체</strong> 수라서 표에 보이는 줄 수와 다릅니다.'],
+      ],
+      example: '통장에 <strong>K55301…</strong> 만 찍혀 있다면 그 코드를 그대로 검색창에 넣으십시오 — 그 클래스를 가진 펀드가 나오고, 줄을 펼치면 <strong>클래스별</strong> 표에서 해당 줄이 표시됩니다. 반대로 <strong>삼성전자</strong> 를 넣으면 그 종목을 담은 펀드가 나옵니다.',
+      caution: '목록의 <strong>총보수 열과 필터는 최저 클래스 기준</strong>입니다. 실제로 가입하는 클래스의 보수는 더 높은 경우가 많으니(지금 ' + fmtN(feeVaries) + '개 펀드가 클래스마다 다릅니다), 줄을 펼쳐 클래스별 표를 보고 고르십시오.',
+    },
+    {
+      tab: '비교 · 중복도',
+      when: '여러 펀드를 <strong>같이 담아도 분산이 되는지</strong>를 볼 때 씁니다. 분산이라고 생각한 조합이 실은 같은 것을 두 번 산 것인지가 여기서 갈립니다.',
+      steps: [
+        '<strong>펀드 찾기</strong> 탭에서 줄 맨 왼쪽 <strong>⊕</strong> 를 눌러 담습니다. <strong>두 개 이상</strong>부터 비교가 되고, 최대 ' + fmtN(MAX_COMPARE) + '개까지 담깁니다.',
+        '이 탭으로 옮겨 옵니다. 담은 수가 위에 적혀 있고 <strong>비우기</strong> 로 한 번에 지웁니다.',
+        '<strong>두 펀드씩 겹침</strong> 표에서 짝마다 겹침 비율과 겹친 종목 수를 봅니다.',
+        '<strong>둘 이상이 담은 종목</strong> 표에서 어느 종목이 여러 펀드에 동시에 들어 있는지, 펀드마다 몇 %씩 줬는지 봅니다.',
+      ],
+      controls: [
+        ['⊕ (펀드 찾기에서)', '비교 대상으로 담습니다. 담기면 <strong>✓</strong> 로 바뀌고, 다시 누르면 뺍니다. 이 탭에는 담는 칸이 따로 없습니다.'],
+        ['겹침 비율', '두 펀드가 <strong>같은 종목에 준 비중 중 작은 쪽</strong>을 모두 더한 값입니다. 40% 라면 두 펀드의 40% 가 사실상 같은 자리에 있다는 뜻입니다.'],
+        ['겹친 종목 수', '한쪽이라도 비중이 오지 않은 종목이 있으면 비율을 내지 않고 <strong>겹친 종목 수만</strong> 싣습니다.'],
+        ['○ 표시', '담고는 있으나 <strong>비중이 원천에 없어</strong> 숫자를 쓸 수 없는 자리입니다. 0 이 아닙니다.'],
+      ],
+      example: '국내 대형주 펀드 둘을 담아 보면 겹침이 절반을 넘는 일이 흔합니다. 둘을 다 사도 분산은 생각만큼 늘지 않습니다.',
+      caution: '보유종목이 오지 않는 펀드(채권형 · MMF 등)는 겹침을 <strong>계산하지 않고 비웁니다</strong> — 겹치는 것이 없다는 뜻이 아닙니다. 보유종목이 실린 것은 ' + fmtN(FUNDS.length) + '개 중 ' + fmtN(withHold) + '개입니다.',
+    },
+    {
+      tab: '종목 → 펀드',
+      when: '특정 종목을 <strong>어느 펀드가 담고 있는지</strong> 거꾸로 찾을 때 씁니다.',
+      steps: [
+        '검색창에 <strong>종목 이름</strong>을 넣습니다(예: 삼성전자, NVIDIA). 지금 이 화면에 실린 종목은 ' + fmtN(secs.size) + '가지입니다.',
+        '그 종목을 담은 펀드가 <strong>비중이 큰 순서</strong>로 나옵니다.',
+        '표에서 펀드 · 유형 · 담은 종목 · 비중 · 설정액을 봅니다. <strong>줄을 누르면</strong> 표 아래에 그 펀드의 상세가 펼쳐집니다(펀드 찾기의 상세와 같은 내용).',
+      ],
+      controls: [
+        ['검색창', '<strong>종목 이름만</strong> 찾습니다. 펀드 이름 · 운용사로 찾을 때는 <strong>펀드 찾기</strong> 탭을 쓰십시오.'],
+        ['+N개 더', '한 펀드가 검색어에 걸리는 종목을 여럿 담고 있으면 <strong>비중이 가장 큰 하나</strong>만 줄에 싣고, 나머지가 몇 개인지를 이렇게 밝힙니다.'],
+        ['위의 건수 줄', '표는 200행까지만 그립니다. 그럴 때 <strong>몇 개 중 몇 개를 보여 주는지</strong>를 위에 적습니다.'],
+      ],
+      example: '<strong>엔비디아</strong> 와 <strong>NVIDIA</strong> 는 다른 글자입니다. 원천이 준 이름 그대로 찾으므로, 안 나오면 <strong>한글 · 영문을 바꿔서</strong> 한 번 더 넣어 보십시오.',
+      caution: '보유종목은 대개 <strong>분기 공시</strong>라 몇 달 전 기준일 수 있는데, 원천이 그 기준일을 주지 않습니다(' + fmtN(FUNDS.length) + '개 중 기준일이 붙은 것 ' + fmtN(datedHold) + '개). "지금 담고 있다" 가 아니라 <strong>"마지막 공시에 있었다"</strong> 로 읽으십시오.',
+    },
+    {
+      tab: '랭킹',
+      when: '어떤 펀드가 <strong>많이 올랐는지 · 크게 모였는지</strong>' + (flowOn ? ' · <strong>돈이 들어왔는지</strong>' : '') + '를 훑을 때 씁니다.',
+      steps: [
+        '<strong>대상</strong> 에서 유형을 고릅니다(전체, 또는 ' + fmtN(types.size) + '가지 유형 중 하나).',
+        '<strong>기간</strong> 을 고릅니다(1일 ~ 5년).',
+        '아래로 그 기간 수익률 <strong>상위 20 · 하위 20</strong> 과 <strong>설정액 상위 20</strong> 이 차례로 나옵니다'
+          + (flowOn ? ', 이어서 <strong>3개월 자금 유입 · 유출 상위 20</strong> 도 나옵니다.' : '.'),
+      ],
+      controls: [
+        ['대상', '유형 하나로 좁혀 <strong>같은 것끼리</strong> 비교합니다. 채권형과 주식형을 한 표에 놓으면 순위는 뜻이 없습니다.'],
+        ['기간', '3년 · 5년도 <strong>연 환산하지 않은 누적</strong> 수익률입니다. 3년 30% 를 연 30% 로 읽으면 안 됩니다.'],
+        ['순위표의 줄', '누르면 표 아래에 그 펀드의 상세가 펼쳐집니다 — 랭킹에서 본 이름을 다시 찾으러 갈 필요가 없습니다.'],
+        flowOn
+          ? ['3개월 자금 유입', '원천이 펀드에는 유입액을 주지 않아서, <strong>설정원본의 3개월 차이</strong>로 냅니다(지금 ' + fmtN(withFlow) + '개 대상). 순자산 차이를 쓰면 값이 올라 커진 펀드가 유입 상위로 올라오기 때문입니다.']
+          : ['3개월 자금 유입 (아직 없음)', '이 표는 <strong>아직 나오지 않습니다.</strong> 원천이 펀드에는 유입액을 주지 않아(ETF 에는 줍니다) <strong>설정원본의 차이</strong>로 내야 하는데, 그 이력이 3개월치가 안 쌓였습니다. 하루치 차이에 "3개월" 이라는 이름을 붙이지 않습니다 — 탭에 가시면 표 대신 그 사정이 적혀 있습니다.'],
+      ],
+      example: '3년 수익률 상위만 보고 고르면 <strong>그 3년에 맞았던 유형</strong>을 사는 것이 되기 쉽습니다. 대상을 유형으로 좁혀 같은 무대에서 비교하십시오.',
+      caution: '순위는 저장된 값이 아니라 화면이 그 자리에서 매깁니다. <strong>값이 빈 펀드는 순위에서 빼며 0 위로 놓지 않습니다</strong> — 그래서 줄 세운 모수가 표마다 다릅니다.',
+    },
+    {
+      tab: '수익률 검산',
+      when: '이 화면의 수익률을 <strong>믿어도 되는지</strong>, 그리고 어떤 칸이 왜 비었는지 확인할 때 봅니다.',
+      steps: [
+        '이 탭에는 조작할 것이 없습니다. <strong>읽는 화면</strong>입니다.',
+        '위 카드에서 검산한 펀드 수, <strong>기준가 계단이 있는 펀드</strong> 수(지금 ' + fmtN(stepped) + '개), 비운 칸 수를 봅니다.',
+        '<strong>무엇을 왜 비웠나</strong> 표에서 펀드별로 어느 기간을 무슨 까닭으로 비웠는지, 그리고 <strong>원천이 준 값은 얼마였는지</strong>를 봅니다.',
+      ],
+      controls: [
+        ['기준가 재산정(계단)', '분할 · 병합 등으로 기준가가 하루 만에 크게 뛴 자리입니다. 그 구간을 지나는 기간수익률은 기준가만으로 검산할 수 없어 비웁니다.'],
+        ['비운 칸', '원천이 준 값이 기준가로 다시 계산한 값과 어긋난 자리입니다. <strong>고쳐 쓰지 않고 비웁니다.</strong> 지금 ' + fmtN(dropped) + '개 펀드에 그런 칸이 있습니다.'],
+        ['원천이 준 값', '비운 자리에 원천이 무엇을 말했는지 그대로 남겨 둡니다 — 다른 화면에서 그 수를 보고 오신 분이 대조할 수 있게.'],
+      ],
+      example: '어떤 펀드의 3년 수익률이 비어 있다면 이 탭에서 그 펀드 이름을 찾아 보십시오. 값이 <strong>없어서</strong>가 아니라 <strong>검산을 통과하지 못해서</strong> 비운 것일 수 있습니다.',
+      caution: '검산은 <strong>같은 원천의 기준가 시계열</strong>로 한 것입니다. 원천이 통째로 틀렸다면 이 검산은 잡지 못합니다 — 1개월 이상 기간수익률은 아직 <strong>외부 원천으로 확인되지 않았습니다</strong>.',
+    },
+    {
+      tab: '사용법 (이 화면)',
+      when: '지금 보고 계신 화면입니다. 화면을 열 수 없는 사람에게 <strong>사용법만 따로</strong> 보낼 때도 씁니다.',
+      steps: [
+        '<strong>사용법 내려받기 (HTML)</strong> — 이 절만 담은 파일 하나를 받습니다. 브라우저만 있으면 열립니다.',
+        '<strong>사용법 내려받기 (PDF)</strong> — 미리 만들어 화면 안에 실어 둔 완성본을 그대로 받습니다.',
+        '<strong>사용법만 인쇄 · PDF 저장</strong> — 브라우저의 인쇄창으로 직접 뽑습니다. 인쇄 설정에서 <strong>배경 그래픽</strong>을 켜야 주황 머리말이 나옵니다.',
+        '오른쪽 위 <strong>KO / EN</strong> 으로 화면 전체의 언어를 바꿉니다. 사용법도 같이 바뀝니다.',
+      ],
+      controls: [
+        ['PDF 단추가 안 보일 때', '실어 둔 PDF 는 만든 날의 자료를 담습니다. 화면이 <strong>지금 세는 수</strong>와 PDF 에 적힌 수가 다르면 낡은 것이므로, 화면이 스스로 단추를 감추고 <strong>왜 없는지를 적습니다.</strong> 그때는 옆의 인쇄 단추로 직접 뽑으십시오.'],
+      ],
+      example: '사용법만 필요한 사람에게는 ' + fmtN(FUNDS.length) + '개 펀드가 통째로 든 이 화면 대신 <strong>내려받은 사용법 파일</strong>만 보내면 됩니다.',
+      caution: '내려받은 파일은 <strong>받은 날의 자료</strong>를 말합니다(지금 기준일 ' + esc(DATES.asOf || '미상') + '). 자료는 날마다 다시 걷히므로 기준일이 바뀌면 다시 받으십시오.',
+    },
   ] : [
-    ['Browse', 'Filter by region, asset class, category, manager, size, risk grade and fee. The search box also accepts <strong>fund codes, share-class codes, manager names and holdings</strong> — typing a stock name finds funds holding it. Click a row for holdings, sector mix, returns, risk metrics and per-class fees.'],
-    ['Compare', 'Put several funds side by side and see <strong>how much they overlap</strong>, computed from the weight both give the same security. This is where a "diversified" pair turns out to be the same bet twice.'],
-    ['Stock → Fund', 'The reverse lookup: type a security and get <strong>the funds holding it</strong>. When a fund holds several matching securities, the largest is shown and <strong>"+N"</strong> states how many more.'],
-    ['Rankings', 'Top funds by return and by size. Ranks are <strong>computed in the browser</strong>, not stored — withheld cells are excluded rather than ranked as zero.'],
-    ['Return Audit', 'Source returns are re-checked against each fund’s own base-price series. This tab records <strong>what was withheld and why</strong>.'],
+    {
+      tab: 'Browse',
+      when: 'Narrow a list down to the funds you care about, then see <strong>what one fund actually holds</strong>. This is the starting point.',
+      steps: [
+        'Type <strong>whatever you know</strong> into the search box — fund name, fund code (KR…), the <strong>share-class code (K55…)</strong> printed on your statement, the manager, or a <strong>security</strong> the fund might hold. All four are searched.',
+        'Narrow with the seven selects (region, asset class, category, manager, size, risk grade, fee). They apply <strong>together</strong>. The number in each option counts funds <strong>across all ' + fmtN(FUNDS.length) + '</strong>, not what is left after your other filters — for that, read the <strong>match count</strong> above the table.',
+        'Changing <strong>Return period</strong> switches the return column to that period (' + fmtN(PERIODS.length) + ' periods, 1D to 5Y).',
+        'Click a column header <strong>▽</strong> to sort by it; click again to reverse.',
+        '<strong>Click a row</strong> to expand the detail — base price, size, inception, risk grade, returns, risk metrics, the full holdings list, sector mix, <strong>per-class fees and codes</strong>, dealing terms, and links straight to the sources.',
+        'Use <strong>⊕</strong> at the left of a row to add a fund to the comparison basket.',
+      ],
+      controls: [
+        ['Search box', 'Searches <strong>four</strong> places, not one: the fund body (name, code, manager, category, benchmark), <strong>share-class codes</strong>, <strong>share-class names</strong>, and <strong>holding names</strong>.'],
+        ['Invests in', 'Where the money goes (domestic, overseas, mixed). The word "mixed" inside a category name means <strong>equity + bond</strong> — a different thing.'],
+        ['Asset class · Category', 'Categories are the source’s own names, used <strong>verbatim</strong> (' + fmtN(types.size) + ' of them). Nothing here is invented.'],
+        ['Manager', fmtN(comps.size) + ' managers are represented.'],
+        ['AUM · Risk · Fee', 'The fee filter uses the <strong>cheapest class</strong>. Risk grade is a text grade from the source, not a number.'],
+        ['Return period', 'Switches the return column; if you are sorting by return, the sort follows.'],
+        ['With holdings only', 'Keeps the ' + fmtN(withHold) + ' funds whose holdings actually arrived. Bond funds and MMFs usually drop out here.'],
+        ['Reset', 'Clears the query and every select at once.'],
+        ['Show more', 'The table draws ' + fmtN(PAGE) + ' rows at a time. The count above is the <strong>full match count</strong>, not the number of rows drawn.'],
+      ],
+      example: 'If your statement only shows <strong>K55301…</strong>, paste that code in: the fund holding that class appears, and expanding the row highlights that line in the <strong>share class</strong> table. Typing a stock name instead finds every fund holding it.',
+      caution: 'The <strong>fee column and fee filter use the cheapest class</strong>. The class you can actually buy often costs more — ' + fmtN(feeVaries) + ' funds here charge different fees by class — so expand the row and read the per-class table before deciding.',
+    },
+    {
+      tab: 'Compare',
+      when: 'Check whether holding several funds together actually diversifies — or is the same bet twice.',
+      steps: [
+        'In <strong>Browse</strong>, click <strong>⊕</strong> at the left of a row. Comparison starts at <strong>two</strong> funds and holds up to ' + fmtN(MAX_COMPARE) + '.',
+        'Switch to this tab. The count of selected funds is shown, with <strong>Clear</strong> to empty it.',
+        'Read <strong>Pairwise overlap</strong> for each pair: the overlap share and the number of shared securities.',
+        'Read <strong>Held by two or more</strong> to see which securities appear in several funds at once, and at what weight in each.',
+      ],
+      controls: [
+        ['⊕ (in Browse)', 'Adds a fund; it turns into <strong>✓</strong>, and clicking again removes it. There is no add control on this tab.'],
+        ['Overlap share', 'The sum of the <strong>smaller of the two weights</strong> on each shared security. 40% means 40% of both funds sits in the same place.'],
+        ['Shared count', 'If either side has a security with no published weight, the share is withheld and only the <strong>count</strong> of shared securities is shown.'],
+        ['○', 'Held, but the <strong>weight is not published</strong> by the source. It is not a zero.'],
+      ],
+      example: 'Two Korean large-cap funds routinely overlap by more than half. Buying both adds far less diversification than it looks.',
+      caution: 'Funds that publish no holdings (bond funds, MMFs) are <strong>left blank rather than computed</strong> — that is not a statement that they do not overlap. ' + fmtN(withHold) + ' of ' + fmtN(FUNDS.length) + ' funds carry holdings.',
+    },
+    {
+      tab: 'Stock → Fund',
+      when: 'The reverse lookup: find out <strong>which funds hold a given security</strong>.',
+      steps: [
+        'Type a <strong>security name</strong> (e.g. NVIDIA, 삼성전자). ' + fmtN(secs.size) + ' distinct securities are carried here.',
+        'Funds holding it are listed <strong>by weight, largest first</strong>.',
+        'The table gives fund, category, the matched holding, its weight and the fund’s size. <strong>Click a row</strong> to expand that fund’s detail below the table — the same detail as in Browse.',
+      ],
+      controls: [
+        ['Search box', 'Searches <strong>security names only</strong>. Use the <strong>Browse</strong> tab to search by fund or manager.'],
+        ['+N', 'When a fund holds several matching securities, only the <strong>largest</strong> is shown on the row and this states how many more there are.'],
+        ['Count line', 'The table draws at most 200 rows and states <strong>how many of the total</strong> are shown.'],
+      ],
+      example: 'Korean holdings arrive under Korean names and foreign ones under Latin names — if a search comes back empty, <strong>try the other script</strong>.',
+      caution: 'Holdings are typically <strong>quarterly disclosures</strong> and may be months old, and the source does not say as of when (' + fmtN(datedHold) + ' of ' + fmtN(FUNDS.length) + ' funds carry a date). Read the result as <strong>"was in the last disclosure"</strong>, not "holds right now".',
+    },
+    {
+      tab: 'Rankings',
+      when: 'Scan which funds rose most and grew largest' + (flowOn ? ', and which took in the most money' : '') + '.',
+      steps: [
+        'Pick a <strong>Scope</strong> — all funds, or one of ' + fmtN(types.size) + ' categories.',
+        'Pick a <strong>Period</strong> (1D to 5Y).',
+        'Below appear top 20 and bottom 20 by that return and <strong>top 20 by size</strong>'
+          + (flowOn ? ', followed by <strong>top 20 net inflow / outflow over 3 months</strong>.' : '.'),
+      ],
+      controls: [
+        ['Scope', 'Narrow to one category so you compare <strong>like with like</strong>. Ranking bond funds against equity funds in one table means nothing.'],
+        ['Period', '3Y and 5Y are <strong>cumulative, not annualised</strong>. 30% over three years is not 30% a year.'],
+        ['A ranking row', 'Click it to expand that fund’s detail below the table — no need to go back and search for the name.'],
+        flowOn
+          ? ['3M net inflow', 'The source publishes no flow for funds, so this is the <strong>3-month change in units-at-par</strong> (' + fmtN(withFlow) + ' funds qualify). Using net-asset differences would let a fund that merely went up rank as an inflow leader.']
+          : ['3M net inflow (not yet)', 'These tables are <strong>not shown yet.</strong> The source publishes no fund-level flow (it does for ETFs), so it has to be derived from changes in units-at-par, and less than three months of that history has accumulated. A one-day difference is not labelled "3 months" — the tab explains this in place of the tables.'],
+      ],
+      example: 'Picking from the 3Y leaderboard alone mostly buys <strong>whichever category worked over those three years</strong>. Narrow the scope and compare within it.',
+      caution: 'Ranks are computed in the browser, not stored. <strong>Funds with a blank value are excluded, never ranked as zero</strong> — which is why the ranked population differs from table to table.',
+    },
+    {
+      tab: 'Return Audit',
+      when: 'Decide whether to trust the returns on this screen, and find out why a particular cell is blank.',
+      steps: [
+        'Nothing to operate here — this tab is <strong>read-only</strong>.',
+        'The cards at the top give the number of funds checked, the number <strong>with a base-price step</strong> (' + fmtN(stepped) + ' now), and the number of cells withheld.',
+        '<strong>What was withheld, and why</strong> lists, per fund, which periods were withheld, for what reason, and <strong>what the source had said</strong>.',
+      ],
+      controls: [
+        ['Base-price step', 'A day where the base price jumped from a split or merger. Period returns spanning it cannot be checked from base prices alone, so they are withheld.'],
+        ['Withheld cell', 'A figure from the source that disagreed with the recomputation. It is <strong>withheld, not corrected</strong> — ' + fmtN(dropped) + ' funds have at least one.'],
+        ['Source said', 'What the source published for a withheld cell, kept verbatim so you can reconcile it against another screen.'],
+      ],
+      example: 'If a fund’s 3Y return is blank, look it up here: it may be blank because the figure <strong>failed the check</strong>, not because it was missing.',
+      caution: 'The check uses the <strong>same source’s base-price series</strong>. If the source were wrong throughout, this would not catch it — returns of one month and longer remain <strong>unverified against any outside source</strong>.',
+    },
+    {
+      tab: 'How to use (this tab)',
+      when: 'The tab you are reading. Also how to send <strong>just the instructions</strong> to someone who cannot open the screen.',
+      steps: [
+        '<strong>Download (HTML)</strong> — a single file containing this section only. It opens in any browser.',
+        '<strong>Download (PDF)</strong> — the finished PDF bundled inside this page, handed over as-is.',
+        '<strong>Print this page only / PDF</strong> — print through the browser. Enable <strong>background graphics</strong> or the orange headings disappear.',
+        '<strong>KO / EN</strong> at the top right switches the whole screen, this guide included.',
+      ],
+      controls: [
+        ['When the PDF button is missing', 'The bundled PDF describes the data as of the day it was built. If the counts on this screen no longer match the ones recorded in that PDF, it is stale — so the screen <strong>hides the button and says why</strong>. Use the print button instead.'],
+      ],
+      example: 'Someone who only needs the instructions does not need this ' + fmtN(FUNDS.length) + '-fund page — send them the downloaded guide instead.',
+      caution: 'A downloaded file describes <strong>the data of the day you downloaded it</strong> (as of ' + esc(DATES.asOf || 'an unstated date') + '). The data is re-collected daily; download again when the as-of date moves.',
+    },
   ];
 
+  // 먼저 한눈에. 어느 탭으로 가야 하는지만 고르는 자리다.
   var html = '<div class="grid grid-2" style="margin-top:20px">';
-  for (var t = 0; t < tabs.length; t += 1) {
-    html += '<div class="card"><div class="label">' + esc(tabs[t][0]) + '</div>' +
-      '<div class="note" style="margin-top:8px;font-size:15px;color:var(--ink)">' + tabs[t][1] + '</div></div>';
+  for (var t = 0; t < screens.length; t += 1) {
+    html += '<div class="card"><div class="label">' + esc((t + 1) + '. ' + screens[t].tab) + '</div>' +
+      '<div class="note" style="margin-top:8px;font-size:15px;color:var(--ink)">' + screens[t].when + '</div></div>';
   }
   html += '</div>';
+
+  // 그 다음 화면마다 자세히.
+  html += '<h3 style="margin-top:34px">' + esc(ko ? '화면별 사용법' : 'Screen by screen') + '</h3>';
+  html += '<div class="dim" style="font-size:14px;margin-top:-6px;line-height:1.7">' + esc(ko
+    ? '화면마다 순서 · 조작 항목 · 해보기 · 주의를 적었습니다. 탭 순서와 같은 차례입니다.'
+    : 'For each screen: the steps, what every control does, one worked example, and the caution specific to it. In tab order.') + '</div>';
+
+  for (var s = 0; s < screens.length; s += 1) {
+    var sc = screens[s];
+    html += '<h4 style="margin-top:26px;font-size:19px">' + esc((s + 1) + '. ' + sc.tab) + '</h4>';
+
+    html += '<ol style="margin:10px 0 0;padding-left:22px;line-height:1.8;font-size:15px">';
+    for (var st = 0; st < sc.steps.length; st += 1) html += '<li style="margin-bottom:4px">' + sc.steps[st] + '</li>';
+    html += '</ol>';
+
+    if (sc.controls && sc.controls.length) {
+      html += '<div class="table-wrap" style="margin-top:14px"><table><thead><tr>' +
+        '<th style="width:26%">' + esc(ko ? '조작 항목' : 'Control') + '</th>' +
+        '<th>' + esc(ko ? '하는 일' : 'What it does') + '</th></tr></thead><tbody>';
+      for (var cn = 0; cn < sc.controls.length; cn += 1) {
+        html += '<tr><td style="font-weight:600;color:var(--ink)">' + esc(sc.controls[cn][0]) + '</td>' +
+          '<td style="line-height:1.6">' + sc.controls[cn][1] + '</td></tr>';
+      }
+      html += '</tbody></table></div>';
+    }
+
+    html += '<div class="grid grid-2" style="margin-top:14px">' +
+      '<div class="card"><div class="label">' + esc(ko ? '해보기' : 'Try this') + '</div>' +
+        '<div class="note" style="margin-top:8px;font-size:15px;color:var(--ink)">' + sc.example + '</div></div>' +
+      '<div class="card"><div class="label">' + esc(ko ? '주의' : 'Watch out') + '</div>' +
+        '<div class="note" style="margin-top:8px;font-size:15px;color:var(--ink)">' + sc.caution + '</div></div>' +
+      '</div>';
+  }
 
   // ── 숫자를 읽는 법. 이 화면이 조용히 오해를 부를 수 있는 지점만 모았다.
   html += '<h3 style="margin-top:34px">' + esc(ko ? '숫자를 읽는 법' : 'How to read the numbers') + '</h3>';
