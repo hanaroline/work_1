@@ -615,9 +615,15 @@ check('총보수를 0 으로 지어내지 않는다', !feeInvented);
   const help = (await page.locator('#help-body').innerText().catch(() => '')) || '';
   check('사용법 탭이 그려진다', help.length > 400, `${help.length}자`);
 
-  const cards = await page.locator('#help-body .card').count();
-  const tabCount = await page.locator('.tabs button[data-tab]').count();
-  check('탭마다 설명이 있다', cards === tabCount - 1, `설명 ${cards}개 / 탭 ${tabCount}개(사용법 제외)`);
+  // 탭 하나가 사용법에서 빠지면, 그 화면은 아무도 쓰는 법을 모르는 채 남는다.
+  // 그래서 카드 수를 세지 않고 **탭 이름이 화면별 사용법의 제목으로 있는지**를
+  // 본다 — 카드 수를 세면 사용법의 짜임새를 바꿀 때마다 시험이 같이 틀어지고,
+  // 정작 "설명이 빠진 탭" 은 못 잡는다(딴 탭 설명이 두 장이어도 수는 맞는다).
+  const tabNames = await page.locator('.tabs button[data-tab]').allInnerTexts();
+  const headings = (await page.locator('#help-body h4').allInnerTexts()).join(' | ');
+  const missing = tabNames.filter((t) => !headings.includes(t.trim()));
+  check('탭마다 사용법이 있다', missing.length === 0,
+    missing.length ? `빠진 탭: ${missing.join(', ')}` : `탭 ${tabNames.length}개 · 제목 ${headings}`);
 
   // 빈칸을 0으로 읽지 말라는 것이 이 화면의 가장 중요한 약속이다. 그 약속이
   // 사용법에서 빠지면 사용자는 빈칸을 0으로 읽는다.
