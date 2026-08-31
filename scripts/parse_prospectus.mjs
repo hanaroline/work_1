@@ -37,6 +37,7 @@ const ASSETS = [
   [/Micron|MU UW/i, '마이크론 테크놀로지'],
   [/Applied Materials|AMAT/i, '어플라이드 머티어리얼즈'],
   [/Broadcom|AVGO|브로드컴/i, '브로드컴'],
+  [/Tesla|TSLA|테슬라/i, '테슬라'],
   [/Palantir|PLTR/i, '팔란티어 테크'],
 ];
 const parseUnderlyings = (s) => {
@@ -102,9 +103,18 @@ function parseBlock(text) {
   const volLine = (text.match(/기초자산가격 변동성\s*\n\s*\t?\s*([^\n]+)/) || [])[1] || '';
   p.volatility = [...volLine.matchAll(/-\s*([^:]+?)\s*:\s*([\d.]+)%/g)]
     .map((m) => ({ asset: parseUnderlyings(m[1])[0] || clean(m[1]), vol: Number(m[2]) }));
+  /**
+   * 상관계수 쌍 이름은 쉼표로 나누면 안 된다 — "Tesla, Inc.,팔란티어 테크" 처럼 회사명 자체에
+   * 쉼표가 들어가는 표기가 있어 셋으로 쪼개진다. 그러면 몬테카를로의 corrMatrix() 가 이름을
+   * 못 찾아 상관계수를 조용히 0 으로 두고 돌아버린다(경고 없음). 기초자산과 똑같이
+   * 알려진 자산을 등장 순서대로 찾는 방식으로 뽑는다.
+   */
   const corrLine = (text.match(/상관계수\s*\n\s*\t?\s*([^\n]+)/) || [])[1] || '';
   p.correlation = [...corrLine.matchAll(/-\s*([^:]+?)\s*:\s*(-?[\d.]+)(?!%)/g)]
-    .map((m) => ({ pair: clean(m[1]).split(',').map((x) => parseUnderlyings(x)[0] || clean(x)).join(' · '), rho: Number(m[2]) }));
+    .map((m) => {
+      const names = parseUnderlyings(m[1]);
+      return { pair: (names.length === 2 ? names : [clean(m[1])]).join(' · '), rho: Number(m[2]) };
+    });
 
   // 조기상환 차수별 평가일·상환금액.
   // 리자드 회차는 한 칸에 두 갈래를 적어 "1)액면금액 × 110.00%" 처럼 번호가 앞에 붙는다.
@@ -180,6 +190,7 @@ function parseBlock(text) {
 
 const files = (await readdir(DIR)).filter((f) => /^prospectus_\d+\.txt$/.test(f));
 const out = {};
+const warn = [];
 for (const f of files) {
   const text = await readFile(`${DIR}/${f}`, 'utf8');
   const marks = [...text.matchAll(/종목명/g)].map((m) => m.index);
@@ -197,7 +208,37 @@ for (const f of files) {
     items,
   };
   console.log(`${f}: 제${out[rcp].range}회 ${items.length}건 / 청약 ${out[rcp].offer}`);
+
+  /**
+   * 조용히 틀리는 것을 막는다. 기초자산 표기는 회차마다 제각각이라 ASSETS 표에 없는
+   * 새 종목이 들어오면 목록에서 통째로 빠지는데, 변동성·상관계수는 그대로 들어오므로
+   * 개수가 어긋난다. 이 어긋남이 유일한 신호다 — 놓치면 두 종목 상품이 한 종목으로
+   * 잡히고 몬테카를로가 상관계수 없이 돌아간다.
+   */
+  for (const it of items) {
+    const nu = it.underlyings.length;
+    if (nu !== it.volatility.length) {
+      warn.push(`제${it.no}회 기초자산 ${nu}종인데 변동성은 ${it.volatility.length}종 — ASSETS 표에 없는 종목이 있다`);
+    }
+    const want = (nu * (nu - 1)) / 2;
+    if (it.correlation.length !== want) {
+      warn.push(`제${it.no}회 상관계수 ${it.correlation.length}쌍 (기초자산 ${nu}종이면 ${want}쌍이어야 함)`);
+    }
+    for (const c of it.correlation) {
+      const names = c.pair.split(' · ');
+      if (names.length !== 2 || names.some((n) => !it.underlyings.includes(n))) {
+        warn.push(`제${it.no}회 상관계수 쌍 "${c.pair}" 이 기초자산과 이름이 다르다 — 시뮬레이션에서 0 으로 처리된다`);
+      }
+    }
+  }
 }
 
 await writeFile(OUT, JSON.stringify(out, null, 2));
 console.log(`\n${OUT} 저장`);
+if (warn.length) {
+  console.log(`\n★ 정합성 경고 ${warn.length}건`);
+  for (const line of warn) console.log(`  - ${line}`);
+  process.exitCode = 1;
+} else {
+  console.log('정합성 검사 통과 — 기초자산·변동성·상관계수 개수와 이름이 모두 맞는다');
+}

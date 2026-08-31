@@ -12,9 +12,9 @@
  */
 import { readFile } from 'node:fs/promises';
 import pptxgen from 'pptxgenjs';
-import { analyze, kindOf, tierOf, TIER_CUT } from './lib/els-analysis.mjs';
+import { analyze, kindOf, tierOf, unitOf, TIER_CUT } from './lib/els-analysis.mjs';
 
-const A = await analyze(process.argv[2] || '20260825000251');
+const A = await analyze(process.argv[2]);   // 인자가 없으면 가장 최근 공시 회차
 const OUT = 'els-sales-deck.pptx';
 
 // ── 미래에셋 팔레트 ─────────────────────────────────────────────────────────
@@ -32,6 +32,9 @@ const f1 = (v, d = 1) => (v == null || Number.isNaN(v) ? '–' : v.toFixed(d));
 const sgn = (v, d = 1) => (v == null ? '–' : (v >= 0 ? '+' : '') + v.toFixed(d));
 const won = (n) => (n == null ? '–' : Math.round(n).toLocaleString('ko-KR'));
 const dot = (s) => (s || '').replace(/-/g, '.');
+// 공정가격은 상품 통화 그대로 적는다. 달러청약 상품(액면 USD 10,000)을 "원"으로
+// 찍으면 환위험이 있는 상품을 원화 상품으로 읽게 만든다.
+const fv = (it) => `${won(it.fairValue)}${it.currency === 'KRW' ? '원' : unitOf(it)}`;
 const byNo = (n) => A.items.find((i) => i.no === n);
 
 // 온라인 전용 — 홈페이지 상품명 끝의 e. 영업점 창구 청약이 안 되므로 상담에서 먼저 말해야 한다.
@@ -44,6 +47,9 @@ const ONLINE = new Set(
     .map(Number),
 );
 const onl = (it) => (ONLINE.has(it.no) ? ' (온라인 전용)' : '');
+// 시세 수집이 짧게 돌아와 직전 종가를 이월한 기초자산. 백테스트(A)의 꼬리가
+// 실관측이 아니므로 자료에 밝힌다.
+const STALE = w.ELS_DATA.history.stale || [];
 
 const pres = new pptxgen();
 pres.layout = 'LAYOUT_WIDE';
@@ -63,6 +69,7 @@ const slide = () => pres.addSlide();
 const P = A.plan;
 const REC = A.slots.map((s) => s.pick);
 const CAU = A.caution;
+const REST = A.items.filter((i) => !A.caution.includes(i));    // 주의 종목을 뺀 나머지
 const safest = A.safest[0];                                   // 손실 확률 최저
 const topRate = [...A.items].sort((a, b) => b.annualRate - a.annualRate)[0];
 const best = [...A.items].filter((i) => i.mcLoss).sort((a, b) => b.annualRate / b.mcLoss - a.annualRate / a.mcLoss)[0];
@@ -79,7 +86,7 @@ const perRisk = (i) => i.annualRate / i.mcLoss;
   s.addText(`제${A.items[0].no}~${A.items.at(-1).no}회\n${A.items.length}종`, {
     x: M, y: 1.06, w: 7.5, h: 1.7, fontFace: F, fontSize: 40, bold: true, color: WHITE, lineSpacing: 46, margin: 0,
   });
-  s.addText(`2026년 9월 1차 공모 · 일괄신고추가서류 ${A.filedOn} 공시 원문 기준`, {
+  s.addText(`공모 청약 ${dot(P.start)}~${dot(P.end)} · 일괄신고추가서류 ${A.filedOn} 공시 원문 기준`, {
     x: M, y: 2.82, w: 7.5, h: 0.3, fontFace: F, fontSize: 13, color: WHITE, margin: 0,
   });
 
@@ -89,7 +96,7 @@ const perRisk = (i) => i.annualRate / i.mcLoss;
       `연 ${f1(best.annualRate, 1)}% · 손실 확률 ${f1(best.mcLoss)}% — 위험 1%당 연 ${f1(perRisk(best), 2)}%로 ${A.items.length}종 중 1위`],
     ['최고 수익률', `제${topRate.no}회 ${topRate.underlyings.join('·')}${onl(topRate)}`,
       `연 ${f1(topRate.annualRate, 1)}% (${topRate.currency === 'USD' ? '달러청약' : '원화'}) · 손실 확률 ${f1(topRate.mcLoss)}%`],
-    ['권하지 않음', `제${CAU.map((c) => c.no).join('·')}회 — 반도체 해외종목형 ${CAU.length}종`,
+    ['권하지 않음', `제${CAU.map((c) => c.no).join('·')}회 — 해외종목형 ${CAU.length}종`,
       `발행사 공시 공정가격 ${won(Math.min(...CAU.map((c) => c.fairValue)))}~${won(Math.max(...CAU.map((c) => c.fairValue)))}원 · 손실 확률 ${f1(Math.min(...CAU.map((c) => c.mcLoss)))}~${f1(Math.max(...CAU.map((c) => c.mcLoss)))}%`],
   ];
   s.addShape(pres.ShapeType.rect, { x: M, y: 3.34, w: 7.5, h: 3.16, fill: { color: WHITE }, line: { width: 0 } });
@@ -125,64 +132,78 @@ const perRisk = (i) => i.annualRate / i.mcLoss;
   });
 }
 
-// ══ 2. 18종 한 장 ═══════════════════════════════════════════════════════════
+// ══ 2. 전 종목 한 장 ═══════════════════════════════════════════════════════════
 {
   const s = slide();
   const y0 = head(s, `이번 회차 ${A.items.length}종 — 손실 확률로 줄 세우면`,
     `A는 발행사가 실제 과거 시세 ${A.head.simYearsWhole}년으로 돌린 결과, B는 같은 조건을 공시 변동성·상관계수로 4만 번 다시 돌린 결과. 등급은 B 하나로만 가릅니다 — ${TIER_CUT[0]}% 이하 방어적 / ${TIER_CUT[0]}~${TIER_CUT[1]}% 중간 / ${TIER_CUT[1]}% 초과 공격적.`);
 
   const hdr = ['회차', '기초자산', '연\n수익률', '조기상환\n주기', '배리어 (%)', '낙인\n(%)',
-    'B. 시뮬레이션\n손실 확률', '등급', 'A. 설명서상\n백테스트', '1만원의\n출발 가치'];
-  const colW = [0.72, 3.08, 0.78, 0.78, 2.28, 0.56, 1.16, 0.75, 1.02, 1.003];  // 합 12.093
+    'B. 시뮬레이션\n손실 확률', '등급', 'A. 설명서상\n백테스트 (검증기간)', '액면 1만 단위\n출발 가치'];
+  const colW = [0.70, 2.96, 0.74, 0.74, 2.20, 0.53, 1.10, 0.70, 1.353, 1.093];  // 합 12.093
+
+  // 종목 수가 회차마다 달라 글자 크기를 고정하면 표가 슬라이드를 넘긴다.
+  // 행 수에 맞춰 줄이되, 8pt 아래로는 읽을 수 없으니 그 밑으로는 내리지 않는다.
+  const FS = A.items.length >= 20 ? 8 : 8.5;
+  const RR = FS === 8 ? 0.218 : 0.232;          // 실측 렌더 행 높이 (셀 여백 [1,3,1,3] 기준)
+  const HDR = 0.38;                             // 두 줄짜리 머리행 실측 높이
 
   const rows = [hdr.map((t) => ({
-    text: t, options: { fill: SOFT, color: INK, bold: true, fontSize: 8.5, align: 'center', valign: 'middle' },
+    text: t, options: { fill: SOFT, color: INK, bold: true, fontSize: FS, align: 'center', valign: 'middle' },
   }))];
 
   for (const it of [...A.items].sort((a, b) => a.mcLoss - b.mcLoss)) {
     const bad = CAU.includes(it);
     const rec = REC.includes(it);
     const bg = bad ? 'FDF3F3' : rec ? 'FFF6EC' : WHITE;
-    const cell = (text, o = {}) => ({ text, options: { fill: bg, fontSize: 8.5, color: BODY, valign: 'middle', ...o } });
+    const cell = (text, o = {}) => ({ text, options: { fill: bg, fontSize: FS, color: BODY, valign: 'middle', ...o } });
     rows.push([
       cell(String(it.no), { align: 'center', bold: rec || bad, color: rec ? ACTIVE : bad ? BAD : INK }),
-      cell(it.underlyings.join('·') + (ONLINE.has(it.no) ? ' *' : ''), { fontSize: 8 }),
+      cell(it.underlyings.join('·') + (ONLINE.has(it.no) ? ' *' : ''), { fontSize: FS - 0.5 }),
       cell(`${f1(it.annualRate, 1)}%${it.currency === 'USD' ? ' $' : ''}`, { align: 'right', bold: true, color: INK }),
-      cell(`${it.every}M · ${it.steps}회`, { align: 'center', fontSize: 8 }),
-      cell(it.barriers.join('-') + (it.lizard ? ` (리자드 ${it.lizard.step}차 ${it.lizard.barrier})` : ''), { fontSize: 7.5, align: 'center' }),
+      cell(`${it.every}M · ${it.steps}회`, { align: 'center', fontSize: FS - 0.5 }),
+      cell(it.barriers.join('-') + (it.lizard ? ` (리자드 ${it.lizard.step}차 ${it.lizard.barrier})` : ''), { fontSize: FS - 1, align: 'center' }),
       cell(it.knockIn == null ? '없음' : String(it.knockIn), { align: 'center' }),
       cell(`${f1(it.mcLoss)}%`, { align: 'right', bold: true, color: TIER_INK[it.tier] }),
       { text: tierOf(it).name, options: { fill: TIER_BG[it.tier], color: TIER_INK[it.tier], bold: true, fontSize: 8.5, align: 'center', valign: 'middle' } },
-      cell(`${f1(it.simLoss, 2)}%`, { align: 'right' }),
-      cell(`${won(it.fairValue)}원`, { align: 'right', bold: bad, color: bad ? BAD : BODY }),
+      cell(`${f1(it.simLoss, 2)}%  (${f1(it.simYears)}년)`, {
+        align: 'right', color: it.simShort ? WARN : BODY, italic: it.simShort,
+      }),
+      cell(fv(it), { align: 'right', bold: bad, color: bad ? BAD : BODY }),
     ]);
   }
 
   // rowH 는 최소값이라 셀이 줄바꿈되면 표가 그만큼 아래로 자란다. 어떤 칸도
   // 두 줄이 되지 않게 폭과 글자 크기를 맞춰 두고, 아래 안내 상자를 그 높이에 붙인다.
-  const RH = 0.22;
+  // 행 높이는 rowH(최소값)보다 셀 여백이 좌우한다. 여백을 줄이지 않으면 20행이
+  // 슬라이드를 넘겨 마지막 한 줄 — 하필 손실 확률이 가장 높은 회차 — 이 잘린다.
   s.addTable(rows, {
-    x: M, y: y0, w: CW, colW, rowH: RH, border: { type: 'solid', color: HAIR, pt: 0.5 }, fontFace: F,
+    x: M, y: y0, w: CW, colW, rowH: RR - 0.04, margin: [1, 3, 1, 3],
+    border: { type: 'solid', color: HAIR, pt: 0.5 }, fontFace: F,
   });
 
-  // 실제 렌더 행 높이는 rowH(최소값)가 아니라 글자 크기가 정한다 — 8.5pt 에서 약 0.274".
+  // 실제 렌더 행 높이는 rowH(최소값)가 아니라 글자 크기가 정한다.
   // 표 아래 안내 상자는 그 실측치로 자리를 잡는다. 낮춰 잡으면 마지막 줄을 덮는다.
-  const yN = y0 + 0.36 + (rows.length - 1) * 0.274 + 0.10;
+  const yN = y0 + HDR + (rows.length - 1) * RR + 0.10;
   s.addShape(pres.ShapeType.rect, { x: M, y: yN, w: CW, h: 0.46, fill: { color: TINT }, line: { width: 0 } });
   s.addText([
     { text: '읽는 법 — ', options: { bold: true, color: INK } },
     { text: `주황 줄이 추천 ${REC.length}종, 붉은 줄이 권하지 않는 ${CAU.length}종. `, options: { color: BODY } },
     { text: '‘1만원의 출발 가치’는 발행사가 공시한 공정가격', options: { color: BODY } },
-    { text: `으로, 1만원을 넣는 순간의 이론 값어치입니다 — 맨 아래 ${CAU.length}종만 ${won(Math.max(...CAU.map((c) => c.fairValue)))}원 이하입니다.   `, options: { color: BODY } },
-    { text: '* 온라인 전용 (영업점 창구 청약 불가)', options: { color: MUTED } },
+    { text: `으로, 액면 1만 단위를 넣는 순간의 이론 값어치입니다 — 맨 아래 ${CAU.length}종만 ${won(Math.max(...CAU.map((c) => c.fairValue)))}원 이하입니다.   `, options: { color: BODY } },
+    { text: '* 온라인 전용 (영업점 창구 청약 불가). 달러청약 상품은 액면 USD 10,000 기준. A 열의 검증기간이 짧은 회차는 기울임 — 20년 상품과 같은 줄에서 비교할 수 없습니다.', options: { color: MUTED } },
   ], { x: M + 0.16, y: yN, w: CW - 0.32, h: 0.46, fontFace: F, fontSize: 9.5, valign: "middle", margin: 0, lineSpacing: 13 });
 }
 
 // ══ 3. 추천 3종 ═════════════════════════════════════════════════════════════
 {
   const s = slide();
-  const y0 = head(s, '고객 성향별 추천 3종',
-    '세 상품 모두 발행사 공시 공정가격이 1만원에 가깝습니다 — 제값을 주고 사는 상품이라는 뜻입니다.');
+  // 추천 3종의 공정가는 회차마다 액면 위아래로 갈린다. 문장을 박아 두면 틀린다.
+  const recGapMin = Math.min(...REC.map((i) => i.fairValueGap));
+  const y0 = head(s, `고객 성향별 추천 ${REC.length}종`,
+    recGapMin >= 0
+      ? `세 상품 모두 발행사 공시 공정가격이 액면 1만 단위를 넘습니다(+${f1(recGapMin, 2)}% 이상) — 제값 이상으로 사는 자리라는 뜻입니다.`
+      : '세 상품 모두 발행사 공시 공정가격이 액면 1만 단위에 가깝습니다 — 제값을 주고 사는 상품이라는 뜻입니다.');
 
   const cw = (CW - 0.36) / 3;
   A.slots.forEach((sl, i) => {
@@ -208,8 +229,8 @@ const perRisk = (i) => i.annualRate / i.mcLoss;
       ['손실 조건', it.knockIn == null
         ? `만기에 ${100 - it.barriers.at(-1)}% 초과 하락`
         : `${100 - it.knockIn}% 하락 경험 + 만기 ${100 - it.barriers.at(-1)}% 초과 하락`],
-      ['설명서 백테스트 (A)', `${A.head.simYearsWhole}년 ${it.simRuns.toLocaleString('ko-KR')}회 중 손실 ${f1(it.simLoss, 2)}% · 1차 상환 ${f1(it.simFirst)}%`],
-      ['1만원의 출발 가치', `${won(it.fairValue)}원 (${sgn(it.fairValueGap, 2)}%)`],
+      ['설명서 백테스트 (A)', `${f1(it.simYears)}년 ${it.simRuns.toLocaleString('ko-KR')}회 중 손실 ${f1(it.simLoss, 2)}% · 1차 상환 ${f1(it.simFirst)}%`],
+      ['액면 1만 단위 출발 가치', `${fv(it)} (${sgn(it.fairValueGap, 2)}%)`],
       ['위험 1%당 연 수익률', `${f1(perRisk(it), 2)}%`],
     ];
     rows.forEach(([k, v], j) => {
@@ -231,40 +252,55 @@ const perRisk = (i) => i.annualRate / i.mcLoss;
 {
   const s = slide();
   const y0 = head(s, `이번 회차에서 권하지 않는 ${CAU.length}종`,
-    '연 27~29.5%라는 수익률만 보면 가장 매력적으로 보이는 상품들입니다. 세 가지 지표가 모두 반대를 가리킵니다.');
+    `연 ${f1(Math.min(...CAU.map((c) => c.annualRate)), 1)}~${f1(Math.max(...CAU.map((c) => c.annualRate)), 1)}%라는 수익률만 보면 눈에 띄는 상품들입니다. 세 가지 지표가 모두 반대를 가리킵니다.`);
 
   // 좌: 세 상품 카드
   const cw = 7.2;
+  // 주의 종목은 회차마다 3~4종으로 달라진다. 칸 높이를 종목 수에 맞춰 잡지 않으면
+  // 넷째 카드가 아래 파란 상자를 덮는다.
+  const CH = CAU.length >= 4 ? 1.005 : 1.34, CB = CH - 0.16;
   CAU.forEach((it, i) => {
-    const y = y0 + i * 1.34;
-    s.addShape(pres.ShapeType.rect, { x: M, y, w: cw, h: 1.18, fill: { color: 'FDF3F3' }, line: { color: 'F0C9C9', width: 1 } });
-    s.addShape(pres.ShapeType.rect, { x: M, y, w: 0.05, h: 1.18, fill: { color: BAD }, line: { width: 0 } });
-    s.addText(`제${it.no}회`, { x: M + 0.24, y: y + 0.14, w: 1.2, h: 0.3, fontFace: F, fontSize: 15, bold: true, color: BAD, margin: 0 });
-    s.addText(it.underlyings.join(' · ') + onl(it), { x: M + 1.44, y: y + 0.17, w: 3.3, h: 0.26, fontFace: F, fontSize: 10.5, color: INK, margin: 0 });
-    s.addText(`연 ${f1(it.annualRate, 1)}%`, { x: M + 4.8, y: y + 0.13, w: 2.2, h: 0.3, fontFace: F, fontSize: 14, bold: true, color: MUTED, align: 'right', margin: 0 });
+    const y = y0 + i * CH;
+    s.addShape(pres.ShapeType.rect, { x: M, y, w: cw, h: CB, fill: { color: 'FDF3F3' }, line: { color: 'F0C9C9', width: 1 } });
+    s.addShape(pres.ShapeType.rect, { x: M, y, w: 0.05, h: CB, fill: { color: BAD }, line: { width: 0 } });
+    s.addText(`제${it.no}회`, { x: M + 0.24, y: y + 0.09, w: 1.2, h: 0.28, fontFace: F, fontSize: 14.5, bold: true, color: BAD, margin: 0 });
+    s.addText(it.underlyings.join(' · ') + onl(it), { x: M + 1.4, y: y + 0.12, w: 3.36, h: 0.24, fontFace: F, fontSize: 10, color: INK, margin: 0 });
+    s.addText(`연 ${f1(it.annualRate, 1)}%`, { x: M + 4.8, y: y + 0.08, w: 2.2, h: 0.28, fontFace: F, fontSize: 13.5, bold: true, color: MUTED, align: 'right', margin: 0 });
 
     const mini = [
-      ['1만원의 출발 가치', `${won(it.fairValue)}원`, BAD],
+      ['출발 가치 (액면 1만)', fv(it), BAD],
       ['손실 확률 (B)', `${f1(it.mcLoss)}%`, BAD],
       ['적용 변동성', `${f1(it.vmax)}%`, BAD],
       ['위험 1%당 연 수익률', `${f1(perRisk(it), 2)}%`, BAD],
     ];
     mini.forEach(([k, v, c], j) => {
       const mx = M + 0.24 + j * 1.72;
-      s.addText(k, { x: mx, y: y + 0.56, w: 1.66, h: 0.2, fontFace: F, fontSize: 8, color: MUTED, margin: 0 });
-      s.addText(v, { x: mx, y: y + 0.76, w: 1.66, h: 0.3, fontFace: F, fontSize: 13.5, bold: true, color: c, margin: 0 });
+      s.addText(k, { x: mx, y: y + 0.42, w: 1.66, h: 0.2, fontFace: F, fontSize: 8, color: MUTED, margin: 0 });
+      s.addText(v, { x: mx, y: y + 0.60, w: 1.66, h: 0.28, fontFace: F, fontSize: 13, bold: true, color: c, margin: 0 });
     });
   });
 
   // 우: 이유 세 가지
   const rx = M + cw + 0.24, rw = CW - cw - 0.24;
+  // 근거 문구는 회차마다 값이 달라진다. 회차 번호나 종목명을 문장에 박으면
+  // 다음 주에 조용히 틀린 자료가 된다 — 전부 이번 회차 값에서 뽑는다.
+  const restKrw = REST.filter((i2) => i2.currency === 'KRW');
+  const cauGapWorst = Math.min(...CAU.map((c) => c.fairValueGap));
+  const cauLossAvg = CAU.reduce((a, b) => a + b.mcLoss, 0) / CAU.length;
+  const restLossAvg = REST.reduce((a, b) => a + b.mcLoss, 0) / REST.length;
+  // 같은 종목이 여러 회차에 걸쳐 나오므로 이름으로 한 번씩만 센다.
+  // 중복을 두면 "마이크론 97.8%, 마이크론 97.8%" 같은 문장이 나간다.
+  const volTop = [...new Map(CAU.flatMap((c) => c.volatility).map((v) => [v.asset, v])).values()]
+    .sort((a, b) => b.vol - a.vol).slice(0, 2);
+  const idxVols = A.items.filter((i2) => kindOf(i2) === '지수').map((i2) => i2.vmax);
+
   const why = [
-    ['1. 넣는 순간 20% 넘게 깎입니다',
-      `발행사가 공시한 공정가격이 ${won(Math.min(...CAU.map((c) => c.fairValue)))}~${won(Math.max(...CAU.map((c) => c.fairValue)))}원입니다. 1만원을 내고 사는 시점의 이론 값어치가 그것뿐이라는 뜻입니다. 나머지 ${A.items.length - CAU.length}종은 ${won(Math.min(...A.items.filter((i) => !CAU.includes(i)).map((i) => i.fairValue)))}원 이상입니다.`],
-    ['2. 손실 확률이 3배입니다',
-      `${f1(Math.min(...CAU.map((c) => c.mcLoss)))}~${f1(Math.max(...CAU.map((c) => c.mcLoss)))}%. 나머지 ${A.items.length - CAU.length}종 평균은 ${f1(A.items.filter((i) => !CAU.includes(i)).reduce((a, b) => a + b.mcLoss, 0) / (A.items.length - CAU.length))}%입니다. 손실이 나면 평균 ${f1(Math.abs(CAU.reduce((a, b) => a + b.mcAvgLoss, 0) / CAU.length))}%를 잃습니다.`],
+    [`1. 넣는 순간 ${Math.abs(Math.round(cauGapWorst))}%까지 깎입니다`,
+      `발행사가 공시한 공정가격이 ${won(Math.min(...CAU.map((c) => c.fairValue)))}~${won(Math.max(...CAU.map((c) => c.fairValue)))}원입니다. 액면 1만원을 내고 사는 시점의 이론 값어치가 그것뿐이라는 뜻입니다. 나머지 원화 ${restKrw.length}종은 ${won(Math.min(...restKrw.map((i2) => i2.fairValue)))}원 이상입니다.`],
+    [`2. 손실 확률이 ${f1(cauLossAvg / restLossAvg, 1)}배입니다`,
+      `${f1(Math.min(...CAU.map((c) => c.mcLoss)))}~${f1(Math.max(...CAU.map((c) => c.mcLoss)))}%. 나머지 ${REST.length}종 평균은 ${f1(restLossAvg)}%입니다. 손실이 나면 평균 ${f1(Math.abs(CAU.reduce((a, b) => a + b.mcAvgLoss, 0) / CAU.length))}%를 잃습니다.`],
     ['3. 변동성이 감당 밖입니다',
-      `마이크론 ${f1(byNo(38064).volatility.find((v) => /마이크론/.test(v.asset)).vol, 2)}%, 어플라이드 ${f1(byNo(38063).volatility.find((v) => /어플라이드/.test(v.asset)).vol, 2)}% — 공시된 적용 변동성입니다. KOSPI200(${f1(byNo(38049).vmax, 2)}%)의 두 배 이상이고, 이 변동성이 그대로 손실 확률로 돌아옵니다.`],
+      `${volTop.map((v) => `${v.asset} ${f1(v.vol, 2)}%`).join(', ')} — 공시된 적용 변동성입니다. ${idxVols.length ? `이번 회차 지수형은 ${f1(Math.min(...idxVols), 1)}~${f1(Math.max(...idxVols), 1)}%로, 그 두 배를 넘습니다. ` : ''}이 변동성이 그대로 손실 확률로 돌아옵니다.`],
   ];
   why.forEach(([t, b], i) => {
     const y = y0 + i * 1.34;
@@ -272,11 +308,11 @@ const perRisk = (i) => i.annualRate / i.mcLoss;
     s.addText(b, { x: rx, y: y + 0.3, w: rw, h: 0.92, fontFace: F, fontSize: 9.5, color: BODY, margin: 0, lineSpacing: 14, valign: 'top' });
   });
 
-  const yN = y0 + 4.16;
+  const yN = y0 + Math.max(CAU.length * CH, 3 * 1.34) + 0.14;
   s.addShape(pres.ShapeType.rect, { x: M, y: yN, w: CW, h: 0.62, fill: { color: BLUE }, line: { width: 0 } });
   s.addText([
     { text: '상담에서 이렇게 말씀하세요  ', options: { bold: true, color: WHITE } },
-    { text: `“수익률만 보면 이게 제일 높아 보이는데, 발행사가 공시한 이 상품의 값어치가 1만원이 아니라 ${won(CAU[0].fairValue)}원입니다. 같은 위험을 지실 거면 제${topRate.no}회가 연 ${f1(topRate.annualRate, 1)}%에 손실 확률은 ${f1(topRate.mcLoss)}%로 절반 이하입니다.”`, options: { color: 'D9E3EE' } },
+    { text: `“수익률만 보면 이게 높아 보이는데, 발행사가 공시한 이 상품의 값어치가 1만원이 아니라 ${fv(CAU[0])}입니다. 같은 위험을 지실 거면 제${topRate.no}회가 연 ${f1(topRate.annualRate, 1)}%에 손실 확률은 ${f1(topRate.mcLoss)}%입니다.”`, options: { color: 'D9E3EE' } },
   ], { x: M + 0.2, y: yN, w: CW - 0.4, h: 0.62, fontFace: F, fontSize: 10, valign: 'middle', margin: 0, lineSpacing: 14 });
 }
 
@@ -287,12 +323,15 @@ const perRisk = (i) => i.annualRate / i.mcLoss;
     '모든 답변의 숫자는 발행사 공시 원문과 이번 회차 시뮬레이션에서 나온 값입니다. 확률을 낮게 말하지 말고, 크기를 함께 말씀하세요.');
 
   const R = REC[0];               // 추천 1순위 기준으로 답한다
-  const hs = byNo(38050);          // HSCEI 포함 상품
+  const HS = A.items.filter((i) => i.underlyings.includes('HSCEI'));   // 회차 번호를 박으면 다음 주에 틀린다
+  const hs = HS[0];
   const scripts = [
     ['“원금을 다 날릴 수도 있다면서요.”',
       `손실은 두 가지가 동시에 맞아야 납니다. 제${R.no}회는 3년 안에 한 번이라도 ${100 - R.knockIn}% 떨어진 적이 있고, 만기에도 ${100 - R.barriers.at(-1)}% 넘게 떨어져 있어야 손실입니다. 발행사가 실제 과거 시세 ${A.head.simYearsWhole}년으로 ${R.simRuns.toLocaleString('ko-KR')}번 돌린 결과 손실은 ${f1(R.simLoss, 2)}%였습니다. 다만 그 ${f1(R.mcLoss)}%가 현실이 되면 평균 ${f1(Math.abs(R.mcAvgLoss))}%를 잃습니다. 확률은 낮고 크기는 큽니다.`],
     ['“홍콩 ELS로 크게 물린 분들 많잖아요.”',
-      `맞습니다. 그때 문제의 핵심은 낙인이 높았다는 것이었습니다. 이번 회차에서 HSCEI가 들어간 건 제${A.items.filter((i) => i.underlyings.includes('HSCEI')).map((i) => i.no).join('·')}회 두 종뿐이고, 낙인은 ${A.items.filter((i) => i.underlyings.includes('HSCEI')).map((i) => i.knockIn).join('%·')}%입니다. 제${hs.no}회 기준 지금 지수에서 ${100 - hs.knockIn}%를 더 내려가야 손실 구간에 들어갑니다. 상품을 고르실 때 수익률이 아니라 이 낙인 숫자를 먼저 보시면 됩니다.`],
+      HS.length
+        ? `맞습니다. 그때 문제의 핵심은 낙인이 높았다는 것이었습니다. 이번 회차에서 HSCEI가 들어간 건 제${HS.map((i) => i.no).join('·')}회 ${HS.length}종뿐이고, 낙인은 ${HS.map((i) => i.knockIn).join('%·')}%입니다. 제${hs.no}회 기준 지금 지수에서 ${100 - hs.knockIn}%를 더 내려가야 손실 구간에 들어갑니다. 상품을 고르실 때 수익률이 아니라 이 낙인 숫자를 먼저 보시면 됩니다.`
+        : `맞습니다. 그때 문제의 핵심은 낙인이 높았다는 것이었습니다. 이번 회차에는 HSCEI가 들어간 상품이 아예 없습니다. 그리고 낙인은 ${Math.min(...A.items.filter((i) => i.knockIn != null).map((i) => i.knockIn))}~${Math.max(...A.items.filter((i) => i.knockIn != null).map((i) => i.knockIn))}% 구간입니다. 상품을 고르실 때 수익률이 아니라 이 낙인 숫자를 먼저 보시면 됩니다.`],
     ['“예금이 안전한데 굳이 왜요.”',
       `같은 자리에 놓고 비교하실 상품이 아닙니다. 예금은 원금이 보장되고 이건 아닙니다. 대신 제${R.no}회는 조건이 맞으면 연 ${f1(R.annualRate, 1)}%, 3년 ${f1(R.totalRate, 1)}%입니다. 예금을 대체하는 돈이 아니라, 예금에 넣지 않기로 한 돈의 일부로만 접근하셔야 합니다.`],
     ['“3년이나 묶이는 거 아닌가요.”',
@@ -358,12 +397,28 @@ const perRisk = (i) => i.annualRate / i.mcLoss;
   });
 
   const yS = y0 + 0.52 + must.length * 0.62 + 0.1;
-  s.addShape(pres.ShapeType.rect, { x: rx, y: yS, w: rw, h: 1.16, fill: { color: TINT }, line: { width: 0 } });
+  s.addShape(pres.ShapeType.rect, { x: rx, y: yS, w: rw, h: 1.78, fill: { color: TINT }, line: { width: 0 } });
   s.addText('이 자료의 근거', { x: rx + 0.18, y: yS + 0.12, w: rw - 0.36, h: 0.24, fontFace: F, fontSize: 10, bold: true, color: INK, margin: 0 });
+  // 확인된 것과 확인되지 않은 것을 갈라서 적는다. 한계를 빼면 나머지가 모두
+  // 검증된 값처럼 읽힌다.
+  const shortSample = A.items.filter((i2) => i2.simShort);
+  const caveat = [
+    shortSample.length
+      ? `제${shortSample.map((i2) => i2.no).join('·')}회는 기초자산 상장이 늦어 검증 표본이 ${f1(Math.min(...shortSample.map((i2) => i2.simYears)))}년뿐입니다 — A 열을 20년 상품과 같은 줄에서 비교할 수 없습니다.`
+      : '',
+    STALE.length
+      ? `${STALE.join('·')} 과거 시세는 최근 수집분이 짧게 들어와 직전 종가를 이월했습니다. A 의 마지막 며칠은 실관측이 아닙니다(B 는 공시 변동성만 쓰므로 영향 없음).`
+      : '',
+  ].filter(Boolean).join(' ');
+
   s.addText(
-    `조건·공정가격·적용 변동성·상관계수·백테스트(A)는 일괄신고추가서류(접수번호 ${A.rcp}, ${A.filedOn} 공시) 원문에서 그대로 옮겼습니다. 손실 확률(B)은 그 공시 변동성과 상관계수로 같은 조건을 4만 번 다시 돌린 값입니다. 수익률은 확정이 아니라 조건 충족 시의 상한입니다.`,
-    { x: rx + 0.18, y: yS + 0.36, w: rw - 0.36, h: 0.72, fontFace: F, fontSize: 8.5, color: BODY, margin: 0, lineSpacing: 12, valign: 'top' },
+    `조건·공정가격·적용 변동성·상관계수·백테스트(A)는 일괄신고추가서류(접수번호 ${A.rcp}, ${A.filedOn} 공시) 원문에서 그대로 옮겼습니다. 손실 확률(B)은 그 공시 변동성과 상관계수로 같은 조건을 4만 번 다시 돌린 값이며, 공시된 수치가 아닙니다. 수익률은 확정이 아니라 조건 충족 시의 상한입니다.`,
+    { x: rx + 0.18, y: yS + 0.36, w: rw - 0.36, h: 0.62, fontFace: F, fontSize: 8.5, color: BODY, margin: 0, lineSpacing: 12, valign: 'top' },
   );
+  if (caveat) {
+    s.addText([{ text: '확인 못한 것 — ', options: { bold: true, color: BAD } }, { text: caveat, options: { color: BODY } }],
+      { x: rx + 0.18, y: yS + 1.02, w: rw - 0.36, h: 0.62, fontFace: F, fontSize: 8.5, margin: 0, lineSpacing: 12, valign: 'top' });
+  }
 }
 
 /** 2단계 스크립트 문장 — 배리어를 "얼마나 떨어져야 하는지" 로 바꾼다 */
