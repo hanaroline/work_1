@@ -55,6 +55,11 @@ SUFFIX=''
 case "$BASE" in
   *-beta) BASE="${BASE%-beta}"; SUFFIX=' (베타 시안 — 고객 전달용 아님)' ;;
 esac
+# 핵심본도 같은 자리에서 꼬리를 뗀다 — 안 떼면 판이 「core」로 잡혀
+# 꼬리말이 「시황 브리핑」으로 뭉개진다.
+case "$BASE" in
+  *-core) BASE="${BASE%-core}"; SUFFIX=" 핵심본${SUFFIX}" ;;
+esac
 DATE="${BASE:0:10}"                                # 2026-08-12
 case "${BASE##*-}" in
   morning) LABEL='모닝 마켓 브리핑' ;;

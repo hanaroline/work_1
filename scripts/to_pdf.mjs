@@ -15,8 +15,10 @@ if (!src || !outdir) {
 }
 fs.mkdirSync(outdir, { recursive: true });
 const base = path.basename(src).replace(/\.html$/, '');
-// 핵심본(-core)은 다섯 쪽에 맞추는 시트라 여백과 꼬리말을 좁힌다.
-const DENSE = /-core\b/.test(base);
+// 핵심본은 여섯 쪽에 맞추는 시트라 여백과 꼬리말을 좁힌다. 보관본 이름
+// (`-core`)으로도, 단독 HTML 이름(`_핵심`)으로도 알아본다 — 이 스크립트가
+// 받는 것은 뒤쪽이라, 앞만 보다가 밀도 설정이 통째로 빠진 적이 있다.
+const DENSE = /-core\b|_핵심/.test(base);
 
 // 이 컨테이너에는 프리텐다드·맑은고딕이 없다. HTML 의 글꼴 스택은 고객 PC 를
 // 겨냥한 것이므로 건드리지 않고, PDF 를 뽑을 때만 여기 있는 한글 글꼴로 바꾼다.
@@ -31,7 +33,10 @@ const FONT = `html:root{
 const b = await chromium.launch({ executablePath: '/opt/pw-browsers/chromium' });
 const made = [];
 
-for (const [full, suffix] of [[false, '_요약'], [true, '_전체']]) {
+// 핵심본에는 접는 상세가 없다 &mdash; 요약본과 전체본이 한 글자도 다르지
+// 않으므로 한 개만 뽑는다. 두 개를 보내면 받는 쪽이 무엇이 다른지 찾는다.
+const JOBS = DENSE ? [[true, '']] : [[false, '_요약'], [true, '_전체']];
+for (const [full, suffix] of JOBS) {
   const name = path.join(outdir, base + suffix + '.pdf');
   const p = await b.newPage({ viewport: { width: 1280, height: 1000 } });
   await p.goto('file://' + path.resolve(src), { waitUntil: 'load' });

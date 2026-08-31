@@ -8,7 +8,7 @@
 import datetime
 
 from briefing_lib import (
-    VF_OK, VF_MD, VF_C, VF_1, VF_N,
+    CORE, VF_OK, VF_MD, VF_C, VF_1, VF_N,
     d, DK, DE, DD, DS, n, pct, bp, eok, jo, esc,
     L, TH, THP, perf_cells, tbl, sparkline, bar)
 
@@ -18,6 +18,9 @@ def _pos52(close, fw):
     if not lo or not hi or hi <= lo:
         return None
     return (close - lo) / (hi - lo) * 100.0
+
+
+_KNUM = {6: "여섯", 8: "여덟", 10: "열", 12: "열둘"}
 
 
 def _split(dct, k=8):
@@ -438,10 +441,16 @@ def _fallbacks(C):
                            "다를 수 있습니다 &mdash; <strong>자가 다르면 자가 다르다고 읽으십시오</strong> " + VF_C + ".")
     C["kr_idx_foot_en"] = ("<strong>The 1W column is a trailing five sessions</strong>, which differs from a "
                            "week-to-date measure &mdash; <strong>two rulers, not two answers</strong> " + VF_C + ".")
-    C["kr_stk_foot_ko"] = ("<strong>마흔 종목을 다 싣지 않고 위아래 여덟씩만</strong> 보입니다 &mdash; 가운데 "
-                           "종목은 그날을 설명하지 못합니다. 「사유」는 <strong>확인된 것만</strong> 답니다.")
-    C["kr_stk_foot_en"] = ("<strong>Only the top and bottom eight</strong> &mdash; the middle of the list does not "
-                           "explain the day. A reason is shown <strong>only where verified</strong>.")
+    # 몇 개를 싣는지는 판마다 다르다 &mdash; 전체 판은 위아래 여덟, 핵심본은 두 표를
+    # 나란히 세워 열씩. 꼬리말에 숫자를 박아 두면 **표와 어긋난다**(실제로 어긋났다).
+    _k = 10 if CORE[0] else 8
+    C["kr_stk_foot_ko"] = ("<strong>수집한 " + n(len(C["S"]), 0) + " 종목을 다 싣지 않고 위아래 "
+                           + _KNUM[_k] + "씩만</strong> "
+                           "보입니다 &mdash; 가운데 종목은 그날을 설명하지 못합니다. "
+                           "「사유」는 <strong>확인된 것만</strong> 답니다.")
+    C["kr_stk_foot_en"] = ("<strong>Only the top and bottom " + str(_k) + "</strong> &mdash; the middle of the "
+                           "list does not explain the day. A reason is shown "
+                           "<strong>only where verified</strong>.")
     C["us_stk_foot_ko"] = ("<strong>이 표는 미국 정규장 마감 값</strong>입니다 &mdash; 마감 뒤에 나온 실적이나 "
                            "시간외 움직임은 들어 있지 않습니다. <strong>「실적&middot;컨퍼런스콜」 절과 함께 "
                            "보십시오.</strong>")
@@ -493,13 +502,23 @@ def _hero(C):
     tone_ko, tone_en = N.get("tone",
                              "지수보다 <strong>무엇이 움직였는지</strong>를 보십시오",
                              "Look at <strong>what moved</strong>, not the index")
+
+    # 첫 줄은 **그날의 한마디**다. 「모닝 마켓 브리핑」은 판 이름일 뿐이라
+    # 첫 쪽에서 가장 큰 글자가 매일 같은 말을 하고 있었다 — 받아 보는 쪽에
+    # 아무것도 알려 주지 않는 자리다. 판 이름은 위 kicker 에 이미 있으므로,
+    # 큰 글자는 그날 시장이 한 일을 말하게 한다(narrative 의 headline).
+    # 없으면 예전처럼 판 이름으로 떨어진다 — **지어내지 않는다.**
+    if N.has("headline"):
+        hl_ko, hl_en = N.get("headline", kindko, kinden)
+    else:
+        hl_ko, hl_en = kindko, kinden
     C["hero"] = (
         '<div class="hero">\n'
         '  <p class="hero-kicker">' + L("%d년 %s" % (today.year, DK(today, True)),
                                         "%s %d" % (DE(today, True), today.year))
         + ' &middot; ' + L("미래에셋증권 마포WM &middot; " + kindko,
                            "Mirae Asset Securities, Mapo WM &middot; " + kinden) + '</p>\n'
-        '  <h1 class="hero-title">' + L(kindko, kinden) + '</h1>\n'
+        '  <h1 class="hero-title">' + L(hl_ko, hl_en) + '</h1>\n'
         '  <p class="hero-lede">' + L(a, b) + '</p>\n'
         '  <p class="hero-meta"><span class="tone mixed">' + L(tone_ko, tone_en) + '</span> &nbsp; '
         + L(("기준: 국내는 오늘 " + DK(today) + " 마감 &middot; 해외는 " + DK(C["prev_us"], True)

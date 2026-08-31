@@ -63,8 +63,13 @@ def main():
     beta = kind.endswith("-beta")
     if beta:
         kind = kind[:-len("-beta")]
-    name = "미래에셋_마포WM_%s%s_%s.html" % (
-        LABEL.get(kind, kind), "(베타)" if beta else "", date)
+    # 핵심본은 `<날짜>-<판>-core.html` 이다. 같은 날 정식판과 나란히 놓이므로
+    # 파일 이름 끝에 「_핵심」을 붙여 받는 쪽이 열지 않고도 가른다.
+    core = kind.endswith("-core")
+    if core:
+        kind = kind[:-len("-core")]
+    name = "미래에셋_마포WM_%s%s_%s%s.html" % (
+        LABEL.get(kind, kind), "(베타)" if beta else "", date, "_핵심" if core else "")
 
     outdir = sys.argv[2] if len(sys.argv) > 2 else os.path.dirname(src)
     os.makedirs(outdir, exist_ok=True)

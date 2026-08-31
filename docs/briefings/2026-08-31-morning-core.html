@@ -598,6 +598,20 @@ table.data td.barcell{width:118px;line-height:0;padding-top:9px}
 .hol li{font-size:12.5px;line-height:1.45;padding:1px 0;border-bottom:1px solid var(--hairline-soft)}
 .hol li b{font-weight:600;color:var(--ink)}
 .hol li em{font-style:normal;color:var(--primary-active);font-weight:600}
+/* 오늘의 결론 — **여섯 값을 한 줄에.** 껍데기는 3단 두 줄로 세우는데, 그러면
+   첫 쪽에서 카드 여섯이 세로로 두 뼘을 먹는다. 개장 전에 훑는 시트에서 지수·
+   거래대금·외국인·금리·환율은 **한 눈에 나란히** 놓여야 견줄 수 있다.
+   auto-fit 이라 좁은 화면에서는 스스로 줄을 접는다(340px 까지 넘침 0).      */
+.stat-grid.six{grid-template-columns:repeat(auto-fit,minmax(min(152px,100%),1fr))!important}
+.stat-grid.six .stat{padding:8px 10px}
+.stat-grid.six .stat-label{font-size:11.5px;letter-spacing:.3px}
+.stat-grid.six .stat-value{font-size:19px}
+.stat-grid.six .stat-chg{font-size:12px}
+.stat-grid.six .stat-note{font-size:10.5px;line-height:1.3;margin-top:3px}
+@media print{ .stat-grid.six{grid-template-columns:repeat(6,1fr)!important}
+  .stat-grid.six .stat{padding:5px 6px}
+  .stat-grid.six .stat-label{font-size:6.6pt} .stat-grid.six .stat-value{font-size:12pt}
+  .stat-grid.six .stat-chg{font-size:7.4pt} .stat-grid.six .stat-note{font-size:6.2pt;line-height:1.2} }
 h3.mini{font-size:15px;font-weight:600;color:var(--ink);margin:14px 0 6px}
 @media print{ h3.mini{font-size:10pt;margin:9px 0 4px;break-after:avoid} }
 @media print{
@@ -606,7 +620,21 @@ h3.mini{font-size:15px;font-weight:600;color:var(--ink);margin:14px 0 6px}
   .duo table.data caption{font-size:8.4pt}
   .trio{grid-template-columns:1fr 1fr 1fr;gap:0 9px}
   .hol{grid-template-columns:1fr 1fr 1fr;gap:1px 10px}
-  .hol li{font-size:7.6pt;line-height:1.3}
+  .hol li{font-size:7.3pt;line-height:1.22}
+}
+/* 머리말 — 큰 글자가 그날의 한마디를 하므로 46px 은 두 줄로 넘친다.
+   한 치수 줄이되 **여전히 쪽에서 가장 큰 글자**로 둔다.                  */
+.hero h1{font-size:34px;line-height:1.2;margin:0 0 12px}
+.hero-kicker{font-size:14px;margin:0 0 9px}
+.hero-lede{font-size:17.5px;line-height:1.5}
+.hero{margin-top:18px;padding-bottom:16px}
+.hero-meta{margin-top:12px;font-size:12.5px}
+@media print{
+  .hero h1{font-size:19pt;line-height:1.18;margin-bottom:6px}
+  .hero-kicker{font-size:8pt;margin-bottom:5px}
+  .hero-lede{font-size:10.4pt;line-height:1.42}
+  .hero-meta{margin-top:6px;font-size:6.8pt}
+  .hero{margin-top:0;padding-bottom:7px}
 }
 .shell > main > .section:first-child{margin-top:14px}
 .sec-num{font-size:12px;letter-spacing:1px}
@@ -635,24 +663,24 @@ table.data .sub{font-size:11px;line-height:1.28}
 footer.foot{margin-top:22px;padding:16px 0 24px;font-size:11px}
 @media print{
   .section{margin-top:22px}
-  .section{margin-top:7px}
-  table.data th,table.data td{padding:1.5px 5px;font-size:8.1pt;line-height:1.16}
-  table.data .sub{font-size:6.9pt;line-height:1.13}
+  .section{margin-top:5px}
+  table.data th,table.data td{padding:1.2px 4.5px;font-size:7.9pt;line-height:1.12}
+  table.data .sub{font-size:6.7pt;line-height:1.1}
   table.data caption{font-size:8.7pt;padding-bottom:2px}
-  .tbl-foot,table.data tfoot td{font-size:6.8pt;line-height:1.28}
-  p.lede{font-size:9.3pt;line-height:1.36;margin-bottom:5px}
-  .section > p{font-size:9.3pt;line-height:1.36;margin-bottom:4px}
+  .tbl-foot,table.data tfoot td{font-size:6.4pt;line-height:1.24}
+  p.lede{font-size:9.1pt;line-height:1.33;margin-bottom:4px}
+  .section > p{font-size:9.1pt;line-height:1.33;margin-bottom:3px}
   .stat-grid{margin-bottom:7px}
-  .callout{padding:12px 14px}
-  .callout p{font-size:9.2pt;line-height:1.4;margin-bottom:5px}
-  .soft-card{padding:9px 11px}
-  .soft-card p{font-size:8.8pt;line-height:1.38}
+  .callout{padding:9px 12px}
+  .callout p{font-size:9.0pt;line-height:1.36;margin-bottom:4px}
+  .soft-card{padding:7px 9px}
+  .soft-card p{font-size:8.5pt;line-height:1.34}
   .soft-card .q{font-size:9.6pt}
   .stat{padding:7px 9px}
   .stat-value{font-size:14.5pt}
   .stat-note{font-size:7pt;line-height:1.25}
   .section-title{font-size:14.5pt}
-  .table-wrap{margin-bottom:5px}
+  .table-wrap{margin-bottom:4px}
   footer.foot{margin-top:10px;padding:8px 0 6px;break-before:avoid}
   /* 다섯 쪽에 맞추려면 **블록을 통째로 붙들면 안 된다.** 전체 판은 짧은 표를
      붙들어 쪽 가운데가 갈리지 않게 하지만, 그 대가로 앞 쪽에 빈 띠가 남는다.
@@ -689,9 +717,9 @@ footer.foot{margin-top:22px;padding:16px 0 24px;font-size:11px}
 
 <div class="hero">
   <p class="hero-kicker"><span data-lang-ko>2026년 8월 31일(월)</span><span data-lang-en>Monday 31 August 2026</span> &middot; <span data-lang-ko>미래에셋증권 마포WM &middot; 모닝 마켓 브리핑</span><span data-lang-en>Mirae Asset Securities, Mapo WM &middot; Morning Market Briefing</span></p>
-  <h1 class="hero-title"><span data-lang-ko>모닝 마켓 브리핑</span><span data-lang-en>Morning Market Briefing</span></h1>
+  <h1 class="hero-title"><span data-lang-ko>금리가 값을 매기고, 반도체가 먼저 치렀습니다</span><span data-lang-en>Rates repriced. Semiconductors paid first.</span></h1>
   <p class="hero-lede"><span data-lang-ko><strong>금요일 밤에 값이 매겨진 것은 주식이 아니라 금리였고, 오늘 아침 우리가 받는 것은 그 계산서입니다.</strong> 워시 의장의 잭슨홀 연설 뒤 시카고상품거래소가 반영한 <strong>9월 인상 확률이 35.4% 에서 57.5% 로</strong> 뛰었고, 정책금리에 가장 민감한 <strong>2년물이 하루에 +14bp</strong> 오르는 사이 30년물은 +3bp 에 그쳐 곡선이 눌렸습니다. 값을 먼저 치른 것은 반도체였습니다 &mdash; 필라델피아 반도체지수 <strong>&minus;3.47%</strong>, 엔비디아 <strong>&minus;4.58%</strong> 인데 같은 날 아마존은 <strong>+3.97%</strong> 올랐습니다. 오늘 09시에 국내가 받는 것은 이 <strong>한 번치 마감</strong>과, 서울이 닫힌 뒤 움직인 환율입니다.</span><span data-lang-en><strong>What got repriced on Friday night was not equities but rates &mdash; and this morning we receive the bill.</strong> After Warsh's Jackson Hole speech, CME-implied odds of a September hike jumped from <strong>35.4% to 57.5%</strong>, and the policy-sensitive <strong>2-year yield rose +14bp in a day</strong> against just +3bp at 30 years, flattening the curve. Semiconductors paid first: the Philadelphia Semiconductor Index fell <strong>&minus;3.47%</strong> and Nvidia <strong>&minus;4.58%</strong>, while Amazon rose <strong>+3.97%</strong> the same session. What Korea takes in at 09:00 is that <strong>single close</strong>, plus the currency move that happened after Seoul shut.</span></p>
-  <p class="hero-meta"><span class="tone mixed"><span data-lang-ko>금리가 매긴 값을 받는 아침</span><span data-lang-en>The morning after rates repriced</span></span> &nbsp; <span data-lang-ko>기준: 국내&middot;해외 모두 8월 28일(금) 마감 &middot; 환율은 오늘 아침 8월 31일 &middot; 시세 파일 08-31 07:40 수집 &middot; 작성 2026-08-31(월) 13:50 KST &middot; <strong>오늘 09:00 국내 증시 개장</strong></span><span data-lang-en>Basis: closes of Friday 28 August; FX as of this morning; data collected 08-31 07:40; compiled 13:50 KST</span></p>
+  <p class="hero-meta"><span class="tone mixed"><span data-lang-ko>금리가 매긴 값을 받는 아침</span><span data-lang-en>The morning after rates repriced</span></span> &nbsp; <span data-lang-ko>기준: 국내&middot;해외 모두 8월 28일(금) 마감 &middot; 환율은 오늘 아침 8월 31일 &middot; 시세 파일 08-31 07:40 수집 &middot; 작성 2026-08-31(월) 14:42 KST &middot; <strong>오늘 09:00 국내 증시 개장</strong></span><span data-lang-en>Basis: closes of Friday 28 August; FX as of this morning; data collected 08-31 07:40; compiled 14:42 KST</span></p>
 </div>
 <div class="shell">
 
@@ -717,9 +745,10 @@ footer.foot{margin-top:22px;padding:16px 0 24px;font-size:11px}
     <li><a href="#flows"><span class="sn">03</span><span data-lang-ko>수급 &middot; 증시 주변자금</span><span data-lang-en>Flows and Money Around the Market</span></a></li>
     <li><a href="#global"><span class="sn">04</span><span data-lang-ko>간밤 해외</span><span data-lang-en>Overnight Overseas</span></a></li>
     <li><a href="#macro"><span class="sn">05</span><span data-lang-ko>금리 &middot; 환율 &middot; 원자재</span><span data-lang-en>Rates, FX and Commodities</span></a></li>
-    <li><a href="#calendar"><span class="sn">06</span><span data-lang-ko>일정 &middot; 체크포인트</span><span data-lang-en>Calendar</span></a></li>
-    <li><a href="#talking"><span class="sn">07</span><span data-lang-ko>고객 응대</span><span data-lang-en>Talking Points</span></a></li>
-    <li><a href="#verify"><span class="sn">08</span><span data-lang-ko>데이터 &middot; 검증</span><span data-lang-en>Data and Verification</span></a></li>
+    <li><a href="#deep"><span class="sn">06</span><span data-lang-ko>심층 분석 &mdash; 금요일 밤 채권시장이 매긴 값, 오늘 아침 국내가 받는 계산서</span><span data-lang-en>In Depth &mdash; What the bond market priced on Friday night, and the bill Korea receives this morning</span></a></li>
+    <li><a href="#calendar"><span class="sn">07</span><span data-lang-ko>일정 &middot; 체크포인트</span><span data-lang-en>Calendar</span></a></li>
+    <li><a href="#talking"><span class="sn">08</span><span data-lang-ko>고객 응대</span><span data-lang-en>Talking Points</span></a></li>
+    <li><a href="#verify"><span class="sn">09</span><span data-lang-ko>데이터 &middot; 검증</span><span data-lang-en>Data and Verification</span></a></li>
   </ul>
   <p class="sidenav-label"><span data-lang-ko>브리핑 목록</span><span data-lang-en>All editions</span></p>
   <ul class="sidenav-dates">
@@ -841,21 +870,45 @@ footer.foot{margin-top:22px;padding:16px 0 24px;font-size:11px}
 <p class="tbl-foot"><span data-lang-ko><strong>52주 최고는 네이버 지수 페이지 표기 그대로</strong>이며 최근 종가 흐름과 차이가 큽니다 &mdash; 검증 노트를 보십시오 <span class="vf none">NOT FOUND</span>.</span><span data-lang-en><strong>The 52-week high is as published by Naver</strong> and sits far above recent closes &mdash; see the verification notes <span class="vf none">NOT FOUND</span>.</span></p>
 </div>
 </div>
+<div class="duo">
 <div class="table-wrap">
 <table class="data compact">
-  <caption><span data-lang-ko>국내 주요 종목 &mdash; 8월 28일 마감, 단위 원</span><span data-lang-en>Korean stocks &mdash; 28 August close, in won</span></caption>
-  <thead><tr><th class="wrap"><span data-lang-ko>종목</span><span data-lang-en>Name</span></th><th class="n"><span data-lang-ko>종가</span><span data-lang-en>Close</span></th><th class="n"><span data-lang-ko>등락률</span><span data-lang-en>Change %</span></th><th class="n opt"><span data-lang-ko>검증</span><span data-lang-en>Verified</span></th></tr></thead>
+  <caption><span data-lang-ko>오른 쪽 &middot; 국내 종목 &mdash; 8월 28일 마감, 원</span><span data-lang-en>Gainers &middot; Korean stocks &mdash; 28 August, in won</span></caption>
+  <thead><tr><th class="wrap"><span data-lang-ko>종목</span><span data-lang-en>Name</span></th><th class="n"><span data-lang-ko>종가</span><span data-lang-en>Close</span></th><th class="n"><span data-lang-ko>등락률</span><span data-lang-en>Change %</span></th></tr></thead>
   <tbody>
-      <tr class="grp"><th class="wrap" colspan="4"><span data-lang-ko>오른 쪽</span><span data-lang-en>Gainers</span></th></tr>
-      <tr><th class="wrap hasnote">실리콘투<span class="sub"><span data-lang-ko>K뷰티 화장품 역직구 유통. 미국 매출 급증</span><span data-lang-en>Cross-border distributor of K-beauty; US sales growing fast</span></span></th><td class="n">53,300.00</td><td class="n"><span class="up">+8.44%</span></td><td class="n opt"><span class="vf ok">MARKET DATA</span></td></tr>
-      <tr><th class="wrap hasnote">SK이노베이션<span class="sub"><span data-lang-ko>정유·석유화학 + 배터리(SK온). 유가에 연동</span><span data-lang-en>Refining and chemicals plus batteries (SK On); tracks crude</span></span></th><td class="n">116,900.00</td><td class="n"><span class="up">+4.38%</span></td><td class="n opt"><span class="vf ok">MARKET DATA</span></td></tr>
-      <tr class="grp"><th class="wrap" colspan="4"><span data-lang-ko>내린 쪽</span><span data-lang-en>Losers</span></th></tr>
-      <tr><th class="wrap hasnote">삼성E&amp;A<span class="sub"><span data-lang-ko>&nbsp;</span><span data-lang-en>&nbsp;</span></span></th><td class="n">48,750.00</td><td class="n"><span class="down">&minus;2.69%</span></td><td class="n opt"><span class="vf ok">MARKET DATA</span></td></tr>
-      <tr><th class="wrap hasnote">HD현대중공업<span class="sub"><span data-lang-ko>조선. LNG선·특수선 수주 잔고가 실적을 좌우</span><span data-lang-en>Shipbuilding; LNG and naval order backlog drives earnings</span></span></th><td class="n">457,000.00</td><td class="n"><span class="down">&minus;2.77%</span></td><td class="n opt"><span class="vf ok">MARKET DATA</span></td></tr>
+      <tr><th class="wrap">실리콘투</th><td class="n">53,300.00</td><td class="n"><span class="up">+8.44%</span></td></tr>
+      <tr><th class="wrap">SK이노베이션</th><td class="n">116,900.00</td><td class="n"><span class="up">+4.38%</span></td></tr>
+      <tr><th class="wrap">삼성에스디에스</th><td class="n">243,000.00</td><td class="n"><span class="up">+3.85%</span></td></tr>
+      <tr><th class="wrap">펄어비스</th><td class="n">32,500.00</td><td class="n"><span class="up">+3.01%</span></td></tr>
+      <tr><th class="wrap">우리금융지주</th><td class="n">33,900.00</td><td class="n"><span class="up">+2.88%</span></td></tr>
+      <tr><th class="wrap">알테오젠</th><td class="n">320,000.00</td><td class="n"><span class="up">+2.73%</span></td></tr>
+      <tr><th class="wrap">두산에너빌리티</th><td class="n">88,200.00</td><td class="n"><span class="up">+2.68%</span></td></tr>
+      <tr><th class="wrap">삼성전기</th><td class="n">1,421,000.00</td><td class="n"><span class="up">+2.60%</span></td></tr>
+      <tr><th class="wrap">메리츠금융지주</th><td class="n">122,000.00</td><td class="n"><span class="up">+2.52%</span></td></tr>
+      <tr><th class="wrap">카카오</th><td class="n">36,850.00</td><td class="n"><span class="up">+2.36%</span></td></tr>
   </tbody>
 </table>
-<p class="tbl-foot"><span data-lang-ko><strong>마흔 종목을 다 싣지 않고 위아래 여덟씩만</strong> 보입니다 &mdash; 가운데 종목은 그날을 설명하지 못합니다. 「사유」는 <strong>확인된 것만</strong> 답니다.</span><span data-lang-en><strong>Only the top and bottom eight</strong> &mdash; the middle of the list does not explain the day. A reason is shown <strong>only where verified</strong>.</span></p>
 </div>
+<div class="table-wrap">
+<table class="data compact">
+  <caption><span data-lang-ko>내린 쪽 &middot; 국내 종목 &mdash; 8월 28일 마감, 원</span><span data-lang-en>Losers &middot; Korean stocks &mdash; 28 August, in won</span></caption>
+  <thead><tr><th class="wrap"><span data-lang-ko>종목</span><span data-lang-en>Name</span></th><th class="n"><span data-lang-ko>종가</span><span data-lang-en>Close</span></th><th class="n"><span data-lang-ko>등락률</span><span data-lang-en>Change %</span></th></tr></thead>
+  <tbody>
+      <tr><th class="wrap">삼성바이오로직스</th><td class="n">1,486,000.00</td><td class="n"><span class="down">&minus;6.78%</span></td></tr>
+      <tr><th class="wrap">SK하이닉스<span data-lang-ko><span class="sub">금리 급등에 미국의 반도체 규제와 CXMT 의 범용 D램 공급 증가 우려가 겹쳤습니다</span></span><span data-lang-en><span class="sub">The yield spike met US chip restrictions and concern over CXMT's commodity-DRAM supply</span></span></th><td class="n">1,653,000.00</td><td class="n"><span class="down">&minus;4.45%</span></td></tr>
+      <tr><th class="wrap">한국전력</th><td class="n">32,550.00</td><td class="n"><span class="down">&minus;4.12%</span></td></tr>
+      <tr><th class="wrap">SK스퀘어</th><td class="n">1,028,000.00</td><td class="n"><span class="down">&minus;3.75%</span></td></tr>
+      <tr><th class="wrap">삼성전자<span data-lang-ko><span class="sub">오늘 아침 LS증권이 HBM4 비중 확대와 수율 개선을 들어 커버리지를 상향했습니다</span></span><span data-lang-en><span class="sub">LS Securities raised its coverage this morning on HBM4 mix and yield improvement</span></span></th><td class="n">257,000.00</td><td class="n"><span class="down">&minus;3.38%</span></td></tr>
+      <tr><th class="wrap">레인보우로보틱스</th><td class="n">456,000.00</td><td class="n"><span class="down">&minus;3.18%</span></td></tr>
+      <tr><th class="wrap">HD현대중공업</th><td class="n">457,000.00</td><td class="n"><span class="down">&minus;2.77%</span></td></tr>
+      <tr><th class="wrap">삼성E&amp;A</th><td class="n">48,750.00</td><td class="n"><span class="down">&minus;2.69%</span></td></tr>
+      <tr><th class="wrap">에코프로</th><td class="n">90,200.00</td><td class="n"><span class="down">&minus;1.96%</span></td></tr>
+      <tr><th class="wrap">HD한국조선해양</th><td class="n">354,500.00</td><td class="n"><span class="down">&minus;1.66%</span></td></tr>
+  </tbody>
+</table>
+</div>
+</div>
+<p class="tbl-foot"><span data-lang-ko><strong>수집한 55 종목을 다 싣지 않고 위아래 열씩만</strong> 보입니다 &mdash; 가운데 종목은 그날을 설명하지 못합니다. 「사유」는 <strong>확인된 것만</strong> 답니다.</span><span data-lang-en><strong>Only the top and bottom 10</strong> &mdash; the middle of the list does not explain the day. A reason is shown <strong>only where verified</strong>.</span></p>
 </section>
 
 <section class="section" id="flows">
@@ -917,40 +970,51 @@ footer.foot{margin-top:22px;padding:16px 0 24px;font-size:11px}
 </div>
 <div class="table-wrap">
 <table class="data compact">
-  <caption><span data-lang-ko>S&amp;P 500 업종 ETF &mdash; 8월 28일</span><span data-lang-en>S&amp;P 500 sector ETFs &mdash; 28 August</span></caption>
-  <thead><tr><th class="wrap"><span data-lang-ko>업종</span><span data-lang-en>Sector</span></th><th class="n"><span data-lang-ko>등락률</span><span data-lang-en>Change %</span></th><th class="n opt"><span data-lang-ko>검증</span><span data-lang-en>Verified</span></th></tr></thead>
+  <caption><span data-lang-ko>S&amp;P 500 주요 업종 &mdash; 오른 3 &middot; 내린 3</span><span data-lang-en>S&amp;P 500 sectors &mdash; top and bottom 3</span></caption>
+  <thead><tr><th class="wrap"><span data-lang-ko>업종</span><span data-lang-en>Sector</span></th><th class="n"><span data-lang-ko>등락</span><span data-lang-en>Chg %</span></th></tr></thead>
   <tbody>
-      <tr><th class="wrap hasnote">커뮤니케이션<span class="sub"><span data-lang-ko>S&P500 커뮤니케이션(XLC). 알파벳·메타·넷플릭스</span><span data-lang-en>S&P 500 communication services (XLC); Alphabet, Meta, Netflix</span></span></th><td class="n"><span class="up">+1.42%</span></td><td class="n opt"><span class="vf ok">MARKET DATA</span></td></tr>
-      <tr><th class="wrap hasnote">임의소비재<span class="sub"><span data-lang-ko>S&P500 경기소비재(XLY). 아마존·테슬라 비중이 큼</span><span data-lang-en>S&P 500 consumer discretionary (XLY); Amazon and Tesla heavy</span></span></th><td class="n"><span class="up">+1.15%</span></td><td class="n opt"><span class="vf ok">MARKET DATA</span></td></tr>
-      <tr><th class="wrap hasnote">에너지<span class="sub"><span data-lang-ko>S&P500 에너지업종(XLE). 유가에 직접 연동</span><span data-lang-en>S&P 500 energy (XLE); moves directly with crude</span></span></th><td class="n"><span class="up">+0.63%</span></td><td class="n opt"><span class="vf ok">MARKET DATA</span></td></tr>
-      <tr><th class="wrap hasnote">필수소비재<span class="sub"><span data-lang-ko>S&P500 필수소비재(XLP). 식품·생활용품. 대표적 방어업종</span><span data-lang-en>S&P 500 consumer staples (XLP); the classic defensive sector</span></span></th><td class="n"><span class="up">+0.43%</span></td><td class="n opt"><span class="vf ok">MARKET DATA</span></td></tr>
-      <tr><th class="wrap hasnote">금융<span class="sub"><span data-lang-ko>S&P500 금융업종(XLF). 은행·보험·카드. 금리와 경기에 민감</span><span data-lang-en>S&P 500 financials (XLF); banks, insurers and card networks</span></span></th><td class="n"><span class="up">+0.38%</span></td><td class="n opt"><span class="vf ok">MARKET DATA</span></td></tr>
-      <tr><th class="wrap hasnote">소재<span class="sub"><span data-lang-ko>S&P500 소재업종(XLB). 화학·금속. 중국 경기에 민감</span><span data-lang-en>S&P 500 materials (XLB); chemicals and metals, China-sensitive</span></span></th><td class="n"><span class="down">&minus;0.09%</span></td><td class="n opt"><span class="vf ok">MARKET DATA</span></td></tr>
-      <tr><th class="wrap hasnote">헬스케어<span class="sub"><span data-lang-ko>S&P500 헬스케어(XLV). 제약·의료기기·보험</span><span data-lang-en>S&P 500 health care (XLV); pharma, devices and insurers</span></span></th><td class="n"><span class="down">&minus;0.24%</span></td><td class="n opt"><span class="vf ok">MARKET DATA</span></td></tr>
-      <tr><th class="wrap hasnote">부동산<span class="sub"><span data-lang-ko>S&P500 부동산·리츠(XLRE). 금리에 가장 민감한 업종</span><span data-lang-en>S&P 500 real estate (XLRE); the most rate-sensitive sector</span></span></th><td class="n"><span class="down">&minus;0.40%</span></td><td class="n opt"><span class="vf ok">MARKET DATA</span></td></tr>
-      <tr><th class="wrap hasnote">산업재<span class="sub"><span data-lang-ko>S&P500 산업재(XLI). 항공·기계·운송·방산</span><span data-lang-en>S&P 500 industrials (XLI); aerospace, machinery and transport</span></span></th><td class="n"><span class="down">&minus;0.93%</span></td><td class="n opt"><span class="vf ok">MARKET DATA</span></td></tr>
-      <tr><th class="wrap hasnote">유틸리티<span class="sub"><span data-lang-ko>S&P500 유틸리티(XLU). 전력·가스. 금리 내리면 유리</span><span data-lang-en>S&P 500 utilities (XLU); benefits when rates fall</span></span></th><td class="n"><span class="down">&minus;1.04%</span></td><td class="n opt"><span class="vf ok">MARKET DATA</span></td></tr>
-      <tr><th class="wrap hasnote">기술<span class="sub"><span data-lang-ko>S&P500 기술업종(XLK). 애플·MS·엔비디아가 큰 비중</span><span data-lang-en>S&P 500 technology (XLK); Apple, Microsoft and Nvidia dominate</span></span></th><td class="n"><span class="down">&minus;1.55%</span></td><td class="n opt"><span class="vf ok">MARKET DATA</span></td></tr>
+      <tr><th class="wrap hasnote">커뮤니케이션<span class="sub"><span data-lang-ko>S&P500 커뮤니케이션(XLC). 알파벳·메타·넷플릭스</span><span data-lang-en>S&P 500 communication services (XLC); Alphabet, Meta, Netflix</span></span></th><td class="n"><span class="up">+1.42%</span></td></tr>
+      <tr><th class="wrap hasnote">임의소비재<span class="sub"><span data-lang-ko>S&P500 경기소비재(XLY). 아마존·테슬라 비중이 큼</span><span data-lang-en>S&P 500 consumer discretionary (XLY); Amazon and Tesla heavy</span></span></th><td class="n"><span class="up">+1.15%</span></td></tr>
+      <tr><th class="wrap hasnote">에너지<span class="sub"><span data-lang-ko>S&P500 에너지업종(XLE). 유가에 직접 연동</span><span data-lang-en>S&P 500 energy (XLE); moves directly with crude</span></span></th><td class="n"><span class="up">+0.63%</span></td></tr>
+      <tr><th class="wrap hasnote">산업재<span class="sub"><span data-lang-ko>S&P500 산업재(XLI). 항공·기계·운송·방산</span><span data-lang-en>S&P 500 industrials (XLI); aerospace, machinery and transport</span></span></th><td class="n"><span class="down">&minus;0.93%</span></td></tr>
+      <tr><th class="wrap hasnote">유틸리티<span class="sub"><span data-lang-ko>S&P500 유틸리티(XLU). 전력·가스. 금리 내리면 유리</span><span data-lang-en>S&P 500 utilities (XLU); benefits when rates fall</span></span></th><td class="n"><span class="down">&minus;1.04%</span></td></tr>
+      <tr><th class="wrap hasnote">기술<span class="sub"><span data-lang-ko>S&P500 기술업종(XLK). 애플·MS·엔비디아가 큰 비중</span><span data-lang-en>S&P 500 technology (XLK); Apple, Microsoft and Nvidia dominate</span></span></th><td class="n"><span class="down">&minus;1.55%</span></td></tr>
   </tbody>
 </table>
-<p class="tbl-foot"><span data-lang-ko><strong>금리가 오른 날은 부동산&middot;유틸리티가 먼저 밀립니다</strong> &mdash; 배당으로 사는 자산이기 때문입니다 <span class="vf ok">CALCULATED</span>.</span><span data-lang-en><strong>When yields rise, real estate and utilities give way first</strong> &mdash; they are bought for yield <span class="vf ok">CALCULATED</span>.</span></p>
+<p class="tbl-foot"><span data-lang-ko><strong>금리가 오른 날은 부동산&middot;유틸리티가 먼저 밀립니다</strong> &mdash; 배당으로 사는 자산이기 때문입니다. 열한 업종 전부는 전체 판에 있습니다 <span class="vf ok">CALCULATED</span>.</span><span data-lang-en><strong>When yields rise, real estate and utilities give way first</strong> &mdash; they are bought for yield. All eleven sectors are in the full edition <span class="vf ok">CALCULATED</span>.</span></p>
 </div>
+</div>
+<div class="duo">
+<div class="table-wrap">
+<table class="data compact">
+  <caption><span data-lang-ko>오른 쪽 &middot; 미국 종목 &mdash; 8월 28일, 달러</span><span data-lang-en>Gainers &middot; US stocks &mdash; 28 August, in dollars</span></caption>
+  <thead><tr><th class="wrap"><span data-lang-ko>종목</span><span data-lang-en>Name</span></th><th class="n"><span data-lang-ko>종가</span><span data-lang-en>Close</span></th><th class="n"><span data-lang-ko>등락률</span><span data-lang-en>Change %</span></th></tr></thead>
+  <tbody>
+      <tr><th class="wrap">아마존<span data-lang-ko><span class="sub">경기소비재&middot;유통주 강세를 이끌었습니다. 같은 업종의 갭은 실적 전망 상향과 경영진 교체로 13% 가까이 급등했습니다</span></span><span data-lang-en><span class="sub">Led the consumer-discretionary and retail rally; peer Gap surged nearly 13% on raised guidance and a leadership change</span></span></th><td class="n">266.43</td><td class="n"><span class="up">+3.97%</span></td></tr>
+      <tr><th class="wrap">알파벳</th><td class="n">346.59</td><td class="n"><span class="up">+1.74%</span></td></tr>
+      <tr><th class="wrap">마이크로소프트</th><td class="n">513.53</td><td class="n"><span class="up">+1.68%</span></td></tr>
+      <tr><th class="wrap">애플<span data-lang-ko><span class="sub">애플TV 월 구독료를 12.99달러에서 14.99달러로 올렸습니다 &mdash; 가입자당 매출 기대가 주가를 밀어 올렸습니다</span></span><span data-lang-en><span class="sub">Raised Apple TV to $14.99 a month from $12.99; expectations for higher revenue per subscriber lifted the shares</span></span></th><td class="n">319.70</td><td class="n"><span class="up">+1.63%</span></td></tr>
+      <tr><th class="wrap">메타</th><td class="n">578.02</td><td class="n"><span class="up">+1.21%</span></td></tr>
+      <tr><th class="wrap">마이크론</th><td class="n">932.86</td><td class="n"><span class="down">&minus;0.27%</span></td></tr>
+  </tbody>
+</table>
 </div>
 <div class="table-wrap">
 <table class="data compact">
-  <caption><span data-lang-ko>미국 주요 종목 &mdash; 8월 28일, 단위 달러</span><span data-lang-en>US stocks &mdash; 28 August, in dollars</span></caption>
-  <thead><tr><th class="wrap"><span data-lang-ko>종목</span><span data-lang-en>Name</span></th><th class="n"><span data-lang-ko>종가</span><span data-lang-en>Close</span></th><th class="n"><span data-lang-ko>등락률</span><span data-lang-en>Change %</span></th><th class="n opt"><span data-lang-ko>검증</span><span data-lang-en>Verified</span></th></tr></thead>
+  <caption><span data-lang-ko>내린 쪽 &middot; 미국 종목 &mdash; 8월 28일, 달러</span><span data-lang-en>Losers &middot; US stocks &mdash; 28 August, in dollars</span></caption>
+  <thead><tr><th class="wrap"><span data-lang-ko>종목</span><span data-lang-en>Name</span></th><th class="n"><span data-lang-ko>종가</span><span data-lang-en>Close</span></th><th class="n"><span data-lang-ko>등락률</span><span data-lang-en>Change %</span></th></tr></thead>
   <tbody>
-      <tr class="grp"><th class="wrap" colspan="4"><span data-lang-ko>오른 쪽</span><span data-lang-en>Gainers</span></th></tr>
-      <tr><th class="wrap hasnote">아마존<span class="sub"><span data-lang-ko>전자상거래 + AWS 클라우드 &mdash; <span class="why">경기소비재&middot;유통주 강세를 이끌었습니다. 같은 업종의 갭은 실적 전망 상향과 경영진 교체로 13% 가까이 급등했습니다</span></span><span data-lang-en>E-commerce plus AWS cloud &mdash; <span class="why">Led the consumer-discretionary and retail rally; peer Gap surged nearly 13% on raised guidance and a leadership change</span></span></span></th><td class="n">266.43</td><td class="n"><span class="up">+3.97%</span></td><td class="n opt"><span class="vf ok">MARKET DATA</span></td></tr>
-      <tr><th class="wrap hasnote">알파벳<span class="sub"><span data-lang-ko>구글 검색·유튜브·클라우드. 자체 AI 칩(TPU) 보유</span><span data-lang-en>Google search, YouTube and cloud; builds its own TPUs</span></span></th><td class="n">346.59</td><td class="n"><span class="up">+1.74%</span></td><td class="n opt"><span class="vf ok">MARKET DATA</span></td></tr>
-      <tr class="grp"><th class="wrap" colspan="4"><span data-lang-ko>내린 쪽</span><span data-lang-en>Losers</span></th></tr>
-      <tr><th class="wrap hasnote">브로드컴<span class="sub"><span data-lang-ko>맞춤형 AI 칩(ASIC)·네트워크 반도체</span><span data-lang-en>Custom AI silicon (ASICs) and networking chips</span></span></th><td class="n">368.79</td><td class="n"><span class="down">&minus;0.74%</span></td><td class="n opt"><span class="vf ok">MARKET DATA</span></td></tr>
-      <tr><th class="wrap hasnote">테슬라<span class="sub"><span data-lang-ko>전기차·에너지저장. 자율주행 기대가 밸류에이션에 반영</span><span data-lang-en>EVs and energy storage; valuation carries autonomy expectations</span></span></th><td class="n">348.75</td><td class="n"><span class="down">&minus;1.71%</span></td><td class="n opt"><span class="vf ok">MARKET DATA</span></td></tr>
+      <tr><th class="wrap">엔비디아<span data-lang-ko><span class="sub">호실적 급등 하루 만의 차익 실현 &mdash; HSBC 는 목표주가를 상향했지만 금리 부담에 장중 내내 밀렸습니다</span></span><span data-lang-en><span class="sub">Profit-taking one day after its earnings surge; HSBC raised its target but the rate burden pressed it all session</span></span></th><td class="n">217.55</td><td class="n"><span class="down">&minus;4.58%</span></td></tr>
+      <tr><th class="wrap">AMD</th><td class="n">465.58</td><td class="n"><span class="down">&minus;2.33%</span></td></tr>
+      <tr><th class="wrap">TSMC</th><td class="n">417.52</td><td class="n"><span class="down">&minus;2.29%</span></td></tr>
+      <tr><th class="wrap">ASML</th><td class="n">1,696.16</td><td class="n"><span class="down">&minus;2.24%</span></td></tr>
+      <tr><th class="wrap">테슬라</th><td class="n">348.75</td><td class="n"><span class="down">&minus;1.71%</span></td></tr>
+      <tr><th class="wrap">브로드컴</th><td class="n">368.79</td><td class="n"><span class="down">&minus;0.74%</span></td></tr>
   </tbody>
 </table>
-<p class="tbl-foot"><span data-lang-ko><strong>이 표는 미국 정규장 마감 값</strong>입니다 &mdash; 마감 뒤에 나온 실적이나 시간외 움직임은 들어 있지 않습니다. <strong>「실적&middot;컨퍼런스콜」 절과 함께 보십시오.</strong></span><span data-lang-en><strong>These are regular-session closes</strong> &mdash; after-hours moves and post-close results are not in them. <strong>Read alongside the results section.</strong></span></p>
 </div>
+</div>
+<p class="tbl-foot"><span data-lang-ko><strong>이 표는 미국 정규장 마감 값</strong>입니다 &mdash; 마감 뒤에 나온 실적이나 시간외 움직임은 들어 있지 않습니다. <strong>「실적&middot;컨퍼런스콜」 절과 함께 보십시오.</strong></span><span data-lang-en><strong>These are regular-session closes</strong> &mdash; after-hours moves and post-close results are not in them. <strong>Read alongside the results section.</strong></span></p>
 <div class="trio">
 <div class="table-wrap">
 <table class="data compact">
@@ -1027,6 +1091,7 @@ footer.foot{margin-top:22px;padding:16px 0 24px;font-size:11px}
 </table>
 <p class="tbl-foot"><span data-lang-ko>미 국채는 <strong>재무부 확정 고시</strong>이고 <span class="vf ok">2 SOURCES</span>, 국고채는 한국은행 ECOS 입니다. <strong>한미 금리차는 같은 만기끼리 뺀 값</strong>입니다 <span class="vf ok">CALCULATED</span>. 만기 열한 개 전부는 아래 상세에 있습니다.</span><span data-lang-en>US yields are <strong>Treasury official fixings</strong> <span class="vf ok">2 SOURCES</span>; Korean yields come from ECOS. <strong>The gap is same-maturity subtraction</strong> <span class="vf ok">CALCULATED</span>. The full eleven-point curve is in the detail below.</span></p>
 </div>
+<div>
 <div class="table-wrap">
 <table class="data compact">
   <caption><span data-lang-ko>원화 환율 &mdash; 오늘 아침 8월 31일</span><span data-lang-en>The won &mdash; this morning, 31 August</span></caption>
@@ -1041,26 +1106,66 @@ footer.foot{margin-top:22px;padding:16px 0 24px;font-size:11px}
 </table>
 <p class="tbl-foot"><span data-lang-ko><strong>이 표는 뒤 통화가 1개입니다</strong> &mdash; 원/달러 1,384 는 달러 1개를 사는 데 1,384원이 든다는 뜻이라, <strong>숫자가 내려가면 원화가 세진 것</strong>입니다. 원화 크로스 넷은 받아 온 값이 아니라 <strong>원/달러에서 계산한 재정환율</strong>입니다 <span class="vf ok">CALCULATED</span> &mdash; 원화는 달러 말고 직접 거래되는 시장이 사실상 없어 국내 고시 환율도 전부 그렇게 만듭니다. <strong>달러 상대 통화는 빗금 방향이 반대</strong>이므로 아래 상세에 따로 두었습니다.</span><span data-lang-en><strong>In this table the second currency is the unit</strong> &mdash; USD/KRW 1,384 means one dollar costs 1,384 won, so <strong>a lower number is a stronger won</strong>. The four crosses are <strong>computed from USD/KRW</strong> <span class="vf ok">CALCULATED</span>, as Korean published rates are. <strong>The dollar crosses read the other way round</strong> and sit in the detail below.</span></p>
 </div>
+<div class="table-wrap">
+<table class="data compact">
+  <caption><span data-lang-ko>원자재 &middot; 기타 &mdash; 8월 28일</span><span data-lang-en>Commodities &mdash; 28 August</span></caption>
+  <thead><tr><th class="wrap"><span data-lang-ko>항목</span><span data-lang-en>Item</span></th><th class="n"><span data-lang-ko>종가</span><span data-lang-en>Close</span></th><th class="n"><span data-lang-ko>등락률</span><span data-lang-en>Change %</span></th></tr></thead>
+  <tbody>
+      <tr class="hl"><th class="wrap"><span data-lang-ko>브렌트유</span><span data-lang-en>Brent</span></th><td class="n">89.67</td><td class="n"><span class="up">+0.40%</span></td></tr>
+      <tr><th class="wrap"><span data-lang-ko>WTI</span><span data-lang-en>WTI</span></th><td class="n">84.79</td><td class="n"><span class="up">+1.67%</span></td></tr>
+      <tr><th class="wrap"><span data-lang-ko>금</span><span data-lang-en>Gold</span></th><td class="n">4,508.60</td><td class="n"><span class="up">+0.68%</span></td></tr>
+      <tr><th class="wrap"><span data-lang-ko>은</span><span data-lang-en>Silver</span></th><td class="n">67.08</td><td class="n"><span class="up">+0.13%</span></td></tr>
+      <tr><th class="wrap"><span data-lang-ko>구리</span><span data-lang-en>Copper</span></th><td class="n">6.63</td><td class="n"><span class="up">+1.07%</span></td></tr>
+      <tr><th class="wrap"><span data-lang-ko>천연가스</span><span data-lang-en>Nat gas</span></th><td class="n">2.88</td><td class="n"><span class="down">&minus;0.24%</span></td></tr>
+      <tr><th class="wrap"><span data-lang-ko>비트코인</span><span data-lang-en>Bitcoin</span></th><td class="n">78,462.47</td><td class="n"><span class="up">+0.81%</span></td></tr>
+  </tbody>
+</table>
+<p class="tbl-foot"><span data-lang-ko>유가는 <strong>야후 일봉 종가</strong>입니다 &mdash; 국내 보도가 쓰는 <strong>선물 정산가</strong>와 폭이 다를 수 있습니다 <span class="vf ok">MARKET DATA</span>.</span><span data-lang-en>Crude is the <strong>Yahoo daily close</strong>, which differs from the <strong>futures settlement</strong> Korean coverage quotes <span class="vf ok">MARKET DATA</span>.</span></p>
+</div>
+</div>
+</div>
+</section>
+
+<section class="section" id="deep">
+  <div class="section-rule"></div>
+  <span class="sec-num">06</span>
+  <h2 class="section-title"><span data-lang-ko>심층 분석 &mdash; 금요일 밤 채권시장이 매긴 값, 오늘 아침 국내가 받는 계산서</span><span data-lang-en>In Depth &mdash; What the bond market priced on Friday night, and the bill Korea receives this morning</span></h2>
+<p class="lede"><span data-lang-ko>케빈 워시 의장의 <strong>취임 후 첫 잭슨홀 기조연설</strong>이 금요일 밤 시장을 한 번에 돌려세웠습니다. 한 기사는 <strong>28분 동안 「인플레이션」이 25번</strong> 나왔다고 셌습니다. 이 절은 그 연설이 <strong>어느 자산에 얼마만큼 값으로 들어갔는지</strong>와, 그것이 <strong>오늘 09시 국내 계좌에 어떻게 닿는지</strong>만 다룹니다.</span><span data-lang-en>Kevin Warsh's <strong>first Jackson Hole keynote since taking office</strong> turned the market in a single session on Friday night. One report counted <strong>25 mentions of &ldquo;inflation&rdquo; in 28 minutes</strong>. This section covers only <strong>which assets absorbed how much of it</strong>, and <strong>how that reaches a Korean account at 09:00 today</strong>.</span></p>
+<div class="soft-grid">
+<div class="soft-card">
+  <p class="q"><span data-lang-ko>무엇이 확정됐고 무엇이 확정되지 않았나</span><span data-lang-en>What is settled and what is not</span></p>
+  <p><span data-lang-ko><strong>확정된 것은 가격이고, 확정되지 않은 것은 정책입니다.</strong> 워시 의장은 「물가 상승률이 충분한 속도로 둔화한다는 확신이 없으면 <strong>추가 대응이 필요하다</strong>」고 했고 2% 목표를 「확고하고 고정된 목표」라고 했지만, <strong>포워드 가이던스는 주지 않겠다고 선을 그었습니다</strong> &mdash; 9월 FOMC 에 대한 직접적인 단서는 없었습니다. 그런데도 시장은 <strong>인상 확률을 35.4% 에서 57.5% 로</strong> 올려 잡았고, 2년물 금리와 달러가 그만큼 움직였습니다. <strong>확률 57.5% 는 「반반보다 조금 더」라는 뜻이지 결정이 아닙니다.</strong> 한 기사는 워시 의장이 이 연설로 쌓은 신뢰를 지키려면 9월에 실제로 움직여야 하는데, 그 경우 <strong>11월 중간선거를 앞둔 트럼프 대통령과 충돌</strong>할 수 있다는 점을 짚었습니다.</span><span data-lang-en><strong>What is settled is a price; what is not settled is the policy.</strong> Warsh said that without confidence inflation is slowing sufficiently &ldquo;<strong>further action is needed</strong>,&rdquo; and called the 2% target &ldquo;firm and fixed&rdquo; &mdash; but <strong>explicitly declined to give forward guidance</strong>, offering no direct hint about the September FOMC. The market nonetheless moved hike odds from <strong>35.4% to 57.5%</strong>, and the 2-year yield and the dollar moved with them. <strong>57.5% means &ldquo;a little more than a coin flip,&rdquo; not a decision.</strong> One report notes that to keep the credibility this speech built, Warsh would have to act in September &mdash; which raises the prospect of <strong>a clash with President Trump ahead of November's midterms</strong>.</span></p>
+</div>
+<div class="soft-card">
+  <p class="q"><span data-lang-ko>왜 반도체가 먼저, 그리고 가장 크게 맞았나</span><span data-lang-en>Why semiconductors were hit first and hardest</span></p>
+  <p><span data-lang-ko><strong>두 가지가 겹쳤습니다.</strong> 첫째는 <strong>할인율</strong>입니다 &mdash; 이익이 먼 미래에 몰려 있는 종목일수록 금리가 오르면 현재가치가 크게 깎입니다. 그래서 금리에 민감한 2년물이 뛴 날 반도체가 &minus;3.47%, 은행주는 오히려 상승, 차입이 많은 산업재&middot;유틸리티는 하락이라는 <strong>교과서적인 갈림</strong>이 나왔습니다. 둘째는 <strong>업종 자체의 잣대가 바뀐 것</strong>입니다. 마벨은 매출&middot;이익을 모두 상회하고 데이터센터 매출이 +46% 늘었는데도 <strong>&minus;10.28%</strong> 였습니다 &mdash; <strong>다음 분기 이익률 전망</strong>이 눈높이를 밑돌았기 때문입니다. 여기에 미래에셋증권 서상영 상무는 <strong>미국의 반도체 규제</strong>와 <strong>창신메모리(CXMT)의 범용 D램 공급 증가 우려</strong>가 함께 작용했다고 설명했습니다. <strong>금리 하나로 설명되지 않습니다.</strong></span><span data-lang-en><strong>Two things overlapped.</strong> The first is <strong>the discount rate</strong>: the further out a company's profits sit, the more a rate rise cuts their present value. Hence the <strong>textbook split</strong> on a day the rate-sensitive 2-year jumped &mdash; semiconductors &minus;3.47%, banks actually higher, and debt-heavy industrials and utilities lower. The second is <strong>a change in the yardstick for the sector itself</strong>. Marvell beat on revenue and earnings with data-centre sales up 46%, and still fell <strong>&minus;10.28%</strong>, because <strong>next-quarter margin guidance</strong> missed. Suh Sang-young of Mirae Asset Securities adds that <strong>US chip restrictions</strong> and <strong>concern over CXMT's rising commodity-DRAM supply</strong> were working at the same time. <strong>Rates alone do not explain it.</strong></span></p>
+</div>
+<div class="soft-card">
+  <p class="q"><span data-lang-ko>국내 계좌에는 오늘 09시에 어떻게 닿나</span><span data-lang-en>How it reaches a Korean account at 09:00 today</span></p>
+  <p><span data-lang-ko><strong>세 갈래입니다.</strong> ① <strong>환율</strong> &mdash; 금요일 서울은 <strong>1,372.5원</strong>으로 13개월 만의 최저에 닫았는데 연설은 그 뒤였습니다. 주말 역외에서 1,380원 부근까지 갔다가 오늘 아침 <strong>1,377.4원</strong> 근처로, <strong>갭이 8원에서 5원 안팎으로 좁혀진 채</strong> 개장합니다. ② <strong>수급</strong> &mdash; 지난주 외국인이 <strong>8조 3,143억</strong>을 팔고 기타법인(자사주)이 <strong>8조 443억</strong>을 받았습니다. 금리 상승은 외국인 매도 쪽에 힘을 싣고, 자사주는 정해진 기간 동안 계속됩니다. ③ <strong>밸류에이션의 잣대</strong> &mdash; 마벨이 보여 준 「호실적으로는 부족하다」가 오늘 삼성전자&middot;SK하이닉스에도 적용됩니다. 다만 LS증권 정우성 연구원은 <strong>HBM4 비중이 1분기 5% 에서 2분기 약 35%</strong> 로 오르고 믹스 수율이 <strong>5%p 넘게</strong> 개선된 것으로 추정된다며, 그동안 할인 요인이던 양산성이 <strong>축소될 가능성</strong>을 들었습니다.</span><span data-lang-en><strong>Three channels.</strong> (1) <strong>The currency</strong> &mdash; Seoul closed Friday at <strong>1,372.5</strong>, a 13-month low, and the speech came afterwards. Offshore trading took it near 1,380 over the weekend and it sits around <strong>1,377.4</strong> this morning, so the market opens with <strong>the gap narrowed from about 8 KRW to roughly 5</strong>. (2) <strong>Flows</strong> &mdash; foreigners sold <strong>8.31tn KRW</strong> last week and other corporates (buybacks) absorbed <strong>8.04tn</strong>. Rising yields lend weight to the selling side; the buybacks run for a set period. (3) <strong>The valuation yardstick</strong> &mdash; Marvell's lesson that a beat is not enough applies to Samsung Electronics and SK Hynix today. Against that, Jung Woo-sung of LS Securities estimates HBM4's share of shipments rose from <strong>about 5% in Q1 to roughly 35% in Q2</strong> with mix yield improving <strong>more than 5pp</strong>, arguing the manufacturability discount may <strong>narrow</strong>.</span></p>
+</div>
+<div class="soft-card">
+  <p class="q"><span data-lang-ko>아직 답해지지 않은 것</span><span data-lang-en>What remains unanswered</span></p>
+  <p><span data-lang-ko><strong>세 가지입니다.</strong> ① <strong>9/4 미국 8월 고용</strong>과 <strong>9/11 8월 소비자물가</strong> &mdash; 월가는 CPI 를 「인상 단행 여부를 결정지을 마지막 단서」로 봅니다. ② <strong>물가의 새 변수</strong> &mdash; 오늘 아침 JP모간은 전쟁과 이상 기후가 겹쳐 <strong>현재 2.8% 수준인 식량 인플레이션이 내년 초 5% 로</strong> 오를 수 있다고 경고했습니다(밀은 연초 대비 51%, 옥수수&middot;대두는 22% 이상 상승). 반대로 <strong>미&middot;베네수엘라 석유 협정</strong>은 유가를 누르는 쪽입니다 &mdash; WTI 83달러, 브렌트 88~89달러선에서 조용합니다. ③ <strong>국내 지표</strong> &mdash; 오늘 아침 7월 산업활동동향, 내일 8월 수출, 모레 8월 소비자물가가 이어집니다. <strong>이 셋 가운데 어느 것도 오늘 09시 이전에 답이 나와 있지 않습니다. 전망은 전망일 뿐 결과가 아닙니다.</strong></span><span data-lang-en><strong>Three things.</strong> (1) <strong>US August payrolls on 4 September</strong> and <strong>August CPI on the 11th</strong> &mdash; Wall Street treats the CPI print as the last clue on whether a hike is delivered. (2) <strong>A new inflation variable</strong> &mdash; JP Morgan warned this morning that war and abnormal weather together could lift <strong>food inflation from about 2.8% now to 5% by early next year</strong> (wheat is up 51% year to date, corn and soybeans more than 22%). Pulling the other way, the <strong>US&ndash;Venezuela oil agreement</strong> weighs on crude &mdash; WTI is quiet near $83 and Brent around $88&ndash;89. (3) <strong>Korean data</strong> &mdash; July industrial activity this morning, August exports tomorrow, August CPI the day after. <strong>None of the three is answered before 09:00 today. Forecasts are forecasts, not results.</strong></span></p>
+</div>
 </div>
 <div class="table-wrap">
 <table class="data compact">
-  <caption><span data-lang-ko>원자재 &middot; 기타 &mdash; 8월 28일</span><span data-lang-en>Commodities and others &mdash; 28 August</span></caption>
-  <thead><tr><th class="wrap"><span data-lang-ko>항목</span><span data-lang-en>Item</span></th><th class="n"><span data-lang-ko>종가</span><span data-lang-en>Close</span></th><th class="n"><span data-lang-ko>등락률</span><span data-lang-en>Change %</span></th><th class="n opt"><span data-lang-ko>검증</span><span data-lang-en>Verified</span></th></tr></thead>
+  <caption><span data-lang-ko>실적 &middot; 컨퍼런스콜 &mdash; 오늘 수집분</span><span data-lang-en>Results and calls &mdash; today&rsquo;s collection</span></caption>
+  <thead><tr><th class="wrap"><span data-lang-ko>기업</span><span data-lang-en>Company</span></th><th class="wrap"><span data-lang-ko>기사에서</span><span data-lang-en>From the article</span></th><th class="n"><span data-lang-ko>판정</span><span data-lang-en>Verdict</span></th><th class="n"><span data-lang-ko>컨콜</span><span data-lang-en>Call</span></th></tr></thead>
   <tbody>
-      <tr class="hl"><th class="wrap hasnote"><span data-lang-ko>브렌트유</span><span data-lang-en>Brent</span><span class="sub"><span data-lang-ko>물가와 금리에 곧바로 닿습니다</span><span data-lang-en>It feeds inflation and rates</span></span></th><td class="n">89.67</td><td class="n"><span class="up">+0.40%</span></td><td class="n opt"><span class="vf ok">MARKET DATA</span></td></tr>
-      <tr><th class="wrap hasnote"><span data-lang-ko>WTI</span><span data-lang-en>WTI</span><span class="sub"><span data-lang-ko>미국 기준 유종</span><span data-lang-en>The US benchmark</span></span></th><td class="n">84.79</td><td class="n"><span class="up">+1.67%</span></td><td class="n opt"><span class="vf ok">MARKET DATA</span></td></tr>
-      <tr><th class="wrap hasnote"><span data-lang-ko>금</span><span data-lang-en>Gold</span><span class="sub"><span data-lang-ko>재정&middot;통화 불신의 온도계</span><span data-lang-en>A gauge of fiscal and monetary distrust</span></span></th><td class="n">4,508.60</td><td class="n"><span class="up">+0.68%</span></td><td class="n opt"><span class="vf ok">MARKET DATA</span></td></tr>
-      <tr><th class="wrap hasnote"><span data-lang-ko>구리</span><span data-lang-en>Copper</span><span class="sub"><span data-lang-ko>제조업 경기의 대리 지표</span><span data-lang-en>A proxy for industrial demand</span></span></th><td class="n">6.63</td><td class="n"><span class="up">+1.07%</span></td><td class="n opt"><span class="vf ok">MARKET DATA</span></td></tr>
-      <tr><th class="wrap hasnote"><span data-lang-ko>비트코인</span><span data-lang-en>Bitcoin</span><span class="sub"><span data-lang-ko>위험 선호의 끝단</span><span data-lang-en>The far end of risk appetite</span></span></th><td class="n">78,462.47</td><td class="n"><span class="up">+0.81%</span></td><td class="n opt"><span class="vf ok">MARKET DATA</span></td></tr>
+      <tr><th class="wrap">삼성전자<span class="sub">257,000원</span></th><td class="wrap">삼성전자 주가는 실적 대비 여전히 저평가 구간에 있다</td><td class="n"><span data-lang-ko>&mdash;</span><span data-lang-en>&mdash;</span></td><td class="n">&mdash;</td></tr>
+      <tr><th class="wrap">아마존<span class="sub">$266.43</span></th><td class="wrap">아마존이 약 4% 상승하며 업종 전반의 오름세를 이끌었고, 의류업체 갭은 실적 발표와 경영진 교체 소식이 맞물리면서 13% 가까이 급등했다</td><td class="n"><span data-lang-ko><span class="vf ok">상회</span></span><span data-lang-en><span class="vf ok">BEAT</span></span></td><td class="n">&mdash;</td></tr>
+      <tr><th class="wrap">엔비디아<span class="sub">$217.55</span></th><td class="wrap">호실적에 힘입어 급등했던 엔비디아가 하루 만에 거센 차익실현 매물을 소화하며 4.57% 하락했고, 필라델피아 반도체 지수 자체도 3.5% 가까이 밀렸죠. 여기에 지난주 목요일 장 마감 후 실적을 발표한 마벨 테크놀로지가 우려를 키웠는데요</td><td class="n"><span data-lang-ko><span class="vf bad">하회</span></span><span data-lang-en><span class="vf bad">MISS</span></span></td><td class="n">&mdash;</td></tr>
   </tbody>
 </table>
-<p class="tbl-foot"><span data-lang-ko>유가는 <strong>야후 일봉 종가</strong>입니다. 국내 보도는 <strong>선물 정산가</strong>를 쓰는 일이 많아 폭이 다를 수 있습니다 &mdash; <strong>틀린 값이 아니라 기준이 다른 값</strong>이므로, 폭을 인용하실 때 어느 기준인지 밝혀 주십시오 <span class="vf ok">MARKET DATA</span>.</span><span data-lang-en>Crude is at the <strong>Yahoo daily close</strong>. Korean coverage often quotes <strong>futures settlements</strong>, which differ &mdash; <strong>a different basis, not a wrong one</strong> <span class="vf ok">MARKET DATA</span>.</span></p>
+<p class="tbl-foot"><span data-lang-ko><strong>판정은 기사에 「상회」&middot;「하회」라고 적혀 있을 때만</strong> 답니다 &mdash; 컨센서스를 저희가 다시 계산한 것이 아닙니다. 인용 원문은 전체 판에 있습니다 <span class="vf solo">1 SOURCE</span>.</span><span data-lang-en><strong>A verdict appears only where the article says beat or miss</strong> &mdash; we do not recompute consensus. The quotations are in the full edition <span class="vf solo">1 SOURCE</span>.</span></p>
 </div>
 </section>
 
 <section class="section" id="calendar">
   <div class="section-rule"></div>
-  <span class="sec-num">06</span>
+  <span class="sec-num">07</span>
   <h2 class="section-title"><span data-lang-ko>일정 &middot; 체크포인트</span><span data-lang-en>Calendar</span></h2>
 <p class="lede"><span data-lang-ko><strong>이번 주는 다섯 날 연속으로 지표가 나옵니다.</strong> 오늘 아침 7월 산업활동동향을 시작으로 내일 8월 수출, 모레 국내 물가와 미국 ADP, 목요일 미국 ISM 서비스업, 금요일 <strong>미국 8월 고용보고서</strong>로 이어집니다. <strong>결과가 아니라 예정입니다</strong> &mdash; 컨센서스는 전망일 뿐이며 아래 표에 결과를 미리 적지 않았습니다.</span><span data-lang-en><strong>Data lands on five consecutive days this week.</strong> July industrial activity this morning, August exports tomorrow, Korean CPI and US ADP the day after, US ISM services on Thursday, and the <strong>US August employment report</strong> on Friday. <strong>These are scheduled events, not results</strong> &mdash; consensus is a forecast, and no outcomes have been pre-entered below.</span></p>
 <div class="table-wrap">
@@ -1108,7 +1213,7 @@ footer.foot{margin-top:22px;padding:16px 0 24px;font-size:11px}
 
 <section class="section" id="talking">
   <div class="section-rule"></div>
-  <span class="sec-num">07</span>
+  <span class="sec-num">08</span>
   <h2 class="section-title"><span data-lang-ko>고객 응대</span><span data-lang-en>Talking Points</span></h2>
 <div class="soft-grid">
 <div class="soft-card">
@@ -1128,7 +1233,7 @@ footer.foot{margin-top:22px;padding:16px 0 24px;font-size:11px}
 
 <section class="section" id="verify">
   <div class="section-rule"></div>
-  <span class="sec-num">08</span>
+  <span class="sec-num">09</span>
   <h2 class="section-title"><span data-lang-ko>데이터 &middot; 검증</span><span data-lang-en>Data and Verification</span></h2>
 <p class="lede"><span data-lang-ko><strong>이것은 핵심본입니다 &mdash; 다섯 쪽 안에 그날의 결론만 담았습니다.</strong> 표의 근거, 만기별 곡선, 지역별 종목표, 검증 노트 전체는 <strong>같은 날짜의 전체 판</strong>에 그대로 있습니다.</span><span data-lang-en><strong>This is the core edition &mdash; the day's conclusions in five pages.</strong> Supporting tables, the full maturity curve, regional stock tables and the complete verification notes remain in <strong>the full edition of the same date</strong>.</span></p>
 <p><span data-lang-ko><strong>어디서 왔나.</strong> 시세는 야후&middot;네이버&middot;한국은행 ECOS, 미 국채는 <strong>재무부 일별 고시 확정치</strong>, 사유&middot;일정은 그날 수집한 기사 본문입니다 <span class="vf ok">MARKET DATA</span>. 누적&middot;스프레드&middot;비율은 <strong>계산</strong>입니다 <span class="vf ok">CALCULATED</span>.</span><span data-lang-en><strong>Where it comes from.</strong> Prices from Yahoo, Naver and the Bank of Korea's ECOS; US Treasuries from <strong>Treasury's official daily par yields</strong>; reasons and calendar items from article text collected that morning <span class="vf ok">MARKET DATA</span>. Cumulative figures, spreads and ratios are <strong>computed</strong> <span class="vf ok">CALCULATED</span>.</span></p>
@@ -1196,7 +1301,7 @@ footer.foot{margin-top:22px;padding:16px 0 24px;font-size:11px}
 </div><!-- /shell -->
 
 <footer class="foot">
-  <p><span data-lang-ko>미래에셋증권 마포WM · 송재섭 · 2026년 8월 31일(월) 13:50 KST 작성.</span><span data-lang-en>Mirae Asset Securities, Mapo WM · Jaeseop Song · Compiled 13:50 KST, Monday 31 August 2026.</span></p>
+  <p><span data-lang-ko>미래에셋증권 마포WM · 송재섭 · 2026년 8월 31일(월) 14:42 KST 작성.</span><span data-lang-en>Mirae Asset Securities, Mapo WM · Jaeseop Song · Compiled 14:42 KST, Monday 31 August 2026.</span></p>
   <p><span data-lang-ko>본 자료는 공개된 언론 보도와 공식 발표를 정리한 내부 참고용이며, 특정 종목의 매매를 권유하지 않습니다. 투자 판단의 최종 책임은 투자자 본인에게 있습니다. 확인되지 않은 수치는 비워 두거나 "미확인"으로 표기했고, 검증 등급은 각 항목의 배지로 표시했습니다.</span><span data-lang-en>An internal reference compiled from public reporting and official releases. It does not recommend the purchase or sale of any security; investment decisions and their consequences rest with the investor. Unverified figures are left blank or marked as such, and each item carries a verification badge.</span></p>
 </footer>
 
