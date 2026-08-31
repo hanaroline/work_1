@@ -57,11 +57,14 @@
 
 === 신한투자 리서치
     https://open.shinhansec.com/phls/rsch/imTot/list.do
-    실패 URLError: <urlopen error timed out>
+    실패 HTTPError: HTTP Error 404: 404
 
 === 하나증권 리서치
     https://www.hanaw.com/main/research/research/list.cmd
-    실패 URLError: <urlopen error timed out>
+    46084 bytes
+    찾던 글자: 리포트, 리서치
+    <tr> 0개 · pdf 링크 0개
+    첫 글자: Daily : Daily : 하나증권                       전체  62465   건 검색되었습니다.                                           0
 
 === KB증권 리서치
     https://rc.kbsec.com/rc/research/list.able
@@ -69,10 +72,7 @@
 
 === 대신증권 리서치
     https://www.daishin.com/g.ds?m=1400&p=3311&v=3312
-    1040 bytes
-    찾던 글자: (하나도 없음)
-    <tr> 0개 · pdf 링크 0개
-    첫 글자: 서비스 이용 안내             요청 하신 페이지를 찾을 수 없습니다.       서비스이용에 불편을 드려 대단히 죄송합니다. 요청하신 페이지가 존재 하지 않습니다.   올바른 방법으로 접근하시기 바랍니다.
+    실패 HTTPError: HTTP Error 403: Forbidden
 
 === 유안타 리서치
     https://www.myasset.com/myasset/research/main.cmd
@@ -84,10 +84,10 @@
 
 === 미래에셋 글로벌
     https://securities.miraeasset.com/bbs/board/message/list.do?categoryId=1525
-    64963 bytes
+    65164 bytes
     찾던 글자: 리포트, 글로벌
     <tr> 14개 · pdf 링크 0개
-    첫 글자: 산업분석 | 리서치 리포트 | 투자정보 | 미래에셋증권                            <meta http-equ
+    첫 글자: 산업분석 | 리서치 리포트 | 투자정보 | 미래에셋증권                               <meta
 
 === 미래에셋 해외주식
     https://securities.miraeasset.com/bbs/board/message/list.do?categoryId=1571
