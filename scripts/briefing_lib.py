@@ -104,13 +104,30 @@ def TH(ko, en, cls=""):
     return '<th' + (' class="%s"' % cls if cls else '') + '>' + L(ko, en) + '</th>'
 
 
+# 핵심본 여부. `build_briefing.py --core` 가 켜고, **표를 만드는 쪽 전부**가
+# 이것을 본다. 예전에는 build_briefing 안에서만 갈랐는데, 그러면
+# briefing_prepare 가 만든 표(환율·원자재·업종 ETF·지역 종목)에는 기간 열이
+# 그대로 남아 열이 여덟이 되고 — 반 칸짜리 격자에 넣으면 246px 씩 넘쳤다.
+CORE = [False]
+
+
 def THP():
-    """기간 수익률 네 열 — w1 · m1 · m3 · ytd (지침 4-3절)"""
+    """기간 수익률 네 열 — w1 · m1 · m3 · ytd (지침 4-3절).
+
+    **핵심본에서는 세우지 않는다.** 「지금이 신고가인지 되돌림인지」를 말해 주는
+    값이라 전체 판에는 반드시 있어야 하지만, 개장 전에 한 번 훑는 여섯 쪽짜리
+    시트에서 오늘 결정에 닿는 것은 전일 대비이고, 기간 사다리는 같은 날짜의
+    전체 판에 그대로 있다. 열을 넷 덜어야 표를 나란히 세울 수 있다.
+    """
+    if CORE[0]:
+        return ""
     return "".join(TH(a, b, "n perf") for a, b in
                    (("1주", "1W"), ("1개월", "1M"), ("3개월", "3M"), ("연초", "YTD")))
 
 
 def perf_cells(p, unit="%"):
+    if CORE[0]:
+        return ""
     p = p or {}
     f = bp if unit == "bp" else pct
     return "".join('<td class="n perf">' +
