@@ -11,6 +11,7 @@
         "no": 38024,
         "riskLabel": "매우높은위험",
         "riskGrade": 1,
+        "instrument": "파생결합증권",
         "principalProtected": false,
         "underlyings": [
           "KOSPI200"
@@ -114,6 +115,7 @@
           }
         ],
         "lizard": null,
+        "monthlyIncome": null,
         "maturityBarrier": 70,
         "knockIn": 25,
         "knockInBasis": "종가",
@@ -324,6 +326,7 @@
         "no": 38025,
         "riskLabel": "매우높은위험",
         "riskGrade": 1,
+        "instrument": "파생결합증권",
         "principalProtected": false,
         "underlyings": [
           "KOSPI200"
@@ -391,6 +394,7 @@
           }
         ],
         "lizard": null,
+        "monthlyIncome": null,
         "maturityBarrier": 70,
         "knockIn": 35,
         "knockInBasis": "종가",
@@ -572,9 +576,10 @@
       {
         "title": "미래에셋증권 제4047회 파생결합사채(주가연계파생결합사채)(낮은위험)(상품위험등급:5등급)",
         "no": 4047,
-        "riskLabel": null,
+        "riskLabel": "낮은위험",
         "riskGrade": 5,
-        "principalProtected": false,
+        "instrument": "파생결합사채",
+        "principalProtected": true,
         "underlyings": [
           "KOSPI200"
         ],
@@ -677,6 +682,12 @@
           }
         ],
         "lizard": null,
+        "monthlyIncome": {
+          "barrier": 60,
+          "rate": 0.5525,
+          "count": 36,
+          "payRule": "해당 차수 월수익지급평가일(불포함) 후 2영업일"
+        },
         "maturityBarrier": 80,
         "knockIn": null,
         "knockInBasis": null,
@@ -912,9 +923,10 @@
       {
         "title": "미래에셋증권 제4048회 파생결합사채(주가연계파생결합사채)(낮은위험)(상품위험등급:5등급)",
         "no": 4048,
-        "riskLabel": null,
+        "riskLabel": "낮은위험",
         "riskGrade": 5,
-        "principalProtected": false,
+        "instrument": "파생결합사채",
+        "principalProtected": true,
         "underlyings": [
           "SK하이닉스"
         ],
@@ -981,6 +993,12 @@
           }
         ],
         "lizard": null,
+        "monthlyIncome": {
+          "barrier": 55,
+          "rate": 0.48,
+          "count": 18,
+          "payRule": "해당 차수 월수익지급평가일(불포함) 후 2영업일"
+        },
         "maturityBarrier": 75,
         "knockIn": null,
         "knockInBasis": null,
@@ -1129,9 +1147,10 @@
       {
         "title": "미래에셋증권 제4049회 파생결합사채(주가연계파생결합사채)(낮은위험)(상품위험등급:5등급)",
         "no": 4049,
-        "riskLabel": null,
+        "riskLabel": "낮은위험",
         "riskGrade": 5,
-        "principalProtected": false,
+        "instrument": "파생결합사채",
+        "principalProtected": true,
         "underlyings": [
           "삼성전자"
         ],
@@ -1198,6 +1217,7 @@
           }
         ],
         "lizard": null,
+        "monthlyIncome": null,
         "maturityBarrier": 65,
         "knockIn": null,
         "knockInBasis": null,
@@ -1277,9 +1297,10 @@
       {
         "title": "미래에셋증권 제4050회 파생결합사채(주가연계파생결합사채)(낮은위험)(상품위험등급:5등급)",
         "no": 4050,
-        "riskLabel": null,
+        "riskLabel": "낮은위험",
         "riskGrade": 5,
-        "principalProtected": false,
+        "instrument": "파생결합사채",
+        "principalProtected": true,
         "underlyings": [
           "삼성전자"
         ],
@@ -1346,6 +1367,7 @@
           }
         ],
         "lizard": null,
+        "monthlyIncome": null,
         "maturityBarrier": 80,
         "knockIn": null,
         "knockInBasis": null,
@@ -1434,9 +1456,10 @@
       {
         "title": "미래에셋증권 제4051회 파생결합사채(주가연계파생결합사채)(낮은위험)",
         "no": 4051,
-        "riskLabel": null,
+        "riskLabel": "낮은위험",
         "riskGrade": null,
-        "principalProtected": false,
+        "instrument": "파생결합사채",
+        "principalProtected": true,
         "underlyings": [
           "KOSPI200",
           "삼성전자"
@@ -1482,6 +1505,7 @@
         ],
         "schedule": [],
         "lizard": null,
+        "monthlyIncome": null,
         "maturityBarrier": null,
         "knockIn": null,
         "knockInBasis": null,
@@ -1540,9 +1564,10 @@
       {
         "title": "미래에셋증권 제4052회 파생결합사채(주가연계파생결합사채)(낮은위험)",
         "no": 4052,
-        "riskLabel": null,
+        "riskLabel": "낮은위험",
         "riskGrade": null,
-        "principalProtected": false,
+        "instrument": "파생결합사채",
+        "principalProtected": true,
         "underlyings": [
           "KOSPI200",
           "삼성전자"
@@ -1588,6 +1613,7 @@
         ],
         "schedule": [],
         "lizard": null,
+        "monthlyIncome": null,
         "maturityBarrier": null,
         "knockIn": null,
         "knockInBasis": null,
@@ -1646,9 +1672,10 @@
       {
         "title": "미래에셋증권 제4053회 파생결합사채(주가연계파생결합사채)(낮은위험)(상품위험등급:5등급)",
         "no": 4053,
-        "riskLabel": null,
+        "riskLabel": "낮은위험",
         "riskGrade": 5,
-        "principalProtected": false,
+        "instrument": "파생결합사채",
+        "principalProtected": true,
         "underlyings": [
           "삼성전자"
         ],
@@ -1715,6 +1742,12 @@
           }
         ],
         "lizard": null,
+        "monthlyIncome": {
+          "barrier": 55,
+          "rate": 0.4225,
+          "count": 36,
+          "payRule": "해당 차수 월수익지급평가일(불포함) 후 2영업일"
+        },
         "maturityBarrier": 75,
         "knockIn": null,
         "knockInBasis": null,
@@ -1803,9 +1836,10 @@
       {
         "title": "미래에셋증권 제4054회 파생결합사채(주가연계파생결합사채)(낮은위험)(상품위험등급:5등급)",
         "no": 4054,
-        "riskLabel": null,
+        "riskLabel": "낮은위험",
         "riskGrade": 5,
-        "principalProtected": false,
+        "instrument": "파생결합사채",
+        "principalProtected": true,
         "underlyings": [
           "삼성전자"
         ],
@@ -1908,6 +1942,12 @@
           }
         ],
         "lizard": null,
+        "monthlyIncome": {
+          "barrier": 65,
+          "rate": 0.56,
+          "count": 36,
+          "payRule": "해당 차수 월수익지급평가일(불포함) 후 2영업일"
+        },
         "maturityBarrier": 75,
         "knockIn": null,
         "knockInBasis": null,
@@ -2143,9 +2183,10 @@
       {
         "title": "미래에셋증권 제4055회 파생결합사채(주가연계파생결합사채)(낮은위험)(상품위험등급:5등급)",
         "no": 4055,
-        "riskLabel": null,
+        "riskLabel": "낮은위험",
         "riskGrade": 5,
-        "principalProtected": false,
+        "instrument": "파생결합사채",
+        "principalProtected": true,
         "underlyings": [
           "삼성전자"
         ],
@@ -2212,6 +2253,12 @@
           }
         ],
         "lizard": null,
+        "monthlyIncome": {
+          "barrier": 60,
+          "rate": 0.3775,
+          "count": 18,
+          "payRule": "해당 차수 월수익지급평가일(불포함) 후 2영업일"
+        },
         "maturityBarrier": 75,
         "knockIn": null,
         "knockInBasis": null,
@@ -2351,9 +2398,10 @@
       {
         "title": "미래에셋증권 제4056회 파생결합사채(주가연계파생결합사채)(낮은위험)(상품위험등급:5등급)",
         "no": 4056,
-        "riskLabel": null,
+        "riskLabel": "낮은위험",
         "riskGrade": 5,
-        "principalProtected": false,
+        "instrument": "파생결합사채",
+        "principalProtected": true,
         "underlyings": [
           "SK하이닉스"
         ],
@@ -2456,6 +2504,12 @@
           }
         ],
         "lizard": null,
+        "monthlyIncome": {
+          "barrier": 65,
+          "rate": 0.78,
+          "count": 36,
+          "payRule": "해당 차수 월수익지급평가일(불포함) 후 2영업일"
+        },
         "maturityBarrier": 75,
         "knockIn": null,
         "knockInBasis": null,
@@ -2691,9 +2745,10 @@
       {
         "title": "미래에셋증권 제4057회 파생결합사채(주가연계파생결합사채)(낮은위험)(상품위험등급:5등급)",
         "no": 4057,
-        "riskLabel": null,
+        "riskLabel": "낮은위험",
         "riskGrade": 5,
-        "principalProtected": false,
+        "instrument": "파생결합사채",
+        "principalProtected": true,
         "underlyings": [
           "SK하이닉스"
         ],
@@ -2760,6 +2815,12 @@
           }
         ],
         "lizard": null,
+        "monthlyIncome": {
+          "barrier": 55,
+          "rate": 0.445,
+          "count": 18,
+          "payRule": "해당 차수 월수익지급평가일(불포함) 후 2영업일"
+        },
         "maturityBarrier": 75,
         "knockIn": null,
         "knockInBasis": null,
@@ -2910,6 +2971,7 @@
         "no": 38031,
         "riskLabel": "매우높은위험",
         "riskGrade": 1,
+        "instrument": "파생결합증권",
         "principalProtected": false,
         "underlyings": [
           "KOSPI200"
@@ -2977,6 +3039,7 @@
           }
         ],
         "lizard": null,
+        "monthlyIncome": null,
         "maturityBarrier": 70,
         "knockIn": 35,
         "knockInBasis": "종가",
@@ -3151,6 +3214,7 @@
         "no": 38032,
         "riskLabel": "매우높은위험",
         "riskGrade": 1,
+        "instrument": "파생결합증권",
         "principalProtected": false,
         "underlyings": [
           "KOSPI200"
@@ -3218,6 +3282,7 @@
           }
         ],
         "lizard": null,
+        "monthlyIncome": null,
         "maturityBarrier": 70,
         "knockIn": 40,
         "knockInBasis": "종가",
@@ -3392,6 +3457,7 @@
         "no": 38033,
         "riskLabel": "매우높은위험",
         "riskGrade": 1,
+        "instrument": "파생결합증권",
         "principalProtected": false,
         "underlyings": [
           "EuroStoxx50",
@@ -3482,6 +3548,7 @@
           }
         ],
         "lizard": null,
+        "monthlyIncome": null,
         "maturityBarrier": 70,
         "knockIn": 35,
         "knockInBasis": "종가",
@@ -3656,6 +3723,7 @@
         "no": 38034,
         "riskLabel": "매우높은위험",
         "riskGrade": 1,
+        "instrument": "파생결합증권",
         "principalProtected": false,
         "underlyings": [
           "EuroStoxx50",
@@ -3746,6 +3814,7 @@
           }
         ],
         "lizard": null,
+        "monthlyIncome": null,
         "maturityBarrier": 70,
         "knockIn": 40,
         "knockInBasis": "종가",
@@ -3920,6 +3989,7 @@
         "no": 38035,
         "riskLabel": "매우높은위험",
         "riskGrade": 1,
+        "instrument": "파생결합증권",
         "principalProtected": false,
         "underlyings": [
           "S&P500",
@@ -4010,6 +4080,7 @@
           }
         ],
         "lizard": null,
+        "monthlyIncome": null,
         "maturityBarrier": 60,
         "knockIn": null,
         "knockInBasis": null,
@@ -4184,6 +4255,7 @@
         "no": 38036,
         "riskLabel": "매우높은위험",
         "riskGrade": 1,
+        "instrument": "파생결합증권",
         "principalProtected": false,
         "underlyings": [
           "KOSPI200",
@@ -4261,6 +4333,7 @@
           }
         ],
         "lizard": null,
+        "monthlyIncome": null,
         "maturityBarrier": 70,
         "knockIn": 35,
         "knockInBasis": "종가",
@@ -4435,6 +4508,7 @@
         "no": 38037,
         "riskLabel": "매우높은위험",
         "riskGrade": 1,
+        "instrument": "파생결합증권",
         "principalProtected": false,
         "underlyings": [
           "삼성전자",
@@ -4548,6 +4622,7 @@
           }
         ],
         "lizard": null,
+        "monthlyIncome": null,
         "maturityBarrier": 70,
         "knockIn": 25,
         "knockInBasis": "종가",
@@ -4758,6 +4833,7 @@
         "no": 38038,
         "riskLabel": "매우높은위험",
         "riskGrade": 1,
+        "instrument": "파생결합증권",
         "principalProtected": false,
         "underlyings": [
           "삼성전자",
@@ -4835,6 +4911,7 @@
           }
         ],
         "lizard": null,
+        "monthlyIncome": null,
         "maturityBarrier": 65,
         "knockIn": 35,
         "knockInBasis": "종가",
@@ -5009,6 +5086,7 @@
         "no": 38039,
         "riskLabel": "매우높은위험",
         "riskGrade": 1,
+        "instrument": "파생결합증권",
         "principalProtected": false,
         "underlyings": [
           "삼성전자",
@@ -5122,6 +5200,7 @@
           }
         ],
         "lizard": null,
+        "monthlyIncome": null,
         "maturityBarrier": 70,
         "knockIn": 30,
         "knockInBasis": "종가",
@@ -5332,6 +5411,7 @@
         "no": 38040,
         "riskLabel": "매우높은위험",
         "riskGrade": 1,
+        "instrument": "파생결합증권",
         "principalProtected": false,
         "underlyings": [
           "삼성전자",
@@ -5409,6 +5489,7 @@
           }
         ],
         "lizard": null,
+        "monthlyIncome": null,
         "maturityBarrier": 70,
         "knockIn": 35,
         "knockInBasis": "종가",
@@ -5583,6 +5664,7 @@
         "no": 38041,
         "riskLabel": "매우높은위험",
         "riskGrade": 1,
+        "instrument": "파생결합증권",
         "principalProtected": false,
         "underlyings": [
           "삼성전자",
@@ -5696,6 +5778,7 @@
           }
         ],
         "lizard": null,
+        "monthlyIncome": null,
         "maturityBarrier": 70,
         "knockIn": 35,
         "knockInBasis": "종가",
@@ -5906,6 +5989,7 @@
         "no": 38042,
         "riskLabel": "매우높은위험",
         "riskGrade": 1,
+        "instrument": "파생결합증권",
         "principalProtected": false,
         "underlyings": [
           "KOSPI200",
@@ -5996,6 +6080,7 @@
           }
         ],
         "lizard": null,
+        "monthlyIncome": null,
         "maturityBarrier": 70,
         "knockIn": 45,
         "knockInBasis": "종가",
@@ -6170,6 +6255,7 @@
         "no": 38043,
         "riskLabel": "매우높은위험",
         "riskGrade": 1,
+        "instrument": "파생결합증권",
         "principalProtected": false,
         "underlyings": [
           "삼성전자",
@@ -6247,6 +6333,7 @@
           }
         ],
         "lizard": null,
+        "monthlyIncome": null,
         "maturityBarrier": 65,
         "knockIn": 20,
         "knockInBasis": "종가",
@@ -6421,6 +6508,7 @@
         "no": 38044,
         "riskLabel": "매우높은위험",
         "riskGrade": 1,
+        "instrument": "파생결합증권",
         "principalProtected": false,
         "underlyings": [
           "KOSPI200",
@@ -6534,6 +6622,7 @@
           }
         ],
         "lizard": null,
+        "monthlyIncome": null,
         "maturityBarrier": 65,
         "knockIn": 35,
         "knockInBasis": "종가",
@@ -6744,6 +6833,7 @@
         "no": 38045,
         "riskLabel": "매우높은위험",
         "riskGrade": 1,
+        "instrument": "파생결합증권",
         "principalProtected": false,
         "underlyings": [
           "어플라이드 머티어리얼즈",
@@ -6821,6 +6911,7 @@
           }
         ],
         "lizard": null,
+        "monthlyIncome": null,
         "maturityBarrier": 70,
         "knockIn": 35,
         "knockInBasis": "종가",
@@ -6995,6 +7086,7 @@
         "no": 38046,
         "riskLabel": "매우높은위험",
         "riskGrade": 1,
+        "instrument": "파생결합증권",
         "principalProtected": false,
         "underlyings": [
           "마이크론 테크놀로지",
@@ -7072,6 +7164,7 @@
           }
         ],
         "lizard": null,
+        "monthlyIncome": null,
         "maturityBarrier": 70,
         "knockIn": 25,
         "knockInBasis": "종가",
@@ -7246,6 +7339,7 @@
         "no": 38047,
         "riskLabel": "매우높은위험",
         "riskGrade": 1,
+        "instrument": "파생결합증권",
         "principalProtected": false,
         "underlyings": [
           "KOSPI200",
@@ -7323,6 +7417,7 @@
           }
         ],
         "lizard": null,
+        "monthlyIncome": null,
         "maturityBarrier": 70,
         "knockIn": 35,
         "knockInBasis": "종가",
@@ -7506,6 +7601,7 @@
         "no": 36998,
         "riskLabel": "매우높은위험",
         "riskGrade": 1,
+        "instrument": "파생결합증권",
         "principalProtected": false,
         "underlyings": [
           "EuroStoxx50",
@@ -7596,6 +7692,7 @@
           }
         ],
         "lizard": null,
+        "monthlyIncome": null,
         "maturityBarrier": 40,
         "knockIn": null,
         "knockInBasis": null,
@@ -7739,6 +7836,7 @@
         "no": 36999,
         "riskLabel": "매우높은위험",
         "riskGrade": 1,
+        "instrument": "파생결합증권",
         "principalProtected": false,
         "underlyings": [
           "EuroStoxx50",
@@ -7798,6 +7896,12 @@
         ],
         "schedule": [],
         "lizard": null,
+        "monthlyIncome": {
+          "barrier": 50,
+          "rate": 0.78,
+          "count": 36,
+          "payRule": "해당 차수 월수익지급평가일(불포함) 후 2영업일 (서울시간 기준)"
+        },
         "maturityBarrier": 50,
         "knockIn": null,
         "knockInBasis": null,
@@ -7948,9 +8052,10 @@
       {
         "title": "미래에셋증권 제4061회 파생결합사채(주가연계파생결합사채)(낮은위험)(상품위험등급:5등급)",
         "no": 4061,
-        "riskLabel": null,
+        "riskLabel": "낮은위험",
         "riskGrade": 5,
-        "principalProtected": false,
+        "instrument": "파생결합사채",
+        "principalProtected": true,
         "underlyings": [
           "KOSPI200"
         ],
@@ -8017,6 +8122,12 @@
           }
         ],
         "lizard": null,
+        "monthlyIncome": {
+          "barrier": 70,
+          "rate": 0.515,
+          "count": 36,
+          "payRule": "해당 차수 월수익지급평가일(불포함) 후 2영업일"
+        },
         "maturityBarrier": 85,
         "knockIn": null,
         "knockInBasis": null,
@@ -8107,6 +8218,7 @@
         "no": 36711,
         "riskLabel": "매우높은위험",
         "riskGrade": 1,
+        "instrument": "파생결합증권",
         "principalProtected": false,
         "underlyings": [
           "EuroStoxx50",
@@ -8197,6 +8309,7 @@
           }
         ],
         "lizard": null,
+        "monthlyIncome": null,
         "maturityBarrier": 40,
         "knockIn": null,
         "knockInBasis": null,
@@ -8340,6 +8453,7 @@
         "no": 36712,
         "riskLabel": "매우높은위험",
         "riskGrade": 1,
+        "instrument": "파생결합증권",
         "principalProtected": false,
         "underlyings": [
           "EuroStoxx50",
@@ -8430,6 +8544,7 @@
           }
         ],
         "lizard": null,
+        "monthlyIncome": null,
         "maturityBarrier": 40,
         "knockIn": null,
         "knockInBasis": null,
@@ -8580,9 +8695,10 @@
       {
         "title": "미래에셋증권 제4058회 파생결합사채(주가연계파생결합사채)(낮은위험)(상품위험등급:5등급)",
         "no": 4058,
-        "riskLabel": null,
+        "riskLabel": "낮은위험",
         "riskGrade": 5,
-        "principalProtected": false,
+        "instrument": "파생결합사채",
+        "principalProtected": true,
         "underlyings": [
           "KOSPI200",
           "SK하이닉스"
@@ -8695,6 +8811,12 @@
           }
         ],
         "lizard": null,
+        "monthlyIncome": {
+          "barrier": 65,
+          "rate": 0.5,
+          "count": 36,
+          "payRule": "해당 차수 월수익지급평가일(불포함) 후 3영업일"
+        },
         "maturityBarrier": 70,
         "knockIn": null,
         "knockInBasis": null,
@@ -8821,6 +8943,7 @@
         "no": 38048,
         "riskLabel": "매우높은위험",
         "riskGrade": 1,
+        "instrument": "파생결합증권",
         "principalProtected": false,
         "underlyings": [
           "EuroStoxx50",
@@ -8915,6 +9038,7 @@
           "barrier": 45,
           "payout": 110
         },
+        "monthlyIncome": null,
         "maturityBarrier": 60,
         "knockIn": null,
         "knockInBasis": null,
@@ -9095,6 +9219,7 @@
         "no": 38049,
         "riskLabel": "매우높은위험",
         "riskGrade": 1,
+        "instrument": "파생결합증권",
         "principalProtected": false,
         "underlyings": [
           "KOSPI200"
@@ -9162,6 +9287,7 @@
           }
         ],
         "lizard": null,
+        "monthlyIncome": null,
         "maturityBarrier": 70,
         "knockIn": 35,
         "knockInBasis": "종가",
@@ -9336,6 +9462,7 @@
         "no": 38050,
         "riskLabel": "높은위험",
         "riskGrade": 2,
+        "instrument": "파생결합증권",
         "principalProtected": false,
         "underlyings": [
           "S&P500",
@@ -9426,6 +9553,7 @@
           }
         ],
         "lizard": null,
+        "monthlyIncome": null,
         "maturityBarrier": 65,
         "knockIn": 45,
         "knockInBasis": "종가",
@@ -9601,6 +9729,7 @@
         "no": 38051,
         "riskLabel": "매우높은위험",
         "riskGrade": 1,
+        "instrument": "파생결합증권",
         "principalProtected": false,
         "underlyings": [
           "KOSPI200"
@@ -9668,6 +9797,7 @@
           }
         ],
         "lizard": null,
+        "monthlyIncome": null,
         "maturityBarrier": 70,
         "knockIn": 35,
         "knockInBasis": "종가",
@@ -9842,6 +9972,7 @@
         "no": 38052,
         "riskLabel": "매우높은위험",
         "riskGrade": 1,
+        "instrument": "파생결합증권",
         "principalProtected": false,
         "underlyings": [
           "KOSPI200"
@@ -9945,6 +10076,7 @@
           }
         ],
         "lizard": null,
+        "monthlyIncome": null,
         "maturityBarrier": 70,
         "knockIn": 35,
         "knockInBasis": "종가",
@@ -10155,6 +10287,7 @@
         "no": 38053,
         "riskLabel": "매우높은위험",
         "riskGrade": 1,
+        "instrument": "파생결합증권",
         "principalProtected": false,
         "underlyings": [
           "KOSPI200",
@@ -10245,6 +10378,7 @@
           }
         ],
         "lizard": null,
+        "monthlyIncome": null,
         "maturityBarrier": 70,
         "knockIn": 30,
         "knockInBasis": "종가",
@@ -10419,6 +10553,7 @@
         "no": 38054,
         "riskLabel": "매우높은위험",
         "riskGrade": 1,
+        "instrument": "파생결합증권",
         "principalProtected": false,
         "underlyings": [
           "EuroStoxx50",
@@ -10509,6 +10644,7 @@
           }
         ],
         "lizard": null,
+        "monthlyIncome": null,
         "maturityBarrier": 70,
         "knockIn": 35,
         "knockInBasis": "종가",
@@ -10683,6 +10819,7 @@
         "no": 38055,
         "riskLabel": "매우높은위험",
         "riskGrade": 1,
+        "instrument": "파생결합증권",
         "principalProtected": false,
         "underlyings": [
           "삼성전자",
@@ -10760,6 +10897,7 @@
           }
         ],
         "lizard": null,
+        "monthlyIncome": null,
         "maturityBarrier": 65,
         "knockIn": 30,
         "knockInBasis": "종가",
@@ -10934,6 +11072,7 @@
         "no": 38056,
         "riskLabel": "매우높은위험",
         "riskGrade": 1,
+        "instrument": "파생결합증권",
         "principalProtected": false,
         "underlyings": [
           "삼성전자",
@@ -11011,6 +11150,7 @@
           }
         ],
         "lizard": null,
+        "monthlyIncome": null,
         "maturityBarrier": 65,
         "knockIn": 35,
         "knockInBasis": "종가",
@@ -11185,6 +11325,7 @@
         "no": 38057,
         "riskLabel": "매우높은위험",
         "riskGrade": 1,
+        "instrument": "파생결합증권",
         "principalProtected": false,
         "underlyings": [
           "삼성전자",
@@ -11262,6 +11403,7 @@
           }
         ],
         "lizard": null,
+        "monthlyIncome": null,
         "maturityBarrier": 65,
         "knockIn": 35,
         "knockInBasis": "종가",
@@ -11436,6 +11578,7 @@
         "no": 38058,
         "riskLabel": "매우높은위험",
         "riskGrade": 1,
+        "instrument": "파생결합증권",
         "principalProtected": false,
         "underlyings": [
           "삼성전자",
@@ -11549,6 +11692,7 @@
           }
         ],
         "lizard": null,
+        "monthlyIncome": null,
         "maturityBarrier": 70,
         "knockIn": 35,
         "knockInBasis": "종가",
@@ -11759,6 +11903,7 @@
         "no": 38059,
         "riskLabel": "매우높은위험",
         "riskGrade": 1,
+        "instrument": "파생결합증권",
         "principalProtected": false,
         "underlyings": [
           "삼성전자",
@@ -11872,6 +12017,7 @@
           }
         ],
         "lizard": null,
+        "monthlyIncome": null,
         "maturityBarrier": 70,
         "knockIn": 35,
         "knockInBasis": "종가",
@@ -12082,6 +12228,7 @@
         "no": 38060,
         "riskLabel": "매우높은위험",
         "riskGrade": 1,
+        "instrument": "파생결합증권",
         "principalProtected": false,
         "underlyings": [
           "S&P500",
@@ -12172,6 +12319,7 @@
           }
         ],
         "lizard": null,
+        "monthlyIncome": null,
         "maturityBarrier": 70,
         "knockIn": 40,
         "knockInBasis": "종가",
@@ -12346,6 +12494,7 @@
         "no": 38061,
         "riskLabel": "매우높은위험",
         "riskGrade": 1,
+        "instrument": "파생결합증권",
         "principalProtected": false,
         "underlyings": [
           "KOSPI200",
@@ -12459,6 +12608,7 @@
           }
         ],
         "lizard": null,
+        "monthlyIncome": null,
         "maturityBarrier": 65,
         "knockIn": 35,
         "knockInBasis": "종가",
@@ -12669,6 +12819,7 @@
         "no": 38062,
         "riskLabel": "매우높은위험",
         "riskGrade": 1,
+        "instrument": "파생결합증권",
         "principalProtected": false,
         "underlyings": [
           "삼성전자",
@@ -12734,6 +12885,7 @@
           }
         ],
         "lizard": null,
+        "monthlyIncome": null,
         "maturityBarrier": 70,
         "knockIn": 40,
         "knockInBasis": "종가",
@@ -12896,6 +13048,7 @@
         "no": 38063,
         "riskLabel": "매우높은위험",
         "riskGrade": 1,
+        "instrument": "파생결합증권",
         "principalProtected": false,
         "underlyings": [
           "어플라이드 머티어리얼즈",
@@ -12973,6 +13126,7 @@
           }
         ],
         "lizard": null,
+        "monthlyIncome": null,
         "maturityBarrier": 70,
         "knockIn": 35,
         "knockInBasis": "종가",
@@ -13147,6 +13301,7 @@
         "no": 38064,
         "riskLabel": "매우높은위험",
         "riskGrade": 1,
+        "instrument": "파생결합증권",
         "principalProtected": false,
         "underlyings": [
           "마이크론 테크놀로지",
@@ -13224,6 +13379,7 @@
           }
         ],
         "lizard": null,
+        "monthlyIncome": null,
         "maturityBarrier": 70,
         "knockIn": 35,
         "knockInBasis": "종가",
@@ -13398,6 +13554,7 @@
         "no": 38065,
         "riskLabel": "매우높은위험",
         "riskGrade": 1,
+        "instrument": "파생결합증권",
         "principalProtected": false,
         "underlyings": [
           "KOSPI200",
@@ -13475,6 +13632,7 @@
           }
         ],
         "lizard": null,
+        "monthlyIncome": null,
         "maturityBarrier": 70,
         "knockIn": 35,
         "knockInBasis": "종가",
@@ -13656,9 +13814,10 @@
       {
         "title": "미래에셋증권 제4064회 파생결합사채(주가연계파생결합사채)(낮은위험)(상품위험등급:5등급)",
         "no": 4064,
-        "riskLabel": null,
+        "riskLabel": "낮은위험",
         "riskGrade": 5,
-        "principalProtected": false,
+        "instrument": "파생결합사채",
+        "principalProtected": true,
         "underlyings": [
           "KOSPI200"
         ],
@@ -13761,6 +13920,12 @@
           }
         ],
         "lizard": null,
+        "monthlyIncome": {
+          "barrier": 70,
+          "rate": 0.5175,
+          "count": 36,
+          "payRule": "해당 차수 월수익지급평가일(불포함) 후 2영업일"
+        },
         "maturityBarrier": 80,
         "knockIn": null,
         "knockInBasis": null,
@@ -13996,9 +14161,10 @@
       {
         "title": "미래에셋증권 제4065회 파생결합사채(주가연계파생결합사채)(낮은위험)(상품위험등급:5등급)",
         "no": 4065,
-        "riskLabel": null,
+        "riskLabel": "낮은위험",
         "riskGrade": 5,
-        "principalProtected": false,
+        "instrument": "파생결합사채",
+        "principalProtected": true,
         "underlyings": [
           "삼성전자"
         ],
@@ -14065,6 +14231,12 @@
           }
         ],
         "lizard": null,
+        "monthlyIncome": {
+          "barrier": 60,
+          "rate": 0.3625,
+          "count": 18,
+          "payRule": "해당 차수 월수익지급평가일(불포함) 후 2영업일"
+        },
         "maturityBarrier": 75,
         "knockIn": null,
         "knockInBasis": null,
@@ -14204,9 +14376,10 @@
       {
         "title": "미래에셋증권 제4066회 파생결합사채(주가연계파생결합사채)(낮은위험)(상품위험등급:5등급)",
         "no": 4066,
-        "riskLabel": null,
+        "riskLabel": "낮은위험",
         "riskGrade": 5,
-        "principalProtected": false,
+        "instrument": "파생결합사채",
+        "principalProtected": true,
         "underlyings": [
           "SK하이닉스"
         ],
@@ -14273,6 +14446,12 @@
           }
         ],
         "lizard": null,
+        "monthlyIncome": {
+          "barrier": 55,
+          "rate": 0.4175,
+          "count": 18,
+          "payRule": "해당 차수 월수익지급평가일(불포함) 후 2영업일"
+        },
         "maturityBarrier": 75,
         "knockIn": null,
         "knockInBasis": null,
@@ -14421,9 +14600,10 @@
       {
         "title": "미래에셋증권 제4059회 파생결합사채(주가연계파생결합사채)(낮은위험)",
         "no": 4059,
-        "riskLabel": null,
+        "riskLabel": "낮은위험",
         "riskGrade": null,
-        "principalProtected": false,
+        "instrument": "파생결합사채",
+        "principalProtected": true,
         "underlyings": [
           "KOSPI200",
           "삼성전자"
@@ -14469,6 +14649,7 @@
         ],
         "schedule": [],
         "lizard": null,
+        "monthlyIncome": null,
         "maturityBarrier": null,
         "knockIn": null,
         "knockInBasis": null,
@@ -14518,9 +14699,10 @@
       {
         "title": "미래에셋증권 제4060회 파생결합사채(주가연계파생결합사채)(낮은위험)",
         "no": 4060,
-        "riskLabel": null,
+        "riskLabel": "낮은위험",
         "riskGrade": null,
-        "principalProtected": false,
+        "instrument": "파생결합사채",
+        "principalProtected": true,
         "underlyings": [
           "KOSPI200",
           "삼성전자"
@@ -14566,6 +14748,7 @@
         ],
         "schedule": [],
         "lizard": null,
+        "monthlyIncome": null,
         "maturityBarrier": null,
         "knockIn": null,
         "knockInBasis": null,
@@ -14626,6 +14809,7 @@
         "no": 38070,
         "riskLabel": "높은위험",
         "riskGrade": 2,
+        "instrument": "파생결합증권",
         "principalProtected": false,
         "underlyings": [
           "EuroStoxx50",
@@ -14716,6 +14900,7 @@
           }
         ],
         "lizard": null,
+        "monthlyIncome": null,
         "maturityBarrier": 70,
         "knockIn": 45,
         "knockInBasis": "종가",
@@ -14891,6 +15076,7 @@
         "no": 38071,
         "riskLabel": "매우높은위험",
         "riskGrade": 1,
+        "instrument": "파생결합증권",
         "principalProtected": false,
         "underlyings": [
           "S&P500",
@@ -14985,6 +15171,7 @@
           "barrier": 40,
           "payout": 110.5
         },
+        "monthlyIncome": null,
         "maturityBarrier": 60,
         "knockIn": null,
         "knockInBasis": null,
@@ -15165,6 +15352,7 @@
         "no": 38072,
         "riskLabel": "매우높은위험",
         "riskGrade": 1,
+        "instrument": "파생결합증권",
         "principalProtected": false,
         "underlyings": [
           "KOSPI200"
@@ -15232,6 +15420,7 @@
           }
         ],
         "lizard": null,
+        "monthlyIncome": null,
         "maturityBarrier": 70,
         "knockIn": 35,
         "knockInBasis": "종가",
@@ -15406,6 +15595,7 @@
         "no": 38073,
         "riskLabel": "매우높은위험",
         "riskGrade": 1,
+        "instrument": "파생결합증권",
         "principalProtected": false,
         "underlyings": [
           "KOSPI200"
@@ -15473,6 +15663,7 @@
           }
         ],
         "lizard": null,
+        "monthlyIncome": null,
         "maturityBarrier": 70,
         "knockIn": 35,
         "knockInBasis": "종가",
@@ -15647,6 +15838,7 @@
         "no": 38074,
         "riskLabel": "매우높은위험",
         "riskGrade": 1,
+        "instrument": "파생결합증권",
         "principalProtected": false,
         "underlyings": [
           "EuroStoxx50",
@@ -15737,6 +15929,7 @@
           }
         ],
         "lizard": null,
+        "monthlyIncome": null,
         "maturityBarrier": 60,
         "knockIn": null,
         "knockInBasis": null,
@@ -15911,6 +16104,7 @@
         "no": 38075,
         "riskLabel": "매우높은위험",
         "riskGrade": 1,
+        "instrument": "파생결합증권",
         "principalProtected": false,
         "underlyings": [
           "EuroStoxx50",
@@ -16001,6 +16195,7 @@
           }
         ],
         "lizard": null,
+        "monthlyIncome": null,
         "maturityBarrier": 70,
         "knockIn": 40,
         "knockInBasis": "종가",
@@ -16175,6 +16370,7 @@
         "no": 38076,
         "riskLabel": "매우높은위험",
         "riskGrade": 1,
+        "instrument": "파생결합증권",
         "principalProtected": false,
         "underlyings": [
           "삼성전자",
@@ -16252,6 +16448,7 @@
           }
         ],
         "lizard": null,
+        "monthlyIncome": null,
         "maturityBarrier": 70,
         "knockIn": 20,
         "knockInBasis": "종가",
@@ -16426,6 +16623,7 @@
         "no": 38077,
         "riskLabel": "매우높은위험",
         "riskGrade": 1,
+        "instrument": "파생결합증권",
         "principalProtected": false,
         "underlyings": [
           "KOSPI200",
@@ -16503,6 +16701,7 @@
           }
         ],
         "lizard": null,
+        "monthlyIncome": null,
         "maturityBarrier": 70,
         "knockIn": 35,
         "knockInBasis": "종가",
@@ -16677,6 +16876,7 @@
         "no": 38078,
         "riskLabel": "매우높은위험",
         "riskGrade": 1,
+        "instrument": "파생결합증권",
         "principalProtected": false,
         "underlyings": [
           "KOSPI200",
@@ -16790,6 +16990,7 @@
           }
         ],
         "lizard": null,
+        "monthlyIncome": null,
         "maturityBarrier": 70,
         "knockIn": 30,
         "knockInBasis": "종가",
@@ -17000,6 +17201,7 @@
         "no": 38079,
         "riskLabel": "매우높은위험",
         "riskGrade": 1,
+        "instrument": "파생결합증권",
         "principalProtected": false,
         "underlyings": [
           "삼성전자",
@@ -17077,6 +17279,7 @@
           }
         ],
         "lizard": null,
+        "monthlyIncome": null,
         "maturityBarrier": 65,
         "knockIn": 35,
         "knockInBasis": "종가",
@@ -17251,6 +17454,7 @@
         "no": 38080,
         "riskLabel": "매우높은위험",
         "riskGrade": 1,
+        "instrument": "파생결합증권",
         "principalProtected": false,
         "underlyings": [
           "삼성전자",
@@ -17328,6 +17532,7 @@
           }
         ],
         "lizard": null,
+        "monthlyIncome": null,
         "maturityBarrier": 70,
         "knockIn": 35,
         "knockInBasis": "종가",
@@ -17502,6 +17707,7 @@
         "no": 38081,
         "riskLabel": "매우높은위험",
         "riskGrade": 1,
+        "instrument": "파생결합증권",
         "principalProtected": false,
         "underlyings": [
           "삼성전자",
@@ -17615,6 +17821,7 @@
           }
         ],
         "lizard": null,
+        "monthlyIncome": null,
         "maturityBarrier": 70,
         "knockIn": 35,
         "knockInBasis": "종가",
@@ -17825,6 +18032,7 @@
         "no": 38082,
         "riskLabel": "매우높은위험",
         "riskGrade": 1,
+        "instrument": "파생결합증권",
         "principalProtected": false,
         "underlyings": [
           "KOSPI200",
@@ -17915,6 +18123,7 @@
           }
         ],
         "lizard": null,
+        "monthlyIncome": null,
         "maturityBarrier": 70,
         "knockIn": 45,
         "knockInBasis": "종가",
@@ -18089,6 +18298,7 @@
         "no": 38083,
         "riskLabel": "매우높은위험",
         "riskGrade": 1,
+        "instrument": "파생결합증권",
         "principalProtected": false,
         "underlyings": [
           "삼성전자",
@@ -18166,6 +18376,7 @@
           }
         ],
         "lizard": null,
+        "monthlyIncome": null,
         "maturityBarrier": 65,
         "knockIn": 25,
         "knockInBasis": "종가",
@@ -18340,6 +18551,7 @@
         "no": 38084,
         "riskLabel": "매우높은위험",
         "riskGrade": 1,
+        "instrument": "파생결합증권",
         "principalProtected": false,
         "underlyings": [
           "삼성전자",
@@ -18417,6 +18629,7 @@
           }
         ],
         "lizard": null,
+        "monthlyIncome": null,
         "maturityBarrier": 70,
         "knockIn": 25,
         "knockInBasis": "종가",
@@ -18591,6 +18804,7 @@
         "no": 38085,
         "riskLabel": "매우높은위험",
         "riskGrade": 1,
+        "instrument": "파생결합증권",
         "principalProtected": false,
         "underlyings": [
           "삼성전자",
@@ -18704,6 +18918,7 @@
           }
         ],
         "lizard": null,
+        "monthlyIncome": null,
         "maturityBarrier": 70,
         "knockIn": 30,
         "knockInBasis": "종가",
@@ -18914,6 +19129,7 @@
         "no": 38086,
         "riskLabel": "매우높은위험",
         "riskGrade": 1,
+        "instrument": "파생결합증권",
         "principalProtected": false,
         "underlyings": [
           "테슬라",
@@ -18991,6 +19207,7 @@
           }
         ],
         "lizard": null,
+        "monthlyIncome": null,
         "maturityBarrier": 70,
         "knockIn": 25,
         "knockInBasis": "종가",
@@ -19165,6 +19382,7 @@
         "no": 38087,
         "riskLabel": "매우높은위험",
         "riskGrade": 1,
+        "instrument": "파생결합증권",
         "principalProtected": false,
         "underlyings": [
           "마이크론 테크놀로지",
@@ -19242,6 +19460,7 @@
           }
         ],
         "lizard": null,
+        "monthlyIncome": null,
         "maturityBarrier": 70,
         "knockIn": 25,
         "knockInBasis": "종가",
@@ -19416,6 +19635,7 @@
         "no": 38088,
         "riskLabel": "매우높은위험",
         "riskGrade": 1,
+        "instrument": "파생결합증권",
         "principalProtected": false,
         "underlyings": [
           "마이크론 테크놀로지",
@@ -19493,6 +19713,7 @@
           }
         ],
         "lizard": null,
+        "monthlyIncome": null,
         "maturityBarrier": 70,
         "knockIn": 30,
         "knockInBasis": "종가",
@@ -19667,6 +19888,7 @@
         "no": 38089,
         "riskLabel": "매우높은위험",
         "riskGrade": 1,
+        "instrument": "파생결합증권",
         "principalProtected": false,
         "underlyings": [
           "테슬라",
@@ -19744,6 +19966,7 @@
           }
         ],
         "lizard": null,
+        "monthlyIncome": null,
         "maturityBarrier": 70,
         "knockIn": 35,
         "knockInBasis": "종가",
@@ -19925,9 +20148,10 @@
       {
         "title": "미래에셋증권 제4063회 파생결합사채(주가연계파생결합사채)(낮은위험)(상품위험등급:5등급)",
         "no": 4063,
-        "riskLabel": null,
+        "riskLabel": "낮은위험",
         "riskGrade": 5,
-        "principalProtected": false,
+        "instrument": "파생결합사채",
+        "principalProtected": true,
         "underlyings": [
           "KOSPI200",
           "SK하이닉스"
@@ -20040,6 +20264,12 @@
           }
         ],
         "lizard": null,
+        "monthlyIncome": {
+          "barrier": 70,
+          "rate": 0.585,
+          "count": 36,
+          "payRule": "해당 차수 월수익지급평가일(불포함) 후 3영업일"
+        },
         "maturityBarrier": 75,
         "knockIn": null,
         "knockInBasis": null,
@@ -20164,9 +20394,10 @@
       {
         "title": "미래에셋증권 제4071회 파생결합사채(주가연계파생결합사채)(낮은위험)(상품위험등급:5등급)",
         "no": 4071,
-        "riskLabel": null,
+        "riskLabel": "낮은위험",
         "riskGrade": 5,
-        "principalProtected": false,
+        "instrument": "파생결합사채",
+        "principalProtected": true,
         "underlyings": [
           "KOSPI200"
         ],
@@ -20233,6 +20464,12 @@
           }
         ],
         "lizard": null,
+        "monthlyIncome": {
+          "barrier": 75,
+          "rate": 0.495,
+          "count": 36,
+          "payRule": "해당 차수 월수익지급평가일(불포함) 후 2영업일"
+        },
         "maturityBarrier": 85,
         "knockIn": null,
         "knockInBasis": null,
@@ -20312,9 +20549,10 @@
       {
         "title": "미래에셋증권 제4072회 파생결합사채(주가연계파생결합사채)(낮은위험)(상품위험등급:5등급)",
         "no": 4072,
-        "riskLabel": null,
+        "riskLabel": "낮은위험",
         "riskGrade": 5,
-        "principalProtected": false,
+        "instrument": "파생결합사채",
+        "principalProtected": true,
         "underlyings": [
           "KOSPI200"
         ],
@@ -20381,6 +20619,12 @@
           }
         ],
         "lizard": null,
+        "monthlyIncome": {
+          "barrier": 70,
+          "rate": 0.45,
+          "count": 36,
+          "payRule": "해당 차수 월수익지급평가일(불포함) 후 2영업일"
+        },
         "maturityBarrier": 85,
         "knockIn": null,
         "knockInBasis": null,
@@ -20460,9 +20704,10 @@
       {
         "title": "미래에셋증권 제4073회 파생결합사채(주가연계파생결합사채)(낮은위험)(상품위험등급:5등급)",
         "no": 4073,
-        "riskLabel": null,
+        "riskLabel": "낮은위험",
         "riskGrade": 5,
-        "principalProtected": false,
+        "instrument": "파생결합사채",
+        "principalProtected": true,
         "underlyings": [
           "KOSPI200"
         ],
@@ -20529,6 +20774,12 @@
           }
         ],
         "lizard": null,
+        "monthlyIncome": {
+          "barrier": 65,
+          "rate": 0.415,
+          "count": 36,
+          "payRule": "해당 차수 월수익지급평가일(불포함) 후 2영업일"
+        },
         "maturityBarrier": 85,
         "knockIn": null,
         "knockInBasis": null,
@@ -20619,6 +20870,7 @@
         "no": 36716,
         "riskLabel": "매우높은위험",
         "riskGrade": 1,
+        "instrument": "파생결합증권",
         "principalProtected": false,
         "underlyings": [
           "EuroStoxx50",
@@ -20709,6 +20961,7 @@
           }
         ],
         "lizard": null,
+        "monthlyIncome": null,
         "maturityBarrier": 40,
         "knockIn": null,
         "knockInBasis": null,
@@ -20852,6 +21105,7 @@
         "no": 36717,
         "riskLabel": "매우높은위험",
         "riskGrade": 1,
+        "instrument": "파생결합증권",
         "principalProtected": false,
         "underlyings": [
           "EuroStoxx50",
@@ -20911,6 +21165,12 @@
         ],
         "schedule": [],
         "lizard": null,
+        "monthlyIncome": {
+          "barrier": 40,
+          "rate": 0.6,
+          "count": 36,
+          "payRule": "해당 차수 월수익지급평가일(불포함) 후 2영업일 (서울시간 기준)"
+        },
         "maturityBarrier": 40,
         "knockIn": null,
         "knockInBasis": null,
