@@ -52,11 +52,37 @@ const pct = (v) => (v == null ? null : `${v}%`);
 const NON_ASIA = /S&P|EURO|STOXX|NASDAQ|DOW|Micron|Applied|Broadcom|Tesla|Palantir|마이크론|어플라이드|브로드컴|테슬라|팔란티어|NVIDIA|엔비디아/i;
 const isAsiaOnly = (unders) => !(unders || []).some((u) => NON_ASIA.test(u));
 
-/** 상품 종류 — 제목에서 읽는다 */
+/**
+ * 상품 종류 — 제목에서 읽는다.
+ * 파생결합사채는 종류 자체가 원금지급형이다 (ELB / DLB).
+ *   "제4058회 파생결합사채(주가연계파생결합사채)(낮은위험)" -> ELB
+ */
 function kindOf(title) {
+  if (/파생결합사채/.test(title)) return /주가연계/.test(title) ? 'ELB' : 'DLB';
   if (/주가연계증권/.test(title)) return /원금지급|원금보장/.test(title) ? 'ELB' : 'ELS';
   if (/기타파생결합증권|파생결합증권/.test(title)) return /원금지급|원금보장/.test(title) ? 'DLB' : 'DLS';
   return null;
+}
+
+/**
+ * 위험등급 ↔ 등급명.
+ * 투자설명서가 "1등급(매우높은위험)에서 6등급(매우낮은위험)까지 6단계" 라고 밝히는 1:1 대응이다.
+ * 제목 표기가 회차마다 달라 한쪽만 있는 경우가 있다 (제4051회는 등급 숫자가 없고,
+ * 제36998회류는 등급명이 없다). 있는 쪽에서 없는 쪽을 채운다.
+ */
+const GRADE_LABEL = ['매우높은위험', '높은위험', '다소높은위험', '보통위험', '낮은위험', '매우낮은위험'];
+const labelOfGrade = (g) => (g >= 1 && g <= 6 ? GRADE_LABEL[g - 1] : null);
+const gradeOfLabel = (l) => { const i = GRADE_LABEL.indexOf(l); return i >= 0 ? i + 1 : null; };
+
+/** 월수익지급 조항 — 월지급식 상품의 핵심 문구 */
+function monthlyNote(it) {
+  const m = it.monthlyIncome;
+  if (!m) return null;
+  let s = `이 상품은 월지급식으로, 매월 월수익지급평가일에 모든 기초자산의 평가가격이 각 최초기준가격의 ${m.barrier}% 이상이면 원금의 ${m.rate}% 를 그 달의 수익으로 지급합니다`;
+  if (m.count) s += ` (총 ${m.count}회 평가)`;
+  s += `. 조건을 충족하지 못한 달에는 그 달의 수익이 지급되지 않으며, 미지급분은 이후에 소급하여 지급되지 않습니다`;
+  if (m.payRule) s += `. 지급일은 ${m.payRule}`;
+  return s + '.';
 }
 
 /**
@@ -153,6 +179,15 @@ function midPriceDate(it) {
 
 /** 숙려제도 실제 일정 */
 function coolNote(it) {
+  /**
+   * 파생결합사채(ELB·DLB) 투자설명서에는 숙려제도 대상 청약기간·숙려기간 칸이 아예 없다
+   * (파생결합증권 문서에는 있다). 고난도 금융투자상품이 아니어서 숙려제도 적용 대상이
+   * 아니기 때문이다. 빈칸으로 두면 「확인필요」로 떠서 직원이 없는 일정을 지어 채우게 된다.
+   */
+  if (!it.coolingFrom && it.instrument === '파생결합사채') {
+    return '이 회차의 투자설명서에는 숙려제도 대상 청약기간과 숙려기간이 정해져 있지 않습니다. '
+      + '파생결합사채(원금지급형)는 고난도 금융투자상품이 아니어서 청약 숙려제도 적용 대상이 아닙니다.';
+  }
   if (!it.coolingFrom || !it.coolingTo) return null;
   let s = `이 회차의 숙려기간은 ${kdate(it.coolingFrom)} ~ ${kdate(it.coolingTo)} 이며`;
   if (it.confirmNote) s += `, 가입의사 확인은 ${it.confirmNote} 입니다`;
@@ -193,9 +228,16 @@ function toRecord(it, rcpNo, docDate) {
     const cycle = schedule.length >= 2 ? schedule[1].months - schedule[0].months : (schedule.length ? schedule[0].months : null);
     const matSeq = cycle ? Math.round(term / cycle) : lastSeq + 1;
     if (matSeq > lastSeq) {
+      /**
+       * 만기 지급률은 문서의 총수익률(docMaxRate)에 100 을 더해 쓴다. 단 월지급식은
+       * docMaxRate 가 「한 달치」다 (제4058회 0.5%(연 6%)). 그대로 더하면 3년물 만기
+       * 지급률이 100.5% 로 나와 실제와 전혀 다른 숫자를 읽게 된다. 월지급식이면
+       * 만기 지급률을 비워 「확인필요」로 남긴다 — 틀린 숫자보다 빈칸이 낫다.
+       */
+      const matPay = (it.monthlyIncome || it.docMaxRate == null) ? null : it.docMaxRate + 100;
       schedule.push({
         seq: matSeq, months: term, barrier: it.maturityBarrier,
-        payRate: it.docMaxRate != null ? it.docMaxRate + 100 : null,
+        payRate: matPay,
         annRate: it.annualRate != null ? it.annualRate : null,
         evalDate: it.maturityDate, maturity: true,
       });
@@ -210,9 +252,12 @@ function toRecord(it, rcpNo, docDate) {
     round: it.no ? `제${it.no}회` : null,
     kind: kind,
     highDiff: it.principalProtected ? '해당 없음 (원금지급형)' : '해당 (고난도 금융투자상품)',
-    riskGrade: it.riskGrade != null ? String(it.riskGrade) : null,
-    riskLabel: it.riskLabel || null,
-    riskReason: it.principalProtected ? '원금지급형' : '최대 원금손실가능금액 20% 초과형',
+    riskGrade: String(it.riskGrade != null ? it.riskGrade : (gradeOfLabel(it.riskLabel) ?? '')) || null,
+    riskLabel: it.riskLabel || labelOfGrade(it.riskGrade) || null,
+    /* 위험등급 분류 근거 — 투자설명서 「금융투자 상품별 투자위험도 분류 기준」 표의 해당 행 */
+    riskReason: it.instrument === '파생결합사채'
+      ? '파생결합사채(ELB·DLB) — 발행 금융회사의 신용등급에 대응하는 채권의 위험등급 준용'
+      : (it.principalProtected ? '원금지급형' : '최대 원금손실가능금액 20% 초과형'),
     under: (it.underlyings || []).join(', ') || null,
     underVol: vol,
     issueDate: kdate(it.issueDate),
@@ -234,6 +279,7 @@ function toRecord(it, rcpNo, docDate) {
     docDate: docDate ? kdate(docDate.replace(/\./g, '-')) : null,
     coolNote: coolNote(it),
     fairValueNote: fairValueNote(it),
+    monthlyNote: monthlyNote(it),
   };
   /* null 은 담지 않는다 — 화면에서 「확인필요」로 남아야 한다 */
   Object.keys(fields).forEach((k) => { if (fields[k] == null || fields[k] === '') delete fields[k]; });
@@ -247,6 +293,10 @@ function toRecord(it, rcpNo, docDate) {
     fields,
     schedule,
     matBarrier: it.maturityBarrier != null ? it.maturityBarrier : null,
+    /* 앱이 손익구조 문구를 만들 때 원금지급형·월지급식이면 문구가 완전히 달라진다 */
+    instrument: it.instrument || null,
+    principalProtected: !!it.principalProtected,
+    monthlyIncome: it.monthlyIncome || null,
     knockIn: it.knockIn != null ? String(it.knockIn) : '',
     lizard: it.lizard || null,
     /* 모의실험 표 전체는 앱이 쓰지 않는다 (lossExample 문구에 요약이 들어간다).
@@ -259,6 +309,7 @@ function toRecord(it, rcpNo, docDate) {
       midPriceDate: '기초자산 소재지(아시아 / 非아시아)로 판정',
       maturityRow: '만기 배리어·만기일을 표 마지막 행으로 추가',
       riskGradeNote: '투자설명서 「목표시장 설정 및 설정 근거」 표(위험추구성향·손실감내능력·지식과 경험·투자기간)를 문장으로 옮김',
+      riskGradeLabel: '등급 숫자와 등급명 중 제목에 있는 쪽에서 나머지를 채움 (문서가 밝히는 1:1 대응)',
       lossExample: it.principalProtected ? '원금지급형 — 중도상환·발행사 신용위험만 손실 요인'
         : (it.knockIn != null ? '낙인 배리어 + 만기 배리어 조항' : '노낙인 — 만기 배리어 조항이 유일한 손실조건'),
     },

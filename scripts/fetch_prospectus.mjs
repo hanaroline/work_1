@@ -146,6 +146,16 @@ for (const f of wanted) {
         terms: slices('자동조기상환 발생조건', 600, 2500, 25),
         offer: slices('청약기간', 300, 900, 4),
         maxLoss: slices('최대손실액', 300, 2200, 25),
+        /**
+         * 아래 넷은 파생결합사채(ELB)·DLS 문서의 서식을 맞추려고 뜬다.
+         * ELB 문서는 「자동조기상환 발생조건」 이라는 머리글을 쓰지 않아 terms 가 0건이고,
+         * 「목표시장」 블록도 파생결합증권과 다른 자리에 있다. 원문 .txt 는 커밋하지 않으므로
+         * (용량) 이 json 이 서식을 확인할 수 있는 유일한 통로다.
+         */
+        targetMarket: slices('목표시장', 900, 2600, 3),
+        earlyTerms: slices('자동조기상환', 400, 2600, 6),
+        maturityTerms: slices('만기상환', 400, 2600, 6),
+        monthlyTerms: slices('월수익지급', 300, 2600, 3),
       }, null, 2));
       console.log(`    -> prospectus_${f.rcpNo}.json 저장`);
     }
