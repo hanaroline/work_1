@@ -1,0 +1,267 @@
+#!/usr/bin/env node
+/**
+ * tools/discovery/prospectus_parsed.json  ->  data/els-prospectus.js
+ *
+ * DART 일괄신고추가서류에서 파싱한 회차별 투자설명서 내용을
+ * 완전판매 스크립트가 읽는 필드 형태로 변환한다.
+ *
+ * 파이프라인
+ *   scripts/fetch_prospectus.mjs   DART 공시 원문 수집  -> tools/discovery/prospectus_<접수번호>.txt
+ *   scripts/parse_prospectus.mjs   회차별 조건 파싱      -> tools/discovery/prospectus_parsed.json
+ *   scripts/build_els_prospectus.mjs (이 파일)          -> data/els-prospectus.js
+ *
+ * 매칭 기준은 회차 번호다. data/els.js 의 상품명("미래에셋증권(ELS)38062e")에서
+ * 회차를 뽑아 투자설명서 항목의 no 와 맞춘다. 상품코드(ISIN)는 공시 원문에 없다.
+ *
+ * ★ 이 변환기는 값을 만들어내지 않는다 ★
+ *   원문에 없는 값은 null 로 남겨 화면에서 「확인필요」로 표시되게 한다.
+ *   계산으로 확정되는 값(평가일 → 경과개월, 기초자산 소재지 → 중도상환 가격평가일)만
+ *   유도하고, 유도 근거를 derivedFrom 에 남긴다.
+ *
+ * 사용: node scripts/build_els_prospectus.mjs
+ */
+import { readFile, writeFile } from 'node:fs/promises';
+
+const PARSED = 'tools/discovery/prospectus_parsed.json';
+const ELS_DATA = 'data/els.js';
+const OUT = 'data/els-prospectus.js';
+
+/* ── 유틸 ─────────────────────────────────────────────── */
+const kdate = (iso) => {
+  if (!iso) return null;
+  const m = String(iso).match(/^(\d{4})-(\d{2})-(\d{2})$/);
+  return m ? `${m[1]}년 ${+m[2]}월 ${+m[3]}일` : null;
+};
+/**
+ * 두 날짜 사이 개월 수.
+ * ELS 조기상환평가일은 3개월 간격이지만 영업일에 맞춰 며칠씩 앞당겨진다
+ * (예: 발행 2026-09-03 -> 1차 평가 2026-11-30 = 88일 = 3개월).
+ * 달 번호 차이로 세면 2개월로 나오므로 일수를 평균 월길이로 나눠 반올림한다.
+ */
+const monthsBetween = (fromIso, toIso) => {
+  if (!fromIso || !toIso) return null;
+  const a = new Date(fromIso + 'T00:00:00Z'), b = new Date(toIso + 'T00:00:00Z');
+  if (isNaN(a) || isNaN(b)) return null;
+  const days = (b - a) / 86400000;
+  if (days < 0) return null;
+  return Math.round(days / 30.4375);
+};
+const pct = (v) => (v == null ? null : `${v}%`);
+
+/** 기초자산 소재지 — 중도상환 가격평가일 문구가 갈린다 */
+const NON_ASIA = /S&P|EURO|STOXX|NASDAQ|DOW|Micron|Applied|Broadcom|Tesla|Palantir|마이크론|어플라이드|브로드컴|테슬라|팔란티어|NVIDIA|엔비디아/i;
+const isAsiaOnly = (unders) => !(unders || []).some((u) => NON_ASIA.test(u));
+
+/** 상품 종류 — 제목에서 읽는다 */
+function kindOf(title) {
+  if (/주가연계증권/.test(title)) return /원금지급|원금보장/.test(title) ? 'ELB' : 'ELS';
+  if (/기타파생결합증권|파생결합증권/.test(title)) return /원금지급|원금보장/.test(title) ? 'DLB' : 'DLS';
+  return null;
+}
+
+/** 손실 발생 상황 및 손실 추정액 — 문서에 있는 조건만으로 구성한다 */
+function lossExample(it) {
+  if (it.knockIn == null || it.maturityBarrier == null) return null;
+  const unders = (it.underlyings || []).join(', ');
+  let s =
+    `만기평가일에 모든 기초자산(${unders}) 중 어느 하나라도 ` +
+    `${it.knockInBasis === '종가' ? '종가기준으로 ' : ''}각 최초기준가격의 ${it.knockIn}% 미만으로 하락한 적이 있고, ` +
+    `만기평가가격이 각 최초기준가격의 ${it.maturityBarrier}% 미만인 경우, ` +
+    `하락률이 가장 큰 기초자산의 하락률만큼 원금손실이 발생하며 최대 원금 전액(100%) 손실이 가능합니다.`;
+  if (it.simLoss != null && it.simRuns) {
+    s += `\n발행사 수익률 모의실험(${it.simRange ? it.simRange.from + '~' + it.simRange.to : ''} 과거 데이터 ${it.simRuns.toLocaleString()}회) 기준 ` +
+      `만기 손실 발생 비율은 ${it.simLoss}% 입니다.`;
+  }
+  return s;
+}
+
+/** 중도상환 가격평가일 — 기초자산 소재지에 맞는 문구 */
+function midPriceDate(it) {
+  const unders = it.underlyings || [];
+  if (!unders.length) return null;
+  return isAsiaOnly(unders)
+    ? '중도상환 신청 시 적용되는 공정가액은 중도상환 신청일의 거래소영업일 및 영업일 종가를 반영하여 결정됩니다. (기초자산이 모두 아시아 지역 거래자산)'
+    : '중도상환 신청 시 적용되는 공정가액은 중도상환 신청일의 익거래소영업일 및 영업일 종가를 반영하여 결정됩니다. (기초자산에 非아시아 지역 거래자산 포함)';
+}
+
+/** 숙려제도 실제 일정 */
+function coolNote(it) {
+  if (!it.coolingFrom || !it.coolingTo) return null;
+  let s = `이 회차의 숙려기간은 ${kdate(it.coolingFrom)} ~ ${kdate(it.coolingTo)} 이며`;
+  if (it.confirmNote) s += `, 가입의사 확인은 ${it.confirmNote} 입니다`;
+  else if (it.confirmBy) s += `, 가입의사 확인 기한은 ${kdate(it.confirmBy)} 입니다`;
+  s += '.';
+  if (it.coolEnd) s += ` 숙려제도 대상(개인 일반투자자) 청약종료일은 ${kdate(it.coolEnd)} 로, 일반 청약종료일(${kdate(it.offerEnd)})보다 앞섭니다.`;
+  return s;
+}
+
+/** 공정가액 안내 — 발생 가능한 불이익 설명 보강 */
+function fairValueNote(it) {
+  if (it.fairValue == null) return null;
+  const unit = it.currency === 'USD' ? `USD ${it.faceValue.toLocaleString()}` : `${it.faceValue.toLocaleString()}원`;
+  const fv = it.currency === 'USD' ? `USD ${it.fairValue.toLocaleString()}` : `${it.fairValue.toLocaleString()}원`;
+  let s = `${kdate(it.fairValueDate) || '평가기준일'} 기준 이 증권의 공정가격은 액면 ${unit} 당 ${fv} 입니다`;
+  if (it.fairValueGap != null) s += ` (액면 대비 ${it.fairValueGap}%)`;
+  s += '. 중도상환 금액은 이 공정가액을 기초로 산정되므로 발행 직후 중도상환 시에도 원금손실이 발생할 수 있습니다.';
+  return s;
+}
+
+/* ── 변환 ─────────────────────────────────────────────── */
+function toRecord(it, rcpNo, docDate) {
+  const kind = kindOf(it.title);
+  const term = monthsBetween(it.issueDate, it.maturityDate);
+
+  /* 차수별 상환조건 — 평가일에서 경과개월을 계산한다 */
+  const schedule = (it.schedule || []).map((s) => ({
+    seq: s.step,
+    months: monthsBetween(it.issueDate, s.date),
+    barrier: s.barrier != null ? s.barrier : null,
+    payRate: s.payout != null ? s.payout : null,
+    annRate: it.annualRate != null ? it.annualRate : null,
+    evalDate: s.date,
+  }));
+  /* 만기 차수를 표 마지막 행으로 붙인다 (만기상환 조건·수익률의 근거) */
+  if (it.maturityBarrier != null && term != null) {
+    const lastSeq = schedule.length ? schedule[schedule.length - 1].seq : 0;
+    const cycle = schedule.length >= 2 ? schedule[1].months - schedule[0].months : (schedule.length ? schedule[0].months : null);
+    const matSeq = cycle ? Math.round(term / cycle) : lastSeq + 1;
+    if (matSeq > lastSeq) {
+      schedule.push({
+        seq: matSeq, months: term, barrier: it.maturityBarrier,
+        payRate: it.docMaxRate != null ? it.docMaxRate + 100 : null,
+        annRate: it.annualRate != null ? it.annualRate : null,
+        evalDate: it.maturityDate, maturity: true,
+      });
+    }
+  }
+
+  const vol = (it.volatility || []).map((v) => `${v.asset} ${v.vol}%`).join(', ') || null;
+
+  const fields = {
+    name: it.title || null,
+    issuer: '미래에셋증권',
+    round: it.no ? `제${it.no}회` : null,
+    kind: kind,
+    highDiff: it.principalProtected ? '해당 없음 (원금지급형)' : '해당 (고난도 금융투자상품)',
+    riskGrade: it.riskGrade != null ? String(it.riskGrade) : null,
+    riskLabel: it.riskLabel || null,
+    riskReason: it.principalProtected ? '원금지급형' : '최대 원금손실가능금액 20% 초과형',
+    under: (it.underlyings || []).join(', ') || null,
+    underVol: vol,
+    issueDate: kdate(it.issueDate),
+    matDate: kdate(it.maturityDate),
+    matTerm: term != null ? (term % 12 === 0 ? `${term / 12}년` : `${term}개월`) : null,
+    fixMethod: '최초기준가격평가일의 각 기초자산 종가',
+    fixDate: kdate(it.baseDate),
+    knockIn: it.knockIn != null ? pct(it.knockIn) : '없음 (노낙인)',
+    coupon: it.annualRate != null ? `연 ${it.annualRate}%` : null,
+    maxLoss: it.principalProtected ? '0% (원금지급형)' : '100%',
+    lossExample: lossExample(it),
+    midPriceDate: midPriceDate(it),
+    midAmt6: '공정가액(기준가)의 90% 이상',
+    midAmtAfter: '공정가액(기준가)의 95% 이상',
+    subUnit: it.minAmount != null ? `최소 ${it.minAmount.toLocaleString()}원` : null,
+    offerEnd: kdate(it.offerEnd),
+    docDate: docDate ? kdate(docDate.replace(/\./g, '-')) : null,
+    coolNote: coolNote(it),
+    fairValueNote: fairValueNote(it),
+  };
+  /* null 은 담지 않는다 — 화면에서 「확인필요」로 남아야 한다 */
+  Object.keys(fields).forEach((k) => { if (fields[k] == null || fields[k] === '') delete fields[k]; });
+
+  return {
+    no: it.no,
+    name: it.title,
+    docUrl: `https://dart.fss.or.kr/dsaf001/main.do?rcpNo=${rcpNo}`,
+    rcpNo, docDate,
+    collectedAt: new Date().toISOString(),
+    fields,
+    schedule,
+    matBarrier: it.maturityBarrier != null ? it.maturityBarrier : null,
+    knockIn: it.knockIn != null ? String(it.knockIn) : '',
+    lizard: it.lizard || null,
+    /* 모의실험 표 전체는 앱이 쓰지 않는다 (lossExample 문구에 요약이 들어간다).
+       파일 크기를 두 배로 만들 뿐이라 요약만 남긴다. */
+    sim: (it.simRuns || it.simLoss != null)
+      ? { runs: it.simRuns || null, loss: it.simLoss != null ? it.simLoss : null, first: it.simFirst != null ? it.simFirst : null, range: it.simRange || null }
+      : null,
+    derivedFrom: {
+      months: '차수별 평가일과 발행일의 차이로 계산',
+      midPriceDate: '기초자산 소재지(아시아 / 非아시아)로 판정',
+      maturityRow: '만기 배리어·만기일을 표 마지막 행으로 추가',
+    },
+  };
+}
+
+async function main() {
+  const parsed = JSON.parse(await readFile(PARSED, 'utf8'));
+
+  /* 회차 -> 레코드. 같은 회차가 여러 접수번호에 있으면 최신 공시를 쓴다 */
+  const byNo = {};
+  const rcps = Object.keys(parsed).sort();
+  for (const rcpNo of rcps) {
+    const doc = parsed[rcpNo];
+    /* 접수번호 앞 8자리가 접수일이다 (20260825000251 -> 2026-08-25).
+       parse_prospectus.mjs 는 날짜를 담지 않으므로 여기서 유도한다. */
+    const d = doc.date || `${rcpNo.slice(0, 4)}-${rcpNo.slice(4, 6)}-${rcpNo.slice(6, 8)}`;
+    for (const it of doc.items || []) {
+      if (!it.no) continue;
+      byNo[it.no] = toRecord(it, rcpNo, d);
+    }
+  }
+
+  /* data/els.js 의 상품과 회차로 매칭해 상품코드 키를 붙인다 */
+  const src = await readFile(ELS_DATA, 'utf8');
+  const g = {};
+  new Function('window', src)(g);
+  const products = (g.ELS_DATA && g.ELS_DATA.products) || [];
+
+  /* 레코드는 회차 키(byRound)에 한 번만 담고, 상품코드는 회차를 가리키는
+     인덱스(codeToRound)로 둔다. 양쪽에 레코드를 복사하면 파일이 두 배가 된다. */
+  const codeToRound = {};
+  const matched = [], unmatched = [];
+  for (const p of products) {
+    const no = Number((String(p.name).match(/(\d{4,6})/) || [])[1]);
+    if (!byNo[no]) { unmatched.push({ code: p.code, name: p.name, no }); continue; }
+    codeToRound[p.code] = no;
+    byNo[no].productCode = p.code;
+    byNo[no].productName = p.name;
+    matched.push(no);
+  }
+
+  const payload = {
+    updatedAt: new Date().toISOString(),
+    source: 'DART 일괄신고추가서류',
+    rcpNos: rcps,
+    matched: matched.length,
+    productCount: products.length,
+    unmatched,
+    codeToRound, /* 상품코드(ISIN) -> 회차 번호 */
+    byRound: byNo, /* 회차 번호 -> 투자설명서 레코드 */
+  };
+
+  const body =
+    '/**\n' +
+    ' * ELS/DLS 투자설명서 — DART 일괄신고추가서류에서 수집·파싱한 결과\n' +
+    ' *\n' +
+    ' * 생성 : scripts/fetch_prospectus.mjs -> scripts/parse_prospectus.mjs -> scripts/build_els_prospectus.mjs\n' +
+    ' *\n' +
+    ' * ELS_PROSPECTUS.byRound[회차번호]  = { fields, schedule, matBarrier, knockIn, docUrl, ... }\n' +
+    ' * ELS_PROSPECTUS.codeToRound[상품코드] = 회차 번호 (data/els.js 상품 목록과의 연결)\n' +
+    ' *   상품 목록에 아직 없는 회차도 byRound 에 들어 있어, 다음 주 상품이 목록에 뜨면 바로 붙는다.\n' +
+    ' *\n' +
+    ' * sales-script.html 이 상품 선택 시 이 값을 등록된 투자설명서로 자동 적용한다.\n' +
+    ' * 원문에 없는 값은 담지 않으므로 화면에서 「확인필요」로 남는다.\n' +
+    ' */\n' +
+    'window.ELS_PROSPECTUS = ' + JSON.stringify(payload, null, 1) + ';\n';
+
+  await writeFile(OUT, body);
+  console.log(`${OUT} 기록`);
+  console.log(`  공시 ${rcps.length}건 · 회차 ${Object.keys(byNo).length}건`);
+  console.log(`  상품 ${products.length}건 중 ${matched.length}건 매칭`);
+  if (unmatched.length) {
+    console.log(`  미매칭 ${unmatched.length}건: ${unmatched.map((u) => u.no || u.name).join(', ')}`);
+  }
+}
+
+main().catch((e) => { console.error(e); process.exit(1); });

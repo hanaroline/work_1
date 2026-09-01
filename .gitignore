@@ -17,3 +17,9 @@ pg/
 g.txt
 out-beta/
 out-prod/
+
+# 투자설명서 공시 원문 — scripts/fetch_prospectus.mjs 가 언제든 다시 받는다.
+# 파싱 결과(prospectus_parsed.json)와 앱 입력(data/els-prospectus.js)만 커밋한다.
+tools/discovery/prospectus_*.txt
+tools/discovery/fund_prospectus_*.txt
+collect-debug/

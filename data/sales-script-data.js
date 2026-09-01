@@ -113,6 +113,8 @@
       { id: 'subUnit', label: '청약단위', group: '청약', hint: '' },
       { id: 'offerEnd', label: '청약 마감일', group: '청약', hint: '' },
       { id: 'watchProduct', label: '투자권유 유의상품 해당 여부', group: '청약', hint: '해당 시 관리직 직원(고객지원팀장·지점장) 사전확인 필수' },
+      { id: 'coolNote', label: '숙려기간 · 가입의사확인 실제 일정', group: '청약', hint: '투자설명서상 숙려기간과 가입의사확인 기한. 숙려제도 대상 청약종료일은 일반 청약종료일보다 앞선다' },
+      { id: 'fairValueNote', label: '공정가액 (액면 대비)', group: '청약', hint: '발생 가능한 불이익·중도상환 설명의 근거. 발행 직후 중도상환 시에도 손실이 나는 이유' },
       { id: 'docDate', label: '투자설명서 기준일', group: '교부서류', hint: '간이투자설명서 교부는 미인정 — 정식 투자설명서 필요', req: true }
     ],
 
