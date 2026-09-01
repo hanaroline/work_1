@@ -15605,10 +15605,91 @@ window.FUND_PROSPECTUS = { updatedAt: null, source: 'DART 투자설명서 공시
      - re       : 정규식 (첫 그룹이 값). 배열이면 순서대로 시도
      - map      : 매치 → 최종 값
      ========================================================== */
-  var GRADE_WORD = '매우높은위험|높은위험|다소높은위험|보통위험|낮은위험|매우낮은위험';
+  /* 설명서마다 "매우높은위험" / "매우 높은 위험" 이 섞여 있어 띄어쓰기를 허용한다 */
+  var GRADE_WORD = '매우\\s*높은\\s*위험|높은\\s*위험|다소\\s*높은\\s*위험|보통\\s*위험|낮은\\s*위험|매우\\s*낮은\\s*위험';
+  var despace = function (s) { return String(s).replace(/\s+/g, ''); };
+
+  /* ----------------------------------------------------------
+     표 읽기
+     pdfToText 가 표의 칸을 탭으로 끊어 준다. 펀드 투자설명서는 명칭·운용사·보수가
+     전부 표 안에 있어, 「라벨 <탭> 값」 구조로 읽는 편이 본문 정규식보다 훨씬 정확하다.
+     (본문 정규식은 옆 칸 값을 잘못 집어 오기 쉽다 — 총보수 자리에 선취수수료가 들어오는 식)
+     ---------------------------------------------------------- */
+  function cellsOf(line) { return line.split('\t').map(function (s) { return s.trim(); }); }
+
+  /** 첫 칸이 라벨과 맞는 행을 찾아 나머지 칸을 값으로 돌려준다 */
+  function rowValue(text, labelRe) {
+    var lines = String(text).split('\n');
+    var at = 0;
+    for (var i = 0; i < lines.length; i++) {
+      var line = lines[i], c = cellsOf(line);
+      if (c.length >= 2 && labelRe.test(c[0])) {
+        var v = c.slice(1).filter(function (x) { return x && x !== '-'; }).join(' ').trim();
+        if (v) return { value: v, index: at, length: line.length };
+      }
+      at += line.length + 1;
+    }
+    return null;
+  }
+
+  /**
+   * 보수·수수료 표에서 특정 클래스 행의 특정 열을 읽는다.
+   * 머리글 행에서 열 번호를 찾고, 그 아래 클래스 행에서 같은 번호의 칸을 가져온다.
+   */
+  function feeCell(text, colRes, clsRe) {
+    var lines = String(text).split('\n');
+    var at = 0, head = -1, headAt = 0, col = -1;
+    for (var i = 0; i < lines.length; i++) {
+      var c = cellsOf(lines[i]);
+      if (head < 0) {
+        for (var k = 0; k < colRes.length && col < 0; k++) {
+          for (var j = 0; j < c.length; j++) {
+            if (colRes[k].test(c[j])) { col = j; break; }
+          }
+        }
+        if (col >= 0) { head = i; headAt = at; }
+      } else if (clsRe.test(c[0] || '') && c.length > col) {
+        var v = c[col];
+        if (v && v !== '-') return { value: v, index: headAt, length: lines[i].length + (at - headAt) };
+      }
+      at += lines[i].length + 1;
+      /* 머리글에서 너무 멀어지면 다른 표다 */
+      if (head >= 0 && i - head > 12) { head = -1; col = -1; }
+    }
+    return null;
+  }
+
+  /**
+   * 줄바꿈으로 끊긴 본문을 잇는다.
+   * PDF 는 폭에 맞춰 문장을 자르므로 "…성과를 추구합 / 니다." 처럼 갈라진다. 그대로 두면
+   * 투자전략·투자대상 같은 서술 항목이 문장 중간에서 잘린 채 스크립트에 들어간다.
+   * 표 행(탭 포함)과 짧은 줄(머리글·제목)은 손대지 않는다 — 그것까지 이으면 제목이 붙어 버린다.
+   */
+  function unwrap(lines) {
+    var out = [];
+    for (var i = 0; i < lines.length; i++) {
+      var cur = lines[i];
+      while (
+        cur.indexOf('\t') < 0 && cur.length >= 40 && /[가-힣,·]$/.test(cur) &&
+        i + 1 < lines.length && lines[i + 1].indexOf('\t') < 0 &&
+        !/^\s*(?:\d+\s*[.)]|[○◦□■※【(])/.test(lines[i + 1]) && lines[i + 1].trim()
+      ) {
+        cur += lines[i + 1].trim();
+        i++;
+      }
+      out.push(cur);
+    }
+    return out;
+  }
 
   function num(m, i) { return m[i == null ? 1 : i].replace(/,/g, ''); }
-  function kdate(y, mo, d) { return y + '년 ' + (+mo) + '월 ' + (+d) + '일'; }
+  /**
+   * 연·월·일 세 조각을 한국어 날짜로.
+   * 아래쪽에 ISO 문자열 한 개를 받는 kdate(iso) 가 따로 있다. 이름이 같으면 함수 선언이
+   * 호이스팅되면서 뒤엣것이 이겨, 추출 규칙의 모든 날짜가 「2026」 처럼 연도만 남았다.
+   * (효력발생일·최초기준가격평가일·발행일·만기일 등 전 상품군의 날짜 항목이 조용히 깨진다.)
+   */
+  function kdateYMD(y, mo, d) { return y + '년 ' + (+mo) + '월 ' + (+d) + '일'; }
 
   /* 날짜 : 2026년 8월 1일 / 2026-08-01 / 2026.08.01 */
   var DATE = '(\\d{4})\\s*[년.\\-/]\\s*(\\d{1,2})\\s*[월.\\-/]\\s*(\\d{1,2})\\s*일?';
@@ -15624,38 +15705,71 @@ window.FUND_PROSPECTUS = { updatedAt: null, source: 'DART 투자설명서 공시
       id: 'riskLabel', label: '위험등급(명칭)',
       re: [new RegExp('(?:\\d\\s*등급\\s*[\\(\\[]?\\s*)(' + GRADE_WORD + ')'),
       new RegExp('(' + GRADE_WORD + ')')],
-      map: function (m) { return m[1]; }
+      /* "매우 높은 위험" 처럼 띄어 쓴 표기도 항목 값은 붙여서 통일한다 */
+      map: function (m) { return despace(m[1]); }
     }
   ];
 
   var RULES = {
+    /**
+     * 펀드 — 간이투자설명서는 거의 전부 표다. 「라벨 <탭> 값」 행을 먼저 읽고,
+     * 표에서 못 찾은 것만 본문 정규식으로 넘긴다.
+     */
     fund: COMMON_RULES.concat([
       {
         id: 'name', label: '펀드 명칭',
+        fn: function (t) { return rowValue(t, /^(?:집합투자기구의?\s*명칭|펀드\s*명칭|상품\s*명|펀드명)$/); },
         re: [/(?:집합투자기구의?\s*명칭|펀드\s*명칭|상품명)\s*[:：]?\s*([^\n]{6,90}?(?:투자신탁|투자회사)[^\n]{0,30})/,
         /([가-힣A-Za-z0-9()\[\]·\-\s]{6,70}(?:증권\s*)?자?투자신탁\s*\d*호?\s*\([^)]{1,20}\))/],
         map: function (m) { return m[1].trim(); }
       },
       {
         id: 'mgr', label: '자산운용사',
+        fn: function (t) { return rowValue(t, /^(?:집합투자업자|자산운용회사|자산운용사|운용회사|운용사)$/); },
         re: [/(?:집합투자업자|자산운용회사|운용회사)\s*[:：]?\s*([가-힣A-Za-z()\s]{2,30}?(?:자산운용|투자신탁운용|운용)(?:주식회사|㈜)?)/,
         /([가-힣A-Za-z]{2,20}자산운용)/],
         map: function (m) { return m[1].trim(); }
       },
       {
+        id: 'fundType', label: '펀드 유형',
+        fn: function (t) { return rowValue(t, /^(?:집합투자기구의?\s*종류|펀드\s*유형|펀드의?\s*종류|상품\s*유형)$/); }
+      },
+      {
+        /**
+         * A클래스 총보수(연).
+         * 표에서 클래스 A 행의 「합성 총보수·비용」(없으면 「총보수」) 칸을 읽는다.
+         * 본문 정규식만 쓰면 머리글 바로 뒤에 오는 선취판매수수료 값(납입금액의 1.00%)을
+         * 총보수로 집어 온다 — 실제로 그렇게 틀리고 있었다.
+         */
         id: 'clsAExp', label: '총보수(연)',
-        re: [/합성\s*총\s*보수[·\s]*비용[^\d%]{0,30}?연?\s*(\d+\.\d+)\s*%/,
-        /총\s*보수[·\s]*비용[^\d%]{0,30}?연?\s*(\d+\.\d+)\s*%/,
-        /총\s*보수[^\d%]{0,30}?연?\s*(\d+\.\d+)\s*%/],
+        fn: function (t) {
+          return feeCell(t, [/합성\s*총\s*보수/, /총\s*보수[·\s]*비용/, /^총\s*보수/], /^A(?:[\s\-]|클래스|$)/i);
+        },
+        re: [/합성\s*총\s*보수[·\s]*비용[^가-힣\d%]{0,20}?연?\s*(\d+\.\d+)\s*%/,
+        /총\s*보수[·\s]*비용[^가-힣\d%]{0,20}?연?\s*(\d+\.\d+)\s*%/],
         map: function (m) { return num(m); }
       },
       {
+        id: 'clsCExp', label: 'C클래스 총보수(연)',
+        fn: function (t) {
+          return feeCell(t, [/합성\s*총\s*보수/, /총\s*보수[·\s]*비용/, /^총\s*보수/], /^C(?:[\s\-]|클래스|$)/i);
+        }
+      },
+      {
         id: 'clsA', label: '선취판매수수료',
+        fn: function (t) {
+          var r = feeCell(t, [/선취\s*판매\s*수수료/, /선취\s*수수료/, /판매\s*수수료/], /^A(?:[\s\-]|클래스|$)/i);
+          if (!r) return null;
+          /* 표에 "1.00% 이내" 만 적힌 경우 기준(납입금액)을 붙여 준다 */
+          if (/^\d/.test(r.value)) r.value = '납입금액의 ' + r.value;
+          return r;
+        },
         re: [/선취\s*판매\s*수수료[^\d%]{0,40}?(\d+(?:\.\d+)?)\s*%\s*(이내)?/],
         map: function (m) { return '납입금액의 ' + num(m) + '%' + (m[2] ? ' 이내' : ''); }
       },
       {
         id: 'redeemFee', label: '환매수수료',
+        fn: function (t) { return rowValue(t, /^환매\s*수수료$/); },
         re: [/환매\s*수수료\s*[:：]?\s*(없음|해당\s*없음|징구하지\s*않(?:음|습니다))/,
         /환매\s*수수료[^\n]{0,40}?(\d+(?:\.\d+)?\s*%[^\n]{0,40})/],
         map: function (m) { return /없|않/.test(m[1]) ? '없음' : m[1].trim(); }
@@ -15666,25 +15780,64 @@ window.FUND_PROSPECTUS = { updatedAt: null, source: 'DART 투자설명서 공시
         map: function (m) { return m[1] + '시' + (m[2] ? ' ' + (+m[2]) + '분' : ''); }
       },
       {
+        id: 'buyBefore', label: '기준시각 이전 매입 적용',
+        re: [/(\d{1,2})\s*시\s*(?:\d{1,2}\s*분\s*)?이전에?\s*(?:매입|취득)[^\n]{0,20}?제?\s*(\d)\s*영업일/],
+        map: function (m) { return '제' + m[2] + '영업일 기준가격 적용'; }
+      },
+      {
         id: 'redPay', label: '환매대금 지급일',
         re: [/제?\s*(\d)\s*영업일\s*에?\s*환매\s*대금/,
         /환매\s*대금[^\n]{0,16}?제?\s*(\d)\s*영업일/],
-        map: function (m) { return num(m) + '영업일'; }
+        map: function (m) { return '제' + num(m) + '영업일'; }
+      },
+      {
+        id: 'redBefore', label: '기준시각 이전 환매 적용',
+        re: [/(\d{1,2})\s*시\s*(?:\d{1,2}\s*분\s*)?이전에?\s*환매[^\n]{0,24}?제?\s*(\d)\s*영업일/],
+        map: function (m) { return '제' + m[2] + '영업일 기준가격 적용'; }
       },
       {
         id: 'term', label: '계약기간',
+        fn: function (t) { return rowValue(t, /^(?:존속기간|계약기간|신탁계약기간)$/); },
         re: [/(추가|개방)형/, /(단위|폐쇄)형/],
         map: function (m) { return /추가|개방/.test(m[1]) ? '환매가 가능한 개방형' : '폐쇄형'; }
       },
       {
+        id: 'redeemable', label: '환매 가능 여부',
+        re: [/(추가|개방)형/],
+        map: function () { return '가능 (개방형)'; }
+      },
+      {
         id: 'docDate', label: '증권신고서 효력발생일',
+        fn: function (t) {
+          var r = rowValue(t, /효력\s*발생일?/);
+          if (!r) return null;
+          var m = new RegExp(DATE).exec(r.value);
+          return m ? { value: kdateYMD(m[1], m[2], m[3]), index: r.index, length: r.length } : null;
+        },
         re: [new RegExp('효력\\s*발생일?\\s*[:：]?\\s*' + DATE)],
-        map: function (m) { return kdate(m[1], m[2], m[3]); }
+        map: function (m) { return kdateYMD(m[1], m[2], m[3]); }
       },
       {
         id: 'targets', label: '투자대상 자산',
+        fn: function (t) { return rowValue(t, /^(?:투자\s*대상|주된?\s*투자\s*대상|투자대상\s*자산)$/); },
         re: [/투자\s*대상\s*(?:및\s*투자\s*전략)?\s*[:：]\s*([^\n]{10,180})/],
         map: function (m) { return m[1].replace(/^[:：\s]+/, '').trim(); }
+      },
+      {
+        id: 'strategy', label: '투자전략',
+        fn: function (t) { return rowValue(t, /^(?:투자\s*전략|주된?\s*투자\s*전략|운용\s*전략)$/); },
+        re: [/투자\s*전략\s*[:：]\s*([^\n]{10,200})/],
+        map: function (m) { return m[1].trim(); }
+      },
+      {
+        id: 'varPct', label: 'VaR 값(%)',
+        re: [/VaR[^\d%]{0,30}?(\d+(?:\.\d+)?)\s*%/i],
+        map: function (m) { return num(m); }
+      },
+      {
+        id: 'fxHedge', label: '환헤지 여부',
+        re: [/환(?:율)?\s*헤지[^\n]{0,20}?(하지\s*않|미실시|실시하지)/, /환(?:율)?\s*헤지[^\n]{0,16}?(실시|합니다|수행)/],
+        map: function (m) { return /않|미실시|하지/.test(m[1]) ? '환헤지 미실시' : '환헤지 실시'; }
       }
     ]),
 
@@ -15713,17 +15866,17 @@ window.FUND_PROSPECTUS = { updatedAt: null, source: 'DART 투자설명서 공시
       {
         id: 'fixDate', label: '최초기준가격 평가일',
         re: [new RegExp('최초\\s*기준\\s*가격\\s*평가일\\s*[:：]?\\s*' + DATE)],
-        map: function (m) { return kdate(m[1], m[2], m[3]); }
+        map: function (m) { return kdateYMD(m[1], m[2], m[3]); }
       },
       {
         id: 'issueDate', label: '발행일',
         re: [new RegExp('발행일\\s*[:：]?\\s*' + DATE)],
-        map: function (m) { return kdate(m[1], m[2], m[3]); }
+        map: function (m) { return kdateYMD(m[1], m[2], m[3]); }
       },
       {
         id: 'matDate', label: '만기일',
         re: [new RegExp('만기(?:상환)?일\\s*[:：]?\\s*' + DATE)],
-        map: function (m) { return kdate(m[1], m[2], m[3]); }
+        map: function (m) { return kdateYMD(m[1], m[2], m[3]); }
       },
       {
         id: 'earlyCycle', label: '조기상환 주기',
@@ -15759,7 +15912,7 @@ window.FUND_PROSPECTUS = { updatedAt: null, source: 'DART 투자설명서 공시
       {
         id: 'docDate', label: '투자설명서 기준일',
         re: [new RegExp('(?:효력\\s*발생일?|작성\\s*기준일)\\s*[:：]?\\s*' + DATE)],
-        map: function (m) { return kdate(m[1], m[2], m[3]); }
+        map: function (m) { return kdateYMD(m[1], m[2], m[3]); }
       }
     ]),
 
@@ -15797,12 +15950,12 @@ window.FUND_PROSPECTUS = { updatedAt: null, source: 'DART 투자설명서 공시
       {
         id: 'issueDate', label: '발행일',
         re: [new RegExp('발행일\\s*[:：]?\\s*' + DATE)],
-        map: function (m) { return kdate(m[1], m[2], m[3]); }
+        map: function (m) { return kdateYMD(m[1], m[2], m[3]); }
       },
       {
         id: 'matDate', label: '만기일',
         re: [new RegExp('만기일\\s*[:：]?\\s*' + DATE)],
-        map: function (m) { return kdate(m[1], m[2], m[3]); }
+        map: function (m) { return kdateYMD(m[1], m[2], m[3]); }
       },
       {
         id: 'credit', label: '신용등급',
@@ -15870,12 +16023,12 @@ window.FUND_PROSPECTUS = { updatedAt: null, source: 'DART 투자설명서 공시
       {
         id: 'issueDate', label: '발행일',
         re: [new RegExp('발행일\\s*[:：]?\\s*' + DATE)],
-        map: function (m) { return kdate(m[1], m[2], m[3]); }
+        map: function (m) { return kdateYMD(m[1], m[2], m[3]); }
       },
       {
         id: 'matDate', label: '만기일',
         re: [new RegExp('만기일\\s*[:：]?\\s*' + DATE)],
-        map: function (m) { return kdate(m[1], m[2], m[3]); }
+        map: function (m) { return kdateYMD(m[1], m[2], m[3]); }
       },
       {
         id: 'credit', label: '국제신용등급',
@@ -15940,6 +16093,20 @@ window.FUND_PROSPECTUS = { updatedAt: null, source: 'DART 투자설명서 공시
     var rules = RULES[cat] || [];
     var out = [];
     rules.forEach(function (r) {
+      /* 표 기반 규칙이 있으면 먼저 쓴다 — 본문 정규식보다 옆 칸을 잘못 집을 위험이 적다 */
+      if (r.fn) {
+        var t = null;
+        try { t = r.fn(text); } catch (e) { t = null; }
+        if (t && t.value != null && t.value !== '') {
+          out.push({
+            id: r.id, label: r.label, value: String(t.value).trim(),
+            evidence: evidenceOf(text, t.index || 0, t.length || 0),
+            fallback: false
+          });
+          return;
+        }
+      }
+      if (!r.re) return;
       var res = Array.isArray(r.re) ? r.re : [r.re];
       for (var i = 0; i < res.length; i++) {
         var m = res[i].exec(text);
@@ -15994,24 +16161,57 @@ window.FUND_PROSPECTUS = { updatedAt: null, source: 'DART 투자설명서 공시
         return lib.getDocument({ data: new Uint8Array(ab) }).promise;
       }).then(function (doc) {
         var chunks = [];
+        /**
+         * file:// 로 열면 브라우저가 Blob 워커 생성을 막아 pdf.js 가 메인 스레드로 내려온다
+         * ("Setting up fake worker"). 프로미스 체인만 쓰면 마이크로태스크라 화면이 다시 그려지지
+         * 않아, 수십 쪽짜리 설명서에서는 진행 표시가 멈춘 채 브라우저가 멈춘 것처럼 보인다.
+         * 페이지마다 매크로태스크로 한 번 양보해 진행 상황이 보이게 한다.
+         */
+        var yieldToUI = function () { return new Promise(function (r) { setTimeout(r, 0); }); };
         var seq = Promise.resolve();
         for (var i = 1; i <= doc.numPages; i++) {
           (function (n) {
-            seq = seq.then(function () {
+            seq = seq.then(yieldToUI).then(function () {
               return doc.getPage(n).then(function (page) {
                 return page.getTextContent().then(function (tc) {
-                  /* 좌표를 무시하고 이어붙이면 표가 뭉개지므로, y 좌표가 바뀔 때 줄을 나눈다 */
-                  var lastY = null, line = [], lines = [];
+                  /**
+                   * 좌표를 무시하고 이어붙이면 표가 뭉개진다.
+                   *  - y 가 바뀌면 줄을 나눈다.
+                   *  - 같은 줄 안에서 가로 간격이 벌어지면 「칸」이 바뀐 것이므로 탭을 넣는다.
+                   * 펀드 투자설명서는 보수·수수료가 표로만 적혀 있어, 칸 구분이 없으면
+                   * "총보수(연)" 머리글 뒤에 옆 칸의 선취수수료 값이 붙어 잘못 읽힌다.
+                   */
+                  var lastY = null, lastEnd = null, line = [], lines = [];
+                  var flush = function () {
+                    if (line.length) lines.push(line.join('').replace(/[ \t]+$/, ''));
+                    line = [];
+                  };
                   tc.items.forEach(function (it) {
-                    var y = it.transform ? Math.round(it.transform[5]) : null;
-                    if (lastY !== null && y !== null && Math.abs(y - lastY) > 2) {
-                      lines.push(line.join(' ')); line = [];
+                    var tr = it.transform || [];
+                    var y = tr.length ? Math.round(tr[5]) : null;
+                    var x = tr.length ? tr[4] : null;
+                    if (lastY !== null && y !== null && Math.abs(y - lastY) > 2) { flush(); lastEnd = null; }
+
+                    /**
+                     * pdf.js 는 칸 사이 여백을 「폭이 넓은 공백 항목」 하나로 준다
+                     * (예: {str:" ", width:56}). 폭을 보고 칸 구분인지 낱말 사이 띄어쓰기인지 가른다.
+                     */
+                    if (/^\s*$/.test(it.str)) {
+                      if (x !== null) lastEnd = x + (it.width || 0);
+                      lastY = y === null ? lastY : y;
+                      if (line.length) line.push((it.width || 0) > 8 ? '\t' : ' ');
+                      return;
+                    }
+                    /* 공백 항목 없이 좌표만 벌어진 문서도 있다 */
+                    if (lastEnd !== null && x !== null && x - lastEnd > 8 && !/\t$/.test(line[line.length - 1] || '')) {
+                      line.push('\t');
                     }
                     line.push(it.str);
+                    if (x !== null) lastEnd = x + (it.width || 0);
                     lastY = y;
                   });
-                  if (line.length) lines.push(line.join(' '));
-                  chunks.push(lines.join('\n'));
+                  flush();
+                  chunks.push(unwrap(lines).join('\n'));
                   if (onPage) onPage(n, doc.numPages);
                 });
               });
@@ -16485,7 +16685,8 @@ window.FUND_PROSPECTUS = { updatedAt: null, source: 'DART 투자설명서 공시
       source: 'COLLECT',
       docName: (hit.fields && hit.fields.name) || hit.key,
       docUrl: hit.docUrl || '',
-      registeredAt: hit.collectedAt || F.updatedAt || '',
+      /* F 는 fundCollectedByName 안의 지역변수였다 — 여기서 쓰면 ReferenceError 로 죽는다 */
+      registeredAt: hit.collectedAt || (window.FUND_PROSPECTUS && window.FUND_PROSPECTUS.updatedAt) || '',
       fields: hit.fields || {},
       schedule: [], matBarrier: null, knockIn: '', rawText: '',
       collected: true
@@ -17392,6 +17593,26 @@ window.FUND_PROSPECTUS = { updatedAt: null, source: 'DART 투자설명서 공시
       h.push('<input type="file" id="pdfFile" accept="application/pdf" style="margin-bottom:10px">');
       h.push('<div class="hint">투자설명서 · 간이투자설명서 · 핵심(요약)설명서 PDF를 올리면 항목과 차수별 상환표를 자동 추출합니다. 외부 네트워크 없이 동작합니다.</div>');
       h.push('<div id="pdfStat" class="note" style="margin:10px 0 0;display:none"></div>');
+      /**
+       * 판독이 끝나면 화면을 다시 그리므로 파일 선택창은 「선택된 파일 없음」 으로 돌아간다.
+       * 결과는 이 페이지 맨 아래에 붙어 있어 스크롤하지 않으면 보이지 않는다 — 그래서
+       * 「첨부해도 인식을 못한다」 로 보였다. 판독 결과를 업로드 칸 바로 밑에 요약해 둔다.
+       */
+      var pr = pros();
+      if (pr && /PDF/.test(pr.src)) {
+        var n = pr.found.length + (pr.schedule ? pr.schedule.length : 0);
+        h.push(n
+          ? '<div class="note" style="margin:10px 0 0;border-left-color:var(--ok)"><b>판독 완료 — ' + esc(pr.name) + '</b> · '
+            + (pr.pages ? pr.pages + '페이지 · ' : '') + '인식 항목 ' + pr.found.length + '건'
+            + (pr.schedule && pr.schedule.length ? ' · 차수별 표 ' + pr.schedule.length + '행' : '')
+            + '<br><button class="tbtn primary" id="btnGoResult" style="margin-top:8px">추출 결과 확인하고 등록하기</button></div>'
+          : '<div class="warnbox" style="margin:10px 0 0"><b>판독은 됐지만 자동으로 인식된 항목이 없습니다 — ' + esc(pr.name) + '</b>'
+            + (pr.pages ? ' (' + pr.pages + '페이지, 글자 ' + (pr.text ? pr.text.length : 0) + '자)' : '')
+            + '<br>' + ((pr.text || '').length < 200
+              ? '글자가 거의 안 나왔습니다. 스캔(이미지) PDF 로 보입니다 — ② 텍스트 붙여넣기나 ③ 직접 등록을 쓰십시오.'
+              : '설명서 서식이 예상과 달라 항목을 못 찾았습니다. 아래 「추출된 원문 텍스트 보기」 로 판독 결과를 확인하고 ② 또는 ③ 으로 진행하십시오.')
+            + '</div>');
+      }
     }
     h.push('</div></div>');
 
@@ -17462,7 +17683,7 @@ window.FUND_PROSPECTUS = { updatedAt: null, source: 'DART 투자설명서 공시
   function extractionResult() {
     var r = pros();
     if (!r) return '';
-    var h = ['<div class="rule"></div><h3 style="font-size:18px;font-weight:700;margin:0 0 10px">추출 결과 — ' + esc(r.name) + '</h3>'];
+    var h = ['<div class="rule" id="extractResult"></div><h3 style="font-size:18px;font-weight:700;margin:0 0 10px">추출 결과 — ' + esc(r.name) + '</h3>'];
     h.push('<div class="hint" style="margin-bottom:12px">출처 ' + esc(r.src) + (r.pages ? ' · ' + r.pages + '페이지' : '')
       + ' · 항목 ' + r.found.length + '건' + (r.schedule && r.schedule.length ? ' · 차수별 표 ' + r.schedule.length + '행' : '') + '</div>');
     if (!r.found.length && !(r.schedule && r.schedule.length)) {
@@ -17825,6 +18046,14 @@ window.FUND_PROSPECTUS = { updatedAt: null, source: 'DART 투자설명서 공시
       };
     }
 
+    var goRes = $('#btnGoResult');
+    if (goRes) {
+      goRes.onclick = function () {
+        var el = $('#extractResult');
+        if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      };
+    }
+
     var fi = $('#pdfFile');
     if (fi) {
       fi.onchange = function () {
@@ -17832,14 +18061,20 @@ window.FUND_PROSPECTUS = { updatedAt: null, source: 'DART 투자설명서 공시
         if (!file) return;
         var stat = $('#pdfStat');
         stat.style.display = '';
-        stat.textContent = 'PDF 판독 중…';
+        stat.textContent = 'PDF 판독 중… (' + file.name + ')';
         PROS.pdfToText(file, function (n, total) {
-          stat.textContent = 'PDF 판독 중… ' + n + ' / ' + total + ' 페이지';
+          stat.textContent = 'PDF 판독 중… ' + n + ' / ' + total + ' 페이지 (' + file.name + ')';
         }).then(function (r) {
           runExtract(r.text, '투자설명서 PDF', file.name, r.pages);
           renderAll();
+          /* 결과는 페이지 아래쪽에 붙는다 — 곧바로 데려간다 */
+          var el = $('#extractResult');
+          if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
         }).catch(function (e) {
-          stat.textContent = 'PDF 판독 실패 : ' + e.message;
+          /* 실패는 반드시 눈에 보여야 한다. 화면을 다시 그리지 않으므로 이 노드는 살아 있다 */
+          stat.className = 'warnbox';
+          stat.textContent = 'PDF 판독 실패 (' + file.name + ') : ' + (e && e.message ? e.message : e)
+            + ' — ② 텍스트 붙여넣기 또는 ③ 항목 직접 등록으로 진행하십시오.';
         });
       };
     }

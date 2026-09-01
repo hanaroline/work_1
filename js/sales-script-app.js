@@ -142,7 +142,8 @@
       source: 'COLLECT',
       docName: (hit.fields && hit.fields.name) || hit.key,
       docUrl: hit.docUrl || '',
-      registeredAt: hit.collectedAt || F.updatedAt || '',
+      /* F 는 fundCollectedByName 안의 지역변수였다 — 여기서 쓰면 ReferenceError 로 죽는다 */
+      registeredAt: hit.collectedAt || (window.FUND_PROSPECTUS && window.FUND_PROSPECTUS.updatedAt) || '',
       fields: hit.fields || {},
       schedule: [], matBarrier: null, knockIn: '', rawText: '',
       collected: true
@@ -1049,6 +1050,26 @@
       h.push('<input type="file" id="pdfFile" accept="application/pdf" style="margin-bottom:10px">');
       h.push('<div class="hint">투자설명서 · 간이투자설명서 · 핵심(요약)설명서 PDF를 올리면 항목과 차수별 상환표를 자동 추출합니다. 외부 네트워크 없이 동작합니다.</div>');
       h.push('<div id="pdfStat" class="note" style="margin:10px 0 0;display:none"></div>');
+      /**
+       * 판독이 끝나면 화면을 다시 그리므로 파일 선택창은 「선택된 파일 없음」 으로 돌아간다.
+       * 결과는 이 페이지 맨 아래에 붙어 있어 스크롤하지 않으면 보이지 않는다 — 그래서
+       * 「첨부해도 인식을 못한다」 로 보였다. 판독 결과를 업로드 칸 바로 밑에 요약해 둔다.
+       */
+      var pr = pros();
+      if (pr && /PDF/.test(pr.src)) {
+        var n = pr.found.length + (pr.schedule ? pr.schedule.length : 0);
+        h.push(n
+          ? '<div class="note" style="margin:10px 0 0;border-left-color:var(--ok)"><b>판독 완료 — ' + esc(pr.name) + '</b> · '
+            + (pr.pages ? pr.pages + '페이지 · ' : '') + '인식 항목 ' + pr.found.length + '건'
+            + (pr.schedule && pr.schedule.length ? ' · 차수별 표 ' + pr.schedule.length + '행' : '')
+            + '<br><button class="tbtn primary" id="btnGoResult" style="margin-top:8px">추출 결과 확인하고 등록하기</button></div>'
+          : '<div class="warnbox" style="margin:10px 0 0"><b>판독은 됐지만 자동으로 인식된 항목이 없습니다 — ' + esc(pr.name) + '</b>'
+            + (pr.pages ? ' (' + pr.pages + '페이지, 글자 ' + (pr.text ? pr.text.length : 0) + '자)' : '')
+            + '<br>' + ((pr.text || '').length < 200
+              ? '글자가 거의 안 나왔습니다. 스캔(이미지) PDF 로 보입니다 — ② 텍스트 붙여넣기나 ③ 직접 등록을 쓰십시오.'
+              : '설명서 서식이 예상과 달라 항목을 못 찾았습니다. 아래 「추출된 원문 텍스트 보기」 로 판독 결과를 확인하고 ② 또는 ③ 으로 진행하십시오.')
+            + '</div>');
+      }
     }
     h.push('</div></div>');
 
@@ -1119,7 +1140,7 @@
   function extractionResult() {
     var r = pros();
     if (!r) return '';
-    var h = ['<div class="rule"></div><h3 style="font-size:18px;font-weight:700;margin:0 0 10px">추출 결과 — ' + esc(r.name) + '</h3>'];
+    var h = ['<div class="rule" id="extractResult"></div><h3 style="font-size:18px;font-weight:700;margin:0 0 10px">추출 결과 — ' + esc(r.name) + '</h3>'];
     h.push('<div class="hint" style="margin-bottom:12px">출처 ' + esc(r.src) + (r.pages ? ' · ' + r.pages + '페이지' : '')
       + ' · 항목 ' + r.found.length + '건' + (r.schedule && r.schedule.length ? ' · 차수별 표 ' + r.schedule.length + '행' : '') + '</div>');
     if (!r.found.length && !(r.schedule && r.schedule.length)) {
@@ -1482,6 +1503,14 @@
       };
     }
 
+    var goRes = $('#btnGoResult');
+    if (goRes) {
+      goRes.onclick = function () {
+        var el = $('#extractResult');
+        if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      };
+    }
+
     var fi = $('#pdfFile');
     if (fi) {
       fi.onchange = function () {
@@ -1489,14 +1518,20 @@
         if (!file) return;
         var stat = $('#pdfStat');
         stat.style.display = '';
-        stat.textContent = 'PDF 판독 중…';
+        stat.textContent = 'PDF 판독 중… (' + file.name + ')';
         PROS.pdfToText(file, function (n, total) {
-          stat.textContent = 'PDF 판독 중… ' + n + ' / ' + total + ' 페이지';
+          stat.textContent = 'PDF 판독 중… ' + n + ' / ' + total + ' 페이지 (' + file.name + ')';
         }).then(function (r) {
           runExtract(r.text, '투자설명서 PDF', file.name, r.pages);
           renderAll();
+          /* 결과는 페이지 아래쪽에 붙는다 — 곧바로 데려간다 */
+          var el = $('#extractResult');
+          if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
         }).catch(function (e) {
-          stat.textContent = 'PDF 판독 실패 : ' + e.message;
+          /* 실패는 반드시 눈에 보여야 한다. 화면을 다시 그리지 않으므로 이 노드는 살아 있다 */
+          stat.className = 'warnbox';
+          stat.textContent = 'PDF 판독 실패 (' + file.name + ') : ' + (e && e.message ? e.message : e)
+            + ' — ② 텍스트 붙여넣기 또는 ③ 항목 직접 등록으로 진행하십시오.';
         });
       };
     }
