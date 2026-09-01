@@ -353,33 +353,64 @@ window.ELS_DATA = {
 
 등록 방법은 5가지이고, 위에서부터 가능한 것을 쓰면 됩니다.
 
-### 왜 ELS 투자설명서가 앱에서 바로 조회되지 않는가
+### ⓿ ELS·DLS — DART 공시에서 자동수집 (기본값)
 
-- **상품 목록·조건은 이미 자동수집합니다.** `data/els.js` 가 그 결과입니다
-  (`scripts/collect_els.mjs` + `.github/workflows/els-weekly.yml`, 매일 08:00 KST).
-- 다만 목록 API 응답에는 **차수별 지급률, 최초기준가격 평가일, 중도상환 가격평가일,
-  기초자산별 변동성** 이 없습니다. 이 값들은 투자설명서에만 있습니다.
-- 그리고 `sales-script.html` 은 정적 페이지라 브라우저에서 미래에셋 사이트로 직접
-  요청하면 **CORS 로 차단**됩니다. 그래서 이 리포지토리는 수집을 **서버측(GitHub
-  Actions + Playwright)** 에서 하고 결과를 데이터 파일로 커밋하는 구조입니다.
+파생결합증권 투자설명서는 **이미 자동수집되어 등록된 상태**입니다.
+상품을 선택하면 그 회차의 투자설명서 내용이 바로 스크립트에 들어갑니다.
 
-이 구조를 그대로 따라 투자설명서 수집기를 추가했습니다.
+미래에셋증권 ELS 는 일괄신고 방식이라 **주간 발행분이 하나의 「일괄신고추가서류」로
+DART 에 공시**되고, 그 문서 하나에 수십 회차의 조건이 모두 들어 있습니다.
 
-```bash
-node scripts/collect_els_prospectus.mjs --probe --limit 3   # 링크 후보 탐색
-node scripts/collect_els_prospectus.mjs                     # 수집 → data/els-prospectus.js
+```
+scripts/fetch_prospectus.mjs      DART 공시 원문 수집   → tools/discovery/prospectus_<접수번호>.txt
+scripts/parse_prospectus.mjs      회차별 조건 파싱      → tools/discovery/prospectus_parsed.json
+scripts/build_els_prospectus.mjs  스크립트 형식 변환    → data/els-prospectus.js
 ```
 
-`data/els-prospectus.js` 가 있으면 앱이 상품 선택 시 그 내용을 **자동수집분**으로
-등록 처리합니다. 담당자가 직접 등록하면 자동수집분을 대체합니다.
+DART 접근 경로는 `POST /dsab001/search.ax` → `GET /dsaf001/main.do` →
+`GET /report/viewer.do` 이고, `.github/workflows/els-prospectus.yml` 이 매일
+08:30 KST 에 돌려 결과를 커밋합니다.
 
-> **⚠ 수집기는 미검증입니다.** 개발 환경의 송신 정책이 `securities.miraeasset.com`
-> 을 차단해 실호출을 시도할 수 없었습니다. 상세페이지의 투자설명서 링크 위치는
-> 사이트 구조에 따라 달라지므로, `--probe` 로 먼저 실행해
-> `collect-debug/prospectus-probe.json` 을 확인한 뒤
-> `scripts/collect_els_prospectus.mjs` 의 `SELECTORS` 를 조정해야 합니다.
-> 워크플로(`.github/workflows/els-prospectus.yml`)도 같은 이유로 정기 실행을
-> 주석 처리해 두었습니다.
+**현재 수집 상태 — 공시 6건 / 회차 92건 / 상품 40건 중 38건 매칭 (자동완성률 90~94%)**
+
+투자설명서에서 자동으로 채워지는 값:
+
+| 항목 | 예시 |
+|---|---|
+| 기초자산별 변동성 | 삼성전자 65.17%, SK하이닉스 75.45% |
+| 차수별 상환조건 | 1차 3개월(2026-11-30) 배리어 75% → 액면 107.25% (연 29%) … |
+| 최초기준가격 평가일 | 2026년 9월 3일 |
+| 발행일 · 만기일 · 만기 배리어 · KI | 2026-09-03 / 2027-09-03 / 70% / 40%(종가기준) |
+| 손실 발생 상황 및 손실 추정액 | 조건 + 발행사 모의실험 손실비율 0.59% |
+| 중도상환 가격평가일 | 기초자산 소재지(아시아/非아시아)로 판정된 문구 |
+| 숙려기간 · 가입의사확인 기한 | 2026-08-31~09-01 / 09-02 오후 5시까지 |
+| 공정가액 | 액면 10,000원 당 9,541.97원 (−4.58%) |
+| 최소청약금액 | 100,000원 |
+
+`parse_prospectus.mjs` 에는 **정합성 검사**가 들어 있습니다 — 기초자산 개수와
+변동성·상관계수 개수·이름이 어긋나면 경고하고 종료코드 1 을 냅니다. 새 기초자산이
+들어와 목록에서 조용히 빠지는 것을 막기 위한 장치입니다.
+
+> **미매칭 2건** — ELB(하이파이브 월지급식, 회차 4058·4063)는 회차번호 체계가 달라
+> 자동매칭되지 않습니다. 아래 ①~③ 방법으로 등록하면 됩니다.
+
+### ⓪ 펀드 — DART 공시에서 자동수집 (probe 필요)
+
+펀드 (간이)투자설명서도 자산운용사가 DART 에 「투자설명서」로 공시하므로 같은 경로로
+수집합니다.
+
+```bash
+node scripts/fetch_fund_prospectus.mjs --probe --limit 3        # 서식·추출률 확인
+node scripts/fetch_fund_prospectus.mjs --mgr "미래에셋자산운용"   # 수집 → data/fund-prospectus.js
+```
+
+앱은 `data/fund-prospectus.js` 를 **펀드 명칭으로 매칭**해 자동 등록합니다.
+
+> **⚠ 펀드 쪽은 미검증입니다.** DART 접근 경로는 ELS 에서 검증된 것과 동일하지만,
+> **펀드 투자설명서 본문의 텍스트 서식**은 확인하지 못했습니다(개발 컨테이너의
+> 송신 정책이 `dart.fss.or.kr` 을 차단). `--probe` 로 먼저 돌려
+> `tools/discovery/fund_probe.json` 의 본문 샘플을 보고
+> `js/sales-script-prospectus.js` 의 `RULES.fund` 정규식을 조정해야 합니다.
 
 ### ① 투자설명서 PDF 업로드 (사외망에서도 동작)
 
@@ -462,10 +493,11 @@ GET {엔드포인트}?cat={fund|els|bondKrw|bondFx|irp}&code={상품코드}
 
 ## 상품 데이터
 
-| 상품군 | 출처 |
-|--------|------|
-| ELS · DLS | `data/els.js` (매일 자동 수집, 미래에셋증권 ELS/DLS 캘린더) 우선, 실패 시 내장 시드 40건 |
-| 펀드 / 원화채권 / 외화채권 / IRP | 화면 확인용 **예시 데이터** — 상담 전 투자설명서 원문 값으로 교체 필요 |
+| 상품군 | 상품 목록 | 투자설명서 |
+|--------|-----------|------------|
+| ELS · DLS | `data/els.js` (매일 자동수집, 미래에셋증권 캘린더) | `data/els-prospectus.js` (DART 자동수집, 38/40 매칭) |
+| 펀드 | 예시 데이터 | `data/fund-prospectus.js` (DART 수집기 · probe 필요) |
+| 원화채권 / 외화채권 / IRP | 예시 데이터 | PDF 업로드 · 텍스트 · 직접 등록 |
 
 예시 데이터가 선택된 경우 화면 상단에 「예시 데이터」 배너가 표시됩니다.
 값은 **투자설명서 자동조회** 탭에서 직접 수정할 수 있고, 입력값은 브라우저에
@@ -507,11 +539,17 @@ data/sales-script-sheets.js    # 평가표 항목 — 적합성원칙 공통
 data/sales-script-sheets2.js   # 평가표 항목 — 펀드 · ELS/DLS
 data/sales-script-sheets3.js   # 평가표 항목 — 채권 · IRP + 평가표(SHEETS) 구성
 
-data/els-prospectus.js         # ELS 투자설명서 수집 결과 (수집기가 생성, 없어도 동작)
+data/els-prospectus.js         # ELS 투자설명서 (DART 수집 결과 · 회차 92건)
+data/fund-prospectus.js        # 펀드 투자설명서 (수집기가 생성, 없어도 동작)
 
 sales-script-standalone.html   # 배포용 단일 파일 (빌드 결과물)
 scripts/build_sales_script.mjs # 위 파일들을 단일 파일로 합치는 빌드 스크립트
-scripts/collect_els_prospectus.mjs  # ELS 투자설명서 수집기 (⚠ 미검증)
+
+scripts/fetch_prospectus.mjs        # ELS 투자설명서 — DART 공시 원문 수집
+scripts/parse_prospectus.mjs        # ELS 투자설명서 — 회차별 조건 파싱 + 정합성 검사
+scripts/build_els_prospectus.mjs    # ELS 투자설명서 — 스크립트 형식 변환
+scripts/fetch_fund_prospectus.mjs   # 펀드 투자설명서 — DART 공시 수집 (⚠ probe 필요)
+tools/discovery/prospectus_parsed.json  # 파싱 결과 (빌더 입력 · 원문 .txt 는 gitignore)
 ```
 
 ## 기타 기능

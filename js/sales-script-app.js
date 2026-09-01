@@ -20,6 +20,7 @@
   var LS = 'ss_state_v1';
   var LS_PROD = 'ss_products_v1';   /* 담당자가 등록·저장한 상품 */
   var LS_DOCS = 'ss_docs_v1';       /* 상품별로 등록된 투자설명서 */
+  var LS_TXT = 'ss_commontexts_v1'; /* 전 상품 공용 문구 (핵심요약설명서 표준 문구 등) */
 
   /* ---------------- 상태 ---------------- */
   var ST = {
@@ -84,8 +85,18 @@
     var cat = sheet().cat, pid = ST.productId;
     var mine = (DOCS[cat] && DOCS[cat][pid]) || null;
     if (mine) return mine;
+    if (cat === 'fund') return fundCollectedDoc();
     if (cat !== 'els') return null;
-    var col = window.ELS_PROSPECTUS && window.ELS_PROSPECTUS.items && window.ELS_PROSPECTUS.items[pid];
+    var P = window.ELS_PROSPECTUS;
+    if (!P || !P.byRound) return null;
+    /* 공시 원문에는 ISIN 이 없어 회차 번호가 유일한 연결키다.
+       상품코드 인덱스를 먼저 보고, 없으면 상품명에서 회차를 뽑는다. */
+    var no = P.codeToRound && P.codeToRound[pid];
+    if (no == null) {
+      var p0 = product();
+      no = p0 && (String(p0.name).match(/(\d{4,6})/) || [])[1];
+    }
+    var col = no != null ? P.byRound[no] : null;
     if (!col) return null;
     var ki = col.fields && col.fields.knockIn;
     return {
@@ -101,6 +112,39 @@
       collected: true
     };
   }
+  /**
+   * 펀드 자동수집분 — data/fund-prospectus.js 는 펀드 명칭 키다.
+   * 명칭 표기가 조금씩 달라 공백·괄호를 지운 뒤 부분일치로 찾는다.
+   */
+  function fundCollectedByName(name) {
+    var F = window.FUND_PROSPECTUS;
+    if (!F || !F.items || !name) return null;
+    var norm = function (x) { return String(x).replace(/[\s()\[\]·\-]/g, ''); };
+    var target = norm(name);
+    var keys = Object.keys(F.items);
+    var hit = null;
+    for (var i = 0; i < keys.length; i++) {
+      var k = norm(keys[i]);
+      if (k === target) return F.items[keys[i]];
+      if (!hit && (k.indexOf(target) >= 0 || target.indexOf(k) >= 0)) hit = F.items[keys[i]];
+    }
+    return hit;
+  }
+  function fundCollectedDoc() {
+    var p = product();
+    var hit = p ? fundCollectedByName(p.name) : null;
+    if (!hit) return null;
+    return {
+      source: 'COLLECT',
+      docName: (hit.fields && hit.fields.name) || hit.key,
+      docUrl: hit.docUrl || '',
+      registeredAt: hit.collectedAt || F.updatedAt || '',
+      fields: hit.fields || {},
+      schedule: [], matBarrier: null, knockIn: '', rawText: '',
+      collected: true
+    };
+  }
+
   function setDoc(d) {
     var cat = sheet().cat, pid = ST.productId;
     if (!pid) return;
@@ -117,6 +161,38 @@
   }
 
   function sheetKey() { return ST.baseSheet + (ST.senior ? '_senior' : '_general'); }
+
+  /* ---------------- 전 상품 공용 문구 ----------------
+     위험등급별 유의사항처럼 상품이 아니라 '판매회사 핵심(요약)설명서' 에서 오는
+     문구다. 상품마다 다시 입력할 필요가 없으므로 등급별로 한 번만 등록해 두고
+     모든 상품에서 재사용한다.
+     seed 값은 업로드된 평가표의 「탁월사례」 원문에서 확인된 것만 넣는다.
+     ---------------------------------------------------- */
+  var COMMON_SEED = {
+    riskNote2: '위험선호도가 높은 투자자를 위한 상품으로서, 시장평균 수익률을 훨씬 넘어서는 높은 수준의 투자수익을 추구하며, 이를 위해 자산가치 변동에 따른 손실위험을 적극 수용할 수 있는 투자자에게 적합한 상품입니다',
+    riskNote5: '투자원금의 손실위험은 최소화하고, 이자소득이나 배당소득 수준의 안정적인 투자를 목표로 하는 투자자에게 적합한 상품입니다',
+    withdrawRight: '불가'
+  };
+  var COMMON = {};
+  function loadCommon() {
+    try {
+      var o = JSON.parse(localStorage.getItem(LS_TXT) || '{}');
+      COMMON = Object.assign({}, COMMON_SEED, (o && typeof o === 'object') ? o : {});
+    } catch (e) { COMMON = Object.assign({}, COMMON_SEED); }
+  }
+  function saveCommon() {
+    try { localStorage.setItem(LS_TXT, JSON.stringify(COMMON)); } catch (e) { /* 저장 불가 환경 */ }
+  }
+  var COMMON_DEFS = [
+    { id: 'riskNote1', label: '1등급 매우높은위험 — 유의사항', hint: '핵심(요약)설명서상 「해당 위험등급의 유의사항」 문구를 그대로 옮기세요' },
+    { id: 'riskNote2', label: '2등급 높은위험 — 유의사항', hint: '평가표 탁월사례에서 확인된 문구가 기본값으로 들어가 있습니다' },
+    { id: 'riskNote3', label: '3등급 다소높은위험 — 유의사항', hint: '' },
+    { id: 'riskNote4', label: '4등급 보통위험 — 유의사항', hint: '' },
+    { id: 'riskNote5', label: '5등급 낮은위험 — 유의사항', hint: '채권 평가표 탁월사례에서 확인된 문구가 기본값으로 들어가 있습니다' },
+    { id: 'riskNote6', label: '6등급 매우낮은위험 — 유의사항', hint: '' },
+    { id: 'riskGradeBasis', label: '위험등급 분류 근거 (채권)', hint: '예) 국내 신용평가사 회사채 신용등급 AA-~AAA 를 5등급 낮은위험으로 분류' },
+    { id: 'withdrawRight', label: '청약철회권 대상여부', hint: '평가표 탁월사례는 모두 「불가」 — 상품별 판단이 다르면 수정하세요' }
+  ];
 
   /** 조회 결과는 조회 당시의 상품군·상품에만 유효하다 */
   function pros() {
@@ -253,9 +329,19 @@
         return sh.cat === 'bondKrw' ? '국내채권 장외거래 투자권유 추가 설명자료' : '외화채권 관련 추가 설명자료';
       case 'tradeLabel':
         return sh.cat === 'bondFx' ? '외화채권' : '장외채권';
+      /* 위험등급별 유의사항 — 등급에 맞는 공용 문구를 쓴다 */
+      case 'riskGradeNote': {
+        var g = rawValue('riskGrade');
+        var t2 = g ? COMMON['riskNote' + String(g).replace(/[^0-9]/g, '')] : null;
+        return (t2 == null || t2 === '') ? undefined : t2;
+      }
+      case 'riskGradeBasis':
+        return COMMON.riskGradeBasis || undefined;
+      case 'withdrawRight':
+        return COMMON.withdrawRight || undefined;
       /* 등록된 투자설명서의 차수별 상환조건 표로 손익구조 문구를 생성한다 */
       case 'earlyTable': case 'matCond': case 'coupon':
-      case 'knockIn': case 'earlyCycle': case 'matTerm': {
+      case 'knockIn': case 'earlyCycle': case 'matTerm': case 'payoffExample': {
         var t = elsTexts();
         if (!t) return undefined;
         var v = t[id];
@@ -279,7 +365,13 @@
   function labelOf(id) {
     var defs = fieldDefs();
     for (var i = 0; i < defs.length; i++) if (defs[i].id === id) return defs[i].label;
-    return { consumerType: '일반/전문금융소비자', recordReason: '녹취 대상 사유', unfitRecordAdd: '부적합 문구', docLabel: '설명서 명칭', docExtra: '추가 설명자료', tradeLabel: '거래 유형' }[id] || id;
+    return {
+      consumerType: '일반/전문금융소비자', recordReason: '녹취 대상 사유', unfitRecordAdd: '부적합 문구',
+      docLabel: '설명서 명칭', docExtra: '추가 설명자료', tradeLabel: '거래 유형',
+      payoffExample: '상환 예시 (차수별 표에서 자동 생성)', earlyTable: '자동조기상환 조건·수익률',
+      matCond: '만기상환 조건·수익률', riskGradeNote: '위험등급 유의사항 (공통 문구)',
+      withdrawRight: '청약철회권 대상여부'
+    }[id] || id;
   }
 
   /* ---------------- 템플릿 렌더링 ---------------- */
@@ -493,9 +585,20 @@
       return [p.name, p.id, p.issuer, p.mgr, p.under, p.kind, p.credit].join(' ').toLowerCase().indexOf(q) >= 0;
     });
     var cat = sheet().cat, docs = DOCS[cat] || {};
+    var P = window.ELS_PROSPECTUS;
+    /** 담당자 등록분 또는 자동수집분이 있으면 등록된 것으로 표시한다 */
+    var hasDoc = function (p) {
+      if (docs[p.id]) return true;
+      if (cat === 'fund') return !!fundCollectedByName(p.name);
+      if (cat !== 'els' || !P || !P.byRound) return false;
+      var no = (P.codeToRound && P.codeToRound[p.id]) != null
+        ? P.codeToRound[p.id]
+        : (String(p.name).match(/(\d{4,6})/) || [])[1];
+      return !!(no != null && P.byRound[no]);
+    };
     sel.innerHTML = list.map(function (p) {
       var tail = p.riskGrade ? ' · ' + p.riskGrade + '등급' : '';
-      var mark = docs[p.id] ? '\u25CF ' : '\u25CB ';   /* 설명서 등록 여부 */
+      var mark = hasDoc(p) ? '\u25CF ' : '\u25CB ';   /* 설명서 등록 여부 */
       return '<option value="' + esc(p.id) + '"' + (p.id === ST.productId ? ' selected' : '') + '>' + mark + esc(p.name) + tail + '</option>';
     }).join('') || '<option disabled>검색 결과 없음</option>';
   }
@@ -944,6 +1047,26 @@
       + '<button class="tbtn" id="btnImportProfile2">상품 프로필 가져오기</button></div>'
       + '<div class="hint" style="margin-top:8px">등록된 설명서 내용과 차수별 표까지 함께 담깁니다. 같은 상품을 여러 지점에서 쓸 때 한 번만 등록해 공유하면 됩니다.</div></div></div>');
 
+    /* 전 상품 공용 문구 */
+    h.push('<div class="rule"></div><h3 style="font-size:18px;font-weight:700;margin:0 0 6px">전 상품 공용 문구</h3>');
+    h.push('<div class="hint" style="margin-bottom:12px">위험등급별 유의사항처럼 <b>상품이 아니라 판매회사 핵심(요약)설명서</b>에서 오는 문구입니다. '
+      + '등급별로 한 번만 등록해 두면 모든 상품·모든 평가표에서 그대로 쓰입니다. 현재 상품 위험등급은 <b>'
+      + esc(valueOf('riskGrade') || '—') + '등급</b> 이므로 그 항목이 스크립트에 들어갑니다.</div>');
+    h.push('<div class="pgrid">');
+    COMMON_DEFS.forEach(function (f) {
+      var v = COMMON[f.id];
+      var empty = (v == null || v === '');
+      var cur = String(valueOf('riskGrade') || '');
+      var active = f.id === 'riskNote' + cur;
+      h.push('<div class="pf' + (empty && active ? ' miss' : '') + '"' + (active ? ' style="border-color:var(--orange)"' : '') + '>');
+      h.push('<div class="k"><span>' + esc(f.label) + (active ? ' <span class="src man">현재 적용</span>' : '') + '</span>'
+        + '<span class="src ' + (empty ? 'no' : 'man') + '">' + (empty ? '미입력' : '입력') + '</span></div>');
+      h.push('<textarea class="cInp" data-k="' + esc(f.id) + '" rows="' + (f.id.indexOf('riskNote') === 0 ? 3 : 1) + '" placeholder="핵심(요약)설명서 문구">' + esc(v == null ? '' : v) + '</textarea>');
+      if (f.hint) h.push('<div class="h">' + esc(f.hint) + '</div>');
+      h.push('</div>');
+    });
+    h.push('</div>');
+
     /* ELS 차수별 표 */
     h.push(scheduleEditor());
 
@@ -1273,6 +1396,12 @@
         save(); renderAll();
       };
     }
+    Array.prototype.forEach.call(document.querySelectorAll('.cInp'), function (i) {
+      i.onchange = function () {
+        COMMON[i.dataset.k] = i.value.trim();
+        saveCommon(); renderView(); renderTabs();
+      };
+    });
     ['docMatBarrier', 'docKnockIn'].forEach(function (id) {
       var el = $('#' + id);
       if (!el) return;
@@ -1542,6 +1671,7 @@
   function init() {
     loadCustom();
     loadDocs();
+    loadCommon();
     load();
     if (!ST.productId) {
       var l = catalog();

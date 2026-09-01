@@ -504,6 +504,25 @@
   var ORD = ['1차', '2차', '3차', '4차', '5차', '6차', '7차', '8차', '9차', '10차',
     '11차', '12차', '13차', '14차', '15차', '16차', '17차', '18차', '19차', '20차'];
 
+  /** 107250000 -> '1억 725만원' */
+  function krwWords(n) {
+    n = Math.round(Number(n) || 0);
+    var eok = Math.floor(n / 100000000);
+    var man = Math.floor((n % 100000000) / 10000);
+    var rest = n % 10000;
+    var out = [];
+    if (eok) out.push(eok.toLocaleString() + '억');
+    if (man) out.push(man.toLocaleString() + '만');
+    if (rest) out.push(rest.toLocaleString());
+    return (out.join(' ') || '0') + '원';
+  }
+
+  /** 2026-11-30 -> 2026년 11월 30일 */
+  function kdate(iso) {
+    var m = String(iso || '').match(/^(\d{4})-(\d{2})-(\d{2})$/);
+    return m ? m[1] + '년 ' + (+m[2]) + '월 ' + (+m[3]) + '일' : String(iso || '');
+  }
+
   function fmtPct(v) {
     if (v == null || v === '') return null;
     var n = Number(v);
@@ -536,6 +555,8 @@
         barrier: r.barrier == null || r.barrier === '' ? null : Number(r.barrier),
         payRate: r.payRate == null || r.payRate === '' ? null : Number(r.payRate),
         annRate: r.annRate == null || r.annRate === '' ? null : Number(r.annRate),
+        evalDate: r.evalDate || null,
+        maturity: !!r.maturity,
         evidence: r.evidence
       };
     });
@@ -575,7 +596,9 @@
       if (r.payRate != null && r.payRate !== '') filled++;
       if (r.annRate != null && r.annRate !== '') filled++;
       var bar = r.barrier != null && r.barrier !== '' ? fmtPct(r.barrier) + '%' : '«' + seq + ' 배리어(%)»';
-      return '  · ' + seq + ' 자동조기상환평가일(' + (r.months ? r.months + '개월' : '«' + seq + ' 경과개월»') +
+      /* 실제 평가일이 있으면 함께 읽는다 — 평가표는 기준가격 결정일 설명을 요구한다 */
+      var when = (r.months ? r.months + '개월' : '«' + seq + ' 경과개월»') + (r.evalDate ? ', ' + kdate(r.evalDate) : '');
+      return '  · ' + seq + ' 자동조기상환평가일(' + when +
         ') : 모든 기초자산의 자동조기상환평가가격이 각 최초기준가격의 ' + bar + ' 이상인 경우 → ' +
         payPhrase(r, seq) + '를 지급';
     });
@@ -587,7 +610,8 @@
     var kiNum = (ki == null || ki === '') ? null : String(ki).replace(/[^0-9.]/g, '');
     var noKi = kiNum === '' || kiNum === null || /없음|노낙인|no.?ki/i.test(String(ki));
 
-    var mat = '[이익조건] 자동조기상환이 발생하지 않을 경우, 만기평가일에 모든 기초자산의 만기평가가격이 각 최초기준가격의 ' +
+    var matWhen = last.evalDate ? '만기평가일(' + kdate(last.evalDate) + ')' : '만기평가일';
+    var mat = '[이익조건] 자동조기상환이 발생하지 않을 경우, ' + matWhen + '에 모든 기초자산의 만기평가가격이 각 최초기준가격의 ' +
       matBarTxt + ' 이상인 경우 ' + payPhrase(last, '만기') + '의 세전수익률을 지급합니다.';
 
     if (!noKi) {
@@ -597,6 +621,22 @@
         '% 미만으로 하락한 적이 있는 경우, 모든 기초자산 중 하락률이 큰 기초자산의 하락률만큼 원금손실이 발생합니다.';
     } else {
       mat += '\n[손실조건] 위 조건을 만족하지 못하는 경우, 모든 기초자산 중 하락률이 큰 기초자산의 하락률만큼 원금손실이 발생합니다.';
+    }
+
+    /* 「이해를 돕기 위한 추가 설명」 예시 — 표 값으로 그대로 계산된다.
+       평가표 탁월사례가 1억원 기준이므로 같은 기준을 쓴다. */
+    var example = null;
+    var ex = sched.find(function (r) { return r.payRate != null && r.barrier != null; });
+    if (ex) {
+      var n = ex.seq != null ? ex.seq : 1;
+      var seqTxt = (ORD[n - 1] || n + '차');
+      var base = 100000000;
+      var amt = Math.round(base * ex.payRate / 100);
+      example = '예를 들어 1억원을 투자하셨을 경우, ' + seqTxt + ' 자동조기상환 평가일' +
+        (ex.evalDate ? '(' + kdate(ex.evalDate) + ')' : '') +
+        '에 모든 기초자산의 평가가격이 모두 최초 기준가의 ' + fmtPct(ex.barrier) + '% 이상으로 ' + seqTxt +
+        ' 조건을 만족했다면, ' + seqTxt + ' 수익률인 ' + fmtPct(ex.payRate - 100) + '%를 적용하여 ' +
+        amt.toLocaleString() + '원(' + krwWords(amt) + ')으로 조기상환 됩니다.';
     }
 
     var ann = fmtPct(last.annRate);
@@ -611,6 +651,7 @@
 
     return {
       earlyTable: rows.join('\n'),
+      payoffExample: example,
       matCond: mat,
       coupon: ann != null ? '연 ' + ann + '%' : null,
       knockIn: noKi ? '없음 (노낙인)' : kiNum + '%',
