@@ -1,12 +1,12 @@
 {
   "deliverable": "제38070~38089회 ELS 세일즈 제안서 (6p PPT)",
-  "as_of": "2026-08-31",
+  "as_of": "2026-09-01",
   "series_policy": {
     "연 수익률": "일괄신고추가서류 공시 원문",
     "공정가격(원)": "일괄신고추가서류 공시 원문 (액면 1만원 기준)",
     "공정가격(달러)": "일괄신고추가서류 공시 원문 (액면 USD 10,000 기준)",
     "백테스트 손실 비중": "발행사 수익률 모의실험 (공시 원문)",
-    "손실 확률": "자체 몬테카를로 (공시 변동성·상관계수 입력, 40,000 경로, 시드 고정)"
+    "손실 확률": "자체 몬테카를로 (공시 변동성·상관계수 입력, 100,000 경로, 대조변량, 시드 고정)"
   },
   "unit_policy": {
     "연 수익률": "%",
@@ -23,6 +23,9 @@
     "1차 배리어": "%",
     "조기상환 횟수": "회",
     "조기상환 주기": "개월",
+    "조기상환 확률": "%",
+    "리자드 상환 확률": "%",
+    "손실 확률 신뢰구간": "%p",
     "낙인까지 하락폭": "%",
     "만기 손실 하락폭": "%",
     "액면가액": "원",
@@ -492,9 +495,9 @@
       "kind": "model_output",
       "metric": "손실 확률",
       "text": "제38070회 만기 손실 확률 (B)",
-      "value": 17.8,
+      "value": 17.4,
       "unit": "%",
-      "series": "자체 몬테카를로 (공시 변동성·상관계수 입력, 40,000 경로, 시드 고정)",
+      "series": "자체 몬테카를로 (공시 변동성·상관계수 입력, 100,000 경로, 대조변량, 시드 고정)",
       "as_of": "2026-08-28",
       "tier": 1,
       "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260828000836",
@@ -503,6 +506,152 @@
       "note": "공시된 값이 아니라 공시 입력으로 재현 가능하게 돌린 모형 결과. 덱에서 \"B. 시뮬레이션\"으로 표기",
       "printed_on": [
         "p2-row-38070"
+      ]
+    },
+    {
+      "id": "R38070_MCCI",
+      "kind": "model_output",
+      "metric": "손실 확률 신뢰구간",
+      "text": "제38070회 손실 확률의 95% 신뢰구간 반폭",
+      "value": 0.23,
+      "unit": "%p",
+      "series": "자체 몬테카를로 (공시 변동성·상관계수 입력, 100,000 경로, 대조변량, 시드 고정)",
+      "as_of": "2026-08-28",
+      "tier": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260828000836",
+      "verdict": "confirmed",
+      "render": "assert",
+      "note": "경로 100,000개, 대조변량 적용. 배치 평균으로 낸 표준오차의 1.96배",
+      "printed_on": [
+        "p2-row-38070"
+      ]
+    },
+    {
+      "id": "R38070_STEP1",
+      "kind": "model_output",
+      "metric": "조기상환 확률",
+      "text": "제38070회 1차 상환 확률",
+      "value": 42.8,
+      "unit": "%",
+      "series": "자체 몬테카를로 (공시 변동성·상관계수 입력, 100,000 경로, 대조변량, 시드 고정)",
+      "as_of": "2026-08-28",
+      "tier": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260828000836",
+      "verdict": "confirmed",
+      "render": "assert",
+      "note": "공시된 값이 아니라 공시 입력으로 재현 가능하게 돌린 모형 결과. 덱에서 \"B. 시뮬레이션\"으로 표기",
+      "printed_on": [
+        "p2-row-38070",
+        "p3-bar"
+      ]
+    },
+    {
+      "id": "R38070_STEP2",
+      "kind": "model_output",
+      "metric": "조기상환 확률",
+      "text": "제38070회 2차 상환 확률",
+      "value": 8.8,
+      "unit": "%",
+      "series": "자체 몬테카를로 (공시 변동성·상관계수 입력, 100,000 경로, 대조변량, 시드 고정)",
+      "as_of": "2026-08-28",
+      "tier": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260828000836",
+      "verdict": "confirmed",
+      "render": "assert",
+      "note": "공시된 값이 아니라 공시 입력으로 재현 가능하게 돌린 모형 결과. 덱에서 \"B. 시뮬레이션\"으로 표기",
+      "printed_on": [
+        "p3-bar"
+      ]
+    },
+    {
+      "id": "R38070_STEP3",
+      "kind": "model_output",
+      "metric": "조기상환 확률",
+      "text": "제38070회 3차 상환 확률",
+      "value": 6.9,
+      "unit": "%",
+      "series": "자체 몬테카를로 (공시 변동성·상관계수 입력, 100,000 경로, 대조변량, 시드 고정)",
+      "as_of": "2026-08-28",
+      "tier": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260828000836",
+      "verdict": "confirmed",
+      "render": "assert",
+      "note": "공시된 값이 아니라 공시 입력으로 재현 가능하게 돌린 모형 결과. 덱에서 \"B. 시뮬레이션\"으로 표기",
+      "printed_on": [
+        "p3-bar"
+      ]
+    },
+    {
+      "id": "R38070_STEP4",
+      "kind": "model_output",
+      "metric": "조기상환 확률",
+      "text": "제38070회 4차 상환 확률",
+      "value": 5.4,
+      "unit": "%",
+      "series": "자체 몬테카를로 (공시 변동성·상관계수 입력, 100,000 경로, 대조변량, 시드 고정)",
+      "as_of": "2026-08-28",
+      "tier": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260828000836",
+      "verdict": "confirmed",
+      "render": "assert",
+      "note": "공시된 값이 아니라 공시 입력으로 재현 가능하게 돌린 모형 결과. 덱에서 \"B. 시뮬레이션\"으로 표기",
+      "printed_on": [
+        "p3-bar"
+      ]
+    },
+    {
+      "id": "R38070_STEP5",
+      "kind": "model_output",
+      "metric": "조기상환 확률",
+      "text": "제38070회 5차 상환 확률",
+      "value": 4.3,
+      "unit": "%",
+      "series": "자체 몬테카를로 (공시 변동성·상관계수 입력, 100,000 경로, 대조변량, 시드 고정)",
+      "as_of": "2026-08-28",
+      "tier": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260828000836",
+      "verdict": "confirmed",
+      "render": "assert",
+      "note": "공시된 값이 아니라 공시 입력으로 재현 가능하게 돌린 모형 결과. 덱에서 \"B. 시뮬레이션\"으로 표기",
+      "printed_on": [
+        "p3-bar"
+      ]
+    },
+    {
+      "id": "R38070_STEP6",
+      "kind": "model_output",
+      "metric": "조기상환 확률",
+      "text": "제38070회 6차(만기) 상환 확률",
+      "value": 31.8,
+      "unit": "%",
+      "series": "자체 몬테카를로 (공시 변동성·상관계수 입력, 100,000 경로, 대조변량, 시드 고정)",
+      "as_of": "2026-08-28",
+      "tier": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260828000836",
+      "verdict": "confirmed",
+      "render": "assert",
+      "note": "공시된 값이 아니라 공시 입력으로 재현 가능하게 돌린 모형 결과. 덱에서 \"B. 시뮬레이션\"으로 표기",
+      "printed_on": [
+        "p2-row-38070",
+        "p3-bar"
+      ]
+    },
+    {
+      "id": "R38070_STEPMID",
+      "kind": "model_output",
+      "metric": "조기상환 확률",
+      "text": "제38070회 2~5차 상환 확률 합계",
+      "value": 25.4,
+      "unit": "%",
+      "series": "자체 몬테카를로 (공시 변동성·상관계수 입력, 100,000 경로, 대조변량, 시드 고정)",
+      "as_of": "2026-08-28",
+      "tier": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260828000836",
+      "verdict": "confirmed",
+      "render": "assert",
+      "note": "공시된 값이 아니라 공시 입력으로 재현 가능하게 돌린 모형 결과. 덱에서 \"B. 시뮬레이션\"으로 표기",
+      "printed_on": [
+        "p3-bar"
       ]
     },
     {
@@ -548,7 +697,7 @@
       "text": "제38070회 손실이 났을 때 잃는 평균 크기",
       "value": 57.7,
       "unit": "%",
-      "series": "자체 몬테카를로 (공시 변동성·상관계수 입력, 40,000 경로, 시드 고정)",
+      "series": "자체 몬테카를로 (공시 변동성·상관계수 입력, 100,000 경로, 대조변량, 시드 고정)",
       "as_of": "2026-08-28",
       "tier": 1,
       "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260828000836",
@@ -801,9 +950,9 @@
       "kind": "model_output",
       "metric": "손실 확률",
       "text": "제38071회 만기 손실 확률 (B)",
-      "value": 14.7,
+      "value": 1.4,
       "unit": "%",
-      "series": "자체 몬테카를로 (공시 변동성·상관계수 입력, 40,000 경로, 시드 고정)",
+      "series": "자체 몬테카를로 (공시 변동성·상관계수 입력, 100,000 경로, 대조변량, 시드 고정)",
       "as_of": "2026-08-28",
       "tier": 1,
       "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260828000836",
@@ -813,6 +962,168 @@
       "printed_on": [
         "p2-row-38071"
       ]
+    },
+    {
+      "id": "R38071_MCCI",
+      "kind": "model_output",
+      "metric": "손실 확률 신뢰구간",
+      "text": "제38071회 손실 확률의 95% 신뢰구간 반폭",
+      "value": 0.09,
+      "unit": "%p",
+      "series": "자체 몬테카를로 (공시 변동성·상관계수 입력, 100,000 경로, 대조변량, 시드 고정)",
+      "as_of": "2026-08-28",
+      "tier": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260828000836",
+      "verdict": "confirmed",
+      "render": "assert",
+      "note": "경로 100,000개, 대조변량 적용. 배치 평균으로 낸 표준오차의 1.96배",
+      "printed_on": [
+        "p2-row-38071"
+      ]
+    },
+    {
+      "id": "R38071_STEP1",
+      "kind": "model_output",
+      "metric": "조기상환 확률",
+      "text": "제38071회 1차 상환 확률",
+      "value": 66.2,
+      "unit": "%",
+      "series": "자체 몬테카를로 (공시 변동성·상관계수 입력, 100,000 경로, 대조변량, 시드 고정)",
+      "as_of": "2026-08-28",
+      "tier": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260828000836",
+      "verdict": "confirmed",
+      "render": "assert",
+      "note": "공시된 값이 아니라 공시 입력으로 재현 가능하게 돌린 모형 결과. 덱에서 \"B. 시뮬레이션\"으로 표기",
+      "printed_on": [
+        "p2-row-38071",
+        "p3-bar"
+      ]
+    },
+    {
+      "id": "R38071_STEP2",
+      "kind": "model_output",
+      "metric": "조기상환 확률",
+      "text": "제38071회 2차 상환 확률",
+      "value": 32.1,
+      "unit": "%",
+      "series": "자체 몬테카를로 (공시 변동성·상관계수 입력, 100,000 경로, 대조변량, 시드 고정)",
+      "as_of": "2026-08-28",
+      "tier": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260828000836",
+      "verdict": "confirmed",
+      "render": "assert",
+      "note": "공시된 값이 아니라 공시 입력으로 재현 가능하게 돌린 모형 결과. 덱에서 \"B. 시뮬레이션\"으로 표기",
+      "printed_on": [
+        "p3-bar"
+      ]
+    },
+    {
+      "id": "R38071_STEP3",
+      "kind": "model_output",
+      "metric": "조기상환 확률",
+      "text": "제38071회 3차 상환 확률",
+      "value": 0,
+      "unit": "%",
+      "series": "자체 몬테카를로 (공시 변동성·상관계수 입력, 100,000 경로, 대조변량, 시드 고정)",
+      "as_of": "2026-08-28",
+      "tier": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260828000836",
+      "verdict": "confirmed",
+      "render": "assert",
+      "note": "공시된 값이 아니라 공시 입력으로 재현 가능하게 돌린 모형 결과. 덱에서 \"B. 시뮬레이션\"으로 표기",
+      "printed_on": [
+        "p3-bar"
+      ]
+    },
+    {
+      "id": "R38071_STEP4",
+      "kind": "model_output",
+      "metric": "조기상환 확률",
+      "text": "제38071회 4차 상환 확률",
+      "value": 0,
+      "unit": "%",
+      "series": "자체 몬테카를로 (공시 변동성·상관계수 입력, 100,000 경로, 대조변량, 시드 고정)",
+      "as_of": "2026-08-28",
+      "tier": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260828000836",
+      "verdict": "confirmed",
+      "render": "assert",
+      "note": "공시된 값이 아니라 공시 입력으로 재현 가능하게 돌린 모형 결과. 덱에서 \"B. 시뮬레이션\"으로 표기",
+      "printed_on": [
+        "p3-bar"
+      ]
+    },
+    {
+      "id": "R38071_STEP5",
+      "kind": "model_output",
+      "metric": "조기상환 확률",
+      "text": "제38071회 5차 상환 확률",
+      "value": 0.1,
+      "unit": "%",
+      "series": "자체 몬테카를로 (공시 변동성·상관계수 입력, 100,000 경로, 대조변량, 시드 고정)",
+      "as_of": "2026-08-28",
+      "tier": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260828000836",
+      "verdict": "confirmed",
+      "render": "assert",
+      "note": "공시된 값이 아니라 공시 입력으로 재현 가능하게 돌린 모형 결과. 덱에서 \"B. 시뮬레이션\"으로 표기",
+      "printed_on": [
+        "p3-bar"
+      ]
+    },
+    {
+      "id": "R38071_STEP6",
+      "kind": "model_output",
+      "metric": "조기상환 확률",
+      "text": "제38071회 6차(만기) 상환 확률",
+      "value": 1.5,
+      "unit": "%",
+      "series": "자체 몬테카를로 (공시 변동성·상관계수 입력, 100,000 경로, 대조변량, 시드 고정)",
+      "as_of": "2026-08-28",
+      "tier": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260828000836",
+      "verdict": "confirmed",
+      "render": "assert",
+      "note": "공시된 값이 아니라 공시 입력으로 재현 가능하게 돌린 모형 결과. 덱에서 \"B. 시뮬레이션\"으로 표기",
+      "printed_on": [
+        "p2-row-38071",
+        "p3-bar"
+      ]
+    },
+    {
+      "id": "R38071_STEPMID",
+      "kind": "model_output",
+      "metric": "조기상환 확률",
+      "text": "제38071회 2~5차 상환 확률 합계",
+      "value": 32.2,
+      "unit": "%",
+      "series": "자체 몬테카를로 (공시 변동성·상관계수 입력, 100,000 경로, 대조변량, 시드 고정)",
+      "as_of": "2026-08-28",
+      "tier": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260828000836",
+      "verdict": "confirmed",
+      "render": "assert",
+      "note": "공시된 값이 아니라 공시 입력으로 재현 가능하게 돌린 모형 결과. 덱에서 \"B. 시뮬레이션\"으로 표기",
+      "printed_on": [
+        "p3-bar"
+      ]
+    },
+    {
+      "id": "R38071_LIZ",
+      "kind": "model_output",
+      "metric": "리자드 상환 확률",
+      "text": "제38071회 리자드 조항으로 상환될 확률",
+      "value": 22.2,
+      "unit": "%",
+      "series": "자체 몬테카를로 (공시 변동성·상관계수 입력, 100,000 경로, 대조변량, 시드 고정)",
+      "as_of": "2026-08-28",
+      "tier": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260828000836",
+      "verdict": "confirmed",
+      "render": "assert",
+      "note": "공시된 값이 아니라 공시 입력으로 재현 가능하게 돌린 모형 결과. 덱에서 \"B. 시뮬레이션\"으로 표기",
+      "printed_on": []
     },
     {
       "id": "R38071_MATDROP",
@@ -837,9 +1148,9 @@
       "kind": "model_output",
       "metric": "손실 시 평균 손실 크기",
       "text": "제38071회 손실이 났을 때 잃는 평균 크기",
-      "value": 61.7,
+      "value": 67.8,
       "unit": "%",
-      "series": "자체 몬테카를로 (공시 변동성·상관계수 입력, 40,000 경로, 시드 고정)",
+      "series": "자체 몬테카를로 (공시 변동성·상관계수 입력, 100,000 경로, 대조변량, 시드 고정)",
       "as_of": "2026-08-28",
       "tier": 1,
       "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260828000836",
@@ -1076,9 +1387,9 @@
       "kind": "model_output",
       "metric": "손실 확률",
       "text": "제38072회 만기 손실 확률 (B)",
-      "value": 8.2,
+      "value": 7.9,
       "unit": "%",
-      "series": "자체 몬테카를로 (공시 변동성·상관계수 입력, 40,000 경로, 시드 고정)",
+      "series": "자체 몬테카를로 (공시 변동성·상관계수 입력, 100,000 경로, 대조변량, 시드 고정)",
       "as_of": "2026-08-28",
       "tier": 1,
       "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260828000836",
@@ -1087,6 +1398,152 @@
       "note": "공시된 값이 아니라 공시 입력으로 재현 가능하게 돌린 모형 결과. 덱에서 \"B. 시뮬레이션\"으로 표기",
       "printed_on": [
         "p2-row-38072"
+      ]
+    },
+    {
+      "id": "R38072_MCCI",
+      "kind": "model_output",
+      "metric": "손실 확률 신뢰구간",
+      "text": "제38072회 손실 확률의 95% 신뢰구간 반폭",
+      "value": 0.16,
+      "unit": "%p",
+      "series": "자체 몬테카를로 (공시 변동성·상관계수 입력, 100,000 경로, 대조변량, 시드 고정)",
+      "as_of": "2026-08-28",
+      "tier": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260828000836",
+      "verdict": "confirmed",
+      "render": "assert",
+      "note": "경로 100,000개, 대조변량 적용. 배치 평균으로 낸 표준오차의 1.96배",
+      "printed_on": [
+        "p2-row-38072"
+      ]
+    },
+    {
+      "id": "R38072_STEP1",
+      "kind": "model_output",
+      "metric": "조기상환 확률",
+      "text": "제38072회 1차 상환 확률",
+      "value": 69.8,
+      "unit": "%",
+      "series": "자체 몬테카를로 (공시 변동성·상관계수 입력, 100,000 경로, 대조변량, 시드 고정)",
+      "as_of": "2026-08-28",
+      "tier": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260828000836",
+      "verdict": "confirmed",
+      "render": "assert",
+      "note": "공시된 값이 아니라 공시 입력으로 재현 가능하게 돌린 모형 결과. 덱에서 \"B. 시뮬레이션\"으로 표기",
+      "printed_on": [
+        "p2-row-38072",
+        "p3-bar"
+      ]
+    },
+    {
+      "id": "R38072_STEP2",
+      "kind": "model_output",
+      "metric": "조기상환 확률",
+      "text": "제38072회 2차 상환 확률",
+      "value": 7.6,
+      "unit": "%",
+      "series": "자체 몬테카를로 (공시 변동성·상관계수 입력, 100,000 경로, 대조변량, 시드 고정)",
+      "as_of": "2026-08-28",
+      "tier": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260828000836",
+      "verdict": "confirmed",
+      "render": "assert",
+      "note": "공시된 값이 아니라 공시 입력으로 재현 가능하게 돌린 모형 결과. 덱에서 \"B. 시뮬레이션\"으로 표기",
+      "printed_on": [
+        "p3-bar"
+      ]
+    },
+    {
+      "id": "R38072_STEP3",
+      "kind": "model_output",
+      "metric": "조기상환 확률",
+      "text": "제38072회 3차 상환 확률",
+      "value": 3.3,
+      "unit": "%",
+      "series": "자체 몬테카를로 (공시 변동성·상관계수 입력, 100,000 경로, 대조변량, 시드 고정)",
+      "as_of": "2026-08-28",
+      "tier": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260828000836",
+      "verdict": "confirmed",
+      "render": "assert",
+      "note": "공시된 값이 아니라 공시 입력으로 재현 가능하게 돌린 모형 결과. 덱에서 \"B. 시뮬레이션\"으로 표기",
+      "printed_on": [
+        "p3-bar"
+      ]
+    },
+    {
+      "id": "R38072_STEP4",
+      "kind": "model_output",
+      "metric": "조기상환 확률",
+      "text": "제38072회 4차 상환 확률",
+      "value": 2.6,
+      "unit": "%",
+      "series": "자체 몬테카를로 (공시 변동성·상관계수 입력, 100,000 경로, 대조변량, 시드 고정)",
+      "as_of": "2026-08-28",
+      "tier": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260828000836",
+      "verdict": "confirmed",
+      "render": "assert",
+      "note": "공시된 값이 아니라 공시 입력으로 재현 가능하게 돌린 모형 결과. 덱에서 \"B. 시뮬레이션\"으로 표기",
+      "printed_on": [
+        "p3-bar"
+      ]
+    },
+    {
+      "id": "R38072_STEP5",
+      "kind": "model_output",
+      "metric": "조기상환 확률",
+      "text": "제38072회 5차 상환 확률",
+      "value": 2.1,
+      "unit": "%",
+      "series": "자체 몬테카를로 (공시 변동성·상관계수 입력, 100,000 경로, 대조변량, 시드 고정)",
+      "as_of": "2026-08-28",
+      "tier": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260828000836",
+      "verdict": "confirmed",
+      "render": "assert",
+      "note": "공시된 값이 아니라 공시 입력으로 재현 가능하게 돌린 모형 결과. 덱에서 \"B. 시뮬레이션\"으로 표기",
+      "printed_on": [
+        "p3-bar"
+      ]
+    },
+    {
+      "id": "R38072_STEP6",
+      "kind": "model_output",
+      "metric": "조기상환 확률",
+      "text": "제38072회 6차(만기) 상환 확률",
+      "value": 14.6,
+      "unit": "%",
+      "series": "자체 몬테카를로 (공시 변동성·상관계수 입력, 100,000 경로, 대조변량, 시드 고정)",
+      "as_of": "2026-08-28",
+      "tier": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260828000836",
+      "verdict": "confirmed",
+      "render": "assert",
+      "note": "공시된 값이 아니라 공시 입력으로 재현 가능하게 돌린 모형 결과. 덱에서 \"B. 시뮬레이션\"으로 표기",
+      "printed_on": [
+        "p2-row-38072",
+        "p3-bar"
+      ]
+    },
+    {
+      "id": "R38072_STEPMID",
+      "kind": "model_output",
+      "metric": "조기상환 확률",
+      "text": "제38072회 2~5차 상환 확률 합계",
+      "value": 15.6,
+      "unit": "%",
+      "series": "자체 몬테카를로 (공시 변동성·상관계수 입력, 100,000 경로, 대조변량, 시드 고정)",
+      "as_of": "2026-08-28",
+      "tier": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260828000836",
+      "verdict": "confirmed",
+      "render": "assert",
+      "note": "공시된 값이 아니라 공시 입력으로 재현 가능하게 돌린 모형 결과. 덱에서 \"B. 시뮬레이션\"으로 표기",
+      "printed_on": [
+        "p3-bar"
       ]
     },
     {
@@ -1130,9 +1587,9 @@
       "kind": "model_output",
       "metric": "손실 시 평균 손실 크기",
       "text": "제38072회 손실이 났을 때 잃는 평균 크기",
-      "value": 66.4,
+      "value": 66.7,
       "unit": "%",
-      "series": "자체 몬테카를로 (공시 변동성·상관계수 입력, 40,000 경로, 시드 고정)",
+      "series": "자체 몬테카를로 (공시 변동성·상관계수 입력, 100,000 경로, 대조변량, 시드 고정)",
       "as_of": "2026-08-28",
       "tier": 1,
       "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260828000836",
@@ -1369,9 +1826,9 @@
       "kind": "model_output",
       "metric": "손실 확률",
       "text": "제38073회 만기 손실 확률 (B)",
-      "value": 9.5,
+      "value": 9.3,
       "unit": "%",
-      "series": "자체 몬테카를로 (공시 변동성·상관계수 입력, 40,000 경로, 시드 고정)",
+      "series": "자체 몬테카를로 (공시 변동성·상관계수 입력, 100,000 경로, 대조변량, 시드 고정)",
       "as_of": "2026-08-28",
       "tier": 1,
       "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260828000836",
@@ -1380,6 +1837,152 @@
       "note": "공시된 값이 아니라 공시 입력으로 재현 가능하게 돌린 모형 결과. 덱에서 \"B. 시뮬레이션\"으로 표기",
       "printed_on": [
         "p2-row-38073"
+      ]
+    },
+    {
+      "id": "R38073_MCCI",
+      "kind": "model_output",
+      "metric": "손실 확률 신뢰구간",
+      "text": "제38073회 손실 확률의 95% 신뢰구간 반폭",
+      "value": 0.17,
+      "unit": "%p",
+      "series": "자체 몬테카를로 (공시 변동성·상관계수 입력, 100,000 경로, 대조변량, 시드 고정)",
+      "as_of": "2026-08-28",
+      "tier": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260828000836",
+      "verdict": "confirmed",
+      "render": "assert",
+      "note": "경로 100,000개, 대조변량 적용. 배치 평균으로 낸 표준오차의 1.96배",
+      "printed_on": [
+        "p2-row-38073"
+      ]
+    },
+    {
+      "id": "R38073_STEP1",
+      "kind": "model_output",
+      "metric": "조기상환 확률",
+      "text": "제38073회 1차 상환 확률",
+      "value": 61.6,
+      "unit": "%",
+      "series": "자체 몬테카를로 (공시 변동성·상관계수 입력, 100,000 경로, 대조변량, 시드 고정)",
+      "as_of": "2026-08-28",
+      "tier": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260828000836",
+      "verdict": "confirmed",
+      "render": "assert",
+      "note": "공시된 값이 아니라 공시 입력으로 재현 가능하게 돌린 모형 결과. 덱에서 \"B. 시뮬레이션\"으로 표기",
+      "printed_on": [
+        "p2-row-38073",
+        "p3-bar"
+      ]
+    },
+    {
+      "id": "R38073_STEP2",
+      "kind": "model_output",
+      "metric": "조기상환 확률",
+      "text": "제38073회 2차 상환 확률",
+      "value": 9.1,
+      "unit": "%",
+      "series": "자체 몬테카를로 (공시 변동성·상관계수 입력, 100,000 경로, 대조변량, 시드 고정)",
+      "as_of": "2026-08-28",
+      "tier": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260828000836",
+      "verdict": "confirmed",
+      "render": "assert",
+      "note": "공시된 값이 아니라 공시 입력으로 재현 가능하게 돌린 모형 결과. 덱에서 \"B. 시뮬레이션\"으로 표기",
+      "printed_on": [
+        "p3-bar"
+      ]
+    },
+    {
+      "id": "R38073_STEP3",
+      "kind": "model_output",
+      "metric": "조기상환 확률",
+      "text": "제38073회 3차 상환 확률",
+      "value": 4.1,
+      "unit": "%",
+      "series": "자체 몬테카를로 (공시 변동성·상관계수 입력, 100,000 경로, 대조변량, 시드 고정)",
+      "as_of": "2026-08-28",
+      "tier": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260828000836",
+      "verdict": "confirmed",
+      "render": "assert",
+      "note": "공시된 값이 아니라 공시 입력으로 재현 가능하게 돌린 모형 결과. 덱에서 \"B. 시뮬레이션\"으로 표기",
+      "printed_on": [
+        "p3-bar"
+      ]
+    },
+    {
+      "id": "R38073_STEP4",
+      "kind": "model_output",
+      "metric": "조기상환 확률",
+      "text": "제38073회 4차 상환 확률",
+      "value": 3.3,
+      "unit": "%",
+      "series": "자체 몬테카를로 (공시 변동성·상관계수 입력, 100,000 경로, 대조변량, 시드 고정)",
+      "as_of": "2026-08-28",
+      "tier": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260828000836",
+      "verdict": "confirmed",
+      "render": "assert",
+      "note": "공시된 값이 아니라 공시 입력으로 재현 가능하게 돌린 모형 결과. 덱에서 \"B. 시뮬레이션\"으로 표기",
+      "printed_on": [
+        "p3-bar"
+      ]
+    },
+    {
+      "id": "R38073_STEP5",
+      "kind": "model_output",
+      "metric": "조기상환 확률",
+      "text": "제38073회 5차 상환 확률",
+      "value": 2.5,
+      "unit": "%",
+      "series": "자체 몬테카를로 (공시 변동성·상관계수 입력, 100,000 경로, 대조변량, 시드 고정)",
+      "as_of": "2026-08-28",
+      "tier": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260828000836",
+      "verdict": "confirmed",
+      "render": "assert",
+      "note": "공시된 값이 아니라 공시 입력으로 재현 가능하게 돌린 모형 결과. 덱에서 \"B. 시뮬레이션\"으로 표기",
+      "printed_on": [
+        "p3-bar"
+      ]
+    },
+    {
+      "id": "R38073_STEP6",
+      "kind": "model_output",
+      "metric": "조기상환 확률",
+      "text": "제38073회 6차(만기) 상환 확률",
+      "value": 19.4,
+      "unit": "%",
+      "series": "자체 몬테카를로 (공시 변동성·상관계수 입력, 100,000 경로, 대조변량, 시드 고정)",
+      "as_of": "2026-08-28",
+      "tier": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260828000836",
+      "verdict": "confirmed",
+      "render": "assert",
+      "note": "공시된 값이 아니라 공시 입력으로 재현 가능하게 돌린 모형 결과. 덱에서 \"B. 시뮬레이션\"으로 표기",
+      "printed_on": [
+        "p2-row-38073",
+        "p3-bar"
+      ]
+    },
+    {
+      "id": "R38073_STEPMID",
+      "kind": "model_output",
+      "metric": "조기상환 확률",
+      "text": "제38073회 2~5차 상환 확률 합계",
+      "value": 19,
+      "unit": "%",
+      "series": "자체 몬테카를로 (공시 변동성·상관계수 입력, 100,000 경로, 대조변량, 시드 고정)",
+      "as_of": "2026-08-28",
+      "tier": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260828000836",
+      "verdict": "confirmed",
+      "render": "assert",
+      "note": "공시된 값이 아니라 공시 입력으로 재현 가능하게 돌린 모형 결과. 덱에서 \"B. 시뮬레이션\"으로 표기",
+      "printed_on": [
+        "p3-bar"
       ]
     },
     {
@@ -1425,7 +2028,7 @@
       "text": "제38073회 손실이 났을 때 잃는 평균 크기",
       "value": 66.5,
       "unit": "%",
-      "series": "자체 몬테카를로 (공시 변동성·상관계수 입력, 40,000 경로, 시드 고정)",
+      "series": "자체 몬테카를로 (공시 변동성·상관계수 입력, 100,000 경로, 대조변량, 시드 고정)",
       "as_of": "2026-08-28",
       "tier": 1,
       "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260828000836",
@@ -1678,9 +2281,9 @@
       "kind": "model_output",
       "metric": "손실 확률",
       "text": "제38074회 만기 손실 확률 (B)",
-      "value": 14,
+      "value": 13.2,
       "unit": "%",
-      "series": "자체 몬테카를로 (공시 변동성·상관계수 입력, 40,000 경로, 시드 고정)",
+      "series": "자체 몬테카를로 (공시 변동성·상관계수 입력, 100,000 경로, 대조변량, 시드 고정)",
       "as_of": "2026-08-28",
       "tier": 1,
       "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260828000836",
@@ -1689,6 +2292,152 @@
       "note": "공시된 값이 아니라 공시 입력으로 재현 가능하게 돌린 모형 결과. 덱에서 \"B. 시뮬레이션\"으로 표기",
       "printed_on": [
         "p2-row-38074"
+      ]
+    },
+    {
+      "id": "R38074_MCCI",
+      "kind": "model_output",
+      "metric": "손실 확률 신뢰구간",
+      "text": "제38074회 손실 확률의 95% 신뢰구간 반폭",
+      "value": 0.13,
+      "unit": "%p",
+      "series": "자체 몬테카를로 (공시 변동성·상관계수 입력, 100,000 경로, 대조변량, 시드 고정)",
+      "as_of": "2026-08-28",
+      "tier": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260828000836",
+      "verdict": "confirmed",
+      "render": "assert",
+      "note": "경로 100,000개, 대조변량 적용. 배치 평균으로 낸 표준오차의 1.96배",
+      "printed_on": [
+        "p2-row-38074"
+      ]
+    },
+    {
+      "id": "R38074_STEP1",
+      "kind": "model_output",
+      "metric": "조기상환 확률",
+      "text": "제38074회 1차 상환 확률",
+      "value": 67.4,
+      "unit": "%",
+      "series": "자체 몬테카를로 (공시 변동성·상관계수 입력, 100,000 경로, 대조변량, 시드 고정)",
+      "as_of": "2026-08-28",
+      "tier": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260828000836",
+      "verdict": "confirmed",
+      "render": "assert",
+      "note": "공시된 값이 아니라 공시 입력으로 재현 가능하게 돌린 모형 결과. 덱에서 \"B. 시뮬레이션\"으로 표기",
+      "printed_on": [
+        "p2-row-38074",
+        "p3-bar"
+      ]
+    },
+    {
+      "id": "R38074_STEP2",
+      "kind": "model_output",
+      "metric": "조기상환 확률",
+      "text": "제38074회 2차 상환 확률",
+      "value": 9.8,
+      "unit": "%",
+      "series": "자체 몬테카를로 (공시 변동성·상관계수 입력, 100,000 경로, 대조변량, 시드 고정)",
+      "as_of": "2026-08-28",
+      "tier": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260828000836",
+      "verdict": "confirmed",
+      "render": "assert",
+      "note": "공시된 값이 아니라 공시 입력으로 재현 가능하게 돌린 모형 결과. 덱에서 \"B. 시뮬레이션\"으로 표기",
+      "printed_on": [
+        "p3-bar"
+      ]
+    },
+    {
+      "id": "R38074_STEP3",
+      "kind": "model_output",
+      "metric": "조기상환 확률",
+      "text": "제38074회 3차 상환 확률",
+      "value": 3,
+      "unit": "%",
+      "series": "자체 몬테카를로 (공시 변동성·상관계수 입력, 100,000 경로, 대조변량, 시드 고정)",
+      "as_of": "2026-08-28",
+      "tier": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260828000836",
+      "verdict": "confirmed",
+      "render": "assert",
+      "note": "공시된 값이 아니라 공시 입력으로 재현 가능하게 돌린 모형 결과. 덱에서 \"B. 시뮬레이션\"으로 표기",
+      "printed_on": [
+        "p3-bar"
+      ]
+    },
+    {
+      "id": "R38074_STEP4",
+      "kind": "model_output",
+      "metric": "조기상환 확률",
+      "text": "제38074회 4차 상환 확률",
+      "value": 2.7,
+      "unit": "%",
+      "series": "자체 몬테카를로 (공시 변동성·상관계수 입력, 100,000 경로, 대조변량, 시드 고정)",
+      "as_of": "2026-08-28",
+      "tier": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260828000836",
+      "verdict": "confirmed",
+      "render": "assert",
+      "note": "공시된 값이 아니라 공시 입력으로 재현 가능하게 돌린 모형 결과. 덱에서 \"B. 시뮬레이션\"으로 표기",
+      "printed_on": [
+        "p3-bar"
+      ]
+    },
+    {
+      "id": "R38074_STEP5",
+      "kind": "model_output",
+      "metric": "조기상환 확률",
+      "text": "제38074회 5차 상환 확률",
+      "value": 2.1,
+      "unit": "%",
+      "series": "자체 몬테카를로 (공시 변동성·상관계수 입력, 100,000 경로, 대조변량, 시드 고정)",
+      "as_of": "2026-08-28",
+      "tier": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260828000836",
+      "verdict": "confirmed",
+      "render": "assert",
+      "note": "공시된 값이 아니라 공시 입력으로 재현 가능하게 돌린 모형 결과. 덱에서 \"B. 시뮬레이션\"으로 표기",
+      "printed_on": [
+        "p3-bar"
+      ]
+    },
+    {
+      "id": "R38074_STEP6",
+      "kind": "model_output",
+      "metric": "조기상환 확률",
+      "text": "제38074회 6차(만기) 상환 확률",
+      "value": 15,
+      "unit": "%",
+      "series": "자체 몬테카를로 (공시 변동성·상관계수 입력, 100,000 경로, 대조변량, 시드 고정)",
+      "as_of": "2026-08-28",
+      "tier": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260828000836",
+      "verdict": "confirmed",
+      "render": "assert",
+      "note": "공시된 값이 아니라 공시 입력으로 재현 가능하게 돌린 모형 결과. 덱에서 \"B. 시뮬레이션\"으로 표기",
+      "printed_on": [
+        "p2-row-38074",
+        "p3-bar"
+      ]
+    },
+    {
+      "id": "R38074_STEPMID",
+      "kind": "model_output",
+      "metric": "조기상환 확률",
+      "text": "제38074회 2~5차 상환 확률 합계",
+      "value": 17.6,
+      "unit": "%",
+      "series": "자체 몬테카를로 (공시 변동성·상관계수 입력, 100,000 경로, 대조변량, 시드 고정)",
+      "as_of": "2026-08-28",
+      "tier": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260828000836",
+      "verdict": "confirmed",
+      "render": "assert",
+      "note": "공시된 값이 아니라 공시 입력으로 재현 가능하게 돌린 모형 결과. 덱에서 \"B. 시뮬레이션\"으로 표기",
+      "printed_on": [
+        "p3-bar"
       ]
     },
     {
@@ -1714,9 +2463,9 @@
       "kind": "model_output",
       "metric": "손실 시 평균 손실 크기",
       "text": "제38074회 손실이 났을 때 잃는 평균 크기",
-      "value": 60.9,
+      "value": 61.4,
       "unit": "%",
-      "series": "자체 몬테카를로 (공시 변동성·상관계수 입력, 40,000 경로, 시드 고정)",
+      "series": "자체 몬테카를로 (공시 변동성·상관계수 입력, 100,000 경로, 대조변량, 시드 고정)",
       "as_of": "2026-08-28",
       "tier": 1,
       "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260828000836",
@@ -1968,9 +2717,9 @@
       "kind": "model_output",
       "metric": "손실 확률",
       "text": "제38075회 만기 손실 확률 (B)",
-      "value": 15.8,
+      "value": 15.4,
       "unit": "%",
-      "series": "자체 몬테카를로 (공시 변동성·상관계수 입력, 40,000 경로, 시드 고정)",
+      "series": "자체 몬테카를로 (공시 변동성·상관계수 입력, 100,000 경로, 대조변량, 시드 고정)",
       "as_of": "2026-08-28",
       "tier": 1,
       "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260828000836",
@@ -1979,6 +2728,152 @@
       "note": "공시된 값이 아니라 공시 입력으로 재현 가능하게 돌린 모형 결과. 덱에서 \"B. 시뮬레이션\"으로 표기",
       "printed_on": [
         "p2-row-38075"
+      ]
+    },
+    {
+      "id": "R38075_MCCI",
+      "kind": "model_output",
+      "metric": "손실 확률 신뢰구간",
+      "text": "제38075회 손실 확률의 95% 신뢰구간 반폭",
+      "value": 0.24,
+      "unit": "%p",
+      "series": "자체 몬테카를로 (공시 변동성·상관계수 입력, 100,000 경로, 대조변량, 시드 고정)",
+      "as_of": "2026-08-28",
+      "tier": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260828000836",
+      "verdict": "confirmed",
+      "render": "assert",
+      "note": "경로 100,000개, 대조변량 적용. 배치 평균으로 낸 표준오차의 1.96배",
+      "printed_on": [
+        "p2-row-38075"
+      ]
+    },
+    {
+      "id": "R38075_STEP1",
+      "kind": "model_output",
+      "metric": "조기상환 확률",
+      "text": "제38075회 1차 상환 확률",
+      "value": 55.3,
+      "unit": "%",
+      "series": "자체 몬테카를로 (공시 변동성·상관계수 입력, 100,000 경로, 대조변량, 시드 고정)",
+      "as_of": "2026-08-28",
+      "tier": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260828000836",
+      "verdict": "confirmed",
+      "render": "assert",
+      "note": "공시된 값이 아니라 공시 입력으로 재현 가능하게 돌린 모형 결과. 덱에서 \"B. 시뮬레이션\"으로 표기",
+      "printed_on": [
+        "p2-row-38075",
+        "p3-bar"
+      ]
+    },
+    {
+      "id": "R38075_STEP2",
+      "kind": "model_output",
+      "metric": "조기상환 확률",
+      "text": "제38075회 2차 상환 확률",
+      "value": 8.1,
+      "unit": "%",
+      "series": "자체 몬테카를로 (공시 변동성·상관계수 입력, 100,000 경로, 대조변량, 시드 고정)",
+      "as_of": "2026-08-28",
+      "tier": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260828000836",
+      "verdict": "confirmed",
+      "render": "assert",
+      "note": "공시된 값이 아니라 공시 입력으로 재현 가능하게 돌린 모형 결과. 덱에서 \"B. 시뮬레이션\"으로 표기",
+      "printed_on": [
+        "p3-bar"
+      ]
+    },
+    {
+      "id": "R38075_STEP3",
+      "kind": "model_output",
+      "metric": "조기상환 확률",
+      "text": "제38075회 3차 상환 확률",
+      "value": 3.5,
+      "unit": "%",
+      "series": "자체 몬테카를로 (공시 변동성·상관계수 입력, 100,000 경로, 대조변량, 시드 고정)",
+      "as_of": "2026-08-28",
+      "tier": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260828000836",
+      "verdict": "confirmed",
+      "render": "assert",
+      "note": "공시된 값이 아니라 공시 입력으로 재현 가능하게 돌린 모형 결과. 덱에서 \"B. 시뮬레이션\"으로 표기",
+      "printed_on": [
+        "p3-bar"
+      ]
+    },
+    {
+      "id": "R38075_STEP4",
+      "kind": "model_output",
+      "metric": "조기상환 확률",
+      "text": "제38075회 4차 상환 확률",
+      "value": 3.5,
+      "unit": "%",
+      "series": "자체 몬테카를로 (공시 변동성·상관계수 입력, 100,000 경로, 대조변량, 시드 고정)",
+      "as_of": "2026-08-28",
+      "tier": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260828000836",
+      "verdict": "confirmed",
+      "render": "assert",
+      "note": "공시된 값이 아니라 공시 입력으로 재현 가능하게 돌린 모형 결과. 덱에서 \"B. 시뮬레이션\"으로 표기",
+      "printed_on": [
+        "p3-bar"
+      ]
+    },
+    {
+      "id": "R38075_STEP5",
+      "kind": "model_output",
+      "metric": "조기상환 확률",
+      "text": "제38075회 5차 상환 확률",
+      "value": 2.9,
+      "unit": "%",
+      "series": "자체 몬테카를로 (공시 변동성·상관계수 입력, 100,000 경로, 대조변량, 시드 고정)",
+      "as_of": "2026-08-28",
+      "tier": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260828000836",
+      "verdict": "confirmed",
+      "render": "assert",
+      "note": "공시된 값이 아니라 공시 입력으로 재현 가능하게 돌린 모형 결과. 덱에서 \"B. 시뮬레이션\"으로 표기",
+      "printed_on": [
+        "p3-bar"
+      ]
+    },
+    {
+      "id": "R38075_STEP6",
+      "kind": "model_output",
+      "metric": "조기상환 확률",
+      "text": "제38075회 6차(만기) 상환 확률",
+      "value": 26.7,
+      "unit": "%",
+      "series": "자체 몬테카를로 (공시 변동성·상관계수 입력, 100,000 경로, 대조변량, 시드 고정)",
+      "as_of": "2026-08-28",
+      "tier": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260828000836",
+      "verdict": "confirmed",
+      "render": "assert",
+      "note": "공시된 값이 아니라 공시 입력으로 재현 가능하게 돌린 모형 결과. 덱에서 \"B. 시뮬레이션\"으로 표기",
+      "printed_on": [
+        "p2-row-38075",
+        "p3-bar"
+      ]
+    },
+    {
+      "id": "R38075_STEPMID",
+      "kind": "model_output",
+      "metric": "조기상환 확률",
+      "text": "제38075회 2~5차 상환 확률 합계",
+      "value": 18,
+      "unit": "%",
+      "series": "자체 몬테카를로 (공시 변동성·상관계수 입력, 100,000 경로, 대조변량, 시드 고정)",
+      "as_of": "2026-08-28",
+      "tier": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260828000836",
+      "verdict": "confirmed",
+      "render": "assert",
+      "note": "공시된 값이 아니라 공시 입력으로 재현 가능하게 돌린 모형 결과. 덱에서 \"B. 시뮬레이션\"으로 표기",
+      "printed_on": [
+        "p3-bar"
       ]
     },
     {
@@ -2022,9 +2917,9 @@
       "kind": "model_output",
       "metric": "손실 시 평균 손실 크기",
       "text": "제38075회 손실이 났을 때 잃는 평균 크기",
-      "value": 63.3,
+      "value": 63.1,
       "unit": "%",
-      "series": "자체 몬테카를로 (공시 변동성·상관계수 입력, 40,000 경로, 시드 고정)",
+      "series": "자체 몬테카를로 (공시 변동성·상관계수 입력, 100,000 경로, 대조변량, 시드 고정)",
       "as_of": "2026-08-28",
       "tier": 1,
       "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260828000836",
@@ -2276,9 +3171,9 @@
       "kind": "model_output",
       "metric": "손실 확률",
       "text": "제38076회 만기 손실 확률 (B)",
-      "value": 15.1,
+      "value": 14.7,
       "unit": "%",
-      "series": "자체 몬테카를로 (공시 변동성·상관계수 입력, 40,000 경로, 시드 고정)",
+      "series": "자체 몬테카를로 (공시 변동성·상관계수 입력, 100,000 경로, 대조변량, 시드 고정)",
       "as_of": "2026-08-28",
       "tier": 1,
       "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260828000836",
@@ -2287,6 +3182,152 @@
       "note": "공시된 값이 아니라 공시 입력으로 재현 가능하게 돌린 모형 결과. 덱에서 \"B. 시뮬레이션\"으로 표기",
       "printed_on": [
         "p2-row-38076"
+      ]
+    },
+    {
+      "id": "R38076_MCCI",
+      "kind": "model_output",
+      "metric": "손실 확률 신뢰구간",
+      "text": "제38076회 손실 확률의 95% 신뢰구간 반폭",
+      "value": 0.22,
+      "unit": "%p",
+      "series": "자체 몬테카를로 (공시 변동성·상관계수 입력, 100,000 경로, 대조변량, 시드 고정)",
+      "as_of": "2026-08-28",
+      "tier": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260828000836",
+      "verdict": "confirmed",
+      "render": "assert",
+      "note": "경로 100,000개, 대조변량 적용. 배치 평균으로 낸 표준오차의 1.96배",
+      "printed_on": [
+        "p2-row-38076"
+      ]
+    },
+    {
+      "id": "R38076_STEP1",
+      "kind": "model_output",
+      "metric": "조기상환 확률",
+      "text": "제38076회 1차 상환 확률",
+      "value": 52.4,
+      "unit": "%",
+      "series": "자체 몬테카를로 (공시 변동성·상관계수 입력, 100,000 경로, 대조변량, 시드 고정)",
+      "as_of": "2026-08-28",
+      "tier": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260828000836",
+      "verdict": "confirmed",
+      "render": "assert",
+      "note": "공시된 값이 아니라 공시 입력으로 재현 가능하게 돌린 모형 결과. 덱에서 \"B. 시뮬레이션\"으로 표기",
+      "printed_on": [
+        "p2-row-38076",
+        "p3-bar"
+      ]
+    },
+    {
+      "id": "R38076_STEP2",
+      "kind": "model_output",
+      "metric": "조기상환 확률",
+      "text": "제38076회 2차 상환 확률",
+      "value": 8.9,
+      "unit": "%",
+      "series": "자체 몬테카를로 (공시 변동성·상관계수 입력, 100,000 경로, 대조변량, 시드 고정)",
+      "as_of": "2026-08-28",
+      "tier": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260828000836",
+      "verdict": "confirmed",
+      "render": "assert",
+      "note": "공시된 값이 아니라 공시 입력으로 재현 가능하게 돌린 모형 결과. 덱에서 \"B. 시뮬레이션\"으로 표기",
+      "printed_on": [
+        "p3-bar"
+      ]
+    },
+    {
+      "id": "R38076_STEP3",
+      "kind": "model_output",
+      "metric": "조기상환 확률",
+      "text": "제38076회 3차 상환 확률",
+      "value": 4.1,
+      "unit": "%",
+      "series": "자체 몬테카를로 (공시 변동성·상관계수 입력, 100,000 경로, 대조변량, 시드 고정)",
+      "as_of": "2026-08-28",
+      "tier": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260828000836",
+      "verdict": "confirmed",
+      "render": "assert",
+      "note": "공시된 값이 아니라 공시 입력으로 재현 가능하게 돌린 모형 결과. 덱에서 \"B. 시뮬레이션\"으로 표기",
+      "printed_on": [
+        "p3-bar"
+      ]
+    },
+    {
+      "id": "R38076_STEP4",
+      "kind": "model_output",
+      "metric": "조기상환 확률",
+      "text": "제38076회 4차 상환 확률",
+      "value": 3.2,
+      "unit": "%",
+      "series": "자체 몬테카를로 (공시 변동성·상관계수 입력, 100,000 경로, 대조변량, 시드 고정)",
+      "as_of": "2026-08-28",
+      "tier": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260828000836",
+      "verdict": "confirmed",
+      "render": "assert",
+      "note": "공시된 값이 아니라 공시 입력으로 재현 가능하게 돌린 모형 결과. 덱에서 \"B. 시뮬레이션\"으로 표기",
+      "printed_on": [
+        "p3-bar"
+      ]
+    },
+    {
+      "id": "R38076_STEP5",
+      "kind": "model_output",
+      "metric": "조기상환 확률",
+      "text": "제38076회 5차 상환 확률",
+      "value": 2.4,
+      "unit": "%",
+      "series": "자체 몬테카를로 (공시 변동성·상관계수 입력, 100,000 경로, 대조변량, 시드 고정)",
+      "as_of": "2026-08-28",
+      "tier": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260828000836",
+      "verdict": "confirmed",
+      "render": "assert",
+      "note": "공시된 값이 아니라 공시 입력으로 재현 가능하게 돌린 모형 결과. 덱에서 \"B. 시뮬레이션\"으로 표기",
+      "printed_on": [
+        "p3-bar"
+      ]
+    },
+    {
+      "id": "R38076_STEP6",
+      "kind": "model_output",
+      "metric": "조기상환 확률",
+      "text": "제38076회 6차(만기) 상환 확률",
+      "value": 29,
+      "unit": "%",
+      "series": "자체 몬테카를로 (공시 변동성·상관계수 입력, 100,000 경로, 대조변량, 시드 고정)",
+      "as_of": "2026-08-28",
+      "tier": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260828000836",
+      "verdict": "confirmed",
+      "render": "assert",
+      "note": "공시된 값이 아니라 공시 입력으로 재현 가능하게 돌린 모형 결과. 덱에서 \"B. 시뮬레이션\"으로 표기",
+      "printed_on": [
+        "p2-row-38076",
+        "p3-bar"
+      ]
+    },
+    {
+      "id": "R38076_STEPMID",
+      "kind": "model_output",
+      "metric": "조기상환 확률",
+      "text": "제38076회 2~5차 상환 확률 합계",
+      "value": 18.6,
+      "unit": "%",
+      "series": "자체 몬테카를로 (공시 변동성·상관계수 입력, 100,000 경로, 대조변량, 시드 고정)",
+      "as_of": "2026-08-28",
+      "tier": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260828000836",
+      "verdict": "confirmed",
+      "render": "assert",
+      "note": "공시된 값이 아니라 공시 입력으로 재현 가능하게 돌린 모형 결과. 덱에서 \"B. 시뮬레이션\"으로 표기",
+      "printed_on": [
+        "p3-bar"
       ]
     },
     {
@@ -2332,7 +3373,7 @@
       "text": "제38076회 손실이 났을 때 잃는 평균 크기",
       "value": 81.3,
       "unit": "%",
-      "series": "자체 몬테카를로 (공시 변동성·상관계수 입력, 40,000 경로, 시드 고정)",
+      "series": "자체 몬테카를로 (공시 변동성·상관계수 입력, 100,000 경로, 대조변량, 시드 고정)",
       "as_of": "2026-08-28",
       "tier": 1,
       "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260828000836",
@@ -2584,9 +3625,9 @@
       "kind": "model_output",
       "metric": "손실 확률",
       "text": "제38077회 만기 손실 확률 (B)",
-      "value": 15,
+      "value": 14.2,
       "unit": "%",
-      "series": "자체 몬테카를로 (공시 변동성·상관계수 입력, 40,000 경로, 시드 고정)",
+      "series": "자체 몬테카를로 (공시 변동성·상관계수 입력, 100,000 경로, 대조변량, 시드 고정)",
       "as_of": "2026-08-28",
       "tier": 1,
       "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260828000836",
@@ -2595,6 +3636,152 @@
       "note": "공시된 값이 아니라 공시 입력으로 재현 가능하게 돌린 모형 결과. 덱에서 \"B. 시뮬레이션\"으로 표기",
       "printed_on": [
         "p2-row-38077"
+      ]
+    },
+    {
+      "id": "R38077_MCCI",
+      "kind": "model_output",
+      "metric": "손실 확률 신뢰구간",
+      "text": "제38077회 손실 확률의 95% 신뢰구간 반폭",
+      "value": 0.23,
+      "unit": "%p",
+      "series": "자체 몬테카를로 (공시 변동성·상관계수 입력, 100,000 경로, 대조변량, 시드 고정)",
+      "as_of": "2026-08-28",
+      "tier": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260828000836",
+      "verdict": "confirmed",
+      "render": "assert",
+      "note": "경로 100,000개, 대조변량 적용. 배치 평균으로 낸 표준오차의 1.96배",
+      "printed_on": [
+        "p2-row-38077"
+      ]
+    },
+    {
+      "id": "R38077_STEP1",
+      "kind": "model_output",
+      "metric": "조기상환 확률",
+      "text": "제38077회 1차 상환 확률",
+      "value": 68.1,
+      "unit": "%",
+      "series": "자체 몬테카를로 (공시 변동성·상관계수 입력, 100,000 경로, 대조변량, 시드 고정)",
+      "as_of": "2026-08-28",
+      "tier": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260828000836",
+      "verdict": "confirmed",
+      "render": "assert",
+      "note": "공시된 값이 아니라 공시 입력으로 재현 가능하게 돌린 모형 결과. 덱에서 \"B. 시뮬레이션\"으로 표기",
+      "printed_on": [
+        "p2-row-38077",
+        "p3-bar"
+      ]
+    },
+    {
+      "id": "R38077_STEP2",
+      "kind": "model_output",
+      "metric": "조기상환 확률",
+      "text": "제38077회 2차 상환 확률",
+      "value": 7.3,
+      "unit": "%",
+      "series": "자체 몬테카를로 (공시 변동성·상관계수 입력, 100,000 경로, 대조변량, 시드 고정)",
+      "as_of": "2026-08-28",
+      "tier": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260828000836",
+      "verdict": "confirmed",
+      "render": "assert",
+      "note": "공시된 값이 아니라 공시 입력으로 재현 가능하게 돌린 모형 결과. 덱에서 \"B. 시뮬레이션\"으로 표기",
+      "printed_on": [
+        "p3-bar"
+      ]
+    },
+    {
+      "id": "R38077_STEP3",
+      "kind": "model_output",
+      "metric": "조기상환 확률",
+      "text": "제38077회 3차 상환 확률",
+      "value": 3.2,
+      "unit": "%",
+      "series": "자체 몬테카를로 (공시 변동성·상관계수 입력, 100,000 경로, 대조변량, 시드 고정)",
+      "as_of": "2026-08-28",
+      "tier": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260828000836",
+      "verdict": "confirmed",
+      "render": "assert",
+      "note": "공시된 값이 아니라 공시 입력으로 재현 가능하게 돌린 모형 결과. 덱에서 \"B. 시뮬레이션\"으로 표기",
+      "printed_on": [
+        "p3-bar"
+      ]
+    },
+    {
+      "id": "R38077_STEP4",
+      "kind": "model_output",
+      "metric": "조기상환 확률",
+      "text": "제38077회 4차 상환 확률",
+      "value": 1.9,
+      "unit": "%",
+      "series": "자체 몬테카를로 (공시 변동성·상관계수 입력, 100,000 경로, 대조변량, 시드 고정)",
+      "as_of": "2026-08-28",
+      "tier": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260828000836",
+      "verdict": "confirmed",
+      "render": "assert",
+      "note": "공시된 값이 아니라 공시 입력으로 재현 가능하게 돌린 모형 결과. 덱에서 \"B. 시뮬레이션\"으로 표기",
+      "printed_on": [
+        "p3-bar"
+      ]
+    },
+    {
+      "id": "R38077_STEP5",
+      "kind": "model_output",
+      "metric": "조기상환 확률",
+      "text": "제38077회 5차 상환 확률",
+      "value": 1.7,
+      "unit": "%",
+      "series": "자체 몬테카를로 (공시 변동성·상관계수 입력, 100,000 경로, 대조변량, 시드 고정)",
+      "as_of": "2026-08-28",
+      "tier": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260828000836",
+      "verdict": "confirmed",
+      "render": "assert",
+      "note": "공시된 값이 아니라 공시 입력으로 재현 가능하게 돌린 모형 결과. 덱에서 \"B. 시뮬레이션\"으로 표기",
+      "printed_on": [
+        "p3-bar"
+      ]
+    },
+    {
+      "id": "R38077_STEP6",
+      "kind": "model_output",
+      "metric": "조기상환 확률",
+      "text": "제38077회 6차(만기) 상환 확률",
+      "value": 17.8,
+      "unit": "%",
+      "series": "자체 몬테카를로 (공시 변동성·상관계수 입력, 100,000 경로, 대조변량, 시드 고정)",
+      "as_of": "2026-08-28",
+      "tier": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260828000836",
+      "verdict": "confirmed",
+      "render": "assert",
+      "note": "공시된 값이 아니라 공시 입력으로 재현 가능하게 돌린 모형 결과. 덱에서 \"B. 시뮬레이션\"으로 표기",
+      "printed_on": [
+        "p2-row-38077",
+        "p3-bar"
+      ]
+    },
+    {
+      "id": "R38077_STEPMID",
+      "kind": "model_output",
+      "metric": "조기상환 확률",
+      "text": "제38077회 2~5차 상환 확률 합계",
+      "value": 14.1,
+      "unit": "%",
+      "series": "자체 몬테카를로 (공시 변동성·상관계수 입력, 100,000 경로, 대조변량, 시드 고정)",
+      "as_of": "2026-08-28",
+      "tier": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260828000836",
+      "verdict": "confirmed",
+      "render": "assert",
+      "note": "공시된 값이 아니라 공시 입력으로 재현 가능하게 돌린 모형 결과. 덱에서 \"B. 시뮬레이션\"으로 표기",
+      "printed_on": [
+        "p3-bar"
       ]
     },
     {
@@ -2638,9 +3825,9 @@
       "kind": "model_output",
       "metric": "손실 시 평균 손실 크기",
       "text": "제38077회 손실이 났을 때 잃는 평균 크기",
-      "value": 69.6,
+      "value": 70.1,
       "unit": "%",
-      "series": "자체 몬테카를로 (공시 변동성·상관계수 입력, 40,000 경로, 시드 고정)",
+      "series": "자체 몬테카를로 (공시 변동성·상관계수 입력, 100,000 경로, 대조변량, 시드 고정)",
       "as_of": "2026-08-28",
       "tier": 1,
       "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260828000836",
@@ -2892,9 +4079,9 @@
       "kind": "model_output",
       "metric": "손실 확률",
       "text": "제38078회 만기 손실 확률 (B)",
-      "value": 11.1,
+      "value": 10.8,
       "unit": "%",
-      "series": "자체 몬테카를로 (공시 변동성·상관계수 입력, 40,000 경로, 시드 고정)",
+      "series": "자체 몬테카를로 (공시 변동성·상관계수 입력, 100,000 경로, 대조변량, 시드 고정)",
       "as_of": "2026-08-28",
       "tier": 1,
       "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260828000836",
@@ -2903,6 +4090,260 @@
       "note": "공시된 값이 아니라 공시 입력으로 재현 가능하게 돌린 모형 결과. 덱에서 \"B. 시뮬레이션\"으로 표기",
       "printed_on": [
         "p2-row-38078"
+      ]
+    },
+    {
+      "id": "R38078_MCCI",
+      "kind": "model_output",
+      "metric": "손실 확률 신뢰구간",
+      "text": "제38078회 손실 확률의 95% 신뢰구간 반폭",
+      "value": 0.21,
+      "unit": "%p",
+      "series": "자체 몬테카를로 (공시 변동성·상관계수 입력, 100,000 경로, 대조변량, 시드 고정)",
+      "as_of": "2026-08-28",
+      "tier": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260828000836",
+      "verdict": "confirmed",
+      "render": "assert",
+      "note": "경로 100,000개, 대조변량 적용. 배치 평균으로 낸 표준오차의 1.96배",
+      "printed_on": [
+        "p2-row-38078"
+      ]
+    },
+    {
+      "id": "R38078_STEP1",
+      "kind": "model_output",
+      "metric": "조기상환 확률",
+      "text": "제38078회 1차 상환 확률",
+      "value": 60.8,
+      "unit": "%",
+      "series": "자체 몬테카를로 (공시 변동성·상관계수 입력, 100,000 경로, 대조변량, 시드 고정)",
+      "as_of": "2026-08-28",
+      "tier": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260828000836",
+      "verdict": "confirmed",
+      "render": "assert",
+      "note": "공시된 값이 아니라 공시 입력으로 재현 가능하게 돌린 모형 결과. 덱에서 \"B. 시뮬레이션\"으로 표기",
+      "printed_on": [
+        "p2-row-38078",
+        "p3-bar"
+      ]
+    },
+    {
+      "id": "R38078_STEP2",
+      "kind": "model_output",
+      "metric": "조기상환 확률",
+      "text": "제38078회 2차 상환 확률",
+      "value": 8.9,
+      "unit": "%",
+      "series": "자체 몬테카를로 (공시 변동성·상관계수 입력, 100,000 경로, 대조변량, 시드 고정)",
+      "as_of": "2026-08-28",
+      "tier": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260828000836",
+      "verdict": "confirmed",
+      "render": "assert",
+      "note": "공시된 값이 아니라 공시 입력으로 재현 가능하게 돌린 모형 결과. 덱에서 \"B. 시뮬레이션\"으로 표기",
+      "printed_on": [
+        "p3-bar"
+      ]
+    },
+    {
+      "id": "R38078_STEP3",
+      "kind": "model_output",
+      "metric": "조기상환 확률",
+      "text": "제38078회 3차 상환 확률",
+      "value": 4.2,
+      "unit": "%",
+      "series": "자체 몬테카를로 (공시 변동성·상관계수 입력, 100,000 경로, 대조변량, 시드 고정)",
+      "as_of": "2026-08-28",
+      "tier": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260828000836",
+      "verdict": "confirmed",
+      "render": "assert",
+      "note": "공시된 값이 아니라 공시 입력으로 재현 가능하게 돌린 모형 결과. 덱에서 \"B. 시뮬레이션\"으로 표기",
+      "printed_on": [
+        "p3-bar"
+      ]
+    },
+    {
+      "id": "R38078_STEP4",
+      "kind": "model_output",
+      "metric": "조기상환 확률",
+      "text": "제38078회 4차 상환 확률",
+      "value": 2.5,
+      "unit": "%",
+      "series": "자체 몬테카를로 (공시 변동성·상관계수 입력, 100,000 경로, 대조변량, 시드 고정)",
+      "as_of": "2026-08-28",
+      "tier": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260828000836",
+      "verdict": "confirmed",
+      "render": "assert",
+      "note": "공시된 값이 아니라 공시 입력으로 재현 가능하게 돌린 모형 결과. 덱에서 \"B. 시뮬레이션\"으로 표기",
+      "printed_on": [
+        "p3-bar"
+      ]
+    },
+    {
+      "id": "R38078_STEP5",
+      "kind": "model_output",
+      "metric": "조기상환 확률",
+      "text": "제38078회 5차 상환 확률",
+      "value": 2.4,
+      "unit": "%",
+      "series": "자체 몬테카를로 (공시 변동성·상관계수 입력, 100,000 경로, 대조변량, 시드 고정)",
+      "as_of": "2026-08-28",
+      "tier": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260828000836",
+      "verdict": "confirmed",
+      "render": "assert",
+      "note": "공시된 값이 아니라 공시 입력으로 재현 가능하게 돌린 모형 결과. 덱에서 \"B. 시뮬레이션\"으로 표기",
+      "printed_on": [
+        "p3-bar"
+      ]
+    },
+    {
+      "id": "R38078_STEP6",
+      "kind": "model_output",
+      "metric": "조기상환 확률",
+      "text": "제38078회 6차 상환 확률",
+      "value": 1.5,
+      "unit": "%",
+      "series": "자체 몬테카를로 (공시 변동성·상관계수 입력, 100,000 경로, 대조변량, 시드 고정)",
+      "as_of": "2026-08-28",
+      "tier": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260828000836",
+      "verdict": "confirmed",
+      "render": "assert",
+      "note": "공시된 값이 아니라 공시 입력으로 재현 가능하게 돌린 모형 결과. 덱에서 \"B. 시뮬레이션\"으로 표기",
+      "printed_on": [
+        "p3-bar"
+      ]
+    },
+    {
+      "id": "R38078_STEP7",
+      "kind": "model_output",
+      "metric": "조기상환 확률",
+      "text": "제38078회 7차 상환 확률",
+      "value": 1,
+      "unit": "%",
+      "series": "자체 몬테카를로 (공시 변동성·상관계수 입력, 100,000 경로, 대조변량, 시드 고정)",
+      "as_of": "2026-08-28",
+      "tier": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260828000836",
+      "verdict": "confirmed",
+      "render": "assert",
+      "note": "공시된 값이 아니라 공시 입력으로 재현 가능하게 돌린 모형 결과. 덱에서 \"B. 시뮬레이션\"으로 표기",
+      "printed_on": [
+        "p3-bar"
+      ]
+    },
+    {
+      "id": "R38078_STEP8",
+      "kind": "model_output",
+      "metric": "조기상환 확률",
+      "text": "제38078회 8차 상환 확률",
+      "value": 0.9,
+      "unit": "%",
+      "series": "자체 몬테카를로 (공시 변동성·상관계수 입력, 100,000 경로, 대조변량, 시드 고정)",
+      "as_of": "2026-08-28",
+      "tier": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260828000836",
+      "verdict": "confirmed",
+      "render": "assert",
+      "note": "공시된 값이 아니라 공시 입력으로 재현 가능하게 돌린 모형 결과. 덱에서 \"B. 시뮬레이션\"으로 표기",
+      "printed_on": [
+        "p3-bar"
+      ]
+    },
+    {
+      "id": "R38078_STEP9",
+      "kind": "model_output",
+      "metric": "조기상환 확률",
+      "text": "제38078회 9차 상환 확률",
+      "value": 1,
+      "unit": "%",
+      "series": "자체 몬테카를로 (공시 변동성·상관계수 입력, 100,000 경로, 대조변량, 시드 고정)",
+      "as_of": "2026-08-28",
+      "tier": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260828000836",
+      "verdict": "confirmed",
+      "render": "assert",
+      "note": "공시된 값이 아니라 공시 입력으로 재현 가능하게 돌린 모형 결과. 덱에서 \"B. 시뮬레이션\"으로 표기",
+      "printed_on": [
+        "p3-bar"
+      ]
+    },
+    {
+      "id": "R38078_STEP10",
+      "kind": "model_output",
+      "metric": "조기상환 확률",
+      "text": "제38078회 10차 상환 확률",
+      "value": 0.6,
+      "unit": "%",
+      "series": "자체 몬테카를로 (공시 변동성·상관계수 입력, 100,000 경로, 대조변량, 시드 고정)",
+      "as_of": "2026-08-28",
+      "tier": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260828000836",
+      "verdict": "confirmed",
+      "render": "assert",
+      "note": "공시된 값이 아니라 공시 입력으로 재현 가능하게 돌린 모형 결과. 덱에서 \"B. 시뮬레이션\"으로 표기",
+      "printed_on": [
+        "p3-bar"
+      ]
+    },
+    {
+      "id": "R38078_STEP11",
+      "kind": "model_output",
+      "metric": "조기상환 확률",
+      "text": "제38078회 11차 상환 확률",
+      "value": 0.5,
+      "unit": "%",
+      "series": "자체 몬테카를로 (공시 변동성·상관계수 입력, 100,000 경로, 대조변량, 시드 고정)",
+      "as_of": "2026-08-28",
+      "tier": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260828000836",
+      "verdict": "confirmed",
+      "render": "assert",
+      "note": "공시된 값이 아니라 공시 입력으로 재현 가능하게 돌린 모형 결과. 덱에서 \"B. 시뮬레이션\"으로 표기",
+      "printed_on": [
+        "p3-bar"
+      ]
+    },
+    {
+      "id": "R38078_STEP12",
+      "kind": "model_output",
+      "metric": "조기상환 확률",
+      "text": "제38078회 12차(만기) 상환 확률",
+      "value": 15.6,
+      "unit": "%",
+      "series": "자체 몬테카를로 (공시 변동성·상관계수 입력, 100,000 경로, 대조변량, 시드 고정)",
+      "as_of": "2026-08-28",
+      "tier": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260828000836",
+      "verdict": "confirmed",
+      "render": "assert",
+      "note": "공시된 값이 아니라 공시 입력으로 재현 가능하게 돌린 모형 결과. 덱에서 \"B. 시뮬레이션\"으로 표기",
+      "printed_on": [
+        "p2-row-38078",
+        "p3-bar"
+      ]
+    },
+    {
+      "id": "R38078_STEPMID",
+      "kind": "model_output",
+      "metric": "조기상환 확률",
+      "text": "제38078회 2~11차 상환 확률 합계",
+      "value": 23.5,
+      "unit": "%",
+      "series": "자체 몬테카를로 (공시 변동성·상관계수 입력, 100,000 경로, 대조변량, 시드 고정)",
+      "as_of": "2026-08-28",
+      "tier": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260828000836",
+      "verdict": "confirmed",
+      "render": "assert",
+      "note": "공시된 값이 아니라 공시 입력으로 재현 가능하게 돌린 모형 결과. 덱에서 \"B. 시뮬레이션\"으로 표기",
+      "printed_on": [
+        "p3-bar"
       ]
     },
     {
@@ -2946,9 +4387,9 @@
       "kind": "model_output",
       "metric": "손실 시 평균 손실 크기",
       "text": "제38078회 손실이 났을 때 잃는 평균 크기",
-      "value": 72.8,
+      "value": 72.7,
       "unit": "%",
-      "series": "자체 몬테카를로 (공시 변동성·상관계수 입력, 40,000 경로, 시드 고정)",
+      "series": "자체 몬테카를로 (공시 변동성·상관계수 입력, 100,000 경로, 대조변량, 시드 고정)",
       "as_of": "2026-08-28",
       "tier": 1,
       "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260828000836",
@@ -3200,9 +4641,9 @@
       "kind": "model_output",
       "metric": "손실 확률",
       "text": "제38079회 만기 손실 확률 (B)",
-      "value": 19.4,
+      "value": 18.5,
       "unit": "%",
-      "series": "자체 몬테카를로 (공시 변동성·상관계수 입력, 40,000 경로, 시드 고정)",
+      "series": "자체 몬테카를로 (공시 변동성·상관계수 입력, 100,000 경로, 대조변량, 시드 고정)",
       "as_of": "2026-08-28",
       "tier": 1,
       "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260828000836",
@@ -3211,6 +4652,152 @@
       "note": "공시된 값이 아니라 공시 입력으로 재현 가능하게 돌린 모형 결과. 덱에서 \"B. 시뮬레이션\"으로 표기",
       "printed_on": [
         "p2-row-38079"
+      ]
+    },
+    {
+      "id": "R38079_MCCI",
+      "kind": "model_output",
+      "metric": "손실 확률 신뢰구간",
+      "text": "제38079회 손실 확률의 95% 신뢰구간 반폭",
+      "value": 0.24,
+      "unit": "%p",
+      "series": "자체 몬테카를로 (공시 변동성·상관계수 입력, 100,000 경로, 대조변량, 시드 고정)",
+      "as_of": "2026-08-28",
+      "tier": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260828000836",
+      "verdict": "confirmed",
+      "render": "assert",
+      "note": "경로 100,000개, 대조변량 적용. 배치 평균으로 낸 표준오차의 1.96배",
+      "printed_on": [
+        "p2-row-38079"
+      ]
+    },
+    {
+      "id": "R38079_STEP1",
+      "kind": "model_output",
+      "metric": "조기상환 확률",
+      "text": "제38079회 1차 상환 확률",
+      "value": 65.8,
+      "unit": "%",
+      "series": "자체 몬테카를로 (공시 변동성·상관계수 입력, 100,000 경로, 대조변량, 시드 고정)",
+      "as_of": "2026-08-28",
+      "tier": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260828000836",
+      "verdict": "confirmed",
+      "render": "assert",
+      "note": "공시된 값이 아니라 공시 입력으로 재현 가능하게 돌린 모형 결과. 덱에서 \"B. 시뮬레이션\"으로 표기",
+      "printed_on": [
+        "p2-row-38079",
+        "p3-bar"
+      ]
+    },
+    {
+      "id": "R38079_STEP2",
+      "kind": "model_output",
+      "metric": "조기상환 확률",
+      "text": "제38079회 2차 상환 확률",
+      "value": 7,
+      "unit": "%",
+      "series": "자체 몬테카를로 (공시 변동성·상관계수 입력, 100,000 경로, 대조변량, 시드 고정)",
+      "as_of": "2026-08-28",
+      "tier": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260828000836",
+      "verdict": "confirmed",
+      "render": "assert",
+      "note": "공시된 값이 아니라 공시 입력으로 재현 가능하게 돌린 모형 결과. 덱에서 \"B. 시뮬레이션\"으로 표기",
+      "printed_on": [
+        "p3-bar"
+      ]
+    },
+    {
+      "id": "R38079_STEP3",
+      "kind": "model_output",
+      "metric": "조기상환 확률",
+      "text": "제38079회 3차 상환 확률",
+      "value": 3.1,
+      "unit": "%",
+      "series": "자체 몬테카를로 (공시 변동성·상관계수 입력, 100,000 경로, 대조변량, 시드 고정)",
+      "as_of": "2026-08-28",
+      "tier": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260828000836",
+      "verdict": "confirmed",
+      "render": "assert",
+      "note": "공시된 값이 아니라 공시 입력으로 재현 가능하게 돌린 모형 결과. 덱에서 \"B. 시뮬레이션\"으로 표기",
+      "printed_on": [
+        "p3-bar"
+      ]
+    },
+    {
+      "id": "R38079_STEP4",
+      "kind": "model_output",
+      "metric": "조기상환 확률",
+      "text": "제38079회 4차 상환 확률",
+      "value": 1.8,
+      "unit": "%",
+      "series": "자체 몬테카를로 (공시 변동성·상관계수 입력, 100,000 경로, 대조변량, 시드 고정)",
+      "as_of": "2026-08-28",
+      "tier": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260828000836",
+      "verdict": "confirmed",
+      "render": "assert",
+      "note": "공시된 값이 아니라 공시 입력으로 재현 가능하게 돌린 모형 결과. 덱에서 \"B. 시뮬레이션\"으로 표기",
+      "printed_on": [
+        "p3-bar"
+      ]
+    },
+    {
+      "id": "R38079_STEP5",
+      "kind": "model_output",
+      "metric": "조기상환 확률",
+      "text": "제38079회 5차 상환 확률",
+      "value": 1.6,
+      "unit": "%",
+      "series": "자체 몬테카를로 (공시 변동성·상관계수 입력, 100,000 경로, 대조변량, 시드 고정)",
+      "as_of": "2026-08-28",
+      "tier": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260828000836",
+      "verdict": "confirmed",
+      "render": "assert",
+      "note": "공시된 값이 아니라 공시 입력으로 재현 가능하게 돌린 모형 결과. 덱에서 \"B. 시뮬레이션\"으로 표기",
+      "printed_on": [
+        "p3-bar"
+      ]
+    },
+    {
+      "id": "R38079_STEP6",
+      "kind": "model_output",
+      "metric": "조기상환 확률",
+      "text": "제38079회 6차(만기) 상환 확률",
+      "value": 20.6,
+      "unit": "%",
+      "series": "자체 몬테카를로 (공시 변동성·상관계수 입력, 100,000 경로, 대조변량, 시드 고정)",
+      "as_of": "2026-08-28",
+      "tier": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260828000836",
+      "verdict": "confirmed",
+      "render": "assert",
+      "note": "공시된 값이 아니라 공시 입력으로 재현 가능하게 돌린 모형 결과. 덱에서 \"B. 시뮬레이션\"으로 표기",
+      "printed_on": [
+        "p2-row-38079",
+        "p3-bar"
+      ]
+    },
+    {
+      "id": "R38079_STEPMID",
+      "kind": "model_output",
+      "metric": "조기상환 확률",
+      "text": "제38079회 2~5차 상환 확률 합계",
+      "value": 13.6,
+      "unit": "%",
+      "series": "자체 몬테카를로 (공시 변동성·상관계수 입력, 100,000 경로, 대조변량, 시드 고정)",
+      "as_of": "2026-08-28",
+      "tier": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260828000836",
+      "verdict": "confirmed",
+      "render": "assert",
+      "note": "공시된 값이 아니라 공시 입력으로 재현 가능하게 돌린 모형 결과. 덱에서 \"B. 시뮬레이션\"으로 표기",
+      "printed_on": [
+        "p3-bar"
       ]
     },
     {
@@ -3254,9 +4841,9 @@
       "kind": "model_output",
       "metric": "손실 시 평균 손실 크기",
       "text": "제38079회 손실이 났을 때 잃는 평균 크기",
-      "value": 74.2,
+      "value": 74.5,
       "unit": "%",
-      "series": "자체 몬테카를로 (공시 변동성·상관계수 입력, 40,000 경로, 시드 고정)",
+      "series": "자체 몬테카를로 (공시 변동성·상관계수 입력, 100,000 경로, 대조변량, 시드 고정)",
       "as_of": "2026-08-28",
       "tier": 1,
       "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260828000836",
@@ -3508,9 +5095,9 @@
       "kind": "model_output",
       "metric": "손실 확률",
       "text": "제38080회 만기 손실 확률 (B)",
-      "value": 25.9,
+      "value": 25.1,
       "unit": "%",
-      "series": "자체 몬테카를로 (공시 변동성·상관계수 입력, 40,000 경로, 시드 고정)",
+      "series": "자체 몬테카를로 (공시 변동성·상관계수 입력, 100,000 경로, 대조변량, 시드 고정)",
       "as_of": "2026-08-28",
       "tier": 1,
       "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260828000836",
@@ -3519,6 +5106,152 @@
       "note": "공시된 값이 아니라 공시 입력으로 재현 가능하게 돌린 모형 결과. 덱에서 \"B. 시뮬레이션\"으로 표기",
       "printed_on": [
         "p2-row-38080"
+      ]
+    },
+    {
+      "id": "R38080_MCCI",
+      "kind": "model_output",
+      "metric": "손실 확률 신뢰구간",
+      "text": "제38080회 손실 확률의 95% 신뢰구간 반폭",
+      "value": 0.22,
+      "unit": "%p",
+      "series": "자체 몬테카를로 (공시 변동성·상관계수 입력, 100,000 경로, 대조변량, 시드 고정)",
+      "as_of": "2026-08-28",
+      "tier": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260828000836",
+      "verdict": "confirmed",
+      "render": "assert",
+      "note": "경로 100,000개, 대조변량 적용. 배치 평균으로 낸 표준오차의 1.96배",
+      "printed_on": [
+        "p2-row-38080"
+      ]
+    },
+    {
+      "id": "R38080_STEP1",
+      "kind": "model_output",
+      "metric": "조기상환 확률",
+      "text": "제38080회 1차 상환 확률",
+      "value": 52.4,
+      "unit": "%",
+      "series": "자체 몬테카를로 (공시 변동성·상관계수 입력, 100,000 경로, 대조변량, 시드 고정)",
+      "as_of": "2026-08-28",
+      "tier": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260828000836",
+      "verdict": "confirmed",
+      "render": "assert",
+      "note": "공시된 값이 아니라 공시 입력으로 재현 가능하게 돌린 모형 결과. 덱에서 \"B. 시뮬레이션\"으로 표기",
+      "printed_on": [
+        "p2-row-38080",
+        "p3-bar"
+      ]
+    },
+    {
+      "id": "R38080_STEP2",
+      "kind": "model_output",
+      "metric": "조기상환 확률",
+      "text": "제38080회 2차 상환 확률",
+      "value": 8.9,
+      "unit": "%",
+      "series": "자체 몬테카를로 (공시 변동성·상관계수 입력, 100,000 경로, 대조변량, 시드 고정)",
+      "as_of": "2026-08-28",
+      "tier": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260828000836",
+      "verdict": "confirmed",
+      "render": "assert",
+      "note": "공시된 값이 아니라 공시 입력으로 재현 가능하게 돌린 모형 결과. 덱에서 \"B. 시뮬레이션\"으로 표기",
+      "printed_on": [
+        "p3-bar"
+      ]
+    },
+    {
+      "id": "R38080_STEP3",
+      "kind": "model_output",
+      "metric": "조기상환 확률",
+      "text": "제38080회 3차 상환 확률",
+      "value": 4.1,
+      "unit": "%",
+      "series": "자체 몬테카를로 (공시 변동성·상관계수 입력, 100,000 경로, 대조변량, 시드 고정)",
+      "as_of": "2026-08-28",
+      "tier": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260828000836",
+      "verdict": "confirmed",
+      "render": "assert",
+      "note": "공시된 값이 아니라 공시 입력으로 재현 가능하게 돌린 모형 결과. 덱에서 \"B. 시뮬레이션\"으로 표기",
+      "printed_on": [
+        "p3-bar"
+      ]
+    },
+    {
+      "id": "R38080_STEP4",
+      "kind": "model_output",
+      "metric": "조기상환 확률",
+      "text": "제38080회 4차 상환 확률",
+      "value": 3.2,
+      "unit": "%",
+      "series": "자체 몬테카를로 (공시 변동성·상관계수 입력, 100,000 경로, 대조변량, 시드 고정)",
+      "as_of": "2026-08-28",
+      "tier": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260828000836",
+      "verdict": "confirmed",
+      "render": "assert",
+      "note": "공시된 값이 아니라 공시 입력으로 재현 가능하게 돌린 모형 결과. 덱에서 \"B. 시뮬레이션\"으로 표기",
+      "printed_on": [
+        "p3-bar"
+      ]
+    },
+    {
+      "id": "R38080_STEP5",
+      "kind": "model_output",
+      "metric": "조기상환 확률",
+      "text": "제38080회 5차 상환 확률",
+      "value": 2.4,
+      "unit": "%",
+      "series": "자체 몬테카를로 (공시 변동성·상관계수 입력, 100,000 경로, 대조변량, 시드 고정)",
+      "as_of": "2026-08-28",
+      "tier": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260828000836",
+      "verdict": "confirmed",
+      "render": "assert",
+      "note": "공시된 값이 아니라 공시 입력으로 재현 가능하게 돌린 모형 결과. 덱에서 \"B. 시뮬레이션\"으로 표기",
+      "printed_on": [
+        "p3-bar"
+      ]
+    },
+    {
+      "id": "R38080_STEP6",
+      "kind": "model_output",
+      "metric": "조기상환 확률",
+      "text": "제38080회 6차(만기) 상환 확률",
+      "value": 29,
+      "unit": "%",
+      "series": "자체 몬테카를로 (공시 변동성·상관계수 입력, 100,000 경로, 대조변량, 시드 고정)",
+      "as_of": "2026-08-28",
+      "tier": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260828000836",
+      "verdict": "confirmed",
+      "render": "assert",
+      "note": "공시된 값이 아니라 공시 입력으로 재현 가능하게 돌린 모형 결과. 덱에서 \"B. 시뮬레이션\"으로 표기",
+      "printed_on": [
+        "p2-row-38080",
+        "p3-bar"
+      ]
+    },
+    {
+      "id": "R38080_STEPMID",
+      "kind": "model_output",
+      "metric": "조기상환 확률",
+      "text": "제38080회 2~5차 상환 확률 합계",
+      "value": 18.6,
+      "unit": "%",
+      "series": "자체 몬테카를로 (공시 변동성·상관계수 입력, 100,000 경로, 대조변량, 시드 고정)",
+      "as_of": "2026-08-28",
+      "tier": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260828000836",
+      "verdict": "confirmed",
+      "render": "assert",
+      "note": "공시된 값이 아니라 공시 입력으로 재현 가능하게 돌린 모형 결과. 덱에서 \"B. 시뮬레이션\"으로 표기",
+      "printed_on": [
+        "p3-bar"
       ]
     },
     {
@@ -3562,9 +5295,9 @@
       "kind": "model_output",
       "metric": "손실 시 평균 손실 크기",
       "text": "제38080회 손실이 났을 때 잃는 평균 크기",
-      "value": 73,
+      "value": 73.1,
       "unit": "%",
-      "series": "자체 몬테카를로 (공시 변동성·상관계수 입력, 40,000 경로, 시드 고정)",
+      "series": "자체 몬테카를로 (공시 변동성·상관계수 입력, 100,000 경로, 대조변량, 시드 고정)",
       "as_of": "2026-08-28",
       "tier": 1,
       "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260828000836",
@@ -3817,9 +5550,9 @@
       "kind": "model_output",
       "metric": "손실 확률",
       "text": "제38081회 만기 손실 확률 (B)",
-      "value": 16.7,
+      "value": 16,
       "unit": "%",
-      "series": "자체 몬테카를로 (공시 변동성·상관계수 입력, 40,000 경로, 시드 고정)",
+      "series": "자체 몬테카를로 (공시 변동성·상관계수 입력, 100,000 경로, 대조변량, 시드 고정)",
       "as_of": "2026-08-28",
       "tier": 1,
       "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260828000836",
@@ -3828,6 +5561,260 @@
       "note": "공시된 값이 아니라 공시 입력으로 재현 가능하게 돌린 모형 결과. 덱에서 \"B. 시뮬레이션\"으로 표기",
       "printed_on": [
         "p2-row-38081"
+      ]
+    },
+    {
+      "id": "R38081_MCCI",
+      "kind": "model_output",
+      "metric": "손실 확률 신뢰구간",
+      "text": "제38081회 손실 확률의 95% 신뢰구간 반폭",
+      "value": 0.27,
+      "unit": "%p",
+      "series": "자체 몬테카를로 (공시 변동성·상관계수 입력, 100,000 경로, 대조변량, 시드 고정)",
+      "as_of": "2026-08-28",
+      "tier": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260828000836",
+      "verdict": "confirmed",
+      "render": "assert",
+      "note": "경로 100,000개, 대조변량 적용. 배치 평균으로 낸 표준오차의 1.96배",
+      "printed_on": [
+        "p2-row-38081"
+      ]
+    },
+    {
+      "id": "R38081_STEP1",
+      "kind": "model_output",
+      "metric": "조기상환 확률",
+      "text": "제38081회 1차 상환 확률",
+      "value": 61.8,
+      "unit": "%",
+      "series": "자체 몬테카를로 (공시 변동성·상관계수 입력, 100,000 경로, 대조변량, 시드 고정)",
+      "as_of": "2026-08-28",
+      "tier": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260828000836",
+      "verdict": "confirmed",
+      "render": "assert",
+      "note": "공시된 값이 아니라 공시 입력으로 재현 가능하게 돌린 모형 결과. 덱에서 \"B. 시뮬레이션\"으로 표기",
+      "printed_on": [
+        "p2-row-38081",
+        "p3-bar"
+      ]
+    },
+    {
+      "id": "R38081_STEP2",
+      "kind": "model_output",
+      "metric": "조기상환 확률",
+      "text": "제38081회 2차 상환 확률",
+      "value": 8.2,
+      "unit": "%",
+      "series": "자체 몬테카를로 (공시 변동성·상관계수 입력, 100,000 경로, 대조변량, 시드 고정)",
+      "as_of": "2026-08-28",
+      "tier": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260828000836",
+      "verdict": "confirmed",
+      "render": "assert",
+      "note": "공시된 값이 아니라 공시 입력으로 재현 가능하게 돌린 모형 결과. 덱에서 \"B. 시뮬레이션\"으로 표기",
+      "printed_on": [
+        "p3-bar"
+      ]
+    },
+    {
+      "id": "R38081_STEP3",
+      "kind": "model_output",
+      "metric": "조기상환 확률",
+      "text": "제38081회 3차 상환 확률",
+      "value": 3.8,
+      "unit": "%",
+      "series": "자체 몬테카를로 (공시 변동성·상관계수 입력, 100,000 경로, 대조변량, 시드 고정)",
+      "as_of": "2026-08-28",
+      "tier": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260828000836",
+      "verdict": "confirmed",
+      "render": "assert",
+      "note": "공시된 값이 아니라 공시 입력으로 재현 가능하게 돌린 모형 결과. 덱에서 \"B. 시뮬레이션\"으로 표기",
+      "printed_on": [
+        "p3-bar"
+      ]
+    },
+    {
+      "id": "R38081_STEP4",
+      "kind": "model_output",
+      "metric": "조기상환 확률",
+      "text": "제38081회 4차 상환 확률",
+      "value": 2.2,
+      "unit": "%",
+      "series": "자체 몬테카를로 (공시 변동성·상관계수 입력, 100,000 경로, 대조변량, 시드 고정)",
+      "as_of": "2026-08-28",
+      "tier": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260828000836",
+      "verdict": "confirmed",
+      "render": "assert",
+      "note": "공시된 값이 아니라 공시 입력으로 재현 가능하게 돌린 모형 결과. 덱에서 \"B. 시뮬레이션\"으로 표기",
+      "printed_on": [
+        "p3-bar"
+      ]
+    },
+    {
+      "id": "R38081_STEP5",
+      "kind": "model_output",
+      "metric": "조기상환 확률",
+      "text": "제38081회 5차 상환 확률",
+      "value": 1.6,
+      "unit": "%",
+      "series": "자체 몬테카를로 (공시 변동성·상관계수 입력, 100,000 경로, 대조변량, 시드 고정)",
+      "as_of": "2026-08-28",
+      "tier": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260828000836",
+      "verdict": "confirmed",
+      "render": "assert",
+      "note": "공시된 값이 아니라 공시 입력으로 재현 가능하게 돌린 모형 결과. 덱에서 \"B. 시뮬레이션\"으로 표기",
+      "printed_on": [
+        "p3-bar"
+      ]
+    },
+    {
+      "id": "R38081_STEP6",
+      "kind": "model_output",
+      "metric": "조기상환 확률",
+      "text": "제38081회 6차 상환 확률",
+      "value": 1.2,
+      "unit": "%",
+      "series": "자체 몬테카를로 (공시 변동성·상관계수 입력, 100,000 경로, 대조변량, 시드 고정)",
+      "as_of": "2026-08-28",
+      "tier": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260828000836",
+      "verdict": "confirmed",
+      "render": "assert",
+      "note": "공시된 값이 아니라 공시 입력으로 재현 가능하게 돌린 모형 결과. 덱에서 \"B. 시뮬레이션\"으로 표기",
+      "printed_on": [
+        "p3-bar"
+      ]
+    },
+    {
+      "id": "R38081_STEP7",
+      "kind": "model_output",
+      "metric": "조기상환 확률",
+      "text": "제38081회 7차 상환 확률",
+      "value": 0.9,
+      "unit": "%",
+      "series": "자체 몬테카를로 (공시 변동성·상관계수 입력, 100,000 경로, 대조변량, 시드 고정)",
+      "as_of": "2026-08-28",
+      "tier": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260828000836",
+      "verdict": "confirmed",
+      "render": "assert",
+      "note": "공시된 값이 아니라 공시 입력으로 재현 가능하게 돌린 모형 결과. 덱에서 \"B. 시뮬레이션\"으로 표기",
+      "printed_on": [
+        "p3-bar"
+      ]
+    },
+    {
+      "id": "R38081_STEP8",
+      "kind": "model_output",
+      "metric": "조기상환 확률",
+      "text": "제38081회 8차 상환 확률",
+      "value": 0.7,
+      "unit": "%",
+      "series": "자체 몬테카를로 (공시 변동성·상관계수 입력, 100,000 경로, 대조변량, 시드 고정)",
+      "as_of": "2026-08-28",
+      "tier": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260828000836",
+      "verdict": "confirmed",
+      "render": "assert",
+      "note": "공시된 값이 아니라 공시 입력으로 재현 가능하게 돌린 모형 결과. 덱에서 \"B. 시뮬레이션\"으로 표기",
+      "printed_on": [
+        "p3-bar"
+      ]
+    },
+    {
+      "id": "R38081_STEP9",
+      "kind": "model_output",
+      "metric": "조기상환 확률",
+      "text": "제38081회 9차 상환 확률",
+      "value": 0.6,
+      "unit": "%",
+      "series": "자체 몬테카를로 (공시 변동성·상관계수 입력, 100,000 경로, 대조변량, 시드 고정)",
+      "as_of": "2026-08-28",
+      "tier": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260828000836",
+      "verdict": "confirmed",
+      "render": "assert",
+      "note": "공시된 값이 아니라 공시 입력으로 재현 가능하게 돌린 모형 결과. 덱에서 \"B. 시뮬레이션\"으로 표기",
+      "printed_on": [
+        "p3-bar"
+      ]
+    },
+    {
+      "id": "R38081_STEP10",
+      "kind": "model_output",
+      "metric": "조기상환 확률",
+      "text": "제38081회 10차 상환 확률",
+      "value": 0.7,
+      "unit": "%",
+      "series": "자체 몬테카를로 (공시 변동성·상관계수 입력, 100,000 경로, 대조변량, 시드 고정)",
+      "as_of": "2026-08-28",
+      "tier": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260828000836",
+      "verdict": "confirmed",
+      "render": "assert",
+      "note": "공시된 값이 아니라 공시 입력으로 재현 가능하게 돌린 모형 결과. 덱에서 \"B. 시뮬레이션\"으로 표기",
+      "printed_on": [
+        "p3-bar"
+      ]
+    },
+    {
+      "id": "R38081_STEP11",
+      "kind": "model_output",
+      "metric": "조기상환 확률",
+      "text": "제38081회 11차 상환 확률",
+      "value": 0.7,
+      "unit": "%",
+      "series": "자체 몬테카를로 (공시 변동성·상관계수 입력, 100,000 경로, 대조변량, 시드 고정)",
+      "as_of": "2026-08-28",
+      "tier": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260828000836",
+      "verdict": "confirmed",
+      "render": "assert",
+      "note": "공시된 값이 아니라 공시 입력으로 재현 가능하게 돌린 모형 결과. 덱에서 \"B. 시뮬레이션\"으로 표기",
+      "printed_on": [
+        "p3-bar"
+      ]
+    },
+    {
+      "id": "R38081_STEP12",
+      "kind": "model_output",
+      "metric": "조기상환 확률",
+      "text": "제38081회 12차(만기) 상환 확률",
+      "value": 17.6,
+      "unit": "%",
+      "series": "자체 몬테카를로 (공시 변동성·상관계수 입력, 100,000 경로, 대조변량, 시드 고정)",
+      "as_of": "2026-08-28",
+      "tier": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260828000836",
+      "verdict": "confirmed",
+      "render": "assert",
+      "note": "공시된 값이 아니라 공시 입력으로 재현 가능하게 돌린 모형 결과. 덱에서 \"B. 시뮬레이션\"으로 표기",
+      "printed_on": [
+        "p2-row-38081",
+        "p3-bar"
+      ]
+    },
+    {
+      "id": "R38081_STEPMID",
+      "kind": "model_output",
+      "metric": "조기상환 확률",
+      "text": "제38081회 2~11차 상환 확률 합계",
+      "value": 20.6,
+      "unit": "%",
+      "series": "자체 몬테카를로 (공시 변동성·상관계수 입력, 100,000 경로, 대조변량, 시드 고정)",
+      "as_of": "2026-08-28",
+      "tier": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260828000836",
+      "verdict": "confirmed",
+      "render": "assert",
+      "note": "공시된 값이 아니라 공시 입력으로 재현 가능하게 돌린 모형 결과. 덱에서 \"B. 시뮬레이션\"으로 표기",
+      "printed_on": [
+        "p3-bar"
       ]
     },
     {
@@ -3871,9 +5858,9 @@
       "kind": "model_output",
       "metric": "손실 시 평균 손실 크기",
       "text": "제38081회 손실이 났을 때 잃는 평균 크기",
-      "value": 73.6,
+      "value": 73.8,
       "unit": "%",
-      "series": "자체 몬테카를로 (공시 변동성·상관계수 입력, 40,000 경로, 시드 고정)",
+      "series": "자체 몬테카를로 (공시 변동성·상관계수 입력, 100,000 경로, 대조변량, 시드 고정)",
       "as_of": "2026-08-28",
       "tier": 1,
       "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260828000836",
@@ -4125,9 +6112,9 @@
       "kind": "model_output",
       "metric": "손실 확률",
       "text": "제38082회 만기 손실 확률 (B)",
-      "value": 22.1,
+      "value": 21.4,
       "unit": "%",
-      "series": "자체 몬테카를로 (공시 변동성·상관계수 입력, 40,000 경로, 시드 고정)",
+      "series": "자체 몬테카를로 (공시 변동성·상관계수 입력, 100,000 경로, 대조변량, 시드 고정)",
       "as_of": "2026-08-28",
       "tier": 1,
       "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260828000836",
@@ -4136,6 +6123,152 @@
       "note": "공시된 값이 아니라 공시 입력으로 재현 가능하게 돌린 모형 결과. 덱에서 \"B. 시뮬레이션\"으로 표기",
       "printed_on": [
         "p2-row-38082"
+      ]
+    },
+    {
+      "id": "R38082_MCCI",
+      "kind": "model_output",
+      "metric": "손실 확률 신뢰구간",
+      "text": "제38082회 손실 확률의 95% 신뢰구간 반폭",
+      "value": 0.22,
+      "unit": "%p",
+      "series": "자체 몬테카를로 (공시 변동성·상관계수 입력, 100,000 경로, 대조변량, 시드 고정)",
+      "as_of": "2026-08-28",
+      "tier": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260828000836",
+      "verdict": "confirmed",
+      "render": "assert",
+      "note": "경로 100,000개, 대조변량 적용. 배치 평균으로 낸 표준오차의 1.96배",
+      "printed_on": [
+        "p2-row-38082"
+      ]
+    },
+    {
+      "id": "R38082_STEP1",
+      "kind": "model_output",
+      "metric": "조기상환 확률",
+      "text": "제38082회 1차 상환 확률",
+      "value": 52.3,
+      "unit": "%",
+      "series": "자체 몬테카를로 (공시 변동성·상관계수 입력, 100,000 경로, 대조변량, 시드 고정)",
+      "as_of": "2026-08-28",
+      "tier": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260828000836",
+      "verdict": "confirmed",
+      "render": "assert",
+      "note": "공시된 값이 아니라 공시 입력으로 재현 가능하게 돌린 모형 결과. 덱에서 \"B. 시뮬레이션\"으로 표기",
+      "printed_on": [
+        "p2-row-38082",
+        "p3-bar"
+      ]
+    },
+    {
+      "id": "R38082_STEP2",
+      "kind": "model_output",
+      "metric": "조기상환 확률",
+      "text": "제38082회 2차 상환 확률",
+      "value": 8.2,
+      "unit": "%",
+      "series": "자체 몬테카를로 (공시 변동성·상관계수 입력, 100,000 경로, 대조변량, 시드 고정)",
+      "as_of": "2026-08-28",
+      "tier": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260828000836",
+      "verdict": "confirmed",
+      "render": "assert",
+      "note": "공시된 값이 아니라 공시 입력으로 재현 가능하게 돌린 모형 결과. 덱에서 \"B. 시뮬레이션\"으로 표기",
+      "printed_on": [
+        "p3-bar"
+      ]
+    },
+    {
+      "id": "R38082_STEP3",
+      "kind": "model_output",
+      "metric": "조기상환 확률",
+      "text": "제38082회 3차 상환 확률",
+      "value": 3.7,
+      "unit": "%",
+      "series": "자체 몬테카를로 (공시 변동성·상관계수 입력, 100,000 경로, 대조변량, 시드 고정)",
+      "as_of": "2026-08-28",
+      "tier": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260828000836",
+      "verdict": "confirmed",
+      "render": "assert",
+      "note": "공시된 값이 아니라 공시 입력으로 재현 가능하게 돌린 모형 결과. 덱에서 \"B. 시뮬레이션\"으로 표기",
+      "printed_on": [
+        "p3-bar"
+      ]
+    },
+    {
+      "id": "R38082_STEP4",
+      "kind": "model_output",
+      "metric": "조기상환 확률",
+      "text": "제38082회 4차 상환 확률",
+      "value": 3.5,
+      "unit": "%",
+      "series": "자체 몬테카를로 (공시 변동성·상관계수 입력, 100,000 경로, 대조변량, 시드 고정)",
+      "as_of": "2026-08-28",
+      "tier": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260828000836",
+      "verdict": "confirmed",
+      "render": "assert",
+      "note": "공시된 값이 아니라 공시 입력으로 재현 가능하게 돌린 모형 결과. 덱에서 \"B. 시뮬레이션\"으로 표기",
+      "printed_on": [
+        "p3-bar"
+      ]
+    },
+    {
+      "id": "R38082_STEP5",
+      "kind": "model_output",
+      "metric": "조기상환 확률",
+      "text": "제38082회 5차 상환 확률",
+      "value": 3.1,
+      "unit": "%",
+      "series": "자체 몬테카를로 (공시 변동성·상관계수 입력, 100,000 경로, 대조변량, 시드 고정)",
+      "as_of": "2026-08-28",
+      "tier": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260828000836",
+      "verdict": "confirmed",
+      "render": "assert",
+      "note": "공시된 값이 아니라 공시 입력으로 재현 가능하게 돌린 모형 결과. 덱에서 \"B. 시뮬레이션\"으로 표기",
+      "printed_on": [
+        "p3-bar"
+      ]
+    },
+    {
+      "id": "R38082_STEP6",
+      "kind": "model_output",
+      "metric": "조기상환 확률",
+      "text": "제38082회 6차(만기) 상환 확률",
+      "value": 29.2,
+      "unit": "%",
+      "series": "자체 몬테카를로 (공시 변동성·상관계수 입력, 100,000 경로, 대조변량, 시드 고정)",
+      "as_of": "2026-08-28",
+      "tier": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260828000836",
+      "verdict": "confirmed",
+      "render": "assert",
+      "note": "공시된 값이 아니라 공시 입력으로 재현 가능하게 돌린 모형 결과. 덱에서 \"B. 시뮬레이션\"으로 표기",
+      "printed_on": [
+        "p2-row-38082",
+        "p3-bar"
+      ]
+    },
+    {
+      "id": "R38082_STEPMID",
+      "kind": "model_output",
+      "metric": "조기상환 확률",
+      "text": "제38082회 2~5차 상환 확률 합계",
+      "value": 18.5,
+      "unit": "%",
+      "series": "자체 몬테카를로 (공시 변동성·상관계수 입력, 100,000 경로, 대조변량, 시드 고정)",
+      "as_of": "2026-08-28",
+      "tier": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260828000836",
+      "verdict": "confirmed",
+      "render": "assert",
+      "note": "공시된 값이 아니라 공시 입력으로 재현 가능하게 돌린 모형 결과. 덱에서 \"B. 시뮬레이션\"으로 표기",
+      "printed_on": [
+        "p3-bar"
       ]
     },
     {
@@ -4179,9 +6312,9 @@
       "kind": "model_output",
       "metric": "손실 시 평균 손실 크기",
       "text": "제38082회 손실이 났을 때 잃는 평균 크기",
-      "value": 60.4,
+      "value": 60.5,
       "unit": "%",
-      "series": "자체 몬테카를로 (공시 변동성·상관계수 입력, 40,000 경로, 시드 고정)",
+      "series": "자체 몬테카를로 (공시 변동성·상관계수 입력, 100,000 경로, 대조변량, 시드 고정)",
       "as_of": "2026-08-28",
       "tier": 1,
       "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260828000836",
@@ -4433,9 +6566,9 @@
       "kind": "model_output",
       "metric": "손실 확률",
       "text": "제38083회 만기 손실 확률 (B)",
-      "value": 15.7,
+      "value": 15.1,
       "unit": "%",
-      "series": "자체 몬테카를로 (공시 변동성·상관계수 입력, 40,000 경로, 시드 고정)",
+      "series": "자체 몬테카를로 (공시 변동성·상관계수 입력, 100,000 경로, 대조변량, 시드 고정)",
       "as_of": "2026-08-28",
       "tier": 1,
       "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260828000836",
@@ -4444,6 +6577,152 @@
       "note": "공시된 값이 아니라 공시 입력으로 재현 가능하게 돌린 모형 결과. 덱에서 \"B. 시뮬레이션\"으로 표기",
       "printed_on": [
         "p2-row-38083"
+      ]
+    },
+    {
+      "id": "R38083_MCCI",
+      "kind": "model_output",
+      "metric": "손실 확률 신뢰구간",
+      "text": "제38083회 손실 확률의 95% 신뢰구간 반폭",
+      "value": 0.22,
+      "unit": "%p",
+      "series": "자체 몬테카를로 (공시 변동성·상관계수 입력, 100,000 경로, 대조변량, 시드 고정)",
+      "as_of": "2026-08-28",
+      "tier": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260828000836",
+      "verdict": "confirmed",
+      "render": "assert",
+      "note": "경로 100,000개, 대조변량 적용. 배치 평균으로 낸 표준오차의 1.96배",
+      "printed_on": [
+        "p2-row-38083"
+      ]
+    },
+    {
+      "id": "R38083_STEP1",
+      "kind": "model_output",
+      "metric": "조기상환 확률",
+      "text": "제38083회 1차 상환 확률",
+      "value": 65.8,
+      "unit": "%",
+      "series": "자체 몬테카를로 (공시 변동성·상관계수 입력, 100,000 경로, 대조변량, 시드 고정)",
+      "as_of": "2026-08-28",
+      "tier": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260828000836",
+      "verdict": "confirmed",
+      "render": "assert",
+      "note": "공시된 값이 아니라 공시 입력으로 재현 가능하게 돌린 모형 결과. 덱에서 \"B. 시뮬레이션\"으로 표기",
+      "printed_on": [
+        "p2-row-38083",
+        "p3-bar"
+      ]
+    },
+    {
+      "id": "R38083_STEP2",
+      "kind": "model_output",
+      "metric": "조기상환 확률",
+      "text": "제38083회 2차 상환 확률",
+      "value": 7,
+      "unit": "%",
+      "series": "자체 몬테카를로 (공시 변동성·상관계수 입력, 100,000 경로, 대조변량, 시드 고정)",
+      "as_of": "2026-08-28",
+      "tier": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260828000836",
+      "verdict": "confirmed",
+      "render": "assert",
+      "note": "공시된 값이 아니라 공시 입력으로 재현 가능하게 돌린 모형 결과. 덱에서 \"B. 시뮬레이션\"으로 표기",
+      "printed_on": [
+        "p3-bar"
+      ]
+    },
+    {
+      "id": "R38083_STEP3",
+      "kind": "model_output",
+      "metric": "조기상환 확률",
+      "text": "제38083회 3차 상환 확률",
+      "value": 3.1,
+      "unit": "%",
+      "series": "자체 몬테카를로 (공시 변동성·상관계수 입력, 100,000 경로, 대조변량, 시드 고정)",
+      "as_of": "2026-08-28",
+      "tier": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260828000836",
+      "verdict": "confirmed",
+      "render": "assert",
+      "note": "공시된 값이 아니라 공시 입력으로 재현 가능하게 돌린 모형 결과. 덱에서 \"B. 시뮬레이션\"으로 표기",
+      "printed_on": [
+        "p3-bar"
+      ]
+    },
+    {
+      "id": "R38083_STEP4",
+      "kind": "model_output",
+      "metric": "조기상환 확률",
+      "text": "제38083회 4차 상환 확률",
+      "value": 1.8,
+      "unit": "%",
+      "series": "자체 몬테카를로 (공시 변동성·상관계수 입력, 100,000 경로, 대조변량, 시드 고정)",
+      "as_of": "2026-08-28",
+      "tier": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260828000836",
+      "verdict": "confirmed",
+      "render": "assert",
+      "note": "공시된 값이 아니라 공시 입력으로 재현 가능하게 돌린 모형 결과. 덱에서 \"B. 시뮬레이션\"으로 표기",
+      "printed_on": [
+        "p3-bar"
+      ]
+    },
+    {
+      "id": "R38083_STEP5",
+      "kind": "model_output",
+      "metric": "조기상환 확률",
+      "text": "제38083회 5차 상환 확률",
+      "value": 1.6,
+      "unit": "%",
+      "series": "자체 몬테카를로 (공시 변동성·상관계수 입력, 100,000 경로, 대조변량, 시드 고정)",
+      "as_of": "2026-08-28",
+      "tier": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260828000836",
+      "verdict": "confirmed",
+      "render": "assert",
+      "note": "공시된 값이 아니라 공시 입력으로 재현 가능하게 돌린 모형 결과. 덱에서 \"B. 시뮬레이션\"으로 표기",
+      "printed_on": [
+        "p3-bar"
+      ]
+    },
+    {
+      "id": "R38083_STEP6",
+      "kind": "model_output",
+      "metric": "조기상환 확률",
+      "text": "제38083회 6차(만기) 상환 확률",
+      "value": 20.6,
+      "unit": "%",
+      "series": "자체 몬테카를로 (공시 변동성·상관계수 입력, 100,000 경로, 대조변량, 시드 고정)",
+      "as_of": "2026-08-28",
+      "tier": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260828000836",
+      "verdict": "confirmed",
+      "render": "assert",
+      "note": "공시된 값이 아니라 공시 입력으로 재현 가능하게 돌린 모형 결과. 덱에서 \"B. 시뮬레이션\"으로 표기",
+      "printed_on": [
+        "p2-row-38083",
+        "p3-bar"
+      ]
+    },
+    {
+      "id": "R38083_STEPMID",
+      "kind": "model_output",
+      "metric": "조기상환 확률",
+      "text": "제38083회 2~5차 상환 확률 합계",
+      "value": 13.6,
+      "unit": "%",
+      "series": "자체 몬테카를로 (공시 변동성·상관계수 입력, 100,000 경로, 대조변량, 시드 고정)",
+      "as_of": "2026-08-28",
+      "tier": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260828000836",
+      "verdict": "confirmed",
+      "render": "assert",
+      "note": "공시된 값이 아니라 공시 입력으로 재현 가능하게 돌린 모형 결과. 덱에서 \"B. 시뮬레이션\"으로 표기",
+      "printed_on": [
+        "p3-bar"
       ]
     },
     {
@@ -4487,9 +6766,9 @@
       "kind": "model_output",
       "metric": "손실 시 평균 손실 크기",
       "text": "제38083회 손실이 났을 때 잃는 평균 크기",
-      "value": 78,
+      "value": 78.3,
       "unit": "%",
-      "series": "자체 몬테카를로 (공시 변동성·상관계수 입력, 40,000 경로, 시드 고정)",
+      "series": "자체 몬테카를로 (공시 변동성·상관계수 입력, 100,000 경로, 대조변량, 시드 고정)",
       "as_of": "2026-08-28",
       "tier": 1,
       "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260828000836",
@@ -4741,9 +7020,9 @@
       "kind": "model_output",
       "metric": "손실 확률",
       "text": "제38084회 만기 손실 확률 (B)",
-      "value": 19.9,
+      "value": 19.4,
       "unit": "%",
-      "series": "자체 몬테카를로 (공시 변동성·상관계수 입력, 40,000 경로, 시드 고정)",
+      "series": "자체 몬테카를로 (공시 변동성·상관계수 입력, 100,000 경로, 대조변량, 시드 고정)",
       "as_of": "2026-08-28",
       "tier": 1,
       "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260828000836",
@@ -4752,6 +7031,152 @@
       "note": "공시된 값이 아니라 공시 입력으로 재현 가능하게 돌린 모형 결과. 덱에서 \"B. 시뮬레이션\"으로 표기",
       "printed_on": [
         "p2-row-38084"
+      ]
+    },
+    {
+      "id": "R38084_MCCI",
+      "kind": "model_output",
+      "metric": "손실 확률 신뢰구간",
+      "text": "제38084회 손실 확률의 95% 신뢰구간 반폭",
+      "value": 0.24,
+      "unit": "%p",
+      "series": "자체 몬테카를로 (공시 변동성·상관계수 입력, 100,000 경로, 대조변량, 시드 고정)",
+      "as_of": "2026-08-28",
+      "tier": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260828000836",
+      "verdict": "confirmed",
+      "render": "assert",
+      "note": "경로 100,000개, 대조변량 적용. 배치 평균으로 낸 표준오차의 1.96배",
+      "printed_on": [
+        "p2-row-38084"
+      ]
+    },
+    {
+      "id": "R38084_STEP1",
+      "kind": "model_output",
+      "metric": "조기상환 확률",
+      "text": "제38084회 1차 상환 확률",
+      "value": 52.4,
+      "unit": "%",
+      "series": "자체 몬테카를로 (공시 변동성·상관계수 입력, 100,000 경로, 대조변량, 시드 고정)",
+      "as_of": "2026-08-28",
+      "tier": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260828000836",
+      "verdict": "confirmed",
+      "render": "assert",
+      "note": "공시된 값이 아니라 공시 입력으로 재현 가능하게 돌린 모형 결과. 덱에서 \"B. 시뮬레이션\"으로 표기",
+      "printed_on": [
+        "p2-row-38084",
+        "p3-bar"
+      ]
+    },
+    {
+      "id": "R38084_STEP2",
+      "kind": "model_output",
+      "metric": "조기상환 확률",
+      "text": "제38084회 2차 상환 확률",
+      "value": 8.9,
+      "unit": "%",
+      "series": "자체 몬테카를로 (공시 변동성·상관계수 입력, 100,000 경로, 대조변량, 시드 고정)",
+      "as_of": "2026-08-28",
+      "tier": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260828000836",
+      "verdict": "confirmed",
+      "render": "assert",
+      "note": "공시된 값이 아니라 공시 입력으로 재현 가능하게 돌린 모형 결과. 덱에서 \"B. 시뮬레이션\"으로 표기",
+      "printed_on": [
+        "p3-bar"
+      ]
+    },
+    {
+      "id": "R38084_STEP3",
+      "kind": "model_output",
+      "metric": "조기상환 확률",
+      "text": "제38084회 3차 상환 확률",
+      "value": 4.1,
+      "unit": "%",
+      "series": "자체 몬테카를로 (공시 변동성·상관계수 입력, 100,000 경로, 대조변량, 시드 고정)",
+      "as_of": "2026-08-28",
+      "tier": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260828000836",
+      "verdict": "confirmed",
+      "render": "assert",
+      "note": "공시된 값이 아니라 공시 입력으로 재현 가능하게 돌린 모형 결과. 덱에서 \"B. 시뮬레이션\"으로 표기",
+      "printed_on": [
+        "p3-bar"
+      ]
+    },
+    {
+      "id": "R38084_STEP4",
+      "kind": "model_output",
+      "metric": "조기상환 확률",
+      "text": "제38084회 4차 상환 확률",
+      "value": 3.2,
+      "unit": "%",
+      "series": "자체 몬테카를로 (공시 변동성·상관계수 입력, 100,000 경로, 대조변량, 시드 고정)",
+      "as_of": "2026-08-28",
+      "tier": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260828000836",
+      "verdict": "confirmed",
+      "render": "assert",
+      "note": "공시된 값이 아니라 공시 입력으로 재현 가능하게 돌린 모형 결과. 덱에서 \"B. 시뮬레이션\"으로 표기",
+      "printed_on": [
+        "p3-bar"
+      ]
+    },
+    {
+      "id": "R38084_STEP5",
+      "kind": "model_output",
+      "metric": "조기상환 확률",
+      "text": "제38084회 5차 상환 확률",
+      "value": 2.4,
+      "unit": "%",
+      "series": "자체 몬테카를로 (공시 변동성·상관계수 입력, 100,000 경로, 대조변량, 시드 고정)",
+      "as_of": "2026-08-28",
+      "tier": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260828000836",
+      "verdict": "confirmed",
+      "render": "assert",
+      "note": "공시된 값이 아니라 공시 입력으로 재현 가능하게 돌린 모형 결과. 덱에서 \"B. 시뮬레이션\"으로 표기",
+      "printed_on": [
+        "p3-bar"
+      ]
+    },
+    {
+      "id": "R38084_STEP6",
+      "kind": "model_output",
+      "metric": "조기상환 확률",
+      "text": "제38084회 6차(만기) 상환 확률",
+      "value": 29,
+      "unit": "%",
+      "series": "자체 몬테카를로 (공시 변동성·상관계수 입력, 100,000 경로, 대조변량, 시드 고정)",
+      "as_of": "2026-08-28",
+      "tier": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260828000836",
+      "verdict": "confirmed",
+      "render": "assert",
+      "note": "공시된 값이 아니라 공시 입력으로 재현 가능하게 돌린 모형 결과. 덱에서 \"B. 시뮬레이션\"으로 표기",
+      "printed_on": [
+        "p2-row-38084",
+        "p3-bar"
+      ]
+    },
+    {
+      "id": "R38084_STEPMID",
+      "kind": "model_output",
+      "metric": "조기상환 확률",
+      "text": "제38084회 2~5차 상환 확률 합계",
+      "value": 18.6,
+      "unit": "%",
+      "series": "자체 몬테카를로 (공시 변동성·상관계수 입력, 100,000 경로, 대조변량, 시드 고정)",
+      "as_of": "2026-08-28",
+      "tier": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260828000836",
+      "verdict": "confirmed",
+      "render": "assert",
+      "note": "공시된 값이 아니라 공시 입력으로 재현 가능하게 돌린 모형 결과. 덱에서 \"B. 시뮬레이션\"으로 표기",
+      "printed_on": [
+        "p3-bar"
       ]
     },
     {
@@ -4795,9 +7220,9 @@
       "kind": "model_output",
       "metric": "손실 시 평균 손실 크기",
       "text": "제38084회 손실이 났을 때 잃는 평균 크기",
-      "value": 77.6,
+      "value": 77.7,
       "unit": "%",
-      "series": "자체 몬테카를로 (공시 변동성·상관계수 입력, 40,000 경로, 시드 고정)",
+      "series": "자체 몬테카를로 (공시 변동성·상관계수 입력, 100,000 경로, 대조변량, 시드 고정)",
       "as_of": "2026-08-28",
       "tier": 1,
       "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260828000836",
@@ -5049,9 +7474,9 @@
       "kind": "model_output",
       "metric": "손실 확률",
       "text": "제38085회 만기 손실 확률 (B)",
-      "value": 15.3,
+      "value": 14.8,
       "unit": "%",
-      "series": "자체 몬테카를로 (공시 변동성·상관계수 입력, 40,000 경로, 시드 고정)",
+      "series": "자체 몬테카를로 (공시 변동성·상관계수 입력, 100,000 경로, 대조변량, 시드 고정)",
       "as_of": "2026-08-28",
       "tier": 1,
       "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260828000836",
@@ -5060,6 +7485,260 @@
       "note": "공시된 값이 아니라 공시 입력으로 재현 가능하게 돌린 모형 결과. 덱에서 \"B. 시뮬레이션\"으로 표기",
       "printed_on": [
         "p2-row-38085"
+      ]
+    },
+    {
+      "id": "R38085_MCCI",
+      "kind": "model_output",
+      "metric": "손실 확률 신뢰구간",
+      "text": "제38085회 손실 확률의 95% 신뢰구간 반폭",
+      "value": 0.26,
+      "unit": "%p",
+      "series": "자체 몬테카를로 (공시 변동성·상관계수 입력, 100,000 경로, 대조변량, 시드 고정)",
+      "as_of": "2026-08-28",
+      "tier": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260828000836",
+      "verdict": "confirmed",
+      "render": "assert",
+      "note": "경로 100,000개, 대조변량 적용. 배치 평균으로 낸 표준오차의 1.96배",
+      "printed_on": [
+        "p2-row-38085"
+      ]
+    },
+    {
+      "id": "R38085_STEP1",
+      "kind": "model_output",
+      "metric": "조기상환 확률",
+      "text": "제38085회 1차 상환 확률",
+      "value": 61.8,
+      "unit": "%",
+      "series": "자체 몬테카를로 (공시 변동성·상관계수 입력, 100,000 경로, 대조변량, 시드 고정)",
+      "as_of": "2026-08-28",
+      "tier": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260828000836",
+      "verdict": "confirmed",
+      "render": "assert",
+      "note": "공시된 값이 아니라 공시 입력으로 재현 가능하게 돌린 모형 결과. 덱에서 \"B. 시뮬레이션\"으로 표기",
+      "printed_on": [
+        "p2-row-38085",
+        "p3-bar"
+      ]
+    },
+    {
+      "id": "R38085_STEP2",
+      "kind": "model_output",
+      "metric": "조기상환 확률",
+      "text": "제38085회 2차 상환 확률",
+      "value": 8.2,
+      "unit": "%",
+      "series": "자체 몬테카를로 (공시 변동성·상관계수 입력, 100,000 경로, 대조변량, 시드 고정)",
+      "as_of": "2026-08-28",
+      "tier": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260828000836",
+      "verdict": "confirmed",
+      "render": "assert",
+      "note": "공시된 값이 아니라 공시 입력으로 재현 가능하게 돌린 모형 결과. 덱에서 \"B. 시뮬레이션\"으로 표기",
+      "printed_on": [
+        "p3-bar"
+      ]
+    },
+    {
+      "id": "R38085_STEP3",
+      "kind": "model_output",
+      "metric": "조기상환 확률",
+      "text": "제38085회 3차 상환 확률",
+      "value": 3.8,
+      "unit": "%",
+      "series": "자체 몬테카를로 (공시 변동성·상관계수 입력, 100,000 경로, 대조변량, 시드 고정)",
+      "as_of": "2026-08-28",
+      "tier": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260828000836",
+      "verdict": "confirmed",
+      "render": "assert",
+      "note": "공시된 값이 아니라 공시 입력으로 재현 가능하게 돌린 모형 결과. 덱에서 \"B. 시뮬레이션\"으로 표기",
+      "printed_on": [
+        "p3-bar"
+      ]
+    },
+    {
+      "id": "R38085_STEP4",
+      "kind": "model_output",
+      "metric": "조기상환 확률",
+      "text": "제38085회 4차 상환 확률",
+      "value": 2.2,
+      "unit": "%",
+      "series": "자체 몬테카를로 (공시 변동성·상관계수 입력, 100,000 경로, 대조변량, 시드 고정)",
+      "as_of": "2026-08-28",
+      "tier": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260828000836",
+      "verdict": "confirmed",
+      "render": "assert",
+      "note": "공시된 값이 아니라 공시 입력으로 재현 가능하게 돌린 모형 결과. 덱에서 \"B. 시뮬레이션\"으로 표기",
+      "printed_on": [
+        "p3-bar"
+      ]
+    },
+    {
+      "id": "R38085_STEP5",
+      "kind": "model_output",
+      "metric": "조기상환 확률",
+      "text": "제38085회 5차 상환 확률",
+      "value": 1.6,
+      "unit": "%",
+      "series": "자체 몬테카를로 (공시 변동성·상관계수 입력, 100,000 경로, 대조변량, 시드 고정)",
+      "as_of": "2026-08-28",
+      "tier": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260828000836",
+      "verdict": "confirmed",
+      "render": "assert",
+      "note": "공시된 값이 아니라 공시 입력으로 재현 가능하게 돌린 모형 결과. 덱에서 \"B. 시뮬레이션\"으로 표기",
+      "printed_on": [
+        "p3-bar"
+      ]
+    },
+    {
+      "id": "R38085_STEP6",
+      "kind": "model_output",
+      "metric": "조기상환 확률",
+      "text": "제38085회 6차 상환 확률",
+      "value": 1.2,
+      "unit": "%",
+      "series": "자체 몬테카를로 (공시 변동성·상관계수 입력, 100,000 경로, 대조변량, 시드 고정)",
+      "as_of": "2026-08-28",
+      "tier": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260828000836",
+      "verdict": "confirmed",
+      "render": "assert",
+      "note": "공시된 값이 아니라 공시 입력으로 재현 가능하게 돌린 모형 결과. 덱에서 \"B. 시뮬레이션\"으로 표기",
+      "printed_on": [
+        "p3-bar"
+      ]
+    },
+    {
+      "id": "R38085_STEP7",
+      "kind": "model_output",
+      "metric": "조기상환 확률",
+      "text": "제38085회 7차 상환 확률",
+      "value": 0.9,
+      "unit": "%",
+      "series": "자체 몬테카를로 (공시 변동성·상관계수 입력, 100,000 경로, 대조변량, 시드 고정)",
+      "as_of": "2026-08-28",
+      "tier": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260828000836",
+      "verdict": "confirmed",
+      "render": "assert",
+      "note": "공시된 값이 아니라 공시 입력으로 재현 가능하게 돌린 모형 결과. 덱에서 \"B. 시뮬레이션\"으로 표기",
+      "printed_on": [
+        "p3-bar"
+      ]
+    },
+    {
+      "id": "R38085_STEP8",
+      "kind": "model_output",
+      "metric": "조기상환 확률",
+      "text": "제38085회 8차 상환 확률",
+      "value": 0.7,
+      "unit": "%",
+      "series": "자체 몬테카를로 (공시 변동성·상관계수 입력, 100,000 경로, 대조변량, 시드 고정)",
+      "as_of": "2026-08-28",
+      "tier": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260828000836",
+      "verdict": "confirmed",
+      "render": "assert",
+      "note": "공시된 값이 아니라 공시 입력으로 재현 가능하게 돌린 모형 결과. 덱에서 \"B. 시뮬레이션\"으로 표기",
+      "printed_on": [
+        "p3-bar"
+      ]
+    },
+    {
+      "id": "R38085_STEP9",
+      "kind": "model_output",
+      "metric": "조기상환 확률",
+      "text": "제38085회 9차 상환 확률",
+      "value": 0.6,
+      "unit": "%",
+      "series": "자체 몬테카를로 (공시 변동성·상관계수 입력, 100,000 경로, 대조변량, 시드 고정)",
+      "as_of": "2026-08-28",
+      "tier": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260828000836",
+      "verdict": "confirmed",
+      "render": "assert",
+      "note": "공시된 값이 아니라 공시 입력으로 재현 가능하게 돌린 모형 결과. 덱에서 \"B. 시뮬레이션\"으로 표기",
+      "printed_on": [
+        "p3-bar"
+      ]
+    },
+    {
+      "id": "R38085_STEP10",
+      "kind": "model_output",
+      "metric": "조기상환 확률",
+      "text": "제38085회 10차 상환 확률",
+      "value": 0.7,
+      "unit": "%",
+      "series": "자체 몬테카를로 (공시 변동성·상관계수 입력, 100,000 경로, 대조변량, 시드 고정)",
+      "as_of": "2026-08-28",
+      "tier": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260828000836",
+      "verdict": "confirmed",
+      "render": "assert",
+      "note": "공시된 값이 아니라 공시 입력으로 재현 가능하게 돌린 모형 결과. 덱에서 \"B. 시뮬레이션\"으로 표기",
+      "printed_on": [
+        "p3-bar"
+      ]
+    },
+    {
+      "id": "R38085_STEP11",
+      "kind": "model_output",
+      "metric": "조기상환 확률",
+      "text": "제38085회 11차 상환 확률",
+      "value": 0.7,
+      "unit": "%",
+      "series": "자체 몬테카를로 (공시 변동성·상관계수 입력, 100,000 경로, 대조변량, 시드 고정)",
+      "as_of": "2026-08-28",
+      "tier": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260828000836",
+      "verdict": "confirmed",
+      "render": "assert",
+      "note": "공시된 값이 아니라 공시 입력으로 재현 가능하게 돌린 모형 결과. 덱에서 \"B. 시뮬레이션\"으로 표기",
+      "printed_on": [
+        "p3-bar"
+      ]
+    },
+    {
+      "id": "R38085_STEP12",
+      "kind": "model_output",
+      "metric": "조기상환 확률",
+      "text": "제38085회 12차(만기) 상환 확률",
+      "value": 17.6,
+      "unit": "%",
+      "series": "자체 몬테카를로 (공시 변동성·상관계수 입력, 100,000 경로, 대조변량, 시드 고정)",
+      "as_of": "2026-08-28",
+      "tier": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260828000836",
+      "verdict": "confirmed",
+      "render": "assert",
+      "note": "공시된 값이 아니라 공시 입력으로 재현 가능하게 돌린 모형 결과. 덱에서 \"B. 시뮬레이션\"으로 표기",
+      "printed_on": [
+        "p2-row-38085",
+        "p3-bar"
+      ]
+    },
+    {
+      "id": "R38085_STEPMID",
+      "kind": "model_output",
+      "metric": "조기상환 확률",
+      "text": "제38085회 2~11차 상환 확률 합계",
+      "value": 20.6,
+      "unit": "%",
+      "series": "자체 몬테카를로 (공시 변동성·상관계수 입력, 100,000 경로, 대조변량, 시드 고정)",
+      "as_of": "2026-08-28",
+      "tier": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260828000836",
+      "verdict": "confirmed",
+      "render": "assert",
+      "note": "공시된 값이 아니라 공시 입력으로 재현 가능하게 돌린 모형 결과. 덱에서 \"B. 시뮬레이션\"으로 표기",
+      "printed_on": [
+        "p3-bar"
       ]
     },
     {
@@ -5103,9 +7782,9 @@
       "kind": "model_output",
       "metric": "손실 시 평균 손실 크기",
       "text": "제38085회 손실이 났을 때 잃는 평균 크기",
-      "value": 75.4,
+      "value": 75.5,
       "unit": "%",
-      "series": "자체 몬테카를로 (공시 변동성·상관계수 입력, 40,000 경로, 시드 고정)",
+      "series": "자체 몬테카를로 (공시 변동성·상관계수 입력, 100,000 경로, 대조변량, 시드 고정)",
       "as_of": "2026-08-28",
       "tier": 1,
       "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260828000836",
@@ -5360,9 +8039,9 @@
       "kind": "model_output",
       "metric": "손실 확률",
       "text": "제38086회 만기 손실 확률 (B)",
-      "value": 30.9,
+      "value": 30.2,
       "unit": "%",
-      "series": "자체 몬테카를로 (공시 변동성·상관계수 입력, 40,000 경로, 시드 고정)",
+      "series": "자체 몬테카를로 (공시 변동성·상관계수 입력, 100,000 경로, 대조변량, 시드 고정)",
       "as_of": "2026-08-28",
       "tier": 1,
       "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260828000836",
@@ -5371,6 +8050,152 @@
       "note": "공시된 값이 아니라 공시 입력으로 재현 가능하게 돌린 모형 결과. 덱에서 \"B. 시뮬레이션\"으로 표기",
       "printed_on": [
         "p2-row-38086"
+      ]
+    },
+    {
+      "id": "R38086_MCCI",
+      "kind": "model_output",
+      "metric": "손실 확률 신뢰구간",
+      "text": "제38086회 손실 확률의 95% 신뢰구간 반폭",
+      "value": 0.26,
+      "unit": "%p",
+      "series": "자체 몬테카를로 (공시 변동성·상관계수 입력, 100,000 경로, 대조변량, 시드 고정)",
+      "as_of": "2026-08-28",
+      "tier": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260828000836",
+      "verdict": "confirmed",
+      "render": "assert",
+      "note": "경로 100,000개, 대조변량 적용. 배치 평균으로 낸 표준오차의 1.96배",
+      "printed_on": [
+        "p2-row-38086"
+      ]
+    },
+    {
+      "id": "R38086_STEP1",
+      "kind": "model_output",
+      "metric": "조기상환 확률",
+      "text": "제38086회 1차 상환 확률",
+      "value": 49.6,
+      "unit": "%",
+      "series": "자체 몬테카를로 (공시 변동성·상관계수 입력, 100,000 경로, 대조변량, 시드 고정)",
+      "as_of": "2026-08-28",
+      "tier": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260828000836",
+      "verdict": "confirmed",
+      "render": "assert",
+      "note": "공시된 값이 아니라 공시 입력으로 재현 가능하게 돌린 모형 결과. 덱에서 \"B. 시뮬레이션\"으로 표기",
+      "printed_on": [
+        "p2-row-38086",
+        "p3-bar"
+      ]
+    },
+    {
+      "id": "R38086_STEP2",
+      "kind": "model_output",
+      "metric": "조기상환 확률",
+      "text": "제38086회 2차 상환 확률",
+      "value": 7.7,
+      "unit": "%",
+      "series": "자체 몬테카를로 (공시 변동성·상관계수 입력, 100,000 경로, 대조변량, 시드 고정)",
+      "as_of": "2026-08-28",
+      "tier": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260828000836",
+      "verdict": "confirmed",
+      "render": "assert",
+      "note": "공시된 값이 아니라 공시 입력으로 재현 가능하게 돌린 모형 결과. 덱에서 \"B. 시뮬레이션\"으로 표기",
+      "printed_on": [
+        "p3-bar"
+      ]
+    },
+    {
+      "id": "R38086_STEP3",
+      "kind": "model_output",
+      "metric": "조기상환 확률",
+      "text": "제38086회 3차 상환 확률",
+      "value": 3.4,
+      "unit": "%",
+      "series": "자체 몬테카를로 (공시 변동성·상관계수 입력, 100,000 경로, 대조변량, 시드 고정)",
+      "as_of": "2026-08-28",
+      "tier": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260828000836",
+      "verdict": "confirmed",
+      "render": "assert",
+      "note": "공시된 값이 아니라 공시 입력으로 재현 가능하게 돌린 모형 결과. 덱에서 \"B. 시뮬레이션\"으로 표기",
+      "printed_on": [
+        "p3-bar"
+      ]
+    },
+    {
+      "id": "R38086_STEP4",
+      "kind": "model_output",
+      "metric": "조기상환 확률",
+      "text": "제38086회 4차 상환 확률",
+      "value": 2,
+      "unit": "%",
+      "series": "자체 몬테카를로 (공시 변동성·상관계수 입력, 100,000 경로, 대조변량, 시드 고정)",
+      "as_of": "2026-08-28",
+      "tier": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260828000836",
+      "verdict": "confirmed",
+      "render": "assert",
+      "note": "공시된 값이 아니라 공시 입력으로 재현 가능하게 돌린 모형 결과. 덱에서 \"B. 시뮬레이션\"으로 표기",
+      "printed_on": [
+        "p3-bar"
+      ]
+    },
+    {
+      "id": "R38086_STEP5",
+      "kind": "model_output",
+      "metric": "조기상환 확률",
+      "text": "제38086회 5차 상환 확률",
+      "value": 1.7,
+      "unit": "%",
+      "series": "자체 몬테카를로 (공시 변동성·상관계수 입력, 100,000 경로, 대조변량, 시드 고정)",
+      "as_of": "2026-08-28",
+      "tier": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260828000836",
+      "verdict": "confirmed",
+      "render": "assert",
+      "note": "공시된 값이 아니라 공시 입력으로 재현 가능하게 돌린 모형 결과. 덱에서 \"B. 시뮬레이션\"으로 표기",
+      "printed_on": [
+        "p3-bar"
+      ]
+    },
+    {
+      "id": "R38086_STEP6",
+      "kind": "model_output",
+      "metric": "조기상환 확률",
+      "text": "제38086회 6차(만기) 상환 확률",
+      "value": 35.5,
+      "unit": "%",
+      "series": "자체 몬테카를로 (공시 변동성·상관계수 입력, 100,000 경로, 대조변량, 시드 고정)",
+      "as_of": "2026-08-28",
+      "tier": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260828000836",
+      "verdict": "confirmed",
+      "render": "assert",
+      "note": "공시된 값이 아니라 공시 입력으로 재현 가능하게 돌린 모형 결과. 덱에서 \"B. 시뮬레이션\"으로 표기",
+      "printed_on": [
+        "p2-row-38086",
+        "p3-bar"
+      ]
+    },
+    {
+      "id": "R38086_STEPMID",
+      "kind": "model_output",
+      "metric": "조기상환 확률",
+      "text": "제38086회 2~5차 상환 확률 합계",
+      "value": 14.8,
+      "unit": "%",
+      "series": "자체 몬테카를로 (공시 변동성·상관계수 입력, 100,000 경로, 대조변량, 시드 고정)",
+      "as_of": "2026-08-28",
+      "tier": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260828000836",
+      "verdict": "confirmed",
+      "render": "assert",
+      "note": "공시된 값이 아니라 공시 입력으로 재현 가능하게 돌린 모형 결과. 덱에서 \"B. 시뮬레이션\"으로 표기",
+      "printed_on": [
+        "p3-bar"
       ]
     },
     {
@@ -5414,9 +8239,9 @@
       "kind": "model_output",
       "metric": "손실 시 평균 손실 크기",
       "text": "제38086회 손실이 났을 때 잃는 평균 크기",
-      "value": 80.4,
+      "value": 80.3,
       "unit": "%",
-      "series": "자체 몬테카를로 (공시 변동성·상관계수 입력, 40,000 경로, 시드 고정)",
+      "series": "자체 몬테카를로 (공시 변동성·상관계수 입력, 100,000 경로, 대조변량, 시드 고정)",
       "as_of": "2026-08-28",
       "tier": 1,
       "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260828000836",
@@ -5671,9 +8496,9 @@
       "kind": "model_output",
       "metric": "손실 확률",
       "text": "제38087회 만기 손실 확률 (B)",
-      "value": 50.4,
+      "value": 49.4,
       "unit": "%",
-      "series": "자체 몬테카를로 (공시 변동성·상관계수 입력, 40,000 경로, 시드 고정)",
+      "series": "자체 몬테카를로 (공시 변동성·상관계수 입력, 100,000 경로, 대조변량, 시드 고정)",
       "as_of": "2026-08-28",
       "tier": 1,
       "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260828000836",
@@ -5682,6 +8507,152 @@
       "note": "공시된 값이 아니라 공시 입력으로 재현 가능하게 돌린 모형 결과. 덱에서 \"B. 시뮬레이션\"으로 표기",
       "printed_on": [
         "p2-row-38087"
+      ]
+    },
+    {
+      "id": "R38087_MCCI",
+      "kind": "model_output",
+      "metric": "손실 확률 신뢰구간",
+      "text": "제38087회 손실 확률의 95% 신뢰구간 반폭",
+      "value": 0.25,
+      "unit": "%p",
+      "series": "자체 몬테카를로 (공시 변동성·상관계수 입력, 100,000 경로, 대조변량, 시드 고정)",
+      "as_of": "2026-08-28",
+      "tier": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260828000836",
+      "verdict": "confirmed",
+      "render": "assert",
+      "note": "경로 100,000개, 대조변량 적용. 배치 평균으로 낸 표준오차의 1.96배",
+      "printed_on": [
+        "p2-row-38087"
+      ]
+    },
+    {
+      "id": "R38087_STEP1",
+      "kind": "model_output",
+      "metric": "조기상환 확률",
+      "text": "제38087회 1차 상환 확률",
+      "value": 35.5,
+      "unit": "%",
+      "series": "자체 몬테카를로 (공시 변동성·상관계수 입력, 100,000 경로, 대조변량, 시드 고정)",
+      "as_of": "2026-08-28",
+      "tier": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260828000836",
+      "verdict": "confirmed",
+      "render": "assert",
+      "note": "공시된 값이 아니라 공시 입력으로 재현 가능하게 돌린 모형 결과. 덱에서 \"B. 시뮬레이션\"으로 표기",
+      "printed_on": [
+        "p2-row-38087",
+        "p3-bar"
+      ]
+    },
+    {
+      "id": "R38087_STEP2",
+      "kind": "model_output",
+      "metric": "조기상환 확률",
+      "text": "제38087회 2차 상환 확률",
+      "value": 6.9,
+      "unit": "%",
+      "series": "자체 몬테카를로 (공시 변동성·상관계수 입력, 100,000 경로, 대조변량, 시드 고정)",
+      "as_of": "2026-08-28",
+      "tier": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260828000836",
+      "verdict": "confirmed",
+      "render": "assert",
+      "note": "공시된 값이 아니라 공시 입력으로 재현 가능하게 돌린 모형 결과. 덱에서 \"B. 시뮬레이션\"으로 표기",
+      "printed_on": [
+        "p3-bar"
+      ]
+    },
+    {
+      "id": "R38087_STEP3",
+      "kind": "model_output",
+      "metric": "조기상환 확률",
+      "text": "제38087회 3차 상환 확률",
+      "value": 3.1,
+      "unit": "%",
+      "series": "자체 몬테카를로 (공시 변동성·상관계수 입력, 100,000 경로, 대조변량, 시드 고정)",
+      "as_of": "2026-08-28",
+      "tier": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260828000836",
+      "verdict": "confirmed",
+      "render": "assert",
+      "note": "공시된 값이 아니라 공시 입력으로 재현 가능하게 돌린 모형 결과. 덱에서 \"B. 시뮬레이션\"으로 표기",
+      "printed_on": [
+        "p3-bar"
+      ]
+    },
+    {
+      "id": "R38087_STEP4",
+      "kind": "model_output",
+      "metric": "조기상환 확률",
+      "text": "제38087회 4차 상환 확률",
+      "value": 1.7,
+      "unit": "%",
+      "series": "자체 몬테카를로 (공시 변동성·상관계수 입력, 100,000 경로, 대조변량, 시드 고정)",
+      "as_of": "2026-08-28",
+      "tier": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260828000836",
+      "verdict": "confirmed",
+      "render": "assert",
+      "note": "공시된 값이 아니라 공시 입력으로 재현 가능하게 돌린 모형 결과. 덱에서 \"B. 시뮬레이션\"으로 표기",
+      "printed_on": [
+        "p3-bar"
+      ]
+    },
+    {
+      "id": "R38087_STEP5",
+      "kind": "model_output",
+      "metric": "조기상환 확률",
+      "text": "제38087회 5차 상환 확률",
+      "value": 1.4,
+      "unit": "%",
+      "series": "자체 몬테카를로 (공시 변동성·상관계수 입력, 100,000 경로, 대조변량, 시드 고정)",
+      "as_of": "2026-08-28",
+      "tier": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260828000836",
+      "verdict": "confirmed",
+      "render": "assert",
+      "note": "공시된 값이 아니라 공시 입력으로 재현 가능하게 돌린 모형 결과. 덱에서 \"B. 시뮬레이션\"으로 표기",
+      "printed_on": [
+        "p3-bar"
+      ]
+    },
+    {
+      "id": "R38087_STEP6",
+      "kind": "model_output",
+      "metric": "조기상환 확률",
+      "text": "제38087회 6차(만기) 상환 확률",
+      "value": 51.4,
+      "unit": "%",
+      "series": "자체 몬테카를로 (공시 변동성·상관계수 입력, 100,000 경로, 대조변량, 시드 고정)",
+      "as_of": "2026-08-28",
+      "tier": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260828000836",
+      "verdict": "confirmed",
+      "render": "assert",
+      "note": "공시된 값이 아니라 공시 입력으로 재현 가능하게 돌린 모형 결과. 덱에서 \"B. 시뮬레이션\"으로 표기",
+      "printed_on": [
+        "p2-row-38087",
+        "p3-bar"
+      ]
+    },
+    {
+      "id": "R38087_STEPMID",
+      "kind": "model_output",
+      "metric": "조기상환 확률",
+      "text": "제38087회 2~5차 상환 확률 합계",
+      "value": 13.1,
+      "unit": "%",
+      "series": "자체 몬테카를로 (공시 변동성·상관계수 입력, 100,000 경로, 대조변량, 시드 고정)",
+      "as_of": "2026-08-28",
+      "tier": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260828000836",
+      "verdict": "confirmed",
+      "render": "assert",
+      "note": "공시된 값이 아니라 공시 입력으로 재현 가능하게 돌린 모형 결과. 덱에서 \"B. 시뮬레이션\"으로 표기",
+      "printed_on": [
+        "p3-bar"
       ]
     },
     {
@@ -5727,7 +8698,7 @@
       "text": "제38087회 손실이 났을 때 잃는 평균 크기",
       "value": 86.8,
       "unit": "%",
-      "series": "자체 몬테카를로 (공시 변동성·상관계수 입력, 40,000 경로, 시드 고정)",
+      "series": "자체 몬테카를로 (공시 변동성·상관계수 입력, 100,000 경로, 대조변량, 시드 고정)",
       "as_of": "2026-08-28",
       "tier": 1,
       "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260828000836",
@@ -5981,9 +8952,9 @@
       "kind": "model_output",
       "metric": "손실 확률",
       "text": "제38088회 만기 손실 확률 (B)",
-      "value": 44,
+      "value": 43,
       "unit": "%",
-      "series": "자체 몬테카를로 (공시 변동성·상관계수 입력, 40,000 경로, 시드 고정)",
+      "series": "자체 몬테카를로 (공시 변동성·상관계수 입력, 100,000 경로, 대조변량, 시드 고정)",
       "as_of": "2026-08-28",
       "tier": 1,
       "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260828000836",
@@ -5992,6 +8963,152 @@
       "note": "공시된 값이 아니라 공시 입력으로 재현 가능하게 돌린 모형 결과. 덱에서 \"B. 시뮬레이션\"으로 표기",
       "printed_on": [
         "p2-row-38088"
+      ]
+    },
+    {
+      "id": "R38088_MCCI",
+      "kind": "model_output",
+      "metric": "손실 확률 신뢰구간",
+      "text": "제38088회 손실 확률의 95% 신뢰구간 반폭",
+      "value": 0.24,
+      "unit": "%p",
+      "series": "자체 몬테카를로 (공시 변동성·상관계수 입력, 100,000 경로, 대조변량, 시드 고정)",
+      "as_of": "2026-08-28",
+      "tier": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260828000836",
+      "verdict": "confirmed",
+      "render": "assert",
+      "note": "경로 100,000개, 대조변량 적용. 배치 평균으로 낸 표준오차의 1.96배",
+      "printed_on": [
+        "p2-row-38088"
+      ]
+    },
+    {
+      "id": "R38088_STEP1",
+      "kind": "model_output",
+      "metric": "조기상환 확률",
+      "text": "제38088회 1차 상환 확률",
+      "value": 39.3,
+      "unit": "%",
+      "series": "자체 몬테카를로 (공시 변동성·상관계수 입력, 100,000 경로, 대조변량, 시드 고정)",
+      "as_of": "2026-08-28",
+      "tier": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260828000836",
+      "verdict": "confirmed",
+      "render": "assert",
+      "note": "공시된 값이 아니라 공시 입력으로 재현 가능하게 돌린 모형 결과. 덱에서 \"B. 시뮬레이션\"으로 표기",
+      "printed_on": [
+        "p2-row-38088",
+        "p3-bar"
+      ]
+    },
+    {
+      "id": "R38088_STEP2",
+      "kind": "model_output",
+      "metric": "조기상환 확률",
+      "text": "제38088회 2차 상환 확률",
+      "value": 7.7,
+      "unit": "%",
+      "series": "자체 몬테카를로 (공시 변동성·상관계수 입력, 100,000 경로, 대조변량, 시드 고정)",
+      "as_of": "2026-08-28",
+      "tier": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260828000836",
+      "verdict": "confirmed",
+      "render": "assert",
+      "note": "공시된 값이 아니라 공시 입력으로 재현 가능하게 돌린 모형 결과. 덱에서 \"B. 시뮬레이션\"으로 표기",
+      "printed_on": [
+        "p3-bar"
+      ]
+    },
+    {
+      "id": "R38088_STEP3",
+      "kind": "model_output",
+      "metric": "조기상환 확률",
+      "text": "제38088회 3차 상환 확률",
+      "value": 4.3,
+      "unit": "%",
+      "series": "자체 몬테카를로 (공시 변동성·상관계수 입력, 100,000 경로, 대조변량, 시드 고정)",
+      "as_of": "2026-08-28",
+      "tier": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260828000836",
+      "verdict": "confirmed",
+      "render": "assert",
+      "note": "공시된 값이 아니라 공시 입력으로 재현 가능하게 돌린 모형 결과. 덱에서 \"B. 시뮬레이션\"으로 표기",
+      "printed_on": [
+        "p3-bar"
+      ]
+    },
+    {
+      "id": "R38088_STEP4",
+      "kind": "model_output",
+      "metric": "조기상환 확률",
+      "text": "제38088회 4차 상환 확률",
+      "value": 2.3,
+      "unit": "%",
+      "series": "자체 몬테카를로 (공시 변동성·상관계수 입력, 100,000 경로, 대조변량, 시드 고정)",
+      "as_of": "2026-08-28",
+      "tier": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260828000836",
+      "verdict": "confirmed",
+      "render": "assert",
+      "note": "공시된 값이 아니라 공시 입력으로 재현 가능하게 돌린 모형 결과. 덱에서 \"B. 시뮬레이션\"으로 표기",
+      "printed_on": [
+        "p3-bar"
+      ]
+    },
+    {
+      "id": "R38088_STEP5",
+      "kind": "model_output",
+      "metric": "조기상환 확률",
+      "text": "제38088회 5차 상환 확률",
+      "value": 1.8,
+      "unit": "%",
+      "series": "자체 몬테카를로 (공시 변동성·상관계수 입력, 100,000 경로, 대조변량, 시드 고정)",
+      "as_of": "2026-08-28",
+      "tier": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260828000836",
+      "verdict": "confirmed",
+      "render": "assert",
+      "note": "공시된 값이 아니라 공시 입력으로 재현 가능하게 돌린 모형 결과. 덱에서 \"B. 시뮬레이션\"으로 표기",
+      "printed_on": [
+        "p3-bar"
+      ]
+    },
+    {
+      "id": "R38088_STEP6",
+      "kind": "model_output",
+      "metric": "조기상환 확률",
+      "text": "제38088회 6차(만기) 상환 확률",
+      "value": 44.6,
+      "unit": "%",
+      "series": "자체 몬테카를로 (공시 변동성·상관계수 입력, 100,000 경로, 대조변량, 시드 고정)",
+      "as_of": "2026-08-28",
+      "tier": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260828000836",
+      "verdict": "confirmed",
+      "render": "assert",
+      "note": "공시된 값이 아니라 공시 입력으로 재현 가능하게 돌린 모형 결과. 덱에서 \"B. 시뮬레이션\"으로 표기",
+      "printed_on": [
+        "p2-row-38088",
+        "p3-bar"
+      ]
+    },
+    {
+      "id": "R38088_STEPMID",
+      "kind": "model_output",
+      "metric": "조기상환 확률",
+      "text": "제38088회 2~5차 상환 확률 합계",
+      "value": 16,
+      "unit": "%",
+      "series": "자체 몬테카를로 (공시 변동성·상관계수 입력, 100,000 경로, 대조변량, 시드 고정)",
+      "as_of": "2026-08-28",
+      "tier": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260828000836",
+      "verdict": "confirmed",
+      "render": "assert",
+      "note": "공시된 값이 아니라 공시 입력으로 재현 가능하게 돌린 모형 결과. 덱에서 \"B. 시뮬레이션\"으로 표기",
+      "printed_on": [
+        "p3-bar"
       ]
     },
     {
@@ -6037,7 +9154,7 @@
       "text": "제38088회 손실이 났을 때 잃는 평균 크기",
       "value": 85.9,
       "unit": "%",
-      "series": "자체 몬테카를로 (공시 변동성·상관계수 입력, 40,000 경로, 시드 고정)",
+      "series": "자체 몬테카를로 (공시 변동성·상관계수 입력, 100,000 경로, 대조변량, 시드 고정)",
       "as_of": "2026-08-28",
       "tier": 1,
       "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260828000836",
@@ -6291,9 +9408,9 @@
       "kind": "model_output",
       "metric": "손실 확률",
       "text": "제38089회 만기 손실 확률 (B)",
-      "value": 43.4,
+      "value": 42.4,
       "unit": "%",
-      "series": "자체 몬테카를로 (공시 변동성·상관계수 입력, 40,000 경로, 시드 고정)",
+      "series": "자체 몬테카를로 (공시 변동성·상관계수 입력, 100,000 경로, 대조변량, 시드 고정)",
       "as_of": "2026-08-28",
       "tier": 1,
       "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260828000836",
@@ -6302,6 +9419,152 @@
       "note": "공시된 값이 아니라 공시 입력으로 재현 가능하게 돌린 모형 결과. 덱에서 \"B. 시뮬레이션\"으로 표기",
       "printed_on": [
         "p2-row-38089"
+      ]
+    },
+    {
+      "id": "R38089_MCCI",
+      "kind": "model_output",
+      "metric": "손실 확률 신뢰구간",
+      "text": "제38089회 손실 확률의 95% 신뢰구간 반폭",
+      "value": 0.19,
+      "unit": "%p",
+      "series": "자체 몬테카를로 (공시 변동성·상관계수 입력, 100,000 경로, 대조변량, 시드 고정)",
+      "as_of": "2026-08-28",
+      "tier": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260828000836",
+      "verdict": "confirmed",
+      "render": "assert",
+      "note": "경로 100,000개, 대조변량 적용. 배치 평균으로 낸 표준오차의 1.96배",
+      "printed_on": [
+        "p2-row-38089"
+      ]
+    },
+    {
+      "id": "R38089_STEP1",
+      "kind": "model_output",
+      "metric": "조기상환 확률",
+      "text": "제38089회 1차 상환 확률",
+      "value": 42.4,
+      "unit": "%",
+      "series": "자체 몬테카를로 (공시 변동성·상관계수 입력, 100,000 경로, 대조변량, 시드 고정)",
+      "as_of": "2026-08-28",
+      "tier": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260828000836",
+      "verdict": "confirmed",
+      "render": "assert",
+      "note": "공시된 값이 아니라 공시 입력으로 재현 가능하게 돌린 모형 결과. 덱에서 \"B. 시뮬레이션\"으로 표기",
+      "printed_on": [
+        "p2-row-38089",
+        "p3-bar"
+      ]
+    },
+    {
+      "id": "R38089_STEP2",
+      "kind": "model_output",
+      "metric": "조기상환 확률",
+      "text": "제38089회 2차 상환 확률",
+      "value": 7.4,
+      "unit": "%",
+      "series": "자체 몬테카를로 (공시 변동성·상관계수 입력, 100,000 경로, 대조변량, 시드 고정)",
+      "as_of": "2026-08-28",
+      "tier": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260828000836",
+      "verdict": "confirmed",
+      "render": "assert",
+      "note": "공시된 값이 아니라 공시 입력으로 재현 가능하게 돌린 모형 결과. 덱에서 \"B. 시뮬레이션\"으로 표기",
+      "printed_on": [
+        "p3-bar"
+      ]
+    },
+    {
+      "id": "R38089_STEP3",
+      "kind": "model_output",
+      "metric": "조기상환 확률",
+      "text": "제38089회 3차 상환 확률",
+      "value": 3.3,
+      "unit": "%",
+      "series": "자체 몬테카를로 (공시 변동성·상관계수 입력, 100,000 경로, 대조변량, 시드 고정)",
+      "as_of": "2026-08-28",
+      "tier": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260828000836",
+      "verdict": "confirmed",
+      "render": "assert",
+      "note": "공시된 값이 아니라 공시 입력으로 재현 가능하게 돌린 모형 결과. 덱에서 \"B. 시뮬레이션\"으로 표기",
+      "printed_on": [
+        "p3-bar"
+      ]
+    },
+    {
+      "id": "R38089_STEP4",
+      "kind": "model_output",
+      "metric": "조기상환 확률",
+      "text": "제38089회 4차 상환 확률",
+      "value": 1.9,
+      "unit": "%",
+      "series": "자체 몬테카를로 (공시 변동성·상관계수 입력, 100,000 경로, 대조변량, 시드 고정)",
+      "as_of": "2026-08-28",
+      "tier": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260828000836",
+      "verdict": "confirmed",
+      "render": "assert",
+      "note": "공시된 값이 아니라 공시 입력으로 재현 가능하게 돌린 모형 결과. 덱에서 \"B. 시뮬레이션\"으로 표기",
+      "printed_on": [
+        "p3-bar"
+      ]
+    },
+    {
+      "id": "R38089_STEP5",
+      "kind": "model_output",
+      "metric": "조기상환 확률",
+      "text": "제38089회 5차 상환 확률",
+      "value": 1.5,
+      "unit": "%",
+      "series": "자체 몬테카를로 (공시 변동성·상관계수 입력, 100,000 경로, 대조변량, 시드 고정)",
+      "as_of": "2026-08-28",
+      "tier": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260828000836",
+      "verdict": "confirmed",
+      "render": "assert",
+      "note": "공시된 값이 아니라 공시 입력으로 재현 가능하게 돌린 모형 결과. 덱에서 \"B. 시뮬레이션\"으로 표기",
+      "printed_on": [
+        "p3-bar"
+      ]
+    },
+    {
+      "id": "R38089_STEP6",
+      "kind": "model_output",
+      "metric": "조기상환 확률",
+      "text": "제38089회 6차(만기) 상환 확률",
+      "value": 43.5,
+      "unit": "%",
+      "series": "자체 몬테카를로 (공시 변동성·상관계수 입력, 100,000 경로, 대조변량, 시드 고정)",
+      "as_of": "2026-08-28",
+      "tier": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260828000836",
+      "verdict": "confirmed",
+      "render": "assert",
+      "note": "공시된 값이 아니라 공시 입력으로 재현 가능하게 돌린 모형 결과. 덱에서 \"B. 시뮬레이션\"으로 표기",
+      "printed_on": [
+        "p2-row-38089",
+        "p3-bar"
+      ]
+    },
+    {
+      "id": "R38089_STEPMID",
+      "kind": "model_output",
+      "metric": "조기상환 확률",
+      "text": "제38089회 2~5차 상환 확률 합계",
+      "value": 14.1,
+      "unit": "%",
+      "series": "자체 몬테카를로 (공시 변동성·상관계수 입력, 100,000 경로, 대조변량, 시드 고정)",
+      "as_of": "2026-08-28",
+      "tier": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260828000836",
+      "verdict": "confirmed",
+      "render": "assert",
+      "note": "공시된 값이 아니라 공시 입력으로 재현 가능하게 돌린 모형 결과. 덱에서 \"B. 시뮬레이션\"으로 표기",
+      "printed_on": [
+        "p3-bar"
       ]
     },
     {
@@ -6345,9 +9608,9 @@
       "kind": "model_output",
       "metric": "손실 시 평균 손실 크기",
       "text": "제38089회 손실이 났을 때 잃는 평균 크기",
-      "value": 85.5,
+      "value": 85.6,
       "unit": "%",
-      "series": "자체 몬테카를로 (공시 변동성·상관계수 입력, 40,000 경로, 시드 고정)",
+      "series": "자체 몬테카를로 (공시 변동성·상관계수 입력, 100,000 경로, 대조변량, 시드 고정)",
       "as_of": "2026-08-28",
       "tier": 1,
       "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260828000836",
@@ -6364,9 +9627,9 @@
       "kind": "model_output",
       "metric": "손실 확률",
       "text": "권하지 않는 4종의 평균 손실 확률",
-      "value": 42.2,
+      "value": 41.3,
       "unit": "%",
-      "series": "자체 몬테카를로 (공시 변동성·상관계수 입력, 40,000 경로, 시드 고정)",
+      "series": "자체 몬테카를로 (공시 변동성·상관계수 입력, 100,000 경로, 대조변량, 시드 고정)",
       "as_of": "2026-08-28",
       "tier": 1,
       "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260828000836",
@@ -6382,9 +9645,9 @@
       "kind": "model_output",
       "metric": "손실 확률",
       "text": "나머지 16종의 평균 손실 확률",
-      "value": 16,
+      "value": 14.7,
       "unit": "%",
-      "series": "자체 몬테카를로 (공시 변동성·상관계수 입력, 40,000 경로, 시드 고정)",
+      "series": "자체 몬테카를로 (공시 변동성·상관계수 입력, 100,000 경로, 대조변량, 시드 고정)",
       "as_of": "2026-08-28",
       "tier": 1,
       "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260828000836",
@@ -6402,7 +9665,7 @@
       "text": "권하지 않는 4종의 평균 손실 크기",
       "value": 84.6,
       "unit": "%",
-      "series": "자체 몬테카를로 (공시 변동성·상관계수 입력, 40,000 경로, 시드 고정)",
+      "series": "자체 몬테카를로 (공시 변동성·상관계수 입력, 100,000 경로, 대조변량, 시드 고정)",
       "as_of": "2026-08-28",
       "tier": 1,
       "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260828000836",
@@ -6418,9 +9681,9 @@
       "kind": "model_output",
       "metric": "손실 확률",
       "text": "지수형 7종의 평균 손실 확률",
-      "value": 14.6,
+      "value": 12.3,
       "unit": "%",
-      "series": "자체 몬테카를로 (공시 변동성·상관계수 입력, 40,000 경로, 시드 고정)",
+      "series": "자체 몬테카를로 (공시 변동성·상관계수 입력, 100,000 경로, 대조변량, 시드 고정)",
       "as_of": "2026-08-28",
       "tier": 1,
       "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260828000836",
@@ -6436,9 +9699,9 @@
       "kind": "model_output",
       "metric": "손실 확률",
       "text": "혼합형 2종의 평균 손실 확률",
-      "value": 13,
+      "value": 12.5,
       "unit": "%",
-      "series": "자체 몬테카를로 (공시 변동성·상관계수 입력, 40,000 경로, 시드 고정)",
+      "series": "자체 몬테카를로 (공시 변동성·상관계수 입력, 100,000 경로, 대조변량, 시드 고정)",
       "as_of": "2026-08-28",
       "tier": 1,
       "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260828000836",
@@ -6452,9 +9715,9 @@
       "kind": "model_output",
       "metric": "손실 확률",
       "text": "종목형 11종의 평균 손실 확률",
-      "value": 27,
+      "value": 26.2,
       "unit": "%",
-      "series": "자체 몬테카를로 (공시 변동성·상관계수 입력, 40,000 경로, 시드 고정)",
+      "series": "자체 몬테카를로 (공시 변동성·상관계수 입력, 100,000 경로, 대조변량, 시드 고정)",
       "as_of": "2026-08-28",
       "tier": 1,
       "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260828000836",
@@ -6538,6 +9801,32 @@
   ],
   "derived": [
     {
+      "id": "D38070_STEPSUM",
+      "kind": "sum",
+      "terms": [
+        "R38070_STEP1",
+        "R38070_STEP2",
+        "R38070_STEP3",
+        "R38070_STEP4",
+        "R38070_STEP5",
+        "R38070_STEP6"
+      ],
+      "printed": 100,
+      "tolerance": 0.35
+    },
+    {
+      "id": "D38070_STEPMID",
+      "kind": "sum",
+      "terms": [
+        "R38070_STEP2",
+        "R38070_STEP3",
+        "R38070_STEP4",
+        "R38070_STEP5"
+      ],
+      "printed": 25.4,
+      "tolerance": 0.3
+    },
+    {
       "id": "D38070_KIDROP",
       "kind": "sum",
       "terms": [
@@ -6578,8 +9867,34 @@
       "kind": "ratio",
       "numerator": "R38070_RATE",
       "denominator": "R38070_MCLOSS",
-      "printed": 0.56,
+      "printed": 0.57,
       "tolerance": 0.01
+    },
+    {
+      "id": "D38071_STEPSUM",
+      "kind": "sum",
+      "terms": [
+        "R38071_STEP1",
+        "R38071_STEP2",
+        "R38071_STEP3",
+        "R38071_STEP4",
+        "R38071_STEP5",
+        "R38071_STEP6"
+      ],
+      "printed": 100,
+      "tolerance": 0.35
+    },
+    {
+      "id": "D38071_STEPMID",
+      "kind": "sum",
+      "terms": [
+        "R38071_STEP2",
+        "R38071_STEP3",
+        "R38071_STEP4",
+        "R38071_STEP5"
+      ],
+      "printed": 32.2,
+      "tolerance": 0.3
     },
     {
       "id": "D38071_MATDROP",
@@ -6612,8 +9927,34 @@
       "kind": "ratio",
       "numerator": "R38071_RATE",
       "denominator": "R38071_MCLOSS",
-      "printed": 0.71,
+      "printed": 7.5,
       "tolerance": 0.01
+    },
+    {
+      "id": "D38072_STEPSUM",
+      "kind": "sum",
+      "terms": [
+        "R38072_STEP1",
+        "R38072_STEP2",
+        "R38072_STEP3",
+        "R38072_STEP4",
+        "R38072_STEP5",
+        "R38072_STEP6"
+      ],
+      "printed": 100,
+      "tolerance": 0.35
+    },
+    {
+      "id": "D38072_STEPMID",
+      "kind": "sum",
+      "terms": [
+        "R38072_STEP2",
+        "R38072_STEP3",
+        "R38072_STEP4",
+        "R38072_STEP5"
+      ],
+      "printed": 15.6,
+      "tolerance": 0.3
     },
     {
       "id": "D38072_KIDROP",
@@ -6656,8 +9997,34 @@
       "kind": "ratio",
       "numerator": "R38072_RATE",
       "denominator": "R38072_MCLOSS",
-      "printed": 1.4,
+      "printed": 1.46,
       "tolerance": 0.01
+    },
+    {
+      "id": "D38073_STEPSUM",
+      "kind": "sum",
+      "terms": [
+        "R38073_STEP1",
+        "R38073_STEP2",
+        "R38073_STEP3",
+        "R38073_STEP4",
+        "R38073_STEP5",
+        "R38073_STEP6"
+      ],
+      "printed": 100,
+      "tolerance": 0.35
+    },
+    {
+      "id": "D38073_STEPMID",
+      "kind": "sum",
+      "terms": [
+        "R38073_STEP2",
+        "R38073_STEP3",
+        "R38073_STEP4",
+        "R38073_STEP5"
+      ],
+      "printed": 19,
+      "tolerance": 0.3
     },
     {
       "id": "D38073_KIDROP",
@@ -6700,8 +10067,34 @@
       "kind": "ratio",
       "numerator": "R38073_RATE",
       "denominator": "R38073_MCLOSS",
-      "printed": 1.26,
+      "printed": 1.29,
       "tolerance": 0.01
+    },
+    {
+      "id": "D38074_STEPSUM",
+      "kind": "sum",
+      "terms": [
+        "R38074_STEP1",
+        "R38074_STEP2",
+        "R38074_STEP3",
+        "R38074_STEP4",
+        "R38074_STEP5",
+        "R38074_STEP6"
+      ],
+      "printed": 100,
+      "tolerance": 0.35
+    },
+    {
+      "id": "D38074_STEPMID",
+      "kind": "sum",
+      "terms": [
+        "R38074_STEP2",
+        "R38074_STEP3",
+        "R38074_STEP4",
+        "R38074_STEP5"
+      ],
+      "printed": 17.6,
+      "tolerance": 0.3
     },
     {
       "id": "D38074_MATDROP",
@@ -6734,8 +10127,34 @@
       "kind": "ratio",
       "numerator": "R38074_RATE",
       "denominator": "R38074_MCLOSS",
-      "printed": 1.04,
+      "printed": 1.1,
       "tolerance": 0.01
+    },
+    {
+      "id": "D38075_STEPSUM",
+      "kind": "sum",
+      "terms": [
+        "R38075_STEP1",
+        "R38075_STEP2",
+        "R38075_STEP3",
+        "R38075_STEP4",
+        "R38075_STEP5",
+        "R38075_STEP6"
+      ],
+      "printed": 100,
+      "tolerance": 0.35
+    },
+    {
+      "id": "D38075_STEPMID",
+      "kind": "sum",
+      "terms": [
+        "R38075_STEP2",
+        "R38075_STEP3",
+        "R38075_STEP4",
+        "R38075_STEP5"
+      ],
+      "printed": 18,
+      "tolerance": 0.3
     },
     {
       "id": "D38075_KIDROP",
@@ -6778,8 +10197,34 @@
       "kind": "ratio",
       "numerator": "R38075_RATE",
       "denominator": "R38075_MCLOSS",
-      "printed": 1.01,
+      "printed": 1.04,
       "tolerance": 0.01
+    },
+    {
+      "id": "D38076_STEPSUM",
+      "kind": "sum",
+      "terms": [
+        "R38076_STEP1",
+        "R38076_STEP2",
+        "R38076_STEP3",
+        "R38076_STEP4",
+        "R38076_STEP5",
+        "R38076_STEP6"
+      ],
+      "printed": 100,
+      "tolerance": 0.35
+    },
+    {
+      "id": "D38076_STEPMID",
+      "kind": "sum",
+      "terms": [
+        "R38076_STEP2",
+        "R38076_STEP3",
+        "R38076_STEP4",
+        "R38076_STEP5"
+      ],
+      "printed": 18.6,
+      "tolerance": 0.3
     },
     {
       "id": "D38076_KIDROP",
@@ -6822,8 +10267,34 @@
       "kind": "ratio",
       "numerator": "R38076_RATE",
       "denominator": "R38076_MCLOSS",
-      "printed": 1.39,
+      "printed": 1.43,
       "tolerance": 0.01
+    },
+    {
+      "id": "D38077_STEPSUM",
+      "kind": "sum",
+      "terms": [
+        "R38077_STEP1",
+        "R38077_STEP2",
+        "R38077_STEP3",
+        "R38077_STEP4",
+        "R38077_STEP5",
+        "R38077_STEP6"
+      ],
+      "printed": 100,
+      "tolerance": 0.35
+    },
+    {
+      "id": "D38077_STEPMID",
+      "kind": "sum",
+      "terms": [
+        "R38077_STEP2",
+        "R38077_STEP3",
+        "R38077_STEP4",
+        "R38077_STEP5"
+      ],
+      "printed": 14.1,
+      "tolerance": 0.3
     },
     {
       "id": "D38077_KIDROP",
@@ -6866,8 +10337,46 @@
       "kind": "ratio",
       "numerator": "R38077_RATE",
       "denominator": "R38077_MCLOSS",
-      "printed": 1.67,
+      "printed": 1.77,
       "tolerance": 0.01
+    },
+    {
+      "id": "D38078_STEPSUM",
+      "kind": "sum",
+      "terms": [
+        "R38078_STEP1",
+        "R38078_STEP2",
+        "R38078_STEP3",
+        "R38078_STEP4",
+        "R38078_STEP5",
+        "R38078_STEP6",
+        "R38078_STEP7",
+        "R38078_STEP8",
+        "R38078_STEP9",
+        "R38078_STEP10",
+        "R38078_STEP11",
+        "R38078_STEP12"
+      ],
+      "printed": 100,
+      "tolerance": 0.35
+    },
+    {
+      "id": "D38078_STEPMID",
+      "kind": "sum",
+      "terms": [
+        "R38078_STEP2",
+        "R38078_STEP3",
+        "R38078_STEP4",
+        "R38078_STEP5",
+        "R38078_STEP6",
+        "R38078_STEP7",
+        "R38078_STEP8",
+        "R38078_STEP9",
+        "R38078_STEP10",
+        "R38078_STEP11"
+      ],
+      "printed": 23.5,
+      "tolerance": 0.3
     },
     {
       "id": "D38078_KIDROP",
@@ -6910,8 +10419,34 @@
       "kind": "ratio",
       "numerator": "R38078_RATE",
       "denominator": "R38078_MCLOSS",
-      "printed": 2.61,
+      "printed": 2.69,
       "tolerance": 0.01
+    },
+    {
+      "id": "D38079_STEPSUM",
+      "kind": "sum",
+      "terms": [
+        "R38079_STEP1",
+        "R38079_STEP2",
+        "R38079_STEP3",
+        "R38079_STEP4",
+        "R38079_STEP5",
+        "R38079_STEP6"
+      ],
+      "printed": 100,
+      "tolerance": 0.35
+    },
+    {
+      "id": "D38079_STEPMID",
+      "kind": "sum",
+      "terms": [
+        "R38079_STEP2",
+        "R38079_STEP3",
+        "R38079_STEP4",
+        "R38079_STEP5"
+      ],
+      "printed": 13.6,
+      "tolerance": 0.3
     },
     {
       "id": "D38079_KIDROP",
@@ -6954,8 +10489,34 @@
       "kind": "ratio",
       "numerator": "R38079_RATE",
       "denominator": "R38079_MCLOSS",
-      "printed": 1.55,
+      "printed": 1.62,
       "tolerance": 0.01
+    },
+    {
+      "id": "D38080_STEPSUM",
+      "kind": "sum",
+      "terms": [
+        "R38080_STEP1",
+        "R38080_STEP2",
+        "R38080_STEP3",
+        "R38080_STEP4",
+        "R38080_STEP5",
+        "R38080_STEP6"
+      ],
+      "printed": 100,
+      "tolerance": 0.35
+    },
+    {
+      "id": "D38080_STEPMID",
+      "kind": "sum",
+      "terms": [
+        "R38080_STEP2",
+        "R38080_STEP3",
+        "R38080_STEP4",
+        "R38080_STEP5"
+      ],
+      "printed": 18.6,
+      "tolerance": 0.3
     },
     {
       "id": "D38080_KIDROP",
@@ -6998,8 +10559,46 @@
       "kind": "ratio",
       "numerator": "R38080_RATE",
       "denominator": "R38080_MCLOSS",
-      "printed": 1.41,
+      "printed": 1.45,
       "tolerance": 0.01
+    },
+    {
+      "id": "D38081_STEPSUM",
+      "kind": "sum",
+      "terms": [
+        "R38081_STEP1",
+        "R38081_STEP2",
+        "R38081_STEP3",
+        "R38081_STEP4",
+        "R38081_STEP5",
+        "R38081_STEP6",
+        "R38081_STEP7",
+        "R38081_STEP8",
+        "R38081_STEP9",
+        "R38081_STEP10",
+        "R38081_STEP11",
+        "R38081_STEP12"
+      ],
+      "printed": 100,
+      "tolerance": 0.35
+    },
+    {
+      "id": "D38081_STEPMID",
+      "kind": "sum",
+      "terms": [
+        "R38081_STEP2",
+        "R38081_STEP3",
+        "R38081_STEP4",
+        "R38081_STEP5",
+        "R38081_STEP6",
+        "R38081_STEP7",
+        "R38081_STEP8",
+        "R38081_STEP9",
+        "R38081_STEP10",
+        "R38081_STEP11"
+      ],
+      "printed": 20.6,
+      "tolerance": 0.3
     },
     {
       "id": "D38081_KIDROP",
@@ -7042,8 +10641,34 @@
       "kind": "ratio",
       "numerator": "R38081_RATE",
       "denominator": "R38081_MCLOSS",
-      "printed": 2.4,
+      "printed": 2.5,
       "tolerance": 0.01
+    },
+    {
+      "id": "D38082_STEPSUM",
+      "kind": "sum",
+      "terms": [
+        "R38082_STEP1",
+        "R38082_STEP2",
+        "R38082_STEP3",
+        "R38082_STEP4",
+        "R38082_STEP5",
+        "R38082_STEP6"
+      ],
+      "printed": 100,
+      "tolerance": 0.35
+    },
+    {
+      "id": "D38082_STEPMID",
+      "kind": "sum",
+      "terms": [
+        "R38082_STEP2",
+        "R38082_STEP3",
+        "R38082_STEP4",
+        "R38082_STEP5"
+      ],
+      "printed": 18.5,
+      "tolerance": 0.3
     },
     {
       "id": "D38082_KIDROP",
@@ -7086,8 +10711,34 @@
       "kind": "ratio",
       "numerator": "R38082_RATE",
       "denominator": "R38082_MCLOSS",
-      "printed": 0.81,
+      "printed": 0.84,
       "tolerance": 0.01
+    },
+    {
+      "id": "D38083_STEPSUM",
+      "kind": "sum",
+      "terms": [
+        "R38083_STEP1",
+        "R38083_STEP2",
+        "R38083_STEP3",
+        "R38083_STEP4",
+        "R38083_STEP5",
+        "R38083_STEP6"
+      ],
+      "printed": 100,
+      "tolerance": 0.35
+    },
+    {
+      "id": "D38083_STEPMID",
+      "kind": "sum",
+      "terms": [
+        "R38083_STEP2",
+        "R38083_STEP3",
+        "R38083_STEP4",
+        "R38083_STEP5"
+      ],
+      "printed": 13.6,
+      "tolerance": 0.3
     },
     {
       "id": "D38083_KIDROP",
@@ -7130,8 +10781,34 @@
       "kind": "ratio",
       "numerator": "R38083_RATE",
       "denominator": "R38083_MCLOSS",
-      "printed": 1.53,
+      "printed": 1.59,
       "tolerance": 0.01
+    },
+    {
+      "id": "D38084_STEPSUM",
+      "kind": "sum",
+      "terms": [
+        "R38084_STEP1",
+        "R38084_STEP2",
+        "R38084_STEP3",
+        "R38084_STEP4",
+        "R38084_STEP5",
+        "R38084_STEP6"
+      ],
+      "printed": 100,
+      "tolerance": 0.35
+    },
+    {
+      "id": "D38084_STEPMID",
+      "kind": "sum",
+      "terms": [
+        "R38084_STEP2",
+        "R38084_STEP3",
+        "R38084_STEP4",
+        "R38084_STEP5"
+      ],
+      "printed": 18.6,
+      "tolerance": 0.3
     },
     {
       "id": "D38084_KIDROP",
@@ -7174,8 +10851,46 @@
       "kind": "ratio",
       "numerator": "R38084_RATE",
       "denominator": "R38084_MCLOSS",
-      "printed": 1.36,
+      "printed": 1.39,
       "tolerance": 0.01
+    },
+    {
+      "id": "D38085_STEPSUM",
+      "kind": "sum",
+      "terms": [
+        "R38085_STEP1",
+        "R38085_STEP2",
+        "R38085_STEP3",
+        "R38085_STEP4",
+        "R38085_STEP5",
+        "R38085_STEP6",
+        "R38085_STEP7",
+        "R38085_STEP8",
+        "R38085_STEP9",
+        "R38085_STEP10",
+        "R38085_STEP11",
+        "R38085_STEP12"
+      ],
+      "printed": 100,
+      "tolerance": 0.35
+    },
+    {
+      "id": "D38085_STEPMID",
+      "kind": "sum",
+      "terms": [
+        "R38085_STEP2",
+        "R38085_STEP3",
+        "R38085_STEP4",
+        "R38085_STEP5",
+        "R38085_STEP6",
+        "R38085_STEP7",
+        "R38085_STEP8",
+        "R38085_STEP9",
+        "R38085_STEP10",
+        "R38085_STEP11"
+      ],
+      "printed": 20.6,
+      "tolerance": 0.3
     },
     {
       "id": "D38085_KIDROP",
@@ -7218,8 +10933,34 @@
       "kind": "ratio",
       "numerator": "R38085_RATE",
       "denominator": "R38085_MCLOSS",
-      "printed": 2.11,
+      "printed": 2.18,
       "tolerance": 0.01
+    },
+    {
+      "id": "D38086_STEPSUM",
+      "kind": "sum",
+      "terms": [
+        "R38086_STEP1",
+        "R38086_STEP2",
+        "R38086_STEP3",
+        "R38086_STEP4",
+        "R38086_STEP5",
+        "R38086_STEP6"
+      ],
+      "printed": 100,
+      "tolerance": 0.35
+    },
+    {
+      "id": "D38086_STEPMID",
+      "kind": "sum",
+      "terms": [
+        "R38086_STEP2",
+        "R38086_STEP3",
+        "R38086_STEP4",
+        "R38086_STEP5"
+      ],
+      "printed": 14.8,
+      "tolerance": 0.3
     },
     {
       "id": "D38086_KIDROP",
@@ -7262,8 +11003,34 @@
       "kind": "ratio",
       "numerator": "R38086_RATE",
       "denominator": "R38086_MCLOSS",
-      "printed": 0.52,
+      "printed": 0.53,
       "tolerance": 0.01
+    },
+    {
+      "id": "D38087_STEPSUM",
+      "kind": "sum",
+      "terms": [
+        "R38087_STEP1",
+        "R38087_STEP2",
+        "R38087_STEP3",
+        "R38087_STEP4",
+        "R38087_STEP5",
+        "R38087_STEP6"
+      ],
+      "printed": 100,
+      "tolerance": 0.35
+    },
+    {
+      "id": "D38087_STEPMID",
+      "kind": "sum",
+      "terms": [
+        "R38087_STEP2",
+        "R38087_STEP3",
+        "R38087_STEP4",
+        "R38087_STEP5"
+      ],
+      "printed": 13.1,
+      "tolerance": 0.3
     },
     {
       "id": "D38087_KIDROP",
@@ -7306,8 +11073,34 @@
       "kind": "ratio",
       "numerator": "R38087_RATE",
       "denominator": "R38087_MCLOSS",
-      "printed": 0.46,
+      "printed": 0.47,
       "tolerance": 0.01
+    },
+    {
+      "id": "D38088_STEPSUM",
+      "kind": "sum",
+      "terms": [
+        "R38088_STEP1",
+        "R38088_STEP2",
+        "R38088_STEP3",
+        "R38088_STEP4",
+        "R38088_STEP5",
+        "R38088_STEP6"
+      ],
+      "printed": 100,
+      "tolerance": 0.35
+    },
+    {
+      "id": "D38088_STEPMID",
+      "kind": "sum",
+      "terms": [
+        "R38088_STEP2",
+        "R38088_STEP3",
+        "R38088_STEP4",
+        "R38088_STEP5"
+      ],
+      "printed": 16,
+      "tolerance": 0.3
     },
     {
       "id": "D38088_KIDROP",
@@ -7350,8 +11143,34 @@
       "kind": "ratio",
       "numerator": "R38088_RATE",
       "denominator": "R38088_MCLOSS",
-      "printed": 0.56,
+      "printed": 0.57,
       "tolerance": 0.01
+    },
+    {
+      "id": "D38089_STEPSUM",
+      "kind": "sum",
+      "terms": [
+        "R38089_STEP1",
+        "R38089_STEP2",
+        "R38089_STEP3",
+        "R38089_STEP4",
+        "R38089_STEP5",
+        "R38089_STEP6"
+      ],
+      "printed": 100,
+      "tolerance": 0.35
+    },
+    {
+      "id": "D38089_STEPMID",
+      "kind": "sum",
+      "terms": [
+        "R38089_STEP2",
+        "R38089_STEP3",
+        "R38089_STEP4",
+        "R38089_STEP5"
+      ],
+      "printed": 14.1,
+      "tolerance": 0.3
     },
     {
       "id": "D38089_KIDROP",
@@ -7394,7 +11213,7 @@
       "kind": "ratio",
       "numerator": "R38089_RATE",
       "denominator": "R38089_MCLOSS",
-      "printed": 0.68,
+      "printed": 0.7,
       "tolerance": 0.01
     },
     {
@@ -7402,7 +11221,7 @@
       "kind": "ratio",
       "numerator": "CAU_LOSS_AVG",
       "denominator": "REST_LOSS_AVG",
-      "printed": 2.6,
+      "printed": 2.8,
       "tolerance": 0.06
     }
   ]

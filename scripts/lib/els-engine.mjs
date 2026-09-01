@@ -148,10 +148,18 @@ export function fromProspectus(it) {
     const a = new Date(it.baseDate || it.issueDate), b = new Date(d);
     return Math.round((b - a) / 86400000 / 30.44);
   };
-  const schedule = it.schedule.map((s) => ({ months: months(s.date), barrier: s.barrier }));
+  // 개월수는 30.44 로 나눠 반올림한 값이라 시간축으로 쓰면 오차가 쌓인다.
+  // 상환금액 비율(경과월/만기월)에는 그대로 쓰되, 시뮬레이션 격자는 실제 날짜에서
+  // 뽑은 years 를 쓴다.
+  const years = (d) => {
+    if (!d) return null;
+    const a = new Date(it.baseDate || it.issueDate), b = new Date(d);
+    return (b - a) / 86400000 / 365.25;
+  };
+  const schedule = it.schedule.map((s) => ({ months: months(s.date), years: years(s.date), barrier: s.barrier }));
   const mat = months(it.maturityDate);
   if (!mat || mat <= 0 || schedule.some((s) => !s.months)) return null;
-  schedule.push({ months: mat, barrier: it.maturityBarrier });
+  schedule.push({ months: mat, years: years(it.maturityDate), barrier: it.maturityBarrier });
   return {
     underlyings: it.underlyings,
     maturityMonths: mat,
@@ -160,8 +168,10 @@ export function fromProspectus(it) {
     totalRate: it.annualRate * mat / 12,   // 월지급식은 문서에 한 달치가 적혀 있어 연율로 환산한다
     annualRate: it.annualRate,
     principalProtection: it.principalProtected ? 100 : 0,
+    maturityYears: years(it.maturityDate),
     lizard: it.lizard
       ? { months: months(it.schedule.find((s) => s.step === it.lizard.step)?.date), barrier: it.lizard.barrier,
+          payout: it.lizard.payout,
           rate: (it.lizard.payout - 100) * 12 / months(it.schedule.find((s) => s.step === it.lizard.step)?.date) }
       : null,
   };

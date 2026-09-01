@@ -42,7 +42,7 @@ const disclosed = (id, metric, text, value, unit, printed_on, extra = {}) => add
 /** 공시 값을 입력으로 우리가 계산한 값 */
 const computed = (id, metric, text, value, unit, printed_on, extra = {}) => add({
   id, kind: 'model_output', metric, text, value, unit,
-  series: '자체 몬테카를로 (공시 변동성·상관계수 입력, 40,000 경로, 시드 고정)',
+  series: `자체 몬테카를로 (공시 변동성·상관계수 입력, ${A.mc.paths.toLocaleString('ko-KR')} 경로, 대조변량, 시드 고정)`,
   as_of: FILED, tier: 1, source_url: SRC,
   verdict: 'confirmed', render: 'assert',
   note: '공시된 값이 아니라 공시 입력으로 재현 가능하게 돌린 모형 결과. 덱에서 "B. 시뮬레이션"으로 표기',
@@ -114,6 +114,33 @@ for (const it of A.items) {
   disclosed(`R${n}_SIMFIRST`, '1차 상환 비중', `제${n}회 모의실험에서 1차에 조기상환된 비중`, it.simFirst, '%', ['p3-row', 'p5-card4'],
     { series: '발행사 수익률 모의실험 (공시 원문)' });
   computed(`R${n}_MCLOSS`, '손실 확률', `제${n}회 만기 손실 확률 (B)`, +it.mcLoss.toFixed(1), '%', page2);
+  computed(`R${n}_MCCI`, '손실 확률 신뢰구간', `제${n}회 손실 확률의 95% 신뢰구간 반폭`,
+    +it.mcCI.toFixed(2), '%p', page2,
+    { note: `경로 ${it.mcPaths.toLocaleString('ko-KR')}개, 대조변량 적용. 배치 평균으로 낸 표준오차의 1.96배` });
+  // 차수별 조기상환 확률 — 합이 100 이 되는지도 검산한다
+  it.mcByStep.forEach((v, k) => computed(`R${n}_STEP${k + 1}`, '조기상환 확률',
+    `제${n}회 ${k + 1}차${k === it.mcByStep.length - 1 ? '(만기)' : ''} 상환 확률`,
+    +v.toFixed(1), '%', k === 0 || k === it.mcByStep.length - 1 ? page2.concat('p3-bar') : ['p3-bar']));
+  derived.push({
+    id: `D${n}_STEPSUM`, kind: 'sum',
+    terms: it.mcByStep.map((_, k) => `R${n}_STEP${k + 1}`),
+    printed: 100, tolerance: 0.35,
+  });
+  // 추천 카드는 중간 차수를 묶어 "2~11차 20.6%" 로 적는다. 그 합계도 인쇄되는 값이다.
+  if (it.mcByStep.length > 2) {
+    const mid = it.mcByStep.slice(1, -1).reduce((a, c) => a + c, 0);
+    computed(`R${n}_STEPMID`, '조기상환 확률', `제${n}회 2~${it.mcByStep.length - 1}차 상환 확률 합계`,
+      +mid.toFixed(1), '%', ['p3-bar']);
+    derived.push({
+      id: `D${n}_STEPMID`, kind: 'sum',
+      terms: it.mcByStep.slice(1, -1).map((_, k) => `R${n}_STEP${k + 2}`),
+      printed: +mid.toFixed(1), tolerance: 0.3,
+    });
+  }
+  if (it.mcLizard != null) {
+    computed(`R${n}_LIZ`, '리자드 상환 확률', `제${n}회 리자드 조항으로 상환될 확률`,
+      +it.mcLizard.toFixed(1), '%', []);
+  }
   // 덱은 배리어·낙인을 "기준가의 몇 %" 가 아니라 "얼마나 떨어져야 하는지" 로 바꿔 말한다.
   // 그 환산값도 인쇄되므로 대장에 둔다.
   if (it.knockIn != null) {
@@ -201,13 +228,14 @@ const ledger = {
     '공정가격(원)': '일괄신고추가서류 공시 원문 (액면 1만원 기준)',
     '공정가격(달러)': '일괄신고추가서류 공시 원문 (액면 USD 10,000 기준)',
     '백테스트 손실 비중': '발행사 수익률 모의실험 (공시 원문)',
-    '손실 확률': '자체 몬테카를로 (공시 변동성·상관계수 입력, 40,000 경로, 시드 고정)',
+    '손실 확률': `자체 몬테카를로 (공시 변동성·상관계수 입력, ${A.mc.paths.toLocaleString('ko-KR')} 경로, 대조변량, 시드 고정)`,
   },
   unit_policy: {
     '연 수익률': '%', '만기 총 수익률': '%', '손실 확률': '%',
     '낙인': '%', '만기 배리어': '%', '적용 변동성': '%', '백테스트 손실 비중': '%',
     '검증 기간': '년', '상관계수': '무차원', '일정': 'YYYYMMDD', '건수': '종',
     '1차 배리어': '%', '조기상환 횟수': '회', '조기상환 주기': '개월',
+    '조기상환 확률': '%', '리자드 상환 확률': '%', '손실 확률 신뢰구간': '%p',
     '낙인까지 하락폭': '%', '만기 손실 하락폭': '%', '액면가액': '원', '공정가 괴리': '%',
     '손실 시 평균 손실 크기': '%',
     '모의실험 횟수': '회', '1차 상환 비중': '%', '등급 경계': '%',
