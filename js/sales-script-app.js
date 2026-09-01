@@ -373,6 +373,41 @@
       }
       case 'riskGradeBasis':
         return COMMON.riskGradeBasis || undefined;
+      /**
+       * 선취판매수수료 계산 예시 — 「이해를 돕기 위한 추가 설명」 가점 항목(+3점).
+       * 선취수수료율만 알면 산술로 확정되는 값이라 직원이 계산기를 두드릴 필요가 없다.
+       * 기준 금액은 투자설명서가 예시로 쓰는 1,000만원에 맞춘다.
+       */
+      case 'feeRate': case 'exAmt': case 'feeCut': case 'netAmt': {
+        var fa = String(valueOf('clsA') || '');
+        var pm = fa.match(/(\d+(?:\.\d+)?)\s*%/);
+        if (!pm) return undefined;
+        var rate = Number(pm[1]), base = 10000000;
+        var cut = Math.round(base * rate / 100);
+        /* 문장이 "그 «율» 인 «금액»" 으로 이어지므로 율만 담는다 (납입금액의 … 은 앞 문장에 있다) */
+        if (id === 'feeRate') return pm[1] + '%';
+        if (id === 'exAmt') return '1,000만원';
+        if (id === 'feeCut') return (cut / 10000).toLocaleString() + '만원';
+        return ((base - cut) / 10000).toLocaleString() + '만원';
+      }
+      /* 초과수익률 = 최근 1년 수익률 − 동종유형 평균 수익률 (뺄셈이라 받아쓸 값이 아니다) */
+      case 'retGap': {
+        var n1 = parseFloat(String(valueOf('ret1y') || '').replace(/[^0-9.\-]/g, ''));
+        var n2 = parseFloat(String(valueOf('retPeer') || '').replace(/[^0-9.\-]/g, ''));
+        if (!isFinite(n1) || !isFinite(n2)) return undefined;
+        return (Math.round((n1 - n2) * 100) / 100) + '%p';
+      }
+      /**
+       * 유사 비계열 펀드 동반 추천은 「계열사 상품을 권유할 때」의 의무다.
+       * 비계열 운용사 상품이면 해당 사항이 없으므로 빨간 확인필요로 남길 값이 아니다.
+       */
+      case 'peerFund': case 'peerRet1y': {
+        var af = String(rawValue('affiliate') || '');
+        if (!/비계열/.test(af)) return undefined;
+        return id === 'peerFund'
+          ? '해당 없음 (비계열 운용사 상품이므로 유사 비계열 펀드 동반 추천 의무 없음)'
+          : '해당 없음';
+      }
       case 'withdrawRight':
         return COMMON.withdrawRight || undefined;
       /* 등록된 투자설명서의 차수별 상환조건 표로 손익구조 문구를 생성한다 */
@@ -411,6 +446,8 @@
       riskGradeBasis: '위험등급 분류 근거 (공통 문구)',
       ytm: '세후 투자수익률',
       monthlyNote: '월수익지급 조건·지급률 (월지급식)',
+      feeRate: '선취판매수수료율', exAmt: '예시 투자금액', feeCut: '선취수수료 차감금액',
+      netAmt: '실제 투자금액', retGap: '초과수익률(%p)', peerRet1y: '비계열 펀드 1년 수익률',
       withdrawRight: '청약철회권 대상여부'
     }[id] || id;
   }
