@@ -22,6 +22,9 @@ on:
   push:
     branches:
       - 'claude/els-**'
+      # 완전판매 스크립트도 같은 수집 결과(data/els-prospectus.js)를 쓴다.
+      # 수집기를 고쳤으면 그 브랜치에서 바로 돌려 결과를 확인해야 한다.
+      - 'claude/complete-sales-script-**'
     paths:
       - 'scripts/fetch_prospectus.mjs'
       - 'scripts/parse_prospectus.mjs'
