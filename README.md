@@ -332,11 +332,25 @@ window.ELS_DATA = {
 
 ## 실행 방법
 
-`data/*.js`, `js/*.js` 를 외부에서 로드하므로 로컬 서버로 열어야 합니다.
+### 방법 1) 단일 파일 (가장 간단)
+
+`sales-script-standalone.html` **한 파일**에 CSS·JS·평가표·상품 데이터가 모두
+인라인되어 있습니다. 별도 서버 없이 더블클릭으로 열면 바로 동작합니다.
+
+### 방법 2) 분리 파일 + 로컬 서버 (개발용)
+
+`sales-script.html` 은 `data/*.js`, `js/*.js` 를 외부에서 로드하므로 로컬 서버로
+열어야 합니다.
 
 ```bash
 python3 -m http.server 8000
 # http://localhost:8000/sales-script.html
+```
+
+소스를 수정한 뒤 배포용 단일 파일을 갱신하려면:
+
+```bash
+node scripts/build_sales_script.mjs
 ```
 
 ## 파일 구조
@@ -348,6 +362,9 @@ data/sales-script-data.js      # 상품 카탈로그 + 투자설명서 필드 �
 data/sales-script-sheets.js    # 평가표 항목 — 적합성원칙 공통
 data/sales-script-sheets2.js   # 평가표 항목 — 펀드 · ELS/DLS
 data/sales-script-sheets3.js   # 평가표 항목 — 채권 · IRP + 평가표(SHEETS) 구성
+
+sales-script-standalone.html   # 배포용 단일 파일 (빌드 결과물)
+scripts/build_sales_script.mjs # 위 파일들을 단일 파일로 합치는 빌드 스크립트
 ```
 
 ## 기타 기능
