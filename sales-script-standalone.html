@@ -14340,9 +14340,9 @@ window.FUND_PROSPECTUS = { updatedAt: null, source: 'DART 투자설명서 공시
     bands: '3가지 모두 <code>7</code> · 2가지 <code>5</code> · 1가지 <code>3</code> · 미실시 <code>0</code>',
     script: [
       { t: 'note', x: '[비계열사 펀드만 추천 시]' },
-      { t: 'say', x: "고객님의 투자자성향인 '{{custProfile}}' 과 현재 투자자금성향에 적합한 상품으로, 비계열사 상품인 {{mgr}}의 '{{name}}' 을 추천드리며, 해당 펀드는 {{riskLabel}} {{riskGrade}}등급 상품으로 고객님께 적합한 펀드입니다.\n이 펀드의 최근 1년 수익률은 {{ret1y}} 로, 동종유형 수익률인 {{retPeer}} 대비 «초과수익률(%p)» 높은 수준입니다." },
+      { t: 'say', x: "고객님의 투자자성향인 '{{custProfile}}' 과 현재 투자자금성향에 적합한 상품으로, 비계열사 상품인 {{mgr}}의 '{{name}}' 을 추천드리며, 해당 펀드는 {{riskLabel}} {{riskGrade}}등급 상품으로 고객님께 적합한 펀드입니다.\n이 펀드의 최근 1년 수익률은 {{ret1y}} 로, 동종유형 수익률인 {{retPeer}} 대비 {{retGap}} 높은 수준입니다." },
       { t: 'note', x: '[계열사 펀드 추천 시 — 계열 고지 + 유사한 비계열 펀드 1가지 동반 추천 필수]' },
-      { t: 'say', x: "고객님의 투자자성향인 '{{custProfile}}' 과 현재 투자자금성향에 적합한 상품으로, 당사 계열사인 {{mgr}}의 '{{name}}' 과 비계열사 상품인 {{peerFund}} 를 추천드리며, 해당 펀드 모두 {{riskLabel}} {{riskGrade}}등급 상품으로 고객님께 적합한 펀드입니다.\n{{name}} 의 최근 1년 수익률은 {{ret1y}} 로 동종유형 수익률 {{retPeer}} 대비 «초과수익률(%p)» 높은 수준이고, {{peerFund}} 의 최근 1년 수익률은 «비계열 펀드 1년 수익률(%)» 입니다." },
+      { t: 'say', x: "고객님의 투자자성향인 '{{custProfile}}' 과 현재 투자자금성향에 적합한 상품으로, 당사 계열사인 {{mgr}}의 '{{name}}' 과 비계열사 상품인 {{peerFund}} 를 추천드리며, 해당 펀드 모두 {{riskLabel}} {{riskGrade}}등급 상품으로 고객님께 적합한 펀드입니다.\n{{name}} 의 최근 1년 수익률은 {{ret1y}} 로 동종유형 수익률 {{retPeer}} 대비 {{retGap}} 높은 수준이고, {{peerFund}} 의 최근 1년 수익률은 {{peerRet1y}} 입니다." },
       { t: 'say', x: '추천드린 상품으로 가입을 하시겠습니까?' }
     ],
     tips: [
@@ -14505,7 +14505,7 @@ window.FUND_PROSPECTUS = { updatedAt: null, source: 'DART 투자설명서 공시
       { t: 'say', x: '① [종류형 펀드(클래스) 체계] 수수료 징구 여부에 따라 수수료 선취형(A클래스)과 수수료 미징구형(C클래스)으로 나뉘며, 펀드를 오프라인에서 판매하느냐 온라인으로 판매하느냐에 따라 오프라인형과 온라인형(e클래스)으로 구분됩니다.' },
       { t: 'say', x: '② [투자방식별 유리한 클래스] A클래스는 선취판매수수료를 징구하고, C클래스는 선취판매수수료를 징구하지 않는 대신 매일 차감하는 총보수가 A클래스보다 높습니다. 따라서 비용적인 측면에서 단기투자자는 C클래스가 유리하고, 약 2~3년 이상 투자하는 중장기 투자자는 A클래스가 유리하며, 온라인으로 가입하시는 경우 오프라인 투자보다 비용을 절약하실 수 있습니다.\n이 펀드는 A클래스 총보수가 연 {{clsAExp}}%, C클래스 총보수가 연 {{clsCExp}}% 입니다.' },
       { t: 'say', x: '③ [판매수수료와 총보수] A클래스는 매입 시 {{clsA}} 를 선취 판매수수료로 징수하며, 해당 펀드의 총보수는 연 {{clsAExp}}% 입니다.' },
-      { t: 'say', x: '[이해를 돕기 위한 추가 설명 — 계산기 활용]\n판매수수료는 «선취수수료율(%)» 로, 만약 고객님께서 «예시 투자금액» 을 납입하신다면 그 «선취수수료율(%)» 인 «차감금액» 을 제외한 «실제 투자금액» 만 투자되는 상품입니다.' },
+      { t: 'say', x: '[이해를 돕기 위한 추가 설명 — 계산기 활용]\n판매수수료는 {{feeRate}} 로, 만약 고객님께서 {{exAmt}} 을 납입하신다면 그 {{feeRate}} 인 {{feeCut}} 을 제외한 {{netAmt}} 만 투자되는 상품입니다.' },
       { t: 'say', x: '④ [판매수수료와 보수의 차이] 판매수수료는 펀드 매입 시 매입금액의 일부를 판매회사에 일회적으로 납부하는 비용이며, 보수는 펀드의 판매·운용·보관·기타 관리행위에 대하여 각 금융회사에 내는 비용으로 매일 펀드 재산에서 일부 차감되는 비용입니다.' },
       { t: 'say', x: '⑤ [환매수수료] 동 펀드의 환매수수료는 {{redeemFee}} 입니다.' },
       { t: 'say', x: '설명 드린 내용 이해되셨을까요?' }
@@ -14554,7 +14554,7 @@ window.FUND_PROSPECTUS = { updatedAt: null, source: 'DART 투자설명서 공시
     script: [
       { t: 'note', x: '위 ①~④ 중 3가지 이상에서 예시·사례·도표·통계를 제공해야 만점. 참고자료를 단순히 읽거나 전문용어를 과도하게 사용하면 미인정' },
       { t: 'say', x: '[예시 1 — 펀드 명칭 부연] 고객님, 본 펀드의 명칭은 \'{{name}}\' 인데요, «명칭에 담긴 뜻을 풀어서 설명»' },
-      { t: 'say', x: '[예시 2 — 수수료·보수 부연] 판매수수료는 «선취수수료율(%)» 로, «예시 투자금액» 을 납입하신다면 «차감금액» 을 제외한 «실제 투자금액» 만 투자되는 상품입니다.' },
+      { t: 'say', x: '[예시 2 — 수수료·보수 부연] 판매수수료는 {{feeRate}} 로, {{exAmt}} 을 납입하신다면 {{feeCut}} 을 제외한 {{netAmt}} 만 투자되는 상품입니다.' },
       { t: 'say', x: '[예시 3 — 환매·중도해지 부연] 환매기준일 및 지급일에 대해 달력을 이용해 설명드리겠습니다. 오늘(«오늘 날짜·요일») {{buyCut}} 이전에 환매를 요청하시면 «기준가 적용일 날짜» 기준가격을 적용하여 «지급일 날짜» 에 환매대금을 지급합니다.' }
     ],
     tips: ['① 투자대상 자산 ② 투자위험 ③ 펀드수수료·보수 ④ 환매·중도해지 가 아닌 항목의 추가설명은 인정하지 않음']
@@ -15624,12 +15624,159 @@ window.FUND_PROSPECTUS = { updatedAt: null, source: 'DART 투자설명서 공시
     for (var i = 0; i < lines.length; i++) {
       var line = lines[i], c = cellsOf(line);
       if (c.length >= 2 && labelRe.test(c[0])) {
-        var v = c.slice(1).filter(function (x) { return x && x !== '-'; }).join(' ').trim();
-        if (v) return { value: v, index: at, length: line.length };
+        var rest = c.slice(1).filter(function (x) { return x && x !== '-'; });
+        /**
+         * 표처럼 보이지만 표가 아닌 두 가지를 걸러낸다.
+         *  ① 양쪽정렬된 본문 — 낱말마다 탭이 들어와 칸이 많고 다 짧다.
+         *    ("집합투자업자 | 또는 | 판매회사는 | 이 | 투자신탁 …" 을 운용사명으로 읽었다)
+         *  ② 머리글 행 — 값 칸이 전부 짧은 라벨이다.
+         *    ("투자대상 | 투자비율 | 투자내용" 을 투자대상 자산으로 읽었다)
+         */
+        var avg = rest.join('').length / Math.max(1, rest.length);
+        var prose = rest.length >= 4 && avg < 6;
+        var header = rest.length >= 2 && rest.every(function (x) { return x.length <= 6; });
+        if (!prose && !header) {
+          var v = rest.join(' ').trim();
+          if (v) return { value: v, index: at, length: line.length };
+        }
       }
       at += line.length + 1;
     }
     return null;
+  }
+
+  /**
+   * 라벨 뒤 몇 줄을 이어 붙인다.
+   * 정식 투자설명서는 표 한 칸이 여러 줄로 쪼개져 나온다
+   * ("환매\n방법\n오후 5 시 이전에 …"). 한 줄만 보면 값을 못 읽는다.
+   */
+  function joinAfter(text, labelRe, n) {
+    var lines = String(text).split('\n');
+    var at = 0;
+    for (var i = 0; i < lines.length; i++) {
+      if (labelRe.test(lines[i])) {
+        var seg = lines.slice(i, i + (n || 8)).join(' ').replace(/\t/g, ' ').replace(/\s+/g, ' ').trim();
+        return { value: seg, index: at, length: seg.length };
+      }
+      at += lines[i].length + 1;
+    }
+    return null;
+  }
+
+  /**
+   * 요약정보의 「투자자가 부담하는 수수료·총보수 및 비용」 표.
+   *
+   * 클래스 이름이 여러 줄로 쪼개지고 판매수수료 칸도 따로 떨어져, 칸 수가 행마다 다르다.
+   * 그래서 왼쪽이 아니라 오른쪽 끝을 기준으로 센다 — 뒤 5칸은 투자기간별 예시 금액,
+   * 그 앞 4칸이 순서대로 총보수 / 판매보수 / 동종유형 총보수 / 합성 총보수·비용이다.
+   *   예) 0.8620  0.7000  0.8900  1.9652  298  508  728  1,201  2,607
+   */
+  function fundFeeTable(text) {
+    var lines = String(text).split('\n');
+    var rows = [], at = 0;
+    var isInt = function (x) { return /^[\d,]+$/.test(x); };
+    var isRate = function (x) { return /^\d+(?:\.\d+)?$/.test(x) || x === '-'; };
+    for (var i = 0; i < lines.length; i++) {
+      var c = cellsOf(lines[i]).filter(function (x) { return x !== ''; });
+      if (c.length >= 9 && c.slice(-5).every(isInt) && c.slice(-9, -5).every(isRate)) {
+        /* 클래스 이름·판매수수료는 앞 몇 줄에 흩어져 있다 */
+        var label = '', cls = null;
+        for (var k = i - 1; k >= 0 && k >= i - 6; k--) {
+          var t = lines[k].replace(/\t/g, ' ').trim();
+          if (!t || /^[\d,.\s%-]+$/.test(t)) break;
+          label = t + ' ' + label;
+          var mm = t.match(/\(([A-Za-z]{1,2}\d?(?:-[A-Za-z])?)\)\s*$/);
+          if (mm) { cls = mm[1]; break; }
+        }
+        label = label.replace(/\s+/g, ' ').trim();
+        var front = c.length >= 10 ? c[c.length - 10] : null;
+        var salesFee = front && !isRate(front) ? front
+          : (label.match(/납입금액의\s*[\d.]+\s*%\s*이내|없음/) || [null])[0];
+        rows.push({
+          cls: cls, label: label, salesFee: salesFee,
+          total: c[c.length - 9], mgmtFee: c[c.length - 8],
+          peerTotal: c[c.length - 7], synthetic: c[c.length - 6],
+          index: at, length: lines[i].length
+        });
+      }
+      at += lines[i].length + 1;
+    }
+    return rows;
+  }
+
+  /** 클래스 한 줄 골라내기 — A / A-e / C / C1 / C-e 표기가 섞여 있다 */
+  function feeRow(text, clsRe) {
+    var rows = fundFeeTable(text);
+    for (var i = 0; i < rows.length; i++) {
+      if (rows[i].cls && clsRe.test(rows[i].cls)) return rows[i];
+    }
+    return null;
+  }
+
+  /**
+   * 「투자실적 추이(연평균 수익률)」 표의 최근 1년.
+   * 머리글 아래 첫 실적 행을 쓰되 참조지수·변동성 행은 건너뛴다.
+   */
+  function fundReturn1y(text) {
+    var lines = String(text).split('\n');
+    var head = -1, at = 0, headAt = 0;
+    var isDate = function (x) { return /^\d{4}[-.\/]\d{1,2}[-.\/]\d{1,2}$/.test(x); };
+    for (var i = 0; i < lines.length; i++) {
+      if (head < 0) {
+        if (/최근\s*1\s*년/.test(lines[i]) && /최근\s*[235]\s*년/.test(lines[i])) { head = i; headAt = at; }
+      } else if (i - head <= 16) {
+        var c = cellsOf(lines[i]).filter(function (x) { return x !== ''; });
+        if (c.length >= 3 && !/참조지수|비교지수|변동성|BM|벤치마크/i.test(c[0])) {
+          var di = isDate(c[0]) ? 1 : (isDate(c[1] || '') ? 2 : -1);
+          if (di > 0 && /^-?\d+(?:\.\d+)?$/.test(c[di] || '')) {
+            return { value: c[di], index: headAt, length: (at - headAt) + lines[i].length };
+          }
+        }
+      } else { break; }
+      at += lines[i].length + 1;
+    }
+    return null;
+  }
+
+  /**
+   * 「주요 투자위험」 표 — 구분(위험 이름)과 내용을 짝지어 돌려준다.
+   * 이름만 말하면 평가에서 미인정이라 내용까지 붙여야 한다.
+   * 이름 칸이 "투자원금손실 / 위험" 처럼 줄로 쪼개져 있어 짧은 줄을 이어 만든다.
+   */
+  function riskItems(text) {
+    var lines = String(text).split('\n');
+    var out = [], at = 0, start = -1, startAt = 0;
+    for (var i = 0; i < lines.length; i++) {
+      if (start < 0 && /구\s*분\s*\t\s*투자위험의?\s*주요내용/.test(lines[i])) { start = i; startAt = at; }
+      at += lines[i].length + 1;
+    }
+    if (start < 0) return out;
+    var name = '';
+    for (var j = start + 1; j < lines.length && j < start + 90; j++) {
+      var t = lines[j].replace(/\t/g, ' ').replace(/\s+/g, ' ').trim();
+      if (!t || /^[-.\s]+$/.test(t)) continue;
+      if (t.length <= 22 && !/[.。]$/.test(t) && !/니다$/.test(t)) {
+        name = (name ? name + ' ' : '') + t;
+        if (/위험$/.test(name)) {
+          /* 이름 다음 줄부터가 내용이다 */
+          var body = [];
+          for (var k = j + 1; k < lines.length && body.join('').length < 260; k++) {
+            var b = lines[k].replace(/\t/g, ' ').replace(/\s+/g, ' ').trim();
+            if (!b) continue;
+            if (b.length <= 22 && !/니다|습니다|합니다/.test(b)) break;
+            body.push(b);
+          }
+          if (body.length) {
+            out.push({ name: name.replace(/\s+/g, ' ').trim(), body: body.join(' ').replace(/\s+/g, ' ') });
+          }
+          name = '';
+        }
+      } else {
+        name = '';
+      }
+      if (out.length >= 6) break;
+    }
+    return out;
   }
 
   /**
@@ -15715,85 +15862,182 @@ window.FUND_PROSPECTUS = { updatedAt: null, source: 'DART 투자설명서 공시
      * 펀드 — 간이투자설명서는 거의 전부 표다. 「라벨 <탭> 값」 행을 먼저 읽고,
      * 표에서 못 찾은 것만 본문 정규식으로 넘긴다.
      */
+    /**
+     * 펀드.
+     * 간이투자설명서는 「라벨 <탭> 값」 표, 정식 투자설명서는 표 한 칸이 여러 줄로 쪼개진
+     * 요약정보 양식이다. 둘 다 읽어야 하므로 순서는 표 판독(fn) -> 구간 고정 정규식이다.
+     * 본문 아무 데나 걸리는 넓은 정규식은 쓰지 않는다 — 개정 이력의 옛 값이나 옆 칸을
+     * 집어 오기 때문이다(환매대금 지급일이 제8영업일로 읽히던 원인).
+     */
     fund: COMMON_RULES.concat([
       {
         id: 'name', label: '펀드 명칭',
         fn: function (t) { return rowValue(t, /^(?:집합투자기구의?\s*명칭|펀드\s*명칭|상품\s*명|펀드명)$/); },
-        re: [/(?:집합투자기구의?\s*명칭|펀드\s*명칭|상품명)\s*[:：]?\s*([^\n]{6,90}?(?:투자신탁|투자회사)[^\n]{0,30})/,
+        re: [/(?:집합투자기구의?\s*명칭|펀드\s*명칭|상품명)\s*[:：]\s*([^\n]{6,90})/,
         /([가-힣A-Za-z0-9()\[\]·\-\s]{6,70}(?:증권\s*)?자?투자신탁\s*\d*호?\s*\([^)]{1,20}\))/],
-        map: function (m) { return m[1].trim(); }
+        map: function (m) { return m[1].replace(/\s+/g, ' ').trim(); }
       },
       {
         id: 'mgr', label: '자산운용사',
         fn: function (t) { return rowValue(t, /^(?:집합투자업자|자산운용회사|자산운용사|운용회사|운용사)$/); },
-        re: [/(?:집합투자업자|자산운용회사|운용회사)\s*[:：]?\s*([가-힣A-Za-z()\s]{2,30}?(?:자산운용|투자신탁운용|운용)(?:주식회사|㈜)?)/,
-        /([가-힣A-Za-z]{2,20}자산운용)/],
-        map: function (m) { return m[1].trim(); }
+        /* 콜론을 반드시 요구한다 — 없으면 본문의 "…또는 집합투자업자가 운용하는 다른…" 을 집어 온다 */
+        re: [/집합투자업자\s*명칭\s*[:：]\s*([^\n]{2,40}?(?:자산운용|투자신탁운용|운용)(?:주식회사|㈜)?)/,
+        /(?:집합투자업자|자산운용회사|운용회사)\s*[:：]\s*([^\n]{2,30}?(?:자산운용|투자신탁운용|운용)(?:주식회사|㈜)?)/,
+        /([가-힣A-Za-z]{2,20}자산운용(?:주식회사|㈜)?)/],
+        map: function (m) { return m[1].replace(/\s+/g, '').trim(); }
       },
       {
-        id: 'fundType', label: '펀드 유형',
-        fn: function (t) { return rowValue(t, /^(?:집합투자기구의?\s*종류|펀드\s*유형|펀드의?\s*종류|상품\s*유형)$/); }
-      },
-      {
-        /**
-         * A클래스 총보수(연).
-         * 표에서 클래스 A 행의 「합성 총보수·비용」(없으면 「총보수」) 칸을 읽는다.
-         * 본문 정규식만 쓰면 머리글 바로 뒤에 오는 선취판매수수료 값(납입금액의 1.00%)을
-         * 총보수로 집어 온다 — 실제로 그렇게 틀리고 있었다.
-         */
-        id: 'clsAExp', label: '총보수(연)',
+        /* 계열 여부는 판매회사(미래에셋증권) 기준이다 — 운용사명으로 판정한다 */
+        id: 'affiliate', label: '계열운용사 여부',
         fn: function (t) {
-          return feeCell(t, [/합성\s*총\s*보수/, /총\s*보수[·\s]*비용/, /^총\s*보수/], /^A(?:[\s\-]|클래스|$)/i);
-        },
-        re: [/합성\s*총\s*보수[·\s]*비용[^가-힣\d%]{0,20}?연?\s*(\d+\.\d+)\s*%/,
-        /총\s*보수[·\s]*비용[^가-힣\d%]{0,20}?연?\s*(\d+\.\d+)\s*%/],
-        map: function (m) { return num(m); }
-      },
-      {
-        id: 'clsCExp', label: 'C클래스 총보수(연)',
-        fn: function (t) {
-          return feeCell(t, [/합성\s*총\s*보수/, /총\s*보수[·\s]*비용/, /^총\s*보수/], /^C(?:[\s\-]|클래스|$)/i);
+          var m = /집합투자업자\s*명칭\s*[:：]\s*([^\n]{2,40}?(?:자산운용|투자신탁운용|운용)(?:주식회사|㈜)?)/.exec(t)
+            || /([가-힣A-Za-z]{2,20}자산운용(?:주식회사|㈜)?)/.exec(t);
+          if (!m) return null;
+          var mg = m[1].replace(/\s+/g, '');
+          return {
+            value: /미래에셋/.test(mg)
+              ? '계열 운용사 (' + mg + ') — 계열사 상품이므로 고지 및 유사 비계열 펀드 1개 동반 추천 필요'
+              : '비계열 운용사 (' + mg + ')',
+            index: m.index, length: m[0].length
+          };
         }
       },
       {
-        id: 'clsA', label: '선취판매수수료',
+        id: 'fundType', label: '펀드 유형',
+        fn: function (t) { return rowValue(t, /^(?:집합투자기구의?\s*종류|펀드\s*유형|펀드의?\s*종류|상품\s*유형|분류)$/); },
+        re: [/((?:투자신탁|투자회사)\s*,[^\n]*?(?:종류형|모자형|추가형|개방형)[^\n]*?)(?=고난도|투자비용|$)/],
+        map: function (m) { return m[1].replace(/\s+/g, ' ').replace(/[,\s]+$/, '').trim(); }
+      },
+      {
+        id: 'targets', label: '투자대상 자산',
+        fn: function (t) { return rowValue(t, /^(?:투자\s*대상|주된?\s*투자\s*대상|투자대상\s*자산)$/); },
+        re: [/(이\s*(?:투자신탁|집합투자기구)은[^\n]*?%\s*까지[^\n]*?투자합니다\.)/,
+        /(이\s*(?:투자신탁|집합투자기구)은[^\n]{20,300}?투자합니다\.)/,
+        /투자\s*대상\s*(?:및\s*투자\s*전략)?\s*[:：]\s*([^\n]{10,180})/],
+        map: function (m) { return m[1].replace(/\s+/g, ' ').trim(); }
+      },
+      {
+        id: 'strategy', label: '투자전략',
+        fn: function (t) { return rowValue(t, /^(?:투자\s*전략|주된?\s*투자\s*전략|운용\s*전략)$/); },
+        /* 모자형·재간접은 모(피투자)펀드 전략까지 설명해야 인정된다 */
+        re: [/투자합니다\.\s*((?:모투자신탁|피투자)[^\n]{30,600})/,
+        /((?:모투자신탁|피투자집합투자기구)은[^\n]{30,600})/,
+        /투자\s*전략\s*[:：]\s*([^\n]{10,300})/],
+        map: function (m) { return m[1].replace(/\s+/g, ' ').trim(); }
+      },
+      {
+        id: 'risk1', label: '투자위험 핵심사항 ①',
         fn: function (t) {
-          var r = feeCell(t, [/선취\s*판매\s*수수료/, /선취\s*수수료/, /판매\s*수수료/], /^A(?:[\s\-]|클래스|$)/i);
-          if (!r) return null;
-          /* 표에 "1.00% 이내" 만 적힌 경우 기준(납입금액)을 붙여 준다 */
-          if (/^\d/.test(r.value)) r.value = '납입금액의 ' + r.value;
-          return r;
+          var r = riskItems(t);
+          return r[0] ? { value: r[0].name + ' — ' + r[0].body.slice(0, 240), index: 0, length: 0 } : null;
+        }
+      },
+      {
+        id: 'risk2', label: '투자위험 핵심사항 ②',
+        fn: function (t) {
+          var r = riskItems(t);
+          return r[1] ? { value: r[1].name + ' — ' + r[1].body.slice(0, 240), index: 0, length: 0 } : null;
+        }
+      },
+      {
+        id: 'clsA', label: 'A클래스 선취판매수수료',
+        fn: function (t) {
+          var r = feeRow(t, /^A$/i) || feeRow(t, /^A/i);
+          var v = r && r.salesFee;
+          /* 요약정보 표가 없으면 「클래스 | 선취판매수수료 | … 」 단순 표를 읽는다 */
+          if (!v) {
+            var c = feeCell(t, [/선취\s*판매\s*수수료/, /선취\s*수수료/, /판매\s*수수료/], /^A(?:[\s\-]|클래스|$)/i);
+            if (!c) return null;
+            r = c; v = c.value;
+          }
+          v = /^\d/.test(v) ? '납입금액의 ' + v : v;
+          return { value: v.replace(/%\s*이내/, '% 이내'), index: r.index, length: r.length };
         },
         re: [/선취\s*판매\s*수수료[^\d%]{0,40}?(\d+(?:\.\d+)?)\s*%\s*(이내)?/],
         map: function (m) { return '납입금액의 ' + num(m) + '%' + (m[2] ? ' 이내' : ''); }
       },
       {
+        /**
+         * A클래스 총보수(연). 스크립트가 "연 {{clsAExp}}%" 로 읽으므로 숫자만 담는다.
+         * 모자형·재간접형은 합성 총보수·비용이 인정 기준이라 그 칸을 먼저 쓴다.
+         */
+        id: 'clsAExp', label: 'A클래스 총보수(연)',
+        fn: function (t) {
+          var r = feeRow(t, /^A$/i) || feeRow(t, /^A/i);
+          if (r) {
+            var v = /^\d/.test(r.synthetic || '') ? r.synthetic : r.total;
+            if (/^\d/.test(v || '')) return { value: v, index: r.index, length: r.length };
+          }
+          var c = feeCell(t, [/합성\s*총\s*보수/, /총\s*보수[·•\s]*비용/, /^총\s*보수/], /^A(?:[\s\-]|클래스|$)/i);
+          return c ? { value: String(c.value).replace(/%$/, ''), index: c.index, length: c.length } : null;
+        },
+        re: [/합성\s*총\s*보수[·•\s]*비용[^가-힣\d%]{0,20}?연?\s*(\d+\.\d+)\s*%/,
+        /총\s*보수[·•\s]*비용[^가-힣\d%]{0,20}?연?\s*(\d+\.\d+)\s*%/],
+        map: function (m) { return num(m); }
+      },
+      {
+        id: 'clsCExp', label: 'C클래스 총보수(연)',
+        fn: function (t) {
+          var r = feeRow(t, /^C\d?$/i) || feeRow(t, /^C/i);
+          if (r) {
+            var v = /^\d/.test(r.synthetic || '') ? r.synthetic : r.total;
+            if (/^\d/.test(v || '')) return { value: v, index: r.index, length: r.length };
+          }
+          var c = feeCell(t, [/합성\s*총\s*보수/, /총\s*보수[·•\s]*비용/, /^총\s*보수/], /^C(?:[\s\-]|클래스|$)/i);
+          return c ? { value: String(c.value).replace(/%$/, ''), index: c.index, length: c.length } : null;
+        }
+      },
+      {
         id: 'redeemFee', label: '환매수수료',
-        fn: function (t) { return rowValue(t, /^환매\s*수수료$/); },
-        re: [/환매\s*수수료\s*[:：]?\s*(없음|해당\s*없음|징구하지\s*않(?:음|습니다))/,
-        /환매\s*수수료[^\n]{0,40}?(\d+(?:\.\d+)?\s*%[^\n]{0,40})/],
-        map: function (m) { return /없|않/.test(m[1]) ? '없음' : m[1].trim(); }
+        /* 표 라벨 읽기는 쓰지 않는다 — 옆 칸의 「전환수수료」 를 값으로 집어 온다 */
+        re: [/환매\s*수수료\s*[:：]?\s*(해당사항\s*없음|없음|면제)/,
+        /환매수수료를?\s*(부과하지\s*않|징구하지\s*않|면제)/,
+        /환매\s*수수료[^\n]{0,30}?(\d+(?:\.\d+)?\s*%[^\n]{0,40})/],
+        map: function (m) { return /없|않|면제/.test(m[1]) ? '없음' : m[1].trim(); }
       },
       {
         id: 'buyCut', label: '매입 기준시각',
-        re: [/(\d{1,2})\s*시\s*(\d{1,2})?\s*분?\s*(?:이전|까지|경과)/],
-        map: function (m) { return m[1] + '시' + (m[2] ? ' ' + (+m[2]) + '분' : ''); }
+        re: [/오후\s*(\d{1,2})\s*시\s*(\d{1,2})?\s*분?\s*(?:이전|경과|까지)/,
+        /(\d{1,2})\s*시\s*(\d{1,2})?\s*분?\s*(?:이전|까지|경과)/],
+        map: function (m) {
+          var pm = /오후/.test(m[0]);
+          return (pm ? '오후 ' : '') + (+m[1]) + '시' + (m[2] ? ' ' + (+m[2]) + '분' : '');
+        }
       },
       {
-        id: 'buyBefore', label: '기준시각 이전 매입 적용',
-        re: [/(\d{1,2})\s*시\s*(?:\d{1,2}\s*분\s*)?이전에?\s*(?:매입|취득)[^\n]{0,20}?제?\s*(\d)\s*영업일/],
-        map: function (m) { return '제' + m[2] + '영업일 기준가격 적용'; }
-      },
-      {
-        id: 'redPay', label: '환매대금 지급일',
-        re: [/제?\s*(\d)\s*영업일\s*에?\s*환매\s*대금/,
-        /환매\s*대금[^\n]{0,16}?제?\s*(\d)\s*영업일/],
+        id: 'buyBefore', label: '기준시각 前 매입 기준가 적용일',
+        re: [/\d{1,2}\s*시[^\n]{0,24}?이전에?[^\n]{0,40}?(?:납입|매입|취득)[^\n]{0,14}?경우[\s\S]{0,140}?제\s*(\d{1,2})\s*영업일/,
+        /\d{1,2}\s*시[^\n]{0,24}?이전에?[^\n]{0,40}?(?:납입|매입|취득)[^\n]{0,30}?제\s*(\d{1,2})\s*영업일/],
         map: function (m) { return '제' + num(m) + '영업일'; }
       },
       {
-        id: 'redBefore', label: '기준시각 이전 환매 적용',
-        re: [/(\d{1,2})\s*시\s*(?:\d{1,2}\s*분\s*)?이전에?\s*환매[^\n]{0,24}?제?\s*(\d)\s*영업일/],
-        map: function (m) { return '제' + m[2] + '영업일 기준가격 적용'; }
+        id: 'buyAfter', label: '기준시각 後 매입 기준가 적용일',
+        re: [/\d{1,2}\s*시\s*경과\s*(?:후|이후)[^\n]{0,40}?(?:납입|매입|취득)[^\n]{0,14}?경우[\s\S]{0,140}?제\s*(\d{1,2})\s*영업일/],
+        map: function (m) { return '제' + num(m) + '영업일'; }
+      },
+      {
+        id: 'redBefore', label: '기준시각 前 환매 기준가 적용일',
+        re: [/\d{1,2}\s*시[^\n]{0,24}?이전에?[^\n]{0,40}?환매[^\n]{0,14}?경우[\s\S]{0,160}?제\s*(\d{1,2})\s*영업일/,
+        /\d{1,2}\s*시[^\n]{0,24}?이전에?[^\n]{0,40}?환매[^\n]{0,30}?제\s*(\d{1,2})\s*영업일/],
+        map: function (m) { return '제' + num(m) + '영업일'; }
+      },
+      {
+        id: 'redAfter', label: '기준시각 後 환매 기준가 적용일',
+        re: [/\d{1,2}\s*시\s*경과\s*(?:후|이후)[^\n]{0,40}?환매[^\n]{0,14}?경우[\s\S]{0,160}?제\s*(\d{1,2})\s*영업일/],
+        map: function (m) { return '제' + num(m) + '영업일'; }
+      },
+      {
+        /**
+         * 환매대금 지급일.
+         * 「제N영업일」 만 찾으면 개정 이력의 옛 값을 읽는다
+         * (실제로 "환매대금 지급일 변경: 제8영업일 -> 제6영업일" 에서 제8영업일을 읽었다).
+         * 반드시 환매 방법 문장 안에서 읽는다.
+         */
+        id: 'redPay', label: '환매대금 지급일',
+        re: [/기준가격을?\s*적용[.\s]*제\s*(\d{1,2})\s*영업일[\s\S]{0,90}?환매대금을?\s*지급/,
+        /환매청구일[\s\S]{0,220}?제\s*(\d{1,2})\s*영업일[\s\S]{0,90}?환매대금을?\s*지급/,
+        /제\s*(\d{1,2})\s*영업일\s*에?\s*환매\s*대금/],
+        map: function (m) { return '제' + num(m) + '영업일'; }
       },
       {
         id: 'term', label: '계약기간',
@@ -15802,9 +16046,60 @@ window.FUND_PROSPECTUS = { updatedAt: null, source: 'DART 투자설명서 공시
         map: function (m) { return /추가|개방/.test(m[1]) ? '환매가 가능한 개방형' : '폐쇄형'; }
       },
       {
-        id: 'redeemable', label: '환매 가능 여부',
-        re: [/(추가|개방)형/],
-        map: function () { return '가능 (개방형)'; }
+        id: 'redeemable', label: '환매·중도해지 가능 여부',
+        re: [/(중도환매가능)/, /(추가|개방)형/, /(폐쇄형|중도환매\s*불가)/],
+        map: function (m) { return /폐쇄|불가/.test(m[1]) ? '불가 (폐쇄형)' : '가능 (개방형·중도환매 가능)'; }
+      },
+      {
+        /* 유동성위험 단계 = 중도환매불가 / 중도환매시 비용발생 / 중도환매 허용 */
+        id: 'liqRisk', label: '유동성위험 단계',
+        fn: function (t) {
+          /**
+           * 「폐쇄형」 이라는 낱말만 찾으면 용어 설명표와 범례("중도환매 불가 | 중도환매 허용")에
+           * 걸린다. 이 펀드의 구분을 밝히는 문장에서만 읽는다.
+           */
+          var m = /개방형\s*[∙·・.]?\s*폐쇄형\s*구분\s*[:：]\s*(개방형|폐쇄형)/.exec(t);
+          var open = m ? m[1] === '개방형'
+            : (/개방형\s*\(\s*중도환매가능/.test(t) ? true
+              : (/(?:^|[\s,(])폐쇄형\s*\(/.test(t) ? false
+                : (/개방형/.test(t) ? true : null)));
+          if (open === null) return null;
+          if (!open) return { value: '중도환매 불가 (폐쇄형)', index: m ? m.index : 0, length: m ? m[0].length : 0 };
+          var free = /환매\s*수수료\s*[:：]?\s*(?:해당사항\s*없음|없음|면제)/.test(t) || /환매수수료를?\s*(?:부과하지|징구하지)\s*않/.test(t);
+          return {
+            value: free ? '중도환매 허용 (환매수수료 없음)' : '중도환매 시 비용발생 (환매수수료 부과)',
+            index: m ? m.index : 0, length: m ? m[0].length : 0
+          };
+        }
+      },
+      {
+        id: 'ret1y', label: '최근 1년 수익률',
+        fn: function (t) {
+          var r = fundReturn1y(t);
+          return r ? { value: r.value + '%', index: r.index, length: r.length } : null;
+        }
+      },
+      {
+        /**
+         * VaR 값 — 위험등급 산정 근거.
+         * "VaR" 근처의 아무 숫자나 잡으면 등급 기준표의 「50% 초과」 를 읽는다.
+         * 이 펀드의 실측치는 「최대손실예상액은 34.81%」 문장에 있다.
+         */
+        id: 'varPct', label: 'VaR 값',
+        re: [/최대손실예상액(?:은|이)?\s*([\d.]+)\s*%/,
+        /VaR\s*(?:값|는|은)?\s*[:：]?\s*([\d.]+)\s*%(?!\s*(?:초과|이하))/i],
+        map: function (m) { return num(m); }
+      },
+      {
+        id: 'fxHedge', label: '환헤지 여부·대상통화',
+        re: [/환(?:율)?위험을?\s*헤지/, /환헤지\s*(?:전략을?)?\s*(?:수행|실시)/,
+        /환(?:율)?\s*헤지[^\n]{0,20}?(?:하지\s*않|미실시)/],
+        map: function (m) { return /않|미실시/.test(m[0]) ? '환헤지 미실시' : '환헤지 실시 (외화표시 투자자산의 환위험 헤지)'; }
+      },
+      {
+        id: 'fxHedgeSize', label: '목표 환헤지 비율',
+        re: [/목표\s*환헤지\s*비율은?[\s\S]{0,80}?약?\s*([\d.]+)\s*%/],
+        map: function (m) { return '약 ' + num(m) + '% (해외투자분 순자산 대비)'; }
       },
       {
         id: 'docDate', label: '증권신고서 효력발생일',
@@ -15816,28 +16111,6 @@ window.FUND_PROSPECTUS = { updatedAt: null, source: 'DART 투자설명서 공시
         },
         re: [new RegExp('효력\\s*발생일?\\s*[:：]?\\s*' + DATE)],
         map: function (m) { return kdateYMD(m[1], m[2], m[3]); }
-      },
-      {
-        id: 'targets', label: '투자대상 자산',
-        fn: function (t) { return rowValue(t, /^(?:투자\s*대상|주된?\s*투자\s*대상|투자대상\s*자산)$/); },
-        re: [/투자\s*대상\s*(?:및\s*투자\s*전략)?\s*[:：]\s*([^\n]{10,180})/],
-        map: function (m) { return m[1].replace(/^[:：\s]+/, '').trim(); }
-      },
-      {
-        id: 'strategy', label: '투자전략',
-        fn: function (t) { return rowValue(t, /^(?:투자\s*전략|주된?\s*투자\s*전략|운용\s*전략)$/); },
-        re: [/투자\s*전략\s*[:：]\s*([^\n]{10,200})/],
-        map: function (m) { return m[1].trim(); }
-      },
-      {
-        id: 'varPct', label: 'VaR 값(%)',
-        re: [/VaR[^\d%]{0,30}?(\d+(?:\.\d+)?)\s*%/i],
-        map: function (m) { return num(m); }
-      },
-      {
-        id: 'fxHedge', label: '환헤지 여부',
-        re: [/환(?:율)?\s*헤지[^\n]{0,20}?(하지\s*않|미실시|실시하지)/, /환(?:율)?\s*헤지[^\n]{0,16}?(실시|합니다|수행)/],
-        map: function (m) { return /않|미실시|하지/.test(m[1]) ? '환헤지 미실시' : '환헤지 실시'; }
       }
     ]),
 
@@ -16916,6 +17189,41 @@ window.FUND_PROSPECTUS = { updatedAt: null, source: 'DART 투자설명서 공시
       }
       case 'riskGradeBasis':
         return COMMON.riskGradeBasis || undefined;
+      /**
+       * 선취판매수수료 계산 예시 — 「이해를 돕기 위한 추가 설명」 가점 항목(+3점).
+       * 선취수수료율만 알면 산술로 확정되는 값이라 직원이 계산기를 두드릴 필요가 없다.
+       * 기준 금액은 투자설명서가 예시로 쓰는 1,000만원에 맞춘다.
+       */
+      case 'feeRate': case 'exAmt': case 'feeCut': case 'netAmt': {
+        var fa = String(valueOf('clsA') || '');
+        var pm = fa.match(/(\d+(?:\.\d+)?)\s*%/);
+        if (!pm) return undefined;
+        var rate = Number(pm[1]), base = 10000000;
+        var cut = Math.round(base * rate / 100);
+        /* 문장이 "그 «율» 인 «금액»" 으로 이어지므로 율만 담는다 (납입금액의 … 은 앞 문장에 있다) */
+        if (id === 'feeRate') return pm[1] + '%';
+        if (id === 'exAmt') return '1,000만원';
+        if (id === 'feeCut') return (cut / 10000).toLocaleString() + '만원';
+        return ((base - cut) / 10000).toLocaleString() + '만원';
+      }
+      /* 초과수익률 = 최근 1년 수익률 − 동종유형 평균 수익률 (뺄셈이라 받아쓸 값이 아니다) */
+      case 'retGap': {
+        var n1 = parseFloat(String(valueOf('ret1y') || '').replace(/[^0-9.\-]/g, ''));
+        var n2 = parseFloat(String(valueOf('retPeer') || '').replace(/[^0-9.\-]/g, ''));
+        if (!isFinite(n1) || !isFinite(n2)) return undefined;
+        return (Math.round((n1 - n2) * 100) / 100) + '%p';
+      }
+      /**
+       * 유사 비계열 펀드 동반 추천은 「계열사 상품을 권유할 때」의 의무다.
+       * 비계열 운용사 상품이면 해당 사항이 없으므로 빨간 확인필요로 남길 값이 아니다.
+       */
+      case 'peerFund': case 'peerRet1y': {
+        var af = String(rawValue('affiliate') || '');
+        if (!/비계열/.test(af)) return undefined;
+        return id === 'peerFund'
+          ? '해당 없음 (비계열 운용사 상품이므로 유사 비계열 펀드 동반 추천 의무 없음)'
+          : '해당 없음';
+      }
       case 'withdrawRight':
         return COMMON.withdrawRight || undefined;
       /* 등록된 투자설명서의 차수별 상환조건 표로 손익구조 문구를 생성한다 */
@@ -16954,6 +17262,8 @@ window.FUND_PROSPECTUS = { updatedAt: null, source: 'DART 투자설명서 공시
       riskGradeBasis: '위험등급 분류 근거 (공통 문구)',
       ytm: '세후 투자수익률',
       monthlyNote: '월수익지급 조건·지급률 (월지급식)',
+      feeRate: '선취판매수수료율', exAmt: '예시 투자금액', feeCut: '선취수수료 차감금액',
+      netAmt: '실제 투자금액', retGap: '초과수익률(%p)', peerRet1y: '비계열 펀드 1년 수익률',
       withdrawRight: '청약철회권 대상여부'
     }[id] || id;
   }
