@@ -88,8 +88,15 @@ const REC = A.slots.map((s) => s.pick);
 const CAU = A.caution;
 const REST = A.items.filter((i) => !A.caution.includes(i));    // 주의 종목을 뺀 나머지
 const safest = A.safest[0];                                   // 손실 확률 최저
+// 스크립트에서 "그래도 부담스러우면 이걸 보시죠" 로 내미는 대안. 지금 이야기하는
+// 상품 자신을 다시 권하지 않도록 추천 1순위는 빼고 고른다.
+const safeAlt = A.safest.find((i) => i.no !== A.slots[0]?.pick?.no) || A.safest[0];
 const topRate = [...A.items].sort((a, b) => b.annualRate - a.annualRate)[0];
-const best = [...A.items].filter((i) => i.mcLoss).sort((a, b) => b.annualRate / b.mcLoss - a.annualRate / a.mcLoss)[0];
+// 표지의 "추천 1순위" 는 3장의 성향별 추천에서 그대로 가져온다. 다른 잣대로 뽑으면
+// 표지와 본문이 서로 다른 상품을 가리킨다.
+const best = REC[0];
+// 위험당 대가 1위는 별도 사실로만 쓴다 (추천 선정 기준이 아니다)
+const bestPerRisk = [...A.items].filter((i) => i.mcLoss).sort((a, b) => b.annualRate / b.mcLoss - a.annualRate / a.mcLoss)[0];
 const perRisk = (i) => i.annualRate / i.mcLoss;
 
 // ══ 1. 표지 겸 요약 ═════════════════════════════════════════════════════════
@@ -110,7 +117,8 @@ const perRisk = (i) => i.annualRate / i.mcLoss;
   // 결론 3줄 — 흰 카드
   const lines = [
     ['추천 1순위', `제${best.no}회 ${best.underlyings.join('·')}${onl(best)}`,
-      `연 ${f1(best.annualRate, 1)}% · 손실 확률 ${f1(best.mcLoss)}% — 위험 1%당 연 ${f1(perRisk(best), 2)}%로 ${A.items.length}종 중 1위`],
+      `연 ${f1(best.annualRate, 1)}% · 손실 확률 ${f1(best.mcLoss)}%로 ${A.items.length}종 중 가장 낮습니다`
+      + (bestPerRisk.no === best.no ? ` (위험 1%당 연 ${f1(perRisk(best), 2)}% 로도 1위)` : '')],
     ['최고 수익률', `제${topRate.no}회 ${topRate.underlyings.join('·')}${onl(topRate)}`,
       `연 ${f1(topRate.annualRate, 1)}% (${topRate.currency === 'USD' ? '달러청약' : '원화'}) · 손실 확률 ${f1(topRate.mcLoss)}%`],
     ['권하지 않음', `제${CAU.map((c) => c.no).join('·')}회 — 해외종목형 ${CAU.length}종`,
@@ -162,10 +170,13 @@ const perRisk = (i) => i.annualRate / i.mcLoss;
 
   // 종목 수가 회차마다 달라 글자 크기를 고정하면 표가 슬라이드를 넘긴다.
   // 행 수에 맞춰 줄이되, 8pt 아래로는 읽을 수 없으니 그 밑으로는 내리지 않는다.
-  // 셀 여백을 줄인 뒤로는 20행도 8.5pt 로 들어간다. 24종을 넘는 회차가 오면 8pt 로 내린다.
-  const FS = A.items.length > 23 ? 8 : 8.5;
-  const RR = FS === 8 ? 0.190 : 0.202;          // 실측 렌더 행 높이 (셀 여백 [1,3,1,3] 기준)
+  // 표를 남는 높이에 맞춰 늘린다. 예전에는 행 높이를 글자 크기가 정하게 두어
+  // 표가 위쪽에 몰리고 아래가 1인치 가까이 비었다. 안내 상자를 슬라이드 아래에
+  // 고정하고, 그 바로 위까지 행 높이를 나눠 준다.
+  const FS = A.items.length > 26 ? 8 : A.items.length > 20 ? 8.5 : 9;
   const HDR = 0.42;                             // 두 줄짜리 머리행 실측 높이
+  const NOTE_Y = 6.62, NOTE_H = 0.52;           // 안내 상자 — 슬라이드 아래에 고정
+  const RH = Math.max(0.19, (NOTE_Y - 0.12 - y0 - HDR) / A.items.length);
 
   const rows = [hdr.map((t) => ({
     text: t, options: { fill: SOFT, color: INK, bold: true, fontSize: FS, align: 'center', valign: 'middle' },
@@ -203,15 +214,14 @@ const perRisk = (i) => i.annualRate / i.mcLoss;
   // 두 줄이 되지 않게 폭과 글자 크기를 맞춰 두고, 아래 안내 상자를 그 높이에 붙인다.
   // 행 높이는 rowH(최소값)보다 셀 여백이 좌우한다. 여백을 줄이지 않으면 20행이
   // 슬라이드를 넘겨 마지막 한 줄 — 하필 손실 확률이 가장 높은 회차 — 이 잘린다.
+  // rowH 는 최소 높이다. 글자가 만드는 자연 높이보다 크게 주면 그 값이 그대로 행 높이가 된다.
   s.addTable(rows, {
-    x: M, y: y0, w: CW, colW, rowH: RR - 0.04, margin: [1, 3, 1, 3],
+    x: M, y: y0, w: CW, colW, rowH: RH, margin: [1, 3, 1, 3],
     border: { type: 'solid', color: HAIR, pt: 0.5 }, fontFace: F,
   });
 
-  // 실제 렌더 행 높이는 rowH(최소값)가 아니라 글자 크기가 정한다.
-  // 표 아래 안내 상자는 그 실측치로 자리를 잡는다. 낮춰 잡으면 마지막 줄을 덮는다.
-  const yN = y0 + HDR + (rows.length - 1) * RR + 0.12;
-  s.addShape(pres.ShapeType.rect, { x: M, y: yN, w: CW, h: 0.46, fill: { color: TINT }, line: { width: 0 } });
+  const yN = NOTE_Y;
+  s.addShape(pres.ShapeType.rect, { x: M, y: yN, w: CW, h: NOTE_H, fill: { color: TINT }, line: { width: 0 } });
   const edge = A.items.filter(onEdge);
   s.addText([
     { text: '읽는 법 — ', options: { bold: true, color: INK } },
@@ -222,7 +232,7 @@ const perRisk = (i) => i.annualRate / i.mcLoss;
     { text: ' 표시는 영업점 창구 청약이 안 되는 상품입니다.  ', options: { color: MUTED } },
     { text: '\u25b3', options: { color: WARN, bold: true } },
     { text: `${edge.length ? ` ${edge.length}종은` : '는'} 손실 확률이 등급 경계에 걸쳐 있어 등급 라벨을 단정할 수 없습니다. A 열은 검증기간이 짧으면 기울임.`, options: { color: MUTED } },
-  ], { x: M + 0.16, y: yN, w: CW - 0.32, h: 0.46, fontFace: F, fontSize: 9, valign: 'middle', margin: 0, lineSpacing: 12 });
+  ], { x: M + 0.16, y: yN, w: CW - 0.32, h: NOTE_H, fontFace: F, fontSize: 9, valign: 'middle', margin: 0, lineSpacing: 12 });
 }
 
 // ══ 3. 추천 3종 ═════════════════════════════════════════════════════════════
@@ -277,7 +287,8 @@ const perRisk = (i) => i.annualRate / i.mcLoss;
 
     const rows = [
       ['3년 총 수익률', `${f1(it.totalRate, 1)}%${it.currency === 'USD' ? ' (달러청약)' : ''}`],
-      ['조기상환', `${it.every}개월마다 ${it.steps}회 · 배리어 ${it.barriers[0]}%부터`],
+      ['조기상환', `${it.every}개월마다 ${it.steps}회 · 배리어 ${it.barriers[0]}%부터`
+        + (it.lizard ? `\n리자드 ${it.lizard.step}차 ${it.lizard.barrier}% (상환 확률 ${f1(it.mcLizard)}%)` : '')],
       ['손실 조건', it.knockIn == null
         ? `만기에 ${100 - it.barriers.at(-1)}% 초과 하락`
         : `${100 - it.knockIn}% 하락 경험 + 만기 ${100 - it.barriers.at(-1)}% 초과 하락`],
@@ -296,7 +307,8 @@ const perRisk = (i) => i.annualRate / i.mcLoss;
   s.addShape(pres.ShapeType.rect, { x: M, y: yN, w: CW, h: 0.46, fill: { color: TINT }, line: { width: 0 } });
   s.addText([
     { text: '한 문장으로 — ', options: { bold: true, color: INK } },
-    { text: `제${REC[0].no}회는 연 ${f1(REC[0].annualRate, 1)}%를 받으면서 손실 확률이 ${f1(REC[0].mcLoss)}%로 지수형 평균(${f1(A.byKind.find((k) => k.key === '지수').loss)}%)보다도 낮습니다. 3개월마다 ${REC[0].steps}번 상환 기회가 있고 배리어가 ${REC[0].barriers[0]}%에서 시작하는 구조 덕입니다.`, options: { color: BODY } },
+    { text: `제${REC[0].no}회는 연 ${f1(REC[0].annualRate, 1)}%를 받으면서 손실 확률이 ${f1(REC[0].mcLoss)}%로 지수형 평균(${f1(A.byKind.find((k) => k.key === '지수').loss)}%)보다도 낮습니다. ${REC[0].every}개월마다 ${REC[0].steps}번 상환 기회가 있고 배리어가 ${REC[0].barriers[0]}%에서 시작하는 구조`
+      + (REC[0].lizard ? `, 그리고 ${REC[0].lizard.step}차까지 ${REC[0].lizard.barrier}% 아래로만 안 가면 상환되는 리자드 조항 덕입니다 — 시뮬레이션에서 ${f1(REC[0].mcLizard)}%가 이 조항으로 끝났습니다.` : ' 덕입니다.'), options: { color: BODY } },
   ], { x: M + 0.16, y: yN, w: CW - 0.32, h: 0.46, fontFace: F, fontSize: 9.5, valign: 'middle', margin: 0 });
 }
 
@@ -379,7 +391,9 @@ const perRisk = (i) => i.annualRate / i.mcLoss;
   const hs = HS[0];
   const scripts = [
     ['“원금을 다 날릴 수도 있다면서요.”',
-      `손실은 두 가지가 동시에 맞아야 납니다. 제${R.no}회는 3년 안에 한 번이라도 ${100 - R.knockIn}% 떨어진 적이 있고, 만기에도 ${100 - R.barriers.at(-1)}% 넘게 떨어져 있어야 손실입니다. 발행사가 실제 과거 시세 ${A.head.simYearsWhole}년으로 ${R.simRuns.toLocaleString('ko-KR')}번 돌린 결과 손실은 ${f1(R.simLoss, 2)}%였습니다. 다만 그 ${f1(R.mcLoss)}%가 현실이 되면 평균 ${f1(Math.abs(R.mcAvgLoss))}%를 잃습니다. 확률은 낮고 크기는 큽니다.`],
+      `${R.knockIn == null
+        ? `제${R.no}회는 낙인이 없는 상품이라 조건이 하나입니다 — 만기에 ${100 - R.barriers.at(-1)}% 넘게 떨어져 있을 때만 손실입니다. 중간에 아무리 빠져도 만기에 회복해 있으면 약정 수익을 받습니다.`
+        : `손실은 두 가지가 동시에 맞아야 납니다. 제${R.no}회는 3년 안에 한 번이라도 ${100 - R.knockIn}% 떨어진 적이 있고, 만기에도 ${100 - R.barriers.at(-1)}% 넘게 떨어져 있어야 손실입니다.`} 발행사가 실제 과거 시세 ${A.head.simYearsWhole}년으로 ${R.simRuns.toLocaleString('ko-KR')}번 돌린 결과 손실은 ${f1(R.simLoss, 2)}%였습니다. 다만 그 ${f1(R.mcLoss)}%가 현실이 되면 평균 ${f1(Math.abs(R.mcAvgLoss))}%를 잃습니다. 확률은 낮고 크기는 큽니다.`],
     ['“홍콩 ELS로 크게 물린 분들 많잖아요.”',
       HS.length
         ? `맞습니다. 그때 문제의 핵심은 낙인이 높았다는 것이었습니다. 이번 회차에서 HSCEI가 들어간 건 제${HS.map((i) => i.no).join('·')}회 ${HS.length}종뿐이고, 낙인은 ${HS.map((i) => i.knockIn).join('%·')}%입니다. 제${hs.no}회 기준 지금 지수에서 ${100 - hs.knockIn}%를 더 내려가야 손실 구간에 들어갑니다. 상품을 고르실 때 수익률이 아니라 이 낙인 숫자를 먼저 보시면 됩니다.`
@@ -389,7 +403,7 @@ const perRisk = (i) => i.annualRate / i.mcLoss;
     ['“3년이나 묶이는 거 아닌가요.”',
       `3년은 최장 기간이고 대부분 훨씬 일찍 끝납니다. 제${R.no}회는 ${R.every}개월마다 ${R.steps}번 상환 기회가 있고, 첫 회에 끝난 경우가 백테스트 ${f1(R.simFirst)}%였습니다. 중도상환도 가능합니다만 그때는 원금 손실이 날 수 있어서, 3년 쓸 일 없는 돈으로만 하셔야 합니다.`],
     ['“지금이 고점 아닌가요.”',
-      `고점인지 아닌지는 저도 모릅니다. 다만 이 상품은 오르면 버는 구조가 아니라 크게 안 떨어지면 버는 구조입니다. 제${R.no}회는 ${R.barriers[0]}% 배리어라 기초자산이 ${100 - R.barriers[0]}% 떨어져도 첫 회에 상환됩니다. 그래도 부담스러우시면 손실 확률이 가장 낮은 제${safest.no}회(${f1(safest.mcLoss)}%, 연 ${f1(safest.annualRate, 1)}%)를 보시죠.`],
+      `고점인지 아닌지는 저도 모릅니다. 다만 이 상품은 오르면 버는 구조가 아니라 크게 안 떨어지면 버는 구조입니다. 제${R.no}회는 ${R.barriers[0]}% 배리어라 기초자산이 ${100 - R.barriers[0]}% 떨어져도 첫 회에 상환됩니다. 그래도 부담스러우시면 손실 확률이 그다음으로 낮은 제${safeAlt.no}회(${f1(safeAlt.mcLoss)}%, 연 ${f1(safeAlt.annualRate, 1)}%)를 보시죠.`],
     ['“그냥 수익률 제일 높은 걸로 주세요.”',
       `그게 이번엔 안 맞습니다. 연 ${f1(CAU[0].annualRate, 1)}%인 제${CAU[0].no}회는 손실 확률이 ${f1(CAU[0].mcLoss)}%로, 연 ${f1(topRate.annualRate, 1)}%인 제${topRate.no}회(${f1(topRate.mcLoss)}%)의 ${f1(CAU[0].mcLoss / topRate.mcLoss, 1)}배입니다. 수익률과 위험이 비례하지 않습니다. 같은 위험이면 더 받는 쪽으로 골라 드리겠습니다.`],
   ];

@@ -288,24 +288,38 @@ export async function analyze(rcpNo) {
   const krw = (it) => it.currency === 'KRW';
   const sane = (i) => (i.fairValueGap ?? 0) > -5 && !i.simShort;   // 출발 가치가 깎였거나 표본이 짧으면 제외
   const pickMax = (list, by) => list.length ? list.reduce((a, b) => (by(b) > by(a) ? b : a)) : null;
+  /**
+   * 방어 자리는 "가장 낮은 손실 확률" 로 고른다.
+   * 예전에는 방어 등급(tier 0) 안에서 수익률이 가장 높은 것을 골랐는데, 그러면
+   * 라벨과 규칙이 어긋난다 — 같은 tier 0 안에서도 손실 확률이 1.4% 부터 14.7% 까지
+   * 열 배로 벌어지는 회차가 있어, 원금을 지키러 온 고객에게 그 구간에서 가장 위험한
+   * 상품을 권하게 된다. 확률이 같은 값이면 수익률로 가른다.
+   */
+  /**
+   * 세 자리를 순서대로 뽑고, 뽑힌 상품은 다음 자리에서 제외한다.
+   * 예전에는 자리마다 등급(tier)으로 후보를 가둔 뒤 겹치면 사후에 바꿨는데,
+   * 그러면 등급 칸이 다르다는 이유로 수익·위험 양쪽에서 더 나은 상품이 아예
+   * 후보에서 빠지는 일이 생긴다.
+   */
+  const taken = new Set();
+  const takeMax = (list, by) => {
+    const p = pickMax(list.filter((i) => !taken.has(i.no)), by);
+    if (p) taken.add(p.no);
+    return p;
+  };
   const slots = [
     { label: '원금을 지키는 게 먼저인 분',
-      why: '컴퓨터로 돌려봤을 때 손해 볼 가능성이 가장 낮은 축에 들면서, 그중에서는 수익률이 제일 높습니다.',
-      pick: pickMax(items.filter((i) => i.tier === 0 && krw(i) && sane(i)), (i) => i.annualRate) },
+      why: '컴퓨터로 돌려봤을 때 이번 회차에서 손해 볼 가능성이 가장 낮습니다.',
+      pick: takeMax(items.filter((i) => krw(i) && sane(i) && i.mcLoss != null),
+        (i) => -i.mcLoss * 1000 + i.annualRate) },
     { label: '수익과 안정을 반반 보는 분',
-      why: '손해 볼 가능성이 한 단계 올라가는 대신, 받는 수익률이 그보다 훨씬 크게 붙는 자리입니다.',
-      pick: pickMax(items.filter((i) => i.tier === 1 && krw(i) && sane(i)), (i) => i.value) },
+      why: '지는 위험 1%당 받는 수익률이 이번 회차에서 가장 큽니다 — 같은 위험이면 여기가 제일 많이 줍니다.',
+      pick: takeMax(items.filter((i) => krw(i) && sane(i) && i.tier < 2 && i.mcLoss),
+        (i) => i.annualRate / i.mcLoss) },
     { label: '수익률을 먼저 보는 분',
-      why: '이번 주에서 가장 높은 수익률입니다. 넣는 순간의 값어치가 크게 깎이지 않은 상품 중에서 골랐습니다.',
-      pick: pickMax(items.filter((i) => sane(i) && i.tier < 2), (i) => i.annualRate) },
+      why: '이번 회차에서 가장 높은 수익률입니다. 넣는 순간의 값어치가 크게 깎이지 않은 상품 중에서 골랐습니다.',
+      pick: takeMax(items.filter((i) => sane(i) && i.tier < 2), (i) => i.annualRate) },
   ].filter((s) => s.pick);
-  // 같은 상품이 두 자리를 차지하면 뒤쪽을 차선책으로 바꾼다
-  const seen = new Set();
-  for (const s of slots) {
-    if (!seen.has(s.pick.no)) { seen.add(s.pick.no); continue; }
-    const alt = pickMax(items.filter((i) => !seen.has(i.no) && sane(i)), (i) => i.value);
-    if (alt) { s.pick = alt; seen.add(alt.no); }
-  }
 
   const caution = items
     .filter((it) => (it.fairValueGap ?? 0) <= -10 || it.tier === 2 || it.simShort)
