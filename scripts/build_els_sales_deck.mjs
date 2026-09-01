@@ -36,6 +36,23 @@ const dot = (s) => (s || '').replace(/-/g, '.');
 // 찍으면 환위험이 있는 상품을 원화 상품으로 읽게 만든다.
 const fv = (it) => `${won(it.fairValue)}${it.currency === 'KRW' ? '원' : unitOf(it)}`;
 const byNo = (n) => A.items.find((i) => i.no === n);
+// 배리어 수열은 12차 상품에서 35자가 넘는다. 같은 값이 이어지면 묶어 적는다
+// (85-85-85-80-75-70 -> 85x3-80-75-70). 정보는 그대로고 폭은 절반이다.
+const barrierText = (it) => {
+  const out = [];
+  for (const b of it.barriers) {
+    const last = out[out.length - 1];
+    if (last && last.v === b) last.n++;
+    else out.push({ v: b, n: 1 });
+  }
+  return out.map((g) => (g.n > 1 ? `${g.v}\u00d7${g.n}` : `${g.v}`)).join('-')
+    + (it.lizard ? ` (L${it.lizard.step}\u00b7${it.lizard.barrier})` : '');
+};
+// 조기상환 확률 — 만기 전에 끝날 확률과 만기까지 갈 확률
+const early = (it) => (it.mcByStep ? it.mcByStep.slice(0, -1).reduce((a, c) => a + c, 0) : null);
+const atMaturity = (it) => (it.mcByStep ? it.mcByStep[it.mcByStep.length - 1] : null);
+// 등급 경계에 걸친 상품 — 시뮬레이션 오차 범위 안에 경계가 들어오면 라벨을 단정하면 안 된다
+const onEdge = (it) => it.mcCI != null && TIER_CUT.some((c) => Math.abs(it.mcLoss - c) < 2 * it.mcCI);
 
 // 온라인 전용 — 홈페이지 상품명 끝의 e. 영업점 창구 청약이 안 되므로 상담에서 먼저 말해야 한다.
 const w = {};
@@ -136,17 +153,19 @@ const perRisk = (i) => i.annualRate / i.mcLoss;
 {
   const s = slide();
   const y0 = head(s, `이번 회차 ${A.items.length}종 — 손실 확률로 줄 세우면`,
-    `A는 발행사가 실제 과거 시세 ${A.head.simYearsWhole}년으로 돌린 결과, B는 같은 조건을 공시 변동성·상관계수로 4만 번 다시 돌린 결과. 등급은 B 하나로만 가릅니다 — ${TIER_CUT[0]}% 이하 방어적 / ${TIER_CUT[0]}~${TIER_CUT[1]}% 중간 / ${TIER_CUT[1]}% 초과 공격적.`);
+    `A는 발행사가 실제 과거 시세 ${A.head.simYearsWhole}년으로 돌린 결과, B는 같은 조건을 공시 변동성·상관계수로 ${(A.mc.paths / 10000).toFixed(0)}만 번 다시 돌린 결과(± 는 95% 신뢰구간). 등급은 B 하나로만 가릅니다 — ${TIER_CUT[0]}% 이하 방어적 / ${TIER_CUT[0]}~${TIER_CUT[1]}% 중간 / ${TIER_CUT[1]}% 초과 공격적.`);
 
   const hdr = ['회차', '기초자산', '연\n수익률', '조기상환\n주기', '배리어 (%)', '낙인\n(%)',
-    'B. 시뮬레이션\n손실 확률', '등급', 'A. 설명서상\n백테스트 (검증기간)', '액면 1만 단위\n출발 가치'];
-  const colW = [0.70, 2.96, 0.74, 0.74, 2.20, 0.53, 1.10, 0.70, 1.353, 1.093];  // 합 12.093
+    'B. 시뮬레이션\n손실 확률', '등급', '1차에\n끝날 확률', '만기까지\n갈 확률',
+    'A. 설명서상\n백테스트', '액면 1만\n출발 가치'];
+  const colW = [0.66, 2.67, 0.72, 0.70, 1.55, 0.50, 1.15, 0.66, 0.72, 0.72, 1.10, 0.943];  // 합 12.093
 
   // 종목 수가 회차마다 달라 글자 크기를 고정하면 표가 슬라이드를 넘긴다.
   // 행 수에 맞춰 줄이되, 8pt 아래로는 읽을 수 없으니 그 밑으로는 내리지 않는다.
-  const FS = A.items.length >= 20 ? 8 : 8.5;
-  const RR = FS === 8 ? 0.218 : 0.232;          // 실측 렌더 행 높이 (셀 여백 [1,3,1,3] 기준)
-  const HDR = 0.38;                             // 두 줄짜리 머리행 실측 높이
+  // 셀 여백을 줄인 뒤로는 20행도 8.5pt 로 들어간다. 24종을 넘는 회차가 오면 8pt 로 내린다.
+  const FS = A.items.length > 23 ? 8 : 8.5;
+  const RR = FS === 8 ? 0.190 : 0.202;          // 실측 렌더 행 높이 (셀 여백 [1,3,1,3] 기준)
+  const HDR = 0.42;                             // 두 줄짜리 머리행 실측 높이
 
   const rows = [hdr.map((t) => ({
     text: t, options: { fill: SOFT, color: INK, bold: true, fontSize: FS, align: 'center', valign: 'middle' },
@@ -159,14 +178,21 @@ const perRisk = (i) => i.annualRate / i.mcLoss;
     const cell = (text, o = {}) => ({ text, options: { fill: bg, fontSize: FS, color: BODY, valign: 'middle', ...o } });
     rows.push([
       cell(String(it.no), { align: 'center', bold: rec || bad, color: rec ? ACTIVE : bad ? BAD : INK }),
-      cell(it.underlyings.join('·') + (ONLINE.has(it.no) ? ' *' : ''), { fontSize: FS - 0.5 }),
+      { text: ONLINE.has(it.no)
+          ? [{ text: it.underlyings.join('·') + '  ', options: { fontSize: FS - 0.5, color: BODY } },
+             { text: '온라인', options: { fontSize: FS - 1.5, color: BLUE, bold: true } }]
+          : it.underlyings.join('·'),
+        options: { fill: bg, fontSize: FS - 0.5, color: BODY, valign: 'middle' } },
       cell(`${f1(it.annualRate, 1)}%${it.currency === 'USD' ? ' $' : ''}`, { align: 'right', bold: true, color: INK }),
       cell(`${it.every}M · ${it.steps}회`, { align: 'center', fontSize: FS - 0.5 }),
-      cell(it.barriers.join('-') + (it.lizard ? ` (리자드 ${it.lizard.step}차 ${it.lizard.barrier})` : ''), { fontSize: FS - 1, align: 'center' }),
+      cell(barrierText(it), { fontSize: FS - 1, align: 'center' }),
       cell(it.knockIn == null ? '없음' : String(it.knockIn), { align: 'center' }),
-      cell(`${f1(it.mcLoss)}%`, { align: 'right', bold: true, color: TIER_INK[it.tier] }),
-      { text: tierOf(it).name, options: { fill: TIER_BG[it.tier], color: TIER_INK[it.tier], bold: true, fontSize: 8.5, align: 'center', valign: 'middle' } },
-      cell(`${f1(it.simLoss, 2)}%  (${f1(it.simYears)}년)`, {
+      cell(`${f1(it.mcLoss)}% ±${f1(it.mcCI, 2)}`, { align: 'right', bold: true, color: TIER_INK[it.tier] }),
+      { text: tierOf(it).name + (onEdge(it) ? ' \u25b3' : ''),
+        options: { fill: TIER_BG[it.tier], color: TIER_INK[it.tier], bold: true, fontSize: FS, align: 'center', valign: 'middle' } },
+      cell(`${f1(it.mcByStep[0])}%`, { align: 'right', color: OK }),
+      cell(`${f1(atMaturity(it))}%`, { align: 'right' }),
+      cell(`${f1(it.simLoss, 2)}% (${f1(it.simYears)}년)`, {
         align: 'right', color: it.simShort ? WARN : BODY, italic: it.simShort,
       }),
       cell(fv(it), { align: 'right', bold: bad, color: bad ? BAD : BODY }),
@@ -184,15 +210,19 @@ const perRisk = (i) => i.annualRate / i.mcLoss;
 
   // 실제 렌더 행 높이는 rowH(최소값)가 아니라 글자 크기가 정한다.
   // 표 아래 안내 상자는 그 실측치로 자리를 잡는다. 낮춰 잡으면 마지막 줄을 덮는다.
-  const yN = y0 + HDR + (rows.length - 1) * RR + 0.10;
+  const yN = y0 + HDR + (rows.length - 1) * RR + 0.12;
   s.addShape(pres.ShapeType.rect, { x: M, y: yN, w: CW, h: 0.46, fill: { color: TINT }, line: { width: 0 } });
+  const edge = A.items.filter(onEdge);
   s.addText([
     { text: '읽는 법 — ', options: { bold: true, color: INK } },
     { text: `주황 줄이 추천 ${REC.length}종, 붉은 줄이 권하지 않는 ${CAU.length}종. `, options: { color: BODY } },
-    { text: '‘1만원의 출발 가치’는 발행사가 공시한 공정가격', options: { color: BODY } },
-    { text: `으로, 액면 1만 단위를 넣는 순간의 이론 값어치입니다 — 맨 아래 ${CAU.length}종만 ${won(Math.max(...CAU.map((c) => c.fairValue)))}원 이하입니다.   `, options: { color: BODY } },
-    { text: '* 온라인 전용 (영업점 창구 청약 불가). 달러청약 상품은 액면 USD 10,000 기준. A 열의 검증기간이 짧은 회차는 기울임 — 20년 상품과 같은 줄에서 비교할 수 없습니다.', options: { color: MUTED } },
-  ], { x: M + 0.16, y: yN, w: CW - 0.32, h: 0.46, fontFace: F, fontSize: 9.5, valign: "middle", margin: 0, lineSpacing: 13 });
+    { text: '‘출발 가치’는 발행사가 공시한 공정가격', options: { color: BODY } },
+    { text: `으로, 액면 1만 단위를 넣는 순간의 이론 값어치입니다 — 맨 아래 ${CAU.length}종만 ${won(Math.max(...CAU.map((c) => c.fairValue)))}원 이하.  `, options: { color: BODY } },
+    { text: '온라인', options: { color: BLUE, bold: true } },
+    { text: ' 표시는 영업점 창구 청약이 안 되는 상품입니다.  ', options: { color: MUTED } },
+    { text: '\u25b3', options: { color: WARN, bold: true } },
+    { text: `${edge.length ? ` ${edge.length}종은` : '는'} 손실 확률이 등급 경계에 걸쳐 있어 등급 라벨을 단정할 수 없습니다. A 열은 검증기간이 짧으면 기울임.`, options: { color: MUTED } },
+  ], { x: M + 0.16, y: yN, w: CW - 0.32, h: 0.46, fontFace: F, fontSize: 9, valign: 'middle', margin: 0, lineSpacing: 12 });
 }
 
 // ══ 3. 추천 3종 ═════════════════════════════════════════════════════════════
@@ -209,7 +239,7 @@ const perRisk = (i) => i.annualRate / i.mcLoss;
   A.slots.forEach((sl, i) => {
     const it = sl.pick;
     const x = M + i * (cw + 0.18);
-    s.addShape(pres.ShapeType.rect, { x, y: y0, w: cw, h: 4.62, fill: { color: WHITE }, line: { color: HAIR, width: 1 } });
+    s.addShape(pres.ShapeType.rect, { x, y: y0, w: cw, h: 5.00, fill: { color: WHITE }, line: { color: HAIR, width: 1 } });
     s.addShape(pres.ShapeType.rect, { x, y: y0, w: cw, h: 0.055, fill: { color: i === 0 ? OK : i === 1 ? ORANGE : BLUE }, line: { width: 0 } });
 
     s.addText(sl.label, { x: x + 0.22, y: y0 + 0.22, w: cw - 0.44, h: 0.26, fontFace: F, fontSize: 11, bold: true, color: i === 0 ? OK : i === 1 ? ACTIVE : BLUE, margin: 0 });
@@ -223,24 +253,46 @@ const perRisk = (i) => i.annualRate / i.mcLoss;
     s.addText('손실 확률 (B)', { x: x + 0.38 + (cw - 0.76) / 2, y: y0 + 1.54, w: (cw - 0.76) / 2, h: 0.2, fontFace: F, fontSize: 8.5, color: MUTED, margin: 0 });
     s.addText(`${f1(it.mcLoss)}%`, { x: x + 0.38 + (cw - 0.76) / 2, y: y0 + 1.74, w: (cw - 0.76) / 2, h: 0.46, fontFace: F, fontSize: 26, bold: true, color: TIER_INK[it.tier], margin: 0 });
 
+    // ── 조기상환 확률 ──
+    // 상담에서 가장 많이 듣는 질문이 "3년 묶이는 거 아니냐" 다.
+    // 차수별 확률을 그대로 보여주는 편이 어떤 설명보다 빠르다.
+    const bs = it.mcByStep, nStep = bs.length;
+    const p1 = bs[0], pMid = bs.slice(1, -1).reduce((a, c) => a + c, 0), pEnd = bs[nStep - 1];
+    const bx = x + 0.22, bw = cw - 0.44, by = y0 + 2.62;
+    s.addText('조기상환 확률 (시뮬레이션)', { x: bx, y: y0 + 2.40, w: bw, h: 0.2, fontFace: F, fontSize: 8.5, color: MUTED, margin: 0 });
+    let acc = 0;
+    [[p1, OK], [pMid, SOFT], [pEnd, '9AA6B2']].forEach(([v, c]) => {
+      const w2 = bw * v / 100;
+      if (w2 > 0.001) s.addShape(pres.ShapeType.rect, { x: bx + bw * acc / 100, y: by, w: w2, h: 0.17, fill: { color: c }, line: { width: 0 } });
+      acc += v;
+    });
+    s.addText([
+      { text: `1차 ${f1(p1)}%`, options: { color: OK, bold: true } },
+      { text: `  ·  2~${nStep - 1}차 ${f1(pMid)}%`, options: { color: ACTIVE } },
+      { text: `  ·  만기 ${f1(pEnd)}%`, options: { color: MUTED } },
+    ], { x: bx, y: by + 0.19, w: bw, h: 0.2, fontFace: F, fontSize: 8.5, margin: 0 });
+    s.addText(bs.map((v, k) => `${k + 1}차 ${f1(v)}`).join(' · ') + '  (%)', {
+      x: bx, y: by + 0.39, w: bw, h: 0.32, fontFace: F, fontSize: 7.5, color: MUTED, margin: 0, lineSpacing: 10,
+    });
+
     const rows = [
       ['3년 총 수익률', `${f1(it.totalRate, 1)}%${it.currency === 'USD' ? ' (달러청약)' : ''}`],
       ['조기상환', `${it.every}개월마다 ${it.steps}회 · 배리어 ${it.barriers[0]}%부터`],
       ['손실 조건', it.knockIn == null
         ? `만기에 ${100 - it.barriers.at(-1)}% 초과 하락`
         : `${100 - it.knockIn}% 하락 경험 + 만기 ${100 - it.barriers.at(-1)}% 초과 하락`],
-      ['설명서 백테스트 (A)', `${f1(it.simYears)}년 ${it.simRuns.toLocaleString('ko-KR')}회 중 손실 ${f1(it.simLoss, 2)}% · 1차 상환 ${f1(it.simFirst)}%`],
+      ['설명서 백테스트 (A)', `손실 ${f1(it.simLoss, 2)}% · 1차 상환 ${f1(it.simFirst)}% · ${f1(it.simYears)}년`],
       ['액면 1만 단위 출발 가치', `${fv(it)} (${sgn(it.fairValueGap, 2)}%)`],
       ['위험 1%당 연 수익률', `${f1(perRisk(it), 2)}%`],
     ];
     rows.forEach(([k, v], j) => {
-      const y = y0 + 2.5 + j * 0.36;
-      s.addText(k, { x: x + 0.22, y, w: 1.42, h: 0.32, fontFace: F, fontSize: 8.5, color: MUTED, valign: 'top', margin: 0 });
-      s.addText(v, { x: x + 1.66, y, w: cw - 1.88, h: 0.32, fontFace: F, fontSize: 8.5, color: BODY, valign: 'top', margin: 0, lineSpacing: 11 });
+      const y = y0 + 3.36 + j * 0.275;
+      s.addText(k, { x: x + 0.22, y, w: 1.42, h: 0.26, fontFace: F, fontSize: 8, color: MUTED, valign: 'top', margin: 0 });
+      s.addText(v, { x: x + 1.66, y, w: cw - 1.88, h: 0.26, fontFace: F, fontSize: 8, color: BODY, valign: 'top', margin: 0, lineSpacing: 10 });
     });
   });
 
-  const yN = y0 + 4.78;
+  const yN = y0 + 5.12;
   s.addShape(pres.ShapeType.rect, { x: M, y: yN, w: CW, h: 0.46, fill: { color: TINT }, line: { width: 0 } });
   s.addText([
     { text: '한 문장으로 — ', options: { bold: true, color: INK } },

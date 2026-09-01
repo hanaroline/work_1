@@ -7,12 +7,44 @@
  * 두 산출물이 각자 계산하면 언젠가 반드시 갈라진다. 등급 기준·추천 규칙·자산군 평균은
  * 전부 여기 한 곳에만 둔다.
  */
-import { readFile } from 'node:fs/promises';
+import { readFile, writeFile } from 'node:fs/promises';
 import { drawdown, backtest, fromProspectus, startIndex } from './els-engine.mjs';
-import { montecarlo } from './els-mc.mjs';
+import { montecarlo, MC_VERSION } from './els-mc.mjs';
 import { spearman, regress, pairAgreement } from './els-stats.mjs';
 
-export const MC = { paths: 40000, seed: 20260823 };   // 시드 고정 — 빌드마다 숫자가 흔들리면 안 된다
+export const MC = { paths: 100000, seed: 20260823 };  // 시드 고정 — 빌드마다 숫자가 흔들리면 안 된다
+// 상관계수 민감도는 "결론이 이 한 값에 얹혀 있나" 를 보는 용도라 본 계산만큼의
+// 정밀도가 필요 없다. 여섯 번을 다 본 정밀도로 돌리면 빌드가 몇 분씩 길어진다.
+export const MC_SENS = { paths: 25000, seed: 20260823 };
+
+/**
+ * 몬테카를로 결과 캐시.
+ * 한 회차를 분석하면 20종 × 756스텝 × 10만 경로가 돌아 1분을 넘긴다. HTML·PPT·대장이
+ * 각각 analyze() 를 부르므로 캐시가 없으면 같은 계산을 세 번 한다. 입력이 같으면
+ * 결과가 같도록 시드를 고정해 두었으니, 그 사실을 그대로 이용한다.
+ */
+const CACHE_FILE = 'tools/discovery/mc-cache.json';
+let CACHE = null, CACHE_DIRTY = false;
+const cacheKey = (rcp, no, tag, opts) => [MC_VERSION, rcp, no, tag, opts.paths, opts.seed, opts.drift ?? 0].join(':');
+
+async function loadCache() {
+  if (CACHE) return CACHE;
+  CACHE = await readFile(CACHE_FILE, 'utf8').then(JSON.parse).catch(() => ({}));
+  for (const k of Object.keys(CACHE)) if (!k.startsWith(`${MC_VERSION}:`)) delete CACHE[k];  // 옛 판 버림
+  return CACHE;
+}
+async function saveCache() {
+  if (CACHE_DIRTY) await writeFile(CACHE_FILE, JSON.stringify(CACHE, null, 0));
+  CACHE_DIRTY = false;
+}
+/** 캐시를 거쳐 몬테카를로를 돌린다. key 가 없으면 캐시하지 않는다. */
+function mcRun(p, vols, pairs, opts, key) {
+  if (!p) return null;
+  if (key && CACHE && CACHE[key]) return CACHE[key];
+  const r = montecarlo(p, vols, pairs, opts);
+  if (key && CACHE && r) { CACHE[key] = r; CACHE_DIRTY = true; }
+  return r;
+}
 export const IDX = new Set(['KOSPI200', 'S&P500', 'Nikkei225', 'EuroStoxx50', 'HSCEI']);
 export const KINDS = ['지수', '혼합', '종목'];
 export const TIER_CUT = [15, 25];                     // MC 손실확률(%) 경계
@@ -53,7 +85,7 @@ export const josa = (word, withJong, withoutJong) => {
   return (c - 0xac00) % 28 ? withJong : withoutJong;
 };
 
-function enrich(item, H) {
+function enrich(item, H, rcp) {
   const p = fromProspectus(item);
   const bt = p && backtest(p, H);
   const dd = p && drawdown(p, H);
@@ -74,7 +106,7 @@ function enrich(item, H) {
   const simWin = item.simLoss == null ? null : +(100 - item.simLoss).toFixed(2);
 
   // 전 상품을 같은 조건으로 견주기 위한 몬테카를로 — 입력은 발행사가 이론가에 쓴 변동성·상관계수
-  const mc = p && montecarlo(p, item.volatility, item.correlation, MC);
+  const mc = mcRun(p, item.volatility, item.correlation, MC, cacheKey(rcp, item.no, 'base', MC));
   const vmax = item.volatility.length ? Math.max(...item.volatility.map((v) => v.vol)) : null;
   const rho = item.correlation.length ? Math.min(...item.correlation.map((c) => c.rho)) : null;
 
@@ -93,6 +125,7 @@ function enrich(item, H) {
     covAt, covYears,
     simYears, simYearsWhole, simShort, simWin,
     mcLoss: mc?.lossRate, mcKi: mc?.kiRate, mcFirst: mc?.firstRate, mcAvgLoss: mc?.avgLoss,
+    mcSE: mc?.se, mcCI: mc?.ci95, mcByStep: mc?.byStep, mcLizard: mc?.lizardRate, mcPaths: mc?.paths,
     // 기대손실 = 손실 확률 × 평균 손실폭. 줄 세우기는 손실 확률로 하되,
     // 확률만으로 설명되지 않는 부분이 어디서 오는지 보려면 이 값이 필요하다.
     mcExpLoss: mc ? (mc.lossRate / 100) * Math.abs(mc.avgLoss) : null,
@@ -182,11 +215,12 @@ function couponStudy(items, best) {
 }
 
 /** 결론이 공시 상관계수 한 값에 얹혀 있지 않은지 흔들어 본다 */
-function rhoSensitivity(it) {
+function rhoSensitivity(it, rcp) {
   if (!it || !it.correlation?.length) return null;
   const p = fromProspectus(it);
   const rows = [null, 0.9, 0.8, 0.7, 0.6, 0.5].map((r) => {
-    const mc = montecarlo(p, it.volatility, r == null ? it.correlation : it.correlation.map((c) => ({ ...c, rho: r })), MC);
+    const mc = mcRun(p, it.volatility, r == null ? it.correlation : it.correlation.map((c) => ({ ...c, rho: r })), MC_SENS,
+      cacheKey(rcp, it.no, `rho:${r ?? 'disclosed'}`, MC_SENS));
     const exp = (mc.lossRate / 100) * Math.abs(mc.avgLoss);
     return { rho: r, loss: mc.lossRate, expLoss: exp, ratio: it.annualRate / mc.lossRate };
   });
@@ -205,7 +239,8 @@ export async function analyze(rcpNo) {
 
   const states = await readFile('tools/discovery/offer_states.json', 'utf8').then(JSON.parse).catch(() => null);
   const batch = P[RCP];
-  const items = batch.items.map((it) => enrich(it, H));
+  await loadCache();
+  const items = batch.items.map((it) => enrich(it, H, RCP));
   const head = items[0];
 
   /**
@@ -284,8 +319,10 @@ export async function analyze(rcpNo) {
 
   // 쿠폰과 위험이 정말 비례하는가 — 위험당 대가가 가장 좋은 상품으로 상관 민감도까지 확인한다
   const coupon = couponStudy(items, slots[0]?.pick);
-  coupon.sens = rhoSensitivity(coupon.eff.fairBest);
+  coupon.sens = rhoSensitivity(coupon.eff.fairBest, RCP);
   coupon.sensIsPick = coupon.sens != null && slots.some((s) => s.pick.no === coupon.sens.no);
+
+  await saveCache();
 
   return {
     coupon,
@@ -293,6 +330,7 @@ export async function analyze(rcpNo) {
     filedOn: `${RCP.slice(0, 4)}.${RCP.slice(4, 6)}.${RCP.slice(6, 8)}`,
     offer: (batch.offer || '').split('~').map((s) => s.trim().replace(/-/g, '.')),
     checkedAt: w.ELS_DATA.checkedAt || w.ELS_DATA.updatedAt || null,
+    mc: { ...MC, version: MC_VERSION },
     onOfferNow: states?.['01']?.count ?? null,
     plan,
     byKind, mcAvgAll, kindRatio, safest, idxWorst, stockBest,
