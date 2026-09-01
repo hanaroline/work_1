@@ -640,6 +640,71 @@
         map: function (m) { return m[1] ? m[1] + '%' : '없음 (노낙인)'; }
       },
       {
+        /* 이론가 산출에 쓴 기초자산별 변동성 — "- EUROSTOXX50 지수 : 22.63%" 가 줄마다 이어진다 */
+        id: 'underVol', label: '기초자산별 변동성',
+        fn: function (t) {
+          var at = String(t).search(/기초자산\s*가격\s*변동성/);
+          if (at < 0) return null;
+          var seg = String(t).slice(at, at + 600);
+          /* 뒤이어 나오는 상관계수 줄(% 없음)은 걸러진다 */
+          var v = [], re = /-\s*([^\n:]{2,40}?)\s*:\s*([\d.]+)\s*%/g, m;
+          while ((m = re.exec(seg))) v.push(m[1].trim() + ' ' + m[2] + '%');
+          return v.length ? { value: v.join(', '), index: at, length: 40 } : null;
+        }
+      },
+      {
+        id: 'fixMethod', label: '최초기준가격 평가방법',
+        re: [/최초기준가격\s*[:：]\s*([^\n]{6,80})/],
+        map: function (m) { return m[1].replace(/\s+/g, ' ').trim(); }
+      },
+      {
+        /**
+         * 중도상환 가격평가일 — 기초자산 소재지로 갈린다.
+         * 모두 아시아면 신청일 당일 종가, 비아시아가 섞이면 익거래소영업일 종가가 반영된다.
+         */
+        id: 'midPriceDate', label: '중도상환 가격평가일',
+        fn: function (t) {
+          var r = rowValue(t, /^기초자산$/);
+          if (!r) return null;
+          var nonAsia = /S&P|EURO|STOXX|NASDAQ|DOW|NIKKEI|Micron|Applied|Broadcom|Tesla|Palantir|마이크론|어플라이드|브로드컴|테슬라|팔란티어|NVIDIA|엔비디아/i.test(r.value);
+          return {
+            value: nonAsia
+              ? '중도상환 신청 시 적용되는 공정가액은 중도상환 신청일의 익거래소영업일 및 영업일 종가를 반영하여 결정됩니다. (기초자산에 非아시아 지역 거래자산 포함)'
+              : '중도상환 신청 시 적용되는 공정가액은 중도상환 신청일의 거래소영업일 및 영업일 종가를 반영하여 결정됩니다. (기초자산이 모두 아시아 지역 거래자산)',
+            index: r.index, length: r.length
+          };
+        }
+      },
+      {
+        /* 손실 발생 상황 — 문서에 있는 낙인·만기 배리어 조항만으로 만든다 */
+        id: 'lossExample', label: '손실 발생 상황 및 손실 추정액',
+        fn: function (t) {
+          var pp = elsProtected(t);
+          var u = rowValue(t, /^기초자산$/);
+          if (pp.on) {
+            return {
+              value: '이 상품은 원금지급형(파생결합사채)으로 만기까지 보유하시면 투자원금은 지급됩니다. '
+                + '다만 만기 전 중도상환 시에는 공정가액을 기준으로 상환금액이 산정되어 투자원금에 미달할 수 있으며, '
+                + '발행사인 미래에셋증권의 신용위험이 발생하면 원금을 돌려받지 못할 수 있습니다.',
+              index: pp.at, length: pp.len
+            };
+          }
+          var mb = t.match(/만기평가가격이\s*각\s*최초\s*기?\s*준?\s*가격의\s*\[?\s*(\d{2,3}(?:\.\d+)?)\s*%?\s*\]?\s*이상/);
+          if (!mb) return null;
+          var ki = t.match(/최초\s*기준가격의?\s*\[?\s*(\d{2,3}(?:\.\d+)?)\s*%?\s*\]?\s*미만으로\s*하락한\s*적이/);
+          var un = u ? '(' + u.value + ')' : '';
+          var v = ki
+            ? '만기평가일에 모든 기초자산' + un + ' 중 어느 하나라도 종가기준으로 각 최초기준가격의 ' + ki[1]
+              + '% 미만으로 하락한 적이 있고, 만기평가가격이 각 최초기준가격의 ' + mb[1] + '% 미만인 경우, '
+            : '이 상품은 낙인(원금손실 발생) 조건이 없어 투자기간 중 하락 자체로는 손실이 확정되지 않습니다. '
+              + '다만 만기평가일에 모든 기초자산' + un + ' 중 어느 하나라도 만기평가가격이 각 최초기준가격의 ' + mb[1] + '% 미만인 경우, ';
+          return {
+            value: v + '하락률이 가장 큰 기초자산의 하락률만큼 원금손실이 발생하며 최대 원금 전액(100%) 손실이 가능합니다.',
+            index: mb.index, length: mb[0].length
+          };
+        }
+      },
+      {
         id: 'coupon', label: '제시수익률',
         re: [/\(\s*연\s*([\d.]+)\s*%\s*\)/],
         map: function (m) { return '연 ' + num(m) + '%'; }
@@ -1303,7 +1368,90 @@
    * 한 줄에 "N차" + 배리어%(≤100) + 지급률%(보통 100 초과) 가 함께 있는 행을 찾는다.
    * 서식이 달라 못 읽는 경우가 많으므로, 결과는 반드시 담당자가 표에서 확인·보정한다.
    */
+  /**
+   * ELS·DLS 투자설명서의 차수별 상환조건 표.
+   *
+   * 문서는 조건과 금액을 두 개의 표로 나눠 싣는다.
+   *   ○ 자동조기상환 발생조건        1차 | …각 최초기준가격의 [80%] 이상인 경우
+   *   ○ 자동조기상환평가일 및 상환금액  1차 | 2027년 02월 10일 | 액면금액 × 111.00%
+   * 한 줄에 배리어와 지급률이 같이 있는 형태가 아니라서, 줄 단위 어림짐작으로는
+   * 한 행도 못 읽는다(실제로 0행이었다). 두 표를 차수로 맞춰 합친다.
+   */
+  function parseElsSchedule(text) {
+    var lines = String(text || '').split('\n');
+    var bar = {}, pay = {}, when = {};
+    lines.forEach(function (line) {
+      var t = line.replace(/\t/g, ' ');
+      /* 발생조건 행 — 차수로 시작하고 「최초기준가격의 [N%] 이상」 이 있다 */
+      /* '차' 뒤에 \b 를 쓰면 안 된다 — 한글은 \w 가 아니라 경계가 성립하지 않는다 */
+      var b = t.match(/^\s*(\d{1,2})\s*차[\s:：][^\n]*?최초기준가격의?\s*\[?\s*(\d{2,3}(?:\.\d+)?)\s*%?\s*\]?\s*이상/);
+      if (b) bar[+b[1]] = Number(b[2]);
+      /* 평가일·상환금액 행 */
+      var d = t.match(/^\s*(\d{1,2})\s*차\s+(\d{4})\D{1,2}\s*(\d{1,2})\D{1,2}\s*(\d{1,2})\D?\s+액면금액\s*[×xX*]\s*([\d.]+)\s*%/);
+      if (d) {
+        when[+d[1]] = d[2] + '-' + ('0' + d[3]).slice(-2) + '-' + ('0' + d[4]).slice(-2);
+        pay[+d[1]] = Number(d[5]);
+      }
+    });
+    var seqs = Object.keys(bar).concat(Object.keys(pay))
+      .map(Number).filter(function (v, i, a) { return a.indexOf(v) === i; }).sort(function (a, b2) { return a - b2; });
+    if (!seqs.length) return [];
+
+    /* 경과개월은 발행일과의 일수로 센다 (영업일에 맞춰 며칠씩 당겨지므로 달 번호 차이로 세면 틀린다) */
+    var iso = function (m) { return m ? m[1] + '-' + ('0' + m[2]).slice(-2) + '-' + ('0' + m[3]).slice(-2) : null; };
+    var issue = iso(text.match(/발\s*행\s*일\s*[\t:：]?\s*(\d{4})\D{1,2}\s*(\d{1,2})\D{1,2}\s*(\d{1,2})/));
+    var months = function (to) {
+      if (!issue || !to) return null;
+      var a = Date.parse(issue + 'T00:00:00Z'), b2 = Date.parse(to + 'T00:00:00Z');
+      if (isNaN(a) || isNaN(b2) || b2 < a) return null;
+      return Math.round((b2 - a) / 86400000 / 30.4375);
+    };
+    /* 연 수익률은 문서 전체에서 가장 큰 「(연 N%)」 를 쓴다 — 차수별로 따로 적히지 않는다 */
+    var anns = [].concat.apply([], (text.match(/\(\s*연\s*[\d.]+\s*%\s*\)/g) || [])
+      .map(function (x) { return [Number(x.replace(/[^\d.]/g, ''))]; }));
+    var ann = anns.length ? Math.max.apply(null, anns) : null;
+
+    var rows = seqs.map(function (n2) {
+      return {
+        seq: n2, months: months(when[n2]),
+        barrier: bar[n2] != null ? bar[n2] : null,
+        payRate: pay[n2] != null ? pay[n2] : null,
+        annRate: ann, evalDate: when[n2] || null
+      };
+    });
+
+    /**
+     * 만기 행. 조건 문구가 "…각 최초기 / 준가격의 [70%] 이상…" 처럼 줄 중간에서 갈려 있어
+     * 줄 단위로는 안 잡힌다. 본문 전체에서 공백을 건너뛰며 찾는다.
+     */
+    var mb = text.match(/만기평가가격이\s*각\s*최초\s*기?\s*준?\s*가격의\s*\[?\s*(\d{2,3}(?:\.\d+)?)\s*%?\s*\]?\s*이상/);
+    var mp = null;
+    if (mb) {
+      var after = text.slice(mb.index, mb.index + 300).match(/액면금액\s*[×xX*]\s*([\d.]+)\s*%/);
+      mp = after ? Number(after[1]) : null;
+    }
+    var md = iso(text.match(/만기평가일\s*[\t:：]\s*(\d{4})\D{1,2}\s*(\d{1,2})\D{1,2}\s*(\d{1,2})/))
+      || iso(text.match(/만\s*기\s*일\s*[\t:：]?\s*(\d{4})\D{1,2}\s*(\d{1,2})\D{1,2}\s*(\d{1,2})/));
+    if (mb && md) {
+      var last = rows[rows.length - 1];
+      var cyc = rows.length >= 2 && rows[1].months != null && rows[0].months != null
+        ? rows[1].months - rows[0].months : null;
+      var mo = months(md);
+      var seq = cyc && mo ? Math.round(mo / cyc) : (last ? last.seq + 1 : 1);
+      if (!last || seq > last.seq) {
+        rows.push({
+          seq: seq, months: mo, barrier: Number(mb[1]), payRate: mp,
+          annRate: ann, evalDate: md, maturity: true
+        });
+      }
+    }
+    return rows;
+  }
+
   function parseSchedule(text) {
+    /* 투자설명서 서식이면 두 표를 맞춰 읽는다 — 줄 단위 어림짐작보다 정확하다 */
+    var exact = parseElsSchedule(text);
+    if (exact.length) return exact;
     var out = [];
     String(text || '').split('\n').forEach(function (line) {
       var seqM = line.match(/(\d{1,2})\s*차/);
