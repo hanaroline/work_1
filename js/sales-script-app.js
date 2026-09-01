@@ -337,6 +337,42 @@
     return null;
   }
 
+  /* ----------------------------------------------------------
+     영업일 달력
+     「이해를 돕기 위한 추가 설명 — 달력 활용」 항목은 오늘을 기준으로 기준가 적용일과
+     환매대금 지급일의 실제 날짜를 말해야 한다. 주말과 날짜가 고정된 공휴일은 반영하지만
+     설·추석·대체공휴일은 해마다 달라 담지 않았다 — 연휴가 끼는 주에는 달력으로 확인해야
+     한다(해당 항목 tips 에 적어 두었다).
+     ---------------------------------------------------------- */
+  var KR_FIXED_HOLIDAY = ['01-01', '03-01', '05-05', '06-06', '08-15', '10-03', '10-09', '12-25'];
+  var DOW = ['일', '월', '화', '수', '목', '금', '토'];
+  function isBizDay(d) {
+    var w = d.getDay();
+    if (w === 0 || w === 6) return false;
+    var md = ('0' + (d.getMonth() + 1)).slice(-2) + '-' + ('0' + d.getDate()).slice(-2);
+    return KR_FIXED_HOLIDAY.indexOf(md) < 0;
+  }
+  /** 기준일로부터 n 영업일 뒤 */
+  function bizDaysAfter(from, n) {
+    var d = new Date(from.getTime()), left = n;
+    while (left > 0) { d.setDate(d.getDate() + 1); if (isBizDay(d)) left--; }
+    return d;
+  }
+  function kDateDow(d) {
+    return d.getFullYear() + '년 ' + (d.getMonth() + 1) + '월 ' + d.getDate() + '일(' + DOW[d.getDay()] + ')';
+  }
+  /** '제3영업일' → 3 */
+  function bizNo(v) {
+    var m = String(v == null ? '' : v).match(/(\d+)\s*영업일/);
+    return m ? Number(m[1]) : null;
+  }
+  /** 「제N영업일」 항목을 오늘 기준 실제 날짜로 (제N영업일 = 청구일 + (N-1) 영업일) */
+  function bizDateOf(fieldId) {
+    var n = bizNo(valueOf(fieldId));
+    if (!n || n < 1) return undefined;
+    return kDateDow(bizDaysAfter(new Date(), n - 1));
+  }
+
   /** 스크립트 전용 파생값 (평가표·시나리오·고객조건에서 계산) */
   function derived(id) {
     var sh = sheet(), p = product(), ctx = ST.ctx;
@@ -401,6 +437,61 @@
        * 유사 비계열 펀드 동반 추천은 「계열사 상품을 권유할 때」의 의무다.
        * 비계열 운용사 상품이면 해당 사항이 없으므로 빨간 확인필요로 남길 값이 아니다.
        */
+      /* 달력 설명 — 오늘과, 오늘을 기준으로 계산한 기준가 적용일·지급일 */
+      case 'todayLabel':
+        return kDateDow(new Date());
+      case 'redBeforeDate': return bizDateOf('redBefore');
+      case 'redAfterDate': return bizDateOf('redAfter');
+      case 'redPayDate': return bizDateOf('redPay');
+      /**
+       * 약칭 — 명칭에서 법적 형태(증권·자투자신탁·유형 괄호)를 떼어낸 부분이다.
+       * 스크립트가 "'{{name}}' 인데요, '{{shortName}}' 은 … 을 의미합니다" 로 읽는다.
+       */
+      case 'shortName': {
+        var nm = String(rawValue('name') || '');
+        if (!nm) return undefined;
+        var sn = nm
+          .replace(/\s*\([^)]*\)\s*$/, '')
+          .replace(/\s*(?:증권)?\s*모?자?투자(?:신탁|회사)\s*(?:제?\s*\d+\s*호)?\s*$/, '')
+          .replace(/\s*증권\s*$/, '')
+          .trim();
+        return sn && sn !== nm ? sn : undefined;
+      }
+      /**
+       * 명칭에 담긴 뜻 — 설명서에서 읽은 운용사·유형·투자대상을 그대로 이어 붙인다.
+       * 없는 말을 만들지 않고, 근거는 필수입력 탭에서 항목별로 확인할 수 있다.
+       */
+      case 'nameMeaning': {
+        var mg = rawValue('mgr'), ft = rawValue('fundType');
+        var rg = derived('fxCountry');
+        if (!mg && !ft && !rg) return undefined;
+        /* 유형 표기에서 자산 종류만 남긴다 — 개방형·추가형·모자형·종류형은 계약기간 항목에서 따로 읽는다 */
+        var core = String(ft || '').split(/\s*[,\/]\s*/)
+          .filter(function (x) { return /증권|주식|채권|혼합|재간접|파생|부동산|특별자산|단기금융|MMF/.test(x); })
+          .join(' · ');
+        /* 조사는 「에서」 로 붙인다 — 이/가 는 앞말 종성에 따라 갈려 잘못 붙기 쉽다 */
+        var v = (mg ? mg + ' 에서 운용하는 ' : '') + (core ? core + ' 펀드' : '펀드');
+        if (rg) v += '로, ' + rg + ' 자산에 투자하는 상품';
+        /* 문장이 "… 을 의미합니다" 로 끝나므로 여기서 「뜻」 을 붙이면 겹친다 */
+        return v;
+      }
+      /**
+       * 주요 투자대상 국가·지역 — 설명서의 투자대상·투자전략 문장에 나오는 지역 표현만 옮긴다.
+       * 문장에 지역이 안 나오면 비워 둔다 (짐작해서 채우지 않는다).
+       */
+      case 'fxCountry': {
+        var hay = [rawValue('targets'), rawValue('strategy'), rawValue('name')].join(' ');
+        var REGION = [[/전\s*세계|글로벌|Global/i, '전세계(글로벌)'], [/미국|US\b|U\.S\./i, '미국'],
+          [/중국|China/i, '중국'], [/일본|Japan/i, '일본'], [/유럽|Europe/i, '유럽'],
+          [/인도|India/i, '인도'], [/베트남|Vietnam/i, '베트남'],
+          [/신흥국|이머징|Emerging/i, '신흥국'], [/아시아|Asia/i, '아시아'], [/국내|한국|Korea/i, '국내']];
+        var hit = [];
+        REGION.forEach(function (r) { if (r[0].test(hay) && hit.indexOf(r[1]) < 0) hit.push(r[1]); });
+        if (!hit.length) return undefined;
+        /* 「전세계」 가 잡히면 그것이 답이다 — 뒤에 붙는 개별 지역은 예시일 뿐이라 나열하면 오해를 준다 */
+        if (hit[0] === '전세계(글로벌)') return '전세계(글로벌)';
+        return hit.slice(0, 2).join(' · ');
+      }
       case 'peerFund': case 'peerRet1y': {
         var af = String(rawValue('affiliate') || '');
         if (!/비계열/.test(af)) return undefined;
@@ -448,6 +539,9 @@
       monthlyNote: '월수익지급 조건·지급률 (월지급식)',
       feeRate: '선취판매수수료율', exAmt: '예시 투자금액', feeCut: '선취수수료 차감금액',
       netAmt: '실제 투자금액', retGap: '초과수익률(%p)', peerRet1y: '비계열 펀드 1년 수익률',
+      todayLabel: '오늘 날짜·요일', redBeforeDate: '기준가 적용일 날짜 (기준시각 前)',
+      redAfterDate: '기준가 적용일 날짜 (기준시각 後)', redPayDate: '환매대금 지급일 날짜',
+      nameMeaning: '명칭에 담긴 뜻',
       withdrawRight: '청약철회권 대상여부'
     }[id] || id;
   }
