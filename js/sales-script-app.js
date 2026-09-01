@@ -106,8 +106,12 @@
       registeredAt: col.collectedAt || (window.ELS_PROSPECTUS.updatedAt || ''),
       fields: col.fields || {},
       schedule: col.schedule || [],
-      matBarrier: null,
-      knockIn: ki && !/없음|노낙인/.test(String(ki)) ? String(ki).replace(/[^0-9.]/g, '') : '',
+      matBarrier: col.matBarrier != null ? col.matBarrier : null,
+      /* 손익구조 문구는 원금지급형·월지급식 여부에 따라 완전히 달라진다 — 반드시 실어 보낸다 */
+      instrument: col.instrument || null,
+      principalProtected: !!col.principalProtected,
+      monthlyIncome: col.monthlyIncome || null,
+      knockIn: ki && !/없음|노낙인|해당 없음/.test(String(ki)) ? String(ki).replace(/[^0-9.]/g, '') : '',
       rawText: '',
       collected: true
     };
