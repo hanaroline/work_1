@@ -274,6 +274,7 @@ function toRecord(it, rcpNo, docDate) {
     coupon: it.annualRate != null ? `연 ${it.annualRate}%` : null,
     maxLoss: it.principalProtected ? '0% (원금지급형)' : '100%',
     lossExample: lossExample(it),
+    midPeriod: it.midPeriod || null,
     midPriceDate: midPriceDate(it),
     midAmt6: '공정가액(기준가)의 90% 이상',
     midAmtAfter: '공정가액(기준가)의 95% 이상',

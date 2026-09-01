@@ -245,6 +245,19 @@
     return out;
   }
 
+  /**
+   * 원금지급형 여부는 종목명으로만 판단한다.
+   * 본문에는 위험등급 분류표("원금의 80% 이상지급형")와 유의사항이 있어,
+   * 문서 어디서나 「원금지급」 을 찾으면 원금비보장 ELS 를 원금지급형으로 읽는다.
+   * 그러면 최대손실 0%, 고난도 해당없음 으로 나가 상담에서 그대로 틀린 설명이 된다.
+   */
+  function elsProtected(t) {
+    var r = rowValue(t, /^종목명$/);
+    var v = r ? r.value
+      : ((String(t).match(/((?:[가-힣A-Za-z]{2,12}증권)\s*제?\s*\d{3,6}\s*회[^\n]{0,60})/) || [])[1] || '');
+    return { on: /파생결합사채|원금지급|원금보장/.test(v), at: r ? r.index : 0, len: r ? r.length : 0 };
+  }
+
   function num(m, i) { return m[i == null ? 1 : i].replace(/,/g, ''); }
   /**
    * 연·월·일 세 조각을 한국어 날짜로.
@@ -530,77 +543,197 @@
       }
     ]),
 
+    /**
+     * ELS·DLS.
+     * 간이투자설명서의 「1. 상품개요」 는 종목명·기초자산·발행일·만기일이 모두
+     * 「라벨 <탭> 값」 표다. 본문 정규식으로 훑으면 유의사항 문단을 값으로 집어 온다
+     * (기초자산 자리에 "…의 가격에 연계하여 증권의 수익률이 결정되므로…" 가 들어갔다).
+     * 표를 먼저 읽고, 표에 없는 것만 정규식으로 넘긴다.
+     */
     els: COMMON_RULES.concat([
       {
         id: 'name', label: '상품 명칭',
-        re: [/((?:미래에셋증권|[가-힣A-Za-z]{2,12}증권)\s*제?\s*\d{3,6}\s*회[^\n]{0,40}?(?:파생결합증권|ELS|DLS|ELB|DLB)[^\n]{0,20})/],
-        map: function (m) { return m[1].trim(); }
+        fn: function (t) { return rowValue(t, /^종목명$/); },
+        re: [/((?:미래에셋증권|[가-힣A-Za-z]{2,12}증권)\s*제?\s*\d{3,6}\s*회[^\n]{0,40}?(?:파생결합증권|파생결합사채|ELS|DLS|ELB|DLB)[^\n]{0,20})/],
+        map: function (m) { return m[1].replace(/\s+/g, ' ').trim(); }
       },
       {
         id: 'round', label: '발행회차',
-        re: [/제?\s*(\d{3,6})\s*회/],
+        re: [/제\s*(\d{3,6})\s*회/],
         map: function (m) { return '제' + num(m) + '회'; }
       },
       {
         id: 'issuer', label: '발행사',
-        re: [/(?:발행\s*회사|발행인|발행사)\s*[:：]?\s*([가-힣A-Za-z()\s]{2,24}증권(?:주식회사|㈜)?)/,
-        /([가-힣A-Za-z]{2,12}증권)\s*제?\s*\d{3,6}\s*회/],
+        /* 발행사는 종목명 앞머리에 있다 — 본문에서 찾으면 유의사항 문장을 집어 온다 */
+        fn: function (t) {
+          var r = rowValue(t, /^종목명$/);
+          var m = r && /^([가-힣A-Za-z]{2,12}증권)/.exec(r.value);
+          return m ? { value: m[1], index: r.index, length: r.length } : null;
+        },
+        re: [/(?:발행\s*회사|발행인|발행사)\s*[:：]\s*([가-힣A-Za-z]{2,20}증권(?:주식회사|㈜)?)/,
+        /([가-힣A-Za-z]{2,12}증권)\s*제\s*\d{3,6}\s*회/],
         map: function (m) { return m[1].trim(); }
       },
       {
+        id: 'kind', label: '상품 종류',
+        fn: function (t) {
+          var r = rowValue(t, /^종목명$/);
+          var v = r ? r.value : '';
+          if (!v) return null;
+          var k = /파생결합사채/.test(v) ? (/주가연계/.test(v) ? 'ELB' : 'DLB')
+            : (/주가연계증권/.test(v) ? 'ELS' : (/파생결합증권/.test(v) ? 'DLS' : null));
+          return k ? { value: k, index: r.index, length: r.length } : null;
+        }
+      },
+      {
         id: 'under', label: '기초자산',
-        re: [/기초\s*자산\s*[:：]?\s*([^\n]{4,120})/],
+        fn: function (t) { return rowValue(t, /^기초자산$/); },
+        re: [/기초\s*자산\s*[:：]\s*([^\n]{4,120})/],
         map: function (m) { return m[1].replace(/\s{2,}/g, ' ').trim(); }
       },
       {
-        id: 'fixDate', label: '최초기준가격 평가일',
-        re: [new RegExp('최초\\s*기준\\s*가격\\s*평가일\\s*[:：]?\\s*' + DATE)],
+        id: 'fixDate', label: '최초기준가격평가일',
+        re: [new RegExp('최초기준가격\\s*평가일\\s*[:：]?\\s*' + DATE)],
         map: function (m) { return kdateYMD(m[1], m[2], m[3]); }
       },
       {
         id: 'issueDate', label: '발행일',
-        re: [new RegExp('발행일\\s*[:：]?\\s*' + DATE)],
+        fn: function (t) { return rowValue(t, /^발\s*행\s*일$/); },
+        re: [new RegExp('발\\s*행\\s*일\\s*[:：]?\\s*' + DATE)],
         map: function (m) { return kdateYMD(m[1], m[2], m[3]); }
       },
       {
         id: 'matDate', label: '만기일',
-        re: [new RegExp('만기(?:상환)?일\\s*[:：]?\\s*' + DATE)],
+        fn: function (t) { return rowValue(t, /^만\s*기\s*일(?:\([^)]*\))?$/); },
+        re: [new RegExp('만\\s*기\\s*일(?:\\([^)]*\\))?\\s*[:：]?\\s*' + DATE)],
         map: function (m) { return kdateYMD(m[1], m[2], m[3]); }
       },
       {
+        /* 만기(기간) — 발행일과 만기일이 있으면 계산으로 확정된다 */
+        id: 'matTerm', label: '만기 (기간)',
+        fn: function (t) {
+          var a = rowValue(t, /^발\s*행\s*일$/), b2 = rowValue(t, /^만\s*기\s*일(?:\([^)]*\))?$/);
+          if (!a || !b2) return null;
+          var pa = /(\d{4})\D+(\d{1,2})\D+(\d{1,2})/.exec(a.value), pb = /(\d{4})\D+(\d{1,2})\D+(\d{1,2})/.exec(b2.value);
+          if (!pa || !pb) return null;
+          var d1 = Date.UTC(+pa[1], +pa[2] - 1, +pa[3]), d2 = Date.UTC(+pb[1], +pb[2] - 1, +pb[3]);
+          var mo = Math.round((d2 - d1) / 86400000 / 30.4375);
+          if (!(mo > 0)) return null;
+          return { value: mo % 12 === 0 ? (mo / 12) + '년' : mo + '개월', index: b2.index, length: b2.length };
+        }
+      },
+      {
         id: 'earlyCycle', label: '조기상환 주기',
-        re: [/(?:자동\s*)?조기\s*상환\s*(?:주기|평가\s*주기)\s*[:：]?\s*(?:매)?\s*(\d{1,2})\s*개월/],
+        re: [/(\d{1,2})\s*개월\s*(?:마다|단위)/, /매\s*(\d{1,2})\s*개월/],
         map: function (m) { return num(m) + '개월'; }
       },
       {
-        id: 'knockIn', label: 'KI 배리어',
-        re: [/(?:원금손실발생조건|KI|Knock[\s\-]?In)[^\d%]{0,40}?(\d{2,3})\s*%/],
-        map: function (m) { return num(m) + '%'; }
+        /**
+         * 낙인 배리어.
+         * 반드시 「최초기준가격의 …% 미만으로 하락한 적이」 조항에서만 읽는다.
+         * 위험등급 분류 기준 보일러플레이트에도 "낙인 배리어가 60% 이상인 경우" 가 있어
+         * 「낙인」 이라는 낱말만 찾으면 그 60% 를 읽는다.
+         */
+        id: 'knockIn', label: '낙인 배리어',
+        re: [/최초\s*기준가격의?\s*\[?\s*(\d{2,3}(?:\.\d+)?)\s*%?\s*\]?\s*%?\s*미만으로\s*하락한\s*적이/,
+        /(?:노\s*낙인|NO\s*KI|낙인\s*없음)/i],
+        map: function (m) { return m[1] ? m[1] + '%' : '없음 (노낙인)'; }
       },
       {
         id: 'coupon', label: '제시수익률',
-        re: [/(?:세전\s*)?(?:제시\s*)?수익률[^\d%]{0,30}?연\s*(\d+(?:\.\d+)?)\s*%/,
-        /연\s*(\d+(?:\.\d+)?)\s*%/],
+        re: [/\(\s*연\s*([\d.]+)\s*%\s*\)/],
         map: function (m) { return '연 ' + num(m) + '%'; }
       },
       {
-        id: 'midAmt6', label: '6개월 이내 중도상환금액',
-        re: [/6\s*개월[^\n]{0,40}?공정가액[^\d%]{0,20}?(\d{2}(?:\.\d)?)\s*%\s*이상/],
+        id: 'highDiff', label: '고난도 금융투자상품 해당 여부',
+        fn: function (t) {
+          var p2 = elsProtected(t);
+          if (p2.on) return { value: '해당 없음 (원금지급형)', index: p2.at, length: p2.len };
+          var m = /고난도금융투자상품에?\s*해당/.exec(t);
+          return m ? { value: '해당 (고난도 금융투자상품)', index: m.index, length: m[0].length } : null;
+        }
+      },
+      {
+        id: 'maxLoss', label: '최대 손실 가능성',
+        fn: function (t) {
+          var p2 = elsProtected(t);
+          if (p2.on) return { value: '0% (원금지급형)', index: p2.at, length: p2.len };
+          var m = /원금의?\s*20\s*%\s*를?\s*초과하는\s*손실/.exec(t);
+          return m ? { value: '100%', index: m.index, length: m[0].length } : null;
+        }
+      },
+      {
+        id: 'riskReason', label: '해당 위험등급으로 정해진 이유',
+        fn: function (t) {
+          var p2 = elsProtected(t);
+          if (p2.on) return { value: '원금지급형', index: p2.at, length: p2.len };
+          var m = /최대\s*원금손실\s*가능금액이?\s*원금의\s*100\s*분의\s*20\s*을?\s*초과/.exec(t);
+          return m ? { value: '최대 원금손실가능금액 20% 초과형', index: m.index, length: m[0].length } : null;
+        }
+      },
+      {
+        /* 라벨이 "중도상환 / 신청가능일" 로 줄이 갈려 있어 표 읽기로는 안 잡힌다 */
+        id: 'midPeriod', label: '중도상환 신청가능기간',
+        /* 값 안에도 "중도상환 신청 불가능일" 이 나오므로 다음 라벨로 끊으면 안 된다 —
+           조항이 "…중도상환 신청 불가)" 로 닫히는 것을 끝으로 삼는다 */
+        re: [/중도상환\s*신청\s*가능일\s*([\s\S]{10,240}?불가\))/,
+        /중도상환\s*신청\s*가능일\s*([\s\S]{10,160}?)(?=\n\s*중도상환\s*\n\s*신청\s*불가능일)/],
+        map: function (m) { return m[1].replace(/\s+/g, ' ').trim(); }
+      },
+      {
+        id: 'midAmt6', label: '중도상환금액 (6개월 이내)',
+        re: [/발행\s*후\s*6\s*개월\s*까?지?는?\s*(\d{2,3})\s*%\s*이상/],
         map: function (m) { return '공정가액(기준가)의 ' + num(m) + '% 이상'; }
       },
       {
-        id: 'midAmtAfter', label: '6개월 경과 후 중도상환금액',
-        re: [/(?:그\s*이후|6\s*개월\s*(?:이후|경과))[^\n]{0,40}?공정가액[^\d%]{0,20}?(\d{2}(?:\.\d)?)\s*%\s*이상/],
+        id: 'midAmtAfter', label: '중도상환금액 (6개월 경과)',
+        re: [/공정가액\s*\(기준가\)의?\s*(\d{2,3})\s*%\s*이상/],
         map: function (m) { return '공정가액(기준가)의 ' + num(m) + '% 이상'; }
       },
       {
         id: 'subUnit', label: '청약단위',
-        re: [/청약\s*단위\s*[:：]?\s*([^\n]{2,40})/],
-        map: function (m) { return m[1].trim(); }
+        fn: function (t) {
+          var r = rowValue(t, /^최소\s*청약금액$/);
+          return r ? { value: '최소 ' + r.value, index: r.index, length: r.length } : null;
+        },
+        re: [/최소\s*청약금액[^\n]{0,10}?([\d,]+\s*원)/,
+        /청약\s*단위\s*[:：]?\s*([^\n]{2,40})/],
+        map: function (m) { return '최소 ' + m[1].trim(); }
+      },
+      {
+        id: 'offerEnd', label: '청약종료일',
+        fn: function (t) {
+          var r = rowValue(t, /^청약종료일$/);
+          if (!r) return null;
+          var m = new RegExp(DATE).exec(r.value);
+          return m ? { value: kdateYMD(m[1], m[2], m[3]), index: r.index, length: r.length } : null;
+        },
+        re: [new RegExp('청약\\s*종료일\\s*[:：]?\\s*' + DATE)],
+        map: function (m) { return kdateYMD(m[1], m[2], m[3]); }
+      },
+      {
+        id: 'fairValueNote', label: '공정가액 (액면 대비)',
+        re: [new RegExp('본\\s*증권의\\s*공정가격은\\s*' + DATE + '\\s*기준\\s*\\[?\\s*([\\d,.]+)\\s*원')],
+        map: function (m) {
+          var fv = Number(m[4].replace(/,/g, ''));
+          var gap = isFinite(fv) ? ' (액면 10,000원 대비 ' + (Math.round((fv / 10000 - 1) * 10000) / 100) + '%)' : '';
+          return kdateYMD(m[1], m[2], m[3]) + ' 기준 액면 10,000원 당 ' + m[4] + '원' + gap
+            + '. 중도상환 금액은 이 공정가액을 기초로 산정되므로 발행 직후 중도상환 시에도 원금손실이 발생할 수 있습니다.';
+        }
+      },
+      {
+        id: 'coolNote', label: '숙려기간 · 가입의사확인 실제 일정',
+        fn: function (t) {
+          var c = rowValue(t, /^숙\s*려\s*기\s*간$/), k = rowValue(t, /^가입의사확인기간$/);
+          if (!c) return null;
+          var v = '이 회차의 숙려기간은 ' + c.value + ' 이며';
+          v += k ? ', 가입의사 확인은 ' + k.value + ' 입니다.' : ' 입니다.';
+          return { value: v, index: c.index, length: c.length };
+        }
       },
       {
         id: 'docDate', label: '투자설명서 기준일',
-        re: [new RegExp('(?:효력\\s*발생일?|작성\\s*기준일)\\s*[:：]?\\s*' + DATE)],
+        re: [new RegExp('(?:작성기준일|기준일|효력\\s*발생일?)\\s*[:：]?\\s*' + DATE)],
         map: function (m) { return kdateYMD(m[1], m[2], m[3]); }
       }
     ]),
@@ -1175,6 +1308,14 @@
     String(text || '').split('\n').forEach(function (line) {
       var seqM = line.match(/(\d{1,2})\s*차/);
       if (!seqM) return;
+      /**
+       * 「수익률 모의실험」 표도 "1차 조기상환 5.50% 3,220 69.20%" 처럼 차수와 %가 같이 있다.
+       * 그 69.20% 는 발생빈도지 배리어가 아니다. 그대로 읽으면 손익구조 스크립트가
+       * 통째로 틀린 숫자로 완성된다. 모의실험 행은 버린다.
+       */
+      if (/발생\s*빈도|발생\s*횟수|모의실험|Total/i.test(line)) return;
+      /* 상환조건 행은 배리어를 「최초기준가격의 …%」 로 적는다 — 그 문구가 없으면 조건표가 아니다 */
+      if (!/기준가격|배리어|이상인\s*경우|액면금액/.test(line)) return;
       var pcts = [];
       var re = /(\d{1,3}(?:\.\d{1,4})?)\s*%/g, m;
       while ((m = re.exec(line))) pcts.push(Number(m[1]));
