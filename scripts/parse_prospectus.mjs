@@ -109,9 +109,22 @@ function parseBlock(text, pre) {
   const title = clean((text.match(/종목명\s*\n\s*\t?\s*([^\n]+)/) || [])[1]);
   p.title = title;
   p.no = numOf((title.match(/제(\d{4,5})회/) || [])[1]);
-  p.riskLabel = (title.match(/\((매우높은위험|높은위험|다소높은위험|보통위험|낮은위험|매우낮은위험),/) || [])[1] || null;
+  /**
+   * 위험등급 표기는 상품 종류에 따라 뒤에 오는 글자가 다르다.
+   *   파생결합증권: "(높은위험,원금비보장)"   → 쉼표
+   *   파생결합사채: "(낮은위험)"              → 닫는 괄호
+   * 쉼표만 보면 ELB 전 회차의 위험등급 라벨이 통째로 빠진다.
+   */
+  p.riskLabel = (title.match(/\((매우높은위험|높은위험|다소높은위험|보통위험|낮은위험|매우낮은위험)[,)]/) || [])[1] || null;
   p.riskGrade = numOf((title.match(/상품위험등급\s*:\s*(\d)/) || [])[1]);
-  p.principalProtected = /원금지급|원금보장/.test(title);
+  /**
+   * 원금지급형 여부는 제목의 「원금지급」 문구만으로 판단하면 안 된다.
+   * 파생결합사채(ELB·DLB)는 사채이므로 종류 자체가 원금지급형인데 제목에 그 말이 없다
+   * (예: "제4058회 파생결합사채(주가연계파생결합사채)(낮은위험)(상품위험등급:5등급)").
+   * 이걸 놓치면 원금이 지켜지는 상품을 두고 "최대 원금 전액 손실 가능" 이라고 설명하게 된다.
+   */
+  p.instrument = /파생결합사채/.test(title) ? '파생결합사채' : '파생결합증권';
+  p.principalProtected = /원금지급|원금보장/.test(title) || p.instrument === '파생결합사채';
 
   p.underlyings = parseUnderlyings((text.match(/기초자산\s*\n\s*\t?\s*([^\n]+)/) || [])[1]);
   p.issueSize = numOf((text.match(/모 ?집 ?총 ?액\s*\n\s*\t?\s*([\d,]+)원/) || [])[1]);
@@ -200,6 +213,25 @@ function parseBlock(text, pre) {
   const lz = text.match(
     /(\d{1,2})차 자동조기상환평가일까지 (?:모든 기초자산 중 어느 하나도|기초자산의 평가가격이) (?:각 )?최초기준가격의\s*\[(\d{2,3}(?:\.\d+)?)%\]\s*미만으로 하락한 적이 없는 경우[^\n]*?액면금액\s*\*\s*([\d.]+)%/);
   p.lizard = lz ? { step: Number(lz[1]), barrier: Number(lz[2]), payout: Number(lz[3]) } : null;
+
+  /**
+   * 월수익지급 (월지급식 ELB) — 조기상환·만기상환과 별개로 매달 조건을 보고 쿠폰을 준다.
+   *   "매월수익지급평가일에 모든 기초자산의 월수익지급평가가격이 모두 각각의
+   *    최초기준가격의 65% 이상인 경우 -> 원금 * 0.50% 지급"
+   * 이 조항이 월지급식의 핵심인데 조기상환 표에는 안 나온다. 빠뜨리면 상담에서
+   * 「매달 언제 얼마를 받는지」 를 설명할 근거가 없다.
+   */
+  const mi = text.match(/월수익지급평가가격이[^\n]*?최초기준가격의\s*\[?(\d{2,3}(?:\.\d+)?)%\]?\s*이상인 경우[^\n]*?원금\s*[*×]\s*\[?([\d.]+)%\]?/);
+  p.monthlyIncome = mi ? { barrier: Number(mi[1]), rate: Number(mi[2]) } : null;
+  if (p.monthlyIncome) {
+    /* 월수익지급평가일 차수 — 표에서 가장 큰 차수를 센다 */
+    const seg = text.slice(text.indexOf('월수익지급평가일'));
+    const seqs = [...seg.slice(0, 6000).matchAll(/(?:^|\n)\s*\t?\s*(\d{1,2})\s*\n\s*\t?\s*\d{4}년\s*\d{2}월\s*\d{2}일/g)]
+      .map((m) => Number(m[1]));
+    p.monthlyIncome.count = seqs.length ? Math.max(...seqs) : null;
+    const pay = seg.match(/월수익지급일\s*:\s*([^\n]+)/);
+    p.monthlyIncome.payRule = pay ? clean(pay[1]) : null;
+  }
 
   // 만기 배리어
   p.maturityBarrier = numOf((text.match(/(?:모든 )?기초자산의 만기평가가격이 (?:각 )?최초기준가격의\s*\[(\d{2,3}(?:\.\d+)?)%\]\s*이상인 경우/) || [])[1]);

@@ -614,7 +614,17 @@
     var mat = '[이익조건] 자동조기상환이 발생하지 않을 경우, ' + matWhen + '에 모든 기초자산의 만기평가가격이 각 최초기준가격의 ' +
       matBarTxt + ' 이상인 경우 ' + payPhrase(last, '만기') + '의 세전수익률을 지급합니다.';
 
-    if (!noKi) {
+    /**
+     * 원금지급형(파생결합사채 ELB·DLB)은 조건을 못 맞춰도 원금이 깎이지 않는다.
+     * 파생결합증권과 같은 「하락률만큼 원금손실」 문구를 읽으면 원금이 지켜지는 상품을
+     * 두고 손실을 설명하는 것이 되어 그대로 부정확한 설명이다.
+     */
+    if (doc.principalProtected) {
+      mat += '\n[원금 지급] 이 상품은 파생결합사채로, 만기까지 보유하시면 조건 충족 여부와 무관하게 투자원금이 지급됩니다.' +
+        ' 조건을 만족하지 못하면 약정 수익을 받지 못할 뿐 원금손실은 발생하지 않습니다.' +
+        '\n[유의사항] 다만 만기 전 중도상환을 신청하시는 경우 공정가액을 기준으로 상환금액이 산정되어 원금에 미달할 수 있고,' +
+        ' 발행사인 미래에셋증권의 신용위험(파산·지급불능 등)이 발생하면 원금을 돌려받지 못할 수 있습니다.';
+    } else if (!noKi) {
       mat += '\n위 조건을 만족하지 못하더라도, 모든 기초자산 중 어느 하나도 종가기준으로 각 최초기준가격의 ' + kiNum +
         '% 미만으로 하락한 적이 없는 경우 ' + payPhrase(last, '만기') + '의 세전수익률을 지급합니다.' +
         '\n[손실조건] 모든 기초자산 중 어느 하나라도 종가기준으로 각 최초기준가격의 ' + kiNum +
@@ -649,12 +659,16 @@
     }
     if (cycle == null && sched.length === 1) cycle = sched[0].months;
 
+    /* 월지급식이면 매달 조건·지급률을 조기상환 표 앞에 세운다 — 이 상품의 핵심 조항이다 */
+    var early = rows.join('\n');
+    if (doc.monthlyNote) early = '  · ' + doc.monthlyNote + '\n' + early;
+
     return {
-      earlyTable: rows.join('\n'),
+      earlyTable: early,
       payoffExample: example,
       matCond: mat,
       coupon: ann != null ? '연 ' + ann + '%' : null,
-      knockIn: noKi ? '없음 (노낙인)' : kiNum + '%',
+      knockIn: noKi ? (doc.principalProtected ? '해당 없음 (원금지급형)' : '없음 (노낙인)') : kiNum + '%',
       earlyCycle: cycle ? cycle + '개월' : null,
       matTerm: last.months ? (last.months % 12 === 0 ? (last.months / 12) + '년' : last.months + '개월') : null,
       filled: filled, total: total

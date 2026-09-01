@@ -157,7 +157,12 @@
     var d = doc();
     if (!d || sheet().cat !== 'els') return null;
     if (!d.schedule || !d.schedule.length) return null;
-    return PROS.buildElsTexts({ schedule: d.schedule, knockIn: d.knockIn, matBarrier: d.matBarrier });
+    return PROS.buildElsTexts({
+      schedule: d.schedule, knockIn: d.knockIn, matBarrier: d.matBarrier,
+      /* 원금지급형(파생결합사채)은 손실조건 문구가 완전히 달라진다 — 반드시 넘긴다 */
+      principalProtected: d.principalProtected,
+      monthlyNote: d.fields && d.fields.monthlyNote
+    });
   }
 
   function sheetKey() { return ST.baseSheet + (ST.senior ? '_senior' : '_general'); }
@@ -400,6 +405,7 @@
          라벨이 없으면 확인필요 목록에 'riskGradeBasis' 처럼 내부 id 가 그대로 뜬다. */
       riskGradeBasis: '위험등급 분류 근거 (공통 문구)',
       ytm: '세후 투자수익률',
+      monthlyNote: '월수익지급 조건·지급률 (월지급식)',
       withdrawRight: '청약철회권 대상여부'
     }[id] || id;
   }
