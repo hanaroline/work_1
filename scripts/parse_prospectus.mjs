@@ -233,6 +233,13 @@ function parseBlock(text, pre) {
     p.monthlyIncome.payRule = pay ? clean(pay[1]) : null;
   }
 
+  /**
+   * 중도상환 신청가능일 — 회차마다 같은 조항이지만 스크립트가 읽어야 하는 항목이다.
+   * 값 안에도 "중도상환 신청 불가능일" 이 나오므로 다음 라벨로 끊으면 안 된다.
+   * 조항이 "…중도상환 신청 불가)" 로 닫히는 것을 끝으로 삼는다.
+   */
+  p.midPeriod = clean((text.match(/중도상환\s*신청\s*가능일\s*([\s\S]{10,240}?불가\))/) || [])[1]) || null;
+
   // 만기 배리어
   p.maturityBarrier = numOf((text.match(/(?:모든 )?기초자산의 만기평가가격이 (?:각 )?최초기준가격의\s*\[(\d{2,3}(?:\.\d+)?)%\]\s*이상인 경우/) || [])[1]);
 

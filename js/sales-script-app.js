@@ -1180,6 +1180,15 @@
     var h = ['<div class="rule" id="extractResult"></div><h3 style="font-size:18px;font-weight:700;margin:0 0 10px">추출 결과 — ' + esc(r.name) + '</h3>'];
     h.push('<div class="hint" style="margin-bottom:12px">출처 ' + esc(r.src) + (r.pages ? ' · ' + r.pages + '페이지' : '')
       + ' · 항목 ' + r.found.length + '건' + (r.schedule && r.schedule.length ? ' · 차수별 표 ' + r.schedule.length + '행' : '') + '</div>');
+    if (r.linked) {
+      var lc = r.found.filter(function (f) { return f.collected; }).length;
+      h.push('<div class="note" style="margin-bottom:12px;border-left-color:var(--ok)"><b>제' + esc(r.linked.no)
+        + '회 — 이미 수집해 둔 DART 공시와 연결되었습니다.</b><br>'
+        + '첨부하신 설명서에서 읽은 값이 우선이고, 비어 있던 ' + lc + '건은 일괄신고추가서류 원문에서 채웠습니다'
+        + (r.schedule && r.schedule.length ? ' (차수별 상환조건 ' + r.schedule.length + '행 포함)' : '') + '. '
+        + (r.linked.rec.docUrl ? '<a href="' + esc(r.linked.rec.docUrl) + '" target="_blank" rel="noopener">공시 원문 보기</a>' : '')
+        + '</div>');
+    }
     if (!r.found.length && !(r.schedule && r.schedule.length)) {
       h.push('<div class="warnbox">자동으로 인식된 항목이 없습니다. 설명서 서식이 예상과 달라 텍스트 패턴이 맞지 않는 경우입니다. '
         + '③ 항목 직접 등록으로 진행하십시오.</div>');
@@ -1405,9 +1414,47 @@
     if (r.schedule && r.schedule.length) patch.schedule = r.schedule;
     /* KI·만기 배리어는 추출 항목에서 끌어온다 */
     var ki = fields.knockIn;
-    if (ki != null && !/없음|노낙인/.test(String(ki))) patch.knockIn = String(ki).replace(/[^0-9.]/g, '');
+    if (ki != null && !/없음|노낙인|해당 없음/.test(String(ki))) patch.knockIn = String(ki).replace(/[^0-9.]/g, '');
+    /**
+     * 수집분과 연결된 회차면 손익구조 문구에 필요한 값까지 함께 싣는다.
+     * (만기 배리어·원금지급형 여부·월지급 조건이 없으면 만기상환 문구를 못 만든다)
+     */
+    if (r.linked && r.linked.rec) {
+      var lr = r.linked.rec;
+      if (lr.matBarrier != null) patch.matBarrier = lr.matBarrier;
+      if (lr.instrument) patch.instrument = lr.instrument;
+      patch.principalProtected = !!lr.principalProtected;
+      if (lr.monthlyIncome) patch.monthlyIncome = lr.monthlyIncome;
+      if (patch.knockIn == null && lr.knockIn) patch.knockIn = String(lr.knockIn);
+      patch.docUrl = lr.docUrl || '';
+      patch.linkedRound = lr.no;
+    }
     upsertDoc(patch);
     save(); renderAll();
+  }
+
+  /**
+   * 첨부한 ELS·DLS 설명서가 이미 수집해 둔 DART 공시의 회차인지 찾는다.
+   *
+   * 간이투자설명서 PDF 를 그대로 긁으면 표가 여러 줄로 쪼개져 있어 차수별 상환조건까지는
+   * 못 읽는다. 그런데 같은 회차를 DART 일괄신고추가서류에서 이미 파싱해 두었다 —
+   * 원문이 더 정확하고 차수표·낙인·공정가액이 다 들어 있다. 회차가 맞으면 그것을 붙인다.
+   * (상품 목록에 없는 임의 상품으로 등록해도 연결된다 — 회차는 문서와 파일명에 있다)
+   */
+  function linkCollected(text, fileName) {
+    var P = window.ELS_PROSPECTUS;
+    if (!P || !P.byRound) return null;
+    var hay = String(text || '') + '\n' + String(fileName || '');
+    var no = null;
+    /* ① 상품코드(ISIN) — 파일명이 코드인 경우가 많다 */
+    var im = hay.match(/\bKR[0-9A-Z]{10}\b/);
+    if (im && P.codeToRound && P.codeToRound[im[0]] != null) no = String(P.codeToRound[im[0]]);
+    /* ② 회차 번호 */
+    if (!no) {
+      var m = hay.match(/제\s*(\d{3,6})\s*회/);
+      if (m && P.byRound[m[1]]) no = m[1];
+    }
+    return no && P.byRound[no] ? { no: no, rec: P.byRound[no] } : null;
   }
 
   /** 텍스트에서 추출 (PDF·붙여넣기 공통) */
@@ -1415,9 +1462,31 @@
     var cat = sheet().cat;
     var found = PROS.extract(text, cat);
     var schedule = cat === 'els' ? PROS.parseSchedule(text) : [];
+    var linked = cat === 'els' ? linkCollected(text, name) : null;
+
+    if (linked) {
+      /* 첨부본에서 읽은 값이 우선이고, 비어 있는 항목만 수집분으로 채운다 */
+      var have = {};
+      found.forEach(function (f) { have[f.id] = 1; });
+      var lf = linked.rec.fields || {};
+      Object.keys(lf).forEach(function (k) {
+        if (have[k] || lf[k] == null || lf[k] === '') return;
+        found.push({
+          id: k, label: labelOf(k), value: lf[k], collected: true,
+          evidence: 'DART 일괄신고추가서류 제' + linked.no + '회 수집분'
+            + (linked.rec.docDate ? ' (' + linked.rec.docDate + ' 공시)' : '')
+        });
+      });
+      /* 차수별 상환조건은 간이설명서 PDF 에서 못 읽는 경우가 많다 */
+      if ((!schedule || !schedule.length) && linked.rec.schedule && linked.rec.schedule.length) {
+        schedule = linked.rec.schedule.slice();
+      }
+    }
+
     ST.pros = {
       cat: cat, productId: ST.productId, src: srcLabel, name: name,
-      pages: pages || 0, found: found, schedule: schedule, text: text
+      pages: pages || 0, found: found, schedule: schedule, text: text,
+      linked: linked
     };
   }
 
