@@ -19,6 +19,7 @@
   var $ = function (s, r) { return (r || document).querySelector(s); };
   var LS = 'ss_state_v1';
   var LS_PROD = 'ss_products_v1';   /* 담당자가 등록·저장한 상품 */
+  var LS_DOCS = 'ss_docs_v1';       /* 상품별로 등록된 투자설명서 */
 
   /* ---------------- 상태 ---------------- */
   var ST = {
@@ -50,6 +51,69 @@
   }
   function saveCustom() {
     try { localStorage.setItem(LS_PROD, JSON.stringify(CUSTOM)); } catch (e) { /* 저장 불가 환경 */ }
+  }
+
+  /* ---------------- 등록된 투자설명서 ----------------
+     DOCS[상품군][상품id] = {
+       source        'PDF' | 'TEXT' | 'MANUAL' | 'API'
+       docName       설명서 파일명·명칭
+       registeredAt  등록 시각
+       fields        { 필드id: 값 }          — 스크립트에 그대로 주입된다
+       schedule      [{seq,months,barrier,payRate,annRate}]  — ELS·DLS 차수별 상환조건
+       matBarrier    만기 배리어 %
+       knockIn       KI 배리어 (없으면 '' )
+       rawText       추출 원문 (PDF·텍스트 등록 시)
+     }
+     ---------------------------------------------------- */
+  var DOCS = {};
+  function loadDocs() {
+    try {
+      var o = JSON.parse(localStorage.getItem(LS_DOCS) || '{}');
+      if (o && typeof o === 'object') DOCS = o;
+    } catch (e) { DOCS = {}; }
+  }
+  function saveDocs() {
+    try { localStorage.setItem(LS_DOCS, JSON.stringify(DOCS)); } catch (e) { /* 저장 불가 환경 */ }
+  }
+  /**
+   * 현재 선택 상품에 등록된 투자설명서.
+   * 담당자가 등록한 것이 없으면, 수집기(scripts/collect_els_prospectus.mjs)가
+   * 만든 data/els-prospectus.js 의 결과를 등록된 설명서로 간주한다.
+   */
+  function doc() {
+    var cat = sheet().cat, pid = ST.productId;
+    var mine = (DOCS[cat] && DOCS[cat][pid]) || null;
+    if (mine) return mine;
+    if (cat !== 'els') return null;
+    var col = window.ELS_PROSPECTUS && window.ELS_PROSPECTUS.items && window.ELS_PROSPECTUS.items[pid];
+    if (!col) return null;
+    var ki = col.fields && col.fields.knockIn;
+    return {
+      source: 'COLLECT',
+      docName: col.name ? col.name + ' 투자설명서' : '자동수집',
+      docUrl: col.docUrl || '',
+      registeredAt: col.collectedAt || (window.ELS_PROSPECTUS.updatedAt || ''),
+      fields: col.fields || {},
+      schedule: col.schedule || [],
+      matBarrier: null,
+      knockIn: ki && !/없음|노낙인/.test(String(ki)) ? String(ki).replace(/[^0-9.]/g, '') : '',
+      rawText: '',
+      collected: true
+    };
+  }
+  function setDoc(d) {
+    var cat = sheet().cat, pid = ST.productId;
+    if (!pid) return;
+    if (!DOCS[cat]) DOCS[cat] = {};
+    if (d) DOCS[cat][pid] = d; else delete DOCS[cat][pid];
+    saveDocs();
+  }
+  /** 등록된 설명서에서 만든 ELS 손익구조 문구 (캐시 없이 매번 계산 — 표가 작다) */
+  function elsTexts() {
+    var d = doc();
+    if (!d || sheet().cat !== 'els') return null;
+    if (!d.schedule || !d.schedule.length) return null;
+    return PROS.buildElsTexts({ schedule: d.schedule, knockIn: d.knockIn, matBarrier: d.matBarrier });
   }
 
   function sheetKey() { return ST.baseSheet + (ST.senior ? '_senior' : '_general'); }
@@ -156,6 +220,9 @@
       var c = ST.ctx[id];
       return (c === '' || c == null) ? null : c;
     }
+    /* 등록된 투자설명서가 상품 기본데이터보다 우선한다 */
+    var d = doc();
+    if (d && d.fields && d.fields[id] != null && d.fields[id] !== '') return d.fields[id];
     var p = product();
     if (p && p[id] != null && p[id] !== '') {
       var v = p[id];
@@ -186,6 +253,14 @@
         return sh.cat === 'bondKrw' ? '국내채권 장외거래 투자권유 추가 설명자료' : '외화채권 관련 추가 설명자료';
       case 'tradeLabel':
         return sh.cat === 'bondFx' ? '외화채권' : '장외채권';
+      /* 등록된 투자설명서의 차수별 상환조건 표로 손익구조 문구를 생성한다 */
+      case 'earlyTable': case 'matCond': case 'coupon':
+      case 'knockIn': case 'earlyCycle': case 'matTerm': {
+        var t = elsTexts();
+        if (!t) return undefined;
+        var v = t[id];
+        return (v == null || v === '') ? undefined : v;
+      }
       default:
         return undefined;
     }
@@ -332,6 +407,7 @@
     h.push('<select id="selProduct" size="8" style="margin-top:6px"></select>');
     h.push('<div style="display:flex;gap:6px;margin-top:6px"><button class="tbtn" id="btnNewProduct" style="flex:1">새 상품 등록</button>'
       + '<button class="tbtn" id="btnDelProduct" style="flex:1"' + (p && p.custom ? '' : ' disabled') + '>등록상품 삭제</button></div>');
+    h.push('<div class="hint">\u25CF 투자설명서 등록됨 · \u25CB 미등록</div>');
     if (sh.cat === 'els') {
       var live = D.elsSource === 'live';
       h.push('<div class="hint">ELS/DLS 목록 <span class="badge ' + (live ? 'live' : 'sample') + '">' + (live ? '자동수집' : '내장 시드') + '</span> · ' + catalog().length + '건'
@@ -404,7 +480,7 @@
     CUSTOM[sh.cat].unshift(p);
     saveCustom();
     ST.productId = id;
-    ST.tab = 'req';
+    ST.tab = 'reg';
     save(); renderAll();
   }
 
@@ -416,9 +492,11 @@
       if (!q) return true;
       return [p.name, p.id, p.issuer, p.mgr, p.under, p.kind, p.credit].join(' ').toLowerCase().indexOf(q) >= 0;
     });
+    var cat = sheet().cat, docs = DOCS[cat] || {};
     sel.innerHTML = list.map(function (p) {
       var tail = p.riskGrade ? ' · ' + p.riskGrade + '등급' : '';
-      return '<option value="' + esc(p.id) + '"' + (p.id === ST.productId ? ' selected' : '') + '>' + esc(p.name) + tail + '</option>';
+      var mark = docs[p.id] ? '\u25CF ' : '\u25CB ';   /* 설명서 등록 여부 */
+      return '<option value="' + esc(p.id) + '"' + (p.id === ST.productId ? ' selected' : '') + '>' + mark + esc(p.name) + tail + '</option>';
     }).join('') || '<option disabled>검색 결과 없음</option>';
   }
 
@@ -447,6 +525,8 @@
       var cat = sheet().cat;
       CUSTOM[cat] = CUSTOM[cat].filter(function (x) { return x.id !== p.id; });
       saveCustom();
+      if (DOCS[cat]) { delete DOCS[cat][p.id]; saveDocs(); }
+      delete ST.pman[p.id];
       var l = catalog();
       ST.productId = l.length ? l[0].id : null;
       save(); renderAll();
@@ -474,7 +554,7 @@
     };
     $('#btnResetAll').onclick = function () {
       if (!confirm('입력값 · 체크 · 확인필요 값을 모두 초기화합니다. 계속하시겠습니까?')) return;
-      ST.pman = {}; ST.inline = {}; ST.checks = {};
+      ST.pman = {}; ST.inline = {}; ST.checks = {}; DOCS = {}; saveDocs();
       ST.ctx = { consumerType: '일반금융소비자', custProfile: '', custProfileMeaning: '', cashPurpose: '', cashPrincipal: '', cashLoss: '', cashHorizon: '', newInvestor: false, watchOverride: null };
       ST.pros = null;
       save(); renderAll();
@@ -488,7 +568,7 @@
     var t = totals(), miss = missing(), rq = reqStatus();
     var defs = [
       ['script', '스크립트', itemsOf().length + '항목'],
-      ['lookup', '투자설명서 조회', pros() ? pros().found.length + '건 조회됨' : '미조회'],
+      ['reg', '투자설명서 등록', doc() ? '등록됨 · ' + docCoverage().pct + '%' : '미등록'],
       ['req', '필수입력', rq.missing ? rq.missing + '건 미입력' : '완료'],
       ['check', '체크리스트 · 셀프채점', t.done + '/' + t.all],
       ['rule', '평가기준 요약', miss.length ? '확인필요 ' + miss.length : '']
@@ -512,7 +592,7 @@
       return;
     }
     if (ST.tab === 'script') v.innerHTML = viewScript();
-    else if (ST.tab === 'lookup') v.innerHTML = viewLookup();
+    else if (ST.tab === 'reg') v.innerHTML = viewRegister();
     else if (ST.tab === 'req') v.innerHTML = viewRequired();
     else if (ST.tab === 'check') v.innerHTML = viewCheck();
     else v.innerHTML = viewRule();
@@ -621,9 +701,15 @@
 
   function reqStatus() {
     var fs = reqFields(), missing = 0, filled = 0;
+    /* 투자설명서에서 오는 항목과 상담에서 확인하는 고객 항목을 나눠 센다.
+       자동완성률에 고객 성향·자금성향을 섞으면 설명서 등록 효과가 흐려진다. */
+    var docTotal = 0, docFilled = 0, custTotal = 0, custMissing = 0;
     fs.forEach(function (f) {
       var v = valueOf(f.id);
-      if (v == null || v === '') missing++; else filled++;
+      var empty = (v == null || v === '');
+      if (empty) missing++; else filled++;
+      if (f.ctx) { custTotal++; if (empty) custMissing++; }
+      else { docTotal++; if (!empty) docFilled++; }
     });
     var inl = collectInlineLabels();
     var inlMissing = inl.filter(function (l) { return !ST.inline[l]; }).length;
@@ -633,7 +719,9 @@
       filled: filled + (inl.length - inlMissing),
       missing: missing + inlMissing,
       fieldTotal: fs.length, fieldMissing: missing,
-      inlineTotal: inl.length, inlineMissing: inlMissing
+      inlineTotal: inl.length, inlineMissing: inlMissing,
+      docTotal: docTotal + inl.length, docFilled: docFilled + (inl.length - inlMissing),
+      custTotal: custTotal, custMissing: custMissing
     };
   }
 
@@ -714,81 +802,200 @@
   }
 
   /* ============================================================
-     투자설명서 조회
+     투자설명서 등록
+     ------------------------------------------------------------
+     설명서를 한 번 등록하면 그 상품의 모든 스크립트 항목이 자동완성된다.
+     등록 방법 : PDF 업로드 / 텍스트 붙여넣기 / 항목 직접 등록 / 사내 API / JSON
      ============================================================ */
-  function viewLookup() {
-    var p = product(), sh = sheet(), cfg = PROS.apiConfig();
-    var h = [headBanner()];
 
-    h.push('<div class="banner blue"><b>투자설명서 조회 경로</b><br>'
-      + '① 사내 상품 API — 사내망에서 엔드포인트를 설정하면 상품코드로 바로 조회됩니다.<br>'
-      + '② 투자설명서 PDF 업로드 — PDF를 올리면 텍스트를 읽어 항목별로 자동 반영합니다. (사외망에서도 동작)<br>'
-      + '③ JSON 가져오기 — 다른 담당자가 내보낸 상품 프로필을 그대로 적용합니다.<br>'
-      + '④ 위 경로가 모두 불가하면 <b>「필수입력」 탭</b>에서 직접 입력합니다.</div>');
+  /** 등록으로 채워진 항목 비율 */
+  function docCoverage() {
+    var rq = reqStatus();
+    return {
+      filled: rq.docFilled, total: rq.docTotal,
+      pct: rq.docTotal ? Math.round(rq.docFilled / rq.docTotal * 100) : 100,
+      custMissing: rq.custMissing, custTotal: rq.custTotal
+    };
+  }
 
-    /* ① 사내 API */
-    h.push('<div class="rule"></div><h3 style="font-size:18px;font-weight:700;margin:0 0 10px">① 사내 상품 API</h3>');
-    h.push('<div class="card"><div class="card-b">');
-    h.push('<div class="pgrid">');
-    h.push('<div class="pf"><div class="k"><span>엔드포인트 (GET)</span></div><input type="text" id="apiBase" value="' + esc(cfg.base || '') + '" placeholder="https://내부호스트/api/product"><div class="h">호출 형태 : {엔드포인트}?cat=' + esc(sh.cat) + '&amp;code={상품코드}</div></div>');
-    h.push('<div class="pf"><div class="k"><span>인증 헤더 이름 (선택)</span></div><input type="text" id="apiHeader" value="' + esc(cfg.header || '') + '" placeholder="Authorization"></div>');
-    h.push('<div class="pf"><div class="k"><span>인증 헤더 값 (선택)</span></div><input type="text" id="apiHeaderValue" value="' + esc(cfg.headerValue || '') + '" placeholder="Bearer ..."><div class="h">이 브라우저에만 저장됩니다</div></div>');
-    h.push('<div class="pf"><div class="k"><span>조회할 상품코드</span></div><input type="text" id="apiCode" value="' + esc(p.id || '') + '"></div>');
+  function docStatusCard() {
+    var d = doc(), cov = docCoverage(), p = product();
+    var h = [];
+    var SRC = { PDF: '투자설명서 PDF', TEXT: '텍스트 붙여넣기', MANUAL: '항목 직접 등록', API: '사내 상품 API', JSON: 'JSON 가져오기', COLLECT: '자동수집 (data/els-prospectus.js)' };
+    h.push('<div class="summary">');
+    h.push('<div class="stat"><div class="l">투자설명서 등록 상태</div><div class="v2 ' + (d ? 'g' : 'r') + '" style="font-size:24px;padding-top:6px">'
+      + (d ? '등록됨' : '미등록') + '</div><div class="s">' + (d ? esc(SRC[d.source] || d.source) + ' · ' + esc(String(d.registeredAt).slice(0, 16).replace('T', ' ')) : '아래에서 등록하세요') + '</div></div>');
+    h.push('<div class="stat"><div class="l">자동완성률</div><div class="v2 ' + (cov.pct >= 100 ? 'g' : (cov.pct >= 70 ? 'o' : 'r')) + '">' + cov.pct + '<span style="font-size:18px">%</span></div>'
+      + '<div class="bar"><i style="width:' + cov.pct + '%"></i></div><div class="s">설명서 항목 ' + cov.filled + ' / ' + cov.total + '</div></div>');
+    h.push('<div class="stat"><div class="l">고객 상담정보</div><div class="v2 ' + (cov.custMissing ? 'o' : 'g') + '">'
+      + (cov.custTotal - cov.custMissing) + '<span style="font-size:18px;color:var(--muted2)">/' + cov.custTotal + '</span></div>'
+      + '<div class="s">설명서와 무관 · 좌측 상담 조건에서 입력</div></div>');
+    if (d && d.docName) {
+      h.push('<div class="stat"><div class="l">등록 문서</div><div class="v2 b" style="font-size:15px;padding-top:10px;line-height:1.4;word-break:break-all">'
+        + esc(d.docName) + '</div></div>');
+    }
     h.push('</div>');
-    h.push('<div style="display:flex;gap:8px;margin-top:12px;flex-wrap:wrap"><button class="tbtn" id="btnApiSave">설정 저장</button>'
-      + '<button class="tbtn primary" id="btnApiFetch"' + (cfg.base ? '' : ' disabled') + '>API로 조회</button></div>');
-    if (!cfg.base) h.push('<div class="note" style="margin:12px 0 0">엔드포인트가 설정되지 않았습니다. 사내 상품 시스템의 조회 URL을 넣으면 활성화됩니다. 응답은 <code>{"fields":{"필드id":"값"}}</code> 또는 필드가 평면으로 담긴 JSON을 받습니다.</div>');
-    h.push('</div></div>');
+    if (d) {
+      h.push('<div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:18px">');
+      h.push('<button class="tbtn" id="btnDocExport">등록 설명서 내보내기</button>');
+      if (!d.collected) h.push('<button class="tbtn" id="btnDocDelete">등록 해제</button>');
+      if (d.docUrl) h.push('<a class="tbtn" href="' + esc(d.docUrl) + '" target="_blank" rel="noopener" style="text-decoration:none">설명서 원문 열기</a>');
+      h.push('</div>');
+      if (d.collected) {
+        h.push('<div class="note">이 내용은 <b>자동수집분</b>입니다. 아래에서 PDF·텍스트·직접 입력으로 등록하면 그 값이 자동수집분을 대체합니다.</div>');
+      }
+    }
+    return h.join('');
+  }
 
-    /* ② PDF 업로드 */
-    h.push('<div class="rule"></div><h3 style="font-size:18px;font-weight:700;margin:0 0 10px">② 투자설명서 PDF 업로드</h3>');
+  /** ELS·DLS 차수별 상환조건 표 입력기 */
+  function scheduleEditor() {
+    if (sheet().cat !== 'els') return '';
+    var d = doc() || {};
+    var rows = PROS.normalizeSchedule(d.schedule || []);
+    var t = elsTexts();
+    var h = [];
+    h.push('<div class="rule"></div><h3 style="font-size:18px;font-weight:700;margin:0 0 6px">차수별 상환조건 표</h3>');
+    h.push('<div class="hint" style="margin-bottom:12px">투자설명서의 상환조건 표를 그대로 옮기면 「자동조기상환의 조건과 수익률」·「만기상환 조건과 수익률」 스크립트가 빠짐없이 자동 생성됩니다. '
+      + '경과개월은 <b>차수 × 조기상환주기</b> 규칙이 성립할 때만 자동으로 채워집니다.</div>');
+    h.push('<div class="tscroll"><table><thead><tr><th style="width:60px">차수</th><th style="width:110px">경과개월</th><th style="width:120px">배리어 %</th>'
+      + '<th style="width:130px">지급률 %<div style="font-weight:400;font-size:11px">액면금액 대비</div></th><th style="width:120px">연 수익률 %</th><th style="width:70px"></th></tr></thead><tbody>');
+    rows.forEach(function (r, i) {
+      h.push('<tr>');
+      h.push('<td class="n" style="font-weight:700">' + (r.seq || i + 1) + '차</td>');
+      ['months', 'barrier', 'payRate', 'annRate'].forEach(function (k) {
+        var v = r[k];
+        h.push('<td><input type="number" step="any" class="schInp" data-i="' + i + '" data-k="' + k + '" value="' + (v == null ? '' : esc(v))
+          + '" style="width:100%;border:1px solid var(--hair);padding:5px 6px;font-variant-numeric:tabular-nums"></td>');
+      });
+      h.push('<td><button class="tbtn schDel" data-i="' + i + '" style="padding:3px 8px;font-size:12px">삭제</button></td>');
+      h.push('</tr>');
+    });
+    h.push('</tbody></table></div>');
+    h.push('<div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px">');
+    h.push('<button class="tbtn" id="btnSchAdd">차수 추가</button>');
+    h.push('<button class="tbtn" id="btnSchAuto">투자설명서 원문에서 표 자동 인식</button>');
+    h.push('</div>');
+    h.push('<div class="pgrid" style="margin-bottom:12px">');
+    h.push('<div class="pf"><div class="k"><span>만기 배리어 %</span></div><input type="number" step="any" id="docMatBarrier" value="' + (d.matBarrier == null ? '' : esc(d.matBarrier)) + '" placeholder="예) 70"></div>');
+    h.push('<div class="pf"><div class="k"><span>KI (원금손실발생조건) 배리어 %</span></div><input type="text" id="docKnockIn" value="' + (d.knockIn == null ? '' : esc(d.knockIn)) + '" placeholder="예) 40 · 노낙인이면 비워 두세요"></div>');
+    h.push('</div>');
+    if (t) {
+      h.push('<div class="note"><b>생성된 스크립트 미리보기</b> (' + t.filled + '/' + t.total + ' 항목 채움)\n\n'
+        + esc(t.earlyTable) + '\n\n' + esc(t.matCond) + '</div>');
+    } else {
+      h.push('<div class="warnbox">표가 비어 있어 손익구조 스크립트가 「확인필요」 로 남습니다. 차수를 추가해 입력하십시오.</div>');
+    }
+    return h.join('');
+  }
+
+  function viewRegister() {
+    var p = product(), sh = sheet(), cfg = PROS.apiConfig(), d = doc();
+    var h = [headBanner()];
+    h.push(docStatusCard());
+
+    h.push('<div class="banner blue"><b>투자설명서를 등록하면 이 상품의 모든 스크립트 항목이 자동완성됩니다.</b><br>'
+      + '아래 다섯 가지 방법 중 가능한 것을 쓰면 됩니다. 등록 내용은 <b>상품별로</b> 저장되어 다음 상담에서도 그대로 쓰입니다.</div>');
+
+    /* ① PDF */
+    h.push('<div class="rule"></div><h3 style="font-size:18px;font-weight:700;margin:0 0 10px">① 투자설명서 PDF 업로드</h3>');
     h.push('<div class="card"><div class="card-b">');
     if (!PROS.pdfAvailable()) {
-      h.push('<div class="warnbox">PDF 판독 모듈(vendor/pdf.min.js)을 불러오지 못했습니다. 파일 경로를 확인하거나 「필수입력」 탭에서 직접 입력하십시오.</div>');
+      h.push('<div class="warnbox">PDF 판독 모듈(vendor/pdf.min.js)을 불러오지 못했습니다. ②~③ 방법을 사용하십시오.</div>');
     } else {
       h.push('<input type="file" id="pdfFile" accept="application/pdf" style="margin-bottom:10px">');
-      h.push('<div class="hint">' + esc(sh.groupLabel.split(' · ')[0]) + ' 투자설명서 · 간이투자설명서 · 핵심(요약)설명서 PDF를 올리면 항목을 자동 추출합니다. '
-        + '추출값은 <b>근거 문구와 함께</b> 표시되며, 확인 후 「반영」을 눌러야 스크립트에 들어갑니다.</div>');
+      h.push('<div class="hint">투자설명서 · 간이투자설명서 · 핵심(요약)설명서 PDF를 올리면 항목과 차수별 상환표를 자동 추출합니다. 외부 네트워크 없이 동작합니다.</div>');
       h.push('<div id="pdfStat" class="note" style="margin:10px 0 0;display:none"></div>');
     }
     h.push('</div></div>');
 
-    /* ③ JSON */
-    h.push('<div class="rule"></div><h3 style="font-size:18px;font-weight:700;margin:0 0 10px">③ JSON 가져오기 / 내보내기</h3>');
+    /* ② 텍스트 */
+    h.push('<div class="rule"></div><h3 style="font-size:18px;font-weight:700;margin:0 0 10px">② 텍스트 붙여넣기</h3>');
+    h.push('<div class="card"><div class="card-b">');
+    h.push('<div class="hint" style="margin-bottom:8px">PDF 판독이 안 되거나 사내 화면(MAPIS 등)에서 복사한 경우 사용합니다. 투자설명서 내용을 붙여넣고 「추출」을 누르십시오.</div>');
+    h.push('<textarea id="docText" rows="8" placeholder="투자설명서 내용을 붙여넣으세요">' + esc(d && d.source === 'TEXT' && d.rawText ? d.rawText.slice(0, 40000) : '') + '</textarea>');
+    h.push('<button class="tbtn primary" id="btnTextExtract" style="margin-top:8px">붙여넣은 내용에서 추출</button>');
+    h.push('</div></div>');
+
+    /* ③ 직접 등록 */
+    h.push('<div class="rule"></div><h3 style="font-size:18px;font-weight:700;margin:0 0 10px">③ 항목 직접 등록</h3>');
+    h.push('<div class="card"><div class="card-b">');
+    h.push('<div class="hint">「필수입력」 탭에서 항목별로 직접 입력하면 그 값이 곧 등록 내용이 됩니다. '
+      + (sh.cat === 'els' ? 'ELS·DLS 는 아래 차수별 상환조건 표까지 채워야 손익구조 스크립트가 완성됩니다.' : '') + '</div>');
+    h.push('<button class="tbtn" id="btnGoReq" style="margin-top:8px">필수입력 탭으로 이동</button>');
+    h.push('</div></div>');
+
+    /* ④ 사내 API */
+    h.push('<div class="rule"></div><h3 style="font-size:18px;font-weight:700;margin:0 0 10px">④ 사내 상품 API</h3>');
+    h.push('<div class="card"><div class="card-b"><div class="pgrid">');
+    h.push('<div class="pf"><div class="k"><span>엔드포인트 (GET)</span></div><input type="text" id="apiBase" value="' + esc(cfg.base || '') + '" placeholder="https://내부호스트/api/product"><div class="h">호출 형태 : {엔드포인트}?cat=' + esc(sh.cat) + '&amp;code={상품코드}</div></div>');
+    h.push('<div class="pf"><div class="k"><span>인증 헤더 이름 (선택)</span></div><input type="text" id="apiHeader" value="' + esc(cfg.header || '') + '" placeholder="Authorization"></div>');
+    h.push('<div class="pf"><div class="k"><span>인증 헤더 값 (선택)</span></div><input type="text" id="apiHeaderValue" value="' + esc(cfg.headerValue || '') + '" placeholder="Bearer ..."><div class="h">이 브라우저에만 저장됩니다</div></div>');
+    h.push('<div class="pf"><div class="k"><span>조회할 상품코드</span></div><input type="text" id="apiCode" value="' + esc(p.id || '') + '"></div>');
+    h.push('</div><div style="display:flex;gap:8px;margin-top:12px;flex-wrap:wrap"><button class="tbtn" id="btnApiSave">설정 저장</button>'
+      + '<button class="tbtn primary" id="btnApiFetch"' + (cfg.base ? '' : ' disabled') + '>API로 조회</button></div>');
+    if (!cfg.base) h.push('<div class="note" style="margin:12px 0 0">엔드포인트가 설정되지 않았습니다. 응답은 <code>{"fields":{"필드id":"값"}}</code> 또는 필드가 평면으로 담긴 JSON을 받습니다. 사내 응답 형태가 다르면 <code>js/sales-script-prospectus.js</code> 의 <code>mapResponse</code> 만 고치면 됩니다.</div>');
+    h.push('</div></div>');
+
+    /* ⑤ JSON */
+    h.push('<div class="rule"></div><h3 style="font-size:18px;font-weight:700;margin:0 0 10px">⑤ JSON 가져오기 / 내보내기</h3>');
     h.push('<div class="card"><div class="card-b"><div style="display:flex;gap:8px;flex-wrap:wrap">'
       + '<button class="tbtn" id="btnExportProfile2">상품 프로필 내보내기</button>'
       + '<button class="tbtn" id="btnImportProfile2">상품 프로필 가져오기</button></div>'
-      + '<div class="hint" style="margin-top:8px">상품 기본정보와 담당자 입력값을 함께 담습니다. 같은 상품을 여러 지점에서 쓸 때 한 번만 채우면 됩니다.</div></div></div>');
+      + '<div class="hint" style="margin-top:8px">등록된 설명서 내용과 차수별 표까지 함께 담깁니다. 같은 상품을 여러 지점에서 쓸 때 한 번만 등록해 공유하면 됩니다.</div></div></div>');
 
-    /* 조회 결과 */
+    /* ELS 차수별 표 */
+    h.push(scheduleEditor());
+
+    /* 추출 결과 검토 */
+    h.push(extractionResult());
+    return h.join('');
+  }
+
+  /** PDF·텍스트·API 추출 결과 검토 표 */
+  function extractionResult() {
     var r = pros();
-    if (r) {
-      h.push('<div class="rule"></div><h3 style="font-size:18px;font-weight:700;margin:0 0 10px">조회 결과 — ' + esc(r.name) + '</h3>');
-      h.push('<div class="hint" style="margin-bottom:12px">출처 ' + esc(r.src) + (r.pages ? ' · ' + r.pages + '페이지' : '') + ' · 추출 ' + r.found.length + '건</div>');
-      if (!r.found.length) {
-        h.push('<div class="warnbox">자동으로 인식된 항목이 없습니다. 설명서 서식이 예상과 달라 텍스트 패턴이 맞지 않는 경우입니다. 「필수입력」 탭에서 직접 입력하십시오.</div>');
-      } else {
-        h.push('<div style="display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap"><button class="tbtn primary" id="btnApplyAll">전체 반영</button>'
-          + '<button class="tbtn" id="btnClearPros">조회 결과 지우기</button></div>');
-        h.push('<div class="tscroll"><table><thead><tr><th style="width:180px">항목</th><th style="width:170px">추출값</th><th>근거 문구</th><th style="width:96px">반영</th></tr></thead><tbody>');
+    if (!r) return '';
+    var h = ['<div class="rule"></div><h3 style="font-size:18px;font-weight:700;margin:0 0 10px">추출 결과 — ' + esc(r.name) + '</h3>'];
+    h.push('<div class="hint" style="margin-bottom:12px">출처 ' + esc(r.src) + (r.pages ? ' · ' + r.pages + '페이지' : '')
+      + ' · 항목 ' + r.found.length + '건' + (r.schedule && r.schedule.length ? ' · 차수별 표 ' + r.schedule.length + '행' : '') + '</div>');
+    if (!r.found.length && !(r.schedule && r.schedule.length)) {
+      h.push('<div class="warnbox">자동으로 인식된 항목이 없습니다. 설명서 서식이 예상과 달라 텍스트 패턴이 맞지 않는 경우입니다. '
+        + '③ 항목 직접 등록으로 진행하십시오.</div>');
+    } else {
+      h.push('<div style="display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap">'
+        + '<button class="tbtn primary" id="btnRegisterAll">전체 등록 (모든 항목 자동완성)</button>'
+        + '<button class="tbtn" id="btnClearPros">추출 결과 지우기</button></div>');
+      if (r.schedule && r.schedule.length) {
+        h.push('<div class="note"><b>인식된 차수별 상환조건 ' + r.schedule.length + '행</b> — 「전체 등록」 시 위 표에 반영됩니다.\n'
+          + r.schedule.map(function (x) {
+            return '  ' + x.seq + '차 : 경과 ' + (x.months == null ? '—' : x.months + '개월')
+              + ' / 배리어 ' + (x.barrier == null ? '—' : x.barrier + '%')
+              + ' / 지급률 ' + (x.payRate == null ? '—' : x.payRate + '%')
+              + ' / 연 ' + (x.annRate == null ? '—' : x.annRate + '%');
+          }).join('\n') + '</div>');
+      }
+      if (r.found.length) {
+        h.push('<div class="tscroll"><table><thead><tr><th style="width:180px">항목</th><th style="width:170px">추출값</th><th>근거 문구</th><th style="width:96px">등록</th></tr></thead><tbody>');
         r.found.forEach(function (f, i) {
           var cur = valueOf(f.id);
           var same = String(cur == null ? '' : cur) === f.value;
           h.push('<tr><td style="font-weight:500">' + esc(labelOf(f.id) || f.label) + '<div style="font-size:11px;color:var(--muted2)">' + esc(f.id) + '</div></td>');
           h.push('<td style="font-weight:700">' + esc(f.value) + (f.fallback ? '<div style="font-size:11px;color:var(--warn)">보조 패턴</div>' : '') + '</td>');
           h.push('<td style="font-size:12px;color:var(--muted)">' + esc(f.evidence) + '</td>');
-          h.push('<td>' + (same ? '<span class="src auto">반영됨</span>' : '<button class="tbtn applyOne" data-i="' + i + '" style="padding:4px 10px;font-size:12px">반영</button>') + '</td></tr>');
+          h.push('<td>' + (same ? '<span class="src auto">등록됨</span>' : '<button class="tbtn applyOne" data-i="' + i + '" style="padding:4px 10px;font-size:12px">등록</button>') + '</td></tr>');
         });
         h.push('</tbody></table></div>');
-        h.push('<div class="warnbox">추출값은 <b>참고</b>입니다. 반영 전에 근거 문구가 해당 항목을 가리키는지 확인하십시오. 잘못된 값을 읽으면 부당권유행위(최대 −18점) 감점 사유가 됩니다.</div>');
       }
-      if (r.text) {
-        h.push('<details style="margin-top:14px"><summary style="cursor:pointer;font-size:14px;font-weight:600;color:var(--blue)">추출된 원문 텍스트 보기 (' + r.text.length.toLocaleString() + '자)</summary>'
-          + '<pre style="max-height:340px;overflow:auto;font-size:12px;background:var(--subtle);border:1px solid var(--hair);padding:12px;white-space:pre-wrap;margin-top:8px">' + esc(r.text.slice(0, 20000)) + '</pre></details>');
-      }
+      h.push('<div class="warnbox">추출값은 <b>참고</b>입니다. 등록 전에 근거 문구가 해당 항목을 가리키는지 확인하십시오. 잘못된 값을 읽으면 부당권유행위(최대 −18점) 감점 사유가 됩니다.</div>');
+    }
+    if (r.text) {
+      h.push('<details style="margin-top:14px"><summary style="cursor:pointer;font-size:14px;font-weight:600;color:var(--blue)">추출된 원문 텍스트 보기 (' + r.text.length.toLocaleString() + '자)</summary>'
+        + '<pre style="max-height:340px;overflow:auto;font-size:12px;background:var(--subtle);border:1px solid var(--hair);padding:12px;white-space:pre-wrap;margin-top:8px">' + esc(r.text.slice(0, 20000)) + '</pre></details>');
     }
     return h.join('');
   }
+
 
   function collectInlineLabels() {
     var set = {}, out = [];
@@ -921,6 +1128,7 @@
       i.onchange = function () { ST.inline[i.dataset.k] = i.value; save(); renderTabs(); };
     });
     bindLookup();
+    bindRegister();
     bindRequired();
     /* 체크리스트 → 스크립트 점프 */
     Array.prototype.forEach.call(document.querySelectorAll('.jump'), function (a) {
@@ -933,9 +1141,148 @@
       };
     });
   }
-  /* ---------------- 투자설명서 조회 · 필수입력 이벤트 ---------------- */
+  /* ---------------- 투자설명서 등록 · 필수입력 이벤트 ---------------- */
+
+  /** 등록 레코드를 만들거나 갱신한다 */
+  function upsertDoc(patch) {
+    var d = doc() || { source: 'MANUAL', docName: '', registeredAt: '', fields: {}, schedule: [], matBarrier: null, knockIn: '' };
+    Object.keys(patch || {}).forEach(function (k) {
+      if (k === 'fields') {
+        d.fields = Object.assign({}, d.fields, patch.fields);
+      } else {
+        d[k] = patch[k];
+      }
+    });
+    d.registeredAt = new Date().toISOString();
+    setDoc(d);
+    return d;
+  }
+
+  /** 추출 항목 하나를 등록한다 (등록 레코드에 반영 — 직접 수정값이 있으면 그것이 우선) */
   function applyFound(f) {
-    setManual(f.id, f.value);
+    var patch = {};
+    patch[f.id] = f.value;
+    upsertDoc({ fields: patch });
+    /* 직접 수정한 값이 남아 있으면 등록값이 가려지므로 정리한다 */
+    if (isManual(f.id)) setManual(f.id, '');
+  }
+
+  /** 추출 결과 전체를 등록 (모든 항목 자동완성) */
+  function registerAll() {
+    var r = pros();
+    if (!r) return;
+    var fields = {};
+    r.found.forEach(function (f) {
+      fields[f.id] = f.value;
+      if (isManual(f.id)) setManual(f.id, '');
+    });
+    var patch = {
+      source: r.src === '사내 상품 API' ? 'API' : (r.src === '텍스트 붙여넣기' ? 'TEXT' : 'PDF'),
+      docName: r.name, fields: fields
+    };
+    if (r.text) patch.rawText = r.text;
+    if (r.schedule && r.schedule.length) patch.schedule = r.schedule;
+    /* KI·만기 배리어는 추출 항목에서 끌어온다 */
+    var ki = fields.knockIn;
+    if (ki != null && !/없음|노낙인/.test(String(ki))) patch.knockIn = String(ki).replace(/[^0-9.]/g, '');
+    upsertDoc(patch);
+    save(); renderAll();
+  }
+
+  /** 텍스트에서 추출 (PDF·붙여넣기 공통) */
+  function runExtract(text, srcLabel, name, pages) {
+    var cat = sheet().cat;
+    var found = PROS.extract(text, cat);
+    var schedule = cat === 'els' ? PROS.parseSchedule(text) : [];
+    ST.pros = {
+      cat: cat, productId: ST.productId, src: srcLabel, name: name,
+      pages: pages || 0, found: found, schedule: schedule, text: text
+    };
+  }
+
+  function bindRegister() {
+    var goReq = $('#btnGoReq');
+    if (goReq) goReq.onclick = function () { ST.tab = 'req'; renderView(); renderTabs(); };
+
+    var tx = $('#btnTextExtract');
+    if (tx) {
+      tx.onclick = function () {
+        var t = $('#docText').value;
+        if (!t || t.trim().length < 20) { alert('투자설명서 내용을 붙여넣으세요.'); return; }
+        runExtract(t, '텍스트 붙여넣기', '붙여넣은 텍스트', 0);
+        renderAll();
+      };
+    }
+
+    var reg = $('#btnRegisterAll');
+    if (reg) reg.onclick = registerAll;
+
+    var del = $('#btnDocDelete');
+    if (del) {
+      del.onclick = function () {
+        if (!confirm('이 상품에 등록된 투자설명서를 해제합니다. 계속하시겠습니까?')) return;
+        setDoc(null); ST.pros = null; renderAll();
+      };
+    }
+    var dex = $('#btnDocExport');
+    if (dex) dex.onclick = exportProfile;
+
+    /* 차수별 표 */
+    Array.prototype.forEach.call(document.querySelectorAll('.schInp'), function (i) {
+      i.onchange = function () {
+        var d = doc() || {};
+        var rows = (d.schedule || []).slice();
+        var idx = +i.dataset.i;
+        while (rows.length <= idx) rows.push({ seq: rows.length + 1 });
+        rows[idx] = Object.assign({}, rows[idx]);
+        rows[idx][i.dataset.k] = i.value === '' ? null : Number(i.value);
+        upsertDoc({ schedule: rows });
+        save(); renderView(); renderTabs();
+      };
+    });
+    Array.prototype.forEach.call(document.querySelectorAll('.schDel'), function (b) {
+      b.onclick = function () {
+        var d = doc() || {};
+        var rows = (d.schedule || []).slice();
+        rows.splice(+b.dataset.i, 1);
+        rows.forEach(function (r, n) { r.seq = n + 1; });
+        upsertDoc({ schedule: rows });
+        save(); renderView(); renderTabs();
+      };
+    });
+    var add = $('#btnSchAdd');
+    if (add) {
+      add.onclick = function () {
+        var d = doc() || {};
+        var rows = (d.schedule || []).slice();
+        var prev = rows[rows.length - 1] || {};
+        rows.push({ seq: rows.length + 1, months: null, barrier: prev.barrier != null ? prev.barrier : null, payRate: null, annRate: prev.annRate != null ? prev.annRate : null });
+        upsertDoc({ schedule: rows });
+        save(); renderView(); renderTabs();
+      };
+    }
+    var auto = $('#btnSchAuto');
+    if (auto) {
+      auto.onclick = function () {
+        var d = doc();
+        var text = (pros() && pros().text) || (d && d.rawText) || '';
+        if (!text) { alert('먼저 PDF를 업로드하거나 텍스트를 붙여넣으십시오.'); return; }
+        var rows = PROS.parseSchedule(text);
+        if (!rows.length) { alert('원문에서 차수별 표를 인식하지 못했습니다. 표를 직접 입력하십시오.'); return; }
+        upsertDoc({ schedule: rows });
+        save(); renderAll();
+      };
+    }
+    ['docMatBarrier', 'docKnockIn'].forEach(function (id) {
+      var el = $('#' + id);
+      if (!el) return;
+      el.onchange = function () {
+        var patch = {};
+        patch[id === 'docMatBarrier' ? 'matBarrier' : 'knockIn'] = el.value === '' ? null : el.value;
+        upsertDoc(patch);
+        save(); renderView(); renderTabs();
+      };
+    });
   }
 
   function bindLookup() {
@@ -957,7 +1304,7 @@
         if (!code) { alert('상품코드를 입력하세요.'); return; }
         fetchBtn.disabled = true; fetchBtn.textContent = '조회 중…';
         PROS.fetchFromApi(sheet().cat, code).then(function (found) {
-          ST.pros = { cat: sheet().cat, productId: ST.productId, src: '사내 상품 API', name: code, pages: 0, found: found, text: '' };
+          ST.pros = { cat: sheet().cat, productId: ST.productId, src: '사내 상품 API', name: code, pages: 0, found: found, schedule: [], text: '' };
           save(); renderAll();
         }).catch(function (e) {
           alert('조회 실패 : ' + e.message);
@@ -977,8 +1324,7 @@
         PROS.pdfToText(file, function (n, total) {
           stat.textContent = 'PDF 판독 중… ' + n + ' / ' + total + ' 페이지';
         }).then(function (r) {
-          var found = PROS.extract(r.text, sheet().cat);
-          ST.pros = { cat: sheet().cat, productId: ST.productId, src: '투자설명서 PDF', name: file.name, pages: r.pages, found: found, text: r.text };
+          runExtract(r.text, '투자설명서 PDF', file.name, r.pages);
           renderAll();
         }).catch(function (e) {
           stat.textContent = 'PDF 판독 실패 : ' + e.message;
@@ -986,13 +1332,6 @@
       };
     }
 
-    var all = $('#btnApplyAll');
-    if (all) {
-      all.onclick = function () {
-        pros().found.forEach(applyFound);
-        save(); renderAll();
-      };
-    }
     Array.prototype.forEach.call(document.querySelectorAll('.applyOne'), function (b) {
       b.onclick = function () {
         applyFound(pros().found[+b.dataset.i]);
@@ -1039,9 +1378,10 @@
     var p = product(), sh = sheet();
     if (!p) return;
     var payload = {
-      _type: 'ss-product-profile', _version: 1,
+      _type: 'ss-product-profile', _version: 2,
       cat: sh.cat, exportedAt: new Date().toISOString(),
       product: JSON.parse(JSON.stringify(Object.assign({}, p, { raw: undefined }))),
+      doc: doc() ? JSON.parse(JSON.stringify(doc())) : null,
       values: Object.assign({}, ST.pman[p.id] || {}),
       inline: Object.assign({}, ST.inline)
     };
@@ -1073,6 +1413,7 @@
         CUSTOM[sheet().cat].unshift(p);
         saveCustom();
         ST.productId = p.id;
+        if (o.doc) { if (!DOCS[sheet().cat]) DOCS[sheet().cat] = {}; DOCS[sheet().cat][p.id] = o.doc; saveDocs(); }
         if (o.values) ST.pman[p.id] = Object.assign({}, o.values);
         if (o.inline) Object.keys(o.inline).forEach(function (k) { if (!ST.inline[k]) ST.inline[k] = o.inline[k]; });
         save(); renderAll();
@@ -1200,6 +1541,7 @@
 
   function init() {
     loadCustom();
+    loadDocs();
     load();
     if (!ST.productId) {
       var l = catalog();

@@ -487,6 +487,187 @@
     });
   }
 
+  /* ==========================================================
+     5. ELS·DLS 차수별 상환조건 표
+     ------------------------------------------------------------
+     투자설명서의 상환조건 표를 구조로 갖고 있으면, 스크립트의
+     「자동조기상환의 조건과 수익률」·「만기상환 조건과 수익률」 문구를
+     빠짐없이 자동 생성할 수 있다. 표가 없으면 그 부분만 «확인필요» 로 남는다.
+
+     schedule 행 : { months, barrier, payRate, annRate }
+       months  경과 개월 (3, 6, 9 …)
+       barrier 관찰 배리어 % (최초기준가격 대비)
+       payRate 액면금액 대비 지급률 % (예: 102.13)
+       annRate 연 수익률 % (예: 8.50)
+     ========================================================== */
+
+  var ORD = ['1차', '2차', '3차', '4차', '5차', '6차', '7차', '8차', '9차', '10차',
+    '11차', '12차', '13차', '14차', '15차', '16차', '17차', '18차', '19차', '20차'];
+
+  function fmtPct(v) {
+    if (v == null || v === '') return null;
+    var n = Number(v);
+    return Number.isFinite(n) ? (Math.round(n * 100) / 100).toFixed(2) : String(v);
+  }
+
+  /** 표 한 행 → 지급률·연수익률 문구 (없으면 «» 마커) */
+  function payPhrase(row, seq) {
+    var pay = fmtPct(row.payRate), ann = fmtPct(row.annRate);
+    var payTxt = pay != null ? pay + '%' : '«' + seq + ' 지급률(%)»';
+    var annTxt = ann != null ? '연 ' + ann + '%' : '연 «' + seq + ' 연수익률(%)»';
+    return '액면금액의 ' + payTxt + '(' + annTxt + ')';
+  }
+
+  /**
+   * 스크립트에 쓰이는 ELS 손익구조 문구를 만든다.
+   * @param {{schedule:Array, knockIn:(number|string), matBarrier:number}} doc
+   * @returns {{earlyTable:string, matCond:string, coupon:string, knockIn:string, filled:number, total:number}}
+   */
+  /**
+   * 차수 간격이 일정하면 비어 있는 경과개월을 산술로 채운다.
+   * (차수 순서 × 주기는 계산으로 확정되는 값이므로 추정이 아니다.
+   *  간격이 일정하지 않거나 근거가 1개뿐이면 채우지 않는다.)
+   */
+  function normalizeSchedule(rows) {
+    var s = (rows || []).slice().map(function (r, i) {
+      return {
+        seq: r.seq != null ? Number(r.seq) : i + 1,
+        months: r.months == null || r.months === '' ? null : Number(r.months),
+        barrier: r.barrier == null || r.barrier === '' ? null : Number(r.barrier),
+        payRate: r.payRate == null || r.payRate === '' ? null : Number(r.payRate),
+        annRate: r.annRate == null || r.annRate === '' ? null : Number(r.annRate),
+        evidence: r.evidence
+      };
+    });
+    s.sort(function (a, b) { return a.seq - b.seq; });
+
+    /* ELS 상환일정의 실제 규칙은 「N차 평가일 = N × 조기상환주기」 다.
+       근거로 얻은 모든 행이 하나의 양의 정수 주기로 이 식을 만족할 때만
+       비어 있는 경과개월을 채운다. 두 점만으로 주기를 역산하면 오독된 행
+       하나가 전체 일정을 틀리게 만들 수 있어 그렇게 하지 않는다. */
+    var known = s.filter(function (r) { return r.months != null && r.seq > 0; });
+    if (known.length) {
+      var step = known[0].months / known[0].seq;
+      var ok = Number.isInteger(step) && step > 0 && known.every(function (r) {
+        return r.months === r.seq * step;
+      });
+      if (ok) {
+        s.forEach(function (r) {
+          if (r.months == null && r.seq > 0) r.months = r.seq * step;
+        });
+      }
+    }
+    return s;
+  }
+
+  function buildElsTexts(doc) {
+    var sched = normalizeSchedule(doc && doc.schedule)
+      .filter(function (r) { return r.months != null || r.barrier != null; });
+    if (!sched.length) return null;
+
+    var filled = 0, total = 0;
+    var rows = sched.map(function (r, i) {
+      /* 라벨은 배열 순서가 아니라 실제 차수를 쓴다.
+         설명서 표에서 일부 차수만 읽힌 경우 순서로 매기면 4차가 2차로 표시된다. */
+      var n = r.seq != null ? r.seq : i + 1;
+      var seq = ORD[n - 1] || n + '차';
+      total += 2;
+      if (r.payRate != null && r.payRate !== '') filled++;
+      if (r.annRate != null && r.annRate !== '') filled++;
+      var bar = r.barrier != null && r.barrier !== '' ? fmtPct(r.barrier) + '%' : '«' + seq + ' 배리어(%)»';
+      return '  · ' + seq + ' 자동조기상환평가일(' + (r.months ? r.months + '개월' : '«' + seq + ' 경과개월»') +
+        ') : 모든 기초자산의 자동조기상환평가가격이 각 최초기준가격의 ' + bar + ' 이상인 경우 → ' +
+        payPhrase(r, seq) + '를 지급';
+    });
+
+    var last = sched[sched.length - 1];
+    var matBar = doc.matBarrier != null && doc.matBarrier !== '' ? doc.matBarrier : last.barrier;
+    var matBarTxt = matBar != null && matBar !== '' ? fmtPct(matBar) + '%' : '«만기 배리어(%)»';
+    var ki = doc.knockIn;
+    var kiNum = (ki == null || ki === '') ? null : String(ki).replace(/[^0-9.]/g, '');
+    var noKi = kiNum === '' || kiNum === null || /없음|노낙인|no.?ki/i.test(String(ki));
+
+    var mat = '[이익조건] 자동조기상환이 발생하지 않을 경우, 만기평가일에 모든 기초자산의 만기평가가격이 각 최초기준가격의 ' +
+      matBarTxt + ' 이상인 경우 ' + payPhrase(last, '만기') + '의 세전수익률을 지급합니다.';
+
+    if (!noKi) {
+      mat += '\n위 조건을 만족하지 못하더라도, 모든 기초자산 중 어느 하나도 종가기준으로 각 최초기준가격의 ' + kiNum +
+        '% 미만으로 하락한 적이 없는 경우 ' + payPhrase(last, '만기') + '의 세전수익률을 지급합니다.' +
+        '\n[손실조건] 모든 기초자산 중 어느 하나라도 종가기준으로 각 최초기준가격의 ' + kiNum +
+        '% 미만으로 하락한 적이 있는 경우, 모든 기초자산 중 하락률이 큰 기초자산의 하락률만큼 원금손실이 발생합니다.';
+    } else {
+      mat += '\n[손실조건] 위 조건을 만족하지 못하는 경우, 모든 기초자산 중 하락률이 큰 기초자산의 하락률만큼 원금손실이 발생합니다.';
+    }
+
+    var ann = fmtPct(last.annRate);
+    /* 주기는 경과개월이 둘 다 있는 인접 차수에서만 계산한다 */
+    var cycle = null;
+    for (var i = 1; i < sched.length; i++) {
+      if (sched[i].months != null && sched[i - 1].months != null) {
+        cycle = sched[i].months - sched[i - 1].months; break;
+      }
+    }
+    if (cycle == null && sched.length === 1) cycle = sched[0].months;
+
+    return {
+      earlyTable: rows.join('\n'),
+      matCond: mat,
+      coupon: ann != null ? '연 ' + ann + '%' : null,
+      knockIn: noKi ? '없음 (노낙인)' : kiNum + '%',
+      earlyCycle: cycle ? cycle + '개월' : null,
+      matTerm: last.months ? (last.months % 12 === 0 ? (last.months / 12) + '년' : last.months + '개월') : null,
+      filled: filled, total: total
+    };
+  }
+
+  /**
+   * 투자설명서 텍스트에서 차수별 상환조건 표를 뽑는다.
+   * 한 줄에 "N차" + 배리어%(≤100) + 지급률%(보통 100 초과) 가 함께 있는 행을 찾는다.
+   * 서식이 달라 못 읽는 경우가 많으므로, 결과는 반드시 담당자가 표에서 확인·보정한다.
+   */
+  function parseSchedule(text) {
+    var out = [];
+    String(text || '').split('\n').forEach(function (line) {
+      var seqM = line.match(/(\d{1,2})\s*차/);
+      if (!seqM) return;
+      var pcts = [];
+      var re = /(\d{1,3}(?:\.\d{1,4})?)\s*%/g, m;
+      while ((m = re.exec(line))) pcts.push(Number(m[1]));
+      if (pcts.length < 2) return;
+
+      var annM = line.match(/연\s*(\d{1,3}(?:\.\d{1,4})?)\s*%/);
+      var ann = annM ? Number(annM[1]) : null;
+      var monM = line.match(/(\d{1,3})\s*개월/);
+
+      /* 배리어 = 100 이하 중 가장 큰 값, 지급률 = 100 이상 중 가장 작은 값 */
+      var bars = pcts.filter(function (v) { return v > 0 && v <= 100; });
+      var pays = pcts.filter(function (v) { return v > 100; });
+      /* 연수익률로 이미 쓰인 값은 배리어 후보에서 제외 */
+      if (ann != null) bars = bars.filter(function (v) { return v !== ann; });
+      if (!bars.length && !pays.length) return;
+
+      out.push({
+        seq: Number(seqM[1]),
+        months: monM ? Number(monM[1]) : null,
+        barrier: bars.length ? Math.max.apply(null, bars) : null,
+        payRate: pays.length ? Math.min.apply(null, pays) : null,
+        annRate: ann,
+        evidence: line.replace(/\s+/g, ' ').trim().slice(0, 140)
+      });
+    });
+
+    /* 차수 중복 제거 후 정렬 */
+    var seen = {}, rows = [];
+    out.forEach(function (r) {
+      if (seen[r.seq]) return;
+      seen[r.seq] = 1; rows.push(r);
+    });
+    rows.sort(function (a, b) { return a.seq - b.seq; });
+
+    /* 개월이 비어 있으면 차수 간격으로 추정하지 않는다 (부정확 설명 방지) */
+    return rows;
+  }
+
   g.SS_PROS = {
     RULES: RULES,
     extract: extract,
@@ -494,6 +675,9 @@
     fetchFromApi: fetchFromApi,
     apiConfig: apiConfig,
     setApiConfig: setApiConfig,
+    buildElsTexts: buildElsTexts,
+    parseSchedule: parseSchedule,
+    normalizeSchedule: normalizeSchedule,
     pdfAvailable: function () { return !!g.pdfjsLib; }
   };
 })(window);
