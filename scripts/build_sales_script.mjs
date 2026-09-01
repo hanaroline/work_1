@@ -42,7 +42,7 @@ html = html.replace(/<script\s+src="([^"]+)"\s*><\/script>/g, (_, src) => {
   try {
     code = readFileSync(resolve(root, src), 'utf8');
   } catch {
-    console.warn(`  건너뜀 (파일 없음): ${src}`);
+    console.log(`  건너뜀 (파일 없음): ${src}`);
     return '';
   }
   log.push(`인라인 ${src} (${(code.length / 1024).toFixed(0)} KB)`);

@@ -1,0 +1,79 @@
+name: ELS 투자설명서 수집
+
+# ⚠ 이 워크플로는 아직 실제 사이트에 대해 검증되지 않았다.
+#    개발 환경의 송신 정책이 securities.miraeasset.com 을 차단해 호출을 시도할 수
+#    없었다. 먼저 probe 로 수동 실행해 collect-debug/prospectus-probe.json 의 링크
+#    후보를 확인하고, scripts/collect_els_prospectus.mjs 의 SELECTORS 를 조정한 뒤
+#    schedule 을 활성화하는 것을 권장한다.
+
+on:
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: '실행 모드'
+        type: choice
+        options: [probe, collect]
+        default: probe
+      limit:
+        description: '수집 건수 제한 (0 = 전체)'
+        type: string
+        default: '3'
+  # 검증 후 아래 주석을 해제해 정기 수집으로 전환한다.
+  # schedule:
+  #   - cron: '30 23 * * *'   # 매일 08:30 KST — ELS 수집(08:00) 이후
+
+permissions:
+  contents: write
+
+concurrency:
+  group: els-prospectus
+  cancel-in-progress: false
+
+jobs:
+  collect:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref_name }}
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: 의존성 설치
+        run: |
+          npm init -y >/dev/null 2>&1 || true
+          npm install --no-save playwright pdfjs-dist@3.11.174
+          npx playwright install --with-deps chromium
+
+      - name: 투자설명서 수집
+        run: |
+          if [ "${{ inputs.mode }}" = "probe" ]; then
+            node scripts/collect_els_prospectus.mjs --probe --limit "${{ inputs.limit }}"
+          else
+            node scripts/collect_els_prospectus.mjs --limit "${{ inputs.limit }}"
+          fi
+
+      - name: 탐색 결과 업로드
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: prospectus-probe
+          path: collect-debug/
+          if-no-files-found: ignore
+          retention-days: 14
+
+      - name: 결과 커밋
+        if: inputs.mode == 'collect'
+        run: |
+          if [ -n "$(git status --porcelain data/els-prospectus.js)" ]; then
+            git config user.name  'github-actions[bot]'
+            git config user.email 'github-actions[bot]@users.noreply.github.com'
+            git add data/els-prospectus.js
+            git commit -m "chore: ELS 투자설명서 수집 결과 갱신"
+            git push
+          else
+            echo '변경 없음'
+          fi
