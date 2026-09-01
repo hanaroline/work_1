@@ -26,6 +26,7 @@
     "조기상환 확률": "%",
     "리자드 상환 확률": "%",
     "손실 확률 신뢰구간": "%p",
+    "리자드 배리어": "%",
     "낙인까지 하락폭": "%",
     "만기 손실 하락폭": "%",
     "액면가액": "원",
@@ -1123,7 +1124,28 @@
       "verdict": "confirmed",
       "render": "assert",
       "note": "공시된 값이 아니라 공시 입력으로 재현 가능하게 돌린 모형 결과. 덱에서 \"B. 시뮬레이션\"으로 표기",
-      "printed_on": []
+      "printed_on": [
+        "p3-row",
+        "p3-foot"
+      ]
+    },
+    {
+      "id": "R38071_LIZBAR",
+      "kind": "contract_term",
+      "metric": "리자드 배리어",
+      "text": "제38071회 리자드 관찰 배리어",
+      "value": 40,
+      "unit": "%",
+      "series": "일괄신고추가서류 공시 원문",
+      "as_of": "2026-08-28",
+      "tier": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260828000836",
+      "verdict": "confirmed",
+      "render": "assert",
+      "printed_on": [
+        "p3-row",
+        "p3-foot"
+      ]
     },
     {
       "id": "R38071_MATDROP",
