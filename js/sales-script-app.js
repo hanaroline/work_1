@@ -168,9 +168,28 @@
      모든 상품에서 재사용한다.
      seed 값은 업로드된 평가표의 「탁월사례」 원문에서 확인된 것만 넣는다.
      ---------------------------------------------------- */
+  /**
+   * 등급별 기본 문구.
+   *   riskNote2 / riskNote5 는 업로드된 평가표 「탁월사례」 원문에서 확인된 문구다.
+   *   나머지 등급은 ELS/DLS 투자설명서의 「목표시장 분석표」 가 밝히는 위험추구성향 구분
+   *   (위험선호형=1·2·3등급 / 위험중립형=4등급 / 위험회피형=5·6등급) 에 맞춰 같은 성향
+   *   그룹의 문구를 기본값으로 둔 것이다. 사내 핵심(요약)설명서 문구가 따로 있으면
+   *   「공통문구」 탭에서 덮어쓰십시오.
+   *   ELS/DLS 는 투자설명서가 등록되면 회차별 원문 문구가 이 기본값보다 우선한다.
+   */
+  var RISK_APPETITE_TEXT = {
+    like: '위험선호도가 높은 투자자를 위한 상품으로서, 시장평균 수익률을 훨씬 넘어서는 높은 수준의 투자수익을 추구하며, 이를 위해 자산가치 변동에 따른 손실위험을 적극 수용할 수 있는 투자자에게 적합한 상품입니다.',
+    neutral: '투자에는 그에 상응하는 투자위험이 있음을 인식하고 있으며, 예금·적금보다 높은 수익을 기대할 수 있다면 일정 수준의 손실위험을 감수할 수 있는 투자자에게 적합한 상품입니다.',
+    avoid: '투자원금의 손실위험은 최소화하고, 이자소득이나 배당소득 수준의 안정적인 투자를 목표로 하는 투자자에게 적합한 상품입니다.',
+    avoidHard: '예금 또는 적금 수준의 수익률을 기대하며, 투자원금에 손실이 발생하는 것을 원하지 않는 투자자에게 적합한 상품입니다.'
+  };
   var COMMON_SEED = {
-    riskNote2: '위험선호도가 높은 투자자를 위한 상품으로서, 시장평균 수익률을 훨씬 넘어서는 높은 수준의 투자수익을 추구하며, 이를 위해 자산가치 변동에 따른 손실위험을 적극 수용할 수 있는 투자자에게 적합한 상품입니다',
-    riskNote5: '투자원금의 손실위험은 최소화하고, 이자소득이나 배당소득 수준의 안정적인 투자를 목표로 하는 투자자에게 적합한 상품입니다',
+    riskNote1: RISK_APPETITE_TEXT.like,
+    riskNote2: RISK_APPETITE_TEXT.like,
+    riskNote3: RISK_APPETITE_TEXT.like,
+    riskNote4: RISK_APPETITE_TEXT.neutral,
+    riskNote5: RISK_APPETITE_TEXT.avoid,
+    riskNote6: RISK_APPETITE_TEXT.avoidHard,
     withdrawRight: '불가'
   };
   var COMMON = {};
@@ -184,12 +203,12 @@
     try { localStorage.setItem(LS_TXT, JSON.stringify(COMMON)); } catch (e) { /* 저장 불가 환경 */ }
   }
   var COMMON_DEFS = [
-    { id: 'riskNote1', label: '1등급 매우높은위험 — 유의사항', hint: '핵심(요약)설명서상 「해당 위험등급의 유의사항」 문구를 그대로 옮기세요' },
+    { id: 'riskNote1', label: '1등급 매우높은위험 — 유의사항', hint: 'ELS/DLS 는 투자설명서 「목표시장」 원문 문구가 우선 적용됩니다. 이 값은 투자설명서가 없을 때 쓰는 기본값(위험선호형)입니다' },
     { id: 'riskNote2', label: '2등급 높은위험 — 유의사항', hint: '평가표 탁월사례에서 확인된 문구가 기본값으로 들어가 있습니다' },
-    { id: 'riskNote3', label: '3등급 다소높은위험 — 유의사항', hint: '' },
-    { id: 'riskNote4', label: '4등급 보통위험 — 유의사항', hint: '' },
+    { id: 'riskNote3', label: '3등급 다소높은위험 — 유의사항', hint: '위험선호형(1·2·3등급) 기본 문구 — 사내 핵심(요약)설명서 문구가 있으면 덮어쓰세요' },
+    { id: 'riskNote4', label: '4등급 보통위험 — 유의사항', hint: '위험중립형(4등급) 기본 문구 — 사내 핵심(요약)설명서 문구가 있으면 덮어쓰세요' },
     { id: 'riskNote5', label: '5등급 낮은위험 — 유의사항', hint: '채권 평가표 탁월사례에서 확인된 문구가 기본값으로 들어가 있습니다' },
-    { id: 'riskNote6', label: '6등급 매우낮은위험 — 유의사항', hint: '' },
+    { id: 'riskNote6', label: '6등급 매우낮은위험 — 유의사항', hint: '위험회피형(5·6등급) 중 안정형 기본 문구 — 사내 핵심(요약)설명서 문구가 있으면 덮어쓰세요' },
     { id: 'riskGradeBasis', label: '위험등급 분류 근거 (채권)', hint: '예) 국내 신용평가사 회사채 신용등급 AA-~AAA 를 5등급 낮은위험으로 분류' },
     { id: 'withdrawRight', label: '청약철회권 대상여부', hint: '평가표 탁월사례는 모두 「불가」 — 상품별 판단이 다르면 수정하세요' }
   ];
@@ -329,8 +348,15 @@
         return sh.cat === 'bondKrw' ? '국내채권 장외거래 투자권유 추가 설명자료' : '외화채권 관련 추가 설명자료';
       case 'tradeLabel':
         return sh.cat === 'bondFx' ? '외화채권' : '장외채권';
-      /* 위험등급별 유의사항 — 등급에 맞는 공용 문구를 쓴다 */
+      /**
+       * 위험등급별 유의사항.
+       * 등록된 투자설명서에 이 회차의 문구가 있으면 그것이 우선이다 — ELS/DLS 투자설명서의
+       * 「목표시장 설정 및 설정 근거」 표에서 뽑은 원문 근거라, 사내 공용 문구보다 이 상품에
+       * 정확하다. 투자설명서가 없거나 그 항목이 비어 있을 때만 등급별 공용 문구로 내려간다.
+       */
       case 'riskGradeNote': {
+        var dn = doc();
+        if (dn && dn.fields && dn.fields.riskGradeNote) return undefined; /* rawValue 가 읽는다 */
         var g = rawValue('riskGrade');
         var t2 = g ? COMMON['riskNote' + String(g).replace(/[^0-9]/g, '')] : null;
         return (t2 == null || t2 === '') ? undefined : t2;
@@ -369,7 +395,11 @@
       consumerType: '일반/전문금융소비자', recordReason: '녹취 대상 사유', unfitRecordAdd: '부적합 문구',
       docLabel: '설명서 명칭', docExtra: '추가 설명자료', tradeLabel: '거래 유형',
       payoffExample: '상환 예시 (차수별 표에서 자동 생성)', earlyTable: '자동조기상환 조건·수익률',
-      matCond: '만기상환 조건·수익률', riskGradeNote: '위험등급 유의사항 (공통 문구)',
+      matCond: '만기상환 조건·수익률', riskGradeNote: '위험등급 유의사항',
+      /* 공통문구 탭에서 한 번만 등록하는 값들 — 상품별 FIELDS 에는 없다.
+         라벨이 없으면 확인필요 목록에 'riskGradeBasis' 처럼 내부 id 가 그대로 뜬다. */
+      riskGradeBasis: '위험등급 분류 근거 (공통 문구)',
+      ytm: '세후 투자수익률',
       withdrawRight: '청약철회권 대상여부'
     }[id] || id;
   }

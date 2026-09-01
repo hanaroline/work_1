@@ -59,20 +59,87 @@ function kindOf(title) {
   return null;
 }
 
-/** 손실 발생 상황 및 손실 추정액 — 문서에 있는 조건만으로 구성한다 */
+/**
+ * 손실 발생 상황 및 손실 추정액 — 문서에 있는 조건만으로 구성한다.
+ *
+ * 낙인형·노낙인형·리자드형·원금지급형이 각각 손실이 나는 조건이 다르다.
+ * 낙인이 없는 회차(제38071·38074회 등 8개)를 「낙인 없음」이라는 이유로 빈칸으로 두면
+ * 상담에서 손실조건 설명이 통째로 빠진다. 노낙인형은 만기 배리어가 유일한 손실조건이므로
+ * 그것으로 문구를 만든다.
+ */
 function lossExample(it) {
-  if (it.knockIn == null || it.maturityBarrier == null) return null;
   const unders = (it.underlyings || []).join(', ');
-  let s =
-    `만기평가일에 모든 기초자산(${unders}) 중 어느 하나라도 ` +
-    `${it.knockInBasis === '종가' ? '종가기준으로 ' : ''}각 최초기준가격의 ${it.knockIn}% 미만으로 하락한 적이 있고, ` +
-    `만기평가가격이 각 최초기준가격의 ${it.maturityBarrier}% 미만인 경우, ` +
-    `하락률이 가장 큰 기초자산의 하락률만큼 원금손실이 발생하며 최대 원금 전액(100%) 손실이 가능합니다.`;
-  if (it.simLoss != null && it.simRuns) {
-    s += `\n발행사 수익률 모의실험(${it.simRange ? it.simRange.from + '~' + it.simRange.to : ''} 과거 데이터 ${it.simRuns.toLocaleString()}회) 기준 ` +
-      `만기 손실 발생 비율은 ${it.simLoss}% 입니다.`;
+  const sim = () => (it.simLoss != null && it.simRuns
+    ? `\n발행사 수익률 모의실험(${it.simRange ? it.simRange.from + '~' + it.simRange.to : ''} 과거 데이터 ${it.simRuns.toLocaleString()}회) 기준 만기 손실 발생 비율은 ${it.simLoss}% 입니다.`
+    : '');
+  const lizard = () => (it.lizard
+    ? ` 아울러 ${it.lizard.step}차 자동조기상환평가일까지 기초자산이 각 최초기준가격의 ${it.lizard.barrier}% 미만으로 하락한 적이 없으면 액면금액의 ${it.lizard.payout}% 로 상환됩니다(리자드 조항).`
+    : '');
+
+  /* 원금지급형(ELB·DLB) — 만기 보유 시 손실이 없다. 중도상환 손실만 남는다 */
+  if (it.principalProtected) {
+    return '이 상품은 원금지급형(파생결합사채)으로 만기까지 보유하시면 투자원금은 지급됩니다. '
+      + '다만 만기 전 중도상환을 신청하시는 경우 상환금액이 공정가액을 기준으로 산정되고 중도상환비용이 차감되므로 투자원금에 미달할 수 있으며, '
+      + '발행사인 미래에셋증권의 신용위험(파산·지급불능 등)이 발생하면 원금을 돌려받지 못할 수 있습니다.'
+      + sim();
+  }
+  if (it.maturityBarrier == null) return null;
+
+  /* 낙인형 — 관찰기간 중 낙인 터치 + 만기 배리어 미달이 손실 조건 */
+  if (it.knockIn != null) {
+    return `만기평가일에 모든 기초자산(${unders}) 중 어느 하나라도 `
+      + `${it.knockInBasis === '종가' ? '종가기준으로 ' : ''}각 최초기준가격의 ${it.knockIn}% 미만으로 하락한 적이 있고, `
+      + `만기평가가격이 각 최초기준가격의 ${it.maturityBarrier}% 미만인 경우, `
+      + `하락률이 가장 큰 기초자산의 하락률만큼 원금손실이 발생하며 최대 원금 전액(100%) 손실이 가능합니다.`
+      + lizard() + sim();
+  }
+
+  /* 노낙인형 — 만기 배리어가 유일한 손실 조건 */
+  return `이 상품은 낙인(원금손실 발생) 조건이 없어 투자기간 중 기초자산 가격이 얼마나 하락하더라도 그 자체로는 손실이 확정되지 않습니다. `
+    + `다만 만기평가일에 모든 기초자산(${unders}) 중 어느 하나라도 만기평가가격이 각 최초기준가격의 ${it.maturityBarrier}% 미만인 경우, `
+    + `하락률이 가장 큰 기초자산의 하락률만큼 원금손실이 발생하며 최대 원금 전액(100%) 손실이 가능합니다.`
+    + lizard() + sim();
+}
+
+/**
+ * 위험등급 유의사항 — 투자설명서의 「목표시장 설정 및 설정 근거」 블록에서 만든다.
+ *
+ * 여태 이 항목은 사내 핵심(요약)설명서 문구를 사람이 넣어야 하는 공용 항목이라
+ * 1등급 회차마다 「확인필요」 1건으로 남았다. 그런데 같은 내용(어떤 위험추구성향·
+ * 손실감내능력·투자기간의 투자자를 대상으로 하는 상품인지)이 회차별 투자설명서 안에
+ * 표로 들어 있다. 그 표를 그대로 문장으로 옮긴다 — 없는 말을 만들지 않는다.
+ *
+ * 스크립트 문맥: "유의사항으로 1등급 매우높은위험은 {{riskGradeNote}}"
+ */
+function riskGradeNote(it) {
+  const tm = it.targetMarket;
+  if (!tm || !tm.appetiteDetail) return null;
+  const a = tm.appetiteDetail;
+
+  const cond = [];
+  if ((tm.lossTolerance || []).length) {
+    cond.push((tm.lossTolerance || []).join('·').replace('원금대비', '원금 대비') + '가 가능하고');
+  }
+  if ((tm.knowledge || []).length) cond.push(`투자에 대한 지식과 경험이 ${tm.knowledge.join('·')} 수준이며`);
+  if ((tm.horizon || []).length) cond.push(`투자기간을 ${tm.horizon.join('·')}로 고려하는`);
+
+  let s = `${a.name}(투자성향 ${a.profile}, 상품위험등급 ${a.grades}) 투자자를 목표시장으로 하는 상품으로서, `;
+  s += cond.length ? `${cond.join(' ')} 투자자에게 적합한 상품입니다.` : '해당 성향의 투자자에게 적합한 상품입니다.';
+  if ((tm.grades || []).length) {
+    s += ` 이 회차의 목표시장은 위험등급 6단계 중 ${tm.grades.map((g) => g + '등급').join('·')}에 해당하는 고객입니다.`;
+  }
+  if (tm.basis && /고난도금융투자상품/.test(tm.basis)) {
+    s += ' 최대 원금손실 가능금액이 원금의 100분의 20을 초과하는 고난도금융투자상품에 해당하므로 특별히 유의하셔야 합니다.';
   }
   return s;
+}
+
+/** 청약단위 — 외화 회차는 통화 표기를 살린다 */
+function subUnit(it) {
+  if (it.minAmount == null) return null;
+  const n = it.minAmount.toLocaleString();
+  const c = it.minAmountCcy;
+  return `최소 ${c && c !== 'KRW' ? `${c} ${n}` : `${n}원`}`;
 }
 
 /** 중도상환 가격평가일 — 기초자산 소재지에 맞는 문구 */
@@ -153,14 +220,16 @@ function toRecord(it, rcpNo, docDate) {
     matTerm: term != null ? (term % 12 === 0 ? `${term / 12}년` : `${term}개월`) : null,
     fixMethod: '최초기준가격평가일의 각 기초자산 종가',
     fixDate: kdate(it.baseDate),
-    knockIn: it.knockIn != null ? pct(it.knockIn) : '없음 (노낙인)',
+    knockIn: it.knockIn != null ? pct(it.knockIn)
+      : (it.principalProtected ? '해당 없음 (원금지급형)' : '없음 (노낙인)'),
     coupon: it.annualRate != null ? `연 ${it.annualRate}%` : null,
     maxLoss: it.principalProtected ? '0% (원금지급형)' : '100%',
     lossExample: lossExample(it),
     midPriceDate: midPriceDate(it),
     midAmt6: '공정가액(기준가)의 90% 이상',
     midAmtAfter: '공정가액(기준가)의 95% 이상',
-    subUnit: it.minAmount != null ? `최소 ${it.minAmount.toLocaleString()}원` : null,
+    subUnit: subUnit(it),
+    riskGradeNote: riskGradeNote(it),
     offerEnd: kdate(it.offerEnd),
     docDate: docDate ? kdate(docDate.replace(/\./g, '-')) : null,
     coolNote: coolNote(it),
@@ -189,7 +258,15 @@ function toRecord(it, rcpNo, docDate) {
       months: '차수별 평가일과 발행일의 차이로 계산',
       midPriceDate: '기초자산 소재지(아시아 / 非아시아)로 판정',
       maturityRow: '만기 배리어·만기일을 표 마지막 행으로 추가',
+      riskGradeNote: '투자설명서 「목표시장 설정 및 설정 근거」 표(위험추구성향·손실감내능력·지식과 경험·투자기간)를 문장으로 옮김',
+      lossExample: it.principalProtected ? '원금지급형 — 중도상환·발행사 신용위험만 손실 요인'
+        : (it.knockIn != null ? '낙인 배리어 + 만기 배리어 조항' : '노낙인 — 만기 배리어 조항이 유일한 손실조건'),
     },
+    /* 근거 표시용 요약만 남긴다 — 설정 근거 문단은 회차마다 같은 보일러플레이트라
+       레코드에 담으면 파일만 커지고, 전문은 tools/discovery/prospectus_parsed.json 에 있다 */
+    targetMarket: it.targetMarket
+      ? { grades: it.targetMarket.grades, appetite: it.targetMarket.appetiteDetail }
+      : null,
   };
 }
 
