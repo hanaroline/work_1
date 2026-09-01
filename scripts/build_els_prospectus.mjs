@@ -234,7 +234,11 @@ function toRecord(it, rcpNo, docDate) {
        * 지급률이 100.5% 로 나와 실제와 전혀 다른 숫자를 읽게 된다. 월지급식이면
        * 만기 지급률을 비워 「확인필요」로 남긴다 — 틀린 숫자보다 빈칸이 낫다.
        */
-      const matPay = (it.monthlyIncome || it.docMaxRate == null) ? null : it.docMaxRate + 100;
+      /* 파생결합사채는 문서의 만기상환 표가 조건 충족·미충족 양쪽 모두 「액면금액」이다
+         (제4058회: (13) 70% 이상 -> 0%(액면금액) / (14) 70% 미만 -> 0%(액면금액)).
+         상환금액이 원금으로 확정되므로 지급률은 100 이다. */
+      const matPay = it.principalProtected ? 100
+        : ((it.monthlyIncome || it.docMaxRate == null) ? null : it.docMaxRate + 100);
       schedule.push({
         seq: matSeq, months: term, barrier: it.maturityBarrier,
         payRate: matPay,

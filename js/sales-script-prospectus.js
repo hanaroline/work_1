@@ -530,10 +530,15 @@
   }
 
   /** 표 한 행 → 지급률·연수익률 문구 (없으면 «» 마커) */
-  function payPhrase(row, seq) {
+  function payPhrase(row, seq, monthlyPP) {
     var pay = fmtPct(row.payRate), ann = fmtPct(row.annRate);
     var payTxt = pay != null ? pay + '%' : '«' + seq + ' 지급률(%)»';
     var annTxt = ann != null ? '연 ' + ann + '%' : '연 «' + seq + ' 연수익률(%)»';
+    /**
+     * 원금지급형 월지급식(ELB)은 상환금액이 액면금액(원금)이고 수익은 월수익으로 따로 나온다.
+     * "액면금액의 100.00%(연 6.00%)" 로 읽으면 상환 자체에 6% 가 붙는 것처럼 들린다.
+     */
+    if (monthlyPP) return '액면금액의 ' + payTxt + '(원금, 월수익 포함 세전 ' + annTxt + ')';
     return '액면금액의 ' + payTxt + '(' + annTxt + ')';
   }
 
@@ -586,6 +591,9 @@
       .filter(function (r) { return r.months != null || r.barrier != null; });
     if (!sched.length) return null;
 
+    /* 원금지급형 월지급식이면 상환금액·수익 문구가 달라진다 */
+    var mpp = !!(doc.principalProtected && doc.monthlyNote);
+
     var filled = 0, total = 0;
     var rows = sched.map(function (r, i) {
       /* 라벨은 배열 순서가 아니라 실제 차수를 쓴다.
@@ -600,7 +608,7 @@
       var when = (r.months ? r.months + '개월' : '«' + seq + ' 경과개월»') + (r.evalDate ? ', ' + kdate(r.evalDate) : '');
       return '  · ' + seq + ' 자동조기상환평가일(' + when +
         ') : 모든 기초자산의 자동조기상환평가가격이 각 최초기준가격의 ' + bar + ' 이상인 경우 → ' +
-        payPhrase(r, seq) + '를 지급';
+        payPhrase(r, seq, mpp) + '를 지급';
     });
 
     var last = sched[sched.length - 1];
@@ -611,8 +619,17 @@
     var noKi = kiNum === '' || kiNum === null || /없음|노낙인|no.?ki/i.test(String(ki));
 
     var matWhen = last.evalDate ? '만기평가일(' + kdate(last.evalDate) + ')' : '만기평가일';
-    var mat = '[이익조건] 자동조기상환이 발생하지 않을 경우, ' + matWhen + '에 모든 기초자산의 만기평가가격이 각 최초기준가격의 ' +
-      matBarTxt + ' 이상인 경우 ' + payPhrase(last, '만기') + '의 세전수익률을 지급합니다.';
+    var mat;
+    if (doc.principalProtected) {
+      /* 파생결합사채는 만기상환 표가 조건 충족·미충족 양쪽 모두 「액면금액」이다.
+         만기 배리어를 조건처럼 읽으면 원금이 배리어에 걸린다고 잘못 설명하게 된다. */
+      mat = '[상환금액] 자동조기상환이 발생하지 않을 경우, ' + matWhen +
+        '에 기초자산 가격과 무관하게 액면금액의 100%(원금)를 상환합니다.' +
+        (doc.monthlyNote ? ' 수익은 매월 월수익지급 조건에 따라 별도로 지급됩니다.' : '');
+    } else {
+      mat = '[이익조건] 자동조기상환이 발생하지 않을 경우, ' + matWhen + '에 모든 기초자산의 만기평가가격이 각 최초기준가격의 ' +
+        matBarTxt + ' 이상인 경우 ' + payPhrase(last, '만기') + '의 세전수익률을 지급합니다.';
+    }
 
     /**
      * 원금지급형(파생결합사채 ELB·DLB)은 조건을 못 맞춰도 원금이 깎이지 않는다.
