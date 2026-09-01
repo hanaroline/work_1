@@ -508,11 +508,13 @@
     return o;
   }
 
-  var SHEETS = {
+  var BASE = {
     fundFit: {
       label: '펀드 · 국내 · 적합', cat: 'fund', scenario: 'fit', overseas: false,
       note: '국내펀드 · 투자자성향에 적합한 상품을 권유하는 시나리오',
       secTotals: { '적합성원칙': 30, '상품설명의무': 70 },
+      /* 원 평가표에 고령투자자 전용 항목이 포함된 표 (전담창구 감점) */
+      seniorBase: true,
       items: [
         it('c_investorInfo', 10), it('c_diagDoc', 3), it('c_elderlyDesk', -2), it('c_cashProfile', 5),
         it('f_recommend', 7), it('f_market', 5), it('c_recordPlus', 2), it('c_reDiag', -5), it('f_affiliate', -5),
@@ -620,5 +622,102 @@
     }
   };
 
-  g.SS_SHEETS = SHEETS;
+  /* ============================================================
+     고령 / 비고령 구분
+     ------------------------------------------------------------
+     제공된 평가표를 고령투자자 전용 항목의 유무로 나누면 다음과 같다.
+
+       고령 전용 항목이 포함된 표 (= 고령 시나리오)
+         · 펀드 국내 적합 / 국내 부적합 / 해외 부적합  → 고령투자자 전담창구
+         · ELS·DLS 적합  → 전담창구 + 적합성보고서 발급·교부 + 유의상품 사전확인
+       고령 전용 항목이 없는 표 (= 비고령 시나리오)
+         · ELS·DLS 부적합, 원화채권, 외화채권, 개인형 IRP
+
+     따라서 각 상품군 × (고령 / 비고령) 을 모두 선택할 수 있도록,
+     제공된 표를 기준으로 고령 전용 항목을 빼거나 더해 구성한다.
+     제공된 표와 항목 구성이 같으면 '원표', 보완한 구성이면 '보완' 으로 표시하고
+     보완으로 추가된 항목에는 derived 플래그를 달아 화면에 명시한다.
+
+     추가되는 항목은 모두 감점 항목이므로 기본배점 100점 체계는 그대로 유지된다.
+     ============================================================ */
+
+  /** 고령투자자에게만 평가되는 항목 */
+  var SENIOR_ONLY = ['c_elderlyDesk', 'e_watchCheck'];
+  /** 고령·신규투자자에게 평가되는 항목 (비고령이면 신규투자자일 때만) */
+  var SENIOR_OR_NEW = ['e_suitReport', 'e_suitDeliver'];
+
+  /** 비고령 표에 고령 시나리오로 전환할 때 보완할 항목 */
+  function seniorPatch(base) {
+    var add = [it('c_elderlyDesk', -2, { derived: true })];
+    /* 유의상품 사전확인은 고난도 상품(ELS·DLS)에서만 지정된다 */
+    if (base.cat === 'els') add.push(it('e_watchCheck', -3, { derived: true }));
+    /* 적합성보고서는 '투자자성향·현재 투자자금성향에 적합한' 고령·신규투자자가 대상이므로
+       부적합 시나리오에는 추가하지 않는다 */
+    if (base.cat === 'els' && base.scenario === 'fit') {
+      add.push(it('e_suitReport', -5, { derived: true }), it('e_suitDeliver', -5, { derived: true }));
+    }
+    return add;
+  }
+
+  function hasItem(items, id) {
+    return items.some(function (x) { return x.id === id; });
+  }
+
+  /** 고령 전용 항목이 하나라도 들어있으면 그 표는 고령 시나리오 표다 */
+  function isSeniorTable(base) {
+    return SENIOR_ONLY.concat(SENIOR_OR_NEW).some(function (id) { return hasItem(base.items, id); });
+  }
+
+  function buildSheets() {
+    var out = {};
+    Object.keys(BASE).forEach(function (key) {
+      var base = BASE[key];
+      var srcIsSenior = isSeniorTable(base);
+
+      [true, false].forEach(function (senior) {
+        var items;
+        if (senior) {
+          if (srcIsSenior) items = base.items.slice();
+          else {
+            /* 비고령 표 → 고령 항목 보완. 적합성원칙 구간 뒤(현재 투자자금성향 앞)에 끼운다 */
+            var patch = seniorPatch(base);
+            var at = 2; /* 투자자정보 파악 · 진단서 교부 다음 */
+            items = base.items.slice(0, at).concat(patch, base.items.slice(at));
+          }
+        } else {
+          if (!srcIsSenior) items = base.items.slice();
+          else {
+            items = base.items.filter(function (x) { return SENIOR_ONLY.indexOf(x.id) < 0; });
+          }
+        }
+
+        var exact = (senior === srcIsSenior);
+        out[key + (senior ? '_senior' : '_general')] = {
+          base: key,
+          senior: senior,
+          label: base.label.replace(/^(\S+(?: · \S+)?)/, '$1 · ' + (senior ? '고령' : '비고령')),
+          groupLabel: base.label,
+          seniorLabel: senior ? '고령투자자 (만 65세 이상)' : '비고령투자자',
+          cat: base.cat,
+          scenario: base.scenario,
+          overseas: base.overseas,
+          note: base.note,
+          secTotals: base.secTotals,
+          provenance: exact ? 'exact' : 'derived',
+          provenanceNote: exact
+            ? '제공된 평가표와 항목 구성이 동일합니다.'
+            : (senior
+              ? '제공된 평가표는 비고령 기준이어서, 고령투자자 전용 항목(' +
+                seniorPatch(base).map(function (x) { return x.title.replace(/^\[감점\]\s*/, ''); }).join(', ') +
+                ')을 보완해 구성했습니다. 보완 항목은 「보완」 배지로 표시됩니다.'
+              : '제공된 평가표는 고령 기준이어서, 고령투자자 전용 항목을 제외해 구성했습니다.'),
+          items: items
+        };
+      });
+    });
+    return out;
+  }
+
+  g.SS_BASE_SHEETS = BASE;
+  g.SS_SHEETS = buildSheets();
 })(window);
