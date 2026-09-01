@@ -243,7 +243,8 @@ function toRecord(it, rcpNo, docDate) {
         seq: matSeq, months: term, barrier: it.maturityBarrier,
         payRate: matPay,
         annRate: it.annualRate != null ? it.annualRate : null,
-        evalDate: it.maturityDate, maturity: true,
+        /* 손익구조 문구가 읽는 것은 만기「평가」일이다 — 만기일(지급일)과 며칠 다르다 */
+        evalDate: it.maturityEvalDate || it.maturityDate, maturity: true,
       });
     }
   }
