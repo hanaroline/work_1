@@ -110,14 +110,20 @@ for (const f of wanted) {
     if (!dcm) { console.log(`  ${f.rcpNo}: dcmNo 없음 (main.do ${main.buf.length}B)`); continue; }
     const doc = await grab(`${DART}/report/viewer.do?rcpNo=${f.rcpNo}&dcmNo=${dcm}&eleId=0&offset=0&length=0&dtd=dart3.xsd`);
     const text = toText(doc.text);
+    /**
+     * 회차 번호를 30000 초과로 걸러내면 ELB(파생결합사채) 문서가 통째로 버려진다.
+     * ELB 는 회차 번호대가 따로여서 네 자리다 (미래에셋증권(ELB)4058·4063회).
+     * 그러면 원금지급형 상품은 투자설명서가 영원히 안 붙는다.
+     */
     const series = [...new Set(text.match(/제\s?\d{4,5}\s?회/g) || [])];
-    const nums = series.map((s) => Number(s.replace(/\D/g, ''))).filter((n) => n > 30000);
+    const nums = series.map((s) => Number(s.replace(/\D/g, ''))).filter((n) => n >= 1000);
     const range = nums.length ? `${Math.min(...nums)}~${Math.max(...nums)}` : '–';
     console.log(`  ${f.date} ${f.rcpNo} dcm=${dcm} ${(doc.buf.length / 1024 / 1024).toFixed(2)}MB 회차 ${series.length}종 (${range})`);
     docs.push({ ...f, dcmNo: dcm, chars: text.length, series, range });
     // 회차 번호대를 박아두면 번호가 굴러간 다음 달부터 아무것도 안 남는다.
-    // 여러 회차를 한 번에 담은 문서(=주간 발행분)이면 표를 떠 둔다.
-    if (nums.length >= 5) {
+    // 회차가 하나라도 잡히면 본문을 남긴다 — ELB 주간 발행분이나 단일 회차
+    // 간이투자설명서는 회차가 1~2건뿐이어서 5건 기준으로는 저장 자체가 안 됐다.
+    if (nums.length >= 1) {
       // 회차별 조건·모의실험을 로컬에서 파싱할 수 있게 본문 전체를 남긴다
       await writeFile(`${OUT}/prospectus_${f.rcpNo}.txt`, text);
       const slices = (needle, before, after, max) => {

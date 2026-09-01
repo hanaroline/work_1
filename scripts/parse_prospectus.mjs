@@ -49,7 +49,61 @@ const parseUnderlyings = (s) => {
     .map(([, name]) => name);
 };
 
-function parseBlock(text) {
+/**
+ * 목표시장 설정 및 설정 근거 — 회차마다 「상품개요(종목명)」 바로 앞에 붙는 블록이다.
+ *
+ * 완전판매 스크립트의 「위험등급 유의사항」은 지금까지 공용 문구(사내 핵심요약설명서)로만
+ * 채울 수 있어 회차마다 「확인필요」로 남았다. 그런데 그 근거가 되는 내용이 투자설명서
+ * 안에 회차별로 그대로 있다 — 목표시장 분석표의 위험추구성향·손실감내능력·투자기간과
+ * 목표시장 등급이다. 여기서 뽑아 두면 등급별 유의사항을 원문 근거로 채울 수 있다.
+ *
+ * 표는 「라벨 / ■□ 선택지」 구조로 떨어진다. ■ 만 골라 담는다.
+ */
+const TM_ROWS = [
+  ['clientType', '고객유형'],
+  ['knowledge', '지식과 경험'],
+  ['lossTolerance', '손실감내능력'],
+  ['appetite', '위험추구성향'],
+  ['horizon', '투자목적을 고려한 투자기간'],
+  ['holding', '보유 가능기간'],
+];
+function parseTargetMarket(pre) {
+  const at = pre.lastIndexOf('목표시장 설정 및 설정 근거');
+  if (at < 0) return null;
+  const seg = pre.slice(at);
+  const tm = {};
+
+  const gm = seg.match(/위험등급\s*\(\s*6\s*단계\s*\)\s*중\s*([^해]*?)\s*에?\s*해당하는/);
+  tm.grades = gm ? [...gm[1].matchAll(/(\d)\s*등급/g)].map((m) => Number(m[1])) : [];
+
+  /* 라벨 위치로 행을 자르고 그 안에서 ■ 항목만 담는다 */
+  const idx = TM_ROWS.map(([, label]) => [label, seg.indexOf(label)]).filter(([, i]) => i >= 0);
+  for (let i = 0; i < idx.length; i++) {
+    const [label, from] = idx[i];
+    const to = i + 1 < idx.length ? idx[i + 1][1] : seg.length;
+    const row = seg.slice(from + label.length, to);
+    const key = (TM_ROWS.find(([, l]) => l === label) || [])[0];
+    tm[key] = [...row.matchAll(/■\s*([^\n□■]+)/g)].map((m) => clean(m[1])).filter(Boolean);
+  }
+
+  /**
+   * 위험추구성향 칸은 선택지 이름 아래 줄에 투자성향·상품위험등급 대응이 달려 있다.
+   *   ■ 위험선호형
+   *   (투자성향:성장형,성장추구형 / 상품위험등급:1,2,3등급)
+   * 이 대응이 등급별 유의사항을 쓸 수 있는 근거다.
+   */
+  const am = seg.match(/■\s*(위험회피형|위험중립형|위험선호형)[\s\S]{0,20}?\(\s*투자성향\s*:\s*([^/]+?)\s*\/\s*상품위험등급\s*:\s*([^)]+?)\s*\)/);
+  tm.appetiteDetail = am
+    ? { name: clean(am[1]), profile: clean(am[2]).replace(/\s*,\s*/g, '·'), grades: clean(am[3]) }
+    : null;
+
+  const bm = seg.match(/목표시장 설정 근거\s*:\s*([\s\S]*?)(?=\n\s*\d\.\s*상품개요|종목명|$)/);
+  tm.basis = bm ? clean(bm[1]) : null;
+
+  return tm.grades.length || tm.appetiteDetail ? tm : null;
+}
+
+function parseBlock(text, pre) {
   const p = {};
 
   const title = clean((text.match(/종목명\s*\n\s*\t?\s*([^\n]+)/) || [])[1]);
@@ -79,8 +133,17 @@ function parseBlock(text) {
   p.confirmBy = ymd(confirm);
   p.confirmNote = clean(confirm) || null;          // "2026년 08월 28일 오후 5시까지"
   p.payDate = ymd((text.match(/납 ?입 ?일\s*\n\s*\t?\s*([^\n]+)/) || [])[1]);
-  // 최소청약금액 — 완전판매 스크립트의 '청약단위' 항목이 이 값을 읽는다
-  p.minAmount = numOf((text.match(/최소청약금액\s*\n\s*\t?\s*([\d,]+)\s*원/) || [])[1]);
+  /**
+   * 최소청약금액 — 완전판매 스크립트의 '청약단위' 항목이 이 값을 읽는다.
+   * 외화 회차는 "USD 1,000" 으로 적혀 있어 「원」을 요구하면 통째로 빠진다
+   * (제38032·38041·38057·38059·38081회). 통화를 같이 뽑는다.
+   */
+  const minLine = (text.match(/최소청약금액\s*\n\s*\t?\s*([^\n]+)/) || [])[1] || '';
+  p.minAmount = numOf((minLine.match(/([\d,]+(?:\.\d+)?)/) || [])[1]);
+  p.minAmountCcy = /USD/i.test(minLine) ? 'USD'
+    : /EUR/i.test(minLine) ? 'EUR'
+      : /JPY|엔/i.test(minLine) ? 'JPY'
+        : (/원/.test(minLine) ? 'KRW' : null);
   // 판매 절차 조항 — 회차 블록 안에 ※ 로 반복되는 것만 쓴다.
   // (고령투자자 지정 문구는 문서 머리의 유의사항에만 있어 회차별로는 잡히지 않는다)
   p.recordingRight = /판매과정에 대한 녹취 자료를 요청할 수 있으며/.test(text);
@@ -187,6 +250,9 @@ function parseBlock(text) {
       p.simLoss = +lossRows.reduce((s, r) => s + (r.share || 0), 0).toFixed(2);
     }
   }
+
+  /* 목표시장 블록은 종목명 앞에 있으므로 직전 구간(pre)에서 읽는다 */
+  p.targetMarket = parseTargetMarket(pre || '');
   return p;
 }
 
@@ -196,9 +262,14 @@ const warn = [];
 for (const f of files) {
   const text = await readFile(`${DIR}/${f}`, 'utf8');
   const marks = [...text.matchAll(/종목명/g)].map((m) => m.index);
-  if (marks.length < 2) continue;
-  const blocks = marks.map((s, i) => text.slice(s, marks[i + 1] ?? text.length));
-  const items = blocks.map(parseBlock).filter((p) => p.no);
+  /* 한 회차만 담긴 간이투자설명서도 있다 (제38005회) — 버리지 않는다 */
+  if (!marks.length) continue;
+  const items = marks
+    .map((s, i) => parseBlock(
+      text.slice(s, marks[i + 1] ?? text.length),
+      text.slice(i > 0 ? marks[i - 1] : 0, s), /* 목표시장 블록이 들어 있는 직전 구간 */
+    ))
+    .filter((p) => p.no);
   if (!items.length) continue;
   const rcp = f.match(/(\d+)/)[1];
   out[rcp] = {
