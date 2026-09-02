@@ -146,6 +146,10 @@ for (let i = 0; i < slice.length; i++) {
       if (SKIP.has(x.id)) continue;
       f[x.id] = intern(CAP[x.id] ? String(x.value).slice(0, CAP[x.id]) : x.value);
     }
+    /* varBasis 는 varPct 가 없을 때만 쓰는 값이다 — 둘 다 담을 이유가 없다 */
+    if (f.varPct != null && f.varBasis != null) delete f.varBasis;
+    /* affiliate 는 운용사명으로 화면에서 판정한다 (계열=미래에셋) — 담지 않는다 */
+    delete f.affiliate;
     if (Object.keys(f).length) { items[it.code] = f; ok++; }
     if ((i + 1) % 25 === 0 || i === slice.length - 1) {
       console.log(`  ${i + 1}/${slice.length} · 추출 ${ok}건 · 실패 ${fail} · 빈문서 ${empty} (${it.code} ${pages}쪽 ${Object.keys(f).length}항목)`);

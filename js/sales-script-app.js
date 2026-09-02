@@ -1163,7 +1163,7 @@
     /* 라벨이 먼저다 — 증시전망·자료 기준월은 받아쓰기 표시라 항목 id 가 없다 */
     if (/증시\s*전망|자료\s*기준월|동종유형\s*평균|협회\s*공시/.test(m.label)) return 'ref';
     if (MISS_REF.indexOf(m.key) >= 0) return 'ref';
-    if (/고객|대리인|투자자성향|투자자금\s*성향/.test(m.label)) return 'ask';
+    if (/고객|대리인|투자자성향|투자자금\s*성향|추천\s*상품명/.test(m.label)) return 'ask';
     if (m.kind === 'inline') return 'doc';           /* 그 밖의 받아쓰기는 설명서 원문 */
     /* 항목 정의의 묶음을 쓴다 — 「고객」 묶음은 상담하며 파악하는 값이다 */
     var defs = fieldDefs();
