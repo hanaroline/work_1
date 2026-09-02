@@ -130,6 +130,19 @@ for (const f of ALL) {
   console.log(`  ${f.padEnd(14)} ${String(n).padStart(3)}/${seen.length}  ${String(Math.round(100 * n / Math.max(1, seen.length))).padStart(3)}%`);
 }
 
+/**
+ * 읽어 낸 값 — 성공률만 보면 「무엇이든 읽었다」 와 「제대로 읽었다」 를 구별할 수 없다.
+ * 창구에서 소리 내어 읽는 문장이라 내용이 맞는지 눈으로 봐야 한다.
+ */
+const VAL = String(argOf('--values', '')).split(',').filter((x) => x && x !== 'none');
+for (const f of VAL) {
+  console.log(`\n${'='.repeat(70)}\n● ${f} — 읽어 낸 값 앞 6건`);
+  for (const s of seen.filter((x) => x.got[f] != null).slice(0, 6)) {
+    console.log(`\n── ${un(s.it.name)}`);
+    console.log(`   ${String(s.got[f]).slice(0, 320)}`);
+  }
+}
+
 /* 못 읽은 항목의 원문 줄 — 서식을 눈으로 보려면 이것이 있어야 한다 */
 for (const f of SHOW) {
   const probes = PROBE[f] || [];
