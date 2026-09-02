@@ -75,6 +75,9 @@
       /* 해외펀드 전용 */
       { id: 'fxHedge', label: '환헤지 여부·대상통화', group: '해외투자', hint: '해외펀드 전용. 예) 미달러(USD) 환헤지 실행', ov: true },
       { id: 'fxHedgeSize', label: '목표 환헤지 비율', group: '해외투자', hint: '해외투자분 순자산가치(NAV) 대비. 설명서에 없으면 여부만 설명', ov: true },
+      /* 위 두 항목을 한 문장으로 묶은 것 — 헤지를 안 하는 펀드에 「목표 비율 범위 내에서
+         헤지할 계획」 을 읽히면 사실과 반대되는 말이 되므로 문장째로 갈라 낸다 */
+      { id: 'fxHedgeNote', label: '환헤지 설명 문장 (여부 + 크기)', group: '해외투자', hint: '환헤지 여부·목표 비율에서 자동으로 만든다', ov: true },
       { id: 'fxCountry', label: '주요 투자대상 국가·지역', group: '해외투자', hint: '해외펀드 전용', ov: true },
       /* 문서 */
       { id: 'docDate', label: '투자설명서 증권신고서 효력발생일', group: '교부서류', hint: '가장 최신본인지 반드시 확인', req: true },
