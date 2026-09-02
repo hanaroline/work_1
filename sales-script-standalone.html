@@ -15911,6 +15911,14 @@ window.FUND_PROSPECTUS = {"updatedAt":"2026-09-02T17:22:13.045Z","source":"펀�
         buf.push(s);
       }
       var v = buf.join(' ').replace(/\s+/g, ' ').trim();
+      /**
+       * 다음 절이 같은 줄에 이어 붙는 경우가 있다 —
+       *   「…목표 환헤지 비율은 최고 100 % 수준 3. 주요투자위험 – 이 투자신탁 및…」
+       * 번호가 붙은 제목에서만 끊는다. 「금리변동에 따른 투자위험을 최소화하면서」 처럼
+       * 전략 문장 안에 투자위험이라는 말이 그냥 나오기도 해서, 번호 없이 끊으면
+       * 제대로 읽은 문장을 잘라 버린다.
+       */
+      v = v.split(/\s\d+\s*[.)]\s*(?:주요\s*)?(?:투자\s*위험|수익\s*구조|위험\s*관리)/)[0].trim();
       if (v.length >= 20 && (!best || v.length > best.length)) best = v;
     }
     return best ? { value: best.slice(0, 300), index: 0, length: 0 } : null;
