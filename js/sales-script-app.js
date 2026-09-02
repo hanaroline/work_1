@@ -382,9 +382,37 @@
    * 펀드 평가표는 국내/해외가 별도 표(해외는 투자위험이 일반+해외로 분리)이므로
    * 해외투자 펀드는 해외 평가표에서만, 국내 펀드는 국내 평가표에서만 선택되게 한다.
    */
+  var FUND_LIST_CACHE = {};
+  /**
+   * 펀드·IRP 목록은 수집한 공모펀드 카탈로그 전체를 쓴다 (국내 1,511 · 해외 1,681).
+   * ELS 가 청약 중인 회차를 전부 보여 주는 것과 같아야 한다 — 예전에는 두 글자 이상
+   * 검색해야 나왔고, 검색하지 않으면 예시 상품 넷만 보였다.
+   * 내장 예시는 카탈로그가 없을 때의 대비로만 남긴다 (예시 값은 상담에 쓸 수 없다).
+   */
+  function fundList(cat, overseas) {
+    var key = cat + '|' + overseas;
+    if (FUND_LIST_CACHE[key]) return FUND_LIST_CACHE[key];
+    var C = fundCat();
+    if (!C) return null;
+    var out = [];
+    for (var i = 0; i < C.items.length; i++) {
+      var it = C.items[i];
+      if (cat === 'fund' && (it.region !== 'domestic') !== !!overseas) continue;
+      out.push(fundCatProduct(it));
+    }
+    /* 가나다순 — 목록이 천 단위라 순서가 예측 가능해야 눈으로 찾을 수 있다 */
+    out.sort(function (a, b) { return a.name < b.name ? -1 : (a.name > b.name ? 1 : 0); });
+    FUND_LIST_CACHE[key] = out;
+    return out;
+  }
   function catalog() {
     var sh = sheet();
-    var list = (CUSTOM[sh.cat] || []).concat(D.catalog[sh.cat] || []);
+    var mine = CUSTOM[sh.cat] || [];
+    if (sh.cat === 'fund' || sh.cat === 'irp') {
+      var fl = fundList(sh.cat, sh.overseas);
+      if (fl) return mine.concat(fl);
+    }
+    var list = mine.concat(D.catalog[sh.cat] || []);
     if (sh.cat !== 'fund') return list;
     var want = !!sh.overseas;
     var f = list.filter(function (p) { return !!p.overseas === want; });
@@ -872,27 +900,7 @@
       if (!q) return true;
       return [p.name, p.id, p.issuer, p.mgr, p.under, p.kind, p.credit].join(' ').toLowerCase().indexOf(q) >= 0;
     });
-    /**
-     * 카탈로그 3,192건을 늘 목록에 붙이면 브라우저가 버겁다.
-     * 두 글자 이상 검색했을 때만 붙인다 — 실제로 상품을 고르는 방식과 같다.
-     */
     var shx = sheet();
-    if ((shx.cat === 'fund' || shx.cat === 'irp') && q.length >= 2 && fundCat()) {
-      var seen = {};
-      list.forEach(function (p) { seen[p.id] = 1; });
-      var want = shx.cat === 'fund' ? !!shx.overseas : null;
-      var add = [];
-      var C = fundCat().items;
-      for (var ci = 0; ci < C.length && add.length < 60; ci++) {
-        var it = C[ci];
-        if (seen[it.code]) continue;
-        if (want !== null && (it.region !== 'domestic') !== want) continue;
-        var hay = (it.name + ' ' + it.code + ' ' + (it.mgr || '') + ' ' + (it.fundType || '')).toLowerCase();
-        if (hay.indexOf(q) < 0) continue;
-        add.push(fundCatProduct(it));
-      }
-      list = list.concat(add);
-    }
     var cat = shx.cat, docs = DOCS[cat] || {};
     var P = window.ELS_PROSPECTUS;
     /** 담당자 등록분 또는 자동수집분이 있으면 등록된 것으로 표시한다 */
