@@ -15058,7 +15058,7 @@ window.FUND_PROSPECTUS = {"updatedAt":"2026-09-02T17:22:13.045Z","source":"펀�
     bands: '6가지 <code>15</code> · 5가지 <code>12</code> · 4가지 <code>9</code> · 3가지 <code>6</code> · 2가지 <code>4</code> · 1가지 <code>2</code> · 없음 <code>0</code>',
     script: [
       { t: 'say', x: "① 고객님께서 선택하신 '{{name}}' 은\n② {{issuer}} 에서 발행한\n③ {{kind}} 입니다.\n④ 발행일은 {{issueDate}} 이고, 만기일은 {{matDate}} 입니다.\n⑤ 발행이자율은 연 {{coupon}}% 이고, {{payCycle}} 단위 {{payType}} 입니다.\n⑥ 장외채권 매매 시 투자자에게 부과되는 별도의 매매수수료는 {{fee}} 입니다." },
-      { t: 'say', x: '[이해하기 쉽게 부연 설명]\n(이표채) 본 채권 «투자금액» 투자 시 {{payCycle}} 마다 «이자금액» 을 이자로 수령 가능합니다.\n(할인채) 할인채는 액면금액을 할인하여 발행하고 그 차액으로 이자를 대신 지급한다는 의미입니다.\n설명 드린 내용 이해 되시나요?' }
+      { t: 'say', x: '[이해하기 쉽게 부연 설명]\n(이표채) 본 채권 {{invAmt}} 투자 시 {{payCycle}} 마다 {{cpnAmt}} 을 이자로 수령 가능합니다.\n(할인채) 할인채는 액면금액을 할인하여 발행하고 그 차액으로 이자를 대신 지급한다는 의미입니다.\n설명 드린 내용 이해 되시나요?' }
     ],
     tips: ['종목명은 Full-name 으로 설명 (예: POSCO306-3) — 줄여 말하면 미설명 처리', '채권 발행사는 종목명과 별도로 언급해야 인정 (국채는 "국채" 만 언급해도 인정)', '이자율은 "연" 을 반드시 언급. 이표채인 경우에만 이자 지급주기 설명', '매매수수료가 없으면 "없음" 을 고지해야 인정. 중개물이면 중개보수(수수료)를 설명']
   });
@@ -15131,10 +15131,10 @@ window.FUND_PROSPECTUS = {"updatedAt":"2026-09-02T17:22:13.045Z","source":"펀�
       { t: 'say', x: '① 채권의 거래가격 및 거래비용과 관련한 참고사항입니다.\n아래 지표를 참고하여 투자하고자 하는 국내장외채권의 \'거래가격 적정성\' 을 판단하신 뒤 매수하시기 바랍니다. 단, \'민평단가\' 는 기관 장외거래의 시세일 뿐 채권의 실제 거래비용과는 차이가 있음을 감안하시기 바랍니다.\n이 채권의 민평금리는 {{mpRate}}, 민평단가는 {{mpPrice}}, 매매단가는 {{tradePrice}}, 매매단가차이는 {{priceDiff}} 입니다.\n민평금리는 전영업일 신용평가기관들의 평가가격을 산술평균한 금리로서 투자 참고 목적으로 제공되며, 민평금리와 매매금리 간 차이는 실제 거래비용에 해당하지 않습니다. 투자자의 거래금액에는 증권사 수수료 외에도 거래에 수반되는 각종 직간접 비용이 포함되며, 만기가 긴 장기채권의 경우 거래금액 대비 높은 거래비용이 발생할 수 있습니다. 사모사채는 민평금리가 없으므로 민평단가 등 관련 데이터가 제공되지 않습니다.' },
       { t: 'say', x: '② 채권 수익률과 투자 위험의 관계에 대한 투자자 유의사항입니다.\n일반적으로 발행사의 신용등급이 낮거나 채권의 만기가 길수록 투자위험이 높으며, 이에 따라 수익률이 높게 책정되는 경향이 있습니다. 동일한 신용등급군에 속하는 채권 간에도 시장 수요가 적거나 발행사의 안정성이 낮을수록 수익률이 더 높은 경향이 있으므로 이를 감안하여 투자하여야 합니다. 신용등급별 민평금리에 대한 정보는 \'금융투자협회 채권정보센터\' 에서 확인할 수 있습니다.\n동일 발행사의 채권이라도 금리 상승기에 발행되는 경우 수익률이 더 높은 경향이 있으나, 중도매도 시 금리 상승에 따른 투자손실이 발생할 가능성도 높아집니다.' },
       { t: 'say', x: '③ 채권의 투자위험 및 중도매도와 관련한 불이익입니다.\n1) 채권을 만기가 아닌 시점에 매도하는 경우 시장금리의 변동으로 인해 투자손실이 발생할 수 있습니다. 시장금리가 상승하면 채권가격 하락으로 중도매매 시 손실을 볼 수 있으며, 장기채일수록 가격변동 정도가 더욱 커질 수 있습니다. 시장금리 하락이 전망될 때에도 금리변동이 예상보다 천천히 진행되면 투자자금이 계획보다 장기간 묶일 수 있습니다.\n2) 만기가 긴 채권일수록 시장금리의 변화에 채권 가격이 더욱 민감하게 변동될 수 있습니다. 만기가 긴 채권(10년·30년물 등)은 만기가 짧은 채권(1년·3년물 등)에 비해 채권가격이 금리변화에 민감하게 변동합니다. 이에 따라 장기채를 만기까지 보유하지 않고 중도에 매각할 경우 시가변동에 따른 이익 또는 손실이 발생할 수 있습니다.' },
-      { t: 'say', x: '[도표 활용 설명] 아래 표를 예시로 설명드리겠습니다. 만기 «예시 만기» «예시 표면금리» 국고채의 시장금리 변동에 따른 채권투자의 손익구조를 보시면,\n시장금리 «기준금리», 채권가격 «기준가격» 이었으나 시장금리가 «상승금리» 로 «변동폭» 상승 시 채권가격은 «상승시 가격» 으로 «상승시 손익»(«상승시 변동률») 입니다.\n반대로 시장금리가 «하락금리» 로 «변동폭» 하락 시 채권가격은 «하락시 가격» 으로 «하락시 손익»(«하락시 변동률») 입니다.\n장기채 투자 시 채권가격은 시장금리 변화에 보다 민감하게 변동하고, 투자자의 전망과 시장금리가 다른 방향으로 변화할 경우 손실 발생 정도는 커집니다.' },
+      { t: 'say', x: '[도표 활용 설명] 이 채권을 기준으로 금리변동에 따른 손익을 계산해 설명드리겠습니다. 잔존만기 {{exMat}}, {{exCoupon}} 인 이 채권의 시장금리 변동에 따른 손익구조를 보시면,\n시장금리 {{exBase}} 일 때 채권가격은 액면 10,000원 기준 {{exPrice}} 이고, 시장금리가 {{exUp}} 로 {{exStep}} 상승하면 채권가격은 {{exUpPrice}} 으로 {{exUpPnl}}({{exUpPct}}) 입니다.\n반대로 시장금리가 {{exDown}} 로 {{exStep}} 하락하면 채권가격은 {{exDownPrice}} 으로 {{exDownPnl}}({{exDownPct}}) 입니다.\n장기채 투자 시 채권가격은 시장금리 변화에 보다 민감하게 변동하고, 투자자의 전망과 시장금리가 다른 방향으로 변화할 경우 손실 발생 정도는 커집니다.' },
       { t: 'say', x: '3) 고객이 매도 가능한 채권의 종목은 증권사 및 시장상황 등에 따라 변동될 수 있으며, 증권사는 고객이 매수한 채권에 대해 중도매도를 보장하지 않습니다. 장외채권은 해당 금융회사가 중도매도 서비스를 제공하는 경우와, 해당 채권을 장외에서 매수하였더라도 장내 상장되어 있는 경우에만 중도매도가 가능합니다. 당사는 중도매도 서비스를 제공하고 있으나 중도매도 가능한 장외채권 종목은 당사 상황에 따라 변동될 수 있으므로, 보유한 장외채권을 중도매도 하고자 하는 경우에는 가능 여부를 당사에 확인하여 주시기 바랍니다.\n4) 중도매도가 불가능한 경우 만기까지 채권을 보유할 수 있으므로, 매수자금의 투자예정기간과 채권만기의 일치 여부를 반드시 감안하여 투자할 필요가 있습니다. 특히 만기가 긴 장기채권 투자 시 단기에 필요한 자금을 투자하지 않도록 유의하시기 바랍니다.' }
     ],
-    tips: ['금리변동에 따른 손익을 쉽게 파악할 수 있는 도표·그래프를 활용해서 설명해야 인정', '투자설명서와 중복되는 부분은 제외 가능']
+    tips: ['금리변동에 따른 손익을 쉽게 파악할 수 있는 도표·그래프를 활용해서 설명해야 인정', '투자설명서와 중복되는 부분은 제외 가능', '손익 수치는 이 채권의 표면금리·잔존만기·이자지급주기로 직접 계산한 값입니다(액면 10,000원, 금리 ±0.5%p 기준). 교부 자료에 실린 예시 도표와 숫자가 다를 수 있으니, 도표를 짚어 설명할 때에는 자료의 수치를 함께 말하십시오.']
   });
 
   I('bk_issuer', {
@@ -15208,7 +15208,7 @@ window.FUND_PROSPECTUS = {"updatedAt":"2026-09-02T17:22:13.045Z","source":"펀�
     bands: '2가지 모두 <code>10</code> · 1가지 <code>5</code> · 없음 <code>0</code>',
     script: [
       { t: 'say', x: '① 방금 설명 드린 내용이 이해 가시나요? 어렵지 않으신가요?' },
-      { t: 'say', x: '② 예를 들어 이표채는 액면가로 채권을 발행하고, 표면이율에 따라 연간 지급해야 하는 이자를 일정 기간 나누어 지급한다는 의미입니다.\n혹은 (투자계산서를 활용하여) 본 채권 «투자금액» 투자 시 {{payCycle}} 마다 «이자금액» 을 이자로 수령 가능합니다.' }
+      { t: 'say', x: '② 예를 들어 이표채는 액면가로 채권을 발행하고, 표면이율에 따라 연간 지급해야 하는 이자를 일정 기간 나누어 지급한다는 의미입니다.\n혹은 (투자계산서를 활용하여) 본 채권 {{invAmt}} 투자 시 {{payCycle}} 마다 {{cpnAmt}} 을 이자로 수령 가능합니다.' }
     ],
     tips: ['마지막에 단순히 "궁금한 점 있으신가요?", "설명이 부족하거나 이해가 안 되는 부분이 있으신가요?" 는 이해여부 확인으로 인정되지 않음', '단순히 이표채의 정의(3개월마다 이자제공)만 설명한 경우 이해하기 쉬운 추가 설명으로 미인정']
   });
@@ -17877,6 +17877,65 @@ window.FUND_PROSPECTUS = {"updatedAt":"2026-09-02T17:22:13.045Z","source":"펀�
     return kDateDow(bizDaysAfter(new Date(), n - 1));
   }
 
+  /** 「연 3.75%」 「3,750원」 처럼 적힌 값에서 숫자만 뽑는다 */
+  function numOf(v) {
+    if (v == null || v === '') return null;
+    var n = parseFloat(String(v).replace(/,/g, '').replace(/[^0-9.\-]/g, ''));
+    return isFinite(n) ? n : null;
+  }
+  /* ----------------------------------------------------------
+     금리변동에 따른 채권 손익 예시
+     ------------------------------------------------------------
+     채권가격은 표면금리·잔존만기·시장금리만 있으면 정확히 계산된다 —
+       가격 = Σ (표면금리/m) / (1+y/m)^k  +  액면 / (1+y/m)^(연수×m)
+     m 은 연간 이자지급 횟수(이자지급주기에서 낸다), 액면은 10,000원으로 둔다.
+
+     기준 시장금리는 민평금리가 있으면 그것을, 없으면 표면금리를 쓴다.
+     표면금리를 쓰면 기준가격이 액면가와 같아져 설명이 오히려 또렷해진다
+     (「표면금리와 시장금리가 같으면 액면가, 금리가 오르면 가격이 내린다」).
+     ---------------------------------------------------------- */
+  var BOND_FACE = 10000;
+  function bondPrice(couponPct, yieldPct, years, m) {
+    var c = BOND_FACE * (couponPct / 100) / m;   /* 회당 이자 */
+    var i = (yieldPct / 100) / m;                /* 회당 할인율 */
+    var n = Math.max(1, Math.round(years * m));
+    var pv = 0;
+    for (var k = 1; k <= n; k++) pv += c / Math.pow(1 + i, k);
+    return pv + BOND_FACE / Math.pow(1 + i, n);
+  }
+  function bondRateExample() {
+    if (sheet().cat !== 'bondKrw' && sheet().cat !== 'bondFx') return null;
+    var cp = numOf(valueOf('coupon'));
+    if (cp == null) return null;
+    /* 잔존만기 — 만기일이 있으면 오늘까지로 재고, 없으면 예시를 만들지 않는다 */
+    var md = String(valueOf('matDate') || '').match(/(\d{4})\D+(\d{1,2})\D+(\d{1,2})/);
+    if (!md) return null;
+    var years = (new Date(+md[1], +md[2] - 1, +md[3]) - new Date()) / (365.25 * 24 * 3600 * 1000);
+    if (!(years > 0.1)) return null;
+    /* 이자지급주기 「3개월」 → 연 4회. 없으면 연 2회(국고채 관행)로 둔다 */
+    var pc = numOf(valueOf('payCycle'));
+    var m = (pc && pc >= 1 && pc <= 12) ? Math.round(12 / pc) : 2;
+    var base = numOf(valueOf('mpRate'));
+    if (base == null) base = cp;
+    var STEP = 0.5;
+    var p0 = bondPrice(cp, base, years, m);
+    var pUp = bondPrice(cp, base + STEP, years, m);
+    var pDn = bondPrice(cp, base - STEP, years, m);
+    var won = function (x) { return Math.round(x).toLocaleString() + '원'; };
+    var pnl = function (x) { return (x >= 0 ? '+' : '−') + Math.abs(Math.round(x)).toLocaleString() + '원'; };
+    var pct = function (x) { return (x >= 0 ? '+' : '−') + Math.abs(Math.round(x / p0 * 10000) / 100) + '%'; };
+    var yr = Math.round(years * 10) / 10;
+    return {
+      exMat: yr + '년', exCoupon: '표면금리 연 ' + cp + '%',
+      exBase: '연 ' + (Math.round(base * 100) / 100) + '%', exPrice: won(p0),
+      exStep: STEP + '%p',
+      exUp: '연 ' + (Math.round((base + STEP) * 100) / 100) + '%',
+      exUpPrice: won(pUp), exUpPnl: pnl(pUp - p0), exUpPct: pct(pUp - p0),
+      exDown: '연 ' + (Math.round((base - STEP) * 100) / 100) + '%',
+      exDownPrice: won(pDn), exDownPnl: pnl(pDn - p0), exDownPct: pct(pDn - p0)
+    };
+  }
+
   /** 스크립트 전용 파생값 (평가표·시나리오·고객조건에서 계산) */
   function derived(id) {
     var sh = sheet(), p = product(), ctx = ST.ctx;
@@ -17977,6 +18036,49 @@ window.FUND_PROSPECTUS = {"updatedAt":"2026-09-02T17:22:13.045Z","source":"펀�
         if (ca && ae2) return 'A클래스는 매입 시 ' + ca + ' 를 선취 판매수수료로 징수하며, 해당 펀드의 총보수는 연 ' + ae2 + '% 입니다.';
         if (ca) return 'A클래스는 매입 시 ' + ca + ' 를 선취 판매수수료로 징수합니다.';
         return undefined;
+      }
+      /**
+       * 이표채 이자 예시 — 1,000만원을 넣으면 회당 얼마를 받는지.
+       * 표면금리와 이자지급주기만 있으면 나오는 곱셈이라 받아쓸 값이 아니다.
+       * (세전 금액이다 — 문장 뒤에 과세 설명이 따로 붙는다.)
+       */
+      case 'invAmt': case 'cpnAmt': {
+        var cq = numOf(valueOf('coupon'));
+        if (cq == null) return undefined;
+        if (id === 'invAmt') return '1,000만원';
+        var pq = numOf(valueOf('payCycle'));
+        var mq = (pq && pq >= 1 && pq <= 12) ? Math.round(12 / pq) : 2;
+        var each = 10000000 * (cq / 100) / mq;
+        return Math.round(each).toLocaleString() + '원(세전)';
+      }
+      /**
+       * 매매단가차이 — 이름 그대로 민평단가 − 매매단가다. 뺄셈이라 받아쓸 값이 아니다.
+       * 평가 기준이 「비율 = 차이/매매단가」 까지 보므로 비율도 함께 낸다.
+       */
+      case 'priceDiff': {
+        var mp = numOf(valueOf('mpPrice')), tp = numOf(valueOf('tradePrice'));
+        if (mp == null || tp == null || !tp) return undefined;
+        var dv = mp - tp;
+        return (dv >= 0 ? '+' : '−') + Math.abs(Math.round(dv * 100) / 100).toLocaleString()
+          + '원 (매매단가 대비 ' + (dv >= 0 ? '+' : '−') + Math.abs(Math.round(dv / tp * 10000) / 100) + '%)';
+      }
+      /**
+       * 금리변동 손익 예시 — 이 채권의 표면금리·잔존만기로 직접 계산한다.
+       *
+       * 왜 계산하나. 평가 기준은 「금리변동에 따른 손익을 쉽게 파악할 수 있는 도표를
+       * 활용해 설명」 하는 것인데, 항목이 13개나 받아쓰기로 비어 있어 창구에서
+       * 자료를 뒤져 옮겨 적어야 했다. 채권가격은 표면금리·잔존만기·시장금리만 있으면
+       * 정확히 계산되는 값이라 지어내는 것이 아니다.
+       *
+       * 기준금리는 민평금리가 있으면 그것을, 없으면 표면금리를 쓴다
+       * (표면금리 = 시장금리면 가격이 액면가라, 설명이 오히려 또렷해진다).
+       * 변동폭은 0.5%p 로 둔다 — 장·단기 민감도 차이를 보여 주기에 충분하다.
+       */
+      case 'exMat': case 'exCoupon': case 'exBase': case 'exPrice': case 'exStep':
+      case 'exUp': case 'exUpPrice': case 'exUpPnl': case 'exUpPct':
+      case 'exDown': case 'exDownPrice': case 'exDownPnl': case 'exDownPct': {
+        var bx = bondRateExample();
+        return bx ? bx[id] : undefined;
       }
       /**
        * 개인형 IRP 제도 기준값 — 상품이 아니라 법령으로 정해진 값이다.
@@ -18250,6 +18352,14 @@ window.FUND_PROSPECTUS = {"updatedAt":"2026-09-02T17:22:13.045Z","source":"펀�
       todayLabel: '오늘 날짜·요일', redBeforeDate: '기준가 적용일 날짜 (기준시각 前)',
       redAfterDate: '기준가 적용일 날짜 (기준시각 後)', redPayDate: '환매대금 지급일 날짜',
       nameMeaning: '명칭에 담긴 뜻',
+      /* 금리변동 손익 예시 — 이 채권의 표면금리·잔존만기로 계산한 값이다 */
+      exMat: '예시 잔존만기', exCoupon: '예시 표면금리', exBase: '기준 시장금리',
+      exPrice: '기준 채권가격', exStep: '금리 변동폭',
+      exUp: '상승 후 시장금리', exUpPrice: '상승 시 채권가격', exUpPnl: '상승 시 손익', exUpPct: '상승 시 변동률',
+      exDown: '하락 후 시장금리', exDownPrice: '하락 시 채권가격', exDownPnl: '하락 시 손익', exDownPct: '하락 시 변동률',
+      priceDiff: '매매단가차이 (민평단가−매매단가)',
+      invAmt: '예시 투자금액', cpnAmt: '회당 이자금액 (세전)',
+      clsExpClass: '총보수 기준 클래스',
       withdrawRight: '청약철회권 대상여부'
     }[id] || id;
   }

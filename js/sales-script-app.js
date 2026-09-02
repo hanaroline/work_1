@@ -542,6 +542,65 @@
     return kDateDow(bizDaysAfter(new Date(), n - 1));
   }
 
+  /** 「연 3.75%」 「3,750원」 처럼 적힌 값에서 숫자만 뽑는다 */
+  function numOf(v) {
+    if (v == null || v === '') return null;
+    var n = parseFloat(String(v).replace(/,/g, '').replace(/[^0-9.\-]/g, ''));
+    return isFinite(n) ? n : null;
+  }
+  /* ----------------------------------------------------------
+     금리변동에 따른 채권 손익 예시
+     ------------------------------------------------------------
+     채권가격은 표면금리·잔존만기·시장금리만 있으면 정확히 계산된다 —
+       가격 = Σ (표면금리/m) / (1+y/m)^k  +  액면 / (1+y/m)^(연수×m)
+     m 은 연간 이자지급 횟수(이자지급주기에서 낸다), 액면은 10,000원으로 둔다.
+
+     기준 시장금리는 민평금리가 있으면 그것을, 없으면 표면금리를 쓴다.
+     표면금리를 쓰면 기준가격이 액면가와 같아져 설명이 오히려 또렷해진다
+     (「표면금리와 시장금리가 같으면 액면가, 금리가 오르면 가격이 내린다」).
+     ---------------------------------------------------------- */
+  var BOND_FACE = 10000;
+  function bondPrice(couponPct, yieldPct, years, m) {
+    var c = BOND_FACE * (couponPct / 100) / m;   /* 회당 이자 */
+    var i = (yieldPct / 100) / m;                /* 회당 할인율 */
+    var n = Math.max(1, Math.round(years * m));
+    var pv = 0;
+    for (var k = 1; k <= n; k++) pv += c / Math.pow(1 + i, k);
+    return pv + BOND_FACE / Math.pow(1 + i, n);
+  }
+  function bondRateExample() {
+    if (sheet().cat !== 'bondKrw' && sheet().cat !== 'bondFx') return null;
+    var cp = numOf(valueOf('coupon'));
+    if (cp == null) return null;
+    /* 잔존만기 — 만기일이 있으면 오늘까지로 재고, 없으면 예시를 만들지 않는다 */
+    var md = String(valueOf('matDate') || '').match(/(\d{4})\D+(\d{1,2})\D+(\d{1,2})/);
+    if (!md) return null;
+    var years = (new Date(+md[1], +md[2] - 1, +md[3]) - new Date()) / (365.25 * 24 * 3600 * 1000);
+    if (!(years > 0.1)) return null;
+    /* 이자지급주기 「3개월」 → 연 4회. 없으면 연 2회(국고채 관행)로 둔다 */
+    var pc = numOf(valueOf('payCycle'));
+    var m = (pc && pc >= 1 && pc <= 12) ? Math.round(12 / pc) : 2;
+    var base = numOf(valueOf('mpRate'));
+    if (base == null) base = cp;
+    var STEP = 0.5;
+    var p0 = bondPrice(cp, base, years, m);
+    var pUp = bondPrice(cp, base + STEP, years, m);
+    var pDn = bondPrice(cp, base - STEP, years, m);
+    var won = function (x) { return Math.round(x).toLocaleString() + '원'; };
+    var pnl = function (x) { return (x >= 0 ? '+' : '−') + Math.abs(Math.round(x)).toLocaleString() + '원'; };
+    var pct = function (x) { return (x >= 0 ? '+' : '−') + Math.abs(Math.round(x / p0 * 10000) / 100) + '%'; };
+    var yr = Math.round(years * 10) / 10;
+    return {
+      exMat: yr + '년', exCoupon: '표면금리 연 ' + cp + '%',
+      exBase: '연 ' + (Math.round(base * 100) / 100) + '%', exPrice: won(p0),
+      exStep: STEP + '%p',
+      exUp: '연 ' + (Math.round((base + STEP) * 100) / 100) + '%',
+      exUpPrice: won(pUp), exUpPnl: pnl(pUp - p0), exUpPct: pct(pUp - p0),
+      exDown: '연 ' + (Math.round((base - STEP) * 100) / 100) + '%',
+      exDownPrice: won(pDn), exDownPnl: pnl(pDn - p0), exDownPct: pct(pDn - p0)
+    };
+  }
+
   /** 스크립트 전용 파생값 (평가표·시나리오·고객조건에서 계산) */
   function derived(id) {
     var sh = sheet(), p = product(), ctx = ST.ctx;
@@ -642,6 +701,49 @@
         if (ca && ae2) return 'A클래스는 매입 시 ' + ca + ' 를 선취 판매수수료로 징수하며, 해당 펀드의 총보수는 연 ' + ae2 + '% 입니다.';
         if (ca) return 'A클래스는 매입 시 ' + ca + ' 를 선취 판매수수료로 징수합니다.';
         return undefined;
+      }
+      /**
+       * 이표채 이자 예시 — 1,000만원을 넣으면 회당 얼마를 받는지.
+       * 표면금리와 이자지급주기만 있으면 나오는 곱셈이라 받아쓸 값이 아니다.
+       * (세전 금액이다 — 문장 뒤에 과세 설명이 따로 붙는다.)
+       */
+      case 'invAmt': case 'cpnAmt': {
+        var cq = numOf(valueOf('coupon'));
+        if (cq == null) return undefined;
+        if (id === 'invAmt') return '1,000만원';
+        var pq = numOf(valueOf('payCycle'));
+        var mq = (pq && pq >= 1 && pq <= 12) ? Math.round(12 / pq) : 2;
+        var each = 10000000 * (cq / 100) / mq;
+        return Math.round(each).toLocaleString() + '원(세전)';
+      }
+      /**
+       * 매매단가차이 — 이름 그대로 민평단가 − 매매단가다. 뺄셈이라 받아쓸 값이 아니다.
+       * 평가 기준이 「비율 = 차이/매매단가」 까지 보므로 비율도 함께 낸다.
+       */
+      case 'priceDiff': {
+        var mp = numOf(valueOf('mpPrice')), tp = numOf(valueOf('tradePrice'));
+        if (mp == null || tp == null || !tp) return undefined;
+        var dv = mp - tp;
+        return (dv >= 0 ? '+' : '−') + Math.abs(Math.round(dv * 100) / 100).toLocaleString()
+          + '원 (매매단가 대비 ' + (dv >= 0 ? '+' : '−') + Math.abs(Math.round(dv / tp * 10000) / 100) + '%)';
+      }
+      /**
+       * 금리변동 손익 예시 — 이 채권의 표면금리·잔존만기로 직접 계산한다.
+       *
+       * 왜 계산하나. 평가 기준은 「금리변동에 따른 손익을 쉽게 파악할 수 있는 도표를
+       * 활용해 설명」 하는 것인데, 항목이 13개나 받아쓰기로 비어 있어 창구에서
+       * 자료를 뒤져 옮겨 적어야 했다. 채권가격은 표면금리·잔존만기·시장금리만 있으면
+       * 정확히 계산되는 값이라 지어내는 것이 아니다.
+       *
+       * 기준금리는 민평금리가 있으면 그것을, 없으면 표면금리를 쓴다
+       * (표면금리 = 시장금리면 가격이 액면가라, 설명이 오히려 또렷해진다).
+       * 변동폭은 0.5%p 로 둔다 — 장·단기 민감도 차이를 보여 주기에 충분하다.
+       */
+      case 'exMat': case 'exCoupon': case 'exBase': case 'exPrice': case 'exStep':
+      case 'exUp': case 'exUpPrice': case 'exUpPnl': case 'exUpPct':
+      case 'exDown': case 'exDownPrice': case 'exDownPnl': case 'exDownPct': {
+        var bx = bondRateExample();
+        return bx ? bx[id] : undefined;
       }
       /**
        * 개인형 IRP 제도 기준값 — 상품이 아니라 법령으로 정해진 값이다.
@@ -915,6 +1017,14 @@
       todayLabel: '오늘 날짜·요일', redBeforeDate: '기준가 적용일 날짜 (기준시각 前)',
       redAfterDate: '기준가 적용일 날짜 (기준시각 後)', redPayDate: '환매대금 지급일 날짜',
       nameMeaning: '명칭에 담긴 뜻',
+      /* 금리변동 손익 예시 — 이 채권의 표면금리·잔존만기로 계산한 값이다 */
+      exMat: '예시 잔존만기', exCoupon: '예시 표면금리', exBase: '기준 시장금리',
+      exPrice: '기준 채권가격', exStep: '금리 변동폭',
+      exUp: '상승 후 시장금리', exUpPrice: '상승 시 채권가격', exUpPnl: '상승 시 손익', exUpPct: '상승 시 변동률',
+      exDown: '하락 후 시장금리', exDownPrice: '하락 시 채권가격', exDownPnl: '하락 시 손익', exDownPct: '하락 시 변동률',
+      priceDiff: '매매단가차이 (민평단가−매매단가)',
+      invAmt: '예시 투자금액', cpnAmt: '회당 이자금액 (세전)',
+      clsExpClass: '총보수 기준 클래스',
       withdrawRight: '청약철회권 대상여부'
     }[id] || id;
   }
