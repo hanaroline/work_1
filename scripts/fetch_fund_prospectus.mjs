@@ -1,186 +1,152 @@
 #!/usr/bin/env node
 /**
- * 펀드 투자설명서 수집기 (DART 공시)
+ * 펀드 투자설명서 미리 판독 — data/fund-prospectus.js
  *
- * 펀드의 (간이)투자설명서는 자산운용사가 DART 에 「투자설명서」 로 공시한다.
- * ELS 수집기(scripts/fetch_prospectus.mjs)와 같은 경로·같은 방식을 쓴다.
- *   1) POST /dsab001/search.ax   제출인(자산운용사) + 기간으로 접수번호 목록
- *   2) GET  /dsaf001/main.do     접수번호 -> dcmNo
- *   3) GET  /report/viewer.do    문서 본문 -> 텍스트
- *   4) js/sales-script-prospectus.js 의 RULES.fund 로 항목 추출
- *   -> data/fund-prospectus.js
+ *   node scripts/fetch_fund_prospectus.mjs [--limit N] [--from N] [--out 경로]
  *
- * ── 실행 ─────────────────────────────────────────────────────
- *   node scripts/fetch_fund_prospectus.mjs --probe
- *       접수번호·문서 크기·펀드명 후보만 출력하고 파일은 쓰지 않는다.
- *   node scripts/fetch_fund_prospectus.mjs --mgr "미래에셋자산운용" --limit 5
- *       특정 운용사 5건 수집
- *   node scripts/fetch_fund_prospectus.mjs
- *       MGRS 목록 전체 수집
+ * 카탈로그(data/fund-catalog.js)가 갖고 있는 투자설명서 PDF 주소를 받아 텍스트를 뽑고,
+ * js/sales-script-prospectus.js 의 RULES.fund 로 항목을 추출해 담는다.
  *
- * ── 검증 상태 ────────────────────────────────────────────────
- * ⚠ DART 접근 경로(search.ax -> main.do -> viewer.do)는 ELS 수집기에서 이미
- *   검증된 것과 동일하다. 다만 「펀드 투자설명서 본문의 텍스트 서식」은 확인하지
- *   못했다(개발 컨테이너 egress 차단). 따라서 항목 추출률은 실행해 봐야 안다.
- *   먼저 --probe 로 돌려 tools/discovery/fund_probe.json 의 본문 샘플을 보고
- *   js/sales-script-prospectus.js 의 RULES.fund 정규식을 조정하십시오.
+ * ── 왜 미리 판독하나 ────────────────────────────────────────────
+ * 브라우저는 다른 도메인의 파일을 앱이 직접 읽는 것을 막는다(CORS). 게다가 이 도구는
+ * 인터넷이 없는 업무용PC 에서 쓴다. 그래서 ELS 와 같은 방식이 필요하다 —
+ * 판독은 러너에서 미리 해 두고, 결과만 파일에 실어 오프라인에서 쓴다.
+ *
+ * ── 무엇을 담나 ─────────────────────────────────────────────────
+ * 카탈로그에 이미 있는 것(명칭·운용사·유형·위험등급·수익률·기준일)은 담지 않는다.
+ * 투자설명서에만 있는 것만 담는다 — 보수·수수료, 환매수수료, 계약기간, 투자전략,
+ * 주요 투자위험, VaR, 유동성위험, 환헤지. 그래야 파일이 커지지 않는다.
+ *
+ * ★ 값을 만들어내지 않는다 ★ 원문에서 못 읽은 것은 담지 않아 화면에서 「확인필요」로 남는다.
  */
-import { writeFile, mkdir, readFile } from 'node:fs/promises';
-
-const UA = 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 Chrome/141 Safari/537.36';
-const DART = 'https://dart.fss.or.kr';
-const OUT_DIR = 'tools/discovery';
-const OUT = 'data/fund-prospectus.js';
-
-/** 기본 수집 대상 운용사 — 필요에 맞게 늘리십시오 */
-const MGRS = [
-  '미래에셋자산운용', '삼성자산운용', 'KB자산운용', '한국투자신탁운용',
-  '신영자산운용', '한국투자밸류자산운용', '흥국자산운용', '피델리티자산운용',
-];
+import { readFile, writeFile } from 'node:fs/promises';
+import { createRequire } from 'node:module';
 
 const args = process.argv.slice(2);
-const PROBE = args.includes('--probe');
 const argOf = (k, d) => { const i = args.indexOf(k); return i >= 0 ? args[i + 1] : d; };
-const LIMIT = Number(argOf('--limit', PROBE ? 3 : 0)) || 0;
-const ONLY_MGR = argOf('--mgr', null);
-const DAYS_BACK = Number(process.env.DART_DAYS_BACK || argOf('--days', 120));
+const LIMIT = Number(argOf('--limit', 0)) || 0;
+const FROM = Number(argOf('--from', 0)) || 0;
+const OUT = argOf('--out', 'data/fund-prospectus.js');
 
-/* ── 공통 유틸 (ELS 수집기와 동일) ───────────────────────────── */
-const decode = (buf) => {
-  const probe = buf.subarray(0, 3000).toString('latin1').toLowerCase();
-  return new TextDecoder(/euc-kr|ks_c_5601/.test(probe) ? 'euc-kr' : 'utf-8').decode(buf);
-};
-const toText = (html) => html
-  .replace(/<(script|style)[\s\S]*?<\/\1>/gi, ' ')
-  .replace(/<\/tr>/gi, '\n').replace(/<\/(p|div|h\d|table)>/gi, '\n\n')
-  .replace(/<t[dh][^>]*>/gi, '\t')
-  .replace(/<[^>]+>/g, '')
-  .replace(/&nbsp;/g, ' ').replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>')
-  .replace(/[ \t]*\n/g, '\n').replace(/\n{3,}/g, '\n\n');
-const grab = async (url, opts = {}) => {
-  const r = await fetch(url, {
-    headers: { 'User-Agent': UA, ...(opts.body ? { 'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8' } : {}), ...(opts.headers || {}) },
-    method: opts.body ? 'POST' : 'GET',
-    body: opts.body,
-    signal: AbortSignal.timeout(90000),
-  });
-  const buf = Buffer.from(await r.arrayBuffer());
-  return { status: r.status, buf, text: decode(buf) };
-};
-const ymd = (d) => `${d.getUTCFullYear()}${String(d.getUTCMonth() + 1).padStart(2, '0')}${String(d.getUTCDate()).padStart(2, '0')}`;
+/* ── 앱과 똑같은 추출 규칙·본문 판독을 쓴다 ───────────────── */
+const prosSrc = await readFile('js/sales-script-prospectus.js', 'utf8');
+const win = {};
+new Function('window', prosSrc)(win);
+const PROS = win.SS_PROS;
+if (!PROS) throw new Error('js/sales-script-prospectus.js 를 불러오지 못했습니다.');
 
-/** 앱과 같은 추출 규칙을 쓴다 */
-async function loadExtractor() {
-  const src = await readFile('js/sales-script-prospectus.js', 'utf8');
-  const g = {};
-  new Function('window', src)(g);
-  if (!g.SS_PROS) throw new Error('추출 규칙(js/sales-script-prospectus.js)을 불러오지 못했습니다.');
-  return g.SS_PROS;
-}
+const require0 = createRequire(import.meta.url);
+const pdfjs = require0('pdfjs-dist/legacy/build/pdf.js');
+pdfjs.GlobalWorkerOptions.workerSrc = require0.resolve('pdfjs-dist/legacy/build/pdf.worker.js');
 
-/** 문서 본문에서 펀드 명칭들을 뽑는다 — 한 문서에 여러 펀드가 담기는 경우가 있다 */
-function fundNames(text) {
-  const re = /[가-힣A-Za-z0-9()\[\]·\-\s]{4,60}(?:증권\s*)?자?투자신탁\s*(?:제?\d+호)?\s*\([^)]{1,24}\)/g;
-  return [...new Set((text.match(re) || []).map((s) => s.replace(/\s+/g, ' ').trim()))].slice(0, 40);
-}
-
-async function main() {
-  await mkdir(OUT_DIR, { recursive: true });
-  const PROS = await loadExtractor();
-
-  const today = new Date();
-  const since = new Date(today.getTime() - DAYS_BACK * 86400000);
-  const mgrs = ONLY_MGR ? [ONLY_MGR] : MGRS;
-  console.log(`펀드 투자설명서 수집 — 운용사 ${mgrs.length}곳 / ${ymd(since)}~${ymd(today)}${PROBE ? ' (probe)' : ''}`);
-
-  const probe = { checkedAt: new Date().toISOString(), mgrs: [] };
-  const items = {};
-
-  for (const mgr of mgrs) {
-    console.log(`\n## ${mgr}`);
-    let filings = [];
-    try {
-      const search = await grab(`${DART}/dsab001/search.ax`, {
-        body: `currentPage=1&maxResults=100&textCrpNm=${encodeURIComponent(mgr)}&startDate=${ymd(since)}&endDate=${ymd(today)}`,
-        headers: { Referer: `${DART}/dsab001/main.do` },
-      });
-      for (const tr of search.text.split(/<tr[^>]*>/i).slice(1)) {
-        const rcp = (tr.match(/rcpNo=(\d{14})/) || [])[1];
-        if (!rcp) continue;
-        const plain = toText(tr).replace(/\s+/g, ' ').trim();
-        const date = (plain.match(/(\d{4}\.\d{2}\.\d{2})/) || [])[1];
-        /* 「투자설명서」 / 「간이투자설명서」 만 고른다 */
-        const name = (plain.match(/(간이투자설명서|투자설명서)/) || [])[1];
-        if (name) filings.push({ rcpNo: rcp, date, name, row: plain.slice(0, 140) });
+/**
+ * PDF -> 텍스트. 앱의 pdfToText 와 같은 규칙으로 만든다 —
+ * y 가 바뀌면 줄을 나누고, 폭이 넓은 공백 항목은 표의 칸 구분(탭)으로 본다.
+ * 여기서 서식이 달라지면 앱에서 통하던 규칙이 러너에서는 안 통한다.
+ */
+async function pdfText(buf) {
+  const doc = await pdfjs.getDocument({ data: new Uint8Array(buf), verbosity: 0 }).promise;
+  const chunks = [];
+  for (let n = 1; n <= doc.numPages; n++) {
+    const page = await doc.getPage(n);
+    const tc = await page.getTextContent();
+    let lastY = null, lastEnd = null, line = [];
+    const lines = [];
+    const flush = () => { if (line.length) lines.push(line.join('').replace(/[ \t]+$/, '')); line = []; };
+    for (const it of tc.items) {
+      const tr = it.transform || [];
+      const y = tr.length ? Math.round(tr[5]) : null;
+      const x = tr.length ? tr[4] : null;
+      if (lastY !== null && y !== null && Math.abs(y - lastY) > 2) { flush(); lastEnd = null; }
+      if (/^\s*$/.test(it.str)) {
+        if (x !== null) lastEnd = x + (it.width || 0);
+        if (y !== null) lastY = y;
+        if (line.length) line.push((it.width || 0) > 8 ? '\t' : ' ');
+        continue;
       }
-      filings = [...new Map(filings.map((f) => [f.rcpNo, f])).values()]
-        .sort((a, b) => (b.date || '').localeCompare(a.date || ''));
-      console.log(`  공시 ${filings.length}건 (HTTP ${search.status})`);
-    } catch (e) {
-      console.log(`  검색 실패 — ${e.name} ${e.message}`);
-      probe.mgrs.push({ mgr, error: e.message });
-      continue;
+      if (lastEnd !== null && x !== null && x - lastEnd > 8 && !/\t$/.test(line[line.length - 1] || '')) line.push('\t');
+      line.push(it.str);
+      if (x !== null) lastEnd = x + (it.width || 0);
+      lastY = y;
     }
-
-    const take = LIMIT ? filings.slice(0, LIMIT) : filings;
-    const mgrProbe = { mgr, filings: filings.length, docs: [] };
-
-    for (const f of take) {
-      try {
-        const main0 = await grab(`${DART}/dsaf001/main.do?rcpNo=${f.rcpNo}`);
-        const dcm = (main0.text.match(/dcmNo["'\s:=]+(\d+)/) || main0.text.match(/viewDoc\(\s*'[^']*'\s*,\s*'(\d+)'/) || [])[1];
-        if (!dcm) { console.log(`  ${f.rcpNo}: dcmNo 없음`); continue; }
-        const doc = await grab(`${DART}/report/viewer.do?rcpNo=${f.rcpNo}&dcmNo=${dcm}&eleId=0&offset=0&length=0&dtd=dart3.xsd`);
-        const text = toText(doc.text);
-        const names = fundNames(text);
-        const fields = {};
-        PROS.extract(text, 'fund').forEach((x) => { fields[x.id] = x.value; });
-
-        console.log(`  ${f.date} ${f.rcpNo} ${(doc.buf.length / 1024).toFixed(0)}KB · 펀드명 후보 ${names.length}건 · 항목 ${Object.keys(fields).length}건`);
-        mgrProbe.docs.push({
-          rcpNo: f.rcpNo, date: f.date, name: f.name, dcmNo: dcm,
-          chars: text.length, names: names.slice(0, 10),
-          fields, head: text.slice(0, 1200),
-        });
-
-        if (!PROBE) {
-          /* 문서 원문을 남겨 두면 규칙을 고친 뒤 재파싱만 하면 된다 */
-          await writeFile(`${OUT_DIR}/fund_prospectus_${f.rcpNo}.txt`, text);
-          /* 명칭이 잡히면 명칭 키로, 아니면 접수번호 키로 담는다 */
-          const key = fields.name || names[0] || f.rcpNo;
-          items[key] = {
-            key, mgr, rcpNo: f.rcpNo, docDate: f.date,
-            docUrl: `${DART}/dsaf001/main.do?rcpNo=${f.rcpNo}`,
-            collectedAt: new Date().toISOString(),
-            names, fields,
-          };
-        }
-      } catch (e) {
-        console.log(`  ${f.rcpNo}: 실패 — ${e.name} ${e.message}`);
-      }
-    }
-    probe.mgrs.push(mgrProbe);
+    flush();
+    chunks.push(unwrap(lines).join('\n'));
   }
-
-  await writeFile(`${OUT_DIR}/fund_probe.json`, JSON.stringify(probe, null, 2));
-  console.log(`\n${OUT_DIR}/fund_probe.json 기록 — 본문 서식·추출률 확인용`);
-  if (PROBE) return;
-
-  const body =
-    '/**\n' +
-    ' * 펀드 투자설명서 — DART 공시에서 수집·파싱한 결과\n' +
-    ' *\n' +
-    ' * 생성 : scripts/fetch_fund_prospectus.mjs\n' +
-    ' * FUND_PROSPECTUS.items[펀드명] = { fields, docUrl, mgr, docDate, ... }\n' +
-    ' *\n' +
-    ' * sales-script.html 이 펀드 선택 시 명칭으로 찾아 등록된 투자설명서로 적용한다.\n' +
-    ' * 원문에 없는 값은 담지 않으므로 화면에서 「확인필요」로 남는다.\n' +
-    ' */\n' +
-    'window.FUND_PROSPECTUS = ' +
-    JSON.stringify({ updatedAt: new Date().toISOString(), source: 'DART 투자설명서 공시', count: Object.keys(items).length, items }, null, 1) +
-    ';\n';
-  await writeFile(OUT, body);
-  console.log(`${OUT} 기록 — ${Object.keys(items).length}건`);
+  return { text: chunks.join('\n'), pages: doc.numPages };
+}
+/** 줄바꿈으로 끊긴 본문을 잇는다 (앱과 같은 규칙) */
+function unwrap(lines) {
+  const out = [];
+  for (let i = 0; i < lines.length; i++) {
+    let cur = lines[i];
+    while (cur.indexOf('\t') < 0 && cur.length >= 40 && /[가-힣,·]$/.test(cur) &&
+      i + 1 < lines.length && lines[i + 1].indexOf('\t') < 0 &&
+      !/^\s*(?:\d+\s*[.)]|[○◦□■※【(])/.test(lines[i + 1]) && lines[i + 1].trim()) {
+      cur += lines[i + 1].trim(); i++;
+    }
+    out.push(cur);
+  }
+  return out;
 }
 
-main().catch((e) => { console.error(e); process.exit(1); });
+/* 카탈로그에 이미 있는 항목은 담지 않는다 */
+const SKIP = new Set(['name', 'mgr', 'fundType', 'riskGrade', 'riskLabel', 'targets',
+  'ret1y', 'retPeer', 'buyCut', 'buyBefore', 'buyAfter', 'redBefore', 'redAfter', 'redPay', 'docDate']);
+/* 서술 항목은 길어서 잘라 담는다 — 파일 크기가 곧 배포 가능성이다 */
+const CAP = { risk1: 170, risk2: 170, strategy: 200 };
+
+const catSrc = await readFile('data/fund-catalog.js', 'utf8');
+const cg = {};
+new Function('window', catSrc)(cg);
+const C = cg.FUND_CATALOG;
+const base = C.docBase;
+const targets = C.items.filter((x) => x.docT || x.docG);
+const slice = targets.slice(FROM, LIMIT ? FROM + LIMIT : undefined);
+console.log(`투자설명서 ${targets.length}건 중 ${slice.length}건 판독 (from ${FROM})`);
+
+const items = {};
+let ok = 0, fail = 0, empty = 0;
+for (let i = 0; i < slice.length; i++) {
+  const it = slice[i];
+  const kind = it.docT ? 'T' : 'G';
+  const url = `${base}${it.code}/${it.code}_${kind}_${it.docT || it.docG}.pdf`;
+  try {
+    const r = await fetch(url, { signal: AbortSignal.timeout(60000) });
+    if (!r.ok) throw new Error('HTTP ' + r.status);
+    const { text, pages } = await pdfText(Buffer.from(await r.arrayBuffer()));
+    if (text.length < 300) { empty++; continue; }
+    const f = {};
+    for (const x of PROS.extract(text, 'fund')) {
+      if (SKIP.has(x.id)) continue;
+      f[x.id] = CAP[x.id] ? String(x.value).slice(0, CAP[x.id]) : x.value;
+    }
+    if (Object.keys(f).length) { items[it.code] = f; ok++; }
+    if ((i + 1) % 25 === 0 || i === slice.length - 1) {
+      console.log(`  ${i + 1}/${slice.length} · 추출 ${ok}건 · 실패 ${fail} · 빈문서 ${empty} (${it.code} ${pages}쪽 ${Object.keys(f).length}항목)`);
+    }
+  } catch (e) {
+    fail++;
+    if (fail <= 5) console.log(`  ${it.code} 실패 — ${e.name} ${e.message}`);
+  }
+}
+
+const body =
+  '/**\n' +
+  ' * 펀드 투자설명서 판독 결과 — 투자설명서에만 있는 항목\n' +
+  ' *\n' +
+  ' * 생성 : scripts/fetch_fund_prospectus.mjs (러너에서 실행)\n' +
+  ' * FUND_PROSPECTUS.items[표준코드] = { clsA, clsAExp, clsCExp, redeemFee, term,\n' +
+  ' *   redeemable, strategy, risk1, risk2, varPct, liqRisk, fxHedge, fxHedgeSize, ... }\n' +
+  ' *\n' +
+  ' * 카탈로그(data/fund-catalog.js)에 이미 있는 항목은 담지 않는다.\n' +
+  ' * 원문에서 못 읽은 것은 담지 않으므로 화면에서 「확인필요」로 남는다.\n' +
+  ' */\n' +
+  'window.FUND_PROSPECTUS = ' + JSON.stringify({
+    updatedAt: new Date().toISOString(),
+    source: '펀드 투자설명서 PDF 판독',
+    count: Object.keys(items).length,
+    items,
+  }) + ';\n';
+await writeFile(OUT, body);
+console.log(`\n${OUT} 기록 — ${Object.keys(items).length}건 · 실패 ${fail} · 빈문서 ${empty}`);
+console.log(`  크기 ${(Buffer.byteLength(body) / 1024 / 1024).toFixed(2)}MB`);
