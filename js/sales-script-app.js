@@ -85,7 +85,13 @@
     var cat = sheet().cat, pid = ST.productId;
     var mine = (DOCS[cat] && DOCS[cat][pid]) || null;
     if (mine) return mine;
-    if (cat === 'fund') return fundCollectedDoc();
+    /**
+     * IRP 는 「편입 펀드」 를 설명하는 시트다. 상품 목록도 펀드 카탈로그를 그대로 쓴다.
+     * 그런데 여기서 fund 만 보고 있어서, IRP 시트에서는 카탈로그·판독 결과가 하나도
+     * 붙지 않았다 — 펀드 시트에서 채워지는 투자대상·투자전략·계약기간·주요위험·
+     * 환매수수료·기준가 적용일이 IRP 에서는 전부 확인필요로 남았다.
+     */
+    if (cat === 'fund' || cat === 'irp') return fundCollectedDoc();
     if (cat !== 'els') return null;
     var P = window.ELS_PROSPECTUS;
     if (!P || !P.byRound) return null;
@@ -636,6 +642,52 @@
         if (ca && ae2) return 'A클래스는 매입 시 ' + ca + ' 를 선취 판매수수료로 징수하며, 해당 펀드의 총보수는 연 ' + ae2 + '% 입니다.';
         if (ca) return 'A클래스는 매입 시 ' + ca + ' 를 선취 판매수수료로 징수합니다.';
         return undefined;
+      }
+      /**
+       * 개인형 IRP 제도 기준값 — 상품이 아니라 법령으로 정해진 값이다.
+       * 상품을 고를 때마다 다시 입력할 이유가 없어 기본값으로 둔다.
+       * 세액공제 한도·공제율은 세법 개정에 따라 바뀌므로 여기서 채우지 않는다 —
+       * 시트가 「반드시 개인형IRP 설명서로 확인」 하도록 받아쓰기로 남겨 둔 항목이다.
+       */
+      case 'limitYear':
+        return rawValue('limitYear') ? undefined : '연간 1,800만원';
+      case 'riskLimit':
+        return rawValue('riskLimit') ? undefined : '적립금의 70%';
+      /**
+       * 가입유형별 증빙서류 — 유형을 확인하지 않고 전부 읽으면 평가에서 미인정이다.
+       * 유형별 목록은 이 항목의 안내문에 이미 있으므로, 고른 유형에 맞는 것만 낸다.
+       */
+      case 'proof': {
+        if (rawValue('proof')) return undefined;
+        var jt = String(valueOf('joinType') || '');
+        if (!jt) return undefined;
+        /* 문장이 「… 중 하나를 택하시어 제출하시면」 으로 이어지므로 「중 택1」 을 붙이면 겹친다 */
+        if (/자영업/.test(jt)) return '사업자등록증 · 사업소득원천징수영수증 · 소득금액증명원';
+        if (/미설정|1년\s*미만|15시간/.test(jt)) {
+          return '재직증명서 · 건강보험자격득실확인서 · 근로소득원천징수영수증 · 단체재직증명서';
+        }
+        if (/퇴직금제도|재직|직역연금/.test(jt)) {
+          return '재직증명서 · 건강보험자격득실확인서 · 근로소득원천징수영수증';
+        }
+        return undefined;
+      }
+      /**
+       * IRP 편입 펀드의 총보수 — 창구에서 가입하는 것은 퇴직연금 클래스다.
+       * A·C 클래스 보수를 말하면 고객이 실제로 부담하지 않는 비용을 말하게 된다.
+       * 그래서 퇴직연금 클래스(C-P·CP·S-P) 보수를 먼저 쓰고, 어느 클래스 기준인지
+       * 함께 말한다 (clsExpClass).
+       */
+      case 'clsExp': case 'clsExpClass': {
+        var dcp = doc();
+        var itp = fundCatByCode((dcp && dcp.catalogCode) || ST.productId || '')
+          || fundCatByName(rawValue('name') || '');
+        var pick = null, who = null;
+        if (itp && itp.clsPExp != null) { pick = itp.clsPExp; who = '퇴직연금 클래스'; }
+        else if (rawValue('clsExp')) { pick = rawValue('clsExp'); who = '투자설명서 기재 기준'; }
+        else if (rawValue('clsCExp')) { pick = rawValue('clsCExp'); who = 'C클래스'; }
+        else if (rawValue('clsAExp')) { pick = rawValue('clsAExp'); who = 'A클래스'; }
+        if (pick == null) return undefined;
+        return id === 'clsExp' ? String(pick) : who;
       }
       /* 계산기 설명 — 선취수수료가 없는 펀드에는 뺄셈 자체가 없다 */
       case 'feeCalcNote': {

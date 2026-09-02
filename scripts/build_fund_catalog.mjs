@@ -144,6 +144,13 @@ const items = all.map((f) => {
     objective: firstSentence(f.objective, 200),
     clsAExp: clsFee(f, /^\(?A\)?$/i),
     clsCExp: clsFee(f, /^\(?C1?\)?$/i),
+    /**
+     * 퇴직연금(IRP) 클래스 총보수. IRP 스크립트가 설명하는 것은 창구에서 가입하는
+     * 퇴직연금 클래스이므로 A·C 보수를 말하면 다른 클래스의 비용을 말하게 된다.
+     * C-P·CP·S-P 가 퇴직연금 클래스다. 뒤에 숫자가 붙는 C-P2 는 연금저축이라 뺀다.
+     * 온라인 전용(C-Pe·S-Pe)도 창구 가입이 아니므로 뺀다.
+     */
+    clsPExp: clsFee(f, /^(?:C|S)-?P$/i),
     cls: clsList(f),
     docT: docKey(f, 'prospectus'),          /* 투자설명서 일련번호 */
     docG: docKey(f, 'summary_prospectus'),  /* 간이투자설명서 일련번호 */
