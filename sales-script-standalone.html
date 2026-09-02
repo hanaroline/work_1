@@ -18038,6 +18038,45 @@ window.FUND_PROSPECTUS = {"updatedAt":"2026-09-02T17:22:13.045Z","source":"펀�
         return undefined;
       }
       /**
+       * 이자지급주기별 이자율 — 표면금리를 연간 지급 횟수로 나눈 값이다.
+       * 예) 표면금리 연 4.25% · 6개월 지급 → 회당 2.125%
+       */
+      case 'payRate': {
+        if (rawValue('payRate')) return undefined;
+        var cr = numOf(valueOf('coupon'));
+        if (cr == null) return undefined;
+        var pr = numOf(valueOf('payCycle'));
+        if (!pr || pr < 1 || pr > 12) return undefined;
+        var mr = Math.round(12 / pr);
+        return '회당 ' + (Math.round(cr / mr * 10000) / 10000) + '% (연 ' + cr + '% ÷ 연 ' + mr + '회)';
+      }
+      /**
+       * 세후 투자수익률 — 매매단가·표면금리·잔존만기가 있으면 정확히 풀린다.
+       * 개인이 보유한 채권은 이자소득만 과세(15.4%)되고 매매차익·상환차익은
+       * 과세되지 않으므로, 이자만 세후로 깎아 만기수익률을 구한다.
+       * 매매단가를 넣기 전에는 낼 수 없으니 비워 둔다 (짐작하지 않는다).
+       */
+      case 'ytm': {
+        if (rawValue('ytm')) return undefined;
+        var cy = numOf(valueOf('coupon'));
+        var py = numOf(valueOf('tradePrice'));
+        if (cy == null || py == null || py <= 0) return undefined;
+        var my = String(valueOf('matDate') || '').match(/(\d{4})\D+(\d{1,2})\D+(\d{1,2})/);
+        if (!my) return undefined;
+        var yy = (new Date(+my[1], +my[2] - 1, +my[3]) - new Date()) / (365.25 * 24 * 3600 * 1000);
+        if (!(yy > 0.05)) return undefined;
+        var pcy = numOf(valueOf('payCycle'));
+        var mm = (pcy && pcy >= 1 && pcy <= 12) ? Math.round(12 / pcy) : 2;
+        var net = cy * (1 - 0.154);                 /* 이자소득세 15.4% (지방세 포함) */
+        /* 값을 좁혀 가며 찾는다 — 세후 이자로 계산한 가격이 매매단가와 같아지는 수익률 */
+        var lo = -0.5, hi = 50, mid = 0;
+        for (var it2 = 0; it2 < 80; it2++) {
+          mid = (lo + hi) / 2;
+          if (bondPrice(net, mid, yy, mm) > py) lo = mid; else hi = mid;
+        }
+        return '연 ' + (Math.round(mid * 100) / 100) + '% (세후, 매매단가 기준)';
+      }
+      /**
        * 이표채 이자 예시 — 1,000만원을 넣으면 회당 얼마를 받는지.
        * 표면금리와 이자지급주기만 있으면 나오는 곱셈이라 받아쓸 값이 아니다.
        * (세전 금액이다 — 문장 뒤에 과세 설명이 따로 붙는다.)
