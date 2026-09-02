@@ -2,7 +2,7 @@
 
 === 한경 consensus http
     http://consensus.hankyung.com/analysis/list?report_type=CO&pagenum=40&now_page=1
-    실패 HTTPError: HTTP Error 500: Internal Server Error
+    실패 ConnectionResetError: [Errno 104] Connection reset by peer
 
 === 한경 hkconsensus
     https://hkconsensus.hankyung.com/analysis/list?report_type=CO
@@ -61,7 +61,10 @@
 
 === 하나증권 리서치
     https://www.hanaw.com/main/research/research/list.cmd
-    실패 URLError: <urlopen error timed out>
+    47580 bytes
+    찾던 글자: 리서치
+    <tr> 0개 · pdf 링크 0개
+    첫 글자: Global Asset Lounge : 글로벌 자산전략 : 하나증권                       전체  62495   건 검색되었습니다.                            이영주                       <a href="#" title="추천하기" class="icon_heart" key
 
 === KB증권 리서치
     https://rc.kbsec.com/rc/research/list.able
@@ -84,17 +87,17 @@
 
 === 미래에셋 글로벌
     https://securities.miraeasset.com/bbs/board/message/list.do?categoryId=1525
-    65077 bytes
+    32977 bytes
     찾던 글자: 리포트, 글로벌
-    <tr> 14개 · pdf 링크 0개
-    첫 글자: 산업분석 | 리서치 리포트 | 투자정보 | 미래에셋증권                               <meta
+    <tr> 8개 · pdf 링크 0개
+    첫 글자: 산업분석 | 리서치 리포트 | 투자정보 | 미래에셋증권
 
 === 미래에셋 해외주식
     https://securities.miraeasset.com/bbs/board/message/list.do?categoryId=1571
-    2840 bytes
+    1405 bytes
     찾던 글자: (하나도 없음)
     <tr> 0개 · pdf 링크 0개
-    첫 글자: 미래에셋증권                                       <script type="text/java
+    첫 글자: 미래에셋증권                                <script type="text/javascript" src="htt
 
 === 네이버 해외 리서치
     https://m.stock.naver.com/api/research/global?page=1&pageSize=10
@@ -123,4 +126,4 @@
     https://kind.krx.co.kr/valueup/reportList.do?method=searchValueupReportMain
     실패 HTTPError: HTTP Error 404: Not Found
 
-살아 있는 후보 5/27
+살아 있는 후보 6/27
