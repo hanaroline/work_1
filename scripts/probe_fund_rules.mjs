@@ -20,7 +20,9 @@ const argOf = (k, d) => { const i = args.indexOf(k); return i >= 0 ? args[i + 1]
 const LIMIT = Number(argOf('--limit', 40)) || 40;
 const EVERY = Number(argOf('--every', 79)) || 79;
 /* 못 읽었을 때 원문 줄을 찍어 볼 항목 */
-const SHOW = String(argOf('--show', 'clsAExp,clsA,varPct,strategy')).split(',').filter(Boolean);
+/* 'none' 이면 성공률만 낸다 — 표가 로그 끝에 오므로 한눈에 보인다 */
+const SHOW = String(argOf('--show', 'clsAExp,clsA,varPct,strategy'))
+  .split(',').filter((x) => x && x !== 'none');
 /* 항목마다 원문에서 찾아 볼 낱말 — 이 낱말이 든 줄을 찍는다 */
 const PROBE = {
   clsA: [/선취/, /판매\s*수수료/],
