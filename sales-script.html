@@ -4,9 +4,12 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>완전판매 스크립트 자동완성 시스템</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<!--
+  글꼴은 PC 에 깔린 것만 쓴다.
+  인터넷이 안 되는 업무용PC 에서도 써야 하므로 웹폰트를 불러오지 않는다.
+  구글 폰트 <link> 는 렌더를 막는 자원이라, 망이 막힌 PC 에서는 응답이 끊길 때까지
+  화면이 비어 있게 된다. 아래 글꼴 목록은 윈도우 기본 글꼴(맑은 고딕)까지 내려간다.
+-->
 <style>
 :root{
   --orange:#F58220; --orange-dk:#CB6015; --orange-soft:#FAB072;
@@ -16,7 +19,7 @@
   --ink:#1A1A1A; --body:#3D3D3D; --muted:#6C6C6C; --muted2:#84888B;
   --ok:#2E8540; --warn:#D4A017; --err:#C62828;
   --font:'Spoqa Han Sans Neo','Noto Sans KR','Malgun Gothic',sans-serif;
-  --num:'Inter','SF Mono',monospace;
+  --num:'Inter','Consolas','SF Mono',monospace;
   --sidebar:360px;
 }
 *{box-sizing:border-box}
