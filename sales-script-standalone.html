@@ -18281,6 +18281,30 @@ window.FUND_PROSPECTUS = {"updatedAt":"2026-09-02T17:22:13.045Z","source":"펀�
     return { base: base, plus: plus, minus: minus, baseMax: baseMax, plusMax: plusMax, total: base + plus + minus, bySec: bySec, done: done, all: all };
   }
 
+  /**
+   * 남은 항목을 「어디서 오는 값인지」 로 나눈다.
+   *
+   * 왜 나누나. 예전에는 남은 것을 뭉쳐서 "투자설명서 원문에서 채워야 하는 값" 이라고
+   * 안내했는데, 실제로 남는 것 중에는 투자설명서에 아예 없는 것이 섞여 있다 —
+   * 투자자성향·현재투자자금성향은 상담하며 파악하는 값이고, 증시전망은 지점 자료에
+   * 있다. 창구에서 있지도 않은 항목을 투자설명서에서 찾게 만들면 시간만 버린다.
+   */
+  /* 협회 공시·운용보고서·지점 증시전망 자료에 있는 값 — 투자설명서에는 없다 */
+  var MISS_REF = ['retPeer', 'peerRet1y'];
+  function missGroup(m) {
+    /* 라벨이 먼저다 — 증시전망·자료 기준월은 받아쓰기 표시라 항목 id 가 없다 */
+    if (/증시\s*전망|자료\s*기준월|동종유형\s*평균|협회\s*공시/.test(m.label)) return 'ref';
+    if (MISS_REF.indexOf(m.key) >= 0) return 'ref';
+    if (/고객|대리인|투자자성향|투자자금\s*성향/.test(m.label)) return 'ask';
+    if (m.kind === 'inline') return 'doc';           /* 그 밖의 받아쓰기는 설명서 원문 */
+    /* 항목 정의의 묶음을 쓴다 — 「고객」 묶음은 상담하며 파악하는 값이다 */
+    var defs = fieldDefs();
+    for (var i = 0; i < defs.length; i++) {
+      if (defs[i].id === m.key) return defs[i].group === '고객' ? 'ask' : 'doc';
+    }
+    return 'doc';
+  }
+
   /** 스크립트에 남아있는 '확인필요' 목록 (중복 제거) */
   function missing() {
     missCache = [];
@@ -18538,9 +18562,25 @@ window.FUND_PROSPECTUS = {"updatedAt":"2026-09-02T17:22:13.045Z","source":"펀�
       + (p.riskGrade ? ' (' + esc(p.riskLabel) + ' ' + p.riskGrade + '등급)' : '')
       + '<br>기본배점 ' + Object.keys(sh.secTotals).map(function (k) { return k + ' ' + sh.secTotals[k]; }).join(' + ') + ' = 100점 · 가점 최대 +3점 (총 103점)</div>');
     if (miss.length) {
-      h.push('<div class="banner"><b>확인필요 ' + miss.length + '건</b> — 투자설명서 원문에서 채워야 하는 값이 남아 있습니다. 빨간 표시를 클릭하면 바로 입력됩니다.<br>'
-        + miss.slice(0, 12).map(function (m) { return '<span class="v miss" data-kind="' + m.kind + '" data-key="' + esc(m.key) + '">' + esc(m.label) + '</span>'; }).join(' ')
-        + (miss.length > 12 ? ' <span style="color:var(--muted2)">외 ' + (miss.length - 12) + '건</span>' : '') + '</div>');
+      /* 어디서 오는 값인지 나눠 보여 준다 — 투자설명서에 없는 것을 거기서 찾게 하지 않는다 */
+      var GRP = [
+        ['doc', '투자설명서에서 확인', '투자설명서 원문에서 채워야 하는 값입니다.'],
+        ['ask', '상담 중 파악·입력', '고객에게 확인하거나 상담 중 옮겨 적는 값입니다 — 투자설명서에는 없습니다.'],
+        ['ref', '지점 자료에서 확인', '증시전망·협회 공시 등 별도 자료에 있는 값입니다 — 투자설명서에는 없습니다.']
+      ];
+      var chip = function (m) {
+        return '<span class="v miss" data-kind="' + m.kind + '" data-key="' + esc(m.key) + '">' + esc(m.label) + '</span>';
+      };
+      var parts = [];
+      GRP.forEach(function (g) {
+        var list = miss.filter(function (m) { return missGroup(m) === g[0]; });
+        if (!list.length) return;
+        parts.push('<div style="margin-top:6px"><b>' + g[1] + ' ' + list.length + '건</b> <span style="color:var(--muted2)">— ' + g[2] + '</span><br>'
+          + list.slice(0, 12).map(chip).join(' ')
+          + (list.length > 12 ? ' <span style="color:var(--muted2)">외 ' + (list.length - 12) + '건</span>' : '') + '</div>');
+      });
+      h.push('<div class="banner"><b>확인필요 ' + miss.length + '건</b> — 빨간 표시를 클릭하면 바로 입력됩니다.'
+        + parts.join('') + '</div>');
     } else {
       h.push('<div class="banner" style="border-color:var(--ok);border-left-color:var(--ok);background:#f3f9f4"><b style="color:var(--ok)">확인필요 항목 없음</b> — 스크립트를 그대로 읽을 수 있습니다. 단, 수치는 투자설명서와 최종 대조하십시오.</div>');
     }
