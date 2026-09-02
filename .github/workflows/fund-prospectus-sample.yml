@@ -1,8 +1,10 @@
-name: 펀드 투자설명서 본문 표본
+name: 펀드 투자설명서 규칙 시험
 
-# 추출 규칙을 다듬으려면 원문이 필요하다. 개발 PC 에서는 stock.pstatic.net 이 막혀 있어
-# PDF 를 받을 수 없으므로, 러너에서 운용사가 골고루 섞인 표본을 받아 본문만 올려 둔다.
-# 산출물은 저장소에 커밋하지 않고 아티팩트로만 남긴다 (규칙 개발용 자료일 뿐이다).
+# 판독 규칙을 다듬으려면 원문 서식을 봐야 한다. 그런데 개발 PC 에서는
+# stock.pstatic.net 이 막혀 PDF 를 받을 수 없고, 아티팩트 내려받기(Azure blob)도 막혀 있다.
+# 그래서 원문을 가져오는 대신 원문을 보는 눈을 러너에 보낸다 —
+# 표본을 판독해 항목별 성공률을 내고, 못 읽은 항목은 원문 줄을 로그에 그대로 찍는다.
+# 저장소에 아무것도 쓰지 않는다.
 
 on:
   workflow_dispatch:
@@ -10,17 +12,22 @@ on:
       limit:
         description: '표본 건수'
         type: string
-        default: '80'
+        default: '40'
       every:
         description: 'N건마다 1건 (운용사 섞기)'
         type: string
-        default: '37'
+        default: '79'
+      show:
+        description: '원문을 찍어 볼 항목 (쉼표 구분)'
+        type: string
+        default: 'clsAExp,clsA,varPct,strategy'
   # 기본 브랜치에 없는 워크플로는 손으로 돌릴 수 없다 (GitHub 제약) —
-  # 이 파일을 밀어 올리면 바로 돌도록 해 둔다.
+  # 규칙이나 이 파일을 밀어 올리면 바로 돌도록 해 둔다.
   push:
     branches:
       - 'claude/complete-sales-script-**'
     paths:
+      - 'scripts/probe_fund_rules.mjs'
       - '.github/workflows/fund-prospectus-sample.yml'
 
 permissions:
@@ -31,7 +38,7 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  sample:
+  probe:
     runs-on: ubuntu-latest
     timeout-minutes: 40
     steps:
@@ -46,20 +53,11 @@ jobs:
       - name: pdfjs 설치
         run: npm install --no-save pdfjs-dist@3.11.174
 
-      - name: 표본 본문 받기
+      - name: 규칙 시험
         env:
-          LIMIT: ${{ inputs.limit || '80' }}
-          EVERY: ${{ inputs.every || '37' }}
+          LIMIT: ${{ inputs.limit || '40' }}
+          EVERY: ${{ inputs.every || '79' }}
+          SHOW: ${{ inputs.show || 'clsAExp,clsA,varPct,strategy' }}
         run: |
-          node scripts/fetch_fund_prospectus.mjs \
-            --limit "$LIMIT" --every "$EVERY" \
-            --dump sample-text --out /tmp/sample-prospectus.js
-          ls -1 sample-text | wc -l
-          du -sh sample-text
-
-      - name: 아티팩트로 올리기
-        uses: actions/upload-artifact@v4
-        with:
-          name: fund-prospectus-sample
-          path: sample-text
-          retention-days: 5
+          node scripts/probe_fund_rules.mjs \
+            --limit "$LIMIT" --every "$EVERY" --show "$SHOW"
