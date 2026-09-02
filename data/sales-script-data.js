@@ -59,6 +59,16 @@
       { id: 'clsA', label: 'A클래스 선취판매수수료', group: '비용', hint: '(간이)투자설명서 보수·수수료 표' },
       { id: 'clsAExp', label: 'A클래스 총보수 (연)', group: '비용', hint: '총보수 / 총보수·비용 / 합성총보수·비용 중 1가지. 모자형·재간접은 합성총보수·비용', req: true },
       { id: 'clsCExp', label: 'C클래스 총보수 (연)', group: '비용', hint: '클래스 비교 설명에 사용' },
+      /**
+       * 아래 셋은 위 항목들을 문장으로 묶은 것이다.
+       * 연금저축·퇴직연금 전용 펀드는 A클래스를 아예 발행하지 않는다 (수집분 3,192건 중
+       * A클래스 발행은 1,659건). 그런 펀드에 「A클래스는 매입 시 ○○ 를 선취」 를 읽히면
+       * 없는 클래스의 수수료를 말하게 되므로, 발행 클래스에 맞춰 문장을 갈라 낸다.
+       */
+      { id: 'clsIssued', label: '발행 클래스', group: '비용', hint: '수집분 기준. A클래스 미발행 펀드가 절반 가까이 된다' },
+      { id: 'clsExpNote', label: '클래스별 총보수 문장', group: '비용', hint: 'A·C 총보수와 발행 클래스에서 자동으로 만든다' },
+      { id: 'clsFeeNote', label: '선취판매수수료 문장', group: '비용', hint: 'A클래스 선취수수료와 발행 클래스에서 자동으로 만든다' },
+      { id: 'feeCalcNote', label: '선취수수료 계산 예시 문장', group: '비용', hint: '선취수수료가 없는 펀드에는 뺄셈 자체가 없다' },
       { id: 'redeemFee', label: '환매수수료', group: '비용', hint: '없으면 "없음" 이라고 고지해야 인정', req: true },
       { id: 'buyCut', label: '매입 기준시각', group: '매입·환매', hint: '15시 30분 또는 17시', req: true },
       { id: 'buyBefore', label: '기준시각 前 매입 기준가 적용일', group: '매입·환매', hint: '예) 2영업일', req: true },
