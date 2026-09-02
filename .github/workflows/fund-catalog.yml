@@ -1,0 +1,63 @@
+name: 공모펀드 카탈로그 갱신
+
+# 원천은 claude/fund-search-tool 브랜치의 data/fund.js (25MB) 이고, 그 브랜치의
+# fund-daily 워크플로가 매일 갱신한다. 여기서는 스크립트가 읽는 항목만 추려
+# data/fund-catalog.js 로 만든다 — 25MB 를 이 브랜치에 들일 이유가 없다.
+
+on:
+  workflow_dispatch:
+  schedule:
+    # 매일 09:30 KST (00:30 UTC) — 원천 수집(fund-daily) 이후
+    - cron: '30 0 * * *'
+  push:
+    branches:
+      - 'claude/complete-sales-script-**'
+    paths:
+      - 'scripts/build_fund_catalog.mjs'
+      - '.github/workflows/fund-catalog.yml'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: fund-catalog
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref_name }}
+          fetch-depth: 0        # 다른 브랜치의 파일을 읽어야 한다
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: 원천 내려놓기 (claude/fund-search-tool 의 data/fund.js)
+        run: |
+          git fetch origin claude/fund-search-tool --depth=1
+          git show origin/claude/fund-search-tool:data/fund.js > /tmp/fund.js
+          ls -la /tmp/fund.js
+
+      - name: 카탈로그 생성
+        run: node scripts/build_fund_catalog.mjs /tmp/fund.js
+
+      - name: 단일 파일 다시 빌드
+        run: node scripts/build_sales_script.mjs
+
+      - name: 결과 커밋
+        run: |
+          git config user.name  'github-actions[bot]'
+          git config user.email 'github-actions[bot]@users.noreply.github.com'
+          git add -A data/fund-catalog.js sales-script-standalone.html
+          if [ -n "$(git diff --cached --name-only)" ]; then
+            git commit -m "chore(fund): 공모펀드 카탈로그 갱신"
+            git pull --rebase --autostash origin "${{ github.ref_name }}" || true
+            git push
+          else
+            echo '변경 없음'
+          fi

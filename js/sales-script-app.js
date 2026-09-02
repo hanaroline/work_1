@@ -116,6 +116,100 @@
       collected: true
     };
   }
+  /* ----------------------------------------------------------
+     공모펀드 카탈로그 (data/fund-catalog.js · 3,192건)
+     금융투자협회 전자공시와 대조된 수집분이다. 명칭·운용사·유형·위험등급·클래스별
+     총보수·1년 수익률·동종유형 평균·매입환매 기준일·투자목적과 투자설명서 PDF 주소가
+     들어 있다. ELS 가 회차로 붙는 것처럼 펀드는 표준코드로 붙는다.
+     ---------------------------------------------------------- */
+  function fundCat() {
+    var C = window.FUND_CATALOG;
+    return (C && C.items) ? C : null;
+  }
+  var FUND_BY_CODE = null;
+  function fundCatByCode(code) {
+    var C = fundCat();
+    if (!C || !code) return null;
+    if (!FUND_BY_CODE) {
+      FUND_BY_CODE = {};
+      C.items.forEach(function (x) { FUND_BY_CODE[x.code] = x; });
+    }
+    return FUND_BY_CODE[code] || null;
+  }
+  /** 명칭으로 찾는다 — 공백·괄호를 지운 뒤 부분일치 */
+  function fundCatByName(name) {
+    var C = fundCat();
+    if (!C || !name) return null;
+    var norm = function (x) { return String(x).replace(/[\s()\[\]·\-]/g, ''); };
+    var t = norm(name), hit = null;
+    for (var i = 0; i < C.items.length; i++) {
+      var k = norm(C.items[i].name);
+      if (k === t) return C.items[i];
+      if (!hit && (k.indexOf(t) >= 0 || t.indexOf(k) >= 0)) hit = C.items[i];
+    }
+    return hit;
+  }
+  /** 투자설명서 PDF 주소를 되살린다 (카탈로그는 일련번호만 담는다) */
+  function fundDocUrl(it, kind) {
+    var C = fundCat();
+    var key = kind === 'G' ? it.docG : it.docT;
+    if (!C || !C.docBase || !key) return null;
+    return C.docBase + it.code + '/' + it.code + '_' + kind + '_' + key + '.pdf';
+  }
+  /** 카탈로그 항목 -> 상품 목록에 쓰는 형태 */
+  function fundCatProduct(it) {
+    return {
+      id: it.code, name: it.name, mgr: it.mgr || '', fundType: it.fundType || '',
+      riskGrade: it.riskGrade || null, riskLabel: it.riskLabel || '',
+      overseas: it.region !== 'domestic', fromCatalog: true
+    };
+  }
+  /**
+   * 카탈로그 항목 -> 등록된 투자설명서 형태.
+   * 원천에 없는 값은 담지 않아 화면에서 「확인필요」로 남는다.
+   */
+  function fundCatDoc(it) {
+    var f = {};
+    var put = function (k, v) { if (v != null && v !== '') f[k] = v; };
+    put('name', it.name);
+    put('mgr', it.mgr);
+    put('fundType', it.fundType);
+    put('riskGrade', it.riskGrade != null ? String(it.riskGrade) : null);
+    put('riskLabel', it.riskLabel);
+    put('targets', it.objective);
+    /* 모자형·재간접형은 합성 총보수·비용이 인정 기준인데 수집분에는 총보수만 있다.
+       낮은 값을 말하게 되므로 카탈로그에서 채우지 않는다(빌더가 이미 비워 둔다). */
+    put('clsAExp', it.clsAExp != null ? String(it.clsAExp) : null);
+    put('clsCExp', it.clsCExp != null ? String(it.clsCExp) : null);
+    put('ret1y', it.ret1y != null ? it.ret1y.toFixed(2) + '%' : null);
+    put('retPeer', it.peerRet1y != null ? it.peerRet1y.toFixed(2) + '%' : null);
+    /* terms 는 [기준시각, 매입前, 매입後, 환매前, 환매後, 지급前, 지급後] (D+N) 이다.
+       기준시각 "5:00" 은 오후 5시, D+N 은 제(N+1)영업일이다
+       (검산: 피델리티글로벌테크놀로지 D+2 -> 투자설명서 「제3영업일」) */
+    var t = it.terms;
+    if (t && t.length) {
+      if (t[0]) {
+        var hm = String(t[0]).split(':');
+        put('buyCut', '오후 ' + (+hm[0]) + '시' + (+hm[1] ? ' ' + (+hm[1]) + '분' : ''));
+      }
+      var biz = function (n) { return n == null ? null : '제' + (n + 1) + '영업일'; };
+      put('buyBefore', biz(t[1]));
+      put('buyAfter', biz(t[2]));
+      put('redBefore', biz(t[3]));
+      put('redAfter', biz(t[4]));
+      put('redPay', biz(t[5]));
+    }
+    put('docDate', it.docAt ? D.fmt.kdate(it.docAt) || it.docAt : null);
+    return {
+      source: 'COLLECT',
+      docName: it.name + ' (공모펀드 수집분)',
+      docUrl: fundDocUrl(it, 'T') || fundDocUrl(it, 'G') || '',
+      registeredAt: (fundCat() || {}).updatedAt || '',
+      fields: f, schedule: [], matBarrier: null, knockIn: '', rawText: '',
+      collected: true, catalogCode: it.code
+    };
+  }
+
   /**
    * 펀드 자동수집분 — data/fund-prospectus.js 는 펀드 명칭 키다.
    * 명칭 표기가 조금씩 달라 공백·괄호를 지운 뒤 부분일치로 찾는다.
@@ -136,7 +230,11 @@
   }
   function fundCollectedDoc() {
     var p = product();
-    var hit = p ? fundCollectedByName(p.name) : null;
+    if (!p) return null;
+    /* 표준코드로 붙는 카탈로그가 먼저다 — 명칭 부분일치보다 정확하다 */
+    var c = fundCatByCode(p.id) || fundCatByName(p.name);
+    if (c) return fundCatDoc(c);
+    var hit = fundCollectedByName(p.name);
     if (!hit) return null;
     return {
       source: 'COLLECT',
@@ -295,6 +393,12 @@
   function product() {
     var l = catalog();
     for (var i = 0; i < l.length; i++) if (l[i].id === ST.productId) return l[i];
+    /* 검색으로 고른 카탈로그 펀드는 기본 목록에 없다 */
+    var sh = sheet();
+    if (sh.cat === 'fund' || sh.cat === 'irp') {
+      var c = fundCatByCode(ST.productId);
+      if (c) return fundCatProduct(c);
+    }
     return null;
   }
   function fieldDefs() {
@@ -492,8 +596,20 @@
         if (hit[0] === '전세계(글로벌)') return '전세계(글로벌)';
         return hit.slice(0, 2).join(' · ');
       }
+      /**
+       * 계열운용사 여부 — 판매회사(미래에셋증권) 기준이므로 운용사명으로 판정된다.
+       * 카탈로그로 고른 펀드는 추출 규칙을 안 타므로 여기서 낸다.
+       */
+      case 'affiliate': {
+        var mgv = rawValue('mgr');
+        if (!mgv) return undefined;
+        return /미래에셋/.test(String(mgv))
+          ? '계열 운용사 (' + mgv + ') — 계열사 상품이므로 고지 및 유사 비계열 펀드 1개 동반 추천 필요'
+          : '비계열 운용사 (' + mgv + ')';
+      }
       case 'peerFund': case 'peerRet1y': {
-        var af = String(rawValue('affiliate') || '');
+        /* affiliate 는 이제 파생값이다 — rawValue 로 보면 늘 비어 있다 */
+        var af = String(valueOf('affiliate') || '');
         if (!/비계열/.test(af)) return undefined;
         return id === 'peerFund'
           ? '해당 없음 (비계열 운용사 상품이므로 유사 비계열 펀드 동반 추천 의무 없음)'
@@ -756,12 +872,35 @@
       if (!q) return true;
       return [p.name, p.id, p.issuer, p.mgr, p.under, p.kind, p.credit].join(' ').toLowerCase().indexOf(q) >= 0;
     });
-    var cat = sheet().cat, docs = DOCS[cat] || {};
+    /**
+     * 카탈로그 3,192건을 늘 목록에 붙이면 브라우저가 버겁다.
+     * 두 글자 이상 검색했을 때만 붙인다 — 실제로 상품을 고르는 방식과 같다.
+     */
+    var shx = sheet();
+    if ((shx.cat === 'fund' || shx.cat === 'irp') && q.length >= 2 && fundCat()) {
+      var seen = {};
+      list.forEach(function (p) { seen[p.id] = 1; });
+      var want = shx.cat === 'fund' ? !!shx.overseas : null;
+      var add = [];
+      var C = fundCat().items;
+      for (var ci = 0; ci < C.length && add.length < 60; ci++) {
+        var it = C[ci];
+        if (seen[it.code]) continue;
+        if (want !== null && (it.region !== 'domestic') !== want) continue;
+        var hay = (it.name + ' ' + it.code + ' ' + (it.mgr || '') + ' ' + (it.fundType || '')).toLowerCase();
+        if (hay.indexOf(q) < 0) continue;
+        add.push(fundCatProduct(it));
+      }
+      list = list.concat(add);
+    }
+    var cat = shx.cat, docs = DOCS[cat] || {};
     var P = window.ELS_PROSPECTUS;
     /** 담당자 등록분 또는 자동수집분이 있으면 등록된 것으로 표시한다 */
     var hasDoc = function (p) {
       if (docs[p.id]) return true;
-      if (cat === 'fund') return !!fundCollectedByName(p.name);
+      if (cat === 'fund' || cat === 'irp') {
+        return !!(fundCatByCode(p.id) || fundCatByName(p.name) || fundCollectedByName(p.name));
+      }
       if (cat !== 'els' || !P || !P.byRound) return false;
       var no = (P.codeToRound && P.codeToRound[p.id]) != null
         ? P.codeToRound[p.id]
@@ -1175,6 +1314,23 @@
     /* ① PDF */
     h.push('<div class="rule"></div><h3 style="font-size:18px;font-weight:700;margin:0 0 10px">① 투자설명서 PDF 업로드</h3>');
     h.push('<div class="card"><div class="card-b">');
+    /**
+     * 수집분에 이 펀드의 투자설명서 주소가 있으면 링크를 먼저 보여 준다.
+     * 브라우저 보안 때문에 파일을 앱이 직접 받아올 수는 없다(다른 도메인이다).
+     * 그래서 「열어서 내려받은 뒤 아래에 올리기」 가 가장 빠른 길이다.
+     */
+    if (sh.cat === 'fund' || sh.cat === 'irp') {
+      var fc = fundCatByCode(p.id) || fundCatByName(p.name);
+      var pu = fc && (fundDocUrl(fc, 'T') || fundDocUrl(fc, 'G'));
+      if (pu) {
+        h.push('<div class="note" style="margin:0 0 12px;border-left-color:var(--ok)"><b>이 펀드의 투자설명서 주소를 수집해 두었습니다.</b><br>'
+          + '<a href="' + esc(pu) + '" target="_blank" rel="noopener">투자설명서 PDF 열기</a>'
+          + (fundDocUrl(fc, 'G') ? ' · <a href="' + esc(fundDocUrl(fc, 'G')) + '" target="_blank" rel="noopener">간이투자설명서 PDF 열기</a>' : '')
+          + (fc.docAt ? ' · 접수 ' + esc(fc.docAt) : '')
+          + '<br>내려받아 아래에 올리면 보수·수수료 표까지 읽어 채웁니다. '
+          + '(다른 도메인이라 브라우저가 앱의 직접 조회를 막습니다)</div>');
+      }
+    }
     if (!PROS.pdfAvailable()) {
       h.push('<div class="warnbox">PDF 판독 모듈(vendor/pdf.min.js)을 불러오지 못했습니다. ②~③ 방법을 사용하십시오.</div>');
     } else {
