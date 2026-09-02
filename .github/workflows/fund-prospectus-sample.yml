@@ -15,6 +15,13 @@ on:
         description: 'N건마다 1건 (운용사 섞기)'
         type: string
         default: '37'
+  # 기본 브랜치에 없는 워크플로는 손으로 돌릴 수 없다 (GitHub 제약) —
+  # 이 파일을 밀어 올리면 바로 돌도록 해 둔다.
+  push:
+    branches:
+      - 'claude/complete-sales-script-**'
+    paths:
+      - '.github/workflows/fund-prospectus-sample.yml'
 
 permissions:
   contents: read
