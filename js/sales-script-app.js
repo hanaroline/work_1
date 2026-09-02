@@ -124,7 +124,22 @@
      ---------------------------------------------------------- */
   function fundCat() {
     var C = window.FUND_CATALOG;
-    return (C && C.items) ? C : null;
+    if (!C || !C.items) return null;
+    /**
+     * 운용사·유형·지역·위험등급명·투자목적은 파일에 번호로 담겨 있다 —
+     * 같은 문구를 3,192번 반복하면 그것만 1.3MB 라 pool 에 한 번만 담는다.
+     * 여기서 한 번에 되살려 두면 아래 코드는 예전처럼 문자열만 본다.
+     */
+    if (C.pool && !C.hydrated) {
+      var keys = C.pooled || [];
+      C.items.forEach(function (x) {
+        keys.forEach(function (k) {
+          if (typeof x[k] === 'number') x[k] = C.pool[x[k]];
+        });
+      });
+      C.hydrated = true;
+    }
+    return C;
   }
   var FUND_BY_CODE = null;
   function fundCatByCode(code) {
@@ -598,12 +613,32 @@
       case 'shortName': {
         var nm = String(rawValue('name') || '');
         if (!nm) return undefined;
-        var sn = nm
-          .replace(/\s*\([^)]*\)\s*$/, '')
-          .replace(/\s*(?:증권)?\s*모?자?투자(?:신탁|회사)\s*(?:제?\s*\d+\s*호)?\s*$/, '')
-          .replace(/\s*증권\s*$/, '')
-          .trim();
-        return sn && sn !== nm ? sn : undefined;
+        /**
+         * 꼬리표가 운용사마다 다르게 겹쳐 붙는다 — 괄호와 대괄호, 모/운 같은 모자형 표시,
+         * H·UH 같은 환헤지 표시, 그리고 " 1" · "제1호" 같은 시리즈 번호가 순서 없이 온다.
+         *   AKP턴어라운드증권투자신탁 1(주식)모
+         *   삼성퇴직연금리서치다이나믹40증권자투자신탁 1[채권혼합]
+         *   피델리티글로벌테크놀로지증권자투자신탁UH(주식-재간접형)
+         * 그래서 한 번에 지우지 않고, 더 지울 것이 없을 때까지 뒤에서부터 떼어낸다.
+         */
+        var sn = nm;
+        for (var sk = 0; sk < 8; sk++) {
+          var was = sn;
+          sn = sn
+            .replace(/\s*[(\[][^)\]]*[)\]]\s*$/, '')                    /* (주식) [채권혼합] */
+            /* 증권자투자신탁 · 특별자산투자신탁3 — 뒤에 붙은 숫자는 시리즈 번호다 */
+            .replace(/\s*(?:증권)?\s*모?자?투자(?:신탁|회사)\s*\d*\s*$/, '')
+            .replace(/\s*_?\s*(?:운용|종류|모|운|UH|H|P)\s*$/, '')       /* 모자형·환헤지·클래스 표시 */
+            /* 시리즈 번호만 뗀다 — 붙어 있는 숫자는 이름의 일부다
+               (TDF2065 의 2065, 아세안40 의 40 을 떼면 다른 상품이 된다) */
+            .replace(/\s+\d+\s*$/, '')
+            .replace(/\s*제\s*\d+\s*호\s*$/, '')
+            .replace(/\s*증권\s*$/, '')
+            .trim();
+          if (sn === was) break;
+        }
+        /* 떼어낼 꼬리표가 없는 이름(MMF 처럼)은 그 자체가 약칭이다 */
+        return (sn && sn.length >= 2) ? sn : nm;
       }
       /**
        * 명칭에 담긴 뜻 — 설명서에서 읽은 운용사·유형·투자대상을 그대로 이어 붙인다.

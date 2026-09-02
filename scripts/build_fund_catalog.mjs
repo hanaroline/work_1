@@ -91,7 +91,6 @@ const items = all.map((f) => {
     riskGrade: grade,
     riskLabel: grade ? GRADE_LABEL[grade - 1] : null,
     ret1y: (f.ret && f.ret['1y'] != null) ? f.ret['1y'] : null,
-    retAsOf: f.tradeDate || null,
     peerRet1y: peerAvg[k] != null ? peerAvg[k] : null,
     /* 매입·환매 기준시각과 영업일 (D+N -> 제(N+1)영업일) */
     /* 칸 이름을 3,192번 반복하면 그것만 0.25MB 다 — 배열로 담는다
@@ -127,6 +126,23 @@ const items = all.map((f) => {
 });
 
 const withDoc = items.filter((x) => x.docT || x.docG).length;
+
+/**
+ * 겹치는 문구는 pool 에 한 번만 담고 항목은 번호로 가리킨다.
+ * 운용사·펀드유형·지역·위험등급명은 3,192건이 80여 개 값을 돌려쓰고,
+ * 투자목적도 고유값 2,519개가 3,190건을 덮는다 — 그대로 실으면 이것만 1.3MB 다.
+ * 화면에서는 앱이 불러올 때 한 번에 되살린다(js/sales-script-app.js 의 fundCat).
+ */
+const POOLED = ['mgr', 'fundType', 'region', 'riskLabel', 'objective'];
+const pool = [];
+const poolIdx = new Map();
+const intern = (v) => {
+  if (poolIdx.has(v)) return poolIdx.get(v);
+  const i = pool.length;
+  pool.push(v); poolIdx.set(v, i);
+  return i;
+};
+items.forEach((o) => POOLED.forEach((k) => { if (o[k] != null) o[k] = intern(o[k]); }));
 const body =
   '/**\n' +
   ' * 공모펀드 카탈로그 — 완전판매 스크립트용\n' +
@@ -137,6 +153,9 @@ const body =
   ' *\n' +
   ' * FUND_CATALOG.items[] = { code, name, mgr, fundType, riskGrade, feeMin/feeMax,\n' +
   ' *                          ret1y, peerRet1y, terms, objective, docT, docG }\n' +
+  ' *\n' +
+  ' * mgr·fundType·region·riskLabel·objective 는 pool 번호로 담긴다 (pooled 목록 참조) —\n' +
+  ' * 앱이 불러올 때 되살린다. 실제 값 = FUND_CATALOG.pool[ items[i].mgr ]\n' +
   ' *\n' +
   ' * 문서 주소는 docUrl(code, docT|docG, \'T\'|\'G\') 로 되살린다 —\n' +
   ' *   https://stock.pstatic.net/stock-research/fund/{code}/{code}_{T|G}_{일련}.pdf\n' +
@@ -151,10 +170,13 @@ const body =
     source: '네이버 Npay 증권 (금융투자협회 전자공시 대조)',
     count: items.length,
     withProspectus: withDoc,
+    pooled: POOLED,
+    pool,
     items,
   }) + ';\n';
 
 await writeFile(OUT, body);
 console.log(`${OUT} 기록 — 펀드 ${items.length}건 · 투자설명서 링크 ${withDoc}건`);
 console.log(`  동종유형 평균 산출 집단 ${Object.keys(peerAvg).length}개`);
+console.log(`  문구 풀 ${pool.length}개 (${POOLED.join('·')} 중복 제거)`);
 console.log(`  크기 ${(body.length / 1024 / 1024).toFixed(2)}MB`);
