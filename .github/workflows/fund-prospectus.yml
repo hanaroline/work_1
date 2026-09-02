@@ -11,12 +11,10 @@ on:
         description: '판독할 건수 (0 = 전량 약 3,000건)'
         type: string
         default: '0'
-  push:
-    branches:
-      - 'claude/complete-sales-script-**'
-    paths:
-      - 'scripts/fetch_fund_prospectus.mjs'
-      - '.github/workflows/fund-prospectus.yml'
+# 전량 판독은 3,000건 × 2.6초 = 3시간 가까이 걸린다. 규칙을 손볼 때마다 자동으로
+# 돌면 러너를 붙잡고 있는 데다 규칙이 덜 다듬어진 상태로 결과가 덮인다.
+# 그래서 자동 실행을 두지 않고, 규칙을 확정한 뒤 손으로 돌린다
+# (규칙 개발용 표본은 fund-prospectus-sample.yml 이 몇 분에 받아 준다).
 
 permissions:
   contents: write

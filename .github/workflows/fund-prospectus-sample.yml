@@ -1,0 +1,58 @@
+name: 펀드 투자설명서 본문 표본
+
+# 추출 규칙을 다듬으려면 원문이 필요하다. 개발 PC 에서는 stock.pstatic.net 이 막혀 있어
+# PDF 를 받을 수 없으므로, 러너에서 운용사가 골고루 섞인 표본을 받아 본문만 올려 둔다.
+# 산출물은 저장소에 커밋하지 않고 아티팩트로만 남긴다 (규칙 개발용 자료일 뿐이다).
+
+on:
+  workflow_dispatch:
+    inputs:
+      limit:
+        description: '표본 건수'
+        type: string
+        default: '80'
+      every:
+        description: 'N건마다 1건 (운용사 섞기)'
+        type: string
+        default: '37'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: fund-prospectus-sample
+  cancel-in-progress: true
+
+jobs:
+  sample:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref_name }}
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: pdfjs 설치
+        run: npm install --no-save pdfjs-dist@3.11.174
+
+      - name: 표본 본문 받기
+        env:
+          LIMIT: ${{ inputs.limit || '80' }}
+          EVERY: ${{ inputs.every || '37' }}
+        run: |
+          node scripts/fetch_fund_prospectus.mjs \
+            --limit "$LIMIT" --every "$EVERY" \
+            --dump sample-text --out /tmp/sample-prospectus.js
+          ls -1 sample-text | wc -l
+          du -sh sample-text
+
+      - name: 아티팩트로 올리기
+        uses: actions/upload-artifact@v4
+        with:
+          name: fund-prospectus-sample
+          path: sample-text
+          retention-days: 5

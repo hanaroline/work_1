@@ -19,7 +19,7 @@
  *
  * ★ 값을 만들어내지 않는다 ★ 원문에서 못 읽은 것은 담지 않아 화면에서 「확인필요」로 남는다.
  */
-import { readFile, writeFile } from 'node:fs/promises';
+import { readFile, writeFile, mkdir } from 'node:fs/promises';
 import { createRequire } from 'node:module';
 
 const args = process.argv.slice(2);
@@ -27,6 +27,14 @@ const argOf = (k, d) => { const i = args.indexOf(k); return i >= 0 ? args[i + 1]
 const LIMIT = Number(argOf('--limit', 0)) || 0;
 const FROM = Number(argOf('--from', 0)) || 0;
 const OUT = argOf('--out', 'data/fund-prospectus.js');
+/**
+ * --dump 경로 : 판독한 본문을 그대로 저장한다.
+ * 추출 규칙을 손볼 때 원문이 있어야 한다. 이 PC 에서는 stock.pstatic.net 이 막혀 있어
+ * PDF 를 받을 수 없으므로, 러너에서 표본을 받아 두고 규칙은 그 표본으로 다듬는다.
+ * --every N : N건마다 한 건씩만 골라 운용사가 골고루 섞이게 한다.
+ */
+const DUMP = argOf('--dump', '');
+const EVERY = Number(argOf('--every', 0)) || 0;
 
 /* ── 앱과 똑같은 추출 규칙·본문 판독을 쓴다 ───────────────── */
 const prosSrc = await readFile('js/sales-script-prospectus.js', 'utf8');
@@ -101,8 +109,10 @@ new Function('window', catSrc)(cg);
 const C = cg.FUND_CATALOG;
 const base = C.docBase;
 const targets = C.items.filter((x) => x.docT || x.docG);
-const slice = targets.slice(FROM, LIMIT ? FROM + LIMIT : undefined);
+const spread = EVERY ? targets.filter((x, n) => n % EVERY === 0) : targets;
+const slice = spread.slice(FROM, LIMIT ? FROM + LIMIT : undefined);
 console.log(`투자설명서 ${targets.length}건 중 ${slice.length}건 판독 (from ${FROM})`);
+if (DUMP) await mkdir(DUMP, { recursive: true });
 
 /**
  * 같은 문구가 펀드마다 되풀이된다 — 시장위험·환매수수료 없음·개방형 설명 등은
@@ -130,6 +140,7 @@ for (let i = 0; i < slice.length; i++) {
     if (!r.ok) throw new Error('HTTP ' + r.status);
     const { text, pages } = await pdfText(Buffer.from(await r.arrayBuffer()));
     if (text.length < 300) { empty++; continue; }
+    if (DUMP) await writeFile(`${DUMP}/${it.code}.txt`, it.name + '\n' + text);
     const f = {};
     for (const x of PROS.extract(text, 'fund')) {
       if (SKIP.has(x.id)) continue;
