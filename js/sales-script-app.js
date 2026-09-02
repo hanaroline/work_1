@@ -208,7 +208,14 @@
      */
     var FP = window.FUND_PROSPECTUS;
     var ex = (FP && FP.items && FP.items[it.code]) || null;
-    if (ex) Object.keys(ex).forEach(function (k) { put(k, ex[k]); });
+    if (ex) {
+      /* 값은 pool 에 한 번만 담고 항목은 번호로 가리킨다 (문구가 펀드마다 겹친다) */
+      var pl = FP.pool;
+      Object.keys(ex).forEach(function (k) {
+        var v = ex[k];
+        put(k, (pl && typeof v === 'number') ? pl[v] : v);
+      });
+    }
     return {
       source: 'COLLECT',
       docName: it.name + ' (공모펀드 수집분)',

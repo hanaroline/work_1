@@ -104,6 +104,21 @@ const targets = C.items.filter((x) => x.docT || x.docG);
 const slice = targets.slice(FROM, LIMIT ? FROM + LIMIT : undefined);
 console.log(`투자설명서 ${targets.length}건 중 ${slice.length}건 판독 (from ${FROM})`);
 
+/**
+ * 같은 문구가 펀드마다 되풀이된다 — 시장위험·환매수수료 없음·개방형 설명 등은
+ * 운용사·유형이 같으면 글자까지 같다. 그대로 실으면 3,000건에 3.5MB 가 되어
+ * 단일 파일이 7MB 를 넘는다. 값을 한 번만 담고 번호로 가리킨다.
+ */
+const pool = [];
+const poolIdx = new Map();
+const intern = (v) => {
+  const k = String(v);
+  if (poolIdx.has(k)) return poolIdx.get(k);
+  const i = pool.length;
+  pool.push(k); poolIdx.set(k, i);
+  return i;
+};
+
 const items = {};
 let ok = 0, fail = 0, empty = 0;
 for (let i = 0; i < slice.length; i++) {
@@ -118,7 +133,7 @@ for (let i = 0; i < slice.length; i++) {
     const f = {};
     for (const x of PROS.extract(text, 'fund')) {
       if (SKIP.has(x.id)) continue;
-      f[x.id] = CAP[x.id] ? String(x.value).slice(0, CAP[x.id]) : x.value;
+      f[x.id] = intern(CAP[x.id] ? String(x.value).slice(0, CAP[x.id]) : x.value);
     }
     if (Object.keys(f).length) { items[it.code] = f; ok++; }
     if ((i + 1) % 25 === 0 || i === slice.length - 1) {
@@ -138,6 +153,9 @@ const body =
   ' * FUND_PROSPECTUS.items[표준코드] = { clsA, clsAExp, clsCExp, redeemFee, term,\n' +
   ' *   redeemable, strategy, risk1, risk2, varPct, liqRisk, fxHedge, fxHedgeSize, ... }\n' +
   ' *\n' +
+  ' * 값은 pool 에 한 번만 담고 items 는 번호로 가리킨다 — 문구가 펀드마다 겹치기 때문이다.\n' +
+  ' *   실제 값 = FUND_PROSPECTUS.pool[ items[코드][항목] ]\n' +
+  ' *\n' +
   ' * 카탈로그(data/fund-catalog.js)에 이미 있는 항목은 담지 않는다.\n' +
   ' * 원문에서 못 읽은 것은 담지 않으므로 화면에서 「확인필요」로 남는다.\n' +
   ' */\n' +
@@ -145,8 +163,10 @@ const body =
     updatedAt: new Date().toISOString(),
     source: '펀드 투자설명서 PDF 판독',
     count: Object.keys(items).length,
+    pool,
     items,
   }) + ';\n';
 await writeFile(OUT, body);
 console.log(`\n${OUT} 기록 — ${Object.keys(items).length}건 · 실패 ${fail} · 빈문서 ${empty}`);
+console.log(`  문구 풀 ${pool.length}개 (중복 제거)`);
 console.log(`  크기 ${(Buffer.byteLength(body) / 1024 / 1024).toFixed(2)}MB`);

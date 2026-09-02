@@ -10,7 +10,7 @@ on:
       limit:
         description: '판독할 건수 (0 = 전량 약 3,000건)'
         type: string
-        default: '60'
+        default: '0'
   push:
     branches:
       - 'claude/complete-sales-script-**'
@@ -28,7 +28,7 @@ concurrency:
 jobs:
   read:
     runs-on: ubuntu-latest
-    timeout-minutes: 180
+    timeout-minutes: 330
     steps:
       - uses: actions/checkout@v4
         with:
@@ -41,9 +41,12 @@ jobs:
       - name: pdfjs 설치
         run: npm install --no-save pdfjs-dist@3.11.174
 
+      # 표본 60건으로 추출률을 먼저 확인했다 (계약기간·환매가능·유동성 100%,
+      # 환매수수료 97%, 투자전략 82%, 주요위험 72/70%, 보수 68/50%).
+      # 이제 전량을 돌린다 — 약 3,000건 × 2.6초 = 2시간 안.
       - name: 판독
         env:
-          LIMIT: ${{ inputs.limit || '60' }}
+          LIMIT: ${{ inputs.limit || '0' }}
         run: node scripts/fetch_fund_prospectus.mjs --limit "$LIMIT"
 
       - name: 추출 품질 확인
