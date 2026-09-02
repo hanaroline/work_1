@@ -589,6 +589,70 @@
         if (id === 'feeCut') return (cut / 10000).toLocaleString() + '만원';
         return ((base - cut) / 10000).toLocaleString() + '만원';
       }
+      /**
+       * 클래스 설명 — 이 펀드가 실제로 발행하는 클래스에 맞춰 말한다.
+       *
+       * 표본을 판독해 보니 「A클래스 선취판매수수료」 가 비는 가장 큰 이유는 규칙이
+       * 못 읽어서가 아니라 A클래스가 없어서였다. 연금저축·퇴직연금 전용 펀드는
+       * C 계열만 발행한다 (수집분 3,192건 중 A클래스 발행은 1,659건). 없는 클래스의
+       * 수수료를 빈칸으로 남기면 창구에서 찾을 수 없는 값을 찾게 된다.
+       */
+      case 'clsIssued': {
+        var dc = doc();
+        var it0 = fundCatByCode((dc && dc.catalogCode) || ST.productId || '');
+        /* 카탈로그로 고르지 않고 직접 등록한 상품이면 명칭으로 찾아 본다 */
+        if (!it0) it0 = fundCatByName(rawValue('name') || '');
+        var cl = it0 && it0.cls;
+        return cl ? String(cl).split(',').join(' · ') : undefined;
+      }
+      case 'clsExpNote': {
+        var ae = rawValue('clsAExp'), ce = rawValue('clsCExp');
+        var cls0 = derived('clsIssued');
+        var hasA = cls0 == null ? null : /(?:^|·)\s*A\s*(?:·|$)/.test(' ' + cls0 + ' ');
+        var hasC = cls0 == null ? null : /(?:^|·)\s*C1?\s*(?:·|$)/.test(' ' + cls0 + ' ');
+        if (ae && ce) return '이 펀드는 A클래스 총보수가 연 ' + ae + '%, C클래스 총보수가 연 ' + ce + '% 입니다.';
+        if (ae && hasC === false) return '이 펀드는 A클래스 총보수가 연 ' + ae + '% 이며, C클래스는 발행하지 않습니다.';
+        if (ce && hasA === false) {
+          return '이 펀드는 선취판매수수료를 받는 A클래스를 발행하지 않고 C 계열만 있으며, ' +
+            'C클래스 총보수는 연 ' + ce + '% 입니다.';
+        }
+        if (ae) return '이 펀드의 A클래스 총보수는 연 ' + ae + '% 입니다.';
+        if (ce) return '이 펀드의 C클래스 총보수는 연 ' + ce + '% 입니다.';
+        if (cls0) {
+          return '이 펀드가 발행하는 클래스는 ' + cls0 + ' 이며, 클래스별 총보수는 ' +
+            '투자설명서 「보수 및 수수료에 관한 사항」 에서 확인해 말씀드립니다.';
+        }
+        return undefined;
+      }
+      case 'clsFeeNote': {
+        var ca = valueOf('clsA'), ae2 = rawValue('clsAExp');
+        var cls1 = derived('clsIssued');
+        var hasA2 = cls1 == null ? null : /(?:^|·)\s*A\s*(?:·|$)/.test(' ' + cls1 + ' ');
+        if (hasA2 === false) {
+          return '이 펀드는 매입·환매 시점에 일시 징구되는 선취판매수수료를 받는 A클래스를 ' +
+            '발행하지 않습니다. 발행 클래스는 ' + cls1 + ' 이며, 판매수수료 대신 총보수가 ' +
+            '매일 펀드 재산에서 차감됩니다.';
+        }
+        if (ca && ae2) return 'A클래스는 매입 시 ' + ca + ' 를 선취 판매수수료로 징수하며, 해당 펀드의 총보수는 연 ' + ae2 + '% 입니다.';
+        if (ca) return 'A클래스는 매입 시 ' + ca + ' 를 선취 판매수수료로 징수합니다.';
+        return undefined;
+      }
+      /* 계산기 설명 — 선취수수료가 없는 펀드에는 뺄셈 자체가 없다 */
+      case 'feeCalcNote': {
+        var fr = derived('feeRate');
+        if (fr) {
+          return '판매수수료는 ' + fr + ' 로, 만약 고객님께서 ' + derived('exAmt') + ' 을 납입하신다면 ' +
+            '그 ' + fr + ' 인 ' + derived('feeCut') + ' 을 제외한 ' + derived('netAmt') + ' 만 투자되는 상품입니다.';
+        }
+        var cls2 = derived('clsIssued');
+        var hasA3 = cls2 == null ? null : /(?:^|·)\s*A\s*(?:·|$)/.test(' ' + cls2 + ' ');
+        var cav = String(valueOf('clsA') || '');
+        if (hasA3 === false || /없음|해당\s*없/.test(cav)) {
+          return '이 펀드는 선취판매수수료가 없어 납입하신 금액이 전액 투자되고, ' +
+            '대신 총보수가 매일 펀드 재산에서 차감됩니다.';
+        }
+        return undefined;
+      }
       /* 초과수익률 = 최근 1년 수익률 − 동종유형 평균 수익률 (뺄셈이라 받아쓸 값이 아니다) */
       case 'retGap': {
         var n1 = parseFloat(String(valueOf('ret1y') || '').replace(/[^0-9.\-]/g, ''));

@@ -72,11 +72,40 @@ const docAt = (f, type) => ((f.documents || []).find((d) => d.type === type) || 
  * 그래서 클래스명에서 모펀드 이름을 떼어낸 「꼬리」만 보고 판정한다.
  * 온라인·연금 클래스(A-e, Ce, C-P 등)는 오프라인 A·C 가 아니므로 제외한다.
  */
-const clsTail = (parent, name) =>
-  String(name || '').replace(parent || '', '').replace(/[\s_]/g, '').trim();
+const clsTail = (parent, name) => {
+  const s = String(name || '').replace(/[\s_]/g, '');
+  const p = String(parent || '').replace(/[\s_]/g, '');
+  /**
+   * 클래스명은 보통 「펀드명 + 종류A」 꼴이다. 그런데 펀드명 뒤에 (운) 같은 꼬리가
+   * 붙는 경우가 있어(「다올전단채증권투자신탁[채권](운)」 의 클래스는
+   * 「다올전단채증권투자신탁[채권]종류A」) 펀드명을 그대로 떼면 하나도 안 맞았다.
+   * 그래서 종류·클래스·Class 뒤를 먼저 본다 — 그것이 곧 클래스 표기다.
+   */
+  /* 「…(종류C1)」 처럼 괄호로 감싸는 곳이 있어 남은 괄호를 떼어 준다 */
+  const clean = (x) => x.replace(/^[([]+/, '').replace(/[)\]]+$/, '').trim();
+  if (/종류|클래스|Class/i.test(s)) return clean(s.split(/종류|클래스|Class/i).pop());
+  if (p && s.startsWith(p)) return clean(s.slice(p.length));
+  const b = s.match(/\(([A-Za-z][A-Za-z0-9-]*)\)$/);          /* 「…(A)」 「…(C-e)」 */
+  if (b) return b[1];
+  let i = 0;                                                   /* 공통 앞부분을 뗀다 */
+  while (i < s.length && i < p.length && s[i] === p[i]) i++;
+  return clean(s.slice(i));
+};
 const clsFee = (f, re) => {
   const c = (f.classes || []).find((x) => re.test(clsTail(f.name, x.name)));
   return c && c.totalFee != null ? c.totalFee : null;
+};
+/**
+ * 이 펀드가 실제로 발행하는 클래스 표기 목록.
+ *
+ * 왜 담나. 연금저축·퇴직연금 전용 펀드는 A클래스를 아예 발행하지 않고 C 계열만 있다
+ * (예: 신한연금저축POP펀드셀렉션 = 종류C1·종류C-e). 그런 펀드에서 「A클래스
+ * 선취판매수수료」 를 빈칸으로 남기면 창구에서 찾을 수 없는 값을 찾게 된다.
+ * 목록이 있으면 「A클래스 미발행」 이라고 말할 수 있다 — 그것이 사실이다.
+ */
+const clsList = (f) => {
+  const t = (f.classes || []).map((x) => clsTail(f.name, x.name)).filter(Boolean);
+  return t.length ? t.filter((v, i, a) => a.indexOf(v) === i).join(',') : null;
 };
 
 const items = all.map((f) => {
@@ -113,8 +142,9 @@ const items = all.map((f) => {
      * 「투자대상 자산」 은 첫 문장에 들어 있고, 자세한 것은 투자설명서를 올려 읽는다.
      */
     objective: firstSentence(f.objective, 200),
-    clsAExp: clsFee(f, /^(?:종류|Class)?\(?A\)?$/i),
-    clsCExp: clsFee(f, /^(?:종류|Class)?\(?C1?\)?$/i),
+    clsAExp: clsFee(f, /^\(?A\)?$/i),
+    clsCExp: clsFee(f, /^\(?C1?\)?$/i),
+    cls: clsList(f),
     docT: docKey(f, 'prospectus'),          /* 투자설명서 일련번호 */
     docG: docKey(f, 'summary_prospectus'),  /* 간이투자설명서 일련번호 */
     docAt: docAt(f, 'prospectus') || docAt(f, 'summary_prospectus'),
@@ -133,7 +163,7 @@ const withDoc = items.filter((x) => x.docT || x.docG).length;
  * 투자목적도 고유값 2,519개가 3,190건을 덮는다 — 그대로 실으면 이것만 1.3MB 다.
  * 화면에서는 앱이 불러올 때 한 번에 되살린다(js/sales-script-app.js 의 fundCat).
  */
-const POOLED = ['mgr', 'fundType', 'region', 'riskLabel', 'objective'];
+const POOLED = ['mgr', 'fundType', 'region', 'riskLabel', 'objective', 'cls'];
 const pool = [];
 const poolIdx = new Map();
 const intern = (v) => {
