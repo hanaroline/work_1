@@ -200,6 +200,15 @@
       put('redPay', biz(t[5]));
     }
     put('docDate', it.docAt ? D.fmt.kdate(it.docAt) || it.docAt : null);
+    /**
+     * 투자설명서에만 있는 항목(보수·수수료, 환매수수료, 계약기간, 투자전략, 주요 투자위험,
+     * VaR, 유동성위험, 환헤지)을 미리 판독해 둔 결과에서 채운다.
+     * 브라우저는 다른 도메인의 PDF 를 앱이 직접 읽지 못하고, 이 도구는 인터넷이 없는
+     * 업무용PC 에서 쓴다 — 그래서 ELS 와 같이 판독은 러너에서 미리 해 둔다.
+     */
+    var FP = window.FUND_PROSPECTUS;
+    var ex = (FP && FP.items && FP.items[it.code]) || null;
+    if (ex) Object.keys(ex).forEach(function (k) { put(k, ex[k]); });
     return {
       source: 'COLLECT',
       docName: it.name + ' (공모펀드 수집분)',

@@ -1,0 +1,75 @@
+name: 펀드 투자설명서 판독
+
+# 카탈로그가 갖고 있는 투자설명서 PDF 주소를 받아 미리 판독한다.
+# 브라우저는 다른 도메인의 PDF 를 앱이 직접 읽지 못하고, 이 도구는 인터넷이 없는
+# 업무용PC 에서 쓴다 — 그래서 ELS 와 같이 판독을 러너에서 해 두고 결과만 싣는다.
+
+on:
+  workflow_dispatch:
+    inputs:
+      limit:
+        description: '판독할 건수 (0 = 전량 약 3,000건)'
+        type: string
+        default: '60'
+  push:
+    branches:
+      - 'claude/complete-sales-script-**'
+    paths:
+      - 'scripts/fetch_fund_prospectus.mjs'
+      - '.github/workflows/fund-prospectus.yml'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: fund-prospectus
+  cancel-in-progress: false
+
+jobs:
+  read:
+    runs-on: ubuntu-latest
+    timeout-minutes: 180
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref_name }}
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: pdfjs 설치
+        run: npm install --no-save pdfjs-dist@3.11.174
+
+      - name: 판독
+        env:
+          LIMIT: ${{ inputs.limit || '60' }}
+        run: node scripts/fetch_fund_prospectus.mjs --limit "$LIMIT"
+
+      - name: 추출 품질 확인
+        run: |
+          node -e "
+          const g={}; new Function('window', require('fs').readFileSync('data/fund-prospectus.js','utf8'))(g);
+          const I=g.FUND_PROSPECTUS.items, K=Object.keys(I);
+          console.log('판독', K.length, '건');
+          const cnt={};
+          K.forEach(k=>Object.keys(I[k]).forEach(f=>cnt[f]=(cnt[f]||0)+1));
+          Object.entries(cnt).sort((a,b)=>b[1]-a[1]).forEach(([f,n])=>console.log('  '+f.padEnd(14), n+'건', (100*n/K.length).toFixed(0)+'%'));
+          console.log('표본:', JSON.stringify(I[K[0]], null, 1).slice(0, 900));
+          "
+
+      - name: 단일 파일 다시 빌드
+        run: node scripts/build_sales_script.mjs
+
+      - name: 결과 커밋
+        run: |
+          git config user.name  'github-actions[bot]'
+          git config user.email 'github-actions[bot]@users.noreply.github.com'
+          git add -A data/fund-prospectus.js sales-script-standalone.html
+          if [ -n "$(git diff --cached --name-only)" ]; then
+            git commit -m "chore(fund): 투자설명서 판독 결과 갱신"
+            git pull --rebase --autostash origin "${{ github.ref_name }}" || true
+            git push
+          else
+            echo '변경 없음'
+          fi
