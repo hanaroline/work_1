@@ -452,6 +452,21 @@
       : (d.source || "");
     els.asof.textContent = "수집 " + (d.generated_at_kst || "-") + " KST · 출처 " + srcText;
 
+    // 원천 하나가 죽은 판은 그날의 온전한 그림이 아니다. 셈이 다 맞아도
+    // 빠진 것은 빠진 것이므로, 읽는 사람이 먼저 알아야 한다. 9/3 판에서
+    // 하나증권이 통째로 빠졌는데 화면에는 아무 표시가 없었다.
+    var dead = Object.keys(d.sources || {}).filter(function (k) {
+      var v = d.sources[k];
+      return v && typeof v === "object" && v.ok === false;
+    });
+    if (dead.length) {
+      els.asof.innerHTML = esc(els.asof.textContent)
+        + '<div style="margin-top:6px;padding:6px 8px;border-left:3px solid var(--mas-orange);'
+        + 'background:var(--card);font-size:12px;">'
+        + '이 판에는 <b>' + esc(dead.join(" · ")) + '</b>가 빠졌습니다 — 그 목록을 받지 못했습니다. '
+        + '나머지 출처만으로 만든 자료입니다.</div>';
+    }
+
     var moves = s.target_moves || [];
     var up = moves.filter(function (m) { return m.move === "상향"; }).length;
     var dn = moves.filter(function (m) { return m.move === "하향"; }).length;

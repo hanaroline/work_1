@@ -322,6 +322,23 @@ def verify(path):
     check("마3 「해외」 표는 외국 종목·해외 판에서만", not ovs_bad,
           "%d건 중 근거 못 찾음 %d" % (len(ovs), len(ovs_bad)))
 
+    # ── 사. 원천이 다 살아 있는가 ───────────────────────────────────────
+    # 셈과 인용이 아무리 맞아도, 원천 하나가 통째로 빠진 판은 그날의 그림이
+    # 아니다. 9/3 판에서 하나증권이 죽어 쉰 줄이 사라졌는데도 검산은 모두
+    # 통과했다 — 있는 것만 검사하고 **없는 것**은 보지 않았기 때문이다.
+    # 이것은 지어낸 수치의 문제가 아니라 **빠진 자료**의 문제이고, 그래도
+    # 산출물을 내겠다면 사람이 알고 내야 한다.
+    srcs = d.get("sources") or {}
+    dead = {k: v.get("error") for k, v in srcs.items()
+            if isinstance(v, dict) and v.get("ok") is False}
+    check("사1 모든 원천이 살아 있음", not dead,
+          "죽은 원천 %s" % ", ".join("%s(%s)" % (k, (v or "")[:60])
+                                     for k, v in dead.items()))
+    live = [k for k, v in srcs.items()
+            if isinstance(v, dict) and v.get("ok") and (v.get("count") or 0) > 0]
+    check("사2 살아 있는 원천이 둘 이상", len(live) >= 2, "산 원천 %d" % len(live))
+    check("사3 그날 자 리포트가 있음", len(todays) > 0, "%d건" % len(todays))
+
     # ── 바. 주간 ────────────────────────────────────────────────────────
     W = d.get("weekly") or {}
     if W:

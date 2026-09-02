@@ -592,12 +592,16 @@ def fetch_hana(pages=5, dump_dir=None):
     한 쪽만 받으면 그날 자가 두어 건뿐이라 해외 리포트가 거의 안 잡힌다 —
     NVDA.US·688017.CH 같은 줄은 하루 이틀 전 자리에 있다.
     """
-    rows, seen, first_html = [], set(), None
+    rows, seen, first_html, why = [], set(), None, None
     for page in range(1, pages + 1):
         url = HANA_LIST if page == 1 else HANA_LIST + "?curPage=%d" % page
         try:
             html = _get_retry(url, encoding="utf-8", referer=HANA_BASE + "/")
-        except Exception:                                      # noqa: BLE001
+        except Exception as e:                                 # noqa: BLE001
+            # 왜 못 받았는지를 삼켜서는 안 된다. 9/3 판에서 하나증권이 통째로
+            # 빠졌는데 남은 말이 「줄을 못 찾았다」뿐이라, 마크업이 바뀐 것인지
+            # 서버가 안 열린 것인지 가릴 수 없었다.
+            why = "%s: %s" % (type(e).__name__, e)
             break
         if page == 1:
             first_html = html
@@ -610,7 +614,9 @@ def fetch_hana(pages=5, dump_dir=None):
     if not rows:
         if dump_dir and first_html:
             _dump(dump_dir, "hana_list.html", first_html)
-        raise ValueError("하나증권 목록에서 줄을 못 찾았다")
+        raise ValueError("하나증권 목록에서 줄을 못 찾았다"
+                         + (" (목록을 받지 못했다 — %s)" % why if why
+                            else " (목록은 받았으나 얼개가 바뀐 듯하다)"))
     return rows, {"rows": len(rows), "pages": page}
 
 
