@@ -550,6 +550,31 @@
     var C = window.BOND_CATALOG;
     return (C && C.krw) ? C : null;
   }
+  /**
+   * 장외채권 화면에 적힌 유의사항 원문에서 필요한 문장을 골라 낸다.
+   * 낱말을 우리가 짓지 않고 회사 문장을 그대로 쓴다 — 규정 문구는
+   * 고쳐 쓰면 그 자체로 미설명·부정확 설명이 된다.
+   */
+  var BOND_NOTICE = null;
+  function bondNotice() {
+    if (BOND_NOTICE) return BOND_NOTICE;
+    var C = bondCat(), list = (C && C.notice) || [];
+    var pick = function (re) {
+      for (var i = 0; i < list.length; i++) if (re.test(list[i])) return list[i];
+      return '';
+    };
+    BOND_NOTICE = {
+      all: list,
+      sell: pick(/중도\s*매도/),
+      unsecured: pick(/무보증사채/),
+      noDeposit: pick(/예금자보호/),
+      call: pick(/콜옵션/)
+    };
+    /* 중도매도 문장은 「가능하다」 는 말 없이 가격만 설명한다 — 앞머리를 붙여
+       평가 항목(중도매도 가능 여부)의 답이 되게 한다. 뒷문장은 원문 그대로다. */
+    if (BOND_NOTICE.sell) BOND_NOTICE.sell = '중도매도 가능 — ' + BOND_NOTICE.sell;
+    return BOND_NOTICE;
+  }
   var BOND_BY_CODE = null;
   function bondCatByCode(code) {
     var C = bondCat();
@@ -597,6 +622,13 @@
       put('guarantee', '대한민국 정부가 원리금을 상환하는 국채');
       put('credit', 'AAA(국가)');
     }
+    /* 중도매도는 장외채권 전체에 걸리는 조건이다 — 회사 화면의 문장을
+       그대로 옮긴다. 문장을 우리가 짓지 않는다.
+       「무보증사채는 …」 문구는 채우지 않는다. 그 문장은 조건문이라
+       이 종목이 무보증사채라고 말해 주지 않는다 — 종목별 보증 여부는
+       설명서를 봐야 하므로 확인필요로 남기고, 원문만 옆에 띄운다. */
+    var N = bondNotice();
+    if (N.sell) put('sellable', N.sell);
     return {
       source: 'COLLECT',
       docName: it.name + ' (장외채권 수집분)',
@@ -2277,6 +2309,36 @@
    * 투자설명서와 따로 두는 이유 — 이것은 상품 자료가 아니라 그 달의 지점 자료다.
    * 한 번 올려 두면 모든 펀드에서 함께 쓰이고, 다음 달 자료가 오면 다시 올린다.
    */
+  /**
+   * 장외채권 화면의 유의사항 원문을 그대로 띄운다.
+   * 「보증 여부」 같은 항목은 이 문장이 조건문이라 그대로 답이 되지 않는다 —
+   * 자동으로 채우지 않고 원문을 옆에 두어 창구가 설명서와 대조하게 한다.
+   */
+  function bondNoticeCard() {
+    var C = bondCat();
+    if (!C) return '';
+    var N = bondNotice();
+    var h = [];
+    h.push('<div class="rule"></div><h3 style="font-size:18px;font-weight:700;margin:0 0 6px">장외채권 화면 유의사항 (회사 원문)</h3>');
+    h.push('<div class="hint" style="margin-bottom:12px">회사 장외채권 화면에 적힌 문장을 <b>고치지 않고</b> 옮겨 온 것입니다. '
+      + '「중도매도 가능 여부」 는 이 문장으로 자동 채워집니다. '
+      + '<b>보증 여부</b>는 「무보증사채는 …」 이 조건문이어서 이 종목이 무보증인지 말해 주지 않으므로 자동으로 채우지 않습니다 — '
+      + '종목 설명서에서 확인해 입력하십시오.</div>');
+    h.push('<div class="card"><div class="card-b">');
+    h.push('<div class="hint" style="margin:0 0 8px">받은 날짜 ' + esc(String(C.updatedAt || '').slice(0, 10))
+      + ' · 원천 <a href="' + esc(C.listUrl || '') + '" target="_blank" rel="noreferrer">장외채권 목록 화면</a>'
+      + ' · 원화 ' + (C.krwCount || (C.krw || []).length) + '종목</div>');
+    if (!N.all.length) {
+      h.push('<div class="warnbox">유의사항 문장을 받지 못했습니다. 화면 서식이 바뀌었을 수 있습니다.</div>');
+    } else {
+      h.push('<ul style="margin:0;padding-left:20px;line-height:1.7">');
+      N.all.forEach(function (s) { h.push('<li>' + esc(s) + '</li>'); });
+      h.push('</ul>');
+    }
+    h.push('</div></div>');
+    return h.join('');
+  }
+
   function marketCard() {
     var h = [];
     var mp = MKT_READ;
@@ -2450,6 +2512,9 @@
 
     /* 펀드 완전판매자료 (증시전망) — 펀드·IRP 에서만 쓴다 */
     if (sh.cat === 'fund' || sh.cat === 'irp') h.push(marketCard());
+
+    /* 채권 — 회사 장외채권 화면의 유의사항 원문 */
+    if (sh.cat === 'bondKrw' || sh.cat === 'bondFx') h.push(bondNoticeCard());
 
     /* 전 상품 공용 문구 */
     h.push('<div class="rule"></div><h3 style="font-size:18px;font-weight:700;margin:0 0 6px">전 상품 공용 문구</h3>');

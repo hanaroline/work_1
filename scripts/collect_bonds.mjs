@@ -167,6 +167,24 @@ for (let i = 0; i < trs.length; i++) {
 }
 console.log('  원화채권 ' + krw.length + '종목');
 
+/* ── 장외채권 화면의 유의사항 원문 ────────────────────
+   창구가 손으로 넣던 「보증 여부」 「중도매도 가능 여부」 의 근거 문구가
+   목록 화면 아래에 그대로 적혀 있다. 내가 문장을 짓지 않고 회사 문장을
+   그대로 옮긴다 — 규정 문구는 우리가 고쳐 쓸 것이 아니다. */
+console.log('장외채권 화면 유의사항 뽑는 중…');
+const NOTICE_KEY = /무보증사채|중도\s*매도|예금자보호|콜옵션|원금손실|원리금\s*상환/;
+const notice = [...new Set(
+  strip(krwHtml)
+    .split(/(?<=[.다])\s+/)
+    .map((s) => s.trim())
+    .filter((s) => s.length >= 20 && s.length <= 320)
+    .filter((s) => NOTICE_KEY.test(s))
+    /* 화면 스크립트가 섞여 들어오는 것을 걷어낸다 */
+    .filter((s) => !/function|var\s|\$\(|window\.|\{|\}/.test(s))
+)];
+console.log('  유의사항 문장 ' + notice.length + '개');
+notice.forEach((s) => console.log('     · ' + s));
+
 /* ── 외화채권 유형 ─────────────────────────────────── */
 console.log('외화채권 유형 안내 받는 중…');
 const fxHtml = await get(LIST_FX);
@@ -248,6 +266,10 @@ const body =
   ' *   ㆍcoupon       표면금리 — 종목명의 다섯 자리(01500 = 1.500%)에서 낸다.\n' +
   ' *                  규칙에 맞지 않는 종목명은 담지 않는다.\n' +
   ' *\n' +
+  ' * BOND_CATALOG.notice[] = 장외채권 화면에 적힌 유의사항 문장 원문.\n' +
+  ' *   「보증 여부」 「중도매도 가능 여부」 를 이 문장으로 채운다 — 규정 문구는\n' +
+  ' *   우리가 고쳐 쓸 것이 아니라 회사 문장을 그대로 읽어야 한다.\n' +
+  ' *\n' +
   ' * BOND_CATALOG.fxTypes[] = 외화채권 유형별 통화·매매방식·국제신용등급·세금·잔존만기.\n' +
   ' *   개별 종목은 로그인 화면에만 있어 받을 수 없다 — 유형 정보로 「과세에 관한 사항」\n' +
   ' *   「국제신용등급」 「발행국가」 를 채우고, 종목값은 창구에서 넣는다.\n' +
@@ -263,6 +285,7 @@ const body =
     krwCount: krw.length,
     krw: krw,
     fxTypes: fxTypes,
+    notice: notice,
     docs: docs
   }) + ';\n';
 await mkdir('data', { recursive: true });
