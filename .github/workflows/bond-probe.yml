@@ -15,6 +15,7 @@ on:
       - 'scripts/probe_bond_pages.mjs'
       - 'scripts/probe_bond_menu.mjs'
       - 'scripts/probe_bond_list.mjs'
+      - 'scripts/probe_bond_html.mjs'
       - '.github/workflows/bond-probe.yml'
 
 permissions:
@@ -40,15 +41,8 @@ jobs:
       # 1·2차 탐색(probe_bond_sources · probe_bond_pages)은 결과를 얻었다.
       # 필요할 때 손으로 돌린다 — 매번 다시 두드릴 이유가 없다.
 
-      # frameset·WebSquare 화면은 주소를 짐작할 수 없다 — 브라우저로 열고
-      # 화면이 스스로 부르는 요청을 적어 둔다. 그것이 곧 데이터 주소다.
-      - name: Playwright 설치
-        run: |
-          npm install --no-save playwright@1.49.1
-          npx playwright install --with-deps chromium
-
-      # 3차에서 메뉴가 실제 주소를 알려 주었다 —
-      #   장외채권 /hks/hks4036/r01.do · 외화채권 /hks/hks4054/v03.do
-      #   채권금리 /hkr/hkr1003/n12.do  (모두 로그인 불필요)
-      - name: 채권 화면 열어 목록·설명서 잡기
-        run: node scripts/probe_bond_list.mjs
+      # 4차에서 확인했다 — 장외채권 화면은 서버가 표를 그려 내려주므로
+      # 브라우저가 필요 없다. 표 구조와 설명서 게시판만 보면 수집기를 쓸 수 있다.
+      # (앞선 탐색 스크립트들은 필요할 때 손으로 돌린다)
+      - name: 표 원문·설명서 게시판 보기
+        run: node scripts/probe_bond_html.mjs
