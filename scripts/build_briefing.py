@@ -268,12 +268,17 @@ def sec_today(C):
     cards = [
         stat("코스피 (" + DS(C["prev_kr"]) + ")", "KOSPI (" + DE(C["prev_kr"]) + ")",
              n(KS["close"]), pct(KS["change_pct"]),
+             # 배수를 함께 싣는다. 핵심본에는 「시장의 폭」 표가 없어서
+             # 여기가 상승/하락 배수가 실리는 유일한 자리다.
              "상승 " + n(ksb["advancing"], 0) + " 대 하락 " + n(ksb["declining"], 0)
-             + " &mdash; 열에 " + n(ten, 0),
-             n(ksb["advancing"], 0) + " up, " + n(ksb["declining"], 0) + " down"),
+             + " (" + _adr(ksb) + "배) &mdash; 열에 " + n(ten, 0),
+             n(ksb["advancing"], 0) + " up, " + n(ksb["declining"], 0) + " down ("
+             + _adr(ksb) + "x)"),
         stat("코스닥", "KOSDAQ", n(KQ["close"]), pct(KQ["change_pct"]),
-             "상승 " + n(kqb["advancing"], 0) + " 대 하락 " + n(kqb["declining"], 0),
-             n(kqb["advancing"], 0) + " up, " + n(kqb["declining"], 0) + " down"),
+             "상승 " + n(kqb["advancing"], 0) + " 대 하락 " + n(kqb["declining"], 0)
+             + " (" + _adr(kqb) + "배)",
+             n(kqb["advancing"], 0) + " up, " + n(kqb["declining"], 0) + " down ("
+             + _adr(kqb) + "x)"),
         stat("거래대금", "Turnover", n(C["turnover"][0][1]) + "조", C["turnover_word"],
              C["turnover_trail"], C["turnover_trail_en"]),
         stat("외국인 순매수", "Foreign net", eok(kf["foreign"]), "",
@@ -336,6 +341,12 @@ def sec_korea(C):
               "열 종목 가운데 몇 개가 올랐는지",
               "How many in ten rose",
               "열에 " + n(C["adv_per_ten"], 0), "열에 " + n(C["adv_per_ten_q"], 0)),
+        # 상승/하락 «배수» — 1.00 이 갈림선이다. 개수만 싣던 동안 재검증기가
+        # 「비율을 판에서 찾지 못했다」를 날마다 냈다. 세어 놓고 안 적은 것이다.
+        _brow("상승 / 하락 배수", "Advance / decline ratio",
+              "1.00 이 갈림선입니다. 1 보다 크면 오른 종목이 더 많습니다",
+              "1.00 is the dividing line; above it, more rose than fell",
+              _adr(ksb), _adr(kqb)),
         _brow("52주 구간 내 위치", "Position in the 52-week range",
               "(종가 &minus; 저) &divide; (고 &minus; 저). 지금이 비싼 자리인지",
               "(close &minus; low) / (high &minus; low)",
@@ -869,6 +880,15 @@ def sec_verify(C):
 # ══════════════════════════════════════════════════════════════════
 def _cell(v):
     return '<td class="n">' + pct(v) + '</td>'
+
+
+def _adr(b):
+    """상승/하락 «배수». 하락이 0 이면 나눌 수 없으므로 비워 둔다."""
+    dec = (b or {}).get("declining") or 0
+    adv = (b or {}).get("advancing") or 0
+    if not dec:
+        return '<span class="na">&mdash;</span>'
+    return "%.2f" % (adv / float(dec))
 
 
 def _brow(ko, en, nk, ne, a, b, hl=False):
