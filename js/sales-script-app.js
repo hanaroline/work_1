@@ -614,6 +614,11 @@
        종목명에 금리가 박힌 국고채만 읽어낼 수 있고(01500 → 연 1.500%),
        나머지는 원천에 없어 확인필요로 남는다. */
     put('coupon', it.coupon != null ? '연 ' + it.coupon.toFixed(3) + '%' : null);
+    /* 종목 상세 화면에서 받은 값 — 이자지급유형·주기·신용등급 */
+    put('payType', it.payType);
+    put('payCycle', it.payCycle != null ? it.payCycle + '개월' : null);
+    put('payRate', it.payRate != null ? '연 ' + it.payRate + '%' : null);
+    if (it.credit) put('credit', it.credit);
     /* 매매단가와 세후수익률 — 창구가 손으로 넣던 값이다 */
     put('tradePrice', it.tradePrice != null ? it.tradePrice.toLocaleString() + '원' : null);
     put('ytm', it.ytmNetPct != null ? '연 ' + it.ytmNetPct + '% (세후, 회사 제시)' : null);
