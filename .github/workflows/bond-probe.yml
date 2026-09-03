@@ -12,6 +12,7 @@ on:
       - 'claude/complete-sales-script-**'
     paths:
       - 'scripts/probe_bond_sources.mjs'
+      - 'scripts/probe_bond_pages.mjs'
       - '.github/workflows/bond-probe.yml'
 
 permissions:
@@ -36,3 +37,13 @@ jobs:
 
       - name: 원천 두드려 보기
         run: node scripts/probe_bond_sources.mjs
+
+      # frameset·WebSquare 화면은 주소를 짐작할 수 없다 — 브라우저로 열고
+      # 화면이 스스로 부르는 요청을 적어 둔다. 그것이 곧 데이터 주소다.
+      - name: Playwright 설치
+        run: |
+          npm install --no-save playwright@1.49.1
+          npx playwright install --with-deps chromium
+
+      - name: 화면 열어 데이터 요청 관찰
+        run: node scripts/probe_bond_pages.mjs
