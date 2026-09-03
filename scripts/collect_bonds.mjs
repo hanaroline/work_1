@@ -167,6 +167,87 @@ for (let i = 0; i < trs.length; i++) {
 }
 console.log('  원화채권 ' + krw.length + '종목');
 
+/* ── 종목 상세 (표면금리·이자지급유형·이자지급주기·신용등급) ──────────
+   목록 화면이 종목마다 상세 링크를 들고 있다 —
+     <a href="/hks/hks4036/v01.do?itemCode=KR60054939A8">POSCO 310-3</a>
+   이 화면은 서버가 값을 채워 내려준다 (p02.do 는 자바스크립트로 채우는
+   껍데기라 전부 null 로 온다 — 쓰지 않는다).
+
+   표면금리 하나가 화면의 확인필요 15건을 막고 있었다 — 금리변동 손익 예시
+   13건과 예시 투자금액·회당 이자금액 2건은 앱이 표면금리로 계산해 주는 값이다.
+
+   표의 칸 자리에 기대지 않고 「이름 뒤의 값」 을 읽는다. 화면 서식이 조금
+   바뀌어도 버티고, 못 읽으면 담지 않아 확인필요로 남는다. */
+const DETAIL = !process.argv.includes('--no-detail');
+/** 이름 바로 뒤에서 값을 읽는다 (없으면 null — 짐작하지 않는다) */
+function after(body, labels, re, span) {
+  for (const label of labels) {
+    let from = 0, i;
+    while ((i = body.indexOf(label, from)) >= 0) {
+      const seg = body.slice(i + label.length, i + label.length + (span || 40));
+      const m = re.exec(seg);
+      if (m) return m[1];
+      from = i + label.length;
+    }
+  }
+  return null;
+}
+async function detailOf(code, dump) {
+  const html = await get('/hks/hks4036/v01.do?itemCode=' + code);
+  const body = strip(html);
+  if (dump) {
+    /* --debug 로 한 종목의 본문을 그대로 본다 — 화면이 어떤 이름으로 값을
+       적어 놓았는지는 짐작할 것이 아니라 봐야 하는 것이다. */
+    const s = body.search(/채권\s*(?:기본)?정보|상품\s*정보|종목\s*정보|표면금리/);
+    console.log('\n[debug] ' + code + ' 본문\n' + body.slice(Math.max(0, s - 200), s + 1100) + '\n');
+  }
+  const d = {};
+  const cp = after(body, ['표면금리'], /^[\s:]*([\d]+\.?[\d]*)\s*%?/);
+  if (cp != null && isFinite(+cp)) d.coupon = +cp;
+  const pt = after(body, ['이자지급 유형', '이자지급유형'], /(이표채|복리채|할인채|단리채)/, 60);
+  if (pt) d.payType = pt;
+  const pc = after(body, ['이자지급 주기', '이자지급주기'], /^[\s:]*([\d]+)\s*개월/, 30);
+  if (pc) d.payCycle = +pc;
+  const pr = after(body, ['이자지급주기별 이자율'], /약?\s*([\d]+\.?[\d]*)\s*%/, 40);
+  if (pr != null && isFinite(+pr)) d.payRate = +pr;
+  /* 신용등급 — Moody's·S&P·Fitch·국내 네 칸이 이어 온다. 값이 하나만 채워진
+     경우(국내채권은 보통 국내등급만 있다)에만 담는다. 넷 중 어느 것인지
+     헷갈릴 값을 등급이라고 단정하지 않는다. */
+  const cr = after(body, ['국내신용등급'], /^[\s:]*((?:[A-D][A-Za-z]{0,2}[+-]?(?:\s|$)){1,4})/, 40);
+  if (cr) {
+    const toks = cr.trim().split(/\s+/).filter(Boolean);
+    if (toks.length === 1) d.credit = toks[0];
+    else d.creditRaw = toks.join(' ');
+  }
+  return d;
+}
+if (DETAIL) {
+  console.log('종목 상세 받는 중… (' + krw.length + '종목)');
+  const CONC = 6;
+  let ok = 0, fail = 0;
+  for (let i = 0; i < krw.length; i += CONC) {
+    const batch = krw.slice(i, i + CONC);
+    await Promise.all(batch.map(async (it) => {
+      try {
+        const d = await detailOf(it.code, DEBUG && i === 0 && it === batch[0]);
+        Object.keys(d).forEach((k) => { it[k] = d[k]; });
+        if (d.coupon != null) ok++;
+      } catch (e) { fail++; }
+    }));
+  }
+  const n = (k) => krw.filter((x) => x[k] != null).length;
+  console.log('  표면금리 ' + n('coupon') + '/' + krw.length
+    + ' · 이자지급유형 ' + n('payType')
+    + ' · 이자지급주기 ' + n('payCycle')
+    + ' · 주기별이자율 ' + n('payRate')
+    + ' · 신용등급 ' + n('credit')
+    + (n('creditRaw') ? ' (여러 등급 ' + n('creditRaw') + ')' : '')
+    + (fail ? ' · 못 받은 종목 ' + fail : ''));
+  krw.slice(0, 5).forEach((x) => console.log('     ' + x.name + ' — 표면 ' + (x.coupon != null ? x.coupon + '%' : '?')
+    + ' · ' + (x.payType || '?') + ' · ' + (x.payCycle != null ? x.payCycle + '개월' : '?')
+    + ' · ' + (x.credit || x.creditRaw || '?')));
+}
+
 /* ── 장외채권 화면의 유의사항 원문 ────────────────────
    창구가 손으로 넣던 「보증 여부」 「중도매도 가능 여부」 의 근거 문구가
    목록 화면 아래에 그대로 적혀 있다. 내가 문장을 짓지 않고 회사 문장을
