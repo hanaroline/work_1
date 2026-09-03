@@ -263,7 +263,11 @@
         --text-primary: #111111; --text-secondary: #333333; --text-muted: #666666;
         --grid: #dddddd; --border: rgba(0,0,0,0.18); --shadow: none;
       }
-      @page { size: A4; margin: 0; }
+      /* 쪽 여백은 **여기서** 잡아야 한다. 크로뮴은 문서가 @page 여백을 선언하면
+         그것을 쓰고 PDF 호출의 margin 값을 무시한다. margin:0 으로 두었더니
+         본문이 종이 끝까지 흘러, 꼬리말이 마지막 줄 위에 겹쳐 찍혔다
+         (9/3·9/4 주간본). 아래 값은 reports_to_pdf.mjs 의 margin 과 같게 둔다. */
+      @page { size: A4; margin: 13mm 11mm 16mm; }
       body { background: #fff; font-size: 9.5pt; line-height: 1.45; }
       .topbar, .filters, .rp .foot button, #clearBtn, #themeBtn, #day, #dashLink { display: none !important; }
       .wrap { max-width: none; padding: 0; }
@@ -294,7 +298,21 @@
       .rp .sum .lead { color: #000; }
       .wk-rank { background: #444; }
       .wk-stocks { font-size: 8pt; }
-      .ov { padding: 8px 11px; margin: 8px 0 4px; break-inside: avoid; }
+      /* 머리 요약 상자는 **쪼개질 수 있어야 한다.** 통째로 묶어 두었더니,
+         논점이 다섯 갈래로 늘어난 판에서 상자가 한 쪽을 넘었고 — 브라우저는
+         쪼갤 수 없으니 넘치게 두어 — 마지막 두 줄이 꼬리말 위에 겹쳐 찍혔다
+         (9/4 주간본 1쪽). 상자는 열어 주고, 안의 토막만 붙여 둔다. */
+      /* 테두리·바탕을 두른 상자는 쪽을 넘길 때 크로뮴이 제대로 쪼개지 못하고
+         아랫단을 꼬리말 위로 흘린다. 종이에서는 상자를 풀고 왼쪽 선만 남긴다 */
+      .ov { border: 0; border-left: 2px solid var(--mas-orange); background: none;
+            padding: 0 0 0 9px; margin: 8px 0 4px; break-inside: auto; }
+      /* 붙여 두는 단위는 **한 줄**까지다. 논점 한 덩이(제목+세 줄)를 통째로
+         묶어 두면, 남은 자리보다 큰 덩이가 걸렸을 때 브라우저가 쪼개지도
+         옮기지도 못해 꼬리말 위로 넘쳐 찍힌다(9/4 주간본 1쪽). 줄만 붙인다. */
+      .ov .themes { break-inside: avoid; page-break-inside: avoid; }
+      .ov .bf, .bf { break-inside: auto; page-break-inside: auto; }
+      .bf li, .ov li, .themes .th { break-inside: avoid; page-break-inside: avoid; }
+      .bf-h { break-after: avoid; page-break-after: avoid; }
       .ov-t { font-size: 9pt; }
       .ov-k { font-size: 7.5pt; }
       .themes .th { grid-template-columns: 88px 1fr 26px; }
