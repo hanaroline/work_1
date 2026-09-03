@@ -13,6 +13,7 @@ on:
     paths:
       - 'scripts/probe_bond_sources.mjs'
       - 'scripts/probe_bond_pages.mjs'
+      - 'scripts/probe_bond_menu.mjs'
       - '.github/workflows/bond-probe.yml'
 
 permissions:
@@ -35,8 +36,8 @@ jobs:
         with:
           node-version: '22'
 
-      - name: 원천 두드려 보기
-        run: node scripts/probe_bond_sources.mjs
+      # 1·2차 탐색(probe_bond_sources · probe_bond_pages)은 결과를 얻었다.
+      # 필요할 때 손으로 돌린다 — 매번 다시 두드릴 이유가 없다.
 
       # frameset·WebSquare 화면은 주소를 짐작할 수 없다 — 브라우저로 열고
       # 화면이 스스로 부르는 요청을 적어 둔다. 그것이 곧 데이터 주소다.
@@ -45,5 +46,5 @@ jobs:
           npm install --no-save playwright@1.49.1
           npx playwright install --with-deps chromium
 
-      - name: 화면 열어 데이터 요청 관찰
-        run: node scripts/probe_bond_pages.mjs
+      - name: 메뉴 따라가 채권 화면 찾기
+        run: node scripts/probe_bond_menu.mjs
