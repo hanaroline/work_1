@@ -14,6 +14,10 @@ on:
         description: '받아만 보고 파일은 쓰지 않기'
         type: boolean
         default: false
+      debug:
+        description: '행의 칸을 그대로 찍기 (구조 확인용)'
+        type: boolean
+        default: false
   schedule:
     # 매일 09:20 KST (00:20 UTC) — 장 시작 뒤 시세가 붙은 뒤
     - cron: '20 0 * * *'
@@ -45,7 +49,7 @@ jobs:
           node-version: '22'
 
       - name: 장외채권 받기
-        run: node scripts/collect_bonds.mjs ${{ inputs.dry && '--dry' || '' }}
+        run: node scripts/collect_bonds.mjs ${{ inputs.dry && '--dry' || '' }} ${{ inputs.debug && '--debug' || '' }}
 
       - name: 단일 파일 다시 빌드
         if: ${{ !inputs.dry }}

@@ -22,6 +22,9 @@
 import { writeFile, mkdir } from 'node:fs/promises';
 
 const DRY = process.argv.includes('--dry');
+/* --debug : 종류별로 행의 칸을 그대로 찍는다. 머리글에 신용등급이 있는데 국고채
+   행에서는 비어 있어, 회사채·지방채 행에서 어느 칸에 오는지 눈으로 봐야 한다. */
+const DEBUG = process.argv.includes('--debug');
 const UA = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0 Safari/537.36';
 const BASE = 'https://securities.miraeasset.com';
 const LIST_KRW = '/hks/hks4036/r01.do';
@@ -105,6 +108,25 @@ const tables = [...krwHtml.matchAll(/<table[\s\S]*?<\/table>/gi)].map((m) => m[0
 const tbl = tables.find((t) => /insertWishItem/.test(t));
 if (!tbl) throw new Error('종목 표를 찾지 못했습니다 — 화면 구조가 바뀌었는지 확인하십시오.');
 const trs = [...tbl.matchAll(/<tr[^>]*>([\s\S]*?)<\/tr>/gi)].map((m) => m[1]).filter((r) => /<td/i.test(r));
+if (DEBUG) {
+  const th = [...tbl.matchAll(/<th[^>]*>([\s\S]*?)<\/th>/gi)].map((m) => strip(m[1])).filter(Boolean);
+  console.log('\n[debug] 머리글: ' + th.join(' │ '));
+  /* 국채·지방채·회사채 각각 한 종목씩 골라 칸을 그대로 찍는다 */
+  const want = ['국고채권', '도시철도', ''];
+  want.forEach((w) => {
+    for (let i = 0; i < trs.length - 1; i++) {
+      const a = [...trs[i].matchAll(/<td[^>]*>([\s\S]*?)<\/td>/gi)].map((m) => strip(m[1]));
+      if (a.length < 6) continue;
+      if (w && a[0].indexOf(w) < 0) continue;
+      if (!w && /국고채권|도시철도|지역개발/.test(a[0])) continue;
+      const b = [...(trs[i + 1] || '').matchAll(/<td[^>]*>([\s\S]*?)<\/td>/gi)].map((m) => strip(m[1]));
+      console.log('\n[debug] ' + (w || '그 밖의 종목') + ' — 앞줄 ' + a.length + '칸 / 뒷줄 ' + b.length + '칸');
+      a.forEach((c, k) => console.log('   A[' + k + '] ' + c.slice(0, 60)));
+      b.forEach((c, k) => console.log('   B[' + k + '] ' + c.slice(0, 60)));
+      break;
+    }
+  });
+}
 
 const krw = [];
 for (let i = 0; i < trs.length; i++) {
