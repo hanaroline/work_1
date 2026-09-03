@@ -259,11 +259,14 @@ async function detailOf(code, dump) {
   if (pt) d.payType = pt;
   const PC_LABELS = ['이자지급 주기', '이자지급주기', '이자지급 간격', '이자주기',
     '이자 주기', '이자지급월', '이자지급 월'];
-  let pc = after(body, PC_LABELS, /^[\s:]*([\d]+)\s*개월/, 30);
-  if (!pc) {
-    const cyc = [...new Set((body.match(/(\d+)\s*개월\s*마다/g) || []).map((s) => s.replace(/\D/g, '')))];
-    if (cyc.length === 1) pc = cyc[0];
+  let pc = after(body, PC_LABELS, /^[\s:]*([\d]+)\s*(?:개월|월)/, 30);
+  /* 이름 없이 「이표채 3개월」 처럼 유형 뒤에 붙는 경우 */
+  if (!pc && pt) {
+    const m = new RegExp(pt + '[^가-힣\\d]{0,12}(\\d+)\\s*(?:개월|월)').exec(body);
+    if (m) pc = m[1];
   }
+  /* 만기에 한 번 주는 채권은 주기가 없다 — 이것은 빈칸이 아니라 답이다 */
+  if (!pc && /복리채|할인채/.test(pt || '')) d.payAtMaturity = true;
   if (pc) d.payCycle = +pc;
   const pr = after(body, ['이자지급주기별 이자율'], /약?\s*([\d]+\.?[\d]*)\s*%/, 40);
   if (pr != null && isFinite(+pr)) d.payRate = +pr;

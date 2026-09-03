@@ -616,7 +616,10 @@
     put('coupon', it.coupon != null ? '연 ' + it.coupon.toFixed(3) + '%' : null);
     /* 종목 상세 화면에서 받은 값 — 이자지급유형·주기·신용등급 */
     put('payType', it.payType);
-    put('payCycle', it.payCycle != null ? it.payCycle + '개월' : null);
+    /* 복리채·할인채는 만기에 한 번 주므로 주기가 없다 — 빈칸이 아니라 답이다.
+       확인필요로 남겨 두면 창구가 없는 값을 찾아 헤맨다. */
+    put('payCycle', it.payCycle != null ? it.payCycle + '개월'
+      : (it.payAtMaturity ? '해당 없음 (만기에 원리금을 한 번에 지급)' : null));
     put('payRate', it.payRate != null ? '연 ' + it.payRate + '%' : null);
     if (it.credit) put('credit', it.credit);
     put('fee', it.fee);
