@@ -175,7 +175,7 @@ const fxTypes = [];
   const th = [...tb.matchAll(/<th[^>]*>([\s\S]*?)<\/th>/gi)].map((m) => strip(m[1])).filter(Boolean);
   if (!/통화|국가/.test(th.join(' ')) || !/국제\s*신용등급/.test(th.join(' '))) return;
   const byCountry = /^국가/.test(th[0] || '');
-  let ccy = null, country = null;
+  let ccy = null, country = null, tax = null;
   [...tb.matchAll(/<tr[^>]*>([\s\S]*?)<\/tr>/gi)].map((m) => m[1]).filter((r) => /<td/i.test(r)).forEach((r) => {
     const td = [...r.matchAll(/<td[^>]*>([\s\S]*?)<\/td>/gi)].map((m) => strip(m[1])).filter((x) => x !== '');
     if (!td.length) return;
@@ -184,9 +184,14 @@ const fxTypes = [];
     if (byCountry) { if (td.length >= 6) { country = td[0]; c = td.slice(1); } }
     else if (/^[A-Z]{3}$/.test(td[0])) { ccy = td[0]; c = td.slice(1); }
     if (c.length < 4) return;
+    /* 과세 칸도 여러 줄을 아우른다 — 잔존만기가 세금 칸으로 밀려 들어와
+       「과세: 1년 ~ 30년」 같은 값이 나왔다. 오른쪽부터 세어 붙인다. */
+    const head = byCountry ? 4 : 3;          /* 종류·매매방식·(통화)·신용등급 */
+    const term = c[c.length - 1];
+    if (c.length > head + 1) tax = c[c.length - 2];
     const o = byCountry
-      ? { country: country, kind: c[0], deal: c[1], ccy: c[2], credit: c[3], tax: c[4], term: c[5] }
-      : { ccy: ccy, kind: c[0], deal: c[1], credit: c[2], tax: c[3], term: c[4] };
+      ? { country: country, kind: c[0], deal: c[1], ccy: c[2], credit: c[3], tax: tax, term: term }
+      : { ccy: ccy, kind: c[0], deal: c[1], credit: c[2], tax: tax, term: term };
     Object.keys(o).forEach((k) => { if (!o[k]) delete o[k]; });
     if (o.kind && o.credit) fxTypes.push(o);
   });

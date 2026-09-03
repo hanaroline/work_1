@@ -93,6 +93,16 @@
      * 환매수수료·기준가 적용일이 IRP 에서는 전부 확인필요로 남았다.
      */
     if (cat === 'fund' || cat === 'irp') return fundCollectedDoc();
+    /* 채권은 설명서가 종목마다 따로 있지 않다 — 회사가 내려 주는 장외채권 목록이
+       설명서 구실을 한다 (표준코드·발행일·만기일·위험등급·매매단가·세후수익률). */
+    if (cat === 'bondKrw') {
+      var b = bondCatByCode(pid);
+      return b ? bondCatDoc(b) : null;
+    }
+    if (cat === 'bondFx') {
+      var x = bondFxByCode(pid);
+      return x ? bondFxDoc(x) : null;
+    }
     if (cat !== 'els') return null;
     var P = window.ELS_PROSPECTUS;
     if (!P || !P.byRound) return null;
@@ -528,12 +538,141 @@
     FUND_LIST_CACHE[key] = out;
     return out;
   }
+  /* ----------------------------------------------------------
+     장외채권 카탈로그 (data/bond-catalog.js)
+     ------------------------------------------------------------
+     미래에셋증권 장외채권 화면에서 매일 받아 둔 판매 종목이다. 종목마다
+     표준코드(ISIN)·종목명·종류·발행사·위험등급·발행일·만기일과, 그날의
+     매수금리·은행환산수익률·세후투자수익률·매매단가가 들어 있다.
+     펀드가 표준코드로 붙는 것처럼 채권도 표준코드로 붙는다.
+     ---------------------------------------------------------- */
+  function bondCat() {
+    var C = window.BOND_CATALOG;
+    return (C && C.krw) ? C : null;
+  }
+  var BOND_BY_CODE = null;
+  function bondCatByCode(code) {
+    var C = bondCat();
+    if (!C || !code) return null;
+    if (!BOND_BY_CODE) {
+      BOND_BY_CODE = {};
+      C.krw.forEach(function (x) { BOND_BY_CODE[x.code] = x; });
+    }
+    return BOND_BY_CODE[code] || null;
+  }
+  /** 카탈로그 항목 -> 상품 목록에 쓰는 형태 */
+  function bondCatProduct(it) {
+    return {
+      id: it.code, name: it.name,
+      kind: it.kind || '', issuer: it.issuer || '',
+      riskGrade: it.riskGrade || null, riskLabel: it.riskLabel || '',
+      fromCatalog: true
+    };
+  }
+  /**
+   * 카탈로그 항목 -> 등록된 설명서 형태.
+   * 세후 투자수익률은 회사가 계산해 내려 준 값이라 앱이 다시 계산하지 않는다.
+   * 원천에 없는 값(민평금리·민평단가·발행회사 재무정보·신용등급)은 담지 않아
+   * 화면에서 「확인필요」로 남는다.
+   */
+  function bondCatDoc(it) {
+    var f = {};
+    var put = function (k, v) { if (v != null && v !== '') f[k] = v; };
+    put('name', it.name);
+    put('kind', it.kind);
+    put('issuer', it.issuer);
+    put('riskGrade', it.riskGrade != null ? String(it.riskGrade) : null);
+    put('riskLabel', it.riskLabel);
+    put('issueDate', it.issueDate ? (D.fmt.kdate(it.issueDate) || it.issueDate) : null);
+    put('matDate', it.matDate ? (D.fmt.kdate(it.matDate) || it.matDate) : null);
+    /* 표면금리는 「연」 을 붙여 말해야 인정된다 — 값에 붙여 둔다.
+       종목명에 금리가 박힌 국고채만 읽어낼 수 있고(01500 → 연 1.500%),
+       나머지는 원천에 없어 확인필요로 남는다. */
+    put('coupon', it.coupon != null ? '연 ' + it.coupon.toFixed(3) + '%' : null);
+    /* 매매단가와 세후수익률 — 창구가 손으로 넣던 값이다 */
+    put('tradePrice', it.tradePrice != null ? it.tradePrice.toLocaleString() + '원' : null);
+    put('ytm', it.ytmNetPct != null ? '연 ' + it.ytmNetPct + '% (세후, 회사 제시)' : null);
+    /* 국채는 보증·수수료가 정해져 있다 — 설명서 표기를 그대로 쓴다 */
+    if (it.kind === '국채') {
+      put('guarantee', '대한민국 정부가 원리금을 상환하는 국채');
+      put('credit', 'AAA(국가)');
+    }
+    return {
+      source: 'COLLECT',
+      docName: it.name + ' (장외채권 수집분)',
+      docUrl: (bondCat() || {}).listUrl || '',
+      registeredAt: (bondCat() || {}).updatedAt || '',
+      fields: f, schedule: [], matBarrier: null, knockIn: '', rawText: '',
+      collected: true, bondCode: it.code
+    };
+  }
+  /** 상품 목록 — 잔존만기가 짧은 것부터 (창구에서 그렇게 찾는다) */
+  var BOND_LIST_CACHE = null;
+  function bondList() {
+    var C = bondCat();
+    if (!C) return null;
+    if (BOND_LIST_CACHE) return BOND_LIST_CACHE;
+    BOND_LIST_CACHE = C.krw.slice()
+      .sort(function (a, b) { return String(a.matDate || '').localeCompare(String(b.matDate || '')); })
+      .map(bondCatProduct);
+    return BOND_LIST_CACHE;
+  }
+
+  /* 외화채권은 개별 종목 시세가 로그인 뒤에 있어 목록을 받을 수 없다.
+     대신 회사가 공개한 「유형」 표(통화·매매방식·국제신용등급·과세·잔존만기)를
+     상품 목록으로 쓴다 — 유형을 고르면 발행통화·종류·국제신용등급·과세가 채워진다.
+     종목명·표면금리·발행일·만기일은 창구가 넣어야 한다. */
+  var BOND_FX_CACHE = null;
+  function bondFxList() {
+    var C = bondCat();
+    if (!C || !C.fxTypes || !C.fxTypes.length) return null;
+    if (BOND_FX_CACHE) return BOND_FX_CACHE;
+    BOND_FX_CACHE = C.fxTypes.map(function (t, i) {
+      return {
+        id: 'fx' + (i + 1),
+        name: (t.ccy || t.country || '') + ' ' + (t.kind || ''),
+        kind: t.kind || '', ccy: t.ccy || '', fxType: t, fromCatalog: true
+      };
+    });
+    return BOND_FX_CACHE;
+  }
+  function bondFxByCode(code) {
+    var l = bondFxList();
+    if (!l) return null;
+    for (var i = 0; i < l.length; i++) if (l[i].id === code) return l[i];
+    return null;
+  }
+  function bondFxDoc(it) {
+    var t = it.fxType || {}, f = {};
+    var put = function (k, v) { if (v != null && v !== '') f[k] = v; };
+    put('kind', t.kind);
+    put('ccy', t.ccy);
+    put('credit', t.credit);
+    put('tax', t.tax);
+    return {
+      source: 'COLLECT',
+      docName: '외화채권 유형 안내 — ' + it.name,
+      docUrl: (bondCat() || {}).fxUrl || '',
+      registeredAt: (bondCat() || {}).updatedAt || '',
+      fields: f, schedule: [], matBarrier: null, knockIn: '', rawText: '',
+      collected: true, fxType: t
+    };
+  }
+
   function catalog() {
     var sh = sheet();
     var mine = CUSTOM[sh.cat] || [];
     if (sh.cat === 'fund' || sh.cat === 'irp') {
       var fl = fundList(sh.cat, sh.overseas);
       if (fl) return mine.concat(fl);
+    }
+    if (sh.cat === 'bondKrw') {
+      var bl = bondList();
+      if (bl) return mine.concat(bl);
+    }
+    if (sh.cat === 'bondFx') {
+      var xl = bondFxList();
+      if (xl) return mine.concat(xl);
     }
     var list = mine.concat(D.catalog[sh.cat] || []);
     if (sh.cat !== 'fund') return list;
@@ -549,6 +688,10 @@
     if (sh.cat === 'fund' || sh.cat === 'irp') {
       var c = fundCatByCode(ST.productId);
       if (c) return fundCatProduct(c);
+    }
+    if (sh.cat === 'bondKrw') {
+      var b = bondCatByCode(ST.productId);
+      if (b) return bondCatProduct(b);
     }
     return null;
   }
