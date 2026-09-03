@@ -1124,13 +1124,15 @@
        */
       case 'taxLimit':
         return rawValue('taxLimit') || COMMON.irpTaxLimit
-          || '연금저축 합산 연 900만원 (연금저축만 납입 시 600만원 한도)';
+          || '연간 900만원 (연금계좌 합산) — ISA 만기전환금액이 있는 경우 최대 연간 1,200만원 한도';
       case 'taxRate':
         return rawValue('taxRate') || COMMON.irpTaxRate
-          || '총급여 5,500만원(종합소득금액 4,500만원) 이하는 16.5%, 초과는 13.2% (지방소득세 포함)';
+          || '종합소득과세표준 4,500만원 이하(근로소득만 있는 경우 총급여 5,500만원 이하)는 16.5%, 초과는 13.2%';
       case 'taxRateOut':
         return rawValue('taxRateOut') || COMMON.irpTaxRateOut
-          || '연금소득세 3.3~5.5% (지방소득세 포함, 분리과세)';
+          /* 문장이 「… 가 적용되며」 로 이어진다 — 명사로 끝내야 읽힌다 */
+          || '과세대상소득은 연금소득세 3.3~5.5% 분리과세(만 70세 미만 5.5% · 만 80세 미만 4.4% · '
+          + '만 80세 이상 3.3%), 이연퇴직소득은 이연퇴직소득세의 70%';
       /**
        * 가입유형별 증빙서류 — 유형을 확인하지 않고 전부 읽으면 평가에서 미인정이다.
        * 유형별 목록은 이 항목의 안내문에 이미 있으므로, 고른 유형에 맞는 것만 낸다.
@@ -1143,11 +1145,32 @@
        * 바꿀 때마다 확인필요로 다시 떴다 — IRP 확인필요가 유난히 많아 보인 이유다.
        * 「전 상품 공용 문구」 에 한 번 등록하면 모든 IRP 상담에서 그대로 쓰인다.
        */
-      case 'feeKinds': return rawValue('feeKinds') || COMMON.irpFeeKinds || undefined;
-      case 'feeTotal': return rawValue('feeTotal') || COMMON.irpFeeTotal || undefined;
-      case 'feeMethod': return rawValue('feeMethod') || COMMON.irpFeeMethod || undefined;
-      case 'products': return rawValue('products') || COMMON.irpProducts || undefined;
-      case 'defaultOpt': return rawValue('defaultOpt') || COMMON.irpDefaultOpt || undefined;
+      case 'feeKinds':
+        return rawValue('feeKinds') || COMMON.irpFeeKinds
+          || 'IRP 계좌에는 운용관리수수료와 자산관리수수료가 각각 부과되며, 디폴트옵션으로 1년 이상 '
+          + '운용 중인 금액에는 운용손익수수료가 더해집니다 (안정형 디폴트옵션 상품은 제외).';
+      case 'feeTotal':
+        return rawValue('feeTotal') || COMMON.irpFeeTotal
+          || '총수수료율은 연 0.3% 입니다 (대면 개설·고객납입액 1억원 미만 기준 — 운용관리 0.2% + '
+          + '자산관리 0.1%). 납입액이 1억원 이상 3억원 미만이면 0.28%, 3억원 이상이면 0.25% 이며, '
+          + '온라인으로 개설하시고 전자매체로 직접 운용·거래하시면 면제됩니다.';
+      case 'feeMethod':
+        return rawValue('feeMethod') || COMMON.irpFeeMethod
+          || '대상기간 중 적립금의 일별 평가금액을 기준으로 수수료율을 적용해 부과합니다. '
+          + '운용관리수수료는 체차식, 자산관리수수료는 단일률로 계산되며, 적립금을 펀드로 운용하시면 '
+          + '그 운용금액에 대해 펀드 보수가 별도로 부과됩니다.';
+      case 'products':
+        return rawValue('products') || COMMON.irpProducts
+          || '증권회사 ELB·은행 정기예금 등 원리금보장상품과 펀드 등 실적배당형 상품';
+      /**
+       * 디폴트옵션 — 설명서는 유형(안정형·안정투자형·중립투자형·적극투자형)까지만
+       * 밝히고 상품명은 「퇴직연금 디폴트옵션 안내장」 을 보라고 한다. 그래서 유형까지
+       * 채우고 상품명은 안내장에서 확인해 말하도록 남긴다 — 없는 상품명을 만들지 않는다.
+       */
+      case 'defaultOpt':
+        return rawValue('defaultOpt') || COMMON.irpDefaultOpt
+          || '안정형·안정투자형·중립투자형·적극투자형 네 가지 유형으로 승인받은 포트폴리오 '
+          + '(구체적 상품명은 교부드린 「퇴직연금 디폴트옵션 안내장」 에서 함께 확인해 드리겠습니다)';
       case 'proof': {
         if (rawValue('proof')) return undefined;
         var jt = String(valueOf('joinType') || '');
