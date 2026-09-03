@@ -14,7 +14,9 @@ import { fileURLToPath } from 'node:url';
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const SRC = 'sales-script.html';
-const OUT = 'sales-script-standalone.html';
+/* 내보낼 파일 이름 — 새 기능을 따로 받아 보려면 인자로 다른 이름을 준다.
+   예) node scripts/build_sales_script.mjs sales-script-standalone-v2.html */
+const OUT = process.argv[2] || 'sales-script-standalone.html';
 const PDF_TAG = '<script src="vendor/pdf.min.js"></script>';
 
 let html = readFileSync(resolve(root, SRC), 'utf8');
