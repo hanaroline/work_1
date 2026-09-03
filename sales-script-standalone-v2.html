@@ -14475,9 +14475,9 @@ window.FUND_PROSPECTUS = {"updatedAt":"2026-09-02T20:18:22.712Z","source":"펀�
     bands: '3가지 모두 <code>7</code> · 2가지 <code>5</code> · 1가지 <code>3</code> · 미실시 <code>0</code>',
     script: [
       { t: 'note', x: '[비계열사 펀드만 추천 시]' },
-      { t: 'say', x: "고객님의 투자자성향인 '{{custProfile}}' 과 현재 투자자금성향에 적합한 상품으로, 비계열사 상품인 {{mgr}}의 '{{name}}' 을 추천드리며, 해당 펀드는 {{riskLabel}} {{riskGrade}}등급 상품으로 고객님께 적합한 펀드입니다.\n이 펀드의 최근 1년 수익률은 {{ret1y}} 로, 동종유형 수익률인 {{retPeer}} 대비 {{retGap}} 높은 수준입니다." },
+      { t: 'say', x: "고객님의 투자자성향인 '{{custProfile}}' 과 현재 투자자금성향에 적합한 상품으로, 비계열사 상품인 {{mgr}}의 '{{name}}' 을 추천드리며, 해당 펀드는 {{riskLabel}} {{riskGrade}}등급 상품으로 고객님께 적합한 펀드입니다.\n{{retCompare}}" },
       { t: 'note', x: '[계열사 펀드 추천 시 — 계열 고지 + 유사한 비계열 펀드 1가지 동반 추천 필수]' },
-      { t: 'say', x: "고객님의 투자자성향인 '{{custProfile}}' 과 현재 투자자금성향에 적합한 상품으로, 당사 계열사인 {{mgr}}의 '{{name}}' 과 비계열사 상품인 {{peerFund}} 를 추천드리며, 해당 펀드 모두 {{riskLabel}} {{riskGrade}}등급 상품으로 고객님께 적합한 펀드입니다.\n{{name}} 의 최근 1년 수익률은 {{ret1y}} 로 동종유형 수익률 {{retPeer}} 대비 {{retGap}} 높은 수준이고, {{peerFund}} 의 최근 1년 수익률은 {{peerRet1y}} 입니다." },
+      { t: 'say', x: "고객님의 투자자성향인 '{{custProfile}}' 과 현재 투자자금성향에 적합한 상품으로, 당사 계열사인 {{mgr}}의 '{{name}}' 과 비계열사 상품인 {{peerFund}} 를 추천드리며, 해당 펀드 모두 {{riskLabel}} {{riskGrade}}등급 상품으로 고객님께 적합한 펀드입니다.\n{{retCompare}}\n{{peerFund}} 의 최근 1년 수익률은 {{peerRet1y}} 입니다." },
       { t: 'say', x: '추천드린 상품으로 가입을 하시겠습니까?' }
     ],
     tips: [
@@ -15877,17 +15877,32 @@ window.FUND_PROSPECTUS = {"updatedAt":"2026-09-02T20:18:22.712Z","source":"펀�
   }
 
   /* ==========================================================
-     펀드 완전판매자료 (증시전망) 판독
+     펀드 완전 판매 관련 자료 판독
+     ------------------------------------------------------------
+     투자설명서가 아니라 지점에 내려오는 월간 사내 자료다. 실제 자료를 보고
+     구조에 맞춰 읽는다 — 담긴 것이 생각보다 많다.
+
+       ① 표지    「펀드 완전 판매 관련 자료 안내(2026 년 09 월)」  -> 자료 기준월
+       ② 글로벌 시황  미국 / 한국 / 중국 / 채권 을 각각 한 단락으로 적어 둔다
+                      -> 고른 펀드의 투자지역·유형에 맞는 단락을 골라 쓴다
+       ③ 투자자 성향별 적합 상품위험등급  성장형=1 / 성장추구형=2·3 /
+                      위험중립형=4 / 안정추구형=5 / 안정형=6
+       ④ 위험등급별 주요 상품 정보 (기준일: 2026.08.25)
+                      펀드명 · 위험등급 · 추천상품(●) · 제로인 소유형 ·
+                      수익률 1M/3M/6M/1Y × (펀드, 동종유형) ·
+                      표준편차 6M/1Y × (펀드, 동종유형) ·
+                      총보수(펀드, 동종유형) · 합성총보수
+
+     ④ 가 중요하다 — 동종유형 평균 수익률과 A Class 총보수·합성총보수가 여기 있다.
+     투자설명서에서 못 읽던 값이고, 평가에서 인정하는 「동종유형」 정의(제로인
+     소유형)와도 맞는다. 그래서 이 자료의 값을 카탈로그 수집분보다 앞세운다.
      ---------------------------------------------------------- */
-  /**
-   * 자료 기준월. 평가에서 「직전월 이후 발간」 만 최신자료로 인정하므로
-   * 연·월이 함께 나오는 표기를 찾아 가장 최근 것을 쓴다.
-   * 「2026년 9월」 · 「2026.09」 · 「'26년 9월」 · 「2026-09-01 발간」 을 모두 본다.
-   */
+
+  /** 자료 기준월 — 표지 제목의 「(2026 년 09 월)」 */
   function marketAsOf(text) {
-    var t = String(text).slice(0, 20000);   /* 표지·머리글에 있다 */
+    var t = String(text).slice(0, 8000);
     var best = null, at = 0;
-    var push = function (y, mo, idx, len) {
+    var push = function (y, mo, idx) {
       y = +y; mo = +mo;
       if (y < 100) y += 2000;
       if (!(y >= 2000 && y <= 2100) || !(mo >= 1 && mo <= 12)) return;
@@ -15895,103 +15910,146 @@ window.FUND_PROSPECTUS = {"updatedAt":"2026-09-02T20:18:22.712Z","source":"펀�
       if (best == null || k > best) { best = k; at = idx; }
     };
     var RES = [
+      /완전\s*판매[^\n(（]{0,30}[(（]\s*(\d{4})\s*년\s*(\d{1,2})\s*월/g,
       /['’]?(\d{2,4})\s*년\s*(\d{1,2})\s*월/g,
-      /(\d{4})\s*[.\-\/]\s*(\d{1,2})\s*(?:[.\-\/]\s*\d{1,2})?\s*(?:발간|작성|기준|현재)/g,
-      /(?:발간|작성|기준)\s*[:：]?\s*(\d{4})\s*[.\-\/]\s*(\d{1,2})/g
+      /(?:발간|작성)\s*[:：]?\s*(\d{4})\s*[.\-\/]\s*(\d{1,2})/g
     ];
-    RES.forEach(function (re) {
+    for (var i = 0; i < RES.length; i++) {
       var m;
-      while ((m = re.exec(t))) push(m[1], m[2], m.index, m[0].length);
-    });
+      while ((m = RES[i].exec(t))) push(m[1], m[2], m.index);
+      if (best != null) break;    /* 앞 규칙이 더 정확하다 — 잡히면 그것으로 끝낸다 */
+    }
     if (best == null) return null;
-    return { value: Math.floor(best / 100) + '년 ' + (best % 100) + '월', index: at, length: 0 };
+    return { value: Math.floor(best / 100) + '년 ' + (best % 100) + '월', index: at };
+  }
+  /** 수익률·보수 기준일 — 「(기준일: 2026.08.25)」 */
+  function marketBaseDate(text) {
+    var m = /기준일\s*[:：]\s*(\d{4})\s*[.\-\/]\s*(\d{1,2})\s*[.\-\/]\s*(\d{1,2})/.exec(String(text));
+    return m ? { value: kdateYMD(m[1], m[2], m[3]), index: m.index } : null;
   }
   /**
-   * 증시전망 요약. 「증시전망 / 시장전망 / 시황 / 하우스뷰 / Market View」 같은
-   * 제목 아래의 문장을 모은다. 요약·투자포인트 블록이 따로 있으면 그것을 먼저 쓴다 —
-   * 지점 자료는 앞머리에 결론을 적어 두는 경우가 많다.
+   * 글로벌 시황 — 「■ 글로벌 시황」 아래의 단락들. 실제 자료는 「- 미국은 …」
+   * 「- 한국은 …」 「- 중국은 …」 「- 채권은 …」 처럼 대상별로 한 단락씩이다.
+   * 대상을 함께 담아 두면, 고른 펀드에 맞는 단락만 골라 읽을 수 있다.
    */
-  function marketView(text) {
+  function marketOutlook(text) {
     var lines = String(text).split('\n');
-    var HEAD = /^\s*[■▶◆●○□\-•\s]*(?:\d+\s*[.)]\s*)?(?:증시\s*전망|시장\s*전망|시황(?:\s*전망)?|하우스\s*뷰|House\s*View|Market\s*View|투자\s*전략|전망\s*및\s*전략|요약|Key\s*Point|투자\s*포인트)\s*[:：]?\s*$/i;
-    /* 제목과 본문이 한 줄에 붙어 오는 서식도 있다 */
-    var INLINE = /(?:증시\s*전망|시장\s*전망|시황|하우스\s*뷰|House\s*View|Market\s*View)\s*[:：]\s*(.{20,})/i;
-    var pick = function (from) {
-      var buf = [];
-      for (var j = from; j < lines.length && j < from + 20 && buf.join(' ').length < 300; j++) {
-        var s = lines[j].replace(/\t/g, ' ').replace(/^[\s\-•∙·※☞◇▶■□○●]+/, '').replace(/\s+/g, ' ').trim();
-        if (!s || /^\d+$/.test(s) || /^-\s*\d+\s*-$/.test(s)) continue;
-        if (HEAD.test(lines[j])) break;
-        /**
-         * 다른 절로 넘어가면 멈춘다. 자료마다 절 이름이 달라 목록으로 막을 수 없으니
-         * 「제목처럼 생긴 줄」 로 본다 — 짧고, 문장으로 끝나지 않고, 서술어가 없는 줄.
-         * (「추천 펀드」 「유의사항」 이 전망 요약에 붙어 들어가던 것을 막는다.)
-         */
-        if (s.length <= 16 && !/[.。]$/.test(s) && !/니다|합니다|입니다|이다$/.test(s)) break;
-        /* 어디에나 붙는 고지문구는 전망이 아니다 */
-        if (/투자원금|손실이\s*발생|보장하지\s*않|참고\s*자료|무단\s*전재|준법감시|본\s*자료는/.test(s)) continue;
-        if (s.length < 10) continue;
-        buf.push(s);
-      }
-      return buf.join(' ').replace(/\s+/g, ' ').trim();
-    };
-    var best = '', at = 0;
-    for (var i = 0; i < lines.length; i++) {
-      if (!HEAD.test(lines[i])) continue;
-      var v = pick(i + 1);
-      if (v.length > best.length) { best = v; at = i; }
+    var HEAD = /^\s*[■▶◆●○□]*\s*(?:글로벌\s*)?시황(?:\s*및\s*전망)?\s*$|^\s*[■▶◆●○□]*\s*(?:증시|시장)\s*전망\s*$/;
+    var NEXT = /^\s*[■▶◆●○□]\s*\S/;                 /* 다음 대제목 */
+    var start = -1;
+    for (var i = 0; i < lines.length; i++) { if (HEAD.test(lines[i])) { start = i; break; } }
+    if (start < 0) return null;
+    /* 단락을 모은다 — 「-」 로 시작하면 새 단락, 아니면 앞 단락에 이어 붙는다 */
+    var paras = [];
+    for (var j = start + 1; j < lines.length && j < start + 80; j++) {
+      var raw = lines[j];
+      if (NEXT.test(raw)) break;
+      var s = raw.replace(/\t/g, ' ').replace(/\s+/g, ' ').trim();
+      if (!s || /^\d+$/.test(s) || /^-\s*\d+\s*-$/.test(s)) continue;
+      if (/^[-–‐]\s*\S/.test(s)) paras.push(s.replace(/^[-–‐]\s*/, ''));
+      else if (paras.length) paras[paras.length - 1] += ' ' + s;
     }
-    if (best.length < 30) {
-      var m = INLINE.exec(String(text));
-      if (m && m[1].trim().length > best.length) { best = m[1].replace(/\s+/g, ' ').trim(); at = m.index; }
-    }
-    return best.length >= 30 ? { value: best.slice(0, 320), index: at, length: 0 } : null;
-  }
-  /**
-   * 자료에 나온 업종·테마·지역. 이것만으로는 스크립트에 쓰지 않는다 —
-   * 고른 펀드의 투자전략과 겹치는 낱말을 찾는 데 쓴다. 두 자료에 함께 나오는
-   * 말이라야 「증시전망과 연결되는 투자업종·종목」 이라고 말할 수 있다.
-   */
-  var MKT_THEME = ['반도체', 'AI', '인공지능', '테크놀로지', '테크', '기술주', '2차전지', '배터리', '바이오', '헬스케어', '제약',
-    '자동차', '조선', '방산', '원자력', '전력', '데이터센터', '로봇', '우주항공', '소비재', '유통',
-    /* 「증권」 은 펀드 이름마다 들어가고(증권투자신탁) 「금」 은 금리·금융에 걸려
-       업종 낱말로 쓸 수 없다 — 빼 둔다. 「원자재·구리」 처럼 또렷한 것만 남긴다. */
-    '금융', '은행', '보험', '건설', '부동산', '리츠', '에너지', '원자재', '구리',
-    '플랫폼', '인터넷', '게임', '엔터', '미디어', '통신', '화학', '철강', '기계', '전기전자',
-    '고배당', '배당', '가치주', '성장주', '중소형주', '대형주', '인컴', '채권', '국채', '크레딧',
-    '미국', '중국', '일본', '유럽', '인도', '베트남', '신흥국', '이머징', '아시아', '국내', '한국', '전세계', '글로벌'];
-  function marketThemes(text) {
-    var t = String(text);
-    var hit = [];
-    MKT_THEME.forEach(function (w) {
-      var n = t.split(w).length - 1;
-      if (n >= 1) hit.push({ w: w, n: n });
+    paras = paras.filter(function (x) { return x.length >= 25; });
+    if (!paras.length) return null;
+    /* 단락마다 무엇을 말하는지 앞머리에서 읽는다 (「미국은」 「채권은」) */
+    var WHO = [[/^미국/, '미국'], [/^한국|^국내/, '한국'], [/^중국/, '중국'], [/^일본/, '일본'],
+      [/^유럽/, '유럽'], [/^인도/, '인도'], [/^신흥국|^이머징/, '신흥국'],
+      [/^채권/, '채권'], [/^주식/, '주식'], [/^글로벌|^전\s*세계/, '글로벌']];
+    var out = paras.map(function (p) {
+      var who = null;
+      for (var k = 0; k < WHO.length; k++) { if (WHO[k][0].test(p)) { who = WHO[k][1]; break; } }
+      return { who: who, text: p };
     });
-    /**
-     * 많이 나온 것부터 담는다. 한 번만 나온 낱말도 버리지 않는다 —
-     * 이 목록은 「자료의 주제」 가 아니라 「고른 펀드와 겹치는지 볼 후보」 이고,
-     * 두 자료에 함께 나오는 것만 추천이유로 쓰이므로 한 번이라도 근거가 된다.
-     * (「글로벌 테크놀로지 펀드」 를 한 번 적은 자료를 버리면 정작 그 펀드와의
-     *  연결을 놓친다.)
-     */
-    hit.sort(function (a, b) { return b.n - a.n; });
-    var out = hit.slice(0, 14).map(function (x) { return x.w; });
-    return out.length ? { value: out.join(','), index: 0, length: 0 } : null;
+    return { value: out, index: start };
   }
-  /** 자료 출처·제목 — 최신자료 인정 근거로 함께 적어 둔다 */
-  function marketSource(text) {
+  /**
+   * 투자자 성향별 적합 상품위험등급. 실제 자료의 표는
+   *   성장형 | 성장추구형 | 위험중립형 | 안정추구형 | 안정형
+   *   1등급  | 2등급 3등급 | 4등급     | 5등급      | 6등급
+   * 로 성향과 등급이 맞물려 있다. 성향 이름과 등급 숫자가 같은 표 안에 있으면
+   * 순서대로 이어 붙인다 — 표 서식이 달라지면 비워 두고 사람이 채운다.
+   */
+  function marketProfileMap(text) {
+    var t = String(text);
+    var i = t.search(/투자자\s*성향별\s*적합\s*상품\s*위험\s*등급/);
+    if (i < 0) return null;
+    var seg = t.slice(i, i + 1200);
+    var PROF = ['성장형', '성장추구형', '위험중립형', '안정추구형', '안정형'];
+    var seen = PROF.filter(function (p) {
+      /* 「성장형」 은 「성장추구형」 안에 들어 있다 — 앞뒤를 보고 가른다 */
+      return new RegExp('(?:^|[^가-힣])' + p + '(?:[^가-힣]|$)').test(seg);
+    });
+    if (seen.length < 3) return null;
+    var grades = [];
+    var re = /(\d)\s*등급/g, m;
+    while ((m = re.exec(seg))) { if (grades.indexOf(+m[1]) < 0) grades.push(+m[1]); }
+    if (grades.length < 5) return null;
+    return { value: seen.join(',') + '|' + grades.join(','), index: i };
+  }
+  /**
+   * 위험등급별 주요 상품 정보 표.
+   *
+   * 칸이 행마다 흔들린다 — 추천상품(●) 칸이 비기도 하고 펀드명이 두 줄로
+   * 쪼개지기도 한다. 그래서 왼쪽이 아니라 오른쪽 끝에서 센다:
+   *   맨 뒤 3칸  = 총보수(펀드) · 총보수(동종유형) · 합성총보수
+   *   그 앞 4칸  = 표준편차 6M(펀드·동종) · 1Y(펀드·동종)
+   *   그 앞 8칸  = 수익률 1M·3M·6M·1Y × (펀드·동종)
+   * 앞쪽 글자 칸이 펀드명·위험등급·추천상품·제로인 소유형이다.
+   */
+  function marketFundRows(text) {
     var lines = String(text).split('\n');
-    for (var i = 0; i < lines.length && i < 40; i++) {
-      var s = lines[i].replace(/\t/g, ' ').replace(/\s+/g, ' ').trim();
-      if (s.length < 6 || s.length > 70) continue;
-      if (/^\d+$/.test(s) || /^-\s*\d+\s*-$/.test(s)) continue;
-      if (/^(?:목차|Contents|페이지)/i.test(s)) continue;
-      /* 자료 제목에 흔히 들어가는 말이 있으면 그 줄을 제목으로 본다 */
-      if (/전망|시황|리포트|자료|월간|주간|투자|하우스|House|Outlook|Monthly|Weekly/i.test(s)) {
-        return { value: s, index: 0, length: 0 };
+    var isNum = function (x) { return /^-?\d+(?:\.\d+)?$/.test(x); };
+    var rows = [];
+    for (var i = 0; i < lines.length; i++) {
+      var c = cellsOf(lines[i]).map(function (x) { return x.trim(); }).filter(function (x) { return x !== ''; });
+      if (c.length < 16) continue;
+      var nums = [];
+      /* 뒤에서부터 숫자만 걷어 온다 */
+      for (var k = c.length - 1; k >= 0 && nums.length < 15; k--) {
+        if (!isNum(c[k])) break;
+        nums.unshift(c[k]);
       }
+      if (nums.length !== 15) continue;
+      var head = c.slice(0, c.length - 15);
+      if (!head.length) continue;
+      /* 앞쪽에서 위험등급·추천·소유형을 걷어내면 남는 것이 펀드명이다 */
+      /**
+       * 위험등급과 추천상품(●)을 걷어내면 「펀드명 … 제로인 소유형」 이 남는다.
+       * 소유형은 낱말 목록으로 알아보려 했더니 「커머더티」 처럼 빠진 것이 펀드명에
+       * 붙어 버렸다. 자리로 본다 — 남은 칸의 맨 뒤가 소유형이다.
+       */
+      var grade = null, rec = false, rest = [];
+      head.forEach(function (x) {
+        if (new RegExp('^(?:' + GRADE_WORD + ')$').test(despace(x))) { grade = despace(x); return; }
+        if (/^[●○•*]$/.test(x)) { rec = true; return; }
+        rest.push(x);
+      });
+      var kind = rest.length >= 2 ? rest.pop() : null;
+      var nm = rest.join(' ').replace(/\s+/g, ' ').trim();
+      if (nm.length < 4) continue;
+      rows.push({
+        name: nm, riskLabel: grade, recommended: rec, peerKind: kind,
+        ret1m: nums[0], ret1mPeer: nums[1], ret3m: nums[2], ret3mPeer: nums[3],
+        ret6m: nums[4], ret6mPeer: nums[5], ret1y: nums[6], ret1yPeer: nums[7],
+        sd6m: nums[8], sd6mPeer: nums[9], sd1y: nums[10], sd1yPeer: nums[11],
+        fee: nums[12], feePeer: nums[13], feeSynth: nums[14]
+      });
     }
-    return null;
+    return rows.length ? { value: rows, index: 0 } : null;
+  }
+  /**
+   * 자료 전체를 한 번에 읽는다. 항목마다 모양이 달라(문단 목록·표 행)
+   * 일반 extract 의 {id,label,value} 틀에 억지로 넣지 않는다.
+   */
+  function readMarket(text) {
+    var pick = function (fn) { try { var r = fn(text); return r ? r.value : null; } catch (e) { return null; } };
+    return {
+      asOf: pick(marketAsOf),
+      baseDate: pick(marketBaseDate),
+      outlook: pick(marketOutlook) || [],
+      profileMap: pick(marketProfileMap),
+      rows: pick(marketFundRows) || []
+    };
   }
 
   /**
@@ -16898,37 +16956,6 @@ window.FUND_PROSPECTUS = {"updatedAt":"2026-09-02T20:18:22.712Z","source":"펀�
       }
     ]),
 
-    /**
-     * 펀드 완전판매자료 (증시전망) — 투자설명서가 아니라 지점에 내려오는 월간 자료다.
-     *
-     * 평가표가 요구하는 것은 세 가지다 —
-     *   ㆍ객관적인 증시 관련 「최신」 자료 사용 (직전월 이후 발간)
-     *   ㆍ증시전망 설명 (종합·지수별·업종별·유형별·국가별 중 1가지 이상)
-     *   ㆍ증시에 부합하는 펀드 추천 이유 (운용전략·투자업종·투자종목을 전망과 연결)
-     * 그래서 자료에서 「기준월」 과 「전망 문단」 을 읽고, 업종·테마·지역 낱말을
-     * 따로 모아 둔다. 마지막 것은 고른 펀드의 투자전략과 겹치는 낱말을 찾는 데 쓴다 —
-     * 두 자료에 실제로 함께 나오는 말이라야 「전망과 연결」 이라고 할 수 있다.
-     *
-     * 자료 서식은 지점마다 다르므로 읽은 값을 화면에서 확인·수정할 수 있게 해 둔다.
-     */
-    market: [
-      {
-        id: 'mktAsOf', label: '자료 기준월',
-        fn: function (t) { return marketAsOf(t); }
-      },
-      {
-        id: 'mktView', label: '증시전망 요약',
-        fn: function (t) { return marketView(t); }
-      },
-      {
-        id: 'mktThemes', label: '자료에 나온 업종·테마·지역',
-        fn: function (t) { return marketThemes(t); }
-      },
-      {
-        id: 'mktSource', label: '자료 출처·제목',
-        fn: function (t) { return marketSource(t); }
-      }
-    ]
   };
 
   /* ==========================================================
@@ -17473,6 +17500,7 @@ window.FUND_PROSPECTUS = {"updatedAt":"2026-09-02T20:18:22.712Z","source":"펀�
   g.SS_PROS = {
     RULES: RULES,
     extract: extract,
+    readMarket: readMarket,
     pdfToText: pdfToText,
     fetchFromApi: fetchFromApi,
     apiConfig: apiConfig,
@@ -17855,6 +17883,36 @@ window.FUND_PROSPECTUS = {"updatedAt":"2026-09-02T20:18:22.712Z","source":"펀�
     try { localStorage.setItem(LS_MKT, JSON.stringify(MKT)); } catch (e) { /* 저장 불가 환경 */ }
   }
   /**
+   * 자료의 상품표에서 지금 고른 펀드의 행을 찾는다.
+   * 자료의 펀드명은 클래스까지 붙어 있고(「… 종류 A」 「…ClassA」) 카탈로그 명칭과
+   * 띄어쓰기도 다르다. 그래서 공백·괄호·클래스 꼬리를 지운 뒤 서로 품고 있는지 본다.
+   */
+  function mktKey(s) {
+    return String(s || '')
+      /* 클래스 꼬리를 뗀다 — 자료는 「종류 A」 「ClassA」 「(A)」 「A 형」 을 섞어 쓴다.
+         (H)·(UH)·(모)·(USD)·_운용 은 클래스가 아니라 상품 구분이라 남긴다. */
+      .replace(/\s*(?:종류|클래스|Class)\s*[A-Za-z0-9-]*\s*형?\s*$/i, '')
+      .replace(/\s*[([]\s*(?!H\b|UH\b|USD|모|운용)[A-Za-z][A-Za-z0-9-]{0,3}\s*[)\]]\s*$/, '')
+      .replace(/\s*[A-Za-z][A-Za-z0-9-]{0,3}\s*형\s*$/, '')
+      /* 법적 형태 — 자료는 「…테크놀로지자(주식-재간접)」 로 줄여 쓰고
+         카탈로그는 「…테크놀로지증권자투자신탁(주식-재간접형)」 로 다 쓴다 */
+      .replace(/증권|투자신탁|투자회사/g, '')
+      .replace(/[자모](?=\s*[([]|\s*$)/g, '')
+      .replace(/[\s()[\]·ㆍ\-_]/g, '')
+      .replace(/형$/, '');
+  }
+  function mktRow() {
+    var rows = MKT.rows;
+    if (!rows || !rows.length) return null;
+    var want = mktKey(valueOf('name'));
+    if (want.length < 4) return null;
+    for (var i = 0; i < rows.length; i++) {
+      var k = mktKey(rows[i].name);
+      if (k && (k === want || k.indexOf(want) >= 0 || want.indexOf(k) >= 0)) return rows[i];
+    }
+    return null;
+  }
+  /**
    * 「직전월 이후 발간」 인지 본다 — 평가에서 최신자료로 인정되는 기준이다.
    * (예: 2026.9 조사 → 2026.8.1 이후 발간 자료만 인정)
    */
@@ -17870,9 +17928,14 @@ window.FUND_PROSPECTUS = {"updatedAt":"2026-09-02T20:18:22.712Z","source":"펀�
   var MKT_READ = null;
   var MKT_DEFS = [
     { id: 'mktAsOf', label: '자료 기준월', ph: '예) 2026년 9월', hint: '평가에서는 직전월 이후 발간 자료만 최신자료로 인정합니다' },
-    { id: 'mktSource', label: '자료 출처·제목', ph: '예) 미래에셋증권 9월 펀드 완전판매자료', hint: '출처가 명확해야 인정됩니다' },
-    { id: 'mktView', label: '증시전망 요약', rows: 4, ph: '지수별·업종별·국가별·유형별 전망 중 1가지 이상', hint: '창구에서 그대로 읽는 문장입니다 — 자료 문구와 맞는지 확인하십시오' },
-    { id: 'mktThemes', label: '자료에 나온 업종·테마·지역', rows: 2, ph: '예) 미국,반도체,AI,헬스케어', hint: '쉼표로 구분. 고른 펀드의 투자전략과 겹치는 것만 추천이유로 쓰입니다' }
+    { id: 'mktBaseDate', label: '수익률·보수 기준일', ph: '예) 2026년 8월 25일', hint: '표의 「기준일」 — 수치를 말할 때 함께 밝히면 좋습니다' },
+    /**
+     * 증시전망 요약은 비워 두는 것이 낫다. 자료의 「글로벌 시황」 은 미국·한국·중국·
+     * 채권을 각각 한 단락으로 적어 두고, 화면은 고른 펀드에 맞는 단락을 골라 읽는다.
+     * 여기에 적으면 그것이 모든 펀드에 그대로 쓰이므로, 고칠 때만 쓴다.
+     */
+    { id: 'mktView', label: '증시전망 요약 (비워 두면 펀드에 맞는 단락을 자동으로 고릅니다)', rows: 4, ph: '자동 선택을 쓰지 않고 직접 적으려면 여기에', hint: '창구에서 그대로 읽는 문장입니다' },
+    { id: 'mktProfileMap', label: '투자자 성향별 적합 위험등급', rows: 1, ph: '예) 성장형,성장추구형,위험중립형,안정추구형,안정형|1,2,3,4,5,6', hint: '자료의 매핑 표 — 성향과 등급이 맞는지 확인하는 데 씁니다' }
   ];
   var COMMON_DEFS = [
     { id: 'riskNote1', label: '1등급 매우높은위험 — 유의사항', hint: 'ELS/DLS 는 투자설명서 「목표시장」 원문 문구가 우선 적용됩니다. 이 값은 투자설명서가 없을 때 쓰는 기본값(위험선호형)입니다' },
@@ -18276,7 +18339,103 @@ window.FUND_PROSPECTUS = {"updatedAt":"2026-09-02T20:18:22.712Z","source":"펀�
        * 자료는 그 달에 하나이므로 모든 펀드에서 같은 값을 쓴다.
        */
       case 'mktAsOf': return MKT.mktAsOf || undefined;
-      case 'mktView': return MKT.mktView || undefined;
+      /**
+       * 증시전망 — 자료의 「글로벌 시황」 은 미국·한국·중국·채권을 각각 한 단락으로
+       * 적어 둔다. 평가는 「지수별·업종별·국가별·유형별 중 1가지 이상」 을 요구하므로,
+       * 고른 펀드에 맞는 단락을 골라 읽는 것이 정확하고 짧다.
+       * (중국주식 펀드에 미국 단락을 읽으면 「증시에 부합하는 추천」 이 되지 않는다.)
+       */
+      case 'mktView': {
+        if (MKT.mktView) return MKT.mktView;          /* 사람이 적어 둔 것이 먼저다 */
+        var ol = MKT.outlook;
+        if (!ol || !ol.length) return undefined;
+        var hay2 = [valueOf('name'), valueOf('fundType'), valueOf('targets'),
+          valueOf('strategy'), derived('fxCountry')].join(' ');
+        /* 채권형이면 채권 단락, 아니면 이름·유형에 나오는 나라의 단락 */
+        var want = [];
+        if (/채권/.test(String(valueOf('fundType') || '')) && !/혼합/.test(String(valueOf('fundType') || ''))) want.push('채권');
+        [['미국', /미국|북미|US\b|S&P|나스닥/i], ['중국', /중국|차이나|China/i],
+          ['한국', /국내|한국|코리아|Korea/i], ['일본', /일본|재팬|Japan/i],
+          ['유럽', /유럽|Europe/i], ['인도', /인도|India/i],
+          ['신흥국', /신흥국|이머징|Emerging/i]].forEach(function (r) {
+          if (r[1].test(hay2)) want.push(r[0]);
+        });
+        var hits = [];
+        want.forEach(function (w) {
+          ol.forEach(function (o) { if (o.who === w && hits.indexOf(o) < 0) hits.push(o); });
+        });
+        /* 글로벌·해외 펀드는 미국 단락이 기준이 된다 — 자료가 그렇게 쓰여 있다 */
+        if (!hits.length && /글로벌|해외|전세계/.test(hay2)) {
+          ol.forEach(function (o) { if (o.who === '미국' || o.who === '글로벌') hits.push(o); });
+        }
+        /* 그래도 못 고르면 자료를 통째로 읽는다 (요건은 「1가지 이상」 이다) */
+        if (!hits.length) hits = ol.slice(0, 2);
+        return hits.slice(0, 2).map(function (o) { return o.text; }).join('\n');
+      }
+      /**
+       * 수익률·보수·표준편차 — 자료의 상품표에 이 펀드 행이 있으면 그것을 쓴다.
+       *
+       * 이 값을 카탈로그 수집분보다 앞세우는 이유가 있다. 자료는 사내 공식 자료이고
+       * A Class 기준이며(A·C 없으면 C-P), 동종유형이 제로인 소유형으로 잡혀 있어
+       * 평가에서 인정하는 「동종유형」 정의와 맞는다. 재간접·자펀드는 합성총보수를
+       * 설명해야 하는데 그 값도 표에 있다.
+       */
+      case 'ret1y': {
+        var r1 = mktRow();
+        return r1 ? r1.ret1y + '%' : undefined;
+      }
+      case 'retPeer': {
+        var r2 = mktRow();
+        return r2 ? r2.ret1yPeer + '%' : undefined;
+      }
+      case 'clsAExp': {
+        var r3 = mktRow();
+        if (!r3) return undefined;
+        /* 재간접·모자형은 합성총보수가 인정 기준이다 — 자료 주석도 그렇게 적고 있다 */
+        var ind = /재간접|모자형|피투자/.test(String(valueOf('name') || ''));
+        return (ind && r3.feeSynth != null) ? r3.feeSynth : r3.fee;
+      }
+      case 'sd1y': { var r4 = mktRow(); return r4 ? r4.sd1y + '%' : undefined; }
+      case 'sdPeer': { var r5 = mktRow(); return r5 ? r5.sd1yPeer + '%' : undefined; }
+      case 'peerKind': { var r6 = mktRow(); return r6 ? r6.peerKind : undefined; }
+      /**
+       * 동종유형 대비 비교 문장.
+       *
+       * 문장이 「… 대비 {{retGap}} 높은 수준입니다」 로 굳어 있었다. 동종유형보다
+       * 낮은 펀드에도 「높은 수준」 을 읽히면 사실과 반대되는 말을 하게 된다 —
+       * 실제 자료를 보면 동종유형에 못 미치는 펀드가 적지 않다(피델리티글로벌
+       * 테크놀로지 1Y 16.6% vs 동종유형 41.7%). 그래서 부호를 보고 말을 고른다.
+       *
+       * 평가는 「수익률·위험·비용 등 양적 특성을 수치로 비교」 를 본다. 자료에
+       * 표준편차와 총보수도 있으므로 함께 말해 준다 — 수익률이 낮은 펀드라면
+       * 위험이나 비용이 추천 근거가 된다.
+       */
+      case 'retCompare': {
+        var a = valueOf('ret1y'), b2 = valueOf('retPeer');
+        var na = numOf(a), nb = numOf(b2);
+        if (na == null || nb == null) return undefined;
+        var d = Math.round((na - nb) * 100) / 100;
+        var word = d > 0 ? '높은' : (d < 0 ? '낮은' : '같은');
+        var v = '이 펀드의 최근 1년 수익률은 ' + a + ' 로, 동종유형 평균 ' + b2 + ' 대비 '
+          + (d === 0 ? '같은 수준입니다.' : Math.abs(d) + '%p ' + word + ' 수준입니다.');
+        /* 위험·비용도 자료에 있으면 함께 비교한다 */
+        var rr = mktRow();
+        if (rr) {
+          var pk = rr.peerKind ? '(동종유형: ' + rr.peerKind + ')' : '';
+          v += '\n같은 자료로 위험과 비용도 비교해 보면, 수익률 변동성을 나타내는 표준편차는 '
+            + rr.sd1y + '% 로 동종유형 ' + rr.sd1yPeer + '% 대비 '
+            + (numOf(rr.sd1y) > numOf(rr.sd1yPeer) ? '높고' : (numOf(rr.sd1y) < numOf(rr.sd1yPeer) ? '낮고' : '같고'))
+            + ', 총보수는 연 ' + rr.fee + '% 로 동종유형 ' + rr.feePeer + '% 대비 '
+            + (numOf(rr.fee) > numOf(rr.feePeer) ? '높습니다' : (numOf(rr.fee) < numOf(rr.feePeer) ? '낮습니다' : '같습니다'))
+            + '. ' + pk;
+          if (/재간접|모자형|피투자/.test(String(valueOf('name') || '')) && rr.feeSynth != null) {
+            v += '\n이 펀드는 재간접·모자형이므로 피투자 집합투자기구의 보수까지 포함한 합성 총보수 연 '
+              + rr.feeSynth + '% 를 함께 부담하시게 됩니다.';
+          }
+          if (rr.recommended) v += '\n(이 펀드는 이번 자료의 추천상품입니다)';
+        }
+        return v;
+      }
       /**
        * 투자대상을 짧게 — 문장이 「{{name}} 은 {{targetsShort}} 에 투자하는 펀드로」 다.
        * 투자목적 문장을 그대로 넣으면 「…에 투자합니다. 에 투자하는 펀드로」 가 되어
@@ -18309,33 +18468,62 @@ window.FUND_PROSPECTUS = {"updatedAt":"2026-09-02T20:18:22.712Z","source":"펀�
        * 겹치는 것이 없으면 비워 두어, 자료를 보고 직접 이어 말하도록 남긴다.
        */
       case 'mktLink': {
-        if (!MKT.mktThemes) return undefined;
-        var themes = String(MKT.mktThemes).split(',').map(function (x) { return x.trim(); }).filter(Boolean);
-        /* 펀드 이름의 법적 형태 표기(증권·자투자신탁·유형 괄호)는 업종이 아니다 — 떼어낸다 */
-        var nm2 = String(valueOf('name') || '')
-          .replace(/\s*[(\[][^)\]]*[)\]]/g, ' ')
-          .replace(/(?:증권)?\s*모?자?투자(?:신탁|회사)/g, ' ');
-        var hay = [valueOf('strategy'), valueOf('targets'), nm2, valueOf('fundType')].join(' ');
-        var shared = themes.filter(function (w) { return hay.indexOf(w) >= 0; });
-        /* 「테크」 는 「테크놀로지」 안에 들어 있다 — 긴 쪽만 남긴다 */
-        shared = shared.filter(function (w) {
-          return !shared.some(function (o) { return o !== w && o.indexOf(w) >= 0; });
-        });
-        if (!shared.length) return undefined;
-        /* 지역과 업종을 갈라 말한다 — 「미국 반도체」 처럼 이어 붙이면 또렷해진다 */
-        var REG = ['미국', '중국', '일본', '유럽', '인도', '베트남', '신흥국', '이머징', '아시아', '국내', '한국', '전세계', '글로벌'];
-        var reg = shared.filter(function (w) { return REG.indexOf(w) >= 0; });
-        var sec = shared.filter(function (w) { return REG.indexOf(w) < 0; });
-        var head = (reg.slice(0, 2).join('·') + (reg.length && sec.length ? ' ' : '') + sec.slice(0, 3).join('·')).trim();
+        var src2 = valueOf('mktView');
+        if (!src2) return undefined;
         /**
-         * 문장이 「… {{mktLink}} 이기 때문에 추천드렸습니다」 로 이어지므로
-         * 이 값은 반드시 명사로 끝나야 한다. 그래서 운용전략을 앞에 이어붙이고
-         * (「…합니다.」 를 「…하며」 로 바꿔), 뒤를 명사구로 닫는다.
-         * 평가는 운용전략까지 말해야 인정하므로 전략을 버리지 않는다.
+         * 「전망과 연결되는 운용전략·투자업종」.
+         *
+         * 낱말이 글자까지 같아야 한다고 보면 놓치는 연결이 있다 — 자료는 「미국의 AI
+         * 투자사이클」 을 말하고, 같은 자료가 이 펀드를 「정보기술섹터」 로 분류한다.
+         * AI 와 정보기술은 같은 업종군이므로 이것은 실제 연결이다. 그래서 업종군으로
+         * 잇고, 자료에 있는 낱말을 그대로 대어 말한다 (없는 연결은 만들지 않는다).
          */
-        var tail = head + josa(head, '을', '를') + ' 전망의 중심에 둔 이번 자료와 같은 방향의 펀드';
+        var GROUP = [
+          ['정보기술', ['AI', '인공지능', '반도체', '테크놀로지', '테크', '기술', '데이터센터', '로봇', '통신', '전력설비', '전력']],
+          ['헬스케어', ['헬스케어', '바이오', '제약']],
+          ['금융', ['금융', '은행', '보험']],
+          ['소비·유통', ['소비', '유통']],
+          ['산업재', ['자동차', '조선', '방산', '우주항공', '기계', '철강', '화학', '건설']],
+          ['에너지·원자재', ['에너지', '원자재', '원자력', '구리']],
+          ['부동산', ['부동산', '리츠']],
+          ['배당', ['고배당', '배당']],
+          ['채권', ['채권', '국채', '단기채', '크레딧', '듀레이션', '금리']]
+        ];
+        var REG = [['미국', /미국|북미|US\b|S&P|나스닥/i], ['중국', /중국|차이나|China/i],
+          ['한국', /국내|한국|코리아|Korea/i], ['일본', /일본|재팬|Japan/i],
+          ['유럽', /유럽|Europe/i], ['인도', /인도|India/i],
+          ['신흥국', /신흥국|이머징|Emerging/i], ['글로벌', /글로벌|전\s*세계|Global/i]];
+        var mrow = mktRow();
+        /* 펀드 쪽 정보 — 자료가 붙인 소유형까지 포함한다 */
+        var mine = [valueOf('name'), valueOf('fundType'), valueOf('targets'),
+          valueOf('strategy'), mrow ? mrow.peerKind : ''].join(' ');
+        /* 자료의 시황 단락에서, 이 펀드와 같은 업종군에 드는 낱말을 찾는다 */
+        var words = [], group = null;
+        for (var gi = 0; gi < GROUP.length; gi++) {
+          var fam = GROUP[gi][1];
+          var inMine = fam.some(function (w) { return mine.indexOf(w) >= 0; })
+            || mine.indexOf(GROUP[gi][0]) >= 0;
+          if (!inMine) continue;
+          var inDoc = fam.filter(function (w) { return String(src2).indexOf(w) >= 0; });
+          if (inDoc.length) { words = inDoc.slice(0, 2); group = GROUP[gi][0]; break; }
+        }
+        /* 지역도 자료와 펀드가 함께 말하는 것만 */
+        var reg = null;
+        for (var ri = 0; ri < REG.length; ri++) {
+          if (REG[ri][1].test(String(src2)) && REG[ri][1].test(mine)) { reg = REG[ri][0]; break; }
+        }
+        if (!reg && /미국은/.test(String(src2)) && /글로벌|해외|전세계/.test(mine)) reg = '미국';
+        if (!words.length && !reg) return undefined;
+        var what = (reg ? reg + '의 ' : '') + (words.length ? words.join('·') : '증시');
+        var tail = '자료가 ' + what + josa(what, '을', '를') + ' 전망의 중심에 두고 있어 같은 방향의 펀드';
+        var lead = [];
+        if (mrow && mrow.peerKind) {
+          lead.push('이번 자료가 ' + mrow.peerKind + josa(mrow.peerKind, '으로', '로') + ' 분류한 펀드이며');
+        }
+        if (mrow && mrow.recommended) lead.push('자료의 추천상품이고');
         var st1 = connective(firstClause(valueOf('strategy')));
-        return st1 ? st1 + ' ' + tail : tail;
+        if (st1) lead.push(st1);
+        return lead.length ? lead.join(' ') + ' ' + tail : tail;
       }
       /**
        * 이자지급주기별 이자율 — 표면금리를 연간 지급 횟수로 나눈 값이다.
@@ -19402,11 +19590,34 @@ window.FUND_PROSPECTUS = {"updatedAt":"2026-09-02T20:18:22.712Z","source":"펀�
     h.push('<button class="tbtn primary" id="btnMktExtract" style="margin-top:8px">붙여넣은 내용에서 추출</button>');
     /* 판독 결과 — 창구에서 눈으로 확인하고 고칠 수 있어야 한다 (자료 서식이 지점마다 다르다) */
     if (mp) {
-      h.push('<div class="note" style="margin:12px 0 0;border-left-color:var(--' + (mp.found.length ? 'ok' : 'warn') + ')">'
-        + '<b>판독 ' + (mp.found.length ? '완료' : '실패') + ' — ' + esc(mp.name) + '</b>'
-        + (mp.pages ? ' · ' + mp.pages + '페이지' : '') + ' · 인식 ' + mp.found.length + '건'
-        + (mp.found.length ? '' : '<br>자료 서식이 예상과 달라 항목을 못 찾았습니다. 아래 칸에 직접 적어 두셔도 됩니다.')
+      var rd = mp.read;
+      h.push('<div class="note" style="margin:12px 0 0;border-left-color:var(--' + (mp.count ? 'ok' : 'warn') + ')">'
+        + '<b>판독 ' + (mp.count ? '완료' : '실패') + ' — ' + esc(mp.name) + '</b>'
+        + (mp.pages ? ' · ' + mp.pages + '페이지' : '')
+        + '<br>기준월 ' + (rd.asOf ? esc(rd.asOf) : '—')
+        + ' · 기준일 ' + (rd.baseDate ? esc(rd.baseDate) : '—')
+        + ' · 시황 ' + rd.outlook.length + '단락'
+        + (rd.outlook.length ? ' (' + rd.outlook.map(function (o) { return esc(o.who || '?'); }).join('·') + ')' : '')
+        + ' · 상품표 ' + rd.rows.length + '개'
+        + ' · 성향↔등급 ' + (rd.profileMap ? '읽음' : '—')
+        + (mp.count ? '' : '<br>자료 서식이 예상과 달라 항목을 못 찾았습니다. 아래 칸에 직접 적어 두셔도 됩니다.')
         + '</div>');
+    }
+    /* 지금 고른 펀드가 자료의 상품표에 있는지 — 있으면 그 수치가 스크립트에 들어간다 */
+    if (MKT.rows && MKT.rows.length) {
+      var mr = mktRow();
+      h.push(mr
+        ? '<div class="note" style="margin:10px 0 0;border-left-color:var(--ok)">'
+          + '<b>이 펀드를 자료에서 찾았습니다</b> — ' + esc(mr.name)
+          + (mr.recommended ? ' <span class="src man">추천상품</span>' : '')
+          + '<br>1년 수익률 ' + esc(mr.ret1y) + '% (동종유형 ' + esc(mr.ret1yPeer) + '%)'
+          + ' · 표준편차 ' + esc(mr.sd1y) + '% (동종유형 ' + esc(mr.sd1yPeer) + '%)'
+          + ' · 총보수 ' + esc(mr.fee) + '% (동종유형 ' + esc(mr.feePeer) + '%)'
+          + ' · 합성총보수 ' + esc(mr.feeSynth) + '%'
+          + (mr.peerKind ? '<br>제로인 소유형 ' + esc(mr.peerKind) : '')
+          + '<br><span style="color:var(--muted2)">이 수치가 카탈로그 수집분보다 앞서 스크립트에 들어갑니다 (사내 자료·A Class 기준).</span></div>'
+        : '<div class="note" style="margin:10px 0 0">이 펀드는 자료의 상품표(' + MKT.rows.length + '개)에 없습니다 — '
+          + '수익률·보수는 수집분과 투자설명서에서 채웁니다. 증시전망은 그대로 쓰입니다.</div>');
     }
     h.push('<div class="pgrid" style="margin-top:12px">');
     MKT_DEFS.forEach(function (f) {
@@ -19419,9 +19630,6 @@ window.FUND_PROSPECTUS = {"updatedAt":"2026-09-02T20:18:22.712Z","source":"펀�
         + (empty ? '미입력' : (got != null && got === v ? '자료 판독' : '입력')) + '</span></div>');
       h.push('<textarea class="mInp" data-k="' + esc(f.id) + '" rows="' + (f.rows || 1) + '" placeholder="' + esc(f.ph || '') + '">' + esc(v == null ? '' : v) + '</textarea>');
       if (f.hint) h.push('<div class="h">' + esc(f.hint) + '</div>');
-      if (got != null && f.id === 'mktThemes') {
-        h.push('<div class="h">이 낱말 중 고른 펀드의 투자전략에도 나오는 것만 「전망과 연결되는 업종」 으로 씁니다.</div>');
-      }
       h.push('</div>');
     });
     h.push('</div>');
@@ -20027,10 +20235,15 @@ window.FUND_PROSPECTUS = {"updatedAt":"2026-09-02T20:18:22.712Z","source":"펀�
     /* ---- 펀드 완전판매자료 (증시전망) ---- */
     /** 자료 본문을 판독해 화면에 미리 채운다 (등록은 「이 자료로 등록」 을 눌러야 된다) */
     function mktRead(text, name, pages) {
-      var found = PROS.extract(text, 'market');
+      var r = PROS.readMarket(text);
+      /* 화면 칸에 미리 채울 값 (사람이 고칠 수 있어야 한다) */
       var map = {};
-      found.forEach(function (x) { map[x.id] = x.value; });
-      MKT_READ = { name: name, pages: pages || 0, found: found, map: map, text: text };
+      if (r.asOf) map.mktAsOf = r.asOf;
+      if (r.baseDate) map.mktBaseDate = r.baseDate;
+      if (r.profileMap) map.mktProfileMap = r.profileMap;
+      var n = (r.asOf ? 1 : 0) + (r.baseDate ? 1 : 0) + (r.profileMap ? 1 : 0)
+        + r.outlook.length + r.rows.length;
+      MKT_READ = { name: name, pages: pages || 0, map: map, read: r, count: n };
       renderAll();
     }
     var mf = $('#mktFile');
@@ -20071,8 +20284,15 @@ window.FUND_PROSPECTUS = {"updatedAt":"2026-09-02T20:18:22.712Z","source":"펀�
         Array.prototype.forEach.call(document.querySelectorAll('.mInp'), function (i) {
           MKT[i.dataset.k] = i.value.trim();
         });
-        if (!MKT.mktAsOf && !MKT.mktView) { alert('기준월 또는 증시전망 요약 중 하나는 채워야 합니다.'); return; }
-        if (MKT_READ) { MKT.docName = MKT_READ.name; MKT.pages = MKT_READ.pages; }
+        if (!MKT.mktAsOf && !MKT.mktView && !(MKT_READ && MKT_READ.read.outlook.length)) {
+          alert('기준월 또는 증시전망 요약 중 하나는 채워야 합니다.'); return;
+        }
+        if (MKT_READ) {
+          MKT.docName = MKT_READ.name; MKT.pages = MKT_READ.pages;
+          /* 시황 단락과 상품표는 화면 칸으로 고칠 값이 아니라 판독분을 그대로 담는다 */
+          MKT.outlook = MKT_READ.read.outlook;
+          MKT.rows = MKT_READ.read.rows;
+        }
         MKT.registeredAt = new Date().toISOString();
         saveMkt();
         if (mktFresh() === false) {
