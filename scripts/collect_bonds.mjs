@@ -245,21 +245,46 @@ async function detailOf(code, dump) {
   const d = {};
   const cp = after(body, ['표면금리'], /^[\s:]*([\d]+\.?[\d]*)\s*%?/);
   if (cp != null && isFinite(+cp)) d.coupon = +cp;
-  const pt = after(body, ['이자지급 유형', '이자지급유형'], /(이표채|복리채|할인채|단리채)/, 60);
+  /* 이자지급유형·주기는 화면이 무슨 이름으로 적어 놓았는지 확정하지 못했다.
+     쓰일 만한 이름을 모두 걸어 보고, 그래도 못 찾으면 본문 전체에서 찾는다.
+     다만 본문 전체에서 찾을 때는 「단 한 가지만 나올 때」 만 담는다 —
+     두 가지가 섞여 나오면 어느 것이 이 종목인지 알 수 없다. */
+  const PT_LABELS = ['이자지급 유형', '이자지급유형', '이자지급방법', '이자지급 방법',
+    '이자지급방식', '이자지급 방식', '이자유형', '이자 유형', '원리금지급방법', '채권유형'];
+  let pt = after(body, PT_LABELS, /(이표채|복리채|할인채|단리채)/, 60);
+  if (!pt) {
+    const kinds = [...new Set((body.match(/이표채|복리채|할인채|단리채/g) || []))];
+    if (kinds.length === 1) pt = kinds[0];
+  }
   if (pt) d.payType = pt;
-  const pc = after(body, ['이자지급 주기', '이자지급주기'], /^[\s:]*([\d]+)\s*개월/, 30);
+  const PC_LABELS = ['이자지급 주기', '이자지급주기', '이자지급 간격', '이자주기',
+    '이자 주기', '이자지급월', '이자지급 월'];
+  let pc = after(body, PC_LABELS, /^[\s:]*([\d]+)\s*개월/, 30);
+  if (!pc) {
+    const cyc = [...new Set((body.match(/(\d+)\s*개월\s*마다/g) || []).map((s) => s.replace(/\D/g, '')))];
+    if (cyc.length === 1) pc = cyc[0];
+  }
   if (pc) d.payCycle = +pc;
   const pr = after(body, ['이자지급주기별 이자율'], /약?\s*([\d]+\.?[\d]*)\s*%/, 40);
   if (pr != null && isFinite(+pr)) d.payRate = +pr;
   /* 신용등급 — Moody's·S&P·Fitch·국내 네 칸이 이어 온다. 값이 하나만 채워진
      경우(국내채권은 보통 국내등급만 있다)에만 담는다. 넷 중 어느 것인지
      헷갈릴 값을 등급이라고 단정하지 않는다. */
-  const cr = after(body, ['국내신용등급'], /^[\s:]*((?:[A-D][A-Za-z]{0,2}[+-]?(?:\s|$)){1,4})/, 40);
+  const cr = after(body, ['국내신용등급', '국내 신용등급', '신용등급', '평가등급'],
+    /^[\s:]*((?:[A-D][A-Za-z]{0,2}[+-]?(?:\s|$)){1,4})/, 40);
   if (cr) {
     const toks = cr.trim().split(/\s+/).filter(Boolean);
     if (toks.length === 1) d.credit = toks[0];
     else d.creditRaw = toks.join(' ');
   }
+  /* 매매수수료·최소 매수금액 — 화면이 적어 놓았을 때만. 「없음」 도 반드시
+     고지해야 하는 값이라 그대로 담는다. 느슨하게 긁으면 엉뚱한 문장이
+     값으로 들어가므로 형태를 좁게 잡는다. */
+  const fee = after(body, ['매매수수료', '매매 수수료'], /^[\s:]*(없음|무료|[\d.]+\s*%)/, 30);
+  if (fee) d.fee = fee;
+  const min = after(body, ['최소 매수금액', '최소매수금액', '최소 매수', '최소투자금액'],
+    /^[\s:]*([\d,]+\s*원)/, 30);
+  if (min) d.minAmt = min;
   return d;
 }
 if (DETAIL) {
@@ -283,6 +308,7 @@ if (DETAIL) {
     + ' · 주기별이자율 ' + n('payRate')
     + ' · 신용등급 ' + n('credit')
     + (n('creditRaw') ? ' (여러 등급 ' + n('creditRaw') + ')' : '')
+    + ' · 매매수수료 ' + n('fee') + ' · 최소금액 ' + n('minAmt')
     + (fail ? ' · 못 받은 종목 ' + fail : ''));
   krw.slice(0, 5).forEach((x) => console.log('     ' + x.name + ' — 표면 ' + (x.coupon != null ? x.coupon + '%' : '?')
     + ' · ' + (x.payType || '?') + ' · ' + (x.payCycle != null ? x.payCycle + '개월' : '?')

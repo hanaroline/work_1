@@ -619,6 +619,8 @@
     put('payCycle', it.payCycle != null ? it.payCycle + '개월' : null);
     put('payRate', it.payRate != null ? '연 ' + it.payRate + '%' : null);
     if (it.credit) put('credit', it.credit);
+    put('fee', it.fee);
+    put('minAmt', it.minAmt);
     /* 매매단가와 세후수익률 — 창구가 손으로 넣던 값이다 */
     put('tradePrice', it.tradePrice != null ? it.tradePrice.toLocaleString() + '원' : null);
     put('ytm', it.ytmNetPct != null ? '연 ' + it.ytmNetPct + '% (세후, 회사 제시)' : null);
