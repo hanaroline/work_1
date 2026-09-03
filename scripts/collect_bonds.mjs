@@ -177,10 +177,17 @@ const notice = [...new Set(
   strip(krwHtml)
     .split(/(?<=[.다])\s+/)
     .map((s) => s.trim())
+    /* 문장 앞에 화면 껍데기가 붙어 온다 —
+       「스크롤을 아래로 내려주세요 [처리시간 : 22:17:49] 채권/RP > RP매매 > 수시형RP매수 -->
+        무보증사채는 …」
+       문장 부호가 없어 앞에서 끊기지 않으므로 껍데기를 걷어낸다. */
+    .map((s) => s.replace(/^[\s\S]*-->\s*/, ''))
+    .map((s) => s.replace(/^\s*\[[^\]]*\]\s*/, ''))
+    .map((s) => s.replace(/^(?:[^\s>]+\s*>\s*)+/, '').trim())
     .filter((s) => s.length >= 20 && s.length <= 320)
     .filter((s) => NOTICE_KEY.test(s))
     /* 화면 스크립트가 섞여 들어오는 것을 걷어낸다 */
-    .filter((s) => !/function|var\s|\$\(|window\.|\{|\}/.test(s))
+    .filter((s) => !/function|var\s|\$\(|window\.|\{|\}|스크롤|처리시간/.test(s))
 )];
 console.log('  유의사항 문장 ' + notice.length + '개');
 notice.forEach((s) => console.log('     · ' + s));
@@ -193,23 +200,45 @@ const fxTypes = [];
   const th = [...tb.matchAll(/<th[^>]*>([\s\S]*?)<\/th>/gi)].map((m) => strip(m[1])).filter(Boolean);
   if (!/통화|국가/.test(th.join(' ')) || !/국제\s*신용등급/.test(th.join(' '))) return;
   const byCountry = /^국가/.test(th[0] || '');
+  /* 이 표는 칸 자리로 읽을 수 없다 —
+       ㆍ통화·과세 칸이 여러 줄을 아우른다(rowspan) → 뒷줄에는 그 칸이 없다
+       ㆍ줄 끝에 「외화채권 매매」 같은 단추 칸이 붙는다
+     자리로 세면(왼쪽이든 오른쪽이든) 줄마다 다르게 밀린다. 그래서 칸의 내용을
+     보고 무슨 값인지 정한다. 자리가 아니라 내용이 값을 말해 준다. */
+  const IS = {
+    ccy: (s) => /^[A-Z]{3}$/.test(s),
+    term: (s) => /(?:\d+\s*년|영구채|만기)/.test(s) && !/과세|소득|판매|중개/.test(s),
+    credit: (s) => /^(?:[A-C]{1,3}[+-]?(?:\s*~\s*[A-C]{1,3}[+-]?)?|.*상이.*|.*등급.*)$/.test(s) && s.length < 30,
+    deal: (s) => /판매|중개/.test(s) && s.length < 30,
+    tax: (s) => /과세|비과세|소득세|원천/.test(s),
+    button: (s) => /^(?:외화채권\s*매매|매매하기|상담|신청|자세히|바로가기)$/.test(s)
+  };
   let ccy = null, country = null, tax = null;
   [...tb.matchAll(/<tr[^>]*>([\s\S]*?)<\/tr>/gi)].map((m) => m[1]).filter((r) => /<td/i.test(r)).forEach((r) => {
-    const td = [...r.matchAll(/<td[^>]*>([\s\S]*?)<\/td>/gi)].map((m) => strip(m[1])).filter((x) => x !== '');
-    if (!td.length) return;
-    /* 통화·국가 칸은 여러 줄을 아우르므로(rowspan) 나오면 기억한다 */
-    let c = td;
-    if (byCountry) { if (td.length >= 6) { country = td[0]; c = td.slice(1); } }
-    else if (/^[A-Z]{3}$/.test(td[0])) { ccy = td[0]; c = td.slice(1); }
-    if (c.length < 4) return;
-    /* 과세 칸도 여러 줄을 아우른다 — 잔존만기가 세금 칸으로 밀려 들어와
-       「과세: 1년 ~ 30년」 같은 값이 나왔다. 오른쪽부터 세어 붙인다. */
-    const head = byCountry ? 4 : 3;          /* 종류·매매방식·(통화)·신용등급 */
-    const term = c[c.length - 1];
-    if (c.length > head + 1) tax = c[c.length - 2];
-    const o = byCountry
-      ? { country: country, kind: c[0], deal: c[1], ccy: c[2], credit: c[3], tax: tax, term: term }
-      : { ccy: ccy, kind: c[0], deal: c[1], credit: c[2], tax: tax, term: term };
+    const td = [...r.matchAll(/<td[^>]*>([\s\S]*?)<\/td>/gi)].map((m) => strip(m[1]))
+      .filter((x) => x !== '' && !IS.button(x));
+    if (td.length < 3) return;
+    const rest = [];
+    let rCcy = null, rTerm = null, rCredit = null, rDeal = null, rTax = null;
+    td.forEach((s) => {
+      if (!rCcy && IS.ccy(s)) { rCcy = s; return; }
+      if (!rDeal && IS.deal(s)) { rDeal = s; return; }
+      if (!rTax && IS.tax(s)) { rTax = s; return; }
+      if (!rTerm && IS.term(s)) { rTerm = s; return; }
+      if (!rCredit && IS.credit(s)) { rCredit = s; return; }
+      rest.push(s);
+    });
+    /* 남은 칸이 종류(와 국가별 표에서는 국가)다 */
+    if (byCountry && rest.length >= 2) country = rest.shift();
+    const kind = rest.shift();
+    /* 아우른 칸은 앞줄 값을 이어 쓴다 */
+    if (rCcy) ccy = rCcy;
+    if (rTax) tax = rTax;
+    const o = {
+      country: byCountry ? country : null,
+      ccy: rCcy || ccy, kind: kind, deal: rDeal,
+      credit: rCredit, tax: rTax || tax, term: rTerm
+    };
     Object.keys(o).forEach((k) => { if (!o[k]) delete o[k]; });
     if (o.kind && o.credit) fxTypes.push(o);
   });
