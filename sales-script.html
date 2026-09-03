@@ -199,6 +199,10 @@ td.hl{background:var(--gray-hl);font-weight:700}
   <div class="sp"></div>
   <div class="timer" id="timer">00:00</div>
   <button class="tbtn" id="btnTimer">상담 시작</button>
+  <!-- 「리셋」 이라 하지 않는다 — 사이드바에 입력값까지 지우는 「전체 초기화」 가 있어서,
+       무엇을 지우는 버튼인지 이름에 담아야 상담 중에 헷갈리지 않는다.
+       시간이 0 일 때는 지울 것이 없으므로 감춘다 (tick 이 켜고 끈다). -->
+  <button class="tbtn" id="btnTimerReset" hidden>시간 초기화</button>
   <button class="tbtn" id="btnPrint">인쇄 / PDF</button>
   <button class="tbtn primary" id="btnPrompter">읽기 모드 ▶</button>
 </div>
