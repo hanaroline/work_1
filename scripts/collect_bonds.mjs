@@ -374,15 +374,27 @@ try {
   const i = pBody.search(/본\s*채권투자의\s*위험요인/);
   if (i >= 0) {
     const blk = pBody.slice(i, i + 4000);
-    /* 「가.」 「나.」 처럼 한글 한 자 + 점으로 시작하는 문단 머리로 자른다 */
-    blk.split(/(?=[가-하]\.\s)/).forEach((sec) => {
-      const head = (/^([가-하])\.\s*([^①]{2,40})/.exec(sec) || [])[2];
-      const items = sec.split(/(?=[①②③④⑤⑥⑦⑧⑨])/)
+    /* 문단 머리는 「가. 채권투자의 기본위험」 「나. 환율변동 위험」 처럼
+       한글 한 자 + 점 + 「…위험」 꼴이다.
+       한글 한 자 + 점만 보고 자르면 「…있습니다.」 의 「다.」 가 문단 머리로
+       잡힌다 — 앞 판에서 문단이 13개로 쪼개진 이유가 이것이다.
+       머리말이 「위험」 으로 끝날 것을 요구해 그것을 막는다. */
+    /* 「위험」 으로 끝날 것을 요구해도 아직 모자랐다 — 「있습니다.」 의 「다.」 를
+       머리표로 보고 그 뒤의 진짜 머리말(「나. 환율변동 위험」)을 통째로
+       삼켰다. 머리표 앞이 한글이면 문장 끝이므로 제외한다. */
+    const HEAD = /(?<![가-힣])([가-마])\.\s*([가-힣][^①]{2,45}?위험)(?=\s|$)/g;
+    const heads = [];
+    let hm;
+    while ((hm = HEAD.exec(blk))) heads.push({ at: hm.index, end: hm.index + hm[0].length, head: hm[2].trim() });
+    /* 머리말을 못 찾으면 한 덩어리로 담는다 (문단을 짐작해 나누지 않는다) */
+    const segs = heads.length
+      ? heads.map((x, k) => ({ head: x.head, text: blk.slice(x.end, k + 1 < heads.length ? heads[k + 1].at : blk.length) }))
+      : [{ head: '', text: blk }];
+    segs.forEach((sec) => {
+      const items = sec.text.split(/(?=[①②③④⑤⑥⑦⑧⑨])/)
         .map((s) => s.trim())
-        /* 다음 문단 머리가 문장 끝에 붙어 오므로 떼어낸다 */
-        .map((s) => s.replace(/\s*[가-하]\.\s*[^.①]{2,40}$/, '').trim())
         .filter((s) => /^[①②③④⑤⑥⑦⑧⑨]/.test(s) && s.length > 25 && s.length < 600);
-      if (items.length) riskFactors.push({ head: (head || '').trim(), items: items });
+      if (items.length) riskFactors.push({ head: sec.head, items: items });
     });
   }
   console.log('  위험요인 문단 ' + riskFactors.length + '개');
