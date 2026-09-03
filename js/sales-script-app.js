@@ -21,6 +21,7 @@
   var LS_PROD = 'ss_products_v1';   /* 담당자가 등록·저장한 상품 */
   var LS_DOCS = 'ss_docs_v1';       /* 상품별로 등록된 투자설명서 */
   var LS_TXT = 'ss_commontexts_v1'; /* 전 상품 공용 문구 (핵심요약설명서 표준 문구 등) */
+  var LS_MKT = 'ss_market_v1';      /* 펀드 완전판매자료 (증시전망) — 그 달의 자료 하나 */
 
   /* ---------------- 상태 ---------------- */
   var ST = {
@@ -347,6 +348,43 @@
   function saveCommon() {
     try { localStorage.setItem(LS_TXT, JSON.stringify(COMMON)); } catch (e) { /* 저장 불가 환경 */ }
   }
+  /* ----------------------------------------------------------
+     펀드 완전판매자료 (증시전망)
+     ------------------------------------------------------------
+     투자설명서가 아니라 지점에 내려오는 월간 자료다. 상품마다 다른 값이 아니라
+     그 달의 자료 하나가 모든 펀드에 쓰이므로, 상품별(DOCS)이 아니라 한 번만
+     등록해 두고 모든 펀드에서 함께 쓴다. 자료가 바뀌면 다시 올리면 된다.
+     ---------------------------------------------------------- */
+  var MKT = {};
+  function loadMkt() {
+    try {
+      var o = JSON.parse(localStorage.getItem(LS_MKT) || '{}');
+      MKT = (o && typeof o === 'object') ? o : {};
+    } catch (e) { MKT = {}; }
+  }
+  function saveMkt() {
+    try { localStorage.setItem(LS_MKT, JSON.stringify(MKT)); } catch (e) { /* 저장 불가 환경 */ }
+  }
+  /**
+   * 「직전월 이후 발간」 인지 본다 — 평가에서 최신자료로 인정되는 기준이다.
+   * (예: 2026.9 조사 → 2026.8.1 이후 발간 자료만 인정)
+   */
+  function mktFresh() {
+    var m = String(MKT.mktAsOf || '').match(/(\d{4})\s*년\s*(\d{1,2})\s*월/);
+    if (!m) return null;
+    var now = new Date();
+    var cur = now.getFullYear() * 12 + now.getMonth();          /* 0-based 월 */
+    var doc = (+m[1]) * 12 + (+m[2]) - 1;
+    return cur - doc <= 1;      /* 이번 달 또는 지난 달이면 최신 */
+  }
+  /* 자료에서 읽은 결과 (등록 전 확인용) */
+  var MKT_READ = null;
+  var MKT_DEFS = [
+    { id: 'mktAsOf', label: '자료 기준월', ph: '예) 2026년 9월', hint: '평가에서는 직전월 이후 발간 자료만 최신자료로 인정합니다' },
+    { id: 'mktSource', label: '자료 출처·제목', ph: '예) 미래에셋증권 9월 펀드 완전판매자료', hint: '출처가 명확해야 인정됩니다' },
+    { id: 'mktView', label: '증시전망 요약', rows: 4, ph: '지수별·업종별·국가별·유형별 전망 중 1가지 이상', hint: '창구에서 그대로 읽는 문장입니다 — 자료 문구와 맞는지 확인하십시오' },
+    { id: 'mktThemes', label: '자료에 나온 업종·테마·지역', rows: 2, ph: '예) 미국,반도체,AI,헬스케어', hint: '쉼표로 구분. 고른 펀드의 투자전략과 겹치는 것만 추천이유로 쓰입니다' }
+  ];
   var COMMON_DEFS = [
     { id: 'riskNote1', label: '1등급 매우높은위험 — 유의사항', hint: 'ELS/DLS 는 투자설명서 「목표시장」 원문 문구가 우선 적용됩니다. 이 값은 투자설명서가 없을 때 쓰는 기본값(위험선호형)입니다' },
     { id: 'riskNote2', label: '2등급 높은위험 — 유의사항', hint: '평가표 탁월사례에서 확인된 문구가 기본값으로 들어가 있습니다' },
@@ -542,6 +580,48 @@
     return kDateDow(bizDaysAfter(new Date(), n - 1));
   }
 
+  /**
+   * 조사를 앞말 종성에 맞춰 고른다 — 「반도체를 / 미국 반도체을」 처럼 틀리면
+   * 창구에서 읽을 때 바로 들킨다. 한글 음절은 (코드−0xAC00)%28 이 0 이면 종성이 없다.
+   */
+  function josa(word, withJong, withoutJong) {
+    var s = String(word || '').replace(/[\s)\]]+$/, '');
+    var c = s.charCodeAt(s.length - 1);
+    if (!(c >= 0xAC00 && c <= 0xD7A3)) return withoutJong;   /* 한글이 아니면 기본형 */
+    return ((c - 0xAC00) % 28) ? withJong : withoutJong;
+  }
+  /**
+   * 서술 문단의 첫 문장만. 「(1) 당해 투자신탁의 투자전략 및 기본방침」 같은
+   * 번호·소제목 조각을 떼고, 문장 하나로 끊어 준다 (잘린 문장을 읽히지 않는다).
+   */
+  function firstClause(v) {
+    var s = String(v || '')
+      .replace(/^\s*(?:\(\d+\)|\d+\s*[.)]|[가-힣]\s*\.)\s*/, '')
+      .replace(/^(?:당해|이)?\s*(?:투자신탁|집합투자기구|펀드)의?\s*(?:투자|운용)\s*전략(?:\s*및\s*기본방침)?\s*/, '')
+      /* 주어는 앞 문장에서 이미 밝혔다 — 「…펀드로 이 투자신탁은」 처럼 겹치지 않게 뗀다 */
+      .replace(/^이\s*(?:투자신탁|집합투자기구|펀드)은?는?\s*/, '')
+      .replace(/\s+/g, ' ').trim();
+    if (!s) return null;
+    var m = /^(.{15,180}?[.。])\s/.exec(s + ' ');
+    var out = m ? m[1] : s.slice(0, 150);
+    return out.length >= 15 ? out : null;
+  }
+  /**
+   * 종결형 문장을 뒤에 말을 이을 수 있는 꼴로 바꾼다 —
+   * 「…에 투자합니다.」 -> 「…에 투자하며,」
+   * 바꿀 수 있는 꼴이 아니면 null 을 낸다. 억지로 이으면 읽을 수 없는 문장이 되므로,
+   * 그때는 이 조각을 아예 쓰지 않는 것이 낫다.
+   */
+  function connective(v) {
+    if (!v) return null;
+    var s = String(v).trim().replace(/[.。]\s*$/, '');
+    var MAP = [[/있습니다$/, '있으며'], [/없습니다$/, '없으며'], [/됩니다$/, '되며'],
+      [/입니다$/, '이며'], [/합니다$/, '하며'], [/습니다$/, '으며']];
+    for (var i = 0; i < MAP.length; i++) {
+      if (MAP[i][0].test(s)) return s.replace(MAP[i][0], MAP[i][1]) + ',';
+    }
+    return null;
+  }
   /** 「연 3.75%」 「3,750원」 처럼 적힌 값에서 숫자만 뽑는다 */
   function numOf(v) {
     if (v == null || v === '') return null;
@@ -701,6 +781,72 @@
         if (ca && ae2) return 'A클래스는 매입 시 ' + ca + ' 를 선취 판매수수료로 징수하며, 해당 펀드의 총보수는 연 ' + ae2 + '% 입니다.';
         if (ca) return 'A클래스는 매입 시 ' + ca + ' 를 선취 판매수수료로 징수합니다.';
         return undefined;
+      }
+      /**
+       * 증시전망 — 등록해 둔 펀드 완전판매자료에서 온다 (투자설명서에는 없다).
+       * 자료는 그 달에 하나이므로 모든 펀드에서 같은 값을 쓴다.
+       */
+      case 'mktAsOf': return MKT.mktAsOf || undefined;
+      case 'mktView': return MKT.mktView || undefined;
+      /**
+       * 투자대상을 짧게 — 문장이 「{{name}} 은 {{targetsShort}} 에 투자하는 펀드로」 다.
+       * 투자목적 문장을 그대로 넣으면 「…에 투자합니다. 에 투자하는 펀드로」 가 되어
+       * 읽을 수 없다. 펀드유형은 카탈로그가 거의 다 갖고 있고 이 자리에 딱 맞는
+       * 굵기라, 유형을 말로 옮긴다 (짐작이 아니라 유형 표기를 바꿔 적는 것이다).
+       */
+      case 'targetsShort': {
+        var ft2 = String(valueOf('fundType') || '');
+        var MAPT = [[/국내주식/, '국내 주식'], [/해외주식/, '해외 주식'],
+          [/국내채권/, '국내 채권'], [/해외채권/, '해외 채권'],
+          [/국내혼합/, '국내 주식과 채권'], [/해외혼합/, '해외 주식과 채권'],
+          [/MMF|단기금융/i, '단기금융상품'],
+          [/국내대체/, '국내 부동산·특별자산 등 대체자산'], [/해외대체/, '해외 부동산·특별자산 등 대체자산']];
+        for (var mi = 0; mi < MAPT.length; mi++) {
+          if (MAPT[mi][0].test(ft2)) return MAPT[mi][1];
+        }
+        /* 「기타형」 처럼 유형만으로는 알 수 없으면 투자대상 문장의 첫 조각을 쓴다 */
+        var tg = String(valueOf('targets') || '');
+        var mt = /([가-힣A-Za-z·ㆍ\s]{2,24}?)(?:을|를)\s*(?:법[^,.]{0,60}?)?(?:규정하는\s*)?주된?\s*투자\s*대상\s*자산/.exec(tg);
+        if (mt) return mt[1].replace(/^(?:이\s*)?(?:투자신탁|집합투자기구|펀드)은?\s*/, '').trim() || undefined;
+        return undefined;
+      }
+      /**
+       * 증시전망과 연결되는 운용전략·투자업종·투자종목.
+       *
+       * 평가 기준은 「증시에 부합하는 펀드 추천 이유」 — 전망과 펀드를 이어서 말해야
+       * 인정된다. 그래서 자료에 나온 업종·테마·지역 낱말과, 이 펀드의 투자전략·
+       * 투자목적에 나오는 낱말이 겹치는 것을 찾는다. 두 자료에 실제로 함께 나오는
+       * 말이라야 「연결」 이라고 할 수 있다 — 없는 연결을 만들어내지 않는다.
+       * 겹치는 것이 없으면 비워 두어, 자료를 보고 직접 이어 말하도록 남긴다.
+       */
+      case 'mktLink': {
+        if (!MKT.mktThemes) return undefined;
+        var themes = String(MKT.mktThemes).split(',').map(function (x) { return x.trim(); }).filter(Boolean);
+        /* 펀드 이름의 법적 형태 표기(증권·자투자신탁·유형 괄호)는 업종이 아니다 — 떼어낸다 */
+        var nm2 = String(valueOf('name') || '')
+          .replace(/\s*[(\[][^)\]]*[)\]]/g, ' ')
+          .replace(/(?:증권)?\s*모?자?투자(?:신탁|회사)/g, ' ');
+        var hay = [valueOf('strategy'), valueOf('targets'), nm2, valueOf('fundType')].join(' ');
+        var shared = themes.filter(function (w) { return hay.indexOf(w) >= 0; });
+        /* 「테크」 는 「테크놀로지」 안에 들어 있다 — 긴 쪽만 남긴다 */
+        shared = shared.filter(function (w) {
+          return !shared.some(function (o) { return o !== w && o.indexOf(w) >= 0; });
+        });
+        if (!shared.length) return undefined;
+        /* 지역과 업종을 갈라 말한다 — 「미국 반도체」 처럼 이어 붙이면 또렷해진다 */
+        var REG = ['미국', '중국', '일본', '유럽', '인도', '베트남', '신흥국', '이머징', '아시아', '국내', '한국', '전세계', '글로벌'];
+        var reg = shared.filter(function (w) { return REG.indexOf(w) >= 0; });
+        var sec = shared.filter(function (w) { return REG.indexOf(w) < 0; });
+        var head = (reg.slice(0, 2).join('·') + (reg.length && sec.length ? ' ' : '') + sec.slice(0, 3).join('·')).trim();
+        /**
+         * 문장이 「… {{mktLink}} 이기 때문에 추천드렸습니다」 로 이어지므로
+         * 이 값은 반드시 명사로 끝나야 한다. 그래서 운용전략을 앞에 이어붙이고
+         * (「…합니다.」 를 「…하며」 로 바꿔), 뒤를 명사구로 닫는다.
+         * 평가는 운용전략까지 말해야 인정하므로 전략을 버리지 않는다.
+         */
+        var tail = head + josa(head, '을', '를') + ' 전망의 중심에 둔 이번 자료와 같은 방향의 펀드';
+        var st1 = connective(firstClause(valueOf('strategy')));
+        return st1 ? st1 + ' ' + tail : tail;
       }
       /**
        * 이자지급주기별 이자율 — 표면금리를 연간 지급 횟수로 나눈 값이다.
@@ -1056,6 +1202,10 @@
       todayLabel: '오늘 날짜·요일', redBeforeDate: '기준가 적용일 날짜 (기준시각 前)',
       redAfterDate: '기준가 적용일 날짜 (기준시각 後)', redPayDate: '환매대금 지급일 날짜',
       nameMeaning: '명칭에 담긴 뜻',
+      /* 펀드 완전판매자료(증시전망)에서 오는 값 — 투자설명서에는 없다 */
+      mktAsOf: '자료 기준월', mktView: '증시전망 요약',
+      mktLink: '증시전망과 연결되는 운용전략·투자업종·투자종목',
+      targetsShort: '투자대상 (짧게)',
       /* 금리변동 손익 예시 — 이 채권의 표면금리·잔존만기로 계산한 값이다 */
       exMat: '예시 잔존만기', exCoupon: '예시 표면금리', exBase: '기준 시장금리',
       exPrice: '기준 채권가격', exStep: '금리 변동폭',
@@ -1729,6 +1879,70 @@
     return h.join('');
   }
 
+  /**
+   * 펀드 완전판매자료 (증시전망) 등록 칸.
+   * 투자설명서와 따로 두는 이유 — 이것은 상품 자료가 아니라 그 달의 지점 자료다.
+   * 한 번 올려 두면 모든 펀드에서 함께 쓰이고, 다음 달 자료가 오면 다시 올린다.
+   */
+  function marketCard() {
+    var h = [];
+    var mp = MKT_READ;
+    var fresh = mktFresh();
+    h.push('<div class="rule"></div><h3 style="font-size:18px;font-weight:700;margin:0 0 6px">펀드 완전판매자료 (증시전망)</h3>');
+    h.push('<div class="hint" style="margin-bottom:12px">증시전망은 투자설명서에 없고 <b>지점에 내려오는 월간 자료</b>에 있습니다. '
+      + '여기 한 번 올려 두면 <b>모든 펀드</b>의 「증시 현황 및 전망 설명」 항목에 그대로 쓰입니다. '
+      + '평가에서는 <b>직전월 이후 발간</b> 자료만 최신자료로 인정합니다.</div>');
+    h.push('<div class="card"><div class="card-b">');
+    if (MKT.mktAsOf || MKT.mktView) {
+      h.push('<div class="note" style="margin:0 0 12px;border-left-color:var(--' + (fresh === false ? 'warn' : 'ok') + ')">'
+        + '<b>등록된 자료</b> — ' + esc(MKT.docName || '(파일명 없음)')
+        + (MKT.mktAsOf ? ' · 기준 ' + esc(MKT.mktAsOf) : '')
+        + (MKT.registeredAt ? ' · 등록 ' + esc(String(MKT.registeredAt).slice(0, 10)) : '')
+        + (fresh === false ? '<br><b style="color:var(--warn)">직전월 이후 자료가 아닙니다 — 이대로 쓰면 최신자료로 인정되지 않습니다.</b>' : '')
+        + '</div>');
+    }
+    if (!PROS.pdfAvailable()) {
+      h.push('<div class="warnbox">PDF 판독 모듈을 불러오지 못했습니다. 아래 붙여넣기를 사용하십시오.</div>');
+    } else {
+      h.push('<input type="file" id="mktFile" accept="application/pdf" style="margin-bottom:10px">');
+      h.push('<div class="hint">완전판매자료·증시전망 보고서 PDF를 올리면 기준월·전망 요약·업종을 읽어 옵니다. 외부 네트워크 없이 동작합니다.</div>');
+      h.push('<div id="mktStat" class="note" style="margin:10px 0 0;display:none"></div>');
+    }
+    h.push('<div class="hint" style="margin:12px 0 6px">PDF 판독이 안 되면 자료 내용을 붙여넣고 「붙여넣은 내용에서 추출」 을 누르십시오.</div>');
+    h.push('<textarea id="mktText" rows="5" placeholder="완전판매자료·증시전망 보고서 내용을 붙여넣으세요"></textarea>');
+    h.push('<button class="tbtn primary" id="btnMktExtract" style="margin-top:8px">붙여넣은 내용에서 추출</button>');
+    /* 판독 결과 — 창구에서 눈으로 확인하고 고칠 수 있어야 한다 (자료 서식이 지점마다 다르다) */
+    if (mp) {
+      h.push('<div class="note" style="margin:12px 0 0;border-left-color:var(--' + (mp.found.length ? 'ok' : 'warn') + ')">'
+        + '<b>판독 ' + (mp.found.length ? '완료' : '실패') + ' — ' + esc(mp.name) + '</b>'
+        + (mp.pages ? ' · ' + mp.pages + '페이지' : '') + ' · 인식 ' + mp.found.length + '건'
+        + (mp.found.length ? '' : '<br>자료 서식이 예상과 달라 항목을 못 찾았습니다. 아래 칸에 직접 적어 두셔도 됩니다.')
+        + '</div>');
+    }
+    h.push('<div class="pgrid" style="margin-top:12px">');
+    MKT_DEFS.forEach(function (f) {
+      var got = mp && mp.map[f.id];
+      var v = MKT[f.id];
+      if (got != null && (v == null || v === '')) v = got;   /* 판독분을 미리 채워 둔다 */
+      var empty = (v == null || v === '');
+      h.push('<div class="pf' + (empty ? ' miss' : '') + '">');
+      h.push('<div class="k"><span>' + esc(f.label) + '</span><span class="src ' + (empty ? 'no' : (got != null ? 'auto' : 'man')) + '">'
+        + (empty ? '미입력' : (got != null && got === v ? '자료 판독' : '입력')) + '</span></div>');
+      h.push('<textarea class="mInp" data-k="' + esc(f.id) + '" rows="' + (f.rows || 1) + '" placeholder="' + esc(f.ph || '') + '">' + esc(v == null ? '' : v) + '</textarea>');
+      if (f.hint) h.push('<div class="h">' + esc(f.hint) + '</div>');
+      if (got != null && f.id === 'mktThemes') {
+        h.push('<div class="h">이 낱말 중 고른 펀드의 투자전략에도 나오는 것만 「전망과 연결되는 업종」 으로 씁니다.</div>');
+      }
+      h.push('</div>');
+    });
+    h.push('</div>');
+    h.push('<div style="display:flex;gap:8px;margin-top:12px;flex-wrap:wrap">'
+      + '<button class="tbtn primary" id="btnMktSave">이 자료로 등록</button>'
+      + (MKT.mktAsOf || MKT.mktView ? '<button class="tbtn" id="btnMktClear">등록 해제</button>' : '') + '</div>');
+    h.push('</div></div>');
+    return h.join('');
+  }
+
   function viewRegister() {
     var p = product(), sh = sheet(), cfg = PROS.apiConfig(), d = doc();
     var h = [headBanner()];
@@ -1820,6 +2034,9 @@
       + '<button class="tbtn" id="btnExportProfile2">상품 프로필 내보내기</button>'
       + '<button class="tbtn" id="btnImportProfile2">상품 프로필 가져오기</button></div>'
       + '<div class="hint" style="margin-top:8px">등록된 설명서 내용과 차수별 표까지 함께 담깁니다. 같은 상품을 여러 지점에서 쓸 때 한 번만 등록해 공유하면 됩니다.</div></div></div>');
+
+    /* 펀드 완전판매자료 (증시전망) — 펀드·IRP 에서만 쓴다 */
+    if (sh.cat === 'fund' || sh.cat === 'irp') h.push(marketCard());
 
     /* 전 상품 공용 문구 */
     h.push('<div class="rule"></div><h3 style="font-size:18px;font-weight:700;margin:0 0 6px">전 상품 공용 문구</h3>');
@@ -2318,6 +2535,72 @@
       };
     }
 
+    /* ---- 펀드 완전판매자료 (증시전망) ---- */
+    /** 자료 본문을 판독해 화면에 미리 채운다 (등록은 「이 자료로 등록」 을 눌러야 된다) */
+    function mktRead(text, name, pages) {
+      var found = PROS.extract(text, 'market');
+      var map = {};
+      found.forEach(function (x) { map[x.id] = x.value; });
+      MKT_READ = { name: name, pages: pages || 0, found: found, map: map, text: text };
+      renderAll();
+    }
+    var mf = $('#mktFile');
+    if (mf) {
+      mf.onchange = function () {
+        var file = mf.files && mf.files[0];
+        if (!file) return;
+        var stat = $('#mktStat');
+        stat.style.display = '';
+        stat.textContent = '자료 판독 중… (' + file.name + ')';
+        PROS.pdfToText(file, function (n, total) {
+          stat.textContent = '자료 판독 중… ' + n + ' / ' + total + ' 페이지 (' + file.name + ')';
+        }).then(function (r) {
+          mktRead(r.text, file.name, r.pages);
+        }).catch(function (e) {
+          stat.className = 'warnbox';
+          stat.textContent = '자료 판독 실패 (' + file.name + ') : ' + (e && e.message ? e.message : e)
+            + ' — 아래 붙여넣기 칸을 사용하십시오.';
+        });
+      };
+    }
+    var mex = $('#btnMktExtract');
+    if (mex) {
+      mex.onclick = function () {
+        var t = ($('#mktText') || {}).value || '';
+        if (t.trim().length < 30) { alert('자료 내용을 붙여넣은 뒤 눌러 주십시오.'); return; }
+        mktRead(t, '붙여넣은 내용', 0);
+      };
+    }
+    /* 칸을 고치면 곧바로 담아 둔다 — 등록 버튼을 눌러야 저장된다 */
+    Array.prototype.forEach.call(document.querySelectorAll('.mInp'), function (i) {
+      i.onchange = function () { MKT[i.dataset.k] = i.value.trim(); };
+    });
+    var msv = $('#btnMktSave');
+    if (msv) {
+      msv.onclick = function () {
+        /* 화면의 칸 값을 그대로 담는다 (판독분을 사람이 고친 것이 최종이다) */
+        Array.prototype.forEach.call(document.querySelectorAll('.mInp'), function (i) {
+          MKT[i.dataset.k] = i.value.trim();
+        });
+        if (!MKT.mktAsOf && !MKT.mktView) { alert('기준월 또는 증시전망 요약 중 하나는 채워야 합니다.'); return; }
+        if (MKT_READ) { MKT.docName = MKT_READ.name; MKT.pages = MKT_READ.pages; }
+        MKT.registeredAt = new Date().toISOString();
+        saveMkt();
+        if (mktFresh() === false) {
+          alert('등록했습니다.\n\n다만 자료 기준월(' + MKT.mktAsOf + ')이 직전월 이후가 아닙니다.\n'
+            + '평가에서는 직전월 이후 발간 자료만 최신자료로 인정하므로, 최신 자료로 바꾸는 것이 안전합니다.');
+        }
+        renderAll();
+      };
+    }
+    var mcl = $('#btnMktClear');
+    if (mcl) {
+      mcl.onclick = function () {
+        if (!confirm('등록된 증시전망 자료를 지웁니다. 계속하시겠습니까?')) return;
+        MKT = {}; MKT_READ = null; saveMkt(); renderAll();
+      };
+    }
+
     Array.prototype.forEach.call(document.querySelectorAll('.applyOne'), function (b) {
       b.onclick = function () {
         applyFound(pros().found[+b.dataset.i]);
@@ -2542,6 +2825,7 @@
     loadCustom();
     loadDocs();
     loadCommon();
+    loadMkt();
     load();
     if (!ST.productId) {
       var l = catalog();

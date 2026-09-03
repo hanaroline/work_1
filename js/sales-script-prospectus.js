@@ -154,6 +154,124 @@
     return null;
   }
 
+  /* ==========================================================
+     펀드 완전판매자료 (증시전망) 판독
+     ---------------------------------------------------------- */
+  /**
+   * 자료 기준월. 평가에서 「직전월 이후 발간」 만 최신자료로 인정하므로
+   * 연·월이 함께 나오는 표기를 찾아 가장 최근 것을 쓴다.
+   * 「2026년 9월」 · 「2026.09」 · 「'26년 9월」 · 「2026-09-01 발간」 을 모두 본다.
+   */
+  function marketAsOf(text) {
+    var t = String(text).slice(0, 20000);   /* 표지·머리글에 있다 */
+    var best = null, at = 0;
+    var push = function (y, mo, idx, len) {
+      y = +y; mo = +mo;
+      if (y < 100) y += 2000;
+      if (!(y >= 2000 && y <= 2100) || !(mo >= 1 && mo <= 12)) return;
+      var k = y * 100 + mo;
+      if (best == null || k > best) { best = k; at = idx; }
+    };
+    var RES = [
+      /['’]?(\d{2,4})\s*년\s*(\d{1,2})\s*월/g,
+      /(\d{4})\s*[.\-\/]\s*(\d{1,2})\s*(?:[.\-\/]\s*\d{1,2})?\s*(?:발간|작성|기준|현재)/g,
+      /(?:발간|작성|기준)\s*[:：]?\s*(\d{4})\s*[.\-\/]\s*(\d{1,2})/g
+    ];
+    RES.forEach(function (re) {
+      var m;
+      while ((m = re.exec(t))) push(m[1], m[2], m.index, m[0].length);
+    });
+    if (best == null) return null;
+    return { value: Math.floor(best / 100) + '년 ' + (best % 100) + '월', index: at, length: 0 };
+  }
+  /**
+   * 증시전망 요약. 「증시전망 / 시장전망 / 시황 / 하우스뷰 / Market View」 같은
+   * 제목 아래의 문장을 모은다. 요약·투자포인트 블록이 따로 있으면 그것을 먼저 쓴다 —
+   * 지점 자료는 앞머리에 결론을 적어 두는 경우가 많다.
+   */
+  function marketView(text) {
+    var lines = String(text).split('\n');
+    var HEAD = /^\s*[■▶◆●○□\-•\s]*(?:\d+\s*[.)]\s*)?(?:증시\s*전망|시장\s*전망|시황(?:\s*전망)?|하우스\s*뷰|House\s*View|Market\s*View|투자\s*전략|전망\s*및\s*전략|요약|Key\s*Point|투자\s*포인트)\s*[:：]?\s*$/i;
+    /* 제목과 본문이 한 줄에 붙어 오는 서식도 있다 */
+    var INLINE = /(?:증시\s*전망|시장\s*전망|시황|하우스\s*뷰|House\s*View|Market\s*View)\s*[:：]\s*(.{20,})/i;
+    var pick = function (from) {
+      var buf = [];
+      for (var j = from; j < lines.length && j < from + 20 && buf.join(' ').length < 300; j++) {
+        var s = lines[j].replace(/\t/g, ' ').replace(/^[\s\-•∙·※☞◇▶■□○●]+/, '').replace(/\s+/g, ' ').trim();
+        if (!s || /^\d+$/.test(s) || /^-\s*\d+\s*-$/.test(s)) continue;
+        if (HEAD.test(lines[j])) break;
+        /**
+         * 다른 절로 넘어가면 멈춘다. 자료마다 절 이름이 달라 목록으로 막을 수 없으니
+         * 「제목처럼 생긴 줄」 로 본다 — 짧고, 문장으로 끝나지 않고, 서술어가 없는 줄.
+         * (「추천 펀드」 「유의사항」 이 전망 요약에 붙어 들어가던 것을 막는다.)
+         */
+        if (s.length <= 16 && !/[.。]$/.test(s) && !/니다|합니다|입니다|이다$/.test(s)) break;
+        /* 어디에나 붙는 고지문구는 전망이 아니다 */
+        if (/투자원금|손실이\s*발생|보장하지\s*않|참고\s*자료|무단\s*전재|준법감시|본\s*자료는/.test(s)) continue;
+        if (s.length < 10) continue;
+        buf.push(s);
+      }
+      return buf.join(' ').replace(/\s+/g, ' ').trim();
+    };
+    var best = '', at = 0;
+    for (var i = 0; i < lines.length; i++) {
+      if (!HEAD.test(lines[i])) continue;
+      var v = pick(i + 1);
+      if (v.length > best.length) { best = v; at = i; }
+    }
+    if (best.length < 30) {
+      var m = INLINE.exec(String(text));
+      if (m && m[1].trim().length > best.length) { best = m[1].replace(/\s+/g, ' ').trim(); at = m.index; }
+    }
+    return best.length >= 30 ? { value: best.slice(0, 320), index: at, length: 0 } : null;
+  }
+  /**
+   * 자료에 나온 업종·테마·지역. 이것만으로는 스크립트에 쓰지 않는다 —
+   * 고른 펀드의 투자전략과 겹치는 낱말을 찾는 데 쓴다. 두 자료에 함께 나오는
+   * 말이라야 「증시전망과 연결되는 투자업종·종목」 이라고 말할 수 있다.
+   */
+  var MKT_THEME = ['반도체', 'AI', '인공지능', '테크놀로지', '테크', '기술주', '2차전지', '배터리', '바이오', '헬스케어', '제약',
+    '자동차', '조선', '방산', '원자력', '전력', '데이터센터', '로봇', '우주항공', '소비재', '유통',
+    /* 「증권」 은 펀드 이름마다 들어가고(증권투자신탁) 「금」 은 금리·금융에 걸려
+       업종 낱말로 쓸 수 없다 — 빼 둔다. 「원자재·구리」 처럼 또렷한 것만 남긴다. */
+    '금융', '은행', '보험', '건설', '부동산', '리츠', '에너지', '원자재', '구리',
+    '플랫폼', '인터넷', '게임', '엔터', '미디어', '통신', '화학', '철강', '기계', '전기전자',
+    '고배당', '배당', '가치주', '성장주', '중소형주', '대형주', '인컴', '채권', '국채', '크레딧',
+    '미국', '중국', '일본', '유럽', '인도', '베트남', '신흥국', '이머징', '아시아', '국내', '한국', '전세계', '글로벌'];
+  function marketThemes(text) {
+    var t = String(text);
+    var hit = [];
+    MKT_THEME.forEach(function (w) {
+      var n = t.split(w).length - 1;
+      if (n >= 1) hit.push({ w: w, n: n });
+    });
+    /**
+     * 많이 나온 것부터 담는다. 한 번만 나온 낱말도 버리지 않는다 —
+     * 이 목록은 「자료의 주제」 가 아니라 「고른 펀드와 겹치는지 볼 후보」 이고,
+     * 두 자료에 함께 나오는 것만 추천이유로 쓰이므로 한 번이라도 근거가 된다.
+     * (「글로벌 테크놀로지 펀드」 를 한 번 적은 자료를 버리면 정작 그 펀드와의
+     *  연결을 놓친다.)
+     */
+    hit.sort(function (a, b) { return b.n - a.n; });
+    var out = hit.slice(0, 14).map(function (x) { return x.w; });
+    return out.length ? { value: out.join(','), index: 0, length: 0 } : null;
+  }
+  /** 자료 출처·제목 — 최신자료 인정 근거로 함께 적어 둔다 */
+  function marketSource(text) {
+    var lines = String(text).split('\n');
+    for (var i = 0; i < lines.length && i < 40; i++) {
+      var s = lines[i].replace(/\t/g, ' ').replace(/\s+/g, ' ').trim();
+      if (s.length < 6 || s.length > 70) continue;
+      if (/^\d+$/.test(s) || /^-\s*\d+\s*-$/.test(s)) continue;
+      if (/^(?:목차|Contents|페이지)/i.test(s)) continue;
+      /* 자료 제목에 흔히 들어가는 말이 있으면 그 줄을 제목으로 본다 */
+      if (/전망|시황|리포트|자료|월간|주간|투자|하우스|House|Outlook|Monthly|Weekly/i.test(s)) {
+        return { value: s, index: 0, length: 0 };
+      }
+    }
+    return null;
+  }
+
   /**
    * 투자전략 — 「투자전략」 제목 아래의 본문을 읽는다.
    *
@@ -1056,7 +1174,39 @@
         re: [/(?:위험자산|실적배당)[^\d%]{0,30}?(\d{2})\s*%/],
         map: function (m) { return '적립금의 ' + num(m) + '% 한도'; }
       }
-    ])
+    ]),
+
+    /**
+     * 펀드 완전판매자료 (증시전망) — 투자설명서가 아니라 지점에 내려오는 월간 자료다.
+     *
+     * 평가표가 요구하는 것은 세 가지다 —
+     *   ㆍ객관적인 증시 관련 「최신」 자료 사용 (직전월 이후 발간)
+     *   ㆍ증시전망 설명 (종합·지수별·업종별·유형별·국가별 중 1가지 이상)
+     *   ㆍ증시에 부합하는 펀드 추천 이유 (운용전략·투자업종·투자종목을 전망과 연결)
+     * 그래서 자료에서 「기준월」 과 「전망 문단」 을 읽고, 업종·테마·지역 낱말을
+     * 따로 모아 둔다. 마지막 것은 고른 펀드의 투자전략과 겹치는 낱말을 찾는 데 쓴다 —
+     * 두 자료에 실제로 함께 나오는 말이라야 「전망과 연결」 이라고 할 수 있다.
+     *
+     * 자료 서식은 지점마다 다르므로 읽은 값을 화면에서 확인·수정할 수 있게 해 둔다.
+     */
+    market: [
+      {
+        id: 'mktAsOf', label: '자료 기준월',
+        fn: function (t) { return marketAsOf(t); }
+      },
+      {
+        id: 'mktView', label: '증시전망 요약',
+        fn: function (t) { return marketView(t); }
+      },
+      {
+        id: 'mktThemes', label: '자료에 나온 업종·테마·지역',
+        fn: function (t) { return marketThemes(t); }
+      },
+      {
+        id: 'mktSource', label: '자료 출처·제목',
+        fn: function (t) { return marketSource(t); }
+      }
+    ]
   };
 
   /* ==========================================================
