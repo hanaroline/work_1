@@ -18,6 +18,7 @@ on:
       - 'scripts/probe_bond_html.mjs'
       - 'scripts/probe_bond_docs.mjs'
       - 'scripts/probe_bond_docs.py'
+      - 'scripts/probe_bond_detail.mjs'
       - '.github/workflows/bond-probe.yml'
 
 permissions:
@@ -56,3 +57,8 @@ jobs:
 
       - name: 설명서 PDF 를 읽어 무슨 문서인지 가려내기
         run: python3 scripts/probe_bond_docs.py
+
+      # 확인필요 26건 중 15건이 표면금리 하나에 걸려 있다 — 금리변동 손익 예시와
+      # 회당 이자금액은 앱이 표면금리로 계산해 주는 값이다. 그것부터 찾는다.
+      - name: 종목 기본정보(표면금리·이자지급·신용등급) 원천 찾기
+        run: node scripts/probe_bond_detail.mjs
