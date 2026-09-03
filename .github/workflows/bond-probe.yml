@@ -14,6 +14,7 @@ on:
       - 'scripts/probe_bond_sources.mjs'
       - 'scripts/probe_bond_pages.mjs'
       - 'scripts/probe_bond_menu.mjs'
+      - 'scripts/probe_bond_list.mjs'
       - '.github/workflows/bond-probe.yml'
 
 permissions:
@@ -46,5 +47,8 @@ jobs:
           npm install --no-save playwright@1.49.1
           npx playwright install --with-deps chromium
 
-      - name: 메뉴 따라가 채권 화면 찾기
-        run: node scripts/probe_bond_menu.mjs
+      # 3차에서 메뉴가 실제 주소를 알려 주었다 —
+      #   장외채권 /hks/hks4036/r01.do · 외화채권 /hks/hks4054/v03.do
+      #   채권금리 /hkr/hkr1003/n12.do  (모두 로그인 불필요)
+      - name: 채권 화면 열어 목록·설명서 잡기
+        run: node scripts/probe_bond_list.mjs
