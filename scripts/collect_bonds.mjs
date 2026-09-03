@@ -343,6 +343,44 @@ const notice = [...new Set(
 console.log('  유의사항 문장 ' + notice.length + '개');
 notice.forEach((s) => console.log('     · ' + s));
 
+/* ── 금융상품 위험도 분류표 ────────────────────────────
+   /hks/hks4036/p02.do 는 종목값은 자바스크립트로 채우는 껍데기라 못 쓰지만,
+   「본 채권투자의 위험요인」 과 「금융상품 위험도 분류표」 는 서버가 그려 준다.
+   분류표는 상품군 × 위험등급 1~6 이고, 맨 아랫줄이 등급별 투자자구분
+   (성장형·성장추구형·위험중립형·안정추구형·안정형)이다.
+   창구가 손으로 넣던 「위험등급의 의미·유의사항」 과 「위험등급 분류 근거」 가
+   여기서 나온다. 종목마다 다르지 않으므로 한 번만 받는다.
+   표를 손대지 않고 칸 그대로 담는다 — 문구를 우리가 고쳐 쓰지 않는다. */
+console.log('위험도 분류표·위험요인 받는 중…');
+let riskTable = [];
+let riskFactors = [];
+try {
+  const pHtml = await get('/hks/hks4036/p02.do');
+  const pBody = strip(pHtml);
+  /* 분류표 — 칸이 많은 표가 그것이다 */
+  const cand = [...pHtml.matchAll(/<table[\s\S]*?<\/table>/gi)].map((m) => m[0])
+    .filter((tb) => /위험등급|매우높은|투자자구분/.test(strip(tb)));
+  cand.forEach((tb) => {
+    [...tb.matchAll(/<tr[^>]*>([\s\S]*?)<\/tr>/gi)].map((m) => m[1]).forEach((tr) => {
+      const cells = [...tr.matchAll(/<(th|td)\b[^>]*>([\s\S]*?)<\/\1>/gi)].map((m) => strip(m[2]));
+      if (cells.filter(Boolean).length >= 2) riskTable.push(cells);
+    });
+  });
+  console.log('  분류표 ' + riskTable.length + '줄');
+  /* 위험요인 — 「본 채권투자의 위험요인」 아래 번호 문장들 */
+  const i = pBody.search(/본\s*채권투자의\s*위험요인/);
+  if (i >= 0) {
+    riskFactors = pBody.slice(i, i + 2600)
+      .split(/(?=[①②③④⑤⑥⑦⑧⑨])/)
+      .map((s) => s.trim())
+      .filter((s) => /^[①②③④⑤⑥⑦⑧⑨]/.test(s) && s.length > 25 && s.length < 500);
+  }
+  console.log('  위험요인 문장 ' + riskFactors.length + '개');
+  riskFactors.slice(0, 3).forEach((s) => console.log('     · ' + s.slice(0, 100)));
+} catch (e) {
+  console.log('  못 받음 — ' + e.message);
+}
+
 /* ── 외화채권 유형 ─────────────────────────────────── */
 console.log('외화채권 유형 안내 받는 중…');
 const fxHtml = await get(LIST_FX);
@@ -446,6 +484,10 @@ const body =
   ' *   ㆍcoupon       표면금리 — 종목명의 다섯 자리(01500 = 1.500%)에서 낸다.\n' +
   ' *                  규칙에 맞지 않는 종목명은 담지 않는다.\n' +
   ' *\n' +
+  ' * BOND_CATALOG.riskTable[][] = 금융상품 위험도 분류표 (상품군 × 위험등급 1~6,\n' +
+  ' *   맨 아랫줄이 등급별 투자자구분). 칸을 손대지 않고 그대로 담는다.\n' +
+  ' * BOND_CATALOG.riskFactors[] = 「본 채권투자의 위험요인」 문장 원문.\n' +
+  ' *\n' +
   ' * BOND_CATALOG.notice[] = 장외채권 화면에 적힌 유의사항 문장 원문.\n' +
   ' *   「보증 여부」 「중도매도 가능 여부」 를 이 문장으로 채운다 — 규정 문구는\n' +
   ' *   우리가 고쳐 쓸 것이 아니라 회사 문장을 그대로 읽어야 한다.\n' +
@@ -466,6 +508,8 @@ const body =
     krw: krw,
     fxTypes: fxTypes,
     notice: notice,
+    riskTable: riskTable,
+    riskFactors: riskFactors,
     docs: docs
   }) + ';\n';
 await mkdir('data', { recursive: true });
