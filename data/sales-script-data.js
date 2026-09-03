@@ -197,15 +197,22 @@
 
     /* ---------------- 개인형 IRP ---------------- */
     irp: [
-      { id: 'joinType', label: '고객 가입유형', group: 'IRP 계좌', hint: '자영업자 / 퇴직급여제도 미설정 근로자 / 퇴직금제도 재직근로자 · 직역연금 가입자 등', req: true },
+      { id: 'joinType', label: '고객 가입유형', group: '고객', ctx: true, hint: '자영업자 / 퇴직급여제도 미설정 근로자 / 퇴직금제도 재직근로자 · 직역연금 가입자 등', req: true },
       { id: 'proof', label: '가입유형별 증빙서류', group: 'IRP 계좌', hint: '유형 확인 없이 전부 읽으면 미인정', req: true },
       { id: 'limitYear', label: '연간 개인부담금 납입한도', group: 'IRP 계좌', hint: '1,800만원', req: true },
-      { id: 'feeKinds', label: '수수료 종류', group: 'IRP 계좌', hint: '운용관리·자산관리 수수료 등', req: true },
-      { id: 'feeTotal', label: '총수수료율', group: 'IRP 계좌', hint: '', req: true },
-      { id: 'feeMethod', label: '수수료 부과방식', group: 'IRP 계좌', hint: '', req: true },
-      { id: 'products', label: '운용 가능한 상품 (구체적 유형)', group: 'IRP 계좌', hint: '예) 원리금보장형 예금·ELB, 펀드, ETF 등', req: true },
+      /* 아래 다섯은 계좌의 조건이라 상품마다 다르지 않다 — 「전 상품 공용 문구」 에
+         한 번 등록하면 모든 IRP 상담에서 쓰인다 (COMMON.irp*). 여기서 상품별로
+         덮어쓸 수도 있게 항목은 남겨 둔다. */
+      { id: 'feeKinds', label: '수수료 종류', group: 'IRP 계좌', hint: '공용 문구에 등록해 두면 자동으로 채워집니다', req: true },
+      { id: 'feeTotal', label: '총수수료율', group: 'IRP 계좌', hint: '공용 문구에 등록해 두면 자동으로 채워집니다', req: true },
+      { id: 'feeMethod', label: '수수료 부과방식', group: 'IRP 계좌', hint: '공용 문구에 등록해 두면 자동으로 채워집니다', req: true },
+      { id: 'products', label: '운용 가능한 상품 (구체적 유형)', group: 'IRP 계좌', hint: '공용 문구에 등록해 두면 자동으로 채워집니다', req: true },
+      /* 세법으로 정해진 값 — 기본값이 들어간다 */
+      { id: 'taxLimit', label: '세액공제 한도(연금저축 합산 기준)', group: 'IRP 계좌', hint: '세법 기준값이 기본으로 들어갑니다 — 세법 변경 시 공용 문구에서 수정' },
+      { id: 'taxRate', label: '세액공제율', group: 'IRP 계좌', hint: '총급여 기준 차등 — 세법 기준값이 기본으로 들어갑니다' },
+      { id: 'taxRateOut', label: '법정사유 중도인출 시 세율', group: 'IRP 계좌', hint: '세법 기준값이 기본으로 들어갑니다' },
       { id: 'riskLimit', label: '실적배당(원금비보장) 상품 운용비율 제한', group: 'IRP 계좌', hint: '적립금의 70% 한도', req: true },
-      { id: 'defaultOpt', label: '디폴트옵션(사전지정운용방법) 상품', group: 'IRP 계좌', hint: '퇴직연금 디폴트옵션 안내장', req: true },
+      { id: 'defaultOpt', label: '디폴트옵션(사전지정운용방법) 상품', group: 'IRP 계좌', hint: '공용 문구에 등록해 두면 자동으로 채워집니다 — 퇴직연금 디폴트옵션 안내장 기준', req: true },
       /* 편입 펀드 */
       { id: 'name', label: '편입 펀드 명칭 (Full-name)', group: '편입 펀드', hint: '', req: true },
       { id: 'mgr', label: '자산운용사', group: '편입 펀드', hint: '', req: true },

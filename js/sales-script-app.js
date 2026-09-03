@@ -427,7 +427,20 @@
     { id: 'riskNote4', label: '4등급 보통위험 — 유의사항', hint: '위험중립형(4등급) 기본 문구 — 사내 핵심(요약)설명서 문구가 있으면 덮어쓰세요' },
     { id: 'riskNote5', label: '5등급 낮은위험 — 유의사항', hint: '채권 평가표 탁월사례에서 확인된 문구가 기본값으로 들어가 있습니다' },
     { id: 'riskNote6', label: '6등급 매우낮은위험 — 유의사항', hint: '위험회피형(5·6등급) 중 안정형 기본 문구 — 사내 핵심(요약)설명서 문구가 있으면 덮어쓰세요' },
-    { id: 'riskGradeBasis', label: '위험등급 분류 근거 (채권)', hint: '예) 국내 신용평가사 회사채 신용등급 AA-~AAA 를 5등급 낮은위험으로 분류' },
+    { id: 'riskGradeBasis', only: 'bond', label: '위험등급 분류 근거 (채권)', hint: '예) 국내 신용평가사 회사채 신용등급 AA-~AAA 를 5등급 낮은위험으로 분류' },
+    /**
+     * 개인형 IRP 계좌 조건 — 상품이 아니라 계좌의 조건이라 어느 펀드를 고르든 같다.
+     * 한 번 등록하면 모든 IRP 상담에서 그대로 쓰인다.
+     */
+    { id: 'irpFeeKinds', only: 'irp', label: 'IRP 수수료 종류', hint: '예) 운용관리수수료 · 자산관리수수료 — 개인형IRP 설명서 「수수료」 항목' },
+    { id: 'irpFeeTotal', only: 'irp', label: 'IRP 총수수료율', hint: '예) 연 0.00% (당사 개인형IRP 수수료 면제) — 사내 기준으로 채우십시오' },
+    { id: 'irpFeeMethod', only: 'irp', label: 'IRP 수수료 부과방식', hint: '예) 매 분기말 적립금 평균잔액에 요율을 적용하여 후취' },
+    { id: 'irpProducts', only: 'irp', label: 'IRP 운용 가능한 상품', hint: '예) 원리금보장형 예금·ELB, 펀드, ETF, 리츠 등 — 구체적 유형까지 말해야 인정' },
+    { id: 'irpDefaultOpt', only: 'irp', label: 'IRP 디폴트옵션 상품', hint: '당사가 승인받은 사전지정운용방법 상품 — 퇴직연금 디폴트옵션 안내장 기준' },
+    /* 세법으로 정해진 값 — 기본값이 들어가 있고, 세법이 바뀌면 여기서 덮어쓴다 */
+    { id: 'irpTaxLimit', only: 'irp', label: 'IRP 세액공제 한도 (세법 변경 시 수정)', hint: '기본값: 연금저축 합산 연 900만원 (연금저축만 납입 시 600만원 한도)' },
+    { id: 'irpTaxRate', only: 'irp', label: 'IRP 세액공제율 (세법 변경 시 수정)', hint: '기본값: 총급여 5,500만원 이하 16.5% / 초과 13.2% (지방소득세 포함)' },
+    { id: 'irpTaxRateOut', only: 'irp', label: 'IRP 법정사유 중도인출 세율 (세법 변경 시 수정)', hint: '기본값: 연금소득세 3.3~5.5% (지방소득세 포함, 분리과세)' },
     { id: 'withdrawRight', label: '청약철회권 대상여부', hint: '평가표 탁월사례는 모두 「불가」 — 상품별 판단이 다르면 수정하세요' }
   ];
 
@@ -1101,9 +1114,40 @@
       case 'riskLimit':
         return rawValue('riskLimit') ? undefined : '적립금의 70%';
       /**
+       * 세액공제·세율 — 소득세법으로 정해진 값이다. 상품마다 다르지 않고 상담마다
+       * 바뀌지도 않으므로 기본값으로 채운다. 세법이 바뀌면 「전 상품 공용 문구」 에서
+       * 한 번 덮어쓰면 모든 IRP 상담에 반영된다 (그래서 COMMON 을 먼저 본다).
+       *
+       * 앞서는 「세법이 바뀔 수 있다」 는 이유로 비워 두었는데, 그것은 값을 비워 둘
+       * 이유가 아니라 값에 확인 안내를 달 이유였다. 매 상담마다 창구에서 세법을
+       * 찾게 만드는 쪽이 더 위험하다.
+       */
+      case 'taxLimit':
+        return rawValue('taxLimit') || COMMON.irpTaxLimit
+          || '연금저축 합산 연 900만원 (연금저축만 납입 시 600만원 한도)';
+      case 'taxRate':
+        return rawValue('taxRate') || COMMON.irpTaxRate
+          || '총급여 5,500만원(종합소득금액 4,500만원) 이하는 16.5%, 초과는 13.2% (지방소득세 포함)';
+      case 'taxRateOut':
+        return rawValue('taxRateOut') || COMMON.irpTaxRateOut
+          || '연금소득세 3.3~5.5% (지방소득세 포함, 분리과세)';
+      /**
        * 가입유형별 증빙서류 — 유형을 확인하지 않고 전부 읽으면 평가에서 미인정이다.
        * 유형별 목록은 이 항목의 안내문에 이미 있으므로, 고른 유형에 맞는 것만 낸다.
        */
+      /**
+       * IRP 계좌의 사내 고정값 — 수수료·운용상품·디폴트옵션.
+       *
+       * 이것들은 상품마다 다른 값이 아니다. 미래에셋증권 개인형IRP 계좌의 조건이라
+       * 어느 펀드를 고르든 같다. 그런데 상품 항목(FIELDS.irp)에 들어 있어서 펀드를
+       * 바꿀 때마다 확인필요로 다시 떴다 — IRP 확인필요가 유난히 많아 보인 이유다.
+       * 「전 상품 공용 문구」 에 한 번 등록하면 모든 IRP 상담에서 그대로 쓰인다.
+       */
+      case 'feeKinds': return rawValue('feeKinds') || COMMON.irpFeeKinds || undefined;
+      case 'feeTotal': return rawValue('feeTotal') || COMMON.irpFeeTotal || undefined;
+      case 'feeMethod': return rawValue('feeMethod') || COMMON.irpFeeMethod || undefined;
+      case 'products': return rawValue('products') || COMMON.irpProducts || undefined;
+      case 'defaultOpt': return rawValue('defaultOpt') || COMMON.irpDefaultOpt || undefined;
       case 'proof': {
         if (rawValue('proof')) return undefined;
         var jt = String(valueOf('joinType') || '');
@@ -1344,6 +1388,12 @@
     return rawValue(id);
   }
 
+  /** 항목 정의에 ctx 가 붙었는지 — 고객 단위로 담아야 하는 값이다 */
+  function isCtxField(id) {
+    var defs = fieldDefs();
+    for (var i = 0; i < defs.length; i++) if (defs[i].id === id) return !!defs[i].ctx;
+    return false;
+  }
   function labelOf(id) {
     var defs = fieldDefs();
     for (var i = 0; i < defs.length; i++) if (defs[i].id === id) return defs[i].label;
@@ -1362,6 +1412,15 @@
       todayLabel: '오늘 날짜·요일', redBeforeDate: '기준가 적용일 날짜 (기준시각 前)',
       redAfterDate: '기준가 적용일 날짜 (기준시각 後)', redPayDate: '환매대금 지급일 날짜',
       nameMeaning: '명칭에 담긴 뜻',
+      /* 아래 문장 항목들은 펀드 항목표에만 등록돼 있어, IRP 시트에서는 내부 id 가
+         그대로 떴다 (varMeaning · feeCalcNote). 시트와 무관한 여기에도 둔다. */
+      varMeaning: 'VaR 설명 문장', varBasis: '위험등급 산정 근거',
+      feeCalcNote: '선취수수료 계산 예시 문장', clsExpNote: '클래스별 총보수 문장',
+      clsFeeNote: '선취판매수수료 문장', clsIssued: '발행 클래스',
+      fxHedgeNote: '환헤지 설명 문장', retCompare: '동종유형 대비 비교 문장',
+      clsExp: '펀드 총보수 (연)', clsExpClass: '총보수 기준 클래스',
+      taxLimit: '세액공제 한도(연금저축 합산 기준)', taxRate: '세액공제율',
+      taxRateOut: '법정사유 중도인출 시 세율',
       /* 펀드 완전판매자료(증시전망)에서 오는 값 — 투자설명서에는 없다 */
       mktAsOf: '자료 기준월', mktView: '증시전망 요약',
       mktLink: '증시전망과 연결되는 운용전략·투자업종·투자종목',
@@ -1469,10 +1528,17 @@
    */
   /* 협회 공시·운용보고서·지점 증시전망 자료에 있는 값 — 투자설명서에는 없다 */
   var MISS_REF = ['retPeer', 'peerRet1y'];
+  /**
+   * 한 번만 등록하면 되는 값 — 상품이 아니라 회사·계좌의 조건이다.
+   * 이것을 「투자설명서에서 확인」 으로 안내하면 창구에서 상품 설명서를 뒤지게 된다.
+   */
+  var MISS_ONCE = ['feeKinds', 'feeTotal', 'feeMethod', 'products', 'defaultOpt',
+    'riskGradeBasis', 'taxLimit', 'taxRate', 'taxRateOut'];
   function missGroup(m) {
     /* 라벨이 먼저다 — 증시전망·자료 기준월은 받아쓰기 표시라 항목 id 가 없다 */
     if (/증시\s*전망|자료\s*기준월|동종유형\s*평균|협회\s*공시/.test(m.label)) return 'ref';
     if (MISS_REF.indexOf(m.key) >= 0) return 'ref';
+    if (MISS_ONCE.indexOf(m.key) >= 0) return 'once';
     if (/고객|대리인|투자자성향|투자자금\s*성향|추천\s*상품명/.test(m.label)) return 'ask';
     if (m.kind === 'inline') return 'doc';           /* 그 밖의 받아쓰기는 설명서 원문 */
     /* 항목 정의의 묶음을 쓴다 — 「고객」 묶음은 상담하며 파악하는 값이다 */
@@ -1744,7 +1810,8 @@
       var GRP = [
         ['doc', '투자설명서에서 확인', '투자설명서 원문에서 채워야 하는 값입니다.'],
         ['ask', '상담 중 파악·입력', '고객에게 확인하거나 상담 중 옮겨 적는 값입니다 — 투자설명서에는 없습니다.'],
-        ['ref', '지점 자료에서 확인', '증시전망·협회 공시 등 별도 자료에 있는 값입니다 — 투자설명서에는 없습니다.']
+        ['ref', '지점 자료에서 확인', '증시전망·협회 공시 등 별도 자료에 있는 값입니다 — 투자설명서에는 없습니다.'],
+        ['once', '한 번만 등록 (이후 모든 상담에서 재사용)', '상품이 아니라 회사·계좌의 조건입니다. 「투자설명서 자동조회」 탭 맨 아래 「전 상품 공용 문구」 에 한 번 등록해 두면 다시 묻지 않습니다.']
       ];
       var chip = function (m) {
         return '<span class="v miss" data-kind="' + m.kind + '" data-key="' + esc(m.key) + '">' + esc(m.label) + '</span>';
@@ -2224,7 +2291,14 @@
       + '등급별로 한 번만 등록해 두면 모든 상품·모든 평가표에서 그대로 쓰입니다. 현재 상품 위험등급은 <b>'
       + esc(valueOf('riskGrade') || '—') + '등급</b> 이므로 그 항목이 스크립트에 들어갑니다.</div>');
     h.push('<div class="pgrid">');
-    COMMON_DEFS.forEach(function (f) {
+    /* 시트에 쓰이는 것만 보여 준다 — IRP 계좌 조건을 펀드 화면에 늘어놓을 이유가 없다 */
+    var cc = sheet().cat;
+    COMMON_DEFS.filter(function (f) {
+      if (!f.only) return true;
+      if (f.only === 'irp') return cc === 'irp';
+      if (f.only === 'bond') return cc === 'bondKrw' || cc === 'bondFx';
+      return true;
+    }).forEach(function (f) {
       var v = COMMON[f.id];
       var empty = (v == null || v === '');
       var cur = String(valueOf('riskGrade') || '');
@@ -2419,7 +2493,14 @@
         var label = kind === 'field' ? labelOf(key) : key;
         var v = prompt('[' + label + ']\n투자설명서 원문 값을 입력하세요.', cur);
         if (v == null) return;
-        if (kind === 'field') setManual(key, v); else ST.inline[key] = v;
+        /**
+         * 고객 항목(투자자성향·가입유형 등)은 상품이 아니라 고객의 값이다.
+         * 상품별 저장(man)에 넣으면 추천 펀드를 바꿀 때마다 다시 물어야 한다 —
+         * 항목 정의에 ctx 가 붙은 것은 고객 단위(ST.ctx)로 담는다.
+         */
+        if (kind !== 'field') { ST.inline[key] = v; }
+        else if (isCtxField(key)) { ST.ctx[key] = v; }
+        else { setManual(key, v); }
         save(); renderAll();
       };
     });
@@ -2955,7 +3036,14 @@
         var cur = kind === 'field' ? (valueOf(key) || '') : (ST.inline[key] || '');
         var v = prompt('[' + label + ']\n투자설명서 원문 값을 입력하세요.', cur);
         if (v == null) return;
-        if (kind === 'field') setManual(key, v); else ST.inline[key] = v;
+        /**
+         * 고객 항목(투자자성향·가입유형 등)은 상품이 아니라 고객의 값이다.
+         * 상품별 저장(man)에 넣으면 추천 펀드를 바꿀 때마다 다시 물어야 한다 —
+         * 항목 정의에 ctx 가 붙은 것은 고객 단위(ST.ctx)로 담는다.
+         */
+        if (kind !== 'field') { ST.inline[key] = v; }
+        else if (isCtxField(key)) { ST.ctx[key] = v; }
+        else { setManual(key, v); }
         save(); prRender();
       };
     });
