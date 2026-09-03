@@ -248,7 +248,11 @@ def _tables(C):
     CM = [("brent", "브렌트유", "Brent", "물가와 금리에 곧바로 닿습니다", "It feeds inflation and rates", True),
           ("wti", "WTI", "WTI", "미국 기준 유종", "The US benchmark", False),
           ("gold", "금", "Gold", "재정&middot;통화 불신의 온도계", "A gauge of fiscal and monetary distrust", False),
+          ("silver", "은", "Silver", "금과 갈라지면 산업 수요가 원인입니다",
+           "When it parts from gold, industrial demand is the reason", False),
           ("copper", "구리", "Copper", "제조업 경기의 대리 지표", "A proxy for industrial demand", False),
+          ("natgas", "천연가스", "Nat gas", "난방&middot;발전 수요와 유가를 갈라 봅니다",
+           "It separates heating and power demand from crude", False),
           ("btc", "비트코인", "Bitcoin", "위험 선호의 끝단", "The far end of risk appetite", False)]
     crows = []
     for k, ko, en, nk, ne, hl in CM:
