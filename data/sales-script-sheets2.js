@@ -23,9 +23,9 @@
     bands: '3가지 모두 <code>7</code> · 2가지 <code>5</code> · 1가지 <code>3</code> · 미실시 <code>0</code>',
     script: [
       { t: 'note', x: '[비계열사 펀드만 추천 시]' },
-      { t: 'say', x: "고객님의 투자자성향인 '{{custProfile}}' 과 현재 투자자금성향에 적합한 상품으로, 비계열사 상품인 {{mgr}}의 '{{name}}' 을 추천드리며, 해당 펀드는 {{riskLabel}} {{riskGrade}}등급 상품으로 고객님께 적합한 펀드입니다.\n이 펀드의 최근 1년 수익률은 {{ret1y}} 로, 동종유형 수익률인 {{retPeer}} 대비 {{retGap}} 높은 수준입니다." },
+      { t: 'say', x: "고객님의 투자자성향인 '{{custProfile}}' 과 현재 투자자금성향에 적합한 상품으로, 비계열사 상품인 {{mgr}}의 '{{name}}' 을 추천드리며, 해당 펀드는 {{riskLabel}} {{riskGrade}}등급 상품으로 고객님께 적합한 펀드입니다.\n{{retCompare}}" },
       { t: 'note', x: '[계열사 펀드 추천 시 — 계열 고지 + 유사한 비계열 펀드 1가지 동반 추천 필수]' },
-      { t: 'say', x: "고객님의 투자자성향인 '{{custProfile}}' 과 현재 투자자금성향에 적합한 상품으로, 당사 계열사인 {{mgr}}의 '{{name}}' 과 비계열사 상품인 {{peerFund}} 를 추천드리며, 해당 펀드 모두 {{riskLabel}} {{riskGrade}}등급 상품으로 고객님께 적합한 펀드입니다.\n{{name}} 의 최근 1년 수익률은 {{ret1y}} 로 동종유형 수익률 {{retPeer}} 대비 {{retGap}} 높은 수준이고, {{peerFund}} 의 최근 1년 수익률은 {{peerRet1y}} 입니다." },
+      { t: 'say', x: "고객님의 투자자성향인 '{{custProfile}}' 과 현재 투자자금성향에 적합한 상품으로, 당사 계열사인 {{mgr}}의 '{{name}}' 과 비계열사 상품인 {{peerFund}} 를 추천드리며, 해당 펀드 모두 {{riskLabel}} {{riskGrade}}등급 상품으로 고객님께 적합한 펀드입니다.\n{{retCompare}}\n{{peerFund}} 의 최근 1년 수익률은 {{peerRet1y}} 입니다." },
       { t: 'say', x: '추천드린 상품으로 가입을 하시겠습니까?' }
     ],
     tips: [
