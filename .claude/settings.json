@@ -1,0 +1,16 @@
+{
+  "hooks": {
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash .claude/hooks/gate-stop.sh",
+            "timeout": 180,
+            "statusMessage": "관문 확인 중 (scripts/gate.sh --changed)"
+          }
+        ]
+      }
+    ]
+  }
+}

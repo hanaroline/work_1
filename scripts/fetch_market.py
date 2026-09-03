@@ -3253,9 +3253,28 @@ def main():
 
     os.makedirs("data/market", exist_ok=True)
     stamp = now.strftime("%Y-%m-%d")
-    for path in ("data/market/latest.json", "data/market/%s.json" % stamp):
+
+    # 수집은 하루 네 번 돈다(06:20·06:45·15:40·16:00 KST). 그런데 보관은
+    # 오래도록 **하루 한 파일**이어서 뒤에 도는 수집이 앞의 것을 덮어썼다.
+    # 그 결과 오후 수집만 남고, **모닝 브리핑이 실제로 읽은 새벽 수집본은
+    # 사라졌다.** 새벽 수집본에만 밤사이 미국·유럽 마감이 들어 있으므로,
+    # 오후가 지나면 그날 모닝 판을 아무도 다시 검산할 수 없었다.
+    #
+    # 8월 27일 모닝 판을 남아 있는 파일로 대조해 보면 유럽 지수가 전부
+    # 어긋난 것처럼 나온다 — 판이 틀린 것이 아니라 근거가 지워진 것이다.
+    # (8월 23일은 일요일이라 오후 수집이 없어 새벽본 07:31 이 살아남았다.
+    #  예외가 규칙을 드러낸 자리다.)
+    #
+    # 그래서 **매 수집을 따로 남긴다.** 날짜별 파일과 latest.json 은 종전대로
+    # 두어 기존 스크립트를 건드리지 않는다.
+    runs = "data/market/runs"
+    os.makedirs(runs, exist_ok=True)
+    run_path = "%s/%s.json" % (runs, now.strftime("%Y-%m-%dT%H%M"))
+    for path in ("data/market/latest.json", "data/market/%s.json" % stamp,
+                 run_path):
         with open(path, "w", encoding="utf-8") as f:
             json.dump(out, f, ensure_ascii=False, indent=2)
+    print("수집본 보관: %s" % run_path)
 
     # 시장 내부 지표 추이 — 스냅숏을 손으로 이어 붙이지 않아도 되게 쌓아 둔다
     try:

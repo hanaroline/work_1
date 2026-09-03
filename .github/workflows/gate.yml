@@ -1,0 +1,54 @@
+name: 관문 (브리핑 검증)
+
+# 고쳐진 브리핑 판에 `scripts/gate.sh` 를 돌린다.
+#
+# 세션 안에도 관문이 있고(.claude/hooks/gate-stop.sh) CLAUDE.md 에도 규칙이
+# 있지만, 둘 다 **작업하는 쪽**에 있다. 이것은 밖에 있다. 「검증했습니다」라는
+# 말이 아니라 저장소에 남는 초록/빨강이 근거가 되는 자리다.
+#
+# 판을 고치지 않은 push 에서는 돌지 않는다 — 관문은 판에 대한 것이다.
+
+on:
+  push:
+    paths:
+      - 'docs/briefings/**.html'
+      - 'scripts/gate.sh'
+      - 'scripts/gate/**'
+      - '.github/workflows/gate.yml'
+  pull_request:
+    paths:
+      - 'docs/briefings/**.html'
+      - 'scripts/gate.sh'
+      - 'scripts/gate/**'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: gate-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  gate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          # gate.sh --changed 가 origin/main 과 견주므로 역사가 필요하다.
+          fetch-depth: 0
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: 관문
+        run: bash scripts/gate.sh --changed
+
+      - name: 기록 남기기
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: gate-log
+          path: out/gate/
+          if-no-files-found: ignore
+          retention-days: 30
