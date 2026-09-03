@@ -1,0 +1,38 @@
+name: 채권 원천 탐색 (조사)
+
+# 채권은 펀드·ELS 와 달리 수집 원천이 없어, 민평금리·민평단가·발행회사 재무정보를
+# 창구에서 종목마다 손으로 넣어야 한다. 자동으로 끌어올 길이 있는지 먼저 확인한다.
+# 개발 PC 는 외부 접속이 막혀 있어 러너에서 두드려 보고 로그로 결과를 본다.
+# 저장소에 아무것도 쓰지 않는다.
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - 'claude/complete-sales-script-**'
+    paths:
+      - 'scripts/probe_bond_sources.mjs'
+      - '.github/workflows/bond-probe.yml'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: bond-probe
+  cancel-in-progress: true
+
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref_name }}
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: 원천 두드려 보기
+        run: node scripts/probe_bond_sources.mjs
