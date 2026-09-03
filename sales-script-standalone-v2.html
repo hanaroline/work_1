@@ -19904,6 +19904,46 @@ window.FUND_PROSPECTUS = {"updatedAt":"2026-09-02T20:18:22.712Z","source":"펀�
       h.push('</ul>');
     }
     h.push('</div></div>');
+
+    /* 본 채권투자의 위험요인 — 회사 화면 원문 */
+    var rf = C.riskFactors || [];
+    if (rf.length) {
+      h.push('<h3 style="font-size:18px;font-weight:700;margin:22px 0 6px">본 채권투자의 위험요인 (회사 원문)</h3>');
+      h.push('<div class="hint" style="margin-bottom:12px">「투자에 따른 위험」 을 설명할 때 이 문장을 그대로 읽으십시오. 종목과 무관하게 같은 문구입니다.</div>');
+      h.push('<div class="card"><div class="card-b"><ul style="margin:0;padding-left:20px;line-height:1.7">');
+      rf.forEach(function (s) { h.push('<li>' + esc(s) + '</li>'); });
+      h.push('</ul></div></div>');
+    }
+
+    /* 금융상품 위험도 분류표 —
+       ★ 이 표는 「1등급(초고위험)~5등급(초저위험)」 5단계다. 그런데 장외채권
+       목록 화면과 개인형 IRP 핵심(요약)설명서는 6단계(1등급 매우높은위험 ~
+       6등급 매우낮은위험)를 쓴다. 등급 번호가 서로 맞지 않으므로 이 표로
+       「위험등급의 의미」 를 자동완성하지 않는다 — 자동완성하면 창구가
+       6등급 종목을 두고 「5등급 초저위험」 이라고 읽게 된다. 원문만 띄운다. */
+    var rt = C.riskTable || [];
+    if (rt.length) {
+      h.push('<h3 style="font-size:18px;font-weight:700;margin:22px 0 6px">금융상품 위험도 분류표 (회사 원문)</h3>');
+      h.push('<div class="warnbox" style="margin-bottom:12px"><b>등급 단계가 다릅니다 — 그대로 읽지 마십시오.</b><br>'
+        + '이 표는 <b>1등급(초고위험)~5등급(초저위험) 5단계</b>입니다. 반면 장외채권 목록 화면과 핵심(요약)설명서는 '
+        + '<b>1등급(매우높은위험)~6등급(매우낮은위험) 6단계</b>를 씁니다. 현재 선택 상품은 '
+        + '<b>' + esc(valueOf('riskLabel') || '—') + ' ' + esc(valueOf('riskGrade') || '—') + '등급</b>(6단계 기준)입니다.<br>'
+        + '그래서 「위험등급의 의미·유의사항」 을 이 표로 자동완성하지 않았습니다. '
+        + '등급별 문구는 <b>사내 핵심(요약)설명서</b>에서 확인해 위 「전 상품 공용 문구」 에 한 번 등록하십시오.</div>');
+      h.push('<div class="card"><div class="card-b" style="overflow-x:auto">');
+      h.push('<table style="border-collapse:collapse;font-size:13px;min-width:640px">');
+      rt.forEach(function (row, i) {
+        var cells = row.filter(function (c) { return c !== ''; });
+        if (!cells.length) return;
+        h.push('<tr>');
+        cells.forEach(function (c) {
+          h.push('<t' + (i <= 1 ? 'h' : 'd') + ' style="border:1px solid var(--line);padding:4px 7px;text-align:left;vertical-align:top">'
+            + esc(c) + '</t' + (i <= 1 ? 'h' : 'd') + '>');
+        });
+        h.push('</tr>');
+      });
+      h.push('</table></div></div>');
+    }
     return h.join('');
   }
 

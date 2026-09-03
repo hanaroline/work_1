@@ -367,16 +367,26 @@ try {
     });
   });
   console.log('  분류표 ' + riskTable.length + '줄');
-  /* 위험요인 — 「본 채권투자의 위험요인」 아래 번호 문장들 */
+  /* 위험요인 — 「본 채권투자의 위험요인」 아래 번호 문장들.
+     이 화면은 원화·외화를 함께 다루므로 「가. 채권투자의 기본위험」 「나. 환율변동
+     위험」 「다. 투자대상 국가…」 로 나뉘어 있다. 문단을 갈라 담지 않으면
+     원화채권 시트에 환율변동 위험이 섞여 나온다. */
   const i = pBody.search(/본\s*채권투자의\s*위험요인/);
   if (i >= 0) {
-    riskFactors = pBody.slice(i, i + 2600)
-      .split(/(?=[①②③④⑤⑥⑦⑧⑨])/)
-      .map((s) => s.trim())
-      .filter((s) => /^[①②③④⑤⑥⑦⑧⑨]/.test(s) && s.length > 25 && s.length < 500);
+    const blk = pBody.slice(i, i + 4000);
+    /* 「가.」 「나.」 처럼 한글 한 자 + 점으로 시작하는 문단 머리로 자른다 */
+    blk.split(/(?=[가-하]\.\s)/).forEach((sec) => {
+      const head = (/^([가-하])\.\s*([^①]{2,40})/.exec(sec) || [])[2];
+      const items = sec.split(/(?=[①②③④⑤⑥⑦⑧⑨])/)
+        .map((s) => s.trim())
+        /* 다음 문단 머리가 문장 끝에 붙어 오므로 떼어낸다 */
+        .map((s) => s.replace(/\s*[가-하]\.\s*[^.①]{2,40}$/, '').trim())
+        .filter((s) => /^[①②③④⑤⑥⑦⑧⑨]/.test(s) && s.length > 25 && s.length < 600);
+      if (items.length) riskFactors.push({ head: (head || '').trim(), items: items });
+    });
   }
-  console.log('  위험요인 문장 ' + riskFactors.length + '개');
-  riskFactors.slice(0, 3).forEach((s) => console.log('     · ' + s.slice(0, 100)));
+  console.log('  위험요인 문단 ' + riskFactors.length + '개');
+  riskFactors.forEach((g) => console.log('     [' + g.head + '] ' + g.items.length + '문장 — ' + g.items[0].slice(0, 70)));
 } catch (e) {
   console.log('  못 받음 — ' + e.message);
 }
