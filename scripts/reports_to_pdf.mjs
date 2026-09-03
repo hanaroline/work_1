@@ -68,7 +68,10 @@ for (const [mode, suffix, label] of [
   // 글꼴을 여기서 따로 지정하지 않으면 한글이 중국어 글꼴로 나온다.
   await p.pdf({
     path: name, format: 'A4', printBackground: true,
-    margin: { top: '13mm', bottom: '15mm', left: '11mm', right: '11mm' },
+    // 여백은 화면 CSS 의 @page 가 잡는다. 여기서 또 주면 **더해져** 쪽수가
+    // 부풀고(전체본 35→45쪽) 판이 좁아진다. 크로뮴은 문서가 @page 여백을
+    // 선언하면 그것을 쓰므로, 이쪽은 0 으로 비워 둔다.
+    margin: { top: '0', bottom: '0', left: '0', right: '0' },
     displayHeaderFooter: true,
     headerTemplate: '<div></div>',
     footerTemplate: '<div style="width:100%;font-size:8pt;color:#777;'
