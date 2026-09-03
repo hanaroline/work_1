@@ -2516,6 +2516,19 @@
       var el = $(sel);
       if (el) { el.textContent = txt; el.className = cls; el.title = '상담시간 기준 ' + limitMin() + '분'; }
     });
+    /* 시간이 0 이면 초기화할 것이 없다 — 그때는 버튼을 감춰 둔다 */
+    var rb = $('#btnTimerReset');
+    if (rb) rb.hidden = !(ST.timer.running || ST.timer.acc > 0);
+  }
+  /** 타이머를 00:00 으로 되돌린다 (입력값·체크는 건드리지 않는다) */
+  function timerReset() {
+    /* 한참 재던 시간을 잘못 눌러 날리지 않도록, 1분을 넘겼으면 한 번 묻는다 */
+    var ms = ST.timer.acc + (ST.timer.running ? Date.now() - ST.timer.base : 0);
+    if (ms >= 60000 && !confirm('상담시간을 00:00 으로 되돌립니다.\n(입력값·체크는 그대로 남습니다)\n계속하시겠습니까?')) return;
+    ST.timer = { running: false, base: 0, acc: 0 };
+    var bt = $('#btnTimer');
+    if (bt) bt.textContent = '상담 시작';
+    tick();
   }
 
   /* ============================================================
@@ -2551,6 +2564,7 @@
       }
       tick();
     };
+    $('#btnTimerReset').onclick = timerReset;
     setInterval(tick, 1000);
 
     document.addEventListener('keydown', function (e) {
