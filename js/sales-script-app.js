@@ -498,38 +498,75 @@
     ],
     /* 상품군 × 등급 — 표의 칸 그대로 */
     rows: [
-      { key: '채권 (국내)', cats: ['bondKrw'], cells: {
+      { key: '채권 (국내)', note: 1, cats: ['bondKrw'], cells: {
         1: '회사채(BB+ 이하)', 2: '회사채(BBB-)', 3: '회사채(BBB0 ~ BBB+)',
         4: '회사채(A- ~ A+)', 5: '회사채(AA- ~ AAA)', 6: '국고채, 통안채, 지방채, 특수채' } },
-      { key: '채권 (해외 · S&P·피치)', cats: ['bondFx'], cells: {
+      { key: '채권 (해외 · S&P·피치)', note: 1, cats: ['bondFx'], cells: {
         1: 'B+ 이하', 2: 'BB- ~ BB+', 3: 'BBB- ~ BBB+', 4: 'A- ~ A+', 5: 'AA- 이상' } },
-      { key: '채권 (해외 · 무디스)', cats: ['bondFx'], cells: {
+      { key: '채권 (해외 · 무디스)', note: 1, cats: ['bondFx'], cells: {
         1: 'B1 이하', 2: 'Ba3 ~ Ba1', 3: 'Baa3 ~ Baa1', 4: 'A3 ~ A1', 5: 'Aa3 이상' } },
       { key: 'CP / 단기사채', cats: [], cells: {
         1: 'B 이하', 2: 'A3-', 3: 'A30 ~ A3+', 4: 'A2- ~ A2+', 5: 'A1' } },
-      { key: '조건부자본증권 (신종 Tier1)', cats: [], cells: {
+      { key: '조건부자본증권 (신종 Tier1)', note: 2, cats: [], cells: {
         1: '그 외', 2: '정부결손보전은행' } },
-      { key: '조건부자본증권 (후순위 Tier2)', cats: [], cells: {
+      { key: '조건부자본증권 (후순위 Tier2)', note: 2, cats: [], cells: {
         1: '그 외', 2: '시스템적 중요은행, 시스템적 중요은행지주', 3: '정부결손보전은행' } },
-      { key: 'ELS · DLS', cats: ['els'], cells: {
+      { key: 'ELS · DLS', note: 3, cats: ['els'], cells: {
         2: '최대원금손실 가능금액 20% 초과형', 3: '원금의 80% 이상 지급형',
         4: '원금의 90% 이상 지급형', 5: '원금의 95% 이상 지급형' } },
       { key: '파생결합사채 (ELB · DLB)', cats: [], span: '발행 금융회사의 신용등급에 대응하는 채권의 위험등급 준용' },
-      { key: '집합투자기구 (펀드)', cats: ['fund', 'irp'], span: '운용사 표기 — 1등급(매우높은위험) ~ 6등급(매우낮은위험)' },
-      { key: 'ETF (국내)', cats: [], span: '운용사 표기 — 1등급(매우높은위험) ~ 6등급(매우낮은위험)' },
-      { key: 'ETF (해외)', cats: [], cells: { 1: '1등급' } },
-      { key: '신탁', cats: [], span: '편입 가능 투자대상 자산의 최고 위험등급' },
+      { key: '집합투자기구 (펀드)', note: 7, cats: ['fund', 'irp'], span: '운용사 표기 — 1등급(매우높은위험) ~ 6등급(매우낮은위험)' },
+      { key: 'ETF (국내)', note: 6, cats: [], span: '운용사 표기 — 1등급(매우높은위험) ~ 6등급(매우낮은위험)' },
+      { key: 'ETF (해외)', note: 6, cats: [], cells: { 1: '1등급' } },
+      { key: '신탁', note: 8, cats: [], span: '편입 가능 투자대상 자산의 최고 위험등급' },
       { key: '주식', cats: [], cells: {
         1: '비상장주식, 해외주식, 신용거래, 투자주의·경고·위험·관리종목', 2: '주식' } },
       { key: 'ELW', cats: [], cells: { 1: 'ELW' } },
-      { key: 'ETN', cats: [], cells: { 1: '일반 ETN', 2: '손실제한 ETN', 4: 'CD+α금리 ETN' } },
+      { key: 'ETN', note: 5, cats: [], cells: { 1: '일반 ETN', 2: '손실제한 ETN', 4: 'CD+α금리 ETN' } },
       { key: '장내파생상품', cats: [], cells: { 1: '국내/해외 선물옵션' } },
       { key: '장외파생상품', cats: [], cells: { 1: '장외파생상품' } },
-      { key: '당사 발행어음', cats: [], cells: { 4: '외화발행어음', 5: '원화발행어음 / 발행어음형 CMA' } },
-      { key: '당사 RP', cats: [], cells: { 5: '외화 RP', 6: '원화 RP / RP형 CMA' } },
-      { key: '예금 · 타사 RP · MMDA · 원리금보장형', cats: [], span: '발행 금융회사의 신용등급에 대응하는 채권의 위험등급 준용' },
-      { key: 'DC·IRP·ISA 편입 예금 · 현금성자산', cats: [], cells: { 6: '예금 등 예금자보호 대상상품, 현금성자산' } }
-    ]
+      { key: '당사 발행어음', note: 11, cats: [], cells: { 4: '외화발행어음', 5: '원화발행어음 / 발행어음형 CMA' } },
+      { key: '당사 RP', note: 11, cats: [], cells: { 5: '외화 RP', 6: '원화 RP / RP형 CMA' } },
+      { key: '예금 · 타사 RP · MMDA · 원리금보장형', note: 12, cats: [], span: '발행 금융회사의 신용등급에 대응하는 채권의 위험등급 준용' },
+      { key: 'DC·IRP·ISA 편입 예금 · 현금성자산', cats: [], note: 13, cells: { 6: '예금 등 예금자보호 대상상품, 현금성자산' } }
+    ],
+    /* 2/2 쪽 [공통사항] */
+    common: [
+      '외화상품은 환헤지가 되지 않으면 상기 분류표에서 위험도 단계 상향 조정함 (예외: 외화 RP, 외화 발행어음)'
+        + ' — 1단계 상향 통화: USD, EUR, GBP, JPY / 상기 상향 이외의 통화는 2단계 상향 조정함',
+      '신용등급은 다수의 적격 신용평가사의 신용등급이 존재할 경우, 가장 높은 등급을 제외한 나머지 등급 중 좋은 등급(Second Best)을 사용',
+      '고난도 금융투자상품의 경우 상기 표 등급과 관계없이 개별 검토하여 2등급 이상으로 결정함'
+    ],
+    /* 2/2 쪽 [주석사항] — 표의 주N) 과 번호가 맞는다 */
+    notes: {
+      1: '보증채는 보증기관과 발행기관의 신용등급 중 가장 높은 신용등급을 기준으로 위험도를 산정함. '
+        + 'KP물은 발행사의 국내 신용등급에 대응하는 국내채권의 위험등급을 기준으로 산정함',
+      2: '정부결손보전은행: 산업은행, 중소기업은행, 수출입은행 / '
+        + '시스템적 중요은행, 시스템적 중요은행지주회사: 금융위원회에서 지정한 기관에 한함',
+      3: '다음 어느 하나에 해당하는 경우 각 1개 등급 상향 — '
+        + '① 기초자산의 수가 3개를 초과하는 경우 '
+        + '② 기초자산의 종류가 부동산·특별자산 등 기초자산에 연계되어 상품구조에 대한 투자자의 이해가능성이 낮은 경우 '
+        + '③ 기초자산 가격이 과거 10년간 기초자산의 일간수익률의 연환산 표준편차가 25%를 초과하는 경우 '
+        + '④ 원금손실조건: 낙인 배리어가 60% 이상인 경우 또는 노낙인형 상품일 때 만기배리어 요건이 70% 이상인 경우 '
+        + '(※ NO KI(노낙인) 상품은 마지막 배리어를 기준으로 위험등급을 부여함) '
+        + '⑤ 레버리지 여부 (손실발생구간의 손실배수가 기초자산 변동률의 1배를 초과하는 경우) '
+        + '⑥ 발행사의 신용위험도가 A- 미만인 경우',
+      4: '발행사의 신용위험도가 A- 미만인 경우 1개 등급 상향',
+      5: '손실제한 ETN은 레버리지가 아닌 원금부분보장형 ETN에 한함',
+      6: '해외상장 ETF는 운용사의 위험등급 분류기준이 부재하고, 펀드평가사·제도권에서도 위험등급을 제공하고 있지 않으며, '
+        + '환위험에 노출되므로 일괄 1등급으로 적용함',
+      7: '집합투자증권의 경우 운용사 표기 위험등급이 없을 경우 재무적 자료에 근거하여 개별 검토하여 2등급 이상으로 결정함',
+      8: '타사에서 발행한 RP, 발행어음 등을 편입할 경우 발행 금융회사의 신용등급에 대응하는 채권의 위험등급 준용',
+      9: '랩 위험등급은 편입 자산별 금액가중치를 보정한 값으로 산정. '
+        + '(ETF/펀드/주식/CMA) 랩 이외의 랩 상품은 기타랩으로 보고 기타랩의 위험등급을 산정',
+      10: '당사 자문계약의 경우 편입 자산별 금액가중치를 보정한 값으로 산정. '
+        + '외부자문사 상품은 해당 외부자문사가 선정한 위험등급을 준용함',
+      11: '당사 신용등급이 A+ 이하로 조정될 경우 등급 상향',
+      12: '퇴직연금 DB 원리금보장형은 예금자보호 기준등급 준용',
+      13: '예금자보호대상 상품: 예금, 원리금보장형, 종금사 발행어음 등'
+    },
+    /* 공통사항 ① 을 계산에 쓰기 위한 값 */
+    fxStep: { one: ['USD', 'EUR', 'GBP', 'JPY'], other: 2, except: ['외화 RP', '외화 발행어음'] }
   };
   /** 등급 숫자 -> 명칭 */
   function gradeLabel(n) {
@@ -545,6 +582,52 @@
     }
     return null;
   }
+  /**
+   * 국제신용등급 -> 분류표상 「채권(해외)」 등급.
+   * S&P·피치 표기와 무디스 표기를 모두 본다. 표에 없는 표기(「채권별로 상이」
+   * 같은 것)는 null 을 준다 — 짐작해서 등급을 매기지 않는다.
+   */
+  function fxBaseGrade(credit) {
+    var t = String(credit || '').toUpperCase().replace(/\s/g, '');
+    if (!t) return null;
+    /* 무디스 표기가 먼저다 — Aa3 를 A 로 잘못 읽지 않도록 */
+    if (/^AAA|^AA[123]/.test(t)) return 5;          /* Aaa · Aa1~Aa3 이상 */
+    if (/^A[123]$/.test(t)) return 4;               /* A1 ~ A3 */
+    if (/^BAA[123]/i.test(t)) return 3;             /* Baa1 ~ Baa3 */
+    if (/^BA[123]/i.test(t)) return 2;              /* Ba1 ~ Ba3 */
+    if (/^B[123]/.test(t)) return 1;                /* B1 이하 */
+    /* S&P · 피치 표기 */
+    if (/^AA[+-]?$|^AAA$/.test(t)) return 5;        /* AA- 이상 */
+    if (/^A[+-]?$/.test(t)) return 4;               /* A- ~ A+ */
+    if (/^BBB[+-]?$|^BBB0$/.test(t)) return 3;      /* BBB- ~ BBB+ */
+    if (/^BB[+-]?$|^BB0$/.test(t)) return 2;        /* BB- ~ BB+ */
+    if (/^B[+-]?$|^CCC|^CC|^C$|^D$/.test(t)) return 1;
+    return null;
+  }
+  /**
+   * 외화채권의 위험등급 — 공통사항 ① 을 적용한다.
+   * 「외화상품은 환헤지가 되지 않으면 상기 분류표에서 위험도 단계 상향 조정함
+   *  (예외: 외화 RP, 외화 발행어음) — 1단계 상향 통화: USD, EUR, GBP, JPY /
+   *  상기 상향 이외의 통화는 2단계 상향 조정함」
+   * 외화채권은 예외가 아니고, 회사 설명 문구도 「환헤지거래는 수행하지
+   * 않습니다」 라고 적고 있으므로 상향이 적용된다.
+   * 계산 과정을 함께 돌려주어 화면에서 눈으로 검산할 수 있게 한다.
+   */
+  function fxRiskGrade(credit, ccy) {
+    var base = fxBaseGrade(credit);
+    if (base == null) return null;
+    var cc = String(ccy || '').toUpperCase().trim();
+    if (!cc) return null;
+    var step = RISK_TABLE.fxStep.one.indexOf(cc) >= 0 ? 1 : RISK_TABLE.fxStep.other;
+    var g = Math.max(1, base - step);       /* 숫자가 작을수록 위험하다 */
+    return {
+      base: base, step: step, grade: g, ccy: cc, credit: String(credit),
+      why: '국제신용등급 ' + credit + ' → 분류표 「채권(해외)」 ' + base + '등급('
+        + gradeLabel(base) + '), 환헤지를 하지 않는 ' + cc + ' 상품이므로 '
+        + step + '단계 상향 → ' + g + '등급(' + gradeLabel(g) + ')'
+    };
+  }
+
   /** 그 등급을 가입할 수 있는 성향 이름들 (위험한 성향부터) */
   function gradeProfiles(n) {
     return RISK_TABLE.profiles.filter(function (p) { return p.grades.indexOf(+n) >= 0; })
@@ -766,10 +849,12 @@
     if (!C || !C.fxTypes || !C.fxTypes.length) return null;
     if (BOND_FX_CACHE) return BOND_FX_CACHE;
     BOND_FX_CACHE = C.fxTypes.map(function (t, i) {
+      var fg = fxRiskGrade(t.credit, t.ccy);
       return {
         id: 'fx' + (i + 1),
         name: (t.ccy || t.country || '') + ' ' + (t.kind || ''),
-        kind: t.kind || '', ccy: t.ccy || '', fxType: t, fromCatalog: true
+        kind: t.kind || '', ccy: t.ccy || '', fxType: t, fromCatalog: true,
+        riskGrade: fg ? fg.grade : null, riskLabel: fg ? gradeLabel(fg.grade) : ''
       };
     });
     return BOND_FX_CACHE;
@@ -787,6 +872,13 @@
     put('ccy', t.ccy);
     put('credit', t.credit);
     put('tax', t.tax);
+    /* 위험등급 — 국제신용등급과 통화로 분류표대로 낸다 (환헤지 미실시 상향 포함).
+       「채권별로 상이」 처럼 등급을 낼 수 없는 유형은 담지 않아 확인필요로 남는다. */
+    var fg = fxRiskGrade(t.credit, t.ccy);
+    if (fg) {
+      put('riskGrade', String(fg.grade));
+      put('riskLabel', gradeLabel(fg.grade));
+    }
     return {
       source: 'COLLECT',
       docName: '외화채권 유형 안내 — ' + it.name,
@@ -1170,7 +1262,24 @@
           if (c) parts.push(r.key + ' 중 ' + c + ' 를 ' + gb + '등급(' + gradeLabel(gb) + ')으로 분류하는 기준');
         });
         if (!parts.length) return undefined;
-        return '당사 「투자자 유형 및 금융투자상품 위험도 분류표」 상 ' + parts.join(', ');
+        var out = '당사 「투자자 유형 및 금융투자상품 위험도 분류표」 상 ' + parts.join(', ');
+        /* 공통사항 ① — 외화상품은 환헤지가 되지 않으면 단계를 상향한다.
+           그 상향까지 말해야 이 상품의 등급이 왜 그 숫자인지가 설명된다. */
+        if (sh.cat === 'bondFx') {
+          var pf = product();
+          var fx = pf && pf.fxType ? fxRiskGrade(pf.fxType.credit, pf.fxType.ccy) : null;
+          if (fx && fx.grade === gb) {
+            out = '당사 「투자자 유형 및 금융투자상품 위험도 분류표」 상 채권(해외) 중 국제신용등급 '
+              + fx.credit + ' 를 ' + fx.base + '등급(' + gradeLabel(fx.base) + ')으로 분류하고, '
+              + '환헤지를 하지 않는 ' + fx.ccy + ' 상품은 ' + fx.step + '단계 상향하는 기준';
+          }
+        }
+        /* 공통사항 ③ — 고난도 금융투자상품은 표와 관계없이 2등급 이상으로 결정한다 */
+        var hd = valueOf('highDiff');
+        if (hd && /해당 \(/.test(String(hd))) {
+          out += ' (다만 고난도 금융투자상품은 상기 표 등급과 관계없이 개별 검토하여 2등급 이상으로 결정합니다)';
+        }
+        return out;
       }
       /**
        * 위험등급의 의미·유의사항.
@@ -2974,7 +3083,7 @@
       var mine = (r.cats || []).indexOf(sh.cat) >= 0;
       var bg = mine ? 'background:#eef6ff' : '';
       h.push('<tr><td style="border:1px solid var(--line);padding:4px 7px;font-weight:' + (mine ? '700' : '400') + ';' + bg + '">'
-        + esc(r.key) + (mine ? ' ◀' : '') + '</td>');
+        + esc(r.key) + (r.note ? '<sup>주' + r.note + ')</sup>' : '') + (mine ? ' ◀' : '') + '</td>');
       if (r.span) {
         h.push('<td colspan="6" style="border:1px solid var(--line);padding:4px 7px;text-align:center;' + bg + '">' + esc(r.span) + '</td>');
       } else {
@@ -3001,6 +3110,45 @@
       + (prof ? ' 초록 칸은 <b>' + esc(prof) + '</b> 성향이 가입할 수 있는 등급입니다.' : ' 투자자성향을 고르면 가입 가능 등급도 함께 표시합니다.') + '</div>');
     h.push('<div class="hint">투자자구분 줄은 각 성향이 가입할 수 있는 <b>가장 위험한</b> 등급에 이름을 적은 것입니다 — '
       + RISK_TABLE.profiles.map(function (pp) { return esc(pp.name) + ' → ' + pp.grades.join('·') + '등급'; }).join(' · ') + '.</div>');
+
+    /* 외화채권 — 환헤지 미실시 상향을 계산해 보여 준다 (공통사항 ①) */
+    if (sh.cat === 'bondFx') {
+      var pfx = product();
+      var fg = pfx && pfx.fxType ? fxRiskGrade(pfx.fxType.credit, pfx.fxType.ccy) : null;
+      if (fg) {
+        h.push('<div class="note" style="margin-top:12px;border-left-color:var(--ok)"><b>이 유형의 위험등급 계산</b><br>'
+          + esc(fg.why) + '<br><span style="color:var(--muted2)">공통사항 ① — 외화상품은 환헤지가 되지 않으면 위험도 단계를 상향합니다. '
+          + '외화채권은 예외(외화 RP·외화 발행어음)가 아니고, 회사 설명 문구도 「환위험을 감소시키기 위한 환헤지거래는 수행하지 않습니다」 라고 적고 있습니다.</span></div>');
+      } else if (pfx && pfx.fxType) {
+        h.push('<div class="note" style="margin-top:12px"><b>이 유형은 위험등급을 계산할 수 없습니다</b> — '
+          + '국제신용등급이 「' + esc(pfx.fxType.credit || '—') + '」 여서 분류표의 등급 구간에 맞출 수 없습니다. '
+          + '종목 설명서의 신용등급을 확인해 「필수입력」 탭에서 등급을 넣으십시오.</div>');
+      }
+    }
+
+    /* 공통사항 */
+    h.push('<div class="rule" style="margin:16px 0 10px"></div><b>공통사항</b>');
+    h.push('<ul style="margin:6px 0 0;padding-left:20px;line-height:1.7">');
+    RISK_TABLE.common.forEach(function (x) { h.push('<li>' + esc(x) + '</li>'); });
+    h.push('</ul>');
+
+    /* 주석사항 — 지금 상품군에 걸린 것을 먼저 보여 준다 */
+    var mineNotes = RISK_TABLE.rows.filter(function (r) { return (r.cats || []).indexOf(sh.cat) >= 0 && r.note; })
+      .map(function (r) { return r.note; });
+    var uniq = [];
+    mineNotes.forEach(function (n) { if (uniq.indexOf(n) < 0) uniq.push(n); });
+    if (uniq.length) {
+      h.push('<div class="rule" style="margin:16px 0 10px"></div><b>이 상품군에 걸린 주석</b>');
+      h.push('<ul style="margin:6px 0 0;padding-left:20px;line-height:1.7">');
+      uniq.forEach(function (n) { h.push('<li><b>주' + n + ')</b> ' + esc(RISK_TABLE.notes[n]) + '</li>'); });
+      h.push('</ul>');
+    }
+    h.push('<div class="rule" style="margin:16px 0 10px"></div>'
+      + '<details><summary style="cursor:pointer;font-weight:700">주석사항 전체 (' + Object.keys(RISK_TABLE.notes).length + '개)</summary>'
+      + '<ul style="margin:8px 0 0;padding-left:20px;line-height:1.7">'
+      + Object.keys(RISK_TABLE.notes).map(function (n) {
+        return '<li><b>주' + n + ')</b> ' + esc(RISK_TABLE.notes[n]) + '</li>';
+      }).join('') + '</ul></details>');
     h.push('</div></div>');
     return h.join('');
   }
