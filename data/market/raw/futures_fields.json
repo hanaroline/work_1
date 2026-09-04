@@ -12,27 +12,42 @@
   {
    "code": "openPrice",
    "key": "시가",
-   "value": "-"
+   "value": "1,043.90",
+   "compareToPreviousPrice": {
+    "code": "2",
+    "text": "상승",
+    "name": "RISING"
+   }
   },
   {
    "code": "highPrice",
    "key": "고가",
-   "value": "-"
+   "value": "1,063.85",
+   "compareToPreviousPrice": {
+    "code": "2",
+    "text": "상승",
+    "name": "RISING"
+   }
   },
   {
    "code": "lowPrice",
    "key": "저가",
-   "value": "-"
+   "value": "1,042.30",
+   "compareToPreviousPrice": {
+    "code": "2",
+    "text": "상승",
+    "name": "RISING"
+   }
   },
   {
    "code": "accumulatedTradingVolume",
    "key": "거래량",
-   "value": "-"
+   "value": "101,513"
   },
   {
    "code": "accumulatedTradingValue",
    "key": "대금",
-   "value": "-"
+   "value": "26,694,127백만"
   },
   {
    "code": "highPriceOf52Weeks",
@@ -48,9 +63,9 @@
  "description": "코스피200 주가지수를 기초자산으로 하는 선물지수",
  "dealTrendInfo": {
   "bizdate": "20260904",
-  "personalValue": "0",
-  "foreignValue": "0",
-  "institutionalValue": "0"
+  "personalValue": "+363",
+  "foreignValue": "+18,971",
+  "institutionalValue": "-19,119"
  },
  "programTrendInfo": null,
  "upDownStockInfo": null,
