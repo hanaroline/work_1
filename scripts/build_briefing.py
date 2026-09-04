@@ -36,7 +36,7 @@ sys.path.insert(0, os.path.join(ROOT, "scripts"))
 from briefing_lib import (  # noqa: E402
     KST, WD, VF_OK, VF_MD, VF_C, VF_1, VF_N,
     d, DK, DE, DD, DS, n, pct, bp, eok, jo, esc,
-    L, TH, THP, perf_cells, tbl, exp as _exp, P, lede, stat, card, callout,
+    L, TH, THP, perf_cells, perf_line, tbl, exp as _exp, P, lede, stat, card, callout,
     sparkline, bar, Doc, Narrative, assemble)
 import briefing_lib as _lib  # noqa: E402
 from briefing_prepare import prepare, KIND_NAME  # noqa: E402
@@ -67,7 +67,26 @@ CORE_CSS = """
    없애면 「이 지수가 무엇인지」가 PDF 에서 통째로 사라진다(지침 4-3절).
 
    껍데기 CSS 뒤에 붙이므로 같은 우선순위에서 이긴다(지침 6절).        */
-.section{margin-top:30px}
+.section{margin-top:26px}
+/* 기간 사다리 — 핵심본은 열 넷을 세울 자리가 없으므로 **이름 밑의 한 줄**로
+   낸다. `fold_perf.py` 의 `.perfline` 과 모양은 같지만 그쪽은 화면 폭에 따라
+   열과 번갈아 보이느라 인쇄에서 숨는다. 이 줄은 대신할 열이 아예 없으니
+   화면에서도 종이에서도 **항상 보인다**. 한 쌍은 붙여 두고 쌍 사이에서만
+   넘긴다 — 「1개월」과 「-5.1%」가 갈라지면 읽히지 않는다. */
+table.data .perfrow{display:inline;margin-left:6px;font-size:11.5px;font-weight:400;
+  line-height:1.45;color:var(--muted);white-space:normal;word-break:keep-all;
+  overflow-wrap:anywhere}
+table.data .perfrow .p{white-space:nowrap}
+table.data .perfrow .k{opacity:.72;margin-right:1px}
+table.data .perfrow .up{color:var(--up)}
+table.data .perfrow .down{color:var(--down)}
+table.data .perfrow .flat{opacity:.6}
+table.data .perfrow i{font-style:normal;opacity:.35;padding:0 3px}
+@media print{
+  table.data .perfrow{font-size:5.9pt;line-height:1.14;margin-left:4px}
+  table.data .perfrow i{padding:0 2px}
+  .section{margin-top:15px}
+}
 /* 좁은 표를 나란히 세운다. 화면이 좁아지면 스스로 한 단으로 풀린다 —
    폭 훑기에서 340px 까지 넘침 0 이어야 하므로 고정 2·3단을 쓰지 않는다. */
 .duo{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(430px,100%),1fr));gap:0 14px}
@@ -649,11 +668,11 @@ def sec_macro(C):
                 cls="data compact",
                 foot_ko="미 국채는 <strong>재무부 확정 고시</strong>이고 " + VF_OK + ", 국고채는 한국은행 "
                         "ECOS 입니다. <strong>한미 금리차는 같은 만기끼리 뺀 값</strong>입니다 " + VF_C + ". "
-                        + ("만기 열한 개 전부는 <strong>오른쪽 곡선표</strong>에 있습니다."
+                        + ("만기 열한 개 전부는 <strong>바로 아래 곡선표</strong>에 있습니다."
                            if CORE[0] else "만기 열한 개 전부는 아래 상세에 있습니다."),
                 foot_en="US yields are <strong>Treasury official fixings</strong> " + VF_OK + "; Korean yields come "
                         "from ECOS. <strong>The gap is same-maturity subtraction</strong> " + VF_C + ". "
-                        + ("The full eleven-point curve is <strong>in the right-hand column</strong>."
+                        + ("The full eleven-point curve is <strong>just below</strong>."
                            if CORE[0] else "The full eleven-point curve is in the detail below."))
 
     a, b = N.get("macro_lede", C["fb_macro"][0], C["fb_macro"][1])
@@ -661,11 +680,17 @@ def sec_macro(C):
         # 원자재를 한 줄로 깔면 표 하나가 쪽 폭을 통째로 먹는다. 열이 여덟인
         # 준비 단계 표(cm_tbl)는 반 칸에 넣으면 넘치므로(700~1600px 에서 최대
         # 246px) **이름·종가·등락률 셋으로 줄인 판**을 따로 만들어 오른 칸에
-        # 환율 밑으로 세운다. 왼쪽은 금리(일곱 줄), 오른쪽은 환율(다섯) + 원자재
-        # (일곱) — 두 칸의 높이가 얼추 맞는다.
+        # 환율 밑으로 세운다.
+        #
+        # **어느 표를 어느 칸에 두는지는 재서 정한다.** 격자 한 줄의 높이는 두 칸
+        # 중 **큰 쪽**이므로, 짝을 잘못 지으면 반대쪽 아래가 그대로 빈다. 기간
+        # 줄이 들어오면서 곡선표(만기 열하나)가 커져 「환율+곡선」 쪽이 931px,
+        # 「금리+원자재」 쪽이 648px 이 됐다 — 283px 이 한쪽에서만 비었고 그것이
+        # 여섯 쪽을 일곱 쪽으로 넘겼다. 짝을 **금리+곡선 / 환율+원자재** 로 바꾸면
+        # 806 대 773 으로 맞고, 덤으로 금리 이야기가 한 칸에 모인다.
         return (lede(a, b) + '\n<div class="duo">\n'
-                + '<div>\n' + rates + "\n" + (_cm_core(C) or "") + '\n</div>\n'
-                + '<div>\n' + C["fx_tbl"] + "\n" + (_curve_core(C) or "") + '\n</div>\n</div>')
+                + '<div>\n' + rates + "\n" + (_curve_core(C) or "") + '\n</div>\n'
+                + '<div>\n' + C["fx_tbl"] + "\n" + (_cm_core(C) or "") + '\n</div>\n</div>')
     return (lede(a, b) + "\n" + rates + "\n" + C["fx_tbl"] + "\n" + C["cm_tbl"] + "\n"
             + exp("미 재무부 곡선 만기 11개 &middot; 달러 상대 통화",
                   "The full US curve and the dollar crosses",
@@ -990,7 +1015,7 @@ def _stock_core(tko, ten, top, bot, why, foot_ko="", foot_en="", k=10):
         for name, v in group[:k]:
             wk, we = why.get(name, ("", ""))
             sub = L('<span class="sub">' + wk + '</span>', '<span class="sub">' + we + '</span>') if wk else ""
-            rows.append('      <tr><th class="wrap">' + esc(name) + sub + '</th>'
+            rows.append('      <tr><th class="wrap">' + esc(name) + sub + perf_line(v.get("perf")) + '</th>'
                         '<td class="n">' + n(v["close"]) + '</td>' + _cell(v.get("change_pct"))
                         + '</tr>')
         return tbl(cap_ko, cap_en, head, rows, cls="data compact")
@@ -1050,8 +1075,9 @@ def _curve_core(C):
     for k, ko, en in LAB:
         if k not in ru["curve"]:
             continue
+        p = (ru.get("perf") or {}).get(k) or {}
         rows.append('      <tr' + (' class="hl"' if k in ("ust2y", "ust10y", "ust30y") else '') + '>'
-                    '<th class="wrap">' + L(ko, en) + '</th>'
+                    '<th class="wrap">' + L(ko, en) + perf_line(p, "bp") + '</th>'
                     '<td class="n">' + n(ru["curve"][k], 3) + '%</td>'
                     '<td class="n">' + bp(ru["change_bp"].get(k)) + '</td></tr>')
     if not rows:
@@ -1159,7 +1185,7 @@ def _cm_core(C):
         if not v:
             continue
         rows.append('      <tr' + (' class="hl"' if hl else '') + '>'
-                    '<th class="wrap">' + L(ko, en) + '</th>'
+                    '<th class="wrap">' + L(ko, en) + perf_line(v.get("perf")) + '</th>'
                     '<td class="n">' + n(v["close"]) + '</td>' + _cell(v.get("change_pct")) + '</tr>')
     if not rows:
         return ""
