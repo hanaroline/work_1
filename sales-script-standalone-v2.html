@@ -21057,13 +21057,25 @@ window.FUND_PROSPECTUS = {"updatedAt":"2026-09-02T20:18:22.712Z","source":"펀�
       + '여기 한 번 올려 두면 <b>모든 펀드</b>의 「증시 현황 및 전망 설명」 항목에 그대로 쓰입니다. '
       + '평가에서는 <b>직전월 이후 발간</b> 자료만 최신자료로 인정합니다.</div>');
     h.push('<div class="card"><div class="card-b">');
-    if (MKT.mktAsOf || MKT.mktView) {
-      h.push('<div class="note" style="margin:0 0 12px;border-left-color:var(--' + (fresh === false ? 'warn' : 'ok') + ')">'
-        + '<b>등록된 자료</b> — ' + esc(MKT.docName || '(파일명 없음)')
-        + (MKT.mktAsOf ? ' · 기준 ' + esc(MKT.mktAsOf) : '')
+    /* 등록 상태를 맨 위에 크게 적는다 — 등록해 두면 새 달 자료를 올릴 때까지
+       모든 펀드에 계속 쓰인다는 것을 화면에서 알 수 있어야 한다. */
+    if (MKT.mktAsOf || MKT.mktView || MKT.docName) {
+      h.push('<div class="banner" style="margin:0 0 12px;border-color:var(--' + (fresh === false ? 'warn' : 'ok')
+        + ');border-left-color:var(--' + (fresh === false ? 'warn' : 'ok') + ')'
+        + (fresh === false ? '' : ';background:#f3f9f4') + '">'
+        + '<b style="color:var(--' + (fresh === false ? 'warn' : 'ok') + ')">등록됨 — 모든 펀드에 계속 쓰입니다</b><br>'
+        + esc(MKT.docName || '(파일명 없음)')
+        + (MKT.mktAsOf ? ' · 기준 <b>' + esc(MKT.mktAsOf) + '</b>' : '')
         + (MKT.registeredAt ? ' · 등록 ' + esc(String(MKT.registeredAt).slice(0, 10)) : '')
-        + (fresh === false ? '<br><b style="color:var(--warn)">직전월 이후 자료가 아닙니다 — 이대로 쓰면 최신자료로 인정되지 않습니다.</b>' : '')
+        + (MKT.rows && MKT.rows.length ? ' · 상품표 ' + MKT.rows.length + '개' : '')
+        + (MKT.outlook && MKT.outlook.length ? ' · 시황 ' + MKT.outlook.length + '단락' : '')
+        + '<br><span style="color:var(--muted2)">다음 달 자료를 올려 다시 등록할 때까지 이 자료를 씁니다. 지금 다시 올릴 필요가 없습니다.</span>'
+        + (fresh === false ? '<br><b style="color:var(--warn)">직전월 이후 자료가 아닙니다 — 이대로 쓰면 최신자료로 인정되지 않습니다. 이번 달 자료를 올리십시오.</b>' : '')
         + '</div>');
+    } else {
+      h.push('<div class="banner"><b>아직 등록된 자료가 없습니다</b><br>'
+        + '아래에서 이번 달 완전판매자료를 <b>한 번</b> 올리면 등록되어, 다음 달 자료를 올릴 때까지 '
+        + '<b>모든 펀드</b>의 「증시 현황 및 전망 설명」 항목에 계속 쓰입니다.</div>');
     }
     if (!PROS.pdfAvailable()) {
       h.push('<div class="warnbox">PDF 판독 모듈을 불러오지 못했습니다. 아래 붙여넣기를 사용하십시오.</div>');
@@ -21218,7 +21230,14 @@ window.FUND_PROSPECTUS = {"updatedAt":"2026-09-02T20:18:22.712Z","source":"펀�
     h.push('<div class="card"><div class="card-b"><div style="display:flex;gap:8px;flex-wrap:wrap">'
       + '<button class="tbtn" id="btnExportProfile2">상품 프로필 내보내기</button>'
       + '<button class="tbtn" id="btnImportProfile2">상품 프로필 가져오기</button></div>'
-      + '<div class="hint" style="margin-top:8px">등록된 설명서 내용과 차수별 표까지 함께 담깁니다. 같은 상품을 여러 지점에서 쓸 때 한 번만 등록해 공유하면 됩니다.</div></div></div>');
+      + '<div class="hint" style="margin-top:8px">등록된 설명서 내용과 차수별 표까지 함께 담깁니다. 같은 상품을 여러 지점에서 쓸 때 한 번만 등록해 공유하면 됩니다.</div>'
+      + '<div class="rule" style="margin:14px 0 10px"></div>'
+      + '<div style="display:flex;gap:8px;flex-wrap:wrap">'
+      + '<button class="tbtn" id="btnExportBundle">지점 설정 내보내기</button>'
+      + '<button class="tbtn" id="btnImportBundle">지점 설정 가져오기</button></div>'
+      + '<div class="hint" style="margin-top:8px">등록해 둔 <b>증시전망 자료 · 전 상품 공용 문구 · 직접등록 상품 · 등록 설명서 · 상담 조건</b>을 '
+      + '한 파일로 담습니다. 이 파일들은 <b>브라우저에 저장</b>되어 파일 이름·폴더가 바뀌어도 남지만, '
+      + '<b>다른 PC·다른 브라우저·시크릿창</b>에서는 없습니다. 그때 이 파일로 한 번에 되살리십시오.</div></div></div>');
 
     /* 펀드 완전판매자료 (증시전망) — 펀드·IRP 에서만 쓴다 */
     if (sh.cat === 'fund' || sh.cat === 'irp') h.push(marketCard());
@@ -21757,6 +21776,24 @@ window.FUND_PROSPECTUS = {"updatedAt":"2026-09-02T20:18:22.712Z","source":"펀�
       var n = (r.asOf ? 1 : 0) + (r.baseDate ? 1 : 0) + (r.profileMap ? 1 : 0)
         + r.outlook.length + r.rows.length;
       MKT_READ = { name: name, pages: pages || 0, map: map, read: r, count: n };
+      /**
+       * 판독이 되면 곧바로 등록한다.
+       * 앞 판은 「올리기」 와 「이 자료로 등록」 이 두 단계여서, 올리고도 등록을
+       * 안 누른 채 상담에 들어가면 증시전망 항목이 전부 확인필요로 남았다.
+       * 담당자가 실제로 그 함정에 빠졌다. 판독이 된 경우에만 자동 등록하고
+       * (판독 실패분을 등록해 두면 더 헷갈린다), 「등록 해제」 로 되돌린다.
+       */
+      if (r.asOf || r.outlook.length || r.rows.length) {
+        Object.keys(map).forEach(function (k) { if (!MKT[k]) MKT[k] = map[k]; });
+        if (r.outlook.length && !MKT.mktView) {
+          /* 요약을 비워 두면 펀드에 맞는 단락을 자동으로 고른다 — 그대로 둔다 */
+        }
+        MKT.docName = name;
+        MKT.registeredAt = new Date().toISOString();
+        MKT.rows = r.rows;
+        MKT.outlook = r.outlook;
+        saveMkt();
+      }
       renderAll();
     }
     var mf = $('#mktFile');
@@ -21855,6 +21892,10 @@ window.FUND_PROSPECTUS = {"updatedAt":"2026-09-02T20:18:22.712Z","source":"펀�
     Array.prototype.forEach.call(document.querySelectorAll('.mInp'), function (i) {
       i.onchange = function () { MKT[i.dataset.k] = i.value.trim(); };
     });
+    var eb = $('#btnExportBundle');
+    if (eb) eb.onclick = exportBundle;
+    var ib = $('#btnImportBundle');
+    if (ib) ib.onclick = importBundle;
     var msv = $('#btnMktSave');
     if (msv) {
       msv.onclick = function () {
@@ -21947,6 +21988,67 @@ window.FUND_PROSPECTUS = {"updatedAt":"2026-09-02T20:18:22.712Z","source":"펀�
     a.download = 'product-' + sh.cat + '-' + String(p.id).replace(/[^\w\-]/g, '') + '.json';
     document.body.appendChild(a); a.click(); document.body.removeChild(a);
     setTimeout(function () { URL.revokeObjectURL(a.href); }, 1000);
+  }
+
+  /**
+   * 지점 설정 내보내기 / 가져오기.
+   *
+   * 등록해 둔 것들(증시전망 자료 · 전 상품 공용 문구 · 직접등록 상품 · 등록한
+   * 설명서)은 이 브라우저에 저장된다. 파일 이름이나 폴더가 바뀌어도 남지만,
+   * 다른 PC·다른 브라우저·시크릿창에서는 없다. 그때 처음부터 다시 만들지
+   * 않도록 한 파일로 내보내고 가져온다.
+   */
+  function bundleOut() {
+    return {
+      _type: 'ss-branch-settings',
+      _at: new Date().toISOString(),
+      market: MKT,          /* 완전판매자료 (증시전망) */
+      common: COMMON,       /* 전 상품 공용 문구 */
+      custom: CUSTOM,       /* 직접등록·안내장 상품 */
+      docs: DOCS,           /* 상품별로 등록한 설명서 */
+      ctx: ST.ctx           /* 상담 조건 (성향·자금성향 등) */
+    };
+  }
+  function exportBundle() {
+    var o = bundleOut();
+    var blob = new Blob([JSON.stringify(o, null, 1)], { type: 'application/json' });
+    var a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    /* 파일 이름은 아스키로 — 「가져오기」 가 .json 만 걸러 보여 주므로 확장자가 붙어야 한다.
+       띄우지 않고 클릭하면 브라우저가 이름을 무시하는 경우가 있어 붙였다 뗀다. */
+    a.download = 'ss-branch-settings-' + new Date().toISOString().slice(0, 10) + '.json';
+    document.body.appendChild(a); a.click(); document.body.removeChild(a);
+    setTimeout(function () { URL.revokeObjectURL(a.href); }, 1000);
+  }
+  function importBundle() {
+    var inp = document.createElement('input');
+    inp.type = 'file'; inp.accept = 'application/json,.json';
+    inp.onchange = function () {
+      var f = inp.files && inp.files[0];
+      if (!f) return;
+      var fr = new FileReader();
+      fr.onload = function () {
+        var o;
+        try { o = JSON.parse(fr.result); } catch (e) { alert('JSON 형식이 올바르지 않습니다.'); return; }
+        if (o._type !== 'ss-branch-settings') { alert('지점 설정 파일이 아닙니다.'); return; }
+        if (!confirm('지점 설정을 가져옵니다.\n\n지금 이 브라우저에 등록된 증시전망 자료·공용 문구·직접등록 상품이 '
+          + '가져온 값으로 바뀝니다. 계속하시겠습니까?')) return;
+        var got = [];
+        if (o.market) { MKT = o.market; saveMkt(); got.push('증시전망 자료'); }
+        if (o.common) { Object.keys(o.common).forEach(function (k) { COMMON[k] = o.common[k]; }); saveCommon(); got.push('공용 문구'); }
+        if (o.custom) {
+          Object.keys(o.custom).forEach(function (k) { if (Array.isArray(o.custom[k])) CUSTOM[k] = o.custom[k]; });
+          saveCustom();
+          got.push('직접등록 상품 ' + Object.keys(CUSTOM).reduce(function (a, k) { return a + CUSTOM[k].length; }, 0) + '개');
+        }
+        if (o.docs) { DOCS = o.docs; saveDocs(); got.push('등록 설명서'); }
+        if (o.ctx) { Object.keys(o.ctx).forEach(function (k) { ST.ctx[k] = o.ctx[k]; }); }
+        save(); renderAll();
+        alert('가져왔습니다 — ' + got.join(' · '));
+      };
+      fr.readAsText(f);
+    };
+    inp.click();
   }
 
   function importProfile() {
