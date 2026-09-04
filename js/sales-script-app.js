@@ -31,6 +31,9 @@
     pman: {},     /* productId -> { fieldId: 값 } — 상품별 입력/수정값 */
     inline: {},   /* «라벨» -> 사용자가 입력한 값 */
     checks: {},   /* 'sheet|itemId' -> [bool,...] */
+    /* 부적합 시나리오에서 「성향에 적합해 먼저 권유하는 상품」 — cat -> productId
+       ('__none' 은 적합한 상품이 없다고 안내하는 경우다) */
+    rec: {},
     tab: 'script',
     ctx: {
       consumerType: '일반금융소비자',
@@ -482,7 +485,7 @@
     try {
       localStorage.setItem(LS, JSON.stringify({
         baseSheet: ST.baseSheet, senior: ST.senior, productId: ST.productId,
-        pman: ST.pman, inline: ST.inline, checks: ST.checks, ctx: ST.ctx
+        pman: ST.pman, inline: ST.inline, checks: ST.checks, ctx: ST.ctx, rec: ST.rec
       }));
     } catch (e) { /* 사생활 보호 모드 등에서 저장 실패 — 무시 */ }
   }
@@ -494,7 +497,7 @@
       if (o.baseSheet && BASE_SHEETS[o.baseSheet]) ST.baseSheet = o.baseSheet;
       if (typeof o.senior === 'boolean') ST.senior = o.senior;
       if (o.productId) ST.productId = o.productId;
-      ['pman', 'inline', 'checks'].forEach(function (k) { if (o[k]) ST[k] = o[k]; });
+      ['pman', 'inline', 'checks', 'rec'].forEach(function (k) { if (o[k]) ST[k] = o[k]; });
       /* 구버전(상품 구분 없는 manual) 저장값 이관 */
       if (o.manual && o.productId) {
         ST.pman[o.productId] = Object.assign({}, o.manual, ST.pman[o.productId] || {});
@@ -703,19 +706,30 @@
   function catalog() {
     var sh = sheet();
     var mine = CUSTOM[sh.cat] || [];
+    /**
+     * 직접등록분과 자동조회분을 이어 붙인다.
+     * 안내장에서 등록한 종목은 표준코드가 자동조회 종목과 같을 수 있다 —
+     * 그대로 이으면 같은 종목이 목록에 두 번 나온다. 직접등록분을 남기고
+     * 자동조회분에서 걷어낸다 (담당자가 올린 자료가 더 최신이다).
+     */
+    var join = function (auto) {
+      var have = {};
+      mine.forEach(function (p) { have[p.id] = 1; });
+      return mine.concat(auto.filter(function (p) { return !have[p.id]; }));
+    };
     if (sh.cat === 'fund' || sh.cat === 'irp') {
       var fl = fundList(sh.cat, sh.overseas);
-      if (fl) return mine.concat(fl);
+      if (fl) return join(fl);
     }
     if (sh.cat === 'bondKrw') {
       var bl = bondList();
-      if (bl) return mine.concat(bl);
+      if (bl) return join(bl);
     }
     if (sh.cat === 'bondFx') {
       var xl = bondFxList();
-      if (xl) return mine.concat(xl);
+      if (xl) return join(xl);
     }
-    var list = mine.concat(D.catalog[sh.cat] || []);
+    var list = join(D.catalog[sh.cat] || []);
     if (sh.cat !== 'fund') return list;
     var want = !!sh.overseas;
     var f = list.filter(function (p) { return !!p.overseas === want; });
@@ -913,8 +927,105 @@
     };
   }
 
+  /* ==========================================================
+     부적합 시나리오의 「추천 상품」
+     ----------------------------------------------------------
+     부적합 시나리오는 고객이 자기 성향보다 위험한 상품을 지목하는 상담이다.
+     평가표는 그 앞 단계에서 「성향에 적합한 상품」 을 먼저 권유하도록 요구한다.
+     그러니 이 시트에서는 상품이 둘이다 —
+       ㆍ선택 상품  = 고객이 지목한 부적합 상품 (설명 단계에서 설명한다)
+       ㆍ추천 상품  = 성향에 적합해서 우리가 먼저 권유하는 상품
+     앞 판은 이것을 가르지 않아 추천 단계 스크립트가 부적합 상품을 「적합한
+     상품」 이라고 권유하는 문장을 만들었다. 읽으면 그 자체로 감점이다.
+
+     추천 상품의 값은 선택 상품과 똑같은 규칙으로 풀어야 한다(수익률·동종유형
+     비교·증시전망 연결까지). 그래서 규칙을 베끼지 않고, 값을 읽는 동안만
+     선택 상품을 추천 상품으로 바꿔 끼운다.
+     ========================================================== */
+  /**
+   * 고른 성향이 가입할 수 있는 가장 위험한 등급(숫자가 작을수록 위험).
+   * 우리가 만들어 내지 않는다 — 완전판매자료의 「투자자 성향별 적합 상품
+   * 위험 등급」 표를 읽어 둔 것만 쓴다. 이름이 표와 다르면(공격투자형·
+   * 적극투자형처럼 사내 명칭이 다른 경우) null 을 주어 경고하지 않는다.
+   */
+  function profileMinGrade(profile) {
+    var raw = MKT && MKT.mktProfileMap;
+    if (!raw || !profile) return null;
+    var parts = String(raw).split('|');
+    if (parts.length < 2) return null;
+    var profs = parts[0].split(',').map(function (x) { return x.trim(); });
+    var grades = parts[1].split(',').map(function (x) { return parseInt(x, 10); });
+    var i = profs.indexOf(String(profile).trim());
+    if (i < 0 || !isFinite(grades[i])) return null;
+    return grades[i];
+  }
+
+  /**
+   * 스크립트 한 줄을 지금 보여 줄지.
+   *   when: 'rec'     추천 상품을 「고른」 경우에만
+   *   when: 'recNone' 「적합한 상품 없음」 을 고른 경우에만
+   * 아무것도 고르지 않았으면 둘 다 보여 준다 — 절차 전체를 보고 고르게 한다.
+   * (없음 을 골랐는데 「적합 상품 추천」 문장이 남아 있으면 그 칸들이 전부
+   *  빨간 확인필요로 떠서, 채울 수 없는 값을 찾아 헤매게 된다)
+   */
+  function lineOn(s) {
+    if (!s || !s.when) return true;
+    var chosen = recId();
+    if (!chosen) return true;
+    if (s.when === 'rec') return chosen !== '__none';
+    if (s.when === 'recNone') return chosen === '__none';
+    return true;
+  }
+
+  var IN_REC = false;
+  function recId() {
+    var sh = sheet();
+    if (sh.scenario !== 'unfit') return null;
+    return (ST.rec && ST.rec[sh.cat]) || null;
+  }
+  /** ELS 는 「적합한 상품이 없음」 이 정답인 경우가 있다 — 그것도 골라 둘 수 있다 */
+  function recNone() {
+    var sh = sheet();
+    if (sh.scenario !== 'unfit') return false;
+    return (ST.rec && ST.rec[sh.cat]) === '__none';
+  }
+  function recProduct() {
+    var id = recId();
+    if (!id || id === '__none') return null;
+    var l = catalog();
+    for (var i = 0; i < l.length; i++) if (l[i].id === id) return l[i];
+    var sh = sheet();
+    if (sh.cat === 'fund' || sh.cat === 'irp') {
+      var c = fundCatByCode(id);
+      if (c) return fundCatProduct(c);
+    }
+    return null;
+  }
+  /** 값을 읽는 동안만 선택 상품을 추천 상품으로 바꿔 끼운다 */
+  function recValue(fieldId) {
+    var id = recId();
+    if (!id || id === '__none' || IN_REC) return undefined;
+    var oldId = ST.productId, oldPros = ST.pros;
+    IN_REC = true; ST.productId = id; ST.pros = null;
+    try {
+      var v = valueOf(fieldId);
+      return (v === '' || v == null) ? undefined : v;
+    } finally {
+      IN_REC = false; ST.productId = oldId; ST.pros = oldPros;
+    }
+  }
+
   /** 스크립트 전용 파생값 (평가표·시나리오·고객조건에서 계산) */
   function derived(id) {
+    /* 추천 상품 값 — rec 로 시작하는 것은 추천 상품에서 읽는다 */
+    if (id.length > 3 && id.slice(0, 3) === 'rec' && id.charAt(3) === id.charAt(3).toUpperCase()) {
+      if (id === 'recNone') return recNone() ? '해당' : (recId() ? '해당 없음' : undefined);
+      var f = id.charAt(3).toLowerCase() + id.slice(4);
+      return recValue(f);
+    }
+    return derived0(id);
+  }
+  function derived0(id) {
     var sh = sheet(), p = product(), ctx = ST.ctx;
     switch (id) {
       case 'consumerType':
@@ -1604,6 +1715,12 @@
   function labelOf(id) {
     var defs = fieldDefs();
     for (var i = 0; i < defs.length; i++) if (defs[i].id === id) return defs[i].label;
+    /* 추천 상품 값은 선택 상품과 같은 이름을 쓰되 「추천」 을 붙인다 —
+       확인필요 목록에서 둘이 섞이면 어느 상품을 채우라는 것인지 알 수 없다. */
+    if (id.length > 3 && id.slice(0, 3) === 'rec' && id.charAt(3) === id.charAt(3).toUpperCase()) {
+      var base = id.charAt(3).toLowerCase() + id.slice(4);
+      return '추천 상품 — ' + labelOf(base);
+    }
     return {
       consumerType: '일반/전문금융소비자', recordReason: '녹취 대상 사유', unfitRecordAdd: '부적합 문구',
       docLabel: '설명서 명칭', docExtra: '추가 설명자료', tradeLabel: '거래 유형',
@@ -1742,6 +1859,9 @@
   var MISS_ONCE = ['feeKinds', 'feeTotal', 'feeMethod', 'products', 'defaultOpt',
     'riskGradeBasis', 'taxLimit', 'taxRate', 'taxRateOut'];
   function missGroup(m) {
+    /* 추천 상품 값은 설명서에서 찾을 것이 아니다 — 왼쪽에서 상품을 고르면 채워진다 */
+    if (m.kind === 'field' && m.key.length > 3 && m.key.slice(0, 3) === 'rec'
+      && m.key.charAt(3) === m.key.charAt(3).toUpperCase()) return 'rec';
     /* 라벨이 먼저다 — 증시전망·자료 기준월은 받아쓰기 표시라 항목 id 가 없다 */
     if (/증시\s*전망|자료\s*기준월|동종유형\s*평균|협회\s*공시/.test(m.label)) return 'ref';
     if (MISS_REF.indexOf(m.key) >= 0) return 'ref';
@@ -1761,7 +1881,7 @@
     missCache = [];
     itemsOf().forEach(function (x) {
       if (!applicable(x)) return;
-      (x.script || []).forEach(function (s) { tpl(s.x); });
+      (x.script || []).forEach(function (s) { if (lineOn(s)) tpl(s.x); });
     });
     var seen = {}, out = [];
     missCache.forEach(function (m) {
@@ -1801,6 +1921,11 @@
     h.push('<div style="display:flex;gap:6px;margin-top:6px"><button class="tbtn" id="btnNewProduct" style="flex:1">새 상품 등록</button>'
       + '<button class="tbtn" id="btnDelProduct" style="flex:1"' + (p && p.custom ? '' : ' disabled') + '>등록상품 삭제</button></div>');
     h.push('<div class="hint">\u25CF 투자설명서 등록됨 · \u25CB 미등록</div>');
+    /* 삭제 규칙을 눈에 보이게 적어 둔다 — 버튼이 왜 꺼져 있는지 알 수 있어야 한다 */
+    h.push('<div class="hint">「등록상품 삭제」 는 <b>직접등록\u00b7안내장</b> 상품만 지울 수 있습니다. '
+      + '자동조회 상품은 지워지지 않습니다 (다음 갱신에 다시 생기므로).'
+      + (p ? (p.custom ? ' 지금 고른 상품은 <b>직접등록</b>이라 지울 수 있습니다.' : ' 지금 고른 상품은 <b>자동조회</b>라 버튼이 꺼져 있습니다.') : '')
+      + '</div>');
     if (sh.cat === 'els') {
       var live = D.elsSource === 'live';
       h.push('<div class="hint">ELS/DLS 목록 <span class="badge ' + (live ? 'live' : 'sample') + '">' + (live ? '자동수집' : '내장 시드') + '</span> · ' + catalog().length + '건'
@@ -1809,6 +1934,45 @@
       h.push('<div class="hint">내장 데이터는 <b>예시</b>입니다. 상담 전 투자설명서 원문 값으로 교체하세요.</div>');
     }
     h.push('</div>');
+
+    /* 추천 상품 — 부적합 시나리오에서만.
+       평가표는 부적합 안내 「전」 단계에서 성향에 적합한 상품을 먼저 권유하도록
+       요구한다. 그때 권유하는 상품은 고객이 지목한 부적합 상품과 다른 상품이다. */
+    if (sh.scenario === 'unfit') {
+      var rid = (ST.rec && ST.rec[sh.cat]) || '';
+      var rp = recProduct();
+      h.push('<div class="rule"></div><div class="fgroup"><div class="flabel">'
+        + '<span class="req" style="background:var(--ok)">3-1</span> 추천 상품 '
+        + '<span style="font-weight:400;color:var(--muted2)">(성향에 <b>적합</b>해서 먼저 권유하는 상품)</span></div>');
+      h.push('<div class="hint" style="margin-bottom:8px">부적합 시나리오는 상품이 <b>둘</b>입니다 — '
+        + '위 「상품 선택」 은 <b>고객이 지목한 부적합 상품</b>(설명 단계에서 설명), '
+        + '여기는 <b>먼저 권유하는 적합 상품</b>(추천 단계에서 권유)입니다. '
+        + '고르지 않으면 추천 단계 스크립트가 「확인필요」로 남습니다.</div>');
+      h.push('<input type="text" id="rq" placeholder="추천할 상품명 · 코드 검색" value="">');
+      h.push('<select id="selRec" size="6" style="margin-top:6px"></select>');
+      h.push('<div style="display:flex;gap:6px;margin-top:6px">');
+      if (sh.cat === 'els') {
+        h.push('<button class="tbtn' + (rid === '__none' ? ' primary' : '') + '" id="btnRecNone" style="flex:1">적합한 상품 없음</button>');
+      }
+      h.push('<button class="tbtn" id="btnRecClear" style="flex:1">선택 해제</button></div>');
+      if (rid === '__none') {
+        h.push('<div class="note" style="margin-top:8px;border-left-color:var(--ok)"><b>적합한 상품 없음</b> 으로 안내합니다 — '
+          + '추천 단계 스크립트가 「투자성향에 적합한 상품이 금일 발행되지 않았습니다」 안내로 바뀝니다.</div>');
+      } else if (rp) {
+        h.push('<div class="note" style="margin-top:8px;border-left-color:var(--ok)"><b>추천 상품</b> — ' + esc(rp.name)
+          + (rp.riskGrade ? ' · ' + esc(rp.riskLabel || '') + ' ' + rp.riskGrade + '등급' : '') + '</div>');
+        /* 추천 상품이 고객 성향에 정말 적합한지 눈으로 확인하게 한다 */
+        var pg = numOf(rp.riskGrade), okg = profileMinGrade(ctx.custProfile);
+        if (pg != null && okg != null && pg < okg) {
+          h.push('<div class="warnbox" style="margin-top:8px">이 상품은 <b>' + pg + '등급</b>으로, '
+            + esc(ctx.custProfile) + ' 성향이 가입할 수 있는 <b>' + okg + '등급</b>보다 위험합니다. '
+            + '적합한 상품이 아니므로 추천 단계에 쓰면 감점됩니다.</div>');
+        }
+      } else if (rid) {
+        h.push('<div class="warnbox" style="margin-top:8px">고른 추천 상품을 목록에서 찾지 못했습니다. 다시 골라 주십시오.</div>');
+      }
+      h.push('</div>');
+    }
 
     /* 상담 조건 */
     h.push('<div class="rule"></div><div class="flabel" style="margin-bottom:12px"><span class="req">4</span> 상담 조건</div>');
@@ -1903,8 +2067,32 @@
     sel.innerHTML = list.map(function (p) {
       var tail = p.riskGrade ? ' · ' + p.riskGrade + '등급' : '';
       var mark = hasDoc(p) ? '\u25CF ' : '\u25CB ';   /* 설명서 등록 여부 */
+      /* 자동조회분과 직접등록분을 눈으로 갈라 보게 한다 — 지울 수 있는 것은
+         직접등록분뿐이다. 자동조회분을 지우면 다음 갱신에 다시 생겨 혼란스럽다. */
+      if (p.custom) tail += p.fromNotice ? ' \u00b7 안내장' : ' \u00b7 직접등록';
       return '<option value="' + esc(p.id) + '"' + (p.id === ST.productId ? ' selected' : '') + '>' + mark + esc(p.name) + tail + '</option>';
     }).join('') || '<option disabled>검색 결과 없음</option>';
+  }
+
+  /** 추천 상품 목록 — 고객이 지목한 부적합 상품은 뺀다 (같은 것을 추천할 수 없다) */
+  function fillRec(q) {
+    var sel = $('#selRec');
+    if (!sel) return;
+    q = (q || '').trim().toLowerCase();
+    var cur = (ST.rec && ST.rec[sheet().cat]) || '';
+    var list = catalog().filter(function (p) {
+      if (p.id === ST.productId) return false;
+      if (!q) return true;
+      return [p.name, p.id, p.issuer, p.mgr, p.under, p.kind].join(' ').toLowerCase().indexOf(q) >= 0;
+    });
+    /* 목록이 매우 길어(펀드 3천 건) 검색 없이 다 그리면 화면이 무거워진다 */
+    var cap = q ? 300 : 200;
+    sel.innerHTML = '<option value=""' + (cur ? '' : ' selected') + '>— 고르지 않음 —</option>'
+      + list.slice(0, cap).map(function (p) {
+        var tail = p.riskGrade ? ' \u00b7 ' + (p.riskLabel || '') + ' ' + p.riskGrade + '등급' : '';
+        return '<option value="' + esc(p.id) + '"' + (p.id === cur ? ' selected' : '') + '>' + esc(p.name) + tail + '</option>';
+      }).join('')
+      + (list.length > cap ? '<option disabled>… 외 ' + (list.length - cap) + '건 — 검색해서 좁히십시오</option>' : '');
   }
 
   function bindSide() {
@@ -1939,6 +2127,18 @@
       save(); renderAll();
     };
     $('#pq').oninput = function () { fillProducts(this.value); };
+    /* 추천 상품 (부적합 시나리오) */
+    if ($('#selRec')) {
+      fillRec('');
+      $('#rq').oninput = function () { fillRec(this.value); };
+      $('#selRec').onchange = function () {
+        ST.rec[sheet().cat] = this.value || null;
+        save(); renderAll();
+      };
+      var rn = $('#btnRecNone');
+      if (rn) rn.onclick = function () { ST.rec[sheet().cat] = '__none'; save(); renderAll(); };
+      $('#btnRecClear').onclick = function () { delete ST.rec[sheet().cat]; save(); renderAll(); };
+    }
     $('#selProduct').onchange = function () { ST.productId = this.value; ST.pros = null; save(); renderAll(); };
     $('#selProfile').onchange = function () {
       ST.ctx.custProfile = this.value;
@@ -2015,6 +2215,7 @@
     if (miss.length) {
       /* 어디서 오는 값인지 나눠 보여 준다 — 투자설명서에 없는 것을 거기서 찾게 하지 않는다 */
       var GRP = [
+        ['rec', '추천 상품을 고르면 채워짐', '부적합 시나리오의 「적합한 상품 추천」 단계에 쓰이는 값입니다. 왼쪽 「3-1 추천 상품」 에서 성향에 적합한 상품을 고르면 한꺼번에 채워집니다 — 설명서를 뒤질 값이 아닙니다.'],
         ['doc', '투자설명서에서 확인', '투자설명서 원문에서 채워야 하는 값입니다.'],
         ['ask', '상담 중 파악·입력', '고객에게 확인하거나 상담 중 옮겨 적는 값입니다 — 투자설명서에는 없습니다.'],
         ['ref', '지점 자료에서 확인', '증시전망·협회 공시 등 별도 자료에 있는 값입니다 — 투자설명서에는 없습니다.'],
@@ -2063,6 +2264,7 @@
     }
     if (item.crit) h.push('<div class="warnbox">★ ' + esc(item.crit) + '</div>');
     (item.script || []).forEach(function (s) {
+      if (!lineOn(s)) return;
       var c = s.t === 'say' ? 'say' : (s.t === 'act' ? 'act' : (s.t === 'warn' ? 'warnbox' : 'note'));
       var pre = s.t === 'act' ? '[행동] ' : (s.t === 'note' ? '※ ' : (s.t === 'warn' ? '⚠ ' : ''));
       h.push('<div class="' + c + '">' + (pre ? esc(pre) : '') + tpl(s.x) + '</div>');
@@ -2108,6 +2310,7 @@
     itemsOf().forEach(function (x) {
       if (!applicable(x)) return;
       (x.script || []).forEach(function (s) {
+        if (!lineOn(s)) return;
         var re = /\{\{(\w+)\}\}/g, m;
         while ((m = re.exec(s.x))) set[m[1]] = 1;
       });
@@ -2323,6 +2526,258 @@
    * 「보증 여부」 같은 항목은 이 문장이 조건문이라 그대로 답이 되지 않는다 —
    * 자동으로 채우지 않고 원문을 옆에 두어 창구가 설명서와 대조하게 한다.
    */
+  /* ==========================================================
+     상품판매 안내장 (엑셀·CSV) 읽기
+     ----------------------------------------------------------
+     채권은 펀드·ELS 와 달리 종목별 투자설명서가 따로 공시되지 않는다.
+     대신 지점에 「상품판매 안내장」 엑셀이 내려오고, 거기에 여러 종목의
+     값이 한 장에 담겨 있다. 그것을 올리면 종목마다 손으로 넣던 값이
+     한 번에 채워진다.
+
+     머리글 이름은 지점·시기마다 조금씩 다르므로 자리(열 번호)가 아니라
+     머리글 낱말로 찾는다. 못 찾은 열은 담지 않아 확인필요로 남는다.
+     ========================================================== */
+  var NOTICE_COLS = [
+    { id: 'name', re: /종목\s*명|상품\s*명|채권\s*명|종목$/ },
+    { id: '_code', re: /표준\s*코드|ISIN|종목\s*코드|단축\s*코드/i },
+    { id: 'kind', re: /채권\s*종류|채권\s*구분|^종류$|상품\s*종류/ },
+    { id: 'issuer', re: /발행\s*(?:사|기관|회사|인|국)/ },
+    { id: 'credit', re: /신용\s*등급/ },
+    { id: '_risk', re: /위험\s*등급/ },
+    { id: 'issueDate', re: /발행\s*일/ },
+    { id: 'matDate', re: /만기\s*일|만기$/ },
+    { id: 'coupon', re: /표면\s*(?:금리|이자율)|쿠폰|이표율/ },
+    { id: 'payType', re: /이자\s*지급\s*(?:유형|방법|방식)|이자\s*유형/ },
+    { id: 'payCycle', re: /이자\s*지급\s*주기|이자\s*주기/ },
+    { id: 'payRate', re: /주기별\s*이자율/ },
+    { id: 'tradePrice', re: /매매\s*단가|매도\s*단가|^단가/ },
+    { id: 'ytm', re: /세후[^가-힣]{0,4}(?:투자)?\s*수익률/ },
+    { id: 'mpRate', re: /민평\s*금리/ },
+    { id: 'mpPrice', re: /민평\s*단가/ },
+    { id: 'fee', re: /매매\s*수수료|^수수료/ },
+    { id: 'minAmt', re: /최소\s*(?:매수|투자)?\s*금액|최소\s*매수/ },
+    { id: 'guarantee', re: /보증/ },
+    { id: 'sellable', re: /중도\s*매도/ },
+    { id: 'ccy', re: /발행\s*통화|^통화/ },
+    { id: 'country', re: /투자\s*대상\s*국가|^국가/ },
+    { id: 'tax', re: /과세|세금/ }
+  ];
+  /** 머리글 줄을 찾는다 — 우리가 아는 낱말이 가장 많이 걸리는 줄 */
+  function noticeHeaderRow(rows) {
+    var best = -1, bestN = 0;
+    rows.slice(0, 12).forEach(function (r, i) {
+      var n = 0;
+      (r || []).forEach(function (c) {
+        if (NOTICE_COLS.some(function (d) { return d.re.test(String(c || '')); })) n++;
+      });
+      if (n > bestN) { bestN = n; best = i; }
+    });
+    return bestN >= 3 ? best : -1;
+  }
+  function noticeMap(header) {
+    var map = {};
+    (header || []).forEach(function (c, i) {
+      var t = String(c || '').replace(/\s+/g, ' ').trim();
+      if (!t) return;
+      for (var k = 0; k < NOTICE_COLS.length; k++) {
+        var d = NOTICE_COLS[k];
+        if (map[d.id] != null) continue;          /* 먼저 나온 열을 쓴다 */
+        if (d.re.test(t)) { map[d.id] = i; break; }
+      }
+    });
+    return map;
+  }
+  function numText(v) {
+    var s = String(v == null ? '' : v).replace(/,/g, '').trim();
+    return /^-?\d+(\.\d+)?$/.test(s) ? +s : null;
+  }
+  function dateText(v) {
+    var s = String(v == null ? '' : v).trim();
+    if (!s) return '';
+    var n = numText(s);
+    if (n != null) {
+      var d = PROS.excelSerialDate ? PROS.excelSerialDate(n) : null;
+      if (d) return D.fmt.kdate(d) || d;
+    }
+    var m = /(\d{4})\D?(\d{1,2})\D?(\d{1,2})/.exec(s);
+    return m ? m[1] + '년 ' + (+m[2]) + '월 ' + (+m[3]) + '일' : s;
+  }
+  /**
+   * 안내장 한 줄 -> 상품 + 설명서 필드.
+   * 값을 만들어내지 않는다 — 빈 칸은 담지 않아 확인필요로 남는다.
+   */
+  function noticeRow(row, map, cat) {
+    var get = function (id) {
+      var i = map[id];
+      return i == null ? '' : String(row[i] == null ? '' : row[i]).trim();
+    };
+    var name = get('name');
+    if (!name || /합계|소계|비고|참고/.test(name)) return null;
+    var f = {};
+    var put = function (k, v) { if (v != null && v !== '' && v !== '-') f[k] = v; };
+    put('name', name);
+    put('kind', get('kind'));
+    put('issuer', get('issuer'));
+    put('credit', get('credit'));
+    put('issueDate', dateText(get('issueDate')));
+    put('matDate', dateText(get('matDate')));
+    var cp = numText(get('coupon'));
+    put('coupon', cp != null ? '연 ' + cp + '%' : get('coupon'));
+    put('payType', get('payType'));
+    var pc = numText(get('payCycle'));
+    put('payCycle', pc != null ? pc + '개월' : get('payCycle'));
+    var pr = numText(get('payRate'));
+    put('payRate', pr != null ? '연 ' + pr + '%' : get('payRate'));
+    var tp = numText(get('tradePrice'));
+    put('tradePrice', tp != null ? tp.toLocaleString() + '원' : get('tradePrice'));
+    var ym = numText(get('ytm'));
+    put('ytm', ym != null ? '연 ' + ym + '% (세후)' : get('ytm'));
+    var mr = numText(get('mpRate'));
+    put('mpRate', mr != null ? '연 ' + mr + '%' : get('mpRate'));
+    var mp = numText(get('mpPrice'));
+    put('mpPrice', mp != null ? mp.toLocaleString() + '원' : get('mpPrice'));
+    put('fee', get('fee'));
+    put('minAmt', get('minAmt'));
+    put('guarantee', get('guarantee'));
+    put('sellable', get('sellable'));
+    put('ccy', get('ccy'));
+    put('country', get('country'));
+    put('tax', get('tax'));
+    /* 위험등급 — 「5등급 낮은위험」 처럼 숫자와 명칭이 한 칸에 들어 있다 */
+    var rk = get('_risk');
+    if (rk) {
+      var g = /(\d)\s*등급/.exec(rk);
+      if (g) f.riskGrade = g[1];
+      var lb = rk.replace(/\d\s*등급/, '').replace(/[()]/g, '').trim();
+      if (lb) f.riskLabel = lb;
+      else if (!g && /위험/.test(rk)) f.riskLabel = rk;
+    }
+    var code = get('_code');
+    return {
+      id: (code && /^[A-Z]{2}[\dA-Z]{10}$/.test(code) ? code : 'N' + Math.random().toString(36).slice(2, 9).toUpperCase()),
+      code: code,
+      name: name,
+      kind: f.kind || '',
+      issuer: f.issuer || '',
+      riskGrade: f.riskGrade ? +f.riskGrade : null,
+      riskLabel: f.riskLabel || '',
+      fields: f
+    };
+  }
+  /** 읽은 표 -> 등록할 상품 목록 */
+  function noticeParse(res, cat) {
+    var out = { sheets: [], rows: [], header: null, map: null, sheetName: '' };
+    (res.sheets || []).forEach(function (s) {
+      var hi = noticeHeaderRow(s.rows);
+      if (hi < 0) return;
+      var map = noticeMap(s.rows[hi]);
+      if (map.name == null) return;
+      var rows = [];
+      s.rows.slice(hi + 1).forEach(function (r) {
+        var o = noticeRow(r, map, cat);
+        if (o) rows.push(o);
+      });
+      if (rows.length) out.sheets.push({ name: s.name, header: s.rows[hi], map: map, rows: rows });
+    });
+    if (out.sheets.length) {
+      out.rows = out.sheets[0].rows;
+      out.header = out.sheets[0].header;
+      out.map = out.sheets[0].map;
+      out.sheetName = out.sheets[0].name;
+      /* 여러 장이면 모두 합친다 — 안내장은 통화·종류별로 장을 나누기도 한다 */
+      for (var i = 1; i < out.sheets.length; i++) out.rows = out.rows.concat(out.sheets[i].rows);
+    }
+    return out;
+  }
+
+  /* 읽어 둔 안내장 — 저장하지 않는다 (상담마다 새 자료를 올린다) */
+  var NOTICE = null;
+
+  /** 상품판매 안내장 올리기 카드 */
+  function noticeCard() {
+    var sh = sheet();
+    var h = [];
+    h.push('<div class="rule"></div><h3 style="font-size:18px;font-weight:700;margin:0 0 6px">상품판매 안내장 올리기 (엑셀 · CSV)</h3>');
+    h.push('<div class="hint" style="margin-bottom:12px">지점에 내려오는 <b>상품판매 안내장</b>을 그대로 올리면, 안내장에 실린 <b>여러 종목</b>을 한 번에 상품 목록에 등록합니다. '
+      + '머리글 이름은 자리가 아니라 <b>낱말</b>로 찾으므로 열 순서가 달라도 됩니다 — 종목명·표준코드·채권종류·발행사·신용등급·위험등급·발행일·만기일·표면금리·이자지급유형·이자지급주기·매매단가·세후수익률·민평금리·민평단가·매매수수료·최소금액·보증·중도매도'
+      + (sh.cat === 'bondFx' ? '·발행통화·투자대상국가·과세' : '') + ' 를 알아봅니다. '
+      + '못 찾은 열은 채우지 않아 「확인필요」로 남습니다.</div>');
+    h.push('<div class="card"><div class="card-b">');
+    h.push('<input type="file" id="ntFile" accept=".xlsx,.xlsm,.csv,.tsv,.txt" style="margin-bottom:8px">');
+    h.push('<div class="hint">.xlsx · .csv · .tsv 를 읽습니다. 옛 형식(.xls)은 엑셀에서 「다른 이름으로 저장 → .xlsx 또는 CSV」 로 바꿔 올리십시오. 외부 네트워크 없이 동작합니다.</div>');
+    h.push('<div class="hint" style="margin:12px 0 6px">엑셀을 올릴 수 없으면 표를 그대로 복사해 붙여넣으십시오 (탭·쉼표 모두 됩니다).</div>');
+    h.push('<textarea id="ntText" rows="4" placeholder="안내장 표를 복사해 붙여넣으세요 (머리글 줄 포함)"></textarea>');
+    h.push('<button class="tbtn primary" id="btnNtExtract" style="margin-top:8px">붙여넣은 표에서 읽기</button>');
+    h.push('<div id="ntStat" class="note" style="margin:10px 0 0;display:none"></div>');
+
+    if (NOTICE && NOTICE.rows.length) {
+      var known = Object.keys(NOTICE.map || {}).filter(function (k) { return k.charAt(0) !== '_'; });
+      h.push('<div class="note" style="margin:12px 0 0;border-left-color:var(--ok)"><b>읽음 — ' + esc(NOTICE.name || '') + '</b>'
+        + (NOTICE.sheetName ? ' · 시트 「' + esc(NOTICE.sheetName) + '」' : '')
+        + ' · 종목 ' + NOTICE.rows.length + '개 · 알아본 열 ' + (known.length + (NOTICE.map._risk != null ? 1 : 0) + (NOTICE.map._code != null ? 1 : 0)) + '개</div>');
+      h.push('<div class="hint" style="margin:10px 0 6px">알아본 머리글 — ' + esc((NOTICE.header || []).filter(function (c, i) {
+        return Object.keys(NOTICE.map).some(function (k) { return NOTICE.map[k] === i; });
+      }).join(' · ')) + '</div>');
+      /* 미리보기 — 창구가 눈으로 확인하고 등록한다 */
+      h.push('<div style="overflow-x:auto"><table style="border-collapse:collapse;font-size:13px;min-width:520px">');
+      h.push('<tr><th style="border:1px solid var(--line);padding:4px 7px;text-align:left">종목명</th>'
+        + '<th style="border:1px solid var(--line);padding:4px 7px">위험등급</th>'
+        + '<th style="border:1px solid var(--line);padding:4px 7px">표면금리</th>'
+        + '<th style="border:1px solid var(--line);padding:4px 7px">만기일</th>'
+        + '<th style="border:1px solid var(--line);padding:4px 7px">채운 항목</th></tr>');
+      NOTICE.rows.slice(0, 12).forEach(function (r) {
+        h.push('<tr><td style="border:1px solid var(--line);padding:4px 7px">' + esc(r.name) + '</td>'
+          + '<td style="border:1px solid var(--line);padding:4px 7px;text-align:center">' + esc(r.riskLabel || '') + (r.riskGrade ? ' ' + r.riskGrade + '등급' : '') + '</td>'
+          + '<td style="border:1px solid var(--line);padding:4px 7px;text-align:right">' + esc(r.fields.coupon || '—') + '</td>'
+          + '<td style="border:1px solid var(--line);padding:4px 7px">' + esc(r.fields.matDate || '—') + '</td>'
+          + '<td style="border:1px solid var(--line);padding:4px 7px;text-align:center">' + Object.keys(r.fields).length + '</td></tr>');
+      });
+      h.push('</table></div>');
+      if (NOTICE.rows.length > 12) h.push('<div class="hint" style="margin-top:6px">… 외 ' + (NOTICE.rows.length - 12) + '개</div>');
+      h.push('<div style="display:flex;gap:8px;margin-top:12px;flex-wrap:wrap">'
+        + '<button class="tbtn primary" id="btnNtRegister">' + NOTICE.rows.length + '개 종목 등록</button>'
+        + '<button class="tbtn" id="btnNtClear">읽은 자료 비우기</button></div>');
+      h.push('<div class="hint" style="margin-top:8px">등록한 종목은 <b>직접등록</b> 상품이므로 나중에 「등록상품 삭제」로 지울 수 있습니다. 자동조회 종목은 지워지지 않습니다.</div>');
+    }
+    h.push('</div></div>');
+    return h.join('');
+  }
+
+  /** 읽은 안내장을 상품 목록에 등록한다 */
+  function noticeRegister() {
+    if (!NOTICE || !NOTICE.rows.length) return;
+    var cat = sheet().cat;
+    CUSTOM[cat] = CUSTOM[cat] || [];
+    if (!DOCS[cat]) DOCS[cat] = {};
+    var added = 0, replaced = 0;
+    NOTICE.rows.forEach(function (r) {
+      var p = {
+        id: r.id, name: r.name, custom: true, sample: false,
+        kind: r.kind, issuer: r.issuer,
+        riskGrade: r.riskGrade, riskLabel: r.riskLabel,
+        fromNotice: true
+      };
+      var was = CUSTOM[cat].some(function (x) { return x.id === p.id; });
+      CUSTOM[cat] = CUSTOM[cat].filter(function (x) { return x.id !== p.id; });
+      CUSTOM[cat].unshift(p);
+      if (was) replaced++; else added++;
+      DOCS[cat][p.id] = {
+        source: 'NOTICE',
+        docName: (NOTICE.name || '상품판매 안내장') + ' — ' + r.name,
+        docUrl: '',
+        registeredAt: new Date().toISOString(),
+        fields: r.fields, schedule: [], matBarrier: null, knockIn: '', rawText: '',
+        notice: true
+      };
+    });
+    saveCustom(); saveDocs();
+    ST.productId = NOTICE.rows[0].id;
+    var n = NOTICE.rows.length;
+    NOTICE = null;
+    save(); renderAll();
+    alert('안내장에서 ' + n + '개 종목을 등록했습니다.\n(새로 추가 ' + added + '개 · 기존 갱신 ' + replaced + '개)\n\n상품 선택 목록 맨 위에서 고르십시오.');
+  }
+
   function bondNoticeCard() {
     var C = bondCat();
     if (!C) return '';
@@ -2422,8 +2877,9 @@
     if (!PROS.pdfAvailable()) {
       h.push('<div class="warnbox">PDF 판독 모듈을 불러오지 못했습니다. 아래 붙여넣기를 사용하십시오.</div>');
     } else {
-      h.push('<input type="file" id="mktFile" accept="application/pdf" style="margin-bottom:10px">');
-      h.push('<div class="hint">완전판매자료·증시전망 보고서 PDF를 올리면 기준월·전망 요약·업종을 읽어 옵니다. 외부 네트워크 없이 동작합니다.</div>');
+      h.push('<input type="file" id="mktFile" accept="application/pdf,.pdf,.xlsx,.xlsm,.csv,.tsv,.txt" style="margin-bottom:10px">');
+      h.push('<div class="hint">완전판매자료·증시전망 보고서를 올리면 기준월·전망 요약·업종·상품표를 읽어 옵니다. '
+        + '<b>PDF · 엑셀(.xlsx) · CSV</b> 를 받습니다 — 지점에 엑셀로 내려오는 자료도 그대로 올리십시오. 외부 네트워크 없이 동작합니다.</div>');
       h.push('<div id="mktStat" class="note" style="margin:10px 0 0;display:none"></div>');
     }
     h.push('<div class="hint" style="margin:12px 0 6px">PDF 판독이 안 되면 자료 내용을 붙여넣고 「붙여넣은 내용에서 추출」 을 누르십시오.</div>');
@@ -2577,7 +3033,11 @@
     if (sh.cat === 'fund' || sh.cat === 'irp') h.push(marketCard());
 
     /* 채권 — 회사 장외채권 화면의 유의사항 원문 */
-    if (sh.cat === 'bondKrw' || sh.cat === 'bondFx') h.push(bondNoticeCard());
+    /* 채권 — 상품판매 안내장 올리기 + 회사 원문 */
+    if (sh.cat === 'bondKrw' || sh.cat === 'bondFx') {
+      h.push(noticeCard());
+      h.push(bondNoticeCard());
+    }
 
     /* 전 상품 공용 문구 */
     h.push('<div class="rule"></div><h3 style="font-size:18px;font-weight:700;margin:0 0 6px">전 상품 공용 문구</h3>');
@@ -2673,6 +3133,7 @@
     itemsOf().forEach(function (x) {
       if (!applicable(x)) return;
       (x.script || []).forEach(function (s) {
+        if (!lineOn(s)) return;
         var re = /«([^«»]{1,80})»/g, m;
         while ((m = re.exec(s.x))) { if (!set[m[1]]) { set[m[1]] = 1; out.push(m[1]); } }
       });
@@ -3111,7 +3572,27 @@
         if (!file) return;
         var stat = $('#mktStat');
         stat.style.display = '';
+        stat.className = 'note';
         stat.textContent = '자료 판독 중… (' + file.name + ')';
+        /* 완전판매자료가 엑셀·CSV 로 내려오는 지점도 있다 — 표를 줄글로 펴서
+           같은 판독 규칙에 넣는다. PDF 는 그대로 판독한다. */
+        if (/\.(xlsx|xlsm|csv|tsv|txt)$/i.test(file.name || '')) {
+          PROS.readTable(file, function (err, res) {
+            if (err) {
+              stat.className = 'warnbox';
+              stat.textContent = '자료 읽기 실패 (' + file.name + ') : ' + err.message
+                + ' — 아래 붙여넣기 칸을 사용하십시오.';
+              return;
+            }
+            var lines = [];
+            (res.sheets || []).forEach(function (s) {
+              lines.push(s.name);
+              (s.rows || []).forEach(function (r) { lines.push(r.join('\t')); });
+            });
+            mktRead(lines.join('\n'), file.name, 0);
+          });
+          return;
+        }
         PROS.pdfToText(file, function (n, total) {
           stat.textContent = '자료 판독 중… ' + n + ' / ' + total + ' 페이지 (' + file.name + ')';
         }).then(function (r) {
@@ -3123,6 +3604,51 @@
         });
       };
     }
+
+    /* ── 상품판매 안내장 (채권) ── */
+    function ntShow(err, res, name) {
+      var stat = $('#ntStat');
+      if (stat) { stat.style.display = ''; stat.className = 'note'; }
+      if (err) {
+        if (stat) { stat.className = 'warnbox'; stat.textContent = '안내장 읽기 실패 : ' + err.message; }
+        return;
+      }
+      var p = noticeParse(res, sheet().cat);
+      if (!p.rows.length) {
+        if (stat) {
+          stat.className = 'warnbox';
+          stat.textContent = '표는 읽었지만 종목 줄을 찾지 못했습니다. 머리글 줄(종목명·발행일·만기일 등)이 들어 있는지 확인하십시오.'
+            + ' 읽은 시트 ' + ((res.sheets || []).length) + '개.';
+        }
+        return;
+      }
+      p.name = name;
+      NOTICE = p;
+      renderAll();
+    }
+    var ntf = $('#ntFile');
+    if (ntf) {
+      ntf.onchange = function () {
+        var file = ntf.files && ntf.files[0];
+        if (!file) return;
+        var stat = $('#ntStat');
+        if (stat) { stat.style.display = ''; stat.className = 'note'; stat.textContent = '안내장 읽는 중… (' + file.name + ')'; }
+        PROS.readTable(file, function (err, res) { ntShow(err, res, file.name); });
+      };
+    }
+    var nte = $('#btnNtExtract');
+    if (nte) {
+      nte.onclick = function () {
+        var t = ($('#ntText') || {}).value || '';
+        if (t.trim().length < 20) { alert('안내장 표를 붙여넣은 뒤 눌러 주십시오.'); return; }
+        var rows = PROS.tableRowsFromText(t);
+        ntShow(null, { kind: 'paste', sheets: [{ name: '붙여넣은 표', rows: rows }] }, '붙여넣은 표');
+      };
+    }
+    var ntr = $('#btnNtRegister');
+    if (ntr) ntr.onclick = noticeRegister;
+    var ntc = $('#btnNtClear');
+    if (ntc) ntc.onclick = function () { NOTICE = null; renderAll(); };
     var mex = $('#btnMktExtract');
     if (mex) {
       mex.onclick = function () {
@@ -3294,6 +3820,7 @@
     h.push('<span class="pts ' + cls + '">' + (item.plus ? '+' + item.max : item.max + '점') + '</span></div>');
     if (item.crit) h.push('<div class="warnbox">★ ' + esc(item.crit) + '</div>');
     (item.script || []).forEach(function (s) {
+      if (!lineOn(s)) return;
       var c = s.t === 'say' ? 'say' : (s.t === 'act' ? 'act' : (s.t === 'warn' ? 'warnbox' : 'note'));
       var pre = s.t === 'act' ? '[행동] ' : (s.t === 'note' ? '※ ' : (s.t === 'warn' ? '⚠ ' : ''));
       h.push('<div class="' + c + '">' + (pre ? esc(pre) : '') + tpl(s.x) + '</div>');

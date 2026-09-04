@@ -529,8 +529,38 @@
       secTotals: { '적합성원칙': 30, '상품설명의무': 70 },
       items: [
         it('c_investorInfo', 10), it('c_diagDoc', 3), it('c_elderlyDesk', -2), it('c_cashProfile', 5),
-        it('f_recommend', 7), it('f_market', 5), it('c_unfit1', -10), it('c_unfit2', -10),
-        it('c_recordPlus', 2), it('c_reDiag', -5), it('f_affiliate', -5),
+      /* 부적합 시나리오의 추천 단계는 「고객이 지목한 부적합 상품」 이 아니라
+         「성향에 적합해서 우리가 먼저 권유하는 상품」 을 말해야 한다.
+         앞 판은 선택 상품 값을 그대로 써서, 부적합 상품을 「적합한 상품」 이라고
+         권유하는 문장을 만들었다 — 읽으면 그 자체로 0점이다.
+         그래서 이 시트에서는 추천 상품(왼쪽 「3-1 추천 상품」)에서 값을 읽는다. */
+        it('f_recommend', 7, {
+          crit: '이 단계는 고객이 부적합 상품을 지목하기 「전」 이다 — 성향에 적합한 상품을 먼저 권유해야 인정된다. 적합·부적합 상품을 섞어 추천하면 0점',
+          script: [
+            { t: 'warn', x: '왼쪽 「3-1 추천 상품」 에서 성향에 적합한 펀드를 먼저 골라 두십시오. 아래 문장의 상품명·운용사·위험등급·수익률이 그 펀드에서 채워집니다.\n위 「상품 선택」 은 고객이 지목한 부적합 상품이며, 설명 단계에서 설명합니다.' },
+            { t: 'note', x: '[비계열사 펀드만 추천 시]' },
+            { t: 'say', x: "고객님의 투자자성향인 '{{custProfile}}' 과 현재 투자자금성향에 적합한 상품으로, 비계열사 상품인 {{recMgr}}의 '{{recName}}' 을 추천드리며, 해당 펀드는 {{recRiskLabel}} {{recRiskGrade}}등급 상품으로 고객님께 적합한 펀드입니다.\n{{recRetCompare}}" },
+            { t: 'note', x: '[계열사 펀드 추천 시 — 계열 고지 + 유사한 비계열 펀드 1가지 동반 추천 필수]' },
+            { t: 'say', x: "고객님의 투자자성향인 '{{custProfile}}' 과 현재 투자자금성향에 적합한 상품으로, 당사 계열사인 {{recMgr}}의 '{{recName}}' 과 비계열사 상품인 {{recPeerFund}} 를 추천드리며, 해당 펀드 모두 {{recRiskLabel}} {{recRiskGrade}}등급 상품으로 고객님께 적합한 펀드입니다.\n{{recRetCompare}}\n{{recPeerFund}} 의 최근 1년 수익률은 {{recPeerRet1y}} 입니다." },
+            { t: 'say', x: '추천드린 상품으로 가입을 하시겠습니까?' },
+            { t: 'note', x: '(고객) 아니요, 저는 ○○○ 상품을 가입하고 싶어요 — 여기서부터 부적합 안내 단계로 넘어갑니다' }
+          ]
+        }),
+        it('f_market', 5, {
+          script: [
+            { t: 'act', x: '[펀드 완전판매 관련 자료] 또는 증시전망 보고서를 고객과 함께 보면서 설명 — 자료 출처와 발간일이 직전월 이후여야 인정' },
+            { t: 'say', x: '자료 같이 보시면서 {{mktAsOf}} 시황에 대해 안내드리겠습니다.\n{{mktView}}' },
+            { t: 'say', x: '이와 같은 증시 전망에 따라, {{recName}} 은 {{recTargetsShort}} 에 투자하는 펀드로 {{recMktLink}} 이기 때문에 추천드렸습니다.' },
+            { t: 'say', x: '추천드린 상품으로 가입을 하시겠습니까?' }
+          ]
+        }),
+        it('c_unfit1', -10), it('c_unfit2', -10),
+        it('c_recordPlus', 2), it('c_reDiag', -5),
+        it('f_affiliate', -5, {
+          script: [
+            { t: 'say', x: "고객님의 투자자성향인 '{{custProfile}}' 과 현재 투자자금성향에 적합한 상품으로, 비계열사 상품인 {{recPeerFund}} 와 당사 계열 자산운용사인 {{recMgr}}의 '{{recName}}' 을 추천드리겠습니다." }
+          ]
+        }),
         it('f_prospectus', 7), it('f_asset', 10), it('f_risk', 12), it('f_fee', 10), it('f_trade', 6),
         it('f_understand', 2), it('f_extra', 3), it('c_rights', 10), it('c_call', 1), it('f_confirm', 10),
         it('c_unfair', -18), it('f_delay', -3), it('f_refuse', -3), it('c_online', -5)
@@ -542,8 +572,38 @@
       secTotals: { '적합성원칙': 30, '상품설명의무': 70 },
       items: [
         it('c_investorInfo', 10), it('c_diagDoc', 3), it('c_elderlyDesk', -2), it('c_cashProfile', 5),
-        it('f_recommend', 7), it('f_market', 5), it('c_unfit1', -10), it('c_unfit2', -10),
-        it('c_recordPlus', 2), it('c_reDiag', -5), it('f_affiliate', -5),
+      /* 부적합 시나리오의 추천 단계는 「고객이 지목한 부적합 상품」 이 아니라
+         「성향에 적합해서 우리가 먼저 권유하는 상품」 을 말해야 한다.
+         앞 판은 선택 상품 값을 그대로 써서, 부적합 상품을 「적합한 상품」 이라고
+         권유하는 문장을 만들었다 — 읽으면 그 자체로 0점이다.
+         그래서 이 시트에서는 추천 상품(왼쪽 「3-1 추천 상품」)에서 값을 읽는다. */
+        it('f_recommend', 7, {
+          crit: '이 단계는 고객이 부적합 상품을 지목하기 「전」 이다 — 성향에 적합한 상품을 먼저 권유해야 인정된다. 적합·부적합 상품을 섞어 추천하면 0점',
+          script: [
+            { t: 'warn', x: '왼쪽 「3-1 추천 상품」 에서 성향에 적합한 펀드를 먼저 골라 두십시오. 아래 문장의 상품명·운용사·위험등급·수익률이 그 펀드에서 채워집니다.\n위 「상품 선택」 은 고객이 지목한 부적합 상품이며, 설명 단계에서 설명합니다.' },
+            { t: 'note', x: '[비계열사 펀드만 추천 시]' },
+            { t: 'say', x: "고객님의 투자자성향인 '{{custProfile}}' 과 현재 투자자금성향에 적합한 상품으로, 비계열사 상품인 {{recMgr}}의 '{{recName}}' 을 추천드리며, 해당 펀드는 {{recRiskLabel}} {{recRiskGrade}}등급 상품으로 고객님께 적합한 펀드입니다.\n{{recRetCompare}}" },
+            { t: 'note', x: '[계열사 펀드 추천 시 — 계열 고지 + 유사한 비계열 펀드 1가지 동반 추천 필수]' },
+            { t: 'say', x: "고객님의 투자자성향인 '{{custProfile}}' 과 현재 투자자금성향에 적합한 상품으로, 당사 계열사인 {{recMgr}}의 '{{recName}}' 과 비계열사 상품인 {{recPeerFund}} 를 추천드리며, 해당 펀드 모두 {{recRiskLabel}} {{recRiskGrade}}등급 상품으로 고객님께 적합한 펀드입니다.\n{{recRetCompare}}\n{{recPeerFund}} 의 최근 1년 수익률은 {{recPeerRet1y}} 입니다." },
+            { t: 'say', x: '추천드린 상품으로 가입을 하시겠습니까?' },
+            { t: 'note', x: '(고객) 아니요, 저는 ○○○ 상품을 가입하고 싶어요 — 여기서부터 부적합 안내 단계로 넘어갑니다' }
+          ]
+        }),
+        it('f_market', 5, {
+          script: [
+            { t: 'act', x: '[펀드 완전판매 관련 자료] 또는 증시전망 보고서를 고객과 함께 보면서 설명 — 자료 출처와 발간일이 직전월 이후여야 인정' },
+            { t: 'say', x: '자료 같이 보시면서 {{mktAsOf}} 시황에 대해 안내드리겠습니다.\n{{mktView}}' },
+            { t: 'say', x: '이와 같은 증시 전망에 따라, {{recName}} 은 {{recTargetsShort}} 에 투자하는 펀드로 {{recMktLink}} 이기 때문에 추천드렸습니다.' },
+            { t: 'say', x: '추천드린 상품으로 가입을 하시겠습니까?' }
+          ]
+        }),
+        it('c_unfit1', -10), it('c_unfit2', -10),
+        it('c_recordPlus', 2), it('c_reDiag', -5),
+        it('f_affiliate', -5, {
+          script: [
+            { t: 'say', x: "고객님의 투자자성향인 '{{custProfile}}' 과 현재 투자자금성향에 적합한 상품으로, 비계열사 상품인 {{recPeerFund}} 와 당사 계열 자산운용사인 {{recMgr}}의 '{{recName}}' 을 추천드리겠습니다." }
+          ]
+        }),
         it('f_prospectus', 7), it('f_asset', 10),
         it('f_risk', 8, { title: '투자위험에 대한 설명 (일반위험)' }), it('f_riskOverseas', 4),
         it('f_fee', 10), it('f_trade', 6), it('f_understand', 2), it('f_extra', 3),
@@ -569,7 +629,30 @@
       note: '파생결합증권(고난도) · 부적합 시나리오 — 부적합 안내 3단계((부)적정성 판단 보고서 포함) 가 추가된다',
       secTotals: { '적합성원칙': 40, '상품설명의무': 60 },
       items: [
-        it('c_investorInfo', 10), it('c_diagDoc', 5), it('c_cashProfile', 5), it('e_recommend', 10),
+        it('c_investorInfo', 10), it('c_diagDoc', 5), it('c_cashProfile', 5),
+        /* 부적합 시나리오에서도 이 단계가 먼저다 — 성향에 적합한 ELS 를 먼저
+           권유하거나, 없으면 「없다」 고 정확히 안내해야 인정된다.
+           왼쪽 「3-1 추천 상품」 에서 적합 상품을 고르거나 「적합한 상품 없음」 을
+           누르면 아래 두 갈래 중 읽을 쪽이 채워진다. */
+        it('e_recommend', 10, {
+          crit: '부적합 시나리오에서도 적합 상품 권유(또는 「적합 상품 없음」 안내)가 먼저 이뤄져야 인정 — 적합·부적합 상품을 섞어 추천하면 0점',
+          script: [
+            { t: 'act', x: '관련화면 : MAPIS TR.4600 파생결합상품자료실 / MAPIS TR.8573 상품공지·정보 > ELS/DLS > 공모상품 > 고객교부가능 마케팅자료_통합' },
+            { t: 'warn', x: '왼쪽 「3-1 추천 상품」 에서 ① 성향에 적합한 ELS 를 고르거나 ② 「적합한 상품 없음」 을 누르십시오.\n위 「상품 선택」 은 고객이 지목한 부적합 상품이며, 설명 단계에서 설명합니다. 둘을 섞어 추천하면 0점입니다.' },
+            { t: 'note', when: 'rec', x: '[① 적합한 상품이 있을 경우 — 「3-1 추천 상품」 에서 고른 상품]' },
+            { t: 'say', when: 'rec', x: "① 고객님의 투자자성향인 '{{custProfile}}' 과 현재 투자자금성향에 적합한 상품으로 {{recName}} 을 추천드립니다.\n② 추천드린 {{recName}} 은 {{recRiskLabel}}({{recRiskGrade}}등급) 상품으로, 고객님의 투자자성향인 '{{custProfile}}' 과 적합한 상품입니다.\n③ {{recIssuer}} {{recRound}} {{recKind}} 의 기초자산은 {{recUnder}} 이고, 청약단위는 {{recSubUnit}} 이며, 기초자산 가격이 최초기준가격 초과 여부에 따라 미리 계약한 수익률 {{recCoupon}} 를 지급합니다." },
+            { t: 'note', when: 'recNone', x: '[② 적합한 상품이 없는 경우 — 이렇게 안내하면 우수 인정]' },
+            { t: 'say', when: 'recNone', x: '고객님의 투자자성향에 적합한 상품이 금일에는 발행되지 않았습니다.\n(또는 당사에서는 고객님 투자성향에 적합한 ELS 상품을 판매하고 있지 않습니다.)' },
+            { t: 'say', when: 'recNone', x: '그래서 지금은 추천드릴 수 있는 적합한 상품이 없습니다. 그럼에도 투자를 원하시는 상품이 있으시면 말씀해 주시겠습니까?' },
+            { t: 'note', x: '(고객) 저는 ○○○ 상품을 가입하고 싶어요 — 여기서부터 부적합 안내 단계로 넘어갑니다' }
+          ],
+          tips: [
+            'ELS·ELT·DLS·DLT·ELF·ELB 를 혼재하여 추천해도 인정 (영업점 판매 가능한 상품만)',
+            '적합한 상품 추천 없이 가입 가능한 상품군(원금보장형/부분보장형/비보장형)만 언급하면 저조',
+            '적합한 상품 추천 없이 고객에게 선택만 유도하면 저조',
+            '적합한 상품이 없을 때 「없음」 을 정확히 안내하면 우수로 인정 — 아무 말 없이 부적합 안내로 넘어가면 이 항목이 0점이다'
+          ]
+        }),
         it('c_unfit1', -10, { title: '[감점] 부적합 안내 ① 부적합 상품 투자권유 불가 및 투자방법 안내' }),
         it('c_unfit2', -10, { title: '[감점] 부적합 안내 ①-1 부적합확인서 작성 및 유의사항 안내' }),
         it('c_adequacyReport', -3),

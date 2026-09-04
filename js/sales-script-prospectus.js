@@ -1775,11 +1775,210 @@
     return rows;
   }
 
+  /* ==========================================================
+     표 파일 읽기 — 엑셀(.xlsx) · CSV · TSV
+     ----------------------------------------------------------
+     상품판매 안내장은 지점에 엑셀로 내려온다. 여러 종목이 한 장에 담겨
+     있어 종목마다 손으로 넣던 값을 한 번에 받을 수 있다.
+
+     외부 라이브러리를 쓸 수 없다 (단일 파일이 file:// 로 열리고 CDN 이
+     막혀 있다). 그래서 xlsx 를 직접 읽는다 — xlsx 는 ZIP 이고, 압축은
+     브라우저가 가진 DecompressionStream('deflate-raw') 으로 푼다.
+     ========================================================== */
+
+  /** ZIP 에서 파일들을 꺼낸다 (저장 0 · deflate 8 만 — xlsx 가 쓰는 방식) */
+  function unzip(buf) {
+    var u8 = new Uint8Array(buf), dv = new DataView(u8.buffer, u8.byteOffset, u8.byteLength);
+    /* 끝에서 중앙 디렉터리를 찾는다 (주석이 붙어 있어도 버티도록 뒤에서 훑는다) */
+    var eocd = -1;
+    for (var i = u8.length - 22; i >= 0 && i > u8.length - 66000; i--) {
+      if (dv.getUint32(i, true) === 0x06054b50) { eocd = i; break; }
+    }
+    if (eocd < 0) return Promise.reject(new Error('ZIP 형식이 아닙니다'));
+    var count = dv.getUint16(eocd + 10, true);
+    var cdOff = dv.getUint32(eocd + 16, true);
+    var jobs = [], p = cdOff;
+    for (var k = 0; k < count && p + 46 <= u8.length; k++) {
+      if (dv.getUint32(p, true) !== 0x02014b50) break;
+      var method = dv.getUint16(p + 10, true);
+      var csize = dv.getUint32(p + 20, true);
+      var nlen = dv.getUint16(p + 28, true);
+      var elen = dv.getUint16(p + 30, true);
+      var clen = dv.getUint16(p + 32, true);
+      var lho = dv.getUint32(p + 42, true);
+      var name = new TextDecoder('utf-8').decode(u8.subarray(p + 46, p + 46 + nlen));
+      p += 46 + nlen + elen + clen;
+      /* 로컬 헤더에서 실제 자료 시작 위치를 다시 읽는다 (이름·부가정보 길이가 다를 수 있다) */
+      if (dv.getUint32(lho, true) !== 0x04034b50) continue;
+      var lnl = dv.getUint16(lho + 26, true), lel = dv.getUint16(lho + 28, true);
+      var start = lho + 30 + lnl + lel;
+      jobs.push({ name: name, method: method, bytes: u8.subarray(start, start + csize) });
+    }
+    var out = {};
+    return jobs.reduce(function (chain, j) {
+      return chain.then(function () {
+        if (j.method === 0) { out[j.name] = j.bytes; return null; }
+        if (j.method !== 8 || typeof DecompressionStream !== 'function') return null;
+        var ds = new DecompressionStream('deflate-raw');
+        var w = ds.writable.getWriter();
+        w.write(j.bytes); w.close();
+        return new Response(ds.readable).arrayBuffer().then(function (ab) {
+          out[j.name] = new Uint8Array(ab);
+        }, function () { /* 못 푼 항목은 건너뛴다 */ });
+      });
+    }, Promise.resolve()).then(function () { return out; });
+  }
+
+  var dec = function (u8) { return u8 ? new TextDecoder('utf-8').decode(u8) : ''; };
+  function unesc(s) {
+    return String(s).replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&quot;/g, '"')
+      .replace(/&apos;/g, "'").replace(/&#(\d+);/g, function (_, n) { return String.fromCharCode(+n); })
+      .replace(/&amp;/g, '&');
+  }
+  /** A1 → 0, B1 → 1, AA1 → 26 */
+  function colOf(ref) {
+    var m = /^([A-Z]+)/.exec(String(ref) || '');
+    if (!m) return 0;
+    var n = 0;
+    for (var i = 0; i < m[1].length; i++) n = n * 26 + (m[1].charCodeAt(i) - 64);
+    return n - 1;
+  }
+  /** 엑셀 일자 일련번호 → YYYY-MM-DD (1900 윤년 버그 포함한 관행 그대로) */
+  function serialDate(n) {
+    if (!(n > 20000 && n < 80000)) return null;
+    var ms = (n - 25569) * 86400000;
+    var d = new Date(Math.round(ms));
+    if (isNaN(d.getTime())) return null;
+    return d.toISOString().slice(0, 10);
+  }
+
+  /** xlsx 를 시트별 행 배열로 */
+  function xlsxSheets(files) {
+    /* 공유 문자열 — 셀이 t="s" 면 이 목록의 번호를 가리킨다 */
+    var shared = [];
+    var ss = dec(files['xl/sharedStrings.xml']);
+    if (ss) {
+      (ss.match(/<si\b[\s\S]*?<\/si>|<si\b[^>]*\/>/g) || []).forEach(function (si) {
+        /* <si> 안에 <t> 가 여러 개면(서식이 섞인 글자) 이어 붙인다 */
+        var t = (si.match(/<t\b[^>]*>([\s\S]*?)<\/t>/g) || [])
+          .map(function (x) { return unesc(x.replace(/<[^>]+>/g, '')); }).join('');
+        shared.push(t);
+      });
+    }
+    /* 시트 이름·순서 — workbook.xml 이 알려 준다 */
+    var names = [];
+    var wb = dec(files['xl/workbook.xml']);
+    (wb.match(/<sheet\b[^>]*>/g) || []).forEach(function (s) {
+      var nm = /name="([^"]*)"/.exec(s);
+      names.push(nm ? unesc(nm[1]) : '');
+    });
+    var paths = Object.keys(files)
+      .filter(function (n) { return /^xl\/worksheets\/sheet\d+\.xml$/.test(n); })
+      .sort(function (a, b) {
+        return (+(/(\d+)/.exec(a) || [])[1] || 0) - (+(/(\d+)/.exec(b) || [])[1] || 0);
+      });
+    return paths.map(function (path, idx) {
+      var xml = dec(files[path]);
+      var rows = [];
+      (xml.match(/<row\b[\s\S]*?<\/row>|<row\b[^>]*\/>/g) || []).forEach(function (r) {
+        var cells = [];
+        (r.match(/<c\b[\s\S]*?<\/c>|<c\b[^>]*\/>/g) || []).forEach(function (c) {
+          var at = /^<c\b([^>]*)/.exec(c)[1];
+          var ref = (/r="([^"]*)"/.exec(at) || [])[1];
+          var ty = (/t="([^"]*)"/.exec(at) || [])[1];
+          var v;
+          if (ty === 'inlineStr') {
+            v = (c.match(/<t\b[^>]*>([\s\S]*?)<\/t>/g) || [])
+              .map(function (x) { return unesc(x.replace(/<[^>]+>/g, '')); }).join('');
+          } else {
+            var vm = /<v\b[^>]*>([\s\S]*?)<\/v>/.exec(c);
+            v = vm ? unesc(vm[1]) : '';
+            if (ty === 's') v = shared[+v] != null ? shared[+v] : '';
+          }
+          cells[colOf(ref)] = String(v == null ? '' : v).trim();
+        });
+        for (var i = 0; i < cells.length; i++) if (cells[i] == null) cells[i] = '';
+        rows.push(cells);
+      });
+      return { name: names[idx] || path.replace(/^.*\//, ''), rows: rows };
+    });
+  }
+
+  /** CSV·TSV — 따옴표 안의 구분자와 줄바꿈을 지킨다 */
+  function delimRows(text) {
+    var head = text.split(/\r?\n/)[0] || '';
+    var d = (head.split('\t').length > head.split(',').length) ? '\t' : ',';
+    var rows = [], row = [], cell = '', q = false;
+    for (var i = 0; i < text.length; i++) {
+      var ch = text[i];
+      if (q) {
+        if (ch === '"') { if (text[i + 1] === '"') { cell += '"'; i++; } else q = false; }
+        else cell += ch;
+        continue;
+      }
+      if (ch === '"') { q = true; continue; }
+      if (ch === d) { row.push(cell.trim()); cell = ''; continue; }
+      if (ch === '\r') continue;
+      if (ch === '\n') { row.push(cell.trim()); rows.push(row); row = []; cell = ''; continue; }
+      cell += ch;
+    }
+    if (cell !== '' || row.length) { row.push(cell.trim()); rows.push(row); }
+    return rows.filter(function (r) { return r.some(function (c) { return c !== ''; }); });
+  }
+
+  /**
+   * 표 파일을 읽어 시트별 행 배열로 준다.
+   *   readTable(file, function (err, res) { ... })
+   *   res = { kind: 'xlsx'|'csv', sheets: [{ name, rows: [[셀,…],…] }] }
+   * 못 읽으면 err 에 사람이 읽을 수 있는 이유가 담긴다 — 화면에 그대로 띄운다.
+   */
+  function readTable(file, cb) {
+    var nm = String((file && file.name) || '').toLowerCase();
+    var fr = new FileReader();
+    fr.onerror = function () { cb(new Error('파일을 읽지 못했습니다.')); };
+    if (/\.xlsx$|\.xlsm$/.test(nm)) {
+      if (typeof DecompressionStream !== 'function') {
+        cb(new Error('이 브라우저는 엑셀 압축을 풀 수 없습니다. 엑셀에서 「다른 이름으로 저장 → CSV」 로 저장해 올리거나, 표를 복사해 붙여넣으십시오.'));
+        return;
+      }
+      fr.onload = function () {
+        unzip(fr.result).then(function (files) {
+          if (!files['xl/workbook.xml'] && !Object.keys(files).some(function (n) { return /worksheets\/sheet1\.xml$/.test(n); })) {
+            throw new Error('엑셀 파일 안에서 표를 찾지 못했습니다.');
+          }
+          var sheets = xlsxSheets(files).filter(function (s) { return s.rows.length; });
+          if (!sheets.length) throw new Error('엑셀에 읽을 행이 없습니다.');
+          cb(null, { kind: 'xlsx', sheets: sheets });
+        }).catch(function (e) { cb(e instanceof Error ? e : new Error(String(e))); });
+      };
+      fr.readAsArrayBuffer(file);
+      return;
+    }
+    if (/\.xls$/.test(nm)) {
+      cb(new Error('옛 형식(.xls)은 읽을 수 없습니다. 엑셀에서 「다른 이름으로 저장 → .xlsx」 또는 CSV 로 저장해 올리십시오.'));
+      return;
+    }
+    fr.onload = function () {
+      /* 사내 엑셀에서 저장한 CSV 는 EUC-KR 인 경우가 많다 — 깨지면 다시 읽는다 */
+      var txt = new TextDecoder('utf-8').decode(new Uint8Array(fr.result));
+      if (/�/.test(txt)) {
+        try { txt = new TextDecoder('euc-kr').decode(new Uint8Array(fr.result)); } catch (e) { /* 그대로 */ }
+      }
+      var rows = delimRows(txt.replace(/^﻿/, ''));
+      if (!rows.length) { cb(new Error('읽을 행이 없습니다.')); return; }
+      cb(null, { kind: 'csv', sheets: [{ name: file.name || 'CSV', rows: rows }] });
+    };
+    fr.readAsArrayBuffer(file);
+  }
+
   g.SS_PROS = {
     RULES: RULES,
     extract: extract,
     readMarket: readMarket,
     pdfToText: pdfToText,
+    readTable: readTable,
+    tableRowsFromText: delimRows,
+    excelSerialDate: serialDate,
     fetchFromApi: fetchFromApi,
     apiConfig: apiConfig,
     setApiConfig: setApiConfig,
