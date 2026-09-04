@@ -10,7 +10,7 @@ import datetime
 from briefing_lib import (
     CORE, VF_OK, VF_MD, VF_C, VF_1, VF_N,
     d, DK, DE, DD, DS, n, pct, bp, eok, jo, esc,
-    L, TH, THP, perf_cells, tbl, sparkline, bar)
+    L, TH, THP, perf_cells, perf_line, tbl, sparkline, bar)
 
 
 def _pos52(close, fw):
@@ -198,8 +198,10 @@ def _tables(C):
         dp = 4 if (r["close"] or 0) < 10 else (1 if (r["close"] or 0) < 3000 else 0)
         nk = (r.get("note_ko") or "") + ((" &mdash; " + extra_ko) if extra_ko else "")
         ne = (r.get("note_en") or "") + ((" &mdash; " + extra_en) if extra_en else "")
+        # 핵심본은 기간 열을 접으므로 이름 밑에 줄로 되살린다(전체 판은 열이 산다).
+        pl = perf_line(r.get("perf")) if CORE[0] else ""
         return ('      <tr' + (' class="hl"' if key == "usdkrw" else '') + '>'
-                '<th class="wrap">' + L(r["name_ko"], r["name_en"]) + '</th>'
+                '<th class="wrap">' + L(r["name_ko"], r["name_en"]) + pl + '</th>'
                 '<td class="n note">' + L(nk or "&nbsp;", ne or "&nbsp;") + '</td>'
                 '<td class="n">' + n(r["close"], dp) + '</td>' + _cell(r.get("change_pct"))
                 + perf_cells(r.get("perf")) + '<td class="n opt">' + VF_MD + '</td></tr>')
@@ -207,17 +209,18 @@ def _tables(C):
     C["fx_tbl"] = tbl("원화 환율 &mdash; 오늘 아침 " + DK(C["today"]),
                       "The won &mdash; this morning, " + DE(C["today"]), fh,
                       [x for x in (_fxrow("usdkrw"), _fxrow("jpykrw"), _fxrow("cnykrw"),
-                                   _fxrow("eurkrw"), _fxrow("audkrw")) if x],
+                                   _fxrow("eurkrw"), _fxrow("audkrw"),
+                                   _fxrow("brlkrw")) if x],
                       cls="data compact",
                       foot_ko="<strong>이 표는 뒤 통화가 1개입니다</strong> &mdash; 원/달러 1,384 는 달러 1개를 "
                               "사는 데 1,384원이 든다는 뜻이라, <strong>숫자가 내려가면 원화가 세진 것</strong>입니다. "
-                              "원화 크로스 넷은 받아 온 값이 아니라 <strong>원/달러에서 계산한 재정환율</strong>입니다 "
+                              "원화 크로스 다섯은 받아 온 값이 아니라 <strong>원/달러에서 계산한 재정환율</strong>입니다 "
                               + VF_C + " &mdash; 원화는 달러 말고 직접 거래되는 시장이 사실상 없어 국내 고시 환율도 "
                                        "전부 그렇게 만듭니다. <strong>달러 상대 통화는 빗금 방향이 반대</strong>이므로 "
                                        "아래 상세에 따로 두었습니다.",
                       foot_en="<strong>In this table the second currency is the unit</strong> &mdash; USD/KRW 1,384 "
                               "means one dollar costs 1,384 won, so <strong>a lower number is a stronger won</strong>. "
-                              "The four crosses are <strong>computed from USD/KRW</strong> " + VF_C + ", as Korean "
+                              "The five crosses are <strong>computed from USD/KRW</strong> " + VF_C + ", as Korean "
                               "published rates are. <strong>The dollar crosses read the other way round</strong> and "
                               "sit in the detail below.")
 
