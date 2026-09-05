@@ -2174,6 +2174,7 @@
         + '<span>성향에 <b>부적합한 등급만</b> 보기 (고객이 지목하는 상품)</span></label>');
     }
     h.push('<div class="hint" id="prodCount" style="margin:0 0 6px"></div>');
+    h.push('<div id="gradeBar"></div>');
     h.push('<input type="text" id="pq" placeholder="상품명 · 코드 · 기초자산 검색" value="">');
     h.push('<select id="selProduct" size="8" style="margin-top:6px"></select>');
     h.push('<div style="display:flex;gap:6px;margin-top:6px"><button class="tbtn" id="btnNewProduct" style="flex:1">새 상품 등록</button>'
@@ -2211,6 +2212,7 @@
         + (profileGrades(ctx.custProfile) ? '' : ' disabled') + '>'
         + '<span>성향에 <b>적합한 등급만</b> 보기</span></label>');
       h.push('<div class="hint" id="recCount" style="margin:0 0 6px"></div>');
+      h.push('<div id="recGradeBar"></div>');
       h.push('<input type="text" id="rq" placeholder="추천할 상품명 · 코드 검색" value="">');
       h.push('<select id="selRec" size="6" style="margin-top:6px"></select>');
       h.push('<div style="display:flex;gap:6px;margin-top:6px">');
@@ -2327,12 +2329,32 @@
       var g = numOf(p.riskGrade);
       return g == null ? true : okG.indexOf(g) < 0;
     });
+    /* 등급으로 좁혀 보기 — 창구가 「4등급 펀드 뭐 있지」 하고 찾는 방식이다 */
+    var gb = gradeBar(list, ST.ctx.gradePick || '', null);
+    var gbox = $('#gradeBar');
+    if (gbox) {
+      gbox.innerHTML = gb.html;
+      bindGradeBar('#gradeBar', function (g) {
+        ST.ctx.gradePick = g; save(); fillProducts(($('#pq') || {}).value || '');
+      });
+    }
+    var beforeGrade = list.length;
+    list = byGrade(list, ST.ctx.gradePick || '');
     var pc = $('#prodCount');
     if (pc) {
-      pc.innerHTML = unfitOnly
-        ? '<b>' + esc(ST.ctx.custProfile) + '</b> 성향에 <b>부적합한</b> 등급만 <b>' + list.length.toLocaleString()
+      var head = unfitOnly
+        ? '<b>' + esc(ST.ctx.custProfile) + '</b> 성향에 <b>부적합한</b> 등급만 <b>' + beforeGrade.toLocaleString()
           + '건</b> <span style="color:var(--muted2)">/ 전체 ' + all0.length.toLocaleString() + '건</span>'
         : '전체 <b>' + all0.length.toLocaleString() + '건</b>';
+      if (ST.ctx.gradePick) head += ' · <b>' + esc(ST.ctx.gradePick) + (ST.ctx.gradePick === '?' ? '' : '등급')
+        + '</b> ' + list.length.toLocaleString() + '건';
+      /* 부적합 시나리오인데 부적합 상품이 없을 수 있다 — 왜인지 적어 준다 */
+      if (unfitOnly && beforeGrade === 0) {
+        head += '<br><b style="color:var(--warn)">' + esc(ST.ctx.custProfile) + ' 성향은 '
+          + (okG || []).join('·') + '등급을 모두 가입할 수 있어 <b>부적합한 상품이 없습니다</b> — '
+          + '부적합 상담 시나리오가 성립하지 않습니다. <b>적합</b> 평가표로 바꾸십시오.</b>';
+      }
+      pc.innerHTML = head;
     }
     var shx = sheet();
     var cat = shx.cat, docs = DOCS[cat] || {};
@@ -2357,6 +2379,48 @@
       if (p.custom) tail += p.fromNotice ? ' \u00b7 안내장' : ' \u00b7 직접등록';
       return '<option value="' + esc(p.id) + '"' + (p.id === ST.productId ? ' selected' : '') + '>' + mark + esc(p.name) + tail + '</option>';
     }).join('') || '<option disabled>검색 결과 없음</option>';
+  }
+
+  /**
+   * 등급 단추 줄 — 「전체 · 1 · 2 · … · 6」.
+   * 건수를 함께 적어, 고를 수 있는 등급이 어디에 몇 건인지 보이게 한다.
+   * 건수가 0인 등급은 눌리지 않는다.
+   */
+  function gradeBar(items, cur, onPick) {
+    var cnt = {};
+    items.forEach(function (p) {
+      var g = numOf(p.riskGrade);
+      var k = g == null ? '?' : String(g);
+      cnt[k] = (cnt[k] || 0) + 1;
+    });
+    var h = ['<div class="seg gradeSeg" style="flex-wrap:wrap;margin:0 0 6px">'];
+    h.push('<button data-g="" aria-pressed="' + (!cur) + '">전체 ' + items.length.toLocaleString() + '</button>');
+    RISK_TABLE.grades.forEach(function (x) {
+      var n = cnt[String(x.n)] || 0;
+      h.push('<button data-g="' + x.n + '" aria-pressed="' + (String(cur) === String(x.n)) + '"'
+        + (n ? '' : ' disabled') + ' title="' + esc(x.label) + '">' + x.n + '등급 ' + n + '</button>');
+    });
+    if (cnt['?']) {
+      h.push('<button data-g="?" aria-pressed="' + (cur === '?') + '" title="위험등급을 모르는 상품">등급없음 ' + cnt['?'] + '</button>');
+    }
+    h.push('</div>');
+    return { html: h.join(''), pick: onPick };
+  }
+  /** 등급 단추에 손을 붙인다 (목록을 다시 그릴 때마다 부른다) */
+  function bindGradeBar(sel, fn) {
+    var box = $(sel);
+    if (!box) return;
+    Array.prototype.forEach.call(box.querySelectorAll('button'), function (b) {
+      b.onclick = function () { fn(b.dataset.g || ''); };
+    });
+  }
+  /** 등급으로 거른다 ('' 는 전체, '?' 는 등급 없는 것) */
+  function byGrade(list, g) {
+    if (!g) return list;
+    return list.filter(function (p) {
+      var n = numOf(p.riskGrade);
+      return g === '?' ? n == null : String(n) === String(g);
+    });
   }
 
   /**
@@ -2385,15 +2449,36 @@
       var g = numOf(p.riskGrade);
       return g == null ? true : okGrades.indexOf(g) >= 0;
     });
+    var rgb = gradeBar(list, ST.ctx.recGradePick || '', null);
+    var rbox = $('#recGradeBar');
+    if (rbox) {
+      rbox.innerHTML = rgb.html;
+      bindGradeBar('#recGradeBar', function (g) {
+        ST.ctx.recGradePick = g; save(); fillRec(($('#rq') || {}).value || '');
+      });
+    }
+    var beforeG = list.length;
+    list = byGrade(list, ST.ctx.recGradePick || '');
     var note = $('#recCount');
     if (note) {
-      note.innerHTML = fitOnly
+      var txt = fitOnly
         ? '<b>' + esc(ST.ctx.custProfile) + '</b> 성향에 적합한 등급(' + okGrades.join('·') + '등급) <b>'
-          + list.length.toLocaleString() + '건</b> <span style="color:var(--muted2)">/ 전체 ' + all.length.toLocaleString() + '건</span>'
+          + beforeG.toLocaleString() + '건</b> <span style="color:var(--muted2)">/ 전체 ' + all.length.toLocaleString() + '건</span>'
         : (okGrades
           ? '<b style="color:var(--warn)">전체 ' + all.length.toLocaleString() + '건을 보고 있습니다</b> — '
             + esc(ST.ctx.custProfile) + ' 성향에 적합한 등급은 ' + okGrades.join('·') + '등급입니다.'
           : '투자자성향을 고르면 적합한 등급만 걸러 보여 드립니다. <b>' + all.length.toLocaleString() + '건</b>');
+      if (ST.ctx.recGradePick) txt += ' · <b>' + esc(ST.ctx.recGradePick)
+        + (ST.ctx.recGradePick === '?' ? '' : '등급') + '</b> ' + list.length.toLocaleString() + '건';
+      /* 적합한 상품이 하나도 없을 수 있다 — 그때가 「적합한 상품 없음」 을 누를 자리다 */
+      if (fitOnly && beforeG === 0) {
+        txt += '<br><b style="color:var(--warn)">' + esc(ST.ctx.custProfile) + ' 성향에 적합한 등급('
+          + okGrades.join('·') + '등급) 상품이 <b>지금 목록에 없습니다</b>'
+          + (sheet().cat === 'els'
+            ? ' — 아래 <b>「적합한 상품 없음」</b> 을 누르면 그렇게 안내하는 스크립트로 바뀝니다 (정확히 안내하면 우수 인정).'
+            : ' — 검색어를 지우거나 체크를 풀어 다시 찾아보십시오.') + '</b>';
+      }
+      note.innerHTML = txt;
     }
     /* 목록이 매우 길어(펀드 3천 건) 검색 없이 다 그리면 화면이 무거워진다 */
     var cap = q ? 300 : 200;

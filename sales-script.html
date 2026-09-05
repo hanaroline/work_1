@@ -71,6 +71,9 @@ select:focus,input:focus,textarea:focus{outline:2px solid var(--orange);outline-
 .seg{display:flex;flex-wrap:wrap;gap:6px}
 .seg button{flex:1 1 auto;padding:8px 6px;border:1px solid var(--hair);background:#fff;border-radius:2px;cursor:pointer;font-size:13px;font-weight:500;color:var(--muted)}
 .seg button[aria-pressed=true]{background:var(--orange);border-color:var(--orange);color:#fff;font-weight:700}
+/* 등급 거르기 단추 — 개수가 많아 작게, 건수가 0인 등급은 눌리지 않는다 */
+.gradeSeg button{flex:0 0 auto;padding:5px 8px;font-size:12px}
+.gradeSeg button[disabled]{opacity:.4;cursor:default}
 .chk{display:flex;align-items:flex-start;gap:8px;padding:6px 0;font-size:14px;cursor:pointer}
 .chk input{margin-top:3px;accent-color:var(--orange);width:16px;height:16px;flex:none}
 .rule{height:1px;background:var(--orange);margin:26px 0 12px}
