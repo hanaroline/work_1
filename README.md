@@ -291,10 +291,22 @@ QR 위치를 1:1로 대조해 확인했으며, 링크 자체를 새로 만들거
 > 전단의 QR과 동일한 값이므로 전단이 유효한 동안에는 동일하게 동작하지만,
 > 배포 전에 실제 휴대폰에서 13개를 한 번씩 눌러보는 것을 권장합니다.
 
-## 배포
+## 배포 (GitHub Pages)
 
-파일 하나로 동작하므로(외부 의존은 Google Fonts CDN뿐, 차단돼도 대체 폰트로 정상 표시)
-정적 호스팅 어디에나 올리면 됩니다. 올린 주소를 문자·카카오톡으로 보내면 끝입니다.
+`.github/workflows/pages.yml`이 `main`에 올라온 `mapo-wm.html`을 GitHub Pages로 배포합니다.
+저장소 전체가 아니라 **이 페이지만** 올립니다(시세·ELS·브리핑 자료는 웹사이트로 노출하지 않음).
+
+| 주소 | 내용 |
+|------|------|
+| `https://hanaroline.github.io/work_1/` | 마포 WM 모바일 창구 |
+| `https://hanaroline.github.io/work_1/mapo-wm.html` | 같은 페이지(주소만 다름) |
+
+**최초 1회만 설정** — 저장소 Settings 〉 Pages 〉 Build and deployment 〉 Source 를
+**GitHub Actions** 로 바꿉니다. 그 뒤로는 `mapo-wm.html`을 고쳐 `main`에 올릴 때마다
+자동 배포되고, Actions 탭에서 수동 실행(workflow_dispatch)도 됩니다.
+
+검색 노출은 막아둡니다(페이지 `noindex` + `robots.txt`). 문자·메신저로 주소를 받은
+고객만 들어오는 페이지라서, 지점 코드가 박힌 링크가 검색에 걸리지 않게 하려는 것입니다.
 
 ```bash
 # 로컬 확인
