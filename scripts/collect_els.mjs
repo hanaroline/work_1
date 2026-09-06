@@ -169,20 +169,30 @@ function normalize(r) {
   const { barriers, knockIn: descKi, lizard } = parseStructure(r.omkt_drv_desc_cn);
 
   const maturityMonths = toMonths(r.omkt_drv_exrt_cycl_cn)
-    ?? (barriers ? barriers.length * (toMonths(r.omkt_drv_rpy_cycl_cn) ?? 6) : 36);
+    ?? (barriers ? barriers.length * (toMonths(r.omkt_drv_rpy_cycl_cn) ?? 6) : null);
 
   // 상환주기가 있으면 그걸로 회차 간격을 잡고, 없으면 배리어 개수로 균등 분할
   const cycle = toMonths(r.omkt_drv_rpy_cycl_cn);
-  const count = barriers?.length ?? (cycle ? Math.round(maturityMonths / cycle) : 6);
-  const step = maturityMonths / count;
-  const schedule = Array.from({ length: count }, (_, i) => ({
+  const count = barriers?.length ?? (cycle && maturityMonths ? Math.round(maturityMonths / cycle) : 6);
+  const step = maturityMonths ? maturityMonths / count : 0;
+  const schedule = (maturityMonths ? Array.from({ length: count }, (_, i) => ({
     months: Math.round(step * (i + 1)),
     barrier: barriers ? barriers[i] : null,
     ...(lizard && lizard.index === i
       ? { lizard: lizard.barrier, lizardRate: lizard.rate ?? null }
       : {}),
-  })).filter((x) => x.barrier != null);
-  if (!schedule.length) return null;
+  })) : []).filter((x) => x.barrier != null);
+  /**
+   * 차수별 상환조건을 못 읽었다고 상품을 버리지 않는다.
+   *
+   * 낙아웃콜 ELB 는 스텝다운 배리어가 아예 없다 — 만기 한 번에 KO 여부로 갚는다
+   * (「① KO 발생 시 : 1.50% ② KO 미발생, 100초과-130이하 : (가격상승률 x 70%)…」).
+   * 앞 판은 배리어가 없으면 버렸고, 그래서 2026-09-07 에 새로 나온 ELB4076·4077·4078
+   * 세 건이 목록에 없었다. 창구에서는 파는데 스크립트에서는 고를 수조차 없다.
+   *
+   * 구조 설명 원문(structureDesc)은 그대로 담기므로 창구가 읽을 것은 남는다.
+   * 차수별 표는 빈 채로 두어 화면에서 「확인필요」 로 남는다 — 지어내지 않는다.
+   */
 
   // 낙인은 kni_yn / lwrk_bar_rt 를 우선하고, 없으면 설명 문자열에서 뽑은 값을 쓴다
   const kniYn = String(r.kni_yn ?? '');
@@ -373,7 +383,7 @@ async function main() {
 
   // 청약 마감일이 가까운 순 → 수익률 높은 순
   // 청약 마감이 임박한 순 → 연 환산 수익률 높은 순
-  const annual = (p) => p.couponRate * 12 / p.maturityMonths;
+  const annual = (p) => (p.maturityMonths ? p.couponRate * 12 / p.maturityMonths : 0);
   products.sort((a, b) =>
     (a.offerEnd || '9999').localeCompare(b.offerEnd || '9999') || annual(b) - annual(a));
 
