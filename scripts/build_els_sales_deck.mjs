@@ -70,21 +70,34 @@ const onEdge = (it) => it.mcCI != null && TIER_CUT.some((c) => Math.abs(it.mcLos
 // 온라인 전용 — 홈페이지 상품명 끝의 e. 영업점 창구 청약이 안 되므로 상담에서 먼저 말해야 한다.
 const w = {};
 new Function('window', await readFile('data/els.js', 'utf8'))(w);
-const ONLINE = new Set(
-  w.ELS_DATA.products
-    .map((p) => (p.name.match(/\(ELS\)(\d{5})e$/) || [])[1])
-    .filter(Boolean)
-    .map(Number),
-);
-// 홈페이지 목록이 이번 회차를 아직 싣지 않았으면 온라인 전용 여부를 알 수 없다.
-// 이때 배지를 안 붙이면 "전부 창구 청약 가능" 으로 읽히므로, 모른다고 적는다.
-const LISTED = new Set(
-  w.ELS_DATA.products
-    .map((p) => (p.name.match(/\(ELS\)(\d{5})e?$/) || [])[1])
-    .filter(Boolean)
-    .map(Number),
-);
-const ONLINE_KNOWN = A.items.some((i) => LISTED.has(i.no));
+/**
+ * 온라인 전용(영업점 창구 청약 불가) 판정 — 상품명 끝의 e.
+ *
+ * 출처가 둘이다. 목록 API(data/els.js)는 "청약 진행중" 만 돌려주므로 청약 첫날
+ * 아침에는 아직 이전 회차만 들어 있다. 반면 홈페이지 화면을 그대로 긁어 둔
+ * rendered_list.json 에는 그날 올라온 회차가 먼저 들어오고 e 접미사도 그대로 남아
+ * 있다. 화면을 먼저 보고, 이번 회차가 없으면 API 로 내려간다.
+ */
+const rendered = await readFile('tools/discovery/rendered_list.json', 'utf8')
+  .then(JSON.parse).catch(() => null);
+const fromNames = (names) => {
+  const listed = new Set(), online = new Set();
+  for (const nm of names) {
+    const m = String(nm).match(/\(ELS\)(\d{5})(e?)\s*$/);
+    if (!m) continue;
+    listed.add(Number(m[1]));
+    if (m[2]) online.add(Number(m[1]));
+  }
+  return { listed, online };
+};
+const covers = (src) => A.items.some((i) => src.listed.has(i.no));
+const screen = fromNames((rendered?.rows || []).map((r) => r.name));
+const api = fromNames(w.ELS_DATA.products.map((p) => p.name));
+const SRC_ONLINE = covers(screen) ? { ...screen, at: rendered.capturedAt, via: '홈페이지 화면' }
+  : covers(api) ? { ...api, at: w.ELS_DATA.checkedAt || w.ELS_DATA.updatedAt, via: '홈페이지 목록' }
+  : { listed: new Set(), online: new Set(), at: w.ELS_DATA.checkedAt, via: null };
+const ONLINE = SRC_ONLINE.online;
+const ONLINE_KNOWN = SRC_ONLINE.via != null;
 const isOnline = (it) => ONLINE_KNOWN && ONLINE.has(it.no);
 const onl = (it) => (isOnline(it) ? ' (온라인 전용)' : '');
 // 시세 수집이 짧게 돌아와 직전 종가를 이월한 기초자산. 백테스트(A)의 꼬리가
@@ -556,7 +569,7 @@ const perRisk = (i) => i.annualRate / i.mcLoss;
       : '',
     ONLINE_KNOWN
       ? ''
-      : `온라인 전용(창구 청약 불가) 여부는 미확인 — 홈페이지 목록이 ${kstDay(A.checkedAt)} 확인 시점에 이번 회차를 아직 싣지 않았습니다.`,
+      : `온라인 전용(창구 청약 불가) 여부는 미확인 — ${kstDay(SRC_ONLINE.at)} 확인 시점에 이번 회차가 아직 올라오지 않았습니다.`,
   ].filter(Boolean).join(' ');
 
   s.addText(
