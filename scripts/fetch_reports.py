@@ -376,6 +376,26 @@ _MIRAE_PDF = re.compile(r"""(?i)downConfirm\('([^']+\.pdf[^']*)'""")
 _MIRAE_HEAD = re.compile(r"^(.*?)\s*\(([0-9A-Z]{5,8})(?:\s+[A-Z]{2})?\s*/\s*([^)]+)\)\s*$")
 
 
+# 점검 안내 페이지는 목록과 생김새가 다르다. 「한 줄도 못 얻었다」로만
+# 남기면 얼개가 바뀐 것인지 문이 닫힌 것인지 가릴 수 없다 — 9/5·9/7 판에서
+# 미래에셋이 이틀 내리 빠졌는데, 덤프를 열어 보고서야 시스템 업그레이드
+# 점검(9/5 09:30~9/6 18:00 공지)인 줄 알았다.
+_CLOSED = re.compile(r"서비스\s*(일시\s*)?중단|시스템\s*(업그레이드|점검)|"
+                     r"작업\s*중입니다|이용이\s*일시적으로\s*제한")
+
+
+def looks_closed(html):
+    """목록 대신 점검 안내가 왔는가. 왔다면 안내 문구 한 토막을 돌려준다."""
+    if len(html) > 30_000 or not _CLOSED.search(html):
+        return None
+    t = re.sub(r"\s+", " ", _text(html)).strip()
+    # 이 쪽에는 2018년 차세대 시스템 안내가 아직 숨은 채로 남아 있다. 맨
+    # 앞의 날짜를 집으면 팔 년 전 공지를 오늘 일로 적게 된다 — **마지막**
+    # 것이 지금 걸린 점검이다.
+    got = re.findall(r"(\d{1,2}월\s*\d{1,2}일\([월화수목금토일]\)[^*]{0,70})", t)
+    return ("점검 안내 화면이 왔다" + (" — " + got[-1].strip() if got else ""))
+
+
 def parse_mirae(html, board, category_id, overseas=False):
     rows = []
     for row in _ROW.findall(html):
@@ -454,7 +474,7 @@ def fetch_mirae(dump_dir=None):
             n += 1
         return n
 
-    board_err = {}
+    board_err, seen_html = {}, []
     for board, cid, pages, overseas in MIRAE_BOARDS:
         # 판 하나가 죽어도 나머지는 살린다. 예전에는 첫 판이 넘어지면
         # 하우스 원천이 통째로 날아갔다.
@@ -466,7 +486,9 @@ def fetch_mirae(dump_dir=None):
         if not first:
             if dump_dir:
                 _dump(dump_dir, "mirae_%s_p1.html" % cid, html)
-            board_err[board] = "줄을 못 찾았다 (%d bytes)" % len(html)
+            seen_html.append(html)
+            board_err[board] = ((looks_closed(html) or "줄을 못 찾았다")
+                                + " (%d bytes)" % len(html))
             continue
         # 같은 리포트의 날짜가 판마다 다르게 읽힌 일이 있다(9/1 판에서 두 건이
         # 사흘씩 당겨졌다). 어느 칸을 집었는지는 마크업을 봐야 알 수 있으므로
@@ -499,7 +521,9 @@ def fetch_mirae(dump_dir=None):
             if not add(got):
                 break                        # 더 나올 것이 없다
     if not rows:
-        raise ValueError("미래에셋 리서치에서 한 줄도 못 얻었다")
+        closed = next((c for c in (looks_closed(h) for h in seen_html) if c), None)
+        raise ValueError("미래에셋 리서치에서 한 줄도 못 얻었다"
+                         + (" (%s)" % closed if closed else ""))
 
     # 같은 리포트가 공저자 수만큼 줄로 서는 일이 있다(SMIC 리포트가 강민희·
     # 정태준 두 줄로 왔다). 제목과 날짜가 같으면 한 줄로 모으고 이름만 잇는다.
