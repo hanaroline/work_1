@@ -216,24 +216,55 @@ disclosed('REST_FV_MIN', '공정가격(원)', `나머지 ${REST.length}종(원�
 // 홈페이지 상품목록이 이번 회차를 아직 싣지 않으면 알 수 없다. "전부 창구 가능"
 // 으로 읽히지 않도록 미확인으로 등록하고 자료에도 그렇게 적는다.
 {
-  const listed = new Set(
-    w.ELS_DATA.products.map((p2) => (p2.name.match(/\(ELS\)(\d{5})e?$/) || [])[1]).filter(Boolean).map(Number),
-  );
-  const known = A.items.filter((i) => listed.has(i.no)).length;
+  // 판정 출처는 덱과 같다 — 목록 API 는 "청약 진행중" 만 돌려주므로 청약 첫날
+  // 아침에는 이전 회차만 들어 있고, 화면 캡처에는 그날 회차가 먼저 들어온다.
+  const rendered = await readFile('tools/discovery/rendered_list.json', 'utf8')
+    .then(JSON.parse).catch(() => null);
+  const fromNames = (names) => {
+    const listed = new Set(), online = new Set();
+    for (const nm of names) {
+      const m = String(nm).match(/\(ELS\)(\d{5})(e?)\s*$/);
+      if (!m) continue;
+      listed.add(Number(m[1]));
+      if (m[2]) online.add(Number(m[1]));
+    }
+    return { listed, online };
+  };
+  const covers = (src) => A.items.some((i) => src.listed.has(i.no));
+  const screen = fromNames((rendered?.rows || []).map((r) => r.name));
+  const api = fromNames(w.ELS_DATA.products.map((p2) => p2.name));
+  const src = covers(screen) ? { ...screen, at: rendered.capturedAt, via: '미래에셋증권 ELS/DLS 캘린더 화면 (자체 수집)' }
+    : covers(api) ? { ...api, at: w.ELS_DATA.checkedAt || w.ELS_DATA.updatedAt, via: '미래에셋증권 ELS/DLS 캘린더 목록 API (자체 수집)' }
+    : { listed: new Set(), online: new Set(), at: w.ELS_DATA.checkedAt, via: null };
+  const known = A.items.filter((i) => src.listed.has(i.no)).length;
+  const onlineCount = A.items.filter((i) => src.online.has(i.no)).length;
   add({
     id: 'ONLINE_COVERAGE', kind: 'data_quality', metric: '온라인 전용 확인',
-    text: `홈페이지 상품목록에서 확인된 이번 회차 상품 수`,
+    text: '홈페이지에서 확인된 이번 회차 상품 수',
     value: known, unit: '종',
-    series: '미래에셋증권 ELS/DLS 캘린더 (자체 수집)',
-    as_of: (A.checkedAt || '').slice(0, 10) || FILED,
+    series: src.via || '미래에셋증권 ELS/DLS 캘린더 (자체 수집)',
+    as_of: String(src.at || '').slice(0, 10) || FILED,
     tier: 1, source_url: 'https://securities.miraeasset.com/hks/hks4022/n01.do',
     verdict: known ? 'confirmed' : 'unverified',
     render: known ? 'assert' : 'marked',
     note: known
-      ? '목록에서 온라인 전용(상품명 끝 e) 여부를 확인했다'
-      : '수집 시점에 목록이 이번 회차를 아직 싣지 않았다. 온라인 전용 여부를 단정할 수 없어 자료에 미확인으로 적는다',
+      ? `상품명 끝의 e 로 온라인 전용을 판정했다. ${A.items.length}종 중 ${known}종이 목록에서 확인되었고 그중 ${onlineCount}종이 온라인 전용이다`
+      : '수집 시점에 홈페이지가 이번 회차를 아직 싣지 않았다. 온라인 전용 여부를 단정할 수 없어 자료에 미확인으로 적는다',
     printed_on: ['p2-note', 'p6-basis'],
   });
+  if (known) {
+    add({
+      id: 'ONLINE_COUNT', kind: 'data_quality', metric: '온라인 전용 확인',
+      text: '영업점 창구 청약이 안 되는(온라인 전용) 상품 수',
+      value: onlineCount, unit: '종',
+      series: src.via,
+      as_of: String(src.at || '').slice(0, 10) || FILED,
+      tier: 1, source_url: 'https://securities.miraeasset.com/hks/hks4022/n01.do',
+      verdict: 'confirmed', render: 'assert',
+      note: `제${A.items.filter((i) => src.online.has(i.no)).map((i) => i.no).join('·')}회`,
+      printed_on: ['p2-row', 'p3-row'],
+    });
+  }
 }
 
 // ── 시세 이월 (백테스트 A 의 한계) ──────────────────────────────────────────

@@ -7209,19 +7209,38 @@
       "id": "ONLINE_COVERAGE",
       "kind": "data_quality",
       "metric": "온라인 전용 확인",
-      "text": "홈페이지 상품목록에서 확인된 이번 회차 상품 수",
-      "value": 0,
+      "text": "홈페이지에서 확인된 이번 회차 상품 수",
+      "value": 15,
       "unit": "종",
-      "series": "미래에셋증권 ELS/DLS 캘린더 (자체 수집)",
+      "series": "미래에셋증권 ELS/DLS 캘린더 화면 (자체 수집)",
       "as_of": "2026-09-06",
       "tier": 1,
       "source_url": "https://securities.miraeasset.com/hks/hks4022/n01.do",
-      "verdict": "unverified",
-      "render": "marked",
-      "note": "수집 시점에 목록이 이번 회차를 아직 싣지 않았다. 온라인 전용 여부를 단정할 수 없어 자료에 미확인으로 적는다",
+      "verdict": "confirmed",
+      "render": "assert",
+      "note": "상품명 끝의 e 로 온라인 전용을 판정했다. 15종 중 15종이 목록에서 확인되었고 그중 6종이 온라인 전용이다",
       "printed_on": [
         "p2-note",
         "p6-basis"
+      ]
+    },
+    {
+      "id": "ONLINE_COUNT",
+      "kind": "data_quality",
+      "metric": "온라인 전용 확인",
+      "text": "영업점 창구 청약이 안 되는(온라인 전용) 상품 수",
+      "value": 6,
+      "unit": "종",
+      "series": "미래에셋증권 ELS/DLS 캘린더 화면 (자체 수집)",
+      "as_of": "2026-09-06",
+      "tier": 1,
+      "source_url": "https://securities.miraeasset.com/hks/hks4022/n01.do",
+      "verdict": "confirmed",
+      "render": "assert",
+      "note": "제38109·38110·38111·38112·38113·38114회",
+      "printed_on": [
+        "p2-row",
+        "p3-row"
       ]
     }
   ],
