@@ -68,22 +68,33 @@ console.log('\n=== 화면 렌더링 ' + rendered.n + '건 ===');
 Object.entries(rendered.out).forEach(([k, v]) => console.log('   ' + k + '  ' + v + '건'));
 
 /* ── 2) 조회조건을 하나씩 바꿔 가며 건수를 비교한다 ── */
+/* 조건값이 서버가 모르는 것이면 응답이 영영 안 올 수 있다. 앞 판에서 그렇게
+   잡 하나를 15분 통째로 잡아먹었다 — 요청마다 시한을 건다. */
 async function call(body) {
-  return page.evaluate(
-    async ({ origin, api, body }) => {
-      const r = await fetch(origin + api, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8' },
-        body,
-        credentials: 'include',
-      });
-      const text = await r.text();
-      let json = null;
-      try { json = JSON.parse(text); } catch { /* 그대로 둔다 */ }
-      return { status: r.status, bytes: text.length, json, head: text.slice(0, 200) };
-    },
-    { origin: ORIGIN, api: LIST_API, body }
-  );
+  try {
+    return await page.evaluate(
+      async ({ origin, api, body }) => {
+        try {
+          const r = await fetch(origin + api, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8' },
+            body,
+            credentials: 'include',
+            signal: AbortSignal.timeout(15000),
+          });
+          const text = await r.text();
+          let json = null;
+          try { json = JSON.parse(text); } catch { /* 그대로 둔다 */ }
+          return { status: r.status, bytes: text.length, json, head: text.slice(0, 200) };
+        } catch (e) {
+          return { status: 0, bytes: 0, json: null, head: '요청 실패: ' + String(e && e.message || e) };
+        }
+      },
+      { origin: ORIGIN, api: LIST_API, body }
+    );
+  } catch (e) {
+    return { status: 0, bytes: 0, json: null, head: '브라우저 오류: ' + String(e && e.message || e) };
+  }
 }
 
 function summary(res) {
