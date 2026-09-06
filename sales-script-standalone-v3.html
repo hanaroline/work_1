@@ -22193,15 +22193,24 @@ window.FUND_PROSPECTUS = {"updatedAt":"2026-09-02T20:18:22.712Z","source":"펀�
       }
       note.innerHTML = txt;
     }
-    /* 목록이 매우 길어(펀드 3천 건) 검색 없이 다 그리면 화면이 무거워진다 */
-    var cap = q ? 300 : 200;
+    /**
+     * 목록을 자르지 않는다.
+     *
+     * 앞 판은 검색 없이 200건까지만 그렸다(무거워진다는 이유였다). 그런데 펀드는
+     * 국내 1,513건·해외 1,681건이라 이름 앞머리 200건만 뜨고 나머지는 검색해야만
+     * 나왔다 — 창구에서 보면 「자동조회가 안 되고 샘플 몇 개만 있는」 것이다.
+     * 부적합 상담은 성향에 적합한 상품을 먼저 권유하는 데서 시작하는데, 정작 그
+     * 권유할 상품을 목록에서 고를 수가 없었다.
+     *
+     * 무겁다는 이유도 사실과 맞지 않았다. 바로 위 「상품 선택」(fillProducts)은
+     * 같은 화면에서 1,513건을 상한 없이 그리고 있다. 둘을 같게 맞춘다.
+     */
     sel.innerHTML = '<option value=""' + (cur ? '' : ' selected') + '>— 고르지 않음 —</option>'
-      + list.slice(0, cap).map(function (p) {
+      + list.map(function (p) {
         var tail = p.riskGrade ? ' \u00b7 ' + (p.riskLabel || '') + ' ' + p.riskGrade + '등급' : '';
         return '<option value="' + esc(p.id) + '"' + (p.id === cur ? ' selected' : '')
           + ' title="' + esc(p.name + tail) + '">' + esc(p.name) + tail + '</option>';
-      }).join('')
-      + (list.length > cap ? '<option disabled>… 외 ' + (list.length - cap) + '건 — 검색해서 좁히십시오</option>' : '');
+      }).join('');
     bindScrollNav('#recBox', '#recNav');
   }
 
