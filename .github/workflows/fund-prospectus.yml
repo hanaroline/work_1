@@ -8,9 +8,20 @@ on:
   workflow_dispatch:
     inputs:
       limit:
-        description: '판독할 건수 (0 = 전량 약 3,000건)'
+        description: '판독할 건수 (0 = 제한 없음)'
         type: string
         default: '0'
+      mode:
+        description: '판독 범위'
+        type: choice
+        default: 'incremental'
+        options:
+          - incremental   # 설명서가 바뀐 종목만 (보통 수십 건 · 몇 분)
+          - full          # 전량 약 3,200건 (두 시간 넘음)
+      seed_refs:
+        description: '(전환용) 옛 판독 결과에 설명서 참조를 채울 카탈로그 경로 — 한 번만 필요'
+        type: string
+        default: ''
 # 전량 판독은 3,000건 × 2.6초 = 3시간 가까이 걸린다. 규칙을 손볼 때마다 자동으로
 # 돌면 러너를 붙잡고 있는 데다 규칙이 덜 다듬어진 상태로 결과가 덮인다.
 # 그래서 자동 실행을 두지 않고, 규칙을 확정한 뒤 손으로 돌린다
@@ -31,6 +42,8 @@ jobs:
       - uses: actions/checkout@v4
         with:
           ref: ${{ github.ref_name }}
+          # seed_refs 로 옛 카탈로그를 꺼내 쓸 수 있어야 한다 (git:<커밋> 형태)
+          fetch-depth: 0
 
       - uses: actions/setup-node@v4
         with:
@@ -45,7 +58,24 @@ jobs:
       - name: 판독
         env:
           LIMIT: ${{ inputs.limit || '0' }}
-        run: node scripts/fetch_fund_prospectus.mjs --limit "$LIMIT"
+          MODE: ${{ inputs.mode || 'incremental' }}
+          SEED_REFS: ${{ inputs.seed_refs || '' }}
+        run: |
+          set -- --limit "$LIMIT"
+          if [ "$MODE" != 'full' ]; then set -- "$@" --incremental; fi
+          if [ -n "$SEED_REFS" ]; then
+            case "$SEED_REFS" in
+              git:*)
+                rev="${SEED_REFS#git:}"
+                git show "$rev:data/fund-catalog.js" > /tmp/seed-catalog.js
+                echo "옛 카탈로그를 $rev 에서 꺼냈습니다 ($(wc -c < /tmp/seed-catalog.js) 바이트)"
+                set -- "$@" --seed-refs /tmp/seed-catalog.js
+                ;;
+              *) set -- "$@" --seed-refs "$SEED_REFS" ;;
+            esac
+          fi
+          echo "인자: $*"
+          node scripts/fetch_fund_prospectus.mjs "$@"
 
       - name: 추출 품질 확인
         run: |

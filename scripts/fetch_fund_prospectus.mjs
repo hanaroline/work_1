@@ -35,6 +35,31 @@ const OUT = argOf('--out', 'data/fund-prospectus.js');
  */
 const DUMP = argOf('--dump', '');
 const EVERY = Number(argOf('--every', 0)) || 0;
+/**
+ * --incremental : 이미 판독해 둔 결과를 그대로 두고, 설명서가 바뀐 것만 다시 읽는다.
+ *
+ * 전량은 3,200건 × 2.6초 = 두 시간이 넘는다. 그런데 하루 사이에 설명서가 바뀌는 것은
+ * 보통 수십 건이다(2026-08-31 → 09-06 사이 51건). 안 바뀐 3,100건을 다시 읽어 봐야
+ * 같은 값이 나오므로 러너만 붙잡는다.
+ *
+ * 무엇이 바뀌었는지는 카탈로그의 설명서 참조(docT/docG)로 가른다. 그래서 판독 결과에
+ * 종목마다 그때 읽은 참조(refs)를 남긴다 — 남기지 않으면 다음 판에 무엇을 다시
+ * 읽어야 하는지 알 길이 없다. 참조가 없는 종목(새로 생겼거나 지난번에 실패한 것)은
+ * 다시 읽는다.
+ */
+const INCREMENTAL = args.includes('--incremental');
+/**
+ * --seed-refs 카탈로그경로 : 참조를 안 남기던 판이 만든 결과에 참조를 채워 넣는다.
+ *
+ * 지금 있는 data/fund-prospectus.js 는 참조를 남기기 전에 만든 것이라 무엇을 읽었는지
+ * 적혀 있지 않다. 그래도 그때 쓴 카탈로그가 무엇인지는 안다 — 그 카탈로그의 docT/docG
+ * 가 곧 그때 읽은 문서다. 그것을 참조로 채우면 전량을 두 시간 다시 읽지 않아도 된다.
+ *
+ * 카탈로그를 잘못 대면 어떻게 되나 — 참조가 어긋나 그 종목을 「다시 읽는」 쪽으로
+ * 기운다. 안 읽고 넘어가는 쪽이 아니라 더 읽는 쪽이므로 값이 낡을 위험은 없다.
+ * 다만 그 카탈로그에 없는 종목은 참조를 채우지 않아 어차피 다시 읽는다.
+ */
+const SEED_REFS = argOf('--seed-refs', '');
 
 /* ── 앱과 똑같은 추출 규칙·본문 판독을 쓴다 ───────────────── */
 const prosSrc = await readFile('js/sales-script-prospectus.js', 'utf8');
@@ -109,9 +134,71 @@ new Function('window', catSrc)(cg);
 const C = cg.FUND_CATALOG;
 const base = C.docBase;
 const targets = C.items.filter((x) => x.docT || x.docG);
-const spread = EVERY ? targets.filter((x, n) => n % EVERY === 0) : targets;
+/**
+ * 이 종목이 지금 가리키는 설명서 — 이것이 바뀌면 다시 읽어야 한다.
+ *
+ * 문서번호(docT/docG)만으로 가리지 않고 게시일(docAt)까지 넣는다. 번호가 그대로인 채
+ * 게시일만 올라간 것이 2026-08-31 → 09-06 사이에 49건 있었다. 같은 파일을 다시 올린
+ * 것으로 보이지만, 같은 이름으로 내용을 갈아끼웠을 가능성을 배제할 수 없다.
+ * 49건을 더 읽는 데 2분이면 되고, 안 읽고 낡은 문구를 남기는 쪽이 훨씬 비싸다.
+ */
+const refOf = (x) => (x.docT ? 'T' : 'G') + (x.docT || x.docG) + '@' + (x.docAt || '');
+
+/* ── 이어서 판독할 때 쓸 직전 결과 ───────────────────────────── */
+let prev = null;
+if (INCREMENTAL) {
+  try {
+    const pg = {};
+    new Function('window', await readFile(OUT, 'utf8'))(pg);
+    prev = pg.FUND_PROSPECTUS || null;
+  } catch {
+    prev = null;
+  }
+  if (!prev) {
+    console.log(`${OUT} 을 읽지 못했습니다 — 이어서 판독할 것이 없으므로 전량 판독합니다.`);
+  } else if (!prev.refs && SEED_REFS) {
+    const sg = {};
+    new Function('window', await readFile(SEED_REFS, 'utf8'))(sg);
+    const seedCat = sg.FUND_CATALOG;
+    const seeded = {};
+    for (const x of seedCat.items) {
+      if (!prev.items[x.code]) continue;
+      if (!(x.docT || x.docG)) continue;
+      seeded[x.code] = (x.docT ? 'T' : 'G') + (x.docT || x.docG);
+    }
+    prev = { ...prev, refs: seeded };
+    console.log(
+      `${SEED_REFS} (기준 ${seedCat.updatedAt}) 로 설명서 참조 ${Object.keys(seeded).length}건을 채웠습니다 — ` +
+      `판독 결과 ${Object.keys(prev.items).length}건 중 ${Object.keys(prev.items).length - Object.keys(seeded).length}건은 참조를 못 채워 다시 읽습니다.`
+    );
+  } else if (!prev.refs) {
+    // 참조를 안 남기던 판이 만든 결과다. 무엇이 바뀌었는지 알 수 없으므로
+    // 있는 것을 바뀐 것으로 치지 않는다 — 전량 다시 읽어 참조를 남긴다.
+    console.log(`${OUT} 에 설명서 참조(refs)가 없습니다 — 무엇이 바뀌었는지 가릴 수 없어 전량 판독합니다 (--seed-refs 로 채울 수 있습니다).`);
+    prev = null;
+  }
+}
+
+const prevItems = (prev && prev.items) || {};
+const prevPool = (prev && prev.pool) || [];
+const prevRefs = (prev && prev.refs) || {};
+
+const spread0 = EVERY ? targets.filter((x, n) => n % EVERY === 0) : targets;
+const spread = prev
+  ? spread0.filter((x) => prevRefs[x.code] !== refOf(x))
+  : spread0;
 const slice = spread.slice(FROM, LIMIT ? FROM + LIMIT : undefined);
-console.log(`투자설명서 ${targets.length}건 중 ${slice.length}건 판독 (from ${FROM})`);
+
+if (prev) {
+  const kept = targets.filter((x) => prevRefs[x.code] === refOf(x)).length;
+  const gone = Object.keys(prevItems).filter((c) => !targets.some((x) => x.code === c)).length;
+  console.log(
+    `이어서 판독 — 설명서 ${targets.length}건 중 그대로 ${kept}건은 직전 판독을 쓰고, ` +
+    `${spread.length}건만 다시 읽습니다 (판매 종료로 빠지는 ${gone}건 제외)`
+  );
+} else {
+  console.log(`투자설명서 ${targets.length}건 중 ${slice.length}건 판독 (from ${FROM})`);
+}
 if (DUMP) await mkdir(DUMP, { recursive: true });
 
 /**
@@ -130,6 +217,28 @@ const intern = (v) => {
 };
 
 const items = {};
+const refs = {};
+
+/* 다시 읽지 않는 종목은 직전 판독을 그대로 옮긴다. 문구 풀은 새로 짜므로
+   옛 번호를 값으로 되돌려 다시 담는다 — 옛 번호를 그대로 두면 딴 문구를 가리킨다.
+   카탈로그에서 빠진 종목(판매 종료)은 옮기지 않는다. */
+if (prev) {
+  const live = new Set(targets.map((x) => x.code));
+  let carried = 0;
+  for (const code of Object.keys(prevItems)) {
+    if (!live.has(code)) continue;
+    if (slice.some((x) => x.code === code)) continue;   // 이번에 다시 읽는다
+    const f = {};
+    for (const [k, idx] of Object.entries(prevItems[code])) {
+      const v = prevPool[idx];
+      if (v === undefined) continue;
+      f[k] = intern(v);
+    }
+    if (Object.keys(f).length) { items[code] = f; refs[code] = prevRefs[code]; carried++; }
+  }
+  console.log(`  직전 판독에서 옮긴 것 ${carried}건`);
+}
+
 let ok = 0, fail = 0, empty = 0;
 for (let i = 0; i < slice.length; i++) {
   const it = slice[i];
@@ -150,7 +259,7 @@ for (let i = 0; i < slice.length; i++) {
     if (f.varPct != null && f.varBasis != null) delete f.varBasis;
     /* affiliate 는 운용사명으로 화면에서 판정한다 (계열=미래에셋) — 담지 않는다 */
     delete f.affiliate;
-    if (Object.keys(f).length) { items[it.code] = f; ok++; }
+    if (Object.keys(f).length) { items[it.code] = f; refs[it.code] = refOf(it); ok++; }
     if ((i + 1) % 25 === 0 || i === slice.length - 1) {
       console.log(`  ${i + 1}/${slice.length} · 추출 ${ok}건 · 실패 ${fail} · 빈문서 ${empty} (${it.code} ${pages}쪽 ${Object.keys(f).length}항목)`);
     }
@@ -173,15 +282,26 @@ const body =
   ' *\n' +
   ' * 카탈로그(data/fund-catalog.js)에 이미 있는 항목은 담지 않는다.\n' +
   ' * 원문에서 못 읽은 것은 담지 않으므로 화면에서 「확인필요」로 남는다.\n' +
+  ' *\n' +
+  ' * refs[표준코드] = 그 값을 뽑아낸 설명서 (T/G + 문서번호).\n' +
+  ' * 카탈로그의 설명서가 이것과 달라지면 --incremental 판독이 그 종목만 다시 읽는다.\n' +
   ' */\n' +
   'window.FUND_PROSPECTUS = ' + JSON.stringify({
     updatedAt: new Date().toISOString(),
     source: '펀드 투자설명서 PDF 판독',
     count: Object.keys(items).length,
     pool,
+    refs,
     items,
   }) + ';\n';
 await writeFile(OUT, body);
-console.log(`\n${OUT} 기록 — ${Object.keys(items).length}건 · 실패 ${fail} · 빈문서 ${empty}`);
+console.log(`\n${OUT} 기록 — ${Object.keys(items).length}건 · 이번에 읽은 것 ${ok}건 · 실패 ${fail} · 빈문서 ${empty}`);
 console.log(`  문구 풀 ${pool.length}개 (중복 제거)`);
 console.log(`  크기 ${(Buffer.byteLength(body) / 1024 / 1024).toFixed(2)}MB`);
+if (prev) {
+  /* 설명서가 바뀌었는데 이번에 못 읽은 종목은 직전 값을 물려주지 않는다.
+     바뀐 설명서를 두고 옛 설명서의 문구를 창구가 읽으면 그게 오독이다.
+     담지 않으면 화면에서 「확인필요」로 남아 창구가 원문을 확인한다. */
+  const lost = slice.filter((x) => !items[x.code]).length;
+  if (lost) console.log(`  설명서가 바뀌었으나 이번에 읽지 못한 ${lost}건은 담지 않습니다 (화면에서 「확인필요」).`);
+}
