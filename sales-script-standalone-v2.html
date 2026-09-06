@@ -76,6 +76,25 @@ select:focus,input:focus,textarea:focus{outline:2px solid var(--orange);outline-
 /* 등급 거르기 단추 — 개수가 많아 작게, 건수가 0인 등급은 눌리지 않는다 */
 .gradeSeg button{flex:0 0 auto;padding:5px 8px;font-size:12px}
 .gradeSeg button[disabled]{opacity:.4;cursor:default}
+/* 상품 목록 — 펀드·ELS 이름이 길어 옆이 잘린다.
+   목록을 내용 너비만큼 넓히고 감싼 상자에 가로 스크롤바를 둔다
+   (목록 자체에 overflow-x 를 주면 브라우저가 무시한다). */
+.listbox{overflow-x:scroll;border:1px solid var(--hair);border-radius:2px;background:#fff;margin-top:6px}
+.listbox select{width:max-content;min-width:100%;border:0;border-radius:0;padding:4px 0}
+.listbox select option{padding:3px 8px;white-space:pre}
+.listbox select:focus{outline:2px solid var(--orange);outline-offset:-2px}
+/* 가로 스크롤바를 항상 보이게 — 겹침(overlay) 스크롤바는 있는지도 모르고 지나친다.
+   ※ scrollbar-width 를 함께 선언하면 크롬이 ::-webkit-scrollbar 를 무시한다. 쓰지 않는다. */
+.listbox::-webkit-scrollbar{height:12px;-webkit-appearance:none}
+.listbox::-webkit-scrollbar-track{background:var(--subtle)}
+.listbox::-webkit-scrollbar-thumb{background:var(--hair);border-radius:6px;border:2px solid var(--subtle)}
+.listbox::-webkit-scrollbar-thumb:hover{background:var(--muted2)}
+/* 스크롤바가 겹침(overlay) 방식이면 있는지도 모른다 — 밀기 단추를 함께 둔다 */
+.scrollnav{display:flex;align-items:center;gap:6px;margin-top:4px;font-size:11.5px;color:var(--muted2)}
+.scrollnav button{padding:2px 9px;border:1px solid var(--hair);background:#fff;border-radius:2px;cursor:pointer;font-size:12px;line-height:1.4;color:var(--body)}
+.scrollnav button:hover{background:var(--subtle)}
+.scrollnav button:disabled{opacity:.35;cursor:default}
+.scrollnav .sp{flex:1}
 .chk{display:flex;align-items:flex-start;gap:8px;padding:6px 0;font-size:14px;cursor:pointer}
 .chk input{margin-top:3px;accent-color:var(--orange);width:16px;height:16px;flex:none}
 .rule{height:1px;background:var(--orange);margin:26px 0 12px}
@@ -20020,7 +20039,10 @@ window.FUND_PROSPECTUS = {"updatedAt":"2026-09-02T20:18:22.712Z","source":"펀�
     h.push('<div class="hint" id="prodCount" style="margin:0 0 6px"></div>');
     h.push('<div id="gradeBar"></div>');
     h.push('<input type="text" id="pq" placeholder="상품명 · 코드 · 기초자산 검색" value="">');
-    h.push('<select id="selProduct" size="8" style="margin-top:6px"></select>');
+    h.push('<div class="listbox" id="prodBox"><select id="selProduct" size="8"></select></div>');
+    h.push('<div class="scrollnav" id="prodNav" hidden><button type="button" data-d="-1" title="왼쪽으로">◀</button>'
+      + '<span class="sp">이름이 길면 옆으로 밀어 보십시오 · Shift+휠 · 마우스를 올리면 전체 이름</span>'
+      + '<button type="button" data-d="1" title="오른쪽으로">▶</button></div>');
     h.push('<div style="display:flex;gap:6px;margin-top:6px"><button class="tbtn" id="btnNewProduct" style="flex:1">새 상품 등록</button>'
       + '<button class="tbtn" id="btnDelProduct" style="flex:1"' + (p && p.custom ? '' : ' disabled') + '>등록상품 삭제</button></div>');
     h.push('<div class="hint">\u25CF 투자설명서 등록됨 · \u25CB 미등록</div>');
@@ -20058,7 +20080,10 @@ window.FUND_PROSPECTUS = {"updatedAt":"2026-09-02T20:18:22.712Z","source":"펀�
       h.push('<div class="hint" id="recCount" style="margin:0 0 6px"></div>');
       h.push('<div id="recGradeBar"></div>');
       h.push('<input type="text" id="rq" placeholder="추천할 상품명 · 코드 검색" value="">');
-      h.push('<select id="selRec" size="6" style="margin-top:6px"></select>');
+      h.push('<div class="listbox" id="recBox"><select id="selRec" size="6"></select></div>');
+      h.push('<div class="scrollnav" id="recNav" hidden><button type="button" data-d="-1" title="왼쪽으로">◀</button>'
+        + '<span class="sp">이름이 길면 옆으로 밀어 보십시오 · Shift+휠</span>'
+        + '<button type="button" data-d="1" title="오른쪽으로">▶</button></div>');
       h.push('<div style="display:flex;gap:6px;margin-top:6px">');
       if (sh.cat === 'els') {
         h.push('<button class="tbtn' + (rid === '__none' ? ' primary' : '') + '" id="btnRecNone" style="flex:1">적합한 상품 없음</button>');
@@ -20221,8 +20246,11 @@ window.FUND_PROSPECTUS = {"updatedAt":"2026-09-02T20:18:22.712Z","source":"펀�
       /* 자동조회분과 직접등록분을 눈으로 갈라 보게 한다 — 지울 수 있는 것은
          직접등록분뿐이다. 자동조회분을 지우면 다음 갱신에 다시 생겨 혼란스럽다. */
       if (p.custom) tail += p.fromNotice ? ' \u00b7 안내장' : ' \u00b7 직접등록';
-      return '<option value="' + esc(p.id) + '"' + (p.id === ST.productId ? ' selected' : '') + '>' + mark + esc(p.name) + tail + '</option>';
+      /* 이름이 길어 잘리므로 전체 이름을 툴팁으로도 둔다 (옆으로 굴리지 않아도 되게) */
+      return '<option value="' + esc(p.id) + '"' + (p.id === ST.productId ? ' selected' : '')
+        + ' title="' + esc(p.name + tail) + '">' + mark + esc(p.name) + tail + '</option>';
     }).join('') || '<option disabled>검색 결과 없음</option>';
+    bindScrollNav('#prodBox', '#prodNav');
   }
 
   /**
@@ -20258,6 +20286,32 @@ window.FUND_PROSPECTUS = {"updatedAt":"2026-09-02T20:18:22.712Z","source":"펀�
       b.onclick = function () { fn(b.dataset.g || ''); };
     });
   }
+  /**
+   * 목록을 옆으로 미는 단추. 스크롤바가 겹침(overlay) 방식인 브라우저에서는
+   * 스크롤바가 있는지도 모르고 지나치므로, 눈에 보이는 단추를 함께 둔다.
+   * 목록이 넘치지 않으면 감춘다.
+   */
+  function bindScrollNav(boxSel, navSel) {
+    var box = $(boxSel), nav = $(navSel);
+    if (!box || !nav) return;
+    var over = box.scrollWidth > box.clientWidth + 2;
+    nav.hidden = !over;
+    if (!over) return;
+    var upd = function () {
+      var bs = nav.querySelectorAll('button');
+      bs[0].disabled = box.scrollLeft <= 0;
+      bs[1].disabled = box.scrollLeft >= box.scrollWidth - box.clientWidth - 1;
+    };
+    Array.prototype.forEach.call(nav.querySelectorAll('button'), function (b) {
+      b.onclick = function () {
+        box.scrollLeft += (+b.dataset.d) * Math.max(120, Math.round(box.clientWidth * 0.6));
+        setTimeout(upd, 30);
+      };
+    });
+    box.onscroll = upd;
+    upd();
+  }
+
   /** 등급으로 거른다 ('' 는 전체, '?' 는 등급 없는 것) */
   function byGrade(list, g) {
     if (!g) return list;
@@ -20329,9 +20383,11 @@ window.FUND_PROSPECTUS = {"updatedAt":"2026-09-02T20:18:22.712Z","source":"펀�
     sel.innerHTML = '<option value=""' + (cur ? '' : ' selected') + '>— 고르지 않음 —</option>'
       + list.slice(0, cap).map(function (p) {
         var tail = p.riskGrade ? ' \u00b7 ' + (p.riskLabel || '') + ' ' + p.riskGrade + '등급' : '';
-        return '<option value="' + esc(p.id) + '"' + (p.id === cur ? ' selected' : '') + '>' + esc(p.name) + tail + '</option>';
+        return '<option value="' + esc(p.id) + '"' + (p.id === cur ? ' selected' : '')
+          + ' title="' + esc(p.name + tail) + '">' + esc(p.name) + tail + '</option>';
       }).join('')
       + (list.length > cap ? '<option disabled>… 외 ' + (list.length - cap) + '건 — 검색해서 좁히십시오</option>' : '');
+    bindScrollNav('#recBox', '#recNav');
   }
 
   function bindSide() {
