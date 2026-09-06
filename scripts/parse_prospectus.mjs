@@ -38,6 +38,7 @@ const ASSETS = [
   [/Applied Materials|AMAT/i, '어플라이드 머티어리얼즈'],
   [/Broadcom|AVGO|브로드컴/i, '브로드컴'],
   [/Tesla|TSLA|테슬라/i, '테슬라'],
+  [/\bAMD\b|Advanced Micro Devices/i, 'AMD'],
   [/Palantir|PLTR/i, '팔란티어 테크'],
 ];
 const parseUnderlyings = (s) => {

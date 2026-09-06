@@ -16,7 +16,7 @@
 import { writeFile, readFile } from 'node:fs/promises';
 import { analyze, unitOf, TIER_CUT } from './lib/els-analysis.mjs';
 
-const A = await analyze(process.argv[2] || '20260828000836');
+const A = await analyze(process.argv[2]);   // 인자가 없으면 가장 최근 공시 회차 (덱과 같은 규칙)
 const OUT = 'tools/discovery/els-claims.json';
 const SRC = `https://dart.fss.or.kr/dsaf001/main.do?rcpNo=${A.rcp}`;
 const FILED = A.filedOn.replace(/\./g, '-');            // 2026.08.28 -> 2026-08-28
@@ -64,6 +64,10 @@ for (const [id, text, v] of [
 ]) disclosed(id, '일정', text, ymd(v), 'YYYYMMDD', ['p1-cal', 'p6-step5']);
 
 disclosed('COUNT', '건수', '이번 회차 상품 수', A.items.length, '종', ['p1-title', 'p2-title']);
+disclosed('SIMYEARS_WHOLE', '검증 기간', '설명서 백테스트 검증 기간 (표지·부제에 쓰는 대표값)',
+  A.head.simYearsWhole, '년', ['p2-sub', 'p4-why3', 'p5-card1'],
+  { series: '발행사 수익률 모의실험 (공시 원문)',
+    note: '회차마다 20.6년 등으로 조금씩 다르며 문장에는 내림한 정수를 쓴다. 표본이 짧은 회차는 표에 실제 기간을 따로 적는다' });
 disclosed('FACE', '액면가액', '1증권당 액면가액 (원화 상품)', A.head.faceValue, '원', ['p2-note', 'p4-why1']);
 
 // 등급 경계는 우리가 정한 기준이지 공시된 값이 아니다 — 그렇게 밝혀 둔다
@@ -102,7 +106,8 @@ for (const it of A.items) {
       verdict: 'unverified', render: 'marked',
       note: `검증 표본이 ${it.simYears}년(${it.simRuns.toLocaleString('ko-KR')}회)뿐이라 20년 상품과 같은 줄에서 비교할 수 없다. 덱에서 표본 기간을 함께 인쇄한다`,
     } : { series: '발행사 수익률 모의실험 (공시 원문)' });
-  disclosed(`R${n}_SIMYEARS`, '검증 기간', `제${n}회 발행사 모의실험 검증 기간`, it.simYears, '년', page2);
+  disclosed(`R${n}_SIMYEARS`, '검증 기간', `제${n}회 발행사 모의실험 검증 기간`, it.simYears, '년', page2,
+    { series: '발행사 수익률 모의실험 (공시 원문)' });
   if (it.rho != null) {
     disclosed(`R${n}_RHO`, '상관계수', `제${n}회 기초자산 간 최저 상관계수 (180영업일 역사적)`, it.rho, '무차원', []);
   }
@@ -207,6 +212,30 @@ disclosed('REST_FV_MIN', '공정가격(원)', `나머지 ${REST.length}종(원�
   Math.min(...REST.filter((i) => i.currency === 'KRW').map((i) => i.fairValue)), '원', ['p4-why1'],
   { series: '일괄신고추가서류 공시 원문 (액면 1만원 기준)' });
 
+// ── 온라인 전용 여부 ────────────────────────────────────────────────────────
+// 홈페이지 상품목록이 이번 회차를 아직 싣지 않으면 알 수 없다. "전부 창구 가능"
+// 으로 읽히지 않도록 미확인으로 등록하고 자료에도 그렇게 적는다.
+{
+  const listed = new Set(
+    w.ELS_DATA.products.map((p2) => (p2.name.match(/\(ELS\)(\d{5})e?$/) || [])[1]).filter(Boolean).map(Number),
+  );
+  const known = A.items.filter((i) => listed.has(i.no)).length;
+  add({
+    id: 'ONLINE_COVERAGE', kind: 'data_quality', metric: '온라인 전용 확인',
+    text: `홈페이지 상품목록에서 확인된 이번 회차 상품 수`,
+    value: known, unit: '종',
+    series: '미래에셋증권 ELS/DLS 캘린더 (자체 수집)',
+    as_of: (A.checkedAt || '').slice(0, 10) || FILED,
+    tier: 1, source_url: 'https://securities.miraeasset.com/hks/hks4022/n01.do',
+    verdict: known ? 'confirmed' : 'unverified',
+    render: known ? 'assert' : 'marked',
+    note: known
+      ? '목록에서 온라인 전용(상품명 끝 e) 여부를 확인했다'
+      : '수집 시점에 목록이 이번 회차를 아직 싣지 않았다. 온라인 전용 여부를 단정할 수 없어 자료에 미확인으로 적는다',
+    printed_on: ['p2-note', 'p6-basis'],
+  });
+}
+
 // ── 시세 이월 (백테스트 A 의 한계) ──────────────────────────────────────────
 if (STALE.length) {
   add({
@@ -238,6 +267,7 @@ const ledger = {
     '검증 기간': '년', '상관계수': '무차원', '일정': 'YYYYMMDD', '건수': '종',
     '1차 배리어': '%', '조기상환 횟수': '회', '조기상환 주기': '개월',
     '조기상환 확률': '%', '리자드 상환 확률': '%', '손실 확률 신뢰구간': '%p', '리자드 배리어': '%',
+    '온라인 전용 확인': '종',
     '낙인까지 하락폭': '%', '만기 손실 하락폭': '%', '액면가액': '원', '공정가 괴리': '%',
     '손실 시 평균 손실 크기': '%',
     '모의실험 횟수': '회', '1차 상환 비중': '%', '등급 경계': '%',
