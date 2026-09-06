@@ -2176,7 +2176,10 @@
     h.push('<div class="hint" id="prodCount" style="margin:0 0 6px"></div>');
     h.push('<div id="gradeBar"></div>');
     h.push('<input type="text" id="pq" placeholder="상품명 · 코드 · 기초자산 검색" value="">');
-    h.push('<select id="selProduct" size="8" style="margin-top:6px"></select>');
+    h.push('<div class="listbox" id="prodBox"><select id="selProduct" size="8"></select></div>');
+    h.push('<div class="scrollnav" id="prodNav" hidden><button type="button" data-d="-1" title="왼쪽으로">◀</button>'
+      + '<span class="sp">이름이 길면 옆으로 밀어 보십시오 · Shift+휠 · 마우스를 올리면 전체 이름</span>'
+      + '<button type="button" data-d="1" title="오른쪽으로">▶</button></div>');
     h.push('<div style="display:flex;gap:6px;margin-top:6px"><button class="tbtn" id="btnNewProduct" style="flex:1">새 상품 등록</button>'
       + '<button class="tbtn" id="btnDelProduct" style="flex:1"' + (p && p.custom ? '' : ' disabled') + '>등록상품 삭제</button></div>');
     h.push('<div class="hint">\u25CF 투자설명서 등록됨 · \u25CB 미등록</div>');
@@ -2214,7 +2217,10 @@
       h.push('<div class="hint" id="recCount" style="margin:0 0 6px"></div>');
       h.push('<div id="recGradeBar"></div>');
       h.push('<input type="text" id="rq" placeholder="추천할 상품명 · 코드 검색" value="">');
-      h.push('<select id="selRec" size="6" style="margin-top:6px"></select>');
+      h.push('<div class="listbox" id="recBox"><select id="selRec" size="6"></select></div>');
+      h.push('<div class="scrollnav" id="recNav" hidden><button type="button" data-d="-1" title="왼쪽으로">◀</button>'
+        + '<span class="sp">이름이 길면 옆으로 밀어 보십시오 · Shift+휠</span>'
+        + '<button type="button" data-d="1" title="오른쪽으로">▶</button></div>');
       h.push('<div style="display:flex;gap:6px;margin-top:6px">');
       if (sh.cat === 'els') {
         h.push('<button class="tbtn' + (rid === '__none' ? ' primary' : '') + '" id="btnRecNone" style="flex:1">적합한 상품 없음</button>');
@@ -2377,8 +2383,11 @@
       /* 자동조회분과 직접등록분을 눈으로 갈라 보게 한다 — 지울 수 있는 것은
          직접등록분뿐이다. 자동조회분을 지우면 다음 갱신에 다시 생겨 혼란스럽다. */
       if (p.custom) tail += p.fromNotice ? ' \u00b7 안내장' : ' \u00b7 직접등록';
-      return '<option value="' + esc(p.id) + '"' + (p.id === ST.productId ? ' selected' : '') + '>' + mark + esc(p.name) + tail + '</option>';
+      /* 이름이 길어 잘리므로 전체 이름을 툴팁으로도 둔다 (옆으로 굴리지 않아도 되게) */
+      return '<option value="' + esc(p.id) + '"' + (p.id === ST.productId ? ' selected' : '')
+        + ' title="' + esc(p.name + tail) + '">' + mark + esc(p.name) + tail + '</option>';
     }).join('') || '<option disabled>검색 결과 없음</option>';
+    bindScrollNav('#prodBox', '#prodNav');
   }
 
   /**
@@ -2414,6 +2423,32 @@
       b.onclick = function () { fn(b.dataset.g || ''); };
     });
   }
+  /**
+   * 목록을 옆으로 미는 단추. 스크롤바가 겹침(overlay) 방식인 브라우저에서는
+   * 스크롤바가 있는지도 모르고 지나치므로, 눈에 보이는 단추를 함께 둔다.
+   * 목록이 넘치지 않으면 감춘다.
+   */
+  function bindScrollNav(boxSel, navSel) {
+    var box = $(boxSel), nav = $(navSel);
+    if (!box || !nav) return;
+    var over = box.scrollWidth > box.clientWidth + 2;
+    nav.hidden = !over;
+    if (!over) return;
+    var upd = function () {
+      var bs = nav.querySelectorAll('button');
+      bs[0].disabled = box.scrollLeft <= 0;
+      bs[1].disabled = box.scrollLeft >= box.scrollWidth - box.clientWidth - 1;
+    };
+    Array.prototype.forEach.call(nav.querySelectorAll('button'), function (b) {
+      b.onclick = function () {
+        box.scrollLeft += (+b.dataset.d) * Math.max(120, Math.round(box.clientWidth * 0.6));
+        setTimeout(upd, 30);
+      };
+    });
+    box.onscroll = upd;
+    upd();
+  }
+
   /** 등급으로 거른다 ('' 는 전체, '?' 는 등급 없는 것) */
   function byGrade(list, g) {
     if (!g) return list;
@@ -2485,9 +2520,11 @@
     sel.innerHTML = '<option value=""' + (cur ? '' : ' selected') + '>— 고르지 않음 —</option>'
       + list.slice(0, cap).map(function (p) {
         var tail = p.riskGrade ? ' \u00b7 ' + (p.riskLabel || '') + ' ' + p.riskGrade + '등급' : '';
-        return '<option value="' + esc(p.id) + '"' + (p.id === cur ? ' selected' : '') + '>' + esc(p.name) + tail + '</option>';
+        return '<option value="' + esc(p.id) + '"' + (p.id === cur ? ' selected' : '')
+          + ' title="' + esc(p.name + tail) + '">' + esc(p.name) + tail + '</option>';
       }).join('')
       + (list.length > cap ? '<option disabled>… 외 ' + (list.length - cap) + '건 — 검색해서 좁히십시오</option>' : '');
+    bindScrollNav('#recBox', '#recNav');
   }
 
   function bindSide() {
