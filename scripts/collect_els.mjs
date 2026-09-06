@@ -6,8 +6,15 @@
  *   화면  : https://securities.miraeasset.com/hks/hks4022/n01.do  (ELS/DLS 캘린더)
  *           https://securities.miraeasset.com/hks/hks4023/n01.do  (ELS/DLS 상품 소개)
  *   데이터: POST /hks/hks4022/a01.json
- *           omkt_drvs_tcd=0&dlbr_term_yn=0&itm_nm=&prgs_scd=01
- *           &qry_sort_tp=0&qry_sort_sqn=0&next_key=
+ *           omkt_drvs_tcd=&qry_strt_dt=<오늘>&qry_end_dt=<오늘>
+ *           &dlbr_term_yn=0&qry_sort_tp=0&qry_sort_sqn=0&next_key=
+ *
+ *   ★ 조회조건은 화면이 스스로 보내는 것과 같아야 한다 ★
+ *   앞 판은 prgs_scd=01 (진행중) 로 물었다. 2026-09-07 에 화면은 40건을 그렸는데
+ *   이 조건으로는 21건만 왔다 — 그날 새로 모집을 시작한 19건이 통째로 빠졌다.
+ *   HTTP 200 · continueYn=0 으로 멀쩡하게 끝나서 빠진 줄도 몰랐다.
+ *   이 화면은 「캘린더」 라 날짜로 묻는다. 그날 청약 가능한 것을 모두 준다
+ *   (scripts/probe_els_list.mjs 로 화면의 요청을 가로채 확인했다).
  *
  * 응답 필드 (grid01[] 원소)
  *   itm_nm                  상품명            "미래에셋증권(ELB)4039"
@@ -62,6 +69,18 @@ function toDate(v) {
   const s = String(v ?? '').replace(/[^0-9]/g, '');
   if (s.length < 8) return null;
   return `${s.slice(0, 4)}-${s.slice(4, 6)}-${s.slice(6, 8)}`;
+}
+
+/**
+ * 오늘(한국 시각) — "20260907" 꼴.
+ *
+ * 러너는 UTC 로 돈다. 수집은 08:00 KST 에 도는데 그때 UTC 는 전날 23:00 이므로,
+ * UTC 날짜로 물으면 캘린더가 하루 전을 답해 그날 새로 모집을 시작한 상품이 통째로
+ * 빠진다. 화면이 쓰는 날짜와 같아야 화면과 같은 목록이 온다.
+ */
+function kstToday() {
+  const d = new Date(Date.now() + 9 * 3600 * 1000);
+  return d.toISOString().slice(0, 10).replace(/-/g, '');
 }
 
 /** "3년" / "1년6개월" / "18개월" -> 개월 수 */
@@ -234,10 +253,10 @@ async function main() {
   let nextKey = '';
   for (let i = 0; i < MAX_PAGES; i++) {
     const res = await page.evaluate(
-      async ({ origin, api, nextKey }) => {
+      async ({ origin, api, nextKey, today }) => {
         const body =
-          'omkt_drvs_tcd=0&dlbr_term_yn=0&itm_nm=&prgs_scd=01' +
-          '&qry_sort_tp=0&qry_sort_sqn=0&next_key=' + encodeURIComponent(nextKey);
+          'omkt_drvs_tcd=&qry_strt_dt=' + today + '&qry_end_dt=' + today +
+          '&dlbr_term_yn=0&qry_sort_tp=0&qry_sort_sqn=0&next_key=' + encodeURIComponent(nextKey);
         const r = await fetch(origin + api, {
           method: 'POST',
           headers: { 'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8' },
@@ -246,7 +265,7 @@ async function main() {
         });
         return { status: r.status, text: await r.text() };
       },
-      { origin: ORIGIN, api: LIST_API, nextKey }
+      { origin: ORIGIN, api: LIST_API, nextKey, today: kstToday() }
     );
 
     pages.push({ nextKey, status: res.status, bytes: res.text.length });
@@ -294,6 +313,28 @@ async function main() {
   const riskByName = {};
   for (const r of rendered.rows) if (r.grade) riskByName[r.name] = r.grade;
   console.log(`화면 렌더링 목록 ${rendered.count}건 / 위험등급 ${Object.keys(riskByName).length}건 확인`);
+
+  /**
+   * 화면이 그린 목록과 수집한 목록이 같은지 본다.
+   *
+   * 이것이 없어서 2026-09-07 에 19건이 조용히 빠졌다. 목록 API 가 HTTP 200 에
+   * continueYn=0 으로 멀쩡하게 답했으므로 수집기는 다 받은 줄 알았고, 창구는
+   * 그날 새로 나온 상품이 목록에 없는 것을 보고서야 알았을 것이다.
+   *
+   * 화면이 곧 창구가 보는 것이다. 그보다 적게 받았으면 그것은 수집 실패다.
+   * 조용히 넘어가지 않는다.
+   */
+  if (rendered.count && rows.length < rendered.count) {
+    const got = new Set(rows.map((r) => String(r.itm_nm ?? '')));
+    const missing = rendered.rows.filter((r) => !got.has(r.name));
+    console.error(
+      `\n수집한 ${rows.length}건이 화면의 ${rendered.count}건보다 적습니다.\n` +
+      '  · 목록 API 조회조건이 화면과 어긋났을 때 이렇게 됩니다.\n' +
+      '  · scripts/probe_els_list.mjs 로 화면이 보내는 요청을 다시 확인하세요.'
+    );
+    missing.slice(0, 20).forEach((r) => console.error(`    빠짐: ${r.name} (청약 ${r.period || '?'})`));
+    process.exit(1);
+  }
 
   await browser.close();
 
