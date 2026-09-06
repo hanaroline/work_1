@@ -1,0 +1,32 @@
+name: ELS 목록 조회조건 탐색 (조사용)
+
+# 화면과 목록 API 의 건수가 어긋날 때 조회조건을 확정하기 위한 조사용 잡이다.
+# 저장소에 아무것도 쓰지 않고 잡 로그로만 결과를 본다.
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - 'claude/complete-sales-script-**'
+    paths:
+      - 'scripts/probe_els_list.mjs'
+      - '.github/workflows/els-probe.yml'
+
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref_name }}
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Playwright 설치
+        run: npm i -D playwright@1.56.1 && npx playwright install --with-deps chromium
+
+      - name: 탐색
+        run: node scripts/probe_els_list.mjs
