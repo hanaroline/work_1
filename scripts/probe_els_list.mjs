@@ -124,11 +124,15 @@ for (const v of ['', '00', '01', '02', '03', '04', '09', '1', '0']) {
   console.log('  prgs_scd=' + JSON.stringify(v).padEnd(6) + ' → ' + summary(res));
 }
 
-console.log('\n=== 화면이 보낸 본문 그대로 (있으면) ===');
-for (const s of seen) {
-  if (!s.url.includes('a01.json')) continue;
-  const res = await call(s.body);
-  console.log('  ' + s.body.slice(0, 200));
+/* 화면이 보낸 본문을 여기서 떠 둔다.
+   page.on('request') 는 내가 page.evaluate 안에서 보내는 요청까지 잡는다. seen 을
+   그대로 돌면 도는 동안 seen 이 늘어나 끝나지 않는다 — 앞 판이 15분 제한에 걸려
+   끊긴 까닭이 이것이다. 지금까지 쌓인 것만 떠서 돌고, 중복은 한 번만 본다. */
+const screenBodies = [...new Set(seen.filter((s) => s.url.includes('a01.json')).map((s) => s.body))];
+console.log('\n=== 화면이 보낸 본문 그대로 ' + screenBodies.length + '가지 ===');
+for (const body of screenBodies) {
+  const res = await call(body);
+  console.log('  ' + body.slice(0, 200));
   console.log('    → ' + summary(res));
 }
 
