@@ -34,6 +34,17 @@
     /* 부적합 시나리오에서 「성향에 적합해 먼저 권유하는 상품」 — cat -> productId
        ('__none' 은 적합한 상품이 없다고 안내하는 경우다) */
     rec: {},
+    /**
+     * 진행 파트 — 'all' | 'suit'(적합성원칙) | 'expl'(상품설명의무).
+     *
+     * 적합성원칙은 상담을 해 나가면서 단계별로 값이 채워진다 (투자자성향 진단,
+     * 현재 투자자금성향 파악, 부적합이면 추천·재지목…). 그래서 상담 前에는
+     * 절대 다 채울 수 없다. 그런데 상품설명의무는 상품만 고르면 그 자리에서
+     * 다 채워진다.
+     * 한 덩어리로 두면, 이미 다 채워진 상품설명의무까지 「확인필요 10건」 을
+     * 안은 채로 읽기모드에 들어가게 된다. 그래서 파트를 갈라 따로 진행한다.
+     */
+    part: 'all',
     tab: 'script',
     ctx: {
       consumerType: '일반금융소비자',
@@ -662,7 +673,7 @@
     try {
       localStorage.setItem(LS, JSON.stringify({
         baseSheet: ST.baseSheet, senior: ST.senior, productId: ST.productId,
-        pman: ST.pman, inline: ST.inline, checks: ST.checks, ctx: ST.ctx, rec: ST.rec
+        pman: ST.pman, inline: ST.inline, checks: ST.checks, ctx: ST.ctx, rec: ST.rec, part: ST.part
       }));
     } catch (e) { /* 사생활 보호 모드 등에서 저장 실패 — 무시 */ }
   }
@@ -675,6 +686,7 @@
       if (typeof o.senior === 'boolean') ST.senior = o.senior;
       if (o.productId) ST.productId = o.productId;
       ['pman', 'inline', 'checks', 'rec'].forEach(function (k) { if (o[k]) ST[k] = o[k]; });
+      if (o.part && PARTS[o.part]) ST.part = o.part;
       /* 구버전(상품 구분 없는 manual) 저장값 이관 */
       if (o.manual && o.productId) {
         ST.pman[o.productId] = Object.assign({}, o.manual, ST.pman[o.productId] || {});
@@ -2072,12 +2084,57 @@
     var s = item.score;
     return s[Math.min(c, s.length - 1)];
   }
-  function itemsOf() { return sheet().items; }
+  /**
+   * 진행 파트.
+   *   all  — 상담 전체 (지금까지의 방식)
+   *   suit — 적합성원칙만. 상담하며 단계별로 채워지는 부분
+   *   expl — 상품설명의무만. 상품만 고르면 그 자리에서 다 채워지는 부분
+   * 파트를 고르면 스크립트·확인필요·읽기모드·인쇄가 그 파트만 다룬다.
+   * 점수(103점)는 평가표 전체가 기준이므로 파트와 무관하게 전체로 센다.
+   */
+  /**
+   * 구분(sec)은 평가표마다 이름이 다르다 —
+   *   적합성원칙 / 상품설명의무 / IRP설명의무 / 펀드설명의무 / 기타
+   * 「기타」 는 전부 상담 내내 걸리는 감점 항목이다 (부당권유행위 금지,
+   * 상담 지연·거부, 온라인 가입 유도, 고객 권익보호, 설명내용 확인·서명,
+   * 퇴직급여보장법 금지행위, 상담시간, 가입목적에 맞지 않은 권유).
+   * 어느 한 파트의 것이 아니므로 두 파트 모두에 넣는다 — 파트를 좁혀 본다고
+   * 감점 항목을 놓치게 하지 않는다.
+   */
+  var PARTS = {
+    all: {
+      label: '전체', match: null,
+      hint: '적합성원칙 + 상품설명의무를 이어서 진행합니다.'
+    },
+    suit: {
+      label: '① 적합성원칙',
+      match: function (sec) { return sec === '적합성원칙' || sec === '기타'; },
+      hint: '상담하며 단계별로 채워지는 부분입니다 — 투자자성향 진단, 현재 투자자금성향 파악, '
+        + '적합한 상품 권유, (부적합이면) 부적합 안내. 상담 전에는 다 채울 수 없는 값들입니다.'
+    },
+    expl: {
+      label: '② 상품설명의무',
+      match: function (sec) { return /설명의무/.test(sec) || sec === '기타'; },
+      hint: '상품만 고르면 그 자리에서 채워지는 부분입니다 — 적합성원칙이 끝나지 않아도 '
+        + '먼저 읽거나 인쇄할 수 있습니다. (IRP 는 IRP설명의무 + 펀드설명의무가 함께 들어갑니다)'
+    }
+  };
+  function partKey() { return PARTS[ST.part] ? ST.part : 'all'; }
+  /** 평가표의 모든 항목 (점수·항목 찾기에 쓴다 — 파트와 무관하다) */
+  function itemsAll() { return sheet().items; }
+  /** 지금 파트의 항목만 (화면·확인필요·읽기모드·인쇄) */
+  function itemsOf() {
+    var m = PARTS[partKey()].match;
+    if (!m) return sheet().items;
+    return sheet().items.filter(function (x) { return m(x.sec); });
+  }
 
   function totals() {
     var sh = sheet(), base = 0, plus = 0, minus = 0, baseMax = 0, plusMax = 0, done = 0, all = 0;
     var bySec = {};
-    itemsOf().forEach(function (x) {
+    /* 점수는 평가표 전체가 기준이다 (기본 100 + 가점 3). 파트를 골라 보고
+       있어도 만점이 달라지지 않는다 — 전체로 센다. */
+    itemsAll().forEach(function (x) {
       var app = applicable(x), sc = scoreOf(x);
       if (app) {
         all += x.cps.length;
@@ -2165,6 +2222,23 @@
     h.push('<div class="hint"><span class="src ' + (sh.provenance === 'exact' ? 'auto' : 'man') + '">'
       + (sh.provenance === 'exact' ? '원표' : '보완') + '</span> ' + esc(sh.provenanceNote) + '</div>');
     h.push('<div class="hint">현재 적용 : <b>' + esc(sh.label) + '</b> · ' + sh.items.length + '항목</div></div>');
+
+    /* 진행 파트 — 적합성원칙과 상품설명의무를 갈라 진행한다 */
+    var pk = partKey();
+    h.push('<div class="fgroup"><div class="flabel"><span class="req">2-1</span> 진행 파트</div>');
+    h.push('<div class="seg" id="segPart">');
+    ['all', 'suit', 'expl'].forEach(function (k) {
+      h.push('<button data-v="' + k + '" aria-pressed="' + (pk === k) + '">' + esc(PARTS[k].label) + '</button>');
+    });
+    h.push('</div>');
+    h.push('<div class="hint">' + esc(PARTS[pk].hint) + '</div>');
+    if (pk !== 'all') {
+      var nOf = itemsOf().length, nAll = itemsAll().length;
+      h.push('<div class="hint">이 파트 <b>' + nOf + '항목</b> / 평가표 전체 ' + nAll + '항목 · '
+        + '스크립트·확인필요·읽기모드·인쇄가 <b>이 파트만</b> 다룹니다. '
+        + '점수는 평가표 전체(103점) 기준 그대로입니다.</div>');
+    }
+    h.push('</div>');
 
     /* 상품 선택 */
     h.push('<div class="fgroup"><div class="flabel"><span class="req">3</span> 상품 선택 <span style="font-weight:400;color:var(--muted2)">(투자설명서 자동조회)</span></div>');
@@ -2535,6 +2609,14 @@
       save(); renderAll();
     }
     $('#selSheet').onchange = function () { ST.baseSheet = this.value; afterSheetChange(); };
+    Array.prototype.forEach.call(document.querySelectorAll('#segPart button'), function (b) {
+      b.onclick = function () {
+        ST.part = b.dataset.v;
+        /* 파트를 바꾸면 읽던 자리가 달라진다 — 읽기모드는 처음부터 */
+        PR.i = 0;
+        save(); renderAll();
+      };
+    });
     Array.prototype.forEach.call(document.querySelectorAll('#segSenior button'), function (b) {
       b.onclick = function () { ST.senior = b.dataset.v === '1'; afterSheetChange(); };
     });
@@ -2647,7 +2729,32 @@
     var h = [];
     h.push('<div class="banner blue"><b>' + esc(sh.label) + '</b> · 선택 상품 <b>' + esc(p.name) + '</b>'
       + (p.riskGrade ? ' (' + esc(p.riskLabel) + ' ' + p.riskGrade + '등급)' : '')
-      + '<br>기본배점 ' + Object.keys(sh.secTotals).map(function (k) { return k + ' ' + sh.secTotals[k]; }).join(' + ') + ' = 100점 · 가점 최대 +3점 (총 103점)</div>');
+      + '<br>기본배점 ' + Object.keys(sh.secTotals).map(function (k) { return k + ' ' + sh.secTotals[k]; }).join(' + ') + ' = 100점 · 가점 최대 +3점 (총 103점)'
+      + (partKey() !== 'all'
+        ? '<br><b>진행 파트 · ' + esc(PARTS[partKey()].label) + '</b> — 아래 스크립트·확인필요·읽기모드·인쇄가 이 파트만 다룹니다 '
+          + '<span style="color:var(--muted2)">(' + itemsOf().length + '항목 / 전체 ' + itemsAll().length + '항목)</span>'
+        : '')
+      + '</div>');
+
+    /* 파트별 준비 상태 — 「상품 자료에서 채울 값」 과 「상담 중 파악할 값」 을 갈라 센다.
+       상품설명의무는 상품만 고르면 채워지는 부분이라, 상품 쪽이 0건이면 적합성원칙이
+       끝나지 않았어도 바로 읽거나 인쇄할 수 있다. 그것을 한 줄로 알려 준다. */
+    if (partKey() !== 'all') {
+      var byG = { doc: 0, ref: 0, once: 0, ask: 0, rec: 0 };
+      miss.forEach(function (m) { var g = missGroup(m); if (byG[g] != null) byG[g]++; else byG.doc++; });
+      var needSelf = byG.doc + byG.ref + byG.once + byG.rec;   /* 미리 채워 둘 수 있는 값 */
+      var ready = needSelf === 0;
+      h.push('<div class="banner" style="border-color:var(--' + (ready ? 'ok' : 'warn')
+        + ');border-left-color:var(--' + (ready ? 'ok' : 'warn') + ')' + (ready ? ';background:#f3f9f4' : '') + '">'
+        + '<b style="color:var(--' + (ready ? 'ok' : 'warn') + ')">' + (ready ? '이 파트는 지금 진행할 수 있습니다' : '먼저 채워야 할 값이 있습니다')
+        + '</b> — 미리 채울 수 있는 값 <b>' + needSelf + '건</b>'
+        + (byG.ask ? ' · 상담 중 고객에게 확인할 값 <b>' + byG.ask + '건</b>' : '')
+        + '<br><span style="color:var(--muted2)">'
+        + (ready
+          ? '남은 값은 상담하며 고객에게 확인해 채우는 것뿐입니다. 「읽기 모드」 나 「인쇄 / PDF」 로 바로 진행하십시오.'
+          : '「투자설명서 자동조회」 탭에서 상품 자료를 등록하거나, 빨간 표시를 눌러 채우십시오.')
+        + '</span></div>');
+    }
 
     /* 부적합 상담 진행 순서 — 지금 어디까지 갖춰졌는지 보여 준다.
        담당자가 「프로세스가 그렇게 되지 않는 것 같다」 고 했다. 절차는 맞게
@@ -4478,7 +4585,8 @@
   }
 
   function findItem(id) {
-    var l = itemsOf();
+    /* 카드 접기·인라인 입력에서 부른다 — 파트를 좁혀 보고 있어도 찾을 수 있어야 한다 */
+    var l = itemsAll();
     for (var i = 0; i < l.length; i++) if (l[i].id === id) return l[i];
     return null;
   }
@@ -4555,7 +4663,17 @@
   function prOpen() {
     if (!product()) { alert('먼저 상품을 선택하세요.'); return; }
     var miss = missing();
-    if (miss.length && !confirm('확인필요 항목이 ' + miss.length + '건 남아 있습니다.\n그대로 읽으면 부정확한 설명으로 감점될 수 있습니다.\n\n계속 진행하시겠습니까?')) return;
+    if (miss.length) {
+      var g2 = { doc: 0, ref: 0, once: 0, ask: 0, rec: 0 };
+      miss.forEach(function (m) { var k = missGroup(m); if (g2[k] != null) g2[k]++; else g2.doc++; });
+      var self2 = g2.doc + g2.ref + g2.once + g2.rec;
+      var msg = self2 === 0
+        ? '[' + PARTS[partKey()].label + '] 남은 ' + miss.length + '건은 모두 <상담 중 고객에게 확인하며 채우는 값>입니다.\n'
+          + '상품 자료에서 채울 값은 없습니다.\n\n진행하시겠습니까?'
+        : '[' + PARTS[partKey()].label + '] 확인필요 ' + miss.length + '건 — 그중 ' + self2
+          + '건은 미리 채울 수 있는 값입니다.\n그대로 읽으면 부정확한 설명으로 감점될 수 있습니다.\n\n계속 진행하시겠습니까?';
+      if (!confirm(msg)) return;
+    }
     PR.on = true; PR.i = 0;
     $('#prompter').classList.add('on');
     document.body.style.overflow = 'hidden';
