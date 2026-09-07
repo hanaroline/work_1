@@ -617,17 +617,29 @@ def fetch_hana(pages=5, dump_dir=None):
     NVDA.US·688017.CH 같은 줄은 하루 이틀 전 자리에 있다.
     """
     rows, seen, first_html, why = [], set(), None, None
+    failed = 0
     for page in range(1, pages + 1):
         url = HANA_LIST if page == 1 else HANA_LIST + "?curPage=%d" % page
         try:
-            html = _get_retry(url, encoding="utf-8", referer=HANA_BASE + "/")
+            # 아침의 하나증권 서버는 느리다. 20초로는 모자라 9/7 08:56 과
+            # 9/8 08:14 두 판에서 첫 쪽이 timed out 으로 죽었고, 첫 쪽이
+            # 죽으면 원천이 통째로 빠졌다. 넉넉히 기다린다 — 부차 원천이라
+            # 몇십 초 더 쓰는 편이 하루치를 잃는 것보다 낫다.
+            html = _get_retry(url, tries=4, timeout=45,
+                              encoding="utf-8", referer=HANA_BASE + "/")
         except Exception as e:                                 # noqa: BLE001
             # 왜 못 받았는지를 삼켜서는 안 된다. 9/3 판에서 하나증권이 통째로
             # 빠졌는데 남은 말이 「줄을 못 찾았다」뿐이라, 마크업이 바뀐 것인지
             # 서버가 안 열린 것인지 가릴 수 없었다.
             why = "%s: %s" % (type(e).__name__, e)
-            break
-        if page == 1:
+            # 한 쪽이 막혔다고 그만두지 않는다. 첫 쪽만 늦게 응답하는 일이
+            # 잦은데, 예전에는 거기서 멈춰 뒤쪽까지 함께 버렸다. 다만 두 쪽이
+            # 내리 막히면 서버가 닫힌 것으로 보고 물러난다.
+            failed += 1
+            if failed >= 2:
+                break
+            continue
+        if first_html is None:
             first_html = html
         got = [r for r in parse_hana(html) if r["nid"] not in seen]
         if not got:
@@ -641,7 +653,12 @@ def fetch_hana(pages=5, dump_dir=None):
         raise ValueError("하나증권 목록에서 줄을 못 찾았다"
                          + (" (목록을 받지 못했다 — %s)" % why if why
                             else " (목록은 받았으나 얼개가 바뀐 듯하다)"))
-    return rows, {"rows": len(rows), "pages": page}
+    how = {"rows": len(rows), "pages": page}
+    if failed:
+        # 몇 줄은 얻었으나 일부 쪽은 못 받았다. 「받았다」로만 적으면 빠진
+        # 줄이 없는 것처럼 보인다 — 몇 쪽이 왜 빠졌는지 함께 남긴다.
+        how["partial"] = "%d쪽을 받지 못했다 — %s" % (failed, why)
+    return rows, how
 
 
 def merge_source(reports, rows, broker, label):
