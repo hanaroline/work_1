@@ -34,6 +34,7 @@ const SRC = process.argv.includes('--built') ? '/fund-search.html' : '/fund.html
 const PDF_OUT = 'tools/discovery/fund_help.pdf';
 const HTML_OUT = 'tools/discovery/fund_howto.html';
 const JS_OUT = 'data/fund-help-pdf.js';
+const DOC_JS_OUT = 'data/fund-help-doc.js';
 
 const TYPES = { '.html': 'text/html', '.js': 'text/javascript', '.css': 'text/css', '.png': 'image/png' };
 const server = createServer(async (req, res) => {
@@ -242,9 +243,9 @@ const picked = await page.evaluate(() => {
 });
 await tab('compare');
 await page.waitForTimeout(400);
-// 담은 수를 적어 주는 띠. 표까지 같이 찍으면 바로 아래 겹침 표 그림과
-// 똑같은 그림이 두 장 들어간다.
-const s2bar = await shot('#compare-body .finder-bar', { maxH: 70 });
+// 담은 수를 적어 주는 띠부터 담긴 것을 하나씩 빼는 이름표까지. 표까지 같이
+// 찍으면 바로 아래 겹침 표 그림과 똑같은 그림이 두 장 들어간다.
+const s2bar = await shotRange('#compare-body .finder-bar', '#compare-body .cmp-chips', { maxH: 200 });
 const cmpMarked = await page.evaluate(() => {
   const tables = [...document.querySelectorAll('#compare-body table')];
   if (!tables.length) return { n: 0 };
@@ -395,11 +396,12 @@ ${tip('기준가 · 설정액 · 설정일은 펀드(모) 단위입니다.', '�
 ${head(2, '비교 · 중복도', '두 개를 같이 사면 얼마나 겹치는지 봅니다.')}
 ${steps([
   `<strong>먼저 담습니다.</strong> 펀드 찾기 <u>또는 랭킹</u>에서 줄 맨 왼쪽 <strong>비교</strong> 칸의 체크상자에 표시해 2~${facts.maxCompare}개를 고릅니다. 두 화면의 칸은 같은 것이라 섞어 담아도 됩니다. 하나만 담으면 비교할 것이 없어 안 그려집니다.`,
-  '<strong>비교 탭으로 옮깁니다.</strong> 맨 위에 몇 개를 담았는지가 적히고(<strong>비우기</strong> 로 한 번에 지웁니다), 그 아래에 <strong>겹침 표</strong>가 나옵니다.',
+  '<strong>비교 탭으로 옮깁니다.</strong> 맨 위에 몇 개를 담았는지가 적히고(<strong>전부 비우기</strong> 로 한 번에 지웁니다), 그 아래에 담은 펀드가 <strong>이름표</strong>로 늘어선 뒤 <strong>겹침 표</strong>가 나옵니다.',
+  `<strong>하나만 뺄 때는 이름표의 <u>×</u> 를 누릅니다.</strong> ${facts.maxCompare}개를 담아 놓고 그중 하나가 마음에 안 들 때, 그것 하나 빼자고 펀드 찾기로 돌아가 이름이 비슷한 줄 사이에서 그 줄을 다시 찾아낼 필요가 없습니다.`,
   '<strong>겹침 표를 읽습니다.</strong> 칸의 숫자는 두 펀드가 공유하는 <u>비중의 합</u>입니다. 진할수록 많이 겹칩니다.',
   '<strong>종목 × 펀드 표를 봅니다.</strong> 어느 종목이 어느 펀드에 들었는지 한눈에 보입니다. <strong>○</strong> 는 담았지만 비중을 모르는 것, <strong>·</strong> 는 안 담은 것입니다.',
 ])}
-${fig(s2bar, '담은 수와 비우기 (예: ' + picked.slice(0, 2).join(' / ') + ' 등 ' + picked.length + '개를 담았을 때)')}
+${fig(s2bar, '담은 수 · 전부 비우기 · 하나씩 빼는 이름표 (예: ' + picked.slice(0, 2).join(' / ') + ' 등 ' + picked.length + '개를 담았을 때)')}
 ${s2ov ? fig(s2ov, '겹침 표 — 칸의 숫자는 두 펀드가 공유하는 비중의 합') : ''}
 ${s2sx ? fig(s2sx, '종목 × 펀드 표') : ''}
 ${tip('펀드의 겹침은 하한이 아닙니다.', 'ETF 와 달리 원천이 보유종목을 <u>전부</u> 주므로, 여기 숫자는 실제 포트폴리오 중복에 가깝습니다. 다만 <strong>양쪽 모두 비중이 다 있을 때만</strong> 비율을 냅니다 — 한쪽이라도 비중 미공시가 섞이면 겹친 <u>종목 수만</u> 세고 비율은 비웁니다.')}
@@ -501,10 +503,9 @@ ${tip('PDF 단추가 안 보일 때', '실어 둔 PDF 는 만든 날의 자료�
 투자설명서와 운용사 공시가 우선합니다.</p>
 `;
 
-const doc = `<!DOCTYPE html>
-<html lang="ko"><head><meta charset="utf-8">
-<title>공모펀드 조회 — 사용법</title>
-<style>
+// 문서의 모양새. 여기 한 벌만 두고 두 군데에서 쓴다 — 따로 받아 가는 문서와
+// 조회 화면 안의 사용법 탭. 두 벌로 적어 두면 한쪽만 고쳐지는 날이 온다.
+const DOC_CSS = `
 :root{--orange:#F58220;--orange-soft:#FAB072;--blue:#043B72;--ink:#1A1A1A;--body:#3D3D3D;
       --muted:#6C6C6C;--hairline:#CDCECB;--hairline-soft:#E5E4E1;--subtle:#F7F8FA;}
 *{box-sizing:border-box}
@@ -558,7 +559,45 @@ u{text-decoration-color:var(--orange-soft);text-underline-offset:2px}
 .callout strong{color:#fff}
 .disc{color:var(--muted);font-size:8.5pt;margin-top:24px;border-top:1px solid var(--hairline-soft);padding-top:12px}
 @page{size:A4;margin:12mm 12mm 14mm}
-</style></head><body><div class="wrap">${body}</div></body></html>`;
+`;
+
+// ── 같은 CSS 를 조회 화면 안에 가둬 쓰기.
+//
+// 이 문서의 선택자는 `p` · `h4` · `.card` · `.note` 처럼 흔한 이름이다. 조회
+// 화면에도 `.card` 와 `.note` 가 이미 있어서, 이대로 부으면 사용법을 한 번
+// 여는 것만으로 다른 탭의 카드까지 이 문서 모양으로 물든다. 그래서 선택자
+// 앞에 `.howto` 를 붙여 그 안에서만 듣게 만든다.
+//
+// `@page` 는 뺀다 — 화면 안에서는 종이 크기를 정할 자리가 아니고, 남겨 두면
+// 사용법을 연 채로 다른 탭을 인쇄할 때 그 탭까지 A4 로 잠긴다.
+function scopeCss(css) {
+  const noPage = css.replace(/@page\s*\{[^}]*\}/g, '');
+  const out = noPage.replace(/(^|\})([^{}]+)\{/g, (m, close, sel) => {
+    const scoped = sel.split(',').map((one) => {
+      const s = one.trim();
+      if (!s) return '';
+      // `:root` 와 `body` 는 문서의 뿌리를 가리킨다. 화면 안에서 그 뿌리는
+      // 감싸는 `.howto` 다.
+      if (s === ':root' || s === 'body') return '.howto';
+      if (s === '*') return '.howto, .howto *';
+      return '.howto ' + s;
+    }).filter(Boolean).join(',');
+    return close + scoped + '{';
+  });
+  // 한 군데라도 가두지 못하고 새어 나가면 조회 화면이 물든다. 세어서 확인한다.
+  const rules = out.split('{').length - 1;
+  const caged = (out.match(/(^|[,}])\s*\.howto/g) || []).length;
+  if (!rules || caged < rules) {
+    throw new Error(`문서 CSS 를 다 가두지 못했다 — 규칙 ${rules}개 중 ${caged}개만 가뒀다`);
+  }
+  return out;
+}
+const SCOPED_CSS = scopeCss(DOC_CSS);
+
+const doc = `<!DOCTYPE html>
+<html lang="ko"><head><meta charset="utf-8">
+<title>공모펀드 조회 — 사용법</title>
+<style>${DOC_CSS}</style></head><body><div class="wrap">${body}</div></body></html>`;
 
 await writeFile(HTML_OUT, doc, 'utf8');
 
@@ -605,9 +644,36 @@ const js = '/* 자동 생성 — scripts/build_fund_howto.mjs. 손으로 고치�
   + ';\n';
 await writeFile(JS_OUT, js, 'utf8');
 
+// ── 같은 문서를 조회 화면 안에도 싣는다.
+//
+// 여태 화면 안의 사용법 탭은 **글만** 있었다. 그림이 붙은 것은 따로 받아 가는
+// PDF 뿐이라, 화면을 열어 놓고 "이 칸이 어느 칸인가" 를 물을 때 정작 그림이
+// 없었다 — 받아야만 보이는 그림은 필요한 순간에 없는 그림이다.
+//
+// 게다가 사용법이 두 벌이 되면서 실제로 어긋났다. 랭킹에 담는 칸을 붙인 날
+// 이 문서에는 적었지만 화면 안의 글에는 못 적어, 화면은 자기가 방금 붙인
+// 칸을 설명하지 못했다. 한 벌을 두 곳에서 쓰면 그 어긋남이 아예 생기지 않는다.
+//
+// stamp 를 같이 적어 둔다. 화면은 자기가 지금 센 수와 이 문서의 수가 다르면
+// 이 문서를 안 그리고 글로 물러선다 — 낡은 그림을 최신인 척 보여 주느니
+// 그림 없는 글이 낫다.
+const docJs = '/* 자동 생성 — scripts/build_fund_howto.mjs. 손으로 고치지 마십시오. */\n'
+  + 'window.HELP_DOC = '
+  + JSON.stringify({
+    stamp: facts.stamp,
+    asOf: facts.asOf,
+    got: facts.got,
+    figs: figs.length,
+    css: SCOPED_CSS,
+    html: body,
+  })
+  + ';\n';
+await writeFile(DOC_JS_OUT, docJs, 'utf8');
+
 console.log(`[howto] ${PDF_OUT} — ${(bytes.length / 1024).toFixed(0)} KB · 그림 ${figs.length}장 (${SRC}, 펀드 ${facts.total}개, 기준일 ${facts.asOf})`);
 console.log(`[howto] ${HTML_OUT} — ${(Buffer.byteLength(doc) / 1024).toFixed(0)} KB`);
 console.log(`[howto] ${JS_OUT} — ${(Buffer.byteLength(js) / 1024).toFixed(0)} KB · stamp ${facts.stamp}`);
+console.log(`[howto] ${DOC_JS_OUT} — ${(Buffer.byteLength(docJs) / 1024).toFixed(0)} KB · 그림 ${figs.length}장`);
 
 if (errors.length) console.error('조회 화면 오류:', errors.join(' / '));
 if (docErrors.length) console.error('사용법 문서 오류:', docErrors.join(' / '));

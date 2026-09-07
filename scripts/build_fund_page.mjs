@@ -52,6 +52,29 @@ out = out.replace(
   pdfjs ? '<script>\n/* ==== data/fund-help-pdf.js (인라인) ==== */\n' + pdfjs + '\n</script>' : ''
 );
 
+// 그림이 붙은 사용법 문서도 같이 넣는다.
+//
+// PDF 와 같은 빌드가 같은 원고로 만든 것인데, 이쪽은 **화면 안에서 그대로
+// 그리는** 몫이다. 없으면 태그를 지운다 — 그때 사용법 탭은 그림 없는 글로
+// 물러선다(화면이 스스로 그렇게 한다). 빠져 있는 것을 없는 파일로 찾게
+// 두면 배포본이 열릴 때마다 404 를 낸다.
+const DOCJS = 'data/fund-help-doc.js';
+let docjs = null;
+try {
+  docjs = await readFile(DOCJS, 'utf8');
+} catch {
+  console.warn(`[build] ${DOCJS} 가 없습니다 — 사용법 탭은 그림 없는 글로 나갑니다.`);
+}
+const docTag = /<script src="data\/fund-help-doc\.js"><\/script>/;
+if (!docTag.test(out)) {
+  console.error(`[build] ${SRC} 안에서 ${DOCJS} 스크립트 태그를 찾지 못했습니다.`);
+  process.exit(1);
+}
+out = out.replace(
+  docTag,
+  docjs ? '<script>\n/* ==== data/fund-help-doc.js (인라인) ==== */\n' + docjs + '\n</script>' : ''
+);
+
 // 외부 폰트 CDN 제거 (오프라인 동작 보장, 시스템 폰트로 폴백)
 out = out
   .replace(/\s*<link rel="preconnect"[^>]*>\n?/g, '')
