@@ -268,8 +268,30 @@
       docUrl: fundDocUrl(it, 'T') || fundDocUrl(it, 'G') || '',
       registeredAt: (fundCat() || {}).updatedAt || '',
       fields: f, schedule: [], matBarrier: null, knockIn: '', rawText: '',
-      collected: true, catalogCode: it.code
+      collected: true, catalogCode: it.code,
+      /**
+       * 설명서 원문을 실제로 판독했는지. 카탈로그만으로도 이 doc 이 만들어지므로
+       * 이것을 남기지 않으면 화면이 원문 없이도 「등록됨」 이라고 말한다 —
+       * 창구는 등록됐다는데 확인필요가 열 몇 건인 것을 보고 고장으로 여긴다.
+       */
+      prosRead: !!ex,
+      docMissing: !(it.docT || it.docG)
     };
+  }
+
+  /**
+   * 카탈로그에 투자설명서 주소가 없는 종목 수. 화면이 「이 펀드만 그런 것이 아니다」 를
+   * 사실로 말할 수 있게 세어 둔다 — 숫자를 글에 박아 두면 다음 수집 때 바로 틀린 수가 된다.
+   */
+  var _noDocCount = null;
+  function fundNoDocCount() {
+    if (_noDocCount != null) return _noDocCount;
+    var F = fundCat();
+    var items = (F && F.items) || [];
+    var n = 0;
+    for (var i = 0; i < items.length; i++) if (!items[i].docT && !items[i].docG) n++;
+    _noDocCount = { miss: n, total: items.length };
+    return _noDocCount;
   }
 
   /**
@@ -3069,10 +3091,35 @@
   function docStatusCard() {
     var d = doc(), cov = docCoverage(), p = product();
     var h = [];
-    var SRC = { PDF: '투자설명서 PDF', TEXT: '텍스트 붙여넣기', MANUAL: '항목 직접 등록', API: '사내 상품 API', JSON: 'JSON 가져오기', COLLECT: '자동수집 (data/els-prospectus.js)' };
+    /* 자동수집분의 출처는 상품군마다 다르다 — 펀드에 「els-prospectus.js」 라고
+       적어 두면 창구가 엉뚱한 파일을 찾는다 */
+    var COLLECT_SRC = {
+      els: '자동수집 (data/els-prospectus.js)',
+      fund: '자동수집 (data/fund-catalog.js · fund-prospectus.js)',
+      irp: '자동수집 (data/fund-catalog.js · fund-prospectus.js)',
+      bond: '자동수집 (data/bond-catalog.js)',
+      bondfx: '자동수집 (data/bond-catalog.js)'
+    };
+    var SRC = {
+      PDF: '투자설명서 PDF', TEXT: '텍스트 붙여넣기', MANUAL: '항목 직접 등록',
+      API: '사내 상품 API', JSON: 'JSON 가져오기',
+      COLLECT: COLLECT_SRC[sheet().cat] || '자동수집'
+    };
+    /**
+     * 원문을 판독하지 못한 자동수집분을 「등록됨」 이라고 말하지 않는다.
+     * 카탈로그(명칭·운용사·등급·수익률·거래기준)만으로도 이 카드가 채워지므로,
+     * 설명서 원문이 없는 펀드도 여태 「등록됨」 으로 보였다. 창구는 등록됐다는데
+     * 확인필요가 열 몇 건인 것을 보고 고장으로 여긴다 — 사실대로 갈라 적는다.
+     */
+    var prosGap = !!(d && d.collected && d.prosRead === false);
+    var stateLabel = !d ? '미등록' : (prosGap ? '원문 미판독' : '등록됨');
+    var stateColor = !d ? 'r' : (prosGap ? 'o' : 'g');
+    var stateSub = !d ? '아래에서 등록하세요'
+      : esc(SRC[d.source] || d.source) + ' · ' + esc(String(d.registeredAt).slice(0, 16).replace('T', ' '))
+        + (prosGap ? '<br><b style="color:var(--warn)">카탈로그 값만 있음 · 설명서 원문 없음</b>' : '');
     h.push('<div class="summary">');
-    h.push('<div class="stat"><div class="l">투자설명서 등록 상태</div><div class="v2 ' + (d ? 'g' : 'r') + '" style="font-size:24px;padding-top:6px">'
-      + (d ? '등록됨' : '미등록') + '</div><div class="s">' + (d ? esc(SRC[d.source] || d.source) + ' · ' + esc(String(d.registeredAt).slice(0, 16).replace('T', ' ')) : '아래에서 등록하세요') + '</div></div>');
+    h.push('<div class="stat"><div class="l">투자설명서 등록 상태</div><div class="v2 ' + stateColor + '" style="font-size:24px;padding-top:6px">'
+      + stateLabel + '</div><div class="s">' + stateSub + '</div></div>');
     h.push('<div class="stat"><div class="l">자동완성률</div><div class="v2 ' + (cov.pct >= 100 ? 'g' : (cov.pct >= 70 ? 'o' : 'r')) + '">' + cov.pct + '<span style="font-size:18px">%</span></div>'
       + '<div class="bar"><i style="width:' + cov.pct + '%"></i></div><div class="s">설명서 항목 ' + cov.filled + ' / ' + cov.total + '</div></div>');
     h.push('<div class="stat"><div class="l">고객 상담정보</div><div class="v2 ' + (cov.custMissing ? 'o' : 'g') + '">'
@@ -3089,7 +3136,22 @@
       if (!d.collected) h.push('<button class="tbtn" id="btnDocDelete">등록 해제</button>');
       if (d.docUrl) h.push('<a class="tbtn" href="' + esc(d.docUrl) + '" target="_blank" rel="noopener" style="text-decoration:none">설명서 원문 열기</a>');
       h.push('</div>');
-      if (d.collected) {
+      if (prosGap) {
+        /* 왜 비어 있는지, 이 펀드만 그런 것인지, 무엇을 하면 되는지를 한자리에서 말한다 */
+        var nd = fundNoDocCount();
+        h.push('<div class="note" style="border-left-color:var(--warn)">'
+          + '<b>확인필요가 많은 까닭 — 이 펀드는 투자설명서 원문을 판독하지 못했습니다.</b><br>'
+          + (d.docMissing
+            ? '공모펀드 카탈로그(원천)에 이 펀드의 <b>투자설명서 주소가 없습니다</b>. '
+              + '새로 설정된 펀드와 목표전환형에서 흔하며, 지금 카탈로그 '
+              + nd.total.toLocaleString() + '종목 중 <b>' + nd.miss.toLocaleString() + '종목</b>이 그렇습니다.'
+            : '설명서 주소는 있으나 원문을 <b>판독하지 못했습니다</b> (원문 PDF 가 깨진 경우입니다).')
+          + '<br>그래서 설명서에만 있는 항목 — 보수·수수료, 환매수수료, 계약기간, 투자전략, '
+          + '주요 투자위험, VaR, 유동성위험, 환헤지 — 이 「확인필요」로 남습니다. '
+          + '명칭·운용사·위험등급·수익률·거래기준은 카탈로그에서 이미 채워져 있습니다.<br>'
+          + '<b>아래에서 투자설명서 PDF 를 올리면</b> 그 자리에서 채워지고, 등록분은 상품별로 저장되어 '
+          + '다음 상담에도 그대로 쓰입니다.</div>');
+      } else if (d.collected) {
         h.push('<div class="note">이 내용은 <b>자동수집분</b>입니다. 아래에서 PDF·텍스트·직접 입력으로 등록하면 그 값이 자동수집분을 대체합니다.</div>');
       }
     }
