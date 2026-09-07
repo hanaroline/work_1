@@ -120,10 +120,15 @@ await page.locator('#rq').fill('삼성전자');
 await page.waitForTimeout(500);
 await shoot('reverse', ['.finder-search', '#reverse-body'], 460);
 
-// 5) 랭킹
+// 5) 랭킹 — 담긴 상태로 찍는다. 여기에도 같은 비교 칸이 있다는 것이
+//    사용법에서 말하려는 것이므로, 체크가 보여야 뜻이 산다.
 await page.locator('.tabs button[data-tab="rank"]').click();
 await page.waitForTimeout(500);
 await shoot('rank', ['#rank-body .grid'], 520);
+await page.locator('#rank-body input[data-pick]').nth(0).click().catch(() => {});
+await page.locator('#rank-body input[data-pick]').nth(2).click().catch(() => {});
+await page.waitForTimeout(300);
+await shoot('rankpicked', ['#rank-basket-bar', '#rank-body .card'], 400);
 
 await browser.close();
 server.close();

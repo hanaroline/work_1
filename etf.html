@@ -557,6 +557,7 @@ footer .disc + .disc{margin-top:12px;}
       <select id="r-period" style="font-family:inherit;font-size:14px;padding:6px 10px;border:1px solid var(--hairline);border-radius:2px;"></select>
       <label class="chk"><input type="checkbox" id="r-lev"> <span data-ko="레버리지 · 인버스 포함" data-en="Include leveraged / inverse">레버리지 · 인버스 포함</span></label>
     </div>
+    <div id="rank-basket-bar"></div>
     <div id="rank-body"></div>
   </section>
 
@@ -602,7 +603,7 @@ footer .disc + .disc{margin-top:12px;}
       <div><b>1</b> <span data-ko="ETF 찾기" data-en="Browse">ETF 찾기</span><em data-ko="조건으로 좁혀 편입종목 보기" data-en="Filter, then see holdings">조건으로 좁혀 편입종목 보기</em></div>
       <div><b>2</b> <span data-ko="비교 · 중복도" data-en="Compare">비교 · 중복도</span><em data-ko="여러 개를 담아 겹침 보기" data-en="Overlap across funds">여러 개를 담아 겹침 보기</em></div>
       <div><b>3</b> <span data-ko="종목 → ETF" data-en="Stock → ETF">종목 → ETF</span><em data-ko="이 종목을 담은 ETF 찾기" data-en="Reverse lookup">이 종목을 담은 ETF 찾기</em></div>
-      <div><b>4</b> <span data-ko="랭킹" data-en="Rankings">랭킹</span><em data-ko="수익률 · 설정액 · 자금유입 · 보수" data-en="Returns, AUM, flows, fees">수익률 · 설정액 · 자금유입 · 보수</em></div>
+      <div><b>4</b> <span data-ko="랭킹" data-en="Rankings">랭킹</span><em data-ko="수익률 · 설정액 · 자금유입 · 보수 (여기서도 담기)" data-en="Returns, AUM, flows, fees — pick here too">수익률 · 설정액 · 자금유입 · 보수 (여기서도 담기)</em></div>
       <div><b>5</b> <span data-ko="분류 점검" data-en="Tag audit">분류 점검</span><em data-ko="테마 태깅이 맞나" data-en="Is the tagging right?">테마 태깅이 맞나</em></div>
       <div><b>6</b> <span data-ko="수익률 기준" data-en="Return basis">수익률 기준</span><em data-ko="다른 화면과 왜 다른가" data-en="Why figures differ">다른 화면과 왜 다른가</em></div>
     </div>
@@ -643,9 +644,9 @@ footer .disc + .disc{margin-top:12px;}
       <div class="guide-head">
         <span class="num" data-ko="1-1" data-en="1-1">1-1</span>
         <div>
-          <h4 data-ko="맨 왼쪽 &quot;비교&quot; 칸 — 담기" data-en="The “Compare” column — picking">맨 왼쪽 &quot;비교&quot; 칸 — 담기</h4>
-          <p data-ko="나중에 견줄 것들을 골라 두는 자리입니다. 체크만 하면 담기고, 담은 것은 비교 화면에서 한꺼번에 봅니다."
-             data-en="Pick the funds you want to compare later, then view them together on the Compare screen.">나중에 견줄 것들을 골라 두는 자리입니다.</p>
+          <h4 data-ko="&quot;비교&quot; 칸 — 담기" data-en="The “Compare” column — picking">&quot;비교&quot; 칸 — 담기</h4>
+          <p data-ko="나중에 견줄 것들을 골라 두는 자리입니다. <b>ETF 찾기</b>와 <b>랭킹</b> 두 화면에 같은 칸이 있고, <u>비교함은 하나</u>입니다."
+             data-en="Pick funds to compare later. The same column appears on both Browse and Rankings, and the tray is shared.">나중에 견줄 것들을 골라 두는 자리입니다.</p>
         </div>
       </div>
       <div class="guide-body">
@@ -660,10 +661,16 @@ footer .disc + .disc{margin-top:12px;}
               data-en="<b>With only one picked</b> the Compare button stays disabled — comparing needs at least two."></li>
           <li data-ko="<b>8개가 차면</b> 나머지 체크상자가 잠기고 띠에 <b>가득 참</b>이 붙습니다. 다른 것을 담으려면 담긴 것을 하나 풀거나 <b>비우기</b>를 누르십시오."
               data-en="<b>At 8 the remaining boxes lock</b> and the bar shows “full”. Untick one, or press Clear."></li>
+          <li data-ko="<b>랭킹 화면에서도 같은 칸으로 담습니다.</b> 순위를 훑다 마음에 드는 것이 보이면 그 자리에서 체크하면 됩니다 — 찾기 화면으로 돌아가 이름으로 다시 찾을 필요가 없습니다. <u>어느 화면에서 담든 비교함은 하나</u>라, 랭킹에서 담은 것이 찾기 화면에도 그대로 보입니다."
+              data-en="<b>The Rankings screen has the same column.</b> Tick a fund right where you see it in the ranking — no need to go back and search for it. The tray is shared across screens."></li>
         </ol>
         <figure class="shot" data-shot="picked">
           <figcaption data-ko="세 개를 담은 모습 — 담긴 줄의 색·왼쪽 띠, 그리고 목록 위의 비교함 띠"
                       data-en="Three picked — tinted rows with an orange bar, and the tray bar above the list">세 개를 담은 모습</figcaption>
+        </figure>
+        <figure class="shot" data-shot="rankpicked">
+          <figcaption data-ko="랭킹 화면에도 같은 비교 칸이 있습니다 — 순위를 보다 그 자리에서 담습니다"
+                      data-en="The same Compare column on the Rankings screen">랭킹 화면에도 같은 비교 칸이 있습니다</figcaption>
         </figure>
       </div>
       <div class="tip" data-ko="<b>담아 둔 것은 화면을 옮겨도 남습니다.</b> 조건을 바꾸거나 다른 탭에 다녀와도 비교함은 그대로입니다. 다만 <u>파일을 다시 열면 비워집니다</u> — 저장되지 않습니다."
@@ -717,8 +724,8 @@ footer .disc + .disc{margin-top:12px;}
       </div>
       <div class="guide-body">
         <ol class="steps">
-          <li data-ko="<b>먼저 담습니다.</b> ETF 찾기에서 맨 왼쪽 <b>비교</b> 칸을 체크해 2~8개를 고릅니다. 하나만 담으면 비교할 것이 없어 <b>비교 화면으로</b> 단추가 잠겨 있습니다."
-              data-en="<b>Tick 2–8 funds</b> in the Compare column on the Browse screen. With only one picked the Compare button stays disabled."></li>
+          <li data-ko="<b>먼저 담습니다.</b> <b>ETF 찾기</b> 또는 <b>랭킹</b> 화면에서 맨 왼쪽 <b>비교</b> 칸을 체크해 2~8개를 고릅니다. 하나만 담으면 비교할 것이 없어 <b>비교 화면으로</b> 단추가 잠겨 있습니다."
+              data-en="<b>Tick 2–8 funds</b> in the Compare column — on the Browse or the Rankings screen. With only one picked the Compare button stays disabled."></li>
           <li data-ko="<b>비교 탭으로 옮깁니다.</b> 담은 것들의 요약이 나란히 놓이고, 그 아래에 <b>겹침 표</b>가 나옵니다."
               data-en="<b>Switch to Compare.</b> Summaries sit side by side, with an overlap table below."></li>
           <li data-ko="<b>겹침 표를 읽습니다.</b> 칸의 숫자는 두 ETF가 상위 10종목에서 공유하는 <u>비중 합</u>입니다. 진할수록 많이 겹칩니다."
@@ -784,6 +791,8 @@ footer .disc + .disc{margin-top:12px;}
               data-en="<b>Leveraged and inverse funds are off by default</b> — they would dominate the top."></li>
           <li data-ko="<b>줄을 누르면</b> 표 아래에 그 ETF의 상세가 열립니다. 순위표는 밀리지 않습니다."
               data-en="<b>Click a row</b> — detail opens below without pushing the tables."></li>
+          <li data-ko="<b>맨 왼쪽 &quot;비교&quot; 칸을 체크하면</b> 여기서도 비교함에 담깁니다. 찾기 화면과 같은 비교함이라, 담은 것은 어느 화면에서든 보입니다."
+              data-en="<b>Tick the “Compare” box</b> here too — it is the same tray as on the Browse screen."></li>
         </ol>
         <figure class="shot" data-shot="rank">
           <figcaption data-ko="수익률 상위 · 하위" data-en="Top and bottom returns">수익률 상위 · 하위</figcaption>
@@ -1249,25 +1258,30 @@ var COLUMNS = [
  * 자리를 아예 비운다 — 늘 떠 있으면 잡음이다.
  */
 function renderBasketBar() {
-  var bar = el('basket-bar');
-  if (!bar) return;
+  // 찾기와 랭킹 두 화면에서 같은 비교함을 쓴다. 한쪽에만 띠를 두면 랭킹에서
+  // 담아 놓고 아무 표시가 없어, 찾기에서 겪던 혼란이 그대로 되풀이된다.
+  var bars = [el('basket-bar'), el('rank-basket-bar')].filter(Boolean);
+  if (!bars.length) return;
   var picks = state.basket.map(byId).filter(Boolean);
   // 담긴 게 없으면 자리를 완전히 비운다. 클래스까지 떼야 테두리가 안 남는다.
-  if (!picks.length) { bar.className = ''; bar.innerHTML = ''; return; }
-  bar.className = 'basket-bar';
+  if (!picks.length) {
+    bars.forEach(function (b) { b.className = ''; b.innerHTML = ''; });
+    return;
+  }
   var names = picks.map(function (e) { return etfName(e); }).join(' · ');
   var full = picks.length >= MAX_COMPARE;
-  bar.innerHTML =
+  var barHtml =
     '<span class="cnt">' + (lang === 'ko'
       ? '비교함 ' + picks.length + ' / ' + MAX_COMPARE + '개'
       : picks.length + ' / ' + MAX_COMPARE + ' picked') + '</span>' +
     '<span class="names" title="' + esc(names) + '">' + esc(names) + '</span>' +
     (full ? '<span class="badge warn">' + (lang === 'ko' ? '가득 참' : 'full') + '</span>' : '') +
-    '<button type="button" id="basket-clear">' + (lang === 'ko' ? '비우기' : 'Clear') + '</button>' +
-    '<button type="button" class="go" id="basket-go"' +
+    '<button type="button" class="basket-clear">' + (lang === 'ko' ? '비우기' : 'Clear') + '</button>' +
+    '<button type="button" class="go basket-go"' +
     (picks.length < 2 ? ' disabled title="' +
       (lang === 'ko' ? '두 개 이상 담아야 비교할 수 있습니다' : 'Pick at least two') + '"' : '') +
     '>' + (lang === 'ko' ? '비교 화면으로 →' : 'Compare →') + '</button>';
+  bars.forEach(function (b) { b.className = 'basket-bar'; b.innerHTML = barHtml; });
 }
 
 function renderHead() {
@@ -1966,7 +1980,7 @@ function renderCompare() {
   var picks = state.basket.map(byId).filter(Boolean);
   if (picks.length < 1) {
     node.innerHTML = '<div class="empty">' + (lang === 'ko'
-      ? 'ETF 찾기 탭에서 맨 왼쪽 <b>비교</b> 칸을 체크해 담으면 여기에서 비교됩니다. 최대 8개.'
+      ? 'ETF 찾기 또는 랭킹 탭에서 맨 왼쪽 <b>비교</b> 칸을 체크해 담으면 여기에서 비교됩니다. 최대 8개.'
       : 'Tick the Compare box in the Browse tab. Up to eight.') + '</div>';
     return;
   }
@@ -2170,14 +2184,28 @@ function renderReverse() {
    ══════════════════════════════════════════════════════════ */
 function rankTable(title, rows, valueFn, valueLabel) {
   if (!rows.length) return '';
+  // 순위를 훑다가 마음에 드는 것을 그 자리에서 담을 수 있어야 한다. 찾기
+  // 화면으로 돌아가 이름으로 다시 찾게 만들 이유가 없다. 찾기와 같은
+  // 체크상자를 쓰고 같은 비교함에 담는다.
   var html = '<div class="card"><h4 style="margin-top:0">' + esc(title) + '</h4>' +
     '<div class="table-wrap"><table><thead><tr>' +
-    '<th style="width:30px"></th><th>ETF</th><th class="num">' + esc(valueLabel) + '</th>' +
+    '<th style="width:26px"></th>' +
+    '<th class="pick-th">' + (lang === 'ko' ? '비교' : 'Cmp') + '</th>' +
+    '<th>ETF</th><th class="num">' + esc(valueLabel) + '</th>' +
     '</tr></thead><tbody>';
   rows.forEach(function (e, i) {
+    var inBasket = state.basket.indexOf(e.id) >= 0;
+    var full = !inBasket && state.basket.length >= MAX_COMPARE;
     html += '<tr class="clickable' + (state.rankSelected === e.id ? ' selected' : '') +
-      '" data-id="' + esc(e.id) + '">' +
+      (inBasket ? ' picked' : '') + '" data-id="' + esc(e.id) + '">' +
       '<td class="dim num">' + (i + 1) + '</td>' +
+      '<td class="pick-cell"><label class="pick-lbl" title="' +
+        (full ? (lang === 'ko' ? '비교함이 찼습니다 (최대 ' + MAX_COMPARE + '개)' : 'Compare tray is full')
+              : (lang === 'ko' ? '비교함에 담기' : 'Add to compare')) + '">' +
+        '<input type="checkbox" data-pick="' + esc(e.id) + '"' +
+        (inBasket ? ' checked' : '') + (full ? ' disabled' : '') +
+        ' aria-label="' + esc((lang === 'ko' ? '비교함에 담기: ' : 'Add to compare: ') + etfName(e)) +
+        '"></label></td>' +
       '<td>' + esc(etfName(e)) + '<br><span class="dim" style="font-size:13px">' +
       esc(e.code) + ' · ' + esc(t(MARKET_LABEL[e.market])) + ' · ' + esc(e.manager || '') + '</span></td>' +
       '<td class="num">' + valueFn(e) + '</td></tr>';
@@ -2296,6 +2324,7 @@ function renderRank() {
   // 갔는지 다시 찾아야 하므로, 자리를 안 흔드는 쪽으로 간다.
   html += '<div id="rank-detail"></div>';
   el('rank-body').innerHTML = html;
+  renderBasketBar();
 
   // 조건을 바꿔 대상에서 빠진 ETF 의 상세가 남아 있으면 지금 순위와 무관한
   // 화면이 된다.
@@ -2642,6 +2671,11 @@ function showTab(name) {
   for (var i = 0; i < btns.length; i++) {
     btns[i].setAttribute('aria-selected', btns[i].getAttribute('data-tab') === name ? 'true' : 'false');
   }
+  // 숨어 있는 동안 비교함이 바뀌었을 수 있다. 그대로 두면 랭킹에서 담은 것이
+  // 찾기 화면에 안 보이고 반대도 마찬가지다 — 실제로 그랬다.
+  if (name === 'browse') renderList();
+  else if (name === 'rank') renderRank();
+  else renderBasketBar();
 }
 
 /**
@@ -2827,18 +2861,24 @@ function bind() {
     renderList();
   });
 
-  el('basket-bar').addEventListener('click', function (ev) {
-    var b = ev.target.closest('button');
-    if (!b) return;
-    if (b.id === 'basket-clear') {
-      state.basket = [];
-      state.cmpSelected = null;
-      renderList();
-      renderCompare();
-    } else if (b.id === 'basket-go' && !b.disabled) {
-      showTab('compare');
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    }
+  // 띠는 찾기·랭킹 두 곳에 있다. 한 곳에만 걸면 다른 쪽 단추가 죽는다.
+  ['basket-bar', 'rank-basket-bar'].forEach(function (slot) {
+    var node = el(slot);
+    if (!node) return;
+    node.addEventListener('click', function (ev) {
+      var b = ev.target.closest('button');
+      if (!b) return;
+      if (b.classList.contains('basket-clear')) {
+        state.basket = [];
+        state.cmpSelected = null;
+        renderList();
+        renderRank();
+        renderCompare();
+      } else if (b.classList.contains('basket-go') && !b.disabled) {
+        showTab('compare');
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
+    });
   });
 
   el('list-head').addEventListener('click', function (ev) {
@@ -2870,6 +2910,7 @@ function bind() {
       else if (state.basket.length >= MAX_COMPARE) return;
       else state.basket.push(id);
       renderList();
+      renderRank();
       renderCompare();
       return;
     }
@@ -2897,6 +2938,7 @@ function bind() {
       state.cmpSelected = null;
       renderCompare();
       renderList();
+      renderRank();          // 랭킹도 같은 비교함을 본다
       return;
     }
     if (ev.target.closest('[data-close-detail]')) {
@@ -2944,6 +2986,24 @@ function bind() {
   });
 
   el('rank-body').addEventListener('click', function (ev) {
+    // 찾기 화면과 같은 규칙 — 비교 칸을 누르면 담고, 상세는 열지 않는다.
+    // 칸 전체가 눌려야 하므로 상자를 못 찾으면 칸에서 찾아 쓴다.
+    var rCell = ev.target.closest('.pick-cell');
+    var rPick = ev.target.closest('[data-pick]') || (rCell ? rCell.querySelector('[data-pick]') : null);
+    if (rPick) {
+      ev.stopPropagation();
+      if (rPick.disabled) return;                 // 가득 찼다 — 이미 잠가 두었다
+      var pid = rPick.getAttribute('data-pick');
+      var pat = state.basket.indexOf(pid);
+      if (pat >= 0) state.basket.splice(pat, 1);
+      else if (state.basket.length >= MAX_COMPARE) return;
+      else state.basket.push(pid);
+      // 세 화면이 같은 비교함을 본다. 하나만 다시 그리면 나머지가 어긋난다.
+      renderRank();
+      renderList();
+      renderCompare();
+      return;
+    }
     if (ev.target.closest('[data-close-detail]')) {
       state.rankSelected = null;
       renderRank();
