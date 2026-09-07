@@ -17,6 +17,10 @@ on:
         description: 'N건마다 1건 (운용사 섞기)'
         type: string
         default: '79'
+      codes:
+        description: '표준코드를 쉼표로 주면 표본 대신 그 종목만 본다 (창구가 짚어 준 종목 확인용)'
+        type: string
+        default: ''
       show:
         description: '못 읽은 항목의 원문을 찍어 볼 항목 (쉼표 구분, none = 성공률만)'
         type: string
@@ -61,8 +65,10 @@ jobs:
         env:
           LIMIT: ${{ inputs.limit || '40' }}
           EVERY: ${{ inputs.every || '79' }}
+          CODES: ${{ inputs.codes || '' }}
           SHOW: ${{ inputs.show || 'clsAExp,clsA,varPct,strategy' }}
           VALUES: ${{ inputs.values || 'none' }}
         run: |
           node scripts/probe_fund_rules.mjs \
-            --limit "$LIMIT" --every "$EVERY" --show "$SHOW" --values "$VALUES"
+            --limit "$LIMIT" --every "$EVERY" --codes "$CODES" \
+            --show "$SHOW" --values "$VALUES"
