@@ -1,0 +1,47 @@
+name: 금투협 투자설명서 경로 탐색 (조사용)
+
+# 공모펀드 카탈로그(원천)에 투자설명서 주소가 없는 175종목을 금융투자협회
+# 전자공시에서 메울 수 있는지 알아본다. 개발 PC 는 dis.kofia.or.kr 이 막혀 있어
+# 러너에서 돈다. 저장소에 아무것도 쓰지 않고 잡 로그로만 결과를 본다.
+
+on:
+  workflow_dispatch:
+    inputs:
+      codes:
+        description: '표준코드 (쉼표 구분 · 비우면 설명서 없는 종목에서 고른다)'
+        type: string
+        default: ''
+  push:
+    branches:
+      - 'claude/complete-sales-script-**'
+    paths:
+      - 'scripts/probe_kofia_prospectus.mjs'
+      - '.github/workflows/kofia-probe.yml'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: kofia-probe
+  cancel-in-progress: true
+
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref_name }}
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Playwright 설치
+        run: npm i -D playwright@1.56.1 && npx playwright install --with-deps chromium
+
+      - name: 탐색
+        env:
+          CODES: ${{ inputs.codes || '' }}
+        run: node scripts/probe_kofia_prospectus.mjs --codes "$CODES"
