@@ -186,13 +186,13 @@ check('띠에 서식이 붙는다', (await page.locator('#basket-bar.basket-bar'
 const barTxt1 = await page.locator('#basket-bar').textContent();
 check('띠가 담긴 개수를 알린다', /1\s*\/\s*8|1 \/ 8/.test(barTxt1 || ''), (barTxt1 || '').trim().slice(0, 40));
 check('하나만 담으면 비교로 못 간다',
-      await page.locator('#basket-go').isDisabled());
+      await page.locator('#basket-bar .basket-go').isDisabled());
 
 for (let i = 1; i < 8; i += 1) {
   await page.locator('#list-body input[data-pick]').nth(i).click();
 }
 await page.waitForTimeout(150);
-check('둘 이상이면 비교로 갈 수 있다', !(await page.locator('#basket-go').isDisabled()));
+check('둘 이상이면 비교로 갈 수 있다', !(await page.locator('#basket-bar .basket-go').isDisabled()));
 // 가득 차면 안 담긴 상자는 눌리지 않아야 한다 — 눌러 놓고 경고창을 띄우는 것보다 낫다.
 const disabledCnt = await page.locator('#list-body input[data-pick]:disabled').count();
 check('가득 차면 나머지 상자가 잠긴다', disabledCnt > 0, `${disabledCnt}개 잠김`);
@@ -506,6 +506,93 @@ const rowsEn = await page.locator('#list-body tr').count();
 check('영문 상태에서도 목록이 그려진다', rowsEn > 0, `${rowsEn}행`);
 await page.locator('.lang-toggle button[data-lang="ko"]').click();
 
+// ── 랭킹 화면에서도 담을 수 있는가.
+//    순위를 훑다 마음에 드는 것을 그 자리에서 담을 수 있어야 한다. 세 화면이
+//    같은 비교함을 보므로, 한쪽에서 담은 것이 다른 쪽에도 보여야 한다.
+{
+  // 먼저 비운다 — 앞 단계가 무엇을 남겼든 여기부터는 우리가 만든 상태로 본다.
+  await page.locator('.tabs button[data-tab="browse"]').click();
+  await page.waitForTimeout(200);
+  if (await page.locator('#basket-bar .basket-clear').count()) {
+    await page.locator('#basket-bar .basket-clear').click();
+    await page.waitForTimeout(200);
+  }
+
+  await page.locator('.tabs button[data-tab="rank"]').click();
+  await page.waitForTimeout(400);
+  const rBoxes = await page.locator('#rank-body input[type="checkbox"][data-pick]').count();
+  check('랭킹에도 체크상자가 있다', rBoxes > 0, `${rBoxes}개`);
+  const rHead = await page.locator('#rank-body th.pick-th').first().textContent();
+  check('랭킹 비교 칸에 머리글이 있다', /비교|Cmp/.test(rHead || ''), (rHead || '').trim());
+  check('담기 전에는 랭킹 띠가 없다',
+        (await page.locator('#rank-basket-bar.basket-bar').count()) === 0);
+
+  // 랭킹에서 담는다.
+  await page.locator('#rank-body input[data-pick]').first().click();
+  await page.waitForTimeout(300);
+  check('랭킹에서 담으면 상자가 켜진다',
+        await page.locator('#rank-body input[data-pick]').first().isChecked());
+  check('랭킹에서 담긴 줄이 표시된다',
+        (await page.locator('#rank-body tr.picked').count()) > 0,
+        `${await page.locator('#rank-body tr.picked').count()}줄`);
+  check('랭킹에도 비교함 띠가 뜬다',
+        /1\s*\/\s*8/.test(await page.locator('#rank-basket-bar').textContent() || ''),
+        (await page.locator('#rank-basket-bar').textContent() || '').trim().slice(0, 24));
+  // 랭킹 표는 다섯 개다. 같은 ETF 가 여러 표에 나오면 모두 켜져 있어야 한다.
+  const sameIdChecked = await page.evaluate(() => {
+    const first = document.querySelector('#rank-body input[data-pick]');
+    if (!first) return null;
+    const id = first.getAttribute('data-pick');
+    const all = [...document.querySelectorAll(`#rank-body input[data-pick="${CSS.escape(id)}"]`)];
+    return { total: all.length, checked: all.filter((x) => x.checked).length };
+  });
+  check('같은 ETF 가 여러 표에 있어도 모두 켜진다',
+        sameIdChecked && sameIdChecked.total === sameIdChecked.checked,
+        sameIdChecked ? `${sameIdChecked.checked}/${sameIdChecked.total}` : '없음');
+
+  // 찾기 화면으로 옮겨도 같은 비교함이어야 한다.
+  await page.locator('.tabs button[data-tab="browse"]').click();
+  await page.waitForTimeout(300);
+  check('랭킹에서 담은 것이 찾기 화면에도 보인다',
+        /1\s*\/\s*8/.test(await page.locator('#basket-bar').textContent() || ''));
+
+  // 가득 채워 잠기는지.
+  await page.locator('.tabs button[data-tab="rank"]').click();
+  await page.waitForTimeout(300);
+  // 같은 ETF 가 다섯 표 중 여러 곳에 나온다. 켜진 **상자 수**로 세면 한 종목이
+  // 두 번 세어져 여덟 개가 찬 줄 안다 — 비교함의 실제 개수로 센다.
+  const trayCount = async () => page.evaluate(() => {
+    const ids = new Set([...document.querySelectorAll('#rank-body input[data-pick]')]
+      .filter((x) => x.checked).map((x) => x.getAttribute('data-pick')));
+    return ids.size;
+  });
+  for (let i = 0; i < 30; i += 1) {
+    if ((await trayCount()) >= 8) break;
+    const next = page.locator('#rank-body input[data-pick]:not(:disabled):not(:checked)');
+    if (!(await next.count())) break;
+    await next.first().click();
+    await page.waitForTimeout(120);
+  }
+  check('랭킹에서 여덟 개까지 담긴다', (await trayCount()) === 8, `${await trayCount()}종목`);
+  check('랭킹에서도 가득 차면 잠긴다',
+        (await page.locator('#rank-body input[data-pick]:disabled').count()) > 0,
+        `${await page.locator('#rank-body input[data-pick]:disabled').count()}개 잠김`);
+  check('랭킹 띠도 가득 찼다고 알린다',
+        /가득|full/.test(await page.locator('#rank-basket-bar').textContent() || ''));
+
+  // 랭킹 띠의 비우기가 세 화면을 모두 되돌리는가.
+  await page.locator('#rank-basket-bar .basket-clear').click();
+  await page.waitForTimeout(300);
+  check('랭킹 띠의 비우기가 동작한다',
+        (await page.locator('#rank-basket-bar.basket-bar').count()) === 0
+        && (await page.locator('#rank-body tr.picked').count()) === 0);
+  await page.locator('.tabs button[data-tab="browse"]').click();
+  await page.waitForTimeout(250);
+  check('비우면 찾기 화면도 같이 비워진다',
+        (await page.locator('#basket-bar.basket-bar').count()) === 0
+        && (await page.locator('#list-body tr.picked').count()) === 0);
+}
+
 // ── 사용법이 적어 둔 것이 실제와 맞는가.
 //    도움말은 화면과 어긋나는 순간 거짓말이 된다. 적어 둔 주장을 눌러서 본다.
 {
@@ -542,8 +629,24 @@ await page.locator('.lang-toggle button[data-lang="ko"]').click();
   await page.waitForTimeout(250);
   check('도움말대로 탭을 옮겼다 와도 담아 둔 것이 남는다',
         /1\s*\/\s*8/.test(await page.locator('#basket-bar').textContent() || ''));
-  // 주장 5 — "비우기를 누르면 비워진다"
-  await page.locator('#basket-clear').click();
+  // 주장 5 — "랭킹 화면에서도 같은 칸으로 담는다"
+  await page.locator('.tabs button[data-tab="rank"]').click();
+  await page.waitForTimeout(350);
+  const rankBoxBefore = await page.locator('#rank-body input[data-pick]:checked').count();
+  await page.locator('#rank-body input[data-pick]:not(:disabled):not(:checked)').first().click();
+  await page.waitForTimeout(300);
+  check('도움말대로 랭킹에서도 담긴다',
+        (await page.locator('#rank-body input[data-pick]:checked').count()) > rankBoxBefore);
+  check('도움말대로 비교함은 하나다 — 찾기 화면 개수가 함께 늘어난다',
+        /2\s*\/\s*8/.test(await page.locator('#rank-basket-bar').textContent() || ''),
+        (await page.locator('#rank-basket-bar').textContent() || '').trim().slice(0, 24));
+  await page.locator('.tabs button[data-tab="browse"]').click();
+  await page.waitForTimeout(300);
+  check('도움말대로 랭킹에서 담은 것이 찾기 화면에도 보인다',
+        /2\s*\/\s*8/.test(await page.locator('#basket-bar').textContent() || ''));
+
+  // 주장 6 — "비우기를 누르면 비워진다"
+  await page.locator('#basket-bar .basket-clear').click();
   await page.waitForTimeout(200);
   check('도움말대로 비우기가 동작한다',
         (await page.locator('#basket-bar.basket-bar').count()) === 0
