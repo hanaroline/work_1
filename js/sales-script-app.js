@@ -254,6 +254,24 @@
      */
     var FP = window.FUND_PROSPECTUS;
     var ex = (FP && FP.items && FP.items[it.code]) || null;
+    var exSrc = ex ? '판매회사 수집분' : null;
+    /**
+     * 두 번째 원천 — 금융투자협회 전자공시.
+     *
+     * 판매회사 원천(카탈로그)에 설명서 주소가 없는 종목이 3,194개 중 175개다
+     * (목표전환형·사모투자재간접·지수연계가 대부분이고 대개 최근 설정분).
+     * 그 종목은 설명서에서만 나오는 항목이 통째로 「확인필요」로 남았다.
+     * 금투협은 공모펀드 투자설명서를 법정 공시하므로 그 빈자리를 메운다.
+     *
+     * 순서는 판매회사 수집분이 먼저다 — 항목 추출률이 더 높고, 두 원천이 같은
+     * 종목을 가질 때 값이 갈리면 창구가 어느 쪽을 읽는지 알 수 없게 된다.
+     * 금투협은 「없을 때만」 쓴다.
+     */
+    if (!ex) {
+      var FK = window.FUND_PROSPECTUS_KOFIA;
+      var kx = (FK && FK.items && FK.items[it.code]) || null;
+      if (kx) { ex = kx; FP = FK; exSrc = '금융투자협회 전자공시'; }
+    }
     if (ex) {
       /* 값은 pool 에 한 번만 담고 항목은 번호로 가리킨다 (문구가 펀드마다 겹친다) */
       var pl = FP.pool;
@@ -275,6 +293,7 @@
        * 창구는 등록됐다는데 확인필요가 열 몇 건인 것을 보고 고장으로 여긴다.
        */
       prosRead: !!ex,
+      prosSrc: exSrc,
       docMissing: !(it.docT || it.docG)
     };
   }
@@ -3116,7 +3135,9 @@
     var stateColor = !d ? 'r' : (prosGap ? 'o' : 'g');
     var stateSub = !d ? '아래에서 등록하세요'
       : esc(SRC[d.source] || d.source) + ' · ' + esc(String(d.registeredAt).slice(0, 16).replace('T', ' '))
-        + (prosGap ? '<br><b style="color:var(--warn)">카탈로그 값만 있음 · 설명서 원문 없음</b>' : '');
+        + (prosGap ? '<br><b style="color:var(--warn)">카탈로그 값만 있음 · 설명서 원문 없음</b>' : '')
+        /* 설명서를 어느 원천에서 읽었는지 밝힌다 — 창구가 원문을 찾아갈 곳이 다르다 */
+        + (!prosGap && d.prosSrc ? '<br>설명서 판독: ' + esc(d.prosSrc) : '');
     h.push('<div class="summary">');
     h.push('<div class="stat"><div class="l">투자설명서 등록 상태</div><div class="v2 ' + stateColor + '" style="font-size:24px;padding-top:6px">'
       + stateLabel + '</div><div class="s">' + stateSub + '</div></div>');
