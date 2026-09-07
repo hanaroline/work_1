@@ -253,11 +253,18 @@ for (const r of rows) {
     }
   }
 
+  // 기준가가 1원 미만이면 값이 아니라 깨진 레코드다. 수집기가 기준가·등락률·
+  // 설정액·순자산을 함께 비운다(scripts/collect_fund_kr.mjs 참고). 여기서도
+  // 같은 규칙으로 기대값을 만들어야 한다 — 안 그러면 규칙이 맞게 도는 것을
+  // 전부 "불일치" 로 잡는다.
+  const srcBp = toNum(d.basePrice);
+  const priceBroken = srcBp != null && srcBp < 1;
+
   // 수치로 옮긴 값
   const numeric = [
-    ['basePrice', toNum(d.basePrice), stored.basePrice ?? null],
-    ['changePrice', toNum(d.changePrice), stored.changePrice ?? null],
-    ['changeRate', toNum(d.returnIndex), stored.changeRate ?? null],
+    ['basePrice', priceBroken ? null : srcBp, stored.basePrice ?? null],
+    ['changePrice', priceBroken ? null : toNum(d.changePrice), stored.changePrice ?? null],
+    ['changeRate', priceBroken ? null : toNum(d.returnIndex), stored.changeRate ?? null],
   ];
   for (const [field, srcV, gotV] of numeric) {
     const ok = near(srcV, gotV);
@@ -275,6 +282,8 @@ for (const r of rows) {
       const rel = Math.abs(rawNav / rawAum - bp / 1000) / (bp / 1000);
       if (!Number.isFinite(rel) || rel > 0.2) { expectAum = null; expectNav = null; dropped = true; }
     }
+    // 기준가가 깨졌으면 그것을 낳은 순자산도 못 믿는다 — 셋을 함께 비운다.
+    if (priceBroken) { expectAum = null; expectNav = null; }
     const okAum = near(expectAum, stored.aum ?? null, 1);
     const okNav = near(expectNav, stored.nav ?? null, 1);
     score('aum', okAum); score('nav', okNav);
@@ -288,6 +297,12 @@ for (const r of rows) {
     if (!okDropMark) {
       flag('error', 'aumDropped-표시어긋남', code, nm,
            `비워야 함=${dropped} vs 기록=${!!stored.aumDropped}`);
+    }
+    const okPriceMark = priceBroken === !!stored.priceDropped;
+    score('priceDropped표시', okPriceMark);
+    if (!okPriceMark) {
+      flag('error', 'priceDropped-표시어긋남', code, nm,
+           `비워야 함=${priceBroken}(원천 기준가 ${srcBp}) vs 기록=${!!stored.priceDropped}`);
     }
   }
 

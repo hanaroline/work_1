@@ -385,6 +385,14 @@ for (const f of FUNDS) {
          `${f.aumDropped.basePrice} 와 앞뒤가 안 맞아(상대오차 ` +
          `${(f.aumDropped.relErr * 100).toFixed(0)}%) 싣지 않았다`);
   }
+  // 기준가가 1원 미만이라 셋을 함께 비운 경우. 항등식이 맞아도 셋 다 틀릴 수
+  // 있어서 생긴 규칙이다 — scripts/collect_fund_kr.mjs 의 설명 참고.
+  if (f.priceDropped) {
+    flag('info', '기준가-싣지않음', f,
+         `기준가 ${f.priceDropped.basePrice} 는 1,000좌 기준으로 말이 안 되는 ` +
+         `크기라 등락률·설정액(${f.priceDropped.aum})·순자산(${f.priceDropped.nav}) 과 ` +
+         `함께 싣지 않았다`);
+  }
 
   // ── 9. 총보수 ───────────────────────────────────────────────────────────
   // 이 원천은 총보수를 주지 않는다(표본 60 중 59가 null). 그래서 화면에도
