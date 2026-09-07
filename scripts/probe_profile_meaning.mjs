@@ -20,7 +20,12 @@ const PAGES = [
   ['투자자정보확인서', 'https://securities.miraeasset.com/hku/hku4028/c01.do'],
   ['투자권유시행세칙', 'https://securities.miraeasset.com/hki/hki3072/n02.do'],
   ['고객유의사항 안내', 'https://securities.miraeasset.com/hki/hki3072/n01.do'],
-  ['금융소비자보호', 'https://securities.miraeasset.com/hki/hki3071/n01.do']
+  ['금융소비자보호', 'https://securities.miraeasset.com/hki/hki3071/n01.do'],
+  /* 시행세칙에 이름은 있으나 설명문은 없었다 — 준칙·표준투자권유준칙 쪽도 본다 */
+  ['투자권유준칙', 'https://securities.miraeasset.com/hki/hki3072/n03.do'],
+  ['금융소비자보호 내부통제', 'https://securities.miraeasset.com/hki/hki3071/n02.do'],
+  /* 협회 표준투자권유준칙 — 회사 서식이 이것을 따른다 */
+  ['금융투자협회 표준투자권유준칙 안내', 'https://www.kofia.or.kr/index.do']
 ];
 
 const TYPES = ['성장형', '성장추구형', '위험중립형', '안정추구형', '안정형'];
@@ -81,8 +86,26 @@ for (const [name, url] of PAGES) {
     continue;
   }
 
-  /* 유형 이름이 나오는 줄과 그 뒤 몇 줄을 그대로 찍는다 — 설명문이 옆 칸에 있다 */
   const lines = t.split('\n');
+
+  /*
+   * 이미 가진 네 문장은 「… 고객 유형입니다」·「… 타입입니다」 로 끝난다. 그 어미가
+   * 이 화면에 있는지가 갈림길이다 — 있으면 설명문이 실린 화면이고, 없으면 이름과
+   * 등급 대응만 있는 화면이다(그러면 확인서 서식에서 받아야 한다).
+   */
+  const ENDS = /(?:고객\s*유형입니다|타입입니다)/;
+  const desc = lines.filter((l) => ENDS.test(l));
+  console.log('   설명문 꼴의 줄 ' + desc.length + '건');
+  desc.slice(0, 12).forEach((l) => console.log('   ★ ' + l.slice(0, 400)));
+
+  /* 별지·별표 서식으로 가는 길이 있는지 — 설명문은 확인서 서식에 있을 수 있다 */
+  const forms = lines.filter((l) => /별지|별표|서식|확인서/.test(l) && l.length < 120);
+  if (forms.length) {
+    console.log('   서식 관련 줄 ' + forms.length + '건 (앞 8건)');
+    forms.slice(0, 8).forEach((l) => console.log('   · ' + l.slice(0, 160)));
+  }
+
+  /* 유형 이름이 나오는 줄과 그 뒤 몇 줄 — 설명문이 옆 칸에 있으면 여기서 보인다 */
   for (let i = 0; i < lines.length; i++) {
     if (!TYPES.some((x) => lines[i].includes(x))) continue;
     console.log('   ┌ ' + (i + 1) + ': ' + lines[i].slice(0, 300));
