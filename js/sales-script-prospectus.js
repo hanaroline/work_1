@@ -450,7 +450,13 @@
               if (b.length <= 22 && !/니다|습니다|합니다/.test(b)) break;
               body.push(b);
             }
-            var nm = name.replace(/\s+/g, ' ').trim();
+            /*
+             * 번호가 이름과 같은 줄에 붙어 오는 설명서도 있다 —
+             * 「1 환율변동위험」 처럼 한 줄이다. 위의 「숫자만 있는 줄」 건너뛰기로는
+             * 걸러지지 않아, 원문에서 다시 읽었을 때 6,005건 중 14건이 그대로 남았다.
+             * 이름 앞의 번호는 여기서 뗀다.
+             */
+            var nm = name.replace(/\s+/g, ' ').trim().replace(/^\d{1,2}\s+(?=\S)/, '');
             if (body.length && !seen[nm]) {
               seen[nm] = 1;
               out.push({ name: nm, body: body.join(' ').replace(/\s+/g, ' ') });
