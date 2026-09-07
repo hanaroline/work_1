@@ -669,6 +669,32 @@ async function fetchDetail(code) {
     }
   }
 
+  // ── 셋이 서로 앞뒤가 맞아도 셋 다 틀릴 수 있다 ────────────────────────────
+  //
+  // 위 항등식은 **서로 맞는가**만 본다. 원천의 순자산 하나가 다른 단위로
+  // 들어오면 기준가도 그것에서 나오므로 셋이 사이좋게 맞으면서 셋 다 틀린다.
+  // 실제 사례 — 베어링글로벌하이일드[USD] K55302CE8539: 설정액 259억인데
+  // 순자산 124만원, 그래서 기준가 0.05. 항등식 잔차는 4.5%(한도 20% 안)라
+  // 위 규칙에 안 걸린다. 금투협 전자공시는 이 펀드의 기준가를 14.1568 로
+  // 준다(tools/discovery/fund_verify_kofia.md).
+  //
+  // 그래서 **크기 자체가 말이 되는가**를 따로 본다. 공모펀드 기준가는
+  // 1,000좌 기준으로 매기므로 1원 미만은 값이 아니라 깨진 레코드다.
+  // 한도를 1 로 둔 근거는 실물 분포다 — 3,194개 중 1 미만은 단 두 건이고
+  // (0.01·0.05) 둘 다 다른 증거로 깨진 것이 확인된다. 바로 위는 9.07 인
+  // 2배 인버스레버리지로, 여러 해에 걸쳐 99% 를 잃은 **진짜 값**이다.
+  // 한도를 100 쯤으로 올리면 그 멀쩡한 펀드들을 지운다.
+  //
+  // 셋을 함께 버린다. 기준가가 깨졌다는 것은 그것을 낳은 순자산이 깨졌다는
+  // 뜻이고, 설정액만 남기면 "설정액 259억 · 기준가 빈칸" 이라는 반쪽짜리
+  // 진술이 남는다.
+  let priceDropped = null;
+  if (bp != null && bp < 1) {
+    priceDropped = { basePrice: bp, aum: rawAum, nav: rawNav };
+    aum = null;
+    nav = null;
+  }
+
   return {
     name: d.fundName || null,
     type: d.parentPeerGroupName || null,
@@ -679,15 +705,18 @@ async function fetchDetail(code) {
     riskGrade: d.riskGrade ?? null,
     inceptionDate: d.inceptionDate || null,
     benchmarkName: d.benchmarkName || null,
-    basePrice: num(d.basePrice),
-    changePrice: num(d.changePrice),
-    changeRate: num(d.returnIndex),        // 원천이 1일 등락률을 returnIndex 로 준다
+    // 기준가가 1원 미만이면 값이 아니라 깨진 레코드다 — 위 참고. 등락률도
+    // 그 기준가에서 나온 것이므로 함께 비운다.
+    basePrice: priceDropped ? null : num(d.basePrice),
+    changePrice: priceDropped ? null : num(d.changePrice),
+    changeRate: priceDropped ? null : num(d.returnIndex),  // 원천이 1일 등락률을 returnIndex 로 준다
     tradeDate: d.tradeDate || null,
     // 설정액(설정원본, 액면 1,000 기준)과 순자산. 기준가와 앞뒤가 안 맞으면
     // 둘 다 싣지 않는다 — 위의 항등식 참고.
     aum,
     nav,
     aumDropped,
+    priceDropped,
     // 총보수는 펀드 자리에서는 거의 다 비어 있다(표본 60 중 59가 null).
     // 클래스 자리에는 차 있다 — classes[] 참고. 받아 두되 지어내지 않는다.
     totalFee: num(d.totalFee),
