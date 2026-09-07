@@ -79,11 +79,16 @@ await page.waitForTimeout(7000);
 
 console.log('   제목: ' + (await page.title().catch(() => '?')));
 console.log('   POST ' + posts.length + '건 · 문서로 보이는 요청 ' + docReqs.length + '건');
+/**
+ * 본문을 통째로 찍는다.
+ *
+ * 앞 판에서 서비스 이름과 길이만 찍었더니, 내가 조립한 본문(standardCd + uGb=Y)이
+ * 약관 한 건만 돌려주는 까닭을 알 수 없었다 (dbio_total_count_ = 1). 화면은 약관·
+ * 투자설명서·간이투자설명서 셋을 다 보여주므로, 길이가 다른 POST(420·431·429자)에
+ * 문서 종류를 가리는 인자가 더 있다. 그것을 봐야 한다.
+ */
 posts.forEach((b, i) => {
-  /* 어떤 서비스를 부르는지만 먼저 — 본문 전체는 길다 */
-  const svc = (b.match(/<(?:svcNm|serviceName|reqName)>([^<]+)</) || [])[1]
-    || (b.match(/([A-Za-z]+SO|[A-Za-z]+Srch[A-Za-z]*)/) || [])[1] || '(모름)';
-  console.log('     POST' + (i + 1) + ' 서비스 ' + svc + ' · ' + b.length + '자');
+  console.log('     POST' + (i + 1) + ' (' + b.length + '자) ' + b.replace(/\s+/g, ' ').trim());
 });
 
 /* 화면 안에 적힌 다른 화면 경로 — 설명서 화면이 어디인지 여기서 나온다 */
