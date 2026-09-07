@@ -27,6 +27,17 @@ const EVERY = Number(argOf('--every', 79)) || 79;
  * 짚어 준 종목을 그대로 봐야 규칙이 못 잡은 것인지 원문에 없는 것인지 가려진다.
  */
 const CODES = String(argOf('--codes', '')).split(/[,\s]+/).filter(Boolean);
+/**
+ * --lines 800:900 : 그 줄 범위를 그대로 찍는다.
+ *
+ * --show 는 「그 항목의 낱말이 든 줄」 만 찍으므로, 규칙을 아예 새로 써야 할 때는
+ * 그 사이에 무엇이 있는지 볼 수가 없다. risk2 가 요약표에 없고 본문
+ * 「10. 집합투자기구의 투자위험 / 가. 일반위험」 쪽에 있는 것을 그렇게 알아냈다.
+ */
+const LINES = (function (s) {
+  var m = String(s).match(/^(\d+)\s*[:~-]\s*(\d+)$/);
+  return m ? { from: +m[1], to: +m[2] } : null;
+}(argOf('--lines', '')));
 /* 못 읽었을 때 원문 줄을 찍어 볼 항목 */
 /* 'none' 이면 성공률만 낸다 — 표가 로그 끝에 오므로 한눈에 보인다 */
 const SHOW = String(argOf('--show', 'clsAExp,clsA,varPct,strategy'))
@@ -161,6 +172,17 @@ for (const f of VAL) {
   for (const s of seen.filter((x) => x.got[f] != null).slice(0, 6)) {
     console.log(`\n── ${un(s.it.name)}`);
     console.log(`   ${String(s.got[f]).slice(0, 320)}`);
+  }
+}
+
+/* 줄 범위를 그대로 — 규칙을 새로 쓸 때는 사이에 무엇이 있는지 봐야 한다 */
+if (LINES) {
+  for (const s of seen) {
+    const lines = s.text.split('\n');
+    console.log(`\n${'='.repeat(70)}\n▣ ${un(s.it.name)} (${s.it.code}) — ${LINES.from}~${LINES.to}행 / 전체 ${lines.length}행`);
+    for (let i = LINES.from; i <= Math.min(LINES.to, lines.length - 1); i++) {
+      console.log(`   ${String(i).padStart(5)}| ${lines[i].slice(0, 400)}`);
+    }
   }
 }
 

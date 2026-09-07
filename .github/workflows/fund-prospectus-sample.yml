@@ -29,6 +29,10 @@ on:
         description: '읽어 낸 값을 찍어 볼 항목 (내용이 맞는지 눈으로 본다)'
         type: string
         default: 'none'
+      lines:
+        description: '원문의 이 줄 범위를 그대로 찍는다 (예 800:900) — 규칙을 새로 쓸 때'
+        type: string
+        default: ''
   # 기본 브랜치에 없는 워크플로는 손으로 돌릴 수 없다 (GitHub 제약) —
   # 규칙이나 이 파일을 밀어 올리면 바로 돌도록 해 둔다.
   push:
@@ -68,7 +72,8 @@ jobs:
           CODES: ${{ inputs.codes || '' }}
           SHOW: ${{ inputs.show || 'clsAExp,clsA,varPct,strategy' }}
           VALUES: ${{ inputs.values || 'none' }}
+          LINES: ${{ inputs.lines || '' }}
         run: |
           node scripts/probe_fund_rules.mjs \
             --limit "$LIMIT" --every "$EVERY" --codes "$CODES" \
-            --show "$SHOW" --values "$VALUES"
+            --show "$SHOW" --values "$VALUES" --lines "$LINES"
