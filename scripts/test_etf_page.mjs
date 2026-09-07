@@ -204,6 +204,47 @@ check('비교에 8개까지 담긴다', cmpCards === 8, `${cmpCards}개`);
 const overlapCells = await page.locator('#compare-body .overlap-cell').count();
 check('중복도 표가 계산된다', overlapCells > 0, `${overlapCells}칸`);
 
+// ── 비교 화면에서 하나씩 빼기.
+//    지금까지 "비우기"(전부) 밖에 없어서, 여덟 개를 담아 놓고 하나만 바꾸려면
+//    처음부터 다시 담아야 했다.
+const dropBtns = await page.locator('#compare-body .cmp-drop').count();
+check('카드마다 빼기 단추가 있다', dropBtns === cmpCards, `${dropBtns}개 / 카드 ${cmpCards}개`);
+const dropSize = await page.locator('#compare-body .cmp-drop').first().boundingBox();
+check('빼기 단추를 누를 만하다',
+      dropSize && dropSize.width >= 24 && dropSize.height >= 24,
+      dropSize ? `${Math.round(dropSize.width)}×${Math.round(dropSize.height)}px` : '없음');
+const dropLabel = await page.locator('#compare-body .cmp-drop').first().getAttribute('aria-label');
+check('빼기 단추가 어느 ETF 인지 밝힌다', /빼기|Remove/.test(dropLabel || ''), (dropLabel || '').slice(0, 40));
+
+const beforeDrop = await page.locator('#compare-body .cmp-grid .card').count();
+const droppedName = await page.locator('#compare-body .cmp-grid .cmp-title').first().textContent();
+await page.locator('#compare-body .cmp-drop').first().click();
+await page.waitForTimeout(300);
+const afterDrop = await page.locator('#compare-body .cmp-grid .card').count();
+check('한 장을 빼면 하나만 줄어든다', afterDrop === beforeDrop - 1, `${beforeDrop} -> ${afterDrop}`);
+const remainNames = await page.locator('#compare-body .cmp-grid .cmp-title').allTextContents();
+check('뺀 것만 사라진다', !remainNames.includes(droppedName), (droppedName || '').trim().slice(0, 24));
+// 네 화면이 같은 비교함을 본다 — 뺀 것이 나머지 화면에도 반영되어야 한다.
+await page.locator('.tabs button[data-tab="browse"]').click();
+await page.waitForTimeout(300);
+check('뺀 것이 찾기 화면에도 반영된다',
+      /7\s*\/\s*8/.test(await page.locator('#basket-bar').textContent() || ''),
+      (await page.locator('#basket-bar').textContent() || '').trim().slice(0, 20));
+check('가득 참이 풀려 상자가 다시 열린다',
+      (await page.locator('#list-body input[data-pick]:not(:disabled):not(:checked)').count()) > 0);
+await page.locator('.tabs button[data-tab="compare"]').click();
+await page.waitForTimeout(300);
+// 다시 여덟 개로 채워 뒤 시험이 기대하는 상태로 되돌린다.
+await page.locator('.tabs button[data-tab="browse"]').click();
+await page.waitForTimeout(250);
+await page.locator('#list-body input[data-pick]:not(:disabled):not(:checked)').first().click();
+await page.waitForTimeout(250);
+await page.locator('.tabs button[data-tab="compare"]').click();
+await page.waitForTimeout(350);
+check('다시 채우면 여덟 장으로 돌아온다',
+      (await page.locator('#compare-body .cmp-grid .card').count()) === 8,
+      `${await page.locator('#compare-body .cmp-grid .card').count()}장`);
+
 // ── 종목 × ETF 매트릭스
 const matrixCols = await page.locator('#compare-body .matrix thead th.etf').count();
 check('매트릭스 열이 담은 ETF 수와 같다', matrixCols === 8, `${matrixCols}열`);
@@ -645,7 +686,20 @@ await page.locator('.lang-toggle button[data-lang="ko"]').click();
   check('도움말대로 랭킹에서 담은 것이 찾기 화면에도 보인다',
         /2\s*\/\s*8/.test(await page.locator('#basket-bar').textContent() || ''));
 
-  // 주장 6 — "비우기를 누르면 비워진다"
+  // 주장 6 — "비교 화면에서 카드의 × 로 하나만 뺀다"
+  // 앞 단계에서 비교함이 가득 찼을 수 있다. 더 담으려 들지 말고 있는 것으로 본다.
+  await page.locator('.tabs button[data-tab="compare"]').click();
+  await page.waitForTimeout(400);
+  const cardsBefore = await page.locator('#compare-body .cmp-grid .card').count();
+  await page.locator('#compare-body .cmp-drop').first().click();
+  await page.waitForTimeout(300);
+  check('도움말대로 카드의 × 로 하나만 빠진다',
+        (await page.locator('#compare-body .cmp-grid .card').count()) === cardsBefore - 1,
+        `${cardsBefore} -> ${await page.locator('#compare-body .cmp-grid .card').count()}`);
+  await page.locator('.tabs button[data-tab="browse"]').click();
+  await page.waitForTimeout(300);
+
+  // 주장 7 — "비우기를 누르면 비워진다"
   await page.locator('#basket-bar .basket-clear').click();
   await page.waitForTimeout(200);
   check('도움말대로 비우기가 동작한다',
