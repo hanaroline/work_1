@@ -393,6 +393,20 @@ td.num,th.num{text-align:right; font-family:var(--font-num); font-variant-numeri
   font-size:14px; line-height:1.5; height:1.5em; margin:4px 0 10px;
   color:var(--muted-soft); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
 }
+/* 비교 카드에서 하나씩 빼기.
+   지금까지는 "비우기"(전부) 밖에 없어서, 여덟 개를 담아 놓고 하나만 바꾸려면
+   처음부터 다시 담아야 했다. */
+.cmp-grid .card{position:relative;}
+.cmp-grid .cmp-title{padding-right:30px;}          /* × 자리를 비워 둔다 */
+.cmp-drop{
+  position:absolute; top:10px; right:10px; width:26px; height:26px; padding:0;
+  display:flex; align-items:center; justify-content:center;
+  font-family:inherit; font-size:17px; line-height:1; cursor:pointer;
+  border:1px solid var(--hairline); border-radius:13px; background:#fff; color:var(--muted-soft);
+}
+.cmp-drop:hover{border-color:var(--orange); color:var(--orange); background:#FFF8F2;}
+.cmp-drop:focus-visible{outline:2px solid var(--orange); outline-offset:1px;}
+
 .overlap-cell{font-family:var(--font-num); font-weight:600;}
 
 /* ---------- 안내 ---------- */
@@ -661,6 +675,8 @@ footer .disc + .disc{margin-top:12px;}
               data-en="<b>With only one picked</b> the Compare button stays disabled — comparing needs at least two."></li>
           <li data-ko="<b>8개가 차면</b> 나머지 체크상자가 잠기고 띠에 <b>가득 참</b>이 붙습니다. 다른 것을 담으려면 담긴 것을 하나 풀거나 <b>비우기</b>를 누르십시오."
               data-en="<b>At 8 the remaining boxes lock</b> and the bar shows “full”. Untick one, or press Clear."></li>
+          <li data-ko="<b>뺄 때는</b> 담을 때처럼 <b>체크를 풀거나</b>, 비교 화면에서 그 카드의 <b>×</b> 를 누르거나, 띠의 <b>비우기</b>로 한꺼번에 지웁니다."
+              data-en="<b>To remove</b>: untick the box, press <b>×</b> on the card in the Compare screen, or <b>Clear</b> the whole tray."></li>
           <li data-ko="<b>랭킹 화면에서도 같은 칸으로 담습니다.</b> 순위를 훑다 마음에 드는 것이 보이면 그 자리에서 체크하면 됩니다 — 찾기 화면으로 돌아가 이름으로 다시 찾을 필요가 없습니다. <u>어느 화면에서 담든 비교함은 하나</u>라, 랭킹에서 담은 것이 찾기 화면에도 그대로 보입니다."
               data-en="<b>The Rankings screen has the same column.</b> Tick a fund right where you see it in the ranking — no need to go back and search for it. The tray is shared across screens."></li>
         </ol>
@@ -732,9 +748,12 @@ footer .disc + .disc{margin-top:12px;}
               data-en="<b>Read the overlap table.</b> Each cell is the shared weight across top-10 holdings."></li>
           <li data-ko="<b>종목 × ETF 표를 봅니다.</b> 어느 종목이 어느 ETF에 들었는지 한눈에 보입니다. <b>○</b> 는 담았지만 비중을 모르는 것, <b>·</b> 는 안 담은 것입니다."
               data-en="<b>Then the stock × fund matrix.</b> ○ = held but weight unknown, · = not held."></li>
+          <li data-ko="<b>하나만 빼려면</b> 그 카드 오른쪽 위의 <b>×</b> 를 누릅니다. 나머지는 그대로 남습니다 — 여덟 개를 담아 놓고 하나만 바꾸려고 처음부터 다시 담을 필요가 없습니다. 전부 지우려면 <b>비우기</b>입니다."
+              data-en="<b>To drop just one</b>, press the <b>×</b> at the card's top right; the rest stay. Use <b>Clear</b> to empty the tray."></li>
         </ol>
         <figure class="shot" data-shot="compare">
-          <figcaption data-ko="담은 ETF 요약과 겹침 표" data-en="Selected funds and overlap">담은 ETF 요약과 겹침 표</figcaption>
+          <figcaption data-ko="담은 ETF 요약과 겹침 표 — 카드 오른쪽 위 × 로 하나씩 뺍니다"
+                      data-en="Selected funds and overlap — press × on a card to drop just that one">담은 ETF 요약과 겹침 표 — 카드 오른쪽 위 × 로 하나씩 뺍니다</figcaption>
         </figure>
         <figure class="shot" data-shot="matrix">
           <figcaption data-ko="종목 × ETF 표" data-en="Stock × fund matrix">종목 × ETF 표</figcaption>
@@ -1996,6 +2015,11 @@ function renderCompare() {
       (lang === 'ko' ? '상위10 ' : 'Top-10 ') +
       (e.top10Weight == null ? '\u2013' : e.top10Weight.toFixed(1) + '%');
     html += '<div class="card">' +
+      '<button type="button" class="cmp-drop" data-drop="' + esc(e.id) + '" title="' +
+        esc((lang === 'ko' ? '비교함에서 빼기: ' : 'Remove from compare: ') + etfName(e)) +
+        '" aria-label="' +
+        esc((lang === 'ko' ? '비교함에서 빼기: ' : 'Remove from compare: ') + etfName(e)) +
+        '">\u00d7</button>' +
       '<h4 class="cmp-title" title="' + esc(etfName(e)) + '">' + esc(etfName(e)) + '</h4>' +
       '<div class="cmp-meta" title="' + esc(meta) + '">' + esc(meta) + '</div>' +
       holdingsBlock(e) + '</div>';
@@ -2933,6 +2957,20 @@ function bind() {
   });
 
   el('compare-body').addEventListener('click', function (ev) {
+    // 카드 하나만 빼기. 전부 비우기보다 먼저 본다.
+    var drop = ev.target.closest('[data-drop]');
+    if (drop) {
+      ev.stopPropagation();
+      var did = drop.getAttribute('data-drop');
+      var dat = state.basket.indexOf(did);
+      if (dat >= 0) state.basket.splice(dat, 1);
+      if (state.cmpSelected === did) state.cmpSelected = null;
+      // 네 화면이 같은 비교함을 본다.
+      renderCompare();
+      renderList();
+      renderRank();
+      return;
+    }
     if (ev.target.closest('[data-clear-basket]')) {
       state.basket = [];
       state.cmpSelected = null;
