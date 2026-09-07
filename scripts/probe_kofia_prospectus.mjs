@@ -343,6 +343,36 @@ if (!rows.length) {
     });
     console.log('   (마) http — HTTP ' + r.status + ' · location ' + (r.headers.get('location') || '-'));
   } catch (e) { console.log('   (마) http 실패 — ' + why(e)); }
+
+  /**
+   * (바) 브라우저가 직접 내려받기.
+   *
+   * 앞의 실패는 모두 같은 이유다 — UNABLE_TO_VERIFY_LEAF_SIGNATURE.
+   * 이 서버가 중간 인증서를 함께 보내지 않는다. 브라우저는 인증서에 적힌
+   * 발급자 주소(AIA)에서 중간 인증서를 스스로 받아 사슬을 이어 검증하는데,
+   * Node 와 Playwright 의 요청 문맥은 그것을 하지 않는다.
+   *
+   * TLS 검증을 끄지 않는다. 대신 제 신뢰저장소를 가진 실제 브라우저가 받게 한다 —
+   * 검증을 건너뛰는 것이 아니라 제대로 하는 쪽이다.
+   */
+  try {
+    const dl = new Promise((res, rej) => {
+      page.once('download', res);
+      setTimeout(() => rej(new Error('내려받기 이벤트 없음')), 45000);
+    });
+    /* 내려받기는 페이지 전환이 아니라 다운로드로 끝나므로 goto 가 예외를 던진다 */
+    await page.goto(url, { timeout: 45000 }).catch(() => {});
+    const d = await dl;
+    const p = await d.path();
+    const { readFile: rf, stat } = await import('node:fs/promises');
+    const st = await stat(p);
+    const head = (await rf(p)).slice(0, 8).toString('latin1');
+    console.log('   (바) 브라우저 내려받기 — ' + st.size + '바이트 · 머리 ' + JSON.stringify(head) +
+      ' · 이름 ' + d.suggestedFilename());
+    console.log('        ' + (head.startsWith('%PDF-') ? '→ PDF 맞음. 이 길로 간다.' : '→ PDF 가 아니다.'));
+  } catch (e) {
+    console.log('   (바) 브라우저 내려받기 실패 — ' + String(e && e.message || e).slice(0, 200));
+  }
 }
 
 await browser.close();
