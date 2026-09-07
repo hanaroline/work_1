@@ -206,5 +206,38 @@ console.log('\n요약정보 POST 본문 하나를 그대로 (수집기가 갈아
 const tmpl = posts.find((b) => b.includes('COMFundUnityBasInfoSO')) || posts[0] || '';
 console.log(tmpl.replace(/\s+/g, ' ').slice(0, 700));
 
+/* ── 3) 파일 목록 응답을 그대로 — 수집기가 무엇을 뜯어야 하는지 태그로 봐야 한다 ──
+   내려받기 주소는 serverPath·serverFileNm·filename 셋으로 만들어진다.
+   그 셋이 응답에서 어떤 태그로 오는지 짐작하지 않고 원문을 찍는다. */
+console.log('\n' + '='.repeat(70));
+console.log('3) srchFile 응답 원문 (표준코드 ' + code + ')');
+const body =
+  '<?xml version="1.0" encoding="utf-8"?>' +
+  '<message><proframeHeader><pfmAppName>FS-COM</pfmAppName>' +
+  '<pfmSvcName>COMFundUnityBasInfoSO</pfmSvcName><pfmFnName>srchFile</pfmFnName>' +
+  '</proframeHeader><systemHeader></systemHeader>' +
+  '<COMFundInfoFileListDTO><standardCd>' + code + '</standardCd><uGb>Y</uGb>' +
+  '</COMFundInfoFileListDTO></message>';
+try {
+  const r = await fetch(ORIGIN + '/proframeWeb/XMLSERVICES/', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/xml; charset=UTF-8',
+      Accept: 'application/xml, text/xml, */*',
+      'User-Agent': UA,
+      Origin: ORIGIN,
+      Referer: ORIGIN + '/websquare/index.jsp'
+    },
+    body,
+    signal: AbortSignal.timeout(20000)
+  });
+  const xml = await r.text();
+  console.log('   HTTP ' + r.status + ' · ' + xml.length + '자');
+  console.log('   ── 원문 ──');
+  console.log(xml.replace(/></g, '>\n<').split('\n').slice(0, 90).map((l) => '   ' + l).join('\n'));
+} catch (e) {
+  console.log('   실패: ' + String(e && e.message || e));
+}
+
 await browser.close();
 console.log('\n탐색 끝.');
