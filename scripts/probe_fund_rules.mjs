@@ -173,8 +173,9 @@ for (const f of SHOW) {
     for (let i = 0; i < lines.length && shown < 14; i++) {
       if (!probes.some((p) => p.test(lines[i]))) continue;
       /* 표는 이름 줄과 숫자 줄이 갈라져 있다 — 뒤 두 줄까지 함께 본다 */
+      /* 150자에서 자르다가 정작 값이 든 뒷부분을 못 봤다 (VaR 수치가 문장 뒤쪽에 있었다) */
       for (let j = i; j <= Math.min(lines.length - 1, i + 2); j++) {
-        console.log(`   ${String(j).padStart(5)}| ${lines[j].slice(0, 150)}`);
+        console.log(`   ${String(j).padStart(5)}| ${lines[j].slice(0, 400)}`);
       }
       shown++; i += 2;
     }

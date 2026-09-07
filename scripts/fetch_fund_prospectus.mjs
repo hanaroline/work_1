@@ -63,6 +63,21 @@ const SEED_REFS = argOf('--seed-refs', '');
 
 /* ── 앱과 똑같은 추출 규칙·본문 판독을 쓴다 ───────────────── */
 const prosSrc = await readFile('js/sales-script-prospectus.js', 'utf8');
+/**
+ * 추출 규칙의 지문.
+ *
+ * 이어서 판독은 「설명서가 바뀌었나」 만 본다. 그래서 규칙을 고쳐도 참조가 그대로면
+ * 한 건도 다시 읽지 않고 옛 판독 결과가 그대로 남는다 — 규칙을 고친 보람이 없다.
+ * 실제로 창구가 짚어 준 환헤지·목표비율 규칙을 고친 판이 그럴 처지였다.
+ *
+ * 규칙 파일이 바뀌면 전량을 다시 읽는다. 두 시간이 들지만, 고친 규칙이 반영되지
+ * 않은 채 「최신」 이라고 말하는 것보다 낫다.
+ */
+const rulesStamp = (function (s) {
+  var h = 5381;
+  for (var i = 0; i < s.length; i++) h = ((h * 33) ^ s.charCodeAt(i)) >>> 0;
+  return s.length + '-' + h.toString(36);
+}(prosSrc));
 const win = {};
 new Function('window', prosSrc)(win);
 const PROS = win.SS_PROS;
@@ -156,6 +171,12 @@ if (INCREMENTAL) {
   }
   if (!prev) {
     console.log(`${OUT} 을 읽지 못했습니다 — 이어서 판독할 것이 없으므로 전량 판독합니다.`);
+  } else if (prev.rulesStamp !== rulesStamp) {
+    console.log(
+      `추출 규칙이 바뀌었습니다 (${prev.rulesStamp || '기록 없음'} → ${rulesStamp}) — ` +
+      '설명서가 그대로라도 판독 결과가 달라지므로 전량 다시 읽습니다.'
+    );
+    prev = null;
   } else if (!prev.refs && SEED_REFS) {
     const sg = {};
     new Function('window', await readFile(SEED_REFS, 'utf8'))(sg);
@@ -308,6 +329,7 @@ const body =
     updatedAt: new Date().toISOString(),
     source: '펀드 투자설명서 PDF 판독',
     count: Object.keys(items).length,
+    rulesStamp,
     pool,
     refs,
     items,
