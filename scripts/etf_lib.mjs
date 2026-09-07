@@ -418,16 +418,63 @@ export function computeReturns(timestamps, closes, adjcloses, dividends, splits)
  * close 는 분할이 반영되지 않은 원가격이라 분할도 같이 받아야 한다.
  * (div 만 받던 동안 분할이 있는 종목의 수익률이 통째로 틀렸다.)
  */
+/**
+ * **아직 안 끝난 세션의 봉을 잘라 낸다.**
+ *
+ * 야후는 장이 열려 있는 동안에도 오늘 날짜의 봉을 준다. 그 값은 종가가
+ * 아니라 지금 값이다. 그대로 쓰면 화면이 "2026-09-07 기준" 이라고 적어 놓고
+ * 실은 오전 10시의 미확정 값을 보여 준다.
+ *
+ * 더 나쁜 것은 **섞인다**는 점이다. 오늘 아직 체결이 없는 종목은 금요일
+ * 종가로 남으므로, 한 표 안에 오늘 장중과 지난 영업일 종가가 함께 놓인다.
+ * 순위와 유형평균은 그 위에서 계산되므로 비교 자체가 성립하지 않는다.
+ * 실제로 9/7 오전에 국내 1,116종목이 장중, 51종목이 금요일 종가였다.
+ *
+ * 가르는 잣대는 야후가 주는 `currentTradingPeriod.regular` 다. 지금이 정규장
+ * 마감 전이고 마지막 봉이 그 세션에 속하면 미확정이다. 시장마다 마감 시각이
+ * 다르므로 우리가 시간표를 들고 있지 않고 원천이 말하는 것을 쓴다.
+ */
+function dropUnsettledBar(r) {
+  const ts = r?.timestamp;
+  if (!Array.isArray(ts) || !ts.length) return r;
+  const reg = r?.meta?.currentTradingPeriod?.regular;
+  const start = Number(reg?.start), end = Number(reg?.end);
+  if (!Number.isFinite(start) || !Number.isFinite(end)) return r;
+  const now = Math.floor(Date.now() / 1000);
+  if (now >= end) return r;                       // 이미 마감했다 — 종가다
+  const last = Number(ts[ts.length - 1]);
+  if (!Number.isFinite(last) || last < start) return r;   // 오늘 봉이 아직 없다
+
+  const cut = (a) => (Array.isArray(a) ? a.slice(0, -1) : a);
+  return {
+    ...r,
+    timestamp: cut(ts),
+    indicators: {
+      ...r.indicators,
+      quote: [{ ...(r.indicators?.quote?.[0] || {}),
+                close: cut(r.indicators?.quote?.[0]?.close) }],
+      adjclose: r.indicators?.adjclose
+        ? [{ adjclose: cut(r.indicators.adjclose[0]?.adjclose) }] : r.indicators?.adjclose,
+    },
+    __droppedUnsettled: true,
+  };
+}
+
 export async function fetchYahooReturns(symbol, { headers = {}, range = '5y' } = {}) {
   const json = await getJson(
     `https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(symbol)}` +
     `?range=${range}&interval=1d&events=div,split`, { headers });
-  const r = json?.chart?.result?.[0];
-  if (!r) return null;
-  return computeReturns(r.timestamp, r.indicators?.quote?.[0]?.close,
-                        r.indicators?.adjclose?.[0]?.adjclose,
-                        r.events?.dividends, r.events?.splits);
+  const raw = json?.chart?.result?.[0];
+  if (!raw) return null;
+  const r = dropUnsettledBar(raw);
+  const out = computeReturns(r.timestamp, r.indicators?.quote?.[0]?.close,
+                             r.indicators?.adjclose?.[0]?.adjclose,
+                             r.events?.dividends, r.events?.splits);
+  if (out && r.__droppedUnsettled) out.droppedUnsettled = true;
+  return out;
 }
+
+export { dropUnsettledBar };
 
 /** 브라우저가 <script> 로 읽을 수 있게 전역 하나를 정의하는 파일로 쓴다. */
 export async function writeDataFile(path, globalName, value, banner) {

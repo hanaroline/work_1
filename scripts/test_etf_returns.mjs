@@ -9,7 +9,7 @@
  * tools/discovery/etf_audit_verify.md 에 적힌 관측값 그대로다.
  */
 
-import { computeReturns } from './etf_lib.mjs';
+import { computeReturns, dropUnsettledBar } from './etf_lib.mjs';
 
 let pass = 0, fail = 0;
 function check(name, cond, detail) {
@@ -114,6 +114,53 @@ console.log('\n5. 내포분배율이 한도를 넘으면 그 구간은 빈칸이
   check('시장가수익률은 그대로 낸다', r.price?.Y1 != null, `price.Y1=${r.price?.Y1}`);
   check('왜 뺐는지 남긴다',
         (r.anomalies || []).some((a) => a.action === 'tr-dropped'), JSON.stringify(r.anomalies?.slice(-2)));
+}
+
+// ── 6. 아직 안 끝난 세션의 봉 ─────────────────────────────────────────────
+// 야후는 장중에도 오늘 날짜 봉을 준다. 그 값은 종가가 아니다. 그대로 쓰면
+// 화면이 "오늘 기준" 이라 적어 놓고 오전 10시 값을 보여 주고, 오늘 아직
+// 체결이 없는 종목은 지난 영업일 종가로 남아 한 표에 두 가지가 섞인다.
+console.log('\n6. 장이 열려 있으면 오늘 봉을 쓰지 않는다');
+{
+  const day = 86400;
+  const t0 = Math.floor(Date.UTC(2026, 8, 4) / 1000);          // 금요일
+  const t1 = Math.floor(Date.UTC(2026, 8, 7) / 1000);          // 월요일(오늘)
+  const mk = (ts, open) => ({
+    timestamp: ts,
+    indicators: { quote: [{ close: ts.map((_, i) => 10000 + i) }], adjclose: [{ adjclose: ts.map((_, i) => 10000 + i) }] },
+    meta: { currentTradingPeriod: { regular: {
+      start: t1,
+      // 열려 있으면 마감이 아직 미래, 닫혔으면 과거
+      end: open ? Math.floor(Date.now() / 1000) + 3600 : Math.floor(Date.now() / 1000) - 3600,
+    } } },
+  });
+
+  const openRaw = mk([t0 - day, t0, t1], true);
+  const openCut = dropUnsettledBar(openRaw);
+  check('장중이면 마지막 봉을 잘라 낸다',
+        openCut.timestamp.length === 2 && openCut.__droppedUnsettled === true,
+        `${openRaw.timestamp.length}개 -> ${openCut.timestamp.length}개`);
+  check('종가 배열도 같이 잘린다',
+        openCut.indicators.quote[0].close.length === 2,
+        `${openCut.indicators.quote[0].close.length}개`);
+
+  const closedCut = dropUnsettledBar(mk([t0 - day, t0, t1], false));
+  check('마감했으면 그대로 둔다',
+        closedCut.timestamp.length === 3 && !closedCut.__droppedUnsettled,
+        `${closedCut.timestamp.length}개`);
+
+  // 오늘 봉이 아직 없으면(장은 열렸지만 체결 전) 자를 것이 없다.
+  const noTodayCut = dropUnsettledBar(mk([t0 - day, t0], true));
+  check('오늘 봉이 없으면 자르지 않는다',
+        noTodayCut.timestamp.length === 2 && !noTodayCut.__droppedUnsettled,
+        `${noTodayCut.timestamp.length}개`);
+
+  // 원천이 장 시간표를 안 주면 손대지 않는다 — 모르면 그대로 둔다.
+  const noMeta = dropUnsettledBar({ timestamp: [t0, t1],
+    indicators: { quote: [{ close: [1, 2] }] } });
+  check('장 시간표가 없으면 손대지 않는다',
+        noMeta.timestamp.length === 2 && !noMeta.__droppedUnsettled,
+        `${noMeta.timestamp.length}개`);
 }
 
 console.log(`\n통과 ${pass} · 실패 ${fail}`);
