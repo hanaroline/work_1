@@ -1206,6 +1206,23 @@
    */
   function lineOn(s) {
     if (!s || !s.when) return true;
+    /**
+     * 고난도 금융투자상품에만 하는 말 / 아닌 상품에만 하는 말.
+     *
+     * 원금지급형 ELB(파생결합사채)를 골라도 「이 상품은 고난도 금융투자상품으로서
+     * 원금손실 위험이 높으면서도…」 와 스텝다운형 손실사례(만기상환 손실률
+     * 57.17%·62.5%)가 그대로 나왔다. 원금이 지급되는 상품에 그것을 읽으면
+     * 사실과 다르게 알리는 것이다 (부당권유 — 감점 항목이기도 하다).
+     * 평가표도 「비고난도는 ③ 제외」 라고 적고 있고 화면도 해당 여부를 이미
+     * 알고 있었는데(highDiff), 문구가 그 갈림을 타지 않고 있었다.
+     */
+    if (s.when === 'highDiff' || s.when === 'lowDiff') {
+      var hd = String(valueOf('highDiff') || '');
+      /* 값을 못 읽었으면 감추지 않는다 — 해야 할 말을 빠뜨리는 쪽이 더 위험하다 */
+      if (!hd) return true;
+      var isHigh = /^해당(?!\s*없음)/.test(hd);
+      return s.when === 'highDiff' ? isHigh : !isHigh;
+    }
     var chosen = recId();
     if (!chosen) return true;
     if (s.when === 'rec') return chosen !== '__none';

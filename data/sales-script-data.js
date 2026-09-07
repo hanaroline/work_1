@@ -490,10 +490,12 @@
       round: round ? '제' + round + '회' : null,
       kind: p.type || null,
       shape: p.shape || null,
-      highDiff: isELB ? '해당 없음 (원금보장형)' : '해당 (고난도 금융투자상품)',
+      /* 증권에 「원금보장」 은 쓰지 않는다 — 보장은 예금자보호를 받는 상품의 말이고,
+         ELB 의 원금 지급은 발행회사 신용에 의존한다. 「원금지급형」 이 맞는 말이다. */
+      highDiff: isELB ? '해당 없음 (원금지급형 파생결합사채)' : '해당 (고난도 금융투자상품)',
       riskGrade: p.riskGrade, riskLabel: p.riskLabel,
       riskReason: (p.principalProtection === 0 || p.principalProtection == null)
-        ? '최대 원금손실가능금액 20% 초과형' : '원금 ' + p.principalProtection + '% 보장형',
+        ? '최대 원금손실가능금액 20% 초과형' : '원금 ' + p.principalProtection + '% 지급형',
       under: (p.underlyings || []).join(', ') || null,
       underVol: null,
       issueDate: issue, matDate: mat,
