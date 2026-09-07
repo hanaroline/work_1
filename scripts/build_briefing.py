@@ -390,7 +390,7 @@ def sec_korea(C):
     kr_stk = _stock_table("국내 주요 종목 &mdash; " + DK(C["prev_kr"]) + " 마감, 단위 원",
                           "Korean stocks &mdash; " + DE(C["prev_kr"]) + " close, in won",
                           C["kr_top"], C["kr_bot"], C["why"],
-                          foot_ko=C["kr_stk_foot_ko"], foot_en=C["kr_stk_foot_en"])
+                          foot_ko=C["kr_stk_foot_ko"], foot_en=C["kr_stk_foot_en"], dp=0)
 
     a, b = N.get("korea_lede", C["fb_korea"][0], C["fb_korea"][1])
     if CORE[0]:
@@ -407,7 +407,7 @@ def sec_korea(C):
                 + _stock_core("국내 종목 &mdash; " + DK(C["prev_kr"]) + " 마감, 원",
                               "Korean stocks &mdash; " + DE(C["prev_kr"]) + ", in won",
                               *_wide(C["S"], 10), why=C["why"],
-                              foot_ko=C["kr_stk_foot_ko"], foot_en=C["kr_stk_foot_en"]))
+                              foot_ko=C["kr_stk_foot_ko"], foot_en=C["kr_stk_foot_en"], dp=0))
     return (lede(a, b) + "\n" + kr_idx + "\n" + breadth + "\n" + kr_stk + "\n"
             + exp("업종 상위·하위와 등락 종목 수 추이",
                   "Sector leaders and laggards, and breadth over time",
@@ -1005,7 +1005,7 @@ def _wide(dct, k=10):
     return items[:k], items[-k:]
 
 
-def _stock_core(tko, ten, top, bot, why, foot_ko="", foot_en="", k=10):
+def _stock_core(tko, ten, top, bot, why, foot_ko="", foot_en="", k=10, dp=2):
     """핵심본용 종목표 — **오른 쪽과 내린 쪽을 나란히 세워 개수를 늘린다.**
 
     한 표에 세로로 쌓으면 종목 하나가 한 줄씩 자리를 먹어, 여섯 쪽에 맞추려고
@@ -1022,7 +1022,7 @@ def _stock_core(tko, ten, top, bot, why, foot_ko="", foot_en="", k=10):
             wk, we = why.get(name, ("", ""))
             sub = L('<span class="sub">' + wk + '</span>', '<span class="sub">' + we + '</span>') if wk else ""
             rows.append('      <tr><th class="wrap">' + esc(name) + sub + perf_line(v.get("perf")) + '</th>'
-                        '<td class="n">' + n(v["close"]) + '</td>' + _cell(v.get("change_pct"))
+                        '<td class="n">' + n(v["close"], dp) + '</td>' + _cell(v.get("change_pct"))
                         + '</tr>')
         return tbl(cap_ko, cap_en, head, rows, cls="data compact")
 
@@ -1286,8 +1286,14 @@ def _holidays_core(C):
             + '<p class="tbl-foot">' + tail + '</p>')
 
 
-def _stock_table(tko, ten, top, bot, why, foot_ko="", foot_en=""):
-    """주도 여덟 · 부진 여덟만 싣는다. **표 하나에 마흔 줄을 싣지 않는다**(압축)."""
+def _stock_table(tko, ten, top, bot, why, foot_ko="", foot_en="", dp=2):
+    """주도 여덟 · 부진 여덟만 싣는다. **표 하나에 마흔 줄을 싣지 않는다**(압축).
+
+    `dp` 는 종가의 소수 자릿수다. **국내 종목은 0 으로 부르십시오** &mdash; 거래소
+    호가가 정수라 `87,900.00` 처럼 없는 정밀도를 지어내 보이고, 자릿수가 길어져
+    좁은 화면에서 열을 밀어냅니다. 미국·유럽 종목은 실제로 소수 둘째 자리까지
+    거래되므로 그대로 2 입니다.
+    """
     head = [TH("종목", "Name", "wrap"), TH("핵심 &middot; 사유", "What it does / why", "note wrap"),
             TH("종가", "Close", "n"), TH("등락률", "Change %", "n"), THP(),
             TH("검증", "Verified", "n opt")]
@@ -1310,7 +1316,7 @@ def _stock_table(tko, ten, top, bot, why, foot_ko="", foot_en=""):
                 ne += (" &mdash; " if ne else "") + '<span class="why">' + we + '</span>'
             rows.append('      <tr><th class="wrap">' + esc(name) + '</th>'
                         '<td class="n note">' + L(nk or "&nbsp;", ne or "&nbsp;") + '</td>'
-                        '<td class="n">' + n(v["close"]) + '</td>' + _cell(v.get("change_pct"))
+                        '<td class="n">' + n(v["close"], dp) + '</td>' + _cell(v.get("change_pct"))
                         + perf_cells(v.get("perf")) + '<td class="n opt">' + VF_MD + '</td></tr>')
     return tbl(tko, ten, head, rows, cls="data compact", foot_ko=foot_ko, foot_en=foot_en)
 
