@@ -6,6 +6,12 @@ name: 투자자성향 설명문 탐색
 
 on:
   workflow_dispatch:
+  # 새로 만든 워크플로우는 등록되기까지 dispatch 가 404 로 거절된다. 탐색기를
+  # 손볼 때마다 바로 돌 수 있게 push 트리거를 둔다 — 대상 파일만 본다.
+  push:
+    paths:
+      - 'scripts/probe_profile_meaning.mjs'
+      - '.github/workflows/profile-meaning-probe.yml'
 
 jobs:
   probe:
