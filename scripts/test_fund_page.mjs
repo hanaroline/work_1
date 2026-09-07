@@ -262,6 +262,51 @@ if (matrixRows > 0) {
   check('매트릭스 머리행이 고정된다', stickyHead === 'sticky', stickyHead);
 }
 
+// ── 담긴 것을 하나씩 빼기
+//
+// 여태 이 탭에서 할 수 있는 것은 전부 비우기 하나였다. 여덟 개를 담아 놓고
+// 하나만 빼고 싶을 때 갈 곳이 없어서 펀드 찾기로 돌아가 그 줄을 다시 찾아야
+// 했다. 이름표의 × 로 하나만 빠지는지, 그리고 **그 하나만** 빠지는지를 본다 —
+// 하나 누르면 둘이 빠지는 것이 이런 기능의 흔한 결말이다.
+{
+  const chipsAt = await page.locator('#compare-body .cmp-chip').count();
+  const picksAt = await page.evaluate(() => window.state.picks.length);
+  check('담긴 것이 이름표로 나온다', chipsAt === picksAt && chipsAt > 1,
+    `이름표 ${chipsAt} · 담김 ${picksAt}`);
+
+  const dropId = await page.locator('#compare-body [data-unpick]').first()
+    .getAttribute('data-unpick');
+  await page.locator('#compare-body [data-unpick]').first().click();
+  await page.waitForTimeout(200);
+  const after = await page.evaluate((gone) => ({
+    picks: window.state.picks.length,
+    stillIn: window.state.picks.indexOf(gone) >= 0,
+    chips: document.querySelectorAll('#compare-body .cmp-chip').length,
+  }), dropId);
+  check('이름표의 × 로 하나만 빠진다',
+    after.picks === picksAt - 1 && !after.stillIn && after.chips === after.picks,
+    `${picksAt} → ${after.picks} · 이름표 ${after.chips} · 뺀 것 남음 ${after.stillIn}`);
+
+  // 뺀 것이 목록의 체크상자에도 반영돼야 한다. 한쪽만 바뀌면 사용자는 담은
+  // 것이 몇 개인지 화면마다 다르게 읽는다.
+  await page.locator('.tabs button[data-tab="browse"]').click();
+  await page.waitForTimeout(200);
+  const stillTicked = await page.evaluate((gone) => {
+    const box = document.querySelector(`#list-table input[data-pick="${gone}"]`);
+    return box ? box.checked : null;
+  }, dropId);
+  check('뺀 것은 목록의 체크도 풀린다', stillTicked !== true,
+    stillTicked === null ? '그 줄이 지금 화면에 없음' : `체크 ${stillTicked}`);
+
+  // 되돌려 놓는다 — 뒤 검사가 앞 검사의 부산물을 보면 안 된다.
+  await page.evaluate((gone) => {
+    if (window.state.picks.indexOf(gone) < 0) window.state.picks.push(gone);
+    window.renderList();
+  }, dropId);
+  await page.locator('.tabs button[data-tab="compare"]').click();
+  await page.waitForTimeout(150);
+}
+
 // ── 역조회
 await page.locator('.tabs button[data-tab="reverse"]').click();
 await page.waitForTimeout(100);
@@ -692,8 +737,11 @@ check('총보수를 0 으로 지어내지 않는다', !feeInvented);
   // 그래서 카드 수를 세지 않고 **탭 이름이 화면별 사용법의 제목으로 있는지**를
   // 본다 — 카드 수를 세면 사용법의 짜임새를 바꿀 때마다 시험이 같이 틀어지고,
   // 정작 "설명이 빠진 탭" 은 못 잡는다(딴 탭 설명이 두 장이어도 수는 맞는다).
+  // 제목의 태그는 어느 것을 그리느냐에 따라 다르다 — 그림이 붙은 문서는
+  // h2, 글로 물러선 쪽은 h4 를 쓴다. 태그를 하나로 못 박으면 둘 중 하나를
+  // 그릴 때마다 시험이 애먼 데서 틀어진다. 제목이면 다 본다.
   const tabNames = await page.locator('.tabs button[data-tab]').allInnerTexts();
-  const headings = (await page.locator('#help-body h4').allInnerTexts()).join(' | ');
+  const headings = (await page.locator('#help-body h2, #help-body h3, #help-body h4').allInnerTexts()).join(' | ');
   const missing = tabNames.filter((t) => !headings.includes(t.trim()));
   check('탭마다 사용법이 있다', missing.length === 0,
     missing.length ? `빠진 탭: ${missing.join(', ')}` : `탭 ${tabNames.length}개 · 제목 ${headings}`);
@@ -725,6 +773,83 @@ check('총보수를 0 으로 지어내지 않는다', !feeInvented);
     .map(([k, v]) => `${k}=${v.toLocaleString()}`);
   check('사용법의 수가 자료와 일치한다', bad.length === 0,
     bad.length ? `화면에 없는 값: ${bad.join(', ')}` : `펀드 ${truth.total.toLocaleString()} 등 일치`);
+
+  // ── 화면 안의 사용법에 실제 화면 그림이 붙는가
+  //
+  // 사용법이 글만 있으면 "어느 칸이 그 칸인가" 에 답하지 못한다. 그림은
+  // 빌드가 **실제 화면을 찍어** 넣은 것이라 손으로 그린 예시가 아니다.
+  // 그리고 그림이 붙은 문서와 화면이 지금 센 수가 다르면 안 그려야 한다 —
+  // 낡은 그림에는 그때의 수가 찍혀 있고 보는 사람은 그것을 알 길이 없다.
+  const figState = await page.evaluate(() => {
+    const b = document.getElementById('help-body');
+    const imgs = [...b.querySelectorAll('img')];
+    return {
+      doc: !!b.querySelector('.howto'),
+      imgs: imgs.length,
+      png: imgs.every((i) => (i.getAttribute('src') || '').startsWith('data:image/png')),
+      drawn: imgs.filter((i) => i.naturalWidth > 0).length,
+      has: !!(window.HELP_DOC && window.HELP_DOC.html),
+      stamp: (window.HELP_DOC || {}).stamp || '',
+      live: window.HELP_STAMP || '',
+    };
+  });
+  const docFresh = figState.has && figState.stamp === figState.live;
+  check('실린 문서가 지금 자료와 같을 때만 그림을 그린다', figState.doc === docFresh,
+    `문서 ${figState.doc ? '그림' : '글'} · 실린 표시 ${figState.stamp || '없음'} · 화면 ${figState.live}`);
+  if (docFresh) {
+    check('사용법에 실제 화면 그림이 붙는다',
+      figState.imgs >= 8 && figState.png && figState.drawn === figState.imgs,
+      `그림 ${figState.imgs}장 · 그려진 것 ${figState.drawn}장`);
+
+    // 작은 글씨가 든 화면 사진은 폭에 맞춰 줄이면 읽히지 않는다. 눌러 펼 수 있어야 한다.
+    await page.locator('#help-body figure img').first().click();
+    await page.waitForTimeout(120);
+    const zoomOn = await page.locator('#help-body figure.zoom').count();
+    await page.locator('#help-body figure.zoom img').first().click();
+    await page.waitForTimeout(120);
+    const zoomOff = await page.locator('#help-body figure.zoom').count();
+    check('그림을 누르면 커지고 다시 누르면 접힌다', zoomOn === 1 && zoomOff === 0,
+      `펼침 ${zoomOn} · 접힘 뒤 ${zoomOff}`);
+
+    // 문서 CSS 의 선택자는 .card · .note 처럼 흔한 이름이다. 가두지 못하면
+    // 사용법을 한 번 여는 것만으로 다른 탭의 카드까지 이 문서 모양으로 물든다.
+    const bleed = await page.evaluate(() => {
+      const probe = document.createElement('div');
+      probe.className = 'note';
+      document.getElementById('tab-browse').appendChild(probe);
+      const bg = getComputedStyle(probe).backgroundColor;
+      probe.remove();
+      const inDoc = document.querySelector('#help-body .note');
+      return { outside: bg, inside: inDoc ? getComputedStyle(inDoc).backgroundColor : null };
+    });
+    check('사용법의 모양새가 다른 탭에 새지 않는다',
+      bleed.inside !== null && bleed.outside !== bleed.inside,
+      `밖 ${bleed.outside} · 안 ${bleed.inside}`);
+
+    // 낡은 그림을 거르는 장치가 실제로 도는지 본다. 자료가 갱신되는 날에만
+    // 발동하는 갈래라 일부러 표시를 어긋내지 않으면 영영 시험되지 않는다.
+    // 그럴 때는 그림 없는 글로 물러서야 한다 — 낡은 그림을 최신인 척
+    // 보여 주느니 글이 낫다. 글에 찍히는 수는 방금 자료에서 센 값이다.
+    const staleDoc = await page.evaluate(() => {
+      const keep = window.HELP_DOC.stamp;
+      window.HELP_DOC.stamp = keep + '|어긋남';
+      renderHelp();
+      const b = document.getElementById('help-body');
+      const out = {
+        doc: !!b.querySelector('.howto'),
+        imgs: b.querySelectorAll('img').length,
+        text: b.innerText.length,
+      };
+      window.HELP_DOC.stamp = keep;
+      renderHelp();
+      return out;
+    });
+    check('자료가 갱신되면 낡은 그림을 그리지 않는다',
+      !staleDoc.doc && staleDoc.imgs === 0 && staleDoc.text > 400,
+      `문서 ${staleDoc.doc ? '그림' : '글'} · 그림 ${staleDoc.imgs}장 · 글 ${staleDoc.text}자`);
+    const backOn = await page.locator('#help-body .howto').count();
+    check('되돌리면 그림이 다시 나온다', backOn === 1, `${backOn}`);
+  }
 
   // ── 사용법을 따로 내려받을 수 있어야 한다
   //

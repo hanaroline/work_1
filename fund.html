@@ -151,6 +151,14 @@ td.hl{background:var(--gray-hl);}
 .ret-table .rank-pct.low{color:var(--muted);}
 .ret-table .rank-raw{display:block; font-size:11px; color:var(--muted-soft);
   font-variant-numeric:tabular-nums;}
+/* 겹침 표에도 같은 두 줄짜리 칸을 쓴다. 위 규칙이 .ret-table 안으로만 걸려
+   있어서 여기서는 아무 모양도 못 받았고, "21.3%19종목" 처럼 비율과 종목 수가
+   한 덩어리로 붙어 나왔다 — 21.3%19 라는 숫자로 읽힌다. */
+.overlap-cell .rank-raw{display:block; font-size:11px; color:var(--muted-soft);
+  font-variant-numeric:tabular-nums; font-weight:400;}
+/* 겹침 표의 줄 이름. 담은 것이 다섯 개를 넘으면 칸이 밀려 이름이 한 글자씩
+   세로로 떨어졌다. 가로로 넘치더라도(표는 옆으로 밀린다) 이름은 읽혀야 한다. */
+.ov-row{min-width:150px;}
 .ret-table .th-sub{display:block; font-size:11px; font-weight:400;
   color:var(--ink); opacity:.72;}
 /* 검산에서 비운 칸. 빈칸이 왜 빈칸인지 그 자리에서 말한다. */
@@ -214,6 +222,20 @@ tbody tr.picked td.pick-cell{box-shadow:inset 4px 0 0 var(--orange);}
 .pick-bar.on{border-left-color:var(--orange); background:#FFF7EF;}
 .pick-bar .box{display:inline-block; width:13px; height:13px; border:2px solid var(--muted);
   border-radius:3px; vertical-align:-2px; margin:0 1px;}
+/* 비교 탭에서 담긴 것을 늘어놓는 이름표. × 를 누르면 그 하나만 빠진다.
+   × 는 44px 짜리 손가락 자리를 갖게 한다 — 작은 × 는 옆의 것을 빼게 만든다. */
+.cmp-chips{display:flex; flex-wrap:wrap; gap:6px; margin:0 0 10px;}
+.cmp-chip{display:inline-flex; align-items:center; gap:2px; max-width:100%;
+  border:1px solid var(--hairline); border-left:3px solid var(--orange);
+  background:#fff; font-size:13px; color:var(--ink);}
+.cmp-chip-name{padding:6px 2px 6px 9px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;}
+.cmp-chip-x{
+  flex:none; width:30px; min-height:30px; padding:0; margin:0; cursor:pointer;
+  font-family:inherit; font-size:17px; line-height:1; color:var(--muted);
+  background:none; border:none; border-left:1px solid var(--hairline-soft);
+}
+.cmp-chip-x:hover{color:#fff; background:var(--orange);}
+.cmp-chip-x:focus-visible{outline:2px solid var(--orange); outline-offset:-2px;}
 
 /* ---------- 배지 ---------- */
 .badge{
@@ -572,6 +594,11 @@ footer .disc + .disc{margin-top:12px;}
   없으면 PDF 단추가 그냥 나오지 않는다. 여기서 404 가 나도 화면은 멀쩡히 뜬다.
 -->
 <script src="data/fund-help-pdf.js"></script>
+<!--
+  실제 화면을 찍어 넣은 사용법 문서(그림 포함). 같은 빌드가 PDF 와 함께
+  만들어 넣는다. 없으면 사용법 탭이 그림 없는 글로 물러선다.
+-->
+<script src="data/fund-help-doc.js"></script>
 <script>
 'use strict';
 
@@ -1814,23 +1841,51 @@ function renderCompare() {
     if (f) picks.push(f);
   }
   var body = el('compare-body');
+
+  // 담긴 펀드를 이름표로 늘어놓고, 각 이름표에 빼는 단추를 단다.
+  //
+  // 여태 이 탭에서 할 수 있는 것은 **전부 비우기** 하나뿐이었다. 여덟 개를
+  // 골라 놓고 그중 하나만 빼고 싶을 때 갈 곳이 없어서, 펀드 찾기로 돌아가
+  // 그 줄을 다시 찾아 체크를 지워야 했다 — 이름이 비슷한 펀드 사이에서
+  // 그것을 하느니 비우고 다시 담는 편이 빠르다. 그래서 뺀다.
+  var chips = function () {
+    var ko = lang === 'ko';
+    var s = '<div class="cmp-chips">';
+    for (var q = 0; q < picks.length; q += 1) {
+      var nm = picks[q].name || picks[q].code || '';
+      s += '<span class="cmp-chip" title="' + esc(nm) + '">' +
+        '<span class="cmp-chip-name">' + esc(nm.length > 28 ? nm.slice(0, 28) + '…' : nm) + '</span>' +
+        '<button type="button" class="cmp-chip-x" data-unpick="' + esc(picks[q].id) + '" title="' +
+        esc(ko ? '비교에서 빼기' : 'Remove from comparison') + '" aria-label="' +
+        esc((ko ? '비교에서 빼기: ' : 'Remove from comparison: ') + nm) + '">×</button></span>';
+    }
+    return s + '</div>';
+  };
+
   if (picks.length < 2) {
     // 비어 있는 화면은 "무엇을 하라" 까지 말해야 한다. 여기가 처음 오는
     // 사람에게는 막다른 자리라, 담는 자리가 어디인지를 그 자리에서 말한다.
-    body.innerHTML = '<div class="empty">' + esc(lang === 'ko'
+    // 하나가 담겨 있으면 그 하나도 여기서 뺄 수 있어야 한다. 담은 것을
+    // 보여 주면서 빼는 길만 없는 화면은 만들지 않는다.
+    body.innerHTML = (picks.length === 1 ? chips() : '') +
+      '<div class="empty">' + esc(lang === 'ko'
       ? (picks.length === 1
-          ? '지금 1개만 담겼습니다 — 비교하려면 하나 더 담아 주세요. 펀드 찾기 탭에서 줄 맨 왼쪽 체크상자에 표시하면 담깁니다.'
-          : '아직 담은 펀드가 없습니다. 펀드 찾기 탭에서 줄 맨 왼쪽 체크상자에 표시해 두 개 이상 담아 주세요.')
+          ? '지금 1개만 담겼습니다 — 비교하려면 하나 더 담아 주세요. 펀드 찾기 또는 랭킹 탭에서 줄 맨 왼쪽 체크상자에 표시하면 담깁니다.'
+          : '아직 담은 펀드가 없습니다. 펀드 찾기 또는 랭킹 탭에서 줄 맨 왼쪽 체크상자에 표시해 두 개 이상 담아 주세요.')
       : (picks.length === 1
-          ? 'Only one fund is selected — tick one more. Use the checkbox at the left of each row in the Browse tab.'
-          : 'No funds selected yet. Tick the checkbox at the left of a row in the Browse tab to add two or more.')) + '</div>';
+          ? 'Only one fund is selected — tick one more. Use the checkbox at the left of each row in the Browse or Rankings tab.'
+          : 'No funds selected yet. Tick the checkbox at the left of a row in the Browse or Rankings tab to add two or more.')) + '</div>';
     return;
   }
 
   var html = '<div class="finder-bar"><span class="count">' +
     esc(lang === 'ko' ? picks.length + '개 담음' : picks.length + ' selected') + '</span>' +
     '<span style="flex:1"></span><button type="button" id="cmp-clear">' +
-    esc(lang === 'ko' ? '비우기' : 'Clear') + '</button></div>';
+    esc(lang === 'ko' ? '전부 비우기' : 'Clear all') + '</button></div>';
+  html += chips();
+  html += '<div class="dim" style="font-size:12.5px;margin:-2px 0 14px">' + esc(lang === 'ko'
+    ? '이름표의 × 를 누르면 그 펀드 하나만 빠집니다.'
+    : 'Click × on a chip to drop that one fund.') + '</div>';
 
   // 겹침 행렬
   html += '<h3>' + esc(lang === 'ko' ? '두 펀드씩 겹침' : 'Pairwise overlap') + '</h3>';
@@ -1841,7 +1896,7 @@ function renderCompare() {
   }
   html += '</tr></thead><tbody>';
   for (var r = 0; r < picks.length; r += 1) {
-    html += '<tr><th class="fund-link" data-id="' + esc(picks[r].id) + '" style="text-align:left;' +
+    html += '<tr><th class="fund-link ov-row" data-id="' + esc(picks[r].id) + '" style="text-align:left;' +
       'background:var(--surface-subtle);font-weight:600" title="' + esc(picks[r].name || '') + '">' +
       esc((picks[r].name || picks[r].code).slice(0, 26)) + '</th>';
     for (var c = 0; c < picks.length; c += 1) {
@@ -2586,6 +2641,36 @@ function renderHelp() {
                 datedHold, secs.size, comps.size, types.size, stepped, withFlow,
                 DATES.asOf, DATES.got].join('|');
 
+  // ── 그림이 붙은 사용법을 화면 안에서 그대로 보여 준다.
+  //
+  // 여태 이 탭은 글만 있었고, 그림이 붙은 것은 따로 받아 가는 PDF 뿐이었다.
+  // 그런데 "어느 칸이 그 칸인가" 는 화면을 보고 있는 그 순간에 묻는 것이다 —
+  // 받아야만 보이는 그림은 필요한 때에 없는 그림이다. 빌드가 실제 화면을 찍어
+  // 만든 문서(data/fund-help-doc.js)가 실려 있으면 여기에 그대로 그린다.
+  //
+  // 사용법이 두 벌이면 반드시 어긋난다. 실제로 랭킹에 담는 칸을 붙인 날
+  // 문서에는 적었는데 아래 글에는 못 적어, 화면이 자기가 방금 붙인 칸을
+  // 설명하지 못했다. 한 벌을 두 곳에서 쓰면 그 어긋남이 생기지 않는다.
+  //
+  // 다만 **수가 다르면 안 그린다.** 낡은 그림에는 그때의 수가 찍혀 있고 보는
+  // 사람은 그것이 낡았다는 것을 알 길이 없다. 그럴 때는 아래 글로 물러선다 —
+  // 글에 찍히는 수는 방금 자료에서 센 값이라 언제 봐도 지금 것이다.
+  var doc = window.HELP_DOC;
+  if (ko && doc && doc.html && doc.stamp && doc.stamp === HELP_STAMP) {
+    installHowtoCss(doc.css);
+    // 그림을 눌러 키우는 것은 종이에서는 뜻이 없어 문서 본문에 넣지 않았다.
+    // 화면에서만 머리말 바로 아래에 한 줄 얹는다.
+    var hint = '<div class="note"><b>그림은 누르면 원래 크기로 커집니다.</b> ' +
+      '아래 그림은 모두 이 화면을 실제로 찍은 것입니다 — 손으로 그린 예시가 아닙니다.</div>';
+    var cut = doc.html.indexOf('</header>');
+    var inner = cut >= 0
+      ? doc.html.slice(0, cut + 9) + hint + doc.html.slice(cut + 9)
+      : hint + doc.html;
+    node.innerHTML = '<div class="howto"><div class="wrap">' + inner + '</div></div>';
+    finishHelp(true);
+    return;
+  }
+
   // ── 화면별 사용법.
   //
   // 전에는 탭당 한 문단짜리 요약 카드였다. 요약은 "무슨 화면인가" 는 알려
@@ -2626,13 +2711,14 @@ function renderHelp() {
       tab: '비교 · 중복도',
       when: '여러 펀드를 <strong>같이 담아도 분산이 되는지</strong>를 볼 때 씁니다. 분산이라고 생각한 조합이 실은 같은 것을 두 번 산 것인지가 여기서 갈립니다.',
       steps: [
-        '<strong>펀드 찾기</strong> 탭에서 줄 맨 왼쪽 <strong>비교</strong> 칸의 체크상자에 표시해 담습니다. <strong>두 개 이상</strong>부터 비교가 되고, 최대 ' + fmtN(MAX_COMPARE) + '개까지 담깁니다.',
-        '이 탭으로 옮겨 옵니다. 담은 수가 위에 적혀 있고 <strong>비우기</strong> 로 한 번에 지웁니다.',
+        '<strong>펀드 찾기</strong> 또는 <strong>랭킹</strong> 탭에서 줄 맨 왼쪽 <strong>비교</strong> 칸의 체크상자에 표시해 담습니다. 두 화면의 칸은 같은 것이라 섞어 담아도 됩니다. <strong>두 개 이상</strong>부터 비교가 되고, 최대 ' + fmtN(MAX_COMPARE) + '개까지 담깁니다.',
+        '이 탭으로 옮겨 옵니다. 담은 수가 위에 적혀 있고, 그 아래에 담긴 펀드가 <strong>이름표</strong>로 늘어섭니다. 이름표의 <strong>×</strong> 를 누르면 <strong>그 하나만</strong> 빠지고, <strong>전부 비우기</strong> 는 한 번에 지웁니다.',
         '<strong>두 펀드씩 겹침</strong> 표에서 짝마다 겹침 비율과 겹친 종목 수를 봅니다.',
         '<strong>둘 이상이 담은 종목</strong> 표에서 어느 종목이 여러 펀드에 동시에 들어 있는지, 펀드마다 몇 %씩 줬는지 봅니다.',
       ],
       controls: [
-        ['비교 칸 체크상자 (펀드 찾기에서)', '표시하면 담기고, 표시를 지우면 빠집니다. 담긴 줄은 왼쪽에 주황 띠가 생깁니다. 이 탭에는 담는 칸이 따로 없습니다 — 담는 일은 <strong>펀드 찾기</strong> 탭에서 합니다.'],
+        ['비교 칸 체크상자 (펀드 찾기 · 랭킹에서)', '표시하면 담기고, 표시를 지우면 빠집니다. 담긴 줄은 왼쪽에 주황 띠가 생깁니다. 이 탭에는 <strong>담는</strong> 칸이 없습니다 — 담는 일은 펀드 찾기와 랭킹에서 합니다.'],
+        ['이름표의 ×', '담긴 것을 <strong>하나씩 뺍니다.</strong> 여덟 개를 담아 놓고 하나만 마음에 안 들 때, 그것 하나 빼자고 펀드 찾기로 돌아가 그 줄을 다시 찾을 필요가 없습니다.'],
         ['겹침 비율', '두 펀드가 <strong>같은 종목에 준 비중 중 작은 쪽</strong>을 모두 더한 값입니다. 40% 라면 두 펀드의 40% 가 사실상 같은 자리에 있다는 뜻입니다.'],
         ['겹친 종목 수', '한쪽이라도 비중이 오지 않은 종목이 있으면 비율을 내지 않고 <strong>겹친 종목 수만</strong> 싣습니다.'],
         ['○ 표시', '담고는 있으나 <strong>비중이 원천에 없어</strong> 숫자를 쓸 수 없는 자리입니다. 0 이 아닙니다.'],
@@ -2664,11 +2750,13 @@ function renderHelp() {
         '<strong>기간</strong> 을 고릅니다(1일 ~ 5년).',
         '아래로 그 기간 수익률 <strong>상위 20 · 하위 20</strong> 과 <strong>설정액 상위 20</strong> 이 차례로 나옵니다'
           + (flowOn ? ', 이어서 <strong>3개월 자금 유입 · 유출 상위 20</strong> 도 나옵니다.' : '.'),
+        '눈에 띄는 것은 줄 맨 왼쪽 <strong>비교</strong> 칸의 체크상자에 표시해 <strong>여기서 바로 담습니다</strong> — 이름을 외워 두었다가 펀드 찾기에서 다시 찾을 필요가 없습니다. 표 위 띠의 <strong>비교 탭에서 보기</strong> 로 바로 넘어갑니다.',
       ],
       controls: [
         ['대상', '유형 하나로 좁혀 <strong>같은 것끼리</strong> 비교합니다. 채권형과 주식형을 한 표에 놓으면 순위는 뜻이 없습니다.'],
         ['기간', '3년 · 5년도 <strong>연 환산하지 않은 누적</strong> 수익률입니다. 3년 30% 를 연 30% 로 읽으면 안 됩니다.'],
         ['순위표의 줄', '누르면 표 아래에 그 펀드의 상세가 펼쳐집니다 — 랭킹에서 본 이름을 다시 찾으러 갈 필요가 없습니다.'],
+        ['비교 칸 (맨 왼쪽 체크상자)', '<strong>펀드 찾기와 같은 칸</strong>입니다. 여기서 표시한 것과 펀드 찾기에서 표시한 것이 한 곳에 담기므로 섞어 담아도 됩니다. 최대 ' + fmtN(MAX_COMPARE) + '개이고, 다 차면 남은 체크상자가 흐려집니다. 담긴 것을 하나씩 빼는 일은 <strong>비교 · 중복도</strong> 탭의 이름표에서 합니다.'],
         flowOn
           ? ['3개월 자금 유입', '원천이 펀드에는 유입액을 주지 않아서, <strong>설정원본의 3개월 차이</strong>로 냅니다(지금 ' + fmtN(withFlow) + '개 대상). 순자산 차이를 쓰면 값이 올라 커진 펀드가 유입 상위로 올라오기 때문입니다.']
           : ['3개월 자금 유입 (아직 없음)', '이 표는 <strong>아직 나오지 않습니다.</strong> 원천이 펀드에는 유입액을 주지 않아(ETF 에는 줍니다) <strong>설정원본의 차이</strong>로 내야 하는데, 그 이력이 3개월치가 안 쌓였습니다. 하루치 차이에 "3개월" 이라는 이름을 붙이지 않습니다 — 탭에 가시면 표 대신 그 사정이 적혀 있습니다.'],
@@ -2738,13 +2826,14 @@ function renderHelp() {
       tab: 'Compare',
       when: 'Check whether holding several funds together actually diversifies — or is the same bet twice.',
       steps: [
-        'In <strong>Browse</strong>, tick the checkbox in the <strong>Compare</strong> column at the left of a row. Comparison starts at <strong>two</strong> funds and holds up to ' + fmtN(MAX_COMPARE) + '.',
-        'Switch to this tab. The count of selected funds is shown, with <strong>Clear</strong> to empty it.',
+        'In <strong>Browse</strong> or <strong>Rankings</strong>, tick the checkbox in the <strong>Compare</strong> column at the left of a row. Both tabs feed the same basket, so you can mix them. Comparison starts at <strong>two</strong> funds and holds up to ' + fmtN(MAX_COMPARE) + '.',
+        'Switch to this tab. The count of selected funds is shown, and below it each selected fund appears as a <strong>chip</strong>. Click the <strong>×</strong> on a chip to drop <strong>that one fund</strong>; <strong>Clear all</strong> empties the basket.',
         'Read <strong>Pairwise overlap</strong> for each pair: the overlap share and the number of shared securities.',
         'Read <strong>Held by two or more</strong> to see which securities appear in several funds at once, and at what weight in each.',
       ],
       controls: [
-        ['Compare checkbox (in Browse)', 'Ticking adds a fund, unticking removes it. A selected row gets an orange bar on its left edge. There is no add control on this tab — selecting happens in <strong>Browse</strong>.'],
+        ['Compare checkbox (in Browse and Rankings)', 'Ticking adds a fund, unticking removes it. A selected row gets an orange bar on its left edge. There is no <strong>add</strong> control on this tab — picking happens in Browse and Rankings.'],
+        ['× on a chip', 'Drops funds <strong>one at a time</strong>. With eight picked and one you no longer want, you do not have to go back to Browse and hunt for that row again.'],
         ['Overlap share', 'The sum of the <strong>smaller of the two weights</strong> on each shared security. 40% means 40% of both funds sits in the same place.'],
         ['Shared count', 'If either side has a security with no published weight, the share is withheld and only the <strong>count</strong> of shared securities is shown.'],
         ['○', 'Held, but the <strong>weight is not published</strong> by the source. It is not a zero.'],
@@ -2776,11 +2865,13 @@ function renderHelp() {
         'Pick a <strong>Period</strong> (1D to 5Y).',
         'Below appear top 20 and bottom 20 by that return and <strong>top 20 by size</strong>'
           + (flowOn ? ', followed by <strong>top 20 net inflow / outflow over 3 months</strong>.' : '.'),
+        'Tick the checkbox in the <strong>Compare</strong> column at the left of a row to pick a fund <strong>right here</strong> — no need to memorise the name and find it again in Browse. The bar above the table takes you straight to the <strong>Compare</strong> tab.',
       ],
       controls: [
         ['Scope', 'Narrow to one category so you compare <strong>like with like</strong>. Ranking bond funds against equity funds in one table means nothing.'],
         ['Period', '3Y and 5Y are <strong>cumulative, not annualised</strong>. 30% over three years is not 30% a year.'],
         ['A ranking row', 'Click it to expand that fund’s detail below the table — no need to go back and search for the name.'],
+        ['Compare column (checkbox on the left)', 'The <strong>same basket as Browse</strong> — what you tick here and what you ticked there land together, so you can mix them. Up to ' + fmtN(MAX_COMPARE) + '; once full, the remaining checkboxes dim. To drop one pick at a time, use the chips on the <strong>Compare</strong> tab.'],
         flowOn
           ? ['3M net inflow', 'The source publishes no flow for funds, so this is the <strong>3-month change in units-at-par</strong> (' + fmtN(withFlow) + ' funds qualify). Using net-asset differences would let a fund that merely went up rank as an inflow leader.']
           : ['3M net inflow (not yet)', 'These tables are <strong>not shown yet.</strong> The source publishes no fund-level flow (it does for ETFs), so it has to be derived from changes in units-at-par, and less than three months of that history has accumulated. A one-day difference is not labelled "3 months" — the tab explains this in place of the tables.'],
@@ -2957,20 +3048,49 @@ function renderHelp() {
     '</div>';
 
   node.innerHTML = html;
+  finishHelp(false);
+}
 
+// 그림이 붙은 사용법 문서의 모양새를 화면에 들인다.
+//
+// 이 CSS 는 빌드가 만들어 넣은 것으로, 선택자마다 `.howto` 가 앞에 붙어 있어
+// 사용법 탭 안에서만 듣는다(가두는 일은 build_fund_howto.mjs 의 scopeCss 가
+// 한다). 그래서 사용법을 한 번 열어도 다른 탭의 카드가 이 문서 모양으로
+// 물들지 않는다. 한 번만 들이면 되니 두 번째부터는 그냥 돌아간다.
+var howtoCssOn = false;
+function installHowtoCss(css) {
+  if (howtoCssOn || !css) return;
+  var s = document.createElement('style');
+  s.id = 'howto-css';
+  // 뒤의 네 줄은 **종이에는 없고 화면에만 필요한 것**이다. 종이는 폭이 정해져
+  // 있지만 화면은 넓어질 수 있고, 종이 위의 그림은 눌러도 커지지 않는다.
+  s.textContent = css + '\n' +
+    '.howto .wrap{max-width:900px;margin:0 auto}' +
+    '.howto figure img{cursor:zoom-in}' +
+    '.howto figure.zoom{overflow-x:auto}' +
+    '.howto figure.zoom img{width:auto;max-width:none;cursor:zoom-out}';
+  document.head.appendChild(s);
+  howtoCssOn = true;
+}
+
+// 사용법을 다 그린 뒤 내려받기 줄의 설명을 맞춘다.
+//
+// `withFigs` 는 지금 화면에 **그림이 붙은 문서**를 그렸는지다. 그렸다면 받아
+// 가는 PDF 는 화면과 같은 것이고, 글로 물러섰다면 PDF 쪽에만 그림이 있다.
+// 둘을 같은 말로 적어 두면 어느 쪽이든 한쪽 사람은 속는다.
+function finishHelp(withFigs) {
   var note = el('help-dl-note');
   if (note) {
-    // HTML 과 PDF 는 같은 사용법이 아니다. PDF 쪽에는 **실제 화면을 찍은
-    // 그림**이 단계마다 붙는다 — 처음 여는 사람에게는 "어느 칸이 그 칸인가"
-    // 가 글보다 그림으로 훨씬 빨리 전해진다. 둘을 같은 것처럼 적어 두면
-    // 그림이 필요한 사람이 글만 든 파일을 받아 간다.
+    var ko = lang === 'ko';
     note.textContent = ko
-      ? 'HTML 은 이 절의 글 그대로이고, PDF 에는 각 단계마다 실제 화면을 찍은 그림이 붙습니다. ' +
+      ? (withFigs
+          ? '이 화면의 사용법과 PDF 는 같은 문서입니다 — 그림도 같습니다. HTML 로 받으면 그림까지 같이 담깁니다. '
+          : 'HTML 은 이 절의 글 그대로이고, PDF 에는 각 단계마다 실제 화면을 찍은 그림이 붙습니다. ') +
         '기준일 ' + (DATES.asOf || '미상') + ' 자료로 만든 사용법이며, 자료가 바뀌면 다시 받아야 합니다.'
-      : 'The HTML file is this section as text; the PDF adds a screenshot of the real screen at each step. ' +
+      : 'The HTML file is this section as text; the PDF adds a screenshot of the real screen at each step ' +
+        '(the illustrated version is Korean only). ' +
         'It describes the data as of ' + (DATES.asOf || 'an unstated date') + '; download again when the data changes.';
   }
-
   syncHelpPdf();
 }
 
@@ -3202,6 +3322,26 @@ function bind() {
       return;
     }
     if (e.target.closest('#cmp-clear')) { state.picks = []; renderCompare(); renderList(); return; }
+    // 담긴 것 하나만 빼기. 비교 화면 안에서 바로 뺄 수 있어야 한다 — 여덟
+    // 개를 담아 놓고 하나가 마음에 안 들 때, 그것 하나 빼자고 펀드 찾기로
+    // 돌아가 그 줄을 다시 찾아내게 하면 대개는 그냥 "비우기" 를 누르고 만다.
+    var drop = e.target.closest('[data-unpick]');
+    if (drop) {
+      var did = drop.getAttribute('data-unpick');
+      var dat = state.picks.indexOf(did);
+      if (dat >= 0) state.picks.splice(dat, 1);
+      renderCompare();
+      renderList();
+      return;
+    }
+    // 사용법의 그림 누르기. 문서에 실린 그림은 화면 폭에 맞춰 줄여 놓았는데,
+    // 작은 글씨가 든 화면 사진은 줄이면 읽히지 않는다. 누르면 찍은 크기
+    // 그대로 펴고, 한 번 더 누르면 접는다.
+    var fig = e.target.closest('#help-body figure');
+    if (fig && e.target.tagName === 'IMG') {
+      fig.classList.toggle('zoom');
+      return;
+    }
     // 표 위 띠의 두 단추. 담은 뒤 "그래서 어디로 가야 하나" 를 화면이
     // 직접 답한다 — 탭 이름을 외워 두었다가 찾아가게 하지 않는다.
     if (e.target.closest('.pick-go')) { showTab('compare'); return; }
