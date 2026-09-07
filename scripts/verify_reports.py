@@ -337,6 +337,11 @@ def verify(path):
     live = [k for k, v in srcs.items()
             if isinstance(v, dict) and v.get("ok") and (v.get("count") or 0) > 0]
     check("사2 살아 있는 원천이 둘 이상", len(live) >= 2, "산 원천 %d" % len(live))
+    # 반쯤 받은 원천은 「받았다」로 지나가 버린다 — 빠진 줄이 없는 것처럼
+    # 보이지 않게 눈에 걸어 둔다.
+    for k, v in sorted(srcs.items()):
+        if isinstance(v, dict) and v.get("partial"):
+            warn("사2-1 참고", "%s — %s" % (k, v["partial"]))
     check("사3 그날 자 리포트가 있음", len(todays) > 0, "%d건" % len(todays))
 
     # ── 바. 주간 ────────────────────────────────────────────────────────
