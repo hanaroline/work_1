@@ -108,9 +108,11 @@ jobs:
           print(f"::notice::리포트 {s['count_collected']}건 "
                 f"({s['report_date']} 자 {s['count_report_date']}건) "
                 f"· 본문 {x.get('detail_opened', 0)}건 중 {x.get('summarized', 0)}건 요약")
+          # 원천 칸에 낯선 항목이 끼어도 요약이 죽어서는 안 된다. 이 단계가
+          # 죽으면 커밋 단계까지 함께 넘어가 그날 수집물이 통째로 날아간다.
           for k, v in sorted(d['sources'].items()):
-              if not v['ok']:
-                  print(f"::warning::{k} 실패 — {v['error']}")
+              if isinstance(v, dict) and v.get('ok') is False:
+                  print(f"::warning::{k} 실패 — {v.get('error', '(사유 없음)')}")
           if x.get('warning'):
               print(f"::warning::{x['warning']}")
           PY

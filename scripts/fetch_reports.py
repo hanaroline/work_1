@@ -1707,7 +1707,10 @@ def main():
     undated = [r for r in reports if not r.get("date")]
     if undated:
         reports = [r for r in reports if r.get("date")]
-        out["sources"]["날짜 없어 뺀 줄"] = {
+        # `sources` 에 넣으면 안 된다 — 그 칸은 원천 상태를 적는 자리이고,
+        # ok 를 갖지 않는 항목이 끼면 그것을 훑는 쪽이 깨진다(9/7 판에서
+        # 워크플로 요약이 KeyError 로 죽어 수집물이 커밋되지 못했다).
+        out["dropped_no_date"] = {
             "count": len(undated),
             "urls": [r.get("url") for r in undated[:5]]}
 
@@ -1776,9 +1779,16 @@ def main():
     s = out["summary"]
     print("리포트 %d건 (%s 자 %d건) · 본문 %d건 요약 %d건"
           % (s["count_collected"], s["report_date"], s["count_report_date"], opened, summarized))
+    # 자료는 이미 다 썼다. 여기서 죽으면 수집 단계가 실패로 끝나 **커밋이
+    # 돌지 않고** 그날 판이 통째로 날아간다(9/7 09:00 판이 그랬다). 마지막
+    # 한 줄을 적다가 판을 잃는 일은 없어야 한다.
     for k, v in sorted(out["sources"].items()):
-        print("  %-24s %s" % (k, ("%d건 (%s)" % (v["count"], v.get("via", "-"))
-                                  if v["ok"] else "실패 " + v["error"])))
+        if not isinstance(v, dict):
+            continue
+        print("  %-24s %s" % (k, ("%d건 (%s)" % (v.get("count") or 0, v.get("via", "-"))
+                                  if v.get("ok") else "실패 " + str(v.get("error", "-")))))
+    if out.get("dropped_no_date"):
+        print("  %-24s %d건" % ("날짜 없어 뺀 줄", out["dropped_no_date"]["count"]))
     return 0
 
 
