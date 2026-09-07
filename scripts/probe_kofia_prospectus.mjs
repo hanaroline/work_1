@@ -107,38 +107,104 @@ const words = await page.evaluate(() => {
 console.log('   본문 ' + words.len + '자 · 낱말: ' + (words.hit.join(', ') || '(없음)'));
 console.log('   본문 앞머리: ' + words.head);
 
-/* ── 2) 전자공시 메인에서 「투자설명서」 메뉴를 찾는다 ── */
-console.log('\n' + '='.repeat(70));
-console.log('2) 전자공시 메인의 메뉴에서 설명서 화면 찾기');
-await page.goto(ORIGIN + '/websquare/index.jsp', { waitUntil: 'domcontentloaded', timeout: 60000 })
-  .catch((e) => console.log('   열기 실패: ' + e.message));
-await page.waitForTimeout(6000);
-const menu = await page.evaluate(() => {
-  const out = [];
-  for (const a of document.querySelectorAll('a,button,li,span')) {
-    const t = (a.textContent || '').replace(/\s+/g, ' ').trim();
-    if (!t || t.length > 30) continue;
-    if (!/설명서|공시|규약|보고서/.test(t)) continue;
-    const on = a.getAttribute('onclick') || a.getAttribute('href') || '';
-    out.push(t + (on ? '  →  ' + on.replace(/\s+/g, ' ').slice(0, 160) : ''));
-  }
-  return out.filter((v, i, arr) => arr.indexOf(v) === i).slice(0, 60);
-}).catch(() => []);
-console.log('   메뉴 후보 ' + menu.length + '개');
-menu.forEach((m) => console.log('     ' + m));
+/* ── 2) 「투자설명서」 링크를 눌러 무엇이 오는지 본다 ──
+   앞 판에서 이 화면 본문에 「약관 투자설명서 간이투자설명서」 가 적혀 있는 것을
+   확인했다. 그것을 누르지 않고서는 문서가 어디서 오는지 알 수 없다. */
+for (const want of ['투자설명서', '간이투자설명서']) {
+  console.log('\n' + '='.repeat(70));
+  console.log('2) 「' + want + '」 누르기');
 
-const paths2 = await page.evaluate(() => {
-  const s = document.documentElement.outerHTML;
-  const out = {};
-  (s.match(/\/wq\/[A-Za-z0-9_\/]+\.xml/g) || []).forEach((p) => { out[p] = 1; });
-  return Object.keys(out);
-}).catch(() => []);
-console.log('   메인에 적힌 w2xPath ' + paths2.length + '개');
-paths2.filter((p) => /pros|expl|설명|Doc|Ann|Fund/i.test(p)).slice(0, 60)
-  .forEach((p) => console.log('     ' + p));
+  /* 누를 것을 먼저 찾아 그 자리의 HTML 을 그대로 본다 — 무엇을 부르는지가 여기 있다 */
+  const info = await page.evaluate((w) => {
+    const els = [...document.querySelectorAll('a,button,span,div,td,li')];
+      /* 낱말이 정확히 그것인 가장 작은 요소를 고른다 (「투자설명서」 를 찾을 때
+         「간이투자설명서」 를 집지 않도록 텍스트가 정확히 같은 것만) */
+    const hit = els.filter((e) => (e.textContent || '').replace(/\s+/g, '') === w)
+      .sort((a, b) => (a.outerHTML || '').length - (b.outerHTML || '').length)[0];
+    if (!hit) return null;
+    return {
+      tag: hit.tagName, id: hit.id || '', cls: hit.className || '',
+      onclick: hit.getAttribute('onclick') || '',
+      href: hit.getAttribute('href') || '',
+      outer: (hit.outerHTML || '').slice(0, 400),
+      parent: (hit.parentElement ? hit.parentElement.outerHTML : '').slice(0, 400)
+    };
+  }, want).catch(() => null);
+
+  if (!info) { console.log('   그 낱말인 요소를 못 찾았습니다'); continue; }
+  console.log('   <' + info.tag + '> id=' + (info.id || '-') + ' class=' + (info.cls || '-'));
+  if (info.onclick) console.log('   onclick: ' + info.onclick.replace(/\s+/g, ' ').slice(0, 300));
+  if (info.href) console.log('   href: ' + info.href.slice(0, 300));
+  console.log('   HTML: ' + info.outer.replace(/\s+/g, ' '));
+  console.log('   부모: ' + info.parent.replace(/\s+/g, ' '));
+
+  const before = docReqs.length;
+  const posts0 = posts.length;
+  /* 새 창으로 열 수도 있다 — 창이 뜨면 그 주소와 본문을 본다 */
+  const popupP = page.waitForEvent('popup', { timeout: 12000 }).catch(() => null);
+  await page.evaluate((w) => {
+    const els = [...document.querySelectorAll('a,button,span,div,td,li')];
+    const hit = els.filter((e) => (e.textContent || '').replace(/\s+/g, '') === w)
+      .sort((a, b) => (a.outerHTML || '').length - (b.outerHTML || '').length)[0];
+    if (hit) hit.click();
+  }, want).catch((e) => console.log('   누르기 실패: ' + e.message));
+  const popup = await popupP;
+  await page.waitForTimeout(7000);
+
+  if (popup) {
+    console.log('   새 창: ' + popup.url().slice(0, 300));
+    await popup.waitForTimeout(4000);
+    const pInfo = await popup.evaluate(() => {
+      const s = document.documentElement.outerHTML;
+      const paths = {};
+      (s.match(/\/wq\/[A-Za-z0-9_\/]+\.xml/g) || []).forEach((p) => { paths[p] = 1; });
+      const links = [];
+      for (const a of document.querySelectorAll('a,button')) {
+        const t = (a.textContent || '').replace(/\s+/g, ' ').trim();
+        if (!t || t.length > 40) continue;
+        links.push(t + ' → ' + (a.getAttribute('onclick') || a.getAttribute('href') || '').replace(/\s+/g, ' ').slice(0, 140));
+      }
+      return {
+        title: document.title,
+        w2x: Object.keys(paths),
+        body: (document.body ? document.body.innerText : '').replace(/\s+/g, ' ').slice(0, 900),
+        links: links.slice(0, 25)
+      };
+    }).catch(() => null);
+    if (pInfo) {
+      console.log('   새 창 제목: ' + pInfo.title);
+      console.log('   새 창 w2xPath: ' + pInfo.w2x.join(' · '));
+      console.log('   새 창 본문: ' + pInfo.body);
+      if (pInfo.links.length) {
+        console.log('   새 창 링크:');
+        pInfo.links.forEach((l) => console.log('      ' + l));
+      }
+    }
+    await popup.close().catch(() => {});
+  } else {
+    console.log('   새 창은 뜨지 않았습니다 (같은 창에서 바뀌었거나 내려받기)');
+    console.log('   지금 주소: ' + page.url().slice(0, 250));
+  }
+  console.log('   이 누름으로 늘어난 문서 요청 ' + (docReqs.length - before) + '건 · POST ' + (posts.length - posts0) + '건');
+  docReqs.slice(before).forEach((u) => console.log('      ' + u));
+  posts.slice(posts0).forEach((b, i) => console.log('      POST' + (i + 1) + ': ' + b.replace(/\s+/g, ' ').slice(0, 500)));
+
+  /* 다음 낱말을 누르려면 원래 화면으로 돌아와야 한다 */
+  if (!page.url().includes('DISComFundSmryInfo')) {
+    await page.goto(
+      ORIGIN + '/websquare/index.jsp?w2xPath=/wq/com/popup/DISComFundSmryInfo.xml' +
+      '&companyCd=&standardCd=' + encodeURIComponent(code) + '&standardDt=&grntGb=',
+      { waitUntil: 'domcontentloaded', timeout: 60000 }
+    ).catch(() => {});
+    await page.waitForTimeout(6000);
+  }
+}
 
 console.log('\n문서로 보이는 요청 (전 구간)');
 [...new Set(docReqs)].slice(0, 40).forEach((u) => console.log('   ' + u));
+console.log('\n요약정보 POST 본문 하나를 그대로 (수집기가 갈아 끼울 틀)');
+const tmpl = posts.find((b) => b.includes('COMFundUnityBasInfoSO')) || posts[0] || '';
+console.log(tmpl.replace(/\s+/g, ' ').slice(0, 700));
 
 await browser.close();
 console.log('\n탐색 끝.');
