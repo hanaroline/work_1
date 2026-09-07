@@ -22,6 +22,10 @@ on:
         description: '(전환용) 옛 판독 결과에 설명서 참조를 채울 카탈로그 경로 — 한 번만 필요'
         type: string
         default: ''
+      codes:
+        description: '표준코드만 다시 읽어 끼워 넣기 (쉼표로 구분) — 규칙의 좁은 구멍을 막았을 때. 규칙 지문은 올리지 않는다'
+        type: string
+        default: ''
 # 전량 판독은 3,000건 × 2.6초 = 3시간 가까이 걸린다. 규칙을 손볼 때마다 자동으로
 # 돌면 러너를 붙잡고 있는 데다 규칙이 덜 다듬어진 상태로 결과가 덮인다.
 # 그래서 자동 실행을 두지 않고, 규칙을 확정한 뒤 손으로 돌린다
@@ -60,9 +64,15 @@ jobs:
           LIMIT: ${{ inputs.limit || '0' }}
           MODE: ${{ inputs.mode || 'incremental' }}
           SEED_REFS: ${{ inputs.seed_refs || '' }}
+          CODES: ${{ inputs.codes || '' }}
         run: |
           set -- --limit "$LIMIT"
-          if [ "$MODE" != 'full' ]; then set -- "$@" --incremental; fi
+          # codes 를 주면 그 종목만 읽는다 — mode 는 보지 않는다
+          if [ -n "$CODES" ]; then
+            set -- "$@" --codes "$CODES"
+          elif [ "$MODE" != 'full' ]; then
+            set -- "$@" --incremental
+          fi
           if [ -n "$SEED_REFS" ]; then
             case "$SEED_REFS" in
               git:*)

@@ -49,6 +49,20 @@ const EVERY = Number(argOf('--every', 0)) || 0;
  */
 const INCREMENTAL = args.includes('--incremental');
 /**
+ * --codes 표준코드,표준코드,… : 그 종목만 다시 읽어 기존 결과에 끼워 넣는다.
+ *
+ * 규칙의 좁은 구멍을 막았을 때 쓴다. 전량은 3시간이 걸리는데, 구멍에 걸린 종목이
+ * 열몇 건이면 그 열몇 건만 읽으면 된다. 실제로 위험 항목 이름 앞에 표 행 번호가
+ * 붙는 것을 두 번에 걸쳐 막았고, 두 번째는 6,005건 중 14건짜리였다.
+ *
+ * ★ 규칙 지문(rulesStamp)은 올리지 않는다.
+ *   지문을 새 규칙으로 적으면 「새 규칙으로 전량을 읽었다」 고 말하는 셈이고,
+ *   다음 --incremental 이 전량 재판독을 걸지 않는다. 그러면 이 몇 건 말고도 값이
+ *   달라질 종목이 있었을 때 낡은 값이 그대로 남는다. 지문을 옛 것으로 두면 다음
+ *   이어서 판독이 스스로 전량을 다시 읽어 저절로 맞아떨어진다.
+ */
+const CODES = argOf('--codes', '').split(/[,\s]+/).filter(Boolean);
+/**
  * --seed-refs 카탈로그경로 : 참조를 안 남기던 판이 만든 결과에 참조를 채워 넣는다.
  *
  * 지금 있는 data/fund-prospectus.js 는 참조를 남기기 전에 만든 것이라 무엇을 읽었는지
@@ -161,7 +175,9 @@ const refOf = (x) => (x.docT ? 'T' : 'G') + (x.docT || x.docG) + '@' + (x.docAt 
 
 /* ── 이어서 판독할 때 쓸 직전 결과 ───────────────────────────── */
 let prev = null;
-if (INCREMENTAL) {
+/** --codes 로 몇 건만 고칠 때 그대로 물려줄 지문 (위 설명 참조) */
+let keepStamp = null;
+if (INCREMENTAL || CODES.length) {
   try {
     const pg = {};
     new Function('window', await readFile(OUT, 'utf8'))(pg);
@@ -169,7 +185,14 @@ if (INCREMENTAL) {
   } catch {
     prev = null;
   }
-  if (!prev) {
+  if (CODES.length) {
+    if (!prev) throw new Error(`--codes 는 ${OUT} 의 기존 결과에 끼워 넣는 것입니다 — 그 파일을 읽지 못했습니다.`);
+    keepStamp = prev.rulesStamp || null;
+    console.log(
+      `--codes — ${CODES.length}건만 다시 읽어 기존 판독 ${Object.keys(prev.items).length}건에 끼워 넣습니다.\n` +
+      `  규칙 지문은 올리지 않습니다 (${keepStamp || '기록 없음'} 유지) — 다음 이어서 판독이 전량을 다시 읽어 맞춥니다.`
+    );
+  } else if (!prev) {
     console.log(`${OUT} 을 읽지 못했습니다 — 이어서 판독할 것이 없으므로 전량 판독합니다.`);
   } else if (prev.rulesStamp !== rulesStamp) {
     console.log(
@@ -209,12 +232,21 @@ const prevPool = (prev && prev.pool) || [];
 const prevRefs = (prev && prev.refs) || {};
 
 const spread0 = EVERY ? targets.filter((x, n) => n % EVERY === 0) : targets;
-const spread = prev
-  ? spread0.filter((x) => prevRefs[x.code] !== refOf(x))
-  : spread0;
+const spread = CODES.length
+  ? spread0.filter((x) => CODES.indexOf(x.code) >= 0)
+  : prev
+    ? spread0.filter((x) => prevRefs[x.code] !== refOf(x))
+    : spread0;
 const slice = spread.slice(FROM, LIMIT ? FROM + LIMIT : undefined);
 
-if (prev) {
+if (CODES.length) {
+  /* 카탈로그에 없는 코드를 조용히 넘기면 「고쳤다」 고 착각한다 */
+  const missing = CODES.filter((c) => !spread0.some((x) => x.code === c));
+  if (missing.length) {
+    console.log('::warning::카탈로그에서 찾지 못한 코드 ' + missing.length + '건 — ' + missing.join(', '));
+  }
+  console.log(`다시 읽을 종목 ${slice.length}건`);
+} else if (prev) {
   const kept = targets.filter((x) => prevRefs[x.code] === refOf(x)).length;
   const gone = Object.keys(prevItems).filter((c) => !targets.some((x) => x.code === c)).length;
   console.log(
@@ -329,7 +361,8 @@ const body =
     updatedAt: new Date().toISOString(),
     source: '펀드 투자설명서 PDF 판독',
     count: Object.keys(items).length,
-    rulesStamp,
+    /* --codes 로 몇 건만 고친 판은 지문을 올리지 않는다 — 위 CODES 설명 참조 */
+    rulesStamp: keepStamp || rulesStamp,
     pool,
     refs,
     items,
