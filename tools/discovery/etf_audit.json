@@ -1,14 +1,31 @@
 {
-  "at": "2026-08-31T00:39:05.329Z",
+  "at": "2026-09-07T01:01:14.536Z",
   "dataUpdatedAt": "2026-08-30T23:46:21.974Z",
   "total": 1348,
   "counts": {
-    "error": 0,
+    "error": 1,
     "warn": 1374,
     "info": 1279
   },
-  "errorEtfCount": 0,
+  "errorEtfCount": 1,
   "rules": [
+    {
+      "rule": "자료-낡음",
+      "sev": "error",
+      "count": 1,
+      "examples": [
+        {
+          "sev": "error",
+          "rule": "자료-낡음",
+          "id": "-",
+          "code": "-",
+          "market": "-",
+          "name": "(전체)",
+          "detail": "최신 기준일 2026-08-28 가 직전 영업일 2026-09-04 보다 7일 뒤졌다 — 수집이 멈췄을 수 있다"
+        }
+      ],
+      "etfCount": 1
+    },
     {
       "rule": "D1-등락률-불일치",
       "sev": "warn",
@@ -28749,6 +28766,15 @@
       "value": 80.64,
       "cohortMean": 25.99,
       "shiftPp": -1.01
+    },
+    {
+      "sev": "error",
+      "rule": "자료-낡음",
+      "id": "-",
+      "code": "-",
+      "market": "-",
+      "name": "(전체)",
+      "detail": "최신 기준일 2026-08-28 가 직전 영업일 2026-09-04 보다 7일 뒤졌다 — 수집이 멈췄을 수 있다"
     }
   ]
 }
