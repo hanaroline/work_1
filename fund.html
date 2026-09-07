@@ -970,11 +970,7 @@ function renderHead() {
     var c = COLUMNS[i];
     // 담는 칸의 머리는 여태 비어 있었다. 이름이 없는 칸은 누른 뒤에야
     // 무슨 칸인지 알게 되고, 그전까지는 눌러도 되는 것인지조차 모른다.
-    if (c[0] === 'pick') {
-      html += '<th class="pick-head" scope="col">' + esc(lang === 'ko' ? '비교' : 'Compare') +
-        '<span class="th-sub">' + esc(lang === 'ko' ? '담기' : 'add') + '</span></th>';
-      continue;
-    }
+    if (c[0] === 'pick') { html += pickHead(); continue; }
     var label = c[0] === 'ret'
       ? (lang === 'ko' ? periodLabel(state.period) + ' 수익률' : periodLabel(state.period) + ' return')
       : (lang === 'ko' ? c[1] : c[2]);
@@ -994,6 +990,42 @@ function periodLabel(key) {
   return key;
 }
 
+// 담는 칸은 목록에도 랭킹에도 똑같이 나온다. 두 곳에 같은 뜻의 칸을 각각
+// 적어 두면 한쪽만 고쳐지는 날이 오므로, 칸을 만드는 자리는 하나만 둔다.
+function isPicked(f) { return state.picks.indexOf(f.id) >= 0; }
+
+function pickCell(f) {
+  var picked = isPicked(f);
+  // 다 찼는데 안 담긴 줄. 여태는 눌러도 아무 일이 안 일어났고 까닭도
+  // 말하지 않았다 — 그것은 조용한 고장이다. 흐리게 잠가서 눈으로 먼저
+  // 알리고, 손을 얹으면 까닭이 뜬다.
+  var atMax = !picked && state.picks.length >= MAX_COMPARE;
+  var title = atMax
+    ? (lang === 'ko' ? MAX_COMPARE + '개까지만 담깁니다 — 하나 빼고 담으세요'
+                     : 'Basket is full (' + MAX_COMPARE + ') — remove one first')
+    : (lang === 'ko' ? (picked ? '비교에서 빼기' : '비교에 담기')
+                     : (picked ? 'Remove from comparison' : 'Add to comparison'));
+  return '<td class="pick-cell"><label class="pick" title="' + esc(title) + '">' +
+    '<input type="checkbox" data-pick="' + esc(f.id) + '"' +
+    (picked ? ' checked' : '') + (atMax ? ' disabled' : '') +
+    ' aria-label="' + esc(title + ' — ' + (f.name || f.code)) + '"></label></td>';
+}
+
+// 표 머리의 담는 칸. 목록·랭킹이 같은 말을 쓰게 한다.
+function pickHead() {
+  return '<th class="pick-head" scope="col">' + esc(lang === 'ko' ? '비교' : 'Compare') +
+    '<span class="th-sub">' + esc(lang === 'ko' ? '담기' : 'add') + '</span></th>';
+}
+
+// 담은 것이 바뀌면 지금 보이는 화면을 전부 다시 그린다. 목록에서 담고
+// 랭킹으로 갔더니 표시가 안 되어 있다거나, 랭킹에서 담았는데 비교 탭이
+// 그대로면 "담긴 게 맞나" 를 다시 묻게 된다.
+function repaintPicks() {
+  renderList();
+  if (state.tab === 'rank') renderRank();
+  if (state.tab === 'compare') renderCompare();
+}
+
 function renderList() {
   var list = sorted(filtered());
   var shown = list.slice(0, state.limit);
@@ -1002,22 +1034,9 @@ function renderList() {
     var f = shown[i];
     var v = retOf(f, state.period);
     var drop = v == null ? dropReasonOf(f, state.period) : null;
-    var picked = state.picks.indexOf(f.id) >= 0;
-    // 다 찼는데 안 담긴 줄. 여태는 눌러도 아무 일이 안 일어났고 까닭도
-    // 말하지 않았다 — 그것은 조용한 고장이다. 흐리게 잠가서 눈으로 먼저
-    // 알리고, 손을 얹으면 까닭이 뜬다.
-    var atMax = !picked && state.picks.length >= MAX_COMPARE;
-    var pickTitle = atMax
-      ? (lang === 'ko' ? MAX_COMPARE + '개까지만 담깁니다 — 하나 빼고 담으세요'
-                       : 'Basket is full (' + MAX_COMPARE + ') — remove one first')
-      : (lang === 'ko' ? (picked ? '비교에서 빼기' : '비교에 담기')
-                       : (picked ? 'Remove from comparison' : 'Add to comparison'));
     html += '<tr class="clickable' + (state.selected === f.id ? ' selected' : '') +
-      (picked ? ' picked' : '') + '" data-id="' + esc(f.id) + '">' +
-      '<td class="pick-cell"><label class="pick" title="' + esc(pickTitle) + '">' +
-        '<input type="checkbox" data-pick="' + esc(f.id) + '"' +
-        (picked ? ' checked' : '') + (atMax ? ' disabled' : '') +
-        ' aria-label="' + esc(pickTitle + ' — ' + (f.name || f.code)) + '"></label></td>' +
+      (isPicked(f) ? ' picked' : '') + '" data-id="' + esc(f.id) + '">' +
+      pickCell(f) +
       '<td><div style="font-weight:600;color:var(--ink)">' + esc(f.name || f.code) + '</div>' +
         '<div class="dim" style="font-size:13px">' + esc(f.code) +
         (f.region ? ' · ' + esc(regionLabel(f)) : '') + '</div>' +
@@ -1061,8 +1080,8 @@ function renderList() {
 // 하는 건가" 를 묻게 되는 순간이기 때문이다. 그래서 0개일 때도 감추지
 // 않고, 대신 무엇을 하는 칸인지를 적는다. 담기 시작하면 같은 자리가
 // 몇 개를 담았는지와 다음에 갈 곳으로 바뀐다.
-function renderPickBar() {
-  var node = el('pick-bar');
+function renderPickBar(hostId) {
+  var node = el(hostId || 'pick-bar');
   if (!node) return;
   var n = state.picks.length;
   var box = '<span class="box"></span>';
@@ -1089,9 +1108,11 @@ function renderPickBar() {
         ? '<span>' + esc(lang === 'ko' ? '— 하나만으로는 비교가 안 됩니다. 하나 더 담아 주세요.'
                                        : '— one fund is not a comparison; tick one more.') + '</span> '
         : '')
-    + '<button type="button" id="pick-go" style="margin-left:6px">'
+    // 목록과 랭킹에 띠가 하나씩 있으므로 단추는 id 가 아니라 class 로
+    // 가른다. 같은 id 가 문서에 둘 있으면 안 된다.
+    + '<button type="button" class="pick-go" style="margin-left:6px">'
     + esc(lang === 'ko' ? '비교 탭에서 보기' : 'Open Compare') + '</button> '
-    + '<button type="button" id="pick-clear">'
+    + '<button type="button" class="pick-clear">'
     + esc(lang === 'ko' ? '담은 것 비우기' : 'Clear') + '</button>';
 }
 
@@ -2005,19 +2026,27 @@ function renderReverse() {
 }
 
 // ───────────────────────── 랭킹 ─────────────────────────
+// 랭킹 표에도 담는 칸을 둔다. 순위를 보다가 "이 둘을 견줘 보고 싶다" 가
+// 되는 것이 자연스러운데, 여태는 이름을 외워 목록 탭으로 돌아가 다시
+// 찾아야 했다. 칸의 생김새·자리·동작은 목록과 똑같이 간다 — 같은 일을
+// 하는 칸이 화면마다 다르게 생기면 그게 또 하나의 배울 거리가 된다.
 function rankTable(title, rows, valueFn, valueLabel) {
   var html = '<h3>' + esc(title) + '</h3><div class="table-wrap"><table><thead><tr>' +
+    pickHead() +
     '<th class="num" style="width:56px">#</th>' +
     '<th>' + esc(lang === 'ko' ? '펀드' : 'Fund') + '</th>' +
     '<th>' + esc(lang === 'ko' ? '유형' : 'Category') + '</th>' +
     '<th class="num">' + esc(valueLabel) + '</th></tr></thead><tbody>';
   for (var i = 0; i < rows.length; i += 1) {
-    html += '<tr class="clickable" data-id="' + esc(rows[i].id) + '">' +
+    var f = rows[i];
+    html += '<tr class="clickable' + (state.selected === f.id ? ' selected' : '') +
+      (isPicked(f) ? ' picked' : '') + '" data-id="' + esc(f.id) + '">' +
+      pickCell(f) +
       '<td class="num dim">' + (i + 1) + '</td>' +
-      '<td><div style="font-weight:600;color:var(--ink)">' + esc(rows[i].name || rows[i].code) + '</div>' +
-      '<div class="dim" style="font-size:13px">' + esc(rows[i].company || '') + '</div></td>' +
-      '<td>' + esc(rows[i].type || '–') + '</td>' +
-      '<td class="num">' + valueFn(rows[i]) + '</td></tr>';
+      '<td><div style="font-weight:600;color:var(--ink)">' + esc(f.name || f.code) + '</div>' +
+      '<div class="dim" style="font-size:13px">' + esc(f.company || '') + '</div></td>' +
+      '<td>' + esc(f.type || '–') + '</td>' +
+      '<td class="num">' + valueFn(f) + '</td></tr>';
   }
   return html + '</tbody></table></div>';
 }
@@ -2037,6 +2066,7 @@ function renderRank() {
   };
 
   var html = '';
+  html += '<div class="pick-bar" id="rank-pick-bar"></div>';
   html += '<div class="notice">' + (lang === 'ko'
     ? '<strong>' + (state.rType || '전체 유형') + '</strong> ' + pool.length.toLocaleString() + '개 중 ' +
       plabel + ' 수익률이 있는 것은 ' + withRet.length.toLocaleString() + '개입니다. ' +
@@ -2115,6 +2145,11 @@ function renderRank() {
 
   html += '<div id="rank-detail"></div>';
   body.innerHTML = html;
+  renderPickBar('rank-pick-bar');
+  // 담을 때마다 이 표를 통째로 다시 그리므로, 열려 있던 상세는 직접
+  // 되살린다. 안 그러면 "담으면 보던 게 닫힌다" 가 된다.
+  var open = state.selected ? byId(state.selected) : null;
+  if (open) el('rank-detail').innerHTML = detailHtml(open);
 }
 
 // ───────────────────────── 수익률 검산 탭 ─────────────────────────
@@ -3163,20 +3198,14 @@ function bind() {
       var at = state.picks.indexOf(id);
       if (at >= 0) state.picks.splice(at, 1);
       else if (state.picks.length < MAX_COMPARE) state.picks.push(id);
-      renderList();
-      if (state.tab === 'compare') renderCompare();
+      repaintPicks();
       return;
     }
     if (e.target.closest('#cmp-clear')) { state.picks = []; renderCompare(); renderList(); return; }
     // 표 위 띠의 두 단추. 담은 뒤 "그래서 어디로 가야 하나" 를 화면이
     // 직접 답한다 — 탭 이름을 외워 두었다가 찾아가게 하지 않는다.
-    if (e.target.closest('#pick-go')) { showTab('compare'); return; }
-    if (e.target.closest('#pick-clear')) {
-      state.picks = [];
-      renderList();
-      if (state.tab === 'compare') renderCompare();
-      return;
-    }
+    if (e.target.closest('.pick-go')) { showTab('compare'); return; }
+    if (e.target.closest('.pick-clear')) { state.picks = []; repaintPicks(); return; }
     var toggle = e.target.closest('.hold-toggle');
     if (toggle) {
       var extras = document.querySelectorAll('[data-extra]');
@@ -3197,6 +3226,13 @@ function bind() {
       var host = el(state.tab === 'compare' ? 'compare-detail'
                 : state.tab === 'reverse' ? 'reverse-detail' : 'rank-detail');
       if (host) host.innerHTML = f ? detailHtml(f) : '';
+      // 랭킹은 표가 넷이고 같은 펀드가 둘 이상에 나온다. 어느 줄을 눌러
+      // 상세가 열렸는지 표시를 맞춰 준다 — 표를 통째로 다시 그리면
+      // 보던 자리가 튀므로 줄 표시만 손으로 옮긴다.
+      var rows = document.querySelectorAll('#rank-body tr[data-id]');
+      for (var r = 0; r < rows.length; r += 1) {
+        rows[r].classList.toggle('selected', rows[r].getAttribute('data-id') === state.selected);
+      }
     }
   });
 

@@ -353,6 +353,64 @@ await page.waitForTimeout(200);
 const rankTables = await page.locator('#rank-body table').count();
 check('랭킹 표가 그려진다', rankTables >= 2, `${rankTables}개`);
 
+// 랭킹에서도 담긴다. 목록과 **같은 바구니**여야 한다 — 화면마다 따로 담기면
+// 비교 탭이 어느 쪽을 보는지 알 수 없다. 앞서 목록에서 담아 둔 것이 그대로
+// 표시되어 있는지부터 본다.
+const rankPickable = await page.locator('#rank-body input[data-pick]').count();
+check('랭킹에도 담는 칸이 있다', rankPickable > 0, `${rankPickable}개`);
+const picksBefore = await page.evaluate(() => state.picks.length);
+const rankChecked = await page.locator('#rank-body input[data-pick]:checked').count();
+const rankInList = await page.evaluate(() => {
+  const ids = [...document.querySelectorAll('#rank-body tr[data-id]')].map((r) => r.getAttribute('data-id'));
+  return state.picks.filter((p) => ids.indexOf(p) >= 0).length;
+});
+check('목록에서 담은 것이 랭킹에도 표시된다', rankChecked === rankInList,
+  `표시 ${rankChecked} · 랭킹에 나온 담긴 펀드 ${rankInList}`);
+
+// 담는 칸을 눌렀을 때 상세가 열리면 안 되는 것은 랭킹에서도 같다.
+const rankDetailBefore = ((await page.locator('#rank-detail').innerHTML()) || '').trim();
+const freeCell = page.locator('#rank-body tr:not(.picked) td.pick-cell').first();
+await freeCell.scrollIntoViewIfNeeded();
+const freeId = await freeCell.locator('input[data-pick]').getAttribute('data-pick');
+await freeCell.click();          // 칸 한가운데 — 체크상자 위가 아니어도 된다
+await page.waitForTimeout(120);
+const picksAfter = await page.evaluate(() => state.picks.length);
+const rankDetailAfter = ((await page.locator('#rank-detail').innerHTML()) || '').trim();
+check('랭킹 담는 칸을 누르면 담긴다', picksAfter === picksBefore + 1,
+  `${picksBefore} → ${picksAfter}`);
+check('랭킹 담는 칸을 눌러도 상세가 안 바뀐다', rankDetailAfter === rankDetailBefore,
+  rankDetailAfter === rankDetailBefore ? '그대로' : '바뀜');
+const rankBarTxt = (await page.locator('#rank-pick-bar').textContent()) || '';
+check('랭킹 표 위 띠가 담은 수를 말한다', rankBarTxt.indexOf(String(picksAfter)) >= 0,
+  rankBarTxt.trim().slice(0, 50));
+// 두 화면이 **같은 바구니**를 본다는 것은 여기서만 확실히 볼 수 있다. 위의
+// 대조는 랭킹 상위 20 에 담긴 펀드가 하나도 없으면 0 = 0 으로 통과해 버린다
+// — 0 은 확인이 아니다. 그래서 방금 랭킹에서 담은 그 펀드를 목록에서
+// 검색해 눈으로 확인한다.
+const freeCode = await page.evaluate((i) => byId(i).code, freeId);
+await page.locator('.tabs button[data-tab="browse"]').click();
+// 앞 절에서 켜 둔 "보유종목 있는 것만" 이 켜져 있으면 이 펀드가 목록에서
+// 걸러져 0개가 나온다 — 그것은 어긋남이 아니라 거름이다. 잠시 끄고 본다.
+await page.locator('#f-hold').uncheck();
+await page.fill('#q', freeCode);
+await page.waitForTimeout(300);
+const echoed = await page.locator(`#list-body input[data-pick="${freeId}"]:checked`).count();
+check('랭킹에서 담은 것이 목록에도 표시된다', echoed === 1, `${freeCode} · ${echoed}개`);
+await page.fill('#q', '');
+await page.locator('#f-hold').check();
+await page.waitForTimeout(250);
+await page.locator('.tabs button[data-tab="rank"]').click();
+await page.waitForTimeout(200);
+
+// 담은 것을 원래대로 돌려 놓는다 — 뒤 검사가 앞 검사의 부산물을 보면 안 된다.
+// 방금 담은 **그 펀드**를 짚는다(다시 그려진 뒤라 자리는 바뀌어 있다).
+const undo = page.locator(`#rank-body input[data-pick="${freeId}"]`).first();
+await undo.scrollIntoViewIfNeeded();
+await undo.click();
+await page.waitForTimeout(120);
+check('랭킹에서 뺀 것이 되돌아간다',
+  (await page.evaluate(() => state.picks.length)) === picksBefore, `${picksBefore}개`);
+
 // ── 자금 유입
 //
 // 이력이 두 열 이상이라야 낼 수 있는 값이다. 둘 중 어느 쪽이든 **말은 해야
