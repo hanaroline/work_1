@@ -389,38 +389,69 @@
    * 이름만 말하면 평가에서 미인정이라 내용까지 붙여야 한다.
    * 이름 칸이 "투자원금손실 / 위험" 처럼 줄로 쪼개져 있어 짧은 줄을 이어 만든다.
    */
+  /**
+   * ★ 머리글이 여러 곳에 있고, 글자 사이에 공백이 끼어 있다 ★
+   *
+   * 창구가 짚어 준 KB그로스&밸류에서 risk2 가 확인필요로 남았다. 원문을 떠 보니
+   * 요약 표에는 위험이 한 줄(원본손실위험)뿐이고, 실제 위험 목록은 본문
+   * 「10. 집합투자기구의 투자위험」 아래 세 표에 나뉘어 있었다.
+   *
+   *   가. 일반위험    구 분 / 투 자 위 험 의  주 요 내 용
+   *     주식가격 변동위험 · 이자율 변동에 따른 위험 · 시장위험 · 신용위험 · 파생상품 투자위험
+   *   나. 특수위험    (같은 머리글)
+   *     집중투자에 따른 위험(종목) · 집중투자에 따른 위험(섹터) · 적극적 매매 위험
+   *   다. 기타 투자위험 (같은 머리글)
+   *     유동성위험 · 증권 대차거래 위험 · 환매에 따른 위험 · …
+   *
+   * 앞 판은 (1) 머리글을 「투자위험의」 로만 찾아 본문의 「투 자 위 험 의」 를
+   * 놓쳤고, (2) 처음 만난 표 하나만 읽었다. 그래서 요약 표의 한 줄만 잡히고
+   * 둘째 위험이 없었다. 판독된 3,015종목 중 377종목이 같은 처지였다.
+   *
+   * 머리글을 낱자 사이 공백까지 받아 모두 찾고, 표마다 이어서 읽는다.
+   */
+  var RISK_HEAD = /구\s*분\s*\t\s*투\s*자\s*위\s*험\s*의?\s*주\s*요\s*내\s*용/;
+  /** 「가. 일반위험」 처럼 표 제목도 「위험」 으로 끝난다 — 이름으로 삼지 않는다 */
+  var RISK_SECTION = /^(?:[가-하]|\d+)\s*[.)]/;
+
   function riskItems(text) {
     var lines = String(text).split('\n');
-    var out = [], at = 0, start = -1, startAt = 0;
-    for (var i = 0; i < lines.length; i++) {
-      if (start < 0 && /구\s*분\s*\t\s*투자위험의?\s*주요내용/.test(lines[i])) { start = i; startAt = at; }
-      at += lines[i].length + 1;
-    }
-    if (start < 0) return out;
-    var name = '';
-    for (var j = start + 1; j < lines.length && j < start + 90; j++) {
-      var t = lines[j].replace(/\t/g, ' ').replace(/\s+/g, ' ').trim();
-      if (!t || /^[-.\s]+$/.test(t)) continue;
-      if (t.length <= 22 && !/[.。]$/.test(t) && !/니다$/.test(t)) {
-        name = (name ? name + ' ' : '') + t;
-        if (/위험$/.test(name)) {
-          /* 이름 다음 줄부터가 내용이다 */
-          var body = [];
-          for (var k = j + 1; k < lines.length && body.join('').length < 260; k++) {
-            var b = lines[k].replace(/\t/g, ' ').replace(/\s+/g, ' ').trim();
-            if (!b) continue;
-            if (b.length <= 22 && !/니다|습니다|합니다/.test(b)) break;
-            body.push(b);
+    var heads = [];
+    for (var i = 0; i < lines.length; i++) if (RISK_HEAD.test(lines[i])) heads.push(i);
+    if (!heads.length) return [];
+
+    var out = [], seen = {};
+    for (var h = 0; h < heads.length && out.length < 8; h++) {
+      var start = heads[h];
+      var stop = Math.min(lines.length, heads[h + 1] != null ? heads[h + 1] : start + 90);
+      var name = '';
+      for (var j = start + 1; j < stop; j++) {
+        var t = lines[j].replace(/\t/g, ' ').replace(/\s+/g, ' ').trim();
+        if (!t || /^[-.\s]+$/.test(t)) continue;
+        /* 「- 19 -」 같은 쪽번호는 이름도 내용도 아니다 */
+        if (/^-\s*\d+\s*-$/.test(t)) continue;
+        if (t.length <= 22 && !/[.。]$/.test(t) && !/니다$/.test(t)) {
+          if (RISK_SECTION.test(t)) { name = ''; continue; }
+          name = (name ? name + ' ' : '') + t;
+          /* 「집중투자에 따른 위험(종목)」 처럼 뒤에 괄호가 붙는 이름도 있다 */
+          if (/위험(?:\s*\([^)]*\))?$/.test(name)) {
+            var body = [];
+            for (var k = j + 1; k < stop && body.join('').length < 260; k++) {
+              var b = lines[k].replace(/\t/g, ' ').replace(/\s+/g, ' ').trim();
+              if (!b || /^-\s*\d+\s*-$/.test(b)) continue;
+              if (b.length <= 22 && !/니다|습니다|합니다/.test(b)) break;
+              body.push(b);
+            }
+            var nm = name.replace(/\s+/g, ' ').trim();
+            if (body.length && !seen[nm]) {
+              seen[nm] = 1;
+              out.push({ name: nm, body: body.join(' ').replace(/\s+/g, ' ') });
+            }
+            name = '';
           }
-          if (body.length) {
-            out.push({ name: name.replace(/\s+/g, ' ').trim(), body: body.join(' ').replace(/\s+/g, ' ') });
-          }
+        } else {
           name = '';
         }
-      } else {
-        name = '';
       }
-      if (out.length >= 6) break;
     }
     return out;
   }
