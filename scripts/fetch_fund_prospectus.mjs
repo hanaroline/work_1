@@ -164,7 +164,11 @@ if (INCREMENTAL) {
     for (const x of seedCat.items) {
       if (!prev.items[x.code]) continue;
       if (!(x.docT || x.docG)) continue;
-      seeded[x.code] = (x.docT ? 'T' : 'G') + (x.docT || x.docG);
+      /* refOf 를 그대로 쓴다. 앞 판은 여기서 참조를 손으로 다시 조립하다가
+         게시일(@docAt)을 빠뜨렸다 — 그래서 채운 참조가 refOf 와 형식이 달라
+         3,019건이 전부 「바뀐 것」 으로 잡히고 두 시간 전량 판독이 돌았다.
+         가르는 기준은 한 군데(refOf)에만 둔다. */
+      seeded[x.code] = refOf(x);
     }
     prev = { ...prev, refs: seeded };
     console.log(
@@ -196,6 +200,20 @@ if (prev) {
     `이어서 판독 — 설명서 ${targets.length}건 중 그대로 ${kept}건은 직전 판독을 쓰고, ` +
     `${spread.length}건만 다시 읽습니다 (판매 종료로 빠지는 ${gone}건 제외)`
   );
+  /**
+   * 이어서 판독하겠다고 했는데 직전 판독을 하나도 못 쓴다면, 하루 사이에 설명서가
+   * 전부 바뀐 것이 아니라 참조를 맞대는 방식이 어긋난 것이다. 실제로 그렇게
+   * 두 시간짜리 전량 판독이 한 번 돌았다(참조를 조립할 때 게시일을 빠뜨렸다).
+   * 조용히 넘어가면 다음에도 같은 일이 되풀이되므로 로그에 크게 남긴다.
+   */
+  if (!kept && Object.keys(prevRefs).length) {
+    console.log(
+      '::warning::이어서 판독인데 직전 판독을 하나도 쓰지 못했습니다 — 참조 형식이 어긋난 것으로 보입니다.\n' +
+      `  직전 참조 표본  ${Object.values(prevRefs)[0]}\n` +
+      `  지금 참조 표본  ${refOf(targets[0])}\n` +
+      '  이대로 전량을 읽습니다 (결과는 옳지만 두 시간이 걸립니다).'
+    );
+  }
 } else {
   console.log(`투자설명서 ${targets.length}건 중 ${slice.length}건 판독 (from ${FROM})`);
 }
