@@ -25,6 +25,25 @@ const PAGES = [
 
 const TYPES = ['성장형', '성장추구형', '위험중립형', '안정추구형', '안정형'];
 
+/**
+ * 회사 페이지는 euc-kr 이다 (Content-Type: text/html;charset=euc-kr).
+ * Node 의 res.text() 는 charset 을 보지 않고 늘 UTF-8 로 푼다. 그래서 첫 판은
+ * 여섯 화면이 모두 HTTP 200 인데 유형 이름이 0/5 로 나왔다 — 한글이 깨진 것이다.
+ * 바이트로 받아 헤더의 charset 으로 푼다.
+ */
+async function body(res) {
+  const ct = res.headers.get('content-type') || '';
+  const m = /charset=([\w-]+)/i.exec(ct);
+  const cs = (m ? m[1] : 'utf-8').toLowerCase();
+  const buf = new Uint8Array(await res.arrayBuffer());
+  try {
+    return new TextDecoder(cs).decode(buf);
+  } catch (e) {
+    console.log('   ' + cs + ' 를 풀 수 없어 UTF-8 로 읽습니다 — ' + e.message);
+    return new TextDecoder('utf-8').decode(buf);
+  }
+}
+
 /** 태그를 떼고 줄을 정리한다 — 표 칸이 줄로 떨어지게 둔다 */
 function text(html) {
   return String(html)
@@ -53,10 +72,14 @@ for (const [name, url] of PAGES) {
   console.log('   HTTP ' + res.status + ' · ' + (res.headers.get('content-type') || ''));
   if (!res.ok) continue;
 
-  const t = text(await res.text());
+  const t = text(await body(res));
   const hit = TYPES.filter((x) => t.includes(x));
   console.log('   유형 이름 ' + hit.length + '/5 등장' + (hit.length ? ' — ' + hit.join(', ') : ''));
-  if (hit.length < 3) continue;
+  if (hit.length < 3) {
+    /* 어느 화면인지는 알 수 있게 첫 줄 몇 개를 찍는다 — 껍데기만 온 것인지 가른다 */
+    console.log('   본문 ' + t.length + '자 · 머리 : ' + t.split('\n').slice(0, 3).join(' / ').slice(0, 200));
+    continue;
+  }
 
   /* 유형 이름이 나오는 줄과 그 뒤 몇 줄을 그대로 찍는다 — 설명문이 옆 칸에 있다 */
   const lines = t.split('\n');
