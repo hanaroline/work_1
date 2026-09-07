@@ -255,7 +255,12 @@ async function getPdf(row, tries = 3) {
       if (i < tries) await new Promise((s) => setTimeout(s, 600 * 2 ** (i - 1)));
     }
   }
-  throw last;
+  /* node fetch 의 「fetch failed」 는 그 자체로는 아무것도 말해 주지 않는다 —
+     진짜 이유는 cause 에 있다. 그것을 붙여 던진다. */
+  const c = last && last.cause;
+  const msg = String(last && last.message || last) +
+    (c ? ' (' + (c.code || '') + ' ' + String(c.message || c).slice(0, 120) + ')' : '');
+  throw new Error(msg);
 }
 
 /* ── 씨앗으로 계약이 살아 있는지 먼저 본다 ───────────────────── */

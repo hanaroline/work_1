@@ -244,5 +244,106 @@ try {
   console.log('   실패: ' + String(e && e.message || e));
 }
 
+/* ── 4) 내려받기를 어떻게 해야 되는지 ──
+   목록은 node fetch 로 잘 되는데 내려받기는 「fetch failed」 로 막혔다 (HTTP 상태도
+   없이 연결 단계에서). 브라우저에서는 요청이 나갔다. 무엇이 다른지 갈라 본다 —
+   이름 풀이 · 맨몸 요청 · 머리글을 갖춘 요청 · 브라우저 문맥의 요청. */
+console.log('\n' + '='.repeat(70));
+console.log('4) 내려받기 경로 가리기');
+
+function parseList(xml) {
+  const out = [];
+  const re = /<list>([\s\S]*?)<\/list>/g;
+  let m;
+  while ((m = re.exec(xml))) {
+    const b = m[1];
+    const g = (t) => {
+      const r = b.match(new RegExp('<' + t + '>([\\s\\S]*?)</' + t + '>'));
+      return r ? r[1].trim() : '';
+    };
+    out.push({ fileNm: g('fileNm'), serverPath: g('serverPath'), originalFileNm: g('originalFileNm') });
+  }
+  return out;
+}
+
+const listXmlBody =
+  '<?xml version="1.0" encoding="utf-8"?><message><proframeHeader>' +
+  '<pfmAppName>FS-COM</pfmAppName><pfmSvcName>COMFundUnityBasInfoSO</pfmSvcName>' +
+  '<pfmFnName>srchFile</pfmFnName></proframeHeader><systemHeader></systemHeader>' +
+  '<COMFundInfoFileListDTO><standardCd>' + code + '</standardCd><uGb>T</uGb>' +
+  '</COMFundInfoFileListDTO></message>';
+const listRes = await fetch(ORIGIN + '/proframeWeb/XMLSERVICES/', {
+  method: 'POST',
+  headers: {
+    'Content-Type': 'application/xml; charset=UTF-8', 'User-Agent': UA,
+    Origin: ORIGIN, Referer: ORIGIN + '/websquare/index.jsp'
+  },
+  body: listXmlBody,
+  signal: AbortSignal.timeout(20000)
+}).catch(() => null);
+const rows = parseList(listRes ? await listRes.text() : '');
+
+if (!rows.length) {
+  console.log('   목록을 못 받아 내려받기 시험을 건너뜁니다');
+} else {
+  const row = rows[0];
+  const url = 'https://disdown.kofia.or.kr/COMFSFileDownload.jsp' +
+    '?serverPath=' + encodeURIComponent(row.serverPath) +
+    '&serverFileNm=' + encodeURIComponent(row.fileNm) +
+    '&filename=' + encodeURIComponent(row.originalFileNm);
+  console.log('   대상: ' + row.originalFileNm.slice(0, 60));
+
+  /* (가) 이름 풀이 — 러너가 이 이름을 못 찾는 것인지 */
+  try {
+    const dns = await import('node:dns/promises');
+    const a = await dns.lookup('disdown.kofia.or.kr', { all: true });
+    console.log('   (가) 이름 풀이 OK — ' + a.map((x) => x.address).join(', '));
+  } catch (e) {
+    console.log('   (가) 이름 풀이 실패 — ' + String(e && e.message || e));
+  }
+
+  /* 오류의 속살까지 — node fetch 는 진짜 이유를 cause 에 넣는다 */
+  const why = (e) => {
+    const c = e && e.cause;
+    return String(e && e.message || e) +
+      (c ? ' | cause: ' + (c.code || '') + ' ' + String(c.message || c).slice(0, 160) : '');
+  };
+
+  /* (나) 맨몸 요청 */
+  try {
+    const r = await fetch(url, { signal: AbortSignal.timeout(30000) });
+    console.log('   (나) 맨몸 요청 — HTTP ' + r.status + ' · ' + (r.headers.get('content-type') || '?'));
+  } catch (e) { console.log('   (나) 맨몸 요청 실패 — ' + why(e)); }
+
+  /* (다) 머리글을 갖춘 요청 */
+  try {
+    const r = await fetch(url, {
+      headers: { 'User-Agent': UA, Referer: ORIGIN + '/websquare/index.jsp', Accept: '*/*' },
+      signal: AbortSignal.timeout(30000)
+    });
+    const buf = Buffer.from(await r.arrayBuffer());
+    console.log('   (다) 머리글 요청 — HTTP ' + r.status + ' · ' + buf.length + '바이트 · 머리 ' +
+      JSON.stringify(buf.slice(0, 8).toString('latin1')));
+  } catch (e) { console.log('   (다) 머리글 요청 실패 — ' + why(e)); }
+
+  /* (라) 브라우저 문맥의 요청 — 쿠키·TLS 를 브라우저가 맡는다 */
+  try {
+    const rr = await ctx.request.get(url, {
+      headers: { Referer: ORIGIN + '/websquare/index.jsp' }, timeout: 40000
+    });
+    const buf = Buffer.from(await rr.body());
+    console.log('   (라) 브라우저 문맥 — HTTP ' + rr.status() + ' · ' + buf.length + '바이트 · 머리 ' +
+      JSON.stringify(buf.slice(0, 8).toString('latin1')));
+  } catch (e) { console.log('   (라) 브라우저 문맥 실패 — ' + String(e && e.message || e).slice(0, 200)); }
+
+  /* (마) http 로 — TLS 가 문제인지 가린다 (값은 쓰지 않고 가리기만) */
+  try {
+    const r = await fetch(url.replace('https://', 'http://'), {
+      headers: { 'User-Agent': UA }, redirect: 'manual', signal: AbortSignal.timeout(20000)
+    });
+    console.log('   (마) http — HTTP ' + r.status + ' · location ' + (r.headers.get('location') || '-'));
+  } catch (e) { console.log('   (마) http 실패 — ' + why(e)); }
+}
+
 await browser.close();
 console.log('\n탐색 끝.');
