@@ -230,8 +230,14 @@ PDF 에서도 제목과 「원문 PDF」는 눌러서 원문으로 갑니다. �
 python3 scripts/fetch_reports.py
 
 # 사내망 등 막힌 곳에서는 러너에 요청한다 (git push 로 워크플로를 깨움)
-bash scripts/request_reports_refresh.sh
+bash scripts/request_reports_refresh.sh "9/8 아침 판"
 ```
+
+> **어느 브랜치로 가는가.** push 이벤트는 **밀어 넣은 브랜치에 놓인** 워크플로
+> 파일로 돕니다. `.github/workflows/reports.yml` 은 아직 작업 브랜치에만 있고
+> `main` 에는 없으므로, 요청은 지금 브랜치로 보냅니다. 예약 실행(`schedule`)은
+> 기본 브랜치의 워크플로만 발동하므로 **이 워크플로가 `main` 에 들어가기
+> 전까지 아침 자동 수집은 돌지 않습니다** — 지금은 매번 손으로 부르고 있습니다.
 
 ## 데이터 소스
 
