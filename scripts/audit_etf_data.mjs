@@ -497,6 +497,22 @@ for (const [key, members] of Object.entries(cohorts)) {
     findings.push({ sev: 'error', rule: '자료-기준일제각각', id: '-', code: '-', market: '-', name: '(전체)',
                     detail: `최신 기준일(${newest}) 종목이 ${atNewest}/${ETFS.length} (${(ratio * 100).toFixed(0)}%) 뿐이다` });
   }
+
+  // ── 아직 안 끝난 세션의 값이 섞였나 ──────────────────────────────────────
+  // 야후는 장중에도 오늘 날짜 봉을 준다. 그 값은 종가가 아니다. 게다가 오늘
+  // 아직 체결이 없는 종목은 지난 영업일 종가로 남으므로, 한 표 안에 장중과
+  // 종가가 함께 놓인다 — 순위와 유형평균이 그 위에서 계산되니 비교가 성립하지
+  // 않는다. 실제로 9/7 오전 수집에서 국내 1,116종목이 장중, 51종목이 금요일
+  // 종가였다.
+  //
+  // "직전 영업일" 보다 **앞선** 기준일이 있으면 그것이 장중 값이다.
+  const ahead = ETFS.filter((e) => /^\d{4}-\d{2}-\d{2}$/.test(String(e.retAsOf))
+                                && e.retAsOf > expected);
+  if (ahead.length) {
+    findings.push({ sev: 'error', rule: '자료-장중값섞임', id: '-', code: '-', market: '-', name: '(전체)',
+                    detail: `직전 영업일(${expected}) 보다 앞선 기준일을 가진 종목 ${ahead.length}개 ` +
+                            `— 아직 안 끝난 세션의 값이다 (예: ${ahead.slice(0, 3).map((e) => e.code + ' ' + e.retAsOf).join(', ')})` });
+  }
   globalThis.__staleness = stale;
 }
 
