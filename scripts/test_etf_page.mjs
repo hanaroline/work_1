@@ -506,6 +506,50 @@ const rowsEn = await page.locator('#list-body tr').count();
 check('영문 상태에서도 목록이 그려진다', rowsEn > 0, `${rowsEn}행`);
 await page.locator('.lang-toggle button[data-lang="ko"]').click();
 
+// ── 사용법이 적어 둔 것이 실제와 맞는가.
+//    도움말은 화면과 어긋나는 순간 거짓말이 된다. 적어 둔 주장을 눌러서 본다.
+{
+  await page.locator('.tabs button[data-tab="browse"]').click();
+  await page.waitForTimeout(200);
+  // 앞 단계에서 열어 둔 상세가 남아 있으면 판정이 흐려진다. 닫고 시작한다.
+  if (await page.locator('#list-body tr.selected').count()) {
+    await page.locator('#list-body tr.selected').first().locator('td').nth(1).click();
+    await page.waitForTimeout(250);
+  }
+  check('상세를 닫고 시작한다', (await page.locator('#detail .hold-row').count()) === 0);
+  // 주장 1 — "칸 안 아무 데나 눌러도 담긴다"
+  const cell = page.locator('#list-body .pick-cell').first();
+  const cb = page.locator('#list-body input[data-pick]').first();
+  await cell.scrollIntoViewIfNeeded();
+  const cellBox = await cell.boundingBox();
+  // 상자 바깥 모서리를 노린다 — 칸 전체가 눌리는지 보려는 것이다.
+  await cell.click({ position: { x: 5, y: cellBox.height - 5 } });
+  await page.waitForTimeout(200);
+  check('도움말대로 칸 모서리를 눌러도 담긴다', await cb.isChecked());
+  // 주장 2 — "체크해도 상세는 열리지 않는다"
+  check('도움말대로 체크해도 상세가 안 열린다',
+        (await page.locator('#detail .hold-row').count()) === 0);
+  // 주장 3 — "그 밖의 자리를 누르면 상세가 펼쳐진다"
+  await page.locator('#list-body tr[data-id]').first().locator('td').nth(1).click();
+  await page.waitForTimeout(250);
+  check('도움말대로 다른 자리를 누르면 상세가 열린다',
+        (await page.locator('#detail .hold-row').count()) > 0);
+  check('상세를 열어도 담기지 않는다(체크 상태 유지)', await cb.isChecked());
+  // 주장 4 — "화면을 옮겼다 와도 담아 둔 것이 남는다"
+  await page.locator('.tabs button[data-tab="rank"]').click();
+  await page.waitForTimeout(200);
+  await page.locator('.tabs button[data-tab="browse"]').click();
+  await page.waitForTimeout(250);
+  check('도움말대로 탭을 옮겼다 와도 담아 둔 것이 남는다',
+        /1\s*\/\s*8/.test(await page.locator('#basket-bar').textContent() || ''));
+  // 주장 5 — "비우기를 누르면 비워진다"
+  await page.locator('#basket-clear').click();
+  await page.waitForTimeout(200);
+  check('도움말대로 비우기가 동작한다',
+        (await page.locator('#basket-bar.basket-bar').count()) === 0
+        && (await page.locator('#list-body tr.picked').count()) === 0);
+}
+
 // ── 사용법 화면
 await page.locator('.tabs button[data-tab="howto"]').click();
 await page.waitForTimeout(200);
