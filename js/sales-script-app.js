@@ -702,6 +702,20 @@
     '안정추구형': '투자원금의 손실위험은 최소화하고 이자소득이나 배당소득 수준의 안정적인 투자를 목표로 하는 타입입니다. 다만 수익을 위해 단기적인 손실을 수용할 수 있는 고객 유형입니다.',
     '안정형': '예금 또는 적금 수준의 수익률을 기대하며, 투자원금에 손실이 발생하는 것을 원하지 않는 고객 유형입니다.'
   };
+  /**
+   * 그 성향의 설명문 — 사내 문장이 있으면 그것, 없으면 창구가 적어 둔 것.
+   *
+   * 성장형은 사내 문장을 확보하지 못해 PROFILES 가 비어 있다. 창구가 진단서에서
+   * 한 번 옮겨 적으면 ST.ctx.profMeanings 에 그 성향의 것으로 남고, 다음에 같은
+   * 성향을 고르면 다시 나온다 — 상품을 바꿔도, 다음 상담에도 그대로다.
+   */
+  function meaningFor(profile) {
+    if (!profile) return '';
+    if (PROFILES[profile]) return PROFILES[profile];
+    var mine = ST.ctx && ST.ctx.profMeanings;
+    return (mine && mine[profile]) || '';
+  }
+
   var CASH_OPTS = {
     cashPurpose: ['원금보존', '이자·배당수익 추구', '시장수익률 수준 추구', '적극적 수익 추구'],
     cashPrincipal: ['원금 반드시 보존', '원금 대부분 보존', '일부 손실 감수 가능', '원금보존 추구하지 않음'],
@@ -733,6 +747,17 @@
         ST.pman[o.productId] = Object.assign({}, o.manual, ST.pman[o.productId] || {});
       }
       if (o.ctx) Object.keys(o.ctx).forEach(function (k) { ST.ctx[k] = o.ctx[k]; });
+      /*
+       * 성향은 저장돼 있는데 의미가 비어 있는 경우를 메운다.
+       *
+       * 앞 판은 의미를 성향 드롭다운의 onchange 에서만 채웠다. 그래서 성향을 고른
+       * 뒤 저장된 화면을 다시 열면 onchange 가 돌지 않아 의미가 빈 채로 남고,
+       * 「확인필요」 에 그대로 떴다. 사내 문장이 생긴 뒤에도 이미 성향을 골라 둔
+       * 창구에는 채워지지 않는다 — 열 때 한 번 메운다.
+       */
+      if (ST.ctx.custProfile && !ST.ctx.custProfileMeaning) {
+        ST.ctx.custProfileMeaning = meaningFor(ST.ctx.custProfile);
+      }
     } catch (e) { /* 손상된 저장값 — 초기값 사용 */ }
   }
 
@@ -2390,7 +2415,37 @@
     Object.keys(PROFILES).forEach(function (k) {
       h.push('<option value="' + k + '"' + (ctx.custProfile === k ? ' selected' : '') + '>' + k + '</option>');
     });
-    h.push('</select><div class="hint">선택하면 성향의 의미 설명문이 자동 입력됩니다 (수정 가능).</div></div>');
+    h.push('</select>');
+    /*
+     * 성향의 의미를 여기서 바로 고치게 한다.
+     *
+     * 앞 판은 이 값을 화면 위 「확인필요」 의 빨간 표시로만 넣을 수 있었다. 그런데
+     * 그 입구는 상품별 저장통(ST.pman[상품])에 쓴다 — 상품마다 따로 저장되므로
+     * 다음 상품을 고르면 다시 확인필요로 떴다. 성향의 의미는 상품이 아니라 고객의
+     * 값이고, 성향이 같으면 회사가 쓰는 문장도 같다.
+     *
+     * 그래서 상담 조건(ST.ctx)에 두고 성향 바로 아래에서 고치게 한다. 여기 적으면
+     * 상품을 바꿔도, 다음 상담에도 그대로 남는다.
+     *
+     * 다섯 성향 중 성장형은 사내 문장을 확보하지 못해 비어 있다. 「자동 입력됩니다」
+     * 라고만 적어 두면 왜 안 채워지는지 알 수 없으므로, 비어 있는 성향을 고른
+     * 경우에는 그 사실과 어디서 옮겨 적어야 하는지를 말해 준다.
+     */
+    var pmNeed = ctx.custProfile && !PROFILES[ctx.custProfile];
+    h.push('<div style="margin-top:6px"><div style="font-size:12px;color:var(--muted);margin-bottom:2px">성향의 의미'
+      + ' <span style="color:var(--muted2)">— 성향명만 말하면 미인정 항목입니다</span></div>');
+    h.push('<textarea id="profMeaning" rows="3" placeholder="투자자성향 진단서에 적힌 설명문을 그대로 옮겨 적으십시오">'
+      + esc(ctx.custProfileMeaning || '') + '</textarea>');
+    h.push('<div class="hint"' + (pmNeed ? ' style="color:var(--warn)"' : '') + '>'
+      + (!ctx.custProfile
+        ? '성향을 고르면 사내 설명문이 자동 입력됩니다 (수정 가능).'
+        : pmNeed
+          ? '<b>' + esc(ctx.custProfile) + '</b> 은 사내 설명문을 확보하지 못해 자동 입력되지 않습니다 — '
+            + '투자자성향 진단서의 문장을 한 번 옮겨 적으면 이후 상담에도 그대로 쓰입니다. '
+            + '(짓지 않고 비워 둔 것입니다 — 회사가 쓰지 않는 문장을 읽으면 그 자체로 부정확한 설명이 됩니다.)'
+          : '사내 설명문이 자동 입력되었습니다 (수정 가능). 상품을 바꿔도 그대로 쓰입니다.')
+      + '</div></div>');
+    h.push('</div>');
 
     h.push('<div class="fgroup"><div class="flabel">일반 / 전문금융소비자</div><div class="seg" id="segConsumer">');
     ['일반금융소비자', '전문금융소비자'].forEach(function (v) {
@@ -2727,8 +2782,24 @@
     $('#selProduct').onchange = function () { ST.productId = this.value; ST.pros = null; save(); renderAll(); };
     $('#selProfile').onchange = function () {
       ST.ctx.custProfile = this.value;
-      if (this.value && !isManual('custProfileMeaning')) ST.ctx.custProfileMeaning = PROFILES[this.value] || '';
+      ST.ctx.custProfileMeaning = meaningFor(this.value);
       save(); renderAll();
+    };
+    /*
+     * 손으로 적은 설명문은 그 성향의 것으로 적어 둔다. 성향을 바꿔도 앞 성향의
+     * 문장이 남지 않고, 그 성향으로 돌아오면 적어 둔 것이 다시 나온다.
+     * 사이드바까지 다시 그리면 입력 중인 칸이 날아가므로 본문과 탭만 다시 그린다.
+     */
+    var pm = $('#profMeaning');
+    if (pm) pm.oninput = function () {
+      var v = this.value.trim();
+      ST.ctx.custProfileMeaning = v;
+      if (ST.ctx.custProfile) {
+        if (!ST.ctx.profMeanings) ST.ctx.profMeanings = {};
+        if (v && v !== PROFILES[ST.ctx.custProfile]) ST.ctx.profMeanings[ST.ctx.custProfile] = v;
+        else delete ST.ctx.profMeanings[ST.ctx.custProfile];
+      }
+      save(); renderTabs(); renderView();
     };
     Array.prototype.forEach.call(document.querySelectorAll('#segConsumer button'), function (b) {
       b.onclick = function () { ST.ctx.consumerType = b.dataset.v; save(); renderAll(); };
@@ -2747,7 +2818,10 @@
     $('#btnResetAll').onclick = function () {
       if (!confirm('입력값 · 체크 · 확인필요 값을 모두 초기화합니다. 계속하시겠습니까?')) return;
       ST.pman = {}; ST.inline = {}; ST.checks = {}; DOCS = {}; saveDocs();
+      /* 성향별 설명문은 고객의 값이 아니라 회사가 쓰는 문장이다 — 초기화해도 남긴다 */
+      var keepMeanings = ST.ctx.profMeanings;
       ST.ctx = { consumerType: '일반금융소비자', custProfile: '', custProfileMeaning: '', cashPurpose: '', cashPrincipal: '', cashLoss: '', cashHorizon: '', newInvestor: false, watchOverride: null };
+      if (keepMeanings) ST.ctx.profMeanings = keepMeanings;
       ST.pros = null;
       save(); renderAll();
     };

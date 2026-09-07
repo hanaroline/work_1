@@ -1,0 +1,20 @@
+name: 투자자성향 설명문 탐색
+
+# 「성향의 의미」 는 미스터리쇼핑 배점 항목인데(성향명만 말하면 미인정) 담당자가 준
+# 위험도 분류표에는 등급 대응만 있고 설명문이 없다. 회사 홈페이지에 있는지 러너에서
+# 찾아본다 — 업무용PC 와 이 세션에서는 securities.miraeasset.com 이 막혀 있다.
+
+on:
+  workflow_dispatch:
+
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: 탐색
+        run: node scripts/probe_profile_meaning.mjs
