@@ -1,14 +1,21 @@
 {
-  "_설명": "은퇴자산 운용 제안서(6p PPT) 주장 대장. 슬라이드에 인쇄되는 모든 수치는 여기에 한 줄을 갖는다.",
+  "_설명": "은퇴자산 운용 제안서(6p PPT) 주장 대장. make_claims.py 가 생성한다 — 직접 수정하지 말 것.",
   "deliverable": "은퇴자산 운용 제안서 — 인컴 중심 노후 현금흐름 설계 (6p PPT)",
   "as_of": "2026-09-07",
-  "_series_policy": "금액은 억원(가구 기준), 월 현금흐름은 만원/월, 수익률은 연율%로 통일.",
+  "_series_policy": "금액은 억원, 월 현금흐름은 만원/월, 수익률은 연율%. 상품 지표는 네이버 수집 데이터셋 한 계열로 통일.",
   "series_policy": {
     "가구자산": "고객 제공 잔액 (2026-09-07 상담)",
     "월현금흐름": "고객 제시 필요액 (세전, 만원/월)",
     "기대수익률": "제안자 설계 가정 (연율, 세전 총수익)",
-    "ETF분배율": "과거 12개월 실적 분배율 (집계·언론 보도)",
-    "세제규정": "2026년 시행 기준"
+    "ETF분배율": "네이버 수집 ETF 데이터셋",
+    "ETF총수익": "네이버 수집 ETF 데이터셋",
+    "ETF보수": "네이버 수집 ETF 데이터셋",
+    "ETF순자산": "네이버 수집 ETF 데이터셋",
+    "상품식별": "네이버 수집 ETF 데이터셋",
+    "세제규정_비율": "2026년 시행 기준",
+    "세제규정_금액": "2026년 시행 기준",
+    "세제규정_확인필요": "2026년 시행 기준",
+    "룩스루확인필요": "네이버 수집 ETF 데이터셋"
   },
   "claims": [
     {
@@ -27,7 +34,7 @@
       "printed_on": [
         "p2-asset-table",
         "p3-timeline",
-        "p5-track-a"
+        "p5-matrix"
       ]
     },
     {
@@ -45,7 +52,7 @@
       "render": "assert",
       "printed_on": [
         "p2-asset-table",
-        "p5-track-a"
+        "p5-matrix"
       ]
     },
     {
@@ -61,12 +68,12 @@
       "source_url": "client-input:2026-09-07 고객 상담 자료",
       "verdict": "confirmed",
       "render": "assert",
-      "note": "가입 시점 미확인. 자녀 결혼 시점(5년 후)과 만기가 일치한다는 고객 진술에 따라 2031년 만기로 가정",
       "printed_on": [
         "p2-asset-table",
         "p3-timeline",
         "p4-alloc"
-      ]
+      ],
+      "note": "가입 시점 미확인. 자녀 결혼 시점(5년 후)과 만기가 일치한다는 고객 진술에 따라 2031년 만기로 가정"
     },
     {
       "id": "A_CASH",
@@ -83,7 +90,7 @@
       "render": "assert",
       "printed_on": [
         "p2-asset-table",
-        "p5-track-b"
+        "p5-matrix"
       ]
     },
     {
@@ -117,11 +124,11 @@
       "source_url": "client-input:2026-09-07 고객 상담 자료",
       "verdict": "confirmed",
       "render": "assert",
-      "note": "자산 구성 내역 미제공 — 전액 재배치 가능으로 가정",
       "printed_on": [
         "p2-asset-table",
-        "p5-track-c"
-      ]
+        "p5-matrix"
+      ],
+      "note": "자산 구성 내역 미제공 — 전액 재배치 가능으로 가정"
     },
     {
       "id": "E_LIVING_LOW",
@@ -194,26 +201,8 @@
       ]
     },
     {
-      "id": "E_WEDDING",
-      "kind": "client_expense",
-      "metric": "가구자산",
-      "text": "자녀 결혼자금 (2031년, 현재 자산에서 충당)",
-      "value": 3.0,
-      "unit": "억원",
-      "series": "고객 제공 잔액 (2026-09-07 상담)",
-      "as_of": "2026-09-07",
-      "tier": 1,
-      "source_url": "client-input:2026-09-07 고객 상담 자료",
-      "verdict": "confirmed",
-      "render": "assert",
-      "printed_on": [
-        "p2-need",
-        "p3-timeline"
-      ]
-    },
-    {
       "id": "P_SPOUSE",
-      "kind": "client_income",
+      "kind": "client_expense",
       "metric": "월현금흐름",
       "text": "배우자 연금 수령액 (2028년~)",
       "value": 280.0,
@@ -231,7 +220,7 @@
     },
     {
       "id": "P_NPS",
-      "kind": "client_income",
+      "kind": "client_expense",
       "metric": "월현금흐름",
       "text": "본인 국민연금 수령액 (만 65세, 2034년~)",
       "value": 250.0,
@@ -245,6 +234,24 @@
       "printed_on": [
         "p3-timeline",
         "p6-cashflow"
+      ]
+    },
+    {
+      "id": "E_WEDDING",
+      "kind": "client_balance",
+      "metric": "가구자산",
+      "text": "자녀 결혼자금 (2031년, 현재 자산에서 충당)",
+      "value": 3.0,
+      "unit": "억원",
+      "series": "고객 제공 잔액 (2026-09-07 상담)",
+      "as_of": "2026-09-07",
+      "tier": 1,
+      "source_url": "client-input:2026-09-07 고객 상담 자료",
+      "verdict": "confirmed",
+      "render": "assert",
+      "printed_on": [
+        "p2-need",
+        "p3-timeline"
       ]
     },
     {
@@ -289,7 +296,7 @@
       "id": "R_EQUITY",
       "kind": "assumption",
       "metric": "기대수익률",
-      "text": "보유 주식(국내·해외) 기대 총수익률 — 설계 가정",
+      "text": "보유 주식 기대 총수익률 — 설계 가정",
       "value": 8.0,
       "unit": "%",
       "series": "제안자 설계 가정 (연율, 세전 총수익)",
@@ -298,10 +305,10 @@
       "source_url": "assumption:제안자 설계 가정 (보장 아님)",
       "verdict": "unverified",
       "render": "marked",
-      "note": "미래 수익률은 확인 불가. 슬라이드에 '가정'으로 표기하고 보장하지 않음을 명시",
       "printed_on": [
         "p4-alloc"
-      ]
+      ],
+      "note": "미래 수익률은 확인 불가. 슬라이드에 '가정'으로 표기"
     },
     {
       "id": "R_EQUITY_DIV",
@@ -338,11 +345,11 @@
       ]
     },
     {
-      "id": "R_TRACK_A",
+      "id": "R_GIC",
       "kind": "assumption",
       "metric": "기대수익률",
-      "text": "트랙A 연금자산 가중 기대수익률 — 설계 가정",
-      "value": 7.25,
+      "text": "IRP 원리금보장 정기예금 금리 — 설계 가정",
+      "value": 3.0,
       "unit": "%",
       "series": "제안자 설계 가정 (연율, 세전 총수익)",
       "as_of": "2026-09-07",
@@ -351,7 +358,24 @@
       "verdict": "unverified",
       "render": "marked",
       "printed_on": [
-        "p5-track-a"
+        "p5-matrix"
+      ]
+    },
+    {
+      "id": "R_TRACK_A",
+      "kind": "assumption",
+      "metric": "기대수익률",
+      "text": "트랙A 연금자산 가중 기대수익률 — 설계 가정",
+      "value": 6.47,
+      "unit": "%",
+      "series": "제안자 설계 가정 (연율, 세전 총수익)",
+      "as_of": "2026-09-07",
+      "tier": 1,
+      "source_url": "assumption:제안자 설계 가정 (보장 아님)",
+      "verdict": "unverified",
+      "render": "marked",
+      "printed_on": [
+        "p5-matrix"
       ]
     },
     {
@@ -359,7 +383,7 @@
       "kind": "assumption",
       "metric": "기대수익률",
       "text": "트랙B 증권 일반계좌 가중 기대수익률 — 설계 가정",
-      "value": 7.98,
+      "value": 7.82,
       "unit": "%",
       "series": "제안자 설계 가정 (연율, 세전 총수익)",
       "as_of": "2026-09-07",
@@ -368,7 +392,7 @@
       "verdict": "unverified",
       "render": "marked",
       "printed_on": [
-        "p5-track-b"
+        "p5-matrix"
       ]
     },
     {
@@ -376,7 +400,7 @@
       "kind": "assumption",
       "metric": "기대수익률",
       "text": "트랙C 배우자 자산 가중 기대수익률 — 설계 가정",
-      "value": 7.36,
+      "value": 7.91,
       "unit": "%",
       "series": "제안자 설계 가정 (연율, 세전 총수익)",
       "as_of": "2026-09-07",
@@ -385,15 +409,15 @@
       "verdict": "unverified",
       "render": "marked",
       "printed_on": [
-        "p5-track-c"
+        "p5-matrix"
       ]
     },
     {
       "id": "R_NEW_PORT",
       "kind": "assumption",
       "metric": "기대수익률",
-      "text": "신규 운용자산 13.28억 가중 기대수익률 — 설계 가정",
-      "value": 7.39,
+      "text": "신규 운용자산 가중 기대수익률 — 설계 가정",
+      "value": 7.11,
       "unit": "%",
       "series": "제안자 설계 가정 (연율, 세전 총수익)",
       "as_of": "2026-09-07",
@@ -407,76 +431,218 @@
       ]
     },
     {
-      "id": "T_458760",
-      "kind": "product_identity",
-      "metric": "상품식별",
-      "text": "TIGER 미국배당다우존스타겟커버드콜2호 종목코드",
-      "value": 458760,
-      "unit": "종목코드",
-      "series": "한국거래소 상장 종목코드",
+      "id": "R_SAFE",
+      "kind": "assumption",
+      "metric": "기대수익률",
+      "text": "연금계좌 안전자산 슬리브 기대수익률 — 설계 가정",
+      "value": 3.18,
+      "unit": "%",
+      "series": "제안자 설계 가정 (연율, 세전 총수익)",
       "as_of": "2026-09-07",
-      "tier": 2,
-      "source_url": "https://www.funetf.co.kr/product/etf/view/KR7458760006",
-      "corroborating_urls": [
-        "https://etf.zeroin.co.kr/etf/458760",
-        "https://www.google.com/finance/quote/458760:KRX?hl=en"
-      ],
-      "verdict": "confirmed",
-      "render": "assert",
-      "note": "기초지수 Dow Jones U.S. Dividend 100 7% Premium Covered Call, 상장 2023-06-20, 월배당",
+      "tier": 1,
+      "source_url": "assumption:제안자 설계 가정 (보장 아님)",
+      "verdict": "unverified",
+      "render": "marked",
       "printed_on": [
-        "p5-track-a",
-        "p5-track-b",
-        "p5-track-c"
+        "p4-gap"
       ]
     },
     {
-      "id": "T_476550",
-      "kind": "product_identity",
-      "metric": "상품식별",
-      "text": "TIGER 미국30년국채커버드콜액티브(H) 종목코드",
-      "value": 476550,
-      "unit": "종목코드",
-      "series": "한국거래소 상장 종목코드",
+      "id": "R_RISK",
+      "kind": "assumption",
+      "metric": "기대수익률",
+      "text": "연금계좌 위험자산 슬리브 기대수익률 — 설계 가정",
+      "value": 7.9,
+      "unit": "%",
+      "series": "제안자 설계 가정 (연율, 세전 총수익)",
       "as_of": "2026-09-07",
-      "tier": 2,
-      "source_url": "https://goinsider.kr/etf/476550",
-      "corroborating_urls": [
-        "https://www.tossinvest.com/stocks/A476550/order",
-        "https://www.investing.com/etfs/476550-seoul"
-      ],
-      "verdict": "confirmed",
-      "render": "assert",
-      "note": "상장 2024-02-27, 기초지수 KEDI 미국 30년국채 위클리 커버드콜 30, 월배당",
+      "tier": 1,
+      "source_url": "assumption:제안자 설계 가정 (보장 아님)",
+      "verdict": "unverified",
+      "render": "marked",
       "printed_on": [
-        "p5-track-a",
-        "p5-track-b",
-        "p5-track-c"
+        "p4-gap"
       ]
     },
     {
-      "id": "T_441680",
-      "kind": "product_identity",
-      "metric": "상품식별",
-      "text": "TIGER 미국나스닥100커버드콜(합성) 종목코드",
-      "value": 441680,
-      "unit": "종목코드",
-      "series": "한국거래소 상장 종목코드",
+      "id": "EXP_458760",
+      "kind": "assumption",
+      "metric": "기대수익률",
+      "text": "TIGER 미국배당다우존스타겟커버드콜2호 기대 총수익률 — 설계 가정",
+      "value": 8.6,
+      "unit": "%",
+      "series": "제안자 설계 가정 (연율, 세전 총수익)",
       "as_of": "2026-09-07",
-      "tier": 2,
-      "source_url": "https://www.funetf.co.kr/product/etf/view/KR7441680006",
-      "corroborating_urls": [
-        "https://market.edaily.co.kr/etf/441680/",
-        "https://comp.wisereport.co.kr/company/c1010001.aspx?cmp_cd=441680"
-      ],
-      "verdict": "confirmed",
-      "render": "assert",
-      "note": "상장 2022-09-22, 기초지수 Cboe Nasdaq-100 BuyWrite V2 (TR), 월배당, 총보수 0.51%",
+      "tier": 1,
+      "source_url": "assumption:제안자 설계 가정 (보장 아님)",
+      "verdict": "unverified",
+      "render": "marked",
       "printed_on": [
-        "p5-track-a",
-        "p5-track-b",
-        "p5-track-c"
-      ]
+        "p5-matrix"
+      ],
+      "note": "3년 실측 TR 12.63% → 68% 감액 적용"
+    },
+    {
+      "id": "EXP_441640",
+      "kind": "assumption",
+      "metric": "기대수익률",
+      "text": "KODEX 미국배당커버드콜액티브 기대 총수익률 — 설계 가정",
+      "value": 8.9,
+      "unit": "%",
+      "series": "제안자 설계 가정 (연율, 세전 총수익)",
+      "as_of": "2026-09-07",
+      "tier": 1,
+      "source_url": "assumption:제안자 설계 가정 (보장 아님)",
+      "verdict": "unverified",
+      "render": "marked",
+      "printed_on": [
+        "p5-matrix"
+      ],
+      "note": "3년 실측 TR 17.30% → 51% 감액 적용"
+    },
+    {
+      "id": "EXP_441680",
+      "kind": "assumption",
+      "metric": "기대수익률",
+      "text": "TIGER 미국나스닥100커버드콜(합성) 기대 총수익률 — 설계 가정",
+      "value": 9.4,
+      "unit": "%",
+      "series": "제안자 설계 가정 (연율, 세전 총수익)",
+      "as_of": "2026-09-07",
+      "tier": 1,
+      "source_url": "assumption:제안자 설계 가정 (보장 아님)",
+      "verdict": "unverified",
+      "render": "marked",
+      "printed_on": [
+        "p5-matrix"
+      ],
+      "note": "3년 실측 TR 13.95% → 67% 감액 적용"
+    },
+    {
+      "id": "EXP_458730",
+      "kind": "assumption",
+      "metric": "기대수익률",
+      "text": "TIGER 미국배당다우존스 기대 총수익률 — 설계 가정",
+      "value": 8.0,
+      "unit": "%",
+      "series": "제안자 설계 가정 (연율, 세전 총수익)",
+      "as_of": "2026-09-07",
+      "tier": 1,
+      "source_url": "assumption:제안자 설계 가정 (보장 아님)",
+      "verdict": "unverified",
+      "render": "marked",
+      "printed_on": [
+        "p5-matrix"
+      ],
+      "note": "3년 실측 TR 16.29% → 49% 감액 적용"
+    },
+    {
+      "id": "EXP_329200",
+      "kind": "assumption",
+      "metric": "기대수익률",
+      "text": "TIGER 리츠부동산인프라 기대 총수익률 — 설계 가정",
+      "value": 6.0,
+      "unit": "%",
+      "series": "제안자 설계 가정 (연율, 세전 총수익)",
+      "as_of": "2026-09-07",
+      "tier": 1,
+      "source_url": "assumption:제안자 설계 가정 (보장 아님)",
+      "verdict": "unverified",
+      "render": "marked",
+      "printed_on": [
+        "p5-matrix"
+      ],
+      "note": "3년 실측 TR 4.73% + 분배율 9.77% 절충"
+    },
+    {
+      "id": "EXP_0008S0",
+      "kind": "assumption",
+      "metric": "기대수익률",
+      "text": "TIGER 미국배당다우존스타겟데일리커버드콜 기대 총수익률 — 설계 가정",
+      "value": 9.0,
+      "unit": "%",
+      "series": "제안자 설계 가정 (연율, 세전 총수익)",
+      "as_of": "2026-09-07",
+      "tier": 1,
+      "source_url": "assumption:제안자 설계 가정 (보장 아님)",
+      "verdict": "unverified",
+      "render": "marked",
+      "printed_on": [
+        "p5-matrix"
+      ],
+      "note": "3년 실측 없음. 1년 TR 25.43%·분배율 11.75% → 보수 설정"
+    },
+    {
+      "id": "EXP_486290",
+      "kind": "assumption",
+      "metric": "기대수익률",
+      "text": "TIGER 미국나스닥100타겟데일리커버드콜 기대 총수익률 — 설계 가정",
+      "value": 9.5,
+      "unit": "%",
+      "series": "제안자 설계 가정 (연율, 세전 총수익)",
+      "as_of": "2026-09-07",
+      "tier": 1,
+      "source_url": "assumption:제안자 설계 가정 (보장 아님)",
+      "verdict": "unverified",
+      "render": "marked",
+      "printed_on": [
+        "p5-matrix"
+      ],
+      "note": "3년 실측 없음. 1년 TR 21.27%·분배율 15.86% → 보수 설정"
+    },
+    {
+      "id": "EXP_476550",
+      "kind": "assumption",
+      "metric": "기대수익률",
+      "text": "TIGER 미국30년국채커버드콜액티브(H) 기대 총수익률 — 설계 가정",
+      "value": 3.5,
+      "unit": "%",
+      "series": "제안자 설계 가정 (연율, 세전 총수익)",
+      "as_of": "2026-09-07",
+      "tier": 1,
+      "source_url": "assumption:제안자 설계 가정 (보장 아님)",
+      "verdict": "unverified",
+      "render": "marked",
+      "printed_on": [
+        "p5-matrix"
+      ],
+      "note": "1년 TR -2.26%. 분배율 13.35%는 원금 반환분 포함 → 저수익 취급"
+    },
+    {
+      "id": "EXP_0043B0",
+      "kind": "assumption",
+      "metric": "기대수익률",
+      "text": "TIGER 머니마켓액티브 기대 총수익률 — 설계 가정",
+      "value": 3.1,
+      "unit": "%",
+      "series": "제안자 설계 가정 (연율, 세전 총수익)",
+      "as_of": "2026-09-07",
+      "tier": 1,
+      "source_url": "assumption:제안자 설계 가정 (보장 아님)",
+      "verdict": "unverified",
+      "render": "marked",
+      "printed_on": [
+        "p5-matrix"
+      ],
+      "note": "1년 실측 TR 3.13% 그대로 적용"
+    },
+    {
+      "id": "EXP_0119H0",
+      "kind": "assumption",
+      "metric": "기대수익률",
+      "text": "KODEX 28-12 회사채(AA-이상)액티브 기대 총수익률 — 설계 가정",
+      "value": 3.4,
+      "unit": "%",
+      "series": "제안자 설계 가정 (연율, 세전 총수익)",
+      "as_of": "2026-09-07",
+      "tier": 1,
+      "source_url": "assumption:제안자 설계 가정 (보장 아님)",
+      "verdict": "unverified",
+      "render": "marked",
+      "printed_on": [
+        "p5-matrix"
+      ],
+      "note": "만기(2028-12) 보유 전제. YTM 미확인 — 확인 필요"
     },
     {
       "id": "T_329200",
@@ -485,21 +651,328 @@
       "text": "TIGER 리츠부동산인프라 종목코드",
       "value": 329200,
       "unit": "종목코드",
-      "series": "한국거래소 상장 종목코드",
-      "as_of": "2026-09-07",
-      "tier": 2,
-      "source_url": "https://www.funetf.co.kr/product/etf/view/KR7329200000",
-      "corroborating_urls": [
-        "https://www.treeinsight.org/tiger-reits-infrastructure-etf-guide-2601/"
-      ],
       "verdict": "confirmed",
       "render": "assert",
-      "note": "기초지수 FnGuide 리츠부동산인프라, 월배당(2025-03부터 주당 약 33원 균등지급)",
       "printed_on": [
-        "p5-track-a",
-        "p5-track-b",
-        "p5-track-c"
-      ]
+        "p5-matrix"
+      ],
+      "series": "네이버 수집 ETF 데이터셋",
+      "as_of": "2026-09-04",
+      "tier": 2,
+      "source_url": "repo:hanaroline/work_1@claude/etf-holdings-lookup-tool-wwtz57:data/etf-kr.js",
+      "note": "hanaroline/work_1 · claude/etf-holdings-lookup-tool-wwtz57 · data/etf-kr.js · 수집 2026-09-07 · 국내 상장 1167종 · 수익률 기준일 2026-09-04"
+    },
+    {
+      "id": "DY_329200",
+      "kind": "product_yield",
+      "metric": "ETF분배율",
+      "text": "TIGER 리츠부동산인프라 분배율 (실측)",
+      "value": 9.77,
+      "unit": "%",
+      "verdict": "confirmed",
+      "render": "assert",
+      "printed_on": [
+        "p5-matrix"
+      ],
+      "series": "네이버 수집 ETF 데이터셋",
+      "as_of": "2026-09-04",
+      "tier": 2,
+      "source_url": "repo:hanaroline/work_1@claude/etf-holdings-lookup-tool-wwtz57:data/etf-kr.js",
+      "note": "hanaroline/work_1 · claude/etf-holdings-lookup-tool-wwtz57 · data/etf-kr.js · 수집 2026-09-07 · 국내 상장 1167종 · 수익률 기준일 2026-09-04"
+    },
+    {
+      "id": "TER_329200",
+      "kind": "product_fee",
+      "metric": "ETF보수",
+      "text": "TIGER 리츠부동산인프라 총보수 (실측)",
+      "value": 0.08,
+      "unit": "%",
+      "verdict": "confirmed",
+      "render": "assert",
+      "printed_on": [
+        "p5-matrix"
+      ],
+      "series": "네이버 수집 ETF 데이터셋",
+      "as_of": "2026-09-04",
+      "tier": 2,
+      "source_url": "repo:hanaroline/work_1@claude/etf-holdings-lookup-tool-wwtz57:data/etf-kr.js",
+      "note": "hanaroline/work_1 · claude/etf-holdings-lookup-tool-wwtz57 · data/etf-kr.js · 수집 2026-09-07 · 국내 상장 1167종 · 수익률 기준일 2026-09-04"
+    },
+    {
+      "id": "AUM_329200",
+      "kind": "product_size",
+      "metric": "ETF순자산",
+      "text": "TIGER 리츠부동산인프라 순자산 (실측)",
+      "value": 15513,
+      "unit": "억원",
+      "verdict": "confirmed",
+      "render": "assert",
+      "printed_on": [
+        "p5-matrix"
+      ],
+      "series": "네이버 수집 ETF 데이터셋",
+      "as_of": "2026-09-04",
+      "tier": 2,
+      "source_url": "repo:hanaroline/work_1@claude/etf-holdings-lookup-tool-wwtz57:data/etf-kr.js",
+      "note": "hanaroline/work_1 · claude/etf-holdings-lookup-tool-wwtz57 · data/etf-kr.js · 수집 2026-09-07 · 국내 상장 1167종 · 수익률 기준일 2026-09-04"
+    },
+    {
+      "id": "TRY1_329200",
+      "kind": "product_return",
+      "metric": "ETF총수익",
+      "text": "TIGER 리츠부동산인프라 총수익률 Y1 (실측, 분배금 재투자 기준)",
+      "value": 3.27,
+      "unit": "%",
+      "verdict": "confirmed",
+      "render": "assert",
+      "printed_on": [
+        "p5-matrix",
+        "p6-trap"
+      ],
+      "series": "네이버 수집 ETF 데이터셋",
+      "as_of": "2026-09-04",
+      "tier": 2,
+      "source_url": "repo:hanaroline/work_1@claude/etf-holdings-lookup-tool-wwtz57:data/etf-kr.js",
+      "note": "hanaroline/work_1 · claude/etf-holdings-lookup-tool-wwtz57 · data/etf-kr.js · 수집 2026-09-07 · 국내 상장 1167종 · 수익률 기준일 2026-09-04"
+    },
+    {
+      "id": "TRY3_329200",
+      "kind": "product_return",
+      "metric": "ETF총수익",
+      "text": "TIGER 리츠부동산인프라 총수익률 Y3 (실측, 분배금 재투자 기준)",
+      "value": 4.73,
+      "unit": "%",
+      "verdict": "confirmed",
+      "render": "assert",
+      "printed_on": [
+        "p5-matrix",
+        "p6-trap"
+      ],
+      "series": "네이버 수집 ETF 데이터셋",
+      "as_of": "2026-09-04",
+      "tier": 2,
+      "source_url": "repo:hanaroline/work_1@claude/etf-holdings-lookup-tool-wwtz57:data/etf-kr.js",
+      "note": "hanaroline/work_1 · claude/etf-holdings-lookup-tool-wwtz57 · data/etf-kr.js · 수집 2026-09-07 · 국내 상장 1167종 · 수익률 기준일 2026-09-04"
+    },
+    {
+      "id": "T_441640",
+      "kind": "product_identity",
+      "metric": "상품식별",
+      "text": "KODEX 미국배당커버드콜액티브 종목코드",
+      "value": 441640,
+      "unit": "종목코드",
+      "verdict": "confirmed",
+      "render": "assert",
+      "printed_on": [
+        "p5-matrix"
+      ],
+      "series": "네이버 수집 ETF 데이터셋",
+      "as_of": "2026-09-04",
+      "tier": 2,
+      "source_url": "repo:hanaroline/work_1@claude/etf-holdings-lookup-tool-wwtz57:data/etf-kr.js",
+      "note": "hanaroline/work_1 · claude/etf-holdings-lookup-tool-wwtz57 · data/etf-kr.js · 수집 2026-09-07 · 국내 상장 1167종 · 수익률 기준일 2026-09-04"
+    },
+    {
+      "id": "DY_441640",
+      "kind": "product_yield",
+      "metric": "ETF분배율",
+      "text": "KODEX 미국배당커버드콜액티브 분배율 (실측)",
+      "value": 9.38,
+      "unit": "%",
+      "verdict": "confirmed",
+      "render": "assert",
+      "printed_on": [
+        "p5-matrix"
+      ],
+      "series": "네이버 수집 ETF 데이터셋",
+      "as_of": "2026-09-04",
+      "tier": 2,
+      "source_url": "repo:hanaroline/work_1@claude/etf-holdings-lookup-tool-wwtz57:data/etf-kr.js",
+      "note": "hanaroline/work_1 · claude/etf-holdings-lookup-tool-wwtz57 · data/etf-kr.js · 수집 2026-09-07 · 국내 상장 1167종 · 수익률 기준일 2026-09-04"
+    },
+    {
+      "id": "TER_441640",
+      "kind": "product_fee",
+      "metric": "ETF보수",
+      "text": "KODEX 미국배당커버드콜액티브 총보수 (실측)",
+      "value": 0.19,
+      "unit": "%",
+      "verdict": "confirmed",
+      "render": "assert",
+      "printed_on": [
+        "p5-matrix"
+      ],
+      "series": "네이버 수집 ETF 데이터셋",
+      "as_of": "2026-09-04",
+      "tier": 2,
+      "source_url": "repo:hanaroline/work_1@claude/etf-holdings-lookup-tool-wwtz57:data/etf-kr.js",
+      "note": "hanaroline/work_1 · claude/etf-holdings-lookup-tool-wwtz57 · data/etf-kr.js · 수집 2026-09-07 · 국내 상장 1167종 · 수익률 기준일 2026-09-04"
+    },
+    {
+      "id": "AUM_441640",
+      "kind": "product_size",
+      "metric": "ETF순자산",
+      "text": "KODEX 미국배당커버드콜액티브 순자산 (실측)",
+      "value": 16964,
+      "unit": "억원",
+      "verdict": "confirmed",
+      "render": "assert",
+      "printed_on": [
+        "p5-matrix"
+      ],
+      "series": "네이버 수집 ETF 데이터셋",
+      "as_of": "2026-09-04",
+      "tier": 2,
+      "source_url": "repo:hanaroline/work_1@claude/etf-holdings-lookup-tool-wwtz57:data/etf-kr.js",
+      "note": "hanaroline/work_1 · claude/etf-holdings-lookup-tool-wwtz57 · data/etf-kr.js · 수집 2026-09-07 · 국내 상장 1167종 · 수익률 기준일 2026-09-04"
+    },
+    {
+      "id": "TRY1_441640",
+      "kind": "product_return",
+      "metric": "ETF총수익",
+      "text": "KODEX 미국배당커버드콜액티브 총수익률 Y1 (실측, 분배금 재투자 기준)",
+      "value": 16.03,
+      "unit": "%",
+      "verdict": "confirmed",
+      "render": "assert",
+      "printed_on": [
+        "p5-matrix",
+        "p6-trap"
+      ],
+      "series": "네이버 수집 ETF 데이터셋",
+      "as_of": "2026-09-04",
+      "tier": 2,
+      "source_url": "repo:hanaroline/work_1@claude/etf-holdings-lookup-tool-wwtz57:data/etf-kr.js",
+      "note": "hanaroline/work_1 · claude/etf-holdings-lookup-tool-wwtz57 · data/etf-kr.js · 수집 2026-09-07 · 국내 상장 1167종 · 수익률 기준일 2026-09-04"
+    },
+    {
+      "id": "TRY3_441640",
+      "kind": "product_return",
+      "metric": "ETF총수익",
+      "text": "KODEX 미국배당커버드콜액티브 총수익률 Y3 (실측, 분배금 재투자 기준)",
+      "value": 17.3,
+      "unit": "%",
+      "verdict": "confirmed",
+      "render": "assert",
+      "printed_on": [
+        "p5-matrix",
+        "p6-trap"
+      ],
+      "series": "네이버 수집 ETF 데이터셋",
+      "as_of": "2026-09-04",
+      "tier": 2,
+      "source_url": "repo:hanaroline/work_1@claude/etf-holdings-lookup-tool-wwtz57:data/etf-kr.js",
+      "note": "hanaroline/work_1 · claude/etf-holdings-lookup-tool-wwtz57 · data/etf-kr.js · 수집 2026-09-07 · 국내 상장 1167종 · 수익률 기준일 2026-09-04"
+    },
+    {
+      "id": "T_441680",
+      "kind": "product_identity",
+      "metric": "상품식별",
+      "text": "TIGER 미국나스닥100커버드콜(합성) 종목코드",
+      "value": 441680,
+      "unit": "종목코드",
+      "verdict": "confirmed",
+      "render": "assert",
+      "printed_on": [
+        "p5-matrix"
+      ],
+      "series": "네이버 수집 ETF 데이터셋",
+      "as_of": "2026-09-04",
+      "tier": 2,
+      "source_url": "repo:hanaroline/work_1@claude/etf-holdings-lookup-tool-wwtz57:data/etf-kr.js",
+      "note": "hanaroline/work_1 · claude/etf-holdings-lookup-tool-wwtz57 · data/etf-kr.js · 수집 2026-09-07 · 국내 상장 1167종 · 수익률 기준일 2026-09-04"
+    },
+    {
+      "id": "DY_441680",
+      "kind": "product_yield",
+      "metric": "ETF분배율",
+      "text": "TIGER 미국나스닥100커버드콜(합성) 분배율 (실측)",
+      "value": 12.65,
+      "unit": "%",
+      "verdict": "confirmed",
+      "render": "assert",
+      "printed_on": [
+        "p5-matrix"
+      ],
+      "series": "네이버 수집 ETF 데이터셋",
+      "as_of": "2026-09-04",
+      "tier": 2,
+      "source_url": "repo:hanaroline/work_1@claude/etf-holdings-lookup-tool-wwtz57:data/etf-kr.js",
+      "note": "hanaroline/work_1 · claude/etf-holdings-lookup-tool-wwtz57 · data/etf-kr.js · 수집 2026-09-07 · 국내 상장 1167종 · 수익률 기준일 2026-09-04"
+    },
+    {
+      "id": "TER_441680",
+      "kind": "product_fee",
+      "metric": "ETF보수",
+      "text": "TIGER 미국나스닥100커버드콜(합성) 총보수 (실측)",
+      "value": 0.37,
+      "unit": "%",
+      "verdict": "confirmed",
+      "render": "assert",
+      "printed_on": [
+        "p5-matrix"
+      ],
+      "series": "네이버 수집 ETF 데이터셋",
+      "as_of": "2026-09-04",
+      "tier": 2,
+      "source_url": "repo:hanaroline/work_1@claude/etf-holdings-lookup-tool-wwtz57:data/etf-kr.js",
+      "note": "hanaroline/work_1 · claude/etf-holdings-lookup-tool-wwtz57 · data/etf-kr.js · 수집 2026-09-07 · 국내 상장 1167종 · 수익률 기준일 2026-09-04"
+    },
+    {
+      "id": "AUM_441680",
+      "kind": "product_size",
+      "metric": "ETF순자산",
+      "text": "TIGER 미국나스닥100커버드콜(합성) 순자산 (실측)",
+      "value": 2777,
+      "unit": "억원",
+      "verdict": "confirmed",
+      "render": "assert",
+      "printed_on": [
+        "p5-matrix"
+      ],
+      "series": "네이버 수집 ETF 데이터셋",
+      "as_of": "2026-09-04",
+      "tier": 2,
+      "source_url": "repo:hanaroline/work_1@claude/etf-holdings-lookup-tool-wwtz57:data/etf-kr.js",
+      "note": "hanaroline/work_1 · claude/etf-holdings-lookup-tool-wwtz57 · data/etf-kr.js · 수집 2026-09-07 · 국내 상장 1167종 · 수익률 기준일 2026-09-04"
+    },
+    {
+      "id": "TRY1_441680",
+      "kind": "product_return",
+      "metric": "ETF총수익",
+      "text": "TIGER 미국나스닥100커버드콜(합성) 총수익률 Y1 (실측, 분배금 재투자 기준)",
+      "value": 19.65,
+      "unit": "%",
+      "verdict": "confirmed",
+      "render": "assert",
+      "printed_on": [
+        "p5-matrix",
+        "p6-trap"
+      ],
+      "series": "네이버 수집 ETF 데이터셋",
+      "as_of": "2026-09-04",
+      "tier": 2,
+      "source_url": "repo:hanaroline/work_1@claude/etf-holdings-lookup-tool-wwtz57:data/etf-kr.js",
+      "note": "hanaroline/work_1 · claude/etf-holdings-lookup-tool-wwtz57 · data/etf-kr.js · 수집 2026-09-07 · 국내 상장 1167종 · 수익률 기준일 2026-09-04"
+    },
+    {
+      "id": "TRY3_441680",
+      "kind": "product_return",
+      "metric": "ETF총수익",
+      "text": "TIGER 미국나스닥100커버드콜(합성) 총수익률 Y3 (실측, 분배금 재투자 기준)",
+      "value": 13.95,
+      "unit": "%",
+      "verdict": "confirmed",
+      "render": "assert",
+      "printed_on": [
+        "p5-matrix",
+        "p6-trap"
+      ],
+      "series": "네이버 수집 ETF 데이터셋",
+      "as_of": "2026-09-04",
+      "tier": 2,
+      "source_url": "repo:hanaroline/work_1@claude/etf-holdings-lookup-tool-wwtz57:data/etf-kr.js",
+      "note": "hanaroline/work_1 · claude/etf-holdings-lookup-tool-wwtz57 · data/etf-kr.js · 수집 2026-09-07 · 국내 상장 1167종 · 수익률 기준일 2026-09-04"
     },
     {
       "id": "T_451540",
@@ -508,42 +981,218 @@
       "text": "TIGER 종합채권(AA-이상)액티브 종목코드",
       "value": 451540,
       "unit": "종목코드",
-      "series": "한국거래소 상장 종목코드",
-      "as_of": "2026-09-07",
-      "tier": 2,
-      "source_url": "https://comp.wisereport.co.kr/ETF/ETF.aspx?cn=&cmp_cd=451540&menuType=block",
-      "corroborating_urls": [
-        "https://kind.krx.co.kr/common/disclsviewer.do?method=searchInitInfo&acptNo=20240502000223"
-      ],
       "verdict": "confirmed",
       "render": "assert",
-      "note": "356540 은 ACE 종합채권(AA-이상)액티브로 별개 상품 — 티커 혼동 주의. 기초지수 KIS 종합채권(AA-이상) TR",
       "printed_on": [
-        "p5-track-a",
-        "p5-track-c"
-      ]
+        "p5-matrix"
+      ],
+      "series": "네이버 수집 ETF 데이터셋",
+      "as_of": "2026-09-04",
+      "tier": 2,
+      "source_url": "repo:hanaroline/work_1@claude/etf-holdings-lookup-tool-wwtz57:data/etf-kr.js",
+      "note": "hanaroline/work_1 · claude/etf-holdings-lookup-tool-wwtz57 · data/etf-kr.js · 수집 2026-09-07 · 국내 상장 1167종 · 수익률 기준일 2026-09-04"
     },
     {
-      "id": "T_458730",
-      "kind": "product_identity",
-      "metric": "상품식별",
-      "text": "TIGER 미국배당다우존스 종목코드",
-      "value": 458730,
-      "unit": "종목코드",
-      "series": "한국거래소 상장 종목코드",
-      "as_of": "2026-09-07",
-      "tier": 2,
-      "source_url": "https://www.funetf.co.kr/product/etf/view/KR7458730009",
-      "corroborating_urls": [
-        "https://www.investing.com/etfs/458730",
-        "https://comp.wisereport.co.kr/company/c1010001.aspx?cmp_cd=458730"
-      ],
+      "id": "DY_451540",
+      "kind": "product_yield",
+      "metric": "ETF분배율",
+      "text": "TIGER 종합채권(AA-이상)액티브 분배율 (실측)",
+      "value": 1.33,
+      "unit": "%",
       "verdict": "confirmed",
       "render": "assert",
-      "note": "상장 2023-06-20, 기초지수 Dow Jones U.S. Dividend 100, 월배당",
       "printed_on": [
-        "p5-track-c"
-      ]
+        "p5-matrix"
+      ],
+      "series": "네이버 수집 ETF 데이터셋",
+      "as_of": "2026-09-04",
+      "tier": 2,
+      "source_url": "repo:hanaroline/work_1@claude/etf-holdings-lookup-tool-wwtz57:data/etf-kr.js",
+      "note": "hanaroline/work_1 · claude/etf-holdings-lookup-tool-wwtz57 · data/etf-kr.js · 수집 2026-09-07 · 국내 상장 1167종 · 수익률 기준일 2026-09-04"
+    },
+    {
+      "id": "TER_451540",
+      "kind": "product_fee",
+      "metric": "ETF보수",
+      "text": "TIGER 종합채권(AA-이상)액티브 총보수 (실측)",
+      "value": 0.03,
+      "unit": "%",
+      "verdict": "confirmed",
+      "render": "assert",
+      "printed_on": [
+        "p5-matrix"
+      ],
+      "series": "네이버 수집 ETF 데이터셋",
+      "as_of": "2026-09-04",
+      "tier": 2,
+      "source_url": "repo:hanaroline/work_1@claude/etf-holdings-lookup-tool-wwtz57:data/etf-kr.js",
+      "note": "hanaroline/work_1 · claude/etf-holdings-lookup-tool-wwtz57 · data/etf-kr.js · 수집 2026-09-07 · 국내 상장 1167종 · 수익률 기준일 2026-09-04"
+    },
+    {
+      "id": "AUM_451540",
+      "kind": "product_size",
+      "metric": "ETF순자산",
+      "text": "TIGER 종합채권(AA-이상)액티브 순자산 (실측)",
+      "value": 10357,
+      "unit": "억원",
+      "verdict": "confirmed",
+      "render": "assert",
+      "printed_on": [
+        "p5-matrix"
+      ],
+      "series": "네이버 수집 ETF 데이터셋",
+      "as_of": "2026-09-04",
+      "tier": 2,
+      "source_url": "repo:hanaroline/work_1@claude/etf-holdings-lookup-tool-wwtz57:data/etf-kr.js",
+      "note": "hanaroline/work_1 · claude/etf-holdings-lookup-tool-wwtz57 · data/etf-kr.js · 수집 2026-09-07 · 국내 상장 1167종 · 수익률 기준일 2026-09-04"
+    },
+    {
+      "id": "TRY1_451540",
+      "kind": "product_return",
+      "metric": "ETF총수익",
+      "text": "TIGER 종합채권(AA-이상)액티브 총수익률 Y1 (실측, 분배금 재투자 기준)",
+      "value": -6.13,
+      "unit": "%",
+      "verdict": "confirmed",
+      "render": "assert",
+      "printed_on": [
+        "p5-matrix",
+        "p6-trap"
+      ],
+      "series": "네이버 수집 ETF 데이터셋",
+      "as_of": "2026-09-04",
+      "tier": 2,
+      "source_url": "repo:hanaroline/work_1@claude/etf-holdings-lookup-tool-wwtz57:data/etf-kr.js",
+      "note": "hanaroline/work_1 · claude/etf-holdings-lookup-tool-wwtz57 · data/etf-kr.js · 수집 2026-09-07 · 국내 상장 1167종 · 수익률 기준일 2026-09-04"
+    },
+    {
+      "id": "TRY3_451540",
+      "kind": "product_return",
+      "metric": "ETF총수익",
+      "text": "TIGER 종합채권(AA-이상)액티브 총수익률 Y3 (실측, 분배금 재투자 기준)",
+      "value": 2.22,
+      "unit": "%",
+      "verdict": "confirmed",
+      "render": "assert",
+      "printed_on": [
+        "p5-matrix",
+        "p6-trap"
+      ],
+      "series": "네이버 수집 ETF 데이터셋",
+      "as_of": "2026-09-04",
+      "tier": 2,
+      "source_url": "repo:hanaroline/work_1@claude/etf-holdings-lookup-tool-wwtz57:data/etf-kr.js",
+      "note": "hanaroline/work_1 · claude/etf-holdings-lookup-tool-wwtz57 · data/etf-kr.js · 수집 2026-09-07 · 국내 상장 1167종 · 수익률 기준일 2026-09-04"
+    },
+    {
+      "id": "T_453850",
+      "kind": "product_identity",
+      "metric": "상품식별",
+      "text": "ACE 미국30년국채액티브(H) 종목코드",
+      "value": 453850,
+      "unit": "종목코드",
+      "verdict": "confirmed",
+      "render": "assert",
+      "printed_on": [
+        "p5-matrix"
+      ],
+      "series": "네이버 수집 ETF 데이터셋",
+      "as_of": "2026-09-04",
+      "tier": 2,
+      "source_url": "repo:hanaroline/work_1@claude/etf-holdings-lookup-tool-wwtz57:data/etf-kr.js",
+      "note": "hanaroline/work_1 · claude/etf-holdings-lookup-tool-wwtz57 · data/etf-kr.js · 수집 2026-09-07 · 국내 상장 1167종 · 수익률 기준일 2026-09-04"
+    },
+    {
+      "id": "DY_453850",
+      "kind": "product_yield",
+      "metric": "ETF분배율",
+      "text": "ACE 미국30년국채액티브(H) 분배율 (실측)",
+      "value": 4.15,
+      "unit": "%",
+      "verdict": "confirmed",
+      "render": "assert",
+      "printed_on": [
+        "p5-matrix"
+      ],
+      "series": "네이버 수집 ETF 데이터셋",
+      "as_of": "2026-09-04",
+      "tier": 2,
+      "source_url": "repo:hanaroline/work_1@claude/etf-holdings-lookup-tool-wwtz57:data/etf-kr.js",
+      "note": "hanaroline/work_1 · claude/etf-holdings-lookup-tool-wwtz57 · data/etf-kr.js · 수집 2026-09-07 · 국내 상장 1167종 · 수익률 기준일 2026-09-04"
+    },
+    {
+      "id": "TER_453850",
+      "kind": "product_fee",
+      "metric": "ETF보수",
+      "text": "ACE 미국30년국채액티브(H) 총보수 (실측)",
+      "value": 0.05,
+      "unit": "%",
+      "verdict": "confirmed",
+      "render": "assert",
+      "printed_on": [
+        "p5-matrix"
+      ],
+      "series": "네이버 수집 ETF 데이터셋",
+      "as_of": "2026-09-04",
+      "tier": 2,
+      "source_url": "repo:hanaroline/work_1@claude/etf-holdings-lookup-tool-wwtz57:data/etf-kr.js",
+      "note": "hanaroline/work_1 · claude/etf-holdings-lookup-tool-wwtz57 · data/etf-kr.js · 수집 2026-09-07 · 국내 상장 1167종 · 수익률 기준일 2026-09-04"
+    },
+    {
+      "id": "AUM_453850",
+      "kind": "product_size",
+      "metric": "ETF순자산",
+      "text": "ACE 미국30년국채액티브(H) 순자산 (실측)",
+      "value": 14883,
+      "unit": "억원",
+      "verdict": "confirmed",
+      "render": "assert",
+      "printed_on": [
+        "p5-matrix"
+      ],
+      "series": "네이버 수집 ETF 데이터셋",
+      "as_of": "2026-09-04",
+      "tier": 2,
+      "source_url": "repo:hanaroline/work_1@claude/etf-holdings-lookup-tool-wwtz57:data/etf-kr.js",
+      "note": "hanaroline/work_1 · claude/etf-holdings-lookup-tool-wwtz57 · data/etf-kr.js · 수집 2026-09-07 · 국내 상장 1167종 · 수익률 기준일 2026-09-04"
+    },
+    {
+      "id": "TRY1_453850",
+      "kind": "product_return",
+      "metric": "ETF총수익",
+      "text": "ACE 미국30년국채액티브(H) 총수익률 Y1 (실측, 분배금 재투자 기준)",
+      "value": -2.42,
+      "unit": "%",
+      "verdict": "confirmed",
+      "render": "assert",
+      "printed_on": [
+        "p5-matrix",
+        "p6-trap"
+      ],
+      "series": "네이버 수집 ETF 데이터셋",
+      "as_of": "2026-09-04",
+      "tier": 2,
+      "source_url": "repo:hanaroline/work_1@claude/etf-holdings-lookup-tool-wwtz57:data/etf-kr.js",
+      "note": "hanaroline/work_1 · claude/etf-holdings-lookup-tool-wwtz57 · data/etf-kr.js · 수집 2026-09-07 · 국내 상장 1167종 · 수익률 기준일 2026-09-04"
+    },
+    {
+      "id": "TRY3_453850",
+      "kind": "product_return",
+      "metric": "ETF총수익",
+      "text": "ACE 미국30년국채액티브(H) 총수익률 Y3 (실측, 분배금 재투자 기준)",
+      "value": -3.37,
+      "unit": "%",
+      "verdict": "confirmed",
+      "render": "assert",
+      "printed_on": [
+        "p5-matrix",
+        "p6-trap"
+      ],
+      "series": "네이버 수집 ETF 데이터셋",
+      "as_of": "2026-09-04",
+      "tier": 2,
+      "source_url": "repo:hanaroline/work_1@claude/etf-holdings-lookup-tool-wwtz57:data/etf-kr.js",
+      "note": "hanaroline/work_1 · claude/etf-holdings-lookup-tool-wwtz57 · data/etf-kr.js · 수집 2026-09-07 · 국내 상장 1167종 · 수익률 기준일 2026-09-04"
     },
     {
       "id": "T_458260",
@@ -552,94 +1201,1326 @@
       "text": "TIGER 미국투자등급회사채액티브(H) 종목코드",
       "value": 458260,
       "unit": "종목코드",
-      "series": "한국거래소 상장 종목코드",
-      "as_of": "2026-09-07",
-      "tier": 2,
-      "source_url": "https://www.k-etf.com/en/etf/458260",
-      "corroborating_urls": [
-        "https://investments.miraeasset.com/tigeretf/ko/product/search/detail/index.do?ksdFund=KR7458260007"
-      ],
       "verdict": "confirmed",
       "render": "assert",
-      "note": "비교지수 iBoxx USD Liquid Investment Grade, 월배당",
       "printed_on": [
-        "p5-track-a"
-      ]
-    },
-    {
-      "id": "D_458760",
-      "kind": "product_yield",
-      "metric": "ETF분배율",
-      "text": "TIGER 미국배당다우존스타겟커버드콜2호 최근 12개월 분배율 (연초가 기준)",
-      "value": 8.57,
-      "unit": "%",
-      "series": "과거 12개월 실적 분배율 (집계·언론 보도)",
-      "as_of": "2026-09-07",
-      "tier": 2,
-      "source_url": "https://www.funetf.co.kr/product/etf/view/KR7458760006",
-      "verdict": "unverified",
-      "render": "marked",
-      "note": "발행사 1차 페이지 접근 차단(egress). 집계 사이트 스니펫 기준이며 집계 기준일이 명시되지 않음 — '과거 실적, 기준일 확인 필요'로 표기",
-      "printed_on": [
-        "p5-footnote"
-      ]
-    },
-    {
-      "id": "D_476550",
-      "kind": "product_yield",
-      "metric": "ETF분배율",
-      "text": "TIGER 미국30년국채커버드콜액티브(H) 연 분배율",
-      "value": 13.17,
-      "unit": "%",
-      "series": "과거 12개월 실적 분배율 (집계·언론 보도)",
-      "as_of": "2026-09-07",
-      "tier": 2,
-      "source_url": "https://goinsider.kr/etf/476550",
-      "verdict": "unverified",
-      "render": "marked",
-      "note": "발행사 1차 페이지 접근 차단. 집계 기준일 미명시. 커버드콜 분배금은 원금 일부 반환 성격을 포함할 수 있어 총수익과 다름",
-      "printed_on": [
-        "p5-footnote"
-      ]
-    },
-    {
-      "id": "D_441680",
-      "kind": "product_yield",
-      "metric": "ETF분배율",
-      "text": "TIGER 미국나스닥100커버드콜(합성) 2023년 연간 분배율",
-      "value": 12.12,
-      "unit": "%",
-      "series": "과거 12개월 실적 분배율 (집계·언론 보도)",
-      "as_of": "2024-01-04",
-      "tier": 2,
-      "source_url": "https://news.mt.co.kr/mtview.php?no=2024010409044988972",
-      "verdict": "confirmed",
-      "render": "marked",
-      "note": "2023년 실적 확정치(2024-01-04 보도). 2026년 현재 분배율은 미확인 — 연도를 반드시 병기",
-      "printed_on": [
-        "p5-footnote"
-      ]
-    },
-    {
-      "id": "D_329200",
-      "kind": "product_yield",
-      "metric": "ETF분배율",
-      "text": "TIGER 리츠부동산인프라 최근 12개월 분배율",
-      "value": 7.78,
-      "unit": "%",
-      "series": "과거 12개월 실적 분배율 (집계·언론 보도)",
-      "as_of": "2026-09-07",
-      "tier": 3,
-      "source_url": "https://www.treeinsight.org/tiger-reits-infrastructure-etf-guide-2601/",
-      "corroborating_urls": [
-        "https://www.funetf.co.kr/product/etf/view/KR7329200000"
+        "p5-matrix"
       ],
-      "verdict": "unverified",
-      "render": "marked",
-      "note": "블로그성 3차 출처. 집계 기준일 미명시 — 실행 전 발행사 확인 필수",
+      "series": "네이버 수집 ETF 데이터셋",
+      "as_of": "2026-09-04",
+      "tier": 2,
+      "source_url": "repo:hanaroline/work_1@claude/etf-holdings-lookup-tool-wwtz57:data/etf-kr.js",
+      "note": "hanaroline/work_1 · claude/etf-holdings-lookup-tool-wwtz57 · data/etf-kr.js · 수집 2026-09-07 · 국내 상장 1167종 · 수익률 기준일 2026-09-04"
+    },
+    {
+      "id": "DY_458260",
+      "kind": "product_yield",
+      "metric": "ETF분배율",
+      "text": "TIGER 미국투자등급회사채액티브(H) 분배율 (실측)",
+      "value": 4.94,
+      "unit": "%",
+      "verdict": "confirmed",
+      "render": "assert",
       "printed_on": [
-        "p5-footnote"
-      ]
+        "p5-matrix"
+      ],
+      "series": "네이버 수집 ETF 데이터셋",
+      "as_of": "2026-09-04",
+      "tier": 2,
+      "source_url": "repo:hanaroline/work_1@claude/etf-holdings-lookup-tool-wwtz57:data/etf-kr.js",
+      "note": "hanaroline/work_1 · claude/etf-holdings-lookup-tool-wwtz57 · data/etf-kr.js · 수집 2026-09-07 · 국내 상장 1167종 · 수익률 기준일 2026-09-04"
+    },
+    {
+      "id": "TER_458260",
+      "kind": "product_fee",
+      "metric": "ETF보수",
+      "text": "TIGER 미국투자등급회사채액티브(H) 총보수 (실측)",
+      "value": 0.14,
+      "unit": "%",
+      "verdict": "confirmed",
+      "render": "assert",
+      "printed_on": [
+        "p5-matrix"
+      ],
+      "series": "네이버 수집 ETF 데이터셋",
+      "as_of": "2026-09-04",
+      "tier": 2,
+      "source_url": "repo:hanaroline/work_1@claude/etf-holdings-lookup-tool-wwtz57:data/etf-kr.js",
+      "note": "hanaroline/work_1 · claude/etf-holdings-lookup-tool-wwtz57 · data/etf-kr.js · 수집 2026-09-07 · 국내 상장 1167종 · 수익률 기준일 2026-09-04"
+    },
+    {
+      "id": "AUM_458260",
+      "kind": "product_size",
+      "metric": "ETF순자산",
+      "text": "TIGER 미국투자등급회사채액티브(H) 순자산 (실측)",
+      "value": 2215,
+      "unit": "억원",
+      "verdict": "confirmed",
+      "render": "assert",
+      "printed_on": [
+        "p5-matrix"
+      ],
+      "series": "네이버 수집 ETF 데이터셋",
+      "as_of": "2026-09-04",
+      "tier": 2,
+      "source_url": "repo:hanaroline/work_1@claude/etf-holdings-lookup-tool-wwtz57:data/etf-kr.js",
+      "note": "hanaroline/work_1 · claude/etf-holdings-lookup-tool-wwtz57 · data/etf-kr.js · 수집 2026-09-07 · 국내 상장 1167종 · 수익률 기준일 2026-09-04"
+    },
+    {
+      "id": "TRY1_458260",
+      "kind": "product_return",
+      "metric": "ETF총수익",
+      "text": "TIGER 미국투자등급회사채액티브(H) 총수익률 Y1 (실측, 분배금 재투자 기준)",
+      "value": -0.87,
+      "unit": "%",
+      "verdict": "confirmed",
+      "render": "assert",
+      "printed_on": [
+        "p5-matrix",
+        "p6-trap"
+      ],
+      "series": "네이버 수집 ETF 데이터셋",
+      "as_of": "2026-09-04",
+      "tier": 2,
+      "source_url": "repo:hanaroline/work_1@claude/etf-holdings-lookup-tool-wwtz57:data/etf-kr.js",
+      "note": "hanaroline/work_1 · claude/etf-holdings-lookup-tool-wwtz57 · data/etf-kr.js · 수집 2026-09-07 · 국내 상장 1167종 · 수익률 기준일 2026-09-04"
+    },
+    {
+      "id": "TRY3_458260",
+      "kind": "product_return",
+      "metric": "ETF총수익",
+      "text": "TIGER 미국투자등급회사채액티브(H) 총수익률 Y3 (실측, 분배금 재투자 기준)",
+      "value": 2.21,
+      "unit": "%",
+      "verdict": "confirmed",
+      "render": "assert",
+      "printed_on": [
+        "p5-matrix",
+        "p6-trap"
+      ],
+      "series": "네이버 수집 ETF 데이터셋",
+      "as_of": "2026-09-04",
+      "tier": 2,
+      "source_url": "repo:hanaroline/work_1@claude/etf-holdings-lookup-tool-wwtz57:data/etf-kr.js",
+      "note": "hanaroline/work_1 · claude/etf-holdings-lookup-tool-wwtz57 · data/etf-kr.js · 수집 2026-09-07 · 국내 상장 1167종 · 수익률 기준일 2026-09-04"
+    },
+    {
+      "id": "T_458730",
+      "kind": "product_identity",
+      "metric": "상품식별",
+      "text": "TIGER 미국배당다우존스 종목코드",
+      "value": 458730,
+      "unit": "종목코드",
+      "verdict": "confirmed",
+      "render": "assert",
+      "printed_on": [
+        "p5-matrix"
+      ],
+      "series": "네이버 수집 ETF 데이터셋",
+      "as_of": "2026-09-04",
+      "tier": 2,
+      "source_url": "repo:hanaroline/work_1@claude/etf-holdings-lookup-tool-wwtz57:data/etf-kr.js",
+      "note": "hanaroline/work_1 · claude/etf-holdings-lookup-tool-wwtz57 · data/etf-kr.js · 수집 2026-09-07 · 국내 상장 1167종 · 수익률 기준일 2026-09-04"
+    },
+    {
+      "id": "DY_458730",
+      "kind": "product_yield",
+      "metric": "ETF분배율",
+      "text": "TIGER 미국배당다우존스 분배율 (실측)",
+      "value": 2.89,
+      "unit": "%",
+      "verdict": "confirmed",
+      "render": "assert",
+      "printed_on": [
+        "p5-matrix"
+      ],
+      "series": "네이버 수집 ETF 데이터셋",
+      "as_of": "2026-09-04",
+      "tier": 2,
+      "source_url": "repo:hanaroline/work_1@claude/etf-holdings-lookup-tool-wwtz57:data/etf-kr.js",
+      "note": "hanaroline/work_1 · claude/etf-holdings-lookup-tool-wwtz57 · data/etf-kr.js · 수집 2026-09-07 · 국내 상장 1167종 · 수익률 기준일 2026-09-04"
+    },
+    {
+      "id": "TER_458730",
+      "kind": "product_fee",
+      "metric": "ETF보수",
+      "text": "TIGER 미국배당다우존스 총보수 (실측)",
+      "value": 0.01,
+      "unit": "%",
+      "verdict": "confirmed",
+      "render": "assert",
+      "printed_on": [
+        "p5-matrix"
+      ],
+      "series": "네이버 수집 ETF 데이터셋",
+      "as_of": "2026-09-04",
+      "tier": 2,
+      "source_url": "repo:hanaroline/work_1@claude/etf-holdings-lookup-tool-wwtz57:data/etf-kr.js",
+      "note": "hanaroline/work_1 · claude/etf-holdings-lookup-tool-wwtz57 · data/etf-kr.js · 수집 2026-09-07 · 국내 상장 1167종 · 수익률 기준일 2026-09-04"
+    },
+    {
+      "id": "AUM_458730",
+      "kind": "product_size",
+      "metric": "ETF순자산",
+      "text": "TIGER 미국배당다우존스 순자산 (실측)",
+      "value": 43084,
+      "unit": "억원",
+      "verdict": "confirmed",
+      "render": "assert",
+      "printed_on": [
+        "p5-matrix"
+      ],
+      "series": "네이버 수집 ETF 데이터셋",
+      "as_of": "2026-09-04",
+      "tier": 2,
+      "source_url": "repo:hanaroline/work_1@claude/etf-holdings-lookup-tool-wwtz57:data/etf-kr.js",
+      "note": "hanaroline/work_1 · claude/etf-holdings-lookup-tool-wwtz57 · data/etf-kr.js · 수집 2026-09-07 · 국내 상장 1167종 · 수익률 기준일 2026-09-04"
+    },
+    {
+      "id": "TRY1_458730",
+      "kind": "product_return",
+      "metric": "ETF총수익",
+      "text": "TIGER 미국배당다우존스 총수익률 Y1 (실측, 분배금 재투자 기준)",
+      "value": 26.43,
+      "unit": "%",
+      "verdict": "confirmed",
+      "render": "assert",
+      "printed_on": [
+        "p5-matrix",
+        "p6-trap"
+      ],
+      "series": "네이버 수집 ETF 데이터셋",
+      "as_of": "2026-09-04",
+      "tier": 2,
+      "source_url": "repo:hanaroline/work_1@claude/etf-holdings-lookup-tool-wwtz57:data/etf-kr.js",
+      "note": "hanaroline/work_1 · claude/etf-holdings-lookup-tool-wwtz57 · data/etf-kr.js · 수집 2026-09-07 · 국내 상장 1167종 · 수익률 기준일 2026-09-04"
+    },
+    {
+      "id": "TRY3_458730",
+      "kind": "product_return",
+      "metric": "ETF총수익",
+      "text": "TIGER 미국배당다우존스 총수익률 Y3 (실측, 분배금 재투자 기준)",
+      "value": 16.29,
+      "unit": "%",
+      "verdict": "confirmed",
+      "render": "assert",
+      "printed_on": [
+        "p5-matrix",
+        "p6-trap"
+      ],
+      "series": "네이버 수집 ETF 데이터셋",
+      "as_of": "2026-09-04",
+      "tier": 2,
+      "source_url": "repo:hanaroline/work_1@claude/etf-holdings-lookup-tool-wwtz57:data/etf-kr.js",
+      "note": "hanaroline/work_1 · claude/etf-holdings-lookup-tool-wwtz57 · data/etf-kr.js · 수집 2026-09-07 · 국내 상장 1167종 · 수익률 기준일 2026-09-04"
+    },
+    {
+      "id": "T_458760",
+      "kind": "product_identity",
+      "metric": "상품식별",
+      "text": "TIGER 미국배당다우존스타겟커버드콜2호 종목코드",
+      "value": 458760,
+      "unit": "종목코드",
+      "verdict": "confirmed",
+      "render": "assert",
+      "printed_on": [
+        "p5-matrix"
+      ],
+      "series": "네이버 수집 ETF 데이터셋",
+      "as_of": "2026-09-04",
+      "tier": 2,
+      "source_url": "repo:hanaroline/work_1@claude/etf-holdings-lookup-tool-wwtz57:data/etf-kr.js",
+      "note": "hanaroline/work_1 · claude/etf-holdings-lookup-tool-wwtz57 · data/etf-kr.js · 수집 2026-09-07 · 국내 상장 1167종 · 수익률 기준일 2026-09-04"
+    },
+    {
+      "id": "DY_458760",
+      "kind": "product_yield",
+      "metric": "ETF분배율",
+      "text": "TIGER 미국배당다우존스타겟커버드콜2호 분배율 (실측)",
+      "value": 9.96,
+      "unit": "%",
+      "verdict": "confirmed",
+      "render": "assert",
+      "printed_on": [
+        "p5-matrix"
+      ],
+      "series": "네이버 수집 ETF 데이터셋",
+      "as_of": "2026-09-04",
+      "tier": 2,
+      "source_url": "repo:hanaroline/work_1@claude/etf-holdings-lookup-tool-wwtz57:data/etf-kr.js",
+      "note": "hanaroline/work_1 · claude/etf-holdings-lookup-tool-wwtz57 · data/etf-kr.js · 수집 2026-09-07 · 국내 상장 1167종 · 수익률 기준일 2026-09-04"
+    },
+    {
+      "id": "TER_458760",
+      "kind": "product_fee",
+      "metric": "ETF보수",
+      "text": "TIGER 미국배당다우존스타겟커버드콜2호 총보수 (실측)",
+      "value": 0.39,
+      "unit": "%",
+      "verdict": "confirmed",
+      "render": "assert",
+      "printed_on": [
+        "p5-matrix"
+      ],
+      "series": "네이버 수집 ETF 데이터셋",
+      "as_of": "2026-09-04",
+      "tier": 2,
+      "source_url": "repo:hanaroline/work_1@claude/etf-holdings-lookup-tool-wwtz57:data/etf-kr.js",
+      "note": "hanaroline/work_1 · claude/etf-holdings-lookup-tool-wwtz57 · data/etf-kr.js · 수집 2026-09-07 · 국내 상장 1167종 · 수익률 기준일 2026-09-04"
+    },
+    {
+      "id": "AUM_458760",
+      "kind": "product_size",
+      "metric": "ETF순자산",
+      "text": "TIGER 미국배당다우존스타겟커버드콜2호 순자산 (실측)",
+      "value": 7020,
+      "unit": "억원",
+      "verdict": "confirmed",
+      "render": "assert",
+      "printed_on": [
+        "p5-matrix"
+      ],
+      "series": "네이버 수집 ETF 데이터셋",
+      "as_of": "2026-09-04",
+      "tier": 2,
+      "source_url": "repo:hanaroline/work_1@claude/etf-holdings-lookup-tool-wwtz57:data/etf-kr.js",
+      "note": "hanaroline/work_1 · claude/etf-holdings-lookup-tool-wwtz57 · data/etf-kr.js · 수집 2026-09-07 · 국내 상장 1167종 · 수익률 기준일 2026-09-04"
+    },
+    {
+      "id": "TRY1_458760",
+      "kind": "product_return",
+      "metric": "ETF총수익",
+      "text": "TIGER 미국배당다우존스타겟커버드콜2호 총수익률 Y1 (실측, 분배금 재투자 기준)",
+      "value": 25.58,
+      "unit": "%",
+      "verdict": "confirmed",
+      "render": "assert",
+      "printed_on": [
+        "p5-matrix",
+        "p6-trap"
+      ],
+      "series": "네이버 수집 ETF 데이터셋",
+      "as_of": "2026-09-04",
+      "tier": 2,
+      "source_url": "repo:hanaroline/work_1@claude/etf-holdings-lookup-tool-wwtz57:data/etf-kr.js",
+      "note": "hanaroline/work_1 · claude/etf-holdings-lookup-tool-wwtz57 · data/etf-kr.js · 수집 2026-09-07 · 국내 상장 1167종 · 수익률 기준일 2026-09-04"
+    },
+    {
+      "id": "TRY3_458760",
+      "kind": "product_return",
+      "metric": "ETF총수익",
+      "text": "TIGER 미국배당다우존스타겟커버드콜2호 총수익률 Y3 (실측, 분배금 재투자 기준)",
+      "value": 12.63,
+      "unit": "%",
+      "verdict": "confirmed",
+      "render": "assert",
+      "printed_on": [
+        "p5-matrix",
+        "p6-trap"
+      ],
+      "series": "네이버 수집 ETF 데이터셋",
+      "as_of": "2026-09-04",
+      "tier": 2,
+      "source_url": "repo:hanaroline/work_1@claude/etf-holdings-lookup-tool-wwtz57:data/etf-kr.js",
+      "note": "hanaroline/work_1 · claude/etf-holdings-lookup-tool-wwtz57 · data/etf-kr.js · 수집 2026-09-07 · 국내 상장 1167종 · 수익률 기준일 2026-09-04"
+    },
+    {
+      "id": "T_473330",
+      "kind": "product_identity",
+      "metric": "상품식별",
+      "text": "SOL 미국30년국채커버드콜(합성) 종목코드",
+      "value": 473330,
+      "unit": "종목코드",
+      "verdict": "confirmed",
+      "render": "assert",
+      "printed_on": [
+        "p5-matrix"
+      ],
+      "series": "네이버 수집 ETF 데이터셋",
+      "as_of": "2026-09-04",
+      "tier": 2,
+      "source_url": "repo:hanaroline/work_1@claude/etf-holdings-lookup-tool-wwtz57:data/etf-kr.js",
+      "note": "hanaroline/work_1 · claude/etf-holdings-lookup-tool-wwtz57 · data/etf-kr.js · 수집 2026-09-07 · 국내 상장 1167종 · 수익률 기준일 2026-09-04"
+    },
+    {
+      "id": "DY_473330",
+      "kind": "product_yield",
+      "metric": "ETF분배율",
+      "text": "SOL 미국30년국채커버드콜(합성) 분배율 (실측)",
+      "value": 13.01,
+      "unit": "%",
+      "verdict": "confirmed",
+      "render": "assert",
+      "printed_on": [
+        "p5-matrix"
+      ],
+      "series": "네이버 수집 ETF 데이터셋",
+      "as_of": "2026-09-04",
+      "tier": 2,
+      "source_url": "repo:hanaroline/work_1@claude/etf-holdings-lookup-tool-wwtz57:data/etf-kr.js",
+      "note": "hanaroline/work_1 · claude/etf-holdings-lookup-tool-wwtz57 · data/etf-kr.js · 수집 2026-09-07 · 국내 상장 1167종 · 수익률 기준일 2026-09-04"
+    },
+    {
+      "id": "TER_473330",
+      "kind": "product_fee",
+      "metric": "ETF보수",
+      "text": "SOL 미국30년국채커버드콜(합성) 총보수 (실측)",
+      "value": 0.25,
+      "unit": "%",
+      "verdict": "confirmed",
+      "render": "assert",
+      "printed_on": [
+        "p5-matrix"
+      ],
+      "series": "네이버 수집 ETF 데이터셋",
+      "as_of": "2026-09-04",
+      "tier": 2,
+      "source_url": "repo:hanaroline/work_1@claude/etf-holdings-lookup-tool-wwtz57:data/etf-kr.js",
+      "note": "hanaroline/work_1 · claude/etf-holdings-lookup-tool-wwtz57 · data/etf-kr.js · 수집 2026-09-07 · 국내 상장 1167종 · 수익률 기준일 2026-09-04"
+    },
+    {
+      "id": "AUM_473330",
+      "kind": "product_size",
+      "metric": "ETF순자산",
+      "text": "SOL 미국30년국채커버드콜(합성) 순자산 (실측)",
+      "value": 2736,
+      "unit": "억원",
+      "verdict": "confirmed",
+      "render": "assert",
+      "printed_on": [
+        "p5-matrix"
+      ],
+      "series": "네이버 수집 ETF 데이터셋",
+      "as_of": "2026-09-04",
+      "tier": 2,
+      "source_url": "repo:hanaroline/work_1@claude/etf-holdings-lookup-tool-wwtz57:data/etf-kr.js",
+      "note": "hanaroline/work_1 · claude/etf-holdings-lookup-tool-wwtz57 · data/etf-kr.js · 수집 2026-09-07 · 국내 상장 1167종 · 수익률 기준일 2026-09-04"
+    },
+    {
+      "id": "TRY1_473330",
+      "kind": "product_return",
+      "metric": "ETF총수익",
+      "text": "SOL 미국30년국채커버드콜(합성) 총수익률 Y1 (실측, 분배금 재투자 기준)",
+      "value": -1.46,
+      "unit": "%",
+      "verdict": "confirmed",
+      "render": "assert",
+      "printed_on": [
+        "p5-matrix",
+        "p6-trap"
+      ],
+      "series": "네이버 수집 ETF 데이터셋",
+      "as_of": "2026-09-04",
+      "tier": 2,
+      "source_url": "repo:hanaroline/work_1@claude/etf-holdings-lookup-tool-wwtz57:data/etf-kr.js",
+      "note": "hanaroline/work_1 · claude/etf-holdings-lookup-tool-wwtz57 · data/etf-kr.js · 수집 2026-09-07 · 국내 상장 1167종 · 수익률 기준일 2026-09-04"
+    },
+    {
+      "id": "T_476550",
+      "kind": "product_identity",
+      "metric": "상품식별",
+      "text": "TIGER 미국30년국채커버드콜액티브(H) 종목코드",
+      "value": 476550,
+      "unit": "종목코드",
+      "verdict": "confirmed",
+      "render": "assert",
+      "printed_on": [
+        "p5-matrix"
+      ],
+      "series": "네이버 수집 ETF 데이터셋",
+      "as_of": "2026-09-04",
+      "tier": 2,
+      "source_url": "repo:hanaroline/work_1@claude/etf-holdings-lookup-tool-wwtz57:data/etf-kr.js",
+      "note": "hanaroline/work_1 · claude/etf-holdings-lookup-tool-wwtz57 · data/etf-kr.js · 수집 2026-09-07 · 국내 상장 1167종 · 수익률 기준일 2026-09-04"
+    },
+    {
+      "id": "DY_476550",
+      "kind": "product_yield",
+      "metric": "ETF분배율",
+      "text": "TIGER 미국30년국채커버드콜액티브(H) 분배율 (실측)",
+      "value": 13.35,
+      "unit": "%",
+      "verdict": "confirmed",
+      "render": "assert",
+      "printed_on": [
+        "p5-matrix"
+      ],
+      "series": "네이버 수집 ETF 데이터셋",
+      "as_of": "2026-09-04",
+      "tier": 2,
+      "source_url": "repo:hanaroline/work_1@claude/etf-holdings-lookup-tool-wwtz57:data/etf-kr.js",
+      "note": "hanaroline/work_1 · claude/etf-holdings-lookup-tool-wwtz57 · data/etf-kr.js · 수집 2026-09-07 · 국내 상장 1167종 · 수익률 기준일 2026-09-04"
+    },
+    {
+      "id": "TER_476550",
+      "kind": "product_fee",
+      "metric": "ETF보수",
+      "text": "TIGER 미국30년국채커버드콜액티브(H) 총보수 (실측)",
+      "value": 0.39,
+      "unit": "%",
+      "verdict": "confirmed",
+      "render": "assert",
+      "printed_on": [
+        "p5-matrix"
+      ],
+      "series": "네이버 수집 ETF 데이터셋",
+      "as_of": "2026-09-04",
+      "tier": 2,
+      "source_url": "repo:hanaroline/work_1@claude/etf-holdings-lookup-tool-wwtz57:data/etf-kr.js",
+      "note": "hanaroline/work_1 · claude/etf-holdings-lookup-tool-wwtz57 · data/etf-kr.js · 수집 2026-09-07 · 국내 상장 1167종 · 수익률 기준일 2026-09-04"
+    },
+    {
+      "id": "AUM_476550",
+      "kind": "product_size",
+      "metric": "ETF순자산",
+      "text": "TIGER 미국30년국채커버드콜액티브(H) 순자산 (실측)",
+      "value": 7712,
+      "unit": "억원",
+      "verdict": "confirmed",
+      "render": "assert",
+      "printed_on": [
+        "p5-matrix"
+      ],
+      "series": "네이버 수집 ETF 데이터셋",
+      "as_of": "2026-09-04",
+      "tier": 2,
+      "source_url": "repo:hanaroline/work_1@claude/etf-holdings-lookup-tool-wwtz57:data/etf-kr.js",
+      "note": "hanaroline/work_1 · claude/etf-holdings-lookup-tool-wwtz57 · data/etf-kr.js · 수집 2026-09-07 · 국내 상장 1167종 · 수익률 기준일 2026-09-04"
+    },
+    {
+      "id": "TRY1_476550",
+      "kind": "product_return",
+      "metric": "ETF총수익",
+      "text": "TIGER 미국30년국채커버드콜액티브(H) 총수익률 Y1 (실측, 분배금 재투자 기준)",
+      "value": -2.26,
+      "unit": "%",
+      "verdict": "confirmed",
+      "render": "assert",
+      "printed_on": [
+        "p5-matrix",
+        "p6-trap"
+      ],
+      "series": "네이버 수집 ETF 데이터셋",
+      "as_of": "2026-09-04",
+      "tier": 2,
+      "source_url": "repo:hanaroline/work_1@claude/etf-holdings-lookup-tool-wwtz57:data/etf-kr.js",
+      "note": "hanaroline/work_1 · claude/etf-holdings-lookup-tool-wwtz57 · data/etf-kr.js · 수집 2026-09-07 · 국내 상장 1167종 · 수익률 기준일 2026-09-04"
+    },
+    {
+      "id": "T_476800",
+      "kind": "product_identity",
+      "metric": "상품식별",
+      "text": "KODEX 한국부동산리츠인프라 종목코드",
+      "value": 476800,
+      "unit": "종목코드",
+      "verdict": "confirmed",
+      "render": "assert",
+      "printed_on": [
+        "p5-matrix"
+      ],
+      "series": "네이버 수집 ETF 데이터셋",
+      "as_of": "2026-09-04",
+      "tier": 2,
+      "source_url": "repo:hanaroline/work_1@claude/etf-holdings-lookup-tool-wwtz57:data/etf-kr.js",
+      "note": "hanaroline/work_1 · claude/etf-holdings-lookup-tool-wwtz57 · data/etf-kr.js · 수집 2026-09-07 · 국내 상장 1167종 · 수익률 기준일 2026-09-04"
+    },
+    {
+      "id": "DY_476800",
+      "kind": "product_yield",
+      "metric": "ETF분배율",
+      "text": "KODEX 한국부동산리츠인프라 분배율 (실측)",
+      "value": 8.54,
+      "unit": "%",
+      "verdict": "confirmed",
+      "render": "assert",
+      "printed_on": [
+        "p5-matrix"
+      ],
+      "series": "네이버 수집 ETF 데이터셋",
+      "as_of": "2026-09-04",
+      "tier": 2,
+      "source_url": "repo:hanaroline/work_1@claude/etf-holdings-lookup-tool-wwtz57:data/etf-kr.js",
+      "note": "hanaroline/work_1 · claude/etf-holdings-lookup-tool-wwtz57 · data/etf-kr.js · 수집 2026-09-07 · 국내 상장 1167종 · 수익률 기준일 2026-09-04"
+    },
+    {
+      "id": "TER_476800",
+      "kind": "product_fee",
+      "metric": "ETF보수",
+      "text": "KODEX 한국부동산리츠인프라 총보수 (실측)",
+      "value": 0.09,
+      "unit": "%",
+      "verdict": "confirmed",
+      "render": "assert",
+      "printed_on": [
+        "p5-matrix"
+      ],
+      "series": "네이버 수집 ETF 데이터셋",
+      "as_of": "2026-09-04",
+      "tier": 2,
+      "source_url": "repo:hanaroline/work_1@claude/etf-holdings-lookup-tool-wwtz57:data/etf-kr.js",
+      "note": "hanaroline/work_1 · claude/etf-holdings-lookup-tool-wwtz57 · data/etf-kr.js · 수집 2026-09-07 · 국내 상장 1167종 · 수익률 기준일 2026-09-04"
+    },
+    {
+      "id": "AUM_476800",
+      "kind": "product_size",
+      "metric": "ETF순자산",
+      "text": "KODEX 한국부동산리츠인프라 순자산 (실측)",
+      "value": 4933,
+      "unit": "억원",
+      "verdict": "confirmed",
+      "render": "assert",
+      "printed_on": [
+        "p5-matrix"
+      ],
+      "series": "네이버 수집 ETF 데이터셋",
+      "as_of": "2026-09-04",
+      "tier": 2,
+      "source_url": "repo:hanaroline/work_1@claude/etf-holdings-lookup-tool-wwtz57:data/etf-kr.js",
+      "note": "hanaroline/work_1 · claude/etf-holdings-lookup-tool-wwtz57 · data/etf-kr.js · 수집 2026-09-07 · 국내 상장 1167종 · 수익률 기준일 2026-09-04"
+    },
+    {
+      "id": "TRY1_476800",
+      "kind": "product_return",
+      "metric": "ETF총수익",
+      "text": "KODEX 한국부동산리츠인프라 총수익률 Y1 (실측, 분배금 재투자 기준)",
+      "value": -3.41,
+      "unit": "%",
+      "verdict": "confirmed",
+      "render": "assert",
+      "printed_on": [
+        "p5-matrix",
+        "p6-trap"
+      ],
+      "series": "네이버 수집 ETF 데이터셋",
+      "as_of": "2026-09-04",
+      "tier": 2,
+      "source_url": "repo:hanaroline/work_1@claude/etf-holdings-lookup-tool-wwtz57:data/etf-kr.js",
+      "note": "hanaroline/work_1 · claude/etf-holdings-lookup-tool-wwtz57 · data/etf-kr.js · 수집 2026-09-07 · 국내 상장 1167종 · 수익률 기준일 2026-09-04"
+    },
+    {
+      "id": "T_481060",
+      "kind": "product_identity",
+      "metric": "상품식별",
+      "text": "KODEX 미국30년국채타겟커버드콜(합성 H) 종목코드",
+      "value": 481060,
+      "unit": "종목코드",
+      "verdict": "confirmed",
+      "render": "assert",
+      "printed_on": [
+        "p5-matrix"
+      ],
+      "series": "네이버 수집 ETF 데이터셋",
+      "as_of": "2026-09-04",
+      "tier": 2,
+      "source_url": "repo:hanaroline/work_1@claude/etf-holdings-lookup-tool-wwtz57:data/etf-kr.js",
+      "note": "hanaroline/work_1 · claude/etf-holdings-lookup-tool-wwtz57 · data/etf-kr.js · 수집 2026-09-07 · 국내 상장 1167종 · 수익률 기준일 2026-09-04"
+    },
+    {
+      "id": "DY_481060",
+      "kind": "product_yield",
+      "metric": "ETF분배율",
+      "text": "KODEX 미국30년국채타겟커버드콜(합성 H) 분배율 (실측)",
+      "value": 13.12,
+      "unit": "%",
+      "verdict": "confirmed",
+      "render": "assert",
+      "printed_on": [
+        "p5-matrix"
+      ],
+      "series": "네이버 수집 ETF 데이터셋",
+      "as_of": "2026-09-04",
+      "tier": 2,
+      "source_url": "repo:hanaroline/work_1@claude/etf-holdings-lookup-tool-wwtz57:data/etf-kr.js",
+      "note": "hanaroline/work_1 · claude/etf-holdings-lookup-tool-wwtz57 · data/etf-kr.js · 수집 2026-09-07 · 국내 상장 1167종 · 수익률 기준일 2026-09-04"
+    },
+    {
+      "id": "TER_481060",
+      "kind": "product_fee",
+      "metric": "ETF보수",
+      "text": "KODEX 미국30년국채타겟커버드콜(합성 H) 총보수 (실측)",
+      "value": 0.25,
+      "unit": "%",
+      "verdict": "confirmed",
+      "render": "assert",
+      "printed_on": [
+        "p5-matrix"
+      ],
+      "series": "네이버 수집 ETF 데이터셋",
+      "as_of": "2026-09-04",
+      "tier": 2,
+      "source_url": "repo:hanaroline/work_1@claude/etf-holdings-lookup-tool-wwtz57:data/etf-kr.js",
+      "note": "hanaroline/work_1 · claude/etf-holdings-lookup-tool-wwtz57 · data/etf-kr.js · 수집 2026-09-07 · 국내 상장 1167종 · 수익률 기준일 2026-09-04"
+    },
+    {
+      "id": "AUM_481060",
+      "kind": "product_size",
+      "metric": "ETF순자산",
+      "text": "KODEX 미국30년국채타겟커버드콜(합성 H) 순자산 (실측)",
+      "value": 7665,
+      "unit": "억원",
+      "verdict": "confirmed",
+      "render": "assert",
+      "printed_on": [
+        "p5-matrix"
+      ],
+      "series": "네이버 수집 ETF 데이터셋",
+      "as_of": "2026-09-04",
+      "tier": 2,
+      "source_url": "repo:hanaroline/work_1@claude/etf-holdings-lookup-tool-wwtz57:data/etf-kr.js",
+      "note": "hanaroline/work_1 · claude/etf-holdings-lookup-tool-wwtz57 · data/etf-kr.js · 수집 2026-09-07 · 국내 상장 1167종 · 수익률 기준일 2026-09-04"
+    },
+    {
+      "id": "TRY1_481060",
+      "kind": "product_return",
+      "metric": "ETF총수익",
+      "text": "KODEX 미국30년국채타겟커버드콜(합성 H) 총수익률 Y1 (실측, 분배금 재투자 기준)",
+      "value": -1.63,
+      "unit": "%",
+      "verdict": "confirmed",
+      "render": "assert",
+      "printed_on": [
+        "p5-matrix",
+        "p6-trap"
+      ],
+      "series": "네이버 수집 ETF 데이터셋",
+      "as_of": "2026-09-04",
+      "tier": 2,
+      "source_url": "repo:hanaroline/work_1@claude/etf-holdings-lookup-tool-wwtz57:data/etf-kr.js",
+      "note": "hanaroline/work_1 · claude/etf-holdings-lookup-tool-wwtz57 · data/etf-kr.js · 수집 2026-09-07 · 국내 상장 1167종 · 수익률 기준일 2026-09-04"
+    },
+    {
+      "id": "T_483290",
+      "kind": "product_identity",
+      "metric": "상품식별",
+      "text": "KODEX 미국배당다우존스타겟커버드콜 종목코드",
+      "value": 483290,
+      "unit": "종목코드",
+      "verdict": "confirmed",
+      "render": "assert",
+      "printed_on": [
+        "p5-matrix"
+      ],
+      "series": "네이버 수집 ETF 데이터셋",
+      "as_of": "2026-09-04",
+      "tier": 2,
+      "source_url": "repo:hanaroline/work_1@claude/etf-holdings-lookup-tool-wwtz57:data/etf-kr.js",
+      "note": "hanaroline/work_1 · claude/etf-holdings-lookup-tool-wwtz57 · data/etf-kr.js · 수집 2026-09-07 · 국내 상장 1167종 · 수익률 기준일 2026-09-04"
+    },
+    {
+      "id": "DY_483290",
+      "kind": "product_yield",
+      "metric": "ETF분배율",
+      "text": "KODEX 미국배당다우존스타겟커버드콜 분배율 (실측)",
+      "value": 12.2,
+      "unit": "%",
+      "verdict": "confirmed",
+      "render": "assert",
+      "printed_on": [
+        "p5-matrix"
+      ],
+      "series": "네이버 수집 ETF 데이터셋",
+      "as_of": "2026-09-04",
+      "tier": 2,
+      "source_url": "repo:hanaroline/work_1@claude/etf-holdings-lookup-tool-wwtz57:data/etf-kr.js",
+      "note": "hanaroline/work_1 · claude/etf-holdings-lookup-tool-wwtz57 · data/etf-kr.js · 수집 2026-09-07 · 국내 상장 1167종 · 수익률 기준일 2026-09-04"
+    },
+    {
+      "id": "TER_483290",
+      "kind": "product_fee",
+      "metric": "ETF보수",
+      "text": "KODEX 미국배당다우존스타겟커버드콜 총보수 (실측)",
+      "value": 0.39,
+      "unit": "%",
+      "verdict": "confirmed",
+      "render": "assert",
+      "printed_on": [
+        "p5-matrix"
+      ],
+      "series": "네이버 수집 ETF 데이터셋",
+      "as_of": "2026-09-04",
+      "tier": 2,
+      "source_url": "repo:hanaroline/work_1@claude/etf-holdings-lookup-tool-wwtz57:data/etf-kr.js",
+      "note": "hanaroline/work_1 · claude/etf-holdings-lookup-tool-wwtz57 · data/etf-kr.js · 수집 2026-09-07 · 국내 상장 1167종 · 수익률 기준일 2026-09-04"
+    },
+    {
+      "id": "AUM_483290",
+      "kind": "product_size",
+      "metric": "ETF순자산",
+      "text": "KODEX 미국배당다우존스타겟커버드콜 순자산 (실측)",
+      "value": 1797,
+      "unit": "억원",
+      "verdict": "confirmed",
+      "render": "assert",
+      "printed_on": [
+        "p5-matrix"
+      ],
+      "series": "네이버 수집 ETF 데이터셋",
+      "as_of": "2026-09-04",
+      "tier": 2,
+      "source_url": "repo:hanaroline/work_1@claude/etf-holdings-lookup-tool-wwtz57:data/etf-kr.js",
+      "note": "hanaroline/work_1 · claude/etf-holdings-lookup-tool-wwtz57 · data/etf-kr.js · 수집 2026-09-07 · 국내 상장 1167종 · 수익률 기준일 2026-09-04"
+    },
+    {
+      "id": "TRY1_483290",
+      "kind": "product_return",
+      "metric": "ETF총수익",
+      "text": "KODEX 미국배당다우존스타겟커버드콜 총수익률 Y1 (실측, 분배금 재투자 기준)",
+      "value": 25.17,
+      "unit": "%",
+      "verdict": "confirmed",
+      "render": "assert",
+      "printed_on": [
+        "p5-matrix",
+        "p6-trap"
+      ],
+      "series": "네이버 수집 ETF 데이터셋",
+      "as_of": "2026-09-04",
+      "tier": 2,
+      "source_url": "repo:hanaroline/work_1@claude/etf-holdings-lookup-tool-wwtz57:data/etf-kr.js",
+      "note": "hanaroline/work_1 · claude/etf-holdings-lookup-tool-wwtz57 · data/etf-kr.js · 수집 2026-09-07 · 국내 상장 1167종 · 수익률 기준일 2026-09-04"
+    },
+    {
+      "id": "T_484790",
+      "kind": "product_identity",
+      "metric": "상품식별",
+      "text": "KODEX 미국30년국채액티브(H) 종목코드",
+      "value": 484790,
+      "unit": "종목코드",
+      "verdict": "confirmed",
+      "render": "assert",
+      "printed_on": [
+        "p5-matrix"
+      ],
+      "series": "네이버 수집 ETF 데이터셋",
+      "as_of": "2026-09-04",
+      "tier": 2,
+      "source_url": "repo:hanaroline/work_1@claude/etf-holdings-lookup-tool-wwtz57:data/etf-kr.js",
+      "note": "hanaroline/work_1 · claude/etf-holdings-lookup-tool-wwtz57 · data/etf-kr.js · 수집 2026-09-07 · 국내 상장 1167종 · 수익률 기준일 2026-09-04"
+    },
+    {
+      "id": "DY_484790",
+      "kind": "product_yield",
+      "metric": "ETF분배율",
+      "text": "KODEX 미국30년국채액티브(H) 분배율 (실측)",
+      "value": 5.2,
+      "unit": "%",
+      "verdict": "confirmed",
+      "render": "assert",
+      "printed_on": [
+        "p5-matrix"
+      ],
+      "series": "네이버 수집 ETF 데이터셋",
+      "as_of": "2026-09-04",
+      "tier": 2,
+      "source_url": "repo:hanaroline/work_1@claude/etf-holdings-lookup-tool-wwtz57:data/etf-kr.js",
+      "note": "hanaroline/work_1 · claude/etf-holdings-lookup-tool-wwtz57 · data/etf-kr.js · 수집 2026-09-07 · 국내 상장 1167종 · 수익률 기준일 2026-09-04"
+    },
+    {
+      "id": "TER_484790",
+      "kind": "product_fee",
+      "metric": "ETF보수",
+      "text": "KODEX 미국30년국채액티브(H) 총보수 (실측)",
+      "value": 0.015,
+      "unit": "%",
+      "verdict": "confirmed",
+      "render": "assert",
+      "printed_on": [
+        "p5-matrix"
+      ],
+      "series": "네이버 수집 ETF 데이터셋",
+      "as_of": "2026-09-04",
+      "tier": 2,
+      "source_url": "repo:hanaroline/work_1@claude/etf-holdings-lookup-tool-wwtz57:data/etf-kr.js",
+      "note": "hanaroline/work_1 · claude/etf-holdings-lookup-tool-wwtz57 · data/etf-kr.js · 수집 2026-09-07 · 국내 상장 1167종 · 수익률 기준일 2026-09-04"
+    },
+    {
+      "id": "AUM_484790",
+      "kind": "product_size",
+      "metric": "ETF순자산",
+      "text": "KODEX 미국30년국채액티브(H) 순자산 (실측)",
+      "value": 5983,
+      "unit": "억원",
+      "verdict": "confirmed",
+      "render": "assert",
+      "printed_on": [
+        "p5-matrix"
+      ],
+      "series": "네이버 수집 ETF 데이터셋",
+      "as_of": "2026-09-04",
+      "tier": 2,
+      "source_url": "repo:hanaroline/work_1@claude/etf-holdings-lookup-tool-wwtz57:data/etf-kr.js",
+      "note": "hanaroline/work_1 · claude/etf-holdings-lookup-tool-wwtz57 · data/etf-kr.js · 수집 2026-09-07 · 국내 상장 1167종 · 수익률 기준일 2026-09-04"
+    },
+    {
+      "id": "TRY1_484790",
+      "kind": "product_return",
+      "metric": "ETF총수익",
+      "text": "KODEX 미국30년국채액티브(H) 총수익률 Y1 (실측, 분배금 재투자 기준)",
+      "value": -2.17,
+      "unit": "%",
+      "verdict": "confirmed",
+      "render": "assert",
+      "printed_on": [
+        "p5-matrix",
+        "p6-trap"
+      ],
+      "series": "네이버 수집 ETF 데이터셋",
+      "as_of": "2026-09-04",
+      "tier": 2,
+      "source_url": "repo:hanaroline/work_1@claude/etf-holdings-lookup-tool-wwtz57:data/etf-kr.js",
+      "note": "hanaroline/work_1 · claude/etf-holdings-lookup-tool-wwtz57 · data/etf-kr.js · 수집 2026-09-07 · 국내 상장 1167종 · 수익률 기준일 2026-09-04"
+    },
+    {
+      "id": "T_486290",
+      "kind": "product_identity",
+      "metric": "상품식별",
+      "text": "TIGER 미국나스닥100타겟데일리커버드콜 종목코드",
+      "value": 486290,
+      "unit": "종목코드",
+      "verdict": "confirmed",
+      "render": "assert",
+      "printed_on": [
+        "p5-matrix"
+      ],
+      "series": "네이버 수집 ETF 데이터셋",
+      "as_of": "2026-09-04",
+      "tier": 2,
+      "source_url": "repo:hanaroline/work_1@claude/etf-holdings-lookup-tool-wwtz57:data/etf-kr.js",
+      "note": "hanaroline/work_1 · claude/etf-holdings-lookup-tool-wwtz57 · data/etf-kr.js · 수집 2026-09-07 · 국내 상장 1167종 · 수익률 기준일 2026-09-04"
+    },
+    {
+      "id": "DY_486290",
+      "kind": "product_yield",
+      "metric": "ETF분배율",
+      "text": "TIGER 미국나스닥100타겟데일리커버드콜 분배율 (실측)",
+      "value": 15.86,
+      "unit": "%",
+      "verdict": "confirmed",
+      "render": "assert",
+      "printed_on": [
+        "p5-matrix"
+      ],
+      "series": "네이버 수집 ETF 데이터셋",
+      "as_of": "2026-09-04",
+      "tier": 2,
+      "source_url": "repo:hanaroline/work_1@claude/etf-holdings-lookup-tool-wwtz57:data/etf-kr.js",
+      "note": "hanaroline/work_1 · claude/etf-holdings-lookup-tool-wwtz57 · data/etf-kr.js · 수집 2026-09-07 · 국내 상장 1167종 · 수익률 기준일 2026-09-04"
+    },
+    {
+      "id": "TER_486290",
+      "kind": "product_fee",
+      "metric": "ETF보수",
+      "text": "TIGER 미국나스닥100타겟데일리커버드콜 총보수 (실측)",
+      "value": 0.25,
+      "unit": "%",
+      "verdict": "confirmed",
+      "render": "assert",
+      "printed_on": [
+        "p5-matrix"
+      ],
+      "series": "네이버 수집 ETF 데이터셋",
+      "as_of": "2026-09-04",
+      "tier": 2,
+      "source_url": "repo:hanaroline/work_1@claude/etf-holdings-lookup-tool-wwtz57:data/etf-kr.js",
+      "note": "hanaroline/work_1 · claude/etf-holdings-lookup-tool-wwtz57 · data/etf-kr.js · 수집 2026-09-07 · 국내 상장 1167종 · 수익률 기준일 2026-09-04"
+    },
+    {
+      "id": "AUM_486290",
+      "kind": "product_size",
+      "metric": "ETF순자산",
+      "text": "TIGER 미국나스닥100타겟데일리커버드콜 순자산 (실측)",
+      "value": 23768,
+      "unit": "억원",
+      "verdict": "confirmed",
+      "render": "assert",
+      "printed_on": [
+        "p5-matrix"
+      ],
+      "series": "네이버 수집 ETF 데이터셋",
+      "as_of": "2026-09-04",
+      "tier": 2,
+      "source_url": "repo:hanaroline/work_1@claude/etf-holdings-lookup-tool-wwtz57:data/etf-kr.js",
+      "note": "hanaroline/work_1 · claude/etf-holdings-lookup-tool-wwtz57 · data/etf-kr.js · 수집 2026-09-07 · 국내 상장 1167종 · 수익률 기준일 2026-09-04"
+    },
+    {
+      "id": "TRY1_486290",
+      "kind": "product_return",
+      "metric": "ETF총수익",
+      "text": "TIGER 미국나스닥100타겟데일리커버드콜 총수익률 Y1 (실측, 분배금 재투자 기준)",
+      "value": 21.27,
+      "unit": "%",
+      "verdict": "confirmed",
+      "render": "assert",
+      "printed_on": [
+        "p5-matrix",
+        "p6-trap"
+      ],
+      "series": "네이버 수집 ETF 데이터셋",
+      "as_of": "2026-09-04",
+      "tier": 2,
+      "source_url": "repo:hanaroline/work_1@claude/etf-holdings-lookup-tool-wwtz57:data/etf-kr.js",
+      "note": "hanaroline/work_1 · claude/etf-holdings-lookup-tool-wwtz57 · data/etf-kr.js · 수집 2026-09-07 · 국내 상장 1167종 · 수익률 기준일 2026-09-04"
+    },
+    {
+      "id": "T_494300",
+      "kind": "product_identity",
+      "metric": "상품식별",
+      "text": "KODEX 미국나스닥100데일리커버드콜OTM 종목코드",
+      "value": 494300,
+      "unit": "종목코드",
+      "verdict": "confirmed",
+      "render": "assert",
+      "printed_on": [
+        "p5-matrix"
+      ],
+      "series": "네이버 수집 ETF 데이터셋",
+      "as_of": "2026-09-04",
+      "tier": 2,
+      "source_url": "repo:hanaroline/work_1@claude/etf-holdings-lookup-tool-wwtz57:data/etf-kr.js",
+      "note": "hanaroline/work_1 · claude/etf-holdings-lookup-tool-wwtz57 · data/etf-kr.js · 수집 2026-09-07 · 국내 상장 1167종 · 수익률 기준일 2026-09-04"
+    },
+    {
+      "id": "DY_494300",
+      "kind": "product_yield",
+      "metric": "ETF분배율",
+      "text": "KODEX 미국나스닥100데일리커버드콜OTM 분배율 (실측)",
+      "value": 22.9,
+      "unit": "%",
+      "verdict": "confirmed",
+      "render": "assert",
+      "printed_on": [
+        "p5-matrix"
+      ],
+      "series": "네이버 수집 ETF 데이터셋",
+      "as_of": "2026-09-04",
+      "tier": 2,
+      "source_url": "repo:hanaroline/work_1@claude/etf-holdings-lookup-tool-wwtz57:data/etf-kr.js",
+      "note": "hanaroline/work_1 · claude/etf-holdings-lookup-tool-wwtz57 · data/etf-kr.js · 수집 2026-09-07 · 국내 상장 1167종 · 수익률 기준일 2026-09-04"
+    },
+    {
+      "id": "TER_494300",
+      "kind": "product_fee",
+      "metric": "ETF보수",
+      "text": "KODEX 미국나스닥100데일리커버드콜OTM 총보수 (실측)",
+      "value": 0.25,
+      "unit": "%",
+      "verdict": "confirmed",
+      "render": "assert",
+      "printed_on": [
+        "p5-matrix"
+      ],
+      "series": "네이버 수집 ETF 데이터셋",
+      "as_of": "2026-09-04",
+      "tier": 2,
+      "source_url": "repo:hanaroline/work_1@claude/etf-holdings-lookup-tool-wwtz57:data/etf-kr.js",
+      "note": "hanaroline/work_1 · claude/etf-holdings-lookup-tool-wwtz57 · data/etf-kr.js · 수집 2026-09-07 · 국내 상장 1167종 · 수익률 기준일 2026-09-04"
+    },
+    {
+      "id": "AUM_494300",
+      "kind": "product_size",
+      "metric": "ETF순자산",
+      "text": "KODEX 미국나스닥100데일리커버드콜OTM 순자산 (실측)",
+      "value": 9948,
+      "unit": "억원",
+      "verdict": "confirmed",
+      "render": "assert",
+      "printed_on": [
+        "p5-matrix"
+      ],
+      "series": "네이버 수집 ETF 데이터셋",
+      "as_of": "2026-09-04",
+      "tier": 2,
+      "source_url": "repo:hanaroline/work_1@claude/etf-holdings-lookup-tool-wwtz57:data/etf-kr.js",
+      "note": "hanaroline/work_1 · claude/etf-holdings-lookup-tool-wwtz57 · data/etf-kr.js · 수집 2026-09-07 · 국내 상장 1167종 · 수익률 기준일 2026-09-04"
+    },
+    {
+      "id": "TRY1_494300",
+      "kind": "product_return",
+      "metric": "ETF총수익",
+      "text": "KODEX 미국나스닥100데일리커버드콜OTM 총수익률 Y1 (실측, 분배금 재투자 기준)",
+      "value": 14.16,
+      "unit": "%",
+      "verdict": "confirmed",
+      "render": "assert",
+      "printed_on": [
+        "p5-matrix",
+        "p6-trap"
+      ],
+      "series": "네이버 수집 ETF 데이터셋",
+      "as_of": "2026-09-04",
+      "tier": 2,
+      "source_url": "repo:hanaroline/work_1@claude/etf-holdings-lookup-tool-wwtz57:data/etf-kr.js",
+      "note": "hanaroline/work_1 · claude/etf-holdings-lookup-tool-wwtz57 · data/etf-kr.js · 수집 2026-09-07 · 국내 상장 1167종 · 수익률 기준일 2026-09-04"
+    },
+    {
+      "id": "T_0008S0",
+      "kind": "product_identity",
+      "metric": "상품식별",
+      "text": "TIGER 미국배당다우존스타겟데일리커버드콜 종목코드",
+      "value": 11376,
+      "unit": "종목코드",
+      "verdict": "confirmed",
+      "render": "assert",
+      "printed_on": [
+        "p5-matrix"
+      ],
+      "series": "네이버 수집 ETF 데이터셋",
+      "as_of": "2026-09-04",
+      "tier": 2,
+      "source_url": "repo:hanaroline/work_1@claude/etf-holdings-lookup-tool-wwtz57:data/etf-kr.js",
+      "note": "hanaroline/work_1 · claude/etf-holdings-lookup-tool-wwtz57 · data/etf-kr.js · 수집 2026-09-07 · 국내 상장 1167종 · 수익률 기준일 2026-09-04"
+    },
+    {
+      "id": "DY_0008S0",
+      "kind": "product_yield",
+      "metric": "ETF분배율",
+      "text": "TIGER 미국배당다우존스타겟데일리커버드콜 분배율 (실측)",
+      "value": 11.75,
+      "unit": "%",
+      "verdict": "confirmed",
+      "render": "assert",
+      "printed_on": [
+        "p5-matrix"
+      ],
+      "series": "네이버 수집 ETF 데이터셋",
+      "as_of": "2026-09-04",
+      "tier": 2,
+      "source_url": "repo:hanaroline/work_1@claude/etf-holdings-lookup-tool-wwtz57:data/etf-kr.js",
+      "note": "hanaroline/work_1 · claude/etf-holdings-lookup-tool-wwtz57 · data/etf-kr.js · 수집 2026-09-07 · 국내 상장 1167종 · 수익률 기준일 2026-09-04"
+    },
+    {
+      "id": "TER_0008S0",
+      "kind": "product_fee",
+      "metric": "ETF보수",
+      "text": "TIGER 미국배당다우존스타겟데일리커버드콜 총보수 (실측)",
+      "value": 0.25,
+      "unit": "%",
+      "verdict": "confirmed",
+      "render": "assert",
+      "printed_on": [
+        "p5-matrix"
+      ],
+      "series": "네이버 수집 ETF 데이터셋",
+      "as_of": "2026-09-04",
+      "tier": 2,
+      "source_url": "repo:hanaroline/work_1@claude/etf-holdings-lookup-tool-wwtz57:data/etf-kr.js",
+      "note": "hanaroline/work_1 · claude/etf-holdings-lookup-tool-wwtz57 · data/etf-kr.js · 수집 2026-09-07 · 국내 상장 1167종 · 수익률 기준일 2026-09-04"
+    },
+    {
+      "id": "AUM_0008S0",
+      "kind": "product_size",
+      "metric": "ETF순자산",
+      "text": "TIGER 미국배당다우존스타겟데일리커버드콜 순자산 (실측)",
+      "value": 3013,
+      "unit": "억원",
+      "verdict": "confirmed",
+      "render": "assert",
+      "printed_on": [
+        "p5-matrix"
+      ],
+      "series": "네이버 수집 ETF 데이터셋",
+      "as_of": "2026-09-04",
+      "tier": 2,
+      "source_url": "repo:hanaroline/work_1@claude/etf-holdings-lookup-tool-wwtz57:data/etf-kr.js",
+      "note": "hanaroline/work_1 · claude/etf-holdings-lookup-tool-wwtz57 · data/etf-kr.js · 수집 2026-09-07 · 국내 상장 1167종 · 수익률 기준일 2026-09-04"
+    },
+    {
+      "id": "TRY1_0008S0",
+      "kind": "product_return",
+      "metric": "ETF총수익",
+      "text": "TIGER 미국배당다우존스타겟데일리커버드콜 총수익률 Y1 (실측, 분배금 재투자 기준)",
+      "value": 25.43,
+      "unit": "%",
+      "verdict": "confirmed",
+      "render": "assert",
+      "printed_on": [
+        "p5-matrix",
+        "p6-trap"
+      ],
+      "series": "네이버 수집 ETF 데이터셋",
+      "as_of": "2026-09-04",
+      "tier": 2,
+      "source_url": "repo:hanaroline/work_1@claude/etf-holdings-lookup-tool-wwtz57:data/etf-kr.js",
+      "note": "hanaroline/work_1 · claude/etf-holdings-lookup-tool-wwtz57 · data/etf-kr.js · 수집 2026-09-07 · 국내 상장 1167종 · 수익률 기준일 2026-09-04"
+    },
+    {
+      "id": "T_0043B0",
+      "kind": "product_identity",
+      "metric": "상품식별",
+      "text": "TIGER 머니마켓액티브 종목코드",
+      "value": 190908,
+      "unit": "종목코드",
+      "verdict": "confirmed",
+      "render": "assert",
+      "printed_on": [
+        "p5-matrix"
+      ],
+      "series": "네이버 수집 ETF 데이터셋",
+      "as_of": "2026-09-04",
+      "tier": 2,
+      "source_url": "repo:hanaroline/work_1@claude/etf-holdings-lookup-tool-wwtz57:data/etf-kr.js",
+      "note": "hanaroline/work_1 · claude/etf-holdings-lookup-tool-wwtz57 · data/etf-kr.js · 수집 2026-09-07 · 국내 상장 1167종 · 수익률 기준일 2026-09-04"
+    },
+    {
+      "id": "DY_0043B0",
+      "kind": "product_yield",
+      "metric": "ETF분배율",
+      "text": "TIGER 머니마켓액티브 분배율 (실측)",
+      "value": 0.7,
+      "unit": "%",
+      "verdict": "confirmed",
+      "render": "assert",
+      "printed_on": [
+        "p5-matrix"
+      ],
+      "series": "네이버 수집 ETF 데이터셋",
+      "as_of": "2026-09-04",
+      "tier": 2,
+      "source_url": "repo:hanaroline/work_1@claude/etf-holdings-lookup-tool-wwtz57:data/etf-kr.js",
+      "note": "hanaroline/work_1 · claude/etf-holdings-lookup-tool-wwtz57 · data/etf-kr.js · 수집 2026-09-07 · 국내 상장 1167종 · 수익률 기준일 2026-09-04"
+    },
+    {
+      "id": "TER_0043B0",
+      "kind": "product_fee",
+      "metric": "ETF보수",
+      "text": "TIGER 머니마켓액티브 총보수 (실측)",
+      "value": 0.04,
+      "unit": "%",
+      "verdict": "confirmed",
+      "render": "assert",
+      "printed_on": [
+        "p5-matrix"
+      ],
+      "series": "네이버 수집 ETF 데이터셋",
+      "as_of": "2026-09-04",
+      "tier": 2,
+      "source_url": "repo:hanaroline/work_1@claude/etf-holdings-lookup-tool-wwtz57:data/etf-kr.js",
+      "note": "hanaroline/work_1 · claude/etf-holdings-lookup-tool-wwtz57 · data/etf-kr.js · 수집 2026-09-07 · 국내 상장 1167종 · 수익률 기준일 2026-09-04"
+    },
+    {
+      "id": "AUM_0043B0",
+      "kind": "product_size",
+      "metric": "ETF순자산",
+      "text": "TIGER 머니마켓액티브 순자산 (실측)",
+      "value": 33037,
+      "unit": "억원",
+      "verdict": "confirmed",
+      "render": "assert",
+      "printed_on": [
+        "p5-matrix"
+      ],
+      "series": "네이버 수집 ETF 데이터셋",
+      "as_of": "2026-09-04",
+      "tier": 2,
+      "source_url": "repo:hanaroline/work_1@claude/etf-holdings-lookup-tool-wwtz57:data/etf-kr.js",
+      "note": "hanaroline/work_1 · claude/etf-holdings-lookup-tool-wwtz57 · data/etf-kr.js · 수집 2026-09-07 · 국내 상장 1167종 · 수익률 기준일 2026-09-04"
+    },
+    {
+      "id": "TRY1_0043B0",
+      "kind": "product_return",
+      "metric": "ETF총수익",
+      "text": "TIGER 머니마켓액티브 총수익률 Y1 (실측, 분배금 재투자 기준)",
+      "value": 3.13,
+      "unit": "%",
+      "verdict": "confirmed",
+      "render": "assert",
+      "printed_on": [
+        "p5-matrix",
+        "p6-trap"
+      ],
+      "series": "네이버 수집 ETF 데이터셋",
+      "as_of": "2026-09-04",
+      "tier": 2,
+      "source_url": "repo:hanaroline/work_1@claude/etf-holdings-lookup-tool-wwtz57:data/etf-kr.js",
+      "note": "hanaroline/work_1 · claude/etf-holdings-lookup-tool-wwtz57 · data/etf-kr.js · 수집 2026-09-07 · 국내 상장 1167종 · 수익률 기준일 2026-09-04"
+    },
+    {
+      "id": "T_0119H0",
+      "kind": "product_identity",
+      "metric": "상품식별",
+      "text": "KODEX 28-12 회사채(AA-이상)액티브 종목코드",
+      "value": 1738548,
+      "unit": "종목코드",
+      "verdict": "confirmed",
+      "render": "assert",
+      "printed_on": [
+        "p5-matrix"
+      ],
+      "series": "네이버 수집 ETF 데이터셋",
+      "as_of": "2026-09-04",
+      "tier": 2,
+      "source_url": "repo:hanaroline/work_1@claude/etf-holdings-lookup-tool-wwtz57:data/etf-kr.js",
+      "note": "hanaroline/work_1 · claude/etf-holdings-lookup-tool-wwtz57 · data/etf-kr.js · 수집 2026-09-07 · 국내 상장 1167종 · 수익률 기준일 2026-09-04"
+    },
+    {
+      "id": "DY_0119H0",
+      "kind": "product_yield",
+      "metric": "ETF분배율",
+      "text": "KODEX 28-12 회사채(AA-이상)액티브 분배율 (실측)",
+      "value": 0.49,
+      "unit": "%",
+      "verdict": "confirmed",
+      "render": "assert",
+      "printed_on": [
+        "p5-matrix"
+      ],
+      "series": "네이버 수집 ETF 데이터셋",
+      "as_of": "2026-09-04",
+      "tier": 2,
+      "source_url": "repo:hanaroline/work_1@claude/etf-holdings-lookup-tool-wwtz57:data/etf-kr.js",
+      "note": "hanaroline/work_1 · claude/etf-holdings-lookup-tool-wwtz57 · data/etf-kr.js · 수집 2026-09-07 · 국내 상장 1167종 · 수익률 기준일 2026-09-04"
+    },
+    {
+      "id": "TER_0119H0",
+      "kind": "product_fee",
+      "metric": "ETF보수",
+      "text": "KODEX 28-12 회사채(AA-이상)액티브 총보수 (실측)",
+      "value": 0.09,
+      "unit": "%",
+      "verdict": "confirmed",
+      "render": "assert",
+      "printed_on": [
+        "p5-matrix"
+      ],
+      "series": "네이버 수집 ETF 데이터셋",
+      "as_of": "2026-09-04",
+      "tier": 2,
+      "source_url": "repo:hanaroline/work_1@claude/etf-holdings-lookup-tool-wwtz57:data/etf-kr.js",
+      "note": "hanaroline/work_1 · claude/etf-holdings-lookup-tool-wwtz57 · data/etf-kr.js · 수집 2026-09-07 · 국내 상장 1167종 · 수익률 기준일 2026-09-04"
+    },
+    {
+      "id": "AUM_0119H0",
+      "kind": "product_size",
+      "metric": "ETF순자산",
+      "text": "KODEX 28-12 회사채(AA-이상)액티브 순자산 (실측)",
+      "value": 2707,
+      "unit": "억원",
+      "verdict": "confirmed",
+      "render": "assert",
+      "printed_on": [
+        "p5-matrix"
+      ],
+      "series": "네이버 수집 ETF 데이터셋",
+      "as_of": "2026-09-04",
+      "tier": 2,
+      "source_url": "repo:hanaroline/work_1@claude/etf-holdings-lookup-tool-wwtz57:data/etf-kr.js",
+      "note": "hanaroline/work_1 · claude/etf-holdings-lookup-tool-wwtz57 · data/etf-kr.js · 수집 2026-09-07 · 국내 상장 1167종 · 수익률 기준일 2026-09-04"
+    },
+    {
+      "id": "LOOKTHRU",
+      "kind": "access_blocked",
+      "metric": "룩스루확인필요",
+      "text": "포트폴리오 실질 주식 익스포저(룩스루) 비중",
+      "value": 0,
+      "unit": "n/a",
+      "series": "네이버 수집 ETF 데이터셋",
+      "as_of": "2026-09-04",
+      "tier": 2,
+      "source_url": "repo:hanaroline/work_1@claude/etf-holdings-lookup-tool-wwtz57:data/etf-kr.js",
+      "verdict": "unverified",
+      "render": "omit",
+      "note": "데이터셋의 assets 필드는 기초 ETF·리츠를 EQUITY 로 분류한다. 미국30년국채 커버드콜(476550)이 EQUITY 80.15% 로 잡히는 등 경제적 익스포저와 어긋나므로 룩스루 주식비중을 수치로 인쇄하지 않고, 직접 주식 보유분과 순수 채권·현금성 비중만 표기했다",
+      "printed_on": []
     },
     {
       "id": "REG_SAFE30",
@@ -652,38 +2533,17 @@
       "as_of": "2026-09-07",
       "tier": 2,
       "source_url": "https://securities.miraeasset.com/public/hks4412/011/DCIRP202412.pdf",
+      "verdict": "confirmed",
+      "render": "assert",
+      "printed_on": [
+        "p4-gap",
+        "p5-matrix"
+      ],
       "corroborating_urls": [
         "https://www.sedaily.com/article/14173945",
         "https://marketin.edaily.co.kr/News/ReadE?newsId=03712966642298152"
       ],
-      "verdict": "confirmed",
-      "render": "assert",
-      "note": "금융당국이 한도 폐지를 추진 중이나 고용노동부 이견으로 2026-09-07 기준 시행 확정된 폐지안은 확인되지 않음",
-      "printed_on": [
-        "p5-track-a"
-      ]
-    },
-    {
-      "id": "REG_SAFE_ETF",
-      "kind": "regulation",
-      "metric": "세제규정_비율",
-      "text": "주식 편입 한도 50% 미만 ETF는 퇴직연금 비위험자산(안전자산)으로 분류",
-      "value": 50.0,
-      "unit": "%",
-      "series": "2026년 시행 기준",
-      "as_of": "2026-09-07",
-      "tier": 2,
-      "source_url": "https://brunch.co.kr/@00b68069c88e4c0/94",
-      "corroborating_urls": [
-        "https://money-info.kr/32",
-        "https://marketin.edaily.co.kr/News/ReadE?newsId=02502646642398848"
-      ],
-      "verdict": "unverified",
-      "render": "marked",
-      "note": "세부 분류는 금융기관 내부기준에 따라 달라질 수 있음 — 상품 선정 전 해당 증권사 위험자산 분류 확인 필요. 슬라이드에 '실행 시 확정'으로 표기",
-      "printed_on": [
-        "p5-track-a"
-      ]
+      "note": "금융당국이 한도 폐지를 추진 중이나 2026-09-07 기준 시행 확정된 폐지안은 확인되지 않음"
     },
     {
       "id": "REG_PENSION1500",
@@ -696,16 +2556,15 @@
       "as_of": "2026-09-07",
       "tier": 2,
       "source_url": "https://www.nts.go.kr/nts/cm/cntnts/cntntsView.do?mi=6608&cntntsId=7888",
-      "corroborating_urls": [
-        "https://brunch.co.kr/@noderesearch/39",
-        "https://www.easyzetec.com/blog/pension-account-income-tax-1500man-separate-taxation-2026"
-      ],
       "verdict": "confirmed",
       "render": "assert",
-      "note": "이연퇴직소득(DC 퇴직급여 원본)에서 발생하는 연금소득은 이 한도와 무관하게 분리과세",
       "printed_on": [
         "p6-tax"
-      ]
+      ],
+      "corroborating_urls": [
+        "https://brunch.co.kr/@noderesearch/39"
+      ],
+      "note": "이연퇴직소득(DC 퇴직급여 원본)에서 발생하는 연금소득은 이 한도와 무관하게 분리과세"
     },
     {
       "id": "REG_SEVERANCE",
@@ -718,16 +2577,15 @@
       "as_of": "2026-09-07",
       "tier": 2,
       "source_url": "https://www.nts.go.kr/nts/cm/cntnts/cntntsView.do?mi=6602&cntntsId=7882",
-      "corroborating_urls": [
-        "https://www.pwc.com/kr/ko/insights/issue-brief/one-point-tax-01.html",
-        "https://kbthink.com/retirement-pension/tax.html"
-      ],
       "verdict": "confirmed",
       "render": "assert",
-      "note": "11년차 이후는 60% 적용 — 일시금 대비 약 30~40% 절감",
       "printed_on": [
         "p6-tax"
-      ]
+      ],
+      "corroborating_urls": [
+        "https://www.pwc.com/kr/ko/insights/issue-brief/one-point-tax-01.html"
+      ],
+      "note": "11년차 이후는 60% 적용 — 일시금 대비 약 30~40% 절감"
     },
     {
       "id": "REG_SEVERANCE11",
@@ -740,13 +2598,13 @@
       "as_of": "2026-09-07",
       "tier": 2,
       "source_url": "https://www.nts.go.kr/nts/cm/cntnts/cntntsView.do?mi=6602&cntntsId=7882",
-      "corroborating_urls": [
-        "https://www.pwc.com/kr/ko/insights/issue-brief/one-point-tax-01.html"
-      ],
       "verdict": "confirmed",
       "render": "assert",
       "printed_on": [
         "p6-tax"
+      ],
+      "corroborating_urls": [
+        "https://kbthink.com/retirement-pension/tax.html"
       ]
     },
     {
@@ -760,16 +2618,15 @@
       "as_of": "2026-09-07",
       "tier": 2,
       "source_url": "https://www.pwc.com/kr/ko/insights/issue-brief/one-point-tax-11.html",
-      "corroborating_urls": [
-        "https://hometax-go.kr/financial-income-tax-threshold/",
-        "https://www.dividend-nomad.com/2026/03/2000-2026.html"
-      ],
       "verdict": "confirmed",
       "render": "assert",
-      "note": "2026년부터 고배당기업 배당소득 분리과세 특례가 별도 신설되었으나 ETF 분배금 적용 여부는 미확인 — 제안서에서 언급하지 않음",
       "printed_on": [
         "p6-tax"
-      ]
+      ],
+      "corroborating_urls": [
+        "https://hometax-go.kr/financial-income-tax-threshold/"
+      ],
+      "note": "2026년부터 고배당기업 배당소득 분리과세 특례가 신설되었으나 ETF 분배금 적용 여부는 미확인 — 제안서에서 언급하지 않음"
     },
     {
       "id": "REG_ISA",
@@ -784,10 +2641,10 @@
       "source_url": "https://www.pwc.com/kr/ko/insights/issue-brief/one-point-tax-11.html",
       "verdict": "unverified",
       "render": "marked",
-      "note": "2026년 ISA 한도 개정 여부를 1차 출처에서 확인하지 못함 — 실행 전 확인 필요 항목으로 표기",
       "printed_on": [
         "p6-tax"
-      ]
+      ],
+      "note": "2026년 ISA 한도 개정 여부를 1차 출처에서 확인하지 못함 — 실행 전 확인 필요"
     },
     {
       "id": "REG_DCRULE2026",
@@ -800,19 +2657,19 @@
       "as_of": "2026-09-07",
       "tier": 2,
       "source_url": "https://www.fsc.go.kr/po010101/73294",
+      "verdict": "unverified",
+      "render": "marked",
+      "printed_on": [
+        "p6-checklist"
+      ],
       "corroborating_urls": [
         "https://www.hankyung.com/article/202609033126i"
       ],
-      "verdict": "unverified",
-      "render": "marked",
-      "note": "금융위 보도자료·기사 본문 모두 egress 차단으로 확인 실패. 개정 사실은 검색 결과로 확인되나 시행일과 대상 상품 범위 미확인 — '확인 필요'로 표기하고 단정하지 않음",
-      "printed_on": [
-        "p6-checklist"
-      ]
+      "note": "금융위 보도자료·기사 본문 모두 egress 차단으로 확인 실패. 시행일과 대상 상품 범위 미확인 — 단정하지 않고 확인 필요로 표기"
     },
     {
       "id": "REG_HI_PENSION",
-      "kind": "regulation",
+      "kind": "access_blocked",
       "metric": "세제규정_확인필요",
       "text": "사적연금(IRP·연금저축) 인출액의 건강보험료 부과 여부",
       "value": 0,
@@ -823,8 +2680,26 @@
       "source_url": "unverified:1차 출처(국민건강보험공단) 확인 실패",
       "verdict": "unverified",
       "render": "omit",
-      "note": "'사적연금은 건보료 부과대상이 아니다'는 통설이나 국민건강보험공단 1차 자료를 확인하지 못했다. 부정 단정으로 쓸 수 없어 제안서에서 제외하고, 대신 '건보료 영향 사전 점검'을 실행 항목으로만 기재",
+      "note": "'사적연금은 건보료 부과대상이 아니다'는 통설이나 공단 1차 자료를 확인하지 못했다. 부정 단정으로 쓸 수 없어 제안서에서 제외하고 '건보료 영향 사전 점검'만 실행 항목으로 기재",
       "printed_on": []
+    },
+    {
+      "id": "MATURITY2031",
+      "kind": "access_blocked",
+      "metric": "룩스루확인필요",
+      "text": "2031년 만기 만기매칭형 채권 ETF의 국내 상장 여부",
+      "value": 0,
+      "unit": "n/a",
+      "series": "네이버 수집 ETF 데이터셋",
+      "as_of": "2026-09-04",
+      "tier": 2,
+      "source_url": "repo:hanaroline/work_1@claude/etf-holdings-lookup-tool-wwtz57:data/etf-kr.js",
+      "verdict": "unverified",
+      "render": "marked",
+      "note": "2026-09-07 수집 국내 상장 ETF 1167종에서는 만기 2028-12 가 최장으로, 2031년 만기 상품이 확인되지 않았다. 데이터셋 미수록 가능성이 있어 '확인되지 않음'으로 표기하고 '존재하지 않는다'로 단정하지 않는다",
+      "printed_on": [
+        "p3-footnote"
+      ]
     }
   ],
   "derived": [
@@ -839,8 +2714,7 @@
         "A_EQUITY"
       ],
       "printed": 15.38,
-      "tolerance": 0.005,
-      "_설명": "p2 본인 자산 소계"
+      "tolerance": 0.005
     },
     {
       "id": "S_TOTAL",
@@ -854,8 +2728,7 @@
         "A_SPOUSE"
       ],
       "printed": 19.38,
-      "tolerance": 0.005,
-      "_설명": "p1·p2 가구 총자산"
+      "tolerance": 0.005
     },
     {
       "id": "S_REALLOC",
@@ -867,8 +2740,7 @@
         "A_SPOUSE"
       ],
       "printed": 13.28,
-      "tolerance": 0.005,
-      "_설명": "p2 즉시 재배치 가능 자산 (예금·주식 제외)"
+      "tolerance": 0.005
     },
     {
       "id": "S_LOCKED",
@@ -878,8 +2750,7 @@
         "A_EQUITY"
       ],
       "printed": 6.1,
-      "tolerance": 0.005,
-      "_설명": "p2 고정 자산 (만기 대기 + 유지)"
+      "tolerance": 0.005
     },
     {
       "id": "S_TRACK_A",
@@ -889,8 +2760,7 @@
         "A_IRP"
       ],
       "printed": 7.28,
-      "tolerance": 0.005,
-      "_설명": "p5 트랙A 연금자산 합계 (DC 이전 후)"
+      "tolerance": 0.005
     },
     {
       "id": "S_NEED_BASE",
@@ -900,8 +2770,7 @@
         "E_PARENTS"
       ],
       "printed": 750.0,
-      "tolerance": 0.5,
-      "_설명": "p2·p6 월 필요자금 기준값"
+      "tolerance": 0.5
     },
     {
       "id": "S_NEED_LOW",
@@ -931,8 +2800,7 @@
         "P_NPS"
       ],
       "printed": 530.0,
-      "tolerance": 0.5,
-      "_설명": "p6 2034년 이후 부부 합산 연금소득"
+      "tolerance": 0.5
     },
     {
       "id": "P_TARGET_INCOME",
@@ -940,9 +2808,7 @@
       "a": 19.38,
       "b": 0.07,
       "printed": 1.3566,
-      "tolerance": 0.0005,
-      "_설명": "p2 목표 연간 수익금액 = 19.38억 x 7%",
-      "_참조": "연쇄 파생 — 상위 파생값을 리터럴로 고정 (검산기는 claim 만 참조 가능)"
+      "tolerance": 0.0005
     },
     {
       "id": "P_DEPOSIT_INCOME",
@@ -950,8 +2816,7 @@
       "a": "A_DEPOSIT",
       "b": 0.05,
       "printed": 0.185,
-      "tolerance": 0.0005,
-      "_설명": "p4 은행예금 연간 기여 수익"
+      "tolerance": 0.0005
     },
     {
       "id": "P_EQUITY_INCOME",
@@ -959,18 +2824,15 @@
       "a": "A_EQUITY",
       "b": 0.08,
       "printed": 0.192,
-      "tolerance": 0.0005,
-      "_설명": "p4 보유주식 연간 기여 수익 (가정)"
+      "tolerance": 0.0005
     },
     {
       "id": "P_NEW_INCOME",
       "kind": "product",
       "a": 13.28,
-      "b": 0.0739,
-      "printed": 0.9814,
-      "tolerance": 0.001,
-      "_설명": "p4 신규 운용자산 연간 기여 수익",
-      "_참조": "연쇄 파생 — 상위 파생값을 리터럴로 고정 (검산기는 claim 만 참조 가능)"
+      "b": 0.071077,
+      "printed": 0.9439,
+      "tolerance": 0.001
     },
     {
       "id": "S_PORT_INCOME",
@@ -978,22 +2840,18 @@
       "terms": [
         0.185,
         0.192,
-        0.9814
+        0.9439
       ],
-      "printed": 1.3584,
-      "tolerance": 0.001,
-      "_설명": "p4 전체 포트폴리오 연간 기대수익 합계",
-      "_참조": "연쇄 파생 — 상위 파생값을 리터럴로 고정 (검산기는 claim 만 참조 가능)"
+      "printed": 1.3209,
+      "tolerance": 0.001
     },
     {
       "id": "RT_PORT_RATE",
       "kind": "ratio",
-      "numerator": 1.3584,
+      "numerator": 1.3209,
       "denominator": 19.38,
-      "printed": 0.0701,
-      "tolerance": 0.0002,
-      "_설명": "p4 전체 기대수익률 7.01% — 목표 7.00% 충족 여부의 근거",
-      "_참조": "연쇄 파생 — 상위 파생값을 리터럴로 고정 (검산기는 claim 만 참조 가능)"
+      "printed": 0.0682,
+      "tolerance": 0.0002
     },
     {
       "id": "RT_REQUIRED",
@@ -1001,21 +2859,18 @@
       "numerator": 0.9796,
       "denominator": 13.28,
       "printed": 0.0738,
-      "tolerance": 0.0002,
-      "_설명": "p2 신규 운용자산 요구수익률 7.38% = (1.3566-0.185-0.192)/13.28",
-      "_참조": "연쇄 파생 — 상위 파생값을 리터럴로 고정 (검산기는 claim 만 참조 가능)"
+      "tolerance": 0.0002
     },
     {
       "id": "S_SAFE_ASSET",
       "kind": "sum",
       "terms": [
-        1.0,
         0.8,
-        0.4
+        0.8,
+        0.6
       ],
       "printed": 2.2,
-      "tolerance": 0.005,
-      "_설명": "p5 트랙A 안전자산 합계 (종합채권 1.00 + 채권혼합커버드콜 0.80 + 원리금보장 0.40)"
+      "tolerance": 0.005
     },
     {
       "id": "RT_SAFE_PCT",
@@ -1023,9 +2878,7 @@
       "numerator": 2.2,
       "denominator": 7.28,
       "printed": 0.3022,
-      "tolerance": 0.0005,
-      "_설명": "p5 안전자산 비중 30.2% — 규정 30% 충족 검증",
-      "_참조": "연쇄 파생 — 상위 파생값을 리터럴로 고정 (검산기는 claim 만 참조 가능)"
+      "tolerance": 0.0005
     },
     {
       "id": "RT_EQUITY_PCT",
@@ -1033,28 +2886,23 @@
       "numerator": "A_EQUITY",
       "denominator": 19.38,
       "printed": 0.1238,
-      "tolerance": 0.0005,
-      "_설명": "p4 직접 주식 비중 12.4% (기존 보유분만, 신규 편입 0)",
-      "_참조": "연쇄 파생 — 상위 파생값을 리터럴로 고정 (검산기는 claim 만 참조 가능)"
+      "tolerance": 0.0005
     },
     {
       "id": "P_DC_COST_YR",
       "kind": "product",
       "a": "A_DC",
-      "b": 0.0475,
-      "printed": 0.304,
-      "tolerance": 0.001,
-      "_설명": "p2 DC 현금성 방치 연간 기회비용 = 6.40억 x (7.25%-2.50%)"
+      "b": 0.039739,
+      "printed": 0.2543,
+      "tolerance": 0.001
     },
     {
       "id": "P_DC_COST_TOTAL",
       "kind": "product",
-      "a": 0.304,
+      "a": 0.2543,
       "b": 2.8333,
-      "printed": 0.8613,
-      "tolerance": 0.002,
-      "_설명": "p2 은퇴까지 34개월(2.83년) 누적 기회비용 약 8,600만원",
-      "_참조": "연쇄 파생 — 상위 파생값을 리터럴로 고정 (검산기는 claim 만 참조 가능)"
+      "printed": 0.7206,
+      "tolerance": 0.002
     },
     {
       "id": "P_DEP_INTEREST_GROSS",
@@ -1062,52 +2910,101 @@
       "a": "A_DEPOSIT",
       "b": 0.25,
       "printed": 0.925,
-      "tolerance": 0.001,
-      "_설명": "p3 예금 5년 세전 이자 (연 5% x 5년, 단리 가정)"
+      "tolerance": 0.001
     },
     {
       "id": "P_DEP_INTEREST_NET",
       "kind": "product",
       "a": 0.925,
       "b": 0.846,
-      "printed": 0.7826,
-      "tolerance": 0.001,
-      "_설명": "p3 이자소득세 15.4% 차감 후 이자",
-      "_참조": "연쇄 파생 — 상위 파생값을 리터럴로 고정 (검산기는 claim 만 참조 가능)"
+      "printed": 0.7825,
+      "tolerance": 0.001
     },
     {
       "id": "S_DEP_MATURITY",
       "kind": "sum",
       "terms": [
         "A_DEPOSIT",
-        0.7826
+        0.7825
       ],
-      "printed": 4.4826,
-      "tolerance": 0.002,
-      "_설명": "p3 2031년 예금 만기 세후 원리금",
-      "_참조": "연쇄 파생 — 상위 파생값을 리터럴로 고정 (검산기는 claim 만 참조 가능)"
+      "printed": 4.4825,
+      "tolerance": 0.002
     },
     {
       "id": "S_DEP_REINVEST",
       "kind": "sum",
       "terms": [
-        4.4826,
+        4.4825,
         -3.0
       ],
-      "printed": 1.4826,
-      "tolerance": 0.002,
-      "_설명": "p3 결혼자금 3억 지출 후 인컴 재투자 재원",
-      "_참조": "연쇄 파생 — 상위 파생값을 리터럴로 고정 (검산기는 claim 만 참조 가능)"
+      "printed": 1.4825,
+      "tolerance": 0.002
+    },
+    {
+      "id": "RT_P3_RATE",
+      "kind": "ratio",
+      "numerator": 1.2413,
+      "denominator": 17.16,
+      "printed": 0.0723,
+      "tolerance": 0.0002,
+      "_설명": "예금 만기 후 전체 기대수익률 — 목표 7% 초과 시점의 근거"
+    },
+    {
+      "id": "S_P1_INFLOW",
+      "kind": "sum",
+      "terms": [
+        "P_SPOUSE",
+        474.0
+      ],
+      "printed": 754.0,
+      "tolerance": 1.0
+    },
+    {
+      "id": "S_P3_INFLOW",
+      "kind": "sum",
+      "terms": [
+        "P_SPOUSE",
+        577.0
+      ],
+      "printed": 857.0,
+      "tolerance": 1.0
+    },
+    {
+      "id": "S_P4_INFLOW",
+      "kind": "sum",
+      "terms": [
+        "P_SPOUSE",
+        "P_NPS",
+        577.0
+      ],
+      "printed": 1107.0,
+      "tolerance": 1.0
+    },
+    {
+      "id": "S_COUPLE_FIN",
+      "kind": "sum",
+      "terms": [
+        2375.0,
+        3318.0
+      ],
+      "printed": 5693.0,
+      "tolerance": 1.0,
+      "_설명": "부부 합산 일반계좌 과세대상 금융소득"
     }
   ],
-  "_unit_policy": "metric 별 기대 단위. 금액과 월현금흐름, 수익률이 섞이는 사고를 막는다.",
+  "_unit_policy": "metric 별 기대 단위.",
   "unit_policy": {
     "가구자산": "억원",
     "월현금흐름": "만원/월",
     "기대수익률": "%",
     "상품식별": "종목코드",
     "ETF분배율": "%",
+    "ETF총수익": "%",
+    "ETF보수": "%",
+    "ETF순자산": "억원",
     "세제규정_비율": "%",
-    "세제규정_금액": "만원"
+    "세제규정_금액": "만원",
+    "세제규정_확인필요": "n/a",
+    "룩스루확인필요": "n/a"
   }
 }
