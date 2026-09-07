@@ -19,6 +19,14 @@ const args = process.argv.slice(2);
 const argOf = (k, d) => { const i = args.indexOf(k); return i >= 0 ? args[i + 1] : d; };
 const LIMIT = Number(argOf('--limit', 40)) || 40;
 const EVERY = Number(argOf('--every', 79)) || 79;
+/**
+ * --codes 표준코드,표준코드 : 표본을 고르지 말고 이 종목만 본다.
+ *
+ * 창구에서 「이 펀드에서 이 항목이 확인필요로 뜬다」 고 짚어 줄 때가 있다. 그때
+ * 표본을 79건마다 뽑아 보면 그 종목이 표본에 안 들어와 아무것도 알 수 없다.
+ * 짚어 준 종목을 그대로 봐야 규칙이 못 잡은 것인지 원문에 없는 것인지 가려진다.
+ */
+const CODES = String(argOf('--codes', '')).split(/[,\s]+/).filter(Boolean);
 /* 못 읽었을 때 원문 줄을 찍어 볼 항목 */
 /* 'none' 이면 성공률만 낸다 — 표가 로그 끝에 오므로 한눈에 보인다 */
 const SHOW = String(argOf('--show', 'clsAExp,clsA,varPct,strategy'))
@@ -99,8 +107,18 @@ const C = cg.FUND_CATALOG;
 const P = C.pool || [];
 const un = (v) => (typeof v === 'number' ? P[v] : v);
 const withDoc = C.items.filter((x) => x.docT || x.docG);
-const slice = withDoc.filter((x, n) => n % EVERY === 0).slice(0, LIMIT);
-console.log(`표본 ${slice.length}건 (전체 ${withDoc.length}건에서 ${EVERY}건마다 1건)\n`);
+let slice;
+if (CODES.length) {
+  slice = CODES.map((c) => withDoc.find((x) => x.code === c)).filter(Boolean);
+  const missing = CODES.filter((c) => !withDoc.some((x) => x.code === c));
+  console.log(`지목한 ${CODES.length}건 중 ${slice.length}건을 봅니다`);
+  if (missing.length) console.log(`  카탈로그에 설명서가 없는 코드: ${missing.join(', ')}`);
+  slice.forEach((x) => console.log(`  ${x.code} ${un(x.name)} · 등급 ${x.riskGrade} · ${un(x.region)} · 게시 ${x.docAt}`));
+  console.log('');
+} else {
+  slice = withDoc.filter((x, n) => n % EVERY === 0).slice(0, LIMIT);
+  console.log(`표본 ${slice.length}건 (전체 ${withDoc.length}건에서 ${EVERY}건마다 1건)\n`);
+}
 
 const cnt = {}, seen = [];
 for (const it of slice) {
