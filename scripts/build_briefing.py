@@ -308,7 +308,9 @@ def sec_today(C):
              "2년 " + bp(ru["change_bp"]["ust2y"]) + " &middot; 30년 " + bp(ru["change_bp"]["ust30y"]),
              "2y " + bp(ru["change_bp"]["ust2y"]) + ", 30y " + bp(ru["change_bp"]["ust30y"])),
         stat("원/달러", "USD/KRW", n(C["usdkrw"]["close"], 2), pct(C["usdkrw"]["change_pct"]),
-             "달러인덱스 " + pct(I["dxy"]["change_pct"]),
+             # 달러인덱스는 미국 장중에만 갱신된다. 전체 판은 환율표 주석이
+             # 그 사실을 달지만 핵심본에는 그 표가 없어, 카드에 한 마디 붙인다.
+             "달러인덱스 " + pct(I["dxy"]["change_pct"]) + " <span class=\"mut\">(미 장중 기준)</span>",
              "Dollar index " + pct(I["dxy"]["change_pct"])),
     ]
 
@@ -320,8 +322,12 @@ def sec_today(C):
 
     grid = "stat-grid six"
     return ('<div class="' + grid + '">\n' + "\n".join(cards) + '\n</div>\n'
-            + callout("오늘 09시 개장에 들고 갈 것",
-                      "What to carry into the 09:00 open", paras))
+            # 장마감 판에 「09시 개장에 들고 갈 것」은 맞지 않는다.
+            + callout("오늘 마감에서 들고 갈 것" if C["kind"] == "close"
+                      else "오늘 09시 개장에 들고 갈 것",
+                      "What to carry from today&rsquo;s close" if C["kind"] == "close"
+                      else "What to carry into the 09:00 open",
+                      paras))
 
 
 def sec_korea(C):
