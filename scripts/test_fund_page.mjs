@@ -229,12 +229,27 @@ await page.waitForTimeout(100);
 // 보유종목이 있는 펀드만 담아야 겹침이 계산된다.
 await page.locator('#f-hold').check();
 await page.waitForTimeout(150);
-const pickable = await page.locator('#list-body button[data-pick]').count();
+// 담는 자리는 이제 그림글자 단추가 아니라 진짜 체크상자다. 셀렉터도 같이
+// 옮긴다 — 옛 셀렉터를 두면 0개가 잡히고, 0개는 통과처럼 보인다.
+const pickable = await page.locator('#list-body input[data-pick]').count();
+check('담는 칸이 체크상자다', pickable > 0, `${pickable}개`);
+// 앞선 검사에서 열어 둔 상세가 남아 있을 수 있다. 여기서 보려는 것은
+// "담는 칸을 눌렀을 때 상세가 **바뀌는가**" 이므로 누르기 전 모습을 잡아 둔다.
+const detailBeforePick = ((await page.locator('#detail').innerHTML()) || '').trim();
 const toPick = Math.min(4, pickable);
 for (let i = 0; i < toPick; i += 1) {
-  await page.locator('#list-body button[data-pick]').nth(i).click();
+  await page.locator('#list-body input[data-pick]').nth(i).click();
   await page.waitForTimeout(60);
 }
+// 담는 칸을 눌러 상세가 열리면 안 된다. 고르려다 다른 것이 열리는 어긋남이
+// "체크를 해야 하는 건지 헷갈린다" 는 말의 실체였다.
+const detailAfterPick = ((await page.locator('#detail').innerHTML()) || '').trim();
+const pickedRows = await page.locator('#list-body tr.picked').count();
+check('담는 칸을 눌러도 상세가 안 바뀐다',
+  detailAfterPick === detailBeforePick && pickedRows === toPick,
+  `상세 ${detailAfterPick === detailBeforePick ? '그대로' : '바뀜'} · 담김 ${pickedRows}/${toPick}줄`);
+const pickBarTxt = (await page.locator('#pick-bar').textContent()) || '';
+check('표 위 띠가 담은 수를 말한다', pickBarTxt.indexOf(String(toPick)) >= 0, pickBarTxt.trim().slice(0, 50));
 await page.locator('.tabs button[data-tab="compare"]').click();
 await page.waitForTimeout(200);
 const overlapCells = await page.locator('#compare-body .overlap-cell, #compare-body td.unw').count();

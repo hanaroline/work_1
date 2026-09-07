@@ -324,8 +324,17 @@ md.push('', '## 중복도', '',
 for (const o of out.overlap.slice(0, 12)) {
   md.push(`| ${o.a} | ${o.b} | ${o.shown} | ${o.recomputed ?? '–'} | ${o.ok ? '○' : '✗'} |`);
 }
-md.push('', '## 역조회', '', '| 종목 | 화면 | 재계산 | |', '|---|---:|---:|:-:|');
-for (const r of out.reverse) md.push(`| ${r.q} | ${r.shown} | ${r.recomputed} | ${r.ok ? '○' : '✗'} |`);
+// 견줌은 표시한도 200 을 감안해서 했는데(wantShown), 표에는 한도를 걷어낸
+// 수만 적혀 있었다. 그래서 "화면 200 vs 재계산 1105 ○" 처럼 **읽는 사람에게는
+// 모순으로 보이는 줄**이 남았다. 판정이 맞아도 근거가 그렇게 보이면 안 된다.
+// 견준 값과 실제 개수를 갈라 적는다.
+md.push('', '## 역조회', '',
+  '화면은 200줄까지만 그립니다. 그래서 견줄 때도 재계산값에 같은 한도를 씌웠습니다',
+  '(아래 **견줌** 열). **전체**는 한도를 걷어낸 실제 개수입니다.', '',
+  '| 종목 | 화면 | 견줌(한도 200) | 전체 | |', '|---|---:|---:|---:|:-:|');
+for (const r of out.reverse) {
+  md.push(`| ${r.q} | ${r.shown} | ${r.cappedTo} | ${r.recomputed} | ${r.ok ? '○' : '✗'} |`);
+}
 if (errs.length) {
   md.push('', '## 오류', '', '| 규칙 | 내용 |', '|---|---|');
   for (const f of errs.slice(0, 100)) md.push(`| ${f.rule} | ${String(f.detail).replace(/\|/g, '\\|')} |`);

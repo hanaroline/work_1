@@ -177,6 +177,44 @@ td.num,th.num{text-align:right; font-family:var(--font-num); font-variant-numeri
 .neg{color:var(--blue-soft);}
 .dim{color:var(--muted-soft);}
 
+/* ---------- 비교에 담는 칸 ---------- */
+/* 이 칸은 "눌러서 상세를 여는 줄" 안에서 **혼자 다른 일을 하는 칸**이다.
+   여기에 ⊕ 하나만 놓아 두면 세 가지가 안 보인다 — 그것이 고르는 표시라는
+   것, 애초에 눌러야 하는 것인지, 누르면 무엇이 되는지. 실제로 헷갈린다는
+   말을 들었다.
+   그래서 그림글자를 흉내 내지 않고 **진짜 체크상자**를 쓴다. 브라우저가
+   그리는 체크상자는 설명이 필요 없다 — 누구나 이미 안다. 크기는 22px 로
+   키우고, 누를 수 있는 자리는 **칸 전체**로 넓혀 손가락으로도 빗나가지
+   않게 한다.
+   높이를 44px 로 못 박아 봤다가 죽은 자리를 만들었다 — 이름이 두 줄인 줄은
+   72px 이라 아래 28px 이 아무 데도 안 걸렸다. 눌러도 아무 일이 없는 자리는
+   "눌러야 하는 건지 모르겠다" 를 정확히 되풀이한다. 그래서 칸에 딱 맞춰
+   깔고(inset:0), 44px 은 상한이 아니라 **하한**으로만 둔다. */
+th.pick-head{text-align:center; padding-left:6px; padding-right:6px; width:66px;}
+th.pick-head .th-sub{display:block; font-size:11px; font-weight:400; opacity:.8;}
+td.pick-cell{padding:0; width:66px; text-align:center; position:relative; min-height:44px;}
+.pick{
+  position:absolute; inset:0;
+  display:flex; align-items:center; justify-content:center;
+  min-height:44px; margin:0; cursor:pointer;
+}
+.pick input{width:22px; height:22px; margin:0; cursor:pointer; accent-color:var(--orange);}
+.pick:hover input:not(:disabled){outline:2px solid var(--orange-soft); outline-offset:2px;}
+.pick input:focus-visible{outline:2px solid var(--orange); outline-offset:2px;}
+/* 다 찼을 때. 아무 일도 안 일어나는 단추를 그대로 두면 고장으로 읽힌다.
+   흐리게 만들어 "지금은 못 담는다" 를 눈으로 먼저 알리고, 까닭은 칸에
+   손을 얹으면 뜨는 설명과 표 위의 띠가 말한다. */
+.pick input:disabled{cursor:not-allowed; opacity:.3;}
+/* 담긴 줄은 왼쪽에 주황 띠로 표시한다. 줄 배경을 칠하면 이미 쓰고 있는
+   '선택된 줄'·'검색어가 걸린 줄' 과 섞여 셋 다 무슨 뜻인지 없어진다. */
+tbody tr.picked td.pick-cell{box-shadow:inset 4px 0 0 var(--orange);}
+/* 표 바로 위에서 이 칸이 무엇인지 말하는 띠 */
+.pick-bar{margin:0 0 8px; padding:9px 12px; border:1px solid var(--hairline-soft);
+  border-left:3px solid var(--orange-soft); background:var(--surface-subtle);}
+.pick-bar.on{border-left-color:var(--orange); background:#FFF7EF;}
+.pick-bar .box{display:inline-block; width:13px; height:13px; border:2px solid var(--muted);
+  border-radius:3px; vertical-align:-2px; margin:0 1px;}
+
 /* ---------- 배지 ---------- */
 .badge{
   display:inline-block; font-size:12px; font-weight:600; letter-spacing:.3px;
@@ -405,6 +443,10 @@ footer .disc + .disc{margin-top:12px;}
 
     <div id="scope-note"></div>
 
+    <!-- 표 왼쪽 첫 칸이 무엇인지 말하는 자리. 늘 보인다 — 아무것도 안 담은
+         사람에게야말로 "저 칸은 뭐지" 라는 질문이 생기기 때문이다. -->
+    <div class="pick-bar" id="pick-bar"></div>
+
     <div class="table-wrap">
       <table id="list-table">
         <thead><tr id="list-head"></tr></thead>
@@ -425,8 +467,8 @@ footer .disc + .disc{margin-top:12px;}
     <div class="section-rule"></div>
     <div class="section-eyebrow" data-ko="비교" data-en="Compare">비교</div>
     <h2 class="section-title" data-ko="같이 담으면 얼마나 겹치나" data-en="How much do they overlap?">같이 담으면 얼마나 겹치나</h2>
-    <p class="section-lead" data-ko="펀드 찾기에서 ⊕ 를 눌러 최대 8개까지 담습니다. 펀드는 ETF 와 달리 원천이 보유종목 전체를 주므로, 겹침 비율은 하한이 아니라 실제 포트폴리오 중복에 가깝습니다. 다만 채권형·MMF 처럼 보유종목이 오지 않는 유형은 비교할 수 없습니다."
-       data-en="Add up to eight funds. Unlike ETFs, the source gives full holdings, so overlap here is close to true portfolio overlap rather than a lower bound. Bond funds and MMFs publish no holdings and cannot be compared.">펀드 찾기에서 ⊕ 를 눌러 최대 8개까지 담습니다.</p>
+    <p class="section-lead" data-ko="펀드 찾기 탭에서 줄 맨 왼쪽 체크상자에 표시해 최대 8개까지 담습니다. 펀드는 ETF 와 달리 원천이 보유종목 전체를 주므로, 겹침 비율은 하한이 아니라 실제 포트폴리오 중복에 가깝습니다. 다만 채권형·MMF 처럼 보유종목이 오지 않는 유형은 비교할 수 없습니다."
+       data-en="Tick the checkbox at the left of a row in Browse to add up to eight funds. Unlike ETFs, the source gives full holdings, so overlap here is close to true portfolio overlap rather than a lower bound. Bond funds and MMFs publish no holdings and cannot be compared.">펀드 찾기 탭에서 줄 맨 왼쪽 체크상자에 표시해 최대 8개까지 담습니다.</p>
     <div id="compare-body"></div>
   </section>
 
@@ -926,6 +968,13 @@ function renderHead() {
   var html = '';
   for (var i = 0; i < COLUMNS.length; i += 1) {
     var c = COLUMNS[i];
+    // 담는 칸의 머리는 여태 비어 있었다. 이름이 없는 칸은 누른 뒤에야
+    // 무슨 칸인지 알게 되고, 그전까지는 눌러도 되는 것인지조차 모른다.
+    if (c[0] === 'pick') {
+      html += '<th class="pick-head" scope="col">' + esc(lang === 'ko' ? '비교' : 'Compare') +
+        '<span class="th-sub">' + esc(lang === 'ko' ? '담기' : 'add') + '</span></th>';
+      continue;
+    }
     var label = c[0] === 'ret'
       ? (lang === 'ko' ? periodLabel(state.period) + ' 수익률' : periodLabel(state.period) + ' return')
       : (lang === 'ko' ? c[1] : c[2]);
@@ -954,13 +1003,21 @@ function renderList() {
     var v = retOf(f, state.period);
     var drop = v == null ? dropReasonOf(f, state.period) : null;
     var picked = state.picks.indexOf(f.id) >= 0;
+    // 다 찼는데 안 담긴 줄. 여태는 눌러도 아무 일이 안 일어났고 까닭도
+    // 말하지 않았다 — 그것은 조용한 고장이다. 흐리게 잠가서 눈으로 먼저
+    // 알리고, 손을 얹으면 까닭이 뜬다.
+    var atMax = !picked && state.picks.length >= MAX_COMPARE;
+    var pickTitle = atMax
+      ? (lang === 'ko' ? MAX_COMPARE + '개까지만 담깁니다 — 하나 빼고 담으세요'
+                       : 'Basket is full (' + MAX_COMPARE + ') — remove one first')
+      : (lang === 'ko' ? (picked ? '비교에서 빼기' : '비교에 담기')
+                       : (picked ? 'Remove from comparison' : 'Add to comparison'));
     html += '<tr class="clickable' + (state.selected === f.id ? ' selected' : '') +
-      '" data-id="' + esc(f.id) + '">' +
-      '<td><button type="button" class="pick" data-pick="' + esc(f.id) + '" title="' +
-        esc(lang === 'ko' ? '비교에 담기' : 'Add to compare') + '" style="border:1px solid var(--hairline);' +
-        'background:' + (picked ? 'var(--orange)' : '#fff') + ';color:' + (picked ? '#fff' : 'var(--muted)') +
-        ';border-radius:2px;width:24px;height:24px;cursor:pointer;font-size:14px;line-height:1">' +
-        (picked ? '✓' : '⊕') + '</button></td>' +
+      (picked ? ' picked' : '') + '" data-id="' + esc(f.id) + '">' +
+      '<td class="pick-cell"><label class="pick" title="' + esc(pickTitle) + '">' +
+        '<input type="checkbox" data-pick="' + esc(f.id) + '"' +
+        (picked ? ' checked' : '') + (atMax ? ' disabled' : '') +
+        ' aria-label="' + esc(pickTitle + ' — ' + (f.name || f.code)) + '"></label></td>' +
       '<td><div style="font-weight:600;color:var(--ink)">' + esc(f.name || f.code) + '</div>' +
         '<div class="dim" style="font-size:13px">' + esc(f.code) +
         (f.region ? ' · ' + esc(regionLabel(f)) : '') + '</div>' +
@@ -995,6 +1052,47 @@ function renderList() {
     ? (lang === 'ko' ? shown.length.toLocaleString() + ' / ' + list.length.toLocaleString() + '개 표시 중'
                      : 'Showing ' + shown.length.toLocaleString() + ' of ' + list.length.toLocaleString())
     : '';
+  renderPickBar();
+}
+
+// 표 첫 칸이 무엇인지 말하는 띠.
+//
+// 아무것도 안 담았을 때야말로 이 말이 필요하다 — 그때가 "이 칸은 눌러야
+// 하는 건가" 를 묻게 되는 순간이기 때문이다. 그래서 0개일 때도 감추지
+// 않고, 대신 무엇을 하는 칸인지를 적는다. 담기 시작하면 같은 자리가
+// 몇 개를 담았는지와 다음에 갈 곳으로 바뀐다.
+function renderPickBar() {
+  var node = el('pick-bar');
+  if (!node) return;
+  var n = state.picks.length;
+  var box = '<span class="box"></span>';
+  node.className = 'pick-bar' + (n ? ' on' : '');
+  if (!n) {
+    node.innerHTML = lang === 'ko'
+      ? '<strong>맨 왼쪽 ' + box + ' 는 비교할 펀드를 담는 칸입니다.</strong> '
+        + '눌러서 <strong>2개 이상</strong> 담으면 <strong>비교 · 중복도</strong> 탭에서 '
+        + '서로 겹치는 종목을 봅니다. 담지 않아도 목록은 그대로 쓸 수 있습니다 — '
+        + '줄 아무 데나 누르면 그 펀드의 보유종목이 열립니다. 최대 ' + fmtNum(MAX_COMPARE) + '개.'
+      : '<strong>The ' + box + ' column on the left picks funds to compare.</strong> '
+        + 'Tick <strong>two or more</strong> and the <strong>Compare</strong> tab shows which holdings they share. '
+        + 'You do not have to tick anything to use the list — click any row to open its holdings. '
+        + 'Up to ' + fmtNum(MAX_COMPARE) + '.';
+    return;
+  }
+  var full = n >= MAX_COMPARE;
+  node.innerHTML =
+    '<strong>' + esc(lang === 'ko' ? n + '개 담음' : n + ' selected') + '</strong>'
+    + ' <span class="dim">' + esc(lang === 'ko' ? '(최대 ' + fmtNum(MAX_COMPARE) + '개'
+        + (full ? ' · 다 찼습니다. 빼야 더 담깁니다' : '') + ')'
+        : '(max ' + fmtNum(MAX_COMPARE) + (full ? ' — full; untick one to add another' : '') + ')') + '</span> '
+    + (n < 2
+        ? '<span>' + esc(lang === 'ko' ? '— 하나만으로는 비교가 안 됩니다. 하나 더 담아 주세요.'
+                                       : '— one fund is not a comparison; tick one more.') + '</span> '
+        : '')
+    + '<button type="button" id="pick-go" style="margin-left:6px">'
+    + esc(lang === 'ko' ? '비교 탭에서 보기' : 'Open Compare') + '</button> '
+    + '<button type="button" id="pick-clear">'
+    + esc(lang === 'ko' ? '담은 것 비우기' : 'Clear') + '</button>';
 }
 
 function shortReason(drop) {
@@ -1696,9 +1794,15 @@ function renderCompare() {
   }
   var body = el('compare-body');
   if (picks.length < 2) {
+    // 비어 있는 화면은 "무엇을 하라" 까지 말해야 한다. 여기가 처음 오는
+    // 사람에게는 막다른 자리라, 담는 자리가 어디인지를 그 자리에서 말한다.
     body.innerHTML = '<div class="empty">' + esc(lang === 'ko'
-      ? '펀드 찾기 탭에서 ⊕ 를 눌러 두 개 이상 담아 주세요.'
-      : 'Add two or more funds from the Browse tab.') + '</div>';
+      ? (picks.length === 1
+          ? '지금 1개만 담겼습니다 — 비교하려면 하나 더 담아 주세요. 펀드 찾기 탭에서 줄 맨 왼쪽 체크상자에 표시하면 담깁니다.'
+          : '아직 담은 펀드가 없습니다. 펀드 찾기 탭에서 줄 맨 왼쪽 체크상자에 표시해 두 개 이상 담아 주세요.')
+      : (picks.length === 1
+          ? 'Only one fund is selected — tick one more. Use the checkbox at the left of each row in the Browse tab.'
+          : 'No funds selected yet. Tick the checkbox at the left of a row in the Browse tab to add two or more.')) + '</div>';
     return;
   }
 
@@ -2466,9 +2570,10 @@ function renderHelp() {
         '<strong>수익률 기간</strong>을 바꾸면 목록의 수익률 열이 그 기간 값으로 바뀝니다(1일부터 5년까지 ' + fmtN(PERIODS.length) + '가지).',
         '열 제목의 <strong>▽</strong> 를 누르면 그 열로 정렬하고, 한 번 더 누르면 반대 방향으로 정렬합니다.',
         '<strong>줄을 누르면</strong> 바로 아래에 상세가 펼쳐집니다 — 기준가 · 설정액 · 설정일 · 위험등급, 기간 수익률, 위험지표, 보유종목 전체, 업종구성, <strong>클래스별 보수와 코드</strong>, 매매 기준일, 그리고 원천으로 바로 가는 링크.',
-        '비교하고 싶은 것은 줄 맨 왼쪽 <strong>⊕</strong> 로 담습니다. 담은 것은 다음 탭에서 봅니다.',
+        '비교하고 싶은 것은 줄 맨 왼쪽 <strong>비교</strong> 칸의 <strong>체크상자</strong>에 표시해 담습니다. 표시하지 않아도 목록은 그대로 쓸 수 있고, 담은 것은 다음 탭에서 봅니다.',
       ],
       controls: [
+        ['비교 칸 (맨 왼쪽 체크상자)', '비교할 펀드를 담는 칸입니다. <strong>표시하지 않아도 목록은 그대로 쓸 수 있습니다</strong> — 줄 아무 데나 누르면 상세가 열립니다. 두 개 이상 표시하면 <strong>비교 · 중복도</strong> 탭에서 겹침을 봅니다. 최대 ' + fmtN(MAX_COMPARE) + '개이고, 다 차면 남은 체크상자가 흐려집니다.'],
         ['검색창', '한 군데가 아니라 <strong>네 군데</strong>를 훑습니다 — 펀드 본체(이름 · 표준코드 · 운용사 · 유형 · 벤치마크), <strong>클래스 코드</strong>, <strong>클래스 이름</strong>, 그리고 <strong>보유종목 이름</strong>.'],
         ['투자 지역', '돈이 <strong>어디에</strong> 투자되는지입니다(국내 · 해외 · 혼합). 유형 이름에 나오는 "혼합" 은 주식+채권이라는 <strong>자산</strong> 이야기라 서로 다른 말입니다.'],
         ['자산군 · 유형', '유형은 원천이 준 이름을 <strong>그대로</strong> 씁니다(지금 ' + fmtN(types.size) + '가지). 이 화면이 지어낸 분류가 아닙니다.'],
@@ -2486,13 +2591,13 @@ function renderHelp() {
       tab: '비교 · 중복도',
       when: '여러 펀드를 <strong>같이 담아도 분산이 되는지</strong>를 볼 때 씁니다. 분산이라고 생각한 조합이 실은 같은 것을 두 번 산 것인지가 여기서 갈립니다.',
       steps: [
-        '<strong>펀드 찾기</strong> 탭에서 줄 맨 왼쪽 <strong>⊕</strong> 를 눌러 담습니다. <strong>두 개 이상</strong>부터 비교가 되고, 최대 ' + fmtN(MAX_COMPARE) + '개까지 담깁니다.',
+        '<strong>펀드 찾기</strong> 탭에서 줄 맨 왼쪽 <strong>비교</strong> 칸의 체크상자에 표시해 담습니다. <strong>두 개 이상</strong>부터 비교가 되고, 최대 ' + fmtN(MAX_COMPARE) + '개까지 담깁니다.',
         '이 탭으로 옮겨 옵니다. 담은 수가 위에 적혀 있고 <strong>비우기</strong> 로 한 번에 지웁니다.',
         '<strong>두 펀드씩 겹침</strong> 표에서 짝마다 겹침 비율과 겹친 종목 수를 봅니다.',
         '<strong>둘 이상이 담은 종목</strong> 표에서 어느 종목이 여러 펀드에 동시에 들어 있는지, 펀드마다 몇 %씩 줬는지 봅니다.',
       ],
       controls: [
-        ['⊕ (펀드 찾기에서)', '비교 대상으로 담습니다. 담기면 <strong>✓</strong> 로 바뀌고, 다시 누르면 뺍니다. 이 탭에는 담는 칸이 따로 없습니다.'],
+        ['비교 칸 체크상자 (펀드 찾기에서)', '표시하면 담기고, 표시를 지우면 빠집니다. 담긴 줄은 왼쪽에 주황 띠가 생깁니다. 이 탭에는 담는 칸이 따로 없습니다 — 담는 일은 <strong>펀드 찾기</strong> 탭에서 합니다.'],
         ['겹침 비율', '두 펀드가 <strong>같은 종목에 준 비중 중 작은 쪽</strong>을 모두 더한 값입니다. 40% 라면 두 펀드의 40% 가 사실상 같은 자리에 있다는 뜻입니다.'],
         ['겹친 종목 수', '한쪽이라도 비중이 오지 않은 종목이 있으면 비율을 내지 않고 <strong>겹친 종목 수만</strong> 싣습니다.'],
         ['○ 표시', '담고는 있으나 <strong>비중이 원천에 없어</strong> 숫자를 쓸 수 없는 자리입니다. 0 이 아닙니다.'],
@@ -2577,9 +2682,10 @@ function renderHelp() {
         'Changing <strong>Return period</strong> switches the return column to that period (' + fmtN(PERIODS.length) + ' periods, 1D to 5Y).',
         'Click a column header <strong>▽</strong> to sort by it; click again to reverse.',
         '<strong>Click a row</strong> to expand the detail — base price, size, inception, risk grade, returns, risk metrics, the full holdings list, sector mix, <strong>per-class fees and codes</strong>, dealing terms, and links straight to the sources.',
-        'Use <strong>⊕</strong> at the left of a row to add a fund to the comparison basket.',
+        'To compare funds, tick the <strong>checkbox</strong> in the <strong>Compare</strong> column at the left of a row. You do not have to tick anything to use the list; what you tick is read on the next tab.',
       ],
       controls: [
+        ['Compare column (checkbox on the left)', 'Picks funds to compare. <strong>Ticking is optional</strong> — click any row to open its detail. Tick two or more and the <strong>Compare</strong> tab shows their overlap. Up to ' + fmtN(MAX_COMPARE) + '; once full, the remaining checkboxes dim.'],
         ['Search box', 'Searches <strong>four</strong> places, not one: the fund body (name, code, manager, category, benchmark), <strong>share-class codes</strong>, <strong>share-class names</strong>, and <strong>holding names</strong>.'],
         ['Invests in', 'Where the money goes (domestic, overseas, mixed). The word "mixed" inside a category name means <strong>equity + bond</strong> — a different thing.'],
         ['Asset class · Category', 'Categories are the source’s own names, used <strong>verbatim</strong> (' + fmtN(types.size) + ' of them). Nothing here is invented.'],
@@ -2597,13 +2703,13 @@ function renderHelp() {
       tab: 'Compare',
       when: 'Check whether holding several funds together actually diversifies — or is the same bet twice.',
       steps: [
-        'In <strong>Browse</strong>, click <strong>⊕</strong> at the left of a row. Comparison starts at <strong>two</strong> funds and holds up to ' + fmtN(MAX_COMPARE) + '.',
+        'In <strong>Browse</strong>, tick the checkbox in the <strong>Compare</strong> column at the left of a row. Comparison starts at <strong>two</strong> funds and holds up to ' + fmtN(MAX_COMPARE) + '.',
         'Switch to this tab. The count of selected funds is shown, with <strong>Clear</strong> to empty it.',
         'Read <strong>Pairwise overlap</strong> for each pair: the overlap share and the number of shared securities.',
         'Read <strong>Held by two or more</strong> to see which securities appear in several funds at once, and at what weight in each.',
       ],
       controls: [
-        ['⊕ (in Browse)', 'Adds a fund; it turns into <strong>✓</strong>, and clicking again removes it. There is no add control on this tab.'],
+        ['Compare checkbox (in Browse)', 'Ticking adds a fund, unticking removes it. A selected row gets an orange bar on its left edge. There is no add control on this tab — selecting happens in <strong>Browse</strong>.'],
         ['Overlap share', 'The sum of the <strong>smaller of the two weights</strong> on each shared security. 40% means 40% of both funds sits in the same place.'],
         ['Shared count', 'If either side has a security with no published weight, the share is withheld and only the <strong>count</strong> of shared securities is shown.'],
         ['○', 'Held, but the <strong>weight is not published</strong> by the source. It is not a zero.'],
@@ -3037,10 +3143,23 @@ function bind() {
 
   // 목록·역조회·랭킹·검산 어디서 눌러도 같은 상세가 열린다.
   document.addEventListener('click', function (e) {
-    var pick = e.target.closest('[data-pick]');
-    if (pick) {
+    // 담는 칸은 줄 안에 있지만 줄과 다른 일을 한다. 그래서 이 칸에서 시작한
+    // 누름은 **무슨 일이 있어도** 상세를 열지 않는다. 여태는 체크상자를 살짝
+    // 빗나가면 그대로 아래로 흘러 상세가 열렸다 — 고르려다 다른 것이 열리는
+    // 이 어긋남이 "체크를 해야 하는 건지 헷갈린다" 는 말의 실체다.
+    var cell = e.target.closest('.pick-cell');
+    if (cell) {
+      // 이 칸에서 시작한 누름은 전부 여기서 끝낸다.
+      //   stopPropagation — 아래로 흘러 상세를 열지 않게
+      //   preventDefault  — 라벨이 체크상자에 누름을 한 번 더 보내는 것과
+      //                     브라우저가 제 손으로 표시를 바꾸는 것을 둘 다 막는다.
+      // 둘을 막아야 **어디를 눌렀든 한 번만** 세어진다. 표시는 브라우저가
+      // 아니라 state.picks 가 정하고, 다시 그릴 때 그대로 찍힌다.
       e.stopPropagation();
-      var id = pick.getAttribute('data-pick');
+      e.preventDefault();
+      var box = cell.querySelector('input[data-pick]');
+      if (!box || box.disabled) return;
+      var id = box.getAttribute('data-pick');
       var at = state.picks.indexOf(id);
       if (at >= 0) state.picks.splice(at, 1);
       else if (state.picks.length < MAX_COMPARE) state.picks.push(id);
@@ -3049,6 +3168,15 @@ function bind() {
       return;
     }
     if (e.target.closest('#cmp-clear')) { state.picks = []; renderCompare(); renderList(); return; }
+    // 표 위 띠의 두 단추. 담은 뒤 "그래서 어디로 가야 하나" 를 화면이
+    // 직접 답한다 — 탭 이름을 외워 두었다가 찾아가게 하지 않는다.
+    if (e.target.closest('#pick-go')) { showTab('compare'); return; }
+    if (e.target.closest('#pick-clear')) {
+      state.picks = [];
+      renderList();
+      if (state.tab === 'compare') renderCompare();
+      return;
+    }
     var toggle = e.target.closest('.hold-toggle');
     if (toggle) {
       var extras = document.querySelectorAll('[data-extra]');
