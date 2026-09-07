@@ -233,6 +233,7 @@ tbody tr.selected{background:#FFF3E8;}
 .pick-cell{text-align:center; padding:0 !important;}
 .pick-lbl{display:flex; align-items:center; justify-content:center;
   width:100%; height:100%; min-height:44px; cursor:pointer;}
+.pick-cell{cursor:pointer;}   /* 칸 전체가 눌린다 */
 .pick-lbl input{width:20px; height:20px; margin:0; cursor:pointer;
   accent-color:var(--orange);}
 .pick-lbl input:disabled{cursor:not-allowed; opacity:.35;}
@@ -626,17 +627,48 @@ footer .disc + .disc{margin-top:12px;}
               data-en="<b>Click a column header to sort</b> — return, AUM, fee, top-10 weight."></li>
           <li data-ko="<b>행을 누르면 그 자리에서 펼쳐집니다.</b> 탭이 바뀌지 않으니 목록을 잃지 않습니다."
               data-en="<b>Click a row</b> and it expands in place."></li>
-          <li data-ko="맨 왼쪽 <b>비교</b> 칸의 <b>체크상자</b>로 비교함에 담습니다. 담긴 줄은 색이 바뀌고, 목록 위에 띠가 떠서 <u>몇 개 담겼는지</u>와 <u>비교 화면으로 가는 단추</u>를 보여 줍니다. 최대 8개."
-              data-en="Tick the checkbox in the leftmost <b>Compare</b> column. Picked rows are highlighted and a bar above the list shows the count and a button to the Compare screen. Up to 8."></li>
+          <li data-ko="<b>맨 왼쪽 &quot;비교&quot; 칸을 체크하면</b> 나중에 견줄 목록(비교함)에 담깁니다. 아래에서 자세히 봅니다."
+              data-en="<b>Tick the leftmost “Compare” box</b> to add the fund to the compare tray — see below."></li>
         </ol>
         <figure class="shot" data-shot="browse">
           <figcaption data-ko="검색창 · 필터 여덟 개 · 목록" data-en="Search, filters, list">검색창 · 필터 여덟 개 · 목록</figcaption>
         </figure>
+      </div>
+      <div class="tip" data-ko="<b>체크와 행 누르기는 다른 동작입니다.</b> 맨 왼쪽 <b>체크상자</b>는 <u>비교함에 담고</u>, 그 밖의 <b>아무 자리나 누르면</b> <u>그 ETF의 상세가 펼쳐집니다</u>. 체크해도 상세는 열리지 않고, 상세를 열어도 담기지 않습니다."
+           data-en="<b>Ticking and clicking are different.</b> The checkbox adds to the compare tray; clicking anywhere else on the row expands the fund's detail."></div>
+    </div>
+
+    <!-- ── 화면 1 비교 담기 ───────────────────────────────────── -->
+    <div class="guide" id="g1c">
+      <div class="guide-head">
+        <span class="num" data-ko="1-1" data-en="1-1">1-1</span>
+        <div>
+          <h4 data-ko="맨 왼쪽 &quot;비교&quot; 칸 — 담기" data-en="The “Compare” column — picking">맨 왼쪽 &quot;비교&quot; 칸 — 담기</h4>
+          <p data-ko="나중에 견줄 것들을 골라 두는 자리입니다. 체크만 하면 담기고, 담은 것은 비교 화면에서 한꺼번에 봅니다."
+             data-en="Pick the funds you want to compare later, then view them together on the Compare screen.">나중에 견줄 것들을 골라 두는 자리입니다.</p>
+        </div>
+      </div>
+      <div class="guide-body">
+        <ol class="steps">
+          <li data-ko="<b>체크상자를 누릅니다.</b> 칸 안 <u>아무 데나</u> 눌러도 됩니다 — 상자보다 넓게 잡혀 있습니다. 키보드로는 <b>Tab</b> 으로 옮겨 <b>Space</b> 로 체크합니다."
+              data-en="<b>Click the checkbox</b> — the whole cell is clickable, not just the box. With a keyboard: <b>Tab</b> then <b>Space</b>."></li>
+          <li data-ko="<b>담긴 줄은 색이 바뀌고</b> 왼쪽에 주황 띠가 섭니다. 목록을 훑어 내려가도 무엇을 골랐는지 보입니다."
+              data-en="<b>Picked rows are tinted</b> with an orange bar on the left, so your picks stay visible as you scroll."></li>
+          <li data-ko="<b>목록 위에 띠가 뜹니다.</b> 몇 개 담겼는지(예: <b>비교함 3 / 8개</b>), 무엇을 담았는지, 그리고 <b>비우기</b> · <b>비교 화면으로 →</b> 단추가 있습니다."
+              data-en="<b>A bar appears above the list</b> showing the count, the names, and buttons to Clear or go to Compare."></li>
+          <li data-ko="<b>하나만 담으면</b> &quot;비교 화면으로&quot; 단추가 잠겨 있습니다. 비교는 둘 이상이라야 뜻이 있습니다."
+              data-en="<b>With only one picked</b> the Compare button stays disabled — comparing needs at least two."></li>
+          <li data-ko="<b>8개가 차면</b> 나머지 체크상자가 잠기고 띠에 <b>가득 참</b>이 붙습니다. 다른 것을 담으려면 담긴 것을 하나 풀거나 <b>비우기</b>를 누르십시오."
+              data-en="<b>At 8 the remaining boxes lock</b> and the bar shows “full”. Untick one, or press Clear."></li>
+        </ol>
         <figure class="shot" data-shot="picked">
-          <figcaption data-ko="맨 왼쪽 비교 칸을 체크한 모습 — 담긴 줄은 색이 바뀌고, 목록 위에 띠가 뜬다"
-                      data-en="After ticking Compare — picked rows are highlighted and a bar appears above the list">맨 왼쪽 비교 칸을 체크한 모습</figcaption>
+          <figcaption data-ko="세 개를 담은 모습 — 담긴 줄의 색·왼쪽 띠, 그리고 목록 위의 비교함 띠"
+                      data-en="Three picked — tinted rows with an orange bar, and the tray bar above the list">세 개를 담은 모습</figcaption>
         </figure>
       </div>
+      <div class="tip" data-ko="<b>담아 둔 것은 화면을 옮겨도 남습니다.</b> 조건을 바꾸거나 다른 탭에 다녀와도 비교함은 그대로입니다. 다만 <u>파일을 다시 열면 비워집니다</u> — 저장되지 않습니다."
+           data-en="<b>Picks survive navigation</b> — changing filters or switching tabs keeps the tray. They are not saved, so reopening the file clears it."></div>
+    </div>
       <div class="tip" data-ko="<b>목록이 너무 적게 나온다면</b> — 아래 <b>&quot;편입종목 있는 것만&quot;</b> 체크가 켜져 있습니다. 원천이 편입종목을 안 주는 상품(중국 본토 상장 등)이 빠져 있으니 풀어 보십시오."
            data-en="<b>Too few results?</b> Untick “with holdings only”."></div>
     </div>
@@ -644,7 +676,7 @@ footer .disc + .disc{margin-top:12px;}
     <!-- ── 화면 1 상세 ────────────────────────────────────────── -->
     <div class="guide" id="g1b">
       <div class="guide-head">
-        <span class="num" data-ko="1-1" data-en="1-1">1-1</span>
+        <span class="num" data-ko="1-2" data-en="1-2">1-2</span>
         <div>
           <h4 data-ko="행을 누르면 — 상세" data-en="After clicking a row">행을 누르면 — 상세</h4>
           <p data-ko="세 덩어리가 펼쳐집니다. 요약값 → 상위 10종목 → 기간 수익률."
@@ -2822,8 +2854,13 @@ function bind() {
   el('list-body').addEventListener('click', function (ev) {
     // 체크상자를 누른 것이면 줄 상세를 열지 않는다. label 안에 있으므로
     // 상자 자체가 아니라 감싼 label 을 눌러도 여기로 온다.
+    // 칸 전체가 눌려야 한다. 줄 높이가 라벨보다 커서(이름이 두 줄이면 90px)
+    // 라벨 밖 모서리는 안 눌리는 죽은 자리가 생겼다 — 시험에서 잡았다.
+    // CSS 로 td 높이를 100% 채우는 것은 브라우저마다 다르게 풀리므로,
+    // 칸을 눌렀을 때 그 안의 상자를 찾아 쓰는 쪽이 확실하다.
+    var cell = ev.target.closest('.pick-cell');
     var pick = ev.target.closest('[data-pick]') ||
-               (ev.target.closest('.pick-lbl') ? ev.target.closest('.pick-lbl').querySelector('[data-pick]') : null);
+               (cell ? cell.querySelector('[data-pick]') : null);
     if (pick) {
       ev.stopPropagation();
       if (pick.disabled) return;               // 가득 찼다 — 이미 못 누르게 해 두었다
