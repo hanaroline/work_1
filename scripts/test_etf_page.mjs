@@ -154,10 +154,49 @@ await page.waitForTimeout(100);
 const sortAttr = await page.locator('#list-head th[data-sort="ter"]').getAttribute('aria-sort');
 check('열 머리를 누르면 정렬된다', Boolean(sortAttr), sortAttr);
 
-// ── 비교 담기 -> 비교 탭 (8개까지 담긴다)
-for (let i = 0; i < 8; i += 1) {
-  await page.locator('#list-body button[data-pick]').nth(i).click();
+// ── 비교 담기.
+//    ⊕ 기호 하나만 두었더니 "눌러야 하는 것인지" 가 안 보였다. 진짜 체크상자를
+//    쓰고, 머리글을 달고, 담긴 줄을 표시하고, 다음에 무엇을 할지 띠로 알린다.
+const pickHead = await page.locator('#list-head th.pick-th').textContent();
+check('비교 칸에 머리글이 있다', /비교|Compare/.test(pickHead || ''), (pickHead || '').trim());
+check('몇 개까지 담기는지 적혀 있다', /8/.test(pickHead || ''), (pickHead || '').trim());
+const pickBoxes = await page.locator('#list-body input[type="checkbox"][data-pick]').count();
+check('줄마다 체크상자가 있다', pickBoxes > 0, `${pickBoxes}개`);
+const boxSize = await page.locator('#list-body input[data-pick]').first().boundingBox();
+check('체크상자가 충분히 크다', boxSize && boxSize.width >= 18 && boxSize.height >= 18,
+      boxSize ? `${Math.round(boxSize.width)}×${Math.round(boxSize.height)}px` : '없음');
+// 누르는 자리는 상자보다 넓어야 한다 — 칸 어디를 눌러도 담겨야 한다.
+const hitBox = await page.locator('#list-body .pick-lbl').first().boundingBox();
+check('누를 수 있는 자리가 상자보다 넓다',
+      hitBox && hitBox.height >= 40, hitBox ? `${Math.round(hitBox.width)}×${Math.round(hitBox.height)}px` : '없음');
+
+check('담기 전에는 띠가 없다',
+      (await page.locator('#basket-bar .cnt').count()) === 0);
+// 클래스를 안 붙이면 서식 없는 글줄로 나온다 — 실제로 그랬다.
+check('담기 전에는 띠 상자도 없다',
+      (await page.locator('#basket-bar.basket-bar').count()) === 0);
+
+await page.locator('#list-body input[data-pick]').first().click();
+await page.waitForTimeout(150);
+check('체크하면 상자가 켜진다',
+      await page.locator('#list-body input[data-pick]').first().isChecked());
+check('담긴 줄이 표시된다', (await page.locator('#list-body tr.picked').count()) === 1,
+      `${await page.locator('#list-body tr.picked').count()}줄`);
+check('띠에 서식이 붙는다', (await page.locator('#basket-bar.basket-bar').count()) === 1);
+const barTxt1 = await page.locator('#basket-bar').textContent();
+check('띠가 담긴 개수를 알린다', /1\s*\/\s*8|1 \/ 8/.test(barTxt1 || ''), (barTxt1 || '').trim().slice(0, 40));
+check('하나만 담으면 비교로 못 간다',
+      await page.locator('#basket-go').isDisabled());
+
+for (let i = 1; i < 8; i += 1) {
+  await page.locator('#list-body input[data-pick]').nth(i).click();
 }
+await page.waitForTimeout(150);
+check('둘 이상이면 비교로 갈 수 있다', !(await page.locator('#basket-go').isDisabled()));
+// 가득 차면 안 담긴 상자는 눌리지 않아야 한다 — 눌러 놓고 경고창을 띄우는 것보다 낫다.
+const disabledCnt = await page.locator('#list-body input[data-pick]:disabled').count();
+check('가득 차면 나머지 상자가 잠긴다', disabledCnt > 0, `${disabledCnt}개 잠김`);
+check('가득 찼다고 알린다', /가득|full/.test(await page.locator('#basket-bar').textContent() || ''));
 await page.locator('.tabs button[data-tab="compare"]').click();
 await page.waitForTimeout(250);
 const cmpCards = await page.locator('#compare-body .cmp-grid .card').count();

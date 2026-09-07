@@ -101,10 +101,13 @@ await shoot('detail', ['#detail .kv'], 260);
 await shoot('holdings', ['#detail .hold-row'], 460);
 await shoot('rettable', ['#detail .ret-table'], 480);
 
-// 3) 비교 — 여덟 개 담아서
+// 3) 비교 — 담아서. 담은 뒤의 목록도 한 장 찍는다. 체크가 어떻게 보이는지,
+//    담긴 줄이 어떻게 표시되는지, 위의 띠에 무엇이 뜨는지가 사용법의 핵심이다.
 for (let i = 0; i < 4; i += 1) {
-  await page.locator('#list-body button[data-pick]').nth(i).click().catch(() => {});
+  await page.locator('#list-body input[data-pick]').nth(i).click().catch(() => {});
 }
+await page.waitForTimeout(300);
+await shoot('picked', ['#basket-bar', '#list-table'], 420);
 await page.locator('.tabs button[data-tab="compare"]').click();
 await page.waitForTimeout(500);
 await shoot('compare', ['#compare-body .card', '#compare-body table'], 460);
