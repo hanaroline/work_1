@@ -55,8 +55,12 @@ jobs:
         with:
           node-version: '22'
 
-      - name: pdfjs 설치
-        run: npm install --no-save pdfjs-dist@3.11.174
+      # 내려받기 서버(disdown.kofia.or.kr)가 중간 인증서를 안 보내므로 node fetch 로는
+      # 받을 수 없다. TLS 검증을 끄는 대신 제 신뢰저장소를 가진 브라우저가 받는다.
+      - name: pdfjs · Playwright 설치
+        run: |
+          npm install --no-save pdfjs-dist@3.11.174 playwright@1.56.1
+          npx playwright install --with-deps chromium
 
       - name: 수집·판독
         env:

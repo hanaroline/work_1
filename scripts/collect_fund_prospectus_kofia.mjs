@@ -234,33 +234,63 @@ function downUrl(row) {
     '&filename=' + encodeURIComponent(row.originalFileNm || row.fileNm);
 }
 
+/**
+ * 내려받기는 브라우저가 한다.
+ *
+ * disdown.kofia.or.kr 은 중간 인증서를 함께 보내지 않는다. 그래서 node fetch 와
+ * Playwright 의 request 문맥은 둘 다 UNABLE_TO_VERIFY_LEAF_SIGNATURE 로 끊긴다.
+ * 브라우저는 인증서에 적힌 발급자 주소(AIA)에서 중간 인증서를 스스로 받아 사슬을
+ * 이어 검증한다.
+ *
+ * ★ TLS 검증을 끄지 않는다 ★ 창구가 고객에게 읽을 문구의 원본을 검증 없이 받는
+ * 것은 안 된다. 제 신뢰저장소를 가진 실제 브라우저가 받게 하는 것은 검증을
+ * 건너뛰는 것이 아니라 제대로 하는 쪽이다.
+ *
+ * 목록 조회(dis.kofia.or.kr)는 node fetch 로 잘 되므로 그대로 둔다 — 브라우저를
+ * 거칠 이유가 없다.
+ */
+let browser = null, bctx = null;
+async function browserReady() {
+  if (bctx) return bctx;
+  const { chromium } = require0('playwright');
+  browser = await chromium.launch();
+  bctx = await browser.newContext({ userAgent: UA, locale: 'ko-KR', acceptDownloads: true });
+  return bctx;
+}
+
 async function getPdf(row, tries = 3) {
+  const ctx0 = await browserReady();
   let last;
   for (let i = 1; i <= tries; i++) {
+    const page = await ctx0.newPage();
     try {
-      const r = await fetch(downUrl(row), {
-        headers: { 'User-Agent': UA, Referer: 'https://dis.kofia.or.kr/websquare/index.jsp' },
-        signal: AbortSignal.timeout(60000)
+      const dl = new Promise((res, rej) => {
+        page.once('download', res);
+        setTimeout(() => rej(new Error('내려받기 이벤트 없음 (45초)')), 45000);
       });
-      if (!r.ok) throw new Error('HTTP ' + r.status);
-      const buf = Buffer.from(await r.arrayBuffer());
+      /* 내려받기로 끝나므로 goto 는 예외를 던진다 — 그것이 정상이다 */
+      await page.goto(downUrl(row), { timeout: 45000 }).catch(() => {});
+      const d = await dl;
+      const p = await d.path();
+      if (!p) throw new Error('내려받은 파일 경로가 없음');
+      const buf = await readFile(p);
       /* PDF 가 아니면(오류 페이지 등) 판독에서 죽는 대신 여기서 가른다 */
       if (buf.slice(0, 5).toString('latin1') !== '%PDF-') {
         throw new Error('PDF 아님 (' + buf.length + '바이트, 머리 ' +
           JSON.stringify(buf.slice(0, 20).toString('latin1')) + ')');
       }
+      await d.delete().catch(() => {});
       return buf;
     } catch (e) {
       last = e;
-      if (i < tries) await new Promise((s) => setTimeout(s, 600 * 2 ** (i - 1)));
+      if (i < tries) await new Promise((s) => setTimeout(s, 800 * 2 ** (i - 1)));
+    } finally {
+      await page.close().catch(() => {});
     }
   }
-  /* node fetch 의 「fetch failed」 는 그 자체로는 아무것도 말해 주지 않는다 —
-     진짜 이유는 cause 에 있다. 그것을 붙여 던진다. */
   const c = last && last.cause;
-  const msg = String(last && last.message || last) +
-    (c ? ' (' + (c.code || '') + ' ' + String(c.message || c).slice(0, 120) + ')' : '');
-  throw new Error(msg);
+  throw new Error(String(last && last.message || last) +
+    (c ? ' (' + (c.code || '') + ' ' + String(c.message || c).slice(0, 120) + ')' : ''));
 }
 
 /* ── 씨앗으로 계약이 살아 있는지 먼저 본다 ───────────────────── */
@@ -291,6 +321,7 @@ try {
     '\n씨앗 종목을 받아 판독하지 못했습니다 — ' + String(e && e.message || e) + '\n' +
     `  · ${OUT} 은 그대로 둡니다.`
   );
+  if (browser) await browser.close().catch(() => {});
   process.exit(1);
 }
 
@@ -399,6 +430,9 @@ if (misses.length) {
   console.log('\n못 담은 종목 ' + misses.length + '건 (앞 20)');
   misses.slice(0, 20).forEach((m) => console.log('  ' + m.code + ' — ' + m.why));
 }
+
+/* 브라우저를 띄웠으면 닫는다 — 안 닫으면 러너에서 프로세스가 남는다 */
+if (browser) await browser.close().catch(() => {});
 
 /* 하나도 못 담았으면 실패로 끝낸다 — 초록으로 두면 자료가 조용히 안 는다 */
 if (!ok) {
