@@ -70,6 +70,22 @@ a{color:var(--blue);}
   background:#fff; color:var(--muted); cursor:pointer; box-shadow:0 2px 8px rgba(0,0,0,.06);
 }
 .btn-tool:hover{background:var(--surface-subtle); color:var(--ink);}
+.btn-tool.refresh{border-color:var(--orange); color:var(--orange-active); font-weight:500;}
+.btn-tool.refresh:hover{background:var(--orange); border-color:var(--orange); color:#fff;}
+.btn-tool[disabled]{opacity:.55; cursor:default;}
+.toolbar .upd{font-size:14px; color:var(--muted); margin-right:auto; line-height:1.45;}
+.toolbar .upd b{color:var(--body-strong); font-family:var(--font-num); font-weight:600;}
+.toolbar .upd .live{color:var(--success); font-weight:600;}
+.toolbar .upd a{color:var(--blue); text-decoration:underline;}
+.toolbar .auto-chk{display:inline-flex; align-items:center; gap:7px; font-size:14px; color:var(--muted); cursor:pointer;}
+.toolbar .auto-chk input{width:15px; height:15px; accent-color:var(--orange); cursor:pointer;}
+@media (max-width:700px){ .toolbar .upd{margin-right:0; width:100%; order:9;} }
+
+/* 값이 바뀐 칸을 잠깐 물들인다 — 갱신이 실제로 일어났는지 눈으로 확인되게 */
+@keyframes flashUp   { from { background:rgba(198,40,40,.18); } to { background:transparent; } }
+@keyframes flashDown { from { background:rgba(0,134,184,.18); } to { background:transparent; } }
+td.flash-up{animation:flashUp 1.4s ease-out;}
+td.flash-down{animation:flashDown 1.4s ease-out;}
 
 /* ---------- Hero ---------- */
 .hero{background:var(--orange); color:#fff; padding:60px 0 66px; margin-top:18px;}
@@ -298,7 +314,10 @@ footer .disc p{margin:0 0 12px;}
 <body>
 
 <div class="toolbar">
-  <button class="btn-tool" type="button" id="btn-refresh" data-ko="새로 조회" data-en="Refresh">새로 조회</button>
+  <span class="upd" id="upd-line"></span>
+  <label class="auto-chk"><input type="checkbox" id="auto-refresh" checked>
+    <span data-ko="자동 갱신" data-en="Auto-refresh">자동 갱신</span></label>
+  <button class="btn-tool refresh" type="button" id="btn-refresh" data-ko="지금 새로 조회" data-en="Refresh now">지금 새로 조회</button>
   <button class="btn-tool" type="button" onclick="window.print()" data-ko="인쇄 · PDF 저장" data-en="Print / PDF">인쇄 · PDF 저장</button>
   <div class="lang-toggle" role="radiogroup" aria-label="Language">
     <button type="button" role="radio" data-lang="ko" aria-checked="true">KO</button>
@@ -707,9 +726,11 @@ var state = {
   move: '',
   q: '',
   favOnly: false,
+  auto: true,             // 자동 갱신(1분 주기)
   fx: null,               // USD/KRW
   asof: null
 };
+try { state.auto = localStorage.getItem('mas-us100-auto') !== 'off'; } catch (e) {}
 
 /* 심볼별 조회 결과 캐시 */
 var CACHE = {};           // sym -> { quote, chart:{1d,1wk,1mo}, summary, news, ts }
@@ -1425,7 +1446,7 @@ function loadList() {
     Object.keys(map).forEach(function (s) { LIST[s] = Object.assign(LIST[s] || {}, map[s]); });
     SRC.list = 'live';
     state.asof = new Date();
-    renderList(); renderHeroMeta(); renderSources();
+    renderList(); renderHeroMeta(); renderSources(); renderUpdLine();
     return map;
   }).catch(function () {
     /* 목록 시세 실패 → 러너 스냅샷이 있으면 그것으로 목록을 채운다 */
@@ -1444,7 +1465,7 @@ function loadList() {
     });
     SRC.list = 'sample';
     state.asof = new Date();
-    renderList(); renderHeroMeta(); renderSources();
+    renderList(); renderHeroMeta(); renderSources(); renderUpdLine();
   });
 }
 
@@ -1552,6 +1573,8 @@ function renderList() {
   var rows = rowsForList(), shown = rows.slice(0, state.limit);
   el('cnt').textContent = rows.length;
   var body = el('list-body');
+  /* 직전에 그린 가격을 기억해 두고, 바뀐 칸만 잠깐 물들인다 */
+  var prevSeen = renderList._seen || (renderList._seen = {});
   if (!shown.length) {
     body.innerHTML = '<tr class="empty-row"><td colspan="' + LIST_COLS.length + '">' +
       t('조건에 맞는 기업이 없습니다.', 'No companies match the filters.') + '</td></tr>';
@@ -1565,7 +1588,7 @@ function renderList() {
         '<td class="co">' + esc(lang === 'en' ? r.en : r.ko) +
           (lang === 'en' ? '' : '<span class="sm">' + esc(r.en) + '</span>') + '</td>' +
         '<td>' + esc(sectorName(r.sector)) + '</td>' +
-        '<td class="num">' + (r.failed
+        '<td class="num' + flashCls(prevSeen, r) + '">' + (r.failed
           ? '<span class="badge none" title="' + esc(t('수집기가 이 종목 시세를 받지 못했습니다: ', 'The collector could not fetch this symbol: ') + r.note) + '">' +
             esc(t('조회 불가', 'no data')) + '</span>'
           : price(r.price)) + '</td>' +
@@ -1614,6 +1637,15 @@ function renderList() {
         ' — the ticker may have changed (the collector retries by company name).')) : '');
 }
 
+/** 직전에 그린 값과 달라졌으면 플래시 클래스를 준다 */
+function flashCls(seen, r) {
+  if (r.price == null) return '';
+  var was = seen[r.sym];
+  seen[r.sym] = r.price;
+  if (was == null || was === r.price) return '';
+  return r.price > was ? ' flash-up' : ' flash-down';
+}
+
 function toggleFav(sym) {
   var i = FAVS.indexOf(sym);
   if (i >= 0) FAVS.splice(i, 1); else FAVS.push(sym);
@@ -1624,6 +1656,10 @@ function toggleFav(sym) {
 function select(sym) {
   state.sel = sym;
   try { localStorage.setItem('mas-us100-sel', sym); } catch (e) {}
+  /* 주소에 남겨 링크로 공유·복귀할 수 있게 한다(히스토리는 쌓지 않는다) */
+  if (location.hash.replace(/^#/, '') !== sym) {
+    try { history.replaceState(null, '', '#' + sym); } catch (e) { location.hash = sym; }
+  }
   renderList();
   loadDetail(sym);
   var top = el('summary').getBoundingClientRect().top + window.pageYOffset - 20;
@@ -2921,7 +2957,7 @@ function applySnapshot() {
   });
   if (SRC.list == null || SRC.list === 'sample') SRC.list = 'snapshot';
   if (state.asof == null && SNAP.fetchedAt) state.asof = new Date(SNAP.fetchedAt);
-  renderList(); renderHeroMeta(); renderSources();
+  renderList(); renderHeroMeta(); renderSources(); renderUpdLine();
   if (CACHE[state.sel]) renderDetail(state.sel);
 }
 
@@ -2972,7 +3008,7 @@ function applyQuotes() {
   });
   if (SRC.list !== 'live') SRC.list = 'quotes';
   if (QUOTES_AT) state.asof = QUOTES_AT;
-  renderList(); renderHeroMeta(); renderSources();
+  renderList(); renderHeroMeta(); renderSources(); renderUpdLine();
   if (CACHE[state.sel]) renderDetail(state.sel);
 }
 
@@ -3102,6 +3138,93 @@ function onTick(pb) {
 /** 스트리밍이 지금 살아 있는가 — 60초 안에 검사를 통과한 틱이 있었는지로 본다 */
 function streamLive() {
   return !!(STREAM.last && (Date.now() - STREAM.last.getTime()) < 60000);
+}
+
+/** 미국 정규장 시간표. 브라우저 시간대와 무관하게 미 동부 기준으로 판정한다.
+ *  휴장일(공휴일)은 반영하지 않으므로 화면에도 그렇게 적는다. */
+function usSession() {
+  var WD = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+  var parts = {};
+  try {
+    new Intl.DateTimeFormat('en-US', { timeZone: 'America/New_York', hour12: false,
+      weekday: 'short', hour: '2-digit', minute: '2-digit' })
+      .formatToParts(new Date()).forEach(function (p) { parts[p.type] = p.value; });
+  } catch (e) { return null; }
+  var wd = parts.weekday, h = parseInt(parts.hour, 10) % 24, m = parseInt(parts.minute, 10);
+  if (isNaN(h) || isNaN(m)) return null;
+  var mins = h * 60 + m, wi = WD.indexOf(wd);
+  var PRE = 4 * 60, OPEN = 9 * 60 + 30, CLOSE = 16 * 60, POST = 20 * 60;
+  var weekend = (wi === 0 || wi === 6);
+  var state = weekend ? 'CLOSED'
+    : mins < PRE ? 'CLOSED' : mins < OPEN ? 'PRE' : mins < CLOSE ? 'REGULAR' : mins < POST ? 'POST' : 'CLOSED';
+  var toOpen = null;
+  if (state !== 'REGULAR') {
+    if (!weekend && mins < OPEN) toOpen = OPEN - mins;
+    else {
+      var d = 1;
+      while (true) { var nxt = (wi + d) % 7; if (nxt !== 0 && nxt !== 6) break; d++; }
+      toOpen = (24 * 60 - mins) + (d - 1) * 24 * 60 + OPEN;
+    }
+  }
+  return { state: state, et: ('0' + h).slice(-2) + ':' + ('0' + m).slice(-2), minsToOpen: toOpen };
+}
+function minsLabel(mins) {
+  if (mins == null) return '';
+  var h = Math.floor(mins / 60), m = mins % 60;
+  if (h >= 24) { var d = Math.floor(h / 24); return t(d + '일 ' + (h % 24) + '시간', d + 'd ' + (h % 24) + 'h'); }
+  if (h) return t(h + '시간 ' + (m ? m + '분' : ''), h + 'h ' + (m ? m + 'm' : ''));
+  return t(m + '분', m + 'm');
+}
+
+var QUOTES_WORKFLOW = 'https://github.com/hanaroline/work_1/actions/workflows/us100-quotes.yml';
+
+/* 조회 결과 같은 알림은 몇 초 동안 상태줄을 붙잡는다. 그렇지 않으면 뒤따라 오는
+   렌더(가격 파일 도착·목록 갱신)가 곧바로 덮어써 사용자가 읽을 틈이 없다. */
+var UPD_MSG = null, UPD_MSG_UNTIL = 0;
+function updMessage(html, ms) {
+  UPD_MSG = html; UPD_MSG_UNTIL = Date.now() + (ms || 6000);
+  renderUpdLine();
+  setTimeout(renderUpdLine, (ms || 6000) + 50);
+}
+
+/** 툴바 한 줄 — 무엇을 언제 받은 값으로 보고 있는지, 장은 열려 있는지 */
+function renderUpdLine() {
+  var el0 = el('upd-line');
+  if (!el0) return;
+  if (UPD_MSG && Date.now() < UPD_MSG_UNTIL) { el0.innerHTML = UPD_MSG; return; }
+  UPD_MSG = null;
+  var bits = [];
+  if (streamLive()) {
+    bits.push('<span class="live">' + esc(t('실시간 스트리밍 수신 중', 'live stream')) + '</span>');
+  } else if (QUOTES_AT) {
+    bits.push(esc(t('가격 ', 'quotes ')) + '<b>' + esc(ageLabel(QUOTES_AT) || '') + '</b>');
+  } else if (SRC.list === 'live') {
+    bits.push('<span class="live">' + esc(t('직접 조회 성공', 'fetched directly')) + '</span>');
+  } else if (SRC.list === 'sample') {
+    bits.push(esc(t('예시 데이터', 'demo data')));
+  } else {
+    bits.push(esc(t('가격 조회 중…', 'loading quotes…')));
+  }
+
+  var ses = usSession();
+  if (ses) {
+    var label = ses.state === 'REGULAR' ? t('정규장', 'regular session')
+      : ses.state === 'PRE' ? t('프리마켓', 'pre-market')
+      : ses.state === 'POST' ? t('애프터마켓', 'after hours') : t('장 마감', 'market closed');
+    var extra = ses.state === 'REGULAR' ? t('미 동부 ' + ses.et, 'ET ' + ses.et)
+      : t('개장까지 ' + minsLabel(ses.minsToOpen), 'opens in ' + minsLabel(ses.minsToOpen));
+    bits.push('<span title="' + esc(t('미 동부 시간 기준. 공휴일 휴장은 반영하지 않습니다.',
+      'US Eastern time. Market holidays are not accounted for.')) + '">' +
+      esc(label) + ' · ' + esc(extra) + '</span>');
+  }
+
+  /* 가격 파일이 15분 넘게 묵었고 장이 열려 있으면 수집을 직접 돌릴 링크를 준다 */
+  var stale = QUOTES_AT && (Date.now() - QUOTES_AT.getTime()) > 15 * 60000;
+  if (!streamLive() && stale && ses && (ses.state === 'REGULAR' || ses.state === 'PRE' || ses.state === 'POST')) {
+    bits.push('<a href="' + QUOTES_WORKFLOW + '" target="_blank" rel="noopener">' +
+      esc(t('지금 수집 요청', 'run collection now')) + '</a>');
+  }
+  el0.innerHTML = bits.join(' · ');
 }
 
 /** "7분 전" 처럼 나이를 적는다 — 예약이 늦어져도 사용자가 스스로 판단할 수 있게 */
@@ -3286,6 +3409,7 @@ function applyLang() {
   buildControls();
   renderList();
   renderHeroMeta();
+  renderUpdLine();
   renderDisclaimer();
   if (CACHE[state.sel]) renderDetail(state.sel); else renderSources();
   document.title = t('미국 100대 기업 시세 조회 | 미래에셋증권', 'US Top 100 Companies | Mirae Asset Securities');
@@ -3344,6 +3468,55 @@ function bindCfg() {
   });
 }
 
+/** 지금 새로 조회 — 어떤 경로로 무엇이 갱신됐는지 버튼 옆에 알려 준다.
+ *  브라우저가 야후에 못 붙는 환경에서는 "러너가 올려둔 최신 파일"을 다시 받는 것이
+ *  실제로 할 수 있는 최선이고, 그 사실을 감추지 않는다. */
+var refreshing = false;
+function manualRefresh() {
+  if (refreshing) return;
+  refreshing = true;
+  var btn = el('btn-refresh');
+  var before = { quotesAt: QUOTES_AT ? QUOTES_AT.getTime() : 0, ticks: STREAM.ticks };
+  btn.disabled = true;
+  btn.textContent = t('조회 중…', 'loading…');
+  DIAG = [];
+  CACHE = {}; LIST = {}; SRC = {};
+  SNAP_CHART = {};
+  applySnapshot();                  /* 스냅샷은 유지 — 실시간이 실패해도 빈 화면이 되지 않게 */
+  STREAM.tries = 0; streamStart();   /* 스트리밍이 끊겨 있었으면 다시 붙어 본다 */
+
+  var jobs = [
+    loadQuotes(),
+    loadList().then(function () {
+      if (SNAP || QUOTES) return null;
+      return enrichVisible(rowsForList().slice(0, Math.min(state.limit, 15)).map(function (r) { return r.sym; }));
+    }, function () { return null; }),
+    loadDetail(state.sel, true)
+  ];
+  Promise.all(jobs.map(function (p) { return Promise.resolve(p).catch(function () { return null; }); }))
+    .then(function () {
+      refreshing = false;
+      btn.disabled = false;
+      btn.textContent = t('지금 새로 조회', 'Refresh now');
+      var msg;
+      if (streamLive()) {
+        msg = t('실시간 스트리밍이 살아 있습니다 — 값이 계속 들어옵니다.', 'Live stream is up — values keep arriving.');
+      } else if (SRC.list === 'live') {
+        msg = t('브라우저에서 직접 받았습니다.', 'Fetched directly from the browser.');
+      } else if (QUOTES_AT && QUOTES_AT.getTime() > before.quotesAt) {
+        msg = t('러너가 올린 새 가격을 받았습니다 (' + (ageLabel(QUOTES_AT) || '') + ' 수집).',
+                'Picked up a newer runner file (collected ' + (ageLabel(QUOTES_AT) || '') + ').');
+      } else if (QUOTES_AT) {
+        msg = t('새로 올라온 값이 없습니다 — 여전히 ' + (ageLabel(QUOTES_AT) || '') + ' 수집분입니다.',
+                'Nothing newer available — still the file collected ' + (ageLabel(QUOTES_AT) || '') + '.');
+      } else {
+        msg = t('시세를 받지 못했습니다. 아래 ⑨ 섹션의 요청 진단을 보세요.',
+                'Could not fetch quotes — see the diagnostics in section ⑨.');
+      }
+      updMessage('<b>' + esc(msg) + '</b>', 7000);   /* 7초 동안 붙잡아 두었다가 상태줄로 돌아간다 */
+    });
+}
+
 function bindEvents() {
   Array.prototype.forEach.call(document.querySelectorAll('.lang-toggle button'), function (b) {
     b.addEventListener('click', function () {
@@ -3368,18 +3541,11 @@ function bindEvents() {
     enrichVisible(rowsForList().slice(0, state.limit).map(function (r) { return r.sym; }));
   });
   el('btn-csv').addEventListener('click', downloadCsv);
-  el('btn-refresh').addEventListener('click', function () {
-    DIAG = [];
-    CACHE = {}; LIST = {}; SRC = {};
-    SNAP_CHART = {};
-    applySnapshot();                 /* 스냅샷은 유지 — 실시간이 실패해도 빈 화면이 되지 않게 */
-    loadQuotes();                    /* 러너가 새로 올린 가격이 있으면 바로 반영 */
-    STREAM.tries = 0; streamStart();  /* 스트리밍이 끊겨 있었으면 다시 붙어 본다 */
-    loadList().then(function () {
-      if (SNAP) return null;
-      return enrichVisible(rowsForList().slice(0, Math.min(state.limit, 15)).map(function (r) { return r.sym; }));
-    });
-    loadDetail(state.sel, true);
+  el('btn-refresh').addEventListener('click', manualRefresh);
+  el('auto-refresh').addEventListener('change', function () {
+    state.auto = this.checked;
+    try { localStorage.setItem('mas-us100-auto', state.auto ? 'on' : 'off'); } catch (e) {}
+    if (state.auto) loadQuotes();
   });
   window.addEventListener('resize', function () {
     clearTimeout(window.__rs);
@@ -3388,10 +3554,21 @@ function bindEvents() {
 }
 
 (function init() {
-  try {
-    var saved = localStorage.getItem('mas-us100-sel');
-    if (saved && company(saved).seq !== 999) state.sel = saved;
-  } catch (e) {}
+  /* 주소 해시(#AAPL)가 있으면 그 종목으로 연다 — 링크로 특정 종목을 공유할 수 있게 */
+  var fromHash = (location.hash || '').replace(/^#/, '').toUpperCase();
+  if (fromHash && company(fromHash).seq !== 999) state.sel = fromHash;
+  else {
+    try {
+      var saved = localStorage.getItem('mas-us100-sel');
+      if (saved && company(saved).seq !== 999) state.sel = saved;
+    } catch (e) {}
+  }
+  var autoBox = el('auto-refresh');
+  if (autoBox) autoBox.checked = state.auto;
+  window.addEventListener('hashchange', function () {
+    var h = (location.hash || '').replace(/^#/, '').toUpperCase();
+    if (h && h !== state.sel && company(h).seq !== 999) select(h);
+  });
   applyCfg();
   bindEvents();
   applyLang();
@@ -3409,15 +3586,21 @@ function bindEvents() {
       return enrichVisible(rowsForList().slice(0, Math.min(state.limit, 15)).map(function (r) { return r.sym; }));
     });
   });
-  /* 가격 파일은 1분마다 다시 확인한다(15KB). 러너가 새로 올리면 화면이 스스로 따라간다. */
-  setInterval(function () { if (!document.hidden) loadQuotes(); }, 60000);
-  /* 나이 표시("7분 전")는 30초마다 다시 그린다 */
+  /* 가격 파일은 1분마다 다시 확인한다(15KB). 러너가 새로 올리면 화면이 스스로 따라간다.
+     탭이 숨어 있거나 자동 갱신을 끄면 부르지 않는다. */
+  setInterval(function () { if (state.auto && !document.hidden) loadQuotes(); }, 60000);
+  /* 나이·장 상태 표시는 30초마다 다시 그린다 */
   setInterval(function () {
     if (document.hidden) return;
+    renderUpdLine();
     renderHeroMeta();
     if (CACHE[state.sel]) { renderQuote(modelOf(state.sel)); renderSources(); }
     renderList();
   }, 30000);
+  /* 탭으로 돌아오면 곧바로 한 번 확인한다 */
+  document.addEventListener('visibilitychange', function () {
+    if (!document.hidden && state.auto) { loadQuotes(); renderUpdLine(); }
+  });
 })();
 </script>
 
