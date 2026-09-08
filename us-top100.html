@@ -591,7 +591,9 @@ var COMPANIES = [
   ['PFE','Pfizer','화이자','hc'],
   ['MU','Micron Technology','마이크론','it'],
   ['PANW','Palo Alto Networks','팔로알토네트웍스','it'],
-  ['FI','Fiserv','파이서브','fin'],
+  /* 티커가 바뀐 종목. 야후는 예전 심볼(FI)을 404 로 답한다 —
+     수집기(scripts/fetch_us100.py)가 회사명으로 찾아낸 현재 심볼로 맞춰 두었다. */
+  ['FISV','Fiserv','파이서브','fin'],
   ['GILD','Gilead Sciences','길리어드','hc'],
   ['MDT','Medtronic','메드트로닉','hc'],
   ['LMT','Lockheed Martin','록히드마틴','ind'],
@@ -600,7 +602,7 @@ var COMPANIES = [
   ['BX','Blackstone','블랙스톤','fin'],
   ['SCHW','Charles Schwab','찰스슈왑','fin'],
   ['KKR','KKR & Co.','KKR','fin'],
-  ['MMC','Marsh & McLennan','마시앤드맥레넌','fin'],
+  ['MRSH','Marsh McLennan','마시앤드맥레넌','fin'],
   ['ADI','Analog Devices','아날로그디바이스','it'],
   ['SBUX','Starbucks','스타벅스','cd'],
   ['PLD','Prologis','프로로지스','re'],
@@ -1463,7 +1465,7 @@ function rowsForList() {
     var up = l.tgt != null && l.price ? ((l.tgt - l.price) / l.price) * 100 : null;
     return { sym: c[0], en: c[1], ko: c[2], sector: c[3], seq: i + 1,
       price: l.price, chg: l.changePct, cap: l.cap, per: l.per, eps: l.eps, tgt: l.tgt, up: up,
-      demo: !!l.demo, intraday: !!l.intraday };
+      demo: !!l.demo, intraday: !!l.intraday, failed: !!l.snapFailed, note: l.snapNote || '' };
   });
   if (q) {
     out = out.filter(function (r) {
@@ -1530,7 +1532,10 @@ function renderList() {
         '<td class="co">' + esc(lang === 'en' ? r.en : r.ko) +
           (lang === 'en' ? '' : '<span class="sm">' + esc(r.en) + '</span>') + '</td>' +
         '<td>' + esc(sectorName(r.sector)) + '</td>' +
-        '<td class="num">' + price(r.price) + '</td>' +
+        '<td class="num">' + (r.failed
+          ? '<span class="badge none" title="' + esc(t('수집기가 이 종목 시세를 받지 못했습니다: ', 'The collector could not fetch this symbol: ') + r.note) + '">' +
+            esc(t('조회 불가', 'no data')) + '</span>'
+          : price(r.price)) + '</td>' +
         '<td class="num ' + signCls(r.chg) + '">' + pct(r.chg) + '</td>' +
         '<td class="num">' + usd(r.cap) + '</td>' +
         '<td class="num">' + ratio(r.per, 1) + '</td>' +
@@ -1550,6 +1555,7 @@ function renderList() {
 
   var missing = shown.filter(function (r) { return r.cap == null; }).length;
   var intraday = shown.filter(function (r) { return r.intraday; }).length;
+  var failed = rowsForList().filter(function (r) { return r.failed; });
   if (SRC.list === 'sample') badge('badge-list', 'sample');
   else if (SRC.list === 'live') badge('badge-list', 'live');
   else if (SRC.list === 'snapshot') badge('badge-list', 'snapshot');
@@ -1564,7 +1570,12 @@ function renderList() {
     : t('“#” 열은 초기 목록 순서(대형주 참고 순서)이며, 실제 순위는 조회한 시가총액으로 정렬하면 나옵니다.',
         'The “#” column is the initial list order; rank by the market cap actually fetched using the sort control.')) +
     (intraday ? '<br>' + esc(t('보조 소스(Stooq)로 받은 ' + intraday + '개 종목의 등락률은 전일 종가가 아니라 당일 시가 대비입니다.',
-        'For ' + intraday + ' rows fetched from the fallback source (Stooq), the change is measured against the day\'s open, not the previous close.')) : '');
+        'For ' + intraday + ' rows fetched from the fallback source (Stooq), the change is measured against the day\'s open, not the previous close.')) : '') +
+    (failed.length ? '<br>' + esc(t('데이터 제공사가 심볼을 인식하지 못해 조회되지 않는 종목: ',
+        'Symbols the data provider does not recognize, so no data is available: ')) +
+      '<b>' + esc(failed.map(function (r) { return r.sym; }).join(', ')) + '</b>' +
+      esc(t(' — 티커가 바뀐 경우일 수 있습니다(수집기가 회사명으로 재탐색을 시도합니다).',
+        ' — the ticker may have changed (the collector retries by company name).')) : '');
 }
 
 function toggleFav(sym) {
@@ -2629,7 +2640,8 @@ function renderSources() {
   };
   var rows = [
     [t('저장 스냅샷 (러너 수집)', 'Saved snapshot (runner)'),
-      SNAP ? ('data/us100/latest.json · ' + t('수집 ', 'fetched ') + dateTimeFmt(Math.floor(snapAsOf().getTime() / 1000)) +
+      SNAP ? ('data/us100/latest.json' +
+              (snapAsOf() ? ' · ' + t('수집 ', 'fetched ') + dateTimeFmt(Math.floor(snapAsOf().getTime() / 1000)) : '') +
               ' · ' + t(Object.keys(SNAP.companies).length + '개 종목', Object.keys(SNAP.companies).length + ' symbols'))
            : 'data/us100/latest.json',
       SNAP ? 'ok' : null],
@@ -2802,9 +2814,15 @@ function applySnapshot() {
     fill('tgt', c.target ? c.target.mean : null);
     if (l.src == null) l.src = 'snapshot';
     l.enriched = true;
+    var st = SNAP.sources && SNAP.sources[sym];
+    if (st && typeof st === 'object' && st.chart !== true && q.price == null) {
+      l.snapFailed = true;                     /* 수집기가 이 종목 시세를 못 받았다 */
+      l.snapNote = String(st.chart || st.fatal || '');
+    }
     var d = CACHE[sym] || (CACHE[sym] = { sym: sym, charts: {}, srcs: {}, ts: Date.now() });
     d.snap = c;
     if (!d.summary && !d.tsFin) d.srcs.summary = d.srcs.summary || 'snapshot';
+    if (!d.news && c.news && c.news.length) d.srcs.news = d.srcs.news || 'snapshot';
   });
   if (SRC.list == null || SRC.list === 'sample') SRC.list = 'snapshot';
   if (state.asof == null && SNAP.fetchedAt) state.asof = new Date(SNAP.fetchedAt);
@@ -2833,11 +2851,11 @@ var RANGE_DAYS = { '1mo': 31, '3mo': 93, '6mo': 186, '1y': 372, '2y': 740, '5y':
 function chartFromSnapshot(sym, interval, range) {
   var src = SNAP_CHART[sym];
   if (!src) return null;
-  var raw = interval === '1mo' ? src.monthly : src.daily;
-  if (!raw || !raw.c || !raw.c.length) return null;
+  var ser = interval === '1mo' ? src.monthly : src.daily;
+  if (!ser || !ser.c || !ser.c.length) return null;
 
-  var rows = raw.d.map(function (day, i) {
-    return { t: new Date(day + 'T00:00:00Z'), o: raw.o[i], h: raw.h[i], l: raw.l[i], c: raw.c[i], v: raw.v[i] };
+  var rows = ser.d.map(function (day, i) {
+    return { t: new Date(day + 'T00:00:00Z'), o: ser.o[i], h: ser.h[i], l: ser.l[i], c: ser.c[i], v: ser.v[i] };
   });
   if (interval === '1wk') rows = groupWeekly(rows);
 
