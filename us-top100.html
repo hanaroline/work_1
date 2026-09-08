@@ -261,6 +261,27 @@ caption{caption-side:bottom; text-align:left; font-size:14px; color:var(--muted)
 .cmp-chip .x{border:0; background:none; cursor:pointer; color:var(--muted); font-size:17px; line-height:1; padding:0 2px;}
 .cmp-chip .x:hover{color:var(--error);}
 .cmp-none{font-size:16px; color:var(--muted);}
+.cmp-bar input[type="text"]{
+  font-family:inherit; font-size:16px; padding:9px 12px; border:1px solid var(--hairline);
+  border-radius:2px; background:#fff; color:var(--ink); width:220px; max-width:100%;
+}
+.cmp-bar input[type="text"]:focus{outline:2px solid var(--orange); outline-offset:-1px;}
+.cmp-set{
+  display:inline-flex; align-items:center; gap:8px; border:1px solid var(--hairline); border-radius:2px;
+  background:#fff; padding:0 0 0 11px; font-size:16px; color:var(--ink);
+}
+.cmp-set > button.nm{
+  font-family:inherit; font-size:16px; border:0; background:none; cursor:pointer; color:var(--ink);
+  padding:8px 2px 8px 0; text-align:left;
+}
+.cmp-set .sy{font-family:var(--font-num); font-size:13px; color:var(--muted); margin-left:7px;}
+.cmp-set:hover{border-color:var(--orange);}
+.cmp-set.on{border-color:var(--orange); background:#FFF6EE;}
+.cmp-set.on > button.nm{color:var(--orange-active); font-weight:600;}
+.cmp-set .x{border:0; background:none; cursor:pointer; color:var(--muted); font-size:17px; line-height:1; padding:0 9px 0 2px;}
+.cmp-set .x:hover{color:var(--error);}
+.cmp-set .lock{color:var(--muted); font-size:13px; padding-right:10px;}
+.cmp-sets-lb{font-size:14px; color:var(--muted); letter-spacing:.4px;}
 #t-cmp{min-width:640px;}
 #t-cmp thead th{vertical-align:bottom;}
 #t-cmp thead th .sy{font-family:var(--font-num); font-size:17px; color:var(--blue); display:block;}
@@ -348,7 +369,7 @@ footer .disc p{margin:0 0 12px;}
 
 /* ---------- 인쇄 ---------- */
 @media print{
-  .toolbar,.finder-search,.finder-filters,.finder-bar,.seg,.chart-ctrl,.btn,.btn-tool,details.diag,#cmp-ctrl,#list-table .cmpc{display:none !important;}
+  .toolbar,.finder-search,.finder-filters,.finder-bar,.seg,.chart-ctrl,.btn,.btn-tool,details.diag,#cmp-ctrl,#cmp-save-bar,#list-table .cmpc{display:none !important;}
   body{font-size:13pt; line-height:1.4;}
   .page{max-width:100%; padding:0;}
   .hero{background:#fff !important; color:var(--ink); padding:0 0 24px; border-bottom:2px solid var(--orange); margin:0;}
@@ -437,8 +458,8 @@ footer .disc p{margin:0 0 12px;}
     <div class="section-rule"></div>
     <p class="section-eyebrow" data-ko="STEP 2" data-en="STEP 2">STEP 2</p>
     <h2 class="section-title"><span data-ko="종목 비교" data-en="Compare companies">종목 비교</span><span class="badge" id="badge-cmp">—</span></h2>
-    <p class="section-lead" data-ko="위 목록의 <b>비교</b> 칸을 눌러 최대 4종목을 고르면, 같은 시점을 100으로 맞춘 주가 흐름과 기간별 수익률·지표를 나란히 놓고 봅니다."
-       data-en="Tick the <b>vs</b> column in the list above to pick up to four companies, then compare them on one rebased (=100) price chart, trailing returns and a metric table.">위 목록의 <b>비교</b> 칸을 눌러 최대 4종목을 고르면, 같은 시점을 100으로 맞춘 주가 흐름과 기간별 수익률·지표를 나란히 놓고 봅니다.</p>
+    <p class="section-lead" data-ko="위 목록의 <b>비교</b> 칸을 눌러 최대 4종목을 고르면, 같은 시점을 100으로 맞춘 주가 흐름과 기간별 수익률·지표를 나란히 놓고 봅니다. 자주 보는 묶음은 <b>조합</b>으로 저장해 한 번에 갈아 끼울 수 있습니다."
+       data-en="Tick the <b>vs</b> column in the list above to pick up to four companies, then compare them on one rebased (=100) price chart, trailing returns and a metric table. Save the groups you use often as <b>sets</b> and switch between them in one click.">위 목록의 <b>비교</b> 칸을 눌러 최대 4종목을 고르면, 같은 시점을 100으로 맞춘 주가 흐름과 기간별 수익률·지표를 나란히 놓고 봅니다. 자주 보는 묶음은 <b>조합</b>으로 저장해 한 번에 갈아 끼울 수 있습니다.</p>
 
     <div class="cmp-bar" id="cmp-chips"></div>
     <div class="cmp-bar" id="cmp-ctrl">
@@ -447,6 +468,17 @@ footer .disc p{margin:0 0 12px;}
       <button class="btn" type="button" id="cmp-peers" data-ko="선택 종목 + 동일 섹터 상위" data-en="Selected + sector peers">선택 종목 + 동일 섹터 상위</button>
       <button class="btn" type="button" id="cmp-clear" data-ko="비교 전체 해제" data-en="Clear all">비교 전체 해제</button>
     </div>
+
+    <div class="cmp-bar" id="cmp-save-bar">
+      <span class="lb" data-ko="조합" data-en="Sets">조합</span>
+      <input type="text" id="cmp-set-name" maxlength="24" autocomplete="off"
+             data-ko-ph="이름 (예: AI 반도체)" data-en-ph="name (e.g. AI semis)" placeholder="이름 (예: AI 반도체)"
+             aria-label="Name for this comparison set">
+      <button class="btn" type="button" id="cmp-set-save"
+        title="지금 담아 둔 종목 묶음을 이름을 붙여 저장합니다. 저장한 조합은 아래에서 눌러 한 번에 불러옵니다(브라우저에 남습니다)."
+        data-ko="현재 조합 저장" data-en="Save current set">현재 조합 저장</button>
+    </div>
+    <div class="cmp-bar" id="cmp-sets"></div>
 
     <div class="chart-ctrl">
       <span class="lb" data-ko="기간" data-en="Range">기간</span>
@@ -609,28 +641,53 @@ footer .disc p{margin:0 0 12px;}
     <div class="note-box" id="snap-stale" hidden></div>
     <div class="note-box" id="fallback-note" hidden></div>
     <details class="diag">
-      <summary data-ko="데이터 경로 설정 (사내 프록시 · 사내 API)" data-en="Data route settings (corporate proxy / API)">데이터 경로 설정 (사내 프록시 · 사내 API)</summary>
-      <p style="font-size:16px; line-height:1.6; margin:14px 0 10px" data-ko="사내에 외부 요청을 대신 보내주는 프록시가 있으면 여기에 넣으세요. 넣는 순간부터 <b>브라우저가 직접 실시간 시세를 받아옵니다</b>(가장 앞 경로로 씁니다). 주소에 <code>{url}</code>(원문 그대로) 또는 <code>{urlenc}</code>(URL 인코딩)를 넣어 어디에 대상 주소가 들어갈지 표시합니다."
-         data-en="If your network has a proxy that forwards outbound requests, put it here. From then on the browser fetches live quotes directly (this route is tried first). Mark where the target URL goes with <code>{url}</code> (raw) or <code>{urlenc}</code> (URL-encoded).">사내에 외부 요청을 대신 보내주는 프록시가 있으면 여기에 넣으세요. 넣는 순간부터 <b>브라우저가 직접 실시간 시세를 받아옵니다</b>(가장 앞 경로로 씁니다). 주소에 <code>{url}</code>(원문 그대로) 또는 <code>{urlenc}</code>(URL 인코딩)를 넣어 어디에 대상 주소가 들어갈지 표시합니다.</p>
-      <p style="font-size:15px; line-height:1.6; margin:0 0 14px; color:var(--muted)"
-         data-ko="사내 프록시가 없으면 Cloudflare Workers 무료 플랜으로 10줄짜리 개인 프록시를 5분 만에 올릴 수 있습니다 — 코드와 절차는 저장소 README 의 “사내 프록시가 없다면” 절에 있습니다."
-         data-en="No corporate proxy? A 10-line personal proxy on the Cloudflare Workers free plan takes five minutes — the code and steps are in the repository README.">사내 프록시가 없으면 Cloudflare Workers 무료 플랜으로 10줄짜리 개인 프록시를 5분 만에 올릴 수 있습니다 — 코드와 절차는 저장소 README 의 “사내 프록시가 없다면” 절에 있습니다.</p>
-      <label style="display:block; font-size:14px; color:var(--muted); margin-bottom:6px" data-ko="사내 프록시 주소 템플릿" data-en="Corporate proxy URL template">사내 프록시 주소 템플릿</label>
+      <summary data-ko="고급 설정 — 회사 네트워크에서 시세가 막힐 때 (대부분 비워 두세요)"
+               data-en="Advanced — only if your network blocks the data (usually leave empty)">고급 설정 — 회사 네트워크에서 시세가 막힐 때 (대부분 비워 두세요)</summary>
+
+      <div class="note-box info" style="margin-top:14px" data-ko="<b>이 설정이 필요한지 먼저 확인하세요.</b> 화면 위쪽 배지가 <b>실시간</b>·<b>시세 N분 전</b>·<b>스냅샷</b> 중 하나면 값이 정상으로 들어오고 있으니 <b>손대지 않으셔도 됩니다</b>. 모든 배지가 <b>예시 데이터</b>로 나올 때만 아래를 씁니다."
+           data-en="<b>Check whether you need this at all.</b> If the badges above read <b>live</b>, <b>quote N min ago</b> or <b>snapshot</b>, data is coming through and you can leave this alone. Use the fields below only when every badge says <b>demo data</b>.">
+        <b>이 설정이 필요한지 먼저 확인하세요.</b> 화면 위쪽 배지가 <b>실시간</b>·<b>시세 N분 전</b>·<b>스냅샷</b> 중 하나면 값이 정상으로 들어오고 있으니 <b>손대지 않으셔도 됩니다</b>. 모든 배지가 <b>예시 데이터</b>로 나올 때만 아래를 씁니다.
+      </div>
+
+      <p style="font-size:16px; line-height:1.7; margin:16px 0 10px"
+         data-ko="이 화면은 시세를 <b>인터넷에서 직접</b> 받아옵니다. 회사 네트워크가 그 요청을 막으면 아무 값도 못 받는데, 그때 <b>대신 받아다 줄 주소</b>를 알려 주면 다시 조회됩니다. 아래 두 칸이 그 주소를 넣는 곳이고, 둘 중 <b>하나만</b> 있어도 됩니다."
+         data-en="This page fetches quotes from the internet. If your network blocks that, nothing arrives — telling the page an address that can fetch on its behalf brings the data back. The two fields below are for that, and either one alone is enough.">이 화면은 시세를 <b>인터넷에서 직접</b> 받아옵니다. 회사 네트워크가 그 요청을 막으면 아무 값도 못 받는데, 그때 <b>대신 받아다 줄 주소</b>를 알려 주면 다시 조회됩니다. 아래 두 칸이 그 주소를 넣는 곳이고, 둘 중 <b>하나만</b> 있어도 됩니다.</p>
+
+      <h4 style="margin-top:20px" data-ko="① 사내 프록시 주소 — “대신 받아다 주는 창구”"
+          data-en="① Corporate proxy — a service that fetches on your behalf">① 사내 프록시 주소 — “대신 받아다 주는 창구”</h4>
+      <p style="font-size:15px; line-height:1.7; margin:6px 0 8px; color:var(--body)"
+         data-ko="사내에 <b>외부 주소를 대신 열어 주는 중계 서비스</b>가 있으면 그 주소를 넣습니다(사내 시스템 담당자에게 “외부 HTTP 요청 중계(프록시) 주소가 있나요?”라고 물어보면 됩니다). 주소 안에 <code>{urlenc}</code> 를 한 번 적어 두면, 이 화면이 받아오려는 주소를 그 자리에 끼워 넣어 요청합니다."
+         data-en="If your company runs a relay that opens external URLs for you, paste it here (ask your IT team for the outbound HTTP proxy URL). Write <code>{urlenc}</code> once inside it — the page substitutes the target address at that spot.">사내에 <b>외부 주소를 대신 열어 주는 중계 서비스</b>가 있으면 그 주소를 넣습니다(사내 시스템 담당자에게 “외부 HTTP 요청 중계(프록시) 주소가 있나요?”라고 물어보면 됩니다). 주소 안에 <code>{urlenc}</code> 를 한 번 적어 두면, 이 화면이 받아오려는 주소를 그 자리에 끼워 넣어 요청합니다.</p>
+      <p style="font-size:14px; line-height:1.7; margin:0 0 10px; color:var(--muted)"
+         data-ko="예) <code>https://intra.example.com/proxy?url={urlenc}</code> 로 넣으면 → 실제로는 <code>https://intra.example.com/proxy?url=https%3A%2F%2Fquery1.finance.yahoo.com%2F…</code> 를 부릅니다. 중계 서비스가 주소를 그대로 받는 방식이면 <code>{urlenc}</code> 대신 <code>{url}</code> 을 쓰세요."
+         data-en="e.g. <code>https://intra.example.com/proxy?url={urlenc}</code> becomes <code>…/proxy?url=https%3A%2F%2Fquery1.finance.yahoo.com%2F…</code>. If the relay expects the address unencoded, use <code>{url}</code> instead.">예) <code>https://intra.example.com/proxy?url={urlenc}</code> 로 넣으면 → 실제로는 <code>https://intra.example.com/proxy?url=https%3A%2F%2Fquery1.finance.yahoo.com%2F…</code> 를 부릅니다. 중계 서비스가 주소를 그대로 받는 방식이면 <code>{urlenc}</code> 대신 <code>{url}</code> 을 쓰세요.</p>
       <input id="cfg-proxy" type="url" placeholder="https://intra.example.com/proxy?url={urlenc}"
              style="width:100%; font-family:var(--font-num); font-size:15px; padding:11px 13px; border:1px solid var(--hairline); border-radius:2px">
-      <label style="display:block; font-size:14px; color:var(--muted); margin:16px 0 6px" data-ko="스냅샷 파일 경로 (data/us100/ 에 해당하는 주소)" data-en="Snapshot base URL (folder that holds data/us100 files)">스냅샷 파일 경로 (data/us100/ 에 해당하는 주소)</label>
+
+      <h4 style="margin-top:22px" data-ko="② 수집 파일 폴더 주소 — “미리 받아 둔 파일을 놓아둔 곳”"
+          data-en="② Folder that holds the collected files">② 수집 파일 폴더 주소 — “미리 받아 둔 파일을 놓아둔 곳”</h4>
+      <p style="font-size:15px; line-height:1.7; margin:6px 0 8px; color:var(--body)"
+         data-ko="이 화면이 쓰는 수집 파일(<code>latest.json</code>·<code>quotes.json</code>·<code>chart/</code>)을 사내 웹서버나 공유 폴더에 복사해 두었다면, <b>그 폴더 주소</b>를 넣습니다. 그러면 인터넷 대신 그곳에서 값을 읽습니다. 파일은 저장소의 <code>us100-data</code> 브랜치 <code>data/us100</code> 에 있습니다."
+         data-en="If the collected files (<code>latest.json</code>, <code>quotes.json</code>, <code>chart/</code>) are copied onto an internal web server or share, put that folder URL here and the page reads them from there instead of the internet. The files live in the repository’s <code>us100-data</code> branch under <code>data/us100</code>.">이 화면이 쓰는 수집 파일(<code>latest.json</code>·<code>quotes.json</code>·<code>chart/</code>)을 사내 웹서버나 공유 폴더에 복사해 두었다면, <b>그 폴더 주소</b>를 넣습니다. 그러면 인터넷 대신 그곳에서 값을 읽습니다. 파일은 저장소의 <code>us100-data</code> 브랜치 <code>data/us100</code> 에 있습니다.</p>
       <input id="cfg-base" type="url" placeholder="https://intra.example.com/us100/"
              style="width:100%; font-family:var(--font-num); font-size:15px; padding:11px 13px; border:1px solid var(--hairline); border-radius:2px">
-      <label class="chk" style="display:inline-flex; align-items:center; gap:8px; margin-top:16px; font-size:16px; cursor:pointer">
-        <input type="checkbox" id="cfg-stream" style="width:17px; height:17px; accent-color:var(--orange)">
-        <span data-ko="실시간 스트리밍 사용 (wss://streamer.finance.yahoo.com — 막히면 자동으로 아래 경로를 씁니다)"
-              data-en="Use live streaming (wss://streamer.finance.yahoo.com — falls back automatically if blocked)">실시간 스트리밍 사용 (wss://streamer.finance.yahoo.com — 막히면 자동으로 아래 경로를 씁니다)</span>
+
+      <h4 style="margin-top:22px" data-ko="③ 실시간 스트리밍" data-en="③ Live streaming">③ 실시간 스트리밍</h4>
+      <label class="chk" style="display:inline-flex; align-items:center; gap:8px; margin-top:4px; font-size:16px; cursor:pointer">
+        <input type="checkbox" id="cfg-stream" style="width:20px; height:20px; accent-color:var(--orange)">
+        <span data-ko="켜 두세요 — 미국 장중에 시세가 실시간으로 들어옵니다(막힌 환경이면 자동으로 다른 경로를 쓰므로 켜 두어도 손해가 없습니다)"
+              data-en="Leave this on — during US market hours quotes stream in live; if your network blocks it the page falls back automatically, so there is no downside">켜 두세요 — 미국 장중에 시세가 실시간으로 들어옵니다(막힌 환경이면 자동으로 다른 경로를 쓰므로 켜 두어도 손해가 없습니다)</span>
       </label>
-      <div style="display:flex; gap:10px; margin-top:14px; flex-wrap:wrap">
+
+      <div style="display:flex; gap:10px; margin-top:20px; flex-wrap:wrap">
         <button class="btn primary" type="button" id="cfg-save" data-ko="저장하고 다시 조회" data-en="Save and reload data">저장하고 다시 조회</button>
-        <button class="btn" type="button" id="cfg-clear" data-ko="지우기" data-en="Clear">지우기</button>
+        <button class="btn" type="button" id="cfg-clear" data-ko="지우고 원래대로" data-en="Clear">지우고 원래대로</button>
         <span id="cfg-msg" style="font-size:15px; color:var(--muted); align-self:center"></span>
       </div>
+
+      <p style="font-size:14px; line-height:1.7; margin:16px 0 0; color:var(--muted)"
+         data-ko="넣은 주소는 이 브라우저에만 저장되고 어디로도 전송되지 않습니다. <b>잘 모르겠으면 두 칸을 비워 두세요</b> — 비워 두어도 러너가 올려 둔 수집 파일 경로로 값이 들어옵니다. 사내 프록시가 없고 직접 만들어 보려면 저장소 README 의 “사내 프록시가 없다면” 절에 10줄짜리 예시가 있습니다. 인터넷이 아예 안 되는 PC 라면 이 설정이 아니라 <b>데이터가 들어 있는 오프라인 파일</b>(us-top100-offline.html)을 쓰세요."
+         data-en="What you type is stored only in this browser and never sent anywhere. <b>If unsure, leave both fields empty</b> — the page still reads the files published by the runner. To build your own relay, see the README section on personal proxies. For a PC with no internet at all, use the offline single file (us-top100-offline.html) instead of these settings.">넣은 주소는 이 브라우저에만 저장되고 어디로도 전송되지 않습니다. <b>잘 모르겠으면 두 칸을 비워 두세요</b> — 비워 두어도 러너가 올려 둔 수집 파일 경로로 값이 들어옵니다. 사내 프록시가 없고 직접 만들어 보려면 저장소 README 의 “사내 프록시가 없다면” 절에 10줄짜리 예시가 있습니다. 인터넷이 아예 안 되는 PC 라면 이 설정이 아니라 <b>데이터가 들어 있는 오프라인 파일</b>(us-top100-offline.html)을 쓰세요.</p>
     </details>
 
     <details class="diag">
@@ -4504,9 +4561,117 @@ function cmpModel(sym) {
   return modelOf(sym);
 }
 
-/* ---------- 17.1 렌더 ---------- */
+/* ---------- 17.1 비교 조합 저장 ----------
+   비교는 4종목까지가 화면이 읽히는 한계다(선 색·막대 라벨·표 폭). 그래서 종목 수를
+   늘리는 대신 **묶음을 저장해 갈아 끼우는** 쪽으로 푼다 — "AI 반도체 4종목"과
+   "빅테크 4종목"을 각각 저장해 두고 한 번에 전환한다.
+   ---------- */
+var CMP_SETS_MAX = 12;
+var CMP_SETS = [];
+try {
+  CMP_SETS = JSON.parse(localStorage.getItem('mas-us100-cmp-sets') || '[]') || [];
+} catch (e) { CMP_SETS = []; }
+CMP_SETS = (Array.isArray(CMP_SETS) ? CMP_SETS : []).filter(function (o) {
+  return o && typeof o.name === 'string' && Array.isArray(o.syms) && o.syms.length;
+}).slice(0, CMP_SETS_MAX);
+
+/* 자주 쓰는 묶음은 기본으로 제공한다(지우지 못하는 읽기 전용 조합) */
+var CMP_PRESETS = [
+  { ko: 'AI 반도체', en: 'AI semis', syms: ['NVDA', 'AVGO', 'AMD', 'MU'] },
+  { ko: '빅테크', en: 'Big tech', syms: ['AAPL', 'MSFT', 'GOOGL', 'AMZN'] },
+  { ko: '대형 은행', en: 'Big banks', syms: ['JPM', 'BAC', 'WFC', 'C'] },
+  { ko: '카드·결제', en: 'Payments', syms: ['V', 'MA', 'AXP', 'FISV'] },
+  { ko: '대형 제약', en: 'Big pharma', syms: ['LLY', 'MRK', 'PFE', 'ABBV'] },
+  { ko: '에너지', en: 'Energy', syms: ['XOM', 'CVX', 'COP'] },
+  { ko: '소프트웨어', en: 'Software', syms: ['CRM', 'NOW', 'ORCL', 'ADBE'] }
+];
+
+function cmpSetsSave() {
+  try { localStorage.setItem('mas-us100-cmp-sets', JSON.stringify(CMP_SETS)); } catch (e) {}
+}
+function cmpSetsSame(a, b) {
+  if (!a || !b || a.length !== b.length) return false;
+  var x = a.slice().sort().join(','), y = b.slice().sort().join(',');
+  return x === y;
+}
+/** 이름을 비워 두면 담긴 티커로 이름을 만든다(NVDA·AVGO·AMD) */
+function cmpSetAdd(rawName) {
+  if (!CMP.length) {
+    updMessage('<b>' + esc(t('담아 둔 종목이 없습니다 — 먼저 비교할 종목을 고르세요.',
+      'Nothing to save — pick companies first.')) + '</b>', 5000);
+    return;
+  }
+  var name = String(rawName || '').trim().slice(0, 24) || CMP.join('·');
+  var syms = CMP.slice();
+  var i = -1;
+  CMP_SETS.forEach(function (o, k) { if (o.name === name) i = k; });
+  var rec = { name: name, syms: syms, at: Date.now() };
+  if (i >= 0) CMP_SETS[i] = rec;
+  else {
+    CMP_SETS.unshift(rec);
+    if (CMP_SETS.length > CMP_SETS_MAX) CMP_SETS = CMP_SETS.slice(0, CMP_SETS_MAX);
+  }
+  cmpSetsSave();
+  renderCmpSets();
+  var box = el('cmp-set-name');
+  if (box) box.value = '';
+  updMessage('<b>' + esc(i >= 0
+    ? t('“' + name + '” 조합을 지금 담긴 종목으로 덮어썼습니다.', 'Overwrote the set “' + name + '”.')
+    : t('“' + name + '” 조합을 저장했습니다 — 아래에서 눌러 불러옵니다.',
+        'Saved the set “' + name + '” — load it from the chips below.')) + '</b>', 5000);
+}
+
+function cmpSetLoad(syms) {
+  var use = syms.filter(function (x) { return company(x).seq !== 999; }).slice(0, CMP_MAX);
+  if (!use.length) return;
+  CMP = use;
+  cmpSave();
+  renderList();
+  buildControls();
+  loadCompare();
+}
+
+function cmpSetDelete(name) {
+  CMP_SETS = CMP_SETS.filter(function (o) { return o.name !== name; });
+  cmpSetsSave();
+  renderCmpSets();
+}
+
+function renderCmpSets() {
+  var box = el('cmp-sets');
+  if (!box) return;
+  var chip = function (label, syms, delName) {
+    var on = cmpSetsSame(syms, CMP);
+    return '<span class="cmp-set' + (on ? ' on' : '') + '">' +
+      '<button type="button" class="nm" data-cmp-load="' + esc(syms.join(',')) + '" title="' +
+        esc(t('이 조합을 비교에 올립니다: ' + syms.join(', '), 'Load this set: ' + syms.join(', '))) + '">' +
+        esc(label) + '<span class="sy">' + esc(syms.join('·')) + '</span></button>' +
+      (delName
+        ? '<button type="button" class="x" data-cmp-setdel="' + esc(delName) + '" aria-label="' +
+          esc(t('조합 삭제', 'Delete set')) + '">×</button>'
+        : '<span class="lock" title="' + esc(t('기본 제공 조합입니다', 'Built-in set')) + '">' + esc(t('기본', 'preset')) + '</span>') +
+      '</span>';
+  };
+  var mine = CMP_SETS.map(function (o) { return chip(o.name, o.syms, o.name); }).join('');
+  var pre = CMP_PRESETS.map(function (o) { return chip(lang === 'en' ? o.en : o.ko, o.syms, null); }).join('');
+  box.innerHTML =
+    (mine ? '<span class="cmp-sets-lb">' + esc(t('내 조합', 'My sets')) + '</span>' + mine : '') +
+    '<span class="cmp-sets-lb">' + esc(t('기본 조합', 'Presets')) + '</span>' + pre;
+
+  Array.prototype.forEach.call(box.querySelectorAll('[data-cmp-load]'), function (b) {
+    b.addEventListener('click', function () {
+      cmpSetLoad(b.getAttribute('data-cmp-load').split(','));
+    });
+  });
+  Array.prototype.forEach.call(box.querySelectorAll('[data-cmp-setdel]'), function (b) {
+    b.addEventListener('click', function () { cmpSetDelete(b.getAttribute('data-cmp-setdel')); });
+  });
+}
+
+/* ---------- 17.2 렌더 ---------- */
 function renderCompare() {
   renderCmpChips();
+  renderCmpSets();
   var sets = CMP.map(cmpWindow).filter(Boolean);
   renderCmpChart(sets);
   renderCmpReturns();
@@ -5190,6 +5355,11 @@ function bindEvents() {
   if (clearBtn) clearBtn.addEventListener('click', clearAll);
   var clearBtn2 = el('btn-cmp-clear');
   if (clearBtn2) clearBtn2.addEventListener('click', clearAll);
+  var setName = el('cmp-set-name'), setSave = el('cmp-set-save');
+  if (setSave) setSave.addEventListener('click', function () { cmpSetAdd(setName ? setName.value : ''); });
+  if (setName) setName.addEventListener('keydown', function (e) {
+    if (e.key === 'Enter') { e.preventDefault(); cmpSetAdd(setName.value); }
+  });
   el('auto-refresh').addEventListener('change', function () {
     state.auto = this.checked;
     try { localStorage.setItem('mas-us100-auto', state.auto ? 'on' : 'off'); } catch (e) {}
