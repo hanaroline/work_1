@@ -380,12 +380,20 @@ footer .disc + .disc{margin-top:12px;}
   /* 인쇄하면 머리말이 흰 바탕이 되므로 흰 글씨를 되돌린다. */
   .hero .meta .dim{color:var(--muted) !important;}
   .section{padding-top:24px;}
-  .section[hidden]{display:block !important;}
-  /* "사용법만 인쇄" 를 누른 경우. 평소 인쇄는 모든 절을 펼치지만, 이때는
-     사용법 한 절만 남긴다 — 사용법을 뽑겠다는데 3,192행이 딸려 나오면 안 된다. */
+  /* 인쇄는 **지금 열어 놓은 탭 하나**만 찍는다.
+     여기에는 한동안 `.section[hidden]{display:block !important}` 가 있었다.
+     인쇄하면 여섯 절을 전부 펼치겠다는 뜻이었는데, 화면에서 비교 · 중복도를
+     보다가 인쇄를 누른 사람은 그 화면을 원한 것이지 펀드 3,194행과 사용법
+     16장까지 원한 것이 아니다. 종이 수백 장을 버리고서야 알게 되는 종류의
+     친절이라 걷어냈다. 숨긴 절은 숨긴 채로 둔다 — 위 .section[hidden] 규칙이
+     이미 그렇게 하고 있으므로 인쇄에서 따로 손댈 것이 없다. */
+  /* "사용법만 인쇄" 는 다른 탭을 보고 있어도 사용법을 뽑아 준다. */
   body.print-help .section{display:none !important;}
   body.print-help #tab-help{display:block !important;}
   .help-dl{display:none !important;}
+  /* 담은 것을 빼는 이름표는 화면에서 누르는 것이라 종이에서는 할 일이 없다.
+     이름은 바로 아래 겹침 표의 줄 이름으로 다시 나온다. */
+  .cmp-chips,.cmp-chips-hint{display:none !important;}
   table,.card,.hold-row{page-break-inside:avoid;}
   /* 사용법의 "숫자를 읽는 법" 은 7행짜리 한 덩어리라 위의 "표는 쪼개지 않는다"
      규칙에 걸려 통째로 다음 장으로 밀렸다 — 앞 장이 카드 하나만 남고 텅 비었다.
@@ -1883,7 +1891,7 @@ function renderCompare() {
     '<span style="flex:1"></span><button type="button" id="cmp-clear">' +
     esc(lang === 'ko' ? '전부 비우기' : 'Clear all') + '</button></div>';
   html += chips();
-  html += '<div class="dim" style="font-size:12.5px;margin:-2px 0 14px">' + esc(lang === 'ko'
+  html += '<div class="dim cmp-chips-hint" style="font-size:12.5px;margin:-2px 0 14px">' + esc(lang === 'ko'
     ? '이름표의 × 를 누르면 그 펀드 하나만 빠집니다.'
     : 'Click × on a chip to drop that one fund.') + '</div>';
 
@@ -2788,6 +2796,7 @@ function renderHelp() {
         '<strong>사용법 내려받기 (PDF)</strong> — 미리 만들어 화면 안에 실어 둔 완성본을 그대로 받습니다.',
         '<strong>사용법만 인쇄 · PDF 저장</strong> — 브라우저의 인쇄창으로 직접 뽑습니다. 인쇄 설정에서 <strong>배경 그래픽</strong>을 켜야 주황 머리말이 나옵니다.',
         '오른쪽 위 <strong>KO / EN</strong> 으로 화면 전체의 언어를 바꿉니다. 사용법도 같이 바뀝니다.',
+        '오른쪽 위 <strong>인쇄 · PDF 저장</strong> 은 <strong>지금 열어 놓은 탭 하나만</strong> 찍습니다. 비교 · 중복도를 보다가 누르면 그 화면만 나옵니다 — 여섯 탭이 통째로 딸려 나오지 않습니다. 검색창 · 거르개처럼 눌러야 하는 것들은 종이에서 할 일이 없어 빠집니다.',
       ],
       controls: [
         ['PDF 단추가 안 보일 때', '실어 둔 PDF 는 만든 날의 자료를 담습니다. 화면이 <strong>지금 세는 수</strong>와 PDF 에 적힌 수가 다르면 낡은 것이므로, 화면이 스스로 단추를 감추고 <strong>왜 없는지를 적습니다.</strong> 그때는 옆의 인쇄 단추로 직접 뽑으십시오.'],
@@ -2903,6 +2912,7 @@ function renderHelp() {
         '<strong>Download (PDF)</strong> — the finished PDF bundled inside this page, handed over as-is.',
         '<strong>Print this page only / PDF</strong> — print through the browser. Enable <strong>background graphics</strong> or the orange headings disappear.',
         '<strong>KO / EN</strong> at the top right switches the whole screen, this guide included.',
+        '<strong>Print / PDF</strong> at the top right prints <strong>only the tab you have open</strong> — press it while looking at Compare and you get that screen, not all six tabs. Controls you would have to click (search box, filters) are left out; they do nothing on paper.',
       ],
       controls: [
         ['When the PDF button is missing', 'The bundled PDF describes the data as of the day it was built. If the counts on this screen no longer match the ones recorded in that PDF, it is stale — so the screen <strong>hides the button and says why</strong>. Use the print button instead.'],

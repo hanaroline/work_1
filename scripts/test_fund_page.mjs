@@ -971,6 +971,75 @@ check('총보수를 0 으로 지어내지 않는다', !feeInvented);
   await page.waitForTimeout(150);
 }
 
+// ── 인쇄는 지금 열어 놓은 탭 하나만 찍어야 한다
+//
+// 한동안 인쇄용 CSS 에 `.section[hidden]{display:block !important}` 가 있었다.
+// 인쇄할 때는 여섯 절을 전부 펼치겠다는 뜻이었는데, 비교 · 중복도를 보다가
+// 인쇄를 누른 사람에게 펀드 3,194행과 사용법 16장까지 딸려 나갔다. 종이
+// 수백 장을 버린 뒤에야 알게 되는 종류의 사고라 시험으로 못박아 둔다.
+//
+// 화면에서 보는 것으로는 절대 잡히지 않는다 — 인쇄 매체로 바꿔 놓고 봐야 한다.
+{
+  const TABS = ['browse', 'compare', 'reverse', 'rank', 'basis', 'help'];
+  // 비교 탭이 빈 채로 오면 표가 없어 아래 "표는 남는다" 가 헛돈다.
+  await page.evaluate(() => {
+    window.state.picks = window.FUNDS.filter((f) => (f.holdings || []).length > 3)
+      .slice(0, 3).map((f) => f.id);
+    renderCompare();
+  });
+  await page.emulateMedia({ media: 'print' });
+
+  // 인쇄 매체에서는 탭 줄 자체가 안 보이므로(그게 맞다) 눌러서 옮길 수 없다.
+  // 화면이 쓰는 것과 같은 showTab() 으로 옮긴다.
+  for (const t of TABS) {
+    await page.evaluate((x) => window.showTab(x), t);
+    await page.waitForTimeout(200);
+    const shown = await page.evaluate(() => [...document.querySelectorAll('.section')]
+      .filter((s) => s.getClientRects().length > 0)
+      .map((s) => s.id));
+    check(`인쇄하면 ${t} 탭 하나만 나온다`,
+      shown.length === 1 && shown[0] === `tab-${t}`,
+      shown.length === 1 ? shown[0] : `${shown.length}개 — ${shown.join(', ') || '없음'}`);
+  }
+
+  // 누르는 것들은 종이에서 할 일이 없다. 검색창·거르개·탭 줄·이름표가 그대로
+  // 찍히면 읽는 사람은 눌러 볼 수 없는 단추만 한 장 받는다.
+  await page.evaluate(() => window.showTab('compare'));
+  await page.waitForTimeout(200);
+  const chrome = await page.evaluate(() => {
+    const vis = (sel) => {
+      const e = document.querySelector(sel);
+      return !!e && e.getClientRects().length > 0;
+    };
+    return {
+      tabs: vis('.tabs'), bar: vis('#compare-body .finder-bar'),
+      chips: vis('#compare-body .cmp-chips'), hint: vis('#compare-body .cmp-chips-hint'),
+      table: vis('#compare-body table'),
+    };
+  });
+  check('인쇄에서 누르는 것들은 빠지고 표는 남는다',
+    !chrome.tabs && !chrome.bar && !chrome.chips && !chrome.hint && chrome.table,
+    `탭줄 ${chrome.tabs} · 띠 ${chrome.bar} · 이름표 ${chrome.chips} · 안내 ${chrome.hint} · 표 ${chrome.table}`);
+
+  // "사용법만 인쇄" 는 다른 탭을 보고 있어도 사용법을 뽑아 준다 — 위의
+  // "열어 놓은 탭만" 규칙에 눌려 빈 종이가 나오면 안 된다.
+  const helpOnly = await page.evaluate(() => {
+    document.body.classList.add('print-help');
+    const out = [...document.querySelectorAll('.section')]
+      .filter((s) => s.getClientRects().length > 0).map((s) => s.id);
+    document.body.classList.remove('print-help');
+    return out;
+  });
+  check('사용법만 인쇄는 다른 탭에서도 사용법을 뽑는다',
+    helpOnly.length === 1 && helpOnly[0] === 'tab-help',
+    helpOnly.join(', ') || '없음');
+
+  await page.emulateMedia({ media: null });
+  await page.evaluate(() => { window.state.picks = []; renderCompare(); renderList(); });
+  await page.locator('.tabs button[data-tab="browse"]').click();
+  await page.waitForTimeout(150);
+}
+
 // ── 머리말의 기준일은 수집 시각이 아니라 자료의 기준일이라야 한다
 //
 // 값은 수집 시각인데 이름만 "기준일" 이었고, ISO 를 그대로 잘라 UTC 날짜를
