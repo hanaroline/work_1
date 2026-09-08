@@ -308,14 +308,63 @@ us-top100.html
 python3 -m http.server 8000   # → http://localhost:8000/us-top100.html
 ```
 
-## 데이터 소스 — 두 경로
+## 데이터 소스 — 세 경로
 
-**① 저장 스냅샷 (러너 수집)** — GitHub Actions 러너가 미국 마감 뒤 야후에서 받아
-`data/us100/` 에 커밋한 값입니다. 화면은 이것을 **먼저** 그립니다. 사내망·CORS 로
-브라우저가 야후에 못 붙는 곳에서도 실제 수치가 나오고, 열자마자 100종목 지표가 다 채워집니다.
+화면은 **가장 빠르고 확실한 것부터** 그리고, 더 신선한 값이 오면 덮어씁니다.
+어느 경로로 그려졌는지는 섹션 배지가 말해 줍니다.
 
-**② 실시간 (브라우저 직접 조회)** — 붙을 수 있는 환경이면 스냅샷 위에 실시간 값을 덮어씁니다.
-섹션 배지가 `스냅샷 09.08 13:46` 에서 `실시간` 으로 바뀌는 것으로 구분합니다.
+**① 가격 파일 (장중 10분 주기)** — `data/us100/quotes.json`. 러너가 25종목씩 묶어
+4~5번 요청으로 20~40초에 받아 커밋합니다. 화면은 이 파일을 가격·등락률에 먼저 쓰고
+**1분마다 다시 확인**해 새로 올라온 값을 스스로 따라갑니다. 배지에 `시세 7분 전`처럼
+**실제 나이**를 적습니다(GitHub 예약은 늦을 때가 있어 주기를 약속하지 않습니다).
+
+**② 저장 스냅샷 (하루 단위)** — `data/us100/latest.json` + `chart/{SYM}.json`.
+지표·실적·컨센서스·일정·투자의견·뉴스·시계열이 들어 있습니다. 사내망·CORS 로
+브라우저가 야후에 못 붙는 곳에서도 실제 수치가 나오고, 열자마자 100종목이 다 채워집니다.
+
+**③ 실시간 (브라우저 직접 조회)** — 붙을 수 있는 환경이면 위 두 값을 덮어씁니다.
+배지가 `실시간` 으로 바뀌는 것으로 구분합니다.
+
+### 사내 프록시가 있으면 진짜 실시간이 됩니다
+
+화면 ⑨ 섹션의 **데이터 경로 설정**에 사내 프록시 주소를 넣으면(예:
+`https://intra.example.com/proxy?url={urlenc}`) 그 경로를 **가장 먼저** 시도합니다.
+넣는 즉시 브라우저가 직접 야후를 호출해 지연 없는 시세를 받습니다. 스냅샷 파일 경로도
+사내 주소로 바꿀 수 있습니다. 주소는 회사마다 달라 코드에 박지 않고 브라우저
+(localStorage)에 저장합니다.
+
+> 무료 공개 소스 + 정적 HTML 로 **틱 단위 실시간**을 만들 수는 없습니다(유료 피드는 키가 필요).
+> 지금 구조에서 가능한 최선은 ⑴ 브라우저가 직접 붙는 환경이면 실시간, ⑵ 아니면 10분 주기
+> 가격 파일, ⑶ 사내 프록시를 넣으면 다시 실시간입니다.
+
+#### 사내 프록시가 없다면 — 개인 프록시 10줄로 만들기
+
+Cloudflare Workers 무료 플랜에 아래를 붙여 배포하고(5분), 나온 주소를
+`https://<이름>.workers.dev/?url={urlenc}` 형태로 **데이터 경로 설정**에 넣으면
+그 순간부터 브라우저가 지연 없이 시세를 받습니다. 대상 호스트를 두 곳으로 못 박아
+아무 주소나 대신 불러 주는 열린 프록시가 되지 않게 했습니다.
+
+```js
+const ALLOW = ['query1.finance.yahoo.com', 'query2.finance.yahoo.com', 'stooq.com'];
+export default {
+  async fetch(req) {
+    const target = new URL(req.url).searchParams.get('url');
+    if (!target) return new Response('url 파라미터가 없습니다', { status: 400 });
+    let u;
+    try { u = new URL(target); } catch { return new Response('주소 형식이 아닙니다', { status: 400 }); }
+    if (!ALLOW.includes(u.hostname)) return new Response('허용되지 않은 호스트', { status: 403 });
+    const r = await fetch(u, { headers: { 'User-Agent': 'Mozilla/5.0', Accept: 'application/json,text/plain,*/*' } });
+    const body = await r.arrayBuffer();
+    return new Response(body, { status: r.status,
+      headers: { 'content-type': r.headers.get('content-type') || 'application/json',
+                 'access-control-allow-origin': '*', 'cache-control': 'no-store' } });
+  }
+};
+```
+
+야후 `quoteSummary`(목표주가·컨센서스·일정)는 이 프록시로도 401 입니다 — 쿠키+crumb 이
+필요하기 때문입니다. 그 항목은 계속 러너 스냅샷을 씁니다. 프록시로 살아나는 것은
+**가격·차트·거래량·배당/분할·뉴스**입니다.
 
 > **야후 `quoteSummary` 는 쿠키 + crumb 을 요구합니다(없으면 HTTP 401).** 실제로 돌려 보니
 > 100종목 전부 401 이었고, crumb 핸드셰이크를 넣은 뒤 98/100 이 들어왔습니다. 이 핸드셰이크는
@@ -325,7 +374,7 @@ python3 -m http.server 8000   # → http://localhost:8000/us-top100.html
 
 | 항목 | 실시간 소스 | 폴백 순서 |
 |------|-------------|-----------|
-| 목록 시세(100종목) | Yahoo `v8/finance/spark` (25개 묶음) | Stooq CSV → **스냅샷** → 예시 데이터 |
+| 목록 시세(100종목) | Yahoo `v8/finance/spark` (25개 묶음) | Stooq CSV → **가격 파일(10분)** → **스냅샷** → 예시 데이터 |
 | 상세 시세·일/주/월 차트·배당·분할 이벤트 | Yahoo `v8/finance/chart` (`events=div,split`) | **스냅샷**(`data/us100/chart/{SYM}.json`) → 예시 데이터 |
 | 지표·실적·컨센서스·일정·투자의견 | Yahoo `v10/finance/quoteSummary` (13개 모듈, **쿠키+crumb 필요 → 브라우저에서는 대개 401**) | **스냅샷** → Yahoo `fundamentals-timeseries`(실적·밸류에이션만) → 예시 데이터 |
 | 뉴스 | Yahoo `v1/finance/search` | Google News RSS → 딥링크 안내 (스냅샷에 담지 않음) |
@@ -344,14 +393,20 @@ python3 -m http.server 8000   # → http://localhost:8000/us-top100.html
 | 영업이익 | 85/100 — 나머지는 은행·보험 등 금융업으로, 그 항목 자체가 제공되지 않는다(화면 캡션에 표기) |
 | 티커 변경 | 야후가 `FI`·`MMC` 를 404 로 답했다. 회사명 재탐색으로 **FI → FISV, MMC → MRSH** 를 찾아 목록을 고쳤다 |
 
-### 스냅샷 수집 (러너)
+### 수집 (러너)
 
 | 파일 | 역할 |
 |------|------|
-| `.github/workflows/us100-data.yml` | 미국 마감 뒤 **21:30·22:30 UTC** 예약(화~토), `data/us100/REFRESH` 수정 push, 수동 실행 |
+| `.github/workflows/us100-quotes.yml` | **가격만** — 미국 정규장 시간대(13~20 UTC) **10분 주기**, 마감 직후 2회, `data/us100/QUOTES_REFRESH` 수정 push, 수동 실행. 한 판에 20~40초 |
+| `scripts/fetch_us100_quotes.py` | 25종목씩 묶어 spark(1일 5분봉 → 5일 일봉) → 실패 시 Stooq 벌크. 환율도 함께 받아 `quotes.json` 저장 |
+| `.github/workflows/us100-data.yml` | **전체** — 미국 마감 뒤 **21:30·22:30 UTC** 예약(화~토), `data/us100/REFRESH` 수정 push, 수동 실행 |
 | `scripts/fetch_us100.py` | 종목별로 일봉 2년 · 월봉 10년 · quoteSummary 13개 모듈 · fundamentals-timeseries 를 받아 저장. 시작할 때 `fc.yahoo.com` 쿠키 → `/v1/test/getcrumb` 으로 crumb 을 얻는다. 야후 chart 가 404 인 심볼은 Stooq CSV 로, 손익 모듈이 빼놓은 영업이익·EPS 는 timeseries 로 메운다 |
 | `data/us100/latest.json` | 전 종목 요약(시세·지표·목표주가·일정·실적) + 종목별 수집 상태 |
 | `data/us100/chart/{SYM}.json` | 종목별 일봉 2년 · 월봉 10년 (주봉은 화면이 일봉을 주 단위로 묶어 만든다) |
+| `data/us100/quotes.json` | 100종목 가격·전일종가·등락률·거래량 + 환율 (약 15KB) |
+
+> **Actions 사용 시간** — 10분 주기 가격 갱신은 하루 약 50회 × 30~40초 ≈ 30분입니다.
+> 부담되면 `us100-quotes.yml` 의 cron 을 `*/15` 나 `*/30` 으로 늘리면 됩니다.
 
 지금 바로 다시 받고 싶으면 `data/us100/REFRESH` 를 한 줄 고쳐 push 하거나(브랜치 무관),
 Actions 탭에서 수동 실행합니다. 수집은 100종목 기준 5분 안팎이 걸립니다.
