@@ -27,6 +27,13 @@ SRC="data/us100"
 
 GITDIR="$(git rev-parse --absolute-git-dir)"   # 별도 인덱스로 트리를 만들 때 쓴다
 
+# git commit-tree 는 커밋 작성자 정보가 없으면 "empty ident name" 으로 죽는다.
+# 워크플로가 git config 를 해 두지 않아도 돌게, 스크립트가 스스로 채운다.
+export GIT_AUTHOR_NAME="${GIT_AUTHOR_NAME:-github-actions[bot]}"
+export GIT_AUTHOR_EMAIL="${GIT_AUTHOR_EMAIL:-github-actions[bot]@users.noreply.github.com}"
+export GIT_COMMITTER_NAME="${GIT_COMMITTER_NAME:-$GIT_AUTHOR_NAME}"
+export GIT_COMMITTER_EMAIL="${GIT_COMMITTER_EMAIL:-$GIT_AUTHOR_EMAIL}"
+
 TMP="$(mktemp -d)"
 MINE="$TMP/mine"
 trap 'rm -rf "$TMP"' EXIT
