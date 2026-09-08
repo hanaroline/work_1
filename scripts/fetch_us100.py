@@ -19,6 +19,7 @@
 
 import http.cookiejar
 import json
+import xml.etree.ElementTree as ET
 import os
 import re
 import sys
@@ -27,6 +28,7 @@ import urllib.error
 import urllib.parse
 import urllib.request
 from datetime import datetime, timezone
+from email.utils import parsedate_to_datetime
 
 UA = ("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
       "(KHTML, like Gecko) Chrome/125.0 Safari/537.36")
@@ -70,29 +72,54 @@ def _open(url, timeout=None):
     return _OPENER.open(urllib.request.Request(url, headers=HDRS), timeout=timeout or TIMEOUT)
 
 
-def init_crumb():
+def init_crumb(rounds=3):
     """쿠키를 받고 crumb 을 얻는다. 실패하면 None — 그 경우 quoteSummary 는 포기한다.
 
     fc.yahoo.com 은 404 를 주지만 Set-Cookie 는 함께 온다(널리 쓰이는 방식).
     EU 리전 러너에서는 동의 화면으로 넘어가 crumb 이 HTML 로 올 수 있어, 형태를 본다.
+
+    **여러 번 시도한다.** 한 번 실패한 판에서 목표주가·컨센서스·일정·투자의견이 통째로
+    비어 화면이 반쯤 빈 채로 배포된 일이 있었다(2026-09-08). 여기서 몇 초 더 쓰는 편이 낫다.
     """
     global CRUMB
-    for url in ("https://fc.yahoo.com/", "https://finance.yahoo.com/quote/AAPL/"):
-        try:
-            _open(url).read(64)
-        except Exception:                       # noqa: BLE001 — 쿠키만 필요하다
-            pass
-    for host in ("query2.finance.yahoo.com", "query1.finance.yahoo.com"):
-        try:
-            v = _open("https://" + host + "/v1/test/getcrumb").read().decode("utf-8", "replace").strip()
-            if v and len(v) < 40 and "<" not in v:
-                CRUMB = v
-                print("crumb 확보: %s (쿠키 %d개)" % (v, len(_CJ)), flush=True)
-                return CRUMB
-        except Exception as e:                  # noqa: BLE001
-            print("crumb 실패(%s): %s" % (host, e), flush=True)
-    print("crumb 을 얻지 못했다 — quoteSummary 는 건너뛴다", flush=True)
+    for attempt in range(1, rounds + 1):
+        _CJ.clear()
+        for url in ("https://fc.yahoo.com/", "https://finance.yahoo.com/quote/AAPL/"):
+            try:
+                _open(url).read(64)
+            except Exception:                   # noqa: BLE001 — 쿠키만 필요하다
+                pass
+        for host in ("query2.finance.yahoo.com", "query1.finance.yahoo.com"):
+            try:
+                v = _open("https://" + host + "/v1/test/getcrumb").read().decode("utf-8", "replace").strip()
+                if v and len(v) < 40 and "<" not in v:
+                    CRUMB = v
+                    print("crumb 확보: %s (쿠키 %d개, 시도 %d)" % (v, len(_CJ), attempt), flush=True)
+                    return CRUMB
+            except Exception as e:              # noqa: BLE001
+                print("crumb 실패(%s, 시도 %d): %s" % (host, attempt, e), flush=True)
+        time.sleep(2 * attempt)
+    CRUMB = None
+    print("crumb 을 얻지 못했다 — quoteSummary 는 건너뛴다(지표·목표주가·일정이 빈다)", flush=True)
     return None
+
+
+_CRUMB_RETRIED = False
+
+
+def fetch_summary_resilient(sym):
+    """401(크럼 만료/무효)이면 crumb 을 한 번 다시 받아 재시도한다."""
+    global _CRUMB_RETRIED
+    try:
+        return fetch_summary(sym)
+    except Exception as e:                      # noqa: BLE001
+        if "401" not in str(e) or _CRUMB_RETRIED:
+            raise
+        _CRUMB_RETRIED = True
+        print("  401 — crumb 을 다시 받는다", flush=True)
+        if not init_crumb(rounds=2):
+            raise
+        return fetch_summary(sym)
 
 
 def _get(url):
@@ -253,6 +280,41 @@ def fetch_news(sym, limit=6):
             continue
         out.append({"title": n["title"][:200], "source": n.get("publisher") or "Yahoo Finance",
                     "ts": num(n.get("providerPublishTime")), "url": n["link"]})
+    if not out:
+        raise RuntimeError("뉴스 없음")
+    return out
+
+
+def fetch_news_ko(c, limit=6):
+    """한글 뉴스 헤드라인 — 구글 뉴스 RSS(ko). 국내 이용자가 보는 화면이라 한글이 먼저다.
+
+    야후 검색 뉴스는 영문뿐이어서, 한국어 화면에서는 이 목록을 먼저 쓴다.
+    """
+    q = urllib.parse.quote((c.get("ko") or c["en"]) + " 주가")
+    url = ("https://news.google.com/rss/search?q=" + q + "&hl=ko&gl=KR&ceid=KR:ko")
+    xml = _get(url)
+    try:
+        root = ET.fromstring(xml)
+    except ET.ParseError as e:
+        raise RuntimeError("RSS 파싱 실패: %s" % e)
+    out = []
+    for item in root.iter("item"):
+        title = (item.findtext("title") or "").strip()
+        link = (item.findtext("link") or "").strip()
+        if not title or not link:
+            continue
+        src = item.find("{*}source")
+        source = (src.text if src is not None and src.text else None) or "Google News"
+        ts = None
+        pub = item.findtext("pubDate")
+        if pub:
+            try:
+                ts = int(parsedate_to_datetime(pub).timestamp())
+            except Exception:                       # noqa: BLE001
+                ts = None
+        out.append({"title": title[:200], "source": source.strip(), "ts": ts, "url": link})
+        if len(out) >= limit:
+            break
     if not out:
         raise RuntimeError("뉴스 없음")
     return out
@@ -606,7 +668,7 @@ def fetch_one(c, sym=None):
     time.sleep(PAUSE)
 
     try:
-        payload.update(shape_summary(fetch_summary(sym), meta))
+        payload.update(shape_summary(fetch_summary_resilient(sym), meta))
         status["summary"] = True
     except Exception as e:                      # noqa: BLE001
         status["summary"] = str(e)
@@ -649,6 +711,13 @@ def fetch_one(c, sym=None):
         status["news"] = True
     except Exception as e:                      # noqa: BLE001
         status["news"] = str(e)
+    time.sleep(PAUSE)
+
+    try:
+        payload["newsKo"] = fetch_news_ko(c)
+        status["newsKo"] = True
+    except Exception as e:                      # noqa: BLE001
+        status["newsKo"] = str(e)
     time.sleep(PAUSE)
 
     chart = None
@@ -738,14 +807,16 @@ def main():
                 print("  %-6s 재시도 성공" % c["sym"], flush=True)
 
     news_ok = sum(1 for v in out["sources"].values() if isinstance(v, dict) and v.get("news") is True)
+    news_ko_ok = sum(1 for v in out["sources"].values() if isinstance(v, dict) and v.get("newsKo") is True)
     out["summary"] = {"symbols": len(companies), "chartOk": ok, "summaryOk": qs_ok,
-                      "newsOk": news_ok, "crumb": bool(CRUMB)}
+                      "newsOk": news_ok, "newsKoOk": news_ko_ok, "crumb": bool(CRUMB)}
     with open(os.path.join(OUT_DIR, "latest.json"), "w", encoding="utf-8") as f:
         json.dump(out, f, ensure_ascii=False, separators=(",", ":"))
 
     size = os.path.getsize(os.path.join(OUT_DIR, "latest.json"))
-    print("\n수집 완료: 시세 %d/%d · 지표 %d/%d · 뉴스 %d/%d · latest.json %.0fKB"
-          % (ok, len(companies), qs_ok, len(companies), news_ok, len(companies), size / 1024), flush=True)
+    print("\n수집 완료: 시세 %d/%d · 지표 %d/%d · 뉴스 %d/%d · 한글뉴스 %d/%d · latest.json %.0fKB"
+          % (ok, len(companies), qs_ok, len(companies), news_ok, len(companies),
+             news_ko_ok, len(companies), size / 1024), flush=True)
     if ok == 0:
         raise SystemExit("한 종목도 받지 못했다 — 원천이 전부 막혔거나 응답 형태가 바뀌었다")
 
