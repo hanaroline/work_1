@@ -1208,7 +1208,7 @@ var PROFILE_KO = {
    "처음"의 기준은 판 문자열 + 파일 경로다. 새로 내려받은 파일은 판이 다르거나
    (같은 판이어도) 이름이 "us-top100 (1).html" 처럼 달라지므로 처음 상태로 열린다.
    ------------------------------------------------------------ */
-var BUILD = '2026-09-09.1';
+var BUILD = '2026-09-09.2';
 var STORE_KEYS = ['mas-us100-lang', 'mas-us100-favs', 'mas-us100-sel', 'mas-us100-auto',
   'mas-us100-ind', 'mas-us100-cmp', 'mas-us100-cmp-range', 'mas-us100-cmp-sets',
   'mas-us100-proxy', 'mas-us100-base', 'mas-us100-stream'];
@@ -4563,10 +4563,11 @@ CMP = CMP.filter(function (s) { return typeof s === 'string' && company(s).seq !
 var CMP_COLORS = [C.orange, C.blue, C.orangeSoft, C.blueSoft];
 var CMP_SERIES = {};      // sym -> { dates, close, src } | null(조회 실패)
 
-/* 처음 열었을 때 비교 섹션이 비어 보이지 않게 "선택 종목 + 동일 섹터 상위"로 채우는데,
-   그것을 저장하면 다음에 열 때 사용자가 고른 것처럼 체크가 남는다. 자동으로 채운 판은
-   저장하지 않고, 화면에도 자동이라고 밝힌다. 직접 고르면 그때부터 저장한다. */
-var CMP_AUTO = false;
+/* 처음 열 때 비교를 자동으로 채우지 않는다.
+   빈 화면을 피하려고 "선택 종목 + 동일 섹터 상위"로 채워 봤지만, 그러면 목록의 비교
+   체크박스 3개가 켜진 채로 열린다 — 저장하지 않아도 사용자에게는 "지난번 체크가 그대로
+   남았다"와 똑같이 보인다. 그래서 처음에는 아무것도 담지 않고, 비교 섹션에서 한 번
+   누르면 채워 주는 버튼과 기본 조합 칩으로 안내한다. */
 
 function cmpColor(i) { return CMP_COLORS[i % CMP_COLORS.length]; }
 function cmpSave() { try { localStorage.setItem('mas-us100-cmp', JSON.stringify(CMP)); } catch (e) {} }
@@ -4589,7 +4590,6 @@ function cmpToggle(sym, on) {
   } else {
     return;
   }
-  CMP_AUTO = false;
   cmpSave();
   renderList();
   loadCompare();
@@ -4615,14 +4615,12 @@ function cmpPeers(sym, n) {
   return out;
 }
 
-/** 처음 열었을 때 빈 화면을 보여 주지 않는다 — 선택 종목 + 동일 섹터 상위로 채운다.
- *  auto=true(초기화가 부른 경우)면 저장하지 않는다 — 사용자가 고른 것이 아니기 때문이다. */
-function cmpFillPeers(auto) {
+/** 비교 섹션의 "선택 종목 + 동일 섹터 상위로 채우기" — 사람이 눌렀을 때만 부른다 */
+function cmpFillPeers() {
   CMP = [state.sel].concat(cmpPeers(state.sel, 2));
-  CMP_AUTO = !!auto;
-  if (auto) { try { localStorage.removeItem('mas-us100-cmp'); } catch (e) {} }
-  else cmpSave();
+  cmpSave();
   renderList();
+  buildControls();
   loadCompare();
 }
 
@@ -4773,7 +4771,6 @@ function cmpSetLoad(syms) {
   var use = syms.filter(function (x) { return company(x).seq !== 999; }).slice(0, CMP_MAX);
   if (!use.length) return;
   CMP = use;
-  CMP_AUTO = false;
   cmpSave();
   renderList();
   buildControls();
@@ -4842,8 +4839,15 @@ function renderCmpChips() {
   var box = el('cmp-chips');
   if (!box) return;
   if (!CMP.length) {
-    box.innerHTML = '<span class="cmp-none">' + esc(t('비교할 종목이 없습니다. 위 목록의 “비교” 칸을 눌러 담아 주세요(최대 ' + CMP_MAX + '종목).',
-      'No companies picked yet — tick the “vs” column in the list above (up to ' + CMP_MAX + ').')) + '</span>';
+    /* 처음 열면 여기다. 무엇을 해야 하는지와 한 번에 채우는 길을 함께 준다. */
+    box.innerHTML = '<span class="cmp-none">' +
+      esc(t('비교에 담은 종목이 없습니다 — 위 목록의 “비교” 칸을 눌러 최대 ' + CMP_MAX + '종목까지 담으세요. ',
+            'Nothing in the comparison — tick the “vs” column in the list above (up to ' + CMP_MAX + '). ')) +
+      '<button type="button" class="btn" id="cmp-fill-here">' +
+      esc(t(state.sel + ' + 동일 섹터 상위로 채우기', 'Fill with ' + state.sel + ' + sector peers')) + '</button>' +
+      esc(t(' 또는 아래 기본 조합을 누르세요.', ' Or pick a preset below.')) + '</span>';
+    var fb = el('cmp-fill-here');
+    if (fb) fb.addEventListener('click', function () { cmpFillPeers(); renderRestoredNote(); });
     return;
   }
   box.innerHTML = CMP.map(function (sym, i) {
@@ -4855,12 +4859,6 @@ function renderCmpChips() {
       '<button type="button" class="x" data-cmp-del="' + esc(sym) + '" aria-label="' +
         esc(t(sym + ' 비교에서 빼기', 'Remove ' + sym)) + '">×</button></span>';
   }).join('');
-  if (CMP_AUTO) {
-    box.innerHTML += '<span class="cmp-none">' +
-      esc(t('처음 열 때 “선택 종목 + 동일 섹터 상위”로 자동 채운 조합입니다 — 직접 고른 조합은 브라우저에 저장됩니다.',
-            'Auto-filled with the selected company and its largest sector peers — your own picks are saved in this browser.')) +
-      '</span>';
-  }
   Array.prototype.forEach.call(box.querySelectorAll('[data-cmp-del]'), function (b) {
     b.addEventListener('click', function () { cmpToggle(b.getAttribute('data-cmp-del'), false); });
   });
@@ -5437,7 +5435,7 @@ function restoredBits() {
   var out = [];
   var has = function (k) { try { return localStorage.getItem(k) != null; } catch (e) { return false; } };
   if (FAVS.length) out.push(t('관심종목 ' + FAVS.length + '개', FAVS.length + ' watchlist'));
-  if (CMP.length && !CMP_AUTO) out.push(t('비교에 담은 종목 ' + CMP.length + '개(' + CMP.join('·') + ')',
+  if (CMP.length) out.push(t('비교에 담은 종목 ' + CMP.length + '개(' + CMP.join('·') + ')',
     CMP.length + ' in the comparison (' + CMP.join(', ') + ')'));
   if (CMP_SETS.length) out.push(t('저장한 비교 조합 ' + CMP_SETS.length + '개', CMP_SETS.length + ' saved sets'));
   if (has('mas-us100-sel')) out.push(t('마지막에 본 종목 ' + state.sel, 'last viewed ' + state.sel));
@@ -5592,12 +5590,11 @@ function bindEvents() {
   el('btn-refresh').addEventListener('click', manualRefresh);
   var peersBtn = el('cmp-peers');
   if (peersBtn) peersBtn.addEventListener('click', function () {
-    cmpFillPeers();               /* 사람이 누른 것이므로 저장한다 */
-    buildControls();
+    cmpFillPeers();
     renderRestoredNote();
   });
   var clearAll = function () {
-    CMP = []; CMP_AUTO = false; cmpSave(); renderList(); buildControls(); renderCompare();
+    CMP = []; cmpSave(); renderList(); buildControls(); renderCompare(); renderRestoredNote();
     updMessage('<b>' + esc(t('비교에 담아 둔 종목을 모두 뺐습니다.', 'Cleared the comparison.')) + '</b>', 4000);
   };
   var clearBtn = el('cmp-clear');
@@ -5652,9 +5649,9 @@ function bindEvents() {
   loadSnapshot().then(function (snap) {
     loadDetail(state.sel);
     loadRanking();                   /* 대상 목록 점검 결과(있으면 ⑩ 섹션에 표시) */
-    /* 비교는 담아 둔 것이 있으면 그대로, 없으면 선택 종목 + 동일 섹터 상위로 채운다 */
-    if (CMP.length >= 2) loadCompare();
-    else cmpFillPeers(true);        /* 자동 채우기 — 저장하지 않는다 */
+    /* 비교는 담아 둔 것만 올린다. 비어 있으면 비어 있는 대로 두고(체크박스도 모두 꺼진
+       상태) 비교 섹션의 채우기 버튼·기본 조합으로 안내한다. */
+    loadCompare();
     buildControls();
     return loadList().then(function () {
       /* 스냅샷이 이미 지표를 채웠으면 종목별 개별 조회는 하지 않는다 */
