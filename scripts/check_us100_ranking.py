@@ -264,9 +264,28 @@ def main():
             universe[sym]["cap"] = cap
         else:
             universe[sym] = {"cap": cap, "name": en.get(sym, sym)}
-    for sym in have:
-        if sym not in universe:
-            print("  %s 는 시총을 확인하지 못했다" % sym, flush=True)
+    # S&P 500 에도 없고 스냅샷에도 없는 우리 종목(예: 미국 상장 외국 기업 TSM·ASML,
+    # 방금 목록에 넣어 아직 수집되지 않은 종목)은 시총을 직접 받아 순위에 넣는다.
+    missing = [s for s in have if s not in universe]
+    if missing:
+        print("시총이 없는 목록 종목 %d개를 직접 받는다: %s" % (len(missing), ", ".join(missing)), flush=True)
+        for i in range(0, len(missing), 50):
+            chunk = missing[i:i + 50]
+            path = ("/v7/finance/quote?symbols=" + ",".join(urllib.parse.quote(x) for x in chunk)
+                    + ("&crumb=" + urllib.parse.quote(F.CRUMB) if F.CRUMB else ""))
+            try:
+                j = yget(path)
+            except Exception as e:                    # noqa: BLE001
+                print("  일괄 조회 실패: %s" % e, flush=True)
+                continue
+            for q in ((j.get("quoteResponse") or {}).get("result") or []):
+                sym, cap = q.get("symbol"), num(q.get("marketCap"))
+                if sym and cap:
+                    universe[sym] = {"cap": cap,
+                                     "name": q.get("shortName") or en.get(sym) or sym}
+        still = [x for x in have if x not in universe]
+        if still:
+            print("  끝까지 확인하지 못한 종목: %s" % ", ".join(still), flush=True)
 
     if len(universe) < 200:
         print("::warning::유니버스가 %d개뿐이다 — 점검을 건너뛴다" % len(universe))
