@@ -206,6 +206,39 @@ def fetch_chart(sym, rng, interval, events=False):
     return out, meta, divs, splits
 
 
+def fetch_chart_stooq(sym, interval="d", keep_days=800):
+    """야후 차트가 막힌 심볼의 대체 경로. Stooq 일별/월별 CSV.
+
+    첫 수집에서 FI(Fiserv)·MMC(Marsh & McLennan)만 야후 chart 가 404 였다.
+    두 종목은 timeseries 는 정상이라 심볼 문제가 아니라 야후 쪽 사정으로 보인다.
+    """
+    code = sym.lower().replace("-", ".") + ".us"
+    url = "https://stooq.com/q/d/l/?s=%s&i=%s" % (code, interval)
+    txt = _get(url)
+    lines = [l for l in txt.strip().splitlines() if l]
+    if not lines or not lines[0].lower().startswith("date"):
+        raise RuntimeError("stooq CSV 아님")
+    out = {"d": [], "o": [], "h": [], "l": [], "c": [], "v": []}
+    for line in lines[1:]:
+        parts = line.split(",")
+        if len(parts) < 5:
+            continue
+        day, o, h, lo, c = parts[0], parts[1], parts[2], parts[3], parts[4]
+        v = parts[5] if len(parts) > 5 else None
+        if num(c) is None:
+            continue
+        out["d"].append(day)
+        out["o"].append(num(o, 4)); out["h"].append(num(h, 4))
+        out["l"].append(num(lo, 4)); out["c"].append(num(c, 4))
+        out["v"].append(int(float(v)) if v not in (None, "", "0") and num(v) is not None else None)
+    if not out["c"]:
+        raise RuntimeError("빈 시계열")
+    keep = keep_days if interval == "d" else 130
+    for k in out:
+        out[k] = out[k][-keep:]
+    return out
+
+
 # ---------------------------------------------------------------- quoteSummary
 
 def fetch_summary(sym):
@@ -444,6 +477,36 @@ def fetch_timeseries(sym):
     }
 
 
+def merge_financials(base, ts):
+    """손익 모듈(base)에 timeseries(ts) 값을 같은 기간끼리 메운다.
+
+    기준은 base 의 기간 라벨('2025' / '2025-06')이다. base 에 없는 기간은 만들지 않는다 —
+    두 원천의 회계기간 표기가 어긋날 때 없는 행을 지어내지 않기 위함이다.
+    0 으로 온 값(그로스가 자주 그렇다)은 결측으로 본다.
+    """
+    out = {}
+    for key in ("annual", "quarterly"):
+        rows = list(base.get(key) or [])
+        extra = list((ts or {}).get(key) or [])
+        if not rows:
+            out[key] = extra or None
+            continue
+        by_label = {}
+        for r in extra:
+            by_label[r["label"]] = r
+        for r in rows:
+            src = by_label.get(r["label"])
+            for f in ("revenue", "op", "net", "eps"):
+                if r.get(f) in (None, 0) and src and src.get(f) not in (None, 0):
+                    r[f] = src[f]
+            if r.get("gross") in (0,):
+                r["gross"] = None
+            if r.get("opMargin") is None and r.get("revenue") and r.get("op") is not None:
+                r["opMargin"] = round(r["op"] / r["revenue"] * 100, 2)
+        out[key] = rows
+    return {k: v for k, v in out.items() if v}
+
+
 def _ttm_eps(rows):
     """최근 4개 분기 희석 EPS 의 합. 4개가 다 있지 않으면 만들지 않는다."""
     if not rows or len(rows) < 4:
@@ -470,6 +533,13 @@ def fetch_one(c):
     except Exception as e:                      # noqa: BLE001
         daily, divs, splits = None, [], []
         status["chart"] = str(e)
+        time.sleep(PAUSE)
+        try:
+            daily = fetch_chart_stooq(sym, "d")
+            status["chart"] = True
+            status["chartVia"] = "stooq"
+        except Exception as e2:                 # noqa: BLE001
+            status["chartStooq"] = str(e2)
     time.sleep(PAUSE)
 
     monthly = None
@@ -479,6 +549,13 @@ def fetch_one(c):
         status["monthly"] = True
     except Exception as e:                      # noqa: BLE001
         status["monthly"] = str(e)
+        time.sleep(PAUSE)
+        try:
+            monthly = fetch_chart_stooq(sym, "m")
+            status["monthly"] = True
+            status["monthlyVia"] = "stooq"
+        except Exception as e2:                 # noqa: BLE001
+            status["monthlyStooq"] = str(e2)
     time.sleep(PAUSE)
 
     try:
@@ -486,14 +563,25 @@ def fetch_one(c):
         status["summary"] = True
     except Exception as e:                      # noqa: BLE001
         status["summary"] = str(e)
-        time.sleep(PAUSE)
-        try:
-            ts = fetch_timeseries(sym)
+    time.sleep(PAUSE)
+
+    # timeseries 는 quoteSummary 성공 여부와 무관하게 받는다.
+    # 야후의 손익 모듈이 영업이익·EPS 를 빼놓고 오는 일이 잦아(그로스는 0 으로 온다)
+    # 같은 기간의 timeseries 값으로 메워야 표가 비지 않는다.
+    try:
+        ts = fetch_timeseries(sym)
+        status["timeseries"] = True
+        if status.get("summary") is True:
+            payload["financials"] = merge_financials(payload.get("financials") or {}, ts["financials"])
+            q0 = payload.setdefault("quote", {})
+            for k, v in ts["quote"].items():
+                if v is not None and q0.get(k) is None:
+                    q0[k] = v
+        else:
             payload["financials"] = {k: v for k, v in ts["financials"].items() if v}
             payload["quote"] = {k: v for k, v in ts["quote"].items() if v is not None}
-            status["timeseries"] = True
-        except Exception as e2:                 # noqa: BLE001
-            status["timeseries"] = str(e2)
+    except Exception as e2:                     # noqa: BLE001
+        status["timeseries"] = str(e2)
     time.sleep(PAUSE)
 
     # 차트 메타로 시세 최소치는 채운다 (quoteSummary 가 막힌 경우의 안전망)

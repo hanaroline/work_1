@@ -1322,7 +1322,7 @@ function loadDetail(sym, force) {
   var d = (cached && !force) ? cached : { sym: sym, charts: {}, srcs: {}, ts: Date.now() };
   CACHE[sym] = d;
   d.ts = Date.now();
-  d.pending = { chart: !d.charts[key], summary: !(d.summary || d.tsFin), news: !d.news };
+  d.pending = { chart: !d.charts[key], summary: !(d.summary || d.tsFin || d.snap), news: !d.news };
   setDetailLoading(sym);
   var draw = function () { if (state.sel === sym) renderDetail(sym); };
   draw();
@@ -1332,6 +1332,13 @@ function loadDetail(sym, force) {
   pChart.then(function (chart) {
     d.charts[key] = chart; d.srcs.chart = 'live'; d.demoChart = false;
   }, function () {
+    /* 실시간 실패 → 러너가 커밋한 스냅샷 시계열 */
+    return loadSnapshotChart(sym).then(function () {
+      var c = chartFromSnapshot(sym, state.interval, state.range);
+      if (!c) throw new Error('스냅샷에 이 구간이 없다');
+      d.charts[key] = c; d.srcs.chart = 'snapshot'; d.demoChart = false;
+    });
+  }).catch(function () {
     /* 끝까지 실패하면 화면 구조 확인용 예시 시계열 */
     if (!d.charts[key]) {
       var n = state.interval === '1mo' ? 120 : state.interval === '1wk' ? 156 : 260;
@@ -1342,7 +1349,7 @@ function loadDetail(sym, force) {
   }).then(function () { d.pending.chart = false; draw(); });
 
   /* (2) 지표 · 실적 · 컨센서스 · 일정 */
-  var pSum = d.pending.summary
+  var pSum = !(d.summary || d.tsFin)
     ? fetchSummary(sym).then(normalizeSummary).then(function (s) {
         d.summary = s; d.srcs.summary = 'live';
       }, function () {
@@ -1354,6 +1361,7 @@ function loadDetail(sym, force) {
             psr: last('trailingPsRatio'), pbr: last('trailingPbRatio'), evEbitda: last('trailingEnterprisesValueEBITDARatio') };
           d.srcs.summary = 'partial';
         }, function () {
+          if (d.snap) { d.srcs.summary = 'snapshot'; return; }   /* 스냅샷이 있으면 예시로 내려가지 않는다 */
           d.demo = sampleSummary(sym); d.srcs.summary = 'sample';
         });
       })
@@ -1384,7 +1392,13 @@ function loadList() {
     renderList(); renderHeroMeta(); renderSources();
     return map;
   }).catch(function () {
-    /* 목록 시세 실패: 예시 값으로 목록 구조를 유지 */
+    /* 목록 시세 실패 → 러너 스냅샷이 있으면 그것으로 목록을 채운다 */
+    if (SNAP) {
+      SRC.list = 'snapshot';
+      applySnapshot();
+      return;
+    }
+    /* 스냅샷도 없으면 예시 값으로 목록 구조를 유지 */
     COMPANIES.forEach(function (c) {
       var s = sampleSummary(c[0]);
       LIST[c[0]] = { price: s.quote.price, prevClose: s.quote.prevClose,
@@ -1534,10 +1548,10 @@ function renderList() {
 
   var missing = shown.filter(function (r) { return r.cap == null; }).length;
   var intraday = shown.filter(function (r) { return r.intraday; }).length;
-  var b = el('badge-list');
-  if (SRC.list === 'sample') { b.textContent = t('예시 데이터', 'demo data'); b.className = 'badge sample'; }
-  else if (SRC.list === 'live') { b.textContent = t('실시간', 'live'); b.className = 'badge live'; }
-  else { b.textContent = t('미조회', 'not loaded'); b.className = 'badge none'; }
+  if (SRC.list === 'sample') badge('badge-list', 'sample');
+  else if (SRC.list === 'live') badge('badge-list', 'live');
+  else if (SRC.list === 'snapshot') badge('badge-list', 'snapshot');
+  else badge('badge-list', null, t('조회 중', 'loading'));
 
   el('list-note').innerHTML = (SRC.list === 'sample'
     ? '<b style="color:#8a6a0a">' + esc(t('실시간 시세를 받지 못해 예시 값을 표시하고 있습니다. 이 표의 숫자는 실제 시세가 아닙니다.',
@@ -1600,10 +1614,13 @@ function setDetailLoading(sym) {
 function modelOf(sym) {
   var d = CACHE[sym] || {};
   var chart = d.charts[state.interval + '|' + state.range] || null;
-  var s = d.summary || null, demo = d.demo || null;
+  var s = d.summary || null, snap = d.snap || null, demo = d.demo || null;
   var q = {};
-  if (s) q = Object.assign({}, s.quote);
-  else if (demo) q = Object.assign({}, demo.quote);
+  /* 우선순위: 실시간 quoteSummary → 러너 스냅샷 → 예시.
+     스냅샷은 scripts/fetch_us100.py 가 화면 모델과 같은 키로 저장한다 */
+  if (snap && snap.quote) q = Object.assign({}, snap.quote);
+  if (s) q = Object.assign(q, s.quote);
+  else if (!snap && demo) q = Object.assign({}, demo.quote);
   if (d.tsQuote) ['cap', 'per', 'fwdPer', 'psr', 'pbr', 'evEbitda'].forEach(function (k) {
     if (q[k] == null && d.tsQuote[k] != null) q[k] = d.tsQuote[k];
   });
@@ -1638,17 +1655,52 @@ function modelOf(sym) {
   if (q.cap == null && q.shares && q.price) q.cap = q.shares * q.price;
   if (q.per == null && q.eps && q.price && q.eps > 0) q.per = q.price / q.eps;
 
-  var fin = (s && s.financials && (s.financials.annual || s.financials.quarterly)) ? s.financials
+  /* quoteSummary 가 막힌 환경(야후가 인증을 요구한다)에서는 시가·당일 고저·52주 고저·
+     평균 거래량이 비어 있다. 일봉이 있으면 그 정의대로 직접 계산해 채우고,
+     계산으로 채운 항목은 화면에 그렇다고 밝힌다. */
+  var derived = [];
+  if (chart && chart.close.length && state.interval === '1d' && !d.demoChart) {
+    var n = chart.close.length, lastI = n - 1;
+    var setDerived = function (k, v) {
+      if (q[k] == null && v != null && !isNaN(v)) { q[k] = v; derived.push(k); }
+    };
+    setDerived('open', chart.open[lastI]);
+    setDerived('dayHigh', chart.high[lastI]);
+    setDerived('dayLow', chart.low[lastI]);
+    var from = Math.max(0, n - 252);
+    var his = chart.high.slice(from).filter(function (v) { return v != null; });
+    var los = chart.low.slice(from).filter(function (v) { return v != null; });
+    if (his.length > 120) setDerived('high52', Math.max.apply(null, his));
+    if (los.length > 120) setDerived('low52', Math.min.apply(null, los));
+    var vols = chart.volume.slice(Math.max(0, n - 20)).filter(function (v) { return v != null; });
+    if (vols.length >= 10) {
+      setDerived('avgVolume', Math.round(vols.reduce(function (a, b) { return a + b; }, 0) / vols.length));
+    }
+  }
+
+  var hasFin = function (f) { return f && (f.annual || f.quarterly); };
+  var fin = hasFin(s && s.financials) ? s.financials
+    : hasFin(snap && snap.financials) ? snap.financials
     : d.tsFin ? d.tsFin
-    : demo ? demo.financials : { annual: null, quarterly: null };
+    : (!snap && demo) ? demo.financials : { annual: null, quarterly: null };
+
+  /* 섹션별로 실시간 → 스냅샷 → 예시 순서로 있는 것을 고른다 */
+  var pickOf = function (key, demoKey, empty) {
+    if (s && s[key] != null) return s[key];
+    if (snap && snap[key] != null) return snap[key];
+    if (!snap && demo && demoKey && demo[demoKey] != null) return demo[demoKey];
+    return empty;
+  };
 
   return {
-    sym: sym, co: company(sym), chart: chart, demoChart: !!d.demoChart, demo: !!demo,
+    sym: sym, co: company(sym), chart: chart, demoChart: !!d.demoChart,
+    demo: !!(demo && !s && !snap),
+    snapshot: !!(snap && !s),
     pending: d.pending || { chart: false, summary: false, news: false },
-    quote: q, profile: s ? s.profile : {},
-    target: s ? s.target : (demo ? demo.target : {}),
-    calendar: s ? s.calendar : {}, surprises: s ? s.surprises : [],
-    epsQuarters: s ? s.epsQuarters : null, epsTrend: s ? s.epsTrend : [],
+    quote: q, derived: derived, profile: pickOf('profile', null, {}),
+    target: pickOf('target', 'target', {}),
+    calendar: pickOf('calendar', null, {}), surprises: pickOf('surprises', null, []),
+    epsQuarters: pickOf('epsQuarters', null, null), epsTrend: pickOf('epsTrend', null, []),
     financials: fin, news: d.news || null, srcs: d.srcs || {}
   };
 }
@@ -1656,9 +1708,18 @@ function modelOf(sym) {
 function badge(id, kind, extra) {
   var b = el(id);
   if (kind === 'live') { b.textContent = extra || t('실시간', 'live'); b.className = 'badge live'; }
+  else if (kind === 'snapshot') { b.textContent = extra || snapLabel(); b.className = 'badge blue'; }
   else if (kind === 'sample') { b.textContent = extra || t('예시 데이터', 'demo data'); b.className = 'badge sample'; }
   else if (kind === 'partial') { b.textContent = extra || t('일부 항목 미확인', 'partial'); b.className = 'badge est'; }
   else { b.textContent = extra || t('미조회', 'not available'); b.className = 'badge none'; }
+}
+/** 스냅샷 배지 문구 — 언제 수집한 값인지 배지에서 바로 보이게 한다 */
+function snapLabel() {
+  var d = (typeof snapAsOf === 'function') ? snapAsOf() : null;
+  if (!d) return t('저장 스냅샷', 'saved snapshot');
+  var mm = ('0' + (d.getMonth() + 1)).slice(-2), dd = ('0' + d.getDate()).slice(-2);
+  var hh = ('0' + d.getHours()).slice(-2), mi = ('0' + d.getMinutes()).slice(-2);
+  return t('스냅샷 ' + mm + '.' + dd + ' ' + hh + ':' + mi, 'snapshot ' + mm + '/' + dd + ' ' + hh + ':' + mi);
 }
 
 /** quoteSummary 계열 섹션의 공통 배지 처리 (조회 중 / 실시간 / 일부 / 예시 / 미조회) */
@@ -1667,7 +1728,8 @@ function srcBadge(id, M, haveData) {
   if (haveData === false) { badge(id, 'none'); return; }   /* 예시로도 만들지 않는 항목(일정·이력 등) */
   if (M.demo) { badge(id, 'sample'); return; }
   if (M.srcs.summary === 'partial') { badge(id, 'partial'); return; }
-  badge(id, haveData === false ? 'none' : (M.srcs.summary === 'live' ? 'live' : 'none'));
+  if (M.snapshot) { badge(id, 'snapshot'); return; }
+  badge(id, M.srcs.summary === 'live' ? 'live' : 'none');
 }
 
 function renderQuote(M) {
@@ -1695,7 +1757,9 @@ function renderQuote(M) {
   el('k-per').textContent = ratio(q.per, 1);
   el('k-per-fwd').textContent = t('선행 PER ', 'Forward P/E ') + ratio(q.fwdPer, 1);
   el('k-eps').textContent = q.eps == null ? '—' : '$' + q.eps.toFixed(2);
-  el('k-eps-fwd').textContent = t('선행 EPS ', 'Forward EPS ') + (q.fwdEps == null ? '—' : '$' + q.fwdEps.toFixed(2));
+  el('k-eps-fwd').textContent = (q.epsBasis === 'ttm-quarters'
+      ? t('최근 4개 분기 희석 EPS 합 · ', 'sum of last 4 quarterly diluted EPS · ') : '') +
+    t('선행 EPS ', 'Forward EPS ') + (q.fwdEps == null ? '—' : '$' + q.fwdEps.toFixed(2));
   var tg = M.target || {};
   el('k-tgt').textContent = price(tg.mean);
   var up = tg.mean != null && q.price ? ((tg.mean - q.price) / q.price) * 100 : null;
@@ -1720,9 +1784,17 @@ function renderQuote(M) {
     [t('베타', 'Beta'), ratio(q.beta, 2)],
     [t('종업원 수', 'Employees'), M.profile && M.profile.employees ? comma(M.profile.employees) : '—']
   ];
+  var DERIVED_KO = { open: '시가', dayHigh: '당일 고가', dayLow: '당일 저가',
+    high52: '52주 최고', low52: '52주 최저', avgVolume: '평균 거래량(20일)' };
+  var DERIVED_EN = { open: 'open', dayHigh: "day's high", dayLow: "day's low",
+    high52: '52-week high', low52: '52-week low', avgVolume: '20-day average volume' };
   el('q-spec').innerHTML = spec.map(function (r) {
     return '<div><dt>' + esc(r[0]) + '</dt><dd>' + r[1] + '</dd></div>';
-  }).join('');
+  }).join('') + ((M.derived && M.derived.length)
+    ? '<div style="grid-column:1/-1; border:0; display:block; font-size:14px; color:var(--muted); padding-top:10px">' +
+      esc(t('지표 응답에 없어 일봉 데이터로 직접 계산한 항목: ', 'Computed from the daily bars because the metrics response did not carry them: ')) +
+      esc(M.derived.map(function (k) { return (lang === 'en' ? DERIVED_EN : DERIVED_KO)[k] || k; }).join(', ')) +
+      '</div>' : '');
 
   srcBadge('badge-quote', M);
 }
@@ -1978,7 +2050,7 @@ function renderPriceChart(M) {
   el('legend-price').innerHTML = lg.map(function (r) { return '<span>' + r[0] + esc(r[1]) + '</span>'; }).join('') +
     '<span>' + esc(t('기간 ' + labelRange(state.range) + ' · ' + labelInterval(state.interval),
       labelRange(state.range) + ' · ' + labelInterval(state.interval))) + '</span>';
-  badge('badge-chart', M.demoChart ? 'sample' : 'live');
+  badge('badge-chart', M.demoChart ? 'sample' : (M.srcs.chart === 'snapshot' ? 'snapshot' : 'live'));
 }
 
 /* ---------- 10.2 거래량 패널 (별도 y축을 쓰지 않기 위해 패널 분리) ---------- */
@@ -2514,21 +2586,29 @@ function renderHeroMeta() {
   el('hero-asof').textContent = state.asof
     ? t('조회 기준 ' + dateTimeFmt(Math.floor(state.asof.getTime() / 1000)), 'Retrieved ' + dateTimeFmt(Math.floor(state.asof.getTime() / 1000)))
     : t('조회 전', 'not retrieved');
-  el('hero-src').textContent = SRC.list === 'live'
-    ? t('대상 ' + COMPANIES.length + '개 기업', COMPANIES.length + ' companies')
-    : SRC.list === 'sample' ? t('예시 데이터 표시 중', 'showing demo data')
-    : t('대상 ' + COMPANIES.length + '개 기업', COMPANIES.length + ' companies');
+  el('hero-src').textContent = SRC.list === 'sample'
+    ? t('예시 데이터 표시 중', 'showing demo data')
+    : SRC.list === 'snapshot'
+      ? t('러너 스냅샷 · 대상 ' + COMPANIES.length + '개 기업', 'runner snapshot · ' + COMPANIES.length + ' companies')
+      : t('대상 ' + COMPANIES.length + '개 기업', COMPANIES.length + ' companies');
 }
 
 function renderSources() {
   var d = CACHE[state.sel] || {}, srcs = d.srcs || {};
   var st = function (v) {
     if (v === 'live') return '<span class="badge live">' + esc(t('실시간', 'live')) + '</span>';
+    if (v === 'ok') return '<span class="badge live">' + esc(t('확보', 'loaded')) + '</span>';
+    if (v === 'snapshot') return '<span class="badge blue">' + esc(snapLabel()) + '</span>';
     if (v === 'partial') return '<span class="badge est">' + esc(t('일부 확인', 'partial')) + '</span>';
     if (v === 'sample') return '<span class="badge sample">' + esc(t('예시', 'demo')) + '</span>';
     return '<span class="badge none">' + esc(t('미조회', 'n/a')) + '</span>';
   };
   var rows = [
+    [t('저장 스냅샷 (러너 수집)', 'Saved snapshot (runner)'),
+      SNAP ? ('data/us100/latest.json · ' + t('수집 ', 'fetched ') + dateTimeFmt(Math.floor(snapAsOf().getTime() / 1000)) +
+              ' · ' + t(Object.keys(SNAP.companies).length + '개 종목', Object.keys(SNAP.companies).length + ' symbols'))
+           : 'data/us100/latest.json',
+      SNAP ? 'ok' : null],
     [t('목록 시세 (100개 기업)', 'List quotes (100 companies)'), 'Yahoo Finance spark · Stooq CSV', SRC.list],
     [t('상세 시세 · 일/주/월 차트', 'Detail quote · daily/weekly/monthly chart'), 'Yahoo Finance chart', srcs.chart],
     [t('밸류에이션 · 실적 · 컨센서스', 'Valuation · results · consensus'), 'Yahoo Finance quoteSummary / fundamentals-timeseries', srcs.summary],
@@ -2540,10 +2620,21 @@ function renderSources() {
   }).join('') + (state.fx != null ? '<li><span class="k">' + esc(t('적용 환율', 'FX applied')) + '</span><span>' +
     esc('1 USD = ' + comma(Math.round(state.fx)) + ' KRW') + '</span></li>' : '');
 
+  var anySnapshot = SRC.list === 'snapshot' || srcs.chart === 'snapshot' || srcs.summary === 'snapshot';
   var anySample = SRC.list === 'sample' || srcs.chart === 'sample' || srcs.summary === 'sample';
   var box = el('fallback-note');
-  box.hidden = !anySample;
-  if (anySample) {
+  box.hidden = !(anySample || anySnapshot);
+  if (!anySample && anySnapshot) {
+    box.className = 'note-box info';
+    box.innerHTML = '<b>' + esc(t('저장 스냅샷을 보고 있습니다.', 'You are looking at the saved snapshot.')) + '</b> ' +
+      esc(t('브라우저에서 Yahoo·Stooq 로 직접 나가지 못해, GitHub Actions 러너가 받아 저장소에 커밋한 값(' +
+            (snapAsOf() ? dateTimeFmt(Math.floor(snapAsOf().getTime() / 1000)) : '') + ' 수집)을 표시합니다. ' +
+            '실제 수집된 시세이며 예시 값이 아닙니다. 다만 그 시점 기준이므로 장중 가격과는 다릅니다.',
+            'The browser cannot reach Yahoo/Stooq directly, so the screen shows the snapshot a GitHub Actions runner fetched and committed' +
+            (snapAsOf() ? ' at ' + dateTimeFmt(Math.floor(snapAsOf().getTime() / 1000)) : '') +
+            '. These are real fetched quotes, not demo values — but they are as of that time, not intraday.'));
+  } else if (anySample) {
+    box.className = 'note-box';
     box.innerHTML = '<b>' + esc(t('예시 데이터가 섞여 있습니다.', 'Demo data is being shown.')) + '</b> ' +
       esc(t('브라우저에서 Yahoo Finance·Stooq 로 나가는 요청이 CORS 또는 사내망 정책으로 막히면 화면 구조 확인용 예시 값을 표시합니다. ' +
             '“예시” 배지가 붙은 숫자는 실제 시세가 아니므로 업무에 사용하지 마세요.',
@@ -2563,13 +2654,13 @@ function renderSources() {
 function renderDisclaimer() {
   el('disclaimer').innerHTML = lang === 'en' ? [
     '<p><strong>Reference material.</strong> This screen aggregates publicly available market data for internal reference. It is not investment advice, a recommendation, or an offer.</p>',
-    '<p><strong>Data.</strong> Quotes, fundamentals, consensus figures and calendars come from Yahoo Finance, Stooq and Google News at the moment you press refresh. They are not audited, may be delayed (typically 15 minutes or more), and can differ from company filings. Company filings and IR announcements are the authoritative source.</p>',
+    '<p><strong>Data.</strong> Quotes, fundamentals, consensus figures and calendars come from Yahoo Finance, Stooq and Google News. When the browser cannot reach them (CORS or a corporate network policy), the screen falls back to a snapshot that a GitHub Actions runner fetched from the same sources and committed to this repository — real fetched numbers, as of the collection time shown on the badge. Nothing is audited, quotes may be delayed (typically 15 minutes or more), and figures can differ from company filings. Company filings and IR announcements are the authoritative source.</p>',
     '<p><strong>Estimates.</strong> Earnings dates flagged as estimated are provider guesses until the company confirms them. Conference call times are not carried by these APIs and must be checked on the company IR page.</p>',
     '<p><strong>Coverage.</strong> The 100 companies listed here are a fixed, hand-maintained list of large US-listed issuers. It is not an index, its order is not a ranking, and it does not update as market caps change — rank the table by the market cap actually fetched.</p>',
     '<p><strong>Before external use.</strong> Anything shown to clients requires compliance review.</p>'
   ].join('') : [
     '<p><strong>참고 자료입니다.</strong> 공개된 시장 데이터를 사내 참고용으로 모아 보여주는 화면이며, 투자 권유나 매매 추천이 아닙니다. 투자 판단과 그 결과에 대한 책임은 이용자에게 있습니다.</p>',
-    '<p><strong>데이터.</strong> 시세·재무·컨센서스·일정은 조회 시점에 Yahoo Finance · Stooq · Google News 에서 받아온 값입니다. 검증된 자료가 아니고 통상 15분 이상 지연될 수 있으며, 회사 공시와 다를 수 있습니다. <b>원문은 회사 공시와 IR 공지</b>입니다.</p>',
+    '<p><strong>데이터.</strong> 시세·재무·컨센서스·일정은 Yahoo Finance · Stooq · Google News 에서 받아온 값입니다. 브라우저가 직접 붙지 못하면(CORS·사내망) <b>GitHub Actions 러너가 같은 원천에서 받아 저장소에 커밋한 스냅샷</b>을 표시합니다 — 실제 수집된 수치이며, 수집 시각은 배지에 표시됩니다. 어느 경로든 검증된 자료가 아니고 통상 15분 이상 지연될 수 있으며, 회사 공시와 다를 수 있습니다. <b>원문은 회사 공시와 IR 공지</b>입니다.</p>',
     '<p><strong>추정치.</strong> “추정”으로 표시된 실적발표일은 회사가 확정 공지하기 전 데이터 제공사의 추정입니다. 컨퍼런스콜 시각은 이 화면이 쓰는 API 에 포함되지 않으므로 회사 IR 공지에서 확인해야 합니다.</p>',
     '<p><strong>대상 종목.</strong> 여기 담긴 100개 기업은 미국 상장 대형주를 손으로 정리한 <b>고정 목록</b>입니다. 지수가 아니고, 목록 순서(#)는 순위가 아니며, 시가총액이 바뀌어도 자동으로 갱신되지 않습니다. 실제 순위는 조회한 시가총액으로 정렬해 확인하세요.</p>',
     '<p><strong>대외 사용 전.</strong> 고객에게 보여주는 자료로 쓸 경우 준법감시 부서 확인이 필요합니다.</p>'
@@ -2615,7 +2706,152 @@ function renderDetail(sym) {
 </script>
 <script>
 /* ============================================================
-   16. 컨트롤 구성 · 언어 토글 · 초기화
+   16. 저장 스냅샷 (GitHub Actions 러너가 받아 커밋한 값)
+   브라우저에서 야후에 직접 붙지 못하는 환경(사내망·CORS)에서도 실제 수치를
+   보여주기 위한 경로다. 스냅샷을 먼저 그리고, 실시간 조회가 성공하면 덮어쓴다.
+   수집기: scripts/fetch_us100.py · 워크플로: .github/workflows/us100-data.yml
+   ============================================================ */
+var SNAPSHOT_BASES = [
+  'data/us100/',                                                          // 저장소를 그대로 서비스하는 경우
+  'https://raw.githubusercontent.com/hanaroline/work_1/main/data/us100/'  // 파일만 따로 열었을 때
+];
+var SNAP = null;          // latest.json
+var SNAP_BASE = null;     // 실제로 성공한 경로
+var SNAP_CHART = {};      // sym -> 시계열 원본(일봉/월봉)
+
+function fetchQuick(url, ms) {
+  return withTimeout(
+    fetch(url, { cache: 'no-store' }).then(function (r) {
+      if (!r.ok) throw new Error('HTTP ' + r.status);
+      return r.json();
+    }), ms || 6000);
+}
+
+/** 스냅샷 받아오기 — 상대 경로 우선, 실패하면 저장소 raw 주소(프록시 폴백 포함) */
+function loadSnapshot() {
+  var tries = SNAPSHOT_BASES.map(function (base) {
+    var url = base + 'latest.json' + '?_ts=' + Date.now();
+    var p = /^https?:/.test(base) ? fetchQuick(url, 8000).catch(function () { return fetchJson(base + 'latest.json'); })
+                                  : fetchQuick(url, 5000);
+    return p.then(function (j) {
+      if (!j || !j.companies) throw new Error('스냅샷 형식이 아니다');
+      return { base: base, json: j };
+    });
+  });
+  return anyOf(tries).then(function (o) {
+    SNAP = o.json; SNAP_BASE = o.base;
+    DIAG.push({ url: o.base + 'latest.json', ok: true, via: '스냅샷', len: 0 });
+    applySnapshot();
+    return SNAP;
+  }, function () {
+    DIAG.push({ url: 'data/us100/latest.json', ok: false, err: '스냅샷 없음' });
+    return null;
+  });
+}
+
+/** 스냅샷의 전 종목 값을 목록과 종목별 캐시에 채운다 */
+function applySnapshot() {
+  if (!SNAP) return;
+  if (SNAP.fx && SNAP.fx.usdkrw && state.fx == null) state.fx = SNAP.fx.usdkrw;
+  Object.keys(SNAP.companies).forEach(function (sym) {
+    var c = SNAP.companies[sym], q = c.quote || {};
+    var l = LIST[sym] || (LIST[sym] = {});
+    /* 실시간으로 이미 받은 값이 있으면 건드리지 않는다 */
+    var fill = function (k, v) { if (v != null && l[k] == null) l[k] = v; };
+    fill('price', q.price); fill('prevClose', q.prevClose); fill('changePct', q.changePct);
+    fill('cap', q.cap); fill('per', q.per); fill('eps', q.eps);
+    fill('tgt', c.target ? c.target.mean : null);
+    if (l.src == null) l.src = 'snapshot';
+    l.enriched = true;
+    var d = CACHE[sym] || (CACHE[sym] = { sym: sym, charts: {}, srcs: {}, ts: Date.now() });
+    d.snap = c;
+    if (!d.summary && !d.tsFin) d.srcs.summary = d.srcs.summary || 'snapshot';
+  });
+  if (SRC.list == null || SRC.list === 'sample') SRC.list = 'snapshot';
+  if (state.asof == null && SNAP.fetchedAt) state.asof = new Date(SNAP.fetchedAt);
+  renderList(); renderHeroMeta(); renderSources();
+  if (CACHE[state.sel]) renderDetail(state.sel);
+}
+
+/** 종목별 시계열 스냅샷 — 선택한 종목만 받는다 */
+function loadSnapshotChart(sym) {
+  if (SNAP_CHART[sym]) return Promise.resolve(SNAP_CHART[sym]);
+  if (!SNAP_BASE) return Promise.reject(new Error('스냅샷 경로 없음'));
+  var file = SNAP_BASE + 'chart/' + encodeURIComponent(sym) + '.json';
+  var p = /^https?:/.test(SNAP_BASE)
+    ? fetchQuick(file + '?_ts=' + Date.now(), 8000).catch(function () { return fetchJson(SNAP_BASE + 'chart/' + sym + '.json'); })
+    : fetchQuick(file + '?_ts=' + Date.now(), 6000);
+  return p.then(function (j) {
+    if (!j || (!j.daily && !j.monthly)) throw new Error('시계열 없음');
+    SNAP_CHART[sym] = j;
+    return j;
+  });
+}
+
+var RANGE_DAYS = { '1mo': 31, '3mo': 93, '6mo': 186, '1y': 372, '2y': 740, '5y': 1830, '10y': 3660, 'max': 1e9 };
+
+/** 스냅샷 시계열 → 화면이 쓰는 차트 객체. 주봉은 일봉을 주 단위로 묶어 만든다. */
+function chartFromSnapshot(sym, interval, range) {
+  var src = SNAP_CHART[sym];
+  if (!src) return null;
+  var raw = interval === '1mo' ? src.monthly : src.daily;
+  if (!raw || !raw.c || !raw.c.length) return null;
+
+  var rows = raw.d.map(function (day, i) {
+    return { t: new Date(day + 'T00:00:00Z'), o: raw.o[i], h: raw.h[i], l: raw.l[i], c: raw.c[i], v: raw.v[i] };
+  });
+  if (interval === '1wk') rows = groupWeekly(rows);
+
+  var cutoff = Date.now() - (RANGE_DAYS[range] || 372) * 86400000;
+  var kept = rows.filter(function (r) { return r.t.getTime() >= cutoff; });
+  if (kept.length < 5) kept = rows.slice(-Math.max(5, Math.min(rows.length, 30)));
+
+  var out = { dates: [], open: [], high: [], low: [], close: [], adj: [], volume: [], divs: [], splits: [],
+    meta: { currency: 'USD', symbol: sym } };
+  kept.forEach(function (r) {
+    out.dates.push(r.t); out.open.push(r.o); out.high.push(r.h); out.low.push(r.l);
+    out.close.push(r.c); out.adj.push(r.c); out.volume.push(r.v);
+  });
+  var snap = SNAP && SNAP.companies[sym];
+  if (snap && snap.events) {
+    out.divs = (snap.events.divs || []).slice();
+    out.splits = (snap.events.splits || []).slice();
+  }
+  /* 스냅샷 종가를 현재가로 쓰지 않는다 — 요약(quote)에 수집 시점 시세가 이미 있다 */
+  return out;
+}
+
+function groupWeekly(rows) {
+  var out = [], cur = null, curKey = null;
+  rows.forEach(function (r) {
+    var d = r.t;
+    /* 그 주의 월요일을 키로 삼는다 */
+    var day = d.getUTCDay(), monday = new Date(d.getTime() - ((day + 6) % 7) * 86400000);
+    var key = monday.toISOString().slice(0, 10);
+    if (key !== curKey) {
+      if (cur) out.push(cur);
+      cur = { t: monday, o: r.o, h: r.h, l: r.l, c: r.c, v: r.v || 0 };
+      curKey = key;
+    } else {
+      if (r.h != null) cur.h = cur.h == null ? r.h : Math.max(cur.h, r.h);
+      if (r.l != null) cur.l = cur.l == null ? r.l : Math.min(cur.l, r.l);
+      cur.c = r.c;
+      cur.v = (cur.v || 0) + (r.v || 0);
+    }
+  });
+  if (cur) out.push(cur);
+  return out;
+}
+
+function snapAsOf() {
+  if (!SNAP || !SNAP.fetchedAt) return null;
+  var d = new Date(SNAP.fetchedAt);
+  return isNaN(d.getTime()) ? null : d;
+}
+</script>
+<script>
+/* ============================================================
+   17. 컨트롤 구성 · 언어 토글 · 초기화
    ============================================================ */
 function buildSeg(id, opts, current, onPick) {
   var box = el(id);
@@ -2740,7 +2976,10 @@ function bindEvents() {
   el('btn-refresh').addEventListener('click', function () {
     DIAG = [];
     CACHE = {}; LIST = {}; SRC = {};
+    SNAP_CHART = {};
+    applySnapshot();                 /* 스냅샷은 유지 — 실시간이 실패해도 빈 화면이 되지 않게 */
     loadList().then(function () {
+      if (SNAP) return null;
       return enrichVisible(rowsForList().slice(0, Math.min(state.limit, 15)).map(function (r) { return r.sym; }));
     });
     loadDetail(state.sel, true);
@@ -2759,11 +2998,15 @@ function bindEvents() {
   bindEvents();
   applyLang();
   setDetailLoading(state.sel);
-  loadList().then(function () {
-    /* 첫 화면에 보이는 상위 종목만 지표를 채운다(요청 수 절약) */
-    return enrichVisible(rowsForList().slice(0, Math.min(state.limit, 15)).map(function (r) { return r.sym; }));
+  /* 러너가 커밋한 스냅샷이 가장 빠르고 확실하다 — 먼저 그린 뒤 실시간으로 덮어쓴다 */
+  loadSnapshot().then(function (snap) {
+    loadDetail(state.sel);
+    return loadList().then(function () {
+      /* 스냅샷이 이미 지표를 채웠으면 종목별 개별 조회는 하지 않는다 */
+      if (snap) return null;
+      return enrichVisible(rowsForList().slice(0, Math.min(state.limit, 15)).map(function (r) { return r.sym; }));
+    });
   });
-  loadDetail(state.sel);
 })();
 </script>
 
