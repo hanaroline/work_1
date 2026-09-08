@@ -316,7 +316,7 @@ def main():
             continue
         rec = universe[s]
         add.append({"sym": s, "name": rec["name"], "cap": rec["cap"], "rank": rank[s],
-                    "country": rec.get("country")})
+                    "country": rec.get("country"), "exch": rec.get("exch")})
     drop = [{"sym": s, "ko": ko.get(s, s), "cap": universe[s]["cap"], "rank": rank[s]}
             for s in have if s in rank and rank[s] > DROP_RANK]
     drop.sort(key=lambda r: r["rank"])
@@ -341,7 +341,13 @@ def main():
     if add:
         lines.append("**목록에 없는 상위 %d 종목 %d개**" % (TOP, len(add)))
         for r in add[:REPORT_MAX]:
-            lines.append("- `%s` %s — %s · 현재 %d위" % (r["sym"], r["name"], usd(r["cap"]), r["rank"]))
+            tail = ""
+            if r.get("exch") and r["exch"] not in OK_EXCHANGES:
+                tail = " · 거래소 %s" % r["exch"]
+            elif not r.get("exch") and r.get("country"):
+                tail = " · 스크리너 보조 경로에서 찾은 종목(상장 형태를 확인해 주세요)"
+            lines.append("- `%s` %s — %s · 현재 %d위%s"
+                         % (r["sym"], r["name"], usd(r["cap"]), r["rank"], tail))
         if len(add) > REPORT_MAX:
             lines.append("- … 그 밖에 %d개 (ranking.json 에 전부 있습니다)" % (len(add) - REPORT_MAX))
     if drop:
