@@ -323,3 +323,71 @@ build(
         '반도체_투자_세미나_20260728.pptx</code>',
         '시황 수치는 2026.7.27 KRX 종가 기준입니다.'],
     outfile='deck-seminar.html')
+
+build(
+    page_title='ELS 세일즈 제안서 · 제38070~38089회',
+    tagline='사내한 · 세일즈 제안서',
+    subtitle='2026년 8월 31일~9월 9일 청약 20종을 손실 확률로 줄 세우고, 성향별 추천 3종과 '
+             '권하지 않는 4종을 갈랐습니다. 고객 반응별 대응 스크립트가 붙어 있습니다.',
+    metas=[('원본', 'els-sales-deck.pptx'),
+           ('슬라이드', '6장'),
+           ('작업 세션', 'ELS 상품 구조 설명 페이지'),
+           ('최종 수정', '2026-09-01')],
+    notes=[NOTE_COMMON,
+           '수익률이 아니라 <b>손실 확률</b>로 줄을 세운 자료입니다. A는 발행사가 과거 시세 '
+           '20년으로 돌린 백테스트, B는 같은 조건을 공시 변동성·상관계수로 10만 번 다시 돌린 '
+           '시뮬레이션입니다. 두 잣대가 어긋나는 상품은 본문에서 따로 짚었습니다.',
+           '고난도금융투자상품 · 숙려제도 대상 · 녹취 의무 상품입니다. 청약기간이 지난 회차이니 '
+           '숫자를 그대로 쓰지 말고 현행 회차 공시로 다시 확인하십시오.'],
+    downloads=[
+        {'id': 'f-elsdeck', 'src': 'els-sales-deck.pptx',
+         'name': 'ELS_세일즈제안서_제38070-38089회.pptx',
+         'label': '원본 내려받기 · PPTX', 'size': kb('els-sales-deck.pptx')},
+        {'id': 'f-elsdeckpdf', 'src': 'els-sales-deck.pdf',
+         'name': 'ELS_세일즈제안서_제38070-38089회.pdf',
+         'label': 'PDF', 'size': kb('els-sales-deck.pdf')},
+    ],
+    deck_keys=['els-sales-deck.pptx'],
+    sections=[{'title': '슬라이드 6장', 'note': '추출 텍스트'}],
+    repo_lines=[
+        '저장소 경로 — <code>claude/els-product-structure-page-ljsucw : '
+        'els-sales-deck.pptx · els-sales-deck.pdf</code>',
+        '공시 기준 — 일괄신고추가서류 2026.08.28. 조건·공정가액은 그 원문에서 뽑았습니다.',
+        '투자 권유가 아닙니다. 실제 상품 내용은 각 회차 투자설명서가 우선합니다.'],
+    outfile='deck-els-sales.html')
+
+build(
+    page_title='은퇴자산 운용 제안서 · v2',
+    tagline='고객 개별 제안 · 취급 주의',
+    subtitle='한 가구의 은퇴 현금흐름을 5단계로 배치하고, 신규 주식 편입 없이 이자·배당·'
+             '옵션프리미엄으로 목표 연 7.0%를 맞춘 제안서입니다. ETF 1,167종·공모펀드 '
+             '3,194종을 실측 비교해 상품을 골랐습니다.',
+    metas=[('원본', '은퇴자산_운용제안서_v2_전체운용사_2026-09-07.pptx'),
+           ('슬라이드', '6장'),
+           ('작업 세션', '은퇴자산 설계 제안서'),
+           ('최종 수정', '2026-09-07')],
+    notes=['<b>이 자료는 특정 가구의 자산 내역을 담고 있습니다.</b> 이름·연락처는 없지만 '
+           '총자산·배우자 자산·은퇴 시점·자녀 결혼 시점·부부 금융소득이 그대로 들어 있어 '
+           '당사자를 아는 사람에게는 식별됩니다. 이 페이지 링크를 해당 상담 관계 밖으로 '
+           '돌리지 마십시오.',
+           NOTE_COMMON,
+           '초판(6.82%)과 개정판(7.00%)이 있습니다. 개정판은 운용사 제약을 풀고 채권형 '
+           '펀드를 넣어 목표를 맞춘 것으로, 여기 실린 텍스트는 <b>개정판(v2)</b> 기준입니다. '
+           '두 판 모두 아래에서 내려받을 수 있습니다.',
+           '수익률 기준일 2026-09-04. 펀드 분배율 등 일부 전제는 원본에서 '
+           '「확인 필요」로 남겨 둔 항목이 있습니다.'],
+    downloads=[
+        {'id': 'f-retirev2', 'src': 'retire-v2.pptx',
+         'name': '은퇴자산_운용제안서_v2_전체운용사_2026-09-07.pptx',
+         'label': '원본 내려받기 · 개정판', 'size': kb('retire-v2.pptx')},
+        {'id': 'f-retirev1', 'src': 'retire-v1.pptx',
+         'name': '은퇴자산_운용제안서_2026-09-07.pptx',
+         'label': '초판', 'size': kb('retire-v1.pptx')},
+    ],
+    deck_keys=['retire-v2.pptx'],
+    sections=[{'title': '슬라이드 6장 · 개정판', 'note': '추출 텍스트'}],
+    repo_lines=[
+        '저장소 경로 — <code>claude/retirement-asset-proposal-m08jfr : '
+        'docs/retirement/</code> (제안서 2판 · 산출 근거 claims.json · 모델 model_v2.py)',
+        '투자 권유가 아닙니다. 실제 상품 내용은 각 상품의 투자설명서가 우선합니다.'],
+    outfile='deck-retirement.html')
