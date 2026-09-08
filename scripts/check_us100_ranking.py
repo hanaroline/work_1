@@ -6,9 +6,15 @@
   자동 교체는 한글이 빈 종목이 조용히 섞여 들어오는 방식이 된다. 그래서 이 스크립트는
   차이만 보고하고, 실제 교체는 한글을 채우는 커밋으로 한다.
 
-순위를 얻는 두 경로
-  ① 야후 스크리너 (POST /v1/finance/screener, crumb 필요) — 시총 내림차순 상위 N
-  ② ①이 막히면 S&P 500 구성종목 목록 + v7/finance/quote 일괄 조회로 순위를 만든다
+순위를 어떻게 만드나
+  기준 유니버스는 **S&P 500 구성종목 + 우리 목록**이다. S&P 500 은 미국에 본사를 둔
+  기업만 담으므로 "미국 100대 기업"의 모집단으로 맞다.
+  야후 스크리너(시총 내림차순)는 **보조**로만 쓴다 — region=us 는 "미국에 상장"이라는
+  뜻이어서 TSM·ASML·텐센트·삼성전자 같은 외국 기업과 같은 회사의 OTC 중복 티커
+  (ASMLF·TCTZF·RHHBF…)가 상위를 채운다. 그래서 스크리너에서 온 종목은
+  ① 정규 거래소(NMS·NYQ 등)에 있고 ② assetProfile.country 가 미국이고
+  ③ 우리 목록에 있는 회사와 같은 이름이 아닐 때만(GOOG·BRK-A 같은 복수 클래스 제외)
+  후보로 올린다.
   우리 목록의 시총은 방금 수집한 data/us100/latest.json 에서 읽는다(요청을 아낀다).
 
 내놓는 것
@@ -34,8 +40,11 @@ import fetch_us100 as F                                    # noqa: E402
 from fetch_us100 import OUT_DIR, companies_from_page, init_crumb, num, yget   # noqa: E402
 
 TOP = 100
-DROP_RANK = 120          # 이 순위 밖으로 밀리면 교체 후보로 본다(경계에서 오가는 잡음을 걸러낸다)
-UNIVERSE = 260           # 스크리너에서 받아 볼 상위 개수
+DROP_RANK = 150          # 이 순위 밖으로 밀리면 교체 후보로 본다(경계에서 오가는 잡음을 걸러낸다)
+UNIVERSE = 260           # 스크리너에서 받아 볼 상위 개수(보조 경로)
+EXTRA_LOOKUPS = 30       # 스크리너 후보의 본사 소재지를 확인할 최대 개수(요청을 묶어 둔다)
+REPORT_MAX = 12          # 사람이 읽는 보고에 적는 최대 줄 수(파일에는 전부 남는다)
+OK_EXCHANGES = ("NMS", "NYQ", "NGM", "ASE", "NCM", "NYS")   # 정규 거래소 — OTC(PNK 등)는 제외
 SP500_CSV = "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv"
 OUT = os.path.join(OUT_DIR, "ranking.json")
 
@@ -77,7 +86,8 @@ def screener_ranking(size=UNIVERSE):
             cap = num(q.get("marketCap"))
             if not sym or not cap:
                 continue
-            out[sym] = {"cap": cap, "name": q.get("shortName") or q.get("longName") or sym}
+            out[sym] = {"cap": cap, "name": q.get("shortName") or q.get("longName") or sym,
+                        "exch": q.get("exchange") or ""}
         offset += page
         if len(quotes) < page:
             break
@@ -118,7 +128,10 @@ def sp500_ranking():
 
 
 def our_caps():
-    """방금 수집한 스냅샷에서 우리 목록의 시총을 읽는다(요청을 아낀다)."""
+    """방금 수집한 스냅샷에서 우리 목록의 **시총만** 읽는다(요청을 아낀다).
+
+    이름은 넣지 않는다 — 여기서 회사 이름 자리에 업종 같은 것을 넣어 두면 아래
+    중복 정리(같은 이름 = 같은 회사)가 엉뚱하게 묶어 버린다."""
     path = os.path.join(OUT_DIR, "latest.json")
     if not os.path.exists(path):
         return {}
@@ -130,8 +143,31 @@ def our_caps():
     for sym, c in (d.get("companies") or {}).items():
         cap = ((c.get("quote") or {}).get("cap"))
         if cap:
-            out[sym] = {"cap": cap, "name": (c.get("profile") or {}).get("industry") or sym}
+            out[sym] = cap
     return out
+
+
+def dedupe_universe(universe, have):
+    """같은 회사의 여러 티커를 하나로 줄인다 — GOOGL/GOOG, BRK-B/BRK-A, FOXA/FOX 처럼
+    복수 클래스가 각각 순위를 차지하면 상위 100이 회사 100곳이 아니게 된다.
+    우리 목록에 있는 쪽을 남기고, 없으면 시총이 큰 쪽을 남긴다."""
+    groups = {}
+    for sym, rec in universe.items():
+        key = norm_name(rec.get("name")) or sym
+        groups.setdefault(key, []).append(sym)
+    dropped = []
+    for syms in groups.values():
+        if len(syms) < 2:
+            continue
+        keep = next((s for s in syms if s in have), None)
+        if keep is None:
+            keep = max(syms, key=lambda s: universe[s]["cap"])
+        for s in syms:
+            if s != keep:
+                dropped.append({"sym": s, "sameAs": keep, "name": universe[s].get("name")})
+    for r in dropped:
+        universe.pop(r["sym"], None)
+    return dropped
 
 
 def country_of(sym):
@@ -191,85 +227,149 @@ def open_or_update_issue(body):
         return None
 
 
+def norm_name(v):
+    """같은 회사의 다른 클래스·다른 티커를 걸러내기 위한 이름 정규화.
+    'Alphabet Inc.' 와 'Alphabet Inc' , 'Berkshire Hathaway Inc.' 와 '… Inc. Class B' 를
+    같은 회사로 본다."""
+    v = (v or "").lower()
+    for junk in (" inc.", " inc", " corporation", " corp.", " corp", " company", " co.",
+                 " plc.", " plc", " ltd.", " ltd", " limited", " holdings", " holding",
+                 " class a", " class b", " class c", " - new york registry shares", ","):
+        v = v.replace(junk, " ")
+    parts = v.split()
+    while parts and len(parts[-1]) == 1:              # "… B", "… A" 같은 클래스 표기
+        parts.pop()
+    return " ".join(parts)[:18]
+
+
 def main():
     ours = companies_from_page()
     have = [c["sym"] for c in ours]
     ko = {c["sym"]: c["ko"] for c in ours}
+    en = {c["sym"]: c["en"] for c in ours}
 
     init_crumb(rounds=2)
-    try:
-        universe, src = screener_ranking()
-    except Exception as e:                            # noqa: BLE001
-        print("스크리너 실패(%s) — S&P 500 경로로 간다" % e, flush=True)
-        try:
-            universe, src = sp500_ranking()
-        except Exception as e2:                       # noqa: BLE001
-            print("::warning::순위를 만들 수 없었다 — %s" % e2)
-            return 0
 
-    # 우리 목록의 시총은 스냅샷 값을 우선한다(같은 판에서 받은 값이라 순위가 흔들리지 않는다)
-    for sym, rec in our_caps().items():
+    # (1) 기준 유니버스 — S&P 500(미국 본사 기업만 담는다) + 우리 목록
+    try:
+        universe, src = sp500_ranking()
+    except Exception as e:                            # noqa: BLE001
+        print("::warning::S&P 500 경로 실패 — %s" % e)
+        universe, src = {}, "none"
+
+    # (2) 우리 목록의 시총은 방금 수집한 스냅샷 값으로 맞춘다(같은 판의 값으로 순위를 매긴다)
+    snap = our_caps()
+    for sym, cap in snap.items():
         if sym in universe:
-            universe[sym] = {"cap": rec["cap"], "name": universe[sym]["name"]}
+            universe[sym]["cap"] = cap
         else:
-            universe[sym] = rec
+            universe[sym] = {"cap": cap, "name": en.get(sym, sym)}
+    for sym in have:
+        if sym not in universe:
+            print("  %s 는 시총을 확인하지 못했다" % sym, flush=True)
+
+    if len(universe) < 200:
+        print("::warning::유니버스가 %d개뿐이다 — 점검을 건너뛴다" % len(universe))
+        return 0
+
+    # (3) 보조 경로 — 스크리너 상위에서 "S&P 500 에도 없고 우리 목록에도 없는" 미국 기업을 줍는다.
+    #     외국 기업·OTC 중복 티커·복수 클래스를 여기서 걸러낸다.
+    ours_names = set(norm_name(en[s]) for s in have)
+    ours_names |= set(norm_name(universe[s].get("name")) for s in have if s in universe)
+    ours_names.discard("")
+    extra = {}
+    try:
+        scr, _ = screener_ranking()
+        cands = sorted(scr.items(), key=lambda kv: -kv[1]["cap"])
+        looked = 0
+        for sym, rec in cands:
+            if sym in universe or looked >= EXTRA_LOOKUPS:
+                continue
+            if rec.get("exch") and rec["exch"] not in OK_EXCHANGES:
+                continue                              # OTC 등 — 같은 회사의 중복 티커가 대부분이다
+            if norm_name(rec["name"]) in ours_names:
+                continue                              # GOOG·BRK-A 처럼 이미 담은 회사의 다른 클래스
+            looked += 1
+            ctry = country_of(sym)
+            if ctry != "United States":
+                continue                              # 미국에 상장했을 뿐인 외국 기업(ADR)
+            extra[sym] = dict(rec, country=ctry)
+            ours_names.add(norm_name(rec["name"]))
+        print("스크리너 보조: 확인 %d개 중 미국 기업 %d개를 유니버스에 더한다" % (looked, len(extra)), flush=True)
+    except Exception as e:                            # noqa: BLE001
+        print("스크리너 보조를 건너뛴다 — %s" % e, flush=True)
+    universe.update(extra)
+
+    # (4) 같은 회사의 여러 티커를 하나로 줄인다(복수 클래스·ADR 중복)
+    deduped = dedupe_universe(universe, set(have))
+    if deduped:
+        print("중복 티커 %d개를 정리했다: %s"
+              % (len(deduped), ", ".join("%s→%s" % (r["sym"], r["sameAs"]) for r in deduped[:8])), flush=True)
 
     ranked = sorted(universe.items(), key=lambda kv: -kv[1]["cap"])
     rank = {sym: i + 1 for i, (sym, _) in enumerate(ranked)}
     top = [sym for sym, _ in ranked[:TOP]]
 
-    add = [{"sym": s, "name": universe[s]["name"], "cap": universe[s]["cap"], "rank": rank[s]}
-           for s in top if s not in have]
-    for r in add[:12]:                                # 후보는 보통 0~3개다
-        r["country"] = country_of(r["sym"])
+    add = []
+    for s in top:
+        if s in have:
+            continue
+        rec = universe[s]
+        add.append({"sym": s, "name": rec["name"], "cap": rec["cap"], "rank": rank[s],
+                    "country": rec.get("country")})
     drop = [{"sym": s, "ko": ko.get(s, s), "cap": universe[s]["cap"], "rank": rank[s]}
-            for s in have if rank.get(s, 9999) > DROP_RANK]
+            for s in have if s in rank and rank[s] > DROP_RANK]
     drop.sort(key=lambda r: r["rank"])
     unknown = [s for s in have if s not in rank]
 
     out = {
         "builtAt": datetime.datetime.now(datetime.timezone.utc).replace(microsecond=0).isoformat().replace("+00:00", "Z"),
         "source": src, "universe": len(universe), "top": TOP, "dropRank": DROP_RANK,
-        "add": add, "drop": drop, "unknown": unknown,
+        "add": add, "drop": drop, "unknown": unknown, "deduped": deduped,
         "ourRanks": {s: rank.get(s) for s in have},
         "top100": top,
-        "note": "목록은 사람이 관리한다 — 이 파일은 갱신 후보만 알려 준다(한글명·기업 개요를 함께 채워야 하기 때문).",
+        "note": ("유니버스 = S&P 500 + 이 화면의 목록 + 스크리너에서 확인한 미국 기업. "
+                 "목록은 사람이 관리한다 — 이 파일은 갱신 후보만 알려 준다(한글명·기업 개요를 함께 채워야 하기 때문)."),
     }
     os.makedirs(OUT_DIR, exist_ok=True)
     with open(OUT, "w", encoding="utf-8") as f:
         json.dump(out, f, ensure_ascii=False, separators=(",", ":"))
-    print("ranking.json 저장 (기준 %s, 후보 %d개 · 밀린 종목 %d개)" % (src, len(add), len(drop)), flush=True)
+    print("ranking.json 저장 (유니버스 %d · 추가 후보 %d · 밀린 종목 %d)"
+          % (len(universe), len(add), len(drop)), flush=True)
 
     lines = []
     if add:
-        lines.append("**목록에 없는 상위 종목 %d개**" % len(add))
-        for r in add:
-            ctry = r.get("country")
-            tail = "" if not ctry or ctry == "United States" else " · 본사 %s(미국 상장 외국 기업)" % ctry
-            lines.append("- `%s` %s — %s · 현재 %d위%s"
-                         % (r["sym"], r["name"], usd(r["cap"]), r["rank"], tail))
+        lines.append("**목록에 없는 상위 %d 종목 %d개**" % (TOP, len(add)))
+        for r in add[:REPORT_MAX]:
+            lines.append("- `%s` %s — %s · 현재 %d위" % (r["sym"], r["name"], usd(r["cap"]), r["rank"]))
+        if len(add) > REPORT_MAX:
+            lines.append("- … 그 밖에 %d개 (ranking.json 에 전부 있습니다)" % (len(add) - REPORT_MAX))
     if drop:
         lines.append("")
         lines.append("**목록에 있으나 %d위 밖으로 밀린 종목 %d개**" % (DROP_RANK, len(drop)))
-        for r in drop:
+        for r in drop[:REPORT_MAX]:
             lines.append("- `%s` %s — %s · 현재 %d위" % (r["sym"], r["ko"], usd(r["cap"]), r["rank"]))
+        if len(drop) > REPORT_MAX:
+            lines.append("- … 그 밖에 %d개" % (len(drop) - REPORT_MAX))
     if unknown:
         lines.append("")
         lines.append("순위를 확인하지 못한 종목: " + ", ".join("`%s`" % s for s in unknown))
 
     if not add and not drop:
-        msg = "대상 목록이 지금 시가총액 상위 %d 과 일치한다(%d위 기준). 교체할 것이 없다." % (TOP, DROP_RANK)
+        msg = "대상 목록이 지금 시가총액 상위 %d 과 일치한다(%d위 기준, 유니버스 %d)." % (TOP, DROP_RANK, len(universe))
         print("::notice::" + msg)
         body = None
     else:
-        msg = ("대상 목록 갱신 후보 — 추가 %d개 / 밀린 종목 %d개 (기준 %s, %s)"
-               % (len(add), len(drop), src, out["builtAt"]))
+        msg = ("대상 목록 갱신 후보 — 추가 %d개 / 밀린 종목 %d개 (유니버스 %d, %s)"
+               % (len(add), len(drop), len(universe), out["builtAt"]))
         print("::notice::" + msg)
-        body = ("\n".join(lines)
+        body = ("유니버스는 **S&P 500 + 이 화면의 목록 + 스크리너에서 확인한 미국 기업**입니다"
+                "(미국에 상장한 외국 기업과 같은 회사의 중복 티커는 제외).\n\n"
+                + "\n".join(lines)
                 + "\n\n교체는 자동으로 하지 않습니다 — 새 종목의 **한글명·검색 키워드·기업 개요**를 "
                   "함께 채워야 화면이 비지 않기 때문입니다. 바꾸려면 `us-top100.html` 의 "
                   "`COMPANIES`·`KEYWORDS`·`PROFILE_KO` 를 함께 고치면 됩니다.\n\n"
-                  "이 글은 매일 수집 때 자동으로 갱신됩니다(기준 " + src + ").")
+                  "이 글은 매일 수집 때 자동으로 갱신됩니다.")
 
     summary = os.environ.get("GITHUB_STEP_SUMMARY")
     if summary:
