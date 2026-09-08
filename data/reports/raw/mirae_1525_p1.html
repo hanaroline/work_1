@@ -71,15 +71,15 @@ eColor = '#598d42';
 	*/
 	function isCommonNull(data){
 		if(data == null || data == "null" || data == "" || typeof(data) == 'undefined' || data.le
-itle="파일 다운로드">HTS 다운로드</a></li>
+="파일 다운로드">HTS 다운로드</a></li>
 						<li><a href="javascript:wtsOpen();" title="새창열림">트레이딩</a></li>
 						<li><a href="javascript:openHp('/hku/hku2001/t01.do', true);">인증서/OTP</a></li>
 						<li><a href="javascript:openHp('/bbs/board/message/list.do?categoryId=1296', false);">자주하는 질문</a></li>
 						<li><a href="javascript:openTalk();" title="새창열림">챗봇상담</a></li>
 						<li><a href="javascript:openHp('/hki/hki3016/n04.do', false);">원격지원</a></li>						
 						<li><a href="javascript:openHp('/hki/hki3062/n05.do', false);">금융소비자포털</a></li>
-						<li><a href="javascript:openGuide('http://dis.kofia.or.kr/fs/dis2/com/COMOutItemAnn.jsp?certifyKey=56b5dcf368687fc
-ight"></span>
+						<li><a href="javascript:openGuide('http://dis.kofia.or.kr/fs/dis2/com/COMOutItemAnn.jsp?certifyKey=56b5dcf368687fc8300
+"></span>
 						</div>
 					</li>
 					<li class="menu">
@@ -104,17 +104,15 @@ ight"></span>
 						</div>
 					</li>
 					<li class="menu">
-						<a href="javascri
->
-								<form name="topSearch" action="/srh.jsp" onsubmit="return false;" method="post">
+						<a href="javascript:v
+							<form name="topSearch" action="/srh.jsp" onsubmit="return false;" method="post">
 									<div class="search_form">
 										<dl>
 											<dt>
 												<input type="text" name="q"  id="q" class="overlay srch_txt" onkeypress="return dq_handleEnter_Top(event);" onfocus="return dq_setTextbox_Top('0',event);" onmousedown="dq_setTextbox_Top('1',event);" onkeydown="dq_setTextbox_Top('1',event);" onkeyup="dq_resetBtn_display();" autocomplete="off" title="검색어를 입력해주세요" placeholder="검색어를 입력해주세요" />
 												<a href="#" title="검색어 초기화" id="searchText_reset" onclick="dq_setAcInput_Top('');" class="btn_value_del">삭제</a>
-												<input type="hidden" name="query" 
->
-									<dl>
+												<input type="hidden" name="query" valu
+								<dl>
 										<dt>추천검색어</dt>
 										<dd>
 											<ul>
@@ -128,8 +126,8 @@ ight"></span>
 								</div>
 								<div class="list_wrap">
 									<div class="month_recommend">
-										<h3>월간 추천상품 <span><a href="javascript:openHp('/hks/hks4000/n02
-owCommonPopup('/advancement/jsp/common/allMenuPopup.jsp', '1050', '750'); }catch(e){}
+										<h3>월간 추천상품 <span><a href="javascript:openHp('/hks/hks4000/n02.do'
+mmonPopup('/advancement/jsp/common/allMenuPopup.jsp', '1050', '750'); }catch(e){}
 		}
 	
 		//퇴직연금(DC) 간편조회 팝업
@@ -151,8 +149,8 @@ owCommonPopup('/advancement/jsp/common/allMenuPopup.jsp', '1050', '750'); }catch
 		
 		function doGnbLogin() {
 		    if (isMobile()) {
-		        openH
-Type	: "json",
+		        openHp('/
+	: "json",
 				type		: "POST",
 				success		: function(data){
 					linkTypeCtrl(linkType, linkUrl); //링크이동
@@ -198,8 +196,8 @@ Type	: "json",
 		</div>
 	</div>
 </div>
-<div id="sn
-tion lnbFour(ar) {
+<div id="snbWra
+ lnbFour(ar) {
         if($('li[id*=lnbFourDepth_]').find(".on").length>0) {
             $('li[id*=lnbFourDepth_] ul').css("display", "");
         }           
@@ -222,9 +220,9 @@ tion lnbFour(ar) {
 				$(this).parent().removeClass('on');
 			}
 		});
-	})
- 
-        var download = {};
+	});
+//
+       var download = {};
 
         let $lastFocused = null;
         
@@ -246,8 +244,8 @@ tion lnbFour(ar) {
                     $popup.find('a:visible').first().focus();
                 }, 0);
         	}else{
-
-        	}
+   
+      	}
         }
         
         //]]>
@@ -301,7 +299,8 @@ tion lnbFour(ar) {
 		if(searchText.length > 0) {
         	if(searchText.val() == '') {
         		if(confirm("검색어가 입력되지 않았습니다. 전체 검색 하시겠습니까?")) {
-rr[2]);
+  
+]);
         $("#searchEndYear").getSetSSValue(endSearchDayArr[0]);
         $("#searchEndMonth").getSetSSValue(endSearchDayArr[1]);
         $("#searchEndDay").getSetSSValue(endSearchDayArr[2]);
@@ -320,8 +319,8 @@ rr[2]);
                
         $("#searchStartYear").getSetSSValue(searchDayArr[0]);
         $("#searchStartMonth").getSetSSValue(searchDayArr[1]);
-        $("#searc
-rchType").getSetSSValue("2");
+        $("#searchSta
+ype").getSetSSValue("2");
 
 
 
@@ -350,9 +349,9 @@ rchType").getSetSSValue("2");
     });
 
 //]]>
-</scrip
+</script>
 
-        <!-- 구분 항목 출력 : 하위 게시판 목록 -->
+     <!-- 구분 항목 출력 : 하위 게시판 목록 -->
         <tbody>
     
         <!-- 검색대상 항목 출력  -->
@@ -385,9 +384,8 @@ rchType").getSetSSValue("2");
                     <option value="18">본문</option>
                     <option value="19">제목+본문</option>
         
-                    <option value="5">작성자</op
-
-                    
+                    <option value="5">작성자</option
+                  
                         <option value="2011">2011</option>
                     
                         <option value="2012">2012</option>
@@ -404,8 +402,8 @@ rchType").getSetSSValue("2");
                     
                         <option value="2018">2018</option>
                     
-                        <option value="2019">2
-                  <select class="month ui-usetab" name="searchStartMonth" id="searchStartMonth" title="검색시작 월 선택">
+                        <option value="2019">2019<
+              <select class="month ui-usetab" name="searchStartMonth" id="searchStartMonth" title="검색시작 월 선택">
                     
                         <option value="01">01</option>
                     
@@ -421,8 +419,8 @@ rchType").getSetSSValue("2");
                     
                         <option value="07">07</option>
                     
-                        <option valu
-"02">02</option>
+                        <option value="0
+>02</option>
                     
                         <option value="03">03</option>
                     
@@ -441,8 +439,8 @@ rchType").getSetSSValue("2");
                         <option value="10">10</option>
                     
                         <option value="11">11</option>
-        
-        <option value="21">21</option>
+            
+    <option value="21">21</option>
                     
                         <option value="22">22</option>
                     
@@ -460,8 +458,8 @@ rchType").getSetSSValue("2");
                     
                         <option value="29">29</option>
                     
-                        <option value="30">
-            <select class="year ui-usetab" name="searchEndYear" id="searchEndYear" title="검색종료 년도 선택">
+                        <option value="30">30</
+        <select class="year ui-usetab" name="searchEndYear" id="searchEndYear" title="검색종료 년도 선택">
                     
                         <option value="2010">2010</option>
                     
@@ -477,8 +475,8 @@ rchType").getSetSSValue("2");
                     
                         <option value="2016">2016</option>
                     
-                      
-          <option value="2026">2026</option>
+                        <o
+      <option value="2026">2026</option>
                     
                     </select>
 
@@ -495,8 +493,8 @@ rchType").getSetSSValue("2");
                     
                         <option value="05">05</option>
                     
-          
-"searchEndDay" title="검색종료 일 선택">
+              
+rchEndDay" title="검색종료 일 선택">
                     
                         <option value="01">01</option>
                     
@@ -514,8 +512,8 @@ rchType").getSetSSValue("2");
                     
                         <option value="08">08</option>
                     
-                        <option value="09">0
-      
+                        <option value="09">09</o
+  
                         <option value="19">19</option>
                     
                         <option value="20">20</option>
@@ -534,8 +532,8 @@ rchType").getSetSSValue("2");
                     
                         <option value="27">27</option>
                     
-                       
-ay:none;"></div>
+                        <op
+one;"></div>
 
 	                <span class="">
 	                	<a href="javascript:searchAll();"><img src="https://img.securities.miraeasset.com/bbsdocs/home/images/bbs/bbs_s_btn01.gif" class="mgt7" alt="전체"/></a>
@@ -549,8 +547,8 @@ ay:none;"></div>
         </tr>
     
     	</tbody>
-    </ta
-� 무단 전재 및 상업적 재배포하는 행위는 저작권법에 의한 저작권 침해에 해당되어 <strong style="float:none;margin-left:0;">처벌 받을 수 있습니다.</strong></li>
+    </table>
+단 전재 및 상업적 재배포하는 행위는 저작권법에 의한 저작권 침해에 해당되어 <strong style="float:none;margin-left:0;">처벌 받을 수 있습니다.</strong></li>
 			</ul>
         </div>
         
@@ -578,8 +576,8 @@ ay:none;"></div>
         <form name="viewForm" id="viewForm" action="#" style="margin:0px;">
             <input type="hidden" name="messageId"           id="vf_messageId"          value="" />
             <input type="hidden" name="messageNumber"       id="vf_messageNumber"      value="" />
-            <input type="hidden" name="mes
-th"    id="vf_searchStartMonth"   value="09" />
+            <input type="hidden" name="message
+   id="vf_searchStartMonth"   value="09" />
             <input type="hidden" name="searchStartDay"      id="vf_searchStartDay"     value="08" />
             <input type="hidden" name="searchEndYear"       id="vf_searchEndYear"      value="2026" />
             <input type="hidden" name="searchEndMonth"      id="vf_searchEndMonth"     value="09" />
@@ -587,8 +585,8 @@ th"    id="vf_searchStartMonth"   value="09" />
             <input type="hidden" name="lastPageFlag"        id="vf_lastPageFlag"       value="" />
             <input type="hidden" name="vf_headerTitle"      id="vf_headerTitle"        value="" />
         
-            <input type="hidden" name="categoryId" id="vf_categoryI
-          <col width="*;" />
+            <input type="hidden" name="categoryId" id="vf_categoryId"  
+      <col width="*;" />
 
             <col width="70px;" />
 
@@ -625,8 +623,8 @@ th"    id="vf_searchStartMonth"   value="09" />
 
 
             <td class="left">
-<div class="subject"><a href="javascript:view('2342542','306')" id="bbsTitle0"><b>제약/바이오</b><br/>우리 기업들은 분명, 앞서 나가고 있다</a> <span><img src="https://i
-ject"><a href="javascript:view('2342520','305')" id="bbsTitle1"><b>NAV Dashboard Weekly</b><br/>한국형 베어허그 법안 국회 발의, 또 다른 주가 누르기 방지법</a></div>
+<div class="subject"><a href="javascript:view('2342542','306')" id="bbsTitle0"><b>제약/바이오</b><br/>우리 기업들은 분명, 앞서 나가고 있다</a> <span><img src="https://img.s
+"><a href="javascript:view('2342520','305')" id="bbsTitle1"><b>NAV Dashboard Weekly</b><br/>한국형 베어허그 법안 국회 발의, 또 다른 주가 누르기 방지법</a></div>
 
              </td>
 
@@ -650,8 +648,9 @@ ject"><a href="javascript:view('2342520','305')" id="bbsTitle1"><b>NAV Dashboard
             <td >
 2026-09-04
 
-             </t
- <td >
+             </td>
+
+ >
 2026-09-02
 
              </td>
@@ -674,8 +673,8 @@ ject"><a href="javascript:view('2342520','305')" id="bbsTitle1"><b>NAV Dashboard
 
              </td>
 
-     
-퓻돌�, CF...
+         
+�, CF...
 
              </td>
 
@@ -702,8 +701,8 @@ ject"><a href="javascript:view('2342520','305')" id="bbsTitle1"><b>NAV Dashboard
              </td>
 
 
-        
-일"/></a></p>
+            
+></a></p>
 
              </td>
 
@@ -731,8 +730,8 @@ ject"><a href="javascript:view('2342520','305')" id="bbsTitle1"><b>NAV Dashboard
 
 
             <td >
-<p class="bbsList_layer_icon">   <a href="javascript:downConfirm('https://securities.miraeasset.com/bbs/download/2146978.pdf?attachmentId=2146978','2146978','1024','768','yes','yes');" title="20260828_AI Infra Signa 1호.pdf(새창열림)">   <img src="https://img.securities.miraeasset.com/bbsdocs/home/images/bbs/ic_file.gif" alt=
-_file.gif" alt="첨부파일"/></a></p>
+<p class="bbsList_layer_icon">   <a href="javascript:downConfirm('https://securities.miraeasset.com/bbs/download/2146978.pdf?attachmentId=2146978','2146978','1024','768','yes','yes');" title="20260828_AI Infra Signa 1호.pdf(새창열림)">   <img src="https://img.securities.miraeasset.com/bbsdocs/home/images/bbs/ic_file.gif" alt="첨�
+e.gif" alt="첨부파일"/></a></p>
 
              </td>
 
@@ -760,8 +759,8 @@ _file.gif" alt="첨부파일"/></a></p>
 
 
             <td >
-<p class="bbsList_layer_icon">   <a href="javascript:downConfirm('https://securities.miraeasset.com/bbs/download/2147037.pdf?attachmentId=2147037','2147037','1024','768','yes','yes');" title="20260901_글로벌 로보틱스 (비중확대_신규).pdf(새창열림)">   <img src="https://img.sec
-의한 저작권 침해에
+<p class="bbsList_layer_icon">   <a href="javascript:downConfirm('https://securities.miraeasset.com/bbs/download/2147037.pdf?attachmentId=2147037','2147037','1024','768','yes','yes');" title="20260901_글로벌 로보틱스 (비중확대_신규).pdf(새창열림)">   <img src="https://img.securit
+ 저작권 침해에
 				 해당되어 처벌받을 수 있습니다.
 			    </p>
 			    <div class="btnWrap middle">
@@ -788,19 +787,19 @@ _file.gif" alt="첨부파일"/></a></p>
     <!-- 페이징 시작 -->
     <div class="bbs_pagingWrap" > 
             <p class="bbs_paging">
-<span><a class=
-chStartMonth=09&searchStartDay=08&searchEndYear=2026&searchEndMonth=09&searchEndDay=08&listType=1&startId=zzzzz~&startPage=1&curPage=3&direction=1" class="off">3</a></span>
+<span><a class="pre
+artMonth=09&searchStartDay=08&searchEndYear=2026&searchEndMonth=09&searchEndDay=08&listType=1&startId=zzzzz~&startPage=1&curPage=3&direction=1" class="off">3</a></span>
 <span class="bar"><a href="list.do?categoryId=1525&searchType=2&searchStartYear=2025&searchStartMonth=09&searchStartDay=08&searchEndYear=2026&searchEndMonth=09&searchEndDay=08&listType=1&startId=zzzzz~&startPage=1&curPage=4&direction=1" class="off">4</a></span>
 <span class="bar"><a href="list.do?categoryId=1525&searchType=2&searchStartYear=2025&searchStartMonth=09&searchStartDay=08&searchEndYear=2026&searchEndMonth=09&searchEndDay=08&listType=1&startId=zzzzz~&startPage=1&curPage=5&direction=1" class="off">5</a></span>
-<span class="bar"><a href="list.do?categoryId=1
-ass="off">8</a></span>
+<span class="bar"><a href="list.do?categoryId=1525&
+"off">8</a></span>
 <span class="bar"><a href="list.do?categoryId=1525&searchType=2&searchStartYear=2025&searchStartMonth=09&searchStartDay=08&searchEndYear=2026&searchEndMonth=09&searchEndDay=08&listType=1&startId=zzzzz~&startPage=1&curPage=9&direction=1" class="off">9</a></span>
 <span class="bar"><a href="list.do?categoryId=1525&searchType=2&searchStartYear=2025&searchStartMonth=09&searchStartDay=08&searchEndYear=2026&searchEndMonth=09&searchEndDay=08&listType=1&startId=zzzzz~&startPage=1&curPage=10&direction=1" class="off">10</a></span>
-<span><a class="next" href="list.do?categoryId=1525&searchType=2&searchStartYear=2025&searchStartMonth=09&searchStartDay=08&searchEndYear=2026&searchEndMonth=09&searchEndDay=08&listType=1&startId=
-판단의 참고 사항이며, 투자판단의 최종 책임은 본 게시물을 열람하시는 이용자에게 있습니다.</li><li>금융투자협회 애널리스트 공시현황 정보를 확인하실 수 있습니다.<a href='http://dis.kofia.or.kr/websquare/index.jsp?w2xPath=/wq/fundMgr/DISFundMgrAnalystStut.xml&divisionId=MDIS03002001000000&serviceId=SDIS03002001000' target='_blank'><img src='/bbsdocs/home/images/financial/bbs_notiBtn01.gif' alt='금융투자협회 애널리스트 공시현황' title='새창' /></a></li><li>투자정보에서 제공되는 PDF파일을 이용하시려면 PDF뷰어를 설치하시기 바랍니다.<a href='http://get.adobe.com/kr/reader/' target='_blank'><img src='/bbsdocs/home/images/financial/bbs_notiBtn02.gif' alt='PDF뷰어 다운로드' title='새창' /></a></li></ul></div>
+<span><a class="next" href="list.do?categoryId=1525&searchType=2&searchStartYear=2025&searchStartMonth=09&searchStartDay=08&searchEndYear=2026&searchEndMonth=09&searchEndDay=08&listType=1&startId=09of
+의 참고 사항이며, 투자판단의 최종 책임은 본 게시물을 열람하시는 이용자에게 있습니다.</li><li>금융투자협회 애널리스트 공시현황 정보를 확인하실 수 있습니다.<a href='http://dis.kofia.or.kr/websquare/index.jsp?w2xPath=/wq/fundMgr/DISFundMgrAnalystStut.xml&divisionId=MDIS03002001000000&serviceId=SDIS03002001000' target='_blank'><img src='/bbsdocs/home/images/financial/bbs_notiBtn01.gif' alt='금융투자협회 애널리스트 공시현황' title='새창' /></a></li><li>투자정보에서 제공되는 PDF파일을 이용하시려면 PDF뷰어를 설치하시기 바랍니다.<a href='http://get.adobe.com/kr/reader/' target='_blank'><img src='/bbsdocs/home/images/financial/bbs_notiBtn02.gif' alt='PDF뷰어 다운로드' title='새창' /></a></li></ul></div>
         <!-- ]] Footer Area -->
-    
-ey ? true : false;		
+        
+ true : false;		
 			if( isShift && event.keyCode == 9){
 				setTimeout(function(){				
 					$('.family_site a:last').focus();
@@ -834,8 +833,8 @@ ey ? true : false;
 		
 			alert("로그인 이후 이용가능합니다.");return;
 				
-
-do',false);"><span>디지털투자상담센터</span><em>1644-9300</em></a></li>
+		wi
+false);"><span>디지털투자상담센터</span><em>1644-9300</em></a></li>
 					<li><a href="javascript:openHp('/ocq/ocq1001/c05.do',false);"><span>개인투자용국채상담센터</span><em>1644-3322</em></a></li>
 					<li><a href="javascript:openHp('/hki/hki3016/n01.do',false);"><span>선물옵션상담센터</span><em>02-3774-6800</em></a></li>
 				</ul>
@@ -846,8 +845,8 @@ do',false);"><span>디지털투자상담센터</span><em>1644-9300</em></a></li>
 					<ul class="quick_menu1">
 						<li><a href="https://ci.securities.miraeasset.com" target="_blank" title="새창열림">회사소개(국문)</a></li>
 						<li><a href="https://english.securities.miraeasset.com" target="_blank" title="새창열림">Our Company</a></li>
-						<li><a href="https://securi
-">미래에셋증권 웹진</a></li>
+						<li><a href="https://securities
+래에셋증권 웹진</a></li>
 						<li><a href="http://magazine.securities.miraeasset.com" target="_blank" title="새창열림">미래에셋증권 매거진</a></li>
 					</ul>
 					<ul class="quick_menu2">
@@ -855,8 +854,8 @@ do',false);"><span>디지털투자상담센터</span><em>1644-9300</em></a></li>
 						<li><a href="javascript:openHp('/hki/hki3040/a00.do?getCode=/hki/hki3040/n04.do',false);">고객정보취급방침</a></li> <!-- 고객유의사항 안내 화면에서 해당화면 포커싱 -->
 						<li><a href="javascript:openHp('/hki/hki3031/a00.do',false);">약관 및 법적 유의사항</a></li>
 						<li><a href="javascript:openHp('/hki/hki3043/n01.do',false);">보호금융상품등록부</a></li>
-						<!-- <li><a href="javascript:openGuide('http://dis.kofia.or.kr/
- 시 클래스 on 추가 -->
+						<!-- <li><a href="javascript:openGuide('http://dis.kofia.or.kr/fs/d
+클래스 on 추가 -->
 						<ul>
 							<li><a href="http://investments.miraeasset.com" target="_blank" title="새창열림">미래에셋자산운용</a></li>
 							<li><a href="https://securities.miraeasset.com" target="_blank" title="새창열림">미래에셋증권</a></li>
@@ -864,8 +863,8 @@ do',false);"><span>디지털투자상담센터</span><em>1644-9300</em></a></li>
 							<li><a href="http://miraeassetlc.com" target="_blank" title="새창열림">미래에셋금융서비스</a></li>
 							<li><a href="http://venture.miraeasset.co.kr" target="_blank" title="새창열림">미래에셋벤처투자</a></li>
 							<li><a href="https://capital.miraeasset.com" target="_blank" title="새창열림">미래에셋캐피탈</a></li>
-							<li><a href="http://consulting.miraeasset.com" 
-rities.mn" target="_blank" title="새창열림">미래에셋증권(몽골)</a></li>
+							<li><a href="http://consulting.miraeasset.com" targ
+es.mn" target="_blank" title="새창열림">미래에셋증권(몽골)</a></li>
 							<li><a href="http://miraeassetsecuritiesus.com" target="_blank" title="새창열림">미래에셋증권(미국)</a></li>
 							<li>미래에셋증권(미국-뉴욕)</li>
 							<li><a href="http://www.masvn.com" target="_blank" title="새창열림">미래에셋증권(베트남)</a></li>
@@ -873,8 +872,8 @@ rities.mn" target="_blank" title="새창열림">미래에셋증권(몽골)</a></
 							<li><a href="https://corretora.miraeasset.com.br" target="_blank" title="새창열림">미래에셋증권(브라질)</a></li>
 							<li><a href="https://securities.miraeasset.com.sg" target="_blank" title="새창열림">미래에셋증권(싱가포르)</a></li>
 							<li><a href="https://securities.miraeasset.co.uk" target="_blank" title="새창열림">미래에셋증권(영국)</a></li>
-					
-)</a></li>
+							<l
+></li>
 							<li><a href="http://fundmanagement-miraeasset.com.vn/" target="_blank" title="새창열림">미래에셋자산운용(베트남)</a></li>
 							<li>미래에셋자산운용(아랍에미리트-두바이)</li>
 							<!-- <li><a href="http://investments.miraeasset.com.br" target="_blank" title="새창열림">미래에셋자산운용(브라질)</a></li> -->
@@ -882,8 +881,8 @@ rities.mn" target="_blank" title="새창열림">미래에셋증권(몽골)</a></
 							<li><a href="http://www.miraeassetmf.co.in" target="_blank" title="새창열림">미래에셋자산운용(인도)</a></li>
 							<li>미래에셋자산운용(중국-상해)</li>
 							<li><a href="http://investments.miraeasset.com.au" target="_blank" title="새창열림">미래에셋자산운용(호주)</a></li>
-							<li
-.vn" target="_blank" title="새창열림">그루 인터내셔널</a></li>
+							<li><a 
+ target="_blank" title="새창열림">그루 인터내셔널</a></li>
 							<li>미래에셋대체투자베트남</li>
 							<li><a href="https://foundation.miraeasset.com.vn/" target="_blank" title="새창열림">미래희망재단(베트남)</a></li>
 						</ul>
@@ -895,15 +894,15 @@ rities.mn" target="_blank" title="새창열림">미래에셋증권(몽골)</a></
 							<li><a href="https://globalxetfs.com.br/" target="_blank" title="새창열림">Global X(브라질)</a></li>
 							<li><a href="https://www.globalxetfs.sg" target="_blank" title="새창열림">Global X(싱가포르)</a></li>
 							<li><a href="https://www.globalxetfs.eu" target="_blank" title="새창열림">Global X(아일랜드)</a></li>
-							<li><a href
-t (호주)</a></li>
+							<li><a href="ht
+Ａ�)</a></li>
 							<li style="margin-top:30px;"><a href="https://miraeassetvc.co.in/" target="_blank" title="새창열림">미래에셋벤처투자(인도)</a></li>
 							<li><a href="https://fs.miraeasset.co.in/" target="_blank" title="새창열림">미래에셋금융서비스(인도)</a></li>
 							<li><a href="https://india.miraeasset.org/" target="_blank" title="새창열림">미래에셋재단(인도)</a></li>
 							<li><a href="https://indices.miraeasset.com/" target="_blank" title="새창열림">미래에셋글로벌인디시스(인도)</a></li>
 							<li><a href="https://www.sharekhan.com/" target="_blank" title="새창열림">미래에셋쉐어칸(인도)</a></li>
-							<li><a href="https://www.lifesci.miraeasset.com" target="_blank" title="새창열림">미래에셋캐피탈라이프사이언스(미국)</a>
-lt="미래에셋증권 로고" />
+							<li><a href="https://www.lifesci.miraeasset.com" target="_blank" title="새창열림">미래에셋캐피탈라이프사이언스(미국)</a></li
+미래에셋증권 로고" />
 					<p class="copyright">COPYRIGHT 2021(C) MIRAE ASSET SECURITIES.CO., LTD. ALL RIGHTS RESERVED.</p>
 				</div>
 				<div class="footer_mark">
@@ -911,9 +910,8 @@ lt="미래에셋증권 로고" />
 						<a href="https://blog.naver.com/how2invest" target="_blank" title="새창열림"><img src="https://img.securities.miraeasset.com/new2026/sns_01.svg" alt="블로그" /></a>
 						<a href="https://facebook.com/miraeassetmstock" target="_blank" title="새창열림"><img src="https://img.securities.miraeasset.com/new2026/sns_02.svg" alt="페이스북" /></a>
 						<a href="https://instagram.com/miraeasset.securities_official" target="_blank" title="새창열림"><img src="https://img.securities.miraeasset.com/new2026/sns_03.svg" alt="인스타그램" /></a>
-						<a
-
-// ]]>
+						<a hre
+]]>
 </script>
 
 <script type='text/javascript' language='javascript' src='/js/weblog_tag.js'></script>
@@ -933,5 +931,5 @@ lt="미래에셋증권 로고" />
 <!-- //Body Start -->
 </html>facebook.com/miraeassetmstock" target="_blank" title="새창열림"><img src="https://img.securities.miraeasset.com/new2026/sns_02.svg" alt="페이스북" /></a>
 						<a href="https://instagram.com/miraeasset.securities_official" target="_blank" title="새창열림"><img src="https://img.securities.miraeasset.com/new2026/sns_03.svg" alt="인스타그램" /></a>
-						<a
+						<a hre
 
