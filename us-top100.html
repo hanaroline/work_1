@@ -2857,7 +2857,10 @@ function renderDetail(sym) {
    ============================================================ */
 var SNAPSHOT_BASES = [
   'data/us100/',                                                          // 저장소를 그대로 서비스하는 경우
-  'https://raw.githubusercontent.com/hanaroline/work_1/main/data/us100/'  // 파일만 따로 열었을 때
+  'https://raw.githubusercontent.com/hanaroline/work_1/main/data/us100/', // 파일만 따로 열었을 때
+  // 아직 main 에 머지되지 않은 동안에도 파일 하나만 열어 쓸 수 있게 작업 브랜치도 본다.
+  // 머지 뒤에는 위 main 경로가 먼저 응답하므로 이 줄은 지워도 된다.
+  'https://raw.githubusercontent.com/hanaroline/work_1/claude/us-top-100-companies-dashboard-wn7877/data/us100/'
 ];
 var SNAP = null;          // latest.json
 var SNAP_BASE = null;     // 실제로 성공한 경로
