@@ -317,11 +317,17 @@ python3 -m http.server 8000   # → http://localhost:8000/us-top100.html
 **② 실시간 (브라우저 직접 조회)** — 붙을 수 있는 환경이면 스냅샷 위에 실시간 값을 덮어씁니다.
 섹션 배지가 `스냅샷 09.08 13:46` 에서 `실시간` 으로 바뀌는 것으로 구분합니다.
 
+> **야후 `quoteSummary` 는 쿠키 + crumb 을 요구합니다(없으면 HTTP 401).** 실제로 돌려 보니
+> 100종목 전부 401 이었고, crumb 핸드셰이크를 넣은 뒤 98/100 이 들어왔습니다. 이 핸드셰이크는
+> 쿠키를 물고 다녀야 해서 **브라우저에서는 사실상 불가능**합니다(교차 사이트 쿠키·CORS).
+> 그래서 **목표주가·컨센서스·실적발표일·투자의견·서프라이즈는 러너 스냅샷이 사실상 유일한 경로**이고,
+> 브라우저 실시간 조회는 **가격·차트·거래량·배당/분할·뉴스**를 갱신하는 역할입니다.
+
 | 항목 | 실시간 소스 | 폴백 순서 |
 |------|-------------|-----------|
 | 목록 시세(100종목) | Yahoo `v8/finance/spark` (25개 묶음) | Stooq CSV → **스냅샷** → 예시 데이터 |
 | 상세 시세·일/주/월 차트·배당·분할 이벤트 | Yahoo `v8/finance/chart` (`events=div,split`) | **스냅샷**(`data/us100/chart/{SYM}.json`) → 예시 데이터 |
-| 지표·실적·컨센서스·일정·투자의견 | Yahoo `v10/finance/quoteSummary` (13개 모듈) | Yahoo `fundamentals-timeseries`(실적·밸류에이션만) → **스냅샷** → 예시 데이터 |
+| 지표·실적·컨센서스·일정·투자의견 | Yahoo `v10/finance/quoteSummary` (13개 모듈, **쿠키+crumb 필요 → 브라우저에서는 대개 401**) | **스냅샷** → Yahoo `fundamentals-timeseries`(실적·밸류에이션만) → 예시 데이터 |
 | 뉴스 | Yahoo `v1/finance/search` | Google News RSS → 딥링크 안내 (스냅샷에 담지 않음) |
 | 원/달러 환율(시가총액 원화 환산) | Yahoo `chart/KRW=X` | **스냅샷의 환율** → 원화 환산 생략 |
 
@@ -334,7 +340,7 @@ python3 -m http.server 8000   # → http://localhost:8000/us-top100.html
 | 파일 | 역할 |
 |------|------|
 | `.github/workflows/us100-data.yml` | 미국 마감 뒤 **21:30·22:30 UTC** 예약(화~토), `data/us100/REFRESH` 수정 push, 수동 실행 |
-| `scripts/fetch_us100.py` | 종목별로 일봉 2년 · 월봉 10년 · quoteSummary 13개 모듈을 받아 저장. quoteSummary 가 막히면 `fundamentals-timeseries` 로 실적·밸류에이션만 확보 |
+| `scripts/fetch_us100.py` | 종목별로 일봉 2년 · 월봉 10년 · quoteSummary 13개 모듈 · fundamentals-timeseries 를 받아 저장. 시작할 때 `fc.yahoo.com` 쿠키 → `/v1/test/getcrumb` 으로 crumb 을 얻는다. 야후 chart 가 404 인 심볼은 Stooq CSV 로, 손익 모듈이 빼놓은 영업이익·EPS 는 timeseries 로 메운다 |
 | `data/us100/latest.json` | 전 종목 요약(시세·지표·목표주가·일정·실적) + 종목별 수집 상태 |
 | `data/us100/chart/{SYM}.json` | 종목별 일봉 2년 · 월봉 10년 (주봉은 화면이 일봉을 주 단위로 묶어 만든다) |
 
@@ -346,6 +352,9 @@ Actions 탭에서 수동 실행합니다. 수집은 100종목 기준 5분 안팎
 
 > 수집기와 화면은 **같은 환산 규칙**을 씁니다(비율 → 퍼센트, 전일종가 짝 맞추기).
 > 한쪽만 고치면 스냅샷과 실시간 값이 다르게 보입니다.
+
+수집 결과는 `latest.json` 의 `summary`(`chartOk` / `summaryOk` / `crumb`)와
+`sources`(종목별 단계별 성공·실패)에 남습니다. 화면 ⑨ 섹션에서도 확인할 수 있습니다.
 
 - 각 요청은 **직접 호출 + CORS 프록시 5경로를 동시에 시도**해 가장 먼저 성공한 응답을 씁니다(각 6초 타임아웃).
 - 섹션마다 응답 시각이 달라, **도착한 섹션부터 즉시 그립니다**. 느린 요청을 기다리며 빈 화면을 보여주지 않습니다.

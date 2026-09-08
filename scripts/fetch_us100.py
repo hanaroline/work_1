@@ -239,6 +239,29 @@ def fetch_chart_stooq(sym, interval="d", keep_days=800):
     return out
 
 
+def resolve_symbol(c):
+    """야후가 심볼을 404 로 답할 때, 회사명으로 실제 심볼을 찾는다.
+
+    티커가 바뀐 종목(예: Fiserv 는 FISV → FI)을 손으로 쫓지 않으려는 장치다.
+    미국 거래소의 보통주만 받아들이고, 회사명이 서로 겹치는지도 확인한다 —
+    검색 결과를 무조건 믿으면 엉뚱한 종목을 그 자리에 앉히게 된다.
+    """
+    q = urllib.parse.quote(c["en"])
+    j = yget("/v1/finance/search?q=%s&quotesCount=6&newsCount=0&enableFuzzyQuery=false" % q)
+    words = [w for w in re.split(r"[^A-Za-z]+", c["en"].lower()) if len(w) > 2]
+    for r in (j.get("quotes") or []):
+        sym = r.get("symbol")
+        if not sym or r.get("quoteType") != "EQUITY":
+            continue
+        if r.get("exchange") not in ("NMS", "NYQ", "NGM", "NCM", "ASE", "PCX", "BTS"):
+            continue
+        name = ((r.get("shortname") or "") + " " + (r.get("longname") or "")).lower()
+        if words and not any(w in name for w in words):
+            continue
+        return sym
+    return None
+
+
 # ---------------------------------------------------------------- quoteSummary
 
 def fetch_summary(sym):
@@ -519,11 +542,16 @@ def _ttm_eps(rows):
 
 # ---------------------------------------------------------------- 본체
 
-def fetch_one(c):
-    """한 종목. 어느 단계가 실패했는지 상태로 남기고, 받은 것만 돌려준다."""
-    sym = c["sym"]
-    payload = {"sym": sym}
+def fetch_one(c, sym=None):
+    """한 종목. 어느 단계가 실패했는지 상태로 남기고, 받은 것만 돌려준다.
+
+    sym 을 따로 주면 그 심볼로 조회한다(티커가 바뀐 종목의 재시도용).
+    """
+    sym = sym or c["sym"]
+    payload = {"sym": c["sym"]}
     status = {}
+    if sym != c["sym"]:
+        status["resolvedSymbol"] = sym
 
     meta = {}
     try:
@@ -657,8 +685,18 @@ def main():
         print("\n시세 실패 %d종목 재시도: %s" % (len(retry), ", ".join(c["sym"] for c in retry)), flush=True)
         time.sleep(5)
         for c in retry:
+            alt = None
+            prev = out["sources"].get(c["sym"])
+            if isinstance(prev, dict) and "404" in str(prev.get("chart", "")):
+                # 심볼 자체를 모른다는 응답이면 회사명으로 다시 찾는다
+                try:
+                    alt = resolve_symbol(c)
+                    if alt and alt != c["sym"]:
+                        print("  %-6s → 야후 심볼 %s 로 재시도" % (c["sym"], alt), flush=True)
+                except Exception as e:          # noqa: BLE001
+                    print("  %-6s 심볼 탐색 실패 — %s" % (c["sym"], e), flush=True)
             try:
-                payload, status, chart = fetch_one(c)
+                payload, status, chart = fetch_one(c, alt)
             except Exception as e:              # noqa: BLE001
                 print("  %-6s 재시도도 실패 — %s" % (c["sym"], e), flush=True)
                 continue
