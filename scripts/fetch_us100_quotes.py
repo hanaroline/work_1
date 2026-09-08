@@ -72,6 +72,16 @@ def quote_bulk(symbols):
                 rec[key] = int(v) if key in ("volume", "asof") else round(v, 4)
         if r.get("marketState"):
             rec["marketState"] = r["marketState"]
+        # 프리마켓·애프터마켓 가격. 정규장이 닫혀 있으면 regularMarketPrice 는 종가에서
+        # 멈춰 있어 몇 시간이 지나도 값이 바뀌지 않는다(사용자가 "3시간 전 데이터"로 본 것).
+        # 시간외 호가가 오면 그것을 따로 담아 화면이 "프리마켓 $X (+1.2%)" 로 함께 보여 준다.
+        for kind, pfx in (("pre", "preMarket"), ("post", "postMarket")):
+            sp = num(r.get(pfx + "Price"), 4)
+            if sp is None:
+                continue
+            rec[kind] = {"price": sp,
+                         "pct": num(r.get(pfx + "ChangePercent"), 2),
+                         "at": int(num(r.get(pfx + "Time")) or 0) or None}
         out[sym] = rec
     if not out:
         raise RuntimeError("쓸 값이 없다")
