@@ -17,6 +17,7 @@
 "sources" 에 남으므로, 화면은 무엇이 확보됐고 무엇이 비었는지 그대로 표시할 수 있다.
 """
 
+import http.cookiejar
 import json
 import os
 import re
@@ -55,6 +56,45 @@ TS_TYPES = ",".join([
 
 # ---------------------------------------------------------------- HTTP
 
+# 야후는 2024년부터 quoteSummary 계열에 쿠키 + crumb 을 요구한다(없으면 401).
+# 쿠키를 물고 다니는 오프너를 하나 쓰고, crumb 은 시작할 때 한 번 받아 둔다.
+_CJ = http.cookiejar.CookieJar()
+_OPENER = urllib.request.build_opener(urllib.request.HTTPCookieProcessor(_CJ))
+CRUMB = None
+
+HDRS = {"User-Agent": UA, "Accept": "application/json,text/plain,*/*",
+        "Accept-Language": "en-US,en;q=0.9"}
+
+
+def _open(url, timeout=None):
+    return _OPENER.open(urllib.request.Request(url, headers=HDRS), timeout=timeout or TIMEOUT)
+
+
+def init_crumb():
+    """쿠키를 받고 crumb 을 얻는다. 실패하면 None — 그 경우 quoteSummary 는 포기한다.
+
+    fc.yahoo.com 은 404 를 주지만 Set-Cookie 는 함께 온다(널리 쓰이는 방식).
+    EU 리전 러너에서는 동의 화면으로 넘어가 crumb 이 HTML 로 올 수 있어, 형태를 본다.
+    """
+    global CRUMB
+    for url in ("https://fc.yahoo.com/", "https://finance.yahoo.com/quote/AAPL/"):
+        try:
+            _open(url).read(64)
+        except Exception:                       # noqa: BLE001 — 쿠키만 필요하다
+            pass
+    for host in ("query2.finance.yahoo.com", "query1.finance.yahoo.com"):
+        try:
+            v = _open("https://" + host + "/v1/test/getcrumb").read().decode("utf-8", "replace").strip()
+            if v and len(v) < 40 and "<" not in v:
+                CRUMB = v
+                print("crumb 확보: %s (쿠키 %d개)" % (v, len(_CJ)), flush=True)
+                return CRUMB
+        except Exception as e:                  # noqa: BLE001
+            print("crumb 실패(%s): %s" % (host, e), flush=True)
+    print("crumb 을 얻지 못했다 — quoteSummary 는 건너뛴다", flush=True)
+    return None
+
+
 def _get(url):
     """실패하면 잠깐 쉬고 다시. 429·5xx 는 기다릴수록 나아지고, 404 는 그렇지 않다."""
     last = None
@@ -62,11 +102,7 @@ def _get(url):
         if attempt:
             time.sleep(1.5 * (2 ** (attempt - 1)))
         try:
-            req = urllib.request.Request(url, headers={
-                "User-Agent": UA, "Accept": "application/json,text/plain,*/*",
-                "Accept-Language": "en-US,en;q=0.9",
-            })
-            with urllib.request.urlopen(req, timeout=TIMEOUT) as r:
+            with _open(url) as r:
                 return r.read().decode("utf-8", "replace")
         except urllib.error.HTTPError as e:
             last = "HTTP %s" % e.code
@@ -173,8 +209,11 @@ def fetch_chart(sym, rng, interval, events=False):
 # ---------------------------------------------------------------- quoteSummary
 
 def fetch_summary(sym):
+    if not CRUMB:
+        raise RuntimeError("crumb 없음")
     path = ("/v10/finance/quoteSummary/" + urllib.parse.quote(sym) +
-            "?modules=" + QS_MODULES + "&formatted=false&corsDomain=finance.yahoo.com")
+            "?modules=" + QS_MODULES + "&formatted=false&corsDomain=finance.yahoo.com" +
+            "&crumb=" + urllib.parse.quote(CRUMB))
     j = yget(path)
     res = (j.get("quoteSummary") or {}).get("result")
     if not res:
@@ -343,10 +382,10 @@ def shape_summary(m, meta):
 def fetch_timeseries(sym):
     """quoteSummary 가 막혔을 때의 대체 경로 — 실적·밸류에이션만 확보한다."""
     end = int(time.time())
-    start = end - 86400 * 365 * 6
+    start = 1262304000                          # 2010-01-01. 좁게 잡으면 연간 계열이 한 행만 온다
     path = ("/ws/fundamentals-timeseries/v1/finance/timeseries/" + urllib.parse.quote(sym) +
             "?symbol=" + urllib.parse.quote(sym) + "&type=" + TS_TYPES +
-            "&period1=%d&period2=%d&merge=false&padTimeSeries=true" % (start, end))
+            "&period1=%d&period2=%d&merge=false" % (start, end))
     j = yget(path)
     res = (j.get("timeseries") or {}).get("result") or []
     series = {}
@@ -355,9 +394,18 @@ def fetch_timeseries(sym):
         if not types:
             continue
         typ = types[0]
-        rows = [x for x in (r.get(typ) or []) if x]
+        rows = [x for x in (r.get(typ) or []) if x and x.get("asOfDate")]
         if rows:
-            series[typ] = [{"date": x.get("asOfDate"), "v": num(x.get("reportedValue"))} for x in rows]
+            got = [{"date": x.get("asOfDate"), "v": num(x.get("reportedValue"))} for x in rows]
+            series.setdefault(typ, []).extend(got)     # 덮어쓰면 계열이 한 행으로 줄어든다
+    for typ in series:
+        seen, uniq = set(), []
+        for x in sorted(series[typ], key=lambda y: y["date"]):
+            if x["date"] in seen:
+                continue
+            seen.add(x["date"])
+            uniq.append(x)
+        series[typ] = uniq
 
     def rows_for(rev_k, op_k, net_k, eps_k, quarterly):
         rev = series.get(rev_k) or []
@@ -388,8 +436,22 @@ def fetch_timeseries(sym):
         },
         "quote": {"cap": last("trailingMarketCap"), "per": last("trailingPeRatio"),
                   "fwdPer": last("trailingForwardPeRatio"), "psr": last("trailingPsRatio"),
-                  "pbr": last("trailingPbRatio"), "evEbitda": last("trailingEnterprisesValueEBITDARatio")},
+                  "pbr": last("trailingPbRatio"), "evEbitda": last("trailingEnterprisesValueEBITDARatio"),
+                  # TTM EPS: quoteSummary 의 trailingEps 가 없을 때 최근 4개 분기 희석 EPS 를 더한다.
+                  # 파생값이므로 화면이 근거를 표시할 수 있게 epsBasis 를 함께 남긴다.
+                  "eps": _ttm_eps(series.get("quarterlyDilutedEPS")),
+                  "epsBasis": "ttm-quarters" if _ttm_eps(series.get("quarterlyDilutedEPS")) is not None else None},
     }
+
+
+def _ttm_eps(rows):
+    """최근 4개 분기 희석 EPS 의 합. 4개가 다 있지 않으면 만들지 않는다."""
+    if not rows or len(rows) < 4:
+        return None
+    vals = [r["v"] for r in rows[-4:] if r.get("v") is not None]
+    if len(vals) < 4:
+        return None
+    return round(sum(vals), 2)
 
 
 # ---------------------------------------------------------------- 본체
@@ -464,6 +526,7 @@ def main():
         companies = [c for c in companies if c["sym"] in only]
 
     os.makedirs(CHART_DIR, exist_ok=True)
+    init_crumb()
     out = {
         "fetchedAt": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
         "source": "yahoo-finance",
@@ -499,7 +562,31 @@ def main():
                                       ("$%.2f" % price) if price else "가격 없음",
                                       "" if status.get("summary") is True else "  (지표 미확보)"), flush=True)
 
-    out["summary"] = {"symbols": len(companies), "chartOk": ok, "summaryOk": qs_ok}
+    # 시세를 못 받은 종목만 한 번 더 — 429·일시적 오류가 대부분이라 재시도로 대개 붙는다
+    retry = [c for c in companies if not isinstance(out["sources"].get(c["sym"]), dict)
+             or out["sources"][c["sym"]].get("chart") is not True]
+    if retry:
+        print("\n시세 실패 %d종목 재시도: %s" % (len(retry), ", ".join(c["sym"] for c in retry)), flush=True)
+        time.sleep(5)
+        for c in retry:
+            try:
+                payload, status, chart = fetch_one(c)
+            except Exception as e:              # noqa: BLE001
+                print("  %-6s 재시도도 실패 — %s" % (c["sym"], e), flush=True)
+                continue
+            if status.get("chart") is True:
+                out["companies"][c["sym"]] = payload
+                out["sources"][c["sym"]] = status
+                ok += 1
+                if status.get("summary") is True:
+                    qs_ok += 1
+                if chart:
+                    with open(os.path.join(CHART_DIR, c["sym"] + ".json"), "w", encoding="utf-8") as f:
+                        json.dump(chart, f, ensure_ascii=False, separators=(",", ":"))
+                print("  %-6s 재시도 성공" % c["sym"], flush=True)
+
+    out["summary"] = {"symbols": len(companies), "chartOk": ok, "summaryOk": qs_ok,
+                      "crumb": bool(CRUMB)}
     with open(os.path.join(OUT_DIR, "latest.json"), "w", encoding="utf-8") as f:
         json.dump(out, f, ensure_ascii=False, separators=(",", ":"))
 
