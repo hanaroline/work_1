@@ -1,273 +1,283 @@
 {
   "_읽는 법": [
-    "2026-09-08(화) 모닝 판. 그날의 서술만 담습니다 — 표·날짜 이름표·비율·개수는 빌더가 시세 자료에서 만듭니다.",
-    "Morning edition for Tue 8 Sep 2026. Narrative only; tables and derived figures come from the builder."
+    "2026년 9월 8일(화) 장마감 판의 서술. 손으로 쓰는 것은 이 파일 하나다.",
+    "숫자는 표에서 나온다 — 문장에 옮겨 적은 값은 다음 날 어긋난다(지침 7절).",
+    "표에 없는 값(예탁금 넉 달 감소분, 증권사 추산, 행사 세션)만 문장에 담고 배지를 단다.",
+    "오늘의 축: 장중 7,171.52 까지 올랐다가 상승분을 전부 반납하고 마감. 어제와 정확히 반대 모양.",
+    "deep 은 「개인의 실탄이 줄고 그 자리를 기타법인이 메우는가」 — 국내 계좌에 바로 닿는 주제.",
+    "verify 노트에 dupcheck 수치를 마지막에 넣는다."
   ],
-
   "headline": [
-    "환율이 지수를 7,000 문턱까지 끌어올렸습니다",
-    "The won carried the index to the door of 7,000"
+    "칠천피를 손에 쥐었다 놓았습니다",
+    "It touched 7,000 and let go"
   ],
-
-  "tone": ["원화가 끌었다", "Won-led"],
-
   "hero": [
-    "어제 서울을 움직인 것은 뉴욕이 아니라 <strong>서울 외환시장</strong>이었습니다. 미국은 노동절로 쉬었고 국내가 손에 쥔 재료는 금요일 뉴욕 마감 하나뿐이었는데도, 코스피는 크게 올라 <strong>7,000선 바로 아래</strong>에서 멈췄습니다. 원·달러가 장중 1,334.7원까지 내려 1년 11개월 만의 최저를 찍자 외국인이 사흘째 사들였고, 그 돈은 시가총액 위쪽 반도체로 몰렸습니다. <strong>오늘 아침 미국에서 새로 받아 올 것은 없습니다</strong> &mdash; 오늘의 7,000선은 국내 수급이 혼자 넘어야 하는 선입니다.",
-    "What moved Seoul yesterday was not New York but <strong>the Seoul FX market</strong>. The US was shut for Labor Day and Korea had only Friday's New York close to work with, yet the KOSPI rose sharply and stopped <strong>just below 7,000</strong>. As the won touched 1,334.7 per dollar intraday &mdash; its strongest in one year and eleven months &mdash; foreigners bought for a third session, and the money went to the large-cap semiconductors. <strong>There is nothing new arriving from the US this morning</strong>: today's 7,000 line has to be cleared by domestic flows alone."
+    "<strong>코스피가 장중 7,171.52 까지 올랐다가 상승분을 전부 반납하고 내려 마쳤습니다.</strong> 장중 7,000 선을 넘은 것은 15거래일 만이지만 <strong>종가로는 지키지 못했습니다.</strong> 어제와 정확히 반대 모양입니다 &mdash; 어제는 당일 고가에서 끝났고, 오늘은 당일 저가 부근에서 끝났습니다. 오전을 끌어올린 것은 어제와 같은 재료(오픈AI 아스트라발 반도체 기대)였고, 오후에 세 가지가 한꺼번에 돌아왔습니다: <strong>사우디 아람코 정유시설 피격에 따른 유가 급등</strong>, <strong>미국&middot;캐나다 보복관세</strong>, 그리고 <strong>엔화 급등에 따른 엔 캐리 청산 우려</strong>입니다. 어제 미국이 노동절로 쉬어 대외 변수가 비어 있었다는 점이 하루 만에 드러난 셈입니다.",
+    "<strong>The KOSPI rose as far as 7,171.52 intraday, then gave the whole advance back and closed lower.</strong> It was the first intraday move above 7,000 in fifteen sessions, but <strong>the close did not hold it.</strong> The shape is the exact inverse of yesterday: yesterday ended at the session high, today near the session low. The morning was driven by the same catalyst as yesterday &mdash; semiconductor momentum from OpenAI&rsquo;s Astra &mdash; and in the afternoon three things returned at once: <strong>a jump in crude after a strike on a Saudi Aramco refinery</strong>, <strong>US&ndash;Canada retaliatory tariffs</strong>, and <strong>a sharp yen rally that revived carry-unwind worries</strong>. Yesterday&rsquo;s US Labor Day holiday had simply left the external side empty."
   ],
-
+  "tone": [
+    "고가에서 끝난 어제, <strong>저가에서 끝난 오늘</strong>",
+    "Yesterday closed at the high; <strong>today closed at the low</strong>"
+  ],
   "today_1": [
-    "<strong>&#9312; 오늘은 간밤이 비어 있습니다.</strong> 미국이 노동절로 쉬어 국내가 개장 전에 받을 새 신호가 없습니다. 이 판의 미국 숫자는 전부 <strong>9/4(금) 마감</strong>이고, 그것은 어제 국내가 이미 반영한 것입니다. 미국이 오늘 밤 다시 열리므로 <strong>다음 재료는 9/9(수) 아침</strong>에 닿습니다.",
-    "<strong>&#9312; There was no overnight session.</strong> With the US closed for Labor Day, Korea opens without a fresh signal. Every US figure in this edition is <strong>Friday 4 Sep</strong> &mdash; already priced in here yesterday. The US reopens tonight, so <strong>the next input lands on Wednesday morning</strong>."
+    "<strong>&#9312; 오전과 오후가 다른 장이었습니다.</strong> 지수는 7,045.79 로 <strong>올라서 출발</strong>해 기관에 이어 외국인까지 매수에 가세하며 7,100 선 위로 올라섰습니다. 그러다 오후 들어 한 방향으로 밀려 <strong>상승분을 전부 반납</strong>했습니다. 장중 고가와 종가의 거리가 이 하루를 가장 잘 설명합니다 &mdash; 표의 「장중 고가&middot;저가」 줄을 보십시오. 반도체 대형주 가운데 <strong>SK하이닉스만 상승을 지켰고</strong>(장중 188만 9,000원까지 올라 7월 27일 이후 처음 180만원선 회복 <span class=\"vf ok\">2 SOURCES</span>), 삼성전자는 장중 27만 9,000원까지 올랐다가 약보합으로 내려앉았습니다.",
+    "<strong>&#9312; The morning and the afternoon were different markets.</strong> The index <strong>opened higher</strong> at 7,045.79, and with institutions and then foreign investors buying it pushed above 7,100. From the afternoon it slid one way and <strong>handed the entire advance back</strong>. The distance between the intraday high and the close describes the day better than anything else &mdash; see the high/low row in the table. Among the large semiconductor names <strong>only SK Hynix held its gain</strong> (it reached &#8361;1,889,000 intraday, its first time back above &#8361;1.8m since 27 July <span class=\"vf ok\">2 SOURCES</span>), while Samsung Electronics touched &#8361;279,000 before slipping to a fractional loss."
   ],
-
   "today_2": [
-    "<strong>&#9313; 외국인이 사흘째 샀습니다.</strong> 한국거래소 집계로 최근 3거래일 코스피에서 <strong>약 4조 7,000억원</strong> 순매수이고, 9월 들어서는 <strong>1조 6,000억원</strong> 이상 매수 우위입니다. 7~8월 두 달 동안 <strong>약 18조원</strong>을 판 흐름이 일단 멈춘 것인지, 방향이 바뀐 것인지는 <strong>환율이 쥐고 있습니다</strong>.",
-    "<strong>&#9313; Foreigners bought for a third day.</strong> Exchange data show roughly <strong>KRW 4.7 trillion</strong> of net KOSPI buying over the last three sessions and more than <strong>KRW 1.6 trillion</strong> month-to-date. Whether the roughly <strong>KRW 18 trillion</strong> of July&ndash;August selling has merely paused or actually turned <strong>rests on the currency</strong>."
+    "<strong>&#9313; 오후를 되돌린 것은 국내 재료가 아닙니다.</strong> 사우디아라비아 아람코 정유시설이 공격받았다는 소식에 국제유가가 장중 급등했고, 미국과 캐나다의 보복관세를 둘러싼 통상 마찰이 겹쳤습니다 <span class=\"vf ok\">2 SOURCES</span>. 여기에 <strong>달러&middot;엔이 153엔대로 내려앉아 엔화 가치가 7개월 만에 최고</strong>가 되면서 엔 캐리 트레이드 청산 우려가 다시 나왔습니다 &mdash; 이경민 대신증권 연구원은 「뚜렷한 엔화 강세가 이어지면서 엔 캐리 청산 우려도 확대되고 있다」고 했습니다 <span class=\"vf solo\">1 SOURCE</span>. 원/100엔 환율이 오늘 오른 것이 같은 이야기의 국내 쪽 얼굴입니다.",
+    "<strong>&#9313; What turned the afternoon was not domestic.</strong> Crude jumped intraday on reports that a Saudi Aramco refinery had been attacked, and friction over US&ndash;Canada retaliatory tariffs added to it <span class=\"vf ok\">2 SOURCES</span>. On top of that <strong>dollar/yen fell into the 153 handle, putting the yen at a seven-month high</strong> and reviving talk of carry-trade unwinding &mdash; Lee Kyung-min of Daishin Securities said &ldquo;with the yen clearly stronger, concern about an unwind of the yen carry trade is widening&rdquo; <span class=\"vf solo\">1 SOURCE</span>. Today&rsquo;s rise in the won-per-100-yen rate is the domestic face of the same story."
   ],
-
   "today_3": [
-    "<strong>&#9314; 모레가 만기일입니다.</strong> 9/10(목) 주식 선물&middot;옵션 만기와 9/11(금) KRX 섹터지수 정기변경이 겹치면서, 반도체 ETF의 <strong>종목별 비중 상한(20%) 재조정</strong> 물량이 <strong>10일 종가 동시호가에 한꺼번에</strong> 집행됩니다. 그 사이 <strong>9/11 미국 8월 소비자물가</strong>가 연준 9월 회의의 방향을 가릅니다.",
-    "<strong>&#9314; Expiry is the day after tomorrow.</strong> Thursday's futures and options expiry runs into Friday's KRX sector-index review, so the <strong>20% single-name cap rebalancing</strong> in semiconductor ETFs will be executed <strong>all at once in Thursday's closing auction</strong>. Between now and then, <strong>US August CPI on Friday</strong> sets the tone for the September Fed meeting."
+    "<strong>&#9314; 판 안에서 돈이 자리를 옮겼습니다.</strong> 한미 원전 협력 기대에 <strong>전기유틸리티와 건설</strong>이 업종 상위에 섰고(한전기술 +16.6%, 대우건설 +8.47% <span class=\"vf solo\">1 SOURCE</span>), 반대편에서는 애플이 새 아이폰 폴더블 수율에 어려움을 겪는다는 소식에 부품주가 크게 밀렸습니다(비에이치 &minus;8.13%, LG이노텍 &minus;6.66% <span class=\"vf solo\">1 SOURCE</span>). <strong>같은 「전자」 안에서도 메모리와 부품이 갈렸습니다</strong> &mdash; 업종 표의 위아래를 함께 보십시오. 지수 하나로 「반도체가 좋았다/나빴다」고 말할 수 없는 날입니다.",
+    "<strong>&#9314; Money moved seats inside the market.</strong> Expectations around Korea&ndash;US nuclear cooperation put <strong>electric utilities and construction</strong> at the top of the sector table (KEPCO E&amp;C +16.6%, Daewoo E&amp;C +8.47% <span class=\"vf solo\">1 SOURCE</span>), while on the other side Apple&rsquo;s reported yield trouble on its new foldable iPhone knocked component makers down hard (BH &minus;8.13%, LG Innotek &minus;6.66% <span class=\"vf solo\">1 SOURCE</span>). <strong>Even within &ldquo;electronics,&rdquo; memory and components split</strong> &mdash; read the top and bottom of the sector table together. This is not a day where one index number can say whether semiconductors were good or bad."
   ],
-
   "korea_lede": [
-    "지수가 크게 오른 날인데 <strong>오른 종목과 내린 종목의 수는 그만큼 벌어지지 않았습니다.</strong> 시가총액 위쪽 몇 종목이 지수를 끌어올렸다는 뜻이고, 그래서 <strong>고객 계좌의 체감은 지수 등락률보다 작을 수 있습니다</strong> &mdash; 응대에서 먼저 짚어 두실 대목입니다. 코스피와 코스닥이 같은 폭으로 오른 것도 아니니 두 시장을 뭉뚱그리지 마십시오.",
-    "The index rose hard, but <strong>advancers did not outnumber decliners by nearly as much.</strong> A handful of the largest names did the lifting, so <strong>what clients feel in their accounts may be smaller than the index move</strong> &mdash; worth saying first. The KOSPI and KOSDAQ did not rise by the same amount either; do not treat them as one market."
+    "지수 두 개가 같은 방향으로 내렸지만 <strong>속을 보면 코스닥이 더 무겁습니다.</strong> 오른 종목보다 내린 종목이 훨씬 많았고, 상승/하락 배수가 1.00 아래로 크게 떨어졌습니다 &mdash; 「폭」 줄을 보십시오. 지수가 장중에 크게 올랐던 것과 견주면, <strong>오른 것은 소수였고 그 소수가 오후에 되밀린 하루</strong>였습니다. 거래대금은 이 창에서 가장 컸습니다.",
+    "Both indices fell, and <strong>the internals are heavier on the KOSDAQ.</strong> Decliners far outnumbered advancers and the advance/decline ratio dropped well below 1.00 &mdash; see the breadth rows. Set against how far the index rose intraday, <strong>the gainers were few and those few were pushed back in the afternoon.</strong> Turnover was the largest in this window."
   ],
-
   "flows_lede": [
-    "<strong>수급은 잔액이 아니라 변화로 읽으십시오.</strong> 외국인은 팔던 것을 멈춘 정도가 아니라 실제로 사들였고, 기관도 같은 방향이었으며, 그 물량을 <strong>개인이 받았습니다</strong>. 증시 주변자금은 <strong>결제일 기준이라 종가일보다 하루이틀 늦습니다</strong> &mdash; 표의 날짜를 함께 보십시오. 매물대는 진짜 매물대가 아니라 일별 (종가, 거래대금)을 지수대로 묶은 <strong>근사</strong>입니다.",
-    "<strong>Read flows as change, not level.</strong> Foreigners did more than stop selling &mdash; they bought; institutions went the same way, and <strong>retail took the other side</strong>. The margin and deposit figures are <strong>settlement-dated, so they lag the close by a day or two</strong> &mdash; read the dates with them. The supply band is an <strong>approximation</strong> built from daily close-and-turnover pairs, not a true volume-at-price profile."
+    "<strong>개인이 홀로 3조원 넘게 팔았고, 외국인과 기관이 같이 샀습니다.</strong> 이 조합이 4거래일째 이어지고 있습니다 &mdash; 표의 최근 계열을 보십시오. 다만 오늘은 <strong>사는 쪽의 힘이 어제의 4분의 1 수준으로 줄었습니다.</strong> 어제 외국인&middot;기관이 함께 5조원 넘게 산 것과 견주면 오늘은 1조원대입니다. <strong>파는 쪽은 그대로인데 받는 쪽이 얇아진 날</strong>이 이런 모양으로 끝납니다. 예탁금&middot;신용융자는 결제일 기준이라 종가일보다 늦습니다 &mdash; 날짜를 함께 보십시오.",
+    "<strong>Retail investors alone sold more than &#8361;3tn, and foreign investors and institutions both bought.</strong> That combination is now in its fourth session &mdash; see the recent series in the table. What changed today is that <strong>the buying side was about a quarter of yesterday&rsquo;s.</strong> Against the &#8361;5tn-plus that foreign investors and institutions bought together yesterday, today was in the &#8361;1tn range. <strong>A day where the selling holds and the bid thins</strong> ends in this shape. Deposits and margin loans are on a settlement basis and lag the close &mdash; read them with their dates."
   ],
-
   "global_lede": [
-    "<strong>미국은 9/7 노동절로 쉬었습니다.</strong> 그래서 이 표의 미국 지수&middot;업종&middot;종목은 모두 <strong>9/4(금) 마감</strong>이고, 그 마감은 어제 국내가 이미 반영했습니다. CME&middot;ICE 도 원유&middot;주가지수 선물을 평소보다 일찍 닫았습니다. 반면 <strong>유럽&middot;일본&middot;중화권은 9/7 현지 마감</strong>이라 미국보다 하루 앞에 있습니다 &mdash; 나란히 놓고 견주지 마십시오. 미국 종목은 정규장 마감 값이라 <strong>장 마감 뒤 발표는 들어 있지 않습니다</strong>.",
-    "<strong>The US was closed on 7 September for Labor Day.</strong> Every US index, sector and stock here is therefore <strong>Friday 4 September</strong> &mdash; the close Korea already traded on yesterday. CME and ICE also shut crude and equity index futures early. <strong>Europe, Japan and Greater China closed on 7 September</strong> in local time, one day ahead of the US &mdash; do not compare them side by side. US stock prices are regular-session closes and <strong>exclude anything announced after the bell</strong>."
+    "<strong>간밤 미국은 열지 않았습니다</strong> &mdash; 9월 7일(월)이 노동절이었습니다. 그래서 표의 미국 지수는 <strong>9월 4일(금) 마감</strong>이며, 이틀 묵은 값입니다. 오늘 국내 오전을 끌어올린 것도 그 금요일의 반도체 강세였습니다. 미국은 오늘 밤 다시 열리고, <strong>이번 주 후반의 물가 지표가 그 자리에서 기다립니다.</strong> 유럽&middot;아시아 표는 각자의 시계로 읽으십시오 &mdash; 마감 시각이 다릅니다.",
+    "<strong>US markets did not trade overnight</strong> &mdash; Monday 7 September was Labor Day. The US rows in the table therefore carry the <strong>Friday 4 September close</strong> and are two days old. That Friday semiconductor rally is also what lifted the Korean morning. The US reopens tonight, and <strong>this week&rsquo;s inflation prints are waiting there.</strong> Read the European and Asian tables on their own clocks &mdash; they close at different times."
   ],
-
   "earnings_lede": [
-    "오늘 수집분에 <strong>분기 실적 발표나 컨퍼런스콜 인용은 없습니다.</strong> 대신 잡힌 것은 증권사 리포트를 옮긴 대목 둘이고, 그 가운데 하나가 오늘 판의 축과 닿습니다 &mdash; <strong>HBM 성장에는 증권가가 대체로 같은 말을 하는데 목표주가는 크게 갈린다</strong>는 것입니다. 범용 D램 가격과 시장금리를 어떻게 반영하느냐가 갈림의 이유입니다. <strong>목표주가는 확정된 판단이 아니며, 여기 옮긴 것은 기사에 실린 대목입니다.</strong>",
-    "Today's collection contains <strong>no quarterly results and no conference-call quotes.</strong> What it does contain are two passages relaying broker research, one of which touches the day's axis: <strong>the street broadly agrees on HBM growth yet its price targets diverge widely</strong>, depending on how each house treats commodity DRAM pricing and market rates. <strong>Price targets are not settled judgements; these are passages as they appeared in the press.</strong>"
+    "<strong>오늘 국내에서 분기 실적을 낸 대형주는 없습니다.</strong> 대신 앞을 가리키는 두 줄이 기사 본문에 있었습니다 &mdash; SK하이닉스가 <strong>10월 말 3분기 실적 발표 시점에 이사회 결의를 거쳐 추가 주주환원을 공개할 계획</strong>이라는 것, 그리고 증권가가 <strong>9월 10일 오라클 실적과 9월 말 마이크론 실적 사이</strong>를 하반기 최고의 모멘텀 구간으로 보고 있다는 것입니다 <span class=\"vf solo\">1 SOURCE</span>. 둘 다 <strong>계획과 전망이지 결과가 아닙니다.</strong>",
+    "<strong>No large Korean company reported quarterly results today.</strong> Two forward-looking lines did appear in the day&rsquo;s coverage: SK Hynix <strong>plans to disclose additional shareholder returns by board resolution at its third-quarter results in late October</strong>, and analysts regard <strong>the stretch between Oracle&rsquo;s results on 10 September and Micron&rsquo;s at month-end</strong> as the strongest momentum window of the second half <span class=\"vf solo\">1 SOURCE</span>. Both are <strong>a plan and a forecast, not results.</strong>"
   ],
-
   "macro_lede": [
-    "세 시계가 서로 다릅니다. <strong>미 재무부 곡선과 기대인플레이션은 9/4 확정치</strong>로, 노동절 탓에 갱신이 없습니다. <strong>국고채는 9/7 확정치</strong>라 하루 앞에 있고, <strong>환율&middot;유가&middot;금은 24시간 거래</strong>라 오늘 새벽 값입니다. 연방기금 금리선물에 담긴 정책금리 기대는 <strong>실효 연방기금금리보다 위</strong>에 있습니다 &mdash; 시장은 지금 완화가 아니라 <strong>인상 쪽</strong>에 값을 매기고 있다는 뜻이고, 이것이 원화 강세와 반대로 당기는 힘입니다.",
-    "Three different clocks. <strong>The Treasury curve and breakevens are Friday 4 September</strong> &mdash; no update over the holiday. <strong>Korean government bonds are 7 September</strong>, a day ahead, and <strong>FX, crude and gold trade around the clock</strong>, so those are this morning's marks. The policy rate implied by fed funds futures sits <strong>above the effective fed funds rate</strong>: the market is pricing <strong>a hike, not an easing</strong> &mdash; the force pulling against the stronger won."
+    "<strong>오늘 매크로의 주인공은 금리가 아니라 유가와 엔화입니다.</strong> 미 국채 곡선은 노동절 휴장으로 <strong>9월 4일에 멈춰 있고</strong>, 그날의 변화도 만기 전 구간에서 한 자릿수 bp 였습니다. 움직인 것은 원자재와 통화 쪽입니다 &mdash; 유가는 공급 차질 소식에 올랐고, 엔화는 달러 대비 크게 강해졌습니다. 원화는 달러에 대해 소폭 약했지만 <strong>엔에 대해서는 그보다 훨씬 크게 밀렸습니다</strong>. 원/100엔 줄과 달러/엔 줄을 나란히 보십시오 &mdash; 원화 크로스는 달러를 거쳐 계산한 재정환율입니다.",
+    "<strong>Today&rsquo;s macro story is crude and the yen, not rates.</strong> The US Treasury curve is <strong>frozen at 4 September</strong> because of Labor Day, and even that day&rsquo;s moves were single-digit basis points across the maturities. What moved was commodities and currencies &mdash; crude rose on supply disruption, and the yen strengthened sharply against the dollar. The won was slightly weaker against the dollar but <strong>much weaker against the yen.</strong> Read the won-per-100-yen row alongside dollar/yen &mdash; the won crosses are computed through the dollar."
   ],
-
+  "calendar_lede": [
+    "<strong>이번 달의 변곡점은 중순 이후에 몰려 있습니다.</strong> 이번 주 물가 지표를 지나면 다음 주에 통화정책회의와 만기, 그리고 AI 인프라 행사가 겹칩니다. 그 뒤가 추석 휴장입니다 &mdash; <strong>연휴 앞에는 포지션을 줄이는 흐름이 나오곤 합니다.</strong> 날짜는 거래소와 주최 측이 바꿉니다. 주문 직전에 다시 보십시오.",
+    "<strong>This month&rsquo;s turning points are bunched after mid-month.</strong> Past this week&rsquo;s inflation data, next week stacks central-bank decisions, an expiry and an AI-infrastructure event on top of each other. The Chuseok closure follows &mdash; <strong>positions are often trimmed ahead of a long holiday.</strong> Exchanges and organisers move dates; reconfirm before acting."
+  ],
+  "talking_lede": [
+    "오늘은 「왜 7,000 을 못 지켰나」와 「지금 사도 되나」가 같이 들어옵니다. <strong>이 판의 표에 있는 숫자로만 답하십시오.</strong> 아래는 확정된 투자 판단이 아니라 응대에 쓸 재료입니다.",
+    "Today brings &ldquo;why did 7,000 not hold&rdquo; and &ldquo;should I buy now&rdquo; together. <strong>Answer only from the tables in this edition.</strong> What follows is material for a conversation, not a settled investment view."
+  ],
+  "verify_lede": [
+    "이 판이 쓴 값이 어디서 왔고 무엇을 확인하지 못했는지 적습니다. <strong>고정 항목은 빌더가 붙이고, 여기에는 오늘에만 있는 것을 답니다.</strong>",
+    "This section records where the figures came from and what could not be confirmed. <strong>The standing notes are added by the builder; what follows is specific to today.</strong>"
+  ],
+  "why": {
+    "_설명": "확인된 것만 답니다. 지수를 따라 움직였을 뿐인 종목에는 붙이지 않았습니다.",
+    "SK하이닉스": [
+      "반도체 대형주 중 유일하게 상승을 지켰습니다. 장중 188만 9,000원까지 올라 7월 27일 이후 처음 180만원선을 회복했습니다",
+      "The only large semiconductor name to hold a gain; it reached &#8361;1,889,000 intraday, back above &#8361;1.8m for the first time since 27 July"
+    ],
+    "한국전력": [
+      "한미 원전 협력 기대가 전력&middot;원전 관련주를 통째로 밀어올렸습니다. 전기유틸리티가 업종 상위 1위입니다",
+      "Expectations around Korea&ndash;US nuclear cooperation lifted the whole power and nuclear complex; electric utilities led the sector table"
+    ],
+    "현대건설": [
+      "같은 재료. 건설이 업종 상위 2위에 올랐고, 대우건설은 8%대 올랐습니다",
+      "The same catalyst; construction was the second-best sector and Daewoo E&amp;C rose more than 8%"
+    ],
+    "삼성전기": [
+      "애플이 새 아이폰 폴더블 제품 수율에 어려움을 겪는다는 소식에 부품주가 함께 밀렸습니다",
+      "Component makers fell together on reports that Apple is struggling with yields on its new foldable iPhone"
+    ],
+    "LG에너지솔루션": [
+      "장 후반 위험자산 회피가 커지며 시가총액 상위 종목이 대부분 약세로 돌아섰고, 그 폭이 큰 쪽에 들었습니다",
+      "As risk appetite faded late in the session most large caps turned lower, and this was among the larger declines"
+    ],
+    "두산에너빌리티": [
+      "대미 투자 프로젝트 기대로 장중 6% 넘게 올랐다가 상승폭을 크게 줄여 마쳤습니다",
+      "Up more than 6% intraday on US investment-project expectations, but it gave most of that back by the close"
+    ]
+  },
   "deep": {
-    "title_ko": "심층 분석 &mdash; 원화 강세가 불러온 외국인, 되돌림인가 방향 전환인가",
-    "title_en": "In Depth &mdash; Foreign buying on a stronger won: a bounce, or a turn?",
-    "lede_ko": "어제 코스피를 끌어올린 힘은 실적도, 미국도 아니었습니다. <strong>원화였습니다.</strong> 두 달 남짓 만에 원·달러가 220원 넘게 내리자 외국인의 손익 계산에서 <strong>환차손이 환차익으로 부호를 바꿨고</strong>, 사흘째 매수가 이어졌습니다. 문제는 이 흐름이 <strong>7~8월 대규모 매도를 되돌리는 것인지, 아니면 잠시 멈춘 것인지</strong>이고, 그 답이 오늘부터 열흘 사이의 일정에 걸려 있습니다.",
-    "lede_en": "What lifted the KOSPI yesterday was neither earnings nor New York. <strong>It was the won.</strong> With the currency more than 220 won stronger in a little over two months, the FX line in a foreign investor's P&amp;L <strong>flipped from a loss to a gain</strong>, and buying ran for a third session. The question is whether this <strong>unwinds the heavy July&ndash;August selling or merely pauses it</strong> &mdash; and the answer hangs on the next ten days of the calendar.",
+    "title_ko": "심층 분석 &mdash; 개인의 실탄이 줄고 있습니다. 그 자리를 누가 메우나",
+    "title_en": "In Depth &mdash; Retail dry powder is shrinking. Who fills the gap",
+    "lede_ko": "오늘 개인은 3조원 넘게 팔았고, 그런데도 지수는 장중 7,171 까지 올랐습니다. <strong>파는 주체와 지수 방향이 어긋나는 국면</strong>이 최근 넉 달 내내 이어지고 있습니다. 이 절은 그 배경에 있는 <strong>대기 자금의 감소</strong>와, 증권가가 그 빈자리의 후보로 꼽는 <strong>기타법인(자사주)</strong>을 봅니다 &mdash; 고객 계좌의 매수 여력과 직접 맞닿는 이야기입니다.",
+    "lede_en": "Retail investors sold more than &#8361;3tn today, and the index still traded as high as 7,171. <strong>A market where the seller and the index point in different directions</strong> has now run for four months. This section looks at what sits behind it &mdash; <strong>the shrinking pool of waiting cash</strong> &mdash; and at the candidate analysts name to fill the gap: <strong>corporate buyers, meaning buybacks.</strong> It bears directly on how much buying power client accounts still have.",
     "blocks": [
       {
-        "q_ko": "무엇이 나왔나",
-        "q_en": "What actually happened",
-        "a_ko": "7일 서울 외환시장에서 원·달러가 <strong>장중 1,334.7원</strong>까지 내려 연중 최저를 갈아치웠습니다. 주간 거래 종가 기준으로는 <strong>1,340.5원</strong>으로, 2024년 10월 4일 이후 <strong>1년 11개월 만의 최저</strong>입니다. 6월 5일 장중 고점이 1,561.5원이었으니 두 달여 만에 <strong>220원 넘게</strong> 내린 셈입니다. 같은 기간 외국인은 코스피에서 최근 3거래일 <strong>약 4조 7,000억원</strong>을 순매수했고, 9월 누적으로도 <strong>1조 6,000억원</strong> 이상 매수 우위입니다. 직전 두 달과 방향이 정반대입니다 &mdash; 7월 <strong>8조 6,313억원</strong>, 8월 <strong>9조 8,895억원</strong> 순매도로 <strong>약 18조원</strong>을 팔았습니다.",
-        "a_en": "On Monday the won touched <strong>1,334.7</strong> per dollar intraday, a new low for the year, and closed the onshore session at <strong>1,340.5</strong> &mdash; the strongest since 4 October 2024, <strong>one year and eleven months</strong>. Against the 1,561.5 intraday high of 5 June, that is <strong>more than 220 won</strong> in a little over two months. Over the same stretch foreigners bought roughly <strong>KRW 4.7 trillion</strong> of KOSPI stock in three sessions and are more than <strong>KRW 1.6 trillion</strong> net buyers in September. That is the mirror image of the prior two months: <strong>KRW 8,631.3 billion</strong> of net selling in July and <strong>KRW 9,889.5 billion</strong> in August, roughly <strong>KRW 18 trillion</strong> in all."
+        "q_ko": "무엇이 확인됐나",
+        "q_en": "What is confirmed",
+        "a_ko": "투자자예탁금은 <strong>9월 4일 기준 93조 5,499억원</strong>입니다 &mdash; 이 판의 「증시 주변자금」 표에 그날 값과 증감이 있습니다. 표 밖의 사실은 이렇습니다: 코스피가 처음 7,000 선을 넘었던 <strong>5월 7일에는 137조원에 육박</strong>했고, <strong>6월 4일 139조 7,000억원</strong>이 역대 최고였습니다. 넉 달 만에 43조원 넘게, 석 달 만에 <strong>46조 1,501억원</strong>이 줄어 <strong>올해 1월 16일(91조 2,181억원) 이후 8개월 만의 최저</strong>입니다. CMA 잔고도 같은 기간 112조 5,947억원에서 <strong>104조 8,820억원</strong>으로 7조 7,127억원 줄어, 단순히 옆 계좌로 옮겨 간 것으로 보기 어렵습니다. 담보 여력도 함께 줄었습니다 &mdash; 예탁증권 담보융자 잔고가 3월 28조 1,000억원에서 8월 <strong>25조 3,000억원</strong>으로 9.9% 감소했습니다. <span class=\"vf solo\">1 SOURCE</span> &mdash; 금융투자협회 집계를 인용한 보도이며 시세 파일에는 없는 항목입니다.",
+        "a_en": "Investor deposits stood at <strong>&#8361;93.5499tn as of 4 September</strong> &mdash; that date and its change are in the market-liquidity table of this edition. Outside the table: when the KOSPI first crossed 7,000 on <strong>7 May the figure was close to &#8361;137tn</strong>, and the record was <strong>&#8361;139.7tn on 4 June</strong>. More than &#8361;43tn has gone in four months, and <strong>&#8361;46.1501tn</strong> in three, leaving the <strong>lowest level in eight months</strong>, since &#8361;91.2181tn on 16 January. CMA balances fell over the same span from &#8361;112.5947tn to <strong>&#8361;104.882tn</strong>, a drop of &#8361;7.7127tn, so this is not simply money moving to the account next door. Collateral capacity shrank too: securities-backed lending fell 9.9%, from &#8361;28.1tn in March to <strong>&#8361;25.3tn</strong> in August. <span class=\"vf solo\">1 SOURCE</span> &mdash; reported from Korea Financial Investment Association data; not present in the market file."
       },
       {
-        "q_ko": "왜 시장이 그렇게 반응했나",
-        "q_en": "Why the market reacted this way",
-        "a_ko": "외국인에게 원화 약세 국면에서는 주식에서 벌어도 <strong>환차손</strong>이 남지만, 강세 국면에서는 주가 상승에 <strong>환차익</strong>까지 붙습니다. 그 부호가 바뀐 것이 수급의 계기입니다. 환율 쪽에서는 <strong>달러로 받은 수출대금의 환전을 미루던 기업들이 본격 매도로 돌았고</strong>, 일본은행 금리 인상 기대로 엔이 강해진 것이 원화를 함께 밀어올렸습니다. 1,400원이 무너진 뒤 1,390원·1,380원대가 차례로 밀리며 <strong>하락이 다시 매도를 부르는 &lsquo;도미노 매도&rsquo;</strong>가 나타났다는 것이 시장의 설명입니다. 다만 하단 인식도 같이 생겼습니다 &mdash; 외환 당국 고위 관계자는 <strong>&ldquo;오늘 환율이 1334원대까지 많이 내려간 만큼 국민연금이 일부 매수를 했을 수 있다&rdquo;</strong>고 했고, 이 언급이 1,330원대에서 추가 달러 투매를 제한한 것으로 시장은 보고 있습니다.",
-        "a_en": "For a foreign investor, a weakening won leaves an <strong>FX loss</strong> even on a winning position, while a strengthening won adds an <strong>FX gain</strong> on top of the price move. That sign change is the trigger. On the currency side, <strong>exporters who had been sitting on dollar receipts turned to selling them</strong>, and a firmer yen &mdash; on expectations of a Bank of Japan hike &mdash; pulled the won up with it. After 1,400 gave way, 1,390 and then the 1,380s followed, producing what the market calls <strong>a &ldquo;domino&rdquo; of selling begetting selling</strong>. A floor emerged alongside it: a senior FX-authority official said <strong>&ldquo;with the rate down as far as the 1,334 area today, the National Pension Service may have bought some dollars&rdquo;</strong> &mdash; a remark the market reads as having capped further dollar dumping in the 1,330s."
+        "q_ko": "그래서 개인이 증시를 떠난 것인가 &mdash; 반론이 있습니다",
+        "q_en": "Does that mean retail is leaving? There is a counter-argument",
+        "a_ko": "<strong>예탁금 감소만으로 떠났다고 읽는 것은 성급하다</strong>는 반론이 있습니다. 김재승 현대차증권 연구원은 「최근 예탁금 감소의 상당 부분을 <strong>조정 과정에서 개인이 저가 매수에 나서며 대기자금을 소진한 결과</strong>로 볼 필요가 있다」고 했습니다. 근거도 같이 제시됐습니다 &mdash; 6월 22일 고점 이후 하락장에서 개인은 개별 종목을 <strong>27조원</strong>, 국내 주식형 ETF 를 <strong>8조 8,000억원</strong> 순매수했고 같은 기간 예탁금은 21조원 줄었습니다. 대기 자금이 <strong>주식으로 바뀐 것</strong>이라는 해석입니다. 다만 참여 열기 자체가 식은 신호도 함께 있습니다: 연초~6월 개인의 코스피 순매수가 <strong>99조 1,000억원</strong>이었는데 7월 초~8월 26일에는 <strong>10조 2,000억원</strong>에 그쳤습니다. <span class=\"vf solo\">1 SOURCE</span>",
+        "a_en": "There is a counter-argument that <strong>reading the fall in deposits as an exit is premature.</strong> Kim Jae-seung of Hyundai Motor Securities said &ldquo;much of the recent decline should be seen as <strong>retail investors spending their waiting cash on buying the dip</strong> during the correction.&rdquo; The evidence offered: since the 22 June peak, through the decline, retail investors bought <strong>&#8361;27tn</strong> of individual shares and <strong>&#8361;8.8tn</strong> of domestic equity ETFs, while deposits fell &#8361;21tn over the same period &mdash; waiting cash <strong>converted into stock.</strong> Even so, there are signs the participation itself has cooled: retail bought &#8361;99.1tn of KOSPI shares from January through June, but only <strong>&#8361;10.2tn</strong> from early July to 26 August. <span class=\"vf solo\">1 SOURCE</span>"
       },
       {
         "q_ko": "국내 계좌에는 어떻게 닿나",
-        "q_en": "How this reaches accounts here",
-        "a_ko": "<strong>세 갈래로 갈라져 닿습니다.</strong> 첫째, <strong>외국인이 사는 자리</strong>는 시가총액 위쪽에 몰려 있습니다 &mdash; 어제 국내 절 표에서 오른 쪽 상단을 그대로 보십시오. 둘째, <strong>수출주의 원화 환산 실적</strong>은 반대로 눌립니다. 이경민 대신증권 연구원은 <strong>&ldquo;원화 강세는 외국인 투자자 수급 여건에 긍정적인 요인이지만, 과도한 달러-원 환율 하락은 수출주의 원화 환산 실적에 부담으로 작용할 가능성이 존재한다&rdquo;</strong>고 했습니다. 다만 반도체에 대해서는 김영건 미래에셋증권 연구원이 <strong>환율 하락에 따른 부정적 영향을 반영하더라도 삼성전자의 이익 증가 흐름은 이어질 것</strong>으로 보았습니다. 셋째, <strong>고객이 이미 들고 있는 해외자산</strong>입니다 &mdash; 환헤지를 하지 않았다면 원화가 세지는 만큼 원화 환산 수익률이 깎입니다. 어제 &lsquo;K-뷰티&rsquo; ETF 수익률이 마이너스로 돌아선 것이 그 경로를 그대로 보여 줍니다. <strong>같은 원화 강세가 계좌마다 부호가 다르게 닿는다</strong>는 것이 오늘 응대의 요점입니다.",
-        "a_en": "<strong>It arrives along three separate paths.</strong> First, <strong>where foreigners buy</strong> is concentrated at the top of the market cap table &mdash; read the upper block of yesterday's Korean stock table directly. Second, <strong>exporters' won-translated earnings</strong> get squeezed the other way. Lee Kyung-min of Daishin Securities put it this way: <strong>&ldquo;A stronger won is a positive for foreign investor flows, but an excessive fall in the dollar-won rate could weigh on exporters' won-translated results.&rdquo;</strong> On semiconductors specifically, Kim Young-gun of Mirae Asset Securities judged that <strong>Samsung Electronics' earnings growth continues even after allowing for the negative FX effect</strong>. Third, <strong>the overseas assets clients already hold</strong>: unhedged, their won-translated returns are cut by exactly as much as the won gains. A K-beauty ETF turning negative yesterday shows that channel plainly. <strong>The same won move reaches different accounts with opposite signs</strong> &mdash; that is the point to make today."
+        "q_en": "How it reaches Korean accounts",
+        "a_ko": "세 가지로 닿습니다. <strong>첫째, 받아 주는 손이 바뀝니다.</strong> 오늘처럼 개인이 3조원을 던져도 외국인&middot;기관이 받으면 지수가 버티지만, 그 힘은 어제의 4분의 1 수준이었습니다 &mdash; <strong>같은 매도에 얇아진 매수</strong>가 오후의 되밀림을 만들었습니다. <strong>둘째, 후보가 기타법인입니다.</strong> 권범석 삼성증권 연구원은 「개인의 매수세가 약화된 빈자리는 삼성전자와 SK하이닉스 등 <strong>기타법인이 채울 가능성</strong>이 있다」고 했고, 삼성증권은 두 회사가 계획대로 자사주를 사들이면 <strong>9월 기타법인 순매수가 30조원을 웃돌 것</strong>으로 추산했습니다. 지난달 31일 개인&middot;외국인&middot;기관이 모두 순매도한 날 지수가 올랐던 것도 그 수요 덕이라는 설명입니다. <strong>셋째, 이 판의 수급 표에는 기타법인이 없습니다</strong> &mdash; 수집기가 개인&middot;외국인&middot;기관 셋만 받습니다. <strong>지수를 좌우하는 매수 주체 하나가 표에 보이지 않는다는 뜻</strong>이므로, 응대할 때 「수급이 좋다/나쁘다」를 세 주체만으로 단정하지 마십시오. <span class=\"vf solo\">1 SOURCE</span>",
+        "a_en": "Three ways. <strong>First, the hand on the other side changes.</strong> The index can absorb &#8361;3tn of retail selling as long as foreign investors and institutions take it, but today that bid was about a quarter of yesterday&rsquo;s &mdash; <strong>the same selling against a thinner bid</strong> is what produced the afternoon reversal. <strong>Second, the named candidate is corporate buying.</strong> Kwon Beom-seok of Samsung Securities said &ldquo;the gap left by weaker retail buying <strong>may be filled by corporate buyers</strong> such as Samsung Electronics and SK Hynix,&rdquo; and Samsung Securities estimates that if the two execute their buybacks as planned, <strong>September corporate net buying will exceed &#8361;30tn.</strong> The same demand is credited for the index rising on 31 August, a day when retail, foreign and institutional investors were all net sellers. <strong>Third, corporate flows are not in this edition&rsquo;s tables</strong> &mdash; the collector carries only retail, foreign and institutional. <strong>One of the buyers that moves the index is invisible here</strong>, so do not judge &ldquo;flows are good or bad&rdquo; from three categories alone. <span class=\"vf solo\">1 SOURCE</span>"
       },
       {
-        "q_ko": "무엇이 아직 답해지지 않았나",
+        "q_ko": "아직 답해지지 않은 것",
         "q_en": "What is still unanswered",
-        "a_ko": "<strong>이 흐름이 이어지기에 좋은 환경은 아니라는 반론이 있습니다.</strong> 김재승 현대차증권 연구원은 <strong>&ldquo;미국과 이란 전쟁 지속에 따른 유가와 미국채 금리 상승, 연준의 9월 기준금리 인상 가능성에 외국인 순매수가 이어지기 좋지 않은 환경&rdquo;</strong>이라며 <strong>&ldquo;단기적으로 이달 중순까지 수급 공백과 매크로 이벤트에 대한 경계감이 이어질 것&rdquo;</strong>으로 보았습니다. 같은 연구원은 <strong>&ldquo;오는 11일 발표되는 미국 8월 소비자물가(CPI)가 연준의 9월 기준금리를 결정할 핵심 이벤트&rdquo;</strong>라고 했습니다. 그 전에 <strong>9/10 만기일의 기계적 매매</strong>가 끼어 있습니다. 정리하면 답이 나오는 순서는 <strong>10일 수급 → 11일 물가 → 16일 연준</strong>이고, 그 셋을 지나기 전까지 어제의 매수를 &lsquo;전환&rsquo;이라고 부르기는 이릅니다. <strong>여기 적은 것은 전망일 뿐 결과가 아닙니다.</strong>",
-        "a_en": "<strong>There is a counter-argument that the backdrop does not favour continuation.</strong> Kim Jae-seung of Hyundai Motor Securities said the environment is <strong>&ldquo;not a good one for sustained foreign net buying, given crude and US Treasury yields rising on the continuing US&ndash;Iran war and the possibility of a September Fed hike&rdquo;</strong>, and expects <strong>&ldquo;a flow vacuum and wariness about macro events to persist into the middle of this month.&rdquo;</strong> The same analyst called <strong>&ldquo;the US August CPI released on the 11th the key event that will decide the Fed's September policy rate.&rdquo;</strong> Ahead of that sits <strong>the mechanical trading of the 10 September expiry</strong>. So the answers arrive in order &mdash; <strong>flows on the 10th, inflation on the 11th, the Fed on the 16th</strong> &mdash; and until those pass it is early to call yesterday's buying a turn. <strong>These are forecasts, not results.</strong>"
+        "a_ko": "<strong>기타법인 순매수 30조원은 추산이지 집계가 아닙니다.</strong> 두 회사가 「계획대로」 매입한다는 가정 위에 서 있고, 자사주 매입은 회사가 시점과 속도를 정합니다 &mdash; 미루면 그 가정도 미뤄집니다. <strong>예탁금이 언제 돌아서는지도 알 수 없습니다.</strong> 저가매수 소진이라는 해석이 맞다면 반등 국면에서 다시 쌓여야 하는데, 오늘 개인은 반등 초입에서 오히려 팔았습니다. 그리고 이 절의 표 밖 수치는 <strong>전부 보도 인용</strong>이며 <strong>기관 전망은 결과가 아닙니다.</strong> 이 판의 표로 검증할 수 있는 것은 예탁금&middot;신용융자의 결제일 기준 잔액과 세 주체의 순매수뿐입니다.",
+        "a_en": "<strong>The &#8361;30tn corporate figure is an estimate, not a tally.</strong> It rests on both companies buying &ldquo;as planned,&rdquo; and a company sets the timing and pace of its own buyback &mdash; if it defers, so does the assumption. <strong>Nor is it known when deposits turn.</strong> If the dip-buying explanation is right they should rebuild on a rally, yet today retail sold into the early part of one. And every figure in this section that is not in a table is <strong>cited from reporting</strong>; <strong>a house forecast is not a result.</strong> What this edition&rsquo;s tables can verify is the settlement-basis deposit and margin balances and the three investor categories &mdash; nothing more."
       }
     ]
   },
-
-  "why": {
-    "SK하이닉스": [
-      "미래에셋증권과 DB증권이 전날 나란히 목표주가를 올렸습니다 &mdash; HBM4 출하 본격화와 수요사 다변화가 근거입니다",
-      "Mirae Asset and DB Securities both raised their price targets the previous day, citing the HBM4 ramp and a broadening customer base"
-    ],
-    "삼성전자": [
-      "미래에셋증권이 목표주가를 올렸습니다 &mdash; 환율 하락 영향을 반영해도 HBM 출하와 가격이 범용 D램 둔화를 보완한다는 판단입니다",
-      "Mirae Asset raised its target: even allowing for the weaker dollar, HBM volume and pricing offset the slowdown in commodity DRAM"
-    ],
-    "주성엔지니어링": [
-      "9/10 반도체 ETF 비중 상한 조정에서 <strong>자금이 들어올 쪽</strong>으로 꼽힌 소부장 종목입니다",
-      "Named among the equipment and materials names expected to <strong>receive inflows</strong> in the 10 September semiconductor ETF cap rebalancing"
-    ],
-    "한미반도체": [
-      "같은 리밸런싱에서 <strong>가장 큰 유입</strong>이 예상된 종목으로 꼽혔습니다",
-      "Flagged as the <strong>largest expected inflow</strong> in the same rebalancing"
-    ],
-    "알테오젠": [
-      "같은 날 바이오 지수 비중 조절에서는 <strong>매도가 출회될 쪽</strong>으로 꼽혔습니다",
-      "In the same review, named on the <strong>sell side</strong> of the bio index weight adjustment"
-    ]
-  },
-
-  "calendar_lede": [
-    "<strong>앞으로 열흘 사이에 답이 세 번 나옵니다</strong> &mdash; 수급(10일), 물가(11일), 연준(16일). 그 뒤로는 추석 휴장이 이어지므로 <strong>재개장 아침에 며칠치를 한꺼번에 받는지</strong>까지 미리 세어 두십시오. 정기적으로 되풀이되는 개장·마감 시각은 이 표에 넣지 않습니다.",
-    "<strong>Three answers arrive within ten days</strong> &mdash; flows on the 10th, inflation on the 11th, the Fed on the 16th. The Chuseok closure follows, so count in advance <strong>how many overseas sessions the reopening morning has to absorb.</strong> Recurring open and close times are not listed here."
-  ],
-
   "calendar": [
     {
-      "when_ko": "<strong>오늘 9/8 (화) 밤</strong>",
-      "when_en": "<strong>Tonight, Tue 8 Sep</strong>",
-      "what_ko": "<strong>미국 증시 재개장</strong> &mdash; 노동절 휴장 뒤 첫 거래",
-      "what_en": "<strong>US equities reopen</strong> &mdash; first session after Labor Day",
-      "why_ko": "국내가 오늘 개장 전에 받은 새 재료는 <strong>없습니다.</strong> 오늘 밤 마감이 <strong>9/9(수) 아침</strong>에 닿습니다",
-      "why_en": "Korea opens today with <strong>no new overnight input.</strong> Tonight's close reaches us <strong>on Wednesday morning</strong>",
-      "type_ko": "수급",
-      "type_en": "Flows",
-      "hl": true
-    },
-    {
-      "when_ko": "<strong>9/10 (목) 장 마감 동시호가</strong>",
-      "when_en": "<strong>Thu 10 Sep &mdash; closing auction</strong>",
-      "what_ko": "<strong>주식 선물&middot;옵션 만기</strong> + 반도체 ETF <strong>종목별 비중 상한(20%) 재조정</strong>",
-      "what_en": "<strong>Futures and options expiry</strong> plus the <strong>20% single-name cap rebalancing</strong> in semiconductor ETFs",
-      "why_ko": "신규 편입&middot;편출보다 <strong>비중 조절에서 나오는 거래대금이 훨씬 큽니다</strong>(1조 8,000억원 추정). 대형주에서 팔고 소부장으로 옮겨 가는 <strong>기계적 매매</strong>이므로 실적과 무관합니다 &mdash; <strong>단기 변동성 확대에 유의</strong>",
-      "why_en": "The turnover from <strong>weight adjustment far exceeds that from additions and deletions</strong> (an estimated KRW 1.8 trillion). It is <strong>mechanical trading</strong> out of the large caps and into equipment names, unrelated to earnings &mdash; <strong>expect a short burst of volatility</strong>",
-      "type_ko": "수급",
-      "type_en": "Flows",
-      "hl": true
-    },
-    {
       "when_ko": "9/10 (목) 21:30",
-      "when_en": "Thu 10 Sep, 21:30",
-      "what_ko": "미국 <strong>8월 생산자물가(PPI)</strong>",
-      "what_en": "US <strong>August PPI</strong>",
-      "why_ko": "다음 날 소비자물가의 <strong>선행 신호</strong>로 읽힙니다",
-      "why_en": "Read as an <strong>early signal</strong> for the next day's CPI",
-      "type_ko": "지표",
-      "type_en": "Data"
-    },
-    {
-      "when_ko": "<strong>9/11 (금) 21:30</strong>",
-      "when_en": "<strong>Fri 11 Sep, 21:30</strong>",
-      "what_ko": "미국 <strong>8월 소비자물가(CPI)</strong> &mdash; 이번 국면의 분수령",
-      "what_en": "US <strong>August CPI</strong> &mdash; the watershed for this phase",
-      "why_ko": "고용은 이미 강하게 나왔습니다. <strong>물가까지 웃돌면 9월 인상 쪽으로 기울고</strong>, 식으면 외국인 매수가 이어지기 좋은 자리가 됩니다. 로이터 설문의 예상치는 전월 대비 <strong>+0.4%</strong>, 근원 <strong>+0.2%</strong>입니다 &mdash; <strong>전망일 뿐 결과가 아닙니다</strong>",
-      "why_en": "Payrolls already came in hot. <strong>A firm CPI on top tilts toward a September hike</strong>; a soft one leaves room for foreign buying to continue. The Reuters poll looks for <strong>+0.4%</strong> on the month and <strong>+0.2%</strong> at the core &mdash; <strong>a forecast, not a result</strong>",
-      "type_ko": "지표",
-      "type_en": "Data",
-      "hl": true
-    },
-    {
-      "when_ko": "9/11 (금)",
-      "when_en": "Fri 11 Sep",
-      "what_ko": "<strong>KRX 섹터지수 정기변경</strong> 시행",
-      "what_en": "<strong>KRX sector index review</strong> takes effect",
-      "why_ko": "전날 동시호가에 집행된 물량이 <strong>이날부터 지수에 반영</strong>됩니다",
-      "why_en": "The trades executed in the previous day's auction are <strong>reflected in the indices from this date</strong>",
-      "type_ko": "한국",
-      "type_en": "Korea"
-    },
-    {
-      "when_ko": "<strong>9/15~16 (화~수)</strong> &middot; 결정 9/17 03:00",
-      "when_en": "<strong>Tue&ndash;Wed 15&ndash;16 Sep</strong> &middot; decision 03:00 on the 17th",
-      "what_ko": "<strong>미국 FOMC</strong> &mdash; 경제전망(점도표) 함께 공표",
-      "what_en": "<strong>FOMC</strong> &mdash; with the Summary of Economic Projections",
-      "why_ko": "연방기금 선물에 담긴 기대가 <strong>실효 연방기금금리보다 위</strong>에 있습니다. 시장이 인상 쪽에 값을 매기고 있어, 결과보다 <strong>점도표가 원화와 외국인 수급을 다시 정할 수 있는 자리</strong>입니다",
-      "why_en": "Fed funds futures imply a rate <strong>above the effective fed funds rate</strong>. With a hike partly priced, it is the <strong>dot plot rather than the decision that can reset the won and foreign flows</strong>",
+      "what_ko": "미국 8월 생산자물가지수(PPI)",
+      "what_en": "US August producer price index",
+      "why_ko": "이번 주 물가 두 장 중 첫 장. 유가 급등이 물가에 얹히는 경로를 먼저 본다",
+      "why_en": "The first of this week&rsquo;s two inflation prints, and the first read on crude feeding through",
       "type_ko": "미국",
       "type_en": "US",
       "hl": true
     },
     {
-      "when_ko": "<strong>9/24 (목)~9/25 (금)</strong>",
-      "when_en": "<strong>Thu 24 &ndash; Fri 25 Sep</strong>",
-      "what_ko": "<strong>추석 &mdash; 국내 증시 휴장</strong>. 9/28(월)은 <strong>정상 개장</strong>합니다",
-      "what_en": "<strong>Chuseok &mdash; Korean market closed</strong>. Monday 28 September <strong>trades normally</strong>",
-      "why_ko": "설&middot;추석 연휴는 <strong>일요일과 겹칠 때만</strong> 대체공휴일이 붙습니다 &mdash; 올해 추석 마지막 날은 토요일이라 9/28 대체공휴일은 <strong>없습니다.</strong> 국내는 9/23(수) 마감 뒤 9/28(월)에 열어 <strong>미국 사흘치(9/23&middot;24&middot;25)를 한꺼번에</strong> 받습니다",
-      "why_en": "For the Lunar New Year and Chuseok, a substitute holiday is granted <strong>only when the break overlaps a Sunday</strong> &mdash; this year the last day falls on a Saturday, so <strong>there is no substitute holiday on 28 September.</strong> Korea closes on Wednesday the 23rd and reopens on Monday the 28th, absorbing <strong>three US sessions (23, 24 and 25 September) at once</strong>",
-      "type_ko": "휴장",
-      "type_en": "Holiday",
+      "when_ko": "9/10 (목) 장 마감 후 (현지)",
+      "what_ko": "오라클 분기 실적",
+      "what_en": "Oracle quarterly results",
+      "why_ko": "AI 데이터센터 투자 지속성을 확인하는 첫 자리. 국내 메모리 수요 기대와 직결된다",
+      "why_en": "The first check on AI data-centre capex; it feeds straight into Korean memory demand",
+      "type_ko": "미국",
+      "type_en": "US",
+      "hl": false
+    },
+    {
+      "when_ko": "9/11 (금) 21:30",
+      "what_ko": "미국 8월 소비자물가지수(CPI)",
+      "what_en": "US August consumer price index",
+      "why_ko": "9월 통화정책회의 직전의 마지막 물가. 오늘 오후 경계심의 실체가 이것이다",
+      "why_en": "The last inflation print before the September policy meeting &mdash; the caution in today&rsquo;s afternoon was about this",
+      "type_ko": "미국",
+      "type_en": "US",
       "hl": true
+    },
+    {
+      "when_ko": "9/15 (화) ~ 9/17 (목)",
+      "what_ko": "AI 인프라 써밋 &mdash; 미 산타클라라",
+      "what_en": "AI Infra Summit &mdash; Santa Clara",
+      "why_ko": "오픈AI&middot;엔비디아&middot;삼성전자&middot;SK하이닉스가 모인다. 16일 국내 메모리 기업 발표가 예정돼 있다",
+      "why_en": "OpenAI, Nvidia, Samsung Electronics and SK Hynix all attend; the Korean memory makers present on the 16th",
+      "type_ko": "행사",
+      "type_en": "Event",
+      "hl": true
+    },
+    {
+      "when_ko": "9/15 (화) ~ 9/18 (금) (현지)",
+      "what_ko": "미국&middot;일본 통화정책회의와 쿼드러플 위칭데이",
+      "what_en": "US and Japan policy meetings, and quadruple witching",
+      "why_ko": "대신증권이 이달 최대 변곡점으로 꼽은 구간. 엔화가 움직이면 오늘의 캐리 이야기가 다시 온다",
+      "why_en": "Daishin calls this the month&rsquo;s main inflection; if the yen moves, today&rsquo;s carry story returns",
+      "type_ko": "정책",
+      "type_en": "Policy",
+      "hl": true
+    },
+    {
+      "when_ko": "9월 24일(목) &middot; 25일(금)",
+      "what_ko": "추석 &mdash; 국내 증시 휴장",
+      "what_en": "Chuseok &mdash; Korean market closed",
+      "why_ko": "연휴 앞에서는 포지션을 줄이는 흐름이 나오곤 한다. 9/28(월)은 대체공휴일이 아니라 정상 개장이다",
+      "why_en": "Positions are often trimmed before a long break; Monday 28 September is a normal session, not a substitute holiday",
+      "type_ko": "한국",
+      "type_en": "Korea",
+      "hl": false
+    },
+    {
+      "when_ko": "9월 말 (현지)",
+      "what_ko": "마이크론 분기 실적",
+      "what_en": "Micron quarterly results",
+      "why_ko": "메모리 업황의 분기 확인점. 오라클과 함께 이 구간을 하반기 모멘텀으로 보는 시각이 있다",
+      "why_en": "The quarterly checkpoint for memory; some see this stretch, with Oracle, as the second half&rsquo;s momentum window",
+      "type_ko": "미국",
+      "type_en": "US",
+      "hl": false
+    },
+    {
+      "when_ko": "10월 말",
+      "what_ko": "SK하이닉스 3분기 실적 &middot; 추가 주주환원 발표 예정",
+      "what_en": "SK Hynix Q3 results and planned additional shareholder returns",
+      "why_ko": "이사회 결의를 거쳐 공개할 계획이라고 밝혔다. 자사주 수요가 지수 하단을 받치는 이야기와 이어진다",
+      "why_en": "The company says it will disclose these by board resolution; it connects to the buyback-support story",
+      "type_ko": "한국",
+      "type_en": "Korea",
+      "hl": false
     }
   ],
-
-  "talking_lede": [
-    "아래 답은 <strong>이 판의 표에서 나온 것만</strong>으로 씁니다. <strong>확정된 투자 판단이 아닙니다.</strong> 오늘은 세 질문이 다 <strong>같은 뿌리</strong>에서 나옵니다 &mdash; 어제의 큰 상승과 환율입니다.",
-    "The answers below are drawn <strong>only from this edition's tables</strong> and are <strong>not settled investment judgements.</strong> All three questions today share <strong>one root</strong>: yesterday's large gain and the currency."
-  ],
-
   "talking": [
     {
-      "q_ko": "&ldquo;코스피가 7,000 앞까지 왔는데, 지금 들어가도 됩니까?&rdquo;",
-      "q_en": "&ldquo;The KOSPI is at the door of 7,000 &mdash; is it too late to buy?&rdquo;",
-      "a_ko": "<strong>지수 하나로 답하지 마십시오.</strong> 국내 절 표의 <strong>52주 구간 안 위치</strong>를 그대로 보여 드리면 코스피와 코스닥이 <strong>서로 다른 자리</strong>에 있다는 것이 바로 보입니다 &mdash; 같은 말씀을 두 시장에 드리면 어긋납니다. 여기에 수급 절의 <strong>매물대</strong>를 겹쳐 보십시오. 어제 코스피는 최근 구간의 <strong>맨 윗칸에서 끝나 위에 쌓인 물량이 사실상 없고</strong>, 코스닥은 그렇지 않습니다. 위가 비어 있다는 것은 <strong>본전에 팔려는 물량을 덜 만난다</strong>는 뜻일 뿐, 올라간다는 뜻이 아닙니다. <strong>확정된 투자 판단이 아닙니다.</strong>",
-      "a_en": "<strong>Do not answer with the index alone.</strong> Show the <strong>position within the 52-week range</strong> from the Korean equities table: the KOSPI and the KOSDAQ sit in <strong>quite different places</strong>, so one message cannot serve both. Overlay the <strong>supply band</strong> from the flows section. The KOSPI closed in the <strong>topmost band, with effectively nothing stacked above it</strong>; the KOSDAQ did not. An empty band above means <strong>less break-even selling to absorb on the way up</strong> &mdash; not that it will go up. <strong>Not a settled investment judgement.</strong>"
+      "q_ko": "장중에 7,000 을 넘었다는데 왜 마이너스로 끝났습니까?",
+      "q_en": "It went above 7,000 during the day &mdash; why did it close negative?",
+      "a_ko": "오전과 오후의 재료가 달랐습니다. 오전은 어제와 같은 <strong>반도체 기대</strong>였고, 오후에 <strong>유가 급등&middot;미국-캐나다 통상 마찰&middot;엔화 급등</strong> 셋이 한꺼번에 들어왔습니다. 어제는 미국이 노동절로 쉬어 이런 대외 변수가 아예 없었습니다 &mdash; <strong>재료가 사라진 것이 아니라 어제 비어 있던 자리가 채워진 것</strong>입니다. 표에서 장중 고가와 종가의 거리를 함께 보여 주십시오. <strong>확정된 투자 판단이 아닙니다.</strong>",
+      "a_en": "The morning and the afternoon ran on different inputs. The morning was the same <strong>semiconductor expectation</strong> as yesterday; the afternoon brought <strong>a crude spike, US&ndash;Canada trade friction and a yen surge</strong> at once. Yesterday the US was shut for Labor Day, so none of that existed &mdash; <strong>the catalyst did not disappear; the empty seat from yesterday was filled.</strong> Show the distance between the intraday high and the close. <strong>Not a settled investment view.</strong>"
     },
     {
-      "q_ko": "&ldquo;환율이 더 내려간다는데, 제 해외 펀드는 어떻게 됩니까?&rdquo;",
-      "q_en": "&ldquo;They say the won will keep strengthening &mdash; what happens to my overseas fund?&rdquo;",
-      "a_ko": "<strong>환헤지 여부에서 갈립니다.</strong> 헤지를 하지 않은 해외자산은 원화가 세지는 만큼 <strong>원화 환산 수익률이 그대로 깎입니다</strong> &mdash; 현지 통화로 올라도 계좌에서는 덜 오르거나 마이너스가 될 수 있습니다. 어제 &lsquo;K-뷰티&rsquo; ETF 수익률이 마이너스로 돌아선 것이 그 경로입니다. 반대로 <strong>국내에 들어오는 외국인에게는 같은 방향이 이익</strong>이라, 어제 지수를 끌어올린 힘과 고객 해외 계좌를 깎는 힘이 <strong>같은 하나</strong>입니다. 이 판의 환율 절에서 원화 환율 표와 달러 상대 통화 표를 <strong>따로</strong> 보여 드리십시오 &mdash; <strong>두 표는 빗금을 읽는 규칙이 반대</strong>입니다.",
-      "a_en": "<strong>It turns on whether the fund is hedged.</strong> An unhedged overseas holding has its <strong>won-translated return cut by exactly the won's gain</strong> &mdash; it can rise in local currency and still be flat or negative in the account. A K-beauty ETF turning negative yesterday is that channel. Conversely, <strong>the same direction is a gain for foreigners buying Korea</strong>: the force that lifted the index yesterday and the force trimming a client's overseas account are <strong>one and the same</strong>. Show the won table and the dollar-cross table <strong>separately</strong> from the FX section &mdash; <strong>the two read their slashes in opposite directions</strong>."
+      "q_ko": "개인이 3조원을 팔았다는데, 지금 파는 게 맞습니까?",
+      "q_en": "Retail sold &#8361;3tn today &mdash; is selling the right call now?",
+      "a_ko": "오늘의 개인 순매도는 <strong>차익실현으로 읽히고 있습니다</strong> &mdash; 지수가 장중 크게 오른 자리에서 나온 매도입니다. 다만 「개인이 팔았으니 나도 판다」는 근거가 되지 못합니다. 짚어 드릴 것은 <strong>대기 자금이 줄고 있다</strong>는 사실입니다(「심층」 절). <strong>고객 본인의 예수금과 신용 사용 여부</strong>를 먼저 확인하시고, 담보 여력이 얇아진 상태에서의 추격 매수는 권하지 않습니다. <strong>확정된 투자 판단이 아닙니다.</strong>",
+      "a_en": "Today&rsquo;s retail selling <strong>reads as profit-taking</strong> &mdash; it came out at a level well above the open. That is not a reason for a client to sell too. What is worth raising is that <strong>the pool of waiting cash is shrinking</strong> (see the In Depth section). Check <strong>the client&rsquo;s own cash balance and whether they are using margin</strong> first; chasing a rally on thin collateral is not something to encourage. <strong>Not a settled investment view.</strong>"
     },
     {
-      "q_ko": "&ldquo;모레 만기일에 반도체가 흔들린다던데요?&rdquo;",
-      "q_en": "&ldquo;I hear semiconductors get shaken up at Thursday's expiry?&rdquo;",
-      "a_ko": "<strong>업황 이야기가 아닙니다.</strong> KRX 섹터지수는 한 종목 쏠림을 막으려고 <strong>비중 상한을 20%</strong>로 두는데, 지금 반도체 지수에서 두 대형주의 비중이 상한을 크게 넘어 <strong>기계적으로 덜어 내야 합니다.</strong> 덜어 낸 돈은 소부장 쪽으로 옮겨 갑니다. 집행은 <strong>10일 종가 동시호가에 한꺼번에</strong> 일어나므로 <strong>그 시점 전후로만 변동성이 커지는 성격</strong>입니다. 실적이나 목표주가가 바뀌어서가 아니라는 점을 먼저 말씀드리고, <strong>그날 종가 근처의 매매는 서두르지 않으시도록</strong> 안내하십시오. <strong>확정된 투자 판단이 아닙니다.</strong>",
-      "a_en": "<strong>This is not a story about the industry.</strong> KRX sector indices cap any single name at <strong>20%</strong> to limit concentration; two large caps now sit well above that cap in the semiconductor index and must be <strong>trimmed mechanically</strong>, with the proceeds moving toward equipment and materials names. Execution happens <strong>all at once in Thursday's closing auction</strong>, so the volatility is <strong>concentrated around that moment</strong>. Say first that nothing changed in earnings or targets, and suggest <strong>not rushing trades near that close</strong>. <strong>Not a settled investment judgement.</strong>"
+      "q_ko": "유가가 오르면 제 계좌에는 어떻게 옵니까?",
+      "q_en": "If crude rises, how does that reach my account?",
+      "a_ko": "두 갈래입니다. <strong>가까운 쪽</strong>은 위험자산 선호가 줄어드는 경로로, 오늘 오후가 그 모습이었습니다. <strong>먼 쪽</strong>은 물가입니다 &mdash; 유가가 물가 지표에 얹히면 금리 인하 기대가 밀리고, 그것이 이번 주 <strong>10일 PPI&middot;11일 CPI</strong> 에서 처음 확인됩니다(「일정」 절). 업종으로는 정유&middot;조선 쪽과 항공&middot;운송 쪽이 반대로 움직입니다. 오늘 표에서는 <strong>전기&middot;가스와 건설이 오르고 IT 가 내린 것</strong>이 그 로테이션의 국내판입니다. <strong>확정된 투자 판단이 아닙니다.</strong>",
+      "a_en": "Two paths. <strong>The near one</strong> is simply less appetite for risk &mdash; that was this afternoon. <strong>The far one</strong> is inflation: crude feeds the price data, that pushes back rate-cut expectations, and the first read comes in <strong>Thursday&rsquo;s PPI and Friday&rsquo;s CPI</strong> (see the calendar). By sector, refiners and shipbuilders move opposite to airlines and transport. In today&rsquo;s tables, <strong>utilities and construction up with IT down</strong> is the domestic version of that rotation. <strong>Not a settled investment view.</strong>"
+    },
+    {
+      "q_ko": "엔화가 오르는 게 왜 한국 주식에 문제가 됩니까?",
+      "q_en": "Why is a stronger yen a problem for Korean stocks?",
+      "a_ko": "싼 엔화를 빌려 다른 자산에 투자한 자금이 있는데, 엔화가 오르면 그 <strong>빌린 쪽의 부담이 커져 되돌리는 압력</strong>이 생깁니다 &mdash; 그 되돌림 과정에서 파는 대상에 신흥국 주식이 들어갑니다. 오늘 시장에서 나온 이야기가 그것이고 <span class=\"vf solo\">1 SOURCE</span>, <strong>실제 청산이 일어났다는 확인은 아닙니다.</strong> 표에서 <strong>달러/엔과 원/100엔</strong> 두 줄을 함께 보여 주시면 설명이 쉽습니다. 다음 확인점은 다음 주 일본 통화정책회의입니다. <strong>확정된 투자 판단이 아닙니다.</strong>",
+      "a_en": "Money has been borrowed in cheap yen and put to work elsewhere; when the yen rises, <strong>the borrowed leg becomes more expensive and pressure builds to reverse the trade</strong> &mdash; and emerging-market equities are among what gets sold in that reversal. That is the concern voiced in the market today <span class=\"vf solo\">1 SOURCE</span>; it is <strong>not confirmation that an unwind occurred.</strong> Showing <strong>dollar/yen and won-per-100-yen</strong> side by side makes the point quickly. The next checkpoint is next week&rsquo;s Bank of Japan meeting. <strong>Not a settled investment view.</strong>"
     }
   ],
-
-  "verify_lede": [
-    "오늘 판에서 <strong>날짜가 세 갈래로 갈립니다</strong> &mdash; 미국은 9/4, 국내·유럽·아시아는 9/7, 환율과 원자재는 오늘 새벽입니다. 아래는 그 밖에 <strong>오늘에만 해당하는</strong> 것들입니다.",
-    "Three date families in this edition &mdash; the US at 4 September, Korea, Europe and Asia at the 7th, FX and commodities at this morning. Below are the items <strong>specific to today</strong>."
-  ],
-
   "verify": [
     {
-      "t_ko": "미국 노동절 휴장 &mdash; 미국 계열은 전부 <strong>9/4(금) 마감</strong>입니다",
-      "t_en": "US Labor Day &mdash; every US series is the <strong>Friday 4 September</strong> close",
-      "b_ko": "9/7(월)은 미국 노동절이라 뉴욕이 열리지 않았습니다. 그래서 미국 지수&middot;업종 ETF&middot;개별 종목, <strong>미 재무부 수익률 곡선과 기대인플레이션(브레이크이븐)</strong>이 모두 9/4 확정치이고 9/7 값이 없습니다. 신선도 확인 스크립트는 「미국 직전 마감 기대 2026-09-07」로 <strong>낡았다</strong>고 판정했지만, <strong>기대 날짜가 휴장일이므로 갱신되지 않은 것이 정상</strong>입니다 &mdash; 그래도 오늘 아침 기사를 받기 위해 수집을 다시 불러 <strong>07:40 수집분</strong>으로 지었습니다.",
-      "b_en": "Monday 7 September was Labor Day and New York did not open, so US indices, sector ETFs, single stocks, <strong>the Treasury curve and breakevens</strong> are all the 4 September prints with no 7 September value. The freshness check reported &ldquo;stale&rdquo; against an expected US close of 2026-09-07, but <strong>that expected date is a holiday, so the absence is correct</strong>. Collection was still re-triggered to pick up this morning's news, and this edition is built on the <strong>07:40 snapshot</strong>."
+      "t_ko": "미국 지수는 <strong>이틀 묵은 값</strong>입니다 &mdash; 9월 7일이 노동절이었습니다",
+      "t_en": "The US rows are <strong>two days old</strong> &mdash; 7 September was Labor Day",
+      "b_ko": "표의 S&amp;P500&middot;나스닥&middot;다우&middot;필라델피아 반도체는 <strong>9월 4일(금) 마감</strong>입니다. 9월 7일(월)은 미국 노동절 휴장이라 새 종가가 없습니다. <strong>「간밤 미국」이라는 말이 오늘은 맞지 않으므로</strong> 해당 절에 그 사실을 적었습니다. 미 국채 곡선도 같은 이유로 9월 4일에 멈춰 있습니다. 반면 <strong>VIX 는 9월 7일 날짜</strong>로 들어와 있어 다른 미국 지수와 시계가 다릅니다 &mdash; 파생 지표라 산출 경로가 다른 것으로 보이나 <strong>확인하지 못했습니다.</strong> 환율&middot;원자재&middot;비트코인은 24시간 거래되므로 오늘 값입니다.",
+      "b_en": "The S&amp;P 500, Nasdaq, Dow and SOX rows carry the <strong>Friday 4 September close.</strong> Monday 7 September was the US Labor Day holiday, so there is no newer close. <strong>&ldquo;Overnight in the US&rdquo; is not accurate today</strong>, and the section says so. The Treasury curve is frozen at 4 September for the same reason. The <strong>VIX, however, is dated 7 September</strong> and therefore runs on a different clock from the other US rows &mdash; likely because it is a derived index, but <strong>this could not be confirmed.</strong> FX, commodities and bitcoin trade around the clock and are today&rsquo;s."
     },
     {
-      "t_ko": "VIX 9/7 봉은 <strong>Cboe 글로벌 세션 값</strong>입니다 &mdash; 정규장 등락률과 <strong>같은 자로 읽지 마십시오</strong>",
-      "t_en": "The 7 September VIX bar is a <strong>Cboe global-session value</strong> &mdash; <strong>do not measure it with the same ruler</strong> as regular-session moves",
-      "b_ko": "S&P500&middot;나스닥&middot;다우&middot;SOX 는 9/4 가 마지막 봉인데 <strong>VIX 만 9/7 날짜로 시가&middot;고가&middot;저가&middot;종가가 다 들어와 있어 원천을 되짚었습니다.</strong> 수집기 오류가 아닙니다. 노동절에 Cboe 정규 옵션 세션은 닫혔지만 <strong>SPX&middot;VIX 옵션의 글로벌 세션(GTH)은 현지 오전 11:30까지 열려 있었고</strong>, VIX 지수는 그 SPX 옵션 호가에서 계산돼 <strong>야간&middot;휴장 중에도 산출&middot;배포</strong>됩니다. 수집 시각이 이를 뒷받침합니다 &mdash; 9/7 22:23 KST(현지 09:23, 세션 안) 수집분은 <strong>15.18</strong>이었고, 9/8 07:40 KST(현지 18:40, 세션이 닫힌 뒤) 수집분이 <strong>15.30</strong>으로 굳었습니다. <strong>야후 VIX 일봉은 원래 진행 중인 봉입니다</strong> &mdash; 9/4 21:02 KST 수집분은 같은 9/4 봉을 14.11 로 들고 있었고 최종 종가는 14.53 이었습니다. 그래서 <strong>이 판의 VIX 등락률은 「휴장일 글로벌 세션 값」과 「금요일 정규장 종가」를 견준 것</strong>이고, 글로벌 세션은 호가가 얇습니다. <strong>&ldquo;휴장일에 변동성이 5% 넘게 뛰었다&rdquo;고 옮기지 마십시오</strong> &mdash; 판의 원자재&middot;환율과 같은 24시간 성격으로 다루십시오.",
-      "b_en": "The S&amp;P 500, Nasdaq, Dow and SOX all end at 4 September, yet <strong>the VIX carries a full 7 September bar with open, high, low and close, so the source was traced.</strong> It is not a collector fault. Cboe's regular options session was closed for Labor Day, but <strong>the global trading hours session for SPX and VIX options ran until 11:30 a.m. local time</strong>, and the VIX index is computed from those SPX option quotes &mdash; it is <strong>calculated and disseminated overnight and through holiday sessions</strong>. The collection times bear this out: the snapshot taken at 22:23 KST on 7 September (09:23 local, inside the session) held <strong>15.18</strong>, and the 07:40 KST snapshot on the 8th (18:40 local, after the session closed) settled at <strong>15.30</strong>. <strong>Yahoo's VIX daily bar is a live, still-forming bar by nature</strong>: the 21:02 KST snapshot on 4 September held that same 4 September bar at 14.11, while the final close was 14.53. So <strong>the VIX change in this edition compares a holiday global-session value against Friday's regular-session close</strong>, and global-session quotes are thin. <strong>Do not relay it as &ldquo;volatility jumped over 5% on a holiday&rdquo;</strong> &mdash; treat it like the round-the-clock FX and commodity marks in this edition."
+      "t_ko": "개인 순매도 금액이 <strong>보도마다 다릅니다</strong> &mdash; 시세 파일 기준을 실었습니다",
+      "t_en": "Retail net selling <strong>differs across outlets</strong> &mdash; the market file is used",
+      "b_ko": "오늘 개인 순매도는 보도에 따라 <strong>3조 530억 &middot; 3조 533억 &middot; 3조 534억 &middot; 3조 3,334억</strong>으로 나옵니다. 외국인도 <strong>6,316억 ~ 6,616억</strong>, 기관은 <strong>6,427억 ~ 6,496억</strong> 사이에서 갈립니다. 이 판은 <strong>시세 파일의 유가증권시장 기준</strong>을 씁니다(지침 3절). 3조 3,334억을 적은 곳은 집계 범위가 다른 것으로 보이나 <strong>확인하지 못했습니다.</strong> <strong>어느 값을 써도 「개인이 3조원대를 팔고 외국인&middot;기관이 각각 6천억원대를 샀다」는 그림은 같습니다.</strong>",
+      "b_en": "Reported retail net selling today ranges across <strong>&#8361;3.053tn, &#8361;3.0533tn, &#8361;3.0534tn and &#8361;3.3334tn.</strong> Foreign buying is given between <strong>&#8361;631.6bn and &#8361;661.6bn</strong>, institutional between <strong>&#8361;642.7bn and &#8361;649.6bn.</strong> This edition uses <strong>the market file&rsquo;s main-board basis</strong> (playbook &sect;3). The outlet reporting &#8361;3.3334tn appears to use a different aggregation, but <strong>this could not be confirmed.</strong> <strong>On any of these figures the picture is the same</strong> &mdash; retail sold in the &#8361;3tn range while foreign investors and institutions each bought in the &#8361;600bn range."
     },
     {
-      "t_ko": "원·달러는 <strong>자가 셋</strong>입니다 &mdash; 어느 것을 말하는지 밝히십시오",
-      "t_en": "Three different won/dollar measures &mdash; say which one you mean",
-      "b_ko": "본문에 인용한 <strong>장중 1,334.7원</strong>과 <strong>주간 거래 종가 1,340.5원</strong>은 7일 서울 외환시장 값으로 기사에서 옮긴 것입니다. 이 판의 <strong>환율 표에 서는 원/달러는 24시간 거래</strong>라 오늘 새벽 값이고, 네이버 <strong>매매기준율</strong>은 또 다른 자입니다. 세 값이 서로 다른 것은 정상이며, <strong>표의 숫자와 본문의 숫자를 견주어 어긋났다고 보지 마십시오.</strong>",
-      "b_en": "The <strong>1,334.7 intraday</strong> and <strong>1,340.5 onshore close</strong> quoted in the text are Monday's Seoul FX market values taken from press reports. The <strong>won/dollar row in this edition's FX table trades around the clock</strong> and is this morning's mark, while the Naver <strong>base rate</strong> is a third measure. The three differing is normal &mdash; <strong>do not treat the table and the text as contradicting each other.</strong>"
+      "t_ko": "「심층」 절의 표 밖 수치는 <strong>전부 보도 인용</strong>입니다",
+      "t_en": "Every out-of-table figure in the In Depth section is <strong>cited from reporting</strong>",
+      "b_ko": "예탁금의 <strong>5월 7일 137조원&middot;6월 4일 139조 7,000억원&middot;1월 16일 91조 2,181억원</strong>, CMA 잔고 <strong>112조 5,947억원 → 104조 8,820억원</strong>, 예탁증권 담보융자 <strong>28조 1,000억원 → 25조 3,000억원</strong>, 개인의 개별종목 <strong>27조원</strong>&middot;ETF <strong>8조 8,000억원</strong> 순매수, 연초~6월 <strong>99조 1,000억원</strong>과 7월~8월 26일 <strong>10조 2,000억원</strong>, 삼성증권의 9월 기타법인 순매수 <strong>30조원 초과</strong> 추산은 모두 <strong>보도에서 인용</strong>했고 원천 자료로 검증하지 못했습니다 &mdash; <span class=\"vf solo\">1 SOURCE</span> 로 답니다. 한전기술 +16.6%, 대우건설 +8.47%, 비에이치 &minus;8.13%, LG이노텍 &minus;6.66% 도 같은 경로입니다. <strong>시세 파일로 검증되는 것은 9월 4일 예탁금&middot;신용융자 잔액과 세 주체 순매수뿐입니다.</strong>",
+      "b_en": "The deposit levels (<strong>&#8361;137tn on 7 May, &#8361;139.7tn on 4 June, &#8361;91.2181tn on 16 January</strong>), the CMA balances (<strong>&#8361;112.5947tn to &#8361;104.882tn</strong>), securities-backed lending (<strong>&#8361;28.1tn to &#8361;25.3tn</strong>), retail buying of <strong>&#8361;27tn</strong> in single stocks and <strong>&#8361;8.8tn</strong> in ETFs, the <strong>&#8361;99.1tn</strong> and <strong>&#8361;10.2tn</strong> period totals, and Samsung Securities&rsquo; estimate of <strong>more than &#8361;30tn</strong> of September corporate net buying are all <strong>cited from reporting</strong> and could not be verified against source data &mdash; they carry a <span class=\"vf solo\">1 SOURCE</span> badge. The same applies to KEPCO E&amp;C +16.6%, Daewoo E&amp;C +8.47%, BH &minus;8.13% and LG Innotek &minus;6.66%. <strong>What the market file verifies is the 4 September deposit and margin balances and the three investor categories &mdash; nothing else.</strong>"
     },
     {
-      "t_ko": "외국인 순매수도 <strong>자가 둘</strong>입니다",
-      "t_en": "Foreign net buying also has two measures",
-      "b_ko": "본문의 <strong>3거래일 약 4조 7,000억원</strong>과 <strong>9월 누적 1조 6,000억원 이상</strong>은 한국거래소&middot;금융투자협회 집계를 전한 기사에서 옮긴 것이고, 이 판의 <strong>수급 표는 네이버 투자자별 매매동향</strong>에서 하루치씩 옵니다. 집계 범위와 시점이 달라 <strong>단순히 더해 맞추지 마십시오.</strong> 판에서 며칠치를 세실 때는 표의 날짜별 값을 쓰십시오.",
-      "b_en": "The <strong>roughly KRW 4.7 trillion over three sessions</strong> and <strong>KRW 1.6 trillion month-to-date</strong> in the text come from press reports of exchange and KOFIA tallies, while this edition's <strong>flows table is Naver's daily investor breakdown</strong>. The coverage and timing differ, so <strong>do not add one to the other.</strong> When counting several sessions, use the dated rows in the table."
+      "t_ko": "<strong>기타법인 수급은 이 판의 표에 없습니다</strong>",
+      "t_en": "<strong>Corporate flows are absent from this edition&rsquo;s tables</strong>",
+      "b_ko": "수집기의 투자자별 수급은 <strong>개인&middot;외국인&middot;기관 셋뿐</strong>입니다. 오늘 세 주체의 합이 <strong>순매도 쪽으로 크게 남는데</strong> 지수가 장중 크게 올랐다는 것은, 표에 없는 주체(기타법인 등)가 그만큼 받았다는 뜻입니다 &mdash; 다만 <strong>그 금액을 오늘 자료로는 확인할 수 없습니다.</strong> 「심층」 절의 30조원은 삼성증권 <strong>추산</strong>이며 집계치가 아닙니다. 이 한계는 8월부터 계속 적고 있는 항목이고, KRX 오픈API 인증키(`KRX_AUTH_KEY`)를 넣으면 해소됩니다.",
+      "b_en": "The collector carries only <strong>retail, foreign and institutional</strong> flows. Today the three sum to a <strong>large net sale</strong> even though the index traded sharply higher intraday, which means a category not in the table &mdash; corporate buyers among them &mdash; absorbed the difference. <strong>Today&rsquo;s data cannot size it.</strong> The &#8361;30tn figure in the In Depth section is a Samsung Securities <strong>estimate</strong>, not a tally. This gap has been recorded since August and closes once a KRX open-API key (`KRX_AUTH_KEY`) is supplied."
     },
     {
-      "t_ko": "휴장일 자료를 고쳤습니다 &mdash; <strong>국내 추석이 빠져 있었습니다</strong>",
-      "t_en": "The holiday file was corrected &mdash; <strong>Korean Chuseok was missing</strong>",
-      "b_ko": "일정 절과 휴장일 표가 읽는 <code>data/market/holidays.json</code> 에 <strong>국내 추석 휴장(9/24 목&middot;9/25 금)이 통째로 없었습니다.</strong> 오늘 넣었고 확인일을 올렸습니다. 함께 확인한 것: 9/26 은 토요일이라 원래 휴장이고, <strong>설&middot;추석 연휴는 일요일과 겹칠 때만 대체공휴일이 붙으므로 9/28(월)은 대체공휴일이 아닙니다</strong> &mdash; 정상 개장합니다. 2026년 국내에 남은 대체공휴일은 <strong>10/5(월) 개천절</strong> 하나입니다. 매체 넷이 같은 내용을 전해 <strong>2 SOURCES</strong> 로 답니다. <strong>거래소가 나중에 바꿀 수 있으니 주문 직전 재확인하십시오.</strong>",
-      "b_en": "<code>data/market/holidays.json</code>, which feeds the calendar and holiday table, <strong>had no entry at all for the Korean Chuseok closure (Thu 24 and Fri 25 September).</strong> Both were added today and the verification date advanced. Also confirmed: 26 September is a Saturday and closed anyway, and <strong>because a substitute holiday is granted for Lunar New Year and Chuseok only when the break overlaps a Sunday, Monday 28 September is not a substitute holiday</strong> &mdash; the market trades. The only remaining Korean substitute holiday in 2026 is <strong>Monday 5 October</strong>. Four outlets agree, so this carries <strong>2 SOURCES</strong>. <strong>Exchanges can change these later; re-check before placing orders.</strong>"
+      "t_ko": "예탁금&middot;신용융자는 <strong>9월 4일 기준</strong>이라 오늘 종가보다 늦습니다",
+      "t_en": "Deposits and margin loans are <strong>as of 4 September</strong> and lag today&rsquo;s close",
+      "b_ko": "증시 주변자금은 <strong>결제일 기준</strong>이라 종가일보다 1~2영업일 늦게 나옵니다. 이 판의 값은 <strong>9월 4일</strong>자이며 오늘&middot;어제의 큰 매매는 아직 반영돼 있지 않습니다. 그래서 <strong>오늘 개인이 3조원을 판 것이 예탁금에 어떻게 나타날지는 이 판으로 알 수 없습니다.</strong> 증감은 부호 있는 `*_delta` 를 썼습니다 &mdash; 네이버가 주는 `*_chg` 는 부호가 없어 감소를 증가로 뒤집습니다(지침 1절).",
+      "b_en": "Market-liquidity figures are on a <strong>settlement basis</strong> and appear one to two business days after the close. The values here are dated <strong>4 September</strong> and do not yet include today&rsquo;s or yesterday&rsquo;s heavy trading. <strong>How today&rsquo;s &#8361;3tn of retail selling will show up in deposits cannot be read from this edition.</strong> The signed `*_delta` fields were used &mdash; Naver&rsquo;s `*_chg` is unsigned and turns a decline into a rise (playbook &sect;1)."
     },
     {
-      "t_ko": "<strong>52주 최고가 지금 지수보다 한참 위</strong>에 있습니다 &mdash; 「구간 내 위치」를 읽을 때 주의",
-      "t_en": "The 52-week high sits <strong>far above the current index</strong> &mdash; read the range position with that in mind",
-      "b_ko": "재검증기가 <strong>코스피 52주 최고(9,385.59)가 최근 최고 종가보다 20% 넘게 높다</strong>고 경고했습니다. 오류가 아니라 <strong>실제로 그렇습니다</strong> &mdash; 코스피는 지난 6월 9,000선을 넘어 사상 최고를 새로 쓴 뒤 7월에 급락했고, 어제의 큰 상승에도 아직 그 자리에서 한참 아래입니다. 따라서 국내 절의 <strong>「52주 구간 내 위치」는 지금이 싼지 비싼지를 말하는 값이 아니라, 지난 1년의 고점과 저점 사이 어디쯤인지를 말하는 값</strong>입니다. <strong>시세 파일은 구간의 두 끝 값만 주고 그것이 언제였는지는 주지 않습니다</strong> &mdash; 고점 쪽은 기사가 전한 6월 사상 최고와 맞아떨어지지만 저점 날짜는 확인하지 못했으므로, 응대에서 <strong>날짜를 짐작해 말씀하지 마십시오.</strong>",
-      "b_en": "The re-check flagged that the <strong>KOSPI's 52-week high (9,385.59) stands more than 20% above the recent maximum close</strong>. That is not an error &mdash; <strong>it is simply true</strong>: the index set a record above 9,000 in June and then fell sharply in July, and even after yesterday's large gain it remains well below that level. So the <strong>&ldquo;position within the 52-week range&rdquo;</strong> in the Korean equities section says where the index sits between the past year's high and low, <strong>not whether it is cheap or expensive</strong>. <strong>The market file gives the two end values but not the dates on which they were set</strong> &mdash; the high squares with the June record reported in the press, but the date of the low could not be confirmed, so <strong>do not guess at dates when discussing it with clients.</strong>"
+      "t_ko": "52주 최고는 <strong>장중 고가</strong> 기준입니다",
+      "t_en": "The 52-week high is on an <strong>intraday</strong> basis",
+      "b_ko": "재검증 스크립트가 <strong>52주 최고 9,385.59 가 최근 최고 종가보다 20% 넘게 높다</strong>고 경고합니다. 이는 오류가 아니라 <strong>기준의 차이</strong>입니다 &mdash; 52주 고저는 <strong>장중 값</strong>이고 비교 대상은 종가입니다. 코스피는 지난 6월 장중 9,000선을 넘었다가 7월 급락을 거쳤으므로 두 값의 거리가 큽니다. <strong>고쳐야 할 수치가 아니라 표기 기준을 밝혀야 할 항목</strong>이라 여기에 적습니다.",
+      "b_en": "The recheck script warns that the <strong>52-week high of 9,385.59 sits more than 20% above the highest recent close.</strong> That is not an error but a <strong>difference of basis</strong> &mdash; 52-week extremes are <strong>intraday</strong> while the comparison is a close. The KOSPI traded above 9,000 intraday in June and then fell sharply in July, so the two are far apart. <strong>Nothing to correct; a basis to disclose</strong>, which is why it is recorded here."
     },
     {
-      "t_ko": "종목 표의 「사유」는 <strong>다섯 종목만</strong> 채웠습니다",
-      "t_en": "Only <strong>five names</strong> carry a reason in the stock tables",
-      "b_ko": "어제 크게 오른 종목 가운데 <strong>오늘 수집분에서 사유가 확인된 것은 다섯</strong>뿐이라 나머지는 비워 두었습니다. 두 자릿수로 오른 종목도 근거 기사가 없으면 달지 않았습니다 &mdash; <strong>지수를 따라 움직였을 뿐인 종목에 이야기를 붙이면 그 자체가 틀린 정보</strong>이기 때문입니다. 실적 절이 비어 있는 것도 같은 이유입니다: 오늘 수집분에 <strong>분기 실적 발표와 컨퍼런스콜 인용이 0건</strong>입니다.",
-      "b_en": "Of yesterday's larger movers, <strong>only five had a reason that could be confirmed in today's collection</strong>; the rest were left blank. Even double-digit gainers were left empty without a supporting article, because <strong>attaching a plausible story to a name that merely followed the index is itself misinformation</strong>. The results section is thin for the same reason: today's collection contains <strong>no quarterly results and no conference-call quotes</strong>."
+      "t_ko": "상한가 <strong>종목 수와 명단이 하나 어긋납니다</strong>",
+      "t_en": "The limit-up <strong>count and the name list differ by one</strong>",
+      "b_ko": "코스닥 등락 종목 수 집계는 상한가를 <strong>6종목</strong>으로 세는데, 상한가 <strong>명단은 5종목</strong>(빛과전자&middot;오르비텍&middot;테라뷰&middot;서전기전&middot;더코디)뿐입니다. 두 값은 <strong>같은 곳에서 오지만 화면이 다릅니다</strong> &mdash; 집계는 시장 전체 요약, 명단은 상한가 목록 화면입니다. 명단 쪽이 신규상장&middot;정리매매 종목 등을 빼는 것으로 보이나 <strong>확인하지 못했습니다.</strong> 어느 쪽도 고치지 않고 <strong>둘 다 원천 그대로</strong> 실었으니, 응대에서 「상한가 몇 개」를 말할 때는 <strong>명단에 이름이 있는 5종목</strong>만 짚으십시오.",
+      "b_en": "The KOSDAQ breadth tally counts <strong>six</strong> limit-up stocks, while the limit-up <strong>name list carries five</strong> (Bit&amp;Electron, Orbitech, Terraview, Seojeon Electric, TheCoDi). Both come from <strong>the same provider but different screens</strong> &mdash; the tally from the market summary, the list from the limit-up page. The list appears to exclude newly listed or delisting-process names, but <strong>this could not be confirmed.</strong> Neither figure was altered; <strong>both are carried as the source gave them.</strong> When naming limit-up stocks to a client, cite only the <strong>five that appear on the list.</strong>"
+    },
+    {
+      "t_ko": "이 판을 <strong>어제 판과 문장 단위로 맞대어</strong> 보았습니다",
+      "t_en": "This edition was <strong>diffed sentence by sentence</strong> against yesterday&rsquo;s",
+      "b_ko": "9월 7일 장마감 판과 대조한 결과 문장 <strong>557개 가운데 255개(46%)</strong> 가 겹쳤습니다. 어제(41%)보다 높은데 <strong>이유가 분명합니다</strong> &mdash; 겹침이 <strong>간밤 해외 54%&middot;금리환율 62%</strong> 에 몰려 있고, 미국 지수와 국채 곡선이 <strong>노동절 휴장으로 어제와 같은 9월 4일 값</strong>이라 표의 칸이 글자까지 같습니다. 글이 굳은 것이 아니라 <strong>자료가 같은 것</strong>입니다. 날의 이야기를 담는 절은 <strong>심층 0%&middot;응대 0%&middot;오늘의 결론 12%</strong> 로 사실상 새로 썼습니다(지침 7-1-0). 판 안에서 반복된 문구는 <strong>1종</strong>(종목표 머리글)뿐이며 표 구조에서 나온 것입니다.",
+      "b_en": "Against the 7 September close edition, <strong>255 of 557 sentences (46%)</strong> overlapped &mdash; higher than yesterday&rsquo;s 41%, and <strong>for an identifiable reason.</strong> The overlap concentrates in <strong>overnight global at 54% and rates/FX at 62%</strong>, because the US indices and the Treasury curve <strong>still carry the same 4 September values as yesterday</strong> owing to the Labor Day holiday, so those cells match character for character. The prose is not stale; <strong>the data is the same.</strong> The sections carrying the day&rsquo;s story were essentially rewritten: <strong>In Depth 0%, talking points 0%, today&rsquo;s conclusions 12%</strong> (playbook &sect;7-1-0). Only <strong>one</strong> phrase repeats within the edition, a stock-table header produced by table structure."
     }
   ]
 }
