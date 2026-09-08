@@ -433,8 +433,18 @@ def shape_summary(m, meta):
         c = trend[0]
         target["dist"] = {k: c.get(k) or 0 for k in ("strongBuy", "buy", "hold", "sell", "strongSell")}
     for h in ((m.get("upgradeDowngradeHistory") or {}).get("history") or [])[:12]:
+        # 증권사별 목표가: 야후의 의견 변경 이력에는 목표가 항목이 없다(firm·fromGrade·
+        # toGrade·action·epochGradeDate 뿐). 제공사가 나중에 넣어 주면 그대로 받도록
+        # 알려진 이름들을 훑어만 둔다 — 없으면 None 이고, 화면은 그 자리에 그 시점 종가를
+        # 보여 준다(있는 값으로 대신하고, 없는 값을 지어내지 않는다).
+        pt = None
+        for k in ("priceTarget", "toPriceTarget", "targetPrice", "priceTargetTo", "pt"):
+            pt = num((h.get(k) or {}).get("raw") if isinstance(h.get(k), dict) else h.get(k), 2)
+            if pt is not None:
+                break
         target["history"].append({"ts": num(h.get("epochGradeDate")), "firm": h.get("firm"),
-                                  "from": h.get("fromGrade"), "to": h.get("toGrade"), "action": h.get("action")})
+                                  "from": h.get("fromGrade"), "to": h.get("toGrade"),
+                                  "action": h.get("action"), "pt": pt})
 
     ce = m.get("calendarEvents") or {}
     cee = ce.get("earnings") or {}
@@ -507,9 +517,24 @@ def shape_summary(m, meta):
         financials["quarterly"] = [{"label": str(r.get("date")), "revenue": num(r.get("revenue")),
                                     "op": None, "net": num(r.get("earnings")), "eps": None} for r in fc["quarterly"]]
 
+    # 기업 개요 — 화면의 "기업 한눈에" 블록이 쓴다. longBusinessSummary 는 영문 원문이고
+    # 길어서(2~4천 자) 그대로 담으면 스냅샷이 커진다. 앞부분만 담되 문장 경계에서 끊는다.
+    desc = (ap.get("longBusinessSummary") or "").strip()
+    if len(desc) > 1400:
+        cut = desc.rfind(". ", 0, 1400)
+        desc = desc[:cut + 1] if cut > 400 else desc[:1400].rstrip() + "…"
+    officers = ap.get("companyOfficers") or []
+    ceo = None
+    for o in officers:
+        title = (o.get("title") or "")
+        if "CEO" in title or "Chief Executive" in title:
+            ceo = {"name": o.get("name"), "title": title}
+            break
     profile = {"sector": ap.get("sector"), "industry": ap.get("industry"),
                "employees": num(ap.get("fullTimeEmployees")), "website": ap.get("website"),
-               "country": ap.get("country")}
+               "country": ap.get("country"), "city": ap.get("city"), "state": ap.get("state"),
+               "desc": desc or None, "ceo": ceo,
+               "irWebsite": ap.get("irWebsite") or None}
 
     return {"quote": q, "target": target, "calendar": calendar, "surprises": surprises,
             "epsQuarters": eps_quarters, "epsTrend": eps_trend, "financials": financials,
