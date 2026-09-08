@@ -646,6 +646,7 @@ footer .disc p{margin:0 0 12px;}
     <ul class="src-list" id="src-list"></ul>
     <div class="note-box" id="snap-stale" hidden></div>
     <div class="note-box" id="fallback-note" hidden></div>
+    <div class="note-box info" id="rank-note" hidden></div>
     <details class="diag">
       <summary data-ko="고급 설정 — 회사 네트워크에서 시세가 막힐 때 (대부분 비워 두세요)"
                data-en="Advanced — only if your network blocks the data (usually leave empty)">고급 설정 — 회사 네트워크에서 시세가 막힐 때 (대부분 비워 두세요)</summary>
@@ -3823,13 +3824,13 @@ function renderDisclaimer() {
     '<p><strong>Reference material.</strong> This screen aggregates publicly available market data for internal reference. It is not investment advice, a recommendation, or an offer.</p>',
     '<p><strong>Data.</strong> Quotes, fundamentals, consensus figures and calendars come from Yahoo Finance, Stooq and Google News. When the browser cannot reach them (CORS or a corporate network policy), the screen falls back to a snapshot that a GitHub Actions runner fetched from the same sources and committed to this repository — real fetched numbers, as of the collection time shown on the badge. Nothing is audited, quotes may be delayed (typically 15 minutes or more), and figures can differ from company filings. Company filings and IR announcements are the authoritative source.</p>',
     '<p><strong>Estimates.</strong> Earnings dates flagged as estimated are provider guesses until the company confirms them. Conference call times are not carried by these APIs and must be checked on the company IR page.</p>',
-    '<p><strong>Coverage.</strong> The 100 companies listed here are a fixed, hand-maintained list of large US-listed issuers. It is not an index, its order is not a ranking, and it does not update as market caps change — rank the table by the market cap actually fetched.</p>',
+    '<p><strong>Coverage.</strong> The 100 companies listed here are a fixed, hand-maintained list of large US-listed issuers. It is not an index and its order is not a ranking — sort by market cap for that. The list does not change on its own, but the collector compares it daily against the current top 100 by market cap and reports candidates in section ⑩; a new symbol needs its Korean name and company overview written before it is swapped in.</p>',
     '<p><strong>Before external use.</strong> Anything shown to clients requires compliance review.</p>'
   ].join('') : [
     '<p><strong>참고 자료입니다.</strong> 공개된 시장 데이터를 사내 참고용으로 모아 보여주는 화면이며, 투자 권유나 매매 추천이 아닙니다. 투자 판단과 그 결과에 대한 책임은 이용자에게 있습니다.</p>',
     '<p><strong>데이터.</strong> 시세·재무·컨센서스·일정은 Yahoo Finance · Stooq · Google News 에서 받아온 값입니다. 브라우저가 직접 붙지 못하면(CORS·사내망) <b>GitHub Actions 러너가 같은 원천에서 받아 저장소에 커밋한 스냅샷</b>을 표시합니다 — 실제 수집된 수치이며, 수집 시각은 배지에 표시됩니다. 어느 경로든 검증된 자료가 아니고 통상 15분 이상 지연될 수 있으며, 회사 공시와 다를 수 있습니다. <b>원문은 회사 공시와 IR 공지</b>입니다.</p>',
     '<p><strong>추정치.</strong> “추정”으로 표시된 실적발표일은 회사가 확정 공지하기 전 데이터 제공사의 추정입니다. 컨퍼런스콜 시각은 이 화면이 쓰는 API 에 포함되지 않으므로 회사 IR 공지에서 확인해야 합니다.</p>',
-    '<p><strong>대상 종목.</strong> 여기 담긴 100개 기업은 미국 상장 대형주를 손으로 정리한 <b>고정 목록</b>입니다. 지수가 아니고, 목록 순서(#)는 순위가 아니며, 시가총액이 바뀌어도 자동으로 갱신되지 않습니다. 실제 순위는 조회한 시가총액으로 정렬해 확인하세요.</p>',
+    '<p><strong>대상 종목.</strong> 여기 담긴 100개 기업은 미국 상장 대형주를 손으로 정리한 <b>고정 목록</b>입니다. 지수가 아니고, 목록 순서는 순위가 아닙니다(정렬을 <b>시가총액</b>으로 두면 조회한 값으로 순위가 매겨집니다). 시가총액이 바뀌어도 목록이 저절로 바뀌지는 않지만, <b>수집기가 매일 “지금 시가총액 상위 100”과 견주어 갱신 후보를 위 ⑩ 섹션에 적어 둡니다</b> — 새 종목은 한글명·기업 개요를 함께 채워야 화면이 비지 않으므로 교체는 사람이 확인해 반영합니다.</p>',
     '<p><strong>대외 사용 전.</strong> 고객에게 보여주는 자료로 쓸 경우 준법감시 부서 확인이 필요합니다.</p>'
   ].join('');
 }
@@ -4407,6 +4408,64 @@ function groupWeekly(rows) {
   });
   if (cur) out.push(cur);
   return out;
+}
+
+/* ------------------------------------------------------------
+   대상 목록 점검 (ranking.json)
+   목록은 사람이 관리한다 — 새 종목의 한글명·기업 개요를 함께 채워야 화면이 비지 않기
+   때문이다. 대신 수집기가 매일 "지금 시가총액 상위 100"과 견주어 차이를 적어 두고
+   (scripts/check_us100_ranking.py), 화면은 그 결과를 여기서 그대로 보여 준다.
+   ------------------------------------------------------------ */
+var RANK = null;
+
+function loadRanking() {
+  var emb = embedded();
+  if (emb && emb.ranking) { RANK = emb.ranking; renderRankNote(); }
+  var bases = SNAP_BASE ? [SNAP_BASE].concat(SNAPSHOT_BASES) : SNAPSHOT_BASES;
+  var tries = bases.map(function (base) {
+    var url = base + 'ranking.json?_ts=' + Date.now();
+    var p = /^https?:/.test(base) ? fetchQuick(url, 7000).catch(function () { return fetchJson(base + 'ranking.json'); })
+                                  : fetchQuick(url, 5000);
+    return p.then(function (j) {
+      if (!j || !j.builtAt || !j.ourRanks) throw new Error('점검 파일 형식이 아니다');
+      return j;
+    });
+  });
+  return anyOf(tries).then(function (j) {
+    RANK = j; renderRankNote(); return j;
+  }, function () { renderRankNote(); return RANK; });
+}
+
+function renderRankNote() {
+  var box = el('rank-note');
+  if (!box) return;
+  if (!RANK) { box.hidden = true; return; }
+  var add = RANK.add || [], drop = RANK.drop || [];
+  var when = dateFmt(new Date(RANK.builtAt));
+  var line = function (r, isAdd) {
+    var nm = isAdd ? (r.name || r.sym) : (r.ko || r.sym);
+    var ctry = isAdd && r.country && r.country !== 'United States'
+      ? t(' · 본사 ' + r.country + '(미국 상장 외국 기업)', ' · HQ ' + r.country + ' (foreign issuer listed in the US)') : '';
+    return '<b>' + esc(r.sym) + '</b> ' + esc(nm) + ' — ' + usd(r.cap) +
+      ' · ' + esc(t('현재 ' + r.rank + '위', 'rank ' + r.rank)) + esc(ctry);
+  };
+  if (!add.length && !drop.length) {
+    box.innerHTML = '<b>' + esc(t('대상 목록 점검', 'Coverage check')) + '</b> — ' +
+      esc(t('지금 시가총액 상위 ' + (RANK.top || 100) + '과 목록이 일치합니다 (' + when + ' 점검, 기준 ' +
+            (RANK.source === 'screener' ? '야후 스크리너' : 'S&P 500 + 시총 조회') + ').',
+            'the list matches the current top ' + (RANK.top || 100) + ' by market cap (checked ' + when + ').'));
+    box.hidden = false;
+    return;
+  }
+  box.innerHTML = '<b>' + esc(t('대상 목록 갱신 후보', 'Coverage change pending')) + '</b> — ' +
+    esc(t(when + ' 점검 결과입니다. 목록은 자동으로 바뀌지 않습니다 — 새 종목의 한글명·기업 개요를 함께 채워야 하기 때문입니다.',
+          'checked ' + when + '. The list does not change automatically — a new symbol needs its Korean name and company overview written first.')) +
+    (add.length ? '<br>' + esc(t('목록에 없는 상위 종목: ', 'In the top 100 but not listed: ')) +
+      add.map(function (r) { return line(r, true); }).join(' / ') : '') +
+    (drop.length ? '<br>' + esc(t('목록에 있으나 ' + (RANK.dropRank || 120) + '위 밖으로 밀린 종목: ',
+      'Listed but now below rank ' + (RANK.dropRank || 120) + ': ')) +
+      drop.map(function (r) { return line(r, false); }).join(' / ') : '');
+  box.hidden = false;
 }
 
 function snapAsOf() {
@@ -5216,6 +5275,7 @@ function applyLang() {
   renderUpdLine();
   renderDisclaimer();
   renderCompare();
+  renderRankNote();
   if (CACHE[state.sel]) renderDetail(state.sel); else renderSources();
   document.title = t('미국 100대 기업 시세 조회 | 미래에셋증권', 'US Top 100 Companies | Mirae Asset Securities');
 }
@@ -5407,6 +5467,7 @@ function bindEvents() {
   streamStart();          /* WebSocket 은 CORS 를 받지 않아 정적 페이지에서도 붙는다 */
   loadSnapshot().then(function (snap) {
     loadDetail(state.sel);
+    loadRanking();                   /* 대상 목록 점검 결과(있으면 ⑩ 섹션에 표시) */
     /* 비교는 담아 둔 것이 있으면 그대로, 없으면 선택 종목 + 동일 섹터 상위로 채운다 */
     if (CMP.length >= 2) loadCompare();
     else cmpFillPeers();

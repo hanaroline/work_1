@@ -25,9 +25,9 @@ SRC="data/us100"
 
 # 이 브랜치에 두는 것은 아래 셋뿐이다. 그 밖의 것(안내 파일 movedTo, REFRESH 트리거,
 # README)은 코드 브랜치에 사는 파일이므로 데이터 브랜치로 새어 나가면 안 된다.
-KEEP_FILES="${KEEP_FILES:-quotes.json latest.json chart}"
+KEEP_FILES="${KEEP_FILES:-quotes.json latest.json chart ranking.json}"
 # 이번 실행이 만든 것만 갈아끼운다. 나머지는 브랜치에 있는 것을 그대로 보존한다.
-#   전체 수집:  PUBLISH_FILES="latest.json chart"
+#   전체 수집:  PUBLISH_FILES="latest.json chart ranking.json"
 #   가격 갱신:  PUBLISH_FILES="quotes.json"
 PUBLISH_FILES="${PUBLISH_FILES:-}"
 [ -n "$PUBLISH_FILES" ] || { echo "PUBLISH_FILES 를 지정해야 한다(이번 실행이 만든 파일)" >&2; exit 2; }
