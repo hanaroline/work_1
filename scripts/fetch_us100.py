@@ -239,6 +239,25 @@ def fetch_chart_stooq(sym, interval="d", keep_days=800):
     return out
 
 
+def fetch_news(sym, limit=6):
+    """종목 뉴스 헤드라인. 제목·출처·시각·링크만 담는다(본문은 담지 않는다).
+
+    사내망에서 브라우저가 야후·구글에 못 붙으면 화면의 뉴스 섹션이 통째로 비므로,
+    수집 시점 헤드라인이라도 남겨 둔다. 화면은 스냅샷 뉴스임을 배지로 밝힌다.
+    """
+    j = yget("/v1/finance/search?q=%s&newsCount=%d&quotesCount=0&enableFuzzyQuery=false"
+             % (urllib.parse.quote(sym), limit))
+    out = []
+    for n in (j.get("news") or [])[:limit]:
+        if not n.get("title") or not n.get("link"):
+            continue
+        out.append({"title": n["title"][:200], "source": n.get("publisher") or "Yahoo Finance",
+                    "ts": num(n.get("providerPublishTime")), "url": n["link"]})
+    if not out:
+        raise RuntimeError("뉴스 없음")
+    return out
+
+
 def resolve_symbol(c):
     """야후가 심볼을 404 로 답할 때, 회사명으로 실제 심볼을 찾는다.
 
@@ -625,6 +644,13 @@ def fetch_one(c, sym=None):
     if q.get("cap") is None and q.get("shares") and q.get("price"):
         q["cap"] = q["shares"] * q["price"]
 
+    try:
+        payload["news"] = fetch_news(sym)
+        status["news"] = True
+    except Exception as e:                      # noqa: BLE001
+        status["news"] = str(e)
+    time.sleep(PAUSE)
+
     chart = None
     if daily or monthly:
         chart = {"symbol": sym, "fetchedAt": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")}
@@ -711,14 +737,15 @@ def main():
                         json.dump(chart, f, ensure_ascii=False, separators=(",", ":"))
                 print("  %-6s 재시도 성공" % c["sym"], flush=True)
 
+    news_ok = sum(1 for v in out["sources"].values() if isinstance(v, dict) and v.get("news") is True)
     out["summary"] = {"symbols": len(companies), "chartOk": ok, "summaryOk": qs_ok,
-                      "crumb": bool(CRUMB)}
+                      "newsOk": news_ok, "crumb": bool(CRUMB)}
     with open(os.path.join(OUT_DIR, "latest.json"), "w", encoding="utf-8") as f:
         json.dump(out, f, ensure_ascii=False, separators=(",", ":"))
 
     size = os.path.getsize(os.path.join(OUT_DIR, "latest.json"))
-    print("\n수집 완료: 시세 %d/%d · 지표 %d/%d · latest.json %.0fKB"
-          % (ok, len(companies), qs_ok, len(companies), size / 1024), flush=True)
+    print("\n수집 완료: 시세 %d/%d · 지표 %d/%d · 뉴스 %d/%d · latest.json %.0fKB"
+          % (ok, len(companies), qs_ok, len(companies), news_ok, len(companies), size / 1024), flush=True)
     if ok == 0:
         raise SystemExit("한 종목도 받지 못했다 — 원천이 전부 막혔거나 응답 형태가 바뀌었다")
 
