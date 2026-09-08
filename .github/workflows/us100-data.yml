@@ -54,6 +54,19 @@ jobs:
           PUBLISH_FILES: latest.json chart
         run: bash scripts/publish_us100_data.sh
 
+      - name: 오프라인 단일 파일 만들기
+        # 인터넷이 막힌 업무용 PC 용. 데이터를 HTML 안에 넣어 파일 하나로 만든다
+        # (file:// 로 열린 페이지는 옆에 있는 json 도 CORS 로 못 읽는다).
+        # Actions 실행 페이지의 Artifacts 에서 내려받아 옮기면 된다.
+        run: python scripts/make_offline_html.py --out us-top100-offline.html
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: us-top100-offline
+          path: us-top100-offline.html
+          retention-days: 14
+          if-no-files-found: warn
+
       - name: 요약
         if: always()
         continue-on-error: true       # 요약이 깨져도 수집·커밋 결과를 실패로 만들지 않는다
