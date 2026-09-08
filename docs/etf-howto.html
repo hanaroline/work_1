@@ -429,15 +429,15 @@ footer .disc + .disc{margin-top:12px;}
   .hero h1,.hero .sub,.hero .meta{color:var(--ink) !important;}
   .hero .tag{border-color:var(--hairline); color:var(--muted);}
   .section{padding-top:24px;}
-  .section[hidden]{display:block !important;}   /* 인쇄물에는 모든 탭을 담는다 */
+  /* 지금 열려 있는 탭 하나만 인쇄한다. 접어 둔 탭은 화면에서 안 보이듯
+     종이에도 넣지 않는다 — 비교 한 장을 뽑으려는데 찾기·역조회·랭킹·분류
+     점검·수익률 기준·사용법까지 일곱 탭이 통째로 딸려 나오면 종이만 버린다.
+     ([hidden] 은 브라우저가 이미 감추지만, !important 로 못을 박아 둔다.) */
+  .section[hidden]{display:none !important;}
+  .take-row{display:none !important;}   /* 종이에서는 누를 수 없는 단추 줄 */
   table,.card,.hold-row{page-break-inside:avoid;}
   .section-title,h3,h4{page-break-after:avoid;}
   .table-wrap{overflow:visible;}
-  /* 기본 인쇄는 모든 탭을 담는다. 사용법만 뽑을 때는 나머지를 접는다 —
-     안내문 한 장을 받으려고 1,348종목 표까지 인쇄되면 쓸모가 없다. */
-  body.print-howto .section{display:none !important;}
-  body.print-howto #tab-howto{display:block !important;}
-  body.print-howto .take-row{display:none !important;}
 }
 
 .section{display:block!important;padding-top:0;}
@@ -645,6 +645,27 @@ footer .disc + .disc{margin-top:12px;}
       </div>
     </div>
 
+
+    <!-- ── 인쇄 · 내려받기 ─────────────────────────────────────── -->
+    <div class="guide" id="gp">
+      <div class="guide-head">
+        <span class="num">+</span>
+        <div>
+          <h4 data-ko="인쇄 · PDF 저장" data-en="Printing and saving as PDF">인쇄 · PDF 저장</h4>
+          <p data-ko="보고 있는 화면 한 장만 나옵니다. 여섯 화면이 통째로 딸려 나오지 않습니다." data-en="Only the screen you are looking at comes out — not all six.">보고 있는 화면 한 장만 나옵니다. 여섯 화면이 통째로 딸려 나오지 않습니다.</p>
+        </div>
+      </div>
+      <div class="guide-body">
+        <ol class="steps">
+          <li data-ko="&lt;b&gt;오른쪽 위 &quot;이 화면 인쇄 · PDF 저장&quot;&lt;/b&gt; 을 누릅니다. &lt;u&gt;그때 열려 있는 탭만&lt;/u&gt; 인쇄물에 담깁니다 — 비교·중복도를 보고 있었다면 비교·중복도만 나옵니다." data-en="&lt;b&gt;Press “Print this screen / PDF”&lt;/b&gt; at the top right. Only the tab that is open at that moment goes to paper."><b>오른쪽 위 "이 화면 인쇄 · PDF 저장"</b> 을 누릅니다. <u>그때 열려 있는 탭만</u> 인쇄물에 담깁니다 — 비교·중복도를 보고 있었다면 비교·중복도만 나옵니다.</li>
+          <li data-ko="&lt;b&gt;PDF로 남기려면&lt;/b&gt; 인쇄 창의 프린터를 &lt;b&gt;&quot;PDF로 저장&quot;&lt;/b&gt;(Save as PDF)으로 고르면 됩니다. 따로 프로그램을 깔 필요가 없습니다." data-en="&lt;b&gt;To keep a PDF&lt;/b&gt;, choose “Save as PDF” as the printer in the print dialog."><b>PDF로 남기려면</b> 인쇄 창의 프린터를 <b>"PDF로 저장"</b>(Save as PDF)으로 고르면 됩니다. 따로 프로그램을 깔 필요가 없습니다.</li>
+          <li data-ko="&lt;b&gt;다른 화면도 뽑으려면&lt;/b&gt; 그 탭으로 옮긴 뒤 다시 누르십시오. 한 번에 여러 화면을 담는 방법은 없습니다 — 일부러 그렇게 두었습니다." data-en="&lt;b&gt;For another screen&lt;/b&gt;, switch to that tab and press it again."><b>다른 화면도 뽑으려면</b> 그 탭으로 옮긴 뒤 다시 누르십시오. 한 번에 여러 화면을 담는 방법은 없습니다 — 일부러 그렇게 두었습니다.</li>
+          <li data-ko="&lt;b&gt;인쇄물에서는 단추와 탭 줄이 빠집니다.&lt;/b&gt; 종이에서 누를 수 없는 것들이라 자리만 차지합니다. 표는 잘리지 않게 쪽을 나눕니다." data-en="&lt;b&gt;Buttons and the tab bar are dropped&lt;/b&gt; from the printout, and tables are kept from splitting across pages."><b>인쇄물에서는 단추와 탭 줄이 빠집니다.</b> 종이에서 누를 수 없는 것들이라 자리만 차지합니다. 표는 잘리지 않게 쪽을 나눕니다.</li>
+          <li data-ko="&lt;b&gt;사용법만 파일로 갖고 싶다면&lt;/b&gt; 이 화면 맨 위의 &lt;b&gt;HTML 파일로 내려받기&lt;/b&gt;·&lt;b&gt;PDF 파일로 내려받기&lt;/b&gt;를 쓰십시오. 내려받은 파일은 인터넷 없이도 혼자 열립니다." data-en="&lt;b&gt;To keep this guide as a file&lt;/b&gt;, use the Download buttons at the top of this screen — the saved file opens on its own, offline."><b>사용법만 파일로 갖고 싶다면</b> 이 화면 맨 위의 <b>HTML 파일로 내려받기</b>·<b>PDF 파일로 내려받기</b>를 쓰십시오. 내려받은 파일은 인터넷 없이도 혼자 열립니다.</li>
+        </ol>
+      </div>
+      <div class="tip" data-ko="&lt;b&gt;목록을 통째로 인쇄하면 종이가 많이 듭니다.&lt;/b&gt; ETF 찾기 화면은 걸어 둔 조건에 걸린 것을 &lt;u&gt;전부&lt;/u&gt; 담습니다. 필터로 먼저 좁힌 다음 인쇄하십시오." data-en="&lt;b&gt;Printing the browse list uses a lot of paper&lt;/b&gt; — it prints every fund matching your filters. Narrow the filters first."><b>목록을 통째로 인쇄하면 종이가 많이 듭니다.</b> ETF 찾기 화면은 걸어 둔 조건에 걸린 것을 <u>전부</u> 담습니다. 필터로 먼저 좁힌 다음 인쇄하십시오.</div>
+    </div>
 
     <h3 style="margin-top:38px" data-ko="숫자를 읽기 전에" data-en="Before you read the numbers">숫자를 읽기 전에</h3>
     <p class="section-lead" style="font-size:15px" data-ko="이 도구를 만들면서 실제로 틀렸던 것들입니다. 여기 적힌 것만 알면 다른 화면과 숫자가 달라도 당황하지 않습니다." data-en="These are the things that actually went wrong while building this tool.">이 도구를 만들면서 실제로 틀렸던 것들입니다. 여기 적힌 것만 알면 다른 화면과 숫자가 달라도 당황하지 않습니다.</p>
