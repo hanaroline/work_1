@@ -2,19 +2,28 @@
 """미국 100대 기업 **가격만** 빠르게 받아 data/us100/quotes.json 에 저장한다.
 
 `fetch_us100.py` 는 종목별로 5번씩 요청해 5~8분이 걸린다(지표·실적·컨센서스까지 받는다).
-장중에 가격만 자주 갱신하려면 그 무게로는 안 되므로, 이 스크립트는 **한 번에 25종목씩
-묶어 4~5번만 요청**하고 20초 안에 끝낸다. 그래서 10분 주기로 돌릴 수 있다.
+장중에 가격만 자주 갱신하려면 그 무게로는 안 되므로 이 스크립트를 따로 둔다.
 
-`us-top100.html` 은 quotes.json 을 스냅샷(latest.json)보다 우선해 가격·등락률에 덮어쓰고,
-화면에는 "시세 N분 전" 으로 나이를 표시한다.
+경로는 세 갈래이고, 되는 것을 먼저 쓴다.
+
+  1) v7/finance/quote  — 쿠키 + crumb 을 붙이면 **한 번에 50종목**을 준다(2~3초).
+                          시가총액·PER·거래량·장 상태까지 함께 온다.
+  2) v8/finance/chart  — 종목별 1일치 일봉. meta 의 regularMarketPrice 와
+                          chartPreviousClose(=전일 종가)를 쓴다. 100종목 60~90초.
+  3) Stooq CSV 벌크    — 야후가 전부 막혔을 때. 전일 종가가 없어 등락률은 시가 대비다.
+
+**v8/finance/spark 는 쓰지 않는다.** 2026-09-08 러너에서 range/interval 조합을 바꿔가며
+불러 봤지만 400·404 만 돌아왔다(야후가 접은 것으로 보인다).
 
 출력 (data/us100/quotes.json)
   {
     "fetchedAt": "2026-09-08T13:40:02Z",
-    "source": "yahoo-spark",           # 또는 stooq
+    "source": "yahoo-quote",          # yahoo-quote | yahoo-chart | stooq | mixed
+    "marketState": "REGULAR",
     "fx": {"usdkrw": 1341.48},
     "quotes": {"AAPL": {"price": 319.97, "prevClose": 328.21, "changePct": -2.51,
-                        "volume": 39606884, "asof": 1788552001}}
+                        "volume": 39606884, "cap": 4669700046848, "per": 36.61,
+                        "asof": 1788552001}}
   }
 """
 
@@ -26,62 +35,74 @@ import urllib.parse
 from datetime import datetime, timezone
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from fetch_us100 import (                       # noqa: E402  같은 규칙을 공유하려고 그대로 쓴다
-    CHART_DIR, OUT_DIR, PAUSE, _get, companies_from_page, num, yget,
+from fetch_us100 import (                       # noqa: E402  환산 규칙을 그대로 공유한다
+    OUT_DIR, PAUSE, _get, companies_from_page, fetch_chart, init_crumb, num, yget,
 )
+import fetch_us100 as F                          # noqa: E402  CRUMB 는 모듈 속성으로 읽는다
 
-CHUNK = 25
+QUOTE_CHUNK = 50
+STOOQ_CHUNK = 15
 
 
-def spark(symbols, rng, interval):
-    """여러 종목을 한 번에. 마지막 종가 = 현재가, chartPreviousClose = 전일 종가."""
-    path = ("/v8/finance/spark?symbols=" + ",".join(urllib.parse.quote(s) for s in symbols) +
-            "&range=%s&interval=%s" % (rng, interval))
+def quote_bulk(symbols):
+    """v7/finance/quote — crumb 이 있어야 한다(없으면 401). 한 번에 여러 종목."""
+    if not F.CRUMB:
+        raise RuntimeError("crumb 없음")
+    path = ("/v7/finance/quote?symbols=" + ",".join(urllib.parse.quote(s) for s in symbols) +
+            "&crumb=" + urllib.parse.quote(F.CRUMB))
     j = yget(path)
+    res = ((j.get("quoteResponse") or {}).get("result")) or []
+    if not res:
+        raise RuntimeError("quoteResponse 가 비었다")
     out = {}
-
-    def put(sym, closes, prev, ts, vols=None):
-        cl = [c for c in (closes or []) if c is not None]
-        if not sym or not cl:
-            return
-        last = cl[-1]
-        base = prev if prev is not None else (cl[-2] if len(cl) > 1 else None)
-        rec = {"price": num(last, 4), "prevClose": num(base, 4)}
-        if base:
-            rec["changePct"] = round((last - base) / base * 100, 2)
-        if ts:
-            rec["asof"] = int(ts[-1])
-        if vols:
-            v = [x for x in vols if x is not None]
-            if v:
-                rec["volume"] = int(sum(v))
+    for r in res:
+        sym = r.get("symbol")
+        price = num(r.get("regularMarketPrice"), 4)
+        if not sym or price is None:
+            continue
+        rec = {"price": price, "prevClose": num(r.get("regularMarketPreviousClose"), 4)}
+        if rec["prevClose"]:
+            rec["changePct"] = round((price - rec["prevClose"]) / rec["prevClose"] * 100, 2)
+        else:
+            rec["changePct"] = num(r.get("regularMarketChangePercent"), 2)
+        for key, field in (("volume", "regularMarketVolume"), ("cap", "marketCap"),
+                           ("per", "trailingPE"), ("asof", "regularMarketTime")):
+            v = num(r.get(field))
+            if v is not None:
+                rec[key] = int(v) if key in ("volume", "asof") else round(v, 4)
+        if r.get("marketState"):
+            rec["marketState"] = r["marketState"]
         out[sym] = rec
-
-    # 형태 1) { AAPL: { close: [...], chartPreviousClose, timestamp: [...] } }
-    for sym in symbols:
-        r = j.get(sym) if isinstance(j, dict) else None
-        if isinstance(r, dict) and r.get("close"):
-            put(sym, r.get("close"),
-                r.get("chartPreviousClose", r.get("previousClose")),
-                r.get("timestamp"))
-    # 형태 2) { spark: { result: [ { symbol, response: [ {meta, timestamp, indicators} ] } ] } }
-    if not out and isinstance(j, dict) and isinstance(j.get("spark"), dict):
-        for r in (j["spark"].get("result") or []):
-            resp = (r.get("response") or [None])[0]
-            if not resp:
-                continue
-            q = ((resp.get("indicators") or {}).get("quote") or [{}])[0]
-            meta = resp.get("meta") or {}
-            put(r.get("symbol"), q.get("close"),
-                meta.get("chartPreviousClose", meta.get("previousClose")),
-                resp.get("timestamp"), q.get("volume"))
     if not out:
-        raise RuntimeError("spark 응답에서 값을 찾지 못했다")
+        raise RuntimeError("쓸 값이 없다")
     return out
 
 
+def quote_one_chart(sym):
+    """종목별 1일치 일봉 — range=1d 에서는 chartPreviousClose 가 전일 종가다."""
+    series, meta, _, _ = fetch_chart(sym, "1d", "1d")
+    price = num(meta.get("regularMarketPrice"), 4)
+    if price is None and series["c"]:
+        price = series["c"][-1]
+    prev = num(meta.get("chartPreviousClose"), 4)
+    if prev is None:
+        prev = num(meta.get("previousClose"), 4)
+    if price is None:
+        raise RuntimeError("가격 없음")
+    rec = {"price": price, "prevClose": prev}
+    if prev:
+        rec["changePct"] = round((price - prev) / prev * 100, 2)
+    if meta.get("regularMarketVolume") is not None:
+        rec["volume"] = int(num(meta["regularMarketVolume"]) or 0)
+    if meta.get("regularMarketTime") is not None:
+        rec["asof"] = int(num(meta["regularMarketTime"]) or 0)
+    if meta.get("marketState"):
+        rec["marketState"] = meta["marketState"]
+    return rec
+
+
 def stooq_bulk(symbols):
-    """야후가 막혔을 때. Stooq 는 전일 종가를 주지 않아 등락률은 당일 시가 대비다."""
+    """야후가 전부 막혔을 때. 전일 종가가 없어 등락률은 당일 시가 대비다."""
     codes = ",".join(s.lower().replace("-", ".") + ".us" for s in symbols)
     txt = _get("https://stooq.com/q/l/?s=%s&f=sd2t2ohlcv&h&e=csv" % codes)
     lines = [l for l in txt.strip().splitlines() if l]
@@ -98,8 +119,10 @@ def stooq_bulk(symbols):
         close, opn = num(p[ix["close"]]), num(p[ix["open"]])
         if close is None:
             continue
-        rec = {"price": close, "prevClose": None, "intraday": True,
-               "volume": int(num(p[ix["volume"]]) or 0) or None}
+        rec = {"price": close, "prevClose": None, "intraday": True}
+        vol = num(p[ix["volume"]]) if "volume" in ix else None
+        if vol:
+            rec["volume"] = int(vol)
         if opn:
             rec["changePct"] = round((close - opn) / opn * 100, 2)
         out[sym] = rec
@@ -112,39 +135,73 @@ def main():
     companies = companies_from_page()
     syms = [c["sym"] for c in companies]
     out = {"fetchedAt": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
-           "source": None, "fx": {}, "quotes": {}, "failed": []}
+           "source": None, "fx": {}, "quotes": {}, "failed": [], "routes": {}}
 
-    got_yahoo = 0
-    for i in range(0, len(syms), CHUNK):
-        chunk = syms[i:i + CHUNK]
-        rec = None
-        for rng, interval in (("1d", "5m"), ("5d", "1d")):
-            try:
-                rec = spark(chunk, rng, interval)
-                break
-            except Exception as e:                      # noqa: BLE001
-                err = e
-        if rec:
-            out["quotes"].update(rec)
-            got_yahoo += len(rec)
-        else:
-            try:
-                out["quotes"].update(stooq_bulk(chunk))
-                out["source"] = "mixed"
-            except Exception as e2:                     # noqa: BLE001
-                out["failed"].extend(chunk)
-                print("  %s 실패 — %s / %s" % (",".join(chunk), err, e2), flush=True)
-        time.sleep(PAUSE)
+    init_crumb()
 
+    # 1) 벌크 quote (crumb) — 되면 여기서 거의 다 끝난다
+    remaining = list(syms)
+    if F.CRUMB:
+        got = []
+        for i in range(0, len(remaining), QUOTE_CHUNK):
+            chunk = remaining[i:i + QUOTE_CHUNK]
+            try:
+                rec = quote_bulk(chunk)
+                out["quotes"].update(rec)
+                got.extend(rec.keys())
+                print("  quote 벌크 %d종목" % len(rec), flush=True)
+            except Exception as e:                          # noqa: BLE001
+                print("  quote 벌크 실패(%d종목) — %s" % (len(chunk), e), flush=True)
+            time.sleep(PAUSE)
+        if got:
+            out["routes"]["yahoo-quote"] = len(got)
+        remaining = [s for s in remaining if s not in out["quotes"]]
+
+    # 2) 남은 종목은 개별 차트로
+    if remaining:
+        print("  개별 차트로 %d종목 받는다" % len(remaining), flush=True)
+        done = 0
+        for sym in list(remaining):
+            try:
+                out["quotes"][sym] = quote_one_chart(sym)
+                done += 1
+            except Exception as e:                          # noqa: BLE001
+                print("    %-6s 실패 — %s" % (sym, e), flush=True)
+            time.sleep(PAUSE)
+        if done:
+            out["routes"]["yahoo-chart"] = done
+        remaining = [s for s in remaining if s not in out["quotes"]]
+
+    # 3) 그래도 남으면 Stooq
+    if remaining:
+        print("  Stooq 로 %d종목 받는다" % len(remaining), flush=True)
+        done = 0
+        for i in range(0, len(remaining), STOOQ_CHUNK):
+            chunk = remaining[i:i + STOOQ_CHUNK]
+            try:
+                rec = stooq_bulk(chunk)
+                out["quotes"].update(rec)
+                done += len(rec)
+            except Exception as e:                          # noqa: BLE001
+                print("    %s 실패 — %s" % (",".join(chunk), e), flush=True)
+            time.sleep(PAUSE)
+        if done:
+            out["routes"]["stooq"] = done
+        remaining = [s for s in remaining if s not in out["quotes"]]
+
+    out["failed"] = remaining
     if not out["quotes"]:
         raise SystemExit("한 종목도 받지 못했다 — 원천이 전부 막혔다")
-    out["source"] = out["source"] or ("yahoo-spark" if got_yahoo else "stooq")
+    routes = list(out["routes"].keys())
+    out["source"] = routes[0] if len(routes) == 1 else "mixed"
+    states = [r.get("marketState") for r in out["quotes"].values() if r.get("marketState")]
+    if states:
+        out["marketState"] = max(set(states), key=states.count)
 
+    # 환율 — 시가총액 원화 환산에 쓴다
     try:
-        fx = spark(["KRW=X"], "5d", "1d")
-        if fx.get("KRW=X", {}).get("price"):
-            out["fx"]["usdkrw"] = fx["KRW=X"]["price"]
-    except Exception as e:                              # noqa: BLE001
+        out["fx"]["usdkrw"] = quote_one_chart("KRW=X")["price"]
+    except Exception as e:                                  # noqa: BLE001
         print("환율 실패 — %s" % e, flush=True)
 
     os.makedirs(OUT_DIR, exist_ok=True)
@@ -152,11 +209,10 @@ def main():
     with open(path, "w", encoding="utf-8") as f:
         json.dump(out, f, ensure_ascii=False, separators=(",", ":"))
 
-    n = len(out["quotes"])
     sample = out["quotes"].get("AAPL") or next(iter(out["quotes"].values()))
-    print("가격 수집 완료: %d/%d 종목 · %.0fKB · 예: %s"
-          % (n, len(syms), os.path.getsize(path) / 1024, json.dumps(sample, ensure_ascii=False)),
-          flush=True)
+    print("\n가격 수집 완료: %d/%d 종목 · 경로 %s · %.0fKB\n  예: %s"
+          % (len(out["quotes"]), len(syms), out["routes"], os.path.getsize(path) / 1024,
+             json.dumps(sample, ensure_ascii=False)), flush=True)
     if out["failed"]:
         print("실패: %s" % ", ".join(out["failed"]), flush=True)
 
