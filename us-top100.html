@@ -445,8 +445,8 @@ footer .disc p{margin:0 0 12px;}
         title="비교에 담아 둔 종목을 한 번에 모두 뺍니다(관심종목 ★ 은 그대로 둡니다).">비교 전체 해제</button>
       <span class="sp">
         <span class="upd" id="upd-line"></span>
-        <label class="auto-chk" title="1분마다 러너가 올려 둔 가격 파일(quotes.json)을 다시 확인합니다. 탭이 숨어 있으면 부르지 않고, 탭으로 돌아오면 즉시 한 번 확인합니다. 새 값이 없으면 화면은 그대로입니다.">
-          <input type="checkbox" id="auto-refresh" checked>
+        <label class="auto-chk" title="처음에는 꺼져 있습니다. 켜면 1분마다 러너가 올려 둔 가격 파일(quotes.json)을 다시 확인해 표가 스스로 따라갑니다(탭이 숨어 있으면 부르지 않고, 탭으로 돌아오면 즉시 한 번 확인). 꺼 두면 화면을 연 시점의 값이 그대로 남아 있고, 갱신은 '지금 새로 조회'를 누를 때만 합니다.">
+          <input type="checkbox" id="auto-refresh">
           <span data-ko="자동 갱신" data-en="Auto-refresh">자동 갱신</span></label>
         <button class="btn primary" type="button" id="btn-refresh"
           title="이 브라우저가 지금 다시 조회합니다 — 캐시를 버리고 (1) 실시간 스트리밍 재접속 (2) 브라우저 직접 조회 (3) 러너 파일 재다운로드를 모두 시도합니다. 수집을 새로 돌리는 것이 아니라, 이미 올라와 있는 가장 새 값을 받아옵니다."
@@ -1208,7 +1208,7 @@ var PROFILE_KO = {
    "처음"의 기준은 판 문자열 + 파일 경로다. 새로 내려받은 파일은 판이 다르거나
    (같은 판이어도) 이름이 "us-top100 (1).html" 처럼 달라지므로 처음 상태로 열린다.
    ------------------------------------------------------------ */
-var BUILD = '2026-09-09.2';
+var BUILD = '2026-09-09.3';
 var STORE_KEYS = ['mas-us100-lang', 'mas-us100-favs', 'mas-us100-sel', 'mas-us100-auto',
   'mas-us100-ind', 'mas-us100-cmp', 'mas-us100-cmp-range', 'mas-us100-cmp-sets',
   'mas-us100-proxy', 'mas-us100-base', 'mas-us100-stream'];
@@ -1253,14 +1253,18 @@ var state = {
   move: '',
   q: '',
   favOnly: false,
-  auto: true,             // 자동 갱신(1분 주기)
+  auto: false,            // 자동 갱신(1분 주기) — 처음에는 꺼 둔다(아래 주석)
   fx: null,               // USD/KRW
   asof: null,
   cmpRange: '1y',         // 종목 비교 기간
   cmpAxis: 'lin',         // 비교 차트 축: lin | log
   ind: { bb: false, macd: false, rsi: false }   // 보조지표 표시 여부
 };
-try { state.auto = localStorage.getItem('mas-us100-auto') !== 'off'; } catch (e) {}
+/* 자동 갱신은 처음에 꺼져 있다. 1분마다 가격 파일을 다시 확인하는 기능인데, 켜져
+   있으면 보고 있던 표가 스스로 바뀌어(값·시각·배지) 방금 읽은 숫자와 어긋난다.
+   화면을 열자마자 한 번 받아오는 것은 이 설정과 무관하게 그대로 하고, 그 뒤로는
+   "지금 새로 조회"를 누를 때만 갱신한다. 켜 두면 그 파일에서는 계속 기억한다. */
+try { state.auto = localStorage.getItem('mas-us100-auto') === 'on'; } catch (e) {}
 try {
   var savedInd = JSON.parse(localStorage.getItem('mas-us100-ind') || 'null');
   if (savedInd) ['bb', 'macd', 'rsi'].forEach(function (k) { state.ind[k] = !!savedInd[k]; });
@@ -5439,7 +5443,7 @@ function restoredBits() {
     CMP.length + ' in the comparison (' + CMP.join(', ') + ')'));
   if (CMP_SETS.length) out.push(t('저장한 비교 조합 ' + CMP_SETS.length + '개', CMP_SETS.length + ' saved sets'));
   if (has('mas-us100-sel')) out.push(t('마지막에 본 종목 ' + state.sel, 'last viewed ' + state.sel));
-  if (has('mas-us100-auto') && !state.auto) out.push(t('자동 갱신 꺼짐', 'auto-refresh off'));
+  if (state.auto) out.push(t('자동 갱신 켜짐', 'auto-refresh on'));
   var ind = ['bb', 'macd', 'rsi'].filter(function (k) { return state.ind[k]; });
   if (ind.length) out.push(t('보조지표 ' + ind.length + '개 켜짐', ind.length + ' indicators on'));
   if (lang === 'en') out.push('English');
