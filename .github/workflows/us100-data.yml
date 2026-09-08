@@ -51,6 +51,7 @@ jobs:
         # 데이터 전용 브랜치를 커밋 하나로 갈아끼운다(scripts/publish_us100_data.sh).
         env:
           COMMIT_LABEL: 전체수집
+          PUBLISH_FILES: latest.json chart
         run: bash scripts/publish_us100_data.sh
 
       - name: 요약
