@@ -1,0 +1,104 @@
+name: 미국 100대 기업 가격 갱신
+
+# 장중 가격만 자주 갱신하는 가벼운 수집이다. 지표·실적·컨센서스까지 받는
+# us100-data.yml 은 종목별로 5번씩 요청해 5~8분이 걸리므로 자주 돌릴 수 없다.
+# 이 워크플로는 25종목씩 묶어 4~5번만 요청하고 20~40초에 끝나므로 10분 주기로 돈다.
+#
+# 화면(us-top100.html)은 quotes.json 을 latest.json 보다 우선해 가격에 덮어쓰고,
+# "시세 N분 전" 으로 나이를 함께 보여준다. 브라우저에서 야후에 직접 붙을 수 있는
+# 환경이면 그쪽이 더 우선한다(진짜 실시간).
+#
+# 주의 1) schedule 은 기본 브랜치(main)의 워크플로만 발동한다. 작업 브랜치에서는
+#         data/us100/QUOTES_REFRESH 를 고쳐 push 하거나 수동 실행한다.
+# 주의 2) GitHub 예약은 제때 돌지 않는다(이 저장소에서 30~90분 지연을 겪었다).
+#         그래서 화면은 예약을 믿지 않고 파일의 수집 시각을 그대로 표시한다.
+# 주의 3) Actions 사용 시간을 쓴다. 10분 주기 × 미국 정규장 = 하루 약 50회, 30~40분.
+#         부담되면 아래 cron 을 '*/15' 나 '*/30' 으로 늘리면 된다.
+
+on:
+  schedule:
+    # 미국 정규장(09:30~16:00 ET)을 여름·겨울 시간 모두 덮는 13:00~21:00 UTC
+    - cron: '*/10 13-20 * * 1-5'
+    # 마감 직후 한 번 더 — 종가를 확실히 담는다
+    - cron: '5,20 21 * * 1-5'
+
+  push:
+    paths:
+      - 'data/us100/QUOTES_REFRESH'
+      - '.github/workflows/us100-quotes.yml'
+      - 'scripts/fetch_us100_quotes.py'
+
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: us100-quotes-${{ github.ref_name }}
+  cancel-in-progress: true          # 늦게 시작한 판이 더 최신이므로 앞선 판은 버려도 된다
+
+jobs:
+  quotes:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: 가격 수집
+        run: python scripts/fetch_us100_quotes.py
+
+      - name: 커밋
+        # us100-data.yml 과 같은 방식 — 충돌이 날 수 없게 원격 최신 위에 파일만 얹는다
+        run: |
+          set -euo pipefail
+          git config user.name  'github-actions[bot]'
+          git config user.email 'github-actions[bot]@users.noreply.github.com'
+          if git diff --quiet -- data/us100/quotes.json \
+             && [ -z "$(git ls-files --others --exclude-standard data/us100/quotes.json)" ]; then
+            echo "가격 변동 없음"
+            exit 0
+          fi
+          TMP=$(mktemp -d)
+          cp data/us100/quotes.json "$TMP/quotes.json"
+          for attempt in 1 2 3; do
+            git fetch --quiet origin "${GITHUB_REF_NAME}"
+            git reset --hard --quiet "origin/${GITHUB_REF_NAME}"
+            mkdir -p data/us100
+            cp "$TMP/quotes.json" data/us100/quotes.json
+            git add data/us100/quotes.json
+            if git diff --staged --quiet; then
+              echo "원격과 같아 커밋할 것이 없다"
+              exit 0
+            fi
+            git commit --quiet -m "미국 100대 기업 가격 $(TZ=Asia/Seoul date '+%m-%d %H:%M KST')"
+            if git push --quiet origin "HEAD:${GITHUB_REF_NAME}"; then
+              echo "커밋 완료 (시도 $attempt)"
+              exit 0
+            fi
+            echo "밀어넣기 실패 — 다시 시도한다 ($attempt/3)" >&2
+            sleep 4
+          done
+          exit 1
+
+      - name: 요약
+        if: always()
+        continue-on-error: true
+        run: |
+          if [ -f data/us100/quotes.json ]; then
+            python - <<'PY'
+          import json
+          try:
+              d = json.load(open('data/us100/quotes.json', encoding='utf-8'))
+          except Exception as e:
+              print(f"::warning::quotes.json 을 읽지 못했다 — {e}")
+              raise SystemExit(0)
+          q = d.get('quotes', {})
+          print(f"::notice::가격 {len(q)}종목 · 출처 {d.get('source')} · 수집 {d.get('fetchedAt')}")
+          if d.get('failed'):
+              print("::warning::실패 " + ", ".join(d['failed'][:20]))
+          PY
+          fi
