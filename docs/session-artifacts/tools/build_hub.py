@@ -27,11 +27,13 @@ GROUPS = [
              'The edition that established the bilingual layout and per-item evidence panel.',
              '자동 증시시황 수집 및 브리핑', 'Auto market briefing',
              '2026-08-06', '52dcf057-d3b2-421c-a418-1741e617e27f', True),
-            ('모닝 마켓 브리핑 · 8/31', 'Morning Market Briefing · Aug 31',
-             '가장 최신 발행본. 매 영업일 아침 새 아티팩트로 올라옵니다.',
-             'The latest edition. A new artifact goes up each business morning.',
+            ('모닝 마켓 브리핑 · 9/7', 'Morning Market Briefing · Sep 7',
+             '가장 최신 발행본. 매 영업일 아침 새 아티팩트로 올라옵니다. 8월 말부터 '
+             '장마감 「핵심본」이 따로 나옵니다.',
+             'The latest edition. A new artifact goes up each business morning; a condensed '
+             'market-close edition has been running since late August.',
              '모닝 시황 브리핑', 'Morning briefing',
-             '2026-08-31', '56daa887-4ba0-4487-9576-c5adb553116a', False),
+             '2026-09-07', 'd50802dd-1522-439f-bd70-2920fb476a71', False),
             ('브리핑 목록', 'Briefing Index',
              '발행한 브리핑을 날짜·판별로 늘어놓은 최신 목록 화면. 일자별 발행본은 '
              '이미 각각 아티팩트로 올라가 있어 다시 올리지 않았고, 여기서 찾습니다.',
@@ -77,8 +79,13 @@ GROUPS = [
         leaden='Tools that turn a client\'s holdings into a briefing or a check-up report.',
         items=[
             ('보유자산 통합 브리핑', 'Client Holdings Briefing',
-             '주식·ETF·펀드·채권을 한 화면에 모아 고객별로 브리핑을 만듭니다. v2026.08.21.',
-             'Equities, ETFs, funds and bonds on one screen, per client. v2026.08.21.',
+             '주식·ETF·펀드·채권을 한 화면에 모아 고객별로 브리핑을 만듭니다. v2026.08.21. '
+             '8/31 에 「연금 상품조회」 링크 단추가 붙었지만 같은 서버의 다른 화면을 '
+             '가리켜 아티팩트에서는 열리지 않으므로, 이 아티팩트는 그 전 판으로 둡니다.',
+             'Equities, ETFs, funds and bonds on one screen, per client. v2026.08.21. A '
+             'pension-lookup button added on Aug 31 points at another page on the same local '
+             'server and cannot work inside an artifact, so this artifact stays on the '
+             'earlier build.',
              'Asset briefing dashboard setup', 'Asset briefing dashboard setup',
              '2026-08-21', '15a26735-c8c5-428c-aec8-7ab437e4f04d', True),
             ('보유자산 브리핑 7월판', 'Holdings Briefing · July',
@@ -91,6 +98,15 @@ GROUPS = [
              'Concentration, FX exposure and ELS knock-in headroom, diagnosed on one page.',
              '새로운 프로젝트 추천', 'New project recommendation',
              '2026-08-17', 'ab051636-2c6e-4e33-a6fe-4955c1130655', True),
+            ('은퇴자산 운용 제안서 · v2', 'Retirement Income Proposal · v2',
+             '한 가구의 은퇴 현금흐름을 5단계로 배치하고, 신규 주식 편입 없이 이자·배당·'
+             '옵션프리미엄으로 목표 연 7.0%를 맞춘 제안서. 취급 주의 — 특정 가구의 '
+             '자산 내역이 담겨 있어 상담 관계 밖으로 돌리면 안 됩니다.',
+             'One household\'s retirement cash flow staged over five phases, hitting a 7.0% '
+             'target from interest, dividends and option premium with no new equity. '
+             'Handle with care — it contains that household\'s asset detail; do not circulate.',
+             '은퇴자산 설계 제안서', 'Retirement asset proposal',
+             '2026-09-07', 'a4d9d351-0a19-4ac7-b9f4-f9c17b8c964c', True),
             ('마켓 모니터', 'Market Monitor',
              '시장 온도·수급·업종 강약을 누적 데이터로 봅니다.',
              'Market temperature, flows and sector strength from accumulated data.',
@@ -103,13 +119,13 @@ GROUPS = [
         leaden='ELS issue analysis and client proposals, with terms, fair value and '
                'knock-in headroom taken from the filings.',
         items=[
-            ('ELS 상품 조회 · 8/25 데이터', 'ELS Product Finder · Aug 25 data',
-             '구조 설명·조건 필터·상환 시뮬레이터를 갖춘 최신판. 상품 데이터를 '
-             '8/25 수집분 36건으로 갈아 끼웠습니다.',
-             'Structure explainer, term filters and redemption simulator, with the product '
-             'table refreshed to the 36 notes collected on Aug 25.',
+            ('ELS 상품 조회 · 최신판', 'ELS Product Finder',
+             '구조 설명·조건 필터·상환 시뮬레이터. 9/6 수집분 21건으로 갈아 끼웠습니다. '
+             '제목의 「8월 최종판」은 달이 바뀌어 「최신판」으로 바꿨고 링크는 그대로입니다.',
+             'Structure explainer, term filters and redemption simulator, refreshed to the '
+             '21 notes collected on Sep 6. Renamed from the August-specific title; same link.',
              'ELS 상품 통합 조회', 'ELS product search',
-             '2026-08-25', 'e8a6b160-154a-4cfa-921f-edc368cf58a4', True),
+             '2026-09-06', 'e8a6b160-154a-4cfa-921f-edc368cf58a4', True),
             ('ELS 상품 구조 한눈에 보기', 'ELS Structures at a Glance',
              '기초자산·조기상환·손익 구조를 처음 배우는 사람 기준으로 설명합니다.',
              'Underlyings, early redemption and payoff explained for a first-time reader.',
@@ -123,6 +139,16 @@ GROUPS = [
              'deadline (Aug 25) once the cooling-off period is counted. Three picks.',
              'ELS 상품 구조 설명 페이지', 'ELS structure page',
              '2026-08-25', '292b0dbd-65ef-405c-b8fd-d7843d8f61d3', False),
+            ('ELS 세일즈 제안서 · 제38070~38089회', 'ELS Sales Deck · series 38070–38089',
+             '20종을 수익률이 아니라 손실 확률로 줄 세운 제안서 6장. 백테스트(과거 20년)와 '
+             '시뮬레이션(10만 번)이 어긋나는 상품을 따로 짚고, 성향별 추천 3종·권하지 않는 '
+             '4종·고객 반응별 대응 스크립트를 담았습니다. PPTX·PDF 원본 첨부.',
+             'Twenty notes ranked by loss probability rather than coupon, over six slides — '
+             'flagging where the 20-year backtest and the 100,000-path simulation disagree, '
+             'with three picks, four to avoid and objection-handling scripts. PPTX and PDF '
+             'attached.',
+             'ELS 상품 구조 설명 페이지', 'ELS structure page',
+             '2026-09-01', '3a975c54-1bd5-403b-8aa8-25ff4e3ac517', True),
             ('ELS 세일즈 분석 8월 4주', 'ELS Sales Analysis · Aug W4',
              '투자설명서에서 공정가액·적용 변동성·리자드 조항을 꺼내 16건을 다시 읽었습니다.',
              'Sixteen notes re-read from the prospectus: fair value, applied vol, lizard clauses.',
@@ -178,27 +204,40 @@ GROUPS = [
              '데이터센터 밸류체인 맵', 'Data center value chain map',
              '2026-08-05', 'b563f426-4248-467e-af3f-bc6c750de2b5', True),
             ('증권사 리포트 다이제스트', 'Broker Report Digest',
-             '조회수·목표주가 변경·복수 커버리지로 그날 리포트를 고릅니다. 8/31 자 18건, '
-             '수집 전체 333건을 파일에 담아 갱신했습니다. 주간 인기와 주제별 논점이 붙었습니다.',
+             '조회수·목표주가 변경·복수 커버리지로 그날 리포트를 고릅니다. 9/4 자 90건, '
+             '수집 전체 316건을 파일에 담았습니다. 수집에 실패한 출처가 있으면 '
+             '「이 판에는 OO가 빠졌습니다」를 머리에 띄웁니다.',
              'Picks the day\'s reports by views, target-price changes and shared coverage. '
-             'Refreshed with the Aug 31 edition (18 reports, 333 collected) embedded in the '
-             'file, plus weekly rankings and per-theme arguments.',
+             'Carries the Sep 4 edition (90 reports, 316 collected) in the file, and now '
+             'names any source that failed to collect at the top of the page.',
              '증권사 리포트 자동 요약', 'Report auto-summary',
-             '2026-08-31', 'e0d4d73a-22db-4d93-a0c5-6ab177711daa', True),
+             '2026-09-04', 'e0d4d73a-22db-4d93-a0c5-6ab177711daa', True),
             ('ETF 편입종목 조회', 'ETF Holdings Lookup',
              '국내·미국·홍콩·일본·중국 상장 ETF 1,348종목의 상위 10개 편입종목과 비중. '
-             '겹침 비교·종목 역조회·랭킹까지. 8/30 수집분, 총수익률 단일 기준.',
+             '겹침 비교·종목 역조회·랭킹까지. 8/31 수집분, 총수익률 단일 기준. '
+             '「사용법」 탭이 붙었지만 화면 그림·PDF 단추는 원본 파일에만 실려 아티팩트에서는 '
+             '글만 보입니다 — 그림이 있는 판은 아래 사용법 항목입니다.',
              'Top-10 holdings and weights for 1,348 ETFs listed in Korea, the US, Hong Kong, '
-             'Japan and China, with overlap comparison, reverse lookup and rankings. Aug 30 '
-             'data, total-return basis only.',
+             'Japan and China, with overlap comparison, reverse lookup and rankings. Aug 31 '
+             'data, total-return basis only. The new How-to tab carries text only here — the '
+             'screenshots live in the separate guide below.',
              'ETF 편입종목 조회 도구', 'ETF holdings lookup tool',
-             '2026-08-30', 'c3f08597-8d47-45ce-ba27-17fd26a63dc7', True),
+             '2026-08-31', 'c3f08597-8d47-45ce-ba27-17fd26a63dc7', True),
+            ('ETF 편입종목 조회 사용법', 'ETF Holdings Lookup · How-to',
+             '화면 여섯 개를 실제 화면 그림 8장과 함께 짚어 주는 안내서. 「숫자를 읽기 전에」 '
+             '절에는 만들면서 실제로 틀렸던 것들 — 기준일 하루 차이로 1개월 수익률이 '
+             '-4.98%와 +5.14%로 갈린 사례 같은 것 — 을 적었습니다.',
+             'A walkthrough of all six screens with eight real screenshots. The "before you '
+             'read the numbers" section records what actually went wrong while building it — '
+             'such as one day of base-date difference flipping a 1-month return.',
+             'ETF 편입종목 조회 도구', 'ETF holdings lookup tool',
+             '2026-08-31', 'f38b7755-cfef-4f6d-9359-a4116b847084', True),
             ('국내 설정 공모펀드 조회', 'Korean Public Fund Finder',
-             '공모펀드 3,192개를 투자 지역·유형으로 가른 화면. 데이터 파일만 25.9MB 라 '
+             '공모펀드 3,192개를 투자 지역·유형으로 가른 화면. 단일 파일이 28.5MB 라 '
              '아티팩트 상한(16MB)을 넘어 올릴 수 없습니다. 저장소 '
              'claude/fund-search-tool 의 fund-search.html 을 내려받아 열면 됩니다.',
-             '3,192 Korean public funds split by investment region and type. Its data file '
-             'alone is 25.9MB — past the 16MB artifact limit, so it cannot be published here. '
+             '3,192 Korean public funds split by investment region and type. The single file '
+             'is 28.5MB — past the 16MB artifact limit, so it cannot be published here. '
              'Download fund-search.html from the claude/fund-search-tool branch.',
              '펀드조회 화면', 'Fund search screen',
              '2026-08-31', None, ('아티팩트 불가 · 저장소', 'Too large · in repo')),
@@ -214,6 +253,28 @@ GROUPS = [
              'including the three cap mechanisms.',
              '부동산 세금 계산기', 'Real estate tax calculator',
              '2026-08-07', '5897de59-de5a-4f82-8775-d8307d6f20bd', True),
+            ('완전판매 스크립트 자동완성', 'Compliance Script Builder',
+             '상품군·시나리오를 고르면 미스터리쇼핑 평가표 순서대로 읽을 문장이 자동 '
+             '완성됩니다. 상품 1,511건과 투자설명서 항목을 파일에 담아 인터넷 없이 동작하고, '
+             '큰 글씨 프롬프터·셀프채점·투자설명서 PDF 판독까지 한 파일입니다. '
+             '「사내 상품 API」와 파일 내려받기 단추는 아티팩트에서 동작하지 않습니다.',
+             'Pick a product group and scenario and the script to read is filled in, in the '
+             'order the mystery-shopping sheet checks. 1,511 products and their prospectus '
+             'fields are embedded, so it runs offline, with a large-type prompter, self-scoring '
+             'and client-side prospectus PDF parsing. The internal product API and the file '
+             'download buttons do not work inside an artifact.',
+             '완전판매 스크립트 자동화 시스템', 'Compliance script automation',
+             '2026-09-06', '6e974295-f4c2-49e3-8bea-33775ef7ca4b', True),
+            ('마포WM 모바일 창구', 'Mapo WM Mobile Desk',
+             '고객에게 문자로 보내는 한 장. 비대면 계좌개설 6종과 자주 찾는 업무 7종을 '
+             '눌러 바로 진행하게 만들었습니다. 링크는 마포WM으로 개설되는 실제 계좌개설 '
+             '주소이고 원본이 검색 노출을 막아 둔 페이지이니, 링크를 넓게 돌리지 마십시오.',
+             'The one-pager sent to clients by text: six online account-opening flows and '
+             'seven common service tasks, each one tap away. The links are live '
+             'account-opening URLs tied to the branch and the page itself is noindexed — do '
+             'not circulate the link widely.',
+             '개별 홈페이지/서버 구축', 'Individual homepage / server',
+             '2026-09-05', '7b5fe21e-f844-4f2f-9fd5-2ee873d3d647', True),
             ('영업 지원 도구', 'Sales Toolkit',
              '종목 리포트·상품 비교기·연금 절세 시뮬레이터·반대매매 리스크 계산기를 한 파일에.',
              'Equity report, product comparison, pension tax simulator and margin-call '
@@ -392,6 +453,9 @@ NOARTIFACT = [
     ('최종본 파일 확인', 'Final file check',
      '어느 파일이 최종본인지 가려낸 점검 작업입니다.',
      'A check to establish which file was the final version.'),
+    ('미국 100대 기업 정보 조회 화면', 'US top-100 companies dashboard',
+     '9월 8일 기준 아직 진행 중인 세션입니다. 최종본이 정해지면 다음 갱신에 싣습니다.',
+     'Still in progress as of Sep 8; it goes in once the session settles on a final build.'),
     ('초기 작업 검증 프로세스', 'Initial work validation process',
      '브리핑 생성 파이프라인에 검증 관문을 붙인 작업입니다. 훅·워크플로·점검 스크립트가 '
      '결과물이라 화면으로 볼 산출물이 없습니다.',
@@ -610,13 +674,13 @@ h.append('<div class="lang" role="radiogroup" aria-label="언어 선택 / Langua
 h.append('</div>')
 
 h.append(bi('세션 산출물 자료실', 'Session Work Library', 'h1'))
-h.append(bi('클로드 코드 세션 40개가 남긴 최종 작업본을 주제별로 모았습니다. '
+h.append(bi('클로드 코드 세션 44개가 남긴 최종 작업본을 주제별로 모았습니다. '
             '제목을 누르면 해당 아티팩트가 열립니다.',
-            'The final deliverable of every one of 40 Claude Code sessions, grouped by '
+            'The final deliverable of every one of 44 Claude Code sessions, grouped by '
             'subject. Each title opens its artifact.', 'p', 'sub'))
 
 h.append('<div class="stats">')
-for kolab, enlab, val in [('세션', 'Sessions', '40'),
+for kolab, enlab, val in [('세션', 'Sessions', '44'),
                           ('주제', 'Subjects', str(len(GROUPS))),
                           ('새로 올린 아티팩트', 'Newly published', str(new_count)),
                           ('색인에 실은 항목', 'Indexed items', str(rows_total))]:
@@ -702,10 +766,10 @@ for (tko, ten, dko, den) in NOARTIFACT:
 h.append('</div></section>')
 
 h.append('<footer>')
-h.append(bi('기준 2026-08-31 · 저장소 <code>hanaroline/work_1</code> · '
+h.append(bi('기준 2026-09-08 · 저장소 <code>hanaroline/work_1</code> · '
             '세션별 브랜치의 마지막 커밋에서 산출물을 뽑았습니다. 이 색인은 월·목 아침에 '
             '스스로 갱신됩니다.',
-            'As of 2026-08-31 · repository <code>hanaroline/work_1</code> · deliverables taken '
+            'As of 2026-09-08 · repository <code>hanaroline/work_1</code> · deliverables taken '
             'from the last commit on each session branch. This index refreshes itself on '
             'Monday and Thursday mornings.', 'p'))
 h.append(bi('세션 목록에는 최근 35개가 잡힙니다. 그보다 앞선 브랜치 두 개'
