@@ -490,6 +490,23 @@ footer .disc p{margin:0 0 12px;}
     <div class="note-box" id="snap-stale" hidden></div>
     <div class="note-box" id="fallback-note" hidden></div>
     <details class="diag">
+      <summary data-ko="데이터 경로 설정 (사내 프록시 · 사내 API)" data-en="Data route settings (corporate proxy / API)">데이터 경로 설정 (사내 프록시 · 사내 API)</summary>
+      <p style="font-size:16px; line-height:1.6; margin:14px 0 10px" data-ko="사내에 외부 요청을 대신 보내주는 프록시가 있으면 여기에 넣으세요. 넣는 순간부터 <b>브라우저가 직접 실시간 시세를 받아옵니다</b>(가장 앞 경로로 씁니다). 주소에 <code>{url}</code>(원문 그대로) 또는 <code>{urlenc}</code>(URL 인코딩)를 넣어 어디에 대상 주소가 들어갈지 표시합니다."
+         data-en="If your network has a proxy that forwards outbound requests, put it here. From then on the browser fetches live quotes directly (this route is tried first). Mark where the target URL goes with <code>{url}</code> (raw) or <code>{urlenc}</code> (URL-encoded).">사내에 외부 요청을 대신 보내주는 프록시가 있으면 여기에 넣으세요. 넣는 순간부터 <b>브라우저가 직접 실시간 시세를 받아옵니다</b>(가장 앞 경로로 씁니다). 주소에 <code>{url}</code>(원문 그대로) 또는 <code>{urlenc}</code>(URL 인코딩)를 넣어 어디에 대상 주소가 들어갈지 표시합니다.</p>
+      <label style="display:block; font-size:14px; color:var(--muted); margin-bottom:6px" data-ko="사내 프록시 주소 템플릿" data-en="Corporate proxy URL template">사내 프록시 주소 템플릿</label>
+      <input id="cfg-proxy" type="url" placeholder="https://intra.example.com/proxy?url={urlenc}"
+             style="width:100%; font-family:var(--font-num); font-size:15px; padding:11px 13px; border:1px solid var(--hairline); border-radius:2px">
+      <label style="display:block; font-size:14px; color:var(--muted); margin:16px 0 6px" data-ko="스냅샷 파일 경로 (data/us100/ 에 해당하는 주소)" data-en="Snapshot base URL (folder that holds data/us100 files)">스냅샷 파일 경로 (data/us100/ 에 해당하는 주소)</label>
+      <input id="cfg-base" type="url" placeholder="https://intra.example.com/us100/"
+             style="width:100%; font-family:var(--font-num); font-size:15px; padding:11px 13px; border:1px solid var(--hairline); border-radius:2px">
+      <div style="display:flex; gap:10px; margin-top:14px; flex-wrap:wrap">
+        <button class="btn primary" type="button" id="cfg-save" data-ko="저장하고 다시 조회" data-en="Save and reload data">저장하고 다시 조회</button>
+        <button class="btn" type="button" id="cfg-clear" data-ko="지우기" data-en="Clear">지우기</button>
+        <span id="cfg-msg" style="font-size:15px; color:var(--muted); align-self:center"></span>
+      </div>
+    </details>
+
+    <details class="diag">
       <summary data-ko="요청 진단 보기 (개발용)" data-en="Request diagnostics (developer)">요청 진단 보기 (개발용)</summary>
       <div class="table-wrap" style="margin-top:12px"><table id="t-diag"></table></div>
     </details>
@@ -1565,6 +1582,7 @@ function renderList() {
   var failed = rowsForList().filter(function (r) { return r.failed; });
   if (SRC.list === 'sample') badge('badge-list', 'sample');
   else if (SRC.list === 'live') badge('badge-list', 'live');
+  else if (SRC.list === 'quotes') badge('badge-list', 'quotes');
   else if (SRC.list === 'snapshot') badge('badge-list', 'snapshot');
   else badge('badge-list', null, t('조회 중', 'loading'));
 
@@ -1636,11 +1654,19 @@ function modelOf(sym) {
   var chart = d.charts[state.interval + '|' + state.range] || null;
   var s = d.summary || null, snap = d.snap || null, demo = d.demo || null;
   var q = {};
-  /* 우선순위: 실시간 quoteSummary → 러너 스냅샷 → 예시.
-     스냅샷은 scripts/fetch_us100.py 가 화면 모델과 같은 키로 저장한다 */
-  if (snap && snap.quote) q = Object.assign({}, snap.quote);
-  if (s) q = Object.assign(q, s.quote);
-  else if (!snap && demo) q = Object.assign({}, demo.quote);
+  /* 우선순위: 실시간 quoteSummary → 가격 파일(10분 주기) → 스냅샷(하루 단위) → 예시.
+     스냅샷·가격 파일은 scripts/fetch_us100*.py 가 화면 모델과 같은 키로 저장한다 */
+  if (snap && snap.quote) { q = Object.assign({}, snap.quote); q.priceSrc = 'snapshot'; }
+  if (d.quote10 && d.quote10.price != null) {
+    q.price = d.quote10.price;
+    if (d.quote10.prevClose != null) q.prevClose = d.quote10.prevClose;
+    if (d.quote10.changePct != null) q.changePct = d.quote10.changePct;
+    if (d.quote10.volume != null) q.volume = d.quote10.volume;
+    q.priceSrc = 'quotes';
+    q.priceAt = d.quote10.asof || (QUOTES_AT ? Math.floor(QUOTES_AT.getTime() / 1000) : null);
+  }
+  if (s) { q = Object.assign(q, s.quote); q.priceSrc = 'live'; }
+  else if (!snap && !d.quote10 && demo) { q = Object.assign({}, demo.quote); q.priceSrc = 'sample'; }
   if (d.tsQuote) ['cap', 'per', 'fwdPer', 'psr', 'pbr', 'evEbitda'].forEach(function (k) {
     if (q[k] == null && d.tsQuote[k] != null) q[k] = d.tsQuote[k];
   });
@@ -1731,6 +1757,10 @@ function modelOf(sym) {
 function badge(id, kind, extra) {
   var b = el(id);
   if (kind === 'live') { b.textContent = extra || t('실시간', 'live'); b.className = 'badge live'; }
+  else if (kind === 'quotes') {
+    b.textContent = extra || t('시세 ' + (ageLabel(QUOTES_AT) || '갱신'), 'quote ' + (ageLabel(QUOTES_AT) || 'updated'));
+    b.className = 'badge orange';
+  }
   else if (kind === 'snapshot') { b.textContent = extra || snapLabel(); b.className = 'badge blue'; }
   else if (kind === 'sample') { b.textContent = extra || t('예시 데이터', 'demo data'); b.className = 'badge sample'; }
   else if (kind === 'partial') { b.textContent = extra || t('일부 항목 미확인', 'partial'); b.className = 'badge est'; }
@@ -1767,12 +1797,13 @@ function renderQuote(M) {
   el('q-change').textContent = (q.change == null ? '—' : (q.change > 0 ? '+' : '') + q.change.toFixed(2) + ' (' + pct(q.changePct) + ')');
   el('q-change').className = 'd ' + signCls(q.changePct);
 
+  var priceAge = q.priceSrc === 'quotes' ? ageLabel(QUOTES_AT) : null;
   var mkState = q.marketState === 'REGULAR' ? t('정규장 진행 중', 'market open')
     : q.marketState === 'CLOSED' ? t('장 마감', 'market closed')
     : q.marketState === 'PRE' ? t('개장 전', 'pre-market')
     : q.marketState === 'POST' ? t('시간외', 'after hours') : null;
   el('q-mkstat').innerHTML = [
-    q.asof ? t('기준 ', 'as of ') + dateTimeFmt(q.asof) : null,
+    priceAge ? t('가격 ', 'price ') + priceAge : (q.asof ? t('기준 ', 'as of ') + dateTimeFmt(q.asof) : null),
     mkState,
     t('통화 ', 'currency ') + (q.currency || 'USD')
   ].filter(Boolean).map(esc).join(' · ');
@@ -1821,7 +1852,8 @@ function renderQuote(M) {
       esc(M.derived.map(function (k) { return (lang === 'en' ? DERIVED_EN : DERIVED_KO)[k] || k; }).join(', ')) +
       '</div>' : '');
 
-  srcBadge('badge-quote', M);
+  if (M.quote.priceSrc === 'quotes' && !M.demo) badge('badge-quote', 'quotes');
+  else srcBadge('badge-quote', M);
 }
 
 function renderValuation(M) {
@@ -2625,8 +2657,10 @@ function renderNews(M) {
    14. 출처 · 진단 · 유의사항
    ============================================================ */
 function renderHeroMeta() {
+  var age = QUOTES_AT ? ageLabel(QUOTES_AT) : null;
   el('hero-asof').textContent = state.asof
-    ? t('조회 기준 ' + dateTimeFmt(Math.floor(state.asof.getTime() / 1000)), 'Retrieved ' + dateTimeFmt(Math.floor(state.asof.getTime() / 1000)))
+    ? t('시세 기준 ' + dateTimeFmt(Math.floor(state.asof.getTime() / 1000)) + (age ? ' (' + age + ')' : ''),
+        'Quotes as of ' + dateTimeFmt(Math.floor(state.asof.getTime() / 1000)) + (age ? ' (' + age + ')' : ''))
     : t('조회 전', 'not retrieved');
   el('hero-src').textContent = SRC.list === 'sample'
     ? t('예시 데이터 표시 중', 'showing demo data')
@@ -2640,6 +2674,7 @@ function renderSources() {
   var st = function (v) {
     if (v === 'live') return '<span class="badge live">' + esc(t('실시간', 'live')) + '</span>';
     if (v === 'ok') return '<span class="badge live">' + esc(t('확보', 'loaded')) + '</span>';
+    if (v === 'quotes') return '<span class="badge orange">' + esc(t('가격 파일 · ' + (ageLabel(QUOTES_AT) || ''), 'quote file · ' + (ageLabel(QUOTES_AT) || ''))) + '</span>';
     if (v === 'snapshot') return '<span class="badge blue">' + esc(snapLabel()) + '</span>';
     if (v === 'partial') return '<span class="badge est">' + esc(t('일부 확인', 'partial')) + '</span>';
     if (v === 'sample') return '<span class="badge sample">' + esc(t('예시', 'demo')) + '</span>';
@@ -2652,6 +2687,11 @@ function renderSources() {
               ' · ' + t(Object.keys(SNAP.companies).length + '개 종목', Object.keys(SNAP.companies).length + ' symbols'))
            : 'data/us100/latest.json',
       SNAP ? 'ok' : null],
+    [t('가격 파일 (장중 10분 주기)', 'Quote file (every ~10 min intraday)'),
+      QUOTES ? ('data/us100/quotes.json · ' + t('수집 ', 'fetched ') + (QUOTES_AT ? dateTimeFmt(Math.floor(QUOTES_AT.getTime() / 1000)) : '?') +
+                ' (' + (ageLabel(QUOTES_AT) || '') + ') · ' + Object.keys(QUOTES.quotes).length + t('개 종목', ' symbols'))
+             : 'data/us100/quotes.json',
+      QUOTES ? 'ok' : null],
     [t('목록 시세 (100개 기업)', 'List quotes (100 companies)'), 'Yahoo Finance spark · Stooq CSV', SRC.list],
     [t('상세 시세 · 일/주/월 차트', 'Detail quote · daily/weekly/monthly chart'), 'Yahoo Finance chart', srcs.chart],
     [t('밸류에이션 · 실적 · 컨센서스', 'Valuation · results · consensus'), 'Yahoo Finance quoteSummary / fundamentals-timeseries', srcs.summary],
@@ -2682,15 +2722,20 @@ function renderSources() {
 
   var box = el('fallback-note');
   box.hidden = !(anySample || anySnapshot);
-  if (!anySample && anySnapshot) {
+  if (!anySample && (anySnapshot || SRC.list === 'quotes')) {
     box.className = 'note-box info';
-    box.innerHTML = '<b>' + esc(t('저장 스냅샷을 보고 있습니다.', 'You are looking at the saved snapshot.')) + '</b> ' +
-      esc(t('브라우저에서 Yahoo·Stooq 로 직접 나가지 못해, GitHub Actions 러너가 받아 저장소에 커밋한 값(' +
-            (snapAsOf() ? dateTimeFmt(Math.floor(snapAsOf().getTime() / 1000)) : '') + ' 수집)을 표시합니다. ' +
-            '실제 수집된 시세이며 예시 값이 아닙니다. 다만 그 시점 기준이므로 장중 가격과는 다릅니다.',
-            'The browser cannot reach Yahoo/Stooq directly, so the screen shows the snapshot a GitHub Actions runner fetched and committed' +
-            (snapAsOf() ? ' at ' + dateTimeFmt(Math.floor(snapAsOf().getTime() / 1000)) : '') +
-            '. These are real fetched quotes, not demo values — but they are as of that time, not intraday.'));
+    var priceLine = QUOTES
+      ? esc(t('가격은 ' + (ageLabel(QUOTES_AT) || '') + ' 수집된 값입니다(장중 10분 주기로 갱신). ',
+              'Prices are from the quote file collected ' + (ageLabel(QUOTES_AT) || '') + ' (refreshed about every 10 minutes during US hours). '))
+      : '';
+    box.innerHTML = '<b>' + esc(t('러너가 받아 둔 값을 보고 있습니다.', 'You are looking at runner-collected data.')) + '</b> ' + priceLine +
+      esc(t('브라우저에서 Yahoo·Stooq 로 직접 나가지 못하는 환경이라, GitHub Actions 러너가 받아 저장소에 커밋한 값을 표시합니다. ' +
+            '지표·실적·컨센서스·일정은 ' + (snapAsOf() ? dateTimeFmt(Math.floor(snapAsOf().getTime() / 1000)) : '') + ' 수집분입니다. ' +
+            '실제 수집된 수치이며 예시 값이 아닙니다.',
+            'This browser cannot reach Yahoo/Stooq directly, so the screen shows what a GitHub Actions runner fetched and committed. ' +
+            'Metrics, results, consensus and calendar are from the snapshot' +
+            (snapAsOf() ? ' collected at ' + dateTimeFmt(Math.floor(snapAsOf().getTime() / 1000)) : '') +
+            '. These are real fetched numbers, not demo values.'));
   } else if (anySample) {
     box.className = 'note-box';
     box.innerHTML = '<b>' + esc(t('예시 데이터가 섞여 있습니다.', 'Demo data is being shown.')) + '</b> ' +
@@ -2776,6 +2821,8 @@ var SNAPSHOT_BASES = [
 var SNAP = null;          // latest.json
 var SNAP_BASE = null;     // 실제로 성공한 경로
 var SNAP_CHART = {};      // sym -> 시계열 원본(일봉/월봉)
+var QUOTES = null;        // quotes.json — 장중 10분 주기로 갱신되는 가격만 담긴 파일
+var QUOTES_AT = null;     // 그 파일의 수집 시각
 
 function fetchQuick(url, ms) {
   return withTimeout(
@@ -2835,6 +2882,68 @@ function applySnapshot() {
   if (state.asof == null && SNAP.fetchedAt) state.asof = new Date(SNAP.fetchedAt);
   renderList(); renderHeroMeta(); renderSources();
   if (CACHE[state.sel]) renderDetail(state.sel);
+}
+
+/** 가격만 담긴 파일. 장중 10분 주기로 러너가 갱신한다(us100-quotes.yml).
+ *  스냅샷(latest.json)보다 최신이므로 가격·등락률은 이쪽을 먼저 쓴다. */
+function loadQuotes() {
+  var bases = SNAP_BASE ? [SNAP_BASE].concat(SNAPSHOT_BASES) : SNAPSHOT_BASES;
+  var tries = bases.map(function (base) {
+    var url = base + 'quotes.json?_ts=' + Date.now();
+    var p = /^https?:/.test(base) ? fetchQuick(url, 7000).catch(function () { return fetchJson(base + 'quotes.json'); })
+                                  : fetchQuick(url, 5000);
+    return p.then(function (j) {
+      if (!j || !j.quotes) throw new Error('가격 파일 형식이 아니다');
+      return j;
+    });
+  });
+  return anyOf(tries).then(function (j) {
+    QUOTES = j;
+    var at = new Date(j.fetchedAt);
+    QUOTES_AT = isNaN(at.getTime()) ? null : at;
+    DIAG.push({ url: 'data/us100/quotes.json', ok: true, via: '가격 파일', len: 0 });
+    applyQuotes();
+    return j;
+  }, function () {
+    DIAG.push({ url: 'data/us100/quotes.json', ok: false, err: '가격 파일 없음' });
+    return null;
+  });
+}
+
+/** 가격 파일을 목록·상세에 반영. 브라우저 직접 조회로 받은 값은 건드리지 않는다. */
+function applyQuotes() {
+  if (!QUOTES) return;
+  if (QUOTES.fx && QUOTES.fx.usdkrw) state.fx = QUOTES.fx.usdkrw;
+  Object.keys(QUOTES.quotes).forEach(function (sym) {
+    var q = QUOTES.quotes[sym] || {};
+    if (q.price == null) return;
+    var l = LIST[sym] || (LIST[sym] = {});
+    if (l.src === 'live' || l.src === 'spark' || l.src === 'stooq') return;   /* 실시간이 이미 있다 */
+    l.price = q.price;
+    l.prevClose = q.prevClose;
+    l.changePct = q.changePct != null ? q.changePct : l.changePct;
+    l.intraday = !!q.intraday;
+    l.src = 'quotes';
+    l.snapFailed = false;
+    l.enriched = true;
+    var d = CACHE[sym] || (CACHE[sym] = { sym: sym, charts: {}, srcs: {}, ts: Date.now() });
+    d.quote10 = q;                    /* modelOf 가 스냅샷보다 우선해 쓴다 */
+  });
+  if (SRC.list !== 'live') SRC.list = 'quotes';
+  if (QUOTES_AT) state.asof = QUOTES_AT;
+  renderList(); renderHeroMeta(); renderSources();
+  if (CACHE[state.sel]) renderDetail(state.sel);
+}
+
+/** "7분 전" 처럼 나이를 적는다 — 예약이 늦어져도 사용자가 스스로 판단할 수 있게 */
+function ageLabel(dt) {
+  if (!dt) return null;
+  var m = Math.floor((Date.now() - dt.getTime()) / 60000);
+  if (m < 1) return t('방금', 'just now');
+  if (m < 60) return t(m + '분 전', m + 'm ago');
+  var h = Math.floor(m / 60), mm = m % 60;
+  if (h < 24) return t(h + '시간 ' + (mm ? mm + '분 ' : '') + '전', h + 'h ' + (mm ? mm + 'm ' : '') + 'ago');
+  return t(Math.floor(h / 24) + '일 전', Math.floor(h / 24) + 'd ago');
 }
 
 /** 종목별 시계열 스냅샷 — 선택한 종목만 받는다 */
@@ -3013,6 +3122,56 @@ function applyLang() {
   document.title = t('미국 100대 기업 시세 조회 | 미래에셋증권', 'US Top 100 Companies | Mirae Asset Securities');
 }
 
+/* ============================================================
+   사내 프록시 · 스냅샷 경로 설정
+   사내에 프록시가 있으면 브라우저가 직접 실시간 시세를 받아올 수 있다.
+   그 주소는 사람마다·회사마다 달라 코드에 박을 수 없으므로 브라우저에 저장한다.
+   ============================================================ */
+var CFG = { proxy: '', base: '' };
+try {
+  CFG.proxy = localStorage.getItem('mas-us100-proxy') || '';
+  CFG.base = localStorage.getItem('mas-us100-base') || '';
+} catch (e) {}
+
+function applyCfg() {
+  if (CFG.proxy && CFG.proxy.indexOf('{url') >= 0) {
+    var tmpl = CFG.proxy;
+    PROXIES.unshift(function (u) {
+      return tmpl.replace('{urlenc}', encodeURIComponent(u)).replace('{url}', u);
+    });
+    PROXY_NAMES.unshift(t('사내 프록시', 'corporate proxy'));
+  }
+  if (CFG.base) {
+    var b = CFG.base.charAt(CFG.base.length - 1) === '/' ? CFG.base : CFG.base + '/';
+    SNAPSHOT_BASES.unshift(b);
+  }
+}
+
+function bindCfg() {
+  var pi = el('cfg-proxy'), bi = el('cfg-base'), msg = el('cfg-msg');
+  if (!pi) return;
+  pi.value = CFG.proxy; bi.value = CFG.base;
+  el('cfg-save').addEventListener('click', function () {
+    var p = pi.value.trim(), b = bi.value.trim();
+    if (p && p.indexOf('{url') < 0) {
+      msg.textContent = t('주소에 {url} 또는 {urlenc} 가 있어야 합니다.', 'The template needs {url} or {urlenc}.');
+      return;
+    }
+    try {
+      localStorage.setItem('mas-us100-proxy', p);
+      localStorage.setItem('mas-us100-base', b);
+    } catch (e) {}
+    msg.textContent = t('저장했습니다. 새 경로로 다시 조회합니다…', 'Saved. Reloading through the new route…');
+    setTimeout(function () { location.reload(); }, 600);
+  });
+  el('cfg-clear').addEventListener('click', function () {
+    try { localStorage.removeItem('mas-us100-proxy'); localStorage.removeItem('mas-us100-base'); } catch (e) {}
+    pi.value = ''; bi.value = '';
+    msg.textContent = t('지웠습니다. 기본 경로로 다시 조회합니다…', 'Cleared. Reloading with the default routes…');
+    setTimeout(function () { location.reload(); }, 600);
+  });
+}
+
 function bindEvents() {
   Array.prototype.forEach.call(document.querySelectorAll('.lang-toggle button'), function (b) {
     b.addEventListener('click', function () {
@@ -3042,6 +3201,7 @@ function bindEvents() {
     CACHE = {}; LIST = {}; SRC = {};
     SNAP_CHART = {};
     applySnapshot();                 /* 스냅샷은 유지 — 실시간이 실패해도 빈 화면이 되지 않게 */
+    loadQuotes();                    /* 러너가 새로 올린 가격이 있으면 바로 반영 */
     loadList().then(function () {
       if (SNAP) return null;
       return enrichVisible(rowsForList().slice(0, Math.min(state.limit, 15)).map(function (r) { return r.sym; }));
@@ -3059,10 +3219,14 @@ function bindEvents() {
     var saved = localStorage.getItem('mas-us100-sel');
     if (saved && company(saved).seq !== 999) state.sel = saved;
   } catch (e) {}
+  applyCfg();
   bindEvents();
   applyLang();
+  bindCfg();
   setDetailLoading(state.sel);
-  /* 러너가 커밋한 스냅샷이 가장 빠르고 확실하다 — 먼저 그린 뒤 실시간으로 덮어쓴다 */
+  /* 러너가 커밋해 둔 값이 가장 빠르고 확실하다. 가격 파일(10분 주기)과 스냅샷(지표·실적)을
+     동시에 받아 먼저 그리고, 브라우저가 야후에 붙을 수 있으면 그 위에 실시간으로 덮어쓴다. */
+  loadQuotes();
   loadSnapshot().then(function (snap) {
     loadDetail(state.sel);
     return loadList().then(function () {
@@ -3071,6 +3235,15 @@ function bindEvents() {
       return enrichVisible(rowsForList().slice(0, Math.min(state.limit, 15)).map(function (r) { return r.sym; }));
     });
   });
+  /* 가격 파일은 1분마다 다시 확인한다(15KB). 러너가 새로 올리면 화면이 스스로 따라간다. */
+  setInterval(function () { if (!document.hidden) loadQuotes(); }, 60000);
+  /* 나이 표시("7분 전")는 30초마다 다시 그린다 */
+  setInterval(function () {
+    if (document.hidden) return;
+    renderHeroMeta();
+    if (CACHE[state.sel]) { renderQuote(modelOf(state.sel)); renderSources(); }
+    renderList();
+  }, 30000);
 })();
 </script>
 
