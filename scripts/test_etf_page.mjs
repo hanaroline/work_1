@@ -833,6 +833,47 @@ if (pdfBtnShown) {
   check('PDF 단추는 PDF 가 실렸을 때만 뜬다', true, '이 파일에는 PDF 가 없다 — 단추 숨김');
 }
 
+// ── 인쇄는 열려 있는 화면 한 장만 담는가
+// 비교 화면을 뽑으려는데 찾기·역조회·랭킹·분류 점검·수익률 기준·사용법까지
+// 일곱 탭이 통째로 나오던 결함이 있었다(@media print 에서 [hidden] 을 풀었다).
+// 눈으로는 인쇄 미리보기를 열기 전까지 안 보이므로 여기서 잡는다.
+await page.emulateMedia({ media: 'print' });
+const TAB_NAMES = await page.evaluate(() =>
+  [...document.querySelectorAll('.tabs button[data-tab]')].map((b) => b.getAttribute('data-tab')));
+check('탭을 찾았다', TAB_NAMES.length >= 2, TAB_NAMES.join(','));
+for (const name of TAB_NAMES) {
+  await page.emulateMedia({ media: 'screen' });          // 탭 누르기는 화면 상태에서
+  await page.locator(`.tabs button[data-tab="${name}"]`).click();
+  await page.waitForTimeout(150);
+  await page.emulateMedia({ media: 'print' });
+  const shown = await page.evaluate(() =>
+    [...document.querySelectorAll('.section[id^="tab-"]')]
+      .filter((s) => getComputedStyle(s).display !== 'none')
+      .map((s) => s.id));
+  check(`인쇄: ${name} 화면만 나온다`,
+        shown.length === 1 && shown[0] === `tab-${name}`, shown.join(',') || '한 장도 없음');
+}
+const printChrome = await page.evaluate(() => {
+  const gone = (sel) => [...document.querySelectorAll(sel)]
+    .every((n) => getComputedStyle(n).display === 'none');
+  return { toolbar: gone('.toolbar'), tabs: gone('.tabs'), take: gone('.take-row') };
+});
+check('인쇄: 도구 막대가 빠진다', printChrome.toolbar);
+check('인쇄: 탭 줄이 빠진다', printChrome.tabs);
+check('인쇄: 종이에서 못 누르는 단추 줄이 빠진다', printChrome.take);
+await page.emulateMedia({ media: 'screen' });
+// 사용법의 "이 화면만 인쇄" 단추가 몸통에 표시를 남기면 다음 인쇄가 망가진다.
+if (TAB_NAMES.includes('howto') && await page.locator('#howto-print').count()) {
+  await page.locator('.tabs button[data-tab="howto"]').click();
+  await page.waitForTimeout(150);
+  await page.evaluate(() => { window.print = () => {}; });   // 인쇄창을 띄우지 않는다
+  await page.locator('#howto-print').click();
+  await page.waitForTimeout(150);
+  check('사용법 인쇄 단추가 몸통에 표시를 남기지 않는다',
+        await page.evaluate(() => document.body.className.trim() === ''),
+        await page.evaluate(() => document.body.className || '(없음)'));
+}
+
 // ── 가로 스크롤이 생기지 않는가 (표는 자기 상자 안에서 스크롤해야 한다)
 for (const width of [1440, 768, 390]) {
   await page.setViewportSize({ width, height: 900 });
