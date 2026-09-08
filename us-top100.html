@@ -502,6 +502,11 @@ footer .disc p{margin:0 0 12px;}
       <label style="display:block; font-size:14px; color:var(--muted); margin:16px 0 6px" data-ko="스냅샷 파일 경로 (data/us100/ 에 해당하는 주소)" data-en="Snapshot base URL (folder that holds data/us100 files)">스냅샷 파일 경로 (data/us100/ 에 해당하는 주소)</label>
       <input id="cfg-base" type="url" placeholder="https://intra.example.com/us100/"
              style="width:100%; font-family:var(--font-num); font-size:15px; padding:11px 13px; border:1px solid var(--hairline); border-radius:2px">
+      <label class="chk" style="display:inline-flex; align-items:center; gap:8px; margin-top:16px; font-size:16px; cursor:pointer">
+        <input type="checkbox" id="cfg-stream" style="width:17px; height:17px; accent-color:var(--orange)">
+        <span data-ko="실시간 스트리밍 사용 (wss://streamer.finance.yahoo.com — 막히면 자동으로 아래 경로를 씁니다)"
+              data-en="Use live streaming (wss://streamer.finance.yahoo.com — falls back automatically if blocked)">실시간 스트리밍 사용 (wss://streamer.finance.yahoo.com — 막히면 자동으로 아래 경로를 씁니다)</span>
+      </label>
       <div style="display:flex; gap:10px; margin-top:14px; flex-wrap:wrap">
         <button class="btn primary" type="button" id="cfg-save" data-ko="저장하고 다시 조회" data-en="Save and reload data">저장하고 다시 조회</button>
         <button class="btn" type="button" id="cfg-clear" data-ko="지우기" data-en="Clear">지우기</button>
@@ -1424,9 +1429,10 @@ function loadList() {
     return map;
   }).catch(function () {
     /* 목록 시세 실패 → 러너 스냅샷이 있으면 그것으로 목록을 채운다 */
-    if (SNAP) {
-      SRC.list = 'snapshot';
+    if (QUOTES || SNAP) {
+      SRC.list = QUOTES ? 'quotes' : 'snapshot';
       applySnapshot();
+      applyQuotes();          /* 가격은 스냅샷보다 가격 파일이 최신이다 */
       return;
     }
     /* 스냅샷도 없으면 예시 값으로 목록 구조를 유지 */
@@ -1583,10 +1589,12 @@ function renderList() {
   var missing = shown.filter(function (r) { return r.cap == null; }).length;
   var intraday = shown.filter(function (r) { return r.intraday; }).length;
   var failed = rowsForList().filter(function (r) { return r.failed; });
-  if (SRC.list === 'sample') badge('badge-list', 'sample');
-  else if (SRC.list === 'live') badge('badge-list', 'live');
-  else if (SRC.list === 'quotes') badge('badge-list', 'quotes');
-  else if (SRC.list === 'snapshot') badge('badge-list', 'snapshot');
+  /* 배지는 목록에 실제로 들어간 값의 출처를 따른다(신선한 것부터) */
+  if (SRC.list === 'live') badge('badge-list', 'live');
+  else if (streamLive()) badge('badge-list', 'stream');
+  else if (QUOTES) badge('badge-list', 'quotes');
+  else if (SNAP) badge('badge-list', 'snapshot');
+  else if (SRC.list === 'sample') badge('badge-list', 'sample');
   else badge('badge-list', null, t('조회 중', 'loading'));
 
   el('list-note').innerHTML = (SRC.list === 'sample'
@@ -1660,13 +1668,26 @@ function modelOf(sym) {
   /* 우선순위: 실시간 quoteSummary → 가격 파일(10분 주기) → 스냅샷(하루 단위) → 예시.
      스냅샷·가격 파일은 scripts/fetch_us100*.py 가 화면 모델과 같은 키로 저장한다 */
   if (snap && snap.quote) { q = Object.assign({}, snap.quote); q.priceSrc = 'snapshot'; }
-  if (d.quote10 && d.quote10.price != null) {
+  if (d.tick && d.tick.price != null) {
+    q.price = d.tick.price;
+    if (d.tick.prevClose != null) q.prevClose = d.tick.prevClose;
+    if (d.tick.changePct != null) q.changePct = d.tick.changePct;
+    if (d.tick.volume != null) q.volume = d.tick.volume;
+    q.priceSrc = 'stream';
+    q.priceAt = d.tick.ts;
+  } else if (d.quote10 && d.quote10.price != null) {
     q.price = d.quote10.price;
     if (d.quote10.prevClose != null) q.prevClose = d.quote10.prevClose;
     if (d.quote10.changePct != null) q.changePct = d.quote10.changePct;
     if (d.quote10.volume != null) q.volume = d.quote10.volume;
     q.priceSrc = 'quotes';
     q.priceAt = d.quote10.asof || (QUOTES_AT ? Math.floor(QUOTES_AT.getTime() / 1000) : null);
+  }
+  /* 가격 파일에는 시가총액·PER·장 상태도 함께 온다 — 스냅샷보다 최신이므로 덮어쓴다 */
+  if (d.quote10) {
+    if (d.quote10.cap != null) q.cap = d.quote10.cap;
+    if (d.quote10.per != null) q.per = d.quote10.per;
+    if (d.quote10.marketState) q.marketState = d.quote10.marketState;
   }
   if (s) { q = Object.assign(q, s.quote); q.priceSrc = 'live'; }
   else if (!snap && !d.quote10 && demo) { q = Object.assign({}, demo.quote); q.priceSrc = 'sample'; }
@@ -1760,6 +1781,10 @@ function modelOf(sym) {
 function badge(id, kind, extra) {
   var b = el(id);
   if (kind === 'live') { b.textContent = extra || t('실시간', 'live'); b.className = 'badge live'; }
+  else if (kind === 'stream') {
+    b.textContent = extra || t('실시간 스트리밍', 'live stream');
+    b.className = 'badge live';
+  }
   else if (kind === 'quotes') {
     b.textContent = extra || t('시세 ' + (ageLabel(QUOTES_AT) || '갱신'), 'quote ' + (ageLabel(QUOTES_AT) || 'updated'));
     b.className = 'badge orange';
@@ -1800,7 +1825,8 @@ function renderQuote(M) {
   el('q-change').textContent = (q.change == null ? '—' : (q.change > 0 ? '+' : '') + q.change.toFixed(2) + ' (' + pct(q.changePct) + ')');
   el('q-change').className = 'd ' + signCls(q.changePct);
 
-  var priceAge = q.priceSrc === 'quotes' ? ageLabel(QUOTES_AT) : null;
+  var priceAge = q.priceSrc === 'stream' ? t('실시간 스트리밍 · ' + (ageLabel(STREAM.last) || ''), 'live stream · ' + (ageLabel(STREAM.last) || ''))
+    : q.priceSrc === 'quotes' ? ageLabel(QUOTES_AT) : null;
   var mkState = q.marketState === 'REGULAR' ? t('정규장 진행 중', 'market open')
     : q.marketState === 'CLOSED' ? t('장 마감', 'market closed')
     : q.marketState === 'PRE' ? t('개장 전', 'pre-market')
@@ -1855,7 +1881,8 @@ function renderQuote(M) {
       esc(M.derived.map(function (k) { return (lang === 'en' ? DERIVED_EN : DERIVED_KO)[k] || k; }).join(', ')) +
       '</div>' : '');
 
-  if (M.quote.priceSrc === 'quotes' && !M.demo) badge('badge-quote', 'quotes');
+  if (M.quote.priceSrc === 'stream' && streamLive()) badge('badge-quote', 'stream');
+  else if (M.quote.priceSrc === 'quotes' && !M.demo) badge('badge-quote', 'quotes');
   else srcBadge('badge-quote', M);
 }
 
@@ -2677,6 +2704,7 @@ function renderSources() {
   var st = function (v) {
     if (v === 'live') return '<span class="badge live">' + esc(t('실시간', 'live')) + '</span>';
     if (v === 'ok') return '<span class="badge live">' + esc(t('확보', 'loaded')) + '</span>';
+    if (v === 'streaming') return '<span class="badge live">' + esc(t('수신 중', 'streaming')) + '</span>';
     if (v === 'quotes') return '<span class="badge orange">' + esc(t('가격 파일 · ' + (ageLabel(QUOTES_AT) || ''), 'quote file · ' + (ageLabel(QUOTES_AT) || ''))) + '</span>';
     if (v === 'snapshot') return '<span class="badge blue">' + esc(snapLabel()) + '</span>';
     if (v === 'partial') return '<span class="badge est">' + esc(t('일부 확인', 'partial')) + '</span>';
@@ -2690,6 +2718,14 @@ function renderSources() {
               ' · ' + t(Object.keys(SNAP.companies).length + '개 종목', Object.keys(SNAP.companies).length + ' symbols'))
            : 'data/us100/latest.json',
       SNAP ? 'ok' : null],
+    [t('실시간 스트리밍 (WebSocket)', 'Live stream (WebSocket)'),
+      'wss://streamer.finance.yahoo.com' +
+        (STREAM.ticks ? ' · ' + t(STREAM.ticks + '건 수신', STREAM.ticks + ' ticks') +
+          (STREAM.last ? ' · ' + t('마지막 ', 'last ') + (ageLabel(STREAM.last) || '') : '') +
+          (STREAM.bad ? ' · ' + t('검사 탈락 ' + STREAM.bad + '건', STREAM.bad + ' rejected') : '')
+         : (STREAM.on ? ' · ' + t('연결 시도 중 / 방화벽에 막히면 아래 경로를 씁니다', 'connecting — falls back to the routes below if blocked')
+                      : ' · ' + t('꺼둠', 'off'))),
+      streamLive() ? 'streaming' : null],
     [t('가격 파일 (장중 10분 주기)', 'Quote file (every ~10 min intraday)'),
       QUOTES ? ('data/us100/quotes.json · ' + t('수집 ', 'fetched ') + (QUOTES_AT ? dateTimeFmt(Math.floor(QUOTES_AT.getTime() / 1000)) : '?') +
                 ' (' + (ageLabel(QUOTES_AT) || '') + ') · ' + Object.keys(QUOTES.quotes).length + t('개 종목', ' symbols'))
@@ -2938,6 +2974,134 @@ function applyQuotes() {
   if (CACHE[state.sel]) renderDetail(state.sel);
 }
 
+/* ============================================================
+   실시간 스트리밍 (야후 스트리머)
+   **WebSocket 은 CORS 를 받지 않는다.** 그래서 정적 HTML 에서도 붙을 수 있고,
+   붙으면 10분 주기 파일이 아니라 진짜 틱을 받는다. 사내 방화벽이 wss 를 막으면
+   조용히 실패하고 아래 경로(가격 파일)가 그대로 화면을 채운다.
+
+   프레임은 base64 로 감싼 protobuf 다. 라이브러리 없이 최소 디코더를 직접 쓰되,
+   **잘못 디코딩한 값이 화면에 나가지 않도록 두 가지를 검사한다.**
+     ① 필드 1 이 우리가 아는 심볼 문자열이어야 한다(레이아웃이 맞았다는 증거)
+     ② 가격이 이미 아는 기준가의 ±25% 안이어야 한다(엉뚱한 필드를 읽었는지 걸러낸다)
+   ============================================================ */
+var STREAM = { ws: null, on: true, ticks: 0, bad: 0, last: null, tries: 0, timer: null, dirty: {} };
+try { STREAM.on = localStorage.getItem('mas-us100-stream') !== 'off'; } catch (e) {}
+
+function b64ToBytes(b64) {
+  var raw = atob(b64), out = new Uint8Array(raw.length);
+  for (var i = 0; i < raw.length; i++) out[i] = raw.charCodeAt(i);
+  return out;
+}
+/** protobuf 최소 디코더 — 필드번호 → 값 */
+function decodePb(bytes) {
+  var i = 0, out = {}, dv = new DataView(bytes.buffer, bytes.byteOffset, bytes.byteLength);
+  function varint() {
+    var shift = 0, result = 0;
+    while (i < bytes.length) {
+      var b = bytes[i++];
+      result += (b & 0x7f) * Math.pow(2, shift);
+      if (!(b & 0x80)) break;
+      shift += 7;
+      if (shift > 63) break;
+    }
+    return result;
+  }
+  while (i < bytes.length) {
+    var key = varint(), field = key >>> 3, wt = key & 7, v;
+    if (wt === 0) v = varint();
+    else if (wt === 5) { if (i + 4 > bytes.length) break; v = dv.getFloat32(i, true); i += 4; }
+    else if (wt === 1) { if (i + 8 > bytes.length) break; v = dv.getFloat64(i, true); i += 8; }
+    else if (wt === 2) {
+      var len = varint();
+      if (i + len > bytes.length) break;
+      v = new TextDecoder('utf-8').decode(bytes.subarray(i, i + len));
+      i += len;
+    } else break;
+    if (out[field] === undefined) out[field] = v;
+  }
+  return out;
+}
+
+function streamStart() {
+  if (!STREAM.on || typeof WebSocket === 'undefined') return;
+  if (STREAM.ws && (STREAM.ws.readyState === 0 || STREAM.ws.readyState === 1)) return;
+  var syms = COMPANIES.map(function (c) { return c[0]; });
+  var ws;
+  try { ws = new WebSocket('wss://streamer.finance.yahoo.com/?version=2'); }
+  catch (e) { DIAG.push({ url: 'wss://streamer.finance.yahoo.com', ok: false, err: String(e) }); return; }
+  STREAM.ws = ws;
+  ws.onopen = function () {
+    STREAM.tries = 0;
+    try { ws.send(JSON.stringify({ subscribe: syms })); } catch (e) {}
+    DIAG.push({ url: 'wss://streamer.finance.yahoo.com', ok: true, via: t('스트리밍 연결', 'stream open'), len: syms.length });
+    renderSources();
+  };
+  ws.onmessage = function (ev) {
+    var payload = ev.data;
+    if (typeof payload !== 'string') return;
+    /* version=2 는 {"message":"<base64>"} 로 감싸 보낸다. v1 은 base64 문자열 그대로다. */
+    if (payload.charAt(0) === '{') {
+      try {
+        var j = JSON.parse(payload);
+        payload = j.message || j.data || '';
+      } catch (e) { return; }
+    }
+    if (!payload) return;
+    var pb;
+    try { pb = decodePb(b64ToBytes(payload)); } catch (e) { STREAM.bad++; return; }
+    onTick(pb);
+  };
+  ws.onerror = function () { DIAG.push({ url: 'wss://streamer.finance.yahoo.com', ok: false, err: t('연결 실패(방화벽일 수 있음)', 'connect failed (firewall?)') }); };
+  ws.onclose = function () {
+    /* 몇 번은 다시 붙어 본다. 막힌 환경에서 무한 재시도하지 않는다. */
+    if (!STREAM.on || STREAM.tries >= 3) return;
+    STREAM.tries++;
+    setTimeout(streamStart, 3000 * STREAM.tries);
+  };
+}
+
+/** 틱 한 건. 검사를 통과한 것만 화면에 반영한다. */
+function onTick(pb) {
+  var sym = pb[1], price = pb[2];
+  if (typeof sym !== 'string' || company(sym).seq === 999) { STREAM.bad++; return; }   /* ① 심볼 검사 */
+  if (typeof price !== 'number' || !(price > 0)) { STREAM.bad++; return; }
+  var l = LIST[sym] || (LIST[sym] = {});
+  var ref = l.price != null ? l.price
+    : (QUOTES && QUOTES.quotes[sym] && QUOTES.quotes[sym].price != null) ? QUOTES.quotes[sym].price
+    : (SNAP && SNAP.companies[sym] && SNAP.companies[sym].quote) ? SNAP.companies[sym].quote.price : null;
+  if (ref && Math.abs(price - ref) / ref > 0.25) { STREAM.bad++; return; }             /* ② 가격 검사 */
+
+  var prev = (typeof pb[16] === 'number' && pb[16] > 0) ? pb[16] : l.prevClose;
+  l.price = +price.toFixed(4);
+  if (prev) { l.prevClose = prev; l.changePct = ((price - prev) / prev) * 100; }
+  else if (typeof pb[8] === 'number') l.changePct = pb[8];
+  if (typeof pb[9] === 'number' && pb[9] > 0) l.volume = pb[9];
+  l.src = 'stream'; l.intraday = false; l.snapFailed = false; l.enriched = true;
+
+  var d = CACHE[sym] || (CACHE[sym] = { sym: sym, charts: {}, srcs: {}, ts: Date.now() });
+  d.tick = { price: l.price, prevClose: l.prevClose, changePct: l.changePct, volume: l.volume,
+    ts: typeof pb[3] === 'number' ? Math.floor(pb[3] / 1000) : Math.floor(Date.now() / 1000),
+    marketHours: pb[7] };
+
+  STREAM.ticks++; STREAM.last = new Date(); STREAM.dirty[sym] = 1;
+  /* 틱마다 다시 그리면 100종목에서 화면이 버벅인다 — 1.5초로 모아 그린다 */
+  if (!STREAM.timer) {
+    STREAM.timer = setTimeout(function () {
+      STREAM.timer = null; STREAM.dirty = {};
+      SRC.list = 'stream';
+      renderList(); renderHeroMeta();
+      if (CACHE[state.sel] && CACHE[state.sel].tick) renderQuote(modelOf(state.sel));
+      renderSources();
+    }, 1500);
+  }
+}
+
+/** 스트리밍이 지금 살아 있는가 — 60초 안에 검사를 통과한 틱이 있었는지로 본다 */
+function streamLive() {
+  return !!(STREAM.last && (Date.now() - STREAM.last.getTime()) < 60000);
+}
+
 /** "7분 전" 처럼 나이를 적는다 — 예약이 늦어져도 사용자가 스스로 판단할 수 있게 */
 function ageLabel(dt) {
   if (!dt) return null;
@@ -3154,8 +3318,11 @@ function bindCfg() {
   var pi = el('cfg-proxy'), bi = el('cfg-base'), msg = el('cfg-msg');
   if (!pi) return;
   pi.value = CFG.proxy; bi.value = CFG.base;
+  var si = el('cfg-stream');
+  if (si) si.checked = STREAM.on;
   el('cfg-save').addEventListener('click', function () {
     var p = pi.value.trim(), b = bi.value.trim();
+    try { localStorage.setItem('mas-us100-stream', (si && si.checked) ? 'on' : 'off'); } catch (e) {}
     if (p && p.indexOf('{url') < 0) {
       msg.textContent = t('주소에 {url} 또는 {urlenc} 가 있어야 합니다.', 'The template needs {url} or {urlenc}.');
       return;
@@ -3205,6 +3372,7 @@ function bindEvents() {
     SNAP_CHART = {};
     applySnapshot();                 /* 스냅샷은 유지 — 실시간이 실패해도 빈 화면이 되지 않게 */
     loadQuotes();                    /* 러너가 새로 올린 가격이 있으면 바로 반영 */
+    STREAM.tries = 0; streamStart();  /* 스트리밍이 끊겨 있었으면 다시 붙어 본다 */
     loadList().then(function () {
       if (SNAP) return null;
       return enrichVisible(rowsForList().slice(0, Math.min(state.limit, 15)).map(function (r) { return r.sym; }));
@@ -3230,6 +3398,7 @@ function bindEvents() {
   /* 러너가 커밋해 둔 값이 가장 빠르고 확실하다. 가격 파일(10분 주기)과 스냅샷(지표·실적)을
      동시에 받아 먼저 그리고, 브라우저가 야후에 붙을 수 있으면 그 위에 실시간으로 덮어쓴다. */
   loadQuotes();
+  streamStart();          /* WebSocket 은 CORS 를 받지 않아 정적 페이지에서도 붙는다 */
   loadSnapshot().then(function (snap) {
     loadDetail(state.sel);
     return loadList().then(function () {
