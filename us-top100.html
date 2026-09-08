@@ -1727,8 +1727,10 @@ function srcBadge(id, M, haveData) {
   if (M.pending.summary && M.srcs.summary == null) { badge(id, null, t('조회 중', 'loading')); return; }
   if (haveData === false) { badge(id, 'none'); return; }   /* 예시로도 만들지 않는 항목(일정·이력 등) */
   if (M.demo) { badge(id, 'sample'); return; }
-  if (M.srcs.summary === 'partial') { badge(id, 'partial'); return; }
+  /* 스냅샷이 채운 화면이면 스냅샷으로 적는다 — 실시간 timeseries 가 일부만 채운 경우보다
+     스냅샷이 더 완전하고, 사용자가 보는 값의 출처도 스냅샷이다 */
   if (M.snapshot) { badge(id, 'snapshot'); return; }
+  if (M.srcs.summary === 'partial') { badge(id, 'partial'); return; }
   badge(id, M.srcs.summary === 'live' ? 'live' : 'none');
 }
 
@@ -2239,10 +2241,13 @@ function renderFinChart(M) {
       (hasEps ? '<td class="num">' + (r.eps == null ? '—' : '$' + Number(r.eps).toFixed(2)) + '</td>' : '') +
       '<td class="num ' + signCls(yoy) + '">' + (yoy == null ? '—' : pct(yoy, 1)) + '</td></tr>';
   }).join('') + '</tbody>';
+  var noOp = !rows.some(function (r) { return r.op != null; });
   el('t-fin').innerHTML = head + body + '<caption>' +
     esc(state.finBasis === 'quarterly'
       ? t('분기 손익계산서. 전분기 대비가 아닌 표 안 직전 행 대비 증감입니다.', 'Quarterly income statement; the last column compares with the previous row.')
       : t('연간 손익계산서(회계연도 기준). 회사의 회계연도는 달력 연도와 다를 수 있습니다.', 'Annual income statement on the company fiscal year, which may differ from the calendar year.')) +
+    (noOp ? ' ' + esc(t('은행·보험 등 금융업은 영업이익 항목이 제공되지 않는 경우가 많습니다.',
+      'Banks and insurers often do not report an operating income line in this data set.')) : '') +
     '</caption>';
   srcBadge('badge-fin', M, true);
 }
@@ -2347,7 +2352,10 @@ function renderRatingChart(M) {
   el('legend-rating').innerHTML = defs.map(function (def) {
     var n = d[def.k] || 0;
     return '<span><i style="background:' + def.color + '"></i>' + esc(lang === 'en' ? def.en : def.ko) + ' ' + n + '</span>';
-  }).join('');
+  }).join('') +
+  /* 위 표의 "커버리지"와 기관 수가 다를 수 있다 — 목표주가 제출 기관과 의견 분포 집계가 서로 다른 필드다 */
+  '<span>' + esc(t('의견 분포와 위 표의 커버리지는 집계 필드가 달라 기관 수가 다를 수 있습니다.',
+    'The rating mix and the coverage count above come from different fields, so the analyst counts can differ.')) + '</span>';
 }
 </script>
 <script>
@@ -2370,10 +2378,11 @@ function renderCalendar(M) {
     var kind = (cal.estimate && spanDays > 0)
       ? t('추정 구간 (회사 확정 공지 전)', 'estimated window (not yet confirmed)')
       : t('발표 예정일', 'scheduled date');
+    /* 시각은 적지 않는다. 제공사의 발표일 타임스탬프는 대개 형식상의 시각(정오 UTC 등)이어서
+       그대로 옮기면 콜 시각처럼 읽힌다. 실제 시각은 회사 IR 공지가 원문이다. */
     el('c-date-note').innerHTML =
       esc(kind) + ' · ' + esc(dd == null ? '' : dd >= 0 ? t('D-' + dd, 'in ' + dd + ' days') : t(Math.abs(dd) + '일 전 발표', Math.abs(dd) + ' days ago')) +
-      /* 추정 구간에는 시각 정보가 없다(제공사가 날짜만 준다). 시각을 붙이면 확정처럼 읽히므로 뺀다 */
-      (spanDays > 0 ? '' : '<br>' + esc(t('표시 시각(현재 시간대 기준): ', 'Shown in your local time zone: ')) + esc(dateTimeFmt(pick[0])));
+      '<br>' + esc(t('시각은 회사 IR 공지에서 확인하세요(아래 링크).', 'Check the exact time on the company IR page (links below).'));
   }
 
   var epsN = null;
@@ -2428,8 +2437,11 @@ function renderCalendar(M) {
   /* 배당 일정 */
   var divs = (M.chart && M.chart.divs) || [];
   var rows = [];
-  if (cal.exDiv) rows.push([t('다음 배당락일', 'Next ex-dividend date'), dateFmt(cal.exDiv), '']);
-  if (cal.divPay) rows.push([t('배당 지급일', 'Dividend payment date'), dateFmt(cal.divPay), '']);
+  /* 야후의 exDividendDate·dividendDate 는 다음 일정이 아니라 직전 일정일 때가 많다.
+     지금과 견줘 라벨을 정한다 — "다음"이라고 적어 두면 지난 날짜가 예정처럼 읽힌다. */
+  var future = function (ts) { return ts * 1000 > Date.now(); };
+  if (cal.exDiv) rows.push([future(cal.exDiv) ? t('다음 배당락일', 'Next ex-dividend date') : t('직전 배당락일', 'Last ex-dividend date'), dateFmt(cal.exDiv), '']);
+  if (cal.divPay) rows.push([future(cal.divPay) ? t('배당 지급 예정일', 'Next dividend payment') : t('직전 배당 지급일', 'Last dividend payment'), dateFmt(cal.divPay), '']);
   if (M.quote.divRate != null) rows.push([t('주당 배당금(연)', 'Annual dividend / share'), '$' + M.quote.divRate.toFixed(2),
     M.quote.divYield == null ? '' : t('배당수익률 ' + M.quote.divYield.toFixed(2) + '%', 'yield ' + M.quote.divYield.toFixed(2) + '%')]);
   divs.slice(0, 4).forEach(function (d) {
@@ -2519,7 +2531,7 @@ function renderEvents(M) {
         : t('실적 발표 예정', 'Earnings report expected') });
   }
   if (cal.exDiv) items.push({ ts: cal.exDiv, kind: t('배당', 'Dividend'), upcoming: cal.exDiv * 1000 > Date.now(),
-    text: t('배당락일', 'Ex-dividend date') });
+    text: t('배당락일', 'Ex-dividend date'), dedupe: 'exdiv' });
   if (cal.divPay) items.push({ ts: cal.divPay, kind: t('배당', 'Dividend'), upcoming: cal.divPay * 1000 > Date.now(),
     text: t('배당 지급일', 'Dividend payment date') });
   ((M.chart && M.chart.divs) || []).slice(0, 3).forEach(function (d) {
@@ -2540,6 +2552,13 @@ function renderEvents(M) {
               'Reported EPS $' + (r.act == null ? '—' : r.act.toFixed(2)) + ' (surprise ' + (r.surprise == null ? '—' : pct(r.surprise, 1)) + ')') });
   });
 
+  /* 배당락일이 과거 배당 목록과 같은 날이면 한 줄만 남긴다 */
+  items = items.filter(function (it, i) {
+    if (it.dedupe !== 'exdiv') return true;
+    return !items.some(function (o, j) {
+      return j !== i && o.dedupe !== 'exdiv' && Math.abs(o.ts - it.ts) < 86400 && o.kind === it.kind;
+    });
+  });
   items.sort(function (a, b) { return b.ts - a.ts; });
   var list = el('event-list');
   if (!items.length) {
