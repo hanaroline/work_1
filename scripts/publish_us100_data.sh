@@ -23,6 +23,15 @@ BRANCH="${US100_DATA_BRANCH:-us100-data}"
 LABEL="${COMMIT_LABEL:-갱신}"
 SRC="data/us100"
 
+# 이 브랜치에 두는 것은 아래 셋뿐이다. 그 밖의 것(안내 파일 movedTo, REFRESH 트리거,
+# README)은 코드 브랜치에 사는 파일이므로 데이터 브랜치로 새어 나가면 안 된다.
+KEEP_FILES="${KEEP_FILES:-quotes.json latest.json chart}"
+# 이번 실행이 만든 것만 갈아끼운다. 나머지는 브랜치에 있는 것을 그대로 보존한다.
+#   전체 수집:  PUBLISH_FILES="latest.json chart"
+#   가격 갱신:  PUBLISH_FILES="quotes.json"
+PUBLISH_FILES="${PUBLISH_FILES:-}"
+[ -n "$PUBLISH_FILES" ] || { echo "PUBLISH_FILES 를 지정해야 한다(이번 실행이 만든 파일)" >&2; exit 2; }
+
 [ -d "$SRC" ] || { echo "$SRC 가 없다 — 수집이 먼저다" >&2; exit 1; }
 
 GITDIR="$(git rev-parse --absolute-git-dir)"   # 별도 인덱스로 트리를 만들 때 쓴다
@@ -38,7 +47,15 @@ TMP="$(mktemp -d)"
 MINE="$TMP/mine"
 trap 'rm -rf "$TMP"' EXIT
 mkdir -p "$MINE"
-cp -a "$SRC/." "$MINE/"
+for f in $PUBLISH_FILES; do
+  if [ -e "$SRC/$f" ]; then
+    cp -a "$SRC/$f" "$MINE/"
+  else
+    echo "$SRC/$f 가 없다 — 수집이 먼저다" >&2
+    exit 1
+  fi
+done
+echo "올릴 것: $(cd "$MINE" && find . -type f | wc -l)개 파일 ($PUBLISH_FILES)"
 
 for attempt in 1 2 3 4; do
   # 러너의 체크아웃은 단일 브랜치 얕은 복제라 `git fetch origin <브랜치>` 만으로는
@@ -58,9 +75,13 @@ for attempt in 1 2 3 4; do
   STAGE="$TMP/stage"
   rm -rf "$STAGE"; mkdir -p "$STAGE/$SRC"
   if [ -n "$BASE" ]; then
-    git archive "$BASE" 2>/dev/null | tar -x -C "$STAGE" || true
+    HYD="$TMP/hyd"; rm -rf "$HYD"; mkdir -p "$HYD"
+    git archive "$BASE" 2>/dev/null | tar -x -C "$HYD" || true
+    # 허용된 것만 가져온다 — 브랜치에 잘못 들어간 파일은 이 단계에서 정리된다
+    for f in $KEEP_FILES; do
+      [ -e "$HYD/$SRC/$f" ] && cp -a "$HYD/$SRC/$f" "$STAGE/$SRC/"
+    done
   fi
-  mkdir -p "$STAGE/$SRC"
   cp -a "$MINE/." "$STAGE/$SRC/"
 
   # (3) data/us100 만 담은 부모 없는 커밋 — 별도 인덱스에 STAGE 를 담아 트리를 만든다

@@ -57,6 +57,7 @@ jobs:
         # 스크립트가 브랜치에서 받아 그대로 보존한다.
         env:
           COMMIT_LABEL: 가격
+          PUBLISH_FILES: quotes.json
         run: bash scripts/publish_us100_data.sh
 
       - name: 요약
