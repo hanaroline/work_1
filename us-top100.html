@@ -1198,6 +1198,41 @@ var PROFILE_KO = {
 /* ------------------------------------------------------------
    1. 언어 / 상태
    ------------------------------------------------------------ */
+/* ------------------------------------------------------------
+   저장된 화면 설정과 "파일 판"
+   브라우저는 file:// 로 연 로컬 HTML 을 하나의 저장소로 묶는다. 그래서 새로 내려받은
+   파일도 이전 파일이 남긴 관심종목·비교 선택을 그대로 물려받는다 — 새 파일을 열었는데
+   체크가 되어 있는 이유가 그것이다.
+   그래서 **이 파일을 처음 열 때는 저장된 화면 설정을 비우고 시작한다.** 같은 파일을
+   계속 쓰는 동안에는 그대로 기억한다(그때는 사용자가 고른 것이 맞다).
+   "처음"의 기준은 판 문자열 + 파일 경로다. 새로 내려받은 파일은 판이 다르거나
+   (같은 판이어도) 이름이 "us-top100 (1).html" 처럼 달라지므로 처음 상태로 열린다.
+   ------------------------------------------------------------ */
+var BUILD = '2026-09-09.1';
+var STORE_KEYS = ['mas-us100-lang', 'mas-us100-favs', 'mas-us100-sel', 'mas-us100-auto',
+  'mas-us100-ind', 'mas-us100-cmp', 'mas-us100-cmp-range', 'mas-us100-cmp-sets',
+  'mas-us100-proxy', 'mas-us100-base', 'mas-us100-stream'];
+var WIPED_KEYS = [];              // 이번에 비운 것들(안내 문구에 쓴다)
+function buildStamp() {
+  var where = '';
+  try {
+    where = location.protocol === 'file:' ? (location.pathname || '')
+      : (location.origin || '') + (location.pathname || '');
+  } catch (e) {}
+  return BUILD + '|' + where;
+}
+(function () {
+  try {
+    var now = buildStamp();
+    if (localStorage.getItem('mas-us100-build') === now) return;
+    STORE_KEYS.forEach(function (k) {
+      if (localStorage.getItem(k) != null) WIPED_KEYS.push(k);
+      localStorage.removeItem(k);
+    });
+    localStorage.setItem('mas-us100-build', now);
+  } catch (e) {}
+})();
+
 var lang = 'ko';
 try { lang = localStorage.getItem('mas-us100-lang') || 'ko'; } catch (e) {}
 function t(ko, en) { return lang === 'en' ? en : ko; }
@@ -3899,8 +3934,8 @@ function renderDetail(sym) {
   renderEvents(M);
   renderNews(M);
   renderSources();
-  document.title = t(coName(M.co) + ' (' + sym + ') · 미국 100대 기업 시세 조회',
-    coName(M.co) + ' (' + sym + ') · US Top 100 Companies');
+  /* 탭 제목은 화면 이름으로 고정한다 — 고른 종목을 넣으면 탭·즐겨찾기·인쇄 머리글에
+     그때 보던 종목이 남아, 즐겨찾기 이름이 "린데(LIN) …" 처럼 굳어 버린다. */
 }
 </script>
 <script>
@@ -5392,14 +5427,11 @@ function bindCfg() {
    브라우저에 남는 것 · 초기화
    이 화면은 관심종목·비교 담은 종목·언어 같은 선택을 브라우저(localStorage)에
    기억한다. 그런데 **file:// 로 연 로컬 파일들은 브라우저가 같은 저장소로 묶는다** —
-   새로 내려받은 파일(ustop100 (4).html)도 이전 파일이 남긴 설정을 그대로 물려받는다.
-   기억하는 것 자체는 편의지만, 몰래 물려받으면 "왜 체크가 되어 있지?"가 된다.
-   그래서 ① 불러온 것이 있으면 목록 위에 밝히고 ② 한 번에 지울 수 있게 한다.
+   그냥 두면 새로 내려받은 파일(ustop100 (4).html)도 이전 파일이 남긴 설정을 그대로
+   물려받아 "왜 체크가 되어 있지?"가 된다. 그래서 위쪽 판 스탬프(BUILD + 파일 경로)로
+   **처음 여는 파일은 비우고 시작하고**, 여기서는 ① 불러온 것이 있으면 목록 위에
+   밝히고 ② 무엇을 비웠는지도 밝히고 ③ 한 번에 지울 수 있게 한다.
    ============================================================ */
-var STORE_KEYS = ['mas-us100-lang', 'mas-us100-favs', 'mas-us100-sel', 'mas-us100-auto',
-  'mas-us100-ind', 'mas-us100-cmp', 'mas-us100-cmp-range', 'mas-us100-cmp-sets',
-  'mas-us100-proxy', 'mas-us100-base', 'mas-us100-stream'];
-
 /** 이번에 브라우저에서 불러온 것들을 사람 말로 적는다(없으면 빈 배열) */
 function restoredBits() {
   var out = [];
@@ -5418,9 +5450,35 @@ function restoredBits() {
   return out;
 }
 
+/** 첫 실행이라 비운 것들을 사람 말로 적는다(WIPED_KEYS → 이름). 같은 이름은 한 번만. */
+function wipedBits() {
+  var name = {
+    'mas-us100-favs': t('관심종목', 'watchlist'),
+    'mas-us100-sel': t('마지막에 본 종목', 'last viewed'),
+    'mas-us100-cmp': t('비교 선택', 'comparison picks'),
+    'mas-us100-cmp-range': t('비교 선택', 'comparison picks'),
+    'mas-us100-cmp-sets': t('저장한 비교 조합', 'saved comparison sets'),
+    'mas-us100-ind': t('보조지표', 'indicators'),
+    'mas-us100-lang': t('언어', 'language'),
+    'mas-us100-auto': t('자동 갱신', 'auto-refresh'),
+    'mas-us100-stream': t('스트리밍', 'streaming'),
+    'mas-us100-proxy': t('데이터 경로 설정', 'data route settings'),
+    'mas-us100-base': t('데이터 경로 설정', 'data route settings')
+  };
+  var out = [];
+  WIPED_KEYS.forEach(function (k) {
+    var n = name[k];
+    if (n && out.indexOf(n) < 0) out.push(n);
+  });
+  return out;
+}
+
 /** 이 화면이 브라우저에 남긴 것을 모두 지우고 처음 상태로 다시 연다 */
 function resetAll() {
-  try { STORE_KEYS.forEach(function (k) { localStorage.removeItem(k); }); } catch (e) {}
+  try {
+    STORE_KEYS.forEach(function (k) { localStorage.removeItem(k); });
+    localStorage.setItem('mas-us100-build', buildStamp());
+  } catch (e) {}
   try { location.hash = ''; } catch (e) {}
   location.reload();
 }
@@ -5429,11 +5487,23 @@ function renderRestoredNote() {
   var box = el('restored-note');
   if (!box) return;
   var bits = restoredBits();
-  if (!bits.length) { box.hidden = true; return; }
+  if (!bits.length) {
+    if (WIPED_KEYS.length) {
+      box.innerHTML = esc(t('이 파일을 처음 열었으므로 처음 상태로 시작합니다 — 이전 파일이 브라우저에 남겨 둔 ',
+                            'First run of this file, so it opened fresh — settings left in this browser by an earlier copy (')) +
+        '<b>' + esc(wipedBits().join(' · ')) + '</b>' +
+        esc(t(' 설정을 지웠습니다. 이 파일에서 다시 고른 것은 계속 기억합니다.',
+              ') were cleared. What you pick from now on is remembered for this file.'));
+      box.hidden = false;
+      return;
+    }
+    box.hidden = true;
+    return;
+  }
   box.innerHTML = esc(t('이 브라우저에 저장해 둔 설정을 불러왔습니다 — ', 'Restored from this browser — ')) +
     '<b>' + esc(bits.join(' · ')) + '</b>. ' +
-    esc(t('브라우저는 내려받은 파일들을 같은 저장소로 묶으므로, 새로 받은 파일도 이전 설정을 물려받습니다. ',
-          'Local files share one browser store, so a freshly downloaded copy inherits earlier settings. ')) +
+    esc(t('이 파일에서 고른 것만 기억하며, 새로 내려받은 파일은 처음 상태로 열립니다. ',
+          'Only what you picked in this file is remembered; a freshly downloaded copy opens fresh. ')) +
     '<a href="#" id="reset-link">' + esc(t('처음 상태로 초기화', 'reset to defaults')) + '</a>';
   box.hidden = false;
   var a = el('reset-link');
