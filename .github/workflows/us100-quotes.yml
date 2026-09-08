@@ -51,38 +51,13 @@ jobs:
       - name: 가격 수집
         run: python scripts/fetch_us100_quotes.py
 
-      - name: 커밋
-        # us100-data.yml 과 같은 방식 — 충돌이 날 수 없게 원격 최신 위에 파일만 얹는다
-        run: |
-          set -euo pipefail
-          git config user.name  'github-actions[bot]'
-          git config user.email 'github-actions[bot]@users.noreply.github.com'
-          if git diff --quiet -- data/us100/quotes.json \
-             && [ -z "$(git ls-files --others --exclude-standard data/us100/quotes.json)" ]; then
-            echo "가격 변동 없음"
-            exit 0
-          fi
-          TMP=$(mktemp -d)
-          cp data/us100/quotes.json "$TMP/quotes.json"
-          for attempt in 1 2 3; do
-            git fetch --quiet origin "${GITHUB_REF_NAME}"
-            git reset --hard --quiet "origin/${GITHUB_REF_NAME}"
-            mkdir -p data/us100
-            cp "$TMP/quotes.json" data/us100/quotes.json
-            git add data/us100/quotes.json
-            if git diff --staged --quiet; then
-              echo "원격과 같아 커밋할 것이 없다"
-              exit 0
-            fi
-            git commit --quiet -m "미국 100대 기업 가격 $(TZ=Asia/Seoul date '+%m-%d %H:%M KST')"
-            if git push --quiet origin "HEAD:${GITHUB_REF_NAME}"; then
-              echo "커밋 완료 (시도 $attempt)"
-              exit 0
-            fi
-            echo "밀어넣기 실패 — 다시 시도한다 ($attempt/3)" >&2
-            sleep 4
-          done
-          exit 1
+      - name: 데이터 브랜치에 올리기
+        # 장중 10분마다 도는 판이다. 히스토리를 남기지 않는 데이터 브랜치를
+        # 커밋 하나로 갈아끼운다 — 이 판은 quotes.json 만 갱신하고, 스냅샷·차트는
+        # 스크립트가 브랜치에서 받아 그대로 보존한다.
+        env:
+          COMMIT_LABEL: 가격
+        run: bash scripts/publish_us100_data.sh
 
       - name: 요약
         if: always()

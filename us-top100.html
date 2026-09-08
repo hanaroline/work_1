@@ -2892,8 +2892,11 @@ function renderDetail(sym) {
    수집기: scripts/fetch_us100.py · 워크플로: .github/workflows/us100-data.yml
    ============================================================ */
 var SNAPSHOT_BASES = [
-  'data/us100/',                                                          // 저장소를 그대로 서비스하는 경우
-  'https://raw.githubusercontent.com/hanaroline/work_1/main/data/us100/'  // 파일만 따로 열었을 때
+  // 데이터는 히스토리를 남기지 않는 전용 브랜치(us100-data)에 커밋 하나로 갈아끼운다.
+  // 여기가 항상 최신이다.
+  'https://raw.githubusercontent.com/hanaroline/work_1/us100-data/data/us100/',
+  'data/us100/',                                                          // 저장소를 로컬에서 서비스하는 경우
+  'https://raw.githubusercontent.com/hanaroline/work_1/main/data/us100/'  // 예전 위치(안내 파일이 새 위치를 가리킨다)
 ];
 var SNAP = null;          // latest.json
 var SNAP_BASE = null;     // 실제로 성공한 경로
@@ -2909,15 +2912,27 @@ function fetchQuick(url, ms) {
     }), ms || 6000);
 }
 
+/** 데이터가 옮겨간 자리에는 {"movedTo": "<새 경로>"} 안내 파일만 둔다.
+ *  예전 HTML 을 이미 받아 둔 사람도 그 안내를 따라가 최신 값을 본다. */
+function followMoved(j, file, ms) {
+  if (!j || !j.movedTo || typeof j.movedTo !== 'string') return Promise.resolve(j);
+  var base = j.movedTo.charAt(j.movedTo.length - 1) === '/' ? j.movedTo : j.movedTo + '/';
+  if (SNAPSHOT_BASES.indexOf(base) < 0) SNAPSHOT_BASES.unshift(base);
+  DIAG.push({ url: base + file, ok: true, via: t('이전 위치 안내를 따라감', 'followed pointer'), len: 0 });
+  return fetchQuick(base + file + '?_ts=' + Date.now(), ms || 8000)
+    .catch(function () { return fetchJson(base + file); })
+    .then(function (moved) { moved.__base = base; return moved; });
+}
+
 /** 스냅샷 받아오기 — 상대 경로 우선, 실패하면 저장소 raw 주소(프록시 폴백 포함) */
 function loadSnapshot() {
   var tries = SNAPSHOT_BASES.map(function (base) {
     var url = base + 'latest.json' + '?_ts=' + Date.now();
     var p = /^https?:/.test(base) ? fetchQuick(url, 8000).catch(function () { return fetchJson(base + 'latest.json'); })
                                   : fetchQuick(url, 5000);
-    return p.then(function (j) {
+    return p.then(function (j) { return followMoved(j, 'latest.json'); }).then(function (j) {
       if (!j || !j.companies) throw new Error('스냅샷 형식이 아니다');
-      return { base: base, json: j };
+      return { base: j.__base || base, json: j };
     });
   });
   return anyOf(tries).then(function (o) {
@@ -2969,8 +2984,9 @@ function loadQuotes() {
     var url = base + 'quotes.json?_ts=' + Date.now();
     var p = /^https?:/.test(base) ? fetchQuick(url, 7000).catch(function () { return fetchJson(base + 'quotes.json'); })
                                   : fetchQuick(url, 5000);
-    return p.then(function (j) {
+    return p.then(function (j) { return followMoved(j, 'quotes.json'); }).then(function (j) {
       if (!j || !j.quotes) throw new Error('가격 파일 형식이 아니다');
+      if (j.__base && SNAP_BASE == null) SNAP_BASE = j.__base;
       return j;
     });
   });
