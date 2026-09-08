@@ -4457,14 +4457,21 @@ function renderRankNote() {
     box.hidden = false;
     return;
   }
+  /* 후보가 스무 개씩 나오는 날도 있다 — 여덟 개까지만 적고 나머지는 개수로 줄인다 */
+  var SHOW = 8;
+  var listOf = function (rows, isAdd) {
+    var head = rows.slice(0, SHOW).map(function (r) { return line(r, isAdd); }).join(' / ');
+    return rows.length > SHOW
+      ? head + esc(t(' … 그 밖에 ' + (rows.length - SHOW) + '개', ' … and ' + (rows.length - SHOW) + ' more'))
+      : head;
+  };
   box.innerHTML = '<b>' + esc(t('대상 목록 갱신 후보', 'Coverage change pending')) + '</b> — ' +
     esc(t(when + ' 점검 결과입니다. 목록은 자동으로 바뀌지 않습니다 — 새 종목의 한글명·기업 개요를 함께 채워야 하기 때문입니다.',
           'checked ' + when + '. The list does not change automatically — a new symbol needs its Korean name and company overview written first.')) +
-    (add.length ? '<br>' + esc(t('목록에 없는 상위 종목: ', 'In the top 100 but not listed: ')) +
-      add.map(function (r) { return line(r, true); }).join(' / ') : '') +
-    (drop.length ? '<br>' + esc(t('목록에 있으나 ' + (RANK.dropRank || 120) + '위 밖으로 밀린 종목: ',
-      'Listed but now below rank ' + (RANK.dropRank || 120) + ': ')) +
-      drop.map(function (r) { return line(r, false); }).join(' / ') : '');
+    (add.length ? '<br>' + esc(t('목록에 없는 상위 종목 ' + add.length + '개: ',
+      add.length + ' in the top 100 but not listed: ')) + listOf(add, true) : '') +
+    (drop.length ? '<br>' + esc(t('목록에 있으나 ' + (RANK.dropRank || 150) + '위 밖으로 밀린 종목 ' + drop.length + '개: ',
+      drop.length + ' listed but now below rank ' + (RANK.dropRank || 150) + ': ')) + listOf(drop, false) : '');
   box.hidden = false;
 }
 
