@@ -230,6 +230,47 @@ caption{caption-side:bottom; text-align:left; font-size:14px; color:var(--muted)
 .spec dt{color:var(--muted); margin:0; white-space:nowrap;}
 .spec dd{margin:0; color:var(--ink); font-weight:600; text-align:right; font-family:var(--font-num); word-break:break-all;}
 
+/* ---------- 기업 한눈에 ---------- */
+.about{margin-top:var(--space-tight); border:1px solid var(--hairline); border-radius:4px; padding:24px; background:#fff;}
+.about .biz{font-size:21px; font-weight:600; color:var(--ink); line-height:1.45; margin:0;}
+.about .desc{font-size:17px; color:var(--body); line-height:1.75; margin:12px 0 0;}
+.about .tags{display:flex; flex-wrap:wrap; gap:8px; margin-top:16px;}
+.about .tags span{font-size:14px; color:var(--blue); border:1px solid var(--blue); border-radius:2px; padding:4px 9px;}
+.about .spec{margin-top:18px;}
+.about details{margin-top:18px; border-top:1px solid var(--hairline-soft); padding-top:14px;}
+.about details summary{cursor:pointer; font-size:15px; color:var(--blue);}
+.about .en{font-size:16px; color:var(--body); line-height:1.7; margin:12px 0 0;}
+.about .who{font-size:14px; color:var(--muted); margin:16px 0 0; line-height:1.6;}
+
+/* ---------- 종목 비교 ---------- */
+#list-table .cmpc{text-align:center; padding:10px 6px;}
+#list-table .cmpc input{width:17px; height:17px; accent-color:var(--orange); cursor:pointer;}
+.cmp-bar{display:flex; flex-wrap:wrap; align-items:center; gap:10px 14px; margin-top:var(--space-content);}
+.cmp-bar .lb{font-size:14px; color:var(--muted); letter-spacing:.4px;}
+.cmp-bar select{
+  font-family:inherit; font-size:16px; padding:9px 12px; border:1px solid var(--hairline);
+  border-radius:2px; background:#fff; color:var(--ink); max-width:280px;
+}
+.cmp-chip{
+  display:inline-flex; align-items:center; gap:9px; border:1px solid var(--hairline); border-radius:2px;
+  padding:7px 10px 7px 0; font-size:16px; background:#fff; color:var(--ink);
+}
+.cmp-chip .sw{width:5px; align-self:stretch; border-radius:2px 0 0 2px;}
+.cmp-chip b{font-family:var(--font-num); font-weight:600;}
+.cmp-chip .x{border:0; background:none; cursor:pointer; color:var(--muted); font-size:17px; line-height:1; padding:0 2px;}
+.cmp-chip .x:hover{color:var(--error);}
+.cmp-none{font-size:16px; color:var(--muted);}
+#t-cmp{min-width:640px;}
+#t-cmp thead th{vertical-align:bottom;}
+#t-cmp thead th .sy{font-family:var(--font-num); font-size:17px; color:var(--blue); display:block;}
+#t-cmp thead th .nm{display:block; font-size:13px; font-weight:400; color:var(--body-strong); white-space:normal; max-width:150px;}
+#t-cmp thead th .sw{display:block; height:3px; border-radius:2px; margin-bottom:7px;}
+#t-cmp tbody th{
+  text-align:left; padding:11px 14px; border-bottom:1px solid var(--hairline-soft);
+  font-weight:400; color:var(--muted); font-size:16px; white-space:nowrap; background:#fff;
+}
+#t-cmp tbody td{white-space:nowrap;}
+
 /* ---------- 차트 ---------- */
 .chart-wrapper{border:1px solid var(--hairline); border-radius:4px; padding:20px 22px; background:#fff; position:relative;}
 .chart-wrapper svg{display:block; width:100%; height:auto;}
@@ -248,6 +289,13 @@ caption{caption-side:bottom; text-align:left; font-size:14px; color:var(--muted)
 .seg button[aria-pressed="false"]:hover{background:var(--surface-subtle); color:var(--ink);}
 .chart-ctrl{display:flex; flex-wrap:wrap; gap:12px 16px; align-items:center; margin:var(--space-content) 0 16px;}
 .chart-ctrl .lb{font-size:14px; color:var(--muted); letter-spacing:.4px;}
+.ind-set{display:inline-flex; flex-wrap:wrap; gap:8px;}
+.ind-set label{
+  display:inline-flex; align-items:center; gap:7px; font-size:15px; color:var(--body-strong);
+  border:1px solid var(--hairline); border-radius:2px; padding:7px 11px; cursor:pointer; background:#fff;
+}
+.ind-set label.on{border-color:var(--orange); color:var(--orange-active); font-weight:600;}
+.ind-set input{width:15px; height:15px; accent-color:var(--orange); cursor:pointer;}
 .tip{
   position:absolute; pointer-events:none; background:var(--ink); color:#fff; font-size:13px; line-height:1.5;
   padding:8px 11px; border-radius:2px; white-space:nowrap; transform:translate(-50%,-100%);
@@ -299,7 +347,7 @@ footer .disc p{margin:0 0 12px;}
 
 /* ---------- 인쇄 ---------- */
 @media print{
-  .toolbar,.finder-search,.finder-filters,.finder-bar,.seg,.chart-ctrl,.btn,.btn-tool,details.diag{display:none !important;}
+  .toolbar,.finder-search,.finder-filters,.finder-bar,.seg,.chart-ctrl,.btn,.btn-tool,details.diag,#cmp-ctrl,#list-table .cmpc{display:none !important;}
   body{font-size:13pt; line-height:1.4;}
   .page{max-width:100%; padding:0;}
   .hero{background:#fff !important; color:var(--ink); padding:0 0 24px; border-bottom:2px solid var(--orange); margin:0;}
@@ -376,10 +424,44 @@ footer .disc p{margin:0 0 12px;}
     <p class="list-note" id="list-note"></p>
   </section>
 
-  <!-- ========== 2. 종목 요약 ========== -->
-  <section class="section" id="summary">
+  <!-- ========== 2. 종목 비교 ========== -->
+  <section class="section" id="compare">
     <div class="section-rule"></div>
     <p class="section-eyebrow" data-ko="STEP 2" data-en="STEP 2">STEP 2</p>
+    <h2 class="section-title"><span data-ko="종목 비교" data-en="Compare companies">종목 비교</span><span class="badge" id="badge-cmp">—</span></h2>
+    <p class="section-lead" data-ko="위 목록의 <b>비교</b> 칸을 눌러 최대 4종목을 고르면, 같은 시점을 100으로 맞춘 주가 흐름과 기간별 수익률·지표를 나란히 놓고 봅니다."
+       data-en="Tick the <b>vs</b> column in the list above to pick up to four companies, then compare them on one rebased (=100) price chart, trailing returns and a metric table.">위 목록의 <b>비교</b> 칸을 눌러 최대 4종목을 고르면, 같은 시점을 100으로 맞춘 주가 흐름과 기간별 수익률·지표를 나란히 놓고 봅니다.</p>
+
+    <div class="cmp-bar" id="cmp-chips"></div>
+    <div class="cmp-bar" id="cmp-ctrl">
+      <span class="lb" data-ko="비교에 추가" data-en="Add">비교에 추가</span>
+      <select id="cmp-add" aria-label="Add a company to the comparison"></select>
+      <button class="btn" type="button" id="cmp-peers" data-ko="선택 종목 + 동일 섹터 상위" data-en="Selected + sector peers">선택 종목 + 동일 섹터 상위</button>
+      <button class="btn" type="button" id="cmp-clear" data-ko="비교 비우기" data-en="Clear">비교 비우기</button>
+    </div>
+
+    <div class="chart-ctrl">
+      <span class="lb" data-ko="기간" data-en="Range">기간</span>
+      <span class="seg" id="seg-cmp-range" role="group"></span>
+      <span class="lb" data-ko="축" data-en="Axis">축</span>
+      <span class="seg" id="seg-cmp-axis" role="group"></span>
+    </div>
+
+    <div class="chart-wrapper" id="w-cmp"><svg id="svg-cmp" role="img"></svg><div class="tip" id="tip-cmp"></div></div>
+    <div class="legend" id="legend-cmp"></div>
+
+    <h3 data-ko="기간별 수익률 비교" data-en="Trailing returns compared">기간별 수익률 비교</h3>
+    <div class="chart-wrapper" id="w-cmpret"><svg id="svg-cmpret" role="img"></svg><div class="tip" id="tip-cmpret"></div></div>
+    <div class="legend" id="legend-cmpret"></div>
+
+    <h3 data-ko="지표 비교" data-en="Metrics compared">지표 비교</h3>
+    <div class="table-wrap"><table id="t-cmp"></table></div>
+  </section>
+
+  <!-- ========== 3. 종목 요약 ========== -->
+  <section class="section" id="summary">
+    <div class="section-rule"></div>
+    <p class="section-eyebrow" data-ko="STEP 3" data-en="STEP 3">STEP 3</p>
     <h2 class="section-title"><span data-ko="종목 요약" data-en="Snapshot">종목 요약</span><span class="badge" id="badge-quote">—</span></h2>
 
     <div class="quote-head">
@@ -402,12 +484,15 @@ footer .disc p{margin:0 0 12px;}
     </div>
 
     <div class="spec" id="q-spec"></div>
+
+    <h3 data-ko="기업 한눈에" data-en="Company at a glance">기업 한눈에</h3>
+    <div class="about" id="q-about"></div>
   </section>
 
-  <!-- ========== 3. 주가 흐름 · 차트 ========== -->
+  <!-- ========== 4. 주가 흐름 · 차트 ========== -->
   <section class="section" id="price">
     <div class="section-rule"></div>
-    <p class="section-eyebrow" data-ko="STEP 3" data-en="STEP 3">STEP 3</p>
+    <p class="section-eyebrow" data-ko="STEP 4" data-en="STEP 4">STEP 4</p>
     <h2 class="section-title"><span data-ko="주가 흐름 · 차트" data-en="Price &amp; charts">주가 흐름 · 차트</span><span class="badge" id="badge-chart">—</span></h2>
     <p class="section-lead" data-ko="일봉·주봉·월봉을 전환할 수 있고, 이동평균선과 거래량을 함께 봅니다. 차트 위에 마우스를 올리면 그 시점의 시가·고가·저가·종가·거래량이 나옵니다."
        data-en="Switch between daily, weekly and monthly candles with moving averages and volume. Hover the chart for that period's open, high, low, close and volume.">일봉·주봉·월봉을 전환할 수 있고, 이동평균선과 거래량을 함께 봅니다. 차트 위에 마우스를 올리면 그 시점의 시가·고가·저가·종가·거래량이 나옵니다.</p>
@@ -419,19 +504,26 @@ footer .disc p{margin:0 0 12px;}
       <span class="seg" id="seg-range" role="group"></span>
       <span class="seg" id="seg-scale" role="group"></span>
     </div>
+    <div class="chart-ctrl" style="margin-top:0">
+      <span class="lb" data-ko="보조지표" data-en="Indicators">보조지표</span>
+      <span class="ind-set" id="ind-set"></span>
+    </div>
 
     <div class="chart-wrapper" id="w-price"><svg id="svg-price" role="img"></svg><div class="tip" id="tip-price"></div></div>
     <div class="chart-wrapper" id="w-vol"><svg id="svg-vol" role="img"></svg><div class="tip" id="tip-vol"></div></div>
+    <div class="chart-wrapper" id="w-macd" hidden><svg id="svg-macd" role="img"></svg><div class="tip" id="tip-macd"></div></div>
+    <div class="chart-wrapper" id="w-rsi" hidden><svg id="svg-rsi" role="img"></svg><div class="tip" id="tip-rsi"></div></div>
     <div class="legend" id="legend-price"></div>
+    <p class="list-note" id="ind-note"></p>
 
     <h3 data-ko="기간별 수익률" data-en="Trailing returns">기간별 수익률</h3>
     <div class="table-wrap"><table id="t-returns"></table></div>
   </section>
 
-  <!-- ========== 4. 밸류에이션 · 시세 항목 ========== -->
+  <!-- ========== 5. 밸류에이션 · 시세 항목 ========== -->
   <section class="section" id="valuation">
     <div class="section-rule"></div>
-    <p class="section-eyebrow" data-ko="STEP 4" data-en="STEP 4">STEP 4</p>
+    <p class="section-eyebrow" data-ko="STEP 5" data-en="STEP 5">STEP 5</p>
     <h2 class="section-title"><span data-ko="밸류에이션 · 시세 항목" data-en="Valuation &amp; quote details">밸류에이션 · 시세 항목</span><span class="badge" id="badge-val">—</span></h2>
     <div class="grid grid-2" style="margin-top:var(--space-content)">
       <div><h4 style="margin-top:0" data-ko="밸류에이션" data-en="Valuation">밸류에이션</h4><div class="table-wrap"><table id="t-val"></table></div></div>
@@ -442,10 +534,10 @@ footer .disc p{margin:0 0 12px;}
     <div class="legend" id="legend-eps"></div>
   </section>
 
-  <!-- ========== 5. 실적 ========== -->
+  <!-- ========== 6. 실적 ========== -->
   <section class="section" id="results">
     <div class="section-rule"></div>
-    <p class="section-eyebrow" data-ko="STEP 5" data-en="STEP 5">STEP 5</p>
+    <p class="section-eyebrow" data-ko="STEP 6" data-en="STEP 6">STEP 6</p>
     <h2 class="section-title"><span data-ko="실적 (매출 · 영업이익 · 순이익)" data-en="Results (revenue · operating income · net income)">실적 (매출 · 영업이익 · 순이익)</span><span class="badge" id="badge-fin">—</span></h2>
     <div class="chart-ctrl">
       <span class="lb" data-ko="기준" data-en="Basis">기준</span>
@@ -456,10 +548,10 @@ footer .disc p{margin:0 0 12px;}
     <div class="table-wrap" style="margin-top:16px"><table id="t-fin"></table></div>
   </section>
 
-  <!-- ========== 6. 실적발표 · 컨퍼런스콜 일정 ========== -->
+  <!-- ========== 7. 실적발표 · 컨퍼런스콜 일정 ========== -->
   <section class="section" id="calendar">
     <div class="section-rule"></div>
-    <p class="section-eyebrow" data-ko="STEP 6" data-en="STEP 6">STEP 6</p>
+    <p class="section-eyebrow" data-ko="STEP 7" data-en="STEP 7">STEP 7</p>
     <h2 class="section-title"><span data-ko="실적발표 · 컨퍼런스콜 일정" data-en="Earnings date &amp; conference call">실적발표 · 컨퍼런스콜 일정</span><span class="badge" id="badge-cal">—</span></h2>
     <div class="grid grid-3" style="margin-top:var(--space-content)">
       <div class="card"><p class="label" data-ko="다음 실적발표" data-en="Next earnings date">다음 실적발표</p><p class="stat orange" id="c-date">—</p><p class="note" id="c-date-note">—</p></div>
@@ -473,10 +565,10 @@ footer .disc p{margin:0 0 12px;}
     <div class="table-wrap"><table id="t-div"></table></div>
   </section>
 
-  <!-- ========== 7. 증권사 목표주가 · 투자의견 ========== -->
+  <!-- ========== 8. 증권사 목표주가 · 투자의견 ========== -->
   <section class="section" id="targets">
     <div class="section-rule"></div>
-    <p class="section-eyebrow" data-ko="STEP 7" data-en="STEP 7">STEP 7</p>
+    <p class="section-eyebrow" data-ko="STEP 8" data-en="STEP 8">STEP 8</p>
     <h2 class="section-title"><span data-ko="증권사 목표주가 · 투자의견" data-en="Analyst targets &amp; ratings">증권사 목표주가 · 투자의견</span><span class="badge" id="badge-tgt">—</span></h2>
     <p class="section-lead" data-ko="애널리스트 목표주가의 최저·평균·최고와 현재가의 위치, 투자의견 분포, 최근 의견 변경 이력입니다."
        data-en="Analyst target low / mean / high against the current price, the rating mix, and recent rating changes.">애널리스트 목표주가의 최저·평균·최고와 현재가의 위치, 투자의견 분포, 최근 의견 변경 이력입니다.</p>
@@ -489,10 +581,10 @@ footer .disc p{margin:0 0 12px;}
     <div class="table-wrap"><table id="t-updown"></table></div>
   </section>
 
-  <!-- ========== 8. 이벤트 · 뉴스 ========== -->
+  <!-- ========== 9. 이벤트 · 뉴스 ========== -->
   <section class="section" id="news">
     <div class="section-rule"></div>
-    <p class="section-eyebrow" data-ko="STEP 8" data-en="STEP 8">STEP 8</p>
+    <p class="section-eyebrow" data-ko="STEP 9" data-en="STEP 9">STEP 9</p>
     <h2 class="section-title"><span data-ko="이벤트 · 뉴스" data-en="Events &amp; news">이벤트 · 뉴스</span><span class="badge" id="badge-news">—</span></h2>
     <h3 style="margin-top:var(--space-block)" data-ko="종목 이벤트" data-en="Company events">종목 이벤트</h3>
     <ul class="timeline" id="event-list"></ul>
@@ -500,7 +592,7 @@ footer .disc p{margin:0 0 12px;}
     <ul class="news-list" id="news-list"></ul>
   </section>
 
-  <!-- ========== 9. 데이터 출처 ========== -->
+  <!-- ========== 10. 데이터 출처 ========== -->
   <section class="section" id="sources">
     <div class="section-rule"></div>
     <p class="section-eyebrow" data-ko="APPENDIX" data-en="APPENDIX">APPENDIX</p>
@@ -704,6 +796,317 @@ var KEYWORDS = {
 };
 
 /* ------------------------------------------------------------
+   0.1 기업 한눈에 — 주력사업 · 특징 · 사업 키워드 (한글)
+   [주력사업 한 줄, 개요, 사업 키워드]
+   야후 assetProfile 의 longBusinessSummary 는 영문 원문이고 길어 그대로는
+   "한 눈에 파악"이 어렵다. 그래서 한글 요약을 화면에 두고, 영문 원문은
+   접어 두었다가 펼쳐 보게 한다(원문은 스냅샷의 profile.desc).
+   회사 사업 구조는 분기마다 바뀌지 않으므로 화면에 상수로 두어도 낡지 않는다.
+   ------------------------------------------------------------ */
+var PROFILE_KO = {
+  AAPL: ['아이폰·맥·아이패드 등 하드웨어와 앱스토어 중심의 서비스',
+    '아이폰이 매출의 절반 정도를 차지하고, 그 위에 얹은 서비스(앱스토어·아이클라우드·광고·애플페이)가 이익률을 끌어올리는 구조입니다. A·M 시리즈 자체 설계 칩으로 하드웨어와 운영체제를 함께 통제하는 것이 경쟁력입니다.',
+    '아이폰, 서비스·구독, 자체 설계 칩, 맥·아이패드, 웨어러블'],
+  MSFT: ['클라우드(Azure)·업무용 소프트웨어·윈도우',
+    '매출은 인텔리전트 클라우드(Azure·서버), 생산성(오피스 365·팀즈·링크드인), 퍼스널 컴퓨팅(윈도우·게임)의 세 부문으로 나뉩니다. 오픈AI 와의 협업을 앞세운 AI 기능을 기존 구독에 얹어 파는 전략이 실적의 축입니다.',
+    'Azure 클라우드, 오피스 365, AI 코파일럿, 윈도우, 게임(엑스박스)'],
+  NVDA: ['AI 데이터센터용 GPU 와 가속 컴퓨팅 플랫폼',
+    '데이터센터 부문이 매출의 대부분을 차지하며, GPU 와 함께 쓰는 CUDA 소프트웨어 생태계가 진입장벽입니다. 게임용 지포스, 자동차·로보틱스, 전문 시각화가 나머지 부문입니다.',
+    '데이터센터 GPU, CUDA, 네트워킹(NVLink·InfiniBand), 게임 GPU, 자동차'],
+  GOOGL: ['검색 광고와 유튜브, 구글 클라우드',
+    '검색·유튜브 광고가 매출의 큰 축이고, 구글 클라우드가 성장을 담당합니다. 안드로이드·크롬·지도 같은 무료 플랫폼으로 이용자를 모아 광고로 수익화하는 구조이며, 최근에는 자체 AI 모델(제미나이)과 TPU 를 함께 밀고 있습니다.',
+    '검색 광고, 유튜브, 구글 클라우드, 안드로이드, 제미나이·TPU'],
+  AMZN: ['이커머스와 클라우드(AWS), 광고',
+    '매출은 온라인 유통이 크지만 영업이익의 대부분은 AWS 에서 나옵니다. 여기에 빠르게 커지는 광고 사업과 프라임 구독이 얹혀 있고, 물류망 자체가 경쟁력이자 고정비입니다.',
+    'AWS 클라우드, 온라인 유통, 광고, 프라임 구독, 물류'],
+  META: ['페이스북·인스타그램·왓츠앱의 광고',
+    '매출의 거의 전부가 광고이며, 이용자 데이터를 활용한 타깃팅과 릴스·메시징 광고가 성장축입니다. 리얼리티 랩스(VR·AR)는 대규모 적자를 감수하는 장기 투자 부문이고, AI 인프라 투자 규모가 실적 변수입니다.',
+    '페이스북·인스타그램 광고, 왓츠앱, 릴스, AI 인프라, 리얼리티 랩스'],
+  AVGO: ['통신·데이터센터용 반도체와 인프라 소프트웨어',
+    '네트워킹 칩과 맞춤형 AI 가속기(ASIC), 무선통신 부품이 반도체 부문의 축이고, VM웨어·CA 등을 인수해 만든 인프라 소프트웨어가 안정적인 구독 매출을 담당합니다. 인수·통합으로 성장해 온 회사입니다.',
+    '네트워킹 칩, 맞춤형 AI 가속기, 무선 부품, VM웨어, 스토리지'],
+  TSLA: ['전기차 제조와 에너지 저장, 자율주행 소프트웨어',
+    '모델 3·Y 가 판매의 대부분이며, 가격 정책이 마진에 바로 반영됩니다. 에너지 저장장치(메가팩)와 FSD 소프트웨어·로보택시, 휴머노이드 로봇이 회사가 내세우는 성장축입니다.',
+    '전기차, 에너지 저장(메가팩), FSD·자율주행, 슈퍼차저, 로보틱스'],
+  'BRK-B': ['보험 인수와 사업회사 지주, 대규모 주식 포트폴리오',
+    '가이코 등 보험에서 나오는 보험료 운용자금(플로트)으로 철도(BNSF)·에너지·제조·유통 자회사를 사들여 굴리는 구조입니다. 애플 등 상장주식 포트폴리오와 대규모 현금이 순자산의 큰 부분을 차지합니다.',
+    '보험(가이코), BNSF 철도, 버크셔 에너지, 제조·유통 자회사, 주식 포트폴리오'],
+  JPM: ['미국 최대 상업·투자은행',
+    '소비자금융(예금·카드·주택담보), 기업투자은행(트레이딩·인수), 자산운용을 함께 갖춘 종합 은행입니다. 순이자마진과 대출 손실 충당금, 트레이딩 수익이 실적을 좌우합니다.',
+    '소비자금융, 기업투자은행, 트레이딩, 자산·자산관리, 카드'],
+  WMT: ['세계 최대 오프라인 유통과 빠르게 커지는 온라인·광고',
+    '식료품이 미국 매출의 절반을 넘어 경기 방어적이며, 점포를 물류 거점으로 쓰는 옴니채널 배송이 강점입니다. 최근에는 마켓플레이스 수수료·광고·멤버십(월마트+) 같은 고마진 사업이 이익 증가를 이끕니다.',
+    '식료품, 이커머스·픽업, 샘스클럽, 리테일 미디어 광고, 월마트+'],
+  LLY: ['비만·당뇨 치료제 중심의 대형 제약',
+    'GLP-1 계열(마운자로·젭바운드)이 매출 성장을 사실상 혼자 끌고 있고, 생산능력 확충이 성장 속도를 결정합니다. 알츠하이머·항암 등 파이프라인과 특허 만료 일정이 중장기 변수입니다.',
+    '비만(젭바운드), 당뇨(마운자로), 항암, 알츠하이머, 생산 증설'],
+  V: ['카드 결제망 운영(비자넷)',
+    '카드를 발급하거나 신용위험을 지지 않고, 결제 건수와 금액에 비례해 수수료를 받는 네트워크 사업입니다. 결제액·국경간 거래량이 실적 지표이며 영업이익률이 60%대인 고마진 구조입니다.',
+    '결제 네트워크, 국경간 결제, 부가 서비스, 데빗·크레딧'],
+  ORCL: ['기업용 데이터베이스와 클라우드 인프라(OCI)',
+    '전통 데이터베이스·ERP 라이선스를 클라우드 구독으로 옮기는 전환기에 있고, 최근에는 AI 학습용 GPU 클라우드 수주(잔여계약, RPO)가 주가의 관심사입니다. 설비투자가 급증해 현금흐름 부담이 커진 상태입니다.',
+    '데이터베이스, OCI 클라우드, AI 인프라 수주, ERP(퓨전·넷스위트)'],
+  MA: ['카드 결제망 운영(마스터카드 네트워크)',
+    '비자와 같은 결제 네트워크 사업으로, 결제 건수·금액 기반 수수료와 부가 서비스(사기 방지·데이터)로 수익을 냅니다. 신용위험을 지지 않아 경기 변동에 상대적으로 견디는 구조입니다.',
+    '결제 네트워크, 국경간 결제, 사이버·데이터 서비스'],
+  NFLX: ['글로벌 동영상 스트리밍 구독',
+    '구독자 수 대신 매출·마진을 실적 지표로 내세우며, 요금 인상과 광고형 요금제, 계정 공유 유료화가 성장축입니다. 콘텐츠 투자 규모와 현지 오리지널 성과가 이익률을 좌우합니다.',
+    '구독 스트리밍, 광고형 요금제, 오리지널 콘텐츠, 게임·라이브'],
+  XOM: ['석유·가스 탐사생산과 정제·화학',
+    '업스트림(생산)이 이익의 중심이며 유가·가스 가격에 실적이 직결됩니다. 퍼미안 분지와 가이아나가 저비용 성장 축이고, 정제·화학 부문이 유가 하락기 완충 역할을 합니다.',
+    '퍼미안·가이아나 생산, LNG, 정제, 화학, 저탄소 사업'],
+  COST: ['회원제 창고형 유통',
+    '상품은 거의 원가 수준으로 팔고 회원비에서 이익을 남기는 구조로, 회원 갱신율이 사업의 핵심 지표입니다. 취급 품목 수를 줄여 회전율을 올리고 자체 브랜드(커클랜드) 비중을 늘리는 방식입니다.',
+    '회원비, 창고형 매장, 커클랜드 PB, 주유·이커머스'],
+  JNJ: ['처방의약품과 의료기기',
+    '항암·면역 등 혁신의약품(이노베이티브 메디신)과 수술·심혈관 기기(메드테크) 두 축으로 나뉘며, 소비자부문(켄뷰)은 분리했습니다. 스텔라라 특허 만료 이후의 신약 대체가 중장기 관건입니다.',
+    '항암·면역 의약품, 수술 기기, 심혈관·정형, 백신'],
+  HD: ['주택개조·건축자재 유통',
+    '전문 시공업자(프로) 매출 비중이 높아 주택 거래와 리모델링 경기, 금리에 민감합니다. 대형 점포망과 자체 물류로 프로 고객의 대량·긴급 수요를 잡는 것이 강점입니다.',
+    '건축자재, 프로 고객, 리모델링, 도구·설비, 배송·물류'],
+  PG: ['생활용품·퍼스널케어 브랜드',
+    '질레트·팬틴·타이드·팸퍼스 등 카테고리 1위 브랜드로 가격 인상 전가력이 높습니다. 원자재·환율이 마진 변수이고, 신흥국 물량 성장과 프리미엄화가 성장축입니다.',
+    '패브릭·홈케어, 베이비, 뷰티, 그루밍, 헬스케어'],
+  ABBV: ['면역질환·미용 중심의 바이오 제약',
+    '휴미라 특허 만료 충격을 스카이리치·린버크로 메우는 전환을 진행했고, 보톡스·필러(엘러간 미용)가 별도 축입니다. 신경정신과·항암 파이프라인이 다음 성장 재료입니다.',
+    '면역(스카이리치·린버크), 미용(보톡스), 신경과학, 항암'],
+  BAC: ['미국 대형 소매·상업은행',
+    '예금 기반이 커 금리 방향에 순이자이익이 크게 움직이고, 카드·주택담보 등 소비자 대출의 연체율이 실적 변수입니다. 메릴린치 자산관리와 글로벌 마켓 부문을 함께 갖췄습니다.',
+    '소비자금융, 자산관리(메릴), 글로벌 뱅킹, 트레이딩'],
+  KO: ['탄산·비탄산 음료 브랜드와 원액 판매',
+    '원액을 만들어 각지 보틀러에 파는 구조라 자본 투입이 적고 이익률이 높습니다. 가격·믹스 개선과 신흥국 물량이 성장축이며, 환율 영향이 큰 편입니다.',
+    '코카콜라, 스프라이트, 주스·커피, 스포츠음료, 보틀러 네트워크'],
+  PLTR: ['정부·기업용 데이터 분석 및 AI 운영 플랫폼',
+    '정부(고담)와 민간(파운드리) 두 축이며, 최근에는 생성형 AI 를 실제 업무에 붙이는 AIP 가 미국 상업 부문 성장을 이끕니다. 계약이 크고 길어 잔여계약(RPO)과 신규 고객 수가 관전 포인트입니다.',
+    '정부 계약(고담), 기업용 파운드리, AIP, 국방·정보'],
+  UNH: ['건강보험과 의료 서비스(옵텀)',
+    '보험(유나이티드헬스케어)과 의료·약제급여관리(옵텀)를 함께 가진 수직결합 구조입니다. 메디케어 어드밴티지 가입자와 의료비 지출 비율(MLR)이 실적의 핵심 변수입니다.',
+    '메디케어 어드밴티지, 고용주 보험, 옵텀 헬스, 약제급여(PBM)'],
+  PM: ['가열식 담배(아이코스) 중심의 담배·니코틴',
+    '연소 담배에서 무연 제품으로의 전환이 회사 전략의 중심이며, 아이코스·질(ZYN)이 성장축입니다. 미국 사업은 알트리아와 분리돼 있어 국제 시장 환율 영향을 크게 받습니다.',
+    '아이코스(가열식), 질(니코틴 파우치), 말보로(해외), 무연 전환'],
+  TMUS: ['미국 이동통신(무선)',
+    '스프린트 합병으로 확보한 중대역 주파수로 5G 커버리지 우위를 잡아 가입자를 늘려 왔습니다. 후불 가입자 순증과 가입자당 매출, 가정용 무선인터넷(FWA)이 실적 지표입니다.',
+    '후불 무선, 선불(메트로), 5G 네트워크, 가정용 무선인터넷'],
+  CSCO: ['기업용 네트워크 장비와 보안·소프트웨어',
+    '스위치·라우터 하드웨어 회사에서 보안·관측(옵저버빌리티)·구독 소프트웨어 회사로 옮겨 가는 중이며, 스플렁크 인수가 그 축입니다. AI 데이터센터용 네트워킹 수주가 새 성장 재료입니다.',
+    '스위치·라우터, 보안, 스플렁크(관측), 협업(웹엑스), AI 네트워킹'],
+  CVX: ['석유·가스 생산과 정제',
+    '퍼미안 분지와 카자흐스탄(텡기즈), 헤스 인수로 확보한 가이아나가 생산 축입니다. 유가·정제마진에 실적이 직결되며 배당·자사주 매입 여력을 중시하는 주주환원 성향이 강합니다.',
+    '퍼미안, 텡기즈, 가이아나(헤스), LNG, 정제·화학'],
+  WFC: ['미국 소매·상업은행',
+    '주택담보·자동차 대출과 예금이 중심인 전통 은행으로, 규제로 묶여 있던 자산 상한이 풀린 뒤 성장 여력이 관심사입니다. 순이자이익과 비용 절감 진척이 실적을 좌우합니다.',
+    '주택담보, 소비자·상업 대출, 자산관리, 카드'],
+  CRM: ['기업용 고객관계관리(CRM) 소프트웨어',
+    '영업·서비스·마케팅 클라우드의 구독 매출이 기반이며, 데이터 클라우드와 AI 에이전트(에이전트포스)가 성장 축입니다. 성장률이 낮아진 대신 영업이익률 개선과 주주환원을 내세우는 국면입니다.',
+    '세일즈·서비스 클라우드, 데이터 클라우드, 슬랙, 태블로, AI 에이전트'],
+  IBM: ['하이브리드 클라우드 소프트웨어와 IT 컨설팅, 메인프레임',
+    '레드햇을 중심으로 한 소프트웨어, 컨설팅, 인프라(메인프레임 z 시리즈)의 세 부문 구조입니다. 신형 메인프레임 출시 주기와 컨설팅 수주, 왓슨x AI 채택이 실적 변수입니다.',
+    '레드햇, 왓슨x AI, 컨설팅, 메인프레임(z), 양자컴퓨팅'],
+  ABT: ['진단·의료기기·영양제의 복합 헬스케어',
+    '연속혈당측정기(리브레)가 성장의 중심이고, 심혈관 기기·진단·영양(시밀락) 부문이 균형을 이룹니다. 코로나 검사 특수가 사라진 뒤 기저 성장률이 정상화된 상태입니다.',
+    '리브레(혈당), 심혈관 기기, 진단, 영양(시밀락), 제네릭 의약품'],
+  MCD: ['글로벌 햄버거 프랜차이즈',
+    '매장의 대부분이 가맹점이라 매출 대비 이익률이 높고 임대료·로열티가 수익의 축입니다. 동일점포 매출과 가격 정책, 배달·디지털 주문 비중이 실적 지표입니다.',
+    '프랜차이즈 로열티, 부동산 임대, 디지털·배달, 밸류 메뉴'],
+  GE: ['항공기 엔진과 애프터마켓 서비스',
+    '가전·발전·헬스케어를 분리하고 항공엔진에 집중한 회사로, 엔진 판매보다 정비·부품(애프터마켓)에서 이익이 나옵니다. 항공 수요와 정비 주기, 공급망 부품 조달이 실적 변수입니다.',
+    '상업용 엔진(LEAP), 애프터마켓 정비, 방산 엔진, 엔진 수주잔량'],
+  LIN: ['산업용 가스(산소·질소·수소) 공급',
+    '고객 공장 옆에 설비를 두고 장기 계약으로 가스를 공급하는 구조라 매출이 안정적이고 가격 전가력이 높습니다. 반도체·의료용 가스와 청정수소 프로젝트가 성장축입니다.',
+    '산업용 가스, 장기 온사이트 계약, 전자용 특수가스, 청정수소'],
+  AMD: ['CPU·GPU 등 고성능 프로세서 설계',
+    '서버용 CPU(에픽)에서 점유율을 꾸준히 늘려 왔고, AI 가속기(인스팅트 MI 시리즈)가 새로운 성장축입니다. 파운드리는 TSMC 에 맡기는 팹리스 구조로 설비 부담이 작습니다.',
+    '서버 CPU(에픽), AI 가속기(MI), 라이젠 PC, 게임 콘솔 칩, FPGA(자일링스)'],
+  MRK: ['항암제 키트루다 중심의 대형 제약',
+    '키트루다가 매출의 큰 비중을 차지해 2028년 특허 만료가 최대 현안이며, 피하주사 제형 전환과 인수·도입으로 공백을 메우려 합니다. 백신(가다실)과 동물의약품이 보조축입니다.',
+    '키트루다(항암), 가다실, 심폐질환, 동물의약품, 특허 절벽 대응'],
+  NOW: ['기업 업무 자동화 워크플로 플랫폼',
+    'IT 서비스 관리에서 시작해 인사·고객서비스·재무 등 전사 업무 자동화로 넓힌 구독 소프트웨어입니다. 구독 잔여계약(cRPO)과 대형 계약 수, AI 기능 유료화가 실적 지표입니다.',
+    'ITSM, 인사·고객서비스 워크플로, AI 에이전트, 대형 구독 계약'],
+  PEP: ['스낵(프리토레이)과 음료의 결합',
+    '북미 스낵이 이익의 큰 축이어서 음료 전업체보다 마진이 안정적입니다. 가격 인상 이후 물량 회복과 건강 지향 제품군 재편이 당면 과제입니다.',
+    '프리토레이 스낵, 게토레이, 펩시·마운틴듀, 퀘이커, 신흥국'],
+  AXP: ['프리미엄 카드 발급과 자체 결제망',
+    '가맹점 수수료와 연회비, 대출 이자를 함께 받는 구조로 비자·마스터카드와 달리 신용위험을 직접 집니다. 고소득 회원 기반이어서 연체율이 낮고 여행·요식 지출에 민감합니다.',
+    '프리미엄 연회비, 가맹점 수수료, 여행·라운지 혜택, 중소기업 카드'],
+  ISRG: ['수술 로봇 다빈치와 소모품·서비스',
+    '로봇 본체를 깔고 나면 매 수술마다 소모품(인스트루먼트)과 서비스 매출이 반복되는 구조입니다. 설치 대수와 수술 건수 증가율, 신형 플랫폼(다빈치5) 전환이 실적 지표입니다.',
+    '다빈치 수술 로봇, 소모품·인스트루먼트, 서비스, 이온(폐 생검)'],
+  TMO: ['생명과학 연구·진단 장비와 위탁생산(CDMO)',
+    '연구용 장비·소재부터 임상시험 서비스, 의약품 위탁생산까지 아우르는 종합 공급자입니다. 제약·바이오 연구개발 예산과 중국 수요가 실적 변수입니다.',
+    '분석 장비, 실험 소재·시약, 임상시험(PPD), CDMO, 진단'],
+  MS: ['자산관리와 투자은행',
+    '이트레이드·자산관리 부문의 수수료가 이익 기반을 안정시키고, 인수·자문·트레이딩이 경기 국면에 따라 변동을 만듭니다. 자산관리 순유입액과 IB 수수료가 실적 지표입니다.',
+    '자산관리(이트레이드), 인수·자문, 트레이딩, 자산운용'],
+  DIS: ['테마파크·스튜디오·스트리밍의 미디어 복합',
+    '이익의 큰 몫이 테마파크·크루즈(익스피리언스)에서 나오고, 스트리밍(디즈니+·훌루)이 흑자로 전환한 국면입니다. ESPN 의 온라인 전환과 콘텐츠 흥행이 변수입니다.',
+    '테마파크·크루즈, 디즈니+·훌루, 스튜디오(마블·픽사), ESPN'],
+  GS: ['투자은행과 트레이딩, 자산운용',
+    '인수·자문 수수료와 채권·주식 트레이딩이 실적의 중심이어서 자본시장 활황에 민감합니다. 소비자금융 실험을 접고 자산·자산관리 수수료 비중을 키우는 방향입니다.',
+    'M&A 자문, 인수(ECM·DCM), 트레이딩, 자산운용, 대체투자'],
+  QCOM: ['스마트폰용 통합칩과 통신 특허 로열티',
+    '스냅드래곤 칩 판매와 함께, 통신 표준특허 로열티(QTL)가 고마진 이익원입니다. 애플의 자체 모뎀 전환에 대비해 자동차·IoT·PC 로 매출을 넓히는 중입니다.',
+    '스냅드래곤, 특허 로열티, 자동차 칩, IoT·PC, 모뎀'],
+  ADBE: ['크리에이티브·문서 소프트웨어 구독',
+    '포토샵·프리미어 등 크리에이티브 클라우드와 아크로뱃 문서 클라우드가 구독 기반이고, 마케팅 소프트웨어(익스피리언스)가 기업 부문입니다. 생성형 AI(파이어플라이) 유료화와 신흥 경쟁 도구가 관전 포인트입니다.',
+    '크리에이티브 클라우드, 아크로뱃, 익스피리언스 클라우드, 파이어플라이 AI'],
+  TXN: ['아날로그·임베디드 반도체',
+    '수만 종의 아날로그 칩을 자체 공장(300mm)에서 만들어 원가 우위를 지키는 전략이며, 산업·자동차 고객 비중이 높습니다. 대규모 설비투자 국면이라 잉여현금흐름이 눌린 상태입니다.',
+    '아날로그 칩, 임베디드 프로세서, 산업·자동차, 자체 300mm 팹'],
+  RTX: ['항공기 엔진(P&W)과 항공부품, 방산',
+    '민항 엔진·부품(콜린스)과 미사일·방공(레이시온)이 결합된 구조로, 민항 정비 수요와 각국 국방예산을 함께 받습니다. GTF 엔진 결함 대응 비용이 최근 실적 변수였습니다.',
+    'P&W 엔진, 콜린스 항공부품, 미사일·방공, 애프터마켓 정비'],
+  BKNG: ['온라인 여행 예약 플랫폼',
+    'Booking.com 중심의 숙박 예약 수수료가 매출의 축이며, 항공·렌터카·어트랙션으로 넓히고 있습니다. 예약액(총예약)과 객실 수, 마케팅 효율이 실적 지표입니다.',
+    'Booking.com, 아고다, 프라이스라인, 카약, 오픈테이블'],
+  CAT: ['건설·광산 기계와 엔진',
+    '건설기계·자원산업·에너지운송 세 부문이며, 딜러 재고와 애프터마켓 부품이 실적을 완충합니다. 인프라 투자와 광산 자본지출 주기에 민감합니다.',
+    '건설기계, 광산장비, 엔진·발전기, 애프터마켓 부품, 파이낸싱'],
+  VZ: ['미국 이동통신과 유선·기업 통신',
+    '후불 무선 가입자와 가정용 무선인터넷(FWA)이 성장축이고, 높은 배당수익률이 투자 포인트입니다. 주파수·네트워크 투자와 부채 규모가 부담 요인입니다.',
+    '후불 무선, 가정용 무선인터넷, 광케이블(파이오스), 기업 통신'],
+  AMGN: ['바이오의약품과 바이오시밀러',
+    '골질환(프롤리아)·염증·항암 등 기존 제품이 특허 만료를 맞는 가운데, 비만 치료제(마리타이드) 임상 결과가 최대 관심사입니다. 호라이즌 인수로 희귀질환 제품군을 더했습니다.',
+    '프롤리아·엔브렐, 희귀질환(호라이즌), 바이오시밀러, 비만 파이프라인'],
+  BSX: ['심혈관·중재시술 의료기기',
+    '심장 부정맥 치료(파포·전기천공)와 구조적 심장질환 기기가 성장을 이끌며, 의료기기 업종에서 가장 높은 성장률을 유지해 왔습니다. 시술 건수와 신제품 승인 속도가 실적 지표입니다.',
+    '전기천공(파포), 부정맥, 워치맨, 내시경, 인터벤션'],
+  T: ['미국 이동통신과 광케이블 인터넷',
+    '무선 후불 가입자와 광케이블(파이버) 가입자 순증이 실적의 축이며, 미디어 사업을 정리하고 통신에 집중했습니다. 부채 축소와 배당 유지가 투자 포인트입니다.',
+    '후불 무선, 광케이블 인터넷, 기업 통신, 부채 감축'],
+  SPGI: ['신용평가와 시장 지수·데이터',
+    '채권 발행량에 연동되는 신용평가와, 자산에 연동되는 지수(S&P 500) 사용료가 두 축입니다. 지수·데이터 부문은 구독형이어서 발행 경기와 무관하게 안정적입니다.',
+    '신용평가, S&P 다우존스 지수, 마켓 인텔리전스, 커모디티(플랏츠)'],
+  PGR: ['자동차보험 중심의 손해보험',
+    '직판 채널과 정교한 요율 산정으로 시장 점유율을 늘려 왔고, 합산비율(콤바인드 레이시오)이 실적의 핵심 지표입니다. 수리비·중고차 가격 등 손해율 요인에 민감합니다.',
+    '자동차보험, 직판 채널, 주택보험, 상업용 차량, 요율 산정'],
+  NEE: ['플로리다 전력 사업과 신재생 발전',
+    '규제 요금으로 안정적 이익을 내는 플로리다 전력(FPL)과, 풍력·태양광·저장장치를 개발하는 에너지 리소시스가 결합된 구조입니다. 금리와 세액공제 정책, 데이터센터 전력 수요가 변수입니다.',
+    '플로리다 전력(FPL), 풍력·태양광, 배터리 저장, 송전, 데이터센터 전력'],
+  BLK: ['세계 최대 자산운용사와 리스크 시스템(알라딘)',
+    'ETF(아이셰어즈)를 중심으로 한 운용보수가 수익의 축이며, 운용자산 규모와 순유입액이 실적 지표입니다. 알라딘 소프트웨어 구독과 사모·인프라 확장이 마진을 보완합니다.',
+    '아이셰어즈 ETF, 인덱스·액티브 운용, 알라딘, 사모·인프라'],
+  SYK: ['정형외과 임플란트와 수술 장비',
+    '인공관절·외상 임플란트와 함께 수술 로봇(마코)을 깔아 소모품 매출을 반복시키는 구조입니다. 선택적 수술 건수와 병원 자본지출이 실적 변수입니다.',
+    '인공관절, 마코 수술 로봇, 외상·척추, 내시경·의료장비'],
+  ETN: ['전력 관리 기기와 산업용 부품',
+    '데이터센터·전력망 투자 확대의 직접 수혜 부문인 전기(일렉트리컬) 사업이 이익의 중심이고, 항공·차량 부품이 보조축입니다. 수주잔량과 가격 정책이 실적 지표입니다.',
+    '데이터센터 전력, 배전·차단기, 산업 자동화, 항공 부품'],
+  DHR: ['바이오 공정 장비·소모품과 진단',
+    '바이오의약품 생산에 쓰이는 소모품(사이티바 계열)과 분자진단(세페이드)이 축이며, 반복 매출 비중이 높습니다. 제약사의 생산 재고 조정과 중국 수요가 실적 변수입니다.',
+    '바이오프로세싱 소모품, 분자진단(세페이드), 생명과학 장비'],
+  UNP: ['미국 서부 화물 철도',
+    '석탄·곡물·컨테이너 등 화물을 나르며, 열차 길이·정시성 같은 운영 효율(오퍼레이팅 레이시오)이 이익률을 좌우합니다. 산업 생산과 수출입 물동량에 민감합니다.',
+    '벌크(곡물·석탄), 인터모달, 산업재 수송, 운영 효율'],
+  HON: ['항공부품·자동화·에너지의 산업 복합기업',
+    '항공(엔진 부품·항전)과 빌딩 자동화, 에너지·소재 부문으로 나뉘며, 소재(어드밴스드 머티리얼즈) 분사와 사업 분리를 추진해 왔습니다. 항공 애프터마켓이 이익의 중심입니다.',
+    '항공 항전·부품, 빌딩 자동화, 산업 자동화, 에너지·소재'],
+  LOW: ['주택개조·건축자재 유통(2위)',
+    '일반 소비자(DIY) 비중이 홈디포보다 높아 주택 경기와 소비 심리에 민감하며, 전문 시공업자 매출을 늘리는 것이 과제입니다. 동일점포 매출과 마진 개선이 실적 지표입니다.',
+    'DIY 자재, 프로 고객 확대, 가전·정원, 옴니채널'],
+  TJX: ['오프프라이스 의류·생활용품 유통',
+    '재고를 싸게 사들여 상시 할인가로 파는 모델로, 소비 위축기에 오히려 고객이 유입되는 특성이 있습니다. 재고 소싱 능력과 동일점포 객수가 실적 지표입니다.',
+    'TJ맥스·마샬, 홈굿즈, 오프프라이스 소싱, 해외 확장'],
+  C: ['글로벌 기업금융과 카드',
+    '기업의 국경간 결제·자금관리(서비스) 부문이 안정적 이익원이고, 카드와 트레이딩이 변동을 만듭니다. 조직 단순화와 자본비율 개선이 진행 중인 구조조정 국면입니다.',
+    '기업 자금관리·수탁, 카드, 트레이딩, 자산관리, 멕시코(바나멕스)'],
+  COP: ['석유·가스 탐사생산 전업',
+    '정제 없이 생산에 집중해 유가 민감도가 큰 대신 원가 구조가 단순합니다. 퍼미안·이글포드와 알래스카(윌로), 마라톤오일 인수 시너지가 관전 포인트입니다.',
+    '퍼미안·이글포드, 알래스카 윌로, LNG, 저원가 생산'],
+  ADP: ['급여·인사 아웃소싱(HR 서비스)',
+    '급여 처리 구독료와, 고객 급여자금을 예치해 얻는 이자수익이 함께 들어오는 구조입니다. 고용 지표와 금리가 실적 변수이며 해지율이 낮아 현금흐름이 안정적입니다.',
+    '급여 처리, 인사 아웃소싱(PEO), 예치금 이자, 중소기업 고객'],
+  VRTX: ['낭성섬유증 치료제와 통증·신장 신약',
+    '낭성섬유증 시장을 사실상 독점(트리카프타·알리프트렉)해 안정적 현금을 내고, 비마약성 진통제(저널비스)로 영역을 넓히는 국면입니다. 유전자 치료(카스게비)와 1형 당뇨 파이프라인이 장기 재료입니다.',
+    '낭성섬유증, 비마약성 진통제, 카스게비(유전자 치료), 신장·통증'],
+  PFE: ['백신·항암 중심의 대형 제약',
+    '코로나 제품 매출 급감 이후 항암(시젠 인수)과 비만·백신 파이프라인으로 축을 옮기는 중입니다. 비용 절감과 특허 만료 대응, 배당 지속 가능성이 관심사입니다.',
+    '백신(프리브나·코미나티), 항암(시젠), 심대사, 비만 파이프라인'],
+  MU: ['D램·낸드 메모리 반도체',
+    '가격 주기가 실적을 좌우하는 대표적 사이클 산업이며, AI 서버용 고대역폭 메모리(HBM)가 새로운 이익 축입니다. 설비투자와 재고 수준이 사이클 판단의 지표입니다.',
+    'HBM, 서버·PC D램, 낸드·SSD, 자동차·산업용 메모리'],
+  PANW: ['기업용 사이버보안 플랫폼',
+    '방화벽 하드웨어에서 클라우드 보안·보안운영(SASE·SOC)의 구독 플랫폼으로 옮겨 가는 전환을 진행 중이며, 차세대 보안 연간반복매출(NGS ARR)이 핵심 지표입니다. 플랫폼 통합 판매 전략을 씁니다.',
+    '차세대 방화벽, 프리즈마(SASE), 코르텍스(SOC), 클라우드 보안'],
+  FISV: ['가맹점 결제 처리와 은행 IT',
+    '소상공인 결제 단말·정산(클로버)과 은행 코어뱅킹 시스템의 두 축을 가진 결제 인프라 회사입니다. 결제 처리량과 클로버 매출 성장률이 실적 지표입니다.',
+    '클로버 POS, 가맹점 정산, 코어뱅킹, 카드 발급 처리'],
+  GILD: ['HIV 치료제 중심의 바이오 제약',
+    'HIV 제품군(빅타비)이 현금 창출의 축이고, 반년 1회 투여 예방제(레나카파비르)가 새 성장 재료입니다. 항암(트로델비·세포치료)은 수익성 개선이 과제입니다.',
+    'HIV(빅타비), 예방(레나카파비르), 간질환, 항암·세포치료'],
+  MDT: ['의료기기 종합(심장·당뇨·수술·신경)',
+    '심장박동기·인슐린 펌프·수술 도구·척추 기기 등 폭넓은 제품군을 갖췄으나 성장률이 낮아 포트폴리오 정리(당뇨 부문 분리)를 진행 중입니다. 신제품 승인과 환율이 실적 변수입니다.',
+    '심장 리듬, 당뇨(펌프·CGM), 수술 기기, 신경조절·척추'],
+  LMT: ['전투기·미사일 등 방위산업',
+    'F-35 프로그램이 매출의 큰 축이고 미사일·우주·헬기 부문이 뒤를 받칩니다. 미 국방예산과 해외 수출 승인, 고정가 계약의 원가 초과 여부가 실적 변수입니다.',
+    'F-35, 미사일·화력(MFC), 우주, 회전익(시코르스키)'],
+  ANET: ['데이터센터용 고속 이더넷 스위치',
+    'AI 학습 클러스터를 잇는 400G·800G 스위치와 자체 운영체제(EOS)가 강점이며, 대형 클라우드 사업자 매출 집중도가 높습니다. AI 백엔드 네트워크 채택 속도가 성장 변수입니다.',
+    '데이터센터 스위치, EOS 소프트웨어, AI 네트워킹, 캠퍼스 네트워크'],
+  CMCSA: ['케이블 인터넷과 미디어(NBC유니버설), 테마파크',
+    '광대역 인터넷 가입자에서 나오는 안정적 현금이 기반이지만 무선 경쟁으로 가입자 순감 압력을 받습니다. 피콕 스트리밍과 테마파크(에픽 유니버스)가 성장 재료입니다.',
+    '광대역 인터넷, 무선(MVNO), NBC유니버설, 피콕, 테마파크'],
+  BX: ['대체투자 운용(사모·부동산·크레딧)',
+    '운용자산에 비례하는 관리보수와, 회수 성과에 연동되는 성과보수(카리) 두 축으로 수익을 냅니다. 자금 조달(펀드레이징)과 금리·부동산 시장이 실적 변수입니다.',
+    '사모펀드, 부동산, 크레딧·보험, 인프라, 성과보수'],
+  SCHW: ['개인 대상 증권 중개와 자산관리',
+    '고객 예치금 운용에서 나오는 순이자수익이 이익의 큰 축이어서 금리와 예치금 이동(캐시 소팅)에 민감합니다. 계좌 수와 순유입 자산이 성장 지표입니다.',
+    '증권 중개, 예치금 운용, 자산관리·자문, ETF·펀드'],
+  KKR: ['대체투자 운용과 자체 보유 자산',
+    '사모·인프라·부동산 운용보수에 더해, 보험(글로벌 애틀랜틱)과 자체 대차대조표 투자에서 나오는 수익 비중이 큰 것이 특징입니다. 자금 모집과 회수 시장이 실적 변수입니다.',
+    '사모펀드, 인프라, 보험(글로벌 애틀랜틱), 크레딧, 부동산'],
+  MRSH: ['보험 중개와 리스크·인사 컨설팅',
+    '보험을 인수하지 않고 중개 수수료를 받는 구조여서 보험료율 상승기에 유리하고 손해율 위험이 없습니다. 리스크(마시·가이카펜터)와 컨설팅(머서·올리버와이만)이 두 축입니다.',
+    '보험 중개(마시), 재보험 중개(가이카펜터), 머서 인사, 올리버와이만'],
+  ADI: ['고성능 아날로그·믹스드시그널 반도체',
+    '산업 자동화·자동차·통신용 신호처리 칩이 중심이며, 제품 수명이 길어 매출이 안정적입니다. 산업 재고 조정 국면에서 실적 변동을 겪었고 회복 시점이 관심사입니다.',
+    '산업용 아날로그, 자동차(BMS·A2B), 통신, 전력관리'],
+  SBUX: ['커피 전문점 프랜차이즈',
+    '북미 직영과 중국·해외 라이선스 매장 구조이며, 동일점포 매출과 객수·모바일 주문 효율이 실적 지표입니다. 매장 혼잡 개선과 중국 경쟁이 당면 과제입니다.',
+    '북미 직영, 중국·해외, 리워드 멤버십, 모바일 주문, 라이선스'],
+  PLD: ['물류창고 리츠(임대)',
+    '항만·대도시 인접 물류창고를 보유·임대하며, 기존 계약이 시세보다 낮아 재계약 때 임대료가 올라가는 구조가 성장 동력입니다. 데이터센터 전환 개발이 새 재료입니다.',
+    '물류창고 임대, 재계약 임대료 상승, 개발 이익, 데이터센터 전환'],
+  BMY: ['항암·면역·심혈관 중심의 대형 제약',
+    '엘리퀴스·레블리미드 등 주력 제품의 특허 만료가 몰려 있어, 신제품(코벤피·소틱투)과 인수로 공백을 메우는 것이 최대 과제입니다. 배당 매력이 투자 포인트로 꼽힙니다.',
+    '엘리퀴스(항응고), 옵디보(항암), 코벤피(정신질환), 세포치료'],
+  CB: ['글로벌 손해보험과 재보험',
+    '기업·고액자산가 보험을 인수하며, 요율 상승기에 이익이 늘고 자연재해 손실이 변수입니다. 보험영업이익과 투자수익이 함께 실적을 만듭니다.',
+    '기업보험, 고액자산가 보험, 재보험, 아시아 생명보험, 투자수익'],
+  DE: ['농기계와 건설·산업 장비',
+    '대형 트랙터·콤바인이 이익의 축이어서 곡물 가격과 농가 소득 주기에 민감합니다. 정밀농업(자율주행·가변시비) 구독화가 장기 성장 전략입니다.',
+    '대형 농기계, 정밀농업, 건설·임업 장비, 금융(존디어 파이낸셜)'],
+  INTC: ['CPU 설계·제조와 파운드리 전환',
+    '설계와 제조를 함께 하는 구조로, 최신 공정(18A) 양산과 외부 고객 파운드리 확보가 회사의 명운을 가르는 국면입니다. 서버 CPU 점유율 방어와 대규모 설비투자 부담이 실적 변수입니다.',
+    '클라이언트 CPU, 서버 CPU, 파운드리(18A), 그래픽·AI 가속기'],
+  INTU: ['중소기업 회계(퀵북스)와 세무(터보택스) 소프트웨어',
+    '세무 시즌에 매출이 몰리는 계절성이 있고, 퀵북스 구독과 결제·급여 부가서비스가 안정적 성장을 담당합니다. AI 자동화(인튜이트 어시스트)와 크레딧카마 연계가 성장 재료입니다.',
+    '퀵북스, 터보택스, 크레딧카마, 메일침프, AI 어시스트'],
+  AMT: ['통신 타워 리츠(임대)',
+    '통신사에 타워 공간을 장기 임대하며, 한 타워에 여러 사업자를 얹을수록 마진이 좋아지는 구조입니다. 금리와 통신사 설비투자, 해외(인도 매각 후) 포트폴리오가 변수입니다.',
+    '통신 타워 임대, 장기 계약·에스컬레이터, 데이터센터(코어사이트)'],
+  MO: ['미국 담배(말보로)와 무연 제품',
+    '연소 담배 물량이 매년 줄지만 가격 인상으로 이익을 유지하는 구조이며, 높은 배당수익률이 투자 포인트입니다. 니코틴 파우치·전자담배 등 무연 전환 성과가 관건입니다.',
+    '말보로(미국), 무연·니코틴 파우치, 시가, 가격 인상 전가'],
+  SO: ['미국 남동부 전력·가스 유틸리티',
+    '조지아·앨라배마의 규제 요금 기반 전력 사업이 중심이며, 데이터센터 유입으로 전력 수요 전망이 상향된 지역입니다. 요금 인가와 금리, 원전(보글) 운영이 변수입니다.',
+    '규제 전력(조지아·앨라배마), 천연가스 배관, 보글 원전, 데이터센터 수요'],
+  UPS: ['소포·물류 배송',
+    '미국 국내 소포가 매출의 축이고, 소포당 단가와 물량의 균형이 이익률을 좌우합니다. 최대 고객 물량 축소와 네트워크 재편(비용 절감)이 진행 중입니다.',
+    '미국 국내 소포, 국제 배송, 공급망 솔루션, 단가·물량 관리'],
+  ELV: ['건강보험(블루크로스 계열)과 약제·의료 서비스',
+    '고용주·개인 보험과 메디케이드·메디케어를 함께 운영하며, 의료비 지출 비율과 정부 프로그램 요율이 실적을 좌우합니다. 카렐론(약제·행동건강)이 서비스 축입니다.',
+    '고용주 보험, 메디케이드·메디케어, 카렐론(PBM·행동건강)'],
+  NKE: ['스포츠 의류·신발 브랜드',
+    '직접판매(DTC)와 도매의 균형을 다시 잡는 국면이며, 재고 정리와 신제품 사이클, 중국 수요가 실적 변수입니다. 러닝 등 핵심 카테고리 복원이 당면 과제입니다.',
+    '풋웨어, 어패럴, 직접판매(DTC)·앱, 조던 브랜드, 중국'],
+  ICE: ['거래소 운영과 채권·모기지 데이터',
+    '에너지·금융 선물 거래소(ICE·NYSE) 수수료와, 채권·모기지 데이터·시스템 구독이 두 축입니다. 변동성이 커지면 거래 수수료가 늘고, 데이터 부문은 경기와 무관하게 안정적입니다.',
+    '에너지 선물(브렌트), NYSE, 채권·ETF 데이터, 모기지 기술']
+};
+
+/* ------------------------------------------------------------
    1. 언어 / 상태
    ------------------------------------------------------------ */
 var lang = 'ko';
@@ -728,9 +1131,18 @@ var state = {
   favOnly: false,
   auto: true,             // 자동 갱신(1분 주기)
   fx: null,               // USD/KRW
-  asof: null
+  asof: null,
+  cmpRange: '1y',         // 종목 비교 기간
+  cmpAxis: 'lin',         // 비교 차트 축: lin | log
+  ind: { bb: false, macd: false, rsi: false }   // 보조지표 표시 여부
 };
 try { state.auto = localStorage.getItem('mas-us100-auto') !== 'off'; } catch (e) {}
+try {
+  var savedInd = JSON.parse(localStorage.getItem('mas-us100-ind') || 'null');
+  if (savedInd) ['bb', 'macd', 'rsi'].forEach(function (k) { state.ind[k] = !!savedInd[k]; });
+  var savedCmpR = localStorage.getItem('mas-us100-cmp-range');
+  if (savedCmpR) state.cmpRange = savedCmpR;
+} catch (e) {}
 
 /* 심볼별 조회 결과 캐시 */
 var CACHE = {};           // sym -> { quote, chart:{1d,1wk,1mo}, summary, news, ts }
@@ -1189,8 +1601,13 @@ function normalizeSummary(m) {
 
   if (m.assetProfile) {
     var a = m.assetProfile;
+    var off = (a.companyOfficers || []).filter(function (o2) {
+      return /CEO|Chief Executive/.test(o2.title || '');
+    })[0];
     o.profile = { sector: a.sector || null, industry: a.industry || null, employees: raw(a.fullTimeEmployees),
-      website: a.website || null, country: a.country || null, summary: a.longBusinessSummary || null };
+      website: a.website || null, country: a.country || null, city: a.city || null, state: a.state || null,
+      desc: a.longBusinessSummary || null, summary: a.longBusinessSummary || null,
+      ceo: off ? { name: off.name, title: off.title } : null };
   }
   var p = m.price || {}, sd = m.summaryDetail || {}, ks = m.defaultKeyStatistics || {}, fd = m.financialData || {};
   var q = o.quote;
@@ -1469,6 +1886,7 @@ function loadList() {
     SRC.list = 'sample';
     state.asof = new Date();
     renderList(); renderHeroMeta(); renderSources(); renderUpdLine();
+    if (CMP.length) renderCompare();     /* 비교 표도 예시 값임을 밝히도록 다시 그린다 */
   });
 }
 
@@ -1505,6 +1923,7 @@ function enrichVisible(syms) {
    ============================================================ */
 var LIST_COLS = [
   { k: 'fav',   ko: '★',        en: '★',        sort: null,     num: false },
+  { k: 'cmp',   ko: '비교',      en: 'vs',       sort: null,     num: false },
   { k: 'rank',  ko: '순위',     en: 'Rank',     sort: 'seq',    num: true },
   { k: 'sym',   ko: '티커',      en: 'Ticker',   sort: 'sym',    num: false },
   { k: 'name',  ko: '기업명',    en: 'Company',  sort: 'name',   num: false },
@@ -1560,7 +1979,7 @@ function renderListHead() {
   var tr = el('list-head');
   tr.innerHTML = LIST_COLS.map(function (c) {
     var arrow = state.sort === c.sort ? ' <span class="ar">' + (state.sortDir < 0 ? '▼' : '▲') + '</span>' : '';
-    return '<th class="' + (c.num ? 'num' : '') + '" data-sort="' + (c.sort || '') + '" scope="col">' +
+    return '<th class="' + (c.num ? 'num' : '') + (c.k === 'cmp' ? ' cmpc' : '') + '" data-sort="' + (c.sort || '') + '" scope="col">' +
       esc(lang === 'en' ? c.en : c.ko) + arrow + '</th>';
   }).join('');
   Array.prototype.forEach.call(tr.querySelectorAll('th'), function (th) {
@@ -1591,6 +2010,9 @@ function renderList() {
       var fav = FAVS.indexOf(r.sym) >= 0;
       return '<tr data-sym="' + r.sym + '"' + (r.sym === state.sel ? ' class="selected"' : '') + '>' +
         '<td class="fav' + (fav ? ' on' : '') + '" data-fav="' + r.sym + '" title="' + t('관심종목', 'Watchlist') + '">' + (fav ? '★' : '☆') + '</td>' +
+        '<td class="cmpc"><input type="checkbox" data-cmp="' + r.sym + '"' + (cmpHas(r.sym) ? ' checked' : '') +
+          ' aria-label="' + esc(t(r.sym + ' 종목 비교에 담기', 'Add ' + r.sym + ' to the comparison')) + '"' +
+          ' title="' + esc(t('종목 비교에 담기 (최대 ' + CMP_MAX + '종목)', 'Add to the comparison (up to ' + CMP_MAX + ')')) + '"></td>' +
         '<td class="num" title="' + esc(t('현재 정렬 기준 순위입니다(시가총액 정렬이면 시총 순위).',
           'Rank under the current sort — with the market-cap sort this is the market-cap rank.')) + '">' +
           (r.rank || r.seq) + '</td>' +
@@ -1615,8 +2037,13 @@ function renderList() {
     tr.addEventListener('click', function (e) {
       var f = e.target.getAttribute && e.target.getAttribute('data-fav');
       if (f) { toggleFav(f); return; }
+      /* 비교 체크박스를 누른 것은 종목 선택이 아니다 */
+      if (e.target.getAttribute && e.target.getAttribute('data-cmp')) return;
       select(tr.getAttribute('data-sym'));
     });
+  });
+  Array.prototype.forEach.call(body.querySelectorAll('input[data-cmp]'), function (box) {
+    box.addEventListener('change', function () { cmpToggle(box.getAttribute('data-cmp'), box.checked); });
   });
 
   var missing = shown.filter(function (r) { return r.cap == null; }).length;
@@ -1939,6 +2366,58 @@ function renderQuote(M) {
   if (M.quote.priceSrc === 'stream' && streamLive()) badge('badge-quote', 'stream');
   else if (M.quote.priceSrc === 'quotes' && !M.demo) badge('badge-quote', 'quotes');
   else srcBadge('badge-quote', M);
+  renderAbout(M);
+}
+
+/** 기업 한눈에 — 주력사업·개요·사업 키워드와 회사 기본 정보.
+ *  한글 요약(PROFILE_KO)은 이 화면이 정리해 둔 것이고, 영문 원문 개요는 데이터
+ *  제공사의 기업 프로필이다. 둘의 출처가 다르므로 화면에서 구분해 적는다. */
+function renderAbout(M) {
+  var box = el('q-about');
+  if (!box) return;
+  var c = M.co, p = M.profile || {}, pk = PROFILE_KO[c.sym] || null;
+  var enDesc = p.desc || p.summary || null;
+
+  var head = '';
+  if (lang === 'en') {
+    head = '<p class="biz">' + esc(p.industry || sectorName(c.sector)) + '</p>' +
+      '<p class="desc">' + (enDesc ? esc(enDesc)
+        : esc(t('기업 개요를 받지 못했습니다.', 'Company description unavailable.'))) + '</p>';
+  } else {
+    head = '<p class="biz">' + esc(pk ? pk[0] : (p.industry || sectorName(c.sector))) + '</p>' +
+      (pk ? '<p class="desc">' + esc(pk[1]) + '</p>' : '') +
+      (pk && pk[2] ? '<div class="tags">' + pk[2].split(/,\s*/).map(function (w) {
+        return '<span>' + esc(w) + '</span>';
+      }).join('') + '</div>' : '');
+  }
+
+  var place = [p.city, p.state, p.country].filter(Boolean).join(', ');
+  var site = p.website || null;
+  var facts = [
+    [t('섹터', 'Sector'), esc(sectorName(c.sector))],
+    [t('산업', 'Industry'), esc(p.industry || '—')],
+    [t('상장 거래소', 'Exchange'), esc(M.quote.exchange || '—')],
+    [t('본사', 'Headquarters'), esc(place || '—')],
+    [t('종업원 수', 'Employees'), p.employees ? comma(p.employees) : '—'],
+    [t('대표', 'CEO'), p.ceo && p.ceo.name ? esc(p.ceo.name) : '—'],
+    [t('시가총액', 'Market cap'), usd(M.quote.cap)],
+    [t('홈페이지', 'Website'), site
+      ? '<a href="' + esc(site) + '" target="_blank" rel="noopener">' + esc(site.replace(/^https?:\/\//, '').replace(/\/$/, '')) + '</a>'
+      : '—']
+  ];
+
+  box.innerHTML = head +
+    '<div class="spec">' + facts.map(function (r) {
+      return '<div><dt>' + esc(r[0]) + '</dt><dd>' + r[1] + '</dd></div>';
+    }).join('') + '</div>' +
+    (lang !== 'en' && enDesc
+      ? '<details><summary>' + esc(t('영문 원문 개요 보기 (데이터 제공사 기업 프로필)', 'Show the original English profile')) +
+        '</summary><p class="en">' + esc(enDesc) + '</p></details>'
+      : '') +
+    '<p class="who">' + esc(lang === 'en'
+      ? 'The English description is the data provider’s company profile (Yahoo Finance). Business facts change slowly; check the company’s IR page for the latest.'
+      : '한글 요약(주력사업·개요·키워드)은 공개된 사업 구조를 이 화면에서 정리한 것이고, 영문 원문 개요는 데이터 제공사(Yahoo Finance)의 기업 프로필입니다. 사업 구조는 자주 바뀌지 않지만, 최신 내용은 회사 IR 공지가 원문입니다.') +
+    '</p>';
 }
 
 function renderValuation(M) {
@@ -1997,6 +2476,20 @@ function longSeries(sym, fallback) {
   }
   if (closes.length < 5) return fallback;
   return { dates: dates, close: closes, __long: true };
+}
+
+/** 그 시점의 종가 — 받아 둔 계열에서 그 일자 이하의 마지막 종가를 찾는다.
+ *  최근 2년은 일봉이 있어 해당일 종가가 되고, 그보다 이전은 월봉 기준이 된다. */
+function closeAt(sym, ts, fallbackChart) {
+  if (ts == null) return null;
+  var c = longSeries(sym, fallbackChart || null);
+  if (!c || !c.close || !c.close.length) return null;
+  var target = ts * 1000 + 86400000, out = null;
+  for (var i = 0; i < c.dates.length; i++) {
+    if (c.dates[i].getTime() <= target) out = c.close[i];
+    else break;
+  }
+  return out;
 }
 
 function renderReturns(M) {
@@ -2079,6 +2572,59 @@ function movingAvg(arr, w) {
   }
   return out;
 }
+
+/* ---------- 보조지표 계산 (정의 그대로, 라이브러리 없이) ---------- */
+/** 볼린저밴드 — 중심선은 w봉 단순이동평균, 위·아래는 ±k표준편차(모집단 표준편차) */
+function bollinger(arr, w, k) {
+  var mid = movingAvg(arr, w), up = [], dn = [];
+  for (var i = 0; i < arr.length; i++) {
+    if (mid[i] == null) { up.push(null); dn.push(null); continue; }
+    var s = 0;
+    for (var j = i - w + 1; j <= i; j++) { var d = arr[j] - mid[i]; s += d * d; }
+    var sd = Math.sqrt(s / w);
+    up.push(mid[i] + k * sd); dn.push(mid[i] - k * sd);
+  }
+  return { mid: mid, up: up, dn: dn, w: w, k: k };
+}
+/** 지수이동평균 */
+function emaArr(arr, span) {
+  var a = 2 / (span + 1), out = [], prev = null;
+  for (var i = 0; i < arr.length; i++) {
+    var v = arr[i];
+    if (v == null) { out.push(prev); continue; }
+    prev = prev == null ? v : (v - prev) * a + prev;
+    out.push(prev);
+  }
+  return out;
+}
+/** MACD — 선 = EMA(f) − EMA(s), 신호선 = 선의 EMA(sig), 막대 = 선 − 신호선.
+ *  앞쪽 워밍업 구간(느린 EMA 가 자리 잡기 전)은 지표가 왜곡되므로 비워 둔다. */
+function macdArr(closes, f, s, sig) {
+  var ef = emaArr(closes, f), es = emaArr(closes, s);
+  var warm = s;
+  var line = closes.map(function (_, i) {
+    return (i < warm || ef[i] == null || es[i] == null) ? null : ef[i] - es[i];
+  });
+  var sg = emaArr(line, sig).map(function (v, i) { return i < warm + sig ? null : v; });
+  var hist = line.map(function (v, i) { return (v == null || sg[i] == null) ? null : v - sg[i]; });
+  return { line: line, signal: sg, hist: hist, f: f, s: s, sig: sig };
+}
+/** RSI — 와일더 방식. 첫 w개 변화의 단순평균으로 시작해 그 뒤는 지수적으로 갱신한다. */
+function rsiArr(closes, w) {
+  var out = [null], gain = 0, loss = 0;
+  for (var i = 1; i < closes.length; i++) {
+    var ch = closes[i] - closes[i - 1], g = ch > 0 ? ch : 0, l = ch < 0 ? -ch : 0;
+    if (i <= w) {
+      gain += g / w; loss += l / w;
+      out.push(i === w ? (loss === 0 ? 100 : 100 - 100 / (1 + gain / loss)) : null);
+    } else {
+      gain = (gain * (w - 1) + g) / w;
+      loss = (loss * (w - 1) + l) / w;
+      out.push(loss === 0 ? 100 : 100 - 100 / (1 + gain / loss));
+    }
+  }
+  return out;
+}
 function tipShow(tipId, wrapId, svgW, x, y, html) {
   var tip = el(tipId), wrap = el(wrapId);
   var scale = wrap.clientWidth ? (wrap.clientWidth - 44) / svgW : 1;   /* padding 22px 양쪽 */
@@ -2102,6 +2648,8 @@ function renderPriceChart(M) {
       ? t('시세를 불러오는 중입니다…', 'Loading price data…')
       : t('시세를 불러오지 못했습니다.', 'Price data unavailable.'));
     emptyChart('svg-vol', PW, 130, '');
+    ['w-macd', 'w-rsi'].forEach(function (id) { var w = el(id); if (w) w.hidden = true; });
+    indPanels = {};
     el('legend-price').innerHTML = '';
     badge('badge-chart', M.pending.chart ? null : 'none', M.pending.chart ? t('조회 중', 'loading') : null);
     return;
@@ -2109,11 +2657,14 @@ function renderPriceChart(M) {
   var closes = c.close.slice(), dates = c.dates;
   var mas = MA_WINDOWS[state.interval];
   var maSeries = mas.map(function (w) { return movingAvg(closes, w); });
+  /* 볼린저밴드는 가격과 같은 단위라 가격 패널에 겹쳐 그린다(MACD·RSI 는 아래 패널) */
+  var bb = (state.ind.bb && closes.length >= 20) ? bollinger(closes, 20, 2) : null;
   var base = closes[0];
   var val = function (v) { return v == null ? null : (state.scale === 'index' ? (v / base) * 100 : v); };
 
   var all = closes.map(val);
   maSeries.forEach(function (s) { s.forEach(function (v) { if (v != null) all.push(val(v)); }); });
+  if (bb) [bb.up, bb.dn].forEach(function (s) { s.forEach(function (v) { if (v != null) all.push(val(v)); }); });
   var lo = Math.min.apply(null, all), hi = Math.max.apply(null, all);
   var pad = (hi - lo) * 0.08 || 1;
   lo -= pad; hi += pad;
@@ -2144,6 +2695,26 @@ function renderPriceChart(M) {
     var idx = Math.round((closes.length - 1) * (ti / (ticks - 1)));
     s.appendChild(mk('text', { x: px(idx), y: PH - 9, 'text-anchor': ti === 0 ? 'start' : ti === ticks - 1 ? 'end' : 'middle',
       fill: C.muted, 'font-size': 13, 'font-family': FNUM }, fmt(dates[idx])));
+  }
+
+  /* 볼린저밴드 — 가격선보다 먼저 그려 뒤에 깔린다 */
+  if (bb) {
+    var top = '', bot = '', first = -1, last = -1;
+    for (var bi = 0; bi < closes.length; bi++) {
+      if (bb.up[bi] == null) continue;
+      if (first < 0) first = bi;
+      last = bi;
+      top += (top ? 'L' : 'M') + px(bi).toFixed(1) + ' ' + py(val(bb.up[bi])).toFixed(1);
+    }
+    for (var bj = last; bj >= first; bj--) {
+      if (bb.dn[bj] == null) continue;
+      bot += 'L' + px(bj).toFixed(1) + ' ' + py(val(bb.dn[bj])).toFixed(1);
+    }
+    if (top && bot) {
+      s.appendChild(mk('path', { d: top + bot + 'Z', fill: C.orangeSoft, opacity: .14 }));
+      s.appendChild(mk('path', { d: top, fill: 'none', stroke: C.orangeSoft, 'stroke-width': 1.3, 'stroke-dasharray': '4 3' }));
+      s.appendChild(mk('path', { d: 'M' + bot.slice(1), fill: 'none', stroke: C.orangeSoft, 'stroke-width': 1.3, 'stroke-dasharray': '4 3' }));
+    }
   }
 
   /* 종가 영역 + 선 (시리즈 1 = Orange) */
@@ -2201,16 +2772,22 @@ function renderPriceChart(M) {
       var v = maSeries[k][i];
       if (v != null) rows.push('MA' + w + ' ' + price(v));
     });
+    if (bb && bb.up[i] != null) {
+      rows.push(t('볼린저 상단 ', 'BB upper ') + price(bb.up[i]) + ' · ' + t('하단 ', 'lower ') + price(bb.dn[i]));
+    }
     tipShow('tip-price', 'w-price', PW, X, Math.max(30, Y - 14), rows.join('<br>'));
     hoverVol(i);
+    hoverInd(i);
   }
   overlay.addEventListener('mousemove', onMove);
   overlay.addEventListener('touchmove', function (e) { onMove(e); e.preventDefault(); });
   overlay.addEventListener('mouseleave', function () {
-    cross.setAttribute('opacity', 0); dot.setAttribute('opacity', 0); tipHide('tip-price'); hoverVol(-1);
+    cross.setAttribute('opacity', 0); dot.setAttribute('opacity', 0); tipHide('tip-price');
+    hoverVol(-1); hoverInd(-1);
   });
 
   renderVolChart(M);
+  renderIndPanels(M);
 
   /* 범례 — 색만으로 구분하지 않도록 이름을 항상 함께 둔다 */
   var lg = [
@@ -2220,6 +2797,9 @@ function renderPriceChart(M) {
     ['<i class="dash" style="color:' + C.neutral + '"></i>', 'MA' + mas[2]],
     ['<i style="background:' + C.blueSoft + ';opacity:.6"></i>', t('거래량(아래 패널)', 'Volume (lower panel)')]
   ];
+  if (bb) lg.push(['<i class="dash" style="color:' + C.orangeSoft + '"></i>', t('볼린저밴드 (20, ±2σ)', 'Bollinger Bands (20, ±2σ)')]);
+  if (state.ind.macd) lg.push(['<i class="line" style="color:' + C.blue + '"></i>', t('MACD(12,26,9) — 아래 패널', 'MACD(12,26,9) — lower panel')]);
+  if (state.ind.rsi) lg.push(['<i class="line" style="color:' + C.orangeActive + '"></i>', t('RSI(14) — 아래 패널', 'RSI(14) — lower panel')]);
   el('legend-price').innerHTML = lg.map(function (r) { return '<span>' + r[0] + esc(r[1]) + '</span>'; }).join('') +
     '<span>' + esc(t('기간 ' + labelRange(state.range) + ' · ' + labelInterval(state.interval),
       labelRange(state.range) + ' · ' + labelInterval(state.interval))) + '</span>';
@@ -2263,10 +2843,145 @@ function hoverVol(i) {
     r.setAttribute('fill', i >= 0 && k === i ? C.blue : C.blueSoft);
   });
 }
+
+/* ---------- 10.2b 보조지표 패널 (MACD · RSI)
+   가격과 단위가 달라 같은 y축에 얹지 않고 아래에 따로 그린다. x축(봉 인덱스)은
+   위 가격 차트와 같은 식을 쓰므로 세로 십자선이 세 패널에서 같은 시점을 가리킨다.
+   ---------- */
+var IH = 158;
+var indPanels = {};              // 'macd' | 'rsi' -> 호버 갱신에 필요한 것들
+
+function renderIndPanels(M) {
+  indPanels = {};
+  var c = M.chart, n = (c && c.close) ? c.close.length : 0;
+  var canMacd = state.ind.macd && n >= 40, canRsi = state.ind.rsi && n >= 20;
+  var wm = el('w-macd'), wr = el('w-rsi');
+  if (wm) wm.hidden = !canMacd;
+  if (wr) wr.hidden = !canRsi;
+  if (canMacd) renderMacdChart(c);
+  if (canRsi) renderRsiChart(c);
+
+  /* 지표는 정의를 함께 적어 둔다 — 같은 이름으로 다르게 계산하는 화면이 많다 */
+  var notes = [];
+  if (state.ind.bb) notes.push(t('볼린저밴드 = 20봉 단순이동평균 ± 2표준편차. 밴드 폭이 좁아지면 변동성이 줄어든 구간입니다.',
+    'Bollinger Bands = 20-bar SMA ± 2 standard deviations. A narrow band marks a low-volatility stretch.'));
+  if (state.ind.macd) notes.push(t('MACD(12,26,9) = EMA12 − EMA26, 신호선은 그 값의 EMA9, 막대는 둘의 차이입니다. 앞쪽 워밍업 구간은 비워 둡니다.',
+    'MACD(12,26,9) = EMA12 − EMA26; the signal line is its EMA9 and the bars are the difference. The warm-up stretch is left empty.'));
+  if (state.ind.rsi) notes.push(t('RSI(14)는 와일더 방식으로 계산하며 70 이상을 과매수, 30 이하를 과매도로 읽는 관행선을 함께 표시합니다.',
+    'RSI(14) uses Wilder smoothing; the 70 / 30 guides are the conventional overbought / oversold levels.'));
+  if (state.ind.macd && !canMacd) notes.push(t('MACD 는 봉이 40개 이상 있어야 그립니다 — 기간을 늘려 주세요.',
+    'MACD needs at least 40 bars — widen the range.'));
+  if (state.ind.rsi && !canRsi) notes.push(t('RSI 는 봉이 20개 이상 있어야 그립니다 — 기간을 늘려 주세요.',
+    'RSI needs at least 20 bars — widen the range.'));
+  var nb = el('ind-note');
+  if (nb) nb.innerHTML = notes.map(esc).join('<br>');
+}
+
+function renderMacdChart(c) {
+  var closes = c.close, n = closes.length, m = macdArr(closes, 12, 26, 9);
+  var innerW = PW - PL - PR, innerH = IH - 16 - 26;
+  var vals = [];
+  [m.line, m.signal, m.hist].forEach(function (a) { a.forEach(function (v) { if (v != null) vals.push(v); }); });
+  if (!vals.length) { emptyChart('svg-macd', PW, IH, t('MACD 를 계산할 수 없습니다.', 'MACD unavailable.')); return; }
+  /* 0 을 패널 가운데 두어 막대의 부호를 눈으로 바로 읽게 한다 */
+  var span = Math.max(Math.max.apply(null, vals), -Math.min.apply(null, vals)) * 1.15 || 1;
+  var px = function (i) { return PL + (n === 1 ? innerW / 2 : (i / (n - 1)) * innerW); };
+  var py = function (v) { return 16 + innerH / 2 - (v / span) * (innerH / 2); };
+  var s = clearSvg('svg-macd', PW, IH, 'MACD');
+
+  [span / 2, 0, -span / 2].forEach(function (v) {
+    var y = py(v);
+    s.appendChild(mk('line', { x1: PL, x2: PW - PR, y1: y, y2: y, stroke: C.lineSoft, 'stroke-width': 1, 'stroke-dasharray': '3 4', opacity: .5 }));
+    s.appendChild(mk('text', { x: PL - 8, y: y + 4, 'text-anchor': 'end', fill: C.muted, 'font-size': 12, 'font-family': FNUM },
+      v === 0 ? '0' : v.toFixed(Math.abs(v) < 1 ? 2 : 1)));
+  });
+  var bw = Math.max(1, (innerW / n) - 1.5);
+  m.hist.forEach(function (v, i) {
+    if (v == null) return;
+    var y0 = py(0), y1 = py(v);
+    s.appendChild(mk('rect', { x: (px(i) - bw / 2).toFixed(1), y: Math.min(y0, y1).toFixed(1),
+      width: bw.toFixed(1), height: Math.max(0.5, Math.abs(y1 - y0)).toFixed(1),
+      fill: v >= 0 ? C.orangeSoft : C.blueSoft, opacity: .75 }));
+  });
+  s.appendChild(mk('line', { x1: PL, x2: PW - PR, y1: py(0), y2: py(0), stroke: C.lineDark, 'stroke-width': 1 }));
+  var pathOf = function (arr) {
+    var d = '', started = false;
+    arr.forEach(function (v, i) {
+      if (v == null) return;
+      d += (started ? 'L' : 'M') + px(i).toFixed(1) + ' ' + py(v).toFixed(1); started = true;
+    });
+    return d;
+  };
+  s.appendChild(mk('path', { d: pathOf(m.line), fill: 'none', stroke: C.orange, 'stroke-width': 1.8 }));
+  s.appendChild(mk('path', { d: pathOf(m.signal), fill: 'none', stroke: C.blue, 'stroke-width': 1.5 }));
+  s.appendChild(mk('text', { x: PL, y: IH - 6, fill: C.muted, 'font-size': 12, 'font-family': FNUM },
+    t('MACD 12,26,9 — 주황 MACD · 남색 신호선 · 막대 차이', 'MACD 12,26,9 — orange MACD · navy signal · bars = difference')));
+
+  var cross = mk('line', { x1: 0, x2: 0, y1: 16, y2: 16 + innerH, stroke: C.ink, 'stroke-width': 1, opacity: 0 });
+  s.appendChild(cross);
+  indPanels.macd = { cross: cross, px: px, tipY: function () { return 26; }, rows: function (i) {
+    return ['<b>' + esc(dateFmt(c.dates[i])) + '</b>',
+      'MACD ' + (m.line[i] == null ? '—' : m.line[i].toFixed(2)) +
+      ' · ' + t('신호선', 'signal') + ' ' + (m.signal[i] == null ? '—' : m.signal[i].toFixed(2)),
+      t('차이', 'difference') + ' ' + (m.hist[i] == null ? '—' : m.hist[i].toFixed(2))].join('<br>');
+  } };
+}
+
+function renderRsiChart(c) {
+  var closes = c.close, n = closes.length, r = rsiArr(closes, 14);
+  if (!r.some(function (v) { return v != null; })) {
+    emptyChart('svg-rsi', PW, IH, t('RSI 를 계산할 수 없습니다.', 'RSI unavailable.'));
+    return;
+  }
+  var innerW = PW - PL - PR, innerH = IH - 16 - 26;
+  var px = function (i) { return PL + (n === 1 ? innerW / 2 : (i / (n - 1)) * innerW); };
+  var py = function (v) { return 16 + innerH - (v / 100) * innerH; };
+  var s = clearSvg('svg-rsi', PW, IH, 'RSI');
+
+  /* 30~70 중립 구간을 옅게 칠해 과매수·과매도 판단선을 눈에 띄게 한다 */
+  s.appendChild(mk('rect', { x: PL, y: py(70), width: innerW, height: py(30) - py(70), fill: C.grayHl, opacity: .35 }));
+  [70, 50, 30].forEach(function (v) {
+    var y = py(v);
+    s.appendChild(mk('line', { x1: PL, x2: PW - PR, y1: y, y2: y,
+      stroke: v === 50 ? C.lineSoft : C.neutral, 'stroke-width': 1, 'stroke-dasharray': '3 4', opacity: .7 }));
+    s.appendChild(mk('text', { x: PL - 8, y: y + 4, 'text-anchor': 'end', fill: C.muted, 'font-size': 12, 'font-family': FNUM }, String(v)));
+  });
+  var d = '', started = false;
+  r.forEach(function (v, i) {
+    if (v == null) return;
+    d += (started ? 'L' : 'M') + px(i).toFixed(1) + ' ' + py(v).toFixed(1); started = true;
+  });
+  s.appendChild(mk('path', { d: d, fill: 'none', stroke: C.orangeActive, 'stroke-width': 1.8 }));
+  s.appendChild(mk('line', { x1: PL, x2: PW - PR, y1: 16 + innerH, y2: 16 + innerH, stroke: C.lineDark, 'stroke-width': 1 }));
+  var lastV = null;
+  for (var i2 = r.length - 1; i2 >= 0; i2--) if (r[i2] != null) { lastV = r[i2]; break; }
+  s.appendChild(mk('text', { x: PL, y: IH - 6, fill: C.muted, 'font-size': 12, 'font-family': FNUM },
+    'RSI(14)' + (lastV == null ? '' : ' — ' + t('현재 ', 'now ') + lastV.toFixed(1) +
+      (lastV >= 70 ? t(' (과매수 구간)', ' (overbought)') : lastV <= 30 ? t(' (과매도 구간)', ' (oversold)') : ''))));
+
+  var cross = mk('line', { x1: 0, x2: 0, y1: 16, y2: 16 + innerH, stroke: C.ink, 'stroke-width': 1, opacity: 0 });
+  s.appendChild(cross);
+  indPanels.rsi = { cross: cross, px: px, tipY: function () { return 26; }, rows: function (i) {
+    return ['<b>' + esc(dateFmt(c.dates[i])) + '</b>',
+      'RSI(14) ' + (r[i] == null ? '—' : r[i].toFixed(1))].join('<br>');
+  } };
+}
+
+/** 가격 차트에서 마우스를 움직일 때 아래 지표 패널의 십자선·툴팁을 같은 시점으로 맞춘다 */
+function hoverInd(i) {
+  ['macd', 'rsi'].forEach(function (k) {
+    var p = indPanels[k];
+    if (!p) return;
+    if (i < 0) { p.cross.setAttribute('opacity', 0); tipHide('tip-' + k); return; }
+    var X = p.px(i);
+    p.cross.setAttribute('x1', X); p.cross.setAttribute('x2', X); p.cross.setAttribute('opacity', .25);
+    tipShow('tip-' + k, 'w-' + k, PW, X, p.tipY(i), p.rows(i));
+  });
+}
 function labelInterval(v) { return v === '1d' ? t('일봉', 'daily') : v === '1wk' ? t('주봉', 'weekly') : t('월봉', 'monthly'); }
 function labelRange(v) {
   var m = { '1mo': t('1개월', '1M'), '3mo': t('3개월', '3M'), '6mo': t('6개월', '6M'), '1y': t('1년', '1Y'),
-    '2y': t('2년', '2Y'), '5y': t('5년', '5Y'), '10y': t('10년', '10Y'), 'max': t('전체', 'Max') };
+    '2y': t('2년', '2Y'), '3y': t('3년', '3Y'), '5y': t('5년', '5Y'), '10y': t('10년', '10Y'), 'max': t('전체', 'Max') };
   return m[v] || v;
 }
 
@@ -2693,16 +3408,31 @@ function renderTargets(M) {
   } else {
     var ACT = { up: t('상향', 'Upgrade'), down: t('하향', 'Downgrade'), main: t('유지', 'Maintain'),
       init: t('신규 개시', 'Initiate'), reit: t('재확인', 'Reiterate') };
+    var anyPt = h.some(function (r) { return r.pt != null; });
     el('t-updown').innerHTML = '<thead><tr><th scope="col">' + esc(t('일자', 'Date')) + '</th>' +
       '<th scope="col">' + esc(t('증권사', 'Firm')) + '</th>' +
       '<th scope="col">' + esc(t('변경', 'Change')) + '</th>' +
-      '<th scope="col">' + esc(t('구분', 'Action')) + '</th></tr></thead><tbody>' +
+      '<th scope="col">' + esc(t('구분', 'Action')) + '</th>' +
+      '<th class="num" scope="col">' + esc(t('목표가', 'Price target')) + '</th>' +
+      '<th class="num" scope="col">' + esc(t('당시 종가', 'Close then')) + '</th>' +
+      '<th class="num" scope="col">' + esc(t('당시 대비 지금', 'Since then')) + '</th></tr></thead><tbody>' +
       h.map(function (r) {
         var arrow = r.from && r.to && r.from !== r.to ? esc(r.from) + ' → ' + esc(r.to) : esc(r.to || r.from || '—');
         var cls = r.action === 'up' ? 'up' : r.action === 'down' ? 'down' : '';
+        var then = closeAt(M.sym, r.ts, M.chart);
+        var since = then != null && px0 ? ((px0 - then) / then) * 100 : null;
         return '<tr><td>' + esc(dateFmt(r.ts)) + '</td><td>' + esc(r.firm || '—') + '</td>' +
-          '<td>' + arrow + '</td><td class="' + cls + '">' + esc(ACT[r.action] || r.action || '—') + '</td></tr>';
-      }).join('') + '</tbody>';
+          '<td>' + arrow + '</td><td class="' + cls + '">' + esc(ACT[r.action] || r.action || '—') + '</td>' +
+          '<td class="num">' + price(r.pt) + '</td>' +
+          '<td class="num">' + price(then) + '</td>' +
+          '<td class="num ' + signCls(since) + '">' + pct(since, 1) + '</td></tr>';
+      }).join('') + '</tbody>' +
+      '<caption>' + esc(anyPt
+        ? t('목표가는 데이터 제공사가 함께 준 증권사별 목표주가입니다. “당시 종가”는 받아 둔 일봉에서 그 일자의 종가를 찾아 넣습니다.',
+            'The price target comes from the data provider’s rating record. “Close then” is looked up in the stored daily bars for that date.')
+        : t('증권사별 목표가는 이 화면이 쓰는 무료 데이터(Yahoo Finance)의 의견 변경 이력에 들어 있지 않아 비어 있습니다 — 제공되기 시작하면 그대로 채워집니다. 대신 그 의견이 나온 날의 종가와 지금까지의 등락을 함께 보여 드립니다. 증권사 전체의 목표주가 최저·평균·최고는 위 표에 있습니다.',
+            'Per-firm price targets are not part of the free data source (Yahoo Finance) rating history, so the column stays empty — it fills in automatically if the provider starts publishing them. Instead the table shows the close on the day of the call and the move since. The consensus low / mean / high is in the table above.')) +
+      '</caption>';
   }
   var have = !!(tg.mean != null || (tg.dist && Object.keys(tg.dist).length));
   srcBadge('badge-tgt', M, have);
@@ -2736,8 +3466,15 @@ function renderEvents(M) {
   });
   ((M.target && M.target.history) || []).slice(0, 6).forEach(function (h) {
     var act = h.action === 'up' ? t('상향', 'upgrade') : h.action === 'down' ? t('하향', 'downgrade') : t('의견 갱신', 'update');
+    /* 목표가는 제공사가 주면 그대로, 없으면 그 시점 종가를 붙인다 — 빈 줄로 두지 않는다 */
+    var tail;
+    if (h.pt != null) tail = ' · ' + t('목표가 ', 'target ') + price(h.pt);
+    else {
+      var then = closeAt(M.sym, h.ts, M.chart);
+      tail = then == null ? '' : ' · ' + t('당시 종가 ', 'close then ') + price(then);
+    }
     items.push({ ts: h.ts, kind: t('투자의견', 'Rating'),
-      text: (h.firm || '') + ' ' + act + (h.to ? ' → ' + h.to : '') });
+      text: (h.firm || '') + ' ' + act + (h.to ? ' → ' + h.to : '') + tail });
   });
   (M.surprises || []).slice(0, 2).forEach(function (r) {
     if (r.ts == null) return;
@@ -3049,6 +3786,7 @@ function applySnapshot() {
   if (state.asof == null && SNAP.fetchedAt) state.asof = new Date(SNAP.fetchedAt);
   renderList(); renderHeroMeta(); renderSources(); renderUpdLine();
   if (CACHE[state.sel]) renderDetail(state.sel);
+  if (CMP.length) renderCompare();
 }
 
 /** 가격만 담긴 파일. 장중 10분 주기로 러너가 갱신한다(us100-quotes.yml).
@@ -3101,6 +3839,7 @@ function applyQuotes() {
   if (QUOTES_AT) state.asof = QUOTES_AT;
   renderList(); renderHeroMeta(); renderSources(); renderUpdLine();
   if (CACHE[state.sel]) renderDetail(state.sel);
+  if (CMP.length) renderCompare();      /* 비교 화면도 새 가격을 반영한다 */
 }
 
 /* ============================================================
@@ -3407,7 +4146,543 @@ function snapAsOf() {
 </script>
 <script>
 /* ============================================================
-   17. 컨트롤 구성 · 언어 토글 · 초기화
+   17. 종목 비교 (최대 4종목)
+   같은 시점을 100으로 맞춰(리베이스) 겹쳐 보는 것이 비교의 기본이다 —
+   주가 수준이 다른 종목을 같은 축에 그대로 올리면 비싼 주식이 늘 위에 있어
+   흐름을 견줄 수 없기 때문이다. 지표는 항목을 행, 종목을 열로 놓는다.
+   ============================================================ */
+var CMP_MAX = 4;
+var CMP = [];
+try { CMP = JSON.parse(localStorage.getItem('mas-us100-cmp') || '[]') || []; } catch (e) { CMP = []; }
+CMP = CMP.filter(function (s) { return typeof s === 'string' && company(s).seq !== 999; }).slice(0, CMP_MAX);
+
+/* 시리즈 색은 디자인 시스템 고정 순서 — 1 Orange, 2 Blue, 3 Soft Orange, 4 Blue Soft */
+var CMP_COLORS = [C.orange, C.blue, C.orangeSoft, C.blueSoft];
+var CMP_SERIES = {};      // sym -> { dates, close, src } | null(조회 실패)
+
+function cmpColor(i) { return CMP_COLORS[i % CMP_COLORS.length]; }
+function cmpSave() { try { localStorage.setItem('mas-us100-cmp', JSON.stringify(CMP)); } catch (e) {} }
+function cmpHas(sym) { return CMP.indexOf(sym) >= 0; }
+
+/** 목록 체크박스 · 칩의 × · 추가 드롭다운이 모두 이 함수를 통한다 */
+function cmpToggle(sym, on) {
+  var i = CMP.indexOf(sym);
+  var want = on == null ? i < 0 : !!on;
+  if (want && i < 0) {
+    if (CMP.length >= CMP_MAX) {
+      updMessage('<b>' + esc(t('비교는 최대 ' + CMP_MAX + '종목까지입니다 — 하나를 빼고 다시 담아 주세요.',
+        'The comparison holds at most ' + CMP_MAX + ' companies — remove one first.')) + '</b>', 5000);
+      renderList();
+      return;
+    }
+    CMP.push(sym);
+  } else if (!want && i >= 0) {
+    CMP.splice(i, 1);
+  } else {
+    return;
+  }
+  cmpSave();
+  renderList();
+  loadCompare();
+}
+
+/** 같은 섹터에서 시가총액이 큰 종목 — 비교 기본값을 "동종 업계"로 채우는 데 쓴다.
+ *  같은 섹터에 상대가 부족하면(목록에 한 곳뿐인 섹터도 있다) 전체 시총 상위로 채운다. */
+function cmpPeers(sym, n) {
+  var want = n == null ? 2 : n;
+  var c = company(sym);
+  var byCap = function (rows) {
+    return rows.map(function (r) { return { sym: r[0], cap: (LIST[r[0]] || {}).cap || 0 }; })
+      .sort(function (a, b) { return b.cap - a.cap; })
+      .map(function (r) { return r.sym; });
+  };
+  var out = byCap(COMPANIES.filter(function (r) { return r[3] === c.sector && r[0] !== sym; })).slice(0, want);
+  if (out.length < want) {
+    byCap(COMPANIES.filter(function (r) { return r[0] !== sym; })).forEach(function (s) {
+      if (out.length < want && out.indexOf(s) < 0) out.push(s);
+    });
+  }
+  return out;
+}
+
+/** 처음 열었을 때 빈 화면을 보여 주지 않는다 — 선택 종목 + 동일 섹터 상위로 채운다 */
+function cmpFillPeers() {
+  CMP = [state.sel].concat(cmpPeers(state.sel, 2));
+  cmpSave();
+  renderList();
+  loadCompare();
+}
+
+/** 비교용 장기 계열. 스냅샷(월봉 10년 + 일봉 2년)을 먼저 쓰고, 없으면 직접 받는다 */
+function cmpLoadSeries(sym) {
+  if (CMP_SERIES[sym] !== undefined) return Promise.resolve(CMP_SERIES[sym]);
+  var takeLong = function () {
+    var s = longSeries(sym, null);
+    if (!s || s.close.length < 5) throw new Error('계열 없음');
+    CMP_SERIES[sym] = { dates: s.dates, close: s.close, src: 'snapshot' };
+    return CMP_SERIES[sym];
+  };
+  return loadSnapshotChart(sym).then(takeLong).catch(function () {
+    return fetchChart(sym, '5y', '1wk').then(function (c) {
+      var dates = [], close = [];
+      c.dates.forEach(function (d, i) { if (c.close[i] != null) { dates.push(d); close.push(c.close[i]); } });
+      if (close.length < 5) throw new Error('계열 짧음');
+      CMP_SERIES[sym] = { dates: dates, close: close, src: 'live' };
+      return CMP_SERIES[sym];
+    });
+  }).catch(function () {
+    /* 이미 받아 둔 상세 차트라도 있으면 그것으로 그린다(예시 데이터는 쓰지 않는다) */
+    var d = CACHE[sym];
+    if (d && d.charts && !d.demoChart) {
+      var keys = Object.keys(d.charts);
+      for (var i = 0; i < keys.length; i++) {
+        var c2 = d.charts[keys[i]];
+        if (c2 && c2.close && c2.close.length > 5) {
+          CMP_SERIES[sym] = { dates: c2.dates, close: c2.close, src: d.srcs.chart || 'live' };
+          return CMP_SERIES[sym];
+        }
+      }
+    }
+    CMP_SERIES[sym] = null;
+    return null;
+  });
+}
+
+function loadCompare() {
+  if (!CMP.length) { renderCompare(); return Promise.resolve(); }
+  renderCompare();                                     /* 있는 것으로 먼저 그린다 */
+  return Promise.all(CMP.map(function (s) {
+    return cmpLoadSeries(s).catch(function () { return null; });
+  })).then(function () { renderCompare(); });
+}
+
+var CMP_RANGE_DAYS = { '1mo': 31, '3mo': 93, '6mo': 186, '1y': 372, '3y': 1100, '5y': 1830 };
+
+/** 고른 기간만 잘라내고, 마지막 점은 지금 가격으로 맞춘다(스냅샷 종가보다 새 값이 있으면) */
+function cmpWindow(sym) {
+  var s = CMP_SERIES[sym];
+  if (!s) return null;
+  var cutoff = Date.now() - (CMP_RANGE_DAYS[state.cmpRange] || 372) * 86400000;
+  var dates = [], close = [];
+  for (var i = 0; i < s.close.length; i++) {
+    if (s.dates[i].getTime() >= cutoff) { dates.push(s.dates[i]); close.push(s.close[i]); }
+  }
+  if (close.length < 3) return null;
+  var live = cmpLivePrice(sym);
+  if (live != null) {
+    var last = dates[dates.length - 1].getTime();
+    if (Date.now() - last > 18 * 3600 * 1000) { dates.push(new Date()); close.push(live); }
+    else close[close.length - 1] = live;
+  }
+  return { sym: sym, dates: dates, close: close, src: s.src };
+}
+
+/** 지금 가격 — 스트리밍 → 가격 파일 → 목록(스냅샷) 순서 */
+function cmpLivePrice(sym) {
+  var d = CACHE[sym] || {};
+  if (d.tick && d.tick.price != null) return d.tick.price;
+  if (d.quote10 && d.quote10.price != null) return d.quote10.price;
+  var l = LIST[sym] || {};
+  return l.price == null ? null : l.price;
+}
+
+/** 화면 모델 — CACHE 항목이 없어도 안전하게 modelOf 를 쓰기 위한 감싸개 */
+function cmpModel(sym) {
+  if (!CACHE[sym]) CACHE[sym] = { sym: sym, charts: {}, srcs: {}, ts: Date.now() };
+  var d = CACHE[sym];
+  if (!d.charts) d.charts = {};
+  if (!d.srcs) d.srcs = {};
+  if (!d.pending) d.pending = { chart: false, summary: false, news: false };
+  return modelOf(sym);
+}
+
+/* ---------- 17.1 렌더 ---------- */
+function renderCompare() {
+  renderCmpChips();
+  var sets = CMP.map(cmpWindow).filter(Boolean);
+  renderCmpChart(sets);
+  renderCmpReturns();
+  renderCmpTable();
+
+  var srcs = sets.map(function (s) { return s.src; });
+  var anyDemo = CMP.some(function (sym) {
+    var d = CACHE[sym];
+    return !!(d && d.demo && !d.summary && !d.snap) || !!(LIST[sym] || {}).demo;
+  });
+  if (!CMP.length) badge('badge-cmp', null, t('종목을 고르세요', 'pick companies'));
+  else if (anyDemo) badge('badge-cmp', 'sample');
+  else if (!sets.length) badge('badge-cmp', null, t('시계열 미조회', 'series unavailable'));
+  else if (srcs.indexOf('live') >= 0 && srcs.indexOf('snapshot') < 0) badge('badge-cmp', 'live');
+  else badge('badge-cmp', 'snapshot');
+}
+
+function renderCmpChips() {
+  var box = el('cmp-chips');
+  if (!box) return;
+  if (!CMP.length) {
+    box.innerHTML = '<span class="cmp-none">' + esc(t('비교할 종목이 없습니다. 위 목록의 “비교” 칸을 눌러 담아 주세요(최대 ' + CMP_MAX + '종목).',
+      'No companies picked yet — tick the “vs” column in the list above (up to ' + CMP_MAX + ').')) + '</span>';
+    return;
+  }
+  box.innerHTML = CMP.map(function (sym, i) {
+    var c = company(sym), l = LIST[sym] || {};
+    return '<span class="cmp-chip">' +
+      '<span class="sw" style="background:' + cmpColor(i) + '"></span>' +
+      '<b>' + esc(sym) + '</b> ' + esc(coName(c)) +
+      '<span class="' + signCls(l.changePct) + '" style="font-family:var(--font-num)">' + pct(l.changePct) + '</span>' +
+      '<button type="button" class="x" data-cmp-del="' + esc(sym) + '" aria-label="' +
+        esc(t(sym + ' 비교에서 빼기', 'Remove ' + sym)) + '">×</button></span>';
+  }).join('');
+  Array.prototype.forEach.call(box.querySelectorAll('[data-cmp-del]'), function (b) {
+    b.addEventListener('click', function () { cmpToggle(b.getAttribute('data-cmp-del'), false); });
+  });
+}
+
+/* 리베이스 차트 */
+var KW = 1000, KH = 344, KL = 58, KR = 104, KT = 18, KB = 30;
+
+/** 로그축 눈금 — 1·1.5·2·3·5·7 × 10^k 중 구간에 들어오는 값 */
+function logTicks(lo, hi) {
+  var out = [], mults = [1, 1.5, 2, 3, 5, 7];
+  for (var e = -2; e <= 5; e++) {
+    for (var i = 0; i < mults.length; i++) {
+      var v = mults[i] * Math.pow(10, e);
+      if (v >= lo && v <= hi) out.push(v);
+    }
+  }
+  return out.length >= 3 ? out : niceTicks(lo, hi, 4);
+}
+
+function renderCmpChart(sets) {
+  var legend = el('legend-cmp');
+  if (!sets.length) {
+    emptyChart('svg-cmp', KW, KH, CMP.length
+      ? t('비교할 시계열을 불러오지 못했습니다.', 'Could not load the series to compare.')
+      : t('위 목록에서 “비교” 칸을 눌러 2종목 이상 담아 주세요.', 'Tick the “vs” column above to pick two or more companies.'));
+    if (legend) legend.innerHTML = '';
+    return;
+  }
+
+  var series = sets.map(function (s) {
+    var base = s.close[0];
+    return { sym: s.sym, dates: s.dates, close: s.close,
+      idx: s.close.map(function (v) { return (v / base) * 100; }), base: base };
+  });
+  var tMin = Infinity, tMax = -Infinity, lo = Infinity, hi = -Infinity;
+  series.forEach(function (s) {
+    tMin = Math.min(tMin, s.dates[0].getTime());
+    tMax = Math.max(tMax, s.dates[s.dates.length - 1].getTime());
+    s.idx.forEach(function (v) { lo = Math.min(lo, v); hi = Math.max(hi, v); });
+  });
+  var logAxis = state.cmpAxis === 'log' && lo > 0;
+  var pad = (hi - lo) * 0.08 || 1;
+  var yLo = logAxis ? lo / 1.06 : lo - pad, yHi = logAxis ? hi * 1.06 : hi + pad;
+  var innerW = KW - KL - KR, innerH = KH - KT - KB;
+  var px = function (ms) { return KL + (tMax === tMin ? innerW / 2 : ((ms - tMin) / (tMax - tMin)) * innerW); };
+  var py = logAxis
+    ? function (v) { return KT + innerH - ((Math.log(v) - Math.log(yLo)) / (Math.log(yHi) - Math.log(yLo))) * innerH; }
+    : function (v) { return KT + innerH - ((v - yLo) / (yHi - yLo)) * innerH; };
+
+  var s = clearSvg('svg-cmp', KW, KH,
+    t(CMP.join(', ') + ' 기준=100 비교 차트', CMP.join(', ') + ' rebased (=100) comparison'));
+
+  (logAxis ? logTicks(yLo, yHi) : niceTicks(yLo, yHi, 5)).forEach(function (v) {
+    var y = py(v);
+    if (y < KT - 1 || y > KT + innerH + 1) return;
+    s.appendChild(mk('line', { x1: KL, x2: KW - KR, y1: y, y2: y, stroke: C.lineSoft, 'stroke-width': 1, 'stroke-dasharray': '3 4', opacity: .55 }));
+    s.appendChild(mk('text', { x: KL - 8, y: y + 4, 'text-anchor': 'end', fill: C.muted, 'font-size': 13, 'font-family': FNUM },
+      v >= 100 ? String(Math.round(v)) : v.toFixed(v < 10 ? 1 : 0)));
+  });
+  /* 기준선 100 — 여기가 비교의 출발점이라는 것을 표시해 둔다 */
+  if (100 >= yLo && 100 <= yHi) {
+    var y100 = py(100);
+    s.appendChild(mk('line', { x1: KL, x2: KW - KR, y1: y100, y2: y100, stroke: C.neutral, 'stroke-width': 1.2 }));
+    s.appendChild(mk('text', { x: KL + 6, y: y100 - 6, fill: C.muted, 'font-size': 12, 'font-family': FNUM },
+      t('기준 100', 'base 100')));
+  }
+  s.appendChild(mk('line', { x1: KL, x2: KL, y1: KT, y2: KT + innerH, stroke: C.lineDark, 'stroke-width': 1 }));
+  s.appendChild(mk('line', { x1: KL, x2: KW - KR, y1: KT + innerH, y2: KT + innerH, stroke: C.lineDark, 'stroke-width': 1 }));
+
+  var ticks = 6;
+  for (var ti = 0; ti < ticks; ti++) {
+    var ms = tMin + ((tMax - tMin) * ti) / (ticks - 1), d = new Date(ms);
+    var lab = (CMP_RANGE_DAYS[state.cmpRange] || 372) > 400
+      ? d.getFullYear() + '.' + ('0' + (d.getMonth() + 1)).slice(-2)
+      : ('0' + (d.getMonth() + 1)).slice(-2) + '.' + ('0' + d.getDate()).slice(-2);
+    s.appendChild(mk('text', { x: px(ms), y: KH - 9, 'text-anchor': ti === 0 ? 'start' : ti === ticks - 1 ? 'end' : 'middle',
+      fill: C.muted, 'font-size': 13, 'font-family': FNUM }, lab));
+  }
+
+  /* 선 + 끝점 직접 라벨 (색만으로 구분하지 않게) */
+  var ends = [];
+  series.forEach(function (ser, i) {
+    var d = '';
+    ser.idx.forEach(function (v, j) {
+      d += (j ? 'L' : 'M') + px(ser.dates[j].getTime()).toFixed(1) + ' ' + py(v).toFixed(1);
+    });
+    s.appendChild(mk('path', { d: d, fill: 'none', stroke: cmpColor(i), 'stroke-width': 2, 'stroke-linejoin': 'round' }));
+    var lastIdx = ser.idx[ser.idx.length - 1];
+    ends.push({ i: i, sym: ser.sym, y: py(lastIdx), v: lastIdx });
+    s.appendChild(mk('circle', { cx: px(ser.dates[ser.dates.length - 1].getTime()), cy: py(lastIdx), r: 3.5,
+      fill: cmpColor(i), stroke: '#fff', 'stroke-width': 1.6 }));
+  });
+  /* 라벨이 겹치지 않게 위에서부터 최소 간격을 준다 */
+  ends.sort(function (a, b) { return a.y - b.y; });
+  var minGap = 17;
+  for (var e = 1; e < ends.length; e++) {
+    if (ends[e].y - ends[e - 1].y < minGap) ends[e].y = ends[e - 1].y + minGap;
+  }
+  ends.forEach(function (en) {
+    var chg = en.v - 100;
+    s.appendChild(mk('text', { x: KW - KR + 8, y: Math.min(KT + innerH, Math.max(KT + 10, en.y + 4)),
+      fill: cmpColor(en.i), 'font-size': 13, 'font-weight': 600, 'font-family': FNUM },
+      en.sym + ' ' + (chg >= 0 ? '+' : '') + chg.toFixed(1) + '%'));
+  });
+
+  /* 호버 — 한 시점의 모든 종목 값을 함께 보여 준다 */
+  var cross = mk('line', { x1: 0, x2: 0, y1: KT, y2: KT + innerH, stroke: C.ink, 'stroke-width': 1, opacity: 0 });
+  s.appendChild(cross);
+  var dots = series.map(function (ser, i) {
+    var dot = mk('circle', { r: 4, fill: cmpColor(i), stroke: '#fff', 'stroke-width': 1.6, opacity: 0 });
+    s.appendChild(dot);
+    return dot;
+  });
+  var overlay = mk('rect', { x: KL, y: KT, width: innerW, height: innerH, fill: 'transparent', style: 'cursor:crosshair' });
+  s.appendChild(overlay);
+  function onMove(evt) {
+    var r = s.getBoundingClientRect();
+    var relX = ((evt.touches ? evt.touches[0].clientX : evt.clientX) - r.left) / r.width * KW;
+    var frac = Math.max(0, Math.min(1, (relX - KL) / innerW));
+    var ms = tMin + (tMax - tMin) * frac;
+    var X = px(ms);
+    cross.setAttribute('x1', X); cross.setAttribute('x2', X); cross.setAttribute('opacity', .25);
+    var rows = [], shown = null;
+    var picked = series.map(function (ser, i) {
+      var best = 0, bd = Infinity;
+      for (var j = 0; j < ser.dates.length; j++) {
+        var dd = Math.abs(ser.dates[j].getTime() - ms);
+        if (dd < bd) { bd = dd; best = j; }
+      }
+      if (shown == null || bd < shown.bd) shown = { bd: bd, date: ser.dates[best] };
+      return { i: i, sym: ser.sym, j: best, idx: ser.idx[best], px: ser.close[best] };
+    });
+    picked.forEach(function (p) {
+      dots[p.i].setAttribute('cx', px(series[p.i].dates[p.j].getTime()));
+      dots[p.i].setAttribute('cy', py(p.idx));
+      dots[p.i].setAttribute('opacity', 1);
+    });
+    picked.slice().sort(function (a, b) { return b.idx - a.idx; }).forEach(function (p) {
+      var chg = p.idx - 100;
+      rows.push(p.sym + ' ' + p.idx.toFixed(1) + ' (' + (chg >= 0 ? '+' : '') + chg.toFixed(1) + '%) · ' + price(p.px));
+    });
+    tipShow('tip-cmp', 'w-cmp', KW, X, Math.max(28, KT + 10),
+      '<b>' + esc(dateFmt(shown.date)) + '</b><br>' + rows.join('<br>'));
+  }
+  overlay.addEventListener('mousemove', onMove);
+  overlay.addEventListener('touchmove', function (e) { onMove(e); e.preventDefault(); });
+  overlay.addEventListener('mouseleave', function () {
+    cross.setAttribute('opacity', 0);
+    dots.forEach(function (d) { d.setAttribute('opacity', 0); });
+    tipHide('tip-cmp');
+  });
+
+  if (legend) {
+    legend.innerHTML = series.map(function (ser, i) {
+      return '<span><i style="background:' + cmpColor(i) + '"></i>' + esc(ser.sym + ' ' + coName(company(ser.sym))) + '</span>';
+    }).join('') +
+      '<span>' + esc(t('시작일을 100 으로 맞춘 지수 · 기간 ' + labelRange(state.cmpRange) +
+        (state.cmpAxis === 'log' ? ' · 로그축' : ''),
+        'Indexed to 100 at the start · ' + labelRange(state.cmpRange) + (state.cmpAxis === 'log' ? ' · log axis' : ''))) + '</span>' +
+      '<span>' + esc(t('배당 재투자는 반영하지 않습니다.', 'Dividends are not reinvested.')) + '</span>';
+  }
+}
+
+/* 기간별 수익률 — 항목(기간)을 가로축에, 종목을 시리즈로 묶은 그룹 막대 */
+var CMP_PERIODS = [
+  ['1개월', '1M', 30], ['3개월', '3M', 91], ['6개월', '6M', 182],
+  ['1년', '1Y', 365], ['3년', '3Y', 365 * 3], ['5년', '5Y', 365 * 5]
+];
+
+/** 받아 둔 전체 계열에서 n일 전 종가 대비 수익률(%) — 차트 기간과 무관하게 계산한다 */
+function cmpReturn(sym, days) {
+  var s = CMP_SERIES[sym];
+  if (!s) return null;
+  var now = cmpLivePrice(sym);
+  var last = now != null ? now : s.close[s.close.length - 1];
+  var target = Date.now() - days * 86400000, idx = -1;
+  for (var i = s.dates.length - 1; i >= 0; i--) {
+    if (s.dates[i].getTime() <= target) { idx = i; break; }
+  }
+  if (idx < 0) return null;
+  var base = s.close[idx];
+  return base ? ((last - base) / base) * 100 : null;
+}
+
+function renderCmpReturns() {
+  var W = 1000, H = 286, T = 34, B = 52, L = 10, R = 10;
+  var syms = CMP.filter(function (s) { return CMP_SERIES[s]; });
+  var legend = el('legend-cmpret');
+  if (!syms.length) {
+    emptyChart('svg-cmpret', W, 180, t('비교할 시계열이 없습니다.', 'No series to compare.'));
+    if (legend) legend.innerHTML = '';
+    return;
+  }
+  /* 기간마다 눈금을 따로 둔다(작은 배수 패널).
+     1개월 수익률과 5년 수익률을 같은 축에 놓으면 5년이 화면을 다 먹어 1개월·3개월
+     막대가 0 선에 붙어 버려 아무것도 읽을 수 없다. 그래서 기간별로 패널을 나누고,
+     패널마다 그 기간의 최대 크기에 맞춰 그린 뒤 그 사실을 패널 위에 적어 둔다. */
+  var panels = CMP_PERIODS.map(function (p) {
+    return { label: t(p[0], p[1]), vals: syms.map(function (sy) { return cmpReturn(sy, p[2]); }) };
+  });
+  var s = clearSvg('svg-cmpret', W, H, t('기간별 수익률 비교', 'Trailing returns compared'));
+  var pw = (W - L - R) / panels.length;
+  var innerH = H - T - B;
+
+  panels.forEach(function (pa, gi) {
+    var x0 = L + pw * gi;
+    if (gi) s.appendChild(mk('line', { x1: x0, x2: x0, y1: T - 22, y2: T + innerH + 8, stroke: C.hairline, 'stroke-width': 1, opacity: .7 }));
+    var got = pa.vals.filter(function (v) { return v != null; });
+    var maxAbs = got.length ? Math.max.apply(null, got.map(Math.abs)) : 1;
+    var scale = maxAbs * 1.18 || 1;
+    var hasNeg = got.some(function (v) { return v < 0; });
+    /* 음수가 있으면 0 선을 패널 아래쪽 1/3 에, 없으면 바닥에 둔다 */
+    var zeroY = hasNeg ? T + innerH * 0.68 : T + innerH;
+    var upH = zeroY - T, dnH = T + innerH - zeroY;
+    var py = function (v) { return v >= 0 ? zeroY - (v / scale) * upH : zeroY + (-v / scale) * (dnH || upH * 0.4); };
+
+    s.appendChild(mk('text', { x: x0 + pw / 2, y: T - 8, 'text-anchor': 'middle', fill: C.muted,
+      'font-size': 11, 'font-family': FNUM },
+      t('눈금 최대 ', 'scale to ') + (maxAbs >= 100 ? Math.round(maxAbs) : maxAbs.toFixed(1)) + '%'));
+
+    var slot = (pw - 18) / syms.length;
+    var bw = Math.min(26, slot - 5);
+    syms.forEach(function (sy, si) {
+      var v = pa.vals[si];
+      var cx = x0 + 9 + slot * si + slot / 2;
+      if (v == null) {
+        s.appendChild(mk('text', { x: cx, y: zeroY - 6, 'text-anchor': 'middle', fill: C.muted, 'font-size': 11, 'font-family': FNUM }, '—'));
+        return;
+      }
+      var y = py(v), h = Math.max(1.5, Math.abs(y - zeroY));
+      var rect = mk('rect', { x: (cx - bw / 2).toFixed(1), y: Math.min(y, zeroY).toFixed(1),
+        width: bw.toFixed(1), height: h.toFixed(1), fill: cmpColor(CMP.indexOf(sy)), opacity: .92, rx: 1 });
+      s.appendChild(rect);
+      /* 막대 끝에 값을 바로 적는다 — 범례를 오가지 않아도 읽히게 */
+      s.appendChild(mk('text', { x: cx, y: v >= 0 ? Math.min(y, zeroY) - 5 : Math.max(y, zeroY) + 12,
+        'text-anchor': 'middle', fill: cmpColor(CMP.indexOf(sy)), 'font-size': 10, 'font-family': FNUM },
+        (v >= 0 ? '+' : '') + (Math.abs(v) >= 100 ? Math.round(v) : v.toFixed(1))));
+      var lab = pa.label;
+      rect.addEventListener('mousemove', function (evt) {
+        var r = s.getBoundingClientRect();
+        var relX = (evt.clientX - r.left) / r.width * W;
+        tipShow('tip-cmpret', 'w-cmpret', W, relX, Math.min(y, zeroY) - 6,
+          '<b>' + esc(sy + ' · ' + lab) + '</b><br>' + (v >= 0 ? '+' : '') + v.toFixed(1) + '%');
+      });
+      rect.addEventListener('mouseleave', function () { tipHide('tip-cmpret'); });
+    });
+    s.appendChild(mk('line', { x1: x0 + 6, x2: x0 + pw - 6, y1: zeroY, y2: zeroY, stroke: C.lineDark, 'stroke-width': 1 }));
+    s.appendChild(mk('text', { x: x0 + pw / 2, y: T + innerH + 26, 'text-anchor': 'middle', fill: C.ink, 'font-size': 15 }, pa.label));
+  });
+  s.appendChild(mk('text', { x: L, y: H - 8, fill: C.muted, 'font-size': 12, 'font-family': FNUM },
+    t('막대 위 숫자는 %, 아래로 뻗은 막대는 마이너스입니다 · 패널마다 눈금이 달라 기간 안에서 종목끼리 비교하는 데 씁니다',
+      'Numbers on the bars are percent; bars below the line are negative · each panel has its own scale, so compare companies within a period, not across periods')));
+
+  if (legend) {
+    legend.innerHTML = syms.map(function (sy) {
+      return '<span><i style="background:' + cmpColor(CMP.indexOf(sy)) + '"></i>' + esc(sy) + '</span>';
+    }).join('') + '<span>' + esc(t('받아 둔 전체 시계열(월봉 10년 + 일봉 2년)로 계산 · 위 차트의 기간 설정과 무관합니다.',
+      'Computed from the full stored series (10y monthly + 2y daily), independent of the chart range above.')) + '</span>';
+  }
+}
+
+/* 지표 비교 표 — 항목을 행, 종목을 열로 둔다(비교는 열 방향으로 읽는다) */
+function renderCmpTable() {
+  var tbl = el('t-cmp');
+  if (!tbl) return;
+  if (!CMP.length) {
+    tbl.innerHTML = '<tbody><tr class="empty-row"><td>' +
+      esc(t('비교할 종목을 담으면 지표가 나란히 표시됩니다.', 'Pick companies and their metrics appear side by side.')) +
+      '</td></tr></tbody>';
+    return;
+  }
+  var models = CMP.map(function (sym) { return cmpModel(sym); });
+  var nextEarn = function (M) {
+    var ds = ((M.calendar || {}).dates || []).slice().sort(function (a, b) { return a - b; });
+    var fut = ds.filter(function (ts) { return ts * 1000 > Date.now() - 86400000; });
+    if (fut.length) return dateFmt(fut[0]);
+    var last = (M.surprises || []).filter(function (r) { return r.ts; })[0];
+    return last ? t(dateFmt(last.ts) + ' (직전)', dateFmt(last.ts) + ' (last)') : '—';
+  };
+  var pos52 = function (q) {
+    return (q.high52 != null && q.low52 != null && q.price != null && q.high52 > q.low52)
+      ? ((q.price - q.low52) / (q.high52 - q.low52)) * 100 : null;
+  };
+
+  var rows = [
+    [t('현재가', 'Price'), function (M) { return price(M.quote.price); }],
+    [t('등락률', 'Change'), function (M) { return '<span class="' + signCls(M.quote.changePct) + '">' + pct(M.quote.changePct) + '</span>'; }],
+    [t('시가총액', 'Market cap'), function (M) { return usd(M.quote.cap); }],
+    [t('PER (TTM)', 'P/E (TTM)'), function (M) { return ratio(M.quote.per, 1); }],
+    [t('선행 PER', 'Forward P/E'), function (M) { return ratio(M.quote.fwdPer, 1); }],
+    [t('PBR', 'P/B'), function (M) { return ratio(M.quote.pbr, 2); }],
+    [t('PSR', 'P/S'), function (M) { return ratio(M.quote.psr, 2); }],
+    [t('EPS (TTM)', 'EPS (TTM)'), function (M) { return M.quote.eps == null ? '—' : '$' + M.quote.eps.toFixed(2); }],
+    [t('매출 (TTM)', 'Revenue (TTM)'), function (M) { return usd(M.quote.revenue); }],
+    [t('매출 성장률(YoY)', 'Revenue growth'), function (M) { return M.quote.revenueGrowth == null ? '—' : '<span class="' + signCls(M.quote.revenueGrowth) + '">' + pct(M.quote.revenueGrowth, 1) + '</span>'; }],
+    [t('영업이익률', 'Operating margin'), function (M) { return M.quote.opMargin == null ? '—' : M.quote.opMargin.toFixed(1) + '%'; }],
+    [t('ROE', 'ROE'), function (M) { return M.quote.roe == null ? '—' : M.quote.roe.toFixed(1) + '%'; }],
+    [t('배당수익률', 'Dividend yield'), function (M) { return M.quote.divYield == null ? '—' : M.quote.divYield.toFixed(2) + '%'; }],
+    [t('베타', 'Beta'), function (M) { return ratio(M.quote.beta, 2); }],
+    [t('52주 밴드 내 위치', 'Position in 52w band'), function (M) { var v = pos52(M.quote); return v == null ? '—' : v.toFixed(0) + '%'; }],
+    [t('목표주가 (평균)', 'Target (mean)'), function (M) { return price((M.target || {}).mean); }],
+    [t('상승여력', 'Upside'), function (M) {
+      var tg = (M.target || {}).mean, p = M.quote.price;
+      var v = tg != null && p ? ((tg - p) / p) * 100 : null;
+      return '<span class="' + signCls(v) + '">' + pct(v, 1) + '</span>';
+    }],
+    [t('커버리지', 'Coverage'), function (M) {
+      var n = (M.target || {}).analysts;
+      return n == null ? '—' : t(n + '개 기관', n + ' analysts');
+    }],
+    [t('다음 실적발표', 'Next earnings'), function (M) { return esc(nextEarn(M)); }],
+    { head: t('기간별 수익률', 'Trailing returns') }
+  ];
+  CMP_PERIODS.forEach(function (p) {
+    rows.push([t(p[0], p[1]), function (M) {
+      var v = cmpReturn(M.sym, p[2]);
+      return '<span class="' + signCls(v) + '">' + pct(v, 1) + '</span>';
+    }]);
+  });
+
+  var head = '<thead><tr><th scope="col">' + esc(t('항목', 'Metric')) + '</th>' +
+    CMP.map(function (sym, i) {
+      var c = company(sym);
+      return '<th class="num" scope="col"><span class="sw" style="background:' + cmpColor(i) + '"></span>' +
+        '<span class="sy">' + esc(sym) + '</span><span class="nm">' + esc(coName(c)) + '</span></th>';
+    }).join('') + '</tr></thead>';
+
+  var body = '<tbody>' + rows.map(function (r) {
+    if (r.head) {
+      return '<tr class="highlight"><th scope="row" style="font-weight:600; color:var(--ink)">' + esc(r.head) + '</th>' +
+        CMP.map(function () { return '<td></td>'; }).join('') + '</tr>';
+    }
+    return '<tr><th scope="row">' + esc(r[0]) + '</th>' +
+      models.map(function (M) { return '<td class="num">' + r[1](M) + '</td>'; }).join('') + '</tr>';
+  }).join('') + '</tbody>';
+
+  /* 예시(데모) 값이 섞이면 숫자를 실제 시세처럼 읽지 않도록 표 아래에 먼저 밝힌다 */
+  var demoWarn = models.some(function (M) { return M.demo || (LIST[M.sym] || {}).demo; })
+    ? '<b style="color:#8a6a0a">' + esc(t('실시간·스냅샷을 모두 받지 못해 일부 종목은 예시 값입니다 — 실제 시세가 아닙니다.',
+        'Neither live nor snapshot data was available for some companies, so their figures are demo values, not real prices.')) + '</b><br>'
+    : '';
+  tbl.innerHTML = head + body + '<caption>' + demoWarn + esc(t(
+    '지표는 종목 요약·밸류에이션 화면과 같은 값입니다(러너 스냅샷 또는 실시간). 비어 있는 칸은 그 종목의 해당 항목을 데이터 제공사가 주지 않은 경우입니다.',
+    'The metrics are the same values used in the snapshot and valuation sections (runner snapshot or live). An empty cell means the provider did not return that item for that company.')) + '</caption>';
+}
+</script>
+<script>
+/* ============================================================
+   18. 컨트롤 구성 · 언어 토글 · 초기화
    ============================================================ */
 function buildSeg(id, opts, current, onPick) {
   var box = el(id);
@@ -3425,6 +4700,29 @@ function buildSelect(id, opts, current, onPick) {
   }).join('');
   s.className = current ? 'on' : '';
   s.onchange = function () { onPick(s.value); };
+}
+
+/** 보조지표 토글 — 켜고 끈 상태를 브라우저에 저장해 다음에도 그대로 보게 한다 */
+function buildIndSet() {
+  var box = el('ind-set');
+  if (!box) return;
+  var opts = [
+    { k: 'bb', label: t('볼린저밴드 (20, ±2σ)', 'Bollinger (20, ±2σ)') },
+    { k: 'macd', label: t('MACD (12,26,9)', 'MACD (12,26,9)') },
+    { k: 'rsi', label: t('RSI (14)', 'RSI (14)') }
+  ];
+  box.innerHTML = opts.map(function (o) {
+    return '<label class="' + (state.ind[o.k] ? 'on' : '') + '"><input type="checkbox" data-ind="' + o.k + '"' +
+      (state.ind[o.k] ? ' checked' : '') + '>' + esc(o.label) + '</label>';
+  }).join('');
+  Array.prototype.forEach.call(box.querySelectorAll('input[data-ind]'), function (b) {
+    b.addEventListener('change', function () {
+      state.ind[b.getAttribute('data-ind')] = b.checked;
+      try { localStorage.setItem('mas-us100-ind', JSON.stringify(state.ind)); } catch (e) {}
+      buildIndSet();
+      if (CACHE[state.sel]) renderDetail(state.sel);
+    });
+  });
 }
 
 function buildControls() {
@@ -3448,6 +4746,32 @@ function buildControls() {
   buildSeg('seg-fin', [
     { v: 'annual', label: t('연간', 'Annual') }, { v: 'quarterly', label: t('분기', 'Quarterly') }
   ], state.finBasis, function (v) { state.finBasis = v; buildControls(); renderDetail(state.sel); });
+
+  /* 보조지표 — 여러 개를 함께 켤 수 있으므로 세그먼트가 아니라 체크박스로 둔다 */
+  buildIndSet();
+
+  /* 종목 비교 기간 · 축 */
+  buildSeg('seg-cmp-range', [
+    { v: '1mo', label: t('1개월', '1M') }, { v: '3mo', label: t('3개월', '3M') }, { v: '6mo', label: t('6개월', '6M') },
+    { v: '1y', label: t('1년', '1Y') }, { v: '3y', label: t('3년', '3Y') }, { v: '5y', label: t('5년', '5Y') }
+  ], state.cmpRange, function (v) {
+    state.cmpRange = v;
+    try { localStorage.setItem('mas-us100-cmp-range', v); } catch (e) {}
+    buildControls();
+    renderCompare();
+  });
+  buildSeg('seg-cmp-axis', [
+    { v: 'lin', label: t('선형', 'Linear') }, { v: 'log', label: t('로그', 'Log') }
+  ], state.cmpAxis, function (v) { state.cmpAxis = v; buildControls(); renderCompare(); });
+
+  /* 비교에 추가 — 목록을 스크롤하지 않고도 담을 수 있게 */
+  buildSelect('cmp-add', [{ v: '', label: t('종목 선택…', 'Choose a company…') }].concat(
+    COMPANIES.filter(function (c) { return !cmpHas(c[0]); }).map(function (c) {
+      return { v: c[0], label: c[0] + ' · ' + (lang === 'en' ? c[1] : c[2]) };
+    })), '', function (v) {
+    if (v) cmpToggle(v, true);
+    buildControls();
+  });
 
   /* 섹터 */
   var sectorOpts = [{ v: '', label: t('전체 섹터', 'All sectors') }].concat(
@@ -3502,6 +4826,7 @@ function applyLang() {
   renderHeroMeta();
   renderUpdLine();
   renderDisclaimer();
+  renderCompare();
   if (CACHE[state.sel]) renderDetail(state.sel); else renderSources();
   document.title = t('미국 100대 기업 시세 조회 | 미래에셋증권', 'US Top 100 Companies | Mirae Asset Securities');
 }
@@ -3573,6 +4898,7 @@ function manualRefresh() {
   DIAG = [];
   CACHE = {}; LIST = {}; SRC = {};
   SNAP_CHART = {};
+  CMP_SERIES = {};                  /* 비교 대상은 그대로 두고 계열만 다시 받는다 */
   applySnapshot();                  /* 스냅샷은 유지 — 실시간이 실패해도 빈 화면이 되지 않게 */
   STREAM.tries = 0; streamStart();   /* 스트리밍이 끊겨 있었으면 다시 붙어 본다 */
 
@@ -3582,7 +4908,8 @@ function manualRefresh() {
       if (SNAP || QUOTES) return null;
       return enrichVisible(rowsForList().slice(0, Math.min(state.limit, 15)).map(function (r) { return r.sym; }));
     }, function () { return null; }),
-    loadDetail(state.sel, true)
+    loadDetail(state.sel, true),
+    loadCompare()
   ];
   Promise.all(jobs.map(function (p) { return Promise.resolve(p).catch(function () { return null; }); }))
     .then(function () {
@@ -3601,8 +4928,8 @@ function manualRefresh() {
         msg = t('새로 올라온 값이 없습니다 — 여전히 ' + (ageLabel(QUOTES_AT) || '') + ' 수집분입니다.',
                 'Nothing newer available — still the file collected ' + (ageLabel(QUOTES_AT) || '') + '.');
       } else {
-        msg = t('시세를 받지 못했습니다. 아래 ⑨ 섹션의 요청 진단을 보세요.',
-                'Could not fetch quotes — see the diagnostics in section ⑨.');
+        msg = t('시세를 받지 못했습니다. 아래 ⑩ 섹션의 요청 진단을 보세요.',
+                'Could not fetch quotes — see the diagnostics in section ⑩.');
       }
       updMessage('<b>' + esc(msg) + '</b>', 7000);   /* 7초 동안 붙잡아 두었다가 상태줄로 돌아간다 */
     });
@@ -3635,6 +4962,12 @@ function bindEvents() {
   });
   el('btn-csv').addEventListener('click', downloadCsv);
   el('btn-refresh').addEventListener('click', manualRefresh);
+  var peersBtn = el('cmp-peers');
+  if (peersBtn) peersBtn.addEventListener('click', function () { cmpFillPeers(); buildControls(); });
+  var clearBtn = el('cmp-clear');
+  if (clearBtn) clearBtn.addEventListener('click', function () {
+    CMP = []; cmpSave(); renderList(); buildControls(); renderCompare();
+  });
   el('auto-refresh').addEventListener('change', function () {
     state.auto = this.checked;
     try { localStorage.setItem('mas-us100-auto', state.auto ? 'on' : 'off'); } catch (e) {}
@@ -3642,7 +4975,10 @@ function bindEvents() {
   });
   window.addEventListener('resize', function () {
     clearTimeout(window.__rs);
-    window.__rs = setTimeout(function () { if (CACHE[state.sel]) renderDetail(state.sel); }, 200);
+    window.__rs = setTimeout(function () {
+      if (CACHE[state.sel]) renderDetail(state.sel);
+      renderCompare();
+    }, 200);
   });
 }
 
@@ -3673,6 +5009,10 @@ function bindEvents() {
   streamStart();          /* WebSocket 은 CORS 를 받지 않아 정적 페이지에서도 붙는다 */
   loadSnapshot().then(function (snap) {
     loadDetail(state.sel);
+    /* 비교는 담아 둔 것이 있으면 그대로, 없으면 선택 종목 + 동일 섹터 상위로 채운다 */
+    if (CMP.length >= 2) loadCompare();
+    else cmpFillPeers();
+    buildControls();
     return loadList().then(function () {
       /* 스냅샷이 이미 지표를 채웠으면 종목별 개별 조회는 하지 않는다 */
       if (snap) return null;
@@ -3689,6 +5029,7 @@ function bindEvents() {
     renderHeroMeta();
     if (CACHE[state.sel]) { renderQuote(modelOf(state.sel)); renderSources(); }
     renderList();
+    if (CMP.length) renderCompare();      /* 비교 화면의 현재가·등락률도 같이 따라간다 */
   }, 30000);
   /* 탭으로 돌아오면 곧바로 한 번 확인한다 */
   document.addEventListener('visibilitychange', function () {
