@@ -411,10 +411,15 @@ footer .disc p{margin:0 0 12px;}
       <label class="chk"><input type="checkbox" id="f-fav"><span data-ko="관심종목만" data-en="Watchlist only">관심종목만</span></label>
       <span class="sp">
         <span class="upd" id="upd-line"></span>
-        <label class="auto-chk"><input type="checkbox" id="auto-refresh" checked>
+        <label class="auto-chk" title="1분마다 러너가 올려 둔 가격 파일(quotes.json)을 다시 확인합니다. 탭이 숨어 있으면 부르지 않고, 탭으로 돌아오면 즉시 한 번 확인합니다. 새 값이 없으면 화면은 그대로입니다.">
+          <input type="checkbox" id="auto-refresh" checked>
           <span data-ko="자동 갱신" data-en="Auto-refresh">자동 갱신</span></label>
-        <button class="btn primary" type="button" id="btn-refresh" data-ko="지금 새로 조회" data-en="Refresh now">지금 새로 조회</button>
-        <button class="btn" type="button" id="btn-csv" data-ko="CSV 내려받기" data-en="Download CSV">CSV 내려받기</button>
+        <button class="btn primary" type="button" id="btn-refresh"
+          title="이 브라우저가 지금 다시 조회합니다 — 캐시를 버리고 (1) 실시간 스트리밍 재접속 (2) 브라우저 직접 조회 (3) 러너 파일 재다운로드를 모두 시도합니다. 수집을 새로 돌리는 것이 아니라, 이미 올라와 있는 가장 새 값을 받아옵니다."
+          data-ko="지금 새로 조회" data-en="Refresh now">지금 새로 조회</button>
+        <button class="btn" type="button" id="btn-csv"
+          title="지금 표에 보이는 종목을 엑셀에서 열 수 있는 CSV 파일로 내려받습니다(티커·기업명·섹터·현재가·등락률·시가총액·PER·EPS·목표주가·상승여력)."
+          data-ko="CSV 내려받기" data-en="Download CSV">CSV 내려받기</button>
       </span>
     </div>
 
@@ -554,7 +559,7 @@ footer .disc p{margin:0 0 12px;}
     <p class="section-eyebrow" data-ko="STEP 7" data-en="STEP 7">STEP 7</p>
     <h2 class="section-title"><span data-ko="실적발표 · 컨퍼런스콜 일정" data-en="Earnings date &amp; conference call">실적발표 · 컨퍼런스콜 일정</span><span class="badge" id="badge-cal">—</span></h2>
     <div class="grid grid-3" style="margin-top:var(--space-content)">
-      <div class="card"><p class="label" data-ko="다음 실적발표" data-en="Next earnings date">다음 실적발표</p><p class="stat orange" id="c-date">—</p><p class="note" id="c-date-note">—</p></div>
+      <div class="card"><p class="label" id="c-date-label" data-ko="다음 실적발표" data-en="Next earnings date">다음 실적발표</p><p class="stat orange" id="c-date">—</p><p class="note" id="c-date-note">—</p></div>
       <div class="card"><p class="label" data-ko="컨센서스 EPS" data-en="Consensus EPS">컨센서스 EPS</p><p class="stat" id="c-eps">—</p><p class="note" id="c-eps-note">—</p></div>
       <div class="card"><p class="label" data-ko="컨센서스 매출" data-en="Consensus revenue">컨센서스 매출</p><p class="stat" id="c-rev">—</p><p class="note" id="c-rev-note">—</p></div>
     </div>
@@ -2052,7 +2057,7 @@ function renderList() {
   /* 배지는 목록에 실제로 들어간 값의 출처를 따른다(신선한 것부터) */
   if (SRC.list === 'live') badge('badge-list', 'live');
   else if (streamLive()) badge('badge-list', 'stream');
-  else if (QUOTES) badge('badge-list', 'quotes');
+  else if (QUOTES_USED) badge('badge-list', 'quotes');
   else if (SNAP) badge('badge-list', 'snapshot');
   else if (SRC.list === 'sample') badge('badge-list', 'sample');
   else badge('badge-list', null, t('조회 중', 'loading'));
@@ -2161,6 +2166,14 @@ function modelOf(sym) {
     if (d.quote10.cap != null) q.cap = d.quote10.cap;
     if (d.quote10.per != null) q.per = d.quote10.per;
     if (d.quote10.marketState) q.marketState = d.quote10.marketState;
+    /* 정규장이 닫혀 있으면 정규 가격은 종가에서 멈춘다. 시간외 호가가 있으면 따로 들고 와
+       화면에 "프리마켓 $X (+1.2%)" 로 덧붙인다(정규 종가를 시간외 값으로 바꾸지는 않는다). */
+    var ms = String(d.quote10.marketState || q.marketState || '');
+    var sess = ms.indexOf('PRE') === 0 ? d.quote10.pre : ms.indexOf('POST') === 0 ? d.quote10.post : null;
+    if (sess && sess.price != null) {
+      q.session = { kind: ms.indexOf('PRE') === 0 ? 'pre' : 'post',
+        price: sess.price, pct: sess.pct, at: sess.at };
+    }
   }
   if (s) { q = Object.assign(q, s.quote); q.priceSrc = 'live'; }
   else if (!snap && !d.quote10 && demo) { q = Object.assign({}, demo.quote); q.priceSrc = 'sample'; }
@@ -2268,7 +2281,7 @@ function badge(id, kind, extra) {
     b.className = 'badge live';
   }
   else if (kind === 'quotes') {
-    b.textContent = extra || t('시세 ' + (ageLabel(QUOTES_AT) || '갱신'), 'quote ' + (ageLabel(QUOTES_AT) || 'updated'));
+    b.textContent = extra || t('시세 ' + (ageLabel(priceAsOf()) || '갱신'), 'quote ' + (ageLabel(priceAsOf()) || 'updated'));
     b.className = 'badge orange';
   }
   else if (kind === 'snapshot') { b.textContent = extra || snapLabel(); b.className = 'badge blue'; }
@@ -2313,11 +2326,19 @@ function renderQuote(M) {
     : q.marketState === 'CLOSED' ? t('장 마감', 'market closed')
     : q.marketState === 'PRE' ? t('개장 전', 'pre-market')
     : q.marketState === 'POST' ? t('시간외', 'after hours') : null;
+  var sessBit = null;
+  if (q.session && q.session.price != null) {
+    sessBit = '<b>' + esc(q.session.kind === 'pre' ? t('프리마켓', 'pre-market') : t('시간외', 'after hours')) + ' ' +
+      esc(price(q.session.price)) + '</b>' +
+      (q.session.pct == null ? '' : ' <span class="' + signCls(q.session.pct) + '">' + pct(q.session.pct) + '</span>') +
+      (q.session.at ? ' <span>' + esc(t('· ' + dateTimeFmt(q.session.at) + ' 수집', '· ' + dateTimeFmt(q.session.at))) + '</span>' : '');
+  }
   el('q-mkstat').innerHTML = [
-    priceAge ? t('가격 ', 'price ') + priceAge : (q.asof ? t('기준 ', 'as of ') + dateTimeFmt(q.asof) : null),
-    mkState,
-    t('통화 ', 'currency ') + (q.currency || 'USD')
-  ].filter(Boolean).map(esc).join(' · ');
+    priceAge ? esc(t('가격 ', 'price ') + priceAge) : (q.asof ? esc(t('기준 ', 'as of ') + dateTimeFmt(q.asof)) : null),
+    mkState ? esc(mkState) : null,
+    sessBit,
+    esc(t('통화 ', 'currency ') + (q.currency || 'USD'))
+  ].filter(Boolean).join(' · ');
 
   el('k-cap').textContent = usd(q.cap);
   el('k-cap-krw').textContent = krw(q.cap) || t('환율 미조회', 'FX not loaded');
@@ -3248,6 +3269,13 @@ function renderRatingChart(M) {
 /* ============================================================
    11. 실적발표 · 컨퍼런스콜 일정
    ============================================================ */
+/** 실적발표 카드 제목 — 지난 일자를 보여 줄 때는 "다음"이라고 적지 않는다 */
+function setEarnLabel(past) {
+  var n = el('c-date-label');
+  if (!n) return;
+  n.textContent = past ? t('직전 실적발표', 'Last earnings date') : t('다음 실적발표', 'Next earnings date');
+}
+
 function renderCalendar(M) {
   var cal = M.calendar || {}, dates = (cal.dates || []).slice().sort(function (a, b) { return a - b; });
   var future = dates.filter(function (ts) { return ts * 1000 > Date.now() - 86400000; });
@@ -3256,6 +3284,7 @@ function renderCalendar(M) {
   if (!pick.length) {
     /* 예정일이 없으면 직전 발표일이라도 보여준다 — 빈칸보다 낫다 */
     var lastRep = (M.surprises || []).filter(function (r) { return r.ts; })[0];
+    setEarnLabel(!!lastRep);
     if (lastRep) {
       el('c-date').textContent = dateFmt(lastRep.ts);
       var dd0 = dayDiff(lastRep.ts);
@@ -3272,17 +3301,33 @@ function renderCalendar(M) {
         'No earnings date returned. Check the company IR page or the links below.'));
     }
   } else {
+    /* future 가 비면 pick 은 **지난** 일자다. 그때 "발표 예정일"로 적으면 이미 지난 날짜를
+       다음 일정처럼 보여 준다(사용자가 짚은 문제). 카드 제목까지 "직전"으로 바꾼다. */
+    var past = !future.length;
     var spanDays = pick.length > 1 ? Math.round((pick[pick.length - 1] - pick[0]) / 86400) : 0;
     el('c-date').textContent = dateFmt(pick[0]) + (spanDays > 0 ? ' ~ ' + dateFmt(pick[pick.length - 1]) : '');
     var dd = dayDiff(pick[0]);
-    var kind = (cal.estimate && spanDays > 0)
-      ? t('추정 구간 (회사 확정 공지 전)', 'estimated window (not yet confirmed)')
-      : t('발표 예정일', 'scheduled date');
+    var kind = past
+      ? t('직전 발표일 (다음 일정은 아직 확인되지 않았습니다)', 'last reported (next date not yet available)')
+      : (cal.estimate && spanDays > 0)
+        ? t('추정 구간 (회사 확정 공지 전)', 'estimated window (not yet confirmed)')
+        : t('발표 예정일', 'scheduled date');
+    setEarnLabel(past);
     /* 시각은 적지 않는다. 제공사의 발표일 타임스탬프는 대개 형식상의 시각(정오 UTC 등)이어서
        그대로 옮기면 콜 시각처럼 읽힌다. 실제 시각은 회사 IR 공지가 원문이다. */
+    var lastRep2 = past ? (M.surprises || []).filter(function (r) { return r.ts; })[0] : null;
     el('c-date-note').innerHTML =
       esc(kind) + ' · ' + esc(dd == null ? '' : dd >= 0 ? t('D-' + dd, 'in ' + dd + ' days') : t(Math.abs(dd) + '일 전 발표', Math.abs(dd) + ' days ago')) +
-      '<br>' + esc(t('시각은 회사 IR 공지에서 확인하세요(아래 링크).', 'Check the exact time on the company IR page (links below).'));
+      '<br>' + esc(past
+        ? t('다음 분기 발표일은 회사가 공지하면 제공사에 반영됩니다 — 회사 IR 공지(아래 링크)가 원문입니다.',
+            'The next date appears once the company announces it — the IR page (links below) is the source of record.')
+        : t('시각은 회사 IR 공지에서 확인하세요(아래 링크).', 'Check the exact time on the company IR page (links below).')) +
+      (lastRep2 && lastRep2.act != null
+        ? '<br>' + esc(t('발표 EPS $' + lastRep2.act.toFixed(2) +
+            (lastRep2.surprise == null ? '' : ' (컨센서스 대비 ' + pct(lastRep2.surprise, 1) + ')'),
+            'Reported EPS $' + lastRep2.act.toFixed(2) +
+            (lastRep2.surprise == null ? '' : ' (surprise ' + pct(lastRep2.surprise, 1) + ')')))
+        : '');
   }
 
   var epsN = null, trend0 = null;
@@ -3532,11 +3577,33 @@ function renderNews(M) {
 /* ============================================================
    14. 출처 · 진단 · 유의사항
    ============================================================ */
+/** 화면에 실제로 올라가 있는 가격이 언제 것인지 — 스트리밍 > 가격 파일 > 스냅샷 순.
+ *  가격 파일이 스냅샷보다 오래되면 쓰지 않으므로(위 applyQuotes) 그 시각도 말하지 않는다. */
+function priceAsOf() {
+  if (streamLive() && STREAM.last) return STREAM.last;
+  var snapAt = (typeof snapAsOf === 'function') ? snapAsOf() : null;
+  if (QUOTES_USED && QUOTES_AT) {
+    return (snapAt && snapAt.getTime() > QUOTES_AT.getTime()) ? snapAt : QUOTES_AT;
+  }
+  return snapAt || QUOTES_AT || state.asof;
+}
+
 function renderHeroMeta() {
-  var age = QUOTES_AT ? ageLabel(QUOTES_AT) : null;
-  el('hero-asof').textContent = state.asof
-    ? t('시세 기준 ' + dateTimeFmt(Math.floor(state.asof.getTime() / 1000)) + (age ? ' (' + age + ')' : ''),
-        'Quotes as of ' + dateTimeFmt(Math.floor(state.asof.getTime() / 1000)) + (age ? ' (' + age + ')' : ''))
+  var at = priceAsOf();
+  var age = at ? ageLabel(at) : null;
+  /* 미국 장이 닫혀 있으면 값이 묵은 이유가 그것이다 — 여기서 바로 밝힌다 */
+  var ses = usSession();
+  var why = '';
+  if (ses && ses.state !== 'REGULAR') {
+    why = ses.state === 'PRE' ? t(' · 프리마켓 (정규장 개장까지 ' + minsLabel(ses.minsToOpen) + ')',
+            ' · pre-market (regular open in ' + minsLabel(ses.minsToOpen) + ')')
+      : ses.state === 'POST' ? t(' · 애프터마켓', ' · after hours')
+      : t(' · 미국 장 마감 (개장까지 ' + minsLabel(ses.minsToOpen) + ')',
+          ' · US market closed (opens in ' + minsLabel(ses.minsToOpen) + ')');
+  }
+  el('hero-asof').textContent = at
+    ? t('시세 기준 ' + dateTimeFmt(Math.floor(at.getTime() / 1000)) + (age ? ' (' + age + ')' : '') + why,
+        'Quotes as of ' + dateTimeFmt(Math.floor(at.getTime() / 1000)) + (age ? ' (' + age + ')' : '') + why)
     : t('조회 전', 'not retrieved');
   el('hero-src').textContent = SRC.list === 'sample'
     ? t('예시 데이터 표시 중', 'showing demo data')
@@ -3713,6 +3780,7 @@ var SNAP_BASE = null;     // 실제로 성공한 경로
 var SNAP_CHART = {};      // sym -> 시계열 원본(일봉/월봉)
 var QUOTES = null;        // quotes.json — 장중 10분 주기로 갱신되는 가격만 담긴 파일
 var QUOTES_AT = null;     // 그 파일의 수집 시각
+var QUOTES_USED = false;  // 그 파일을 실제로 화면에 썼는지(스냅샷보다 오래되면 쓰지 않는다)
 
 function fetchQuick(url, ms) {
   return withTimeout(
@@ -3762,6 +3830,7 @@ function loadSnapshot() {
 function applySnapshot() {
   if (!SNAP) return;
   if (SNAP.fx && SNAP.fx.usdkrw && state.fx == null) state.fx = SNAP.fx.usdkrw;
+  dropStaleQuotes();                 /* 스냅샷이 더 새로우면 가격 파일 값을 물린다 */
   Object.keys(SNAP.companies).forEach(function (sym) {
     var c = SNAP.companies[sym], q = c.quote || {};
     var l = LIST[sym] || (LIST[sym] = {});
@@ -3783,7 +3852,8 @@ function applySnapshot() {
     if (!d.news && c.news && c.news.length) d.srcs.news = d.srcs.news || 'snapshot';
   });
   if (SRC.list == null || SRC.list === 'sample') SRC.list = 'snapshot';
-  if (state.asof == null && SNAP.fetchedAt) state.asof = new Date(SNAP.fetchedAt);
+  var sa = snapAsOf();
+  if (sa && (state.asof == null || state.asof.getTime() < sa.getTime())) state.asof = sa;
   renderList(); renderHeroMeta(); renderSources(); renderUpdLine();
   if (CACHE[state.sel]) renderDetail(state.sel);
   if (CMP.length) renderCompare();
@@ -3817,9 +3887,35 @@ function loadQuotes() {
 }
 
 /** 가격 파일을 목록·상세에 반영. 브라우저 직접 조회로 받은 값은 건드리지 않는다. */
+/** 가격 파일(10분 주기)이 스냅샷(하루 단위)보다 **오래된** 경우가 있다 — 예약이 밀리거나
+ *  전체 수집을 수동으로 돌리면 그렇게 된다. 그 파일로 덮어쓰면 더 새 값을 헌 값으로 바꿔
+ *  놓고 화면 위쪽 "시세 기준"도 헌 시각을 말하게 된다. 그런 판은 쓰지 않고, 먼저 도착해
+ *  이미 들어간 값이 있으면 물려서 스냅샷이 다시 채우게 한다.
+ *  (두 파일은 따로 도착하므로 가격 파일이 먼저 올 수 있다 — 그래서 되돌리기가 필요하다.) */
+function dropStaleQuotes() {
+  var snapAt = (typeof snapAsOf === 'function') ? snapAsOf() : null;
+  if (!QUOTES_AT || !snapAt || QUOTES_AT.getTime() >= snapAt.getTime() - 60000) return false;
+  QUOTES_USED = false;
+  Object.keys(CACHE).forEach(function (sym) {
+    if (CACHE[sym] && CACHE[sym].quote10) delete CACHE[sym].quote10;
+  });
+  Object.keys(LIST).forEach(function (sym) {
+    var l = LIST[sym];
+    if (l && l.src === 'quotes') {
+      l.price = null; l.prevClose = null; l.changePct = null; l.intraday = false; l.src = null;
+    }
+  });
+  return true;
+}
+
 function applyQuotes() {
   if (!QUOTES) return;
   if (QUOTES.fx && QUOTES.fx.usdkrw) state.fx = QUOTES.fx.usdkrw;
+  if (dropStaleQuotes()) {
+    applySnapshot();                 /* 물린 자리를 더 새 스냅샷 값으로 다시 채운다 */
+    return;
+  }
+  QUOTES_USED = true;
   Object.keys(QUOTES.quotes).forEach(function (sym) {
     var q = QUOTES.quotes[sym] || {};
     if (q.price == null) return;
@@ -3837,6 +3933,8 @@ function applyQuotes() {
   });
   if (SRC.list !== 'live') SRC.list = 'quotes';
   if (QUOTES_AT) state.asof = QUOTES_AT;
+  var sAt = (typeof snapAsOf === 'function') ? snapAsOf() : null;
+  if (sAt && (state.asof == null || state.asof.getTime() < sAt.getTime())) state.asof = sAt;
   renderList(); renderHeroMeta(); renderSources(); renderUpdLine();
   if (CACHE[state.sel]) renderDetail(state.sel);
   if (CMP.length) renderCompare();      /* 비교 화면도 새 가격을 반영한다 */
@@ -4026,8 +4124,8 @@ function renderUpdLine() {
   var bits = [];
   if (streamLive()) {
     bits.push('<span class="live">' + esc(t('실시간 스트리밍 수신 중', 'live stream')) + '</span>');
-  } else if (QUOTES_AT) {
-    bits.push(esc(t('가격 ', 'quotes ')) + '<b>' + esc(ageLabel(QUOTES_AT) || '') + '</b>');
+  } else if (priceAsOf()) {
+    bits.push(esc(t('가격 ', 'quotes ')) + '<b>' + esc(ageLabel(priceAsOf()) || '') + '</b>');
   } else if (SRC.list === 'live') {
     bits.push('<span class="live">' + esc(t('직접 조회 성공', 'fetched directly')) + '</span>');
   } else if (SRC.list === 'sample') {
@@ -4049,9 +4147,16 @@ function renderUpdLine() {
   }
 
   /* 가격 파일이 15분 넘게 묵었고 장이 열려 있으면 수집을 직접 돌릴 링크를 준다 */
-  var stale = QUOTES_AT && (Date.now() - QUOTES_AT.getTime()) > 15 * 60000;
+  var pAt = priceAsOf();
+  var stale = pAt && (Date.now() - pAt.getTime()) > 15 * 60000;
   if (!streamLive() && stale && ses && (ses.state === 'REGULAR' || ses.state === 'PRE' || ses.state === 'POST')) {
-    bits.push('<a href="' + QUOTES_WORKFLOW + '" target="_blank" rel="noopener">' +
+    bits.push('<a href="' + QUOTES_WORKFLOW + '" target="_blank" rel="noopener" title="' +
+      esc(t('GitHub Actions 의 가격 수집 워크플로를 사람이 직접 돌리는 링크입니다(Run workflow). ' +
+            '브라우저가 야후에 직접 붙지 못하는 환경에서 새 값을 만들려면 서버(러너)가 대신 받아 와야 하고, ' +
+            '이 링크가 그 수집을 시작합니다. 끝나면 30~60초 뒤 “지금 새로 조회”로 받아 가세요.',
+            'Opens the price-collection workflow on GitHub Actions so a person can run it. ' +
+            'When the browser cannot reach Yahoo directly, only the runner can produce a newer file; ' +
+            'after it finishes (30-60s) press “Refresh now” to pull it.')) + '">' +
       esc(t('지금 수집 요청', 'run collection now')) + '</a>');
   }
   el0.innerHTML = bits.join(' · ');
@@ -4706,10 +4811,12 @@ function buildSelect(id, opts, current, onPick) {
 function buildIndSet() {
   var box = el('ind-set');
   if (!box) return;
+  /* 어디에 그려지는지 라벨에 적는다 — MACD·RSI 는 가격 차트가 아니라 아래 패널에 그리므로
+     스크롤하지 않으면 "선택해도 아무 일도 없는" 것처럼 보인다. */
   var opts = [
-    { k: 'bb', label: t('볼린저밴드 (20, ±2σ)', 'Bollinger (20, ±2σ)') },
-    { k: 'macd', label: t('MACD (12,26,9)', 'MACD (12,26,9)') },
-    { k: 'rsi', label: t('RSI (14)', 'RSI (14)') }
+    { k: 'bb', label: t('볼린저밴드 (20, ±2σ) · 가격 차트에 겹침', 'Bollinger (20, ±2σ) · on price chart') },
+    { k: 'macd', label: t('MACD (12,26,9) · 아래 패널', 'MACD (12,26,9) · lower panel') },
+    { k: 'rsi', label: t('RSI (14) · 아래 패널', 'RSI (14) · lower panel') }
   ];
   box.innerHTML = opts.map(function (o) {
     return '<label class="' + (state.ind[o.k] ? 'on' : '') + '"><input type="checkbox" data-ind="' + o.k + '"' +
@@ -4717,10 +4824,18 @@ function buildIndSet() {
   }).join('');
   Array.prototype.forEach.call(box.querySelectorAll('input[data-ind]'), function (b) {
     b.addEventListener('change', function () {
-      state.ind[b.getAttribute('data-ind')] = b.checked;
+      var k = b.getAttribute('data-ind'), on = b.checked;
+      state.ind[k] = on;
       try { localStorage.setItem('mas-us100-ind', JSON.stringify(state.ind)); } catch (e) {}
       buildIndSet();
       if (CACHE[state.sel]) renderDetail(state.sel);
+      /* 켠 지표가 아래 패널이면 그 패널을 화면에 보여 준다(안 그리는 줄 알기 쉽다) */
+      if (on && (k === 'macd' || k === 'rsi')) {
+        var w = el('w-' + k);
+        if (w && !w.hidden && w.scrollIntoView) {
+          try { w.scrollIntoView({ behavior: 'smooth', block: 'center' }); } catch (e) { w.scrollIntoView(); }
+        }
+      }
     });
   });
 }
