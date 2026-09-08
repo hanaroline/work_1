@@ -2094,6 +2094,35 @@
     for (var i = 0; i < defs.length; i++) if (defs[i].id === id) return !!defs[i].ctx;
     return false;
   }
+  /**
+   * 그 항목을 무엇으로 채우는지 한 줄 설명.
+   *
+   * 항목 정의에 hint 가 있으면 그것을 쓰고, 만들어지는 값(파생)처럼 정의에 없는 것은
+   * 여기서 적어 준다. 이름만으로는 무엇을 넣어야 하는지 모르는 것이 있다 —
+   * 「선취수수료 계산 예시 문장」 을 보고 계산 문장을 손으로 쓰면 뺄셈을 창구가 하게
+   * 되는데, 이 도구는 그 뺄셈을 없애려고 만든 것이다.
+   */
+  var MISS_HINT = {
+    feeCalcNote: '투자설명서 「보수·수수료」 표에서 A클래스 선취판매수수료율을 「선취판매수수료」 칸에 넣으면 납입금액·차감액·실투자금액 계산까지 저절로 채워집니다. 선취가 없는 펀드면 그 칸에 「없음」 이라고 적으십시오.',
+    clsExp: 'IRP 는 퇴직연금 클래스(C-P·CP·S-P) 총보수로 말해야 합니다 — A·C 클래스 보수를 말하면 고객이 부담하지 않는 비용을 말하게 됩니다.',
+    clsExpClass: '위 총보수가 어느 클래스 기준인지 함께 말해야 인정됩니다.',
+    proof: '왼쪽 「4 상담 조건」 에서 고객 가입유형을 고르면 그 유형의 증빙서류 목록이 채워집니다.',
+    mpRate: '금융투자협회 채권정보센터의 전영업일 민간채권평가회사 평균 금리입니다 — 투자설명서에는 없습니다.',
+    mpPrice: '금융투자협회 채권정보센터의 민평단가입니다 — 투자설명서에는 없습니다.',
+    priceDiff: '민평단가에서 매매단가를 뺀 값입니다. 민평단가를 넣으면 계산됩니다.',
+    fin1: '발행회사 재무제표(전자공시 DART)에서 확인하십시오 — 투자설명서에는 없습니다.',
+    fin2: '발행회사 재무제표(전자공시 DART)에서 확인하십시오 — 투자설명서에는 없습니다.',
+    creditMeaning: '신용평가사의 등급 정의표에서 그 등급의 뜻을 옮겨 적으십시오.',
+    fee: '채권 매매 화면·약관의 수수료 조건입니다. 없으면 「없음」 을 고지해야 인정되고, 중개물이면 중개보수를 말해야 합니다.',
+    credit: '장외채권 종목 상세 화면의 신용등급입니다. 위험등급(1~6등급)과 다른 값이니 옮겨 적지 마십시오.',
+    guarantee: '보증사채인지 무보증사채인지는 종목별로 다릅니다 — 설명서에서 확인하십시오. 화면에 띄운 회사 문구는 조건문이라 이 종목이 무보증이라고 말해 주지 않습니다.'
+  };
+  function hintOf(id) {
+    if (MISS_HINT[id]) return MISS_HINT[id];
+    var defs = fieldDefs();
+    for (var i = 0; i < defs.length; i++) if (defs[i].id === id) return defs[i].hint || '';
+    return '';
+  }
   function labelOf(id) {
     var defs = fieldDefs();
     for (var i = 0; i < defs.length; i++) if (defs[i].id === id) return defs[i].label;
@@ -2286,13 +2315,35 @@
    * 있다. 창구에서 있지도 않은 항목을 투자설명서에서 찾게 만들면 시간만 버린다.
    */
   /* 협회 공시·운용보고서·지점 증시전망 자료에 있는 값 — 투자설명서에는 없다 */
-  var MISS_REF = ['retPeer', 'peerRet1y'];
+  var MISS_REF = ['retPeer', 'peerRet1y',
+    /*
+     * 채권에서 투자설명서에 없는 값들. 앞 판은 이것들을 「투자설명서에서 확인」 으로
+     * 안내했다. 원화채권 확인필요 10건 중 일곱이 여기 해당했으니, 창구는 설명서에
+     * 없는 값을 설명서에서 찾다가 시간을 버렸다. 어디에 있는지 적어 준다 —
+     *
+     *   mpRate·mpPrice·priceDiff  금융투자협회 채권정보센터의 민평 값 (매일 바뀐다)
+     *   fin1·fin2                 발행회사 재무제표 (전자공시 DART)
+     *   creditMeaning             신용평가사의 등급 정의표
+     *   fee                       채권 매매 화면·약관의 수수료 조건.
+     *                             회사 조건이라 종목마다 다르지 않은 것이 보통이지만,
+     *                             평가표가 「중개물이면 중개보수를 설명」 이라고 하므로
+     *                             공용 문구로 한 번만 등록하는 값으로 단정하지 않는다.
+     */
+    'mpRate', 'mpPrice', 'priceDiff', 'fin1', 'fin2', 'creditMeaning', 'fee'];
   /**
    * 한 번만 등록하면 되는 값 — 상품이 아니라 회사·계좌의 조건이다.
    * 이것을 「투자설명서에서 확인」 으로 안내하면 창구에서 상품 설명서를 뒤지게 된다.
    */
   var MISS_ONCE = ['feeKinds', 'feeTotal', 'feeMethod', 'products', 'defaultOpt',
     'riskGradeBasis', 'taxLimit', 'taxRate', 'taxRateOut'];
+  /**
+   * 상담 중 고른 값에서 저절로 만들어지는 값 — 설명서에 있는 것이 아니다.
+   *
+   * proof(가입유형별 증빙서류)는 왼쪽에서 「고객 가입유형」 을 고르면 그 유형의
+   * 서류 목록이 채워진다. 앞 판은 이것을 「투자설명서에서 확인」 으로 안내해,
+   * 창구가 펀드 투자설명서에서 증빙서류 목록을 찾게 만들고 있었다.
+   */
+  var MISS_ASK = ['proof'];
   function missGroup(m) {
     /* 추천 상품 값은 설명서에서 찾을 것이 아니다 — 왼쪽에서 상품을 고르면 채워진다 */
     if (m.kind === 'field' && m.key.length > 3 && m.key.slice(0, 3) === 'rec'
@@ -2301,6 +2352,7 @@
     if (/증시\s*전망|자료\s*기준월|동종유형\s*평균|협회\s*공시/.test(m.label)) return 'ref';
     if (MISS_REF.indexOf(m.key) >= 0) return 'ref';
     if (MISS_ONCE.indexOf(m.key) >= 0) return 'once';
+    if (MISS_ASK.indexOf(m.key) >= 0) return 'ask';
     if (/고객|대리인|투자자성향|투자자금\s*성향|추천\s*상품명/.test(m.label)) return 'ask';
     if (m.kind === 'inline') return 'doc';           /* 그 밖의 받아쓰기는 설명서 원문 */
     /* 항목 정의의 묶음을 쓴다 — 「고객」 묶음은 상담하며 파악하는 값이다 */
@@ -3015,20 +3067,34 @@
       var GRP = [
         ['rec', '추천 상품을 고르면 채워짐', '부적합 시나리오의 「적합한 상품 추천」 단계에 쓰이는 값입니다. 왼쪽 「3-1 추천 상품」 에서 성향에 적합한 상품을 고르면 한꺼번에 채워집니다 — 설명서를 뒤질 값이 아닙니다.'],
         ['doc', '투자설명서에서 확인', '투자설명서 원문에서 채워야 하는 값입니다.'],
-        ['ask', '상담 중 파악·입력', '고객에게 확인하거나 상담 중 옮겨 적는 값입니다 — 투자설명서에는 없습니다.'],
-        ['ref', '지점 자료에서 확인', '증시전망·협회 공시 등 별도 자료에 있는 값입니다 — 투자설명서에는 없습니다.'],
+        ['ask', '상담 중 파악·입력', '고객에게 확인하거나 상담 중 옮겨 적는 값입니다 — 투자설명서에는 없습니다. 왼쪽 「4 상담 조건」 에서 투자자성향·투자자금성향·가입유형을 고르면 성향의 의미와 가입유형별 증빙서류까지 함께 채워집니다.'],
+        ['ref', '별도 자료에서 확인', '투자설명서에는 없는 값입니다. 증시전망은 지점 자료, 민평금리·민평단가는 금융투자협회 채권정보센터, 발행회사 재무정보는 전자공시(DART), 신용등급의 의미는 신용평가사 등급 정의표, 매매수수료는 채권 매매 화면·약관에 있습니다.'],
         ['once', '한 번만 등록 (이후 모든 상담에서 재사용)', '상품이 아니라 회사·계좌의 조건입니다. 「투자설명서 자동조회」 탭 맨 아래 「전 상품 공용 문구」 에 한 번 등록해 두면 다시 묻지 않습니다.']
       ];
+      /*
+       * 항목 이름만으로는 무엇을 넣어야 하는지 모르는 것이 있다 —
+       * 「선취수수료 계산 예시 문장」 은 계산 문장을 손으로 쓰라는 말이 아니고,
+       * A클래스 선취판매수수료율을 넣으면 뺄셈까지 저절로 만들어지는 항목이다.
+       * 항목 정의의 hint 를 칩에 달아 마우스를 올리면 보이게 한다.
+       */
       var chip = function (m) {
-        return '<span class="v miss" data-kind="' + m.kind + '" data-key="' + esc(m.key) + '">' + esc(m.label) + '</span>';
+        var hint = hintOf(m.key);
+        return '<span class="v miss" data-kind="' + m.kind + '" data-key="' + esc(m.key) + '"'
+          + (hint ? ' title="' + esc(hint) + '"' : '') + '>' + esc(m.label) + '</span>';
       };
       var parts = [];
       GRP.forEach(function (g) {
         var list = miss.filter(function (m) { return missGroup(m) === g[0]; });
         if (!list.length) return;
+        /*
+         * 앞 판은 묶음마다 12개까지만 칩을 그리고 나머지를 「외 N건」 으로 접었다.
+         * 그런데 이 칩이 값을 넣는 입구다 — 접힌 것은 어느 항목인지도 알 수 없고
+         * 클릭할 수도 없었다. 외화채권은 설명서 묶음이 14건이라 2건이 그렇게 가려져
+         * 있었다. 다 그린다. 40건은 한 상품에서 남는 최대치(외화채권 20건)의 두 배다.
+         */
         parts.push('<div style="margin-top:6px"><b>' + g[1] + ' ' + list.length + '건</b> <span style="color:var(--muted2)">— ' + g[2] + '</span><br>'
-          + list.slice(0, 12).map(chip).join(' ')
-          + (list.length > 12 ? ' <span style="color:var(--muted2)">외 ' + (list.length - 12) + '건</span>' : '') + '</div>');
+          + list.slice(0, 40).map(chip).join(' ')
+          + (list.length > 40 ? ' <span style="color:var(--muted2)">외 ' + (list.length - 40) + '건</span>' : '') + '</div>');
       });
       h.push('<div class="banner"><b>확인필요 ' + miss.length + '건</b> — 빨간 표시를 클릭하면 바로 입력됩니다.'
         + parts.join('') + '</div>');
