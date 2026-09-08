@@ -73,13 +73,14 @@ a{color:var(--blue);}
 .btn-tool.refresh{border-color:var(--orange); color:var(--orange-active); font-weight:500;}
 .btn-tool.refresh:hover{background:var(--orange); border-color:var(--orange); color:#fff;}
 .btn-tool[disabled]{opacity:.55; cursor:default;}
-.toolbar .upd{font-size:14px; color:var(--muted); margin-right:auto; line-height:1.45;}
-.toolbar .upd b{color:var(--body-strong); font-family:var(--font-num); font-weight:600;}
-.toolbar .upd .live{color:var(--success); font-weight:600;}
-.toolbar .upd a{color:var(--blue); text-decoration:underline;}
-.toolbar .auto-chk{display:inline-flex; align-items:center; gap:7px; font-size:14px; color:var(--muted); cursor:pointer;}
-.toolbar .auto-chk input{width:15px; height:15px; accent-color:var(--orange); cursor:pointer;}
-@media (max-width:700px){ .toolbar .upd{margin-right:0; width:100%; order:9;} }
+.upd{font-size:14px; color:var(--muted); line-height:1.45; align-self:center;}
+.upd b{color:var(--body-strong); font-family:var(--font-num); font-weight:600;}
+.upd .live{color:var(--success); font-weight:600;}
+.upd a{color:var(--blue); text-decoration:underline;}
+.auto-chk{display:inline-flex; align-items:center; gap:7px; font-size:14px; color:var(--muted); cursor:pointer; align-self:center;}
+.auto-chk input{width:15px; height:15px; accent-color:var(--orange); cursor:pointer;}
+.finder-bar .sp{align-items:center; gap:12px;}
+@media (max-width:820px){ .finder-bar .sp{margin-left:0; width:100%;} .upd{width:100%;} }
 
 /* 값이 바뀐 칸을 잠깐 물들인다 — 갱신이 실제로 일어났는지 눈으로 확인되게 */
 @keyframes flashUp   { from { background:rgba(198,40,40,.18); } to { background:transparent; } }
@@ -314,10 +315,6 @@ footer .disc p{margin:0 0 12px;}
 <body>
 
 <div class="toolbar">
-  <span class="upd" id="upd-line"></span>
-  <label class="auto-chk"><input type="checkbox" id="auto-refresh" checked>
-    <span data-ko="자동 갱신" data-en="Auto-refresh">자동 갱신</span></label>
-  <button class="btn-tool refresh" type="button" id="btn-refresh" data-ko="지금 새로 조회" data-en="Refresh now">지금 새로 조회</button>
   <button class="btn-tool" type="button" onclick="window.print()" data-ko="인쇄 · PDF 저장" data-en="Print / PDF">인쇄 · PDF 저장</button>
   <div class="lang-toggle" role="radiogroup" aria-label="Language">
     <button type="button" role="radio" data-lang="ko" aria-checked="true">KO</button>
@@ -365,7 +362,10 @@ footer .disc p{margin:0 0 12px;}
       <span><strong id="cnt">0</strong> <span data-ko="개 기업" data-en="companies">개 기업</span></span>
       <label class="chk"><input type="checkbox" id="f-fav"><span data-ko="관심종목만" data-en="Watchlist only">관심종목만</span></label>
       <span class="sp">
-        <button class="btn" type="button" id="btn-enrich" data-ko="표시 종목 지표 불러오기" data-en="Load metrics for listed">표시 종목 지표 불러오기</button>
+        <span class="upd" id="upd-line"></span>
+        <label class="auto-chk"><input type="checkbox" id="auto-refresh" checked>
+          <span data-ko="자동 갱신" data-en="Auto-refresh">자동 갱신</span></label>
+        <button class="btn primary" type="button" id="btn-refresh" data-ko="지금 새로 조회" data-en="Refresh now">지금 새로 조회</button>
         <button class="btn" type="button" id="btn-csv" data-ko="CSV 내려받기" data-en="Download CSV">CSV 내려받기</button>
       </span>
     </div>
@@ -1431,7 +1431,10 @@ function loadDetail(sym, force) {
   });
   pNews.then(function () { d.pending.news = false; draw(); });
 
-  /* (4) 환율 — 원화 환산용 */
+  /* (4) 장기 계열 — 수익률(1년·3년·5년)과 월봉 전환에 쓴다. 실시간 차트가 성공해도 받아 둔다. */
+  if (!SNAP_CHART[sym]) loadSnapshotChart(sym).then(function () { draw(); }, function () {});
+
+  /* (5) 환율 — 원화 환산용 */
   fetchFx().then(function () { draw(); });
 
   return Promise.all([pChart.catch(function () {}), pSum, pNews]).then(function () { return d; });
@@ -1473,8 +1476,11 @@ function loadList() {
 function enrichVisible(syms) {
   var todo = syms.filter(function (s) { return !LIST[s] || (LIST[s].cap == null && !LIST[s].enriched); });
   if (!todo.length) return Promise.resolve();
+  /* 이 버튼은 스냅샷이 지표를 모두 채우게 된 뒤 화면에서 없앴다 — 있을 때만 다룬다 */
   var btn = el('btn-enrich');
-  btn.disabled = true; btn.textContent = t('불러오는 중… 0/' + todo.length, 'loading… 0/' + todo.length);
+  var label = function (txt) { if (btn) btn.textContent = txt; };
+  if (btn) btn.disabled = true;
+  label(t('불러오는 중… 0/' + todo.length, 'loading… 0/' + todo.length));
   var done = 0;
   return pool(todo, function (s) {
     return enrichOne(s).then(function (o) {
@@ -1483,12 +1489,12 @@ function enrichVisible(syms) {
       LIST[s] = Object.assign(LIST[s] || {}, { enriched: true, failed: true });
     }).then(function () {
       done++;
-      btn.textContent = t('불러오는 중… ' + done + '/' + todo.length, 'loading… ' + done + '/' + todo.length);
+      label(t('불러오는 중… ' + done + '/' + todo.length, 'loading… ' + done + '/' + todo.length));
       if (done % 5 === 0) renderList();
     });
   }, 5).then(function () {
-    btn.disabled = false;
-    btn.textContent = t('표시 종목 지표 불러오기', 'Load metrics for listed');
+    if (btn) btn.disabled = false;
+    label(t('표시 종목 지표 불러오기', 'Load metrics for listed'));
     renderList(); renderSources();
   });
 }
@@ -1499,7 +1505,7 @@ function enrichVisible(syms) {
    ============================================================ */
 var LIST_COLS = [
   { k: 'fav',   ko: '★',        en: '★',        sort: null,     num: false },
-  { k: 'seq',   ko: '#',        en: '#',        sort: 'seq',    num: true },
+  { k: 'rank',  ko: '순위',     en: 'Rank',     sort: 'seq',    num: true },
   { k: 'sym',   ko: '티커',      en: 'Ticker',   sort: 'sym',    num: false },
   { k: 'name',  ko: '기업명',    en: 'Company',  sort: 'name',   num: false },
   { k: 'sector',ko: '섹터',      en: 'Sector',   sort: 'sector', num: false },
@@ -1571,6 +1577,8 @@ function renderListHead() {
 function renderList() {
   renderListHead();
   var rows = rowsForList(), shown = rows.slice(0, state.limit);
+  /* 순위는 지금 정렬 기준으로 매긴다 — 목록 순서를 뜻하는 "#"이 무엇인지 묻게 되지 않도록 */
+  shown.forEach(function (r, i) { r.rank = i + 1; });
   el('cnt').textContent = rows.length;
   var body = el('list-body');
   /* 직전에 그린 가격을 기억해 두고, 바뀐 칸만 잠깐 물들인다 */
@@ -1583,7 +1591,9 @@ function renderList() {
       var fav = FAVS.indexOf(r.sym) >= 0;
       return '<tr data-sym="' + r.sym + '"' + (r.sym === state.sel ? ' class="selected"' : '') + '>' +
         '<td class="fav' + (fav ? ' on' : '') + '" data-fav="' + r.sym + '" title="' + t('관심종목', 'Watchlist') + '">' + (fav ? '★' : '☆') + '</td>' +
-        '<td class="num">' + r.seq + '</td>' +
+        '<td class="num" title="' + esc(t('현재 정렬 기준 순위입니다(시가총액 정렬이면 시총 순위).',
+          'Rank under the current sort — with the market-cap sort this is the market-cap rank.')) + '">' +
+          (r.rank || r.seq) + '</td>' +
         '<td class="sym">' + esc(r.sym) + '</td>' +
         '<td class="co">' + esc(lang === 'en' ? r.en : r.ko) +
           (lang === 'en' ? '' : '<span class="sm">' + esc(r.en) + '</span>') + '</td>' +
@@ -1626,8 +1636,8 @@ function renderList() {
     : '') + (missing
     ? t('시가총액·PER·EPS·목표주가는 종목별로 따로 받아옵니다. 지금 표에 ' + missing + '개 종목이 비어 있습니다 — <b>표시 종목 지표 불러오기</b>를 누르면 채워집니다.',
         'Market cap, P/E, EPS and targets are fetched per company. ' + missing + ' rows are still empty — press <b>Load metrics for listed</b> to fill them.')
-    : t('“#” 열은 초기 목록 순서(대형주 참고 순서)이며, 실제 순위는 조회한 시가총액으로 정렬하면 나옵니다.',
-        'The “#” column is the initial list order; rank by the market cap actually fetched using the sort control.')) +
+    : t('“순위” 열은 지금 정렬 기준의 순위입니다 — 정렬을 <b>시가총액</b>으로 두면 시총 순위가 됩니다.',
+        'The “Rank” column follows the current sort — set the sort to <b>Market cap</b> and it becomes the market-cap rank.')) +
     (intraday ? '<br>' + esc(t('보조 소스(Stooq)로 받은 ' + intraday + '개 종목의 등락률은 전일 종가가 아니라 당일 시가 대비입니다.',
         'For ' + intraday + ' rows fetched from the fallback source (Stooq), the change is measured against the day\'s open, not the previous close.')) : '') +
     (failed.length ? '<br>' + esc(t('데이터 제공사가 심볼을 인식하지 못해 조회되지 않는 종목: ',
@@ -1808,10 +1818,19 @@ function modelOf(sym) {
     calendar: pickOf('calendar', null, {}), surprises: pickOf('surprises', null, []),
     epsQuarters: pickOf('epsQuarters', null, null), epsTrend: pickOf('epsTrend', null, []),
     financials: fin,
-    news: d.news || (snap && snap.news && snap.news.length ? snap.news : null),
-    newsFromSnapshot: !d.news && !!(snap && snap.news && snap.news.length),
+    news: d.news || pickNews(snap),
+    newsFromSnapshot: !d.news && !!pickNews(snap),
     srcs: d.srcs || {}
   };
+}
+
+/** 스냅샷 뉴스 — 한국어 화면에서는 한글 헤드라인을 먼저 쓴다(수집기가 함께 받아 둔다) */
+function pickNews(snap) {
+  if (!snap) return null;
+  if (lang !== 'en' && snap.newsKo && snap.newsKo.length) return snap.newsKo;
+  if (snap.news && snap.news.length) return snap.news;
+  if (snap.newsKo && snap.newsKo.length) return snap.newsKo;
+  return null;
 }
 
 function badge(id, kind, extra) {
@@ -1955,10 +1974,37 @@ function renderValuation(M) {
   srcBadge('badge-val', M);
 }
 
+/** 수익률 계산용 장기 계열 — 스냅샷의 월봉 10년 + 일봉 2년을 이어 만든다.
+ *  차트에서 1개월을 보고 있어도 1년·3년·5년 수익률이 나와야 하기 때문이다. */
+function longSeries(sym, fallback) {
+  var src = SNAP_CHART[sym];
+  if (!src || (!src.daily && !src.monthly)) return fallback;
+  var dates = [], closes = [];
+  var d = src.daily, m = src.monthly;
+  var firstDaily = d && d.d && d.d.length ? d.d[0] : null;
+  if (m && m.d) {
+    for (var i = 0; i < m.d.length; i++) {
+      if (firstDaily && m.d[i] >= firstDaily) break;      /* 일봉이 있는 구간은 일봉을 쓴다 */
+      if (m.c[i] == null) continue;
+      dates.push(new Date(m.d[i] + 'T00:00:00Z')); closes.push(m.c[i]);
+    }
+  }
+  if (d && d.d) {
+    for (var j = 0; j < d.d.length; j++) {
+      if (d.c[j] == null) continue;
+      dates.push(new Date(d.d[j] + 'T00:00:00Z')); closes.push(d.c[j]);
+    }
+  }
+  if (closes.length < 5) return fallback;
+  return { dates: dates, close: closes, __long: true };
+}
+
 function renderReturns(M) {
-  var c = M.chart;
+  var c = longSeries(M.sym, M.chart);
   if (!c || !c.close.length) { el('t-returns').innerHTML = ''; return; }
   var closes = c.close, dates = c.dates, last = closes[closes.length - 1];
+  /* 마지막 값은 지금 가격(스트리밍·가격파일)이 있으면 그것을 쓴다 */
+  if (M.quote && M.quote.price != null) last = M.quote.price;
   function backFrom(days) {
     var target = Date.now() - days * 86400000, idx = -1;
     for (var i = dates.length - 1; i >= 0; i--) { if (dates[i].getTime() <= target) { idx = i; break; } }
@@ -1972,7 +2018,7 @@ function renderReturns(M) {
   var defs = [
     [t('1주', '1W'), backFrom(7)], [t('1개월', '1M'), backFrom(30)], [t('3개월', '3M'), backFrom(91)],
     [t('6개월', '6M'), backFrom(182)], [t('연초 이후', 'YTD'), ytdBase()], [t('1년', '1Y'), backFrom(365)],
-    [t('3년', '3Y'), backFrom(365 * 3)]
+    [t('3년', '3Y'), backFrom(365 * 3)], [t('5년', '5Y'), backFrom(365 * 5)]
   ];
   var head = '<thead><tr>' + defs.map(function (d) { return '<th class="num" scope="col">' + esc(d[0]) + '</th>'; }).join('') + '</tr></thead>';
   var body = '<tbody><tr>' + defs.map(function (d) {
@@ -1980,8 +2026,12 @@ function renderReturns(M) {
     return '<td class="num ' + signCls(v) + '">' + pct(v, 1) + '</td>';
   }).join('') + '</tr></tbody>';
   el('t-returns').innerHTML = head + body +
-    '<caption>' + esc(t('선택한 차트 기간에 담긴 데이터로 계산합니다. 기간이 짧으면 일부 칸은 값이 없습니다(—). 배당 재투자는 반영하지 않습니다.',
-      'Computed from the loaded chart window; shorter ranges leave some cells empty (—). Dividends are not reinvested.')) + '</caption>';
+    '<caption>' + esc(c.__long
+      ? t('차트에서 고른 기간과 무관하게, 받아 둔 전체 시계열(월봉 10년 + 일봉 2년)로 계산합니다. 배당 재투자는 반영하지 않습니다.',
+          'Computed from the full stored series (10y monthly + 2y daily), independent of the chart range. Dividends are not reinvested.')
+      : t('지금 받아 둔 시계열로 계산합니다. 장기 계열을 못 받으면 일부 칸은 비어 있습니다(—). 배당 재투자는 반영하지 않습니다.',
+          'Computed from the series currently loaded; long horizons stay empty (—) if the long series is unavailable. Dividends are not reinvested.')) +
+    '</caption>';
 }
 </script>
 <script>
@@ -2489,9 +2539,23 @@ function renderCalendar(M) {
   var pick = future.length ? future : dates;
 
   if (!pick.length) {
-    el('c-date').textContent = '—';
-    el('c-date-note').innerHTML = esc(t('발표일을 받지 못했습니다. 회사 IR 공지나 아래 링크에서 확인하세요.',
-      'No earnings date returned. Check the company IR page or the links below.'));
+    /* 예정일이 없으면 직전 발표일이라도 보여준다 — 빈칸보다 낫다 */
+    var lastRep = (M.surprises || []).filter(function (r) { return r.ts; })[0];
+    if (lastRep) {
+      el('c-date').textContent = dateFmt(lastRep.ts);
+      var dd0 = dayDiff(lastRep.ts);
+      el('c-date-note').innerHTML =
+        esc(t('직전 발표일 (다음 일정은 아직 확인되지 않았습니다)', 'Last reported (next date not yet available)')) +
+        (dd0 == null ? '' : ' · ' + esc(t(Math.abs(dd0) + '일 전', Math.abs(dd0) + ' days ago'))) +
+        '<br>' + esc(t('발표 EPS $' + (lastRep.act == null ? '—' : lastRep.act.toFixed(2)) +
+          (lastRep.surprise == null ? '' : ' (컨센서스 대비 ' + pct(lastRep.surprise, 1) + ')'),
+          'Reported EPS $' + (lastRep.act == null ? '—' : lastRep.act.toFixed(2)) +
+          (lastRep.surprise == null ? '' : ' (surprise ' + pct(lastRep.surprise, 1) + ')')));
+    } else {
+      el('c-date').textContent = '—';
+      el('c-date-note').innerHTML = esc(t('발표일을 받지 못했습니다. 회사 IR 공지나 아래 링크에서 확인하세요.',
+        'No earnings date returned. Check the company IR page or the links below.'));
+    }
   } else {
     var spanDays = pick.length > 1 ? Math.round((pick[pick.length - 1] - pick[0]) / 86400) : 0;
     el('c-date').textContent = dateFmt(pick[0]) + (spanDays > 0 ? ' ~ ' + dateFmt(pick[pick.length - 1]) : '');
@@ -2506,8 +2570,17 @@ function renderCalendar(M) {
       '<br>' + esc(t('시각은 회사 IR 공지에서 확인하세요(아래 링크).', 'Check the exact time on the company IR page (links below).'));
   }
 
-  var epsN = null;
-  (M.epsTrend || []).forEach(function (r) { if (r.period === '0q' && r.n) epsN = r.n; });
+  var epsN = null, trend0 = null;
+  (M.epsTrend || []).forEach(function (r) {
+    if (r.period === '0q') { trend0 = r; if (r.n) epsN = r.n; }
+  });
+  /* calendarEvents 에 컨센서스가 없으면 earningsTrend 의 당분기 추정으로 채운다 */
+  if (cal.epsEst == null && trend0 && trend0.avg != null) {
+    cal = Object.assign({}, cal, { epsEst: trend0.avg, epsLow: trend0.low, epsHigh: trend0.high });
+  }
+  if (cal.revEst == null && trend0 && trend0.revAvg != null) {
+    cal = Object.assign({}, cal, { revEst: trend0.revAvg });
+  }
   el('c-eps').textContent = cal.epsEst == null ? '—' : '$' + Number(cal.epsEst).toFixed(2);
   el('c-eps-note').textContent = cal.epsLow == null || cal.epsHigh == null
     ? (epsN ? t(epsN + '개 기관 추정', epsN + ' analysts') : t('컨센서스 미조회', 'consensus not available'))
@@ -3555,7 +3628,9 @@ function bindEvents() {
     if (rows.length) select(rows[0].sym);
   });
   el('f-fav').addEventListener('change', function () { state.favOnly = this.checked; renderList(); });
-  el('btn-enrich').addEventListener('click', function () {
+  /* "표시 종목 지표 불러오기" 버튼은 스냅샷이 지표를 모두 채우게 된 뒤 없앴다 — 있을 때만 연결한다 */
+  var enrichBtn = el('btn-enrich');
+  if (enrichBtn) enrichBtn.addEventListener('click', function () {
     enrichVisible(rowsForList().slice(0, state.limit).map(function (r) { return r.sym; }));
   });
   el('btn-csv').addEventListener('click', downloadCsv);
