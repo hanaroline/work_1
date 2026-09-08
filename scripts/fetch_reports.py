@@ -396,6 +396,27 @@ def looks_closed(html):
     return ("점검 안내 화면이 왔다" + (" — " + got[-1].strip() if got else ""))
 
 
+# 세 번째 고장. 9/8 09:21 판에서 「리서치 리포트」 게시판이 34KB 를 돌려주고도
+# 줄이 한 개도 없었는데, 열어 보니 HTML 이 아니라 **HTTP 응답 헤더를 마흔일곱
+# 번 되풀이한 덩어리**였다(태그가 하나도 없다). 앞단 장비가 몸통 자리에 헤더를
+# 흘려 넣은 것으로 보인다. 점검 화면도 마크업 변경도 아니므로 따로 가려 적고,
+# 잠깐 있다 사라지는 고장이니 다시 두드린다 — 같은 아침 08:14 판에서는 이
+# 게시판이 멀쩡히 열렸다.
+_HTTP_HEAD = re.compile(r"^\s*(HTTP/\d|\d{3}\s+[A-Za-z])")
+
+
+def looks_garbled(html):
+    """목록 대신 HTML 이 아닌 것이 왔는가. 왔다면 무엇이 왔는지 적어 돌려준다."""
+    if not html:
+        return "빈 몸통이 왔다"
+    tags = len(re.findall(r"<[a-zA-Z]", html))
+    if tags > 20:
+        return None                       # 얼개는 있다 — 다른 까닭이다
+    if _HTTP_HEAD.match(html) or "Set-Cookie:" in html[:2000]:
+        return "몸통 자리에 HTTP 헤더가 왔다 (태그 %d개, %d bytes)" % (tags, len(html))
+    return "HTML 이 아닌 몸통이 왔다 (태그 %d개, %d bytes)" % (tags, len(html))
+
+
 def parse_mirae(html, board, category_id, overseas=False):
     rows = []
     for row in _ROW.findall(html):
@@ -478,17 +499,31 @@ def fetch_mirae(dump_dir=None):
     for board, cid, pages, overseas in MIRAE_BOARDS:
         # 판 하나가 죽어도 나머지는 살린다. 예전에는 첫 판이 넘어지면
         # 하우스 원천이 통째로 날아갔다.
-        try:
-            first, html = _mirae_page(cid, board, "pageIndex", 1, overseas)
-        except Exception as e:                                  # noqa: BLE001
-            board_err[board] = "%s: %s" % (type(e).__name__, e)
-            continue
+        # 몸통이 깨져 오면 잠깐 있다 사라지는 고장이다. 한 번 더 두드려 본다 —
+        # 이걸 안 하면 게시판 하나가 조용히 빠진 채 「정상」으로 적힌다.
+        first, html, garbled = None, "", None
+        for attempt in range(3):
+            try:
+                first, html = _mirae_page(cid, board, "pageIndex", 1, overseas)
+            except Exception as e:                              # noqa: BLE001
+                board_err[board] = "%s: %s" % (type(e).__name__, e)
+                first, html, garbled = None, "", None
+                break
+            if first:
+                garbled = None
+                break
+            garbled = looks_garbled(html)
+            if not garbled:
+                break                        # 얼개는 왔는데 줄이 없다 — 다시 받아도 같다
+            if attempt + 1 < 3:
+                time.sleep(2.0 * (attempt + 1))
         if not first:
-            if dump_dir:
-                _dump(dump_dir, "mirae_%s_p1.html" % cid, html)
-            seen_html.append(html)
-            board_err[board] = ((looks_closed(html) or "줄을 못 찾았다")
-                                + " (%d bytes)" % len(html))
+            if html:
+                if dump_dir:
+                    _dump(dump_dir, "mirae_%s_p1.html" % cid, html)
+                seen_html.append(html)
+                board_err[board] = ((garbled or looks_closed(html) or "줄을 못 찾았다")
+                                    + ("" if garbled else " (%d bytes)" % len(html)))
             continue
         # 같은 리포트의 날짜가 판마다 다르게 읽힌 일이 있다(9/1 판에서 두 건이
         # 사흘씩 당겨졌다). 어느 칸을 집었는지는 마크업을 봐야 알 수 있으므로
@@ -541,10 +576,17 @@ def fetch_mirae(dump_dir=None):
                 mate["analyst"] = (mate.get("analyst") + ", " + who) if mate.get("analyst") else who
         if r.get("pdf") and not mate.get("pdf"):
             mate["pdf"] = r["pdf"]
-    return uniq, {"page_param": used or "(쪽 넘김 없음)",
-                  "first_page_rows": first_n, "rows_before_dedupe": len(rows),
-                  "boards": len(MIRAE_BOARDS) - len(board_err),
-                  "board_errors": board_err or None}
+    how = {"page_param": used or "(쪽 넘김 없음)",
+           "first_page_rows": first_n, "rows_before_dedupe": len(rows),
+           "boards": len(MIRAE_BOARDS) - len(board_err),
+           "board_errors": board_err or None}
+    if board_err:
+        # 게시판 둘 가운데 하나만 열려도 원천은 「정상」으로 적혔다. 9/8 아침에
+        # 하우스 건수가 19→14→5 로 줄었는데도 상태는 내내 정상이었다 — 빠진
+        # 게시판이 눈에 걸리게 한다.
+        how["partial"] = "게시판 %d곳이 빠졌다 — %s" % (
+            len(board_err), "; ".join("%s: %s" % kv for kv in sorted(board_err.items())))
+    return uniq, how
 
 
 def _key(title):
