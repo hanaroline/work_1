@@ -487,6 +487,7 @@ footer .disc p{margin:0 0 12px;}
     <p class="section-eyebrow" data-ko="APPENDIX" data-en="APPENDIX">APPENDIX</p>
     <h2 class="section-title"><span data-ko="데이터 출처 · 조회 진단" data-en="Data sources &amp; diagnostics">데이터 출처 · 조회 진단</span></h2>
     <ul class="src-list" id="src-list"></ul>
+    <div class="note-box" id="snap-stale" hidden></div>
     <div class="note-box" id="fallback-note" hidden></div>
     <details class="diag">
       <summary data-ko="요청 진단 보기 (개발용)" data-en="Request diagnostics (developer)">요청 진단 보기 (개발용)</summary>
@@ -1322,7 +1323,8 @@ function loadDetail(sym, force) {
   var d = (cached && !force) ? cached : { sym: sym, charts: {}, srcs: {}, ts: Date.now() };
   CACHE[sym] = d;
   d.ts = Date.now();
-  d.pending = { chart: !d.charts[key], summary: !(d.summary || d.tsFin || d.snap), news: !d.news };
+  d.pending = { chart: !d.charts[key], summary: !(d.summary || d.tsFin || d.snap),
+    news: !(d.news || (d.snap && d.snap.news && d.snap.news.length)) };
   setDetailLoading(sym);
   var draw = function () { if (state.sel === sym) renderDetail(sym); };
   draw();
@@ -1701,7 +1703,10 @@ function modelOf(sym) {
     target: pickOf('target', 'target', {}),
     calendar: pickOf('calendar', null, {}), surprises: pickOf('surprises', null, []),
     epsQuarters: pickOf('epsQuarters', null, null), epsTrend: pickOf('epsTrend', null, []),
-    financials: fin, news: d.news || null, srcs: d.srcs || {}
+    financials: fin,
+    news: d.news || (snap && snap.news && snap.news.length ? snap.news : null),
+    newsFromSnapshot: !d.news && !!(snap && snap.news && snap.news.length),
+    srcs: d.srcs || {}
   };
 }
 
@@ -2595,7 +2600,7 @@ function renderNews(M) {
     return '<li><a href="' + esc(n.url) + '" target="_blank" rel="noopener">' + esc(n.title) + '</a>' +
       '<div class="m">' + esc(n.source) + (n.ts ? ' · ' + esc(dateFmt(n.ts)) : '') + '</div></li>';
   }).join('') + links;
-  badge('badge-news', 'live');
+  badge('badge-news', M.newsFromSnapshot ? 'snapshot' : 'live');
 }
 
 /* ============================================================
@@ -2641,6 +2646,21 @@ function renderSources() {
 
   var anySnapshot = SRC.list === 'snapshot' || srcs.chart === 'snapshot' || srcs.summary === 'snapshot';
   var anySample = SRC.list === 'sample' || srcs.chart === 'sample' || srcs.summary === 'sample';
+  /* 스냅샷이 오래되면 알린다 — 며칠 지난 값을 오늘 시세로 읽으면 안 된다 */
+  var snapAge = null, at = snapAsOf();
+  if (at) snapAge = Math.floor((Date.now() - at.getTime()) / 86400000);
+  var stale = el('snap-stale');
+  if (stale) {
+    stale.hidden = !(anySnapshot && snapAge != null && snapAge >= 2);
+    if (!stale.hidden) {
+      stale.innerHTML = '<b>' + esc(t('스냅샷이 ' + snapAge + '일 지났습니다.', 'This snapshot is ' + snapAge + ' days old.')) + '</b> ' +
+        esc(t('수집 워크플로(.github/workflows/us100-data.yml)가 돌지 않았을 수 있습니다. ' +
+              'data/us100/REFRESH 를 고쳐 push 하거나 Actions 탭에서 수동 실행하면 다시 받습니다.',
+              'The collection workflow (.github/workflows/us100-data.yml) may not have run. ' +
+              'Edit data/us100/REFRESH and push, or run it manually from the Actions tab.'));
+    }
+  }
+
   var box = el('fallback-note');
   box.hidden = !(anySample || anySnapshot);
   if (!anySample && anySnapshot) {
