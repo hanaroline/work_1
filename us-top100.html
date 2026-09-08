@@ -2292,10 +2292,12 @@ function badge(id, kind, extra) {
 /** 스냅샷 배지 문구 — 언제 수집한 값인지 배지에서 바로 보이게 한다 */
 function snapLabel() {
   var d = (typeof snapAsOf === 'function') ? snapAsOf() : null;
-  if (!d) return t('저장 스냅샷', 'saved snapshot');
+  var kind = SNAP_EMBEDDED ? t('내장 스냅샷 ', 'embedded ') : t('스냅샷 ', 'snapshot ');
+  if (!d) return SNAP_EMBEDDED ? t('내장 스냅샷', 'embedded snapshot') : t('저장 스냅샷', 'saved snapshot');
   var mm = ('0' + (d.getMonth() + 1)).slice(-2), dd = ('0' + d.getDate()).slice(-2);
   var hh = ('0' + d.getHours()).slice(-2), mi = ('0' + d.getMinutes()).slice(-2);
-  return t('스냅샷 ' + mm + '.' + dd + ' ' + hh + ':' + mi, 'snapshot ' + mm + '/' + dd + ' ' + hh + ':' + mi);
+  return t(kind + mm + '.' + dd + ' ' + hh + ':' + mi,
+           (SNAP_EMBEDDED ? 'embedded ' : 'snapshot ') + mm + '/' + dd + ' ' + hh + ':' + mi);
 }
 
 /** quoteSummary 계열 섹션의 공통 배지 처리 (조회 중 / 실시간 / 일부 / 예시 / 미조회) */
@@ -3607,9 +3609,12 @@ function renderHeroMeta() {
     : t('조회 전', 'not retrieved');
   el('hero-src').textContent = SRC.list === 'sample'
     ? t('예시 데이터 표시 중', 'showing demo data')
-    : SRC.list === 'snapshot'
-      ? t('러너 스냅샷 · 대상 ' + COMPANIES.length + '개 기업', 'runner snapshot · ' + COMPANIES.length + ' companies')
-      : t('대상 ' + COMPANIES.length + '개 기업', COMPANIES.length + ' companies');
+    : SNAP_EMBEDDED
+      ? t('이 파일에 내장된 스냅샷 · 대상 ' + COMPANIES.length + '개 기업',
+          'snapshot embedded in this file · ' + COMPANIES.length + ' companies')
+      : SRC.list === 'snapshot'
+        ? t('러너 스냅샷 · 대상 ' + COMPANIES.length + '개 기업', 'runner snapshot · ' + COMPANIES.length + ' companies')
+        : t('대상 ' + COMPANIES.length + '개 기업', COMPANIES.length + ' companies');
 }
 
 function renderSources() {
@@ -3782,6 +3787,29 @@ var QUOTES = null;        // quotes.json — 장중 10분 주기로 갱신되는
 var QUOTES_AT = null;     // 그 파일의 수집 시각
 var QUOTES_USED = false;  // 그 파일을 실제로 화면에 썼는지(스냅샷보다 오래되면 쓰지 않는다)
 
+/* ------------------------------------------------------------
+   파일에 내장된 데이터 — 인터넷이 없는 PC용
+   브라우저는 file:// 로 열린 페이지가 옆에 있는 json 을 읽는 것도 막는다(CORS,
+   origin 'null'). 그래서 오프라인 PC 에서는 파일 하나에 데이터를 넣어 두는 수밖에 없다.
+   scripts/make_offline_html.py 가 아래 <script id="us100-embedded"> 블록을 심어
+   us-top100-offline.html 을 만든다. 이 판에서는 그 값을 먼저 그리고, 인터넷이 되는
+   자리에서는 더 새 파일이 오면 그 위에 덮는다.
+   ------------------------------------------------------------ */
+var EMBEDDED_CACHE;
+function embedded() {
+  if (EMBEDDED_CACHE !== undefined) return EMBEDDED_CACHE;
+  EMBEDDED_CACHE = null;
+  var n = document.getElementById('us100-embedded');
+  if (n && n.textContent && n.textContent.length > 100) {
+    try {
+      var j = JSON.parse(n.textContent);
+      if (j && (j.latest || j.quotes)) EMBEDDED_CACHE = j;
+    } catch (e) { EMBEDDED_CACHE = null; }
+  }
+  return EMBEDDED_CACHE;
+}
+var SNAP_EMBEDDED = false;      // 지금 그려진 스냅샷이 파일 내장본인지
+
 function fetchQuick(url, ms) {
   return withTimeout(
     fetch(url, { cache: 'no-store' }).then(function (r) {
@@ -3806,6 +3834,13 @@ function followMoved(j, file, ms, from) {
 
 /** 스냅샷 받아오기 — 상대 경로 우선, 실패하면 저장소 raw 주소(프록시 폴백 포함) */
 function loadSnapshot() {
+  /* 내장본이 있으면 먼저 그린다 — 오프라인 PC 에서는 이것이 유일한 데이터다 */
+  var emb = embedded();
+  if (emb && emb.latest && emb.latest.companies) {
+    SNAP = emb.latest; SNAP_BASE = null; SNAP_EMBEDDED = true;
+    DIAG.push({ url: t('(이 파일에 내장)', '(embedded in this file)'), ok: true, via: t('내장 스냅샷', 'embedded snapshot'), len: 0 });
+    applySnapshot();
+  }
   var tries = SNAPSHOT_BASES.map(function (base) {
     var url = base + 'latest.json' + '?_ts=' + Date.now();
     var p = /^https?:/.test(base) ? fetchQuick(url, 8000).catch(function () { return fetchJson(base + 'latest.json'); })
@@ -3816,11 +3851,21 @@ function loadSnapshot() {
     });
   });
   return anyOf(tries).then(function (o) {
-    SNAP = o.json; SNAP_BASE = o.base;
+    /* 내장본보다 새 것만 받아들인다(오프라인에서 받아 온 파일이 더 오래된 경우도 있다) */
+    if (SNAP_EMBEDDED) {
+      var got = o.json.fetchedAt ? new Date(o.json.fetchedAt).getTime() : 0;
+      var have = SNAP && SNAP.fetchedAt ? new Date(SNAP.fetchedAt).getTime() : 0;
+      if (!(got > have)) {
+        DIAG.push({ url: o.base + 'latest.json', ok: true, via: t('내장본이 더 새로워 그대로 씀', 'embedded copy is newer'), len: 0 });
+        return SNAP;
+      }
+    }
+    SNAP = o.json; SNAP_BASE = o.base; SNAP_EMBEDDED = false;
     DIAG.push({ url: o.base + 'latest.json', ok: true, via: '스냅샷', len: 0 });
     applySnapshot();
     return SNAP;
   }, function () {
+    if (SNAP_EMBEDDED) return SNAP;          /* 인터넷이 없으면 내장본으로 계속 간다 */
     DIAG.push({ url: 'data/us100/latest.json', ok: false, err: '스냅샷 없음' });
     return null;
   });
@@ -3862,6 +3907,13 @@ function applySnapshot() {
 /** 가격만 담긴 파일. 장중 10분 주기로 러너가 갱신한다(us100-quotes.yml).
  *  스냅샷(latest.json)보다 최신이므로 가격·등락률은 이쪽을 먼저 쓴다. */
 function loadQuotes() {
+  var emb = embedded();
+  if (emb && emb.quotes && emb.quotes.quotes && QUOTES == null) {
+    QUOTES = emb.quotes;
+    var eat = new Date(emb.quotes.fetchedAt);
+    QUOTES_AT = isNaN(eat.getTime()) ? null : eat;
+    applyQuotes();
+  }
   var bases = SNAP_BASE ? [SNAP_BASE].concat(SNAPSHOT_BASES) : SNAPSHOT_BASES;
   var tries = bases.map(function (base) {
     var url = base + 'quotes.json?_ts=' + Date.now();
@@ -3874,13 +3926,17 @@ function loadQuotes() {
     });
   });
   return anyOf(tries).then(function (j) {
+    /* 내장 가격보다 오래된 파일이면 무시한다 */
+    var at0 = new Date(j.fetchedAt);
+    if (QUOTES_AT && !isNaN(at0.getTime()) && at0.getTime() <= QUOTES_AT.getTime()) return QUOTES;
     QUOTES = j;
-    var at = new Date(j.fetchedAt);
+    var at = at0;
     QUOTES_AT = isNaN(at.getTime()) ? null : at;
     DIAG.push({ url: 'data/us100/quotes.json', ok: true, via: '가격 파일', len: 0 });
     applyQuotes();
     return j;
   }, function () {
+    if (QUOTES) return QUOTES;               /* 내장 가격으로 계속 간다 */
     DIAG.push({ url: 'data/us100/quotes.json', ok: false, err: '가격 파일 없음' });
     return null;
   });
@@ -4176,6 +4232,11 @@ function ageLabel(dt) {
 /** 종목별 시계열 스냅샷 — 선택한 종목만 받는다 */
 function loadSnapshotChart(sym) {
   if (SNAP_CHART[sym]) return Promise.resolve(SNAP_CHART[sym]);
+  var emb = embedded();
+  if (emb && emb.charts && emb.charts[sym]) {
+    SNAP_CHART[sym] = emb.charts[sym];
+    return Promise.resolve(SNAP_CHART[sym]);
+  }
   if (!SNAP_BASE) return Promise.reject(new Error('스냅샷 경로 없음'));
   var file = SNAP_BASE + 'chart/' + encodeURIComponent(sym) + '.json';
   var p = /^https?:/.test(SNAP_BASE)
