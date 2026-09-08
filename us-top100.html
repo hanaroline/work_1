@@ -2711,13 +2711,8 @@ function renderSources() {
     if (v === 'sample') return '<span class="badge sample">' + esc(t('예시', 'demo')) + '</span>';
     return '<span class="badge none">' + esc(t('미조회', 'n/a')) + '</span>';
   };
+  /* 신선한 경로부터 나열한다 — 위에 있는 것이 아래 것을 덮어쓴다 */
   var rows = [
-    [t('저장 스냅샷 (러너 수집)', 'Saved snapshot (runner)'),
-      SNAP ? ('data/us100/latest.json' +
-              (snapAsOf() ? ' · ' + t('수집 ', 'fetched ') + dateTimeFmt(Math.floor(snapAsOf().getTime() / 1000)) : '') +
-              ' · ' + t(Object.keys(SNAP.companies).length + '개 종목', Object.keys(SNAP.companies).length + ' symbols'))
-           : 'data/us100/latest.json',
-      SNAP ? 'ok' : null],
     [t('실시간 스트리밍 (WebSocket)', 'Live stream (WebSocket)'),
       'wss://streamer.finance.yahoo.com' +
         (STREAM.ticks ? ' · ' + t(STREAM.ticks + '건 수신', STREAM.ticks + ' ticks') +
@@ -2731,7 +2726,14 @@ function renderSources() {
                 ' (' + (ageLabel(QUOTES_AT) || '') + ') · ' + Object.keys(QUOTES.quotes).length + t('개 종목', ' symbols'))
              : 'data/us100/quotes.json',
       QUOTES ? 'ok' : null],
-    [t('목록 시세 (100개 기업)', 'List quotes (100 companies)'), 'Yahoo Finance spark · Stooq CSV', SRC.list],
+    [t('저장 스냅샷 (지표·실적·일정)', 'Saved snapshot (metrics, results, calendar)'),
+      SNAP ? ('data/us100/latest.json' +
+              (snapAsOf() ? ' · ' + t('수집 ', 'fetched ') + dateTimeFmt(Math.floor(snapAsOf().getTime() / 1000)) : '') +
+              ' · ' + t(Object.keys(SNAP.companies).length + '개 종목', Object.keys(SNAP.companies).length + ' symbols'))
+           : 'data/us100/latest.json',
+      SNAP ? 'ok' : null],
+    [t('목록 시세 (브라우저 직접 조회)', 'List quotes (direct from browser)'),
+      'Yahoo Finance quote · Stooq CSV', SRC.list === 'quotes' || SRC.list === 'stream' ? null : SRC.list],
     [t('상세 시세 · 일/주/월 차트', 'Detail quote · daily/weekly/monthly chart'), 'Yahoo Finance chart', srcs.chart],
     [t('밸류에이션 · 실적 · 컨센서스', 'Valuation · results · consensus'), 'Yahoo Finance quoteSummary / fundamentals-timeseries', srcs.summary],
     [t('뉴스', 'News'), 'Yahoo Finance search · Google News RSS', srcs.news],
