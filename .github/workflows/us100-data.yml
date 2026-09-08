@@ -21,13 +21,11 @@ on:
       - 'data/us100/REFRESH'
       - '.github/workflows/us100-data.yml'
       - 'scripts/fetch_us100.py'
-      - 'scripts/check_us100_ranking.py'
 
   workflow_dispatch:
 
 permissions:
   contents: write
-  issues: write          # 대상 목록 갱신 후보를 이슈 하나에 적어 둔다(check_us100_ranking.py)
 
 concurrency:
   group: us100-data-${{ github.ref_name }}
@@ -47,14 +45,9 @@ jobs:
       - name: 시세 수집
         run: python scripts/fetch_us100.py
 
-      - name: 대상 목록 점검 (지금 시가총액 상위 100 대비)
-        # 목록을 자동으로 갈아치우지 않는다 — 새 종목의 한글명·기업 개요를 사람이 채워야
-        # 화면이 비지 않기 때문이다. 차이만 ranking.json·요약·이슈로 알려 준다.
-        continue-on-error: true
-        env:
-          US100_RANK_ISSUE: '1'
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: python scripts/check_us100_ranking.py
+      # 대상 목록 점검은 따로 돈다(.github/workflows/us100-ranking.yml) — 필요한 것이
+      # latest.json 뿐이라 8분 걸리는 이 수집에 매달아 둘 이유가 없고, 수집이 느린 날에
+      # 점검까지 함께 못 도는 일을 피한다.
 
       - name: 데이터 브랜치에 올리기
         # main 히스토리에 쌓지 않는다 — 차트 100개(약 3MB)가 매일 통째로 바뀌므로
@@ -62,7 +55,7 @@ jobs:
         # 데이터 전용 브랜치를 커밋 하나로 갈아끼운다(scripts/publish_us100_data.sh).
         env:
           COMMIT_LABEL: 전체수집
-          PUBLISH_FILES: latest.json chart ranking.json
+          PUBLISH_FILES: latest.json chart
         run: bash scripts/publish_us100_data.sh
 
       - name: 오프라인 단일 파일 만들기
