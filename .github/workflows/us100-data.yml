@@ -21,6 +21,7 @@ on:
       - 'data/us100/REFRESH'
       - '.github/workflows/us100-data.yml'
       - 'scripts/fetch_us100.py'
+      - 'scripts/check_us100_ranking.py'
 
   workflow_dispatch:
 
