@@ -82,6 +82,12 @@ for attempt in 1 2 3 4; do
       [ -e "$HYD/$SRC/$f" ] && cp -a "$HYD/$SRC/$f" "$STAGE/$SRC/"
     done
   fi
+  # 이번 실행이 올리는 것은 **그 실행이 만든 것으로 갈아끼운다** — 브랜치에 있던 같은
+  # 이름을 먼저 지운다. 그러지 않으면 목록에서 빠진 종목의 차트(예: 교체된 종목)가
+  # 브랜치에 영원히 남는다. 이번에 올리지 않는 파일은 위에서 깔아 둔 것이 그대로 남는다.
+  for f in $PUBLISH_FILES; do
+    rm -rf "$STAGE/$SRC/$f"
+  done
   cp -a "$MINE/." "$STAGE/$SRC/"
 
   # (3) data/us100 만 담은 부모 없는 커밋 — 별도 인덱스에 STAGE 를 담아 트리를 만든다
