@@ -1318,7 +1318,8 @@ function loadDetail(sym, force) {
   var c = company(sym);
   var cached = CACHE[sym];
   var key = state.interval + '|' + state.range;
-  if (cached && !force && (Date.now() - cached.ts) < 5 * 60 * 1000 && cached.charts[key] && !cached.pending) {
+  var waiting = function (p) { return !!p && (p.chart || p.summary || p.news); };
+  if (cached && !force && (Date.now() - cached.ts) < 5 * 60 * 1000 && cached.charts[key] && !waiting(cached.pending)) {
     renderDetail(sym);
     return Promise.resolve(cached);
   }
@@ -1331,9 +1332,12 @@ function loadDetail(sym, force) {
   var draw = function () { if (state.sel === sym) renderDetail(sym); };
   draw();
 
-  /* (1) 가격 시계열 */
-  var pChart = d.charts[key] ? Promise.resolve(d.charts[key]) : fetchChart(sym, state.range, state.interval);
+  /* (1) 가격 시계열. 이미 받아 둔 봉이 있으면 그대로 쓰고 출처 표기도 건드리지 않는다
+     (캐시에서 꺼낸 스냅샷 봉을 '실시간'으로 적으면 배지가 거짓말을 한다) */
+  var cachedChart = !!d.charts[key];
+  var pChart = cachedChart ? Promise.resolve(d.charts[key]) : fetchChart(sym, state.range, state.interval);
   pChart.then(function (chart) {
+    if (cachedChart) return;
     d.charts[key] = chart; d.srcs.chart = 'live'; d.demoChart = false;
   }, function () {
     /* 실시간 실패 → 러너가 커밋한 스냅샷 시계열 */
@@ -1375,7 +1379,10 @@ function loadDetail(sym, force) {
   /* (3) 뉴스 */
   var pNews = d.news ? Promise.resolve() : fetchNews(sym, lang === 'en' ? c.en : c.ko).then(function (n) {
     d.news = n; d.srcs.news = 'live';
-  }, function () { d.srcs.news = null; });
+  }, function () {
+    /* 실시간 뉴스가 실패해도 스냅샷 뉴스 표기는 지우지 않는다 */
+    if (d.srcs.news !== 'snapshot') d.srcs.news = null;
+  });
   pNews.then(function () { d.pending.news = false; draw(); });
 
   /* (4) 환율 — 원화 환산용 */
