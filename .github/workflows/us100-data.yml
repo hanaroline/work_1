@@ -26,6 +26,7 @@ on:
 
 permissions:
   contents: write
+  issues: write          # 대상 목록 갱신 후보를 이슈 하나에 적어 둔다(check_us100_ranking.py)
 
 concurrency:
   group: us100-data-${{ github.ref_name }}
@@ -45,13 +46,22 @@ jobs:
       - name: 시세 수집
         run: python scripts/fetch_us100.py
 
+      - name: 대상 목록 점검 (지금 시가총액 상위 100 대비)
+        # 목록을 자동으로 갈아치우지 않는다 — 새 종목의 한글명·기업 개요를 사람이 채워야
+        # 화면이 비지 않기 때문이다. 차이만 ranking.json·요약·이슈로 알려 준다.
+        continue-on-error: true
+        env:
+          US100_RANK_ISSUE: '1'
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: python scripts/check_us100_ranking.py
+
       - name: 데이터 브랜치에 올리기
         # main 히스토리에 쌓지 않는다 — 차트 100개(약 3MB)가 매일 통째로 바뀌므로
         # 쌓으면 저장소가 1년에 1GB 규모로 붇는다. 지금 조회되는 값만 의미가 있어
         # 데이터 전용 브랜치를 커밋 하나로 갈아끼운다(scripts/publish_us100_data.sh).
         env:
           COMMIT_LABEL: 전체수집
-          PUBLISH_FILES: latest.json chart
+          PUBLISH_FILES: latest.json chart ranking.json
         run: bash scripts/publish_us100_data.sh
 
       - name: 오프라인 단일 파일 만들기

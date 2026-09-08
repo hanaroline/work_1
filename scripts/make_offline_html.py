@@ -8,7 +8,7 @@
   HTML 안에 넣어 두는 수밖에 없다.
 
 하는 일
-  data/us100/{latest.json, quotes.json, chart/*.json} 을 하나의 JSON 으로 접어
+  data/us100/{latest.json, quotes.json, ranking.json, chart/*.json} 을 하나의 JSON 으로 접어
   <script id="us100-embedded" type="application/json"> 블록으로 <body> 바로 뒤에 심는다.
   화면(us-top100.html)은 그 블록이 있으면 먼저 그리고, 인터넷이 되는 자리에서는
   더 새 파일이 오면 그 위에 덮는다.
@@ -72,6 +72,15 @@ def main():
         q = load(quotes_path)
         if q.get("quotes"):
             bundle["quotes"] = q
+
+    rank_path = os.path.join(a.data, "ranking.json")
+    if os.path.exists(rank_path):
+        try:
+            r = load(rank_path)
+            if r.get("builtAt"):
+                bundle["ranking"] = r
+        except Exception:                     # noqa: BLE001 — 없으면 그냥 넘어간다
+            pass
 
     charts = {}
     if not a.no_charts:
