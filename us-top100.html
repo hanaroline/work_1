@@ -2914,9 +2914,11 @@ function fetchQuick(url, ms) {
 
 /** 데이터가 옮겨간 자리에는 {"movedTo": "<새 경로>"} 안내 파일만 둔다.
  *  예전 HTML 을 이미 받아 둔 사람도 그 안내를 따라가 최신 값을 본다. */
-function followMoved(j, file, ms) {
+function followMoved(j, file, ms, from) {
   if (!j || !j.movedTo || typeof j.movedTo !== 'string') return Promise.resolve(j);
   var base = j.movedTo.charAt(j.movedTo.length - 1) === '/' ? j.movedTo : j.movedTo + '/';
+  /* 자기 자신을 가리키는 안내는 따라가지 않는다(잘못 올라간 안내 파일이 무한 반복이 되지 않게) */
+  if (from && base === from) return Promise.resolve(j);
   if (SNAPSHOT_BASES.indexOf(base) < 0) SNAPSHOT_BASES.unshift(base);
   DIAG.push({ url: base + file, ok: true, via: t('이전 위치 안내를 따라감', 'followed pointer'), len: 0 });
   return fetchQuick(base + file + '?_ts=' + Date.now(), ms || 8000)
@@ -2930,7 +2932,7 @@ function loadSnapshot() {
     var url = base + 'latest.json' + '?_ts=' + Date.now();
     var p = /^https?:/.test(base) ? fetchQuick(url, 8000).catch(function () { return fetchJson(base + 'latest.json'); })
                                   : fetchQuick(url, 5000);
-    return p.then(function (j) { return followMoved(j, 'latest.json'); }).then(function (j) {
+    return p.then(function (j) { return followMoved(j, 'latest.json', 8000, base); }).then(function (j) {
       if (!j || !j.companies) throw new Error('스냅샷 형식이 아니다');
       return { base: j.__base || base, json: j };
     });
@@ -2984,7 +2986,7 @@ function loadQuotes() {
     var url = base + 'quotes.json?_ts=' + Date.now();
     var p = /^https?:/.test(base) ? fetchQuick(url, 7000).catch(function () { return fetchJson(base + 'quotes.json'); })
                                   : fetchQuick(url, 5000);
-    return p.then(function (j) { return followMoved(j, 'quotes.json'); }).then(function (j) {
+    return p.then(function (j) { return followMoved(j, 'quotes.json', 8000, base); }).then(function (j) {
       if (!j || !j.quotes) throw new Error('가격 파일 형식이 아니다');
       if (j.__base && SNAP_BASE == null) SNAP_BASE = j.__base;
       return j;
