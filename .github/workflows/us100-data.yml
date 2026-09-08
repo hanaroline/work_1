@@ -1,0 +1,75 @@
+name: 미국 100대 기업 시세 수집
+
+# `us-top100.html` 은 브라우저에서 야후에 직접 붙지만, 사내망·CORS 로 막히는 곳이
+# 많다. Claude 세션도 이그레스 정책 때문에 야후에 못 붙는다. GitHub 러너는 그
+# 정책 밖에서 돌므로 여기서 대신 받아 data/us100/ 에 커밋하고, 화면은 그 스냅샷을
+# 먼저 그린 뒤 브라우저가 실시간으로 받아오면 그 위에 덮어쓴다.
+#
+# 주의: schedule 이벤트는 기본 브랜치(main)의 워크플로만 발동한다. 작업 브랜치에서는
+# 아래 push 트리거(data/us100/REFRESH 한 줄 수정)나 수동 실행으로 돌린다.
+
+on:
+  schedule:
+    # 미국 정규장 마감(16:00 ET) 뒤 — 21:30 UTC. ET 가 EST 인 겨울에는 22:30 것이 받는다.
+    - cron: '30 21 * * 2-6'
+    - cron: '30 22 * * 2-6'
+
+  # 세션·사람이 직접 부르는 길. 세션 토큰에는 Actions 쓰기 권한이 없어
+  # workflow_dispatch 를 API 로 부르지 못하지만(403), git push 는 된다.
+  push:
+    paths:
+      - 'data/us100/REFRESH'
+      - '.github/workflows/us100-data.yml'
+      - 'scripts/fetch_us100.py'
+
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: us100-data-${{ github.ref_name }}
+  cancel-in-progress: false
+
+jobs:
+  fetch:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: 시세 수집
+        run: python scripts/fetch_us100.py
+
+      - name: 커밋
+        run: |
+          git config user.name  'github-actions[bot]'
+          git config user.email 'github-actions[bot]@users.noreply.github.com'
+          git add data/us100
+          if git diff --staged --quiet; then
+            echo "변경 없음"
+          else
+            git commit -m "미국 100대 기업 시세 수집 $(TZ=Asia/Seoul date '+%Y-%m-%d %H:%M KST')"
+            # 같은 브랜치에 다른 커밋이 들어왔을 수 있다 — 한 번 rebase 하고 다시 밀어본다
+            git push || (git pull --rebase origin "${GITHUB_REF_NAME}" && git push)
+          fi
+
+      - name: 요약
+        if: always()
+        run: |
+          if [ -f data/us100/latest.json ]; then
+            python - <<'PY'
+          import json
+          d = json.load(open('data/us100/latest.json', encoding='utf-8'))
+          s = d.get('summary', {})
+          print(f"::notice::시세 {s.get('chartOk')}/{s.get('symbols')} · 지표 {s.get('summaryOk')}/{s.get('symbols')}")
+          bad = [k for k, v in d.get('sources', {}).items()
+                 if isinstance(v, dict) and v.get('chart') is not True]
+          if bad:
+              print("::warning::시세 실패 " + ", ".join(bad[:20]))
+          PY
+          fi
