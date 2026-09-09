@@ -9,13 +9,20 @@
       "importance": 2,
       "name_ko": "코스피200 옵션 만기일",
       "name_en": "KOSPI 200 option expiry",
-      "rule": { "kind": "nth-weekday", "nth": 2, "weekday": 3 },
+      "rule": {
+        "kind": "nth-weekday",
+        "nth": 2,
+        "weekday": 3
+      },
       "rule_note_ko": "매월 두 번째 목요일",
       "months": "all",
       "why_ko": "만기 전후로 프로그램 매매(차익거래 청산)가 몰려 지수가 흔들린다",
       "url": "https://global.krx.co.kr/contents/GLB/05/0505/0505010000/GLB0505010000.jsp",
       "source": "한국거래소 파생상품 상품명세",
-      "confirmed": "rule"
+      "confirmed": "rule",
+      "rule_note_en": "The second Thursday of every month",
+      "why_en": "Program trading (index-arbitrage unwinds) clusters around expiry and shakes the index",
+      "source_en": "Korea Exchange — derivatives contract specifications"
     },
     {
       "id": "kr-quadruple-expiry",
@@ -23,13 +30,25 @@
       "importance": 3,
       "name_ko": "코스피200 선물·옵션 동시 만기일",
       "name_en": "KOSPI 200 futures & options simultaneous expiry",
-      "rule": { "kind": "nth-weekday", "nth": 2, "weekday": 3 },
+      "rule": {
+        "kind": "nth-weekday",
+        "nth": 2,
+        "weekday": 3
+      },
       "rule_note_ko": "3·6·9·12월의 두 번째 목요일 — 지수선물·옵션이 함께 만기",
-      "months": [3, 6, 9, 12],
+      "months": [
+        3,
+        6,
+        9,
+        12
+      ],
       "why_ko": "동시 만기일은 청산 물량이 가장 크다. 만기 직전 며칠의 프로그램 순매수 누적을 함께 보십시오",
       "url": "https://global.krx.co.kr/contents/GLB/05/0505/0505010000/GLB0505010000.jsp",
       "source": "한국거래소 파생상품 상품명세",
-      "confirmed": "rule"
+      "confirmed": "rule",
+      "rule_note_en": "The second Thursday of March, June, September and December — index futures and options expire together",
+      "why_en": "Simultaneous expiry carries the largest unwind; read it with the cumulative program net buying of the preceding days",
+      "source_en": "Korea Exchange — derivatives contract specifications"
     },
     {
       "id": "us-option-expiry",
@@ -37,13 +56,20 @@
       "importance": 1,
       "name_ko": "미국 주식·지수 옵션 만기일",
       "name_en": "US equity & index option expiry",
-      "rule": { "kind": "nth-weekday", "nth": 3, "weekday": 4 },
+      "rule": {
+        "kind": "nth-weekday",
+        "nth": 3,
+        "weekday": 4
+      },
       "rule_note_ko": "매월 세 번째 금요일",
       "months": "all",
       "why_ko": "만기 주에 변동성이 커진다",
       "url": "https://www.cboe.com/about/hours/us-options/",
       "source": "Cboe — trading hours & expirations",
-      "confirmed": "rule"
+      "confirmed": "rule",
+      "rule_note_en": "The third Friday of every month",
+      "why_en": "Volatility picks up during expiry week",
+      "source_en": "Cboe — trading hours & expirations"
     },
     {
       "id": "us-quad-witching",
@@ -51,13 +77,25 @@
       "importance": 2,
       "name_ko": "미국 쿼드러플 위칭 (선물·옵션 동시 만기)",
       "name_en": "US quadruple witching",
-      "rule": { "kind": "nth-weekday", "nth": 3, "weekday": 4 },
+      "rule": {
+        "kind": "nth-weekday",
+        "nth": 3,
+        "weekday": 4
+      },
       "rule_note_ko": "3·6·9·12월의 세 번째 금요일",
-      "months": [3, 6, 9, 12],
+      "months": [
+        3,
+        6,
+        9,
+        12
+      ],
       "why_ko": "지수선물·지수옵션·개별주선물·개별주옵션이 함께 만기. 지수 리밸런싱과 겹쳐 거래대금이 급증한다",
       "url": "https://www.cboe.com/about/hours/us-options/",
       "source": "Cboe — trading hours & expirations",
-      "confirmed": "rule"
+      "confirmed": "rule",
+      "rule_note_en": "The third Friday of March, June, September and December",
+      "why_en": "Index futures, index options, single-stock futures and single-stock options expire together; it coincides with index rebalancing and turnover spikes",
+      "source_en": "Cboe — trading hours & expirations"
     },
     {
       "id": "sp-quarterly-rebalance",
@@ -65,13 +103,25 @@
       "importance": 2,
       "name_ko": "S&P 지수 분기 리밸런싱 효력일",
       "name_en": "S&P quarterly rebalance effective date",
-      "rule": { "kind": "nth-weekday", "nth": 3, "weekday": 4 },
+      "rule": {
+        "kind": "nth-weekday",
+        "nth": 3,
+        "weekday": 4
+      },
       "rule_note_ko": "3·6·9·12월 세 번째 금요일 종가 후 효력. 편입·편출 종목 발표는 그 앞 몇 주에 나온다",
-      "months": [3, 6, 9, 12],
+      "months": [
+        3,
+        6,
+        9,
+        12
+      ],
       "why_ko": "패시브 자금이 한 번에 움직여 편입 종목이 급등, 편출 종목이 급락하는 일이 잦다",
       "url": "https://www.spglobal.com/spdji/en/governance/index-announcements/",
       "source": "S&P Dow Jones Indices — index announcements",
-      "confirmed": "rule"
+      "confirmed": "rule",
+      "rule_note_en": "Effective after the close on the third Friday of March, June, September and December; additions and deletions are announced weeks earlier",
+      "why_en": "Passive money moves at once, so additions often spike and deletions often drop",
+      "source_en": "S&P Dow Jones Indices — index announcements"
     },
     {
       "id": "pboc-lpr",
@@ -79,7 +129,11 @@
       "importance": 2,
       "name_ko": "중국 대출우대금리 (LPR) 고시",
       "name_en": "China Loan Prime Rate fixing",
-      "rule": { "kind": "day-of-month", "day": 20, "business_day": true },
+      "rule": {
+        "kind": "day-of-month",
+        "day": 20,
+        "business_day": true
+      },
       "rule_note_ko": "매월 20일 09:15(현지). 20일이 휴일이면 다음 영업일",
       "months": "all",
       "time_local": "09:15",
@@ -87,7 +141,10 @@
       "why_ko": "중국의 실질 정책금리. 인민은행 MLF 조정 뒤 반영된다",
       "url": "https://www.pbc.gov.cn/en/3688229/index.html",
       "source": "People's Bank of China",
-      "confirmed": "rule"
+      "confirmed": "rule",
+      "rule_note_en": "The 20th of each month at 09:15 local time, moving to the next business day if the 20th is a holiday",
+      "why_en": "China's effective policy rate; it follows any PBOC adjustment to the MLF",
+      "source_en": "People's Bank of China"
     }
   ],
   "index_reviews": [
@@ -100,7 +157,9 @@
       "why_ko": "한국물 편입·편출은 외국인 패시브 수급을 그대로 바꾼다. 효력일 종가에 거래량이 몰린다",
       "url": "https://www.msci.com/our-solutions/indexes/index-review",
       "source": "MSCI — Index Review",
-      "confirmed": "undated"
+      "confirmed": "undated",
+      "schedule_note_en": "Four reviews a year — quarterly (QIR) in February and August, semi-annual (SAIR) in May and November. The announcement comes early or mid-month and changes take effect after the close on the last business day of that month. MSCI publishes each set of dates separately, so none are hard-coded here.",
+      "source_en": "MSCI — Index Review"
     },
     {
       "id": "krx-kospi200-review",
@@ -111,7 +170,9 @@
       "why_ko": "코스피200 편입은 지수 추종 자금의 신규 매수를 부른다",
       "url": "https://index.krx.co.kr/contents/MKD/03/0304/03040101/MKD03040101.jsp",
       "source": "한국거래소 지수 공지",
-      "confirmed": "undated"
+      "confirmed": "undated",
+      "schedule_note_en": "The Korea Exchange announces the screening result and the effective date separately. The method has changed from year to year, so no rule is applied.",
+      "source_en": "Korea Exchange — index notices"
     },
     {
       "id": "ftse-review",
@@ -122,7 +183,9 @@
       "why_ko": "MSCI 와 함께 외국인 패시브 수급의 두 축",
       "url": "https://www.lseg.com/en/ftse-russell/index-notices",
       "source": "FTSE Russell — index notices",
-      "confirmed": "undated"
+      "confirmed": "undated",
+      "schedule_note_en": "FTSE Russell publishes its quarterly review dates separately.",
+      "source_en": "FTSE Russell — index notices"
     }
   ],
   "links": [
@@ -132,7 +195,10 @@
       "importance": 2,
       "note_ko": "2024년 배당절차 개선 이후 기준일을 회사가 정관에 따라 각자 정한다 — '12월 마지막 거래일 배당락'이 더는 일률적이지 않다. 그래서 날짜를 만들지 않고 회사별 공시로 연결한다",
       "url": "https://kind.krx.co.kr/",
-      "source": "KIND 한국거래소 전자공시"
+      "source": "KIND 한국거래소 전자공시",
+      "name_en": "Korean dividend record dates",
+      "note_en": "Since the 2024 procedural reform each company sets its own record date under its articles, so a uniform 'ex-dividend on the last trading day of December' no longer holds. Rather than compute a date, this links to each company's filing.",
+      "source_en": "KIND — Korea Exchange disclosure system"
     },
     {
       "id": "kr-ktb-auction",
@@ -140,7 +206,10 @@
       "importance": 1,
       "note_ko": "기획재정부가 월간 국고채 발행계획으로 공표한다. 종목별 입찰일이 매월 달라 규칙으로 만들지 않는다",
       "url": "https://www.moef.go.kr/",
-      "source": "기획재정부"
+      "source": "기획재정부",
+      "name_en": "Korean treasury bond auctions",
+      "note_en": "The Ministry of Economy and Finance publishes a monthly issuance plan; auction days differ by issue each month, so no rule is applied.",
+      "source_en": "Ministry of Economy and Finance (Korea)"
     },
     {
       "id": "us-treasury-auction",
@@ -149,7 +218,10 @@
       "note_ko": "TreasuryDirect 가 예정 입찰을 공개 API 로 준다 — 러너가 받아 채운다(키 불필요)",
       "url": "https://www.treasurydirect.gov/auctions/upcoming/",
       "api": "https://www.treasurydirect.gov/TA_WS/securities/upcoming?format=json",
-      "source": "TreasuryDirect"
+      "source": "TreasuryDirect",
+      "name_en": "US Treasury auctions",
+      "note_en": "TreasuryDirect exposes upcoming auctions through a public API — the runner fills these in (no key needed).",
+      "source_en": "TreasuryDirect"
     },
     {
       "id": "kr-ipo",
@@ -157,7 +229,10 @@
       "importance": 1,
       "note_ko": "청약일·상장일은 증권신고서 정정에 따라 자주 바뀐다. 화면에서는 원문 공시로 연결한다",
       "url": "https://kind.krx.co.kr/listinvstg/listingcompany.do?method=searchListingTypeMain",
-      "source": "KIND 한국거래소 전자공시"
+      "source": "KIND 한국거래소 전자공시",
+      "name_en": "IPO subscription and listing",
+      "note_en": "Subscription and listing dates change often as registration statements are amended. The screen links to the source filing.",
+      "source_en": "KIND — Korea Exchange disclosure system"
     },
     {
       "id": "kr-lockup",
@@ -165,7 +240,10 @@
       "importance": 1,
       "note_ko": "종목별 물량·해제일이 상장 시 공시에 흩어져 있어 일괄 수집 경로가 없다. 원문 공시로 연결한다",
       "url": "https://kind.krx.co.kr/",
-      "source": "KIND 한국거래소 전자공시"
+      "source": "KIND 한국거래소 전자공시",
+      "name_en": "Lock-up expiry",
+      "note_en": "Volumes and expiry dates are scattered across listing filings with no single collection route. The screen links to the source filing.",
+      "source_en": "KIND — Korea Exchange disclosure system"
     },
     {
       "id": "us-earnings-calendar",
@@ -173,7 +251,10 @@
       "importance": 1,
       "note_ko": "이 화면이 담는 실적일정은 국내 100 · 미국 100 기업이다. 그 밖의 종목은 아래에서 확인하십시오",
       "url": "https://www.nasdaq.com/market-activity/earnings",
-      "source": "Nasdaq"
+      "source": "Nasdaq",
+      "name_en": "Full US earnings calendar",
+      "note_en": "This screen carries the 100 largest Korean and 100 largest US companies. Check other tickers below.",
+      "source_en": "Nasdaq"
     },
     {
       "id": "kr-earnings-disclosure",
@@ -181,7 +262,10 @@
       "importance": 1,
       "note_ko": "'연결재무제표 기준 영업(잠정)실적' 과 '기업설명회(IR) 개최' 공시가 원문이다",
       "url": "https://dart.fss.or.kr/",
-      "source": "DART 금융감독원 전자공시"
+      "source": "DART 금융감독원 전자공시",
+      "name_en": "Korean earnings filings (provisional results, IR notices)",
+      "note_en": "The 'provisional operating results' and 'investor relations event' filings are the record.",
+      "source_en": "DART — Korean electronic disclosure system"
     }
   ],
   "policy_events": [
@@ -195,7 +279,9 @@
       "why_ko": "연준 의장의 기조연설이 중기 정책 방향의 신호로 읽힌다",
       "url": "https://www.kansascityfed.org/research/jackson-hole-economic-policy-symposium/",
       "source": "Federal Reserve Bank of Kansas City",
-      "confirmed": "undated"
+      "confirmed": "undated",
+      "schedule_note_en": "Usually three days in late August. The Kansas City Fed announces the dates each year.",
+      "source_en": "Federal Reserve Bank of Kansas City"
     },
     {
       "id": "beige-book",
@@ -208,7 +294,13 @@
       "url": "https://www.federalreserve.gov/monetarypolicy/beige-book-default.htm",
       "source": "Federal Reserve",
       "confirmed": "rule",
-      "rule": { "kind": "before-fomc", "weeks": 2, "weekday": 2 }
+      "rule": {
+        "kind": "before-fomc",
+        "weeks": 2,
+        "weekday": 2
+      },
+      "schedule_note_en": "The Wednesday two weeks before each FOMC meeting, 14:00 local — computed from the FOMC dates.",
+      "source_en": "Federal Reserve"
     }
   ]
 }
