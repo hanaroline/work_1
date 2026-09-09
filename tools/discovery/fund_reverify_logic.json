@@ -1,18 +1,12 @@
 {
-  "at": "2026-09-07T02:57:07.557Z",
-  "findings": [
-    {
-      "sev": "error",
-      "rule": "필터-개수불일치",
-      "detail": "설정액 100억 미만: 화면 1829 vs 재계산 1827"
-    }
-  ],
+  "at": "2026-09-09T01:17:34.661Z",
+  "findings": [],
   "errors": [],
   "filters": [
     {
       "label": "투자지역 국내",
-      "shown": 1513,
-      "recomputed": 1513,
+      "shown": 1511,
+      "recomputed": 1511,
       "ok": true
     },
     {
@@ -29,8 +23,8 @@
     },
     {
       "label": "자산군 채권형",
-      "shown": 423,
-      "recomputed": 423,
+      "shown": 424,
+      "recomputed": 424,
       "ok": true
     },
     {
@@ -66,19 +60,19 @@
     {
       "label": "설정액 100억 미만",
       "shown": 1829,
-      "recomputed": 1827,
-      "ok": false
+      "recomputed": 1829,
+      "ok": true
     },
     {
       "label": "위험등급 매우 높은 위험",
-      "shown": 235,
-      "recomputed": 235,
+      "shown": 237,
+      "recomputed": 237,
       "ok": true
     },
     {
       "label": "총보수 0.3% 미만",
-      "shown": 655,
-      "recomputed": 655,
+      "shown": 652,
+      "recomputed": 652,
       "ok": true
     },
     {
@@ -112,28 +106,28 @@
       "okTop": true,
       "okBottom": true,
       "okAum": true,
-      "n": 2894
+      "n": 2897
     },
     {
       "label": "해외주식형 1y",
       "okTop": true,
       "okBottom": true,
       "okAum": true,
-      "n": 751
+      "n": 753
     },
     {
       "label": "국내주식형 3m",
       "okTop": true,
       "okBottom": true,
       "okAum": true,
-      "n": 615
+      "n": 616
     },
     {
       "label": "전체 5y",
       "okTop": true,
       "okBottom": true,
       "okAum": true,
-      "n": 2297
+      "n": 2295
     }
   ],
   "overlap": [
@@ -248,7 +242,7 @@
   "tally": {
     "필터.개수": {
       "checked": 13,
-      "same": 12
+      "same": 13
     },
     "필터.내용": {
       "checked": 13,
@@ -280,7 +274,7 @@
     }
   },
   "counts": {
-    "error": 1
+    "error": 0
   },
-  "verdict": "오류 1건"
+  "verdict": "필터·검색·랭킹·중복도·역조회가 모두 재계산과 일치"
 }
