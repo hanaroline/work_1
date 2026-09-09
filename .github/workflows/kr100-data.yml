@@ -49,14 +49,33 @@ jobs:
       # 전종목 시세만 있으면 되는 일이라 8분 걸리는 이 수집에 매달아 둘 이유가 없고,
       # 수집이 느린 날에 점검까지 함께 못 도는 일을 피한다.
 
-      - name: 직전 목록 점검 결과 받기
-        # 오프라인 파일에 ⑩ 섹션의 목록 점검 결과도 함께 넣으려는 것이다. 이 판이 만든
-        # 파일이 아니므로 아래 PUBLISH_FILES 에는 넣지 않는다(브랜치의 것이 보존된다).
+      - name: 직전 가격 파일과 목록 점검 결과 받기
+        # 오프라인 파일에 가격(10분 주기)과 ⑩ 섹션의 목록 점검 결과도 함께 넣으려는
+        # 것이다. 이 판이 만든 파일이 아니므로 아래 PUBLISH_FILES 에는 넣지 않는다
+        # (브랜치에 있는 것이 그대로 보존된다).
+        #
+        # 이 단계가 없으면 코드 브랜치의 안내 파일({"movedTo": …})이 그대로 쓰여
+        # 오프라인 판에 가격이 안 담긴다 — 2026-09-09 실제로 그렇게 나갔다.
         continue-on-error: true
         run: |
           if git fetch --quiet origin "+refs/heads/kr100-data:refs/remotes/origin/kr100-data" 2>/dev/null; then
-            git show origin/kr100-data:data/kr100/ranking.json > data/kr100/ranking.json || true
+            for f in quotes.json ranking.json; do
+              git show "origin/kr100-data:data/kr100/$f" > "data/kr100/$f" || true
+            done
           fi
+          python - <<'PY'
+          import json, os
+          for f in ('quotes.json', 'ranking.json'):
+              p = os.path.join('data/kr100', f)
+              try:
+                  d = json.load(open(p, encoding='utf-8'))
+              except Exception as e:
+                  print('%s 없음/못 읽음 — %s' % (f, e)); continue
+              if d.get('movedTo'):
+                  print('%s 는 아직 안내 파일이다(데이터 브랜치에 없음)' % f)
+              else:
+                  print('%s 받음 — %s' % (f, d.get('fetchedAt') or d.get('builtAt')))
+          PY
 
       - name: 오프라인 단일 파일 만들기
         # 인터넷이 막힌 업무용 PC 용. 데이터를 HTML 안에 넣어 파일 하나로 만든다
