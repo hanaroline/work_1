@@ -100,6 +100,62 @@ for (const [sym, mkt] of SYMBOLS) {
       ` | ${any.marketTime || '—'} | ${any.price ?? '—'} |`);
 }
 
+// ── 쿠키·crumb 를 달면 달라지는가 ────────────────────────────────────────
+//
+// 위 표에서 원천은 09-08 봉을 갖고 있었다. 그런데 같은 시각에 돌린 수집기는
+// 미국 09-04, 홍콩·중국 09-07, 일본 09-08 — 시장마다 정확히 **한 봉씩** 이른
+// 값을 받았다. 봉을 잘라 낸 것도 아니다(droppedUnsettled 표시가 185종목 중
+// 0개). 남는 차이는 요청 모양 하나다. 수집기는 quoteSummary 를 부르려고
+// 받아 둔 쿠키·crumb 를 차트 요청에도 함께 보낸다. 그 길이 다른(묵은) 캐시로
+// 가는지 여기서 가른다 — 같은 심볼을 두 번, 하나는 맨몸으로 하나는 쿠키를
+// 달고 부른다.
+say('');
+say('## 쿠키·crumb 를 달면 달라지나');
+say('');
+let cookie = '';
+try {
+  const res = await fetch('https://fc.yahoo.com/', { headers: { 'User-Agent': UA }, redirect: 'follow' })
+    .catch(() => null);
+  cookie = (res?.headers?.getSetCookie?.() || []).map((c) => c.split(';')[0]).join('; ');
+  const cr = await fetch('https://query1.finance.yahoo.com/v1/test/getcrumb',
+    { headers: { 'User-Agent': UA, Cookie: cookie } });
+  const crumb = (await cr.text()).trim();
+  say(`쿠키 ${cookie ? '확보' : '못 받음'} · crumb ${crumb ? '확보' : '못 받음'}`);
+} catch (err) {
+  say(`쿠키 발급 실패: ${String(err && err.message || err)}`);
+}
+const authHeaders = { 'User-Agent': UA, Cookie: cookie, Referer: 'https://finance.yahoo.com/' };
+
+async function probeWith(symbol, headers) {
+  try {
+    const j = await getJson(
+      `https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(symbol)}` +
+      `?range=5y&interval=1d&events=div,split`, { headers });
+    const r = j?.chart?.result?.[0];
+    const ts = r?.timestamp || [];
+    const off = Number(r?.meta?.gmtoffset) || 0;
+    return ts.length ? ymd(ts[ts.length - 1], off) : null;
+  } catch { return null; }
+}
+
+say('');
+say('| 종목 | 맨몸 요청 | 쿠키 단 요청 | 같나 |');
+say('|---|---|---|---|');
+const authRows = [];
+for (const [sym] of SYMBOLS) {
+  const bare = await probeWith(sym, { 'User-Agent': UA });
+  const auth = await probeWith(sym, authHeaders);
+  authRows.push({ sym, bare, auth });
+  say(`| ${sym} | ${bare || '—'} | ${auth || '—'} | ${bare === auth ? '같음' : '**다름**'} |`);
+}
+const differ = authRows.filter((r) => r.bare !== r.auth);
+say('');
+say(differ.length
+  ? `→ **쿠키를 달면 ${differ.length}종목이 다른 봉을 받는다.** 수집기가 차트 요청에 ` +
+    '쿠키를 안 보내도록 고쳐야 한다.'
+  : '→ 쿠키를 달아도 같은 봉을 받는다. 원인은 요청 헤더가 아니다 — ' +
+    '동시 요청 수(rate limit)나 수집 시각 쪽을 봐야 한다.');
+
 say('');
 say('## 판정');
 say('');
