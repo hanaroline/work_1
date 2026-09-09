@@ -1,0 +1,87 @@
+name: 국내 100대 기업 가격 갱신
+
+# 장중 가격만 자주 갱신하는 가벼운 수집이다. 지표·실적까지 받는 kr100-data.yml 은
+# 종목별로 5번씩 요청해 5~8분이 걸리므로 자주 돌릴 수 없다. 이 워크플로는 50종목씩
+# 묶어 2~3번만 요청하고 20~40초에 끝나므로 10분 주기로 돈다.
+#
+# 화면(kr-top100.html)은 quotes.json 을 latest.json 보다 우선해 가격에 덮어쓰고,
+# "시세 N분 전" 으로 나이를 함께 보여준다. 브라우저에서 야후에 직접 붙을 수 있는
+# 환경이면 그쪽이 더 우선한다(진짜 실시간).
+#
+# 시각은 모두 UTC 다. 한국시간은 UTC+9 이고 서머타임이 없다.
+#   정규장 09:00~15:30 KST = 00:00~06:30 UTC
+#   장전 시간외 08:30~09:00 KST = 전날 23:30~24:00 UTC
+#   장후 시간외단일가 16:00~18:00 KST = 07:00~09:00 UTC
+#
+# 주의 1) schedule 은 기본 브랜치(main)의 워크플로만 발동한다. 작업 브랜치에서는
+#         data/kr100/QUOTES_REFRESH 를 고쳐 push 하거나 수동 실행한다.
+# 주의 2) GitHub 예약은 제때 돌지 않는다(이 저장소에서 30~90분 지연을 겪었다).
+#         그래서 화면은 예약을 믿지 않고 파일의 수집 시각을 그대로 표시한다.
+# 주의 3) Actions 사용 시간을 쓴다. 정규장 10분 주기(약 40회) + 시간외 30분 주기
+#         (약 10회) = 하루 약 50회, 30~40분. 부담되면 아래 cron 주기를 늘리면 된다.
+
+on:
+  schedule:
+    # 정규장 — 00:00~06:50 UTC (09:00~15:50 KST). 마감 직후 판이 종가를 담는다.
+    - cron: '*/10 0-6 * * 1-5'
+    # 장전 시간외 (전날 23:30 UTC 부터)
+    - cron: '30 23 * * 0-4'
+    # 장후 시간외단일가
+    - cron: '*/30 7-8 * * 1-5'
+
+  push:
+    paths:
+      - 'data/kr100/QUOTES_REFRESH'
+      - '.github/workflows/kr100-quotes.yml'
+      - 'scripts/fetch_kr100_quotes.py'
+
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: kr100-quotes-${{ github.ref_name }}
+  cancel-in-progress: true          # 늦게 시작한 판이 더 최신이므로 앞선 판은 버려도 된다
+
+jobs:
+  quotes:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: 가격 수집
+        run: python scripts/fetch_kr100_quotes.py
+
+      - name: 데이터 브랜치에 올리기
+        # 장중 10분마다 도는 판이다. 히스토리를 남기지 않는 데이터 브랜치를
+        # 커밋 하나로 갈아끼운다 — 이 판은 quotes.json 만 갱신하고, 스냅샷·차트는
+        # 스크립트가 브랜치에서 받아 그대로 보존한다.
+        env:
+          COMMIT_LABEL: 가격
+          PUBLISH_FILES: quotes.json
+        run: bash scripts/publish_kr100_data.sh
+
+      - name: 요약
+        if: always()
+        continue-on-error: true
+        run: |
+          if [ -f data/kr100/quotes.json ]; then
+            python - <<'PY'
+          import json
+          try:
+              d = json.load(open('data/kr100/quotes.json', encoding='utf-8'))
+          except Exception as e:
+              print(f"::warning::quotes.json 을 읽지 못했다 — {e}")
+              raise SystemExit(0)
+          q = d.get('quotes', {})
+          print(f"::notice::가격 {len(q)}종목 · 출처 {d.get('source')} · 수집 {d.get('fetchedAt')}")
+          if d.get('failed'):
+              print("::warning::실패 " + ", ".join(d['failed'][:20]))
+          PY
+          fi
