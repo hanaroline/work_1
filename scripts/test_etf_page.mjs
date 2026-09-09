@@ -356,8 +356,36 @@ await page.locator('#reverse-body tbody tr[data-id]').first().click();
 await page.waitForTimeout(250);
 const revHold = await page.locator('#reverse-detail .hold-row').count();
 check('역조회에서 ETF 상세가 열린다', revHold > 0, `${revHold}종목`);
-const revRet = await page.locator('#reverse-detail table tbody tr').count();
-check('역조회 상세에 기간수익률이 있다', revRet > 0, `${revRet}행`);
+
+// 기간수익률 표는 **수익률이 있는 종목**을 눌러야 나온다. 첫 줄을 무조건
+// 누르면 그 자리에 수익률 없는 종목(원천이 값을 안 주는 7종목 중 하나)이
+// 오는 날 시험이 깨진다 — 화면은 멀쩡한데 시험만 빨개졌다. 결과 중에서
+// 수익률이 있는 것을 골라 누른다.
+const withRet = await page.evaluate(() => {
+  const rows = [...document.querySelectorAll('#reverse-body tbody tr[data-id]')];
+  const all = window.ETF_DATA?.etfs || ETFS;
+  const has = (e) => {
+    const r = e && e.ret && (e.ret.tr || e.ret.price);
+    return !!r && Object.values(r).some((v) => v != null);
+  };
+  for (const tr of rows) {
+    const id = tr.getAttribute('data-id');
+    if (has(all.find((e) => e.id === id))) return id;
+  }
+  return null;
+});
+check('역조회 결과에 수익률 있는 종목이 있다', !!withRet, withRet || '한 종목도 없음');
+if (withRet) {
+  // 열린 상세를 먼저 닫는다. 같은 줄을 다시 누르면 접히므로, 방금 연 것이
+  // 마침 그 줄이면 눌러 놓고 "표가 없다" 로 읽는다 — 실제로 그랬다.
+  await page.locator('#reverse-body tbody tr[data-id]').first().click();
+  await page.waitForTimeout(150);
+  await page.locator(`#reverse-body tbody tr[data-id="${withRet}"]`).click();
+  await page.waitForTimeout(250);
+  const revRet = await page.locator('#reverse-detail table tbody tr').count();
+  check('역조회 상세에 기간수익률이 있다', revRet > 0, `${withRet} · ${revRet}행`);
+}
+
 const revSel = await page.locator('#reverse-body tbody tr.selected').count();
 check('고른 행이 표시된다', revSel === 1, `${revSel}행`);
 
@@ -396,6 +424,36 @@ const combined = await page.locator('#reverse-body tbody tr[data-id] td:nth-chil
   .first().textContent();
 check('여러 종목이 걸리면 함께 적는다', (combined || '').includes('·'),
       (combined || '').trim().slice(0, 40));
+
+// 반대쪽도 못 박는다. 수익률이 없는 종목은 표 대신 **왜 비었는지 적은 자리**가
+// 나와야 한다. 아무것도 안 나오면 읽는 사람은 화면이 깨진 줄 안다.
+const noRet = await page.evaluate(() => {
+  const all = window.ETF_DATA?.etfs || ETFS;
+  const e = all.find((x) => {
+    const r = [x.ret?.tr, x.ret?.price].filter(Boolean);
+    const has = r.some((o) => Object.values(o).some((v) => v != null));
+    return !has && (x.holdings || []).length;
+  });
+  return e ? { id: e.id, code: e.code, name: e.name } : null;
+});
+if (noRet) {
+  await page.locator('.tabs button[data-tab="browse"]').click();
+  await page.waitForTimeout(120);
+  // 앞의 시험들이 걸어 둔 조건이 남아 있으면 찾는 종목이 목록에서 빠진다.
+  await page.locator('#f-reset').click();
+  await page.waitForTimeout(200);
+  await page.locator('#q').fill(noRet.code);
+  await page.waitForTimeout(250);
+  await page.locator(`#list-body tr[data-id="${noRet.id}"]`).click();
+  await page.waitForTimeout(250);
+  const rows = await page.locator('#detail .ret-table table tbody tr').count();
+  const empty = (await page.locator('#detail .empty').allInnerTexts()).join(' ');
+  check('수익률이 없으면 왜 비었는지 적는다',
+        rows === 0 && /수익률|return/i.test(empty),
+        `${noRet.code} ${noRet.name} · 표 ${rows}행 · "${empty.slice(0, 30)}"`);
+  await page.locator('#q').fill('');
+  await page.waitForTimeout(200);
+}
 
 // ── 랭킹
 await page.locator('.tabs button[data-tab="rank"]').click();
