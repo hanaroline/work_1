@@ -168,6 +168,13 @@ for (const row of table) {
     say(`- **${row.sym}** — range 마다 다르다. 가장 새 봉 \`${fresh}\`, 뒤진 range: ` +
         stale.map((r) => `\`${r}\`(${row.byRange[r].last})`).join(', ') + ' → **캐시 문제(나)**');
     verdictLines += 1;
+  } else if (row.byRange['5y'] && row.byRange['5y'].lastClose == null && fresh) {
+    // 이것이 2026-09-09 의 답이었다. 봉은 있는데 종가가 null 이다 —
+    // 원천이 자리만 만들고 확정값을 아직 안 채웠다. 계산기는 값 없는 봉을
+    // 건너뛰므로 기준일이 한 세션 이르게 나온다. 우리 잘못이 아니다.
+    say(`- **${row.sym}** — 마지막 봉 \`${fresh}\` 은 있는데 **종가가 비어 있다**. ` +
+        '원천이 자리만 만들고 확정값을 안 채운 것이다 → 기준일이 한 세션 이른 것이 맞다');
+    verdictLines += 1;
   } else if (row.marketTime && fresh && row.marketTime > fresh) {
     say(`- **${row.sym}** — 어떤 range 로 물어도 마지막 봉이 \`${fresh}\` 인데 ` +
         `원천이 말하는 마지막 체결일은 \`${row.marketTime}\` 이다 → **봉을 아직 안 만들었다(가)**`);

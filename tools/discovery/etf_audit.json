@@ -1,10 +1,10 @@
 {
-  "at": "2026-09-09T00:24:26.697Z",
+  "at": "2026-09-09T00:38:24.037Z",
   "dataUpdatedAt": "2026-09-09T00:24:26.210Z",
   "total": 1353,
   "counts": {
     "error": 0,
-    "warn": 1504,
+    "warn": 1511,
     "info": 1296
   },
   "errorEtfCount": 0,
@@ -348,6 +348,69 @@
         }
       ],
       "etfCount": 9
+    },
+    {
+      "rule": "수익률-없음",
+      "sev": "warn",
+      "count": 7,
+      "examples": [
+        {
+          "sev": "warn",
+          "rule": "수익률-없음",
+          "id": "KR:310970",
+          "code": "310970",
+          "market": "KR",
+          "name": "TIGER MSCI Korea TR",
+          "detail": "기간 수익률이 한 칸도 없다 — 상세에 표 대신 \"자료 없음\" 이 나간다 (편입종목 10개, 기준가 수익률만 있음)",
+          "holdings": 10,
+          "navOnly": true
+        },
+        {
+          "sev": "warn",
+          "rule": "수익률-없음",
+          "id": "KR:475720",
+          "code": "475720",
+          "market": "KR",
+          "name": "RISE 200위클리커버드콜",
+          "detail": "기간 수익률이 한 칸도 없다 — 상세에 표 대신 \"자료 없음\" 이 나간다 (편입종목 10개, 기준가 수익률만 있음)",
+          "holdings": 10,
+          "navOnly": true
+        },
+        {
+          "sev": "warn",
+          "rule": "수익률-없음",
+          "id": "KR:310960",
+          "code": "310960",
+          "market": "KR",
+          "name": "TIGER 200TR",
+          "detail": "기간 수익률이 한 칸도 없다 — 상세에 표 대신 \"자료 없음\" 이 나간다 (편입종목 10개, 기준가 수익률만 있음)",
+          "holdings": 10,
+          "navOnly": true
+        },
+        {
+          "sev": "warn",
+          "rule": "수익률-없음",
+          "id": "KR:0238P0",
+          "code": "0238P0",
+          "market": "KR",
+          "name": "TIGER 미국S&P500미국채혼합50",
+          "detail": "기간 수익률이 한 칸도 없다 — 상세에 표 대신 \"자료 없음\" 이 나간다 (편입종목 10개, 기준가 수익률만 있음)",
+          "holdings": 10,
+          "navOnly": true
+        },
+        {
+          "sev": "warn",
+          "rule": "수익률-없음",
+          "id": "KR:265690",
+          "code": "265690",
+          "market": "KR",
+          "name": "ACE 러시아MSCI(합성)",
+          "detail": "기간 수익률이 한 칸도 없다 — 상세에 표 대신 \"자료 없음\" 이 나간다 (편입종목 2개, 기준가 수익률만 있음)",
+          "holdings": 2,
+          "navOnly": true
+        }
+      ],
+      "etfCount": 7
     },
     {
       "rule": "tr-내포분배율-큼",
@@ -1237,6 +1300,17 @@
       "detail": "등락률 1.29% vs price.D1 -0.37%",
       "changeRate": 1.29,
       "d1": -0.37
+    },
+    {
+      "sev": "warn",
+      "rule": "수익률-없음",
+      "id": "KR:310970",
+      "code": "310970",
+      "market": "KR",
+      "name": "TIGER MSCI Korea TR",
+      "detail": "기간 수익률이 한 칸도 없다 — 상세에 표 대신 \"자료 없음\" 이 나간다 (편입종목 10개, 기준가 수익률만 있음)",
+      "holdings": 10,
+      "navOnly": true
     },
     {
       "sev": "info",
@@ -3040,6 +3114,17 @@
       "detail": "등락률 -0.57% vs price.D1 0.27%",
       "changeRate": -0.57,
       "d1": 0.27
+    },
+    {
+      "sev": "warn",
+      "rule": "수익률-없음",
+      "id": "KR:475720",
+      "code": "475720",
+      "market": "KR",
+      "name": "RISE 200위클리커버드콜",
+      "detail": "기간 수익률이 한 칸도 없다 — 상세에 표 대신 \"자료 없음\" 이 나간다 (편입종목 10개, 기준가 수익률만 있음)",
+      "holdings": 10,
+      "navOnly": true
     },
     {
       "sev": "info",
@@ -5410,6 +5495,17 @@
       "detail": "등락률 -0.17% vs price.D1 0.29%",
       "changeRate": -0.17,
       "d1": 0.29
+    },
+    {
+      "sev": "warn",
+      "rule": "수익률-없음",
+      "id": "KR:310960",
+      "code": "310960",
+      "market": "KR",
+      "name": "TIGER 200TR",
+      "detail": "기간 수익률이 한 칸도 없다 — 상세에 표 대신 \"자료 없음\" 이 나간다 (편입종목 10개, 기준가 수익률만 있음)",
+      "holdings": 10,
+      "navOnly": true
     },
     {
       "sev": "info",
@@ -13438,6 +13534,17 @@
       "d1": -1.56
     },
     {
+      "sev": "warn",
+      "rule": "수익률-없음",
+      "id": "KR:0238P0",
+      "code": "0238P0",
+      "market": "KR",
+      "name": "TIGER 미국S&P500미국채혼합50",
+      "detail": "기간 수익률이 한 칸도 없다 — 상세에 표 대신 \"자료 없음\" 이 나간다 (편입종목 10개, 기준가 수익률만 있음)",
+      "holdings": 10,
+      "navOnly": true
+    },
+    {
       "sev": "info",
       "rule": "보유비중-미공시",
       "id": "KR:0238P0",
@@ -19489,6 +19596,17 @@
     },
     {
       "sev": "warn",
+      "rule": "수익률-없음",
+      "id": "KR:265690",
+      "code": "265690",
+      "market": "KR",
+      "name": "ACE 러시아MSCI(합성)",
+      "detail": "기간 수익률이 한 칸도 없다 — 상세에 표 대신 \"자료 없음\" 이 나간다 (편입종목 2개, 기준가 수익률만 있음)",
+      "holdings": 2,
+      "navOnly": true
+    },
+    {
+      "sev": "warn",
       "rule": "수익률-범위밖",
       "id": "KR:265690",
       "code": "265690",
@@ -21784,6 +21902,17 @@
       "detail": "등락률 4.38% vs price.D1 0.74%",
       "changeRate": 4.38,
       "d1": 0.74
+    },
+    {
+      "sev": "warn",
+      "rule": "수익률-없음",
+      "id": "KR:301400",
+      "code": "301400",
+      "market": "KR",
+      "name": "PLUS 코스닥150",
+      "detail": "기간 수익률이 한 칸도 없다 — 상세에 표 대신 \"자료 없음\" 이 나간다 (편입종목 10개, 기준가 수익률만 있음)",
+      "holdings": 10,
+      "navOnly": true
     },
     {
       "sev": "warn",
@@ -25455,6 +25584,17 @@
       "detail": "등락률 -1.04% vs price.D1 -0.48%",
       "changeRate": -1.04,
       "d1": -0.48
+    },
+    {
+      "sev": "warn",
+      "rule": "수익률-없음",
+      "id": "US:SPLG",
+      "code": "SPLG",
+      "market": "US",
+      "name": "State Street SPDR Portfolio S&P 500 ETF",
+      "detail": "기간 수익률이 한 칸도 없다 — 상세에 표 대신 \"자료 없음\" 이 나간다 (편입종목 10개)",
+      "holdings": 10,
+      "navOnly": false
     },
     {
       "sev": "warn",
