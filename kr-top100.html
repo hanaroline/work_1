@@ -3446,7 +3446,7 @@ function renderFinChart(M) {
 
 /* ---------- 10.5 목표주가 밴드 ---------- */
 function renderBandChart(M) {
-  var W = 1000, H = 190, L = 30, R = 30, T = 56;
+  var W = 1000, H = 224, L = 30, R = 30, T = 56;
   var tg = M.target || {}, px0 = M.quote.price;
   if (tg.low == null && tg.mean == null && tg.high == null) {
     emptyChart('svg-band', W, H, t('증권사 목표주가를 불러오지 못했습니다.', 'Analyst targets unavailable.'));
@@ -3473,18 +3473,37 @@ function renderBandChart(M) {
     s.appendChild(mk('text', { x: X(v), y: barY + barH + 40, 'text-anchor': 'middle', fill: C.muted, 'font-size': 13, 'font-family': FNUM }, price(v)));
   });
 
+  /* 축 아래 표시는 한 번에 모아 두고 아래에서 배치한다 — 값이 가까우면 글자가 겹치므로 */
+  var below = [];
   function marker(v, color, labelKo, labelEn, above) {
     if (v == null) return;
-    var x = X(v);
-    s.appendChild(mk('line', { x1: x, x2: x, y1: above ? T - 26 : barY - 6, y2: barY + barH + (above ? 0 : 12), stroke: color, 'stroke-width': 2 }));
-    s.appendChild(mk('text', { x: Math.max(40, Math.min(W - 40, x)), y: above ? T - 32 : barY + barH + 30 + 26,
-      'text-anchor': 'middle', fill: color, 'font-size': 14, 'font-weight': 700, 'font-family': FNUM },
-      (lang === 'en' ? labelEn : labelKo) + ' ' + price(v)));
+    var x = X(v), text = (lang === 'en' ? labelEn : labelKo) + ' ' + price(v);
+    if (above) {
+      s.appendChild(mk('line', { x1: x, x2: x, y1: T - 26, y2: barY + barH, stroke: color, 'stroke-width': 2 }));
+      s.appendChild(mk('text', { x: Math.max(60, Math.min(W - 60, x)), y: T - 32,
+        'text-anchor': 'middle', fill: color, 'font-size': 14, 'font-weight': 700, 'font-family': FNUM }, text));
+      return;
+    }
+    s.appendChild(mk('line', { x1: x, x2: x, y1: barY - 6, y2: barY + barH + 12, stroke: color, 'stroke-width': 2 }));
+    below.push({ x: x, text: text, color: color });
   }
   marker(tg.low, C.neutral, '최저', 'Low', false);
   marker(tg.high, C.neutral, '최고', 'High', false);
   marker(tg.mean, C.blue, '평균 목표주가', 'Mean target', true);
   marker(px0, C.orangeActive, '현재가', 'Current', false);
+
+  /* 겹치면 아래 줄로 내린다. 줄마다 마지막 글자의 오른쪽 끝을 기억해 자리를 고른다.
+     글자 폭은 재지 않고 어림한다 — 숫자 폰트라 글자당 폭이 거의 같다. */
+  var rowEnd = [];
+  below.sort(function (a, b) { return a.x - b.x; }).forEach(function (m) {
+    var half = m.text.length * 4.0 + 6;
+    var cx = Math.max(L + half, Math.min(W - R - half, m.x));
+    var r = 0;
+    while (r < rowEnd.length && (cx - half) < rowEnd[r] + 10) r++;
+    rowEnd[r] = cx + half;
+    s.appendChild(mk('text', { x: cx, y: barY + barH + 56 + r * 20, 'text-anchor': 'middle',
+      fill: m.color, 'font-size': 14, 'font-weight': 700, 'font-family': FNUM }, m.text));
+  });
 
   /* 상승여력 */
   if (tg.mean != null && px0) {
@@ -4654,8 +4673,8 @@ function renderRankNote() {
       : head;
   };
   box.innerHTML = '<b>' + esc(t('대상 목록 갱신 후보', 'Coverage change pending')) + '</b> — ' +
-    esc(t(when + ' 점검 결과입니다. 목록은 자동으로 바뀌지 않습니다 — 새 종목의 한글명·기업 개요를 함께 채워야 하기 때문입니다.',
-          'checked ' + when + '. The list does not change automatically — a new symbol needs its Korean name and company overview written first.')) +
+    esc(t(when + ' 점검 결과입니다. 목록은 자동으로 바뀌지 않습니다 — 새 종목의 검색 키워드와 기업 개요를 함께 채워야 하기 때문입니다.',
+          'checked ' + when + '. The list does not change automatically — a new symbol needs its search keywords and company overview written first.')) +
     (add.length ? '<br>' + esc(t('목록에 없는 상위 종목 ' + add.length + '개: ',
       add.length + ' in the top 100 but not listed: ')) + listOf(add, true) : '') +
     (drop.length ? '<br>' + esc(t('목록에 있으나 ' + (RANK.dropRank || 150) + '위 밖으로 밀린 종목 ' + drop.length + '개: ',
