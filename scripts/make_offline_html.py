@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
-"""us-top100.html + 수집한 데이터 → us-top100-offline.html (파일 하나, 인터넷 불필요).
+"""화면 파일 + 수집한 데이터 → 파일 하나로 (인터넷 불필요).
+
+미국 화면(us-top100.html)과 국내 화면(kr-top100.html)에 모두 쓴다 — `--market kr` 로 고른다.
 
 왜 이런 파일이 필요한가
   인터넷이 막힌 업무용 PC 에서는 화면이 어떤 경로로도 데이터를 못 받는다.
@@ -8,13 +10,14 @@
   HTML 안에 넣어 두는 수밖에 없다.
 
 하는 일
-  data/us100/{latest.json, quotes.json, ranking.json, chart/*.json} 을 하나의 JSON 으로 접어
-  <script id="us100-embedded" type="application/json"> 블록으로 <body> 바로 뒤에 심는다.
-  화면(us-top100.html)은 그 블록이 있으면 먼저 그리고, 인터넷이 되는 자리에서는
-  더 새 파일이 오면 그 위에 덮는다.
+  data/{us100|kr100}/{latest.json, quotes.json, ranking.json, chart/*.json} 을 하나의
+  JSON 으로 접어 <script id="{us100|kr100}-embedded" type="application/json"> 블록으로
+  <body> 바로 뒤에 심는다. 화면은 그 블록이 있으면 먼저 그리고, 인터넷이 되는
+  자리에서는 더 새 파일이 오면 그 위에 덮는다.
 
 쓰는 법
-  python scripts/make_offline_html.py                     # 저장소의 data/us100 을 사용
+  python scripts/make_offline_html.py                     # 미국 — data/us100 을 사용
+  python scripts/make_offline_html.py --market kr         # 국내 — data/kr100 을 사용
   python scripts/make_offline_html.py --out /tmp/a.html   # 출력 경로 지정
   python scripts/make_offline_html.py --no-charts         # 차트 시계열을 빼고 가볍게
 
@@ -30,9 +33,13 @@ import os
 import sys
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-PAGE = os.path.join(ROOT, "us-top100.html")
-DATA = os.path.join(ROOT, "data", "us100")
 ANCHOR = "<body>"
+
+# 시장별 기본값 — 화면 파일 · 데이터 폴더 · 내장 블록 id · 출력 파일 · 데이터 브랜치
+MARKETS = {
+    "us": {"page": "us-top100.html", "data": "us100", "out": "us-top100-offline.html"},
+    "kr": {"page": "kr-top100.html", "data": "kr100", "out": "kr-top100-offline.html"},
+}
 
 
 def load(path):
@@ -42,11 +49,20 @@ def load(path):
 
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument("--page", default=PAGE)
-    ap.add_argument("--data", default=DATA)
-    ap.add_argument("--out", default=os.path.join(ROOT, "us-top100-offline.html"))
+    ap.add_argument("--market", choices=sorted(MARKETS), default="us", help="us(기본) 또는 kr")
+    ap.add_argument("--page")
+    ap.add_argument("--data")
+    ap.add_argument("--out")
+    ap.add_argument("--embed-id", help="내장 블록 id (기본: <market>100-embedded)")
     ap.add_argument("--no-charts", action="store_true", help="차트 시계열을 넣지 않는다(파일이 1/4 로 작아진다)")
     a = ap.parse_args()
+
+    m = MARKETS[a.market]
+    a.page = a.page or os.path.join(ROOT, m["page"])
+    a.data = a.data or os.path.join(ROOT, "data", m["data"])
+    a.out = a.out or os.path.join(ROOT, m["out"])
+    embed_id = a.embed_id or (m["data"] + "-embedded")
+    branch = m["data"] + "-data"
 
     with open(a.page, encoding="utf-8") as f:
         html = f.read()
@@ -59,7 +75,7 @@ def main():
     latest_path = os.path.join(a.data, "latest.json")
     if not os.path.exists(latest_path):
         print("%s 가 없다 — 먼저 데이터를 받아 두어야 한다"
-              "(git checkout origin/us100-data -- data/us100)" % latest_path, file=sys.stderr)
+              "(git checkout origin/%s -- data/%s)" % (latest_path, branch, m["data"]), file=sys.stderr)
         return 1
     latest = load(latest_path)
     if not latest.get("companies"):
@@ -99,7 +115,7 @@ def main():
     # JSON 문법을 지키면서 안전하게 바꾸는 방법은 "</" 를 "<\/" 로 적는 것이다.
     blob = blob.replace("</", "<\\/")
 
-    block = ('<script id="us100-embedded" type="application/json">' + blob + "</script>\n")
+    block = ('<script id="' + embed_id + '" type="application/json">' + blob + "</script>\n")
     out_html = html.replace(ANCHOR, ANCHOR + "\n" + block, 1)
 
     with open(a.out, "w", encoding="utf-8") as f:
