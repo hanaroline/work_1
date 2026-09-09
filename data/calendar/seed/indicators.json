@@ -1,0 +1,288 @@
+{
+  "note": "각국 주요 경제지표의 정의·발표기관·공표일정 페이지. 실제 발표일은 러너(scripts/fetch_calendar.py)가 발표기관 공표일정에서 받아 채운다. 여기 rule 은 '통상 이 무렵'이라는 규칙이고, 규칙으로 만든 날짜는 confirmed=rule 로 표시해 확정 일정과 구분한다.",
+  "verified_at": "2026-09-09",
+  "verified_note": "known_dates 는 검색으로 교차 확인한 값이다. 이 세션은 bls.gov·kostat.go.kr 등에 직접 붙지 못한다(CONNECT 403).",
+  "rule_grammar": {
+    "nth-weekday": "예: {\"kind\":\"nth-weekday\",\"nth\":2,\"weekday\":3} = 매월 둘째 수요일 (weekday 0=월)",
+    "first-friday": "매월 첫 금요일",
+    "weekly": "예: {\"kind\":\"weekly\",\"weekday\":3} = 매주 목요일",
+    "day-of-month": "예: {\"kind\":\"day-of-month\",\"day\":1} = 매월 1일",
+    "month-end": "예: {\"kind\":\"month-end\",\"offset\":-1} = 말일 하루 전",
+    "quarterly": "분기 지표 — 규칙으로 만들지 않는다(발표기관 일정만 씀)"
+  },
+  "indicators": [
+    {
+      "id": "us-cpi", "country": "us", "importance": 3,
+      "name_ko": "미국 소비자물가지수 (CPI)", "name_en": "US Consumer Price Index",
+      "org": "美 노동통계국 (BLS)", "org_en": "Bureau of Labor Statistics",
+      "time_local": "08:30", "tz": "America/New_York",
+      "rule": { "kind": "nth-weekday", "nth": 2, "weekday": 2 },
+      "rule_note_ko": "통상 매월 둘째 주 (수요일 전후) 08:30 ET",
+      "why_ko": "정책금리 경로를 가장 크게 흔드는 지표. 근원(core) 전월비가 핵심",
+      "url": "https://www.bls.gov/schedule/news_release/cpi.htm",
+      "calendar_url": "https://www.bls.gov/schedule/news_release/2026_sched.htm",
+      "fred_release_id": 10,
+      "known_dates": [
+        { "date": "2026-09-11", "ref_ko": "2026년 8월분", "confirmed": "websearch" }
+      ]
+    },
+    {
+      "id": "us-empsit", "country": "us", "importance": 3,
+      "name_ko": "미국 고용상황 (비농업 취업자수·실업률)", "name_en": "US Employment Situation",
+      "org": "美 노동통계국 (BLS)", "org_en": "Bureau of Labor Statistics",
+      "time_local": "08:30", "tz": "America/New_York",
+      "rule": { "kind": "first-friday" },
+      "rule_note_ko": "통상 매월 첫 금요일 08:30 ET",
+      "why_ko": "고용이 꺾이는지로 금리 인하 기대가 갈린다. 시간당임금 상승률도 함께 본다",
+      "url": "https://www.bls.gov/schedule/news_release/empsit.htm",
+      "calendar_url": "https://www.bls.gov/schedule/news_release/2026_sched.htm",
+      "fred_release_id": 50,
+      "known_dates": [
+        { "date": "2026-10-02", "ref_ko": "2026년 9월분", "confirmed": "websearch" }
+      ]
+    },
+    {
+      "id": "us-pce", "country": "us", "importance": 3,
+      "name_ko": "미국 개인소득·지출 (PCE 물가)", "name_en": "US Personal Income and Outlays (PCE)",
+      "org": "美 경제분석국 (BEA)", "org_en": "Bureau of Economic Analysis",
+      "time_local": "08:30", "tz": "America/New_York",
+      "rule": { "kind": "month-end", "offset": -1 },
+      "rule_note_ko": "통상 매월 말 08:30 ET",
+      "why_ko": "연준이 목표로 삼는 물가 지표는 CPI 가 아니라 근원 PCE 다",
+      "url": "https://www.bea.gov/news/schedule",
+      "calendar_url": "https://www.bea.gov/news/schedule",
+      "fred_release_id": 54,
+      "known_dates": []
+    },
+    {
+      "id": "us-gdp", "country": "us", "importance": 2,
+      "name_ko": "미국 GDP (속보·수정·확정)", "name_en": "US GDP",
+      "org": "美 경제분석국 (BEA)", "org_en": "Bureau of Economic Analysis",
+      "time_local": "08:30", "tz": "America/New_York",
+      "rule": { "kind": "quarterly" },
+      "rule_note_ko": "분기마다 세 번(속보·수정·확정) 나온다 — 규칙으로 만들지 않고 BEA 일정을 쓴다",
+      "why_ko": "성장 둔화·재가속을 확인. 속보치가 시장을 움직이고 수정치는 영향이 작다",
+      "url": "https://www.bea.gov/news/schedule",
+      "fred_release_id": 53,
+      "known_dates": []
+    },
+    {
+      "id": "us-retail", "country": "us", "importance": 2,
+      "name_ko": "미국 소매판매", "name_en": "US Advance Retail Sales",
+      "org": "美 인구조사국 (Census)", "org_en": "Census Bureau",
+      "time_local": "08:30", "tz": "America/New_York",
+      "rule": { "kind": "nth-weekday", "nth": 3, "weekday": 1 },
+      "rule_note_ko": "통상 매월 중순 08:30 ET",
+      "why_ko": "미국 소비의 체감. 유통·소비재주에 직결",
+      "url": "https://www.census.gov/retail/index.html",
+      "calendar_url": "https://www.census.gov/economic-indicators/",
+      "known_dates": []
+    },
+    {
+      "id": "us-ism-mfg", "country": "us", "importance": 2,
+      "name_ko": "미국 ISM 제조업 PMI", "name_en": "US ISM Manufacturing PMI",
+      "org": "美 공급관리협회 (ISM)", "org_en": "Institute for Supply Management",
+      "time_local": "10:00", "tz": "America/New_York",
+      "rule": { "kind": "day-of-month", "day": 1, "business_day": true },
+      "rule_note_ko": "통상 매월 첫 영업일 10:00 ET",
+      "why_ko": "50 을 넘는지로 제조업 확장·수축을 가른다 — 반도체·소재 수요의 선행 신호",
+      "url": "https://www.ismworld.org/supply-management-news-and-reports/reports/ism-report-on-business/",
+      "known_dates": []
+    },
+    {
+      "id": "us-ism-svc", "country": "us", "importance": 2,
+      "name_ko": "미국 ISM 서비스업 PMI", "name_en": "US ISM Services PMI",
+      "org": "美 공급관리협회 (ISM)", "org_en": "Institute for Supply Management",
+      "time_local": "10:00", "tz": "America/New_York",
+      "rule": { "kind": "nth-business-day", "nth": 3 },
+      "rule_note_ko": "통상 매월 셋째 영업일 10:00 ET",
+      "why_ko": "미국 경제의 대부분이 서비스업이라 제조업 PMI 보다 체감에 가깝다",
+      "url": "https://www.ismworld.org/supply-management-news-and-reports/reports/ism-report-on-business/",
+      "known_dates": []
+    },
+    {
+      "id": "us-ppi", "country": "us", "importance": 1,
+      "name_ko": "미국 생산자물가지수 (PPI)", "name_en": "US Producer Price Index",
+      "org": "美 노동통계국 (BLS)", "org_en": "Bureau of Labor Statistics",
+      "time_local": "08:30", "tz": "America/New_York",
+      "rule": { "kind": "nth-weekday", "nth": 2, "weekday": 3 },
+      "rule_note_ko": "통상 CPI 앞뒤로 같은 주 08:30 ET",
+      "why_ko": "CPI 로 넘어가기 전 단계의 물가 압력",
+      "url": "https://www.bls.gov/schedule/news_release/ppi.htm",
+      "fred_release_id": 46,
+      "known_dates": []
+    },
+    {
+      "id": "us-claims", "country": "us", "importance": 1,
+      "name_ko": "미국 신규 실업수당 청구건수 (주간)", "name_en": "US Initial Jobless Claims",
+      "org": "美 노동부 (DOL)", "org_en": "Department of Labor",
+      "time_local": "08:30", "tz": "America/New_York",
+      "rule": { "kind": "weekly", "weekday": 3 },
+      "rule_note_ko": "매주 목요일 08:30 ET",
+      "why_ko": "고용 지표 가운데 가장 빠르다 — 월간 고용의 방향을 미리 본다",
+      "url": "https://www.dol.gov/ui/data.pdf",
+      "known_dates": []
+    },
+    {
+      "id": "us-fomc-minutes", "country": "us", "importance": 2,
+      "name_ko": "FOMC 의사록 공개", "name_en": "FOMC Minutes",
+      "org": "美 연방준비제도", "org_en": "Federal Reserve",
+      "time_local": "14:00", "tz": "America/New_York",
+      "rule": { "kind": "after-fomc", "weeks": 3 },
+      "rule_note_ko": "각 FOMC 회의 종료 3주 뒤 14:00 ET — centralbanks.json 의 FOMC 일정에서 계산한다",
+      "why_ko": "성명서에 없던 위원 간 의견 분포가 드러난다",
+      "url": "https://www.federalreserve.gov/monetarypolicy/fomccalendars.htm",
+      "known_dates": []
+    },
+
+    {
+      "id": "kr-cpi", "country": "kr", "importance": 3,
+      "name_ko": "한국 소비자물가동향", "name_en": "Korea CPI",
+      "org": "통계청", "org_en": "Statistics Korea",
+      "time_local": "08:00", "tz": "Asia/Seoul",
+      "rule": { "kind": "day-of-month", "day": 2, "business_day": true },
+      "rule_note_ko": "통상 매월 초(1~4일) 08:00",
+      "why_ko": "금통위 결정의 근거. 근원물가와 기대인플레이션을 함께 본다",
+      "url": "https://kostat.go.kr/board.es?mid=a10301010000&bid=201",
+      "calendar_url": "https://kostat.go.kr/board.es?mid=a10501010000&bid=11570",
+      "known_dates": []
+    },
+    {
+      "id": "kr-trade", "country": "kr", "importance": 3,
+      "name_ko": "한국 수출입 동향", "name_en": "Korea Exports and Imports",
+      "org": "산업통상자원부 · 관세청", "org_en": "MOTIE / Korea Customs Service",
+      "time_local": "09:00", "tz": "Asia/Seoul",
+      "rule": { "kind": "day-of-month", "day": 1, "business_day": true },
+      "rule_note_ko": "월간 확정치는 매월 1일 전후, 잠정치는 매월 1·11·21일에 '10일간 수출입' 으로 나온다",
+      "why_ko": "한국 증시의 실적 선행 지표. 반도체 수출 증감률이 특히 그렇다",
+      "url": "https://www.motie.go.kr/",
+      "calendar_url": "https://unipass.customs.go.kr/ets/",
+      "known_dates": []
+    },
+    {
+      "id": "kr-ip", "country": "kr", "importance": 2,
+      "name_ko": "한국 산업활동동향", "name_en": "Korea Industrial Activity",
+      "org": "통계청", "org_en": "Statistics Korea",
+      "time_local": "08:00", "tz": "Asia/Seoul",
+      "rule": { "kind": "month-end", "offset": -1 },
+      "rule_note_ko": "통상 매월 말 08:00",
+      "why_ko": "생산·소비·투자를 한 번에 본다. 경기 국면 판단의 기본 자료",
+      "url": "https://kostat.go.kr/board.es?mid=a10301020200&bid=202",
+      "calendar_url": "https://kostat.go.kr/board.es?mid=a10501010000&bid=11570",
+      "known_dates": []
+    },
+    {
+      "id": "kr-gdp", "country": "kr", "importance": 2,
+      "name_ko": "한국 실질 GDP (속보·잠정)", "name_en": "Korea Real GDP",
+      "org": "한국은행", "org_en": "Bank of Korea",
+      "time_local": "08:00", "tz": "Asia/Seoul",
+      "rule": { "kind": "quarterly" },
+      "rule_note_ko": "분기 종료 약 4주 뒤 속보, 약 10주 뒤 잠정",
+      "why_ko": "성장률이 한국은행 전망을 벗어나면 금리 경로가 바뀐다",
+      "url": "https://www.bok.or.kr/portal/bbs/P0000559/list.do?menuNo=200690",
+      "known_dates": []
+    },
+    {
+      "id": "kr-employment", "country": "kr", "importance": 1,
+      "name_ko": "한국 고용동향", "name_en": "Korea Employment Trends",
+      "org": "통계청", "org_en": "Statistics Korea",
+      "time_local": "08:00", "tz": "Asia/Seoul",
+      "rule": { "kind": "nth-weekday", "nth": 2, "weekday": 2 },
+      "rule_note_ko": "통상 매월 중순 08:00",
+      "why_ko": "내수 소비 여력을 가늠",
+      "url": "https://kostat.go.kr/board.es?mid=a10301020600&bid=210",
+      "known_dates": []
+    },
+    {
+      "id": "kr-bop", "country": "kr", "importance": 1,
+      "name_ko": "한국 국제수지 (경상수지)", "name_en": "Korea Balance of Payments",
+      "org": "한국은행", "org_en": "Bank of Korea",
+      "time_local": "08:00", "tz": "Asia/Seoul",
+      "rule": { "kind": "nth-business-day", "nth": 5 },
+      "rule_note_ko": "통상 매월 초순 08:00",
+      "why_ko": "경상흑자 규모는 원화 방향과 맞닿는다",
+      "url": "https://www.bok.or.kr/portal/bbs/P0000559/list.do?menuNo=200690",
+      "known_dates": []
+    },
+
+    {
+      "id": "eu-hicp", "country": "eu", "importance": 2,
+      "name_ko": "유로존 소비자물가 (HICP 속보)", "name_en": "Euro area HICP flash",
+      "org": "Eurostat", "org_en": "Eurostat",
+      "time_local": "11:00", "tz": "Europe/Brussels",
+      "rule": { "kind": "month-end", "offset": 0 },
+      "rule_note_ko": "속보치는 통상 매월 말, 확정치는 다음 달 중순",
+      "why_ko": "ECB 결정의 근거",
+      "url": "https://ec.europa.eu/eurostat/web/euro-indicators/release-calendar",
+      "known_dates": []
+    },
+    {
+      "id": "eu-pmi", "country": "eu", "importance": 1,
+      "name_ko": "유로존 제조업·서비스업 PMI (속보)", "name_en": "Euro area flash PMI",
+      "org": "S&P Global / HCOB", "org_en": "S&P Global / HCOB",
+      "time_local": "10:00", "tz": "Europe/Brussels",
+      "rule": { "kind": "nth-last-business-day", "nth": 5 },
+      "rule_note_ko": "통상 매월 하순(23일 전후)",
+      "why_ko": "유럽 경기의 가장 빠른 신호",
+      "url": "https://www.pmi.spglobal.com/",
+      "known_dates": []
+    },
+
+    {
+      "id": "jp-cpi", "country": "jp", "importance": 1,
+      "name_ko": "일본 전국 소비자물가", "name_en": "Japan National CPI",
+      "org": "총무성 통계국", "org_en": "Statistics Bureau of Japan",
+      "time_local": "08:30", "tz": "Asia/Tokyo",
+      "rule": { "kind": "nth-last-business-day", "nth": 4 },
+      "rule_note_ko": "통상 매월 하순 08:30",
+      "why_ko": "BOJ 정상화 속도 — 엔화와 엔캐리에 걸린다",
+      "url": "https://www.stat.go.jp/english/data/cpi/index.html",
+      "known_dates": []
+    },
+    {
+      "id": "jp-tankan", "country": "jp", "importance": 1,
+      "name_ko": "일본은행 단칸 (기업경기실사)", "name_en": "BOJ Tankan Survey",
+      "org": "일본은행", "org_en": "Bank of Japan",
+      "time_local": "08:50", "tz": "Asia/Tokyo",
+      "rule": { "kind": "quarterly" },
+      "rule_note_ko": "4·7·10·1월 초 08:50",
+      "why_ko": "일본 대기업 체감경기 — BOJ 판단의 핵심 자료",
+      "url": "https://www.boj.or.jp/en/statistics/tk/index.htm",
+      "known_dates": []
+    },
+
+    {
+      "id": "cn-pmi", "country": "cn", "importance": 2,
+      "name_ko": "중국 제조업·비제조업 PMI (국가통계국)", "name_en": "China NBS PMI",
+      "org": "중국 국가통계국 (NBS)", "org_en": "National Bureau of Statistics of China",
+      "time_local": "09:30", "tz": "Asia/Shanghai",
+      "rule": { "kind": "month-end", "offset": 0 },
+      "rule_note_ko": "통상 매월 말일 09:30",
+      "why_ko": "중국 수요 — 국내 소재·화학·기계주에 직결",
+      "url": "https://www.stats.gov.cn/english/PressRelease/",
+      "known_dates": []
+    },
+    {
+      "id": "cn-trade", "country": "cn", "importance": 1,
+      "name_ko": "중국 수출입 (해관총서)", "name_en": "China Trade Balance",
+      "org": "중국 해관총서", "org_en": "General Administration of Customs China",
+      "time_local": null, "tz": "Asia/Shanghai",
+      "rule": { "kind": "day-of-month", "day": 7 },
+      "rule_note_ko": "통상 매월 상순 — 발표 시각이 고정돼 있지 않다",
+      "why_ko": "글로벌 교역량의 방향",
+      "url": "http://english.customs.gov.cn/",
+      "known_dates": []
+    },
+    {
+      "id": "cn-activity", "country": "cn", "importance": 1,
+      "name_ko": "중국 월간 실물지표 (산업생산·소매판매·고정자산투자)", "name_en": "China monthly activity data",
+      "org": "중국 국가통계국 (NBS)", "org_en": "National Bureau of Statistics of China",
+      "time_local": "10:00", "tz": "Asia/Shanghai",
+      "rule": { "kind": "nth-weekday", "nth": 3, "weekday": 0 },
+      "rule_note_ko": "통상 매월 중순(15일 전후) 10:00",
+      "why_ko": "부동산·소비 회복 여부",
+      "url": "https://www.stats.gov.cn/english/PressRelease/",
+      "known_dates": []
+    }
+  ]
+}

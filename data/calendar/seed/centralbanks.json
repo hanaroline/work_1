@@ -1,0 +1,150 @@
+{
+  "note": "각국 중앙은행 통화정책 결정일. 중앙은행들은 연간 일정을 미리 공표하므로 여기에 seed 로 두고, 러너(scripts/fetch_calendar.py)가 공식 페이지에서 받아 덮어쓴다. holidays.json 과 같은 이유로 빌더 코드에 문자열로 박지 않는다.",
+  "confirmed_levels": {
+    "official": "러너가 해당 중앙은행 공식 페이지에서 받아 확인한 날짜",
+    "websearch": "세션에서 검색으로 교차 확인한 날짜 — 공식 페이지 재확인 전",
+    "tentative": "중앙은행이 스스로 '잠정'으로 공표한 날짜 (예: FOMC 익년 일정)"
+  },
+  "verified_at": "2026-09-09",
+  "verified_note": "이 세션은 이그레스 정책으로 federalreserve.gov·bok.or.kr·ecb.europa.eu 에 직접 붙지 못한다(CONNECT 403). 그래서 아래 날짜는 검색으로 교차 확인한 값이고 confirmed 는 websearch 다. 러너가 한 번 돌면 official 로 바뀐다 — 화면은 그 구분을 배지로 보여준다.",
+  "banks": [
+    {
+      "key": "fed",
+      "country": "us",
+      "name_ko": "미국 연방준비제도 (FOMC)",
+      "name_en": "Federal Reserve (FOMC)",
+      "importance": 3,
+      "decision_time_local": "14:00",
+      "tz": "America/New_York",
+      "time_note_ko": "이틀 회의의 둘째 날 오후 2시(현지) 성명 발표, 이어 기자회견 2시 30분",
+      "time_note_en": "Statement at 2:00 pm ET on day 2, press conference at 2:30 pm",
+      "url": "https://www.federalreserve.gov/monetarypolicy/fomccalendars.htm",
+      "source": "Federal Reserve — FOMC meeting calendars",
+      "minutes_rule_ko": "의사록은 회의 종료 3주 뒤 오후 2시(현지)",
+      "meetings": [
+        { "start": "2026-01-27", "end": "2026-01-28", "sep": false, "presser": true, "confirmed": "websearch" },
+        { "start": "2026-03-17", "end": "2026-03-18", "sep": true,  "presser": true, "confirmed": "websearch" },
+        { "start": "2026-04-28", "end": "2026-04-29", "sep": false, "presser": true, "confirmed": "websearch" },
+        { "start": "2026-06-16", "end": "2026-06-17", "sep": true,  "presser": true, "confirmed": "websearch" },
+        { "start": "2026-07-28", "end": "2026-07-29", "sep": false, "presser": true, "confirmed": "websearch" },
+        { "start": "2026-09-15", "end": "2026-09-16", "sep": true,  "presser": true, "confirmed": "websearch" },
+        { "start": "2026-10-27", "end": "2026-10-28", "sep": false, "presser": true, "confirmed": "websearch" },
+        { "start": "2026-12-08", "end": "2026-12-09", "sep": true,  "presser": true, "confirmed": "websearch" },
+        { "start": "2027-01-26", "end": "2027-01-27", "sep": false, "presser": true, "confirmed": "tentative" },
+        { "start": "2027-03-16", "end": "2027-03-17", "sep": true,  "presser": true, "confirmed": "tentative" },
+        { "start": "2027-06-08", "end": "2027-06-09", "sep": true,  "presser": true, "confirmed": "tentative" },
+        { "start": "2027-09-14", "end": "2027-09-15", "sep": true,  "presser": true, "confirmed": "tentative" },
+        { "start": "2027-12-07", "end": "2027-12-08", "sep": true,  "presser": true, "confirmed": "tentative" }
+      ]
+    },
+    {
+      "key": "bok",
+      "country": "kr",
+      "name_ko": "한국은행 금융통화위원회",
+      "name_en": "Bank of Korea (MPB)",
+      "importance": 3,
+      "decision_time_local": null,
+      "tz": "Asia/Seoul",
+      "time_note_ko": "오전 회의 뒤 통화정책방향 결정문 발표, 이어 총재 기자간담회. 정확한 발표 시각은 공식 공지를 보십시오",
+      "time_note_en": "Decision published in the morning, followed by the Governor's press conference",
+      "url": "https://www.bok.or.kr/portal/main/contents.do?menuNo=200755",
+      "source": "한국은행 — 통화정책방향 결정회의 일정 및 자료",
+      "minutes_rule_ko": "의사록은 회의일로부터 2주 경과 후 첫 화요일",
+      "schedule_note_ko": "통화정책방향 결정회의는 1·2·4·5·7·8·10·11월(연 8회), 금융안정회의는 3·6·9·12월에 열린다. 2026년 첫 결정회의는 1월 15일이었다",
+      "meetings": [
+        { "start": "2026-10-22", "end": "2026-10-22", "sep": false, "presser": true, "confirmed": "websearch" },
+        { "start": "2026-11-26", "end": "2026-11-26", "sep": false, "presser": true, "confirmed": "websearch" }
+      ],
+      "gap_note_ko": "2027년 일정과 금융안정회의(9·12월) 날짜는 아직 확인하지 못했다 — 러너가 공식 페이지에서 채운다. 추정으로 채우지 않는다"
+    },
+    {
+      "key": "ecb",
+      "country": "eu",
+      "name_ko": "유럽중앙은행 정책이사회 (ECB)",
+      "name_en": "European Central Bank (Governing Council)",
+      "importance": 3,
+      "decision_time_local": "14:15",
+      "tz": "Europe/Berlin",
+      "time_note_ko": "이틀 회의의 둘째 날 14:15(CET) 결정 발표, 14:45 기자회견",
+      "time_note_en": "Decision at 14:15 CET on day 2, press conference at 14:45",
+      "url": "https://www.ecb.europa.eu/press/calendars/mgcgc/html/index.en.html",
+      "source": "ECB — Meetings of the Governing Council and the General Council",
+      "projections_note_ko": "ECB 스태프 거시전망은 3·6·9·12월 회의에 함께 발표",
+      "meetings": [
+        { "start": "2026-04-29", "end": "2026-04-30", "sep": false, "presser": true, "confirmed": "websearch" },
+        { "start": "2026-06-10", "end": "2026-06-11", "sep": true,  "presser": true, "confirmed": "websearch" },
+        { "start": "2026-07-22", "end": "2026-07-23", "sep": false, "presser": true, "confirmed": "websearch" },
+        { "start": "2026-09-09", "end": "2026-09-10", "sep": true,  "presser": true, "confirmed": "websearch", "note_ko": "독일 분데스방크 주최(비정례 개최지)" },
+        { "start": "2026-10-28", "end": "2026-10-29", "sep": false, "presser": true, "confirmed": "websearch" },
+        { "start": "2026-12-16", "end": "2026-12-17", "sep": true,  "presser": true, "confirmed": "websearch" },
+        { "start": "2027-02-03", "end": "2027-02-04", "sep": false, "presser": true, "confirmed": "websearch" },
+        { "start": "2027-03-17", "end": "2027-03-18", "sep": true,  "presser": true, "confirmed": "websearch" },
+        { "start": "2027-04-28", "end": "2027-04-29", "sep": false, "presser": true, "confirmed": "websearch" }
+      ]
+    },
+    {
+      "key": "boj",
+      "country": "jp",
+      "name_ko": "일본은행 금융정책결정회의 (BOJ)",
+      "name_en": "Bank of Japan (Monetary Policy Meeting)",
+      "importance": 2,
+      "decision_time_local": null,
+      "tz": "Asia/Tokyo",
+      "time_note_ko": "발표 시각이 고정돼 있지 않다(둘째 날 정오 전후). 추정하지 않는다",
+      "time_note_en": "No fixed announcement time — released around midday on day 2",
+      "url": "https://www.boj.or.jp/en/mopo/mpmsche_minu/index.htm",
+      "source": "Bank of Japan — Monetary Policy Meetings",
+      "projections_note_ko": "1·4·7·10월 회의에 전망 리포트(Outlook Report) 동시 발표",
+      "meetings": [
+        { "start": "2026-01-22", "end": "2026-01-23", "sep": true,  "presser": true, "confirmed": "websearch" },
+        { "start": "2026-03-18", "end": "2026-03-19", "sep": false, "presser": true, "confirmed": "websearch" },
+        { "start": "2026-04-27", "end": "2026-04-28", "sep": true,  "presser": true, "confirmed": "websearch" },
+        { "start": "2026-06-15", "end": "2026-06-16", "sep": false, "presser": true, "confirmed": "websearch" },
+        { "start": "2026-07-30", "end": "2026-07-31", "sep": true,  "presser": true, "confirmed": "websearch" },
+        { "start": "2026-09-17", "end": "2026-09-18", "sep": false, "presser": true, "confirmed": "websearch" },
+        { "start": "2026-10-29", "end": "2026-10-30", "sep": true,  "presser": true, "confirmed": "websearch" },
+        { "start": "2026-12-17", "end": "2026-12-18", "sep": false, "presser": true, "confirmed": "websearch" }
+      ]
+    },
+    {
+      "key": "boe",
+      "country": "gb",
+      "name_ko": "영란은행 통화정책위원회 (BOE MPC)",
+      "name_en": "Bank of England (MPC)",
+      "importance": 2,
+      "decision_time_local": "12:00",
+      "tz": "Europe/London",
+      "time_note_ko": "발표일 12:00(영국 시간)",
+      "time_note_en": "Announcement at 12:00 UK time",
+      "url": "https://www.bankofengland.co.uk/monetary-policy/upcoming-mpc-dates",
+      "source": "Bank of England — Upcoming MPC dates",
+      "projections_note_ko": "2·5(4)·8(7)·11월 회의에 통화정책보고서(MPR)와 기자회견 동반",
+      "meetings": [
+        { "start": "2026-02-05", "end": "2026-02-05", "sep": true,  "presser": true, "confirmed": "websearch" },
+        { "start": "2026-03-19", "end": "2026-03-19", "sep": false, "presser": false, "confirmed": "websearch" },
+        { "start": "2026-04-30", "end": "2026-04-30", "sep": true,  "presser": true, "confirmed": "websearch" },
+        { "start": "2026-06-18", "end": "2026-06-18", "sep": false, "presser": false, "confirmed": "websearch" },
+        { "start": "2026-07-30", "end": "2026-07-30", "sep": true,  "presser": true, "confirmed": "websearch" },
+        { "start": "2026-09-17", "end": "2026-09-17", "sep": false, "presser": false, "confirmed": "websearch" },
+        { "start": "2026-11-05", "end": "2026-11-05", "sep": true,  "presser": true, "confirmed": "websearch" },
+        { "start": "2026-12-17", "end": "2026-12-17", "sep": false, "presser": false, "confirmed": "websearch" }
+      ]
+    },
+    {
+      "key": "pboc",
+      "country": "cn",
+      "name_ko": "중국인민은행 대출우대금리 (LPR)",
+      "name_en": "People's Bank of China (LPR)",
+      "importance": 2,
+      "decision_time_local": "09:15",
+      "tz": "Asia/Shanghai",
+      "time_note_ko": "매월 20일 09:15(현지) 공표. 20일이 휴일이면 다음 영업일로 밀린다",
+      "time_note_en": "Published on the 20th of each month at 09:15 local time; shifts to the next business day if the 20th is a holiday",
+      "url": "https://www.pbc.gov.cn/en/3688229/index.html",
+      "source": "People's Bank of China",
+      "rule": "monthly-20th",
+      "meetings": [],
+      "gap_note_ko": "LPR 은 '매월 20일' 규칙이라 빌더가 규칙으로 만든다(confirmed=rule). 휴일 이동은 holidays.json 의 중국 휴장일로 보정한다"
+    }
+  ]
+}
