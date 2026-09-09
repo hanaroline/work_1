@@ -15,6 +15,10 @@
 
 원천이 하나 죽어도 나머지는 그대로 저장한다. 종목별 성공/실패는 latest.json 의
 "sources" 에 남으므로, 화면은 무엇이 확보됐고 무엇이 비었는지 그대로 표시할 수 있다.
+
+**국내 화면도 이 수집기를 쓴다.** 시장마다 다른 것은 아래 "시장 프로필" 여덟 가지뿐이고
+받아오는 방법·정규화 규칙은 같으므로, 코드를 두 벌 두지 않는다.
+국내 수집은 `scripts/fetch_kr100.py` 가 프로필만 바꿔 끼워 이 모듈의 main() 을 부른다.
 """
 
 import http.cookiejar
@@ -37,9 +41,44 @@ PAUSE = 0.35            # 요청 사이 간격 — 야후 429 를 피하려는 �
 RETRY = 3
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
+# ---------------------------------------------------------------- 시장 프로필
+# 기본값은 미국이다. 국내 수집기(scripts/fetch_kr100.py)가 configure() 로 갈아 끼운다.
+MARKET = "us"
 PAGE = os.path.join(ROOT, "us-top100.html")
 OUT_DIR = os.path.join(ROOT, "data", "us100")
 CHART_DIR = os.path.join(OUT_DIR, "chart")
+CURRENCY = "USD"
+STOOQ_SUFFIX = ".us"                 # Stooq 심볼 접미사 — 야후 차트가 막힌 종목의 대체 경로
+# 심볼을 회사명으로 다시 찾을 때 받아들일 거래소 코드(야후 search 의 exchange 값).
+# 이 목록을 두는 이유는 OTC·해외 중복 티커를 엉뚱하게 집어오지 않으려는 것이다.
+EXCHANGES = ("NMS", "NYQ", "NGM", "NCM", "ASE", "PCX", "BTS")
+NOTE = "GitHub Actions 러너가 수집한 스냅샷. us-top100.html 이 읽는다."
+
+
+def configure(market, page, out_dir, currency, stooq_suffix, exchanges, note):
+    """시장 프로필을 바꿔 끼운다. 수집을 시작하기 전에 한 번 부른다."""
+    global MARKET, PAGE, OUT_DIR, CHART_DIR, CURRENCY, STOOQ_SUFFIX, EXCHANGES, NOTE
+    MARKET = market
+    PAGE = page
+    OUT_DIR = out_dir
+    CHART_DIR = os.path.join(out_dir, "chart")
+    CURRENCY = currency
+    STOOQ_SUFFIX = stooq_suffix
+    EXCHANGES = tuple(exchanges)
+    NOTE = note
+
+
+def fmt_price(v):
+    """로그에 찍는 가격 — 통화에 맞춰 적는다(원화는 소수점을 쓰지 않는다)."""
+    if v is None:
+        return "가격 없음"
+    if CURRENCY == "USD":
+        return "$%.2f" % v
+    if CURRENCY == "KRW":
+        return "%s원" % format(int(round(v)), ",")
+    return "%s %.2f" % (CURRENCY, v)
+
 
 QS_MODULES = ",".join([
     "assetProfile", "price", "summaryDetail", "defaultKeyStatistics", "financialData",
@@ -180,11 +219,11 @@ def pctize(v):
 
 
 def companies_from_page():
-    """us-top100.html 의 COMPANIES 배열에서 [심볼, 영문명, 한글명, 섹터] 를 읽는다."""
+    """화면 파일의 COMPANIES 배열에서 [심볼, 영문명, 한글명, 섹터] 를 읽는다."""
     src = open(PAGE, encoding="utf-8").read()
     m = re.search(r"var COMPANIES = \[(.*?)\n\];", src, re.S)
     if not m:
-        raise SystemExit("us-top100.html 에서 COMPANIES 배열을 찾지 못했다")
+        raise SystemExit("%s 에서 COMPANIES 배열을 찾지 못했다" % os.path.basename(PAGE))
     rows = re.findall(r"\[\s*'([^']+)'\s*,\s*(?:'([^']*)'|\"([^\"]*)\")\s*,\s*'([^']*)'\s*,\s*'([^']*)'\s*\]",
                       m.group(1))
     out = []
@@ -233,13 +272,22 @@ def fetch_chart(sym, rng, interval, events=False):
     return out, meta, divs, splits
 
 
+def stooq_code(sym):
+    """우리 심볼 → Stooq 심볼. 시장 접미사를 떼고 Stooq 접미사를 붙인다.
+
+      AAPL → aapl.us · BRK-B → brk.b.us · 005930.KS → 005930.kr
+    """
+    base = sym.replace("-", ".") if MARKET == "us" else sym.split(".")[0]
+    return base.lower() + STOOQ_SUFFIX
+
+
 def fetch_chart_stooq(sym, interval="d", keep_days=800):
     """야후 차트가 막힌 심볼의 대체 경로. Stooq 일별/월별 CSV.
 
     첫 수집에서 FI(Fiserv)·MMC(Marsh & McLennan)만 야후 chart 가 404 였다.
     두 종목은 timeseries 는 정상이라 심볼 문제가 아니라 야후 쪽 사정으로 보인다.
     """
-    code = sym.lower().replace("-", ".") + ".us"
+    code = stooq_code(sym)
     url = "https://stooq.com/q/d/l/?s=%s&i=%s" % (code, interval)
     txt = _get(url)
     lines = [l for l in txt.strip().splitlines() if l]
@@ -266,14 +314,18 @@ def fetch_chart_stooq(sym, interval="d", keep_days=800):
     return out
 
 
-def fetch_news(sym, limit=6):
+def fetch_news(c, sym, limit=6):
     """종목 뉴스 헤드라인. 제목·출처·시각·링크만 담는다(본문은 담지 않는다).
 
     사내망에서 브라우저가 야후·구글에 못 붙으면 화면의 뉴스 섹션이 통째로 비므로,
     수집 시점 헤드라인이라도 남겨 둔다. 화면은 스냅샷 뉴스임을 배지로 밝힌다.
+
+    국내 종목은 '005930.KS' 로 물어보면 야후 검색이 거의 아무것도 주지 않으므로
+    영문 회사명으로 묻는다.
     """
+    q = sym if MARKET == "us" else (c.get("en") or sym)
     j = yget("/v1/finance/search?q=%s&newsCount=%d&quotesCount=0&enableFuzzyQuery=false"
-             % (urllib.parse.quote(sym), limit))
+             % (urllib.parse.quote(q), limit))
     out = []
     for n in (j.get("news") or [])[:limit]:
         if not n.get("title") or not n.get("link"):
@@ -324,7 +376,7 @@ def resolve_symbol(c):
     """야후가 심볼을 404 로 답할 때, 회사명으로 실제 심볼을 찾는다.
 
     티커가 바뀐 종목(예: Fiserv 는 FISV → FI)을 손으로 쫓지 않으려는 장치다.
-    미국 거래소의 보통주만 받아들이고, 회사명이 서로 겹치는지도 확인한다 —
+    해당 시장의 보통주만 받아들이고, 회사명이 서로 겹치는지도 확인한다 —
     검색 결과를 무조건 믿으면 엉뚱한 종목을 그 자리에 앉히게 된다.
     """
     q = urllib.parse.quote(c["en"])
@@ -334,7 +386,7 @@ def resolve_symbol(c):
         sym = r.get("symbol")
         if not sym or r.get("quoteType") != "EQUITY":
             continue
-        if r.get("exchange") not in ("NMS", "NYQ", "NGM", "NCM", "ASE", "PCX", "BTS"):
+        if r.get("exchange") not in EXCHANGES:
             continue
         name = ((r.get("shortname") or "") + " " + (r.get("longname") or "")).lower()
         if words and not any(w in name for w in words):
@@ -376,7 +428,7 @@ def shape_summary(m, meta):
     if q["price"] is not None and q["prevClose"]:
         q["changePct"] = round((q["price"] - q["prevClose"]) / q["prevClose"] * 100, 2)
     q["cap"] = num(p.get("marketCap")) or num(sd.get("marketCap"))
-    q["currency"] = p.get("currency") or sd.get("currency") or meta.get("currency") or "USD"
+    q["currency"] = p.get("currency") or sd.get("currency") or meta.get("currency") or CURRENCY
     q["exchange"] = p.get("fullExchangeName") or p.get("exchangeName") or meta.get("fullExchangeName")
     q["asof"] = num(p.get("regularMarketTime")) or num(meta.get("regularMarketTime"))
     q["open"] = num(p.get("regularMarketOpen")) or num(sd.get("open"))
@@ -726,13 +778,13 @@ def fetch_one(c, sym=None):
             q["prevClose"] = meta.get("previousClose") or daily["c"][-2]
         if q.get("price") is not None and q.get("prevClose"):
             q["changePct"] = round((q["price"] - q["prevClose"]) / q["prevClose"] * 100, 2)
-        q.setdefault("currency", meta.get("currency") or "USD")
+        q.setdefault("currency", meta.get("currency") or CURRENCY)
         q.setdefault("volume", daily["v"][-1])
     if q.get("cap") is None and q.get("shares") and q.get("price"):
         q["cap"] = q["shares"] * q["price"]
 
     try:
-        payload["news"] = fetch_news(sym)
+        payload["news"] = fetch_news(c, sym)
         status["news"] = True
     except Exception as e:                      # noqa: BLE001
         status["news"] = str(e)
@@ -766,7 +818,7 @@ def main():
     out = {
         "fetchedAt": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
         "source": "yahoo-finance",
-        "note": "GitHub Actions 러너가 수집한 스냅샷. us-top100.html 이 읽는다.",
+        "note": NOTE,
         "fx": {}, "companies": {}, "sources": {},
     }
 
@@ -782,7 +834,7 @@ def main():
             payload, status, chart = fetch_one(c)
         except Exception as e:                   # noqa: BLE001
             out["sources"][c["sym"]] = {"fatal": str(e)}
-            print("  %3d/%d %-6s 실패 — %s" % (i, len(companies), c["sym"], e), flush=True)
+            print("  %3d/%d %-10s 실패 — %s" % (i, len(companies), c["sym"], e), flush=True)
             continue
         out["companies"][c["sym"]] = payload
         out["sources"][c["sym"]] = status
@@ -794,9 +846,8 @@ def main():
             with open(os.path.join(CHART_DIR, c["sym"] + ".json"), "w", encoding="utf-8") as f:
                 json.dump(chart, f, ensure_ascii=False, separators=(",", ":"))
         price = payload.get("quote", {}).get("price")
-        print("  %3d/%d %-6s %s%s" % (i, len(companies), c["sym"],
-                                      ("$%.2f" % price) if price else "가격 없음",
-                                      "" if status.get("summary") is True else "  (지표 미확보)"), flush=True)
+        print("  %3d/%d %-10s %s%s" % (i, len(companies), c["sym"], fmt_price(price),
+                                       "" if status.get("summary") is True else "  (지표 미확보)"), flush=True)
 
     # 시세를 못 받은 종목만 한 번 더 — 429·일시적 오류가 대부분이라 재시도로 대개 붙는다
     retry = [c for c in companies if not isinstance(out["sources"].get(c["sym"]), dict)
@@ -812,13 +863,13 @@ def main():
                 try:
                     alt = resolve_symbol(c)
                     if alt and alt != c["sym"]:
-                        print("  %-6s → 야후 심볼 %s 로 재시도" % (c["sym"], alt), flush=True)
+                        print("  %-10s → 야후 심볼 %s 로 재시도" % (c["sym"], alt), flush=True)
                 except Exception as e:          # noqa: BLE001
-                    print("  %-6s 심볼 탐색 실패 — %s" % (c["sym"], e), flush=True)
+                    print("  %-10s 심볼 탐색 실패 — %s" % (c["sym"], e), flush=True)
             try:
                 payload, status, chart = fetch_one(c, alt)
             except Exception as e:              # noqa: BLE001
-                print("  %-6s 재시도도 실패 — %s" % (c["sym"], e), flush=True)
+                print("  %-10s 재시도도 실패 — %s" % (c["sym"], e), flush=True)
                 continue
             if status.get("chart") is True:
                 out["companies"][c["sym"]] = payload
@@ -829,7 +880,7 @@ def main():
                 if chart:
                     with open(os.path.join(CHART_DIR, c["sym"] + ".json"), "w", encoding="utf-8") as f:
                         json.dump(chart, f, ensure_ascii=False, separators=(",", ":"))
-                print("  %-6s 재시도 성공" % c["sym"], flush=True)
+                print("  %-10s 재시도 성공" % c["sym"], flush=True)
 
     news_ok = sum(1 for v in out["sources"].values() if isinstance(v, dict) and v.get("news") is True)
     news_ko_ok = sum(1 for v in out["sources"].values() if isinstance(v, dict) and v.get("newsKo") is True)
