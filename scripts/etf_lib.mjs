@@ -471,6 +471,26 @@ export async function fetchYahooReturns(symbol, { headers = {}, range = '5y' } =
                              r.indicators?.adjclose?.[0]?.adjclose,
                              r.events?.dividends, r.events?.splits);
   if (out && r.__droppedUnsettled) out.droppedUnsettled = true;
+
+  // 원천이 **자리만 만들고 값을 안 채운 봉**을 적어 둔다.
+  //
+  // 2026-09-09 아침, 미국·홍콩·중국 ETF 의 기준일이 한 세션씩 뒤졌다.
+  // 야후에 직접 물어 보니 09-08 봉이 분명히 있었다 — 그런데 그 봉의 종가가
+  // null 이었다. 자리는 만들어 두고 확정값은 아직 안 채운 것이다.
+  // computeReturns 는 값이 없는 봉을 건너뛰므로 결과는 맞았는데, "왜 어제
+  // 것이냐" 를 밝히는 데 반나절이 들었다. 원천이 무엇을 줬는지 그때 그 자리에
+  // 적어 두면 다음에는 감사 보고서만 보면 된다.
+  const ts = r?.timestamp || [];
+  const cl = r?.indicators?.quote?.[0]?.close || [];
+  if (out && ts.length) {
+    const dayOf = (s) => new Date(s * 1000).toISOString().slice(0, 10);
+    let i = ts.length - 1;
+    while (i >= 0 && !Number.isFinite(Number(cl[i]))) i -= 1;
+    if (i < ts.length - 1) {
+      out.pendingBar = dayOf(ts[ts.length - 1]);   // 원천이 만든 마지막 봉
+      out.pendingBars = ts.length - 1 - i;         // 값이 안 채워진 봉 수
+    }
+  }
   return out;
 }
 

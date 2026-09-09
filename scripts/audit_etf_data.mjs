@@ -128,6 +128,18 @@ for (const e of ETFS) {
     }
   }
 
+  // ── 2-2. 원천이 자리만 만들고 값을 안 채운 봉 ───────────────────────────
+  // 왜 기준일이 하루 뒤인지를 여기서 말한다. 2026-09-09 아침 수집분에서
+  // 미국·홍콩·중국이 한 세션씩 뒤졌는데, 야후에 직접 물어 보니 그 날짜의 봉이
+  // 분명히 있었다 — 다만 종가가 null 이었다. 자리만 만들고 확정값을 아직
+  // 안 채운 것이다. 계산기는 값 없는 봉을 건너뛰므로 결과는 맞았지만,
+  // "자료가 낡았나 우리가 잘못 받았나" 를 가리는 데 반나절이 걸렸다.
+  if (e.pendingBar && e.retAsOf && e.pendingBar > e.retAsOf) {
+    flag('info', '원천-봉미확정', e,
+         `원천에 ${e.pendingBar} 봉이 있으나 종가가 비어 있어 ${e.retAsOf} 를 기준일로 썼다`,
+         { pendingBar: e.pendingBar, usedAsOf: e.retAsOf });
+  }
+
   // ── 3. 수익률 자체의 범위 ───────────────────────────────────────────────
   // 하루 ±40% 는 국내 가격제한폭(±30%) 밖이고, 해외에서도 ETF 로는 안 나온다.
   for (const [basis, obj] of [['price', price], ['tr', tr], ['nav', nav]]) {
@@ -560,13 +572,16 @@ for (const [key, members] of Object.entries(cohorts)) {
     const mMain = main ? main[0] : null;
     const mNewest = ds.length ? ds.slice().sort()[ds.length - 1] : null;
     const gap = mMain && newest ? Math.round((Date.parse(newest) - Date.parse(mMain)) / dayMs) : null;
+    // 뒤진 까닭이 "원천이 봉을 아직 안 채웠다" 인지 함께 적는다.
+    const pending = rows.filter((e) => e.pendingBar && e.retAsOf && e.pendingBar > e.retAsOf).length;
     perMarket.push({ market: m, count: rows.length, main: mMain, atMain: main ? main[1] : 0,
-                     newest: mNewest, gapDays: gap });
+                     newest: mNewest, gapDays: gap, pending });
     if (mMain && gap > 3) {
       findings.push({ sev: 'warn', rule: '시장별-기준일뒤짐', id: '-', code: '-', market: m,
                       name: '(시장 전체)',
                       detail: `${m} 의 주된 기준일 ${mMain} 이 전체 최신 ${newest} 보다 ${gap}일 이르다 ` +
-                              `(${main[1]}/${rows.length}종목) — 이 시장의 값은 다른 시장과 같은 날이 아니다` });
+                              `(${main[1]}/${rows.length}종목) — 이 시장의 값은 다른 시장과 같은 날이 아니다` +
+                              (pending ? `. ${pending}종목은 원천이 다음 봉을 만들어 두고 종가를 아직 안 채웠다` : '') });
     }
   }
   console.log('  시장별: ' + perMarket.map((p) =>
@@ -629,12 +644,15 @@ for (const r of rules) md.push(`| ${r.sev} | ${r.rule} | ${r.count} | ${r.etfCou
 if (globalThis.__perMarket) {
   md.push('', '## 시장별 기준일', '',
     `직전 영업일 ${globalThis.__staleness?.expected ?? '—'} · 전체 최신 ${globalThis.__staleness?.newest ?? '—'}`, '',
-    '| 시장 | 종목 | 주된 기준일 | 그 날짜인 종목 | 가장 새 기준일 | 전체 최신과의 차이 |',
-    '|---|---:|---|---:|---|---:|');
+    '| 시장 | 종목 | 주된 기준일 | 그 날짜인 종목 | 가장 새 기준일 | 전체 최신과의 차이 | 원천이 안 채운 봉 |',
+    '|---|---:|---|---:|---|---:|---:|');
   for (const p of globalThis.__perMarket) {
     md.push(`| ${p.market} | ${p.count} | ${p.main ?? '없음'} | ${p.atMain} | ${p.newest ?? '없음'} | ` +
-            `${p.gapDays == null ? '—' : (p.gapDays === 0 ? '같음' : p.gapDays + '일 이름')} |`);
+            `${p.gapDays == null ? '—' : (p.gapDays === 0 ? '같음' : p.gapDays + '일 이름')} | ` +
+            `${p.pending ? p.pending + '종목' : '—'} |`);
   }
+  md.push('', '원천이 다음 날짜의 봉을 만들어 두고 종가를 아직 안 채운 종목 수다. ' +
+              '그만큼은 "자료가 낡은 것" 이 아니라 **원천이 아직 확정하지 않은 것**이다.');
 }
 
 md.push('', '## 오류 상세', '', '| 종목 | 규칙 | 내용 |', '|---|---|---|');

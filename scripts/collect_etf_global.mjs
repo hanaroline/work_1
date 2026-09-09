@@ -154,6 +154,9 @@ function shape(entry, summary, returns) {
 
     retAsOf: returns?.asOf || null,
     trMethod: returns?.method || null,
+    // 원천이 자리만 만들고 값을 안 채운 봉. 기준일이 왜 하루 뒤인지를
+    // 나중에 되짚지 않아도 되도록 그때 그 자리에 적어 둔다.
+    pendingBar: returns?.pendingBar || null,
     // price = 가격수익률(분배금 제외), tr = 총수익률(분배금 재투자).
     // 국내도 같은 계산기를 쓰므로 두 시장의 tr 이 한 뜻이다.
     ret: returns ? { price: returns.price, tr: returns.tr, baseDays: returns.baseDays } : null,
