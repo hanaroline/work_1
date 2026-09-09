@@ -1,0 +1,1650 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>증시 일정 캘린더</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* ============================================================
+   미래에셋증권 디자인 시스템
+   Orange #F58220 / Blue #043B72 / 1px 섹션 룰 / FAB072 테이블 헤더
+   ============================================================ */
+:root{
+  --orange:#F58220; --orange-active:#CB6015; --orange-soft:#FAB072;
+  --blue:#043B72; --blue-soft:#0086B8; --cyan:#00A9CE;
+  --gray-hl:#D7D7D7; --tan:#F0B26B; --terracotta:#AD624E; --neutral:#84888B;
+  --canvas:#FFFFFF; --surface-soft:#ECEFF4; --surface-subtle:#F7F8FA;
+  --hairline:#CDCECB; --hairline-soft:#E5E4E1;
+  --line-dark:#49535B; --line-mid:#84888B; --line-soft:#A0A6A8;
+  --ink:#1A1A1A; --body-strong:#2C2C2C; --body:#3D3D3D; --muted:#6C6C6C; --muted-soft:#84888B;
+  --success:#2E8540; --warning:#D4A017; --error:#C62828;
+
+  --font-kr:'Spoqa Han Sans Neo','Noto Sans KR','Apple SD Gothic Neo','Malgun Gothic',sans-serif;
+  --font-en:'Inter','Aptos','Segoe UI',system-ui,-apple-system,sans-serif;
+  --font-num:'Inter','SF Mono',ui-monospace,monospace;
+
+  --space-section:104px; --space-block:56px; --space-content:28px; --space-tight:14px;
+}
+@media (max-width:768px){ :root{ --space-section:72px; --space-block:36px; } }
+
+*{box-sizing:border-box;}
+html{-webkit-text-size-adjust:100%;}
+body{
+  margin:0; background:var(--canvas); color:var(--body);
+  font-family:var(--font-kr); font-size:19px; line-height:1.65;
+  font-variant-numeric:tabular-nums;
+}
+html[lang="en"] body{font-family:var(--font-en);}
+h1,h2,h3,h4{color:var(--ink); margin:0;}
+p{margin:0 0 var(--space-content);}
+a{color:var(--blue);}
+:focus-visible{outline:2px solid var(--orange); outline-offset:2px;}
+
+.page{max-width:1200px; margin:0 auto; padding:0 32px;}
+@media (max-width:768px){ .page{padding:0 20px;} }
+
+/* ---------- 상단 툴바 ---------- */
+.toolbar{
+  max-width:1200px; margin:0 auto; padding:18px 32px 0;
+  display:flex; justify-content:flex-end; gap:10px; align-items:center; flex-wrap:wrap;
+}
+@media (max-width:768px){ .toolbar{padding:14px 20px 0;} }
+.lang-toggle{
+  display:inline-flex; border:1px solid var(--hairline); border-radius:2px;
+  overflow:hidden; background:#fff; box-shadow:0 2px 8px rgba(0,0,0,.06);
+}
+.lang-toggle button{
+  font-family:var(--font-en); font-size:14px; font-weight:500; letter-spacing:.5px;
+  padding:10px 17px; border:0; background:#fff; color:var(--muted); cursor:pointer;
+}
+.lang-toggle button + button{border-left:1px solid var(--hairline);}
+.lang-toggle button[aria-checked="true"]{background:var(--orange); color:#fff;}
+.lang-toggle button[aria-checked="false"]:hover{background:var(--surface-subtle); color:var(--ink);}
+.btn-tool{
+  font-family:inherit; font-size:14px; padding:10px 15px; border:1px solid var(--hairline); border-radius:2px;
+  background:#fff; color:var(--muted); cursor:pointer; box-shadow:0 2px 8px rgba(0,0,0,.06);
+}
+.btn-tool:hover{background:var(--surface-subtle); color:var(--ink);}
+
+/* ---------- 머리 ---------- */
+.masthead{padding:38px 0 0;}
+.eyebrow{font-size:14px; letter-spacing:1.2px; color:var(--orange); font-weight:700; margin-bottom:10px;}
+h1{font-size:34px; line-height:1.25; letter-spacing:-.3px;}
+@media (max-width:768px){ h1{font-size:26px;} }
+.lede{font-size:19px; color:var(--body); margin:14px 0 0; max-width:78ch;}
+.meta-line{
+  margin-top:19px; padding-top:14px; border-top:1px solid var(--hairline-soft);
+  font-size:14px; color:var(--muted); display:flex; gap:8px 20px; flex-wrap:wrap; align-items:center;
+}
+.meta-line b{color:var(--ink); font-weight:600;}
+
+/* ---------- 섹션 앵커 칩 ---------- */
+.anchors{
+  margin:28px 0 0; display:flex; gap:8px; flex-wrap:wrap;
+  padding-bottom:6px;
+}
+.anchors a{
+  font-size:14px; text-decoration:none; color:var(--muted); background:#fff;
+  border:1px solid var(--hairline); border-radius:2px; padding:7px 13px;
+}
+.anchors a:hover{border-color:var(--orange); color:var(--ink);}
+
+/* ---------- 섹션 ---------- */
+.section{padding-top:var(--space-section);}
+.section-rule{height:1px; background:var(--orange); margin-bottom:19px;}
+.section-title{font-size:26px; font-weight:600; letter-spacing:0;}
+@media (max-width:768px){ .section-title{font-size:22px;} }
+.section-note{font-size:17px; color:var(--muted); margin:10px 0 var(--space-content); max-width:82ch;}
+h3{font-size:22px; font-weight:600; margin:var(--space-block) 0 var(--space-tight);}
+@media (max-width:768px){ h3{font-size:19px;} }
+
+/* ---------- 배지 ---------- */
+.badge{
+  display:inline-block; font-size:12px; line-height:1.3; padding:3px 7px;
+  border:1px solid var(--hairline); border-radius:2px; color:var(--muted);
+  background:#fff; white-space:nowrap; font-family:var(--font-en); letter-spacing:.2px;
+}
+.badge.official{border-color:var(--success); color:var(--success);}
+.badge.websearch{border-color:var(--blue-soft); color:var(--blue-soft);}
+.badge.tentative{border-color:var(--warning); color:#8a6a10;}
+.badge.estimate{border-color:var(--warning); color:#8a6a10;}
+.badge.rule{border-color:var(--hairline); color:var(--muted-soft); background:var(--surface-subtle);}
+.badge.imp3{border-color:var(--orange); color:var(--orange-active); font-weight:600;}
+.dot{display:inline-block; width:8px; height:8px; border-radius:50%; vertical-align:middle;}
+
+/* ---------- D-day 카드 ---------- */
+.cards{display:grid; grid-template-columns:repeat(3,1fr); gap:var(--space-tight);}
+@media (max-width:1024px){ .cards{grid-template-columns:repeat(2,1fr);} }
+@media (max-width:640px){ .cards{grid-template-columns:1fr;} }
+.card{
+  border:1px solid var(--hairline); border-radius:4px; padding:19px; background:#fff;
+  display:flex; flex-direction:column; gap:8px;
+}
+.card.hot{border-left:3px solid var(--orange);}
+.card .dday{font-family:var(--font-num); font-size:26px; font-weight:700; color:var(--blue); line-height:1;}
+.card .dday.today{color:var(--orange);}
+.card .when{font-size:14px; color:var(--muted);}
+.card .what{font-size:17px; color:var(--ink); font-weight:500; line-height:1.4;}
+.card .why{font-size:14px; color:var(--muted); line-height:1.5;}
+.card .row{display:flex; gap:6px; flex-wrap:wrap; align-items:center;}
+
+/* ---------- 월간 캘린더 ---------- */
+.cal-head{display:flex; align-items:center; gap:14px; flex-wrap:wrap; margin-bottom:var(--space-tight);}
+.cal-head .ym{font-size:22px; font-weight:700; color:var(--ink); font-family:var(--font-num); min-width:9ch;}
+/* minmax(0,1fr) — 1fr 의 최소 크기는 auto 라, 줄바꿈이 안 되는 칩 하나가 칸을 넓혀
+   격자가 부모를 밀어낸다. 0 을 최소로 못박아 칸 안에서만 잘리게 한다. */
+.grid{display:grid; grid-template-columns:repeat(7,minmax(0,1fr)); border:1px solid var(--hairline); border-radius:2px; overflow:hidden;}
+.grid .dow{
+  background:var(--orange-soft); color:#1A1A1A; font-size:14px; font-weight:700;
+  text-align:center; padding:9px 0; border-right:1px solid rgba(255,255,255,.5);
+}
+.grid .dow:last-child{border-right:0;}
+.grid .cell{
+  min-height:104px; border-top:1px solid var(--hairline-soft); border-right:1px solid var(--hairline-soft);
+  padding:7px 8px; background:#fff; cursor:pointer; position:relative; text-align:left;
+  font:inherit; color:inherit;
+}
+.grid .cell:nth-child(7n+7){border-right:0;}
+.grid .cell:hover{background:var(--surface-subtle);}
+.grid .cell.dim{background:#FCFCFC;}
+.grid .cell.dim .dnum{color:var(--hairline);}
+.grid .cell.closed{background:var(--surface-soft);}
+.grid .cell.today{box-shadow:inset 0 0 0 2px var(--orange);}
+.grid .cell.sel{background:#FFF6EE; box-shadow:inset 0 0 0 1px var(--orange-soft);}
+.grid .dnum{font-family:var(--font-num); font-size:15px; font-weight:600; color:var(--body-strong);}
+.grid .cell.sat .dnum{color:var(--blue-soft);} .grid .cell.sun .dnum{color:var(--error);}
+.grid .chips{margin-top:5px; display:flex; flex-direction:column; gap:2px;}
+.grid .chip{
+  font-size:11.5px; line-height:1.35; color:var(--body-strong); white-space:nowrap;
+  overflow:hidden; text-overflow:ellipsis; padding-left:9px; position:relative;
+}
+.grid .chip::before{content:''; position:absolute; left:0; top:5px; width:5px; height:5px; border-radius:50%; background:var(--neutral);}
+.grid .more{font-size:11px; color:var(--muted); margin-top:2px;}
+@media (max-width:768px){
+  .grid .cell{min-height:74px; padding:5px;}
+  .grid .chip{font-size:10.5px;}
+}
+.legend{margin-top:var(--space-tight); display:flex; gap:8px 18px; flex-wrap:wrap; font-size:14px; color:var(--muted);}
+.legend span.k{display:inline-flex; align-items:center; gap:6px;}
+
+/* ---------- 필터 ---------- */
+.filters{
+  border:1px solid var(--hairline); border-radius:4px; padding:17px 19px;
+  background:var(--surface-subtle); margin-bottom:var(--space-content);
+  display:flex; flex-direction:column; gap:12px;
+}
+.frow{display:flex; gap:10px; flex-wrap:wrap; align-items:center;}
+.frow > label{font-size:14px; color:var(--muted); min-width:7ch; font-weight:500;}
+.pill{
+  font:inherit; font-size:14px; padding:6px 12px; border:1px solid var(--hairline);
+  border-radius:2px; background:#fff; color:var(--muted); cursor:pointer;
+}
+.pill[aria-pressed="true"]{background:var(--blue); border-color:var(--blue); color:#fff;}
+.pill.cat[aria-pressed="true"]{background:var(--orange); border-color:var(--orange);}
+.search{
+  font:inherit; font-size:16px; padding:9px 12px; border:1px solid var(--hairline);
+  border-radius:2px; background:#fff; color:var(--ink); min-width:260px; flex:1;
+}
+.fcount{font-size:14px; color:var(--muted); margin-left:auto;}
+
+/* ---------- 표 ---------- */
+.tw{overflow-x:auto; border:1px solid var(--hairline); border-radius:2px;}
+table{border-collapse:collapse; width:100%; font-size:15px; background:#fff;}
+thead th{
+  background:var(--orange-soft); color:#1A1A1A; font-weight:700; font-size:14px;
+  text-align:left; padding:10px 12px; white-space:nowrap; border-right:1px solid rgba(255,255,255,.5);
+}
+thead th:last-child{border-right:0;}
+tbody td{padding:9px 12px; border-top:1px solid var(--hairline-soft); vertical-align:top; line-height:1.45;}
+tbody tr:hover{background:var(--surface-subtle);}
+td.num, th.num{text-align:right; font-family:var(--font-num);}
+td.nowrap{white-space:nowrap;}
+tbody tr.past{color:var(--muted-soft);}
+tbody tr.past td{background:#FCFCFC;}
+.fav-btn{font:inherit; font-size:15px; line-height:1; border:0; background:none; cursor:pointer; color:var(--hairline); padding:2px 4px;}
+.fav-btn[aria-pressed="true"]{color:var(--orange);}
+.empty{padding:28px 12px; text-align:center; color:var(--muted); font-size:16px; background:#fff;}
+
+/* ---------- 주간 집중도 막대 ---------- */
+.bars{display:flex; flex-direction:column; gap:6px;}
+.bar-row{display:grid; grid-template-columns:12ch 1fr 5ch; gap:10px; align-items:center; font-size:14px;}
+.bar-track{background:var(--surface-soft); height:18px; border-radius:2px; overflow:hidden;}
+.bar-fill{height:100%; background:var(--orange);}
+.bar-fill.b2{background:var(--blue);}
+.bar-row .n{text-align:right; font-family:var(--font-num); color:var(--muted);}
+
+/* ---------- 타임라인 (통화정책) ---------- */
+.tl{border-left:2px solid var(--hairline-soft); margin-left:9px; padding-left:22px; display:flex; flex-direction:column; gap:19px;}
+.tl-item{position:relative;}
+.tl-item::before{
+  content:''; position:absolute; left:-30px; top:7px; width:11px; height:11px;
+  border-radius:50%; background:#fff; border:2px solid var(--line-mid);
+}
+.tl-item.next::before{background:var(--orange); border-color:var(--orange);}
+.tl-when{font-family:var(--font-num); font-size:16px; font-weight:600; color:var(--ink);}
+.tl-what{font-size:15px; color:var(--muted); margin-top:2px;}
+
+/* ---------- 안내 박스 ---------- */
+.callout{
+  border:1px solid var(--hairline); border-left:3px solid var(--orange); border-radius:2px;
+  padding:17px 19px; background:var(--surface-subtle); font-size:16px; color:var(--body-strong);
+  margin:var(--space-content) 0;
+}
+.callout.warn{border-left-color:var(--warning);}
+.callout.err{border-left-color:var(--error);}
+.callout h4{font-size:17px; margin-bottom:7px;}
+.callout ul{margin:7px 0 0; padding-left:20px;}
+/* ⑩ 의 '빈 곳' 목록에는 긴 URL 이 섞여 들어온다. 끊을 자리를 주지 않으면 좁은 화면에서
+   이 한 줄이 문서 전체를 가로로 늘린다(390px 에서 495px 이 되던 원인). */
+.callout li,.callout p{margin-bottom:5px; overflow-wrap:anywhere;}
+.callout code{font-family:var(--font-num); font-size:14px; background:#fff; padding:1px 5px; border:1px solid var(--hairline-soft);}
+
+/* ---------- 소소한 것 ---------- */
+.two-col{display:grid; grid-template-columns:1fr 1fr; gap:var(--space-content);}
+@media (max-width:900px){ .two-col{grid-template-columns:1fr;} }
+.kv{font-size:15px; display:grid; grid-template-columns:auto 1fr; gap:5px 14px;}
+.kv dt{color:var(--muted);} .kv dd{margin:0; color:var(--ink);}
+.small{font-size:14px; color:var(--muted);}
+.mono{font-family:var(--font-num);}
+footer{
+  margin-top:var(--space-section); padding:28px 0 56px; border-top:1px solid var(--hairline);
+  font-size:14px; color:var(--muted);
+}
+.skip{position:absolute; left:-9999px;}
+.skip:focus{left:32px; top:8px; background:#fff; padding:8px 12px; border:1px solid var(--orange); z-index:9;}
+
+/* ---------- 인쇄 ---------- */
+@media print{
+  .toolbar,.anchors,.filters,.cal-head button,.fav-btn,.btn-tool,.no-print{display:none !important;}
+  body{font-size:11pt; line-height:1.4;}
+  .page{max-width:100%; padding:0;}
+  .section{padding-top:24px;}
+  h2,h3,.section-title{page-break-after:avoid;}
+  table,.card,.grid{page-break-inside:avoid;}
+  .grid .cell{min-height:64px;}
+  a{color:#000; text-decoration:none;}
+}
+</style>
+</head>
+<body>
+<a class="skip" href="#s3" data-ko="일정 목록으로 건너뛰기" data-en="Skip to the schedule list">일정 목록으로 건너뛰기</a>
+
+<div class="toolbar no-print">
+  <div class="lang-toggle" role="radiogroup" aria-label="Language">
+    <button type="button" id="btn-ko" role="radio" aria-checked="true">KO</button>
+    <button type="button" id="btn-en" role="radio" aria-checked="false">EN</button>
+  </div>
+  <button type="button" class="btn-tool" id="btn-print" data-ko="인쇄 · PDF 저장" data-en="Print / save PDF">인쇄 · PDF 저장</button>
+</div>
+
+<div class="page">
+  <header class="masthead">
+    <div class="eyebrow" data-ko="사내 참고 자료" data-en="INTERNAL REFERENCE">사내 참고 자료</div>
+    <h1 data-ko="증시 일정 캘린더" data-en="Market Calendar">증시 일정 캘린더</h1>
+    <p class="lede"
+       data-ko="각국 경제지표 발표일 · 중앙은행 정책금리 결정일 · 기업 실적발표와 컨퍼런스콜 · 제약·바이오 학회 · 파생 만기와 지수 정기변경 · 시장 휴장일을 한 화면에서 조회합니다. 확정 일정과 추정 일정을 배지로 구분하고, 확인하지 못한 일정은 날짜를 지어내지 않고 이름과 공식 링크만 남깁니다."
+       data-en="Economic data releases, central-bank rate decisions, corporate earnings and conference calls, pharma/biotech congresses, derivative expiries and index reviews, and market holidays — in one screen. Confirmed and estimated dates carry distinct badges; where a date could not be verified, only the name and its official link are shown.">각국 경제지표 발표일 · 중앙은행 정책금리 결정일 · 기업 실적발표와 컨퍼런스콜 · 제약·바이오 학회 · 파생 만기와 지수 정기변경 · 시장 휴장일을 한 화면에서 조회합니다. 확정 일정과 추정 일정을 배지로 구분하고, 확인하지 못한 일정은 날짜를 지어내지 않고 이름과 공식 링크만 남깁니다.</p>
+    <div class="meta-line" id="meta"></div>
+    <nav class="anchors no-print" aria-label="sections">
+      <a href="#s1" data-ko="① 다가오는 일정" data-en="1. Coming up">① 다가오는 일정</a>
+      <a href="#s2" data-ko="② 월간 캘린더" data-en="2. Month view">② 월간 캘린더</a>
+      <a href="#s3" data-ko="③ 일정 목록" data-en="3. Schedule list">③ 일정 목록</a>
+      <a href="#s4" data-ko="④ 경제지표" data-en="4. Economic data">④ 경제지표</a>
+      <a href="#s5" data-ko="⑤ 통화정책" data-en="5. Monetary policy">⑤ 통화정책</a>
+      <a href="#s6" data-ko="⑥ 실적·컨콜" data-en="6. Earnings & calls">⑥ 실적·컨콜</a>
+      <a href="#s7" data-ko="⑦ 제약·바이오 학회" data-en="7. Pharma congresses">⑦ 제약·바이오 학회</a>
+      <a href="#s8" data-ko="⑧ 수급·제도" data-en="8. Market structure">⑧ 수급·제도</a>
+      <a href="#s9" data-ko="⑨ 관심 일정" data-en="9. My list">⑨ 관심 일정</a>
+      <a href="#s10" data-ko="⑩ 데이터 상태" data-en="10. Data status">⑩ 데이터 상태</a>
+    </nav>
+  </header>
+
+  <div id="boot"></div>
+
+  <main id="app" hidden>
+
+    <!-- ① 다가오는 일정 -->
+    <section class="section" id="s1">
+      <div class="section-rule"></div>
+      <h2 class="section-title" data-ko="① 다가오는 일정" data-en="1. Coming up">① 다가오는 일정</h2>
+      <p class="section-note"
+         data-ko="오늘부터 21일 안의 일정 가운데 중요도가 높은 것부터 보여줍니다. 규칙으로 만든 추정 일정은 여기에 넣지 않습니다."
+         data-en="The most significant events within the next 21 days. Rule-derived estimates are excluded from this block.">오늘부터 21일 안의 일정 가운데 중요도가 높은 것부터 보여줍니다. 규칙으로 만든 추정 일정은 여기에 넣지 않습니다.</p>
+      <div class="cards" id="upcoming"></div>
+      <h3 data-ko="이번 주 (월~일)" data-en="This week (Mon-Sun)">이번 주 (월~일)</h3>
+      <div class="tw" id="thisweek"></div>
+    </section>
+
+    <!-- ② 월간 캘린더 -->
+    <section class="section" id="s2">
+      <div class="section-rule"></div>
+      <h2 class="section-title" data-ko="② 월간 캘린더" data-en="2. Month view">② 월간 캘린더</h2>
+      <p class="section-note"
+         data-ko="날짜를 누르면 그날 일정이 아래에 펼쳐집니다. 회색 칸은 그 시장의 휴장일이며, ③의 국가 필터를 바꾸면 이 격자도 함께 바뀝니다."
+         data-en="Click a date to expand that day below. Shaded cells are market holidays; changing the country filter in section 3 also filters this grid.">날짜를 누르면 그날 일정이 아래에 펼쳐집니다. 회색 칸은 그 시장의 휴장일이며, ③의 국가 필터를 바꾸면 이 격자도 함께 바뀝니다.</p>
+      <div class="cal-head">
+        <button type="button" class="btn-tool" id="m-prev" aria-label="previous month">◀</button>
+        <span class="ym" id="ym"></span>
+        <button type="button" class="btn-tool" id="m-next" aria-label="next month">▶</button>
+        <button type="button" class="btn-tool" id="m-today" data-ko="이번 달" data-en="This month">이번 달</button>
+      </div>
+      <div class="grid" id="grid"></div>
+      <div class="legend" id="legend"></div>
+      <div id="dayview"></div>
+    </section>
+
+    <!-- ③ 일정 목록 -->
+    <section class="section" id="s3">
+      <div class="section-rule"></div>
+      <h2 class="section-title" data-ko="③ 일정 목록" data-en="3. Schedule list">③ 일정 목록</h2>
+      <p class="section-note"
+         data-ko="국가·분류·중요도·확정도로 걸러 보고, 이름으로 찾습니다. ★ 를 누르면 ⑨ 관심 일정에 담기고 이 브라우저에 남습니다."
+         data-en="Filter by country, category, significance and confirmation level, or search by name. The star adds an event to section 9 and is remembered in this browser.">국가·분류·중요도·확정도로 걸러 보고, 이름으로 찾습니다. ★ 를 누르면 ⑨ 관심 일정에 담기고 이 브라우저에 남습니다.</p>
+      <div class="filters no-print">
+        <div class="frow">
+          <label data-ko="분류" data-en="Category">분류</label>
+          <span id="f-cat"></span>
+        </div>
+        <div class="frow">
+          <label data-ko="국가" data-en="Country">국가</label>
+          <span id="f-country"></span>
+        </div>
+        <div class="frow">
+          <label data-ko="중요도" data-en="Weight">중요도</label>
+          <span id="f-imp"></span>
+          <label style="margin-left:14px" data-ko="확정도" data-en="Confirmed">확정도</label>
+          <span id="f-conf"></span>
+        </div>
+        <div class="frow">
+          <label data-ko="기간" data-en="Range">기간</label>
+          <span id="f-range"></span>
+        </div>
+        <div class="frow">
+          <input class="search" id="q" type="search" data-ko-ph="일정·기관 이름으로 찾기" data-en-ph="Search by event or institution">
+          <button type="button" class="btn-tool" id="btn-csv" data-ko="CSV 내려받기" data-en="Download CSV">CSV 내려받기</button>
+          <button type="button" class="btn-tool" id="btn-ics-all" data-ko="ICS 내려받기 (걸러진 일정)" data-en="Download ICS (filtered)">ICS 내려받기 (걸러진 일정)</button>
+          <span class="fcount" id="fcount"></span>
+        </div>
+      </div>
+      <div class="tw" id="list"></div>
+    </section>
+
+    <!-- ④ 경제지표 -->
+    <section class="section" id="s4">
+      <div class="section-rule"></div>
+      <h2 class="section-title" data-ko="④ 각국 경제지표 발표일정" data-en="4. Economic data releases">④ 각국 경제지표 발표일정</h2>
+      <p class="section-note"
+         data-ko="지표마다 다음 발표일과 발표기관, 그 지표를 왜 보는지를 함께 적었습니다. 발표기관이 연간 일정을 공표한 지표는 확정으로, 발표 주기만 아는 지표는 규칙추정으로 표시합니다."
+         data-en="For each indicator: the next release, the publishing agency, and why it matters. Dates from an agency's published calendar are marked confirmed; dates derived only from the usual cadence are marked rule-derived.">지표마다 다음 발표일과 발표기관, 그 지표를 왜 보는지를 함께 적었습니다. 발표기관이 연간 일정을 공표한 지표는 확정으로, 발표 주기만 아는 지표는 규칙추정으로 표시합니다.</p>
+      <div class="frow no-print" id="ind-tabs" style="margin-bottom:14px"></div>
+      <div class="tw" id="indicators"></div>
+    </section>
+
+    <!-- ⑤ 통화정책 -->
+    <section class="section" id="s5">
+      <div class="section-rule"></div>
+      <h2 class="section-title" data-ko="⑤ 통화정책 결정일" data-en="5. Monetary policy decisions">⑤ 통화정책 결정일</h2>
+      <p class="section-note"
+         data-ko="중앙은행별 남은 결정일입니다. 기자회견·경제전망 동반 여부를 함께 적었고, 발표 시각이 공표돼 있지 않은 회의(일본은행·금통위)는 시각을 비워 둡니다 — 추정하지 않습니다."
+         data-en="Remaining decision dates by central bank, noting whether a press conference or projections accompany each. Where an announcement time is not published (BOJ, BOK) the time is left blank rather than estimated.">중앙은행별 남은 결정일입니다. 기자회견·경제전망 동반 여부를 함께 적었고, 발표 시각이 공표돼 있지 않은 회의(일본은행·금통위)는 시각을 비워 둡니다 — 추정하지 않습니다.</p>
+      <div id="policy-context"></div>
+      <div id="policy"></div>
+    </section>
+
+    <!-- ⑥ 실적·컨콜 -->
+    <section class="section" id="s6">
+      <div class="section-rule"></div>
+      <h2 class="section-title" data-ko="⑥ 실적발표 · 컨퍼런스콜 일정" data-en="6. Earnings and conference calls">⑥ 실적발표 · 컨퍼런스콜 일정</h2>
+      <p class="section-note"
+         data-ko="국내 100대 기업과 미국 100대 기업의 다음 실적발표일입니다. 이 화면은 kr-top100 · us-top100 이 쓰는 수집 스냅샷을 그대로 읽습니다 — 같은 값을 두 곳에서 따로 모으지 않기 위함입니다."
+         data-en="Next earnings dates for the 100 largest Korean and 100 largest US companies, read from the same collection snapshots the kr-top100 and us-top100 screens use rather than gathered twice.">국내 100대 기업과 미국 100대 기업의 다음 실적발표일입니다. 이 화면은 kr-top100 · us-top100 이 쓰는 수집 스냅샷을 그대로 읽습니다 — 같은 값을 두 곳에서 따로 모으지 않기 위함입니다.</p>
+      <div id="earn-load"></div>
+      <h3 data-ko="주간 집중도" data-en="Weekly concentration">주간 집중도</h3>
+      <div class="bars" id="earn-bars"></div>
+      <h3 data-ko="발표 예정 종목" data-en="Upcoming reports">발표 예정 종목</h3>
+      <div class="tw" id="earn-table"></div>
+      <div class="callout warn">
+        <h4 data-ko="컨퍼런스콜 시각은 만들지 않습니다" data-en="Conference-call times are not synthesised">컨퍼런스콜 시각은 만들지 않습니다</h4>
+        <p style="margin:0"
+           data-ko="이 화면이 쓰는 소스에 콜 시각이 없습니다. 추정하지 않고 회사 IR 페이지로 연결합니다. 실적발표일이 구간(두 날짜)으로 오면 회사 확정 공지 전이라는 뜻이므로 <span class=&quot;badge estimate&quot;>추정구간</span> 으로 표시하고 시각을 숨깁니다."
+           data-en="The sources behind this screen carry no call time, so we link to the company's IR page instead of estimating one. When a provider returns a date range instead of a single date, the company has not confirmed it yet — it is shown as an estimated window with no time.">이 화면이 쓰는 소스에 콜 시각이 없습니다. 추정하지 않고 회사 IR 페이지로 연결합니다. 실적발표일이 구간(두 날짜)으로 오면 회사 확정 공지 전이라는 뜻이므로 <span class="badge estimate">추정구간</span> 으로 표시하고 시각을 숨깁니다.</p>
+      </div>
+    </section>
+
+    <!-- ⑦ 제약·바이오 학회 -->
+    <section class="section" id="s7">
+      <div class="section-rule"></div>
+      <h2 class="section-title" data-ko="⑦ 제약·바이오 학회 · 산업 콘퍼런스" data-en="7. Pharma congresses and industry conferences">⑦ 제약·바이오 학회 · 산업 콘퍼런스</h2>
+      <p class="section-note"
+         data-ko="학회는 임상 데이터가 공개되는 자리라 그 주에 제약·바이오 주가가 크게 움직입니다. 다만 어느 회사가 무엇을 발표하는지는 초록 공개 전에는 확정이 아니므로 이 화면에 적지 않고 공식 프로그램으로 연결합니다."
+         data-en="Congresses are where clinical data lands, so pharma and biotech prices move that week. Which company presents what is not settled until abstracts are released, so this screen links to the official programme rather than asserting it.">학회는 임상 데이터가 공개되는 자리라 그 주에 제약·바이오 주가가 크게 움직입니다. 다만 어느 회사가 무엇을 발표하는지는 초록 공개 전에는 확정이 아니므로 이 화면에 적지 않고 공식 프로그램으로 연결합니다.</p>
+      <div class="cards" id="conf-cards"></div>
+      <h3 data-ko="날짜를 확인하지 못한 학회 · 콘퍼런스" data-en="Congresses with no verified date yet">날짜를 확인하지 못한 학회 · 콘퍼런스</h3>
+      <p class="section-note"
+         data-ko="개최 시기만 알려진 것들입니다. 날짜를 지어내 캘린더에 넣지 않고 여기에 이름과 공식 링크만 둡니다."
+         data-en="Only the usual season is known. Rather than inventing dates for the calendar, we list the name and the official link here.">개최 시기만 알려진 것들입니다. 날짜를 지어내 캘린더에 넣지 않고 여기에 이름과 공식 링크만 둡니다.</p>
+      <div class="tw" id="conf-undated"></div>
+    </section>
+
+    <!-- ⑧ 수급·제도 -->
+    <section class="section" id="s8">
+      <div class="section-rule"></div>
+      <h2 class="section-title" data-ko="⑧ 수급 · 제도 일정" data-en="8. Market structure events">⑧ 수급 · 제도 일정</h2>
+      <p class="section-note"
+         data-ko="파생 만기와 지수 리밸런싱은 규칙이 확실해 날짜를 계산했습니다(휴장일과 겹치면 앞 영업일로 당깁니다). 회사·기관이 그때그때 정하는 일정은 계산하지 않고 원문 공시로 연결합니다."
+         data-en="Derivative expiries and index rebalances follow firm rules, so dates are computed (and pulled back to the previous business day when they land on a holiday). Schedules set case by case are linked to their source filing instead.">파생 만기와 지수 리밸런싱은 규칙이 확실해 날짜를 계산했습니다(휴장일과 겹치면 앞 영업일로 당깁니다). 회사·기관이 그때그때 정하는 일정은 계산하지 않고 원문 공시로 연결합니다.</p>
+      <div class="tw" id="supply"></div>
+      <h3 data-ko="지수 정기변경 · 원문으로 확인할 일정" data-en="Index reviews and schedules to check at source">지수 정기변경 · 원문으로 확인할 일정</h3>
+      <div class="tw" id="supply-links"></div>
+      <h3 data-ko="시장 휴장일" data-en="Market holidays">시장 휴장일</h3>
+      <div class="tw" id="holidays"></div>
+    </section>
+
+    <!-- ⑨ 관심 일정 -->
+    <section class="section" id="s9">
+      <div class="section-rule"></div>
+      <h2 class="section-title" data-ko="⑨ 관심 일정 · 내 캘린더로 담기" data-en="9. My list and calendar export">⑨ 관심 일정 · 내 캘린더로 담기</h2>
+      <p class="section-note"
+         data-ko="★ 로 담은 일정입니다. ICS 로 내려받아 구글 캘린더·아웃룩에 그대로 넣을 수 있습니다. 담은 목록은 이 브라우저에만 저장되고 어디로도 전송되지 않습니다."
+         data-en="Events you starred. Download them as an ICS file and import into Google Calendar or Outlook. The list is stored only in this browser and is never transmitted.">★ 로 담은 일정입니다. ICS 로 내려받아 구글 캘린더·아웃룩에 그대로 넣을 수 있습니다. 담은 목록은 이 브라우저에만 저장되고 어디로도 전송되지 않습니다.</p>
+      <div class="frow no-print" style="margin-bottom:14px">
+        <button type="button" class="btn-tool" id="btn-ics-fav" data-ko="관심 일정 ICS 내려받기" data-en="Download my list as ICS">관심 일정 ICS 내려받기</button>
+        <button type="button" class="btn-tool" id="btn-fav-clear" data-ko="전체 비우기" data-en="Clear all">전체 비우기</button>
+      </div>
+      <div class="tw" id="fav"></div>
+      <div class="callout">
+        <h4 data-ko="ICS 파일을 캘린더에 넣는 방법" data-en="Importing the ICS file">ICS 파일을 캘린더에 넣는 방법</h4>
+        <ul>
+          <li data-ko="<b>구글 캘린더</b> — 설정 → 가져오기/내보내기 → 가져오기에서 내려받은 <code>.ics</code> 파일을 선택합니다." data-en="<b>Google Calendar</b> — Settings, then Import &amp; export, then Import, and choose the downloaded <code>.ics</code> file."><b>구글 캘린더</b> — 설정 → 가져오기/내보내기 → 가져오기에서 내려받은 <code>.ics</code> 파일을 선택합니다.</li>
+          <li data-ko="<b>아웃룩</b> — 파일 → 열기 및 내보내기 → 가져오기/내보내기 → iCalendar(.ics) 파일 가져오기." data-en="<b>Outlook</b> — File, Open &amp; Export, Import/Export, then import an iCalendar (.ics) file."><b>아웃룩</b> — 파일 → 열기 및 내보내기 → 가져오기/내보내기 → iCalendar(.ics) 파일 가져오기.</li>
+          <li data-ko="발표 시각이 공표된 일정은 <b>한국 시간</b>으로 시각까지 담기고, 시각이 없는 일정은 <b>종일 일정</b>으로 담깁니다. 확정이 아닌 일정은 제목 뒤에 <code>(추정)</code> 이 붙습니다." data-en="Events with a published time are exported at that time in Korea Standard Time; events without one become all-day entries. Unconfirmed dates carry a suffix in the title.">발표 시각이 공표된 일정은 <b>한국 시간</b>으로 시각까지 담기고, 시각이 없는 일정은 <b>종일 일정</b>으로 담깁니다. 확정이 아닌 일정은 제목 뒤에 <code>(추정)</code> 이 붙습니다.</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- ⑩ 데이터 상태 -->
+    <section class="section" id="s10">
+      <div class="section-rule"></div>
+      <h2 class="section-title" data-ko="⑩ 데이터 상태 · 출처" data-en="10. Data status and sources">⑩ 데이터 상태 · 출처</h2>
+      <p class="section-note"
+         data-ko="어느 입력이 들어왔고 어디가 비었는지, 각 일정을 어디서 가져왔는지를 그대로 보여줍니다. 값이 이상해 보이면 여기서 먼저 확인하십시오."
+         data-en="Which inputs arrived, what is missing, and where each schedule came from. If a value looks wrong, start here.">어느 입력이 들어왔고 어디가 비었는지, 각 일정을 어디서 가져왔는지를 그대로 보여줍니다. 값이 이상해 보이면 여기서 먼저 확인하십시오.</p>
+      <h3 data-ko="확정도 표기" data-en="Confirmation levels">확정도 표기</h3>
+      <div class="tw" id="legend-table"></div>
+      <h3 data-ko="입력별 상태" data-en="Input status">입력별 상태</h3>
+      <div class="tw" id="src-table"></div>
+      <h3 data-ko="아직 비어 있는 곳" data-en="Known gaps">아직 비어 있는 곳</h3>
+      <div id="gaps"></div>
+      <h3 data-ko="출처 목록" data-en="Sources">출처 목록</h3>
+      <div class="tw" id="src-urls"></div>
+    </section>
+
+  </main>
+
+  <footer>
+    <p style="margin:0 0 10px"
+       data-ko="정보 제공 목적의 사내 참고 자료이며 투자 권유가 아닙니다. 일정은 발표기관·회사의 공지가 원문이며 예고 없이 바뀔 수 있습니다. 특히 <b>규칙추정</b>·<b>추정구간</b> 으로 표시된 일정은 확정이 아니므로 원문을 확인하고 쓰십시오. 고객에게 보여주는 자료로 쓸 경우 준법감시 부서 확인이 필요합니다."
+       data-en="An internal reference for information only; not investment advice. The publishing institution's or company's own notice is the record and schedules can change without warning — in particular, anything marked rule-derived or an estimated window is not confirmed. Compliance review is required before showing this to clients.">정보 제공 목적의 사내 참고 자료이며 투자 권유가 아닙니다. 일정은 발표기관·회사의 공지가 원문이며 예고 없이 바뀔 수 있습니다. 특히 <b>규칙추정</b>·<b>추정구간</b> 으로 표시된 일정은 확정이 아니므로 원문을 확인하고 쓰십시오. 고객에게 보여주는 자료로 쓸 경우 준법감시 부서 확인이 필요합니다.</p>
+    <p class="small" style="margin:0">
+      데이터 <code class="mono">data/calendar/latest.json</code> ·
+      빌더 <code class="mono">scripts/build_calendar.py</code> ·
+      수집 <code class="mono">scripts/fetch_calendar.py</code> ·
+      워크플로 <code class="mono">.github/workflows/calendar-data.yml</code>
+    </p>
+  </footer>
+</div>
+
+<script>
+/* ============================================================
+   증시 일정 캘린더
+
+   데이터는 scripts/build_calendar.py 가 만든 data/calendar/latest.json 하나다.
+   실적발표일만은 파일이 커서(종목 200개 요약) 그 안에 담지 않고, 필요할 때
+   kr100-data · us100-data 브랜치의 스냅샷을 브라우저가 직접 받아 얹는다.
+
+   원칙: 날짜를 지어내지 않는다. confirmed 값을 그대로 배지로 그리고,
+   규칙으로 만든 날짜는 ① 카드와 ICS 에서 확정 일정과 섞이지 않게 한다.
+   ============================================================ */
+(function () {
+'use strict';
+
+/* ---------- 오프라인 판이 값을 심는 자리 (scripts/inline_calendar.py) ---------- */
+var INLINE = null; /*__CALENDAR_INLINE__*/
+
+var BASES = [
+  'data/calendar/',
+  'https://raw.githubusercontent.com/hanaroline/work_1/main/data/calendar/'
+];
+
+var CAL = null;
+var LANG = 'ko';
+var FAV = [];
+var MONTH = null;          /* 격자가 보여주는 달의 1일 */
+var SELDAY = null;         /* 격자에서 고른 날 */
+var EARN_STATE = 'idle';   /* idle | loading | ok | fail */
+
+var CATS = {
+  policy:     { ko:'통화정책',      en:'Monetary policy',  color:'#F58220' },
+  indicator:  { ko:'경제지표',      en:'Economic data',    color:'#043B72' },
+  earnings:   { ko:'실적발표',      en:'Earnings',         color:'#0086B8' },
+  conference: { ko:'학회·콘퍼런스', en:'Conferences',      color:'#AD624E' },
+  supply:     { ko:'수급·제도',     en:'Market structure', color:'#F0B26B' },
+  holiday:    { ko:'휴장',          en:'Market holiday',   color:'#84888B' },
+  other:      { ko:'기타',          en:'Other',            color:'#7E9FC3' }
+};
+var CAT_ORDER = ['policy','indicator','earnings','conference','supply','holiday','other'];
+
+var COUNTRIES = {
+  kr:{ko:'한국',en:'Korea'}, us:{ko:'미국',en:'US'}, eu:{ko:'유로존',en:'Euro area'},
+  jp:{ko:'일본',en:'Japan'}, cn:{ko:'중국',en:'China'}, gb:{ko:'영국',en:'UK'},
+  hk:{ko:'홍콩',en:'Hong Kong'}, es:{ko:'스페인',en:'Spain'}, at:{ko:'오스트리아',en:'Austria'},
+  global:{ko:'글로벌',en:'Global'}
+};
+var COUNTRY_ORDER = ['kr','us','eu','jp','cn','gb'];
+
+var CONF = {
+  official:  {ko:'확정',      en:'Confirmed'},
+  websearch: {ko:'교차확인',  en:'Cross-checked'},
+  tentative: {ko:'잠정',      en:'Tentative'},
+  estimate:  {ko:'추정구간',  en:'Est. window'},
+  rule:      {ko:'규칙추정',  en:'Rule-derived'}
+};
+var CONF_ORDER = ['official','websearch','tentative','estimate','rule'];
+var SOFT = {estimate:1, rule:1};       /* 확정이 아닌 것 */
+
+var FILT = {
+  cat: {}, country: {}, imp: 0, conf: {}, range: '3m', q: ''
+};
+CAT_ORDER.forEach(function (c) { FILT.cat[c] = true; });
+FILT.cat.holiday = false;              /* 휴장일은 기본으로 접어 둔다 — 목록을 채우기만 한다 */
+Object.keys(CONF).forEach(function (k) { FILT.conf[k] = true; });
+
+/* ---------------------------------------------------------- 잔심부름 */
+
+/* en 에 빈 문자열을 넘기는 자리가 있다(한국어에만 붙는 단위 '건' 같은 것). `en || ko` 로
+   쓰면 빈 문자열이 falsy 라 한국어가 되살아난다 — null 만 폴백으로 본다. */
+function t(ko, en) { return LANG === 'en' ? (en == null ? ko : en) : ko; }
+function el(id) { return document.getElementById(id); }
+function esc(s) {
+  return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) {
+    return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];
+  });
+}
+function iso(dt) {
+  return dt.getFullYear() + '-' + String(dt.getMonth() + 1).padStart(2, '0') +
+         '-' + String(dt.getDate()).padStart(2, '0');
+}
+function parseISO(s) {
+  var p = String(s).split('-');
+  return new Date(+p[0], +p[1] - 1, +p[2]);
+}
+function todayISO() { return iso(new Date()); }
+function addDays(s, n) { var d = parseISO(s); d.setDate(d.getDate() + n); return iso(d); }
+function diffDays(a, b) {
+  return Math.round((parseISO(b) - parseISO(a)) / 86400000);
+}
+function fmtDate(s) {
+  var d = parseISO(s), wd = t('일월화수목금토', 'SunMonTueWedThuFriSat');
+  var w = LANG === 'en' ? ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'][d.getDay()]
+                        : '일월화수목금토'.charAt(d.getDay());
+  return LANG === 'en'
+    ? (s + ' (' + w + ')')
+    : (d.getMonth() + 1) + '/' + d.getDate() + ' (' + w + ')';
+}
+function fmtDateFull(s) {
+  var d = parseISO(s);
+  return LANG === 'en' ? s : d.getFullYear() + '.' + String(d.getMonth() + 1).padStart(2, '0') +
+    '.' + String(d.getDate()).padStart(2, '0');
+}
+function ddayLabel(s) {
+  var n = diffDays(todayISO(), s);
+  if (n === 0) return t('오늘', 'Today');
+  if (n > 0) return 'D-' + n;
+  return 'D+' + (-n);
+}
+function badge(kind) {
+  var m = CONF[kind] || {ko:kind, en:kind};
+  return '<span class="badge ' + esc(kind) + '">' + esc(t(m.ko, m.en)) + '</span>';
+}
+function impMark(n) {
+  return n >= 3 ? '<span class="badge imp3">' + t('핵심', 'Key') + '</span>'
+       : n === 2 ? '<span class="badge">' + t('주요', 'Major') + '</span>' : '';
+}
+function catDot(c) {
+  var m = CATS[c] || CATS.other;
+  return '<span class="dot" style="background:' + m.color + '"></span>';
+}
+function countryName(c) {
+  var m = COUNTRIES[c];
+  return m ? t(m.ko, m.en) : String(c || '').toUpperCase();
+}
+function title(e) { return LANG === 'en' ? (e.title_en || e.title_ko) : e.title_ko; }
+function detail(e) { return LANG === 'en' ? (e.detail_en || e.detail_ko || '') : (e.detail_ko || ''); }
+function orgName(e) { return LANG === 'en' ? (e.org_en || e.org || '') : (e.org || ''); }
+function timeText(e) {
+  if (!e.time_kst) return '<span class="small">' + t('시각 미공표', 'time n/a') + '</span>';
+  var hhmm = e.time_kst.slice(11);
+  var sameDay = e.time_kst.slice(0, 10) === e.date;
+  return '<span class="mono">' + esc(hhmm) + '</span>' +
+    (sameDay ? '' : ' <span class="small">' + t('(한국 ' + e.time_kst.slice(5, 10) + ')',
+                                                '(KST ' + e.time_kst.slice(5, 10) + ')') + '</span>');
+}
+function noteText(u) {
+  return LANG === 'en' ? (u.note_en || u.note_ko || '') : (u.note_ko || '');
+}
+/* holidays.json 의 kinds 는 한국어 설명만 담고 있다(그 파일은 이 화면보다 먼저 있었고,
+   다른 화면도 읽으므로 손대지 않는다). 영문 이름은 여기서 kind 키로 붙인다. */
+var HKIND_EN = {full:'closed all day', early:'early close', weekend:'weekend (already closed)'};
+function kindText(kind, kinds) {
+  return LANG === 'en' ? (HKIND_EN[kind] || kind || '') : (kinds[kind] || kind || '');
+}
+function link(e) {
+  return e.url ? '<a href="' + esc(e.url) + '" target="_blank" rel="noopener">' +
+    t('원문', 'source') + '</a>' : '';
+}
+
+/* ---------------------------------------------------------- 저장 */
+
+function store(k, v) {
+  try {
+    if (v === undefined) { var r = localStorage.getItem('mc.' + k); return r; }
+    localStorage.setItem('mc.' + k, v);
+  } catch (err) { /* 사생활 보호 모드 등 — 없어도 화면은 돈다 */ }
+  return null;
+}
+function loadFav() {
+  try { FAV = JSON.parse(store('fav') || '[]'); } catch (err) { FAV = []; }
+  if (!Array.isArray(FAV)) FAV = [];
+}
+function saveFav() { store('fav', JSON.stringify(FAV)); }
+function isFav(id) { return FAV.indexOf(id) >= 0; }
+function toggleFav(id) {
+  var i = FAV.indexOf(id);
+  if (i >= 0) FAV.splice(i, 1); else FAV.push(id);
+  saveFav();
+}
+
+/* ---------------------------------------------------------- 한/영 */
+
+function applyLang() {
+  document.documentElement.lang = LANG;
+  var key = 'data-' + LANG, keyPh = 'data-' + LANG + '-ph';
+  Array.prototype.forEach.call(document.querySelectorAll('[data-ko]'), function (n) {
+    var v = n.getAttribute(key);
+    if (v != null) n.innerHTML = v;
+  });
+  Array.prototype.forEach.call(document.querySelectorAll('[data-ko-ph]'), function (n) {
+    var v = n.getAttribute(keyPh);
+    if (v != null) n.setAttribute('placeholder', v);
+  });
+  el('btn-ko').setAttribute('aria-checked', LANG === 'ko');
+  el('btn-en').setAttribute('aria-checked', LANG === 'en');
+  store('lang', LANG);
+}
+
+/* ---------------------------------------------------------- 데이터 받기 */
+
+function fetchJson(url, ms) {
+  return new Promise(function (res, rej) {
+    var done = false, timer = setTimeout(function () {
+      if (!done) { done = true; rej(new Error('timeout')); }
+    }, ms || 8000);
+    fetch(url, {cache: 'no-cache'}).then(function (r) {
+      if (!r.ok) throw new Error('HTTP ' + r.status);
+      return r.json();
+    }).then(function (j) {
+      if (!done) { done = true; clearTimeout(timer); res(j); }
+    })['catch'](function (e) {
+      if (!done) { done = true; clearTimeout(timer); rej(e); }
+    });
+  });
+}
+
+function loadCalendar() {
+  if (INLINE) { CAL = INLINE; return Promise.resolve('inline'); }
+  var i = 0;
+  function next() {
+    if (i >= BASES.length) return Promise.reject(new Error('all bases failed'));
+    var base = BASES[i++];
+    return fetchJson(base + 'latest.json', 9000).then(function (j) {
+      CAL = j; return base;
+    })['catch'](next);
+  }
+  return next();
+}
+
+/* 실적발표일 — kr100 · us100 스냅샷에서 얹는다. 파일이 커서 눌렀을 때만 받는다. */
+function loadEarnings() {
+  if (EARN_STATE === 'loading') return;
+  EARN_STATE = 'loading';
+  renderEarnLoad();
+  var bases = (CAL.earnings_snapshot_bases) || {};
+  var jobs = ['kr', 'us'].map(function (mk) {
+    var list = bases[mk] || [];
+    var i = 0;
+    function next() {
+      if (i >= list.length) return Promise.resolve({market: mk, err: 'no base'});
+      var b = list[i++];
+      return fetchJson(b + 'latest.json', 25000).then(function (j) {
+        return {market: mk, data: j, base: b};
+      })['catch'](next);
+    }
+    return next();
+  });
+  Promise.all(jobs).then(function (rs) {
+    var added = 0, fails = [];
+    rs.forEach(function (r) {
+      if (!r || !r.data || r.data.movedTo) { fails.push(r && r.market); return; }
+      added += mergeEarnings(r.data, r.market);
+    });
+    EARN_STATE = added ? 'ok' : 'fail';
+    CAL.__earnFails = fails.filter(Boolean);
+    CAL.__earnAdded = added;
+    renderAll();
+  })['catch'](function () {
+    EARN_STATE = 'fail';
+    renderAll();
+  });
+}
+
+function mergeEarnings(snap, market) {
+  var names = CAL.company_names || {};
+  var have = {};
+  CAL.events.forEach(function (e) { have[e.id] = 1; });
+  var lo = CAL.window.from, hi = CAL.window.to, added = 0;
+
+  Object.keys(snap.companies || {}).forEach(function (sym) {
+    var c = (snap.companies[sym] || {}).calendar || {};
+    var ds = (c.dates || []).filter(function (x) { return x; });
+    if (!ds.length) return;
+    var first = new Date(ds[0] * 1000), day = iso(first);
+    if (day < lo || day > hi) return;
+    var id = 'earnings-' + sym + '-' + day;
+    if (have[id]) return;
+    var estimate = !!c.estimate || ds.length > 1;
+    var rng = '';
+    if (ds.length > 1) {
+      var last = iso(new Date(ds[ds.length - 1] * 1000));
+      if (last !== day) rng = ' (' + day.slice(5) + '~' + last.slice(5) + ')';
+    }
+    var nm = names[sym] || {};
+    var ir = ((snap.companies[sym] || {}).profile || {}).irWebsite;
+    CAL.events.push({
+      id: id, date: day, end_date: null, country: market, category: 'earnings',
+      importance: market === 'kr' ? 2 : 1,
+      title_ko: (nm.ko || sym) + ' ' + '실적발표' + rng,
+      title_en: (nm.en || sym) + ' earnings' + rng,
+      org: sym, org_en: sym,
+      detail_ko: '컨퍼런스콜 시각은 이 소스에 없다 — 회사 IR 공지를 보십시오',
+      detail_en: 'No call time in this source — see the company IR notice',
+      time_local: null, tz: null, time_kst: null,
+      url: ir || ('https://finance.yahoo.com/quote/' + encodeURIComponent(sym)),
+      source: market.toUpperCase() + '100 ' + t('스냅샷', 'snapshot'),
+      confirmed: estimate ? 'estimate' : 'official',
+      tags: ['earnings', market, sym]
+    });
+    have[id] = 1;
+    added++;
+  });
+  CAL.events.sort(function (a, b) {
+    return a.date < b.date ? -1 : a.date > b.date ? 1
+      : (b.importance - a.importance) || (a.title_ko < b.title_ko ? -1 : 1);
+  });
+  return added;
+}
+
+/* ---------------------------------------------------------- 걸러내기 */
+
+function rangeBounds() {
+  var today = todayISO();
+  if (FILT.range === 'week') {
+    var d = parseISO(today), off = (d.getDay() + 6) % 7;
+    var mon = addDays(today, -off);
+    return [mon, addDays(mon, 6)];
+  }
+  if (FILT.range === 'month') return [today.slice(0, 8) + '01', addDays(today, 62)];
+  if (FILT.range === '3m') return [today, addDays(today, 92)];
+  if (FILT.range === '12m') return [today, addDays(today, 366)];
+  if (FILT.range === 'past') return [CAL.window.from, today];
+  return [CAL.window.from, CAL.window.to];
+}
+
+function passes(e, ignore) {
+  ignore = ignore || {};
+  if (!ignore.cat && !FILT.cat[e.category]) return false;
+  if (!ignore.country) {
+    var picked = Object.keys(FILT.country).filter(function (k) { return FILT.country[k]; });
+    if (picked.length && picked.indexOf(e.country) < 0) return false;
+  }
+  if (e.importance < FILT.imp) return false;
+  if (!FILT.conf[e.confirmed]) return false;
+  if (!ignore.range) {
+    var b = rangeBounds();
+    var endD = e.end_date || e.date;
+    if (endD < b[0] || e.date > b[1]) return false;
+  }
+  if (FILT.q) {
+    var hay = [e.title_ko, e.title_en, e.org, e.org_en, e.detail_ko, e.detail_en,
+               (e.tags || []).join(' ')].join(' ').toLowerCase();
+    if (hay.indexOf(FILT.q.toLowerCase()) < 0) return false;
+  }
+  return true;
+}
+
+function filtered() { return CAL.events.filter(function (e) { return passes(e); }); }
+
+/* ---------------------------------------------------------- 그리기 */
+
+function renderMeta() {
+  var c = CAL.counts || {};
+  var soft = (c.confirmed || {}).rule || 0;
+  el('meta').innerHTML =
+    '<span>' + t('기준', 'Built') + ' <b>' + esc(CAL.builtAt || '') + '</b></span>' +
+    '<span>' + t('담긴 일정', 'Events') + ' <b>' + (c.total || 0) + '</b>' +
+      t('건', '') + '</span>' +
+    '<span>' + t('조회 구간', 'Window') + ' <b class="mono">' + esc(CAL.window.from) +
+      ' ~ ' + esc(CAL.window.to) + '</b></span>' +
+    '<span>' + t('확정 아님', 'Not confirmed') + ' <b>' + soft + '</b>' + t('건', '') + '</span>' +
+    (INLINE ? '<span>' + badge('official') + ' ' + t('오프라인 판 (파일에 심긴 값)', 'offline build') + '</span>' : '');
+}
+
+function renderUpcoming() {
+  var today = todayISO(), hi = addDays(today, 21);
+  var rows = CAL.events.filter(function (e) {
+    if (SOFT[e.confirmed]) return false;               /* 추정은 카드에 올리지 않는다 */
+    if (e.category === 'holiday') return e.importance >= 2;
+    var endD = e.end_date || e.date;
+    return endD >= today && e.date <= hi && e.importance >= 2;
+  }).sort(function (a, b) {
+    return (b.importance - a.importance) || (a.date < b.date ? -1 : 1);
+  }).slice(0, 9);
+
+  if (!rows.length) {
+    el('upcoming').innerHTML = '<div class="empty">' +
+      t('앞으로 3주 안에 확정된 주요 일정이 없습니다.',
+        'No confirmed major events in the next three weeks.') + '</div>';
+    return;
+  }
+  el('upcoming').innerHTML = rows.map(function (e) {
+    var n = diffDays(today, e.date);
+    var span = e.end_date && e.end_date !== e.date
+      ? fmtDate(e.date) + ' ~ ' + fmtDate(e.end_date) : fmtDate(e.date);
+    return '<div class="card' + (n <= 7 ? ' hot' : '') + '">' +
+      '<div class="dday' + (n === 0 ? ' today' : '') + '">' + esc(ddayLabel(e.date)) + '</div>' +
+      '<div class="when">' + catDot(e.category) + ' ' + esc(span) +
+        (e.time_kst ? ' · <span class="mono">' + esc(e.time_kst.slice(11)) + ' KST</span>' : '') +
+        ' · ' + esc(countryName(e.country)) + '</div>' +
+      '<div class="what">' + esc(title(e)) + '</div>' +
+      (detail(e) ? '<div class="why">' + esc(detail(e)) + '</div>' : '') +
+      '<div class="row">' + impMark(e.importance) + badge(e.confirmed) + ' ' + link(e) + '</div>' +
+      '</div>';
+  }).join('');
+}
+
+function renderThisWeek() {
+  var d = parseISO(todayISO()), off = (d.getDay() + 6) % 7;
+  var mon = addDays(todayISO(), -off), sun = addDays(mon, 6);
+  var rows = CAL.events.filter(function (e) {
+    var endD = e.end_date || e.date;
+    return endD >= mon && e.date <= sun && FILT.cat[e.category];
+  });
+  el('thisweek').innerHTML = eventTable(rows, {compact: true, emptyMsg:
+    t('이번 주에는 (현재 분류 필터에서) 일정이 없습니다.',
+      'Nothing this week under the current category filter.')});
+}
+
+function eventTable(rows, opt) {
+  opt = opt || {};
+  if (!rows.length) return '<div class="empty">' + esc(opt.emptyMsg ||
+    t('해당하는 일정이 없습니다.', 'No matching events.')) + '</div>';
+  var today = todayISO();
+  var head = '<thead><tr>' +
+    '<th style="width:3ch">★</th>' +
+    '<th>' + t('날짜', 'Date') + '</th>' +
+    '<th>' + t('시각(KST)', 'Time (KST)') + '</th>' +
+    '<th>' + t('국가', 'Country') + '</th>' +
+    '<th>' + t('분류', 'Category') + '</th>' +
+    '<th>' + t('일정', 'Event') + '</th>' +
+    (opt.compact ? '' : '<th>' + t('발표기관 · 왜 보는가', 'Publisher / why') + '</th>') +
+    '<th>' + t('확정도', 'Confirmed') + '</th>' +
+    '<th>' + t('원문', 'Source') + '</th>' +
+    '</tr></thead>';
+  var body = rows.map(function (e) {
+    var span = e.end_date && e.end_date !== e.date
+      ? fmtDateFull(e.date) + ' ~ ' + fmtDateFull(e.end_date) : fmtDateFull(e.date);
+    var dd = diffDays(today, e.date);
+    return '<tr class="' + (e.date < today ? 'past' : '') + '">' +
+      '<td><button type="button" class="fav-btn" data-fav="' + esc(e.id) + '" aria-pressed="' +
+        isFav(e.id) + '" aria-label="' + t('관심 일정', 'star') + '">★</button></td>' +
+      '<td class="nowrap"><span class="mono">' + esc(span) + '</span>' +
+        (dd >= 0 && dd <= 60 ? ' <span class="small">' + esc(ddayLabel(e.date)) + '</span>' : '') + '</td>' +
+      '<td class="nowrap">' + timeText(e) + '</td>' +
+      '<td class="nowrap">' + esc(countryName(e.country)) + '</td>' +
+      '<td class="nowrap">' + catDot(e.category) + ' ' +
+        esc(t((CATS[e.category] || CATS.other).ko, (CATS[e.category] || CATS.other).en)) + '</td>' +
+      '<td>' + esc(title(e)) + ' ' + impMark(e.importance) + '</td>' +
+      (opt.compact ? '' : '<td class="small">' + esc(orgName(e)) +
+        (detail(e) ? '<br>' + esc(detail(e)) : '') + '</td>') +
+      '<td class="nowrap">' + badge(e.confirmed) + '</td>' +
+      '<td class="nowrap">' + link(e) + '</td>' +
+      '</tr>';
+  }).join('');
+  return '<table>' + head + '<tbody>' + body + '</tbody></table>';
+}
+
+/* ---------- 월간 격자 ---------- */
+
+function holidayIndex() {
+  var idx = {};
+  (CAL.holidays || []).forEach(function (m) {
+    (m.days || []).forEach(function (d) {
+      if (d.kind !== 'full') return;
+      (idx[d.date] = idx[d.date] || []).push(m);
+    });
+  });
+  return idx;
+}
+
+function renderGrid() {
+  var first = MONTH, y = first.getFullYear(), m = first.getMonth();
+  el('ym').textContent = LANG === 'en'
+    ? ['January','February','March','April','May','June','July','August','September','October','November','December'][m] + ' ' + y
+    : y + '년 ' + (m + 1) + '월';
+
+  var byDay = {};
+  CAL.events.forEach(function (e) {
+    if (!passes(e, {range: true})) return;
+    var d = e.date, endD = e.end_date || e.date;
+    while (d <= endD) { (byDay[d] = byDay[d] || []).push(e); d = addDays(d, 1); }
+  });
+
+  var hidx = holidayIndex();
+  var start = new Date(y, m, 1);
+  start.setDate(1 - ((start.getDay() + 6) % 7));       /* 월요일 시작 */
+  var dows = LANG === 'en' ? ['Mon','Tue','Wed','Thu','Fri','Sat','Sun']
+                           : ['월','화','수','목','금','토','일'];
+  var html = dows.map(function (w) { return '<div class="dow">' + w + '</div>'; }).join('');
+  var today = todayISO();
+
+  for (var i = 0; i < 42; i++) {
+    var d = new Date(start); d.setDate(start.getDate() + i);
+    var ds = iso(d), inMonth = d.getMonth() === m;
+    var list = (byDay[ds] || []).slice().sort(function (a, b) { return b.importance - a.importance; });
+    var hol = hidx[ds] || [];
+    var cls = ['cell'];
+    if (!inMonth) cls.push('dim');
+    if (hol.length) cls.push('closed');
+    if (ds === today) cls.push('today');
+    if (ds === SELDAY) cls.push('sel');
+    if (d.getDay() === 6) cls.push('sat');
+    if (d.getDay() === 0) cls.push('sun');
+    var chips = list.slice(0, 3).map(function (e) {
+      var col = (CATS[e.category] || CATS.other).color;
+      return '<div class="chip" title="' + esc(title(e)) + '">' +
+        '<span style="position:absolute;left:0;top:5px;width:5px;height:5px;border-radius:50%;background:' +
+        col + '"></span>' + esc(title(e)) + '</div>';
+    }).join('');
+    html += '<button type="button" class="' + cls.join(' ') + '" data-day="' + ds + '">' +
+      '<span class="dnum">' + d.getDate() + '</span>' +
+      (hol.length ? ' <span class="small" style="font-size:10.5px">' +
+        esc(hol.map(function (x) {
+          return LANG === 'en' ? String(x.name_en).replace(/\s*\(.*/, '')
+                               : String(x.name_ko).replace(/\s*\(.*/, '');
+        }).join('·')) + t(' 휴장', ' closed') + '</span>' : '') +
+      '<div class="chips">' + chips + '</div>' +
+      (list.length > 3 ? '<div class="more">+' + (list.length - 3) + '</div>' : '') +
+      '</button>';
+  }
+  el('grid').innerHTML = html;
+
+  el('legend').innerHTML = CAT_ORDER.filter(function (c) { return FILT.cat[c]; })
+    .map(function (c) {
+      return '<span class="k">' + catDot(c) + ' ' + esc(t(CATS[c].ko, CATS[c].en)) + '</span>';
+    }).join('') +
+    '<span class="k"><span class="dot" style="background:var(--surface-soft);border:1px solid var(--hairline)"></span> ' +
+    t('휴장일', 'market holiday') + '</span>';
+
+  renderDayView(byDay);
+}
+
+function renderDayView(byDay) {
+  if (!SELDAY) { el('dayview').innerHTML = ''; return; }
+  var rows = (byDay[SELDAY] || []).slice().sort(function (a, b) {
+    return (b.importance - a.importance) || (a.category < b.category ? -1 : 1);
+  });
+  el('dayview').innerHTML = '<h3>' + esc(fmtDateFull(SELDAY)) + ' · ' +
+    esc(ddayLabel(SELDAY)) + '</h3>' +
+    '<div class="tw">' + eventTable(rows, {emptyMsg:
+      t('이 날에는 담긴 일정이 없습니다.', 'No events recorded for this day.')}) + '</div>';
+}
+
+/* ---------- 필터 UI ---------- */
+
+function renderFilters() {
+  el('f-cat').innerHTML = CAT_ORDER.map(function (c) {
+    return '<button type="button" class="pill cat" data-f="cat" data-v="' + c + '" aria-pressed="' +
+      !!FILT.cat[c] + '">' + catDot(c) + ' ' + esc(t(CATS[c].ko, CATS[c].en)) + '</button>';
+  }).join(' ');
+
+  var seen = {};
+  CAL.events.forEach(function (e) { seen[e.country] = 1; });
+  var list = COUNTRY_ORDER.filter(function (c) { return seen[c]; })
+    .concat(Object.keys(seen).filter(function (c) { return COUNTRY_ORDER.indexOf(c) < 0; }));
+  el('f-country').innerHTML =
+    '<button type="button" class="pill" data-f="country-all" aria-pressed="' +
+      (Object.keys(FILT.country).filter(function (k) { return FILT.country[k]; }).length === 0) +
+      '">' + t('전체', 'All') + '</button> ' +
+    list.map(function (c) {
+      return '<button type="button" class="pill" data-f="country" data-v="' + esc(c) +
+        '" aria-pressed="' + !!FILT.country[c] + '">' + esc(countryName(c)) + '</button>';
+    }).join(' ');
+
+  el('f-imp').innerHTML = [[0, t('전체', 'All')], [2, t('주요 이상', 'Major+')], [3, t('핵심만', 'Key only')]]
+    .map(function (p) {
+      return '<button type="button" class="pill" data-f="imp" data-v="' + p[0] +
+        '" aria-pressed="' + (FILT.imp === p[0]) + '">' + esc(p[1]) + '</button>';
+    }).join(' ');
+
+  el('f-conf').innerHTML = CONF_ORDER.map(function (k) {
+    return '<button type="button" class="pill" data-f="conf" data-v="' + k + '" aria-pressed="' +
+      !!FILT.conf[k] + '">' + esc(t(CONF[k].ko, CONF[k].en)) + '</button>';
+  }).join(' ');
+
+  el('f-range').innerHTML = [
+    ['week', t('이번 주', 'This week')], ['month', t('이번 달', 'This month')],
+    ['3m', t('3개월', '3 months')], ['12m', t('1년', '12 months')],
+    ['past', t('지난 일정', 'Past')], ['all', t('전체 구간', 'Full window')]
+  ].map(function (p) {
+    return '<button type="button" class="pill" data-f="range" data-v="' + p[0] +
+      '" aria-pressed="' + (FILT.range === p[0]) + '">' + esc(p[1]) + '</button>';
+  }).join(' ');
+}
+
+function renderList() {
+  var rows = filtered();
+  el('fcount').textContent = t(rows.length + '건', rows.length + ' events');
+  el('list').innerHTML = eventTable(rows, {});
+}
+
+/* ---------- ④ 경제지표 ---------- */
+
+var IND_TAB = 'us';
+function renderIndicators() {
+  var inds = CAL.indicators || [];
+  var seen = {};
+  inds.forEach(function (i) { seen[i.country] = 1; });
+  var tabs = COUNTRY_ORDER.filter(function (c) { return seen[c]; });
+  if (tabs.indexOf(IND_TAB) < 0) IND_TAB = tabs[0];
+  el('ind-tabs').innerHTML = tabs.map(function (c) {
+    return '<button type="button" class="pill" data-f="indtab" data-v="' + c + '" aria-pressed="' +
+      (IND_TAB === c) + '">' + esc(countryName(c)) + '</button>';
+  }).join(' ');
+
+  var today = todayISO();
+  var rows = inds.filter(function (i) { return i.country === IND_TAB; })
+    .sort(function (a, b) { return b.importance - a.importance; })
+    .map(function (i) {
+      var next = CAL.events.filter(function (e) {
+        return (e.tags || []).indexOf(i.id) >= 0 && e.date >= today;
+      }).sort(function (a, b) { return a.date < b.date ? -1 : 1; })[0];
+      var later = CAL.events.filter(function (e) {
+        return (e.tags || []).indexOf(i.id) >= 0 && next && e.date > next.date;
+      }).slice(0, 2);
+      return '<tr>' +
+        '<td>' + esc(LANG === 'en' ? i.name_en : i.name_ko) + ' ' + impMark(i.importance) + '</td>' +
+        '<td class="small">' + esc(LANG === 'en' ? (i.org_en || i.org || '') : (i.org || '')) + '</td>' +
+        '<td class="nowrap">' + (next
+          ? '<span class="mono">' + esc(fmtDateFull(next.date)) + '</span> <span class="small">' +
+            esc(ddayLabel(next.date)) + '</span>'
+          : '<span class="small">' + t('미확인', 'not known') + '</span>') + '</td>' +
+        '<td class="nowrap">' + (next ? timeText(next) : '') + '</td>' +
+        '<td class="nowrap">' + (next ? badge(next.confirmed) : '') + '</td>' +
+        '<td class="small">' + esc(later.map(function (e) { return fmtDateFull(e.date); }).join(', ')) + '</td>' +
+        '<td class="small">' + esc(LANG === 'en' ? (i.why_en || i.rule_note_en || '')
+                                                   : (i.why_ko || i.rule_note_ko || '')) + '</td>' +
+        '<td class="nowrap">' + (i.calendar_url || i.url
+          ? '<a href="' + esc(i.calendar_url || i.url) + '" target="_blank" rel="noopener">' +
+            t('공표일정', 'calendar') + '</a>' : '') + '</td>' +
+        '</tr>';
+    }).join('');
+
+  el('indicators').innerHTML = '<table><thead><tr>' +
+    '<th>' + t('지표', 'Indicator') + '</th>' +
+    '<th>' + t('발표기관', 'Agency') + '</th>' +
+    '<th>' + t('다음 발표', 'Next') + '</th>' +
+    '<th>' + t('시각(KST)', 'Time (KST)') + '</th>' +
+    '<th>' + t('확정도', 'Confirmed') + '</th>' +
+    '<th>' + t('그 다음', 'After that') + '</th>' +
+    '<th>' + t('왜 보는가 · 발표 주기', 'Why / cadence') + '</th>' +
+    '<th>' + t('공표일정', 'Calendar') + '</th>' +
+    '</tr></thead><tbody>' + (rows || '') + '</tbody></table>';
+}
+
+/* ---------- ⑤ 통화정책 ---------- */
+
+function renderPolicy() {
+  var ctx = CAL.context || {}, pr = ctx.policy_rate_us || {}, fi = ctx.fed_implied || {};
+  var bits = [];
+  if (pr.effr != null) bits.push('<dt>' + t('미국 실효 연방기금금리 (EFFR)', 'US effective fed funds rate') +
+    '</dt><dd class="mono">' + esc(pr.effr) + '%</dd>');
+  if (pr.target_low != null && pr.target_high != null) bits.push('<dt>' + t('정책금리 목표범위', 'Target range') +
+    '</dt><dd class="mono">' + esc(pr.target_low) + '~' + esc(pr.target_high) + '%</dd>');
+  if (fi.implied_rate_pct != null) bits.push('<dt>' + t('연방기금 선물 내재금리', 'Fed funds futures implied') +
+    '</dt><dd class="mono">' + esc(fi.implied_rate_pct) + '%' +
+    (fi.vs_effr_bp != null ? ' <span class="small">(' + t('EFFR 대비', 'vs EFFR') + ' ' +
+      esc(fi.vs_effr_bp) + 'bp)</span>' : '') + '</dd>');
+  if ((ctx.rates_kr || {}).base != null) bits.push('<dt>' + t('한국은행 기준금리', 'BOK base rate') +
+    '</dt><dd class="mono">' + esc(ctx.rates_kr.base) + '%</dd>');
+
+  el('policy-context').innerHTML = bits.length
+    ? '<div class="callout"><h4>' + t('지금 정책금리는', 'Where policy rates stand') + '</h4>' +
+      '<dl class="kv">' + bits.join('') + '</dl>' +
+      '<p class="small" style="margin:10px 0 0">' +
+      esc(t('data/market/latest.json 에서 읽었습니다 · 기준 ' + (ctx.asof_kst || '미상'),
+            'Read from data/market/latest.json · as of ' + (ctx.asof_kst || 'n/a'))) + '</p></div>'
+    : '<div class="callout warn"><p style="margin:0">' +
+      t('정책금리 맥락(data/market/latest.json)을 읽지 못했습니다 — 결정일만 표시합니다.',
+        'Could not read the policy-rate context (data/market/latest.json); only the decision dates are shown.') +
+      '</p></div>';
+
+  var banks = CAL.banks || [];
+  var today = todayISO();
+  el('policy').innerHTML = banks.map(function (b) {
+    var evs = CAL.events.filter(function (e) {
+      return e.category === 'policy' && (e.tags || []).indexOf(b.key) >= 0;
+    }).sort(function (x, y) { return x.date < y.date ? -1 : 1; });
+    var future = evs.filter(function (e) { return e.date >= today; });
+    if (!future.length && !evs.length) {
+      return '<h3>' + esc(t(b.name_ko, b.name_en)) + '</h3>' +
+        '<div class="callout warn"><p style="margin:0">' +
+        esc((LANG === 'en' ? b.gap_note_en : b.gap_note_ko) ||
+            t('담긴 결정일이 없습니다.', 'No decision dates recorded.')) +
+        '</p></div>';
+    }
+    var firstFuture = future[0];
+    var items = evs.slice(-2 - future.length).map(function (e) {
+      return '<div class="tl-item' + (e === firstFuture ? ' next' : '') + '">' +
+        '<div class="tl-when">' + esc(fmtDateFull(e.date)) +
+          (e.date >= today ? ' <span class="small">' + esc(ddayLabel(e.date)) + '</span>' : '') +
+          ' ' + badge(e.confirmed) + '</div>' +
+        '<div class="tl-what">' + esc(detail(e) || '') +
+          (e.time_kst ? ' · <span class="mono">' + t('한국 ', 'KST ') +
+            esc(e.time_kst.slice(5, 10) + ' ' + e.time_kst.slice(11)) + '</span>' : '') + '</div>' +
+        '</div>';
+    }).join('');
+    return '<h3>' + esc(t(b.name_ko, b.name_en)) + ' ' + impMark(b.importance) + '</h3>' +
+      '<p class="small" style="margin:0 0 14px">' +
+        esc(LANG === 'en' ? (b.time_note_en || '') : (b.time_note_ko || '')) +
+        (function () {
+          var m = LANG === 'en' ? b.minutes_rule_en : b.minutes_rule_ko;
+          return m ? ' · ' + esc(m) : '';
+        })() +
+        (b.url ? ' · <a href="' + esc(b.url) + '" target="_blank" rel="noopener">' +
+          t('공식 일정', 'official calendar') + '</a>' : '') + '</p>' +
+      '<div class="tl">' + items + '</div>' +
+      (function () {
+        var g = LANG === 'en' ? (b.gap_note_en || '') : (b.gap_note_ko || '');
+        return g ? '<p class="small" style="margin:12px 0 0">' + esc(g) + '</p>' : '';
+      })();
+  }).join('');
+}
+
+/* ---------- ⑥ 실적 ---------- */
+
+function renderEarnLoad() {
+  var n = CAL.events.filter(function (e) { return e.category === 'earnings'; }).length;
+  var msgs = {
+    idle: t('실적발표일은 이 파일에 담기지 않습니다 — 종목 200개 요약 스냅샷(수 MB)에서 그때그때 받습니다. 아래 버튼을 누르면 받아 얹습니다.',
+            'Earnings dates are not bundled in this file — they come from the 200-company snapshots (several MB). Press the button to fetch and overlay them.'),
+    loading: t('스냅샷을 받고 있습니다… (파일이 커서 십여 초 걸릴 수 있습니다)',
+               'Fetching the snapshots… this can take a dozen seconds.'),
+    ok: t('스냅샷에서 실적발표일 ' + (CAL.__earnAdded || 0) + '건을 얹었습니다.',
+          'Overlaid ' + (CAL.__earnAdded || 0) + ' earnings dates from the snapshots.'),
+    fail: t('스냅샷을 받지 못했습니다. 사내망이 raw.githubusercontent.com 을 막고 있거나, 수집 워크플로가 아직 돌지 않았을 수 있습니다.',
+            'Could not fetch the snapshots — raw.githubusercontent.com may be blocked on this network, or the collection workflow has not run yet.')
+  };
+  var cls = EARN_STATE === 'fail' ? 'callout err' : EARN_STATE === 'ok' ? 'callout' : 'callout warn';
+  el('earn-load').innerHTML = '<div class="' + cls + '">' +
+    '<p style="margin:0 0 10px">' + esc(msgs[EARN_STATE]) + '</p>' +
+    (EARN_STATE === 'idle' || EARN_STATE === 'fail'
+      ? '<button type="button" class="btn-tool no-print" id="btn-earn">' +
+        t('실적일정 불러오기', 'Load earnings dates') + '</button>' : '') +
+    (n ? '<p class="small" style="margin:10px 0 0">' +
+      t('지금 담긴 실적 일정 ' + n + '건', n + ' earnings events currently loaded') + '</p>' : '') +
+    '</div>';
+  var b = el('btn-earn');
+  if (b) b.addEventListener('click', loadEarnings);
+}
+
+function renderEarnings() {
+  renderEarnLoad();
+  var today = todayISO();
+  var rows = CAL.events.filter(function (e) {
+    return e.category === 'earnings' && e.date >= today;
+  }).sort(function (a, b) { return a.date < b.date ? -1 : 1; });
+
+  /* 주간 집중도 — 앞으로 10주 */
+  var d = parseISO(today), off = (d.getDay() + 6) % 7, mon = addDays(today, -off);
+  var weeks = [];
+  for (var i = 0; i < 10; i++) {
+    var s = addDays(mon, i * 7), e2 = addDays(s, 6);
+    var kr = rows.filter(function (x) { return x.country === 'kr' && x.date >= s && x.date <= e2; }).length;
+    var us = rows.filter(function (x) { return x.country === 'us' && x.date >= s && x.date <= e2; }).length;
+    weeks.push({s: s, e: e2, kr: kr, us: us});
+  }
+  var max = Math.max(1, Math.max.apply(null, weeks.map(function (w) { return w.kr + w.us; })));
+  el('earn-bars').innerHTML = weeks.every(function (w) { return !w.kr && !w.us; })
+    ? '<div class="empty">' + t('담긴 실적 일정이 없습니다 — 위에서 불러오십시오.',
+        'No earnings events loaded — fetch them above.') + '</div>'
+    : weeks.map(function (w) {
+        var tot = w.kr + w.us;
+        return '<div class="bar-row"><span class="mono">' + esc(w.s.slice(5)) + '~' + esc(w.e.slice(5)) +
+          '</span><span class="bar-track">' +
+          '<span class="bar-fill" style="width:' + (w.kr / max * 100) + '%;display:inline-block"></span>' +
+          '<span class="bar-fill b2" style="width:' + (w.us / max * 100) + '%;display:inline-block"></span>' +
+          '</span><span class="n">' + tot + '</span></div>';
+      }).join('') +
+      '<p class="small" style="margin:10px 0 0">' +
+      '<span class="dot" style="background:var(--orange)"></span> ' + t('국내', 'Korea') +
+      ' &nbsp; <span class="dot" style="background:var(--blue)"></span> ' + t('미국', 'US') + '</p>';
+
+  el('earn-table').innerHTML = eventTable(rows.slice(0, 120), {emptyMsg:
+    t('담긴 실적 일정이 없습니다.', 'No earnings events loaded.')});
+}
+
+/* ---------- ⑦ 학회 ---------- */
+
+function renderConferences() {
+  var today = todayISO();
+  var rows = CAL.events.filter(function (e) {
+    return e.category === 'conference' && (e.end_date || e.date) >= today;
+  }).sort(function (a, b) { return a.date < b.date ? -1 : 1; });
+
+  el('conf-cards').innerHTML = rows.length ? rows.map(function (e) {
+    var span = fmtDateFull(e.date) + (e.end_date && e.end_date !== e.date
+      ? ' ~ ' + fmtDateFull(e.end_date) : '');
+    return '<div class="card' + (diffDays(today, e.date) <= 30 ? ' hot' : '') + '">' +
+      '<div class="dday">' + esc(ddayLabel(e.date)) + '</div>' +
+      '<div class="when">' + esc(span) + ' · ' + esc(countryName(e.country)) + '</div>' +
+      '<div class="what">' + esc(title(e)) + '</div>' +
+      (detail(e) ? '<div class="why">' + esc(detail(e)) + '</div>' : '') +
+      '<div class="row">' + impMark(e.importance) + badge(e.confirmed) + ' ' +
+      (e.url ? '<a href="' + esc(e.url) + '" target="_blank" rel="noopener">' +
+        t('공식 프로그램', 'official programme') + '</a>' : '') + '</div></div>';
+  }).join('') : '<div class="empty">' + t('담긴 학회 일정이 없습니다.', 'No congresses recorded.') + '</div>';
+
+  var un = (CAL.undated || []).filter(function (u) { return u.group === 'bio' || u.group === 'industry'; });
+  el('conf-undated').innerHTML = un.length ? '<table><thead><tr>' +
+    '<th>' + t('약어', 'Abbr.') + '</th><th>' + t('이름', 'Name') + '</th>' +
+    '<th>' + t('분야 · 개최 시기', 'Field / usual season') + '</th>' +
+    '<th>' + t('구분', 'Group') + '</th><th>' + t('공식 페이지', 'Official page') + '</th>' +
+    '</tr></thead><tbody>' + un.map(function (u) {
+      return '<tr><td class="nowrap mono">' + esc(u.abbr || '') + '</td>' +
+        '<td>' + esc(LANG === 'en' ? (u.name_en || u.name_ko) : u.name_ko) + ' ' +
+          impMark(u.importance) + '</td>' +
+        '<td class="small">' + esc(noteText(u)) + '</td>' +
+        '<td class="nowrap small">' + (u.group === 'bio' ? t('제약·바이오', 'pharma')
+          : t('산업', 'industry')) + '</td>' +
+        '<td class="nowrap">' + (u.url ? '<a href="' + esc(u.url) +
+          '" target="_blank" rel="noopener">' + t('열기', 'open') + '</a>' : '') + '</td></tr>';
+    }).join('') + '</tbody></table>'
+    : '<div class="empty">-</div>';
+}
+
+/* ---------- ⑧ 수급·제도 ---------- */
+
+function renderSupply() {
+  var today = todayISO();
+  var rows = CAL.events.filter(function (e) {
+    return e.category === 'supply' && e.date >= today;
+  }).sort(function (a, b) { return a.date < b.date ? -1 : 1; });
+  el('supply').innerHTML = eventTable(rows, {});
+
+  var un = (CAL.undated || []).filter(function (u) {
+    return u.group === 'index' || u.group === 'link' || u.group === 'policy';
+  });
+  el('supply-links').innerHTML = un.length ? '<table><thead><tr>' +
+    '<th>' + t('일정', 'Schedule') + '</th><th>' + t('왜 날짜를 만들지 않는가', 'Why no date is computed') + '</th>' +
+    '<th>' + t('원문', 'Source') + '</th></tr></thead><tbody>' +
+    un.map(function (u) {
+      return '<tr><td>' + esc(LANG === 'en' ? (u.name_en || u.name_ko) : u.name_ko) + ' ' +
+        impMark(u.importance) + '</td>' +
+        '<td class="small">' + esc(noteText(u)) + '</td>' +
+        '<td class="nowrap">' + (u.url ? '<a href="' + esc(u.url) +
+          '" target="_blank" rel="noopener">' + t('열기', 'open') + '</a>' : '') + '</td></tr>';
+    }).join('') + '</tbody></table>' : '<div class="empty">-</div>';
+  var hrows = [];
+  (CAL.holidays || []).forEach(function (m) {
+    (m.days || []).forEach(function (d) {
+      if (d.date < today) return;
+      hrows.push({m: m, d: d});
+    });
+  });
+  var kinds = CAL.holiday_kinds || {};
+  hrows.sort(function (a, b) { return a.d.date < b.d.date ? -1 : 1; });
+  el('holidays').innerHTML = hrows.length ? '<table><thead><tr>' +
+    '<th>' + t('날짜', 'Date') + '</th><th>' + t('시장', 'Market') + '</th>' +
+    '<th>' + t('사유', 'Reason') + '</th><th>' + t('구분', 'Kind') + '</th></tr></thead><tbody>' +
+    hrows.map(function (r) {
+      return '<tr><td class="nowrap mono">' + esc(fmtDateFull(r.d.date)) +
+        ' <span class="small">' + esc(ddayLabel(r.d.date)) + '</span></td>' +
+        '<td class="nowrap">' + esc(t(r.m.name_ko, r.m.name_en)) + '</td>' +
+        '<td>' + esc(LANG === 'en' ? r.d.en : r.d.ko) + '</td>' +
+        '<td class="nowrap small">' + esc(kindText(r.d.kind, kinds)) + '</td></tr>';
+    }).join('') + '</tbody></table>' : '<div class="empty">-</div>';
+}
+
+/* ---------- ⑨ 관심 ---------- */
+
+function renderFav() {
+  var rows = CAL.events.filter(function (e) { return isFav(e.id); })
+    .sort(function (a, b) { return a.date < b.date ? -1 : 1; });
+  el('fav').innerHTML = eventTable(rows, {emptyMsg:
+    t('아직 담은 일정이 없습니다 — 목록의 ★ 를 누르십시오.',
+      'Nothing starred yet — use the star in the list above.')});
+}
+
+/* ---------- ⑩ 데이터 상태 ---------- */
+
+function renderStatus() {
+  var lg = (LANG === 'en' ? CAL.confirmed_legend_en : null) || CAL.confirmed_legend || {};
+  var counts = (CAL.counts || {}).confirmed || {};
+  el('legend-table').innerHTML = '<table><thead><tr>' +
+    '<th>' + t('표기', 'Badge') + '</th><th>' + t('뜻', 'Meaning') + '</th>' +
+    '<th class="num">' + t('건수', 'Count') + '</th></tr></thead><tbody>' +
+    CONF_ORDER.map(function (k) {
+      return '<tr><td class="nowrap">' + badge(k) + '</td>' +
+        '<td>' + esc(lg[k] || '') + '</td>' +
+        '<td class="num">' + (counts[k] || 0) + '</td></tr>';
+    }).join('') + '</tbody></table>';
+
+  var src = CAL.sources || {};
+  el('src-table').innerHTML =
+    (LANG === 'en'
+      ? '<p class="small" style="margin:0 0 10px">Builder notes below are recorded in Korean.</p>'
+      : '') +
+    '<table><thead><tr>' +
+    '<th>' + t('입력', 'Input') + '</th><th>' + t('상태', 'Status') + '</th>' +
+    '<th>' + t('메모', 'Note') + '</th></tr></thead><tbody>' +
+    Object.keys(src).map(function (k) {
+      var v = src[k] || {};
+      return '<tr><td class="mono nowrap">' + esc(k) + '</td>' +
+        '<td class="nowrap">' + (v.ok
+          ? '<span class="badge official">' + t('들어옴', 'loaded') + '</span>'
+          : '<span class="badge estimate">' + t('빠짐', 'missing') + '</span>') + '</td>' +
+        '<td class="small">' + esc(v.why || (v.count != null ? v.count + t('건', ' items') : '')) +
+        '</td></tr>';
+    }).join('') + '</tbody></table>';
+
+  var gaps = CAL.gaps || [];
+  el('gaps').innerHTML = gaps.length
+    ? '<div class="callout warn">' +
+      (LANG === 'en' ? '<p class="small" style="margin:0 0 7px">Builder diagnostics are recorded in Korean.</p>' : '') +
+      '<ul style="margin:0">' +
+      gaps.map(function (g) { return '<li>' + esc(g) + '</li>'; }).join('') + '</ul></div>'
+    : '<div class="callout"><p style="margin:0">' +
+      t('빈 곳으로 기록된 항목이 없습니다.', 'No gaps recorded.') + '</p></div>';
+
+  var urls = {};
+  CAL.events.forEach(function (e) {
+    if (!e.url) return;
+    urls[e.url] = urls[e.url] ||
+      {url: e.url, source: LANG === 'en' ? (e.source_en || e.source) : e.source, n: 0};
+    urls[e.url].n++;
+  });
+  (CAL.undated || []).forEach(function (u) {
+    if (!u.url) return;
+    urls[u.url] = urls[u.url] ||
+      {url: u.url, source: LANG === 'en' ? (u.name_en || u.name_ko) : u.name_ko, n: 0};
+  });
+  var list = Object.keys(urls).map(function (k) { return urls[k]; })
+    .sort(function (a, b) { return b.n - a.n; });
+  el('src-urls').innerHTML = '<table><thead><tr>' +
+    '<th>' + t('출처', 'Source') + '</th><th>' + t('주소', 'URL') + '</th>' +
+    '<th class="num">' + t('일정 수', 'Events') + '</th></tr></thead><tbody>' +
+    list.map(function (u) {
+      return '<tr><td class="small">' + esc(u.source || '') + '</td>' +
+        '<td class="small"><a href="' + esc(u.url) + '" target="_blank" rel="noopener">' +
+        esc(u.url.replace(/^https?:\/\//, '').slice(0, 78)) + '</a></td>' +
+        '<td class="num">' + u.n + '</td></tr>';
+    }).join('') + '</tbody></table>';
+}
+
+/* ---------------------------------------------------------- 내보내기 */
+
+function download(name, mime, text) {
+  var blob = new Blob(['\ufeff' + text], {type: mime + ';charset=utf-8'});
+  var url = URL.createObjectURL(blob);
+  var a = document.createElement('a');
+  a.href = url; a.download = name;
+  document.body.appendChild(a); a.click();
+  setTimeout(function () { document.body.removeChild(a); URL.revokeObjectURL(url); }, 0);
+}
+
+function csvCell(s) {
+  s = String(s == null ? '' : s);
+  return /[",\n]/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s;
+}
+
+function exportCsv() {
+  var rows = filtered();
+  var head = ['date', 'end_date', 'time_kst', 'country', 'category', 'importance',
+              'title_ko', 'title_en', 'org', 'detail', 'confirmed', 'source', 'url'];
+  var body = rows.map(function (e) {
+    return [e.date, e.end_date || '', e.time_kst || '', e.country, e.category, e.importance,
+            e.title_ko, e.title_en, e.org || '', (e.detail_ko || ''), e.confirmed,
+            e.source || '', e.url || ''].map(csvCell).join(',');
+  });
+  download('market-calendar-' + todayISO() + '.csv', 'text/csv',
+           head.join(',') + '\n' + body.join('\n') + '\n');
+}
+
+/* ICS — RFC 5545. 75옥텟 접기는 바이트로 센다(한글이 잘리지 않게 문자 경계에서만 끊는다). */
+function icsFold(line) {
+  var enc = new TextEncoder();
+  if (enc.encode(line).length <= 73) return line;
+  var out = '', cur = '', first = true;
+  for (var i = 0; i < line.length; i++) {
+    var ch = line[i];
+    if (enc.encode(cur + ch).length > (first ? 73 : 72)) {
+      out += (first ? '' : '\r\n ') + cur;
+      first = false; cur = '';
+    }
+    cur += ch;
+  }
+  return out + (first ? cur : '\r\n ' + cur);
+}
+function icsText(s) {
+  return String(s == null ? '' : s)
+    .replace(/\\/g, '\\\\').replace(/;/g, '\\;').replace(/,/g, '\\,')
+    .replace(/\r?\n/g, '\\n');
+}
+function icsStamp() {
+  return new Date().toISOString().replace(/[-:]/g, '').replace(/\.\d{3}/, '');
+}
+function kstToUtcStamp(kst) {                 /* "YYYY-MM-DD HH:MM" (KST) → UTC basic */
+  var p = kst.split(/[- :]/).map(Number);
+  var ms = Date.UTC(p[0], p[1] - 1, p[2], p[3], p[4]) - 9 * 3600000;
+  return new Date(ms).toISOString().replace(/[-:]/g, '').replace(/\.\d{3}/, '');
+}
+
+function exportIcs(rows, fname) {
+  if (!rows.length) {
+    alert(t('내보낼 일정이 없습니다.', 'Nothing to export.'));
+    return;
+  }
+  var out = ['BEGIN:VCALENDAR', 'VERSION:2.0',
+             'PRODID:-//work_1//market-calendar//KO', 'CALSCALE:GREGORIAN',
+             'METHOD:PUBLISH', 'X-WR-CALNAME:' + icsText(t('증시 일정', 'Market calendar')),
+             'X-WR-TIMEZONE:Asia/Seoul'];
+  var stamp = icsStamp();
+  rows.forEach(function (e) {
+    var soft = SOFT[e.confirmed] || e.confirmed === 'websearch' || e.confirmed === 'tentative';
+    var suffix = SOFT[e.confirmed] ? t(' (추정)', ' (estimated)')
+               : e.confirmed === 'tentative' ? t(' (잠정)', ' (tentative)') : '';
+    var desc = [detail(e), orgName(e),
+                t('확정도: ', 'Confirmation: ') + t(CONF[e.confirmed].ko, CONF[e.confirmed].en),
+                e.source ? t('출처: ', 'Source: ') +
+                  (LANG === 'en' ? (e.source_en || e.source) : e.source) : ''
+               ].filter(Boolean).join('\n');
+    out.push('BEGIN:VEVENT');
+    out.push('UID:' + e.id + '@market-calendar');
+    out.push('DTSTAMP:' + stamp);
+    if (e.time_kst) {
+      out.push('DTSTART:' + kstToUtcStamp(e.time_kst));
+      var endMs = new Date(Date.UTC.apply(null, e.time_kst.split(/[- :]/).map(function (x, i) {
+        return i === 1 ? +x - 1 : +x;
+      })) - 9 * 3600000 + 3600000);
+      out.push('DTEND:' + endMs.toISOString().replace(/[-:]/g, '').replace(/\.\d{3}/, ''));
+    } else {
+      out.push('DTSTART;VALUE=DATE:' + e.date.replace(/-/g, ''));
+      out.push('DTEND;VALUE=DATE:' + addDays(e.end_date || e.date, 1).replace(/-/g, ''));
+    }
+    out.push(icsFold('SUMMARY:' + icsText(title(e) + suffix)));
+    if (desc) out.push(icsFold('DESCRIPTION:' + icsText(desc)));
+    if (e.url) out.push(icsFold('URL:' + e.url));
+    out.push('CATEGORIES:' + icsText(t(CATS[e.category].ko, CATS[e.category].en)));
+    if (soft) out.push('STATUS:TENTATIVE'); else out.push('STATUS:CONFIRMED');
+    out.push('TRANSP:TRANSPARENT');
+    out.push('END:VEVENT');
+  });
+  out.push('END:VCALENDAR');
+  download(fname, 'text/calendar', out.join('\r\n') + '\r\n');
+}
+
+/* ---------------------------------------------------------- 묶어 그리기 */
+
+function renderAll() {
+  renderMeta();
+  renderUpcoming();
+  renderThisWeek();
+  renderFilters();
+  renderGrid();
+  renderList();
+  renderIndicators();
+  renderPolicy();
+  renderEarnings();
+  renderConferences();
+  renderSupply();
+  renderFav();
+  renderStatus();
+}
+
+/* ---------------------------------------------------------- 이벤트 */
+
+function bind() {
+  el('btn-ko').addEventListener('click', function () { LANG = 'ko'; applyLang(); renderAll(); });
+  el('btn-en').addEventListener('click', function () { LANG = 'en'; applyLang(); renderAll(); });
+  el('btn-print').addEventListener('click', function () { window.print(); });
+
+  el('m-prev').addEventListener('click', function () {
+    MONTH = new Date(MONTH.getFullYear(), MONTH.getMonth() - 1, 1); renderGrid();
+  });
+  el('m-next').addEventListener('click', function () {
+    MONTH = new Date(MONTH.getFullYear(), MONTH.getMonth() + 1, 1); renderGrid();
+  });
+  el('m-today').addEventListener('click', function () {
+    var n = new Date(); MONTH = new Date(n.getFullYear(), n.getMonth(), 1);
+    SELDAY = todayISO(); renderGrid();
+  });
+
+  el('q').addEventListener('input', function () {
+    FILT.q = this.value.trim(); renderList(); renderGrid();
+  });
+  el('btn-csv').addEventListener('click', exportCsv);
+  el('btn-ics-all').addEventListener('click', function () {
+    exportIcs(filtered(), 'market-calendar-' + todayISO() + '.ics');
+  });
+  el('btn-ics-fav').addEventListener('click', function () {
+    exportIcs(CAL.events.filter(function (e) { return isFav(e.id); })
+      .sort(function (a, b) { return a.date < b.date ? -1 : 1; }),
+      'market-calendar-my-list.ics');
+  });
+  el('btn-fav-clear').addEventListener('click', function () {
+    if (!FAV.length) return;
+    if (!confirm(t('관심 일정을 모두 비웁니까?', 'Clear the whole list?'))) return;
+    FAV = []; saveFav(); renderAll();
+  });
+
+  /* 필터 알약과 ★, 격자 칸 — 한 곳에서 위임으로 받는다 */
+  document.addEventListener('click', function (ev) {
+    var b = ev.target.closest ? ev.target.closest('[data-f]') : null;
+    if (b) {
+      var f = b.getAttribute('data-f'), v = b.getAttribute('data-v');
+      if (f === 'cat') FILT.cat[v] = !FILT.cat[v];
+      else if (f === 'country') FILT.country[v] = !FILT.country[v];
+      else if (f === 'country-all') FILT.country = {};
+      else if (f === 'imp') FILT.imp = +v;
+      else if (f === 'conf') FILT.conf[v] = !FILT.conf[v];
+      else if (f === 'range') FILT.range = v;
+      else if (f === 'indtab') { IND_TAB = v; renderIndicators(); return; }
+      renderFilters(); renderList(); renderGrid(); renderThisWeek();
+      return;
+    }
+    var fav = ev.target.closest ? ev.target.closest('[data-fav]') : null;
+    if (fav) {
+      toggleFav(fav.getAttribute('data-fav'));
+      renderAll();
+      return;
+    }
+    var cell = ev.target.closest ? ev.target.closest('[data-day]') : null;
+    if (cell) {
+      var day = cell.getAttribute('data-day');
+      SELDAY = (SELDAY === day) ? null : day;
+      renderGrid();
+    }
+  });
+}
+
+/* ---------------------------------------------------------- 시작 */
+
+function boot() {
+  LANG = store('lang') === 'en' ? 'en' : 'ko';
+  loadFav();
+  applyLang();
+
+  el('boot').innerHTML = '<div class="callout"><p style="margin:0">' +
+    t('일정 데이터를 불러오고 있습니다…', 'Loading the calendar data…') + '</p></div>';
+
+  loadCalendar().then(function (from) {
+    var n = new Date();
+    MONTH = new Date(n.getFullYear(), n.getMonth(), 1);
+    SELDAY = todayISO();
+    el('boot').innerHTML = '';
+    el('app').hidden = false;
+    bind();
+    renderAll();
+    if (from && from.indexOf('http') === 0) {
+      el('boot').innerHTML = '<div class="callout"><p style="margin:0" class="small">' +
+        esc(t('데이터를 저장소에서 직접 받았습니다 (' + from + ').',
+              'Data fetched from the repository (' + from + ').')) + '</p></div>';
+    }
+  })['catch'](function (err) {
+    el('boot').innerHTML =
+      '<div class="callout err"><h4>' + t('일정 데이터를 불러오지 못했습니다',
+        'Could not load the calendar data') + '</h4>' +
+      '<p>' + t('이 화면은 <code>data/calendar/latest.json</code> 을 읽습니다. 다음 가운데 하나로 해결됩니다.',
+        'This screen reads <code>data/calendar/latest.json</code>. One of the following will fix it.') + '</p>' +
+      '<ul>' +
+      '<li>' + t('저장소를 그대로 두고 <code>python3 -m http.server 8000</code> 로 열기 — 파일을 직접(<code>file://</code>) 열면 브라우저가 옆의 JSON 을 못 읽습니다.',
+        'Serve the repository with <code>python3 -m http.server 8000</code> — a page opened via <code>file://</code> cannot read the JSON beside it.') + '</li>' +
+      '<li>' + t('인터넷이 되는 PC 라면 <code>raw.githubusercontent.com</code> 이 사내망에서 막혀 있는지 확인.',
+        'If this machine has internet, check whether <code>raw.githubusercontent.com</code> is blocked on your network.') + '</li>' +
+      '<li>' + t('인터넷이 아예 안 되는 PC 라면 데이터가 파일 안에 심긴 <b>오프라인 판</b>(<code>market-calendar-offline.html</code>)을 쓰십시오.',
+        'On a machine with no internet at all, use the offline build (<code>market-calendar-offline.html</code>) that carries the data inside the file.') + '</li>' +
+      '</ul>' +
+      '<p class="small" style="margin:10px 0 0">' + esc(String(err && err.message || err)) + '</p></div>';
+  });
+}
+
+if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot);
+else boot();
+
+})();
+</script>
+</body>
+</html>

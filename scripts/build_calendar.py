@@ -200,6 +200,7 @@ def ev(**kw):
         "detail_ko": kw.get("detail_ko"), "detail_en": kw.get("detail_en"),
         "time_local": kw.get("time_local"), "tz": kw.get("tz"), "time_kst": kw.get("time_kst"),
         "url": kw.get("url"), "source": kw.get("source"),
+        "source_en": kw.get("source_en") or kw.get("source"),
         "confirmed": kw.get("confirmed", "rule"),
         "tags": kw.get("tags") or [],
     }
@@ -244,6 +245,7 @@ def add_central_banks(cb, events, start, end):
                 detail_en=" · ".join(bits_en) or bank.get("time_note_en"),
                 time_local=t, tz=tz, time_kst=to_kst(day, t, tz),
                 url=bank.get("url"), source=bank.get("source"),
+                source_en=bank.get("source_en"),
                 confirmed=mt.get("confirmed", "websearch"),
                 tags=["central-bank", bank["key"]] + (["sep"] if mt.get("sep") else []),
             ))
@@ -303,10 +305,13 @@ def add_indicators(ind, events, start, end, hidx):
         tz, t = it.get("tz"), it.get("time_local")
         market = it["country"] if it["country"] in hidx else "us"
 
-        seen = set()
+        # 확인된 발표일이 있는 달에는 규칙 추정을 만들지 않는다. 그러지 않으면 8월 CPI 가
+        # 확정 9/11 과 규칙 9/9 두 줄로 나와, 한 달에 두 번 발표되는 것처럼 읽힌다.
+        seen, known_months = set(), set()
         for kd in it.get("known_dates", []):
             day = d(kd["date"])
             seen.add(day)
+            known_months.add((day.year, day.month))
             if not (start <= day <= end):
                 continue
             events.append(ev(
@@ -316,10 +321,10 @@ def add_indicators(ind, events, start, end, hidx):
                 title_ko=it["name_ko"] + (" (%s)" % kd["ref_ko"] if kd.get("ref_ko") else ""),
                 title_en=it["name_en"],
                 org=it.get("org"), org_en=it.get("org_en"),
-                detail_ko=it.get("why_ko"), detail_en=None,
+                detail_ko=it.get("why_ko"), detail_en=it.get("why_en"),
                 time_local=t, tz=tz, time_kst=to_kst(day, t, tz),
                 url=it.get("calendar_url") or it.get("url"), source=it.get("org"),
-                confirmed=kd.get("confirmed", "websearch"),
+                source_en=it.get("org_en"), confirmed=kd.get("confirmed", "websearch"),
                 tags=["indicator", it["id"]],
             ))
 
@@ -328,8 +333,11 @@ def add_indicators(ind, events, start, end, hidx):
             continue
         horizon = RULE_DAYS_AHEAD_WEEKLY if rule["kind"] == "weekly" else RULE_DAYS_AHEAD
         rule_end = min(end, date.today() + timedelta(days=horizon))
+        weekly = rule["kind"] == "weekly"
         for day in expand_rule(rule, start, rule_end, market, hidx, shift=None):
             if day in seen:
+                continue
+            if not weekly and (day.year, day.month) in known_months:
                 continue
             events.append(ev(
                 id="indicator-%s-%s" % (it["id"], day.isoformat()),
@@ -337,10 +345,10 @@ def add_indicators(ind, events, start, end, hidx):
                 importance=it.get("importance", 1),
                 title_ko=it["name_ko"], title_en=it["name_en"],
                 org=it.get("org"), org_en=it.get("org_en"),
-                detail_ko=it.get("rule_note_ko"), detail_en=None,
+                detail_ko=it.get("rule_note_ko"), detail_en=it.get("rule_note_en"),
                 time_local=t, tz=tz, time_kst=to_kst(day, t, tz),
                 url=it.get("calendar_url") or it.get("url"), source=it.get("org"),
-                confirmed="rule", tags=["indicator", it["id"]],
+                source_en=it.get("org_en"), confirmed="rule", tags=["indicator", it["id"]],
             ))
 
 
@@ -359,7 +367,7 @@ def add_conferences(cf, events, start, end):
             org=c.get("abbr"), org_en=c.get("abbr"),
             detail_ko="%s · %s" % (c.get("field_ko", ""), c.get("city", "")),
             detail_en="%s · %s" % (c.get("field_en", ""), c.get("city_en", "")),
-            url=c.get("url"), source=c.get("source"),
+            url=c.get("url"), source=c.get("source"), source_en=c.get("source_en"),
             confirmed=c.get("confirmed", "websearch"),
             tags=["conference", "bio", (c.get("abbr") or "").lower()],
         ))
@@ -381,11 +389,12 @@ def add_market_rules(me, events, start, end, hidx):
                 category="policy" if r["id"] == "pboc-lpr" else "supply",
                 importance=r.get("importance", 1),
                 title_ko=r["name_ko"], title_en=r["name_en"],
-                org=r.get("source"), org_en=None,
+                org=r.get("source"), org_en=r.get("source_en"),
                 detail_ko="%s · %s" % (r.get("rule_note_ko", ""), r.get("why_ko", "")),
-                detail_en=None,
+                detail_en=(" · ".join(x for x in (r.get("rule_note_en"), r.get("why_en")) if x)
+                           or None),
                 time_local=t, tz=tz, time_kst=to_kst(day, t, tz),
-                url=r.get("url"), source=r.get("source"),
+                url=r.get("url"), source=r.get("source"), source_en=r.get("source_en"),
                 confirmed="rule", tags=["supply", r["id"]],
             ))
 
@@ -414,6 +423,7 @@ def add_holidays(hol, events, start, end):
                 org=m["name_ko"], org_en=m["name_en"],
                 detail_ko=None, detail_en=None,
                 url=(hol.get("sources") or [None])[0], source="data/market/holidays.json",
+                source_en="data/market/holidays.json",
                 confirmed="official", tags=["holiday", key, day.get("kind", "full")],
             ))
 
@@ -486,6 +496,7 @@ def add_earnings(snap, names, market, events, start, end):
             time_local=None, tz=tz, time_kst=None,
             url=ir or ("https://finance.yahoo.com/quote/%s" % sym),
             source="%s 스냅샷 (data/%s100/latest.json)" % (market.upper(), market),
+            source_en="%s100 snapshot (data/%s100/latest.json)" % (market.upper(), market),
             confirmed="estimate" if estimate else "official",
             tags=["earnings", market, sym],
         ))
@@ -495,29 +506,34 @@ def add_earnings(snap, names, market, events, start, end):
 
 def collect_undated(cf, me):
     """날짜를 확인하지 못한 것들 — events 에 넣지 않고 이름·링크만 보여준다."""
+    def join(*parts):
+        return " · ".join(x for x in parts if x) or None
+
     out = []
     if cf:
-        for c in cf.get("undated", []):
-            out.append({"group": "bio", "abbr": c.get("abbr"), "name_ko": c["name_ko"],
-                        "name_en": c.get("name_en"), "note_ko": "%s · %s" % (c.get("field_ko", ""), c.get("typical_ko", "")),
-                        "url": c.get("url"), "importance": c.get("importance", 1)})
-        for c in cf.get("industry", []):
-            out.append({"group": "industry", "abbr": c.get("abbr"), "name_ko": c["name_ko"],
-                        "name_en": c.get("name_en"), "note_ko": "%s · %s" % (c.get("field_ko", ""), c.get("typical_ko", "")),
-                        "url": c.get("url"), "importance": c.get("importance", 1)})
+        for group, key in (("bio", "undated"), ("industry", "industry")):
+            for c in cf.get(key, []):
+                out.append({"group": group, "abbr": c.get("abbr"), "name_ko": c["name_ko"],
+                            "name_en": c.get("name_en"),
+                            "note_ko": join(c.get("field_ko"), c.get("typical_ko")),
+                            "note_en": join(c.get("field_en"), c.get("typical_en")),
+                            "url": c.get("url"), "importance": c.get("importance", 1)})
     if me:
         for r in me.get("index_reviews", []):
             out.append({"group": "index", "abbr": None, "name_ko": r["name_ko"],
                         "name_en": r.get("name_en"), "note_ko": r.get("schedule_note_ko"),
+                        "note_en": r.get("schedule_note_en"),
                         "url": r.get("url"), "importance": r.get("importance", 1)})
         for l in me.get("links", []):
-            out.append({"group": "link", "abbr": None, "name_ko": l["name_ko"], "name_en": None,
-                        "note_ko": l.get("note_ko"), "url": l.get("url"),
-                        "importance": l.get("importance", 1)})
+            out.append({"group": "link", "abbr": None, "name_ko": l["name_ko"],
+                        "name_en": l.get("name_en"),
+                        "note_ko": l.get("note_ko"), "note_en": l.get("note_en"),
+                        "url": l.get("url"), "importance": l.get("importance", 1)})
         for p in me.get("policy_events", []):
             if p.get("confirmed") == "undated":
                 out.append({"group": "policy", "abbr": None, "name_ko": p["name_ko"],
                             "name_en": p.get("name_en"), "note_ko": p.get("schedule_note_ko"),
+                            "note_en": p.get("schedule_note_en"),
                             "url": p.get("url"), "importance": p.get("importance", 1)})
     return out
 
@@ -610,6 +626,13 @@ def main(argv=None):
             "tentative": "기관이 스스로 '잠정'으로 공표",
             "estimate": "데이터 제공사의 추정 구간 (실적발표일)",
             "rule": "발표 주기 규칙으로 만든 날짜 — 확정 아님",
+        },
+        "confirmed_legend_en": {
+            "official": "Verified against the institution's own calendar",
+            "websearch": "Cross-checked by search — not yet re-verified against the official page",
+            "tentative": "Published by the institution as tentative",
+            "estimate": "A data provider's estimated window (earnings dates)",
+            "rule": "Derived from the usual release cadence — not confirmed",
         },
         "counts": counts,
         "sources": sources,
