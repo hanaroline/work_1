@@ -20,6 +20,7 @@ on:
       - 'scripts/verify_rank_fields.mjs'
       - 'scripts/verify_442580.mjs'
       - 'scripts/verify_jul28.mjs'
+      - 'scripts/verify_chart_lag.mjs'
       - '.github/workflows/etf-verify-rank.yml'
 
 permissions:
@@ -51,6 +52,10 @@ jobs:
         if: hashFiles('scripts/verify_442580.mjs') != ''
         run: node scripts/verify_442580.mjs
 
+      - name: 되짚기 실행 (야후 일봉이 왜 한 세션 뒤졌나)
+        if: hashFiles('scripts/verify_chart_lag.mjs') != ''
+        run: node scripts/verify_chart_lag.mjs
+
       - name: 되짚기 실행 (랭킹 네 칸)
         run: node scripts/verify_rank_fields.mjs
 
@@ -63,6 +68,8 @@ jobs:
             tools/discovery/rank_fields_verify.*
             tools/discovery/verify_442580.md
             tools/discovery/verify_jul28.md
+            tools/discovery/verify_chart_lag.md
+            tools/discovery/verify_chart_lag.json
           retention-days: 14
 
       - name: 결과 커밋
@@ -73,5 +80,6 @@ jobs:
           git add tools/discovery/rank_fields_verify.* 2>/dev/null || true
           git add tools/discovery/verify_442580.md 2>/dev/null || true
           git add tools/discovery/verify_jul28.md 2>/dev/null || true
+          git add tools/discovery/verify_chart_lag.md tools/discovery/verify_chart_lag.json 2>/dev/null || true
           git commit -m "chore(etf): 랭킹 네 칸 되짚기 결과" || echo "변경 없음"
           git push || echo "푸시 실패 (무시)"

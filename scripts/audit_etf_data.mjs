@@ -513,6 +513,44 @@ for (const [key, members] of Object.entries(cohorts)) {
                     detail: `직전 영업일(${expected}) 보다 앞선 기준일을 가진 종목 ${ahead.length}개 ` +
                             `— 아직 안 끝난 세션의 값이다 (예: ${ahead.slice(0, 3).map((e) => e.code + ' ' + e.retAsOf).join(', ')})` });
   }
+  // ── 시장마다 따로 본다 ───────────────────────────────────────────────────
+  // 위의 두 잣대는 **전체**를 본다. 그래서 국내가 86%를 차지하는 이 표에서는
+  // 해외가 통째로 뒤져도 초록으로 지나간다. 실제로 그랬다 — 2026-09-09
+  // 09:12(KST) 수집분에서 국내·일본은 09-08 인데 미국 120종목은 09-04,
+  // 홍콩·중국 40종목은 09-07 이었고, 감사는 오류 0 이었다.
+  //
+  // 랭킹 화면은 국내와 해외를 한 줄에 세운다. 기준일이 다른 값을 나란히
+  // 놓으면 비교 자체가 성립하지 않으므로, 시장별로 갈라 적어 둔다.
+  //
+  // 다만 하루 차이는 정상이다. 미국장은 국내장보다 늦게 닫으므로, 16:30 KST
+  // 에 받으면 국내는 오늘·미국은 어제가 맞다. 그래서 사흘(주말 한 번)을
+  // 넘게 벌어질 때만 경고한다 — 위의 '자료-낡음' 과 같은 잣대다.
+  // 가장 새 날짜가 아니라 **주된 날짜**로 잰다. 한 종목만 새 날짜를 갖고
+  // 나머지가 하루 뒤진 경우(오늘 상하이 16종목 중 1종목만 09-08)를 "최신" 으로
+  // 셈하면 시장 전체가 뒤진 것이 그 한 종목 뒤에 숨는다.
+  const perMarket = [];
+  for (const m of [...new Set(ETFS.map((e) => e.market))].sort()) {
+    const rows = ETFS.filter((e) => e.market === m);
+    const ds = rows.map((e) => e.retAsOf).filter((d) => /^\d{4}-\d{2}-\d{2}$/.test(String(d)));
+    const tally = {};
+    for (const d of ds) tally[d] = (tally[d] || 0) + 1;
+    const main = Object.entries(tally).sort((a, b) => b[1] - a[1] || (a[0] < b[0] ? 1 : -1))[0] || null;
+    const mMain = main ? main[0] : null;
+    const mNewest = ds.length ? ds.slice().sort()[ds.length - 1] : null;
+    const gap = mMain && newest ? Math.round((Date.parse(newest) - Date.parse(mMain)) / dayMs) : null;
+    perMarket.push({ market: m, count: rows.length, main: mMain, atMain: main ? main[1] : 0,
+                     newest: mNewest, gapDays: gap });
+    if (mMain && gap > 3) {
+      findings.push({ sev: 'warn', rule: '시장별-기준일뒤짐', id: '-', code: '-', market: m,
+                      name: '(시장 전체)',
+                      detail: `${m} 의 주된 기준일 ${mMain} 이 전체 최신 ${newest} 보다 ${gap}일 이르다 ` +
+                              `(${main[1]}/${rows.length}종목) — 이 시장의 값은 다른 시장과 같은 날이 아니다` });
+    }
+  }
+  console.log('  시장별: ' + perMarket.map((p) =>
+    `${p.market} ${p.main ?? '없음'}(${p.atMain}/${p.count})`).join(' · '));
+  globalThis.__perMarket = perMarket;
+
   globalThis.__staleness = stale;
 }
 
@@ -564,6 +602,19 @@ const md = ['# ETF 자료 전수 감사', '', `감사 시각: ${new Date().toISO
   '잡는다 — 안에서 앞뒤가 안 맞는 숫자는 바깥을 볼 것도 없이 틀린 것이다.', '',
   '## 규칙별', '', '| 심각도 | 규칙 | 건수 | 종목수 |', '|---|---|---:|---:|'];
 for (const r of rules) md.push(`| ${r.sev} | ${r.rule} | ${r.count} | ${r.etfCount} |`);
+
+// 시장별 기준일. 전체 잣대는 국내가 86%라 해외가 통째로 뒤져도 안 보인다.
+if (globalThis.__perMarket) {
+  md.push('', '## 시장별 기준일', '',
+    `직전 영업일 ${globalThis.__staleness?.expected ?? '—'} · 전체 최신 ${globalThis.__staleness?.newest ?? '—'}`, '',
+    '| 시장 | 종목 | 주된 기준일 | 그 날짜인 종목 | 가장 새 기준일 | 전체 최신과의 차이 |',
+    '|---|---:|---|---:|---|---:|');
+  for (const p of globalThis.__perMarket) {
+    md.push(`| ${p.market} | ${p.count} | ${p.main ?? '없음'} | ${p.atMain} | ${p.newest ?? '없음'} | ` +
+            `${p.gapDays == null ? '—' : (p.gapDays === 0 ? '같음' : p.gapDays + '일 이름')} |`);
+  }
+}
+
 md.push('', '## 오류 상세', '', '| 종목 | 규칙 | 내용 |', '|---|---|---|');
 for (const f of findings.filter((x) => x.sev === 'error').slice(0, 300)) {
   md.push(`| ${f.code} ${f.name} | ${f.rule} | ${f.detail.replace(/\|/g, '\\|')} |`);
