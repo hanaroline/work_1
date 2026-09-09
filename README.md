@@ -762,6 +762,7 @@ TSMC(대만)·ASML(네덜란드) 두 곳이 그렇게 담겨 있고, 대신 순�
 | `.github/workflows/kr100-data.yml` | 평일 15:45 KST (마감 뒤) | 전 종목 시세·지표·실적·뉴스 → `latest.json` + `chart/*.json`, 오프라인 파일 Artifact |
 | `.github/workflows/kr100-quotes.yml` | 평일 정규장 10분 주기 + 시간외 30분 주기 | 가격만 → `quotes.json` |
 | `.github/workflows/kr100-ranking.yml` | 평일 16:10 KST | 시가총액 상위 100 과 목록 비교 → `ranking.json` + 이슈 갱신 |
+| `.github/workflows/kr100-offline.yml` | `kr-top100.html` 을 고쳐 push 할 때 | 수집은 하지 않고 **오프라인 판만** 새 화면으로 다시 만들어 올립니다(30~60초). 화면을 고친 날 오프라인 판이 하루 동안 낡은 화면을 담고 있지 않게 하려는 것입니다 |
 
 데이터는 미국 화면과 같은 방식으로 **히스토리를 남기지 않는 전용 브랜치**(`kr100-data`)에
 커밋 하나로 갈아끼웁니다. `data/kr100/` 에는 안내 파일(`{"movedTo": …}`)과 수집을 부르는
