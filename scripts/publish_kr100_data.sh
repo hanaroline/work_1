@@ -11,6 +11,9 @@ set -euo pipefail
 
 HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
+# 국내 화면은 오프라인 단일 파일도 데이터 브랜치에 올려 둔다(고정 주소로 내려받게).
+# 여기서 KEEP_FILES 에 넣어 두어야 가격 갱신 판이 올릴 때 그 파일이 지워지지 않는다.
+KEEP_FILES="${KEEP_FILES:-quotes.json latest.json chart ranking.json kr-top100-offline.html}" \
 DATA_DIR="data/kr100" \
 DATA_BRANCH="${KR100_DATA_BRANCH:-kr100-data}" \
 COMMIT_TITLE="국내 100대 기업 데이터" \
