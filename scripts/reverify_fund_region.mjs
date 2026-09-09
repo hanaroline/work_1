@@ -52,6 +52,31 @@ const out = { at: new Date().toISOString(), rows: [], errors: [] };
 async function save() {
   await mkdir('tools/discovery', { recursive: true });
   await writeFile(OUT_JSON, JSON.stringify(out, null, 2));
+  // 이 층은 시간 상한에 걸려 죽는 일이 있다(금투협이 도중에 막으면 남은 것을
+  // 끝까지 못 돈다). json 은 여기서 계속 덮어써지는데 md 는 맨 끝에서 한 번만
+  // 쓰이므로, 그렇게 죽으면 **며칠 전 보고서가 오늘 것인 양 남는다** — 그때
+  // 그 글에는 "전부 일치" 가 적혀 있다. 실제로 그 일이 났다.
+  // 그래서 저장할 때마다 md 를 "안 끝났다" 는 글로 먼저 덮어 둔다. 끝까지
+  // 돌면 맨 아래에서 진짜 보고서가 이 글을 덮는다. 못 끝내면 이 글이 남고,
+  // 남은 글은 끝내지 못했다고 말한다.
+  const done = out.rows.filter((r) => r.ok === true).length;
+  const failed = out.rows.filter((r) => r.error).length;
+  await writeFile(OUT_MD, [
+    '# 재검증 L3-b — 투자지역 대조 (끝나지 않음)',
+    '',
+    `시작: ${out.at}`,
+    '',
+    '**이 글이 남아 있다면 이 층은 끝까지 돌지 못했습니다.** 시간 상한에 걸렸거나',
+    '중간에 죽었다는 뜻입니다. 아래 수는 죽은 시점까지의 몫이며 전수가 아닙니다.',
+    '',
+    `- 물어본 것: ${out.rows.length}`,
+    `- 대조해서 맞은 것: ${done}`,
+    `- 답을 못 받은 것: ${failed}`,
+    '',
+    '전수 투자지역 대조는 `fund_verify_kofia.md`(L3-d) 에도 있습니다. 같은 출처의',
+    '같은 칸을 보므로, 이 층이 못 끝났을 때는 그쪽을 보십시오.',
+    '',
+  ].join('\n'));
 }
 process.on('unhandledRejection', async (e) => {
   out.errors.push(`unhandledRejection: ${String(e?.message || e)}`);
