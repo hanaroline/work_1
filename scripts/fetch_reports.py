@@ -652,8 +652,44 @@ def parse_hana(html):
     return rows
 
 
-def fetch_hana(pages=5, dump_dir=None):
-    """한 쪽에 열 줄이다. `curPage` 로 넘긴다(목록 쪽의 doSearch 에서 확인).
+_TRANSIENT = re.compile(r"URLError|timed out|TimeoutError|RemoteDisconnected|"
+                        r"ConnectionReset|IncompleteRead|BadStatusLine|EOF")
+
+
+def fetch_hana(pages=5, dump_dir=None, rounds=2, pause=40):
+    """한 쪽에 열 줄이다. 원천이 통째로 비면 한 판 쉬었다가 다시 받는다.
+
+    아침의 하나증권 서버는 자주 끊긴다 — 9/7·9/8·9/9·9/10 나흘 내리 아침
+    판에서 한 번씩 죽었고, 그때마다 몇 분 뒤 다시 부르면 멀쩡히 열렸다.
+    쪽 단위로 다시 두드리는 것만으로는 모자라다. 서버가 잠깐 통째로
+    닫히면 다섯 쪽이 다 막혀 원천이 빈손으로 끝나기 때문이다.
+
+    그래서 **원천 단위로** 한 번 더 간다. 다만 오래 끌지 않도록 두 번째
+    판은 쪽 수를 줄이고, 얼개가 바뀐 경우(받기는 받았는데 줄이 없는 경우)
+    에는 다시 받아도 같으므로 곧바로 물러난다.
+    """
+    last = None
+    for rnd in range(rounds):
+        try:
+            rows, how = _fetch_hana_once(3 if rnd else pages, dump_dir)
+        except ValueError as e:                                  # noqa: PERF203
+            last = e
+            # 못 받아서 빈 것만 다시 간다. 받았는데 줄이 없으면 마크업 문제다.
+            if rnd + 1 >= rounds or not _TRANSIENT.search(str(e)):
+                raise
+            time.sleep(pause)
+        else:
+            if rnd:
+                # 한 번 죽었다가 살아난 판이다. 그냥 「50건」으로만 남으면
+                # 이 원천이 아침마다 얼마나 자주 끊기는지 알 길이 없다.
+                how["retried"] = "첫 판이 끊겨 %d초 뒤 다시 받았다 — %s" % (
+                    pause, str(last)[:120])
+            return rows, how
+    raise last
+
+
+def _fetch_hana_once(pages, dump_dir):
+    """한 판을 받는다. `curPage` 로 넘긴다(목록 쪽의 doSearch 에서 확인).
 
     한 쪽만 받으면 그날 자가 두어 건뿐이라 해외 리포트가 거의 안 잡힌다 —
     NVDA.US·688017.CH 같은 줄은 하루 이틀 전 자리에 있다.

@@ -342,6 +342,10 @@ def verify(path):
     for k, v in sorted(srcs.items()):
         if isinstance(v, dict) and v.get("partial"):
             warn("사2-1 참고", "%s — %s" % (k, v["partial"]))
+        # 죽었다가 다시 받아 살아난 원천도 눈에 걸어 둔다. 「50건 정상」만
+        # 남으면 그 원천이 아침마다 얼마나 자주 끊기는지 알 길이 없다.
+        if isinstance(v, dict) and v.get("retried"):
+            warn("사2-2 참고", "%s — %s" % (k, v["retried"]))
     check("사3 그날 자 리포트가 있음", len(todays) > 0, "%d건" % len(todays))
 
     # ── 바. 주간 ────────────────────────────────────────────────────────
