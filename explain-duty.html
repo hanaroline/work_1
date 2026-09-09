@@ -1,0 +1,700 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>설명의무 안내 · ELS / 국내펀드 / 해외펀드</title>
+<meta name="description" content="금융소비자보호법 제19조 설명의무 — ELS · 국내펀드 · 해외펀드 상품별 설명 항목과 고객 확인 체크리스트.">
+<meta name="theme-color" content="#F58220">
+<meta name="robots" content="noindex, nofollow">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --orange:#F58220; --orange-active:#CB6015; --orange-soft:#FAB072;
+    --navy:#043B72;
+    --ink:#1A1A1A; --body:#3D3D3D; --muted:#6C6C6C; --muted-soft:#84888B;
+    --canvas:#FFFFFF; --surface-soft:#ECEFF4; --surface-subtle:#F7F8FA;
+    --hairline:#CDCECB; --hairline-soft:#E5E4E1;
+    --error:#C62828; --warning:#D4A017;
+    --font-kr:'Spoqa Han Sans Neo','Noto Sans KR','Apple SD Gothic Neo','Malgun Gothic',sans-serif;
+    --font-en:'Inter','Aptos','Segoe UI',system-ui,-apple-system,sans-serif;
+    --space-block:56px; --space-content:28px;
+  }
+  *{box-sizing:border-box;}
+  html{-webkit-text-size-adjust:100%;}
+  body{
+    margin:0; background:var(--surface-subtle); color:var(--body);
+    font-family:var(--font-kr); font-size:19px; line-height:1.65;
+    font-variant-numeric:tabular-nums;
+    word-break:keep-all; overflow-wrap:break-word;
+  }
+  html[lang="en"] body{font-family:var(--font-en); word-break:normal;}
+  a{color:var(--navy);}
+
+  .shell{max-width:960px; margin:0 auto; background:var(--canvas); min-height:100vh;}
+  .page{padding:0 32px;}
+
+  /* ---------- hero ---------- */
+  .hero{background:var(--orange); color:#fff; padding:26px 32px 32px;}
+  .hero-top{display:flex; align-items:flex-start; justify-content:space-between; gap:16px;}
+  .eyebrow{font-size:14px; font-weight:500; letter-spacing:.2px; color:rgba(255,255,255,.92); margin:0; padding-top:7px;}
+  .hero h1{margin:14px 0 10px; font-size:40px; line-height:1.15; font-weight:700; letter-spacing:-.6px;}
+  .hero p{margin:0; font-size:18px; line-height:1.55; color:rgba(255,255,255,.95); max-width:52em;}
+  .hero .legal{margin-top:14px; font-size:14px; color:rgba(255,255,255,.88); letter-spacing:.2px;}
+
+  .lang-toggle{display:inline-flex; flex:none; border:1px solid var(--hairline); border-radius:2px;
+    overflow:hidden; background:#fff; box-shadow:0 2px 8px rgba(0,0,0,.06);}
+  .lang-toggle button{
+    font-family:var(--font-en); font-size:14px; font-weight:500; letter-spacing:.5px;
+    padding:9px 15px; border:0; background:#fff; color:var(--muted); cursor:pointer; min-height:38px;}
+  .lang-toggle button+button{border-left:1px solid var(--hairline);}
+  .lang-toggle button[aria-checked="true"]{background:var(--orange); color:#fff;}
+  .lang-toggle button:focus-visible{outline:2px solid var(--navy); outline-offset:-2px;}
+
+  /* ---------- section ---------- */
+  .section{padding-top:var(--space-block);}
+  .section-rule{height:1px; background:var(--orange);}
+  .section-head{display:flex; align-items:baseline; gap:10px; flex-wrap:wrap; margin:16px 0 var(--space-content);}
+  .section-title{margin:0; font-size:26px; font-weight:700; color:var(--ink); letter-spacing:-.2px;}
+  .section-note{font-size:15px; color:var(--muted);}
+  h3.block-title{
+    margin:0 0 10px; font-size:22px; font-weight:600; color:var(--ink);
+    display:flex; align-items:baseline; gap:10px;
+  }
+  h3 .idx{
+    font-family:var(--font-en); font-size:14px; font-weight:600; color:#fff; background:var(--navy);
+    border-radius:2px; padding:2px 7px; flex:none; line-height:1.45;
+  }
+
+  /* ---------- duty overview ---------- */
+  .duty-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:12px;}
+  .duty-card{border:1px solid var(--hairline-soft); border-radius:4px; padding:16px 16px 18px; background:#fff;}
+  .duty-card .k{font-family:var(--font-en); font-size:13px; font-weight:600; color:var(--orange-active); letter-spacing:.4px;}
+  .duty-card .t{display:block; margin-top:6px; font-size:18px; font-weight:700; color:var(--ink); line-height:1.35;}
+  .duty-card .d{display:block; margin-top:6px; font-size:15px; line-height:1.5; color:var(--muted);}
+
+  .rule-strip{
+    margin-top:var(--space-content); background:var(--surface-soft); border-radius:4px; padding:18px 20px;
+    font-size:17px; line-height:1.6; color:var(--ink);
+  }
+  .rule-strip b{color:var(--orange-active);}
+
+  /* ---------- tabs ---------- */
+  .tabs{display:flex; gap:0; border:1px solid var(--hairline); border-radius:2px; overflow:hidden; margin-bottom:var(--space-content);}
+  .tabs button{
+    flex:1 1 0; font-family:inherit; font-size:18px; font-weight:700; color:var(--muted);
+    background:#fff; border:0; padding:14px 10px; min-height:52px; cursor:pointer; line-height:1.3;
+  }
+  .tabs button+button{border-left:1px solid var(--hairline);}
+  .tabs button[aria-selected="true"]{background:var(--orange); color:#fff;}
+  .tabs button:hover:not([aria-selected="true"]){background:var(--surface-subtle); color:var(--ink);}
+  .tabs button:focus-visible{outline:2px solid var(--navy); outline-offset:-2px;}
+
+  .panel[hidden]{display:none;}
+  .panel-head{margin-bottom:var(--space-content);}
+  .panel-head .pname{margin:0; font-size:28px; font-weight:700; color:var(--ink); letter-spacing:-.3px;}
+  .panel-head .pdesc{margin:6px 0 0; font-size:17px; color:var(--muted); line-height:1.55;}
+
+  /* ---------- blocks ---------- */
+  .block{margin-bottom:38px;}
+  .block ul{margin:0; padding:0; list-style:none;}
+  .block li{
+    position:relative; padding:11px 0 11px 18px; border-top:1px solid var(--hairline-soft);
+    font-size:18px; line-height:1.6;
+  }
+  .block li:first-child{border-top:0;}
+  .block li::before{content:""; position:absolute; left:2px; top:22px; width:5px; height:1px; background:var(--orange);}
+  .block li b{color:var(--ink); font-weight:700;}
+  .block li .em{color:var(--error); font-weight:700;}
+
+  table{width:100%; border-collapse:collapse; border:1px solid var(--hairline); font-size:17px;}
+  thead th{background:var(--orange-soft); color:var(--ink); font-weight:700; text-align:left; padding:11px 12px; border:1px solid var(--hairline);}
+  tbody td{padding:11px 12px; border:1px solid var(--hairline-soft); vertical-align:top; line-height:1.55;}
+  tbody tr:hover{background:var(--surface-subtle);}
+  tbody th{background:var(--surface-subtle); text-align:left; font-weight:700; color:var(--ink);
+    padding:11px 12px; border:1px solid var(--hairline-soft); white-space:nowrap; width:150px;}
+
+  .warn{
+    border-left:3px solid var(--error); background:#FDF5F5; border-radius:0 4px 4px 0;
+    padding:14px 16px; font-size:17px; line-height:1.6; color:var(--ink); margin-top:14px;
+  }
+  .warn .lbl{font-weight:700; color:var(--error); margin-right:6px;}
+  .info{
+    border-left:3px solid var(--navy); background:var(--surface-subtle); border-radius:0 4px 4px 0;
+    padding:14px 16px; font-size:17px; line-height:1.6; color:var(--ink); margin-top:14px;
+  }
+  .info .lbl{font-weight:700; color:var(--navy); margin-right:6px;}
+
+  /* ---------- checklist ---------- */
+  .check{border:1px solid var(--hairline); border-radius:4px; padding:20px 20px 22px; background:#fff;}
+  .check-head{display:flex; align-items:baseline; justify-content:space-between; gap:12px; flex-wrap:wrap; margin-bottom:14px;}
+  .check-head h4{margin:0; font-size:20px; font-weight:700; color:var(--ink);}
+  .count{font-family:var(--font-en); font-size:15px; font-weight:600; color:var(--orange-active);}
+  .check label{
+    display:flex; gap:12px; align-items:flex-start; padding:11px 0; border-top:1px solid var(--hairline-soft);
+    font-size:17px; line-height:1.55; cursor:pointer;
+  }
+  .check label:first-of-type{border-top:0;}
+  .check input[type="checkbox"]{
+    flex:none; width:22px; height:22px; margin:2px 0 0; accent-color:var(--orange); cursor:pointer;
+  }
+  .check input:checked + span{color:var(--muted);}
+  .sign{
+    margin-top:18px; padding-top:16px; border-top:1px solid var(--hairline);
+    display:flex; gap:24px; flex-wrap:wrap; font-size:16px; color:var(--muted);
+  }
+  .sign span{flex:1 1 200px; border-bottom:1px solid var(--hairline); padding-bottom:6px;}
+
+  .actions{display:flex; gap:10px; margin-top:22px; flex-wrap:wrap;}
+  .btn{
+    display:inline-flex; align-items:center; justify-content:center; gap:6px;
+    min-height:44px; padding:10px 19px; border-radius:2px; font-family:inherit;
+    font-size:17px; font-weight:500; cursor:pointer;
+    border:1px solid var(--navy); color:var(--navy); background:#fff;
+  }
+  .btn.solid{background:var(--orange); border-color:var(--orange); color:#fff;}
+  .btn.solid:hover{background:var(--orange-active); border-color:var(--orange-active);}
+  .btn:hover{background:var(--surface-subtle);}
+  .btn:focus-visible{outline:2px solid var(--orange); outline-offset:2px;}
+
+  .notes{padding:var(--space-block) 0 0; margin:0; list-style:none;}
+  .notes li{position:relative; padding-left:18px; font-size:15px; line-height:1.6; color:var(--muted); margin-bottom:9px;}
+  .notes li::before{content:"※"; position:absolute; left:0; color:var(--muted-soft);}
+
+  footer{margin-top:var(--space-block); padding:24px 32px 48px; border-top:1px solid var(--hairline-soft); background:var(--surface-subtle);}
+  .disclaimer{margin:0; font-size:14px; line-height:1.65; color:var(--muted-soft);}
+
+  .print-only{display:none;}
+  [data-en]{display:none;}
+  html[lang="en"] [data-ko]{display:none;}
+  html[lang="en"] [data-en]{display:inline;}
+  html[lang="en"] li[data-en], html[lang="en"] p[data-en], html[lang="en"] div[data-en]{display:block;}
+
+  @media (max-width:768px){
+    :root{--space-block:36px; --space-content:20px;}
+    body{font-size:17px;}
+    .page{padding:0 20px;}
+    .hero{padding:22px 20px 26px;}
+    .hero h1{font-size:29px;}
+    .hero p{font-size:16px;}
+    .duty-grid{grid-template-columns:1fr;}
+    .tabs button{font-size:16px; padding:12px 6px;}
+    .panel-head .pname{font-size:23px;}
+    .section-title{font-size:22px;}
+    h3.block-title{font-size:19px;}
+    .block li{font-size:17px;}
+    table{font-size:15px;}
+    tbody th{width:auto; white-space:normal;}
+    footer{padding:22px 20px 40px;}
+  }
+
+  @media print{
+    .lang-toggle,.tabs,.actions{display:none !important;}
+    .print-only{display:block;}
+    body{background:#fff; font-size:11pt; line-height:1.45;}
+    .shell{max-width:100%;}
+    .page{padding:0;}
+    .hero{background:#fff !important; color:var(--ink); padding:0 0 12pt; border-bottom:1px solid var(--orange);
+      -webkit-print-color-adjust:exact; print-color-adjust:exact;}
+    .hero h1{font-size:20pt; color:var(--ink);}
+    .hero p,.hero .eyebrow,.hero .legal{color:var(--body);}
+    .panel[hidden]{display:block !important;}
+    .panel{page-break-before:always;}
+    .panel:first-of-type{page-break-before:auto;}
+    .block,.check,table,.duty-card{page-break-inside:avoid;}
+    h3,.section-head,.panel-head{page-break-after:avoid;}
+    thead th{-webkit-print-color-adjust:exact; print-color-adjust:exact;}
+  }
+</style>
+</head>
+<body>
+<div class="shell">
+
+  <header class="hero">
+    <div class="hero-top">
+      <p class="eyebrow">
+        <span data-ko>미래에셋증권 · 금융소비자보호법 제19조</span>
+        <span data-en>Mirae Asset Securities · Financial Consumer Protection Act, Art. 19</span>
+      </p>
+      <div class="lang-toggle" role="radiogroup" aria-label="언어 선택 / Language">
+        <button type="button" role="radio" aria-checked="true" data-lang="ko">KO</button>
+        <button type="button" role="radio" aria-checked="false" data-lang="en">EN</button>
+      </div>
+    </div>
+    <h1>
+      <span data-ko>설명의무 안내</span>
+      <span data-en>Duty of Explanation</span>
+    </h1>
+    <p>
+      <span data-ko>ELS · 국내펀드 · 해외펀드 — 계약 체결 전 반드시 설명드려야 하는 항목과, 고객님이 이해하셨는지 확인하는 체크리스트입니다.</span>
+      <span data-en>ELS · Domestic funds · Overseas funds — the items that must be explained before a contract is signed, with a checklist confirming the client understood them.</span>
+    </p>
+    <p class="legal">
+      <span data-ko>설명의무는 상품을 권유할 때, 그리고 고객이 설명을 요청할 때 모두 적용됩니다.</span>
+      <span data-en>The duty applies both when a product is recommended and when the client requests an explanation.</span>
+    </p>
+  </header>
+
+  <div class="page">
+
+    <!-- ── 설명의무란 ────────────────────────────────── -->
+    <section class="section" aria-labelledby="sec-duty">
+      <div class="section-rule"></div>
+      <div class="section-head">
+        <h2 class="section-title" id="sec-duty">
+          <span data-ko>설명해야 하는 항목</span>
+          <span data-en>What must be explained</span>
+        </h2>
+        <span class="section-note">
+          <span data-ko>세 상품에 공통 적용</span>
+          <span data-en>Common to all three products</span>
+        </span>
+      </div>
+
+      <div class="duty-grid">
+        <div class="duty-card">
+          <span class="k">01</span>
+          <span class="t"><span data-ko>상품의 내용</span><span data-en>Product content</span></span>
+          <span class="d"><span data-ko>어떤 구조로 손익이 결정되는지, 무엇에 투자하는지</span><span data-en>How gains and losses arise, and what the money is invested in</span></span>
+        </div>
+        <div class="duty-card">
+          <span class="k">02</span>
+          <span class="t"><span data-ko>투자에 따르는 위험</span><span data-en>Investment risks</span></span>
+          <span class="d"><span data-ko>원금 손실 가능성과 그 최대 범위, 상품 고유의 위험</span><span data-en>Possible loss of principal, its maximum extent, product-specific risks</span></span>
+        </div>
+        <div class="duty-card">
+          <span class="k">03</span>
+          <span class="t"><span data-ko>위험등급과 그 의미</span><span data-en>Risk grade and its meaning</span></span>
+          <span class="d"><span data-ko>1~6등급 중 어디에 해당하며, 그 등급이 뜻하는 바</span><span data-en>Where it sits on the 1–6 scale and what that grade means</span></span>
+        </div>
+        <div class="duty-card">
+          <span class="k">04</span>
+          <span class="t"><span data-ko>수수료 · 비용</span><span data-en>Fees and costs</span></span>
+          <span class="d"><span data-ko>가입·보유·해지 각 단계에서 부담하는 금액</span><span data-en>What is charged at purchase, while held, and on exit</span></span>
+        </div>
+        <div class="duty-card">
+          <span class="k">05</span>
+          <span class="t"><span data-ko>계약의 해제 · 해지</span><span data-en>Cancellation and termination</span></span>
+          <span class="d"><span data-ko>중도 해지·환매 방법과 그때 발생하는 불이익</span><span data-en>How to exit early and what it costs to do so</span></span>
+        </div>
+        <div class="duty-card">
+          <span class="k">06</span>
+          <span class="t"><span data-ko>그 밖의 보호 사항</span><span data-en>Other protections</span></span>
+          <span class="d"><span data-ko>예금자보호 여부, 청약철회권, 위법계약해지권 등</span><span data-en>Deposit protection, right of withdrawal, unlawful-contract termination</span></span>
+        </div>
+      </div>
+
+      <div class="rule-strip">
+        <span data-ko><b>설명 → 설명서 교부 → 이해 확인</b>의 세 단계를 모두 마쳐야 설명의무를 이행한 것입니다. 고객이 이해하셨다는 사실은 서명·기명날인·녹취 등으로 남깁니다. 중요한 사항을 빠뜨리거나 거짓·왜곡해 설명하는 것은 금지됩니다.</span>
+        <span data-en><b>Explain → hand over the disclosure document → confirm understanding.</b> All three steps are required. The client's understanding is recorded by signature, seal or voice recording. Omitting, misstating or distorting a material fact is prohibited.</span>
+      </div>
+    </section>
+
+    <!-- ── 상품별 ────────────────────────────────── -->
+    <section class="section" aria-labelledby="sec-prod">
+      <div class="section-rule"></div>
+      <div class="section-head">
+        <h2 class="section-title" id="sec-prod">
+          <span data-ko>상품별 설명 내용</span>
+          <span data-en>Explanation by product</span>
+        </h2>
+        <span class="section-note">
+          <span data-ko>ELS · 국내펀드 · 해외펀드</span>
+          <span data-en>ELS · Domestic funds · Overseas funds</span>
+        </span>
+      </div>
+
+      <div class="tabs" role="tablist" aria-label="상품 선택 / Select product">
+        <button type="button" role="tab" id="tab-els" aria-controls="panel-els" aria-selected="true">
+          <span data-ko>ELS</span><span data-en>ELS</span>
+        </button>
+        <button type="button" role="tab" id="tab-kr" aria-controls="panel-kr" aria-selected="false">
+          <span data-ko>국내펀드</span><span data-en>Domestic fund</span>
+        </button>
+        <button type="button" role="tab" id="tab-ov" aria-controls="panel-ov" aria-selected="false">
+          <span data-ko>해외펀드</span><span data-en>Overseas fund</span>
+        </button>
+      </div>
+
+      <div id="panels"></div>
+    </section>
+
+    <ul class="notes">
+      <li>
+        <span data-ko>이 페이지는 설명 항목을 빠뜨리지 않기 위한 안내이며, 개별 상품의 확정된 조건은 투자설명서·간이투자설명서·핵심설명서에 기재된 내용이 우선합니다.</span>
+        <span data-en>This page is a prompt so that no required item is missed. For any individual product, the terms stated in the prospectus, simplified prospectus and key-information document prevail.</span>
+      </li>
+      <li>
+        <span data-ko>수수료율·보수율·환매 소요일·위험등급은 상품마다 다릅니다. 반드시 해당 상품의 설명서에 표기된 실제 수치로 설명하십시오.</span>
+        <span data-en>Fee rates, expense ratios, redemption timelines and risk grades differ by product. Always quote the actual figures printed in that product's disclosure document.</span>
+      </li>
+      <li>
+        <span data-ko>관련 법령·감독규정 및 사내 표준투자권유준칙이 개정되면 이 페이지보다 개정된 기준이 우선합니다.</span>
+        <span data-en>Where laws, supervisory regulations or the firm's investment-solicitation standards are amended, the amended rules prevail over this page.</span>
+      </li>
+    </ul>
+
+  </div><!-- /page -->
+
+  <footer>
+    <p class="disclaimer">
+      <span data-ko>투자자는 금융투자상품에 대하여 금융회사로부터 충분한 설명을 받을 권리가 있으며, 투자 전 상품설명서 및 약관을 반드시 읽어보시기 바랍니다. 금융투자상품은 예금자보호법에 따라 보호되지 않으며, 원금 손실이 발생할 수 있습니다. 과거의 운용실적이 미래의 수익률을 보장하지 않습니다.</span>
+      <span data-en>Investors have the right to receive a full explanation of financial investment products from the financial company, and should read the product prospectus and terms before investing. Financial investment products are not protected under the Depositor Protection Act and may incur a loss of principal. Past performance does not guarantee future returns.</span>
+    </p>
+  </footer>
+
+</div>
+
+<script>
+(function () {
+  'use strict';
+
+  /* 상품별 설명 내용 — 한/영 페어.
+     수치가 상품마다 달라지는 항목은 일부러 값을 비워 두고 "설명서 확인"으로 넘긴다. */
+  var PRODUCTS = [
+    {
+      id: 'els',
+      name: { ko: 'ELS (주가연계증권)', en: 'ELS (Equity-Linked Securities)' },
+      desc: {
+        ko: '기초자산의 가격이 미리 정한 조건을 채우는지에 따라 손익이 결정되는 파생결합증권입니다. 예금도 채권도 아니며, 발행 증권사가 지급 의무를 집니다.',
+        en: 'A derivative-linked security whose payoff depends on whether the underlying asset meets pre-set conditions. It is neither a deposit nor a bond; the issuing securities firm bears the payment obligation.'
+      },
+      blocks: [
+        {
+          title: { ko: '상품의 내용', en: 'Product content' },
+          items: [
+            { ko: '기초자산(주가지수 또는 개별 종목)의 <b>가격 수준</b>만 보고, 미리 정해 둔 조건표대로 손익이 결정됩니다. 회사의 실적이나 배당과는 무관합니다.', en: 'The payoff is decided purely by the <b>price level</b> of the underlying (an index or a single stock) against a pre-set condition table. It is unrelated to company earnings or dividends.' },
+            { ko: '조기상환 평가일마다 기초자산이 <b>조기상환 배리어 이상</b>이면 약정 수익과 함께 상환되고, 미달하면 다음 회차로 넘어갑니다.', en: 'On each early-redemption valuation date, if the underlying is <b>at or above the barrier</b>, the note redeems with the agreed return; if not, it rolls to the next date.' },
+            { ko: '만기까지 조기상환되지 않으면, <b>낙인(Knock-In) 터치 여부</b>와 만기 상환 조건을 함께 따져 원금 지급 여부가 정해집니다.', en: 'If it never redeems early, repayment at maturity depends on <b>whether the knock-in barrier was touched</b> and on the maturity condition.' },
+            { ko: '제시수익률은 조건을 채웠을 때 받는 <b>상한이자 전부</b>입니다. 기초자산이 아무리 올라도 그 이상은 받지 못합니다.', en: 'The headline yield is the <b>maximum</b>, not a target. However far the underlying rises, the payout does not exceed it.' },
+            { ko: '기초자산을 직접 사는 것이 아니므로 <b>배당·의결권이 없습니다.</b>', en: 'The investor does not own the underlying, so there are <b>no dividends and no voting rights.</b>' }
+          ]
+        },
+        {
+          title: { ko: '투자에 따르는 위험', en: 'Investment risks' },
+          items: [
+            { ko: '<span class="em">원금 전액 손실이 가능합니다.</span> 낙인을 터치하고 만기 조건도 채우지 못하면, 기초자산 하락률만큼 손실이 확정됩니다.', en: '<span class="em">A total loss of principal is possible.</span> If the knock-in is touched and the maturity condition is missed, the loss equals the fall in the underlying.' },
+            { ko: '<b>발행사 신용위험</b> — 조건을 모두 충족해도 발행 증권사가 지급 불능이면 원리금을 받지 못할 수 있습니다.', en: '<b>Issuer credit risk</b> — even if every condition is met, payment may not be received if the issuing firm becomes insolvent.' },
+            { ko: '<b>중도상환 위험</b> — 만기 전에 돈을 찾으면 공정가액에서 중도상환 수수료를 뺀 금액만 받습니다. 원금을 크게 밑돌 수 있습니다.', en: '<b>Early-exit risk</b> — exiting before maturity pays fair value minus an early-redemption fee, which can be far below the amount invested.' },
+            { ko: '<b>유동성 위험</b> — 거래소에서 사고파는 상품이 아니므로 원하는 시점에 시장가로 처분할 수 없습니다.', en: '<b>Liquidity risk</b> — the note is not exchange-traded, so it cannot be sold at a market price on demand.' },
+            { ko: '<b>기초자산 구성 위험</b> — 개별 종목형은 지수형보다 변동성이 크고, 기초자산 수가 많을수록 손실 확률이 높아집니다. 손익은 <b>가장 많이 하락한 기초자산</b>을 기준으로 판정됩니다.', en: '<b>Composition risk</b> — single-stock notes are more volatile than index notes, and more underlyings means a higher chance of loss. The outcome is judged on the <b>worst-performing underlying</b>.' },
+            { ko: '<b>예금자보호 대상이 아닙니다.</b>', en: '<b>Not covered by depositor protection.</b>' }
+          ]
+        },
+        {
+          title: { ko: '위험등급 · 수수료 · 세금', en: 'Risk grade, fees and tax' },
+          table: [
+            { th: { ko: '위험등급', en: 'Risk grade' }, td: { ko: '1등급(매우 높은 위험)~6등급(매우 낮은 위험) 중 상품별로 부여됩니다. <b>원금비보장 ELS는 위험도가 높은 등급에 속합니다.</b> 실제 등급은 해당 상품 설명서에 표기된 값으로 설명하십시오.', en: 'Assigned per product on a scale of 1 (very high risk) to 6 (very low risk). <b>Non-principal-protected ELS sits at the high-risk end.</b> Quote the grade printed in that product\'s document.' } },
+            { th: { ko: '투자성향', en: 'Suitability' }, td: { ko: '고객 투자성향보다 위험등급이 높은 상품은 <b>부적합</b>합니다. 권유가 불가하며, 고객이 그럼에도 청약하는 경우 부적합확인 절차를 거쳐야 합니다.', en: 'A product riskier than the client\'s profile is <b>unsuitable</b>: it cannot be recommended, and if the client still subscribes, the unsuitability confirmation process applies.' } },
+            { th: { ko: '수수료', en: 'Fees' }, td: { ko: '판매 관련 비용은 제시 조건에 반영되는 구조이며, <b>중도상환 시 별도의 중도상환 수수료</b>가 부과됩니다. 부과 방식과 요율은 상품마다 다르므로 설명서 표기값으로 안내하십시오.', en: 'Distribution costs are embedded in the quoted terms, and an <b>early-redemption fee</b> applies on exit before maturity. The method and rate vary by product — quote the document.' } },
+            { th: { ko: '세금', en: 'Tax' }, td: { ko: '수익은 <b>배당소득</b>으로 분류되어 15.4%(소득세 14% + 지방소득세 1.4%)가 원천징수되며, 금융소득종합과세 대상에 포함됩니다.', en: 'Gains are treated as <b>dividend income</b>, withheld at 15.4% (14% income tax + 1.4% local tax), and count toward aggregate financial-income taxation.' } }
+          ]
+        },
+        {
+          title: { ko: '계약의 해제 · 해지', en: 'Cancellation and termination' },
+          items: [
+            { ko: '<b>청약기간 중</b>에는 청약을 철회하고 청약금을 돌려받을 수 있습니다.', en: '<b>During the subscription period</b>, the subscription can be withdrawn and the money returned.' },
+            { ko: '<b>고난도금융투자상품</b>에 해당하는 ELS는 계약서류를 받은 날(또는 계약체결일)로부터 <b>7일 이내 청약철회</b>가 가능합니다.', en: 'For an ELS classified as a <b>highly complex financial investment product</b>, the client may withdraw <b>within 7 days</b> of receiving the contract documents (or of contract conclusion).' },
+            { ko: '발행 이후에는 해지가 아니라 <b>중도상환 신청</b>만 가능하며, 신청 가능일과 지급일은 상품마다 정해져 있습니다.', en: 'After issuance there is no termination — only an <b>early-redemption request</b>, on the dates fixed for that product.' },
+            { ko: '설명의무 등 판매규제를 위반한 계약은 <b>위법계약해지권</b>을 행사할 수 있습니다 — 계약일로부터 5년 이내이면서, 위반 사실을 안 날로부터 1년 이내.', en: 'Where sales rules such as this duty were breached, the client may exercise the <b>right to terminate an unlawful contract</b> — within 5 years of the contract date and within 1 year of learning of the breach.' }
+          ]
+        },
+        {
+          title: { ko: '교부 서류 · 추가 절차', en: 'Documents and additional procedures' },
+          items: [
+            { ko: '<b>교부</b> — 투자설명서, 핵심설명서(고난도 해당 시), 상품 요약 설명 자료, 청약서 사본.', en: '<b>Hand over</b> — the prospectus, the key-information document (if highly complex), the product summary and a copy of the subscription form.' },
+            { ko: '<b>녹취</b> — 고난도금융투자상품을 일반투자자에게 판매하는 경우, 그리고 65세 이상 고령투자자·부적합투자자에게 파생결합증권을 판매하는 경우 판매 과정을 녹취합니다.', en: '<b>Recording</b> — the sales process is recorded when a highly complex product is sold to a retail client, and when derivative-linked securities are sold to clients aged 65+ or to clients for whom the product is unsuitable.' },
+            { ko: '<b>숙려기간</b> — 위 경우 <b>2영업일 이상</b>의 숙려기간을 드리고, 기간이 끝난 뒤 청약을 확정할 의사를 다시 확인합니다. 숙려기간 중에는 청약 철회가 자유롭습니다.', en: '<b>Cooling-off</b> — in those cases the client is given <b>at least 2 business days</b>, after which the intention to proceed is confirmed again. The subscription may be withdrawn freely during that period.' },
+            { ko: '<b>고령투자자</b> — 지정인 연락처 확인 등 고령투자자 보호 절차를 함께 적용합니다.', en: '<b>Elderly clients</b> — additional protections apply, including confirming a designated contact person.' }
+          ]
+        }
+      ],
+      checklist: [
+        { ko: '원금 전액을 잃을 수 있다는 점을 이해하셨습니까?', en: 'Do you understand that you could lose your entire principal?' },
+        { ko: '조기상환 배리어와 낙인 배리어가 각각 몇 %인지 확인하셨습니까?', en: 'Have you confirmed the early-redemption and knock-in barrier levels?' },
+        { ko: '제시수익률이 최대 수익이며, 그 이상은 받을 수 없다는 점을 이해하셨습니까?', en: 'Do you understand the quoted yield is the maximum, with no upside beyond it?' },
+        { ko: '손익이 가장 많이 하락한 기초자산을 기준으로 정해진다는 점을 이해하셨습니까?', en: 'Do you understand the outcome is judged on the worst-performing underlying?' },
+        { ko: '만기 전에 찾으면 원금보다 크게 적은 금액을 받을 수 있다는 점을 이해하셨습니까?', en: 'Do you understand that exiting early can return far less than you invested?' },
+        { ko: '발행 증권사가 지급 불능이 되면 조건을 채워도 못 받을 수 있다는 점을 이해하셨습니까?', en: 'Do you understand that issuer insolvency can prevent payment even if conditions are met?' },
+        { ko: '예금자보호 대상이 아니라는 점을 이해하셨습니까?', en: 'Do you understand this is not covered by depositor protection?' },
+        { ko: '이 상품의 위험등급과, 고객님 투자성향과의 관계를 확인하셨습니까?', en: 'Have you confirmed the product\'s risk grade against your investor profile?' },
+        { ko: '투자설명서(및 핵심설명서)를 교부받으셨습니까?', en: 'Have you received the prospectus (and key-information document)?' }
+      ]
+    },
+
+    {
+      id: 'kr',
+      name: { ko: '국내펀드', en: 'Domestic fund' },
+      desc: {
+        ko: '여러 투자자의 자금을 모아 운용사가 국내 주식·채권 등에 투자하고, 그 결과를 좌수에 따라 나누는 실적배당 상품입니다.',
+        en: 'A pooled vehicle in which an asset manager invests in Korean equities, bonds and similar assets, and distributes the result pro rata. Returns depend on performance — they are not fixed.'
+      },
+      blocks: [
+        {
+          title: { ko: '상품의 내용', en: 'Product content' },
+          items: [
+            { ko: '<b>실적배당 상품</b>입니다. 확정금리가 아니며, 운용 결과가 그대로 고객의 손익이 됩니다.', en: 'Returns are <b>performance-based</b>. There is no fixed rate; the manager\'s results flow straight through to the client.' },
+            { ko: '운용사(운용) · 판매사(판매와 설명) · 신탁업자(자산 보관)가 분리되어 있어, <b>판매사는 수익을 보장하지 않습니다.</b>', en: 'Management, distribution and custody are separated. <b>The distributor does not guarantee any return.</b>' },
+            { ko: '유형에 따라 위험이 크게 달라집니다 — 주식형 · 채권형 · 혼합형 · MMF · 재간접 등. 어떤 유형인지 먼저 확인하십시오.', en: 'Risk varies sharply by type — equity, bond, balanced, MMF, fund-of-funds. Identify the type first.' },
+            { ko: '<b>미래가격 방식</b> — 매수·환매 신청 시점의 기준가가 아니라, 펀드별로 정해진 적용 기준가로 체결됩니다.', en: '<b>Forward pricing</b> — orders are executed at the NAV designated for that fund, not the NAV at the time of the request.' },
+            { ko: '<b>과거 수익률은 미래 수익률을 보장하지 않습니다.</b> 특정 기간의 성과만 강조해 설명해서는 안 됩니다.', en: '<b>Past performance does not guarantee future returns.</b> Highlighting a favourable period alone is not acceptable.' }
+          ]
+        },
+        {
+          title: { ko: '투자에 따르는 위험', en: 'Investment risks' },
+          items: [
+            { ko: '<span class="em">원금 손실이 가능하며, 그 손실은 전부 투자자에게 귀속됩니다.</span> 예금자보호 대상이 아닙니다.', en: '<span class="em">Principal may be lost, and the loss falls entirely on the investor.</span> Not covered by depositor protection.' },
+            { ko: '<b>시장위험</b> — 주가·금리 변동으로 편입자산의 가치가 떨어지면 기준가가 하락합니다.', en: '<b>Market risk</b> — the NAV falls when holdings decline with equity prices or interest rates.' },
+            { ko: '<b>신용위험</b> — 편입 채권 발행자의 부도·신용등급 하락으로 손실이 날 수 있습니다.', en: '<b>Credit risk</b> — default or downgrade of a bond issuer in the portfolio can cause losses.' },
+            { ko: '<b>유동성 위험</b> — 대량 환매나 시장 경색 시 <b>환매 연기 또는 일부 환매</b>가 이루어질 수 있습니다.', en: '<b>Liquidity risk</b> — heavy redemptions or market stress can lead to <b>deferred or partial redemption</b>.' },
+            { ko: '<b>운용 위험</b> — 같은 유형이라도 운용사의 판단에 따라 성과가 달라집니다.', en: '<b>Manager risk</b> — results differ by the manager\'s decisions even within the same category.' },
+            { ko: '파생상품을 활용하는 펀드는 <b>기초자산 변동폭보다 큰 손실</b>이 발생할 수 있습니다.', en: 'Funds using derivatives can lose <b>more than the move in the underlying</b>.' }
+          ]
+        },
+        {
+          title: { ko: '위험등급 · 수수료 · 세금', en: 'Risk grade, fees and tax' },
+          table: [
+            { th: { ko: '위험등급', en: 'Risk grade' }, td: { ko: '1등급(매우 높은 위험)~6등급(매우 낮은 위험). <b>간이투자설명서 첫 장에 표기된 등급</b>으로 설명하고, 고객 투자성향과 맞는지 확인하십시오.', en: 'Graded 1 (very high risk) to 6 (very low risk). Use the <b>grade printed on the first page of the simplified prospectus</b> and check it against the client\'s profile.' } },
+            { th: { ko: '판매수수료', en: 'Sales charge' }, td: { ko: '가입 시 떼는 <b>선취</b>, 환매 시 떼는 <b>후취</b>가 있으며 클래스(A·C·S 등)에 따라 구조가 다릅니다. 같은 펀드라도 클래스에 따라 총부담이 달라집니다.', en: 'Charged <b>front-end</b> at purchase or <b>back-end</b> at redemption, depending on the share class (A, C, S…). Total cost differs by class for the same fund.' } },
+            { th: { ko: '총보수', en: 'Total expenses' }, td: { ko: '운용·판매·수탁·사무관리 보수가 <b>매일 순자산에서 차감되어 기준가에 이미 반영</b>됩니다. 따로 청구되지 않을 뿐, 수익률을 깎는 비용입니다. 여기에 기타비용과 매매중개수수료가 더해집니다.', en: 'Management, distribution, custody and administration fees are <b>deducted daily from net assets and already reflected in the NAV</b>. They are not billed separately but do reduce returns. Other expenses and brokerage costs are added on top.' } },
+            { th: { ko: '환매수수료', en: 'Redemption fee' }, td: { ko: '정해진 기간 안에 환매하면 이익금의 일정 비율을 <b>환매수수료</b>로 부담합니다. 기간과 요율은 펀드마다 다릅니다.', en: 'Redeeming within a set holding period incurs a <b>redemption fee</b> on part of the gain. The period and rate differ by fund.' } },
+            { th: { ko: '세금', en: 'Tax' }, td: { ko: '분배금과 환매 이익은 <b>배당소득</b>으로 15.4% 과세됩니다. 다만 국내 상장주식의 매매·평가차익 부분은 과세되지 않습니다.', en: 'Distributions and redemption gains are taxed as <b>dividend income</b> at 15.4%. Gains on listed Korean equities within the fund are exempt.' } }
+          ]
+        },
+        {
+          title: { ko: '계약의 해제 · 해지', en: 'Cancellation and termination' },
+          items: [
+            { ko: '펀드는 언제든 <b>환매 신청</b>이 가능하지만, 신청한 날 바로 돈이 나오지 않습니다. 적용 기준가일과 지급일은 펀드마다 다르므로 <b>실제 며칠이 걸리는지 숫자로 안내</b>하십시오.', en: 'Redemption can be requested at any time, but the money does not arrive the same day. The pricing date and payment date differ by fund — <b>state the actual number of days</b>.' },
+            { ko: '환매 신청 이후에는 <b>취소가 어렵습니다.</b> 기준가는 신청 시점에 확정되지 않습니다.', en: 'A redemption request is <b>difficult to cancel</b>, and the NAV is not fixed at the moment of the request.' },
+            { ko: '집합투자규약에 정한 사유가 발생하면 <b>환매가 연기</b>될 수 있습니다.', en: 'Redemption may be <b>deferred</b> where the fund rules provide for it.' },
+            { ko: '일반 펀드는 청약철회권 대상이 아닙니다. 다만 <b>고난도금융투자상품에 해당하는 펀드</b>는 7일 이내 청약철회가 가능합니다.', en: 'Ordinary funds carry no right of withdrawal, but a fund classified as a <b>highly complex product</b> may be withdrawn within 7 days.' },
+            { ko: '판매규제 위반 시 <b>위법계약해지권</b> — 계약일로부터 5년 이내이면서 위반 사실을 안 날로부터 1년 이내.', en: 'Where sales rules were breached, the <b>right to terminate an unlawful contract</b> applies — within 5 years of the contract and 1 year of learning of the breach.' }
+          ]
+        },
+        {
+          title: { ko: '교부 서류 · 추가 절차', en: 'Documents and additional procedures' },
+          items: [
+            { ko: '<b>교부</b> — 간이투자설명서를 반드시 드리고, 고객이 요청하면 투자설명서를 드립니다. 집합투자규약은 요청 시 제공합니다.', en: '<b>Hand over</b> — the simplified prospectus is mandatory; the full prospectus is provided on request, as are the fund rules.' },
+            { ko: '<b>사후 제공</b> — 자산운용보고서가 분기마다 제공되고, 중요 사항 변경 시 수시로 공시됩니다.', en: '<b>Ongoing</b> — an asset-management report is provided quarterly, and material changes are disclosed as they occur.' },
+            { ko: '<b>적합성 원칙</b> — 권유해서 판매할 때는 투자성향 진단 결과에 맞는 펀드만 권유할 수 있습니다.', en: '<b>Suitability</b> — when recommending, only funds matching the client\'s assessed profile may be proposed.' },
+            { ko: '<b>적정성 원칙</b> — 권유 없이 고객이 스스로 파생형·고난도 펀드를 청약하는 경우에도, 적정하지 않으면 그 사실을 알리고 확인을 받아야 합니다.', en: '<b>Appropriateness</b> — even without a recommendation, if a client subscribes to a derivative or highly complex fund that is not appropriate, that fact must be disclosed and confirmed.' },
+            { ko: '<b>고난도 펀드</b>는 녹취와 2영업일 이상의 숙려기간 절차가 적용됩니다. 65세 이상 고령투자자 보호 절차도 함께 확인하십시오.', en: '<b>Highly complex funds</b> require recording and a cooling-off period of at least 2 business days. Apply the protections for clients aged 65+ as well.' }
+          ]
+        }
+      ],
+      checklist: [
+        { ko: '원금이 보장되지 않는 실적배당 상품이라는 점을 이해하셨습니까?', en: 'Do you understand this is a performance-based product with no principal guarantee?' },
+        { ko: '이 펀드가 어떤 유형(주식형·채권형 등)이며 무엇에 투자하는지 확인하셨습니까?', en: 'Have you confirmed the fund\'s type and what it invests in?' },
+        { ko: '위험등급과 고객님 투자성향이 맞는지 확인하셨습니까?', en: 'Have you confirmed the risk grade matches your investor profile?' },
+        { ko: '보수가 매일 기준가에서 차감된다는 점을 이해하셨습니까?', en: 'Do you understand fees are deducted from the NAV every day?' },
+        { ko: '환매수수료가 붙는 기간과 요율을 확인하셨습니까?', en: 'Have you confirmed the redemption-fee period and rate?' },
+        { ko: '환매를 신청하면 며칠 뒤에 얼마의 기준가로 지급되는지 확인하셨습니까?', en: 'Have you confirmed how many days redemption takes and at which NAV?' },
+        { ko: '과거 수익률이 미래를 보장하지 않는다는 점을 이해하셨습니까?', en: 'Do you understand past performance does not guarantee future returns?' },
+        { ko: '예금자보호 대상이 아니라는 점을 이해하셨습니까?', en: 'Do you understand this is not covered by depositor protection?' },
+        { ko: '간이투자설명서를 교부받으셨습니까?', en: 'Have you received the simplified prospectus?' }
+      ]
+    },
+
+    {
+      id: 'ov',
+      name: { ko: '해외펀드', en: 'Overseas fund' },
+      desc: {
+        ko: '국내펀드의 위험을 모두 포함하면서, 환율·국가·현지 시장이라는 위험이 더해집니다. 세금 계산 방식도 해외주식 직접투자와 다릅니다.',
+        en: 'Carries every risk of a domestic fund, plus currency, country and local-market risk. It is also taxed differently from investing in overseas shares directly.'
+      },
+      blocks: [
+        {
+          title: { ko: '상품의 내용', en: 'Product content' },
+          items: [
+            { ko: '해외 주식·채권·리츠 등에 투자하는 펀드로, <b>국내에서 설정된 역내펀드</b>와 <b>해외에서 설정되어 판매되는 역외펀드</b>가 있습니다. 세금·환매 절차가 다르므로 어느 쪽인지 먼저 확인하십시오.', en: 'Invests in overseas equities, bonds or REITs. It may be <b>domiciled in Korea</b> or an <b>offshore fund distributed here</b> — tax and redemption differ, so identify which it is first.' },
+            { ko: '<b>환헤지형(H)과 언헤지형</b>은 같은 펀드라도 성과가 달라집니다. 어느 클래스에 가입하는지 반드시 짚어 주십시오.', en: 'A <b>currency-hedged (H) class and an unhedged class</b> of the same fund perform differently. Make explicit which class is being purchased.' },
+            { ko: '국내펀드와 마찬가지로 <b>실적배당 상품</b>이며, 운용 결과가 그대로 손익이 됩니다.', en: 'Like a domestic fund, returns are <b>performance-based</b> and flow straight through to the client.' },
+            { ko: '현지 시장의 휴장일과 결제 주기 때문에 <b>기준가 반영과 자금 흐름이 국내펀드보다 느립니다.</b>', en: 'Local holidays and settlement cycles mean <b>NAV updates and cash flows are slower than for a domestic fund.</b>' }
+          ]
+        },
+        {
+          title: { ko: '투자에 따르는 위험', en: 'Investment risks' },
+          items: [
+            { ko: '<span class="em">원금 손실이 가능하며 예금자보호 대상이 아닙니다.</span> 시장·신용·유동성·운용 위험은 국내펀드와 동일하게 적용됩니다.', en: '<span class="em">Principal may be lost and there is no depositor protection.</span> Market, credit, liquidity and manager risk apply just as for a domestic fund.' },
+            { ko: '<b>환율변동 위험</b> — 현지에서 수익이 나도 원화가 강세면 원화 기준 손실이 날 수 있습니다. <b>이 위험은 언헤지형에서 그대로 노출됩니다.</b>', en: '<b>Currency risk</b> — a gain in local currency can still be a loss in won if the won strengthens. <b>An unhedged class is fully exposed to this.</b>' },
+            { ko: '<b>환헤지도 완전하지 않습니다</b> — 헤지 비용이 수익률을 깎고, 양국 금리차에 따라 비용이 커질 수 있으며, 헤지 비율만큼만 방어됩니다.', en: '<b>Hedging is not complete</b> — it costs return, the cost grows with the interest-rate gap between the two currencies, and only the hedged portion is protected.' },
+            { ko: '<b>국가 · 정치 · 제도 위험</b> — 현지 규제 변경, 과세제도 변경, 자본 통제, 송금 제한이 발생할 수 있습니다. 신흥국일수록 큽니다.', en: '<b>Country, political and regulatory risk</b> — rule changes, tax changes, capital controls and remittance limits, greater in emerging markets.' },
+            { ko: '<b>현지 시장 위험</b> — 유동성이 낮은 시장에서는 매도 자체가 어렵고, 거래 정지·휴장이 길어지면 환매도 늦어집니다.', en: '<b>Local-market risk</b> — in illiquid markets selling itself is difficult, and trading halts or long holidays delay redemption.' },
+            { ko: '<b>정보 지연 위험</b> — 시차 때문에 현지 사건이 기준가에 반영되는 시점이 하루 이상 늦을 수 있습니다.', en: '<b>Information lag</b> — time-zone differences can delay the reflection of local events in the NAV by a day or more.' }
+          ]
+        },
+        {
+          title: { ko: '위험등급 · 수수료 · 세금', en: 'Risk grade, fees and tax' },
+          table: [
+            { th: { ko: '위험등급', en: 'Risk grade' }, td: { ko: '1~6등급 체계는 국내펀드와 동일합니다. 같은 유형이어도 <b>환위험과 국가위험 때문에 등급이 더 높게(위험하게) 부여되는 경우가 많습니다.</b>', en: 'The 1–6 scale is the same as for domestic funds, but the same asset type is <b>often graded riskier because of currency and country risk.</b>' } },
+            { th: { ko: '보수 · 비용', en: 'Fees' }, td: { ko: '총보수 외에 <b>현지 거래·보관 비용, 환전 스프레드, 환헤지 비용</b>이 추가로 발생합니다. 역외펀드는 국내펀드보다 비용 구조가 복잡합니다.', en: 'On top of the expense ratio there are <b>local trading and custody costs, FX spreads and hedging costs</b>. Offshore funds have the more complex structure.' } },
+            { th: { ko: '세금', en: 'Tax' }, td: { ko: '이익 <b>전액</b>이 배당소득으로 15.4% 과세되며, 금융소득종합과세 대상입니다. 국내펀드와 달리 <b>주식 매매차익도 과세 대상</b>입니다. 환차익도 과세에 포함됩니다.', en: 'The <b>entire</b> gain is taxed as dividend income at 15.4% and counts toward aggregate financial-income taxation. Unlike a domestic fund, <b>equity trading gains are taxable</b>, and FX gains are included.' } },
+            { th: { ko: '직접투자와 비교', en: 'vs. direct investment' }, td: { ko: '해외주식을 <b>직접</b> 사면 양도소득으로 분리과세(기본공제 후 22%)되고 종목 간 손익통산이 됩니다. 펀드는 배당소득 과세라 <b>과세 방식과 손익통산 범위가 다릅니다.</b> 어느 쪽이 유리한지는 고객 소득 상황에 따라 달라지므로 단정하지 마십시오.', en: 'Buying overseas shares <b>directly</b> is taxed as capital gains (22% after the basic deduction) with gains and losses offset across holdings. A fund is taxed as dividend income, so <b>the method and the scope of offsetting differ.</b> Which is better depends on the client\'s circumstances — do not assert one is superior.' } }
+          ]
+        },
+        {
+          title: { ko: '계약의 해제 · 해지', en: 'Cancellation and termination' },
+          items: [
+            { ko: '<b>환매에 걸리는 기간이 국내펀드보다 깁니다.</b> 현지 결제일과 휴장일이 겹치면 더 길어집니다. 반드시 해당 펀드의 실제 소요일을 숫자로 안내하십시오.', en: '<b>Redemption takes longer than for a domestic fund</b>, and longer still when local settlement and holidays overlap. State the actual number of days for that fund.' },
+            { ko: '환매 기준가가 적용되는 날과 지급일이 각각 다르며, 그 사이의 <b>환율 변동은 고객이 부담합니다.</b>', en: 'The pricing date and the payment date differ, and the <b>client bears the currency movement in between.</b>' },
+            { ko: '환매 신청 후에는 취소가 어렵고, 신청 시점에 받을 금액이 확정되지 않습니다.', en: 'A redemption request is difficult to cancel and the amount receivable is not fixed when it is made.' },
+            { ko: '현지 시장 폐쇄·자본 통제 등으로 <b>환매가 연기</b>될 수 있습니다.', en: 'Redemption may be <b>deferred</b> owing to market closures or capital controls.' },
+            { ko: '판매규제 위반 시 <b>위법계약해지권</b> — 계약일로부터 5년 이내이면서 위반 사실을 안 날로부터 1년 이내.', en: 'Where sales rules were breached, the <b>right to terminate an unlawful contract</b> applies — within 5 years of the contract and 1 year of learning of the breach.' }
+          ]
+        },
+        {
+          title: { ko: '교부 서류 · 추가 절차', en: 'Documents and additional procedures' },
+          items: [
+            { ko: '<b>교부</b> — 간이투자설명서(요청 시 투자설명서), 집합투자규약. 역외펀드도 판매사를 통해 국문 설명서를 교부합니다.', en: '<b>Hand over</b> — the simplified prospectus (full prospectus on request) and the fund rules. Offshore funds are also documented in Korean through the distributor.' },
+            { ko: '<b>환헤지 여부</b>를 반드시 설명하고, 어느 클래스로 가입하는지 고객이 인지한 상태에서 청약을 받으십시오.', en: 'Always explain <b>whether the class is hedged</b>, and take the subscription only once the client knows which class they are buying.' },
+            { ko: '<b>과세 방식의 차이</b>(해외주식 직접투자 대비)를 설명하되, 세무 상담이 필요한 사안은 세무 전문가 확인을 안내하십시오.', en: 'Explain <b>how the tax treatment differs</b> from direct overseas share investment, and refer detailed tax questions to a tax professional.' },
+            { ko: '적합성·적정성 원칙, 부적합확인 절차, 고령투자자 보호 절차는 국내펀드와 동일하게 적용됩니다.', en: 'Suitability, appropriateness, the unsuitability confirmation process and elderly-client protections apply exactly as for a domestic fund.' },
+            { ko: '고난도금융투자상품에 해당하는 해외펀드는 <b>녹취 + 2영업일 이상 숙려기간</b> 절차가 적용됩니다.', en: 'An overseas fund classified as a highly complex product requires <b>recording plus a cooling-off period of at least 2 business days</b>.' }
+          ]
+        }
+      ],
+      checklist: [
+        { ko: '원금이 보장되지 않고 예금자보호 대상이 아니라는 점을 이해하셨습니까?', en: 'Do you understand there is no principal guarantee and no depositor protection?' },
+        { ko: '환율이 불리하게 움직이면 현지 수익에도 원화 손실이 날 수 있다는 점을 이해하셨습니까?', en: 'Do you understand an adverse FX move can turn a local gain into a won loss?' },
+        { ko: '가입하시는 클래스가 환헤지형인지 언헤지형인지 확인하셨습니까?', en: 'Have you confirmed whether your class is hedged or unhedged?' },
+        { ko: '환헤지형이라도 비용이 들고 위험이 완전히 없어지지 않는다는 점을 이해하셨습니까?', en: 'Do you understand hedging has a cost and does not remove the risk entirely?' },
+        { ko: '투자 대상 국가의 정치·규제·자본통제 위험을 이해하셨습니까?', en: 'Do you understand the political, regulatory and capital-control risks of the target country?' },
+        { ko: '환매에 며칠이 걸리는지, 그 사이 환율 변동을 고객님이 부담한다는 점을 확인하셨습니까?', en: 'Have you confirmed how long redemption takes and that you bear the FX move in between?' },
+        { ko: '이익 전액이 배당소득으로 과세되어 해외주식 직접투자와 세금 계산이 다르다는 점을 이해하셨습니까?', en: 'Do you understand the whole gain is taxed as dividend income, unlike direct overseas share investment?' },
+        { ko: '위험등급과 고객님 투자성향이 맞는지 확인하셨습니까?', en: 'Have you confirmed the risk grade matches your investor profile?' },
+        { ko: '간이투자설명서를 교부받으셨습니까?', en: 'Have you received the simplified prospectus?' }
+      ]
+    }
+  ];
+
+  /* ---------- 렌더 ---------- */
+  function pair(obj) {
+    return '<span data-ko>' + obj.ko + '</span><span data-en>' + obj.en + '</span>';
+  }
+
+  function renderBlock(block, idx) {
+    var out = '<div class="block">';
+    out += '<h3 class="block-title"><span class="idx">' + ('0' + idx) + '</span>' + pair(block.title) + '</h3>';
+    if (block.items) {
+      out += '<ul>';
+      for (var i = 0; i < block.items.length; i++) out += '<li>' + pair(block.items[i]) + '</li>';
+      out += '</ul>';
+    }
+    if (block.table) {
+      out += '<table><tbody>';
+      for (var j = 0; j < block.table.length; j++) {
+        out += '<tr><th scope="row">' + pair(block.table[j].th) + '</th><td>' + pair(block.table[j].td) + '</td></tr>';
+      }
+      out += '</tbody></table>';
+    }
+    return out + '</div>';
+  }
+
+  function renderProduct(p, index) {
+    var out = '<div class="panel" id="panel-' + p.id + '" role="tabpanel" aria-labelledby="tab-' + p.id + '"' +
+              (index === 0 ? '' : ' hidden') + '>';
+
+    out += '<div class="panel-head">';
+    out += '<h3 class="pname">' + pair(p.name) + '</h3>';
+    out += '<p class="pdesc">' + pair(p.desc) + '</p>';
+    out += '</div>';
+
+    for (var i = 0; i < p.blocks.length; i++) out += renderBlock(p.blocks[i], i + 1);
+
+    out += '<div class="check" data-check="' + p.id + '">';
+    out += '<div class="check-head">';
+    out += '<h4><span data-ko>고객 이해 확인</span><span data-en>Confirmation of understanding</span></h4>';
+    out += '<span class="count"><span class="done">0</span> / ' + p.checklist.length + '</span>';
+    out += '</div>';
+    for (var k = 0; k < p.checklist.length; k++) {
+      out += '<label><input type="checkbox"><span>' + pair(p.checklist[k]) + '</span></label>';
+    }
+    out += '<div class="sign">';
+    out += '<span><span data-ko>설명일자</span><span data-en>Date of explanation</span></span>';
+    out += '<span><span data-ko>설명 담당자</span><span data-en>Explained by</span></span>';
+    out += '<span><span data-ko>고객 확인(서명)</span><span data-en>Client signature</span></span>';
+    out += '</div>';
+    out += '</div>';
+
+    out += '<div class="actions">';
+    out += '<button type="button" class="btn solid" data-print><span data-ko>확인서로 인쇄</span><span data-en>Print as a record</span></button>';
+    out += '<button type="button" class="btn" data-reset><span data-ko>체크 지우기</span><span data-en>Clear checks</span></button>';
+    out += '</div>';
+
+    return out + '</div>';
+  }
+
+  var host = document.getElementById('panels');
+  var html = '';
+  for (var i = 0; i < PRODUCTS.length; i++) html += renderProduct(PRODUCTS[i], i);
+  host.innerHTML = html;
+
+  /* ---------- 탭 ---------- */
+  var tabs = document.querySelectorAll('[role="tab"]');
+  function selectTab(id) {
+    for (var i = 0; i < tabs.length; i++) {
+      var on = tabs[i].id === 'tab-' + id;
+      tabs[i].setAttribute('aria-selected', String(on));
+      document.getElementById(tabs[i].getAttribute('aria-controls')).hidden = !on;
+    }
+  }
+  for (var t = 0; t < tabs.length; t++) {
+    (function (btn) {
+      btn.addEventListener('click', function () { selectTab(btn.id.slice(4)); });
+      btn.addEventListener('keydown', function (e) {
+        if (e.key !== 'ArrowRight' && e.key !== 'ArrowLeft') return;
+        var list = Array.prototype.slice.call(tabs);
+        var next = list[(list.indexOf(btn) + (e.key === 'ArrowRight' ? 1 : list.length - 1)) % list.length];
+        next.focus(); selectTab(next.id.slice(4));
+      });
+    })(tabs[t]);
+  }
+
+  /* ---------- 체크리스트 카운터 ---------- */
+  /* 확인 상태는 저장하지 않는다 — 응대 기록은 인쇄본과 서명으로 남긴다. */
+  function refresh(box) {
+    var boxes = box.querySelectorAll('input[type="checkbox"]');
+    var done = 0;
+    for (var i = 0; i < boxes.length; i++) if (boxes[i].checked) done++;
+    box.querySelector('.done').textContent = String(done);
+  }
+  var checks = document.querySelectorAll('[data-check]');
+  for (var c = 0; c < checks.length; c++) {
+    (function (box) {
+      box.addEventListener('change', function () { refresh(box); });
+    })(checks[c]);
+  }
+
+  document.addEventListener('click', function (e) {
+    var printBtn = e.target.closest('[data-print]');
+    if (printBtn) { window.print(); return; }
+    var resetBtn = e.target.closest('[data-reset]');
+    if (!resetBtn) return;
+    var panel = resetBtn.closest('.panel');
+    var boxes = panel.querySelectorAll('input[type="checkbox"]');
+    for (var i = 0; i < boxes.length; i++) boxes[i].checked = false;
+    refresh(panel.querySelector('[data-check]'));
+  });
+
+  /* ---------- 한/영 ---------- */
+  var root = document.documentElement;
+  var langButtons = document.querySelectorAll('.lang-toggle button');
+  function setLang(lang) {
+    root.setAttribute('lang', lang);
+    for (var i = 0; i < langButtons.length; i++) {
+      langButtons[i].setAttribute('aria-checked', String(langButtons[i].dataset.lang === lang));
+    }
+    try { localStorage.setItem('explainduty-lang', lang); } catch (err) {}
+  }
+  for (var b = 0; b < langButtons.length; b++) {
+    langButtons[b].addEventListener('click', function () { setLang(this.dataset.lang); });
+  }
+  var saved;
+  try { saved = localStorage.getItem('explainduty-lang'); } catch (err) {}
+  if (saved === 'en' || saved === 'ko') setLang(saved);
+})();
+</script>
+</body>
+</html>
