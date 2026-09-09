@@ -7,20 +7,26 @@
   차이만 보고하고, 실제 교체는 개요를 채우는 커밋으로 한다.
 
 순위를 어떻게 만드나
-  한국거래소 정보데이터시스템(data.krx.co.kr)의 **전종목 시세**를 받아 유가증권·코스닥을
-  한 판에 놓고 시가총액으로 줄을 세운다. 미국 쪽 점검(check_us100_ranking.py)이
-  S&P 500 + 스크리너로 모집단을 어림해야 했던 것과 달리, 국내는 거래소가 전 종목
-  시가총액을 그대로 주므로 모집단을 추정할 필요가 없다.
+  야후 스크리너(region=kr, 시가총액 내림차순)로 상위 종목을 받는다. 우리 목록 종목의
+  시총은 방금 수집한 data/kr100/latest.json 에서 읽어 같은 판의 값으로 맞춘다.
 
-  우선주·리츠·스팩·ETF 는 "기업"이 아니거나 같은 회사의 다른 종목이므로 제외한다
-  (종목코드 끝자리가 0 이 아닌 것이 우선주, 이름으로 걸러지는 것이 스팩·리츠다).
+  **한국거래소(data.krx.co.kr)는 쓰지 않는다.** 전종목 시세를 주는 getJsonData 가
+  GitHub 러너에서 HTTP 400 과 본문 `LOGOUT` 을 돌려준다 — Referer·쿠키·bld 를 바꿔
+  네 가지로 시도해도 같았다(2026-09-09 확인). 거래소가 클라우드 IP 를 거부하는
+  형태여서 헤더로 풀리는 문제가 아니다.
+
+  스크리너 결과에서 걸러내는 것
+    · 우선주 — 종목코드 끝자리가 0 이 아닌 것(005935 등). 같은 회사의 다른 종목이고,
+      야후가 우선주에 보통주 기준 시가총액을 붙여 주는 일이 있어 순위를 망친다.
+    · 스팩·리츠 — "기업이 아닌 것"이라 100대 기업의 모집단이 아니다.
+    · 코스피·코스닥이 아닌 심볼(접미사가 .KS/.KQ 가 아닌 것).
 
 내놓는 것
   data/kr100/ranking.json  — 데이터 브랜치에 함께 올라가고, 화면 ⑩ 섹션이 읽어 표시한다
   Actions 요약(::notice·단계 요약)  — 사람이 읽을 문장
   (선택) GitHub 이슈 하나를 만들거나 갱신한다 — GITHUB_TOKEN 과 KR100_RANK_ISSUE=1 일 때
 
-거래소가 응답하지 않으면 **ranking.json 을 쓰지 않는다.** 반쯤 맞는 순위를 올리면
+스크리너가 응답하지 않으면 **ranking.json 을 쓰지 않는다.** 반쯤 맞는 순위를 올리면
 화면이 "목록이 일치합니다" 라고 잘못 말하게 되므로, 그럴 때는 경고만 남기고 끝낸다.
 
 쓰는 법
@@ -30,25 +36,24 @@
 import datetime
 import json
 import os
+import re
 import sys
 import urllib.parse
 import urllib.request
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import fetch_kr100                                          # noqa: E402  국내 시장 프로필
-import fetch_us100 as F                                     # noqa: E402  수집 엔진(목록 파싱)
+import fetch_us100 as F                                     # noqa: E402  수집 엔진(목록 파싱·HTTP)
 
 TOP = 100
 DROP_RANK = 150          # 이 순위 밖으로 밀리면 교체 후보로 본다(경계에서 오가는 잡음을 걸러낸다)
 REPORT_MAX = 12          # 사람이 읽는 보고에 적는 최대 줄 수(파일에는 전부 남는다)
-BACK_DAYS = 10           # 휴장일이면 하루씩 앞으로 물러나며 다시 물어본다
+PAGE = 100               # 스크리너가 한 번에 주는 행 수
+PAGES = 4                # 상위 400위까지 받는다(TOP·DROP_RANK 판정에 넉넉하다)
 
-KRX_URL = "https://data.krx.co.kr/comm/bldAttendant/getJsonData.cmd"
-KRX_BLD = "dbms/MDC/STAT/standard/MDCSTAT01501"          # 전종목 시세(시가총액 포함)
-KRX_REFERER = "https://data.krx.co.kr/contents/MDC/MDI/mdiLoader/index.cmd"
-
-# 기업이 아니거나 같은 회사의 다른 종목 — 순위 모집단에서 뺀다
-EXCLUDE_WORDS = ("스팩", "리츠", "기업인수목적", "인프라투융자", "위탁관리부동산투자")
+SYM_RE = re.compile(r"^(\d{6})\.(KS|KQ)$")
+# 기업이 아닌 것 — 이름으로 걸러낸다. 야후의 국내 종목명은 영문·한글이 섞여 온다.
+EXCLUDE_RE = re.compile(r"스팩|기업인수목적|리츠|위탁관리부동산|인프라투융자|SPAC|REIT", re.I)
 
 
 def won(v):
@@ -63,61 +68,78 @@ def won(v):
     return "%s원" % format(int(round(a)), ",")
 
 
-def krx_all_stocks(day):
-    """그 날짜의 전종목 시세. 휴장일이면 빈 목록이 온다."""
-    body = urllib.parse.urlencode({
-        "bld": KRX_BLD, "locale": "ko_KR", "mktId": "ALL",
-        "trdDd": day, "share": "1", "money": "1", "csvxls_isNo": "false",
-    }).encode("utf-8")
-    req = urllib.request.Request(KRX_URL, data=body, headers={
-        "User-Agent": F.UA, "Referer": KRX_REFERER,
-        "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8",
-        "Accept": "application/json, text/javascript, */*; q=0.01",
-        "X-Requested-With": "XMLHttpRequest",
-    })
-    with urllib.request.urlopen(req, timeout=F.TIMEOUT) as r:
+def screener_page(offset, size=PAGE):
+    """야후 스크리너 — region=kr, 시가총액 내림차순. crumb 이 있어야 한다."""
+    body = {
+        "size": size, "offset": offset,
+        "sortField": "intradaymarketcap", "sortType": "DESC",
+        "quoteType": "EQUITY",
+        "query": {"operator": "AND", "operands": [
+            {"operator": "eq", "operands": ["region", "kr"]}]},
+        "userId": "", "userIdType": "guid",
+    }
+    url = ("https://query2.finance.yahoo.com/v1/finance/screener?lang=en-US&region=US"
+           + ("&crumb=" + urllib.parse.quote(F.CRUMB) if F.CRUMB else ""))
+    req = urllib.request.Request(url, data=json.dumps(body).encode("utf-8"),
+                                 headers=dict(F.HDRS, **{"Content-Type": "application/json"}))
+    with F._OPENER.open(req, timeout=F.TIMEOUT) as r:
         j = json.loads(r.read().decode("utf-8", "replace"))
-    return j.get("OutBlock_1") or j.get("output") or []
+    res = ((j.get("finance") or {}).get("result") or [])
+    if not res:
+        raise RuntimeError("스크리너 응답에 result 가 없다")
+    return res[0].get("quotes") or [], res[0].get("total")
 
 
-def krx_universe():
-    """가장 최근 영업일의 전종목 시가총액. {심볼: {cap, name, market}}"""
-    today = datetime.datetime.now(datetime.timezone(datetime.timedelta(hours=9))).date()
-    last_err = None
-    for back in range(BACK_DAYS):
-        day = (today - datetime.timedelta(days=back)).strftime("%Y%m%d")
-        try:
-            rows = krx_all_stocks(day)
-        except Exception as e:                            # noqa: BLE001
-            last_err = e
-            print("  %s 조회 실패 — %s" % (day, e), flush=True)
-            continue
+def screener_universe():
+    """{심볼: {cap, name, market}} — 우선주·스팩·리츠를 걸러낸 상위 종목."""
+    out, total, dropped = {}, None, 0
+    for page in range(PAGES):
+        rows, total = screener_page(page * PAGE)
         if not rows:
-            print("  %s 는 휴장(또는 자료 없음)" % day, flush=True)
-            continue
+            break
+        for q in rows:
+            sym = q.get("symbol") or ""
+            m = SYM_RE.match(sym)
+            cap = F.num(q.get("marketCap"))
+            if not m or not cap:
+                dropped += 1
+                continue
+            if not m.group(1).endswith("0"):
+                dropped += 1                     # 우선주 — 같은 회사의 다른 종목이다
+                continue
+            name = (q.get("shortName") or q.get("longName") or sym).strip()
+            if EXCLUDE_RE.search(name):
+                dropped += 1
+                continue
+            out[sym] = {"cap": cap, "name": name,
+                        "market": "코스피" if m.group(2) == "KS" else "코스닥"}
+        if len(rows) < PAGE:
+            break
+    if len(out) < 200:
+        raise RuntimeError("스크리너에서 쓸 수 있는 종목이 %d개뿐이다" % len(out))
+    print("야후 스크리너: 국내 %s종목 중 상위 %d개 확보(우선주·스팩·리츠 등 %d개 제외)"
+          % (total, len(out), dropped), flush=True)
+    return out, total
 
-        out = {}
-        for r in rows:
-            code = (r.get("ISU_SRT_CD") or "").strip()
-            name = (r.get("ISU_ABBRV") or "").strip()
-            mkt = (r.get("MKT_NM") or "").strip()
-            cap = F.num(str(r.get("MKTCAP") or "").replace(",", ""))
-            if len(code) != 6 or not code.isdigit() or not cap:
-                continue
-            if not code.endswith("0"):
-                continue                                  # 우선주 — 같은 회사의 다른 종목이다
-            if mkt not in ("KOSPI", "KOSDAQ", "KOSDAQ GLOBAL"):
-                continue                                  # 코넥스 등은 "100대 기업"의 모집단이 아니다
-            if any(w in name for w in EXCLUDE_WORDS):
-                continue
-            sym = code + (".KS" if mkt == "KOSPI" else ".KQ")
-            out[sym] = {"cap": cap, "name": name, "market": "코스피" if mkt == "KOSPI" else "코스닥"}
-        if len(out) < 1000:
-            print("  %s 응답이 %d종목뿐이다 — 다음 날짜로" % (day, len(out)), flush=True)
-            continue
-        print("한국거래소 %s 기준 %d종목" % (day, len(out)), flush=True)
-        return out, day
-    raise RuntimeError("최근 %d일 안에서 전종목 시세를 받지 못했다 (마지막 오류: %s)" % (BACK_DAYS, last_err))
+
+def our_caps():
+    """방금 수집한 스냅샷에서 우리 목록의 시가총액을 읽는다(같은 판의 값으로 순위를 매긴다)."""
+    path = os.path.join(F.OUT_DIR, "latest.json")
+    if not os.path.exists(path) or os.path.getsize(path) < 1000:
+        print("스냅샷이 없다 — 우리 목록의 시총은 스크리너 값에만 의존한다", flush=True)
+        return {}
+    try:
+        d = json.load(open(path, encoding="utf-8"))
+    except Exception as e:                                # noqa: BLE001
+        print("::warning::latest.json 을 읽지 못했다 — %s" % e)
+        return {}
+    caps = {}
+    for sym, c in (d.get("companies") or {}).items():
+        cap = F.num((c.get("quote") or {}).get("cap"))
+        if cap:
+            caps[sym] = cap
+    print("스냅샷 %s · 시총이 있는 종목 %d개" % (d.get("fetchedAt"), len(caps)), flush=True)
+    return caps
 
 
 def open_or_update_issue(body):
@@ -155,12 +177,23 @@ def main():
     have = [c["sym"] for c in companies]
     ko = {c["sym"]: c["ko"] for c in companies}
 
+    F.init_crumb(rounds=2)
     try:
-        universe, day = krx_universe()
+        universe, total = screener_universe()
     except Exception as e:                                # noqa: BLE001
         # 반쯤 맞는 순위를 올리지 않는다 — 화면이 "일치합니다" 라고 잘못 말하게 된다.
-        print("::warning::한국거래소 전종목 시세를 받지 못해 목록 점검을 건너뛴다 — %s" % e)
+        print("::warning::시가총액 순위를 받지 못해 목록 점검을 건너뛴다 — %s" % e)
         return 0
+
+    # 우리 목록의 시총은 스냅샷 값으로 맞추고, 스크리너에 없던 종목도 순위에 넣는다
+    snap = our_caps()
+    for sym, cap in snap.items():
+        if sym in universe:
+            universe[sym]["cap"] = cap
+        else:
+            m = SYM_RE.match(sym)
+            universe[sym] = {"cap": cap, "name": ko.get(sym, sym),
+                             "market": "코스닥" if (m and m.group(2) == "KQ") else "코스피"}
 
     ranked = sorted(universe.items(), key=lambda kv: -kv[1]["cap"])
     rank = {sym: i + 1 for i, (sym, _) in enumerate(ranked)}
@@ -178,19 +211,19 @@ def main():
     out = {
         "builtAt": datetime.datetime.now(datetime.timezone.utc).replace(microsecond=0)
                    .isoformat().replace("+00:00", "Z"),
-        "source": "krx", "tradeDate": day, "universe": len(universe),
+        "source": "screener", "universe": len(universe), "krTotal": total,
         "top": TOP, "dropRank": DROP_RANK,
         "add": add, "drop": drop, "unknown": unknown, "deduped": [],
         "ourRanks": {s: rank.get(s) for s in have},
         "top100": top,
-        "note": ("유니버스 = 한국거래소 전종목 시세(유가증권·코스닥, 우선주·스팩·리츠 제외). "
-                 "목록은 사람이 관리한다 — 이 파일은 갱신 후보만 알려 준다(기업 개요를 함께 채워야 하기 때문)."),
+        "note": ("유니버스 = 야후 스크리너(region=kr) 시총 상위 + 이 화면의 목록. "
+                 "우선주·스팩·리츠는 제외한다. 목록은 사람이 관리하며 이 파일은 갱신 후보만 알려 준다."),
     }
     os.makedirs(F.OUT_DIR, exist_ok=True)
     with open(os.path.join(F.OUT_DIR, "ranking.json"), "w", encoding="utf-8") as f:
         json.dump(out, f, ensure_ascii=False, separators=(",", ":"))
-    print("ranking.json 저장 (유니버스 %d · 추가 후보 %d · 밀린 종목 %d)"
-          % (len(universe), len(add), len(drop)), flush=True)
+    print("ranking.json 저장 (유니버스 %d · 추가 후보 %d · 밀린 종목 %d · 순위 미확인 %d)"
+          % (len(universe), len(add), len(drop), len(unknown)), flush=True)
 
     lines = []
     if add:
@@ -210,18 +243,19 @@ def main():
             lines.append("- … 그 밖에 %d개" % (len(drop) - REPORT_MAX))
     if unknown:
         lines.append("")
-        lines.append("거래소 자료에서 찾지 못한 종목(상장폐지·합병·코드 변경일 수 있습니다): "
+        lines.append("시총을 확인하지 못한 종목(상장폐지·합병·코드 변경일 수 있습니다): "
                      + ", ".join("`%s`" % s.split(".")[0] for s in unknown))
 
     if not add and not drop and not unknown:
-        msg = "대상 목록이 %s 기준 시가총액 상위 %d 과 일치한다(유니버스 %d)." % (day, TOP, len(universe))
+        msg = "대상 목록이 지금 시가총액 상위 %d 과 일치한다(유니버스 %d)." % (TOP, len(universe))
         print("::notice::" + msg)
         body = None
     else:
-        msg = ("대상 목록 갱신 후보 — 추가 %d개 / 밀린 종목 %d개 / 확인 실패 %d개 (%s 기준)"
-               % (len(add), len(drop), len(unknown), day))
+        msg = ("대상 목록 갱신 후보 — 추가 %d개 / 밀린 종목 %d개 / 확인 실패 %d개"
+               % (len(add), len(drop), len(unknown)))
         print("::notice::" + msg)
-        body = ("유니버스는 **한국거래소 전종목 시세**입니다(유가증권·코스닥, 우선주·스팩·리츠 제외).\n\n"
+        body = ("유니버스는 **야후 스크리너(region=kr) 시총 상위 + 이 화면의 목록**입니다"
+                "(우선주·스팩·리츠 제외).\n\n"
                 + "\n".join(lines)
                 + "\n\n교체는 자동으로 하지 않습니다 — 새 종목의 **검색 키워드·기업 개요**를 함께 "
                   "채워야 화면이 비지 않기 때문입니다. 바꾸려면 `kr-top100.html` 의 "

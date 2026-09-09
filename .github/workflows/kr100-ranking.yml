@@ -44,6 +44,23 @@ jobs:
         with:
           python-version: '3.12'
 
+      - name: 데이터 브랜치에서 최신 스냅샷 받기
+        # 우리 목록의 시총은 최근 수집분에서 읽는다(요청을 아끼고, 같은 판의 값으로 순위를 매긴다)
+        run: |
+          mkdir -p data/kr100
+          if git fetch --quiet origin "+refs/heads/kr100-data:refs/remotes/origin/kr100-data" 2>/dev/null; then
+            git show origin/kr100-data:data/kr100/latest.json > data/kr100/latest.json || true
+          fi
+          python - <<'PY'
+          import json, os
+          p = 'data/kr100/latest.json'
+          if os.path.exists(p) and os.path.getsize(p) > 1000:
+              d = json.load(open(p, encoding='utf-8'))
+              print('스냅샷 %s · %d종목' % (d.get('fetchedAt'), len(d.get('companies') or {})))
+          else:
+              print('::warning::스냅샷이 없다 — 우리 목록의 시총은 스크리너 값에만 의존한다')
+          PY
+
       - name: 목록 점검
         env:
           KR100_RANK_ISSUE: '1'
