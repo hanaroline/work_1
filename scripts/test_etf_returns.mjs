@@ -9,7 +9,7 @@
  * tools/discovery/etf_audit_verify.md 에 적힌 관측값 그대로다.
  */
 
-import { computeReturns, dropUnsettledBar } from './etf_lib.mjs';
+import { computeReturns, dropUnsettledBar, pendingBarOf } from './etf_lib.mjs';
 
 let pass = 0, fail = 0;
 function check(name, cond, detail) {
@@ -161,6 +161,47 @@ console.log('\n6. 장이 열려 있으면 오늘 봉을 쓰지 않는다');
   check('장 시간표가 없으면 손대지 않는다',
         noMeta.timestamp.length === 2 && !noMeta.__droppedUnsettled,
         `${noMeta.timestamp.length}개`);
+}
+
+// ── 원천이 자리만 만들고 값을 안 채운 봉 ──────────────────────────────────
+//
+// 2026-09-09 아침 야후가 실제로 준 모양이다. SPY 의 09-08 봉이 timestamp 에는
+// 있는데 close 가 null 이었다. 그 탓에 미국 120종목의 기준일이 09-04 로
+// 잡혔고(9/7 은 노동절 휴장이라 그 앞 영업일이 09-04 다), "자료가 낡았나"
+// 를 가리는 데 반나절이 들었다.
+//
+// 처음 만든 판은 이 봉을 한 종목도 못 잡았다. Number(null) 이 0 이고
+// Number.isFinite(0) 이 true 라, 빈 봉이 "값이 있는 봉" 으로 둔갑했기
+// 때문이다. 그 함정을 여기서 못 박는다.
+{
+  const d = (y, m, day) => Math.floor(Date.UTC(y, m - 1, day) / 1000);
+  const bars = (closes) => ({
+    timestamp: [d(2026, 9, 3), d(2026, 9, 4), d(2026, 9, 8)],
+    indicators: { quote: [{ close: closes }] },
+  });
+
+  const pend = pendingBarOf(bars([765.1, 770.19, null]));
+  check('종가가 빈 꼬리 봉을 잡아낸다',
+        pend && pend.day === '2026-09-08' && pend.count === 1,
+        pend ? `${pend.day} · ${pend.count}봉` : '못 잡음');
+
+  check('마지막 봉에 값이 있으면 아무것도 안 남긴다',
+        pendingBarOf(bars([765.1, 770.19, 765.96])) === null);
+
+  // null 이 아니라 undefined 로 오는 원천도 있다.
+  check('undefined 도 빈 값으로 본다',
+        (pendingBarOf(bars([765.1, 770.19, undefined])) || {}).count === 1);
+
+  // 0 은 **빈 값이 아니다**. 실제로 있을 수 있는 값이므로 잡으면 안 된다.
+  check('종가 0 은 빈 값으로 보지 않는다', pendingBarOf(bars([765.1, 770.19, 0])) === null);
+
+  const two = pendingBarOf(bars([765.1, null, null]));
+  check('연달아 비어 있으면 몇 봉인지 센다', two && two.count === 2,
+        two ? `${two.count}봉` : '못 잡음');
+
+  check('봉이 없으면 null 이다', pendingBarOf({ timestamp: [] }) === null);
+  check('종가 배열이 통째로 없으면 손대지 않는다',
+        (pendingBarOf({ timestamp: [d(2026, 9, 8)] }) || {}).count === 1);
 }
 
 console.log(`\n통과 ${pass} · 실패 ${fail}`);
