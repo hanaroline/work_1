@@ -4864,14 +4864,15 @@ CMP_SETS = (Array.isArray(CMP_SETS) ? CMP_SETS : []).filter(function (o) {
 
 /* 자주 쓰는 묶음은 기본으로 제공한다(지우지 못하는 읽기 전용 조합) */
 var CMP_PRESETS = [
-  { ko: '반도체', en: 'Semiconductors', syms: ['005930.KS', '000660.KS', '042700.KS', '058470.KQ'] },
+  { ko: '반도체', en: 'Semiconductors', syms: ['005930.KS', '000660.KS', '042700.KS', '240810.KQ'] },
+  { ko: '전력기기', en: 'Power equipment', syms: ['298040.KS', '267260.KS', '010120.KS', '062040.KS'] },
   { ko: '2차전지', en: 'Batteries', syms: ['373220.KS', '006400.KS', '003670.KS', '247540.KQ'] },
   { ko: '자동차', en: 'Autos', syms: ['005380.KS', '000270.KS', '012330.KS', '161390.KS'] },
   { ko: '조선', en: 'Shipbuilding', syms: ['009540.KS', '329180.KS', '042660.KS', '010140.KS'] },
   { ko: '방산', en: 'Defense', syms: ['012450.KS', '047810.KS', '079550.KS', '064350.KS'] },
   { ko: '금융지주', en: 'Bank holdings', syms: ['105560.KS', '055550.KS', '086790.KS', '316140.KS'] },
   { ko: '바이오', en: 'Biotech', syms: ['207940.KS', '068270.KS', '326030.KS', '196170.KQ'] },
-  { ko: '인터넷·게임', en: 'Internet & games', syms: ['035420.KS', '035720.KS', '259960.KS', '036570.KS'] }
+  { ko: '인터넷·게임', en: 'Internet & games', syms: ['035420.KS', '035720.KS', '259960.KS'] }
 ];
 
 function cmpSetsSave() {
