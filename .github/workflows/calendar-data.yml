@@ -1,0 +1,160 @@
+name: 증시 일정 수집
+
+# `market-calendar.html` 이 읽는 data/calendar/latest.json 을 만든다.
+#
+# 세션(Claude)은 이그레스 정책 때문에 federalreserve.gov·bok.or.kr·bls.gov 에 못 붙는다.
+# 러너는 그 정책 밖에서 도니 여기서 공식 페이지를 받아 seed 의 날짜를 official 로 올린다.
+#
+# 주 1회로 잡은 이유: 캘린더는 매일 바뀌는 자료가 아니다. 중앙은행 일정은 1년에 한 번
+# 공표되고 학회 일정도 그렇다. 매일 돌리면 main 에 276KB 짜리 차이만 쌓인다.
+# 지금 당장 돌려야 하면 data/calendar/REFRESH 를 한 줄 고쳐 push 한다.
+#
+# 주의: schedule 이벤트는 기본 브랜치(main)의 워크플로만 발동한다. 작업 브랜치에서는
+# 아래 push 트리거나 수동 실행으로 돌린다.
+
+on:
+  schedule:
+    # 월요일 21:10 UTC = 화요일 06:10 KST — 국내 장 시작 전에 그 주 일정이 갱신돼 있게.
+    - cron: '10 21 * * 1'
+
+  # 세션·사람이 직접 부르는 길. 세션 토큰에는 Actions 쓰기 권한이 없어
+  # workflow_dispatch 를 API 로 부르지 못하지만(403), git push 는 된다.
+  push:
+    paths:
+      - 'data/calendar/REFRESH'
+      - 'data/calendar/seed/**'
+      - 'scripts/fetch_calendar.py'
+      - 'scripts/build_calendar.py'
+      - 'scripts/check_calendar.py'
+      - '.github/workflows/calendar-data.yml'
+
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: calendar-data-${{ github.ref_name }}
+  cancel-in-progress: false
+
+jobs:
+  fetch:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: 파서 먼저 검증한다
+        # 수집 전에 모의 응답으로 파서를 본다. 파서가 깨진 채로 수집하면 seed 만
+        # 흔들어 놓는다(실패하면 반영은 안 되지만, 그 사실을 여기서 먼저 알고 싶다).
+        run: python scripts/check_calendar.py --only parsers
+
+      - name: 실적발표일 스냅샷 받아 두기
+        # kr100/us100 의 실물은 데이터 브랜치에 있고 코드 브랜치에는 안내 파일만 있다.
+        # 있으면 빌더가 실적 일정까지 담고, 없으면 화면이 브라우저에서 직접 받는다.
+        continue-on-error: true
+        run: |
+          for pair in "kr100 kr100-data" "us100 us100-data"; do
+            set -- $pair
+            dir="$1"; branch="$2"
+            if git fetch --quiet origin "+refs/heads/$branch:refs/remotes/origin/$branch" 2>/dev/null; then
+              git show "origin/$branch:data/$dir/latest.json" > "data/$dir/latest.json" || true
+              echo "$dir 스냅샷 받음"
+            else
+              echo "$dir 데이터 브랜치가 없다 — 실적 일정은 브라우저가 직접 받는다"
+            fi
+          done
+
+      - name: 발표기관 원문에서 확정 날짜 받기
+        # 한 경로가 막혀도 나머지는 간다. 실패는 fetch-report.json 에 남는다.
+        run: python scripts/fetch_calendar.py
+
+      - name: 산출물 검사
+        run: python scripts/check_calendar.py --only data
+
+      - name: 오프라인 단일 파일 만들기
+        # 인터넷이 막힌 업무용 PC 용. file:// 로 열린 페이지는 옆에 있는 json 도
+        # CORS 로 못 읽으므로 데이터를 HTML 안에 심어 둔다. 저장소에는 커밋하지 않는다
+        # (매번 통째로 바뀐다) — 아래 Artifacts 에서 받거나 로컬에서 다시 만들면 된다.
+        run: python scripts/inline_calendar.py
+
+      - name: 수집 결과 요약
+        if: always()
+        continue-on-error: true
+        run: |
+          python - <<'PY' >> "$GITHUB_STEP_SUMMARY"
+          import json, os
+          try:
+              rep = json.load(open('data/calendar/fetch-report.json', encoding='utf-8'))
+          except Exception as e:
+              print('수집 보고서를 읽지 못했다 — %s' % e); raise SystemExit(0)
+          s = rep.get('summary', {})
+          print('## 증시 일정 수집\n')
+          print('경로 %s개 중 **%s개 성공**, %s개 실패 · %s\n'
+                % (s.get('sources'), s.get('ok'), s.get('failed'), rep.get('ranAt')))
+          print('| 경로 | 결과 | 건수 | 메모 |')
+          print('|---|---|---|---|')
+          for name, v in rep.get('sources', {}).items():
+              note = (v.get('why') or '; '.join(v.get('changes') or []) or '').replace('|', '/')
+              print('| `%s` | %s | %s | %s |'
+                    % (name, '성공' if v.get('ok') else '실패', v.get('count', '-'), note[:240]))
+          try:
+              cal = json.load(open('data/calendar/latest.json', encoding='utf-8'))
+          except Exception:
+              raise SystemExit(0)
+          c = cal.get('counts', {})
+          print('\n담긴 일정 **%s건** — %s' % (c.get('total'),
+                ' · '.join('%s %s' % (k, v) for k, v in c.items()
+                           if k != 'total' and isinstance(v, int) and v)))
+          print('\n확정도 — %s' % ' · '.join('%s %s' % kv for kv in (c.get('confirmed') or {}).items() if kv[1]))
+          gaps = cal.get('gaps') or []
+          if gaps:
+              print('\n### 아직 비어 있는 곳\n')
+              for g in gaps:
+                  print('- %s' % g)
+          PY
+          python - <<'PY'
+          import json
+          try:
+              rep = json.load(open('data/calendar/fetch-report.json', encoding='utf-8'))
+          except Exception:
+              raise SystemExit(0)
+          bad = [k for k, v in rep.get('sources', {}).items() if not v.get('ok')]
+          if bad:
+              print('::warning::원문을 못 받은 경로 — ' + ', '.join(bad))
+          PY
+
+      - name: main 에 커밋
+        # 실적 스냅샷은 이 판이 만든 것이 아니므로 커밋하지 않는다(데이터 브랜치가 원본).
+        if: github.ref_name == 'main'
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git checkout -- data/kr100/latest.json data/us100/latest.json 2>/dev/null || true
+          git add data/calendar/latest.json data/calendar/fetch-report.json data/calendar/seed
+          if git diff --cached --quiet; then
+            echo "바뀐 것이 없다"
+          else
+            git commit -m "증시 일정 수집 $(TZ=Asia/Seoul date '+%Y-%m-%d %H:%M KST')"
+            for i in 1 2 3 4; do
+              git push && break
+              echo "push 실패 — $((2**i))초 뒤 다시"
+              sleep $((2**i))
+              git pull --rebase origin main || true
+            done
+          fi
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: calendar-data
+          path: |
+            data/calendar/latest.json
+            data/calendar/fetch-report.json
+            market-calendar-offline.html
+          retention-days: 14
+          if-no-files-found: warn
