@@ -217,6 +217,18 @@ caption{caption-side:bottom; text-align:left; font-size:14px; color:var(--muted)
   #list-table{min-width:760px;}
   #list-table thead th:nth-child(4), #list-table tbody td:nth-child(4){display:none;}
 }
+/* 열이 13개인 이 표는 원화 금액이 길어(1,853,000원 vs $173.45) 1200px 안에 들어가지
+   못했고 오른쪽 두 열(목표주가·상승여력)이 잘렸다. 금액의 단위를 열 머리글로 옮기고
+   업종을 짧게 적어 넓은 화면에서는 해결됐다. 노트북 폭에서는 여기서 한 번 더 줄인다 —
+   먼저 접어도 되는 것(영문 사명·여백·기업명 최소폭) 순서다. */
+/* 머리글이 한글 단어 중간에서 갈리지 않게 한다 — "종목코/드", "상승여/력" 로 접혔다.
+   단위는 앞에 공백을 두어 그 자리에서만 줄바꿈된다("시가총액 / (조원)"). */
+#list-table thead th{word-break:keep-all;}
+@media (max-width:1160px){
+  #list-table tbody td, #list-table thead th{padding:10px 7px;}
+  #list-table .co{min-width:120px;}
+  #list-table .co .sm{display:none;}
+}
 .empty-row td{text-align:center; color:var(--muted); padding:34px 16px;}
 .up{color:var(--error);} .down{color:var(--blue-soft);} .flat{color:var(--muted);}
 .list-note{font-size:14px; color:var(--muted); margin-top:10px; line-height:1.6;}
@@ -1451,6 +1463,17 @@ function volAxis(v) {
   return comma(v);
 }
 /** 상승 빨강 · 하락 파랑 — 국내 시장 관행을 따른다 */
+/** 목록 표의 주당 금액 — 단위는 열 머리글에 적어 두고 숫자만 넣는다 */
+function won0(v) {
+  if (v == null || isNaN(v)) return '—';
+  return Math.abs(v) < 1000 ? String(+Number(v).toFixed(1)) : comma(Math.round(v));
+}
+/** 목록 표의 시가총액 — 조 단위 숫자만(머리글이 "조원"을 밝힌다) */
+function capTri(v) {
+  if (v == null || isNaN(v)) return '—';
+  var x = v / 1e12;
+  return comma(+x.toFixed(Math.abs(x) >= 100 ? 0 : 1));
+}
 function signCls(v) { return v == null ? 'flat' : v > 0 ? 'up' : v < 0 ? 'down' : 'flat'; }
 function dateFmt(ts) {
   if (ts == null) return '—';
@@ -1503,6 +1526,22 @@ function abroadTag(sym) {
     esc(t('코스닥', 'KOSDAQ')) + '</span>' : '';
 }
 function sectorName(code) { var s = SECTORS[code]; return s ? (lang === 'en' ? s[1] : s[0]) : '—'; }
+/* 목록 표에서만 쓰는 짧은 업종 이름. 전체 이름("조선 · 기계 · 방산 · 전력기기")을 표에
+   그대로 넣으면 그 열이 220px 을 먹어 오른쪽 열이 잘린다. 필터·요약·기업 개요에서는
+   전체 이름을 그대로 쓰고, 표에서는 짧은 이름을 쓰되 칸에 전체 이름을 붙여 둔다. */
+var SECTOR_SHORT = {
+  semi:  ['반도체', 'Semis'],          elec:  ['전기전자', 'Electronics'],
+  bat:   ['2차전지', 'Batteries'],     auto:  ['자동차', 'Autos'],
+  heavy: ['조선·기계·방산', 'Machinery'], chem:  ['화학·정유', 'Chemicals'],
+  steel: ['철강·비철', 'Steel'],       bio:   ['제약·바이오', 'Pharma'],
+  it:    ['인터넷·SW', 'Internet'],    fin:   ['금융', 'Financials'],
+  cons:  ['소비재·유통', 'Consumer'],   infra: ['건설·운송', 'Infra'],
+  tel:   ['통신·미디어', 'Telecom'],    hold:  ['지주회사', 'Holdings']
+};
+function sectorShort(code) {
+  var s = SECTOR_SHORT[code];
+  return s ? (lang === 'en' ? s[1] : s[0]) : sectorName(code);
+}
 
 /* ------------------------------------------------------------
    3. 데이터 레이어 — CORS 프록시 병렬 폴백
@@ -2178,12 +2217,12 @@ var LIST_COLS = [
   { k: 'sym',   ko: '종목코드',  en: 'Code',     sort: 'sym',    num: false },
   { k: 'name',  ko: '기업명',    en: 'Company',  sort: 'name',   num: false },
   { k: 'sector',ko: '업종',      en: 'Sector',   sort: 'sector', num: false },
-  { k: 'price', ko: '현재가',    en: 'Price',    sort: 'price',  num: true },
+  { k: 'price', ko: '현재가 (원)', en: 'Price (\u20a9)', sort: 'price',  num: true },
   { k: 'chg',   ko: '등락률',    en: 'Change',   sort: 'chg',    num: true },
-  { k: 'cap',   ko: '시가총액',  en: 'Market cap', sort: 'cap',  num: true },
+  { k: 'cap',   ko: '시가총액 (조원)', en: 'Mkt cap (\u20a9tn)', sort: 'cap',  num: true },
   { k: 'per',   ko: 'PER',      en: 'P/E',      sort: 'per',    num: true },
-  { k: 'eps',   ko: 'EPS',      en: 'EPS',      sort: 'eps',    num: true },
-  { k: 'tgt',   ko: '목표주가',  en: 'Target',   sort: 'tgt',    num: true },
+  { k: 'eps',   ko: 'EPS (원)',   en: 'EPS (\u20a9)',   sort: 'eps',    num: true },
+  { k: 'tgt',   ko: '목표주가 (원)', en: 'Target (\u20a9)', sort: 'tgt',    num: true },
   { k: 'up',    ko: '상승여력',  en: 'Upside',   sort: 'up',     num: true }
 ];
 
@@ -2278,16 +2317,16 @@ function renderList() {
         '<td class="sym">' + esc(codeOf(r.sym)) + '</td>' +
         '<td class="co">' + esc(lang === 'en' ? r.en : r.ko) + abroadTag(r.sym) +
           (lang === 'en' ? '' : '<span class="sm">' + esc(r.en) + '</span>') + '</td>' +
-        '<td>' + esc(sectorName(r.sector)) + '</td>' +
+        '<td title="' + esc(sectorName(r.sector)) + '">' + esc(sectorShort(r.sector)) + '</td>' +
         '<td class="num' + flashCls(prevSeen, r) + '">' + (r.failed
           ? '<span class="badge none" title="' + esc(t('수집기가 이 종목 시세를 받지 못했습니다: ', 'The collector could not fetch this symbol: ') + r.note) + '">' +
             esc(t('조회 불가', 'no data')) + '</span>'
-          : price(r.price)) + '</td>' +
+          : won0(r.price)) + '</td>' +
         '<td class="num ' + signCls(r.chg) + '">' + pct(r.chg) + '</td>' +
-        '<td class="num">' + usd(r.cap) + '</td>' +
+        '<td class="num">' + capTri(r.cap) + '</td>' +
         '<td class="num">' + ratio(r.per, 1) + '</td>' +
-        '<td class="num">' + price(r.eps) + '</td>' +
-        '<td class="num">' + price(r.tgt) + '</td>' +
+        '<td class="num">' + won0(r.eps) + '</td>' +
+        '<td class="num">' + won0(r.tgt) + '</td>' +
         '<td class="num ' + signCls(r.up) + '">' + pct(r.up, 1) + '</td>' +
         '</tr>';
     }).join('');
