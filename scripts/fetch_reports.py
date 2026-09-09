@@ -1039,13 +1039,20 @@ def key_facts(body, limit=3):
 # 막아 뒤 문장의 숫자를 끌어오지 않게 한다.
 _TP_UNIT = re.compile(r"(?:목표\s*(?:주가|가)|TP)[^\d]{0,12}?([\d,]+(?:\.\d+)?)\s*(만|억)?\s*원")
 _TP_COLON = re.compile(r"(?:목표\s*(?:주가|가)|TP)\s*[:：]\s*([\d,]+(?:\.\d+)?)(?![\d,]*\s*[만억])")
+# 「원」도 쌍점도 없이 숫자만 적는 판이 있다 — 9/9 신한 알테오젠 리포트의
+# 「목표가 520,000」이 그랬다. 방향(하향)은 잡고 값은 놓쳐, 화면에 목표가
+# 없는 「하향」이 실렸다. 다만 아무 숫자나 주우면 안 되므로 자릿점이 있거나
+# 네 자리 이상인 것만 보고, 뒤에 단위가 붙으면 앞의 두 패턴에 맡긴다.
+_TP_BARE = re.compile(r"(?:목표\s*(?:주가|가)|TP)[^\d\n]{0,6}?"
+                      r"(\d{1,3}(?:,\d{3})+|\d{4,})"
+                      r"(?![\d,.]*\s*(?:만|억|%|배|주|년|월|일|건|명))")
 _UNIT = {"만": 10_000, "억": 100_000_000}
 
 
 def target_price(body, title=""):
     """목표주가. 원 단위 정수로. 못 찾으면 None."""
     for text in (title, body[:1500], body):
-        for pat in (_TP_UNIT, _TP_COLON):
+        for pat in (_TP_UNIT, _TP_COLON, _TP_BARE):
             m = pat.search(text)
             if not m:
                 continue
