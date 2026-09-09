@@ -1,0 +1,26 @@
+name: 국내 시총 순위 경로 조사 (일회성)
+
+# 목록 점검이 쓸 시가총액 순위 원천을 러너에서 실제로 재 본다.
+# 세션에서는 이그레스가 막혀 원인을 볼 수 없으므로 여기서 응답을 그대로 찍는다.
+# 무엇이 되는지 확인한 뒤 이 워크플로와 scripts/probe_kr_ranking.py 는 지운다.
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - 'scripts/probe_kr_ranking.py'
+      - '.github/workflows/kr100-probe.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python scripts/probe_kr_ranking.py 20260908
