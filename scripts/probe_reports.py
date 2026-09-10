@@ -24,6 +24,37 @@ RAW = "data/reports/raw"
 # 미래에셋 게시판만 살아남았다. 이번에는 (가) 앞서 죽었던 곳을 다른 길로 다시,
 # (나) 증권사 자체 리서치 게시판, (다) 외국계·해외 리포트를 본다.
 CANDIDATES = [
+    # ── (0) 네이버 리서치 상세 본문을 어디서 받아 오나 ──────────────
+    # 9/11 새벽에 네이버가 리서치 상세 페이지를 새 앱으로 갈아엎었다.
+    # 옛 `class="view_cnt"` 표식이 사라졌고, 본문은 HTML 에도 RSC 스트림에도
+    # 없다 — 화면이 뜬 뒤 따로 받아 온다는 뜻이다. 목록은 이미
+    # `/api/research/{갈래}?page=` 에서 JSON 으로 받고 있고, 모바일 화면
+    # 주소가 `m.stock.naver.com/research/{갈래}/{id}` 이므로 상세 API 는
+    # `/api/research/{갈래}/{id}` 일 것으로 본다. 그것부터 찔러 본다.
+    #
+    # 찾는 글자는 리포트 본문에 흔한 말과 JSON 칸 이름 둘 다 넣는다.
+    ("네이버 상세 API company", "https://m.stock.naver.com/api/research/company/96069",
+     "utf-8", "https://m.stock.naver.com/research/company/96069",
+     ["contents", "researchId", "투자의견", "목표주가"]),
+    ("네이버 상세 API industry", "https://m.stock.naver.com/api/research/industry/46010",
+     "utf-8", "https://m.stock.naver.com/research/industry/46010",
+     ["contents", "researchId", "요약"]),
+    ("네이버 상세 API market", "https://m.stock.naver.com/api/research/market/37454",
+     "utf-8", "https://m.stock.naver.com/research/market/37454",
+     ["contents", "researchId", "요약"]),
+    # 갈래 없이 id 만 주는 길일 수도 있다.
+    ("네이버 상세 API id만", "https://m.stock.naver.com/api/research/96069",
+     "utf-8", "https://m.stock.naver.com/research/company/96069",
+     ["contents", "researchId"]),
+    # 새 모바일 화면 자체 — 여기에는 본문이 박혀 오는지 본다.
+    ("네이버 모바일 상세 화면", "https://m.stock.naver.com/research/company/96069",
+     "utf-8", "https://m.stock.naver.com/",
+     ["contents", "투자의견", "목표주가"]),
+    # 옛 PC 상세 — 정말로 죽었는지, UTF-8 로 읽으면 살아나는지 가른다.
+    ("옛 PC 상세 utf-8", "https://finance.naver.com/research/company_read.naver?nid=96069",
+     "utf-8", "https://finance.naver.com/research/",
+     ["view_cnt", "view_con", "투자의견", "목표주가"]),
+
     # ── (가) 앞서 죽었던 곳 다시 ────────────────────────────────
     # 한경 컨센서스: 목표주가·투자의견을 **열로** 주는 유일한 곳이다.
     # 앞서 https 로 500 이 났다. 호스트와 얼개를 바꿔 가며 찔러 본다.
