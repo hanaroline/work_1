@@ -245,6 +245,8 @@ FOMC_HTML = """
       <div class="fomc-meeting__month"><strong>April/May</strong></div>
       <div class="fomc-meeting__date">27-28</div>
     </div>
+    <p class="note">Organizational business is taken up January 25-26 alongside
+       the first meeting.</p>
   </div>
 </div>
 """
@@ -382,6 +384,33 @@ def check_parsers():
     bok = fc.parse_bok(BOK_HTML)
     if any(m["start"] == "2026-11-10" for m in bok):
         bad("파서 bok: 의사록 공개일 2026-11-10 을 회의로 잡았다")
+
+    # FOMC — 정례 회의는 화요일에 시작한다. 러너 실행에서 2027년 1월에 겹치는 회의가
+    # 둘 들어왔던 자리다(페이지 다른 대목의 '월 일자').
+    fomc = fc.parse_fomc(FOMC_HTML)
+    if any(m["start"] == "2027-01-25" for m in fomc):
+        bad("파서 fomc: 화요일이 아닌 2027-01-25 를 회의로 잡았다")
+    from datetime import date as _date
+    off = [m["start"] for m in fomc if _date.fromisoformat(m["start"]).weekday() != 1]
+    if off:
+        bad("파서 fomc: 화요일에 시작하지 않는 회의가 있다 — %s" % off)
+    for a, b in zip(fomc, fomc[1:]):
+        if b["start"] <= a["end"]:
+            bad("파서 fomc: 회의가 겹친다 — %s~%s 와 %s~%s"
+                % (a["start"], a["end"], b["start"], b["end"]))
+
+    # BOE — 전망보고서 동반 여부를 달로 짐작하지 않고 본문에서 읽어야 한다.
+    boe = {m["start"]: m for m in fc.parse_boe(BOE_HTML)}
+    for day, want in (("2026-02-05", True), ("2026-04-30", True), ("2026-07-30", True),
+                      ("2026-03-19", False), ("2026-06-18", False), ("2026-12-17", False)):
+        got = boe.get(day, {}).get("sep")
+        if got is not want:
+            bad("파서 boe: %s 의 전망보고서 동반 표시가 %r 인데 %r 를 기대했다"
+                % (day, got, want))
+    # 페이지에 그 문구가 아예 없으면 아무 것도 주장하지 않아야 한다(False 도 주장이다).
+    no_mpr = fc.parse_boe(BOE_HTML.replace("with Monetary Policy Report", ""))
+    if any(m["sep"] is not None for m in no_mpr):
+        bad("파서 boe: 전망보고서 문구가 없는 페이지에서 동반 여부를 단정했다")
 
     # 페이지가 바뀐 상황 — 반드시 Skip 이어야 한다(빈 값으로 seed 를 덮어쓰면 안 된다).
     print("페이지가 바뀐 상황 — 모두 걸러져야 한다")

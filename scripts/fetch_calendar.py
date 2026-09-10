@@ -16,20 +16,19 @@
   받은 날짜가 seed 와 다르면 **그 차이를 report 에 적는다**. 조용히 바뀌면 어느 날 일정이
   왜 달라졌는지 알 수 없다.
 
-받아오는 곳
-  FOMC        federalreserve.gov/monetarypolicy/fomccalendars.htm        (HTML)
-  ECB         ecb.europa.eu/press/calendars/mgcgc/html/index.en.html     (HTML)
-  BOE         bankofengland.co.uk/monetary-policy/upcoming-mpc-dates     (HTML)
-  BOJ         boj.or.jp/en/mopo/mpmsche_minu/index.htm                   (HTML)
-  한국은행     bok.or.kr 통화정책방향 결정회의 일정                          (HTML)
-  BLS         bls.gov/schedule/news_release/{cpi,empsit,ppi}.htm         (HTML)
-  미국채 입찰   treasurydirect.gov/TA_WS/securities/upcoming               (JSON, 키 불필요)
-  FRED        api.stlouisfed.org/fred/release/dates                      (JSON, FRED_API_KEY 있을 때만)
+받아오는 곳 (2026-09-10 러너에서 실측)
+  FOMC        federalreserve.gov/monetarypolicy/fomccalendars.htm        O
+  BOE         bankofengland.co.uk/monetary-policy/upcoming-mpc-dates     O
+  미국채 입찰   treasurydirect.gov/TA_WS/securities/upcoming (공개 JSON)     O
+  FRED        api.stlouisfed.org/fred/release/dates                      FRED_API_KEY 있을 때만
+  BLS         bls.gov/schedule/news_release/{cpi,empsit,ppi}.htm         403 (러너 IP 차단)
+  ECB·BOJ·한국은행                                                        받을 수 없다 → BLOCKED 참고
 
 쓰는 법
-  python scripts/fetch_calendar.py                # 전부 받아 seed 갱신 + latest.json 재빌드
-  python scripts/fetch_calendar.py --dry-run      # 받아서 견주기만 하고 파일은 안 고친다
-  python scripts/fetch_calendar.py --only fomc,bls
+  python scripts/fetch_calendar.py                    # 전부 받아 seed 갱신 + latest.json 재빌드
+  python scripts/fetch_calendar.py --dry-run          # 받아서 견주기만 하고 파일은 안 고친다
+  python scripts/fetch_calendar.py --only fomc,boe
+  python scripts/fetch_calendar.py --try-blocked      # 못 받는다고 적어 둔 곳도 다시 시험
 """
 
 import argparse
@@ -224,11 +223,17 @@ def parse_fomc(html):
             start, end = span_dates(year, mon1, d1, mon2, d2)
             if not (start and end) or start in seen:
                 continue
+            # 정례 FOMC 는 화요일에 시작하는 이틀 회의다. 이 규칙을 걸지 않았더니
+            # 2027년 1월에 겹치는 회의가 둘(01-25~26 과 01-26~27) 들어왔다 —
+            # 페이지의 다른 대목에서 온 '월 일자' 였다.
+            if date.fromisoformat(start).weekday() != 1:
+                continue
             seen.add(start)
             out.append({"start": start, "end": end, "sep": star == "*",
                         "presser": True, "confirmed": "official"})
-    need(len(out) >= 8, "회의를 %d개만 읽었다 (8개 이상이어야 한다)" % len(out))
-    return out
+    need(len(out) >= 8,
+         "화요일에 시작하는 이틀 회의를 %d개만 읽었다 (8개 이상이어야 한다)" % len(out))
+    return sorted(out, key=lambda x: x["start"])
 
 
 def parse_ecb(html):
@@ -260,21 +265,29 @@ def parse_boe(html):
     """
     secs = year_sections(html, r"(20\d{2})\s+(?:confirmed|provisional|indicative|announcement)")
     need(secs, "'YYYY confirmed dates' 같은 연도 구획을 못 찾았다")
+    # 전망보고서(MPR) 동반 여부를 '2·5·8·11월' 로 짐작했더니 2026년 4월 30일·7월 30일을
+    # 놓쳤다. 영란은행은 해마다 그 달이 조금씩 옮겨간다. 짐작하지 않고 날짜 뒤에 그
+    # 문구가 붙어 있는지를 본다. 문구가 페이지에 아예 없으면 아무 것도 주장하지 않는다.
+    has_mpr_text = "Monetary Policy Report" in strip_tags(html)
     out, seen = [], set()
     for year, text in secs:
-        for m in re.finditer(
-                r"(?:Mon|Tues|Wednes|Thurs|Fri)day\s+(\d{1,2})\s+([A-Z][a-z]{2,8})"
-                r"(?:\s+(20\d{2}))?", text):
+        hits = list(re.finditer(
+            r"(?:Mon|Tues|Wednes|Thurs|Fri)day\s+(\d{1,2})\s+([A-Z][a-z]{2,8})"
+            r"(?:\s+(20\d{2}))?", text))
+        for i, m in enumerate(hits):
             day, mname, inline_year = m.groups()
             mon = MONTHS.get(mname.lower())
             iso = mk(inline_year or year, mon, day) if mon else None
             if not iso or iso in seen:
                 continue
             seen.add(iso)
-            # MPR·기자회견 동반 회의는 2·5·8·11월이다(4·7월로 당겨지는 해가 있어 안전하게
-            # 표시만 하고, 확정 표기는 공식 페이지 문구를 따르지 않는다).
-            out.append({"start": iso, "end": iso, "sep": mon in (2, 5, 8, 11),
-                        "presser": mon in (2, 5, 8, 11), "confirmed": "official"})
+            # 이 날짜의 칸만 본다. 90자로 잘랐더니 다음 행의 문구까지 딸려 들어와
+            # 3월·6월 회의에 전망보고서가 붙은 것처럼 읽혔다.
+            stop = hits[i + 1].start() if i + 1 < len(hits) else len(text)
+            near = text[m.end():min(stop, m.end() + 90)]
+            mpr = ("Monetary Policy Report" in near) if has_mpr_text else None
+            out.append({"start": iso, "end": iso, "sep": mpr, "presser": mpr,
+                        "confirmed": "official"})
     need(len(out) >= 6, "MPC 발표일을 %d개만 읽었다" % len(out))
     return sorted(out, key=lambda x: x["start"])
 
@@ -506,6 +519,19 @@ SOURCES = [
     ("treasury", ["https://www.treasurydirect.gov/TA_WS/securities/upcoming?format=json"]),
 ]
 
+# 러너에서 실제로 받아 본 결과, 아래 셋은 이 방식으로 받을 수 없다. 매주 90초를 들여
+# 같은 사실을 다시 알아낼 이유가 없어 요청을 걸지 않는다. 기관이 페이지를 정적으로 바꾸면
+# 다시 되니, `--try-blocked` 로 언제든 시험해 볼 수 있게 주소는 SOURCES 에 남겨 둔다.
+BLOCKED = {
+    "ecb": "정책이사회 일정표가 본문에 없다 — 자바스크립트로 그린다"
+           " (2026-09-10 러너 확인: 본문 18,492자에 회의 날짜 0건)",
+    "boj": "회의 일정표가 본문에 없다 — 자바스크립트로 그린다"
+           " (2026-09-10 러너 확인: 연도 헤딩은 있으나 '월 일자' 표기 0건)",
+    "bok": "일정이 보도자료의 첨부파일(hwp·pdf)에만 있다"
+           " (2026-09-10 러너 확인: 본문은 '자세한 내용은 첨부파일을 참고' 뿐이고,"
+           " 목록 페이지의 날짜는 의결사항·보도자료 등록일이라 회의일이 아니다)",
+}
+
 # BLS 는 러너 IP 에 403 을 준다(첫 러너 실행에서 세 경로 모두). 페이지를 아예 못 받으니
 # 파서로는 풀리지 않는다. 같은 통계를 FRED 가 API 로 주므로, 무료 키를 넣으면 그 길로
 # CPI·고용상황까지 채워진다.
@@ -523,6 +549,8 @@ def main(argv=None):
     ap.add_argument("--dry-run", action="store_true", help="받아서 견주기만 하고 파일은 안 고친다")
     ap.add_argument("--only", default="", help="쉼표로 구른 경로 이름만 받는다 (fomc,ecb,bls,…)")
     ap.add_argument("--no-build", action="store_true", help="latest.json 재빌드를 건너뛴다")
+    ap.add_argument("--try-blocked", action="store_true",
+                    help="받을 수 없다고 적어 둔 경로(ECB·BOJ·한국은행)도 다시 시험한다")
     args = ap.parse_args(argv)
 
     only = {x.strip() for x in args.only.split(",") if x.strip()}
@@ -549,6 +577,13 @@ def main(argv=None):
             continue
         rep = {"urls": urls, "ok": False}
         report["sources"][name] = rep
+
+        if short in BLOCKED and not args.try_blocked:
+            rep["blocked"] = True
+            rep["why"] = "받을 수 없는 경로라 요청하지 않았다 — %s" % BLOCKED[short]
+            rep["hint"] = "다시 시험하려면: python scripts/fetch_calendar.py --try-blocked --only " + short
+            print("[block] %-15s %s" % (name, BLOCKED[short][:80]))
+            continue
 
         if short == "treasury":
             try:
