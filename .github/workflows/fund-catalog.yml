@@ -1,0 +1,66 @@
+name: 공모펀드 카탈로그 갱신
+
+# 원천은 claude/fund-search-tool 브랜치의 data/fund.js (25MB) 이고, 그 브랜치의
+# fund-daily 워크플로가 매일 갱신한다. 여기서는 스크립트가 읽는 항목만 추려
+# data/fund-catalog.js 로 만든다 — 25MB 를 이 브랜치에 들일 이유가 없다.
+
+on:
+  workflow_dispatch:
+  schedule:
+    # 매일 09:30 KST (00:30 UTC) — 원천 수집(fund-daily) 이후
+    - cron: '30 0 * * *'
+  push:
+    branches:
+      - 'claude/complete-sales-script-**'
+    paths:
+      - 'scripts/build_fund_catalog.mjs'
+      - '.github/workflows/fund-catalog.yml'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: fund-catalog
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref_name }}
+          fetch-depth: 0        # 다른 브랜치의 파일을 읽어야 한다
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: 원천 내려놓기 (claude/fund-search-tool 의 data/fund.js)
+        run: |
+          git fetch origin claude/fund-search-tool --depth=1
+          git show origin/claude/fund-search-tool:data/fund.js > /tmp/fund.js
+          ls -la /tmp/fund.js
+
+      - name: 카탈로그 생성
+        run: node scripts/build_fund_catalog.mjs /tmp/fund.js
+
+      # 단일 파일(sales-script-standalone-v3.html)은 여기서 만들지 않는다.
+      # 네 개 수집 워크플로가 저마다 5MB 산출물을 만들어 밀면 리베이스가 부딪힌다.
+      # 산출물은 bond-daily 가 매일 한 번, 모든 데이터가 갱신된 뒤 다시 만든다.
+      - name: 결과 커밋
+        run: |
+          git config user.name  'github-actions[bot]'
+          git config user.email 'github-actions[bot]@users.noreply.github.com'
+          git add -A data/fund-catalog.js
+          if [ -z "$(git diff --cached --name-only)" ]; then
+            echo '변경 없음'; exit 0
+          fi
+          git commit -m "chore(fund): 공모펀드 카탈로그 갱신"
+          for i in 1 2 3 4 5; do
+            if git push; then exit 0; fi
+            echo "push 거절 — 원격 변경을 받아 재시도 ($i/5)"
+            git pull --rebase --autostash origin "${{ github.ref_name }}" || exit 1
+          done
+          echo '5회 시도 후에도 push 실패'; exit 1

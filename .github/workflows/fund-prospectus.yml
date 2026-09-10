@@ -1,0 +1,117 @@
+name: 펀드 투자설명서 판독
+
+# 카탈로그가 갖고 있는 투자설명서 PDF 주소를 받아 미리 판독한다.
+# 브라우저는 다른 도메인의 PDF 를 앱이 직접 읽지 못하고, 이 도구는 인터넷이 없는
+# 업무용PC 에서 쓴다 — 그래서 ELS 와 같이 판독을 러너에서 해 두고 결과만 싣는다.
+
+on:
+  workflow_dispatch:
+    inputs:
+      limit:
+        description: '판독할 건수 (0 = 제한 없음)'
+        type: string
+        default: '0'
+      mode:
+        description: '판독 범위'
+        type: choice
+        default: 'incremental'
+        options:
+          - incremental   # 설명서가 바뀐 종목만 (보통 수십 건 · 몇 분)
+          - full          # 전량 약 3,200건 (두 시간 넘음)
+      seed_refs:
+        description: '(전환용) 옛 판독 결과에 설명서 참조를 채울 카탈로그 경로 — 한 번만 필요'
+        type: string
+        default: ''
+      codes:
+        description: '표준코드만 다시 읽어 끼워 넣기 (쉼표로 구분) — 규칙의 좁은 구멍을 막았을 때. 규칙 지문은 올리지 않는다'
+        type: string
+        default: ''
+# 전량 판독은 3,000건 × 2.6초 = 3시간 가까이 걸린다. 규칙을 손볼 때마다 자동으로
+# 돌면 러너를 붙잡고 있는 데다 규칙이 덜 다듬어진 상태로 결과가 덮인다.
+# 그래서 자동 실행을 두지 않고, 규칙을 확정한 뒤 손으로 돌린다
+# (규칙 개발용 표본은 fund-prospectus-sample.yml 이 몇 분에 받아 준다).
+
+permissions:
+  contents: write
+
+concurrency:
+  group: fund-prospectus
+  cancel-in-progress: false
+
+jobs:
+  read:
+    runs-on: ubuntu-latest
+    timeout-minutes: 330
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref_name }}
+          # seed_refs 로 옛 카탈로그를 꺼내 쓸 수 있어야 한다 (git:<커밋> 형태)
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: pdfjs 설치
+        run: npm install --no-save pdfjs-dist@3.11.174
+
+      # 표본 60건으로 추출률을 먼저 확인했다 (계약기간·환매가능·유동성 100%,
+      # 환매수수료 97%, 투자전략 82%, 주요위험 72/70%, 보수 68/50%).
+      # 이제 전량을 돌린다 — 약 3,000건 × 2.6초 = 2시간 안.
+      - name: 판독
+        env:
+          LIMIT: ${{ inputs.limit || '0' }}
+          MODE: ${{ inputs.mode || 'incremental' }}
+          SEED_REFS: ${{ inputs.seed_refs || '' }}
+          CODES: ${{ inputs.codes || '' }}
+        run: |
+          set -- --limit "$LIMIT"
+          # codes 를 주면 그 종목만 읽는다 — mode 는 보지 않는다
+          if [ -n "$CODES" ]; then
+            set -- "$@" --codes "$CODES"
+          elif [ "$MODE" != 'full' ]; then
+            set -- "$@" --incremental
+          fi
+          if [ -n "$SEED_REFS" ]; then
+            case "$SEED_REFS" in
+              git:*)
+                rev="${SEED_REFS#git:}"
+                git show "$rev:data/fund-catalog.js" > /tmp/seed-catalog.js
+                echo "옛 카탈로그를 $rev 에서 꺼냈습니다 ($(wc -c < /tmp/seed-catalog.js) 바이트)"
+                set -- "$@" --seed-refs /tmp/seed-catalog.js
+                ;;
+              *) set -- "$@" --seed-refs "$SEED_REFS" ;;
+            esac
+          fi
+          echo "인자: $*"
+          node scripts/fetch_fund_prospectus.mjs "$@"
+
+      - name: 추출 품질 확인
+        run: |
+          node -e "
+          const g={}; new Function('window', require('fs').readFileSync('data/fund-prospectus.js','utf8'))(g);
+          const I=g.FUND_PROSPECTUS.items, K=Object.keys(I);
+          console.log('판독', K.length, '건');
+          const cnt={};
+          K.forEach(k=>Object.keys(I[k]).forEach(f=>cnt[f]=(cnt[f]||0)+1));
+          Object.entries(cnt).sort((a,b)=>b[1]-a[1]).forEach(([f,n])=>console.log('  '+f.padEnd(14), n+'건', (100*n/K.length).toFixed(0)+'%'));
+          console.log('표본:', JSON.stringify(I[K[0]], null, 1).slice(0, 900));
+          "
+
+      # 단일 파일은 여기서 만들지 않는다 (fund-catalog.yml 의 같은 자리 설명 참고).
+      - name: 결과 커밋
+        run: |
+          git config user.name  'github-actions[bot]'
+          git config user.email 'github-actions[bot]@users.noreply.github.com'
+          git add -A data/fund-prospectus.js
+          if [ -z "$(git diff --cached --name-only)" ]; then
+            echo '변경 없음'; exit 0
+          fi
+          git commit -m "chore(fund): 투자설명서 판독 결과 갱신"
+          for i in 1 2 3 4 5; do
+            if git push; then exit 0; fi
+            echo "push 거절 — 원격 변경을 받아 재시도 ($i/5)"
+            git pull --rebase --autostash origin "${{ github.ref_name }}" || exit 1
+          done
+          echo '5회 시도 후에도 push 실패'; exit 1

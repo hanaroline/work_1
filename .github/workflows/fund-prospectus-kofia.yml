@@ -1,0 +1,91 @@
+name: 펀드 투자설명서 판독 (금투협 · 두 번째 원천)
+
+# 판매회사 원천(공모펀드 카탈로그)에 투자설명서 주소가 없는 종목을 금융투자협회
+# 전자공시에서 받아 판독한다. 기본은 그 빈자리만 — 전 종목을 다시 받을 이유가 없다.
+#
+# 개발 PC 는 dis.kofia.or.kr 이 막혀 있어 러너에서 돈다.
+# 조회 계약은 scripts/probe_kofia_prospectus.mjs 로 관찰해 얻은 것이고,
+# 수집기는 씨앗 한 종목으로 계약이 살아 있는지 먼저 확인한 뒤 전수를 돈다.
+
+on:
+  workflow_dispatch:
+    inputs:
+      scope:
+        description: '대상'
+        type: choice
+        default: 'missing'
+        options:
+          - missing   # 카탈로그에 설명서 주소가 없는 종목만 (보통 175건 · 10분 안)
+          - all       # 전 종목 (대조용 · 오래 걸린다)
+      limit:
+        description: '건수 제한 (0 = 제한 없음)'
+        type: string
+        default: '0'
+      codes:
+        description: '표준코드를 쉼표로 주면 그 종목만'
+        type: string
+        default: ''
+  schedule:
+    # 매일 09:50 KST (00:50 UTC) — 카탈로그 갱신(09:30) 뒤
+    - cron: '50 0 * * *'
+  push:
+    branches:
+      - 'claude/complete-sales-script-**'
+    paths:
+      - 'scripts/collect_fund_prospectus_kofia.mjs'
+      - '.github/workflows/fund-prospectus-kofia.yml'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: fund-prospectus-kofia
+  cancel-in-progress: false
+
+jobs:
+  collect:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref_name }}
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      # 내려받기 서버(disdown.kofia.or.kr)가 중간 인증서를 안 보내므로 node fetch 로는
+      # 받을 수 없다. TLS 검증을 끄는 대신 제 신뢰저장소를 가진 브라우저가 받는다.
+      - name: pdfjs · Playwright 설치
+        run: |
+          npm install --no-save pdfjs-dist@3.11.174 playwright@1.56.1
+          npx playwright install --with-deps chromium
+
+      - name: 수집·판독
+        env:
+          SCOPE: ${{ inputs.scope || 'missing' }}
+          LIMIT: ${{ inputs.limit || '0' }}
+          CODES: ${{ inputs.codes || '' }}
+        run: |
+          set -- --limit "$LIMIT"
+          if [ "$SCOPE" = 'all' ]; then set -- "$@" --all; fi
+          if [ -n "$CODES" ]; then set -- "$@" --codes "$CODES"; fi
+          echo "인자: $*"
+          node scripts/collect_fund_prospectus_kofia.mjs "$@"
+
+      - name: 결과 커밋
+        run: |
+          git config user.name  'github-actions[bot]'
+          git config user.email 'github-actions[bot]@users.noreply.github.com'
+          git add -A data/fund-prospectus-kofia.js
+          if [ -z "$(git diff --cached --name-only)" ]; then
+            echo '변경 없음'; exit 0
+          fi
+          git commit -m "chore(fund): 금투협 투자설명서 판독 결과 갱신"
+          for i in 1 2 3 4 5; do
+            if git push; then exit 0; fi
+            echo "push 거절 — 원격 변경을 받아 재시도 ($i/5)"
+            git pull --rebase --autostash origin "${{ github.ref_name }}" || exit 1
+          done
+          echo '5회 시도 후에도 push 실패'; exit 1

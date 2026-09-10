@@ -98,9 +98,10 @@ data/els.js           # ELS 상품 데이터 + 기초자산 과거 시세 (매�
 us-top100.html        # 미국 100대 기업 시세 조회 — 단일 파일 (아래 참고)
 kr-top100.html        # 국내 100대 기업 시세 조회 — 단일 파일 (아래 참고)
 mapo-wm.html          # 마포 WM 모바일 창구 (아래 참고)
-explain-duty.html     # 완전판매 스크립트 — 상품설명의무 자동완성 (아래 참고)
-explain-duty-offline.html # 위 화면의 단일 파일 배포본 (오프라인 PC 용)
-data/funds.js         # 펀드 상품 데이터 (국내/해외)
+sales-script.html     # 완전판매 스크립트 자동완성 — 전체판 (적합성원칙 + 상품설명의무)
+sales-script-expl.html            # 같은 시스템의 상품설명의무 전용판 (아래 참고)
+sales-script-expl-standalone.html # 설명의무 전용판 배포본 (단일 파일, 오프라인 PC 용)
+data/fund-catalog.js  # 공모펀드 3,194건 · data/fund-prospectus*.js 투자설명서 판독 결과
 vendor/pdf*.js        # pdf.js — 투자설명서 PDF 판독 (오프라인 동작용)
 scripts/              # 수집·빌드·탐색 스크립트
 ```
@@ -876,144 +877,105 @@ python3 -m http.server 8000   # http://localhost:8000/mapo-wm.html
 
 ---
 
-# 완전판매 스크립트 — 상품설명의무 자동완성 (ELS / 펀드)
+# 완전판매 스크립트 — 상품설명의무 (설명의무 전용판)
 
-`explain-duty.html` — 상품을 고르면 **금융소비자보호법 제19조 설명의무 내용이 그 상품의
-값으로 자동 작성**되는 화면입니다. 창구에서 그대로 읽어 드릴 수 있는 문장으로 나오고,
-고객 이해 확인 체크리스트와 서명란까지 한 장에 붙습니다.
+`sales-script-expl.html` — **완전판매 스크립트 자동완성 시스템**(`sales-script.html`)에서
+**적합성원칙을 걷어내고 상품설명의무만** 남긴 화면입니다. 화면 구성·데이터·읽기 모드·
+채점은 전체판과 같고, 적합성원칙에 딸린 입력칸만 사라집니다.
 
-배포본은 `explain-duty-offline.html` 한 파일이며 **인터넷 연결 없이** 동작합니다.
+배포본은 `sales-script-expl-standalone.html` 한 파일이며 **인터넷 없이** 동작합니다.
 
-## 하는 일
+## 전체판과 무엇이 다른가
 
-| 단계 | 내용 |
-|------|------|
-| **① 상품 선택** | ELS(`data/els.js`, 자동 수집분) + 펀드(`data/funds.js`) + 첨부로 등록한 상품이 **한 목록으로 자동 리스트업**. 검색어와 `전체 / ELS / 국내펀드 / 해외펀드 / 첨부등록` 필터. 행을 누르면 그 상품으로 이하 화면이 바뀜 |
-| **② 투자설명서 첨부(선택)** | PDF · TXT · HTML 을 끌어다 놓으면 브라우저 안에서 판독해 **설명서에 적힌 값으로 문안을 다시 작성**. 판독한 항목마다 **문서에 적힌 문장**을 함께 보여주므로 인식이 틀리면 바로 보임. `새 상품으로 등록`을 누르면 목록에 없던 상품도 목록에 들어감 |
-| **③ 설명의무 내용** | `00 핵심 수치 요약` + `01 상품의 내용` `02 투자에 따르는 위험` `03 위험등급과 그 의미` `04 수수료·비용·세금` `05 계약의 해제·해지(펀드는 환매)` `06 교부 서류·판매 절차` |
-| **고객 이해 확인** | 상품 조건에서 만들어진 확인 문항(예: "기초자산이 한 번이라도 35% 아래로 내려가면…") + 확인 수 카운터 + 설명일자·담당자·서명란 |
-| **내보내기** | `확인서로 인쇄`(선택·첨부 화면은 인쇄에서 빠짐) · `스크립트 복사`(텍스트본) · 등록 상품 JSON 내보내기/가져오기 |
+| | 전체판 `sales-script.html` | 설명의무 전용판 `sales-script-expl.html` |
+|---|---|---|
+| 다루는 범위 | 적합성원칙 + 상품설명의무 (평가표 전체) | **상품설명의무만** |
+| 사이드바 | 상품군·시나리오 / 고령·비고령 / 진행 파트 / 상품 / **추천상품** / **상담 조건**(투자자성향·현재 투자자금성향·고객구분) | **상품군 / 고령·비고령 / 상품** 셋뿐 |
+| 시나리오 | 적합 · 부적합을 직접 고름 | 고르지 않음 — 설명의무 항목은 두 평가표가 사실상 같습니다 |
+| 펀드 목록 | 평가표에 맞는 쪽만 (국내 1,513 또는 해외) | **국내·해외 전부 3,194건 한 목록** |
+| 평가표 선택 | 사람이 고름 | **상품이 정함** — 해외펀드를 고르면 해외 평가표로 자동 전환 |
+| 배점 표기 | 적합성 + 설명의무 = 100점 (+가점 3) | **설명의무 배점만** (펀드 70 · ELS 60 · 채권 75점) |
+| 읽기 모드 · 인쇄 · 셀프채점 · 투자설명서 판독 | 동일 | **동일** |
 
-## 자동완성의 규칙 — 모든 줄에 출처가 붙는다
+## 쓰는 순서
 
-| 배지 | 뜻 |
-|------|-----|
-| **상품데이터** | 수집된 상품 데이터(`data/els.js` · `data/funds.js`)에서 나온 값 |
-| **투자설명서** | 첨부한 설명서에서 읽어낸 값. 근거 문장이 같이 표시됨 |
-| **계산** | 데이터로 계산한 값(예: 만기 총 수익률 = 연 수익률 × 개월 ÷ 12) |
-| **법령** | 법령·규정으로 고정된 문장(15.4% 원천징수, 청약철회 7일 등) |
-| **확인필요** | 값이 없어 문장을 만들지 못한 항목 |
+1. **상품군** — 펀드 / ELS·DLS / 원화채권 / 외화채권 / IRP
+2. **고령 / 비고령** — 평가표가 갈리는 축이라 남겨 두었습니다
+3. **상품 선택** — 검색(상품명·코드·기초자산)과 위험등급 단추로 좁힌 뒤 고릅니다.
+   고르는 즉시 투자설명서가 자동 조회되고 스크립트가 그 상품의 값으로 완성됩니다
+4. **읽기 모드 ▶** — 한 항목씩 큰 글씨(27px)로 넘기며 읽고, Check Point 를 체크하면
+   예상 점수가 실시간으로 계산됩니다 (`←` `→` 이동 · `Space` 다음)
+5. **인쇄 / PDF** — 사이드바·탭·버튼을 빼고 스크립트만 인쇄합니다
 
-- **값이 없으면 지어내지 않습니다.** 중도상환 수수료율처럼 데이터에 없는 항목은
-  "설명서에 적힌 값으로 직접 안내하십시오"라는 문장으로 남고 **확인필요**로 셉니다.
-- 상품 데이터와 첨부 설명서의 **숫자·등급이 다르면 그 줄에 `불일치` 표시**가 붙고 상단에
-  건수가 뜹니다. 상품명이나 서술 문장은 표현 차이가 늘 있으므로 불일치로 세지 않습니다.
-- 예시 데이터(`source: "sample"`)로 만든 상품은 목록과 결과 화면 모두에 **예시** 배지가
-  붙고 "고객 응대에 쓰지 마십시오" 경고가 나옵니다.
+## 상품 목록은 어디서 오나
 
-## 오프라인 동작
+| 상품군 | 건수 | 원천 |
+|---|---|---|
+| 펀드 | **3,194** (설명서 있는 것 3,019) | `data/fund-catalog.js` — 네이버 Npay 증권 수집분, 금융투자협회 전자공시와 전량 대조 |
+| ELS · DLS | 37 | `data/els.js` — 미래에셋증권 ELS/DLS 캘린더 주간 수집분 |
+| 장외채권 | 원화 100 · 외화 | `data/bond-catalog.js` — 미래에셋증권 장외채권 화면 일일 수집분 |
 
-```bash
-node scripts/build_explain_duty.mjs      # -> explain-duty-offline.html (약 1.8MB, 단일 파일)
-```
+투자설명서 판독 결과는 `data/fund-prospectus.js`(판매회사 원천)와
+`data/fund-prospectus-kofia.js`(금투협 전자공시 · 빈자리 보완), ELS 는 `data/els-prospectus.js`
+(DART 일괄신고추가서류)에 들어 있습니다. 브라우저는 다른 도메인의 PDF 를 직접 읽지
+못하고 이 도구는 망이 막힌 PC 에서 쓰므로, **판독을 미리 해 두고 결과만 싣습니다.**
 
-- 상품 데이터·화면 로직·PDF 판독기(pdf.js)를 **한 파일에 인라인**하고 폰트 CDN 링크를 지웁니다.
-- PDF 판독은 `vendor/pdf.min.js` + `vendor/pdf.worker.min.js`(pdf.js 3.11.174, Apache-2.0,
-  `vendor/pdfjs-LICENSE.txt`)로 합니다. 워커 스크립트를 함께 넣어두면 pdf.js 가
-  `globalThis.pdfjsWorker` 를 찾아 메인 스레드에서 돌리므로 **워커 파일을 받으러 나가지 않습니다.**
-- 첨부한 설명서는 브라우저 밖으로 나가지 않습니다. 등록한 상품은 그 PC 의 브라우저
-  저장소에만 남고, 다른 PC 로는 JSON 내보내기/가져오기로 옮깁니다.
-- 검증: 배포본을 열어 상품 43건을 모두 선택하고 PDF·TXT·HTML 을 첨부하는 동안
-  **외부 요청 0건 · 콘솔 오류 0건**을 확인했습니다.
+갱신은 `.github/workflows/fund-catalog.yml` · `fund-prospectus*.yml` · `els-prospectus.yml`
+가 맡습니다. **예약 실행은 기본 브랜치에서만 도는 것이 GitHub 규칙**이라, 이 브랜치에
+있는 동안에는 Actions 탭에서 수동 실행(workflow_dispatch)해야 합니다.
 
-```bash
-# 소스 상태로 확인 (data/, vendor/ 가 옆에 있어야 함)
-python3 -m http.server 8000   # http://localhost:8000/explain-duty.html
-```
+## 자동완성이 채우지 못하는 값
 
-> 소스 파일(`explain-duty.html`)은 폰트만 Google Fonts CDN 에서 받습니다(막히면 시스템 폰트).
-> 오프라인 PC 에는 **`explain-duty-offline.html` 한 파일만** 보내면 됩니다.
+빨간 **확인필요** 표시는 값을 지어내지 않고 남겨 둔 자리입니다. 표시를 누르면 그 자리에서
+입력되고, 화면 위 배너가 그 값이 **어디에 있는 값인지** 갈라 알려 줍니다 —
+투자설명서에 있는 값 / 상담 중 고객에게 확인할 값 / 별도 자료(협회 채권정보센터·DART·
+지점 증시전망)에 있는 값 / 한 번만 등록하면 되는 회사 공용 값.
 
-## 펀드 목록 채우기
+ELS 평가표의 **적합성보고서 항목은 평가표 원문에서 「상품설명의무」 로 분류**되어 있어
+이 화면에도 남아 있습니다. 그 문안에 투자자성향·현재 투자자금성향이 들어가므로,
+해당 4건은 빨간 표시를 눌러 상담 중에 적습니다 (적합성원칙 화면을 뺐다고 해서 평가표의
+분류를 바꾸지는 않았습니다).
 
-`data/funds.js` 는 지금 **예시 6건**(`source: "sample"`)입니다. 실재하지 않는 상품이며
-화면에 예시 배지가 붙습니다. 실제 목록은 사내에서 내려받은 파일로 바꿉니다.
+## 만들기
 
 ```bash
-node scripts/build_funds_data.mjs funds.csv          # -> data/funds.js
-node scripts/build_explain_duty.mjs                  # 배포본 다시 만들기
+# 설명의무 전용판 (배포본)
+node scripts/build_sales_script.mjs sales-script-expl-standalone.html --src sales-script-expl.html
+
+# 전체판 (적합성원칙 포함) — 필요할 때만
+node scripts/build_sales_script.mjs sales-script-standalone.html
+
+# 소스 상태로 확인
+python3 -m http.server 8000   # http://localhost:8000/sales-script-expl.html
 ```
 
-- CSV(첫 줄 헤더) 또는 객체 배열 JSON 을 받습니다. 알아보는 머리글은 스크립트 상단 주석 참고
-  (`펀드명` `지역` `위험등급` `총보수` `환매수수료` `환매지급일` …).
-- **범위를 벗어난 값은 채우지 않고 비웁니다** — 위험등급이 1~6 밖이거나 보수율이 20%를 넘으면
-  비운 뒤 몇 행이 왜 비었는지 보고합니다. 지역이 없으면 펀드명으로 추정하고 그 사실을 알립니다.
-- ELS 처럼 공개 화면을 긁는 수집기는 넣지 않았습니다. 펀드 목록·보수·환매조건은 판매사
-  사내 시스템에 있고, 검증할 수 없는 추측 코드를 남기지 않으려는 것입니다.
-
-## 펀드 데이터 스키마
-
-`data/funds.js` 는 `window.FUND_DATA` 하나를 정의합니다.
-
-```js
-window.FUND_DATA = {
-  updatedAt: '2026-09-10T00:00:00Z',
-  source: 'live',                    // 'live' | 'sample' (sample 이면 화면에 예시 배지)
-  sourceNote: '...', sourceNoteEn: '...',
-  products: [{
-    code: 'KR5301234567',
-    name: '○○증권자투자신탁1호(주식) 종류C',
-    manager: '○○자산운용',
-    region: 'domestic',              // 'domestic' | 'overseas'
-    assetType: '주식형',              // 주식형 | 채권형 | 혼합형 | 재간접 | MMF
-    riskGrade: 2,                    // 1(매우높은위험) ~ 6(매우낮은위험)
-    riskLabel: '높은위험',
-    hedge: 'H',                      // 'H'(환헤지형) | 'UH'(환노출형) | null
-    currency: 'KRW',
-    invests: '국내 상장 주식에 60% 이상 투자',
-    benchmark: 'KOSPI',
-    feeFront: 1.0,                   // 선취판매수수료 %. null = 없음
-    feeBack: null,
-    totalExpense: 1.35,              // 총보수 연 %
-    expenseBreakdown: { 운용: 0.7, 판매: 0.5, 수탁: 0.03, 사무관리: 0.02 },
-    otherCost: 0.08,
-    redemptionFee: '90일 미만 환매 시 이익금의 70%',   // null = 없음
-    redemptionPricing: '제3영업일 기준가격 적용',
-    redemptionPayout: '제4영업일 지급',
-    derivatives: false,              // 파생상품 활용 → 적정성 원칙 문장이 붙는다
-    highComplexity: false,           // 고난도금융투자상품 → 녹취·숙려·7일 청약철회 문장이 붙는다
-    docDate: null, url: null,
-  }],
-};
-```
-
-`feeFront` 와 `redemptionFee` 는 **`null` = 없음**, **키 자체가 없음 = 미확인**으로 구분합니다.
-미확인이면 화면에 "확인필요"로 뜨고, 없음이면 "없습니다"라고 안내합니다.
+빌드는 `vendor/*.js` · `data/*.js` · `js/*.js` 를 한 파일에 인라인하고, PDF 판독 워커는
+문자열로 심어 앱이 Blob URL 로 씁니다. **웹폰트를 부르지 않습니다** — 망이 막힌 PC 에서
+구글 폰트 `<link>` 는 응답이 끊길 때까지 화면을 비워 두기 때문입니다.
 
 ## 파일
 
 ```
-explain-duty.html          # 화면 (소스)
-explain-duty-offline.html  # 단일 파일 배포본 — 오프라인 PC 용
-data/duty-text.js          # 설명의무 문안 생성기 (상품 -> 읽어줄 문장)
-data/duty-extract.js       # 투자설명서 판독기 (PDF/TXT/HTML -> 항목 값 + 근거 문장)
-data/duty-app.js           # 목록·선택·첨부·인쇄 등 화면 동작
-data/funds.js              # 펀드 상품 데이터
-vendor/pdf.min.js          # pdf.js 본체 (Apache-2.0)
-vendor/pdf.worker.min.js   # pdf.js 워커 — 같이 로드해 메인 스레드에서 돌린다
-scripts/build_explain_duty.mjs  # 단일 파일 배포본 빌드
-scripts/build_funds_data.mjs    # 사내 목록 파일(CSV/JSON) -> data/funds.js
+sales-script.html                 # 전체판 화면 (적합성원칙 + 상품설명의무)
+sales-script-expl.html            # 설명의무 전용 화면 — window.SS_MODE='expl' 만 다름
+sales-script-expl-standalone.html # 설명의무 전용 배포본 (단일 파일, 약 5.3MB)
+js/sales-script-app.js            # 앱 로직 (두 화면이 함께 쓴다)
+js/sales-script-prospectus.js     # 투자설명서 판독기
+data/sales-script-data.js         # 상품 시드·필드 정의
+data/sales-script-sheets*.js      # 미스터리쇼핑 평가표 16종 (8종 × 고령/비고령)
+data/fund-catalog.js              # 공모펀드 3,194건
+data/fund-prospectus*.js          # 펀드 투자설명서 판독 결과
+data/els-prospectus.js            # ELS 투자설명서(DART) 판독 결과
+data/bond-catalog.js              # 장외채권
+scripts/build_sales_script.mjs    # 단일 파일 빌드 (--src 로 화면 선택)
+scripts/build_fund_catalog.mjs    # 펀드 카탈로그 생성
+scripts/fetch_fund_prospectus.mjs · collect_fund_prospectus_kofia.mjs
+scripts/fetch_prospectus.mjs · parse_prospectus.mjs · build_els_prospectus.mjs
 ```
 
 ## 유의사항 (완전판매 스크립트)
 
-자동 작성된 문안은 **설명 항목을 빠뜨리지 않기 위한 초안**입니다. 확정된 계약 조건은
-투자설명서·간이투자설명서·핵심설명서가 우선하며, 고객에게 읽어 드리기 전에 설명서와
-대조하십시오. 판독은 규칙 기반이라 문서 형식이 다르면 틀리게 잡을 수 있고, 스캔 이미지
-PDF 는 글자가 없어 읽지 못합니다(그 경우 그렇게 표시됩니다).
-
-법령 문장은 작성 시점 기준입니다 — 배당소득 원천징수 15.4%, 고난도금융투자상품 청약철회
-7일, 위법계약해지권(계약일 5년 이내 + 안 날로부터 1년 이내), 고난도상품 녹취 및 2영업일
-이상 숙려기간, 위험등급 1~6등급 체계. 감독규정이나 사내 표준투자권유준칙이 바뀌면 그쪽이
-우선합니다. 실제 판매에 쓰기 전 준법감시 부서 확인을 받으십시오.
-GitHub Pages 배포 대상(`mapo-wm.html`)에는 포함되어 있지 않습니다.
+이 화면의 스크립트는 **미스터리쇼핑 평가표를 코드화한 것**입니다. 숫자·일자·요율은
+반드시 **해당 상품의 투자설명서 원문**과 대조하십시오 — 부정확한 설명은 부당권유행위로
+감점됩니다. 셀프채점은 평가표 배점을 그대로 적용한 계산일 뿐 실제 평가 결과가 아닙니다.
+실제 판매 적용 전 준법감시 부서 확인을 받으십시오.

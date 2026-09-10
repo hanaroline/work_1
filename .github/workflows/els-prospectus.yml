@@ -1,0 +1,93 @@
+name: ELS 투자설명서 수집 (DART)
+
+# 파이프라인
+#   scripts/fetch_prospectus.mjs   DART 일괄신고추가서류 원문 수집
+#   scripts/parse_prospectus.mjs   회차별 조건 파싱 (정합성 검사 포함)
+#   scripts/build_els_prospectus.mjs  완전판매 스크립트 형식으로 변환
+#
+# 수집 경로는 이미 검증된 것이다 — tools/discovery/prospectus_*.txt 가 그 결과물이고,
+# parse -> build 단계는 그 원문으로 로컬 검증했다(회차 92건, 정합성 검사 통과).
+# 개발 컨테이너는 dart.fss.or.kr 이 egress 차단이라 fetch 단계만 러너에서 돈다.
+
+on:
+  workflow_dispatch:
+    inputs:
+      days_back:
+        description: 'DART 공시 검색 기간 (일)'
+        type: string
+        default: '45'
+  schedule:
+    # 매일 08:30 KST (23:30 UTC) — ELS 상품 수집(08:00) 이후
+    - cron: '30 23 * * *'
+  push:
+    branches:
+      - 'claude/els-**'
+      # 완전판매 스크립트도 같은 수집 결과(data/els-prospectus.js)를 쓴다.
+      # 수집기를 고쳤으면 그 브랜치에서 바로 돌려 결과를 확인해야 한다.
+      - 'claude/complete-sales-script-**'
+    paths:
+      - 'scripts/fetch_prospectus.mjs'
+      - 'scripts/parse_prospectus.mjs'
+      - 'scripts/build_els_prospectus.mjs'
+      - '.github/workflows/els-prospectus.yml'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: els-prospectus
+  cancel-in-progress: false
+
+jobs:
+  collect:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref_name }}
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: 1. DART 공시 원문 수집
+        env:
+          DART_DAYS_BACK: ${{ inputs.days_back || '45' }}
+        run: node scripts/fetch_prospectus.mjs
+
+      - name: 2. 회차별 조건 파싱
+        # 정합성 검사(기초자산·변동성·상관계수 개수/이름 일치)가 실패하면
+        # exit 1 이 되지만, 새 기초자산이 들어온 경우이므로 빌드는 계속한다.
+        run: node scripts/parse_prospectus.mjs || echo '::warning::정합성 경고 — ASSETS 표에 없는 기초자산이 있을 수 있음'
+
+      - name: 3. 스크립트 형식으로 변환
+        run: node scripts/build_els_prospectus.mjs
+
+      - name: 수집 결과 업로드
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: prospectus-raw
+          path: |
+            tools/discovery/prospectus_*.txt
+            tools/discovery/dart_filings.json
+            tools/discovery/dart_docs.json
+          if-no-files-found: ignore
+          retention-days: 30
+
+      - name: 결과 커밋
+        run: |
+          git config user.name  'github-actions[bot]'
+          git config user.email 'github-actions[bot]@users.noreply.github.com'
+          git add -A data/els-prospectus.js tools/discovery/ 2>/dev/null || true
+          if [ -z "$(git diff --cached --name-only)" ]; then
+            echo '변경 없음'; exit 0
+          fi
+          git commit -m "chore(els): 투자설명서 수집 결과 갱신"
+          for i in 1 2 3 4 5; do
+            if git push; then exit 0; fi
+            echo "push 거절 — 원격 변경을 받아 재시도 ($i/5)"
+            git pull --rebase --autostash origin "${{ github.ref_name }}" || exit 1
+          done
+          echo '5회 시도 후에도 push 실패'; exit 1
