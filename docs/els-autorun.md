@@ -55,7 +55,22 @@ node scripts/els_schedule_check.mjs
 | `els-weekly.yml` | 홈페이지 청약중 목록 수집 | `data/els.js`, `tools/discovery/rendered_list.json` |
 | `els-prospectus-probe.yml` | 최신 회차 공시 원문(일괄신고추가서류) 추출 | `tools/discovery/prospectus_*.json` |
 
-먼저 `els-weekly.yml` 을 돌리고, 끝나면 받아온다.
+**두 워크플로 모두 스스로 걸어야 한다.** `els-weekly.yml` 에 매일 도는 스케줄이
+있긴 하지만 (가) 기본 브랜치(main)에서만 돌고 (나) GitHub 스케줄 지연 때문에
+실제로는 09:30~10:00 KST 에 실행된다. 08:30 슬롯에서는 아직 그날 목록이 없다.
+
+MCP 도구가 없는 세션이라면 **git push 로 부른다.** 두 워크플로에 요청 파일
+경로가 `push.paths` 로 걸려 있다.
+
+```bash
+date -u +'마지막 요청: %Y-%m-%dT%H:%M:%SZ' >> tools/discovery/collect-request.txt
+git commit -am "chore(els): 목록 수집 요청" && git push origin claude/els-product-structure-page-ljsucw
+# 공시 원문이 필요할 때
+date -u +'마지막 요청: %Y-%m-%dT%H:%M:%SZ' >> tools/discovery/prospectus-request.txt
+git commit -am "chore(els): 공시 원문 수집 요청" && git push origin claude/els-product-structure-page-ljsucw
+```
+
+워크플로가 끝나면 결과를 같은 브랜치에 커밋하므로 받아온다.
 
 ```bash
 git pull --ff-only origin claude/els-product-structure-page-ljsucw
