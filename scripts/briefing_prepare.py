@@ -143,9 +143,14 @@ def _tables(C):
           TH("하락", "Dec", "n"), TH("검증", "Verified", "n opt")]
     brows = []
     for r in (C["H"].get("rows") or []):
-        b = r["breadth"]
-        ks_, kq_ = b["kospi"], b["kosdaq"]
-        miss = (ks_["advancing"] + ks_["declining"]) == 0
+        # 수집이 네이버를 못 받은 날은 `breadth` 자체가 없는 줄이 남는다
+        # (2026-09-10 저녁 수집 셋이 그랬다). 그런 줄에서 죽지 말고, 값이
+        # 0 으로 들어온 날과 똑같이 «—» 로 비워 둔다 — 지수 등락률은 있으므로
+        # 줄을 통째로 버리면 추이에 구멍이 생긴다.
+        b = r.get("breadth") or {}
+        zero = {"advancing": 0, "declining": 0}
+        ks_, kq_ = b.get("kospi") or zero, b.get("kosdaq") or zero
+        miss = (ks_.get("advancing", 0) + ks_.get("declining", 0)) == 0
         dash = '<span class="mut">&mdash;</span>'
         brows.append('      <tr><th class="wrap">' + r["date"][5:] + '</th>'
                      '<td class="n">' + pct(r["kospi"]["change_pct"]) + '</td>'
