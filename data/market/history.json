@@ -1,7 +1,7 @@
 {
  "note": "날짜별 시장 내부 지표 누적본. 최신이 맨 아래다.",
  "unit": "등락 종목 수는 개, 수급·예탁금은 억원",
- "count": 23,
+ "count": 24,
  "rows": [
   {
    "date": "2026-08-07",
@@ -3028,6 +3028,29 @@
     "cofix_balance": 3.0
    },
    "usdkrw": 1340.0
+  },
+  {
+   "date": "2026-09-10",
+   "collected_kst": "2026-09-10 20:46:55",
+   "kospi": {
+    "close": 7033.9199,
+    "change_pct": -0.2513
+   },
+   "kosdaq": {
+    "close": 836.92,
+    "change_pct": 0.7888
+   },
+   "investors_kospi": {
+    "date": "26.09.10",
+    "retail": 3802,
+    "foreign": -26217,
+    "institution": 5744
+   },
+   "rates_kr": {
+    "ktb1y": 3.507,
+    "ktb5y": 4.186,
+    "ktb10y": 4.453
+   }
   }
  ]
 }
