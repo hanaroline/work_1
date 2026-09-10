@@ -72,6 +72,33 @@ jobs:
           echo "인자: $*"
           node scripts/fetch_fund_prospectus.mjs "$@"
 
+      # 아티팩트(Azure blob)를 못 내려받는 자리에서도 원문을 볼 수 있어야 한다.
+      # 규칙을 고치려면 「문서가 실제로 뭐라고 적었나」 를 봐야 하는데, 그것을 못 보면
+      # 추측으로 정규식을 고치게 된다. 수수료 대목만 잘라 로그에 찍는다.
+      - name: 원문 발췌 — 보수·수수료 대목
+        if: always()
+        run: |
+          node -e "
+          const fs=require('fs'), path='/tmp/sample/text';
+          if(!fs.existsSync(path)){ console.log('(받아 둔 원문 없음)'); process.exit(0); }
+          const files=fs.readdirSync(path).filter(f=>f.endsWith('.txt'));
+          for(const f of files){
+            const t=fs.readFileSync(path+'/'+f,'utf8');
+            console.log('');
+            console.log('════════ '+f+' ════════');
+            console.log(t.split('\n')[0].slice(0,90));
+            const hits=[...t.matchAll(/선취\s*판매\s*수수료|판매수수료|보수 및 수수료|종류형|클래스/g)].map(m=>m.index);
+            const shown=[]; let n=0;
+            for(const at of hits){
+              if(shown.some(x=>Math.abs(x-at)<400)) continue;
+              shown.push(at); n++; if(n>7) break;
+              const seg=t.slice(Math.max(0,at-260), at+420).replace(/\t/g,' | ').replace(/\n{2,}/g,'\n');
+              console.log('  ── @'+at+' ──');
+              seg.split('\n').map(l=>l.trim()).filter(Boolean).slice(0,14).forEach(l=>console.log('     '+l.slice(0,150)));
+            }
+          }
+          "
+
       - name: 추출률
         env:
           FIELDS: ${{ inputs.fields || 'clsA,clsAExp,redeemFee,liqRisk' }}
@@ -90,6 +117,17 @@ jobs:
           console.log('── 항목별 추출률 ──');
           Object.entries(cnt).sort((a,b)=>b[1]-a[1])
             .forEach(([f,n])=>console.log('  '+f.padEnd(14)+String(n).padStart(4)+'건  '+(100*n/K.length).toFixed(0)+'%'));
+          /* 종목을 지목했으면 종목별로 무엇을 읽었는지 한 줄씩 — 이것이 확인의 핵심이다 */
+          if (onlyCodes.length) {
+            console.log('\n── 종목별 읽어 낸 값 ──');
+            for (const k of K) {
+              const row = Object.keys(I[k]).sort().map(f => f + '=' + JSON.stringify(String(P.pool[I[k][f]]).slice(0,44)));
+              console.log('  ' + k);
+              console.log('     ' + (row.length ? row.join('  ') : '(아무것도 못 읽음)'));
+            }
+            const missed = onlyCodes.filter(k => !I[k]);
+            if (missed.length) console.log('  판독 실패: ' + missed.join(', '));
+          }
           const want=(process.env.FIELDS||'').split(',').map(s=>s.trim()).filter(Boolean);
           for (const f of want) {
             console.log('\n── ' + f + ' 읽어 낸 값 (중복 제거, 최대 25종) ──');
@@ -132,32 +170,6 @@ jobs:
           if(bad) process.exit(1);
           "
 
-      # 아티팩트(Azure blob)를 못 내려받는 자리에서도 원문을 볼 수 있어야 한다.
-      # 규칙을 고치려면 「문서가 실제로 뭐라고 적었나」 를 봐야 하는데, 그것을 못 보면
-      # 추측으로 정규식을 고치게 된다. 수수료 대목만 잘라 로그에 찍는다.
-      - name: 원문 발췌 — 보수·수수료 대목
-        if: always()
-        run: |
-          node -e "
-          const fs=require('fs'), path='/tmp/sample/text';
-          if(!fs.existsSync(path)){ console.log('(받아 둔 원문 없음)'); process.exit(0); }
-          const files=fs.readdirSync(path).filter(f=>f.endsWith('.txt'));
-          for(const f of files){
-            const t=fs.readFileSync(path+'/'+f,'utf8');
-            console.log('');
-            console.log('════════ '+f+' ════════');
-            console.log(t.split('\n')[0].slice(0,90));
-            const hits=[...t.matchAll(/선취\s*판매\s*수수료|판매수수료|보수 및 수수료|종류형|클래스/g)].map(m=>m.index);
-            const shown=[]; let n=0;
-            for(const at of hits){
-              if(shown.some(x=>Math.abs(x-at)<400)) continue;
-              shown.push(at); n++; if(n>7) break;
-              const seg=t.slice(Math.max(0,at-260), at+420).replace(/\t/g,' | ').replace(/\n{2,}/g,'\n');
-              console.log('  ── @'+at+' ──');
-              seg.split('\n').map(l=>l.trim()).filter(Boolean).slice(0,14).forEach(l=>console.log('     '+l.slice(0,150)));
-            }
-          }
-          "
 
       - uses: actions/upload-artifact@v4
         if: always()
