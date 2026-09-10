@@ -845,18 +845,13 @@ def fetch_detail(rep, dump_dir=None, alien=()):
     if rep["title"].rstrip().endswith("..") and len(full) > len(rep["title"]) - 2:
         rep["title"], rep["title_full"] = full, True
 
-    if len(body) < 80:
-        if dump_dir:
-            _dump(dump_dir, "detail_%s.json" % rep["nid"],
-                  json.dumps(got, ensure_ascii=False, indent=1))
-        rep["extracted"] = how
-        return rep
-
-    # 원문 PDF 가 칸으로 온다. 긁어 올 때는 본문 화면만 있는 리포트에서
-    # 이것을 얻지 못해 「원문 PDF 없음」이 수십 건씩 났다.
+    # 아래 넷은 **본문과 따로** 온다. 본문이 짧아도 버리지 않는다 — 긁어
+    # 오던 때는 본문이 없으면 아무것도 없었지만, 칸은 본문 길이와 무관하다.
+    #
+    # 원문 PDF: 긁어 올 때는 본문 화면만 있는 리포트에서 이것을 얻지 못해
+    # 「원문 PDF 없음」이 수십 건씩 났다.
     if not rep.get("pdf") and got.get("attachUrl"):
         rep["pdf"] = got["attachUrl"]
-
     # 투자의견·목표주가도 칸으로 온다. 글자에서 캐낸 것보다 이쪽이 옳다.
     if got.get("opinion"):
         rep["opinion"] = str(got["opinion"]).strip()
@@ -872,7 +867,14 @@ def fetch_detail(rep, dump_dir=None, alien=()):
         rep["prev_target_price"] = prev
         rep["target_move"] = ("상향" if goal > prev
                               else "하향" if goal < prev else "유지")
+
     rep["extracted"] = how
+    if len(body) < 80:
+        # 요약할 만한 본문이 없다. 위에서 챙긴 칸 값은 그대로 둔 채 물러난다.
+        if dump_dir:
+            _dump(dump_dir, "detail_%s.json" % rep["nid"],
+                  json.dumps(got, ensure_ascii=False, indent=1))
+        return rep
     rep["body_chars"] = len(body)
     lines = summarize(body, rep["title"], alien=alien)
     if lines:
