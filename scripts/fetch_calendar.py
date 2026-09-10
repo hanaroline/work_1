@@ -98,6 +98,60 @@ def need(cond, why):
         raise Skip(why)
 
 
+# 파서가 0건을 뱉었을 때 찾아볼 날짜 표기들. 페이지가 어떤 꼴로 날짜를 적는지 알아야
+# 파서를 그 꼴에 맞출 수 있다.
+DATE_SHAPES = (
+    ("D Month YYYY", r"\d{1,2}\s+[A-Z][a-z]{2,8}\s+20\d{2}"),
+    ("Month D, YYYY", r"[A-Z][a-z]{2,8}\s+\d{1,2},?\s+20\d{2}"),
+    ("Month D-D", r"[A-Z][a-z]{2,8}\s+\d{1,2}\s*[-–]\s*\d{1,2}"),
+    ("YYYY.MM.DD", r"20\d{2}[.\-/]\s?\d{1,2}[.\-/]\s?\d{1,2}"),
+    ("YYYY년 M월 D일", r"20\d{2}년\s*\d{1,2}월\s*\d{1,2}일"),
+    ("ISO", r"20\d{2}-\d{2}-\d{2}"),
+)
+
+
+def probe(name, html):
+    """파서가 걸러졌을 때 받은 페이지가 어떻게 생겼는지 남긴다.
+
+    HTTP 는 200 인데 0건이 나오는 것은 페이지 구조가 파서의 가정과 다르다는 뜻이다.
+    그 자리에서 구조를 로그와 report 에 적어 두지 않으면, 세션에서 그 사이트에 붙지
+    못하는 한(CONNECT 403) 무엇을 고쳐야 하는지 영영 알 수 없다.
+    """
+    text = strip_tags(html)
+    title = re.search(r"(?is)<title[^>]*>(.*?)</title>", html)
+    heads = [strip_tags(h)[:70] for h in
+             re.findall(r"(?is)<h[1-4][^>]*>(.*?)</h[1-4]>", html)[:8]]
+    info = {
+        "title": strip_tags(title.group(1))[:120] if title else None,
+        "bytes": len(html),
+        "textChars": len(text),
+        "headings": heads,
+        "sample": text[:500],
+        "shapes": {},
+        "around": [],
+    }
+    print("  [probe] %s — %d바이트, 본문 %d자, title=%r"
+          % (name, len(html), len(text), info["title"]))
+    if heads:
+        print("  [probe] 헤딩: " + " / ".join(heads[:5]))
+    print("  [probe] 본문 앞부분: " + text[:260])
+
+    for label, pat in DATE_SHAPES:
+        hits = re.findall(pat, text)
+        if hits:
+            info["shapes"][label] = {"n": len(hits), "e.g.": hits[:4]}
+            print("  [probe] 날짜꼴 %-16s %3d개 — %s" % (label, len(hits), hits[:4]))
+
+    # 원본 HTML 에서 날짜 둘레를 그대로 떠 온다 — 어떤 태그·클래스에 담겨 있는지가
+    # 파서를 고칠 때 필요한 전부다.
+    for m in list(re.finditer(r"20\d{2}", html))[:4]:
+        lo, hi = max(0, m.start() - 160), min(len(html), m.end() + 160)
+        chunk = re.sub(r"\s+", " ", html[lo:hi])
+        info["around"].append(chunk)
+        print("  [probe] 둘레: …%s…" % chunk)
+    return info
+
+
 # ------------------------------------------------------------------ 파서들
 #
 # 아래 파서는 **이 세션에서 실측하지 못했다**(대상 사이트가 전부 CONNECT 403).
@@ -400,6 +454,7 @@ def main(argv=None):
             continue
         rep = {"url": url, "ok": False}
         report["sources"][name] = rep
+        html = None
         try:
             if short == "treasury":
                 rows = fetch_treasury()
@@ -424,6 +479,13 @@ def main(argv=None):
         except Skip as e:
             rep["why"] = "믿을 수 없어 반영하지 않았다 — %s" % e
             print("[skip] %-16s %s" % (name, e))
+            # HTTP 는 됐는데 0건이면 페이지 구조가 파서의 가정과 다른 것이다. 그 구조를
+            # 여기서 남겨 두지 않으면 무엇을 고쳐야 하는지 알 수 없다.
+            if html is not None:
+                try:
+                    rep["probe"] = probe(name, html)
+                except Exception as pe:                       # noqa: BLE001
+                    rep["probeError"] = str(pe)
         except Exception as e:                                # noqa: BLE001
             rep["why"] = "받지 못했다 — %s: %s" % (type(e).__name__, e)
             print("[fail] %-16s %s" % (name, rep["why"]))
