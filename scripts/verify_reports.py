@@ -259,11 +259,29 @@ def verify(path):
             forms.add(sq("%d만" % (tp // 10000)))
         if tp % 1000 == 0:
             forms.add(sq("%s만" % ("%g" % (tp / 10000))))
+        if r.get("target_from") == "api":
+            continue                       # 칸에서 온 수 — 다4-1 이 따로 본다
         if not any(f and f in hay for f in forms):
             tp_bad.append((r["url"], tp))
     check("다4 목표주가가 원문에 적힌 수임", not tp_bad,
           "%d건 중 원문에서 못 찾음 %d" % (sum(1 for r in rows if r.get("target_price")),
                                           len(tp_bad)))
+    # 9/11 개편 뒤로 목표주가는 네이버가 `goalPrice` 칸으로 준다. 칸에서 온
+    # 수는 본문 글자에 없을 수 있으므로 위 잣대를 그대로 대면 안 된다 —
+    # 대신 **직전 목표가와 나란히** 있는지, 방향이 두 수와 맞는지를 본다.
+    api_tp = [r for r in rows if r.get("target_from") == "api"]
+    move_bad = []
+    for r in api_tp:
+        goal, prev, mv = r.get("target_price"), r.get("prev_target_price"), r.get("target_move")
+        if prev is None or mv is None:
+            continue
+        want = "상향" if goal > prev else "하향" if goal < prev else "유지"
+        if mv != want:
+            move_bad.append((r["url"], goal, prev, mv))
+    check("다4-1 칸에서 온 목표주가의 방향이 두 수와 맞음", not move_bad,
+          "칸에서 온 %d건 중 어긋남 %d" % (len(api_tp), len(move_bad)))
+    for u, g, p_, mv in move_bad[:5]:
+        warn("다4-1 눈으로 볼 것", "%s→%s 인데 %s — %s" % (p_, g, mv, u))
     for u, tp in tp_bad[:5]:
         warn("다4 눈으로 볼 것", "%s → %s" % (tp, u))
 
