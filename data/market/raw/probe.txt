@@ -1,0 +1,61 @@
+네이버 API 탐색 2026-09-11 08:15:14 KST
+(원천이 실패한 날에만 돈다. 수집 결과는 바꾸지 않는다.)
+
+[internals] https://m.stock.naver.com/api/index/KOSPI/basic
+    빈손 · 3165 bytes · 걸린 낱말 없음
+    남김: data/market/raw/probe_00_internals.txt
+    앞머리: {"stockEndType":"index","itemCode":"KOSPI","reutersCode":"KOSPI","symbolCode":"KOSPI","stockName":"코스피","itemLogoUrl":"https://ssl.pstatic.net/imgstock/fn/real/logo/index/IndexKOSPI.svg","itemLogoPngUrl":"https://ssl.pstatic.net/imgstock/fn
+
+[internals] https://m.stock.naver.com/api/index/KOSDAQ/basic
+    빈손 · 3196 bytes · 걸린 낱말 없음
+    남김: data/market/raw/probe_01_internals.txt
+    앞머리: {"stockEndType":"index","itemCode":"KOSDAQ","reutersCode":"KOSDAQ","symbolCode":"KOSDAQ","stockName":"코스닥","itemLogoUrl":"https://ssl.pstatic.net/imgstock/fn/real/logo/index/IndexKOSDAQ.svg","itemLogoPngUrl":"https://ssl.pstatic.net/imgstoc
+
+[internals] https://api.stock.naver.com/index/KOSPI/basic
+    실패 · 35 bytes · 걸린 낱말 없음
+
+[internals] https://m.stock.naver.com/api/index/KOSPI/integration
+    쓸모 · 15925 bytes · 걸린 낱말 ['riseCount', 'fallCount']
+    남김: data/market/raw/probe_03_internals.txt
+    앞머리: {"stockEndType":"index","itemCode":"KOSPI","reutersCode":"KOSPI","stockName":"코스피","totalInfos":[{"code":"lastClosePrice","key":"전일","value":"7,033.92"},{"code":"openPrice","key":"시가","value":"-"},{"code":"highPrice","key":"고가","value":"-"}
+
+[internals] https://m.stock.naver.com/api/index/KOSPI/price?pageSize=5&page=1
+    쓸모 · 1279 bytes · 걸린 낱말 ['상승']
+    남김: data/market/raw/probe_04_internals.txt
+    앞머리: [{"localTradedAt":"2026-09-10","closePrice":"7,033.92","compareToPreviousClosePrice":"-17.72","compareToPreviousPrice":{"code":"5","text":"하락","name":"FALLING"},"fluctuationsRatio":"-0.25","openPrice":"7,038.85","highPrice":"7,072.79","lowP
+
+[sectors] https://m.stock.naver.com/api/stocks/industry
+    쓸모 · 2230 bytes · 걸린 낱말 ['changeRate']
+    남김: data/market/raw/probe_05_sectors.txt
+    앞머리: {"stockListSortType":"INDUSTRY","groups":[{"no":309,"name":"음료","totalCount":0,"changeRate":"0.00","riseCount":0,"fallCount":0,"steadyCount":0},{"no":318,"name":"종이와목재","totalCount":0,"changeRate":"0.00","riseCount":0,"fallCount":0,"steadyC
+
+[sectors] https://api.stock.naver.com/industry
+    실패 · 36 bytes · 걸린 낱말 없음
+
+[sectors] https://m.stock.naver.com/api/stocks/industry?page=1&pageSize=100
+    쓸모 · 8455 bytes · 걸린 낱말 ['반도체', 'changeRate']
+    남김: data/market/raw/probe_07_sectors.txt
+    앞머리: {"stockListSortType":"INDUSTRY","groups":[{"no":309,"name":"음료","totalCount":0,"changeRate":"0.00","riseCount":0,"fallCount":0,"steadyCount":0},{"no":318,"name":"종이와목재","totalCount":0,"changeRate":"0.00","riseCount":0,"fallCount":0,"steadyC
+
+[money_flow] https://m.stock.naver.com/api/stocks/marketValue/deposit
+    실패 · 30 bytes · 걸린 낱말 없음
+
+[money_flow] https://finance.naver.com/sise/sise_deposit.naver
+    셸 · 122030 bytes · 걸린 낱말 ['예탁금', 'deposit']
+    남김: data/market/raw/probe_09_money_flow.txt
+    앞머리: <!DOCTYPE html><html lang="ko" class="" data-theme="light"><head><meta charSet="utf-8"/><meta name="viewport" content="width=1366, initial-scale=1.0, user-scalable=yes"/><meta name="viewport" content="width=device-width, initial-scale=1"/><
+
+[news] https://m.stock.naver.com/api/news/mainNews?category=mainnews&page=1&pageSize=20
+    실패 · 30 bytes · 걸린 낱말 없음
+
+[news] https://m.stock.naver.com/api/home/news/mainnews?pageSize=20
+    실패 · 30 bytes · 걸린 낱말 없음
+
+[marketindex] https://api.stock.naver.com/marketindex/exchange/FX_USDKRW/basic
+    실패 · 36 bytes · 걸린 낱말 없음
+
+[marketindex] https://m.stock.naver.com/api/marketindex/exchange/FX_USDKRW/basic
+    실패 · 30 bytes · 걸린 낱말 없음
+
+[marketindex] https://api.stock.naver.com/marketindex/interest
+    실패 · 36 bytes · 걸린 낱말 없음
