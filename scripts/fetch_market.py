@@ -3099,6 +3099,56 @@ _API_WANT = {
 }
 
 
+_CHUNK = re.compile(r'https://ssl\.pstatic\.net/imgstock/fn/real/pc/_next/static/chunks/[^"\']+\.js')
+# JS 묶음 안에서 API 경로처럼 보이는 조각. 따옴표 안의 "/api/..." 를 노린다.
+_APIPATH = re.compile(r'["\'`](/api/[A-Za-z0-9_\-/{}$.:?=&]{4,120})["\'`]')
+_HOSTPATH = re.compile(r'["\'`](https?://[a-z.]*stock\.naver\.com/api/[^"\'`]{4,120})["\'`]')
+
+
+def probe_next_chunks(pages, dump_dir="data/market/raw"):
+    """**셸 페이지의 JS 묶음을 열어 API 주소를 직접 읽는다.**
+
+    네이버 금융이 Next.js 로 바뀐 뒤, 값은 브라우저가 API 로 받아 채운다.
+    어느 주소인지는 짐작으로 맞히기 어렵다 — 2026-09-11 탐색에서 증시자금·
+    기사·금리/환율 후보 열넷이 전부 404 였다. 그런데 **셸 안에 그 페이지가
+    쓰는 JS 묶음 주소가 그대로 적혀 있고**, 묶음 안에는 호출하는 경로가
+    문자열로 들어 있다. 그것을 긁어 오면 추측할 필요가 없다.
+
+    묶음은 크므로 페이지마다 `app/...` 경로가 든 것만 골라 몇 개만 연다.
+    """
+    os.makedirs(dump_dir, exist_ok=True)
+    lines = ["Next.js 묶음에서 API 주소 찾기 %s KST"
+             % datetime.now(KST).strftime("%Y-%m-%d %H:%M:%S"), ""]
+    for label, page_url in pages:
+        lines.append("### %s\n    %s" % (label, page_url))
+        try:
+            shell = _get(page_url, referer="https://finance.naver.com/")
+        except Exception as e:                                    # noqa: BLE001
+            lines.append("    셸 실패: %s: %s\n" % (type(e).__name__, e))
+            continue
+        chunks = [u for u in dict.fromkeys(_CHUNK.findall(shell)) if "/app/" in u]
+        lines.append("    app 묶음 %d 개" % len(chunks))
+        found = set()
+        for cu in chunks[:8]:
+            try:
+                js = _get(cu)
+            except Exception as e:                                # noqa: BLE001
+                lines.append("    묶음 실패 %s — %s" % (cu.rsplit("/", 1)[-1], e))
+                continue
+            found |= set(_APIPATH.findall(js)) | set(_HOSTPATH.findall(js))
+        keep = sorted(x for x in found
+                      if not any(b in x for b in ("/api/nlog", "/api/log", "sentry")))
+        for x in keep[:60]:
+            lines.append("      %s" % x)
+        if not keep:
+            lines.append("      (경로를 못 찾음)")
+        lines.append("")
+    with open(os.path.join(dump_dir, "probe_chunks.txt"), "w", encoding="utf-8") as f:
+        f.write("\n".join(lines))
+    print("\n".join(lines[:40]))
+    print("... 전체는 %s/probe_chunks.txt" % dump_dir)
+
+
 def probe_naver_api(dump_dir="data/market/raw"):
     """네이버 API 후보를 훑어 응답을 그대로 남긴다. 진단 전용."""
     os.makedirs(dump_dir, exist_ok=True)
@@ -3541,6 +3591,14 @@ def main():
             probe_naver_api()
         except Exception as e:                                    # noqa: BLE001
             print("!! API 탐색 실패: %s" % e)
+        try:
+            probe_next_chunks([
+                ("증시자금동향", "https://finance.naver.com/sise/sise_deposit.naver"),
+                ("증시 기사", "https://finance.naver.com/news/mainnews.naver"),
+                ("시장지표(금리·환율)", "https://finance.naver.com/marketindex/"),
+            ])
+        except Exception as e:                                    # noqa: BLE001
+            print("!! 묶음 탐색 실패: %s" % e)
 
     # 아무것도 못 받으면 실패로 끝내 워크플로가 빨갛게 뜨도록 한다
     return 0 if ok else 1
