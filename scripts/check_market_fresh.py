@@ -100,6 +100,22 @@ SESSION_FLOOR = {
     "morning": None,                  # 간밤 미국 마감이 날짜로 이미 걸러진다
 }
 
+# 날짜와 시각이 맞아도 **덩어리째 빠진 스냅숏**이 있다. 2026-09-10 저녁
+# 수집 세 번(20:48·21:09·23:20)이 모두 네이버를 못 받아 `market_internals`
+# (등락 종목 수·투자자별·프로그램·52주·장중 고저)·`sectors`·`money_flow`
+# ·`news` 없이 커밋됐다. 날짜 검사만 하던 이 스크립트는 셋 다 「쓸 수 있다」로
+# 통과시켰고, 빌더가 `KeyError: 'market_internals'` 로 죽고 나서야 드러났다.
+# **빌더가 반드시 읽는 것**만 여기 적는다 — 없으면 글을 쓰기 전에 멈춘다.
+REQUIRED_SECTIONS = {
+    "close": ["market_internals", "sectors"],
+    "morning": ["market_internals", "sectors"],
+}
+
+
+def missing_sections(j, session):
+    """비었거나 아예 없는 필수 덩어리의 이름. 다 있으면 빈 목록."""
+    return [k for k in REQUIRED_SECTIONS.get(session, []) if not j.get(k)]
+
 
 def capture_time(j):
     """`generated_at_kst` 를 datetime 으로. 못 읽으면 None."""
@@ -168,6 +184,14 @@ def inspect(session, today, use_main=True):
         else:
             lines.append("  O 마감 뒤 수집          %s (하한 %s)"
                          % (cap.strftime("%m-%d %H:%M"), floor.strftime("%H:%M")))
+
+    # 날짜·시각이 맞아도 덩어리가 빠져 있으면 브리핑을 지을 수 없다.
+    gone = missing_sections(j, session)
+    if gone:
+        ok = False
+        lines.append("  X 덩어리가 빠졌다 — %s" % ", ".join(gone))
+        lines.append("    날짜는 맞지만 수집이 원천을 못 받은 것이다. 빌더가 읽는 항목이라 "
+                     "이대로는 판을 지을 수 없다.")
     return ok, lines, raw
 
 
