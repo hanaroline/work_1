@@ -2523,6 +2523,24 @@
   }
   /** ELS 만 적합/부적합에 따라 설명의무가 달라진다 — 그 상품군에서만 시나리오를 묻는다 */
   function scenarioMatters() { return sheet().cat === 'els'; }
+  /**
+   * ELS 적합을 고르면 「신규투자자」 를 기본으로 켠다.
+   *
+   * 미스터리쇼핑은 대부분 신규투자자로 들어온다. 적합성보고서 발급 대상이
+   * (적합한) 고령 또는 신규투자자라, 비고령 고객에서 이것이 꺼져 있으면
+   * 적합성보고서 2항목이 통째로 「미해당」 이 되어 스크립트에서 빠진다 —
+   * 정작 평가에서 보는 항목이 빠진 채로 상담을 진행하게 된다.
+   *
+   * 사람이 한 번이라도 이 칸을 건드렸으면 그 뜻을 존중해 다시 켜지 않는다.
+   */
+  function applyElsDefaults() {
+    if (!EXPL) return;
+    if (ST.ctx.newInvestorTouched) return;
+    var sh = SHEETS[sheetKey()];
+    if (!sh || sh.cat !== 'els' || sh.scenario !== 'fit') return;
+    if (!ST.pick.cat || !ST.pick.scen) return;
+    ST.ctx.newInvestor = true;
+  }
   /** 상품군을 골랐는가 (설명의무 화면에서만 따진다) */
   function pickedCat() { return !EXPL || ST.pick.cat; }
   /** 적합/부적합을 골랐는가 — ELS 가 아니면 물을 것이 없다 */
@@ -2810,8 +2828,14 @@
       h.push('<div class="hint" style="margin-bottom:10px">설명의무 항목 「적합성보고서 발급 및 내용 안내」 의 '
         + '<b>투자권유 사유</b> 문안이 이 값들을 그대로 읽습니다 — 고르면 스크립트에 바로 들어갑니다.</div>');
 
+      var nvAuto = ctx.newInvestor && !ctx.newInvestorTouched;
       h.push('<label class="chk"><input type="checkbox" class="ctxChk" data-k="newInvestor"'
-        + (ctx.newInvestor ? ' checked' : '') + '><span>신규투자자</span></label>');
+        + (ctx.newInvestor ? ' checked' : '') + '><span>신규투자자'
+        + (nvAuto ? ' <span class="badge" style="margin-left:4px">기본 켜짐</span>' : '') + '</span></label>');
+      if (nvAuto) {
+        h.push('<div class="hint" style="margin:2px 0 0">미스터리쇼핑은 대부분 신규투자자로 들어오므로 '
+          + '<b>ELS 적합</b>에서는 켜 둔 채로 시작합니다 — 해당 없으면 끄십시오. 한 번 끄면 자동으로 다시 켜지지 않습니다.</div>');
+      }
       h.push('<div class="hint" style="margin:2px 0 10px' + (suitApp ? '' : ';color:var(--warn)') + '">'
         + '적합성보고서 발급 대상은 <b>(투자자성향 및 현재 투자자금성향이 적합한) 고령투자자 또는 신규투자자</b>입니다. '
         + '현재 판정 <b style="color:var(--' + (suitApp ? 'ok' : 'warn') + ')">' + (suitApp ? '대상' : '미대상') + '</b>'
@@ -3238,6 +3262,7 @@
   function bindSide() {
     function afterSheetChange() {
       ST.pros = null;
+      applyElsDefaults();
       var l = catalog();
       if (!l.some(function (p) { return p.id === ST.productId; })) ST.productId = l.length ? l[0].id : null;
       save(); renderAll();
@@ -3358,7 +3383,12 @@
       };
     });
     Array.prototype.forEach.call(document.querySelectorAll('.ctxChk'), function (c) {
-      c.onchange = function () { ST.ctx[c.dataset.k] = c.checked; save(); renderAll(); };
+      c.onchange = function () {
+        ST.ctx[c.dataset.k] = c.checked;
+        /* 사람이 정한 값은 자동 기본값이 덮지 않는다 */
+        if (c.dataset.k === 'newInvestor') ST.ctx.newInvestorTouched = true;
+        save(); renderAll();
+      };
     });
     bindResetButtons();
   }
@@ -4503,8 +4533,11 @@
     if (!PROS.pdfAvailable()) {
       h.push('<div class="warnbox">PDF 판독 모듈(vendor/pdf.min.js)을 불러오지 못했습니다. ②~③ 방법을 사용하십시오.</div>');
     } else {
+      h.push('<div class="drop" id="pdfDrop">');
       h.push('<input type="file" id="pdfFile" accept="application/pdf" style="margin-bottom:10px">');
       h.push('<div class="hint">투자설명서 · 간이투자설명서 · 핵심(요약)설명서 PDF를 올리면 항목과 차수별 상환표를 자동 추출합니다. 외부 네트워크 없이 동작합니다.</div>');
+      h.push('<div class="dropmsg">이 상자 <b>어디에나</b> PDF 파일을 끌어다 놓아도 됩니다.</div>');
+      h.push('</div>');
       h.push('<div id="pdfStat" class="note" style="margin:10px 0 0;display:none"></div>');
       /**
        * 판독이 끝나면 화면을 다시 그리므로 파일 선택창은 「선택된 파일 없음」 으로 돌아간다.
@@ -5078,12 +5111,20 @@
       };
     }
 
-    var fi = $('#pdfFile');
-    if (fi) {
-      fi.onchange = function () {
-        var file = fi.files && fi.files[0];
+    /** 파일 하나를 판독한다 — 파일 선택과 끌어다 놓기가 같은 길을 탄다 */
+    function readPdfFile(file) {
         if (!file) return;
+        if (!/\.pdf$/i.test(file.name) && file.type !== 'application/pdf') {
+          var bad = $('#pdfStat');
+          if (bad) {
+            bad.style.display = '';
+            bad.className = 'warnbox';
+            bad.textContent = 'PDF 파일이 아닙니다 (' + file.name + ') — ② 텍스트 붙여넣기를 쓰십시오.';
+          }
+          return;
+        }
         var stat = $('#pdfStat');
+        stat.className = 'note';
         stat.style.display = '';
         stat.textContent = 'PDF 판독 중… (' + file.name + ')';
         PROS.pdfToText(file, function (n, total) {
@@ -5100,7 +5141,28 @@
           stat.textContent = 'PDF 판독 실패 (' + file.name + ') : ' + (e && e.message ? e.message : e)
             + ' — ② 텍스트 붙여넣기 또는 ③ 항목 직접 등록으로 진행하십시오.';
         });
-      };
+    }
+
+    var fi = $('#pdfFile');
+    if (fi) fi.onchange = function () { readPdfFile(fi.files && fi.files[0]); };
+
+    /* 블록 전체를 받는 자리로 만든다 — 작은 파일 칸에만 떨어뜨릴 수 있으면
+       넓은 설명 문구 위에 놓는 사람은 「업로드가 안 된다」 고 여긴다. */
+    var pdrop = $('#pdfDrop');
+    if (pdrop) {
+      var over = function (on) { return function (ev) {
+        ev.preventDefault(); ev.stopPropagation();
+        pdrop.classList.toggle('over', on);
+      }; };
+      pdrop.addEventListener('dragenter', over(true));
+      pdrop.addEventListener('dragover', over(true));
+      pdrop.addEventListener('dragleave', over(false));
+      pdrop.addEventListener('drop', function (ev) {
+        ev.preventDefault(); ev.stopPropagation();
+        pdrop.classList.remove('over');
+        var dt = ev.dataTransfer;
+        readPdfFile(dt && dt.files && dt.files[0]);
+      });
     }
 
     /* ---- 펀드 완전판매자료 (증시전망) ---- */
@@ -5574,6 +5636,7 @@
     loadCommon();
     loadMkt();
     load();
+    applyElsDefaults();
     if (!ST.productId) {
       var l = catalog();
       ST.productId = l.length ? l[0].id : null;
