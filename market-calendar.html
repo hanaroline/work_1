@@ -1434,7 +1434,17 @@ function renderStatus() {
     }).join('') + '</tbody></table>';
 
   var src = CAL.sources || {};
+  var whence;
+  if (!CAL.__from || CAL.__from === 'inline') {
+    whence = t('이 화면이 읽은 곳: 이 파일 안에 심긴 값 (오프라인 판)',
+               'Loaded from data embedded in this file (offline build)');
+  } else if (String(CAL.__from).indexOf('http') === 0) {
+    whence = t('이 화면이 읽은 곳: 저장소 — ', 'Loaded from the repository — ') + CAL.__from;
+  } else {
+    whence = t('이 화면이 읽은 곳: 옆에 있는 파일 — ', 'Loaded from a path beside this page — ') + CAL.__from;
+  }
   el('src-table').innerHTML =
+    '<p class="small" style="margin:0 0 10px">' + esc(whence) + '</p>' +
     (LANG === 'en'
       ? '<p class="small" style="margin:0 0 10px">Builder notes below are recorded in Korean.</p>'
       : '') +
@@ -1697,13 +1707,9 @@ function boot() {
     SELDAY = todayISO();
     el('boot').innerHTML = '';
     el('app').hidden = false;
+    CAL.__from = from;          /* 어디서 받았는지는 ⑩ 에만 적는다 — 화면 맨 위를 가리지 않게 */
     bind();
     renderAll();
-    if (from && from.indexOf('http') === 0) {
-      el('boot').innerHTML = '<div class="callout"><p style="margin:0" class="small">' +
-        esc(t('데이터를 저장소에서 직접 받았습니다 (' + from + ').',
-              'Data fetched from the repository (' + from + ').')) + '</p></div>';
-    }
   })['catch'](function (err) {
     el('boot').innerHTML =
       '<div class="callout err"><h4>' + t('일정 데이터를 불러오지 못했습니다',
