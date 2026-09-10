@@ -1028,6 +1028,10 @@ python3 -m http.server 8000   # http://localhost:8000/mapo-wm.html
   핵심 유의사항 설명」 이라 더 말해서 깎일 것은 없고 빠뜨리는 쪽이 위험합니다.
   (`data/sales-script-sheets2.js` 의 `e_suitReport` — 원문 문안에 한 조각을 보탠 자리라
   주석으로 표시해 두었습니다)
+- **신규투자자는 ELS 적합에서 기본으로 켜 둡니다** — 미스터리쇼핑은 대부분 신규투자자로
+  들어오고, 비고령 고객에서 이것이 꺼져 있으면 적합성보고서 2항목이 통째로 「미해당」 이 되어
+  정작 평가에서 보는 항목이 스크립트에서 빠집니다. 「기본 켜짐」 배지가 붙고, **한 번 끄면
+  자동으로 다시 켜지지 않습니다.** 전체판에는 적용하지 않습니다(거기서는 적합성원칙을 직접 다룹니다).
 - **신규투자자** 체크가 함께 있습니다. 적합성보고서 발급 대상은 *(적합한) 고령투자자 또는
   신규투자자* 라서, **비고령이면서 신규투자자가 아니면 두 항목이 빠집니다** — 카드에는
   「미해당」 으로 남지만 **읽기 모드와 셀프채점에서는 제외**됩니다. 그래서 화면 위에
@@ -1052,10 +1056,19 @@ python3 -m http.server 8000   # http://localhost:8000/mapo-wm.html
 에서는 그대로 둡니다 — 적합성보고서 문안이 "…적합하여 추천드립니다" 라고 말하므로,
 성향에 맞지 않는 등급을 고르면 그 문장 자체가 사실과 달라지기 때문입니다.
 
+## 투자설명서 PDF 올리기
+
+「투자설명서 등록」 탭의 ① 업로드 블록은 **상자 전체가 받는 자리**입니다. 파일 선택 칸뿐
+아니라 설명 문구 위 어디에 끌어다 놓아도 됩니다(끌어오면 테두리가 오렌지로 바뀝니다).
+PDF 가 아니면 그 자리에서 알려 주고, 판독은 외부 네트워크 없이 브라우저 안에서 합니다.
+
 ## 만들기
 
 ```bash
-# 설명의무 전용판 (배포본)
+# ① 전용판 화면을 전체판에서 다시 만든다 (껍데기는 sales-script.html 한 벌만 고친다)
+node scripts/make_expl_source.mjs
+
+# ② 설명의무 전용판 (배포본)
 node scripts/build_sales_script.mjs sales-script-expl-standalone.html --src sales-script-expl.html
 
 # 전체판 (적합성원칙 포함) — 필요할 때만
@@ -1073,7 +1086,7 @@ python3 -m http.server 8000   # http://localhost:8000/sales-script-expl.html
 
 ```
 sales-script.html                 # 전체판 화면 (적합성원칙 + 상품설명의무)
-sales-script-expl.html            # 설명의무 전용 화면 — window.SS_MODE='expl' 만 다름
+sales-script-expl.html            # 설명의무 전용 화면 — scripts/make_expl_source.mjs 생성물
 sales-script-expl-standalone.html # 설명의무 전용 배포본 (단일 파일, 약 5.3MB)
 js/sales-script-app.js            # 앱 로직 (두 화면이 함께 쓴다)
 js/sales-script-prospectus.js     # 투자설명서 판독기
@@ -1083,6 +1096,7 @@ data/fund-catalog.js              # 공모펀드 3,194건
 data/fund-prospectus*.js          # 펀드 투자설명서 판독 결과
 data/els-prospectus.js            # ELS 투자설명서(DART) 판독 결과
 data/bond-catalog.js              # 장외채권
+scripts/make_expl_source.mjs      # sales-script.html -> sales-script-expl.html (제목·문구·모드만 다름)
 scripts/build_sales_script.mjs    # 단일 파일 빌드 (--src 로 화면 선택)
 scripts/build_fund_catalog.mjs    # 펀드 카탈로그 생성
 scripts/fetch_fund_prospectus.mjs · collect_fund_prospectus_kofia.mjs
