@@ -281,8 +281,19 @@ def check_byline(h, path):
         warn("작성일", "머리말에서 작성 시각을 찾지 못해 꼬리말만 봤습니다")
 
     if fdate and by != fdate:
-        fail("작성일", "파일은 %04d-%02d-%02d 판인데 꼬리말 작성일은 %04d-%02d-%02d 입니다 "
-             "— 껍데기를 물려 쓰면서 안 고친 자국입니다" % (fdate + by))
+        # 이 검사가 잡으려던 것은 **어제 껍데기를 물려 쓴 자국**이다 — 그때는
+        # 작성일이 판 날짜보다 «이르다». 반대로 작성일이 판 날짜보다 «늦은» 것은
+        # 지난 장을 되짚어 만든 판이고, 그 경우 꼬리말이 실제 작성 시각을
+        # 적는 것이 오히려 규칙에 맞다(지침 3절 규칙 6 — 작성 시각은 실제
+        # 작성한 시각을 적는다). 2026-09-10 판을 9/11 에 되짚어 만들면서
+        # 드러났다. 그래도 조용히 넘기지는 않는다 — 판에 그 사실을 적어야 한다.
+        if by > fdate:
+            warn("작성일", "파일은 %04d-%02d-%02d 판인데 꼬리말 작성일은 %04d-%02d-%02d 로 "
+                 "**나중**입니다 — 되짚어 만든 판이라면 맞습니다. 그 사실을 검증 노트에 "
+                 "적으십시오" % (fdate + by))
+        else:
+            fail("작성일", "파일은 %04d-%02d-%02d 판인데 꼬리말 작성일은 %04d-%02d-%02d 로 "
+                 "**이릅니다** — 껍데기를 물려 쓰면서 안 고친 자국입니다" % (fdate + by))
 
     en = BYLINE_EN.search(h)
     if not en:
@@ -324,9 +335,13 @@ def check_derived(h, d):
                 warn("52주 고점", "52주 최고 %s 가 최근 최고 종가 %s 보다 20%% 넘게 높습니다 — 표기 기준을 적으십시오"
                      % ("{:,.2f}".format(f["high"]), "{:,.2f}".format(hi)))
     if ks and kq:
-        b = mi.get("kospi", {}).get("breadth")
-        if b and b["advancing"] + b["declining"]:
-            r = b["advancing"] / float(b["declining"])
+        # 원천이 빠진 날은 breadth 가 통째로 없거나 일부 칸만 들어온다
+        # (2026-09-10 이후 네이버 개편). 빌더는 그런 날에도 판을 내므로
+        # 검사도 죽지 말고 **셀 수 없으면 그냥 넘어간다.**
+        b = mi.get("kospi", {}).get("breadth") or {}
+        adv, dec = b.get("advancing"), b.get("declining")
+        if adv and dec:
+            r = adv / float(dec)
             if ("%.2f" % r) not in t:
                 warn("상승/하락 비율", "다시 계산하면 %.2f 인데 판에서 찾지 못했습니다" % r)
 
