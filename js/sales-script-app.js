@@ -2402,6 +2402,15 @@
     }
   }
   function ckey(item) { return sheetKey() + '|' + item.id; }
+  /** 지금 평가표에서 체크되어 있는 Check Point 수 — 「체크 해제」 단추에 적는다 */
+  function checkedCount() {
+    var pref = sheetKey() + '|', n = 0;
+    Object.keys(ST.checks).forEach(function (k) {
+      if (k.indexOf(pref) !== 0) return;
+      (ST.checks[k] || []).forEach(function (v) { if (v) n++; });
+    });
+    return n;
+  }
   function checksOf(item) {
     var k = ckey(item), n = item.cps.length;
     if (!ST.checks[k] || ST.checks[k].length !== n) ST.checks[k] = new Array(n).fill(false);
@@ -2654,6 +2663,41 @@
     return h.join('') + '</div>';
   }
 
+  /**
+   * 「체크 해제」 · 「전체 초기화」.
+   *
+   * 앞 판은 단추 이름만 있고 무엇을 지우는지 적지 않았다. 체크된 것이 없을 때
+   * 눌러도 아무 일이 없으니 「작동하지 않는다」 로 보였고, 전체 초기화가
+   * **등록해 둔 투자설명서까지** 지운다는 것도 눌러 보기 전에는 알 수 없었다.
+   * 지금 몇 개가 지워지는지 단추에 적고, 각각 무엇을 건드리는지 아래 한 줄로 밝힌다.
+   */
+  function resetButtons() { return '<div id="resetBox">' + resetButtonsInner() + '</div>'; }
+  /**
+   * 체크 상태는 카드에서 바로 바뀐다(전체 재렌더를 하지 않는다 — 스크롤과 펼침을
+   * 지켜야 하므로). 그래서 이 단추도 그때마다 같이 갈아 끼워야 한다.
+   * 안 그러면 체크를 해 놓고도 단추가 「체크된 것이 없습니다」 인 채로 꺼져 있다.
+   */
+  function refreshResetBox() {
+    var box = $('#resetBox');
+    if (!box) return;
+    box.innerHTML = resetButtonsInner();
+    bindResetButtons();
+  }
+  function resetButtonsInner() {
+    var n = checkedCount();
+    var h = ['<div class="rule"></div>'];
+    h.push('<button class="tbtn" id="btnResetChecks" style="width:100%;margin-bottom:6px"' + (n ? '' : ' disabled') + '>'
+      + 'Check Point 체크 해제' + (n ? ' (' + n + '개)' : '') + '</button>');
+    h.push('<div class="hint" style="margin:0 0 12px">'
+      + (n ? '지금 평가표에 체크된 <b>' + n + '개</b>를 해제합니다. ' : '지금 평가표에는 <b>체크된 것이 없습니다.</b> ')
+      + '입력값 · 등록한 설명서 · 고른 조건은 <b>그대로</b> 둡니다.</div>');
+    h.push('<button class="tbtn" id="btnResetAll" style="width:100%">전체 초기화</button>');
+    h.push('<div class="hint" style="margin-top:6px">고른 조건(상품군·적합여부·고령여부) · 선택 상품 · '
+      + '<b>모든 평가표의 체크</b> · 직접 입력값 · <b>등록한 투자설명서</b>까지 지웁니다. '
+      + '직접 등록한 상품 목록과 성향별 설명문은 남습니다.</div>');
+    return h.join('');
+  }
+
   function renderSide() {
     var sh = sheet(), p = product(), ctx = ST.ctx;
     var h = [];
@@ -2725,9 +2769,7 @@
     if (!pickedAll()) {
       h.push('<div class="rule"></div><div class="sidenote">상품군' + (scenarioMatters() && ST.pick.cat ? ' · 적합/부적합' : '')
         + ' · 고령/비고령을 고르면 <b>상품 목록</b>이 열립니다.</div>');
-      h.push('<div class="rule"></div>');
-      h.push('<button class="tbtn" id="btnResetChecks" style="width:100%;margin-bottom:8px">체크 초기화</button>');
-      h.push('<button class="tbtn" id="btnResetAll" style="width:100%">전체 초기화</button>');
+      h.push(resetButtons());
       $('#side').innerHTML = h.join('');
       bindSide();
       return;
@@ -2920,9 +2962,7 @@
 
     }
 
-    h.push('<div class="rule"></div>');
-    h.push('<button class="tbtn" id="btnResetChecks" style="width:100%;margin-bottom:8px">체크 초기화</button>');
-    h.push('<button class="tbtn" id="btnResetAll" style="width:100%">전체 초기화</button>');
+    h.push(resetButtons());
     h.push('<div class="sidenote">이 화면의 스크립트는 <b>미스터리쇼핑 평가표</b>를 코드화한 것입니다. 숫자·일자·요율 등은 반드시 <b>해당 상품의 투자설명서 원문</b>과 대조하십시오. 부정확한 설명은 부당권유행위(최대 −18점)로 감점됩니다.</div>');
 
     $('#side').innerHTML = h.join('');
@@ -3296,13 +3336,38 @@
     Array.prototype.forEach.call(document.querySelectorAll('.ctxChk'), function (c) {
       c.onchange = function () { ST.ctx[c.dataset.k] = c.checked; save(); renderAll(); };
     });
-    $('#btnResetChecks').onclick = function () {
+    bindResetButtons();
+  }
+
+  function bindResetButtons() {
+    var btnRC = $('#btnResetChecks');
+    if (btnRC) btnRC.onclick = function () {
+      var n = checkedCount();
+      if (!n) return;
       var pref = sheetKey() + '|';
       Object.keys(ST.checks).forEach(function (k) { if (k.indexOf(pref) === 0) delete ST.checks[k]; });
       save(); renderAll();
+      /* 눌렀는데 화면이 그대로면 안 눌린 줄 안다 — 지운 개수를 잠깐 보여 준다.
+         (카드가 접혀 있으면 체크가 지워진 것이 눈에 안 띈다) */
+      var again = $('#btnResetChecks');
+      if (again) {
+        var keep = again.textContent;
+        again.textContent = '체크 ' + n + '개를 해제했습니다';
+        setTimeout(function () { var el = $('#btnResetChecks'); if (el) el.textContent = keep; }, 1600);
+      }
     };
-    $('#btnResetAll').onclick = function () {
-      if (!confirm('입력값 · 체크 · 확인필요 값을 모두 초기화합니다. 계속하시겠습니까?')) return;
+    var btnRA = $('#btnResetAll');
+    if (btnRA) btnRA.onclick = function () {
+      if (!confirm(
+        '전체 초기화 — 아래를 지웁니다.\n'
+        + '  · 고른 조건 (상품군 · 적합/부적합 · 고령/비고령)\n'
+        + '  · 선택한 상품\n'
+        + '  · 모든 평가표의 Check Point 체크\n'
+        + '  · 직접 입력한 값 (확인필요에 적은 값 포함)\n'
+        + '  · 상담 조건 (투자자성향 · 현재 투자자금성향 · 신규투자자)\n'
+        + '  · 등록한 투자설명서\n\n'
+        + '남는 것 : 직접 등록한 상품 목록, 성향별 설명문\n\n'
+        + '계속하시겠습니까?')) return;
       ST.pman = {}; ST.inline = {}; ST.checks = {}; DOCS = {}; saveDocs();
       ST.pick = { cat: false, scen: false, senior: false };
       ST.productId = null;
@@ -4655,6 +4720,7 @@
         c.closest('label').classList.toggle('done', c.checked);
         updateScorebar(c.closest('.card'), item);
         renderTabs();
+        refreshResetBox();
         if (ST.tab === 'check') renderView();
       };
     });
@@ -4675,6 +4741,7 @@
         });
         updateScorebar(card, item);
         renderTabs();
+        refreshResetBox();
       };
     });
     /* 확인필요 · 값 클릭 → 인라인 입력 */
