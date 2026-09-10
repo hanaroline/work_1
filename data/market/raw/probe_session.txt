@@ -1,0 +1,25 @@
+세션을 지닌 채 API 부르기 2026-09-11 08:53:32 KST
+
+### 증시자금동향
+    페이지 https://finance.naver.com/market/stock/kr/deposit → HTTP 200 · 최종주소 https://finance.naver.com/market/stock/kr/deposit · 2691 bytes
+    받은 쿠키: ['JSESSIONID']
+    API https://finance.naver.com/api/domestic/market/trendDeposit?startIdx=0&pageSize=20
+        HTTP 200 · 2691 bytes · JSON 아님
+        앞머리:  <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd"> <html> <head> <meta http-equiv="Content-Type" content="text/html; charset=euc-kr"> <title>���̹� 
+
+### 증시 기사
+    페이지 https://finance.naver.com/news/mainnews.naver → HTTP 200 · 최종주소 https://stock.naver.com/news/mainnews · 112454 bytes
+    받은 쿠키: ['JSESSIONID']
+    API https://finance.naver.com/api/domestic/news/list?startIdx=0&pageSize=20
+        HTTP 200 · 2691 bytes · JSON 아님
+        앞머리:  <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd"> <html> <head> <meta http-equiv="Content-Type" content="text/html; charset=euc-kr"> <title>���̹� 
+
+### 시장지표
+    페이지 https://finance.naver.com/marketindex/ → HTTP 200 · 최종주소 https://stock.naver.com/market/marketindex · 118640 bytes
+    받은 쿠키: ['JSESSIONID']
+    API https://finance.naver.com/api/securityService/marketindex/exchange
+        HTTP 200 · 2691 bytes · JSON 아님
+        앞머리:  <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd"> <html> <head> <meta http-equiv="Content-Type" content="text/html; charset=euc-kr"> <title>���̹� 
+    API https://finance.naver.com/api/securityService/marketindex/majors
+        HTTP 200 · 2691 bytes · JSON 아님
+        앞머리:  <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd"> <html> <head> <meta http-equiv="Content-Type" content="text/html; charset=euc-kr"> <title>���̹� 
