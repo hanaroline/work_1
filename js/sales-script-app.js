@@ -31,6 +31,26 @@
   var EXPL = window.SS_MODE === 'expl';
   var $ = function (s, r) { return (r || document).querySelector(s); };
   var LS = window.SS_MODE === 'expl' ? 'ss_state_expl_v1' : 'ss_state_v1';
+  /**
+   * 상담 상태를 어디에 담나.
+   *
+   * 설명의무 화면은 고객 한 사람을 앞에 두고 쓰는 화면이다. 여기 담기는 값
+   * (투자자성향·현재 투자자금성향·고령여부·신규투자자)은 **그 고객의 값**이라,
+   * localStorage 에 남기면 다음 고객 상담을 앞 고객의 답으로 시작하게 된다.
+   * file:// 로 열면 내려받은 파일들이 저장소를 함께 쓰므로, 새로 받은 파일을
+   * 열어도 지난 값이 그대로 떠 있었다 — 실제로 그 일이 났다.
+   *
+   * 그래서 이 화면은 sessionStorage 에 담는다. 새로고침에는 살아남고,
+   * 창을 닫거나 새 탭에서 열면 처음부터다. 등록해 둔 상품·투자설명서·공용 문구는
+   * 고객의 값이 아니라 지점의 자산이므로 종전대로 localStorage 에 남는다.
+   */
+  var STORE = (function () {
+    try {
+      var s = window.SS_MODE === 'expl' ? window.sessionStorage : window.localStorage;
+      s.getItem(LS);   /* 접근 자체가 막힌 환경을 여기서 걸러 낸다 */
+      return s;
+    } catch (e) { return null; }
+  })();
   var LS_PROD = 'ss_products_v1';   /* 담당자가 등록·저장한 상품 */
   var LS_DOCS = 'ss_docs_v1';       /* 상품별로 등록된 투자설명서 */
   var LS_TXT = 'ss_commontexts_v1'; /* 전 상품 공용 문구 (핵심요약설명서 표준 문구 등) */
@@ -40,6 +60,15 @@
   var ST = {
     baseSheet: 'fundFit',
     senior: true,             /* 고령투자자 여부 — 평가표 선택 차원 */
+    /**
+     * 설명의무 화면에서 「사람이 실제로 고른 것」 인지 표시한다.
+     *
+     * baseSheet·senior 에는 화면이 깨지지 않도록 기본값이 들어 있지만,
+     * 상품군·적합여부·고령여부는 **고객마다 달라지는 판단**이라 기본값이 있으면
+     * 안 된다. 고르지 않은 채로 시작해 놓고 기본값으로 스크립트를 뽑으면,
+     * 창구는 자기가 고른 적 없는 조건으로 읽게 된다.
+     */
+    pick: { cat: false, scen: false, senior: false },
     productId: null,
     pman: {},     /* productId -> { fieldId: 값 } — 상품별 입력/수정값 */
     inline: {},   /* «라벨» -> 사용자가 입력한 값 */
@@ -810,21 +839,25 @@
   /* ---------------- 저장 / 복원 ---------------- */
   function save() {
     try {
-      localStorage.setItem(LS, JSON.stringify({
+      if (!STORE) return;
+      STORE.setItem(LS, JSON.stringify({
         baseSheet: ST.baseSheet, senior: ST.senior, productId: ST.productId,
-        pman: ST.pman, inline: ST.inline, checks: ST.checks, ctx: ST.ctx, rec: ST.rec, part: ST.part
+        pman: ST.pman, inline: ST.inline, checks: ST.checks, ctx: ST.ctx, rec: ST.rec, part: ST.part,
+        pick: ST.pick
       }));
     } catch (e) { /* 사생활 보호 모드 등에서 저장 실패 — 무시 */ }
   }
   function load() {
     try {
-      var raw = localStorage.getItem(LS);
+      if (!STORE) return;
+      var raw = STORE.getItem(LS);
       if (!raw) return;
       var o = JSON.parse(raw);
       if (o.baseSheet && BASE_SHEETS[o.baseSheet]) ST.baseSheet = o.baseSheet;
       if (typeof o.senior === 'boolean') ST.senior = o.senior;
       if (o.productId) ST.productId = o.productId;
       ['pman', 'inline', 'checks', 'rec'].forEach(function (k) { if (o[k]) ST[k] = o[k]; });
+      if (o.pick) ST.pick = { cat: !!o.pick.cat, scen: !!o.pick.scen, senior: !!o.pick.senior };
       if (!EXPL && o.part && PARTS[o.part]) ST.part = o.part;
       /* 구버전(상품 구분 없는 manual) 저장값 이관 */
       if (o.manual && o.productId) {
@@ -859,7 +892,28 @@
           if (SUPERSEDED[ST.ctx.profMeanings[k]]) delete ST.ctx.profMeanings[k];
         });
       }
+      sanitizeCtx();
     } catch (e) { /* 손상된 저장값 — 초기값 사용 */ }
+  }
+
+  /**
+   * 저장된 상담값 중 **지금 보기 목록에 없는 값**을 버린다.
+   *
+   * 현재 투자자금성향 보기를 사내 서식으로 갈아 끼우면서, 예전 값
+   * (「원금보존 추구하지 않음」 같은 것)이 저장된 화면에서는 드롭다운이
+   * 「— 선택 —」 으로 보이는데 판정과 문장은 옛 값을 쓰고 있었다.
+   * 화면에 없는 값이 뒤에서 도는 것은 그 자체로 사고다.
+   */
+  function sanitizeCtx() {
+    Object.keys(CASH_OPTS).forEach(function (k) {
+      var v = ST.ctx[k];
+      if (v && CASH_OPTS[k].indexOf(v) < 0) ST.ctx[k] = '';
+    });
+    if (ST.ctx.custProfile && !PROFILES[ST.ctx.custProfile]) {
+      ST.ctx.custProfile = '';
+      ST.ctx.custProfileMeaning = '';
+    }
+    if (!cashLossOpen()) ST.ctx.cashLoss = '';
   }
 
   /* ---------------- 유틸 ---------------- */
@@ -2445,6 +2499,14 @@
   }
   /** ELS 만 적합/부적합에 따라 설명의무가 달라진다 — 그 상품군에서만 시나리오를 묻는다 */
   function scenarioMatters() { return sheet().cat === 'els'; }
+  /** 상품군을 골랐는가 (설명의무 화면에서만 따진다) */
+  function pickedCat() { return !EXPL || ST.pick.cat; }
+  /** 적합/부적합을 골랐는가 — ELS 가 아니면 물을 것이 없다 */
+  function pickedScen() { return !EXPL || !scenarioMatters() || ST.pick.scen; }
+  /** 고령/비고령을 골랐는가 */
+  function pickedSenior() { return !EXPL || ST.pick.senior; }
+  /** 스크립트를 뽑을 조건이 다 갖춰졌는가 */
+  function pickedAll() { return pickedCat() && pickedScen() && pickedSenior(); }
   /** 지금 파트의 항목만 (화면·확인필요·읽기모드·인쇄) */
   function itemsOf() {
     var m = PARTS[partKey()].match;
@@ -2600,7 +2662,7 @@
       /* 시나리오(적합/부적합)는 적합성원칙의 축이라 여기서는 묻지 않는다 */
       h.push('<div class="fgroup"><div class="flabel"><span class="req">1</span> 상품군</div><div class="seg" id="segCat">');
       EXPL_CATS.forEach(function (c) {
-        h.push('<button data-v="' + c.base + '" aria-pressed="' + (sh.cat === c.cat) + '">' + esc(c.label) + '</button>');
+        h.push('<button data-v="' + c.base + '" aria-pressed="' + (ST.pick.cat && sh.cat === c.cat) + '">' + esc(c.label) + '</button>');
       });
       h.push('</div><div class="hint">펀드는 <b>국내·해외를 가리지 않고 전부</b> 목록에 나옵니다. '
         + '고른 펀드가 해외면 해외 평가표로 자동으로 바뀝니다.</div></div>');
@@ -2612,7 +2674,7 @@
       if (scenarioMatters()) {
         h.push('<div class="fgroup"><div class="flabel"><span class="req">1-1</span> 적합 / 부적합</div><div class="seg" id="segScenario">');
         [['elsFit', '적합'], ['elsUnfit', '부적합']].forEach(function (o) {
-          h.push('<button data-v="' + o[0] + '" aria-pressed="' + (ST.baseSheet === o[0]) + '">' + o[1] + '</button>');
+          h.push('<button data-v="' + o[0] + '" aria-pressed="' + (ST.pick.scen && ST.baseSheet === o[0]) + '">' + o[1] + '</button>');
         });
         h.push('</div><div class="hint">ELS 는 <b>적합일 때만</b> 설명의무에 적합성보고서(발급·내용 안내 −5, 교부 −5)가 들어갑니다. '
           + '부적합이면 그 두 항목이 평가표에 없어 투자자성향을 말할 일도 없습니다. '
@@ -2629,12 +2691,14 @@
 
     /* 고령 / 비고령 — 평가표가 갈리는 축이므로 별도 선택으로 노출한다 */
     h.push('<div class="fgroup"><div class="flabel"><span class="req">2</span> 고령 / 비고령</div><div class="seg" id="segSenior">');
-    h.push('<button data-v="1" aria-pressed="' + (ST.senior === true) + '">고령투자자</button>');
-    h.push('<button data-v="0" aria-pressed="' + (ST.senior === false) + '">비고령투자자</button>');
+    h.push('<button data-v="1" aria-pressed="' + (pickedSenior() && ST.senior === true) + '">고령투자자</button>');
+    h.push('<button data-v="0" aria-pressed="' + (pickedSenior() && ST.senior === false) + '">비고령투자자</button>');
     h.push('</div>');
     h.push('<div class="hint"><span class="src ' + (sh.provenance === 'exact' ? 'auto' : 'man') + '">'
       + (sh.provenance === 'exact' ? '원표' : '보완') + '</span> ' + esc(sh.provenanceNote) + '</div>');
-    h.push('<div class="hint">현재 적용 : <b>' + esc(sh.label) + '</b> · ' + sh.items.length + '항목</div></div>');
+    h.push(pickedAll()
+      ? '<div class="hint">현재 적용 : <b>' + esc(sh.label) + '</b> · ' + sh.items.length + '항목</div></div>'
+      : '<div class="hint" style="color:var(--warn)">위 항목을 모두 고르면 평가표가 정해집니다.</div></div>');
 
     /* 진행 파트 — 적합성원칙과 상품설명의무를 갈라 진행한다.
        설명의무 전용 화면은 고를 것이 없으므로 이 칸 자체를 내지 않는다. */
@@ -2654,6 +2718,19 @@
         + '점수는 평가표 전체(103점) 기준 그대로입니다.</div>');
     }
     h.push('</div>');
+    }
+
+    /* 앞 단계를 고르기 전에는 상품 목록과 상담값 칸을 내지 않는다 —
+       고른 적 없는 조건으로 만들어진 목록·문장을 보여 주면 안 된다. */
+    if (!pickedAll()) {
+      h.push('<div class="rule"></div><div class="sidenote">상품군' + (scenarioMatters() && ST.pick.cat ? ' · 적합/부적합' : '')
+        + ' · 고령/비고령을 고르면 <b>상품 목록</b>이 열립니다.</div>');
+      h.push('<div class="rule"></div>');
+      h.push('<button class="tbtn" id="btnResetChecks" style="width:100%;margin-bottom:8px">체크 초기화</button>');
+      h.push('<button class="tbtn" id="btnResetAll" style="width:100%">전체 초기화</button>');
+      $('#side').innerHTML = h.join('');
+      bindSide();
+      return;
     }
 
     /* 적합성보고서에 들어가는 값 — ELS 적합에서만.
@@ -3109,12 +3186,16 @@
            상품군 단추를 다시 눌렀다고 적합으로 되돌리면 안 된다 */
         var want = b.dataset.v;
         var cur = BASE_SHEETS[ST.baseSheet], next = BASE_SHEETS[want];
-        if (cur && next && cur.cat === next.cat) return;
+        var same = cur && next && cur.cat === next.cat && ST.pick.cat;
+        ST.pick.cat = true;
+        if (same) { save(); renderAll(); return; }
+        /* 상품군이 바뀌면 그 상품군의 적합/부적합은 다시 골라야 한다 */
+        ST.pick.scen = false;
         ST.baseSheet = want; ST.ctx.gradePick = ''; afterSheetChange();
       };
     });
     Array.prototype.forEach.call(document.querySelectorAll('#segScenario button'), function (b) {
-      b.onclick = function () { ST.baseSheet = b.dataset.v; afterSheetChange(); };
+      b.onclick = function () { ST.pick.scen = true; ST.baseSheet = b.dataset.v; afterSheetChange(); };
     });
     Array.prototype.forEach.call(document.querySelectorAll('#segPart button'), function (b) {
       b.onclick = function () {
@@ -3125,7 +3206,7 @@
       };
     });
     Array.prototype.forEach.call(document.querySelectorAll('#segSenior button'), function (b) {
-      b.onclick = function () { ST.senior = b.dataset.v === '1'; afterSheetChange(); };
+      b.onclick = function () { ST.pick.senior = true; ST.senior = b.dataset.v === '1'; afterSheetChange(); };
     });
     Array.prototype.forEach.call(document.querySelectorAll('#segWatch button'), function (b) {
       b.onclick = function () {
@@ -3133,8 +3214,12 @@
         save(); renderAll();
       };
     });
-    $('#btnNewProduct').onclick = newProduct;
-    $('#btnDelProduct').onclick = function () {
+    /* 단계 게이트 상태에서는 상품 칸이 아직 없다 — 있는 것만 붙인다.
+       (하나라도 없는 것에 걸면 여기서 멈춰 본문·탭이 아예 그려지지 않는다) */
+    var btnNew = $('#btnNewProduct');
+    if (btnNew) btnNew.onclick = newProduct;
+    var btnDel = $('#btnDelProduct');
+    if (btnDel) btnDel.onclick = function () {
       var p = product();
       if (!p || !p.custom) return;
       if (!confirm('등록상품 「' + p.name + '」 을 삭제합니다. 계속하시겠습니까?')) return;
@@ -3165,7 +3250,8 @@
       if (rn) rn.onclick = function () { ST.rec[sheet().cat] = '__none'; save(); renderAll(); };
       $('#btnRecClear').onclick = function () { delete ST.rec[sheet().cat]; save(); renderAll(); };
     }
-    $('#selProduct').onchange = function () {
+    var selProd = $('#selProduct');
+    if (selProd) selProd.onchange = function () {
       ST.productId = this.value; ST.pros = null;
       /* 상품이 평가표를 정한다 — 해외펀드를 고르면 해외 평가표로 따라간다 */
       syncSheetToProduct();
@@ -3218,6 +3304,8 @@
     $('#btnResetAll').onclick = function () {
       if (!confirm('입력값 · 체크 · 확인필요 값을 모두 초기화합니다. 계속하시겠습니까?')) return;
       ST.pman = {}; ST.inline = {}; ST.checks = {}; DOCS = {}; saveDocs();
+      ST.pick = { cat: false, scen: false, senior: false };
+      ST.productId = null;
       /* 성향별 설명문은 고객의 값이 아니라 회사가 쓰는 문장이다 — 초기화해도 남긴다 */
       var keepMeanings = ST.ctx.profMeanings;
       ST.ctx = { consumerType: '일반금융소비자', custProfile: '', custProfileMeaning: '', cashPurpose: '', cashPrincipal: '', cashLoss: '', cashHorizon: '', newInvestor: false, watchOverride: null };
@@ -3253,6 +3341,25 @@
      ============================================================ */
   function renderView() {
     var v = $('#view');
+    if (EXPL && !pickedAll()) {
+      var step = function (done, label, detail) {
+        return '<div style="line-height:1.9">'
+          + (done ? '<span style="color:var(--ok);font-weight:700">✓</span>' : '<span style="color:var(--muted2)">·</span>')
+          + ' <b>' + label + '</b> <span style="color:var(--muted2)">— ' + detail + '</span></div>';
+      };
+      v.innerHTML = '<div class="empty" style="text-align:left;max-width:620px;margin:40px auto">'
+        + '<h3 style="text-align:center">먼저 상담 조건을 고르십시오</h3>'
+        + '<p style="text-align:center;color:var(--muted2);margin-bottom:22px">고른 조건에 따라 평가표가 정해지고, 상품 목록이 열립니다.</p>'
+        + step(ST.pick.cat, '① 상품군', '펀드 · ELS·DLS · 원화채권 · 외화채권 · IRP')
+        + (ST.pick.cat && scenarioMatters()
+          ? step(ST.pick.scen, '② 적합 / 부적합', 'ELS 는 적합일 때만 설명의무에 적합성보고서가 들어갑니다')
+          : '')
+        + step(ST.pick.senior, (ST.pick.cat && scenarioMatters() ? '③' : '②') + ' 고령 / 비고령', '평가표가 갈리는 축입니다')
+        + '<p style="margin-top:22px;color:var(--muted2)">기본값을 두지 않았습니다 — 고객마다 달라지는 판단이라, '
+        + '고른 적 없는 조건으로 스크립트가 만들어지면 안 되기 때문입니다.</p>'
+        + '</div>';
+      return;
+    }
     if (!product()) {
       v.innerHTML = '<div class="empty"><h3>상품을 선택하세요</h3><p>좌측에서 평가표와 상품을 선택하면 투자설명서가 자동 조회되고 스크립트가 완성됩니다.</p></div>';
       return;
