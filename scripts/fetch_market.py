@@ -3071,8 +3071,22 @@ _API_CANDIDATES = [
     ("sectors", "https://m.stock.naver.com/api/stocks/industry"),
     ("sectors", "https://api.stock.naver.com/industry"),
     ("sectors", "https://m.stock.naver.com/api/stocks/industry?page=1&pageSize=100"),
-    # 2026-09-11 1차 탐색에서 internals·sectors 는 찾았고 아래 셋은 못 찾았다.
-    # 후보를 넓혀 다시 훑는다(모바일 앱이 실제로 쓰는 주소 계열을 노린다).
+    # **묶음 탐색으로 실제 경로를 읽어 냈다**(2026-09-11 08:27).
+    #   증시자금 /api/domestic/market/trendDeposit(+/chart)
+    #   기사     /api/domestic/news/list
+    #   시장지표 /api/securityService/marketindex/{exchange,majors,metals,energy}
+    # 상대 경로라 호스트를 붙여 본다 — finance 와 m.stock 둘 다 시도한다.
+    ("money_flow", "https://finance.naver.com/api/domestic/market/trendDeposit"),
+    ("money_flow", "https://m.stock.naver.com/api/domestic/market/trendDeposit"),
+    ("money_flow", "https://finance.naver.com/api/domestic/market/trendDeposit/chart"),
+    ("news", "https://finance.naver.com/api/domestic/news/list"),
+    ("news", "https://finance.naver.com/api/domestic/news/list?page=1&pageSize=20"),
+    ("news", "https://m.stock.naver.com/api/domestic/news/list?page=1&pageSize=20"),
+    ("marketindex", "https://finance.naver.com/api/securityService/marketindex/exchange"),
+    ("marketindex", "https://finance.naver.com/api/securityService/marketindex/majors"),
+    ("marketindex", "https://finance.naver.com/api/securityService/marketindex/metals"),
+    ("marketindex", "https://finance.naver.com/api/realtime/marketindex/"),
+
     ("money_flow", "https://m.stock.naver.com/api/stock/market/deposit"),
     ("money_flow", "https://m.stock.naver.com/api/marketindex/deposit"),
     ("money_flow", "https://m.stock.naver.com/api/index/KOSPI/deposit"),
