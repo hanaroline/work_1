@@ -125,11 +125,19 @@
    * 선취판매수수료 값처럼 생겼는가 — 「0.7%」 · 「납입금액의 1% 이내」 · 「없음」.
    * 클래스 이름(A · A-e)이나 설명 문장이 값 자리에 들어오는 것을 여기서 막는다.
    */
+  /**
+   * 선취판매수수료율의 법정 한도 — 납입금액의 2%.
+   * 자본시장법 시행령 제77조. 이보다 큰 값이 나왔으면 요율이 아니라 딴 숫자를
+   * 집어 온 것이다. 실제로 「납입금액의 5%」(약관의 한도 문구)와 「19.59%」 가
+   * 요율 자리에 들어와 있었다. 요율은 보통 0.05~1.5% 다.
+   */
+  var FEE_CAP = 2;
   function feeRateLike(v) {
     var t = String(v == null ? '' : v).trim();
     if (!t) return false;
     if (/없음|면제|해당\s*없|미징구|징구하지\s*않/.test(t) && t.length <= 30) return true;
-    return /\d+(?:\.\d+)?\s*%/.test(t) && t.length <= 40;
+    var m = t.match(/(\d+(?:\.\d+)?)\s*%/);
+    return !!m && parseFloat(m[1]) <= FEE_CAP && t.length <= 40;
   }
   /** 총보수처럼 숫자(연 %)로 읽혀야 하는 값인가 — 「1.143」 · 「1.143%」 */
   function rateNumLike(v) {
@@ -853,8 +861,12 @@
            * 여기까지 왔으면 「클래스 | 값」 이 한 줄인 표가 아니다.
            * ① 칸이 여러 줄로 쪼개진 표를 읽어 보고 ② 그래도 안 되면 본문을 본다.
            * 본문은 클래스를 가릴 수 없으므로 언급이 모두 같을 때만 쓴다 (clsAFromText).
+           *
+           * 어느 길로 왔든 마지막에 한 번 더 잣대를 댄다 — 법정 한도(2%) 를 넘는
+           * 값은 요율이 아니다. 길마다 따로 검사하면 새 길을 낼 때 빠뜨린다.
            */
-          return feeStacked(t) || clsAFromText(t);
+          var alt = feeStacked(t) || clsAFromText(t);
+          return alt && feeRateLike(alt.value) ? alt : null;
         }
       },
       {
