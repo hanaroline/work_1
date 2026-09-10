@@ -1,0 +1,118 @@
+{
+  "ranAt": "2026-09-10T00:54:11Z",
+  "note": "발표기관 원문에서 확정 날짜를 받아 seed 를 갱신한 결과. ok=false 인 경로는 seed 를 손대지 않았다 — 검색으로 확인해 둔 날짜가 그대로 남아 있다.",
+  "dryRun": false,
+  "sources": {
+    "fomc": {
+      "urls": [
+        "https://www.federalreserve.gov/monetarypolicy/fomccalendars.htm"
+      ],
+      "ok": true,
+      "url": "https://www.federalreserve.gov/monetarypolicy/fomccalendars.htm",
+      "bytes": 166860,
+      "count": 13,
+      "changes": []
+    },
+    "ecb": {
+      "urls": [
+        "https://www.ecb.europa.eu/press/calendars/mgcgc/html/index.en.html",
+        "https://www.ecb.europa.eu/press/calendars/mgcgc/html/mgcgc_2026.en.html",
+        "https://www.ecb.europa.eu/press/calendars/mgcgc/html/mgcgc_2027.en.html"
+      ],
+      "ok": false,
+      "blocked": true,
+      "why": "받을 수 없는 경로라 요청하지 않았다 — 정책이사회 일정표가 본문에 없다 — 자바스크립트로 그린다 (2026-09-10 러너 확인: 본문 18,492자에 회의 날짜 0건)",
+      "hint": "다시 시험하려면: python scripts/fetch_calendar.py --try-blocked --only ecb"
+    },
+    "boe": {
+      "urls": [
+        "https://www.bankofengland.co.uk/monetary-policy/upcoming-mpc-dates"
+      ],
+      "ok": true,
+      "url": "https://www.bankofengland.co.uk/monetary-policy/upcoming-mpc-dates",
+      "bytes": 82554,
+      "count": 13,
+      "changes": []
+    },
+    "boj": {
+      "urls": [
+        "https://www.boj.or.jp/en/mopo/mpmsche_minu/index.htm",
+        "https://www.boj.or.jp/en/mopo/mpmsche_minu/index_2026.htm"
+      ],
+      "ok": false,
+      "blocked": true,
+      "why": "받을 수 없는 경로라 요청하지 않았다 — 회의 일정표가 본문에 없다 — 자바스크립트로 그린다 (2026-09-10 러너 확인: 연도 헤딩은 있으나 '월 일자' 표기 0건)",
+      "hint": "다시 시험하려면: python scripts/fetch_calendar.py --try-blocked --only boj"
+    },
+    "bok": {
+      "urls": [
+        "https://www.bok.or.kr/portal/singl/crncyPolicyDrcMtg/listYear.do?menuNo=200755&mtgSe=A",
+        "https://www.bok.or.kr/portal/main/contents.do?menuNo=200755",
+        "https://www.bok.or.kr/portal/bbs/B0000502/view.do?menuNo=201265&nttId=10094300"
+      ],
+      "ok": false,
+      "blocked": true,
+      "why": "받을 수 없는 경로라 요청하지 않았다 — 일정이 보도자료의 첨부파일(hwp·pdf)에만 있다 (2026-09-10 러너 확인: 본문은 '자세한 내용은 첨부파일을 참고' 뿐이고, 목록 페이지의 날짜는 의결사항·보도자료 등록일이라 회의일이 아니다)",
+      "hint": "다시 시험하려면: python scripts/fetch_calendar.py --try-blocked --only bok"
+    },
+    "bls:us-cpi": {
+      "urls": [
+        "https://www.bls.gov/schedule/news_release/cpi.htm"
+      ],
+      "ok": false,
+      "tried": [
+        {
+          "url": "https://www.bls.gov/schedule/news_release/cpi.htm",
+          "why": "받지 못했다 — HTTPError: HTTP Error 403: Forbidden"
+        }
+      ],
+      "why": "받지 못했다 — HTTPError: HTTP Error 403: Forbidden"
+    },
+    "bls:us-empsit": {
+      "urls": [
+        "https://www.bls.gov/schedule/news_release/empsit.htm"
+      ],
+      "ok": false,
+      "tried": [
+        {
+          "url": "https://www.bls.gov/schedule/news_release/empsit.htm",
+          "why": "받지 못했다 — HTTPError: HTTP Error 403: Forbidden"
+        }
+      ],
+      "why": "받지 못했다 — HTTPError: HTTP Error 403: Forbidden"
+    },
+    "bls:us-ppi": {
+      "urls": [
+        "https://www.bls.gov/schedule/news_release/ppi.htm"
+      ],
+      "ok": false,
+      "tried": [
+        {
+          "url": "https://www.bls.gov/schedule/news_release/ppi.htm",
+          "why": "받지 못했다 — HTTPError: HTTP Error 403: Forbidden"
+        }
+      ],
+      "why": "받지 못했다 — HTTPError: HTTP Error 403: Forbidden"
+    },
+    "treasury": {
+      "urls": [
+        "https://www.treasurydirect.gov/TA_WS/securities/upcoming?format=json"
+      ],
+      "ok": true,
+      "url": "https://www.treasurydirect.gov/TA_WS/securities/upcoming?format=json",
+      "count": 4,
+      "changes": [
+        "예정 입찰일 4일분"
+      ]
+    },
+    "fred": {
+      "ok": false,
+      "why": "FRED_API_KEY 가 없어 건너뛰었다 (무료 키로 켤 수 있다)"
+    }
+  },
+  "summary": {
+    "sources": 10,
+    "ok": 3,
+    "failed": 7
+  }
+}
