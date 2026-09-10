@@ -851,8 +851,106 @@ def _rate(text, *label_words):
     return float(m.group(1).replace(",", "")) if m else None
 
 
+def naver_market_api(code, dump_dir=None):
+    """지수 한 장을 **모바일 JSON API** 에서 뽑는다 — 새 1순위.
+
+    2026-09-10 에 `sise_index.naver` 가 React 앱으로 바뀌면서 서버가 그리던
+    표가 사라졌다. 118KB 를 받아도 안에 「상승」 「하락」 같은 말이 한 번도
+    나오지 않고 종가조차 없다 — 숫자를 화면에서 나중에 불러온다. 그래서
+    긁기로는 더 못 얻는다. 같은 날 업종·환율·금리·자금동향·뉴스도 함께
+    깨졌고, 살아남은 것은 표를 그대로 내려 주는 옛 화면들뿐이다.
+
+    선물에서 이미 쓰던 `m.stock.naver.com/api/index/<코드>/integration` 이
+    같은 자료를 JSON 으로 준다. 선물 응답에는 `upDownStockInfo` 와
+    `programTrendInfo` 가 null 로 들어 있는데, 이름 그대로라면 지수 쪽에서는
+    등락 종목 수와 프로그램 매매가 여기 담긴다. `dealTrendInfo` 가 코스피
+    현물에서도 나온다는 것은 `naver_futures` 주석에 이미 대조해 둔 사실이다.
+
+    **응답 모양을 세션에서 확인하지 못했다**(사내 정책상 네이버에 직접 붙지
+    못한다). 그래서 키 이름을 여러 갈래로 받아 보고, 무엇 하나라도 못 읽으면
+    응답 전체를 `dump_dir` 에 남긴다 — 다음 실행 때 그 파일을 보고 고치면
+    된다. 못 읽어도 예외를 내므로 호출 쪽이 옛 긁기로 물러설 수 있다.
+    """
+    url = "https://m.stock.naver.com/api/index/%s/integration" % code
+    j = json.loads(_get(url, referer="https://m.stock.naver.com/"))
+
+    def n(x):
+        if x is None:
+            return None
+        try:
+            return float(re.sub(r"[^\d.\-]", "", str(x).replace("−", "-")))
+        except ValueError:
+            return None
+
+    def pick(d, *names):
+        """이름이 어느 쪽으로 붙었는지 모르므로 여러 갈래로 찾는다."""
+        for nm in names:
+            if isinstance(d, dict) and d.get(nm) is not None:
+                return d[nm]
+        return None
+
+    out = {"source_url": url, "unit": "억원"}
+
+    ud = j.get("upDownStockInfo") or {}
+    breadth = {}
+    for key, names in (("limit_up", ("upperLimitCount", "upperLimit", "limitUpCount")),
+                       ("advancing", ("risingCount", "rising", "upCount")),
+                       ("unchanged", ("unchangedCount", "unchanged", "steadyCount")),
+                       ("declining", ("fallingCount", "falling", "downCount")),
+                       ("limit_down", ("lowerLimitCount", "lowerLimit", "limitDownCount"))):
+        v = n(pick(ud, *names))
+        if v is not None:
+            breadth[key] = int(v)
+    if breadth:
+        out["breadth"] = breadth
+
+    dt = j.get("dealTrendInfo") or {}
+    flows = {}
+    for key, names in (("retail", ("personalValue",)), ("foreign", ("foreignValue",)),
+                       ("institution", ("institutionalValue",))):
+        v = n(pick(dt, *names))
+        if v is not None:
+            flows[key] = v
+    if flows:
+        out["investor_flows"] = flows
+
+    pt = j.get("programTrendInfo") or {}
+    program = {}
+    for key, names in (("arb", ("arbitrageValue", "arbitrage")),
+                       ("non_arb", ("nonArbitrageValue", "nonArbitrage")),
+                       ("total", ("totalValue", "total"))):
+        v = n(pick(pt, *names))
+        if v is not None:
+            program[key] = v
+    if program:
+        out["program_trading"] = program
+
+    info = {t.get("code"): t.get("value") for t in j.get("totalInfos") or []}
+    hi, lo = n(info.get("highPrice")), n(info.get("lowPrice"))
+    if hi and lo:
+        out["intraday"] = {"high": hi, "low": lo}
+    y_hi, y_lo = n(info.get("highPriceOf52Weeks")), n(info.get("lowPriceOf52Weeks"))
+    if y_hi and y_lo:
+        out["fifty_two_week"] = {"high": y_hi, "low": y_lo}
+
+    # 등락 종목 수는 이 판의 핵심이다. 그것이 없으면 성공으로 치지 않는다.
+    if "breadth" not in out or len(out) <= 3:
+        if dump_dir:
+            os.makedirs(dump_dir, exist_ok=True)
+            with open(os.path.join(dump_dir, "index_api_%s.json" % code), "w",
+                      encoding="utf-8") as f:
+                json.dump(j, f, ensure_ascii=False, indent=1)
+        raise ValueError("API 응답에서 등락 종목 수를 못 찾음 — 키 %s (덤프함)"
+                         % sorted(j.keys()))
+    return out
+
+
 def naver_market_page(code, dump_dir=None):
-    """sise_index.naver 한 장에서 네 가지를 한 번에 뽑는다.
+    """sise_index.naver 한 장에서 네 가지를 한 번에 뽑는다. **옛 방식(2순위).**
+
+    2026-09-10 부터 이 화면이 React 앱으로 바뀌어 아무것도 안 나온다.
+    되돌아올 수도 있으므로 물러설 자리로 남겨 둔다 — `naver_market_api` 를
+    먼저 부르고, 그것이 실패했을 때만 이쪽으로 온다.
 
     등락 종목 수, 투자자별 매매동향, 프로그램 매매동향, 장중 고저.
     code 는 KOSPI 또는 KOSDAQ.
@@ -3079,10 +3177,14 @@ def main():
     if v:
         out["investors_kospi"] = v
 
-    # 지수 페이지 한 장에서 등락 종목 수·투자자별·프로그램 매매·장중 고저
+    # 지수 한 장에서 등락 종목 수·투자자별·프로그램 매매·장중 고저.
+    # **API 를 먼저 부르고, 안 되면 옛 긁기로 물러선다**(2026-09-10 개편).
     for code in ("KOSPI", "KOSDAQ"):
-        v, st = run("market", naver_market_page, code, "data/market/raw")
-        out["sources"]["naver:market:" + code] = st
+        v, st = run("market_api", naver_market_api, code, "data/market/raw")
+        out["sources"]["naver:market_api:" + code] = st
+        if not v:
+            v, st2 = run("market", naver_market_page, code, "data/market/raw")
+            out["sources"]["naver:market:" + code] = st2
         if v:
             out.setdefault("market_internals", {})[code.lower()] = v
 
