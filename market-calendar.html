@@ -533,6 +533,16 @@ var EARN_STATE = 'idle';   /* idle | loading | ok | fail */
 var TIMEBASE = 'kst';      /* kst | local — 날짜와 시각을 어느 시각으로 볼지 */
 var SEEN_TODAY = null;     /* 마지막으로 그렸을 때의 '오늘' — 날짜가 넘어갔는지 보려고 둔다 */
 
+/* 처음에 표 780행을 한꺼번에 만들면 DOM 이 1만 노드를 넘어가 스크롤부터 무거워진다.
+   자주 보는 것만 펼쳐 두고, 참고용 긴 표(출처 목록·휴장일·실적)는 눌렀을 때 만든다. */
+var LIST_PAGE = 200, LIST_SHOWN = LIST_PAGE;
+var OPEN = { srcUrls: false, holidays: false, earn: false };
+
+function foldButton(key, label, n) {
+  return '<div class="empty"><button type="button" class="btn-tool no-print" data-open="' +
+    key + '">' + esc(label) + ' (' + n + ')</button></div>';
+}
+
 var CATS = {
   policy:     { ko:'통화정책',      en:'Monetary policy',  color:'#F58220' },
   indicator:  { ko:'경제지표',      en:'Economic data',    color:'#043B72' },
@@ -1131,7 +1141,13 @@ function renderFilters() {
 function renderList() {
   var rows = filtered();
   el('fcount').textContent = t(rows.length + '건', rows.length + ' events');
-  el('list').innerHTML = eventTable(rows, {});
+  var shown = rows.slice(0, LIST_SHOWN);
+  el('list').innerHTML = eventTable(shown, {}) +
+    (rows.length > shown.length
+      ? '<div class="empty"><button type="button" class="btn-tool no-print" data-more="list">' +
+        t('더 보기 — 남은 ' + (rows.length - shown.length) + '건',
+          'Show more — ' + (rows.length - shown.length) + ' remaining') + '</button></div>'
+      : '');
 }
 
 /* ---------- ④ 경제지표 ---------- */
@@ -1322,8 +1338,11 @@ function renderEarnings() {
       '<span class="dot" style="background:var(--orange)"></span> ' + t('국내', 'Korea') +
       ' &nbsp; <span class="dot" style="background:var(--blue)"></span> ' + t('미국', 'US') + '</p>';
 
-  el('earn-table').innerHTML = eventTable(rows.slice(0, 120), {emptyMsg:
-    t('담긴 실적 일정이 없습니다.', 'No earnings events loaded.')});
+  el('earn-table').innerHTML = !rows.length
+    ? '<div class="empty">' + t('담긴 실적 일정이 없습니다.', 'No earnings events loaded.') + '</div>'
+    : OPEN.earn
+      ? eventTable(rows.slice(0, 200), {})
+      : foldButton('earn', t('발표 예정 종목 펼치기', 'Show upcoming reports'), rows.length);
 }
 
 /* ---------- ⑦ 학회 ---------- */
@@ -1395,6 +1414,11 @@ function renderSupply() {
   });
   var kinds = CAL.holiday_kinds || {};
   hrows.sort(function (a, b) { return a.d.date < b.d.date ? -1 : 1; });
+  if (hrows.length && !OPEN.holidays) {
+    el('holidays').innerHTML = foldButton('holidays', t('휴장일 펼치기', 'Show market holidays'),
+                                          hrows.length);
+    return;
+  }
   el('holidays').innerHTML = hrows.length ? '<table><thead><tr>' +
     '<th>' + t('날짜', 'Date') + '</th><th>' + t('시장', 'Market') + '</th>' +
     '<th>' + t('사유', 'Reason') + '</th><th>' + t('구분', 'Kind') + '</th></tr></thead><tbody>' +
@@ -1482,6 +1506,11 @@ function renderStatus() {
   });
   var list = Object.keys(urls).map(function (k) { return urls[k]; })
     .sort(function (a, b) { return b.n - a.n; });
+  if (!OPEN.srcUrls) {
+    el('src-urls').innerHTML = foldButton('srcUrls', t('출처 목록 펼치기', 'Show the source list'),
+                                          list.length);
+    return;
+  }
   el('src-urls').innerHTML = '<table><thead><tr>' +
     '<th>' + t('출처', 'Source') + '</th><th>' + t('주소', 'URL') + '</th>' +
     '<th class="num">' + t('일정 수', 'Events') + '</th></tr></thead><tbody>' +
@@ -1599,6 +1628,14 @@ function exportIcs(rows, fname) {
 
 /* ---------------------------------------------------------- 묶어 그리기 */
 
+/* 필터·검색이 바꾸는 것은 이 셋뿐이다. ④~⑩ 은 필터와 무관하므로 건드리지 않는다. */
+function renderFiltered() {
+  renderFilters();
+  renderThisWeek();
+  renderGrid();
+  renderList();
+}
+
 function renderAll() {
   SEEN_TODAY = todayISO();
   stampDates();
@@ -1666,7 +1703,9 @@ function bind() {
   });
 
   el('q').addEventListener('input', function () {
-    FILT.q = this.value.trim(); renderList(); renderGrid();
+    FILT.q = this.value.trim();
+    LIST_SHOWN = LIST_PAGE;
+    renderList(); renderGrid();
   });
   el('btn-csv').addEventListener('click', exportCsv);
   el('btn-ics-all').addEventListener('click', function () {
@@ -1695,13 +1734,37 @@ function bind() {
       else if (f === 'conf') FILT.conf[v] = !FILT.conf[v];
       else if (f === 'range') FILT.range = v;
       else if (f === 'indtab') { IND_TAB = v; renderIndicators(); return; }
-      renderFilters(); renderList(); renderGrid(); renderThisWeek();
+      LIST_SHOWN = LIST_PAGE;          /* 필터를 바꾸면 목록을 처음부터 다시 센다 */
+      renderFiltered();
+      return;
+    }
+    var fold = ev.target.closest ? ev.target.closest('[data-open]') : null;
+    if (fold) {
+      var key = fold.getAttribute('data-open');
+      OPEN[key] = true;
+      if (key === 'srcUrls') renderStatus();
+      else if (key === 'holidays') renderSupply();
+      else renderEarnings();
+      return;
+    }
+    var more = ev.target.closest ? ev.target.closest('[data-more]') : null;
+    if (more) {
+      LIST_SHOWN += LIST_PAGE;
+      renderList();
       return;
     }
     var fav = ev.target.closest ? ev.target.closest('[data-fav]') : null;
     if (fav) {
-      toggleFav(fav.getAttribute('data-fav'));
-      renderAll();
+      var id = fav.getAttribute('data-fav');
+      toggleFav(id);
+      /* 예전에는 여기서 renderAll() 을 불렀다 — ★ 하나 누를 때마다 열 개 섹션과
+         표 780행을 통째로 다시 만들었다(재 보니 66ms). 바뀌는 것은 그 별의 눌림 상태와
+         ⑨ 관심 일정뿐이므로 그 둘만 손댄다. */
+      var on = isFav(id);
+      Array.prototype.forEach.call(document.querySelectorAll('[data-fav]'), function (b) {
+        if (b.getAttribute('data-fav') === id) b.setAttribute('aria-pressed', on);
+      });
+      renderFav();
       return;
     }
     var cell = ev.target.closest ? ev.target.closest('[data-day]') : null;
