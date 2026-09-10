@@ -1,5 +1,5 @@
 {
-  "note": "각국 중앙은행 통화정책 결정일. 중앙은행들은 연간 일정을 미리 공표하므로 여기에 seed 로 두고, 러너(scripts/fetch_calendar.py)가 공식 페이지에서 받아 덮어쓴다. holidays.json 과 같은 이유로 빌더 코드에 문자열로 박지 않는다.",
+  "note": "각국 중앙은행 통화정책 결정일. 중앙은행들은 연간 일정을 미리 공표하므로 여기에 seed 로 두고, 러너(scripts/fetch_calendar.py)가 공식 페이지에서 받아 덮어쓴다. holidays.json 과 같은 이유로 빌더 코드에 문자열로 박지 않는다. meetings_per_year 는 러너가 받은 결과를 검사할 때 쓴다 — 페이지가 바뀌어 엉뚱한 날짜를 그러모으면 연간 횟수가 먼저 어긋난다.",
   "confirmed_levels": {
     "official": "러너가 해당 중앙은행 공식 페이지에서 받아 확인한 날짜",
     "websearch": "세션에서 검색으로 교차 확인한 날짜 — 공식 페이지 재확인 전",
@@ -115,7 +115,8 @@
         }
       ],
       "source_en": "Federal Reserve — FOMC meeting calendars",
-      "minutes_rule_en": "Minutes three weeks after the meeting, 14:00 local"
+      "minutes_rule_en": "Minutes three weeks after the meeting, 14:00 local",
+      "meetings_per_year": 8
     },
     {
       "key": "bok",
@@ -151,7 +152,8 @@
       "source_en": "Bank of Korea — monetary policy decision calendar",
       "minutes_rule_en": "Minutes on the first Tuesday after two weeks have passed from the meeting",
       "schedule_note_en": "Rate-decision meetings fall in January, February, April, May, July, August, October and November (eight a year); financial-stability meetings in March, June, September and December. The first 2026 decision was on 15 January.",
-      "gap_note_en": "The 2027 dates and the September/December financial-stability meeting dates are not yet verified — the runner fills them from the official page. They are not filled in by estimate."
+      "gap_note_en": "The 2027 dates and the September/December financial-stability meeting dates are not yet verified — the runner fills them from the official page. They are not filled in by estimate.",
+      "meetings_per_year": 8
     },
     {
       "key": "ecb",
@@ -233,7 +235,8 @@
         }
       ],
       "source_en": "ECB — Meetings of the Governing Council and the General Council",
-      "projections_note_en": "ECB staff macroeconomic projections accompany the March, June, September and December meetings"
+      "projections_note_en": "ECB staff macroeconomic projections accompany the March, June, September and December meetings",
+      "meetings_per_year": 8
     },
     {
       "key": "boj",
@@ -307,7 +310,8 @@
         }
       ],
       "source_en": "Bank of Japan — Monetary Policy Meetings",
-      "projections_note_en": "The quarterly Outlook Report accompanies the January, April, July and October meetings"
+      "projections_note_en": "The quarterly Outlook Report accompanies the January, April, July and October meetings",
+      "meetings_per_year": 8
     },
     {
       "key": "boe",
@@ -381,7 +385,8 @@
         }
       ],
       "source_en": "Bank of England — Upcoming MPC dates",
-      "projections_note_en": "A Monetary Policy Report and press conference accompany the February, April (May), July (August) and November meetings"
+      "projections_note_en": "A Monetary Policy Report and press conference accompany the February, April (May), July (August) and November meetings",
+      "meetings_per_year": 8
     },
     {
       "key": "pboc",
@@ -399,7 +404,8 @@
       "meetings": [],
       "gap_note_ko": "LPR 은 '매월 20일' 규칙이라 빌더가 규칙으로 만든다(confirmed=rule). 휴일 이동은 holidays.json 의 중국 휴장일로 보정한다",
       "source_en": "People's Bank of China",
-      "gap_note_en": "The LPR follows a 'twentieth of the month' rule, so the builder derives it (confirmed=rule). Holiday shifts are corrected against the Chinese market holidays in holidays.json."
+      "gap_note_en": "The LPR follows a 'twentieth of the month' rule, so the builder derives it (confirmed=rule). Holiday shifts are corrected against the Chinese market holidays in holidays.json.",
+      "meetings_per_year": 12
     }
   ]
 }
