@@ -279,7 +279,6 @@ footer{
     <button type="button" id="btn-en" role="radio" aria-checked="false">EN</button>
   </div>
   <button type="button" class="btn-tool" id="btn-timebase" aria-pressed="true"></button>
-  <button type="button" class="btn-tool" id="btn-linkmode" aria-pressed="true"></button>
   <button type="button" class="btn-tool" id="btn-print" data-ko="인쇄 · PDF 저장" data-en="Print / save PDF">인쇄 · PDF 저장</button>
 </div>
 
@@ -482,9 +481,6 @@ footer{
       <h3 data-ko="아직 비어 있는 곳" data-en="Known gaps">아직 비어 있는 곳</h3>
       <div id="gaps"></div>
       <h3 data-ko="출처 목록" data-en="Sources">출처 목록</h3>
-      <p class="section-note"
-         data-ko="출처의 대부분이 영문 기관 페이지입니다. 한국어 화면에서는 링크를 누르면 <b>번역된 판</b>이 열리고, 원문 그대로 보려면 위 툴바의 <b>출처 링크</b> 단추로 바꿉니다(그 선택은 이 브라우저에 남습니다). 아래 표에 적힌 주소는 언제나 <b>원문 주소</b>입니다."
-         data-en="Most sources are Korean-language institutional pages. In English the links open a translated view; use the <b>Source links</b> button in the toolbar to open them as published (the choice is remembered in this browser). The addresses listed below are always the original ones.">출처의 대부분이 영문 기관 페이지입니다. 한국어 화면에서는 링크를 누르면 <b>번역된 판</b>이 열리고, 원문 그대로 보려면 위 툴바의 <b>출처 링크</b> 단추로 바꿉니다(그 선택은 이 브라우저에 남습니다). 아래 표에 적힌 주소는 언제나 <b>원문 주소</b>입니다.</p>
       <div class="tw" id="src-urls"></div>
     </section>
 
@@ -531,7 +527,6 @@ var FAV = [];
 var MONTH = null;          /* 격자가 보여주는 달의 1일 */
 var SELDAY = null;         /* 격자에서 고른 날 */
 var EARN_STATE = 'idle';   /* idle | loading | ok | fail */
-var LINKMODE = 'translate';/* translate | raw — 출처 링크를 지금 언어로 옮겨 열지 */
 var TIMEBASE = 'kst';      /* kst | local — 날짜와 시각을 어느 시각으로 볼지 */
 
 var CATS = {
@@ -676,40 +671,6 @@ function timeText(e) {
     (e._moved ? ' <span class="small">' + t('(현지 ' + e.date.slice(5).replace('-', '/') + ')',
                                             '(local ' + e.date.slice(5) + ')') + '</span>' : '');
 }
-/* ---------- 출처 링크를 읽는 언어로 열기 ----------
-   출처의 대부분이 영문 기관 페이지다(연준·BLS·ESMO·Cboe…). 링크를 그대로 걸면 눌렀을 때
-   영문 원문이 뜬다. 한국어 화면에서는 번역된 판을 먼저 열어 주고, 원문 그대로 보고 싶으면
-   위 툴바에서 바꿀 수 있게 한다. 영문 화면에서는 반대로 국내 기관 페이지를 옮겨 준다.
-
-   번역은 구글 번역의 프록시 주소(<호스트>.translate.goog)를 쓴다. 원문 주소가 그대로
-   드러나므로 어디로 가는지 감출 일이 없고, 번역이 막힌 곳이면 툴바에서 원문으로 돌리면
-   된다. 인터넷이 없는 PC 에서는 원문이든 번역이든 열리지 않는 것은 마찬가지다. */
-var KO_HOSTS = /(^|\.)(bok\.or\.kr|kostat\.go\.kr|krx\.co\.kr|fss\.or\.kr|moef\.go\.kr|customs\.go\.kr|motie\.go\.kr|biokorea\.org|bixkorea\.com|ksmo\.or\.kr)$/i;
-/* 국내 기관인데 그 주소만 영문판인 곳. 도메인만 보고 '한국어'로 넘기면 눌렀을 때
-   영문이 뜬다 — 한국거래소 파생상품 상품명세가 그렇다. */
-var EN_PAGES = /^global\.krx\.co\.kr$/i;
-
-function translateUrl(u, target) {
-  try {
-    var a = new URL(u);
-    /* 호스트의 점은 하이픈으로, 원래 있던 하이픈은 두 개로 바꾼다 (구글 번역 규칙) */
-    var host = a.hostname.replace(/-/g, '--').replace(/\./g, '-') + '.translate.goog';
-    return a.protocol + '//' + host + a.pathname + (a.search ? a.search + '&' : '?') +
-      '_x_tr_sl=auto&_x_tr_tl=' + target + '&_x_tr_hl=' + target + a.hash;
-  } catch (err) { return u; }
-}
-
-function viewUrl(u) {
-  if (!u || LINKMODE !== 'translate') return u;
-  try {
-    var host = new URL(u).hostname;
-    var korean = KO_HOSTS.test(host) && !EN_PAGES.test(host);
-    if (LANG === 'ko' && korean) return u;        /* 이미 한국어 페이지다 */
-    if (LANG === 'en' && !korean) return u;       /* 이미 영어권 페이지다 */
-    return translateUrl(u, LANG);
-  } catch (err) { return u; }
-}
-
 function noteText(u) {
   return LANG === 'en' ? (u.note_en || u.note_ko || '') : (u.note_ko || '');
 }
@@ -720,7 +681,7 @@ function kindText(kind, kinds) {
   return LANG === 'en' ? (HKIND_EN[kind] || kind || '') : (kinds[kind] || kind || '');
 }
 function link(e) {
-  return e.url ? '<a href="' + esc(viewUrl(e.url)) + '" target="_blank" rel="noopener">' +
+  return e.url ? '<a href="' + esc(e.url) + '" target="_blank" rel="noopener">' +
     t('원문', 'source') + '</a>' : '';
 }
 
@@ -761,7 +722,6 @@ function applyLang() {
   el('btn-ko').setAttribute('aria-checked', LANG === 'ko');
   el('btn-en').setAttribute('aria-checked', LANG === 'en');
   store('lang', LANG);
-  renderLinkMode();
   renderTimeBase();
 }
 
@@ -779,19 +739,6 @@ function renderTimeBase() {
         'Shown in the publishing institution\'s local time. Press for Korea Standard Time.');
 }
 
-function renderLinkMode() {
-  var b = el('btn-linkmode');
-  if (!b) return;
-  var on = LINKMODE === 'translate';
-  b.setAttribute('aria-pressed', on);
-  b.textContent = on ? t('출처 링크: 한국어로', 'Source links: translated')
-                     : t('출처 링크: 원문 그대로', 'Source links: original');
-  b.title = on
-    ? t('출처를 누르면 번역된 판이 열립니다. 원문 그대로 보려면 누르십시오.',
-        'Sources open translated. Press to open them as published.')
-    : t('출처를 누르면 원문이 그대로 열립니다. 번역해 보려면 누르십시오.',
-        'Sources open as published. Press to open them translated.');
-}
 
 /* ---------------------------------------------------------- 데이터 받기 */
 
@@ -1220,7 +1167,7 @@ function renderIndicators() {
         '<td class="small">' + esc(LANG === 'en' ? (i.why_en || i.rule_note_en || '')
                                                    : (i.why_ko || i.rule_note_ko || '')) + '</td>' +
         '<td class="nowrap">' + (i.calendar_url || i.url
-          ? '<a href="' + esc(viewUrl(i.calendar_url || i.url)) + '" target="_blank" rel="noopener">' +
+          ? '<a href="' + esc(i.calendar_url || i.url) + '" target="_blank" rel="noopener">' +
             t('공표일정', 'calendar') + '</a>' : '') + '</td>' +
         '</tr>';
     }).join('');
@@ -1297,7 +1244,7 @@ function renderPolicy() {
           var m = LANG === 'en' ? b.minutes_rule_en : b.minutes_rule_ko;
           return m ? ' · ' + esc(m) : '';
         })() +
-        (b.url ? ' · <a href="' + esc(viewUrl(b.url)) + '" target="_blank" rel="noopener">' +
+        (b.url ? ' · <a href="' + esc(b.url) + '" target="_blank" rel="noopener">' +
           t('공식 일정', 'official calendar') + '</a>' : '') + '</p>' +
       '<div class="tl">' + items + '</div>' +
       (function () {
@@ -1391,7 +1338,7 @@ function renderConferences() {
       '<div class="what">' + esc(title(e)) + '</div>' +
       (detail(e) ? '<div class="why">' + esc(detail(e)) + '</div>' : '') +
       '<div class="row">' + impMark(e.importance) + badge(e.confirmed) + ' ' +
-      (e.url ? '<a href="' + esc(viewUrl(e.url)) + '" target="_blank" rel="noopener">' +
+      (e.url ? '<a href="' + esc(e.url) + '" target="_blank" rel="noopener">' +
         t('공식 프로그램', 'official programme') + '</a>' : '') + '</div></div>';
   }).join('') : '<div class="empty">' + t('담긴 학회 일정이 없습니다.', 'No congresses recorded.') + '</div>';
 
@@ -1407,7 +1354,7 @@ function renderConferences() {
         '<td class="small">' + esc(noteText(u)) + '</td>' +
         '<td class="nowrap small">' + (u.group === 'bio' ? t('제약·바이오', 'pharma')
           : t('산업', 'industry')) + '</td>' +
-        '<td class="nowrap">' + (u.url ? '<a href="' + esc(viewUrl(u.url)) +
+        '<td class="nowrap">' + (u.url ? '<a href="' + esc(u.url) +
           '" target="_blank" rel="noopener">' + t('열기', 'open') + '</a>' : '') + '</td></tr>';
     }).join('') + '</tbody></table>'
     : '<div class="empty">-</div>';
@@ -1432,7 +1379,7 @@ function renderSupply() {
       return '<tr><td>' + esc(LANG === 'en' ? (u.name_en || u.name_ko) : u.name_ko) + ' ' +
         impMark(u.importance) + '</td>' +
         '<td class="small">' + esc(noteText(u)) + '</td>' +
-        '<td class="nowrap">' + (u.url ? '<a href="' + esc(viewUrl(u.url)) +
+        '<td class="nowrap">' + (u.url ? '<a href="' + esc(u.url) +
           '" target="_blank" rel="noopener">' + t('열기', 'open') + '</a>' : '') + '</td></tr>';
     }).join('') + '</tbody></table>' : '<div class="empty">-</div>';
   var hrows = [];
@@ -1526,7 +1473,7 @@ function renderStatus() {
     '<th class="num">' + t('일정 수', 'Events') + '</th></tr></thead><tbody>' +
     list.map(function (u) {
       return '<tr><td class="small">' + esc(u.source || '') + '</td>' +
-        '<td class="small"><a href="' + esc(viewUrl(u.url)) + '" target="_blank" rel="noopener">' +
+        '<td class="small"><a href="' + esc(u.url) + '" target="_blank" rel="noopener">' +
         esc(u.url.replace(/^https?:\/\//, '').slice(0, 78)) + '</a></td>' +
         '<td class="num">' + u.n + '</td></tr>';
     }).join('') + '</tbody></table>';
@@ -1667,12 +1614,6 @@ function bind() {
     renderTimeBase();
     renderAll();
   });
-  el('btn-linkmode').addEventListener('click', function () {
-    LINKMODE = LINKMODE === 'translate' ? 'raw' : 'translate';
-    store('linkmode', LINKMODE);
-    renderLinkMode();
-    renderAll();
-  });
 
   el('m-prev').addEventListener('click', function () {
     MONTH = new Date(MONTH.getFullYear(), MONTH.getMonth() - 1, 1); renderGrid();
@@ -1737,7 +1678,6 @@ function bind() {
 
 function boot() {
   LANG = store('lang') === 'en' ? 'en' : 'ko';
-  LINKMODE = store('linkmode') === 'raw' ? 'raw' : 'translate';
   TIMEBASE = store('timebase') === 'local' ? 'local' : 'kst';
   loadFav();
   applyLang();
