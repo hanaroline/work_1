@@ -348,6 +348,27 @@ def verify(path):
             warn("사2-2 참고", "%s — %s" % (k, v["retried"]))
     check("사3 그날 자 리포트가 있음", len(todays) > 0, "%d건" % len(todays))
 
+    # ── 아. 본문에서 요약이 나왔는가 ────────────────────────────────────
+    # 9/11 00:02 판에서 네이버가 리서치 상세 페이지를 새 앱으로 갈아엎었다.
+    # 본문 150건을 열고도 요약이 **한 건도** 안 나왔는데 검산 37개가 전부
+    # 통과했다 — 요약이 없으니 대조할 것도 없어서 인용 검사가 조용히 넘어간
+    # 것이다. 사(원천) 묶음이 「빠진 원천」을 잡듯, 여기서 「빠진 본문」을
+    # 잡는다. 목록만 있고 요약이 없는 자료는 그날의 그림이 아니다.
+    x = d.get("extraction") or {}
+    opened = x.get("detail_opened") or 0
+    made = x.get("summarized") or 0
+    if opened:
+        check("아1 연 본문에서 요약이 나옴",
+              made >= opened * 0.5,
+              "%d건 열어 %d건 요약 (%d%%)" % (opened, made, round(100 * made / opened)))
+    withsum = sum(1 for r in todays if r.get("summary"))
+    if todays:
+        check("아2 그날 자에 요약이 붙음",
+              withsum >= len(todays) * 0.3,
+              "%d건 중 %d건 (%d%%)" % (len(todays), withsum,
+                                       round(100 * withsum / len(todays))))
+    check("아3 수집기가 남긴 경고 없음", not x.get("warning"), str(x.get("warning") or ""))
+
     # ── 바. 주간 ────────────────────────────────────────────────────────
     W = d.get("weekly") or {}
     if W:
