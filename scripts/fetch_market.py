@@ -716,7 +716,54 @@ def yahoo_quote(symbol):
 
 
 def naver_sectors():
-    """업종별 등락률 — 네이버 업종 시세 페이지(EUC-KR HTML)를 파싱한다."""
+    """업종별 등락률 — **모바일 JSON API 가 1순위**, 옛 화면이 물러설 자리.
+
+    2026-09-10 에 `sise_group.naver` 도 React 앱으로 바뀌어 표가 사라졌다.
+    `m.stock.naver.com/api/stocks/industry?page=1&pageSize=100` 이 같은 업종
+    79 개를 JSON 으로 준다 — 이름·등락률·상승/하락 종목 수까지 함께 온다
+    (2026-09-11 08:15 탐색에서 응답을 받아 확인했다).
+
+    **개장 전에는 등락률이 전부 "0.00" 으로 온다.** 진행 중인 장을 주기
+    때문이다. 그것을 그대로 실으면 전날 업종이 0 으로 덮이므로, 전부 0 이면
+    받지 않은 것으로 보고 예외를 낸다 — 빈 것과 영은 다르다.
+    """
+    try:
+        return _naver_sectors_api()
+    except Exception as api_err:                                  # noqa: BLE001
+        try:
+            return _naver_sectors_html()
+        except Exception:                                         # noqa: BLE001
+            raise api_err
+
+
+def _naver_sectors_api():
+    url = "https://m.stock.naver.com/api/stocks/industry?page=1&pageSize=100"
+    j = json.loads(_get(url, referer="https://m.stock.naver.com/"))
+    out = []
+    for g in j.get("groups") or []:
+        name = (g.get("name") or "").strip()
+        try:
+            pct = float(str(g.get("changeRate")).replace(",", ""))
+        except (TypeError, ValueError):
+            continue
+        if not name:
+            continue
+        row = {"name": name, "change_pct": pct, "source_url": url}
+        for a, b in (("riseCount", "advancing"), ("fallCount", "declining"),
+                     ("steadyCount", "unchanged"), ("totalCount", "total")):
+            if isinstance(g.get(a), int):
+                row[b] = g[a]
+        out.append(row)
+    if not out:
+        raise ValueError("업종 행을 찾지 못함 (API)")
+    if not any(r["change_pct"] for r in out):
+        raise ValueError("업종 등락률이 전부 0 — 개장 전 응답이다(%d개)" % len(out))
+    out.sort(key=lambda d: d["change_pct"], reverse=True)
+    return out
+
+
+def _naver_sectors_html():
+    """옛 화면(EUC-KR HTML). 2026-09-10 부터 비어 있지만 되돌아올 수 있다."""
     s = _get("https://finance.naver.com/sise/sise_group.naver?type=upjong",
              referer="https://finance.naver.com/", encoding="cp949")
     out = []
@@ -893,36 +940,50 @@ def naver_market_api(code, dump_dir=None):
 
     ud = j.get("upDownStockInfo") or {}
     breadth = {}
-    for key, names in (("limit_up", ("upperLimitCount", "upperLimit", "limitUpCount")),
-                       ("advancing", ("risingCount", "rising", "upCount")),
-                       ("unchanged", ("unchangedCount", "unchanged", "steadyCount")),
-                       ("declining", ("fallingCount", "falling", "downCount")),
-                       ("limit_down", ("lowerLimitCount", "lowerLimit", "limitDownCount"))):
+    # 이름은 **짐작이 아니라 실제 응답으로 확정**했다(2026-09-11 08:15 탐색).
+    #   upDownStockInfo = {upperCount, riseCount, lowerCount, fallCount, steadyCount}
+    # 옛 짐작(risingCount·upCount…)은 하나도 맞지 않아 breadth 가 통째로 비었다.
+    for key, names in (("limit_up", ("upperCount", "upperLimitCount", "limitUpCount")),
+                       ("advancing", ("riseCount", "risingCount", "upCount")),
+                       ("unchanged", ("steadyCount", "unchangedCount", "unchanged")),
+                       ("declining", ("fallCount", "fallingCount", "downCount")),
+                       ("limit_down", ("lowerCount", "lowerLimitCount", "limitDownCount"))):
         v = n(pick(ud, *names))
         if v is not None:
             breadth[key] = int(v)
     if breadth:
         out["breadth"] = breadth
 
+    # **개장 전에는 이 API 가 「오늘 장」을 0 으로 준다.** 2026-09-11 08:15 응답이
+    # bizdate=20260911 에 등락·수급·프로그램을 전부 "0" 으로 줬다. 그대로 저장하면
+    # 전날 마감이 0 으로 덮여 판이 「아무도 사지 않은 날」이 된다.
+    # **전부 0 인 묶음은 싣지 않는다** — 비어 있는 것과 영은 다르다.
+    if breadth and not any(breadth.values()):
+        out.pop("breadth", None)
+
     dt = j.get("dealTrendInfo") or {}
+    if dt.get("bizdate"):
+        out["bizdate"] = str(dt["bizdate"])          # 어느 장의 값인지 밝혀 둔다
     flows = {}
     for key, names in (("retail", ("personalValue",)), ("foreign", ("foreignValue",)),
                        ("institution", ("institutionalValue",))):
         v = n(pick(dt, *names))
         if v is not None:
             flows[key] = v
-    if flows:
+    if flows and any(flows.values()):
         out["investor_flows"] = flows
 
     pt = j.get("programTrendInfo") or {}
     program = {}
-    for key, names in (("arb", ("arbitrageValue", "arbitrage")),
-                       ("non_arb", ("nonArbitrageValue", "nonArbitrage")),
-                       ("total", ("totalValue", "total"))):
+    # programTrendInfo = {indexDifferenceReal(차익), indexBiDifferenceReal(비차익),
+    #                     indexTotalReal(전체)} — 같은 탐색에서 확정했다.
+    for key, names in (("arb", ("indexDifferenceReal", "arbitrageValue")),
+                       ("non_arb", ("indexBiDifferenceReal", "nonArbitrageValue")),
+                       ("total", ("indexTotalReal", "totalValue"))):
         v = n(pick(pt, *names))
         if v is not None:
             program[key] = v
-    if program:
+    if program and any(program.values()):
         out["program_trading"] = program
 
     info = {t.get("code"): t.get("value") for t in j.get("totalInfos") or []}
@@ -3010,13 +3071,22 @@ _API_CANDIDATES = [
     ("sectors", "https://m.stock.naver.com/api/stocks/industry"),
     ("sectors", "https://api.stock.naver.com/industry"),
     ("sectors", "https://m.stock.naver.com/api/stocks/industry?page=1&pageSize=100"),
-    ("money_flow", "https://m.stock.naver.com/api/stocks/marketValue/deposit"),
+    # 2026-09-11 1차 탐색에서 internals·sectors 는 찾았고 아래 셋은 못 찾았다.
+    # 후보를 넓혀 다시 훑는다(모바일 앱이 실제로 쓰는 주소 계열을 노린다).
+    ("money_flow", "https://m.stock.naver.com/api/stock/market/deposit"),
+    ("money_flow", "https://m.stock.naver.com/api/marketindex/deposit"),
+    ("money_flow", "https://m.stock.naver.com/api/index/KOSPI/deposit"),
     ("money_flow", "https://finance.naver.com/sise/sise_deposit.naver"),
-    ("news", "https://m.stock.naver.com/api/news/mainNews?category=mainnews&page=1&pageSize=20"),
-    ("news", "https://m.stock.naver.com/api/home/news/mainnews?pageSize=20"),
-    ("marketindex", "https://api.stock.naver.com/marketindex/exchange/FX_USDKRW/basic"),
-    ("marketindex", "https://m.stock.naver.com/api/marketindex/exchange/FX_USDKRW/basic"),
-    ("marketindex", "https://api.stock.naver.com/marketindex/interest"),
+    ("news", "https://m.stock.naver.com/api/news/mainNews?page=1&pageSize=20"),
+    ("news", "https://m.stock.naver.com/api/news/worldNews?page=1&pageSize=20"),
+    ("news", "https://m.stock.naver.com/api/html/news/mainnews"),
+    ("news", "https://m.stock.naver.com/api/index/KOSPI/news?pageSize=20&page=1"),
+    ("news", "https://m.stock.naver.com/api/stock/005930/news?pageSize=5&page=1"),
+    ("marketindex", "https://m.stock.naver.com/api/marketindex/exchangeList?page=1&pageSize=20"),
+    ("marketindex", "https://m.stock.naver.com/api/marketindex/interestList?page=1&pageSize=20"),
+    ("marketindex", "https://m.stock.naver.com/api/marketindex/exchange/FX_USDKRW"),
+    ("marketindex", "https://m.stock.naver.com/api/marketindex/interest/IRR_CD91"),
+    ("marketindex", "https://m.stock.naver.com/api/marketindex/home"),
 ]
 
 # **길이만 보면 속는다** — 셸 HTML 도 12만 바이트다. 낱말이 걸리는지를 본다.
