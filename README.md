@@ -978,16 +978,52 @@ data/calendar/
 매일 바뀌는 자료가 아니어서 주 1회로 잡았습니다. 지금 돌리려면 `data/calendar/REFRESH` 를
 한 줄 고쳐 push 하십시오.
 
-| 경로 | 받는 곳 | 무엇을 |
-|---|---|---|
-| FOMC | `federalreserve.gov/monetarypolicy/fomccalendars.htm` | 회의일·경제전망(SEP) 동반 여부 |
-| ECB | `ecb.europa.eu/press/calendars/mgcgc/...` | 정책이사회 통화정책 회의만 (비통화정책 회의 제외) |
-| BOE | `bankofengland.co.uk/monetary-policy/upcoming-mpc-dates` | MPC 발표일 |
-| BOJ | `boj.or.jp/en/mopo/mpmsche_minu/index.htm` | 금융정책결정회의 (이틀짜리만 — 하루짜리는 의사록 공표일) |
-| 한국은행 | `bok.or.kr` 통화정책방향 결정회의 일정 | 금통위 결정일 (의사록 공개일과 구분) |
-| BLS | `bls.gov/schedule/news_release/{cpi,empsit,ppi}.htm` | CPI·고용상황·PPI 확정 발표일 |
-| 미국채 입찰 | `treasurydirect.gov/TA_WS/securities/upcoming` | 예정 입찰일·종목 (공개 JSON, 키 불필요) |
-| FRED | `api.stlouisfed.org/fred/release/dates` | PCE·GDP·소매판매 예정 발표일 (**`FRED_API_KEY` 를 넣으면 켜집니다** — 무료) |
+| 경로 | 받는 곳 | 무엇을 | 실측 |
+|---|---|---|---|
+| FOMC | `federalreserve.gov/monetarypolicy/fomccalendars.htm` | 회의일·경제전망(SEP) 동반 여부 | 페이지 확보 O |
+| ECB | `ecb.europa.eu/press/calendars/mgcgc/...` | 정책이사회 통화정책 회의만 (비통화정책 회의 제외) | **본문에 날짜 없음** |
+| BOE | `bankofengland.co.uk/monetary-policy/upcoming-mpc-dates` | MPC 발표일 | 페이지 확보 O |
+| BOJ | `boj.or.jp/en/mopo/mpmsche_minu/index.htm` | 금융정책결정회의 (이틀짜리만 — 하루짜리는 의사록 공표일) | 페이지 확보 O |
+| 한국은행 | `bok.or.kr` 통화정책방향 결정회의 일정 | 금통위 결정일 (의사록 공개일과 구분) | **본문에 날짜 없음** |
+| BLS | `bls.gov/schedule/news_release/{cpi,empsit,ppi}.htm` | CPI·고용상황·PPI 확정 발표일 | **403** |
+| 미국채 입찰 | `treasurydirect.gov/TA_WS/securities/upcoming` | 예정 입찰일·종목 (공개 JSON, 키 불필요) | O |
+| FRED | `api.stlouisfed.org/fred/release/dates` | CPI·고용상황·PCE·GDP·소매판매 예정 발표일 (**`FRED_API_KEY` 를 넣으면 켜집니다** — 무료) | 키 없어 미실행 |
+
+경로마다 주소를 여러 개 둘 수 있고, 받아서 **파서 검사까지 통과한 첫 응답**만 씁니다.
+
+### 러너에서 실제로 돌려 본 결과 (2026-09-10)
+
+첫 실행에서 다섯 곳이 **HTTP 200 을 받고도 0건**을 뱉었습니다. 검사가 제 몫을 해 seed 는
+지켜졌지만, 세션에서는 그 사이트에 붙지 못해 무엇이 어긋났는지 알 수 없었습니다. 그래서
+파서가 걸러졌을 때 **받은 페이지의 구조를 로그와 `fetch-report.json` 에 남기는 진단**을
+넣고 다시 돌렸고, 원인이 셋으로 갈렸습니다.
+
+**구조 가정이 틀렸던 것** — 파서를 고쳐 해결했습니다.
+
+- **FOMC** — 페이지에 `2026 FOMC Meetings` 헤딩과 `January 27-28` 이 그대로 있는데,
+  `<h4>` 바로 뒤에 연도가 오리라 본 정규식이 빗나갔습니다. 헤딩 안에 태그가 하나 더 있습니다.
+- **BOE · BOJ** — 날짜에 연도가 붙어 있지 않습니다. 연도는 구획 헤딩
+  (`2026 confirmed dates` · `<h2>2026</h2>`)에 있습니다.
+
+지금은 클래스 이름과 태그 구조에 기대지 않습니다. **연도 표시를 기준으로 원본을 구획으로
+자르고, 그 구획의 본문에서 `월 일자` 를 읽습니다.** 기관이 페이지를 다시 만들어도 '연도'
+라는 글자와 '월 일자' 표기는 남습니다.
+
+**이 주소로는 안 되는 것** — 다른 길이 필요합니다.
+
+- **ECB · 한국은행** — 본문에 날짜가 **아예 없습니다**. 자바스크립트로 그리는 판입니다.
+  정적으로 내려오는 다른 주소를 후보로 붙여 두었고, 그래도 안 되면 seed 의 `교차확인`
+  날짜가 그대로 남습니다(⑩에 그 사실이 적힙니다).
+- **BLS** — 세 경로 모두 **403** 입니다. 러너 IP 차단으로 보이며 페이지를 아예 못 받으니
+  파서로는 풀리지 않습니다. 같은 통계를 FRED 가 API 로 주므로 CPI(release 10)·
+  고용상황(50)을 FRED 쪽에 더해 두었습니다 — **무료 키를 넣으면 그 길로 채워집니다.**
+
+### 파서가 느슨한 만큼 안전장치를 하나 더 답니다
+
+연도 구획 안의 `월 일자` 를 그러모으는 방식이라, 엉뚱한 표를 읽으면 **날짜 형식은 멀쩡한데
+개수가 먼저 어긋납니다**. 그래서 중앙은행마다 연간 회의 횟수(`meetings_per_year`)를 seed 에
+적어 두고, 온전히 담긴 해의 개수가 그 범위를 벗어나면 반영하지 않습니다. 연 8회 기관에
+30건이 들어오면 걸러지고 8건은 통과하는 것을 점검에 넣었습니다.
 
 ### 의심스러우면 덮어쓰지 않습니다
 
