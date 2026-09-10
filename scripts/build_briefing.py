@@ -818,10 +818,12 @@ def sec_verify_core(C):
     more_ko = (" 외 %d건" % (len(notes) - 4)) if len(notes) > 4 else ""
     more_en = (" and %d more" % (len(notes) - 4)) if len(notes) > 4 else ""
     return "\n".join((
-        lede("<strong>이것은 핵심본입니다 &mdash; 다섯 쪽 안에 그날의 결론만 담았습니다.</strong> "
+        # 쪽수를 문장에 박지 않는다(지침 7-0). 「다섯 쪽」이라고 적어 두었는데 실제로는
+        # 여섯~일곱 쪽으로 나가고 있었다 — 빌드 시점에 셀 수 없는 수는 아예 말하지 않는다.
+        lede("<strong>이것은 핵심본입니다 &mdash; 그날의 결론만 한 장에 담았습니다.</strong> "
              "표의 근거, 만기별 곡선, 지역별 종목표, 검증 노트 전체는 <strong>같은 날짜의 전체 판</strong>에 "
              "그대로 있습니다.",
-             "<strong>This is the core edition &mdash; the day's conclusions in five pages.</strong> "
+             "<strong>This is the core edition &mdash; the day's conclusions on a single sheet.</strong> "
              "Supporting tables, the full maturity curve, regional stock tables and the complete "
              "verification notes remain in <strong>the full edition of the same date</strong>."),
         P("<strong>어디서 왔나.</strong> 시세는 야후&middot;네이버&middot;한국은행 ECOS, 미 국채는 "
