@@ -933,15 +933,24 @@ def naver_market_api(code, dump_dir=None):
     if y_hi and y_lo:
         out["fifty_two_week"] = {"high": y_hi, "low": y_lo}
 
-    # 등락 종목 수는 이 판의 핵심이다. 그것이 없으면 성공으로 치지 않는다.
-    if "breadth" not in out or len(out) <= 3:
-        if dump_dir:
-            os.makedirs(dump_dir, exist_ok=True)
-            with open(os.path.join(dump_dir, "index_api_%s.json" % code), "w",
-                      encoding="utf-8") as f:
-                json.dump(j, f, ensure_ascii=False, indent=1)
-        raise ValueError("API 응답에서 등락 종목 수를 못 찾음 — 키 %s (덤프함)"
-                         % sorted(j.keys()))
+    # 등락 종목 수의 «상승·하락» 이 이 판의 핵심이다. 둘 중 하나라도 못 읽으면
+    # 키 이름을 잘못 짚은 것이므로 **응답을 통째로 남긴다.** 2026-09-11 08:05
+    # 실행이 그랬다 — 호출은 성공(OK)했는데 breadth 가 {'unchanged': 0} 하나뿐이라
+    # 이름을 고칠 단서가 남지 않았다. 그때 조용히 넘어가면 다음 실행도 똑같이
+    # 비어서 나온다.
+    #
+    # 다만 **예외를 내지는 않는다.** 52주 고저처럼 제대로 읽힌 것이 함께 있고,
+    # 옛 긁기(2순위)는 이미 죽어서 물러설 자리가 없기 때문이다. 얻은 만큼 낸다.
+    thin = out.get("breadth", {}).get("advancing") is None or \
+        out.get("breadth", {}).get("declining") is None
+    if thin and dump_dir:
+        os.makedirs(dump_dir, exist_ok=True)
+        with open(os.path.join(dump_dir, "index_api_%s.json" % code), "w",
+                  encoding="utf-8") as f:
+            json.dump(j, f, ensure_ascii=False, indent=1)
+    if len(out) <= 2:
+        raise ValueError("API 응답에서 아무것도 못 찾음 — 키 %s%s"
+                         % (sorted(j.keys()), " (덤프함)" if dump_dir else ""))
     return out
 
 
