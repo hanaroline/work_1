@@ -134,6 +134,21 @@
     try { localStorage.setItem(LS_DOCS, JSON.stringify(DOCS)); } catch (e) { /* 저장 불가 환경 */ }
   }
   /**
+   * 담당자가 등록해 둔 투자설명서 목록.
+   * 자동수집분(카탈로그·판독 결과)은 여기 담기지 않는다 — doc() 이 없을 때만 붙여 쓴다.
+   * 그래서 이 목록을 비워도 자동수집분은 그대로 다시 조회된다.
+   */
+  function docEntries() {
+    var out = [];
+    Object.keys(DOCS).forEach(function (cat) {
+      Object.keys(DOCS[cat] || {}).forEach(function (pid) {
+        var d = DOCS[cat][pid] || {};
+        out.push({ cat: cat, pid: pid, name: d.docName || pid, source: d.source || '' });
+      });
+    });
+    return out;
+  }
+  /**
    * 현재 선택 상품에 등록된 투자설명서.
    * 담당자가 등록한 것이 없으면, 수집기(scripts/collect_els_prospectus.mjs)가
    * 만든 data/els-prospectus.js 의 결과를 등록된 설명서로 간주한다.
@@ -2691,6 +2706,15 @@
     h.push('<div class="hint" style="margin:0 0 12px">'
       + (n ? '지금 평가표에 체크된 <b>' + n + '개</b>를 해제합니다. ' : '지금 평가표에는 <b>체크된 것이 없습니다.</b> ')
       + '입력값 · 등록한 설명서 · 고른 조건은 <b>그대로</b> 둡니다.</div>');
+    var docs = docEntries();
+    h.push('<button class="tbtn" id="btnResetDocs" style="width:100%;margin-bottom:6px"' + (docs.length ? '' : ' disabled') + '>'
+      + '등록한 투자설명서 삭제' + (docs.length ? ' (' + docs.length + '건)' : '') + '</button>');
+    h.push('<div class="hint" style="margin:0 0 12px">'
+      + (docs.length
+        ? '직접 등록한 설명서 <b>' + docs.length + '건</b>만 지웁니다. '
+        : '직접 등록한 설명서가 <b>없습니다.</b> ')
+      + '<b>자동수집분</b>(펀드 카탈로그·판독 결과, ELS·채권)은 지워지지 않고 그대로 다시 조회됩니다. '
+      + '체크 · 입력값 · 고른 조건도 건드리지 않습니다.</div>');
     h.push('<button class="tbtn" id="btnResetAll" style="width:100%">전체 초기화</button>');
     h.push('<div class="hint" style="margin-top:6px">고른 조건(상품군·적합여부·고령여부) · 선택 상품 · '
       + '<b>모든 평가표의 체크</b> · 직접 입력값 · <b>등록한 투자설명서</b>까지 지웁니다. '
@@ -3354,6 +3378,25 @@
         var keep = again.textContent;
         again.textContent = '체크 ' + n + '개를 해제했습니다';
         setTimeout(function () { var el = $('#btnResetChecks'); if (el) el.textContent = keep; }, 1600);
+      }
+    };
+    var btnRD = $('#btnResetDocs');
+    if (btnRD) btnRD.onclick = function () {
+      var docs = docEntries();
+      if (!docs.length) return;
+      var list = docs.slice(0, 5).map(function (d) { return '  · ' + d.name; }).join('\n')
+        + (docs.length > 5 ? '\n  · 외 ' + (docs.length - 5) + '건' : '');
+      if (!confirm('직접 등록한 투자설명서 ' + docs.length + '건을 지웁니다.\n\n' + list
+        + '\n\n자동수집분(펀드 카탈로그·판독 결과, ELS·채권)은 지워지지 않고 그대로 다시 조회됩니다.\n'
+        + '체크 · 입력값 · 고른 조건은 그대로 둡니다.\n\n계속하시겠습니까?')) return;
+      DOCS = {}; saveDocs();
+      ST.pros = null;
+      save(); renderAll();
+      var again = $('#btnResetDocs');
+      if (again) {
+        var keep = again.textContent;
+        again.textContent = '설명서 ' + docs.length + '건을 지웠습니다';
+        setTimeout(function () { var el = $('#btnResetDocs'); if (el) el.textContent = keep; }, 1600);
       }
     };
     var btnRA = $('#btnResetAll');
