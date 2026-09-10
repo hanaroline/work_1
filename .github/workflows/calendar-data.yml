@@ -128,9 +128,12 @@ jobs:
               print('::warning::원문을 못 받은 경로 — ' + ', '.join(bad))
           PY
 
-      - name: main 에 커밋
+      - name: 돌린 브랜치에 커밋
+        # 돌린 그 브랜치에 되돌려 놓는다. 처음에는 main 일 때만 커밋했는데, 그러면 작업
+        # 브랜치에서 돌린 수집 결과가 아무 데도 남지 않았다(Artifacts 는 14일 뒤 사라진다).
+        # 이 워크플로의 push 트리거 자체가 작업 브랜치용이므로 앞뒤가 맞지 않았다.
+        #
         # 실적 스냅샷은 이 판이 만든 것이 아니므로 커밋하지 않는다(데이터 브랜치가 원본).
-        if: github.ref_name == 'main'
         run: |
           git config user.name  "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
@@ -141,10 +144,10 @@ jobs:
           else
             git commit -m "증시 일정 수집 $(TZ=Asia/Seoul date '+%Y-%m-%d %H:%M KST')"
             for i in 1 2 3 4; do
-              git push && break
+              git push origin "HEAD:${{ github.ref_name }}" && break
               echo "push 실패 — $((2**i))초 뒤 다시"
               sleep $((2**i))
-              git pull --rebase origin main || true
+              git pull --rebase origin "${{ github.ref_name }}" || true
             done
           fi
 

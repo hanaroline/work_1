@@ -1197,9 +1197,14 @@ function renderPolicy() {
 
 function renderEarnLoad() {
   var n = CAL.events.filter(function (e) { return e.category === 'earnings'; }).length;
+  // 러너가 수집할 때 스냅샷을 읽었으면 실적 일정이 이미 담겨 온다. 그때도 "담기지
+  // 않습니다" 라고 안내하면 화면에 있는 것과 안내가 어긋난다.
   var msgs = {
-    idle: t('실적발표일은 이 파일에 담기지 않습니다 — 종목 200개 요약 스냅샷(수 MB)에서 그때그때 받습니다. 아래 버튼을 누르면 받아 얹습니다.',
-            'Earnings dates are not bundled in this file — they come from the 200-company snapshots (several MB). Press the button to fetch and overlay them.'),
+    idle: n
+      ? t('이 판에는 실적 일정 ' + n + '건이 담겨 있습니다 (수집 시점 기준). 더 새로 받으려면 아래 버튼을 누르십시오 — 종목 200개 요약 스냅샷에서 받아 덮어씁니다.',
+          'This build already carries ' + n + ' earnings dates as of collection time. Use the button below to refresh them from the 200-company snapshots.')
+      : t('실적발표일이 이 판에 담기지 않았습니다 — 종목 200개 요약 스냅샷(수 MB)에서 그때그때 받습니다. 아래 버튼을 누르면 받아 얹습니다.',
+          'This build carries no earnings dates — they come from the 200-company snapshots (several MB). Press the button to fetch and overlay them.'),
     loading: t('스냅샷을 받고 있습니다… (파일이 커서 십여 초 걸릴 수 있습니다)',
                'Fetching the snapshots… this can take a dozen seconds.'),
     ok: t('스냅샷에서 실적발표일 ' + (CAL.__earnAdded || 0) + '건을 얹었습니다.',
