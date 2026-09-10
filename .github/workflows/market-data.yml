@@ -76,6 +76,8 @@ jobs:
         run: |
           # 파싱 실패 시에만 남기는 원본이다. 7일 지난 것은 지운다.
           find data/market/raw -name '*.html' -mtime +7 -delete 2>/dev/null || true
+          # API 탐색이 남긴 응답도 같이 정리한다 — 진단용이라 오래 둘 이유가 없다.
+          find data/market/raw -name 'probe_*.txt' -mtime +7 -delete 2>/dev/null || true
 
       - name: 커밋
         run: |

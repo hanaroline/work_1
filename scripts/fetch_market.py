@@ -2988,6 +2988,77 @@ def earnings_from_news(articles, names):
     return sorted(best.values(), key=lambda e: (not e["has_call"], e["company"]))
 
 
+# ══════════════════════════════════════════════════════════════════
+# 원천이 통째로 죽었을 때 — **무엇이 살아 있는지 러너에서 찾아 둔다**
+# ══════════════════════════════════════════════════════════════════
+# 2026-09-10 09:04 수집분을 마지막으로 네이버 원천이 한꺼번에 실패했다.
+# 페이지는 11~12만 바이트로 멀쩡히 받아지는데 항목이 하나도 안 잡힌다.
+# 저장된 원본을 열어 보니 `_next/static` 과 `self.__next_f` 만 있는 React
+# 셸이었다 — 표 HTML 이 사라지고 값은 클라이언트가 API 로 받아 그린다.
+#
+# 브리핑 세션은 이그레스 정책 때문에 네이버에 직접 못 붙으므로 **어느 API 가
+# 살아 있는지는 러너만 알 수 있다.** 그래서 실패한 날에는 후보를 훑어 응답을
+# 그대로 저장소에 남긴다. 다음 세션이 그 응답을 읽고 파서를 고친다.
+#
+# 이 함수는 **아무것도 채우지 않는다.** 수집 결과를 바꾸지 않고 진단만 남긴다.
+_API_CANDIDATES = [
+    ("internals", "https://m.stock.naver.com/api/index/KOSPI/basic"),
+    ("internals", "https://m.stock.naver.com/api/index/KOSDAQ/basic"),
+    ("internals", "https://api.stock.naver.com/index/KOSPI/basic"),
+    ("internals", "https://m.stock.naver.com/api/index/KOSPI/integration"),
+    ("internals", "https://m.stock.naver.com/api/index/KOSPI/price?pageSize=5&page=1"),
+    ("sectors", "https://m.stock.naver.com/api/stocks/industry"),
+    ("sectors", "https://api.stock.naver.com/industry"),
+    ("sectors", "https://m.stock.naver.com/api/stocks/industry?page=1&pageSize=100"),
+    ("money_flow", "https://m.stock.naver.com/api/stocks/marketValue/deposit"),
+    ("money_flow", "https://finance.naver.com/sise/sise_deposit.naver"),
+    ("news", "https://m.stock.naver.com/api/news/mainNews?category=mainnews&page=1&pageSize=20"),
+    ("news", "https://m.stock.naver.com/api/home/news/mainnews?pageSize=20"),
+    ("marketindex", "https://api.stock.naver.com/marketindex/exchange/FX_USDKRW/basic"),
+    ("marketindex", "https://m.stock.naver.com/api/marketindex/exchange/FX_USDKRW/basic"),
+    ("marketindex", "https://api.stock.naver.com/marketindex/interest"),
+]
+
+# **길이만 보면 속는다** — 셸 HTML 도 12만 바이트다. 낱말이 걸리는지를 본다.
+_API_WANT = {
+    "internals": ["riseCount", "fallCount", "상승", "highPrice52", "upperLimit"],
+    "sectors": ["industryName", "업종", "반도체", "changeRate"],
+    "money_flow": ["예탁금", "deposit", "credit"],
+    "news": ["articleId", "officeId", "title", "코스피"],
+    "marketindex": ["USDKRW", "closePrice", "매매기준율", "국고채"],
+}
+
+
+def probe_naver_api(dump_dir="data/market/raw"):
+    """네이버 API 후보를 훑어 응답을 그대로 남긴다. 진단 전용."""
+    os.makedirs(dump_dir, exist_ok=True)
+    lines = ["네이버 API 탐색 %s KST" % datetime.now(KST).strftime("%Y-%m-%d %H:%M:%S"),
+             "(원천이 실패한 날에만 돈다. 수집 결과는 바꾸지 않는다.)", ""]
+    for i, (group, url) in enumerate(_API_CANDIDATES):
+        try:
+            body = _get(url, referer="https://m.stock.naver.com/")
+            ok = True
+        except Exception as e:                                    # noqa: BLE001
+            body, ok = "%s: %s" % (type(e).__name__, e), False
+        shell = "_next/static" in body or "self.__next_f" in body
+        hits = [w for w in _API_WANT.get(group, []) if w in body]
+        verdict = "쓸모" if (ok and hits and not shell) else ("셸" if shell else
+                                                            ("빈손" if ok else "실패"))
+        lines.append("[%s] %s" % (group, url))
+        lines.append("    %s · %d bytes · 걸린 낱말 %s" % (verdict, len(body), hits or "없음"))
+        if ok:
+            fn = os.path.join(dump_dir, "probe_%02d_%s.txt" % (i, group))
+            with open(fn, "w", encoding="utf-8") as f:
+                f.write(url + "\n\n" + body[:200000])
+            lines.append("    남김: %s" % fn)
+            lines.append("    앞머리: %s" % re.sub(r"\s+", " ", body[:240]))
+        lines.append("")
+    with open(os.path.join(dump_dir, "probe.txt"), "w", encoding="utf-8") as f:
+        f.write("\n".join(lines))
+    print("\n".join(lines[:6]))
+    print("... 전체는 %s/probe.txt" % dump_dir)
+
+
 def main():
     now = datetime.now(KST)
     out = {
@@ -3389,6 +3460,17 @@ def main():
             i = out["indices"][k]
             print("  %s %s  close=%s  chg=%s (%s%%)  vol=%s"
                   % (k, i["date"], i["close"], i["change"], i["change_pct"], i["volume"]))
+
+    # 네이버 덩어리가 죽은 날에는 **살아 있는 API 를 찾아 응답을 남긴다.**
+    # 수집 결과를 바꾸지 않는 진단이며, 다음 세션이 이것을 읽고 파서를 고친다.
+    dead = [k for k, v in out["sources"].items()
+            if not v["ok"] and k.startswith("naver:")]
+    if dead:
+        print("\n=== 네이버 원천 %d 개가 죽었다 — API 후보를 훑는다 ===" % len(dead))
+        try:
+            probe_naver_api()
+        except Exception as e:                                    # noqa: BLE001
+            print("!! API 탐색 실패: %s" % e)
 
     # 아무것도 못 받으면 실패로 끝내 워크플로가 빨갛게 뜨도록 한다
     return 0 if ok else 1
