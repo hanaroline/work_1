@@ -2322,11 +2322,29 @@
   function partKey() { if (EXPL) return 'expl'; return PARTS[ST.part] ? ST.part : 'all'; }
   /** 평가표의 모든 항목 (점수·항목 찾기에 쓴다 — 파트와 무관하다) */
   function itemsAll() { return sheet().items; }
+  /**
+   * 적합성보고서 항목 — ELS 평가표는 이것을 「상품설명의무」 칸에 넣어 두었지만,
+   * 안에 든 것은 적합성원칙의 산출물이다. 발급 안내 문안이 곧 투자권유 사유라서
+   * 투자자성향과 현재 투자자금성향 셋(원금보존태도·손실감내수준·투자예정기간)으로
+   * 쓰인다 — 적합성원칙을 다루지 않는 화면에는 그 값을 채울 길이 아예 없다.
+   *
+   * 그대로 두면 채울 수 없는 값 넷이 늘 「확인필요」 로 남아, 정작 채워야 할
+   * 설명서 값이 그 빨간 표시에 묻힌다. 그래서 이 화면에서는 항목째 뺀다.
+   * (평가표의 분류를 고치는 것이 아니다 — 전체판에는 그대로 있다.)
+   */
+  function isSuitReportItem(x) { return x.only === 'suitReport'; }
+  /** 설명의무 전용 화면에서 빠지는 적합성보고서 항목 수 — 화면에 왜 없는지 적어 준다 */
+  function droppedSuitReport() {
+    if (!EXPL) return 0;
+    var m = PARTS.expl.match;
+    return sheet().items.filter(function (x) { return m(x.sec) && isSuitReportItem(x); }).length;
+  }
   /** 지금 파트의 항목만 (화면·확인필요·읽기모드·인쇄) */
   function itemsOf() {
     var m = PARTS[partKey()].match;
-    if (!m) return sheet().items;
-    return sheet().items.filter(function (x) { return m(x.sec); });
+    var list = m ? sheet().items.filter(function (x) { return m(x.sec); }) : sheet().items;
+    if (EXPL) list = list.filter(function (x) { return !isSuitReportItem(x); });
+    return list;
   }
 
   function totals() {
@@ -3051,7 +3069,11 @@
         ? '<br><b>상품설명의무</b> 배점 ' + tt.baseMax + '점 · 가점 최대 +' + tt.plusMax + '점 '
           + '<span style="color:var(--muted2)">(평가표 ' + esc(sh.label) + ' 중 설명의무 ' + itemsOf().length
           + '항목 · 전체 ' + itemsAll().length + '항목 중)</span>'
-          + '<br><span style="color:var(--muted2)">적합성원칙은 이 화면에서 다루지 않습니다 — 전체 진행은 완전판매 스크립트 전체판에서 하십시오.</span>'
+          + '<br><span style="color:var(--muted2)">적합성원칙은 이 화면에서 다루지 않습니다 — 전체 진행은 완전판매 스크립트 전체판에서 하십시오.'
+          + (droppedSuitReport()
+            ? ' 적합성보고서 ' + droppedSuitReport() + '항목(발급·교부)도 함께 빠집니다 — 투자권유 사유가 적합성원칙의 값으로 쓰여 여기서는 채울 수 없습니다.'
+            : '')
+          + '</span>'
         : '<br>기본배점 ' + Object.keys(sh.secTotals).map(function (k) { return k + ' ' + sh.secTotals[k]; }).join(' + ') + ' = 100점 · 가점 최대 +3점 (총 103점)'
           + (partKey() !== 'all'
             ? '<br><b>진행 파트 · ' + esc(PARTS[partKey()].label) + '</b> — 아래 스크립트·확인필요·읽기모드·인쇄가 이 파트만 다룹니다 '
