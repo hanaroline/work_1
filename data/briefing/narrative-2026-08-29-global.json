@@ -1,0 +1,217 @@
+{
+  "_읽는 법": "표·날짜 이름표·비율·개수·주도 종목은 build_briefing.py 가 시세 자료에서 만든다. 이 파일에는 **그날의 서술만** 둔다. 파일 이름에 판(global)을 붙인 것은 같은 날 모닝·장마감이 서로의 서술을 덮어쓰던 일을 막기 위해서다.",
+  "hero": [
+    "<strong>이틀 사이에 판이 정확히 두 번 뒤집혔습니다.</strong> 목요일에는 코스피가 <strong>+1.53%</strong> 오르는데 종목의 63% 가 내렸고, 금요일에는 코스피가 <strong>&minus;1.79%</strong> 내리는데 종목의 <strong>70% 가 올랐습니다</strong>. 삼성전자와 SK하이닉스 둘이 지수를 끌어내린 자리에서 인터넷&middot;화장품&middot;금융이 크게 올랐습니다. 뉴욕도 같았습니다 &mdash; 엔비디아가 <strong>&minus;4.58%</strong> 빠지는 동안 아마존&middot;알파벳&middot;마이크로소프트&middot;애플&middot;메타가 모두 올랐습니다. <strong>AI 하드웨어에서 나온 돈이 나머지로 옮겨 갔습니다.</strong>",
+    "<strong>The board flipped twice in two days.</strong> On Thursday KOSPI rose <strong>1.53%</strong> while 63% of its constituents fell; on Friday it fell <strong>1.79%</strong> while <strong>70% rose</strong>. Samsung Electronics and SK Hynix dragged the index down, and internet, cosmetics and financials climbed in the space they left. New York did the same &mdash; Nvidia fell <strong>4.58%</strong> while Amazon, Alphabet, Microsoft, Apple and Meta all gained. <strong>Money left AI hardware and moved to everything else.</strong>"
+  ],
+  "tone": [
+    "지수와 종목이 이틀 내리 반대로 갔습니다",
+    "Two days running, the index and its constituents went opposite ways"
+  ],
+  "today_1": [
+    "<strong>&#9312; 이번 주에 배울 것이 있다면 「지수는 시장이 아니다」입니다.</strong> 목요일 코스피는 오르고 종목은 내렸고, 금요일에는 코스피가 내리고 종목은 올랐습니다. <strong>이틀 다 지수 방향과 종목 방향이 반대</strong>였습니다. 시가총액 1&middot;2위 둘이 지수의 상당 부분을 정하는 시장에서는 이런 일이 예외가 아닙니다 &mdash; <strong>지수 등락률로 계좌를 설명하려 들면 이틀 내리 틀립니다.</strong>",
+    "<strong>&#9312; If this week taught one thing, it is that the index is not the market.</strong> Thursday: index up, most stocks down. Friday: index down, most stocks up. <strong>Both days the index went one way and its constituents the other.</strong> In a market where the two largest names set much of the headline, that is not an anomaly &mdash; <strong>explaining a portfolio by the index number will be wrong two days running.</strong>"
+  ],
+  "today_2": [
+    "<strong>&#9313; 같은 회전이 서울과 뉴욕에서 동시에 일어났습니다.</strong> 뉴욕에서 열한 개 업종 ETF 가운데 <strong>기술이 꼴찌(&minus;1.55%)</strong> 였고 <strong>커뮤니케이션이 1등(+1.42%)</strong> 이었습니다 &mdash; 하루 전과 정확히 반대입니다. 국내에서도 <strong>반도체와반도체장비가 &minus;3.74%</strong> 로 가장 많이 내리고 <strong>인터넷과카탈로그소매가 +7.40%</strong> 로 가장 많이 올랐는데, 이 업종은 <strong>목요일에 &minus;4.37% 로 가장 많이 내렸던 곳</strong>입니다. 우연이 겹친 것이 아니라 <strong>같은 돈이 같은 방향으로 옮겨 다닌 것</strong>입니다.",
+    "<strong>&#9313; The same rotation ran in Seoul and New York at once.</strong> Of eleven US sector ETFs, <strong>technology was last (&minus;1.55%)</strong> and <strong>communications first (+1.42%)</strong> &mdash; the exact inverse of the day before. In Korea <strong>semiconductors fell hardest (&minus;3.74%)</strong> and <strong>internet retail rose most (+7.40%)</strong>, the very sector that had fallen hardest on Thursday at &minus;4.37%. Not a coincidence of two markets but <strong>one pool of money moving the same way in both</strong>."
+  ],
+  "today_3": [
+    "<strong>&#9314; 금리가 이 회전의 방아쇠일 가능성이 큽니다.</strong> 금요일 미 국채는 <strong>2년물이 하루에 14bp</strong> 오르며 앞쪽이 급하게 들렸습니다(10년 +6bp, 30년 +3bp). 인하 기대가 뒤로 밀리면 <strong>가장 먼 미래의 이익에 값을 매긴 것부터 깎입니다</strong> &mdash; 지금 그 자리에 AI 반도체가 있습니다. 같은 날 <strong>금이 &minus;2.29%, 은이 &minus;3.37%</strong> 로 크게 빠지고 달러가 오른 것도 같은 이야기의 다른 장면입니다.",
+    "<strong>&#9314; Rates are the likely trigger.</strong> On Friday the <strong>US two-year rose 14bp in a session</strong>, lifting the front end sharply (10-year +6bp, 30-year +3bp). When rate-cut expectations get pushed out, <strong>what is priced on the most distant earnings is marked down first</strong> &mdash; and that is where AI semiconductors now sit. <strong>Gold &minus;2.29% and silver &minus;3.37%</strong> on the same day, with the dollar up, are another scene from the same story."
+  ],
+  "korea_lede": [
+    "<strong>금요일 국내 장은 지수만 무너졌습니다.</strong> 코스피는 &minus;1.79% 였지만 <strong>오른 종목이 640 개, 내린 종목이 238 개</strong> 로 셋 중 둘 넘게 올랐습니다. 지수를 끌어내린 것은 <strong>삼성전자(&minus;3.38%)와 SK하이닉스(&minus;4.45%)</strong> 둘입니다. 한편 코스닥은 <strong>+0.09%</strong> 로 버텼고 상한가가 6 종목 나왔습니다. 다만 <strong>외국인과 기관이 함께 크게 팔았고</strong> 개인이 받았습니다 &mdash; 오른 종목이 많다고 편한 장이었던 것은 아닙니다.",
+    "<strong>On Friday only the index broke.</strong> KOSPI fell 1.79%, yet <strong>640 names rose against 238 that fell</strong> &mdash; more than two in three advanced. The fall was <strong>Samsung Electronics (&minus;3.38%) and SK Hynix (&minus;4.45%)</strong>, the two largest. KOSDAQ held at <strong>+0.09%</strong> with six limit-up names. But <strong>foreigners and institutions both sold heavily</strong> and retail absorbed it &mdash; a broad advance is not the same as an easy session."
+  ],
+  "flows_lede": [
+    "<strong>금요일 수급은 목요일과 정반대였습니다.</strong> 목요일 코스피에서 함께 사들이던 외국인과 기관이 금요일에는 <strong>둘 다 크게 팔았고</strong>, 목요일 크게 팔던 개인이 받았습니다. 하루 만에 세 주체가 모두 방향을 바꾼 것입니다. 거래대금은 <strong>21.6조원</strong> 으로 또 줄어 <strong>8/21 의 28.9조원에서 나흘 만에 4분의 1 가까이 얇아졌습니다</strong>. <strong>수급은 잔액이 아니라 방향으로 읽습니다</strong> &mdash; 얇아진 판에서 방향이 자주 바뀌면 그날그날의 폭이 커집니다.",
+    "<strong>Friday's flows were the mirror of Thursday's.</strong> The foreigners and institutions who bought KOSPI together on Thursday <strong>both sold heavily on Friday</strong>, and the retail investors who had sold took the other side. All three reversed in a day. Turnover thinned again to <strong>21.6 trillion won</strong> &mdash; <strong>close to a quarter below the 28.9 trillion of 21 August, four sessions earlier</strong>. <strong>Flows are read as direction, not as a balance</strong>: when direction flips this often in a thinning market, daily swings widen."
+  ],
+  "global_lede": [
+    "<strong>뉴욕은 지수가 거의 움직이지 않았는데 안에서는 크게 갈렸습니다.</strong> S&amp;P 500 은 &minus;0.25%, 다우는 &minus;0.02% 로 사실상 제자리인데 <strong>엔비디아가 &minus;4.58%</strong>, 아마존이 <strong>+3.97%</strong> 였습니다. 회전이 지수 안에서 일어나 서로 상쇄된 것입니다. <strong>유럽은 올랐습니다</strong> &mdash; 반도체 비중이 미국만큼 크지 않아 이 회전에 덜 다쳤습니다. 아시아는 일본이 오르고 중국이 내렸습니다.",
+    "<strong>New York's indices barely moved while their insides split wide open.</strong> The S&amp;P 500 fell <strong>&minus;0.25%</strong> and the Dow &minus;0.02% &mdash; effectively flat &mdash; yet <strong>Nvidia fell 4.58%</strong> and <strong>Amazon rose 3.97%</strong>. The rotation happened inside the index and netted out. <strong>Europe rose</strong>, carrying less semiconductor weight and so less exposed to it. In Asia Japan gained and China slipped."
+  ],
+  "earnings_lede": [
+    "<strong>주말에 나온 실적 하나가 월요일 국내 장을 흔들 수 있습니다.</strong> 중국 D램 기업 <strong>창신메모리(CXMT)</strong> 가 2026년 상반기 매출 <strong>1,503억 1,000만위안(약 31조원)</strong>, 전년 대비 <strong>+873.6%</strong> 를 냈습니다. 지배주주 순이익은 <strong>776억 1,000만위안</strong> 으로 전년 동기 23억 3,000만위안 적자에서 돌아섰고, 상장 전 회사가 제시했던 매출 1,100~1,200억위안&middot;순이익 500~570억위안 전망을 크게 넘었습니다. <strong>삼성전자와 SK하이닉스는 중국 메모리의 증설 소식이 나올 때마다 주가가 흔들려 왔습니다.</strong>",
+    "<strong>One set of results published over the weekend could move Korea on Monday.</strong> Chinese DRAM maker <strong>CXMT</strong> reported first-half revenue of <strong>150.31 billion yuan (about 31 trillion won)</strong>, up <strong>873.6%</strong> year on year, and net profit attributable to owners of <strong>77.61 billion yuan</strong> against a 2.33 billion loss a year earlier &mdash; far beyond the 110&ndash;120 billion revenue and 50&ndash;57 billion profit it had guided to before listing. <strong>Samsung and SK Hynix shares have moved on Chinese memory capacity news every time it appears.</strong>"
+  ],
+  "macro_lede": [
+    "<strong>금요일 곡선은 앞쪽이 급하게 들렸습니다.</strong> 2년물 <strong>+14bp</strong> 에 30년물 <strong>+3bp</strong> 이니 <strong>단기가 장기보다 네 배 넘게 움직인</strong> 것입니다. 가까운 미래의 정책금리 기대가 밀린 자리라고 읽는 편이 자연스럽습니다. 원/달러는 <strong>1,371원대</strong> 로 내려 원화가 여섯 통화 모두에 대해 세졌고, 반대로 <strong>달러/엔은 160엔대로 올라</strong> 엔이 약해졌습니다 &mdash; 미 재무부가 지난달 1998년 이후 처음으로 엔화 매수 개입에 나선 배경이 이 절의 상세에 있습니다.",
+    "<strong>Friday's curve lifted hard at the front.</strong> The two-year rose <strong>14bp</strong> against the thirty-year's <strong>3bp</strong> &mdash; <strong>the short end moved more than four times as much</strong>. The natural reading is that near-term policy expectations were pushed back. The won strengthened to the <strong>1,371 level</strong> against all six crosses, while <strong>dollar/yen rose past 160</strong> as the yen weakened &mdash; the background to July's first US yen-buying intervention since 1998 is in this section's detail."
+  ],
+  "deep": {
+    "title_ko": "심층 분석 &mdash; 이틀 사이에 두 번 뒤집힌 판",
+    "title_en": "In Depth &mdash; A Board That Flipped Twice in Two Days",
+    "lede_ko": "<strong>목요일과 금요일은 거울처럼 반대였습니다.</strong> 그런데 두 날의 공통점이 하나 있습니다 &mdash; <strong>이틀 다 지수와 종목이 반대로 갔습니다.</strong> 월요일 개장 전에 이 두 날을 나란히 놓고 보면, 지금 시장에서 무엇이 값을 정하고 있는지가 드러납니다.",
+    "lede_en": "<strong>Thursday and Friday were mirror images.</strong> They shared one thing, though &mdash; <strong>on both days the index and its constituents moved in opposite directions.</strong> Laid side by side before Monday's open, the pair shows what is actually setting prices right now.",
+    "blocks": [
+      {
+        "q_ko": "두 날에 무슨 일이 있었나",
+        "q_en": "What happened on the two days",
+        "a_ko": "<strong>목요일(8/27)</strong>: 코스피 <strong>+1.53%</strong>, 상승 317 대 하락 539. 지수는 올랐는데 <strong>열에 여섯이 내렸습니다.</strong> 전기장비&middot;배터리가 끌어올렸고 인터넷&middot;자동차&middot;게임이 밀렸습니다.<br><strong>금요일(8/28)</strong>: 코스피 <strong>&minus;1.79%</strong>, 상승 640 대 하락 238. 지수는 내렸는데 <strong>셋에 둘 넘게 올랐습니다.</strong> 삼성전자(&minus;3.38%)와 SK하이닉스(&minus;4.45%)가 끌어내렸고, 전날 가장 많이 내렸던 인터넷과카탈로그소매가 <strong>+7.40%</strong> 로 가장 많이 올랐습니다.",
+        "a_en": "<strong>Thursday 27 August</strong>: KOSPI <strong>+1.53%</strong>, 317 advancers to 539 decliners &mdash; the index up while <strong>six in ten fell</strong>. Electrical equipment and batteries carried it; internet, autos and gaming lagged.<br><strong>Friday 28 August</strong>: KOSPI <strong>&minus;1.79%</strong>, 640 advancers to 238 decliners &mdash; the index down while <strong>more than two in three rose</strong>. Samsung Electronics (&minus;3.38%) and SK Hynix (&minus;4.45%) pulled it down, and internet retail, Thursday's worst sector, was Friday's best at <strong>+7.40%</strong>."
+      },
+      {
+        "q_ko": "왜 지수와 종목이 따로 가나",
+        "q_en": "Why the index and its constituents diverge",
+        "a_ko": "<strong>코스피는 시가총액 가중 지수</strong>이고, 삼성전자와 SK하이닉스 둘이 그 가중치의 상당 부분을 차지합니다. 그래서 <strong>이 둘이 3~4% 움직이면 나머지 팔백 종목이 반대로 가도 지수는 둘을 따라갑니다.</strong> 목요일에는 배터리&middot;전력기기 대형주가 그 역할을 했고, 금요일에는 반도체 두 종목이 했습니다. <strong>지수는 「몇 개나 올랐나」가 아니라 「큰 것이 어디로 갔나」를 말합니다.</strong> 두 질문의 답이 다른 날이 이번 주에만 이틀이었습니다.",
+        "a_en": "<strong>KOSPI is capitalisation-weighted</strong>, and Samsung Electronics and SK Hynix carry a large share of that weight. So <strong>when those two move 3&ndash;4%, the index follows them even if eight hundred other names go the other way.</strong> On Thursday large-cap batteries and grid equipment played that role; on Friday the two chipmakers did. <strong>The index answers \"where did the big ones go\", not \"how many rose\"</strong> &mdash; and this week the two answers disagreed on two separate days."
+      },
+      {
+        "q_ko": "무엇이 회전을 일으켰나",
+        "q_en": "What drove the rotation",
+        "a_ko": "<strong>가장 그럴듯한 것은 금리입니다.</strong> 금요일 미 국채 <strong>2년물이 14bp</strong> 올랐습니다 &mdash; 30년물(+3bp)의 네 배가 넘습니다. 앞쪽만 급하게 드는 것은 <strong>가까운 미래의 인하 기대가 밀렸다</strong>는 뜻이고, 그러면 <strong>이익이 가장 멀리 있는 자산부터 값이 깎입니다.</strong> 지금 AI 반도체가 정확히 그 자리에 있습니다. 같은 날 <strong>금 &minus;2.29% &middot; 은 &minus;3.37%</strong> 와 달러 강세도 같은 방향입니다. 다만 <strong>이날 잭슨홀 연설이 있었는데 그 내용은 오늘 수집한 기사에 없습니다</strong> &mdash; 연설과 금리 급등을 인과로 잇지 않았습니다.",
+        "a_en": "<strong>Rates are the most plausible cause.</strong> The US <strong>two-year rose 14bp</strong> on Friday, more than four times the thirty-year's 3bp. A front end that lifts alone means <strong>near-term cut expectations were pushed back</strong>, and that <strong>marks down whatever is priced on the most distant earnings first</strong> &mdash; where AI semiconductors sit today. <strong>Gold &minus;2.29%, silver &minus;3.37%</strong> and a firmer dollar on the same day point the same way. Note that <strong>a Jackson Hole address fell on this day but its content is not in the articles collected here</strong>, so no causal link is drawn between the speech and the move."
+      },
+      {
+        "q_ko": "월요일에 무엇을 볼 것인가",
+        "q_en": "What to watch on Monday",
+        "a_ko": "<strong>세 가지입니다.</strong> 첫째, <strong>CXMT 실적</strong> &mdash; 중국 D램의 상반기 매출이 열 배 가까이 늘었습니다. 삼성전자&middot;SK하이닉스가 이미 금요일에 크게 내린 뒤라 <strong>이 재료를 어떻게 받는지</strong>가 첫 시험입니다. 둘째, <strong>거래대금</strong> &mdash; 21.6조원까지 얇아졌습니다. 여기서 더 줄면 폭이 커집니다. 셋째, <strong>외국인의 방향</strong> &mdash; 목요일 사고 금요일 크게 팔았습니다. 이틀 연속 파는지가 회전인지 이탈인지를 가릅니다.",
+        "a_en": "<strong>Three things.</strong> First, <strong>CXMT's results</strong> &mdash; Chinese DRAM revenue up nearly tenfold in the half. With Samsung and SK Hynix already down hard on Friday, <strong>how they take this</strong> is the first test. Second, <strong>turnover</strong>, now thinned to 21.6 trillion won; thinner still means wider swings. Third, <strong>the direction of foreign flows</strong> &mdash; buyers on Thursday, heavy sellers on Friday. Whether they sell a second day separates a rotation from an exit."
+      }
+    ]
+  },
+  "why": {
+    "삼성전자": [
+      "반도체와반도체장비 업종 동반 약세 — 중국 D램 증설 우려가 겹친 자리",
+      "Fell with the semiconductor sector, compounded by Chinese DRAM capacity concerns"
+    ],
+    "SK하이닉스": [
+      "같은 업종 약세. 금요일 코스피 하락의 상당 부분이 이 종목과 삼성전자입니다",
+      "Same sector move; this name and Samsung account for much of Friday's index fall"
+    ],
+    "실리콘투": [
+      "화장품 업종 +6.33% 를 따라 반등 — 목요일 &minus;5.12% 에서 돌아섰습니다",
+      "Rebounded with cosmetics (+6.33%), reversing Thursday's &minus;5.12%"
+    ],
+    "엔비디아": [
+      "미 기술 업종 ETF &minus;1.55% 와 함께 하락. 전날 +8.64% 의 되돌림",
+      "Fell with the US technology ETF (&minus;1.55%), giving back the prior session's +8.64%"
+    ],
+    "아마존": [
+      "기술에서 빠진 자금이 커뮤니케이션·임의소비재로 옮겨 간 흐름의 선두",
+      "Led the money that left technology for communications and discretionary"
+    ]
+  },
+  "calendar": [
+    {
+      "when_ko": "<strong>월요일 8/31 (월) 09:00</strong>",
+      "when_en": "<strong>Monday 31 August, 09:00</strong>",
+      "what_ko": "<strong>국내 증시 재개 &mdash; CXMT 실적을 받는 첫 장</strong>",
+      "what_en": "<strong>Korea reopens &mdash; the first session to price CXMT</strong>",
+      "why_ko": "삼성전자&middot;SK하이닉스가 금요일에 이미 3~4% 내린 뒤라 <strong>추가 반응인지 되돌림인지</strong>가 이날 갈립니다",
+      "why_en": "With both chipmakers already down 3&ndash;4% on Friday, Monday decides whether this extends or reverses",
+      "type_ko": "한국",
+      "type_en": "Korea"
+    },
+    {
+      "when_ko": "9/1 (화) 09:00",
+      "when_en": "Tuesday 1 September, 09:00",
+      "what_ko": "8월 수출입 확정치",
+      "what_en": "August trade, final",
+      "why_ko": "반도체 수출이 이번 회전을 얼마나 버텨 주는지 확인하는 자리",
+      "why_en": "How far chip exports hold up through this rotation",
+      "type_ko": "한국",
+      "type_en": "Korea"
+    },
+    {
+      "when_ko": "9/5 (금) 21:30",
+      "when_en": "Friday 5 September, 21:30",
+      "what_ko": "<strong>미 8월 고용보고서</strong>",
+      "what_en": "<strong>US August employment report</strong>",
+      "why_ko": "<strong>금요일 2년물이 14bp 오른 뒤 맞는 첫 큰 지표</strong>입니다. 앞쪽 곡선이 더 들릴지 여기서 갈립니다",
+      "why_en": "The first major print after Friday's 14bp jump in the two-year; it decides whether the front end lifts further",
+      "type_ko": "미국",
+      "type_en": "US"
+    },
+    {
+      "when_ko": "<strong>9/9 (수)</strong>",
+      "when_en": "<strong>Wednesday 9 September</strong>",
+      "what_ko": "미 재무부 장기채 바이백 확대 시행",
+      "what_en": "US Treasury expands long-end buybacks",
+      "why_ko": "금요일에 <strong>앞쪽만 급하게 든 곡선</strong>(2년 +14bp 대 30년 +3bp)에서, 장기 구간에만 작용하는 조치입니다",
+      "why_en": "After Friday's front-loaded curve (2y +14bp against 30y +3bp), this acts only on the long end",
+      "type_ko": "미국",
+      "type_en": "US"
+    },
+    {
+      "when_ko": "9/11 (금)",
+      "when_en": "Friday 11 September",
+      "what_ko": "선물&middot;옵션 동시만기",
+      "what_en": "Quadruple witching",
+      "why_ko": "거래대금이 21.6조원까지 얇아진 뒤 맞는 만기라 변동이 커지기 쉽습니다",
+      "why_en": "Expiry after turnover has thinned to 21.6 trillion won, which amplifies moves",
+      "type_ko": "한국",
+      "type_en": "Korea"
+    },
+    {
+      "when_ko": "10/5 (월)",
+      "when_en": "Monday 5 October",
+      "what_ko": "개천절 대체공휴일 &mdash; 국내 휴장",
+      "what_en": "Substitute holiday &mdash; Korea closed",
+      "why_ko": "그날 뉴욕은 열립니다 &mdash; <strong>사흘치 해외 재료를 10/6(화) 아침에 한꺼번에 받습니다</strong>",
+      "why_en": "New York trades that day, so three sessions of overseas news arrive at once on the morning of 6 October",
+      "type_ko": "휴장",
+      "type_en": "Holiday"
+    }
+  ],
+  "calendar_lede": [
+    "<strong>주말 사이에 값이 매겨지지 않은 재료가 하나 쌓여 있습니다</strong> &mdash; CXMT 실적입니다. 월요일 09시가 그것을 처음 받는 자리이고, 그다음 큰 자리는 9/5 미 고용보고서입니다. 지난 날짜는 이 표에서 자동으로 지워집니다.",
+    "<strong>One piece of news is sitting unpriced over the weekend</strong> &mdash; the CXMT results. Monday's 09:00 open is where it first meets a price; the next large date is the US employment report on 5 September. Elapsed rows drop out of this table automatically."
+  ],
+  "talking_lede": [
+    "<strong>월요일 아침에 가장 많이 나올 물음은 반도체입니다.</strong> 금요일 삼성전자와 SK하이닉스가 크게 내렸고 주말에 중국 D램 실적이 나왔기 때문입니다. 아래 넷은 <strong>확인된 자료로 답할 수 있는 것만</strong> 담았습니다 &mdash; 월요일 주가가 어떻게 될지는 그 안에 없습니다.",
+    "<strong>Monday's questions will be about semiconductors</strong> &mdash; both Korean chipmakers fell hard on Friday and Chinese DRAM results landed over the weekend. The four below are limited to <strong>what the confirmed data can answer</strong>; where the price goes on Monday is not among them."
+  ],
+  "talking": [
+    {
+      "q_ko": "삼성전자가 금요일에 왜 그렇게 빠졌나요?",
+      "q_en": "Why did Samsung Electronics fall so hard on Friday?",
+      "a_ko": "<strong>업종 전체가 내렸습니다.</strong> 반도체와반도체장비 업종이 <strong>&minus;3.74%</strong> 로 국내에서 가장 많이 내렸고, 같은 날 뉴욕에서도 엔비디아 <strong>&minus;4.58%</strong>, TSMC &minus;2.29%, AMD &minus;2.33% 로 AI 반도체가 함께 밀렸습니다. <strong>종목 하나의 문제가 아니라 그날 시장이 반도체에서 돈을 뺐습니다.</strong> 다만 주말에 중국 CXMT 의 상반기 실적이 크게 좋게 나와서, <strong>월요일에는 그 재료가 하나 더 얹힙니다.</strong>",
+      "a_en": "<strong>The whole sector fell.</strong> Semiconductors were Korea's weakest sector at <strong>&minus;3.74%</strong>, and the same day in New York Nvidia fell <strong>&minus;4.58%</strong>, TSMC &minus;2.29% and AMD &minus;2.33%. <strong>This was money leaving semiconductors, not a problem at one company.</strong> Over the weekend, though, CXMT's strong first-half results landed, so <strong>Monday carries one more input.</strong>"
+    },
+    {
+      "q_ko": "중국 CXMT 실적이 우리 반도체에 나쁜 소식인가요?",
+      "q_en": "Are CXMT's results bad news for Korean chipmakers?",
+      "a_ko": "<strong>확인된 것만 말씀드리면 이렇습니다.</strong> CXMT 상반기 매출이 <strong>1,503억위안(약 31조원)&middot;전년 대비 +873.6%</strong> 이고 순이익은 적자에서 흑자로 돌아섰습니다. 실적이 좋아진 배경으로 기사가 든 것은 <strong>D램 판가 상승</strong>인데, 그것은 삼성&middot;SK하이닉스에도 좋은 조건입니다. 부담이 되는 쪽은 <strong>중국 업체의 점유율이 빨라질 수 있다</strong>는 대목입니다. <strong>어느 쪽이 더 클지는 아직 값으로 확인되지 않았습니다</strong> &mdash; 월요일 장이 첫 답입니다.",
+      "a_en": "<strong>Limited to what is confirmed:</strong> CXMT's first-half revenue was <strong>150.3 billion yuan (about 31 trillion won), up 873.6%</strong>, and it swung from loss to profit. The reason the reporting gives is <strong>higher DRAM prices</strong> &mdash; which also helps Samsung and SK Hynix. The pressure is in the other half: <strong>Chinese share may rise faster</strong>. <strong>Which effect dominates has not yet been priced</strong>; Monday's session is the first answer."
+    },
+    {
+      "q_ko": "지수는 내렸는데 제 종목은 올랐어요. 왜 이런가요?",
+      "q_en": "The index fell but my stocks rose. Why?",
+      "a_ko": "<strong>금요일은 그런 날이었습니다.</strong> 코스피가 &minus;1.79% 인데 <strong>오른 종목 640 개, 내린 종목 238 개</strong> 였습니다. 코스피는 시가총액으로 가중하는 지수라 <strong>삼성전자&middot;SK하이닉스 둘이 크게 내리면 나머지가 올라도 지수는 내려갑니다.</strong> 재미있는 것은 <strong>바로 전날은 정확히 반대</strong>였다는 점입니다 &mdash; 지수가 오르는데 열에 여섯이 내렸습니다. <strong>이번 주 이틀은 지수로 계좌를 설명할 수 없는 날이었습니다.</strong>",
+      "a_en": "<strong>Friday was that kind of day.</strong> KOSPI fell 1.79% while <strong>640 names rose and 238 fell</strong>. KOSPI is capitalisation-weighted, so <strong>when Samsung and SK Hynix fall hard the index follows them even as the rest rise.</strong> What is striking is that <strong>the previous day was the exact opposite</strong> &mdash; index up, six in ten down. <strong>For two days this week the index could not explain a portfolio.</strong>"
+    },
+    {
+      "q_ko": "환율이 1,371원까지 내렸는데 계속 내려갈까요?",
+      "q_en": "The won has firmed to 1,371 &mdash; will it keep going?",
+      "a_ko": "<strong>방향을 말씀드릴 수는 없고, 지금 무엇이 작용하고 있는지는 말씀드릴 수 있습니다.</strong> 원화는 금요일 여섯 통화 모두에 대해 세졌습니다. 한편 <strong>달러/엔은 160엔대로 올라</strong> 엔은 약해졌는데, 미 재무부가 지난달 <strong>1998년 이후 처음으로 엔화 매수 개입</strong>에 나섰던 사실이 이번 주 공개됐습니다. 베선트 장관은 그 이유를 <strong>「일본은 미 국채의 주요 보유국이고, 엔 시장이 무질서해지면 미국 차입 비용이 오른다」</strong> 고 설명했습니다. <strong>환율은 지금 두 나라 정책 당국이 함께 보고 있는 변수입니다</strong> &mdash; 한 방향을 단정하기 어려운 국면입니다.",
+      "a_en": "<strong>Not a direction, but what is at work:</strong> the won firmed against all six crosses on Friday. Meanwhile <strong>dollar/yen rose past 160</strong> as the yen weakened, and it emerged this week that the US Treasury intervened to <strong>buy yen last month for the first time since 1998</strong>. Secretary Bessent explained it as <strong>\"Japan is a major holder of US Treasuries, and a disorderly yen market raises American borrowing costs.\"</strong> <strong>FX is currently a variable two sets of policymakers are watching together</strong> &mdash; not a market to call one way."
+    }
+  ],
+  "verify_lede": [
+    "<strong>이 절은 판을 짓는 데 쓴 자료와, 쓰지 못한 자료를 밝히는 자리입니다.</strong> 오늘 판에서 조심해서 다룬 것 둘 &mdash; <strong>잭슨홀 연설 내용</strong>과 <strong>CXMT 실적</strong> &mdash; 을 (z) 에 적어 두었습니다.",
+    "<strong>This section states what the edition was built from and what it could not use.</strong> The two items handled with most care today &mdash; <strong>the Jackson Hole address</strong> and <strong>the CXMT results</strong> &mdash; are set out in (z)."
+  ],
+  "verify": [
+    {
+      "t_ko": "(z) 잭슨홀 연설 내용은 확보하지 못했습니다",
+      "t_en": "(z) The Jackson Hole address could not be obtained",
+      "b_ko": "<strong>8월 28일 잭슨홀에서 워시 의장의 기조연설이 예정돼 있었지만, 오늘 수집한 기사 스물넷 어디에도 그 내용이 없습니다.</strong> 그래서 이 판은 <strong>연설과 금요일 금리 급등(2년물 +14bp)을 인과로 잇지 않았습니다</strong> &mdash; 시각이 맞아떨어진다고 원인으로 적으면 그 자체가 틀린 정보가 됩니다. 금리가 왜 올랐는지는 <strong>다음 판에서 자료가 들어오면</strong> 채우겠습니다. 곡선 값 자체는 미 재무부 일별 곡선에서 온 것이라 확정치입니다.",
+      "b_en": "<strong>Chair Warsh's keynote was scheduled at Jackson Hole on 28 August, but none of the twenty-four articles collected today carries its content.</strong> This edition therefore <strong>draws no causal link between the speech and Friday's 14bp jump in the two-year</strong> &mdash; matching timestamps are not a cause, and writing one would itself be false. Why yields rose will be filled in <strong>once the reporting arrives</strong>. The curve values themselves come from the US Treasury daily curve and are final."
+    },
+    {
+      "t_ko": "(z) CXMT 실적은 언론 보도 인용입니다",
+      "t_en": "(z) The CXMT figures are quoted from press reporting",
+      "b_ko": "CXMT 의 상반기 매출&middot;순이익&middot;증가율&middot;상장 전 전망치&middot;선행 PER 은 모두 <strong>29일자 기사 본문에서 그대로 옮긴 것</strong>이며(<a href=\"https://n.news.naver.com/mnews/article/009/0005727444\" target=\"_blank\" rel=\"noopener\">「월요일 삼전 주가 어떡해」 CXMT 깜짝 어닝서프라이즈</a>), <strong>회사 공시를 직접 대조하지는 못했습니다</strong> &mdash; 중국 상장사 공시는 이 수집 경로에 없습니다. 그래서 <strong>1 SOURCE</strong> 로 답니다. 「월요일 주가에 영향을 줄 것으로 보인다」는 기사의 전망이지 이 판의 판단이 아닙니다.",
+      "b_en": "CXMT's first-half revenue, profit, growth rate, pre-listing guidance and forward P/E are all <strong>taken verbatim from a 29 August article</strong>; <strong>the company's own filing was not checked</strong> &mdash; Chinese listed-company disclosures are not on this collection path. It is marked <strong>1 SOURCE</strong>. The expectation that it will move Monday's prices is the article's, not this edition's."
+    },
+    {
+      "t_ko": "(z) 「같은 회전」은 순위의 방향을 말한 것입니다",
+      "t_en": "(z) \"The same rotation\" refers to ordering, not to comparable numbers",
+      "b_ko": "이 판은 서울과 뉴욕에서 <strong>같은 회전이 일어났다</strong>고 썼습니다. 그것은 <strong>업종 순위가 같은 방향으로 뒤집혔다</strong>는 뜻이지 두 숫자를 견줄 수 있다는 뜻이 아닙니다 &mdash; 국내 업종은 <strong>일간 등락률을 쌓은 값</strong>이고 미국 업종은 <strong>ETF 종가</strong>입니다. 이름이 겹치는 곳에서 특히 조심해야 합니다: 이 판의 <strong>「기타금융 +7.18%」는 국내 업종</strong>이고 미국 <strong>금융 ETF 는 +0.38%</strong>, <strong>「전기유틸리티 &minus;3.57%」는 국내</strong>이고 미국 <strong>유틸리티 ETF 는 &minus;1.04%</strong> 입니다. 감사기가 이 둘을 어긋난 짝으로 잡지만 <strong>다른 대상의 값</strong>입니다.",
+      "b_en": "This edition says <strong>the same rotation</strong> ran in Seoul and New York. That means <strong>the sector ordering inverted the same way</strong>, not that the numbers are comparable: Korean sectors are <strong>accumulated daily changes</strong> and US sectors are <strong>ETF closes</strong>. Care is needed where the names overlap &mdash; <strong>&quot;other financials +7.18%&quot; is Korean</strong> while the <strong>US financials ETF was +0.38%</strong>, and <strong>&quot;electric utilities &minus;3.57%&quot; is Korean</strong> while the <strong>US utilities ETF was &minus;1.04%</strong>. The auditor flags these as mismatches; they are <strong>values for different things</strong>."
+    }
+  ]
+}

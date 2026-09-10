@@ -1725,9 +1725,18 @@ def weekly(reports, day, out_dir, skip=None):
 # ---------------------------------------------------------------- 저장
 
 def _dump(dump_dir, name, text):
+    """파싱이 어긋났을 때만 남기는 원본. 맨 앞에 받은 날짜를 적어 둔다.
+
+    지우는 쪽에서 날짜를 알아야 하기 때문이다. 예전에는 워크플로가
+    `find -mtime +7` 로 지웠는데, actions/checkout 이 파일을 새로 쓰는 탓에
+    러너에서는 모든 파일의 mtime 이 늘 「방금」이라 한 번도 맞은 적이 없다.
+    8/21 에 남은 탐색 덤프가 20일째 그대로 있었다.
+    """
     try:
         os.makedirs(dump_dir, exist_ok=True)
+        stamp = datetime.now(KST).strftime("%Y-%m-%d %H:%M KST")
         with open(os.path.join(dump_dir, name), "w", encoding="utf-8") as f:
+            f.write("<!-- 덤프: %s -->\n" % stamp)
             f.write(text[:400_000])
     except OSError:
         pass

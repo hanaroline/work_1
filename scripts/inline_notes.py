@@ -63,8 +63,32 @@ def strip_opt(attrs):
     return attrs + ' class="hasnote"'
 
 
+COLSPAN = re.compile(r'(?i)\bcolspan\s*=\s*"?(\d+)"?')
+
+
+def shrink_colspan(row, drop):
+    """표 안의 구분 행 — 칸 하나가 전체 폭을 덮는 줄의 colspan 을 함께 줄인다.
+
+    이걸 빼먹으면 열은 줄었는데 구분 행만 옛 폭을 고집해 **표가 통째로
+    벌어진다.** 「오른 쪽 / 내린 쪽」 구분 행을 쓰기 시작하면서 실제로 표가
+    600px 넘게 넘쳤다.
+    """
+    cs = cells(row)
+    if len(cs) != 1:
+        return row
+    m = COLSPAN.search(cs[0].group(2) or "")
+    if not m:
+        return row
+    new = max(1, int(m.group(1)) - drop)
+    attrs = COLSPAN.sub('colspan="%d"' % new, cs[0].group(2) or "", count=1)
+    return (row[:cs[0].start()] + "<" + cs[0].group(1) + attrs + ">"
+            + cs[0].group(3) + "</" + cs[0].group(1) + ">" + row[cs[0].end():])
+
+
 def fix_row(row, idxs, ncols):
     cs = cells(row)
+    if len(cs) == 1:
+        return shrink_colspan(row, len(idxs))
     if len(cs) != ncols or not idxs or 0 in idxs:
         return row                      # 칸 수가 다르거나 이름 칸 자체가 설명이면 둔다
     notes = [cs[i].group(3).strip() for i in idxs]

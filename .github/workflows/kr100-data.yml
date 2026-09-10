@@ -1,0 +1,127 @@
+name: 국내 100대 기업 시세 수집
+
+# `kr-top100.html` 은 브라우저에서 야후에 직접 붙지만, 사내망·CORS 로 막히는 곳이
+# 많다. Claude 세션도 이그레스 정책 때문에 야후에 못 붙는다. GitHub 러너는 그
+# 정책 밖에서 돌므로 여기서 대신 받아 데이터 브랜치(kr100-data)에 올리고, 화면은
+# 그 스냅샷을 먼저 그린 뒤 브라우저가 실시간으로 받아오면 그 위에 덮어쓴다.
+#
+# 주의: schedule 이벤트는 기본 브랜치(main)의 워크플로만 발동한다. 작업 브랜치에서는
+# 아래 push 트리거(data/kr100/REFRESH 한 줄 수정)나 수동 실행으로 돌린다.
+
+on:
+  schedule:
+    # 국내 정규장 마감(15:30 KST) 뒤 — 06:45 UTC = 15:45 KST.
+    # 한국은 서머타임이 없어 계절에 따라 시각이 어긋나지 않는다.
+    - cron: '45 6 * * 1-5'
+
+  # 세션·사람이 직접 부르는 길. 세션 토큰에는 Actions 쓰기 권한이 없어
+  # workflow_dispatch 를 API 로 부르지 못하지만(403), git push 는 된다.
+  push:
+    paths:
+      - 'data/kr100/REFRESH'
+      - '.github/workflows/kr100-data.yml'
+      - 'scripts/fetch_kr100.py'
+
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: kr100-data-${{ github.ref_name }}
+  cancel-in-progress: false
+
+jobs:
+  fetch:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: 시세 수집
+        run: python scripts/fetch_kr100.py
+
+      # 대상 목록 점검은 따로 돈다(.github/workflows/kr100-ranking.yml) — 한국거래소
+      # 전종목 시세만 있으면 되는 일이라 8분 걸리는 이 수집에 매달아 둘 이유가 없고,
+      # 수집이 느린 날에 점검까지 함께 못 도는 일을 피한다.
+
+      - name: 직전 가격 파일과 목록 점검 결과 받기
+        # 오프라인 파일에 가격(10분 주기)과 ⑩ 섹션의 목록 점검 결과도 함께 넣으려는
+        # 것이다. 이 판이 만든 파일이 아니므로 아래 PUBLISH_FILES 에는 넣지 않는다
+        # (브랜치에 있는 것이 그대로 보존된다).
+        #
+        # 이 단계가 없으면 코드 브랜치의 안내 파일({"movedTo": …})이 그대로 쓰여
+        # 오프라인 판에 가격이 안 담긴다 — 2026-09-09 실제로 그렇게 나갔다.
+        continue-on-error: true
+        run: |
+          if git fetch --quiet origin "+refs/heads/kr100-data:refs/remotes/origin/kr100-data" 2>/dev/null; then
+            for f in quotes.json ranking.json; do
+              git show "origin/kr100-data:data/kr100/$f" > "data/kr100/$f" || true
+            done
+          fi
+          python - <<'PY'
+          import json, os
+          for f in ('quotes.json', 'ranking.json'):
+              p = os.path.join('data/kr100', f)
+              try:
+                  d = json.load(open(p, encoding='utf-8'))
+              except Exception as e:
+                  print('%s 없음/못 읽음 — %s' % (f, e)); continue
+              if d.get('movedTo'):
+                  print('%s 는 아직 안내 파일이다(데이터 브랜치에 없음)' % f)
+              else:
+                  print('%s 받음 — %s' % (f, d.get('fetchedAt') or d.get('builtAt')))
+          PY
+
+      - name: 오프라인 단일 파일 만들기
+        # 인터넷이 막힌 업무용 PC 용. 데이터를 HTML 안에 넣어 파일 하나로 만든다
+        # (file:// 로 열린 페이지는 옆에 있는 json 도 CORS 로 못 읽는다).
+        run: |
+          python scripts/make_offline_html.py --market kr --out kr-top100-offline.html
+          cp kr-top100-offline.html data/kr100/
+
+      - name: 데이터 브랜치에 올리기
+        # main 히스토리에 쌓지 않는다 — 차트 100개(약 3MB)와 오프라인 파일(약 4MB)이
+        # 매일 통째로 바뀌므로 쌓으면 저장소가 1년에 여러 GB 로 붇는다. 지금 조회되는
+        # 값만 의미가 있어 데이터 전용 브랜치를 커밋 하나로 갈아끼운다.
+        #
+        # 오프라인 파일을 여기 함께 올리는 이유: Actions 의 Artifacts 는 로그인해서
+        # zip 을 풀어야 하고 14일 뒤 사라진다. 데이터 브랜치에 두면 언제나 같은 주소에서
+        # 가장 새 판을 받을 수 있다.
+        env:
+          COMMIT_LABEL: 전체수집
+          PUBLISH_FILES: latest.json chart kr-top100-offline.html
+        run: bash scripts/publish_kr100_data.sh
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: kr-top100-offline
+          path: kr-top100-offline.html
+          retention-days: 14
+          if-no-files-found: warn
+
+      - name: 요약
+        if: always()
+        continue-on-error: true       # 요약이 깨져도 수집·커밋 결과를 실패로 만들지 않는다
+        run: |
+          if [ -f data/kr100/latest.json ]; then
+            python - <<'PY'
+          import json
+          try:
+              d = json.load(open('data/kr100/latest.json', encoding='utf-8'))
+          except Exception as e:
+              print(f"::warning::latest.json 을 읽지 못했다 — {e}")
+              raise SystemExit(0)
+          s = d.get('summary', {})
+          print(f"::notice::시세 {s.get('chartOk')}/{s.get('symbols')} · 지표 {s.get('summaryOk')}/{s.get('symbols')}"
+                f" · 한글뉴스 {s.get('newsKoOk')}/{s.get('symbols')} · crumb {s.get('crumb')}")
+          bad = [k for k, v in d.get('sources', {}).items()
+                 if isinstance(v, dict) and v.get('chart') is not True]
+          if bad:
+              print("::warning::시세 실패 " + ", ".join(bad[:20]))
+          PY
+          fi
