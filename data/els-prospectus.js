@@ -11,7 +11,7 @@
  * 원문에 없는 값은 담지 않으므로 화면에서 「확인필요」로 남는다.
  */
 window.ELS_PROSPECTUS = {
- "updatedAt": "2026-09-10T00:56:43.163Z",
+ "updatedAt": "2026-09-10T14:06:50.032Z",
  "source": "DART 일괄신고추가서류",
  "rcpNos": [
   "20260821000106",
@@ -86,7 +86,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260821000106",
    "rcpNo": "20260821000106",
    "docDate": "2026-08-21",
-   "collectedAt": "2026-09-10T00:56:43.151Z",
+   "collectedAt": "2026-09-10T14:06:50.019Z",
    "fields": {
     "name": "미래에셋증권 제4053회 파생결합사채(주가연계파생결합사채)(낮은위험)(상품위험등급:5등급)",
     "issuer": "미래에셋증권",
@@ -192,7 +192,7 @@ window.ELS_PROSPECTUS = {
    "derivedFrom": {
     "months": "차수별 평가일과 발행일의 차이로 계산",
     "midPriceDate": "기초자산 소재지(아시아 / 非아시아)로 판정",
-    "maturityRow": "만기 배리어·만기일을 표 마지막 행으로 추가",
+    "maturityRow": "만기 배리어·만기일을 표 마지막 행으로 추가 (지급률은 손익구조 표의 만기상환 칸)",
     "riskGradeNote": "투자설명서 「목표시장 설정 및 설정 근거」 표(위험추구성향·손실감내능력·지식과 경험·투자기간)를 문장으로 옮김",
     "riskGradeLabel": "등급 숫자와 등급명 중 제목에 있는 쪽에서 나머지를 채움 (문서가 밝히는 1:1 대응)",
     "lossExample": "원금지급형 — 중도상환·발행사 신용위험만 손실 요인"
@@ -205,7 +205,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260821000181",
    "rcpNo": "20260821000181",
    "docDate": "2026-08-21",
-   "collectedAt": "2026-09-10T00:56:43.151Z",
+   "collectedAt": "2026-09-10T14:06:50.019Z",
    "fields": {
     "name": "미래에셋증권 제4054회 파생결합사채(주가연계파생결합사채)(낮은위험)(상품위험등급:5등급)",
     "issuer": "미래에셋증권",
@@ -359,7 +359,7 @@ window.ELS_PROSPECTUS = {
    "derivedFrom": {
     "months": "차수별 평가일과 발행일의 차이로 계산",
     "midPriceDate": "기초자산 소재지(아시아 / 非아시아)로 판정",
-    "maturityRow": "만기 배리어·만기일을 표 마지막 행으로 추가",
+    "maturityRow": "만기 배리어·만기일을 표 마지막 행으로 추가 (지급률은 손익구조 표의 만기상환 칸)",
     "riskGradeNote": "투자설명서 「목표시장 설정 및 설정 근거」 표(위험추구성향·손실감내능력·지식과 경험·투자기간)를 문장으로 옮김",
     "riskGradeLabel": "등급 숫자와 등급명 중 제목에 있는 쪽에서 나머지를 채움 (문서가 밝히는 1:1 대응)",
     "lossExample": "원금지급형 — 중도상환·발행사 신용위험만 손실 요인"
@@ -372,7 +372,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260821000181",
    "rcpNo": "20260821000181",
    "docDate": "2026-08-21",
-   "collectedAt": "2026-09-10T00:56:43.151Z",
+   "collectedAt": "2026-09-10T14:06:50.020Z",
    "fields": {
     "name": "미래에셋증권 제4055회 파생결합사채(주가연계파생결합사채)(낮은위험)(상품위험등급:5등급)",
     "issuer": "미래에셋증권",
@@ -478,7 +478,7 @@ window.ELS_PROSPECTUS = {
    "derivedFrom": {
     "months": "차수별 평가일과 발행일의 차이로 계산",
     "midPriceDate": "기초자산 소재지(아시아 / 非아시아)로 판정",
-    "maturityRow": "만기 배리어·만기일을 표 마지막 행으로 추가",
+    "maturityRow": "만기 배리어·만기일을 표 마지막 행으로 추가 (지급률은 손익구조 표의 만기상환 칸)",
     "riskGradeNote": "투자설명서 「목표시장 설정 및 설정 근거」 표(위험추구성향·손실감내능력·지식과 경험·투자기간)를 문장으로 옮김",
     "riskGradeLabel": "등급 숫자와 등급명 중 제목에 있는 쪽에서 나머지를 채움 (문서가 밝히는 1:1 대응)",
     "lossExample": "원금지급형 — 중도상환·발행사 신용위험만 손실 요인"
@@ -491,7 +491,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260821000181",
    "rcpNo": "20260821000181",
    "docDate": "2026-08-21",
-   "collectedAt": "2026-09-10T00:56:43.151Z",
+   "collectedAt": "2026-09-10T14:06:50.020Z",
    "fields": {
     "name": "미래에셋증권 제4056회 파생결합사채(주가연계파생결합사채)(낮은위험)(상품위험등급:5등급)",
     "issuer": "미래에셋증권",
@@ -645,7 +645,7 @@ window.ELS_PROSPECTUS = {
    "derivedFrom": {
     "months": "차수별 평가일과 발행일의 차이로 계산",
     "midPriceDate": "기초자산 소재지(아시아 / 非아시아)로 판정",
-    "maturityRow": "만기 배리어·만기일을 표 마지막 행으로 추가",
+    "maturityRow": "만기 배리어·만기일을 표 마지막 행으로 추가 (지급률은 손익구조 표의 만기상환 칸)",
     "riskGradeNote": "투자설명서 「목표시장 설정 및 설정 근거」 표(위험추구성향·손실감내능력·지식과 경험·투자기간)를 문장으로 옮김",
     "riskGradeLabel": "등급 숫자와 등급명 중 제목에 있는 쪽에서 나머지를 채움 (문서가 밝히는 1:1 대응)",
     "lossExample": "원금지급형 — 중도상환·발행사 신용위험만 손실 요인"
@@ -658,7 +658,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260821000181",
    "rcpNo": "20260821000181",
    "docDate": "2026-08-21",
-   "collectedAt": "2026-09-10T00:56:43.151Z",
+   "collectedAt": "2026-09-10T14:06:50.020Z",
    "fields": {
     "name": "미래에셋증권 제4057회 파생결합사채(주가연계파생결합사채)(낮은위험)(상품위험등급:5등급)",
     "issuer": "미래에셋증권",
@@ -764,7 +764,7 @@ window.ELS_PROSPECTUS = {
    "derivedFrom": {
     "months": "차수별 평가일과 발행일의 차이로 계산",
     "midPriceDate": "기초자산 소재지(아시아 / 非아시아)로 판정",
-    "maturityRow": "만기 배리어·만기일을 표 마지막 행으로 추가",
+    "maturityRow": "만기 배리어·만기일을 표 마지막 행으로 추가 (지급률은 손익구조 표의 만기상환 칸)",
     "riskGradeNote": "투자설명서 「목표시장 설정 및 설정 근거」 표(위험추구성향·손실감내능력·지식과 경험·투자기간)를 문장으로 옮김",
     "riskGradeLabel": "등급 숫자와 등급명 중 제목에 있는 쪽에서 나머지를 채움 (문서가 밝히는 1:1 대응)",
     "lossExample": "원금지급형 — 중도상환·발행사 신용위험만 손실 요인"
@@ -777,7 +777,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260825000242",
    "rcpNo": "20260825000242",
    "docDate": "2026-08-25",
-   "collectedAt": "2026-09-10T00:56:43.153Z",
+   "collectedAt": "2026-09-10T14:06:50.021Z",
    "fields": {
     "name": "미래에셋증권 제4058회 파생결합사채(주가연계파생결합사채)(낮은위험)(상품위험등급:5등급)",
     "issuer": "미래에셋증권",
@@ -931,7 +931,7 @@ window.ELS_PROSPECTUS = {
    "derivedFrom": {
     "months": "차수별 평가일과 발행일의 차이로 계산",
     "midPriceDate": "기초자산 소재지(아시아 / 非아시아)로 판정",
-    "maturityRow": "만기 배리어·만기일을 표 마지막 행으로 추가",
+    "maturityRow": "만기 배리어·만기일을 표 마지막 행으로 추가 (지급률은 손익구조 표의 만기상환 칸)",
     "riskGradeNote": "투자설명서 「목표시장 설정 및 설정 근거」 표(위험추구성향·손실감내능력·지식과 경험·투자기간)를 문장으로 옮김",
     "riskGradeLabel": "등급 숫자와 등급명 중 제목에 있는 쪽에서 나머지를 채움 (문서가 밝히는 1:1 대응)",
     "lossExample": "원금지급형 — 중도상환·발행사 신용위험만 손실 요인"
@@ -944,7 +944,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260826000487",
    "rcpNo": "20260826000487",
    "docDate": "2026-08-26",
-   "collectedAt": "2026-09-10T00:56:43.154Z",
+   "collectedAt": "2026-09-10T14:06:50.022Z",
    "fields": {
     "name": "미래에셋증권 제4059회 파생결합사채(주가연계파생결합사채)(낮은위험)",
     "issuer": "미래에셋증권",
@@ -975,8 +975,18 @@ window.ELS_PROSPECTUS = {
     "coolNote": "이 회차의 투자설명서에는 숙려제도 대상 청약기간과 숙려기간이 정해져 있지 않습니다. 파생결합사채(원금지급형)는 고난도 금융투자상품이 아니어서 청약 숙려제도 적용 대상이 아닙니다.",
     "fairValueNote": "2026년 8월 25일 기준 이 증권의 공정가격은 액면 10,000원 당 9,984.37원 입니다 (액면 대비 -0.16%). 중도상환 금액은 이 공정가액을 기초로 산정되므로 발행 직후 중도상환 시에도 원금손실이 발생할 수 있습니다."
    },
-   "schedule": [],
-   "matBarrier": null,
+   "schedule": [
+    {
+     "seq": 1,
+     "months": 11,
+     "barrier": 500,
+     "payRate": 103.5451,
+     "annRate": 3.851,
+     "evalDate": "2027-07-28",
+     "maturity": true
+    }
+   ],
+   "matBarrier": 500,
    "instrument": "파생결합사채",
    "principalProtected": true,
    "monthlyIncome": null,
@@ -994,7 +1004,7 @@ window.ELS_PROSPECTUS = {
    "derivedFrom": {
     "months": "차수별 평가일과 발행일의 차이로 계산",
     "midPriceDate": "기초자산 소재지(아시아 / 非아시아)로 판정",
-    "maturityRow": "만기 배리어·만기일을 표 마지막 행으로 추가",
+    "maturityRow": "만기 배리어·만기일을 표 마지막 행으로 추가 (지급률은 손익구조 표의 만기상환 칸)",
     "riskGradeNote": "투자설명서 「목표시장 설정 및 설정 근거」 표(위험추구성향·손실감내능력·지식과 경험·투자기간)를 문장으로 옮김",
     "riskGradeLabel": "등급 숫자와 등급명 중 제목에 있는 쪽에서 나머지를 채움 (문서가 밝히는 1:1 대응)",
     "lossExample": "원금지급형 — 중도상환·발행사 신용위험만 손실 요인"
@@ -1007,7 +1017,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260826000487",
    "rcpNo": "20260826000487",
    "docDate": "2026-08-26",
-   "collectedAt": "2026-09-10T00:56:43.154Z",
+   "collectedAt": "2026-09-10T14:06:50.022Z",
    "fields": {
     "name": "미래에셋증권 제4060회 파생결합사채(주가연계파생결합사채)(낮은위험)",
     "issuer": "미래에셋증권",
@@ -1038,8 +1048,18 @@ window.ELS_PROSPECTUS = {
     "coolNote": "이 회차의 투자설명서에는 숙려제도 대상 청약기간과 숙려기간이 정해져 있지 않습니다. 파생결합사채(원금지급형)는 고난도 금융투자상품이 아니어서 청약 숙려제도 적용 대상이 아닙니다.",
     "fairValueNote": "2026년 8월 25일 기준 이 증권의 공정가격은 액면 10,000원 당 9,972.71원 입니다 (액면 대비 -0.27%). 중도상환 금액은 이 공정가액을 기초로 산정되므로 발행 직후 중도상환 시에도 원금손실이 발생할 수 있습니다."
    },
-   "schedule": [],
-   "matBarrier": null,
+   "schedule": [
+    {
+     "seq": 1,
+     "months": 18,
+     "barrier": 500,
+     "payRate": 106.1341,
+     "annRate": 4.1006,
+     "evalDate": "2028-02-23",
+     "maturity": true
+    }
+   ],
+   "matBarrier": 500,
    "instrument": "파생결합사채",
    "principalProtected": true,
    "monthlyIncome": null,
@@ -1057,7 +1077,7 @@ window.ELS_PROSPECTUS = {
    "derivedFrom": {
     "months": "차수별 평가일과 발행일의 차이로 계산",
     "midPriceDate": "기초자산 소재지(아시아 / 非아시아)로 판정",
-    "maturityRow": "만기 배리어·만기일을 표 마지막 행으로 추가",
+    "maturityRow": "만기 배리어·만기일을 표 마지막 행으로 추가 (지급률은 손익구조 표의 만기상환 칸)",
     "riskGradeNote": "투자설명서 「목표시장 설정 및 설정 근거」 표(위험추구성향·손실감내능력·지식과 경험·투자기간)를 문장으로 옮김",
     "riskGradeLabel": "등급 숫자와 등급명 중 제목에 있는 쪽에서 나머지를 채움 (문서가 밝히는 1:1 대응)",
     "lossExample": "원금지급형 — 중도상환·발행사 신용위험만 손실 요인"
@@ -1070,7 +1090,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260825000204",
    "rcpNo": "20260825000204",
    "docDate": "2026-08-25",
-   "collectedAt": "2026-09-10T00:56:43.153Z",
+   "collectedAt": "2026-09-10T14:06:50.021Z",
    "fields": {
     "name": "미래에셋증권 제4061회 파생결합사채(주가연계파생결합사채)(낮은위험)(상품위험등급:5등급)",
     "issuer": "미래에셋증권",
@@ -1176,7 +1196,7 @@ window.ELS_PROSPECTUS = {
    "derivedFrom": {
     "months": "차수별 평가일과 발행일의 차이로 계산",
     "midPriceDate": "기초자산 소재지(아시아 / 非아시아)로 판정",
-    "maturityRow": "만기 배리어·만기일을 표 마지막 행으로 추가",
+    "maturityRow": "만기 배리어·만기일을 표 마지막 행으로 추가 (지급률은 손익구조 표의 만기상환 칸)",
     "riskGradeNote": "투자설명서 「목표시장 설정 및 설정 근거」 표(위험추구성향·손실감내능력·지식과 경험·투자기간)를 문장으로 옮김",
     "riskGradeLabel": "등급 숫자와 등급명 중 제목에 있는 쪽에서 나머지를 채움 (문서가 밝히는 1:1 대응)",
     "lossExample": "원금지급형 — 중도상환·발행사 신용위험만 손실 요인"
@@ -1189,7 +1209,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260828000838",
    "rcpNo": "20260828000838",
    "docDate": "2026-08-28",
-   "collectedAt": "2026-09-10T00:56:43.155Z",
+   "collectedAt": "2026-09-10T14:06:50.023Z",
    "fields": {
     "name": "미래에셋증권 제4063회 파생결합사채(주가연계파생결합사채)(낮은위험)(상품위험등급:5등급)",
     "issuer": "미래에셋증권",
@@ -1343,7 +1363,7 @@ window.ELS_PROSPECTUS = {
    "derivedFrom": {
     "months": "차수별 평가일과 발행일의 차이로 계산",
     "midPriceDate": "기초자산 소재지(아시아 / 非아시아)로 판정",
-    "maturityRow": "만기 배리어·만기일을 표 마지막 행으로 추가",
+    "maturityRow": "만기 배리어·만기일을 표 마지막 행으로 추가 (지급률은 손익구조 표의 만기상환 칸)",
     "riskGradeNote": "투자설명서 「목표시장 설정 및 설정 근거」 표(위험추구성향·손실감내능력·지식과 경험·투자기간)를 문장으로 옮김",
     "riskGradeLabel": "등급 숫자와 등급명 중 제목에 있는 쪽에서 나머지를 채움 (문서가 밝히는 1:1 대응)",
     "lossExample": "원금지급형 — 중도상환·발행사 신용위험만 손실 요인"
@@ -1358,7 +1378,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260826000227",
    "rcpNo": "20260826000227",
    "docDate": "2026-08-26",
-   "collectedAt": "2026-09-10T00:56:43.154Z",
+   "collectedAt": "2026-09-10T14:06:50.022Z",
    "fields": {
     "name": "미래에셋증권 제4064회 파생결합사채(주가연계파생결합사채)(낮은위험)(상품위험등급:5등급)",
     "issuer": "미래에셋증권",
@@ -1512,7 +1532,7 @@ window.ELS_PROSPECTUS = {
    "derivedFrom": {
     "months": "차수별 평가일과 발행일의 차이로 계산",
     "midPriceDate": "기초자산 소재지(아시아 / 非아시아)로 판정",
-    "maturityRow": "만기 배리어·만기일을 표 마지막 행으로 추가",
+    "maturityRow": "만기 배리어·만기일을 표 마지막 행으로 추가 (지급률은 손익구조 표의 만기상환 칸)",
     "riskGradeNote": "투자설명서 「목표시장 설정 및 설정 근거」 표(위험추구성향·손실감내능력·지식과 경험·투자기간)를 문장으로 옮김",
     "riskGradeLabel": "등급 숫자와 등급명 중 제목에 있는 쪽에서 나머지를 채움 (문서가 밝히는 1:1 대응)",
     "lossExample": "원금지급형 — 중도상환·발행사 신용위험만 손실 요인"
@@ -1525,7 +1545,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260826000227",
    "rcpNo": "20260826000227",
    "docDate": "2026-08-26",
-   "collectedAt": "2026-09-10T00:56:43.154Z",
+   "collectedAt": "2026-09-10T14:06:50.022Z",
    "fields": {
     "name": "미래에셋증권 제4065회 파생결합사채(주가연계파생결합사채)(낮은위험)(상품위험등급:5등급)",
     "issuer": "미래에셋증권",
@@ -1631,7 +1651,7 @@ window.ELS_PROSPECTUS = {
    "derivedFrom": {
     "months": "차수별 평가일과 발행일의 차이로 계산",
     "midPriceDate": "기초자산 소재지(아시아 / 非아시아)로 판정",
-    "maturityRow": "만기 배리어·만기일을 표 마지막 행으로 추가",
+    "maturityRow": "만기 배리어·만기일을 표 마지막 행으로 추가 (지급률은 손익구조 표의 만기상환 칸)",
     "riskGradeNote": "투자설명서 「목표시장 설정 및 설정 근거」 표(위험추구성향·손실감내능력·지식과 경험·투자기간)를 문장으로 옮김",
     "riskGradeLabel": "등급 숫자와 등급명 중 제목에 있는 쪽에서 나머지를 채움 (문서가 밝히는 1:1 대응)",
     "lossExample": "원금지급형 — 중도상환·발행사 신용위험만 손실 요인"
@@ -1644,7 +1664,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260826000227",
    "rcpNo": "20260826000227",
    "docDate": "2026-08-26",
-   "collectedAt": "2026-09-10T00:56:43.154Z",
+   "collectedAt": "2026-09-10T14:06:50.022Z",
    "fields": {
     "name": "미래에셋증권 제4066회 파생결합사채(주가연계파생결합사채)(낮은위험)(상품위험등급:5등급)",
     "issuer": "미래에셋증권",
@@ -1750,7 +1770,7 @@ window.ELS_PROSPECTUS = {
    "derivedFrom": {
     "months": "차수별 평가일과 발행일의 차이로 계산",
     "midPriceDate": "기초자산 소재지(아시아 / 非아시아)로 판정",
-    "maturityRow": "만기 배리어·만기일을 표 마지막 행으로 추가",
+    "maturityRow": "만기 배리어·만기일을 표 마지막 행으로 추가 (지급률은 손익구조 표의 만기상환 칸)",
     "riskGradeNote": "투자설명서 「목표시장 설정 및 설정 근거」 표(위험추구성향·손실감내능력·지식과 경험·투자기간)를 문장으로 옮김",
     "riskGradeLabel": "등급 숫자와 등급명 중 제목에 있는 쪽에서 나머지를 채움 (문서가 밝히는 1:1 대응)",
     "lossExample": "원금지급형 — 중도상환·발행사 신용위험만 손실 요인"
@@ -1763,7 +1783,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260902000080",
    "rcpNo": "20260902000080",
    "docDate": "2026-09-02",
-   "collectedAt": "2026-09-10T00:56:43.155Z",
+   "collectedAt": "2026-09-10T14:06:50.023Z",
    "fields": {
     "name": "미래에셋증권 제4067회 파생결합사채(주가연계파생결합사채)(낮은위험)",
     "issuer": "미래에셋증권",
@@ -1794,8 +1814,18 @@ window.ELS_PROSPECTUS = {
     "coolNote": "이 회차의 투자설명서에는 숙려제도 대상 청약기간과 숙려기간이 정해져 있지 않습니다. 파생결합사채(원금지급형)는 고난도 금융투자상품이 아니어서 청약 숙려제도 적용 대상이 아닙니다.",
     "fairValueNote": "2026년 9월 1일 기준 이 증권의 공정가격은 액면 10,000원 당 9,985.8원 입니다 (액면 대비 -0.14%). 중도상환 금액은 이 공정가액을 기초로 산정되므로 발행 직후 중도상환 시에도 원금손실이 발생할 수 있습니다."
    },
-   "schedule": [],
-   "matBarrier": null,
+   "schedule": [
+    {
+     "seq": 1,
+     "months": 12,
+     "barrier": 500,
+     "payRate": 103.9102,
+     "annRate": 3.9209,
+     "evalDate": "2027-09-01",
+     "maturity": true
+    }
+   ],
+   "matBarrier": 500,
    "instrument": "파생결합사채",
    "principalProtected": true,
    "monthlyIncome": null,
@@ -1813,7 +1843,7 @@ window.ELS_PROSPECTUS = {
    "derivedFrom": {
     "months": "차수별 평가일과 발행일의 차이로 계산",
     "midPriceDate": "기초자산 소재지(아시아 / 非아시아)로 판정",
-    "maturityRow": "만기 배리어·만기일을 표 마지막 행으로 추가",
+    "maturityRow": "만기 배리어·만기일을 표 마지막 행으로 추가 (지급률은 손익구조 표의 만기상환 칸)",
     "riskGradeNote": "투자설명서 「목표시장 설정 및 설정 근거」 표(위험추구성향·손실감내능력·지식과 경험·투자기간)를 문장으로 옮김",
     "riskGradeLabel": "등급 숫자와 등급명 중 제목에 있는 쪽에서 나머지를 채움 (문서가 밝히는 1:1 대응)",
     "lossExample": "원금지급형 — 중도상환·발행사 신용위험만 손실 요인"
@@ -1826,7 +1856,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260902000080",
    "rcpNo": "20260902000080",
    "docDate": "2026-09-02",
-   "collectedAt": "2026-09-10T00:56:43.155Z",
+   "collectedAt": "2026-09-10T14:06:50.023Z",
    "fields": {
     "name": "미래에셋증권 제4068회 파생결합사채(주가연계파생결합사채)(낮은위험)",
     "issuer": "미래에셋증권",
@@ -1857,8 +1887,18 @@ window.ELS_PROSPECTUS = {
     "coolNote": "이 회차의 투자설명서에는 숙려제도 대상 청약기간과 숙려기간이 정해져 있지 않습니다. 파생결합사채(원금지급형)는 고난도 금융투자상품이 아니어서 청약 숙려제도 적용 대상이 아닙니다.",
     "fairValueNote": "2026년 9월 1일 기준 이 증권의 공정가격은 액면 10,000원 당 9,974.96원 입니다 (액면 대비 -0.25%). 중도상환 금액은 이 공정가액을 기초로 산정되므로 발행 직후 중도상환 시에도 원금손실이 발생할 수 있습니다."
    },
-   "schedule": [],
-   "matBarrier": null,
+   "schedule": [
+    {
+     "seq": 1,
+     "months": 18,
+     "barrier": 500,
+     "payRate": 106.2089,
+     "annRate": 4.1506,
+     "evalDate": "2028-02-29",
+     "maturity": true
+    }
+   ],
+   "matBarrier": 500,
    "instrument": "파생결합사채",
    "principalProtected": true,
    "monthlyIncome": null,
@@ -1876,7 +1916,7 @@ window.ELS_PROSPECTUS = {
    "derivedFrom": {
     "months": "차수별 평가일과 발행일의 차이로 계산",
     "midPriceDate": "기초자산 소재지(아시아 / 非아시아)로 판정",
-    "maturityRow": "만기 배리어·만기일을 표 마지막 행으로 추가",
+    "maturityRow": "만기 배리어·만기일을 표 마지막 행으로 추가 (지급률은 손익구조 표의 만기상환 칸)",
     "riskGradeNote": "투자설명서 「목표시장 설정 및 설정 근거」 표(위험추구성향·손실감내능력·지식과 경험·투자기간)를 문장으로 옮김",
     "riskGradeLabel": "등급 숫자와 등급명 중 제목에 있는 쪽에서 나머지를 채움 (문서가 밝히는 1:1 대응)",
     "lossExample": "원금지급형 — 중도상환·발행사 신용위험만 손실 요인"
@@ -1889,7 +1929,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260902000017",
    "rcpNo": "20260902000017",
    "docDate": "2026-09-02",
-   "collectedAt": "2026-09-10T00:56:43.155Z",
+   "collectedAt": "2026-09-10T14:06:50.023Z",
    "fields": {
     "name": "미래에셋증권 제4069회 파생결합사채(주가연계파생결합사채)(낮은위험)(상품위험등급:5등급)",
     "issuer": "미래에셋증권",
@@ -1965,7 +2005,7 @@ window.ELS_PROSPECTUS = {
      "seq": 6,
      "months": 36,
      "barrier": 70,
-     "payRate": 100,
+     "payRate": 115.15,
      "annRate": 5.05,
      "evalDate": "2029-09-14",
      "maturity": true
@@ -1989,7 +2029,7 @@ window.ELS_PROSPECTUS = {
    "derivedFrom": {
     "months": "차수별 평가일과 발행일의 차이로 계산",
     "midPriceDate": "기초자산 소재지(아시아 / 非아시아)로 판정",
-    "maturityRow": "만기 배리어·만기일을 표 마지막 행으로 추가",
+    "maturityRow": "만기 배리어·만기일을 표 마지막 행으로 추가 (지급률은 손익구조 표의 만기상환 칸)",
     "riskGradeNote": "투자설명서 「목표시장 설정 및 설정 근거」 표(위험추구성향·손실감내능력·지식과 경험·투자기간)를 문장으로 옮김",
     "riskGradeLabel": "등급 숫자와 등급명 중 제목에 있는 쪽에서 나머지를 채움 (문서가 밝히는 1:1 대응)",
     "lossExample": "원금지급형 — 중도상환·발행사 신용위험만 손실 요인"
@@ -2002,7 +2042,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260902000017",
    "rcpNo": "20260902000017",
    "docDate": "2026-09-02",
-   "collectedAt": "2026-09-10T00:56:43.155Z",
+   "collectedAt": "2026-09-10T14:06:50.023Z",
    "fields": {
     "name": "미래에셋증권 제4070회 파생결합사채(주가연계파생결합사채)(낮은위험)(상품위험등급:5등급)",
     "issuer": "미래에셋증권",
@@ -2078,7 +2118,7 @@ window.ELS_PROSPECTUS = {
      "seq": 6,
      "months": 36,
      "barrier": 80,
-     "payRate": 100,
+     "payRate": 119.05,
      "annRate": 6.35,
      "evalDate": "2029-09-14",
      "maturity": true
@@ -2102,7 +2142,7 @@ window.ELS_PROSPECTUS = {
    "derivedFrom": {
     "months": "차수별 평가일과 발행일의 차이로 계산",
     "midPriceDate": "기초자산 소재지(아시아 / 非아시아)로 판정",
-    "maturityRow": "만기 배리어·만기일을 표 마지막 행으로 추가",
+    "maturityRow": "만기 배리어·만기일을 표 마지막 행으로 추가 (지급률은 손익구조 표의 만기상환 칸)",
     "riskGradeNote": "투자설명서 「목표시장 설정 및 설정 근거」 표(위험추구성향·손실감내능력·지식과 경험·투자기간)를 문장으로 옮김",
     "riskGradeLabel": "등급 숫자와 등급명 중 제목에 있는 쪽에서 나머지를 채움 (문서가 밝히는 1:1 대응)",
     "lossExample": "원금지급형 — 중도상환·발행사 신용위험만 손실 요인"
@@ -2115,7 +2155,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260901000116",
    "rcpNo": "20260901000116",
    "docDate": "2026-09-01",
-   "collectedAt": "2026-09-10T00:56:43.155Z",
+   "collectedAt": "2026-09-10T14:06:50.023Z",
    "fields": {
     "name": "미래에셋증권 제4071회 파생결합사채(주가연계파생결합사채)(낮은위험)(상품위험등급:5등급)",
     "issuer": "미래에셋증권",
@@ -2221,7 +2261,7 @@ window.ELS_PROSPECTUS = {
    "derivedFrom": {
     "months": "차수별 평가일과 발행일의 차이로 계산",
     "midPriceDate": "기초자산 소재지(아시아 / 非아시아)로 판정",
-    "maturityRow": "만기 배리어·만기일을 표 마지막 행으로 추가",
+    "maturityRow": "만기 배리어·만기일을 표 마지막 행으로 추가 (지급률은 손익구조 표의 만기상환 칸)",
     "riskGradeNote": "투자설명서 「목표시장 설정 및 설정 근거」 표(위험추구성향·손실감내능력·지식과 경험·투자기간)를 문장으로 옮김",
     "riskGradeLabel": "등급 숫자와 등급명 중 제목에 있는 쪽에서 나머지를 채움 (문서가 밝히는 1:1 대응)",
     "lossExample": "원금지급형 — 중도상환·발행사 신용위험만 손실 요인"
@@ -2234,7 +2274,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260901000116",
    "rcpNo": "20260901000116",
    "docDate": "2026-09-01",
-   "collectedAt": "2026-09-10T00:56:43.155Z",
+   "collectedAt": "2026-09-10T14:06:50.023Z",
    "fields": {
     "name": "미래에셋증권 제4072회 파생결합사채(주가연계파생결합사채)(낮은위험)(상품위험등급:5등급)",
     "issuer": "미래에셋증권",
@@ -2340,7 +2380,7 @@ window.ELS_PROSPECTUS = {
    "derivedFrom": {
     "months": "차수별 평가일과 발행일의 차이로 계산",
     "midPriceDate": "기초자산 소재지(아시아 / 非아시아)로 판정",
-    "maturityRow": "만기 배리어·만기일을 표 마지막 행으로 추가",
+    "maturityRow": "만기 배리어·만기일을 표 마지막 행으로 추가 (지급률은 손익구조 표의 만기상환 칸)",
     "riskGradeNote": "투자설명서 「목표시장 설정 및 설정 근거」 표(위험추구성향·손실감내능력·지식과 경험·투자기간)를 문장으로 옮김",
     "riskGradeLabel": "등급 숫자와 등급명 중 제목에 있는 쪽에서 나머지를 채움 (문서가 밝히는 1:1 대응)",
     "lossExample": "원금지급형 — 중도상환·발행사 신용위험만 손실 요인"
@@ -2353,7 +2393,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260901000116",
    "rcpNo": "20260901000116",
    "docDate": "2026-09-01",
-   "collectedAt": "2026-09-10T00:56:43.155Z",
+   "collectedAt": "2026-09-10T14:06:50.023Z",
    "fields": {
     "name": "미래에셋증권 제4073회 파생결합사채(주가연계파생결합사채)(낮은위험)(상품위험등급:5등급)",
     "issuer": "미래에셋증권",
@@ -2459,7 +2499,7 @@ window.ELS_PROSPECTUS = {
    "derivedFrom": {
     "months": "차수별 평가일과 발행일의 차이로 계산",
     "midPriceDate": "기초자산 소재지(아시아 / 非아시아)로 판정",
-    "maturityRow": "만기 배리어·만기일을 표 마지막 행으로 추가",
+    "maturityRow": "만기 배리어·만기일을 표 마지막 행으로 추가 (지급률은 손익구조 표의 만기상환 칸)",
     "riskGradeNote": "투자설명서 「목표시장 설정 및 설정 근거」 표(위험추구성향·손실감내능력·지식과 경험·투자기간)를 문장으로 옮김",
     "riskGradeLabel": "등급 숫자와 등급명 중 제목에 있는 쪽에서 나머지를 채움 (문서가 밝히는 1:1 대응)",
     "lossExample": "원금지급형 — 중도상환·발행사 신용위험만 손실 요인"
@@ -2472,7 +2512,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260904000185",
    "rcpNo": "20260904000185",
    "docDate": "2026-09-04",
-   "collectedAt": "2026-09-10T00:56:43.155Z",
+   "collectedAt": "2026-09-10T14:06:50.023Z",
    "fields": {
     "name": "미래에셋증권 제4075회 파생결합사채(주가연계파생결합사채)(낮은위험)(상품위험등급:5등급)",
     "issuer": "미래에셋증권",
@@ -2578,7 +2618,7 @@ window.ELS_PROSPECTUS = {
    "derivedFrom": {
     "months": "차수별 평가일과 발행일의 차이로 계산",
     "midPriceDate": "기초자산 소재지(아시아 / 非아시아)로 판정",
-    "maturityRow": "만기 배리어·만기일을 표 마지막 행으로 추가",
+    "maturityRow": "만기 배리어·만기일을 표 마지막 행으로 추가 (지급률은 손익구조 표의 만기상환 칸)",
     "riskGradeNote": "투자설명서 「목표시장 설정 및 설정 근거」 표(위험추구성향·손실감내능력·지식과 경험·투자기간)를 문장으로 옮김",
     "riskGradeLabel": "등급 숫자와 등급명 중 제목에 있는 쪽에서 나머지를 채움 (문서가 밝히는 1:1 대응)",
     "lossExample": "원금지급형 — 중도상환·발행사 신용위험만 손실 요인"
@@ -2593,7 +2633,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260904000185",
    "rcpNo": "20260904000185",
    "docDate": "2026-09-04",
-   "collectedAt": "2026-09-10T00:56:43.155Z",
+   "collectedAt": "2026-09-10T14:06:50.023Z",
    "fields": {
     "name": "미래에셋증권 제4076회 파생결합사채(주가연계파생결합사채)(낮은위험)(상품위험등급:5등급)",
     "issuer": "미래에셋증권",
@@ -2642,7 +2682,7 @@ window.ELS_PROSPECTUS = {
    "derivedFrom": {
     "months": "차수별 평가일과 발행일의 차이로 계산",
     "midPriceDate": "기초자산 소재지(아시아 / 非아시아)로 판정",
-    "maturityRow": "만기 배리어·만기일을 표 마지막 행으로 추가",
+    "maturityRow": "만기 배리어·만기일을 표 마지막 행으로 추가 (지급률은 손익구조 표의 만기상환 칸)",
     "riskGradeNote": "투자설명서 「목표시장 설정 및 설정 근거」 표(위험추구성향·손실감내능력·지식과 경험·투자기간)를 문장으로 옮김",
     "riskGradeLabel": "등급 숫자와 등급명 중 제목에 있는 쪽에서 나머지를 채움 (문서가 밝히는 1:1 대응)",
     "lossExample": "원금지급형 — 중도상환·발행사 신용위험만 손실 요인"
@@ -2655,7 +2695,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260904000185",
    "rcpNo": "20260904000185",
    "docDate": "2026-09-04",
-   "collectedAt": "2026-09-10T00:56:43.155Z",
+   "collectedAt": "2026-09-10T14:06:50.023Z",
    "fields": {
     "name": "미래에셋증권 제4077회 파생결합사채(주가연계파생결합사채)(낮은위험)(상품위험등급:5등급)",
     "issuer": "미래에셋증권",
@@ -2704,7 +2744,7 @@ window.ELS_PROSPECTUS = {
    "derivedFrom": {
     "months": "차수별 평가일과 발행일의 차이로 계산",
     "midPriceDate": "기초자산 소재지(아시아 / 非아시아)로 판정",
-    "maturityRow": "만기 배리어·만기일을 표 마지막 행으로 추가",
+    "maturityRow": "만기 배리어·만기일을 표 마지막 행으로 추가 (지급률은 손익구조 표의 만기상환 칸)",
     "riskGradeNote": "투자설명서 「목표시장 설정 및 설정 근거」 표(위험추구성향·손실감내능력·지식과 경험·투자기간)를 문장으로 옮김",
     "riskGradeLabel": "등급 숫자와 등급명 중 제목에 있는 쪽에서 나머지를 채움 (문서가 밝히는 1:1 대응)",
     "lossExample": "원금지급형 — 중도상환·발행사 신용위험만 손실 요인"
@@ -2717,7 +2757,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260904000185",
    "rcpNo": "20260904000185",
    "docDate": "2026-09-04",
-   "collectedAt": "2026-09-10T00:56:43.155Z",
+   "collectedAt": "2026-09-10T14:06:50.023Z",
    "fields": {
     "name": "미래에셋증권 제4078회 파생결합사채(주가연계파생결합사채)(낮은위험)(상품위험등급:5등급)",
     "issuer": "미래에셋증권",
@@ -2766,7 +2806,7 @@ window.ELS_PROSPECTUS = {
    "derivedFrom": {
     "months": "차수별 평가일과 발행일의 차이로 계산",
     "midPriceDate": "기초자산 소재지(아시아 / 非아시아)로 판정",
-    "maturityRow": "만기 배리어·만기일을 표 마지막 행으로 추가",
+    "maturityRow": "만기 배리어·만기일을 표 마지막 행으로 추가 (지급률은 손익구조 표의 만기상환 칸)",
     "riskGradeNote": "투자설명서 「목표시장 설정 및 설정 근거」 표(위험추구성향·손실감내능력·지식과 경험·투자기간)를 문장으로 옮김",
     "riskGradeLabel": "등급 숫자와 등급명 중 제목에 있는 쪽에서 나머지를 채움 (문서가 밝히는 1:1 대응)",
     "lossExample": "원금지급형 — 중도상환·발행사 신용위험만 손실 요인"
@@ -2779,7 +2819,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260908000216",
    "rcpNo": "20260908000216",
    "docDate": "2026-09-08",
-   "collectedAt": "2026-09-10T00:56:43.157Z",
+   "collectedAt": "2026-09-10T14:06:50.026Z",
    "fields": {
     "name": "미래에셋증권 제4080회 파생결합사채(주가연계파생결합사채)(낮은위험)(상품위험등급:5등급)",
     "issuer": "미래에셋증권",
@@ -2885,7 +2925,7 @@ window.ELS_PROSPECTUS = {
    "derivedFrom": {
     "months": "차수별 평가일과 발행일의 차이로 계산",
     "midPriceDate": "기초자산 소재지(아시아 / 非아시아)로 판정",
-    "maturityRow": "만기 배리어·만기일을 표 마지막 행으로 추가",
+    "maturityRow": "만기 배리어·만기일을 표 마지막 행으로 추가 (지급률은 손익구조 표의 만기상환 칸)",
     "riskGradeNote": "투자설명서 「목표시장 설정 및 설정 근거」 표(위험추구성향·손실감내능력·지식과 경험·투자기간)를 문장으로 옮김",
     "riskGradeLabel": "등급 숫자와 등급명 중 제목에 있는 쪽에서 나머지를 채움 (문서가 밝히는 1:1 대응)",
     "lossExample": "원금지급형 — 중도상환·발행사 신용위험만 손실 요인"
@@ -2898,7 +2938,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260908000216",
    "rcpNo": "20260908000216",
    "docDate": "2026-09-08",
-   "collectedAt": "2026-09-10T00:56:43.157Z",
+   "collectedAt": "2026-09-10T14:06:50.026Z",
    "fields": {
     "name": "미래에셋증권 제4081회 파생결합사채(주가연계파생결합사채)(낮은위험)(상품위험등급:5등급)",
     "issuer": "미래에셋증권",
@@ -3004,7 +3044,7 @@ window.ELS_PROSPECTUS = {
    "derivedFrom": {
     "months": "차수별 평가일과 발행일의 차이로 계산",
     "midPriceDate": "기초자산 소재지(아시아 / 非아시아)로 판정",
-    "maturityRow": "만기 배리어·만기일을 표 마지막 행으로 추가",
+    "maturityRow": "만기 배리어·만기일을 표 마지막 행으로 추가 (지급률은 손익구조 표의 만기상환 칸)",
     "riskGradeNote": "투자설명서 「목표시장 설정 및 설정 근거」 표(위험추구성향·손실감내능력·지식과 경험·투자기간)를 문장으로 옮김",
     "riskGradeLabel": "등급 숫자와 등급명 중 제목에 있는 쪽에서 나머지를 채움 (문서가 밝히는 1:1 대응)",
     "lossExample": "원금지급형 — 중도상환·발행사 신용위험만 손실 요인"
@@ -3017,7 +3057,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260909000201",
    "rcpNo": "20260909000201",
    "docDate": "2026-09-09",
-   "collectedAt": "2026-09-10T00:56:43.157Z",
+   "collectedAt": "2026-09-10T14:06:50.026Z",
    "fields": {
     "name": "미래에셋증권 제4082회 파생결합사채(주가연계파생결합사채)(낮은위험)(상품위험등급:5등급)",
     "issuer": "미래에셋증권",
@@ -3171,7 +3211,7 @@ window.ELS_PROSPECTUS = {
    "derivedFrom": {
     "months": "차수별 평가일과 발행일의 차이로 계산",
     "midPriceDate": "기초자산 소재지(아시아 / 非아시아)로 판정",
-    "maturityRow": "만기 배리어·만기일을 표 마지막 행으로 추가",
+    "maturityRow": "만기 배리어·만기일을 표 마지막 행으로 추가 (지급률은 손익구조 표의 만기상환 칸)",
     "riskGradeNote": "투자설명서 「목표시장 설정 및 설정 근거」 표(위험추구성향·손실감내능력·지식과 경험·투자기간)를 문장으로 옮김",
     "riskGradeLabel": "등급 숫자와 등급명 중 제목에 있는 쪽에서 나머지를 채움 (문서가 밝히는 1:1 대응)",
     "lossExample": "원금지급형 — 중도상환·발행사 신용위험만 손실 요인"
@@ -3184,7 +3224,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260909000253",
    "rcpNo": "20260909000253",
    "docDate": "2026-09-09",
-   "collectedAt": "2026-09-10T00:56:43.157Z",
+   "collectedAt": "2026-09-10T14:06:50.026Z",
    "fields": {
     "name": "미래에셋증권 제4083회 파생결합사채(주가연계파생결합사채)(낮은위험)(상품위험등급:5등급)",
     "issuer": "미래에셋증권",
@@ -3290,7 +3330,7 @@ window.ELS_PROSPECTUS = {
    "derivedFrom": {
     "months": "차수별 평가일과 발행일의 차이로 계산",
     "midPriceDate": "기초자산 소재지(아시아 / 非아시아)로 판정",
-    "maturityRow": "만기 배리어·만기일을 표 마지막 행으로 추가",
+    "maturityRow": "만기 배리어·만기일을 표 마지막 행으로 추가 (지급률은 손익구조 표의 만기상환 칸)",
     "riskGradeNote": "투자설명서 「목표시장 설정 및 설정 근거」 표(위험추구성향·손실감내능력·지식과 경험·투자기간)를 문장으로 옮김",
     "riskGradeLabel": "등급 숫자와 등급명 중 제목에 있는 쪽에서 나머지를 채움 (문서가 밝히는 1:1 대응)",
     "lossExample": "원금지급형 — 중도상환·발행사 신용위험만 손실 요인"
@@ -3303,7 +3343,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260825000207",
    "rcpNo": "20260825000207",
    "docDate": "2026-08-25",
-   "collectedAt": "2026-09-10T00:56:43.153Z",
+   "collectedAt": "2026-09-10T14:06:50.021Z",
    "fields": {
     "name": "미래에셋증권 제36711회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
     "issuer": "미래에셋증권",
@@ -3402,7 +3442,7 @@ window.ELS_PROSPECTUS = {
    "derivedFrom": {
     "months": "차수별 평가일과 발행일의 차이로 계산",
     "midPriceDate": "기초자산 소재지(아시아 / 非아시아)로 판정",
-    "maturityRow": "만기 배리어·만기일을 표 마지막 행으로 추가",
+    "maturityRow": "만기 배리어·만기일을 표 마지막 행으로 추가 (지급률은 손익구조 표의 만기상환 칸)",
     "riskGradeNote": "투자설명서 「목표시장 설정 및 설정 근거」 표(위험추구성향·손실감내능력·지식과 경험·투자기간)를 문장으로 옮김",
     "riskGradeLabel": "등급 숫자와 등급명 중 제목에 있는 쪽에서 나머지를 채움 (문서가 밝히는 1:1 대응)",
     "lossExample": "노낙인 — 만기 배리어 조항이 유일한 손실조건"
@@ -3415,7 +3455,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260825000207",
    "rcpNo": "20260825000207",
    "docDate": "2026-08-25",
-   "collectedAt": "2026-09-10T00:56:43.153Z",
+   "collectedAt": "2026-09-10T14:06:50.021Z",
    "fields": {
     "name": "미래에셋증권 제36712회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
     "issuer": "미래에셋증권",
@@ -3514,7 +3554,7 @@ window.ELS_PROSPECTUS = {
    "derivedFrom": {
     "months": "차수별 평가일과 발행일의 차이로 계산",
     "midPriceDate": "기초자산 소재지(아시아 / 非아시아)로 판정",
-    "maturityRow": "만기 배리어·만기일을 표 마지막 행으로 추가",
+    "maturityRow": "만기 배리어·만기일을 표 마지막 행으로 추가 (지급률은 손익구조 표의 만기상환 칸)",
     "riskGradeNote": "투자설명서 「목표시장 설정 및 설정 근거」 표(위험추구성향·손실감내능력·지식과 경험·투자기간)를 문장으로 옮김",
     "riskGradeLabel": "등급 숫자와 등급명 중 제목에 있는 쪽에서 나머지를 채움 (문서가 밝히는 1:1 대응)",
     "lossExample": "노낙인 — 만기 배리어 조항이 유일한 손실조건"
@@ -3527,7 +3567,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260901000204",
    "rcpNo": "20260901000204",
    "docDate": "2026-09-01",
-   "collectedAt": "2026-09-10T00:56:43.155Z",
+   "collectedAt": "2026-09-10T14:06:50.023Z",
    "fields": {
     "name": "미래에셋증권 제36716회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
     "issuer": "미래에셋증권",
@@ -3626,7 +3666,7 @@ window.ELS_PROSPECTUS = {
    "derivedFrom": {
     "months": "차수별 평가일과 발행일의 차이로 계산",
     "midPriceDate": "기초자산 소재지(아시아 / 非아시아)로 판정",
-    "maturityRow": "만기 배리어·만기일을 표 마지막 행으로 추가",
+    "maturityRow": "만기 배리어·만기일을 표 마지막 행으로 추가 (지급률은 손익구조 표의 만기상환 칸)",
     "riskGradeNote": "투자설명서 「목표시장 설정 및 설정 근거」 표(위험추구성향·손실감내능력·지식과 경험·투자기간)를 문장으로 옮김",
     "riskGradeLabel": "등급 숫자와 등급명 중 제목에 있는 쪽에서 나머지를 채움 (문서가 밝히는 1:1 대응)",
     "lossExample": "노낙인 — 만기 배리어 조항이 유일한 손실조건"
@@ -3639,7 +3679,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260901000204",
    "rcpNo": "20260901000204",
    "docDate": "2026-09-01",
-   "collectedAt": "2026-09-10T00:56:43.155Z",
+   "collectedAt": "2026-09-10T14:06:50.023Z",
    "fields": {
     "name": "미래에셋증권 제36717회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
     "issuer": "미래에셋증권",
@@ -3675,7 +3715,7 @@ window.ELS_PROSPECTUS = {
      "seq": 1,
      "months": 36,
      "barrier": 40,
-     "payRate": null,
+     "payRate": 100,
      "annRate": 7.2,
      "evalDate": "2029-09-18",
      "maturity": true
@@ -3704,7 +3744,7 @@ window.ELS_PROSPECTUS = {
    "derivedFrom": {
     "months": "차수별 평가일과 발행일의 차이로 계산",
     "midPriceDate": "기초자산 소재지(아시아 / 非아시아)로 판정",
-    "maturityRow": "만기 배리어·만기일을 표 마지막 행으로 추가",
+    "maturityRow": "만기 배리어·만기일을 표 마지막 행으로 추가 (지급률은 손익구조 표의 만기상환 칸)",
     "riskGradeNote": "투자설명서 「목표시장 설정 및 설정 근거」 표(위험추구성향·손실감내능력·지식과 경험·투자기간)를 문장으로 옮김",
     "riskGradeLabel": "등급 숫자와 등급명 중 제목에 있는 쪽에서 나머지를 채움 (문서가 밝히는 1:1 대응)",
     "lossExample": "노낙인 — 만기 배리어 조항이 유일한 손실조건"
@@ -3717,7 +3757,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260908000224",
    "rcpNo": "20260908000224",
    "docDate": "2026-09-08",
-   "collectedAt": "2026-09-10T00:56:43.157Z",
+   "collectedAt": "2026-09-10T14:06:50.026Z",
    "fields": {
     "name": "미래에셋증권 제36722회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
     "issuer": "미래에셋증권",
@@ -3753,7 +3793,7 @@ window.ELS_PROSPECTUS = {
      "seq": 1,
      "months": 36,
      "barrier": 60,
-     "payRate": null,
+     "payRate": 100,
      "annRate": 8.82,
      "evalDate": "2029-10-17",
      "maturity": true
@@ -3782,7 +3822,7 @@ window.ELS_PROSPECTUS = {
    "derivedFrom": {
     "months": "차수별 평가일과 발행일의 차이로 계산",
     "midPriceDate": "기초자산 소재지(아시아 / 非아시아)로 판정",
-    "maturityRow": "만기 배리어·만기일을 표 마지막 행으로 추가",
+    "maturityRow": "만기 배리어·만기일을 표 마지막 행으로 추가 (지급률은 손익구조 표의 만기상환 칸)",
     "riskGradeNote": "투자설명서 「목표시장 설정 및 설정 근거」 표(위험추구성향·손실감내능력·지식과 경험·투자기간)를 문장으로 옮김",
     "riskGradeLabel": "등급 숫자와 등급명 중 제목에 있는 쪽에서 나머지를 채움 (문서가 밝히는 1:1 대응)",
     "lossExample": "노낙인 — 만기 배리어 조항이 유일한 손실조건"
@@ -3795,7 +3835,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260821000466",
    "rcpNo": "20260821000466",
    "docDate": "2026-08-21",
-   "collectedAt": "2026-09-10T00:56:43.153Z",
+   "collectedAt": "2026-09-10T14:06:50.021Z",
    "fields": {
     "name": "미래에셋증권 제36998회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
     "issuer": "미래에셋증권",
@@ -3894,7 +3934,7 @@ window.ELS_PROSPECTUS = {
    "derivedFrom": {
     "months": "차수별 평가일과 발행일의 차이로 계산",
     "midPriceDate": "기초자산 소재지(아시아 / 非아시아)로 판정",
-    "maturityRow": "만기 배리어·만기일을 표 마지막 행으로 추가",
+    "maturityRow": "만기 배리어·만기일을 표 마지막 행으로 추가 (지급률은 손익구조 표의 만기상환 칸)",
     "riskGradeNote": "투자설명서 「목표시장 설정 및 설정 근거」 표(위험추구성향·손실감내능력·지식과 경험·투자기간)를 문장으로 옮김",
     "riskGradeLabel": "등급 숫자와 등급명 중 제목에 있는 쪽에서 나머지를 채움 (문서가 밝히는 1:1 대응)",
     "lossExample": "노낙인 — 만기 배리어 조항이 유일한 손실조건"
@@ -3907,7 +3947,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260821000466",
    "rcpNo": "20260821000466",
    "docDate": "2026-08-21",
-   "collectedAt": "2026-09-10T00:56:43.153Z",
+   "collectedAt": "2026-09-10T14:06:50.021Z",
    "fields": {
     "name": "미래에셋증권 제36999회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
     "issuer": "미래에셋증권",
@@ -3943,7 +3983,7 @@ window.ELS_PROSPECTUS = {
      "seq": 1,
      "months": 36,
      "barrier": 50,
-     "payRate": null,
+     "payRate": 100,
      "annRate": 9.36,
      "evalDate": "2029-08-30",
      "maturity": true
@@ -3972,7 +4012,7 @@ window.ELS_PROSPECTUS = {
    "derivedFrom": {
     "months": "차수별 평가일과 발행일의 차이로 계산",
     "midPriceDate": "기초자산 소재지(아시아 / 非아시아)로 판정",
-    "maturityRow": "만기 배리어·만기일을 표 마지막 행으로 추가",
+    "maturityRow": "만기 배리어·만기일을 표 마지막 행으로 추가 (지급률은 손익구조 표의 만기상환 칸)",
     "riskGradeNote": "투자설명서 「목표시장 설정 및 설정 근거」 표(위험추구성향·손실감내능력·지식과 경험·투자기간)를 문장으로 옮김",
     "riskGradeLabel": "등급 숫자와 등급명 중 제목에 있는 쪽에서 나머지를 채움 (문서가 밝히는 1:1 대응)",
     "lossExample": "노낙인 — 만기 배리어 조항이 유일한 손실조건"
@@ -3985,7 +4025,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260821000193",
    "rcpNo": "20260821000193",
    "docDate": "2026-08-21",
-   "collectedAt": "2026-09-10T00:56:43.152Z",
+   "collectedAt": "2026-09-10T14:06:50.020Z",
    "fields": {
     "name": "미래에셋증권 제38031회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
     "issuer": "미래에셋증권",
@@ -4086,7 +4126,7 @@ window.ELS_PROSPECTUS = {
    "derivedFrom": {
     "months": "차수별 평가일과 발행일의 차이로 계산",
     "midPriceDate": "기초자산 소재지(아시아 / 非아시아)로 판정",
-    "maturityRow": "만기 배리어·만기일을 표 마지막 행으로 추가",
+    "maturityRow": "만기 배리어·만기일을 표 마지막 행으로 추가 (지급률은 손익구조 표의 만기상환 칸)",
     "riskGradeNote": "투자설명서 「목표시장 설정 및 설정 근거」 표(위험추구성향·손실감내능력·지식과 경험·투자기간)를 문장으로 옮김",
     "riskGradeLabel": "등급 숫자와 등급명 중 제목에 있는 쪽에서 나머지를 채움 (문서가 밝히는 1:1 대응)",
     "lossExample": "낙인 배리어 + 만기 배리어 조항"
@@ -4108,7 +4148,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260821000193",
    "rcpNo": "20260821000193",
    "docDate": "2026-08-21",
-   "collectedAt": "2026-09-10T00:56:43.152Z",
+   "collectedAt": "2026-09-10T14:06:50.020Z",
    "fields": {
     "name": "미래에셋증권 제38032회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
     "issuer": "미래에셋증권",
@@ -4209,7 +4249,7 @@ window.ELS_PROSPECTUS = {
    "derivedFrom": {
     "months": "차수별 평가일과 발행일의 차이로 계산",
     "midPriceDate": "기초자산 소재지(아시아 / 非아시아)로 판정",
-    "maturityRow": "만기 배리어·만기일을 표 마지막 행으로 추가",
+    "maturityRow": "만기 배리어·만기일을 표 마지막 행으로 추가 (지급률은 손익구조 표의 만기상환 칸)",
     "riskGradeNote": "투자설명서 「목표시장 설정 및 설정 근거」 표(위험추구성향·손실감내능력·지식과 경험·투자기간)를 문장으로 옮김",
     "riskGradeLabel": "등급 숫자와 등급명 중 제목에 있는 쪽에서 나머지를 채움 (문서가 밝히는 1:1 대응)",
     "lossExample": "낙인 배리어 + 만기 배리어 조항"
@@ -4231,7 +4271,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260821000193",
    "rcpNo": "20260821000193",
    "docDate": "2026-08-21",
-   "collectedAt": "2026-09-10T00:56:43.152Z",
+   "collectedAt": "2026-09-10T14:06:50.020Z",
    "fields": {
     "name": "미래에셋증권 제38033회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
     "issuer": "미래에셋증권",
@@ -4332,7 +4372,7 @@ window.ELS_PROSPECTUS = {
    "derivedFrom": {
     "months": "차수별 평가일과 발행일의 차이로 계산",
     "midPriceDate": "기초자산 소재지(아시아 / 非아시아)로 판정",
-    "maturityRow": "만기 배리어·만기일을 표 마지막 행으로 추가",
+    "maturityRow": "만기 배리어·만기일을 표 마지막 행으로 추가 (지급률은 손익구조 표의 만기상환 칸)",
     "riskGradeNote": "투자설명서 「목표시장 설정 및 설정 근거」 표(위험추구성향·손실감내능력·지식과 경험·투자기간)를 문장으로 옮김",
     "riskGradeLabel": "등급 숫자와 등급명 중 제목에 있는 쪽에서 나머지를 채움 (문서가 밝히는 1:1 대응)",
     "lossExample": "낙인 배리어 + 만기 배리어 조항"
@@ -4354,7 +4394,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260821000193",
    "rcpNo": "20260821000193",
    "docDate": "2026-08-21",
-   "collectedAt": "2026-09-10T00:56:43.152Z",
+   "collectedAt": "2026-09-10T14:06:50.020Z",
    "fields": {
     "name": "미래에셋증권 제38034회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
     "issuer": "미래에셋증권",
@@ -4455,7 +4495,7 @@ window.ELS_PROSPECTUS = {
    "derivedFrom": {
     "months": "차수별 평가일과 발행일의 차이로 계산",
     "midPriceDate": "기초자산 소재지(아시아 / 非아시아)로 판정",
-    "maturityRow": "만기 배리어·만기일을 표 마지막 행으로 추가",
+    "maturityRow": "만기 배리어·만기일을 표 마지막 행으로 추가 (지급률은 손익구조 표의 만기상환 칸)",
     "riskGradeNote": "투자설명서 「목표시장 설정 및 설정 근거」 표(위험추구성향·손실감내능력·지식과 경험·투자기간)를 문장으로 옮김",
     "riskGradeLabel": "등급 숫자와 등급명 중 제목에 있는 쪽에서 나머지를 채움 (문서가 밝히는 1:1 대응)",
     "lossExample": "낙인 배리어 + 만기 배리어 조항"
@@ -4477,7 +4517,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260821000193",
    "rcpNo": "20260821000193",
    "docDate": "2026-08-21",
-   "collectedAt": "2026-09-10T00:56:43.152Z",
+   "collectedAt": "2026-09-10T14:06:50.020Z",
    "fields": {
     "name": "미래에셋증권 제38035회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
     "issuer": "미래에셋증권",
@@ -4578,7 +4618,7 @@ window.ELS_PROSPECTUS = {
    "derivedFrom": {
     "months": "차수별 평가일과 발행일의 차이로 계산",
     "midPriceDate": "기초자산 소재지(아시아 / 非아시아)로 판정",
-    "maturityRow": "만기 배리어·만기일을 표 마지막 행으로 추가",
+    "maturityRow": "만기 배리어·만기일을 표 마지막 행으로 추가 (지급률은 손익구조 표의 만기상환 칸)",
     "riskGradeNote": "투자설명서 「목표시장 설정 및 설정 근거」 표(위험추구성향·손실감내능력·지식과 경험·투자기간)를 문장으로 옮김",
     "riskGradeLabel": "등급 숫자와 등급명 중 제목에 있는 쪽에서 나머지를 채움 (문서가 밝히는 1:1 대응)",
     "lossExample": "노낙인 — 만기 배리어 조항이 유일한 손실조건"
@@ -4600,7 +4640,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260821000193",
    "rcpNo": "20260821000193",
    "docDate": "2026-08-21",
-   "collectedAt": "2026-09-10T00:56:43.152Z",
+   "collectedAt": "2026-09-10T14:06:50.020Z",
    "fields": {
     "name": "미래에셋증권 제38036회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
     "issuer": "미래에셋증권",
@@ -4701,7 +4741,7 @@ window.ELS_PROSPECTUS = {
    "derivedFrom": {
     "months": "차수별 평가일과 발행일의 차이로 계산",
     "midPriceDate": "기초자산 소재지(아시아 / 非아시아)로 판정",
-    "maturityRow": "만기 배리어·만기일을 표 마지막 행으로 추가",
+    "maturityRow": "만기 배리어·만기일을 표 마지막 행으로 추가 (지급률은 손익구조 표의 만기상환 칸)",
     "riskGradeNote": "투자설명서 「목표시장 설정 및 설정 근거」 표(위험추구성향·손실감내능력·지식과 경험·투자기간)를 문장으로 옮김",
     "riskGradeLabel": "등급 숫자와 등급명 중 제목에 있는 쪽에서 나머지를 채움 (문서가 밝히는 1:1 대응)",
     "lossExample": "낙인 배리어 + 만기 배리어 조항"
@@ -4723,7 +4763,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260821000193",
    "rcpNo": "20260821000193",
    "docDate": "2026-08-21",
-   "collectedAt": "2026-09-10T00:56:43.152Z",
+   "collectedAt": "2026-09-10T14:06:50.021Z",
    "fields": {
     "name": "미래에셋증권 제38037회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
     "issuer": "미래에셋증권",
@@ -4872,7 +4912,7 @@ window.ELS_PROSPECTUS = {
    "derivedFrom": {
     "months": "차수별 평가일과 발행일의 차이로 계산",
     "midPriceDate": "기초자산 소재지(아시아 / 非아시아)로 판정",
-    "maturityRow": "만기 배리어·만기일을 표 마지막 행으로 추가",
+    "maturityRow": "만기 배리어·만기일을 표 마지막 행으로 추가 (지급률은 손익구조 표의 만기상환 칸)",
     "riskGradeNote": "투자설명서 「목표시장 설정 및 설정 근거」 표(위험추구성향·손실감내능력·지식과 경험·투자기간)를 문장으로 옮김",
     "riskGradeLabel": "등급 숫자와 등급명 중 제목에 있는 쪽에서 나머지를 채움 (문서가 밝히는 1:1 대응)",
     "lossExample": "낙인 배리어 + 만기 배리어 조항"
@@ -4894,7 +4934,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260821000193",
    "rcpNo": "20260821000193",
    "docDate": "2026-08-21",
-   "collectedAt": "2026-09-10T00:56:43.152Z",
+   "collectedAt": "2026-09-10T14:06:50.021Z",
    "fields": {
     "name": "미래에셋증권 제38038회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
     "issuer": "미래에셋증권",
@@ -4995,7 +5035,7 @@ window.ELS_PROSPECTUS = {
    "derivedFrom": {
     "months": "차수별 평가일과 발행일의 차이로 계산",
     "midPriceDate": "기초자산 소재지(아시아 / 非아시아)로 판정",
-    "maturityRow": "만기 배리어·만기일을 표 마지막 행으로 추가",
+    "maturityRow": "만기 배리어·만기일을 표 마지막 행으로 추가 (지급률은 손익구조 표의 만기상환 칸)",
     "riskGradeNote": "투자설명서 「목표시장 설정 및 설정 근거」 표(위험추구성향·손실감내능력·지식과 경험·투자기간)를 문장으로 옮김",
     "riskGradeLabel": "등급 숫자와 등급명 중 제목에 있는 쪽에서 나머지를 채움 (문서가 밝히는 1:1 대응)",
     "lossExample": "낙인 배리어 + 만기 배리어 조항"
@@ -5017,7 +5057,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260821000193",
    "rcpNo": "20260821000193",
    "docDate": "2026-08-21",
-   "collectedAt": "2026-09-10T00:56:43.152Z",
+   "collectedAt": "2026-09-10T14:06:50.021Z",
    "fields": {
     "name": "미래에셋증권 제38039회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
     "issuer": "미래에셋증권",
@@ -5166,7 +5206,7 @@ window.ELS_PROSPECTUS = {
    "derivedFrom": {
     "months": "차수별 평가일과 발행일의 차이로 계산",
     "midPriceDate": "기초자산 소재지(아시아 / 非아시아)로 판정",
-    "maturityRow": "만기 배리어·만기일을 표 마지막 행으로 추가",
+    "maturityRow": "만기 배리어·만기일을 표 마지막 행으로 추가 (지급률은 손익구조 표의 만기상환 칸)",
     "riskGradeNote": "투자설명서 「목표시장 설정 및 설정 근거」 표(위험추구성향·손실감내능력·지식과 경험·투자기간)를 문장으로 옮김",
     "riskGradeLabel": "등급 숫자와 등급명 중 제목에 있는 쪽에서 나머지를 채움 (문서가 밝히는 1:1 대응)",
     "lossExample": "낙인 배리어 + 만기 배리어 조항"
@@ -5188,7 +5228,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260821000193",
    "rcpNo": "20260821000193",
    "docDate": "2026-08-21",
-   "collectedAt": "2026-09-10T00:56:43.153Z",
+   "collectedAt": "2026-09-10T14:06:50.021Z",
    "fields": {
     "name": "미래에셋증권 제38040회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
     "issuer": "미래에셋증권",
@@ -5289,7 +5329,7 @@ window.ELS_PROSPECTUS = {
    "derivedFrom": {
     "months": "차수별 평가일과 발행일의 차이로 계산",
     "midPriceDate": "기초자산 소재지(아시아 / 非아시아)로 판정",
-    "maturityRow": "만기 배리어·만기일을 표 마지막 행으로 추가",
+    "maturityRow": "만기 배리어·만기일을 표 마지막 행으로 추가 (지급률은 손익구조 표의 만기상환 칸)",
     "riskGradeNote": "투자설명서 「목표시장 설정 및 설정 근거」 표(위험추구성향·손실감내능력·지식과 경험·투자기간)를 문장으로 옮김",
     "riskGradeLabel": "등급 숫자와 등급명 중 제목에 있는 쪽에서 나머지를 채움 (문서가 밝히는 1:1 대응)",
     "lossExample": "낙인 배리어 + 만기 배리어 조항"
@@ -5311,7 +5351,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260821000193",
    "rcpNo": "20260821000193",
    "docDate": "2026-08-21",
-   "collectedAt": "2026-09-10T00:56:43.153Z",
+   "collectedAt": "2026-09-10T14:06:50.021Z",
    "fields": {
     "name": "미래에셋증권 제38041회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
     "issuer": "미래에셋증권",
@@ -5460,7 +5500,7 @@ window.ELS_PROSPECTUS = {
    "derivedFrom": {
     "months": "차수별 평가일과 발행일의 차이로 계산",
     "midPriceDate": "기초자산 소재지(아시아 / 非아시아)로 판정",
-    "maturityRow": "만기 배리어·만기일을 표 마지막 행으로 추가",
+    "maturityRow": "만기 배리어·만기일을 표 마지막 행으로 추가 (지급률은 손익구조 표의 만기상환 칸)",
     "riskGradeNote": "투자설명서 「목표시장 설정 및 설정 근거」 표(위험추구성향·손실감내능력·지식과 경험·투자기간)를 문장으로 옮김",
     "riskGradeLabel": "등급 숫자와 등급명 중 제목에 있는 쪽에서 나머지를 채움 (문서가 밝히는 1:1 대응)",
     "lossExample": "낙인 배리어 + 만기 배리어 조항"
@@ -5482,7 +5522,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260821000193",
    "rcpNo": "20260821000193",
    "docDate": "2026-08-21",
-   "collectedAt": "2026-09-10T00:56:43.153Z",
+   "collectedAt": "2026-09-10T14:06:50.021Z",
    "fields": {
     "name": "미래에셋증권 제38042회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
     "issuer": "미래에셋증권",
@@ -5583,7 +5623,7 @@ window.ELS_PROSPECTUS = {
    "derivedFrom": {
     "months": "차수별 평가일과 발행일의 차이로 계산",
     "midPriceDate": "기초자산 소재지(아시아 / 非아시아)로 판정",
-    "maturityRow": "만기 배리어·만기일을 표 마지막 행으로 추가",
+    "maturityRow": "만기 배리어·만기일을 표 마지막 행으로 추가 (지급률은 손익구조 표의 만기상환 칸)",
     "riskGradeNote": "투자설명서 「목표시장 설정 및 설정 근거」 표(위험추구성향·손실감내능력·지식과 경험·투자기간)를 문장으로 옮김",
     "riskGradeLabel": "등급 숫자와 등급명 중 제목에 있는 쪽에서 나머지를 채움 (문서가 밝히는 1:1 대응)",
     "lossExample": "낙인 배리어 + 만기 배리어 조항"
@@ -5605,7 +5645,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260821000193",
    "rcpNo": "20260821000193",
    "docDate": "2026-08-21",
-   "collectedAt": "2026-09-10T00:56:43.153Z",
+   "collectedAt": "2026-09-10T14:06:50.021Z",
    "fields": {
     "name": "미래에셋증권 제38043회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
     "issuer": "미래에셋증권",
@@ -5706,7 +5746,7 @@ window.ELS_PROSPECTUS = {
    "derivedFrom": {
     "months": "차수별 평가일과 발행일의 차이로 계산",
     "midPriceDate": "기초자산 소재지(아시아 / 非아시아)로 판정",
-    "maturityRow": "만기 배리어·만기일을 표 마지막 행으로 추가",
+    "maturityRow": "만기 배리어·만기일을 표 마지막 행으로 추가 (지급률은 손익구조 표의 만기상환 칸)",
     "riskGradeNote": "투자설명서 「목표시장 설정 및 설정 근거」 표(위험추구성향·손실감내능력·지식과 경험·투자기간)를 문장으로 옮김",
     "riskGradeLabel": "등급 숫자와 등급명 중 제목에 있는 쪽에서 나머지를 채움 (문서가 밝히는 1:1 대응)",
     "lossExample": "낙인 배리어 + 만기 배리어 조항"
@@ -5728,7 +5768,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260821000193",
    "rcpNo": "20260821000193",
    "docDate": "2026-08-21",
-   "collectedAt": "2026-09-10T00:56:43.153Z",
+   "collectedAt": "2026-09-10T14:06:50.021Z",
    "fields": {
     "name": "미래에셋증권 제38044회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
     "issuer": "미래에셋증권",
@@ -5877,7 +5917,7 @@ window.ELS_PROSPECTUS = {
    "derivedFrom": {
     "months": "차수별 평가일과 발행일의 차이로 계산",
     "midPriceDate": "기초자산 소재지(아시아 / 非아시아)로 판정",
-    "maturityRow": "만기 배리어·만기일을 표 마지막 행으로 추가",
+    "maturityRow": "만기 배리어·만기일을 표 마지막 행으로 추가 (지급률은 손익구조 표의 만기상환 칸)",
     "riskGradeNote": "투자설명서 「목표시장 설정 및 설정 근거」 표(위험추구성향·손실감내능력·지식과 경험·투자기간)를 문장으로 옮김",
     "riskGradeLabel": "등급 숫자와 등급명 중 제목에 있는 쪽에서 나머지를 채움 (문서가 밝히는 1:1 대응)",
     "lossExample": "낙인 배리어 + 만기 배리어 조항"
@@ -5899,7 +5939,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260821000193",
    "rcpNo": "20260821000193",
    "docDate": "2026-08-21",
-   "collectedAt": "2026-09-10T00:56:43.153Z",
+   "collectedAt": "2026-09-10T14:06:50.021Z",
    "fields": {
     "name": "미래에셋증권 제38045회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
     "issuer": "미래에셋증권",
@@ -6000,7 +6040,7 @@ window.ELS_PROSPECTUS = {
    "derivedFrom": {
     "months": "차수별 평가일과 발행일의 차이로 계산",
     "midPriceDate": "기초자산 소재지(아시아 / 非아시아)로 판정",
-    "maturityRow": "만기 배리어·만기일을 표 마지막 행으로 추가",
+    "maturityRow": "만기 배리어·만기일을 표 마지막 행으로 추가 (지급률은 손익구조 표의 만기상환 칸)",
     "riskGradeNote": "투자설명서 「목표시장 설정 및 설정 근거」 표(위험추구성향·손실감내능력·지식과 경험·투자기간)를 문장으로 옮김",
     "riskGradeLabel": "등급 숫자와 등급명 중 제목에 있는 쪽에서 나머지를 채움 (문서가 밝히는 1:1 대응)",
     "lossExample": "낙인 배리어 + 만기 배리어 조항"
@@ -6022,7 +6062,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260821000193",
    "rcpNo": "20260821000193",
    "docDate": "2026-08-21",
-   "collectedAt": "2026-09-10T00:56:43.153Z",
+   "collectedAt": "2026-09-10T14:06:50.021Z",
    "fields": {
     "name": "미래에셋증권 제38046회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
     "issuer": "미래에셋증권",
@@ -6123,7 +6163,7 @@ window.ELS_PROSPECTUS = {
    "derivedFrom": {
     "months": "차수별 평가일과 발행일의 차이로 계산",
     "midPriceDate": "기초자산 소재지(아시아 / 非아시아)로 판정",
-    "maturityRow": "만기 배리어·만기일을 표 마지막 행으로 추가",
+    "maturityRow": "만기 배리어·만기일을 표 마지막 행으로 추가 (지급률은 손익구조 표의 만기상환 칸)",
     "riskGradeNote": "투자설명서 「목표시장 설정 및 설정 근거」 표(위험추구성향·손실감내능력·지식과 경험·투자기간)를 문장으로 옮김",
     "riskGradeLabel": "등급 숫자와 등급명 중 제목에 있는 쪽에서 나머지를 채움 (문서가 밝히는 1:1 대응)",
     "lossExample": "낙인 배리어 + 만기 배리어 조항"
@@ -6145,7 +6185,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260821000193",
    "rcpNo": "20260821000193",
    "docDate": "2026-08-21",
-   "collectedAt": "2026-09-10T00:56:43.153Z",
+   "collectedAt": "2026-09-10T14:06:50.021Z",
    "fields": {
     "name": "미래에셋증권 제38047회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
     "issuer": "미래에셋증권",
@@ -6246,7 +6286,7 @@ window.ELS_PROSPECTUS = {
    "derivedFrom": {
     "months": "차수별 평가일과 발행일의 차이로 계산",
     "midPriceDate": "기초자산 소재지(아시아 / 非아시아)로 판정",
-    "maturityRow": "만기 배리어·만기일을 표 마지막 행으로 추가",
+    "maturityRow": "만기 배리어·만기일을 표 마지막 행으로 추가 (지급률은 손익구조 표의 만기상환 칸)",
     "riskGradeNote": "투자설명서 「목표시장 설정 및 설정 근거」 표(위험추구성향·손실감내능력·지식과 경험·투자기간)를 문장으로 옮김",
     "riskGradeLabel": "등급 숫자와 등급명 중 제목에 있는 쪽에서 나머지를 채움 (문서가 밝히는 1:1 대응)",
     "lossExample": "낙인 배리어 + 만기 배리어 조항"
@@ -6268,7 +6308,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260825000251",
    "rcpNo": "20260825000251",
    "docDate": "2026-08-25",
-   "collectedAt": "2026-09-10T00:56:43.153Z",
+   "collectedAt": "2026-09-10T14:06:50.021Z",
    "fields": {
     "name": "미래에셋증권 제38048회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
     "issuer": "미래에셋증권",
@@ -6373,7 +6413,7 @@ window.ELS_PROSPECTUS = {
    "derivedFrom": {
     "months": "차수별 평가일과 발행일의 차이로 계산",
     "midPriceDate": "기초자산 소재지(아시아 / 非아시아)로 판정",
-    "maturityRow": "만기 배리어·만기일을 표 마지막 행으로 추가",
+    "maturityRow": "만기 배리어·만기일을 표 마지막 행으로 추가 (지급률은 손익구조 표의 만기상환 칸)",
     "riskGradeNote": "투자설명서 「목표시장 설정 및 설정 근거」 표(위험추구성향·손실감내능력·지식과 경험·투자기간)를 문장으로 옮김",
     "riskGradeLabel": "등급 숫자와 등급명 중 제목에 있는 쪽에서 나머지를 채움 (문서가 밝히는 1:1 대응)",
     "lossExample": "노낙인 — 만기 배리어 조항이 유일한 손실조건"
@@ -6395,7 +6435,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260825000251",
    "rcpNo": "20260825000251",
    "docDate": "2026-08-25",
-   "collectedAt": "2026-09-10T00:56:43.153Z",
+   "collectedAt": "2026-09-10T14:06:50.021Z",
    "fields": {
     "name": "미래에셋증권 제38049회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
     "issuer": "미래에셋증권",
@@ -6496,7 +6536,7 @@ window.ELS_PROSPECTUS = {
    "derivedFrom": {
     "months": "차수별 평가일과 발행일의 차이로 계산",
     "midPriceDate": "기초자산 소재지(아시아 / 非아시아)로 판정",
-    "maturityRow": "만기 배리어·만기일을 표 마지막 행으로 추가",
+    "maturityRow": "만기 배리어·만기일을 표 마지막 행으로 추가 (지급률은 손익구조 표의 만기상환 칸)",
     "riskGradeNote": "투자설명서 「목표시장 설정 및 설정 근거」 표(위험추구성향·손실감내능력·지식과 경험·투자기간)를 문장으로 옮김",
     "riskGradeLabel": "등급 숫자와 등급명 중 제목에 있는 쪽에서 나머지를 채움 (문서가 밝히는 1:1 대응)",
     "lossExample": "낙인 배리어 + 만기 배리어 조항"
@@ -6518,7 +6558,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260825000251",
    "rcpNo": "20260825000251",
    "docDate": "2026-08-25",
-   "collectedAt": "2026-09-10T00:56:43.153Z",
+   "collectedAt": "2026-09-10T14:06:50.022Z",
    "fields": {
     "name": "미래에셋증권 제38050회 파생결합증권(주가연계증권)(높은위험,원금비보장)(상품위험등급:2등급)",
     "issuer": "미래에셋증권",
@@ -6619,7 +6659,7 @@ window.ELS_PROSPECTUS = {
    "derivedFrom": {
     "months": "차수별 평가일과 발행일의 차이로 계산",
     "midPriceDate": "기초자산 소재지(아시아 / 非아시아)로 판정",
-    "maturityRow": "만기 배리어·만기일을 표 마지막 행으로 추가",
+    "maturityRow": "만기 배리어·만기일을 표 마지막 행으로 추가 (지급률은 손익구조 표의 만기상환 칸)",
     "riskGradeNote": "투자설명서 「목표시장 설정 및 설정 근거」 표(위험추구성향·손실감내능력·지식과 경험·투자기간)를 문장으로 옮김",
     "riskGradeLabel": "등급 숫자와 등급명 중 제목에 있는 쪽에서 나머지를 채움 (문서가 밝히는 1:1 대응)",
     "lossExample": "낙인 배리어 + 만기 배리어 조항"
@@ -6642,7 +6682,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260825000251",
    "rcpNo": "20260825000251",
    "docDate": "2026-08-25",
-   "collectedAt": "2026-09-10T00:56:43.153Z",
+   "collectedAt": "2026-09-10T14:06:50.022Z",
    "fields": {
     "name": "미래에셋증권 제38051회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
     "issuer": "미래에셋증권",
@@ -6743,7 +6783,7 @@ window.ELS_PROSPECTUS = {
    "derivedFrom": {
     "months": "차수별 평가일과 발행일의 차이로 계산",
     "midPriceDate": "기초자산 소재지(아시아 / 非아시아)로 판정",
-    "maturityRow": "만기 배리어·만기일을 표 마지막 행으로 추가",
+    "maturityRow": "만기 배리어·만기일을 표 마지막 행으로 추가 (지급률은 손익구조 표의 만기상환 칸)",
     "riskGradeNote": "투자설명서 「목표시장 설정 및 설정 근거」 표(위험추구성향·손실감내능력·지식과 경험·투자기간)를 문장으로 옮김",
     "riskGradeLabel": "등급 숫자와 등급명 중 제목에 있는 쪽에서 나머지를 채움 (문서가 밝히는 1:1 대응)",
     "lossExample": "낙인 배리어 + 만기 배리어 조항"
@@ -6765,7 +6805,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260825000251",
    "rcpNo": "20260825000251",
    "docDate": "2026-08-25",
-   "collectedAt": "2026-09-10T00:56:43.153Z",
+   "collectedAt": "2026-09-10T14:06:50.022Z",
    "fields": {
     "name": "미래에셋증권 제38052회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
     "issuer": "미래에셋증권",
@@ -6914,7 +6954,7 @@ window.ELS_PROSPECTUS = {
    "derivedFrom": {
     "months": "차수별 평가일과 발행일의 차이로 계산",
     "midPriceDate": "기초자산 소재지(아시아 / 非아시아)로 판정",
-    "maturityRow": "만기 배리어·만기일을 표 마지막 행으로 추가",
+    "maturityRow": "만기 배리어·만기일을 표 마지막 행으로 추가 (지급률은 손익구조 표의 만기상환 칸)",
     "riskGradeNote": "투자설명서 「목표시장 설정 및 설정 근거」 표(위험추구성향·손실감내능력·지식과 경험·투자기간)를 문장으로 옮김",
     "riskGradeLabel": "등급 숫자와 등급명 중 제목에 있는 쪽에서 나머지를 채움 (문서가 밝히는 1:1 대응)",
     "lossExample": "낙인 배리어 + 만기 배리어 조항"
@@ -6936,7 +6976,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260825000251",
    "rcpNo": "20260825000251",
    "docDate": "2026-08-25",
-   "collectedAt": "2026-09-10T00:56:43.153Z",
+   "collectedAt": "2026-09-10T14:06:50.022Z",
    "fields": {
     "name": "미래에셋증권 제38053회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
     "issuer": "미래에셋증권",
@@ -7037,7 +7077,7 @@ window.ELS_PROSPECTUS = {
    "derivedFrom": {
     "months": "차수별 평가일과 발행일의 차이로 계산",
     "midPriceDate": "기초자산 소재지(아시아 / 非아시아)로 판정",
-    "maturityRow": "만기 배리어·만기일을 표 마지막 행으로 추가",
+    "maturityRow": "만기 배리어·만기일을 표 마지막 행으로 추가 (지급률은 손익구조 표의 만기상환 칸)",
     "riskGradeNote": "투자설명서 「목표시장 설정 및 설정 근거」 표(위험추구성향·손실감내능력·지식과 경험·투자기간)를 문장으로 옮김",
     "riskGradeLabel": "등급 숫자와 등급명 중 제목에 있는 쪽에서 나머지를 채움 (문서가 밝히는 1:1 대응)",
     "lossExample": "낙인 배리어 + 만기 배리어 조항"
@@ -7059,7 +7099,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260825000251",
    "rcpNo": "20260825000251",
    "docDate": "2026-08-25",
-   "collectedAt": "2026-09-10T00:56:43.153Z",
+   "collectedAt": "2026-09-10T14:06:50.022Z",
    "fields": {
     "name": "미래에셋증권 제38054회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
     "issuer": "미래에셋증권",
@@ -7160,7 +7200,7 @@ window.ELS_PROSPECTUS = {
    "derivedFrom": {
     "months": "차수별 평가일과 발행일의 차이로 계산",
     "midPriceDate": "기초자산 소재지(아시아 / 非아시아)로 판정",
-    "maturityRow": "만기 배리어·만기일을 표 마지막 행으로 추가",
+    "maturityRow": "만기 배리어·만기일을 표 마지막 행으로 추가 (지급률은 손익구조 표의 만기상환 칸)",
     "riskGradeNote": "투자설명서 「목표시장 설정 및 설정 근거」 표(위험추구성향·손실감내능력·지식과 경험·투자기간)를 문장으로 옮김",
     "riskGradeLabel": "등급 숫자와 등급명 중 제목에 있는 쪽에서 나머지를 채움 (문서가 밝히는 1:1 대응)",
     "lossExample": "낙인 배리어 + 만기 배리어 조항"
@@ -7182,7 +7222,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260825000251",
    "rcpNo": "20260825000251",
    "docDate": "2026-08-25",
-   "collectedAt": "2026-09-10T00:56:43.153Z",
+   "collectedAt": "2026-09-10T14:06:50.022Z",
    "fields": {
     "name": "미래에셋증권 제38055회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
     "issuer": "미래에셋증권",
@@ -7283,7 +7323,7 @@ window.ELS_PROSPECTUS = {
    "derivedFrom": {
     "months": "차수별 평가일과 발행일의 차이로 계산",
     "midPriceDate": "기초자산 소재지(아시아 / 非아시아)로 판정",
-    "maturityRow": "만기 배리어·만기일을 표 마지막 행으로 추가",
+    "maturityRow": "만기 배리어·만기일을 표 마지막 행으로 추가 (지급률은 손익구조 표의 만기상환 칸)",
     "riskGradeNote": "투자설명서 「목표시장 설정 및 설정 근거」 표(위험추구성향·손실감내능력·지식과 경험·투자기간)를 문장으로 옮김",
     "riskGradeLabel": "등급 숫자와 등급명 중 제목에 있는 쪽에서 나머지를 채움 (문서가 밝히는 1:1 대응)",
     "lossExample": "낙인 배리어 + 만기 배리어 조항"
@@ -7305,7 +7345,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260825000251",
    "rcpNo": "20260825000251",
    "docDate": "2026-08-25",
-   "collectedAt": "2026-09-10T00:56:43.153Z",
+   "collectedAt": "2026-09-10T14:06:50.022Z",
    "fields": {
     "name": "미래에셋증권 제38056회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
     "issuer": "미래에셋증권",
@@ -7406,7 +7446,7 @@ window.ELS_PROSPECTUS = {
    "derivedFrom": {
     "months": "차수별 평가일과 발행일의 차이로 계산",
     "midPriceDate": "기초자산 소재지(아시아 / 非아시아)로 판정",
-    "maturityRow": "만기 배리어·만기일을 표 마지막 행으로 추가",
+    "maturityRow": "만기 배리어·만기일을 표 마지막 행으로 추가 (지급률은 손익구조 표의 만기상환 칸)",
     "riskGradeNote": "투자설명서 「목표시장 설정 및 설정 근거」 표(위험추구성향·손실감내능력·지식과 경험·투자기간)를 문장으로 옮김",
     "riskGradeLabel": "등급 숫자와 등급명 중 제목에 있는 쪽에서 나머지를 채움 (문서가 밝히는 1:1 대응)",
     "lossExample": "낙인 배리어 + 만기 배리어 조항"
@@ -7428,7 +7468,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260825000251",
    "rcpNo": "20260825000251",
    "docDate": "2026-08-25",
-   "collectedAt": "2026-09-10T00:56:43.154Z",
+   "collectedAt": "2026-09-10T14:06:50.022Z",
    "fields": {
     "name": "미래에셋증권 제38057회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
     "issuer": "미래에셋증권",
@@ -7529,7 +7569,7 @@ window.ELS_PROSPECTUS = {
    "derivedFrom": {
     "months": "차수별 평가일과 발행일의 차이로 계산",
     "midPriceDate": "기초자산 소재지(아시아 / 非아시아)로 판정",
-    "maturityRow": "만기 배리어·만기일을 표 마지막 행으로 추가",
+    "maturityRow": "만기 배리어·만기일을 표 마지막 행으로 추가 (지급률은 손익구조 표의 만기상환 칸)",
     "riskGradeNote": "투자설명서 「목표시장 설정 및 설정 근거」 표(위험추구성향·손실감내능력·지식과 경험·투자기간)를 문장으로 옮김",
     "riskGradeLabel": "등급 숫자와 등급명 중 제목에 있는 쪽에서 나머지를 채움 (문서가 밝히는 1:1 대응)",
     "lossExample": "낙인 배리어 + 만기 배리어 조항"
@@ -7551,7 +7591,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260825000251",
    "rcpNo": "20260825000251",
    "docDate": "2026-08-25",
-   "collectedAt": "2026-09-10T00:56:43.154Z",
+   "collectedAt": "2026-09-10T14:06:50.022Z",
    "fields": {
     "name": "미래에셋증권 제38058회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
     "issuer": "미래에셋증권",
@@ -7700,7 +7740,7 @@ window.ELS_PROSPECTUS = {
    "derivedFrom": {
     "months": "차수별 평가일과 발행일의 차이로 계산",
     "midPriceDate": "기초자산 소재지(아시아 / 非아시아)로 판정",
-    "maturityRow": "만기 배리어·만기일을 표 마지막 행으로 추가",
+    "maturityRow": "만기 배리어·만기일을 표 마지막 행으로 추가 (지급률은 손익구조 표의 만기상환 칸)",
     "riskGradeNote": "투자설명서 「목표시장 설정 및 설정 근거」 표(위험추구성향·손실감내능력·지식과 경험·투자기간)를 문장으로 옮김",
     "riskGradeLabel": "등급 숫자와 등급명 중 제목에 있는 쪽에서 나머지를 채움 (문서가 밝히는 1:1 대응)",
     "lossExample": "낙인 배리어 + 만기 배리어 조항"
@@ -7722,7 +7762,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260825000251",
    "rcpNo": "20260825000251",
    "docDate": "2026-08-25",
-   "collectedAt": "2026-09-10T00:56:43.154Z",
+   "collectedAt": "2026-09-10T14:06:50.022Z",
    "fields": {
     "name": "미래에셋증권 제38059회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
     "issuer": "미래에셋증권",
@@ -7871,7 +7911,7 @@ window.ELS_PROSPECTUS = {
    "derivedFrom": {
     "months": "차수별 평가일과 발행일의 차이로 계산",
     "midPriceDate": "기초자산 소재지(아시아 / 非아시아)로 판정",
-    "maturityRow": "만기 배리어·만기일을 표 마지막 행으로 추가",
+    "maturityRow": "만기 배리어·만기일을 표 마지막 행으로 추가 (지급률은 손익구조 표의 만기상환 칸)",
     "riskGradeNote": "투자설명서 「목표시장 설정 및 설정 근거」 표(위험추구성향·손실감내능력·지식과 경험·투자기간)를 문장으로 옮김",
     "riskGradeLabel": "등급 숫자와 등급명 중 제목에 있는 쪽에서 나머지를 채움 (문서가 밝히는 1:1 대응)",
     "lossExample": "낙인 배리어 + 만기 배리어 조항"
@@ -7893,7 +7933,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260825000251",
    "rcpNo": "20260825000251",
    "docDate": "2026-08-25",
-   "collectedAt": "2026-09-10T00:56:43.154Z",
+   "collectedAt": "2026-09-10T14:06:50.022Z",
    "fields": {
     "name": "미래에셋증권 제38060회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
     "issuer": "미래에셋증권",
@@ -7994,7 +8034,7 @@ window.ELS_PROSPECTUS = {
    "derivedFrom": {
     "months": "차수별 평가일과 발행일의 차이로 계산",
     "midPriceDate": "기초자산 소재지(아시아 / 非아시아)로 판정",
-    "maturityRow": "만기 배리어·만기일을 표 마지막 행으로 추가",
+    "maturityRow": "만기 배리어·만기일을 표 마지막 행으로 추가 (지급률은 손익구조 표의 만기상환 칸)",
     "riskGradeNote": "투자설명서 「목표시장 설정 및 설정 근거」 표(위험추구성향·손실감내능력·지식과 경험·투자기간)를 문장으로 옮김",
     "riskGradeLabel": "등급 숫자와 등급명 중 제목에 있는 쪽에서 나머지를 채움 (문서가 밝히는 1:1 대응)",
     "lossExample": "낙인 배리어 + 만기 배리어 조항"
@@ -8016,7 +8056,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260825000251",
    "rcpNo": "20260825000251",
    "docDate": "2026-08-25",
-   "collectedAt": "2026-09-10T00:56:43.154Z",
+   "collectedAt": "2026-09-10T14:06:50.022Z",
    "fields": {
     "name": "미래에셋증권 제38061회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
     "issuer": "미래에셋증권",
@@ -8165,7 +8205,7 @@ window.ELS_PROSPECTUS = {
    "derivedFrom": {
     "months": "차수별 평가일과 발행일의 차이로 계산",
     "midPriceDate": "기초자산 소재지(아시아 / 非아시아)로 판정",
-    "maturityRow": "만기 배리어·만기일을 표 마지막 행으로 추가",
+    "maturityRow": "만기 배리어·만기일을 표 마지막 행으로 추가 (지급률은 손익구조 표의 만기상환 칸)",
     "riskGradeNote": "투자설명서 「목표시장 설정 및 설정 근거」 표(위험추구성향·손실감내능력·지식과 경험·투자기간)를 문장으로 옮김",
     "riskGradeLabel": "등급 숫자와 등급명 중 제목에 있는 쪽에서 나머지를 채움 (문서가 밝히는 1:1 대응)",
     "lossExample": "낙인 배리어 + 만기 배리어 조항"
@@ -8187,7 +8227,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260825000251",
    "rcpNo": "20260825000251",
    "docDate": "2026-08-25",
-   "collectedAt": "2026-09-10T00:56:43.154Z",
+   "collectedAt": "2026-09-10T14:06:50.022Z",
    "fields": {
     "name": "미래에셋증권 제38062회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
     "issuer": "미래에셋증권",
@@ -8272,7 +8312,7 @@ window.ELS_PROSPECTUS = {
    "derivedFrom": {
     "months": "차수별 평가일과 발행일의 차이로 계산",
     "midPriceDate": "기초자산 소재지(아시아 / 非아시아)로 판정",
-    "maturityRow": "만기 배리어·만기일을 표 마지막 행으로 추가",
+    "maturityRow": "만기 배리어·만기일을 표 마지막 행으로 추가 (지급률은 손익구조 표의 만기상환 칸)",
     "riskGradeNote": "투자설명서 「목표시장 설정 및 설정 근거」 표(위험추구성향·손실감내능력·지식과 경험·투자기간)를 문장으로 옮김",
     "riskGradeLabel": "등급 숫자와 등급명 중 제목에 있는 쪽에서 나머지를 채움 (문서가 밝히는 1:1 대응)",
     "lossExample": "낙인 배리어 + 만기 배리어 조항"
@@ -8294,7 +8334,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260825000251",
    "rcpNo": "20260825000251",
    "docDate": "2026-08-25",
-   "collectedAt": "2026-09-10T00:56:43.154Z",
+   "collectedAt": "2026-09-10T14:06:50.022Z",
    "fields": {
     "name": "미래에셋증권 제38063회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
     "issuer": "미래에셋증권",
@@ -8395,7 +8435,7 @@ window.ELS_PROSPECTUS = {
    "derivedFrom": {
     "months": "차수별 평가일과 발행일의 차이로 계산",
     "midPriceDate": "기초자산 소재지(아시아 / 非아시아)로 판정",
-    "maturityRow": "만기 배리어·만기일을 표 마지막 행으로 추가",
+    "maturityRow": "만기 배리어·만기일을 표 마지막 행으로 추가 (지급률은 손익구조 표의 만기상환 칸)",
     "riskGradeNote": "투자설명서 「목표시장 설정 및 설정 근거」 표(위험추구성향·손실감내능력·지식과 경험·투자기간)를 문장으로 옮김",
     "riskGradeLabel": "등급 숫자와 등급명 중 제목에 있는 쪽에서 나머지를 채움 (문서가 밝히는 1:1 대응)",
     "lossExample": "낙인 배리어 + 만기 배리어 조항"
@@ -8417,7 +8457,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260825000251",
    "rcpNo": "20260825000251",
    "docDate": "2026-08-25",
-   "collectedAt": "2026-09-10T00:56:43.154Z",
+   "collectedAt": "2026-09-10T14:06:50.022Z",
    "fields": {
     "name": "미래에셋증권 제38064회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
     "issuer": "미래에셋증권",
@@ -8518,7 +8558,7 @@ window.ELS_PROSPECTUS = {
    "derivedFrom": {
     "months": "차수별 평가일과 발행일의 차이로 계산",
     "midPriceDate": "기초자산 소재지(아시아 / 非아시아)로 판정",
-    "maturityRow": "만기 배리어·만기일을 표 마지막 행으로 추가",
+    "maturityRow": "만기 배리어·만기일을 표 마지막 행으로 추가 (지급률은 손익구조 표의 만기상환 칸)",
     "riskGradeNote": "투자설명서 「목표시장 설정 및 설정 근거」 표(위험추구성향·손실감내능력·지식과 경험·투자기간)를 문장으로 옮김",
     "riskGradeLabel": "등급 숫자와 등급명 중 제목에 있는 쪽에서 나머지를 채움 (문서가 밝히는 1:1 대응)",
     "lossExample": "낙인 배리어 + 만기 배리어 조항"
@@ -8540,7 +8580,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260825000251",
    "rcpNo": "20260825000251",
    "docDate": "2026-08-25",
-   "collectedAt": "2026-09-10T00:56:43.154Z",
+   "collectedAt": "2026-09-10T14:06:50.022Z",
    "fields": {
     "name": "미래에셋증권 제38065회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
     "issuer": "미래에셋증권",
@@ -8641,7 +8681,7 @@ window.ELS_PROSPECTUS = {
    "derivedFrom": {
     "months": "차수별 평가일과 발행일의 차이로 계산",
     "midPriceDate": "기초자산 소재지(아시아 / 非아시아)로 판정",
-    "maturityRow": "만기 배리어·만기일을 표 마지막 행으로 추가",
+    "maturityRow": "만기 배리어·만기일을 표 마지막 행으로 추가 (지급률은 손익구조 표의 만기상환 칸)",
     "riskGradeNote": "투자설명서 「목표시장 설정 및 설정 근거」 표(위험추구성향·손실감내능력·지식과 경험·투자기간)를 문장으로 옮김",
     "riskGradeLabel": "등급 숫자와 등급명 중 제목에 있는 쪽에서 나머지를 채움 (문서가 밝히는 1:1 대응)",
     "lossExample": "낙인 배리어 + 만기 배리어 조항"
@@ -8663,7 +8703,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260828000836",
    "rcpNo": "20260828000836",
    "docDate": "2026-08-28",
-   "collectedAt": "2026-09-10T00:56:43.154Z",
+   "collectedAt": "2026-09-10T14:06:50.023Z",
    "fields": {
     "name": "미래에셋증권 제38070회 파생결합증권(주가연계증권)(높은위험,원금비보장)(상품위험등급:2등급)",
     "issuer": "미래에셋증권",
@@ -8764,7 +8804,7 @@ window.ELS_PROSPECTUS = {
    "derivedFrom": {
     "months": "차수별 평가일과 발행일의 차이로 계산",
     "midPriceDate": "기초자산 소재지(아시아 / 非아시아)로 판정",
-    "maturityRow": "만기 배리어·만기일을 표 마지막 행으로 추가",
+    "maturityRow": "만기 배리어·만기일을 표 마지막 행으로 추가 (지급률은 손익구조 표의 만기상환 칸)",
     "riskGradeNote": "투자설명서 「목표시장 설정 및 설정 근거」 표(위험추구성향·손실감내능력·지식과 경험·투자기간)를 문장으로 옮김",
     "riskGradeLabel": "등급 숫자와 등급명 중 제목에 있는 쪽에서 나머지를 채움 (문서가 밝히는 1:1 대응)",
     "lossExample": "낙인 배리어 + 만기 배리어 조항"
@@ -8789,7 +8829,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260828000836",
    "rcpNo": "20260828000836",
    "docDate": "2026-08-28",
-   "collectedAt": "2026-09-10T00:56:43.154Z",
+   "collectedAt": "2026-09-10T14:06:50.023Z",
    "fields": {
     "name": "미래에셋증권 제38071회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
     "issuer": "미래에셋증권",
@@ -8894,7 +8934,7 @@ window.ELS_PROSPECTUS = {
    "derivedFrom": {
     "months": "차수별 평가일과 발행일의 차이로 계산",
     "midPriceDate": "기초자산 소재지(아시아 / 非아시아)로 판정",
-    "maturityRow": "만기 배리어·만기일을 표 마지막 행으로 추가",
+    "maturityRow": "만기 배리어·만기일을 표 마지막 행으로 추가 (지급률은 손익구조 표의 만기상환 칸)",
     "riskGradeNote": "투자설명서 「목표시장 설정 및 설정 근거」 표(위험추구성향·손실감내능력·지식과 경험·투자기간)를 문장으로 옮김",
     "riskGradeLabel": "등급 숫자와 등급명 중 제목에 있는 쪽에서 나머지를 채움 (문서가 밝히는 1:1 대응)",
     "lossExample": "노낙인 — 만기 배리어 조항이 유일한 손실조건"
@@ -8918,7 +8958,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260828000836",
    "rcpNo": "20260828000836",
    "docDate": "2026-08-28",
-   "collectedAt": "2026-09-10T00:56:43.154Z",
+   "collectedAt": "2026-09-10T14:06:50.023Z",
    "fields": {
     "name": "미래에셋증권 제38072회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
     "issuer": "미래에셋증권",
@@ -9019,7 +9059,7 @@ window.ELS_PROSPECTUS = {
    "derivedFrom": {
     "months": "차수별 평가일과 발행일의 차이로 계산",
     "midPriceDate": "기초자산 소재지(아시아 / 非아시아)로 판정",
-    "maturityRow": "만기 배리어·만기일을 표 마지막 행으로 추가",
+    "maturityRow": "만기 배리어·만기일을 표 마지막 행으로 추가 (지급률은 손익구조 표의 만기상환 칸)",
     "riskGradeNote": "투자설명서 「목표시장 설정 및 설정 근거」 표(위험추구성향·손실감내능력·지식과 경험·투자기간)를 문장으로 옮김",
     "riskGradeLabel": "등급 숫자와 등급명 중 제목에 있는 쪽에서 나머지를 채움 (문서가 밝히는 1:1 대응)",
     "lossExample": "낙인 배리어 + 만기 배리어 조항"
@@ -9043,7 +9083,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260828000836",
    "rcpNo": "20260828000836",
    "docDate": "2026-08-28",
-   "collectedAt": "2026-09-10T00:56:43.154Z",
+   "collectedAt": "2026-09-10T14:06:50.023Z",
    "fields": {
     "name": "미래에셋증권 제38073회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
     "issuer": "미래에셋증권",
@@ -9144,7 +9184,7 @@ window.ELS_PROSPECTUS = {
    "derivedFrom": {
     "months": "차수별 평가일과 발행일의 차이로 계산",
     "midPriceDate": "기초자산 소재지(아시아 / 非아시아)로 판정",
-    "maturityRow": "만기 배리어·만기일을 표 마지막 행으로 추가",
+    "maturityRow": "만기 배리어·만기일을 표 마지막 행으로 추가 (지급률은 손익구조 표의 만기상환 칸)",
     "riskGradeNote": "투자설명서 「목표시장 설정 및 설정 근거」 표(위험추구성향·손실감내능력·지식과 경험·투자기간)를 문장으로 옮김",
     "riskGradeLabel": "등급 숫자와 등급명 중 제목에 있는 쪽에서 나머지를 채움 (문서가 밝히는 1:1 대응)",
     "lossExample": "낙인 배리어 + 만기 배리어 조항"
@@ -9168,7 +9208,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260828000836",
    "rcpNo": "20260828000836",
    "docDate": "2026-08-28",
-   "collectedAt": "2026-09-10T00:56:43.154Z",
+   "collectedAt": "2026-09-10T14:06:50.023Z",
    "fields": {
     "name": "미래에셋증권 제38074회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
     "issuer": "미래에셋증권",
@@ -9269,7 +9309,7 @@ window.ELS_PROSPECTUS = {
    "derivedFrom": {
     "months": "차수별 평가일과 발행일의 차이로 계산",
     "midPriceDate": "기초자산 소재지(아시아 / 非아시아)로 판정",
-    "maturityRow": "만기 배리어·만기일을 표 마지막 행으로 추가",
+    "maturityRow": "만기 배리어·만기일을 표 마지막 행으로 추가 (지급률은 손익구조 표의 만기상환 칸)",
     "riskGradeNote": "투자설명서 「목표시장 설정 및 설정 근거」 표(위험추구성향·손실감내능력·지식과 경험·투자기간)를 문장으로 옮김",
     "riskGradeLabel": "등급 숫자와 등급명 중 제목에 있는 쪽에서 나머지를 채움 (문서가 밝히는 1:1 대응)",
     "lossExample": "노낙인 — 만기 배리어 조항이 유일한 손실조건"
@@ -9293,7 +9333,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260828000836",
    "rcpNo": "20260828000836",
    "docDate": "2026-08-28",
-   "collectedAt": "2026-09-10T00:56:43.154Z",
+   "collectedAt": "2026-09-10T14:06:50.023Z",
    "fields": {
     "name": "미래에셋증권 제38075회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
     "issuer": "미래에셋증권",
@@ -9394,7 +9434,7 @@ window.ELS_PROSPECTUS = {
    "derivedFrom": {
     "months": "차수별 평가일과 발행일의 차이로 계산",
     "midPriceDate": "기초자산 소재지(아시아 / 非아시아)로 판정",
-    "maturityRow": "만기 배리어·만기일을 표 마지막 행으로 추가",
+    "maturityRow": "만기 배리어·만기일을 표 마지막 행으로 추가 (지급률은 손익구조 표의 만기상환 칸)",
     "riskGradeNote": "투자설명서 「목표시장 설정 및 설정 근거」 표(위험추구성향·손실감내능력·지식과 경험·투자기간)를 문장으로 옮김",
     "riskGradeLabel": "등급 숫자와 등급명 중 제목에 있는 쪽에서 나머지를 채움 (문서가 밝히는 1:1 대응)",
     "lossExample": "낙인 배리어 + 만기 배리어 조항"
@@ -9418,7 +9458,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260828000836",
    "rcpNo": "20260828000836",
    "docDate": "2026-08-28",
-   "collectedAt": "2026-09-10T00:56:43.154Z",
+   "collectedAt": "2026-09-10T14:06:50.023Z",
    "fields": {
     "name": "미래에셋증권 제38076회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
     "issuer": "미래에셋증권",
@@ -9519,7 +9559,7 @@ window.ELS_PROSPECTUS = {
    "derivedFrom": {
     "months": "차수별 평가일과 발행일의 차이로 계산",
     "midPriceDate": "기초자산 소재지(아시아 / 非아시아)로 판정",
-    "maturityRow": "만기 배리어·만기일을 표 마지막 행으로 추가",
+    "maturityRow": "만기 배리어·만기일을 표 마지막 행으로 추가 (지급률은 손익구조 표의 만기상환 칸)",
     "riskGradeNote": "투자설명서 「목표시장 설정 및 설정 근거」 표(위험추구성향·손실감내능력·지식과 경험·투자기간)를 문장으로 옮김",
     "riskGradeLabel": "등급 숫자와 등급명 중 제목에 있는 쪽에서 나머지를 채움 (문서가 밝히는 1:1 대응)",
     "lossExample": "낙인 배리어 + 만기 배리어 조항"
@@ -9543,7 +9583,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260828000836",
    "rcpNo": "20260828000836",
    "docDate": "2026-08-28",
-   "collectedAt": "2026-09-10T00:56:43.154Z",
+   "collectedAt": "2026-09-10T14:06:50.023Z",
    "fields": {
     "name": "미래에셋증권 제38077회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
     "issuer": "미래에셋증권",
@@ -9644,7 +9684,7 @@ window.ELS_PROSPECTUS = {
    "derivedFrom": {
     "months": "차수별 평가일과 발행일의 차이로 계산",
     "midPriceDate": "기초자산 소재지(아시아 / 非아시아)로 판정",
-    "maturityRow": "만기 배리어·만기일을 표 마지막 행으로 추가",
+    "maturityRow": "만기 배리어·만기일을 표 마지막 행으로 추가 (지급률은 손익구조 표의 만기상환 칸)",
     "riskGradeNote": "투자설명서 「목표시장 설정 및 설정 근거」 표(위험추구성향·손실감내능력·지식과 경험·투자기간)를 문장으로 옮김",
     "riskGradeLabel": "등급 숫자와 등급명 중 제목에 있는 쪽에서 나머지를 채움 (문서가 밝히는 1:1 대응)",
     "lossExample": "낙인 배리어 + 만기 배리어 조항"
@@ -9668,7 +9708,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260828000836",
    "rcpNo": "20260828000836",
    "docDate": "2026-08-28",
-   "collectedAt": "2026-09-10T00:56:43.154Z",
+   "collectedAt": "2026-09-10T14:06:50.023Z",
    "fields": {
     "name": "미래에셋증권 제38078회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
     "issuer": "미래에셋증권",
@@ -9817,7 +9857,7 @@ window.ELS_PROSPECTUS = {
    "derivedFrom": {
     "months": "차수별 평가일과 발행일의 차이로 계산",
     "midPriceDate": "기초자산 소재지(아시아 / 非아시아)로 판정",
-    "maturityRow": "만기 배리어·만기일을 표 마지막 행으로 추가",
+    "maturityRow": "만기 배리어·만기일을 표 마지막 행으로 추가 (지급률은 손익구조 표의 만기상환 칸)",
     "riskGradeNote": "투자설명서 「목표시장 설정 및 설정 근거」 표(위험추구성향·손실감내능력·지식과 경험·투자기간)를 문장으로 옮김",
     "riskGradeLabel": "등급 숫자와 등급명 중 제목에 있는 쪽에서 나머지를 채움 (문서가 밝히는 1:1 대응)",
     "lossExample": "낙인 배리어 + 만기 배리어 조항"
@@ -9841,7 +9881,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260828000836",
    "rcpNo": "20260828000836",
    "docDate": "2026-08-28",
-   "collectedAt": "2026-09-10T00:56:43.154Z",
+   "collectedAt": "2026-09-10T14:06:50.023Z",
    "fields": {
     "name": "미래에셋증권 제38079회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
     "issuer": "미래에셋증권",
@@ -9942,7 +9982,7 @@ window.ELS_PROSPECTUS = {
    "derivedFrom": {
     "months": "차수별 평가일과 발행일의 차이로 계산",
     "midPriceDate": "기초자산 소재지(아시아 / 非아시아)로 판정",
-    "maturityRow": "만기 배리어·만기일을 표 마지막 행으로 추가",
+    "maturityRow": "만기 배리어·만기일을 표 마지막 행으로 추가 (지급률은 손익구조 표의 만기상환 칸)",
     "riskGradeNote": "투자설명서 「목표시장 설정 및 설정 근거」 표(위험추구성향·손실감내능력·지식과 경험·투자기간)를 문장으로 옮김",
     "riskGradeLabel": "등급 숫자와 등급명 중 제목에 있는 쪽에서 나머지를 채움 (문서가 밝히는 1:1 대응)",
     "lossExample": "낙인 배리어 + 만기 배리어 조항"
@@ -9966,7 +10006,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260828000836",
    "rcpNo": "20260828000836",
    "docDate": "2026-08-28",
-   "collectedAt": "2026-09-10T00:56:43.154Z",
+   "collectedAt": "2026-09-10T14:06:50.023Z",
    "fields": {
     "name": "미래에셋증권 제38080회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
     "issuer": "미래에셋증권",
@@ -10067,7 +10107,7 @@ window.ELS_PROSPECTUS = {
    "derivedFrom": {
     "months": "차수별 평가일과 발행일의 차이로 계산",
     "midPriceDate": "기초자산 소재지(아시아 / 非아시아)로 판정",
-    "maturityRow": "만기 배리어·만기일을 표 마지막 행으로 추가",
+    "maturityRow": "만기 배리어·만기일을 표 마지막 행으로 추가 (지급률은 손익구조 표의 만기상환 칸)",
     "riskGradeNote": "투자설명서 「목표시장 설정 및 설정 근거」 표(위험추구성향·손실감내능력·지식과 경험·투자기간)를 문장으로 옮김",
     "riskGradeLabel": "등급 숫자와 등급명 중 제목에 있는 쪽에서 나머지를 채움 (문서가 밝히는 1:1 대응)",
     "lossExample": "낙인 배리어 + 만기 배리어 조항"
@@ -10091,7 +10131,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260828000836",
    "rcpNo": "20260828000836",
    "docDate": "2026-08-28",
-   "collectedAt": "2026-09-10T00:56:43.155Z",
+   "collectedAt": "2026-09-10T14:06:50.023Z",
    "fields": {
     "name": "미래에셋증권 제38081회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
     "issuer": "미래에셋증권",
@@ -10240,7 +10280,7 @@ window.ELS_PROSPECTUS = {
    "derivedFrom": {
     "months": "차수별 평가일과 발행일의 차이로 계산",
     "midPriceDate": "기초자산 소재지(아시아 / 非아시아)로 판정",
-    "maturityRow": "만기 배리어·만기일을 표 마지막 행으로 추가",
+    "maturityRow": "만기 배리어·만기일을 표 마지막 행으로 추가 (지급률은 손익구조 표의 만기상환 칸)",
     "riskGradeNote": "투자설명서 「목표시장 설정 및 설정 근거」 표(위험추구성향·손실감내능력·지식과 경험·투자기간)를 문장으로 옮김",
     "riskGradeLabel": "등급 숫자와 등급명 중 제목에 있는 쪽에서 나머지를 채움 (문서가 밝히는 1:1 대응)",
     "lossExample": "낙인 배리어 + 만기 배리어 조항"
@@ -10264,7 +10304,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260828000836",
    "rcpNo": "20260828000836",
    "docDate": "2026-08-28",
-   "collectedAt": "2026-09-10T00:56:43.155Z",
+   "collectedAt": "2026-09-10T14:06:50.023Z",
    "fields": {
     "name": "미래에셋증권 제38082회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
     "issuer": "미래에셋증권",
@@ -10365,7 +10405,7 @@ window.ELS_PROSPECTUS = {
    "derivedFrom": {
     "months": "차수별 평가일과 발행일의 차이로 계산",
     "midPriceDate": "기초자산 소재지(아시아 / 非아시아)로 판정",
-    "maturityRow": "만기 배리어·만기일을 표 마지막 행으로 추가",
+    "maturityRow": "만기 배리어·만기일을 표 마지막 행으로 추가 (지급률은 손익구조 표의 만기상환 칸)",
     "riskGradeNote": "투자설명서 「목표시장 설정 및 설정 근거」 표(위험추구성향·손실감내능력·지식과 경험·투자기간)를 문장으로 옮김",
     "riskGradeLabel": "등급 숫자와 등급명 중 제목에 있는 쪽에서 나머지를 채움 (문서가 밝히는 1:1 대응)",
     "lossExample": "낙인 배리어 + 만기 배리어 조항"
@@ -10389,7 +10429,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260828000836",
    "rcpNo": "20260828000836",
    "docDate": "2026-08-28",
-   "collectedAt": "2026-09-10T00:56:43.155Z",
+   "collectedAt": "2026-09-10T14:06:50.023Z",
    "fields": {
     "name": "미래에셋증권 제38083회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
     "issuer": "미래에셋증권",
@@ -10490,7 +10530,7 @@ window.ELS_PROSPECTUS = {
    "derivedFrom": {
     "months": "차수별 평가일과 발행일의 차이로 계산",
     "midPriceDate": "기초자산 소재지(아시아 / 非아시아)로 판정",
-    "maturityRow": "만기 배리어·만기일을 표 마지막 행으로 추가",
+    "maturityRow": "만기 배리어·만기일을 표 마지막 행으로 추가 (지급률은 손익구조 표의 만기상환 칸)",
     "riskGradeNote": "투자설명서 「목표시장 설정 및 설정 근거」 표(위험추구성향·손실감내능력·지식과 경험·투자기간)를 문장으로 옮김",
     "riskGradeLabel": "등급 숫자와 등급명 중 제목에 있는 쪽에서 나머지를 채움 (문서가 밝히는 1:1 대응)",
     "lossExample": "낙인 배리어 + 만기 배리어 조항"
@@ -10514,7 +10554,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260828000836",
    "rcpNo": "20260828000836",
    "docDate": "2026-08-28",
-   "collectedAt": "2026-09-10T00:56:43.155Z",
+   "collectedAt": "2026-09-10T14:06:50.023Z",
    "fields": {
     "name": "미래에셋증권 제38084회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
     "issuer": "미래에셋증권",
@@ -10615,7 +10655,7 @@ window.ELS_PROSPECTUS = {
    "derivedFrom": {
     "months": "차수별 평가일과 발행일의 차이로 계산",
     "midPriceDate": "기초자산 소재지(아시아 / 非아시아)로 판정",
-    "maturityRow": "만기 배리어·만기일을 표 마지막 행으로 추가",
+    "maturityRow": "만기 배리어·만기일을 표 마지막 행으로 추가 (지급률은 손익구조 표의 만기상환 칸)",
     "riskGradeNote": "투자설명서 「목표시장 설정 및 설정 근거」 표(위험추구성향·손실감내능력·지식과 경험·투자기간)를 문장으로 옮김",
     "riskGradeLabel": "등급 숫자와 등급명 중 제목에 있는 쪽에서 나머지를 채움 (문서가 밝히는 1:1 대응)",
     "lossExample": "낙인 배리어 + 만기 배리어 조항"
@@ -10639,7 +10679,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260828000836",
    "rcpNo": "20260828000836",
    "docDate": "2026-08-28",
-   "collectedAt": "2026-09-10T00:56:43.155Z",
+   "collectedAt": "2026-09-10T14:06:50.023Z",
    "fields": {
     "name": "미래에셋증권 제38085회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
     "issuer": "미래에셋증권",
@@ -10788,7 +10828,7 @@ window.ELS_PROSPECTUS = {
    "derivedFrom": {
     "months": "차수별 평가일과 발행일의 차이로 계산",
     "midPriceDate": "기초자산 소재지(아시아 / 非아시아)로 판정",
-    "maturityRow": "만기 배리어·만기일을 표 마지막 행으로 추가",
+    "maturityRow": "만기 배리어·만기일을 표 마지막 행으로 추가 (지급률은 손익구조 표의 만기상환 칸)",
     "riskGradeNote": "투자설명서 「목표시장 설정 및 설정 근거」 표(위험추구성향·손실감내능력·지식과 경험·투자기간)를 문장으로 옮김",
     "riskGradeLabel": "등급 숫자와 등급명 중 제목에 있는 쪽에서 나머지를 채움 (문서가 밝히는 1:1 대응)",
     "lossExample": "낙인 배리어 + 만기 배리어 조항"
@@ -10812,7 +10852,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260828000836",
    "rcpNo": "20260828000836",
    "docDate": "2026-08-28",
-   "collectedAt": "2026-09-10T00:56:43.155Z",
+   "collectedAt": "2026-09-10T14:06:50.023Z",
    "fields": {
     "name": "미래에셋증권 제38086회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
     "issuer": "미래에셋증권",
@@ -10913,7 +10953,7 @@ window.ELS_PROSPECTUS = {
    "derivedFrom": {
     "months": "차수별 평가일과 발행일의 차이로 계산",
     "midPriceDate": "기초자산 소재지(아시아 / 非아시아)로 판정",
-    "maturityRow": "만기 배리어·만기일을 표 마지막 행으로 추가",
+    "maturityRow": "만기 배리어·만기일을 표 마지막 행으로 추가 (지급률은 손익구조 표의 만기상환 칸)",
     "riskGradeNote": "투자설명서 「목표시장 설정 및 설정 근거」 표(위험추구성향·손실감내능력·지식과 경험·투자기간)를 문장으로 옮김",
     "riskGradeLabel": "등급 숫자와 등급명 중 제목에 있는 쪽에서 나머지를 채움 (문서가 밝히는 1:1 대응)",
     "lossExample": "낙인 배리어 + 만기 배리어 조항"
@@ -10937,7 +10977,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260828000836",
    "rcpNo": "20260828000836",
    "docDate": "2026-08-28",
-   "collectedAt": "2026-09-10T00:56:43.155Z",
+   "collectedAt": "2026-09-10T14:06:50.023Z",
    "fields": {
     "name": "미래에셋증권 제38087회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
     "issuer": "미래에셋증권",
@@ -11038,7 +11078,7 @@ window.ELS_PROSPECTUS = {
    "derivedFrom": {
     "months": "차수별 평가일과 발행일의 차이로 계산",
     "midPriceDate": "기초자산 소재지(아시아 / 非아시아)로 판정",
-    "maturityRow": "만기 배리어·만기일을 표 마지막 행으로 추가",
+    "maturityRow": "만기 배리어·만기일을 표 마지막 행으로 추가 (지급률은 손익구조 표의 만기상환 칸)",
     "riskGradeNote": "투자설명서 「목표시장 설정 및 설정 근거」 표(위험추구성향·손실감내능력·지식과 경험·투자기간)를 문장으로 옮김",
     "riskGradeLabel": "등급 숫자와 등급명 중 제목에 있는 쪽에서 나머지를 채움 (문서가 밝히는 1:1 대응)",
     "lossExample": "낙인 배리어 + 만기 배리어 조항"
@@ -11062,7 +11102,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260828000836",
    "rcpNo": "20260828000836",
    "docDate": "2026-08-28",
-   "collectedAt": "2026-09-10T00:56:43.155Z",
+   "collectedAt": "2026-09-10T14:06:50.023Z",
    "fields": {
     "name": "미래에셋증권 제38088회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
     "issuer": "미래에셋증권",
@@ -11163,7 +11203,7 @@ window.ELS_PROSPECTUS = {
    "derivedFrom": {
     "months": "차수별 평가일과 발행일의 차이로 계산",
     "midPriceDate": "기초자산 소재지(아시아 / 非아시아)로 판정",
-    "maturityRow": "만기 배리어·만기일을 표 마지막 행으로 추가",
+    "maturityRow": "만기 배리어·만기일을 표 마지막 행으로 추가 (지급률은 손익구조 표의 만기상환 칸)",
     "riskGradeNote": "투자설명서 「목표시장 설정 및 설정 근거」 표(위험추구성향·손실감내능력·지식과 경험·투자기간)를 문장으로 옮김",
     "riskGradeLabel": "등급 숫자와 등급명 중 제목에 있는 쪽에서 나머지를 채움 (문서가 밝히는 1:1 대응)",
     "lossExample": "낙인 배리어 + 만기 배리어 조항"
@@ -11187,7 +11227,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260828000836",
    "rcpNo": "20260828000836",
    "docDate": "2026-08-28",
-   "collectedAt": "2026-09-10T00:56:43.155Z",
+   "collectedAt": "2026-09-10T14:06:50.023Z",
    "fields": {
     "name": "미래에셋증권 제38089회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
     "issuer": "미래에셋증권",
@@ -11288,7 +11328,7 @@ window.ELS_PROSPECTUS = {
    "derivedFrom": {
     "months": "차수별 평가일과 발행일의 차이로 계산",
     "midPriceDate": "기초자산 소재지(아시아 / 非아시아)로 판정",
-    "maturityRow": "만기 배리어·만기일을 표 마지막 행으로 추가",
+    "maturityRow": "만기 배리어·만기일을 표 마지막 행으로 추가 (지급률은 손익구조 표의 만기상환 칸)",
     "riskGradeNote": "투자설명서 「목표시장 설정 및 설정 근거」 표(위험추구성향·손실감내능력·지식과 경험·투자기간)를 문장으로 옮김",
     "riskGradeLabel": "등급 숫자와 등급명 중 제목에 있는 쪽에서 나머지를 채움 (문서가 밝히는 1:1 대응)",
     "lossExample": "낙인 배리어 + 만기 배리어 조항"
@@ -11312,7 +11352,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260904000316",
    "rcpNo": "20260904000316",
    "docDate": "2026-09-04",
-   "collectedAt": "2026-09-10T00:56:43.155Z",
+   "collectedAt": "2026-09-10T14:06:50.024Z",
    "fields": {
     "name": "미래에셋증권 제38100회 파생결합증권(주가연계증권)(높은위험,원금비보장)(상품위험등급:2등급)",
     "issuer": "미래에셋증권",
@@ -11413,7 +11453,7 @@ window.ELS_PROSPECTUS = {
    "derivedFrom": {
     "months": "차수별 평가일과 발행일의 차이로 계산",
     "midPriceDate": "기초자산 소재지(아시아 / 非아시아)로 판정",
-    "maturityRow": "만기 배리어·만기일을 표 마지막 행으로 추가",
+    "maturityRow": "만기 배리어·만기일을 표 마지막 행으로 추가 (지급률은 손익구조 표의 만기상환 칸)",
     "riskGradeNote": "투자설명서 「목표시장 설정 및 설정 근거」 표(위험추구성향·손실감내능력·지식과 경험·투자기간)를 문장으로 옮김",
     "riskGradeLabel": "등급 숫자와 등급명 중 제목에 있는 쪽에서 나머지를 채움 (문서가 밝히는 1:1 대응)",
     "lossExample": "낙인 배리어 + 만기 배리어 조항"
@@ -11438,7 +11478,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260904000316",
    "rcpNo": "20260904000316",
    "docDate": "2026-09-04",
-   "collectedAt": "2026-09-10T00:56:43.155Z",
+   "collectedAt": "2026-09-10T14:06:50.024Z",
    "fields": {
     "name": "미래에셋증권 제38101회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
     "issuer": "미래에셋증권",
@@ -11539,7 +11579,7 @@ window.ELS_PROSPECTUS = {
    "derivedFrom": {
     "months": "차수별 평가일과 발행일의 차이로 계산",
     "midPriceDate": "기초자산 소재지(아시아 / 非아시아)로 판정",
-    "maturityRow": "만기 배리어·만기일을 표 마지막 행으로 추가",
+    "maturityRow": "만기 배리어·만기일을 표 마지막 행으로 추가 (지급률은 손익구조 표의 만기상환 칸)",
     "riskGradeNote": "투자설명서 「목표시장 설정 및 설정 근거」 표(위험추구성향·손실감내능력·지식과 경험·투자기간)를 문장으로 옮김",
     "riskGradeLabel": "등급 숫자와 등급명 중 제목에 있는 쪽에서 나머지를 채움 (문서가 밝히는 1:1 대응)",
     "lossExample": "낙인 배리어 + 만기 배리어 조항"
@@ -11563,7 +11603,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260904000316",
    "rcpNo": "20260904000316",
    "docDate": "2026-09-04",
-   "collectedAt": "2026-09-10T00:56:43.155Z",
+   "collectedAt": "2026-09-10T14:06:50.024Z",
    "fields": {
     "name": "미래에셋증권 제38102회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
     "issuer": "미래에셋증권",
@@ -11664,7 +11704,7 @@ window.ELS_PROSPECTUS = {
    "derivedFrom": {
     "months": "차수별 평가일과 발행일의 차이로 계산",
     "midPriceDate": "기초자산 소재지(아시아 / 非아시아)로 판정",
-    "maturityRow": "만기 배리어·만기일을 표 마지막 행으로 추가",
+    "maturityRow": "만기 배리어·만기일을 표 마지막 행으로 추가 (지급률은 손익구조 표의 만기상환 칸)",
     "riskGradeNote": "투자설명서 「목표시장 설정 및 설정 근거」 표(위험추구성향·손실감내능력·지식과 경험·투자기간)를 문장으로 옮김",
     "riskGradeLabel": "등급 숫자와 등급명 중 제목에 있는 쪽에서 나머지를 채움 (문서가 밝히는 1:1 대응)",
     "lossExample": "낙인 배리어 + 만기 배리어 조항"
@@ -11688,7 +11728,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260904000316",
    "rcpNo": "20260904000316",
    "docDate": "2026-09-04",
-   "collectedAt": "2026-09-10T00:56:43.155Z",
+   "collectedAt": "2026-09-10T14:06:50.025Z",
    "fields": {
     "name": "미래에셋증권 제38103회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
     "issuer": "미래에셋증권",
@@ -11789,7 +11829,7 @@ window.ELS_PROSPECTUS = {
    "derivedFrom": {
     "months": "차수별 평가일과 발행일의 차이로 계산",
     "midPriceDate": "기초자산 소재지(아시아 / 非아시아)로 판정",
-    "maturityRow": "만기 배리어·만기일을 표 마지막 행으로 추가",
+    "maturityRow": "만기 배리어·만기일을 표 마지막 행으로 추가 (지급률은 손익구조 표의 만기상환 칸)",
     "riskGradeNote": "투자설명서 「목표시장 설정 및 설정 근거」 표(위험추구성향·손실감내능력·지식과 경험·투자기간)를 문장으로 옮김",
     "riskGradeLabel": "등급 숫자와 등급명 중 제목에 있는 쪽에서 나머지를 채움 (문서가 밝히는 1:1 대응)",
     "lossExample": "노낙인 — 만기 배리어 조항이 유일한 손실조건"
@@ -11813,7 +11853,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260904000316",
    "rcpNo": "20260904000316",
    "docDate": "2026-09-04",
-   "collectedAt": "2026-09-10T00:56:43.156Z",
+   "collectedAt": "2026-09-10T14:06:50.025Z",
    "fields": {
     "name": "미래에셋증권 제38104회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
     "issuer": "미래에셋증권",
@@ -11914,7 +11954,7 @@ window.ELS_PROSPECTUS = {
    "derivedFrom": {
     "months": "차수별 평가일과 발행일의 차이로 계산",
     "midPriceDate": "기초자산 소재지(아시아 / 非아시아)로 판정",
-    "maturityRow": "만기 배리어·만기일을 표 마지막 행으로 추가",
+    "maturityRow": "만기 배리어·만기일을 표 마지막 행으로 추가 (지급률은 손익구조 표의 만기상환 칸)",
     "riskGradeNote": "투자설명서 「목표시장 설정 및 설정 근거」 표(위험추구성향·손실감내능력·지식과 경험·투자기간)를 문장으로 옮김",
     "riskGradeLabel": "등급 숫자와 등급명 중 제목에 있는 쪽에서 나머지를 채움 (문서가 밝히는 1:1 대응)",
     "lossExample": "낙인 배리어 + 만기 배리어 조항"
@@ -11938,7 +11978,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260904000316",
    "rcpNo": "20260904000316",
    "docDate": "2026-09-04",
-   "collectedAt": "2026-09-10T00:56:43.156Z",
+   "collectedAt": "2026-09-10T14:06:50.025Z",
    "fields": {
     "name": "미래에셋증권 제38105회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
     "issuer": "미래에셋증권",
@@ -12039,7 +12079,7 @@ window.ELS_PROSPECTUS = {
    "derivedFrom": {
     "months": "차수별 평가일과 발행일의 차이로 계산",
     "midPriceDate": "기초자산 소재지(아시아 / 非아시아)로 판정",
-    "maturityRow": "만기 배리어·만기일을 표 마지막 행으로 추가",
+    "maturityRow": "만기 배리어·만기일을 표 마지막 행으로 추가 (지급률은 손익구조 표의 만기상환 칸)",
     "riskGradeNote": "투자설명서 「목표시장 설정 및 설정 근거」 표(위험추구성향·손실감내능력·지식과 경험·투자기간)를 문장으로 옮김",
     "riskGradeLabel": "등급 숫자와 등급명 중 제목에 있는 쪽에서 나머지를 채움 (문서가 밝히는 1:1 대응)",
     "lossExample": "낙인 배리어 + 만기 배리어 조항"
@@ -12063,7 +12103,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260904000316",
    "rcpNo": "20260904000316",
    "docDate": "2026-09-04",
-   "collectedAt": "2026-09-10T00:56:43.157Z",
+   "collectedAt": "2026-09-10T14:06:50.025Z",
    "fields": {
     "name": "미래에셋증권 제38106회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
     "issuer": "미래에셋증권",
@@ -12141,7 +12181,7 @@ window.ELS_PROSPECTUS = {
      "seq": 6,
      "months": 36,
      "barrier": 70,
-     "payRate": null,
+     "payRate": 100,
      "annRate": 25.62,
      "evalDate": "2029-09-12",
      "maturity": true
@@ -12170,7 +12210,7 @@ window.ELS_PROSPECTUS = {
    "derivedFrom": {
     "months": "차수별 평가일과 발행일의 차이로 계산",
     "midPriceDate": "기초자산 소재지(아시아 / 非아시아)로 판정",
-    "maturityRow": "만기 배리어·만기일을 표 마지막 행으로 추가",
+    "maturityRow": "만기 배리어·만기일을 표 마지막 행으로 추가 (지급률은 손익구조 표의 만기상환 칸)",
     "riskGradeNote": "투자설명서 「목표시장 설정 및 설정 근거」 표(위험추구성향·손실감내능력·지식과 경험·투자기간)를 문장으로 옮김",
     "riskGradeLabel": "등급 숫자와 등급명 중 제목에 있는 쪽에서 나머지를 채움 (문서가 밝히는 1:1 대응)",
     "lossExample": "낙인 배리어 + 만기 배리어 조항"
@@ -12194,7 +12234,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260904000316",
    "rcpNo": "20260904000316",
    "docDate": "2026-09-04",
-   "collectedAt": "2026-09-10T00:56:43.157Z",
+   "collectedAt": "2026-09-10T14:06:50.025Z",
    "fields": {
     "name": "미래에셋증권 제38107회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
     "issuer": "미래에셋증권",
@@ -12295,7 +12335,7 @@ window.ELS_PROSPECTUS = {
    "derivedFrom": {
     "months": "차수별 평가일과 발행일의 차이로 계산",
     "midPriceDate": "기초자산 소재지(아시아 / 非아시아)로 판정",
-    "maturityRow": "만기 배리어·만기일을 표 마지막 행으로 추가",
+    "maturityRow": "만기 배리어·만기일을 표 마지막 행으로 추가 (지급률은 손익구조 표의 만기상환 칸)",
     "riskGradeNote": "투자설명서 「목표시장 설정 및 설정 근거」 표(위험추구성향·손실감내능력·지식과 경험·투자기간)를 문장으로 옮김",
     "riskGradeLabel": "등급 숫자와 등급명 중 제목에 있는 쪽에서 나머지를 채움 (문서가 밝히는 1:1 대응)",
     "lossExample": "낙인 배리어 + 만기 배리어 조항"
@@ -12319,7 +12359,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260904000316",
    "rcpNo": "20260904000316",
    "docDate": "2026-09-04",
-   "collectedAt": "2026-09-10T00:56:43.157Z",
+   "collectedAt": "2026-09-10T14:06:50.025Z",
    "fields": {
     "name": "미래에셋증권 제38108회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
     "issuer": "미래에셋증권",
@@ -12420,7 +12460,7 @@ window.ELS_PROSPECTUS = {
    "derivedFrom": {
     "months": "차수별 평가일과 발행일의 차이로 계산",
     "midPriceDate": "기초자산 소재지(아시아 / 非아시아)로 판정",
-    "maturityRow": "만기 배리어·만기일을 표 마지막 행으로 추가",
+    "maturityRow": "만기 배리어·만기일을 표 마지막 행으로 추가 (지급률은 손익구조 표의 만기상환 칸)",
     "riskGradeNote": "투자설명서 「목표시장 설정 및 설정 근거」 표(위험추구성향·손실감내능력·지식과 경험·투자기간)를 문장으로 옮김",
     "riskGradeLabel": "등급 숫자와 등급명 중 제목에 있는 쪽에서 나머지를 채움 (문서가 밝히는 1:1 대응)",
     "lossExample": "낙인 배리어 + 만기 배리어 조항"
@@ -12444,7 +12484,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260904000316",
    "rcpNo": "20260904000316",
    "docDate": "2026-09-04",
-   "collectedAt": "2026-09-10T00:56:43.157Z",
+   "collectedAt": "2026-09-10T14:06:50.026Z",
    "fields": {
     "name": "미래에셋증권 제38109회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
     "issuer": "미래에셋증권",
@@ -12545,7 +12585,7 @@ window.ELS_PROSPECTUS = {
    "derivedFrom": {
     "months": "차수별 평가일과 발행일의 차이로 계산",
     "midPriceDate": "기초자산 소재지(아시아 / 非아시아)로 판정",
-    "maturityRow": "만기 배리어·만기일을 표 마지막 행으로 추가",
+    "maturityRow": "만기 배리어·만기일을 표 마지막 행으로 추가 (지급률은 손익구조 표의 만기상환 칸)",
     "riskGradeNote": "투자설명서 「목표시장 설정 및 설정 근거」 표(위험추구성향·손실감내능력·지식과 경험·투자기간)를 문장으로 옮김",
     "riskGradeLabel": "등급 숫자와 등급명 중 제목에 있는 쪽에서 나머지를 채움 (문서가 밝히는 1:1 대응)",
     "lossExample": "노낙인 — 만기 배리어 조항이 유일한 손실조건"
@@ -12569,7 +12609,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260904000316",
    "rcpNo": "20260904000316",
    "docDate": "2026-09-04",
-   "collectedAt": "2026-09-10T00:56:43.157Z",
+   "collectedAt": "2026-09-10T14:06:50.026Z",
    "fields": {
     "name": "미래에셋증권 제38110회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
     "issuer": "미래에셋증권",
@@ -12670,7 +12710,7 @@ window.ELS_PROSPECTUS = {
    "derivedFrom": {
     "months": "차수별 평가일과 발행일의 차이로 계산",
     "midPriceDate": "기초자산 소재지(아시아 / 非아시아)로 판정",
-    "maturityRow": "만기 배리어·만기일을 표 마지막 행으로 추가",
+    "maturityRow": "만기 배리어·만기일을 표 마지막 행으로 추가 (지급률은 손익구조 표의 만기상환 칸)",
     "riskGradeNote": "투자설명서 「목표시장 설정 및 설정 근거」 표(위험추구성향·손실감내능력·지식과 경험·투자기간)를 문장으로 옮김",
     "riskGradeLabel": "등급 숫자와 등급명 중 제목에 있는 쪽에서 나머지를 채움 (문서가 밝히는 1:1 대응)",
     "lossExample": "낙인 배리어 + 만기 배리어 조항"
@@ -12694,7 +12734,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260904000316",
    "rcpNo": "20260904000316",
    "docDate": "2026-09-04",
-   "collectedAt": "2026-09-10T00:56:43.157Z",
+   "collectedAt": "2026-09-10T14:06:50.026Z",
    "fields": {
     "name": "미래에셋증권 제38111회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
     "issuer": "미래에셋증권",
@@ -12795,7 +12835,7 @@ window.ELS_PROSPECTUS = {
    "derivedFrom": {
     "months": "차수별 평가일과 발행일의 차이로 계산",
     "midPriceDate": "기초자산 소재지(아시아 / 非아시아)로 판정",
-    "maturityRow": "만기 배리어·만기일을 표 마지막 행으로 추가",
+    "maturityRow": "만기 배리어·만기일을 표 마지막 행으로 추가 (지급률은 손익구조 표의 만기상환 칸)",
     "riskGradeNote": "투자설명서 「목표시장 설정 및 설정 근거」 표(위험추구성향·손실감내능력·지식과 경험·투자기간)를 문장으로 옮김",
     "riskGradeLabel": "등급 숫자와 등급명 중 제목에 있는 쪽에서 나머지를 채움 (문서가 밝히는 1:1 대응)",
     "lossExample": "낙인 배리어 + 만기 배리어 조항"
@@ -12819,7 +12859,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260904000316",
    "rcpNo": "20260904000316",
    "docDate": "2026-09-04",
-   "collectedAt": "2026-09-10T00:56:43.157Z",
+   "collectedAt": "2026-09-10T14:06:50.026Z",
    "fields": {
     "name": "미래에셋증권 제38112회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
     "issuer": "미래에셋증권",
@@ -12920,7 +12960,7 @@ window.ELS_PROSPECTUS = {
    "derivedFrom": {
     "months": "차수별 평가일과 발행일의 차이로 계산",
     "midPriceDate": "기초자산 소재지(아시아 / 非아시아)로 판정",
-    "maturityRow": "만기 배리어·만기일을 표 마지막 행으로 추가",
+    "maturityRow": "만기 배리어·만기일을 표 마지막 행으로 추가 (지급률은 손익구조 표의 만기상환 칸)",
     "riskGradeNote": "투자설명서 「목표시장 설정 및 설정 근거」 표(위험추구성향·손실감내능력·지식과 경험·투자기간)를 문장으로 옮김",
     "riskGradeLabel": "등급 숫자와 등급명 중 제목에 있는 쪽에서 나머지를 채움 (문서가 밝히는 1:1 대응)",
     "lossExample": "낙인 배리어 + 만기 배리어 조항"
@@ -12944,7 +12984,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260904000316",
    "rcpNo": "20260904000316",
    "docDate": "2026-09-04",
-   "collectedAt": "2026-09-10T00:56:43.157Z",
+   "collectedAt": "2026-09-10T14:06:50.026Z",
    "fields": {
     "name": "미래에셋증권 제38113회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
     "issuer": "미래에셋증권",
@@ -13045,7 +13085,7 @@ window.ELS_PROSPECTUS = {
    "derivedFrom": {
     "months": "차수별 평가일과 발행일의 차이로 계산",
     "midPriceDate": "기초자산 소재지(아시아 / 非아시아)로 판정",
-    "maturityRow": "만기 배리어·만기일을 표 마지막 행으로 추가",
+    "maturityRow": "만기 배리어·만기일을 표 마지막 행으로 추가 (지급률은 손익구조 표의 만기상환 칸)",
     "riskGradeNote": "투자설명서 「목표시장 설정 및 설정 근거」 표(위험추구성향·손실감내능력·지식과 경험·투자기간)를 문장으로 옮김",
     "riskGradeLabel": "등급 숫자와 등급명 중 제목에 있는 쪽에서 나머지를 채움 (문서가 밝히는 1:1 대응)",
     "lossExample": "낙인 배리어 + 만기 배리어 조항"
@@ -13069,7 +13109,7 @@ window.ELS_PROSPECTUS = {
    "docUrl": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260904000316",
    "rcpNo": "20260904000316",
    "docDate": "2026-09-04",
-   "collectedAt": "2026-09-10T00:56:43.157Z",
+   "collectedAt": "2026-09-10T14:06:50.026Z",
    "fields": {
     "name": "미래에셋증권 제38114회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
     "issuer": "미래에셋증권",
@@ -13170,7 +13210,7 @@ window.ELS_PROSPECTUS = {
    "derivedFrom": {
     "months": "차수별 평가일과 발행일의 차이로 계산",
     "midPriceDate": "기초자산 소재지(아시아 / 非아시아)로 판정",
-    "maturityRow": "만기 배리어·만기일을 표 마지막 행으로 추가",
+    "maturityRow": "만기 배리어·만기일을 표 마지막 행으로 추가 (지급률은 손익구조 표의 만기상환 칸)",
     "riskGradeNote": "투자설명서 「목표시장 설정 및 설정 근거」 표(위험추구성향·손실감내능력·지식과 경험·투자기간)를 문장으로 옮김",
     "riskGradeLabel": "등급 숫자와 등급명 중 제목에 있는 쪽에서 나머지를 채움 (문서가 밝히는 1:1 대응)",
     "lossExample": "낙인 배리어 + 만기 배리어 조항"

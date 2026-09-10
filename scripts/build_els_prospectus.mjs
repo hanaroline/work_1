@@ -229,16 +229,30 @@ function toRecord(it, rcpNo, docDate) {
     const matSeq = cycle ? Math.round(term / cycle) : lastSeq + 1;
     if (matSeq > lastSeq) {
       /**
-       * 만기 지급률은 문서의 총수익률(docMaxRate)에 100 을 더해 쓴다. 단 월지급식은
-       * docMaxRate 가 「한 달치」다 (제4058회 0.5%(연 6%)). 그대로 더하면 3년물 만기
-       * 지급률이 100.5% 로 나와 실제와 전혀 다른 숫자를 읽게 된다. 월지급식이면
-       * 만기 지급률을 비워 「확인필요」로 남긴다 — 틀린 숫자보다 빈칸이 낫다.
+       * 만기 지급률 — 손익구조 표의 만기상환 조건 칸에서 읽은 값을 그대로 쓴다.
+       *
+       * 앞 판은 문서 전체의 최대 총수익률(docMaxRate)로 대신했다. 그런데 월지급식은
+       * docMaxRate 가 「한 달치」라 (제4058회 0.5%(연 6%)) 그대로 더하면 3년물 만기
+       * 지급률이 100.5% 로 나온다. 그래서 월지급식은 비워 「확인필요」로 남겼는데,
+       * 원문에는 값이 적혀 있었다 — 월지급식의 만기상환 칸은 「0%(원금지급)」 이다.
+       * 수익을 매달 따로 주므로 만기에는 원금만 상환한다는 뜻이고, 조기상환 차수가
+       * 모두 「액면금액 × 100.00%」 인 것과 같은 말이다.
+       *
+       * 순서는 ① 원문이 「원금지급」 이라고 적은 것 ② 원문 만기상환 칸의 수익률
+       * ③ 원금지급형이라는 상품 성격 ④ (그것도 없으면) 옛 방식 이다.
+       * 수집분 105개 회차에서 ② 는 비월지급식 docMaxRate 와 전건 일치했다.
+       *
+       * ★ 원문(①②)이 상품 성격(③)보다 앞선다 ★
+       *   앞 판은 「파생결합사채면 상환금액이 원금으로 확정되니 100」 을 먼저 봤다.
+       *   월지급식 ELB(제4058회)는 그 말이 맞지만, 수익을 만기에 한꺼번에 주는
+       *   ELB(제4059·4060·4067·4068회)는 만기상환금액이 「액면금액 × 103.5451%」 다.
+       *   성격을 먼저 보면 103.55% 를 100% 로 깎아 읽어, 창구가 실제보다 적은
+       *   수익을 말하게 된다. 문서가 숫자를 적어 두었으면 그 숫자가 먼저다.
        */
-      /* 파생결합사채는 문서의 만기상환 표가 조건 충족·미충족 양쪽 모두 「액면금액」이다
-         (제4058회: (13) 70% 이상 -> 0%(액면금액) / (14) 70% 미만 -> 0%(액면금액)).
-         상환금액이 원금으로 확정되므로 지급률은 100 이다. */
-      const matPay = it.principalProtected ? 100
-        : ((it.monthlyIncome || it.docMaxRate == null) ? null : it.docMaxRate + 100);
+      const matPay = it.maturityPrincipalOnly ? 100
+        : it.maturityRate != null ? it.maturityRate + 100
+          : it.principalProtected ? 100
+            : ((it.monthlyIncome || it.docMaxRate == null) ? null : it.docMaxRate + 100);
       schedule.push({
         seq: matSeq, months: term, barrier: it.maturityBarrier,
         payRate: matPay,
@@ -313,7 +327,7 @@ function toRecord(it, rcpNo, docDate) {
     derivedFrom: {
       months: '차수별 평가일과 발행일의 차이로 계산',
       midPriceDate: '기초자산 소재지(아시아 / 非아시아)로 판정',
-      maturityRow: '만기 배리어·만기일을 표 마지막 행으로 추가',
+      maturityRow: '만기 배리어·만기일을 표 마지막 행으로 추가 (지급률은 손익구조 표의 만기상환 칸)',
       riskGradeNote: '투자설명서 「목표시장 설정 및 설정 근거」 표(위험추구성향·손실감내능력·지식과 경험·투자기간)를 문장으로 옮김',
       riskGradeLabel: '등급 숫자와 등급명 중 제목에 있는 쪽에서 나머지를 채움 (문서가 밝히는 1:1 대응)',
       lossExample: it.principalProtected ? '원금지급형 — 중도상환·발행사 신용위험만 손실 요인'
