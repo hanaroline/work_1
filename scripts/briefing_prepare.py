@@ -33,10 +33,27 @@ def _split(dct, k=8):
 def prepare(D, H, N, today, now, kind):
     I = D["indices"]
     KS, KQ = I["kospi"], I["kosdaq"]
-    MI = D["market_internals"]
-    KSI, KQI = MI["kospi"], MI["kosdaq"]
+    # 네이버가 페이지 구조를 바꾸면 `market_internals` 가 통째로 빠진다
+    # (2026-09-11 아침에 실제로 그랬다 — 업종·증시자금·기사까지 함께 실패했다).
+    # 그때 판을 못 짓는 것이 아니라, **없는 칸을 「—」로 두고 나머지를 낸다.**
+    # 값을 지어내지 않는 것이 규칙이므로 0 으로 채우지 않고 None 으로 둔다.
+    _EMPTY_B = {"advancing": None, "declining": None, "unchanged": None,
+                "limit_up": None, "limit_down": None}
+    MI = D.get("market_internals") or {}
+    KSI = MI.get("kospi") or {}
+    KQI = MI.get("kosdaq") or {}
+    KSI.setdefault("breadth", dict(_EMPTY_B))
+    KQI.setdefault("breadth", dict(_EMPTY_B))
+    KSI.setdefault("fifty_two_week", {})
+    KQI.setdefault("fifty_two_week", {})
     ksb, kqb = KSI["breadth"], KQI["breadth"]
-    kf, qf = KSI["investor_flows"], KQI["investor_flows"]
+    # 투자자별은 `investors_kospi`(다른 원천)에 남아 있는 일이 있다 — 있으면 살려 쓴다.
+    _iv = (D.get("investors_kospi") or [])
+    kf = KSI.get("investor_flows") or (
+        {k: _iv[0].get(k) for k in ("retail", "foreign", "institution")} if _iv else {})
+    qf = KQI.get("investor_flows") or {}
+    KSI.setdefault("investor_flows", kf)
+    KQI.setdefault("investor_flows", qf)
     ru, ec, rk = D["rates_us"], D.get("rates_ecos", {}), D.get("rates_kr", {})
     S = D["stocks"]
     US = D["us_stocks"]
@@ -61,10 +78,15 @@ def prepare(D, H, N, today, now, kind):
     if down == 0:
         word = "전일 대비 증가" if len(tv) > 1 and tv[0][1] > tv[1][1] else "보합"
 
-    ksum = ksb["advancing"] + ksb["declining"] + ksb.get("unchanged", 0)
-    qsum = kqb["advancing"] + kqb["declining"] + kqb.get("unchanged", 0)
-    adv10 = round(ksb["advancing"] / max(1, ksum) * 10)
-    adv10q = round(kqb["advancing"] / max(1, qsum) * 10)
+    def _ten(b):
+        """열에 몇이 올랐나. 등락 종목 수가 없으면 **지어내지 않고 None 을 낸다.**"""
+        adv, dec = b.get("advancing"), b.get("declining")
+        if adv is None or dec is None:
+            return None
+        tot = adv + dec + (b.get("unchanged") or 0)
+        return round(adv / max(1, tot) * 10)
+
+    adv10, adv10q = _ten(ksb), _ten(kqb)
 
     IV = D.get("investors_kospi") or []
     fgn1 = IV[1]["foreign"] if len(IV) > 1 else None
@@ -387,24 +409,28 @@ def _tables(C):
 def _fallbacks(C):
     I, KS, KQ, ksb, kqb, kf = C["I"], C["KS"], C["KQ"], C["ksb"], C["kqb"], C["kf"]
     ru, S = C["ru"], C["S"]
-    agree = (KS["change_pct"] > 0) == (ksb["advancing"] > ksb["declining"])
+    # 등락 종목 수가 없으면 「지수와 폭이 같은 쪽인가」를 판정할 수 없다 — None 으로 둔다.
+    agree = (None if ksb.get("advancing") is None or ksb.get("declining") is None
+             else (KS["change_pct"] > 0) == (ksb["advancing"] > ksb["declining"]))
+    agree_ko = "같은" if agree else ("다른" if agree is False else "말할 수 없는")
+    agree_en = "agree" if agree else ("disagree" if agree is False else "cannot be compared")
     lead = C["kr_top"][0] if C["kr_top"] else None
     lag = C["kr_bot"][0] if C["kr_bot"] else None
 
     C["fallback_today"] = [
         ("<strong>국내.</strong> 코스피 " + pct(KS["change_pct"]) + " (" + n(KS["close"]) + "), 코스닥 "
          + pct(KQ["change_pct"]) + " 입니다. 오른 종목 " + n(ksb["advancing"], 0) + " 대 내린 종목 "
-         + n(ksb["declining"], 0) + " 로 <strong>지수와 폭이 " + ("같은" if agree else "다른")
+         + n(ksb["declining"], 0) + " 로 <strong>지수와 폭이 " + agree_ko
          + " 쪽</strong>을 봤습니다 " + VF_MD + ". 거래대금은 " + n(C["turnover"][0][1]) + "조입니다.",
          "<strong>Korea.</strong> The KOSPI was " + pct(KS["change_pct"]) + " and the KOSDAQ "
          + pct(KQ["change_pct"]) + ", with " + n(ksb["advancing"], 0) + " advancers against "
          + n(ksb["declining"], 0) + " &mdash; <strong>index and breadth "
-         + ("agree" if agree else "disagree") + "</strong> " + VF_MD + "."),
-        ("<strong>수급.</strong> 외국인 " + eok(kf["foreign"]) + ", 기관 " + eok(kf["institution"])
-         + ", 개인 " + eok(kf["retail"]) + " 입니다 " + VF_MD
+         + agree_en + "</strong> " + VF_MD + "."),
+        ("<strong>수급.</strong> 외국인 " + eok(kf.get("foreign")) + ", 기관 " + eok(kf.get("institution"))
+         + ", 개인 " + eok(kf.get("retail")) + " 입니다 " + VF_MD
          + (". 그 앞 거래일 외국인은 " + eok(C["fgn1"]) + " 였습니다." if C["fgn1"] is not None else "."),
-         "<strong>Flows.</strong> Foreigners " + eok(kf["foreign"]) + ", institutions "
-         + eok(kf["institution"]) + ", retail " + eok(kf["retail"]) + " " + VF_MD + "."),
+         "<strong>Flows.</strong> Foreigners " + eok(kf.get("foreign")) + ", institutions "
+         + eok(kf.get("institution")) + ", retail " + eok(kf.get("retail")) + " " + VF_MD + "."),
         ("<strong>간밤 해외.</strong> 다우 " + pct(I["dow"]["change_pct"]) + ", S&amp;P "
          + pct(I["sp500"]["change_pct"]) + ", 나스닥 " + pct(I["nasdaq"]["change_pct"]) + ", SOX "
          + pct(I["sox"]["change_pct"]) + " 입니다. 미 10년물은 " + n(ru["curve"]["ust10y"], 3) + "%("
@@ -426,11 +452,11 @@ def _fallbacks(C):
         + n(ksb["declining"], 0) + ".")
 
     C["fb_flows"] = (
-        "외국인 " + eok(kf["foreign"]) + ", 기관 " + eok(kf["institution"]) + ", 개인 "
-        + eok(kf["retail"]) + " 입니다 " + VF_MD + ". <strong>수급은 잔액이 아니라 변화로 읽으십시오</strong> "
+        "외국인 " + eok(kf.get("foreign")) + ", 기관 " + eok(kf.get("institution")) + ", 개인 "
+        + eok(kf.get("retail")) + " 입니다 " + VF_MD + ". <strong>수급은 잔액이 아니라 변화로 읽으십시오</strong> "
         "&mdash; 팔던 손이 멎는 것만으로 지수가 움직입니다.",
-        "Foreigners " + eok(kf["foreign"]) + ", institutions " + eok(kf["institution"]) + ", retail "
-        + eok(kf["retail"]) + " " + VF_MD + ". <strong>Read the change, not the level.</strong>")
+        "Foreigners " + eok(kf.get("foreign")) + ", institutions " + eok(kf.get("institution")) + ", retail "
+        + eok(kf.get("retail")) + " " + VF_MD + ". <strong>Read the change, not the level.</strong>")
 
     C["fb_global"] = (
         "다우 " + pct(I["dow"]["change_pct"]) + ", S&amp;P " + pct(I["sp500"]["change_pct"]) + ", 나스닥 "
