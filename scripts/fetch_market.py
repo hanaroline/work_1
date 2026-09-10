@@ -3156,6 +3156,28 @@ def probe_next_chunks(pages, dump_dir="data/market/raw"):
             lines.append("      %s" % x)
         if not keep:
             lines.append("      (경로를 못 찾음)")
+
+        # **경로만으로는 못 부른다** — finance.naver.com 에 붙였더니 네이버
+        # 공통 오류 페이지(2,691 bytes)가 왔다. 그래서 ① 묶음에 등장하는
+        # 네이버 호스트를 전부 모으고 ② 관심 경로가 나오는 자리의 앞뒤를
+        # 그대로 떠서, 기준 주소가 어떻게 조립되는지 눈으로 볼 수 있게 한다.
+        hosts, ctx = set(), []
+        for cu in chunks[:8]:
+            try:
+                js = _get(cu)
+            except Exception:                                     # noqa: BLE001
+                continue
+            hosts |= set(re.findall(r'https://[a-z0-9.\-]*naver\.com[a-z0-9/_\-]*', js))
+            for kw in ("domestic/market/trendDeposit", "domestic/news/list",
+                       "securityService/marketindex"):
+                for m in re.finditer(re.escape(kw), js):
+                    ctx.append(js[max(0, m.start() - 260):m.start() + 120])
+        lines.append("    -- 묶음에 나오는 네이버 호스트 --")
+        for h in sorted(hosts)[:40]:
+            lines.append("      %s" % h)
+        lines.append("    -- 관심 경로가 조립되는 자리 --")
+        for c in ctx[:6]:
+            lines.append("      …%s…" % re.sub(r"\s+", " ", c))
         lines.append("")
     with open(os.path.join(dump_dir, "probe_chunks.txt"), "w", encoding="utf-8") as f:
         f.write("\n".join(lines))
