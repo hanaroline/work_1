@@ -1,4 +1,4 @@
-네이버 API 탐색 2026-09-11 08:38:14 KST
+네이버 API 탐색 2026-09-11 08:41:42 KST
 (원천이 실패한 날에만 돈다. 수집 결과는 바꾸지 않는다.)
 
 [internals] https://m.stock.naver.com/api/index/KOSPI/basic
@@ -41,38 +41,38 @@
     남김: data/market/raw/probe_07_sectors.txt
     앞머리: {"stockListSortType":"INDUSTRY","groups":[{"no":309,"name":"음료","totalCount":0,"changeRate":"0.00","riseCount":0,"fallCount":0,"steadyCount":0},{"no":318,"name":"종이와목재","totalCount":0,"changeRate":"0.00","riseCount":0,"fallCount":0,"steadyC
 
-[money_flow] https://finance.naver.com/api/domestic/market/trendDeposit?startIdx=0&pageSize=20
+[money_flow] https://m.stock.naver.com/api/domestic/market/trendDeposit?startIdx=0&pageSize=20
+    실패 · 30 bytes · 걸린 낱말 없음
+    응답 앞머리: HTTPError: HTTP Error 404: 404
+
+[money_flow] https://m.stock.naver.com/api/domestic/market/trendDeposit/chart?startDate=20260801&endDate=20260911
+    실패 · 30 bytes · 걸린 낱말 없음
+    응답 앞머리: HTTPError: HTTP Error 404: 404
+
+[news] https://m.stock.naver.com/api/domestic/news/list?startIdx=0&pageSize=20
+    실패 · 30 bytes · 걸린 낱말 없음
+    응답 앞머리: HTTPError: HTTP Error 404: 404
+
+[news] https://m.stock.naver.com/api/domestic/news/list?category=mainnews&startIdx=0&pageSize=20
+    실패 · 30 bytes · 걸린 낱말 없음
+    응답 앞머리: HTTPError: HTTP Error 404: 404
+
+[marketindex] https://m.stock.naver.com/api/securityService/marketindex/exchange?startIdx=0&pageSize=20
+    실패 · 30 bytes · 걸린 낱말 없음
+    응답 앞머리: HTTPError: HTTP Error 404: 404
+
+[marketindex] https://m.stock.naver.com/api/securityService/marketindex/majors?startIdx=0&pageSize=20
+    실패 · 30 bytes · 걸린 낱말 없음
+    응답 앞머리: HTTPError: HTTP Error 404: 404
+
+[marketindex] https://m.stock.naver.com/api/securityService/marketindex/exchange
+    실패 · 30 bytes · 걸린 낱말 없음
+    응답 앞머리: HTTPError: HTTP Error 404: 404
+
+[money_flow] https://finance.naver.com/market/stock/kr/deposit
     빈손 · 2691 bytes · 걸린 낱말 없음
     응답 앞머리:  <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd"> <html> <head> <meta http-equiv="Content-Type" content="t
-    남김: data/market/raw/probe_08_money_flow.txt
-    앞머리:  <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd"> <html> <head> <meta http-equiv="Content-Type" content="text/html; charset=euc-kr"> <title>���̹� :: ������ ��� ����, ���̹�</title> <styl
-
-[money_flow] https://finance.naver.com/api/domestic/market/trendDeposit/chart?startDate=20260801&endDate=20260911
-    빈손 · 2691 bytes · 걸린 낱말 없음
-    응답 앞머리:  <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd"> <html> <head> <meta http-equiv="Content-Type" content="t
-    남김: data/market/raw/probe_09_money_flow.txt
-    앞머리:  <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd"> <html> <head> <meta http-equiv="Content-Type" content="text/html; charset=euc-kr"> <title>���̹� :: ������ ��� ����, ���̹�</title> <styl
-
-[news] https://finance.naver.com/api/domestic/news/list?startIdx=0&pageSize=20
-    쓸모 · 2691 bytes · 걸린 낱말 ['title']
-    남김: data/market/raw/probe_10_news.txt
-    앞머리:  <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd"> <html> <head> <meta http-equiv="Content-Type" content="text/html; charset=euc-kr"> <title>���̹� :: ������ ��� ����, ���̹�</title> <styl
-
-[news] https://finance.naver.com/api/domestic/news/list?category=mainnews&startIdx=0&pageSize=20
-    쓸모 · 2691 bytes · 걸린 낱말 ['title']
-    남김: data/market/raw/probe_11_news.txt
-    앞머리:  <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd"> <html> <head> <meta http-equiv="Content-Type" content="text/html; charset=euc-kr"> <title>���̹� :: ������ ��� ����, ���̹�</title> <styl
-
-[marketindex] https://finance.naver.com/api/securityService/marketindex/exchange?startIdx=0&pageSize=20
-    빈손 · 2691 bytes · 걸린 낱말 없음
-    응답 앞머리:  <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd"> <html> <head> <meta http-equiv="Content-Type" content="t
-    남김: data/market/raw/probe_12_marketindex.txt
-    앞머리:  <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd"> <html> <head> <meta http-equiv="Content-Type" content="text/html; charset=euc-kr"> <title>���̹� :: ������ ��� ����, ���̹�</title> <styl
-
-[marketindex] https://finance.naver.com/api/securityService/marketindex/majors?startIdx=0&pageSize=20
-    빈손 · 2691 bytes · 걸린 낱말 없음
-    응답 앞머리:  <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd"> <html> <head> <meta http-equiv="Content-Type" content="t
-    남김: data/market/raw/probe_13_marketindex.txt
+    남김: data/market/raw/probe_15_money_flow.txt
     앞머리:  <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd"> <html> <head> <meta http-equiv="Content-Type" content="text/html; charset=euc-kr"> <title>���̹� :: ������ ��� ����, ���̹�</title> <styl
 
 [money_flow] https://m.stock.naver.com/api/stock/market/deposit
@@ -89,7 +89,7 @@
 
 [money_flow] https://finance.naver.com/sise/sise_deposit.naver
     셸 · 122030 bytes · 걸린 낱말 ['예탁금', 'deposit']
-    남김: data/market/raw/probe_17_money_flow.txt
+    남김: data/market/raw/probe_19_money_flow.txt
     앞머리: <!DOCTYPE html><html lang="ko" class="" data-theme="light"><head><meta charSet="utf-8"/><meta name="viewport" content="width=1366, initial-scale=1.0, user-scalable=yes"/><meta name="viewport" content="width=device-width, initial-scale=1"/><
 
 [news] https://m.stock.naver.com/api/news/mainNews?page=1&pageSize=20
