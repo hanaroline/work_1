@@ -3138,8 +3138,14 @@ def probe_next_chunks(pages, dump_dir="data/market/raw"):
         except Exception as e:                                    # noqa: BLE001
             lines.append("    셸 실패: %s: %s\n" % (type(e).__name__, e))
             continue
-        chunks = [u for u in dict.fromkeys(_CHUNK.findall(shell)) if "/app/" in u]
-        lines.append("    app 묶음 %d 개" % len(chunks))
+        allc = list(dict.fromkeys(_CHUNK.findall(shell)))
+        # **공용 묶음까지 본다.** 경로를 만드는 곳은 app 묶음이지만, 그 앞에
+        # 붙는 기준 주소를 쥔 fetch 감싸개는 공용 묶음에 있다. app 만 뒤져서
+        # 호스트가 하나도 안 나왔다(2026-09-11 08:31).
+        chunks = [u for u in allc if "/app/" in u] + [u for u in allc if "/app/" not in u]
+        chunks = chunks[:26]
+        lines.append("    묶음 %d 개 중 %d 개를 연다 (app %d)"
+                     % (len(allc), len(chunks), sum(1 for u in chunks if "/app/" in u)))
         found = set()
         for cu in chunks[:8]:
             try:
@@ -3160,12 +3166,18 @@ def probe_next_chunks(pages, dump_dir="data/market/raw"):
         # 네이버 호스트를 전부 모으고 ② 관심 경로가 나오는 자리의 앞뒤를
         # 그대로 떠서, 기준 주소가 어떻게 조립되는지 눈으로 볼 수 있게 한다.
         hosts, ctx = set(), []
-        for cu in chunks[:8]:
+        for cu in chunks:
             try:
                 js = _get(cu)
             except Exception:                                     # noqa: BLE001
                 continue
             hosts |= set(re.findall(r'https://[a-z0-9.\-]*naver\.com[a-z0-9/_\-]*', js))
+            # fetch 감싸개(모듈 65164)가 기준 주소를 쥐고 있다. 그 정의와,
+            # baseURL·API_HOST 처럼 기준 주소를 담을 만한 이름의 앞뒤를 뜬다.
+            for m in re.finditer(r'65164:\(', js):
+                ctx.append("[65164] " + js[m.start():m.start() + 420])
+            for m in re.finditer(r'(?:baseURL|baseUrl|API_HOST|apiHost|NEXT_PUBLIC[A-Z_]*)', js):
+                ctx.append("[base] " + js[max(0, m.start() - 140):m.start() + 200])
             for kw in ("domestic/market/trendDeposit", "domestic/news/list",
                        "securityService/marketindex"):
                 for m in re.finditer(re.escape(kw), js):
@@ -3174,7 +3186,7 @@ def probe_next_chunks(pages, dump_dir="data/market/raw"):
         for h in sorted(hosts)[:40]:
             lines.append("      %s" % h)
         lines.append("    -- 관심 경로가 조립되는 자리 --")
-        for c in ctx[:6]:
+        for c in ctx[:14]:
             lines.append("      …%s…" % re.sub(r"\s+", " ", c))
         lines.append("")
     with open(os.path.join(dump_dir, "probe_chunks.txt"), "w", encoding="utf-8") as f:
