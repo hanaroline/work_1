@@ -755,12 +755,57 @@
     return (mine && mine[profile]) || '';
   }
 
+  /**
+   * 현재 투자자금성향 확인서의 보기 — 사내 서식 문항 그대로.
+   *
+   * 손실감내수준은 원금보존태도의 하위 문항이다(2-1). 원금보존태도에서
+   * 「손실위험이 있더라도 투자수익을 추구함」 을 고른 경우에만 답할 수 있다.
+   */
   var CASH_OPTS = {
-    cashPurpose: ['원금보존', '이자·배당수익 추구', '시장수익률 수준 추구', '적극적 수익 추구'],
-    cashPrincipal: ['원금 반드시 보존', '원금 대부분 보존', '일부 손실 감수 가능', '원금보존 추구하지 않음'],
-    cashLoss: ['손실 감내 불가', '10% 이내', '20% 이내', '20% 초과 감내 가능'],
-    cashHorizon: ['6개월 이내', '6개월~1년', '1년~3년', '3년 이상']
+    cashPurpose: ['여유자금(투자자금)', '사업자금', '교육자금', '노후자금'],
+    cashPrincipal: ['손실위험이 있더라도 투자수익을 추구함', '투자원금은 보존되어야 함'],
+    cashLoss: ['전액손실 가능', '70% 손실 가능', '50% 손실 가능', '20% 손실 가능', '10% 손실 가능'],
+    cashHorizon: ['상품만기일까지 보유', '3년 초과', '1년~3년', '1년 미만']
   };
+  var CASH_FIELDS = [
+    ['cashPurpose', '투자목적'], ['cashPrincipal', '원금보존태도'],
+    ['cashLoss', '손실감내수준'], ['cashHorizon', '투자예정기간']
+  ];
+  /** 손실감내수준은 원금보존태도에서 「손실위험이 있더라도…」 를 고른 경우에만 답한다 */
+  function cashLossOpen() { return ST.ctx.cashPrincipal === CASH_OPTS.cashPrincipal[0]; }
+
+  /**
+   * 적합성보고서 발급 대상 판정에 쓰는 현재 투자자금성향 적합 요건.
+   * 네 항목을 **모두** 만족해야 적합하고, 하나라도 어긋나면 부적합이다.
+   */
+  var CASH_FIT = {
+    cashPurpose: { ok: function (v) { return v !== '노후자금'; }, rule: '노후자금이 아니어야 적합' },
+    cashPrincipal: { ok: function (v) { return v === CASH_OPTS.cashPrincipal[0]; }, rule: '「손실위험이 있더라도 투자수익을 추구함」 이어야 적합' },
+    cashLoss: { ok: function (v) { return v === '전액손실 가능'; }, rule: '「전액손실 가능」 이어야 적합' },
+    cashHorizon: { ok: function (v) { return v !== '1년 미만'; }, rule: '1년 미만이 아니어야 적합' }
+  };
+  /**
+   * @returns {{rows:Array, complete:boolean, fit:boolean, badCount:number}}
+   *   rows  항목별 { key, label, value, state: 'ok'|'bad'|'empty', rule }
+   *   complete  네 항목을 다 골랐는가 (원금보존태도가 「보존되어야 함」 이면
+   *             손실감내수준은 답할 수 없으므로 그것으로 판정을 끝낸다)
+   */
+  function cashFit() {
+    var ctx = ST.ctx, rows = [], bad = 0, empty = 0;
+    CASH_FIELDS.forEach(function (f) {
+      var key = f[0], v = ctx[key] || '';
+      if (key === 'cashLoss' && !cashLossOpen()) {
+        /* 답할 수 없는 문항이다. 원금보존태도가 이미 부적합이라 판정에는 영향이 없다. */
+        rows.push({ key: key, label: f[1], value: '(답변 대상 아님)', state: 'skip', rule: CASH_FIT[key].rule });
+        return;
+      }
+      if (!v) { empty++; rows.push({ key: key, label: f[1], value: '', state: 'empty', rule: CASH_FIT[key].rule }); return; }
+      var ok = CASH_FIT[key].ok(v);
+      if (!ok) bad++;
+      rows.push({ key: key, label: f[1], value: v, state: ok ? 'ok' : 'bad', rule: CASH_FIT[key].rule });
+    });
+    return { rows: rows, complete: empty === 0, fit: empty === 0 && bad === 0, badCount: bad };
+  }
 
   /* ---------------- 저장 / 복원 ---------------- */
   function save() {
@@ -2238,8 +2283,21 @@
     switch (item.only) {
       case 'elderly': return !!sh.senior;
       case 'overseas': return !!(sh.overseas || (p && p.overseas));
-      /* 적합성보고서 대상 : (성향에 적합한) 고령투자자 또는 신규투자자 */
-      case 'suitReport': return !!(sh.senior || ctx.newInvestor);
+      /**
+       * 적합성보고서 발급 대상 :
+       *   (투자자성향 및 현재 투자자금성향이 적합한) 고령투자자 또는 신규투자자
+       *
+       * 현재 투자자금성향은 네 항목을 모두 만족해야 적합하다 (CASH_FIT).
+       * 아직 다 고르지 않았으면 판정할 수 없으므로 대상으로 두고, 화면이 무엇을
+       * 더 골라야 하는지 말한다 — 판정 전에 항목을 지워 버리면 창구는 이 항목이
+       * 있었다는 사실조차 모른다.
+       */
+      case 'suitReport': {
+        if (!(sh.senior || ctx.newInvestor)) return false;
+        if (gradeFits(ctx.custProfile, valueOf('riskGrade')) === false) return false;
+        var cf = cashFit();
+        return cf.complete ? cf.fit : true;
+      }
       case 'watch': return isWatchProduct();
       default: return true;
     }
@@ -2255,12 +2313,29 @@
   function whyNotApplicable(item) {
     var where2 = EXPL ? '왼쪽 「2 고령 / 비고령」' : '좌측 「2 고령 / 비고령」';
     switch (item.only) {
-      case 'suitReport':
-        return '<b>지금 상담 조건에서는 평가 대상이 아닙니다</b> — 적합성보고서 발급 대상은 '
-          + '<b>(성향에 적합한) 고령투자자 또는 신규투자자</b>인데, 지금은 비고령이면서 신규투자자도 아닙니다.<br>'
-          + '대상 고객이면 ' + where2 + ' 를 <b>고령투자자</b> 로 바꾸거나, '
-          + (EXPL ? '「2-1 적합성보고서에 들어가는 값」' : '좌측 「4 상담 조건 · 고객 구분」')
-          + ' 의 <b>신규투자자</b> 를 켜십시오. 켜면 이 항목이 스크립트와 읽기 모드에 들어갑니다.';
+      case 'suitReport': {
+        var head = '<b>지금 상담 조건에서는 적합성보고서 발급 대상이 아닙니다</b> — 대상은 '
+          + '<b>(투자자성향 및 현재 투자자금성향이 적합한) 고령투자자 또는 신규투자자</b>입니다.<br>';
+        if (!(sheet().senior || ST.ctx.newInvestor)) {
+          return head + '지금은 비고령이면서 신규투자자도 아닙니다 — 대상 고객이면 ' + where2
+            + ' 를 <b>고령투자자</b> 로 바꾸거나, '
+            + (EXPL ? '「2-1 적합성보고서에 들어가는 값」' : '좌측 「4 상담 조건 · 고객 구분」')
+            + ' 의 <b>신규투자자</b> 를 켜십시오.';
+        }
+        if (gradeFits(ST.ctx.custProfile, valueOf('riskGrade')) === false) {
+          return head + '고른 상품의 위험등급이 <b>' + esc(ST.ctx.custProfile) + '</b> 성향에 맞지 않습니다 — '
+            + '투자자성향이 적합해야 발급 대상입니다.';
+        }
+        var cf2 = cashFit();
+        var bad = cf2.rows.filter(function (r) { return r.state === 'bad'; });
+        if (bad.length) {
+          return head + '현재 투자자금성향이 <b>적합하지 않습니다</b> — 네 항목을 모두 만족해야 하는데 '
+            + bad.map(function (r) {
+              return '<b>' + esc(r.label) + '</b>(' + esc(r.value) + ' — ' + esc(r.rule) + ')';
+            }).join(', ') + ' 가 어긋납니다.';
+        }
+        return head + '현재 투자자금성향 요건을 확인하십시오.';
+      }
       case 'elderly':
         return '<b>고령투자자 상담에서만 평가하는 항목입니다</b> — ' + where2 + ' 를 고령투자자로 바꾸면 활성화됩니다.';
       case 'overseas':
@@ -2476,6 +2551,47 @@
   /* ============================================================
      사이드바
      ============================================================ */
+  /** 현재 투자자금성향 4문항. 손실감내수준(2-1)은 원금보존태도의 답에 따라 열린다. */
+  function cashSelects(ctx) {
+    var h = [], open = cashLossOpen();
+    CASH_FIELDS.forEach(function (pair) {
+      var key = pair[0], sub = key === 'cashLoss';
+      var off = sub && !open;
+      h.push('<div style="margin-bottom:6px"><div style="font-size:12px;color:var(--' + (off ? 'muted2' : 'muted') + ');margin-bottom:2px">'
+        + (sub ? '↳ ' : '') + pair[1] + (sub ? ' <span style="color:var(--muted2)">(원금보존태도에서 「손실위험이 있더라도…」 를 고른 경우)</span>' : '') + '</div>');
+      h.push('<select class="cashSel" data-k="' + key + '"' + (off ? ' disabled' : '') + '><option value="">— 선택 —</option>');
+      CASH_OPTS[key].forEach(function (o) {
+        h.push('<option value="' + esc(o) + '"' + (ctx[key] === o ? ' selected' : '') + '>' + esc(o) + '</option>');
+      });
+      h.push('</select></div>');
+    });
+    return h.join('');
+  }
+
+  /** 적합성보고서 발급 요건 — 네 항목을 모두 만족해야 적합하다. 지금 상태를 항목별로 적는다. */
+  function cashFitTable() {
+    var cf = cashFit();
+    var mark = { ok: '<span style="color:var(--ok);font-weight:700">✓</span>',
+      bad: '<span style="color:var(--err);font-weight:700">✗</span>',
+      empty: '<span style="color:var(--muted2)">·</span>',
+      skip: '<span style="color:var(--muted2)">—</span>' };
+    var h = ['<div class="note" style="margin-top:10px;padding:10px 12px">'];
+    h.push('<div style="font-weight:700;color:var(--ink);margin-bottom:6px">현재 투자자금성향 적합 요건 '
+      + '<span style="font-weight:400;color:var(--muted2)">— 네 항목을 모두 만족해야 적합</span></div>');
+    cf.rows.forEach(function (r) {
+      h.push('<div style="line-height:1.7">' + mark[r.state] + ' <b>' + esc(r.label) + '</b> '
+        + (r.state === 'empty' ? '<span style="color:var(--muted2)">미선택</span>'
+          : '<span style="color:var(--' + (r.state === 'bad' ? 'err' : 'muted') + ')">' + esc(r.value) + '</span>')
+        + '<br><span style="color:var(--muted2);font-size:11.5px;padding-left:14px">' + esc(r.rule) + '</span></div>');
+    });
+    h.push('<div style="margin-top:8px;padding-top:8px;border-top:1px solid var(--hair-soft);font-weight:700;color:var(--'
+      + (!cf.complete ? 'muted' : (cf.fit ? 'ok' : 'err')) + ')">'
+      + (!cf.complete ? '판정 전 — 남은 문항을 고르십시오'
+        : (cf.fit ? '적합 — 발급 대상 요건을 채웠습니다' : '부적합 — 적합성보고서 발급 대상이 아닙니다'))
+      + '</div>');
+    return h.join('') + '</div>';
+  }
+
   function renderSide() {
     var sh = sheet(), p = product(), ctx = ST.ctx;
     var h = [];
@@ -2543,7 +2659,9 @@
     /* 적합성보고서에 들어가는 값 — ELS 적합에서만.
        설명의무 문안(투자권유 사유)이 이 넷을 그대로 읽게 되어 있다. */
     if (needsSuitValues()) {
-      var suitApp = !!(sh.senior || ctx.newInvestor);
+      /* 판정은 항목의 적용 규칙 그대로 쓴다 — 화면과 스크립트가 서로 다른 말을 하면 안 된다 */
+      var suitItem = itemsOf().filter(function (x) { return x.only === 'suitReport'; })[0];
+      var suitApp = suitItem ? applicable(suitItem) : false;
       h.push('<div class="rule"></div><div class="fgroup"><div class="flabel">'
         + '<span class="req">2-1</span> 적합성보고서에 들어가는 값</div>');
       h.push('<div class="hint" style="margin-bottom:10px">설명의무 항목 「적합성보고서 발급 및 내용 안내」 의 '
@@ -2552,7 +2670,7 @@
       h.push('<label class="chk"><input type="checkbox" class="ctxChk" data-k="newInvestor"'
         + (ctx.newInvestor ? ' checked' : '') + '><span>신규투자자</span></label>');
       h.push('<div class="hint" style="margin:2px 0 10px' + (suitApp ? '' : ';color:var(--warn)') + '">'
-        + '적합성보고서 발급 대상은 <b>(적합한) 고령투자자 또는 신규투자자</b>입니다. '
+        + '적합성보고서 발급 대상은 <b>(투자자성향 및 현재 투자자금성향이 적합한) 고령투자자 또는 신규투자자</b>입니다. '
         + '현재 판정 <b style="color:var(--' + (suitApp ? 'ok' : 'warn') + ')">' + (suitApp ? '대상' : '미대상') + '</b>'
         + (suitApp ? '' : ' — 비고령이면서 신규투자자가 아니어서 적합성보고서 <b>2항목이 스크립트·읽기 모드에서 빠집니다</b>. '
             + '대상 고객이면 위 「고령 / 비고령」 을 바꾸거나 <b>신규투자자</b> 를 켜십시오.') + '</div>');
@@ -2565,15 +2683,9 @@
       h.push('</select></div>');
 
       h.push('<div style="font-size:12px;color:var(--muted);margin:0 0 4px">현재 투자자금성향 <span style="color:var(--muted2)">(4항목)</span></div>');
-      [['cashPurpose', '투자목적'], ['cashPrincipal', '원금보존태도'], ['cashLoss', '손실감내수준'], ['cashHorizon', '투자예정기간']].forEach(function (pair) {
-        h.push('<div style="margin-bottom:6px"><div style="font-size:12px;color:var(--muted);margin-bottom:2px">' + pair[1] + '</div>');
-        h.push('<select class="cashSel" data-k="' + pair[0] + '"><option value="">— 선택 —</option>');
-        CASH_OPTS[pair[0]].forEach(function (o) {
-          h.push('<option value="' + esc(o) + '"' + (ctx[pair[0]] === o ? ' selected' : '') + '>' + esc(o) + '</option>');
-        });
-        h.push('</select></div>');
-      });
-      h.push('<div class="hint">네 항목이 한 세트입니다 — 고른 값이 그대로 투자권유 사유 문장에 들어갑니다.</div>');
+      h.push(cashSelects(ctx));
+      h.push('<div class="hint">고른 값이 그대로 투자권유 사유 문장에 들어갑니다.</div>');
+      h.push(cashFitTable());
       h.push('</div>');
     }
 
@@ -2712,14 +2824,8 @@
     h.push('</div></div>');
 
     h.push('<div class="fgroup"><div class="flabel">현재 투자자금성향 (4항목)</div>');
-    [['cashPurpose', '투자목적'], ['cashPrincipal', '원금보존태도'], ['cashLoss', '손실감내수준'], ['cashHorizon', '투자예정기간']].forEach(function (pair) {
-      h.push('<div style="margin-bottom:6px"><div style="font-size:12px;color:var(--muted);margin-bottom:2px">' + pair[1] + '</div>');
-      h.push('<select class="cashSel" data-k="' + pair[0] + '"><option value="">— 선택 —</option>');
-      CASH_OPTS[pair[0]].forEach(function (o) {
-        h.push('<option value="' + esc(o) + '"' + (ctx[pair[0]] === o ? ' selected' : '') + '>' + esc(o) + '</option>');
-      });
-      h.push('</select></div>');
-    });
+    h.push(cashSelects(ctx));
+    h.push(cashFitTable());
     h.push('</div>');
 
     h.push('<div class="fgroup"><div class="flabel">고객 구분</div>');
@@ -3093,7 +3199,13 @@
       b.onclick = function () { ST.ctx.consumerType = b.dataset.v; save(); renderAll(); };
     });
     Array.prototype.forEach.call(document.querySelectorAll('.cashSel'), function (s) {
-      s.onchange = function () { ST.ctx[s.dataset.k] = s.value; save(); renderAll(); };
+      s.onchange = function () {
+        ST.ctx[s.dataset.k] = s.value;
+        /* 손실감내수준은 원금보존태도의 하위 문항이다 — 답할 수 없게 되면 답을 지운다.
+           남겨 두면 화면에는 안 보이는 값이 문장과 판정에 그대로 쓰인다. */
+        if (s.dataset.k === 'cashPrincipal' && !cashLossOpen()) ST.ctx.cashLoss = '';
+        save(); renderAll();
+      };
     });
     Array.prototype.forEach.call(document.querySelectorAll('.ctxChk'), function (c) {
       c.onchange = function () { ST.ctx[c.dataset.k] = c.checked; save(); renderAll(); };
