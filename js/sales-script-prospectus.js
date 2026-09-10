@@ -121,6 +121,43 @@
   }
 
   /** 클래스 한 줄 골라내기 — A / A-e / C / C1 / C-e 표기가 섞여 있다 */
+  /**
+   * 선취판매수수료 값처럼 생겼는가 — 「0.7%」 · 「납입금액의 1% 이내」 · 「없음」.
+   * 클래스 이름(A · A-e)이나 설명 문장이 값 자리에 들어오는 것을 여기서 막는다.
+   */
+  function feeRateLike(v) {
+    var t = String(v == null ? '' : v).trim();
+    if (!t) return false;
+    if (/없음|면제|해당\s*없|미징구|징구하지\s*않/.test(t) && t.length <= 30) return true;
+    return /\d+(?:\.\d+)?\s*%/.test(t) && t.length <= 40;
+  }
+  /** 총보수처럼 숫자(연 %)로 읽혀야 하는 값인가 — 「1.143」 · 「1.143%」 */
+  function rateNumLike(v) {
+    var t = String(v == null ? '' : v).trim();
+    return /^\d+(?:\.\d+)?\s*%?$/.test(t) && parseFloat(t) <= 20;
+  }
+  /**
+   * 환매수수료가 「없다」 고 원문이 말하고 있는가.
+   *
+   * 환매수수료 항목과 유동성위험 단계가 각자 이 판단을 하고 있었는데, 둘의 잣대가
+   * 달라 한쪽만 읽히는 일이 있었다. 더 나쁜 것은 유동성위험 쪽이었다 —
+   * 「없음」 을 못 읽으면 그것을 「환매수수료 부과」 라고 단정해, 원문이 없다고 적어 둔
+   * 펀드를 두고 창구가 부과된다고 말하게 된다. 판단은 한 곳에서만 한다.
+   *
+   * PDF 에서 글자를 뽑으면 「없 음」 · 「없\n음」 처럼 사이가 벌어지는 일이 잦다.
+   */
+  var RE_REDEEM_NONE = [
+    /환매\s*수수료[^\n]{0,10}?[:：]?\s*(해당\s*사항\s*없\s*음|해당\s*없\s*음|없\s*음|면\s*제|미\s*부과)/,
+    /환매\s*수수료를?[^\n]{0,20}?(부과하지\s*(?:않|아니)|징구하지\s*(?:않|아니)|면제)/
+  ];
+  function redeemFeeFree(t) {
+    return RE_REDEEM_NONE.some(function (re) { return re.test(t); });
+  }
+  /** 환매수수료 율이 원문에 실제로 적혀 있는가 (부과된다고 단정할 근거) */
+  function redeemFeeCharged(t) {
+    return /환매\s*수수료[^\n]{0,30}?\d+(?:\.\d+)?\s*%/.test(t);
+  }
+
   function feeRow(text, clsRe) {
     var rows = fundFeeTable(text);
     for (var i = 0; i < rows.length; i++) {
@@ -657,6 +694,13 @@
           return r[1] ? { value: r[1].name + ' — ' + r[1].body.slice(0, 240), index: 0, length: 0 } : null;
         }
       },
+      /**
+       * 보수·수수료 표는 클래스 칸과 요율 칸이 어긋나기 쉽다.
+       * 실제로 판독분 3,014건 중 137건이 「A」 · 「A-e」 · 설명 문장을 선취수수료 값으로
+       * 담고 있었다. 값처럼 보이지 않는 것은 담지 않는다 — 담아 버리면 창구 화면에는
+       * 「등록됨」 으로 뜨는데 문장은 만들어지지 않아, 어디가 잘못됐는지 알 수 없다.
+       * (여기서 null 을 돌려주면 엔진이 본문 정규식으로 넘어가 한 번 더 찾는다)
+       */
       {
         id: 'clsA', label: 'A클래스 선취판매수수료',
         fn: function (t) {
@@ -668,11 +712,24 @@
             if (!c) return null;
             r = c; v = c.value;
           }
+          if (!feeRateLike(v)) return null;
           v = /^\d/.test(v) ? '납입금액의 ' + v : v;
           return { value: v.replace(/%\s*이내/, '% 이내'), index: r.index, length: r.length };
         },
-        re: [/선취\s*판매\s*수수료[^\d%]{0,40}?(\d+(?:\.\d+)?)\s*%\s*(이내)?/],
-        map: function (m) { return '납입금액의 ' + num(m) + '%' + (m[2] ? ' 이내' : ''); }
+        /**
+         * 본문 폴백. 두 가지를 조심한다.
+         *   ① 「선취판매수수료 : 없음」 뒤에 오는 **총보수** 값을 집어 오는 것 —
+         *      없음을 먼저 잡고, 숫자 규칙은 줄을 넘지 않게 한다.
+         *   ② 건너뛰기 창이 넓으면 옆 칸 값을 끌어온다 — 20자로 줄인다.
+         */
+        re: [/선취\s*판매\s*수수료[를은는이가]?\s*[:：]?\s*(없음|면제|해당\s*없음|미징구|징구하지\s*않|부과하지\s*않)/,
+        /선취\s*판매\s*수수료[^\d%\n]{0,20}?(\d+(?:\.\d+)?)\s*%\s*(이내)?/],
+        map: function (m) {
+          /* 앞 규칙(없음·면제·미징구…)은 잡은 것이 늘 글자이고, 뒤 규칙은 늘 숫자다.
+             문구를 일일이 나열해 맞추면 하나 빠뜨렸을 때 「납입금액의 부과하지 않%」 가 된다. */
+          if (!/^\d/.test(String(m[1] || ''))) return '없음';
+          return '납입금액의 ' + num(m) + '%' + (m[2] ? ' 이내' : '');
+        }
       },
       {
         /**
@@ -684,10 +741,11 @@
           var r = feeRow(t, /^A$/i) || feeRow(t, /^A/i);
           if (r) {
             var v = /^\d/.test(r.synthetic || '') ? r.synthetic : r.total;
-            if (/^\d/.test(v || '')) return { value: v, index: r.index, length: r.length };
+            if (rateNumLike(v)) return { value: v, index: r.index, length: r.length };
           }
           var c = feeCell(t, [/합성\s*총\s*보수/, /총\s*보수[·•\s]*비용/, /^총\s*보수/], /^A(?:[\s\-]|클래스|$)/i);
-          return c ? { value: String(c.value).replace(/%$/, ''), index: c.index, length: c.length } : null;
+          if (!c || !rateNumLike(String(c.value).replace(/%$/, ''))) return null;
+          return { value: String(c.value).replace(/%$/, ''), index: c.index, length: c.length };
         },
         re: [/합성\s*총\s*보수[·•\s]*비용[^가-힣\d%]{0,20}?연?\s*(\d+\.\d+)\s*%/,
         /총\s*보수[·•\s]*비용[^가-힣\d%]{0,20}?연?\s*(\d+\.\d+)\s*%/],
@@ -699,19 +757,42 @@
           var r = feeRow(t, /^C\d?$/i) || feeRow(t, /^C/i);
           if (r) {
             var v = /^\d/.test(r.synthetic || '') ? r.synthetic : r.total;
-            if (/^\d/.test(v || '')) return { value: v, index: r.index, length: r.length };
+            if (rateNumLike(v)) return { value: v, index: r.index, length: r.length };
           }
           var c = feeCell(t, [/합성\s*총\s*보수/, /총\s*보수[·•\s]*비용/, /^총\s*보수/], /^C(?:[\s\-]|클래스|$)/i);
-          return c ? { value: String(c.value).replace(/%$/, ''), index: c.index, length: c.length } : null;
+          if (!c || !rateNumLike(String(c.value).replace(/%$/, ''))) return null;
+          return { value: String(c.value).replace(/%$/, ''), index: c.index, length: c.length };
         }
       },
       {
         id: 'redeemFee', label: '환매수수료',
-        /* 표 라벨 읽기는 쓰지 않는다 — 옆 칸의 「전환수수료」 를 값으로 집어 온다 */
-        re: [/환매\s*수수료\s*[:：]?\s*(해당사항\s*없음|없음|면제)/,
-        /환매수수료를?\s*(부과하지\s*않|징구하지\s*않|면제)/,
-        /환매\s*수수료[^\n]{0,30}?(\d+(?:\.\d+)?\s*%[^\n]{0,40})/],
-        map: function (m) { return /없|않|면제/.test(m[1]) ? '없음' : m[1].trim(); }
+        /*
+         * 표 라벨 읽기는 쓰지 않는다 — 옆 칸의 「전환수수료」 를 값으로 집어 온다.
+         *
+         * 「없음」 을 못 읽어 통째로 비는 종목이 3,014건 중 234건이었다. PDF 에서 글자를
+         * 뽑으면 「없 음」 · 「없\n음」 처럼 사이가 벌어지는 일이 잦고(같은 운용사의
+         * 쌍둥이 펀드 중 (UH)만 읽히고 (H)는 못 읽힌 경우가 그랬다), 「미부과」 ·
+         * 「부과하지 아니합니다」 같은 표현도 쓴다. 없다는 말의 변형만 넓힌다 —
+         * 숫자를 집는 마지막 규칙을 넓히면 옆 칸의 판매수수료율을 환매수수료로
+         * 읽어 버린다.
+         *
+         * 「없다」 를 알아보는 잣대는 유동성위험 단계와 함께 쓴다 (RE_REDEEM_NONE) —
+         * 따로 두었더니 한쪽만 읽혀 두 항목이 서로 다른 말을 했다.
+         */
+        re: RE_REDEEM_NONE.concat([
+        /*
+         * 율은 조건과 함께 읽어야 한다. 「70%」 만 담으면 창구가 「환매수수료는 70% 입니다」
+         * 라고 읽게 되는데, 원문은 「90일 미만 환매 시 이익금의 70%」 다 — 기간을 떼면
+         * 뜻이 뒤집힌다. 판독분에서 실제로 30건 남짓이 벌거벗은 「70%」 로 담겨 있었다.
+         * 그래서 기간·기준(90일 미만 · 이익금의)이 앞에 있으면 그것부터 담는다.
+         */
+        /환매\s*수수료[^\n]{0,10}?[:：]?\s*((?:\d+\s*(?:일|개월|년)|이익금)[^\n]{0,24}?\d+(?:\.\d+)?\s*%[^\n]{0,40})/,
+        /환매\s*수수료[^\n]{0,30}?(\d+(?:\.\d+)?\s*%[^\n]{0,40})/]),
+        /* 표에서 뽑으면 값 뒤에 탭으로 옆 칸이 딸려 온다 (「70%\t환매시」) — 잘라 낸다 */
+        map: function (m) {
+          if (/없|않|아니|면\s*제|미\s*부과/.test(m[1])) return '없음';
+          return m[1].split('\t')[0].trim();
+        }
       },
       {
         id: 'buyCut', label: '매입 기준시각',
@@ -783,11 +864,16 @@
                 : (/개방형/.test(t) ? true : null)));
           if (open === null) return null;
           if (!open) return { value: '중도환매 불가 (폐쇄형)', index: m ? m.index : 0, length: m ? m[0].length : 0 };
-          var free = /환매\s*수수료\s*[:：]?\s*(?:해당사항\s*없음|없음|면제)/.test(t) || /환매수수료를?\s*(?:부과하지|징구하지)\s*않/.test(t);
-          return {
-            value: free ? '중도환매 허용 (환매수수료 없음)' : '중도환매 시 비용발생 (환매수수료 부과)',
-            index: m ? m.index : 0, length: m ? m[0].length : 0
-          };
+          /*
+           * 환매수수료가 있다 없다를 여기서 단정하지 않는다.
+           * 원문이 「없음」 이라고 말하면 없다고 하고, 율이 적혀 있으면 부과된다고 한다.
+           * 둘 다 못 읽었으면 개방형이라는 사실만 말한다 — 못 읽은 것을 「부과」 라고
+           * 적으면, 원문에 없다고 쓰인 펀드를 두고 창구가 부과된다고 말하게 된다.
+           * (환매수수료 자체는 별도 항목으로 「확인필요」 에 남아 창구가 채우게 된다)
+           */
+          var val = redeemFeeFree(t) ? '중도환매 허용 (환매수수료 없음)'
+            : (redeemFeeCharged(t) ? '중도환매 시 비용발생 (환매수수료 부과)' : '중도환매 허용 (개방형)');
+          return { value: val, index: m ? m.index : 0, length: m ? m[0].length : 0 };
         }
       },
       {
