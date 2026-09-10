@@ -153,6 +153,38 @@
   function redeemFeeFree(t) {
     return RE_REDEEM_NONE.some(function (re) { return re.test(t); });
   }
+  /**
+   * 본문에서 선취판매수수료를 읽는 마지막 수단 — 언급이 모두 같을 때만 쓴다.
+   *
+   * 표를 못 읽으면 본문 문장을 보게 되는데, 여러 클래스를 파는 펀드는 문서 안에
+   * 선취판매수수료가 여러 번 나온다 — A는 0.5% 이내, C는 없음 하는 식이다.
+   * 본문만 봐서는 어느 것이 A의 것인지 가릴 수 없다.
+   *
+   * 앞 판은 먼저 걸리는 것을 썼다. 그래서 C클래스의 「없음」 이 A클래스 수수료로
+   * 담겼다 — 전량 재판독 3,003건 중 99건이 그렇게 「없음」 이 됐고, 그중에는
+   * A·A-e 만 파는 펀드(제K55101EN3316호: 0.5% 이내 → 없음)까지 있었다.
+   * 창구가 고객에게 「선취수수료가 없습니다」 라고 단정하게 되는 값이다.
+   * 빈칸은 창구가 설명서를 보게 하지만, 틀린 값은 그대로 읽힌다.
+   *
+   * 그래서 언급이 모두 같은 값일 때만 담는다. 갈리면 담지 않아 「확인필요」로 남는다.
+   * (율만 적힌 것과 「이내」 까지 적힌 것은 같은 값으로 보고, 더 자세한 쪽을 남긴다)
+   */
+  function clsAFromText(t) {
+    var re = new RegExp(
+      '선취\\s*판매\\s*수수료[를은는이가]?\\s*[:：]?\\s*(없\\s*음|면\\s*제|해당\\s*없\\s*음|미징구|징구하지\\s*않|부과하지\\s*않)'
+      + '|선취\\s*판매\\s*수수료[^\\d%\\n]{0,20}?(\\d+(?:\\.\\d+)?)\\s*%\\s*(이내)?', 'g');
+    var m, seen = {}, best = null;
+    while ((m = re.exec(t))) {
+      var key = m[1] ? '없음' : m[2];
+      var val = m[1] ? '없음' : '납입금액의 ' + m[2] + '%' + (m[3] ? ' 이내' : '');
+      if (!seen[key]) seen[key] = { value: val, index: m.index, length: m[0].length };
+      /* 같은 율이면 「이내」 가 붙은 쪽이 원문에 가깝다 */
+      else if (m[3] && !/이내/.test(seen[key].value)) seen[key].value = val;
+      best = seen[key];
+    }
+    var keys = Object.keys(seen);
+    return keys.length === 1 ? seen[keys[0]] : null;
+  }
   /** 환매수수료 율이 원문에 실제로 적혀 있는가 (부과된다고 단정할 근거) */
   function redeemFeeCharged(t) {
     return /환매\s*수수료[^\n]{0,30}?\d+(?:\.\d+)?\s*%/.test(t);
@@ -509,6 +541,78 @@
   }
 
   /**
+   * 세로로 쌓인 보수·수수료 표에서 A클래스 선취수수료를 읽는다.
+   *
+   * feeCell 은 「클래스 | 값」 이 한 줄에 있는 표를 읽는다. 그런데 PDF 에서 글자를
+   * 뽑으면 칸 하나가 여러 줄로 쪼개지는 표가 많다 (다올·한투 서식):
+   *
+   *     수수료선취-온라인(Ae)
+   *     납입금액
+   *     의0.5%
+   *     이내
+   *     1.34% | 0.35% | 1.27% | …      ← 여기서부터 총보수 숫자 행
+   *     수수료미징구-온라인(Ce)
+   *     없음 | 1.49% | …
+   *
+   * 이런 표를 못 읽으면 본문 폴백으로 떨어지는데, 본문에는 C클래스의 「없음」 도
+   * 함께 있어 그것을 A클래스 값으로 담게 된다 — 전량 재판독에서 99건이 그렇게
+   * 「없음」 이 됐다. 표를 제대로 읽는 것이 근본 해결이다.
+   *
+   * 창구는 오프라인으로 판다. (A) 를 (Ae) 보다 먼저 찾는다 — 둘의 요율이 다르다.
+   */
+  function feeStacked(text) {
+    var lines = String(text).split('\n');
+    /* 클래스 딱지 줄인가 — 「…(A)」 · 「…(Ae)」 · 「A」 · 「종류 A」 */
+    var labelOf = function (s) {
+      var t = s.replace(/\t/g, ' ').trim();
+      if (t.length > 40) return null;
+      var m = t.match(/\(([A-Za-z][A-Za-z0-9\-]{0,6})\)\s*$/);
+      if (m) return m[1];
+      m = t.match(/^(?:종류\s*)?([A-Za-z][A-Za-z0-9\-]{0,6})$/);
+      return m ? m[1] : null;
+    };
+    var read = function (want) {
+      var at = 0;
+      for (var i = 0; i < lines.length; i++) {
+        var lab = labelOf(lines[i]);
+        at += lines[i].length + 1;
+        if (!lab || !want.test(lab)) continue;
+        /* 딱지 아래로 값 조각을 모은다 — 탭(다음 칸)이나 숫자 행을 만나면 끝 */
+        var buf = [];
+        for (var j = i + 1; j < lines.length && j <= i + 5; j++) {
+          var raw = lines[j];
+          if (raw.indexOf('\t') >= 0) break;
+          var t = raw.trim();
+          if (!t) continue;
+          if (labelOf(raw)) break;
+          /* 총보수 숫자 행에서 멈춘다. 다만 값 자체가 「0.05%」 한 조각으로 떨어져
+             나오는 표가 있어(다올 전단채), 숫자로 시작한다고 무조건 끊으면 그 값을
+             놓친다 — 숫자가 여럿 늘어선 줄만 총보수 행으로 본다. */
+          if (/^\d/.test(t)) {
+            var nums = (t.match(/\d+(?:\.\d+)?/g) || []).length;
+            if (nums >= 2 || !buf.length) break;
+          }
+          if (t.length > 24) break;             /* 설명 문장 */
+          buf.push(t);
+          if (/이내|없음|면제|미징구/.test(t)) break;
+        }
+        var v = buf.join('').replace(/\s+/g, '');
+        if (!v) continue;
+        if (/없\s*음|면\s*제|미징구/.test(v)) return { value: '없음', index: at, length: 1 };
+        var pm = v.match(/(\d+(?:\.\d+)?)\s*%/);
+        if (!pm) continue;
+        return {
+          value: '납입금액의 ' + pm[1] + '%' + (/이내/.test(v) ? ' 이내' : ''),
+          index: at, length: 1
+        };
+      }
+      return null;
+    };
+    /* 오프라인 A 가 먼저다. 없으면 A 계열(Ae·A-e·A1…) 을 쓴다. */
+    return read(/^A$/i) || read(/^A[A-Za-z0-9\-]*$/i);
+  }
+
+  /**
    * 보수·수수료 표에서 특정 클래스 행의 특정 열을 읽는다.
    * 머리글 행에서 열 번호를 찾고, 그 아래 클래스 행에서 같은 번호의 칸을 가져온다.
    */
@@ -709,26 +813,18 @@
           /* 요약정보 표가 없으면 「클래스 | 선취판매수수료 | … 」 단순 표를 읽는다 */
           if (!v) {
             var c = feeCell(t, [/선취\s*판매\s*수수료/, /선취\s*수수료/, /판매\s*수수료/], /^A(?:[\s\-]|클래스|$)/i);
-            if (!c) return null;
-            r = c; v = c.value;
+            if (c) { r = c; v = c.value; }
           }
-          if (!feeRateLike(v)) return null;
-          v = /^\d/.test(v) ? '납입금액의 ' + v : v;
-          return { value: v.replace(/%\s*이내/, '% 이내'), index: r.index, length: r.length };
-        },
-        /**
-         * 본문 폴백. 두 가지를 조심한다.
-         *   ① 「선취판매수수료 : 없음」 뒤에 오는 **총보수** 값을 집어 오는 것 —
-         *      없음을 먼저 잡고, 숫자 규칙은 줄을 넘지 않게 한다.
-         *   ② 건너뛰기 창이 넓으면 옆 칸 값을 끌어온다 — 20자로 줄인다.
-         */
-        re: [/선취\s*판매\s*수수료[를은는이가]?\s*[:：]?\s*(없음|면제|해당\s*없음|미징구|징구하지\s*않|부과하지\s*않)/,
-        /선취\s*판매\s*수수료[^\d%\n]{0,20}?(\d+(?:\.\d+)?)\s*%\s*(이내)?/],
-        map: function (m) {
-          /* 앞 규칙(없음·면제·미징구…)은 잡은 것이 늘 글자이고, 뒤 규칙은 늘 숫자다.
-             문구를 일일이 나열해 맞추면 하나 빠뜨렸을 때 「납입금액의 부과하지 않%」 가 된다. */
-          if (!/^\d/.test(String(m[1] || ''))) return '없음';
-          return '납입금액의 ' + num(m) + '%' + (m[2] ? ' 이내' : '');
+          if (v && feeRateLike(v)) {
+            v = /^\d/.test(v) ? '납입금액의 ' + v : v;
+            return { value: v.replace(/%\s*이내/, '% 이내'), index: r.index, length: r.length };
+          }
+          /*
+           * 여기까지 왔으면 「클래스 | 값」 이 한 줄인 표가 아니다.
+           * ① 칸이 여러 줄로 쪼개진 표를 읽어 보고 ② 그래도 안 되면 본문을 본다.
+           * 본문은 클래스를 가릴 수 없으므로 언급이 모두 같을 때만 쓴다 (clsAFromText).
+           */
+          return feeStacked(t) || clsAFromText(t);
         }
       },
       {
