@@ -3201,6 +3201,69 @@ def probe_next_chunks(pages, dump_dir="data/market/raw"):
     print("... 전체는 %s/probe_chunks.txt" % dump_dir)
 
 
+def probe_with_session(dump_dir="data/market/raw"):
+    """**앱 페이지를 먼저 열어 쿠키를 받은 뒤** API 를 부른다.
+
+    경로는 묶음에서 읽어 확정했고(`/api/domestic/market/trendDeposit` 등),
+    감싸개는 `fetch(상대경로)` 뿐이라 요청은 **페이지와 같은 오리진**으로 간다.
+    셸이 가리키는 오리진은 finance.naver.com 이다. 그런데 그대로 부르면 네이버
+    공통 404 가 온다 — 호스트도 경로도 맞는데 404 라면 남는 설명은 **세션**이다.
+    그래서 사람이 하는 순서 그대로 한다: 페이지를 열고, 받은 쿠키를 지닌 채
+    같은 오리진의 API 를 부른다. 최종 주소(리다이렉트 후)도 함께 적는다.
+    """
+    import http.cookiejar
+    jar = http.cookiejar.CookieJar()
+    op = urllib.request.build_opener(urllib.request.HTTPCookieProcessor(jar))
+    hdr = [("User-Agent", UA),
+           ("Accept-Language", "ko-KR,ko;q=0.9,en;q=0.8")]
+
+    def go(url, accept="*/*", referer=None):
+        op.addheaders = hdr + [("Accept", accept)] + ([("Referer", referer)] if referer else [])
+        try:
+            with op.open(url, timeout=20) as r:
+                return r.getcode(), r.geturl(), r.read().decode("utf-8", "replace")
+        except urllib.error.HTTPError as e:
+            return e.code, url, (e.read() or b"").decode("utf-8", "replace")[:400]
+        except Exception as e:                                    # noqa: BLE001
+            return None, url, "%s: %s" % (type(e).__name__, e)
+
+    PAGES = [("증시자금동향", "https://finance.naver.com/market/stock/kr/deposit",
+              ["https://finance.naver.com/api/domestic/market/trendDeposit?startIdx=0&pageSize=20"]),
+             ("증시 기사", "https://finance.naver.com/news/mainnews.naver",
+              ["https://finance.naver.com/api/domestic/news/list?startIdx=0&pageSize=20"]),
+             ("시장지표", "https://finance.naver.com/marketindex/",
+              ["https://finance.naver.com/api/securityService/marketindex/exchange",
+               "https://finance.naver.com/api/securityService/marketindex/majors"])]
+
+    lines = ["세션을 지닌 채 API 부르기 %s KST"
+             % datetime.now(KST).strftime("%Y-%m-%d %H:%M:%S"), ""]
+    for label, page, apis in PAGES:
+        code, final, body = go(page, accept="text/html,*/*")
+        lines.append("### %s" % label)
+        lines.append("    페이지 %s → HTTP %s · 최종주소 %s · %d bytes"
+                     % (page, code, final, len(body)))
+        lines.append("    받은 쿠키: %s" % ([c.name for c in jar] or "없음"))
+        for api in apis:
+            c2, f2, b2 = go(api, accept="application/json, text/plain, */*", referer=final)
+            looks_json = b2.lstrip()[:1] in ("{", "[")
+            lines.append("    API %s" % api)
+            lines.append("        HTTP %s · %d bytes · %s"
+                         % (c2, len(b2), "JSON!" if looks_json else "JSON 아님"))
+            lines.append("        앞머리: %s" % re.sub(r"\s+", " ", b2[:200]))
+            if looks_json:
+                fn = os.path.join(dump_dir, "session_%s.json"
+                                  % api.rstrip("/").rsplit("/", 1)[-1].split("?")[0])
+                os.makedirs(dump_dir, exist_ok=True)
+                with open(fn, "w", encoding="utf-8") as f:
+                    f.write(api + "\n\n" + b2[:200000])
+                lines.append("        남김: %s" % fn)
+        lines.append("")
+    os.makedirs(dump_dir, exist_ok=True)
+    with open(os.path.join(dump_dir, "probe_session.txt"), "w", encoding="utf-8") as f:
+        f.write("\n".join(lines))
+    print("\n".join(lines))
+
+
 def probe_naver_api(dump_dir="data/market/raw"):
     """네이버 API 후보를 훑어 응답을 그대로 남긴다. 진단 전용."""
     os.makedirs(dump_dir, exist_ok=True)
@@ -3659,6 +3722,10 @@ def main():
             probe_naver_api()
         except Exception as e:                                    # noqa: BLE001
             print("!! API 탐색 실패: %s" % e)
+        try:
+            probe_with_session()
+        except Exception as e:                                    # noqa: BLE001
+            print("!! 세션 탐색 실패: %s" % e)
         try:
             probe_next_chunks([
                 ("증시자금동향", "https://finance.naver.com/sise/sise_deposit.naver"),
