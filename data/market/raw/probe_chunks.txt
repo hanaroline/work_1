@@ -1,8 +1,8 @@
-Next.js 묶음에서 API 주소 찾기 2026-09-11 08:35:39 KST
+Next.js 묶음에서 API 주소 찾기 2026-09-11 08:38:37 KST
 
 ### 증시자금동향
     https://finance.naver.com/sise/sise_deposit.naver
-    app 묶음 7 개
+    묶음 64 개 중 26 개를 연다 (app 7)
       /api/community/profile/users
       /api/community/profile/users/
       /api/community/profile/users/form
@@ -14,14 +14,21 @@ Next.js 묶음에서 API 주소 찾기 2026-09-11 08:35:39 KST
       /api/domestic/market/trendDeposit
       /api/domestic/market/trendDeposit/chart
     -- 묶음에 나오는 네이버 호스트 --
+      https://dev-m.stock.naver.com
+      https://dev-story.pay.naver.com
       https://help.pay.naver.com/faq/content
+      https://m.stock.naver.com
+      https://mini-m.stock.naver.com
+      https://story.pay.naver.com
+      https://test-m.stock.naver.com
     -- 관심 경로가 조립되는 자리 --
+      …[65164] 65164:(e,t,n)=>{"use strict";n.d(t,{f:()=>a});var i=n(68928);async function a(e,t){let n=e instanceof Response?e:await fetch(e,t);if(await (0,i.Bw)(n),204===n.status)return{};let a=await n.json();return(0,i.SX)(a,n.status),a}},68928:(e,t,n)=>{"use strict";n.d(t,{Bw:()=>a,SX:()=>r,j$:()=>i});class i extends Error{constructor(e,t,n){if(super(e),this.name="HttpError",this.status=t,this.payload=n,n){let e=null;if(null==n…
       …acity 0.4s ease":"none"}})})}_.displayName="Lottie";let p=_},20412:(e,t,n)=>{"use strict";n.d(t,{H:()=>a,V:()=>r});var i=n(65164);async function a(e){let{startIdx:t,pageSize:n}=e,a=new URLSearchParams({startIdx:String(t),pageSize:String(n)}),r="".concat("/api/domestic/market/trendDeposit","?").concat(a.toString());return(0,i.f)(r)}async function r(e){let{startDate:t,endDate:n}=…
       …tartIdx:String(t),pageSize:String(n)}),r="".concat("/api/domestic/market/trendDeposit","?").concat(a.toString());return(0,i.f)(r)}async function r(e){let{startDate:t,endDate:n}=e,a=new URLSearchParams({startDate:String(t),endDate:String(n)}),r="".concat("/api/domestic/market/trendDeposit/chart","?").concat(a.toString());return(0,i.f)(r)}},34243:(e,t,n)=>{Promise.resolve().then(…
 
 ### 증시 기사
     https://finance.naver.com/news/mainnews.naver
-    app 묶음 7 개
+    묶음 63 개 중 26 개를 연다 (app 7)
       /api/community/profile/users
       /api/community/profile/users/
       /api/community/profile/users/form
@@ -40,7 +47,7 @@ Next.js 묶음에서 API 주소 찾기 2026-09-11 08:35:39 KST
 
 ### 시장지표(금리·환율)
     https://finance.naver.com/marketindex/
-    app 묶음 7 개
+    묶음 62 개 중 26 개를 연다 (app 7)
       /api/auth/userInfo
       /api/community/profile/users
       /api/community/profile/users/
@@ -110,6 +117,7 @@ Next.js 묶음에서 API 주소 찾기 2026-09-11 08:35:39 KST
       https://securities-ai.io.naver.com
       https://securities-general-api.io.naver.com
     -- 관심 경로가 조립되는 자리 --
+      …[65164] 65164:(e,t,a)=>{"use strict";a.d(t,{f:()=>r});var n=a(68928);async function r(e,t){let a=e instanceof Response?e:await fetch(e,t);if(await (0,n.Bw)(a),204===a.status)return{};let r=await a.json();return(0,n.SX)(r,a.status),r}},66353:(e,t,a)=>{"use strict";a.d(t,{$U:()=>f,BC:()=>v,Fl:()=>g,O8:()=>p,OF:()=>h});var n=a(84825),r=a(43815),i=a(25740),o=a(58110),l=a(81190),s=a(73020),c=a(92763),d=a(74031),u=a(48342),_=a(565…
       …l(g);let{nlog:h}=c.variants[p];h&&(0,r.No)({area:h})},[e,u,_,s,l])}}},8929:(e,t,a)=>{"use strict";a.d(t,{G0:()=>h,$f:()=>g,n:()=>f,Yi:()=>v,Wr:()=>S,g2:()=>I,BJ:()=>y,IV:()=>C});var n=a(84825),r=a(25740),i=a(81190),o=a(92763),l=a(74031),s=a(65164);let c="/api/securityService/marketindex/majors";async function d(){let e=arguments.length>0&&void 0!==arguments[0]?arguments[0]:"exc…
       …=>e.id===d);e&&(_=(0,n.jsx)(s.A,{tabId:e.id,className:e.className,children:e.content},e.id))}return(0,n.jsx)("div",{className:u("tab-panels",t),children:_})}},36490:(e,t,a)=>{"use strict";a.d(t,{DU:()=>i,Zo:()=>s,iJ:()=>o,r6:()=>l});var n=a(65164);let r="/api/securityService/marketindex/metals";async function i(){return(0,n.f)(r)}async function o(e){return(0,n.f)("".concat(r,"/…
       …tiveTabId:e=>{void 0===_&&A(e),null==p||p(e)},tabs:C,refreshSignal:T,triggerRefresh:()=>x(e=>e+1),enableRefreshOnSameTabClick:g,disableDragClickGuard:f},children:d})}},48342:(e,t,a)=>{"use strict";a.d(t,{L0:()=>l,Rj:()=>i,uz:()=>o});var n=a(65164);let r="/api/securityService/marketindex/energy";async function i(){return(0,n.f)(r)}async function o(e){return(0,n.f)("".concat(r,"/…
