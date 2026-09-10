@@ -142,46 +142,91 @@ def probe(name, html):
             info["shapes"][label] = {"n": len(hits), "e.g.": hits[:4]}
             print("  [probe] 날짜꼴 %-16s %3d개 — %s" % (label, len(hits), hits[:4]))
 
-    # 원본 HTML 에서 날짜 둘레를 그대로 떠 온다 — 어떤 태그·클래스에 담겨 있는지가
-    # 파서를 고칠 때 필요한 전부다.
-    for m in list(re.finditer(r"20\d{2}", html))[:4]:
-        lo, hi = max(0, m.start() - 160), min(len(html), m.end() + 160)
+    # 날짜가 있는 자리를 찾아 그 둘레만 떠 온다. 처음에는 그냥 '20xx' 가 처음 나오는
+    # 곳을 떴는데, 그건 언제나 머리말·내비게이션이라 아무 쓸모가 없었다(첫 진단에서
+    # 다섯 곳 모두 그랬다). 날짜 표기가 실제로 있는 자리를 찾아야 한다.
+    anchor = None
+    for _, pat in DATE_SHAPES:
+        m = re.search(pat, html)
+        if m and (anchor is None or m.start() < anchor):
+            anchor = m.start()
+    if anchor is None:                      # 날짜가 아예 없다 — 자바스크립트로 그리는 판
+        m = re.search(r"통화정책|Meeting|meeting|Calendar|calendar", html)
+        anchor = m.start() if m else 0
+    for off in (0, 1500, 4000):
+        lo, hi = max(0, anchor + off - 200), min(len(html), anchor + off + 700)
+        if lo >= len(html):
+            break
         chunk = re.sub(r"\s+", " ", html[lo:hi])
         info["around"].append(chunk)
-        print("  [probe] 둘레: …%s…" % chunk)
+        print("  [probe] 둘레(+%d): …%s…" % (off, chunk))
+
+    # 본문 텍스트에서 날짜가 몰려 있는 대목. 파서를 어떤 꼴에 맞춰야 하는지가 여기 보인다.
+    tpos = None
+    for _, pat in DATE_SHAPES:
+        m = re.search(pat, text)
+        if m and (tpos is None or m.start() < tpos):
+            tpos = m.start()
+    if tpos is not None:
+        info["textAroundDates"] = text[max(0, tpos - 200):tpos + 1800]
+        print("  [probe] 날짜 둘레 본문: " + info["textAroundDates"][:900])
     return info
 
 
 # ------------------------------------------------------------------ 파서들
 #
-# 아래 파서는 **이 세션에서 실측하지 못했다**(대상 사이트가 전부 CONNECT 403).
-# 첫 러너 실행이 곧 검증이며, 실패하면 report 에 남고 seed 는 손대지 않는다.
+# 클래스 이름과 태그 구조에 기대지 않는다. 첫 러너 실행에서 다섯 곳이 HTTP 200 을 받고도
+# 0건을 뱉었는데, 그 까닭이 전부 구조 가정이었다 —
+#   FOMC   <h4> 바로 뒤에 연도가 오리라 봤지만 태그가 하나 더 끼어 있었다
+#   BOE·BOJ 날짜에 연도가 안 붙어 있다. 연도는 구획 헤딩('2026 confirmed dates'·'2026')에 있다
+# 기관이 페이지를 다시 만들어도 '연도'라는 글자와 '월 일자' 표기는 남는다. 거기에 기댄다.
+
+
+def year_sections(html, mark_pat):
+    """연도 표시를 기준으로 원본 HTML 을 잘라 [(연도, 그 구획의 본문 텍스트)] 로 준다."""
+    marks = [(m.start(), m.group(1)) for m in re.finditer(mark_pat, html)]
+    out = []
+    for i, (pos, year) in enumerate(marks):
+        end = marks[i + 1][0] if i + 1 < len(marks) else len(html)
+        out.append((year, strip_tags(html[pos:end])))
+    return out
+
+
+def span_dates(year, mon1, d1, mon2, d2):
+    """'April/May 30-1' 처럼 달을 넘기는 회의를 제자리에 놓는다.
+
+    끝일이 시작일보다 크면 같은 달 안의 이틀이고(April/May 28-29 → 4월 28~29),
+    작으면 다음 달로 넘어간 것이다(April/May 30-1 → 4월 30 ~ 5월 1).
+    """
+    start = mk(year, mon1, d1)
+    if int(d2) >= int(d1):
+        return start, mk(year, mon1, d2)
+    ey, em = int(year), (mon2 if mon2 and mon2 != mon1 else mon1 % 12 + 1)
+    if em == 1 and mon1 == 12:
+        ey += 1
+    return start, mk(ey, em, d2)
+
 
 def parse_fomc(html):
-    """연도 구획별로 '월 + 일자범위' 를 읽는다. SEP 회의는 별표(*)가 붙는다."""
-    out = []
-    # <h4>2026 FOMC Meetings</h4> … 다음 <h4> 까지가 그 연도 구획이다.
-    chunks = re.split(r"(?i)<h4[^>]*>\s*(\d{4})\s+FOMC\s+Meetings", html)
-    need(len(chunks) >= 3, "연도 구획(<h4>YYYY FOMC Meetings</h4>)을 못 찾았다")
-    for i in range(1, len(chunks) - 1, 2):
-        year, body = chunks[i], chunks[i + 1]
-        months = re.findall(r'(?is)fomc-meeting__month[^>]*>(.*?)</div>', body)
-        dates = re.findall(r'(?is)fomc-meeting__date[^>]*>(.*?)</div>', body)
-        if not months or len(months) != len(dates):
-            continue
-        for mtxt, dtxt in zip(months, dates):
-            mname = strip_tags(mtxt).strip().lower().rstrip("*").strip()
-            mon = MONTHS.get(mname) or MONTHS.get(mname[:3])
-            dtxt = strip_tags(dtxt)
-            sep = "*" in dtxt
-            nums = re.findall(r"\d+", dtxt)
-            if not mon or not nums:
+    """'2026 FOMC Meetings' 구획 안에서 'January 27-28' 꼴을 읽는다. SEP 회의엔 별표."""
+    secs = year_sections(html, r"(20\d{2})\s+FOMC\s+Meetings")
+    need(secs, "'YYYY FOMC Meetings' 표시를 못 찾았다")
+    out, seen = [], set()
+    for year, text in secs:
+        for m in re.finditer(
+                r"([A-Z][a-z]{2,8})(?:\s*/\s*([A-Z][a-z]{2,8}))?\s+"
+                r"(\d{1,2})\s*-\s*(\d{1,2})\s*(\*?)", text):
+            m1, m2, d1, d2, star = m.groups()
+            mon1 = MONTHS.get(m1.lower())
+            if not mon1:
                 continue
-            start = mk(year, mon, nums[0])
-            end = mk(year, mon, nums[-1]) if len(nums) > 1 else start
-            if start and end:
-                out.append({"start": start, "end": end, "sep": sep, "presser": True,
-                            "confirmed": "official"})
+            mon2 = MONTHS.get((m2 or "").lower())
+            start, end = span_dates(year, mon1, d1, mon2, d2)
+            if not (start and end) or start in seen:
+                continue
+            seen.add(start)
+            out.append({"start": start, "end": end, "sep": star == "*",
+                        "presser": True, "confirmed": "official"})
     need(len(out) >= 8, "회의를 %d개만 읽었다 (8개 이상이어야 한다)" % len(out))
     return out
 
@@ -208,46 +253,64 @@ def parse_ecb(html):
 
 
 def parse_boe(html):
-    """'Thursday 5 February 2026' 꼴의 발표일. MPR 동반 여부는 페이지에 적히지 않아 비워 둔다."""
-    text = strip_tags(html)
-    out = []
-    for m in re.finditer(r"(?:Mon|Tues|Wednes|Thurs|Fri)day\s+(\d{1,2})\s+([A-Z][a-z]+)\s+(\d{4})",
-                         text):
-        day, mname, year = m.groups()
-        mon = MONTHS.get(mname.lower())
-        iso = mk(year, mon, day) if mon else None
-        if iso:
+    """'2026 confirmed dates' 구획 안의 'Thursday 5 February' 꼴.
+
+    이 페이지는 날짜에 연도를 붙이지 않는다 — 연도는 구획 헤딩에 있다. 그래서 연도가
+    붙은 날짜만 찾던 첫 판은 0건이었다.
+    """
+    secs = year_sections(html, r"(20\d{2})\s+(?:confirmed|provisional|indicative|announcement)")
+    need(secs, "'YYYY confirmed dates' 같은 연도 구획을 못 찾았다")
+    out, seen = [], set()
+    for year, text in secs:
+        for m in re.finditer(
+                r"(?:Mon|Tues|Wednes|Thurs|Fri)day\s+(\d{1,2})\s+([A-Z][a-z]{2,8})"
+                r"(?:\s+(20\d{2}))?", text):
+            day, mname, inline_year = m.groups()
+            mon = MONTHS.get(mname.lower())
+            iso = mk(inline_year or year, mon, day) if mon else None
+            if not iso or iso in seen:
+                continue
+            seen.add(iso)
+            # MPR·기자회견 동반 회의는 2·5·8·11월이다(4·7월로 당겨지는 해가 있어 안전하게
+            # 표시만 하고, 확정 표기는 공식 페이지 문구를 따르지 않는다).
             out.append({"start": iso, "end": iso, "sep": mon in (2, 5, 8, 11),
                         "presser": mon in (2, 5, 8, 11), "confirmed": "official"})
     need(len(out) >= 6, "MPC 발표일을 %d개만 읽었다" % len(out))
-    return out
+    return sorted(out, key=lambda x: x["start"])
 
 
 def parse_boj(html):
-    """'January 22 and 23, 2026' 꼴.
+    """연도 헤딩(<h2>2026</h2>) 아래의 'January 22 and 23' 꼴.
 
-    같은 페이지에 의사록·주요의견 공표일도 하루짜리 날짜로 적혀 있다. 금융정책결정회의는
-    **언제나 이틀**이므로 이틀 범위만 받아 그 둘을 가른다 — 하루짜리는 회의가 아니다.
+    이 페이지도 날짜에 연도를 붙이지 않아, 연도까지 요구하던 첫 판은 0건이었다.
+    같은 페이지에 의사록·주요의견 공표일이 하루짜리 날짜로 함께 적혀 있는데,
+    금융정책결정회의는 **언제나 이틀**이므로 이틀 연속만 받아 그 둘을 가른다.
     """
-    text = strip_tags(html)
+    secs = year_sections(html, r"<h[1-4][^>]*>\s*(20\d{2})\s*</h[1-4]>")
+    if not secs:                          # 연도 헤딩을 못 찾으면 페이지 전체를 한 구획으로
+        secs = [(None, strip_tags(html))]
     out, seen = [], set()
-    for m in re.finditer(
-            r"([A-Z][a-z]+)\s+(\d{1,2})\s*(?:and|,|-)\s*(\d{1,2})\s*,\s*(\d{4})", text):
-        mname, d1, d2, year = m.groups()
-        mon = MONTHS.get(mname.lower())
-        if not mon:
-            continue
-        start, end = mk(year, mon, d1), mk(year, mon, d2)
-        if not (start and end) or start >= end or (date.fromisoformat(end) -
-                                                   date.fromisoformat(start)).days != 1:
-            continue                      # 이틀 연속이 아니면 회의 일정이 아니다
-        if start in seen:
-            continue
-        seen.add(start)
-        out.append({"start": start, "end": end, "sep": mon in (1, 4, 7, 10),
-                    "presser": True, "confirmed": "official"})
+    for year, text in secs:
+        for m in re.finditer(
+                r"([A-Z][a-z]{2,8})\s+(\d{1,2})\s*(?:and|,|-|and\s+)\s*(\d{1,2})"
+                r"(?:\s*,\s*(20\d{2}))?", text):
+            mname, d1, d2, inline_year = m.groups()
+            mon = MONTHS.get(mname.lower())
+            yr = inline_year or year
+            if not mon or not yr:
+                continue
+            start, end = mk(yr, mon, d1), mk(yr, mon, d2)
+            if not (start and end) or start >= end:
+                continue
+            if (date.fromisoformat(end) - date.fromisoformat(start)).days != 1:
+                continue                  # 이틀 연속이 아니면 회의 일정이 아니다
+            if start in seen:
+                continue
+            seen.add(start)
+            out.append({"start": start, "end": end, "sep": mon in (1, 4, 7, 10),
+                        "presser": True, "confirmed": "official"})
     need(len(out) >= 6, "이틀짜리 금융정책결정회의를 %d개만 읽었다" % len(out))
-    return out
+    return sorted(out, key=lambda x: x["start"])
 
 
 BOK_DATE = r"(20\d{2})[.\-년]\s*(\d{1,2})[.\-월]\s*(\d{1,2})"
@@ -348,6 +411,20 @@ def apply_bank(seed, key, meetings, rep, horizon_days=900):
     fresh = [m for m in meetings if lo <= m["start"] <= hi]
     need(len(fresh) >= 3, "조회 구간(%s~%s) 안의 회의가 %d개뿐이다" % (lo, hi, len(fresh)))
 
+    # 연간 횟수로 한 번 더 거른다. 파서가 연도 구획 안의 '월 일자' 를 그러모으는 방식이라,
+    # 페이지가 바뀌어 엉뚱한 표를 읽으면 날짜 형식은 멀쩡한데 개수가 먼저 어긋난다.
+    per_year = bank.get("meetings_per_year")
+    if per_year:
+        years = {}
+        for m in fresh:
+            years[m["start"][:4]] = years.get(m["start"][:4], 0) + 1
+        # 구간의 양 끝 해는 잘려 들어오므로, 온전히 담긴 해만 본다.
+        full = [y for y in years if lo[:4] < y < hi[:4]]
+        for y in full:
+            need(per_year - 2 <= years[y] <= per_year + 3,
+                 "%s년 회의가 %d개다 — 연 %d회 기관에서 나올 수 없는 수다(엉뚱한 표를 읽었을 것)"
+                 % (y, years[y], per_year))
+
     old = {m["end"]: m for m in bank.get("meetings", [])}
     new = {m["end"]: m for m in fresh}
     diffs = []
@@ -409,18 +486,36 @@ def apply_auctions(seed, rows, rep):
 
 # ------------------------------------------------------------------ main
 
+# 경로마다 주소를 여러 개 둘 수 있다. 앞의 것부터 받아 파서를 태우고, 검사를 통과한
+# 첫 응답을 쓴다. ECB·한국은행은 첫 주소가 자바스크립트로 그리는 판이라 본문에 날짜가
+# 아예 없었다(첫 러너 실행에서 확인). 정적으로 내려오는 다른 주소를 뒤에 붙여 둔다.
 SOURCES = [
-    ("fomc", "https://www.federalreserve.gov/monetarypolicy/fomccalendars.htm"),
-    ("ecb", "https://www.ecb.europa.eu/press/calendars/mgcgc/html/index.en.html"),
-    ("boe", "https://www.bankofengland.co.uk/monetary-policy/upcoming-mpc-dates"),
-    ("boj", "https://www.boj.or.jp/en/mopo/mpmsche_minu/index.htm"),
-    ("bok", "https://www.bok.or.kr/portal/singl/crncyPolicyDrcMtg/listYear.do?menuNo=200755&mtgSe=A"),
-    ("bls:us-cpi", "https://www.bls.gov/schedule/news_release/cpi.htm"),
-    ("bls:us-empsit", "https://www.bls.gov/schedule/news_release/empsit.htm"),
-    ("bls:us-ppi", "https://www.bls.gov/schedule/news_release/ppi.htm"),
-    ("treasury", "https://www.treasurydirect.gov/TA_WS/securities/upcoming?format=json"),
+    ("fomc", ["https://www.federalreserve.gov/monetarypolicy/fomccalendars.htm"]),
+    ("ecb", ["https://www.ecb.europa.eu/press/calendars/mgcgc/html/index.en.html",
+             "https://www.ecb.europa.eu/press/calendars/mgcgc/html/mgcgc_2026.en.html",
+             "https://www.ecb.europa.eu/press/calendars/mgcgc/html/mgcgc_2027.en.html"]),
+    ("boe", ["https://www.bankofengland.co.uk/monetary-policy/upcoming-mpc-dates"]),
+    ("boj", ["https://www.boj.or.jp/en/mopo/mpmsche_minu/index.htm",
+             "https://www.boj.or.jp/en/mopo/mpmsche_minu/index_2026.htm"]),
+    ("bok", ["https://www.bok.or.kr/portal/singl/crncyPolicyDrcMtg/listYear.do?menuNo=200755&mtgSe=A",
+             "https://www.bok.or.kr/portal/main/contents.do?menuNo=200755",
+             "https://www.bok.or.kr/portal/bbs/B0000502/view.do?menuNo=201265&nttId=10094300"]),
+    ("bls:us-cpi", ["https://www.bls.gov/schedule/news_release/cpi.htm"]),
+    ("bls:us-empsit", ["https://www.bls.gov/schedule/news_release/empsit.htm"]),
+    ("bls:us-ppi", ["https://www.bls.gov/schedule/news_release/ppi.htm"]),
+    ("treasury", ["https://www.treasurydirect.gov/TA_WS/securities/upcoming?format=json"]),
 ]
-FRED_RELEASES = {"us-pce": 54, "us-gdp": 53, "us-retail": 8}
+
+# BLS 는 러너 IP 에 403 을 준다(첫 러너 실행에서 세 경로 모두). 페이지를 아예 못 받으니
+# 파서로는 풀리지 않는다. 같은 통계를 FRED 가 API 로 주므로, 무료 키를 넣으면 그 길로
+# CPI·고용상황까지 채워진다.
+FRED_RELEASES = {"us-cpi": 10, "us-empsit": 50, "us-pce": 54, "us-gdp": 53, "us-retail": 8}
+
+
+def describe(e):
+    if isinstance(e, Skip):
+        return "믿을 수 없어 반영하지 않았다 — %s" % e
+    return "받지 못했다 — %s: %s" % (type(e).__name__, e)
 
 
 def main(argv=None):
@@ -448,21 +543,31 @@ def main(argv=None):
     }
     touched = {"cb": False, "ind": False, "me": False}
 
-    for name, url in SOURCES:
+    for name, urls in SOURCES:
         short = name.split(":")[0]
         if only and short not in only and name not in only:
             continue
-        rep = {"url": url, "ok": False}
+        rep = {"urls": urls, "ok": False}
         report["sources"][name] = rep
-        html = None
-        try:
-            if short == "treasury":
+
+        if short == "treasury":
+            try:
                 rows = fetch_treasury()
                 n, diffs = apply_auctions(me, rows, rep)
                 touched["me"] = True
-            else:
+                rep.update({"ok": True, "url": urls[0], "count": n, "changes": diffs})
+                print("[ok]   %-16s %d건 · %s" % (name, n, "; ".join(diffs)))
+            except Exception as e:                            # noqa: BLE001
+                rep["why"] = describe(e)
+                print("[fail] %-16s %s" % (name, rep["why"]))
+            continue
+
+        # 주소를 앞에서부터 받아 본다. 받아서 파서까지 통과한 첫 응답만 반영한다.
+        tried = []
+        for url in urls:
+            html = None
+            try:
                 html = http(url)
-                rep["bytes"] = len(html)
                 if short == "bls":
                     dates = parse_bls(html)
                     n, diffs = apply_indicator_dates(ind, name.split(":", 1)[1], dates, rep)
@@ -474,21 +579,25 @@ def main(argv=None):
                     bank = {"fomc": "fed"}.get(short, short)
                     n, diffs = apply_bank(cb, bank, meetings, rep)
                     touched["cb"] = True
-            rep.update({"ok": True, "count": n, "changes": diffs})
-            print("[ok]   %-16s %d건%s" % (name, n, (" · " + "; ".join(diffs)) if diffs else ""))
-        except Skip as e:
-            rep["why"] = "믿을 수 없어 반영하지 않았다 — %s" % e
-            print("[skip] %-16s %s" % (name, e))
-            # HTTP 는 됐는데 0건이면 페이지 구조가 파서의 가정과 다른 것이다. 그 구조를
-            # 여기서 남겨 두지 않으면 무엇을 고쳐야 하는지 알 수 없다.
-            if html is not None:
-                try:
-                    rep["probe"] = probe(name, html)
-                except Exception as pe:                       # noqa: BLE001
-                    rep["probeError"] = str(pe)
-        except Exception as e:                                # noqa: BLE001
-            rep["why"] = "받지 못했다 — %s: %s" % (type(e).__name__, e)
-            print("[fail] %-16s %s" % (name, rep["why"]))
+                rep.update({"ok": True, "url": url, "bytes": len(html),
+                            "count": n, "changes": diffs})
+                print("[ok]   %-16s %d건%s" % (name, n, (" · " + "; ".join(diffs)) if diffs else ""))
+                break
+            except Exception as e:                            # noqa: BLE001
+                why = describe(e)
+                entry = {"url": url, "why": why}
+                # HTTP 는 됐는데 0건이면 페이지 구조가 파서의 가정과 다른 것이다.
+                # 그 구조를 남겨 두지 않으면 무엇을 고쳐야 하는지 알 수 없다.
+                if isinstance(e, Skip) and html is not None:
+                    try:
+                        entry["probe"] = probe(name, html)
+                    except Exception as pe:                   # noqa: BLE001
+                        entry["probeError"] = str(pe)
+                tried.append(entry)
+                print("[%s] %-16s %s" % ("skip" if isinstance(e, Skip) else "fail", name, why))
+        if not rep["ok"]:
+            rep["tried"] = tried
+            rep["why"] = tried[-1]["why"] if tried else "받아 볼 주소가 없다"
 
     key = os.environ.get("FRED_API_KEY", "").strip()
     if key and (not only or "fred" in only):

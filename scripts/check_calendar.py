@@ -186,50 +186,64 @@ def check_data():
 
 # --------------------------------------------- 2) 파서의 모의 응답 검증
 
+# 아래 조각은 첫 러너 실행이 남긴 진단(probe)을 보고 **실제 페이지 구조에 맞춰** 고쳤다.
+# 처음에는 짐작으로 썼는데, 그 짐작이 틀려서 다섯 곳이 HTTP 200 을 받고도 0건을 뱉었다.
+#   FOMC   연도 헤딩 안에 태그가 하나 더 끼어 있다
+#   BOE    연도는 '2026 confirmed dates' 헤딩에 있고 날짜에는 안 붙는다
+#   BOJ    연도는 <h2>2026</h2> 에 있고 날짜에는 안 붙는다
+
 FOMC_HTML = """
+<h3>Meeting calendars, statements, and minutes (2021-2027)</h3>
 <div class="panel panel-default">
-  <div class="panel-heading"><h4 class="panel-title">2026 FOMC Meetings</h4></div>
+  <div class="panel-heading"><h4 class="panel-title"><a href="#a2026">2026 FOMC Meetings</a></h4></div>
   <div class="panel-body">
     <div class="row fomc-meeting">
-      <div class="fomc-meeting__month col-md-2"><strong>January</strong></div>
-      <div class="fomc-meeting__date col-md-2">27-28</div>
+      <div class="fomc-meeting__month"><strong>January</strong></div>
+      <div class="fomc-meeting__date">27-28</div>
+      <div class="fomc-meeting__minutes"><a href="/x.htm">Minutes</a>
+        (Released February 18, 2026)</div>
     </div>
     <div class="row fomc-meeting">
-      <div class="fomc-meeting__month col-md-2"><strong>March</strong></div>
-      <div class="fomc-meeting__date col-md-2">17-18*</div>
+      <div class="fomc-meeting__month"><strong>March</strong></div>
+      <div class="fomc-meeting__date">17-18*</div>
+      <div class="fomc-meeting__minutes">(Released April 08, 2026)</div>
     </div>
     <div class="row fomc-meeting">
-      <div class="fomc-meeting__month col-md-2"><strong>April/May</strong></div>
-      <div class="fomc-meeting__date col-md-2">28-29</div>
+      <div class="fomc-meeting__month"><strong>April/May</strong></div>
+      <div class="fomc-meeting__date">28-29</div>
     </div>
     <div class="row fomc-meeting">
-      <div class="fomc-meeting__month col-md-2"><strong>June</strong></div>
-      <div class="fomc-meeting__date col-md-2">16-17*</div>
+      <div class="fomc-meeting__month"><strong>June</strong></div>
+      <div class="fomc-meeting__date">16-17*</div>
     </div>
     <div class="row fomc-meeting">
-      <div class="fomc-meeting__month col-md-2"><strong>July</strong></div>
-      <div class="fomc-meeting__date col-md-2">28-29</div>
+      <div class="fomc-meeting__month"><strong>July</strong></div>
+      <div class="fomc-meeting__date">28-29</div>
     </div>
     <div class="row fomc-meeting">
-      <div class="fomc-meeting__month col-md-2"><strong>September</strong></div>
-      <div class="fomc-meeting__date col-md-2">15-16*</div>
+      <div class="fomc-meeting__month"><strong>September</strong></div>
+      <div class="fomc-meeting__date">15-16*</div>
     </div>
     <div class="row fomc-meeting">
-      <div class="fomc-meeting__month col-md-2"><strong>October</strong></div>
-      <div class="fomc-meeting__date col-md-2">27-28</div>
+      <div class="fomc-meeting__month"><strong>October</strong></div>
+      <div class="fomc-meeting__date">27-28</div>
     </div>
     <div class="row fomc-meeting">
-      <div class="fomc-meeting__month col-md-2"><strong>December</strong></div>
-      <div class="fomc-meeting__date col-md-2">8-9*</div>
+      <div class="fomc-meeting__month"><strong>December</strong></div>
+      <div class="fomc-meeting__date">8-9*</div>
     </div>
   </div>
 </div>
 <div class="panel panel-default">
-  <div class="panel-heading"><h4 class="panel-title">2027 FOMC Meetings</h4></div>
+  <div class="panel-heading"><h4 class="panel-title"><span>2027 FOMC Meetings</span></h4></div>
   <div class="panel-body">
     <div class="row fomc-meeting">
-      <div class="fomc-meeting__month col-md-2"><strong>January</strong></div>
-      <div class="fomc-meeting__date col-md-2">26-27</div>
+      <div class="fomc-meeting__month"><strong>January</strong></div>
+      <div class="fomc-meeting__date">26-27</div>
+    </div>
+    <div class="row fomc-meeting">
+      <div class="fomc-meeting__month"><strong>April/May</strong></div>
+      <div class="fomc-meeting__date">27-28</div>
     </div>
   </div>
 </div>
@@ -249,30 +263,43 @@ ECB_HTML = """
 """
 
 BOE_HTML = """
-<h2>Monetary Policy Committee dates for 2026</h2>
-<ul>
-<li>Thursday 5 February 2026</li>
-<li>Thursday 19 March 2026</li>
-<li>Thursday 30 April 2026</li>
-<li>Thursday 18 June 2026</li>
-<li>Thursday 30 July 2026</li>
-<li>Thursday 17 September 2026</li>
-<li>Thursday 5 November 2026</li>
-<li>Thursday 17 December 2026</li>
-</ul>
+<h1>Monetary Policy Committee dates for 2026 and 2027</h1>
+<h2>2026 confirmed dates</h2>
+<table><tbody>
+<tr><th>MPC announcement</th><th>Minutes</th></tr>
+<tr><td>Thursday 5 February</td><td>with Monetary Policy Report</td></tr>
+<tr><td>Thursday 19 March</td><td></td></tr>
+<tr><td>Thursday 30 April</td><td>with Monetary Policy Report</td></tr>
+<tr><td>Thursday 18 June</td><td></td></tr>
+<tr><td>Thursday 30 July</td><td>with Monetary Policy Report</td></tr>
+<tr><td>Thursday 17 September</td><td></td></tr>
+<tr><td>Thursday 5 November</td><td>with Monetary Policy Report</td></tr>
+<tr><td>Thursday 17 December</td><td></td></tr>
+</tbody></table>
+<h2>2027 provisional dates</h2>
+<table><tbody>
+<tr><td>Thursday 4 February</td><td></td></tr>
+<tr><td>Thursday 18 March</td><td></td></tr>
+</tbody></table>
 """
 
 BOJ_HTML = """
+<h1>Monetary Policy Meetings</h1>
+<h2>2026</h2>
 <table><tbody>
-<tr><th>Meeting</th><th>Minutes</th></tr>
-<tr><td>January 22 and 23, 2026</td><td>March 20, 2026</td></tr>
-<tr><td>March 18 and 19, 2026</td><td>May 8, 2026</td></tr>
-<tr><td>April 27 and 28, 2026</td><td>June 19, 2026</td></tr>
-<tr><td>June 15 and 16, 2026</td><td>August 3, 2026</td></tr>
-<tr><td>July 30 and 31, 2026</td><td>September 24, 2026</td></tr>
-<tr><td>September 17 and 18, 2026</td><td>November 6, 2026</td></tr>
-<tr><td>October 29 and 30, 2026</td><td>December 22, 2026</td></tr>
-<tr><td>December 17 and 18, 2026</td><td>January 29, 2027</td></tr>
+<tr><th>Meeting</th><th>Minutes released</th></tr>
+<tr><td>January 22 and 23</td><td>March 20</td></tr>
+<tr><td>March 18 and 19</td><td>May 8</td></tr>
+<tr><td>April 27 and 28</td><td>June 19</td></tr>
+<tr><td>June 15 and 16</td><td>August 3</td></tr>
+<tr><td>July 30 and 31</td><td>September 24</td></tr>
+<tr><td>September 17 and 18</td><td>November 6</td></tr>
+<tr><td>October 29 and 30</td><td>December 22</td></tr>
+<tr><td>December 17 and 18</td><td>January 29</td></tr>
+</tbody></table>
+<h2>2027</h2>
+<table><tbody>
+<tr><td>January 21 and 22</td><td>March 19</td></tr>
 </tbody></table>
 """
 
@@ -378,6 +405,29 @@ def check_parsers():
         bad("apply_bank: 먼 미래 회의만 왔는데도 seed 를 갈아끼웠다")
     except fc.Skip:
         print("  apply_bank 구간 밖 입력 걸러짐 (정상)")
+
+    # 파서가 연도 구획 안의 '월 일자' 를 그러모으는 방식이라, 엉뚱한 표를 읽으면 날짜
+    # 형식은 멀쩡한데 개수가 먼저 어긋난다. 연간 횟수 검사가 그것을 잡아야 한다.
+    from datetime import date as _d, timedelta as _td
+    nxt = _d.today().year + 1
+    flood = [{"start": "%d-%02d-%02d" % (nxt, (i % 12) + 1, (i % 27) + 1),
+              "end": "%d-%02d-%02d" % (nxt, (i % 12) + 1, (i % 27) + 1),
+              "sep": False, "presser": True, "confirmed": "official"} for i in range(30)]
+    try:
+        fc.apply_bank(json.loads(json.dumps(cb)), "fed", flood, {})
+        bad("apply_bank: 연 8회 기관에 30건이 들어왔는데 통과시켰다")
+    except fc.Skip as e:
+        print("  apply_bank 연간 횟수 검사 걸러짐 (정상) — %s" % e)
+
+    # 반대로 정상 개수는 통과해야 한다(검사가 지나치게 빡빡하면 수집이 영영 안 된다).
+    ok8 = [{"start": "%d-%02d-15" % (nxt, mth), "end": "%d-%02d-16" % (nxt, mth),
+            "sep": mth in (3, 6, 9, 12), "presser": True, "confirmed": "official"}
+           for mth in (1, 3, 4, 6, 7, 9, 10, 12)]
+    try:
+        n, _ = fc.apply_bank(json.loads(json.dumps(cb)), "fed", ok8, {})
+        print("  apply_bank 정상 8회 통과 (정상) — %d건" % n)
+    except fc.Skip as e:
+        bad("apply_bank: 연 8회 정상 입력을 걸러냈다 — %s" % e)
 
 
 def main(argv=None):
