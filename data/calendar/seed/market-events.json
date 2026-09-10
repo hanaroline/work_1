@@ -221,7 +221,42 @@
       "source": "TreasuryDirect",
       "name_en": "US Treasury auctions",
       "note_en": "TreasuryDirect exposes upcoming auctions through a public API — the runner fills these in (no key needed).",
-      "source_en": "TreasuryDirect"
+      "source_en": "TreasuryDirect",
+      "upcoming": [
+        {
+          "date": "2026-09-10",
+          "terms": [
+            "29-Year 11-Month",
+            "4-Week",
+            "8-Week"
+          ],
+          "n": 3
+        },
+        {
+          "date": "2026-09-14",
+          "terms": [
+            "13-Week",
+            "26-Week"
+          ],
+          "n": 2
+        },
+        {
+          "date": "2026-09-15",
+          "terms": [
+            "19-Year 11-Month",
+            "6-Week"
+          ],
+          "n": 2
+        },
+        {
+          "date": "2026-09-17",
+          "terms": [
+            "9-Year 10-Month"
+          ],
+          "n": 1
+        }
+      ],
+      "fetched_at": "2026-09-10"
     },
     {
       "id": "kr-ipo",
