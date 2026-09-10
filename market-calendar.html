@@ -531,6 +531,7 @@ var MONTH = null;          /* 격자가 보여주는 달의 1일 */
 var SELDAY = null;         /* 격자에서 고른 날 */
 var EARN_STATE = 'idle';   /* idle | loading | ok | fail */
 var TIMEBASE = 'kst';      /* kst | local — 날짜와 시각을 어느 시각으로 볼지 */
+var SEEN_TODAY = null;     /* 마지막으로 그렸을 때의 '오늘' — 날짜가 넘어갔는지 보려고 둔다 */
 
 var CATS = {
   policy:     { ko:'통화정책',      en:'Monetary policy',  color:'#F58220' },
@@ -1599,6 +1600,7 @@ function exportIcs(rows, fname) {
 /* ---------------------------------------------------------- 묶어 그리기 */
 
 function renderAll() {
+  SEEN_TODAY = todayISO();
   stampDates();
   renderMeta();
   renderUpcoming();
@@ -1613,6 +1615,30 @@ function renderAll() {
   renderSupply();
   renderFav();
   renderStatus();
+}
+
+/* ------------------------------------------------- 날짜가 넘어갔을 때
+
+   D-day·이번 주·이번 달·'지난 일정' 표시는 모두 그릴 때의 오늘을 쓴다. 그래서 새로 열면
+   언제나 그날 기준으로 맞는다. 문제는 **켜 둔 채 자정을 넘기는 경우**다 — 다시 그리지
+   않으면 어제의 D-day 가 그대로 남는다. 창구에 종일 띄워 두는 화면이라 그 상황이 흔하다.
+
+   1분마다, 그리고 덮여 있던 창이 다시 보일 때(밤새 잠들었던 노트북) 확인한다.
+   보고 있던 달을 함부로 끌고 오지는 않는다 — 사용자가 다른 달을 펼쳐 두었으면 그 자리를
+   지키고 날짜 표시만 새로 그린다. 오늘에 머물러 있었을 때만 새 오늘로 따라 옮긴다. */
+function checkDayRollover() {
+  var now = todayISO();
+  if (now === SEEN_TODAY) return;
+  var wasAnchored = SELDAY === SEEN_TODAY &&
+    MONTH.getFullYear() === +SEEN_TODAY.slice(0, 4) &&
+    MONTH.getMonth() === +SEEN_TODAY.slice(5, 7) - 1;
+  SEEN_TODAY = now;
+  if (wasAnchored) {
+    var n = new Date();
+    MONTH = new Date(n.getFullYear(), n.getMonth(), 1);
+    SELDAY = now;
+  }
+  renderAll();
 }
 
 /* ---------------------------------------------------------- 이벤트 */
@@ -1707,6 +1733,10 @@ function boot() {
     CAL.__from = from;          /* 어디서 받았는지는 ⑩ 에만 적는다 — 화면 맨 위를 가리지 않게 */
     bind();
     renderAll();
+    setInterval(checkDayRollover, 60000);
+    document.addEventListener('visibilitychange', function () {
+      if (!document.hidden) checkDayRollover();
+    });
   })['catch'](function (err) {
     el('boot').innerHTML =
       '<div class="callout err"><h4>' + t('일정 데이터를 불러오지 못했습니다',
