@@ -3078,12 +3078,16 @@ _API_CANDIDATES = [
     # 상대 경로라 호스트를 붙여 본다 — finance 와 m.stock 둘 다 시도한다.
     # 묶음이 만드는 질의 인자를 **그대로** 붙인다. 인자 없이 부르면 404 다
     #   trendDeposit?startIdx=&pageSize=   (모듈 20412 이 그렇게 만든다)
-    ("money_flow", "https://finance.naver.com/api/domestic/market/trendDeposit?startIdx=0&pageSize=20"),
-    ("money_flow", "https://finance.naver.com/api/domestic/market/trendDeposit/chart?startDate=20260801&endDate=20260911"),
-    ("news", "https://finance.naver.com/api/domestic/news/list?startIdx=0&pageSize=20"),
-    ("news", "https://finance.naver.com/api/domestic/news/list?category=mainnews&startIdx=0&pageSize=20"),
-    ("marketindex", "https://finance.naver.com/api/securityService/marketindex/exchange?startIdx=0&pageSize=20"),
-    ("marketindex", "https://finance.naver.com/api/securityService/marketindex/majors?startIdx=0&pageSize=20"),
+    # 감싸개(모듈 65164)는 `fetch(상대경로)` 뿐이다 — **페이지와 같은 오리진**으로
+    # 간다. 묶음에 나오는 호스트는 m.stock.naver.com 이므로 거기에 붙인다.
+    ("money_flow", "https://m.stock.naver.com/api/domestic/market/trendDeposit?startIdx=0&pageSize=20"),
+    ("money_flow", "https://m.stock.naver.com/api/domestic/market/trendDeposit/chart?startDate=20260801&endDate=20260911"),
+    ("news", "https://m.stock.naver.com/api/domestic/news/list?startIdx=0&pageSize=20"),
+    ("news", "https://m.stock.naver.com/api/domestic/news/list?category=mainnews&startIdx=0&pageSize=20"),
+    ("marketindex", "https://m.stock.naver.com/api/securityService/marketindex/exchange?startIdx=0&pageSize=20"),
+    ("marketindex", "https://m.stock.naver.com/api/securityService/marketindex/majors?startIdx=0&pageSize=20"),
+    ("marketindex", "https://m.stock.naver.com/api/securityService/marketindex/exchange"),
+    ("money_flow", "https://finance.naver.com/market/stock/kr/deposit"),
 
     ("money_flow", "https://m.stock.naver.com/api/stock/market/deposit"),
     ("money_flow", "https://m.stock.naver.com/api/marketindex/deposit"),
