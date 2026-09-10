@@ -1,5 +1,5 @@
 {
-  "ranAt": "2026-09-10T00:15:07Z",
+  "ranAt": "2026-09-10T00:18:36Z",
   "note": "발표기관 원문에서 확정 날짜를 받아 seed 를 갱신한 결과. ok=false 인 경로는 seed 를 손대지 않았다 — 검색으로 확인해 둔 날짜가 그대로 남아 있다.",
   "dryRun": false,
   "sources": {
@@ -11,9 +11,7 @@
       "url": "https://www.federalreserve.gov/monetarypolicy/fomccalendars.htm",
       "bytes": 166860,
       "count": 13,
-      "changes": [
-        "seed 에만 있던 2027-01-26 (공식 페이지에 없다 — 바뀌었는지 확인)"
-      ]
+      "changes": []
     },
     "ecb": {
       "urls": [
@@ -32,7 +30,7 @@
       ],
       "ok": true,
       "url": "https://www.bankofengland.co.uk/monetary-policy/upcoming-mpc-dates",
-      "bytes": 82554,
+      "bytes": 82615,
       "count": 13,
       "changes": []
     },
