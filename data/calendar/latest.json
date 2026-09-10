@@ -1,6 +1,6 @@
 {
- "builtAt": "2026-09-10 09:02 KST",
- "builtAtUtc": "2026-09-10T00:02:35Z",
+ "builtAt": "2026-09-10 09:10 KST",
+ "builtAtUtc": "2026-09-10T00:10:41Z",
  "window": {
   "from": "2026-07-27",
   "to": "2028-01-23"
@@ -21,20 +21,20 @@
   "rule": "Derived from the usual release cadence — not confirmed"
  },
  "counts": {
-  "policy": 32,
-  "indicator": 171,
+  "policy": 44,
+  "indicator": 179,
   "earnings": 166,
   "conference": 9,
   "supply": 20,
   "holiday": 35,
   "other": 0,
-  "total": 433,
+  "total": 453,
   "confirmed": {
-   "official": 201,
-   "websearch": 31,
-   "tentative": 5,
+   "official": 226,
+   "websearch": 23,
+   "tentative": 0,
    "estimate": 0,
-   "rule": 196
+   "rule": 204
   }
  },
  "sources": {
@@ -2060,7 +2060,9 @@
    "source": "Federal Reserve — FOMC meeting calendars",
    "minutes_rule_ko": "의사록은 회의 종료 3주 뒤 오후 2시(현지)",
    "source_en": "Federal Reserve — FOMC meeting calendars",
-   "minutes_rule_en": "Minutes three weeks after the meeting, 14:00 local"
+   "minutes_rule_en": "Minutes three weeks after the meeting, 14:00 local",
+   "meetings_per_year": 8,
+   "fetched_at": "2026-09-10"
   },
   {
    "key": "bok",
@@ -2080,7 +2082,8 @@
    "source_en": "Bank of Korea — monetary policy decision calendar",
    "minutes_rule_en": "Minutes on the first Tuesday after two weeks have passed from the meeting",
    "schedule_note_en": "Rate-decision meetings fall in January, February, April, May, July, August, October and November (eight a year); financial-stability meetings in March, June, September and December. The first 2026 decision was on 15 January.",
-   "gap_note_en": "The 2027 dates and the September/December financial-stability meeting dates are not yet verified — the runner fills them from the official page. They are not filled in by estimate."
+   "gap_note_en": "The 2027 dates and the September/December financial-stability meeting dates are not yet verified — the runner fills them from the official page. They are not filled in by estimate.",
+   "meetings_per_year": 8
   },
   {
    "key": "ecb",
@@ -2096,7 +2099,8 @@
    "source": "ECB — Meetings of the Governing Council and the General Council",
    "projections_note_ko": "ECB 스태프 거시전망은 3·6·9·12월 회의에 함께 발표",
    "source_en": "ECB — Meetings of the Governing Council and the General Council",
-   "projections_note_en": "ECB staff macroeconomic projections accompany the March, June, September and December meetings"
+   "projections_note_en": "ECB staff macroeconomic projections accompany the March, June, September and December meetings",
+   "meetings_per_year": 8
   },
   {
    "key": "boj",
@@ -2112,7 +2116,8 @@
    "source": "Bank of Japan — Monetary Policy Meetings",
    "projections_note_ko": "1·4·7·10월 회의에 전망 리포트(Outlook Report) 동시 발표",
    "source_en": "Bank of Japan — Monetary Policy Meetings",
-   "projections_note_en": "The quarterly Outlook Report accompanies the January, April, July and October meetings"
+   "projections_note_en": "The quarterly Outlook Report accompanies the January, April, July and October meetings",
+   "meetings_per_year": 8
   },
   {
    "key": "boe",
@@ -2128,7 +2133,9 @@
    "source": "Bank of England — Upcoming MPC dates",
    "projections_note_ko": "2·5(4)·8(7)·11월 회의에 통화정책보고서(MPR)와 기자회견 동반",
    "source_en": "Bank of England — Upcoming MPC dates",
-   "projections_note_en": "A Monetary Policy Report and press conference accompany the February, April (May), July (August) and November meetings"
+   "projections_note_en": "A Monetary Policy Report and press conference accompany the February, April (May), July (August) and November meetings",
+   "meetings_per_year": 8,
+   "fetched_at": "2026-09-10"
   },
   {
    "key": "pboc",
@@ -2145,7 +2152,8 @@
    "rule": "monthly-20th",
    "gap_note_ko": "LPR 은 '매월 20일' 규칙이라 빌더가 규칙으로 만든다(confirmed=rule). 휴일 이동은 holidays.json 의 중국 휴장일로 보정한다",
    "source_en": "People's Bank of China",
-   "gap_note_en": "The LPR follows a 'twentieth of the month' rule, so the builder derives it (confirmed=rule). Holiday shifts are corrected against the Chinese market holidays in holidays.json."
+   "gap_note_en": "The LPR follows a 'twentieth of the month' rule, so the builder derives it (confirmed=rule). Holiday shifts are corrected against the Chinese market holidays in holidays.json.",
+   "meetings_per_year": 12
   }
  ],
  "undated": [
@@ -2590,7 +2598,7 @@
    "url": "https://www.federalreserve.gov/monetarypolicy/fomccalendars.htm",
    "source": "Federal Reserve — FOMC meeting calendars",
    "source_en": "Federal Reserve — FOMC meeting calendars",
-   "confirmed": "websearch",
+   "confirmed": "official",
    "tags": [
     "central-bank",
     "fed"
@@ -2632,19 +2640,18 @@
    "title_en": "Bank of England (MPC) rate decision",
    "org": "영란은행 통화정책위원회 (BOE MPC)",
    "org_en": "Bank of England (MPC)",
-   "detail_ko": "기자회견 · 경제전망 동시 발표",
-   "detail_en": "press conference · projections released",
+   "detail_ko": "발표일 12:00(영국 시간)",
+   "detail_en": "Announcement at 12:00 UK time",
    "time_local": "12:00",
    "tz": "Europe/London",
    "time_kst": "2026-07-30 20:00",
    "url": "https://www.bankofengland.co.uk/monetary-policy/upcoming-mpc-dates",
    "source": "Bank of England — Upcoming MPC dates",
    "source_en": "Bank of England — Upcoming MPC dates",
-   "confirmed": "websearch",
+   "confirmed": "official",
    "tags": [
     "central-bank",
-    "boe",
-    "sep"
+    "boe"
    ]
   },
   {
@@ -3972,7 +3979,7 @@
    "url": "https://www.federalreserve.gov/monetarypolicy/fomccalendars.htm",
    "source": "Federal Reserve — FOMC meeting calendars",
    "source_en": "Federal Reserve — FOMC meeting calendars",
-   "confirmed": "websearch",
+   "confirmed": "official",
    "tags": [
     "central-bank",
     "fed",
@@ -3998,7 +4005,7 @@
    "url": "https://www.bankofengland.co.uk/monetary-policy/upcoming-mpc-dates",
    "source": "Bank of England — Upcoming MPC dates",
    "source_en": "Bank of England — Upcoming MPC dates",
-   "confirmed": "websearch",
+   "confirmed": "official",
    "tags": [
     "central-bank",
     "boe"
@@ -6897,7 +6904,7 @@
    "url": "https://www.federalreserve.gov/monetarypolicy/fomccalendars.htm",
    "source": "Federal Reserve — FOMC meeting calendars",
    "source_en": "Federal Reserve — FOMC meeting calendars",
-   "confirmed": "websearch",
+   "confirmed": "official",
    "tags": [
     "central-bank",
     "fed"
@@ -9044,7 +9051,7 @@
    "url": "https://www.bankofengland.co.uk/monetary-policy/upcoming-mpc-dates",
    "source": "Bank of England — Upcoming MPC dates",
    "source_en": "Bank of England — Upcoming MPC dates",
-   "confirmed": "websearch",
+   "confirmed": "official",
    "tags": [
     "central-bank",
     "boe",
@@ -10809,7 +10816,7 @@
    "url": "https://www.federalreserve.gov/monetarypolicy/fomccalendars.htm",
    "source": "Federal Reserve — FOMC meeting calendars",
    "source_en": "Federal Reserve — FOMC meeting calendars",
-   "confirmed": "websearch",
+   "confirmed": "official",
    "tags": [
     "central-bank",
     "fed",
@@ -11038,7 +11045,7 @@
    "url": "https://www.bankofengland.co.uk/monetary-policy/upcoming-mpc-dates",
    "source": "Bank of England — Upcoming MPC dates",
    "source_en": "Bank of England — Upcoming MPC dates",
-   "confirmed": "websearch",
+   "confirmed": "official",
    "tags": [
     "central-bank",
     "boe"
@@ -11911,6 +11918,31 @@
    ]
   },
   {
+   "id": "indicator-beige-book-2027-01-06",
+   "date": "2027-01-06",
+   "end_date": null,
+   "country": "us",
+   "category": "indicator",
+   "importance": 1,
+   "title_ko": "연준 베이지북",
+   "title_en": "Federal Reserve Beige Book",
+   "org": "美 연방준비제도",
+   "org_en": "Federal Reserve",
+   "detail_ko": "01/26 FOMC 를 앞둔 지역 경기 서술",
+   "detail_en": "Regional economic conditions ahead of the 2027-01-26 FOMC",
+   "time_local": "14:00",
+   "tz": "America/New_York",
+   "time_kst": "2027-01-07 04:00",
+   "url": "https://www.federalreserve.gov/monetarypolicy/beige-book-default.htm",
+   "source": "Federal Reserve",
+   "source_en": "Federal Reserve",
+   "confirmed": "rule",
+   "tags": [
+    "fed",
+    "beige-book"
+   ]
+  },
+  {
    "id": "indicator-cn-trade-2027-01-07",
    "date": "2027-01-07",
    "end_date": null,
@@ -12237,6 +12269,31 @@
    ]
   },
   {
+   "id": "policy-fed-2027-01-26",
+   "date": "2027-01-26",
+   "end_date": null,
+   "country": "us",
+   "category": "policy",
+   "importance": 3,
+   "title_ko": "미국 연방준비제도 (FOMC) 정책금리 결정",
+   "title_en": "Federal Reserve (FOMC) rate decision",
+   "org": "미국 연방준비제도 (FOMC)",
+   "org_en": "Federal Reserve (FOMC)",
+   "detail_ko": "기자회견 · 01-25~01-26 이틀 회의의 둘째 날",
+   "detail_en": "press conference",
+   "time_local": "14:00",
+   "tz": "America/New_York",
+   "time_kst": "2027-01-27 04:00",
+   "url": "https://www.federalreserve.gov/monetarypolicy/fomccalendars.htm",
+   "source": "Federal Reserve — FOMC meeting calendars",
+   "source_en": "Federal Reserve — FOMC meeting calendars",
+   "confirmed": "official",
+   "tags": [
+    "central-bank",
+    "fed"
+   ]
+  },
+  {
    "id": "indicator-jp-cpi-2027-01-26",
    "date": "2027-01-26",
    "end_date": null,
@@ -12280,7 +12337,7 @@
    "url": "https://www.federalreserve.gov/monetarypolicy/fomccalendars.htm",
    "source": "Federal Reserve — FOMC meeting calendars",
    "source_en": "Federal Reserve — FOMC meeting calendars",
-   "confirmed": "tentative",
+   "confirmed": "official",
    "tags": [
     "central-bank",
     "fed"
@@ -12512,6 +12569,32 @@
    ]
   },
   {
+   "id": "policy-boe-2027-02-04",
+   "date": "2027-02-04",
+   "end_date": null,
+   "country": "gb",
+   "category": "policy",
+   "importance": 2,
+   "title_ko": "영란은행 통화정책위원회 (BOE MPC) 정책금리 결정",
+   "title_en": "Bank of England (MPC) rate decision",
+   "org": "영란은행 통화정책위원회 (BOE MPC)",
+   "org_en": "Bank of England (MPC)",
+   "detail_ko": "기자회견 · 경제전망 동시 발표",
+   "detail_en": "press conference · projections released",
+   "time_local": "12:00",
+   "tz": "Europe/London",
+   "time_kst": "2027-02-04 21:00",
+   "url": "https://www.bankofengland.co.uk/monetary-policy/upcoming-mpc-dates",
+   "source": "Bank of England — Upcoming MPC dates",
+   "source_en": "Bank of England — Upcoming MPC dates",
+   "confirmed": "official",
+   "tags": [
+    "central-bank",
+    "boe",
+    "sep"
+   ]
+  },
+  {
    "id": "indicator-us-empsit-2027-02-05",
    "date": "2027-02-05",
    "end_date": null,
@@ -12709,6 +12792,31 @@
    "tags": [
     "indicator",
     "cn-activity"
+   ]
+  },
+  {
+   "id": "indicator-fomc-minutes-2027-02-16",
+   "date": "2027-02-16",
+   "end_date": null,
+   "country": "us",
+   "category": "indicator",
+   "importance": 2,
+   "title_ko": "FOMC 의사록 공개 (01/26 회의)",
+   "title_en": "FOMC minutes (2027-01-26 meeting)",
+   "org": "美 연방준비제도",
+   "org_en": "Federal Reserve",
+   "detail_ko": "회의 종료 3주 뒤 공개 — 성명서에 없던 위원 간 의견 분포가 드러난다",
+   "detail_en": "Released three weeks after the meeting",
+   "time_local": "14:00",
+   "tz": "America/New_York",
+   "time_kst": "2027-02-17 04:00",
+   "url": "https://www.federalreserve.gov/monetarypolicy/fomccalendars.htm",
+   "source": "Federal Reserve — FOMC meeting calendars",
+   "source_en": "Federal Reserve — FOMC meeting calendars",
+   "confirmed": "rule",
+   "tags": [
+    "fed",
+    "minutes"
    ]
   },
   {
@@ -13180,7 +13288,7 @@
    "url": "https://www.federalreserve.gov/monetarypolicy/fomccalendars.htm",
    "source": "Federal Reserve — FOMC meeting calendars",
    "source_en": "Federal Reserve — FOMC meeting calendars",
-   "confirmed": "tentative",
+   "confirmed": "official",
    "tags": [
     "central-bank",
     "fed",
@@ -13211,6 +13319,31 @@
     "central-bank",
     "ecb",
     "sep"
+   ]
+  },
+  {
+   "id": "policy-boe-2027-03-18",
+   "date": "2027-03-18",
+   "end_date": null,
+   "country": "gb",
+   "category": "policy",
+   "importance": 2,
+   "title_ko": "영란은행 통화정책위원회 (BOE MPC) 정책금리 결정",
+   "title_en": "Bank of England (MPC) rate decision",
+   "org": "영란은행 통화정책위원회 (BOE MPC)",
+   "org_en": "Bank of England (MPC)",
+   "detail_ko": "발표일 12:00(영국 시간)",
+   "detail_en": "Announcement at 12:00 UK time",
+   "time_local": "12:00",
+   "tz": "Europe/London",
+   "time_kst": "2027-03-18 21:00",
+   "url": "https://www.bankofengland.co.uk/monetary-policy/upcoming-mpc-dates",
+   "source": "Bank of England — Upcoming MPC dates",
+   "source_en": "Bank of England — Upcoming MPC dates",
+   "confirmed": "official",
+   "tags": [
+    "central-bank",
+    "boe"
    ]
   },
   {
@@ -13265,6 +13398,56 @@
    ]
   },
   {
+   "id": "indicator-beige-book-2027-04-14",
+   "date": "2027-04-14",
+   "end_date": null,
+   "country": "us",
+   "category": "indicator",
+   "importance": 1,
+   "title_ko": "연준 베이지북",
+   "title_en": "Federal Reserve Beige Book",
+   "org": "美 연방준비제도",
+   "org_en": "Federal Reserve",
+   "detail_ko": "04/28 FOMC 를 앞둔 지역 경기 서술",
+   "detail_en": "Regional economic conditions ahead of the 2027-04-28 FOMC",
+   "time_local": "14:00",
+   "tz": "America/New_York",
+   "time_kst": "2027-04-15 03:00",
+   "url": "https://www.federalreserve.gov/monetarypolicy/beige-book-default.htm",
+   "source": "Federal Reserve",
+   "source_en": "Federal Reserve",
+   "confirmed": "rule",
+   "tags": [
+    "fed",
+    "beige-book"
+   ]
+  },
+  {
+   "id": "policy-fed-2027-04-28",
+   "date": "2027-04-28",
+   "end_date": null,
+   "country": "us",
+   "category": "policy",
+   "importance": 3,
+   "title_ko": "미국 연방준비제도 (FOMC) 정책금리 결정",
+   "title_en": "Federal Reserve (FOMC) rate decision",
+   "org": "미국 연방준비제도 (FOMC)",
+   "org_en": "Federal Reserve (FOMC)",
+   "detail_ko": "기자회견 · 04-27~04-28 이틀 회의의 둘째 날",
+   "detail_en": "press conference",
+   "time_local": "14:00",
+   "tz": "America/New_York",
+   "time_kst": "2027-04-29 03:00",
+   "url": "https://www.federalreserve.gov/monetarypolicy/fomccalendars.htm",
+   "source": "Federal Reserve — FOMC meeting calendars",
+   "source_en": "Federal Reserve — FOMC meeting calendars",
+   "confirmed": "official",
+   "tags": [
+    "central-bank",
+    "fed"
+   ]
+  },
+  {
    "id": "policy-ecb-2027-04-29",
    "date": "2027-04-29",
    "end_date": null,
@@ -13287,6 +13470,56 @@
    "tags": [
     "central-bank",
     "ecb"
+   ]
+  },
+  {
+   "id": "policy-boe-2027-04-29",
+   "date": "2027-04-29",
+   "end_date": null,
+   "country": "gb",
+   "category": "policy",
+   "importance": 2,
+   "title_ko": "영란은행 통화정책위원회 (BOE MPC) 정책금리 결정",
+   "title_en": "Bank of England (MPC) rate decision",
+   "org": "영란은행 통화정책위원회 (BOE MPC)",
+   "org_en": "Bank of England (MPC)",
+   "detail_ko": "발표일 12:00(영국 시간)",
+   "detail_en": "Announcement at 12:00 UK time",
+   "time_local": "12:00",
+   "tz": "Europe/London",
+   "time_kst": "2027-04-29 20:00",
+   "url": "https://www.bankofengland.co.uk/monetary-policy/upcoming-mpc-dates",
+   "source": "Bank of England — Upcoming MPC dates",
+   "source_en": "Bank of England — Upcoming MPC dates",
+   "confirmed": "official",
+   "tags": [
+    "central-bank",
+    "boe"
+   ]
+  },
+  {
+   "id": "indicator-fomc-minutes-2027-05-19",
+   "date": "2027-05-19",
+   "end_date": null,
+   "country": "us",
+   "category": "indicator",
+   "importance": 2,
+   "title_ko": "FOMC 의사록 공개 (04/28 회의)",
+   "title_en": "FOMC minutes (2027-04-28 meeting)",
+   "org": "美 연방준비제도",
+   "org_en": "Federal Reserve",
+   "detail_ko": "회의 종료 3주 뒤 공개 — 성명서에 없던 위원 간 의견 분포가 드러난다",
+   "detail_en": "Released three weeks after the meeting",
+   "time_local": "14:00",
+   "tz": "America/New_York",
+   "time_kst": "2027-05-20 03:00",
+   "url": "https://www.federalreserve.gov/monetarypolicy/fomccalendars.htm",
+   "source": "Federal Reserve — FOMC meeting calendars",
+   "source_en": "Federal Reserve — FOMC meeting calendars",
+   "confirmed": "rule",
+   "tags": [
+    "fed",
+    "minutes"
    ]
   },
   {
@@ -13359,11 +13592,36 @@
    "url": "https://www.federalreserve.gov/monetarypolicy/fomccalendars.htm",
    "source": "Federal Reserve — FOMC meeting calendars",
    "source_en": "Federal Reserve — FOMC meeting calendars",
-   "confirmed": "tentative",
+   "confirmed": "official",
    "tags": [
     "central-bank",
     "fed",
     "sep"
+   ]
+  },
+  {
+   "id": "policy-boe-2027-06-17",
+   "date": "2027-06-17",
+   "end_date": null,
+   "country": "gb",
+   "category": "policy",
+   "importance": 2,
+   "title_ko": "영란은행 통화정책위원회 (BOE MPC) 정책금리 결정",
+   "title_en": "Bank of England (MPC) rate decision",
+   "org": "영란은행 통화정책위원회 (BOE MPC)",
+   "org_en": "Bank of England (MPC)",
+   "detail_ko": "발표일 12:00(영국 시간)",
+   "detail_en": "Announcement at 12:00 UK time",
+   "time_local": "12:00",
+   "tz": "Europe/London",
+   "time_kst": "2027-06-17 20:00",
+   "url": "https://www.bankofengland.co.uk/monetary-policy/upcoming-mpc-dates",
+   "source": "Bank of England — Upcoming MPC dates",
+   "source_en": "Bank of England — Upcoming MPC dates",
+   "confirmed": "official",
+   "tags": [
+    "central-bank",
+    "boe"
    ]
   },
   {
@@ -13418,6 +13676,106 @@
    ]
   },
   {
+   "id": "indicator-beige-book-2027-07-14",
+   "date": "2027-07-14",
+   "end_date": null,
+   "country": "us",
+   "category": "indicator",
+   "importance": 1,
+   "title_ko": "연준 베이지북",
+   "title_en": "Federal Reserve Beige Book",
+   "org": "美 연방준비제도",
+   "org_en": "Federal Reserve",
+   "detail_ko": "07/28 FOMC 를 앞둔 지역 경기 서술",
+   "detail_en": "Regional economic conditions ahead of the 2027-07-28 FOMC",
+   "time_local": "14:00",
+   "tz": "America/New_York",
+   "time_kst": "2027-07-15 03:00",
+   "url": "https://www.federalreserve.gov/monetarypolicy/beige-book-default.htm",
+   "source": "Federal Reserve",
+   "source_en": "Federal Reserve",
+   "confirmed": "rule",
+   "tags": [
+    "fed",
+    "beige-book"
+   ]
+  },
+  {
+   "id": "policy-fed-2027-07-28",
+   "date": "2027-07-28",
+   "end_date": null,
+   "country": "us",
+   "category": "policy",
+   "importance": 3,
+   "title_ko": "미국 연방준비제도 (FOMC) 정책금리 결정",
+   "title_en": "Federal Reserve (FOMC) rate decision",
+   "org": "미국 연방준비제도 (FOMC)",
+   "org_en": "Federal Reserve (FOMC)",
+   "detail_ko": "기자회견 · 07-27~07-28 이틀 회의의 둘째 날",
+   "detail_en": "press conference",
+   "time_local": "14:00",
+   "tz": "America/New_York",
+   "time_kst": "2027-07-29 03:00",
+   "url": "https://www.federalreserve.gov/monetarypolicy/fomccalendars.htm",
+   "source": "Federal Reserve — FOMC meeting calendars",
+   "source_en": "Federal Reserve — FOMC meeting calendars",
+   "confirmed": "official",
+   "tags": [
+    "central-bank",
+    "fed"
+   ]
+  },
+  {
+   "id": "policy-boe-2027-07-29",
+   "date": "2027-07-29",
+   "end_date": null,
+   "country": "gb",
+   "category": "policy",
+   "importance": 2,
+   "title_ko": "영란은행 통화정책위원회 (BOE MPC) 정책금리 결정",
+   "title_en": "Bank of England (MPC) rate decision",
+   "org": "영란은행 통화정책위원회 (BOE MPC)",
+   "org_en": "Bank of England (MPC)",
+   "detail_ko": "발표일 12:00(영국 시간)",
+   "detail_en": "Announcement at 12:00 UK time",
+   "time_local": "12:00",
+   "tz": "Europe/London",
+   "time_kst": "2027-07-29 20:00",
+   "url": "https://www.bankofengland.co.uk/monetary-policy/upcoming-mpc-dates",
+   "source": "Bank of England — Upcoming MPC dates",
+   "source_en": "Bank of England — Upcoming MPC dates",
+   "confirmed": "official",
+   "tags": [
+    "central-bank",
+    "boe"
+   ]
+  },
+  {
+   "id": "indicator-fomc-minutes-2027-08-18",
+   "date": "2027-08-18",
+   "end_date": null,
+   "country": "us",
+   "category": "indicator",
+   "importance": 2,
+   "title_ko": "FOMC 의사록 공개 (07/28 회의)",
+   "title_en": "FOMC minutes (2027-07-28 meeting)",
+   "org": "美 연방준비제도",
+   "org_en": "Federal Reserve",
+   "detail_ko": "회의 종료 3주 뒤 공개 — 성명서에 없던 위원 간 의견 분포가 드러난다",
+   "detail_en": "Released three weeks after the meeting",
+   "time_local": "14:00",
+   "tz": "America/New_York",
+   "time_kst": "2027-08-19 03:00",
+   "url": "https://www.federalreserve.gov/monetarypolicy/fomccalendars.htm",
+   "source": "Federal Reserve — FOMC meeting calendars",
+   "source_en": "Federal Reserve — FOMC meeting calendars",
+   "confirmed": "rule",
+   "tags": [
+    "fed",
+    "minutes"
+   ]
+  },
+  {
    "id": "indicator-beige-book-2027-09-01",
    "date": "2027-09-01",
    "end_date": null,
@@ -13461,11 +13819,36 @@
    "url": "https://www.federalreserve.gov/monetarypolicy/fomccalendars.htm",
    "source": "Federal Reserve — FOMC meeting calendars",
    "source_en": "Federal Reserve — FOMC meeting calendars",
-   "confirmed": "tentative",
+   "confirmed": "official",
    "tags": [
     "central-bank",
     "fed",
     "sep"
+   ]
+  },
+  {
+   "id": "policy-boe-2027-09-16",
+   "date": "2027-09-16",
+   "end_date": null,
+   "country": "gb",
+   "category": "policy",
+   "importance": 2,
+   "title_ko": "영란은행 통화정책위원회 (BOE MPC) 정책금리 결정",
+   "title_en": "Bank of England (MPC) rate decision",
+   "org": "영란은행 통화정책위원회 (BOE MPC)",
+   "org_en": "Bank of England (MPC)",
+   "detail_ko": "발표일 12:00(영국 시간)",
+   "detail_en": "Announcement at 12:00 UK time",
+   "time_local": "12:00",
+   "tz": "Europe/London",
+   "time_kst": "2027-09-16 20:00",
+   "url": "https://www.bankofengland.co.uk/monetary-policy/upcoming-mpc-dates",
+   "source": "Bank of England — Upcoming MPC dates",
+   "source_en": "Bank of England — Upcoming MPC dates",
+   "confirmed": "official",
+   "tags": [
+    "central-bank",
+    "boe"
    ]
   },
   {
@@ -13484,6 +13867,107 @@
    "time_local": "14:00",
    "tz": "America/New_York",
    "time_kst": "2027-10-07 03:00",
+   "url": "https://www.federalreserve.gov/monetarypolicy/fomccalendars.htm",
+   "source": "Federal Reserve — FOMC meeting calendars",
+   "source_en": "Federal Reserve — FOMC meeting calendars",
+   "confirmed": "rule",
+   "tags": [
+    "fed",
+    "minutes"
+   ]
+  },
+  {
+   "id": "indicator-beige-book-2027-10-13",
+   "date": "2027-10-13",
+   "end_date": null,
+   "country": "us",
+   "category": "indicator",
+   "importance": 1,
+   "title_ko": "연준 베이지북",
+   "title_en": "Federal Reserve Beige Book",
+   "org": "美 연방준비제도",
+   "org_en": "Federal Reserve",
+   "detail_ko": "10/27 FOMC 를 앞둔 지역 경기 서술",
+   "detail_en": "Regional economic conditions ahead of the 2027-10-27 FOMC",
+   "time_local": "14:00",
+   "tz": "America/New_York",
+   "time_kst": "2027-10-14 03:00",
+   "url": "https://www.federalreserve.gov/monetarypolicy/beige-book-default.htm",
+   "source": "Federal Reserve",
+   "source_en": "Federal Reserve",
+   "confirmed": "rule",
+   "tags": [
+    "fed",
+    "beige-book"
+   ]
+  },
+  {
+   "id": "policy-fed-2027-10-27",
+   "date": "2027-10-27",
+   "end_date": null,
+   "country": "us",
+   "category": "policy",
+   "importance": 3,
+   "title_ko": "미국 연방준비제도 (FOMC) 정책금리 결정",
+   "title_en": "Federal Reserve (FOMC) rate decision",
+   "org": "미국 연방준비제도 (FOMC)",
+   "org_en": "Federal Reserve (FOMC)",
+   "detail_ko": "기자회견 · 10-26~10-27 이틀 회의의 둘째 날",
+   "detail_en": "press conference",
+   "time_local": "14:00",
+   "tz": "America/New_York",
+   "time_kst": "2027-10-28 03:00",
+   "url": "https://www.federalreserve.gov/monetarypolicy/fomccalendars.htm",
+   "source": "Federal Reserve — FOMC meeting calendars",
+   "source_en": "Federal Reserve — FOMC meeting calendars",
+   "confirmed": "official",
+   "tags": [
+    "central-bank",
+    "fed"
+   ]
+  },
+  {
+   "id": "policy-boe-2027-11-04",
+   "date": "2027-11-04",
+   "end_date": null,
+   "country": "gb",
+   "category": "policy",
+   "importance": 2,
+   "title_ko": "영란은행 통화정책위원회 (BOE MPC) 정책금리 결정",
+   "title_en": "Bank of England (MPC) rate decision",
+   "org": "영란은행 통화정책위원회 (BOE MPC)",
+   "org_en": "Bank of England (MPC)",
+   "detail_ko": "기자회견 · 경제전망 동시 발표",
+   "detail_en": "press conference · projections released",
+   "time_local": "12:00",
+   "tz": "Europe/London",
+   "time_kst": "2027-11-04 21:00",
+   "url": "https://www.bankofengland.co.uk/monetary-policy/upcoming-mpc-dates",
+   "source": "Bank of England — Upcoming MPC dates",
+   "source_en": "Bank of England — Upcoming MPC dates",
+   "confirmed": "official",
+   "tags": [
+    "central-bank",
+    "boe",
+    "sep"
+   ]
+  },
+  {
+   "id": "indicator-fomc-minutes-2027-11-17",
+   "date": "2027-11-17",
+   "end_date": null,
+   "country": "us",
+   "category": "indicator",
+   "importance": 2,
+   "title_ko": "FOMC 의사록 공개 (10/27 회의)",
+   "title_en": "FOMC minutes (2027-10-27 meeting)",
+   "org": "美 연방준비제도",
+   "org_en": "Federal Reserve",
+   "detail_ko": "회의 종료 3주 뒤 공개 — 성명서에 없던 위원 간 의견 분포가 드러난다",
+   "detail_en": "Released three weeks after the meeting",
+   "time_local": "14:00",
+   "tz": "America/New_York",
+   "time_kst": "2027-11-18 04:00",
    "url": "https://www.federalreserve.gov/monetarypolicy/fomccalendars.htm",
    "source": "Federal Reserve — FOMC meeting calendars",
    "source_en": "Federal Reserve — FOMC meeting calendars",
@@ -13537,11 +14021,36 @@
    "url": "https://www.federalreserve.gov/monetarypolicy/fomccalendars.htm",
    "source": "Federal Reserve — FOMC meeting calendars",
    "source_en": "Federal Reserve — FOMC meeting calendars",
-   "confirmed": "tentative",
+   "confirmed": "official",
    "tags": [
     "central-bank",
     "fed",
     "sep"
+   ]
+  },
+  {
+   "id": "policy-boe-2027-12-16",
+   "date": "2027-12-16",
+   "end_date": null,
+   "country": "gb",
+   "category": "policy",
+   "importance": 2,
+   "title_ko": "영란은행 통화정책위원회 (BOE MPC) 정책금리 결정",
+   "title_en": "Bank of England (MPC) rate decision",
+   "org": "영란은행 통화정책위원회 (BOE MPC)",
+   "org_en": "Bank of England (MPC)",
+   "detail_ko": "발표일 12:00(영국 시간)",
+   "detail_en": "Announcement at 12:00 UK time",
+   "time_local": "12:00",
+   "tz": "Europe/London",
+   "time_kst": "2027-12-16 21:00",
+   "url": "https://www.bankofengland.co.uk/monetary-policy/upcoming-mpc-dates",
+   "source": "Bank of England — Upcoming MPC dates",
+   "source_en": "Bank of England — Upcoming MPC dates",
+   "confirmed": "official",
+   "tags": [
+    "central-bank",
+    "boe"
    ]
   },
   {
