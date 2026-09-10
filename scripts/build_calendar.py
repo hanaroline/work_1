@@ -492,7 +492,8 @@ def add_earnings(snap, names, market, events, start, end):
             org=sym, org_en=sym,
             detail_ko=("컨퍼런스콜 시각은 이 화면이 쓰는 소스에 없다 — 회사 IR 공지를 보십시오"
                        if ir else "회사 IR 공지가 원문이다"),
-            detail_en=None,
+            detail_en=("No conference-call time in this source — see the company's IR notice"
+                       if ir else "The company's IR notice is the record"),
             time_local=None, tz=tz, time_kst=None,
             url=ir or ("https://finance.yahoo.com/quote/%s" % sym),
             source="%s 스냅샷 (data/%s100/latest.json)" % (market.upper(), market),
