@@ -278,6 +278,8 @@ footer{
     <button type="button" id="btn-ko" role="radio" aria-checked="true">KO</button>
     <button type="button" id="btn-en" role="radio" aria-checked="false">EN</button>
   </div>
+  <button type="button" class="btn-tool" id="btn-timebase" aria-pressed="true"></button>
+  <button type="button" class="btn-tool" id="btn-linkmode" aria-pressed="true"></button>
   <button type="button" class="btn-tool" id="btn-print" data-ko="인쇄 · PDF 저장" data-en="Print / save PDF">인쇄 · PDF 저장</button>
 </div>
 
@@ -342,8 +344,8 @@ footer{
       <div class="section-rule"></div>
       <h2 class="section-title" data-ko="③ 일정 목록" data-en="3. Schedule list">③ 일정 목록</h2>
       <p class="section-note"
-         data-ko="국가·분류·중요도·확정도로 걸러 보고, 이름으로 찾습니다. ★ 를 누르면 ⑨ 관심 일정에 담기고 이 브라우저에 남습니다."
-         data-en="Filter by country, category, significance and confirmation level, or search by name. The star adds an event to section 9 and is remembered in this browser.">국가·분류·중요도·확정도로 걸러 보고, 이름으로 찾습니다. ★ 를 누르면 ⑨ 관심 일정에 담기고 이 브라우저에 남습니다.</p>
+         data-ko="국가·분류·중요도·확정도로 걸러 보고, 이름으로 찾습니다. ★ 를 누르면 ⑨ 관심 일정에 담기고 이 브라우저에 남습니다. <b>날짜와 시각은 상단 툴바에서 고른 기준</b>을 따릅니다 — 기본은 한국 시각이라, 현지 9/16 오후 2시인 FOMC 결정은 <b>9/17</b> 칸에 새벽 3시로 놓입니다."
+         data-en="Filter by country, category, significance and confirmation level, or search by name. The star adds an event to section 9 and is remembered in this browser. <b>Dates and times follow the basis chosen in the toolbar</b> — by default Korea time, so an FOMC decision at 2pm on 9/16 in New York sits in the <b>9/17</b> cell at 3am.">국가·분류·중요도·확정도로 걸러 보고, 이름으로 찾습니다. ★ 를 누르면 ⑨ 관심 일정에 담기고 이 브라우저에 남습니다. <b>날짜와 시각은 상단 툴바에서 고른 기준</b>을 따릅니다 — 기본은 한국 시각이라, 현지 9/16 오후 2시인 FOMC 결정은 <b>9/17</b> 칸에 새벽 3시로 놓입니다.</p>
       <div class="filters no-print">
         <div class="frow">
           <label data-ko="분류" data-en="Category">분류</label>
@@ -480,6 +482,9 @@ footer{
       <h3 data-ko="아직 비어 있는 곳" data-en="Known gaps">아직 비어 있는 곳</h3>
       <div id="gaps"></div>
       <h3 data-ko="출처 목록" data-en="Sources">출처 목록</h3>
+      <p class="section-note"
+         data-ko="출처의 대부분이 영문 기관 페이지입니다. 한국어 화면에서는 링크를 누르면 <b>번역된 판</b>이 열리고, 원문 그대로 보려면 위 툴바의 <b>출처 링크</b> 단추로 바꿉니다(그 선택은 이 브라우저에 남습니다). 아래 표에 적힌 주소는 언제나 <b>원문 주소</b>입니다."
+         data-en="Most sources are Korean-language institutional pages. In English the links open a translated view; use the <b>Source links</b> button in the toolbar to open them as published (the choice is remembered in this browser). The addresses listed below are always the original ones.">출처의 대부분이 영문 기관 페이지입니다. 한국어 화면에서는 링크를 누르면 <b>번역된 판</b>이 열리고, 원문 그대로 보려면 위 툴바의 <b>출처 링크</b> 단추로 바꿉니다(그 선택은 이 브라우저에 남습니다). 아래 표에 적힌 주소는 언제나 <b>원문 주소</b>입니다.</p>
       <div class="tw" id="src-urls"></div>
     </section>
 
@@ -526,6 +531,8 @@ var FAV = [];
 var MONTH = null;          /* 격자가 보여주는 달의 1일 */
 var SELDAY = null;         /* 격자에서 고른 날 */
 var EARN_STATE = 'idle';   /* idle | loading | ok | fail */
+var LINKMODE = 'translate';/* translate | raw — 출처 링크를 지금 언어로 옮겨 열지 */
+var TIMEBASE = 'kst';      /* kst | local — 날짜와 시각을 어느 시각으로 볼지 */
 
 var CATS = {
   policy:     { ko:'통화정책',      en:'Monetary policy',  color:'#F58220' },
@@ -625,14 +632,84 @@ function countryName(c) {
 function title(e) { return LANG === 'en' ? (e.title_en || e.title_ko) : e.title_ko; }
 function detail(e) { return LANG === 'en' ? (e.detail_en || e.detail_ko || '') : (e.detail_ko || ''); }
 function orgName(e) { return LANG === 'en' ? (e.org_en || e.org || '') : (e.org || ''); }
-function timeText(e) {
-  if (!e.time_kst) return '<span class="small">' + t('시각 미공표', 'time n/a') + '</span>';
-  var hhmm = e.time_kst.slice(11);
-  var sameDay = e.time_kst.slice(0, 10) === e.date;
-  return '<span class="mono">' + esc(hhmm) + '</span>' +
-    (sameDay ? '' : ' <span class="small">' + t('(한국 ' + e.time_kst.slice(5, 10) + ')',
-                                                '(KST ' + e.time_kst.slice(5, 10) + ')') + '</span>');
+/* ---------- 어느 시각으로 볼 것인가 ----------
+   빌더는 일정마다 **발표기관 현지 날짜**(date)와 **한국 시각 환산**(time_kst)을 함께 담는다.
+   둘은 날짜가 어긋날 수 있다 — FOMC 는 현지 9/16 오후 2시에 결정을 내리지만 한국에서는
+   9/17 새벽 3시다. 처음에는 날짜 칸에 현지 날짜를, 시각 칸에 한국 시각을 함께 보여
+   주었는데, 한 줄 안에서 기준이 갈려 읽기 어려웠다.
+
+   이제 기준을 하나 골라 **달력 배치·D-day·목록 정렬·기간 필터까지 모두** 그 기준을 쓴다.
+   기본은 한국 시각이다(국내에서 보는 화면이므로). 현지 기준이 필요하면 툴바에서 바꾼다.
+   시각이 공표되지 않은 일정은 옮길 근거가 없으므로 현지 날짜 그대로 둔다. */
+function stampDates() {
+  CAL.events.forEach(function (e) {
+    var shift = 0;
+    if (TIMEBASE === 'kst' && e.time_kst) {
+      e._d = e.time_kst.slice(0, 10);
+      shift = diffDays(e.date, e._d);
+    } else {
+      e._d = e.date;
+    }
+    e._end = e.end_date ? addDays(e.end_date, shift) : e._d;
+    e._moved = shift !== 0;
+  });
 }
+
+/* 현지 시각을 보여 줄 때 붙일 짧은 지역 이름. 시간대 데이터를 브라우저에 두지 않으려고
+   빌더가 KST 만 환산해 두었으므로, 현지 시각은 seed 에 적힌 표기를 그대로 쓴다. */
+var TZ_SHORT = {
+  'America/New_York': {ko: '뉴욕', en: 'New York'}, 'Europe/London': {ko: '런던', en: 'London'},
+  'Europe/Berlin': {ko: '프랑크푸르트', en: 'Frankfurt'}, 'Europe/Brussels': {ko: '브뤼셀', en: 'Brussels'},
+  'Asia/Tokyo': {ko: '도쿄', en: 'Tokyo'}, 'Asia/Shanghai': {ko: '베이징', en: 'Beijing'},
+  'Asia/Seoul': {ko: '서울', en: 'Seoul'}
+};
+
+function timeText(e) {
+  if (TIMEBASE === 'local') {
+    if (!e.time_local) return '<span class="small">' + t('시각 미공표', 'time n/a') + '</span>';
+    var z = TZ_SHORT[e.tz];
+    return '<span class="mono">' + esc(e.time_local) + '</span>' +
+      (z ? ' <span class="small">' + esc(t(z.ko, z.en)) + '</span>' : '');
+  }
+  if (!e.time_kst) return '<span class="small">' + t('시각 미공표', 'time n/a') + '</span>';
+  return '<span class="mono">' + esc(e.time_kst.slice(11)) + '</span>' +
+    (e._moved ? ' <span class="small">' + t('(현지 ' + e.date.slice(5).replace('-', '/') + ')',
+                                            '(local ' + e.date.slice(5) + ')') + '</span>' : '');
+}
+/* ---------- 출처 링크를 읽는 언어로 열기 ----------
+   출처의 대부분이 영문 기관 페이지다(연준·BLS·ESMO·Cboe…). 링크를 그대로 걸면 눌렀을 때
+   영문 원문이 뜬다. 한국어 화면에서는 번역된 판을 먼저 열어 주고, 원문 그대로 보고 싶으면
+   위 툴바에서 바꿀 수 있게 한다. 영문 화면에서는 반대로 국내 기관 페이지를 옮겨 준다.
+
+   번역은 구글 번역의 프록시 주소(<호스트>.translate.goog)를 쓴다. 원문 주소가 그대로
+   드러나므로 어디로 가는지 감출 일이 없고, 번역이 막힌 곳이면 툴바에서 원문으로 돌리면
+   된다. 인터넷이 없는 PC 에서는 원문이든 번역이든 열리지 않는 것은 마찬가지다. */
+var KO_HOSTS = /(^|\.)(bok\.or\.kr|kostat\.go\.kr|krx\.co\.kr|fss\.or\.kr|moef\.go\.kr|customs\.go\.kr|motie\.go\.kr|biokorea\.org|bixkorea\.com|ksmo\.or\.kr)$/i;
+/* 국내 기관인데 그 주소만 영문판인 곳. 도메인만 보고 '한국어'로 넘기면 눌렀을 때
+   영문이 뜬다 — 한국거래소 파생상품 상품명세가 그렇다. */
+var EN_PAGES = /^global\.krx\.co\.kr$/i;
+
+function translateUrl(u, target) {
+  try {
+    var a = new URL(u);
+    /* 호스트의 점은 하이픈으로, 원래 있던 하이픈은 두 개로 바꾼다 (구글 번역 규칙) */
+    var host = a.hostname.replace(/-/g, '--').replace(/\./g, '-') + '.translate.goog';
+    return a.protocol + '//' + host + a.pathname + (a.search ? a.search + '&' : '?') +
+      '_x_tr_sl=auto&_x_tr_tl=' + target + '&_x_tr_hl=' + target + a.hash;
+  } catch (err) { return u; }
+}
+
+function viewUrl(u) {
+  if (!u || LINKMODE !== 'translate') return u;
+  try {
+    var host = new URL(u).hostname;
+    var korean = KO_HOSTS.test(host) && !EN_PAGES.test(host);
+    if (LANG === 'ko' && korean) return u;        /* 이미 한국어 페이지다 */
+    if (LANG === 'en' && !korean) return u;       /* 이미 영어권 페이지다 */
+    return translateUrl(u, LANG);
+  } catch (err) { return u; }
+}
+
 function noteText(u) {
   return LANG === 'en' ? (u.note_en || u.note_ko || '') : (u.note_ko || '');
 }
@@ -643,7 +720,7 @@ function kindText(kind, kinds) {
   return LANG === 'en' ? (HKIND_EN[kind] || kind || '') : (kinds[kind] || kind || '');
 }
 function link(e) {
-  return e.url ? '<a href="' + esc(e.url) + '" target="_blank" rel="noopener">' +
+  return e.url ? '<a href="' + esc(viewUrl(e.url)) + '" target="_blank" rel="noopener">' +
     t('원문', 'source') + '</a>' : '';
 }
 
@@ -684,6 +761,36 @@ function applyLang() {
   el('btn-ko').setAttribute('aria-checked', LANG === 'ko');
   el('btn-en').setAttribute('aria-checked', LANG === 'en');
   store('lang', LANG);
+  renderLinkMode();
+  renderTimeBase();
+}
+
+function renderTimeBase() {
+  var b = el('btn-timebase');
+  if (!b) return;
+  var kst = TIMEBASE === 'kst';
+  b.setAttribute('aria-pressed', kst);
+  b.textContent = kst ? t('시각 기준: 한국(KST)', 'Times: Korea (KST)')
+                      : t('시각 기준: 현지', 'Times: local');
+  b.title = kst
+    ? t('날짜·달력 배치·D-day 를 모두 한국 시각으로 맞춥니다. 현지 기준으로 보려면 누르십시오.',
+        'Dates, calendar placement and D-day all follow Korea Standard Time. Press for local time.')
+    : t('발표기관 현지 시각으로 봅니다. 한국 시각으로 보려면 누르십시오.',
+        'Shown in the publishing institution\'s local time. Press for Korea Standard Time.');
+}
+
+function renderLinkMode() {
+  var b = el('btn-linkmode');
+  if (!b) return;
+  var on = LINKMODE === 'translate';
+  b.setAttribute('aria-pressed', on);
+  b.textContent = on ? t('출처 링크: 한국어로', 'Source links: translated')
+                     : t('출처 링크: 원문 그대로', 'Source links: original');
+  b.title = on
+    ? t('출처를 누르면 번역된 판이 열립니다. 원문 그대로 보려면 누르십시오.',
+        'Sources open translated. Press to open them as published.')
+    : t('출처를 누르면 원문이 그대로 열립니다. 번역해 보려면 누르십시오.',
+        'Sources open as published. Press to open them translated.');
 }
 
 /* ---------------------------------------------------------- 데이터 받기 */
@@ -824,8 +931,7 @@ function passes(e, ignore) {
   if (!FILT.conf[e.confirmed]) return false;
   if (!ignore.range) {
     var b = rangeBounds();
-    var endD = e.end_date || e.date;
-    if (endD < b[0] || e.date > b[1]) return false;
+    if (e._end < b[0] || e._d > b[1]) return false;
   }
   if (FILT.q) {
     var hay = [e.title_ko, e.title_en, e.org, e.org_en, e.detail_ko, e.detail_en,
@@ -835,7 +941,13 @@ function passes(e, ignore) {
   return true;
 }
 
-function filtered() { return CAL.events.filter(function (e) { return passes(e); }); }
+function filtered() {
+  return CAL.events.filter(function (e) { return passes(e); })
+    .sort(function (a, b) {
+      return a._d < b._d ? -1 : a._d > b._d ? 1
+        : (b.importance - a.importance) || (a.title_ko < b.title_ko ? -1 : 1);
+    });
+}
 
 /* ---------------------------------------------------------- 그리기 */
 
@@ -849,6 +961,9 @@ function renderMeta() {
     '<span>' + t('조회 구간', 'Window') + ' <b class="mono">' + esc(CAL.window.from) +
       ' ~ ' + esc(CAL.window.to) + '</b></span>' +
     '<span>' + t('확정 아님', 'Not confirmed') + ' <b>' + soft + '</b>' + t('건', '') + '</span>' +
+    '<span>' + t('시각 기준', 'Times shown in') + ' <b>' +
+      (TIMEBASE === 'kst' ? t('한국 시각(KST)', 'Korea (KST)')
+                          : t('발표기관 현지 시각', 'the institution\'s local time')) + '</b></span>' +
     (INLINE ? '<span>' + badge('official') + ' ' + t('오프라인 판 (파일에 심긴 값)', 'offline build') + '</span>' : '');
 }
 
@@ -857,10 +972,9 @@ function renderUpcoming() {
   var rows = CAL.events.filter(function (e) {
     if (SOFT[e.confirmed]) return false;               /* 추정은 카드에 올리지 않는다 */
     if (e.category === 'holiday') return e.importance >= 2;
-    var endD = e.end_date || e.date;
-    return endD >= today && e.date <= hi && e.importance >= 2;
+    return e._end >= today && e._d <= hi && e.importance >= 2;
   }).sort(function (a, b) {
-    return (b.importance - a.importance) || (a.date < b.date ? -1 : 1);
+    return (b.importance - a.importance) || (a._d < b._d ? -1 : 1);
   }).slice(0, 9);
 
   if (!rows.length) {
@@ -870,11 +984,10 @@ function renderUpcoming() {
     return;
   }
   el('upcoming').innerHTML = rows.map(function (e) {
-    var n = diffDays(today, e.date);
-    var span = e.end_date && e.end_date !== e.date
-      ? fmtDate(e.date) + ' ~ ' + fmtDate(e.end_date) : fmtDate(e.date);
+    var n = diffDays(today, e._d);
+    var span = e._end !== e._d ? fmtDate(e._d) + ' ~ ' + fmtDate(e._end) : fmtDate(e._d);
     return '<div class="card' + (n <= 7 ? ' hot' : '') + '">' +
-      '<div class="dday' + (n === 0 ? ' today' : '') + '">' + esc(ddayLabel(e.date)) + '</div>' +
+      '<div class="dday' + (n === 0 ? ' today' : '') + '">' + esc(ddayLabel(e._d)) + '</div>' +
       '<div class="when">' + catDot(e.category) + ' ' + esc(span) +
         (e.time_kst ? ' · <span class="mono">' + esc(e.time_kst.slice(11)) + ' KST</span>' : '') +
         ' · ' + esc(countryName(e.country)) + '</div>' +
@@ -889,9 +1002,8 @@ function renderThisWeek() {
   var d = parseISO(todayISO()), off = (d.getDay() + 6) % 7;
   var mon = addDays(todayISO(), -off), sun = addDays(mon, 6);
   var rows = CAL.events.filter(function (e) {
-    var endD = e.end_date || e.date;
-    return endD >= mon && e.date <= sun && FILT.cat[e.category];
-  });
+    return e._end >= mon && e._d <= sun && FILT.cat[e.category];
+  }).sort(function (a, b) { return a._d < b._d ? -1 : 1; });
   el('thisweek').innerHTML = eventTable(rows, {compact: true, emptyMsg:
     t('이번 주에는 (현재 분류 필터에서) 일정이 없습니다.',
       'Nothing this week under the current category filter.')});
@@ -905,7 +1017,8 @@ function eventTable(rows, opt) {
   var head = '<thead><tr>' +
     '<th style="width:3ch">★</th>' +
     '<th>' + t('날짜', 'Date') + '</th>' +
-    '<th>' + t('시각(KST)', 'Time (KST)') + '</th>' +
+    '<th>' + (TIMEBASE === 'kst' ? t('시각(한국)', 'Time (KST)')
+                                  : t('시각(현지)', 'Time (local)')) + '</th>' +
     '<th>' + t('국가', 'Country') + '</th>' +
     '<th>' + t('분류', 'Category') + '</th>' +
     '<th>' + t('일정', 'Event') + '</th>' +
@@ -914,14 +1027,14 @@ function eventTable(rows, opt) {
     '<th>' + t('원문', 'Source') + '</th>' +
     '</tr></thead>';
   var body = rows.map(function (e) {
-    var span = e.end_date && e.end_date !== e.date
-      ? fmtDateFull(e.date) + ' ~ ' + fmtDateFull(e.end_date) : fmtDateFull(e.date);
-    var dd = diffDays(today, e.date);
-    return '<tr class="' + (e.date < today ? 'past' : '') + '">' +
+    var span = e._end !== e._d
+      ? fmtDateFull(e._d) + ' ~ ' + fmtDateFull(e._end) : fmtDateFull(e._d);
+    var dd = diffDays(today, e._d);
+    return '<tr class="' + (e._d < today ? 'past' : '') + '">' +
       '<td><button type="button" class="fav-btn" data-fav="' + esc(e.id) + '" aria-pressed="' +
         isFav(e.id) + '" aria-label="' + t('관심 일정', 'star') + '">★</button></td>' +
       '<td class="nowrap"><span class="mono">' + esc(span) + '</span>' +
-        (dd >= 0 && dd <= 60 ? ' <span class="small">' + esc(ddayLabel(e.date)) + '</span>' : '') + '</td>' +
+        (dd >= 0 && dd <= 60 ? ' <span class="small">' + esc(ddayLabel(e._d)) + '</span>' : '') + '</td>' +
       '<td class="nowrap">' + timeText(e) + '</td>' +
       '<td class="nowrap">' + esc(countryName(e.country)) + '</td>' +
       '<td class="nowrap">' + catDot(e.category) + ' ' +
@@ -958,7 +1071,7 @@ function renderGrid() {
   var byDay = {};
   CAL.events.forEach(function (e) {
     if (!passes(e, {range: true})) return;
-    var d = e.date, endD = e.end_date || e.date;
+    var d = e._d, endD = e._end;
     while (d <= endD) { (byDay[d] = byDay[d] || []).push(e); d = addDays(d, 1); }
   });
 
@@ -1089,25 +1202,25 @@ function renderIndicators() {
     .sort(function (a, b) { return b.importance - a.importance; })
     .map(function (i) {
       var next = CAL.events.filter(function (e) {
-        return (e.tags || []).indexOf(i.id) >= 0 && e.date >= today;
-      }).sort(function (a, b) { return a.date < b.date ? -1 : 1; })[0];
+        return (e.tags || []).indexOf(i.id) >= 0 && e._d >= today;
+      }).sort(function (a, b) { return a._d < b._d ? -1 : 1; })[0];
       var later = CAL.events.filter(function (e) {
-        return (e.tags || []).indexOf(i.id) >= 0 && next && e.date > next.date;
-      }).slice(0, 2);
+        return (e.tags || []).indexOf(i.id) >= 0 && next && e._d > next._d;
+      }).sort(function (a, b) { return a._d < b._d ? -1 : 1; }).slice(0, 2);
       return '<tr>' +
         '<td>' + esc(LANG === 'en' ? i.name_en : i.name_ko) + ' ' + impMark(i.importance) + '</td>' +
         '<td class="small">' + esc(LANG === 'en' ? (i.org_en || i.org || '') : (i.org || '')) + '</td>' +
         '<td class="nowrap">' + (next
-          ? '<span class="mono">' + esc(fmtDateFull(next.date)) + '</span> <span class="small">' +
-            esc(ddayLabel(next.date)) + '</span>'
+          ? '<span class="mono">' + esc(fmtDateFull(next._d)) + '</span> <span class="small">' +
+            esc(ddayLabel(next._d)) + '</span>'
           : '<span class="small">' + t('미확인', 'not known') + '</span>') + '</td>' +
         '<td class="nowrap">' + (next ? timeText(next) : '') + '</td>' +
         '<td class="nowrap">' + (next ? badge(next.confirmed) : '') + '</td>' +
-        '<td class="small">' + esc(later.map(function (e) { return fmtDateFull(e.date); }).join(', ')) + '</td>' +
+        '<td class="small">' + esc(later.map(function (e) { return fmtDateFull(e._d); }).join(', ')) + '</td>' +
         '<td class="small">' + esc(LANG === 'en' ? (i.why_en || i.rule_note_en || '')
                                                    : (i.why_ko || i.rule_note_ko || '')) + '</td>' +
         '<td class="nowrap">' + (i.calendar_url || i.url
-          ? '<a href="' + esc(i.calendar_url || i.url) + '" target="_blank" rel="noopener">' +
+          ? '<a href="' + esc(viewUrl(i.calendar_url || i.url)) + '" target="_blank" rel="noopener">' +
             t('공표일정', 'calendar') + '</a>' : '') + '</td>' +
         '</tr>';
     }).join('');
@@ -1116,7 +1229,8 @@ function renderIndicators() {
     '<th>' + t('지표', 'Indicator') + '</th>' +
     '<th>' + t('발표기관', 'Agency') + '</th>' +
     '<th>' + t('다음 발표', 'Next') + '</th>' +
-    '<th>' + t('시각(KST)', 'Time (KST)') + '</th>' +
+    '<th>' + (TIMEBASE === 'kst' ? t('시각(한국)', 'Time (KST)')
+                                  : t('시각(현지)', 'Time (local)')) + '</th>' +
     '<th>' + t('확정도', 'Confirmed') + '</th>' +
     '<th>' + t('그 다음', 'After that') + '</th>' +
     '<th>' + t('왜 보는가 · 발표 주기', 'Why / cadence') + '</th>' +
@@ -1156,8 +1270,8 @@ function renderPolicy() {
   el('policy').innerHTML = banks.map(function (b) {
     var evs = CAL.events.filter(function (e) {
       return e.category === 'policy' && (e.tags || []).indexOf(b.key) >= 0;
-    }).sort(function (x, y) { return x.date < y.date ? -1 : 1; });
-    var future = evs.filter(function (e) { return e.date >= today; });
+    }).sort(function (x, y) { return x._d < y._d ? -1 : 1; });
+    var future = evs.filter(function (e) { return e._d >= today; });
     if (!future.length && !evs.length) {
       return '<h3>' + esc(t(b.name_ko, b.name_en)) + '</h3>' +
         '<div class="callout warn"><p style="margin:0">' +
@@ -1168,8 +1282,8 @@ function renderPolicy() {
     var firstFuture = future[0];
     var items = evs.slice(-2 - future.length).map(function (e) {
       return '<div class="tl-item' + (e === firstFuture ? ' next' : '') + '">' +
-        '<div class="tl-when">' + esc(fmtDateFull(e.date)) +
-          (e.date >= today ? ' <span class="small">' + esc(ddayLabel(e.date)) + '</span>' : '') +
+        '<div class="tl-when">' + esc(fmtDateFull(e._d)) +
+          (e._d >= today ? ' <span class="small">' + esc(ddayLabel(e._d)) + '</span>' : '') +
           ' ' + badge(e.confirmed) + '</div>' +
         '<div class="tl-what">' + esc(detail(e) || '') +
           (e.time_kst ? ' · <span class="mono">' + t('한국 ', 'KST ') +
@@ -1183,7 +1297,7 @@ function renderPolicy() {
           var m = LANG === 'en' ? b.minutes_rule_en : b.minutes_rule_ko;
           return m ? ' · ' + esc(m) : '';
         })() +
-        (b.url ? ' · <a href="' + esc(b.url) + '" target="_blank" rel="noopener">' +
+        (b.url ? ' · <a href="' + esc(viewUrl(b.url)) + '" target="_blank" rel="noopener">' +
           t('공식 일정', 'official calendar') + '</a>' : '') + '</p>' +
       '<div class="tl">' + items + '</div>' +
       (function () {
@@ -1229,16 +1343,16 @@ function renderEarnings() {
   renderEarnLoad();
   var today = todayISO();
   var rows = CAL.events.filter(function (e) {
-    return e.category === 'earnings' && e.date >= today;
-  }).sort(function (a, b) { return a.date < b.date ? -1 : 1; });
+    return e.category === 'earnings' && e._d >= today;
+  }).sort(function (a, b) { return a._d < b._d ? -1 : 1; });
 
   /* 주간 집중도 — 앞으로 10주 */
   var d = parseISO(today), off = (d.getDay() + 6) % 7, mon = addDays(today, -off);
   var weeks = [];
   for (var i = 0; i < 10; i++) {
     var s = addDays(mon, i * 7), e2 = addDays(s, 6);
-    var kr = rows.filter(function (x) { return x.country === 'kr' && x.date >= s && x.date <= e2; }).length;
-    var us = rows.filter(function (x) { return x.country === 'us' && x.date >= s && x.date <= e2; }).length;
+    var kr = rows.filter(function (x) { return x.country === 'kr' && x._d >= s && x._d <= e2; }).length;
+    var us = rows.filter(function (x) { return x.country === 'us' && x._d >= s && x._d <= e2; }).length;
     weeks.push({s: s, e: e2, kr: kr, us: us});
   }
   var max = Math.max(1, Math.max.apply(null, weeks.map(function (w) { return w.kr + w.us; })));
@@ -1266,19 +1380,18 @@ function renderEarnings() {
 function renderConferences() {
   var today = todayISO();
   var rows = CAL.events.filter(function (e) {
-    return e.category === 'conference' && (e.end_date || e.date) >= today;
-  }).sort(function (a, b) { return a.date < b.date ? -1 : 1; });
+    return e.category === 'conference' && e._end >= today;
+  }).sort(function (a, b) { return a._d < b._d ? -1 : 1; });
 
   el('conf-cards').innerHTML = rows.length ? rows.map(function (e) {
-    var span = fmtDateFull(e.date) + (e.end_date && e.end_date !== e.date
-      ? ' ~ ' + fmtDateFull(e.end_date) : '');
-    return '<div class="card' + (diffDays(today, e.date) <= 30 ? ' hot' : '') + '">' +
-      '<div class="dday">' + esc(ddayLabel(e.date)) + '</div>' +
+    var span = fmtDateFull(e._d) + (e._end !== e._d ? ' ~ ' + fmtDateFull(e._end) : '');
+    return '<div class="card' + (diffDays(today, e._d) <= 30 ? ' hot' : '') + '">' +
+      '<div class="dday">' + esc(ddayLabel(e._d)) + '</div>' +
       '<div class="when">' + esc(span) + ' · ' + esc(countryName(e.country)) + '</div>' +
       '<div class="what">' + esc(title(e)) + '</div>' +
       (detail(e) ? '<div class="why">' + esc(detail(e)) + '</div>' : '') +
       '<div class="row">' + impMark(e.importance) + badge(e.confirmed) + ' ' +
-      (e.url ? '<a href="' + esc(e.url) + '" target="_blank" rel="noopener">' +
+      (e.url ? '<a href="' + esc(viewUrl(e.url)) + '" target="_blank" rel="noopener">' +
         t('공식 프로그램', 'official programme') + '</a>' : '') + '</div></div>';
   }).join('') : '<div class="empty">' + t('담긴 학회 일정이 없습니다.', 'No congresses recorded.') + '</div>';
 
@@ -1294,7 +1407,7 @@ function renderConferences() {
         '<td class="small">' + esc(noteText(u)) + '</td>' +
         '<td class="nowrap small">' + (u.group === 'bio' ? t('제약·바이오', 'pharma')
           : t('산업', 'industry')) + '</td>' +
-        '<td class="nowrap">' + (u.url ? '<a href="' + esc(u.url) +
+        '<td class="nowrap">' + (u.url ? '<a href="' + esc(viewUrl(u.url)) +
           '" target="_blank" rel="noopener">' + t('열기', 'open') + '</a>' : '') + '</td></tr>';
     }).join('') + '</tbody></table>'
     : '<div class="empty">-</div>';
@@ -1305,8 +1418,8 @@ function renderConferences() {
 function renderSupply() {
   var today = todayISO();
   var rows = CAL.events.filter(function (e) {
-    return e.category === 'supply' && e.date >= today;
-  }).sort(function (a, b) { return a.date < b.date ? -1 : 1; });
+    return e.category === 'supply' && e._d >= today;
+  }).sort(function (a, b) { return a._d < b._d ? -1 : 1; });
   el('supply').innerHTML = eventTable(rows, {});
 
   var un = (CAL.undated || []).filter(function (u) {
@@ -1319,7 +1432,7 @@ function renderSupply() {
       return '<tr><td>' + esc(LANG === 'en' ? (u.name_en || u.name_ko) : u.name_ko) + ' ' +
         impMark(u.importance) + '</td>' +
         '<td class="small">' + esc(noteText(u)) + '</td>' +
-        '<td class="nowrap">' + (u.url ? '<a href="' + esc(u.url) +
+        '<td class="nowrap">' + (u.url ? '<a href="' + esc(viewUrl(u.url)) +
           '" target="_blank" rel="noopener">' + t('열기', 'open') + '</a>' : '') + '</td></tr>';
     }).join('') + '</tbody></table>' : '<div class="empty">-</div>';
   var hrows = [];
@@ -1347,7 +1460,7 @@ function renderSupply() {
 
 function renderFav() {
   var rows = CAL.events.filter(function (e) { return isFav(e.id); })
-    .sort(function (a, b) { return a.date < b.date ? -1 : 1; });
+    .sort(function (a, b) { return a._d < b._d ? -1 : 1; });
   el('fav').innerHTML = eventTable(rows, {emptyMsg:
     t('아직 담은 일정이 없습니다 — 목록의 ★ 를 누르십시오.',
       'Nothing starred yet — use the star in the list above.')});
@@ -1413,7 +1526,7 @@ function renderStatus() {
     '<th class="num">' + t('일정 수', 'Events') + '</th></tr></thead><tbody>' +
     list.map(function (u) {
       return '<tr><td class="small">' + esc(u.source || '') + '</td>' +
-        '<td class="small"><a href="' + esc(u.url) + '" target="_blank" rel="noopener">' +
+        '<td class="small"><a href="' + esc(viewUrl(u.url)) + '" target="_blank" rel="noopener">' +
         esc(u.url.replace(/^https?:\/\//, '').slice(0, 78)) + '</a></td>' +
         '<td class="num">' + u.n + '</td></tr>';
     }).join('') + '</tbody></table>';
@@ -1437,12 +1550,14 @@ function csvCell(s) {
 
 function exportCsv() {
   var rows = filtered();
-  var head = ['date', 'end_date', 'time_kst', 'country', 'category', 'importance',
-              'title_ko', 'title_en', 'org', 'detail', 'confirmed', 'source', 'url'];
+  // 두 기준을 모두 담는다 — 받아서 쓰는 쪽이 어느 기준인지 헷갈리지 않게.
+  var head = ['date_shown', 'date_local', 'end_date_local', 'time_local', 'tz', 'time_kst',
+              'country', 'category', 'importance', 'title_ko', 'title_en', 'org', 'detail',
+              'confirmed', 'source', 'url'];
   var body = rows.map(function (e) {
-    return [e.date, e.end_date || '', e.time_kst || '', e.country, e.category, e.importance,
-            e.title_ko, e.title_en, e.org || '', (e.detail_ko || ''), e.confirmed,
-            e.source || '', e.url || ''].map(csvCell).join(',');
+    return [e._d, e.date, e.end_date || '', e.time_local || '', e.tz || '', e.time_kst || '',
+            e.country, e.category, e.importance, e.title_ko, e.title_en, e.org || '',
+            (e.detail_ko || ''), e.confirmed, e.source || '', e.url || ''].map(csvCell).join(',');
   });
   download('market-calendar-' + todayISO() + '.csv', 'text/csv',
            head.join(',') + '\n' + body.join('\n') + '\n');
@@ -1524,6 +1639,7 @@ function exportIcs(rows, fname) {
 /* ---------------------------------------------------------- 묶어 그리기 */
 
 function renderAll() {
+  stampDates();
   renderMeta();
   renderUpcoming();
   renderThisWeek();
@@ -1545,6 +1661,18 @@ function bind() {
   el('btn-ko').addEventListener('click', function () { LANG = 'ko'; applyLang(); renderAll(); });
   el('btn-en').addEventListener('click', function () { LANG = 'en'; applyLang(); renderAll(); });
   el('btn-print').addEventListener('click', function () { window.print(); });
+  el('btn-timebase').addEventListener('click', function () {
+    TIMEBASE = TIMEBASE === 'kst' ? 'local' : 'kst';
+    store('timebase', TIMEBASE);
+    renderTimeBase();
+    renderAll();
+  });
+  el('btn-linkmode').addEventListener('click', function () {
+    LINKMODE = LINKMODE === 'translate' ? 'raw' : 'translate';
+    store('linkmode', LINKMODE);
+    renderLinkMode();
+    renderAll();
+  });
 
   el('m-prev').addEventListener('click', function () {
     MONTH = new Date(MONTH.getFullYear(), MONTH.getMonth() - 1, 1); renderGrid();
@@ -1566,7 +1694,7 @@ function bind() {
   });
   el('btn-ics-fav').addEventListener('click', function () {
     exportIcs(CAL.events.filter(function (e) { return isFav(e.id); })
-      .sort(function (a, b) { return a.date < b.date ? -1 : 1; }),
+      .sort(function (a, b) { return a._d < b._d ? -1 : 1; }),
       'market-calendar-my-list.ics');
   });
   el('btn-fav-clear').addEventListener('click', function () {
@@ -1609,6 +1737,8 @@ function bind() {
 
 function boot() {
   LANG = store('lang') === 'en' ? 'en' : 'ko';
+  LINKMODE = store('linkmode') === 'raw' ? 'raw' : 'translate';
+  TIMEBASE = store('timebase') === 'local' ? 'local' : 'kst';
   loadFav();
   applyLang();
 
