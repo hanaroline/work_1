@@ -8,6 +8,8 @@ on:
     paths:
       - 'scripts/fetch_prospectus.mjs'
       - '.github/workflows/els-prospectus-probe.yml'
+      # 자동 예약이 API 없이 수집을 거는 통로. els-weekly.yml 설명 참고.
+      - 'tools/discovery/prospectus-request.txt'
 
 permissions:
   contents: write
@@ -16,7 +18,11 @@ jobs:
   probe:
     runs-on: ubuntu-latest
     steps:
+      # ref 를 주지 않으면 push 이벤트에서 detached HEAD 로 떨어져 아래 git push 가
+      # "not currently on a branch" 로 죽는다.
       - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref_name }}
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
@@ -30,5 +36,12 @@ jobs:
             echo "변경 없음"
           else
             git commit -m "chore(els): 공시 원문 추출 결과 갱신"
-            git push
+            # 같은 브랜치에 목록 수집이 끼면 push 가 거절된다. 받아 얹고 다시 민다.
+            for i in 1 2 3 4 5; do
+              if git push; then exit 0; fi
+              echo "push 거절 — 원격 변경을 받아 재시도 ($i/5)"
+              git pull --rebase origin "${{ github.ref_name }}" || exit 1
+            done
+            echo "5회 시도 후에도 push 실패"
+            exit 1
           fi

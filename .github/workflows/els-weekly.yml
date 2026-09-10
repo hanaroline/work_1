@@ -6,13 +6,18 @@ on:
     # 매일 08:00 KST (23:00 UTC). ELS 청약기간은 보통 1주일이라 주 1회로는
     # 이미 마감된 상품이 며칠씩 "청약중"으로 남는다.
     - cron: '0 23 * * *'
-  # 수집기를 고쳤을 때 바로 검증되도록
+  # 수집기를 고쳤을 때 바로 검증되도록.
+  # collect-request.txt 는 자동 예약이 쓰는 호출 통로다 — 위 schedule 은 기본
+  # 브랜치(main)에서만 돌고 시각도 09:30~10:00 KST 로 밀리므로, 08:30 KST 점검이
+  # 작업 브랜치의 그날 목록을 보려면 스스로 수집을 걸어야 한다. API 로
+  # workflow_dispatch 를 부를 수 없는 세션도 git push 만으로 여기를 두드릴 수 있다.
   push:
     branches:
       - 'claude/els-**'
     paths:
       - 'scripts/collect_els.mjs'
       - '.github/workflows/els-weekly.yml'
+      - 'tools/discovery/collect-request.txt'
 
 permissions:
   contents: write
