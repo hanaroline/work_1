@@ -59,6 +59,10 @@ jobs:
         run: |
           mkdir -p /tmp/sample/text
           if [ -n "$CODES" ]; then
+            # --codes 는 「기존 결과에 그 종목만 다시 읽어 끼워 넣는」 방식이라
+            # 읽을 기존 결과가 있어야 한다. --out 이 빈 자리를 가리키면 그대로 죽는다.
+            # 담긴 결과를 씨앗으로 깔아 준다 (data/ 는 건드리지 않는다).
+            cp data/fund-prospectus.js /tmp/sample/fund-prospectus.js
             set -- --codes "$CODES" --limit 0
           else
             set -- --limit "$LIMIT" --every "$EVERY"
@@ -71,10 +75,15 @@ jobs:
       - name: 추출률
         env:
           FIELDS: ${{ inputs.fields || 'clsA,clsAExp,redeemFee,liqRisk' }}
+          CODES: ${{ inputs.codes || '' }}
         run: |
           node -e "
           const g={}; new Function('window', require('fs').readFileSync('/tmp/sample/fund-prospectus.js','utf8'))(g);
-          const P=g.FUND_PROSPECTUS, I=P.items, K=Object.keys(I);
+          const P=g.FUND_PROSPECTUS, I=P.items;
+          /* --codes 는 담긴 결과를 씨앗으로 깔고 그 위에 끼워 넣는다 —
+             보고는 지목한 종목만 해야 3,000건에 파묻히지 않는다 */
+          const onlyCodes=(process.env.CODES||'').split(',').map(s=>s.trim()).filter(Boolean);
+          const K=onlyCodes.length?onlyCodes.filter(k=>I[k]):Object.keys(I);
           console.log('표본 ' + K.length + '건\n');
           const cnt={};
           K.forEach(k=>Object.keys(I[k]).forEach(f=>cnt[f]=(cnt[f]||0)+1));
@@ -94,10 +103,14 @@ jobs:
           "
 
       - name: 값처럼 생기지 않은 것 (규칙이 잘못 읽은 것)
+        env:
+          CODES: ${{ inputs.codes || '' }}
         run: |
           node -e "
           const g={}; new Function('window', require('fs').readFileSync('/tmp/sample/fund-prospectus.js','utf8'))(g);
-          const P=g.FUND_PROSPECTUS, I=P.items, K=Object.keys(I);
+          const P=g.FUND_PROSPECTUS, I=P.items;
+          const want=(process.env.CODES||'').split(',').map(s=>s.trim()).filter(Boolean);
+          const K=want.length?want.filter(k=>I[k]):Object.keys(I);
           const feeRateLike=v=>{const t=String(v==null?'':v).trim(); if(!t) return false;
             if(/없음|면제|해당\s*없|미징구|징구하지\s*않/.test(t)&&t.length<=30) return true;
             return /\d+(?:\.\d+)?\s*%/.test(t)&&t.length<=40;};
