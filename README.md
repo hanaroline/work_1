@@ -928,30 +928,35 @@ python3 -m http.server 8000   # http://localhost:8000/mapo-wm.html
 **발표 시각도 만들지 않습니다.** 일본은행과 금통위는 발표 시각이 공표돼 있지 않아
 `시각 미공표` 로 둡니다. 컨퍼런스콜 시각은 이 화면이 쓰는 소스에 없어 IR 링크로 넘깁니다.
 
-## 실행 방법
+## 두 가지 판 — 어느 것을 쓰나
+
+| | `market-calendar.html` (인터넷판) | `market-calendar-offline.html` (오프라인판) |
+|---|---|---|
+| 데이터 | 열 때마다 `latest.json` 을 **받아온다** | 파일 안에 **심겨 있다** |
+| 갱신 | 주 1회 수집이 돌면 **다시 열기만 하면 최신** | 파일을 다시 배포해야 바뀐다 |
+| 필요한 것 | 저장소 옆자리 또는 `raw.githubusercontent.com` 접근 | **아무것도 필요 없음** |
+| 크기 | 약 0.2MB | 약 0.5MB |
+| 표시 | — | ⑩ 상단에 `오프라인 판` 배지 |
+
+**인터넷판**은 데이터를 세 곳에서 앞에서부터 찾습니다 — ① 저장소 옆자리(로컬 서버로 열었을
+때) ② `main` 브랜치 ③ 작업 브랜치. 그래서 로컬 서버로 열어도, 파일 하나만 옮겨 `file://`
+로 열어도(그 PC 에 인터넷이 있으면) 동작합니다. 어디서 받았는지는 화면 위에 적힙니다.
 
 ```bash
-# 저장소 뿌리에서 — 화면이 data/calendar/latest.json 을 읽으므로 로컬 서버가 필요합니다
+# 저장소를 통째로 두고 보는 경우
 python3 -m http.server 8000
 # 브라우저에서 http://localhost:8000/market-calendar.html
 ```
 
-파일을 직접(`file://`) 열면 브라우저 보안정책에 막혀 옆의 JSON 을 못 읽습니다.
-인터넷이 되는 PC 라면 그 상태에서도 `raw.githubusercontent.com` 의 `main` 브랜치에서
-데이터를 받아 그립니다.
-
-### 인터넷이 아예 안 되는 PC
-
-데이터를 파일 안에 심은 **오프라인 판**을 씁니다.
+**오프라인판**은 인터넷이 아예 안 되는 업무용 PC 용입니다. `file://` 로 열린 페이지는 옆에
+있는 JSON 도 브라우저 보안정책에 막혀 못 읽으므로, 데이터를 HTML 안에 심어 둡니다.
 
 ```bash
-python scripts/inline_calendar.py       # market-calendar-offline.html (약 0.3MB)
+python scripts/inline_calendar.py       # market-calendar-offline.html
 ```
 
-이 파일은 더블클릭만 하면 열리고 네트워크를 쓰지 않습니다(⑩ 상단에 `오프라인 판` 표시).
 저장소에는 커밋하지 않습니다 — 만들 때마다 통째로 바뀌므로, 수집 워크플로의
 **Artifacts**(`calendar-data`)에서 받거나 위 명령으로 다시 만드십시오.
-단 **실적발표일은 빠집니다**(그 스냅샷은 데이터 브랜치에 있고 수 MB 라 심지 않습니다).
 
 ## 데이터 구조
 
@@ -1053,8 +1058,24 @@ HTML 을 긁는 경로는 상대가 페이지 구조를 바꾸면 조용히 빈 
 
 ```bash
 python scripts/fetch_calendar.py --dry-run        # 받아서 견주기만, 파일은 안 고침
-python scripts/fetch_calendar.py --only fomc,bls  # 일부 경로만
+python scripts/fetch_calendar.py --only fomc,boe  # 일부 경로만
+python scripts/fetch_calendar.py --try-blocked    # 못 받는다고 적어 둔 곳도 다시 시험
 ```
+
+### FRED API 키 넣기 (미국 CPI·고용상황 확정 발표일)
+
+BLS 가 러너 IP 에 403 을 주므로, 미국 CPI·고용상황·PCE·GDP·소매판매의 **확정** 발표일은
+지금 FRED 경로로만 들어옵니다. 무료 키 하나면 켜집니다.
+
+1. <https://fredaccount.stlouisfed.org/apikey> 에서 계정을 만들고 **API key** 를 발급합니다
+   (무료, 승인 대기 없음. 32자리 문자열입니다).
+2. 저장소 **Settings → Secrets and variables → Actions → New repository secret** 으로 갑니다.
+3. 이름을 정확히 `FRED_API_KEY` 로 하고 값에 그 키를 붙여 넣습니다.
+4. `data/calendar/REFRESH` 를 한 줄 고쳐 push 하면 바로 수집이 돕니다.
+
+키를 넣었는지는 Actions 실행 요약의 `fred:*` 줄로 확인합니다 — 없으면
+`FRED_API_KEY 가 없어 건너뛰었다`, 있으면 지표별 건수가 찍힙니다.
+키는 시크릿에만 두고 저장소 파일에는 넣지 마십시오.
 
 ## 점검
 
