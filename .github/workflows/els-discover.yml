@@ -1,0 +1,57 @@
+name: ELS 사이트 구조 탐색 (1회성 조사)
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - 'claude/els-**'
+    paths:
+      - 'scripts/discover_els.mjs'
+      - '.github/workflows/els-discover.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  discover:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Playwright 설치
+        run: npm i -D playwright@1.56.1 && npx playwright install --with-deps chromium
+
+      - name: 탐색 실행
+        run: node scripts/discover_els.mjs
+
+      - name: 수익률 기준 확인
+        if: hashFiles('scripts/verify_rate_basis.mjs') != ''
+        continue-on-error: true
+        run: node scripts/verify_rate_basis.mjs
+
+      - name: 원문 업로드
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: els-discovery
+          path: discovery/
+          retention-days: 7
+
+      - name: 요약 커밋
+        if: always()
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          mkdir -p discovery
+          # 요약만 저장소에 남긴다 (원문 HTML 은 아티팩트로만)
+          if [ -f discovery/_summary.json ]; then
+            mkdir -p tools/discovery
+            cp discovery/_summary.json tools/discovery/summary.json
+            git add tools/discovery/summary.json
+            git commit -m "chore: ELS 사이트 탐색 요약 갱신" || echo "변경 없음"
+            git push || echo "푸시 실패 (무시)"
+          fi

@@ -85,8 +85,37 @@ jobs:
 
       - name: 오래된 덤프 정리
         run: |
-          # 파싱 실패 시에만 남기는 원본이다. 7일 지난 것은 지운다.
-          find data/reports/raw -name '*.html' -mtime +7 -delete 2>/dev/null || true
+          # 파싱이 어긋났을 때만 남기는 원본이다. 이레 지난 것은 지운다.
+          #
+          # 예전에는 `find -mtime +7` 이었는데 한 번도 맞은 적이 없다 —
+          # actions/checkout 이 파일을 새로 쓰므로 러너에서는 모든 파일의
+          # mtime 이 늘 「방금」이다. 8/21 탐색 덤프가 20일째 남아 있었다.
+          # 그래서 _dump 가 맨 앞 줄에 적어 둔 날짜를 보고 지운다.
+          python3 - <<'PY'
+          import os, re, datetime
+          d = 'data/reports/raw'
+          today = datetime.date.today()
+          gone = 0
+          for f in sorted(os.listdir(d)) if os.path.isdir(d) else []:
+              if not f.endswith('.html'):
+                  continue
+              p = os.path.join(d, f)
+              try:
+                  with open(p, encoding='utf-8', errors='replace') as fh:
+                      head = fh.readline()
+              except OSError:
+                  continue
+              m = re.search(r'<!-- 덤프: (\d{4})-(\d{2})-(\d{2})', head)
+              # 날짜가 없으면 이 규칙이 생기기 전의 것이다 — 지운다.
+              old = True
+              if m:
+                  when = datetime.date(*map(int, m.groups()))
+                  old = (today - when).days > 7
+              if old:
+                  os.remove(p); gone += 1
+                  print('지움: %s' % f)
+          print('덤프 %d개 지움' % gone)
+          PY
 
       - name: 커밋
         run: |

@@ -1,0 +1,217 @@
+{
+  "_읽는 법": "표·날짜 이름표·비율·개수·주도 종목은 build_briefing.py 가 시세 자료에서 만든다. 이 파일에는 **그날의 서술만** 둔다. 키를 비우면 자료에서 계산한 한 줄이 대신 나가고 검증 노트 (b) 에 개수가 찍힌다.",
+  "hero": [
+    "<strong>한국은행이 어제 기준금리를 연 2.75%에서 3.00% 로 올렸습니다 &mdash; 두 달 연속입니다.</strong> 그런데 같은 날 코스피는 <strong>+1.53%</strong> 올랐습니다. 금리를 올린 날 지수가 오른 것이 아니라, <strong>지수만</strong> 오른 날입니다 &mdash; 오른 종목이 317 개, 내린 종목이 539 개였습니다. 간밤 뉴욕에서 엔비디아가 정규장에서 <strong>+8.64%</strong> 뛰며 반도체&middot;배터리&middot;전력기기를 끌어올렸고, 금리에 약한 인터넷&middot;자동차&middot;게임은 그대로 밀렸습니다. 오늘 밤 잭슨홀에서 워시 의장이 말합니다.",
+    "<strong>The Bank of Korea raised its policy rate to 3.00% from 2.75% yesterday &mdash; a second consecutive hike.</strong> KOSPI nonetheless closed <strong>+1.53%</strong>. Not a market that shrugged off the hike, but one where <strong>only the index</strong> rose: 317 stocks advanced and 539 declined. Nvidia's <strong>+8.64%</strong> regular session in New York carried chips, batteries and grid equipment; rate-sensitive internet, autos and gaming were left behind. Chair Warsh speaks at Jackson Hole tonight."
+  ],
+  "tone": [
+    "금리는 3% 시대, 지수는 좁은 오름",
+    "A 3% policy rate, and a narrow rally"
+  ],
+  "today_1": [
+    "<strong>&#9312; 금리를 올린 날 지수가 올랐다는 말은 절반만 맞습니다.</strong> 코스피는 올랐지만 <strong>열 종목 가운데 여섯이 내렸습니다</strong>. 미국도 같은 모습이었습니다 &mdash; 열한 개 업종 ETF 가운데 오른 것은 <strong>기술과 에너지 둘뿐</strong>이고 아홉이 내렸는데도 나스닥은 올랐습니다. 양쪽 모두 <strong>지수를 끌어올린 것은 몇 종목이고, 나머지는 반대로 갔습니다.</strong> 계좌가 지수를 못 따라갔다면 그것이 정상입니다.",
+    "<strong>&#9312; The hike-day rally is only half a story.</strong> KOSPI rose, but <strong>six stocks in ten fell</strong>. New York looked the same: of eleven sector ETFs only <strong>technology and energy</strong> gained &mdash; nine fell, and the Nasdaq still rose. In both markets <strong>a handful of names carried the index while the rest went the other way.</strong> A portfolio that lagged yesterday was behaving normally."
+  ],
+  "today_2": [
+    "<strong>&#9313; 시장은 금리를 무시한 것이 아니라 종목을 갈랐습니다.</strong> 오른 업종은 <strong>전기장비&middot;전기제품&middot;우주항공과국방</strong> 처럼 실적과 수주가 앞에 있는 쪽이고, 내린 업종은 <strong>인터넷과카탈로그소매&middot;자동차&middot;게임엔터테인먼트</strong> 처럼 <strong>먼 미래의 이익을 현재로 당겨 매기는 쪽</strong>입니다. 금리가 오르면 그 할인율이 커집니다. 지수 한 줄만 보면 안 보이지만, 업종을 펴 놓으면 어제 시장은 금통위를 정확히 읽고 있었습니다.",
+    "<strong>&#9313; The market did not ignore the hike &mdash; it sorted.</strong> What rose &mdash; <strong>electrical equipment, electrical products, aerospace and defence</strong> &mdash; earns now. What fell &mdash; <strong>internet retail, autos, gaming</strong> &mdash; is valued on profits far out in time, which a higher rate discounts harder. The index line hides this; the sector table does not."
+  ],
+  "today_3": [
+    "<strong>&#9314; 코스피는 한 주를 꼬박 돌아 제자리에 왔습니다.</strong> 8/21 종가가 6,912.95 였고 어제 종가가 <strong>6,912.37</strong> 입니다 &mdash; 나흘 사이 하루 &minus;3.12% 와 사흘의 회복을 겪고 <strong>0.58 포인트 아래</strong>로 돌아왔습니다. 그동안 거래대금은 <strong>28.9조원에서 22.9조원으로</strong> 줄었습니다. <strong>값은 제자리인데 손바뀜은 줄었습니다</strong> &mdash; 되돌린 것이지 새로 올라간 것이 아닙니다.",
+    "<strong>&#9314; KOSPI has gone a full week and come back to where it started.</strong> It closed at 6,912.95 on 21 August and at <strong>6,912.37</strong> yesterday &mdash; <strong>0.58 points lower</strong> after a &minus;3.12% day and three sessions of recovery. Turnover over the same stretch fell from <strong>28.9 to 22.9 trillion won</strong>. <strong>Same level, less trading</strong> &mdash; a round trip, not a breakout."
+  ],
+  "korea_lede": [
+    "<strong>금통위 인상을 받은 첫 장이었는데, 지수는 오르고 폭은 좁았습니다.</strong> 코스닥은 상승 840 대 하락 794 로 코스피보다 훨씬 고르게 올랐습니다 &mdash; <strong>상한가도 7 종목 나왔습니다.</strong> 시가총액 큰 쪽이 끌고 간 코스피와 달리 코스닥은 안에서 넓게 움직였다는 뜻입니다. 다만 두 지수 모두 <strong>어제 하루로 방향이 정해졌다고 읽기에는 이릅니다</strong> &mdash; 금리 인상의 실제 부담은 대출금리와 이자 비용으로 몇 달에 걸쳐 나타납니다.",
+    "<strong>The first session after the hike: the index up, the breadth narrow.</strong> KOSDAQ was far more even &mdash; 840 advancers against 794 decliners, with <strong>seven limit-up names</strong>. Where KOSPI was carried by its largest constituents, KOSDAQ moved broadly. Neither, though, <strong>settles the direction in one session</strong>: the real weight of a hike arrives over months, through loan rates and interest costs."
+  ],
+  "flows_lede": [
+    "<strong>이 절에서 눈여겨볼 것은 예탁금과 신용의 방향이 반대라는 점입니다.</strong> 고객예탁금은 한 주 사이 <strong>2.12% (2조 2,209억원) 줄었는데</strong> 신용융자 잔고는 <strong>5.65% (1조 7,336억원) 늘었습니다</strong>. 대기 자금은 빠지고 빌려서 산 자금은 느는 모양입니다. <strong>금리를 올린 국면에서 이 조합은 편하지 않습니다</strong> &mdash; 이자 부담이 커지는 쪽으로 레버리지가 쌓이고 있기 때문입니다. 어제 코스피에서는 외국인과 기관이 함께 샀고 개인이 크게 팔았습니다.",
+    "<strong>What matters here is that deposits and margin debt are moving in opposite directions.</strong> Customer deposits fell <strong>2.12% (2.22 trillion won) over the week</strong> while margin loan balances rose <strong>5.65% (1.73 trillion won)</strong>. Cash on the sidelines is draining; borrowed money is building. <strong>That is an uncomfortable pairing into a hiking cycle</strong>, because leverage is accumulating just as its cost rises. In KOSPI yesterday foreigners and institutions both bought while retail sold heavily."
+  ],
+  "global_lede": [
+    "<strong>뉴욕은 한 종목이 지수를 들었습니다.</strong> 엔비디아가 정규장에서 <strong>+8.64%</strong> 오르며 나스닥을 <strong>+1.28%</strong> 끌어올렸는데, 다우는 <strong>+0.21%</strong> 에 그쳤습니다 &mdash; <strong>같은 날 같은 시장에서 여섯 배 차이</strong>입니다. VIX 는 14 대로 내려 겉으로는 편안해 보이지만, 업종 아홉이 내리는데 지수가 오르는 장은 <strong>편안한 것이 아니라 쏠린 것</strong>입니다. 유럽은 내렸고 아시아는 상하이만 올랐습니다.",
+    "<strong>One stock lifted New York.</strong> Nvidia's <strong>+8.64%</strong> regular session carried the Nasdaq <strong>+1.28%</strong>; the Dow managed <strong>+0.21%</strong> &mdash; a <strong>sixfold gap on the same day in the same market</strong>. VIX slipped into the 14s, which looks calm, but an index that rises while nine of eleven sectors fall is <strong>concentrated, not calm</strong>. Europe fell; in Asia only Shanghai rose."
+  ],
+  "earnings_lede": [
+    "<strong>어제 시간외에서 시작된 엔비디아 이야기가 정규장에서 값으로 확정됐습니다.</strong> 전날 판에서 「가이던스가 값을 돌려세웠다」고 적었는데, 하루가 지나 <strong>정규장 +8.64%</strong> 로 확인됐습니다 &mdash; 13분기 연속 매출 신기록이라는 숫자보다 <strong>다음 분기를 어떻게 말했는지</strong>가 값을 정했다는 뜻입니다. 국내에서도 SK하이닉스가 미국 인디애나 HBM 공장 착공에 들어갔고, 곽노정 사장은 「반도체 강세가 이어질 것」이라며 추가 투자에 열려 있다고 했습니다.",
+    "<strong>The Nvidia story that began after hours was settled by the regular session.</strong> Yesterday's edition said the guidance, not the quarter, turned the price; a day later <strong>+8.64% in regular trading</strong> confirms it. In Korea, SK Hynix broke ground on its first US HBM plant in Indiana, and chief executive Kwak Noh-jung said the chip upcycle would continue and that further investment was open."
+  ],
+  "macro_lede": [
+    "<strong>국내 금리는 이제 3% 에서 출발합니다.</strong> 기준금리 인상은 시장금리에 이미 상당 부분 반영돼 있었지만, 실제로 손에 닿는 것은 대출금리입니다 &mdash; 5대 은행 <strong>5년 고정형 주택담보대출이 연 4.72~7.17%</strong> 이고, 연내 상단 8% 돌파 관측이 나옵니다. 한국은행 추산으로 대출금리가 <strong>0.50%포인트 오르면 주담대 이자 부담이 3조 7,000억원</strong> 늘어납니다. 6월 말 가계신용은 <strong>2,019조 8,000억원</strong> 으로 사상 처음 2,000조원을 넘었습니다.",
+    "<strong>Korean rates now start from 3%.</strong> The hike was largely priced into market yields, but what households actually meet is the loan rate: five-year fixed mortgages at the five largest banks run <strong>4.72&ndash;7.17%</strong>, with forecasts of the top of that range passing 8% this year. The Bank of Korea estimates a <strong>50bp rise adds 3.7 trillion won</strong> to mortgage interest costs. Household credit stood at <strong>2,019.8 trillion won</strong> at end-June, past 2,000 trillion for the first time."
+  ],
+  "calendar_lede": [
+    "<strong>어제로 국내 쪽 큰 일정은 지나갔고, 이제 미국 차례입니다.</strong> 오늘 밤 잭슨홀이 그 자리이고, 그다음은 9/5 고용보고서입니다. 국내 일정 가운데 <strong>9/11 동시만기</strong>는 거래대금이 22.9조원까지 얇아진 뒤 맞는 만기라 평소보다 폭이 커지기 쉽습니다. 지난 날짜는 이 표에서 자동으로 지워집니다.",
+    "<strong>Korea's big date is behind us; the US ones are ahead.</strong> Jackson Hole is tonight, then the employment report on 5 September. Among domestic dates, <strong>the 11 September expiry</strong> arrives after turnover has thinned to 22.9 trillion won, which tends to widen the swings. Elapsed rows drop out of this table automatically."
+  ],
+  "deep": {
+    "title_ko": "심층 분석 &mdash; 금리를 올린 날, 지수는 왜 올랐나",
+    "title_en": "In Depth &mdash; Why the Index Rose on Hike Day",
+    "lede_ko": "<strong>어제는 두 가지가 같은 날 일어났습니다.</strong> 한국은행이 두 달 연속 기준금리를 올렸고, 코스피가 +1.53% 올랐습니다. 이 둘을 「시장이 금리를 무시했다」로 붙이면 틀립니다. <strong>자료를 펴 놓으면 시장은 금리를 정확히 반영했고, 다만 지수 한 줄이 그것을 가렸습니다.</strong> 오늘 고객이 가장 많이 물을 대목이라 따로 폅니다.",
+    "lede_en": "<strong>Two things happened on the same day.</strong> The Bank of Korea raised its policy rate for a second month, and KOSPI rose 1.53%. Reading that as \"the market ignored the hike\" is wrong. <strong>Laid out, the data show a market that priced the hike precisely &mdash; the index line simply hid it.</strong> This is what clients will ask about, so it gets its own section.",
+    "blocks": [
+      {
+        "q_ko": "무엇이 결정됐나",
+        "q_en": "What was decided",
+        "a_ko": "한국은행 금융통화위원회가 8월 27일 기준금리를 <strong>연 2.75% 에서 3.00% 로 0.25%포인트 올렸습니다</strong>. <strong>7월에 이어 두 달 연속</strong>이고, 언론은 이를 「백투백 인상」, 「기준금리 3% 시대」로 적고 있습니다. 인상 배경으로는 <strong>부동산 시장과 환율 안정</strong>이 지목됐습니다. 원/달러는 오늘 아침까지 1,381원대에서 사실상 움직이지 않았습니다 &mdash; <strong>인상이 이미 값에 들어가 있었다는 뜻</strong>으로 읽는 편이 자연스럽습니다.",
+        "a_en": "On 27 August the Monetary Policy Board raised the base rate <strong>25bp to 3.00% from 2.75%</strong> &mdash; a <strong>second consecutive move</strong> after July's, described in the press as a back-to-back hike and the arrival of a 3% policy rate. <strong>Property prices and the won</strong> were cited. The won has barely moved through this morning, around 1,381 &mdash; the most natural reading is that <strong>the hike was already in the price</strong>."
+      },
+      {
+        "q_ko": "그런데 왜 지수가 올랐나",
+        "q_en": "So why did the index rise",
+        "a_ko": "<strong>지수가 오른 것과 시장이 오른 것은 다릅니다.</strong> 어제 코스피에서 오른 종목은 317 개, 내린 종목은 539 개였습니다 &mdash; <strong>내린 종목이 오른 종목보다 200 개 이상 많은데 지수는 +1.53%</strong> 입니다. 이런 일은 시가총액이 큰 몇 종목이 크게 오를 때만 생깁니다. 실제로 <strong>삼성SDI &middot; LG에너지솔루션 &middot; 에코프로비엠</strong> 같은 배터리 대형주와 <strong>한화에어로스페이스</strong> 가 크게 올랐고, 업종으로는 <strong>전기장비가 +10.30%</strong> 였습니다. 간밤 엔비디아가 정규장에서 +8.64% 오른 것이 이 쪽에 재료가 됐습니다.",
+        "a_en": "<strong>The index rising and the market rising are different things.</strong> 317 KOSPI names advanced and 539 declined &mdash; <strong>more than 200 more losers than winners, and the index still up 1.53%</strong>. That only happens when a few of the largest constituents move hard. <strong>Samsung SDI, LG Energy Solution and Ecopro BM</strong> among batteries and <strong>Hanwha Aerospace</strong> did exactly that; <strong>electrical equipment gained 10.30%</strong> as a sector. Nvidia's +8.64% regular session overnight was the trigger."
+      },
+      {
+        "q_ko": "그러면 금리는 어디에 나타났나",
+        "q_en": "Where did the rate show up",
+        "a_ko": "<strong>내린 쪽에 나타났습니다.</strong> 어제 가장 많이 내린 국내 업종은 <strong>인터넷과카탈로그소매(&minus;4.37%) &middot; 자동차(&minus;2.86%) &middot; 게임엔터테인먼트(&minus;2.25%)</strong> 입니다. 셋 다 <strong>먼 미래의 이익을 현재 값으로 당겨 매기는</strong> 쪽이고, 금리가 오르면 그 할인율이 커져 값이 먼저 깎입니다. 종목으로도 <strong>크래프톤&middot;기아</strong> 가 하위에 있습니다. <strong>시장은 금리를 무시한 것이 아니라, 금리에 약한 것을 골라 팔았습니다.</strong> 지수는 그 둘을 더해 하나의 숫자로 내놓기 때문에 그 과정이 보이지 않습니다.",
+        "a_en": "<strong>On the losing side.</strong> The weakest Korean sectors were <strong>internet retail (&minus;4.37%), autos (&minus;2.86%) and gaming (&minus;2.25%)</strong> &mdash; all valued on profits far out in time, which a higher discount rate marks down first. <strong>Krafton and Kia</strong> sit among the day's laggards for the same reason. <strong>The market did not ignore the rate; it sold what the rate hurts.</strong> The index adds the two together and reports one number, so the sorting disappears."
+      },
+      {
+        "q_ko": "고객에게 무엇이 남나",
+        "q_en": "What it leaves for clients",
+        "a_ko": "<strong>세 가지입니다.</strong> 첫째, <strong>계좌가 어제 지수를 못 따라갔다면 그것이 보통</strong>입니다 &mdash; 종목의 63% 가 내렸습니다. 둘째, 금리 인상의 부담은 하루가 아니라 <strong>대출금리를 거쳐 몇 달에 걸쳐</strong> 옵니다. 5년 고정형 주담대 상단이 이미 <strong>7.17%</strong> 이고 연내 8% 관측이 나옵니다. 셋째, <strong>예탁금은 한 주 사이 2.12% 줄고 신용융자는 5.65% 늘었습니다</strong> &mdash; 이자가 비싸지는 국면에서 레버리지가 쌓이는 조합이라, 신용을 쓰고 있는 계좌는 이번 주에 한 번 점검하시는 편이 낫습니다.",
+        "a_en": "<strong>Three things.</strong> First, <strong>a portfolio that lagged the index yesterday was normal</strong> &mdash; 63% of names fell. Second, the weight of a hike arrives over months <strong>through loan rates</strong>, not in a day: the top of the five-year fixed mortgage range is already <strong>7.17%</strong>, with 8% forecast this year. Third, <strong>deposits fell 2.12% over the week while margin debt rose 5.65%</strong> &mdash; leverage building as its cost rises, so any account carrying margin is worth reviewing this week."
+      }
+    ]
+  },
+  "talking_lede": [
+    "<strong>오늘 창구에서 가장 많이 나올 물음은 하나로 모입니다 &mdash; 「금리를 올렸는데 왜 올랐나」.</strong> 답의 핵심은 <strong>지수와 종목이 다르게 움직였다</strong>는 것이고, 그 뒤에 <strong>대출금리와 신용잔고</strong>가 따라옵니다. 아래 네 가지는 어제 자료로 답할 수 있는 것만 담았습니다.",
+    "<strong>Today's questions all converge on one &mdash; \"rates went up, so why did the market?\"</strong> The answer turns on <strong>the gap between the index and its constituents</strong>, and behind it sit <strong>loan rates and margin balances</strong>. The four below are limited to what yesterday's data can actually answer."
+  ],
+  "why": {
+    "삼성SDI": [
+      "엔비디아 실적을 받은 배터리·소재 동반 강세",
+      "Batteries and materials rallied on the Nvidia print"
+    ],
+    "한화에어로스페이스": [
+      "방산 수주 기대가 이어지며 우주항공과국방 업종 전체가 상승",
+      "Aerospace and defence rose as a sector on order expectations"
+    ],
+    "엔비디아": [
+      "회계연도 2분기 어닝 서프라이즈와 가이던스가 정규장에서 값으로 확정",
+      "The fiscal Q2 beat and guidance carried into the regular session"
+    ],
+    "기아": [
+      "금리 상승 국면에서 할인율 부담이 큰 자동차 업종 동반 약세",
+      "Autos fell with the sector as the discount rate rose"
+    ],
+    "크래프톤": [
+      "게임엔터테인먼트 업종 약세 — 먼 미래 이익의 현재가치가 깎이는 쪽",
+      "Gaming weakened with the sector, long-duration earnings marked down"
+    ]
+  },
+  "calendar": [
+    {
+      "when_ko": "<strong>오늘 8/28 (금) 밤</strong>",
+      "when_en": "<strong>Tonight, Friday 28 August</strong>",
+      "what_ko": "<strong>잭슨홀 &mdash; 워시 의장 기조연설</strong>",
+      "what_en": "<strong>Jackson Hole &mdash; Chair Warsh's keynote</strong>",
+      "why_ko": "<strong>어제 국내 금리가 3% 로 올라선 직후</strong>라 미국 쪽 방향이 원/달러와 외국인 수급에 곧바로 닿습니다",
+      "why_en": "Coming right after Korea's move to 3%, the US signal feeds straight into the won and foreign flows",
+      "type_ko": "미국",
+      "type_en": "US"
+    },
+    {
+      "when_ko": "9/1 (화) 09:00",
+      "when_en": "Tuesday 1 September, 09:00",
+      "what_ko": "8월 수출입 확정치",
+      "what_en": "August trade, final",
+      "why_ko": "반도체 수출이 인상 부담을 얼마나 상쇄하는지 확인하는 자리",
+      "why_en": "How far chip exports offset the tightening",
+      "type_ko": "한국",
+      "type_en": "Korea"
+    },
+    {
+      "when_ko": "9/5 (금) 21:30",
+      "when_en": "Friday 5 September, 21:30",
+      "what_ko": "미 8월 고용보고서",
+      "what_en": "US August employment report",
+      "why_ko": "연방기금 선물 내재금리가 실효금리보다 10bp 위에 있어, 이 지표가 그 간격을 좁히거나 넓힙니다",
+      "why_en": "Fed funds futures imply 10bp above the effective rate; this print narrows or widens that",
+      "type_ko": "미국",
+      "type_en": "US"
+    },
+    {
+      "when_ko": "<strong>9/9 (수)</strong>",
+      "when_en": "<strong>Wednesday 9 September</strong>",
+      "what_ko": "미 재무부 장기채 바이백 확대 시행",
+      "what_en": "US Treasury expands long-end buybacks",
+      "why_ko": "30년물이 5.18% 로 곡선 맨 위에 있어 장기 구간 수급에 직접 닿습니다",
+      "why_en": "With the 30-year at 5.18%, the top of the curve, this lands directly on long-end supply",
+      "type_ko": "미국",
+      "type_en": "US"
+    },
+    {
+      "when_ko": "9/11 (금)",
+      "when_en": "Friday 11 September",
+      "what_ko": "선물&middot;옵션 동시만기",
+      "what_en": "Quadruple witching",
+      "why_ko": "거래대금이 22.9조원까지 줄어든 뒤 맞는 만기라 변동이 커지기 쉽습니다",
+      "why_en": "Expiry arrives after turnover has thinned to 22.9 trillion won, which amplifies moves",
+      "type_ko": "한국",
+      "type_en": "Korea"
+    },
+    {
+      "when_ko": "10/5 (월)",
+      "when_en": "Monday 5 October",
+      "what_ko": "개천절 대체공휴일 &mdash; 국내 휴장",
+      "what_en": "Substitute holiday &mdash; Korea closed",
+      "why_ko": "그날 뉴욕은 열립니다. 중국은 10/1~10/7 닫고 10/8 재개장합니다",
+      "why_en": "New York trades that day; mainland China is closed 1&ndash;7 October and reopens on the 8th",
+      "type_ko": "휴장",
+      "type_en": "Holiday"
+    }
+  ],
+  "talking": [
+    {
+      "q_ko": "금리를 올렸는데 왜 주가가 올랐나요?",
+      "q_en": "Rates went up &mdash; why did the market rise?",
+      "a_ko": "<strong>지수만 올랐습니다.</strong> 어제 코스피에서 오른 종목은 317 개, 내린 종목은 539 개입니다 &mdash; <strong>열 종목 중 여섯이 내렸는데</strong> 시가총액 큰 배터리&middot;전력기기가 크게 오르면서 지수를 밀어 올렸습니다. 금리에 약한 <strong>인터넷&middot;자동차&middot;게임은 어제도 내렸습니다.</strong> 시장이 금리를 무시한 것이 아니라 종목을 갈랐고, 지수가 그 과정을 하나의 숫자로 덮은 것입니다.",
+      "a_en": "<strong>Only the index rose.</strong> 317 KOSPI names advanced against 539 decliners &mdash; <strong>six in ten fell</strong>, while large-cap batteries and grid equipment pushed the headline up. <strong>Internet, autos and gaming &mdash; what a higher rate hurts &mdash; fell.</strong> The market sorted rather than shrugged; the index reported the sum as one number."
+    },
+    {
+      "q_ko": "제 계좌는 지수만큼 안 올랐는데 뭘 잘못한 건가요?",
+      "q_en": "My account did not keep up with the index &mdash; did I do something wrong?",
+      "a_ko": "<strong>어제는 그것이 보통이었습니다.</strong> 종목의 63% 가 내렸으니, 지수를 따라간 계좌 쪽이 오히려 드뭅니다. 다만 짚어 둘 것은 있습니다 &mdash; <strong>지수는 한 주 전과 같은 자리</strong>입니다(8/21 6,912.95 → 어제 6,912.37). 그 사이 하루 &minus;3%대 하락과 사흘의 회복이 있었을 뿐이라, <strong>「올랐다」기보다 「되돌렸다」</strong>가 정확합니다.",
+      "a_en": "<strong>Yesterday that was normal</strong> &mdash; 63% of names fell, so keeping up with the index was the exception. One thing is worth adding: <strong>the index is where it was a week ago</strong> (6,912.95 on 21 August against 6,912.37 yesterday). In between came one day near &minus;3% and three of recovery, so <strong>\"recovered\" is more accurate than \"rose\"</strong>."
+    },
+    {
+      "q_ko": "대출이 있는데 이번 인상으로 얼마나 늘어나나요?",
+      "q_en": "I have a mortgage &mdash; how much does this hike cost me?",
+      "a_ko": "<strong>한국은행 추산으로 대출금리가 0.25%포인트 오르면 전체 차주의 주담대 이자 부담이 1조 8,000억원, 0.50%포인트면 3조 7,000억원 늘어납니다.</strong> 1인당으로는 <strong>연 29만 6,000원에서 59만 2,000원</strong> 입니다. 5대 은행 <strong>5년 고정형이 연 4.72~7.17%</strong> 이고 연내 상단 8% 관측이 나옵니다. <strong>다만 이는 언론에 보도된 추산이고 개별 조건에 따라 달라집니다</strong> &mdash; 실제 금액은 거래 은행에서 확인하셔야 합니다.",
+      "a_en": "<strong>The Bank of Korea estimates a 25bp rise adds 1.8 trillion won to total mortgage interest, and 50bp adds 3.7 trillion</strong> &mdash; per borrower, <strong>296,000 to 592,000 won a year</strong>. Five-year fixed mortgages at the five largest banks run <strong>4.72&ndash;7.17%</strong>, with the top of the range forecast to pass 8% this year. <strong>These are reported estimates and individual terms differ</strong> &mdash; the actual figure has to come from the lender."
+    },
+    {
+      "q_ko": "신용을 쓰고 있는데 지금 어떤가요?",
+      "q_en": "I am using margin &mdash; where does that stand?",
+      "a_ko": "<strong>시장 전체로는 신용이 늘고 예탁금이 줄고 있습니다.</strong> 한 주 사이 신용융자 잔고가 <strong>5.65%(1조 7,336억원) 늘었고</strong> 고객예탁금은 <strong>2.12%(2조 2,209억원) 줄었습니다</strong>. 기준금리가 3% 로 올라선 국면에서 <strong>빌린 돈의 비용은 커지고 대기 자금은 얇아지는</strong> 조합입니다. 지금 당장 무슨 일이 난다는 뜻은 아니지만, <strong>담보 비율과 만기를 이번 주에 한 번 확인해 두시는 편이 낫습니다.</strong>",
+      "a_en": "<strong>Across the market, margin is rising while deposits shrink.</strong> Over the week margin loan balances rose <strong>5.65% (1.73 trillion won)</strong> and customer deposits fell <strong>2.12% (2.22 trillion won)</strong>. With the policy rate now at 3%, <strong>borrowed money costs more while the cash buffer thins</strong>. That is not a warning of anything imminent, but <strong>collateral ratios and maturities are worth checking this week</strong>."
+    }
+  ],
+  "verify_lede": [
+    "<strong>이 절은 판을 짓는 데 쓴 자료와, 쓰지 못한 자료를 밝히는 자리입니다.</strong> 오늘 판에서 가장 중요한 항목인 <strong>기준금리 인상은 시세 파일이 아니라 기사 본문에서 왔습니다</strong> &mdash; 그 사정을 (z) 에 적어 두었습니다. 나머지 배지는 각 표에 그대로 달려 있습니다.",
+    "<strong>This section states what the edition was built from, and what it could not use.</strong> Today's single most important item &mdash; <strong>the policy-rate hike &mdash; came from news text, not the market file</strong>; the circumstances are set out in (z). The remaining badges sit on the tables themselves."
+  ],
+  "verify": [
+    {
+      "t_ko": "(z) 기준금리 인상은 언론 보도로 확인했습니다",
+      "t_en": "(z) The rate decision is confirmed from press reporting",
+      "b_ko": "<strong>기준금리 2.75% → 3.00% 인상은 시세 파일이 아니라 어제 수집한 기사 본문에서 확인했습니다</strong> &mdash; 「한국은행이 27일 기준금리를 연 2.75%에서 3%로 올리며 2회 연속 백투백 인상을 단행했다」(<a href=\"https://n.news.naver.com/mnews/article/025/0003547360\" target=\"_blank\" rel=\"noopener\">고금리 버티려면…보·은·주 잡아라</a>) 와 「기준금리 3% 시대」 부제를 단 별개 기사 두 곳입니다. <strong>한국은행 ECOS 의 기준금리 계열은 표본 인증키로 0 행을 돌려주고 있어 원천 대조를 못 했습니다</strong> &mdash; 이 판에서는 <strong>2 SOURCES</strong> 로 답니다. 주담대 금리&middot;이자 부담&middot;가계신용 수치도 같은 기사에서 나온 <strong>보도 인용</strong>입니다.",
+      "b_en": "<strong>The move to 3.00% from 2.75% comes from the news bodies collected yesterday, not from the market file</strong> &mdash; two separate articles, one stating the back-to-back hike outright and one carrying a \"3% policy rate\" standfirst. <strong>The Bank of Korea ECOS policy-rate series returns zero rows on the sample key</strong>, so it could not be checked at source; this edition marks it <strong>2 SOURCES</strong>. The mortgage-rate, interest-burden and household-credit figures are likewise <strong>quoted from that reporting</strong>."
+    },
+    {
+      "t_ko": "(z) 국내 업종 등락률은 지수 계열이 아닙니다",
+      "t_en": "(z) Korean sector moves are not an index series",
+      "b_ko": "이 판의 국내 업종 등락률은 <strong>일간 등락률을 쌓은 값</strong>이지 지수 계열이 아닙니다(자료 파일의 <code>sectors</code> 가 그렇게 밝히고 있습니다). 그래서 <strong>「전기장비 +10.30%」 같은 값은 그날 하루의 폭</strong>이고, 기간 수익률은 쌓인 날수만큼만 냅니다. <strong>미국 업종은 ETF 종가</strong>라 성격이 다르니 두 표를 같은 잣대로 견주지 마십시오 &mdash; 이름이 겹치는 「유틸리티」&middot;「에너지」가 특히 그렇습니다.",
+      "b_en": "The Korean sector moves here are <strong>daily changes accumulated</strong>, not an index series &mdash; the market file says so under <code>sectors</code>. So <strong>a figure like \"electrical equipment +10.30%\" is one day's move</strong>, and period returns run only as far as the accumulated days. <strong>The US sector table is ETF closes</strong> and is a different measure; do not read the two on one scale, particularly where the names overlap."
+    },
+    {
+      "t_ko": "(z) 52주 고점과 최근 종가의 기준이 다릅니다",
+      "t_en": "(z) The 52-week high and the recent closes are on different bases",
+      "b_ko": "코스피 <strong>52주 최고 9,385.59</strong> 는 <strong>장중 고가</strong> 기준이고, 이 판의 일별 표는 <strong>종가</strong> 기준입니다. 게다가 일별 계열은 최근 <strong>12영업일</strong>만 담고 있어 그 안의 최고 종가(6,977.94)와는 애초에 견줄 수 있는 값이 아닙니다. <strong>재검증기가 이 둘의 차이를 경고로 잡지만 오류가 아닙니다</strong> &mdash; 52주 위치는 장중 고저로, 흐름은 종가로 읽으십시오.",
+      "b_en": "The KOSPI <strong>52-week high of 9,385.59</strong> is an <strong>intraday</strong> figure, while the daily table in this edition is on <strong>closes</strong>. The daily series also spans only the last <strong>12 sessions</strong>, so its highest close (6,977.94) is not a comparable number. <strong>The verifier flags the gap, but it is not an error</strong> &mdash; read the 52-week position on intraday highs and lows, and the trend on closes."
+    }
+  ]
+}

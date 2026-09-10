@@ -1,0 +1,45 @@
+name: 마포 WM 페이지 배포 (GitHub Pages)
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+    paths:
+      - 'mapo-wm.html'
+      - '.github/workflows/pages.yml'
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# 배포는 겹치면 안 되지만, 앞선 배포를 중간에 끊지도 않는다.
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deploy.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+
+      # 저장소 전체가 아니라 고객에게 보낼 페이지만 올린다.
+      # (시세·ELS·브리핑 자료는 웹사이트로 노출하지 않는다)
+      - name: 배포할 파일만 모은다
+        run: |
+          mkdir -p _site
+          cp mapo-wm.html _site/index.html
+          cp mapo-wm.html _site/mapo-wm.html
+          printf 'User-agent: *\nDisallow: /\n' > _site/robots.txt
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+
+      - id: deploy
+        uses: actions/deploy-pages@v4

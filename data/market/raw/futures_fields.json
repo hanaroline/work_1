@@ -1,0 +1,74 @@
+{
+ "stockEndType": "futures",
+ "itemCode": "FUT",
+ "reutersCode": "FUT",
+ "stockName": "코스피 200 선물",
+ "totalInfos": [
+  {
+   "code": "lastClosePrice",
+   "key": "전일",
+   "value": "1,117.20"
+  },
+  {
+   "code": "openPrice",
+   "key": "시가",
+   "value": "1,110.50",
+   "compareToPreviousPrice": {
+    "code": "5",
+    "text": "하락",
+    "name": "FALLING"
+   }
+  },
+  {
+   "code": "highPrice",
+   "key": "고가",
+   "value": "1,118.90",
+   "compareToPreviousPrice": {
+    "code": "2",
+    "text": "상승",
+    "name": "RISING"
+   }
+  },
+  {
+   "code": "lowPrice",
+   "key": "저가",
+   "value": "1,088.55",
+   "compareToPreviousPrice": {
+    "code": "5",
+    "text": "하락",
+    "name": "FALLING"
+   }
+  },
+  {
+   "code": "accumulatedTradingVolume",
+   "key": "거래량",
+   "value": "57,969"
+  },
+  {
+   "code": "accumulatedTradingValue",
+   "key": "대금",
+   "value": "15,994,040백만"
+  },
+  {
+   "code": "highPriceOf52Weeks",
+   "key": "52주 최고",
+   "value": "1,535.00"
+  },
+  {
+   "code": "lowPriceOf52Weeks",
+   "key": "52주 최저",
+   "value": "610.00"
+  }
+ ],
+ "description": "코스피200 주가지수를 기초자산으로 하는 선물지수",
+ "dealTrendInfo": {
+  "bizdate": "20260910",
+  "personalValue": "+968",
+  "foreignValue": "-19,475",
+  "institutionalValue": "+18,409"
+ },
+ "programTrendInfo": null,
+ "upDownStockInfo": null,
+ "enrollStocks": null,
+ "month": "26.09."
+}

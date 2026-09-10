@@ -100,6 +100,6 @@ jobs:
           print(f"::notice::원천 {s['sources_ok']}/{s['sources_tried']} 성공")
           for k, v in sorted(d['sources'].items()):
               if not v['ok']:
-                  print(f"::warning::{k} 실패 — {v['error']}")
+                  print(f"::warning::{k} 실패 — {v.get('error', '사유 없음')}")
           PY
           fi
