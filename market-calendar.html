@@ -518,13 +518,10 @@ var INLINE = null; /*__CALENDAR_INLINE__*/
 
 /* 앞에서부터 받아 본다.
    ① 저장소를 로컬 서버로 열었을 때의 옆자리
-   ② main 브랜치 (병합된 뒤에는 여기서 들어온다)
-   ③ 작업 브랜치 — 아직 main 에 없을 때를 위한 자리다. 병합 뒤에는 ② 가 먼저 맞으므로
-      그대로 두어도 해가 없고, 정리하고 싶으면 지우면 된다. */
+   ② main 브랜치 — 파일 하나만 옮겨 file:// 로 열었을 때 여기서 들어온다 */
 var BASES = [
   'data/calendar/',
-  'https://raw.githubusercontent.com/hanaroline/work_1/main/data/calendar/',
-  'https://raw.githubusercontent.com/hanaroline/work_1/claude/financial-calendar-screen-r8dcqf/data/calendar/'
+  'https://raw.githubusercontent.com/hanaroline/work_1/main/data/calendar/'
 ];
 
 var CAL = null;
