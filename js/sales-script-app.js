@@ -234,7 +234,10 @@
     var t = String(v == null ? '' : v).trim();
     if (!t) return false;
     if (/없음|면제|해당\s*없|미징구|징구하지\s*않/.test(t) && t.length <= 30) return true;
-    return /\d+(?:\.\d+)?\s*%/.test(t) && t.length <= 40;
+    /* 선취판매수수료는 납입금액의 2% 가 법정 한도다 (자본시장법 시행령 제77조).
+       그보다 크면 요율이 아니라 딴 숫자를 집어 온 것이다 — 판독기와 같은 잣대. */
+    var m = t.match(/(\d+(?:\.\d+)?)\s*%/);
+    return !!m && parseFloat(m[1]) <= 2 && t.length <= 40;
   }
   function rateNumLikeApp(v) {
     var t = String(v == null ? '' : v).trim();
