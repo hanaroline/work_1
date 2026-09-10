@@ -1,6 +1,6 @@
 {
- "builtAt": "2026-09-10 09:54 KST",
- "builtAtUtc": "2026-09-10T00:54:31Z",
+ "builtAt": "2026-09-10 10:02 KST",
+ "builtAtUtc": "2026-09-10T01:02:15Z",
  "window": {
   "from": "2026-07-27",
   "to": "2028-01-23"
@@ -78,10 +78,10 @@
  "context": {
   "policy_rate_us": {
    "effr_pct": 3.63,
-   "date": "2026-09-04",
+   "date": "2026-09-08",
    "percentile_1": 3.6,
    "percentile_99": 3.64,
-   "volume_bn_usd": 103,
+   "volume_bn_usd": 107,
    "note": "실효 연방기금금리. 하루 지연 공표라 시세일보다 하루 이르다",
    "source_url": "https://markets.newyorkfed.org/api/rates/unsecured/effr",
    "perf": {
@@ -92,13 +92,13 @@
     "y1": -70.0,
     "ytd": -1.0,
     "unit": "bp",
-    "from": "2025-02-04"
+    "from": "2025-02-05"
    },
    "series_days": 400
   },
   "fed_implied": {
-   "contract_price": 96.215,
-   "implied_rate_pct": 3.785,
+   "contract_price": 96.21,
+   "implied_rate_pct": 3.79,
    "quote_date": "2026-09-09",
    "note": "해당 결제월의 평균 연방기금금리 기대치. policy_rate_us.effr 와 견주십시오 — 단기 국채와 견주면 안 됩니다(국채는 정책금리 위에서 거래되는 게 보통)",
    "source": "CBOT 30일 연방기금 금리선물 (ZQ=F)",
@@ -108,9 +108,9 @@
     "w1": 8.7,
     "m1": 15.4,
     "m3": 16.4,
-    "m6": 14.5,
-    "y1": -43.1,
-    "ytd": 5.8,
+    "m6": 15.4,
+    "y1": -42.1,
+    "ytd": 6.7,
     "unit": "bp",
     "basis": "내재금리(100 − 가격) 기준. 선물 가격 등락률에서 되짚었다"
    }
@@ -118,34 +118,34 @@
   "rates_kr": {
    "cd91": 3.12,
    "call": 2.98,
-   "ktb3y": 3.9,
-   "corp3y": 4.57,
+   "ktb3y": 3.91,
+   "corp3y": 4.58,
    "cofix_balance": 3.0,
    "cofix_new": 3.18,
    "source_url": "https://finance.naver.com/marketindex/",
    "unit": "%",
    "ktb10y_errors": [
-    "il.naver?marketindexCd=IRR_GOVT10Y -> 값 없음(22157 bytes)",
+    "il.naver?marketindexCd=IRR_GOVT10Y -> 값 없음(22076 bytes)",
     "nds/south-korea-10-year-bond-yield -> HTTP Error 403: Forbidden"
    ],
-   "ktb1y": 3.479,
-   "ktb5y": 4.127,
+   "ktb1y": 3.486,
+   "ktb5y": 4.136,
    "ktb10y": 4.401,
    "perf": {
     "ktb1y": {
-     "w1": 0.4,
+     "w1": 1.1,
      "unit": "bp",
      "from": "2026-08-14",
      "basis": "네이버 시장지표 누적본(history.json) 대비"
     },
     "ktb3y": {
-     "w1": -3.0,
+     "w1": -2.0,
      "unit": "bp",
      "from": "2026-08-14",
      "basis": "네이버 시장지표 누적본(history.json) 대비"
     },
     "ktb5y": {
-     "w1": -4.0,
+     "w1": -3.1,
      "unit": "bp",
      "from": "2026-08-14",
      "basis": "네이버 시장지표 누적본(history.json) 대비"
@@ -169,7 +169,7 @@
      "basis": "네이버 시장지표 누적본(history.json) 대비"
     },
     "corp3y": {
-     "w1": -3.0,
+     "w1": -2.0,
      "unit": "bp",
      "from": "2026-08-14",
      "basis": "네이버 시장지표 누적본(history.json) 대비"
@@ -188,7 +188,7 @@
     }
    }
   },
-  "asof_kst": "2026-09-09 16:15:15"
+  "asof_kst": "2026-09-10 09:04:31"
  },
  "holidays": [
   {
