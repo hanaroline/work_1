@@ -289,20 +289,20 @@ def sec_today(C):
              n(KS["close"]), pct(KS["change_pct"]),
              # 배수를 함께 싣는다. 핵심본에는 「시장의 폭」 표가 없어서
              # 여기가 상승/하락 배수가 실리는 유일한 자리다.
-             "상승 " + n(ksb["advancing"], 0) + " 대 하락 " + n(ksb["declining"], 0)
+             "상승 " + n(ksb.get("advancing"), 0) + " 대 하락 " + n(ksb.get("declining"), 0)
              + " (" + _adr(ksb) + "배) &mdash; 열에 " + n(ten, 0),
-             n(ksb["advancing"], 0) + " up, " + n(ksb["declining"], 0) + " down ("
+             n(ksb.get("advancing"), 0) + " up, " + n(ksb.get("declining"), 0) + " down ("
              + _adr(ksb) + "x)"),
         stat("코스닥", "KOSDAQ", n(KQ["close"]), pct(KQ["change_pct"]),
-             "상승 " + n(kqb["advancing"], 0) + " 대 하락 " + n(kqb["declining"], 0)
+             "상승 " + n(kqb.get("advancing"), 0) + " 대 하락 " + n(kqb.get("declining"), 0)
              + " (" + _adr(kqb) + "배)",
-             n(kqb["advancing"], 0) + " up, " + n(kqb["declining"], 0) + " down ("
+             n(kqb.get("advancing"), 0) + " up, " + n(kqb.get("declining"), 0) + " down ("
              + _adr(kqb) + "x)"),
         stat("거래대금", "Turnover", n(C["turnover"][0][1]) + "조", C["turnover_word"],
              C["turnover_trail"], C["turnover_trail_en"]),
-        stat("외국인 순매수", "Foreign net", eok(kf["foreign"]), "",
-             "기관 " + eok(kf["institution"]) + " &middot; 개인 " + eok(kf["retail"]),
-             "Institutions " + eok(kf["institution"]) + ", retail " + eok(kf["retail"])),
+        stat("외국인 순매수", "Foreign net", eok(kf.get("foreign")), "",
+             "기관 " + eok(kf.get("institution")) + " &middot; 개인 " + eok(kf.get("retail")),
+             "Institutions " + eok(kf.get("institution")) + ", retail " + eok(kf.get("retail"))),
         stat("미 10년물", "US 10-year", n(ru["curve"]["ust10y"], 3) + "%",
              bp(ru["change_bp"]["ust10y"]),
              "2년 " + bp(ru["change_bp"]["ust2y"]) + " &middot; 30년 " + bp(ru["change_bp"]["ust30y"]),
@@ -360,8 +360,8 @@ def sec_korea(C):
         _brow("상승 / 하락 종목", "Advancing / declining",
               "지수 방향과 어긋나면 대형주 몇 개가 지수를 움직인 것입니다",
               "If it disagrees with the index, a few heavyweights moved it",
-              n(ksb["advancing"], 0) + " / " + n(ksb["declining"], 0),
-              n(kqb["advancing"], 0) + " / " + n(kqb["declining"], 0), True),
+              n(ksb.get("advancing"), 0) + " / " + n(ksb.get("declining"), 0),
+              n(kqb.get("advancing"), 0) + " / " + n(kqb.get("declining"), 0), True),
         _brow("오른 종목 비율", "Share advancing",
               "열 종목 가운데 몇 개가 올랐는지",
               "How many in ten rose",
@@ -423,16 +423,16 @@ def sec_flows(C):
         _brow("외국인 순매수", "Foreign net buying",
               "방향보다 <strong>전날 대비 변화</strong>가 큽니다 &mdash; 팔던 손이 멎는 것만으로 지수가 움직입니다",
               "The change matters more than the level",
-              eok(kf["foreign"]), eok(qf["foreign"]), True),
+              eok(kf.get("foreign")), eok(qf.get("foreign")), True),
         _brow("기관 순매수", "Institutions", "연기금·투신·보험", "Pensions, funds, insurers",
-              eok(kf["institution"]), eok(qf["institution"])),
+              eok(kf.get("institution")), eok(qf.get("institution"))),
         _brow("개인 순매수", "Retail", "외국인·기관이 판 것을 누가 받았는지",
-              "Who absorbed what the others sold", eok(kf["retail"]), eok(qf["retail"])),
+              "Who absorbed what the others sold", eok(kf.get("retail")), eok(qf.get("retail"))),
         _brow("프로그램 비차익", "Non-arb programme",
               "크게 마이너스면 <strong>바스켓 매도</strong>가 지수를 눌렀다는 신호입니다",
               "Deeply negative means basket selling weighed on the index",
-              eok(KSI["program_trading"]["non_arb"]),
-              eok(C["KQI"]["program_trading"]["non_arb"])),
+              eok((KSI.get("program_trading") or {}).get("non_arb")),
+              eok((C["KQI"].get("program_trading") or {}).get("non_arb"))),
     ]
     flow_tbl = tbl("투자자별 순매수 &mdash; " + DK(C["prev_kr"]) + ", 단위 원",
                    "Net buying by investor type &mdash; " + DE(C["prev_kr"]),
@@ -467,6 +467,17 @@ def sec_flows(C):
               jo(mfl.get("fund_bond")) + "원", eok(mfl.get("fund_bond_delta")),
               _sp("fund_bond")),
     ]
+    # 원천이 통째로 실패하면 **표를 빼고** 그 사실을 판에 적는다 — 빈 「비고」 칸을
+    # 남기거나 잔액을 「—」로 채워 넣는 것이 가장 나쁘다(지침 3절 2번).
+    if not mfl.get("date"):
+        money_tbl = ('<p class="tbl-foot">' + L(
+            "<strong>증시 주변자금(예탁금&middot;신용융자&middot;펀드)은 오늘 확보하지 못했습니다</strong> "
+            "&mdash; 수집기가 원천에서 항목을 찾지 못했습니다. 값을 지어내지 않고 표를 뺐습니다 "
+            "<span class=\"vf none\">NOT FOUND</span>.",
+            "<strong>Deposits, margin loans and fund flows are unavailable today</strong> &mdash; the collector "
+            "could not find the items at the source. The table is omitted rather than filled with invented "
+            "values <span class=\"vf none\">NOT FOUND</span>.") + '</p>')
+        return _flows_body(C, N, flow_tbl, money_tbl)
     money_tbl = tbl("증시 주변자금 &mdash; " + DK(d(mfl["date"])) + " 기준",
                     "Money around the market &mdash; as of " + DE(d(mfl["date"])),
                     mh, mrows, cls="data compact",
@@ -479,6 +490,11 @@ def sec_flows(C):
                             "taken from the unsigned figure Naver publishes " + VF_C + ". "
                             "<strong>Each sparkline is scaled to its own row</strong> &mdash; do not compare heights.")
 
+    return _flows_body(C, N, flow_tbl, money_tbl)
+
+
+def _flows_body(C, N, flow_tbl, money_tbl):
+    """03절 본문 조립 — 증시 주변자금 표가 빠진 날에도 같은 순서로 낸다."""
     body = lede(*N.get("flows_lede", C["fb_flows"][0], C["fb_flows"][1]))
     if CORE[0]:
         body += '\n<div class="duo">\n' + flow_tbl + "\n" + money_tbl + '\n</div>'
@@ -855,7 +871,9 @@ def sec_verify(C):
          "<strong>오늘 09시 개장 전이라 「오늘 시세」는 아직 없습니다.</strong> 국내&middot;해외 지수와 종목, "
          "업종 ETF, 미 국채 곡선, 원자재는 모두 <strong>" + DK(C["prev_us"], True) + " 마감</strong>이고, "
          "<strong>환율만 24시간 시장이라 오늘 아침(" + DK(C["today"]) + ") 값</strong>입니다 " + VF_MD + ". "
-         "예탁금&middot;신용융자는 결제일 기준이라 <strong>" + DK(d(C["mfl"]["date"])) + "</strong>입니다. "
+         + (("예탁금&middot;신용융자는 결제일 기준이라 <strong>" + DK(d(C["mfl"]["date"])) + "</strong>입니다. ")
+          if C["mfl"].get("date") else
+          "<strong>예탁금&middot;신용융자는 오늘 확보하지 못했습니다</strong> &mdash; 표를 뺐습니다. ") +
          "<strong>기준일이 다른 값을 섞어 읽지 마십시오</strong> &mdash; 표마다 날짜를 달아 두었습니다.",
          "<strong>Korea has not opened, so there is no &lsquo;today&rsquo; price.</strong> Indices, single stocks, "
          "sector ETFs, the Treasury curve and commodities are all at the <strong>" + DE(C["prev_us"], True)
@@ -925,10 +943,15 @@ def _adr(b):
 
 
 def _brow(ko, en, nk, ne, a, b, hl=False):
+    # 두 칸이 다 비었으면 **배지도 MARKET DATA 가 아니라 NOT FOUND** 여야 한다.
+    # 값이 없는 줄에 「거래소 자료」 배지를 달면, 못 받은 것을 받은 것처럼 보이게 한다.
+    def _empty(x):
+        return not re.sub(r'<[^>]+>|&mdash;|&nbsp;|[%\s/]', '', x or '')
+    vf = VF_N if (_empty(a) and _empty(b)) else VF_MD
     return ('      <tr' + (' class="hl"' if hl else '') + '><th class="wrap">' + L(ko, en) + '</th>'
             '<td class="n note">' + L(nk, ne) + '</td>'
             '<td class="n">' + a + '</td><td class="n">' + b + '</td>'
-            '<td class="n opt">' + VF_MD + '</td></tr>')
+            '<td class="n opt">' + vf + '</td></tr>')
 
 
 def _mrow(ko, en, nk, ne, lvl, chg, spark, hl=False):
@@ -1122,8 +1145,8 @@ def _kr_snapshot_core(C, kr_idx, breadth):
         _brow("상승 / 하락 종목", "Advancing / declining",
               "지수 방향과 어긋나면 대형주 몇 개가 지수를 움직인 것입니다",
               "If it disagrees with the index, a few heavyweights moved it",
-              n(ksb["advancing"], 0) + " / " + n(ksb["declining"], 0),
-              n(kqb["advancing"], 0) + " / " + n(kqb["declining"], 0)),
+              n(ksb.get("advancing"), 0) + " / " + n(ksb.get("declining"), 0),
+              n(kqb.get("advancing"), 0) + " / " + n(kqb.get("declining"), 0)),
         _brow("오른 종목 비율", "Share advancing", "열 종목 가운데 몇 개가 올랐는지",
               "How many in ten rose",
               "열에 " + n(C["adv_per_ten"], 0), "열에 " + n(C["adv_per_ten_q"], 0)),
