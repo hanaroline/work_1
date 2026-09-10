@@ -3227,13 +3227,22 @@ def probe_with_session(dump_dir="data/market/raw"):
         except Exception as e:                                    # noqa: BLE001
             return None, url, "%s: %s" % (type(e).__name__, e)
 
-    PAGES = [("증시자금동향", "https://finance.naver.com/market/stock/kr/deposit",
-              ["https://finance.naver.com/api/domestic/market/trendDeposit?startIdx=0&pageSize=20"]),
-             ("증시 기사", "https://finance.naver.com/news/mainnews.naver",
-              ["https://finance.naver.com/api/domestic/news/list?startIdx=0&pageSize=20"]),
-             ("시장지표", "https://finance.naver.com/marketindex/",
-              ["https://finance.naver.com/api/securityService/marketindex/exchange",
-               "https://finance.naver.com/api/securityService/marketindex/majors"])]
+    # **오리진을 리다이렉트가 알려 줬다**(2026-09-11 08:53).
+    #   finance.naver.com/news/mainnews.naver → stock.naver.com/news/mainnews
+    #   finance.naver.com/marketindex/        → stock.naver.com/market/marketindex
+    # 앱은 finance 도 m.stock 도 아닌 **stock.naver.com** 에서 돈다. 감싸개가
+    # 상대 경로로 부르므로 API 도 그 오리진이다.
+    PAGES = [("증시자금동향", "https://stock.naver.com/market/stock/kr/deposit",
+              ["https://stock.naver.com/api/domestic/market/trendDeposit?startIdx=0&pageSize=20",
+               "https://stock.naver.com/api/domestic/market/trendDeposit/chart?startDate=20260801&endDate=20260911"]),
+             ("증시 기사", "https://stock.naver.com/news/mainnews",
+              ["https://stock.naver.com/api/domestic/news/list?startIdx=0&pageSize=20",
+               "https://stock.naver.com/api/domestic/news/list?category=mainnews&startIdx=0&pageSize=20"]),
+             ("시장지표", "https://stock.naver.com/market/marketindex",
+              ["https://stock.naver.com/api/securityService/marketindex/exchange",
+               "https://stock.naver.com/api/securityService/marketindex/majors",
+               "https://stock.naver.com/api/securityService/marketindex/metals",
+               "https://stock.naver.com/api/securityService/marketindex/energy"])]
 
     lines = ["세션을 지닌 채 API 부르기 %s KST"
              % datetime.now(KST).strftime("%Y-%m-%d %H:%M:%S"), ""]
