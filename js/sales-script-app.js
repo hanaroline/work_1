@@ -2564,8 +2564,8 @@
       });
       h.push('</select></div>');
 
-      h.push('<div style="font-size:12px;color:var(--muted);margin:0 0 4px">현재 투자자금성향</div>');
-      [['cashPrincipal', '원금보존태도'], ['cashLoss', '손실감내수준'], ['cashHorizon', '투자예정기간']].forEach(function (pair) {
+      h.push('<div style="font-size:12px;color:var(--muted);margin:0 0 4px">현재 투자자금성향 <span style="color:var(--muted2)">(4항목)</span></div>');
+      [['cashPurpose', '투자목적'], ['cashPrincipal', '원금보존태도'], ['cashLoss', '손실감내수준'], ['cashHorizon', '투자예정기간']].forEach(function (pair) {
         h.push('<div style="margin-bottom:6px"><div style="font-size:12px;color:var(--muted);margin-bottom:2px">' + pair[1] + '</div>');
         h.push('<select class="cashSel" data-k="' + pair[0] + '"><option value="">— 선택 —</option>');
         CASH_OPTS[pair[0]].forEach(function (o) {
@@ -2573,7 +2573,7 @@
         });
         h.push('</select></div>');
       });
-      h.push('<div class="hint">투자목적은 이 문안에 들어가지 않아 두지 않았습니다 — 안 쓰는 칸을 두면 무엇이 스크립트에 반영되는지 흐려집니다.</div>');
+      h.push('<div class="hint">네 항목이 한 세트입니다 — 고른 값이 그대로 투자권유 사유 문장에 들어갑니다.</div>');
       h.push('</div>');
     }
 

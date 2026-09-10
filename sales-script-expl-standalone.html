@@ -16877,7 +16877,12 @@ window.FUND_PROSPECTUS_KOFIA = {"updatedAt":"2026-09-07T02:53:56.627Z","source":
     bands: '내용 설명 + 직원 기재사항 작성 모두 <code>0</code> · 일부 누락 <code>-3</code> · 모두 누락 <code>-5</code>',
     script: [
       { t: 'act', x: '적합성보고서 발급 대상 : (투자자성향 및 현재 투자자금성향에 적합한) 고령투자자, 신규투자자\n발급 : TR.32506 임의투자자정보확인 → 고객명 입력 → 우측 하단 "설문시작" → "결과조회" → 하단 "금융상품 적합성조회" → 3096 우측 상단 "현재투자자금성향" 선택 후 입력 → 좌측 상단 종목유형 선택 및 상품선택 → 우측 상단 "조회" → 적합성보고서 선택 인쇄' },
-      { t: 'say', x: '[투자권유 사유] 고객님의 투자자성향은 {{custProfile}} 이며, 현재 투자자금성향 응답 결과 원금보존태도는 {{cashPrincipal}}, 손실감내수준은 {{cashLoss}}, 투자예정기간은 {{cashHorizon}} 으로 "{{issuer}} {{round}}" 회 상품과 적합하여 추천드립니다. 상품 수익률은 {{coupon}}, 조기상환주기는 매 {{earlyCycle}} 이며, 만기는 {{matTerm}} 입니다.' },
+      /* 현재 투자자금성향은 네 항목이 한 세트다 — 투자목적 · 원금보존태도 · 손실감내수준 · 투자예정기간.
+         적합성원칙 항목(c_cashProfile)의 진단서 교부 문안은 네 개를 다 읽는데, 여기 투자권유 사유
+         문안에는 투자목적이 빠져 있었다. 적합성보고서 서식에는 네 항목이 모두 인쇄되므로 맞춰 넣는다.
+         체크포인트는 「투자자성향, 투자권유 상품 및 사유, 핵심 유의사항 설명」 이라 더 말해서 깎일 것은 없고,
+         빠뜨리는 쪽이 위험하다. (원문 문안에 없던 한 조각을 보탠 자리다) */
+      { t: 'say', x: '[투자권유 사유] 고객님의 투자자성향은 {{custProfile}} 이며, 현재 투자자금성향 응답 결과 투자목적은 {{cashPurpose}}, 원금보존태도는 {{cashPrincipal}}, 손실감내수준은 {{cashLoss}}, 투자예정기간은 {{cashHorizon}} 으로 "{{issuer}} {{round}}" 회 상품과 적합하여 추천드립니다. 상품 수익률은 {{coupon}}, 조기상환주기는 매 {{earlyCycle}} 이며, 만기는 {{matTerm}} 입니다.' },
       { t: 'say', x: '[핵심 유의사항] 상품구조 및 기초자산 가격변동에 따라 원금손실, 때로는 원금 전부 손실이 발생할 수 있으며, 운용결과에 따른 이익 또는 손실 책임은 투자자 본인에게 귀속됩니다. 고객의 요청에 의한 중도상환 시 상품의 가격변동 등에 따른 요인으로 원금손실이 발생할 수 있고, 예금자보호법에 따라 예금보험공사가 보호하지 않습니다. 최초 발행가액 대비 초과소득은 배당소득으로 과세되며, 종합소득세 과세대상이 될 수 있습니다. 최대손실 가능성은 {{maxLoss}} 입니다.' },
       { t: 'act', x: '적합성보고서 內 직원 기재사항(① 상품 수익률 ② 조기상환주기 ③ 만기 ④ 최대손실가능성 ⑤ 직원서명) 작성' },
       { t: 'say', x: '내용 확인하시고 서명 부탁드립니다.' },
@@ -22470,8 +22475,8 @@ window.FUND_PROSPECTUS_KOFIA = {"updatedAt":"2026-09-07T02:53:56.627Z","source":
       });
       h.push('</select></div>');
 
-      h.push('<div style="font-size:12px;color:var(--muted);margin:0 0 4px">현재 투자자금성향</div>');
-      [['cashPrincipal', '원금보존태도'], ['cashLoss', '손실감내수준'], ['cashHorizon', '투자예정기간']].forEach(function (pair) {
+      h.push('<div style="font-size:12px;color:var(--muted);margin:0 0 4px">현재 투자자금성향 <span style="color:var(--muted2)">(4항목)</span></div>');
+      [['cashPurpose', '투자목적'], ['cashPrincipal', '원금보존태도'], ['cashLoss', '손실감내수준'], ['cashHorizon', '투자예정기간']].forEach(function (pair) {
         h.push('<div style="margin-bottom:6px"><div style="font-size:12px;color:var(--muted);margin-bottom:2px">' + pair[1] + '</div>');
         h.push('<select class="cashSel" data-k="' + pair[0] + '"><option value="">— 선택 —</option>');
         CASH_OPTS[pair[0]].forEach(function (o) {
@@ -22479,7 +22484,7 @@ window.FUND_PROSPECTUS_KOFIA = {"updatedAt":"2026-09-07T02:53:56.627Z","source":
         });
         h.push('</select></div>');
       });
-      h.push('<div class="hint">투자목적은 이 문안에 들어가지 않아 두지 않았습니다 — 안 쓰는 칸을 두면 무엇이 스크립트에 반영되는지 흐려집니다.</div>');
+      h.push('<div class="hint">네 항목이 한 세트입니다 — 고른 값이 그대로 투자권유 사유 문장에 들어갑니다.</div>');
       h.push('</div>');
     }
 
