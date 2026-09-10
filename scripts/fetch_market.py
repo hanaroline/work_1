@@ -3076,16 +3076,14 @@ _API_CANDIDATES = [
     #   기사     /api/domestic/news/list
     #   시장지표 /api/securityService/marketindex/{exchange,majors,metals,energy}
     # 상대 경로라 호스트를 붙여 본다 — finance 와 m.stock 둘 다 시도한다.
-    ("money_flow", "https://finance.naver.com/api/domestic/market/trendDeposit"),
-    ("money_flow", "https://m.stock.naver.com/api/domestic/market/trendDeposit"),
-    ("money_flow", "https://finance.naver.com/api/domestic/market/trendDeposit/chart"),
-    ("news", "https://finance.naver.com/api/domestic/news/list"),
-    ("news", "https://finance.naver.com/api/domestic/news/list?page=1&pageSize=20"),
-    ("news", "https://m.stock.naver.com/api/domestic/news/list?page=1&pageSize=20"),
-    ("marketindex", "https://finance.naver.com/api/securityService/marketindex/exchange"),
-    ("marketindex", "https://finance.naver.com/api/securityService/marketindex/majors"),
-    ("marketindex", "https://finance.naver.com/api/securityService/marketindex/metals"),
-    ("marketindex", "https://finance.naver.com/api/realtime/marketindex/"),
+    # 묶음이 만드는 질의 인자를 **그대로** 붙인다. 인자 없이 부르면 404 다
+    #   trendDeposit?startIdx=&pageSize=   (모듈 20412 이 그렇게 만든다)
+    ("money_flow", "https://finance.naver.com/api/domestic/market/trendDeposit?startIdx=0&pageSize=20"),
+    ("money_flow", "https://finance.naver.com/api/domestic/market/trendDeposit/chart?startDate=20260801&endDate=20260911"),
+    ("news", "https://finance.naver.com/api/domestic/news/list?startIdx=0&pageSize=20"),
+    ("news", "https://finance.naver.com/api/domestic/news/list?category=mainnews&startIdx=0&pageSize=20"),
+    ("marketindex", "https://finance.naver.com/api/securityService/marketindex/exchange?startIdx=0&pageSize=20"),
+    ("marketindex", "https://finance.naver.com/api/securityService/marketindex/majors?startIdx=0&pageSize=20"),
 
     ("money_flow", "https://m.stock.naver.com/api/stock/market/deposit"),
     ("money_flow", "https://m.stock.naver.com/api/marketindex/deposit"),
@@ -3202,6 +3200,8 @@ def probe_naver_api(dump_dir="data/market/raw"):
                                                             ("빈손" if ok else "실패"))
         lines.append("[%s] %s" % (group, url))
         lines.append("    %s · %d bytes · 걸린 낱말 %s" % (verdict, len(body), hits or "없음"))
+        if not ok or verdict == "빈손":
+            lines.append("    응답 앞머리: %s" % re.sub(r"\s+", " ", body[:160]))
         if ok:
             fn = os.path.join(dump_dir, "probe_%02d_%s.txt" % (i, group))
             with open(fn, "w", encoding="utf-8") as f:
