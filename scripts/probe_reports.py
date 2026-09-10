@@ -8,9 +8,11 @@
 작업 브랜치에서만 돈다. 응답은 data/reports/raw/probe_*.html 로 남겨
 세션이 마크업을 보고 파서를 붙일 수 있게 한다.
 """
+import json
 import os
 import re
 import sys
+from datetime import datetime, timedelta, timezone
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
@@ -125,6 +127,24 @@ CANDIDATES = [
 ]
 
 
+
+def _show(o, pre="", depth=0):
+    """JSON 을 칸 이름과 값 앞머리로 펼친다. 긴 글자 칸이 곧 본문이다."""
+    if depth > 3:
+        return
+    if isinstance(o, dict):
+        for k, v in o.items():
+            if isinstance(v, (dict, list)):
+                _show(v, pre + k + ".", depth + 1)
+            else:
+                s = str(v).replace("\n", " ⏎ ")
+                mark = "  ← 긴 글자" if len(s) > 200 else ""
+                print("      %-30s (%4d) %s%s" % (pre + k, len(s), s[:180], mark))
+    elif isinstance(o, list):
+        print("      %-30s [%d개]" % (pre.rstrip("."), len(o)))
+        if o:
+            _show(o[0], pre + "0.", depth + 1)
+
 def probe(name, url, enc, ref, wants):
     print("\n=== %s\n    %s" % (name, url))
     try:
@@ -140,12 +160,24 @@ def probe(name, url, enc, ref, wants):
     rows = len(re.findall(r"(?is)<tr[^>]*>", body))
     pdfs = len(re.findall(r'(?i)href="[^"]*\.pdf"', body))
     print("    <tr> %d개 · pdf 링크 %d개" % (rows, pdfs))
-    head = _text(body[:1500]).replace("\n", " ")[:220]
-    print("    첫 글자: %s" % head)
+    if body.lstrip().startswith(("{", "[")):
+        try:
+            got = json.loads(body)
+        except ValueError as e:
+            print("    JSON 인 줄 알았는데 못 읽었다: %s" % e)
+        else:
+            print("    JSON 칸:")
+            _show(got)
+    else:
+        head = _text(body[:1500]).replace("\n", " ")[:220]
+        print("    첫 글자: %s" % head)
     try:
         os.makedirs(RAW, exist_ok=True)
         fn = re.sub(r"[^0-9A-Za-z가-힣]+", "_", name)[:40]
+        stamp = datetime.now(timezone(timedelta(hours=9))).strftime("%Y-%m-%d %H:%M KST")
         with open(os.path.join(RAW, "probe_%s.html" % fn), "w", encoding="utf-8") as f:
+            # 표식이 없으면 워크플로의 덤프 정리가 같은 판에서 지워 버린다.
+            f.write("<!-- 덤프: %s -->\n" % stamp)
             f.write(body[:400_000])
     except OSError:
         pass
