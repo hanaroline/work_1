@@ -3086,8 +3086,10 @@ _API_CANDIDATES = [
     ("news", "https://m.stock.naver.com/api/domestic/news/list?category=mainnews&startIdx=0&pageSize=20"),
     ("marketindex", "https://m.stock.naver.com/api/securityService/marketindex/exchange?startIdx=0&pageSize=20"),
     ("marketindex", "https://m.stock.naver.com/api/securityService/marketindex/majors?startIdx=0&pageSize=20"),
-    ("marketindex", "https://m.stock.naver.com/api/securityService/marketindex/exchange"),
-    ("money_flow", "https://finance.naver.com/market/stock/kr/deposit"),
+    ("money_flow", "https://finance.naver.com/api/domestic/market/trendDeposit?startIdx=0&pageSize=20"),
+    ("news", "https://finance.naver.com/api/domestic/news/list?startIdx=0&pageSize=20"),
+    ("marketindex", "https://finance.naver.com/api/securityService/marketindex/exchange"),
+    ("marketindex", "https://finance.naver.com/api/securityService/marketindex/majors"),
 
     ("money_flow", "https://m.stock.naver.com/api/stock/market/deposit"),
     ("money_flow", "https://m.stock.naver.com/api/marketindex/deposit"),
@@ -3206,7 +3208,21 @@ def probe_naver_api(dump_dir="data/market/raw"):
              "(원천이 실패한 날에만 돈다. 수집 결과는 바꾸지 않는다.)", ""]
     for i, (group, url) in enumerate(_API_CANDIDATES):
         try:
-            body = _get(url, referer="https://m.stock.naver.com/")
+            # **Referer 를 그 API 를 부르는 앱 페이지로 맞춘다.** 네이버는 오리진이
+            # 어긋난 요청에 404 를 준다. finance 쪽 경로에 m.stock Referer 를
+            # 달아 보내던 것이 계속 404 로 돌아온 까닭일 수 있다.
+            if "finance.naver.com/api/domestic/market" in url:
+                ref = "https://finance.naver.com/market/stock/kr/deposit"
+            elif "finance.naver.com/api/domestic/news" in url:
+                ref = "https://finance.naver.com/news/mainnews.naver"
+            elif "finance.naver.com/api/securityService" in url:
+                ref = "https://finance.naver.com/marketindex/"
+            elif "finance.naver.com" in url:
+                ref = "https://finance.naver.com/"
+            else:
+                ref = "https://m.stock.naver.com/"
+            body = _get(url, referer=ref,
+                        headers={"Accept": "application/json, text/plain, */*"})
             ok = True
         except Exception as e:                                    # noqa: BLE001
             body, ok = "%s: %s" % (type(e).__name__, e), False
