@@ -22150,6 +22150,34 @@ window.FUND_PROSPECTUS_KOFIA = {"updatedAt":"2026-09-07T02:53:56.627Z","source":
       default: return true;
     }
   }
+  /**
+   * 왜 「미해당」 인지, 무엇을 켜면 살아나는지 그 자리에서 말해 준다.
+   *
+   * 앞 판은 어느 항목이든 「좌측 「고객 구분」 체크에 따라 활성화」 라고만 적었다.
+   * 설명의무 전용 화면에는 그런 칸이 아예 없어서, 창구는 없는 칸을 찾다가
+   * 「스크립트가 안 나온다」 고 여기게 된다. 항목이 무엇을 조건으로 삼는지에 따라
+   * 이 화면에서 실제로 누를 곳을 가리킨다.
+   */
+  function whyNotApplicable(item) {
+    var where2 = EXPL ? '왼쪽 「2 고령 / 비고령」' : '좌측 「2 고령 / 비고령」';
+    switch (item.only) {
+      case 'suitReport':
+        return '<b>지금 상담 조건에서는 평가 대상이 아닙니다</b> — 적합성보고서 발급 대상은 '
+          + '<b>(성향에 적합한) 고령투자자 또는 신규투자자</b>인데, 지금은 비고령이면서 신규투자자도 아닙니다.<br>'
+          + '대상 고객이면 ' + where2 + ' 를 <b>고령투자자</b> 로 바꾸거나, '
+          + (EXPL ? '「2-1 적합성보고서에 들어가는 값」' : '좌측 「4 상담 조건 · 고객 구분」')
+          + ' 의 <b>신규투자자</b> 를 켜십시오. 켜면 이 항목이 스크립트와 읽기 모드에 들어갑니다.';
+      case 'elderly':
+        return '<b>고령투자자 상담에서만 평가하는 항목입니다</b> — ' + where2 + ' 를 고령투자자로 바꾸면 활성화됩니다.';
+      case 'overseas':
+        return '<b>해외 상품 상담에서만 평가하는 항목입니다</b> — 해외 상품을 고르면 활성화됩니다.';
+      case 'watch':
+        return '<b>투자권유 유의상품일 때만 평가하는 항목입니다</b>'
+          + (EXPL ? ' — 고령 + 고난도 파생결합증권이면 자동으로 지정됩니다.' : ' — 좌측 「고객 구분」 에서 지정합니다.');
+      default:
+        return '<b>지금 상담 조건에서는 평가 대상이 아닙니다.</b>';
+    }
+  }
   function ckey(item) { return sheetKey() + '|' + item.id; }
   function checksOf(item) {
     var k = ckey(item), n = item.cps.length;
@@ -22429,9 +22457,11 @@ window.FUND_PROSPECTUS_KOFIA = {"updatedAt":"2026-09-07T02:53:56.627Z","source":
 
       h.push('<label class="chk"><input type="checkbox" class="ctxChk" data-k="newInvestor"'
         + (ctx.newInvestor ? ' checked' : '') + '><span>신규투자자</span></label>');
-      h.push('<div class="hint" style="margin:2px 0 10px">적합성보고서 발급 대상은 <b>(적합한) 고령투자자 또는 신규투자자</b>입니다. '
-        + '현재 판정 <b style="color:var(--' + (suitApp ? 'ok' : 'muted2') + ')">' + (suitApp ? '대상' : '미대상') + '</b>'
-        + (suitApp ? '' : ' — 비고령이면서 신규투자자가 아니라 두 항목이 「미해당」 으로 표시됩니다.') + '</div>');
+      h.push('<div class="hint" style="margin:2px 0 10px' + (suitApp ? '' : ';color:var(--warn)') + '">'
+        + '적합성보고서 발급 대상은 <b>(적합한) 고령투자자 또는 신규투자자</b>입니다. '
+        + '현재 판정 <b style="color:var(--' + (suitApp ? 'ok' : 'warn') + ')">' + (suitApp ? '대상' : '미대상') + '</b>'
+        + (suitApp ? '' : ' — 비고령이면서 신규투자자가 아니어서 적합성보고서 <b>2항목이 스크립트·읽기 모드에서 빠집니다</b>. '
+            + '대상 고객이면 위 「고령 / 비고령」 을 바꾸거나 <b>신규투자자</b> 를 켜십시오.') + '</div>');
 
       h.push('<div style="margin-bottom:8px"><div style="font-size:12px;color:var(--muted);margin-bottom:2px">투자자성향</div>');
       h.push('<select id="selProfile"><option value="">— 선택 —</option>');
@@ -22648,8 +22678,13 @@ window.FUND_PROSPECTUS_KOFIA = {"updatedAt":"2026-09-07T02:53:56.627Z","source":
     var shq = sheet();
     var okG = profileGrades(ST.ctx.custProfile);
     /* 부적합 시나리오의 「선택 상품」 은 고객이 지목한 부적합 상품이다 —
-       성향보다 위험한 등급만 걸러 볼 수 있게 한다 (기본 켜짐). */
-    var unfitOnly = shq.scenario === 'unfit' && !!okG && ST.ctx.prodUnfitOnly !== false;
+       성향보다 위험한 등급만 걸러 볼 수 있게 한다 (기본 켜짐).
+       단 설명의무 전용 화면에서는 걸러내지 않는다. 적합성 판정과 부적합확인서는
+       적합성원칙 단계에서 이미 끝났고, 여기서는 고객이 고른 그 상품을 설명할 뿐이다.
+       성향값은 적합성보고서 문안에 쓰려고 받아 둔 것이지 목록을 거르라고 받은 것이 아니다 —
+       거르면 「성장형은 모든 등급을 가입할 수 있어 부적합한 상품이 없습니다」 가 되어
+       목록이 통째로 비어 버린다. */
+    var unfitOnly = !EXPL && shq.scenario === 'unfit' && !!okG && ST.ctx.prodUnfitOnly !== false;
     var all0 = catalog().filter(function (p) {
       if (!q) return true;
       return [p.name, p.id, p.issuer, p.mgr, p.under, p.kind, p.credit].join(' ').toLowerCase().indexOf(q) >= 0;
@@ -23048,6 +23083,17 @@ window.FUND_PROSPECTUS_KOFIA = {"updatedAt":"2026-09-07T02:53:56.627Z","source":
             : ''))
       + '</div>');
 
+    /* 조건 때문에 빠지는 항목 — 스크립트에는 「미해당」 으로 남지만 읽기 모드와
+       셀프채점에서는 빠진다. 그것을 모르면 「스크립트가 왜 없지」 가 된다.
+       (적합성보고서가 대표적이다 — 비고령·비신규 고객이면 대상이 아니다) */
+    var na = itemsOf().filter(function (x) { return !applicable(x); });
+    if (na.length) {
+      h.push('<div class="banner"><b>지금 상담 조건에서 빠지는 항목 ' + na.length + '건</b> — '
+        + na.map(function (x) { return esc(x.title); }).join(' · ')
+        + '<br><span style="color:var(--muted2)">아래 카드에 「미해당」 으로 표시되고 <b>읽기 모드·셀프채점에서는 빠집니다</b>. '
+        + '카드를 열면 무엇을 켜야 살아나는지 적혀 있습니다.</span></div>');
+    }
+
     /* 파트별 준비 상태 — 「상품 자료에서 채울 값」 과 「상담 중 파악할 값」 을 갈라 센다.
        상품설명의무는 상품만 고르면 채워지는 부분이라, 상품 쪽이 0건이면 적합성원칙이
        끝나지 않았어도 바로 읽거나 인쇄할 수 있다. 그것을 한 줄로 알려 준다. */
@@ -23116,7 +23162,9 @@ window.FUND_PROSPECTUS_KOFIA = {"updatedAt":"2026-09-07T02:53:56.627Z","source":
     if (selFit !== null) {
       var okList = (profileGrades(ST.ctx.custProfile) || []).join('·');
       var gN = numOf(valueOf('riskGrade'));
-      if (sh.scenario === 'unfit' && selFit === true) {
+      if (sh.scenario === 'unfit' && selFit === true && !EXPL) {
+        /* 설명의무 화면에서는 이 경고를 내지 않는다 — 부적합확인서까지 마친 뒤
+           고객이 지목한 상품을 설명하는 자리라, 등급이 성향에 맞는지는 따질 일이 아니다. */
         h.push('<div class="banner"><b>시나리오가 맞지 않습니다</b> — 지금 고른 상품은 '
           + gN + '등급(' + esc(gradeLabel(gN)) + ')으로 <b>' + esc(ST.ctx.custProfile)
           + '</b> 성향에 <b>적합한</b> 상품입니다(가입 가능 ' + esc(okList) + '등급). '
@@ -23201,9 +23249,7 @@ window.FUND_PROSPECTUS_KOFIA = {"updatedAt":"2026-09-07T02:53:56.627Z","source":
     h.push('<span class="caret">' + (open ? '▲' : '▼') + '</span>');
     h.push('</div>');
     h.push('<div class="card-b"' + (open ? '' : ' hidden') + '>');
-    if (!app) {
-      h.push('<div class="note">현재 상담 조건에서는 평가 대상이 아닙니다. (좌측 「고객 구분」 체크에 따라 활성화)</div>');
-    }
+    if (!app) h.push('<div class="warnbox">' + whyNotApplicable(item) + '</div>');
     if (item.crit) h.push('<div class="warnbox">★ ' + esc(item.crit) + '</div>');
     (item.script || []).forEach(function (s) {
       if (!lineOn(s)) return;
