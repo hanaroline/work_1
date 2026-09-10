@@ -872,27 +872,78 @@ def full_title(html, short):
     return min(whole or cands, key=len)
 
 
+# 갈래 이름 → 모바일 API 길 이름. CATEGORIES 에서 그대로 끌어온다.
+API_PATH = {name: path for name, _, _, _, path in CATEGORIES}
+NAVER_DETAIL_API = "https://m.stock.naver.com/api/research/%s/%s"
+
+
+def fetch_detail_api(rep):
+    """상세를 모바일 JSON 으로 받는다.
+
+    9/11 새벽에 네이버가 리서치 상세 페이지를 새 앱으로 갈아엎었다. 옛
+    `class="view_cnt"` 표식이 사라졌고 본문은 HTML 에도 RSC 스트림에도 없다 —
+    화면이 뜬 뒤 따로 받아 오기 때문이다. 목록을 이미 JSON 으로 받고 있으므로
+    상세도 같은 길로 옮긴다(러너 탐색으로 확인).
+
+    긁어 오던 때보다 오히려 낫다. 본문뿐 아니라 투자의견·목표주가·직전
+    목표주가·원문 PDF 가 **칸으로** 온다 — 글자에서 캐낼 때처럼 「목표가
+    520,000」을 놓칠 일이 없다.
+    """
+    path = API_PATH.get(rep.get("category"))
+    if not path:
+        raise ValueError("갈래 %r 의 API 길 이름을 모른다" % rep.get("category"))
+    raw = _get_retry(NAVER_DETAIL_API % (path, rep["nid"]), tries=3, timeout=25,
+                     encoding="utf-8", referer=rep.get("mobile_url")
+                     or "https://m.stock.naver.com/")
+    got = (json.loads(raw) or {}).get("researchContent") or {}
+    body = _text(got.get("content") or "").strip()
+    return body, got
+
+
+def _int_or_none(v):
+    try:
+        return int(str(v).replace(",", "").strip())
+    except (TypeError, ValueError):
+        return None
+
+
 def fetch_detail(rep, dump_dir=None, alien=()):
     """리포트 한 건의 본문을 받아 요약·목표주가·투자의견을 채운다."""
-    html = _get(rep["url"], encoding="cp949", referer=BASE + "company_list.naver")
-    if rep["title"].rstrip().endswith(".."):
-        got = full_title(html, rep["title"])
-        if got != rep["title"]:
-            rep["title_full"] = True
-        elif dump_dir:
-            # 되찾지 못했으면 그 쪽을 남긴다 — 마크업을 보고 고칠 수 있게.
-            _dump(dump_dir, "title_%s.html" % rep["nid"], html)
-        rep["title"] = got
-    body, how = parse_detail(html)
+    body, got = fetch_detail_api(rep)
+    how = "api"
+
+    # 목록에서 잘려 온 제목(「…기대도 여전..」)을 상세의 온전한 제목으로 갈음한다.
+    full = (got.get("title") or "").strip()
+    if rep["title"].rstrip().endswith("..") and len(full) > len(rep["title"]) - 2:
+        rep["title"], rep["title_full"] = full, True
+
     if len(body) < 80:
         if dump_dir:
-            _dump(dump_dir, "detail_%s.html" % rep["nid"], html)
+            _dump(dump_dir, "detail_%s.json" % rep["nid"],
+                  json.dumps(got, ensure_ascii=False, indent=1))
         rep["extracted"] = how
         return rep
-    if not rep.get("pdf"):
-        m = _PDF.search(html)
-        if m:
-            rep["pdf"] = _abs(m.group(1))
+
+    # 원문 PDF 가 칸으로 온다. 긁어 올 때는 본문 화면만 있는 리포트에서
+    # 이것을 얻지 못해 「원문 PDF 없음」이 수십 건씩 났다.
+    if not rep.get("pdf") and got.get("attachUrl"):
+        rep["pdf"] = got["attachUrl"]
+
+    # 투자의견·목표주가도 칸으로 온다. 글자에서 캐낸 것보다 이쪽이 옳다.
+    if got.get("opinion"):
+        rep["opinion"] = str(got["opinion"]).strip()
+    goal = _int_or_none(got.get("goalPrice"))
+    prev = _int_or_none(got.get("prevGoalPrice"))
+    if goal:
+        rep["target_price"] = goal
+        # 어디서 온 값인지 남긴다. 칸에서 온 수는 본문 글자에 없을 수 있어
+        # 「원문에 적힌 그대로인가」 검사를 그대로 댈 수 없다.
+        rep["target_from"] = "api"
+    if goal and prev:
+        # 견주기일 뿐 셈이 아니다. 두 수를 나란히 남겨 눈으로 확인할 수 있게 한다.
+        rep["prev_target_price"] = prev
+        rep["target_move"] = ("상향" if goal > prev
+                              else "하향" if goal < prev else "유지")
     rep["extracted"] = how
     rep["body_chars"] = len(body)
     lines = summarize(body, rep["title"], alien=alien)
@@ -905,15 +956,20 @@ def fetch_detail(rep, dump_dir=None, alien=()):
     if facts:
         rep["facts"] = facts
     rep["excerpt"] = body[:1200]
-    tp = target_price(body, rep["title"])
-    if tp:
-        rep["target_price"] = tp
-    op = opinion(body, rep["title"])
-    if op:
-        rep["opinion"] = op
-    move = re.search(r"목표주가[^.\n]{0,40}?(상향|하향|유지)", body)
-    if move:
-        rep["target_move"] = move.group(1)
+    # 아래 셋은 **칸으로 오지 않았을 때만** 글자에서 캐낸다. 칸에 있는 값이
+    # 언제나 옳다 — 글자에서 캐는 것은 적는 방식이 증권사마다 달라 놓치기 쉽다.
+    if not rep.get("target_price"):
+        tp = target_price(body, rep["title"])
+        if tp:
+            rep["target_price"] = tp
+    if not rep.get("opinion"):
+        op = opinion(body, rep["title"])
+        if op:
+            rep["opinion"] = op
+    if not rep.get("target_move"):
+        move = re.search(r"목표주가[^.\n]{0,40}?(상향|하향|유지)", body)
+        if move:
+            rep["target_move"] = move.group(1)
     return rep
 
 
