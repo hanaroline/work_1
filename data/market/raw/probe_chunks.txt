@@ -1,4 +1,4 @@
-Next.js 묶음에서 API 주소 찾기 2026-09-11 08:30:02 KST
+Next.js 묶음에서 API 주소 찾기 2026-09-11 08:33:06 KST
 
 ### 증시자금동향
     https://finance.naver.com/sise/sise_deposit.naver
@@ -13,6 +13,11 @@ Next.js 묶음에서 API 주소 찾기 2026-09-11 08:30:02 KST
       /api/community/profile/users/status
       /api/domestic/market/trendDeposit
       /api/domestic/market/trendDeposit/chart
+    -- 묶음에 나오는 네이버 호스트 --
+      https://help.pay.naver.com/faq/content
+    -- 관심 경로가 조립되는 자리 --
+      …acity 0.4s ease":"none"}})})}_.displayName="Lottie";let p=_},20412:(e,t,n)=>{"use strict";n.d(t,{H:()=>a,V:()=>r});var i=n(65164);async function a(e){let{startIdx:t,pageSize:n}=e,a=new URLSearchParams({startIdx:String(t),pageSize:String(n)}),r="".concat("/api/domestic/market/trendDeposit","?").concat(a.toString());return(0,i.f)(r)}async function r(e){let{startDate:t,endDate:n}=…
+      …tartIdx:String(t),pageSize:String(n)}),r="".concat("/api/domestic/market/trendDeposit","?").concat(a.toString());return(0,i.f)(r)}async function r(e){let{startDate:t,endDate:n}=e,a=new URLSearchParams({startDate:String(t),endDate:String(n)}),r="".concat("/api/domestic/market/trendDeposit/chart","?").concat(a.toString());return(0,i.f)(r)}},34243:(e,t,n)=>{Promise.resolve().then(…
 
 ### 증시 기사
     https://finance.naver.com/news/mainnews.naver
@@ -26,6 +31,12 @@ Next.js 묶음에서 API 주소 찾기 2026-09-11 08:30:02 KST
       /api/community/profile/users/nickname/validate
       /api/community/profile/users/status
       /api/domestic/news/list
+    -- 묶음에 나오는 네이버 호스트 --
+      https://help.pay.naver.com/faq/content
+      https://n.news.naver.com/article/
+    -- 관심 경로가 조립되는 자리 --
+      …)=>{"use strict";r.d(t,{y:()=>a});var n=r(595),o=r(65164);async function a(e,t,r,a){let i=arguments.length>4&&void 0!==arguments[4]&&arguments[4],s=new URLSearchParams({category:e,page:String(t),pageSize:String(r)});a&&s.append("date",a);let l=i?(0,n.x)("/api/domestic/news/list"):(0,n.A)("/api/domestic/news/list");return(0,o.f)("".concat(l,"?").concat(s.toString()))}},56329:e=>…
+      …ar n=r(595),o=r(65164);async function a(e,t,r,a){let i=arguments.length>4&&void 0!==arguments[4]&&arguments[4],s=new URLSearchParams({category:e,page:String(t),pageSize:String(r)});a&&s.append("date",a);let l=i?(0,n.x)("/api/domestic/news/list"):(0,n.A)("/api/domestic/news/list");return(0,o.f)("".concat(l,"?").concat(s.toString()))}},56329:e=>{"use strict";e.exports=Math.min},5…
 
 ### 시장지표(금리·환율)
     https://finance.naver.com/marketindex/
@@ -57,3 +68,49 @@ Next.js 묶음에서 API 주소 찾기 2026-09-11 08:30:02 KST
       /api/securityService/marketindex/majors
       /api/securityService/marketindex/metals
       /api/stockDomestic/gold/sise/
+    -- 묶음에 나오는 네이버 호스트 --
+      https://ac.stock.naver.com
+      https://alpha-personal-securities.io.naver.com
+      https://alpha.pay.naver.com
+      https://api.stock.naver.com
+      https://beta-con-api.io.naver.com
+      https://beta.pay.naver.com
+      https://community-securities.io.naver.com
+      https://dev-ac.stock.naver.com
+      https://dev-api.stock.naver.com
+      https://dev-community-securities.io.naver.com
+      https://dev-con-api.io.naver.com
+      https://dev-general-api.io.naver.com
+      https://dev-m.stock.naver.com
+      https://dev-personal-securities.io.naver.com
+      https://dev-polling.finance.naver.com
+      https://dev-rpc-domestic.io.naver.com
+      https://dev-rpc-foreign.io.naver.com
+      https://dev-sec-internal-gw.io.naver.com
+      https://dev-securities-ai.io.naver.com
+      https://dev-stock.naver.com
+      https://dev.pay.naver.com
+      https://help.pay.naver.com/faq/content
+      https://internal-service-dev.pay.naver.com/myasset-api
+      https://internal-service-qa.pay.naver.com/myasset-api
+      https://internal-service-stage.pay.naver.com/myasset-api
+      https://internal-service.pay.naver.com/myasset-api
+      https://m.stock.naver.com
+      https://mini-api.stock.naver.com
+      https://mini-m.stock.naver.com
+      https://mini-polling.finance.naver.com
+      https://mini-rpc-be.io.naver.com
+      https://mini-stock.naver.com
+      https://pay.naver.com
+      https://personal-securities.io.naver.com
+      https://polling.finance.naver.com
+      https://prod-con-api.io.naver.com
+      https://rpc-be-v2.io.naver.com
+      https://sec-internal-gw.io.naver.com
+      https://securities-ai.io.naver.com
+      https://securities-general-api.io.naver.com
+    -- 관심 경로가 조립되는 자리 --
+      …l(g);let{nlog:h}=c.variants[p];h&&(0,r.No)({area:h})},[e,u,_,s,l])}}},8929:(e,t,a)=>{"use strict";a.d(t,{G0:()=>h,$f:()=>g,n:()=>f,Yi:()=>v,Wr:()=>S,g2:()=>I,BJ:()=>y,IV:()=>C});var n=a(84825),r=a(25740),i=a(81190),o=a(92763),l=a(74031),s=a(65164);let c="/api/securityService/marketindex/majors";async function d(){let e=arguments.length>0&&void 0!==arguments[0]?arguments[0]:"exc…
+      …=>e.id===d);e&&(_=(0,n.jsx)(s.A,{tabId:e.id,className:e.className,children:e.content},e.id))}return(0,n.jsx)("div",{className:u("tab-panels",t),children:_})}},36490:(e,t,a)=>{"use strict";a.d(t,{DU:()=>i,Zo:()=>s,iJ:()=>o,r6:()=>l});var n=a(65164);let r="/api/securityService/marketindex/metals";async function i(){return(0,n.f)(r)}async function o(e){return(0,n.f)("".concat(r,"/…
+      …tiveTabId:e=>{void 0===_&&A(e),null==p||p(e)},tabs:C,refreshSignal:T,triggerRefresh:()=>x(e=>e+1),enableRefreshOnSameTabClick:g,disableDragClickGuard:f},children:d})}},48342:(e,t,a)=>{"use strict";a.d(t,{L0:()=>l,Rj:()=>i,uz:()=>o});var n=a(65164);let r="/api/securityService/marketindex/energy";async function i(){return(0,n.f)(r)}async function o(e){return(0,n.f)("".concat(r,"/…
+      …-image__mfu2V","rolling-slide-up":"Photo_rolling-slide-up__CxvZo","rolling-fade-out":"Photo_rolling-fade-out__ojB7w","rolling-fade-in":"Photo_rolling-fade-in__8eBEP"}},83359:(e,t,a)=>{"use strict";a.d(t,{Bu:()=>l,lz:()=>i,mi:()=>o});var n=a(65164);let r="/api/securityService/marketindex/exchange";async function i(e){let t="".concat(r,"/").concat(e);return(0,n.f)(t)}async functi…
