@@ -94,6 +94,10 @@ def check_data():
             no_source.append(e["id"])
         if not e.get("source_en"):
             bad("%s: source_en 이 없다 — 영문 모드에 한글이 남는다" % e["id"])
+        # 한국어 설명만 있고 영문 짝이 없으면 영문 모드에 그 문장이 한글로 남는다.
+        # 실적 일정 166건에서 실제로 그렇게 샜다(2026-09-10).
+        if e.get("detail_ko") and not e.get("detail_en"):
+            bad("%s: detail_en 이 없다 — 영문 모드에 한글 설명이 남는다" % e["id"])
 
         # 시각이 있으면 KST 환산이 있어야 하고, 그 반대도 성립해야 한다.
         if e.get("time_local") and e.get("tz") and not e.get("time_kst"):
@@ -157,6 +161,23 @@ def check_data():
                 % (e["id"], e["country"], e["date"]))
         if date.fromisoformat(e["date"]).weekday() >= 5:
             bad("%s: 만기·리밸런싱이 주말(%s)에 있다" % (e["id"], e["date"]))
+
+    # 같은 중앙은행의 정책 회의가 겹치면 페이지의 엉뚱한 대목을 회의로 읽은 것이다.
+    # 2026-09-10 러너 실행에서 FOMC 2027년 1월에 겹치는 회의가 둘 들어왔던 자리다.
+    banks = {}
+    for e in evs:
+        if e["category"] != "policy":
+            continue
+        key = next((t for t in e.get("tags", [])
+                    if t in ("fed", "boe", "boj", "bok", "ecb", "pboc")), None)
+        if key:
+            banks.setdefault(key, []).append(e)
+    for key, rows in banks.items():
+        rows.sort(key=lambda x: x["date"])
+        for a, b2 in zip(rows, rows[1:]):
+            if b2["date"] <= (a.get("end_date") or a["date"]):
+                bad("%s 정책 회의가 겹친다 — %s~%s 와 %s"
+                    % (key, a["date"], a.get("end_date") or a["date"], b2["date"]))
 
     # undated 는 날짜가 없어야 한다 — 여기에 날짜가 들어오면 캘린더에 들어가야 할 것이다.
     for u in d.get("undated", []):
