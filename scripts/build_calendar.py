@@ -47,6 +47,7 @@ KST = ZoneInfo("Asia/Seoul")
 # 만든다 — 1년 뒤 CPI 발표일을 규칙으로 찍어 두는 것은 정보가 아니라 소음이다.
 RULE_DAYS_AHEAD = 180
 RULE_DAYS_AHEAD_WEEKLY = 60          # 주간 지표(실업수당청구)는 더 짧게
+RULE_DAYS_AHEAD_SPARSE = 400         # 분기·연 1회로 드물게 오는 것은 더 멀리까지
 
 CATEGORIES = ("policy", "indicator", "earnings", "conference", "supply", "holiday", "other")
 
@@ -298,6 +299,77 @@ def add_fed_derived(cb, fomc_meetings, events, start, end):
             ))
 
 
+def weekday_before(day, wd):
+    """day 직전의 요일 wd (그날은 세지 않는다). wd 는 월=0 … 일=6."""
+    return day - timedelta(days=((day.weekday() - wd) % 7) or 7)
+
+
+def weekday_after(day, wd):
+    return day + timedelta(days=((wd - day.weekday()) % 7) or 7)
+
+
+def add_fed_blackout(cb, fomc_meetings, events, start, end):
+    """FOMC 발언 자제(블랙아웃) 기간.
+
+    연준이 정한 규칙 그대로다 — 회의 시작 **두 번째 앞 토요일**부터 회의 **다음 목요일**까지.
+    이 구간에는 위원들이 통화정책을 말하지 않으므로, 발언이 없는 것과 뜻이 없는 것을 가려
+    읽는 데 쓴다. FOMC 일정에서 계산하므로 따로 받아 올 것이 없다.
+    """
+    if not cb or not fomc_meetings:
+        return
+    fed = next((b for b in cb.get("banks", []) if b["key"] == "fed"), None)
+    if not fed:
+        return
+    for mt in fomc_meetings:
+        s_day, e_day = d(mt["start"]), d(mt["end"])
+        bo_start = weekday_before(s_day, 5) - timedelta(days=7)     # 두 번째 앞 토요일
+        bo_end = weekday_after(e_day, 3)                            # 다음 목요일
+        # 시작일이 조회 구간 안에 있어야 담는다. 구간보다 앞서 시작한 것을 담으면 파일의
+        # 조회 구간과 어긋나 점검에서 걸린다(실제로 7월 회의 블랙아웃이 그랬다).
+        if not (start <= bo_start <= end):
+            continue
+        events.append(ev(
+            id="policy-fed-blackout-%s" % mt["end"],
+            date=bo_start.isoformat(), end_date=bo_end.isoformat(),
+            country="us", category="policy", importance=1,
+            title_ko="FOMC 발언 자제 기간 (블랙아웃)",
+            title_en="FOMC blackout period",
+            org="美 연방준비제도", org_en="Federal Reserve",
+            detail_ko="%s 회의를 앞둔 발언 자제 구간 — 회의 시작 두 번째 앞 토요일부터 회의 다음 목요일까지"
+                      % mt["end"][5:].replace("-", "/"),
+            detail_en="Ahead of the %s meeting — from the second Saturday before it starts "
+                      "to the Thursday after it ends" % mt["end"],
+            url="https://www.federalreserve.gov/monetarypolicy/files/fomc-blackout-period-calendar.pdf",
+            source="Federal Reserve — FOMC blackout period calendar",
+            source_en="Federal Reserve — FOMC blackout period calendar",
+            confirmed="rule", tags=["fed", "blackout"],
+        ))
+
+
+def add_dated_events(me, events, start, end):
+    """선거·회계연도처럼 날짜가 못박힌 단발 일정. 규칙으로 만들 것이 아니라 그냥 적어 둔다."""
+    if not me:
+        return
+    for x in me.get("dated_events", []):
+        day = d(x["date"])
+        if not (start <= day <= end):
+            continue
+        events.append(ev(
+            id=x["id"], date=x["date"], end_date=x.get("end_date"),
+            country=x.get("country", "global"), category=x.get("category", "other"),
+            importance=x.get("importance", 2),
+            title_ko=x["name_ko"], title_en=x.get("name_en"),
+            org=x.get("source"), org_en=x.get("source_en"),
+            detail_ko=" · ".join(y for y in (x.get("detail_ko"), x.get("why_ko")) if y) or None,
+            detail_en=" · ".join(y for y in (x.get("detail_en"), x.get("why_en")) if y) or None,
+            time_local=x.get("time_local"), tz=x.get("tz"),
+            time_kst=to_kst(day, x.get("time_local"), x.get("tz")),
+            url=x.get("url"), source=x.get("source"), source_en=x.get("source_en"),
+            confirmed=x.get("confirmed", "websearch"),
+            tags=["dated", x["id"]],
+        ))
+
+
 def add_indicators(ind, events, start, end, hidx):
     if not ind:
         return
@@ -357,7 +429,7 @@ def add_conferences(cf, events, start, end):
         return
     for c in cf.get("dated", []):
         day = d(c["start"])
-        if not (start <= day <= end) and not (d(c["end"]) >= start and day <= end):
+        if not (start <= day <= end):
             continue
         events.append(ev(
             id=c["id"], date=c["start"], end_date=c["end"],
@@ -381,7 +453,11 @@ def add_market_rules(me, events, start, end, hidx):
         months = r.get("months", "all")
         tz, t = r.get("tz"), r.get("time_local")
         shift = "next" if r["id"] == "pboc-lpr" else "prev"
-        rule_end = min(end, date.today() + timedelta(days=RULE_DAYS_AHEAD))
+        # 매달 오는 것(만기·LPR)은 180일치면 넉넉하지만, 분기·연 1회 항목은 그 창 안에 한
+        # 번도 안 들어오는 일이 생긴다 — 3월에만 있는 주주총회 시한이 실제로 0건이었다.
+        # 드물게 오는 것일수록 멀리까지 보여 주는 편이 쓸모 있다.
+        horizon = RULE_DAYS_AHEAD if months == "all" else RULE_DAYS_AHEAD_SPARSE
+        rule_end = min(end, date.today() + timedelta(days=horizon))
         for day in expand_rule(r["rule"], start, rule_end, market, hidx, months, shift=shift):
             events.append(ev(
                 id="%s-%s" % (r["id"], day.isoformat()),
@@ -566,6 +642,8 @@ def main(argv=None):
 
     fomc = add_central_banks(cb, events, start, end) or []
     add_fed_derived(cb, fomc, events, start, end)
+    add_fed_blackout(cb, fomc, events, start, end)
+    add_dated_events(me, events, start, end)
     add_indicators(ind, events, start, end, hidx)
     add_conferences(cf, events, start, end)
     add_market_rules(me, events, start, end, hidx)
