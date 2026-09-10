@@ -1274,6 +1274,28 @@
   function setManual(id, v) {
     var m = man();
     if (v === '' || v == null) delete m[id]; else m[id] = v;
+    /**
+     * 직접등록 상품의 명칭은 「직접 입력값」 이 아니라 그 상품의 이름 그 자체다.
+     *
+     * 명칭은 「필수입력」·「투자설명서 등록」 탭에서도 고칠 수 있는데, 그것을 직접
+     * 입력값으로만 담으면 왼쪽 상품 목록은 옛 이름인 채로 남는다. 창구는 스크립트에는
+     * 새 이름이, 목록에는 옛 이름이 보이는 것을 보고 무엇이 진짜인지 알 수 없다.
+     * 직접등록·안내장 상품은 원천이 따로 없으므로 상품 이름을 함께 고쳐 하나로 맞춘다.
+     *
+     * 자동조회 상품은 고치지 않는다 — 카탈로그 이름을 덮으면 다음 갱신과 어긋난다.
+     * (그쪽은 직접 입력값으로 남아 그 상담에서만 적용된다)
+     */
+    return id === 'name' && v ? renameCustomProduct(ST.productId, String(v).trim()) : false;
+  }
+  /** 직접등록·안내장 상품의 이름을 바꾼다 (자동조회 상품이면 아무것도 하지 않는다) */
+  function renameCustomProduct(pid, nm) {
+    if (!pid || !nm) return false;
+    var cat = sheet().cat, hit = false;
+    (CUSTOM[cat] || []).forEach(function (x) {
+      if (x.id === pid && x.name !== nm) { x.name = nm; hit = true; }
+    });
+    if (hit) saveCustom();
+    return hit;
   }
 
   function rawValue(id) {
@@ -2989,13 +3011,18 @@
     h.push('<div class="scrollnav" id="prodNav" hidden><button type="button" data-d="-1" title="왼쪽으로">◀</button>'
       + '<span class="sp">이름이 길면 옆으로 밀어 보십시오 · Shift+휠 · 마우스를 올리면 전체 이름</span>'
       + '<button type="button" data-d="1" title="오른쪽으로">▶</button></div>');
-    h.push('<div style="display:flex;gap:6px;margin-top:6px"><button class="tbtn" id="btnNewProduct" style="flex:1">새 상품 등록</button>'
-      + '<button class="tbtn" id="btnDelProduct" style="flex:1"' + (p && p.custom ? '' : ' disabled') + '>등록상품 삭제</button></div>');
+    var mine = !!(p && p.custom);
+    h.push('<div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:6px">'
+      + '<button class="tbtn" id="btnNewProduct" style="flex:1 1 100%">새 상품 등록</button>'
+      + '<button class="tbtn" id="btnRenameProduct" style="flex:1 1 45%"' + (mine ? '' : ' disabled') + '>이름 수정</button>'
+      + '<button class="tbtn" id="btnDelProduct" style="flex:1 1 45%"' + (mine ? '' : ' disabled') + '>등록상품 삭제</button></div>');
     h.push('<div class="hint">\u25CF 투자설명서 등록됨 · \u25CB 미등록</div>');
-    /* 삭제 규칙을 눈에 보이게 적어 둔다 — 버튼이 왜 꺼져 있는지 알 수 있어야 한다 */
-    h.push('<div class="hint">「등록상품 삭제」 는 <b>직접등록\u00b7안내장</b> 상품만 지울 수 있습니다. '
-      + '자동조회 상품은 지워지지 않습니다 (다음 갱신에 다시 생기므로).'
-      + (p ? (p.custom ? ' 지금 고른 상품은 <b>직접등록</b>이라 지울 수 있습니다.' : ' 지금 고른 상품은 <b>자동조회</b>라 버튼이 꺼져 있습니다.') : '')
+    /* 두 버튼이 왜 꺼져 있는지 눈에 보이게 적어 둔다 */
+    h.push('<div class="hint">「이름 수정」\u00b7「등록상품 삭제」 는 <b>직접등록\u00b7안내장</b> 상품만 됩니다. '
+      + '자동조회 상품은 고치거나 지워도 다음 갱신에 원래대로 돌아옵니다.'
+      + (p ? (p.custom
+        ? ' 지금 고른 상품은 <b>직접등록</b>이라 이름을 고치거나 지울 수 있습니다.'
+        : ' 지금 고른 상품은 <b>자동조회</b>라 두 버튼이 꺼져 있습니다.') : '')
       + '</div>');
     if (sh.cat === 'els') {
       var live = D.elsSource === 'live';
@@ -3152,6 +3179,37 @@
     saveCustom();
     ST.productId = id;
     ST.tab = 'reg';
+    save(); renderAll();
+  }
+
+  /**
+   * 직접등록·안내장 상품의 명칭을 고친다.
+   *
+   * 등록할 때 「38050」 처럼 회차만 적어 두고 나중에 제대로 된 이름을 붙이고 싶은 일이
+   * 잦다. 그런데 이름은 세 군데에 있을 수 있어(상품 자체 · 직접 입력값 · 등록한
+   * 설명서), 한 군데만 고치면 목록은 새 이름인데 스크립트는 옛 이름을 읽는다.
+   * 값을 읽는 순서가 「직접 입력값 → 설명서 → 상품」 이라 앞의 둘이 상품 이름을 가린다.
+   * 그래서 셋을 함께 맞춘다 — 화면 어디서나 같은 이름이 보이게.
+   *
+   * 자동조회 상품은 고치지 않는다. 다음 갱신에 원래 이름으로 돌아와 창구가
+   * 「고쳤는데 왜 돌아왔지」 를 겪게 된다 (지울 수 없는 것과 같은 이유다).
+   */
+  function renameProduct() {
+    var p = product();
+    if (!p || !p.custom) return;
+    var nm = prompt('상품 명칭을 고칩니다.\n(직접등록·안내장 상품만 고칠 수 있습니다)', p.name || '');
+    if (nm == null) return;
+    nm = nm.trim();
+    if (!nm || nm === p.name) return;
+    var cat = sheet().cat;
+    renameCustomProduct(p.id, nm);
+    /* 상품 이름을 가리고 있던 값들을 함께 맞춘다 */
+    if (ST.pman[p.id]) delete ST.pman[p.id].name;
+    var d = DOCS[cat] && DOCS[cat][p.id];
+    if (d && d.fields && d.fields.name != null && d.fields.name !== '') {
+      d.fields.name = nm;
+      saveDocs();
+    }
     save(); renderAll();
   }
 
@@ -3426,6 +3484,8 @@
        (하나라도 없는 것에 걸면 여기서 멈춰 본문·탭이 아예 그려지지 않는다) */
     var btnNew = $('#btnNewProduct');
     if (btnNew) btnNew.onclick = newProduct;
+    var btnRen = $('#btnRenameProduct');
+    if (btnRen) btnRen.onclick = renameProduct;
     var btnDel = $('#btnDelProduct');
     if (btnDel) btnDel.onclick = function () {
       var p = product();
@@ -4983,7 +5043,13 @@
     });
     /* 자동조회 패널 입력 */
     Array.prototype.forEach.call(document.querySelectorAll('.fInp'), function (i) {
-      i.onchange = function () { setManual(i.dataset.k, i.value); save(); renderTabs(); };
+      /* 명칭을 고쳐 상품 이름이 바뀌었으면 왼쪽 목록도 다시 그린다 —
+         본문만 다시 그리면 목록에는 옛 이름이 남아 어느 쪽이 진짜인지 알 수 없다 */
+      i.onchange = function () {
+        var renamed = setManual(i.dataset.k, i.value);
+        save();
+        if (renamed) renderAll(); else renderTabs();
+      };
     });
     Array.prototype.forEach.call(document.querySelectorAll('.iInp'), function (i) {
       i.onchange = function () { ST.inline[i.dataset.k] = i.value; save(); renderTabs(); };
