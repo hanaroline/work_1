@@ -183,7 +183,37 @@
       best = seen[key];
     }
     var keys = Object.keys(seen);
-    return keys.length === 1 ? seen[keys[0]] : null;
+    if (keys.length !== 1) return null;
+    var hit = seen[keys[0]];
+    /**
+     * 「없음」 이라고 결론지으려는데 문서 어딘가가 선취판매수수료를 「징구·부과한다」 고
+     * 말하고 있으면 담지 않는다.
+     *
+     * 어느 클래스 이야기인지 가릴 수 없기 때문이다. 실제로 가입조건 표만 있고
+     * 「종류(Class) U | 제한없음 (선취판매수수료 부과)」 처럼 딴 클래스에 붙어 있는
+     * 문서가 있다. 「없음」 은 창구가 고객에게 그대로 단정해 말하는 값이라
+     * 조금이라도 어긋나면 담지 않는 편이 낫다 — 빈칸은 설명서를 보게 하지만
+     * 틀린 「없음」 은 그대로 읽힌다. (유동성위험에서 근거 없는 「부과」 를
+     * 걷어낸 것과 같은 이유다)
+     */
+    if (hit.value === '없음' && saysCharged(t)) return null;
+    return hit;
+  }
+  /**
+   * 문서가 선취판매수수료를 「징구·부과한다」 고 말하는 대목이 있는가.
+   *
+   * 「미징구」·「징구하지 않」 은 없다는 말이므로 세지 않는다. 낱말만 찾으면
+   * 「미징구」 안의 「징구」 에 걸리므로, 대목을 잘라 놓고 그 안에서 가린다
+   * (뒤돌아보기 정규식은 오래된 브라우저에서 안 도는 곳이 있어 쓰지 않는다).
+   */
+  function saysCharged(t) {
+    var re = /선취\s*판매\s*수수료[^\n]{0,24}/g, m;
+    while ((m = re.exec(t))) {
+      var seg = m[0];
+      if (/미\s*징구|징구하지\s*(?:않|아니)|부과하지\s*(?:않|아니)|면제/.test(seg)) continue;
+      if (/징구|부과/.test(seg)) return true;
+    }
+    return false;
   }
   /** 환매수수료 율이 원문에 실제로 적혀 있는가 (부과된다고 단정할 근거) */
   function redeemFeeCharged(t) {
