@@ -2323,28 +2323,30 @@
   /** 평가표의 모든 항목 (점수·항목 찾기에 쓴다 — 파트와 무관하다) */
   function itemsAll() { return sheet().items; }
   /**
-   * 적합성보고서 항목 — ELS 평가표는 이것을 「상품설명의무」 칸에 넣어 두었지만,
-   * 안에 든 것은 적합성원칙의 산출물이다. 발급 안내 문안이 곧 투자권유 사유라서
-   * 투자자성향과 현재 투자자금성향 셋(원금보존태도·손실감내수준·투자예정기간)으로
-   * 쓰인다 — 적합성원칙을 다루지 않는 화면에는 그 값을 채울 길이 아예 없다.
+   * 적합성보고서 항목 (only:'suitReport').
    *
-   * 그대로 두면 채울 수 없는 값 넷이 늘 「확인필요」 로 남아, 정작 채워야 할
-   * 설명서 값이 그 빨간 표시에 묻힌다. 그래서 이 화면에서는 항목째 뺀다.
-   * (평가표의 분류를 고치는 것이 아니다 — 전체판에는 그대로 있다.)
+   * 한 번 이 화면에서 통째로 뺐다가 되살린 자리다. 뺀 이유는 그 문안이 쓰는 값
+   * (투자자성향·현재 투자자금성향)을 채울 칸이 없어 늘 「확인필요」 로 남아서였다.
+   * 그러나 평가표를 다시 대조해 보니 이것은 적합성원칙이 아니라 **상품설명의무**다 —
+   *
+   *   ELS 적합   : 설명의무에 적합성보고서 발급·내용 안내(−5) + 교부(−5) 가 있고,
+   *                내용 안내 문안이 투자자성향과 현재 투자자금성향 셋을 말하게 되어 있다
+   *   ELS 부적합 : 평가표에 이 두 항목 자체가 없다 (그래서 성향을 말할 일도 없다)
+   *   펀드·채권·IRP : 적합/부적합 사이에 설명의무 항목·문안 차이가 없다
+   *
+   * 그래서 항목을 빼는 대신, **ELS 적합일 때만** 그 네 값을 고르는 칸을 낸다.
    */
-  function isSuitReportItem(x) { return x.only === 'suitReport'; }
-  /** 설명의무 전용 화면에서 빠지는 적합성보고서 항목 수 — 화면에 왜 없는지 적어 준다 */
-  function droppedSuitReport() {
-    if (!EXPL) return 0;
-    var m = PARTS.expl.match;
-    return sheet().items.filter(function (x) { return m(x.sec) && isSuitReportItem(x); }).length;
+  function needsSuitValues() {
+    return EXPL && sheet().scenario === 'fit'
+      && itemsOf().some(function (x) { return x.only === 'suitReport'; });
   }
+  /** ELS 만 적합/부적합에 따라 설명의무가 달라진다 — 그 상품군에서만 시나리오를 묻는다 */
+  function scenarioMatters() { return sheet().cat === 'els'; }
   /** 지금 파트의 항목만 (화면·확인필요·읽기모드·인쇄) */
   function itemsOf() {
     var m = PARTS[partKey()].match;
-    var list = m ? sheet().items.filter(function (x) { return m(x.sec); }) : sheet().items;
-    if (EXPL) list = list.filter(function (x) { return !isSuitReportItem(x); });
-    return list;
+    if (!m) return sheet().items;
+    return sheet().items.filter(function (x) { return m(x.sec); });
   }
 
   function totals() {
@@ -2458,6 +2460,20 @@
       });
       h.push('</div><div class="hint">펀드는 <b>국내·해외를 가리지 않고 전부</b> 목록에 나옵니다. '
         + '고른 펀드가 해외면 해외 평가표로 자동으로 바뀝니다.</div></div>');
+
+      /* 적합 / 부적합 — ELS 에서만 묻는다.
+         펀드·채권·IRP 는 적합/부적합 평가표의 설명의무 항목과 문안이 같아,
+         물어 봐야 화면이 달라지지 않는다. 안 쓰는 선택지를 두면 창구가
+         「무엇이 달라지나」 를 매번 다시 생각하게 된다. */
+      if (scenarioMatters()) {
+        h.push('<div class="fgroup"><div class="flabel"><span class="req">1-1</span> 적합 / 부적합</div><div class="seg" id="segScenario">');
+        [['elsFit', '적합'], ['elsUnfit', '부적합']].forEach(function (o) {
+          h.push('<button data-v="' + o[0] + '" aria-pressed="' + (ST.baseSheet === o[0]) + '">' + o[1] + '</button>');
+        });
+        h.push('</div><div class="hint">ELS 는 <b>적합일 때만</b> 설명의무에 적합성보고서(발급·내용 안내 −5, 교부 −5)가 들어갑니다. '
+          + '부적합이면 그 두 항목이 평가표에 없어 투자자성향을 말할 일도 없습니다. '
+          + '<span style="color:var(--muted2)">(펀드·채권·IRP 는 적합/부적합에 따라 설명의무가 달라지지 않아 묻지 않습니다)</span></div></div>');
+      }
     } else {
       h.push('<div class="fgroup"><div class="flabel"><span class="req">1</span> 상품군 · 시나리오</div>');
       h.push('<select id="selSheet">');
@@ -2494,6 +2510,41 @@
         + '점수는 평가표 전체(103점) 기준 그대로입니다.</div>');
     }
     h.push('</div>');
+    }
+
+    /* 적합성보고서에 들어가는 값 — ELS 적합에서만.
+       설명의무 문안(투자권유 사유)이 이 넷을 그대로 읽게 되어 있다. */
+    if (needsSuitValues()) {
+      var suitApp = !!(sh.senior || ctx.newInvestor);
+      h.push('<div class="rule"></div><div class="fgroup"><div class="flabel">'
+        + '<span class="req">2-1</span> 적합성보고서에 들어가는 값</div>');
+      h.push('<div class="hint" style="margin-bottom:10px">설명의무 항목 「적합성보고서 발급 및 내용 안내」 의 '
+        + '<b>투자권유 사유</b> 문안이 이 값들을 그대로 읽습니다 — 고르면 스크립트에 바로 들어갑니다.</div>');
+
+      h.push('<label class="chk"><input type="checkbox" class="ctxChk" data-k="newInvestor"'
+        + (ctx.newInvestor ? ' checked' : '') + '><span>신규투자자</span></label>');
+      h.push('<div class="hint" style="margin:2px 0 10px">적합성보고서 발급 대상은 <b>(적합한) 고령투자자 또는 신규투자자</b>입니다. '
+        + '현재 판정 <b style="color:var(--' + (suitApp ? 'ok' : 'muted2') + ')">' + (suitApp ? '대상' : '미대상') + '</b>'
+        + (suitApp ? '' : ' — 비고령이면서 신규투자자가 아니라 두 항목이 「미해당」 으로 표시됩니다.') + '</div>');
+
+      h.push('<div style="margin-bottom:8px"><div style="font-size:12px;color:var(--muted);margin-bottom:2px">투자자성향</div>');
+      h.push('<select id="selProfile"><option value="">— 선택 —</option>');
+      Object.keys(PROFILES).forEach(function (k) {
+        h.push('<option value="' + k + '"' + (ctx.custProfile === k ? ' selected' : '') + '>' + k + '</option>');
+      });
+      h.push('</select></div>');
+
+      h.push('<div style="font-size:12px;color:var(--muted);margin:0 0 4px">현재 투자자금성향</div>');
+      [['cashPrincipal', '원금보존태도'], ['cashLoss', '손실감내수준'], ['cashHorizon', '투자예정기간']].forEach(function (pair) {
+        h.push('<div style="margin-bottom:6px"><div style="font-size:12px;color:var(--muted);margin-bottom:2px">' + pair[1] + '</div>');
+        h.push('<select class="cashSel" data-k="' + pair[0] + '"><option value="">— 선택 —</option>');
+        CASH_OPTS[pair[0]].forEach(function (o) {
+          h.push('<option value="' + esc(o) + '"' + (ctx[pair[0]] === o ? ' selected' : '') + '>' + esc(o) + '</option>');
+        });
+        h.push('</select></div>');
+      });
+      h.push('<div class="hint">투자목적은 이 문안에 들어가지 않아 두지 않았습니다 — 안 쓰는 칸을 두면 무엇이 스크립트에 반영되는지 흐려집니다.</div>');
+      h.push('</div>');
     }
 
     /* 상품 선택 */
@@ -2912,7 +2963,17 @@
     var selSheet = $('#selSheet');
     if (selSheet) selSheet.onchange = function () { ST.baseSheet = this.value; afterSheetChange(); };
     Array.prototype.forEach.call(document.querySelectorAll('#segCat button'), function (b) {
-      b.onclick = function () { ST.baseSheet = b.dataset.v; ST.ctx.gradePick = ''; afterSheetChange(); };
+      b.onclick = function () {
+        /* 이미 그 상품군이면 그대로 둔다 — ELS 에서 부적합을 골라 둔 것을
+           상품군 단추를 다시 눌렀다고 적합으로 되돌리면 안 된다 */
+        var want = b.dataset.v;
+        var cur = BASE_SHEETS[ST.baseSheet], next = BASE_SHEETS[want];
+        if (cur && next && cur.cat === next.cat) return;
+        ST.baseSheet = want; ST.ctx.gradePick = ''; afterSheetChange();
+      };
+    });
+    Array.prototype.forEach.call(document.querySelectorAll('#segScenario button'), function (b) {
+      b.onclick = function () { ST.baseSheet = b.dataset.v; afterSheetChange(); };
     });
     Array.prototype.forEach.call(document.querySelectorAll('#segPart button'), function (b) {
       b.onclick = function () {
@@ -3070,8 +3131,8 @@
           + '<span style="color:var(--muted2)">(평가표 ' + esc(sh.label) + ' 중 설명의무 ' + itemsOf().length
           + '항목 · 전체 ' + itemsAll().length + '항목 중)</span>'
           + '<br><span style="color:var(--muted2)">적합성원칙은 이 화면에서 다루지 않습니다 — 전체 진행은 완전판매 스크립트 전체판에서 하십시오.'
-          + (droppedSuitReport()
-            ? ' 적합성보고서 ' + droppedSuitReport() + '항목(발급·교부)도 함께 빠집니다 — 투자권유 사유가 적합성원칙의 값으로 쓰여 여기서는 채울 수 없습니다.'
+          + (needsSuitValues()
+            ? ' 다만 ELS 적합은 <b>설명의무 안에 적합성보고서(발급·교부)</b>가 있어, 그 문안이 쓰는 투자자성향과 현재 투자자금성향은 왼쪽에서 고릅니다.'
             : '')
           + '</span>'
         : '<br>기본배점 ' + Object.keys(sh.secTotals).map(function (k) { return k + ' ' + sh.secTotals[k]; }).join(' + ') + ' = 100점 · 가점 최대 +3점 (총 103점)'
@@ -3154,13 +3215,15 @@
           + gN + '등급(' + esc(gradeLabel(gN)) + ')으로 <b>' + esc(ST.ctx.custProfile)
           + '</b> 성향에 <b>적합한</b> 상품입니다(가입 가능 ' + esc(okList) + '등급). '
           + '부적합 평가표는 고객이 성향보다 위험한 상품을 지목하는 상담입니다 — '
-          + '더 위험한 등급의 상품을 고르거나 <b>적합</b> 평가표로 바꾸십시오.</div>');
+          + '더 위험한 등급의 상품을 고르거나 <b>적합</b>'
+          + (EXPL ? '으로 바꾸십시오 (왼쪽 「1-1 적합 / 부적합」).' : ' 평가표로 바꾸십시오.') + '</div>');
       } else if (sh.scenario !== 'unfit' && selFit === false) {
         h.push('<div class="banner"><b>시나리오가 맞지 않습니다</b> — 지금 고른 상품은 '
           + gN + '등급(' + esc(gradeLabel(gN)) + ')으로 <b>' + esc(ST.ctx.custProfile)
           + '</b> 성향이 가입할 수 있는 등급(' + esc(okList) + '등급)이 아닙니다. '
           + '적합 평가표에서 부적합 상품을 권유하면 <b>적합성원칙 위반</b>입니다 — '
-          + '적합한 상품을 고르거나 <b>부적합</b> 평가표로 바꾸십시오.</div>');
+          + '적합한 상품을 고르거나 <b>부적합</b>'
+          + (EXPL ? '으로 바꾸십시오 (왼쪽 「1-1 적합 / 부적합」).' : ' 평가표로 바꾸십시오.') + '</div>');
       } else {
         h.push('<div class="banner" style="border-color:var(--ok);border-left-color:var(--ok);background:#f3f9f4">'
           + '<b style="color:var(--ok)">성향·등급 확인</b> — ' + esc(ST.ctx.custProfile) + ' 성향의 가입 가능 등급은 '
