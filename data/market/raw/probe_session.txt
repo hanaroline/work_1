@@ -1,25 +1,45 @@
-세션을 지닌 채 API 부르기 2026-09-11 08:53:32 KST
+세션을 지닌 채 API 부르기 2026-09-11 08:56:27 KST
 
 ### 증시자금동향
-    페이지 https://finance.naver.com/market/stock/kr/deposit → HTTP 200 · 최종주소 https://finance.naver.com/market/stock/kr/deposit · 2691 bytes
-    받은 쿠키: ['JSESSIONID']
-    API https://finance.naver.com/api/domestic/market/trendDeposit?startIdx=0&pageSize=20
-        HTTP 200 · 2691 bytes · JSON 아님
-        앞머리:  <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd"> <html> <head> <meta http-equiv="Content-Type" content="text/html; charset=euc-kr"> <title>���̹� 
+    페이지 https://stock.naver.com/market/stock/kr/deposit → HTTP 200 · 최종주소 https://stock.naver.com/market/stock/kr/deposit · 122030 bytes
+    받은 쿠키: 없음
+    API https://stock.naver.com/api/domestic/market/trendDeposit?startIdx=0&pageSize=20
+        HTTP 200 · 11563 bytes · JSON!
+        앞머리: {"content":[{"bizdate":"20260909","customerDeposit":"1028462","customerDepositDiff":"58598","customerDepositDiffAbs":"58598","creditLoan":"319898","creditLoanDiff":"-3287","creditLoanDiffAbs":"3287","
+        남김: data/market/raw/session_trendDeposit.json
+    API https://stock.naver.com/api/domestic/market/trendDeposit/chart?startDate=20260801&endDate=20260911
+        HTTP 200 · 22505 bytes · JSON!
+        앞머리: [{"bizdate":"20260714","customerDeposit":"1112825","customerDepositDiff":"22709","customerDepositDiffAbs":"22709","creditLoan":"341910","creditLoanDiff":"-759","creditLoanDiffAbs":"759","beneficiaryCe
+        남김: data/market/raw/session_chart.json
 
 ### 증시 기사
-    페이지 https://finance.naver.com/news/mainnews.naver → HTTP 200 · 최종주소 https://stock.naver.com/news/mainnews · 112454 bytes
-    받은 쿠키: ['JSESSIONID']
-    API https://finance.naver.com/api/domestic/news/list?startIdx=0&pageSize=20
-        HTTP 200 · 2691 bytes · JSON 아님
-        앞머리:  <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd"> <html> <head> <meta http-equiv="Content-Type" content="text/html; charset=euc-kr"> <title>���̹� 
+    페이지 https://stock.naver.com/news/mainnews → HTTP 200 · 최종주소 https://stock.naver.com/news/mainnews · 112454 bytes
+    받은 쿠키: 없음
+    API https://stock.naver.com/api/domestic/news/list?startIdx=0&pageSize=20
+        HTTP 200 · 8789 bytes · JSON!
+        앞머리: {"articles":[{"officeId":"018","officeHname":"이데일리","articleId":"0006367380","title":"LS, 일렉트릭 주가 하락 반영…목표가 54만원으로 하향-SK증권","datetime":"2026-09-11 08:18:10","type":"1","subcontent":"SK증권이 LS(006260)에 
+        남김: data/market/raw/session_list.json
+    API https://stock.naver.com/api/domestic/news/list?category=mainnews&startIdx=0&pageSize=20
+        HTTP 200 · 8789 bytes · JSON!
+        앞머리: {"articles":[{"officeId":"018","officeHname":"이데일리","articleId":"0006367380","title":"LS, 일렉트릭 주가 하락 반영…목표가 54만원으로 하향-SK증권","datetime":"2026-09-11 08:18:10","type":"1","subcontent":"SK증권이 LS(006260)에 
+        남김: data/market/raw/session_list.json
 
 ### 시장지표
-    페이지 https://finance.naver.com/marketindex/ → HTTP 200 · 최종주소 https://stock.naver.com/market/marketindex · 118640 bytes
-    받은 쿠키: ['JSESSIONID']
-    API https://finance.naver.com/api/securityService/marketindex/exchange
-        HTTP 200 · 2691 bytes · JSON 아님
-        앞머리:  <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd"> <html> <head> <meta http-equiv="Content-Type" content="text/html; charset=euc-kr"> <title>���̹� 
-    API https://finance.naver.com/api/securityService/marketindex/majors
-        HTTP 200 · 2691 bytes · JSON 아님
-        앞머리:  <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd"> <html> <head> <meta http-equiv="Content-Type" content="text/html; charset=euc-kr"> <title>���̹� 
+    페이지 https://stock.naver.com/market/marketindex → HTTP 200 · 최종주소 https://stock.naver.com/market/marketindex · 118640 bytes
+    받은 쿠키: 없음
+    API https://stock.naver.com/api/securityService/marketindex/exchange
+        HTTP 404 · 112 bytes · JSON!
+        앞머리: {"message":"Route GET:/api/securityService/marketindex/exchange not found","error":"Not Found","statusCode":404}
+        남김: data/market/raw/session_exchange.json
+    API https://stock.naver.com/api/securityService/marketindex/majors
+        HTTP 404 · 110 bytes · JSON!
+        앞머리: {"message":"Route GET:/api/securityService/marketindex/majors not found","error":"Not Found","statusCode":404}
+        남김: data/market/raw/session_majors.json
+    API https://stock.naver.com/api/securityService/marketindex/metals
+        HTTP 200 · 26571 bytes · JSON!
+        앞머리: [{"categoryType":"metals","stockExchangeType":{"code":"CMX","zoneId":"CST6CDT","nationType":"USA","delayTime":10,"startTime":"1700","endTime":"1600","closePriceSendTime":"1600","nameKor":"뉴욕상품거래소","na
+        남김: data/market/raw/session_metals.json
+    API https://stock.naver.com/api/securityService/marketindex/energy
+        HTTP 200 · 25491 bytes · JSON!
+        앞머리: [{"categoryType":"energy","stockExchangeType":{"code":"NYM","zoneId":"CST6CDT","nationType":"USA","delayTime":10,"startTime":"1700","endTime":"1600","closePriceSendTime":"1600","nameKor":"뉴욕상업거래소","na
+        남김: data/market/raw/session_energy.json
