@@ -1,6 +1,6 @@
 {
   "note": "수급·제도 일정. 만기일처럼 규칙이 확실한 것은 rules 에 규칙만 두고 빌더가 날짜를 만든다(confirmed=rule). 회사·기관이 그때그때 정하는 것(배당기준일·국고채 입찰·공모주)은 날짜를 만들지 않고 links 로 원문만 연결한다.",
-  "verified_at": "2026-09-09",
+  "verified_at": "2026-09-10",
   "verified_note": "만기 규칙은 국내·미국 파생상품시장의 표준 규칙이다. 다만 만기일이 휴장일과 겹치면 앞 영업일로 당겨지므로 빌더가 data/market/holidays.json 으로 보정한다.",
   "rules": [
     {
@@ -145,6 +145,54 @@
       "rule_note_en": "The 20th of each month at 09:15 local time, moving to the next business day if the 20th is a holiday",
       "why_en": "China's effective policy rate; it follows any PBOC adjustment to the MLF",
       "source_en": "People's Bank of China"
+    },
+    {
+      "id": "kr-ktb-futures-expiry",
+      "country": "kr",
+      "importance": 2,
+      "name_ko": "국채선물(3년·10년) 최종거래일",
+      "name_en": "KTB futures (3Y/10Y) last trading day",
+      "rule": {
+        "kind": "nth-weekday",
+        "nth": 3,
+        "weekday": 1
+      },
+      "rule_note_ko": "3·6·9·12월의 세 번째 화요일",
+      "months": [
+        3,
+        6,
+        9,
+        12
+      ],
+      "why_ko": "채권 데스크의 분기 롤오버가 몰린다. 만기 앞뒤로 국고채 현물 수급과 스프레드가 흔들린다",
+      "rule_note_en": "The third Tuesday of March, June, September and December",
+      "why_en": "Quarterly rolls cluster here; cash KTB flows and spreads move around expiry",
+      "url": "https://global.krx.co.kr/contents/GLB/05/0505/0505010000/GLB0505010000.jsp",
+      "source": "한국거래소 파생상품 상품명세",
+      "source_en": "Korea Exchange — derivatives contract specifications",
+      "confirmed": "rule"
+    },
+    {
+      "id": "kr-agm-deadline",
+      "country": "kr",
+      "importance": 2,
+      "name_ko": "12월 결산법인 정기주주총회 시한",
+      "name_en": "AGM deadline for December fiscal year-end companies",
+      "rule": {
+        "kind": "month-end",
+        "offset": 0
+      },
+      "rule_note_ko": "상법 제365조 — 사업연도 종료 후 3개월 이내. 12월 결산법인은 3월 31일이 마지막 날이고, 실제 개최는 3월 넷째 주 전후에 몰린다",
+      "months": [
+        3
+      ],
+      "why_ko": "재무제표 승인·배당·이사 선임이 이 시기에 몰린다. 의결권 대결이 있는 종목은 주총 전후로 크게 움직인다",
+      "rule_note_en": "Commercial Act art. 365 — within three months of fiscal year end, so 31 March for December-close companies; most meetings cluster in the fourth week of March",
+      "why_en": "Financial-statement approval, dividends and director elections land here; contested votes move prices",
+      "url": "https://kind.krx.co.kr/",
+      "source": "KIND 한국거래소 전자공시",
+      "source_en": "KIND — Korea Exchange disclosure system",
+      "confirmed": "rule"
     }
   ],
   "index_reviews": [
@@ -301,6 +349,17 @@
       "name_en": "Korean earnings filings (provisional results, IR notices)",
       "note_en": "The 'provisional operating results' and 'investor relations event' filings are the record.",
       "source_en": "DART — Korean electronic disclosure system"
+    },
+    {
+      "id": "us-cr-expiry",
+      "name_ko": "미 잠정예산(CR) 만료일 · 셧다운 시한",
+      "name_en": "US continuing-resolution expiry and shutdown deadline",
+      "importance": 2,
+      "note_ko": "잠정예산을 통과시킬 때마다 만료일이 새로 정해진다. 회계연도 시작(10/1)만 고정이고 그 뒤 시한은 그때그때 달라지므로 날짜를 만들지 않는다",
+      "note_en": "Each continuing resolution sets its own expiry; only the 1 October fiscal-year start is fixed, so later deadlines are not computed here",
+      "url": "https://www.congress.gov/resources/display/content/Appropriations+and+Budget",
+      "source": "美 의회 (Congress.gov)",
+      "source_en": "US Congress (Congress.gov)"
     }
   ],
   "policy_events": [
@@ -336,6 +395,59 @@
       },
       "schedule_note_en": "The Wednesday two weeks before each FOMC meeting, 14:00 local — computed from the FOMC dates.",
       "source_en": "Federal Reserve"
+    }
+  ],
+  "dated_events": [
+    {
+      "id": "us-midterm-2026",
+      "country": "us",
+      "category": "other",
+      "importance": 3,
+      "date": "2026-11-03",
+      "name_ko": "미국 중간선거",
+      "name_en": "US midterm elections",
+      "detail_ko": "연방 하원 전원과 상원 3분의 1을 새로 뽑는다. 11월 첫 월요일 다음 화요일이라는 연방법 규칙으로 날짜가 정해져 있다",
+      "detail_en": "The whole House and a third of the Senate; the date is fixed by federal law as the Tuesday after the first Monday in November",
+      "why_ko": "의회 구도가 바뀌면 예산·감세·규제 방향이 달라진다. 결과 확정까지 며칠 걸리는 해도 있다",
+      "why_en": "A change in Congress shifts the path of budgets, taxes and regulation",
+      "url": "https://www.fec.gov/introduction-campaign-finance/election-dates/",
+      "source": "美 연방선거관리위원회 (FEC)",
+      "source_en": "Federal Election Commission",
+      "confirmed": "official"
+    },
+    {
+      "id": "us-fiscal-year-2027",
+      "country": "us",
+      "category": "other",
+      "importance": 2,
+      "date": "2026-10-01",
+      "name_ko": "미국 2027 회계연도 시작 (예산 처리 시한)",
+      "name_en": "US fiscal year 2027 begins (appropriations deadline)",
+      "detail_ko": "연방 회계연도는 10월 1일에 시작한다. 그날까지 세출법이나 잠정예산(CR)이 통과되지 않으면 정부가 셧다운된다",
+      "detail_en": "The federal fiscal year starts on 1 October; without appropriations or a continuing resolution the government shuts down",
+      "why_ko": "셧다운은 경제지표 발표까지 멈춘다 — 고용·물가 통계가 밀리면 연준 판단의 근거가 사라진다",
+      "why_en": "A shutdown halts economic releases, leaving the Fed without the data it reads",
+      "url": "https://www.congress.gov/resources/display/content/Appropriations+and+Budget",
+      "source": "美 의회 (Congress.gov)",
+      "source_en": "US Congress (Congress.gov)",
+      "confirmed": "official"
+    },
+    {
+      "id": "us-fiscal-year-2028",
+      "country": "us",
+      "category": "other",
+      "importance": 2,
+      "date": "2027-10-01",
+      "name_ko": "미국 2028 회계연도 시작 (예산 처리 시한)",
+      "name_en": "US fiscal year 2028 begins (appropriations deadline)",
+      "detail_ko": "연방 회계연도는 10월 1일에 시작한다. 그날까지 세출법이나 잠정예산(CR)이 통과되지 않으면 정부가 셧다운된다",
+      "detail_en": "The federal fiscal year starts on 1 October; without appropriations or a continuing resolution the government shuts down",
+      "why_ko": "셧다운은 경제지표 발표까지 멈춘다 — 고용·물가 통계가 밀리면 연준 판단의 근거가 사라진다",
+      "why_en": "A shutdown halts economic releases, leaving the Fed without the data it reads",
+      "url": "https://www.congress.gov/resources/display/content/Appropriations+and+Budget",
+      "source": "美 의회 (Congress.gov)",
+      "source_en": "US Congress (Congress.gov)",
+      "confirmed": "official"
     }
   ]
 }

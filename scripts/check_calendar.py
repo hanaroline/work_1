@@ -168,6 +168,9 @@ def check_data():
     for e in evs:
         if e["category"] != "policy":
             continue
+        # 블랙아웃은 회의를 품는 구간이라 겹치는 것이 정의다 — 결정일끼리만 견준다.
+        if "blackout" in e.get("tags", []):
+            continue
         key = next((t for t in e.get("tags", [])
                     if t in ("fed", "boe", "boj", "bok", "ecb", "pboc")), None)
         if key:
@@ -178,6 +181,17 @@ def check_data():
             if b2["date"] <= (a.get("end_date") or a["date"]):
                 bad("%s 정책 회의가 겹친다 — %s~%s 와 %s"
                     % (key, a["date"], a.get("end_date") or a["date"], b2["date"]))
+
+    # 휴장일의 kind 가 요일과 어긋나면 표기가 틀린 것이다 — 'weekend' 는 원래 쉬는 날이라는
+    # 뜻이고, 평일에 그렇게 적히면 그 시장이 정상 개장하는 것처럼 읽힌다.
+    for m in d.get("holidays", []):
+        for day in m.get("days", []):
+            wd = date.fromisoformat(day["date"]).weekday()
+            if wd >= 5 and day.get("kind") != "weekend":
+                bad("%s %s(%s)은 주말인데 kind=%s 다" % (m["key"], day["date"], day.get("ko"),
+                                                       day.get("kind")))
+            if wd < 5 and day.get("kind") == "weekend":
+                bad("%s %s(%s)은 평일인데 kind=weekend 다" % (m["key"], day["date"], day.get("ko")))
 
     # undated 는 날짜가 없어야 한다 — 여기에 날짜가 들어오면 캘린더에 들어가야 할 것이다.
     for u in d.get("undated", []):
