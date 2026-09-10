@@ -1494,6 +1494,66 @@ def naver_money_flow(dump_dir=None):
     반대매매 금액은 이 표에 없다(금투협 통계 소관). 신용잔고는 결제일 기준이라
     당일 종가 대비 하루이틀 늦게 실린다. 그래서 날짜를 값과 같이 돌려준다.
     """
+    try:
+        return _money_flow_api()
+    except Exception as api_err:                                  # noqa: BLE001
+        try:
+            return _money_flow_html(dump_dir)
+        except Exception:                                         # noqa: BLE001
+            raise api_err
+
+
+def _money_flow_api():
+    """증시자금동향 — **새 API**(2026-09-11 확정).
+
+    stock.naver.com/api/domestic/market/trendDeposit 가 20영업일치를 준다.
+    `*Diff` 는 **부호가 살아 있는 증감**이라 그대로 `*_delta` 로 쓴다 —
+    옛 화면이 주던 `*_chg` 는 부호 없는 절대값이라 감소를 증가로 읽었다.
+    단위는 억원으로 옛 표와 같다.
+    """
+    url = ("https://stock.naver.com/api/domestic/market/trendDeposit"
+           "?startIdx=0&pageSize=20")
+    j = json.loads(_get(url, referer="https://stock.naver.com/market/stock/kr/deposit",
+                        headers={"Accept": "application/json"}))
+    rows = j.get("content") or []
+    if not rows:
+        raise ValueError("증시자금동향 API 가 행을 주지 않음")
+
+    def f(x):
+        try:
+            return float(str(x).replace(",", ""))
+        except (TypeError, ValueError):
+            return None
+
+    series = []
+    for r in rows:
+        bd = str(r.get("bizdate") or "")
+        if len(bd) != 8:
+            continue
+        series.append({
+            "date": "%s-%s-%s" % (bd[:4], bd[4:6], bd[6:]),
+            "deposit": f(r.get("customerDeposit")),
+            "deposit_chg": f(r.get("customerDepositDiffAbs")),
+            "deposit_delta": f(r.get("customerDepositDiff")),
+            "credit_balance": f(r.get("creditLoan")),
+            "credit_chg": f(r.get("creditLoanDiffAbs")),
+            "credit_balance_delta": f(r.get("creditLoanDiff")),
+            "fund_equity": f(r.get("beneficiaryCertificateStock")),
+            "fund_equity_delta": f(r.get("beneficiaryCertificateStockDiff")),
+            "fund_mixed": f(r.get("beneficiaryCertificateMixing")),
+            "fund_mixed_delta": f(r.get("beneficiaryCertificateMixingDiff")),
+            "fund_bond": f(r.get("beneficiaryCertificateBond")),
+            "fund_bond_delta": f(r.get("beneficiaryCertificateBondDiff")),
+        })
+    if not series:
+        raise ValueError("증시자금동향 API 응답에 쓸 행이 없음")
+    return {"latest": dict(series[0]), "series": series, "unit": "억원",
+            "source_url": url,
+            "missing": "반대매매·미수금은 이 원천에 없다(금투협 소관)"}
+
+
+def _money_flow_html(dump_dir=None):
+    """옛 화면(EUC-KR). 2026-09-10 부터 비어 있지만 물러설 자리로 남긴다."""
     html = _get("https://finance.naver.com/sise/sise_deposit.naver", encoding="cp949")
     tbl = re.search(r"(?is)<table[^>]*>(?:(?!</table>).)*?증시자금동향.*?</table>", html)
     if not tbl:
@@ -1681,16 +1741,37 @@ def naver_news(now, limit=24):
     검색 요약 대신 원문을 인용할 수 있도록 본문과 URL을 같이 저장한다.
     선물 수급·신용융자처럼 시세 화면에 없는 수치도 여기서 건진다.
     """
-    lst = _get("https://finance.naver.com/news/mainnews.naver?date="
-               + now.strftime("%Y-%m-%d"), encoding="cp949")
+    # **목록은 새 API 에서 받는다**(2026-09-11). 옛 화면은 Next.js 앱으로 바뀌어
+    # 링크가 서버 HTML 에 없다. 앱이 쓰는 주소는 리다이렉트로 확인했다 —
+    # finance.naver.com/news/mainnews.naver → stock.naver.com/news/mainnews 이고,
+    # 목록은 같은 오리진의 /api/domestic/news/list 다.
+    # **본문은 종전대로** n.news.naver.com 에서 받는다(그쪽은 안 바뀌었다).
     links = []
-    for aid, oid, title in re.findall(
-            r'article_id=(\d+)[^"]*?office_id=(\d+)[^"]*"[^>]*>\s*([^<]{4,90})', lst):
-        url = "https://n.news.naver.com/mnews/article/%s/%s" % (oid, aid)
-        if url not in [u for _, u in links]:
-            links.append((_text(title).strip(), url))
+    try:
+        j = json.loads(_get("https://stock.naver.com/api/domestic/news/list"
+                            "?startIdx=0&pageSize=%d" % max(limit, 20),
+                            referer="https://stock.naver.com/news/mainnews",
+                            headers={"Accept": "application/json"}))
+        for a in j.get("articles") or []:
+            oid, aid = a.get("officeId"), a.get("articleId")
+            if not (oid and aid):
+                continue
+            url = "https://n.news.naver.com/mnews/article/%s/%s" % (oid, aid)
+            if url not in [u for _, u in links]:
+                links.append(((a.get("title") or "").strip(), url))
+    except Exception as api_err:                                  # noqa: BLE001
+        lst = _get("https://finance.naver.com/news/mainnews.naver?date="
+                   + now.strftime("%Y-%m-%d"), encoding="cp949")
+        for aid, oid, title in re.findall(
+                r'article_id=(\d+)[^"]*?office_id=(\d+)[^"]*"[^>]*>\s*([^<]{4,90})', lst):
+            url = "https://n.news.naver.com/mnews/article/%s/%s" % (oid, aid)
+            if url not in [u for _, u in links]:
+                links.append((_text(title).strip(), url))
+        if not links:
+            raise ValueError("기사 목록 없음 — API %s, 옛 화면 %d bytes"
+                             % (api_err, len(lst)))
     if not links:
-        raise ValueError("기사 목록 없음 (%d bytes)" % len(lst))
+        raise ValueError("기사 목록 없음 (API 가 기사를 주지 않음)")
 
     arts, fut, credit = [], [], []
     for title, url in links[:limit]:
@@ -3238,11 +3319,19 @@ def probe_with_session(dump_dir="data/market/raw"):
              ("증시 기사", "https://stock.naver.com/news/mainnews",
               ["https://stock.naver.com/api/domestic/news/list?startIdx=0&pageSize=20",
                "https://stock.naver.com/api/domestic/news/list?category=mainnews&startIdx=0&pageSize=20"]),
+             # metals·energy 는 200 이고 exchange·majors 는 404 였다. 라우터가
+             # "Route GET:… not found" 라고 또렷이 답하므로 **이름만 맞히면 된다.**
              ("시장지표", "https://stock.naver.com/market/marketindex",
-              ["https://stock.naver.com/api/securityService/marketindex/exchange",
-               "https://stock.naver.com/api/securityService/marketindex/majors",
-               "https://stock.naver.com/api/securityService/marketindex/metals",
-               "https://stock.naver.com/api/securityService/marketindex/energy"])]
+              ["https://stock.naver.com/api/securityService/marketindex/metals",
+               "https://stock.naver.com/api/securityService/marketindex/exchangeRate",
+               "https://stock.naver.com/api/securityService/marketindex/exchanges",
+               "https://stock.naver.com/api/securityService/marketindex/currency",
+               "https://stock.naver.com/api/securityService/marketindex/interest",
+               "https://stock.naver.com/api/securityService/marketindex/interestRate",
+               "https://stock.naver.com/api/securityService/marketindex/bond",
+               "https://stock.naver.com/api/securityService/marketindex/major",
+               "https://stock.naver.com/api/securityService/marketindex/index",
+               "https://stock.naver.com/api/securityService/marketindex/agriculture"])]
 
     lines = ["세션을 지닌 채 API 부르기 %s KST"
              % datetime.now(KST).strftime("%Y-%m-%d %H:%M:%S"), ""]
