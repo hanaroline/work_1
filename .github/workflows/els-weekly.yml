@@ -22,8 +22,10 @@ on:
 permissions:
   contents: write
 
+# 공시 원문 수집과 같은 그룹이다. 둘은 같은 브랜치에 커밋하므로 동시에 돌면
+# push 가 서로 밀린다. 한 번의 push 가 두 워크플로를 함께 깨울 수 있어 실제로 겹쳤다.
 concurrency:
-  group: els-weekly
+  group: els-collect
   cancel-in-progress: false
 
 jobs:
@@ -83,7 +85,7 @@ jobs:
           for i in 1 2 3 4 5; do
             if git push; then exit 0; fi
             echo "push 거절 — 원격 변경을 받아 재시도 ($i/5)"
-            git pull --rebase origin "${{ github.ref_name }}" || exit 1
+            git pull --rebase --autostash origin "${{ github.ref_name }}" || exit 1
           done
           echo "5회 시도 후에도 push 실패"
           exit 1
