@@ -795,82 +795,10 @@ def merge_house(reports, house):
 
 # ---------------------------------------------------------------- 상세
 
-_BODY_NEEDLES = ('class="view_cnt"', 'class="view_con"', 'id="contentarea_left"',
-                 'class="box_type_m"')
-
-
-def parse_detail(html):
-    """상세 페이지에서 리포트 본문 글자를 뽑는다. (본문, 어디서 건졌는지)."""
-    best, how = "", "none"
-    for needle in _BODY_NEEDLES:
-        frag = _slice_tag(html, needle)
-        if not frag:
-            continue
-        body = _TAIL_CUT.split(_text(_PDF_A.sub(" ", frag)))[0].strip()
-        if len(body) > len(best):
-            best, how = body, needle.split('"')[-2] if '"' in needle else needle
-        if len(best) >= 300:
-            break
-    return best, how
-
-
-def full_title(html, short):
-    """목록에 잘려 실린 제목(「…기대도 여전..」)을 상세 페이지에서 되찾는다.
-
-    상세 페이지의 어느 태그에 제목이 들어 있는지는 네이버가 바꿀 수 있으므로
-    자리를 외우지 않는다. **잘린 제목의 앞머리로 시작하는 가장 긴 글자**를
-    페이지 안에서 찾는다. 못 찾으면 잘린 채로 둔다.
-    """
-    # 잘리기 전까지 보이는 대목은 진짜 제목의 앞부분 **그대로**다. 그것으로
-    # 시작하고 그보다 긴 한 줄만 후보로 삼는다 — 열두 자만 맞춰 보면 엉뚱한
-    # 줄이 걸린다.
-    prefix = re.sub(r"[.…]{2,}\s*$", "", short).strip()
-    if len(prefix) < 6:
-        return short
-    cands = []
-
-    def keep(t):
-        t = re.sub(r"\s+", " ", t).strip()
-        # 제목이 <meta content="…"/> 같은 **속성값** 안에 들어 있으면, 다음
-        # 태그까지 읽는 아래 길이 닫는 따옴표와 꺾쇠까지 물고 온다 —
-        # 「… 높을 수도... : Npay 증권"/>」 로 앞면에 뜬 판이 있었다.
-        t = re.sub(r"[\"']\s*/?>?\s*$", "", t).strip()
-        # 브라우저 탭 제목에는 사이트 이름이 붙는다 — 「… : Npay 증권」.
-        t = re.sub(r"\s*[:｜|]\s*(Npay|네이버(페이)?)\s*증권\s*$", "", t).strip()
-        # 잘린 제목에 말줄임표만 더 붙은 것은 되찾은 것이 아니다. 후보로
-        # 두면 「가장 짧은 것」 자리를 차지해 진짜 제목을 밀어낸다.
-        if re.sub(r"[.…]+\s*$", "", t).strip() == prefix:
-            return
-        if t.startswith(prefix) and len(prefix) < len(t) < 200:
-            cands.append(t)
-
-    # 가장 확실한 길 — 쪽 안에서 그 대목이 나오는 자리를 찾아 **다음 태그가
-    # 열릴 때까지** 이어 읽는다. 상세 쪽의 제목은 태그에 싸여 있지 않고
-    # <span><em>종목명</em></span> 과 <p class="source"> 사이에 맨몸으로
-    # 놓여 있어(러너가 남긴 덤프에서 확인) 태그를 훑는 것만으로는 못 집는다.
-    for m in re.finditer(re.escape(prefix), html):
-        keep(html_mod.unescape(html[m.start():].split("<", 1)[0]))
-    # 태그마다 따로 훑는다. 한 번에 훑으면 바깥 <th> 가 안쪽 <strong> 을
-    # 삼켜 버려(정규식은 앞 매치 뒤부터 이어 찾는다) 제목만 담은 태그를
-    # 영영 못 본다 — 실제로 그랬다.
-    for tag in ("strong", "h1", "h2", "h3", "h4", "title", "th", "td"):
-        for m in re.finditer(r"(?is)<%s[^>]*>(.*?)</%s\s*>" % (tag, tag), html):
-            # 제목은 한 줄이다. 제목만 담은 태그가 따로 없고 증권사·작성일까지
-            # 한 상자에 들어 있을 수 있으므로 **첫 줄만** 본다. 처음엔 여러
-            # 줄짜리 후보를 통째로 버렸는데, 그 바람에 스물세 건이 잘린 채로
-            # 남았다. 여는 태그 앞에도 줄을 끊어야 제목과 출처가 갈린다 —
-            # `_text` 는 닫는 태그에서만 줄을 바꾸기 때문이다.
-            frag = re.sub(r"(?i)<(p|div|span|br|em|small|a)\b", r"\n<\1", m.group(1))
-            keep(_text(frag).strip().split("\n")[0])
-    if not cands:
-        return short
-    # 가장 짧은 것을 고른다 — 제목만 담은 가장 안쪽 자리다. **다만 그것도
-    # 잘려 있으면 안 된다**: 상세 쪽의 <title> 은 목록보다 길게, 그러나 여전히
-    # 잘린 채로 실린다. 짧은 것부터 고르다 보니 다섯 건이 「…읽을 수 ..」로
-    # 남았다. 잘리지 않은 후보를 먼저 보고, 없을 때만 잘린 것을 쓴다.
-    whole = [t for t in cands if not re.search(r"[.…]{2,}$", t.rstrip())]
-    return min(whole or cands, key=len)
-
+# 옛 길(HTML 긁기)은 여기 있었다 — 9/11 개편으로 상세 페이지에서 본문이
+# 사라져 쓸 데가 없어졌다. 사라진 마크업을 긁는 코드를 남겨 두면 되살릴
+# 수 있는 갈림길이 있는 것처럼 보인다. 지운다 — 필요하면 이력에 있다
+# (parse_detail · full_title · _BODY_NEEDLES).
 
 # 갈래 이름 → 모바일 API 길 이름. CATEGORIES 에서 그대로 끌어온다.
 API_PATH = {name: path for name, _, _, _, path in CATEGORIES}
