@@ -1202,6 +1202,21 @@ def yahoo_intraday_at(symbol, target_date, hhmm="15:30"):
 
 
 def naver_usdkrw():
+    """원/달러 **매매기준율**. 2026-09-11 부터 새 API 가 1순위."""
+    try:
+        url = "https://stock.naver.com/api/securityService/marketindex/majors/exchange"
+        j = json.loads(_get(url, referer="https://stock.naver.com/market/marketindex",
+                            headers={"Accept": "application/json"}))
+        for it in j if isinstance(j, list) else []:
+            if it.get("reutersCode") == "FX_USDKRW" or "USD" in (it.get("name") or ""):
+                v = float(str(it.get("closePrice")).replace(",", ""))
+                return {"rate": v, "source_url": url, "note": "매매기준율"}
+        raise ValueError("환율 목록에 USD 가 없음")
+    except Exception:                                             # noqa: BLE001
+        return _naver_usdkrw_html()
+
+
+def _naver_usdkrw_html():
     """네이버 시장지표의 미국 USD 매매기준율 — 원/달러 두 번째 출처."""
     s = _get("https://finance.naver.com/marketindex/",
              referer="https://finance.naver.com/", encoding="cp949")
@@ -3266,7 +3281,7 @@ def probe_next_chunks(pages, dump_dir="data/market/raw"):
             for m in re.finditer(r'(?:baseURL|baseUrl|API_HOST|apiHost|NEXT_PUBLIC[A-Z_]*)', js):
                 ctx.append("[base] " + js[max(0, m.start() - 140):m.start() + 200])
             for kw in ("domestic/market/trendDeposit", "domestic/news/list",
-                       "securityService/marketindex"):
+                       "securityService/marketindex", "COFIX", "IRR_", "CD(91"):
                 for m in re.finditer(re.escape(kw), js):
                     ctx.append(js[max(0, m.start() - 120):m.start() + 700])
         lines.append("    -- 묶음에 나오는 네이버 호스트 --")
