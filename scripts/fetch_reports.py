@@ -904,7 +904,7 @@ def fetch_detail(rep, dump_dir=None, alien=()):
         if op:
             rep["opinion"] = op
     if not rep.get("target_move"):
-        move = re.search(r"목표주가[^.\n]{0,40}?(상향|하향|유지)", body)
+        move = _TP_MOVE.search(body + " " + rep["title"])
         if move:
             rep["target_move"] = move.group(1)
     return rep
@@ -1072,6 +1072,13 @@ _TP_COLON = re.compile(r"(?:목표\s*(?:주가|가)|TP)\s*[:：]\s*([\d,]+(?:\.\
 # 「목표가 520,000」이 그랬다. 방향(하향)은 잡고 값은 놓쳐, 화면에 목표가
 # 없는 「하향」이 실렸다. 다만 아무 숫자나 주우면 안 되므로 자릿점이 있거나
 # 네 자리 이상인 것만 보고, 뒤에 단위가 붙으면 앞의 두 패턴에 맡긴다.
+# 상하향은 **목표주가와 묶여 있을 때만** 인정한다. 방향어만 찾으면
+# 「업종 최선호주 의견 유지」나 「가격 상승세가 유지되는 가운데」까지
+# 목표주가 조정으로 둔갑한다 — 9/11 판에서 실제로 셋이 그렇게 걸렸다.
+# 갓 뽑을 때와 지난 판에서 넘어온 것을 털 때가 같은 잣대여야 한다.
+_TP_MOVE = re.compile(r"목표\s*(?:주가|가)[^.\n]{0,40}?(상향|하향|유지)")
+
+
 _TP_BARE = re.compile(r"(?:목표\s*(?:주가|가)|TP)[^\d\n]{0,6}?"
                       r"(\d{1,3}(?:,\d{3})+|\d{4,})"
                       r"(?![\d,.]*\s*(?:만|억|%|배|주|년|월|일|건|명))")
@@ -1597,7 +1604,7 @@ def drop_unsourced(r):
     # 발췌에도 제목에도 그런 말이 없으면 댈 근거가 없으므로 지운다.
     if r.get("target_move"):
         hay = (r.get("excerpt") or "") + " " + (r.get("title") or "")
-        if not re.search(r"상향|하향|유지|상승|하락|조정", hay):
+        if not _TP_MOVE.search(hay):
             r.pop("target_move", None)
 
     tp = r.get("target_price")
