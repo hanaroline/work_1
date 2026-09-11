@@ -72,22 +72,30 @@ git commit -am "chore(els): 공시 원문 수집 요청" && git push origin clau
 
 워크플로가 끝나면 결과를 같은 브랜치에 커밋하므로 받아온다.
 
+**수집은 건너뛸 수 없다.** `data/els.js` 가 어제 것이어도 파일은 멀쩡해 보이고
+회차도 그럴듯하게 들어 있다. 그것을 읽고 "새 회차 없음" 이라고 끝내면 점검이
+돈 적이 없는데 성공으로 기록된다 — 2026-09-11 아침에 실제로 그렇게 됐다.
+그래서 판정은 눈으로 하지 말고 아래 스크립트에 맡긴다.
+
 ```bash
 git pull --ff-only origin claude/els-product-structure-page-ljsucw
-node -e '
-const fs=require("fs");const w={};new Function("window",fs.readFileSync("data/els.js","utf8"))(w);
-const d=w.ELS_DATA;
-console.log("기준",d.updatedAt,"· 상품",d.products.length,"건");
-console.log([...new Set(d.products.map(p=>(p.name.match(/(\d{5})e?\s*$/)||[])[1]))].sort().join(" "));
-'
+node scripts/els_check_new.mjs --log
 ```
 
-여기서 나온 회차 번호를 **직전 제안서가 다룬 회차**와 비교한다. 직전 회차 목록은
-`tools/discovery/els-claims.json` 또는 최근 커밋 메시지(`feat(els): 제…회 세일즈 제안서`)로 확인한다.
+이 스크립트는 `data/els.js` 의 수집 시각이 **오늘(KST)** 인지 먼저 보고, 오늘 것이
+아니면 비교를 거부한다. 목록에 실린 회차와 `tools/discovery/prospectus_parsed.json`
+에 파싱돼 있는 회차(= 이미 제안서로 다룬 회차)를 맞춰 판정하고,
+`docs/els-autorun-log.md` 에 한 줄 남긴다.
 
-- **새 회차가 없다** → 갱신할 것이 없다. 아무것도 커밋하지 않고 끝낸다.
-  사용자에게 보고하지 않는다(조용한 확인).
-- **새 회차가 있다** → 3절로 간다.
+| STATUS | 뜻 | 할 일 |
+|---|---|---|
+| `STALE` | 오늘 목록이 아니다 | 수집을 걸고 받은 뒤 **다시 부른다.** 이대로 끝내지 않는다 |
+| `NONE` | 오늘 목록을 받았고 새 회차가 없다 | 기록 줄만 커밋하고 끝낸다 |
+| `NEW` | 새 회차가 있다 (`NEW_NOS` 에 나열) | 3절로 간다 |
+
+`NONE` 으로 끝낼 때도 **기록 줄은 커밋·푸시하고, 사용자에게 한 줄 보고한다**
+("오늘 확인함 · 새 회차 없음"). 조용히 끝내면 점검이 돈 것과 안 돈 것이
+구분되지 않는다.
 
 ## 3. 공시 원문 수집·파싱
 
