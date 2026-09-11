@@ -1571,7 +1571,28 @@ def drop_unsourced(r):
     if r.get("summary") and not r.get("excerpt"):
         for k in ("summary", "lead", "facts", "extracted", "body_chars"):
             r.pop(k, None)
+
+    # 목표주가도 같은 잣대로 본다. 9/11 개편으로 본문을 API 로 받게 되면서
+    # 발췌가 짧아졌는데, 지난 판에서 넘어온 목표주가는 **옛 긴 본문**에서
+    # 캐낸 값이라 지금 발췌에는 그 글자가 없다. 실제로 넷이 그랬다 —
+    # 재검산이 「원문에서 못 찾음 4」로 잡았다.
+    #
+    # 칸에서 온 값(target_from == "api")은 네이버가 제 칸으로 준 것이므로
+    # 그대로 둔다. 글자에서 캔 값인데 지금 발췌에서 그 수를 못 찾으면
+    # 근거를 댈 수 없으므로 지운다 — 근거 없는 수는 인쇄하지 않는다.
+    tp = r.get("target_price")
+    if tp and r.get("target_from") != "api":
+        hay = _SQ_NUM.sub("", (r.get("excerpt") or "") + " " + (r.get("title") or ""))
+        forms = {str(tp), "%d" % tp, format(tp, ",").replace(",", "")}
+        if tp % 10000 == 0:
+            forms.add("%d만" % (tp // 10000))
+        if not any(f in hay for f in forms):
+            r.pop("target_price", None)
+            r.pop("target_move", None)
     return r
+
+
+_SQ_NUM = re.compile(r"[^0-9A-Za-z가-힣%]")
 
 
 def merge_today(reports, out_dir, today):
