@@ -1,4 +1,4 @@
-세션을 지닌 채 API 부르기 2026-09-11 09:24:01 KST
+세션을 지닌 채 API 부르기 2026-09-11 09:35:38 KST
 
 ### 증시자금동향
     페이지 https://stock.naver.com/market/stock/kr/deposit → HTTP 200 · 최종주소 https://stock.naver.com/market/stock/kr/deposit · 122030 bytes
@@ -16,12 +16,12 @@
     페이지 https://stock.naver.com/news/mainnews → HTTP 200 · 최종주소 https://stock.naver.com/news/mainnews · 112454 bytes
     받은 쿠키: 없음
     API https://stock.naver.com/api/domestic/news/list?startIdx=0&pageSize=20
-        HTTP 200 · 8784 bytes · JSON!
-        앞머리: {"articles":[{"officeId":"014","officeHname":"파이낸셜뉴스","articleId":"0005574328","title":"60만원 찍고 30만원 된 LS...이제야 목표주가도 낮아졌다","datetime":"2026-09-11 09:09:12","type":"1","subcontent":"지난 5월 전력주로 묶이며 60만
+        HTTP 200 · 8779 bytes · JSON!
+        앞머리: {"articles":[{"officeId":"014","officeHname":"파이낸셜뉴스","articleId":"0005574339","title":"[단독] 바디프랜드 본사 건물, 11년 만에 주인 바뀐다 [fn마켓워치]","datetime":"2026-09-11 09:25:13","type":"1","subcontent":"바디프랜드 본사로 사용
         남김: data/market/raw/session_list.json
     API https://stock.naver.com/api/domestic/news/list?category=mainnews&startIdx=0&pageSize=20
-        HTTP 200 · 8784 bytes · JSON!
-        앞머리: {"articles":[{"officeId":"014","officeHname":"파이낸셜뉴스","articleId":"0005574328","title":"60만원 찍고 30만원 된 LS...이제야 목표주가도 낮아졌다","datetime":"2026-09-11 09:09:12","type":"1","subcontent":"지난 5월 전력주로 묶이며 60만
+        HTTP 200 · 8779 bytes · JSON!
+        앞머리: {"articles":[{"officeId":"014","officeHname":"파이낸셜뉴스","articleId":"0005574339","title":"[단독] 바디프랜드 본사 건물, 11년 만에 주인 바뀐다 [fn마켓워치]","datetime":"2026-09-11 09:25:13","type":"1","subcontent":"바디프랜드 본사로 사용
         남김: data/market/raw/session_list.json
 
 ### 시장지표
@@ -39,35 +39,31 @@
         HTTP 200 · 5036 bytes · JSON!
         앞머리: [{"categoryType":"exchange","stockExchangeType":{"code":"IUS","zoneId":"EST5EDT","nationType":"USA","delayTime":10,"startTime":"","endTime":"","closePriceSendTime":"","nameKor":"미국 ICE선물거래소","nameEng"
         남김: data/market/raw/session_exchange.json
-    API https://stock.naver.com/api/securityService/marketindex/majors/interest
-        HTTP 404 · 226 bytes · JSON!
-        앞머리: {"detailCode":"HttpError","message":"Not Found","result":"{\"timestamp\":\"2026-09-11T00:24:12.202+0000\",\"status\":404,\"error\":\"Not Found\",\"message\":\"No message available\",\"path\":\"/market
-        남김: data/market/raw/session_interest.json
-    API https://stock.naver.com/api/securityService/marketindex/majors/interestRate
-        HTTP 404 · 230 bytes · JSON!
-        앞머리: {"detailCode":"HttpError","message":"Not Found","result":"{\"timestamp\":\"2026-09-11T00:24:13.048+0000\",\"status\":404,\"error\":\"Not Found\",\"message\":\"No message available\",\"path\":\"/market
-        남김: data/market/raw/session_interestRate.json
     API https://stock.naver.com/api/securityService/marketindex/majors/bond
-        HTTP 200 · 7371 bytes · JSON!
+        HTTP 200 · 7366 bytes · JSON!
         앞머리: [{"categoryType":"bond","stockExchangeType":null,"reutersCode":"US10YT=RR","symbolCode":null,"name":"미국 국채 10년","fullName":null,"nameEng":null,"itemLogoUrl":null,"itemLogoPngUrl":null,"delayTime":0,"d
         남김: data/market/raw/session_bond.json
-    API https://stock.naver.com/api/securityService/marketindex/majors/rate
-        HTTP 404 · 222 bytes · JSON!
-        앞머리: {"detailCode":"HttpError","message":"Not Found","result":"{\"timestamp\":\"2026-09-11T00:24:14.509+0000\",\"status\":404,\"error\":\"Not Found\",\"message\":\"No message available\",\"path\":\"/market
-        남김: data/market/raw/session_rate.json
-    API https://stock.naver.com/api/securityService/marketindex/majors/metals
+    API https://stock.naver.com/api/securityService/marketindex/majors/dminte
         HTTP 404 · 224 bytes · JSON!
-        앞머리: {"detailCode":"HttpError","message":"Not Found","result":"{\"timestamp\":\"2026-09-11T00:24:15.365+0000\",\"status\":404,\"error\":\"Not Found\",\"message\":\"No message available\",\"path\":\"/market
-        남김: data/market/raw/session_metals.json
-    API https://stock.naver.com/api/securityService/marketindex/majors/energy
+        앞머리: {"detailCode":"HttpError","message":"Not Found","result":"{\"timestamp\":\"2026-09-11T00:35:46.643+0000\",\"status\":404,\"error\":\"Not Found\",\"message\":\"No message available\",\"path\":\"/market
+        남김: data/market/raw/session_dminte.json
+    API https://stock.naver.com/api/securityService/marketindex/majors/dmInte
         HTTP 404 · 224 bytes · JSON!
-        앞머리: {"detailCode":"HttpError","message":"Not Found","result":"{\"timestamp\":\"2026-09-11T00:24:16.033+0000\",\"status\":404,\"error\":\"Not Found\",\"message\":\"No message available\",\"path\":\"/market
-        남김: data/market/raw/session_energy.json
-    API https://stock.naver.com/api/securityService/marketindex/majors/domesticInterest
-        HTTP 200 · 9159 bytes · JSON!
-        앞머리: [{"categoryType":"domesticInterest","stockExchangeType":{"code":"BOK","zoneId":"Asia/Seoul","nationType":"KOR","delayTime":0,"startTime":"","endTime":"","closePriceSendTime":"","nameKor":"한국은행","nameE
-        남김: data/market/raw/session_domesticInterest.json
-    API https://stock.naver.com/api/securityService/marketindex/majors/interestKr
+        앞머리: {"detailCode":"HttpError","message":"Not Found","result":"{\"timestamp\":\"2026-09-11T00:35:47.146+0000\",\"status\":404,\"error\":\"Not Found\",\"message\":\"No message available\",\"path\":\"/market
+        남김: data/market/raw/session_dmInte.json
+    API https://stock.naver.com/api/securityService/marketindex/majors/domesticInte
+        HTTP 404 · 230 bytes · JSON!
+        앞머리: {"detailCode":"HttpError","message":"Not Found","result":"{\"timestamp\":\"2026-09-11T00:35:47.638+0000\",\"status\":404,\"error\":\"Not Found\",\"message\":\"No message available\",\"path\":\"/market
+        남김: data/market/raw/session_domesticInte.json
+    API https://stock.naver.com/api/securityService/marketindex/majors/domesticInterestRate
+        HTTP 404 · 238 bytes · JSON!
+        앞머리: {"detailCode":"HttpError","message":"Not Found","result":"{\"timestamp\":\"2026-09-11T00:35:48.055+0000\",\"status\":404,\"error\":\"Not Found\",\"message\":\"No message available\",\"path\":\"/market
+        남김: data/market/raw/session_domesticInterestRate.json
+    API https://stock.naver.com/api/securityService/marketindex/majors/krRate
+        HTTP 404 · 224 bytes · JSON!
+        앞머리: {"detailCode":"HttpError","message":"Not Found","result":"{\"timestamp\":\"2026-09-11T00:35:48.677+0000\",\"status\":404,\"error\":\"Not Found\",\"message\":\"No message available\",\"path\":\"/market
+        남김: data/market/raw/session_krRate.json
+    API https://stock.naver.com/api/securityService/marketindex/majors/marketRate
         HTTP 404 · 228 bytes · JSON!
-        앞머리: {"detailCode":"HttpError","message":"Not Found","result":"{\"timestamp\":\"2026-09-11T00:24:17.292+0000\",\"status\":404,\"error\":\"Not Found\",\"message\":\"No message available\",\"path\":\"/market
-        남김: data/market/raw/session_interestKr.json
+        앞머리: {"detailCode":"HttpError","message":"Not Found","result":"{\"timestamp\":\"2026-09-11T00:35:49.318+0000\",\"status\":404,\"error\":\"Not Found\",\"message\":\"No message available\",\"path\":\"/market
+        남김: data/market/raw/session_marketRate.json
