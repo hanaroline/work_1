@@ -35,7 +35,11 @@ const made = [];
 
 // 핵심본에는 접는 상세가 없다 &mdash; 요약본과 전체본이 한 글자도 다르지
 // 않으므로 한 개만 뽑는다. 두 개를 보내면 받는 쪽이 무엇이 다른지 찾는다.
-const JOBS = DENSE ? [[true, '']] : [[false, '_요약'], [true, '_전체']];
+// **요약본도 상세를 펼친다**(2026-09-12). 접어 두면 종이에서는 제목만 찍히고
+// 본문이 따라가지 않아 「빠진 자리」로 읽힌다 — 실제로 근거 블록 일곱이
+// 그렇게 나갔다. 화면에서는 접는 것이 읽기를 돕지만 종이에는 펼칠 단추가
+// 없다. 그래서 두 PDF 모두 펼친 채로 뽑는다(내용이 같아진다).
+const JOBS = DENSE ? [[true, '']] : [[true, '_요약'], [true, '_전체']];
 for (const [full, suffix] of JOBS) {
   const name = path.join(outdir, base + suffix + '.pdf');
   const p = await b.newPage({ viewport: { width: 1280, height: 1000 } });
