@@ -3281,9 +3281,9 @@ def probe_next_chunks(pages, dump_dir="data/market/raw"):
             for m in re.finditer(r'(?:baseURL|baseUrl|API_HOST|apiHost|NEXT_PUBLIC[A-Z_]*)', js):
                 ctx.append("[base] " + js[max(0, m.start() - 140):m.start() + 200])
             for kw in ("domestic/market/trendDeposit", "domestic/news/list",
-                       "securityService/marketindex", "COFIX", "IRR_", "CD(91"):
+                       "securityService/marketindex", "DMINTE"):
                 for m in re.finditer(re.escape(kw), js):
-                    ctx.append(js[max(0, m.start() - 120):m.start() + 700])
+                    ctx.append(js[max(0, m.start() - 900):m.start() + 500])
         lines.append("    -- 묶음에 나오는 네이버 호스트 --")
         for h in sorted(hosts)[:40]:
             lines.append("      %s" % h)
@@ -3343,14 +3343,15 @@ def probe_with_session(dump_dir="data/market/raw"):
                "https://stock.naver.com/api/securityService/marketindex/exchange/FX_USDKRW",
                # **목록은 majors/<분류>** 다 — majors/exchange 가 200 이었다.
                "https://stock.naver.com/api/securityService/marketindex/majors/exchange",
-               "https://stock.naver.com/api/securityService/marketindex/majors/interest",
-               "https://stock.naver.com/api/securityService/marketindex/majors/interestRate",
                "https://stock.naver.com/api/securityService/marketindex/majors/bond",
-               "https://stock.naver.com/api/securityService/marketindex/majors/rate",
-               "https://stock.naver.com/api/securityService/marketindex/majors/metals",
-               "https://stock.naver.com/api/securityService/marketindex/majors/energy",
-               "https://stock.naver.com/api/securityService/marketindex/majors/domesticInterest",
-               "https://stock.naver.com/api/securityService/marketindex/majors/interestKr"])]
+               # nlog 이름표가 COFIX 를 **DMINTE**(국내금리) 아래 둔다 —
+               # 분류명이 그 계열일 것이다.
+               "https://stock.naver.com/api/securityService/marketindex/majors/dminte",
+               "https://stock.naver.com/api/securityService/marketindex/majors/dmInte",
+               "https://stock.naver.com/api/securityService/marketindex/majors/domesticInte",
+               "https://stock.naver.com/api/securityService/marketindex/majors/domesticInterestRate",
+               "https://stock.naver.com/api/securityService/marketindex/majors/krRate",
+               "https://stock.naver.com/api/securityService/marketindex/majors/marketRate"])]
 
     lines = ["세션을 지닌 채 API 부르기 %s KST"
              % datetime.now(KST).strftime("%Y-%m-%d %H:%M:%S"), ""]
