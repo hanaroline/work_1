@@ -856,17 +856,24 @@ def fetch_detail(rep, dump_dir=None, alien=()):
     if got.get("opinion"):
         rep["opinion"] = str(got["opinion"]).strip()
     goal = _int_or_none(got.get("goalPrice"))
-    prev = _int_or_none(got.get("prevGoalPrice"))
     if goal:
         rep["target_price"] = goal
         # 어디서 온 값인지 남긴다. 칸에서 온 수는 본문 글자에 없을 수 있어
         # 「원문에 적힌 그대로인가」 검사를 그대로 댈 수 없다.
         rep["target_from"] = "api"
-    if goal and prev:
-        # 견주기일 뿐 셈이 아니다. 두 수를 나란히 남겨 눈으로 확인할 수 있게 한다.
-        rep["prev_target_price"] = prev
-        rep["target_move"] = ("상향" if goal > prev
-                              else "하향" if goal < prev else "유지")
+
+    # `prevGoalPrice` 는 **직전 목표가가 아니다.** 이름만 보고 목표주가
+    # 조정으로 읽었다가 9/11 판에서 「8건 상향」이 나갈 뻔했다. 34건이
+    # 몽땅 상향이고 목표가÷직전값 중앙값이 1.49배였다 — 목표주가 조정폭
+    # 으로는 말이 안 되는 값이다. 탐색 응답을 다시 보니
+    # `prevGoalPrice == priceAtWriteDate` 였다. 곧 **작성일 주가**다.
+    #
+    # 그래서 그 값으로 상하향을 가리지 않는다. 그것은 「목표가가 그날
+    # 주가보다 높다」는 말일 뿐이고, 매수 의견 리포트면 거의 언제나 참이다.
+    # 상하향은 예전처럼 본문이 그렇게 **적은** 경우에만 붙인다.
+    price = _int_or_none(got.get("priceAtWriteDate")) or _int_or_none(got.get("prevGoalPrice"))
+    if price:
+        rep["price_at_write"] = price
 
     rep["extracted"] = how
     if len(body) < 80:
@@ -1580,6 +1587,10 @@ def drop_unsourced(r):
     # 칸에서 온 값(target_from == "api")은 네이버가 제 칸으로 준 것이므로
     # 그대로 둔다. 글자에서 캔 값인데 지금 발췌에서 그 수를 못 찾으면
     # 근거를 댈 수 없으므로 지운다 — 근거 없는 수는 인쇄하지 않는다.
+    # 잘못 붙였던 칸이 지난 판에서 넘어올 수 있다 — 이름이 남아 있으면
+    # 다음 판에서 되살아난다.
+    r.pop("prev_target_price", None)
+
     tp = r.get("target_price")
     if tp and r.get("target_from") != "api":
         hay = _SQ_NUM.sub("", (r.get("excerpt") or "") + " " + (r.get("title") or ""))
