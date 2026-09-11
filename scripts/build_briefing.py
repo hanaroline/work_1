@@ -410,7 +410,12 @@ def sec_korea(C):
                 + _stock_core("국내 종목 &mdash; " + DK(C["prev_kr"]) + " 마감, 원",
                               "Korean stocks &mdash; " + DE(C["prev_kr"]) + ", in won",
                               *_wide(C["S"], 10), why=C["why"],
-                              foot_ko=C["kr_stk_foot_ko"], foot_en=C["kr_stk_foot_en"], dp=0))
+                              foot_ko=C["kr_stk_foot_ko"], foot_en=C["kr_stk_foot_en"], dp=0)
+                # 등락 종목 수 추이도 핵심본에 싣는다(2026-09-12). 하루치 폭은
+                # 위 표가 말하지만 **「며칠째 그런가」는 추이만 말한다** — 지수와
+                # 폭이 어긋난 날을 찾는 것이 이 표의 쓸모다. 접는 자리가 없으므로
+                # 표를 그대로 세운다.
+                + ("\n" + C["breadth_trend"] if C.get("breadth_trend") else ""))
     return (lede(a, b) + "\n" + kr_idx + "\n" + breadth + "\n" + kr_stk + "\n"
             + exp("업종 상위·하위와 등락 종목 수 추이",
                   "Sector leaders and laggards, and breadth over time",
@@ -501,12 +506,18 @@ def _flows_body(C, N, flow_tbl, money_tbl):
     body = lede(*N.get("flows_lede", C["fb_flows"][0], C["fb_flows"][1]))
     if CORE[0]:
         body += '\n<div class="duo">\n' + flow_tbl + "\n" + money_tbl + '\n</div>'
-    else:
-        body += "\n" + flow_tbl + "\n" + money_tbl
-    if not CORE[0]:
-        # 매물대만 전체 판에 둔다 — 근사이고, 그날의 결정보다 추이로 읽는 값이다.
-        if C["supply_tbl"]:
-            body += "\n" + C["supply_tbl"]
+        # 핵심본에도 **투자자별 추이와 매물대**를 싣는다(2026-09-12). 하루치
+        # 수급은 위 표가 말하지만 「팔던 손이 멎었는가」는 추이라야 보이고,
+        # 매물대는 「올라갈 때 어디서 물량을 만나는가」에 답한다. 접는 자리가
+        # 없으므로 표를 그대로 세우고, 둘을 나란히 놓아 높이를 줄인다.
+        pair = [t for t in (C.get("inv_trend"), C.get("supply_tbl")) if t]
+        if pair:
+            body += '\n<div class="duo">\n' + "\n".join(pair) + '\n</div>'
+        return body
+    body += "\n" + flow_tbl + "\n" + money_tbl
+    # 매물대는 근사이고, 그날의 결정보다 추이로 읽는 값이다.
+    if C["supply_tbl"]:
+        body += "\n" + C["supply_tbl"]
     body += "\n" + exp("투자자별 순매수 추이 &mdash; 최근 10거래일",
                        "Net buying by investor type &mdash; last 10 sessions", C["inv_trend"])
     return body
@@ -713,9 +724,13 @@ def sec_macro(C):
         # 「금리+원자재」 쪽이 648px 이 됐다 — 283px 이 한쪽에서만 비었고 그것이
         # 여섯 쪽을 일곱 쪽으로 넘겼다. 짝을 **금리+곡선 / 환율+원자재** 로 바꾸면
         # 806 대 773 으로 맞고, 덤으로 금리 이야기가 한 칸에 모인다.
+        # 달러 상대 통화도 핵심본에 싣는다(2026-09-12). 원화 표의 꼬리말이
+        # 「빗금 방향이 반대」라고 말해 놓고 정작 그 표가 없으면, 읽는 사람이
+        # 규칙만 듣고 대조할 자리를 못 찾는다. 환율 칸 아래에 이어 세운다.
         return (lede(a, b) + '\n<div class="duo">\n'
                 + '<div>\n' + rates + "\n" + (_curve_core(C) or "") + '\n</div>\n'
-                + '<div>\n' + C["fx_tbl"] + "\n" + (_cm_core(C) or "") + '\n</div>\n</div>')
+                + '<div>\n' + C["fx_tbl"] + "\n" + C["usdfx_tbl"] + "\n"
+                + (_cm_core(C) or "") + '\n</div>\n</div>')
     return (lede(a, b) + "\n" + rates + "\n" + C["fx_tbl"] + "\n" + C["cm_tbl"] + "\n"
             + exp("미 재무부 곡선 만기 11개 &middot; 달러 상대 통화",
                   "The full US curve and the dollar crosses",
@@ -1411,23 +1426,24 @@ def main():
     if not CORE[0]:
         doc.sec("earnings", "실적 &middot; 컨퍼런스콜", "Results and Calls", sec_earnings(C))
     else:
-        # 핵심본은 절을 따로 세우지 않고 **실적 표를 심층 분석 절로 옮긴다**
-        # (아래). 머리말만 04 뒤에 한 문단으로 남긴다.
+        # **핵심본도 이 절을 따로 세운다**(2026-09-12). 예전에는 머리말만 04 뒤에
+        # 붙이고 표는 심층 분석 절로 옮겼는데, 그러면 「오늘 실적이 있었나」에
+        # 답하는 자리가 판에서 사라진 것처럼 읽힌다. 표는 핵심본용 한 줄짜리를
+        # 쓰고(인용 원문은 전체 판에 그대로 있다), 없는 날은 없다고 적는다.
         el = C["N"].get("earnings_lede", "", "")
-        if el[0]:
-            sid, tko, ten, body = doc.secs[-1]
-            doc.secs[-1] = (sid, tko, ten, body + "\n" + P(el[0], el[1]))
-    doc.sec("macro", "금리 &middot; 환율 &middot; 원자재", "Rates, FX and Commodities", sec_macro(C))
-    deep = sec_deep(C)
-    if CORE[0]:
-        # 「주요 이슈·실적을 심층 분석해 달라」 — 핵심본에도 이 절을 둔다. 그날의
-        # 심층 분석이 없으면 실적 표만으로 절을 세우고, 둘 다 없으면 절이 없다.
         et = _earn_core(C)
-        if deep or et:
-            tko, ten, body = (deep if deep else
-                              ("주요 이슈 &middot; 실적", "Issues and Results", ""))
-            doc.sec("deep", tko, ten, (body + ("\n" + et if et else "")).strip())
-    elif deep:
+        if el[0] or et:
+            body = (lede(el[0], el[1]) if el[0] else "")
+            body += ("\n" + et) if et else ("\n" + P(
+                "<strong>오늘 수집분에 실적&middot;컨퍼런스콜 대목이 없습니다</strong> " + VF_N
+                + " &mdash; 지어내지 않고 비워 둡니다.",
+                "<strong>No results or call excerpts in today's collection</strong> " + VF_N + "."))
+            doc.sec("earnings", "실적 &middot; 컨퍼런스콜", "Results and Calls", body.strip())
+    doc.sec("macro", "금리 &middot; 환율 &middot; 원자재", "Rates, FX and Commodities", sec_macro(C))
+    # 실적 표는 이제 **05절이 들고 있다** — 예전처럼 여기 한 번 더 붙이면
+    # 같은 표가 판에 두 번 나온다(2026-09-12 에 실제로 그랬다).
+    deep = sec_deep(C)
+    if deep:
         doc.sec("deep", deep[0], deep[1], deep[2])
     doc.sec("calendar", "일정 &middot; 체크포인트", "Calendar", sec_calendar(C))
     doc.sec("talking", "고객 응대", "Talking Points", sec_talking(C))
