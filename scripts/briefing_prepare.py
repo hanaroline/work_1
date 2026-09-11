@@ -239,23 +239,39 @@ def _tables(C):
                 '<td class="n">' + n(r["close"], dp) + '</td>' + _cell(r.get("change_pct"))
                 + perf_cells(r.get("perf")) + '<td class="n opt">' + VF_MD + '</td></tr>')
 
+    # 꼬리말의 「읽는 법」 예시는 **표에 선 값 그대로** 쓴다. 손으로 적으면
+    # 다음 날 어긋난다 — 실제로 1,384 가 박힌 채 1,341 짜리 표 밑에 서 있었다.
+    _uk = (C["byk"].get("usdkrw") or {}).get("close")
+    _usdkrw_ex = n(_uk, 0) if _uk else "1,340"
+    # 핵심본에는 접는 상세가 없다. 「아래 상세에 따로 두었다」고 적으면
+    # 있지도 않은 자리를 가리킨다 — 핵심본에서는 어디에 있는지를 바르게 적는다.
+    _usdfx_where_ko = ("<strong>같은 날짜의 전체 판</strong>에 따로 두었습니다" if CORE[0]
+                       else "아래 상세에 따로 두었습니다")
+    _usdfx_where_en = ("sit in <strong>the full edition of the same date</strong>" if CORE[0]
+                       else "sit in the detail below")
+
     C["fx_tbl"] = tbl("원화 환율 &mdash; 오늘 아침 " + DK(C["today"]),
                       "The won &mdash; this morning, " + DE(C["today"]), fh,
                       [x for x in (_fxrow("usdkrw"), _fxrow("jpykrw"), _fxrow("cnykrw"),
                                    _fxrow("eurkrw"), _fxrow("audkrw"),
                                    _fxrow("brlkrw")) if x],
                       cls="data compact",
-                      foot_ko="<strong>이 표는 뒤 통화가 1개입니다</strong> &mdash; 원/달러 1,384 는 달러 1개를 "
-                              "사는 데 1,384원이 든다는 뜻이라, <strong>숫자가 내려가면 원화가 세진 것</strong>입니다. "
-                              "원화 크로스 다섯은 받아 온 값이 아니라 <strong>원/달러에서 계산한 재정환율</strong>입니다 "
+                      # 읽는 법을 보이는 예로 드는 자리다. **손으로 적은 1,384 가 박혀 있었다** —
+                      # 표에는 오늘 값이 서는데 꼬리말만 옛 값이라 나란히 어긋났다(지침 7절).
+                      # 표와 같은 자리에서 뽑아 쓴다.
+                      foot_ko="<strong>이 표는 뒤 통화가 1개입니다</strong> &mdash; 원/달러 " + _usdkrw_ex
+                              + " 은 달러 1개를 사는 데 " + _usdkrw_ex + "원이 든다는 뜻이라, "
+                                "<strong>숫자가 내려가면 원화가 세진 것</strong>입니다. "
+                                "원화 크로스 다섯은 받아 온 값이 아니라 <strong>원/달러에서 계산한 재정환율</strong>입니다 "
                               + VF_C + " &mdash; 원화는 달러 말고 직접 거래되는 시장이 사실상 없어 국내 고시 환율도 "
-                                       "전부 그렇게 만듭니다. <strong>달러 상대 통화는 빗금 방향이 반대</strong>이므로 "
-                                       "아래 상세에 따로 두었습니다.",
-                      foot_en="<strong>In this table the second currency is the unit</strong> &mdash; USD/KRW 1,384 "
-                              "means one dollar costs 1,384 won, so <strong>a lower number is a stronger won</strong>. "
-                              "The five crosses are <strong>computed from USD/KRW</strong> " + VF_C + ", as Korean "
-                              "published rates are. <strong>The dollar crosses read the other way round</strong> and "
-                              "sit in the detail below.")
+                                       "전부 그렇게 만듭니다. <strong>달러 상대 통화는 빗금 방향이 반대</strong>라 "
+                              + _usdfx_where_ko + ".",
+                      foot_en="<strong>In this table the second currency is the unit</strong> &mdash; USD/KRW "
+                              + _usdkrw_ex + " means one dollar costs " + _usdkrw_ex + " won, so "
+                                "<strong>a lower number is a stronger won</strong>. "
+                                "The five crosses are <strong>computed from USD/KRW</strong> " + VF_C + ", as Korean "
+                                "published rates are. <strong>The dollar crosses read the other way round</strong> and "
+                              + _usdfx_where_en + ".")
 
     uh = [TH("통화쌍 &middot; 지수", "Pair or index", "wrap"), TH("읽는 법", "How to read it", "note wrap"),
           TH("현재", "Level", "n"), TH("등락률", "Change %", "n"), THP(), TH("검증", "Verified", "n opt")]
