@@ -1097,7 +1097,50 @@ KTB10Y_URLS = [
 
 
 def naver_rates(dump_dir=None):
-    """국내 시장금리 — 네이버 시장지표의 국내시장금리 표."""
+    """국내 시장금리 &mdash; **새 API 가 1순위**(2026-09-11 확정).
+
+    네이버 시장지표가 Next.js 로 바뀌어 옛 표가 사라졌다. 묶음의 nlog 이름표가
+    COFIX 를 `DMINTE`(국내금리) 아래 두는 것을 보고 분류명을 짚어,
+    `stock.naver.com/api/securityService/marketindex/majors/domesticInterest`
+    에서 **콜&middot;CD&middot;COFIX 셋(신규취급액&middot;잔액&middot;신잔액)** 을 받는다.
+    국고채는 여기 없고 한국은행 ECOS(`rates_ecos`)가 이미 채운다.
+    """
+    try:
+        api = ("https://stock.naver.com/api/securityService/marketindex/majors"
+               "/domesticInterest")
+        j = json.loads(_get(api, referer="https://stock.naver.com/market/marketindex",
+                            headers={"Accept": "application/json"}))
+        # 이름 → 우리 열쇠. 네이버 표기가 조금 바뀌어도 걸리게 넉넉히 본다.
+        NAMES = (("콜", "call"), ("CD", "cd91"),
+                 ("COFIX 신잔액", "cofix_new_balance"),
+                 ("COFIX 신규", "cofix_new"), ("COFIX 잔액", "cofix_balance"))
+        out, seen = {}, []
+        for it in j if isinstance(j, list) else []:
+            nm = (it.get("name") or "").strip()
+            seen.append(nm)
+            try:
+                v = float(str(it.get("closePrice")).replace(",", ""))
+            except (TypeError, ValueError):
+                continue
+            for word, key in NAMES:
+                if word in nm and key not in out and 0 < v < 20:
+                    out[key] = v
+                    break
+        if out:
+            out["source_url"] = api
+            out["unit"] = "%"
+            out["items"] = seen          # 눈으로 대조할 수 있게 이름을 그대로 남긴다
+            return _rates_add_ktb10y(out, dump_dir)
+        raise ValueError("국내금리 API 에서 이름을 못 맞춤 — %s" % seen)
+    except Exception as api_err:                                  # noqa: BLE001
+        try:
+            return _naver_rates_html(dump_dir)
+        except Exception:                                         # noqa: BLE001
+            raise api_err
+
+
+def _naver_rates_html(dump_dir=None):
+    """옛 시장지표 화면. 2026-09-10 부터 비어 있지만 물러설 자리로 남긴다."""
     url = "https://finance.naver.com/marketindex/"
     s = _get(url, referer="https://finance.naver.com/", encoding="cp949")
     t = re.sub(r"\s+", " ", _text(s))
@@ -1115,6 +1158,10 @@ def naver_rates(dump_dir=None):
     out["source_url"] = url
     out["unit"] = "%"
 
+    return _rates_add_ktb10y(out, dump_dir)
+
+
+def _rates_add_ktb10y(out, dump_dir=None):
     # 국고채 10년은 이 표에 없다. 후보를 따로 시도하고 실패해도 넘어간다.
     for n, u10 in enumerate(KTB10Y_URLS):
         try:
