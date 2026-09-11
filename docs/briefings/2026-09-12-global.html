@@ -427,6 +427,15 @@ html[lang="en"] [data-lang-en]{display:revert}
   .detail-label{margin-bottom:6px}
   .detail-links{display:none}
   .exp > summary{padding-right:0}
+  /* 접힌 채로 인쇄되면 **제목만 찍히고 본문이 없다.** 요약본에서 근거 블록
+     일곱이 그렇게 나가 「빠진 자리」로 읽혔다 — 약속만 하고 내용이 없는
+     제목은 없느니만 못하다. 종이에서는 어디에 있는지를 제목 옆에 적는다.
+     전체본은 모두 펼친 채 인쇄하므로 이 줄이 붙지 않는다. */
+  html[lang="ko"] .exp:not([open]) > summary::after{
+    content:" \2014 전체본에 펼쳐져 있습니다"}
+  html[lang="en"] .exp:not([open]) > summary::after{
+    content:" \2014 expanded in the full edition"}
+  .exp:not([open]) > summary::after{font-size:8.5pt;font-weight:400;color:#777}
   .exp-mark,table.data tr.clickable > *:first-child::before{display:none!important}
   table.data tr.clickable > *:first-child{padding-left:13px}
   body{font-size:11pt;line-height:1.4;color:#000;background:#FFF}
@@ -584,7 +593,7 @@ table.data td.barcell{width:118px;line-height:0;padding-top:9px}
   <p class="hero-kicker"><span data-lang-ko>2026년 9월 12일(토)</span><span data-lang-en>Saturday 12 September 2026</span> &middot; <span data-lang-ko>미래에셋증권 마포WM &middot; 해외 증시 브리핑</span><span data-lang-en>Mirae Asset Securities, Mapo WM &middot; Global Market Briefing</span></p>
   <h1 class="hero-title"><span data-lang-ko>해외 증시 브리핑</span><span data-lang-en>Global Market Briefing</span></h1>
   <p class="hero-lede"><span data-lang-ko><strong>금요일 낮 서울은 반도체를 던졌고, 그날 밤 뉴욕은 그 반도체를 되샀습니다.</strong> 사이에 있던 것이 <strong>미 8월 소비자물가</strong>입니다 &mdash; 헤드라인은 전월 대비 <strong>+0.4%</strong>, 전년 대비 <strong>+3.4%</strong> 로 예상에 부합했지만 <strong>근원이 +0.3% 로 예상(+0.2%)을 웃돌았고</strong>, CME 페드워치의 <strong>9월 인상 확률이 전날 72% 에서 86.5% 로</strong> 뛰었습니다. <strong>그런데 뉴욕증시는 나흘 연속 하락을 끊고 올랐습니다.</strong> 답은 유가에 있습니다 &mdash; 밤사이 배럴당 <strong>110달러</strong>에 육박했던 브렌트가 걸프&middot;이란 대화 가능성과 IEA 의 수요 전망 하향에 <strong>104달러대로 되밀렸습니다.</strong> 값을 올리던 힘이 하루 물러서자, 물가가 강한 날에도 주식이 올랐습니다. <strong>서울&middot;도쿄&middot;타이베이는 이 두 가지를 모두 모르는 상태로 금요일을 마쳤습니다.</strong></span><span data-lang-en><strong>Seoul sold chips on Friday afternoon; New York bought them back that night.</strong> In between sat <strong>US August CPI</strong> &mdash; headline <strong>+0.4%</strong> on the month and <strong>+3.4%</strong> on the year, in line, but <strong>core at +0.3% beat the +0.2% consensus</strong>, and CME FedWatch odds of a September hike jumped from <strong>72% to 86.5%</strong>. <strong>Wall Street rose anyway, ending four straight declines.</strong> The answer is crude: Brent, which had touched nearly <strong>$110</strong> overnight, fell back into the <strong>$104s</strong> on talk of Gulf&ndash;Iran discussions and an IEA demand downgrade. With the force lifting prices in retreat for a day, equities could rise on a hot inflation print. <strong>Seoul, Tokyo and Taipei closed knowing neither of those things.</strong></span></p>
-  <p class="hero-meta"><span class="tone mixed"><span data-lang-ko>열두 시간 어긋난 하루</span><span data-lang-en>A day out of step by twelve hours</span></span> &nbsp; <span data-lang-ko>기준: 국내&middot;해외 모두 9월 11일(금) 마감 &middot; 환율은 오늘 아침 9월 12일 &middot; 시세 파일 09-12 07:40 수집 &middot; 작성 2026-09-12(토) 07:52 KST</span><span data-lang-en>Basis: closes of Friday 11 September; FX as of this morning; data collected 09-12 07:40; compiled 07:52 KST</span></p>
+  <p class="hero-meta"><span class="tone mixed"><span data-lang-ko>열두 시간 어긋난 하루</span><span data-lang-en>A day out of step by twelve hours</span></span> &nbsp; <span data-lang-ko>기준: 국내&middot;해외 모두 9월 11일(금) 마감 &middot; 환율은 오늘 아침 9월 12일 &middot; 시세 파일 09-12 07:40 수집 &middot; 작성 2026-09-12(토) 08:04 KST</span><span data-lang-en>Basis: closes of Friday 11 September; FX as of this morning; data collected 09-12 07:40; compiled 08:04 KST</span></p>
 </div>
 <div class="shell">
 
@@ -1445,7 +1454,7 @@ table.data td.barcell{width:118px;line-height:0;padding-top:9px}
 </div><!-- /shell -->
 
 <footer class="foot">
-  <p><span data-lang-ko>미래에셋증권 마포WM · 송재섭 · 2026년 9월 12일(토) 07:52 KST 작성.</span><span data-lang-en>Mirae Asset Securities, Mapo WM · Jaeseop Song · Compiled 07:52 KST, Saturday 12 September 2026.</span></p>
+  <p><span data-lang-ko>미래에셋증권 마포WM · 송재섭 · 2026년 9월 12일(토) 08:04 KST 작성.</span><span data-lang-en>Mirae Asset Securities, Mapo WM · Jaeseop Song · Compiled 08:04 KST, Saturday 12 September 2026.</span></p>
   <p><span data-lang-ko>본 자료는 공개된 언론 보도와 공식 발표를 정리한 내부 참고용이며, 특정 종목의 매매를 권유하지 않습니다. 투자 판단의 최종 책임은 투자자 본인에게 있습니다. 확인되지 않은 수치는 비워 두거나 "미확인"으로 표기했고, 검증 등급은 각 항목의 배지로 표시했습니다.</span><span data-lang-en>An internal reference compiled from public reporting and official releases. It does not recommend the purchase or sale of any security; investment decisions and their consequences rest with the investor. Unverified figures are left blank or marked as such, and each item carries a verification badge.</span></p>
 </footer>
 

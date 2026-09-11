@@ -427,6 +427,15 @@ html[lang="en"] [data-lang-en]{display:revert}
   .detail-label{margin-bottom:6px}
   .detail-links{display:none}
   .exp > summary{padding-right:0}
+  /* 접힌 채로 인쇄되면 **제목만 찍히고 본문이 없다.** 요약본에서 근거 블록
+     일곱이 그렇게 나가 「빠진 자리」로 읽혔다 — 약속만 하고 내용이 없는
+     제목은 없느니만 못하다. 종이에서는 어디에 있는지를 제목 옆에 적는다.
+     전체본은 모두 펼친 채 인쇄하므로 이 줄이 붙지 않는다. */
+  html[lang="ko"] .exp:not([open]) > summary::after{
+    content:" \2014 전체본에 펼쳐져 있습니다"}
+  html[lang="en"] .exp:not([open]) > summary::after{
+    content:" \2014 expanded in the full edition"}
+  .exp:not([open]) > summary::after{font-size:8.5pt;font-weight:400;color:#777}
   .exp-mark,table.data tr.clickable > *:first-child::before{display:none!important}
   table.data tr.clickable > *:first-child{padding-left:13px}
   body{font-size:11pt;line-height:1.4;color:#000;background:#FFF}
