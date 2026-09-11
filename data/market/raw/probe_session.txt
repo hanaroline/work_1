@@ -1,4 +1,4 @@
-세션을 지닌 채 API 부르기 2026-09-11 21:08:32 KST
+세션을 지닌 채 API 부르기 2026-09-12 07:42:33 KST
 
 ### 증시자금동향
     페이지 https://stock.naver.com/market/stock/kr/deposit → HTTP 200 · 최종주소 https://stock.naver.com/market/stock/kr/deposit · 122030 bytes
@@ -16,54 +16,54 @@
     페이지 https://stock.naver.com/news/mainnews → HTTP 200 · 최종주소 https://stock.naver.com/news/mainnews · 112454 bytes
     받은 쿠키: 없음
     API https://stock.naver.com/api/domestic/news/list?startIdx=0&pageSize=20
-        HTTP 200 · 8824 bytes · JSON!
-        앞머리: {"articles":[{"officeId":"015","officeHname":"한국경제","articleId":"0005331507","title":"공모주 받았더니 하루 만에 '잭팟'…179% 폭등에 '들썩들썩'","datetime":"2026-09-11 20:02:21","type":"1","subcontent":"중국 그래픽처리장치(GPU) 제조업
+        HTTP 200 · 8754 bytes · JSON!
+        앞머리: {"articles":[{"officeId":"119","officeHname":"데일리안","articleId":"0003131883","title":"AI 꺾여도 전력 투자는 이상무?","datetime":"2026-09-12 07:02:20","type":"1","subcontent":"전 세계 투자금이 인공지능(AI) 사이클에 집중되는 가운데 인프라
         남김: data/market/raw/session_list.json
     API https://stock.naver.com/api/domestic/news/list?category=mainnews&startIdx=0&pageSize=20
-        HTTP 200 · 8824 bytes · JSON!
-        앞머리: {"articles":[{"officeId":"015","officeHname":"한국경제","articleId":"0005331507","title":"공모주 받았더니 하루 만에 '잭팟'…179% 폭등에 '들썩들썩'","datetime":"2026-09-11 20:02:21","type":"1","subcontent":"중국 그래픽처리장치(GPU) 제조업
+        HTTP 200 · 8754 bytes · JSON!
+        앞머리: {"articles":[{"officeId":"119","officeHname":"데일리안","articleId":"0003131883","title":"AI 꺾여도 전력 투자는 이상무?","datetime":"2026-09-12 07:02:20","type":"1","subcontent":"전 세계 투자금이 인공지능(AI) 사이클에 집중되는 가운데 인프라
         남김: data/market/raw/session_list.json
 
 ### 시장지표
     페이지 https://stock.naver.com/market/marketindex → HTTP 200 · 최종주소 https://stock.naver.com/market/marketindex · 118640 bytes
     받은 쿠키: 없음
     API https://stock.naver.com/api/securityService/marketindex/metals
-        HTTP 200 · 26574 bytes · JSON!
+        HTTP 200 · 26585 bytes · JSON!
         앞머리: [{"categoryType":"metals","stockExchangeType":{"code":"CMX","zoneId":"CST6CDT","nationType":"USA","delayTime":10,"startTime":"1700","endTime":"1600","closePriceSendTime":"1600","nameKor":"뉴욕상품거래소","na
         남김: data/market/raw/session_metals.json
     API https://stock.naver.com/api/securityService/marketindex/exchange/FX_USDKRW
-        HTTP 200 · 2414 bytes · JSON!
+        HTTP 200 · 2415 bytes · JSON!
         앞머리: {"exchangeInfo":{"stockExchangeType":{"code":"HANA","zoneId":"Asia/Seoul","nationType":"KOR","delayTime":0,"startTime":"","endTime":"","closePriceSendTime":"","nameKor":"하나은행","nameEng":"Hana Bank","n
         남김: data/market/raw/session_FX_USDKRW.json
     API https://stock.naver.com/api/securityService/marketindex/majors/exchange
-        HTTP 200 · 5041 bytes · JSON!
+        HTTP 200 · 5047 bytes · JSON!
         앞머리: [{"categoryType":"exchange","stockExchangeType":{"code":"IUS","zoneId":"EST5EDT","nationType":"USA","delayTime":10,"startTime":"","endTime":"","closePriceSendTime":"","nameKor":"미국 ICE선물거래소","nameEng"
         남김: data/market/raw/session_exchange.json
     API https://stock.naver.com/api/securityService/marketindex/majors/bond
-        HTTP 200 · 7363 bytes · JSON!
+        HTTP 200 · 7367 bytes · JSON!
         앞머리: [{"categoryType":"bond","stockExchangeType":null,"reutersCode":"US10YT=RR","symbolCode":null,"name":"미국 국채 10년","fullName":null,"nameEng":null,"itemLogoUrl":null,"itemLogoPngUrl":null,"delayTime":0,"d
         남김: data/market/raw/session_bond.json
     API https://stock.naver.com/api/securityService/marketindex/majors/dminte
         HTTP 404 · 224 bytes · JSON!
-        앞머리: {"detailCode":"HttpError","message":"Not Found","result":"{\"timestamp\":\"2026-09-11T12:08:43.500+0000\",\"status\":404,\"error\":\"Not Found\",\"message\":\"No message available\",\"path\":\"/market
+        앞머리: {"detailCode":"HttpError","message":"Not Found","result":"{\"timestamp\":\"2026-09-11T22:42:44.221+0000\",\"status\":404,\"error\":\"Not Found\",\"message\":\"No message available\",\"path\":\"/market
         남김: data/market/raw/session_dminte.json
     API https://stock.naver.com/api/securityService/marketindex/majors/dmInte
         HTTP 404 · 224 bytes · JSON!
-        앞머리: {"detailCode":"HttpError","message":"Not Found","result":"{\"timestamp\":\"2026-09-11T12:08:44.147+0000\",\"status\":404,\"error\":\"Not Found\",\"message\":\"No message available\",\"path\":\"/market
+        앞머리: {"detailCode":"HttpError","message":"Not Found","result":"{\"timestamp\":\"2026-09-11T22:42:44.998+0000\",\"status\":404,\"error\":\"Not Found\",\"message\":\"No message available\",\"path\":\"/market
         남김: data/market/raw/session_dmInte.json
     API https://stock.naver.com/api/securityService/marketindex/majors/domesticInte
         HTTP 404 · 230 bytes · JSON!
-        앞머리: {"detailCode":"HttpError","message":"Not Found","result":"{\"timestamp\":\"2026-09-11T12:08:44.978+0000\",\"status\":404,\"error\":\"Not Found\",\"message\":\"No message available\",\"path\":\"/market
+        앞머리: {"detailCode":"HttpError","message":"Not Found","result":"{\"timestamp\":\"2026-09-11T22:42:45.852+0000\",\"status\":404,\"error\":\"Not Found\",\"message\":\"No message available\",\"path\":\"/market
         남김: data/market/raw/session_domesticInte.json
     API https://stock.naver.com/api/securityService/marketindex/majors/domesticInterestRate
         HTTP 404 · 238 bytes · JSON!
-        앞머리: {"detailCode":"HttpError","message":"Not Found","result":"{\"timestamp\":\"2026-09-11T12:08:45.837+0000\",\"status\":404,\"error\":\"Not Found\",\"message\":\"No message available\",\"path\":\"/market
+        앞머리: {"detailCode":"HttpError","message":"Not Found","result":"{\"timestamp\":\"2026-09-11T22:42:46.693+0000\",\"status\":404,\"error\":\"Not Found\",\"message\":\"No message available\",\"path\":\"/market
         남김: data/market/raw/session_domesticInterestRate.json
     API https://stock.naver.com/api/securityService/marketindex/majors/krRate
         HTTP 404 · 224 bytes · JSON!
-        앞머리: {"detailCode":"HttpError","message":"Not Found","result":"{\"timestamp\":\"2026-09-11T12:08:46.611+0000\",\"status\":404,\"error\":\"Not Found\",\"message\":\"No message available\",\"path\":\"/market
+        앞머리: {"detailCode":"HttpError","message":"Not Found","result":"{\"timestamp\":\"2026-09-11T22:42:47.369+0000\",\"status\":404,\"error\":\"Not Found\",\"message\":\"No message available\",\"path\":\"/market
         남김: data/market/raw/session_krRate.json
     API https://stock.naver.com/api/securityService/marketindex/majors/marketRate
         HTTP 404 · 228 bytes · JSON!
-        앞머리: {"detailCode":"HttpError","message":"Not Found","result":"{\"timestamp\":\"2026-09-11T12:08:47.374+0000\",\"status\":404,\"error\":\"Not Found\",\"message\":\"No message available\",\"path\":\"/market
+        앞머리: {"detailCode":"HttpError","message":"Not Found","result":"{\"timestamp\":\"2026-09-11T22:42:48.047+0000\",\"status\":404,\"error\":\"Not Found\",\"message\":\"No message available\",\"path\":\"/market
         남김: data/market/raw/session_marketRate.json
