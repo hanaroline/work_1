@@ -1611,6 +1611,9 @@ def _money_flow_api():
         raise ValueError("증시자금동향 API 응답에 쓸 행이 없음")
     return {"latest": dict(series[0]), "series": series, "unit": "억원",
             "source_url": url,
+            "columns": ["고객예탁금", "신용잔고", "주식형펀드", "채권형펀드"],
+            "note": "증감은 원천이 주는 **부호 있는 값**(*Diff)을 그대로 쓴다.",
+            "delta_note": "*_delta 는 부호 있는 증감, *_chg 는 절대값이다.",
             "missing": "반대매매·미수금은 이 원천에 없다(금투협 소관)"}
 
 
@@ -2787,6 +2790,78 @@ def run(label, fn, *a, **k):
         return None, {"ok": False, "error": "%s: %s" % (type(e).__name__, e)}
 
 
+def carry_kr_session(out, now, path="data/market/kr_carry.json"):
+    """**직전 마감분을 따로 보관했다가, 개장 전 판에 이어 붙인다.**
+
+    2026-09-10 개편 전에는 개장 전에 화면을 긁어도 전날 마감값이 그대로
+    적혀 있었다. 지금 `integration`·`industry` API 는 장이 열리기 전이면
+    오늘 장을 전부 0 으로 준다. 0 은 싣지 않으므로(윗쪽 가드) 등락 종목
+    수·업종·수급·프로그램이 아침 판에서 통째로 빈다 — 어제까지 있던 칸이
+    오늘 사라진 이유가 이것이다.
+
+    그래서 **마감 뒤 수집분을 여기 남겨 두고**, 값이 비어 있는 아침 수집
+    때 그 묶음을 그대로 쓴다. 어느 장의 값인지 헷갈리지 않도록 `bizdate`
+    와 `carried_from` 을 함께 싣는다.
+
+    보관은 **15:35 KST 이후 수집에서만** 한다. 장중 수집분을 남기면 다음
+    날 아침 판이 「장중 어느 한때」를 마감값인 양 말하게 된다.
+    """
+    try:
+        carry = json.load(open(path, encoding="utf-8"))
+    except (OSError, ValueError):
+        carry = {}
+
+    mi = out.get("market_internals") or {}
+    live_internals = {c: v for c, v in mi.items() if v.get("breadth")}
+    live_sectors = (out.get("sectors") or {}).get("all") or []
+    after_close = (now.hour, now.minute) >= (15, 35)
+
+    if after_close and (live_internals or live_sectors):
+        if live_internals:
+            carry["internals"] = live_internals
+            bd = next((v.get("bizdate") for v in live_internals.values() if v.get("bizdate")), None)
+            carry["internals_bizdate"] = bd or now.strftime("%Y%m%d")
+        if live_sectors:
+            carry["sectors"] = live_sectors
+            carry["sectors_bizdate"] = now.strftime("%Y%m%d")
+        carry["saved_at_kst"] = now.strftime("%Y-%m-%d %H:%M:%S")
+        try:
+            os.makedirs(os.path.dirname(path), exist_ok=True)
+            with open(path, "w", encoding="utf-8") as f:
+                json.dump(carry, f, ensure_ascii=False, indent=1)
+        except OSError as e:                                      # noqa: BLE001
+            out["sources"]["carry:save"] = {"ok": False, "error": str(e)}
+
+    used = []
+    today = now.strftime("%Y%m%d")
+    for code, saved in (carry.get("internals") or {}).items():
+        cur = mi.get(code) or {}
+        if cur.get("breadth"):
+            continue                                     # 살아 있는 값이 먼저다
+        bd = carry.get("internals_bizdate")
+        if bd == today:
+            continue                                     # 오늘 값을 되쓰지 않는다
+        merged = dict(saved)
+        merged.update({k: v for k, v in cur.items() if v})   # 장중 고저 등은 유지
+        merged["carried_from"] = bd
+        merged["carried_note"] = "개장 전이라 %s 마감분을 이어 붙였다" % bd
+        out.setdefault("market_internals", {})[code] = merged
+        used.append(code)
+
+    if not live_sectors and carry.get("sectors") and carry.get("sectors_bizdate") != today:
+        v = carry["sectors"]
+        out["sectors"] = {"all": v, "top5": v[:5], "bottom5": v[-5:],
+                          "carried_from": carry.get("sectors_bizdate"),
+                          "carried_note": "개장 전이라 %s 마감분을 이어 붙였다"
+                                          % carry.get("sectors_bizdate")}
+        used.append("sectors")
+
+    if used:
+        out["sources"]["carry:used"] = {"ok": True, "note": "직전 마감분 이어 붙임: "
+                                        + ", ".join(used)}
+    return out
+
+
 def attach_history_perf(out, path="data/market/history.json"):
     """쌓아 둔 history.json 으로 **네이버 스냅숏 항목들의 기간 변화**를 만든다.
 
@@ -3683,6 +3758,9 @@ def main():
             out["sources"]["naver:market:" + code] = st2
         if v:
             out.setdefault("market_internals", {})[code.lower()] = v
+
+    # 개장 전이면 등락 종목 수·업종이 0 으로 오므로 직전 마감분을 이어 붙인다
+    carry_kr_session(out, now)
 
     # 국내 시장금리
     v, st = run("rates", naver_rates, "data/market/raw")
