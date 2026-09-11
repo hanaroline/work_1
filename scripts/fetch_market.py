@@ -3268,7 +3268,7 @@ def probe_next_chunks(pages, dump_dir="data/market/raw"):
             for kw in ("domestic/market/trendDeposit", "domestic/news/list",
                        "securityService/marketindex"):
                 for m in re.finditer(re.escape(kw), js):
-                    ctx.append(js[max(0, m.start() - 260):m.start() + 120])
+                    ctx.append(js[max(0, m.start() - 120):m.start() + 700])
         lines.append("    -- 묶음에 나오는 네이버 호스트 --")
         for h in sorted(hosts)[:40]:
             lines.append("      %s" % h)
@@ -3323,14 +3323,16 @@ def probe_with_session(dump_dir="data/market/raw"):
              # "Route GET:… not found" 라고 또렷이 답하므로 **이름만 맞히면 된다.**
              ("시장지표", "https://stock.naver.com/market/marketindex",
               ["https://stock.naver.com/api/securityService/marketindex/metals",
-               "https://stock.naver.com/api/securityService/marketindex/exchangeRate",
-               "https://stock.naver.com/api/securityService/marketindex/exchanges",
-               "https://stock.naver.com/api/securityService/marketindex/currency",
-               "https://stock.naver.com/api/securityService/marketindex/interest",
-               "https://stock.naver.com/api/securityService/marketindex/interestRate",
-               "https://stock.naver.com/api/securityService/marketindex/bond",
-               "https://stock.naver.com/api/securityService/marketindex/major",
-               "https://stock.naver.com/api/securityService/marketindex/index",
+               # 묶음을 읽으니 exchange 는 **뒤에 코드가 붙는 경로**이고
+               # (모듈 83359: r+"/"+e), majors 는 인자를 받는다(모듈 8929).
+               "https://stock.naver.com/api/securityService/marketindex/exchange/FX_USDKRW",
+               "https://stock.naver.com/api/securityService/marketindex/exchange/exchange",
+               "https://stock.naver.com/api/securityService/marketindex/majors?category=exchange",
+               "https://stock.naver.com/api/securityService/marketindex/majors/exchange",
+               "https://stock.naver.com/api/securityService/marketindex/majors?type=exchange",
+               "https://stock.naver.com/api/securityService/marketindex/interestRate/IRR_CD91",
+               "https://stock.naver.com/api/securityService/marketindex/interest/IRR_CD91",
+               "https://stock.naver.com/api/securityService/marketindex/rate",
                "https://stock.naver.com/api/securityService/marketindex/agriculture"])]
 
     lines = ["세션을 지닌 채 API 부르기 %s KST"
