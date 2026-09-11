@@ -29,7 +29,8 @@ import os
 import glob
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from fetch_reports import THEMES, theme_counts, _sentences, pool_key  # noqa: E402
+from fetch_reports import (THEMES, theme_counts, _sentences, pool_key,  # noqa: E402
+                           _TP_MOVE)
 
 OK, BAD, WARN = [], [], []
 
@@ -282,7 +283,8 @@ def verify(path):
         if not r.get("target_move"):
             continue
         hay = (r.get("excerpt") or "") + " " + (r.get("title") or "")
-        if not re.search(r"(상향|하향|유지|상승|하락|조정)", hay):
+        # 방향어만으로는 모자라다 — 목표주가와 묶여 있어야 근거다.
+        if not _TP_MOVE.search(hay):
             mv_noevi.append((r["url"], r["target_move"]))
     check("다4-1 상하향에 본문 근거가 있음", not mv_noevi,
           "상하향 %d건 중 근거 못 찾음 %d"
