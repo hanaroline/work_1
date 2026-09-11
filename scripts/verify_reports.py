@@ -267,23 +267,36 @@ def verify(path):
           "%d건 중 원문에서 못 찾음 %d" % (sum(1 for r in rows if r.get("target_price")),
                                           len(tp_bad)))
     # 9/11 개편 뒤로 목표주가는 네이버가 `goalPrice` 칸으로 준다. 칸에서 온
-    # 수는 본문 글자에 없을 수 있으므로 위 잣대를 그대로 대면 안 된다 —
-    # 대신 **직전 목표가와 나란히** 있는지, 방향이 두 수와 맞는지를 본다.
-    api_tp = [r for r in rows if r.get("target_from") == "api"]
-    move_bad = []
-    for r in api_tp:
-        goal, prev, mv = r.get("target_price"), r.get("prev_target_price"), r.get("target_move")
-        if prev is None or mv is None:
+    # 수는 본문 글자에 없을 수 있어 위 잣대(다4)를 그대로 대면 안 되므로
+    # 거기서는 건너뛰고, 대신 여기서 **상하향이 본문 근거를 가졌는지**를 본다.
+    #
+    # 왜 이 검사가 생겼나. 같은 응답에 있는 `prevGoalPrice` 를 직전 목표가로
+    # 읽고 goal 과 견주어 상하향을 가렸다가, 34건이 몽땅 「상향」으로 나왔다.
+    # 그 칸은 실은 **작성일 주가**였고(`priceAtWriteDate` 와 같은 값),
+    # 그 견주기는 「목표가가 그날 주가보다 높다」는 말일 뿐이었다. 하마터면
+    # 「목표주가 8건 상향」이 머리 요약에 실릴 뻔했다.
+    #
+    # 그래서 상하향은 본문이 그렇게 적은 경우에만 인정한다.
+    mv_noevi = []
+    for r in rows:
+        if not r.get("target_move"):
             continue
-        want = "상향" if goal > prev else "하향" if goal < prev else "유지"
-        if mv != want:
-            move_bad.append((r["url"], goal, prev, mv))
-    check("다4-1 칸에서 온 목표주가의 방향이 두 수와 맞음", not move_bad,
-          "칸에서 온 %d건 중 어긋남 %d" % (len(api_tp), len(move_bad)))
-    for u, g, p_, mv in move_bad[:5]:
-        warn("다4-1 눈으로 볼 것", "%s→%s 인데 %s — %s" % (p_, g, mv, u))
-    for u, tp in tp_bad[:5]:
-        warn("다4 눈으로 볼 것", "%s → %s" % (tp, u))
+        hay = (r.get("excerpt") or "") + " " + (r.get("title") or "")
+        if not re.search(r"(상향|하향|유지|상승|하락|조정)", hay):
+            mv_noevi.append((r["url"], r["target_move"]))
+    check("다4-1 상하향에 본문 근거가 있음", not mv_noevi,
+          "상하향 %d건 중 근거 못 찾음 %d"
+          % (sum(1 for r in rows if r.get("target_move")), len(mv_noevi)))
+    for u, mv in mv_noevi[:5]:
+        warn("다4-1 눈으로 볼 것", "%s — %s" % (mv, u))
+
+    # 한쪽으로만 쏠린 상하향은 의심한다. 위의 흠이 바로 그 모양이었다 —
+    # 상향 34 · 하향 0 · 유지 0. 다섯 건이 넘는데 모두 한 방향이면 사람이
+    # 봐야 한다. 드물게 그런 날이 있을 수 있으므로 참고로만 띄운다.
+    mvs = [r["target_move"] for r in rows if r.get("target_move")]
+    if len(mvs) >= 5 and len(set(mvs)) == 1:
+        warn("다4-2 참고", "상하향 %d건이 모두 「%s」 — 한쪽으로만 쏠렸는지 보십시오"
+             % (len(mvs), mvs[0]))
 
     # 머리 요약에 실리는 인용도 같은 잣대로 본다.
     brief_bad, brief_n = [], 0
