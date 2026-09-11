@@ -95,7 +95,10 @@ table.data .perfrow i{font-style:normal;opacity:.35;padding:0 3px}
 /* 격자 칸 안에서는 표가 min-width 를 고집하면 안 된다 — 칸보다 넓어져
    700~1080px 구간에서 62 곳이 넘쳤다. 폭을 풀고 글자를 한 치수 줄인다. */
 .duo table.data,.trio table.data{min-width:0!important;width:100%}
-.duo .table-wrap,.trio .table-wrap{overflow-x:visible}
+/* 칸보다 넓은 표는 **제 상자 안에서 밀어 보게** 둔다. `visible` 로 두면
+   칸 밖으로 삐져나와 쪽 전체가 가로로 밀린다 — 증시 주변자금 표(여섯 칸)가
+   되살아나자 핵심본 940~1100px 구간에서 27 곳이 넘쳤다.             */
+.duo .table-wrap,.trio .table-wrap{overflow-x:auto}
 .trio table.data th,.trio table.data td{padding:3px 5px;font-size:12px}
 .trio table.data caption{font-size:12.5px}
 /* 반 칸에 들어가려면 표가 350px 안쪽이어야 한다. 글자와 여백을 한 치수 줄이고,

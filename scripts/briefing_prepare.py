@@ -164,7 +164,13 @@ def _tables(C):
           TH("하락", "Dec", "n"), TH("코스닥 %", "KOSDAQ %", "n"), TH("상승", "Adv", "n"),
           TH("하락", "Dec", "n"), TH("검증", "Verified", "n opt")]
     brows = []
+    # **아직 안 끝난 장은 줄로 세우지 않는다.** 아침 판을 장중에 만들면
+    # history 에 오늘 줄이 이미 들어 있어(개편 뒤 수집은 장중에도 값을 준다)
+    # 「오늘 마감」인 양 읽힌다. 마지막 마감일까지만 싣는다.
+    last_kr = (C["KS"] or {}).get("date") or ""
     for r in (C["H"].get("rows") or []):
+        if last_kr and r.get("date", "") > last_kr:
+            continue
         # 수집이 네이버를 못 받은 날은 `breadth` 자체가 없는 줄이 남는다
         # (2026-09-10 저녁 수집 셋이 그랬다). 그런 줄에서 죽지 말고, 값이
         # 0 으로 들어온 날과 똑같이 «—» 로 비워 둔다 — 지수 등락률은 있으므로
