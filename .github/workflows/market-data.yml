@@ -86,10 +86,35 @@ jobs:
           git add data/market
           if git diff --staged --quiet; then
             echo "변경 없음"
-          else
-            git commit -m "시세 수집 $(TZ=Asia/Seoul date '+%Y-%m-%d %H:%M KST')"
-            git push
+            exit 0
           fi
+          git commit -m "시세 수집 $(TZ=Asia/Seoul date '+%Y-%m-%d %H:%M KST')"
+
+          # **밀리면 되받아서 다시 민다.** 2026-09-11 18:05 수집이 여기서
+          # 죽었다 — 같은 시각 리포트 수집이 main 에 커밋하는 중이라 푸시가
+          # 거절됐고, 재시도가 없어 **그 수집분이 통째로 사라졌다.** 그날
+          # 장마감 판을 제때 못 낸 직접 원인이다. 리포트 수집이 평일 예약
+          # (08:40·09:25·13:00·17:20 KST)으로 돌기 시작하면서 겹칠 자리가
+          # 늘었으므로 경합은 앞으로도 난다.
+          #
+          # 서로 다른 파일을 건드리므로(이쪽은 data/market, 저쪽은 data/reports)
+          # 되받기는 거의 언제나 깨끗하다. 충돌이 나면 그때는 조용히 덮지 말고
+          # 실패로 끝낸다 — 시세 파일을 잘못 합치는 것이 더 나쁘다.
+          for i in 1 2 3 4 5; do
+            if git push; then
+              echo "밀어 넣음 (시도 $i)"
+              exit 0
+            fi
+            echo "거절됨 — 되받아 다시 시도한다 ($i/5)"
+            if ! git pull --rebase --no-edit origin main; then
+              git rebase --abort || true
+              echo "::error::되받기 충돌 — 손으로 확인하십시오"
+              exit 1
+            fi
+            sleep $((i * 5))
+          done
+          echo "::error::다섯 번 밀어 봤지만 모두 거절됐습니다"
+          exit 1
 
       - name: 요약
         if: always()
