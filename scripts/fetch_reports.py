@@ -1591,6 +1591,15 @@ def drop_unsourced(r):
     # 다음 판에서 되살아난다.
     r.pop("prev_target_price", None)
 
+    # 상하향도 근거를 따진다. 새로 받은 줄은 본문이 그렇게 적었을 때만
+    # 붙으므로 근거가 있지만, **지난 판에서 넘어온 줄**에는 잘못된 판정이
+    # 그대로 실려 온다(작성일 주가를 직전 목표가로 잘못 읽던 때의 값).
+    # 발췌에도 제목에도 그런 말이 없으면 댈 근거가 없으므로 지운다.
+    if r.get("target_move"):
+        hay = (r.get("excerpt") or "") + " " + (r.get("title") or "")
+        if not re.search(r"상향|하향|유지|상승|하락|조정", hay):
+            r.pop("target_move", None)
+
     tp = r.get("target_price")
     if tp and r.get("target_from") != "api":
         hay = _SQ_NUM.sub("", (r.get("excerpt") or "") + " " + (r.get("title") or ""))
