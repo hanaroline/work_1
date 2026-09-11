@@ -3326,14 +3326,16 @@ def probe_with_session(dump_dir="data/market/raw"):
                # 묶음을 읽으니 exchange 는 **뒤에 코드가 붙는 경로**이고
                # (모듈 83359: r+"/"+e), majors 는 인자를 받는다(모듈 8929).
                "https://stock.naver.com/api/securityService/marketindex/exchange/FX_USDKRW",
-               "https://stock.naver.com/api/securityService/marketindex/exchange/exchange",
-               "https://stock.naver.com/api/securityService/marketindex/majors?category=exchange",
+               # **목록은 majors/<분류>** 다 — majors/exchange 가 200 이었다.
                "https://stock.naver.com/api/securityService/marketindex/majors/exchange",
-               "https://stock.naver.com/api/securityService/marketindex/majors?type=exchange",
-               "https://stock.naver.com/api/securityService/marketindex/interestRate/IRR_CD91",
-               "https://stock.naver.com/api/securityService/marketindex/interest/IRR_CD91",
-               "https://stock.naver.com/api/securityService/marketindex/rate",
-               "https://stock.naver.com/api/securityService/marketindex/agriculture"])]
+               "https://stock.naver.com/api/securityService/marketindex/majors/interest",
+               "https://stock.naver.com/api/securityService/marketindex/majors/interestRate",
+               "https://stock.naver.com/api/securityService/marketindex/majors/bond",
+               "https://stock.naver.com/api/securityService/marketindex/majors/rate",
+               "https://stock.naver.com/api/securityService/marketindex/majors/metals",
+               "https://stock.naver.com/api/securityService/marketindex/majors/energy",
+               "https://stock.naver.com/api/securityService/marketindex/majors/domesticInterest",
+               "https://stock.naver.com/api/securityService/marketindex/majors/interestKr"])]
 
     lines = ["세션을 지닌 채 API 부르기 %s KST"
              % datetime.now(KST).strftime("%Y-%m-%d %H:%M:%S"), ""]
