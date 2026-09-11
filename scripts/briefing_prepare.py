@@ -243,11 +243,11 @@ def _tables(C):
     # 다음 날 어긋난다 — 실제로 1,384 가 박힌 채 1,341 짜리 표 밑에 서 있었다.
     _uk = (C["byk"].get("usdkrw") or {}).get("close")
     _usdkrw_ex = n(_uk, 0) if _uk else "1,340"
-    # 핵심본에는 접는 상세가 없다. 「아래 상세에 따로 두었다」고 적으면
-    # 있지도 않은 자리를 가리킨다 — 핵심본에서는 어디에 있는지를 바르게 적는다.
-    _usdfx_where_ko = ("<strong>같은 날짜의 전체 판</strong>에 따로 두었습니다" if CORE[0]
+    # 핵심본에는 접는 상세가 없다. 「아래 상세에 따로 두었다」고 적으면 있지도
+    # 않은 자리를 가리킨다 — 핵심본은 그 표를 이 표 **바로 아래**에 세운다.
+    _usdfx_where_ko = ("<strong>바로 아래</strong>에 따로 두었습니다" if CORE[0]
                        else "아래 상세에 따로 두었습니다")
-    _usdfx_where_en = ("sit in <strong>the full edition of the same date</strong>" if CORE[0]
+    _usdfx_where_en = ("sit <strong>just below</strong>" if CORE[0]
                        else "sit in the detail below")
 
     C["fx_tbl"] = tbl("원화 환율 &mdash; 오늘 아침 " + DK(C["today"]),

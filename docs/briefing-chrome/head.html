@@ -577,8 +577,11 @@ table.data td.barcell{width:118px;line-height:0;padding-top:9px}
 <div class="topbar">
   <span class="chip"><span data-lang-ko>고객 브리핑용 · 국내 개장일</span><span data-lang-en>For client briefing · Korea trading</span></span>
   <div class="topbar-actions">
-    <button type="button" class="print-btn" data-print="brief" title="상세를 접은 요약본으로 인쇄 / PDF 저장 — 고객 전달용"><span data-lang-ko>요약 PDF</span><span data-lang-en>Summary PDF</span></button>
-    <button type="button" class="print-btn alt" data-print="full" title="모든 상세를 펼친 전체본으로 인쇄 / PDF 저장 — 브리핑 준비용"><span data-lang-ko>전체 PDF</span><span data-lang-en>Full PDF</span></button>
+    <!-- 「요약 PDF」 단추를 걷어냈다(2026-09-12). 상세를 접은 채 인쇄하면
+         종이에는 펼칠 단추가 없어 **제목만 찍히고 본문이 사라진다** — 근거
+         블록 일곱이 그렇게 나가 「빠진 자리」로 읽혔다. 짧은 판이 필요하면
+         접어서 감추는 것이 아니라 같은 날짜의 **핵심본**을 쓴다. -->
+    <button type="button" class="print-btn" data-print="full" title="모든 상세를 펼쳐 인쇄 / PDF 저장 — 짧은 판이 필요하면 같은 날짜의 핵심본을 쓰십시오"><span data-lang-ko>PDF 저장</span><span data-lang-en>Save as PDF</span></button>
     <button type="button" class="expand-all" aria-pressed="false"><span class="lbl-expand"><span data-lang-ko>전체 펼치기</span><span data-lang-en>Expand all</span></span><span class="lbl-collapse"><span data-lang-ko>전체 접기</span><span data-lang-en>Collapse all</span></span></button>
     <div class="lang-toggle" role="radiogroup" aria-label="Language">
       <button type="button" data-lang="ko" role="radio" aria-checked="true">KO</button>
