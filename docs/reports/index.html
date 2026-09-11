@@ -1,0 +1,934 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>증권사 리포트 다이제스트</title>
+  <style>
+    /* 표면·글자색은 대시보드(index.html)와 같은 것을 쓴다 — 두 화면을 오가도
+       같은 자리에 있다는 느낌이 끊기지 않게.
+       다만 **강조색은 미래에셋 브랜드**를 따른다. 이 화면은 고객·동료에게
+       건네는 산출물이고, 브랜드 자산은 이미 정해져 있다:
+       오렌지 #F58220(강조·섹션 룰·CTA), 블루 #043B72(링크·수치).
+       모서리는 4px 이하, 그림자는 쓰지 않는다. */
+    :root {
+      --mas-orange: #F58220; --mas-orange-active: #CB6015; --mas-soft: #FAB072;
+      --mas-blue: #043B72;
+      --surface-1: #fcfcfb; --page: #f9f9f7;
+      --text-primary: #0b0b0b; --text-secondary: #52514e; --text-muted: #898781;
+      --grid: #e1e0d9; --border: rgba(11,11,11,0.10);
+      --series-1: #043B72; --series-2: #1baf7a; --series-3: #eda100;
+      --series-5: #4a3aa7; --series-6: #e34948; --series-8: #eb6834;
+      --up: #d03b3b; --down: #043B72;
+      --shadow: none;
+      --radius: 4px;
+    }
+    :root[data-theme="dark"] {
+      --surface-1: #1a1a19; --page: #0d0d0d;
+      --text-primary: #ffffff; --text-secondary: #c3c2b7; --text-muted: #898781;
+      --grid: #2c2c2a; --border: rgba(255,255,255,0.10);
+      --series-1: #7E9FC3; --series-2: #199e70; --series-3: #c98500;
+      --series-5: #9085e9; --series-6: #e66767; --series-8: #d95926;
+      --up: #ff6b6b; --down: #7E9FC3;
+      --shadow: none;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root:not([data-theme="light"]) {
+        --surface-1: #1a1a19; --page: #0d0d0d;
+        --text-primary: #ffffff; --text-secondary: #c3c2b7; --text-muted: #898781;
+        --grid: #2c2c2a; --border: rgba(255,255,255,0.10);
+        --series-1: #7E9FC3; --series-2: #199e70; --series-3: #c98500;
+        --series-5: #9085e9; --series-6: #e66767; --series-8: #d95926;
+        --up: #ff6b6b; --down: #7E9FC3;
+        --shadow: none;
+      }
+    }
+
+    * { box-sizing: border-box; }
+    html, body { margin: 0; padding: 0; }
+    body {
+      font-family: system-ui, -apple-system, "Segoe UI", "Malgun Gothic", sans-serif;
+      background: var(--page); color: var(--text-primary); line-height: 1.55;
+      -webkit-font-smoothing: antialiased;
+    }
+    a { color: inherit; }
+
+    .topbar {
+      position: sticky; top: 0; z-index: 20; background: var(--surface-1);
+      border-bottom: 1px solid var(--border);
+      display: flex; align-items: center; gap: 10px; padding: 12px 20px; flex-wrap: wrap;
+    }
+    .brand { font-weight: 700; font-size: 17px; letter-spacing: -.02em; white-space: nowrap; }
+    .brand .dot { color: var(--mas-orange); }
+    .grow { flex: 1 1 240px; min-width: 160px; }
+    input[type="search"], select {
+      width: 100%; padding: 9px 12px; font-size: 14px; border: 1px solid var(--border);
+      border-radius: 2px; background: var(--page); color: var(--text-primary);
+    }
+    /* 상단 바의 날짜 고르개는 글자만큼만 차지한다 — width:100% 를 물려받으면
+       한 줄을 통째로 먹고 나머지 단추가 아래로 밀린다. */
+    .topbar select { width: auto; min-width: 112px; }
+    .search { display: flex; gap: 8px; align-items: center; }
+    .btn-primary { background: var(--mas-orange); color: #fff; border-color: transparent; font-weight: 600; }
+    .btn-primary:hover { filter: brightness(1.08); }
+    input[type="search"]:focus, select:focus { outline: 2px solid var(--mas-orange); border-color: transparent; }
+    .btn {
+      border: 1px solid var(--border); background: var(--page); color: var(--text-primary);
+      padding: 9px 12px; font-size: 14px; border-radius: 2px; cursor: pointer; white-space: nowrap;
+      text-decoration: none; display: inline-flex; align-items: center; gap: 6px;
+    }
+    .btn:hover { border-color: var(--mas-orange); }
+
+    .wrap { max-width: 1080px; margin: 0 auto; padding: 20px; }
+
+    /* 머리 요약 */
+    .head { display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap; margin-bottom: 6px; }
+    .head h1 { font-size: 22px; margin: 0; letter-spacing: -.02em; }
+    .head .sub { font-size: 13px; color: var(--text-muted); }
+    .stats { display: flex; gap: 10px; flex-wrap: wrap; margin: 14px 0 6px; }
+    .stat {
+      background: var(--surface-1); border: 1px solid var(--border); border-radius: var(--radius);
+      padding: 12px 16px; box-shadow: var(--shadow); min-width: 132px;
+    }
+    .stat .k { font-size: 12px; color: var(--text-muted); }
+    .stat .v { font-size: 22px; font-weight: 700; letter-spacing: -.02em; }
+    .stat .v small { font-size: 13px; font-weight: 500; color: var(--text-secondary); }
+
+    .section-title {
+      display: flex; align-items: center; gap: 8px; font-size: 15px; font-weight: 700;
+      margin: 26px 0 12px;
+    }
+    /* 섹션을 여는 1px 오렌지 룰 — 미래에셋 레이아웃 시그니처다. */
+    .section-title { border-top: 1px solid var(--mas-orange); padding-top: 10px; }
+    .section-title .accent { display: none; }
+    .section-title .hint { font-weight: 400; font-size: 12px; color: var(--text-muted); }
+
+    /* 걸러 보기 */
+    .filters { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; margin-bottom: 12px; }
+    .chip {
+      font-size: 13px; cursor: pointer; padding: 6px 12px; border-radius: 2px;
+      border: 1px solid var(--border); background: var(--surface-1); color: var(--text-secondary);
+    }
+    .chip:hover { border-color: var(--mas-orange); color: var(--text-primary); }
+    .chip.on { background: var(--mas-orange); color: #fff; border-color: transparent; }
+    .chip .n { opacity: .7; margin-left: 4px; font-size: 11px; }
+    .filters select { width: auto; min-width: 130px; }
+
+    /* 리포트 카드 */
+    .cards { display: grid; gap: 10px; }
+    .cards.two { grid-template-columns: repeat(auto-fill, minmax(330px, 1fr)); }
+    .rp {
+      background: var(--surface-1); border: 1px solid var(--border); border-radius: var(--radius);
+      padding: 14px 16px; box-shadow: var(--shadow); cursor: pointer; position: relative;
+    }
+    .rp:hover { border-color: var(--mas-orange); }
+    /* 갈래마다 왼쪽에 띠를 둔다 — 마흔 쪽을 넘길 때 눈이 갈래를 먼저 잡는다.
+       색은 브랜드 차트 팔레트 차례를 그대로 쓴다. */
+    .rp[data-cat="종목분석"]   { border-left: 3px solid #F58220; }
+    .rp[data-cat="산업분석"]   { border-left: 3px solid #043B72; }
+    .rp[data-cat="시황정보"]   { border-left: 3px solid #FAB072; }
+    .rp[data-cat="투자정보"]   { border-left: 3px solid #0086B8; }
+    .rp[data-cat="경제분석"]   { border-left: 3px solid #AD624E; }
+    .rp[data-cat="채권분석"]   { border-left: 3px solid #00A9CE; }
+    .rp[data-cat="리서치 리포트"] { border-left: 3px solid #7E9FC3; }
+    .rp[data-cat="해외 리서치"]  { border-left: 3px solid #CB6015; }
+    .stat .v, .themes .c, .rp .foot { font-variant-numeric: tabular-nums; }
+
+    /* 전체본 PDF 의 차례. 마흔 쪽을 그냥 넘기게 두지 않는다. */
+    .toc { border: 1px solid var(--border); border-radius: 2px; padding: 12px 16px; margin: 12px 0; }
+    .toc b { display: block; font-size: 11px; letter-spacing: .06em; color: var(--mas-orange); margin-bottom: 6px; }
+    .toc ol { margin: 0; padding-left: 18px; font-size: 13px; color: var(--text-secondary); }
+    .toc li { margin: 2px 0; }
+    .grp {
+      margin: 16px 0 8px; font-size: 14px; font-weight: 700;
+      border-top: 1px solid var(--mas-orange); padding-top: 8px;
+    }
+    .grp .n { font-weight: 400; font-size: 12px; color: var(--text-muted); margin-left: 6px; }
+    .rp .tags { display: flex; gap: 6px; flex-wrap: wrap; align-items: center; margin-bottom: 6px; }
+    .tag {
+      font-size: 11px; padding: 2px 8px; border-radius: 2px; border: 1px solid var(--border);
+      color: var(--text-secondary); white-space: nowrap;
+    }
+    .tag.cat { border-color: transparent; background: rgba(4,59,114,.10); color: var(--series-1); font-weight: 600; }
+    .tag.stock { border-color: transparent; background: var(--grid); color: var(--text-primary); font-weight: 600; }
+    .tag.op { border-color: transparent; background: rgba(27,175,122,.15); color: var(--series-2); font-weight: 600; }
+    .tag.op.hold { background: rgba(237,161,0,.15); color: var(--series-3); }
+    .tag.op.sell { background: rgba(227,73,72,.15); color: var(--series-6); }
+    .tag.tp { border-color: transparent; background: var(--grid); }
+    .tag.tp .mv-up { color: var(--up); font-weight: 700; }
+    .tag.tp .mv-dn { color: var(--down); font-weight: 700; }
+    .rp .t {
+      font-size: 15px; font-weight: 600; letter-spacing: -.01em; text-decoration: none;
+      display: inline-block; margin-bottom: 4px;
+    }
+    .rp .t:hover { text-decoration: underline; text-decoration-color: var(--series-1); }
+    .rp .sum { font-size: 13.5px; color: var(--text-secondary); margin: 4px 0 8px; }
+    .rp .sum.none { color: var(--text-muted); font-style: italic; }
+    .rp .sum .lead { color: var(--text-primary); font-weight: 600; }
+    .tag.fact { border-color: transparent; background: rgba(245,130,32,.12); color: var(--text-secondary); }
+    .wk-rank {
+      display: inline-flex; align-items: center; justify-content: center;
+      min-width: 20px; height: 20px; padding: 0 5px; border-radius: 2px;
+      background: var(--mas-orange); color: #fff; font-size: 11px; font-weight: 700;
+    }
+    .wk-stocks {
+      display: flex; flex-wrap: wrap; gap: 6px; margin: 0 0 10px;
+      font-size: 12.5px; color: var(--text-secondary);
+    }
+    .wk-stocks .s {
+      border: 1px solid var(--border); border-radius: 2px; padding: 3px 9px;
+      background: var(--surface-1);
+    }
+    .wk-stocks .s b { color: var(--text-primary); }
+    .tag.ov { border-color: transparent; background: var(--mas-orange); color: #fff; font-weight: 700; }
+
+    /* 서두 총평 */
+    .ov {
+      border: 1px solid var(--border); border-left: 3px solid var(--mas-orange);
+      border-radius: 2px; background: var(--surface-1); padding: 12px 16px; margin: 12px 0 4px;
+    }
+    .ov-k {
+      font-size: 11px; font-weight: 700; letter-spacing: .06em; color: var(--mas-orange);
+      margin-bottom: 5px;
+    }
+    .ov-t { margin: 0; font-size: 14px; color: var(--text-primary); line-height: 1.65; }
+    .themes { margin-top: 10px; display: grid; gap: 3px; }
+    .themes .th { display: grid; grid-template-columns: 104px 1fr 34px; align-items: center; gap: 8px; }
+    .themes .n { font-size: 12px; color: var(--text-secondary); }
+    .themes .bar { height: 7px; background: var(--grid); border-radius: 1px; overflow: hidden; }
+    .themes .bar i { display: block; height: 100%; background: var(--mas-orange); }
+    .themes .c { font-size: 12px; color: var(--text-muted); text-align: right;
+                 font-variant-numeric: tabular-nums; }
+
+    /* 논점 — 주제마다 리포트가 실제로 한 말 */
+    .bf { margin: 10px 0 0; break-inside: avoid; page-break-inside: avoid; }
+    .bf-h {
+      display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap;
+      border-top: 1px solid var(--mas-orange); padding-top: 6px; margin-bottom: 4px;
+    }
+    .bf-h b { font-size: 13.5px; }
+    .bf-h span { font-size: 11.5px; color: var(--text-muted); }
+    .bf ul { margin: 0; padding-left: 16px; }
+    .bf li {
+      font-size: 13px; color: var(--text-secondary); line-height: 1.6; margin: 3px 0;
+    }
+    .bf li::marker { color: var(--mas-orange); }
+    .bf .who { color: var(--series-1); font-weight: 700; text-decoration: none; }
+    .bf .who:hover { text-decoration: underline; }
+    .bf .mv-up { color: var(--up); font-weight: 700; }
+    .bf .mv-dn { color: var(--down); font-weight: 700; }
+    .rp .ex {
+      display: none; font-size: 13px; color: var(--text-secondary); white-space: pre-wrap;
+      border-left: 3px solid var(--grid); padding: 6px 0 6px 12px; margin: 8px 0;
+      max-height: 320px; overflow: auto;
+    }
+    .rp.open .ex { display: block; }
+    .rp .foot {
+      display: flex; gap: 10px; flex-wrap: wrap; align-items: center;
+      font-size: 12px; color: var(--text-muted);
+    }
+    .rp .foot .go { color: var(--series-1); text-decoration: none; font-weight: 600; }
+    .rp .foot .go:hover { text-decoration: underline; }
+    .rp .foot button {
+      font: inherit; font-size: 12px; background: none; border: none; padding: 0;
+      color: var(--series-1); cursor: pointer;
+    }
+    .sep { color: var(--border); }
+
+    .state {
+      text-align: center; padding: 60px 20px; color: var(--text-muted);
+      background: var(--surface-1); border: 1px solid var(--border); border-radius: var(--radius);
+    }
+    .state .big { font-size: 34px; margin-bottom: 10px; }
+    .foot-note {
+      margin: 30px 0 10px; font-size: 12px; color: var(--text-muted); line-height: 1.7;
+      border-top: 1px solid var(--border); padding-top: 14px;
+    }
+    @media (max-width: 640px) {
+      .wrap { padding: 14px; }
+      .stat { flex: 1 1 40%; min-width: 0; }
+    }
+
+    /* ===== 인쇄 · PDF =====
+       화면은 걸러 보고 눌러 보는 물건이고, 종이는 훑는 물건이다. 누를 수
+       없는 것(조회창·걸개·단추)은 지우고, 링크는 눌러도 되게 남기되 카드가
+       쪽 경계에서 잘리지 않게 한다.
+
+       `body.pdf-summary` 는 「주요 리포트」까지만, `body.pdf-full` 은 전체
+       목록까지 싣는다. scripts/reports_to_pdf.mjs 가 이 이름을 붙인다. */
+    @media print {
+      /* 종이는 늘 밝은 바탕이다 — 다크 테마로 뽑으면 잉크만 먹는다. */
+      :root, :root[data-theme="dark"] {
+        --surface-1: #ffffff; --page: #ffffff;
+        --text-primary: #111111; --text-secondary: #333333; --text-muted: #666666;
+        --grid: #dddddd; --border: rgba(0,0,0,0.18); --shadow: none;
+      }
+      /* 쪽 여백은 **여기서** 잡아야 한다. 크로뮴은 문서가 @page 여백을 선언하면
+         그것을 쓰고 PDF 호출의 margin 값을 무시한다. margin:0 으로 두었더니
+         본문이 종이 끝까지 흘러, 꼬리말이 마지막 줄 위에 겹쳐 찍혔다
+         (9/3·9/4 주간본). 아래 값은 reports_to_pdf.mjs 의 margin 과 같게 둔다. */
+      @page { size: A4; margin: 13mm 11mm 16mm; }
+      body { background: #fff; font-size: 9.5pt; line-height: 1.45; }
+      .topbar, .filters, .rp .foot button, #clearBtn, #themeBtn, #day, #dashLink { display: none !important; }
+      .wrap { max-width: none; padding: 0; }
+      .head h1 { font-size: 16pt; }
+      .head .sub { font-size: 8pt; }
+      .stats { gap: 6px; }
+      .stat { padding: 7px 10px; min-width: 0; flex: 1 1 0; box-shadow: none; }
+      .stat .v { font-size: 13pt; }
+      .stat .k { font-size: 7.5pt; }
+      .section-title { margin: 14px 0 8px; font-size: 11pt; }
+      .section-title .hint { font-size: 7.5pt; }
+      /* 카드는 쪽 경계에서 자르지 않는다 — 제목만 남고 넘어가면 못 읽는다. */
+      .rp { break-inside: avoid; page-break-inside: avoid; padding: 8px 10px; box-shadow: none; }
+      /* 격자(grid)는 쪽 경계에서 제대로 쪼개지지 않는다 — 요약을 여섯 줄로
+         늘리자 마지막 줄의 카드가 꼬리말 위로 넘쳐 겹쳤다. 인쇄에서는
+         흐르는 단(multi-column)으로 바꾼다. 단은 쪽을 넘어 이어지고
+         break-inside 도 제대로 듣는다. */
+      .cards { display: block; gap: 0; }
+      .cards.two { display: block; columns: 2; column-gap: 8px; }
+      .cards > .rp { display: block; width: 100%; margin: 0 0 6px; }
+      .rp .t { font-size: 10pt; }
+      .rp .sum { font-size: 8.5pt; margin: 3px 0 5px; }
+      .rp .ex { display: none !important; }          /* 발췌는 종이에서 뺀다 */
+      .rp .foot { font-size: 7.5pt; }
+      .rp .foot .go { text-decoration: underline; }
+      .tag { font-size: 7pt; }
+      .foot-note { font-size: 7.5pt; margin-top: 16px; }
+      .rp .sum .lead { color: #000; }
+      .wk-rank { background: #444; }
+      .wk-stocks { font-size: 8pt; }
+      /* 머리 요약 상자는 **쪼개질 수 있어야 한다.** 통째로 묶어 두었더니,
+         논점이 다섯 갈래로 늘어난 판에서 상자가 한 쪽을 넘었고 — 브라우저는
+         쪼갤 수 없으니 넘치게 두어 — 마지막 두 줄이 꼬리말 위에 겹쳐 찍혔다
+         (9/4 주간본 1쪽). 상자는 열어 주고, 안의 토막만 붙여 둔다. */
+      /* 테두리·바탕을 두른 상자는 쪽을 넘길 때 크로뮴이 제대로 쪼개지 못하고
+         아랫단을 꼬리말 위로 흘린다. 종이에서는 상자를 풀고 왼쪽 선만 남긴다 */
+      .ov { border: 0; border-left: 2px solid var(--mas-orange); background: none;
+            padding: 0 0 0 9px; margin: 8px 0 4px; break-inside: auto; }
+      /* 붙여 두는 단위는 **한 줄**까지다. 논점 한 덩이(제목+세 줄)를 통째로
+         묶어 두면, 남은 자리보다 큰 덩이가 걸렸을 때 브라우저가 쪼개지도
+         옮기지도 못해 꼬리말 위로 넘쳐 찍힌다(9/4 주간본 1쪽). 줄만 붙인다. */
+      .ov .themes { break-inside: avoid; page-break-inside: avoid; }
+      .ov .bf, .bf { break-inside: auto; page-break-inside: auto; }
+      .bf li, .ov li, .themes .th { break-inside: avoid; page-break-inside: avoid; }
+      .bf-h { break-after: avoid; page-break-after: avoid; }
+      .ov-t { font-size: 9pt; }
+      .ov-k { font-size: 7.5pt; }
+      .themes .th { grid-template-columns: 88px 1fr 26px; }
+      .themes .n, .themes .c { font-size: 7.5pt; }
+      .bf li { font-size: 8.5pt; margin: 2px 0; }
+      .bf-h b { font-size: 9.5pt; }
+      .bf-h span { font-size: 7.5pt; }
+      .bf .who { text-decoration: underline; }
+      .toc { padding: 8px 11px; break-inside: avoid; }
+      .toc ol { font-size: 8.5pt; }
+      .grp { font-size: 10pt; margin: 10px 0 6px; break-after: avoid; page-break-after: avoid; }
+      /* 요약본에서는 전체 목록과 주간을 뺀다 — 그날 판만 담는다. */
+      body.pdf-summary #listTop, body.pdf-summary #list, body.pdf-summary #hit,
+      body.pdf-summary #weekly-wrap { display: none !important; }
+      body.pdf-full #hl-wrap { display: block !important; }
+      /* 주간본은 주간 절만 담는다. 그날 판은 요약본이 이미 맡았다. */
+      body.pdf-weekly #stats, body.pdf-weekly #ov-day, body.pdf-weekly #hl-wrap,
+      body.pdf-weekly #moves-wrap, body.pdf-weekly #listTop, body.pdf-weekly #list,
+      body.pdf-weekly #hit { display: none !important; }
+      body.pdf-weekly #weekly-wrap { display: block !important; }
+    }
+  </style>
+</head>
+<body>
+  <div class="topbar">
+    <div class="brand"><span class="dot">◼</span> 증권사 리포트 다이제스트</div>
+    <form class="grow search" id="searchForm" autocomplete="off">
+      <input type="search" id="q" list="pickList" placeholder="종목명 · 종목코드 · 증권사 · 제목 (예: 삼성전자, 005930)" />
+      <datalist id="pickList"></datalist>
+      <button type="submit" class="btn btn-primary">조회</button>
+      <button type="button" class="btn" id="clearBtn" title="검색 지우기">✕</button>
+    </form>
+    <select id="day" title="지난 판"></select>
+    <a class="btn" href="../../index.html" id="dashLink" title="종목 통합 리포트">📈 대시보드</a>
+    <button class="btn" id="themeBtn" title="테마 전환">◐</button>
+  </div>
+
+  <div class="wrap">
+    <div class="head">
+      <h1 id="title">증권사 리포트</h1>
+      <span class="sub" id="asof"></span>
+    </div>
+    <div class="stats" id="stats"></div>
+    <div id="ov-day"></div>
+
+    <div id="hl-wrap" style="display:none;">
+      <div class="section-title"><span class="accent"></span>오늘의 주요 리포트
+        <span class="hint">조회수 · 목표주가 변경 · 여러 증권사가 함께 본 종목을 기준으로 고릅니다</span>
+      </div>
+      <div class="cards two" id="highlights"></div>
+    </div>
+
+    <div id="moves-wrap" style="display:none;">
+      <div class="section-title"><span class="accent"></span>목표주가를 움직인 리포트
+        <span class="hint">본문에서 「상향 · 하향 · 유지」를 읽어 낸 것입니다 — 원문으로 확인하십시오</span>
+      </div>
+      <div id="moves"></div>
+    </div>
+
+    <div id="weekly-wrap" style="display:none;">
+      <div class="section-title"><span class="accent"></span>주간 인기 리포트
+        <span class="hint" id="weekHint"></span>
+      </div>
+      <div class="stats" id="weekStats"></div>
+      <div id="ov-week"></div>
+      <div class="wk-stocks" id="weekStocks"></div>
+      <div class="cards two" id="weekly"></div>
+    </div>
+
+    <div id="hit"></div>
+
+    <div class="section-title" id="listTop"><span class="accent"></span>전체 리포트 <span class="hint" id="cnt"></span></div>
+    <div class="filters" id="filters"></div>
+    <div class="cards" id="list"></div>
+
+    <div class="foot-note" id="note"></div>
+  </div>
+
+<script>
+(function () {
+  "use strict";
+
+  var DATA_DIR = "../../data/reports/";
+  // 첫 화면은 **인기순**이다. 그날 나온 것을 날짜순으로 늘어놓으면 위쪽이
+  // 새벽에 올라온 시황으로 채워져, 정작 많이 읽힌 리포트가 아래로 밀린다.
+  var state = { data: null, cat: "전체", broker: "전체", sort: "views", q: "" };
+  var els = {
+    q: document.getElementById("q"), day: document.getElementById("day"),
+    title: document.getElementById("title"), asof: document.getElementById("asof"),
+    stats: document.getElementById("stats"), hlWrap: document.getElementById("hl-wrap"),
+    highlights: document.getElementById("highlights"), filters: document.getElementById("filters"),
+    list: document.getElementById("list"), cnt: document.getElementById("cnt"),
+    note: document.getElementById("note")
+  };
+
+  function esc(s) {
+    return String(s == null ? "" : s).replace(/[&<>"']/g, function (c) {
+      return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c];
+    });
+  }
+  var nf = new Intl.NumberFormat("ko-KR");
+
+  /* ================= 테마 ================= */
+  (function () {
+    var saved = null; try { saved = localStorage.getItem("theme"); } catch (e) {}
+    if (saved) document.documentElement.setAttribute("data-theme", saved);
+    document.getElementById("themeBtn").addEventListener("click", function () {
+      var cur = document.documentElement.getAttribute("data-theme");
+      var next = cur === "dark" ? "light" : cur === "light" ? "dark"
+        : (matchMedia("(prefers-color-scheme: dark)").matches ? "light" : "dark");
+      document.documentElement.setAttribute("data-theme", next);
+      try { localStorage.setItem("theme", next); } catch (e) {}
+    });
+  })();
+
+  /* ================= 불러오기 =================
+     한 파일로 묶은 실행본(standalone)에서는 서버가 없어 fetch 가 막힌다.
+     그때는 만들 때 넣어 둔 window.__INLINE__ 을 그대로 쓴다. */
+  function getJSON(url) {
+    var inline = window.__INLINE__ && window.__INLINE__[url.split("/").pop()];
+    if (inline) return Promise.resolve(inline);
+    return fetch(url, { cache: "no-cache" }).then(function (r) {
+      if (!r.ok) throw new Error(r.status + " " + url);
+      return r.json();
+    });
+  }
+
+  function load(day) {
+    var file = day ? day + ".json" : "latest.json";
+    els.list.innerHTML = '<div class="state"><div class="big">⏳</div><div>리포트를 불러오는 중…</div></div>';
+    return getJSON(DATA_DIR + file).then(render).catch(failed);
+  }
+
+  function failed(err) {
+    els.hlWrap.style.display = "none";
+    els.stats.innerHTML = "";
+    els.list.innerHTML = '<div class="state"><div class="big">📭</div>' +
+      '<div>아직 받아 둔 리포트가 없습니다.<br>' +
+      '수집은 GitHub Actions(<code>증권사 리포트 수집</code>)가 매일 아침·저녁에 돌려 ' +
+      '<code>data/reports/latest.json</code> 에 커밋합니다.</div>' +
+      '<div style="margin-top:14px;font-size:13px;">' +
+      '지금 바로 보려면 <a href="https://finance.naver.com/research/" target="_blank" rel="noopener">네이버 금융 리서치</a>로 가십시오.' +
+      '</div><div style="margin-top:10px;font-size:12px;">(' + esc(err && err.message) + ')</div></div>';
+  }
+
+  /* ================= 그리기 ================= */
+  function render(d) {
+    state.data = d;
+    var s = d.summary || {};
+    els.title.textContent = (s.report_date || d.date || "") + " 증권사 리포트";
+    // 출처가 여럿이면 어디서 몇 건이 왔는지 그대로 적는다.
+    var srcs = s.by_source || {};
+    var srcText = Object.keys(srcs).length
+      ? Object.keys(srcs).map(function (k) { return k + " " + srcs[k] + "건"; }).join(" · ")
+      : (d.source || "");
+    els.asof.textContent = "수집 " + (d.generated_at_kst || "-") + " KST · 출처 " + srcText;
+
+    // 원천 하나가 죽은 판은 그날의 온전한 그림이 아니다. 셈이 다 맞아도
+    // 빠진 것은 빠진 것이므로, 읽는 사람이 먼저 알아야 한다. 9/3 판에서
+    // 하나증권이 통째로 빠졌는데 화면에는 아무 표시가 없었다.
+    var dead = Object.keys(d.sources || {}).filter(function (k) {
+      var v = d.sources[k];
+      return v && typeof v === "object" && v.ok === false;
+    });
+    if (dead.length) {
+      els.asof.innerHTML = esc(els.asof.textContent)
+        + '<div style="margin-top:6px;padding:6px 8px;border-left:3px solid var(--mas-orange);'
+        + 'background:var(--card);font-size:12px;">'
+        + '이 판에는 <b>' + esc(dead.join(" · ")) + '</b>가 빠졌습니다 — 그 목록을 받지 못했습니다. '
+        + '나머지 출처만으로 만든 자료입니다.</div>';
+    }
+
+    var moves = s.target_moves || [];
+    var up = moves.filter(function (m) { return m.move === "상향"; }).length;
+    var dn = moves.filter(function (m) { return m.move === "하향"; }).length;
+    els.stats.innerHTML =
+      stat((s.report_date || "최근") + " 자 리포트",
+        nf.format(s.count_report_date || 0) + "<small> 건</small>") +
+      stat("수집한 전체", nf.format(s.count_collected || 0) + "<small> 건</small>") +
+      stat("목표주가 상향 · 하향",
+        '<span style="color:var(--up)">' + up + "</span> <small>·</small> " +
+        '<span style="color:var(--down)">' + dn + "</span>") +
+      stat("리포트가 몰린 종목", nf.format((s.crowded_stocks || []).length) + "<small> 종목</small>") +
+      stat("해외 리포트", nf.format(s.count_overseas || 0) + "<small> 건</small>");
+
+    var hl = (d.highlights || []).map(byNid).filter(Boolean);
+    els.hlWrap.style.display = hl.length ? "" : "none";
+    els.highlights.innerHTML = hl.map(card).join("");
+
+    renderOverview("ov-day", s.overview, "오늘 한눈에");
+    renderMoves(s.target_moves || []);
+    renderWeekly(d.weekly);
+    buildPickList();
+    buildFilters();
+    renderList();
+    els.note.innerHTML =
+      "요약은 리포트 본문에서 <b>원문 문장을 그대로 골라</b> 이은 것입니다(자동 추출). " +
+      "새로 쓴 문장이 아니며, 요지를 옮기는 과정에서 맥락이 빠질 수 있으니 " +
+      "판단은 <b>세부 리포트 원문</b>으로 하십시오. 제목을 누르면 네이버 상세, " +
+      "「원문 PDF」를 누르면 증권사가 낸 리포트 파일로 갑니다.<br>" +
+      "목표주가·투자의견은 본문에서 기계로 뽑은 값이라 <b>원문과 다를 수 있습니다</b>. " +
+      "본 화면은 정보 제공 목적의 참고 자료이며, 투자 판단과 그 결과에 대한 책임은 이용자에게 있습니다." +
+      (d.extraction && d.extraction.warning ? "<br><b style='color:var(--series-6)'>⚠ " + esc(d.extraction.warning) + "</b>" : "");
+  }
+
+  /* 서두 총평. 카드를 하나하나 짚기 전에 「무슨 이야기가 많았나」를 먼저
+     알려 준다. 새 사실을 짓지 않고 이미 센 것을 문장으로 엮은 것이다. */
+  function renderOverview(el, ov, label) {
+    var box = document.getElementById(el);
+    if (!ov || !ov.text) { box.innerHTML = ""; return; }
+    var bars = "";
+    if (ov.themes && ov.themes.length) {
+      var max = ov.themes[0].count || 1;
+      bars = '<div class="themes">' + ov.themes.map(function (t) {
+        return '<div class="th"><span class="n">' + esc(t.theme) + "</span>"
+          + '<span class="bar"><i style="width:' + Math.round(t.count / max * 100) + '%"></i></span>'
+          + '<span class="c">' + t.count + "</span></div>";
+      }).join("") + "</div>";
+    }
+    box.innerHTML = '<div class="ov"><div class="ov-k">' + esc(label) + "</div>"
+      + '<p class="ov-t">' + esc(ov.text) + "</p>" + bars + "</div>"
+      + briefBlock(ov);
+  }
+
+  /* 몇 건인지 다음에 **무슨 이야기인지**가 와야 한다. 주제마다 그 주제를
+     다룬 리포트의 판단 문장을 증권사·종목과 함께 그대로 옮긴다. 지어낸
+     문장이 아니라 리포트가 한 말이고, 눌러서 원문으로 갈 수 있다. */
+  function point(p) {
+    var who = esc(p.broker || "-") + (p.stock ? " " + esc(p.stock) : "");
+    return '<li><a class="who" href="' + esc(p.url) + '" target="_blank" rel="noopener">'
+      + who + "</a> " + esc(p.text) + "</li>";
+  }
+
+  function briefBlock(ov) {
+    var out = "";
+    (ov.brief || []).forEach(function (t) {
+      out += '<div class="bf"><div class="bf-h"><b>' + esc(t.theme) + "</b>"
+        + '<span>' + t.count + "건"
+        + (t.brokers && t.brokers.length ? " · " + esc(t.brokers.slice(0, 4).join(", ")) : "")
+        + "</span></div><ul>" + t.points.map(point).join("") + "</ul></div>";
+    });
+    if ((ov.moves || []).length) {
+      out += '<div class="bf"><div class="bf-h"><b>목표주가를 움직인 까닭</b>'
+        + "<span>본문에서 읽어 낸 것입니다 — 원문으로 확인하십시오</span></div><ul>"
+        + ov.moves.map(function (m) {
+          var cls = m.move === "상향" ? "mv-up" : "mv-dn";
+          return '<li><a class="who" href="' + esc(m.url) + '" target="_blank" rel="noopener">'
+            + esc(m.broker || "-") + (m.stock ? " " + esc(m.stock) : "") + "</a> "
+            + '<span class="' + cls + '">' + esc(m.move)
+            + (m.target_price ? " " + nf.format(m.target_price) + "원" : "") + "</span> "
+            + esc(m.why || m.title) + "</li>";
+        }).join("") + "</ul></div>";
+    }
+    (ov.crowd || []).forEach(function (c) {
+      var span = c.target_min && c.target_max && c.target_min !== c.target_max
+        ? " · 목표주가 " + nf.format(c.target_min) + "~" + nf.format(c.target_max) + "원" : "";
+      out += '<div class="bf"><div class="bf-h"><b>' + esc(c.name) + " — 여러 곳이 함께 본 종목</b>"
+        + "<span>" + c.count + "곳" + span + "</span></div><ul>"
+        + c.points.map(point).join("") + "</ul></div>";
+    });
+    return out;
+  }
+
+  /* 전체본 PDF 전용. 마흔 쪽짜리 목록을 갈래로 묶고 앞에 차례를 세운다 —
+     종이에는 걸러 보기가 없으니, 묶어 두지 않으면 찾을 길이 없다.
+     화면은 건드리지 않는다(reports_to_pdf.mjs 가 찍기 직전에만 부른다). */
+  window.__groupList__ = function () {
+    var host = els.list, cards = [].slice.call(host.children);
+    if (!cards.length) return 0;
+    var order = [], bag = {};
+    cards.forEach(function (el) {
+      var c = el.getAttribute("data-cat") || "그 밖";
+      if (!bag[c]) { bag[c] = []; order.push(c); }
+      bag[c].push(el);
+    });
+    var toc = document.createElement("div");
+    toc.className = "toc";
+    toc.innerHTML = "<b>차례</b><ol>" + order.map(function (c) {
+      return "<li>" + esc(c) + " — " + bag[c].length + "건</li>";
+    }).join("") + "</ol>";
+    host.parentNode.insertBefore(toc, host);
+    // 갈래 머리는 카드 격자 밖에 서야 단 흐름에서 제 몫으로 잡힌다.
+    var frag = document.createDocumentFragment();
+    order.forEach(function (c) {
+      var h = document.createElement("div");
+      h.className = "grp";
+      h.innerHTML = esc(c) + '<span class="n">' + bag[c].length + "건</span>";
+      frag.appendChild(h);
+      var box = document.createElement("div");
+      // 인쇄에서 두 단으로 흐르게 한다 — 한 단이면 마흔여덟 쪽이 되고,
+      // 블록 흐름은 쪽 끝에서 마지막 카드가 꼬리말 위로 넘친다.
+      box.className = "cards two";
+      bag[c].forEach(function (el) { box.appendChild(el); });
+      frag.appendChild(box);
+    });
+    host.innerHTML = "";
+    host.appendChild(frag);
+    return order.length;
+  };
+
+  function stat(k, v) {
+    return '<div class="stat"><div class="k">' + esc(k) + '</div><div class="v">' + v + "</div></div>";
+  }
+
+  function byNid(nid) {
+    var all = (state.data && state.data.reports) || [];
+    for (var i = 0; i < all.length; i++) if (all[i].nid === nid) return all[i];
+    return null;
+  }
+
+  function opClass(op) {
+    if (/매도|축소/.test(op)) return "sell";
+    if (/중립|보유/.test(op)) return "hold";
+    return "";
+  }
+
+  function card(r) {
+    var st = r.stock || {};
+    var tags = ['<span class="tag cat">' + esc(r.category) + "</span>"];
+    if (r.sector) tags.push('<span class="tag">' + esc(r.sector) + "</span>");
+    if (r.overseas) tags.push('<span class="tag ov">해외</span>');
+    if (st.name) tags.push('<span class="tag stock">' + esc(st.name) + "</span>");
+    if (r.opinion) tags.push('<span class="tag op ' + opClass(r.opinion) + '">' + esc(r.opinion) + "</span>");
+    if (r.target_price) {
+      var mv = r.target_move === "상향" ? '<span class="mv-up"> ▲상향</span>'
+        : r.target_move === "하향" ? '<span class="mv-dn"> ▼하향</span>'
+        : r.target_move ? " " + esc(r.target_move) : "";
+      tags.push('<span class="tag tp">목표 ' + nf.format(r.target_price) + "원" + mv + "</span>");
+    }
+    // 원문에 적힌 숫자를 그대로 집어 온 것. 목표주가 옆에 나란히 세운다.
+    (r.facts || []).forEach(function (f) {
+      tags.push('<span class="tag fact">' + esc(f.k) + " " + esc(f.v) + "</span>");
+    });
+    // 첫 줄은 대개 판단이다. 굵게 세워 두면 종이에서 한 줄만 보고 넘어갈 수
+    // 있고, 더 볼 사람은 이어지는 줄을 읽으면 된다.
+    var sum;
+    if (r.summary) {
+      var rest = r.summary, lead = "";
+      if (r.lead && r.summary.indexOf(r.lead) === 0) {
+        lead = r.lead;
+        rest = r.summary.slice(r.lead.length).trim();
+      }
+      sum = '<div class="sum">'
+        + (lead ? '<b class="lead">' + esc(lead) + "</b> " : "")
+        + esc(rest) + "</div>";
+    } else {
+      sum = '<div class="sum none">본문 요약을 아직 받지 못했습니다 — 제목과 원문으로 확인하십시오.</div>';
+    }
+    var who = r.broker + (r.analyst ? " " + r.analyst : "");
+    var meta = [who, r.date, r.views != null ? "조회 " + nf.format(r.views) : null, r.source]
+      .filter(Boolean).map(esc).join(' <span class="sep">·</span> ');
+
+    var links = ['<a class="go" href="' + esc(r.url) + '" target="_blank" rel="noopener">세부 리포트 →</a>'];
+    if (r.pdf) links.push('<a class="go" href="' + esc(r.pdf) + '" target="_blank" rel="noopener">원문 PDF ↓</a>');
+    // 하우스에서 직접 받은 원문이 따로 있으면 그 길도 같이 연다.
+    if (r.house_pdf && r.house_pdf !== r.pdf) links.push('<a class="go" href="' + esc(r.house_pdf) + '" target="_blank" rel="noopener">미래에셋 원문 ↓</a>');
+    // 한 파일 실행본에는 대시보드가 딸려 오지 않으므로 그 줄은 빼 둔다.
+    if (st.code && !window.__NO_DASH__) links.push('<a class="go" href="../../index.html?code=' + esc(st.code) + '">종목 대시보드</a>');
+    if (r.excerpt) links.push('<button type="button" data-more="1">본문 발췌</button>');
+
+    return '<article class="rp" data-cat="' + esc(r.category) + '" data-url="' + esc(r.url) + '">' +
+      '<div class="tags">' + tags.join("") + "</div>" +
+      '<a class="t" href="' + esc(r.url) + '" target="_blank" rel="noopener">' + esc(r.title) + "</a>" +
+      sum +
+      (r.excerpt ? '<div class="ex">' + esc(r.excerpt) + "…</div>" : "") +
+      '<div class="foot"><span>' + meta + "</span>" + links.join("") + "</div>" +
+      "</article>";
+  }
+
+  /* 목표주가를 건드린 리포트만 따로 세운다 — 그날 판에서 가장 손이 가는
+     대목이고, 종이로 뽑았을 때 한눈에 보여야 하는 것도 이것이다. */
+  function renderMoves(moves) {
+    var wrap = document.getElementById("moves-wrap");
+    var up = moves.filter(function (m) { return m.move !== "유지"; });
+    wrap.style.display = up.length ? "" : "none";
+    if (up.length) wrap.dataset.has = "1"; else delete wrap.dataset.has;
+    if (!up.length) return;
+    document.getElementById("moves").innerHTML =
+      '<div class="cards">' + up.map(function (m) {
+        var cls = m.move === "상향" ? "mv-up" : m.move === "하향" ? "mv-dn" : "";
+        return '<article class="rp" data-url="' + esc(m.url) + '">' +
+          '<div class="tags">' +
+            (m.stock ? '<span class="tag stock">' + esc(m.stock) + "</span>" : "") +
+            '<span class="tag tp"><span class="' + cls + '">' + esc(m.move) + "</span>" +
+              (m.target_price ? " " + nf.format(m.target_price) + "원" : "") + "</span>" +
+            '<span class="tag">' + esc(m.broker || "-") + "</span>" +
+          "</div>" +
+          '<a class="t" href="' + esc(m.url) + '" target="_blank" rel="noopener">' + esc(m.title) + "</a>" +
+          "</article>";
+      }).join("") + "</div>";
+  }
+
+  /* 한 주 동안 가장 많이 읽힌 리포트. 그날 판만 보면 무엇이 이 주의 화두
+     였는지 알 수 없다 — 오늘 올라온 리포트는 아직 아무도 읽지 않았기
+     때문이다. 조회수는 날이 갈수록 쌓이므로, 인기 목록은 자연히 며칠 전
+     것으로 채워진다. 그게 맞다. */
+  function renderWeekly(w) {
+    var wrap = document.getElementById("weekly-wrap");
+    var reps = (w && w.reports) || [];
+    wrap.style.display = reps.length ? "" : "none";
+    if (!reps.length) { delete wrap.dataset.has; return; }
+    wrap.dataset.has = "1";
+
+    renderOverview("ov-week", w.overview, "이번 주 한눈에");
+    document.getElementById("weekHint").textContent =
+      w.since + " ~ " + w.until + " · 영업일 " + (w.days || []).length + "일 · 조회수 순";
+
+    var topBroker = (w.by_broker || [])[0];
+    document.getElementById("weekStats").innerHTML =
+      stat("한 주 리포트", nf.format(w.count || 0) + "<small> 건</small>") +
+      stat("목표주가 상향 · 하향",
+        '<span style="color:var(--up)">' + (w.moves_up || 0) + "</span> <small>·</small> " +
+        '<span style="color:var(--down)">' + (w.moves_down || 0) + "</span>") +
+      stat("가장 많이 낸 곳", topBroker
+        ? esc(topBroker.broker) + "<small> " + topBroker.count + "건</small>" : "-") +
+      stat("한 주 다뤄진 종목", nf.format((w.top_stocks || []).length) + "<small> 종목 이상</small>") +
+      stat("해외 리포트", nf.format(w.count_overseas || 0) + "<small> 건</small>");
+
+    document.getElementById("weekStocks").innerHTML =
+      (w.top_stocks || []).map(function (s) {
+        return '<span class="s"><b>' + esc(s.name || s.code) + "</b> " + s.count + "건"
+          + (s.brokers && s.brokers.length ? " <span class='sep'>·</span> " + esc(s.brokers.slice(0, 4).join(", ")) : "")
+          + "</span>";
+      }).join("");
+
+    document.getElementById("weekly").innerHTML = reps.map(function (r, i) {
+      return card(r).replace('<div class="tags">',
+        '<div class="tags"><span class="wk-rank">' + (i + 1) + "</span>");
+    }).join("");
+  }
+
+  /* 종목으로 조회했을 때 그 종목을 한 줄로 세운다 — 몇 곳이 다뤘고
+     목표주가가 어디쯤인지. 걸러 낸 목록만 보여 주면 「조회」한 느낌이 없다. */
+  function renderHit(reps, q) {
+    var box = document.getElementById("hit");
+    if (!q) { box.innerHTML = ""; return; }
+    // 걸린 리포트들이 한 종목을 가리킬 때만 세운다.
+    var codes = {}, name = null;
+    reps.forEach(function (r) {
+      var st = r.stock || {};
+      if (st.code) { codes[st.code] = 1; name = st.name || name; }
+    });
+    var keys = Object.keys(codes);
+    if (keys.length !== 1) { box.innerHTML = ""; return; }
+    var code = keys[0];
+    var mine = reps.filter(function (r) { return (r.stock || {}).code === code; });
+    var tgts = mine.map(function (r) { return r.target_price; }).filter(Boolean);
+    var brokers = [];
+    mine.forEach(function (r) { if (r.broker && brokers.indexOf(r.broker) < 0) brokers.push(r.broker); });
+    var ops = {};
+    mine.forEach(function (r) { if (r.opinion) ops[r.opinion] = (ops[r.opinion] || 0) + 1; });
+    var opText = Object.keys(ops).map(function (k) { return k + " " + ops[k]; }).join(" · ");
+    var avg = tgts.length ? Math.round(tgts.reduce(function (a, b) { return a + b; }, 0) / tgts.length) : null;
+
+    box.innerHTML =
+      '<div class="stats" style="margin-top:18px;">' +
+        stat(esc(name || code) + " (" + esc(code) + ")", nf.format(mine.length) + "<small> 건</small>") +
+        stat("다룬 증권사", nf.format(brokers.length) + "<small> 곳</small>") +
+        (avg ? stat("목표주가 평균", nf.format(avg) + "<small>원</small>" +
+          (tgts.length > 1 ? '<small style="display:block;font-size:11px;">최저 ' + nf.format(Math.min.apply(null, tgts)) +
+            " · 최고 " + nf.format(Math.max.apply(null, tgts)) + "</small>" : "")) : "") +
+        (opText ? stat("투자의견", '<span style="font-size:15px;">' + esc(opText) + "</span>") : "") +
+      "</div>" +
+      '<div style="font-size:12px;color:var(--text-muted);margin:6px 0 0;">' +
+        esc(brokers.join(" · ")) +
+        (window.__NO_DASH__ ? "" :
+          ' · <a href="../../index.html?code=' + esc(code) + '">이 종목 통합 대시보드 열기 →</a>') +
+      "</div>";
+  }
+
+  /* 조회창 자동완성 — 이 판에 실제로 들어 있는 종목·증권사만 올린다.
+     없는 이름을 쳐서 0건이 뜨는 헛걸음을 줄인다. */
+  function buildPickList() {
+    var seen = {}, out = [];
+    (state.data.reports || []).forEach(function (r) {
+      var st = r.stock || {};
+      if (st.name && !seen["s" + st.code]) {
+        seen["s" + st.code] = 1;
+        out.push('<option value="' + esc(st.name) + '">' + esc(st.code) + " · 종목</option>");
+      }
+      if (r.broker && !seen["b" + r.broker]) {
+        seen["b" + r.broker] = 1;
+        out.push('<option value="' + esc(r.broker) + '">증권사</option>');
+      }
+    });
+    document.getElementById("pickList").innerHTML = out.join("");
+  }
+
+  /* ================= 걸러 보기 ================= */
+  function buildFilters() {
+    var reps = state.data.reports || [];
+    var cats = {}, brokers = {};
+    reps.forEach(function (r) {
+      cats[r.category] = (cats[r.category] || 0) + 1;
+      if (r.broker) brokers[r.broker] = (brokers[r.broker] || 0) + 1;
+    });
+    var chips = ['<button class="chip' + (state.cat === "전체" ? " on" : "") + '" data-cat="전체">전체' +
+      '<span class="n">' + reps.length + "</span></button>"];
+    Object.keys(cats).forEach(function (c) {
+      chips.push('<button class="chip' + (state.cat === c ? " on" : "") + '" data-cat="' + esc(c) + '">' +
+        esc(c) + '<span class="n">' + cats[c] + "</span></button>");
+    });
+    var bl = Object.keys(brokers).sort(function (a, b) { return brokers[b] - brokers[a]; });
+    chips.push('<select id="broker"><option value="전체">증권사 전체</option>' +
+      bl.map(function (b) {
+        return '<option value="' + esc(b) + '"' + (state.broker === b ? " selected" : "") + ">" +
+          esc(b) + " (" + brokers[b] + ")</option>";
+      }).join("") + "</select>");
+    chips.push('<select id="sort">' +
+      // 조회수는 네이버에만 있다. 증권사 제 목록에서 온 줄에는 없는 값이라
+      // 뒤로 밀리는데, 그것이 「안 읽힌 리포트」로 보이면 안 된다.
+      '<option value="views">인기순(네이버 조회수)</option>' +
+      '<option value="recent">최신순</option>' +
+      '<option value="target">목표주가 변경 먼저</option>' +
+      "</select>");
+    els.filters.innerHTML = chips.join("");
+    els.filters.querySelectorAll("[data-cat]").forEach(function (b) {
+      b.addEventListener("click", function () { state.cat = b.getAttribute("data-cat"); buildFilters(); renderList(); });
+    });
+    document.getElementById("broker").addEventListener("change", function (e) {
+      state.broker = e.target.value; renderList();
+    });
+    var sortSel = document.getElementById("sort");
+    sortSel.value = state.sort;
+    sortSel.addEventListener("change", function (e) { state.sort = e.target.value; renderList(); });
+  }
+
+  function renderList() {
+    var q = state.q.trim().toLowerCase();
+    var reps = (state.data.reports || []).filter(function (r) {
+      if (state.cat !== "전체" && r.category !== state.cat) return false;
+      if (state.broker !== "전체" && r.broker !== state.broker) return false;
+      if (!q) return true;
+      var hay = [r.title, r.broker, r.analyst, r.summary, r.sector,
+                 (r.stock || {}).name, (r.stock || {}).code]
+        .filter(Boolean).join(" ").toLowerCase();
+      return hay.indexOf(q) >= 0;
+    });
+    reps = reps.slice().sort(function (a, b) {
+      if (state.sort === "views") return (b.views || 0) - (a.views || 0);
+      if (state.sort === "target") {
+        var am = a.target_move ? 1 : 0, bm = b.target_move ? 1 : 0;
+        if (am !== bm) return bm - am;
+      }
+      return String(b.date || "").localeCompare(String(a.date || "")) || (b.views || 0) - (a.views || 0);
+    });
+    els.cnt.textContent = reps.length + "건" + (q ? ' · "' + q + '" 검색' : "");
+    renderHit(reps, q);
+    // 조회 중에는 「오늘의 주요 리포트」를 접는다 — 조회와 상관없는 것이
+    // 위를 다 차지하면 정작 찾은 것이 화면 밖으로 밀린다.
+    els.hlWrap.style.display = (!q && (state.data.highlights || []).length) ? "" : "none";
+    var mw = document.getElementById("moves-wrap");
+    if (mw.dataset.has) mw.style.display = q ? "none" : "";
+    var ww = document.getElementById("weekly-wrap");
+    if (ww.dataset.has) ww.style.display = q ? "none" : "";
+    els.list.innerHTML = reps.length
+      ? reps.map(card).join("")
+      : '<div class="state">' +
+        "<div>" + (q ? '"' + esc(state.q.trim()) + '" 에 맞는 리포트가 이 판에 없습니다.' : "걸러 낸 조건에 맞는 리포트가 없습니다.") + "</div>" +
+        '<div style="margin-top:12px;font-size:13px;">종목명·종목코드·증권사·제목의 일부로 찾습니다. ' +
+        '그 종목에 이번 판 리포트가 없을 수도 있습니다 — ' +
+        '<a href="https://finance.naver.com/research/" target="_blank" rel="noopener">네이버 금융 리서치</a>에서 지난 것까지 볼 수 있습니다.</div></div>';
+  }
+
+  /* 카드 아무 데나 눌러도 세부 리포트로 간다. 링크·버튼을 누른 것은 그대로 둔다. */
+  document.addEventListener("click", function (e) {
+    var more = e.target.closest("[data-more]");
+    if (more) { more.closest(".rp").classList.toggle("open"); return; }
+    if (e.target.closest("a")) return;
+    var cardEl = e.target.closest(".rp");
+    if (!cardEl) return;
+    if (window.getSelection && String(window.getSelection())) return;   // 글자를 긁는 중이면 두고 본다
+    var url = cardEl.getAttribute("data-url");
+    if (url) window.open(url, "_blank", "noopener");
+  });
+
+  /* ================= 조회 =================
+     글자를 치는 대로 걸러 주지만, **조회 단추와 엔터도 받는다** — 단추가
+     없으면 「조회가 안 된다」고 느끼기 때문이다. 걸러 낸 결과가 위쪽 「주요
+     리포트」에 가려지지 않도록 목록으로 스크롤도 옮겨 준다. */
+  function applySearch(scroll) {
+    state.q = els.q.value;
+    if (!state.data) return;
+    // 검색할 때는 판·증권사 걸개를 풀어 준다 — 「삼성전자」를 쳤는데 산업분석만
+    // 걸려 있어 0건이 뜨면 고장으로 보인다.
+    if (state.q.trim()) { state.cat = "전체"; state.broker = "전체"; buildFilters(); }
+    renderList();
+    if (scroll) {
+      var top = document.getElementById("hit");
+      if (!top.innerHTML) top = document.getElementById("listTop");
+      top.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+  }
+  document.getElementById("searchForm").addEventListener("submit", function (e) {
+    e.preventDefault(); applySearch(true);
+  });
+  document.getElementById("clearBtn").addEventListener("click", function () {
+    els.q.value = ""; applySearch(false); els.q.focus();
+  });
+  els.q.addEventListener("input", function () { applySearch(false); });
+
+  // 한 파일 실행본에는 대시보드가 딸려 오지 않는다 — 눌러 봐야 「파일에
+  // 액세스할 수 없습니다」만 뜨므로 아예 감춘다.
+  if (window.__NO_DASH__) document.getElementById("dashLink").style.display = "none";
+
+  /* ================= 지난 판 ================= */
+  getJSON(DATA_DIR + "index.json").then(function (ix) {
+    var days = ix.days || [];
+    els.day.innerHTML = '<option value="">최신</option>' +
+      days.map(function (d) { return '<option value="' + d + '">' + d + "</option>"; }).join("");
+  }).catch(function () { els.day.style.display = "none"; });
+
+  els.day.addEventListener("change", function (e) { load(e.target.value); });
+
+  load("");
+})();
+</script>
+</body>
+</html>
