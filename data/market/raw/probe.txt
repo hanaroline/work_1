@@ -1,14 +1,14 @@
-네이버 API 탐색 2026-09-11 08:56:01 KST
+네이버 API 탐색 2026-09-11 09:00:10 KST
 (원천이 실패한 날에만 돈다. 수집 결과는 바꾸지 않는다.)
 
 [internals] https://m.stock.naver.com/api/index/KOSPI/basic
-    빈손 · 3165 bytes · 걸린 낱말 없음
+    빈손 · 3162 bytes · 걸린 낱말 없음
     응답 앞머리: {"stockEndType":"index","itemCode":"KOSPI","reutersCode":"KOSPI","symbolCode":"KOSPI","stockName":"코스피","itemLogoUrl":"https://ssl.pstatic.net/imgstock/fn/real/
     남김: data/market/raw/probe_00_internals.txt
     앞머리: {"stockEndType":"index","itemCode":"KOSPI","reutersCode":"KOSPI","symbolCode":"KOSPI","stockName":"코스피","itemLogoUrl":"https://ssl.pstatic.net/imgstock/fn/real/logo/index/IndexKOSPI.svg","itemLogoPngUrl":"https://ssl.pstatic.net/imgstock/fn
 
 [internals] https://m.stock.naver.com/api/index/KOSDAQ/basic
-    빈손 · 3196 bytes · 걸린 낱말 없음
+    빈손 · 3193 bytes · 걸린 낱말 없음
     응답 앞머리: {"stockEndType":"index","itemCode":"KOSDAQ","reutersCode":"KOSDAQ","symbolCode":"KOSDAQ","stockName":"코스닥","itemLogoUrl":"https://ssl.pstatic.net/imgstock/fn/re
     남김: data/market/raw/probe_01_internals.txt
     앞머리: {"stockEndType":"index","itemCode":"KOSDAQ","reutersCode":"KOSDAQ","symbolCode":"KOSDAQ","stockName":"코스닥","itemLogoUrl":"https://ssl.pstatic.net/imgstock/fn/real/logo/index/IndexKOSDAQ.svg","itemLogoPngUrl":"https://ssl.pstatic.net/imgstoc
@@ -18,28 +18,28 @@
     응답 앞머리: HTTPError: HTTP Error 409: Conflict
 
 [internals] https://m.stock.naver.com/api/index/KOSPI/integration
-    쓸모 · 15957 bytes · 걸린 낱말 ['riseCount', 'fallCount']
+    쓸모 · 15855 bytes · 걸린 낱말 ['riseCount', 'fallCount']
     남김: data/market/raw/probe_03_internals.txt
     앞머리: {"stockEndType":"index","itemCode":"KOSPI","reutersCode":"KOSPI","stockName":"코스피","totalInfos":[{"code":"lastClosePrice","key":"전일","value":"7,033.92"},{"code":"openPrice","key":"시가","value":"-"},{"code":"highPrice","key":"고가","value":"-"}
 
 [internals] https://m.stock.naver.com/api/index/KOSPI/price?pageSize=5&page=1
-    쓸모 · 1279 bytes · 걸린 낱말 ['상승']
+    쓸모 · 1280 bytes · 걸린 낱말 ['상승']
     남김: data/market/raw/probe_04_internals.txt
-    앞머리: [{"localTradedAt":"2026-09-10","closePrice":"7,033.92","compareToPreviousClosePrice":"-17.72","compareToPreviousPrice":{"code":"5","text":"하락","name":"FALLING"},"fluctuationsRatio":"-0.25","openPrice":"7,038.85","highPrice":"7,072.79","lowP
+    앞머리: [{"localTradedAt":"2026-09-11","closePrice":"7,033.92","compareToPreviousClosePrice":"0.00","compareToPreviousPrice":{"code":"3","text":"보합","name":"UNCHANGED"},"fluctuationsRatio":"0.00","openPrice":"7,038.85","highPrice":"7,072.79","lowPr
 
 [sectors] https://m.stock.naver.com/api/stocks/industry
-    쓸모 · 2230 bytes · 걸린 낱말 ['changeRate']
+    쓸모 · 2294 bytes · 걸린 낱말 ['changeRate']
     남김: data/market/raw/probe_05_sectors.txt
-    앞머리: {"stockListSortType":"INDUSTRY","groups":[{"no":309,"name":"음료","totalCount":0,"changeRate":"0.00","riseCount":0,"fallCount":0,"steadyCount":0},{"no":318,"name":"종이와목재","totalCount":0,"changeRate":"0.00","riseCount":0,"fallCount":0,"steadyC
+    앞머리: {"stockListSortType":"INDUSTRY","groups":[{"no":271,"name":"레저용장비와제품","totalCount":13,"changeRate":"0.07","riseCount":1,"fallCount":0,"steadyCount":12},{"no":315,"name":"손해보험","totalCount":12,"changeRate":"0.04","riseCount":1,"fallCount":0,
 
 [sectors] https://api.stock.naver.com/industry
     실패 · 36 bytes · 걸린 낱말 없음
     응답 앞머리: HTTPError: HTTP Error 404: Not Found
 
 [sectors] https://m.stock.naver.com/api/stocks/industry?page=1&pageSize=100
-    쓸모 · 8455 bytes · 걸린 낱말 ['반도체', 'changeRate']
+    쓸모 · 8598 bytes · 걸린 낱말 ['반도체', 'changeRate']
     남김: data/market/raw/probe_07_sectors.txt
-    앞머리: {"stockListSortType":"INDUSTRY","groups":[{"no":309,"name":"음료","totalCount":0,"changeRate":"0.00","riseCount":0,"fallCount":0,"steadyCount":0},{"no":318,"name":"종이와목재","totalCount":0,"changeRate":"0.00","riseCount":0,"fallCount":0,"steadyC
+    앞머리: {"stockListSortType":"INDUSTRY","groups":[{"no":271,"name":"레저용장비와제품","totalCount":13,"changeRate":"0.07","riseCount":1,"fallCount":0,"steadyCount":12},{"no":315,"name":"손해보험","totalCount":12,"changeRate":"0.04","riseCount":1,"fallCount":0,
 
 [money_flow] https://m.stock.naver.com/api/domestic/market/trendDeposit?startIdx=0&pageSize=20
     실패 · 30 bytes · 걸린 낱말 없음

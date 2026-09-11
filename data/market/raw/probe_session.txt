@@ -1,4 +1,4 @@
-세션을 지닌 채 API 부르기 2026-09-11 08:56:27 KST
+세션을 지닌 채 API 부르기 2026-09-11 09:00:32 KST
 
 ### 증시자금동향
     페이지 https://stock.naver.com/market/stock/kr/deposit → HTTP 200 · 최종주소 https://stock.naver.com/market/stock/kr/deposit · 122030 bytes
@@ -27,19 +27,43 @@
 ### 시장지표
     페이지 https://stock.naver.com/market/marketindex → HTTP 200 · 최종주소 https://stock.naver.com/market/marketindex · 118640 bytes
     받은 쿠키: 없음
-    API https://stock.naver.com/api/securityService/marketindex/exchange
-        HTTP 404 · 112 bytes · JSON!
-        앞머리: {"message":"Route GET:/api/securityService/marketindex/exchange not found","error":"Not Found","statusCode":404}
-        남김: data/market/raw/session_exchange.json
-    API https://stock.naver.com/api/securityService/marketindex/majors
-        HTTP 404 · 110 bytes · JSON!
-        앞머리: {"message":"Route GET:/api/securityService/marketindex/majors not found","error":"Not Found","statusCode":404}
-        남김: data/market/raw/session_majors.json
     API https://stock.naver.com/api/securityService/marketindex/metals
         HTTP 200 · 26571 bytes · JSON!
         앞머리: [{"categoryType":"metals","stockExchangeType":{"code":"CMX","zoneId":"CST6CDT","nationType":"USA","delayTime":10,"startTime":"1700","endTime":"1600","closePriceSendTime":"1600","nameKor":"뉴욕상품거래소","na
         남김: data/market/raw/session_metals.json
-    API https://stock.naver.com/api/securityService/marketindex/energy
-        HTTP 200 · 25491 bytes · JSON!
-        앞머리: [{"categoryType":"energy","stockExchangeType":{"code":"NYM","zoneId":"CST6CDT","nationType":"USA","delayTime":10,"startTime":"1700","endTime":"1600","closePriceSendTime":"1600","nameKor":"뉴욕상업거래소","na
-        남김: data/market/raw/session_energy.json
+    API https://stock.naver.com/api/securityService/marketindex/exchangeRate
+        HTTP 404 · 116 bytes · JSON!
+        앞머리: {"message":"Route GET:/api/securityService/marketindex/exchangeRate not found","error":"Not Found","statusCode":404}
+        남김: data/market/raw/session_exchangeRate.json
+    API https://stock.naver.com/api/securityService/marketindex/exchanges
+        HTTP 404 · 113 bytes · JSON!
+        앞머리: {"message":"Route GET:/api/securityService/marketindex/exchanges not found","error":"Not Found","statusCode":404}
+        남김: data/market/raw/session_exchanges.json
+    API https://stock.naver.com/api/securityService/marketindex/currency
+        HTTP 404 · 112 bytes · JSON!
+        앞머리: {"message":"Route GET:/api/securityService/marketindex/currency not found","error":"Not Found","statusCode":404}
+        남김: data/market/raw/session_currency.json
+    API https://stock.naver.com/api/securityService/marketindex/interest
+        HTTP 404 · 112 bytes · JSON!
+        앞머리: {"message":"Route GET:/api/securityService/marketindex/interest not found","error":"Not Found","statusCode":404}
+        남김: data/market/raw/session_interest.json
+    API https://stock.naver.com/api/securityService/marketindex/interestRate
+        HTTP 404 · 116 bytes · JSON!
+        앞머리: {"message":"Route GET:/api/securityService/marketindex/interestRate not found","error":"Not Found","statusCode":404}
+        남김: data/market/raw/session_interestRate.json
+    API https://stock.naver.com/api/securityService/marketindex/bond
+        HTTP 404 · 108 bytes · JSON!
+        앞머리: {"message":"Route GET:/api/securityService/marketindex/bond not found","error":"Not Found","statusCode":404}
+        남김: data/market/raw/session_bond.json
+    API https://stock.naver.com/api/securityService/marketindex/major
+        HTTP 404 · 109 bytes · JSON!
+        앞머리: {"message":"Route GET:/api/securityService/marketindex/major not found","error":"Not Found","statusCode":404}
+        남김: data/market/raw/session_major.json
+    API https://stock.naver.com/api/securityService/marketindex/index
+        HTTP 404 · 109 bytes · JSON!
+        앞머리: {"message":"Route GET:/api/securityService/marketindex/index not found","error":"Not Found","statusCode":404}
+        남김: data/market/raw/session_index.json
+    API https://stock.naver.com/api/securityService/marketindex/agriculture
+        HTTP 404 · 115 bytes · JSON!
+        앞머리: {"message":"Route GET:/api/securityService/marketindex/agriculture not found","error":"Not Found","statusCode":404}
+        남김: data/market/raw/session_agriculture.json
