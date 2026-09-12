@@ -611,13 +611,13 @@
     var list = band.filter(function (c) { return matches(c.name + ' ' + c.org); });
     // 지금 라이브인 채널을 맨 위로
     list.sort(function (a, b) {
-      var la = S.live[a.id] ? 0 : 1, lb = S.live[b.id] ? 0 : 1;
+      var la = playableLive(a) ? 0 : 1, lb = playableLive(b) ? 0 : 1;
       if (la !== lb) return la - lb;
       return 0;
     });
 
     var liveCount = band.filter(function (c) { return S.live[c.id]; }).length;
-    var inPage = band.filter(function (c) { return S.live[c.id]; }).length;
+    var inPage = band.filter(function (c) { return playableLive(c); }).length;
     $('tvCount').textContent = inPage
       ? inPage + '개 화면에서 재생 · 전체 ' + band.length + '개'
       : '전체 ' + band.length + '개 · 누르면 유튜브가 열립니다';
@@ -628,7 +628,7 @@
       return;
     }
 
-    if (!band.filter(function (c) { return S.live[c.id]; }).length) {
+    if (!band.filter(function (c) { return playableLive(c); }).length) {
       var note = document.createElement('div');
       note.className = 'note';
       note.innerHTML = '<b>지금은 채널을 누르면 유튜브가 새 창으로 열립니다.</b><br>' +
@@ -638,7 +638,7 @@
     }
 
     list.forEach(function (c) {
-      var live = S.live[c.id];
+      var live = playableLive(c);
       var freq = (c.freq && c.freq.seoul) ? c.freq.seoul.toFixed(1) + ' MHz' : c.org;
       box.appendChild(makeCard({
         kind: 'yt',
@@ -704,12 +704,12 @@
       if (f.kind === 'yt') {
         var c = S.channels.filter(function (x) { return x.id === f.id; })[0];
         if (!c) return;
-        var live = S.live[c.id];
+        var live = playableLive(c);
         box.appendChild(makeCard({
           kind: 'yt', id: c.id, name: c.name,
           sub: c.freq && c.freq.seoul ? c.freq.seoul.toFixed(1) + ' MHz' : c.org,
           color: orgColor(c.org), initials: initials(c.name, c.org), live: !!live,
-          chip: live ? '영상' : '공식 사이트', chipClass: live ? 'live' : 'ext',
+          chip: live ? '영상' : '유튜브 새 창', chipClass: live ? 'live' : 'ext',
           onPlay: function () { playChannel(c); }
         }));
       } else {
@@ -864,7 +864,18 @@
   // 확인된 유튜브 채널이 있으면 그 채널의 /live 주소를 쓴다. 지금 방송 중인 것을
   // 유튜브가 알아서 띄워 주므로, 수집이 늦었거나 단일 파일 판의 영상 ID 가 낡았을
   // 때도 바로 볼 수 있다.
+  // 화면 안에서 틀 수 있는가 — 영상 번호가 있고 임베드가 막히지 않은 것만.
+  function playableLive(c) {
+    var l = S.live[c.id];
+    return (l && l.embeddable !== false) ? l : null;
+  }
+
   function liveUrlOf(c) {
+    var l = S.live[c.id];
+    // 막힌 영상이라도 번호를 알면 그 영상을 바로 연다. 채널 페이지보다 정확하다.
+    if (l && l.videoId) {
+      return { url: 'https://www.youtube.com/watch?v=' + l.videoId, kind: 'yt' };
+    }
     if (c.youtube && c.youtube.verified && c.youtube.channelId) {
       return { url: 'https://www.youtube.com/channel/' + c.youtube.channelId + '/live', kind: 'yt' };
     }
@@ -873,7 +884,7 @@
   }
 
   function playChannel(c) {
-    var live = S.live[c.id];
+    var live = playableLive(c);
     var official = (c.official && c.official.url) || null;
 
     if (!live) {
