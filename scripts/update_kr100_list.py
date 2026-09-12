@@ -235,27 +235,36 @@ def kind_table():
     try:
         req = urllib.request.Request(url, headers={"User-Agent": F.UA})
         with urllib.request.urlopen(req, timeout=F.TIMEOUT) as r:
-            html = r.read().decode("euc-kr", "replace")
-        for tr in re.findall(r"<tr[^>]*>(.*?)</tr>", html, re.S)[1:]:
-            tds = [re.sub(r"<[^>]+>", "", td).replace("&amp;", "&").strip()
-                   for td in re.findall(r"<td[^>]*>(.*?)</td>", tr, re.S)]
+            body = r.read()
+        html = body.decode("euc-kr", "replace")
+        # 이 파일은 대문자 태그(<TR><TD>)로 온다 — 대소문자를 가리면 한 줄도 못 읽는다.
+        trs = re.findall(r"<tr[^>]*>(.*?)</tr>", html, re.S | re.I)
+        for tr in trs[1:]:
+            tds = [re.sub(r"<[^>]+>", "", td).replace("&amp;", "&").replace("&nbsp;", " ").strip()
+                   for td in re.findall(r"<td[^>]*>(.*?)</td>", tr, re.S | re.I)]
             if len(tds) < 4 or not re.fullmatch(r"\d{6}", tds[1]):
                 continue
             rows[tds[1]] = {"name": tds[0], "industry": tds[2], "product": tds[3]}
-        print("  KIND 상장법인 목록 %d개 확보" % len(rows), flush=True)
+        print("  KIND 상장법인 목록 %d개 확보 (%.0fKB · 행 %d)"
+              % (len(rows), len(body) / 1024, len(trs)), flush=True)
+        if not rows:
+            print("  KIND 응답 앞부분: %s" % html[:200].replace("\n", " "), flush=True)
     except Exception as e:                                  # noqa: BLE001
         print("  KIND 상장법인 목록을 못 받았다 — %s" % e, flush=True)
     _KIND_CACHE["rows"] = rows
     return rows
 
 
-def _ko_from_yahoo(sym):
-    """야후에 한국어로 물어본다 — 국내 종목은 ko-KR 로 물으면 한글 이름을 줄 때가 있다."""
-    code = sym.split(".")[0]
+def yahoo_names(sym, locale):
+    """야후가 그 지역 말로 주는 이름들. locale='ko' 면 한글, 'en' 이면 영문이 온다."""
+    lang, region = ("ko-KR", "KR") if locale == "ko" else ("en-US", "US")
+    out = []
     for path in (
-        "/v1/finance/search?q=%s&lang=ko-KR&region=KR&quotesCount=8&newsCount=0" % code,
-        "/v7/finance/quote?symbols=%s&lang=ko-KR&region=KR%s"
-        % (urllib.parse.quote(sym), "&crumb=" + urllib.parse.quote(F.CRUMB) if F.CRUMB else ""),
+        "/v1/finance/search?q=%s&lang=%s&region=%s&quotesCount=8&newsCount=0"
+        % (sym.split(".")[0], lang, region),
+        "/v7/finance/quote?symbols=%s&lang=%s&region=%s%s"
+        % (urllib.parse.quote(sym), lang, region,
+           "&crumb=" + urllib.parse.quote(F.CRUMB) if F.CRUMB else ""),
     ):
         try:
             j = F.yget(path)
@@ -266,9 +275,17 @@ def _ko_from_yahoo(sym):
             if (r.get("symbol") or "") != sym:
                 continue
             for k in ("shortname", "longname", "shortName", "longName"):
-                if has_hangul(r.get(k)):
-                    return r[k].strip()
-    return None
+                v = (r.get(k) or "").strip()
+                if v and v not in out:
+                    out.append(v)
+    return out
+
+
+def strip_corp(name):
+    """한글 사명에서 법인 형태 표기를 뗀다 — '한국전력기술(주)' → '한국전력기술'."""
+    s = re.sub(r"\s*(\(주\)|㈜|주식회사)\s*$", "", (name or "").strip())
+    s = re.sub(r"^\s*(\(주\)|㈜|주식회사)\s*", "", s)
+    return s.strip() or (name or "").strip()
 
 
 def korean_name(sym, en):
@@ -276,14 +293,26 @@ def korean_name(sym, en):
     code = sym.split(".")[0]
     row = kind_table().get(code)
     if row and has_hangul(row.get("name")):
-        return row["name"].strip(), "KIND"
+        return strip_corp(row["name"]), "KIND"
     try:
-        v = _ko_from_yahoo(sym)
+        v = next((n for n in yahoo_names(sym, "ko") if has_hangul(n)), None)
     except Exception:                                       # noqa: BLE001
         v = None
     if v:
-        return v, "야후(ko-KR)"
+        return strip_corp(v), "야후(ko-KR)"
     return clean_en(en) or code, "영문명 그대로"
+
+
+def english_name(sym, given):
+    """영문 사명. 스크리너가 준 이름이 있으면 그것을, 없으면 야후에 영어로 물어본다."""
+    given = clean_en(given)
+    if given and not SYM_RE.match(given):
+        return given
+    try:
+        v = next((n for n in yahoo_names(sym, "en") if not has_hangul(n)), None)
+    except Exception:                                       # noqa: BLE001
+        v = None
+    return clean_en(v) or sym.split(".")[0]
 
 
 # ---------------------------------------------------------------- 새 종목의 한글 자산
@@ -515,7 +544,7 @@ def build_entry(a):
         print("    기업 프로필이 비어 업종을 정할 수 없다 (다음 주에 다시 본다)", flush=True)
         return None
     ko, ko_src = korean_name(sym, a.get("name"))
-    en = clean_en(a.get("name")) or ko
+    en = english_name(sym, a.get("name")) or ko
     sector, why = pick_sector(profile, ko, en)
     prof = make_profile_ko(sym, ko, en, sector, payload, a.get("rank"))
     kw = make_keywords(sym, ko, en, sector, profile)
@@ -539,27 +568,28 @@ def probe(syms):
     F.init_crumb(rounds=2)
     kind_table()
     for sym in syms:
-        sym = resolve(sym)
-        row = kind_table().get(sym.split(".")[0]) or {}
-        build_entry({"sym": sym, "name": row.get("name") or sym, "rank": None, "cap": None})
+        build_entry({"sym": resolve(sym), "name": None, "rank": None, "cap": None})
     print("\n--probe 라 목록은 건드리지 않았다", flush=True)
     return 0
 
 
 def resolve(v):
-    """'052690' 처럼 코드만 줘도 되게 한다 — 시장 접미사는 상장 시장에서 찾는다."""
+    """'052690' 처럼 코드만 줘도 되게 한다 — 시장 접미사(.KS/.KQ)는 야후 검색에서 얻는다.
+
+    두 접미사를 차례로 찔러 보는 방법은 못 쓴다 — 야후가 상장되지 않은 쪽에도 빈 차트를
+    돌려주는 일이 있어(039030.KS) 엉뚱한 시장으로 굳는다.
+    """
     v = str(v).strip().upper()
-    if SYM_RE.match(v):
+    if SYM_RE.match(v) or not re.fullmatch(r"\d{6}", v):
         return v
-    if re.fullmatch(r"\d{6}", v):
-        # 코스닥 여부는 KIND 표에 없다. 두 접미사를 다 시도해 차트가 오는 쪽을 쓴다.
-        for suf in (".KS", ".KQ"):
-            try:
-                F.fetch_chart(v + suf, "5d", "1d")
-                return v + suf
-            except Exception:                               # noqa: BLE001
-                continue
-    return v
+    try:
+        j = F.yget("/v1/finance/search?q=%s&quotesCount=10&newsCount=0" % v)
+        for r in (j.get("quotes") or []):
+            if SYM_RE.match(r.get("symbol") or "") and (r.get("symbol") or "").startswith(v + "."):
+                return r["symbol"]
+    except Exception as e:                                  # noqa: BLE001
+        print("  %s 의 시장을 찾지 못했다 — %s" % (v, e), flush=True)
+    return v + ".KS"
 
 
 # ---------------------------------------------------------------- 본체
