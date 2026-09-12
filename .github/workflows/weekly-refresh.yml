@@ -24,6 +24,15 @@ on:
     # 30~90분씩 늦을 때가 있어(이 저장소에서 겪었다) 여유를 한 시간 두었다.
     - cron: '30 22 * * 0'
 
+  # 표시 파일을 고쳐 밀면 돈다 — Actions 를 부를 수단이 없는 자리를 위한 길이다.
+  #   date -u >> data/WEEKLY_REFRESH && git commit -am '갱신 요청' && git push
+  push:
+    branches:
+      - 'claude/els-**'
+      - 'claude/complete-sales-script-**'
+    paths:
+      - 'data/WEEKLY_REFRESH'
+
 # 예약은 기본 브랜치(main)의 워크플로만 발동한다 — GitHub 규칙이다.
 # 병합 전까지는 Routine(세션 예약)이 매주 월요일 이 워크플로를 작업 브랜치에서
 # workflow_dispatch 로 발동한다. README 「자동 갱신 시각」 참고.

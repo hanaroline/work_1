@@ -1,0 +1,14 @@
+# 월요일 일괄 갱신을 지금 돌리고 싶을 때 — 이 파일에 한 줄 더 적고 push 하면 된다.
+#
+#   date -u >> data/WEEKLY_REFRESH
+#   git commit -am '갱신 요청' && git push
+#
+# .github/workflows/weekly-refresh.yml 이 이 파일의 변경만 보고 돈다. 내용은 보지
+# 않으므로 무엇을 적든 상관없다 — 「파일이 바뀌었다」 는 사실이 신호다.
+#
+# 왜 이 길을 두나
+#   예약(schedule)은 기본 브랜치(main)의 워크플로만 돈다. Actions 탭에 들어가
+#   Run workflow 를 누를 수 있으면 그게 가장 빠르지만, 자동화된 자리에서는
+#   workflow_dispatch 를 부를 권한이 없을 때가 있다. git push 는 거의 언제나 된다.
+
+2026-09-12T02:20:00Z  첫 줄 — 이 길이 실제로 도는지 확인한 실행
