@@ -979,7 +979,7 @@ SK하이닉스 38개 기관처럼 국내 대형주는 커버리지가 두텁습�
 | `.github/workflows/kr100-quotes.yml` | 평일 정규장 10분 주기 + 시간외 30분 주기 | 가격만 → `quotes.json` |
 | `.github/workflows/kr100-ranking.yml` | 평일 16:10 KST | 시가총액 상위 100 과 목록 비교 → `ranking.json` + 이슈 갱신 |
 | `.github/workflows/kr100-offline.yml` | `kr-top100.html` 을 고쳐 push 할 때 | 수집은 하지 않고 **오프라인 판만** 새 화면으로 다시 만들어 올립니다(30~60초). 화면을 고친 날 오프라인 판이 하루 동안 낡은 화면을 담고 있지 않게 하려는 것입니다 |
-| `.github/workflows/kr100-weekly.yml` | **금요일 17:00 KST** | 목록 점검 → **목록 교체** → 새 목록으로 재수집 → 오프라인 판 → 데이터 브랜치 → `main` 커밋을 한 판에서 잇습니다 |
+| `.github/workflows/kr100-weekly.yml` | **월요일 10:00 KST** | 목록 점검 → **목록 교체** → 새 목록으로 재수집 → 오프라인 판 → 데이터 브랜치 → `main` 커밋을 한 판에서 잇습니다 |
 
 데이터는 미국 화면과 같은 방식으로 **히스토리를 남기지 않는 전용 브랜치**(`kr100-data`)에
 커밋 하나로 갈아끼웁니다. `data/kr100/` 에는 안내 파일(`{"movedTo": …}`)과 수집을 부르는
@@ -998,7 +998,7 @@ SK하이닉스 38개 기관처럼 국내 대형주는 커버리지가 두텁습�
 ## 대상 종목은 매주 저절로 바뀝니다
 
 종목 목록은 **`kr-top100.html` 의 `COMPANIES` 배열이 유일한 원본**입니다(수집기가 그 파일을
-읽습니다). 금요일 17:00 KST 에 `scripts/update_kr100_list.py` 가 그 배열을 시가총액 순위에
+읽습니다). 월요일 10:00 KST 에 `scripts/update_kr100_list.py` 가 그 배열을 시가총액 순위에
 맞춰 갈아 끼우고, 같은 커밋에서 `KEYWORDS`·`PROFILE_KO`·`CMP_PRESETS` 도 함께 고칩니다.
 
 | 규칙 | 값 | 왜 |
