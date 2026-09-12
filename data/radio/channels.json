@@ -1,5 +1,5 @@
 {
-  "updated": "2026-09-12T15:00:34.329Z",
+  "updated": "2026-09-12T15:08:30.608Z",
   "channels": [
     {
       "id": "kbs-1radio",
@@ -327,7 +327,7 @@
         "handle": "YTNradio",
         "title": "YTN 라디오",
         "verified": true,
-        "embeddable": true,
+        "embeddable": false,
         "checked": "2026-09-12T13:56:17.037Z"
       }
     },
@@ -394,7 +394,7 @@
         "handle": null,
         "verified": false,
         "embeddable": null,
-        "checked": "2026-09-12T14:59:41.540Z"
+        "checked": "2026-09-12T15:07:57.165Z"
       }
     },
     {
@@ -436,7 +436,7 @@
         "handle": "ytnnews24",
         "title": " YTN",
         "verified": true,
-        "embeddable": true,
+        "embeddable": false,
         "checked": "2026-09-12T14:03:08.273Z"
       }
     },
@@ -457,7 +457,7 @@
         "handle": null,
         "title": "연합뉴스TV",
         "verified": true,
-        "embeddable": true,
+        "embeddable": false,
         "checked": "2026-09-12T14:51:29.735Z"
       }
     },
@@ -478,7 +478,7 @@
         "handle": null,
         "title": "KBS News",
         "verified": true,
-        "embeddable": true,
+        "embeddable": false,
         "checked": "2026-09-12T14:51:33.100Z"
       }
     },
@@ -498,7 +498,7 @@
         "handle": "MBCNEWS11",
         "title": "MBCNEWS",
         "verified": true,
-        "embeddable": true,
+        "embeddable": false,
         "checked": "2026-09-12T14:07:21.504Z"
       }
     },
@@ -518,7 +518,7 @@
         "handle": "sbsnews8",
         "title": "SBS 뉴스",
         "verified": true,
-        "embeddable": true,
+        "embeddable": false,
         "checked": "2026-09-12T14:03:19.230Z"
       }
     },
@@ -538,7 +538,7 @@
         "handle": null,
         "title": "JTBC News",
         "verified": true,
-        "embeddable": true,
+        "embeddable": false,
         "checked": "2026-09-12T14:51:41.153Z"
       }
     },
@@ -550,8 +550,9 @@
       "band": "tv",
       "kind": "news",
       "official": {
-        "url": "https://www.ichannela.com/program/main/onair.do",
-        "verified": false
+        "url": "https://www.ichannela.com/",
+        "verified": true,
+        "fallback": true
       },
       "youtube": {
         "channelId": "UCrd_8ZuKJrgP6kpXB8_l1pQ",
@@ -598,7 +599,7 @@
         "handle": "TVCHOSUNnews",
         "title": "뉴스TVCHOSUN",
         "verified": true,
-        "embeddable": true,
+        "embeddable": false,
         "checked": "2026-09-12T14:03:36.444Z"
       }
     },
