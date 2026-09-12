@@ -33,6 +33,10 @@ on:
         description: '원문의 이 줄 범위를 그대로 찍는다 (예 800:900) — 규칙을 새로 쓸 때'
         type: string
         default: ''
+      fee:
+        description: '보수 표를 행마다 찍는다 (클래스 규칙을 쓸 때) — true/false'
+        type: string
+        default: 'false'
   # 기본 브랜치에 없는 워크플로는 손으로 돌릴 수 없다 (GitHub 제약) —
   # 규칙이나 이 파일을 밀어 올리면 바로 돌도록 해 둔다.
   push:
@@ -73,7 +77,9 @@ jobs:
           SHOW: ${{ inputs.show || 'clsAExp,clsA,varPct,strategy' }}
           VALUES: ${{ inputs.values || 'none' }}
           LINES: ${{ inputs.lines || '' }}
+          FEE: ${{ inputs.fee || 'false' }}
         run: |
-          node scripts/probe_fund_rules.mjs \
-            --limit "$LIMIT" --every "$EVERY" --codes "$CODES" \
+          set -- --limit "$LIMIT" --every "$EVERY" --codes "$CODES" \
             --show "$SHOW" --values "$VALUES" --lines "$LINES"
+          if [ "$FEE" = 'true' ]; then set -- "$@" --fee; fi
+          node scripts/probe_fund_rules.mjs "$@"
