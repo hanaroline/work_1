@@ -146,7 +146,8 @@ async function resolveLiveViaFeed (channelId) {
   }
 
   // 생방송은 대개 맨 앞에 온다. 앞쪽 몇 개만 본다.
-  for (const id of ids.slice(0, 4)) {
+  // (24시간 라이브는 RSS 에 아예 안 올라오는 일이 많다 — 그때는 /live 쪽이 맡는다)
+  for (const id of ids.slice(0, 3)) {
     const emb = await get(`https://www.youtube.com/embed/${id}`)
     if (!emb.ok) continue
     const isLive = emb.text.includes('"isLive":true') ||
@@ -160,6 +161,32 @@ async function resolveLiveViaFeed (channelId) {
   }
   log(`   · RSS 앞 ${Math.min(4, ids.length)}개 중 생방송 없음`)
   return null
+}
+
+// 지금 보고 있는 영상의 번호를 고른다.
+//
+// canonical 이나 videoDetails 만 보다가 놓쳤다 — YTN·MBC 뉴스·SBS 뉴스·TV조선이
+// '라이브 표시는 있는데 영상 id 를 못 찾았다' 로 떨어졌다. 열쇠 순서가 다르거나
+// 페이지 모양이 조금만 달라도 빗나간다.
+//
+// 페이지에 나오는 모든 영상 번호를 세어 가장 많이 나온 것을 고른다. 지금 트는
+// 영상은 페이지 곳곳에 되풀이되고, 추천 영상은 한두 번씩만 나온다.
+function pickVideoId (html) {
+  const exact = html.match(/<link\s+rel="canonical"\s+href="https:\/\/www\.youtube\.com\/watch\?v=([\w-]{11})"/)
+  if (exact) return exact[1]
+
+  const count = new Map()
+  for (const m of html.matchAll(/"videoId":"([\w-]{11})"/g)) {
+    count.set(m[1], (count.get(m[1]) || 0) + 1)
+  }
+  if (!count.size) return null
+
+  let best = null, bestN = 0
+  for (const [id, n] of count) {
+    if (n > bestN) { best = id; bestN = n }
+  }
+  // 한 번밖에 안 나온 것은 추천 목록일 가능성이 크다
+  return bestN >= 2 ? best : null
 }
 
 async function resolveLive (channelId) {
@@ -188,9 +215,7 @@ async function resolveLive (channelId) {
   // canonical 이 가장 정확하지만, 동의 페이지나 다른 판이 오면 없을 수 있다.
   // 그때는 videoDetails 의 videoId 를 쓴다 — 추천 영상 목록의 id 가 아니라
   // 지금 보고 있는 영상의 id 다.
-  const canonical = res.text.match(/<link\s+rel="canonical"\s+href="https:\/\/www\.youtube\.com\/watch\?v=([\w-]{11})"/)
-  const details = res.text.match(/"videoDetails":\s*\{"videoId":"([\w-]{11})"/)
-  const videoId = (canonical && canonical[1]) || (details && details[1])
+  const videoId = pickVideoId(res.text)
   if (!videoId) {
     log(`   ! 라이브 표시는 있는데 영상 id 를 못 찾았다 (길이=${res.text.length})`)
     return null
