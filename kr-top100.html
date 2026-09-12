@@ -4773,8 +4773,8 @@ function renderRankNote() {
       : head;
   };
   box.innerHTML = '<b>' + esc(t('대상 목록 갱신 후보', 'Coverage change pending')) + '</b> — ' +
-    esc(t(when + ' 점검 결과입니다. 주 1회(금요일) 목록이 자동으로 갱신되면서 이 가운데 순위 조건을 갖춘 종목이 들어오고, 밀린 종목이 빠집니다.',
-          'checked ' + when + '. The list is refreshed automatically once a week (Friday); qualifying symbols move in and fallen ones move out.')) +
+    esc(t(when + ' 점검 결과입니다. 주 1회(월요일) 목록이 자동으로 갱신되면서 이 가운데 순위 조건을 갖춘 종목이 들어오고, 밀린 종목이 빠집니다.',
+          'checked ' + when + '. The list is refreshed automatically once a week (Monday); qualifying symbols move in and fallen ones move out.')) +
     (add.length ? '<br>' + esc(t('목록에 없는 상위 종목 ' + add.length + '개: ',
       add.length + ' in the top 100 but not listed: ')) + listOf(add, true) : '') +
     (drop.length ? '<br>' + esc(t('목록에 있으나 ' + (RANK.dropRank || 150) + '위 밖으로 밀린 종목 ' + drop.length + '개: ',
