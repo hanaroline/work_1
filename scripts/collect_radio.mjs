@@ -245,24 +245,6 @@ async function resolveLive (channelId) {
   return { videoId, title: title ? title[1] : null }
 }
 
-// ── 3. 외부 사이트에서 재생 가능한지 ────────────────────────────────────────
-//
-// oEmbed 로는 안 된다. 임베드를 막아 둔 영상도 oEmbed 는 200 을 돌려준다
-// (영상이 사라진 것만 걸러 낸다). 그래서 YTN·연합뉴스TV·KBS 뉴스·YTN 라디오가
-// '재생 가능' 으로 통과했다가 화면에서 '이 동영상은 볼 수 없습니다' 가 떴다.
-//
-// 임베드 페이지를 직접 열어 playabilityStatus 를 본다. 막아 둔 영상은 여기서
-// UNPLAYABLE 로 나온다. 실제 플레이어가 보는 것과 같은 값이다.
-async function checkEmbeddable (videoId) {
-  const res = await get(`https://www.youtube.com/embed/${videoId}`)
-  if (!res.ok) return false
-
-  const m = res.text.match(/"playabilityStatus":\s*\{\s*"status":"([A-Z_]+)"/)
-  const status = m ? m[1] : '(못 읽음)'
-  if (status !== 'OK') log(`     임베드 상태 ${status}`)
-  return status === 'OK'
-}
-
 // ── 확인 2 ─────────────────────────────────────────────────────────────────
 // 채널 ID 만으로 '지금 라이브' 를 띄우는 옛 임베드 주소가 아직 도는지 본다.
 // 이게 되면 영상 ID 를 쫓아다닐 필요가 없어지고(수집 지연 문제도 사라진다),
@@ -385,17 +367,21 @@ async function main () {
 
     if (!onAir) continue
 
-    const embeddable = await checkEmbeddable(onAir.videoId)
-    out.youtube.embeddable = embeddable
-    log(`   ● 라이브 ${onAir.videoId}${embeddable ? '' : ' (임베드 막힘 → 유튜브 새 창으로)'}`)
+    // 임베드 가능 여부는 여기서 판정하지 않는다.
+    //
+    // 러너 IP 에서는 그 답을 믿을 수 없다. MBC·SBS·JTBC·TV조선 뉴스는 사용자
+    // 브라우저에서 멀쩡히 재생되는데 러너는 8개 전부 '막힘' 으로 봤다. 유튜브가
+    // 러너를 봇으로 보고 다른 답을 주기 때문이다.
+    //
+    // 진짜 판정은 실제 플레이어가 한다. 화면 쪽에서 재생해 보고 101·150 오류가
+    // 나면 그때 그 채널을 '막힘' 으로 기억한다 — 사람마다 망 사정이 다르므로
+    // 그쪽이 더 정확하다.
+    log(`   ● 라이브 ${onAir.videoId}`)
 
-    // 막힌 것도 적어 둔다. 화면 안에서 틀지는 못해도, 바로 그 영상을
-    // 새 창으로 열 수 있으니 채널 페이지로 보내는 것보다 낫다.
     live.push({
       channel: out.id,
       videoId: onAir.videoId,
       title: onAir.title,
-      embeddable,
       resolvedAt: new Date().toISOString()
     })
   }

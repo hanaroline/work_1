@@ -101,7 +101,8 @@
     .screen iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
     .screen iframe[hidden] { display: none; }
     .screen-empty {
-      position: absolute; inset: 0; display: grid; place-content: center; gap: 10px;
+      position: absolute; inset: 0; z-index: 2;  /* iframe 위에 와야 보인다 */
+      display: grid; place-content: center; gap: 10px;
       text-align: center; padding: 24px; color: #b9b8b2; background: #121212;
     }
     .screen-empty strong { color: #f2f2ef; font-size: 16px; font-weight: 600; }
@@ -357,7 +358,8 @@
     sleepTimer: null,
     fav: {},
     recent: [],
-    dead: {}
+    dead: {},
+    blocked: {}
   };
 
   var $ = function (id) { return document.getElementById(id); };
@@ -779,8 +781,22 @@
         onError: function (e) {
           // 101 · 150 = 방송사가 외부 사이트 재생을 막아 둔 영상
           if (e.data === 101 || e.data === 150) {
-            toast('이 채널은 외부 사이트 재생을 막아 두었습니다 — 공식 사이트로 여세요');
-            $('screenEmptyMsg').textContent = '이 채널은 외부 사이트 재생이 막혀 있습니다. 공식 사이트 단추로 보실 수 있습니다.';
+            // 방송사가 외부 사이트 재생을 막아 둔 영상. 기억해 두고 다음부터는
+            // 아예 새 창으로 보낸다 — 같은 화면을 두 번 보여 주지 않는다.
+            var cur = S.current;
+            if (cur) {
+              S.blocked[cur.id] = Date.now();
+              LS.set('blocked', S.blocked);
+              var l = S.live[cur.id];
+              if (l && l.videoId) {
+                window.open('https://www.youtube.com/watch?v=' + l.videoId, '_blank', 'noopener');
+                toast(cur.name + ' — 이 방송은 바깥 재생을 막아 두어 유튜브로 열었습니다');
+              } else {
+                toast(cur.name + ' — 이 방송은 바깥 재생을 막아 두었습니다');
+              }
+            }
+            $('screenEmptyMsg').textContent = '이 방송은 외부 사이트 재생이 막혀 있습니다. 유튜브 새 창에서 보실 수 있습니다.';
+            renderAll();
           } else {
             toast('영상을 재생하지 못했습니다 (' + e.data + ')');
           }
@@ -865,9 +881,15 @@
   // 유튜브가 알아서 띄워 주므로, 수집이 늦었거나 단일 파일 판의 영상 ID 가 낡았을
   // 때도 바로 볼 수 있다.
   // 화면 안에서 틀 수 있는가 — 영상 번호가 있고 임베드가 막히지 않은 것만.
+  // 화면 안에서 틀 수 있는가.
+  //
+  // 임베드 가능 여부는 수집 쪽에서 판정하지 않는다 — 러너 IP 에서는 유튜브가
+  // 다른 답을 준다(멀쩡히 나오는 MBC·SBS·JTBC·TV조선까지 '막힘' 으로 봤다).
+  // 진짜 판정은 실제 플레이어가 한다. 101·150 오류가 난 채널을 기억해 두고
+  // 그다음부터 새 창으로 보낸다.
   function playableLive(c) {
     var l = S.live[c.id];
-    return (l && l.embeddable !== false) ? l : null;
+    return (l && !S.blocked[c.id]) ? l : null;
   }
 
   function liveUrlOf(c) {
@@ -1149,6 +1171,7 @@
     S.fav = LS.get('fav', {}) || {};
     S.recent = LS.get('recent', []) || [];
     S.dead = LS.get('dead', {}) || {};
+    S.blocked = LS.get('blocked', {}) || {};
     var v = LS.get('vol', 80);
     $('vol').value = v;
     au.volume = v / 100;
