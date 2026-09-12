@@ -7,6 +7,10 @@
   --border: rgba(20, 19, 15, 0.12);
   --accent: #2a78d6;
   --shadow: 0 1px 2px rgba(20, 19, 15, 0.05), 0 8px 24px rgba(20, 19, 15, 0.06);
+
+  /* 값의 부호를 나타내는 색 — 양수 파랑 / 음수 빨강 */
+  --positive: #1a66c4;
+  --negative: #c92f2f;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -18,6 +22,10 @@
     --border: rgba(255, 255, 255, 0.14);
     --accent: #5598e7;
     --shadow: 0 1px 2px rgba(0, 0, 0, 0.4), 0 8px 24px rgba(0, 0, 0, 0.3);
+
+    /* 어두운 배경에서도 충분히 밝게 보이는 값으로 올린다 */
+    --positive: #6aa8ee;
+    --negative: #ff7070;
   }
 }
 
@@ -66,6 +74,37 @@ body {
   line-height: 1.1;
   font-variant-numeric: tabular-nums;
   letter-spacing: -0.03em;
+  transition: color 0.15s ease;
+}
+
+/* ===== 값의 부호에 따른 색 (0 일 때는 아무 클래스도 붙지 않아 기본색) ===== */
+
+/* 양수: 숫자와 + 버튼이 파랗게 */
+.counter.is-positive .counter__display,
+.counter.is-positive .btn--plus {
+  color: var(--positive);
+}
+
+.counter.is-positive .btn--plus {
+  border-color: color-mix(in srgb, var(--positive) 45%, transparent);
+}
+
+.counter.is-positive .btn--plus:hover {
+  background: color-mix(in srgb, var(--positive) 12%, transparent);
+}
+
+/* 음수: 숫자와 − 버튼이 빨갛게 */
+.counter.is-negative .counter__display,
+.counter.is-negative .btn--minus {
+  color: var(--negative);
+}
+
+.counter.is-negative .btn--minus {
+  border-color: color-mix(in srgb, var(--negative) 45%, transparent);
+}
+
+.counter.is-negative .btn--minus:hover {
+  background: color-mix(in srgb, var(--negative) 12%, transparent);
 }
 
 .counter__buttons {
@@ -87,7 +126,8 @@ body {
   border: 1px solid var(--border);
   border-radius: 14px;
   cursor: pointer;
-  transition: background-color 0.15s ease, transform 0.08s ease;
+  transition: background-color 0.15s ease, border-color 0.15s ease,
+    color 0.15s ease, transform 0.08s ease;
 }
 
 .btn:hover {

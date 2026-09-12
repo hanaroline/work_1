@@ -4,10 +4,14 @@
 let count = 0;
 
 const display = document.getElementById('display');
+const root = document.querySelector('.counter');
 
-// 현재 값을 화면에 반영한다
+// 현재 값을 화면에 반영한다.
+// 부호에 따라 색 상태 클래스를 갈아 끼운다 — 0 이면 둘 다 떼어 기본색으로 돌아간다.
 function render() {
   display.textContent = count;
+  root.classList.toggle('is-positive', count > 0);
+  root.classList.toggle('is-negative', count < 0);
 }
 
 // 증가 버튼: 1 증가
