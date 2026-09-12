@@ -59,7 +59,7 @@ def main():
         "</script>\n"
     )
 
-    if "window.RADIO_DATA" in html:
+    if "window.RADIO_DATA =" in html:
         raise SystemExit("radio.html 에 이미 데이터가 박혀 있다 — 원본을 확인하라")
 
     # 앱 스크립트보다 먼저 놓아야 한다.

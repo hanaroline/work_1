@@ -97,6 +97,7 @@
     }
     .screen { position: relative; width: 100%; aspect-ratio: 16 / 9; background: #000; }
     .screen iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
+    .screen iframe[hidden] { display: none; }
     .screen-empty {
       position: absolute; inset: 0; display: grid; place-content: center; gap: 10px;
       text-align: center; padding: 24px; color: #b9b8b2; background: #121212;
@@ -251,6 +252,8 @@
               <span id="screenEmptyMsg">지금 라이브 중인 채널은 목록 맨 위에 모여 있습니다.</span>
             </div>
             <div id="ytmount"></div>
+            <!-- 채널 주소로 바로 트는 판. 유튜브가 '지금 라이브' 를 알아서 고른다. -->
+            <iframe id="rawFrame" title="라이브 영상" allow="autoplay; encrypted-media; picture-in-picture" allowfullscreen hidden></iframe>
           </div>
           <div class="stage-info">
             <div>
@@ -427,9 +430,17 @@
       return;
     }
     if (i >= RB_HOSTS.length) {
-      $('audioCount').textContent = '목록을 받지 못했습니다';
-      $('audioList').innerHTML =
-        '<div class="empty">공개 스트림 목록을 받지 못했습니다.<br>네트워크를 확인한 뒤 새로고침해 주세요.</div>';
+      // 사내망처럼 막힌 곳에서는 러너가 받아 둔 목록으로 넘어간다.
+      getJSON('data/radio/stations.json').then(function (d) {
+        S.stations = d.stations || [];
+        if (!S.stations.length) throw new Error('empty');
+        buildTags(); renderAudio(); renderFav();
+        toast('공개 스트림은 저장소에 받아 둔 목록으로 보여 줍니다');
+      }).catch(function () {
+        $('audioCount').textContent = '목록을 받지 못했습니다';
+        $('audioList').innerHTML =
+          '<div class="empty">공개 스트림 목록을 받지 못했습니다.<br>네트워크를 확인한 뒤 새로고침해 주세요.</div>';
+      });
       return;
     }
     var url = RB_HOSTS[i] +
@@ -578,8 +589,11 @@
     });
 
     var liveCount = band.filter(function (c) { return S.live[c.id]; }).length;
-    $('tvCount').textContent = liveCount
-      ? liveCount + '개 라이브 · 전체 ' + band.length + '개'
+    var canPlay = band.filter(function (c) {
+      return S.live[c.id] || (c.youtube && c.youtube.verified && c.youtube.channelId);
+    }).length;
+    $('tvCount').textContent = canPlay
+      ? canPlay + '개 재생 가능 · 전체 ' + band.length + '개'
       : '전체 ' + band.length + '개';
     $('lamp').className = 'lamp' + (S.current ? ' on' : '');
 
@@ -588,13 +602,16 @@
       return;
     }
 
-    if (!liveCount) {
+    var playable = band.filter(function (c) {
+      return S.live[c.id] || (c.youtube && c.youtube.verified && c.youtube.channelId);
+    }).length;
+
+    if (!playable) {
       var note = document.createElement('div');
       note.className = 'note';
-      note.innerHTML = '<b>지금 사이트 안에서 재생할 수 있는 채널이 없습니다.</b><br>' +
-        '수집 워크플로가 아직 돌지 않았거나, 지금 라이브 중인 채널이 없습니다. ' +
-        '각 채널의 <b>공식 사이트</b> 단추로는 바로 들으실 수 있습니다.<br>' +
-        '<code>.github/workflows/radio-live.yml</code> 을 한 번 실행하면 라이브 채널이 여기 올라옵니다.';
+      note.innerHTML = '<b>이 갈래에는 사이트 안에서 재생할 수 있는 채널이 없습니다.</b><br>' +
+        '공식 유튜브 채널이 아직 확인되지 않았습니다. ' +
+        '각 채널의 <b>공식 사이트</b> 단추로는 바로 들으실 수 있습니다.';
       box.appendChild(note);
     }
 
@@ -609,8 +626,8 @@
         color: orgColor(c.org),
         initials: initials(c.name, c.org),
         live: !!live,
-        chip: live ? '영상' : (liveUrlOf(c) && liveUrlOf(c).kind === 'yt' ? '유튜브 라이브' : '공식 사이트'),
-        chipClass: live ? 'live' : 'ext',
+        chip: (live || (c.youtube && c.youtube.verified && c.youtube.channelId)) ? '영상' : '공식 사이트',
+        chipClass: (live || (c.youtube && c.youtube.verified && c.youtube.channelId)) ? 'live' : 'ext',
         onPlay: function () { playChannel(c); }
       }));
     });
@@ -771,7 +788,47 @@
     $('screenEmpty').style.display = show ? 'grid' : 'none';
   }
 
+  // 채널 주소로 바로 트는 판. 유튜브 자체 조작단추를 쓰므로 우리 음량·재생
+  // 단추는 이 판에서 동작하지 않는다. 대신 수집이 늦거나 없어도 지금 방송이 나온다.
+  function playChannelEmbed(c) {
+    stopAudio();
+    if (S.ytReady && S.yt && S.yt.stopVideo) { try { S.yt.stopVideo(); } catch (e) {} }
+
+    S.current = { kind: 'ytraw', id: c.id, name: c.name, sub: c.org + ' 라이브 (유튜브)' };
+    setTab((c.band || 'radio') === 'tv' ? 'tv' : 'radio');
+    updateNow();
+
+    var f = $('rawFrame');
+    f.src = 'https://www.youtube.com/embed/live_stream?channel=' +
+            encodeURIComponent(c.youtube.channelId) + '&autoplay=1';
+    f.hidden = false;
+    $('ytmount').style.display = 'none';
+    showScreenEmpty(false);
+
+    var official = (c.official && c.official.url) || null;
+    $('btnOfficial').hidden = false;
+    $('btnOfficial').href = 'https://www.youtube.com/channel/' + c.youtube.channelId + '/live';
+    $('btnOfficial').textContent = '유튜브에서 열기';
+    $('stageSub').textContent = '영상이 안 나오면 · 유튜브에서 열기' + (official ? ' · 공식 사이트도 있습니다' : '');
+
+    pushRecent({
+      kind: 'yt', id: c.id, name: c.name,
+      sub: (c.freq && c.freq.seoul) ? c.freq.seoul.toFixed(1) + ' MHz' : c.org,
+      color: orgColor(c.org), initials: initials(c.name, c.org)
+    });
+    LS.set('last', { kind: 'yt', id: c.id });
+    renderAll();
+  }
+
+  function hideRawFrame() {
+    var f = $('rawFrame');
+    if (!f.hidden) { f.hidden = true; f.removeAttribute('src'); }
+    $('ytmount').style.display = '';
+    $('btnOfficial').textContent = '공식 사이트';
+  }
+
   function startVideo(videoId) {
+    hideRawFrame();
     showScreenEmpty(false);
     S.yt.loadVideoById({ videoId: videoId });
     S.yt.setVolume(Number($('vol').value));
@@ -792,13 +849,18 @@
     var live = S.live[c.id];
     var official = (c.official && c.official.url) || null;
 
+    // 영상 ID 가 없어도 채널이 확인돼 있으면 채널 주소로 바로 튼다.
+    // 유튜브가 그 채널의 '지금 라이브' 를 알아서 고르므로 수집이 늦어도 된다.
+    if (!live && c.youtube && c.youtube.verified && c.youtube.channelId) {
+      playChannelEmbed(c);
+      return;
+    }
+
     if (!live) {
       var out = liveUrlOf(c);
       if (out) {
         window.open(out.url, '_blank', 'noopener');
-        toast(c.name + (out.kind === 'yt'
-          ? ' — 유튜브 라이브를 새 창으로 열었습니다'
-          : ' — 공식 사이트를 새 창으로 열었습니다'));
+        toast(c.name + ' — 공식 사이트를 새 창으로 열었습니다');
       } else {
         toast(c.name + ' — 지금 들을 수 있는 경로가 없습니다');
       }
@@ -832,6 +894,7 @@
 
   function stopVideo() {
     if (S.ytReady && S.yt && S.yt.stopVideo) { try { S.yt.stopVideo(); } catch (e) {} }
+    hideRawFrame();
     showScreenEmpty(true);
   }
   function stopAudio() {
@@ -909,6 +972,10 @@
 
   function togglePlay() {
     if (!S.current) { toast('먼저 채널을 고르세요'); return; }
+    if (S.current.kind === 'ytraw') {
+      toast('이 채널은 영상 안의 유튜브 단추로 조작하세요');
+      return;
+    }
     if (S.current.kind === 'yt') {
       if (!S.ytReady) return;
       var st = S.yt.getPlayerState();
