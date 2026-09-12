@@ -129,13 +129,23 @@ async function resolveChannel (handles, expect) {
 // /live 는 방송 중이면 watch 페이지로, 아니면 채널 페이지로 간다.
 async function resolveLive (channelId) {
   const res = await get(`https://www.youtube.com/channel/${channelId}/live`)
-  if (!res.ok) return null
+  if (!res.ok) {
+    log(`   ! /live 응답 실패 (status=${res.status}${res.error ? ' ' + res.error : ''})`)
+    return null
+  }
 
   // 진짜 생방송일 때만 받는다. 지난 방송의 다시보기를 라이브로 올리면 안 된다.
   const isLive = res.text.includes('"isLiveNow":true') ||
                  res.text.includes('"isLive":true') ||
                  res.text.includes('hlsManifestUrl')
-  if (!isLive) return null
+  if (!isLive) {
+    // 왜 아닌지 남긴다. 24시간 라이브를 도는 뉴스 채널까지 '라이브 아님' 으로
+    // 나오면 응답 자체가 다른 판(동의 페이지·봇 차단)일 가능성이 크다.
+    const looksLikePlayer = res.text.includes('"videoDetails"')
+    const looksLikeConsent = res.text.includes('consent.youtube.com') || res.text.includes('CONSENT')
+    log(`   · 라이브 아님 (길이=${res.text.length} 플레이어=${looksLikePlayer} 동의페이지=${looksLikeConsent})`)
+    return null
+  }
 
   // canonical 이 가장 정확하지만, 동의 페이지나 다른 판이 오면 없을 수 있다.
   // 그때는 videoDetails 의 videoId 를 쓴다 — 추천 영상 목록의 id 가 아니라
@@ -143,7 +153,10 @@ async function resolveLive (channelId) {
   const canonical = res.text.match(/<link\s+rel="canonical"\s+href="https:\/\/www\.youtube\.com\/watch\?v=([\w-]{11})"/)
   const details = res.text.match(/"videoDetails":\s*\{"videoId":"([\w-]{11})"/)
   const videoId = (canonical && canonical[1]) || (details && details[1])
-  if (!videoId) return null
+  if (!videoId) {
+    log(`   ! 라이브 표시는 있는데 영상 id 를 못 찾았다 (길이=${res.text.length})`)
+    return null
+  }
 
   const title = res.text.match(/<meta\s+name="title"\s+content="([^"]+)"/)
   return { videoId, title: title ? title[1] : null }
@@ -156,6 +169,22 @@ async function checkEmbeddable (videoId) {
     `https://www.youtube.com/oembed?format=json&url=${encodeURIComponent(`https://www.youtube.com/watch?v=${videoId}`)}`
   )
   return res.ok
+}
+
+// ── 확인 2 ─────────────────────────────────────────────────────────────────
+// 채널 ID 만으로 '지금 라이브' 를 띄우는 옛 임베드 주소가 아직 도는지 본다.
+// 이게 되면 영상 ID 를 쫓아다닐 필요가 없어지고(수집 지연 문제도 사라진다),
+// 단일 파일 판도 낡지 않는다. 판정만 하고 쓰지는 않는다 — 쓸지는 로그를 보고 정한다.
+async function probeChannelEmbed (channelId, name) {
+  const res = await get(`https://www.youtube.com/embed/live_stream?channel=${channelId}`)
+  if (!res.ok) {
+    log(`   [확인2] ${name}: 응답 실패 (status=${res.status})`)
+    return false
+  }
+  const hasVideo = /"videoId":"([\w-]{11})"/.test(res.text)
+  const unavailable = res.text.includes('UNPLAYABLE') || res.text.includes('ERROR')
+  log(`   [확인2] ${name}: 영상있음=${hasVideo} 막힘=${unavailable} 길이=${res.text.length}`)
+  return hasVideo && !unavailable
 }
 
 async function readJson (path, fallback) {
@@ -250,10 +279,13 @@ async function main () {
     if (args.has('--channels-only') || !out.youtube.channelId) continue
 
     const onAir = await resolveLive(out.youtube.channelId)
-    if (!onAir) {
-      log('   · 지금은 라이브 아님')
-      continue
+
+    // 24시간 라이브를 도는 뉴스 채널 몇 개로만 확인 2 를 돌린다.
+    if (['ytn-tv', 'yonhap-tv', 'mbn-news', 'arirang-tv'].includes(out.id)) {
+      await probeChannelEmbed(out.youtube.channelId, out.name)
     }
+
+    if (!onAir) continue
 
     const embeddable = await checkEmbeddable(onAir.videoId)
     out.youtube.embeddable = embeddable
