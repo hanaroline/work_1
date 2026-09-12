@@ -1,31 +1,56 @@
 /* ===== 색상 토큰 (라이트 기본 / 다크 자동 전환) ===== */
 :root {
-  --page: #f7f7f5;
-  --surface: #ffffff;
-  --text: #14130f;
-  --text-muted: #77756d;
-  --border: rgba(20, 19, 15, 0.12);
-  --accent: #2a78d6;
-  --shadow: 0 1px 2px rgba(20, 19, 15, 0.05), 0 8px 24px rgba(20, 19, 15, 0.06);
+  /* 배경 보라 그라데이션 */
+  --bg-1: #7c3aed;
+  --bg-2: #a855f7;
+  --bg-3: #5b21b6;
+
+  --card: rgba(255, 255, 255, 0.9);
+  --card-border: rgba(255, 255, 255, 0.65);
+  --card-shadow: 0 24px 64px rgba(59, 7, 100, 0.35), 0 2px 8px rgba(59, 7, 100, 0.18);
+
+  --text: #1e1b30;
+  --text-muted: #6b6784;
+
+  --btn-face: #ffffff;
+  --btn-border: rgba(91, 33, 182, 0.14);
+  --btn-shadow: 0 4px 14px rgba(76, 29, 149, 0.14), 0 1px 2px rgba(76, 29, 149, 0.1);
+  --btn-shadow-hover: 0 10px 24px rgba(76, 29, 149, 0.22), 0 2px 4px rgba(76, 29, 149, 0.12);
+
+  --accent: #7c3aed;
 
   /* 값의 부호를 나타내는 색 — 양수 파랑 / 음수 빨강 */
-  --positive: #1a66c4;
-  --negative: #c92f2f;
+  --positive: #2563eb;
+  --positive-2: #60a5fa;
+  --negative: #dc2626;
+  --negative-2: #f87171;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --page: #0d0d0c;
-    --surface: #1a1a19;
-    --text: #f5f4f0;
-    --text-muted: #94928a;
-    --border: rgba(255, 255, 255, 0.14);
-    --accent: #5598e7;
-    --shadow: 0 1px 2px rgba(0, 0, 0, 0.4), 0 8px 24px rgba(0, 0, 0, 0.3);
+    --bg-1: #4c1d95;
+    --bg-2: #6d28d9;
+    --bg-3: #2e1065;
+
+    --card: rgba(30, 27, 48, 0.86);
+    --card-border: rgba(255, 255, 255, 0.12);
+    --card-shadow: 0 24px 64px rgba(0, 0, 0, 0.55), 0 2px 8px rgba(0, 0, 0, 0.4);
+
+    --text: #f4f2ff;
+    --text-muted: #a9a3c4;
+
+    --btn-face: rgba(255, 255, 255, 0.07);
+    --btn-border: rgba(255, 255, 255, 0.16);
+    --btn-shadow: 0 4px 14px rgba(0, 0, 0, 0.35);
+    --btn-shadow-hover: 0 10px 24px rgba(0, 0, 0, 0.45);
+
+    --accent: #a78bfa;
 
     /* 어두운 배경에서도 충분히 밝게 보이는 값으로 올린다 */
-    --positive: #6aa8ee;
-    --negative: #ff7070;
+    --positive: #7fb0ff;
+    --positive-2: #4f8ef7;
+    --negative: #ff8080;
+    --negative-2: #f05a5a;
   }
 }
 
@@ -33,7 +58,7 @@
   box-sizing: border-box;
 }
 
-/* 화면 정중앙 배치 */
+/* 화면 정중앙 배치 + 보라 그라데이션 배경 */
 body {
   min-height: 100vh;
   margin: 0;
@@ -41,110 +66,145 @@ body {
   align-items: center;
   justify-content: center;
   padding: 24px;
-  background: var(--page);
   color: var(--text);
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans KR", sans-serif;
+  background: linear-gradient(150deg, var(--bg-1) 0%, var(--bg-2) 45%, var(--bg-3) 100%);
+  background-attachment: fixed;
 }
 
+/* 유리판 느낌의 카드 */
 .counter {
   width: 100%;
-  max-width: 380px;
-  padding: 40px 28px;
+  max-width: 360px;
+  padding: 44px 32px 36px;
   text-align: center;
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 20px;
-  box-shadow: var(--shadow);
+  background: var(--card);
+  border: 1px solid var(--card-border);
+  border-radius: 28px;
+  box-shadow: var(--card-shadow);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
 }
 
 .counter__title {
-  margin: 0 0 20px;
-  font-size: 14px;
-  font-weight: 600;
-  letter-spacing: 0.08em;
+  margin: 0 0 8px;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.16em;
   text-transform: uppercase;
   color: var(--text-muted);
 }
 
 /* 큰 숫자: 자릿수가 늘어나도 흔들리지 않도록 고정폭 숫자 사용 */
 .counter__display {
-  margin-bottom: 32px;
-  font-size: clamp(64px, 22vw, 112px);
-  font-weight: 700;
-  line-height: 1.1;
+  margin-bottom: 36px;
+  font-size: clamp(76px, 26vw, 128px);
+  font-weight: 800;
+  line-height: 1.05;
   font-variant-numeric: tabular-nums;
-  letter-spacing: -0.03em;
-  transition: color 0.15s ease;
-}
-
-/* ===== 값의 부호에 따른 색 (0 일 때는 아무 클래스도 붙지 않아 기본색) ===== */
-
-/* 양수: 숫자와 + 버튼이 파랗게 */
-.counter.is-positive .counter__display,
-.counter.is-positive .btn--plus {
-  color: var(--positive);
-}
-
-.counter.is-positive .btn--plus {
-  border-color: color-mix(in srgb, var(--positive) 45%, transparent);
-}
-
-.counter.is-positive .btn--plus:hover {
-  background: color-mix(in srgb, var(--positive) 12%, transparent);
-}
-
-/* 음수: 숫자와 − 버튼이 빨갛게 */
-.counter.is-negative .counter__display,
-.counter.is-negative .btn--minus {
-  color: var(--negative);
-}
-
-.counter.is-negative .btn--minus {
-  border-color: color-mix(in srgb, var(--negative) 45%, transparent);
-}
-
-.counter.is-negative .btn--minus:hover {
-  background: color-mix(in srgb, var(--negative) 12%, transparent);
+  letter-spacing: -0.05em;
+  transition: color 0.2s ease;
 }
 
 .counter__buttons {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 12px;
+  gap: 14px;
 }
 
+/* ===== 버튼: pill 형태 + 그림자 + 호버 들림 ===== */
 .btn {
-  min-width: 64px;
-  height: 56px;
-  padding: 0 18px;
   font-family: inherit;
-  font-size: 26px;
   font-weight: 600;
   color: var(--text);
-  background: transparent;
-  border: 1px solid var(--border);
-  border-radius: 14px;
+  background: var(--btn-face);
+  border: 1px solid var(--btn-border);
+  border-radius: 999px;
+  box-shadow: var(--btn-shadow);
   cursor: pointer;
-  transition: background-color 0.15s ease, border-color 0.15s ease,
-    color 0.15s ease, transform 0.08s ease;
+  transition: transform 0.18s ease, box-shadow 0.18s ease,
+    background-color 0.18s ease, border-color 0.18s ease, color 0.18s ease;
 }
 
 .btn:hover {
-  background: color-mix(in srgb, var(--accent) 12%, transparent);
+  transform: translateY(-3px);
+  box-shadow: var(--btn-shadow-hover);
 }
 
 .btn:active {
-  transform: scale(0.96);
+  transform: translateY(0) scale(0.95);
+  box-shadow: var(--btn-shadow);
 }
 
 .btn:focus-visible {
   outline: 2px solid var(--accent);
-  outline-offset: 2px;
+  outline-offset: 3px;
 }
 
-/* 리셋 버튼은 보조 동작이므로 작고 약하게 */
+/* +, − 는 원형 pill */
+.btn--plus,
+.btn--minus {
+  width: 62px;
+  height: 62px;
+  padding: 0;
+  font-size: 28px;
+  line-height: 1;
+}
+
+/* 리셋은 보조 동작이므로 작고 약하게 */
 .btn--reset {
-  font-size: 15px;
+  height: 46px;
+  padding: 0 22px;
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
   color: var(--text-muted);
+}
+
+/* ===== 값의 부호에 따른 색 (0 일 때는 아무 클래스도 붙지 않아 기본색) ===== */
+
+/* 양수: 숫자는 파랗게, + 버튼은 파랑으로 채운다 */
+.counter.is-positive .counter__display {
+  color: var(--positive);
+}
+
+.counter.is-positive .btn--plus {
+  color: #fff;
+  background: linear-gradient(140deg, var(--positive-2), var(--positive));
+  border-color: transparent;
+  box-shadow: 0 6px 18px color-mix(in srgb, var(--positive) 45%, transparent);
+}
+
+.counter.is-positive .btn--plus:hover {
+  box-shadow: 0 12px 28px color-mix(in srgb, var(--positive) 55%, transparent);
+}
+
+/* 음수: 숫자는 빨갛게, − 버튼은 빨강으로 채운다 */
+.counter.is-negative .counter__display {
+  color: var(--negative);
+}
+
+.counter.is-negative .btn--minus {
+  color: #fff;
+  background: linear-gradient(140deg, var(--negative-2), var(--negative));
+  border-color: transparent;
+  box-shadow: 0 6px 18px color-mix(in srgb, var(--negative) 45%, transparent);
+}
+
+.counter.is-negative .btn--minus:hover {
+  box-shadow: 0 12px 28px color-mix(in srgb, var(--negative) 55%, transparent);
+}
+
+/* 움직임을 줄여 달라는 설정을 존중한다 */
+@media (prefers-reduced-motion: reduce) {
+  .btn,
+  .counter__display {
+    transition: none;
+  }
+
+  .btn:hover,
+  .btn:active {
+    transform: none;
+  }
 }
