@@ -1,0 +1,1011 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>보이는 라디오</title>
+  <style>
+    /* ===== 팔레트 (index.html 과 같은 토큰, 라이트/다크) ===== */
+    :root {
+      --surface-1: #fcfcfb; --surface-2: #f2f2ef; --page: #f9f9f7;
+      --text-primary: #0b0b0b; --text-secondary: #52514e; --text-muted: #898781;
+      --grid: #e1e0d9; --axis: #c3c2b7; --border: rgba(11,11,11,0.10);
+      --series-1: #2a78d6; --series-2: #1baf7a; --series-3: #eda100;
+      --series-5: #4a3aa7; --series-6: #e34948; --series-8: #eb6834;
+      --onair: #d03b3b; --good: #006300;
+      --shadow: 0 1px 2px rgba(11,11,11,.05), 0 4px 16px rgba(11,11,11,.04);
+      --radius: 14px;
+    }
+    :root[data-theme="dark"] {
+      --surface-1: #1a1a19; --surface-2: #232321; --page: #0d0d0d;
+      --text-primary: #ffffff; --text-secondary: #c3c2b7; --text-muted: #898781;
+      --grid: #2c2c2a; --axis: #383835; --border: rgba(255,255,255,0.10);
+      --series-1: #3987e5; --series-2: #199e70; --series-3: #c98500;
+      --series-5: #9085e9; --series-6: #e66767; --series-8: #d95926;
+      --onair: #ff6b6b; --good: #0ca30c;
+      --shadow: 0 1px 2px rgba(0,0,0,.4), 0 4px 16px rgba(0,0,0,.3);
+    }
+    @media (prefers-color-scheme: dark) {
+      :root:not([data-theme="light"]) {
+        --surface-1: #1a1a19; --surface-2: #232321; --page: #0d0d0d;
+        --text-primary: #ffffff; --text-secondary: #c3c2b7; --text-muted: #898781;
+        --grid: #2c2c2a; --axis: #383835; --border: rgba(255,255,255,0.10);
+        --series-1: #3987e5; --series-2: #199e70; --series-3: #c98500;
+        --series-5: #9085e9; --series-6: #e66767; --series-8: #d95926;
+        --onair: #ff6b6b; --good: #0ca30c;
+        --shadow: 0 1px 2px rgba(0,0,0,.4), 0 4px 16px rgba(0,0,0,.3);
+      }
+    }
+
+    * { box-sizing: border-box; }
+    html, body { margin: 0; padding: 0; }
+    body {
+      background: var(--page); color: var(--text-primary);
+      font-family: "Apple SD Gothic Neo", "Malgun Gothic", -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+      line-height: 1.6; -webkit-font-smoothing: antialiased;
+      padding-bottom: 96px; /* 하단 플레이어 자리 */
+    }
+    button { font: inherit; color: inherit; cursor: pointer; }
+    :focus-visible { outline: 2px solid var(--series-1); outline-offset: 2px; }
+    .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+
+    /* ===== 상단 ===== */
+    .bar {
+      position: sticky; top: 0; z-index: 40;
+      background: color-mix(in srgb, var(--page) 92%, transparent);
+      backdrop-filter: blur(8px);
+      border-bottom: 1px solid var(--border);
+    }
+    .bar-inner {
+      max-width: 1280px; margin: 0 auto; padding: 12px 20px;
+      display: flex; align-items: center; gap: 14px; flex-wrap: wrap;
+    }
+    .brand { display: flex; align-items: center; gap: 9px; font-weight: 700; font-size: 17px; letter-spacing: -.02em; }
+    .lamp { width: 9px; height: 9px; border-radius: 50%; background: var(--axis); flex: none; transition: background .2s; }
+    .lamp.on { background: var(--onair); box-shadow: 0 0 0 4px color-mix(in srgb, var(--onair) 20%, transparent); }
+    .tabs { display: flex; gap: 4px; }
+    .tab {
+      border: 1px solid transparent; background: none; border-radius: 999px;
+      padding: 6px 14px; font-size: 14px; color: var(--text-secondary);
+    }
+    .tab:hover { background: var(--surface-2); }
+    .tab[aria-selected="true"] { background: var(--text-primary); color: var(--page); font-weight: 600; }
+    .spacer { flex: 1 1 auto; }
+    .search {
+      border: 1px solid var(--border); background: var(--surface-1); border-radius: 999px;
+      padding: 7px 14px; font-size: 14px; width: 200px; color: inherit;
+    }
+    .search::placeholder { color: var(--text-muted); }
+    @media (max-width: 640px) { .search { flex: 1 1 140px; width: auto; min-width: 0; } }
+    .icon-btn {
+      border: 1px solid var(--border); background: var(--surface-1);
+      border-radius: 999px; width: 36px; height: 36px; display: grid; place-items: center;
+      font-size: 15px; flex: none;
+    }
+    .icon-btn:hover { background: var(--surface-2); }
+
+    /* ===== 본문 ===== */
+    .layout { max-width: 1280px; margin: 0 auto; padding: 20px; }
+    .pane[hidden] { display: none !important; }
+
+    .tv-grid { display: grid; grid-template-columns: 1fr; gap: 22px; align-items: start; }
+    @media (min-width: 940px) { .tv-grid { grid-template-columns: minmax(0,1.9fr) minmax(300px,1fr); } }
+
+    .stage {
+      background: var(--surface-1); border: 1px solid var(--border);
+      border-radius: var(--radius); overflow: hidden; box-shadow: var(--shadow);
+    }
+    .screen { position: relative; width: 100%; aspect-ratio: 16 / 9; background: #000; }
+    .screen iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
+    .screen-empty {
+      position: absolute; inset: 0; display: grid; place-content: center; gap: 10px;
+      text-align: center; padding: 24px; color: #b9b8b2; background: #121212;
+    }
+    .screen-empty strong { color: #f2f2ef; font-size: 16px; font-weight: 600; }
+    .screen-empty span { font-size: 13.5px; max-width: 40ch; }
+    /* 영상 끄기 — iframe 은 살려 둔 채 화면에서만 치운다 (소리는 계속 난다) */
+    .stage.audio-only .screen { aspect-ratio: auto; height: 0; }
+    .stage.audio-only .screen iframe { width: 1px; height: 1px; opacity: 0; pointer-events: none; }
+
+    .stage-info { padding: 14px 18px; display: flex; gap: 14px; align-items: flex-start; flex-wrap: wrap; }
+    .stage-info h2 { margin: 0; font-size: 17px; letter-spacing: -.02em; }
+    .stage-info p { margin: 3px 0 0; font-size: 13.5px; color: var(--text-muted); }
+    .stage-actions { display: flex; gap: 8px; margin-left: auto; flex-wrap: wrap; }
+    .btn {
+      border: 1px solid var(--border); background: var(--surface-1); border-radius: 999px;
+      padding: 7px 14px; font-size: 13.5px; color: var(--text-secondary);
+    }
+    .btn:hover { background: var(--surface-2); }
+    .btn[aria-pressed="true"] { background: var(--text-primary); color: var(--page); border-color: var(--text-primary); }
+    .btn.primary { background: var(--series-1); border-color: var(--series-1); color: #fff; }
+
+    .section-title {
+      display: flex; align-items: baseline; gap: 10px; margin: 0 0 12px;
+      font-size: 13px; font-weight: 600; color: var(--text-muted);
+      letter-spacing: .06em; text-transform: uppercase;
+    }
+    .section-title em { font-style: normal; font-weight: 400; text-transform: none; letter-spacing: 0; font-size: 12.5px; }
+
+    .cards { display: grid; gap: 8px; }
+    .list-col .cards { max-height: none; }
+    .card {
+      display: grid; grid-template-columns: 40px 1fr auto; gap: 12px; align-items: center;
+      width: 100%; text-align: left;
+      background: var(--surface-1); border: 1px solid var(--border);
+      border-radius: 10px; padding: 10px 12px;
+    }
+    .card:hover { border-color: var(--axis); background: var(--surface-2); }
+    .card[aria-current="true"] { border-color: var(--series-1); box-shadow: 0 0 0 1px var(--series-1); }
+    .badge {
+      width: 40px; height: 40px; border-radius: 9px; display: grid; place-items: center;
+      font-size: 12px; font-weight: 700; letter-spacing: -.03em; color: #fff; flex: none;
+    }
+    .card-main { min-width: 0; }
+    .card-name { font-size: 14.5px; font-weight: 600; letter-spacing: -.015em; display: flex; align-items: center; gap: 7px; min-width: 0; }
+    .card-name .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--onair); flex: none; }
+    .card-name .label { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .card-sub {
+      font-size: 12.5px; color: var(--text-muted); margin-top: 1px;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    .card-right { display: flex; align-items: center; gap: 8px; }
+    .chip {
+      font-size: 11px; padding: 2px 8px; border-radius: 999px; white-space: nowrap;
+      font-variant-numeric: tabular-nums;
+    }
+    .chip.live { background: color-mix(in srgb, var(--onair) 14%, transparent); color: var(--onair); font-weight: 600; }
+    .chip.ext { background: var(--surface-2); color: var(--text-muted); }
+    .chip.audio { background: color-mix(in srgb, var(--series-2) 14%, transparent); color: var(--series-2); }
+    .star { border: none; background: none; font-size: 15px; line-height: 1; color: var(--axis); padding: 4px; }
+    .star.on { color: var(--series-3); }
+
+    .filters { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 14px; }
+    .filter {
+      border: 1px solid var(--border); background: var(--surface-1);
+      border-radius: 999px; padding: 5px 12px; font-size: 13px; color: var(--text-secondary);
+    }
+    .filter[aria-pressed="true"] { background: var(--text-primary); color: var(--page); border-color: var(--text-primary); }
+
+    .grid-cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 8px; }
+
+    .note {
+      background: var(--surface-1); border: 1px solid var(--border); border-left: 3px solid var(--series-3);
+      border-radius: 0 10px 10px 0; padding: 14px 16px; font-size: 13.5px; color: var(--text-secondary);
+      margin-bottom: 18px;
+    }
+    .note b { color: var(--text-primary); }
+    .note code { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 12.5px; background: var(--surface-2); padding: 1px 5px; border-radius: 4px; }
+    .empty { padding: 40px 20px; text-align: center; color: var(--text-muted); font-size: 14px; }
+
+    /* ===== 하단 플레이어 ===== */
+    .player {
+      position: fixed; left: 0; right: 0; bottom: 0; z-index: 50;
+      background: color-mix(in srgb, var(--surface-1) 96%, transparent);
+      backdrop-filter: blur(10px);
+      border-top: 1px solid var(--border);
+    }
+    .player-inner {
+      max-width: 1280px; margin: 0 auto; padding: 10px 20px;
+      display: flex; align-items: center; gap: 14px;
+    }
+    .play-btn {
+      width: 44px; height: 44px; border-radius: 50%; border: none; flex: none;
+      background: var(--text-primary); color: var(--page); font-size: 15px;
+      display: grid; place-items: center;
+    }
+    .now { min-width: 0; flex: 1 1 auto; }
+    .now-name { font-size: 14px; font-weight: 600; letter-spacing: -.015em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .now-sub { font-size: 12px; color: var(--text-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .player-controls { display: flex; align-items: center; gap: 10px; flex: none; }
+    .vol { width: 90px; accent-color: var(--series-1); }
+    @media (max-width: 700px) { .vol, .sleep-wrap { display: none; } }
+    .sleep-wrap select {
+      border: 1px solid var(--border); background: var(--surface-1); color: inherit;
+      border-radius: 999px; padding: 6px 10px; font-size: 13px;
+    }
+
+    .toast {
+      position: fixed; left: 50%; bottom: 110px; transform: translateX(-50%);
+      background: var(--text-primary); color: var(--page);
+      padding: 9px 16px; border-radius: 999px; font-size: 13.5px; z-index: 60;
+      box-shadow: var(--shadow); max-width: calc(100vw - 40px);
+    }
+    .toast[hidden] { display: none; }
+
+    footer.foot {
+      max-width: 1280px; margin: 0 auto; padding: 30px 20px 10px;
+      font-size: 12.5px; color: var(--text-muted); border-top: 1px solid var(--border);
+      display: flex; flex-wrap: wrap; gap: 6px 18px;
+    }
+    footer.foot a { color: var(--text-secondary); }
+
+    @media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
+  </style>
+</head>
+<body>
+
+<header class="bar">
+  <div class="bar-inner">
+    <div class="brand"><span class="lamp" id="lamp" aria-hidden="true"></span>보이는 라디오</div>
+    <div class="tabs" role="tablist" aria-label="화면 전환">
+      <button class="tab" role="tab" id="tab-tv" aria-selected="true" aria-controls="pane-tv">보이는 라디오</button>
+      <button class="tab" role="tab" id="tab-audio" aria-selected="false" aria-controls="pane-audio">소리만</button>
+      <button class="tab" role="tab" id="tab-fav" aria-selected="false" aria-controls="pane-fav">즐겨찾기</button>
+    </div>
+    <div class="spacer"></div>
+    <input class="search" id="search" type="search" placeholder="채널 이름 검색" aria-label="채널 이름 검색" />
+    <button class="icon-btn" id="theme" title="라이트 · 다크 전환" aria-label="라이트 · 다크 전환">◐</button>
+  </div>
+</header>
+
+<main class="layout">
+  <!-- ===== 보이는 라디오 ===== -->
+  <section class="pane" id="pane-tv" role="tabpanel" aria-labelledby="tab-tv">
+    <div class="tv-grid">
+      <div>
+        <div class="stage" id="stage">
+          <div class="screen" id="screen">
+            <div class="screen-empty" id="screenEmpty">
+              <strong>채널을 고르면 여기서 재생됩니다</strong>
+              <span id="screenEmptyMsg">지금 라이브 중인 채널은 목록 맨 위에 모여 있습니다.</span>
+            </div>
+            <div id="ytmount"></div>
+          </div>
+          <div class="stage-info">
+            <div>
+              <h2 id="stageName">재생 중인 채널 없음</h2>
+              <p id="stageSub">채널을 선택하세요</p>
+            </div>
+            <div class="stage-actions">
+              <button class="btn" id="btnAudioOnly" aria-pressed="false">영상 끄기</button>
+              <button class="btn" id="btnFull">전체화면</button>
+              <a class="btn" id="btnOfficial" href="#" target="_blank" rel="noopener" hidden>공식 사이트</a>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="list-col">
+        <h3 class="section-title">채널 <em id="tvCount"></em></h3>
+        <div class="cards" id="tvList"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== 소리만 ===== -->
+  <section class="pane" id="pane-audio" role="tabpanel" aria-labelledby="tab-audio" hidden>
+    <div class="filters" id="audioFilters"></div>
+    <h3 class="section-title">공개 스트림 <em id="audioCount">불러오는 중…</em></h3>
+    <div class="grid-cards" id="audioList"></div>
+  </section>
+
+  <!-- ===== 즐겨찾기 ===== -->
+  <section class="pane" id="pane-fav" role="tabpanel" aria-labelledby="tab-fav" hidden>
+    <h3 class="section-title">즐겨찾기 <em id="favCount"></em></h3>
+    <div class="grid-cards" id="favList"></div>
+    <h3 class="section-title" style="margin-top:28px;">최근 들은 채널</h3>
+    <div class="grid-cards" id="recentList"></div>
+  </section>
+
+  <footer class="foot">
+    <span>지상파·보도채널은 방송사 공식 유튜브 라이브를 정식 임베드로 재생합니다.</span>
+    <span>공개 스트림 목록 출처 <a href="https://www.radio-browser.info/" target="_blank" rel="noopener">Radio Browser</a></span>
+    <span>목록에서 빼기를 원하시면 저장소 이슈로 알려 주세요 — 요청 당일 제거합니다.</span>
+  </footer>
+</main>
+
+<div class="player">
+  <div class="player-inner">
+    <button class="play-btn" id="playBtn" aria-label="재생 · 정지">▶</button>
+    <div class="now">
+      <div class="now-name" id="nowName">재생 중인 채널 없음</div>
+      <div class="now-sub" id="nowSub">채널을 선택하세요</div>
+    </div>
+    <div class="player-controls">
+      <span class="sleep-wrap">
+        <label class="sr" for="sleep">자동 종료</label>
+        <select id="sleep">
+          <option value="0">끄기 안 함</option>
+          <option value="15">15분 뒤</option>
+          <option value="30">30분 뒤</option>
+          <option value="60">60분 뒤</option>
+        </select>
+      </span>
+      <label class="sr" for="vol">음량</label>
+      <input class="vol" id="vol" type="range" min="0" max="100" value="80" />
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
+<audio id="au" preload="none"></audio>
+
+<script>
+(function () {
+  'use strict';
+
+  // ─────────────────────────────────────────────────────────────────────────
+  // 상태
+  // ─────────────────────────────────────────────────────────────────────────
+  var S = {
+    channels: [],      // data/radio/channels.json
+    live: {},          // channelId → { videoId, title }
+    stations: [],      // Radio Browser (브라우저에서 직접 받는다)
+    tags: [],
+    tag: null,
+    query: '',
+    tab: 'tv',
+    current: null,     // { kind:'yt'|'audio', id, name, sub }
+    yt: null,
+    ytReady: false,
+    ytPending: null,
+    audioOnly: false,
+    sleepTimer: null,
+    fav: {},
+    recent: []
+  };
+
+  var $ = function (id) { return document.getElementById(id); };
+  var au = $('au');
+
+  var LS = {
+    get: function (k, d) {
+      try { var v = localStorage.getItem('radio:' + k); return v == null ? d : JSON.parse(v); }
+      catch (e) { return d; }
+    },
+    set: function (k, v) {
+      try { localStorage.setItem('radio:' + k, JSON.stringify(v)); } catch (e) {}
+    }
+  };
+
+  var ORG_COLOR = {
+    KBS: 'var(--series-1)', MBC: 'var(--series-5)', SBS: 'var(--series-6)',
+    CBS: 'var(--series-2)', TBS: 'var(--series-8)', EBS: 'var(--series-3)',
+    YTN: 'var(--series-6)'
+  };
+  function orgColor(org) { return ORG_COLOR[org] || 'var(--text-secondary)'; }
+  function initials(name, org) {
+    if (org && org.length <= 3) return org;
+    return (name || '?').slice(0, 2);
+  }
+
+  var toastTimer = null;
+  function toast(msg) {
+    var el = $('toast');
+    el.textContent = msg;
+    el.hidden = false;
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(function () { el.hidden = true; }, 3200);
+  }
+
+  // ─────────────────────────────────────────────────────────────────────────
+  // 데이터
+  // ─────────────────────────────────────────────────────────────────────────
+  function getJSON(url) {
+    return fetch(url, { cache: 'no-store' }).then(function (r) {
+      if (!r.ok) throw new Error(r.status);
+      return r.json();
+    });
+  }
+
+  function loadChannels() {
+    return Promise.all([
+      getJSON('data/radio/channels.json').catch(function () { return { channels: [] }; }),
+      getJSON('data/radio/live.json').catch(function () { return { live: [] }; })
+    ]).then(function (res) {
+      S.channels = res[0].channels || [];
+      (res[1].live || []).forEach(function (l) { S.live[l.channel] = l; });
+      renderTV();
+    });
+  }
+
+  // Radio Browser — 공개 DB. 키가 없고 CORS 를 허용한다.
+  // 서버가 여러 대라 하나가 죽어도 다음 것으로 넘어간다.
+  var RB_HOSTS = [
+    'https://de1.api.radio-browser.info',
+    'https://de2.api.radio-browser.info',
+    'https://at1.api.radio-browser.info',
+    'https://all.api.radio-browser.info'
+  ];
+
+  function loadStations(i) {
+    i = i || 0;
+    if (i >= RB_HOSTS.length) {
+      $('audioCount').textContent = '목록을 받지 못했습니다';
+      $('audioList').innerHTML =
+        '<div class="empty">공개 스트림 목록을 받지 못했습니다.<br>네트워크를 확인한 뒤 새로고침해 주세요.</div>';
+      return;
+    }
+    var url = RB_HOSTS[i] +
+      '/json/stations/bycountrycodeexact/KR?hidebroken=true&order=votes&reverse=true&limit=400';
+    getJSON(url).then(function (rows) {
+      S.stations = (rows || [])
+        // https 페이지에서 http 스트림은 브라우저가 막는다. 처음부터 뺀다.
+        .filter(function (s) {
+          var u = s.url_resolved || s.url || '';
+          if (!u) return false;
+          if (location.protocol === 'https:' && u.indexOf('https://') !== 0) return false;
+          return s.lastcheckok !== 0;
+        })
+        .map(function (s) {
+          return {
+            id: s.stationuuid,
+            name: (s.name || '').trim() || '이름 없음',
+            url: s.url_resolved || s.url,
+            codec: s.codec || '',
+            bitrate: s.bitrate || 0,
+            tags: (s.tags || '').split(',').map(function (t) { return t.trim(); }).filter(Boolean),
+            homepage: s.homepage || ''
+          };
+        });
+      buildTags();
+      renderAudio();
+      renderFav();
+    }).catch(function () { loadStations(i + 1); });
+  }
+
+  function buildTags() {
+    var count = {};
+    S.stations.forEach(function (s) {
+      s.tags.slice(0, 4).forEach(function (t) { count[t] = (count[t] || 0) + 1; });
+    });
+    S.tags = Object.keys(count)
+      .filter(function (t) { return count[t] >= 3 && t.length <= 12; })
+      .sort(function (a, b) { return count[b] - count[a]; })
+      .slice(0, 10);
+
+    var box = $('audioFilters');
+    box.innerHTML = '';
+    var all = document.createElement('button');
+    all.className = 'filter';
+    all.textContent = '전체';
+    all.setAttribute('aria-pressed', S.tag === null ? 'true' : 'false');
+    all.onclick = function () { S.tag = null; buildTags(); renderAudio(); };
+    box.appendChild(all);
+
+    S.tags.forEach(function (t) {
+      var b = document.createElement('button');
+      b.className = 'filter';
+      b.textContent = t;
+      b.setAttribute('aria-pressed', S.tag === t ? 'true' : 'false');
+      b.onclick = function () { S.tag = (S.tag === t ? null : t); buildTags(); renderAudio(); };
+      box.appendChild(b);
+    });
+  }
+
+  // ─────────────────────────────────────────────────────────────────────────
+  // 카드
+  // ─────────────────────────────────────────────────────────────────────────
+  function favKey(kind, id) { return kind + ':' + id; }
+
+  function makeCard(opts) {
+    var card = document.createElement('button');
+    card.className = 'card';
+    card.type = 'button';
+    if (S.current && S.current.kind === opts.kind && S.current.id === opts.id) {
+      card.setAttribute('aria-current', 'true');
+    }
+
+    var badge = document.createElement('span');
+    badge.className = 'badge';
+    badge.style.background = opts.color;
+    badge.textContent = opts.initials;
+    card.appendChild(badge);
+
+    var main = document.createElement('span');
+    main.className = 'card-main';
+    var name = document.createElement('span');
+    name.className = 'card-name';
+    if (opts.live) {
+      var dot = document.createElement('span');
+      dot.className = 'dot';
+      name.appendChild(dot);
+    }
+    var label = document.createElement('span');
+    label.className = 'label';
+    label.textContent = opts.name;
+    name.appendChild(label);
+    main.appendChild(name);
+    var sub = document.createElement('span');
+    sub.className = 'card-sub';
+    sub.textContent = opts.sub;
+    main.appendChild(sub);
+    card.appendChild(main);
+
+    var right = document.createElement('span');
+    right.className = 'card-right';
+    if (opts.chip) {
+      var chip = document.createElement('span');
+      chip.className = 'chip ' + opts.chipClass;
+      chip.textContent = opts.chip;
+      right.appendChild(chip);
+    }
+    var star = document.createElement('span');
+    star.className = 'star' + (S.fav[favKey(opts.kind, opts.id)] ? ' on' : '');
+    star.textContent = S.fav[favKey(opts.kind, opts.id)] ? '★' : '☆';
+    star.setAttribute('role', 'button');
+    star.setAttribute('tabindex', '0');
+    star.setAttribute('aria-label', '즐겨찾기');
+    var toggleFav = function (ev) {
+      ev.stopPropagation();
+      ev.preventDefault();
+      var k = favKey(opts.kind, opts.id);
+      if (S.fav[k]) { delete S.fav[k]; } else { S.fav[k] = { kind: opts.kind, id: opts.id }; }
+      LS.set('fav', S.fav);
+      renderAll();
+    };
+    star.onclick = toggleFav;
+    star.onkeydown = function (ev) { if (ev.key === 'Enter' || ev.key === ' ') toggleFav(ev); };
+    right.appendChild(star);
+    card.appendChild(right);
+
+    card.onclick = opts.onPlay;
+    return card;
+  }
+
+  function matches(text) {
+    if (!S.query) return true;
+    return text.toLowerCase().indexOf(S.query) !== -1;
+  }
+
+  function renderTV() {
+    var box = $('tvList');
+    box.innerHTML = '';
+
+    var list = S.channels.filter(function (c) { return matches(c.name + ' ' + c.org); });
+    // 지금 라이브인 채널을 맨 위로
+    list.sort(function (a, b) {
+      var la = S.live[a.id] ? 0 : 1, lb = S.live[b.id] ? 0 : 1;
+      if (la !== lb) return la - lb;
+      return 0;
+    });
+
+    var liveCount = S.channels.filter(function (c) { return S.live[c.id]; }).length;
+    $('tvCount').textContent = liveCount
+      ? liveCount + '개 라이브 · 전체 ' + S.channels.length + '개'
+      : '전체 ' + S.channels.length + '개';
+    $('lamp').className = 'lamp' + (S.current ? ' on' : '');
+
+    if (!S.channels.length) {
+      box.innerHTML = '<div class="empty">채널 목록을 읽지 못했습니다.<br>로컬 서버로 열어야 합니다 — <code>python3 -m http.server</code></div>';
+      return;
+    }
+
+    if (!liveCount) {
+      var note = document.createElement('div');
+      note.className = 'note';
+      note.innerHTML = '<b>지금 사이트 안에서 재생할 수 있는 채널이 없습니다.</b><br>' +
+        '수집 워크플로가 아직 돌지 않았거나, 지금 라이브 중인 채널이 없습니다. ' +
+        '각 채널의 <b>공식 사이트</b> 단추로는 바로 들으실 수 있습니다.<br>' +
+        '<code>.github/workflows/radio-live.yml</code> 을 한 번 실행하면 라이브 채널이 여기 올라옵니다.';
+      box.appendChild(note);
+    }
+
+    list.forEach(function (c) {
+      var live = S.live[c.id];
+      var freq = c.freq && c.freq.seoul ? c.freq.seoul.toFixed(1) + ' MHz' : c.org;
+      box.appendChild(makeCard({
+        kind: 'yt',
+        id: c.id,
+        name: c.name,
+        sub: live && live.title ? live.title : freq,
+        color: orgColor(c.org),
+        initials: initials(c.name, c.org),
+        live: !!live,
+        chip: live ? '영상' : '공식 사이트',
+        chipClass: live ? 'live' : 'ext',
+        onPlay: function () { playChannel(c); }
+      }));
+    });
+  }
+
+  function renderAudio() {
+    var box = $('audioList');
+    box.innerHTML = '';
+    var list = S.stations.filter(function (s) {
+      if (!matches(s.name + ' ' + s.tags.join(' '))) return false;
+      if (S.tag && s.tags.indexOf(S.tag) === -1) return false;
+      return true;
+    });
+    $('audioCount').textContent = list.length + '개';
+
+    if (!list.length) {
+      box.innerHTML = '<div class="empty">조건에 맞는 방송국이 없습니다.</div>';
+      return;
+    }
+    list.slice(0, 200).forEach(function (s) {
+      box.appendChild(makeCard({
+        kind: 'audio',
+        id: s.id,
+        name: s.name,
+        sub: (s.tags.slice(0, 3).join(' · ') || '태그 없음'),
+        color: 'var(--series-2)',
+        initials: s.name.slice(0, 2),
+        live: false,
+        chip: s.bitrate ? s.bitrate + 'k' : (s.codec || '오디오'),
+        chipClass: 'audio',
+        onPlay: function () { playStation(s); }
+      }));
+    });
+  }
+
+  function renderFav() {
+    var box = $('favList');
+    box.innerHTML = '';
+    var keys = Object.keys(S.fav);
+    $('favCount').textContent = keys.length + '개';
+
+    if (!keys.length) {
+      box.innerHTML = '<div class="empty">카드의 ☆ 를 눌러 즐겨찾기에 담아 두세요.</div>';
+    }
+    keys.forEach(function (k) {
+      var f = S.fav[k];
+      if (f.kind === 'yt') {
+        var c = S.channels.filter(function (x) { return x.id === f.id; })[0];
+        if (!c) return;
+        var live = S.live[c.id];
+        box.appendChild(makeCard({
+          kind: 'yt', id: c.id, name: c.name,
+          sub: c.freq && c.freq.seoul ? c.freq.seoul.toFixed(1) + ' MHz' : c.org,
+          color: orgColor(c.org), initials: initials(c.name, c.org), live: !!live,
+          chip: live ? '영상' : '공식 사이트', chipClass: live ? 'live' : 'ext',
+          onPlay: function () { playChannel(c); }
+        }));
+      } else {
+        var s = S.stations.filter(function (x) { return x.id === f.id; })[0];
+        if (!s) return;
+        box.appendChild(makeCard({
+          kind: 'audio', id: s.id, name: s.name,
+          sub: s.tags.slice(0, 3).join(' · ') || '태그 없음',
+          color: 'var(--series-2)', initials: s.name.slice(0, 2), live: false,
+          chip: s.bitrate ? s.bitrate + 'k' : '오디오', chipClass: 'audio',
+          onPlay: function () { playStation(s); }
+        }));
+      }
+    });
+
+    var rbox = $('recentList');
+    rbox.innerHTML = '';
+    if (!S.recent.length) {
+      rbox.innerHTML = '<div class="empty">아직 들은 채널이 없습니다.</div>';
+      return;
+    }
+    S.recent.forEach(function (r) {
+      var card = document.createElement('button');
+      card.className = 'card';
+      card.type = 'button';
+      card.innerHTML = '<span class="badge" style="background:' + (r.color || 'var(--text-secondary)') + '">' +
+        (r.initials || '··') + '</span>' +
+        '<span class="card-main"><span class="card-name"></span><span class="card-sub"></span></span>' +
+        '<span class="card-right"></span>';
+      card.querySelector('.card-name').textContent = r.name;
+      card.querySelector('.card-sub').textContent = r.sub || '';
+      card.onclick = function () {
+        if (r.kind === 'yt') {
+          var c = S.channels.filter(function (x) { return x.id === r.id; })[0];
+          if (c) playChannel(c);
+        } else {
+          var s = S.stations.filter(function (x) { return x.id === r.id; })[0];
+          if (s) playStation(s); else toast('목록에서 사라진 방송국입니다');
+        }
+      };
+      rbox.appendChild(card);
+    });
+  }
+
+  function renderAll() { renderTV(); renderAudio(); renderFav(); }
+
+  function pushRecent(item) {
+    S.recent = S.recent.filter(function (r) { return !(r.kind === item.kind && r.id === item.id); });
+    S.recent.unshift(item);
+    S.recent = S.recent.slice(0, 12);
+    LS.set('recent', S.recent);
+  }
+
+  // ─────────────────────────────────────────────────────────────────────────
+  // 재생 — 유튜브
+  // ─────────────────────────────────────────────────────────────────────────
+  window.onYouTubeIframeAPIReady = function () {
+    S.yt = new YT.Player('ytmount', {
+      height: '100%', width: '100%',
+      playerVars: { autoplay: 1, playsinline: 1, modestbranding: 1, rel: 0 },
+      events: {
+        onReady: function () {
+          S.ytReady = true;
+          S.yt.setVolume(Number($('vol').value));
+          if (S.ytPending) { var p = S.ytPending; S.ytPending = null; startVideo(p); }
+        },
+        onError: function (e) {
+          // 101 · 150 = 방송사가 외부 사이트 재생을 막아 둔 영상
+          if (e.data === 101 || e.data === 150) {
+            toast('이 채널은 외부 사이트 재생을 막아 두었습니다 — 공식 사이트로 여세요');
+            $('screenEmptyMsg').textContent = '이 채널은 외부 사이트 재생이 막혀 있습니다. 공식 사이트 단추로 보실 수 있습니다.';
+          } else {
+            toast('영상을 재생하지 못했습니다 (' + e.data + ')');
+          }
+          showScreenEmpty(true);
+        },
+        onStateChange: function (e) {
+          if (e.data === YT.PlayerState.PLAYING) { $('playBtn').textContent = '❚❚'; $('lamp').className = 'lamp on'; }
+          if (e.data === YT.PlayerState.PAUSED) { $('playBtn').textContent = '▶'; }
+          if (e.data === YT.PlayerState.ENDED) {
+            // 방송이 끝났다. 빈 화면을 남기지 않는다.
+            $('playBtn').textContent = '▶';
+            $('lamp').className = 'lamp';
+            $('screenEmptyMsg').textContent = '방송이 끝났습니다. 다른 채널을 고르거나 소리만 탭에서 이어 들으세요.';
+            showScreenEmpty(true);
+            toast('방송이 끝났습니다');
+          }
+        }
+      }
+    });
+  };
+
+  function loadYTApi() {
+    if (document.getElementById('yt-api')) return;
+    var s = document.createElement('script');
+    s.id = 'yt-api';
+    s.src = 'https://www.youtube.com/iframe_api';
+    s.onerror = function () { toast('유튜브 플레이어를 불러오지 못했습니다'); };
+    document.head.appendChild(s);
+  }
+
+  function showScreenEmpty(show) {
+    $('screenEmpty').style.display = show ? 'grid' : 'none';
+  }
+
+  function startVideo(videoId) {
+    showScreenEmpty(false);
+    S.yt.loadVideoById({ videoId: videoId });
+    S.yt.setVolume(Number($('vol').value));
+  }
+
+  function playChannel(c) {
+    var live = S.live[c.id];
+    var official = (c.official && c.official.url) || null;
+
+    if (!live) {
+      if (official) {
+        window.open(official, '_blank', 'noopener');
+        toast(c.name + ' — 공식 사이트를 새 창으로 열었습니다');
+      } else {
+        toast(c.name + ' — 지금 들을 수 있는 경로가 없습니다');
+      }
+      return;
+    }
+
+    stopAudio();
+    S.current = { kind: 'yt', id: c.id, name: c.name, sub: live.title || (c.org + ' 라이브') };
+    setTab('tv');
+    updateNow();
+
+    $('btnOfficial').hidden = !official;
+    if (official) $('btnOfficial').href = official;
+
+    if (!S.ytReady) { S.ytPending = live.videoId; loadYTApi(); showScreenEmpty(true); $('screenEmptyMsg').textContent = '플레이어를 불러오는 중…'; }
+    else startVideo(live.videoId);
+
+    pushRecent({
+      kind: 'yt', id: c.id, name: c.name,
+      sub: c.freq && c.freq.seoul ? c.freq.seoul.toFixed(1) + ' MHz' : c.org,
+      color: orgColor(c.org), initials: initials(c.name, c.org)
+    });
+    LS.set('last', { kind: 'yt', id: c.id });
+    renderAll();
+  }
+
+  // ─────────────────────────────────────────────────────────────────────────
+  // 재생 — 오디오
+  // ─────────────────────────────────────────────────────────────────────────
+  var hlsInstance = null;
+
+  function stopVideo() {
+    if (S.ytReady && S.yt && S.yt.stopVideo) { try { S.yt.stopVideo(); } catch (e) {} }
+    showScreenEmpty(true);
+  }
+  function stopAudio() {
+    au.pause();
+    au.removeAttribute('src');
+    au.load();
+    if (hlsInstance) { try { hlsInstance.destroy(); } catch (e) {} hlsInstance = null; }
+  }
+
+  function playStation(s) {
+    stopVideo();
+    stopAudio();
+    S.current = { kind: 'audio', id: s.id, name: s.name, sub: s.tags.slice(0, 3).join(' · ') || '공개 스트림' };
+    updateNow();
+    $('btnOfficial').hidden = true;
+
+    var isHls = /\.m3u8(\?|$)/i.test(s.url);
+    if (isHls && !au.canPlayType('application/vnd.apple.mpegurl')) {
+      loadHls(function (ok) {
+        if (!ok) { toast('이 스트림 형식은 이 브라우저에서 재생할 수 없습니다'); return; }
+        hlsInstance = new window.Hls();
+        hlsInstance.loadSource(s.url);
+        hlsInstance.attachMedia(au);
+        au.play().catch(function () {});
+      });
+    } else {
+      au.src = s.url;
+      au.play().catch(function () { toast('재생하지 못했습니다 — 다른 방송국을 골라 보세요'); });
+    }
+
+    // 12초 안에 소리가 안 나오면 알린다
+    var guard = setTimeout(function () {
+      if (au.paused || au.readyState < 2) toast(s.name + ' — 응답이 없습니다. 점검 중인 주소일 수 있습니다');
+    }, 12000);
+    au.addEventListener('playing', function once() {
+      clearTimeout(guard);
+      au.removeEventListener('playing', once);
+    });
+
+    pushRecent({
+      kind: 'audio', id: s.id, name: s.name,
+      sub: s.tags.slice(0, 3).join(' · '), color: 'var(--series-2)', initials: s.name.slice(0, 2)
+    });
+    LS.set('last', { kind: 'audio', id: s.id });
+    renderAll();
+  }
+
+  function loadHls(cb) {
+    if (window.Hls) { cb(true); return; }
+    var s = document.createElement('script');
+    s.src = 'https://cdnjs.cloudflare.com/ajax/libs/hls.js/1.5.13/hls.min.js';
+    s.onload = function () { cb(!!window.Hls); };
+    s.onerror = function () { cb(false); };
+    document.head.appendChild(s);
+  }
+
+  // ─────────────────────────────────────────────────────────────────────────
+  // 플레이어 바
+  // ─────────────────────────────────────────────────────────────────────────
+  function updateNow() {
+    $('nowName').textContent = S.current ? S.current.name : '재생 중인 채널 없음';
+    $('nowSub').textContent = S.current ? S.current.sub : '채널을 선택하세요';
+    $('stageName').textContent = S.current && S.current.kind === 'yt' ? S.current.name : '재생 중인 채널 없음';
+    $('stageSub').textContent = S.current && S.current.kind === 'yt' ? S.current.sub : '채널을 선택하세요';
+    $('lamp').className = 'lamp' + (S.current ? ' on' : '');
+
+    if ('mediaSession' in navigator && S.current) {
+      try {
+        navigator.mediaSession.metadata = new MediaMetadata({
+          title: S.current.name, artist: S.current.sub, album: '보이는 라디오'
+        });
+      } catch (e) {}
+    }
+  }
+
+  function togglePlay() {
+    if (!S.current) { toast('먼저 채널을 고르세요'); return; }
+    if (S.current.kind === 'yt') {
+      if (!S.ytReady) return;
+      var st = S.yt.getPlayerState();
+      if (st === YT.PlayerState.PLAYING) { S.yt.pauseVideo(); }
+      else { S.yt.playVideo(); }
+    } else {
+      if (au.paused) { au.play().catch(function () {}); } else { au.pause(); }
+    }
+  }
+
+  au.addEventListener('play', function () { $('playBtn').textContent = '❚❚'; $('lamp').className = 'lamp on'; });
+  au.addEventListener('pause', function () { $('playBtn').textContent = '▶'; });
+
+  $('playBtn').onclick = togglePlay;
+
+  $('vol').oninput = function () {
+    var v = Number(this.value);
+    au.volume = v / 100;
+    if (S.ytReady) S.yt.setVolume(v);
+    LS.set('vol', v);
+  };
+
+  $('sleep').onchange = function () {
+    clearTimeout(S.sleepTimer);
+    var min = Number(this.value);
+    if (!min) { toast('자동 종료를 껐습니다'); return; }
+    S.sleepTimer = setTimeout(function () {
+      stopAudio(); stopVideo();
+      S.current = null; updateNow(); renderAll();
+      toast('자동 종료했습니다');
+      $('sleep').value = '0';
+    }, min * 60 * 1000);
+    toast(min + '분 뒤에 끕니다');
+  };
+
+  $('btnAudioOnly').onclick = function () {
+    S.audioOnly = !S.audioOnly;
+    $('stage').classList.toggle('audio-only', S.audioOnly);
+    this.setAttribute('aria-pressed', S.audioOnly ? 'true' : 'false');
+    this.textContent = S.audioOnly ? '영상 켜기' : '영상 끄기';
+    LS.set('audioOnly', S.audioOnly);
+    toast(S.audioOnly ? '영상을 껐습니다 — 소리는 계속 나옵니다' : '영상을 켰습니다');
+  };
+
+  $('btnFull').onclick = function () {
+    var el = $('screen');
+    if (document.fullscreenElement) { document.exitFullscreen(); return; }
+    if (el.requestFullscreen) el.requestFullscreen();
+    else toast('이 브라우저에서는 전체화면을 쓸 수 없습니다');
+  };
+
+  // ─────────────────────────────────────────────────────────────────────────
+  // 탭 · 검색 · 테마 · 키보드
+  // ─────────────────────────────────────────────────────────────────────────
+  function setTab(name) {
+    S.tab = name;
+    ['tv', 'audio', 'fav'].forEach(function (t) {
+      $('tab-' + t).setAttribute('aria-selected', t === name ? 'true' : 'false');
+      $('pane-' + t).hidden = (t !== name);
+    });
+  }
+  $('tab-tv').onclick = function () { setTab('tv'); };
+  $('tab-audio').onclick = function () { setTab('audio'); if (!S.stations.length) loadStations(0); };
+  $('tab-fav').onclick = function () { setTab('fav'); };
+
+  $('search').oninput = function () {
+    S.query = this.value.trim().toLowerCase();
+    renderAll();
+  };
+
+  function applyTheme(t) {
+    if (t) document.documentElement.setAttribute('data-theme', t);
+    else document.documentElement.removeAttribute('data-theme');
+  }
+  $('theme').onclick = function () {
+    var cur = document.documentElement.getAttribute('data-theme');
+    var next = cur === 'dark' ? 'light' : 'dark';
+    applyTheme(next);
+    LS.set('theme', next);
+  };
+
+  document.addEventListener('keydown', function (e) {
+    var t = e.target;
+    if (t && (t.tagName === 'INPUT' || t.tagName === 'SELECT' || t.tagName === 'TEXTAREA')) return;
+    if (e.metaKey || e.ctrlKey || e.altKey) return;
+
+    if (e.key === ' ') { e.preventDefault(); togglePlay(); return; }
+    if (e.key === 'f') { $('btnFull').click(); return; }
+    if (e.key === 'v') { $('btnAudioOnly').click(); return; }
+    if (e.key === '/') { e.preventDefault(); $('search').focus(); return; }
+
+    if (/^[1-9]$/.test(e.key)) {
+      var idx = Number(e.key) - 1;
+      var cards = $(S.tab === 'tv' ? 'tvList' : S.tab === 'audio' ? 'audioList' : 'favList')
+        .querySelectorAll('.card');
+      if (cards[idx]) cards[idx].click();
+    }
+  });
+
+  // ─────────────────────────────────────────────────────────────────────────
+  // 시작
+  // ─────────────────────────────────────────────────────────────────────────
+  (function init() {
+    applyTheme(LS.get('theme', null));
+    S.fav = LS.get('fav', {}) || {};
+    S.recent = LS.get('recent', []) || [];
+    var v = LS.get('vol', 80);
+    $('vol').value = v;
+    au.volume = v / 100;
+
+    if (LS.get('audioOnly', false)) $('btnAudioOnly').click();
+
+    loadChannels().then(function () {
+      renderFav();
+      // 마지막으로 듣던 채널이 지금도 라이브면 바로 띄운다.
+      // (소리는 브라우저 정책상 사용자가 한 번 눌러야 나온다)
+      var last = LS.get('last', null);
+      if (last && last.kind === 'yt' && S.live[last.id]) {
+        var c = S.channels.filter(function (x) { return x.id === last.id; })[0];
+        if (c) {
+          $('stageName').textContent = c.name;
+          $('stageSub').textContent = '지금 라이브 중 — 눌러서 재생';
+          $('screenEmptyMsg').textContent = c.name + ' 이(가) 라이브 중입니다. 목록에서 눌러 재생하세요.';
+        }
+      }
+    });
+    loadStations(0);
+  })();
+})();
+</script>
+</body>
+</html>
