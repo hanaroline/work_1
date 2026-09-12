@@ -1,32 +1,42 @@
 @echo off
-rem ===========================================================================
-rem  라디오 · TV 온에어 — 여는 도구 (Windows)
+rem ==========================================================================
+rem  Radio . TV On-Air - local launcher (Windows)
 rem
-rem  파일을 그냥 더블클릭해서 열면(file://) 유튜브 영상이 나오지 않습니다.
-rem  유튜브가 임베드에 Referer 헤더를 요구하는데 file:// 에는 그 헤더가 없어
-rem  '오류 153 · 동영상 플레이어 구성 오류' 가 납니다. 채널 문제가 아닙니다.
+rem  Opening the HTML by double-click (file://) makes YouTube fail with
+rem  "Error 153", because YouTube requires an HTTP Referer header and
+rem  file:// sends none. This script serves the file over http://127.0.0.1
+rem  so the header exists and video plays.
 rem
-rem  이 도구는 아주 작은 웹 서버를 띄워 http://127.0.0.1:8765 로 열어 줍니다.
-rem  그러면 Referer 가 생겨 영상이 정상 재생됩니다.
+rem  Usage : keep this next to radio-standalone.html and double-click it.
+rem  Stop  : close the black window.
 rem
-rem  쓰는 법 : radio-standalone.html 과 같은 폴더에 두고 이 파일을 더블클릭.
-rem  끄는 법 : 열린 검은 창을 닫으면 됩니다.
-rem
-rem  설치할 것이 없습니다. 윈도우에 기본으로 있는 PowerShell 만 씁니다.
-rem
-rem  * 이 파일 아래쪽 표시 지점부터가 PowerShell 코드입니다. 표시할 글자가
-rem    이 줄에도 있으면 안 되므로, 찾을 때 LastIndexOf 로 '마지막' 것을 씁니다.
-rem ===========================================================================
+rem  NOTE for maintainers:
+rem   - This file MUST be saved with CRLF line endings.
+rem   - Everything above "goto :eof" MUST stay ASCII. Korean text here gets
+rem     mangled by the CP949 console and breaks the command line.
+rem   - Korean text lives below the marker; cmd never parses those lines.
+rem ==========================================================================
 setlocal
+title Radio - TV On-Air
 echo.
-echo   Starting Radio . TV ...
-echo   Close this window to stop.
+echo   Radio . TV On-Air
+echo   Starting a small local server...
 echo.
 
-powershell -NoProfile -ExecutionPolicy Bypass -Command "$ErrorActionPreference='Continue'; $here = Split-Path -Parent '%~f0'; $src = Get-Content -Raw -Encoding UTF8 -LiteralPath '%~f0'; $i = $src.LastIndexOf([char]35 + 'PS-START'); if ($i -lt 0) { Write-Host '  시작 지점을 찾지 못했습니다.' -ForegroundColor Red; Read-Host '  엔터를 누르면 닫습니다'; exit 1 }; try { Invoke-Expression $src.Substring($i) } catch { Write-Host ''; Write-Host ('  오류: ' + $_.Exception.Message) -ForegroundColor Red; Write-Host ''; Read-Host '  엔터를 누르면 닫습니다' }"
+where powershell >nul 2>nul
+if errorlevel 1 (
+  echo   [X] PowerShell was not found on this PC.
+  echo       Tell Claude - we will publish it to a https address instead.
+  echo.
+  pause
+  goto :eof
+)
+
+powershell -NoProfile -ExecutionPolicy Bypass -Command "$ErrorActionPreference='Continue'; $here = Split-Path -Parent '%~f0'; try { $src = Get-Content -Raw -Encoding UTF8 -LiteralPath '%~f0' } catch { Write-Host ('  [X] cannot read this file: ' + $_.Exception.Message); Read-Host '  Press Enter to close'; exit 1 }; $i = $src.LastIndexOf([char]35 + 'PS-START'); if ($i -lt 0) { Write-Host '  [X] start marker not found'; Read-Host '  Press Enter to close'; exit 1 }; try { Invoke-Expression $src.Substring($i) } catch { Write-Host ''; Write-Host ('  [X] ' + $_.Exception.Message); Write-Host ''; Read-Host '  Press Enter to close' }"
 
 echo.
-echo   Server stopped.
+echo   Server stopped. Read the messages above.
+echo.
 pause
 endlocal
 goto :eof
@@ -34,14 +44,17 @@ goto :eof
 #PS-START
 # ---------------------------------------------------------------------------
 # 여기부터 PowerShell. cmd 는 위의 goto :eof 에서 멈추므로 이 줄들을 읽지 않는다.
-# $here 는 위에서 넘겨받는다 ($MyInvocation 은 -Command 로 부르면 비어 있다).
+# 그래서 여기서는 한글을 써도 안전하다 (위쪽은 ASCII 여야 한다).
+# $here 는 cmd 가 넘겨준다 ($MyInvocation 은 -Command 로 부르면 비어 있다).
 # ---------------------------------------------------------------------------
+try { [Console]::OutputEncoding = [System.Text.Encoding]::UTF8 } catch { }
+
 if (-not $here) { $here = (Get-Location).Path }
 
 $file = Join-Path $here 'radio-standalone.html'
 if (-not (Test-Path -LiteralPath $file)) {
   Write-Host ''
-  Write-Host '  radio-standalone.html 을 찾지 못했습니다.' -ForegroundColor Red
+  Write-Host '  radio-standalone.html 을 찾지 못했습니다.'
   Write-Host ('  찾아본 곳 : ' + $file)
   Write-Host '  두 파일을 같은 폴더에 두고 다시 실행해 주세요.'
   Write-Host ''
@@ -49,23 +62,22 @@ if (-not (Test-Path -LiteralPath $file)) {
   return
 }
 
-$port = 8765
 $listener = $null
-foreach ($try in 8765, 8766, 8767, 8768) {
+$port = 0
+foreach ($try in 8765, 8766, 8767, 8768, 8769) {
   try {
-    $listener = New-Object System.Net.Sockets.TcpListener ([System.Net.IPAddress]::Loopback), $try
-    $listener.Start()
+    $l = New-Object System.Net.Sockets.TcpListener ([System.Net.IPAddress]::Loopback), $try
+    $l.Start()
+    $listener = $l
     $port = $try
     break
-  } catch {
-    $listener = $null
-  }
+  } catch { }
 }
 
 if (-not $listener) {
   Write-Host ''
-  Write-Host '  8765~8768 번을 모두 쓸 수 없습니다.' -ForegroundColor Red
-  Write-Host '  이미 이 도구가 떠 있는지 확인해 주세요.'
+  Write-Host '  8765~8769 번을 모두 쓸 수 없습니다.'
+  Write-Host '  이 도구가 이미 떠 있는지 확인해 주세요.'
   Write-Host ''
   Read-Host '  엔터를 누르면 닫습니다'
   return
@@ -73,10 +85,14 @@ if (-not $listener) {
 
 $url = "http://127.0.0.1:$port/"
 Write-Host ''
-Write-Host "  열린 주소 : $url" -ForegroundColor Green
+Write-Host "  열린 주소 : $url"
 Write-Host '  브라우저가 저절로 열리지 않으면 위 주소를 직접 붙여 넣으세요.'
+Write-Host '  이 창을 닫으면 꺼집니다.'
 Write-Host ''
-Start-Process $url
+
+try { Start-Process $url } catch {
+  Write-Host '  브라우저를 자동으로 열지 못했습니다. 위 주소를 직접 여세요.'
+}
 
 # 단일 파일이므로 어떤 경로로 들어와도 같은 것을 돌려준다.
 $bytes = [System.IO.File]::ReadAllBytes($file)
@@ -92,7 +108,6 @@ while ($true) {
     $client = $listener.AcceptTcpClient()
     $stream = $client.GetStream()
 
-    # 요청 첫 덩어리만 읽고 흘려보낸다. 어차피 돌려줄 것은 하나뿐이다.
     $buf = New-Object byte[] 4096
     $stream.ReadTimeout = 2000
     try { $null = $stream.Read($buf, 0, $buf.Length) } catch { }
