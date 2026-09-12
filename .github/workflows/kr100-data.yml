@@ -59,13 +59,13 @@ jobs:
         continue-on-error: true
         run: |
           if git fetch --quiet origin "+refs/heads/kr100-data:refs/remotes/origin/kr100-data" 2>/dev/null; then
-            for f in quotes.json ranking.json; do
-              git show "origin/kr100-data:data/kr100/$f" > "data/kr100/$f" || true
+            for f in quotes.json ranking.json list-change.json; do
+              git show "origin/kr100-data:data/kr100/$f" > "data/kr100/$f" 2>/dev/null || true
             done
           fi
           python - <<'PY'
           import json, os
-          for f in ('quotes.json', 'ranking.json'):
+          for f in ('quotes.json', 'ranking.json', 'list-change.json'):
               p = os.path.join('data/kr100', f)
               try:
                   d = json.load(open(p, encoding='utf-8'))
