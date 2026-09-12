@@ -98,6 +98,26 @@ function titleMatches (title, expect) {
   return expect.some(word => hay.includes(String(word).toLowerCase()))
 }
 
+// 채널 번호(UC...)를 직접 적어 둔 경우. RSS 에 채널 이름이 들어 있으므로
+// 그것으로 대조한다. handle 과 달리 번호는 남이 가로챌 수 없지만, 내가 잘못
+// 적었을 수 있으니 확인은 똑같이 거친다.
+async function resolveChannelById (channelId, expect) {
+  const feed = await get(`https://www.youtube.com/feeds/videos.xml?channel_id=${channelId}`)
+  if (!feed.ok) {
+    log(`   ✗ ${channelId} → RSS 실패 (status=${feed.status})`)
+    return null
+  }
+  const m = feed.text.match(/<title>([^<]{1,120})<\/title>/)
+  const title = m ? m[1] : null
+
+  if (expect && expect.length && !titleMatches(title, expect)) {
+    log(`   ✗ ${channelId} → "${title}" — 방송사 이름과 맞지 않아 버린다`)
+    return null
+  }
+  log(`   ✓ ${channelId} → ${title}`)
+  return { channelId, handle: null, title }
+}
+
 async function resolveChannel (handles, expect) {
   for (const handle of handles) {
     const clean = String(handle).replace(/^@/, '').trim()
@@ -320,7 +340,13 @@ async function main () {
       out.youtube = { ...prevYt }
       log(`   · 채널 확인 생략 (${prevYt.channelId})`)
     } else {
-      const found = await resolveChannel(seed.youtube?.handles || [], expect)
+      // 채널 번호를 적어 둔 것이 있으면 그것부터 본다 (handle 보다 확실하다)
+      let found = null
+      for (const cid of (seed.youtube?.channelIds || [])) {
+        found = await resolveChannelById(cid, expect)
+        if (found) break
+      }
+      if (!found) found = await resolveChannel(seed.youtube?.handles || [], expect)
       if (found) {
         out.youtube = {
           channelId: found.channelId,
