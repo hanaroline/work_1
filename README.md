@@ -301,6 +301,10 @@ us-top100.html        # 미국 100대 기업 시세 조회 — 단일 파일 (�
 kr-top100.html        # 국내 100대 기업 시세 조회 — 단일 파일 (아래 참고)
 mapo-wm.html          # 마포 WM 모바일 창구 (아래 참고)
 
+counter/index.html    # 카운터 웹앱 (증가/감소/리셋)
+counter/style.css     # 카운터 화면 스타일
+counter/main.js       # 카운터 동작
+
 docs/reports/index.html             # 증권사 리포트 다이제스트 화면 (아래 참고)
 scripts/fetch_reports.py            # 리포트 수집·요약기 (러너에서 하루 네 번)
 scripts/probe_reports.py            # 새 원천 후보 탐색 (작업 브랜치에서만 실행)
@@ -1122,17 +1126,19 @@ QR 위치를 1:1로 대조해 확인했으며, 링크 자체를 새로 만들거
 
 ## 배포 (GitHub Pages)
 
-`.github/workflows/pages.yml`이 `main`에 올라온 `mapo-wm.html`을 GitHub Pages로 배포합니다.
-저장소 전체가 아니라 **이 페이지만** 올립니다(시세·ELS·브리핑 자료는 웹사이트로 노출하지 않음).
+`.github/workflows/pages.yml`이 `main`에 올라온 `mapo-wm.html`과 `counter/`를
+GitHub Pages로 배포합니다. 저장소 전체가 아니라 **공개해도 되는 페이지만** 올립니다
+(시세·ELS·브리핑 자료는 웹사이트로 노출하지 않음).
 
 | 주소 | 내용 |
 |------|------|
 | `https://hanaroline.github.io/work_1/` | 마포 WM 모바일 창구 |
 | `https://hanaroline.github.io/work_1/mapo-wm.html` | 같은 페이지(주소만 다름) |
+| `https://hanaroline.github.io/work_1/counter/` | 카운터 웹앱 |
 
 **최초 1회만 설정** — 저장소 Settings 〉 Pages 〉 Build and deployment 〉 Source 를
-**GitHub Actions** 로 바꿉니다. 그 뒤로는 `mapo-wm.html`을 고쳐 `main`에 올릴 때마다
-자동 배포되고, Actions 탭에서 수동 실행(workflow_dispatch)도 됩니다.
+**GitHub Actions** 로 바꿉니다. 그 뒤로는 `mapo-wm.html`이나 `counter/`를 고쳐 `main`에
+올릴 때마다 자동 배포되고, Actions 탭에서 수동 실행(workflow_dispatch)도 됩니다.
 
 검색 노출은 막아둡니다(페이지 `noindex` + `robots.txt`). 문자·메신저로 주소를 받은
 고객만 들어오는 페이지라서, 지점 코드가 박힌 링크가 검색에 걸리지 않게 하려는 것입니다.
