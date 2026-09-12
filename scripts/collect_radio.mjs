@@ -246,12 +246,21 @@ async function resolveLive (channelId) {
 }
 
 // ── 3. 외부 사이트에서 재생 가능한지 ────────────────────────────────────────
-// 임베드를 막아 둔 영상은 oEmbed 가 401/403 을 돌려준다.
+//
+// oEmbed 로는 안 된다. 임베드를 막아 둔 영상도 oEmbed 는 200 을 돌려준다
+// (영상이 사라진 것만 걸러 낸다). 그래서 YTN·연합뉴스TV·KBS 뉴스·YTN 라디오가
+// '재생 가능' 으로 통과했다가 화면에서 '이 동영상은 볼 수 없습니다' 가 떴다.
+//
+// 임베드 페이지를 직접 열어 playabilityStatus 를 본다. 막아 둔 영상은 여기서
+// UNPLAYABLE 로 나온다. 실제 플레이어가 보는 것과 같은 값이다.
 async function checkEmbeddable (videoId) {
-  const res = await get(
-    `https://www.youtube.com/oembed?format=json&url=${encodeURIComponent(`https://www.youtube.com/watch?v=${videoId}`)}`
-  )
-  return res.ok
+  const res = await get(`https://www.youtube.com/embed/${videoId}`)
+  if (!res.ok) return false
+
+  const m = res.text.match(/"playabilityStatus":\s*\{\s*"status":"([A-Z_]+)"/)
+  const status = m ? m[1] : '(못 읽음)'
+  if (status !== 'OK') log(`     임베드 상태 ${status}`)
+  return status === 'OK'
 }
 
 // ── 확인 2 ─────────────────────────────────────────────────────────────────
@@ -378,14 +387,15 @@ async function main () {
 
     const embeddable = await checkEmbeddable(onAir.videoId)
     out.youtube.embeddable = embeddable
-    log(`   ● 라이브 ${onAir.videoId}${embeddable ? '' : ' (임베드 막힘 → 공식 사이트로)'}`)
+    log(`   ● 라이브 ${onAir.videoId}${embeddable ? '' : ' (임베드 막힘 → 유튜브 새 창으로)'}`)
 
-    if (!embeddable) continue
-
+    // 막힌 것도 적어 둔다. 화면 안에서 틀지는 못해도, 바로 그 영상을
+    // 새 창으로 열 수 있으니 채널 페이지로 보내는 것보다 낫다.
     live.push({
       channel: out.id,
       videoId: onAir.videoId,
       title: onAir.title,
+      embeddable,
       resolvedAt: new Date().toISOString()
     })
   }
