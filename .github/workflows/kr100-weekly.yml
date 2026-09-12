@@ -1,0 +1,189 @@
+name: 국내 100대 기업 주간 자동 갱신
+
+# 대상 목록(kr-top100.html 의 COMPANIES)을 **주 1회 실제로 갈아 끼운다.**
+# 평일 점검(kr100-ranking.yml)은 차이만 적어 두고, 교체는 여기서 한 번에 한다.
+#
+# 한 판이 끝까지 스스로 도는 이유
+#   Actions 가 기본 토큰(GITHUB_TOKEN)으로 밀어 넣은 커밋은 다른 워크플로를 부르지
+#   않는다(무한 반복 방지). 그래서 목록을 고친 뒤의 재수집·오프라인 판 만들기·데이터
+#   브랜치 올리기를 다른 워크플로에 넘기지 못하고, 이 판에서 이어서 한다.
+#
+# 되돌리는 자리
+#   목록을 고친 뒤 전체 수집에서 새 종목의 시세를 못 받으면, 커밋하지 않고 화면 파일을
+#   원래대로 되돌린다. 반쯤 들어온 종목이 목록에 남는 것이 가장 나쁜 결과다.
+
+on:
+  schedule:
+    # 금요일 17:00 KST(08:00 UTC) — 그날의 전체 수집(15:45)·목록 점검(16:10) 다음.
+    # 한국은 서머타임이 없어 계절에 따라 시각이 어긋나지 않는다.
+    - cron: '0 8 * * 5'
+
+  push:
+    paths:
+      - 'data/kr100/WEEKLY_REFRESH'
+      - 'scripts/update_kr100_list.py'
+      - '.github/workflows/kr100-weekly.yml'
+
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: '무엇이 바뀔지만 보고 파일은 건드리지 않는다'
+        type: boolean
+        default: false
+      max_swap:
+        description: '한 번에 바꿀 최대 종목 수'
+        default: '5'
+      probe:
+        description: '이 종목들이 들어온다면 무엇이 적힐지 지어만 본다 (예: 052690,039030)'
+        default: ''
+
+permissions:
+  contents: write
+
+concurrency:
+  group: kr100-weekly-${{ github.ref_name }}
+  cancel-in-progress: false
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: 데이터 브랜치에서 최신 스냅샷 받기
+        # 목록 점검은 우리 목록의 시총을 최근 수집분에서 읽고, 오프라인 판은 가격 파일을
+        # 함께 담는다. 둘 다 코드 브랜치에는 안내 파일({"movedTo": …})만 있다.
+        run: |
+          mkdir -p data/kr100
+          if git fetch --quiet origin "+refs/heads/kr100-data:refs/remotes/origin/kr100-data" 2>/dev/null; then
+            for f in latest.json quotes.json ranking.json list-change.json; do
+              git show "origin/kr100-data:data/kr100/$f" > "data/kr100/$f" 2>/dev/null || true
+            done
+          fi
+          python - <<'PY'
+          import json, os
+          for f in ('latest.json', 'quotes.json', 'ranking.json', 'list-change.json'):
+              p = os.path.join('data/kr100', f)
+              if not os.path.exists(p) or os.path.getsize(p) < 40:
+                  print('%s 없음' % f); continue
+              try:
+                  d = json.load(open(p, encoding='utf-8'))
+              except Exception as e:
+                  print('%s 못 읽음 — %s' % (f, e)); continue
+              print('%s — %s' % (f, '안내 파일' if d.get('movedTo')
+                                else (d.get('fetchedAt') or d.get('builtAt'))))
+          PY
+
+      - name: 목록 점검 다시 돌리기
+        # 교체는 **방금 만든 순위**로 판단한다. 어제 파일로 목록을 바꾸지 않는다.
+        # 스크리너가 응답하지 않으면 ranking.json 을 쓰지 않으므로, 다음 단계가
+        # 직전 점검 결과를 그대로 쓰거나(있으면) 아무것도 바꾸지 않는다.
+        continue-on-error: true
+        run: python scripts/check_kr100_ranking.py
+
+      - name: 후보 미리보기
+        # 사람이 부를 때만 도는 길이다(probe 입력이 있을 때). 목록은 건드리지 않는다.
+        if: github.event.inputs.probe != ''
+        run: python scripts/update_kr100_list.py --probe "${{ github.event.inputs.probe }}"
+
+      - name: 목록 갱신
+        id: upd
+        # probe 를 부른 판은 미리보기만 하고 끝낸다(예약 실행은 probe 가 비어 있다)
+        if: github.event.inputs.probe == ''
+        run: |
+          python scripts/update_kr100_list.py \
+            --max-swap "${{ github.event.inputs.max_swap || '5' }}" \
+            ${{ github.event.inputs.dry_run == 'true' && '--dry-run' || '' }}
+          if git diff --quiet -- kr-top100.html; then
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+            echo "바뀐 것이 없다 — 재수집도 건너뛴다"
+          else
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+            python - <<'PY' >> "$GITHUB_OUTPUT"
+          import json
+          d = json.load(open('data/kr100/list-change.json', encoding='utf-8'))
+          print('added=' + ','.join(a['sym'] for a in d['added']))
+          print('label=' + ' · '.join('%s→%s' % (r['ko'], a['ko'])
+                                      for r, a in zip(d['removed'], d['added'])))
+          PY
+          fi
+
+      - name: 새 목록으로 다시 수집
+        if: steps.upd.outputs.changed == 'true'
+        run: python scripts/fetch_kr100.py
+
+      - name: 새로 들어온 종목이 제대로 받히는지 확인
+        # 여기서 걸리면 커밋하지 않고 화면 파일을 되돌린다 — 데이터 없는 종목이 목록에
+        # 남으면 화면에 빈 칸이 생긴다. 다음 주에 후보를 다시 본다.
+        if: steps.upd.outputs.changed == 'true'
+        id: check
+        run: |
+          python - <<'PY'
+          import json, os, sys
+          d = json.load(open('data/kr100/latest.json', encoding='utf-8'))
+          syms = os.environ['ADDED'].split(',')
+          bad = []
+          for s in syms:
+              st = (d.get('sources') or {}).get(s)
+              if not isinstance(st, dict) or st.get('chart') is not True:
+                  bad.append('%s (시세 %s)' % (s, (st or {}).get('chart')))
+          if bad:
+              print('::error::새 종목의 데이터를 받지 못했다 — ' + ', '.join(bad))
+              sys.exit(1)
+          print('새 종목 %d개 모두 수집됨' % len(syms))
+          PY
+        env:
+          ADDED: ${{ steps.upd.outputs.added }}
+
+      - name: 실패하면 목록을 되돌린다
+        if: failure() && steps.upd.outputs.changed == 'true'
+        run: |
+          git checkout -- kr-top100.html
+          echo "::warning::목록 변경을 되돌렸다 — 다음 주에 다시 본다"
+
+      - name: 오프라인 단일 파일 만들기
+        if: steps.upd.outputs.changed == 'true'
+        run: |
+          python scripts/make_offline_html.py --market kr --out kr-top100-offline.html
+          cp kr-top100-offline.html data/kr100/
+
+      - name: 데이터 브랜치에 올리기
+        if: steps.upd.outputs.changed == 'true'
+        env:
+          COMMIT_LABEL: 주간갱신
+          PUBLISH_FILES: latest.json chart kr-top100-offline.html list-change.json
+        run: bash scripts/publish_kr100_data.sh
+
+      - name: 바뀐 목록을 코드 브랜치에 커밋
+        if: steps.upd.outputs.changed == 'true' && github.event.inputs.dry_run != 'true'
+        env:
+          LABEL: ${{ steps.upd.outputs.label }}
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add kr-top100.html
+          git commit -m "대상 목록을 시가총액 순위에 맞춘다 (${LABEL})" -m \
+            "주간 자동 갱신(.github/workflows/kr100-weekly.yml)이 만든 커밋이다.
+          새로 들어온 종목의 한글 개요는 수집한 값으로 지은 것이고, 화면이 그렇게 밝힌다
+          (PROFILE_KO 항목 네 번째 자리의 'auto'). 사람이 문장을 고치면 그 표시를 지우면 된다."
+          ok=0
+          for i in 1 2 3 4; do
+            if git push origin "HEAD:${GITHUB_REF_NAME}"; then ok=1; break; fi
+            echo "푸시 실패 — $((2**i))초 뒤 다시 시도한다"
+            sleep $((2**i))
+            git pull --rebase origin "${GITHUB_REF_NAME}" || true
+          done
+          [ "$ok" = 1 ] || { echo "::error::목록 변경을 푸시하지 못했다"; exit 1; }
+
+      - name: 요약
+        if: always()
+        continue-on-error: true
+        run: |
+          if [ "${{ steps.upd.outputs.changed }}" != "true" ]; then
+            echo "::notice::대상 목록에 바뀐 것이 없다"
+          fi
