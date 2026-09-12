@@ -192,6 +192,55 @@ INDUSTRY_KO = {
 }
 
 
+# 영문 기업 개요에 나오는 말 → 한글 검색어. KIND 의 "주요제품" 을 못 받는 자리
+# (GitHub 러너에서 403)에서 키워드를 채우는 길이다. 국내 화면에서 사람이 실제로
+# 쳐 볼 만한 말만 넣는다 — 원문에 없는 말은 넣지 않으므로 지어낸 것이 아니다.
+DESC_KO = [
+    (r"\bfoundr", "파운드리"), (r"\bwafer", "웨이퍼"), (r"\bmemory\b|\bdram\b", "메모리"),
+    (r"\bsemiconductor", "반도체"), (r"\blaser", "레이저"), (r"\bdisplay", "디스플레이"),
+    (r"\bbatter", "배터리"), (r"cathode", "양극재"), (r"anode", "음극재"),
+    (r"secondary cell|lithium", "2차전지"), (r"\bnuclear", "원자력"),
+    (r"power plant|power generation", "발전소"), (r"transformer", "변압기"),
+    (r"switchgear|substation", "전력기기"), (r"\bcable\b|\bwire\b", "전선"),
+    (r"shipbuild|shipyard|\bvessel", "조선"), (r"\blng\b", "LNG"),
+    (r"defen[cs]e|missile|weapon", "방산"), (r"aerospace|aircraft|satellite", "항공우주"),
+    (r"\brobot", "로봇"), (r"construction|engineering, procurement", "건설"),
+    (r"\bplant\b|\bepc\b", "플랜트"), (r"refin(e|ing)|petroleum", "정유"),
+    (r"petrochemical|chemical", "화학"), (r"\bsteel\b", "철강"), (r"\bzinc\b|smelt", "제련"),
+    (r"pharmaceutic|\bdrug", "제약"), (r"biosimilar", "바이오시밀러"),
+    (r"\bbiotech|biolog", "바이오"), (r"vaccine", "백신"),
+    (r"cosmetic|skin care|beauty", "화장품"), (r"\bfood\b|noodle|confection", "식품"),
+    (r"tobacco|cigarette", "담배"), (r"\bretail|department store|convenience store", "유통"),
+    (r"\bbank(ing)?\b", "은행"), (r"life insurance", "생명보험"),
+    (r"non-life|property and casualty|casualty insurance", "손해보험"),
+    (r"\binsurance\b", "보험"), (r"securities|brokerage", "증권"),
+    (r"asset management", "자산운용"), (r"\bcard\b|payment", "결제"),
+    (r"\bgame|gaming", "게임"), (r"\bcloud\b", "클라우드"),
+    (r"\bsoftware\b|system integration", "소프트웨어"), (r"\bsearch engine|portal", "포털"),
+    (r"e-?commerce", "커머스"), (r"telecommunication|wireless|mobile network", "통신"),
+    (r"\biptv\b|broadcast", "미디어"), (r"entertainment|music|artist", "엔터"),
+    (r"\bairline|air transport", "항공"), (r"shipping|container", "해운"),
+    (r"logistic|freight", "물류"), (r"\bautomobile|\bvehicle|passenger car", "자동차"),
+    (r"\btire\b|\btyre\b", "타이어"), (r"electric vehicle|\bev\b", "전기차"),
+    (r"excavator|construction equipment", "건설기계"), (r"\bcamera module", "카메라모듈"),
+    (r"printed circuit|substrate", "기판"), (r"\bmlcc\b|capacitor", "MLCC"),
+    (r"\bsolar\b|photovoltaic", "태양광"), (r"\bsecurity\b|surveillance", "보안"),
+    (r"holding company|investment holding", "지주"),
+]
+
+
+def desc_words(desc, limit=6):
+    """영문 개요에서 한글 검색어를 뽑는다. 원문에 있는 말만 옮긴다."""
+    out = []
+    low = (desc or "").lower()
+    for pat, ko in DESC_KO:
+        if ko not in out and re.search(pat, low):
+            out.append(ko)
+            if len(out) >= limit:
+                break
+    return out
+
+
 def pick_sector(profile, ko, en):
     """이 화면의 업종 코드를 고른다 — 사명 → 야후 industry → 야후 sector 순."""
     name = (ko or "") + " " + (en or "")
@@ -226,6 +275,12 @@ def kind_table():
     한국거래소 상장공시시스템이 내려 주는 전 상장사 표다. 한글 **정식 사명**과
     **업종·주요제품**이 함께 있어, 자동으로 지은 개요의 살이 된다.
     한 번만 받아 두고 쓴다. 못 받으면 빈 표를 돌려주고 다음 원천으로 넘어간다.
+
+    **GitHub 러너에서는 HTTP 403 이 온다**(2026-09-12 확인). 거래소가 클라우드 IP 를
+    막는 것이어서 data.krx.co.kr 과 같은 사정이다 — 헤더로 풀리는 문제가 아니다.
+    그래서 예약 실행에서는 한글 사명을 야후(ko-KR)에서 받고, 주요제품은 비운 채
+    영문 개요에서 뽑은 말로 키워드를 채운다. 국내 IP 가 나가는 자리에서 손으로 돌리면
+    이 표가 열려 더 좋은 이름·키워드가 들어간다.
     """
     if _KIND_CACHE:
         return _KIND_CACHE.get("rows", {})
@@ -332,6 +387,8 @@ def make_keywords(sym, ko, en, sector, profile):
     row = kind_table().get(sym.split(".")[0]) or {}
     add(row.get("product"))
     add(row.get("industry"))
+    for w in desc_words(profile.get("desc") or profile.get("summary")):
+        add(w)
     # 줄여 부르는 말('삼전' 같은 것)은 자동으로 짓지 않는다 — 사람이 KEYWORDS 에
     # 덧붙이면 된다. 어설프게 잘라 넣으면 검색에 걸리지 않는 말만 늘어난다.
     return " ".join(words[:14])
@@ -376,7 +433,7 @@ def make_profile_ko(sym, ko, en, sector, payload, rank):
         s = s.strip()
         if s and s not in tags:
             tags.append(s)
-    for w in SECTOR_WORDS.get(sector, "").split(" "):
+    for w in desc_words(p.get("desc") or p.get("summary")) + SECTOR_WORDS.get(sector, "").split(" "):
         if w and w not in tags and len(tags) < 5:
             tags.append(w)
 

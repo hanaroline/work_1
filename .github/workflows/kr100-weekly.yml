@@ -36,6 +36,12 @@ on:
       probe:
         description: '이 종목들이 들어온다면 무엇이 적힐지 지어만 본다 (예: 052690,039030)'
         default: ''
+      add_rank:
+        description: '들어오는 조건 — 이 순위 안 (기본 90)'
+        default: '90'
+      drop_rank:
+        description: '나가는 조건 — 이 순위 밖 (기본 110)'
+        default: '110'
 
 permissions:
   contents: write
@@ -98,6 +104,8 @@ jobs:
         run: |
           python scripts/update_kr100_list.py \
             --max-swap "${{ github.event.inputs.max_swap || '5' }}" \
+            --add-rank "${{ github.event.inputs.add_rank || '90' }}" \
+            --drop-rank "${{ github.event.inputs.drop_rank || '110' }}" \
             ${{ github.event.inputs.dry_run == 'true' && '--dry-run' || '' }}
           if git diff --quiet -- kr-top100.html; then
             echo "changed=false" >> "$GITHUB_OUTPUT"
