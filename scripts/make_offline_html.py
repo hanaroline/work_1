@@ -89,13 +89,16 @@ def main():
         if q.get("quotes"):
             bundle["quotes"] = q
 
-    rank_path = os.path.join(a.data, "ranking.json")
-    if os.path.exists(rank_path):
+    # 목록 점검 결과와 주간 목록 갱신 기록 — 화면 ⑩ 섹션이 읽는다. 없으면 그냥 넘어간다.
+    for name, key in (("ranking.json", "ranking"), ("list-change.json", "listChange")):
+        path = os.path.join(a.data, name)
+        if not os.path.exists(path):
+            continue
         try:
-            r = load(rank_path)
+            r = load(path)
             if r.get("builtAt"):
-                bundle["ranking"] = r
-        except Exception:                     # noqa: BLE001 — 없으면 그냥 넘어간다
+                bundle[key] = r
+        except Exception:                     # noqa: BLE001
             pass
 
     charts = {}

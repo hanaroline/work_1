@@ -2714,14 +2714,36 @@ function renderQuote(M) {
   renderAbout(M);
 }
 
+/** 한글 요약이 아직 없는 종목의 개요 — 받아 온 값만으로 몇 문장을 짓는다.
+ *
+ *  목록이 주간으로 바뀌므로(scripts/update_kr100_list.py) 사람이 쓴 요약이 미처
+ *  붙지 못한 종목이 들어올 수 있다. 그때 이 자리가 통째로 비지 않게 하는 그물이다.
+ *  없는 사실은 적지 않는다 — 받은 값이 있는 문장만 이어 붙인다. */
+function koFallbackDesc(M) {
+  var p = M.profile || {}, q = M.quote || {}, out = [];
+  /* 업종 이름은 한글(SECTORS)을 쓴다 — 야후의 industry 는 영문이라 한글 문장에
+     섞이면 읽기 나쁘다. 영문 industry 는 아래 기본 정보 표의 '산업' 에 그대로 있다. */
+  out.push(marketOf(M.co.sym) + ' 상장 ' + sectorName(M.co.sector) + ' 기업입니다.');
+  if (q.revenue != null) {
+    out.push('최근 12개월 매출은 ' + usd(q.revenue) +
+      (q.opMargin != null ? ', 영업이익률은 ' + q.opMargin.toFixed(1) + '%' : '') + '입니다.');
+  }
+  if (q.cap != null) out.push('시가총액은 ' + usd(q.cap) + '입니다.');
+  if (p.employees) out.push('임직원은 ' + comma(p.employees) + '명입니다.');
+  return out.join(' ');
+}
+
 /** 기업 한눈에 — 주력사업·개요·사업 키워드와 회사 기본 정보.
  *  한글 요약(PROFILE_KO)은 이 화면이 정리해 둔 것이고, 영문 원문 개요는 데이터
- *  제공사의 기업 프로필이다. 둘의 출처가 다르므로 화면에서 구분해 적는다. */
+ *  제공사의 기업 프로필이다. 둘의 출처가 다르므로 화면에서 구분해 적는다.
+ *  네 번째 자리에 'auto' 가 있는 항목은 사람이 쓴 글이 아니라 주간 갱신이 지은
+ *  문장이다 — 그 사실을 아래 출처 문구에 밝힌다. */
 function renderAbout(M) {
   var box = el('q-about');
   if (!box) return;
   var c = M.co, p = M.profile || {}, pk = PROFILE_KO[c.sym] || null;
   var enDesc = p.desc || p.summary || null;
+  var auto = !pk || pk[3] === 'auto';
 
   var head = '';
   if (lang === 'en') {
@@ -2729,8 +2751,9 @@ function renderAbout(M) {
       '<p class="desc">' + (enDesc ? esc(enDesc)
         : esc(t('기업 개요를 받지 못했습니다.', 'Company description unavailable.'))) + '</p>';
   } else {
-    head = '<p class="biz">' + esc(pk ? pk[0] : (p.industry || sectorName(c.sector))) + abroadTag(c.sym) + '</p>' +
-      (pk ? '<p class="desc">' + esc(pk[1]) + '</p>' : '') +
+    var desc = pk ? pk[1] : koFallbackDesc(M);
+    head = '<p class="biz">' + esc(pk ? pk[0] : sectorName(c.sector)) + abroadTag(c.sym) + '</p>' +
+      (desc ? '<p class="desc">' + esc(desc) + '</p>' : '') +
       (pk && pk[2] ? '<div class="tags">' + pk[2].split(/,\s*/).map(function (w) {
         return '<span>' + esc(w) + '</span>';
       }).join('') + '</div>' : '');
@@ -2761,7 +2784,9 @@ function renderAbout(M) {
       : '') +
     '<p class="who">' + esc(lang === 'en'
       ? 'The English description is the data provider’s company profile (Yahoo Finance). Business facts change slowly; check the company’s IR page for the latest.'
-      : '한글 요약(주력사업·개요·키워드)은 공개된 사업 구조를 이 화면에서 정리한 것이고, 영문 원문 개요는 데이터 제공사(Yahoo Finance)의 기업 프로필입니다. 사업 구조는 자주 바뀌지 않지만, 최신 내용은 회사 IR 공지가 원문입니다.') +
+      : (auto
+        ? '이 종목의 한글 개요는 사람이 쓴 요약이 아니라, 수집한 값(업종·매출·영업이익률·시가총액·임직원 수)으로 지은 문장입니다 — 목록이 주간으로 갱신되면서 새로 들어온 종목입니다. 사업 구조 설명은 위의 영문 원문 개요와 회사 IR 공지가 원문입니다.'
+        : '한글 요약(주력사업·개요·키워드)은 공개된 사업 구조를 이 화면에서 정리한 것이고, 영문 원문 개요는 데이터 제공사(Yahoo Finance)의 기업 프로필입니다. 사업 구조는 자주 바뀌지 않지만, 최신 내용은 회사 IR 공지가 원문입니다.')) +
     '</p>';
 }
 
@@ -4658,35 +4683,70 @@ function groupWeekly(rows) {
 }
 
 /* ------------------------------------------------------------
-   대상 목록 점검 (ranking.json)
-   목록은 사람이 관리한다 — 새 종목의 한글명·기업 개요를 함께 채워야 화면이 비지 않기
-   때문이다. 대신 수집기가 매일 "지금 시가총액 상위 100"과 견주어 차이를 적어 두고
-   (scripts/check_kr100_ranking.py), 화면은 그 결과를 여기서 그대로 보여 준다.
+   대상 목록 점검 (ranking.json) · 주간 자동 갱신 기록 (list-change.json)
+   수집기가 평일마다 "지금 시가총액 상위 100"과 견주어 차이를 적어 두고
+   (scripts/check_kr100_ranking.py), 주 1회 그 결과대로 목록을 실제로 갈아 끼운다
+   (scripts/update_kr100_list.py). 화면은 둘을 여기서 그대로 보여 준다.
    ------------------------------------------------------------ */
 var RANK = null;
+var LISTCHG = null;
+
+/** 스냅샷 폴더의 파일 하나를 후보 경로들에서 찾아 받는다(가장 먼저 오는 것을 쓴다). */
+function loadSnapFile(name, ok) {
+  var bases = SNAP_BASE ? [SNAP_BASE].concat(SNAPSHOT_BASES) : SNAPSHOT_BASES;
+  return anyOf(bases.map(function (base) {
+    var url = base + name + '?_ts=' + Date.now();
+    var p = /^https?:/.test(base) ? fetchQuick(url, 7000).catch(function () { return fetchJson(base + name); })
+                                  : fetchQuick(url, 5000);
+    return p.then(function (j) {
+      if (!ok(j)) throw new Error(name + ' 형식이 아니다');
+      return j;
+    });
+  }));
+}
 
 function loadRanking() {
   var emb = embedded();
-  if (emb && emb.ranking) { RANK = emb.ranking; renderRankNote(); }
-  var bases = SNAP_BASE ? [SNAP_BASE].concat(SNAPSHOT_BASES) : SNAPSHOT_BASES;
-  var tries = bases.map(function (base) {
-    var url = base + 'ranking.json?_ts=' + Date.now();
-    var p = /^https?:/.test(base) ? fetchQuick(url, 7000).catch(function () { return fetchJson(base + 'ranking.json'); })
-                                  : fetchQuick(url, 5000);
-    return p.then(function (j) {
-      if (!j || !j.builtAt || !j.ourRanks) throw new Error('점검 파일 형식이 아니다');
-      return j;
-    });
-  });
-  return anyOf(tries).then(function (j) {
-    RANK = j; renderRankNote(); return j;
-  }, function () { renderRankNote(); return RANK; });
+  if (emb && emb.ranking) { RANK = emb.ranking; }
+  if (emb && emb.listChange) { LISTCHG = emb.listChange; }
+  if (RANK || LISTCHG) renderRankNote();
+
+  /* 목록 갱신 기록은 없어도 그만이다 — 실패해도 점검 결과 표시를 막지 않는다 */
+  loadSnapFile('list-change.json', function (j) { return j && j.builtAt && j.rule; })
+    .then(function (j) { LISTCHG = j; renderRankNote(); }, function () {});
+
+  return loadSnapFile('ranking.json', function (j) { return j && j.builtAt && j.ourRanks; })
+    .then(function (j) { RANK = j; renderRankNote(); return j; },
+          function () { renderRankNote(); return RANK; });
+}
+
+/** 지난 주간 갱신에서 무엇이 바뀌었는지 한 줄 — 목록이 저절로 바뀌는 화면이므로 밝혀 둔다 */
+function changeLine() {
+  if (!LISTCHG) return '';
+  var when = dateFmt(new Date(LISTCHG.builtAt));
+  var add = LISTCHG.added || [], rm = LISTCHG.removed || [];
+  var nm = function (rows, key) {
+    return rows.map(function (r) { return codeOf(r.sym) + ' ' + (r[key] || r.sym); }).join(', ');
+  };
+  if (!add.length) {
+    return '<br>' + esc(t('주간 자동 갱신 ' + when + ' — 바뀐 종목이 없습니다.',
+                          'Weekly auto-update ' + when + ' — no change.'));
+  }
+  return '<br>' + esc(t('주간 자동 갱신 ' + when + ' — ' + rm.length + '종목을 빼고 ' +
+                        add.length + '종목을 넣었습니다: ', 'Weekly auto-update ' + when + ' — ')) +
+    '<b>' + esc(nm(rm, 'ko')) + '</b>' + esc(t(' → ', ' → ')) + '<b>' + esc(nm(add, 'ko')) + '</b>' +
+    esc(t(' (새로 들어온 종목의 한글 개요는 수집한 값으로 지은 것입니다)',
+          ' (Korean overviews for new entries are generated from collected data)'));
 }
 
 function renderRankNote() {
   var box = el('rank-note');
   if (!box) return;
-  if (!RANK) { box.hidden = true; return; }
+  if (!RANK) {
+    if (LISTCHG) { box.innerHTML = changeLine().replace(/^<br>/, ''); box.hidden = false; }
+    else box.hidden = true;
+    return;
+  }
   var add = RANK.add || [], drop = RANK.drop || [];
   var when = dateFmt(new Date(RANK.builtAt));
   var line = function (r, isAdd) {
@@ -4699,7 +4759,8 @@ function renderRankNote() {
     box.innerHTML = '<b>' + esc(t('대상 목록 점검', 'Coverage check')) + '</b> — ' +
       esc(t('지금 시가총액 상위 ' + (RANK.top || 100) + '과 목록이 일치합니다 (' + when + ' 점검, 기준 ' +
             (RANK.source === 'screener' ? '야후 스크리너 시총 순위' : '수집한 시가총액') + ').',
-            'the list matches the current top ' + (RANK.top || 100) + ' by market cap (checked ' + when + ').'));
+            'the list matches the current top ' + (RANK.top || 100) + ' by market cap (checked ' + when + ').')) +
+      changeLine();
     box.hidden = false;
     return;
   }
@@ -4712,12 +4773,13 @@ function renderRankNote() {
       : head;
   };
   box.innerHTML = '<b>' + esc(t('대상 목록 갱신 후보', 'Coverage change pending')) + '</b> — ' +
-    esc(t(when + ' 점검 결과입니다. 목록은 자동으로 바뀌지 않습니다 — 새 종목의 검색 키워드와 기업 개요를 함께 채워야 하기 때문입니다.',
-          'checked ' + when + '. The list does not change automatically — a new symbol needs its search keywords and company overview written first.')) +
+    esc(t(when + ' 점검 결과입니다. 주 1회(금요일) 목록이 자동으로 갱신되면서 이 가운데 순위 조건을 갖춘 종목이 들어오고, 밀린 종목이 빠집니다.',
+          'checked ' + when + '. The list is refreshed automatically once a week (Friday); qualifying symbols move in and fallen ones move out.')) +
     (add.length ? '<br>' + esc(t('목록에 없는 상위 종목 ' + add.length + '개: ',
       add.length + ' in the top 100 but not listed: ')) + listOf(add, true) : '') +
     (drop.length ? '<br>' + esc(t('목록에 있으나 ' + (RANK.dropRank || 150) + '위 밖으로 밀린 종목 ' + drop.length + '개: ',
-      drop.length + ' listed but now below rank ' + (RANK.dropRank || 150) + ': ')) + listOf(drop, false) : '');
+      drop.length + ' listed but now below rank ' + (RANK.dropRank || 150) + ': ')) + listOf(drop, false) : '') +
+    changeLine();
   box.hidden = false;
 }
 
