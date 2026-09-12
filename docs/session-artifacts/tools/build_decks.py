@@ -391,3 +391,29 @@ build(
         'docs/retirement/</code> (제안서 2판 · 산출 근거 claims.json · 모델 model_v2.py)',
         '투자 권유가 아닙니다. 실제 상품 내용은 각 상품의 투자설명서가 우선합니다.'],
     outfile='deck-retirement.html')
+
+build(
+    page_title='업무자동화 구축 결과보고',
+    tagline='사내한 · 업무 보고',
+    subtitle='2026년 6월부터 9월까지 넉 달 동안 Claude Code 로 만든 영업 현장 업무 '
+             '자동화를 7장으로 정리한 보고 덱입니다. 매일 도는 자동 산출물 4종, 현장 '
+             '업무 화면 8종, 무인 워크플로 30종.',
+    metas=[('원본', '2026-09-09-업무자동화-구축결과보고.pptx'),
+           ('슬라이드', '7장'),
+           ('작업 세션', '업무 보고 발표자료'),
+           ('최종 수정', '2026-09-09')],
+    notes=[NOTE_COMMON,
+           '이 덱이 성과로 세는 화면·산출물 대부분은 이 자료실에 아티팩트로 올라와 '
+           '있습니다. 주제별 목록에서 이름으로 찾을 수 있습니다.'],
+    downloads=[
+        {'id': 'f-workrep', 'src': 'work-report.pptx',
+         'name': '2026-09-09-업무자동화-구축결과보고.pptx',
+         'label': '원본 내려받기', 'size': kb('work-report.pptx')},
+    ],
+    deck_keys=['work-report.pptx'],
+    sections=[{'title': '슬라이드 7장', 'note': '추출 텍스트'}],
+    repo_lines=[
+        '저장소 경로 — <code>claude/work-report-presentation-wfnh58 : '
+        'docs/reports/2026-09-09-업무자동화-구축결과보고.pptx</code>',
+        '덱을 만드는 스크립트는 같은 폴더의 <code>build_work_report_deck.js</code> 입니다.'],
+    outfile='deck-work-report.html')
