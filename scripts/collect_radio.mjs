@@ -27,6 +27,7 @@ const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..')
 const CURATED = resolve(ROOT, 'data/radio/curated.json')
 const CHANNELS = resolve(ROOT, 'data/radio/channels.json')
 const LIVE = resolve(ROOT, 'data/radio/live.json')
+const STATIONS = resolve(ROOT, 'data/radio/stations.json')
 
 const UA = 'Mozilla/5.0 (compatible; work1-radio/1.0; +https://github.com/hanaroline/work_1)'
 const TIMEOUT = 15000
@@ -78,7 +79,18 @@ async function head (url) {
 
 // ── 1. 채널 찾기 ───────────────────────────────────────────────────────────
 // @handle 페이지에서 canonical 채널 주소와 channelId 를 뽑는다.
-async function resolveChannel (handles) {
+//
+// handle 은 빈 이름을 아무나 선점할 수 있다. 첫 수집에서 @MBCradio 가 "테스트.",
+// @CBSradio 가 "마이홈", @wbsi 가 "Maximilian Obenaus" 라는 개인 채널에 붙었다.
+// 그래서 찾은 채널 이름이 방송사 이름을 담고 있는지 반드시 대조한다.
+// 대조에 실패하면 다음 후보로 넘어가고, 전부 실패하면 영상 없이 공식 사이트로 간다.
+// 엉뚱한 채널을 트는 것보다 영상이 없는 편이 낫다.
+function nameMatches (title, handle, expect) {
+  const hay = ((title || '') + ' ' + (handle || '')).toLowerCase()
+  return expect.some(word => hay.includes(String(word).toLowerCase()))
+}
+
+async function resolveChannel (handles, expect) {
   for (const handle of handles) {
     const clean = String(handle).replace(/^@/, '').trim()
     if (!clean) continue
@@ -91,9 +103,16 @@ async function resolveChannel (handles) {
     const channelId = (byCanonical && byCanonical[1]) || (byMeta && byMeta[1])
     if (!channelId) continue
 
-    const title = res.text.match(/<meta\s+property="og:title"\s+content="([^"]+)"/)
-    log(`   ✓ @${clean} → ${channelId}${title ? ` (${title[1]})` : ''}`)
-    return { channelId, handle: clean, title: title ? title[1] : null }
+    const m = res.text.match(/<meta\s+property="og:title"\s+content="([^"]+)"/)
+    const title = m ? m[1] : null
+
+    if (expect && expect.length && !nameMatches(title, clean, expect)) {
+      log(`   ✗ @${clean} → "${title}" — 방송사 이름과 맞지 않아 버린다`)
+      continue
+    }
+
+    log(`   ✓ @${clean} → ${channelId}${title ? ` (${title})` : ''}`)
+    return { channelId, handle: clean, title }
   }
   return null
 }
@@ -160,6 +179,7 @@ async function main () {
       name: seed.name,
       org: seed.org,
       freq: seed.freq || {},
+      band: seed.band || 'radio',   // radio | tv
       kind: seed.kind || 'talk',
       official: { url: seed.official?.url || seed.official?.home || null, verified: false },
       youtube: { channelId: null, handle: null, verified: false, embeddable: null, checked: null }
@@ -187,7 +207,10 @@ async function main () {
       out.youtube = { ...prevYt }
       log(`   · 채널 확인 생략 (${prevYt.channelId})`)
     } else {
-      const found = await resolveChannel(seed.youtube?.handles || [])
+      const expect = (seed.youtube?.expect && seed.youtube.expect.length)
+        ? seed.youtube.expect
+        : [seed.org]
+      const found = await resolveChannel(seed.youtube?.handles || [], expect)
       if (found) {
         out.youtube = {
           channelId: found.channelId,
@@ -233,6 +256,47 @@ async function main () {
 
   const verified = channels.filter(c => c.youtube.verified).length
   log(`\n채널 ${channels.length}개 · 유튜브 확인 ${verified}개 · 지금 라이브 ${live.length}개`)
+
+  // 공개 스트림 목록. 화면은 사용자 브라우저에서 직접 받지만, 단일 파일 판과
+  // 외부 접속이 막힌 곳을 위해 러너도 한 벌 받아 둔다.
+  const stations = await collectStations()
+  if (stations.length) {
+    await writeJson(STATIONS, { updated: new Date().toISOString(), stations })
+    log(`공개 스트림 ${stations.length}개`)
+  } else {
+    log('공개 스트림 목록을 받지 못했다 — 기존 파일을 그대로 둔다')
+  }
+}
+
+const RB_HOSTS = [
+  'https://de1.api.radio-browser.info',
+  'https://de2.api.radio-browser.info',
+  'https://at1.api.radio-browser.info',
+  'https://all.api.radio-browser.info'
+]
+
+async function collectStations () {
+  for (const host of RB_HOSTS) {
+    const res = await get(`${host}/json/stations/bycountrycodeexact/KR?hidebroken=true&order=votes&reverse=true&limit=400`)
+    if (!res.ok) continue
+    let rows
+    try { rows = JSON.parse(res.text) } catch { continue }
+    if (!Array.isArray(rows)) continue
+
+    return rows
+      .map(s => ({
+        id: s.stationuuid,
+        name: (s.name || '').trim() || '이름 없음',
+        url: s.url_resolved || s.url || '',
+        codec: s.codec || '',
+        bitrate: s.bitrate || 0,
+        tags: String(s.tags || '').split(',').map(t => t.trim()).filter(Boolean).slice(0, 6),
+        homepage: s.homepage || ''
+      }))
+      // https 페이지에서 http 스트림은 브라우저가 막는다. 처음부터 뺀다.
+      .filter(s => s.url.startsWith('https://'))
+  }
+  return []
 }
 
 main().catch(err => {

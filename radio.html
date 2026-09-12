@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>보이는 라디오</title>
+  <title>라디오 · TV 온에어</title>
   <style>
     /* ===== 팔레트 (index.html 과 같은 토큰, 라이트/다크) ===== */
     :root {
@@ -226,9 +226,10 @@
 
 <header class="bar">
   <div class="bar-inner">
-    <div class="brand"><span class="lamp" id="lamp" aria-hidden="true"></span>보이는 라디오</div>
+    <div class="brand"><span class="lamp" id="lamp" aria-hidden="true"></span>라디오 · TV</div>
     <div class="tabs" role="tablist" aria-label="화면 전환">
-      <button class="tab" role="tab" id="tab-tv" aria-selected="true" aria-controls="pane-tv">보이는 라디오</button>
+      <button class="tab" role="tab" id="tab-radio" aria-selected="true" aria-controls="pane-live">보이는 라디오</button>
+      <button class="tab" role="tab" id="tab-tv" aria-selected="false" aria-controls="pane-live">TV</button>
       <button class="tab" role="tab" id="tab-audio" aria-selected="false" aria-controls="pane-audio">소리만</button>
       <button class="tab" role="tab" id="tab-fav" aria-selected="false" aria-controls="pane-fav">즐겨찾기</button>
     </div>
@@ -240,7 +241,7 @@
 
 <main class="layout">
   <!-- ===== 보이는 라디오 ===== -->
-  <section class="pane" id="pane-tv" role="tabpanel" aria-labelledby="tab-tv">
+  <section class="pane" id="pane-live" role="tabpanel" aria-labelledby="tab-radio">
     <div class="tv-grid">
       <div>
         <div class="stage" id="stage">
@@ -287,7 +288,7 @@
   </section>
 
   <footer class="foot">
-    <span>지상파·보도채널은 방송사 공식 유튜브 라이브를 정식 임베드로 재생합니다.</span>
+    <span>지상파 라디오·보도채널·TV 뉴스는 방송사 공식 유튜브 라이브를 정식 임베드로 재생합니다.</span>
     <span>공개 스트림 목록 출처 <a href="https://www.radio-browser.info/" target="_blank" rel="noopener">Radio Browser</a></span>
     <span>목록에서 빼기를 원하시면 저장소 이슈로 알려 주세요 — 요청 당일 제거합니다.</span>
   </footer>
@@ -333,7 +334,8 @@
     tags: [],
     tag: null,
     query: '',
-    tab: 'tv',
+    tab: 'radio',
+    band: 'radio',     // 라디오 탭 · TV 탭
     current: null,     // { kind:'yt'|'audio', id, name, sub }
     yt: null,
     ytReady: false,
@@ -387,7 +389,17 @@
     });
   }
 
+  // 단일 파일 판은 데이터를 파일 안에 넣어 둔다(window.RADIO_DATA).
+  // 그때는 fetch 를 하지 않으므로 더블클릭으로 열어도 그대로 돈다.
+  var INLINE = window.RADIO_DATA || null;
+
   function loadChannels() {
+    if (INLINE) {
+      S.channels = INLINE.channels || [];
+      (INLINE.live || []).forEach(function (l) { S.live[l.channel] = l; });
+      renderTV();
+      return Promise.resolve();
+    }
     return Promise.all([
       getJSON('data/radio/channels.json').catch(function () { return { channels: [] }; }),
       getJSON('data/radio/live.json').catch(function () { return { live: [] }; })
@@ -409,6 +421,11 @@
 
   function loadStations(i) {
     i = i || 0;
+    if (INLINE && INLINE.stations && INLINE.stations.length) {
+      S.stations = INLINE.stations.slice();
+      buildTags(); renderAudio(); renderFav();
+      return;
+    }
     if (i >= RB_HOSTS.length) {
       $('audioCount').textContent = '목록을 받지 못했습니다';
       $('audioList').innerHTML =
@@ -551,7 +568,8 @@
     var box = $('tvList');
     box.innerHTML = '';
 
-    var list = S.channels.filter(function (c) { return matches(c.name + ' ' + c.org); });
+    var band = S.channels.filter(function (c) { return (c.band || 'radio') === S.band; });
+    var list = band.filter(function (c) { return matches(c.name + ' ' + c.org); });
     // 지금 라이브인 채널을 맨 위로
     list.sort(function (a, b) {
       var la = S.live[a.id] ? 0 : 1, lb = S.live[b.id] ? 0 : 1;
@@ -559,13 +577,13 @@
       return 0;
     });
 
-    var liveCount = S.channels.filter(function (c) { return S.live[c.id]; }).length;
+    var liveCount = band.filter(function (c) { return S.live[c.id]; }).length;
     $('tvCount').textContent = liveCount
-      ? liveCount + '개 라이브 · 전체 ' + S.channels.length + '개'
-      : '전체 ' + S.channels.length + '개';
+      ? liveCount + '개 라이브 · 전체 ' + band.length + '개'
+      : '전체 ' + band.length + '개';
     $('lamp').className = 'lamp' + (S.current ? ' on' : '');
 
-    if (!S.channels.length) {
+    if (!band.length) {
       box.innerHTML = '<div class="empty">채널 목록을 읽지 못했습니다.<br>로컬 서버로 열어야 합니다 — <code>python3 -m http.server</code></div>';
       return;
     }
@@ -582,7 +600,7 @@
 
     list.forEach(function (c) {
       var live = S.live[c.id];
-      var freq = c.freq && c.freq.seoul ? c.freq.seoul.toFixed(1) + ' MHz' : c.org;
+      var freq = (c.freq && c.freq.seoul) ? c.freq.seoul.toFixed(1) + ' MHz' : c.org;
       box.appendChild(makeCard({
         kind: 'yt',
         id: c.id,
@@ -591,7 +609,7 @@
         color: orgColor(c.org),
         initials: initials(c.name, c.org),
         live: !!live,
-        chip: live ? '영상' : '공식 사이트',
+        chip: live ? '영상' : (liveUrlOf(c) && liveUrlOf(c).kind === 'yt' ? '유튜브 라이브' : '공식 사이트'),
         chipClass: live ? 'live' : 'ext',
         onPlay: function () { playChannel(c); }
       }));
@@ -759,14 +777,28 @@
     S.yt.setVolume(Number($('vol').value));
   }
 
+  // 확인된 유튜브 채널이 있으면 그 채널의 /live 주소를 쓴다. 지금 방송 중인 것을
+  // 유튜브가 알아서 띄워 주므로, 수집이 늦었거나 단일 파일 판의 영상 ID 가 낡았을
+  // 때도 바로 볼 수 있다.
+  function liveUrlOf(c) {
+    if (c.youtube && c.youtube.verified && c.youtube.channelId) {
+      return { url: 'https://www.youtube.com/channel/' + c.youtube.channelId + '/live', kind: 'yt' };
+    }
+    if (c.official && c.official.url) return { url: c.official.url, kind: 'official' };
+    return null;
+  }
+
   function playChannel(c) {
     var live = S.live[c.id];
     var official = (c.official && c.official.url) || null;
 
     if (!live) {
-      if (official) {
-        window.open(official, '_blank', 'noopener');
-        toast(c.name + ' — 공식 사이트를 새 창으로 열었습니다');
+      var out = liveUrlOf(c);
+      if (out) {
+        window.open(out.url, '_blank', 'noopener');
+        toast(c.name + (out.kind === 'yt'
+          ? ' — 유튜브 라이브를 새 창으로 열었습니다'
+          : ' — 공식 사이트를 새 창으로 열었습니다'));
       } else {
         toast(c.name + ' — 지금 들을 수 있는 경로가 없습니다');
       }
@@ -775,7 +807,7 @@
 
     stopAudio();
     S.current = { kind: 'yt', id: c.id, name: c.name, sub: live.title || (c.org + ' 라이브') };
-    setTab('tv');
+    setTab((c.band || 'radio') === 'tv' ? 'tv' : 'radio');
     updateNow();
 
     $('btnOfficial').hidden = !official;
@@ -869,7 +901,7 @@
     if ('mediaSession' in navigator && S.current) {
       try {
         navigator.mediaSession.metadata = new MediaMetadata({
-          title: S.current.name, artist: S.current.sub, album: '보이는 라디오'
+          title: S.current.name, artist: S.current.sub, album: '라디오 · TV 온에어'
         });
       } catch (e) {}
     }
@@ -931,13 +963,22 @@
   // ─────────────────────────────────────────────────────────────────────────
   // 탭 · 검색 · 테마 · 키보드
   // ─────────────────────────────────────────────────────────────────────────
+  // 라디오 탭과 TV 탭은 같은 화면(pane-live)을 쓰고 목록만 갈아 끼운다.
+  // 채널을 바꿔도 보던 화면이 그대로 있어야 TV 처럼 쓸 수 있다.
+  var PANE_OF = { radio: 'live', tv: 'live', audio: 'audio', fav: 'fav' };
+
   function setTab(name) {
     S.tab = name;
-    ['tv', 'audio', 'fav'].forEach(function (t) {
+    ['radio', 'tv', 'audio', 'fav'].forEach(function (t) {
       $('tab-' + t).setAttribute('aria-selected', t === name ? 'true' : 'false');
-      $('pane-' + t).hidden = (t !== name);
     });
+    ['live', 'audio', 'fav'].forEach(function (p) {
+      $('pane-' + p).hidden = (p !== PANE_OF[name]);
+    });
+    $('pane-live').setAttribute('aria-labelledby', name === 'tv' ? 'tab-tv' : 'tab-radio');
+    if (name === 'radio' || name === 'tv') { S.band = name === 'tv' ? 'tv' : 'radio'; renderTV(); }
   }
+  $('tab-radio').onclick = function () { setTab('radio'); };
   $('tab-tv').onclick = function () { setTab('tv'); };
   $('tab-audio').onclick = function () { setTab('audio'); if (!S.stations.length) loadStations(0); };
   $('tab-fav').onclick = function () { setTab('fav'); };
@@ -970,8 +1011,8 @@
 
     if (/^[1-9]$/.test(e.key)) {
       var idx = Number(e.key) - 1;
-      var cards = $(S.tab === 'tv' ? 'tvList' : S.tab === 'audio' ? 'audioList' : 'favList')
-        .querySelectorAll('.card');
+      var listId = (S.tab === 'audio') ? 'audioList' : (S.tab === 'fav') ? 'favList' : 'tvList';
+      var cards = $(listId).querySelectorAll('.card');
       if (cards[idx]) cards[idx].click();
     }
   });
