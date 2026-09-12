@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>카운터</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <main class="counter">
+    <h1 class="counter__title">카운터</h1>
+
+    <!-- 현재 값 표시 영역 (화면 낭독기를 위해 aria-live 사용) -->
+    <div id="display" class="counter__display" aria-live="polite">0</div>
+
+    <div class="counter__buttons">
+      <button id="decrease" type="button" class="btn" aria-label="1 감소">−</button>
+      <button id="reset" type="button" class="btn btn--reset">리셋</button>
+      <button id="increase" type="button" class="btn" aria-label="1 증가">+</button>
+    </div>
+  </main>
+
+  <script src="main.js"></script>
+</body>
+</html>
