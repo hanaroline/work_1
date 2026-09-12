@@ -130,6 +130,30 @@
   }
 
   /**
+   * 클래스 이름(label)으로 한 줄 골라내기.
+   *
+   * fundFeeTable 의 cls 는 줄 끝 괄호 안의 로마자만 잡는다 — 「(A)」·「(C-P)」.
+   * 그런데 퇴직연금 클래스는 괄호 안이 한글인 경우가 많아서(「종류C-P2(퇴직연금)」)
+   * cls 가 비고 이름에만 남는다. 그래서 이름으로도 고를 수 있어야 한다.
+   *
+   * 먼저 맞는 행을 그대로 돌려준다 — 표는 위에서 아래로 클래스 순서대로 놓인다.
+   */
+  function feeRowByLabel(text, labelRe) {
+    var rows = fundFeeTable(text);
+    for (var i = 0; i < rows.length; i++) {
+      if (labelRe.test(rows[i].label || '')) return rows[i];
+    }
+    return null;
+  }
+
+  /** 그 행에서 창구가 말해야 하는 총보수 — 모자형·재간접형은 합성 총보수·비용이 기준이다 */
+  function feeRowTotal(r) {
+    if (!r) return null;
+    var v = /^\d/.test(r.synthetic || '') ? r.synthetic : r.total;
+    return /^\d/.test(v || '') ? v : null;
+  }
+
+  /**
    * 「투자실적 추이(연평균 수익률)」 표의 최근 1년.
    * 머리글 아래 첫 실적 행을 쓰되 참조지수·변동성 행은 건너뛴다.
    */
