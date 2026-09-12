@@ -957,8 +957,9 @@
   function updateNow() {
     $('nowName').textContent = S.current ? S.current.name : '재생 중인 채널 없음';
     $('nowSub').textContent = S.current ? S.current.sub : '채널을 선택하세요';
-    $('stageName').textContent = S.current && S.current.kind === 'yt' ? S.current.name : '재생 중인 채널 없음';
-    $('stageSub').textContent = S.current && S.current.kind === 'yt' ? S.current.sub : '채널을 선택하세요';
+    var onScreen = S.current && (S.current.kind === 'yt' || S.current.kind === 'ytraw');
+    $('stageName').textContent = onScreen ? S.current.name : '재생 중인 채널 없음';
+    $('stageSub').textContent = onScreen ? S.current.sub : '채널을 선택하세요';
     $('lamp').className = 'lamp' + (S.current ? ' on' : '');
 
     if ('mediaSession' in navigator && S.current) {
