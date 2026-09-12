@@ -153,23 +153,49 @@
     return /^\d/.test(v || '') ? v : null;
   }
 
-  /** 이름에 적힌 연금 종류 — 「개인연금」·「연금저축」 은 퇴직연금이 아니다 */
-  var PENSION_OTHER = /개인\s*연금|연금\s*저축/;
+  /** 이름에 「퇴직」 이 적혔는가 — 퇴직연금 클래스의 유일하게 믿을 만한 표시다 */
+  var PENSION_RETIRE = /퇴\s*직\s*연\s*금/;
+  /** 온라인 전용 클래스 — 창구에서 가입하는 것이 아니다 */
+  var PENSION_ONLINE = /온\s*라\s*인|이\s*클래스|e\s*\)/i;
   /**
    * 보수 표에서 퇴직연금 클래스 행을 고른다.
    *
-   * ① 이름에 「퇴직연금」 이라고 적힌 행 — 가장 믿을 만하다.
-   * ② 없으면 클래스 표기가 C-P·CP·S-P·P 인 행. 다만 그 이름에 개인연금·연금저축이
-   *    적혀 있으면 집지 않는다. 같은 「S-P」 를 개인연금에 쓰는 운용사가 있다.
+   * ① 이름에 「퇴직연금」 이라고 적힌 행. 창구 가입분이 먼저고, 온라인 전용밖에
+   *    없으면 그것을 쓰되 이름(clsPName)에 「온라인」 이 그대로 드러난다.
+   * ② 이름에 연금 종류가 아예 안 적힌 경우에만 클래스 표기로 고른다.
+   *
+   * 표본에서 걸린 두 가지를 막는다 —
+   *
+   *   「인연금(C-P)」 (미래에셋G2이노베이터)
+   *     PDF 가 「개인연금」 을 줄 바꿔 자르는 바람에 앞 글자가 떨어져 나왔다.
+   *     「개인연금」 을 찾아 빼는 방식은 이렇게 잘린 글자에 뚫린다. 그래서 뒤집는다 —
+   *     이름에 「연금」 이라는 말이 있는데 「퇴직」 이 없으면 집지 않는다.
+   *     잘려도 「연금」 은 남으므로 새지 않는다.
+   *
+   *   「수수료미징구-온라인-퇴직 연금(C-P2e)」 (미래에셋퇴직연금글로벌인컴)
+   *     퇴직연금이 맞지만 온라인 전용이라 창구 가입분이 아니다. 창구 가입분을
+   *     먼저 찾고, 그것이 없을 때만 쓴다.
+   *
+   * 클래스 표기로 종류를 단정하지 않는 까닭도 여기서 드러났다. 카탈로그는
+   * 「C-P2 는 연금저축」 으로 보고 빼는데, 미래에셋은 C-P2 를 퇴직연금에 쓴다.
+   * 원문이 한글로 적어 둔 이름을 따른다.
    */
   function pensionFeeRow(text) {
-    var r = feeRowByLabel(text, /퇴직\s*연금/);
-    if (r) return r;
     var rows = fundFeeTable(text);
+    var online = null;
     for (var i = 0; i < rows.length; i++) {
-      if (!rows[i].cls || !/^(?:C|S)?-?P$/i.test(rows[i].cls)) continue;
-      if (PENSION_OTHER.test(rows[i].label || '')) continue;
+      if (!PENSION_RETIRE.test(rows[i].label || '')) continue;
+      if (PENSION_ONLINE.test(rows[i].label || '')) { if (!online) online = rows[i]; continue; }
       return rows[i];
+    }
+    if (online) return online;
+    /* 이름에 연금 종류가 안 적혔을 때만 표기로 고른다 */
+    for (var j = 0; j < rows.length; j++) {
+      var lb = rows[j].label || '';
+      if (!rows[j].cls || !/^(?:C|S)?-?P$/i.test(rows[j].cls)) continue;
+      if (/연\s*금/.test(lb)) continue;
+      if (PENSION_ONLINE.test(lb)) continue;
+      return rows[j];
     }
     return null;
   }
