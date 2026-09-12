@@ -1,0 +1,173 @@
+name: 공모펀드 주간 갱신 (부름)
+
+# 왜 이 파일만 main 에 있나
+# ──────────────────────────────────────────────────────────────────────
+# 깃허브는 **기본 가지(main)에 놓인 워크플로우만** schedule 로 부른다.
+# 공모펀드 일은 claude/fund-search-tool 에서 하는데, 그 가지의
+# fund-daily.yml 에 적혀 있던 `cron: '30 23 * * 0-4'` 는 그래서
+# **한 번도 돈 적이 없다.** 기록에 남은 실행 30건이 전부 push 아니면
+# workflow_dispatch 였다 — 날마다 도는 것처럼 보였을 뿐 실제로는 사람이
+# 손으로 부른 것이었다.
+#
+# 그래서 "부르는 사람" 만 여기 둔다. 수집·재검증의 내용은 그대로 가지 쪽
+# fund-daily.yml / fund-reverify.yml 에 있다. 여기에 베껴 두면 두 벌이
+# 되어 언젠가 조용히 어긋난다 — 그게 이 프로젝트에서 제일 비싼 종류의
+# 고장이다.
+
+on:
+  schedule:
+    # 월요일 08:30 KST = 일요일 23:30 UTC.
+    #
+    # 왜 월요일 아침인가 — 원천은 기준가를 **직전 영업일** 기준으로 싣는다.
+    # 월요일 아침에 받으면 금요일 기준가, 곧 그 주의 마지막 확정치가 온다.
+    # 토·일에 부르면 목요일 자가 오고, 화요일에 부르면 한 주가 어긋난다.
+    - cron: '30 23 * * 0'
+  workflow_dispatch:
+    inputs:
+      branch:
+        description: '수집·재검증을 돌릴 가지'
+        default: claude/fund-search-tool
+
+permissions:
+  # 다른 워크플로우를 부르는 데 필요하다. 자료는 불려 간 쪽이 커밋하므로
+  # 여기서는 저장소를 읽기만 한다.
+  actions: write
+  contents: read
+
+concurrency:
+  group: fund-weekly
+  cancel-in-progress: false
+
+jobs:
+  call:
+    runs-on: ubuntu-latest
+    # 수집은 보통 10~20분이다. 원천이 느려질 때를 보고 넉넉히 둔다.
+    timeout-minutes: 75
+    env:
+      GH_TOKEN: ${{ github.token }}
+      REPO: ${{ github.repository }}
+      BRANCH: ${{ inputs.branch || 'claude/fund-search-tool' }}
+
+    steps:
+      - name: 대상 가지 확인
+        run: |
+          if ! gh api "repos/$REPO/branches/$BRANCH" --jq .name >/dev/null 2>&1; then
+            echo "::error::가지 $BRANCH 가 없습니다. 이름이 바뀌었는지 확인하십시오."
+            exit 1
+          fi
+          echo "대상 가지: $BRANCH"
+
+      - name: 수집 부르기
+        id: daily
+        run: |
+          # 부르기 **전**의 마지막 실행 번호를 적어 둔다. 이게 없으면 새로
+          # 생긴 실행과 어제 실행을 구별할 수 없고, 어제 것을 보며 "끝났다"
+          # 고 말하게 된다.
+          BEFORE=$(gh api "repos/$REPO/actions/workflows/fund-daily.yml/runs?branch=$BRANCH&per_page=1" \
+                     --jq '.workflow_runs[0].id // 0')
+          echo "직전 실행: $BEFORE"
+
+          gh api -X POST "repos/$REPO/actions/workflows/fund-daily.yml/dispatches" -f ref="$BRANCH"
+
+          # 부름이 실제로 실행을 만들었는지 본다. 만들어지지 않았는데 넘어가면
+          # 이 잡은 초록인데 자료는 안 바뀌는, 제일 나쁜 모양이 된다.
+          ID=$BEFORE
+          for _ in $(seq 1 30); do
+            sleep 10
+            ID=$(gh api "repos/$REPO/actions/workflows/fund-daily.yml/runs?branch=$BRANCH&per_page=1" \
+                   --jq '.workflow_runs[0].id // 0')
+            if [ "$ID" != "$BEFORE" ]; then break; fi
+          done
+          if [ "$ID" = "$BEFORE" ]; then
+            echo "::error::수집 워크플로우가 시작되지 않았습니다 (5분 안에 새 실행이 생기지 않음)."
+            exit 1
+          fi
+          echo "id=$ID" >> "$GITHUB_OUTPUT"
+          echo "url=https://github.com/$REPO/actions/runs/$ID" >> "$GITHUB_OUTPUT"
+          echo "수집 실행: https://github.com/$REPO/actions/runs/$ID"
+
+      - name: 수집이 끝날 때까지 기다리기
+        id: wait
+        run: |
+          ID='${{ steps.daily.outputs.id }}'
+          STATUS=queued
+          CONCL=
+          # 60초 × 65 ≈ 65분. 잡 자체의 상한(75분) 안에 든다.
+          # 60초로 두는 것은 GITHUB_TOKEN 의 시간당 호출 한도(저장소당 1,000회)를
+          # 이 기다림 하나가 갉아먹지 않게 하려는 것이다.
+          for _ in $(seq 1 65); do
+            sleep 60
+            STATUS=$(gh api "repos/$REPO/actions/runs/$ID" --jq .status)
+            CONCL=$(gh api "repos/$REPO/actions/runs/$ID" --jq '.conclusion // ""')
+            echo "$(date -u +%H:%M:%S) $STATUS $CONCL"
+            if [ "$STATUS" = completed ]; then break; fi
+          done
+          echo "status=$STATUS"     >> "$GITHUB_OUTPUT"
+          echo "conclusion=$CONCL"  >> "$GITHUB_OUTPUT"
+
+      - name: 재검증 부르기
+        id: reverify
+        # 수집이 실패했어도 부른다. 실패하면 수집기는 파일을 건드리지 않고
+        # 끝나므로 저장소에는 직전 자료가 그대로 있고, 재검증은 그 자료가
+        # 원천과 같은지를 본다 — 오히려 그때 더 봐야 한다.
+        if: always() && steps.daily.outputs.id != ''
+        run: |
+          BEFORE=$(gh api "repos/$REPO/actions/workflows/fund-reverify.yml/runs?branch=$BRANCH&per_page=1" \
+                     --jq '.workflow_runs[0].id // 0')
+          gh api -X POST "repos/$REPO/actions/workflows/fund-reverify.yml/dispatches" -f ref="$BRANCH"
+
+          ID=$BEFORE
+          for _ in $(seq 1 30); do
+            sleep 10
+            ID=$(gh api "repos/$REPO/actions/workflows/fund-reverify.yml/runs?branch=$BRANCH&per_page=1" \
+                   --jq '.workflow_runs[0].id // 0')
+            if [ "$ID" != "$BEFORE" ]; then break; fi
+          done
+          if [ "$ID" = "$BEFORE" ]; then
+            echo "::error::재검증 워크플로우가 시작되지 않았습니다."
+            exit 1
+          fi
+          echo "id=$ID" >> "$GITHUB_OUTPUT"
+          # 재검증은 한 시간 넘게 돈다. 여기서 기다리면 러너를 그만큼 놀리므로
+          # 부르고 끝낸다. 결과는 그쪽이 tools/discovery 에 커밋한다.
+          echo "재검증 실행: https://github.com/$REPO/actions/runs/$ID"
+
+      - name: 결과 요약
+        if: always()
+        run: |
+          {
+            echo "### 공모펀드 주간 갱신"
+            echo ""
+            echo "- 대상 가지: \`$BRANCH\`"
+            D='${{ steps.daily.outputs.id }}'
+            if [ -n "$D" ]; then
+              echo "- 수집: [$D](https://github.com/$REPO/actions/runs/$D) — ${{ steps.wait.outputs.status }} ${{ steps.wait.outputs.conclusion }}"
+            else
+              echo "- 수집: **부르지 못했습니다**"
+            fi
+            R='${{ steps.reverify.outputs.id }}'
+            if [ -n "$R" ]; then
+              echo "- 재검증: [$R](https://github.com/$REPO/actions/runs/$R) — 부름만 하고 기다리지 않습니다 (한 시간 넘게 돕니다)"
+            else
+              echo "- 재검증: **부르지 못했습니다**"
+            fi
+            echo ""
+            echo "자료는 불려 간 쪽이 \`$BRANCH\` 에 커밋합니다. 이 잡은 부르기만 합니다."
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      # 수집이 제때 안 끝났거나 실패했으면 이 잡도 빨간불로 남긴다.
+      # 부름만 성공하고 자료는 안 바뀐 주가 조용히 지나가면 안 된다.
+      - name: 수집 결과 판정
+        if: always()
+        run: |
+          S='${{ steps.wait.outputs.status }}'
+          C='${{ steps.wait.outputs.conclusion }}'
+          if [ "$S" != completed ]; then
+            echo "::error::수집이 65분 안에 끝나지 않았습니다 (상태: $S). 실행 기록을 확인하십시오."
+            exit 1
+          fi
+          if [ "$C" != success ]; then
+            echo "::error::수집이 $C 로 끝났습니다. data/fund.js 는 직전 자료를 유지합니다."
+            exit 1
+          fi
+          echo "수집 성공."
