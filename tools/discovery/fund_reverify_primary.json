@@ -1,5 +1,5 @@
 {
-  "at": "2026-09-09T01:26:01.328Z",
+  "at": "2026-09-12T02:47:20.571Z",
   "sites": [
     {
       "label": "전자공시 펀드공시",
@@ -7,14 +7,14 @@
       "xhr": [
         {
           "method": "GET",
-          "url": "https://dis.kofia.or.kr/websquare/config.xml?postfix=178891716362497.82618341127814",
+          "url": "https://dis.kofia.or.kr/websquare/config.xml?postfix=17891812421468149.045654015847",
           "status": 200,
           "postData": "",
           "body": "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<WebSquare>\n        <w2xPathCrossFilter enable=\"true\" allowOrigins=\"\"/>\n\t<docType value=\"standard\"/>\t<!-- quirk, standard-->\n\t<debug value=\"true\" fixErrorLineNumber=\"true\" console=\"true\"/>\t\n\t<debugKey value=\"\"/>\n\t<language value=\"ko\"/>\n\n\t<!-- system : websquare(*) -->\n\t<exceptionHandler value=\"websquare\"/>\n\t<debugMenu value=\"use\"/>\n\t<welcome-file></welcome-file>\n\t<forcedValueSetting value=\"true\">\n\t\t<!-- xml model instance에 값을 넣으려할때, 대상 instance가 없을경우 해당 instance를 만들건지를 결정-->\n\t</forcedValueSetting>\n\t<processMsgHeight value=\"80\"/>\n\t<processMsgWidth value=\"180\"/>\n\t<processMsgBackground value=\"true\" backgroundColor=\"#112233\"/>\n\t<byteCheckEncoding value=\"euc-kr\">\t \n\t\t<!-- string을 읽어서 byte를 셀 때의 default encoding을 설정해준다. ex: WebSquare.util.getStringByteSize -->\n\t</byteCheckEncoding>\n\t<initScript value=\"false\">\n\t</initScript>\n\t<clearMemory value=\"false\"/>\n\t\n\t<!-- stylesheet를 websquare.html의 link로 넣을 경우는 enable속성을 false로 설정. 기본값은 true-->\n\t<stylesheet value=\"stylesheet.css\"/>\n\n    <!--\n        Theme를 정의한다.\n        @default : 기본 테마를 설정한다.\n        /name/@value : 테마 이름\n        /name/@path  : 테마 경로\n    <theme default=\"dolphin\"> \n        <name value=\"dolphin\" path=\"/websquare/theme/dolphin/\"/>\n        <name value=\"aqua\" path=\"/websquare/theme/aqua/\"/>\n    </theme>\n    -->\n\n\t<!--\n\t\tInitializer에서 Engine 모듈을 호출 한다.\n\t\t업무 공통 JavaScript를 추가해 준다.\n\t-->\n\t<engine>\n  \t\t<!-- module src=\"/education/common/common.js\"/ -->\n                <module src=\"hotfix/WESD_151"
         },
         {
           "method": "GET",
-          "url": "https://dis.kofia.or.kr/wq/fundann/DISFundAnnList.xml?postfix=17889171651957233.016086884313",
+          "url": "https://dis.kofia.or.kr/wq/fundann/DISFundAnnList.xml?postfix=17891812435321546.122037401949",
           "status": 307,
           "postData": "",
           "body": ""
@@ -28,7 +28,7 @@
         },
         {
           "method": "GET",
-          "url": "https://dis.kofia.or.kr/websquare/skin/stylesheet.css?postfix=17889171655746987.872241770303",
+          "url": "https://dis.kofia.or.kr/websquare/skin/stylesheet.css?postfix=17891812438631748.244571728087",
           "status": 200,
           "postData": "",
           "body": "html{height:100%;overflow:auto}body{height:100%;margin:0;padding:0;font:12px \"ë‹ì›€\",Dotum,Helvetica,AppleGothic,Sans-serif;position:relative}.w2noselect{user-select:none;-ms-user-select:none;-moz-user-select:none;-webkit-user-select:none}.w2modalopenedbody{overflow:hidden}*html .w2modal{position:absolute}.w2modal{position:fixed;left:0;top:0;width:100%;height:100%;background-color:#ccc;filter:alpha(opacity=30);opacity:.3;z-index:6000}*html .w2modal_gridDownload{position:absolute}.w2modal_gridDownload{position:fixed;left:0;top:0;width:100%;height:100%;background-color:#fff;filter:alpha(opacity=0);opacity:0;z-index:6000}*html .w2modal_floatingLayer{position:absolute}.w2modal_floatingLayer{position:fixed;left:0;top:0;width:100%;height:100%;background-color:#ccc;filter:alpha(opacity=30);opacity:.3;z-index:4000}*html .w2modal_onmove{position:absolute}.w2modal_onmove{position:fixed;left:0;top:0;width:100%;height:100%;background-color:#ccc;filter:alpha(opacity=50);opacity:.5;z-index:5000}.w2windowContainer .w2modal{filter:alpha(opacity=0);opacity:0}.w2windowContainer{overflow:hidden}.w2windowContainer_window{position:absolute;width:100%;top:0;left:0;bottom:24px;overflow:hidden;background-color:transparent;*height:expression(this.parentNode.clientHeight - 24)}.w2windowContainer_window_top{position:absolute;width:100%;top:24px;left:0;bottom:0;overflow:hidden;background-color:transparent;*height:expression(this.parentNode.clientHeight - 24)}.w2windowContainer_windowToolbar{position:ab"
@@ -50,42 +50,42 @@
       "xhr": [
         {
           "method": "GET",
-          "url": "https://dis.kofia.or.kr/websquare/config.xml?postfix=17889171723941626.7849495563623",
+          "url": "https://dis.kofia.or.kr/websquare/config.xml?postfix=17891812505565735.047146712474",
           "status": 200,
           "postData": "",
           "body": "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<WebSquare>\n        <w2xPathCrossFilter enable=\"true\" allowOrigins=\"\"/>\n\t<docType value=\"standard\"/>\t<!-- quirk, standard-->\n\t<debug value=\"true\" fixErrorLineNumber=\"true\" console=\"true\"/>\t\n\t<debugKey value=\"\"/>\n\t<language value=\"ko\"/>\n\n\t<!-- system : websquare(*) -->\n\t<exceptionHandler value=\"websquare\"/>\n\t<debugMenu value=\"use\"/>\n\t<welcome-file></welcome-file>\n\t<forcedValueSetting value=\"true\">\n\t\t<!-- xml model instance에 값을 넣으려할때, 대상 instance가 없을경우 해당 instance를 만들건지를 결정-->\n\t</forcedValueSetting>\n\t<processMsgHeight value=\"80\"/>\n\t<processMsgWidth value=\"180\"/>\n\t<processMsgBackground value=\"true\" backgroundColor=\"#112233\"/>\n\t<byteCheckEncoding value=\"euc-kr\">\t \n\t\t<!-- string을 읽어서 byte를 셀 때의 default encoding을 설정해준다. ex: WebSquare.util.getStringByteSize -->\n\t</byteCheckEncoding>\n\t<initScript value=\"false\">\n\t</initScript>\n\t<clearMemory value=\"false\"/>\n\t\n\t<!-- stylesheet를 websquare.html의 link로 넣을 경우는 enable속성을 false로 설정. 기본값은 true-->\n\t<stylesheet value=\"stylesheet.css\"/>\n\n    <!--\n        Theme를 정의한다.\n        @default : 기본 테마를 설정한다.\n        /name/@value : 테마 이름\n        /name/@path  : 테마 경로\n    <theme default=\"dolphin\"> \n        <name value=\"dolphin\" path=\"/websquare/theme/dolphin/\"/>\n        <name value=\"aqua\" path=\"/websquare/theme/aqua/\"/>\n    </theme>\n    -->\n\n\t<!--\n\t\tInitializer에서 Engine 모듈을 호출 한다.\n\t\t업무 공통 JavaScript를 추가해 준다.\n\t-->\n\t<engine>\n  \t\t<!-- module src=\"/education/common/common.js\"/ -->\n                <module src=\"hotfix/WESD_151"
         },
         {
           "method": "GET",
-          "url": "https://dis.kofia.or.kr/wq/com/popup/DISComFundSmryInfo.xml?postfix=17889171739714980.667457726634",
+          "url": "https://dis.kofia.or.kr/wq/com/popup/DISComFundSmryInfo.xml?postfix=17891812519097070.083990739529",
           "status": 200,
           "postData": "",
           "body": "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\r\n<?xml-stylesheet href=\"/css/pop.css\" type=\"text/css\"?>\r\r\n<?xml-stylesheet href=\"/css/common.css\" type=\"text/css\"?>\r\r\n<html xmlns=\"http://www.w3.org/1999/xhtml\"\r\r\n    xmlns:ev=\"http://www.w3.org/2001/xml-events\"\r\r\n    xmlns:w2=\"http://www.inswave.com/websquare\" xmlns:xf=\"http://www.w3.org/2002/xforms\">\r\r\n    <head>\r\r\n    \t<w2:buildDate />\r\r\n    \t<xf:model>\r\r\n    \t\t<xf:instance>\r\r\n    \t\t\t<data xmlns=\"\">\r\r\n    \t\t\t</data>\r\r\n    \t\t</xf:instance>\r\r\n    \t</xf:model>\r\r\n    \t<script src=\"/js/com/jquery-1.9.1.js\" type=\"javascript\"><![CDATA[ ]]></script>\r\r\n    \t<script type=\"text/javascript\" src=\"/websquare/externalJS/FusionCharts_XT/Charts/FusionCharts.js\"></script>\r\r\n\t\t<script type=\"text/javascript\" src=\"/websquare/externalJS/FusionCharts_XT/Charts/FusionChartsExportComponent.js\"></script>\r\r\n    \t<script src=\"/js/com/jquery-1.9.1.js\" type=\"javascript\"><![CDATA[ ]]></script>\r\r\n        <script src=\"/js/com/jquery.cookie.js\" type=\"javascript\"><![CDATA[ ]]></script>\r\r\n    \t<script src=\"/js/com/uiCommon.js\" type=\"javascript\"><![CDATA[ ]]></script>\r\r\n    \t<script src=\"/js/com/disCookie.js\" type=\"javascript\"><![CDATA[ ]]></script>\r\r\n    \t<script src=\"/js/com/disCommon.js\" type=\"javascript\"><![CDATA[ ]]></script>\r\r\n    \t<script src=\"/js/com/callProframe.js\" type=\"javascript\"><![CDATA[ ]]></script>\r\r\n    \t<script src=\"/js/com/pop.js\" type=\"javascript\"><![CDATA[ ]]></script>\r\r\n    \t<script src=\"/js/meta/comm.js\" type=\"javascript\"><![CDATA[ ]]></script>\r\r"
         },
         {
           "method": "GET",
-          "url": "https://dis.kofia.or.kr/websquare/skin/stylesheet.css?postfix=17889171741806691.72549044214",
+          "url": "https://dis.kofia.or.kr/websquare/skin/stylesheet.css?postfix=17891812520929931.887670285609",
           "status": 200,
           "postData": "",
           "body": "html{height:100%;overflow:auto}body{height:100%;margin:0;padding:0;font:12px \"ë‹ì›€\",Dotum,Helvetica,AppleGothic,Sans-serif;position:relative}.w2noselect{user-select:none;-ms-user-select:none;-moz-user-select:none;-webkit-user-select:none}.w2modalopenedbody{overflow:hidden}*html .w2modal{position:absolute}.w2modal{position:fixed;left:0;top:0;width:100%;height:100%;background-color:#ccc;filter:alpha(opacity=30);opacity:.3;z-index:6000}*html .w2modal_gridDownload{position:absolute}.w2modal_gridDownload{position:fixed;left:0;top:0;width:100%;height:100%;background-color:#fff;filter:alpha(opacity=0);opacity:0;z-index:6000}*html .w2modal_floatingLayer{position:absolute}.w2modal_floatingLayer{position:fixed;left:0;top:0;width:100%;height:100%;background-color:#ccc;filter:alpha(opacity=30);opacity:.3;z-index:4000}*html .w2modal_onmove{position:absolute}.w2modal_onmove{position:fixed;left:0;top:0;width:100%;height:100%;background-color:#ccc;filter:alpha(opacity=50);opacity:.5;z-index:5000}.w2windowContainer .w2modal{filter:alpha(opacity=0);opacity:0}.w2windowContainer{overflow:hidden}.w2windowContainer_window{position:absolute;width:100%;top:0;left:0;bottom:24px;overflow:hidden;background-color:transparent;*height:expression(this.parentNode.clientHeight - 24)}.w2windowContainer_window_top{position:absolute;width:100%;top:24px;left:0;bottom:0;overflow:hidden;background-color:transparent;*height:expression(this.parentNode.clientHeight - 24)}.w2windowContainer_windowToolbar{position:ab"
         },
         {
           "method": "GET",
-          "url": "https://dis.kofia.or.kr/css/pop.css?postfix=17889171743766150.2543545348835",
+          "url": "https://dis.kofia.or.kr/css/pop.css?postfix=17891812522627804.736557630223",
           "status": 200,
           "postData": "",
           "body": "\n/*ê³µí†µ*/\n#popWrap{width:100%}\n#popTop{position:relative; overflow:hidden; border-bottom:1px solid #bcbcbc; padding:6px 20px 7px}\n#popTop2{position:relative; overflow:hidden; border-bottom:1px solid #bcbcbc; padding:6px 20px 7px}\n.pop_close{position:absolute; top:16px; right:20px; display:block; font-size:0; width:31px; height:31px; line-height:0; overflow:hidden; background:url(/img/com/btn_pop_close.gif) no-repeat 0 0}\n#popContainer{position:relative; width:100%; clear:both}\n#popFooter{}\n.common_table_ipt{height:22px; line-height:22px; vertical-align:middle; border-top:1px solid #b3b3b3; border-right:1px solid #e9e9e9; border-bottom:1px solid #e9e9e9; border-left:1px solid #b3b3b3}\n.common_table_select{position:relative; height:24px; border-top:1px solid #b3b3b3; border-right:1px solid #e9e9e9; border-bottom:1px solid #e9e9e9; border-left:1px solid #b3b3b3}\n.common_table_select select{padding:0 3px; margin-top:3px}\n\n.pop_gride_section{width:100%; height:210px; border-top:1px solid #848484}\n.pop_gride_section:focus{outline:0px}\n.pop_gride_section table.gridHeaderTableDefault, .pop_gride_section thead.gridHeaderTableDefault{border-top:0; border-right:1px solid #e5e5e5; border-bottom:1px solid #e5e5e5; border-left:1px solid #e5e5e5}\n.pop_gride_section table.gridHeaderTableDefault th{font-weight:bold; color:#494949; height:28px !important; border:1px solid #e5e5e5; border-top:0; border-left:1px solid #e5e5e5; background:#f5f5f5}\n.pop_gride_section table.gridHeaderTableDefault"
         },
         {
           "method": "GET",
-          "url": "https://dis.kofia.or.kr/css/common.css?postfix=17889171745707146.039608869102",
+          "url": "https://dis.kofia.or.kr/css/common.css?postfix=17891812524275345.618358507448",
           "status": 200,
           "postData": "",
           "body": "@charset \"utf-8\";\n\n@font-face {\n  font-family:'MalgunGothic';\n  font-style:normal;\n  font-weight:400;\n  src:url(./font/MalgunGothicRegular.eot);\n  src:url(./font/MalgunGothicRegular.eot?#iefix) format('embedded-opentype'),\n      url(./font/MalgunGothicRegular.woff2) format('otf'),\n      url(./font/MalgunGothicRegular.woff) format('woff'),\n      url(./font/MalgunGothicRegular.ttf) format('truetype');\n}\n\n@font-face {\n  font-family:'MalgunGothic';\n  font-style:normal;\n  font-weight:700;\n  src:url(./font/MalgunGothicBold.eot);\n  src:url(./font/MalgunGothicBold.eot?#iefix) format('embedded-opentype'),\n      url(./font/MalgunGothicBold.otf) format('otf'),\n      url(./font/MalgunGothicBold.woff) format('woff'),\n      url(./font/MalgunGothicBold.ttf) format('truetype');\n}\n\nbody{font-size: 12px; font-family:Dotum, \"ë‹ì›€\", Malgun Gothic, 'MalgunGothic', 'ë§‘ì€ ê³ ë”•', sans-serif; color:#000; line-height:120%}\nhtml, body, blockquote, caption, dd, div, dl, dt, fieldset, form, frame, h1, h2, h3, h4, h5, h6, hr,\niframe, input, legend, li, object, ol, p, pre, q, select, table, textarea, ul, tr, td{margin:0; padding:0}\ninput, select, object, textarea{font-size:12px}\n\na:link {text-decoration:none; color:#383633}/*ê¸°ë³¸ìœ¼ë¡œ ì“°ìž„.*/\na:hover\t{text-decoration:none; color:#383633}\na:visited {text-decoration:none; color:#383633}\na:active {text-decoration:none; color:#383633}\n\nimg,table, h{border:0}\ncaption{display:none}\n/*padding-top*/\n.pt3{padding-top:3px}\n.pt5{padding-top:5px}\n.pt7{paddi"
         },
         {
           "method": "GET",
-          "url": "https://dis.kofia.or.kr/wq/com/popup/loading.xml?postfix=17889171747857684.279602065347",
+          "url": "https://dis.kofia.or.kr/wq/com/popup/loading.xml?postfix=17891812526092171.643341646865",
           "status": 200,
           "postData": "",
           "body": "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n<html xmlns=\"http://www.w3.org/1999/xhtml\"\r\n    xmlns:ev=\"http://www.w3.org/2001/xml-events\"\r\n    xmlns:w2=\"http://www.inswave.com/websquare\" xmlns:xf=\"http://www.w3.org/2002/xforms\">\r\n    <head>\r\n        <w2:buildDate/>\r\n        <xf:model>\r\n            <xf:instance>\r\n                <data xmlns=\"\"/>\r\n            </xf:instance>\r\n        </xf:model>\r\n        <script type=\"javascript\"><![CDATA[\r\n        ]]></script>\r\n    </head>\r\n    <body>\r\n    \t<xf:group id=\"loadingBox\" class=\"loadindBox\">\r\n    \t\t<xf:group id=\"loadImg\" class=\"loadindImg\">\r\n    \t\t\t<xf:image id=\"loadImgChange\" style=\"\" alt=\"데이타 불러오는중입니다.\" src=\"/img/com/loding.gif\"></xf:image>\r\n    \t\t</xf:group>\r\n    \t\t<w2:textbox id=\"loadindTxt\" class=\"loadindTxt\" label=\"자료를 조회중입니다.&lt;br/&gt;잠시 기다려 주시기 바랍니다.\" tagname=\"p\"></w2:textbox>\r\n    \t</xf:group>\r\n\r\n    </body>\r\n</html>\r\n"
@@ -95,62 +95,62 @@
           "url": "https://dis.kofia.or.kr/proframeWeb/XMLSERVICES/",
           "status": 200,
           "postData": "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<message>\n  <proframeHeader>\n    <pfmAppName>FS-DIS2</pfmAppName>\n    <pfmSvcName>DISComFundNmSO</pfmSvcName>\n    <pfmFnName>select</pfmFnName>\n  </proframeHeader>\n  <systemHeader></systemHeader>\n    <DISComStdCdDTO>\n    <standardCd>KR5105409225</standardCd>\n</DISComStdCdDTO>\n</message>\n",
-          "body": "<?xml version=\"1.0\" encoding=\"UTF-8\"?><root><message><proframeHeader>\n<pfmAppName>FS-DIS2</pfmAppName>\n<pfmSvcName>DISComFundNmSO</pfmSvcName>\n<pfmFnName>select</pfmFnName>\n<pfmGlobalNo>83c5d7c00afe009617b39fac5ba82807</pfmGlobalNo>\n<pfmTrDate>20260909</pfmTrDate>\n<pfmTrTime>20260909102616256</pfmTrTime>\n<pfmClntIp>20.55.14.48</pfmClntIp>\n<pfmResponseDtal></pfmResponseDtal>\n</proframeHeader>\n<systemHeader>\n</systemHeader>\n<DISComStdCdListDTO>\n<dbio_total_count_>1</dbio_total_count_>\n<dbio_fetch_seq_>0</dbio_fetch_seq_>\n<dbio_fetch_size_>0</dbio_fetch_size_>\n<dbio_affected_count_>0</dbio_affected_count_>\n<list>\n<txCd />\n<txVsn>0</txVsn>\n<tsCd />\n<standardDt />\n<serviceCompCd />\n<standardCd />\n<fundNm>삼성MMF법인 1</fundNm>\n</list>\n</DISComStdCdListDTO></message></root>"
-        },
-        {
-          "method": "POST",
-          "url": "https://dis.kofia.or.kr/proframeWeb/XMLSERVICES/",
-          "status": 200,
-          "postData": "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<message>\n  <proframeHeader>\n    <pfmAppName>FS-COM</pfmAppName>\n    <pfmSvcName>COMFundUnityBasInfoSO</pfmSvcName>\n    <pfmFnName>srchFile</pfmFnName>\n  </proframeHeader>\n  <systemHeader></systemHeader>\n    <COMFundInfoFileListDTO>\n    <standardCd>KR5105409225</standardCd>\n    <uGb>Y</uGb>\n</COMFundInfoFileListDTO>\n</message>\n",
-          "body": "<?xml version=\"1.0\" encoding=\"UTF-8\"?><root><message><proframeHeader>\n<pfmAppName>FS-COM</pfmAppName>\n<pfmSvcName>COMFundUnityBasInfoSO</pfmSvcName>\n<pfmFnName>srchFile</pfmFnName>\n<pfmGlobalNo>83c5d8550afe009643dd141e56668ec2</pfmGlobalNo>\n<pfmTrDate>20260909</pfmTrDate>\n<pfmTrTime>20260909102616405</pfmTrTime>\n<pfmClntIp>20.55.14.48</pfmClntIp>\n<pfmResponseDtal></pfmResponseDtal>\n</proframeHeader>\n<systemHeader>\n</systemHeader>\n<COMFundInfoFileListDTO>\n<dbio_total_count_>1</dbio_total_count_>\n<dbio_fetch_seq_>0</dbio_fetch_seq_>\n<dbio_fetch_size_>0</dbio_fetch_size_>\n<dbio_affected_count_>0</dbio_affected_count_>\n<standardCd />\n<uGb />\n<list>\n<fileNm>1e8761fba739f672-689df773195c6c4a9e6-73e9-20250328095705.pdf</fileNm>\n<serverPath>/fsfile/report/distribution/2025/2OF0400</serverPath>\n<originalFileNm>규약_123604_삼성MMF법인 제1호_Ce클래스신설및S클래스보수인하_250328.pdf</originalFileNm>\n<standardDt>20250328</standardDt>\n</list>\n</COMFundInfoFileListDTO></message></root>"
+          "body": "<?xml version=\"1.0\" encoding=\"UTF-8\"?><root><message><proframeHeader>\n<pfmAppName>FS-DIS2</pfmAppName>\n<pfmSvcName>DISComFundNmSO</pfmSvcName>\n<pfmFnName>select</pfmFnName>\n<pfmGlobalNo>938358f50afe009603797cd51e00b0a2</pfmGlobalNo>\n<pfmTrDate>20260912</pfmTrDate>\n<pfmTrTime>20260912114733877</pfmTrTime>\n<pfmClntIp>135.119.86.106</pfmClntIp>\n<pfmResponseDtal></pfmResponseDtal>\n</proframeHeader>\n<systemHeader>\n</systemHeader>\n<DISComStdCdListDTO>\n<dbio_total_count_>1</dbio_total_count_>\n<dbio_fetch_seq_>0</dbio_fetch_seq_>\n<dbio_fetch_size_>0</dbio_fetch_size_>\n<dbio_affected_count_>0</dbio_affected_count_>\n<list>\n<txCd />\n<txVsn>0</txVsn>\n<tsCd />\n<standardDt />\n<serviceCompCd />\n<standardCd />\n<fundNm>삼성MMF법인 1</fundNm>\n</list>\n</DISComStdCdListDTO></message></root>"
         },
         {
           "method": "POST",
           "url": "https://dis.kofia.or.kr/proframeWeb/XMLSERVICES/",
           "status": 200,
           "postData": "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<message>\n  <proframeHeader>\n    <pfmAppName>FS-COM</pfmAppName>\n    <pfmSvcName>COMFundUnityBasInfoSO</pfmSvcName>\n    <pfmFnName>srchFile</pfmFnName>\n  </proframeHeader>\n  <systemHeader></systemHeader>\n    <COMFundInfoFileListDTO>\n    <standardCd>KR5105409225</standardCd>\n    <uGb>T</uGb>\n</COMFundInfoFileListDTO>\n</message>\n",
-          "body": "<?xml version=\"1.0\" encoding=\"UTF-8\"?><root><message><proframeHeader>\n<pfmAppName>FS-COM</pfmAppName>\n<pfmSvcName>COMFundUnityBasInfoSO</pfmSvcName>\n<pfmFnName>srchFile</pfmFnName>\n<pfmGlobalNo>83c5d85b0afe0096758b77d80193126f</pfmGlobalNo>\n<pfmTrDate>20260909</pfmTrDate>\n<pfmTrTime>20260909102616411</pfmTrTime>\n<pfmClntIp>20.55.14.48</pfmClntIp>\n<pfmResponseDtal></pfmResponseDtal>\n</proframeHeader>\n<systemHeader>\n</systemHeader>\n<COMFundInfoFileListDTO>\n<dbio_total_count_>1</dbio_total_count_>\n<dbio_fetch_seq_>0</dbio_fetch_seq_>\n<dbio_fetch_size_>0</dbio_fetch_size_>\n<dbio_affected_count_>0</dbio_affected_count_>\n<standardCd />\n<uGb />\n<list>\n<fileNm>e4d388e657fcc4ea-177a8fc519ba1c6a113-4b0e-20260130130716.pdf</fileNm>\n<serverPath>/fsfile/report/distribution/2026/2OF0401</serverPath>\n<originalFileNm>투자설명서(개편)_123604_삼성MMF법인 제1호_KR5105409225.pdf</originalFileNm>\n<standardDt>20260130</standardDt>\n</list>\n</COMFundInfoFileListDTO></message></root>"
+          "body": "<?xml version=\"1.0\" encoding=\"UTF-8\"?><root><message><proframeHeader>\n<pfmAppName>FS-COM</pfmAppName>\n<pfmSvcName>COMFundUnityBasInfoSO</pfmSvcName>\n<pfmFnName>srchFile</pfmFnName>\n<pfmGlobalNo>938359770afe0096168c8af8b7938f01</pfmGlobalNo>\n<pfmTrDate>20260912</pfmTrDate>\n<pfmTrTime>20260912114734007</pfmTrTime>\n<pfmClntIp>135.119.86.106</pfmClntIp>\n<pfmResponseDtal></pfmResponseDtal>\n</proframeHeader>\n<systemHeader>\n</systemHeader>\n<COMFundInfoFileListDTO>\n<dbio_total_count_>1</dbio_total_count_>\n<dbio_fetch_seq_>0</dbio_fetch_seq_>\n<dbio_fetch_size_>0</dbio_fetch_size_>\n<dbio_affected_count_>0</dbio_affected_count_>\n<standardCd />\n<uGb />\n<list>\n<fileNm>e4d388e657fcc4ea-177a8fc519ba1c6a113-4b0e-20260130130716.pdf</fileNm>\n<serverPath>/fsfile/report/distribution/2026/2OF0401</serverPath>\n<originalFileNm>투자설명서(개편)_123604_삼성MMF법인 제1호_KR5105409225.pdf</originalFileNm>\n<standardDt>20260130</standardDt>\n</list>\n</COMFundInfoFileListDTO></message></root>"
+        },
+        {
+          "method": "POST",
+          "url": "https://dis.kofia.or.kr/proframeWeb/XMLSERVICES/",
+          "status": 200,
+          "postData": "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<message>\n  <proframeHeader>\n    <pfmAppName>FS-COM</pfmAppName>\n    <pfmSvcName>COMFundUnityBasInfoSO</pfmSvcName>\n    <pfmFnName>srchFile</pfmFnName>\n  </proframeHeader>\n  <systemHeader></systemHeader>\n    <COMFundInfoFileListDTO>\n    <standardCd>KR5105409225</standardCd>\n    <uGb>Y</uGb>\n</COMFundInfoFileListDTO>\n</message>\n",
+          "body": "<?xml version=\"1.0\" encoding=\"UTF-8\"?><root><message><proframeHeader>\n<pfmAppName>FS-COM</pfmAppName>\n<pfmSvcName>COMFundUnityBasInfoSO</pfmSvcName>\n<pfmFnName>srchFile</pfmFnName>\n<pfmGlobalNo>938359770afe009664f7ab5811759a1f</pfmGlobalNo>\n<pfmTrDate>20260912</pfmTrDate>\n<pfmTrTime>20260912114734007</pfmTrTime>\n<pfmClntIp>135.119.86.106</pfmClntIp>\n<pfmResponseDtal></pfmResponseDtal>\n</proframeHeader>\n<systemHeader>\n</systemHeader>\n<COMFundInfoFileListDTO>\n<dbio_total_count_>1</dbio_total_count_>\n<dbio_fetch_seq_>0</dbio_fetch_seq_>\n<dbio_fetch_size_>0</dbio_fetch_size_>\n<dbio_affected_count_>0</dbio_affected_count_>\n<standardCd />\n<uGb />\n<list>\n<fileNm>1e8761fba739f672-689df773195c6c4a9e6-73e9-20250328095705.pdf</fileNm>\n<serverPath>/fsfile/report/distribution/2025/2OF0400</serverPath>\n<originalFileNm>규약_123604_삼성MMF법인 제1호_Ce클래스신설및S클래스보수인하_250328.pdf</originalFileNm>\n<standardDt>20250328</standardDt>\n</list>\n</COMFundInfoFileListDTO></message></root>"
         },
         {
           "method": "POST",
           "url": "https://dis.kofia.or.kr/proframeWeb/XMLSERVICES/",
           "status": 200,
           "postData": "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<message>\n  <proframeHeader>\n    <pfmAppName>FS-COM</pfmAppName>\n    <pfmSvcName>COMFundUnityBasInfoSO</pfmSvcName>\n    <pfmFnName>srchFile</pfmFnName>\n  </proframeHeader>\n  <systemHeader></systemHeader>\n    <COMFundInfoFileListDTO>\n    <standardCd>KR5105409225</standardCd>\n    <uGb>G</uGb>\n</COMFundInfoFileListDTO>\n</message>\n",
-          "body": "<?xml version=\"1.0\" encoding=\"UTF-8\"?><root><message><proframeHeader>\n<pfmAppName>FS-COM</pfmAppName>\n<pfmSvcName>COMFundUnityBasInfoSO</pfmSvcName>\n<pfmFnName>srchFile</pfmFnName>\n<pfmGlobalNo>83c5d85d0afe009672760343e77f35ac</pfmGlobalNo>\n<pfmTrDate>20260909</pfmTrDate>\n<pfmTrTime>20260909102616413</pfmTrTime>\n<pfmClntIp>20.55.14.48</pfmClntIp>\n<pfmResponseDtal></pfmResponseDtal>\n</proframeHeader>\n<systemHeader>\n</systemHeader>\n<COMFundInfoFileListDTO>\n<dbio_total_count_>1</dbio_total_count_>\n<dbio_fetch_seq_>0</dbio_fetch_seq_>\n<dbio_fetch_size_>0</dbio_fetch_size_>\n<dbio_affected_count_>0</dbio_affected_count_>\n<standardCd />\n<uGb />\n<list>\n<fileNm>e4d388e657fcc4ea-177a8fc519ba1c6a113-4b0f-20260130130708.pdf</fileNm>\n<serverPath>/fsfile/report/distribution/2026/2OF0401</serverPath>\n<originalFileNm>간이투자설명서(개편)_123604_삼성MMF법인 제1호_KR5105409225.pdf</originalFileNm>\n<standardDt>20260130</standardDt>\n</list>\n</COMFundInfoFileListDTO></message></root>"
+          "body": "<?xml version=\"1.0\" encoding=\"UTF-8\"?><root><message><proframeHeader>\n<pfmAppName>FS-COM</pfmAppName>\n<pfmSvcName>COMFundUnityBasInfoSO</pfmSvcName>\n<pfmFnName>srchFile</pfmFnName>\n<pfmGlobalNo>938359770afe00964012523137fcbaa3</pfmGlobalNo>\n<pfmTrDate>20260912</pfmTrDate>\n<pfmTrTime>20260912114734007</pfmTrTime>\n<pfmClntIp>135.119.86.106</pfmClntIp>\n<pfmResponseDtal></pfmResponseDtal>\n</proframeHeader>\n<systemHeader>\n</systemHeader>\n<COMFundInfoFileListDTO>\n<dbio_total_count_>1</dbio_total_count_>\n<dbio_fetch_seq_>0</dbio_fetch_seq_>\n<dbio_fetch_size_>0</dbio_fetch_size_>\n<dbio_affected_count_>0</dbio_affected_count_>\n<standardCd />\n<uGb />\n<list>\n<fileNm>e4d388e657fcc4ea-177a8fc519ba1c6a113-4b0f-20260130130708.pdf</fileNm>\n<serverPath>/fsfile/report/distribution/2026/2OF0401</serverPath>\n<originalFileNm>간이투자설명서(개편)_123604_삼성MMF법인 제1호_KR5105409225.pdf</originalFileNm>\n<standardDt>20260130</standardDt>\n</list>\n</COMFundInfoFileListDTO></message></root>"
         },
         {
           "method": "POST",
           "url": "https://dis.kofia.or.kr/proframeWeb/XMLSERVICES/",
           "status": 200,
           "postData": "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<message>\n  <proframeHeader>\n    <pfmAppName>FS-DIS2</pfmAppName>\n    <pfmSvcName>DISComConnLogSO</pfmSvcName>\n    <pfmFnName>insertFndInqLog</pfmFnName>\n  </proframeHeader>\n  <systemHeader></systemHeader>\n    <DISFndInqStatDTO>\n    <standardCd>KR5105409225</standardCd>\n    <userGb>01</userGb>\n    <companyCd></companyCd>\n</DISFndInqStatDTO>\n</message>\n",
-          "body": "<?xml version=\"1.0\" encoding=\"UTF-8\"?><root><message><proframeHeader>\n<pfmAppName>FS-DIS2</pfmAppName>\n<pfmSvcName>DISComConnLogSO</pfmSvcName>\n<pfmFnName>insertFndInqLog</pfmFnName>\n<pfmGlobalNo>83c5d9190afe009631136b0766bc9137</pfmGlobalNo>\n<pfmTrDate>20260909</pfmTrDate>\n<pfmTrTime>20260909102616602</pfmTrTime>\n<pfmClntIp>20.55.14.48</pfmClntIp>\n<pfmResponseDtal></pfmResponseDtal>\n</proframeHeader>\n<systemHeader>\n</systemHeader>\n<DISFndInqStatDTO>\n<standardDt />\n<userGb />\n<standardCd />\n<inquiryCnt />\n<registDate />\n<registUser />\n<modifyDate />\n<modifyUser />\n<fundNm />\n<companyCd />\n</DISFndInqStatDTO></message></root>"
+          "body": "<?xml version=\"1.0\" encoding=\"UTF-8\"?><root><message><proframeHeader>\n<pfmAppName>FS-DIS2</pfmAppName>\n<pfmSvcName>DISComConnLogSO</pfmSvcName>\n<pfmFnName>insertFndInqLog</pfmFnName>\n<pfmGlobalNo>93835a210afe00962973f15b997139be</pfmGlobalNo>\n<pfmTrDate>20260912</pfmTrDate>\n<pfmTrTime>20260912114734177</pfmTrTime>\n<pfmClntIp>135.119.86.106</pfmClntIp>\n<pfmResponseDtal></pfmResponseDtal>\n</proframeHeader>\n<systemHeader>\n</systemHeader>\n<DISFndInqStatDTO>\n<standardDt />\n<userGb />\n<standardCd />\n<inquiryCnt />\n<registDate />\n<registUser />\n<modifyDate />\n<modifyUser />\n<fundNm />\n<companyCd />\n</DISFndInqStatDTO></message></root>"
         },
         {
           "method": "POST",
           "url": "https://dis.kofia.or.kr/proframeWeb/XMLSERVICES/",
           "status": 200,
           "postData": "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<message>\n  <proframeHeader>\n    <pfmAppName>FS-COM</pfmAppName>\n    <pfmSvcName>COMFundUnityBasInfoSO</pfmSvcName>\n    <pfmFnName>fundBasInfoSrch</pfmFnName>\n  </proframeHeader>\n  <systemHeader></systemHeader>\n    <COMFundUnityInfoInputDTO>\n    <standardCd>KR5105409225</standardCd>\n    <companyCd></companyCd>\n    <standardDt></standardDt>\n</COMFundUnityInfoInputDTO>\n</message>\n",
-          "body": "<?xml version=\"1.0\" encoding=\"UTF-8\"?><root><message><proframeHeader>\n<pfmAppName>FS-COM</pfmAppName>\n<pfmSvcName>COMFundUnityBasInfoSO</pfmSvcName>\n<pfmFnName>fundBasInfoSrch</pfmFnName>\n<pfmGlobalNo>83c5d9200afe009671323a72514d3110</pfmGlobalNo>\n<pfmTrDate>20260909</pfmTrDate>\n<pfmTrTime>20260909102616608</pfmTrTime>\n<pfmClntIp>20.55.14.48</pfmClntIp>\n<pfmResponseDtal></pfmResponseDtal>\n</proframeHeader>\n<systemHeader>\n</systemHeader>\n<COMFundBasInfoOutDTO>\n<vFundGbNm>투자신탁</vFundGbNm>\n<uFundTypNm>단기금융(MMF)</uFundTypNm>\n<vAdditionalEstMtdNm>추가</vAdditionalEstMtdNm>\n<establishmentDt>20031230</establishmentDt>\n<classCd>1EE111120010182ZZZZ6</classCd>\n<subClassCd>001ZZZZ</subClassCd>\n<shortCd>40922</shortCd>\n<trustAccTrm>0</trustAccTrm>\n<vInvestRgnGbNm>국내</vInvestRgnGbNm>\n<vSaleRgnGbNm>국내위탁</vSaleRgnGbNm>\n<vProfitTypeCdNm>(MMF)일반형</vProfitTypeCdNm>\n<vTraitDivNm>종류형 FUND</vTraitDivNm>\n<vPriPubGBNm>공모</vPriPubGBNm>\n<establishmentCot>1000</establishmentCot>\n<trustTrm>0</trustTrm>\n<manageRewRate>0</manageRewRate>\n<saleRewRate>0</saleRewRate>\n<trustRewRate>0</trustRewRate>\n<generalOfctrtrewRate>0</generalOfctrtrewRate>\n<rewSum>0</rewSum>\n<ter>0.0031</ter>\n<frontendCmsRate>0</frontendCmsRate>\n<backendCmsRate>0</backendCmsRate>\n<vManageCompNm>삼성자산운용</vManageCompNm>\n<vImg>e4d388e657fcc4ea4433b134193234243c5-7fc2-20241216092615.jpg</vImg>\n<vGeneralOfctrtcompNm>삼성자산운용</vGeneralOfctrtcompNm>\n<vTrustCompNm>한국증권금융</vTrustCompNm>\n<standardDt>20260731</standardDt>\n<companyCd>A01005</companyCd>"
+          "body": "<?xml version=\"1.0\" encoding=\"UTF-8\"?><root><message><proframeHeader>\n<pfmAppName>FS-COM</pfmAppName>\n<pfmSvcName>COMFundUnityBasInfoSO</pfmSvcName>\n<pfmFnName>fundBasInfoSrch</pfmFnName>\n<pfmGlobalNo>93835a210afe0096425ab3c48f8d277d</pfmGlobalNo>\n<pfmTrDate>20260912</pfmTrDate>\n<pfmTrTime>20260912114734177</pfmTrTime>\n<pfmClntIp>135.119.86.106</pfmClntIp>\n<pfmResponseDtal></pfmResponseDtal>\n</proframeHeader>\n<systemHeader>\n</systemHeader>\n<COMFundBasInfoOutDTO>\n<vFundGbNm>투자신탁</vFundGbNm>\n<uFundTypNm>단기금융(MMF)</uFundTypNm>\n<vAdditionalEstMtdNm>추가</vAdditionalEstMtdNm>\n<establishmentDt>20031230</establishmentDt>\n<classCd>1EE111120010182ZZZZ6</classCd>\n<subClassCd>001ZZZZ</subClassCd>\n<shortCd>40922</shortCd>\n<trustAccTrm>0</trustAccTrm>\n<vInvestRgnGbNm>국내</vInvestRgnGbNm>\n<vSaleRgnGbNm>국내위탁</vSaleRgnGbNm>\n<vProfitTypeCdNm>(MMF)일반형</vProfitTypeCdNm>\n<vTraitDivNm>종류형 FUND</vTraitDivNm>\n<vPriPubGBNm>공모</vPriPubGBNm>\n<establishmentCot>1000</establishmentCot>\n<trustTrm>0</trustTrm>\n<manageRewRate>0</manageRewRate>\n<saleRewRate>0</saleRewRate>\n<trustRewRate>0</trustRewRate>\n<generalOfctrtrewRate>0</generalOfctrtrewRate>\n<rewSum>0</rewSum>\n<ter>0.0031</ter>\n<frontendCmsRate>0</frontendCmsRate>\n<backendCmsRate>0</backendCmsRate>\n<vManageCompNm>삼성자산운용</vManageCompNm>\n<vImg>e4d388e657fcc4ea4433b134193234243c5-7fc2-20241216092615.jpg</vImg>\n<vGeneralOfctrtcompNm>삼성자산운용</vGeneralOfctrtcompNm>\n<vTrustCompNm>한국증권금융</vTrustCompNm>\n<standardDt>20260831</standardDt>\n<companyCd>A01005</company"
         },
         {
           "method": "POST",
           "url": "https://dis.kofia.or.kr/proframeWeb/XMLSERVICES/",
           "status": 200,
           "postData": "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<message>\n  <proframeHeader>\n    <pfmAppName>FS-COM</pfmAppName>\n    <pfmSvcName>COMFundUnityBasInfoSO</pfmSvcName>\n    <pfmFnName>fundSaleCompInfoSrch</pfmFnName>\n  </proframeHeader>\n  <systemHeader></systemHeader>\n    <COMFundUnityInfoInputDTO>\n    <standardCd>KR5105409225</standardCd>\n    <companyCd>A01005</companyCd>\n    <standardDt></standardDt>\n</COMFundUnityInfoInputDTO>\n</message>\n",
-          "body": "<?xml version=\"1.0\" encoding=\"UTF-8\"?><root><message><proframeHeader>\n<pfmAppName>FS-COM</pfmAppName>\n<pfmSvcName>COMFundUnityBasInfoSO</pfmSvcName>\n<pfmFnName>fundSaleCompInfoSrch</pfmFnName>\n<pfmGlobalNo>83c5d9ef0afe009606507eeb9943699e</pfmGlobalNo>\n<pfmTrDate>20260909</pfmTrDate>\n<pfmTrTime>20260909102616815</pfmTrTime>\n<pfmClntIp>20.55.14.48</pfmClntIp>\n<pfmResponseDtal></pfmResponseDtal>\n</proframeHeader>\n<systemHeader>\n</systemHeader>\n<COMFundSaleCompListDTO>\n<dbio_total_count_>15</dbio_total_count_>\n<dbio_affected_count_>0</dbio_affected_count_>\n<fundSaleCompList>\n<uSaleCompNm>에스케이증권</uSaleCompNm>\n<homepage>www.sks.co.kr</homepage>\n</fundSaleCompList>\n<fundSaleCompList>\n<uSaleCompNm>메리츠증권</uSaleCompNm>\n<homepage>www.imeritz.com</homepage>\n</fundSaleCompList>\n<fundSaleCompList>\n<uSaleCompNm>하나증권</uSaleCompNm>\n<homepage>www.hanaw.com</homepage>\n</fundSaleCompList>\n<fundSaleCompList>\n<uSaleCompNm>NH투자증권</uSaleCompNm>\n<homepage>www.nhqv.com</homepage>\n</fundSaleCompList>\n<fundSaleCompList>\n<uSaleCompNm>엔에이치농협선물</uSaleCompNm>\n<homepage>www.nhfutures.co.kr</homepage>\n</fundSaleCompList>\n<fundSaleCompList>\n<uSaleCompNm>유안타증권</uSaleCompNm>\n<homepage>www.myasset.com/myasset/main/index.cmd</homepage>\n</fundSaleCompList>\n<fundSaleCompList>\n<uSaleCompNm>다올투자증권</uSaleCompNm>\n<homepage>www.ktb.co.kr</homepage>\n</fundSaleCompList>\n<fundSaleCompList>\n<uSaleCompNm>삼성생명보험</uSaleCompNm>\n<homepage>www.samsunglife.com</homepage>\n</fundSaleCompList>\n<fundSaleCompList>\n<uSaleCompNm>삼성증권</uS"
+          "body": "<?xml version=\"1.0\" encoding=\"UTF-8\"?><root><message><proframeHeader>\n<pfmAppName>FS-COM</pfmAppName>\n<pfmSvcName>COMFundUnityBasInfoSO</pfmSvcName>\n<pfmFnName>fundSaleCompInfoSrch</pfmFnName>\n<pfmGlobalNo>93835ad70afe009663ac7b859c784061</pfmGlobalNo>\n<pfmTrDate>20260912</pfmTrDate>\n<pfmTrTime>20260912114734359</pfmTrTime>\n<pfmClntIp>135.119.86.106</pfmClntIp>\n<pfmResponseDtal></pfmResponseDtal>\n</proframeHeader>\n<systemHeader>\n</systemHeader>\n<COMFundSaleCompListDTO>\n<dbio_total_count_>15</dbio_total_count_>\n<dbio_affected_count_>0</dbio_affected_count_>\n<fundSaleCompList>\n<uSaleCompNm>에스케이증권</uSaleCompNm>\n<homepage>www.sks.co.kr</homepage>\n</fundSaleCompList>\n<fundSaleCompList>\n<uSaleCompNm>메리츠증권</uSaleCompNm>\n<homepage>www.imeritz.com</homepage>\n</fundSaleCompList>\n<fundSaleCompList>\n<uSaleCompNm>하나증권</uSaleCompNm>\n<homepage>www.hanaw.com</homepage>\n</fundSaleCompList>\n<fundSaleCompList>\n<uSaleCompNm>NH투자증권</uSaleCompNm>\n<homepage>www.nhqv.com</homepage>\n</fundSaleCompList>\n<fundSaleCompList>\n<uSaleCompNm>엔에이치농협선물</uSaleCompNm>\n<homepage>www.nhfutures.co.kr</homepage>\n</fundSaleCompList>\n<fundSaleCompList>\n<uSaleCompNm>유안타증권</uSaleCompNm>\n<homepage>www.myasset.com/myasset/main/index.cmd</homepage>\n</fundSaleCompList>\n<fundSaleCompList>\n<uSaleCompNm>다올투자증권</uSaleCompNm>\n<homepage>www.ktb.co.kr</homepage>\n</fundSaleCompList>\n<fundSaleCompList>\n<uSaleCompNm>삼성생명보험</uSaleCompNm>\n<homepage>www.samsunglife.com</homepage>\n</fundSaleCompList>\n<fundSaleCompList>\n<uSaleCompNm>삼성증권<"
         },
         {
           "method": "POST",
           "url": "https://dis.kofia.or.kr/proframeWeb/XMLSERVICES/",
           "status": 200,
           "postData": "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<message>\n  <proframeHeader>\n    <pfmAppName>FS-COM</pfmAppName>\n    <pfmSvcName>COMFundUnityBasInfoSO</pfmSvcName>\n    <pfmFnName>fundStdcotInfoSrch</pfmFnName>\n  </proframeHeader>\n  <systemHeader></systemHeader>\n    <COMFundUnityInfoInputDTO>\n    <standardCd>KR5105409225</standardCd>\n    <companyCd>A01005</companyCd>\n    <standardDt></standardDt>\n</COMFundUnityInfoInputDTO>\n</message>\n",
-          "body": "<?xml version=\"1.0\" encoding=\"UTF-8\"?><root><message><proframeHeader>\n<pfmAppName>FS-COM</pfmAppName>\n<pfmSvcName>COMFundUnityBasInfoSO</pfmSvcName>\n<pfmFnName>fundStdcotInfoSrch</pfmFnName>\n<pfmGlobalNo>83c5dabd0afe009629db37ecd44ec5ad</pfmGlobalNo>\n<pfmTrDate>20260909</pfmTrDate>\n<pfmTrTime>20260909102617021</pfmTrTime>\n<pfmClntIp>20.55.14.48</pfmClntIp>\n<pfmResponseDtal></pfmResponseDtal>\n</proframeHeader>\n<systemHeader>\n</systemHeader>\n<COMFundStdcotInfoDTO>\n<standardCot>1020.81</standardCot>\n<vBefDayFltstdcot>0.1648</vBefDayFltstdcot>\n<vBeDayFltstdcotRt>0.01</vBeDayFltstdcotRt>\n<vBefWeekFltstdcot>1.1536</vBefWeekFltstdcot>\n<vBefWeeFltstdcotRt>0.06</vBefWeeFltstdcotRt>\n<uOriginalAmt>11807835</uOriginalAmt>\n<netAsstotAmt>12053614</netAsstotAmt>\n<standardDt>20260908</standardDt>\n</COMFundStdcotInfoDTO></message></root>"
+          "body": "<?xml version=\"1.0\" encoding=\"UTF-8\"?><root><message><proframeHeader>\n<pfmAppName>FS-COM</pfmAppName>\n<pfmSvcName>COMFundUnityBasInfoSO</pfmSvcName>\n<pfmFnName>fundStdcotInfoSrch</pfmFnName>\n<pfmGlobalNo>93835b9a0afe0096672736c9a63e15d1</pfmGlobalNo>\n<pfmTrDate>20260912</pfmTrDate>\n<pfmTrTime>20260912114734554</pfmTrTime>\n<pfmClntIp>135.119.86.106</pfmClntIp>\n<pfmResponseDtal></pfmResponseDtal>\n</proframeHeader>\n<systemHeader>\n</systemHeader>\n<COMFundStdcotInfoDTO>\n<standardCot>1021.09</standardCot>\n<vBefDayFltstdcot>0.1648</vBefDayFltstdcot>\n<vBeDayFltstdcotRt>0.01</vBeDayFltstdcotRt>\n<vBefWeekFltstdcot>1.1719</vBefWeekFltstdcot>\n<vBefWeeFltstdcotRt>0.06</vBefWeeFltstdcotRt>\n<uOriginalAmt>11338988</uOriginalAmt>\n<netAsstotAmt>11578137</netAsstotAmt>\n<standardDt>20260911</standardDt>\n</COMFundStdcotInfoDTO></message></root>"
         }
       ],
       "notes": [],
       "title": "금융투자협회",
       "finalUrl": "https://dis.kofia.or.kr/websquare/index.jsp?w2xPath=/wq/com/popup/DISComFundSmryInfo.xml&companyCd=&standardCd=KR5105409225&standardDt=&grntGb=",
-      "text": "삼성MMF법인 1[KR5105409225]\n\n자산운용사 정보\n\n회사로고\n회사개황\n주요재무현황\n회사로고\n\n펀드정보\n\n약관\n투자설명서\n간이투자설명서\n\n기준가\n\n1,020.81\n\n(전일대비0.1648, 0.01%)\n\n(전주대비1.1536, 0.06%)\n\n[기준일: 2026/09/08]\n\n[단위:백만원]\n\n펀드유형\n\n\t\n\n단기금융(MMF)\n\n\n\n\n투자지역\n\n\t\n\n국내\n\n\n\n\n단축코드\n\n\t\n\n40922\n\n\n\n\n총보수\n\n\t\n\n0\n\n\n\n\n최초설정일\n\n\t\n\n2003/12/30\n\n\n\n\n설정원본\n\n\t\n\n11,807,835\n\n\n\n\n순자산총액\n\n\t\n\n12,053,614\n\n\n\n\n운용상태\n\n\t\n\n운용중\n\n펀드기본정보\n수익률 추이차트\n가격변동 추이\n자산구성내역\n결산 및 상환\n공시관련\n펀드기본정보\n\n펀드기본 정보\n\n구분\n\n\t\n\n투자신탁\n\n\t\n\n상품분류\n\n\t\n\n단기금융(MMF)\n\n\t\n\n추가/단위구분\n\n\t\n\n추가\n\n\n\n\n설정일\n\n\t\n\n2003/12/30\n\n\t\n\n분류코드\n\n\t\n\n1EE111120010182ZZZZ6\n\n\t\n\n단축코드\n\n\t\n\n40922\n\n\n\n\n신탁회계기간\n\n\t\n\n0\n\n\t\n\n투자지역구분\n\n\t\n\n국내\n\n\t\n\n판매지역구분\n\n\t\n\n국내위탁\n\n\n\n\n운용실적공시분류\n\n\t\n\n(MMF)일반형\n\n\t\n\n특성분류\n\n\t\n\n종류형 FUND\n\n\t\n\n공시/사모구분\n\n\t\n\n공모\n\n\n\n\n최초설정기준가격\n\n\t\n\n1,000\n\n\t\n\n신탁기간\n\n\t\n\n0\n\n\t\n\n\t\n\n관련보수\n\n()은 단기금융(MMF) 유형평균보수 비율입니다.\n\n[기준일: 2026/07/31]\n\n운용보수\n\n\t\n\n0 (0.049)\n\n\t\n\n판매보수\n\n\t\n\n0 (0.067)\n\n\t\n\n수탁보수\n\n\t\n\n0 (0)\n\n\n\n\n일반사무관리보수\n\n\t\n\n0 (0.009)\n\n\t\n\n보수합계\n\n\t\n\n0 (0.135)\n\n\t\n\n총비용비율(TER)\n\n\t\n\n0.0031 (0.14)\n\n관련수수료\n\n[기준일: 2026/07/31]\n\n선취수수료\n\n\t\n\n0\n\n\t\n\n후취수수료\n\n\t\n\n0\n\n관련회사 정보\n\n* 회사명을 클릭하시면 해당 회사 홈페이지로 이동합니다.\n\n운용회사\n\n\t삼성자산운용\t\n\n일반사무관리회사\n\n\t삼성자산운용\t\n\n수탁회사\n\n\t한국증권금융\n\n\n판매회사\n\n\t에스케이증권, 메리츠증권, 하나증권, NH투자증권, 엔에이치농협선물, 유안타증권, 다올투자증권, 삼성생명보험, 삼성증권, 미래에셋증권, 대신증권, 한국투자증권, 교보증권, 아이엠증권, 키움증권",
+      "text": "삼성MMF법인 1[KR5105409225]\n\n자산운용사 정보\n\n회사로고\n회사개황\n주요재무현황\n회사로고\n\n펀드정보\n\n약관\n투자설명서\n간이투자설명서\n\n기준가\n\n1,021.09\n\n(전일대비0.1648, 0.01%)\n\n(전주대비1.1719, 0.06%)\n\n[기준일: 2026/09/11]\n\n[단위:백만원]\n\n펀드유형\n\n\t\n\n단기금융(MMF)\n\n\n\n\n투자지역\n\n\t\n\n국내\n\n\n\n\n단축코드\n\n\t\n\n40922\n\n\n\n\n총보수\n\n\t\n\n0\n\n\n\n\n최초설정일\n\n\t\n\n2003/12/30\n\n\n\n\n설정원본\n\n\t\n\n11,338,988\n\n\n\n\n순자산총액\n\n\t\n\n11,578,137\n\n\n\n\n운용상태\n\n\t\n\n운용중\n\n펀드기본정보\n수익률 추이차트\n가격변동 추이\n자산구성내역\n결산 및 상환\n공시관련\n펀드기본정보\n\n펀드기본 정보\n\n구분\n\n\t\n\n투자신탁\n\n\t\n\n상품분류\n\n\t\n\n단기금융(MMF)\n\n\t\n\n추가/단위구분\n\n\t\n\n추가\n\n\n\n\n설정일\n\n\t\n\n2003/12/30\n\n\t\n\n분류코드\n\n\t\n\n1EE111120010182ZZZZ6\n\n\t\n\n단축코드\n\n\t\n\n40922\n\n\n\n\n신탁회계기간\n\n\t\n\n0\n\n\t\n\n투자지역구분\n\n\t\n\n국내\n\n\t\n\n판매지역구분\n\n\t\n\n국내위탁\n\n\n\n\n운용실적공시분류\n\n\t\n\n(MMF)일반형\n\n\t\n\n특성분류\n\n\t\n\n종류형 FUND\n\n\t\n\n공시/사모구분\n\n\t\n\n공모\n\n\n\n\n최초설정기준가격\n\n\t\n\n1,000\n\n\t\n\n신탁기간\n\n\t\n\n0\n\n\t\n\n\t\n\n관련보수\n\n()은 단기금융(MMF) 유형평균보수 비율입니다.\n\n[기준일: 2026/08/31]\n\n운용보수\n\n\t\n\n0 (0.049)\n\n\t\n\n판매보수\n\n\t\n\n0 (0.067)\n\n\t\n\n수탁보수\n\n\t\n\n0 (0)\n\n\n\n\n일반사무관리보수\n\n\t\n\n0 (0.008)\n\n\t\n\n보수합계\n\n\t\n\n0 (0.134)\n\n\t\n\n총비용비율(TER)\n\n\t\n\n0.0031 (0.14)\n\n관련수수료\n\n[기준일: 2026/08/31]\n\n선취수수료\n\n\t\n\n0\n\n\t\n\n후취수수료\n\n\t\n\n0\n\n관련회사 정보\n\n* 회사명을 클릭하시면 해당 회사 홈페이지로 이동합니다.\n\n운용회사\n\n\t삼성자산운용\t\n\n일반사무관리회사\n\n\t삼성자산운용\t\n\n수탁회사\n\n\t한국증권금융\n\n\n판매회사\n\n\t에스케이증권, 메리츠증권, 하나증권, NH투자증권, 엔에이치농협선물, 유안타증권, 다올투자증권, 삼성생명보험, 삼성증권, 미래에셋증권, 대신증권, 한국투자증권, 교보증권, 아이엠증권, 키움증권",
       "ok": true,
       "hasCode": true,
       "hasFields": true
@@ -183,21 +183,21 @@
       "xhr": [
         {
           "method": "POST",
-          "url": "https://www.google-analytics.com/j/collect?v=1&_v=j102&a=1618967395&t=event&ni=0&_s=1&dl=https%3A%2F%2Fwww.funddoctor.co.kr%2F&ul=ko-kr&dt=%ED%8E%80%EB%93%9C%EB%8B%A5%ED%84%B0&sr=1280x720&vp=1280x720&ec=%ED%8E%80%EB%93%9C%EB%8B%A5%ED%84%B0%EC%83%81%EB%8B%A8%EB%B0%B0%EB%84%88&ea=undefined&el=%2F&_u=YGDAgUABAAAAACAAI~&jid=1238795946&gjid=679018020&cid=1001729739.1788917189&tid=UA-150939181-1&_gid=1776105953.1788917189&_slc=1&gtm=45He6930n81WSBDNCLza200&gcd=13l3l3l3l1l1&dma=0&tag_exp=115616985~115938466~115938468~118897920~118897930~120385423~120469145~120469153~120914213&z=1437578696",
+          "url": "https://www.google-analytics.com/j/collect?v=1&_v=j102&a=1866210903&t=event&ni=0&_s=1&dl=https%3A%2F%2Fwww.funddoctor.co.kr%2F&ul=ko-kr&dt=%ED%8E%80%EB%93%9C%EB%8B%A5%ED%84%B0&sr=1280x720&vp=1280x720&ec=%ED%8E%80%EB%93%9C%EB%8B%A5%ED%84%B0%EC%83%81%EB%8B%A8%EB%B0%B0%EB%84%88&ea=undefined&el=%2F&_u=YGBAgEABAAAAACAAI~&jid=567696778&gjid=1377351155&cid=1620546300.1789181267&tid=UA-150939181-1&_gid=609325341.1789181267&_slc=1&gtm=45He6992n81WSBDNCLza200&gcd=13l3l3l3l1l1&dma=0&tag_exp=115616985~115938466~115938469~118897920~118897930~120385422~120469145~120469153&z=1618899679",
           "status": 200,
           "postData": "",
           "body": "2,cG-D7RCDX73LB"
         },
         {
           "method": "POST",
-          "url": "https://stats.g.doubleclick.net/j/collect?t=dc&aip=1&_r=3&v=1&_v=j102&tid=UA-150939181-1&cid=1001729739.1788917189&jid=1238795946&gjid=679018020&_gid=1776105953.1788917189&_u=YGDAgUABAAAAAGAAI~&z=1100785472",
+          "url": "https://stats.g.doubleclick.net/j/collect?t=dc&aip=1&_r=3&v=1&_v=j102&tid=UA-150939181-1&cid=1620546300.1789181267&jid=567696778&gjid=1377351155&_gid=609325341.1789181267&_u=YGBAgEABAAAAAGAAI~&z=974582163",
           "status": 200,
           "postData": "",
           "body": "1"
         },
         {
           "method": "POST",
-          "url": "https://analytics.google.com/g/collect?v=2&tid=G-D7RCDX73LB&gtm=45je6941h2v9136902590za20g&_p=1788917188746&_gaz=1&gcd=13l3l3l3l1l1&npa=0&dma=0&_eu=AAAIAGAC&are=1&cid=1001729739.1788917189&frm=0&pscdl=noapi&rcb=6&sr=1280x720&uaa=x86&uab=64&uafvl=HeadlessChrome%3B141.0.7390.37%7CNot%253FA_Brand%3B8.0.0.0%7CChromium%3B141.0.7390.37&uam=&uamb=0&uap=Windows&uapv=10.0&uaw=0&ul=ko-kr&gaf=2&_s=1&tag_exp=115938466~115938468~118897920~118897930~120213116~120385423~120469145~120469153&sid=1788917188&sct=1&seg=0&dl=https%3A%2F%2Fwww.funddoctor.co.kr%2F&dt=%ED%8E%80%EB%93%9C%EB%8B%A5%ED%84%B0&en=page_view&_fv=1&_ss=1&tfd=1741",
+          "url": "https://analytics.google.com/g/collect?v=2&tid=G-D7RCDX73LB&gtm=45je6992v9136902590za20g&_p=1789181266953&_gaz=1&gcd=13l3l3l3l1l1&npa=0&dma=0&_eu=AAAIAGAC&are=1&cid=1620546300.1789181267&frm=0&pscdl=noapi&rcb=8&sr=1280x720&uaa=x86&uab=64&uafvl=HeadlessChrome%3B141.0.7390.37%7CNot%253FA_Brand%3B8.0.0.0%7CChromium%3B141.0.7390.37&uam=&uamb=0&uap=Windows&uapv=10.0&uaw=0&ul=ko-kr&gaf=2&_s=1&tag_exp=115616985~115938466~115938469~118897920~118897930~120213116~120385422~120469145~120469153&sid=1789181267&sct=1&seg=0&dl=https%3A%2F%2Fwww.funddoctor.co.kr%2F&dt=%ED%8E%80%EB%93%9C%EB%8B%A5%ED%84%B0&en=page_view&_fv=1&_ss=1&tfd=1607",
           "status": 204,
           "postData": "",
           "body": ""
@@ -224,24 +224,24 @@
       "xhr": [
         {
           "method": "POST",
-          "url": "https://analytics.google.com/g/collect?v=2&tid=G-D7RCDX73LB&gtm=45je6941h2v9136902590za20g&_p=1788917198524&_gaz=1&gcd=13l3l3l3l1l1&npa=0&dma=0&_eu=AAAIAGAC&are=1&cid=2130498296.1788917202&frm=0&pscdl=noapi&rcb=14&sr=1280x720&uaa=x86&uab=64&uafvl=HeadlessChrome%3B141.0.7390.37%7CNot%253FA_Brand%3B8.0.0.0%7CChromium%3B141.0.7390.37&uam=&uamb=0&uap=Windows&uapv=10.0&uaw=0&ul=ko-kr&gaf=2&_s=1&tag_exp=115938466~115938469~118897920~118897930~120213116~120385423~120469145~120469153&sid=1788917201&sct=1&seg=0&dl=https%3A%2F%2Fwww.funddoctor.co.kr%2Fafn%2Ffund%2Ffdlist.jsp%3Ffund_cd%3DKR5105409225&dt=%ED%8E%80%EB%93%9C%EB%8B%A5%ED%84%B0&en=page_view&_fv=1&_nsi=1&_ss=1&tfd=4098",
-          "status": 204,
-          "postData": "",
-          "body": ""
-        },
-        {
-          "method": "POST",
-          "url": "https://www.google-analytics.com/j/collect?v=1&_v=j102&a=195108510&t=event&ni=0&_s=1&dl=https%3A%2F%2Fwww.funddoctor.co.kr%2Fafn%2Ffund%2Ffdlist.jsp%3Ffund_cd%3DKR5105409225&ul=ko-kr&dt=%ED%8E%80%EB%93%9C%EB%8B%A5%ED%84%B0&sr=1280x720&vp=1280x720&ec=%ED%8E%80%EB%93%9C%EB%8B%A5%ED%84%B0%EC%83%81%EB%8B%A8%EB%B0%B0%EB%84%88&ea=undefined&el=%2Fafn%2Ffund%2Ffdlist.jsp&_u=YCDAgUABAAAAACAAI~&jid=1675356565&gjid=885368846&cid=2130498296.1788917202&tid=UA-150939181-1&_gid=1603278923.1788917202&_slc=1&gtm=45He6930n81WSBDNCLza200&gcd=13l3l3l3l1l1&dma=0&tag_exp=115938466~115938468~118897920~118897930~119793974~120385422~120469145~120469153&z=377178265",
+          "url": "https://www.google-analytics.com/j/collect?v=1&_v=j102&a=977905471&t=event&ni=0&_s=1&dl=https%3A%2F%2Fwww.funddoctor.co.kr%2Fafn%2Ffund%2Ffdlist.jsp%3Ffund_cd%3DKR5105409225&ul=ko-kr&dt=%ED%8E%80%EB%93%9C%EB%8B%A5%ED%84%B0&sr=1280x720&vp=1280x720&ec=%ED%8E%80%EB%93%9C%EB%8B%A5%ED%84%B0%EC%83%81%EB%8B%A8%EB%B0%B0%EB%84%88&ea=undefined&el=%2Fafn%2Ffund%2Ffdlist.jsp&_u=aGDAgUABAAAAACAAI~&jid=743176892&gjid=1557964596&cid=1948176564.1789181278&tid=UA-150939181-1&_gid=1367940863.1789181278&_slc=1&gtm=45He6992n81WSBDNCLza200&gcd=13l3l3l3l1l1&dma=0&tag_exp=115616986~115938465~115938469~118897920~118897930~120385423~120469145~120469153&z=1470083871",
           "status": 200,
           "postData": "",
           "body": "2,cG-D7RCDX73LB"
         },
         {
           "method": "POST",
-          "url": "https://stats.g.doubleclick.net/j/collect?t=dc&aip=1&_r=3&v=1&_v=j102&tid=UA-150939181-1&cid=2130498296.1788917202&jid=1675356565&gjid=885368846&_gid=1603278923.1788917202&_u=YCDAgUABAAAAAGAAI~&z=1866857840",
+          "url": "https://stats.g.doubleclick.net/j/collect?t=dc&aip=1&_r=3&v=1&_v=j102&tid=UA-150939181-1&cid=1948176564.1789181278&jid=743176892&gjid=1557964596&_gid=1367940863.1789181278&_u=aGDAgUABAAAAAGAAI~&z=1447384706",
           "status": 200,
           "postData": "",
           "body": "1"
+        },
+        {
+          "method": "POST",
+          "url": "https://analytics.google.com/g/collect?v=2&tid=G-D7RCDX73LB&gtm=45je69a0h2v9136902590za20g&_p=1789181275762&_gaz=1&gcd=13l3l3l3l1l1&npa=0&dma=0&_eu=AAAIAGAC&are=1&cid=1948176564.1789181278&frm=0&pscdl=noapi&rcb=5&sr=1280x720&uaa=x86&uab=64&uafvl=HeadlessChrome%3B141.0.7390.37%7CNot%253FA_Brand%3B8.0.0.0%7CChromium%3B141.0.7390.37&uam=&uamb=0&uap=Windows&uapv=10.0&uaw=0&ul=ko-kr&gaf=2&_s=1&tag_exp=115616985~115938465~115938468~118897920~118897930~120213116~120385423~120420414~120469145~120469153&sid=1789181277&sct=1&seg=0&dl=https%3A%2F%2Fwww.funddoctor.co.kr%2Fafn%2Ffund%2Ffdlist.jsp%3Ffund_cd%3DKR5105409225&dt=%ED%8E%80%EB%93%9C%EB%8B%A5%ED%84%B0&en=page_view&_fv=1&_ss=1&tfd=2776",
+          "status": 204,
+          "postData": "",
+          "body": ""
         },
         {
           "method": "GET",
@@ -267,9 +267,9 @@
       "name": "삼성MMF법인 1",
       "company": "삼성자산운용",
       "type": "MMF",
-      "basePrice": 1020.81,
-      "aum": 11807835041141,
-      "nav": 12053613608577,
+      "basePrice": 1021,
+      "aum": 11483022690403,
+      "nav": 11724151466701,
       "feeMin": 0.051,
       "feeMax": 0.09,
       "classes": [
@@ -310,63 +310,48 @@
       ]
     },
     {
-      "code": "K55107BJ2329",
-      "name": "우리큰만족법인MMF 1(국공채)",
-      "company": "우리자산운용",
+      "code": "KR5223385430",
+      "name": "KB법인용MMF I-1(운용)",
+      "company": "케이비자산운용",
       "type": "MMF",
-      "basePrice": 1023.33,
-      "aum": 9749365865278,
-      "nav": 9976782118847,
-      "feeMin": 0.078,
-      "feeMax": 0.098,
+      "basePrice": 1029.27,
+      "aum": 8950444702017,
+      "nav": 9212390235284,
+      "feeMin": 0.06,
+      "feeMax": 0.09,
       "classes": [
         {
-          "code": "K55107DZ1758",
-          "name": "우리큰만족법인MMF 1(국공채)ClassC-e",
-          "fee": 0.078
+          "code": "K55223BU0616",
+          "name": "KB법인용MMF I-1C",
+          "fee": 0.09
         },
         {
-          "code": "K55107DZ3663",
-          "name": "우리큰만족법인MMF 1(국공채)ClassC",
-          "fee": 0.098
+          "code": "K55223BU0624",
+          "name": "KB법인용MMF I-1 C-F",
+          "fee": 0.06
         }
       ]
     },
     {
-      "code": "KR5234472706",
-      "name": "IBK그랑프리국공채MMF법인투자신탁 1[국공채]",
-      "company": "아이비케이자산운용",
+      "code": "KR5107397683",
+      "name": "우리큰만족신종MMF3",
+      "company": "우리자산운용",
       "type": "MMF",
-      "basePrice": 1018.37,
-      "aum": 9345722226470,
-      "nav": 9517441282917,
-      "feeMin": 0.093,
-      "feeMax": 0.168,
+      "basePrice": 1021.92,
+      "aum": 8613719200397,
+      "nav": 8802530758103,
+      "feeMin": 0.09,
+      "feeMax": 0.11,
       "classes": [
         {
-          "code": "K55234E18792",
-          "name": "IBK그랑프리국공채MMF법인투자신탁 1[국공채]종류Ce",
-          "fee": 0.118
+          "code": "K55107E86029",
+          "name": "우리큰만족신종MMF3ClassC",
+          "fee": 0.11
         },
         {
-          "code": "K55234E28379",
-          "name": "IBK그랑프리국공채MMF법인투자신탁 1[국공채]종류C-Pe",
-          "fee": 0.093
-        },
-        {
-          "code": "KR5234AI3400",
-          "name": "IBK그랑프리국공채MMF법인투자신탁 1[국공채]종류C",
-          "fee": 0.168
-        },
-        {
-          "code": "KR5234AI3418",
-          "name": "IBK그랑프리국공채MMF법인투자신탁 1[국공채]종류I",
-          "fee": 0.098
-        },
-        {
-          "code": "KR5234AR1254",
-          "name": "IBK그랑프리국공채MMF법인투자신탁 1[국공채]종류C-P",
-          "fee": 0.128
+          "code": "K55107E86037",
+          "name": "우리큰만족신종MMF3ClassC-e",
+          "fee": 0.09
         }
       ]
     },
@@ -375,9 +360,9 @@
       "name": "피델리티글로벌테크놀로지증권자투자신탁(주식-재간접형)",
       "company": "피델리티자산운용",
       "type": "해외주식형",
-      "basePrice": 5771.29,
-      "aum": 921755555465,
-      "nav": 4652477213533,
+      "basePrice": 5736.06,
+      "aum": 921918392237,
+      "nav": 4624968056743,
       "feeMin": 0.162,
       "feeMax": 1.362,
       "classes": [
@@ -468,9 +453,9 @@
       "name": "신영밸류고배당증권자투자신탁(주식)운용",
       "company": "신영자산운용",
       "type": "국내주식형",
-      "basePrice": 2765.89,
-      "aum": 833104589042,
-      "nav": 2304275415976,
+      "basePrice": 2752.08,
+      "aum": 831578981100,
+      "nav": 2288574246611,
       "feeMin": 0.45,
       "feeMax": 1.35,
       "classes": [
