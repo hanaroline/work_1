@@ -3,6 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <!-- 유튜브는 임베드에 Referer 헤더를 요구한다. 없으면 오류 153 이 뜬다. -->
+  <meta name="referrer" content="strict-origin-when-cross-origin" />
   <title>라디오 · TV 온에어</title>
   <style>
     /* ===== 팔레트 (index.html 과 같은 토큰, 라이트/다크) ===== */
@@ -242,6 +244,14 @@
 
 <main class="layout">
   <!-- ===== 보이는 라디오 ===== -->
+  <div class="note" id="fileWarn" hidden>
+    <b>지금은 영상이 나오지 않습니다 — 파일을 직접 열었기 때문입니다.</b><br>
+    유튜브는 임베드에 <code>Referer</code> 헤더를 요구하는데, <code>file://</code> 로 열면 그 헤더가 없어
+    <b>오류 153</b>(동영상 플레이어 구성 오류)이 납니다. 채널 문제가 아니라 여는 방식 문제입니다.<br>
+    같은 폴더의 <code>radio-launch.cmd</code> 를 더블클릭하면 <code>http://127.0.0.1:8765</code> 로 열리고
+    영상이 정상 재생됩니다. <b>소리만</b> 탭은 지금 이대로도 들을 수 있습니다.
+  </div>
+
   <section class="pane" id="pane-live" role="tabpanel" aria-labelledby="tab-radio">
     <div class="tv-grid">
       <div>
@@ -253,7 +263,7 @@
             </div>
             <div id="ytmount"></div>
             <!-- 채널 주소로 바로 트는 판. 유튜브가 '지금 라이브' 를 알아서 고른다. -->
-            <iframe id="rawFrame" title="라이브 영상" allow="autoplay; encrypted-media; picture-in-picture" allowfullscreen hidden></iframe>
+            <iframe id="rawFrame" title="라이브 영상" referrerpolicy="strict-origin-when-cross-origin" allow="autoplay; encrypted-media; picture-in-picture" allowfullscreen hidden></iframe>
           </div>
           <div class="stage-info">
             <div>
@@ -346,7 +356,8 @@
     audioOnly: false,
     sleepTimer: null,
     fav: {},
-    recent: []
+    recent: [],
+    dead: {}
   };
 
   var $ = function (id) { return document.getElementById(id); };
@@ -425,14 +436,14 @@
   function loadStations(i) {
     i = i || 0;
     if (INLINE && INLINE.stations && INLINE.stations.length) {
-      S.stations = INLINE.stations.slice();
+      S.stations = dedupe(INLINE.stations.slice());
       buildTags(); renderAudio(); renderFav();
       return;
     }
     if (i >= RB_HOSTS.length) {
       // 사내망처럼 막힌 곳에서는 러너가 받아 둔 목록으로 넘어간다.
       getJSON('data/radio/stations.json').then(function (d) {
-        S.stations = d.stations || [];
+        S.stations = dedupe(d.stations || []);
         if (!S.stations.length) throw new Error('empty');
         buildTags(); renderAudio(); renderFav();
         toast('공개 스트림은 저장소에 받아 둔 목록으로 보여 줍니다');
@@ -465,10 +476,27 @@
             homepage: s.homepage || ''
           };
         });
+      S.stations = dedupe(S.stations);
       buildTags();
       renderAudio();
       renderFav();
     }).catch(function () { loadStations(i + 1); });
+  }
+
+  // Radio Browser 는 같은 방송국이 여러 번 등록돼 있다(KBS Classic FM 이 세 번).
+  // 이름을 다듬어 같은 것끼리 묶고, 비트레이트가 높은 쪽 하나만 남긴다.
+  function dedupe(rows) {
+    var key = function (n) {
+      return String(n).toLowerCase()
+        .replace(/[\s_\-\[\]()·.]/g, '')
+        .replace(/kbs|mbc|sbs|cbs|ebs/g, function (m) { return m; });
+    };
+    var best = {};
+    rows.forEach(function (r) {
+      var k = key(r.name);
+      if (!best[k] || (r.bitrate || 0) > (best[k].bitrate || 0)) best[k] = r;
+    });
+    return Object.keys(best).map(function (k) { return best[k]; });
   }
 
   function buildTags() {
@@ -641,7 +669,12 @@
       if (S.tag && s.tags.indexOf(S.tag) === -1) return false;
       return true;
     });
-    $('audioCount').textContent = list.length + '개';
+    list.sort(function (a, b) {
+      return (S.dead[a.id] ? 1 : 0) - (S.dead[b.id] ? 1 : 0);
+    });
+    var deadCount = list.filter(function (x) { return S.dead[x.id]; }).length;
+    $('audioCount').textContent = list.length + '개' +
+      (deadCount ? ' · 안 나온 것 ' + deadCount + '개는 뒤로' : '');
 
     if (!list.length) {
       box.innerHTML = '<div class="empty">조건에 맞는 방송국이 없습니다.</div>';
@@ -656,8 +689,8 @@
         color: 'var(--series-2)',
         initials: s.name.slice(0, 2),
         live: false,
-        chip: s.bitrate ? s.bitrate + 'k' : (s.codec || '오디오'),
-        chipClass: 'audio',
+        chip: S.dead[s.id] ? '안 나옴' : (s.bitrate ? s.bitrate + 'k' : '오디오'),
+        chipClass: S.dead[s.id] ? 'ext' : 'audio',
         onPlay: function () { playStation(s); }
       }));
     });
@@ -925,13 +958,30 @@
       au.play().catch(function () { toast('재생하지 못했습니다 — 다른 방송국을 골라 보세요'); });
     }
 
-    // 12초 안에 소리가 안 나오면 알린다
+    // 소리가 안 나오는 주소는 기억해 두고 다음부터 목록 뒤로 보낸다.
+    // 공개 스트림은 예고 없이 죽기 때문에 한 번 겪은 것을 다시 권하지 않는다.
+    var settled = false;
+    var fail = function (why) {
+      if (settled) return;
+      settled = true;
+      S.dead[s.id] = Date.now();
+      LS.set('dead', S.dead);
+      toast(s.name + ' — ' + why + ' 목록 뒤로 보냈습니다');
+      renderAudio();
+    };
     var guard = setTimeout(function () {
-      if (au.paused || au.readyState < 2) toast(s.name + ' — 응답이 없습니다. 점검 중인 주소일 수 있습니다');
+      if (au.paused || au.readyState < 2) fail('응답이 없습니다.');
     }, 12000);
     au.addEventListener('playing', function once() {
+      settled = true;
       clearTimeout(guard);
+      if (S.dead[s.id]) { delete S.dead[s.id]; LS.set('dead', S.dead); }
       au.removeEventListener('playing', once);
+    });
+    au.addEventListener('error', function onerr() {
+      au.removeEventListener('error', onerr);
+      clearTimeout(guard);
+      fail('재생할 수 없는 주소입니다.');
     });
 
     pushRecent({
@@ -1089,9 +1139,13 @@
   // 시작
   // ─────────────────────────────────────────────────────────────────────────
   (function init() {
+    // file:// 로 열면 유튜브 임베드가 통째로 막힌다(오류 153). 먼저 알린다.
+    if (location.protocol === 'file:') $('fileWarn').hidden = false;
+
     applyTheme(LS.get('theme', null));
     S.fav = LS.get('fav', {}) || {};
     S.recent = LS.get('recent', []) || [];
+    S.dead = LS.get('dead', {}) || {};
     var v = LS.get('vol', 80);
     $('vol').value = v;
     au.volume = v / 100;
