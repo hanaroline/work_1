@@ -48,7 +48,9 @@ async function get (url) {
       redirect: 'follow',
       headers: {
         'User-Agent': UA,
-        'Accept-Language': 'ko-KR,ko;q=0.9,en;q=0.5'
+        'Accept-Language': 'ko-KR,ko;q=0.9,en;q=0.5',
+        // 동의 페이지가 대신 오면 라이브 정보가 통째로 없다. 미리 넘긴다.
+        'Cookie': 'SOCS=CAI; CONSENT=YES+1'
       }
     })
     return { ok: res.ok, status: res.status, url: res.url, text: res.ok ? await res.text() : '' }
@@ -85,8 +87,14 @@ async function head (url) {
 // 그래서 찾은 채널 이름이 방송사 이름을 담고 있는지 반드시 대조한다.
 // 대조에 실패하면 다음 후보로 넘어가고, 전부 실패하면 영상 없이 공식 사이트로 간다.
 // 엉뚱한 채널을 트는 것보다 영상이 없는 편이 낫다.
-function nameMatches (title, handle, expect) {
-  const hay = ((title || '') + ' ' + (handle || '')).toLowerCase()
+// 채널 "이름"만 본다. handle 은 지금 검증하려는 대상이므로 증거로 쓰면 안 된다.
+// 2차 수집에서 @kbsnews 가 "byung joo lee", @jtbcnews 가 "자영업자", @natv 가
+// "恩威TV" 인데도 handle 에 kbs·jtbc·natv 가 들어 있다는 이유로 통과했다.
+// expect 는 넉넉한 약자(MBC)가 아니라 그 채널의 실제 이름에 가깝게 적는다 —
+// @MBCNEWS 가 사우디 "MBC الأخبار" 였는데 expect 가 ["MBC"] 라 통과했다.
+function titleMatches (title, expect) {
+  if (!title) return false
+  const hay = title.toLowerCase()
   return expect.some(word => hay.includes(String(word).toLowerCase()))
 }
 
@@ -106,7 +114,7 @@ async function resolveChannel (handles, expect) {
     const m = res.text.match(/<meta\s+property="og:title"\s+content="([^"]+)"/)
     const title = m ? m[1] : null
 
-    if (expect && expect.length && !nameMatches(title, clean, expect)) {
+    if (expect && expect.length && !titleMatches(title, expect)) {
       log(`   ✗ @${clean} → "${title}" — 방송사 이름과 맞지 않아 버린다`)
       continue
     }
@@ -123,17 +131,22 @@ async function resolveLive (channelId) {
   const res = await get(`https://www.youtube.com/channel/${channelId}/live`)
   if (!res.ok) return null
 
-  const canonical = res.text.match(/<link\s+rel="canonical"\s+href="https:\/\/www\.youtube\.com\/watch\?v=([\w-]{11})"/)
-  if (!canonical) return null
-
-  // canonical 만으로는 지난 방송의 다시보기일 수 있다. 진짜 생방송인지 본다.
+  // 진짜 생방송일 때만 받는다. 지난 방송의 다시보기를 라이브로 올리면 안 된다.
   const isLive = res.text.includes('"isLiveNow":true') ||
                  res.text.includes('"isLive":true') ||
                  res.text.includes('hlsManifestUrl')
   if (!isLive) return null
 
+  // canonical 이 가장 정확하지만, 동의 페이지나 다른 판이 오면 없을 수 있다.
+  // 그때는 videoDetails 의 videoId 를 쓴다 — 추천 영상 목록의 id 가 아니라
+  // 지금 보고 있는 영상의 id 다.
+  const canonical = res.text.match(/<link\s+rel="canonical"\s+href="https:\/\/www\.youtube\.com\/watch\?v=([\w-]{11})"/)
+  const details = res.text.match(/"videoDetails":\s*\{"videoId":"([\w-]{11})"/)
+  const videoId = (canonical && canonical[1]) || (details && details[1])
+  if (!videoId) return null
+
   const title = res.text.match(/<meta\s+name="title"\s+content="([^"]+)"/)
-  return { videoId: canonical[1], title: title ? title[1] : null }
+  return { videoId, title: title ? title[1] : null }
 }
 
 // ── 3. 외부 사이트에서 재생 가능한지 ────────────────────────────────────────
@@ -201,15 +214,20 @@ async function main () {
 
     // 채널 ID — 이미 확인해 둔 게 있고 아직 싱싱하면 그대로 쓴다
     const prevYt = prev.youtube || {}
-    const fresh = prevYt.verified && prevYt.checked && (now - Date.parse(prevYt.checked) < CHANNEL_TTL_MS)
+    const expect = (seed.youtube?.expect && seed.youtube.expect.length)
+      ? seed.youtube.expect
+      : [seed.org]
+    // 캐시도 지금 기준으로 다시 판정한다. 그러지 않으면 예전 규칙으로 통과한
+    // 엉뚱한 채널이 TTL 동안 그대로 살아남는다(실제로 그랬다). 판정은 이미
+    // 받아 둔 이름으로 하므로 네트워크를 더 쓰지 않는다.
+    const fresh = prevYt.verified && prevYt.checked &&
+      (now - Date.parse(prevYt.checked) < CHANNEL_TTL_MS) &&
+      titleMatches(prevYt.title, expect)
 
     if (fresh) {
       out.youtube = { ...prevYt }
       log(`   · 채널 확인 생략 (${prevYt.channelId})`)
     } else {
-      const expect = (seed.youtube?.expect && seed.youtube.expect.length)
-        ? seed.youtube.expect
-        : [seed.org]
       const found = await resolveChannel(seed.youtube?.handles || [], expect)
       if (found) {
         out.youtube = {

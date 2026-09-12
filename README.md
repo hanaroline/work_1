@@ -1523,7 +1523,8 @@ python3 -m http.server 8000
 | 갈래 | 대상 | 재생 |
 |------|------|------|
 | **보이는 라디오** | KBS·MBC·SBS·CBS·TBS·EBS·YTN 등, 공식 유튜브 라이브를 운영하고 임베드를 허용하는 채널 | **사이트 안에서 영상** (영상을 꺼도 소리는 계속) |
-| **공식 사이트** | 라이브가 없는 시간대, 외부 재생을 막아 둔 채널 | 공식 온에어 페이지를 새 창으로 |
+| **TV** | YTN·연합뉴스TV·KBS/MBC/SBS 뉴스·JTBC·채널A·MBN·TV조선·아리랑TV·국회방송 | 같은 방식. **뉴스 채널은 대부분 24시간 라이브**라 편성 시간을 타지 않는다 |
+| **유튜브 라이브 / 공식 사이트** | 라이브가 아직 안 잡혔거나 외부 재생을 막아 둔 채널 | 그 채널의 유튜브 `/live`(지금 방송 중인 것을 유튜브가 띄워 준다), 없으면 공식 온에어 페이지를 새 창으로 |
 | **소리만** | 지역·대학·종교·해외 한인방송 등 공개 스트림 | 브라우저가 Radio Browser 에서 직접 받아 재생 |
 
 **하지 않는 것** — 방송사 스트림의 토큰·프레임 차단을 우회하지 않습니다. 받아서 되뿌리는
@@ -1553,6 +1554,20 @@ GitHub Actions(라디오 라이브 수집)  ─15분마다→  data/radio/channe
 | `data/radio/curated.json` | 채널 시드 — 이름·주파수·공식 주소·유튜브 handle 후보 | **사람** |
 | `data/radio/channels.json` | 확인된 채널 (유튜브 channelId, 공식 주소 생사) | 러너 |
 | `data/radio/live.json` | 지금 라이브 중인 채널과 영상 ID | 러너 |
+| `data/radio/stations.json` | 공개 스트림 한 벌 (단일 파일 판·막힌 곳 대비) | 러너 |
+
+## 단일 파일 판
+
+`radio.html` 은 `data/radio/*.json` 을 fetch 하므로 로컬 서버가 필요합니다.
+**더블클릭으로 여는 한 판**이 필요하면 데이터를 파일 안에 넣어 만듭니다.
+
+```bash
+python3 scripts/make_radio_standalone.py   # → radio-standalone.html
+```
+
+> 라이브 영상 ID 는 방송마다 새로 생깁니다. 단일 파일에 박히는 ID 는 만든 시각의
+> 것이라 시간이 지나면 끝난 방송입니다. 그때 화면은 그 채널의 유튜브 `/live` 로
+> 넘기므로 계속 볼 수 있고, 목록을 최신으로 되돌리려면 다시 만들면 됩니다.
 
 ## 첫 실행 뒤에 할 일
 
@@ -1562,8 +1577,9 @@ GitHub Actions(라디오 라이브 수집)  ─15분마다→  data/radio/channe
 `curated.json` 에 손으로 고쳐 넣으면 됩니다 — **화면 코드는 건드릴 필요가 없습니다.**
 
 ```bash
-# 러너에 요청 (workflow_dispatch 권한이 없는 세션도 push 로 깨울 수 있다)
-git commit --allow-empty -m "라디오 수집 요청" && git push
+# 러너에 요청 — 워크플로가 지켜보는 파일을 건드려야 발동한다.
+# (paths 필터가 걸려 있어 빈 커밋으로는 돌지 않는다)
+touch data/radio/curated.json && git commit -am "라디오 수집 요청" && git push
 ```
 
 > 예약(`schedule`)은 기본 브랜치의 워크플로만 발동합니다. 이 워크플로가 `main` 에
