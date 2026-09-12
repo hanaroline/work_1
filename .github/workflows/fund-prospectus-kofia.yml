@@ -25,6 +25,24 @@ on:
         description: '표준코드를 쉼표로 주면 그 종목만'
         type: string
         default: ''
+  # 월요일 일괄 갱신(weekly-refresh.yml)이 순서를 지켜 부른다
+  workflow_call:
+    inputs:
+      scope:
+        description: '대상 (missing | all)'
+        type: string
+        required: false
+        default: 'missing'
+      limit:
+        description: '건수 제한 (0 = 제한 없음)'
+        type: string
+        required: false
+        default: '0'
+      codes:
+        description: '표준코드를 쉼표로 주면 그 종목만'
+        type: string
+        required: false
+        default: ''
   schedule:
     # 매일 09:50 KST (00:50 UTC) — 카탈로그 갱신(09:30) 뒤
     - cron: '50 0 * * *'

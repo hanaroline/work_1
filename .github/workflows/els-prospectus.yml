@@ -16,6 +16,14 @@ on:
         description: 'DART 공시 검색 기간 (일)'
         type: string
         default: '45'
+  # 월요일 일괄 갱신(weekly-refresh.yml)이 순서를 지켜 부른다
+  workflow_call:
+    inputs:
+      days_back:
+        description: 'DART 공시 검색 기간 (일)'
+        type: string
+        required: false
+        default: '45'
   schedule:
     # 매일 08:30 KST (23:30 UTC) — ELS 상품 수집(08:00) 이후
     - cron: '30 23 * * *'

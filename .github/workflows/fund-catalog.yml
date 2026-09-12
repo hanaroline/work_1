@@ -6,6 +6,8 @@ name: 공모펀드 카탈로그 갱신
 
 on:
   workflow_dispatch:
+  # 월요일 일괄 갱신(weekly-refresh.yml)이 순서를 지켜 부른다
+  workflow_call:
   schedule:
     # 매일 09:30 KST (00:30 UTC) — 원천 수집(fund-daily) 이후
     - cron: '30 0 * * *'

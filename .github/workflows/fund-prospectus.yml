@@ -26,6 +26,35 @@ on:
         description: '표준코드만 다시 읽어 끼워 넣기 (쉼표로 구분) — 규칙의 좁은 구멍을 막았을 때. 규칙 지문은 올리지 않는다'
         type: string
         default: ''
+  # 월요일 일괄 갱신(weekly-refresh.yml)이 순서를 지켜 부른다.
+  # 부를 때는 guard_rules 를 켜서 예약과 똑같은 안전장치를 받게 한다 —
+  # 사람이 손으로 돌리는 것과 달리, 자동 실행이 3시간짜리 전량 판독으로
+  # 조용히 승격해서는 안 된다.
+  workflow_call:
+    inputs:
+      limit:
+        description: '판독할 건수 (0 = 제한 없음)'
+        type: string
+        required: false
+        default: '0'
+      mode:
+        description: '판독 범위 (incremental | full)'
+        type: string
+        required: false
+        default: 'incremental'
+      seed_refs:
+        type: string
+        required: false
+        default: ''
+      codes:
+        type: string
+        required: false
+        default: ''
+      guard_rules:
+        description: '규칙 지문이 바뀌었으면 전량 승격을 막는다 (예약 실행과 같은 안전장치)'
+        type: boolean
+        required: false
+        default: false
   schedule:
     # 매일 10:10 KST (01:10 UTC).
     #
@@ -73,9 +102,10 @@ jobs:
       - name: pdfjs 설치
         run: npm install --no-save pdfjs-dist@3.11.174
 
-      # 예약 실행에만 건다. 손으로 돌리는 것은 사람이 무엇을 하는지 아는 것이므로 막지 않는다.
+      # 사람 손을 거치지 않는 실행에만 건다 — 예약(schedule)과 월요일 일괄 갱신
+      # (guard_rules=true). 손으로 돌리는 것은 사람이 무엇을 하는지 아는 것이므로 막지 않는다.
       - name: 예약 안전장치 — 규칙이 바뀌었으면 전량 승격을 막는다
-        if: github.event_name == 'schedule'
+        if: github.event_name == 'schedule' || inputs.guard_rules
         run: |
           node -e "
           const fs = require('fs');
