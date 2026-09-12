@@ -186,6 +186,30 @@ if (LINES) {
   }
 }
 
+/**
+ * --fee : 보수 표가 어떻게 읽히는지 행마다 그대로 찍는다.
+ *
+ * 퇴직연금 클래스 보수를 읽는 규칙을 쓰려면 그 행의 클래스 표기(cls)와 이름(label)이
+ * 실제로 어떻게 생겼는지 봐야 한다. 카탈로그가 이미 아는 퇴직연금 보수(clsPExp)를
+ * 함께 찍어, 어느 행을 집어야 그 값이 나오는지 눈으로 맞춰 볼 수 있게 한다.
+ */
+if (args.includes('--fee')) {
+  for (const s of seen) {
+    const rows = PROS.fundFeeTable(s.text);
+    /* clsPExp 는 문구 풀 번호가 아니라 숫자 그대로다 — un() 을 태우면 엉뚱한 문구가 나온다 */
+    const known = s.it.clsPExp != null && s.it.clsPExp !== '' ? s.it.clsPExp : null;
+    console.log(`\n${'='.repeat(70)}\n▤ ${un(s.it.name)} (${s.it.code})`);
+    console.log(`   카탈로그가 아는 퇴직연금 클래스 보수 : ${known == null ? '없음' : known}`);
+    console.log(`   보수 표 ${rows.length}행`);
+    for (const r of rows) {
+      const hit = known != null && (String(r.total) === String(known) || String(r.synthetic) === String(known));
+      console.log(`   ${hit ? '★' : ' '} cls=${String(r.cls || '-').padEnd(6)}`
+        + ` 총보수=${String(r.total || '-').padEnd(8)} 합성=${String(r.synthetic || '-').padEnd(8)}`
+        + ` 선취=${String(r.salesFee || '-').padEnd(18)} label=${String(r.label).slice(0, 90)}`);
+    }
+  }
+}
+
 /* 못 읽은 항목의 원문 줄 — 서식을 눈으로 보려면 이것이 있어야 한다 */
 for (const f of SHOW) {
   const probes = PROBE[f] || [];

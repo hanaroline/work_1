@@ -2079,6 +2079,8 @@
     buildElsTexts: buildElsTexts,
     parseSchedule: parseSchedule,
     normalizeSchedule: normalizeSchedule,
+    /* 규칙 시험용 — 보수 표가 어떻게 읽히는지 그대로 봐야 클래스 규칙을 쓸 수 있다 */
+    fundFeeTable: fundFeeTable,
     pdfAvailable: function () { return !!g.pdfjsLib; }
   };
 })(window);
