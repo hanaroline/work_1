@@ -63,7 +63,7 @@ jobs:
         run: |
           git config user.name  'github-actions[bot]'
           git config user.email 'github-actions[bot]@users.noreply.github.com'
-          git add data/radio/channels.json data/radio/live.json
+          git add data/radio/channels.json data/radio/live.json data/radio/stations.json
           if git diff --cached --quiet; then
             echo '바뀐 내용 없음 — 커밋하지 않는다'
             exit 0
