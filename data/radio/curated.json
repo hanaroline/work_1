@@ -31,15 +31,16 @@
       },
       "youtube": {
         "handles": [
-          "kbsradio",
-          "KBS1Radio"
+          "KBS_1Radio"
         ],
         "expect": [
+          "1라디오",
+          "1Radio",
           "KBS 라디오",
-          "KBSradio",
-          "KBS Radio",
-          "KBS 1라디오",
-          "KBS1"
+          "KBSradio"
+        ],
+        "channelIds": [
+          "UCMLJc_D3jgFcS_48G7i4V0A"
         ]
       },
       "band": "radio"
@@ -59,14 +60,14 @@
       "youtube": {
         "handles": [
           "kbsradio",
-          "KBS2Radio"
+          "KBS_2Radio"
         ],
         "expect": [
-          "KBS 라디오",
-          "KBSradio",
-          "KBS Radio",
           "해피FM",
-          "KBS 2라디오"
+          "happy",
+          "2라디오",
+          "KBS 라디오",
+          "KBSradio"
         ]
       },
       "band": "radio"
@@ -85,15 +86,16 @@
       },
       "youtube": {
         "handles": [
-          "KBSClassicFM",
-          "kbsclassicfm",
-          "kbsradio"
+          "KBS_ClassicFM"
         ],
         "expect": [
-          "클래식FM",
           "Classic FM",
           "ClassicFM",
-          "KBS 1FM"
+          "클래식FM",
+          "클래식 FM"
+        ],
+        "channelIds": [
+          "UC2klpNOmQgbnnYwaW5eQOLQ"
         ]
       },
       "band": "radio"
@@ -112,16 +114,17 @@
       },
       "youtube": {
         "handles": [
-          "KBSCoolFM",
-          "kbsradio",
-          "KBSKpop"
+          "KBS_CoolFM",
+          "KBSCoolFM"
         ],
         "expect": [
-          "쿨FM",
-          "CoolFM",
           "Cool FM",
-          "KBS Kpop",
-          "KBS 라디오"
+          "CoolFM",
+          "쿨FM",
+          "쿨 FM"
+        ],
+        "channelIds": [
+          "UCbVRtqsTmYh1xhrDSTfSQLg"
         ]
       },
       "band": "radio"
@@ -140,13 +143,15 @@
       },
       "youtube": {
         "handles": [
-          "KBS3Radio",
+          "KBS_3Radio",
           "kbsradio"
         ],
         "expect": [
-          "KBS 3라디오",
+          "3라디오",
           "사랑의 소리",
-          "KBS 라디오"
+          "사랑의소리",
+          "KBS 라디오",
+          "KBSradio"
         ]
       },
       "band": "radio"
@@ -165,16 +170,18 @@
       },
       "youtube": {
         "handles": [
-          "mbcradio_official",
-          "MBCradio1",
-          "MBCNEWS",
-          "MBCradio"
+          "radiombc",
+          "MBCradio1"
         ],
         "expect": [
-          "MBC라디오",
           "MBC 라디오",
+          "MBC RADIO",
+          "MBCradio",
           "표준FM",
-          "MBCradio"
+          "라디오 시사"
+        ],
+        "channelIds": [
+          "UCTTmtS2ljy1vyl_s-d_LEHQ"
         ]
       },
       "band": "radio"
@@ -193,15 +200,14 @@
       },
       "youtube": {
         "handles": [
-          "MBCFM4U",
-          "mbcfm4u",
-          "mbcradio_official"
+          "radiombc",
+          "MBCFM4U"
         ],
         "expect": [
           "FM4U",
-          "fm4u",
-          "MBC라디오",
-          "MBC 라디오"
+          "MBC 라디오",
+          "MBC RADIO",
+          "MBCradio"
         ]
       },
       "band": "radio"
@@ -328,15 +334,18 @@
       },
       "youtube": {
         "handles": [
-          "TBSseoul",
-          "tbsseoul",
-          "tbs"
+          "seoulTBSfm",
+          "seoultbs"
         ],
         "expect": [
-          "교통방송",
+          "TBS FM",
           "시민의방송",
-          "TBS 서울",
-          "tbs seoul"
+          "시민의 방송",
+          "교통방송"
+        ],
+        "channelIds": [
+          "UC0sfSZeoSUeWxys7OKkTelQ",
+          "UC5HSw5OY2vfVFSihpiB-AVQ"
         ]
       },
       "band": "radio"
@@ -355,14 +364,16 @@
       },
       "youtube": {
         "handles": [
-          "tbseFM",
-          "TBSeFM",
-          "TBSseoul"
+          "seoultbs"
         ],
         "expect": [
           "eFM",
-          "교통방송",
-          "시민의방송"
+          "시민의방송",
+          "시민의 방송",
+          "교통방송"
+        ],
+        "channelIds": [
+          "UC5HSw5OY2vfVFSihpiB-AVQ"
         ]
       },
       "band": "radio"
@@ -429,13 +440,16 @@
       },
       "youtube": {
         "handles": [
-          "gugakfm",
-          "gugakbangsong",
-          "국악방송"
+          "GugakFM991",
+          "gugaktv"
         ],
         "expect": [
           "국악방송",
-          "gugak"
+          "Gugak"
+        ],
+        "channelIds": [
+          "UChGH9Y7DVCJXFlBtNXTf98A",
+          "UCaBwNyKKjDaYIzS8dhyaXBA"
         ]
       },
       "band": "radio"
@@ -479,8 +493,9 @@
       },
       "youtube": {
         "handles": [
+          "febcseoul",
           "febckorea",
-          "febc"
+          "FEBCTV"
         ],
         "expect": [
           "극동방송",
@@ -503,13 +518,14 @@
       },
       "youtube": {
         "handles": [
-          "wbsi_official",
-          "wonbuddhism",
           "wbsi"
         ],
         "expect": [
           "원음방송",
-          "WBS 원음"
+          "WBS"
+        ],
+        "channelIds": [
+          "UCvCsHiX168qm_OqH5EEO-Eg"
         ]
       },
       "band": "radio"
