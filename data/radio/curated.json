@@ -1,0 +1,186 @@
+{
+  "_comment": [
+    "사람이 관리하는 채널 시드. scripts/collect_radio.mjs 가 이 파일을 읽어",
+    "유튜브 채널과 공식 시청 주소를 실제로 확인한 뒤 data/radio/channels.json 을 만든다.",
+    "",
+    "youtube.handles : 후보 목록. 수집기가 위에서부터 시도해 처음 확인되는 것을 쓴다.",
+    "                  전부 실패하면 그 채널은 영상 없이 '공식 사이트에서 시청' 으로만 뜬다.",
+    "official.url    : 확인되면 이 주소로, 실패하면 official.home 으로 연결한다.",
+    "",
+    "첫 수집이 끝나면 channels.json 의 verified 값을 보고 실패한 채널의 handles 를",
+    "손으로 고쳐 넣으면 된다. 이 파일만 고치면 되고 화면 코드는 건드릴 필요가 없다."
+  ],
+  "channels": [
+    {
+      "id": "kbs-1radio",
+      "name": "KBS 1라디오",
+      "org": "KBS",
+      "freq": { "seoul": 97.3 },
+      "kind": "news",
+      "official": { "url": "https://onair.kbs.co.kr/", "home": "https://www.kbs.co.kr/" },
+      "youtube": { "handles": ["KBS1Radio", "kbsradio", "KBSNews"] }
+    },
+    {
+      "id": "kbs-happyfm",
+      "name": "KBS 해피FM",
+      "org": "KBS",
+      "freq": { "seoul": 106.1 },
+      "kind": "music",
+      "official": { "url": "https://onair.kbs.co.kr/", "home": "https://www.kbs.co.kr/" },
+      "youtube": { "handles": ["kbsradio", "KBS2Radio"] }
+    },
+    {
+      "id": "kbs-classicfm",
+      "name": "KBS 클래식FM",
+      "org": "KBS",
+      "freq": { "seoul": 93.1 },
+      "kind": "music",
+      "official": { "url": "https://onair.kbs.co.kr/", "home": "https://www.kbs.co.kr/" },
+      "youtube": { "handles": ["KBSClassicFM", "kbsclassic"] }
+    },
+    {
+      "id": "kbs-coolfm",
+      "name": "KBS 쿨FM",
+      "org": "KBS",
+      "freq": { "seoul": 89.1 },
+      "kind": "music",
+      "official": { "url": "https://onair.kbs.co.kr/", "home": "https://www.kbs.co.kr/" },
+      "youtube": { "handles": ["KBSCoolFM", "kbscoolfm", "KBSKpop"] }
+    },
+    {
+      "id": "kbs-3radio",
+      "name": "KBS 3라디오",
+      "org": "KBS",
+      "freq": { "seoul": 104.9 },
+      "kind": "talk",
+      "official": { "url": "https://onair.kbs.co.kr/", "home": "https://www.kbs.co.kr/" },
+      "youtube": { "handles": ["KBS3Radio"] }
+    },
+    {
+      "id": "mbc-sfm",
+      "name": "MBC 표준FM",
+      "org": "MBC",
+      "freq": { "seoul": 95.9 },
+      "kind": "talk",
+      "official": { "url": "https://mini.imbc.com/", "home": "https://www.imbc.com/" },
+      "youtube": { "handles": ["MBCradio", "mbcradio", "MBCNEWS"] }
+    },
+    {
+      "id": "mbc-fm4u",
+      "name": "MBC FM4U",
+      "org": "MBC",
+      "freq": { "seoul": 91.9 },
+      "kind": "music",
+      "official": { "url": "https://mini.imbc.com/", "home": "https://www.imbc.com/" },
+      "youtube": { "handles": ["MBCFM4U", "mbcradio", "MBCradio"] }
+    },
+    {
+      "id": "sbs-lovefm",
+      "name": "SBS 러브FM",
+      "org": "SBS",
+      "freq": { "seoul": 103.5 },
+      "kind": "talk",
+      "official": { "url": "https://www.sbs.co.kr/gorealra", "home": "https://www.sbs.co.kr/" },
+      "youtube": { "handles": ["SBSLoveFM", "sbsradio", "gorealra"] }
+    },
+    {
+      "id": "sbs-powerfm",
+      "name": "SBS 파워FM",
+      "org": "SBS",
+      "freq": { "seoul": 107.7 },
+      "kind": "music",
+      "official": { "url": "https://www.sbs.co.kr/gorealra", "home": "https://www.sbs.co.kr/" },
+      "youtube": { "handles": ["SBSPowerFM", "gorealra", "sbsradio"] }
+    },
+    {
+      "id": "cbs-sfm",
+      "name": "CBS 표준FM",
+      "org": "CBS",
+      "freq": { "seoul": 98.1 },
+      "kind": "talk",
+      "official": { "url": "https://www.cbs.co.kr/radio/onair/", "home": "https://www.cbs.co.kr/" },
+      "youtube": { "handles": ["CBSradio", "nocutnews"] }
+    },
+    {
+      "id": "cbs-musicfm",
+      "name": "CBS 음악FM",
+      "org": "CBS",
+      "freq": { "seoul": 93.9 },
+      "kind": "music",
+      "official": { "url": "https://www.cbs.co.kr/radio/onair/", "home": "https://www.cbs.co.kr/" },
+      "youtube": { "handles": ["CBSMusicFM", "CBSradio"] }
+    },
+    {
+      "id": "tbs-fm",
+      "name": "TBS FM",
+      "org": "TBS",
+      "freq": { "seoul": 95.1 },
+      "kind": "talk",
+      "official": { "url": "https://tbs.seoul.kr/", "home": "https://tbs.seoul.kr/" },
+      "youtube": { "handles": ["TBSseoul", "tbs"] }
+    },
+    {
+      "id": "tbs-efm",
+      "name": "TBS eFM",
+      "org": "TBS",
+      "freq": { "seoul": 101.3 },
+      "kind": "talk",
+      "official": { "url": "https://tbs.seoul.kr/", "home": "https://tbs.seoul.kr/" },
+      "youtube": { "handles": ["tbseFM", "TBSseoul"] }
+    },
+    {
+      "id": "ebs-fm",
+      "name": "EBS FM",
+      "org": "EBS",
+      "freq": { "seoul": 104.5 },
+      "kind": "edu",
+      "official": { "url": "https://www.ebs.co.kr/onair", "home": "https://www.ebs.co.kr/" },
+      "youtube": { "handles": ["EBSradio", "ebsculture"] }
+    },
+    {
+      "id": "ytn-radio",
+      "name": "YTN 라디오",
+      "org": "YTN",
+      "freq": { "seoul": 94.5 },
+      "kind": "news",
+      "official": { "url": "https://radio.ytn.co.kr/", "home": "https://www.ytn.co.kr/" },
+      "youtube": { "handles": ["YTNradio", "ytnnews24"] }
+    },
+    {
+      "id": "gugak-fm",
+      "name": "국악방송",
+      "org": "국악방송",
+      "freq": { "seoul": 99.1 },
+      "kind": "music",
+      "official": { "url": "https://www.gugakfm.co.kr/", "home": "https://www.gugakfm.co.kr/" },
+      "youtube": { "handles": ["gugakfm", "gugakbangsong"] }
+    },
+    {
+      "id": "bbs-fm",
+      "name": "BBS 불교방송",
+      "org": "BBS",
+      "freq": { "seoul": 101.9 },
+      "kind": "talk",
+      "official": { "url": "https://www.bbsi.co.kr/", "home": "https://www.bbsi.co.kr/" },
+      "youtube": { "handles": ["bbsradio", "bbstv"] }
+    },
+    {
+      "id": "febc-fm",
+      "name": "극동방송",
+      "org": "FEBC",
+      "freq": { "seoul": 106.9 },
+      "kind": "talk",
+      "official": { "url": "https://www.febc.net/", "home": "https://www.febc.net/" },
+      "youtube": { "handles": ["febckorea", "febc"] }
+    },
+    {
+      "id": "wbs-fm",
+      "name": "원음방송",
+      "org": "WBS",
+      "freq": { "seoul": 89.7 },
+      "kind": "music",
+      "official": { "url": "https://www.wbsi.kr/", "home": "https://www.wbsi.kr/" },
+      "youtube": { "handles": ["wbsi", "wonbuddhism"] }
+    }
+  ]
+}

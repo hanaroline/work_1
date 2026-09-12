@@ -1,0 +1,73 @@
+name: 라디오 라이브 수집
+
+# radio.html 이 읽는 data/radio/channels.json · live.json 을 만든다.
+#
+# 브리핑 세션은 사내 이그레스 정책 때문에 유튜브·방송사·radio-browser 에 직접 붙지
+# 못한다(radio-browser 는 CONNECT 단계에서 403). GitHub 러너는 그 정책 밖에서
+# 돌므로 여기서 대신 받아 커밋한다. 시세 수집(market-data.yml)과 같은 구조다.
+#
+# 주의 1: schedule 이벤트는 기본 브랜치(main)에 있는 워크플로만 발동한다.
+#         다른 브랜치에서는 수동 실행(workflow_dispatch)만 된다.
+# 주의 2: 예약은 제때 돌지 않는다. 이 저장소에서 95분 늦은 적이 있다.
+#         그래서 화면은 수집 데이터가 없어도 '공식 사이트' 단추로 동작하게 짜여 있다.
+#
+# 라이브 영상 ID 는 방송마다 새로 생기므로 자주 받아야 한다. 15분 간격이 과하면
+# 아래 cron 을 방송 시간대로 좁히면 된다 (예: '*/15 5-17 * * *').
+
+on:
+  schedule:
+    - cron: '*/15 * * * *'
+
+  workflow_dispatch:
+    inputs:
+      channels_only:
+        description: '채널만 다시 확인하고 라이브는 건너뛴다'
+        type: boolean
+        default: false
+
+  # 세션이 직접 부르는 길. 세션 토큰에는 Actions 쓰기 권한이 없어
+  # workflow_dispatch 를 API 로 부르지 못하지만 git push 는 된다.
+  push:
+    paths:
+      - 'data/radio/curated.json'
+      - 'scripts/collect_radio.mjs'
+      - '.github/workflows/radio-live.yml'
+
+permissions:
+  contents: write
+
+# 앞선 수집이 돌고 있으면 새로 시작하지 않는다. 같은 파일을 두 번 쓰지 않게.
+concurrency:
+  group: radio-live
+  cancel-in-progress: false
+
+jobs:
+  collect:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: 채널과 라이브를 받아 온다
+        run: |
+          if [ "${{ inputs.channels_only }}" = "true" ]; then
+            node scripts/collect_radio.mjs --channels-only
+          else
+            node scripts/collect_radio.mjs
+          fi
+
+      - name: 바뀐 게 있을 때만 커밋한다
+        run: |
+          git config user.name  'github-actions[bot]'
+          git config user.email 'github-actions[bot]@users.noreply.github.com'
+          git add data/radio/channels.json data/radio/live.json
+          if git diff --cached --quiet; then
+            echo '바뀐 내용 없음 — 커밋하지 않는다'
+            exit 0
+          fi
+          LIVE=$(node -e "console.log(JSON.parse(require('fs').readFileSync('data/radio/live.json','utf8')).live.length)")
+          git commit -m "라디오 라이브 수집 $(TZ=Asia/Seoul date '+%Y-%m-%d %H:%M KST') — 라이브 ${LIVE}개"
+          git push
