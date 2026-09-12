@@ -153,6 +153,27 @@
     return /^\d/.test(v || '') ? v : null;
   }
 
+  /** 이름에 적힌 연금 종류 — 「개인연금」·「연금저축」 은 퇴직연금이 아니다 */
+  var PENSION_OTHER = /개인\s*연금|연금\s*저축/;
+  /**
+   * 보수 표에서 퇴직연금 클래스 행을 고른다.
+   *
+   * ① 이름에 「퇴직연금」 이라고 적힌 행 — 가장 믿을 만하다.
+   * ② 없으면 클래스 표기가 C-P·CP·S-P·P 인 행. 다만 그 이름에 개인연금·연금저축이
+   *    적혀 있으면 집지 않는다. 같은 「S-P」 를 개인연금에 쓰는 운용사가 있다.
+   */
+  function pensionFeeRow(text) {
+    var r = feeRowByLabel(text, /퇴직\s*연금/);
+    if (r) return r;
+    var rows = fundFeeTable(text);
+    for (var i = 0; i < rows.length; i++) {
+      if (!rows[i].cls || !/^(?:C|S)?-?P$/i.test(rows[i].cls)) continue;
+      if (PENSION_OTHER.test(rows[i].label || '')) continue;
+      return rows[i];
+    }
+    return null;
+  }
+
   /**
    * 「투자실적 추이(연평균 수익률)」 표의 최근 1년.
    * 머리글 아래 첫 실적 행을 쓰되 참조지수·변동성 행은 건너뛴다.
@@ -727,6 +748,45 @@
           }
           var c = feeCell(t, [/합성\s*총\s*보수/, /총\s*보수[·•\s]*비용/, /^총\s*보수/], /^C(?:[\s\-]|클래스|$)/i);
           return c ? { value: String(c.value).replace(/%$/, ''), index: c.index, length: c.length } : null;
+        }
+      },
+      /**
+       * 퇴직연금 클래스 — IRP 로 가입하는 고객이 실제로 부담하는 보수다.
+       *
+       * 왜 클래스 표기가 아니라 이름으로 찾나. 표본을 떠 보니 표기만으로는 갈리지
+       * 않았다 —
+       *   우리프랭클린미국바이오헬스케어   cls=P     label=퇴직연금(P)
+       *   한화연금저축글로벌헬스케어       cls=S-P   label=개인연금(S-P)
+       * 같은 「S-P」 를 어떤 운용사는 개인연금에 쓴다. 표기로 가리면 연금저축 보수를
+       * 퇴직연금 보수라고 말하게 된다. 원문이 한글로 적어 둔 이름이 유일하게 믿을
+       * 만한 신호다.
+       *
+       * 표기로 고르는 것은 이름에 연금 종류가 안 적혔을 때만 쓰고, 그때도 개인연금·
+       * 연금저축이라고 적힌 행은 뺀다. 어느 행을 집었는지는 clsPName 으로 함께
+       * 남겨, 창구가 「무슨 클래스 기준」 인지 소리 내어 말할 수 있게 한다.
+       *
+       * 값은 feeRowTotal 이 고른다 — 모자형·재간접형은 합성 총보수·비용이 인정
+       * 기준이라 그 칸을 먼저 쓴다.
+       */
+      {
+        id: 'clsPExp', label: '퇴직연금 클래스 총보수(연)',
+        fn: function (t) {
+          var r = pensionFeeRow(t);
+          var v = feeRowTotal(r);
+          return v ? { value: v, index: r.index, length: r.length } : null;
+        }
+      },
+      {
+        id: 'clsPName', label: '퇴직연금 클래스 표기',
+        fn: function (t) {
+          var r = pensionFeeRow(t);
+          if (!feeRowTotal(r)) return null;
+          /* 이름 뒤에 숫자 칸이 딸려 오는 행이 있다 — 클래스 이름까지만 남긴다 */
+          var nm = String(r.label || '').replace(/\s+/g, ' ').trim();
+          var m = nm.match(/^[^0-9]*?\([A-Za-z][A-Za-z0-9\-]{0,5}\)/);
+          if (m) nm = m[0].trim();
+          else nm = nm.split(/\s+(?=없음|납입금액의|\d)/)[0].trim();
+          return nm ? { value: nm, index: r.index, length: r.length } : null;
         }
       },
       {

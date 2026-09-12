@@ -1873,10 +1873,26 @@
         var itp = fundCatByCode((dcp && dcp.catalogCode) || ST.productId || '')
           || fundCatByName(rawValue('name') || '');
         var pick = null, who = null;
-        if (itp && itp.clsPExp != null) { pick = itp.clsPExp; who = '퇴직연금 클래스'; }
+        /*
+         * 설명서에서 읽은 퇴직연금 클래스가 먼저다. 카탈로그의 퇴직연금 보수는
+         * 「총보수」 인데, 재간접·모자형은 인정 기준이 「합성 총보수·비용」 이라
+         * 총보수로 말하면 비용을 낮게 말하게 된다. 설명서 쪽은 합성 값을 먼저 쓴다.
+         * 어느 클래스를 집었는지(clsPName)를 그대로 말해 준다 — 「퇴직연금 클래스」
+         * 라고 뭉뚱그리면 창구가 무엇을 읽고 있는지 알 수 없다.
+         */
+        if (rawValue('clsPExp')) {
+          pick = rawValue('clsPExp');
+          who = rawValue('clsPName')
+            ? '투자설명서 ' + rawValue('clsPName') + ' 클래스' : '퇴직연금 클래스';
+        } else if (itp && itp.clsPExp != null) { pick = itp.clsPExp; who = '퇴직연금 클래스'; }
         else if (rawValue('clsExp')) { pick = rawValue('clsExp'); who = '투자설명서 기재 기준'; }
-        else if (rawValue('clsCExp')) { pick = rawValue('clsCExp'); who = 'C클래스'; }
-        else if (rawValue('clsAExp')) { pick = rawValue('clsAExp'); who = 'A클래스'; }
+        /*
+         * A·C 클래스는 IRP 고객이 부담하는 비용이 아니다. 값이 없는 것보다 나을 게
+         * 없으므로 「대신 쓴 값」 임을 이름에 드러낸다 — 창구가 그대로 읽어도 무엇을
+         * 말하고 있는지 고객에게 전달되고, 화면에서도 바로잡을 자리가 보인다.
+         */
+        else if (rawValue('clsCExp')) { pick = rawValue('clsCExp'); who = 'C클래스 (퇴직연금 클래스 보수 미확인)'; }
+        else if (rawValue('clsAExp')) { pick = rawValue('clsAExp'); who = 'A클래스 (퇴직연금 클래스 보수 미확인)'; }
         if (pick == null) return undefined;
         return id === 'clsExp' ? String(pick) : who;
       }
