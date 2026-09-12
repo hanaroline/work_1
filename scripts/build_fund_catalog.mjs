@@ -151,12 +151,23 @@ const items = all.map((f) => {
      * 온라인 전용(C-Pe·S-Pe)도 창구 가입이 아니므로 뺀다.
      */
     clsPExp: clsFee(f, /^(?:C|S)-?P$/i),
+    /* 아래 ind 갈래에서 clsAExp·clsCExp 와 함께 지운다 — 까닭은 그 자리에 적어 두었다 */
     cls: clsList(f),
     docT: docKey(f, 'prospectus'),          /* 투자설명서 일련번호 */
     docG: docKey(f, 'summary_prospectus'),  /* 간이투자설명서 일련번호 */
     docAt: docAt(f, 'prospectus') || docAt(f, 'summary_prospectus'),
   };
-  if (o.ind) { delete o.clsAExp; delete o.clsCExp; }
+  /**
+   * 재간접·모자형은 클래스별 총보수를 담지 않는다 — 인정 기준이 「합성 총보수·비용」
+   * 이라 총보수로 채우면 실제 비용을 낮게 말하게 된다. 투자설명서에서 합성 값을 읽는다.
+   *
+   * clsPExp 가 빠져 있었다. A·C 만 지우고 퇴직연금 클래스는 그대로 두어서, 재간접·
+   * 모자형 448종목이 IRP 상담에서 총보수를 말하고 있었다 — 예를 들어 우리프랭클린
+   * 미국바이오헬스케어(주식-재간접형)는 0.34% 로 나가는데 설명서의 퇴직연금(P) 행은
+   * 총보수 0.8400 · 합성 총보수·비용 1.7724 다. 다섯 배 낮게 말한 셈이다.
+   * 셋을 함께 지운다.
+   */
+  if (o.ind) { delete o.clsAExp; delete o.clsCExp; delete o.clsPExp; }
   delete o.ind;
   Object.keys(o).forEach((x) => { if (o[x] == null) delete o[x]; });
   return o;
