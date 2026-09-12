@@ -617,12 +617,10 @@
     });
 
     var liveCount = band.filter(function (c) { return S.live[c.id]; }).length;
-    var canPlay = band.filter(function (c) {
-      return S.live[c.id] || (c.youtube && c.youtube.verified && c.youtube.channelId);
-    }).length;
-    $('tvCount').textContent = canPlay
-      ? canPlay + '개 재생 가능 · 전체 ' + band.length + '개'
-      : '전체 ' + band.length + '개';
+    var inPage = band.filter(function (c) { return S.live[c.id]; }).length;
+    $('tvCount').textContent = inPage
+      ? inPage + '개 화면에서 재생 · 전체 ' + band.length + '개'
+      : '전체 ' + band.length + '개 · 누르면 유튜브가 열립니다';
     $('lamp').className = 'lamp' + (S.current ? ' on' : '');
 
     if (!band.length) {
@@ -630,16 +628,12 @@
       return;
     }
 
-    var playable = band.filter(function (c) {
-      return S.live[c.id] || (c.youtube && c.youtube.verified && c.youtube.channelId);
-    }).length;
-
-    if (!playable) {
+    if (!band.filter(function (c) { return S.live[c.id]; }).length) {
       var note = document.createElement('div');
       note.className = 'note';
-      note.innerHTML = '<b>이 갈래에는 사이트 안에서 재생할 수 있는 채널이 없습니다.</b><br>' +
-        '공식 유튜브 채널이 아직 확인되지 않았습니다. ' +
-        '각 채널의 <b>공식 사이트</b> 단추로는 바로 들으실 수 있습니다.';
+      note.innerHTML = '<b>지금은 채널을 누르면 유튜브가 새 창으로 열립니다.</b><br>' +
+        '화면 안에서 재생하려면 방송 중인 영상 번호가 있어야 하는데, 아직 받아 오지 못했습니다. ' +
+        '유튜브 새 창에서는 <b>지금 방송 중인 것이 바로 나옵니다.</b>';
       box.appendChild(note);
     }
 
@@ -654,8 +648,8 @@
         color: orgColor(c.org),
         initials: initials(c.name, c.org),
         live: !!live,
-        chip: (live || (c.youtube && c.youtube.verified && c.youtube.channelId)) ? '영상' : '공식 사이트',
-        chipClass: (live || (c.youtube && c.youtube.verified && c.youtube.channelId)) ? 'live' : 'ext',
+        chip: live ? '영상' : (liveUrlOf(c) && liveUrlOf(c).kind === 'yt' ? '유튜브 새 창' : '공식 사이트'),
+        chipClass: live ? 'live' : 'ext',
         onPlay: function () { playChannel(c); }
       }));
     });
@@ -882,18 +876,16 @@
     var live = S.live[c.id];
     var official = (c.official && c.official.url) || null;
 
-    // 영상 ID 가 없어도 채널이 확인돼 있으면 채널 주소로 바로 튼다.
-    // 유튜브가 그 채널의 '지금 라이브' 를 알아서 고르므로 수집이 늦어도 된다.
-    if (!live && c.youtube && c.youtube.verified && c.youtube.channelId) {
-      playChannelEmbed(c);
-      return;
-    }
-
     if (!live) {
+      // 영상 ID 가 없으면 화면 안에서 틀 방법이 없다.
+      // (채널 주소만으로 트는 옛 방식은 유튜브가 막았다 — '이 동영상은 볼 수 없습니다')
+      // 깨진 화면을 보여 주느니 유튜브를 새 창으로 연다. 거기서는 반드시 나온다.
       var out = liveUrlOf(c);
       if (out) {
         window.open(out.url, '_blank', 'noopener');
-        toast(c.name + ' — 공식 사이트를 새 창으로 열었습니다');
+        toast(c.name + (out.kind === 'yt'
+          ? ' — 유튜브 라이브를 새 창으로 열었습니다'
+          : ' — 공식 사이트를 새 창으로 열었습니다'));
       } else {
         toast(c.name + ' — 지금 들을 수 있는 경로가 없습니다');
       }

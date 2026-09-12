@@ -127,7 +127,45 @@ async function resolveChannel (handles, expect) {
 
 // ── 2. 지금 라이브인지 ─────────────────────────────────────────────────────
 // /live 는 방송 중이면 watch 페이지로, 아니면 채널 페이지로 간다.
+// 채널 RSS → 최근 영상 후보 → 임베드 페이지에서 생방송인지 확인.
+//
+// /live 페이지는 러너 IP 에 동의 페이지가 내려와 못 쓴다(로그로 확인). RSS 는
+// 동의 페이지가 없고 키도 필요 없다. 임베드 페이지도 마찬가지다. 그래서 이 둘을
+// 엮어 영상 ID 를 찾는다.
+async function resolveLiveViaFeed (channelId) {
+  const feed = await get(`https://www.youtube.com/feeds/videos.xml?channel_id=${channelId}`)
+  if (!feed.ok) {
+    log(`   ! RSS 실패 (status=${feed.status})`)
+    return null
+  }
+
+  const ids = [...feed.text.matchAll(/<yt:videoId>([\w-]{11})<\/yt:videoId>/g)].map(m => m[1])
+  if (!ids.length) {
+    log('   ! RSS 에 영상이 없다')
+    return null
+  }
+
+  // 생방송은 대개 맨 앞에 온다. 앞쪽 몇 개만 본다.
+  for (const id of ids.slice(0, 4)) {
+    const emb = await get(`https://www.youtube.com/embed/${id}`)
+    if (!emb.ok) continue
+    const isLive = emb.text.includes('"isLive":true') ||
+                   emb.text.includes('"isLiveNow":true') ||
+                   emb.text.includes('hlsManifestUrl')
+    if (!isLive) continue
+
+    const t = emb.text.match(/"title":"([^"]{1,120})"/)
+    log(`   ● RSS 로 찾음 ${id}`)
+    return { videoId: id, title: t ? t[1] : null }
+  }
+  log(`   · RSS 앞 ${Math.min(4, ids.length)}개 중 생방송 없음`)
+  return null
+}
+
 async function resolveLive (channelId) {
+  const viaFeed = await resolveLiveViaFeed(channelId)
+  if (viaFeed) return viaFeed
+
   const res = await get(`https://www.youtube.com/channel/${channelId}/live`)
   if (!res.ok) {
     log(`   ! /live 응답 실패 (status=${res.status}${res.error ? ' ' + res.error : ''})`)
@@ -325,6 +363,63 @@ const RB_HOSTS = [
   'https://all.api.radio-browser.info'
 ]
 
+// 이름이 제각각이라 같은 방송국이 서너 개씩 올라와 있다.
+// (KBS Classic FM · Clasico kbs · KBS_kor / KBS 1R · KBS 1Radio ...)
+// 아는 낱말만 뽑아 정렬해 열쇠로 삼으면 표기가 흔들려도 같은 것으로 묶인다.
+const NAME_TOKENS = [
+  [/kbs|케이비에스/g, 'kbs'], [/mbc|엠비씨/g, 'mbc'], [/sbs|에스비에스/g, 'sbs'],
+  [/cbs/g, 'cbs'], [/ebs/g, 'ebs'], [/ytn/g, 'ytn'], [/tbs/g, 'tbs'],
+  [/gugak|국악/g, 'gugak'], [/obs/g, 'obs'],
+  [/classic|클래식|clasico/g, 'classic'], [/cool|쿨/g, 'cool'],
+  [/happy|해피/g, 'happy'], [/power|파워/g, 'power'], [/love|러브/g, 'love'],
+  [/music|음악/g, 'music'], [/standard|표준/g, 'standard'],
+  [/fm4u|fmforyou|fm4you/g, 'fm4u'],
+  [/1radio|1r|제1라디오|1라디오/g, '1r'],
+  [/2radio|2r|제2라디오|2라디오/g, '2r']
+]
+
+function canonicalName (name) {
+  const flat = String(name).toLowerCase().replace(/[^0-9a-z가-힣]/g, '')
+  const found = []
+  for (const [re, tag] of NAME_TOKENS) {
+    re.lastIndex = 0
+    if (re.test(flat)) found.push(tag)
+  }
+  // 방송사 낱말이 하나도 없으면 이름 그대로를 열쇠로 쓴다(엉뚱하게 묶지 않는다)
+  if (found.length < 2) return flat
+  return found.sort().join('-')
+}
+
+// 정말 소리가 나오는지 직접 틀어 본다. hidebroken 을 걸어도 죽은 주소가 남는다.
+async function checkStream (url) {
+  const ctrl = new AbortController()
+  const timer = setTimeout(() => ctrl.abort(), 8000)
+  try {
+    const res = await fetch(url, {
+      signal: ctrl.signal,
+      redirect: 'follow',
+      headers: { 'User-Agent': UA, 'Range': 'bytes=0-2048', 'Icy-MetaData': '1' }
+    })
+    if (!res.ok && res.status !== 206) return false
+
+    const type = String(res.headers.get('content-type') || '').toLowerCase()
+    const soundy = type.startsWith('audio/') || type.includes('mpegurl') ||
+                   type.includes('ogg') || type.includes('octet-stream')
+    if (!soundy) return false
+
+    // 머리만 받고 정말 바이트가 오는지 본다
+    const reader = res.body && res.body.getReader ? res.body.getReader() : null
+    if (!reader) return true
+    const first = await reader.read()
+    try { await reader.cancel() } catch { }
+    return !!(first && first.value && first.value.length > 0)
+  } catch {
+    return false
+  } finally {
+    clearTimeout(timer)
+  }
+}
+
 async function collectStations () {
   for (const host of RB_HOSTS) {
     const res = await get(`${host}/json/stations/bycountrycodeexact/KR?hidebroken=true&order=votes&reverse=true&limit=400`)
@@ -333,7 +428,7 @@ async function collectStations () {
     try { rows = JSON.parse(res.text) } catch { continue }
     if (!Array.isArray(rows)) continue
 
-    return rows
+    const mapped = rows
       .map(s => ({
         id: s.stationuuid,
         name: (s.name || '').trim() || '이름 없음',
@@ -345,6 +440,31 @@ async function collectStations () {
       }))
       // https 페이지에서 http 스트림은 브라우저가 막는다. 처음부터 뺀다.
       .filter(s => s.url.startsWith('https://'))
+
+    // 같은 방송국끼리 묶고, 비트레이트가 높은 쪽을 대표로 세운다.
+    const groups = new Map()
+    for (const s of mapped) {
+      const k = canonicalName(s.name)
+      if (!groups.has(k)) groups.set(k, [])
+      groups.get(k).push(s)
+    }
+    for (const list of groups.values()) {
+      list.sort((a, b) => (b.bitrate || 0) - (a.bitrate || 0))
+    }
+    log(`공개 스트림 ${mapped.length}개 → ${groups.size}개로 묶음. 실제로 틀어 본다…`)
+
+    // 묶음마다 위에서부터 틀어 보고, 처음으로 소리가 나오는 것 하나만 남긴다.
+    // 한 방송국이 주소를 여러 개 올려 둔 이유가 바로 이것이다 — 하나는 살아 있다.
+    const alive = []
+    let tried = 0
+    for (const [k, list] of groups) {
+      for (const s of list.slice(0, 3)) {
+        tried++
+        if (await checkStream(s.url)) { alive.push(s); break }
+      }
+    }
+    log(`   ${tried}개 시험 → ${alive.length}개가 소리를 냈다`)
+    return alive
   }
   return []
 }
