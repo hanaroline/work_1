@@ -1,72 +1,304 @@
-<!-- 덤프: 2026-09-11 10:15 KST -->
-
-
-<!DOCTYPE html>
-<html lang="ko" class="">
+<!-- 덤프: 2026-09-12 16:51 KST -->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="ko" lang="ko">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no,viewport-fit=cover">
-    <meta name="format-detection" content="telephone=no">
-    <!-- CSS -->
-    <link rel="stylesheet" type="text/css" href="/h/kws/assets/css/style.css">
-    <link rel="stylesheet" type="text/css" href="/h/kws/assets/css/toastr.css">
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="edge"/>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta name="viewport" id="viewport"></meta>
+    <title>시스템작업알림</title>
+    <!-- 참고용 CSS -->
+	<link type="text/css" rel="stylesheet" href="css/base.css?20170427" />
+	<link type="text/css" rel="stylesheet" href="css/common.css?20170320" />
+	
+    <!-- 참고용 CSS -->
+    <style>
+    body, body * { -webkit-font-smoothing: antialiased; }
+    .top-area-pc { width: 100%; text-align: left; }
+    .notice-wrap-pc { width: 500px; margin: auto;}
+    
+    .notice-wrap { width: 90%; margin: auto;}
+    .notice-wrap img { width: 100%;}
+    
+    .notice-wrap-pc { width: 500px; margin: auto;}
+    .notice-list-pc { border-top: 2px solid #b2b2b2;}
+    .notice-list-pc ul { margin-bottom: 20px;}
+    .notice-list-pc li { padding: 10px 0; border-bottom: 1px solid #b2b2b2; font-size: 14px; color:#222; overflow: hidden;}
+    .notice-list-pc li p.num { width: 62px; float: left; font-size: 30px; line-height: 30px !important; color:  #b2b2b2; font-weight: bold;}
+    .notice-list-pc li div { width: 100%;  word-break: keep-all;}
+    .notice-list-pc li div h2 { display: block; font-size: 17px;  line-height: 17px !important; font-weight: bold; margin-bottom: 5px;}
+    .notice-list-pc li .dash { padding-left: 8px; background: url(img/icon_dash.png) no-repeat left 8px; font-size: 13px;}
+    .notice-sub-text-pc { font-size: 13px; line-height: 14px !important;    word-break: keep-all; margin-bottom: 20px; word-break: keep-all; }
+    .notice-sub-text-pc span { display: block; font-weight: bold; margin-bottom: 5px;}
+    .notice-close-pc { height:33px;  line-height: 33px !important;  background: #e5e5e5; text-align: right;}
+    .notice-clos-pce label { margin-right:5%;}
+    
+    .top-area-mobile { width: 100%; height: 28px; text-align: left; }
+    .top-area-mobile img { height: 100%;}
+    .notice-wrap-mobile { width: 90%; margin: auto;}
+    .notice-wrap-mobile img { width: 100%;}
+    .notice-list-mobile { border-top: 2px solid #b2b2b2;}
+    .notice-list-mobile ul { margin-bottom: 20px;}
+    .notice-list-mobile li { padding: 10px 0; border-bottom: 1px solid #b2b2b2; font-size: 13px; color:#222; overflow: hidden;}
+    .notice-list-mobile li p.num { width: 40px; float: left; font-size: 24px; line-height:24px !important; color:  #b2b2b2;}
+    .notice-list-mobile li div { width: 100%;  word-break: keep-all;}
+    .notice-list-mobile li div h2 { display: block; font-size: 14px;  line-height: 14px !important; font-weight: bold; margin-bottom: 3px;}
+    .notice-list-mobile li .dash { padding-left: 8px; background: url(img/icon_dash.png) no-repeat left 8px; }
+    .notice-sub-text-mobile { font-size: 13px; line-height: 14px !important;    word-break: keep-all; margin-bottom: 20px; word-break: keep-all; }
+    .notice-sub-text-mobile span { display: block; font-weight: bold; margin-bottom: 5px;}
+    
+	.top-area-mts { width: 100%; height: 28px; text-align: left; }
+    h1 { font-size: 14px; text-align: center; padding: 20px 0; }
+    .notice-wrap-mts { width: 90%; margin: auto;}
+    .notice-list-mts { border-top: 2px solid #b2b2b2;}
+    .notice-list-mts ul { margin-bottom: 20px;}
+    .notice-list-mts li { padding: 10px 0; border-bottom: 1px solid #b2b2b2; font-size: 12px; color:#222; overflow: hidden;}
+    .notice-list-mts li p.num { width: 40px; float: left; font-size: 24px; line-height:24px !important; color:  #b2b2b2;}
+    .notice-list-mts li div { width: 100%;  word-break: keep-all;}
+    .notice-list-mts li div h2 { display: block; font-size: 12px;  line-height: 14px !important; font-weight: bold; margin-bottom: 3px;}
+   
+    .notice-sub-text-mts { font-size: 12px; line-height: 14px !important;    word-break: keep-all; margin-bottom: 20px; word-break: keep-all; }
+    .notice-sub-text-mts span { display: block; font-weight: bold; margin-bottom: 3px;}
+    
+    .insert-text {padding-left: 20px;}
+    .insert-text h2 { margin-left: -20px;}
+    
+    </style>
+	<script type="text/javascript">
+	
+	var Request = function() {  
+	    this.getParameter = function(name) {  
+	        var rtnval = '';  
+	        var nowAddress = unescape(location.href);  
+	        var parameters = (nowAddress.slice(nowAddress.indexOf('?') + 1,  
+	                nowAddress.length)).split('&');  
+	        for (var i = 0; i < parameters.length; i++) {  
+	            var varName = parameters[i].split('=')[0];  
+	            if (varName.toUpperCase() == name.toUpperCase()) {  
+	                rtnval = parameters[i].split('=')[1];  
+	                break;  
+	            }  
+	        }  
+	        return rtnval;  
+	    }  
+	}  
+	
+	var request = new Request();  
 
-    <!-- JS  -->
-    <script>var w7onN = {"AbgVq":"646b65b9eac5ea8d020e2755fe6760f12e0443eb9c63b556a95f9fbc9da17613b4fb7556f00eb2614cfc39be4e8c74f5efbeb16ab90082f147b6bb89d681d50bee5085f8b783a85d139a6ffedd40efd9143c957001ff8e6f5a919d5161aa1e9f710b5ae9510f62b5dae8d8aa3afe8a8d8f98a8c1614c0e63ea1e2c2212224481ace040d1315c9b8b5a407c0987b84a5d0578a22e1b41994276e519a04c3ba8fccc334fb949d5ba5e28252770b5c2911dc649fe0ee251ada6998db0cfd52f3ba2226f018a4f4ba49443cf276f4988658809d77805f7bd29f1c47f84ab1c9e9041649df3140cbcce35d9b7d56242a85f461342a1a8b186e0f069f448c4e87788b438f86de399dc656e7cc69e70f88fe699634e7afb5328d803765cf2bf25d577c5d24aafe4d19de22e55bb4cb3233e079c5b3f4648d97fc1e2e783532db664d83e03913f0f06352212f4b3c75bdfc40b7d5594d40f5f8223a2be73f72303874262ff99e864f896b482525973b4f3de230d5d9a15adc08a23127a4f27e71111c0cceb31173491cf3a8d1965112b46cedcb84392cdcc7e8b421b63f1551e7dc6ae41ef99d7cb8af7517f8a770e09ea807a22ce965a0432ef1483d3d06e0dd3c032dbcdf63f4225d55fc3fe9d367f6579556161cf7b4f8f7dee8993f7b9f1c9220a2bcab68801236dca349d56351ae8138fd1bde046774757cfe9b9e1c167642461f8d0065ba2678d260faedaa9cd8e7a171ccc41b57dd69ee2661ad6660fbc237e04","rey58":"/h","WSSCl":"evfw","rEAt9":"","DPm4z":0,"NxP6b":"f92995b27f144b1d1adf96c54ac1ee010a52cd7731e5090262aae23fa9290b9e95f093649b641265a98133d75cf084b8c44db49c35e6cb54943c4c6528931b60d1db6722d57c82746436c0db95b30edc06facb9adb5e0aa8bf29d031317391b0402d903cec861b35f7c1a02e3883f46532e07632d7d0028c0e638b6e6239792296945342283672b48ec964e5b6e5de99f2d3098cd25f3e4ef7f8733273051d101143956cdd7e6927533fad36c9dd145c8c6be9ff22e0df749ef8a055066d2f40a34826a8af14ec9c96ec0adf9484a42998108faad28c048f8fab469325a4889c3b64b9edb047c3952e585b50177c8cd9f704ade1cfe45a655d1588dc43cc18816393c4481fa5bc98d1342ddc0c2a62518178ce006cf44e28530d4cb2654fd04afae41d8bd1baeb0050187274df0ed7c6be47c2ffbef789dc4167f91edad6e272037bf68896345c05cd8277d8210d5d7be7c38f870cd4bcd83f6b3af642a48974a6b15f707c26ea4777a8ee097fd17b0dcb500d63b6d3e54e0c3af26633b00939023268e56ed9a0bd708a1b81ccaf91edfd4878dab60530f3cbcdd2f67a1369f2f94599a6d64848afed84df83b6149cda8ee9316109c6cb98cddbaf23352fd53500edd6bf8eb07ef21a02988e1efa39bc125a75de97c644dbf2cde89a2f628f4e21379438123bb7079217e537d982a0aa3b0da062ac12672fbe07602315c3cb84807d6bb4ace3d3dffb2efc1d0fef2d46f532e06da26ef1ca4286192e957861fe7e20a5d7dd94fe730297d8aeba1a2aaf46bc03e7381d10dea3e86e752285d71d50bcee14f530e5cf70c433cfceaecc324786a4576a15e7ff11781edb59b03d74421a59a6bf0247a3b9675bc408f36873f37259f526341a809e3a1f3b94d35447cdb63f92874ddcbaa990414dd3c9ff0243add6f423afba420d0764470cce9e3751be7e0d86c70dec2b98e4a45f9b3f1815fbca546ed0f69d4d563a0838fe2cae","w1nKx":{},"xv5Ot":"9f2029a8387e7351a54e9c26fadef8f59b511a434a9be913ffb858457345543495d2e7d7c120f32145314b99e12b67f434f63c7514f2e00544565e7ecc81a6d1bea85ba966d00213a42d53c7b0221dfad90be8fe38410d1e970fce21d3408e755aba295f0ad9a150a1d2fe96704ba8b2bb367bc0939de75cb4cdea636f88749975af339804e8f6a40fe127c29505c9fde86eee78c5e9684647e072b0af3829fcad07a4dd4738f17a4fe918e5f9ad5e9001e7c3257938fd531420bec1dd951d1581003eb51172102993a85e3536fa9b85a2153bfa11cf26b3ca7998196eace427ef8aa862a1c93946a0a38d75bf8ac35ba3eda738bf7d1bcabf1627cb531834adfcea970462eb7d051a35eb5653b46d07c1be62a0c87ca37bab160a8f63fefd872ca41e4aab9521add2308d54f95094d609a595f24316bbd1800cfeeb995c89c6aed3d9464f229dbe413cc028dd58f5b7bd3878b548c5a05e5c6f5eb51321a524ee262dd123ab230fa7bc93ef7673b84f41414e10eaaa068861e1697d0fd655787d1ca6ab14f431c8cc9ddbe3c0724754a003696be1aebad8cad354eb7a3ef1d4319b51805bea33bcd882604ed217ca1dbcb3b4920d79933eb11116b9c946875010ffd080f239faf5e6e1fc84d587c08933c7fbd476b9cf0ed45b01f188754157addf45dcdfddd3eccc75c358e1e8c3a990aac10befee8def1a445fd88e25fc2b6e5fbcfce4b79ea9b948fc9425a6e3c9f06665725bee1c3f39c55feb3ce1e14e473d2276de053698144eb5859341611afdcbeeca7d74e9245f59ed6c8f251ec069a4a2dd46fe9bc0d7c7884db28cb9c5b2bf00a4af67a975d85346b6dfdea6ced9feef5436835274b1a8160736e11511502496ef4b9fc42ca4c0971384791ec44c92fb34bd6034e0ade125bf73ddd1bee1d7e4e7f6278b8db569db1d45f2b89b24bf4a23aced7b008e724312374167a7ab7ffbb8d2d06e43b253b3a80bc72b7d98ac6403522c703a7a8cbd14c11250e5cd34713f0df7efdd524db2ef8969af826b374ed93e8100d1ed60bd7bc485501ebe8d30b76426e18e1f46a742990a22ff85d8128fd44ed4c5c852cbcda17daede6df3bcd5103e2b66d83c606633951ce46f3bb1b2806b59677d50db122229d19ba660272d4a4eda8d38c6f564fea4fb0cd99a9bfcde7a3c682c6ec781ffacc2bb9cd495102089784eb580270ba768692ae5deb46b4cf2a738047908a6e1baece16e7d97b7d0c2a5bbd2c8ed96a0aad67dd9b8dd1fc8ab73e1979525f723449c759bd5b22052d8aca30b544a9552914c8a95157703ab59a26bf058ba8e39e03bd2f1f711fe3bc97e1602aadf57d4bb4052adf9d26347e6137d5845b8294d3c6579bf8e6057503e98cf7a53077a87522400da409e2ea2319d78352253d19472b84a5c144f0ee87a3151cdf487e10d2990e9540d6924088b2f954d8311b816ab58e1338c0a2304bc0624104a2e8437b788613e71e3e3012c8964b0502e618c861ad494be153a4e3a2ca20bb13d7dac36afc10cb4692f1223bd4ae0110d7614fc786bdc58f97756e631052bb7d7ab033ae076b06c3faf05eeefff9740480a11a014155a617e88b931120223add800e31b0857d832123b30e2982367e1bb1aa933e20adc861ea2f9af2ed85e75be32418332945c3c3d77843f0be6424af2b51fb328f49b5d0871850489931c4fe9fc7537e367c35803d3d02342c7c10a85734fa67a2cea42b2bfacf1b3c0f111df2d4e5a45f69ae1014216cdeff81a879c7cce2e4b1164b8cb4a7c15fa868de03b7805249acc87f6af09887e80273d32382300f2837b31a03efb3acc5954947c5323ea1e7420f4f486405a389cbeaa8003b7764d5045b25bc56aed02caff0f608d9edb6d93fec35bc44199f32eedcf4de75d3779c88d38c6069fe4877c1ac4c88bed8bb9c0407244a16e7b93e3628e85e803e56faafa8b2d957bfef21a3d9fce2efd259bbf2eb8a9e2075549bd41d71de182d2192da1bf3876e0c0b1723f586c4e1a2266839fbb3e3e7a3c6fdc57325648ea761c07d49338f8a0c0121376e279414b5f57f7d18d74968b7996e726866ea0bc98c23bf789ed86b4db59aa080b7835e315028611b5d38cf6bc7d6c6b6aaa83d8f215023f98c81fbbf468ca26e4c30bc7b5f2e34a5e0236908061c93391f615bb631ca9b9739a8192e7dd0b6b6c09442122dd11d1a5c9e9823a1a58113081f186d733aba551c87c09934f2b8eb03fbc4eedf20367aa40b79adfbbbb45754c28d112c57f8df43881722c50c4d03f14f3faaa3aed117cd91f861b3acfe67dbdef278076848b5d985af088e9e6c1be44651f540faf809ffa1fbaf1b0f0cae4c8db6494a484ffdf504abb4c8e0640ee9eb8257187ec4ac4793462af18aeb3e59115327276185a70c3dbf0b0400780e057c497eba3a8a70d39d43a4bb085b609408de3bc31edccf9d59d28d5b56ea3884b80d243d7d3474c4fda0d024b3c9da8f29247541b0dbed8334c9adbdc4badaf219a6a748d2947b413a5ff555d5896c42814ab134d992fedc03956908a2e88d13f51334a09fb5e5ebe97829bba8d79960c13d64635f957c878e6d631b3002f56361f37649f2df130421b2e7b63b75c24e3413e4a4ee83076ac256ccdd7c1015a20281b07ab255314f112d94525d397200a56b72c0467a1ad828bf8a4cf89096a54eb9aa954f1bdb4f170aad785ce9da524670f8d720844ae70395ddff2c98951015a14dd388c2493f3a54f23c8e96b033f026b5ec13f6764340f1d674992260d2314b38013667926e68cf8e5de3b158da008bfbe60ae2c69d4dd1ba02e15656aa5ea5d0aae4c52e205f779d123620b173ad849273492cc950a2114ea8b0a311816820bdee804c5719d614f8015c533af025fdcdd5b3a45cd4a5ee243e8c65013915dad7537447d16727201db90701d964c529d1c0efef342fdde44bacdb568f91c6cacc52900442667915afb08b9f3bae42a36c113376a331c32ea4977cd324bd36a731217f69b6a36261b19819066210084634eeb11b6681ef2844e7b16efb2a21b042f6d55bd6a97f6150d6b537d33d98b7ae16a96dc24ae3d64acfff2e6829c37adb005c41c64f5f090893e1bc8456ba17cbaf7ef47fe7849c994446fe0208fb486f147d976b6eb299e50cdc7c358c54b3f28fd0fe84f5944f5944983fe8cb38d55fb1aaccc5f771b22492d39cc5c002771c4c018b9c8a4f7576db95c5aeae2684209a181c1fd01c2d55b9d76978fc1876ed978c1cf472b9200ada2fb639ce5c1a3b23276b71de2202af6995c1b0e5d34acecc0def57476944c7703b1b93db18d2e65c489581ea7c0e5fd9674074a6e2dcc7965061222a0e4d4e3cee49bc13a161dcbc5942cda383c321620e25ab30be0a57c868715f2514f3dfe81266d2fa7a0037045299b73827b7ff7865320612885994348f02edc19336e854a5f6e1f725d518ebb9d643885a008653d8044e40d5428fbcc158142a605325906b566ed63dfdcf486c41e23112f759983025675ee7bef50eb3538f24722103e5ef25aee29996e3ac511269ae24e5e44bafdbe418ab3a9c4494862064fa9549a0ec58d322b02cc63ed57dd01b0612301998f115d3e4e84a52ced30e1dcd23071d9e05024e91cc1a53e83338ba51579910e41cde6d9a791d492dcf73aefdc164d04f58e9138419bb98c3d8cbbbe17a0177365160f1ddac84960aafe865241737cb1d53b4f96e670f305cd118a0f7f5ca8b709071186b6151dd5de5c12233c6b3814009c66ca28f5596345d386ff471900a0843724edfd01e65ac7da1ef53018ce2c3d93c2ccc9e97a51719df90b67e872d036ce71ad5d9c886f6b6cc2d69438338432cea9d3bcdbef218fdc583abe9004afc2e41592b306d227cda3da417187ea102490fc514e19d95e6071f75a2affae7a30453e46ab38b77594ff52da2248d91a9f410a303861e77cb8260e9fe5f813e89f176f2f2e38eb8a9c4e4054e1a23493d8ad15d1b60e9463d63c631fd3e755f1bd218fa03b6b04ce384707de5797d78e62f23b2ca61a7657d9530e7bcf603445b1cef78835dbc3f2da6bbc1fd1a5548052fc31f012b8b9ca96d4cb9de32c1a3b921c5435b532f2420a37edb4177c90a3961602f412fdd710a0f62ea67fe5b5693140c937fe8e189d18c874af099f3d03ea8315a16cc07797ba4ef6cd1753ca8c89396ef2e492b5f34d1e51109092e547a839ed9197114eeedee1cef32f825e938d71f02853367b643482f340139f915a8a217e944ee8dd2fdfecaac6bfc02f4c8488df4db2353ca1e8684920a0ff354054e777a9479002d57f47077343ee0e2652244bcc4bb8fdfa16805f9fa1927349673a121bfc27c69a33c32bd33633cace61ee2c08428b9a5538f02212a32cca10cdab629abb2f9ccea72bfc85e94d806fd22dbe7f062ea12b886859b3ab7d865df67a5dbf780bd9e1ce7a3e8d2faa6fa080a3cfa8556736e97fc8c7a28db59a5d2562103ee263c600f0501637f73d8b913ba6b6eb5acbd12ede21d74e34df4820c7c0214bfbe57db453961c47beba52bf2fd055990ed23cb14facf764b09a97dfc8bd306892856460aa705f2dedb84f2b5979ef1ba4f6197db8e34a6e95977602288e132fccf36ce16c09d266ea108ac907aeb6d7da3951769f2f0d36e545425c009f4e87c5b31604a2c663d3c6b1b4b100bf4c17905c72e6080c07787b62bde00a51a755b02edac824d9b5b788324807df5f951f21acbdcc1f632861c9b27fefaee71ffd39dadeaa2872162836068620ce392ebd1cf61244fa00eaea9e0d70d12f668047b80b3eac36c68e548861d4b57f22f203b07b2d7ff4a3c12497dfc078fda98d24e2c90504dbbdf72f506c86a131bfc613848e0389be770e8feab4ecb68d1166c924ba4e78f05796b0c97af4d1fa1068da97aa4c05dbf535e8b11468d86e2ac094d8cc10151c8be258bf578ce07338c69089d2dfa1921e4b4c061be6f0b06db0d1ace207ab8142294816530d02127304a7be35c959fce269dfc66f9f223e12f18b88906d29ff30817f069dc8a5478b389ffd2fe0236a8530860ebcfa2244e2c20c876533dcfa9d4062339a3965d7f642ae9ed6f9385fc4a68709e9a938d2e70d875aca56a843003aa620684fa0f4c7bdc0accdfdbd32ce5faf3f8d163517a827f29a69b62ba458dfcb74ab04c4e1295a6410345aec935cf888b0a146e4d5cbf29555d980e2cab236fb0ec695c38d026b6216fdeed56331d4f426bd3d165629537e6b06dc5eba6a2d92dd5bacf738b55a2d1d662bca0db57af84e0f08271a5fcf891dffb2f762a0b6c86e98f8820b333172151265c5aafa60c3de63cfb4534aa3c0df7d32fe64e8a838e4fa8d7c74fa992befdee2e246c4af8ad21bbbed0ed762969e8ce1d17a45770a7a97eaf29a7f53cf9e44339483ee36c80541408a0e407b382fcfc59450303d883b960af9b5a0be12cfe698f8b4fc9f1be410fe36301ead267bd855896b85ee684619edfae8592c8a36ad1a7f0663914f3fd3f25c05b719a5435254a1634e5c46d010ea6b4d1d48f31dd3e11c9d8f28d12e50835f07d50ab4981bde2418fb18bc4767a8f501295014c56743fca37118c1c65410528ffcf68786d766ef00d5b035fb57c9ea55fb1e668df28036d0569d70eb895cfb8de056c18c2ea0c533dbf8839d8a197e847c53f285f635bac18ee02ec558b19af79bb6f1f34b1151c53a2c638abb722aa36cf5bf2c272c1089669050137f6ec3512615d7182dda3a635a453c0bb7c1a58821610bca71a8b106f1c6e966eadd5aa55ad98c32eca7fff72f","XUvdo":{"cQL0N":"l"},"R59bR":{"tWrof":[],"oox2O":"","xqnD8":"","siruz":[],"KQppg":""},"FI0LB":{"HXJ5g":[],"R5eM5":"alert('threat detected!!!'); window.location.reload(true);"},"f1dJA":{"Q98Gc":[],"k553Z":[],"PBsbK":"du/","oo1Si":[],"UxRsw":{},"aW4h6":"dq/"},"uBRxh":{"OQzGv":"","yvYgW":0,"yc4TM":"","YwJSS":[]},"oLkqL":{"eBfJs":"","tGUY9":[],"q9CnO":[],"M0IgU":""}};
-</script><script src="/h/invest/research/VAnalysisRVwList?evfw=sPowsUXwNpjPscav" charset="utf-8"></script><script type="text/javascript" src="/h/kws/assets/lib/jquery-3.5.0.min.js?20231019"></script>
-    <script type="text/javascript" src="/h/kws/assets/lib/jquery-ui.min.js"></script>
-    <script type="text/javascript" src="/h/kws/assets/lib/fontfaceonload.js"></script>
-    <script type="text/javascript" src="/h/kws/assets/js/share.js"></script>
-    <script type="text/javascript" src="/h/kws/assets/js/interaction.js"></script>
-    <script type="text/javascript" src="/h/kws/assets/lib/swiper.min.js"></script>
-    
-    <!-- dev js -->
-	<script type="text/javascript" src="/h/kws/assets/lib/string-prototype.js"></script>
-	<script type="text/javascript" src="/h/kws/assets/lib/jquery-extends-custom.js"></script>
-	<script type="text/javascript" src="/h/kws/assets/lib/iframe.js"></script>
-	<script type="text/javascript" src="/h/kws/assets/lib/JXParser.js"></script>
-	<script type="text/javascript" src="/h/kws/assets/lib/jdate.js"></script>
-	<script type="text/javascript" src="/h/kws/assets/lib/params-validator.js"></script>
-	<script type="text/javascript" src="/h/script-validator-types"></script>
-	<script type="text/javascript" src="/h/script-validator"></script>
-	<script type="text/javascript" src="/h/kws/assets/lib/message-popup.js"></script>
-	<script type="text/javascript" src="/h/kws/assets/lib/jcalendar.js"></script>
-    <script type="text/javascript" src="/h/kws/assets/lib/toastr.custom.js"></script>
-	<script type="text/javascript" src="/h/kws/assets/lib/clipboard.custom.js"></script>
-    
-    <!-- Title -->
-    <title>오류페이지 | 키움증권</title>
+	var media = request.getParameter('media'); 
+	var agt = navigator.userAgent.toLowerCase();
+	var platform = navigator.platform.toLowerCase();
+
+	var browser = "";
+	var isMobile = "";		
+
+	if(agt.indexOf("iphone") != -1){
+		browser = "iphone";
+		isMobile = "1";
+	}else if(agt.indexOf("ipod") != -1){
+		browser = "ipod";
+		isMobile = "1";
+	}else if(agt.indexOf("android") != -1){
+		browser = "android";
+		isMobile = "1";
+	}else if(agt.indexOf("symbian") != -1) {
+		browser = "symbian";
+		isMobile = "1";
+	}else if(agt.indexOf("iemobile") != -1 || agt.indexOf("windows ce") != -1) {
+		browser = "iemobile";
+		isMobile = "1";
+	}else if(agt.indexOf("windows") > 0  && agt.indexOf("applewebkit") > 0 && agt.indexOf("qt") > 0) { 
+		browser = "windows mobile";
+		isMobile = "1";
+	}else if(agt.indexOf("ipad") != -1){
+		browser = "ipad";
+		isMobile = "2";
+	}else if(agt.indexOf("safari") != -1){
+		browser = "safari";
+		isMobile = "0";
+	}else if(agt.indexOf("opera") != -1){
+		browser = "opera";
+		isMobile = "0";
+	}else if(agt.indexOf("chrome") != -1){
+		browser = "chrome";
+		isMobile = "0";
+	}else if(agt.indexOf("firefox") != -1){
+		browser = "firefox";
+		isMobile = "0";
+	}else if(agt.indexOf("netscape") != -1){
+		browser = "netscape";
+		isMobile = "0";
+	}else{
+	 	browser = "etc";
+	 	isMobile = "0";
+	}
+
+	if(agt.indexOf("shw-m480s") != -1 || agt.indexOf("shw-m380k") != -1 || agt.indexOf("shw-m480k") != -1
+	|| agt.indexOf("shw-m480l") != -1	|| agt.indexOf("shw-m380s") != -1 || agt.indexOf("shw-m380l") != -1
+	|| agt.indexOf("sm-p605s") != -1	|| agt.indexOf("sm-p605k") != -1 || agt.indexOf("sm-p605l") != -1){
+		browser = "android";
+		isMobile = "2";
+	}	
+		window.onload = function(){
+
+			//isMobile 사용자 기기체크.
+			
+			//PC
+			if(isMobile =="0"){
+				document.getElementById("notice-wrap").style.display="none";
+				document.getElementById("notice-wrap-pc").style.display="";
+				document.getElementById("notice-wrap-mts").style.display="none";
+				
+				
+				document.getElementById("top-area-mobile").style.display="none";
+				document.getElementById("top-area-pc").style.display="";
+				
+
+			//모바일
+			}else{
+				//영웅문(MTS)
+				if(media=="mts"){
+					document.getElementById("notice-wrap").style.display="none";
+					document.getElementById("notice-wrap-pc").style.display="none";
+					document.getElementById("notice-wrap-mts").style.display="";
+					
+					document.getElementById("top-area-mobile").style.display="none";
+					document.getElementById("top-area-pc").style.display="none";
+
+				//모바일웹
+				}else{
+					document.getElementById("notice-wrap").style.display="";
+					document.getElementById("notice-wrap-pc").style.display="none";
+					document.getElementById("notice-wrap-mts").style.display="none";
+					
+					document.getElementById("top-area-mobile").style.display="";
+					document.getElementById("top-area-pc").style.display="none";
+
+				}
+				
+				var viewport =	document.getElementById("viewport");
+				viewport.setAttribute("content", "initial-scale=1, maximum-scale=1, minimum-scale=1, target-densitydpi=medium-dpi")
+			}
+		}
+	</script>
 </head>
 
 <body>
-	<!-- webContent -->
-	<div class="error-container">
-	    <div class="error-wrap">
-	        <div class="error-area code">
-	            <h1><span class="logo"><img src="/h/kws/assets/images/common/header-logo.png" alt="키움증권"></span></h1>
-	            <p class="title">서비스 이용에 불편을 드려 대단히 죄송합니다. <br>처리중 문제가 발생하였습니다.</p>
-	            <div class="content">
-	                <!-- code error -->
-	                <p class="code">에러 : <strong>올바르지 않은 요청입니다.</strong></p>
-	            </div>
-	            <p class="center">키움금융센터 1544-9000</p>
-	        </div>
-	        <div class="btn-bottom-wrap">
-	            <button class="btn primary" id="btnHome">홈</button>
-	        </div>
-			
-	    </div>
-	</div>
-	<!-- //webContent -->
-<script type="text/javascript">
-$(function(){
-	$("#btnHome").on('click',function(){
-		$.xmit({
-			url:"/h/main"
-		});
-	});
-});
-</script>	
+    <!-- 홈페이지,HTS -->
+    <div class="top-area-pc" id="top-area-pc" display="none">
+        <img src="img/icon_notice_logo.png" alt="키움증권"/>
+    </div>
+    <div class="notice-wrap-pc" display="none" id="notice-wrap-pc" display="none">
+        <h1>
+            <img src="img/bg_notice_02_pc.png" alt="시스템 작업에 따른 서비스 중단 안내"/>
+        </h1>
+		<div class="notice-sub-text-mobile" style="font-size:15px; text-align:center">
+			시스템 작업으로 인하여 아래와 같이 안내 드립니다.
+		</div>
+        <div class="notice-list-pc">
+            <ul>
+                <li>
+                    <div class="insert-text">
+                        <h2>1. 중단 일시</h2>
+						<p><b class="blockduration">9/12(토) 08:30 ~ 20:00</b></p>
+                        <p>(중단 시간은 작업 진행에 따라 변경 될 수 있음)</p>
+                    </div>
+                </li>
+                <li>
+                    <div class="insert-text">
+                        <h2>2. 중단 내용</h2>
+						<b><p>홈페이지, HTS, MTS를 이용한 전체 서비스 중단</p>
+                        <p>- 입출금을 포함한 전자금융거래 서비스 이용 불가<br/>&nbsp;&nbsp;(이체 등 금융거래에 주의 당부 드립니다.)</p></b>
+                        <p>- 계좌개설 및 비대면 업무 불가(계좌사고해지 등)</p>
+                        <p>- 당사 매체를 통한 미수금,추가증거금 확인 불가</p>
+                    </div>
+                </li>
+				<li>
+                    <div class="insert-text">
+                        <h2>3. 중단 사유</h2>
+						<p><b class="blockreason">KRX애프터마켓 이행 관련 시스템 작업</b></p>
+                    </div>
+                </li>
+            </ul>
+            <div class="notice-sub-text-pc">
+                보다 나은 서비스 제공을 위한 작업이오니 고객님의 양해 부탁드립니다. 감사합니다.
+            </div>
+        </div>
+    </div>
+    
+    <!-- 모바일웹 -->
+    <div class="top-area-mobile" id="top-area-mobile" display="none">
+        <img src="img/icon_notice_logo.png" alt="키움증권"/>
+    </div>
+    
+	<div class="notice-wrap-mobile" display="none" id ="notice-wrap" display="none">
+        <h1>
+            <img src="img/bg_notice_02_mobile.png" alt="시스템 작업에 따른 서비스 중단 안내"/>
+        </h1>
+		<div class="notice-sub-text-mobile" style="font-size:15px; text-align:center">
+			시스템 작업으로 인하여 아래와 같이 안내 드립니다.
+		</div>
+        <div class="notice-list-mobile">
+            <ul>
+                <li>
+                    <div class="insert-text">
+                        <h2>1. 중단 일시</h2>
+						<p><b class="blockduration">9/12(토) 08:30 ~ 20:00</b></p>
+                        <p>(중단 시간은 작업 진행에 따라 변경 될 수 있음)</p>
+                    </div>
+                </li>
+                <li>
+                    <div class="insert-text">
+                        <h2>2. 중단 내용</h2>
+						<b><p>홈페이지, HTS, MTS를 이용한 전체 서비스 중단</p>
+                        <p>- 입출금을 포함한 전자금융거래 서비스 이용 불가<br/>&nbsp;&nbsp;(이체 등 금융거래에 주의 당부 드립니다.)</p></b>
+                        <p>- 계좌개설 및 비대면 업무 불가(계좌사고해지 등)</p>
+                        <p>- 당사 매체를 통한 미수금,추가증거금 확인 불가</p>
+                    </div>
+                </li>
+				<li>
+                    <div class="insert-text">
+                        <h2>3. 중단 사유</h2>
+						<p><b class="blockreason">KRX애프터마켓 이행 관련 시스템 작업</b></p>
+                    </div>
+                </li>
+            </ul>
+            <div class="notice-sub-text-mobile">
+                보다 나은 서비스 제공을 위한 작업이오니 고객님의 양해 부탁드립니다. 감사합니다.
+            </div>
+        </div>
+    </div>
+    
+    
+     <!-- 영웅문S,영웅문SG, 영웅문SF, 영웅문SF...(MTS) -->
+     <div class="notice-wrap-mts" id="notice-wrap-mts" display="none">
+        <h1><b>전체 서비스 중단 안내</b></h1>
+        <div class="notice-list-mts">
+            <ul>
+                <li>
+                    <div class="insert-text">
+                        <h2>1. 중단 일시</h2>
+                        <p><b class="blockduration">9/12(토) 08:30 ~ 20:00</b></p>
+                        <p>(작업 진행에 따라 변경 될 수 있음)</p>
+                    </div>
+                </li>
+                <li>
+                    <div class="insert-text">
+                        <h2>2. 중단 사유</h2>
+						<p><b class="blockreason">KRX애프터마켓 이행 관련 시스템 작업</b></p>
+                    </div>
+                </li>
+                <li>
+                    <div class="insert-text">
+                        <h2>3. 중단 내용</h2>
+                        <p>MTS,HTS,홈페이지 서비스 중단</p>
+                    </div>
+                </li>
+            </ul>
+            <div class="notice-sub-text-mts">
+                보다 나은 서비스 제공을 위한 작업이오니 고객님의 양해 부탁드립니다. 감사합니다.
+            </div>
+        </div>
+    </div>
 </body>
 </html>
-
