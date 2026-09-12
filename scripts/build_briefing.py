@@ -505,14 +505,19 @@ def _flows_body(C, N, flow_tbl, money_tbl):
     """03절 본문 조립 — 증시 주변자금 표가 빠진 날에도 같은 순서로 낸다."""
     body = lede(*N.get("flows_lede", C["fb_flows"][0], C["fb_flows"][1]))
     if CORE[0]:
-        body += '\n<div class="duo">\n' + flow_tbl + "\n" + money_tbl + '\n</div>'
         # 핵심본에도 **투자자별 추이와 매물대**를 싣는다(2026-09-12). 하루치
         # 수급은 위 표가 말하지만 「팔던 손이 멎었는가」는 추이라야 보이고,
-        # 매물대는 「올라갈 때 어디서 물량을 만나는가」에 답한다. 접는 자리가
-        # 없으므로 표를 그대로 세우고, 둘을 나란히 놓아 높이를 줄인다.
-        pair = [t for t in (C.get("inv_trend"), C.get("supply_tbl")) if t]
-        if pair:
-            body += '\n<div class="duo">\n' + "\n".join(pair) + '\n</div>'
+        # 매물대는 「올라갈 때 어디서 물량을 만나는가」에 답한다.
+        #
+        # **짝은 재서 짓는다.** [당일|주변자금] [추이|매물대] 로 두었더니
+        # 인쇄 폭 718px 에서 105px 이 한쪽에서만 비었다. 「수급 둘」과
+        # 「자금·매물대 둘」로 갈라 놓으면 높이가 맞고, 읽는 순서도
+        # 「오늘 → 열흘」 「있는 돈 → 쌓인 물량」으로 이어진다.
+        rows = [[flow_tbl, C.get("inv_trend")], [money_tbl, C.get("supply_tbl")]]
+        for pair in rows:
+            cells = [t for t in pair if t]
+            if cells:
+                body += '\n<div class="duo">\n' + "\n".join(cells) + '\n</div>'
         return body
     body += "\n" + flow_tbl + "\n" + money_tbl
     # 매물대는 근사이고, 그날의 결정보다 추이로 읽는 값이다.
@@ -726,11 +731,17 @@ def sec_macro(C):
         # 806 대 773 으로 맞고, 덤으로 금리 이야기가 한 칸에 모인다.
         # 달러 상대 통화도 핵심본에 싣는다(2026-09-12). 원화 표의 꼬리말이
         # 「빗금 방향이 반대」라고 말해 놓고 정작 그 표가 없으면, 읽는 사람이
-        # 규칙만 듣고 대조할 자리를 못 찾는다. 환율 칸 아래에 이어 세운다.
+        # 규칙만 듣고 대조할 자리를 못 찾는다.
+        #
+        # **다만 그것을 오른 칸에 얹자 균형이 깨졌다.** 인쇄 폭 718px 에서
+        # 왼 칸 693px · 오른 칸 1301px 이 되어 **왼쪽 아래가 611px 비었다.**
+        # 격자 한 줄의 높이는 큰 쪽을 따르므로 그 빈자리가 그대로 종이에
+        # 남는다. 원자재를 왼 칸으로 옮겨 둘을 맞춘다 — 덤으로 금리 이야기와
+        # 값 이야기가 한 칸씩 모인다.
         return (lede(a, b) + '\n<div class="duo">\n'
-                + '<div>\n' + rates + "\n" + (_curve_core(C) or "") + '\n</div>\n'
-                + '<div>\n' + C["fx_tbl"] + "\n" + C["usdfx_tbl"] + "\n"
-                + (_cm_core(C) or "") + '\n</div>\n</div>')
+                + '<div>\n' + rates + "\n" + (_curve_core(C) or "") + "\n"
+                + (_cm_core(C) or "") + '\n</div>\n'
+                + '<div>\n' + C["fx_tbl"] + "\n" + C["usdfx_tbl"] + '\n</div>\n</div>')
     return (lede(a, b) + "\n" + rates + "\n" + C["fx_tbl"] + "\n" + C["cm_tbl"] + "\n"
             + exp("미 재무부 곡선 만기 11개 &middot; 달러 상대 통화",
                   "The full US curve and the dollar crosses",
