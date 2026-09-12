@@ -3,184 +3,711 @@
     "사람이 관리하는 채널 시드. scripts/collect_radio.mjs 가 이 파일을 읽어",
     "유튜브 채널과 공식 시청 주소를 실제로 확인한 뒤 data/radio/channels.json 을 만든다.",
     "",
-    "youtube.handles : 후보 목록. 수집기가 위에서부터 시도해 처음 확인되는 것을 쓴다.",
-    "                  전부 실패하면 그 채널은 영상 없이 '공식 사이트에서 시청' 으로만 뜬다.",
-    "official.url    : 확인되면 이 주소로, 실패하면 official.home 으로 연결한다.",
+    "youtube.handles : 후보 목록. 수집기가 위에서부터 시도한다.",
+    "youtube.expect  : 찾은 채널 이름이 이 말 중 하나를 담고 있어야 통과한다.",
+    "                  handle 은 아무나 선점할 수 있어서(첫 수집에서 @MBCradio 가",
+    "                  '테스트.', @wbsi 가 개인 채널이었다) 이 대조가 반드시 필요하다.",
+    "                  전부 실패하면 그 채널은 영상 없이 '공식 사이트' 로만 뜬다.",
+    "band            : radio | tv",
+    "official.url    : 확인되면 이 주소로, 죽었으면 official.home 으로 내려간다.",
     "",
-    "첫 수집이 끝나면 channels.json 의 verified 값을 보고 실패한 채널의 handles 를",
-    "손으로 고쳐 넣으면 된다. 이 파일만 고치면 되고 화면 코드는 건드릴 필요가 없다."
+    "빗나간 채널은 channels.json 에 verified:false 로 남는다. 수집 로그를 보고",
+    "이 파일의 handles 만 고치면 된다 — 화면 코드는 건드릴 필요가 없다."
   ],
   "channels": [
     {
       "id": "kbs-1radio",
       "name": "KBS 1라디오",
       "org": "KBS",
-      "freq": { "seoul": 97.3 },
+      "freq": {
+        "seoul": 97.3
+      },
       "kind": "news",
-      "official": { "url": "https://onair.kbs.co.kr/", "home": "https://www.kbs.co.kr/" },
-      "youtube": { "handles": ["KBS1Radio", "kbsradio", "KBSNews"] }
+      "official": {
+        "url": "https://onair.kbs.co.kr/",
+        "home": "https://www.kbs.co.kr/"
+      },
+      "youtube": {
+        "handles": [
+          "kbsradio",
+          "KBS1Radio"
+        ],
+        "expect": [
+          "KBS"
+        ]
+      },
+      "band": "radio"
     },
     {
       "id": "kbs-happyfm",
       "name": "KBS 해피FM",
       "org": "KBS",
-      "freq": { "seoul": 106.1 },
+      "freq": {
+        "seoul": 106.1
+      },
       "kind": "music",
-      "official": { "url": "https://onair.kbs.co.kr/", "home": "https://www.kbs.co.kr/" },
-      "youtube": { "handles": ["kbsradio", "KBS2Radio"] }
+      "official": {
+        "url": "https://onair.kbs.co.kr/",
+        "home": "https://www.kbs.co.kr/"
+      },
+      "youtube": {
+        "handles": [
+          "kbsradio",
+          "KBS2Radio"
+        ],
+        "expect": [
+          "KBS"
+        ]
+      },
+      "band": "radio"
     },
     {
       "id": "kbs-classicfm",
       "name": "KBS 클래식FM",
       "org": "KBS",
-      "freq": { "seoul": 93.1 },
+      "freq": {
+        "seoul": 93.1
+      },
       "kind": "music",
-      "official": { "url": "https://onair.kbs.co.kr/", "home": "https://www.kbs.co.kr/" },
-      "youtube": { "handles": ["KBSClassicFM", "kbsclassic"] }
+      "official": {
+        "url": "https://onair.kbs.co.kr/",
+        "home": "https://www.kbs.co.kr/"
+      },
+      "youtube": {
+        "handles": [
+          "KBSClassicFM",
+          "kbsclassicfm",
+          "kbsradio"
+        ],
+        "expect": [
+          "KBS"
+        ]
+      },
+      "band": "radio"
     },
     {
       "id": "kbs-coolfm",
       "name": "KBS 쿨FM",
       "org": "KBS",
-      "freq": { "seoul": 89.1 },
+      "freq": {
+        "seoul": 89.1
+      },
       "kind": "music",
-      "official": { "url": "https://onair.kbs.co.kr/", "home": "https://www.kbs.co.kr/" },
-      "youtube": { "handles": ["KBSCoolFM", "kbscoolfm", "KBSKpop"] }
+      "official": {
+        "url": "https://onair.kbs.co.kr/",
+        "home": "https://www.kbs.co.kr/"
+      },
+      "youtube": {
+        "handles": [
+          "KBSCoolFM",
+          "kbsradio",
+          "KBSKpop"
+        ],
+        "expect": [
+          "KBS"
+        ]
+      },
+      "band": "radio"
     },
     {
       "id": "kbs-3radio",
       "name": "KBS 3라디오",
       "org": "KBS",
-      "freq": { "seoul": 104.9 },
+      "freq": {
+        "seoul": 104.9
+      },
       "kind": "talk",
-      "official": { "url": "https://onair.kbs.co.kr/", "home": "https://www.kbs.co.kr/" },
-      "youtube": { "handles": ["KBS3Radio"] }
+      "official": {
+        "url": "https://onair.kbs.co.kr/",
+        "home": "https://www.kbs.co.kr/"
+      },
+      "youtube": {
+        "handles": [
+          "KBS3Radio",
+          "kbsradio"
+        ],
+        "expect": [
+          "KBS"
+        ]
+      },
+      "band": "radio"
     },
     {
       "id": "mbc-sfm",
       "name": "MBC 표준FM",
       "org": "MBC",
-      "freq": { "seoul": 95.9 },
+      "freq": {
+        "seoul": 95.9
+      },
       "kind": "talk",
-      "official": { "url": "https://mini.imbc.com/", "home": "https://www.imbc.com/" },
-      "youtube": { "handles": ["MBCradio", "mbcradio", "MBCNEWS"] }
+      "official": {
+        "url": "https://mini.imbc.com/",
+        "home": "https://www.imbc.com/"
+      },
+      "youtube": {
+        "handles": [
+          "mbcradio_official",
+          "MBCradio1",
+          "MBCNEWS",
+          "MBCradio"
+        ],
+        "expect": [
+          "MBC"
+        ]
+      },
+      "band": "radio"
     },
     {
       "id": "mbc-fm4u",
       "name": "MBC FM4U",
       "org": "MBC",
-      "freq": { "seoul": 91.9 },
+      "freq": {
+        "seoul": 91.9
+      },
       "kind": "music",
-      "official": { "url": "https://mini.imbc.com/", "home": "https://www.imbc.com/" },
-      "youtube": { "handles": ["MBCFM4U", "mbcradio", "MBCradio"] }
+      "official": {
+        "url": "https://mini.imbc.com/",
+        "home": "https://www.imbc.com/"
+      },
+      "youtube": {
+        "handles": [
+          "MBCFM4U",
+          "mbcfm4u",
+          "mbcradio_official"
+        ],
+        "expect": [
+          "MBC"
+        ]
+      },
+      "band": "radio"
     },
     {
       "id": "sbs-lovefm",
       "name": "SBS 러브FM",
       "org": "SBS",
-      "freq": { "seoul": 103.5 },
+      "freq": {
+        "seoul": 103.5
+      },
       "kind": "talk",
-      "official": { "url": "https://www.sbs.co.kr/gorealra", "home": "https://www.sbs.co.kr/" },
-      "youtube": { "handles": ["SBSLoveFM", "sbsradio", "gorealra"] }
+      "official": {
+        "url": "https://www.sbs.co.kr/radio",
+        "home": "https://www.sbs.co.kr/"
+      },
+      "youtube": {
+        "handles": [
+          "sbsradio",
+          "SBSLoveFM"
+        ],
+        "expect": [
+          "SBS"
+        ]
+      },
+      "band": "radio"
     },
     {
       "id": "sbs-powerfm",
       "name": "SBS 파워FM",
       "org": "SBS",
-      "freq": { "seoul": 107.7 },
+      "freq": {
+        "seoul": 107.7
+      },
       "kind": "music",
-      "official": { "url": "https://www.sbs.co.kr/gorealra", "home": "https://www.sbs.co.kr/" },
-      "youtube": { "handles": ["SBSPowerFM", "gorealra", "sbsradio"] }
+      "official": {
+        "url": "https://www.sbs.co.kr/radio",
+        "home": "https://www.sbs.co.kr/"
+      },
+      "youtube": {
+        "handles": [
+          "gorealra",
+          "sbsradio",
+          "SBSPowerFM"
+        ],
+        "expect": [
+          "SBS",
+          "gorealra",
+          "고릴라"
+        ]
+      },
+      "band": "radio"
     },
     {
       "id": "cbs-sfm",
       "name": "CBS 표준FM",
       "org": "CBS",
-      "freq": { "seoul": 98.1 },
+      "freq": {
+        "seoul": 98.1
+      },
       "kind": "talk",
-      "official": { "url": "https://www.cbs.co.kr/radio/onair/", "home": "https://www.cbs.co.kr/" },
-      "youtube": { "handles": ["CBSradio", "nocutnews"] }
+      "official": {
+        "url": "https://www.cbs.co.kr/radio/onair/",
+        "home": "https://www.cbs.co.kr/"
+      },
+      "youtube": {
+        "handles": [
+          "cbsradio_official",
+          "CBSradio"
+        ],
+        "expect": [
+          "CBS"
+        ]
+      },
+      "band": "radio"
     },
     {
       "id": "cbs-musicfm",
       "name": "CBS 음악FM",
       "org": "CBS",
-      "freq": { "seoul": 93.9 },
+      "freq": {
+        "seoul": 93.9
+      },
       "kind": "music",
-      "official": { "url": "https://www.cbs.co.kr/radio/onair/", "home": "https://www.cbs.co.kr/" },
-      "youtube": { "handles": ["CBSMusicFM", "CBSradio"] }
+      "official": {
+        "url": "https://www.cbs.co.kr/radio/onair/",
+        "home": "https://www.cbs.co.kr/"
+      },
+      "youtube": {
+        "handles": [
+          "cbsradio_official",
+          "CBSMusicFM"
+        ],
+        "expect": [
+          "CBS"
+        ]
+      },
+      "band": "radio"
     },
     {
       "id": "tbs-fm",
       "name": "TBS FM",
       "org": "TBS",
-      "freq": { "seoul": 95.1 },
+      "freq": {
+        "seoul": 95.1
+      },
       "kind": "talk",
-      "official": { "url": "https://tbs.seoul.kr/", "home": "https://tbs.seoul.kr/" },
-      "youtube": { "handles": ["TBSseoul", "tbs"] }
+      "official": {
+        "url": "https://tbs.seoul.kr/",
+        "home": "https://tbs.seoul.kr/"
+      },
+      "youtube": {
+        "handles": [
+          "TBSseoul",
+          "tbsseoul",
+          "tbs"
+        ],
+        "expect": [
+          "교통방송",
+          "시민의방송",
+          "tbsseoul",
+          "TBS 서울"
+        ]
+      },
+      "band": "radio"
     },
     {
       "id": "tbs-efm",
       "name": "TBS eFM",
       "org": "TBS",
-      "freq": { "seoul": 101.3 },
+      "freq": {
+        "seoul": 101.3
+      },
       "kind": "talk",
-      "official": { "url": "https://tbs.seoul.kr/", "home": "https://tbs.seoul.kr/" },
-      "youtube": { "handles": ["tbseFM", "TBSseoul"] }
+      "official": {
+        "url": "https://tbs.seoul.kr/",
+        "home": "https://tbs.seoul.kr/"
+      },
+      "youtube": {
+        "handles": [
+          "tbseFM",
+          "TBSeFM",
+          "TBSseoul"
+        ],
+        "expect": [
+          "eFM",
+          "교통방송",
+          "시민의방송"
+        ]
+      },
+      "band": "radio"
     },
     {
       "id": "ebs-fm",
       "name": "EBS FM",
       "org": "EBS",
-      "freq": { "seoul": 104.5 },
+      "freq": {
+        "seoul": 104.5
+      },
       "kind": "edu",
-      "official": { "url": "https://www.ebs.co.kr/onair", "home": "https://www.ebs.co.kr/" },
-      "youtube": { "handles": ["EBSradio", "ebsculture"] }
+      "official": {
+        "url": "https://www.ebs.co.kr/onair",
+        "home": "https://www.ebs.co.kr/"
+      },
+      "youtube": {
+        "handles": [
+          "EBSradio"
+        ],
+        "expect": [
+          "EBS"
+        ]
+      },
+      "band": "radio"
     },
     {
       "id": "ytn-radio",
       "name": "YTN 라디오",
       "org": "YTN",
-      "freq": { "seoul": 94.5 },
+      "freq": {
+        "seoul": 94.5
+      },
       "kind": "news",
-      "official": { "url": "https://radio.ytn.co.kr/", "home": "https://www.ytn.co.kr/" },
-      "youtube": { "handles": ["YTNradio", "ytnnews24"] }
+      "official": {
+        "url": "https://radio.ytn.co.kr/",
+        "home": "https://www.ytn.co.kr/"
+      },
+      "youtube": {
+        "handles": [
+          "YTNradio"
+        ],
+        "expect": [
+          "YTN"
+        ]
+      },
+      "band": "radio"
     },
     {
       "id": "gugak-fm",
       "name": "국악방송",
       "org": "국악방송",
-      "freq": { "seoul": 99.1 },
+      "freq": {
+        "seoul": 99.1
+      },
       "kind": "music",
-      "official": { "url": "https://www.gugakfm.co.kr/", "home": "https://www.gugakfm.co.kr/" },
-      "youtube": { "handles": ["gugakfm", "gugakbangsong"] }
+      "official": {
+        "url": "https://www.gugakfm.co.kr/gugakfm/",
+        "home": "https://www.gugakfm.co.kr/"
+      },
+      "youtube": {
+        "handles": [
+          "gugakfm",
+          "gugakbangsong",
+          "국악방송"
+        ],
+        "expect": [
+          "국악",
+          "gugak"
+        ]
+      },
+      "band": "radio"
     },
     {
       "id": "bbs-fm",
       "name": "BBS 불교방송",
       "org": "BBS",
-      "freq": { "seoul": 101.9 },
+      "freq": {
+        "seoul": 101.9
+      },
       "kind": "talk",
-      "official": { "url": "https://www.bbsi.co.kr/", "home": "https://www.bbsi.co.kr/" },
-      "youtube": { "handles": ["bbsradio", "bbstv"] }
+      "official": {
+        "url": "https://www.bbsi.co.kr/",
+        "home": "https://www.bbsi.co.kr/"
+      },
+      "youtube": {
+        "handles": [
+          "bbsradio_official",
+          "BBSKorea",
+          "bbsradio"
+        ],
+        "expect": [
+          "불교",
+          "BBS 불교"
+        ]
+      },
+      "band": "radio"
     },
     {
       "id": "febc-fm",
       "name": "극동방송",
       "org": "FEBC",
-      "freq": { "seoul": 106.9 },
+      "freq": {
+        "seoul": 106.9
+      },
       "kind": "talk",
-      "official": { "url": "https://www.febc.net/", "home": "https://www.febc.net/" },
-      "youtube": { "handles": ["febckorea", "febc"] }
+      "official": {
+        "url": "https://www.febc.net/",
+        "home": "https://www.febc.net/"
+      },
+      "youtube": {
+        "handles": [
+          "febckorea",
+          "febc"
+        ],
+        "expect": [
+          "극동",
+          "febc"
+        ]
+      },
+      "band": "radio"
     },
     {
       "id": "wbs-fm",
       "name": "원음방송",
       "org": "WBS",
-      "freq": { "seoul": 89.7 },
+      "freq": {
+        "seoul": 89.7
+      },
       "kind": "music",
-      "official": { "url": "https://www.wbsi.kr/", "home": "https://www.wbsi.kr/" },
-      "youtube": { "handles": ["wbsi", "wonbuddhism"] }
+      "official": {
+        "url": "https://www.wbsi.kr/index.wbs",
+        "home": "https://www.wbsi.kr/"
+      },
+      "youtube": {
+        "handles": [
+          "wbsi_official",
+          "wonbuddhism",
+          "wbsi"
+        ],
+        "expect": [
+          "원음",
+          "WBS"
+        ]
+      },
+      "band": "radio"
+    },
+    {
+      "id": "ytn-tv",
+      "name": "YTN",
+      "org": "YTN",
+      "freq": {},
+      "band": "tv",
+      "kind": "news",
+      "official": {
+        "url": "https://www.ytn.co.kr/news/live.php",
+        "home": "https://www.ytn.co.kr/"
+      },
+      "youtube": {
+        "handles": [
+          "ytnnews24",
+          "YTNnews"
+        ],
+        "expect": [
+          "YTN"
+        ]
+      }
+    },
+    {
+      "id": "yonhap-tv",
+      "name": "연합뉴스TV",
+      "org": "연합뉴스TV",
+      "freq": {},
+      "band": "tv",
+      "kind": "news",
+      "official": {
+        "url": "https://www.yonhapnewstv.co.kr/browse/onair",
+        "home": "https://www.yonhapnewstv.co.kr/"
+      },
+      "youtube": {
+        "handles": [
+          "yonhapnewstv",
+          "yonhapnews"
+        ],
+        "expect": [
+          "연합"
+        ]
+      }
+    },
+    {
+      "id": "kbs-news",
+      "name": "KBS 뉴스",
+      "org": "KBS",
+      "freq": {},
+      "band": "tv",
+      "kind": "news",
+      "official": {
+        "url": "https://news.kbs.co.kr/news/pc/program/live.html",
+        "home": "https://news.kbs.co.kr/"
+      },
+      "youtube": {
+        "handles": [
+          "kbsnews",
+          "KBSNews"
+        ],
+        "expect": [
+          "KBS"
+        ]
+      }
+    },
+    {
+      "id": "mbc-news",
+      "name": "MBC 뉴스",
+      "org": "MBC",
+      "freq": {},
+      "band": "tv",
+      "kind": "news",
+      "official": {
+        "url": "https://imnews.imbc.com/replay/livetoday/",
+        "home": "https://imnews.imbc.com/"
+      },
+      "youtube": {
+        "handles": [
+          "MBCNEWS",
+          "mbcnews"
+        ],
+        "expect": [
+          "MBC"
+        ]
+      }
+    },
+    {
+      "id": "sbs-news",
+      "name": "SBS 뉴스",
+      "org": "SBS",
+      "freq": {},
+      "band": "tv",
+      "kind": "news",
+      "official": {
+        "url": "https://news.sbs.co.kr/news/live.do",
+        "home": "https://news.sbs.co.kr/"
+      },
+      "youtube": {
+        "handles": [
+          "sbsnews8",
+          "SBSNews",
+          "sbsnews"
+        ],
+        "expect": [
+          "SBS"
+        ]
+      }
+    },
+    {
+      "id": "jtbc-news",
+      "name": "JTBC 뉴스",
+      "org": "JTBC",
+      "freq": {},
+      "band": "tv",
+      "kind": "news",
+      "official": {
+        "url": "https://news.jtbc.co.kr/Html/Onair/OnAirLive.aspx",
+        "home": "https://news.jtbc.co.kr/"
+      },
+      "youtube": {
+        "handles": [
+          "jtbcnews",
+          "JTBCNews"
+        ],
+        "expect": [
+          "JTBC"
+        ]
+      }
+    },
+    {
+      "id": "channela-news",
+      "name": "채널A 뉴스",
+      "org": "채널A",
+      "freq": {},
+      "band": "tv",
+      "kind": "news",
+      "official": {
+        "url": "https://www.ichannela.com/program/main/onair.do",
+        "home": "https://www.ichannela.com/"
+      },
+      "youtube": {
+        "handles": [
+          "ChannelAnews",
+          "channelanews"
+        ],
+        "expect": [
+          "채널A",
+          "ChannelA",
+          "Channel A"
+        ]
+      }
+    },
+    {
+      "id": "mbn-news",
+      "name": "MBN 뉴스",
+      "org": "MBN",
+      "freq": {},
+      "band": "tv",
+      "kind": "news",
+      "official": {
+        "url": "https://www.mbn.co.kr/vod/onair",
+        "home": "https://www.mbn.co.kr/"
+      },
+      "youtube": {
+        "handles": [
+          "mbn",
+          "MBNnews"
+        ],
+        "expect": [
+          "MBN"
+        ]
+      }
+    },
+    {
+      "id": "tvchosun-news",
+      "name": "TV조선 뉴스",
+      "org": "TV조선",
+      "freq": {},
+      "band": "tv",
+      "kind": "news",
+      "official": {
+        "url": "https://news.tvchosun.com/broadcast/live",
+        "home": "https://news.tvchosun.com/"
+      },
+      "youtube": {
+        "handles": [
+          "TVCHOSUNnews",
+          "tvchosun"
+        ],
+        "expect": [
+          "조선",
+          "CHOSUN"
+        ]
+      }
+    },
+    {
+      "id": "arirang-tv",
+      "name": "아리랑TV",
+      "org": "아리랑TV",
+      "freq": {},
+      "band": "tv",
+      "kind": "news",
+      "official": {
+        "url": "https://www.arirang.com/tv/live",
+        "home": "https://www.arirang.com/"
+      },
+      "youtube": {
+        "handles": [
+          "arirang",
+          "ArirangTV"
+        ],
+        "expect": [
+          "Arirang",
+          "아리랑"
+        ]
+      }
+    },
+    {
+      "id": "natv",
+      "name": "국회방송 NATV",
+      "org": "국회방송",
+      "freq": {},
+      "band": "tv",
+      "kind": "news",
+      "official": {
+        "url": "https://www.natv.go.kr/",
+        "home": "https://www.natv.go.kr/"
+      },
+      "youtube": {
+        "handles": [
+          "natv",
+          "korea_natv"
+        ],
+        "expect": [
+          "국회",
+          "NATV"
+        ]
+      }
     }
   ]
 }
