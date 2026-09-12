@@ -1042,6 +1042,9 @@ python3 -m http.server 8000   # http://localhost:8000/mapo-wm.html
 > `weekly-refresh.yml` 을 작업 브랜치에서 발동합니다. 작업 브랜치에서도 실제로
 > 도는 것은 `workflow_dispatch` 이기 때문입니다(수동 실행과 같은 길).
 > 급할 때 사람이 직접 하려면 Actions 탭 → **월요일 일괄 갱신** → Run workflow.
+> 그 탭을 쓸 수 없는 자리에서는 표시 파일을 밀어도 됩니다 —
+> `date -u >> data/WEEKLY_REFRESH && git commit -am '갱신 요청' && git push`
+> (kr100·시세 수집이 `REFRESH` 파일로 쓰는 것과 같은 길입니다).
 >
 > 병합하면 예약 실행이 **`main` 에 커밋**합니다 — 그때부터 데이터의 주인은 `main` 입니다.
 
