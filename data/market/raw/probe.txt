@@ -1,4 +1,4 @@
-네이버 API 탐색 2026-09-12 09:09:59 KST
+네이버 API 탐색 2026-09-13 07:42:28 KST
 (원천이 실패한 날에만 돈다. 수집 결과는 바꾸지 않는다.)
 
 [internals] https://m.stock.naver.com/api/index/KOSPI/basic
@@ -18,7 +18,7 @@
     응답 앞머리: HTTPError: HTTP Error 409: Conflict
 
 [internals] https://m.stock.naver.com/api/index/KOSPI/integration
-    쓸모 · 16288 bytes · 걸린 낱말 ['riseCount', 'fallCount', '상승']
+    쓸모 · 16328 bytes · 걸린 낱말 ['riseCount', 'fallCount', '상승']
     남김: data/market/raw/probe_03_internals.txt
     앞머리: {"stockEndType":"index","itemCode":"KOSPI","reutersCode":"KOSPI","stockName":"코스피","totalInfos":[{"code":"lastClosePrice","key":"전일","value":"7,033.92"},{"code":"openPrice","key":"시가","value":"6,802.50","compareToPreviousPrice":{"code":"5",
 
@@ -101,7 +101,7 @@
     응답 앞머리: HTTPError: HTTP Error 404: 404
 
 [money_flow] https://finance.naver.com/sise/sise_deposit.naver
-    셸 · 122030 bytes · 걸린 낱말 ['예탁금', 'deposit']
+    셸 · 121095 bytes · 걸린 낱말 ['예탁금', 'deposit']
     남김: data/market/raw/probe_21_money_flow.txt
     앞머리: <!DOCTYPE html><html lang="ko" class="" data-theme="light"><head><meta charSet="utf-8"/><meta name="viewport" content="width=1366, initial-scale=1.0, user-scalable=yes"/><meta name="viewport" content="width=device-width, initial-scale=1"/><
 
