@@ -27,13 +27,13 @@ GROUPS = [
              'The edition that established the bilingual layout and per-item evidence panel.',
              '자동 증시시황 수집 및 브리핑', 'Auto market briefing',
              '2026-08-06', '52dcf057-d3b2-421c-a418-1741e617e27f', True),
-            ('모닝 마켓 브리핑 · 9/7', 'Morning Market Briefing · Sep 7',
+            ('모닝 마켓 브리핑 · 9/11', 'Morning Market Briefing · Sep 11',
              '가장 최신 발행본. 매 영업일 아침 새 아티팩트로 올라옵니다. 8월 말부터 '
              '장마감 「핵심본」이 따로 나옵니다.',
              'The latest edition. A new artifact goes up each business morning; a condensed '
              'market-close edition has been running since late August.',
              '모닝 시황 브리핑', 'Morning briefing',
-             '2026-09-07', 'd50802dd-1522-439f-bd70-2920fb476a71', False),
+             '2026-09-11', 'ebb9ba15-22ba-4f79-8354-bcc3a0e0d665', False),
             ('브리핑 목록', 'Briefing Index',
              '발행한 브리핑을 날짜·판별로 늘어놓은 최신 목록 화면. 일자별 발행본은 '
              '이미 각각 아티팩트로 올라가 있어 다시 올리지 않았고, 여기서 찾습니다.',
@@ -213,16 +213,19 @@ GROUPS = [
              '증권사 리포트 자동 요약', 'Report auto-summary',
              '2026-09-04', 'e0d4d73a-22db-4d93-a0c5-6ab177711daa', True),
             ('ETF 편입종목 조회', 'ETF Holdings Lookup',
-             '국내·미국·홍콩·일본·중국 상장 ETF 1,348종목의 상위 10개 편입종목과 비중. '
-             '겹침 비교·종목 역조회·랭킹까지. 8/31 수집분, 총수익률 단일 기준. '
-             '「사용법」 탭이 붙었지만 화면 그림·PDF 단추는 원본 파일에만 실려 아티팩트에서는 '
-             '글만 보입니다 — 그림이 있는 판은 아래 사용법 항목입니다.',
-             'Top-10 holdings and weights for 1,348 ETFs listed in Korea, the US, Hong Kong, '
-             'Japan and China, with overlap comparison, reverse lookup and rankings. Aug 31 '
-             'data, total-return basis only. The new How-to tab carries text only here — the '
-             'screenshots live in the separate guide below.',
+             '국내·미국·홍콩·일본·중국 상장 ETF 1,353종목의 상위 10개 편입종목과 비중. '
+             '9/9 수집분, 총수익률 단일 기준. 목록에서 체크로 최대 8개를 담아 겹침을 '
+             '견주고, 종목 역조회·랭킹까지 봅니다. 사용법 탭에 화면 그림 8장과 '
+             '내려받기 단추가 함께 실렸습니다. '
+             '(8/31~9/10 에 올라가 있던 판은 빌드가 잘려 빈 화면이었습니다. 고쳐 올렸습니다.)',
+             'Top-10 holdings and weights for 1,353 ETFs listed in Korea, the US, Hong Kong, '
+             'Japan and China, on Sep 9 data and a total-return basis. Tick up to eight in '
+             'the list to compare overlap; reverse lookup and rankings included. The How-to '
+             'tab now carries its eight screenshots and working download buttons. '
+             '(The edition posted Aug 31–Sep 10 was a truncated build that rendered blank; '
+             'this one is fixed.)',
              'ETF 편입종목 조회 도구', 'ETF holdings lookup tool',
-             '2026-08-31', 'c3f08597-8d47-45ce-ba27-17fd26a63dc7', True),
+             '2026-09-09', 'c3f08597-8d47-45ce-ba27-17fd26a63dc7', True),
             ('ETF 편입종목 조회 사용법', 'ETF Holdings Lookup · How-to',
              '화면 여섯 개를 실제 화면 그림 8장과 함께 짚어 주는 안내서. 「숫자를 읽기 전에」 '
              '절에는 만들면서 실제로 틀렸던 것들 — 기준일 하루 차이로 1개월 수익률이 '
@@ -241,6 +244,39 @@ GROUPS = [
              'Download fund-search.html from the claude/fund-search-tool branch.',
              '펀드조회 화면', 'Fund search screen',
              '2026-08-31', None, ('아티팩트 불가 · 저장소', 'Too large · in repo')),
+            ('국내 100대 기업 시세 조회', 'Korea Top-100 Companies',
+             '시가총액 상위 국내 상장 100곳(코스피 94·코스닥 6)의 주가·밸류에이션·실적·'
+             '일정·뉴스를 한 화면에 모았습니다. 업종으로 걸러 행을 누르면 아래 화면이 '
+             '모두 그 기업으로 바뀝니다. 시세는 바깥에서 받아 오는데 아티팩트는 외부 '
+             '요청이 막혀 있어, 여기서는 내려받은 시점(9/9)의 예시 데이터로 돕니다.',
+             'The 100 largest Korean listings (94 KOSPI, 6 KOSDAQ) — price, valuation, '
+             'earnings, calendar and news on one screen; click a row and every panel below '
+             'follows it. Quotes come from outside, which the artifact host blocks, so this '
+             'copy runs on the snapshot taken Sep 9.',
+             '국내 100대 기업 조회', 'Korea top-100 lookup',
+             '2026-09-09', '7645c0af-d6d3-4370-b050-cbb353f23a52', True),
+            ('미국 100대 기업 시세 조회', 'US Top-100 Companies',
+             '같은 화면의 미국판. 시가총액 상위 100곳의 주가·밸류에이션·실적·컨센서스·'
+             '일정·뉴스를 봅니다(두 곳은 미국에 상장한 외국 기업). 국내판과 마찬가지로 '
+             '아티팩트에서는 9/9 시점 예시 데이터로 돕니다.',
+             'The same screen for the 100 largest US listings, adding analyst consensus (two '
+             'are foreign companies listed in the US). As with the Korean edition, this copy '
+             'runs on the Sep 9 snapshot.',
+             '미국 100대 기업 조회', 'US top-100 lookup',
+             '2026-09-09', '21725cd6-5882-4679-a897-f55566e0190b', True),
+            ('증시 일정 캘린더', 'Market Calendar',
+             '경제지표 발표일·중앙은행 정책금리 결정일·기업 실적발표·제약바이오 학회·'
+             '파생 만기와 지수 정기변경·휴장일을 한 화면에서 봅니다. 확정 일정과 추정 '
+             '일정을 배지로 가르고, 확인하지 못한 일정은 날짜를 지어내지 않고 이름과 '
+             '공식 링크만 남깁니다. 아티팩트에는 267건을 파일에 담은 오프라인 판을 '
+             '올렸습니다.',
+             'Economic releases, central-bank decisions, earnings, pharma conferences, '
+             'derivative expiries, index rebalances and market holidays on one screen. '
+             'Confirmed and estimated dates carry different badges; where a date could not '
+             'be verified it is left out rather than invented. This is an offline edition '
+             'with 267 events baked into the file.',
+             '증시 일정 화면', 'Market calendar screen',
+             '2026-09-09', '1bde1435-33ce-4cd6-97d6-6e3ef06d26c0', True),
         ]),
     dict(
         ko='세금 · 계산기 · 영업 도구', en='Tax, Calculators & Sales Tools',
@@ -387,6 +423,16 @@ GROUPS = [
              'selling, letting.',
              '동영상 제작', 'Video creation',
              '2026-07-28', '1a896c1f-dba8-4095-b749-30b44b0aab71', True),
+            ('업무자동화 구축 결과보고', 'Work Automation · Results Report',
+             '6월부터 9월까지 넉 달 동안 만든 영업 현장 업무 자동화를 7장으로 정리한 '
+             '보고 덱입니다 — 매일 도는 자동 산출물 4종, 현장 업무 화면 8종, 무인 '
+             '워크플로 30종. 여기서 세는 화면 대부분은 이 자료실에 아티팩트로 올라와 '
+             '있습니다. 원본 PPTX 를 붙였습니다.',
+             'Four months of sales-floor automation in seven slides — four daily automated '
+             'outputs, eight working screens, thirty unattended workflows. Most of what it '
+             'counts is published in this library. The original PPTX is attached.',
+             '업무 보고 발표자료', 'Work report deck',
+             '2026-09-09', '7b11fe2a-9361-4afb-9e58-6166f830e655', True),
             ('AI 투자 트렌드 숏폼', 'AI Investment Trends · Short',
              '2026년 AI 투자가 인프라에서 수익화로 넘어가는 국면을 31.7초 세로 영상으로.',
              'The 2026 shift from AI infrastructure to monetization, in a 31.7-second vertical clip.',
@@ -453,9 +499,6 @@ NOARTIFACT = [
     ('최종본 파일 확인', 'Final file check',
      '어느 파일이 최종본인지 가려낸 점검 작업입니다.',
      'A check to establish which file was the final version.'),
-    ('미국 100대 기업 정보 조회 화면', 'US top-100 companies dashboard',
-     '9월 8일 기준 아직 진행 중인 세션입니다. 최종본이 정해지면 다음 갱신에 싣습니다.',
-     'Still in progress as of Sep 8; it goes in once the session settles on a final build.'),
     ('초기 작업 검증 프로세스', 'Initial work validation process',
      '브리핑 생성 파이프라인에 검증 관문을 붙인 작업입니다. 훅·워크플로·점검 스크립트가 '
      '결과물이라 화면으로 볼 산출물이 없습니다.',
@@ -674,13 +717,13 @@ h.append('<div class="lang" role="radiogroup" aria-label="언어 선택 / Langua
 h.append('</div>')
 
 h.append(bi('세션 산출물 자료실', 'Session Work Library', 'h1'))
-h.append(bi('클로드 코드 세션 44개가 남긴 최종 작업본을 주제별로 모았습니다. '
+h.append(bi('클로드 코드 세션 47개가 남긴 최종 작업본을 주제별로 모았습니다. '
             '제목을 누르면 해당 아티팩트가 열립니다.',
-            'The final deliverable of every one of 44 Claude Code sessions, grouped by '
+            'The final deliverable of every one of 47 Claude Code sessions, grouped by '
             'subject. Each title opens its artifact.', 'p', 'sub'))
 
 h.append('<div class="stats">')
-for kolab, enlab, val in [('세션', 'Sessions', '44'),
+for kolab, enlab, val in [('세션', 'Sessions', '47'),
                           ('주제', 'Subjects', str(len(GROUPS))),
                           ('새로 올린 아티팩트', 'Newly published', str(new_count)),
                           ('색인에 실은 항목', 'Indexed items', str(rows_total))]:
@@ -753,9 +796,9 @@ h.append('</tbody></table></div><p class="dlmsg" id="dlmsg"></p></section>')
 # 아티팩트 없는 세션
 h.append('<section class="grp"><div class="rule"></div>')
 h.append(bi('아티팩트가 없는 세션', 'Sessions Without an Artifact', 'h2'))
-h.append(bi('네 개 세션은 남길 산출물 파일이 없어 링크가 없습니다. 무엇을 했는지만 적어 둡니다.',
-            'Four sessions produced no file to keep, so they have no link. Recorded here for '
-            'completeness.', 'p', 'lead'))
+h.append(bi('아래 세션들은 남길 산출물 파일이 없어 링크가 없습니다. 무엇을 했는지만 적어 둡니다.',
+            'The sessions below produced no file to keep, so they have no link. Recorded here '
+            'for completeness.', 'p', 'lead'))
 h.append('<div class="rows">')
 for (tko, ten, dko, den) in NOARTIFACT:
     h.append('<div class="row"><div class="t">%s</div>' % bi(esc(tko), esc(ten), 'span', 'noa'))
@@ -766,10 +809,10 @@ for (tko, ten, dko, den) in NOARTIFACT:
 h.append('</div></section>')
 
 h.append('<footer>')
-h.append(bi('기준 2026-09-08 · 저장소 <code>hanaroline/work_1</code> · '
+h.append(bi('기준 2026-09-10 · 저장소 <code>hanaroline/work_1</code> · '
             '세션별 브랜치의 마지막 커밋에서 산출물을 뽑았습니다. 이 색인은 월·목 아침에 '
             '스스로 갱신됩니다.',
-            'As of 2026-09-08 · repository <code>hanaroline/work_1</code> · deliverables taken '
+            'As of 2026-09-10 · repository <code>hanaroline/work_1</code> · deliverables taken '
             'from the last commit on each session branch. This index refreshes itself on '
             'Monday and Thursday mornings.', 'p'))
 h.append(bi('세션 목록에는 최근 35개가 잡힙니다. 그보다 앞선 브랜치 두 개'
@@ -783,6 +826,16 @@ h.append(bi('세션 목록에는 최근 35개가 잡힙니다. 그보다 앞선 
             'artifacts are the original; the two factsheets were found in the artifact list '
             'but the session that produced them could not be identified from the session '
             'listing.', 'p'))
+h.append(bi('<b>바로잡습니다 —</b> <code>ETF 편입종목 조회</code> 는 8/31 부터 9/10 까지 '
+            '빈 화면이었습니다. 아티팩트용 조각을 뽑는 스크립트가 본문을 자바스크립트 '
+            '문자열 안의 <code>&lt;/body&gt;</code> 에서 잘라내, 마지막 스크립트가 닫히지 '
+            '않은 채 끊긴 탓입니다. 9/10 에 고쳐 다시 올렸습니다. 그 사이에 이 링크를 '
+            '받으신 분은 다시 열어 주십시오.',
+            '<b>Correction —</b> the <code>ETF Holdings Lookup</code> artifact rendered blank '
+            'from Aug 31 to Sep 10: the fragment builder cut the body at a '
+            '<code>&lt;/body&gt;</code> that sits inside a JavaScript string, leaving the '
+            'final script unterminated. It was fixed and republished on Sep 10 — please '
+            'reopen the link if you received it before then.', 'p'))
 h.append(bi('모든 아티팩트는 기본이 비공개입니다. 부서 밖으로 링크를 돌리기 전에 각 '
             '아티팩트의 공유 설정을 확인하십시오.',
             'Every artifact is private by default. Check each artifact\'s sharing setting '
