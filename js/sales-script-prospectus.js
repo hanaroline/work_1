@@ -130,20 +130,24 @@
   }
 
   /**
-   * 클래스 이름(label)으로 한 줄 골라내기.
+   * 그 행의 클래스 이름만 잘라 낸다.
    *
-   * fundFeeTable 의 cls 는 줄 끝 괄호 안의 로마자만 잡는다 — 「(A)」·「(C-P)」.
-   * 그런데 퇴직연금 클래스는 괄호 안이 한글인 경우가 많아서(「종류C-P2(퇴직연금)」)
-   * cls 가 비고 이름에만 남는다. 그래서 이름으로도 고를 수 있어야 한다.
+   * fundFeeTable 은 숫자 줄 위쪽 여섯 줄까지 거슬러 올라가 이어 붙인다. 표에 따라
+   * 클래스 이름이 여러 줄로 쪼개져서 그래야 하는데, 그러다 보면 앞 클래스의 이름까지
+   * 함께 딸려 온다 —
    *
-   * 먼저 맞는 행을 그대로 돌려준다 — 표는 위에서 아래로 클래스 순서대로 놓인다.
+   *   「개인연금(C-P2 (연금저축)) 수수료미징구- 오프라인- 퇴직연금(C-P (퇴직연금))」
+   *
+   * 이 한 덩어리에 두 클래스가 들어 있다. 여기서 「퇴직연금」 을 찾으면 개인연금 행도
+   * 걸리고, 앞에서부터 이름을 떼면 개인연금 쪽을 집는다. 실제로 495종목 중 79종목이
+   * 그렇게 개인연금·연금저축으로 나갔다 — 막으려던 바로 그 오류다.
+   *
+   * 거슬러 올라가며 앞에 붙이므로 숫자에 가장 가까운 이름이 덩어리의 끝에 온다.
+   * 괄호가 닫힌 뒤 새 낱말이 시작되는 자리에서 끊고 마지막 토막을 쓴다.
    */
-  function feeRowByLabel(text, labelRe) {
-    var rows = fundFeeTable(text);
-    for (var i = 0; i < rows.length; i++) {
-      if (labelRe.test(rows[i].label || '')) return rows[i];
-    }
-    return null;
+  function feeRowOwnLabel(r) {
+    var segs = String((r && r.label) || '').split(/\)\s+(?=\S)/);
+    return segs[segs.length - 1].trim();
   }
 
   /** 그 행에서 창구가 말해야 하는 총보수 — 모자형·재간접형은 합성 총보수·비용이 기준이다 */
@@ -156,48 +160,33 @@
   /** 이름에 「퇴직」 이 적혔는가 — 퇴직연금 클래스의 유일하게 믿을 만한 표시다 */
   var PENSION_RETIRE = /퇴\s*직\s*연\s*금/;
   /** 온라인 전용 클래스 — 창구에서 가입하는 것이 아니다 */
-  var PENSION_ONLINE = /온\s*라\s*인|이\s*클래스|e\s*\)/i;
+  var PENSION_ONLINE = /온\s*라\s*인|e\s*\)/i;
   /**
    * 보수 표에서 퇴직연금 클래스 행을 고른다.
    *
-   * ① 이름에 「퇴직연금」 이라고 적힌 행. 창구 가입분이 먼저고, 온라인 전용밖에
-   *    없으면 그것을 쓰되 이름(clsPName)에 「온라인」 이 그대로 드러난다.
-   * ② 이름에 연금 종류가 아예 안 적힌 경우에만 클래스 표기로 고른다.
+   * ★ 그 행이 스스로 「퇴직연금」 이라고 적은 것만 집는다. 표기로는 고르지 않는다.
    *
-   * 표본에서 걸린 두 가지를 막는다 —
+   * 표기로 고르는 갈래를 두었다가 495종목 중 120종목이 그리로 들어왔고, 그중 상당수가
+   * 개인연금(C-P)이었다. 같은 「C-P」 를 어떤 운용사는 개인연금에, 어떤 운용사는
+   * 퇴직연금에 쓴다 — 표기로는 갈릴 수가 없다. 못 읽고 「확인필요」 로 남기는 쪽이
+   * 연금저축 보수를 퇴직연금 보수라고 말하는 것보다 낫다.
    *
-   *   「인연금(C-P)」 (미래에셋G2이노베이터)
-   *     PDF 가 「개인연금」 을 줄 바꿔 자르는 바람에 앞 글자가 떨어져 나왔다.
-   *     「개인연금」 을 찾아 빼는 방식은 이렇게 잘린 글자에 뚫린다. 그래서 뒤집는다 —
-   *     이름에 「연금」 이라는 말이 있는데 「퇴직」 이 없으면 집지 않는다.
-   *     잘려도 「연금」 은 남으므로 새지 않는다.
+   * 판단은 그 행이 가진 이름(feeRowOwnLabel)으로만 한다. 덩어리 전체로 보면 옆
+   * 클래스의 「퇴직연금」 이 묻어 들어온다.
    *
-   *   「수수료미징구-온라인-퇴직 연금(C-P2e)」 (미래에셋퇴직연금글로벌인컴)
-   *     퇴직연금이 맞지만 온라인 전용이라 창구 가입분이 아니다. 창구 가입분을
-   *     먼저 찾고, 그것이 없을 때만 쓴다.
-   *
-   * 클래스 표기로 종류를 단정하지 않는 까닭도 여기서 드러났다. 카탈로그는
-   * 「C-P2 는 연금저축」 으로 보고 빼는데, 미래에셋은 C-P2 를 퇴직연금에 쓴다.
-   * 원문이 한글로 적어 둔 이름을 따른다.
+   * 창구 가입분이 먼저고, 온라인 전용밖에 없으면 그것을 쓰되 이름(clsPName)에
+   * 「온라인」 이 그대로 드러나 창구가 알아볼 수 있게 한다.
    */
   function pensionFeeRow(text) {
     var rows = fundFeeTable(text);
     var online = null;
     for (var i = 0; i < rows.length; i++) {
-      if (!PENSION_RETIRE.test(rows[i].label || '')) continue;
-      if (PENSION_ONLINE.test(rows[i].label || '')) { if (!online) online = rows[i]; continue; }
+      var own = feeRowOwnLabel(rows[i]);
+      if (!PENSION_RETIRE.test(own)) continue;
+      if (PENSION_ONLINE.test(own)) { if (!online) online = rows[i]; continue; }
       return rows[i];
     }
-    if (online) return online;
-    /* 이름에 연금 종류가 안 적혔을 때만 표기로 고른다 */
-    for (var j = 0; j < rows.length; j++) {
-      var lb = rows[j].label || '';
-      if (!rows[j].cls || !/^(?:C|S)?-?P$/i.test(rows[j].cls)) continue;
-      if (/연\s*금/.test(lb)) continue;
-      if (PENSION_ONLINE.test(lb)) continue;
-      return rows[j];
-    }
-    return null;
+    return online;
   }
 
   /**
@@ -807,12 +796,12 @@
         fn: function (t) {
           var r = pensionFeeRow(t);
           if (!feeRowTotal(r)) return null;
+          /* 그 행이 가진 이름만 쓴다 — 덩어리 앞쪽은 옆 클래스의 이름이다 */
+          var nm = feeRowOwnLabel(r).replace(/\s+/g, ' ').trim();
           /* 이름 뒤에 숫자 칸이 딸려 오는 행이 있다 — 클래스 이름까지만 남긴다 */
-          var nm = String(r.label || '').replace(/\s+/g, ' ').trim();
-          var m = nm.match(/^[^0-9]*?\([A-Za-z][A-Za-z0-9\-]{0,5}\)/);
-          if (m) nm = m[0].trim();
-          else nm = nm.split(/\s+(?=없음|납입금액의|\d)/)[0].trim();
-          return nm ? { value: nm, index: r.index, length: r.length } : null;
+          nm = nm.split(/\s+(?=없음|납입금액의|\d)/)[0].trim();
+          /* 창구가 소리 내어 읽는 말이다 — 「퇴직연금」 이 없으면 이름이 아니다 */
+          return PENSION_RETIRE.test(nm) ? { value: nm, index: r.index, length: r.length } : null;
         }
       },
       {
