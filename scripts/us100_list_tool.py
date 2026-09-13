@@ -455,6 +455,82 @@ def cmd_apply(a):
     return 0
 
 
+def cmd_edit(a):
+    """이미 담긴 종목의 한글 자산만 고쳐 쓴다.
+
+    수집된 영문 요약(latest.json 의 profile.desc)과 대조해 보면 처음 쓴 개요가
+    실제 사업 구성과 어긋나는 일이 생긴다 — 사업 부문 하나를 통째로 빠뜨렸다든지.
+    그때 종목을 뺐다 다시 넣을 수는 없으므로(그러면 목록이 100개를 벗어난다),
+    한글 자산만 바꿔 끼운다. 검사는 apply 와 똑같이 한다.
+    계획서: {"edit": [{"sym": "SPCX", "ko": …, "keywords": …, "profile": [...]}]}
+    """
+    plan = json.load(open(a.plan, encoding="utf-8"))
+    edits = plan.get("edit") or []
+    if not edits:
+        print("고칠 항목이 없다(edit 이 비어 있다)")
+        return 2
+
+    src = read_page()
+    rows = {c["sym"]: c for c in companies(src)}
+    errs = []
+    for c in edits:
+        sym = c.get("sym")
+        if sym not in rows:
+            errs.append("%s 는 목록에 없다" % sym)
+            continue
+        p = c.get("profile")
+        if p is not None and (len(p) != 3 or not all(isinstance(x, str) and x.strip() for x in p)):
+            errs.append("%s 의 기업 개요는 [주력사업, 개요, 키워드] 세 줄이어야 한다" % sym)
+        elif p is not None and len(p[1]) < 60:
+            errs.append("%s 의 개요가 너무 짧다(%d자)" % (sym, len(p[1])))
+    if errs:
+        print("계획서를 받아들일 수 없다:")
+        for e in errs:
+            print("  - " + e)
+        return 2
+
+    # 바꿀 값을 채워 "빼고 다시 넣기"로 처리한다 — 네 맵을 같은 방식으로 고치게 된다.
+    full = []
+    for c in edits:
+        old = rows[c["sym"]]
+        full.append({"sym": c["sym"], "en": c.get("en") or old["en"], "ko": c.get("ko") or old["ko"],
+                     "sector": c.get("sector") or old["sector"], "keywords": c.get("keywords"),
+                     "foreign": c.get("foreign"), "profile": c.get("profile")})
+    need_profile = [c for c in full if not c["profile"]]
+    if need_profile:
+        print("개요를 주지 않은 항목이 있다(지금은 개요를 반드시 함께 준다): %s"
+              % ", ".join(c["sym"] for c in need_profile))
+        return 2
+
+    syms = {c["sym"] for c in full}
+    src = drop_from_companies(src, syms)
+    src = add_to_companies(src, full)
+    src = drop_from_profile(src, syms)
+    src = add_to_profile(src, full)
+    src = edit_map(src, "var KEYWORDS = {", syms,
+                   ["  %s: %s," % (js_key(c["sym"]), js_str(c["keywords"])) for c in full if c.get("keywords")])
+    src = edit_map(src, "var FOREIGN = {", syms,
+                   ["  %s: [%s, %s]," % (js_key(c["sym"]), js_str(c["foreign"][0]), js_str(c["foreign"][1]))
+                    for c in full if c.get("foreign")])
+    src = bump_build(src)
+
+    errs = validate(src, verbose=False)
+    if errs:
+        print("고친 결과가 검사를 통과하지 못해 **쓰지 않았다**:")
+        for e in errs:
+            print("  - " + e)
+        return 3
+    if a.dry_run:
+        print("검사 통과 — 그러나 --dry-run 이라 쓰지 않았다")
+        return 0
+    with open(PAGE, "w", encoding="utf-8") as f:
+        f.write(src)
+    build = re.search(r"var BUILD = '([^']+)';", src)
+    print("고쳤다 — %s · 판 %s" % (", ".join(sorted(syms)), build.group(1) if build else "?"))
+    validate(src)
+    return 0
+
+
 def cmd_validate(a):
     return 1 if validate(read_page()) else 0
 
@@ -475,6 +551,11 @@ def main():
     p.add_argument("--dry-run", action="store_true")
     p.add_argument("--no-verify", action="store_true", help="시세 확인을 건너뛴다(권장하지 않음)")
     p.set_defaults(fn=cmd_apply)
+
+    e = sub.add_parser("edit", help="이미 담긴 종목의 한글명·개요·키워드만 고친다")
+    e.add_argument("--plan", required=True)
+    e.add_argument("--dry-run", action="store_true")
+    e.set_defaults(fn=cmd_edit)
 
     v = sub.add_parser("validate", help="고치지 않고 검사만 한다")
     v.set_defaults(fn=cmd_validate)
