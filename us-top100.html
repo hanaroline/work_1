@@ -217,6 +217,17 @@ caption{caption-side:bottom; text-align:left; font-size:14px; color:var(--muted)
   #list-table{min-width:760px;}
   #list-table thead th:nth-child(4), #list-table tbody td:nth-child(4){display:none;}
 }
+/* 열이 13개인 이 표는 섹터 이름을 줄여 적어 넓은 화면에서 칸 안에 들어온다.
+   노트북 폭에서는 여기서 한 번 더 줄인다 — 먼저 접어도 되는 것(영문 사명·여백·기업명
+   최소폭) 순서다. 이 블록은 위 1080px 블록 **뒤에** 두어야 한다. 앞에 두면 뒤따르는
+   #list-table tbody td 규칙(padding:10px)에 덮여 아무 일도 하지 않는다. */
+/* 한글 머리글이 단어 중간에서 갈리지 않게 한다 — "상승여/력" 으로 접혔다. */
+#list-table thead th{word-break:keep-all;}
+@media (max-width:1160px){
+  #list-table tbody td, #list-table thead th{padding:10px 7px;}
+  #list-table .co{min-width:120px;}
+  #list-table .co .sm{display:none;}
+}
 .empty-row td{text-align:center; color:var(--muted); padding:34px 16px;}
 .up{color:var(--error);} .down{color:var(--blue-soft);} .flat{color:var(--muted);}
 .list-note{font-size:14px; color:var(--muted); margin-top:10px; line-height:1.6;}
@@ -1393,6 +1404,24 @@ function abroadTag(sym) {
 }
 function sectorName(code) { var s = SECTORS[code]; return s ? (lang === 'en' ? s[1] : s[0]) : '—'; }
 
+/* 목록 표에서만 쓰는 짧은 섹터 이름.
+   GICS 정식 이름("Consumer Discretionary")을 표에 그대로 넣으면 이 열이 233px 을 먹어
+   영문 화면에서 표가 칸(1134px)을 60px 넘겼다 — 화면을 아무리 넓혀도 .page 최대 폭이
+   1200px 이라 오른쪽 두 열(Target·Upside)이 잘린 채였다. 필터·요약·상세에서는 정식
+   이름을 그대로 쓰고, 표에서는 줄여 적되 칸에 정식 이름을 title 로 붙여 둔다. */
+var SECTOR_SHORT = {
+  it:   ['정보기술', 'Info tech'],        comm: ['커뮤니케이션', 'Comm services'],
+  cd:   ['임의소비재', 'Cons. disc.'],     cs:   ['필수소비재', 'Cons. staples'],
+  hc:   ['헬스케어', 'Health care'],      fin:  ['금융', 'Financials'],
+  ind:  ['산업재', 'Industrials'],        eng:  ['에너지', 'Energy'],
+  mat:  ['소재', 'Materials'],            util: ['유틸리티', 'Utilities'],
+  re:   ['부동산', 'Real estate']
+};
+function sectorShort(code) {
+  var s = SECTOR_SHORT[code];
+  return s ? (lang === 'en' ? s[1] : s[0]) : sectorName(code);
+}
+
 /* ------------------------------------------------------------
    3. 데이터 레이어 — CORS 프록시 병렬 폴백
    브라우저에서 Yahoo/Stooq 를 직접 부르면 CORS 로 막히는 경우가 많다.
@@ -2182,7 +2211,7 @@ function renderList() {
         '<td class="sym">' + esc(r.sym) + '</td>' +
         '<td class="co">' + esc(lang === 'en' ? r.en : r.ko) + abroadTag(r.sym) +
           (lang === 'en' ? '' : '<span class="sm">' + esc(r.en) + '</span>') + '</td>' +
-        '<td>' + esc(sectorName(r.sector)) + '</td>' +
+        '<td title="' + esc(sectorName(r.sector)) + '">' + esc(sectorShort(r.sector)) + '</td>' +
         '<td class="num' + flashCls(prevSeen, r) + '">' + (r.failed
           ? '<span class="badge none" title="' + esc(t('수집기가 이 종목 시세를 받지 못했습니다: ', 'The collector could not fetch this symbol: ') + r.note) + '">' +
             esc(t('조회 불가', 'no data')) + '</span>'
