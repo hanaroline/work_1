@@ -1,6 +1,6 @@
 {
- "builtAt": "2026-09-14 08:24 KST",
- "builtAtUtc": "2026-09-13T23:24:38Z",
+ "builtAt": "2026-09-14 08:29 KST",
+ "builtAtUtc": "2026-09-13T23:29:41Z",
  "window": {
   "from": "2026-07-30",
   "to": "2028-01-26"
@@ -97,19 +97,19 @@
    "series_days": 400
   },
   "fed_implied": {
-   "contract_price": 96.145,
-   "implied_rate_pct": 3.855,
-   "quote_date": "2026-09-14",
+   "contract_price": 96.14,
+   "implied_rate_pct": 3.86,
+   "quote_date": "2026-09-11",
    "note": "해당 결제월의 평균 연방기금금리 기대치. policy_rate_us.effr 와 견주십시오 — 단기 국채와 견주면 안 됩니다(국채는 정책금리 위에서 거래되는 게 보통)",
    "source": "CBOT 30일 연방기금 금리선물 (ZQ=F)",
    "effr_pct": 3.63,
    "vs_effr_bp": 23,
    "perf": {
-    "w1": 15.4,
-    "m1": 22.2,
-    "m3": 23.1,
+    "w1": 16.4,
+    "m1": 23.1,
+    "m3": 24.1,
     "m6": 22.2,
-    "y1": -36.4,
+    "y1": -35.4,
     "ytd": 13.5,
     "unit": "bp",
     "basis": "내재금리(100 − 가격) 기준. 선물 가격 등락률에서 되짚었다"
@@ -182,7 +182,7 @@
     }
    }
   },
-  "asof_kst": "2026-09-14 08:10:58"
+  "asof_kst": "2026-09-14 00:34:52"
  },
  "holidays": [
   {
@@ -1483,12 +1483,6 @@
    "market": "us",
    "sector": "it"
   },
-  "GOOGL": {
-   "ko": "알파벳(구글)",
-   "en": "Alphabet",
-   "market": "us",
-   "sector": "comm"
-  },
   "AMZN": {
    "ko": "아마존",
    "en": "Amazon.com",
@@ -1506,12 +1500,6 @@
    "en": "Broadcom",
    "market": "us",
    "sector": "it"
-  },
-  "TSLA": {
-   "ko": "테슬라",
-   "en": "Tesla",
-   "market": "us",
-   "sector": "cd"
   },
   "BRK-B": {
    "ko": "버크셔 해서웨이 B",
@@ -1660,12 +1648,6 @@
   "CRM": {
    "ko": "세일즈포스",
    "en": "Salesforce",
-   "market": "us",
-   "sector": "it"
-  },
-  "IBM": {
-   "ko": "IBM",
-   "en": "IBM",
    "market": "us",
    "sector": "it"
   },
@@ -1818,12 +1800,6 @@
    "en": "Progressive",
    "market": "us",
    "sector": "fin"
-  },
-  "NEE": {
-   "ko": "넥스트에라에너지",
-   "en": "NextEra Energy",
-   "market": "us",
-   "sector": "util"
   },
   "BLK": {
    "ko": "블랙록",
@@ -2058,6 +2034,30 @@
    "en": "Applied Materials",
    "market": "us",
    "sector": "it"
+  },
+  "IBM": {
+   "ko": "IBM",
+   "en": "IBM",
+   "market": "us",
+   "sector": "it"
+  },
+  "GOOGL": {
+   "ko": "알파벳(구글)",
+   "en": "Alphabet",
+   "market": "us",
+   "sector": "comm"
+  },
+  "TSLA": {
+   "ko": "테슬라",
+   "en": "Tesla",
+   "market": "us",
+   "sector": "cd"
+  },
+  "NEE": {
+   "ko": "넥스트에라에너지",
+   "en": "NextEra Energy",
+   "market": "us",
+   "sector": "util"
   }
  },
  "earnings_snapshot_bases": {
