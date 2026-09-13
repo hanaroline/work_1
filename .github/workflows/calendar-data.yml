@@ -167,12 +167,19 @@ jobs:
             echo "바뀐 것이 없다"
           else
             git commit -m "증시 일정 수집 $(TZ=Asia/Seoul date '+%Y-%m-%d %H:%M KST')"
+            # 네 번을 다 밀어 보고도 안 되면 **조용히 넘어가지 않는다.**
+            # 예전에는 고리가 그냥 끝나 잡이 초록으로 남았고, 그러면 수집분이
+            # 사라진 것을 아무도 모른다. 2026-09-11 시세 수집이 같은 자리에서
+            # 밀려 그날 장마감 판을 제때 못 냈는데, 그때는 잡이 빨갛게 죽어
+            # 원인을 찾을 수 있었다. 초록으로 사라지는 쪽이 더 나쁘다.
+            ok=0
             for i in 1 2 3 4; do
-              git push origin "HEAD:${{ github.ref_name }}" && break
+              if git push origin "HEAD:${{ github.ref_name }}"; then ok=1; break; fi
               echo "push 실패 — $((2**i))초 뒤 다시"
               sleep $((2**i))
               git pull --rebase origin "${{ github.ref_name }}" || true
             done
+            [ "$ok" = 1 ] || { echo "::error::일정 수집분을 밀어넣지 못했다"; exit 1; }
           fi
 
       - name: 오프라인판 배포
