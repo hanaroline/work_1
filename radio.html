@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <!-- 유튜브는 임베드에 Referer 헤더를 요구한다. 없으면 오류 153 이 뜬다. -->
   <meta name="referrer" content="strict-origin-when-cross-origin" />
-  <title>라디오 · TV 온에어</title>
+  <title>TV · 라디오 온에어</title>
   <style>
     /* ===== 팔레트 (index.html 과 같은 토큰, 라이트/다크) ===== */
     :root {
@@ -230,11 +230,11 @@
 
 <header class="bar">
   <div class="bar-inner">
-    <div class="brand"><span class="lamp" id="lamp" aria-hidden="true"></span>라디오 · TV</div>
+    <div class="brand"><span class="lamp" id="lamp" aria-hidden="true"></span>TV · 라디오</div>
     <div class="tabs" role="tablist" aria-label="화면 전환">
-      <button class="tab" role="tab" id="tab-radio" aria-selected="true" aria-controls="pane-live">보이는 라디오</button>
-      <button class="tab" role="tab" id="tab-tv" aria-selected="false" aria-controls="pane-live">TV</button>
-      <button class="tab" role="tab" id="tab-audio" aria-selected="false" aria-controls="pane-audio">소리만</button>
+      <button class="tab" role="tab" id="tab-tv" aria-selected="true" aria-controls="pane-live">TV</button>
+      <button class="tab" role="tab" id="tab-audio" aria-selected="false" aria-controls="pane-audio">라디오</button>
+      <button class="tab" role="tab" id="tab-radio" aria-selected="false" aria-controls="pane-live">보이는 라디오</button>
       <button class="tab" role="tab" id="tab-fav" aria-selected="false" aria-controls="pane-fav">즐겨찾기</button>
     </div>
     <div class="spacer"></div>
@@ -250,10 +250,10 @@
     유튜브는 임베드에 <code>Referer</code> 헤더를 요구하는데, <code>file://</code> 로 열면 그 헤더가 없어
     <b>오류 153</b>(동영상 플레이어 구성 오류)이 납니다. 채널 문제가 아니라 여는 방식 문제입니다.<br>
     같은 폴더의 <code>radio-launch.cmd</code> 를 더블클릭하면 <code>http://127.0.0.1:8765</code> 로 열리고
-    영상이 정상 재생됩니다. <b>소리만</b> 탭은 지금 이대로도 들을 수 있습니다.
+    영상이 정상 재생됩니다. <b>라디오</b> 탭은 지금 이대로도 들을 수 있습니다.
   </div>
 
-  <section class="pane" id="pane-live" role="tabpanel" aria-labelledby="tab-radio">
+  <section class="pane" id="pane-live" role="tabpanel" aria-labelledby="tab-tv">
     <div class="tv-grid">
       <div>
         <div class="stage" id="stage">
@@ -289,7 +289,7 @@
   <!-- ===== 소리만 ===== -->
   <section class="pane" id="pane-audio" role="tabpanel" aria-labelledby="tab-audio" hidden>
     <div class="filters" id="audioFilters"></div>
-    <h3 class="section-title">공개 스트림 <em id="audioCount">불러오는 중…</em></h3>
+    <h3 class="section-title">라디오 <em id="audioCount">불러오는 중…</em></h3>
     <div class="grid-cards" id="audioList"></div>
   </section>
 
@@ -348,8 +348,8 @@
     tags: [],
     tag: null,
     query: '',
-    tab: 'radio',
-    band: 'radio',     // 라디오 탭 · TV 탭
+    tab: 'tv',
+    band: 'tv',        // TV 탭 · 보이는 라디오 탭
     current: null,     // { kind:'yt'|'audio', id, name, sub }
     yt: null,
     ytReady: false,
@@ -810,7 +810,7 @@
             // 방송이 끝났다. 빈 화면을 남기지 않는다.
             $('playBtn').textContent = '▶';
             $('lamp').className = 'lamp';
-            $('screenEmptyMsg').textContent = '방송이 끝났습니다. 다른 채널을 고르거나 소리만 탭에서 이어 들으세요.';
+            $('screenEmptyMsg').textContent = '방송이 끝났습니다. 다른 채널을 고르거나 라디오 탭에서 이어 들으세요.';
             showScreenEmpty(true);
             toast('방송이 끝났습니다');
           }
@@ -1041,7 +1041,7 @@
     if ('mediaSession' in navigator && S.current) {
       try {
         navigator.mediaSession.metadata = new MediaMetadata({
-          title: S.current.name, artist: S.current.sub, album: '라디오 · TV 온에어'
+          title: S.current.name, artist: S.current.sub, album: 'TV · 라디오 온에어'
         });
       } catch (e) {}
     }
@@ -1113,7 +1113,7 @@
 
   function setTab(name) {
     S.tab = name;
-    ['radio', 'tv', 'audio', 'fav'].forEach(function (t) {
+    ['tv', 'audio', 'radio', 'fav'].forEach(function (t) {
       $('tab-' + t).setAttribute('aria-selected', t === name ? 'true' : 'false');
     });
     ['live', 'audio', 'fav'].forEach(function (p) {
@@ -1180,6 +1180,7 @@
     if (LS.get('audioOnly', false)) $('btnAudioOnly').click();
 
     loadChannels().then(function () {
+      setTab('tv');
       renderFav();
       // 마지막으로 듣던 채널이 지금도 라이브면 바로 띄운다.
       // (소리는 브라우저 정책상 사용자가 한 번 눌러야 나온다)
