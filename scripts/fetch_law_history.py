@@ -36,7 +36,7 @@ from datetime import datetime, timezone, timedelta
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from fetch_law import (get, search_items, squash, slugify, OUT, PAUSE,   # noqa: E402
-                       basic_info, articles, admrul_articles, render)
+                       basic_info, articles, admrul_articles, render, reachable)
 
 KST = timezone(timedelta(hours=9))
 HIST = os.path.join(OUT, "history")
@@ -158,6 +158,9 @@ def main():
     else:
         with open(CONF, encoding="utf-8") as f:
             reqs = json.load(f)["요청"]
+
+    if not reachable(oc):
+        return 2
 
     os.makedirs(HIST, exist_ok=True)
     print("=== 연혁 조문 수집 (%d건) ===" % len(reqs))

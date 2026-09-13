@@ -138,6 +138,29 @@ def get(path, params):
     return json.loads(text)
 
 
+def reachable(oc, log=print):
+    """서버가 살아 있는지 한 번만, 짧게 물어본다.
+
+    law.go.kr 은 이따금 통째로 무응답이 된다. 그때 목록을 다 돌면 재시도까지
+    겹쳐 15분을 버리고도 0건이다(실제로 그랬다). 한 번 두드려 보고 안 되면
+    바로 접고, 왜 접었는지 남긴다 — 코드가 잘못된 것과 서버가 죽은 것은
+    다른 일이고, 로그에서 그 둘이 구별돼야 한다.
+    """
+    global TIMEOUT, RETRY
+    keep = (TIMEOUT, RETRY)
+    TIMEOUT, RETRY = 10, 1
+    try:
+        get("lawSearch.do", {"OC": oc, "target": "law", "type": "JSON",
+                             "query": "소득세법", "display": 1, "page": 1})
+        return True
+    except Exception as e:                                        # noqa: BLE001
+        log("!! law.go.kr 이 응답하지 않는다 — %s: %s" % (type(e).__name__, e))
+        log("   서버 쪽 일시 장애다. 코드 문제가 아니므로 잠시 뒤 다시 부른다.")
+        return False
+    finally:
+        TIMEOUT, RETRY = keep
+
+
 def search(oc, name, target="law", display=100):
     """법령명으로 찾아 후보 목록을 돌려준다."""
     data = get("lawSearch.do", {
@@ -691,6 +714,9 @@ def main():
         if not targets:
             print("!! --only 에 걸리는 대상이 없다", file=sys.stderr)
             return 1
+
+    if not reachable(oc):
+        return 2
 
     print("=== 국가법령정보센터 수집 (%d건) ==="
           % len(targets))
