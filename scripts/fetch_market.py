@@ -1186,6 +1186,16 @@ def _rates_add_ktb10y(out, dump_dir=None):
     return out
 
 
+def _is_next_shell(body):
+    """받아 온 것이 값이 아니라 **React 셸**인지 가린다.
+
+    개편된 네이버 화면은 표 대신 빈 껍데기를 내려보내고 값은 브라우저가
+    나중에 API 로 채운다. 껍데기도 100KB 를 넘으므로 **크기로는 가릴 수
+    없다** — 안에 `_next/static` 이나 `self.__next_f` 가 있는지로 본다.
+    """
+    return "_next/static" in body or "self.__next_f" in body
+
+
 LIMIT_URLS = {
     "upper": ["https://finance.naver.com/sise/sise_upper.naver"],
     "lower": ["https://finance.naver.com/sise/sise_lower.naver"],
@@ -1209,12 +1219,20 @@ def naver_limit_names(kind, dump_dir=None):
                 names.append({"code": code, "name": name})
         if names:
             return {"names": names[:40], "count": len(names), "source_url": url}
-        # 해당 종목이 하나도 없는 날은 링크가 없는 것이 정상이다.
-        # 페이지가 온전히 내려왔으면 0건으로 처리하고, 껍데기만 왔으면 실패로 본다.
-        if len(s) > 20000:
+        # **크기로 「빈 날」과 「깨진 페이지」를 가르면 안 된다.** 2026-09-10
+        # 개편 뒤 이 화면은 React 셸만 118KB 로 내려온다. 20,000 바이트를
+        # 넘으므로 옛 규칙은 그것을 「해당 종목 없음」으로 읽었고, 등락 종목
+        # 수가 상한가 열둘을 말하는 날에도 `ok: True · count: 0` 이 나갔다.
+        # **실패를 없음으로 보고하는 것이 못 받는 것보다 나쁘다.**
+        if _is_next_shell(s):
+            errors.append("%s -> Next.js 셸만 옴(%d bytes) — 표가 없다"
+                          % (url[-24:], len(s)))
+        elif "코스피" in s and "코스닥" in s and len(s) > 20000:
+            # 옛 화면이 온전히 내려왔는데 링크가 없으면 그날은 정말로 없다.
             return {"names": [], "count": 0, "source_url": url,
                     "note": "해당 종목 없음"}
-        errors.append("%s -> 종목 링크 없음(%d bytes)" % (url[-24:], len(s)))
+        else:
+            errors.append("%s -> 종목 링크 없음(%d bytes)" % (url[-24:], len(s)))
         if dump_dir:
             os.makedirs(dump_dir, exist_ok=True)
             with open(os.path.join(dump_dir, "limit_%s_try%d.html" % (kind, n)), "w",
@@ -3504,6 +3522,105 @@ def probe_with_session(dump_dir="data/market/raw"):
     print("\n".join(lines))
 
 
+def probe_limit_sources(dump_dir="data/market/raw"):
+    """**상한가·하한가 종목명을 줄 다른 원천을 찾는다.** 진단 전용.
+
+    옛 화면(`sise_upper.naver`)은 2026-09-10 개편 뒤 React 셸만 준다.
+    등락 종목 수는 지수 API 에서 오므로 「상한가 열둘」이라고 말하는데
+    명단은 0 건인 상태가 이어졌다. 네 갈래를 한 번에 두드려 본다.
+
+      ① 새 네이버 앱 API   — 업종·수급을 되찾은 것과 같은 계열
+      ② 다음 금융 API      — 같은 값을 다른 회사가 준다
+      ③ KRX 정보데이터     — 전종목 시세에서 등락률로 추려 낸다
+      ④ 앱 페이지의 JS 묶음 — 위가 다 안 되면 주소를 직접 읽는다
+
+    셋 다 값을 주지 않으면 ④ 가 다음 시도의 실마리를 남긴다.
+    """
+    os.makedirs(dump_dir, exist_ok=True)
+    lines = ["상한가 명단 원천 탐색 %s KST"
+             % datetime.now(KST).strftime("%Y-%m-%d %H:%M:%S"),
+             "(수집 결과는 바꾸지 않는다. 무엇이 값을 주는지만 적는다.)", ""]
+
+    # ① 새 네이버 앱 계열 — 되찾은 API 들과 같은 오리진·모양으로 짐작한다.
+    naver = [
+        "https://m.stock.naver.com/api/stocks/upperLimit?page=1&pageSize=100",
+        "https://m.stock.naver.com/api/stocks/lowerLimit?page=1&pageSize=100",
+        "https://m.stock.naver.com/api/stocks/upDownLimit/upper?page=1&pageSize=100",
+        "https://m.stock.naver.com/api/stocks/ranking/upperLimit?page=1&pageSize=100",
+        "https://stock.naver.com/api/domestic/ranking/upperLimit?startIdx=0&pageSize=100",
+        "https://stock.naver.com/api/domestic/stock/upperLimit?startIdx=0&pageSize=100",
+        "https://stock.naver.com/api/domestic/market/upperLimit?startIdx=0&pageSize=100",
+    ]
+    # ② 다음 금융 — 오리진이 달라 네이버 개편과 무관하다.
+    daum = [
+        "https://finance.daum.net/api/trend/upper_limit?market=KOSPI",
+        "https://finance.daum.net/api/trend/upper_limit?market=KOSDAQ",
+        "https://finance.daum.net/api/quotes/upper_limit",
+    ]
+    for group, urls in (("네이버 앱", naver), ("다음 금융", daum)):
+        for url in urls:
+            if "daum" in url:
+                ref, extra = ("https://finance.daum.net/domestic/upper_lower",
+                              {"Accept": "application/json, text/plain, */*",
+                               # 다음은 Referer 만으로는 403 을 준다.
+                               "X-Requested-With": "XMLHttpRequest"})
+            else:
+                ref, extra = ("https://m.stock.naver.com/",
+                              {"Accept": "application/json, text/plain, */*"})
+            try:
+                body, ok = _get(url, referer=ref, headers=extra), True
+            except Exception as e:                                # noqa: BLE001
+                body, ok = "%s: %s" % (type(e).__name__, e), False
+            # 종목코드 여섯 자리가 여럿 보이면 명단일 가능성이 크다.
+            codes = len(set(re.findall(r'"(\d{6})"', body))) if ok else 0
+            verdict = ("쓸모" if codes >= 3 else
+                       ("셸" if ok and _is_next_shell(body) else
+                        ("빈손" if ok else "실패")))
+            lines.append("[%s] %s" % (group, url))
+            lines.append("    %s · %d bytes · 종목코드 %d 개"
+                         % (verdict, len(body), codes))
+            if verdict != "쓸모":
+                lines.append("    앞머리: %s" % re.sub(r"\s+", " ", body[:150]))
+            else:
+                with open(os.path.join(dump_dir, "limitsrc_%d.json" % len(lines)),
+                          "w", encoding="utf-8") as f:
+                    f.write(body[:300000])
+    lines.append("")
+
+    # ③ KRX 전종목 시세 — 상한가 표가 따로 없어도 **등락률로 추려 낼 수 있다.**
+    #    수집 서버 IP 가 막혀 상시 실패해 왔지만(krx:allstocks), 이 경로는
+    #    따로 확인한 적이 없으므로 한 번 두드려 본다.
+    lines.append("### KRX 전종목 시세 (등락률로 추려 내기)")
+    try:
+        rows = krx_json("dbms/MDC/STAT/standard/MDCSTAT01501",
+                        mktId="ALL", trdDd=datetime.now(KST).strftime("%Y%m%d"),
+                        share="1", money="1")
+        up = [r for r in rows
+              if _num(r.get("FLUC_RT")) is not None and _num(r.get("FLUC_RT")) >= 29.0]
+        lines.append("    응답 %d 종목 · 등락률 +29% 이상 %d 개" % (len(rows), len(up)))
+        for r in up[:10]:
+            lines.append("      %s %s %s%%" % (r.get("ISU_SRT_CD"), r.get("ISU_ABBRV"),
+                                               r.get("FLUC_RT")))
+    except Exception as e:                                        # noqa: BLE001
+        lines.append("    실패 %s: %s" % (type(e).__name__, str(e)[:140]))
+    lines.append("")
+
+    # ④ 앱 페이지의 JS 묶음에서 주소를 직접 읽는다(짐작이 다 빗나갔을 때).
+    lines.append("### 셸에서 주소 읽기 — 아래 파일을 보십시오")
+    try:
+        probe_next_chunks([("상한가 화면", "https://finance.naver.com/sise/sise_upper.naver")],
+                          dump_dir)
+        lines.append("    next_chunks.txt 에 적었다")
+    except Exception as e:                                        # noqa: BLE001
+        lines.append("    묶음 읽기 실패 %s: %s" % (type(e).__name__, str(e)[:120]))
+
+    path = os.path.join(dump_dir, "limit_sources.txt")
+    with open(path, "w", encoding="utf-8") as f:
+        f.write("\n".join(lines) + "\n")
+    print("\n".join(lines))
+    return path
+
+
 def probe_naver_api(dump_dir="data/market/raw"):
     """네이버 API 후보를 훑어 응답을 그대로 남긴다. 진단 전용."""
     os.makedirs(dump_dir, exist_ok=True)
@@ -3977,6 +4094,21 @@ def main():
             ])
         except Exception as e:                                    # noqa: BLE001
             print("!! 묶음 탐색 실패: %s" % e)
+
+    # **상한가 명단이 비었는데 등락 종목 수는 있다면 원천을 찾아본다.**
+    # 둘이 어긋나는 것은 「그날 없었다」가 아니라 「못 받았다」는 뜻이다.
+    ln = out.get("limit_names") or {}
+    mi = out.get("market_internals") or {}
+    counted = sum((mi.get(m, {}).get("breadth") or {}).get(f, 0) or 0
+                  for m in ("kospi", "kosdaq") for f in ("limit_up", "limit_down"))
+    listed = sum((ln.get(k) or {}).get("count", 0) or 0 for k in ("upper", "lower"))
+    if counted and not listed:
+        print("\n=== 등락 종목 수는 상한·하한 %d 개인데 명단이 0 건이다 "
+              "— 다른 원천을 찾는다 ===" % counted)
+        try:
+            probe_limit_sources()
+        except Exception as e:                                    # noqa: BLE001
+            print("!! 상한가 원천 탐색 실패: %s" % e)
 
     # 아무것도 못 받으면 실패로 끝내 워크플로가 빨갛게 뜨도록 한다
     return 0 if ok else 1
