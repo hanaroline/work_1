@@ -103,8 +103,41 @@ function finish(etf, listedIn) {
   // 잣대가 다른 값을 한 줄로 세우면 안 되므로 화면이 이 표를 보고 가른다.
   const aumScope = etf.aum == null ? null : (etf.aumScope || (etf.market === 'KR' ? 'etf' : 'unknown'));
 
+  // ── 야후 일봉이 비어 있을 때 네이버 시장가 수익률로 채운다 ──────────────
+  //
+  // price·tr 은 한 원천(야후 일봉)에서 짝으로 만드는 것이 원칙이다. 두 계열이
+  // 서로 다른 원천이면 "분배금만큼의 차이" 를 잴 수 없기 때문이다.
+  //
+  // 그런데 야후가 일봉을 아예 안 주는 국내 종목이 있다. 되짚기로 확인했다
+  // (tools/discovery/verify_no_returns.md) — 심볼도 종목 종류도 맞는데 값이
+  // 있는 봉이 1개뿐이라 계산기가 rows<2 에서 값을 내지 못한다.
+  //
+  //   310970 TIGER MSCI Korea TR   310960 TIGER 200TR
+  //   301400 PLUS 코스닥150         475720 RISE 200위클리커버드콜
+  //
+  // 이 종목들은 네이버가 자기 화면에 싣는 시장가 수익률을 주고 있고, 우리는
+  // 그것을 naverPrice 로 받아만 두고 안 썼다. 빈칸으로 두느니 **출처를 밝히고**
+  // 채운다. 총수익률(tr)은 만들지 않는다 — 네이버는 분배금 재투자 계열을 주지
+  // 않으므로, 없는 것을 지어낼 수는 없다.
+  //
+  // 두 가지를 지킨다.
+  //   - 거래가 멈춘 종목에는 채우지 않는다. 멈춘 날의 값을 오늘 것처럼
+  //     내놓게 된다(265690 ACE 러시아MSCI 가 그렇다).
+  //   - retSource 표를 붙인다. 화면이 이 표를 보고 "네이버 기준" 이라고
+  //     밝히고, 순위·유형평균에는 넣지 않는다(그쪽은 tr 로만 센다).
+  let ret = etf.ret;
+  let retSource;
+  const hasYahoo = !!(ret && (ret.price || ret.tr));
+  if (etf.market === 'KR' && !suspended && !hasYahoo && ret && ret.naverPrice
+      && Object.values(ret.naverPrice).some((v) => v != null)) {
+    ret = { ...ret, price: ret.naverPrice };
+    retSource = 'naver';
+  }
+
   return {
     ...etf,
+    ret,
+    retSource,
     aumScope,
     suspended: suspended || undefined,
     // 국내는 수집기가 운용사를 직접 받아 온다(네이버 issuerName). 없으면 규칙으로.

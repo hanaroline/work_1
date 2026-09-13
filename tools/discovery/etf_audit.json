@@ -1,18 +1,18 @@
 {
-  "at": "2026-09-09T00:46:52.472Z",
-  "dataUpdatedAt": "2026-09-09T00:46:52.008Z",
+  "at": "2026-09-13T15:47:57.317Z",
+  "dataUpdatedAt": "2026-09-13T15:41:57.223Z",
   "total": 1353,
   "counts": {
     "error": 0,
     "warn": 1499,
-    "info": 1456
+    "info": 1462
   },
   "errorEtfCount": 0,
   "rules": [
     {
       "rule": "D1-등락률-불일치",
       "sev": "warn",
-      "count": 1090,
+      "count": 1095,
       "examples": [
         {
           "sev": "warn",
@@ -70,7 +70,7 @@
           "d1": 0.43
         }
       ],
-      "etfCount": 1090
+      "etfCount": 1095
     },
     {
       "rule": "price-nav-괴리",
@@ -350,69 +350,6 @@
       "etfCount": 9
     },
     {
-      "rule": "수익률-없음",
-      "sev": "warn",
-      "count": 7,
-      "examples": [
-        {
-          "sev": "warn",
-          "rule": "수익률-없음",
-          "id": "KR:310970",
-          "code": "310970",
-          "market": "KR",
-          "name": "TIGER MSCI Korea TR",
-          "detail": "기간 수익률이 한 칸도 없다 — 상세에 표 대신 \"자료 없음\" 이 나간다 (편입종목 10개, 기준가 수익률만 있음)",
-          "holdings": 10,
-          "navOnly": true
-        },
-        {
-          "sev": "warn",
-          "rule": "수익률-없음",
-          "id": "KR:475720",
-          "code": "475720",
-          "market": "KR",
-          "name": "RISE 200위클리커버드콜",
-          "detail": "기간 수익률이 한 칸도 없다 — 상세에 표 대신 \"자료 없음\" 이 나간다 (편입종목 10개, 기준가 수익률만 있음)",
-          "holdings": 10,
-          "navOnly": true
-        },
-        {
-          "sev": "warn",
-          "rule": "수익률-없음",
-          "id": "KR:310960",
-          "code": "310960",
-          "market": "KR",
-          "name": "TIGER 200TR",
-          "detail": "기간 수익률이 한 칸도 없다 — 상세에 표 대신 \"자료 없음\" 이 나간다 (편입종목 10개, 기준가 수익률만 있음)",
-          "holdings": 10,
-          "navOnly": true
-        },
-        {
-          "sev": "warn",
-          "rule": "수익률-없음",
-          "id": "KR:0238P0",
-          "code": "0238P0",
-          "market": "KR",
-          "name": "TIGER 미국S&P500미국채혼합50",
-          "detail": "기간 수익률이 한 칸도 없다 — 상세에 표 대신 \"자료 없음\" 이 나간다 (편입종목 10개, 기준가 수익률만 있음)",
-          "holdings": 10,
-          "navOnly": true
-        },
-        {
-          "sev": "warn",
-          "rule": "수익률-없음",
-          "id": "KR:265690",
-          "code": "265690",
-          "market": "KR",
-          "name": "ACE 러시아MSCI(합성)",
-          "detail": "기간 수익률이 한 칸도 없다 — 상세에 표 대신 \"자료 없음\" 이 나간다 (편입종목 2개, 기준가 수익률만 있음)",
-          "holdings": 2,
-          "navOnly": true
-        }
-      ],
-      "etfCount": 7
-    },
-    {
       "rule": "tr-내포분배율-큼",
       "sev": "warn",
       "count": 4,
@@ -472,6 +409,36 @@
           "tr": 16.1,
           "impliedCumPct": 43.76,
           "dividendYield": 1.45
+        }
+      ],
+      "etfCount": 2
+    },
+    {
+      "rule": "수익률-없음",
+      "sev": "warn",
+      "count": 2,
+      "examples": [
+        {
+          "sev": "warn",
+          "rule": "수익률-없음",
+          "id": "KR:265690",
+          "code": "265690",
+          "market": "KR",
+          "name": "ACE 러시아MSCI(합성)",
+          "detail": "기간 수익률이 한 칸도 없다 — 상세에 표 대신 \"자료 없음\" 이 나간다 (편입종목 2개, 기준가 수익률만 있음)",
+          "holdings": 2,
+          "navOnly": true
+        },
+        {
+          "sev": "warn",
+          "rule": "수익률-없음",
+          "id": "US:SPLG",
+          "code": "SPLG",
+          "market": "US",
+          "name": "State Street SPDR Portfolio S&P 500 ETF",
+          "detail": "기간 수익률이 한 칸도 없다 — 상세에 표 대신 \"자료 없음\" 이 나간다 (편입종목 10개)",
+          "holdings": 10,
+          "navOnly": false
         }
       ],
       "etfCount": 2
@@ -1051,6 +1018,64 @@
       "etfCount": 28
     },
     {
+      "rule": "수익률-네이버기준",
+      "sev": "info",
+      "count": 5,
+      "examples": [
+        {
+          "sev": "info",
+          "rule": "수익률-네이버기준",
+          "id": "KR:310970",
+          "code": "310970",
+          "market": "KR",
+          "name": "TIGER MSCI Korea TR",
+          "detail": "야후 일봉이 없어 네이버 시장가 수익률로 채웠다 — 총수익률이 아니다 (9칸, 기준일 2026-09-08)",
+          "periods": 9
+        },
+        {
+          "sev": "info",
+          "rule": "수익률-네이버기준",
+          "id": "KR:475720",
+          "code": "475720",
+          "market": "KR",
+          "name": "RISE 200위클리커버드콜",
+          "detail": "야후 일봉이 없어 네이버 시장가 수익률로 채웠다 — 총수익률이 아니다 (7칸, 기준일 2026-09-08)",
+          "periods": 7
+        },
+        {
+          "sev": "info",
+          "rule": "수익률-네이버기준",
+          "id": "KR:310960",
+          "code": "310960",
+          "market": "KR",
+          "name": "TIGER 200TR",
+          "detail": "야후 일봉이 없어 네이버 시장가 수익률로 채웠다 — 총수익률이 아니다 (9칸, 기준일 2026-09-08)",
+          "periods": 9
+        },
+        {
+          "sev": "info",
+          "rule": "수익률-네이버기준",
+          "id": "KR:0238P0",
+          "code": "0238P0",
+          "market": "KR",
+          "name": "TIGER 미국S&P500미국채혼합50",
+          "detail": "야후 일봉이 없어 네이버 시장가 수익률로 채웠다 — 총수익률이 아니다 (1칸, 기준일 2026-09-08)",
+          "periods": 1
+        },
+        {
+          "sev": "info",
+          "rule": "수익률-네이버기준",
+          "id": "KR:301400",
+          "code": "301400",
+          "market": "KR",
+          "name": "PLUS 코스닥150",
+          "detail": "야후 일봉이 없어 네이버 시장가 수익률로 채웠다 — 총수익률이 아니다 (9칸, 기준일 2026-09-08)",
+          "periods": 9
+        }
+      ],
+      "etfCount": 5
+    },
+    {
       "rule": "시총-설정액-괴리",
       "sev": "info",
       "count": 1,
@@ -1087,6 +1112,23 @@
           "volume": 0,
           "price": 8535,
           "nav": 48.41
+        }
+      ],
+      "etfCount": 1
+    },
+    {
+      "rule": "자료-하루뒤",
+      "sev": "info",
+      "count": 1,
+      "examples": [
+        {
+          "sev": "info",
+          "rule": "자료-하루뒤",
+          "id": "-",
+          "code": "-",
+          "market": "-",
+          "name": "(전체)",
+          "detail": "최신 기준일 2026-09-08 · 직전 영업일 2026-09-11 (차이 3일)"
         }
       ],
       "etfCount": 1
@@ -1365,15 +1407,25 @@
       "d1": -0.37
     },
     {
-      "sev": "warn",
-      "rule": "수익률-없음",
+      "sev": "info",
+      "rule": "수익률-네이버기준",
       "id": "KR:310970",
       "code": "310970",
       "market": "KR",
       "name": "TIGER MSCI Korea TR",
-      "detail": "기간 수익률이 한 칸도 없다 — 상세에 표 대신 \"자료 없음\" 이 나간다 (편입종목 10개, 기준가 수익률만 있음)",
-      "holdings": 10,
-      "navOnly": true
+      "detail": "야후 일봉이 없어 네이버 시장가 수익률로 채웠다 — 총수익률이 아니다 (9칸, 기준일 2026-09-08)",
+      "periods": 9
+    },
+    {
+      "sev": "warn",
+      "rule": "D1-등락률-불일치",
+      "id": "KR:310970",
+      "code": "310970",
+      "market": "KR",
+      "name": "TIGER MSCI Korea TR",
+      "detail": "등락률 0.79% vs price.D1 -0.1%",
+      "changeRate": 0.79,
+      "d1": -0.1
     },
     {
       "sev": "info",
@@ -3179,15 +3231,14 @@
       "d1": 0.27
     },
     {
-      "sev": "warn",
-      "rule": "수익률-없음",
+      "sev": "info",
+      "rule": "수익률-네이버기준",
       "id": "KR:475720",
       "code": "475720",
       "market": "KR",
       "name": "RISE 200위클리커버드콜",
-      "detail": "기간 수익률이 한 칸도 없다 — 상세에 표 대신 \"자료 없음\" 이 나간다 (편입종목 10개, 기준가 수익률만 있음)",
-      "holdings": 10,
-      "navOnly": true
+      "detail": "야후 일봉이 없어 네이버 시장가 수익률로 채웠다 — 총수익률이 아니다 (7칸, 기준일 2026-09-08)",
+      "periods": 7
     },
     {
       "sev": "info",
@@ -3218,6 +3269,17 @@
       "name": "RISE 200위클리커버드콜",
       "detail": "합 103.69%",
       "sum": 103.69
+    },
+    {
+      "sev": "warn",
+      "rule": "D1-등락률-불일치",
+      "id": "KR:475720",
+      "code": "475720",
+      "market": "KR",
+      "name": "RISE 200위클리커버드콜",
+      "detail": "등락률 0.83% vs price.D1 0.04%",
+      "changeRate": 0.83,
+      "d1": 0.04
     },
     {
       "sev": "warn",
@@ -5549,15 +5611,25 @@
       "d1": 0.29
     },
     {
-      "sev": "warn",
-      "rule": "수익률-없음",
+      "sev": "info",
+      "rule": "수익률-네이버기준",
       "id": "KR:310960",
       "code": "310960",
       "market": "KR",
       "name": "TIGER 200TR",
-      "detail": "기간 수익률이 한 칸도 없다 — 상세에 표 대신 \"자료 없음\" 이 나간다 (편입종목 10개, 기준가 수익률만 있음)",
-      "holdings": 10,
-      "navOnly": true
+      "detail": "야후 일봉이 없어 네이버 시장가 수익률로 채웠다 — 총수익률이 아니다 (9칸, 기준일 2026-09-08)",
+      "periods": 9
+    },
+    {
+      "sev": "warn",
+      "rule": "D1-등락률-불일치",
+      "id": "KR:310960",
+      "code": "310960",
+      "market": "KR",
+      "name": "TIGER 200TR",
+      "detail": "등락률 1.05% vs price.D1 -0.28%",
+      "changeRate": 1.05,
+      "d1": -0.28
     },
     {
       "sev": "info",
@@ -13465,15 +13537,14 @@
       "d1": -1.56
     },
     {
-      "sev": "warn",
-      "rule": "수익률-없음",
+      "sev": "info",
+      "rule": "수익률-네이버기준",
       "id": "KR:0238P0",
       "code": "0238P0",
       "market": "KR",
       "name": "TIGER 미국S&P500미국채혼합50",
-      "detail": "기간 수익률이 한 칸도 없다 — 상세에 표 대신 \"자료 없음\" 이 나간다 (편입종목 10개, 기준가 수익률만 있음)",
-      "holdings": 10,
-      "navOnly": true
+      "detail": "야후 일봉이 없어 네이버 시장가 수익률로 채웠다 — 총수익률이 아니다 (1칸, 기준일 2026-09-08)",
+      "periods": 1
     },
     {
       "sev": "info",
@@ -13483,6 +13554,17 @@
       "market": "KR",
       "name": "TIGER 미국S&P500미국채혼합50",
       "detail": "10종목 모두 비중 없음 (수량만)"
+    },
+    {
+      "sev": "warn",
+      "rule": "D1-등락률-불일치",
+      "id": "KR:0238P0",
+      "code": "0238P0",
+      "market": "KR",
+      "name": "TIGER 미국S&P500미국채혼합50",
+      "detail": "등락률 -0.65% vs price.D1 0.1%",
+      "changeRate": -0.65,
+      "d1": 0.1
     },
     {
       "sev": "warn",
@@ -21835,15 +21917,25 @@
       "d1": 0.74
     },
     {
-      "sev": "warn",
-      "rule": "수익률-없음",
+      "sev": "info",
+      "rule": "수익률-네이버기준",
       "id": "KR:301400",
       "code": "301400",
       "market": "KR",
       "name": "PLUS 코스닥150",
-      "detail": "기간 수익률이 한 칸도 없다 — 상세에 표 대신 \"자료 없음\" 이 나간다 (편입종목 10개, 기준가 수익률만 있음)",
-      "holdings": 10,
-      "navOnly": true
+      "detail": "야후 일봉이 없어 네이버 시장가 수익률로 채웠다 — 총수익률이 아니다 (9칸, 기준일 2026-09-08)",
+      "periods": 9
+    },
+    {
+      "sev": "warn",
+      "rule": "D1-등락률-불일치",
+      "id": "KR:301400",
+      "code": "301400",
+      "market": "KR",
+      "name": "PLUS 코스닥150",
+      "detail": "등락률 2.28% vs price.D1 -2.02%",
+      "changeRate": 2.28,
+      "d1": -2.02
     },
     {
       "sev": "warn",
@@ -32264,6 +32356,15 @@
       "value": 89.32,
       "cohortMean": 26.34,
       "shiftPp": -1.17
+    },
+    {
+      "sev": "info",
+      "rule": "자료-하루뒤",
+      "id": "-",
+      "code": "-",
+      "market": "-",
+      "name": "(전체)",
+      "detail": "최신 기준일 2026-09-08 · 직전 영업일 2026-09-11 (차이 3일)"
     },
     {
       "sev": "warn",

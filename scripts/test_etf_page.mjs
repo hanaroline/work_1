@@ -442,6 +442,11 @@ if (noRet) {
   // 앞의 시험들이 걸어 둔 조건이 남아 있으면 찾는 종목이 목록에서 빠진다.
   await page.locator('#f-reset').click();
   await page.waitForTimeout(200);
+  // "편입종목 있는 것만" 은 기본으로 켜져 있다. 수익률 없는 종목은 거래가
+  // 멈춰 편입종목이 현금뿐인 경우가 많아(265690 은 원화현금·설정현금액 둘뿐)
+  // 그 체크에 걸려 목록에서 빠진다. 풀고 찾는다.
+  await page.locator('#f-hold').uncheck();
+  await page.waitForTimeout(250);
   await page.locator('#q').fill(noRet.code);
   await page.waitForTimeout(250);
   await page.locator(`#list-body tr[data-id="${noRet.id}"]`).click();
@@ -451,6 +456,50 @@ if (noRet) {
   check('수익률이 없으면 왜 비었는지 적는다',
         rows === 0 && /수익률|return/i.test(empty),
         `${noRet.code} ${noRet.name} · 표 ${rows}행 · "${empty.slice(0, 30)}"`);
+  await page.locator('#q').fill('');
+  await page.waitForTimeout(200);
+}
+
+// ── 네이버에서 채운 종목은 그 사실을 밝히는가
+//
+// 야후 일봉이 비어 값을 못 만든 국내 소수 종목을 네이버 시장가 수익률로
+// 채웠다(310970·310960·301400·475720). 원천도 기준도 다른 값이므로 화면이
+// 그것을 말하지 않으면 다른 종목과 같은 잣대로 읽힌다. 세 가지를 못 박는다.
+//   - 상세에 숫자가 실제로 뜬다(채운 보람이 있어야 한다)
+//   - 어디서 온 값인지 적혀 있다
+//   - 목록의 수익률 칸은 **비어 있다** — 총수익률 머리말 아래에 시장가를
+//     끼워 넣으면 라벨이 거짓이 된다
+const naverRet = await page.evaluate(() => {
+  const all = window.ETF_DATA?.etfs || ETFS;
+  const e = all.find((x) => x.retSource === 'naver'
+                         && x.ret?.price && Object.values(x.ret.price).filter((v) => v != null).length >= 5);
+  return e ? { id: e.id, code: e.code, name: e.name } : null;
+});
+if (naverRet) {
+  await page.locator('#f-hold').uncheck().catch(() => {});
+  await page.locator('#q').fill(naverRet.code);
+  await page.waitForTimeout(300);
+  await page.locator(`#list-body tr[data-id="${naverRet.id}"]`).click();
+  await page.waitForTimeout(300);
+  const rows = await page.locator('#detail .ret-table table tbody tr').count();
+  check('네이버에서 채운 종목도 기간수익률이 뜬다', rows >= 5,
+        `${naverRet.code} ${naverRet.name} · ${rows}행`);
+  const head = (await page.locator('#detail .ret-table thead th').allInnerTexts()).join(' | ');
+  check('표 머리가 네이버 기준이라고 밝힌다', /네이버|Naver/.test(head), head.slice(0, 60));
+  const note = (await page.locator('#detail .notice').allInnerTexts()).join(' ');
+  check('왜 원천이 다른지 안내문이 설명한다',
+        /네이버|Naver/.test(note) && /일봉|daily/.test(note), note.slice(0, 60));
+  check('총수익률이 아니라는 것도 밝힌다', /총수익률이 아니|not a total return/.test(note));
+  // 목록 칸은 비어 있어야 한다 — 총수익률 열에 시장가를 섞지 않는다.
+  const listCell = await page.evaluate((id) => {
+    const tr = document.querySelector(`#list-body tr[data-id="${id}"]`);
+    if (!tr) return null;
+    const idx = [...document.querySelectorAll('#list-head th')]
+      .findIndex((th) => th.getAttribute('data-sort') === 'ret');
+    return idx < 0 ? null : (tr.children[idx]?.textContent || '').trim();
+  }, naverRet.id);
+  check('목록의 총수익률 칸에는 섞어 넣지 않는다', !/\d/.test(listCell || ''),
+        `"${listCell}"`);
   await page.locator('#q').fill('');
   await page.waitForTimeout(200);
 }
