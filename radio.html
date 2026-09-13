@@ -641,12 +641,13 @@
 
     list.forEach(function (c) {
       var live = playableLive(c);
-      var freq = (c.freq && c.freq.seoul) ? c.freq.seoul.toFixed(1) + ' MHz' : c.org;
+      // 주파수 → 지금 방송 제목 → 왜 못 트는지 순으로 보여 준다
+      var freq = (c.freq && c.freq.seoul) ? c.freq.seoul.toFixed(1) + ' MHz' : (c.note || c.org);
       box.appendChild(makeCard({
         kind: 'yt',
         id: c.id,
         name: c.name,
-        sub: live && live.title ? live.title : freq,
+        sub: (live && live.title) ? live.title : freq,
         color: orgColor(c.org),
         initials: initials(c.name, c.org),
         live: !!live,
