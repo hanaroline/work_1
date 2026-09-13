@@ -103,10 +103,46 @@
    * 모자라 표가 아닌 것으로 판정된다. 글자가 섞인 칸(「납입금액의 0.1% 이내」)은
    * 건드리지 않는다 — 그것은 한 칸이 맞다.
    */
+  var isNumTok = function (x) { return /^[\d,]+(?:\.\d+)?%?$/.test(x) || x === '-'; };
   var splitGlued = function (x) {
     var s = String(x).trim();
-    return /^[\d.,%]+(?:\s+[\d.,%]+)+$/.test(s) ? s.split(/\s+/) : [x];
+    var toks = s.split(/\s+/);
+    if (toks.length < 2) return [x];
+    /* 숫자 칸끼리 공백으로 붙은 것 — 「0.145% 0.11%」 */
+    if (toks.every(isNumTok)) return toks;
+    /*
+     * 선취 표시가 첫 비율에 붙어 오는 표 — 「없음 0.565%」·「1.0%이내 0.8400」.
+     * 앞머리 한 칸만 글자이고 나머지가 모두 숫자면 그 한 칸을 떼어 준다.
+     * 「납입금액의 0.1% 이내」 처럼 뒤가 글자로 끝나면 한 칸이 맞으므로 두지 않는다.
+     */
+    if (!isNumTok(toks[0]) && toks.slice(1).every(isNumTok)) return [toks[0]].concat(toks.slice(1));
+    return [x];
   };
+
+  /**
+   * 이름을 거슬러 올라가다 어디서 멈출지.
+   *
+   *   'break' 그 줄은 앞 행의 데이터다 — 더 올라가지 않는다
+   *   'skip'  수수료 조각 한두 개뿐이다 — 이름이 아니니 건너뛰고 더 올라간다
+   *   'take'  이름이다
+   *
+   * 앞 판은 「숫자만 있는 줄」 에서만 멈췄다. 그런데 데이터 행이 「없음」 으로
+   * 시작하는 설명서가 있어서 멈추지 못하고 앞 행의 숫자를 통째로 이름에 담았다 —
+   * 표본에서 clsPName 11건 중 2건이 이렇게 나왔다.
+   *
+   *   없음 0.565% 0.40% - 1.313% 138 283 435 762 1,734 수수료미징구-오프 라인-퇴직연금(C- P2)
+   *
+   * 글자로 시작하는지가 아니라 숫자 칸이 몇 개인지로 가른다. 세 개 이상이면
+   * 데이터 행이다. 한두 개뿐인 「0.05%」 같은 줄은 선취수수료 조각이므로 건너뛴다 —
+   * 앞 판은 여기서도 멈춰서 다올의 Ae 행이 클래스 이름을 잃었다.
+   */
+  function labelWalkStop(s) {
+    var toks = String(s).replace(/\t/g, ' ').trim().split(/\s+/).filter(Boolean);
+    if (!toks.length) return 'break';
+    var nums = toks.filter(function (x) { return /^[\d,]+(?:\.\d+)?%?$/.test(x) || x === '-'; });
+    if (nums.length >= 3) return 'break';
+    return nums.length === toks.length ? 'skip' : 'take';
+  }
 
   function fundFeeTable(text) {
     var lines = String(text).split('\n');
@@ -121,7 +157,9 @@
         var label = '', cls = null;
         for (var k = i - 1; k >= 0 && k >= i - 6; k--) {
           var t = lines[k].replace(/\t/g, ' ').trim();
-          if (!t || /^[\d,.\s%-]+$/.test(t)) break;
+          var st = labelWalkStop(t);
+          if (st === 'break') break;
+          if (st === 'skip') continue;
           label = t + ' ' + label;
           var mm = t.match(/\(([A-Za-z]{1,2}\d?(?:-[A-Za-z])?)\)\s*$/);
           if (mm) { cls = mm[1]; break; }
@@ -186,7 +224,9 @@
         var label = '', cls = null;
         for (var k = i - 1; k >= 0 && k >= i - 6; k--) {
           var s = lines[k].replace(/\t/g, ' ').trim();
-          if (!s || /^[\d,.\s%-]+$/.test(s)) break;
+          var st2 = labelWalkStop(s);
+          if (st2 === 'break') break;
+          if (st2 === 'skip') continue;
           label = s + ' ' + label;
           var mm = s.match(/\(([A-Za-z]{1,2}\d?(?:-[A-Za-z])?)\)\s*$/);
           if (mm) { cls = mm[1]; break; }
@@ -250,11 +290,23 @@
     /* 뒤에 붙은 숫자 칸 — 「… (C-P2) 없음 0.800 0.50」 */
     nm = nm.replace(/\s+(?:없음|납입금액의)[\s\S]*$/, '');
     nm = nm.replace(/\s+\d[\d.,%\s]*$/, '');
-    /* 앞에 붙은 수수료 조각 — 「0.15% 이내 수수료미징구- …」 */
-    nm = nm.replace(/^[\d.,%\s]*(?:이내|이하)?\s*/, '');
+    /*
+     * 앞에 붙은 데이터 조각을 뗀다. 이름 거슬러 올라가기를 고쳐 대부분 막았지만,
+     * 서식이 또 다른 설명서가 있을 수 있으므로 여기서 한 번 더 턴다 —
+     *   「없음 0.565% 0.40% - 1.313% 138 … 수수료미징구-오프 라인-퇴직연금(C-P2)」
+     * 숫자·「없음」·「납입금액의 … 이내」 로 시작하는 머리를 떼고 이름부터 남긴다.
+     */
+    nm = nm.replace(/^(?:없음|납입금액의|[\d.,%-]+|이내|이하)(?:\s+(?:없음|납입금액의|[\d.,%-]+|이내|이하))*\s*/, '');
     /* 앞에 남은 붙임표·점 */
     nm = nm.replace(/^[-—·.\s]+/, '');
     return nm.trim();
+  }
+
+  /** 이름에 숫자 칸이 여럿이면 클래스 이름이 아니라 데이터가 섞인 것이다 */
+  function looksLikeClassName(nm) {
+    var toks = String(nm).split(/\s+/).filter(Boolean);
+    var nums = toks.filter(function (x) { return /^[\d,]+(?:\.\d+)?%?$/.test(x); });
+    return toks.length > 0 && nums.length < 2;
   }
 
   /** 그 행에서 창구가 말해야 하는 총보수 — 모자형·재간접형은 합성 총보수·비용이 기준이다 */
@@ -905,8 +957,9 @@
           if (!feeRowTotal(r)) return null;
           /* 그 행이 가진 이름만 쓴다 — 덩어리 앞쪽은 옆 클래스의 이름이다 */
           var nm = cleanClassName(feeRowOwnLabel(r));
-          /* 창구가 소리 내어 읽는 말이다 — 「퇴직연금」 이 없으면 이름이 아니다 */
-          return PENSION_RETIRE.test(nm) ? { value: nm, index: r.index, length: r.length } : null;
+          /* 창구가 소리 내어 읽는 말이다 — 「퇴직연금」 이 없거나 숫자가 섞였으면 이름이 아니다 */
+          return (PENSION_RETIRE.test(nm) && looksLikeClassName(nm))
+            ? { value: nm, index: r.index, length: r.length } : null;
         }
       },
       {
