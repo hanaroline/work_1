@@ -77,6 +77,17 @@ jobs:
           LAW_OC: ${{ secrets.LAW_OC }}
         run: python scripts/fetch_law.py
 
+      - name: 연혁 호출 탐침
+        # data/law/PROBE 가 있을 때만 돈다. 세션은 law.go.kr 에 못 붙어서
+        # 연혁 법령 API 의 겉모양을 볼 수 없으므로, 러너가 후보를 두드려
+        # 응답을 저장소에 남기면 세션이 그것을 읽고 수집기를 짠다.
+        # 다 배우고 나면 PROBE 파일을 지워 이 단계를 끈다.
+        if: hashFiles('data/law/PROBE') != ''
+        continue-on-error: true
+        env:
+          LAW_OC: ${{ secrets.LAW_OC }}
+        run: python scripts/probe_law_history.py
+
       - name: 커밋
         run: |
           git config user.name  'github-actions[bot]'
