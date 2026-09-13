@@ -161,6 +161,13 @@ def comma_ready(body):
     return "\n".join(lines)
 
 
+def map_value(src, head, sym):
+    """KEYWORDS·FOREIGN 에서 이 종목의 값을 원문 그대로 꺼낸다(고칠 때 보존하려고)."""
+    a, b = block(src, head, "};")
+    m = re.search(r"'?\b" + re.escape(sym) + r"\b'?:\s*('[^']*'|\[[^\]]*\])", src[a:b])
+    return m.group(1) if m else None
+
+
 def js_key(sym):
     """BRK-B 처럼 하이픈이 든 심볼은 키를 따옴표로 감싸야 한다."""
     return sym if re.match(r"^[A-Za-z_$][A-Za-z0-9_$]*$", sym) else "'" + sym + "'"
@@ -493,9 +500,20 @@ def cmd_edit(a):
     full = []
     for c in edits:
         old = rows[c["sym"]]
+        # 주지 않은 것은 지금 값을 그대로 둔다 — 개요만 고치려다 검색 키워드가 사라지면 안 된다
+        kw = c.get("keywords")
+        if kw is None:
+            raw = map_value(src, "var KEYWORDS = {", c["sym"])
+            kw = raw[1:-1] if raw and raw.startswith("'") else None
+        fr = c.get("foreign")
+        if fr is None:
+            raw = map_value(src, "var FOREIGN = {", c["sym"])
+            if raw and raw.startswith("["):
+                got = re.findall(r"'([^']*)'", raw)
+                fr = got if len(got) == 2 else None
         full.append({"sym": c["sym"], "en": c.get("en") or old["en"], "ko": c.get("ko") or old["ko"],
-                     "sector": c.get("sector") or old["sector"], "keywords": c.get("keywords"),
-                     "foreign": c.get("foreign"), "profile": c.get("profile")})
+                     "sector": c.get("sector") or old["sector"], "keywords": kw,
+                     "foreign": fr, "profile": c.get("profile")})
     need_profile = [c for c in full if not c["profile"]]
     if need_profile:
         print("개요를 주지 않은 항목이 있다(지금은 개요를 반드시 함께 준다): %s"
