@@ -138,6 +138,10 @@ say('## 국내 종목 — 접미사를 바꿔 물었을 때');
 say('');
 say('우리는 국내 코드에 무조건 `.KS` 를 붙인다. 그것이 틀렸다면 다른 쪽에서 값이 나온다.');
 say('');
+say('⚠ **봉 수만 보면 안 된다.** `.KQ` 쪽이 봉을 잔뜩 주더라도 그것이 같은');
+say('상품이어야 쓸 수 있다. 그래서 종목 종류(instrumentType)를 같이 적는다 —');
+say('`ETF` 가 아니면 상장 ETF 가 아니라 **다른 상품**이다.');
+say('');
 say('| 종목 | `.KS` | `.KQ` | 접미사 없음 |');
 say('|---|---|---|---|');
 for (const r of rows.filter((x) => x.market === 'KR')) {
@@ -145,7 +149,8 @@ for (const r of rows.filter((x) => x.market === 'KR')) {
     const g = r.got[v];
     if (!g) return '—';
     if (g.error) return `✗ ${g.error.split(':')[0]}`;
-    return `${g.filledCloses}봉`;
+    return `${g.filledCloses}봉 · ${g.instrumentType || '종류미상'}` +
+           (g.currency ? '' : ' · 통화없음');
   };
   say(`| ${r.code} ${r.name} | ${cell(`${r.code}.KS`)} | ${cell(`${r.code}.KQ`)} | ${cell(r.code)} |`);
 }
@@ -156,15 +161,32 @@ say('');
 for (const r of rows) {
   if (/대조군/.test(r.name)) continue;
   const g = r.got[r.variants[0]];
-  const alt = r.variants.slice(1).find((v) => r.got[v] && !r.got[v].error && r.got[v].filledCloses >= 2);
+  // 같은 **상품**으로 값이 나오는 다른 심볼만 대안으로 친다. 종류가 ETF 가
+  // 아니면 상장 ETF 가 아니라 그 뒤의 펀드 같은 딴 상품이고, 그 값을 시장가
+  // 수익률로 쓰면 기준가(nav)를 시장가라고 부르는 꼴이 된다.
+  const alt = r.variants.slice(1).find((v) => r.got[v] && !r.got[v].error
+                                           && r.got[v].filledCloses >= 2
+                                           && r.got[v].instrumentType === 'ETF');
+  const wrongKind = r.variants.slice(1).find((v) => r.got[v] && !r.got[v].error
+                                                && r.got[v].filledCloses >= 2
+                                                && r.got[v].instrumentType !== 'ETF');
+  const altNote = alt ? `. \`${alt}\` 로는 ${r.got[alt].filledCloses}봉이 온다 → **심볼을 잘못 만들고 있다**`
+    : wrongKind ? `. \`${wrongKind}\` 가 ${r.got[wrongKind].filledCloses}봉을 주지만 종류가 ` +
+                  `\`${r.got[wrongKind].instrumentType}\` 라 **상장 ETF 가 아니다** — 쓸 수 없다`
+    : '';
   if (g.error || !g.hasResult) {
     say(`- **${r.code} ${r.name}** — 야후에 이 심볼이 없다 (\`${g.error || 'result 없음'}\`)` +
-        (alt ? `. 그런데 \`${alt}\` 로는 ${r.got[alt].filledCloses}봉이 온다 → **심볼을 잘못 만들고 있다**`
-             : '. 다른 접미사로도 안 온다 → 야후가 이 종목을 아예 안 싣는다'));
+        (altNote || '. 다른 접미사로도 안 온다 → 야후가 이 종목을 아예 안 싣는다'));
   } else if (g.filledCloses < 2) {
-    say(`- **${r.code} ${r.name}** — 심볼은 있는데 값이 있는 봉이 ${g.filledCloses}개다` +
-        (g.firstTradeDate ? ` (첫 거래일 ${g.firstTradeDate})` : '') +
-        ' → 계산할 자료가 없다');
+    const born = g.firstTradeDate && g.firstTradeDate !== '1970-01-01' ? g.firstTradeDate : null;
+    const fresh = born && (Date.now() - Date.parse(born)) < 30 * 864e5;
+    say(`- **${r.code} ${r.name}** — 심볼은 맞는데(종류 \`${g.instrumentType}\`) 값이 있는 봉이 ` +
+        `${g.filledCloses}개뿐이다` + (born ? ` (원천이 말하는 첫 거래일 ${born})` : ' (첫 거래일 미상)') +
+        (fresh ? ' → **갓 상장해 이력이 없다**. 며칠 지나면 저절로 채워진다'
+               : g.last && Date.now() - Date.parse(g.last) > 180 * 864e5
+                 ? ` → 마지막 봉이 ${g.last} 다. **거래가 멈춘 종목**이라 그 뒤 자료가 없다`
+                 : ' → **원천에 일봉 이력이 없다**. 심볼도 종류도 맞으므로 우리가 고칠 것이 아니라 ' +
+                   '원천의 빈 구멍이다') + altNote);
   } else if (g.computed && !g.computed.ok) {
     say(`- **${r.code} ${r.name}** — 봉이 ${g.filledCloses}개나 있는데 계산기가 null 을 냈다 ` +
         '→ **우리 쪽 문제다**');
