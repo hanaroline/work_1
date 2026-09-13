@@ -93,14 +93,35 @@ def fetch_article(oc, mst, jo):
                                  "MST": mst, "JO": jo})
 
 
+def article_eff(arts):
+    """조문 단위에 적힌 시행일자 중 가장 이른 것. 없으면 빈 문자열."""
+    days = [str(a.get("시행일자") or "") for a in arts if a.get("시행일자")]
+    return min(days) if days else ""
+
+
+def looks_deleted(body):
+    return bool(re.fullmatch(r"제\d+조(?:의\d+)?\s*삭제\s*", body or ""))
+
+
 def one(oc, name, jo_spec, at_list, log):
-    """한 법령의 한 조문을, 여러 시점에 대해 받는다."""
+    """한 법령의 한 조문을, 여러 시점에 대해 받는다.
+
+    한 공포본의 본문에는 **아직 시행되지 않은 개정도 반영돼 있다.** 실제로
+    2022년에 멀쩡히 살아 있던 소득세법 시행령 제157조가 그 시점 공포본에서는
+    "제157조 삭제" 로 나왔다 — 금융투자소득세 시행에 맞춰 삭제하도록 예정된
+    문언이 먼저 보인 것이다. 그대로 믿으면 "2022년에는 대주주 규정이 없었다"
+    는 엉뚱한 결론이 된다.
+
+    그래서 조문에 적힌 시행일자를 보고, 기준 시점보다 나중이거나 삭제로만
+    나오면 **한 판 앞선 공포본으로 물러나며** 다시 찾는다. 몇 판 물러났는지
+    기록에 남긴다.
+    """
     jo = jo_code(jo_spec)
     label = jo_label(jo_spec)
     span_from = min(at_list).replace("-", "")
     # 시행본 목록은 요청 시점보다 넉넉히 앞에서부터 훑는다. 그 날짜 직전의
     # 개정이 목록 밖이면 엉뚱하게 더 옛 본을 고르게 된다.
-    frm = "%d0101" % (int(span_from[:4]) - 6)
+    frm = "%d0101" % (int(span_from[:4]) - 8)
     to = datetime.now(KST).strftime("%Y%m%d")
     rows = versions(oc, name, frm, to)
     log("  %s — 시행본 %d개 (%s ~ %s)" % (name, len(rows), frm, to))
@@ -110,33 +131,51 @@ def one(oc, name, jo_spec, at_list, log):
     out = []
     for at in at_list:
         key = at.replace("-", "")
-        got = pick(rows, key)
-        if not got:
+        # 그 시점 이전에 시행된 공포본들을, 나중 것부터 차례로
+        cand = sorted({r for r in rows if r[0] and r[0] <= key},
+                      key=lambda r: (r[0], r[1]), reverse=True)
+        if not cand:
             log("    %s  건너뜀 — 그 이전 시행본이 목록에 없다" % at)
             continue
-        eff, anc, no, mst = got
-        data = fetch_article(oc, mst, jo)
-        info = basic_info(data)
-        arts = articles(data) or admrul_articles(data)
+
+        chosen = None
+        for back, (eff, anc, no, mst) in enumerate(cand[:6]):
+            data = fetch_article(oc, mst, jo)
+            info = basic_info(data)
+            arts = articles(data) or admrul_articles(data)
+            body = "\n\n".join(render(a) for a in arts)
+            aeff = article_eff(arts)
+            future = bool(aeff and aeff > key)
+            if arts and not looks_deleted(body) and not future:
+                chosen = (back, eff, anc, no, mst, info, arts, body, aeff)
+                break
+            why = "조문 없음" if not arts else ("삭제 표기" if looks_deleted(body)
+                                             else "조문시행일 %s > 기준" % aeff)
+            log("    %s  %s판 물러남 (공포 %s 제%s호) — %s" % (at, back, anc, no, why))
+            time.sleep(PAUSE)
+
+        if not chosen:
+            log("    %s  실패 — 여섯 판을 물러나도 그 시점 문언을 찾지 못했다" % at)
+            continue
+
+        back, eff, anc, no, mst, info, arts, body, aeff = chosen
         got_no = str(info.get("공포번호") or "")
-        got_eff = str(info.get("시행일자") or "")
-        ok = (got_no == no)
         rec = {
             "법령명": name, "조문": label,
             "기준시점": at,
             "고른 시행본": {"시행일자": eff, "공포일자": anc, "공포번호": no, "MST": mst},
-            "응답 기본정보": {"시행일자": got_eff, "공포일자": str(info.get("공포일자") or ""),
+            "응답 기본정보": {"시행일자": str(info.get("시행일자") or ""),
+                          "공포일자": str(info.get("공포일자") or ""),
                           "공포번호": got_no},
-            "일치": ok,
+            "조문시행일자": aeff,
+            "물러난 판수": back,
+            "일치": got_no == no,
             "조문수": len(arts),
-            "본문": "\n\n".join(render(a) for a in arts),
+            "본문": body,
         }
         out.append(rec)
-        mark = "OK  " if ok else "어긋남"
-        log("    %s → 시행 %s / 공포 %s 제%s호 (MST %s) %s  조문 %d"
-            % (at, eff, anc, no, mst, mark, len(arts)))
-        if not ok:
-            log("      !! 응답은 공포 %s 제%s호 다 — 고른 것과 다르다" % (got_eff, got_no))
+        log("    %s → 공포 %s 제%s호 (MST %s) · 조문시행 %s · %d판 물러남 · 조문 %d"
+            % (at, anc, no, mst, aeff or "?", back, len(arts)))
         time.sleep(PAUSE)
     return out
 
