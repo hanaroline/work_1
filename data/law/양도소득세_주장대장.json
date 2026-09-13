@@ -1,0 +1,924 @@
+{
+  "deliverable": "국내 상장주식 양도소득세 세무 브리프 최종본 (자료 A 4p + 자료 B 2p)",
+  "as_of": "2026-09-14",
+  "_series_policy": "법령 원문은 국가법령정보센터 OPEN API. 현행본은 2026-08-29 수집분, 2020~2022년 구간은 2026-09-14 연혁(시행본) 대조분. 2023~2024년 소득세법 시행령 §157 조문 원문은 미확인 — 해당 기간 공포본이 모두 금투세 시행에 맞춘 삭제 문언을 보인다.",
+  "series_policy": {
+    "법령원문": "국가법령정보센터 현행본 (2026-08-29 수집)"
+  },
+  "unit_policy": {
+    "지분율": "%",
+    "보유금액": "억원",
+    "세율": "%",
+    "거래세율": "%",
+    "과세표준": "억원",
+    "산출세액": "만원",
+    "기본공제": "만원",
+    "예정신고기한": "개월",
+    "가산세": "%",
+    "친족범위": "촌",
+    "시행일": "일자",
+    "일몰": "일자",
+    "배당분리과세": "%",
+    "배당성향": "%",
+    "배당분리과세누진액": "만원"
+  },
+  "claims": [
+    {
+      "id": "RATE_KOSPI",
+      "kind": "statute",
+      "metric": "지분율",
+      "text": "코스피 대주주 지분율 기준",
+      "value": 1,
+      "unit": "%",
+      "as_of": "2026-08-29",
+      "tier": 1,
+      "source_url": "https://www.law.go.kr/법령/소득세법시행령/제157조",
+      "verdict": "confirmed",
+      "render": "assert",
+      "note": "영 §157①1호 '100분의 1 이상'",
+      "printed_on": [
+        "A-p1-table",
+        "A-p2-table2",
+        "B-p1-table"
+      ]
+    },
+    {
+      "id": "RATE_KOSDAQ",
+      "kind": "statute",
+      "metric": "지분율",
+      "text": "코스닥 대주주 지분율 기준",
+      "value": 2,
+      "unit": "%",
+      "as_of": "2026-08-29",
+      "tier": 1,
+      "source_url": "https://www.law.go.kr/법령/소득세법시행령/제157조",
+      "verdict": "confirmed",
+      "render": "assert",
+      "note": "영 §157②1호 '100분의 2 이상'",
+      "printed_on": [
+        "A-p1-table",
+        "A-p2-table2",
+        "B-p1-table"
+      ]
+    },
+    {
+      "id": "RATE_KONEX",
+      "kind": "statute",
+      "metric": "지분율",
+      "text": "코넥스 대주주 지분율 기준",
+      "value": 4,
+      "unit": "%",
+      "as_of": "2026-08-29",
+      "tier": 1,
+      "source_url": "https://www.law.go.kr/법령/소득세법시행령/제157조",
+      "verdict": "confirmed",
+      "render": "assert",
+      "note": "영 §157②2호 '100분의 4 이상'",
+      "printed_on": [
+        "A-p1-table",
+        "A-p2-table2",
+        "B-p1-table"
+      ]
+    },
+    {
+      "id": "AMT_NOW",
+      "kind": "statute",
+      "metric": "보유금액",
+      "text": "현행 대주주 보유금액 기준 (코스피·코스닥·코넥스 공통)",
+      "value": 50,
+      "unit": "억원",
+      "as_of": "2026-08-29",
+      "tier": 1,
+      "source_url": "https://www.law.go.kr/법령/소득세법시행령/제157조",
+      "verdict": "confirmed",
+      "render": "assert",
+      "note": "영 §157①2호·②1호·②2호 모두 '50억원 이상'",
+      "printed_on": [
+        "A-p1-card3",
+        "A-p1-table",
+        "A-p2-table1",
+        "A-p4-table3"
+      ]
+    },
+    {
+      "id": "AMT_2024_FROM",
+      "kind": "statute",
+      "metric": "보유금액",
+      "text": "2024.1.1 상향 전 보유금액 기준",
+      "value": 10,
+      "unit": "억원",
+      "as_of": "2026-08-29",
+      "tier": 1,
+      "source_url": "https://www.law.go.kr/법령/소득세법시행령/부칙",
+      "verdict": "confirmed",
+      "render": "assert",
+      "note": "대통령령 제34061호(2023.12.28) 부칙 §2 — 시행 전 양도분은 §157④2호·⑤1호2호 종전 규정",
+      "printed_on": [
+        "A-p1-card3",
+        "A-p1-table",
+        "A-p2-table1",
+        "B-p1-table"
+      ]
+    },
+    {
+      "id": "AMT_NONLISTED",
+      "kind": "statute",
+      "metric": "보유금액",
+      "text": "세율 적용상 비상장 대주주 시가총액 기준",
+      "value": 10,
+      "unit": "억원",
+      "as_of": "2026-08-29",
+      "tier": 1,
+      "source_url": "https://www.law.go.kr/법령/소득세법시행령/제167조의8",
+      "verdict": "confirmed",
+      "render": "assert",
+      "note": "영 §167의8①2호나목",
+      "printed_on": [
+        "A-p2-note",
+        "B-p1-table"
+      ]
+    },
+    {
+      "id": "AMT_KOTC_VC",
+      "kind": "statute",
+      "metric": "보유금액",
+      "text": "K-OTC 거래 벤처기업 주식의 비상장 대주주 기준",
+      "value": 40,
+      "unit": "억원",
+      "as_of": "2026-08-29",
+      "tier": 1,
+      "source_url": "https://www.law.go.kr/법령/소득세법시행령/제167조의8",
+      "verdict": "confirmed",
+      "render": "assert",
+      "note": "영 §167의8①2호나목 괄호 — 자본시장법 시행령 §178① 거래 벤처기업",
+      "printed_on": [
+        "A-p2-note"
+      ]
+    },
+    {
+      "id": "TAX_20",
+      "kind": "statute",
+      "metric": "세율",
+      "text": "대주주 양도세율 — 과세표준 3억원 이하",
+      "value": 20,
+      "unit": "%",
+      "as_of": "2026-08-29",
+      "tier": 1,
+      "source_url": "https://www.law.go.kr/법령/소득세법/제104조",
+      "verdict": "confirmed",
+      "render": "assert",
+      "note": "법 §104①11가목2) 표",
+      "printed_on": [
+        "A-p1-table",
+        "A-p4-table1",
+        "B-p2-table1"
+      ]
+    },
+    {
+      "id": "TAX_25",
+      "kind": "statute",
+      "metric": "세율",
+      "text": "대주주 양도세율 — 과세표준 3억원 초과분",
+      "value": 25,
+      "unit": "%",
+      "as_of": "2026-08-29",
+      "tier": 1,
+      "source_url": "https://www.law.go.kr/법령/소득세법/제104조",
+      "verdict": "confirmed",
+      "render": "assert",
+      "note": "법 §104①11가목2) '6천만원 + (3억원 초과액 × 25퍼센트)'",
+      "printed_on": [
+        "A-p1-table",
+        "A-p4-table1",
+        "B-p2-table1"
+      ]
+    },
+    {
+      "id": "TAX_30",
+      "kind": "statute",
+      "metric": "세율",
+      "text": "대주주 양도세율 — 중소기업 외 법인 주식 1년 미만 보유",
+      "value": 30,
+      "unit": "%",
+      "as_of": "2026-08-29",
+      "tier": 1,
+      "source_url": "https://www.law.go.kr/법령/소득세법/제104조",
+      "verdict": "confirmed",
+      "render": "assert",
+      "note": "법 §104①11가목1)",
+      "printed_on": [
+        "A-p1-table",
+        "A-p4-table1",
+        "B-p2-table1"
+      ]
+    },
+    {
+      "id": "TAX_BRACKET",
+      "kind": "statute",
+      "metric": "과세표준",
+      "text": "대주주 세율 구간 경계",
+      "value": 3,
+      "unit": "억원",
+      "as_of": "2026-08-29",
+      "tier": 1,
+      "source_url": "https://www.law.go.kr/법령/소득세법/제104조",
+      "verdict": "confirmed",
+      "render": "assert",
+      "printed_on": [
+        "A-p4-table1",
+        "B-p2-table1"
+      ]
+    },
+    {
+      "id": "TAX_PROG_BASE",
+      "kind": "statute",
+      "metric": "산출세액",
+      "text": "3억원 초과 구간 기본세액",
+      "value": 6000,
+      "unit": "만원",
+      "as_of": "2026-08-29",
+      "tier": 1,
+      "source_url": "https://www.law.go.kr/법령/소득세법/제104조",
+      "verdict": "confirmed",
+      "render": "assert",
+      "printed_on": [
+        "A-p4-table1",
+        "B-p2-note"
+      ]
+    },
+    {
+      "id": "TAX_SME_10",
+      "kind": "statute",
+      "metric": "세율",
+      "text": "대주주 아닌 자의 중소기업 주식 양도세율",
+      "value": 10,
+      "unit": "%",
+      "as_of": "2026-08-29",
+      "tier": 1,
+      "source_url": "https://www.law.go.kr/법령/소득세법/제104조",
+      "verdict": "confirmed",
+      "render": "assert",
+      "note": "법 §104①11나목1)",
+      "printed_on": [
+        "A-p4-table1"
+      ]
+    },
+    {
+      "id": "DEDUCT_250",
+      "kind": "statute",
+      "metric": "기본공제",
+      "text": "양도소득 기본공제 (주식등 소득 묶음, 연간)",
+      "value": 250,
+      "unit": "만원",
+      "as_of": "2026-08-29",
+      "tier": 1,
+      "source_url": "https://www.law.go.kr/법령/소득세법/제103조",
+      "verdict": "confirmed",
+      "render": "assert",
+      "note": "법 §103①2호 — §94①3호 소득별로 연 250만원",
+      "printed_on": [
+        "A-p4-note",
+        "B-p2-note"
+      ]
+    },
+    {
+      "id": "FILE_PRE",
+      "kind": "statute",
+      "metric": "예정신고기한",
+      "text": "주식 양도 예정신고 기한 — 양도일이 속하는 반기 말일부터",
+      "value": 2,
+      "unit": "개월",
+      "as_of": "2026-08-29",
+      "tier": 1,
+      "source_url": "https://www.law.go.kr/법령/소득세법/제105조",
+      "verdict": "confirmed",
+      "render": "assert",
+      "note": "법 §105①2호",
+      "printed_on": [
+        "A-p4-table2",
+        "B-p2-table2"
+      ]
+    },
+    {
+      "id": "PEN_NOFILE",
+      "kind": "statute",
+      "metric": "가산세",
+      "text": "무신고가산세 (부정행위 외)",
+      "value": 20,
+      "unit": "%",
+      "as_of": "2026-08-29",
+      "tier": 1,
+      "source_url": "https://www.law.go.kr/법령/국세기본법/제47조의2",
+      "verdict": "confirmed",
+      "render": "assert",
+      "note": "법 §47의2①2호",
+      "printed_on": [
+        "B-p2-note"
+      ]
+    },
+    {
+      "id": "PEN_FRAUD",
+      "kind": "statute",
+      "metric": "가산세",
+      "text": "무신고가산세 (부정행위)",
+      "value": 40,
+      "unit": "%",
+      "as_of": "2026-08-29",
+      "tier": 1,
+      "source_url": "https://www.law.go.kr/법령/국세기본법/제47조의2",
+      "verdict": "confirmed",
+      "render": "assert",
+      "note": "법 §47의2①1호 — 역외거래 부정행위는 60%",
+      "printed_on": [
+        "B-p2-note"
+      ]
+    },
+    {
+      "id": "PEN_LATE",
+      "kind": "statute",
+      "metric": "가산세",
+      "text": "납부지연가산세 이자율 (1일)",
+      "value": 0.022,
+      "unit": "%",
+      "as_of": "2026-08-29",
+      "tier": 1,
+      "source_url": "https://www.law.go.kr/법령/국세기본법시행령/제27조의4",
+      "verdict": "confirmed",
+      "render": "assert",
+      "note": "국기령 §27의4① '1일 10만분의 22'",
+      "printed_on": [
+        "B-p2-note"
+      ]
+    },
+    {
+      "id": "KIN_BLOOD",
+      "kind": "statute",
+      "metric": "친족범위",
+      "text": "현행 국세기본법상 친족 — 혈족",
+      "value": 4,
+      "unit": "촌",
+      "as_of": "2026-08-29",
+      "tier": 1,
+      "source_url": "https://www.law.go.kr/법령/국세기본법시행령/제1조의2",
+      "verdict": "confirmed",
+      "render": "assert",
+      "note": "국기령 §1의2①1호",
+      "printed_on": [
+        "A-p1-table",
+        "A-p3-table"
+      ]
+    },
+    {
+      "id": "KIN_INLAW",
+      "kind": "statute",
+      "metric": "친족범위",
+      "text": "현행 국세기본법상 친족 — 인척",
+      "value": 3,
+      "unit": "촌",
+      "as_of": "2026-08-29",
+      "tier": 1,
+      "source_url": "https://www.law.go.kr/법령/국세기본법시행령/제1조의2",
+      "verdict": "confirmed",
+      "render": "assert",
+      "note": "국기령 §1의2①2호",
+      "printed_on": [
+        "A-p1-table",
+        "A-p3-table"
+      ]
+    },
+    {
+      "id": "KIN_EFF",
+      "kind": "statute",
+      "metric": "시행일",
+      "text": "대주주 판정의 친족 범위 축소가 적용되는 양도 시기",
+      "value": "2023-03-01",
+      "unit": "일자",
+      "as_of": "2026-09-14",
+      "tier": 1,
+      "source_url": "https://www.law.go.kr/법령/국세기본법시행령",
+      "verdict": "confirmed",
+      "render": "assert",
+      "note": "구 §157④1호가목1)과 현행 §157①1호가목이 모두 국세기본법 시행령 §1의2①을 인용한다(2021·2022년 본과 현행본 대조). 따라서 국기령 개정 시행일부터 대주주 판정의 친족 범위도 함께 좁아지며, 소득세법 시행령을 따로 고칠 필요가 없었다. 앞서 소득세법 시행령 부칙 <제33267호> 제1조 단서 3호의 §157④·⑥ 개정(2024.1.1 시행)을 친족 축소로 본 것은 오독이다. 2023~2024년 §157 조문 원문은 그 기간 공포본이 모두 금투세 시행에 맞춘 \"제157조 삭제\" 문언을 보여 확인하지 못했다 — 시행일법령 본문 API 신청 필요",
+      "printed_on": [
+        "A-p1-table",
+        "A-p3-table",
+        "A-p3-timeline"
+      ]
+    },
+    {
+      "id": "KIN_KBL_EFF",
+      "kind": "statute",
+      "metric": "시행일",
+      "text": "국세기본법 시행령 §1의2① 친족 축소 시행일",
+      "value": "2023-03-01",
+      "unit": "일자",
+      "as_of": "2026-08-29",
+      "tier": 1,
+      "source_url": "https://www.law.go.kr/법령/국세기본법시행령/부칙",
+      "verdict": "confirmed",
+      "render": "assert",
+      "note": "대통령령 제33276호(2023.2.28) 부칙 §1 단서",
+      "printed_on": [
+        "A-p3-timeline"
+      ]
+    },
+    {
+      "id": "AGG_ABOLISH_EFF",
+      "kind": "statute",
+      "metric": "시행일",
+      "text": "상장 비최대주주의 기타주주 합산 폐지가 적용되는 양도 시기",
+      "value": "2023-01-01",
+      "unit": "일자",
+      "as_of": "2026-08-29",
+      "tier": 1,
+      "source_url": "https://www.law.go.kr/법령/소득세법시행령/부칙",
+      "verdict": "confirmed",
+      "render": "assert",
+      "note": "대통령령 제33207호(2022.12.31) 부칙 §1 시행일 2023.1.1 · §2 경과조치",
+      "printed_on": [
+        "A-p1-card2",
+        "A-p1-table",
+        "A-p3-timeline",
+        "B-p1-note"
+      ]
+    },
+    {
+      "id": "STT_2026",
+      "kind": "statute",
+      "metric": "거래세율",
+      "text": "2026년 증권거래세 총부담 (코스피·코스닥)",
+      "value": 0.15,
+      "unit": "%",
+      "as_of": "2026-08-29",
+      "tier": 1,
+      "source_url": "https://www.law.go.kr/법령/증권거래세법시행령/제5조",
+      "verdict": "confirmed",
+      "render": "assert",
+      "note": "증권거래세법 시행령 §5(시행 2026.1.2) 유가증권 영(零)+농특세 0.15% / 코스닥 1만분의 15. 자료 초안의 0.20% 인상은 오류",
+      "printed_on": [
+        "A-p4-table3",
+        "A-p4-note"
+      ]
+    },
+    {
+      "id": "STT_FARM",
+      "kind": "statute",
+      "metric": "거래세율",
+      "text": "유가증권시장 양도가액에 대한 농어촌특별세율",
+      "value": 0.15,
+      "unit": "%",
+      "as_of": "2026-08-29",
+      "tier": 1,
+      "source_url": "https://www.law.go.kr/법령/농어촌특별세법/제5조",
+      "verdict": "confirmed",
+      "render": "assert",
+      "note": "농특세법 §5①5호 '1만분의 15'",
+      "printed_on": [
+        "A-p4-note"
+      ]
+    },
+    {
+      "id": "STT_2023",
+      "kind": "statute",
+      "metric": "거래세율",
+      "text": "2023년 증권거래세 총부담",
+      "value": 0.2,
+      "unit": "%",
+      "as_of": "2026-08-29",
+      "tier": 1,
+      "source_url": "https://www.law.go.kr/법령/증권거래세법시행령/제5조",
+      "verdict": "confirmed",
+      "render": "assert",
+      "note": "영 §5 단서 — 유가증권 1만분의 5, 코스닥 1만분의 20",
+      "printed_on": [
+        "A-p4-table3"
+      ]
+    },
+    {
+      "id": "STT_2024",
+      "kind": "statute",
+      "metric": "거래세율",
+      "text": "2024년 증권거래세 총부담",
+      "value": 0.18,
+      "unit": "%",
+      "as_of": "2026-08-29",
+      "tier": 1,
+      "source_url": "https://www.law.go.kr/법령/증권거래세법시행령/제5조",
+      "verdict": "confirmed",
+      "render": "assert",
+      "note": "영 §5 단서 — 유가증권 1만분의 3, 코스닥 1만분의 18",
+      "printed_on": [
+        "A-p4-table3"
+      ]
+    },
+    {
+      "id": "STT_2122",
+      "kind": "statute",
+      "metric": "거래세율",
+      "text": "2021·2022년 증권거래세 총부담",
+      "value": 0.23,
+      "unit": "%",
+      "as_of": "2026-08-29",
+      "tier": 1,
+      "source_url": "https://www.law.go.kr/법령/증권거래세법시행령/제5조",
+      "verdict": "confirmed",
+      "render": "assert",
+      "note": "영 §5 단서 — 유가증권 1만분의 8, 코스닥 1만분의 23",
+      "printed_on": [
+        "A-p4-table3"
+      ]
+    },
+    {
+      "id": "STT_KONEX",
+      "kind": "statute",
+      "metric": "거래세율",
+      "text": "코넥스시장 증권거래세율",
+      "value": 0.1,
+      "unit": "%",
+      "as_of": "2026-08-29",
+      "tier": 1,
+      "source_url": "https://www.law.go.kr/법령/증권거래세법시행령/제5조",
+      "verdict": "confirmed",
+      "render": "assert",
+      "note": "영 §5 2호 '1만분의 10'",
+      "printed_on": [
+        "A-p4-note"
+      ]
+    },
+    {
+      "id": "STT_UNLISTED",
+      "kind": "statute",
+      "metric": "거래세율",
+      "text": "비상장주식 증권거래세 본세율",
+      "value": 0.35,
+      "unit": "%",
+      "as_of": "2026-08-29",
+      "tier": 1,
+      "source_url": "https://www.law.go.kr/법령/증권거래세법/제8조",
+      "verdict": "confirmed",
+      "render": "assert",
+      "note": "증권거래세법 §8① '1만분의 35'",
+      "printed_on": [
+        "A-p4-note"
+      ]
+    },
+    {
+      "id": "DIV_14",
+      "kind": "statute",
+      "metric": "배당분리과세",
+      "text": "고배당기업 특례배당소득 세율 — 2천만원 이하",
+      "value": 14,
+      "unit": "%",
+      "as_of": "2026-08-29",
+      "tier": 1,
+      "source_url": "https://www.law.go.kr/법령/조세특례제한법/제104조의27",
+      "verdict": "confirmed",
+      "render": "assert",
+      "note": "조특법 §104의27② 표",
+      "printed_on": [
+        "A-p4-note"
+      ]
+    },
+    {
+      "id": "DIV_20",
+      "kind": "statute",
+      "metric": "배당분리과세",
+      "text": "고배당기업 특례배당소득 세율 — 2천만원 초과 3억원 이하",
+      "value": 20,
+      "unit": "%",
+      "as_of": "2026-08-29",
+      "tier": 1,
+      "source_url": "https://www.law.go.kr/법령/조세특례제한법/제104조의27",
+      "verdict": "confirmed",
+      "render": "assert",
+      "printed_on": [
+        "A-p4-note"
+      ]
+    },
+    {
+      "id": "DIV_25",
+      "kind": "statute",
+      "metric": "배당분리과세",
+      "text": "고배당기업 특례배당소득 세율 — 3억원 초과 50억원 이하",
+      "value": 25,
+      "unit": "%",
+      "as_of": "2026-08-29",
+      "tier": 1,
+      "source_url": "https://www.law.go.kr/법령/조세특례제한법/제104조의27",
+      "verdict": "confirmed",
+      "render": "assert",
+      "printed_on": [
+        "A-p4-note"
+      ]
+    },
+    {
+      "id": "DIV_30",
+      "kind": "statute",
+      "metric": "배당분리과세",
+      "text": "고배당기업 특례배당소득 세율 — 50억원 초과",
+      "value": 30,
+      "unit": "%",
+      "as_of": "2026-08-29",
+      "tier": 1,
+      "source_url": "https://www.law.go.kr/법령/조세특례제한법/제104조의27",
+      "verdict": "confirmed",
+      "render": "assert",
+      "printed_on": [
+        "A-p4-note"
+      ]
+    },
+    {
+      "id": "DIV_EFF",
+      "kind": "statute",
+      "metric": "시행일",
+      "text": "고배당기업 배당소득 분리과세 조문 시행일",
+      "value": "2026-01-01",
+      "unit": "일자",
+      "as_of": "2026-08-29",
+      "tier": 1,
+      "source_url": "https://www.law.go.kr/법령/조세특례제한법/제104조의27",
+      "verdict": "confirmed",
+      "render": "assert",
+      "note": "조문시행일자 20260101",
+      "printed_on": [
+        "A-p4-note"
+      ]
+    },
+    {
+      "id": "DIV_SUNSET",
+      "kind": "statute",
+      "metric": "일몰",
+      "text": "고배당기업 배당 분리과세 적용 종료 사업연도",
+      "value": "2028-12-31",
+      "unit": "일자",
+      "as_of": "2026-08-29",
+      "tier": 1,
+      "source_url": "https://www.law.go.kr/법령/조세특례제한법/제104조의27",
+      "verdict": "confirmed",
+      "render": "assert",
+      "note": "조특법 §104의27① '2028년 12월 31일이 속하는 사업연도까지'",
+      "printed_on": [
+        "A-p4-note"
+      ]
+    },
+    {
+      "id": "DIV_PAYOUT",
+      "kind": "statute",
+      "metric": "배당성향",
+      "text": "고배당기업 요건 — 배당성향",
+      "value": 40,
+      "unit": "%",
+      "as_of": "2026-08-29",
+      "tier": 1,
+      "source_url": "https://www.law.go.kr/법령/조세특례제한법/제104조의27",
+      "verdict": "confirmed",
+      "render": "assert",
+      "note": "조특법 §104의27①3호가목. 나목은 배당성향 25% 이상 + 배당금 10% 이상 증가",
+      "printed_on": [
+        "A-p4-note"
+      ]
+    },
+    {
+      "id": "AMT_2020_15",
+      "kind": "statute",
+      "metric": "보유금액",
+      "text": "2020.3.31 이전 양도분 보유금액 기준",
+      "value": 15,
+      "unit": "억원",
+      "as_of": "2026-09-14",
+      "tier": 1,
+      "source_url": "https://www.law.go.kr/법령/소득세법시행령",
+      "verdict": "confirmed",
+      "render": "assert",
+      "note": "구 §157④2호나목 — \"2018년 4월 1일부터 2020년 3월 31일까지의 기간 동안 주식등을 양도하는 경우: 15억원\" (공포 2020.2.18 대통령령 제30423호 본, 연혁 조문 대조 완료)",
+      "printed_on": [
+        "A-p1-table",
+        "A-p2-table1"
+      ]
+    },
+    {
+      "id": "AMT_2020_KONEX10",
+      "kind": "statute",
+      "metric": "보유금액",
+      "text": "2020.3.31 이전 코넥스 보유금액 기준",
+      "value": 10,
+      "unit": "억원",
+      "as_of": "2026-09-14",
+      "tier": 1,
+      "source_url": "https://www.law.go.kr/법령/소득세법시행령",
+      "verdict": "confirmed",
+      "render": "assert",
+      "note": "구 §157⑤2호가목 — 2020.2.18 본은 \"2021년 3월 31일까지 10억원\", 2021.2.17 본(제31442호)에서 \"2022년 12월 31일까지 10억원\"으로 연장. 연혁 조문 대조 완료",
+      "printed_on": [
+        "A-p1-table",
+        "A-p2-table1"
+      ]
+    },
+    {
+      "id": "KIN_OLD_BLOOD",
+      "kind": "statute",
+      "metric": "친족범위",
+      "text": "2023년 이전 최대주주 친족 — 혈족",
+      "value": 6,
+      "unit": "촌",
+      "as_of": "2026-09-14",
+      "tier": 1,
+      "source_url": "https://www.law.go.kr/법령/국세기본법시행령",
+      "verdict": "confirmed",
+      "render": "assert",
+      "note": "국기령 §1의2①1호 \"6촌 이내의 혈족\" — 2021-06-01 · 2022-06-01 · 2023-02-01 세 시점 모두 확인. 구 소득세법 시행령 §157④1호가목1)이 이 항을 그대로 인용한다",
+      "printed_on": [
+        "A-p1-table",
+        "A-p3-table",
+        "B-p1-note"
+      ]
+    },
+    {
+      "id": "KIN_OLD_INLAW",
+      "kind": "statute",
+      "metric": "친족범위",
+      "text": "2023년 이전 최대주주 친족 — 인척",
+      "value": 4,
+      "unit": "촌",
+      "as_of": "2026-09-14",
+      "tier": 1,
+      "source_url": "https://www.law.go.kr/법령/국세기본법시행령",
+      "verdict": "confirmed",
+      "render": "assert",
+      "note": "국기령 §1의2①2호 \"4촌 이내의 인척\" — 같은 세 시점 확인",
+      "printed_on": [
+        "A-p1-table",
+        "A-p3-table",
+        "B-p1-note"
+      ]
+    },
+    {
+      "kind": "statute",
+      "metric": "배당분리과세누진액",
+      "unit": "만원",
+      "as_of": "2026-08-29",
+      "tier": 1,
+      "source_url": "https://www.law.go.kr/법령/조세특례제한법/제104조의27",
+      "verdict": "confirmed",
+      "render": "assert",
+      "printed_on": [
+        "A-p4-table4"
+      ],
+      "id": "DIV_ACC_20",
+      "text": "2천만원 초과 구간 누진 기본세액",
+      "value": 280
+    },
+    {
+      "kind": "statute",
+      "metric": "배당분리과세누진액",
+      "unit": "만원",
+      "as_of": "2026-08-29",
+      "tier": 1,
+      "source_url": "https://www.law.go.kr/법령/조세특례제한법/제104조의27",
+      "verdict": "confirmed",
+      "render": "assert",
+      "printed_on": [
+        "A-p4-table4"
+      ],
+      "id": "DIV_ACC_25",
+      "text": "3억원 초과 구간 누진 기본세액",
+      "value": 5880
+    },
+    {
+      "kind": "statute",
+      "metric": "배당분리과세누진액",
+      "unit": "만원",
+      "as_of": "2026-08-29",
+      "tier": 1,
+      "source_url": "https://www.law.go.kr/법령/조세특례제한법/제104조의27",
+      "verdict": "confirmed",
+      "render": "assert",
+      "printed_on": [
+        "A-p4-table4"
+      ],
+      "id": "DIV_ACC_30",
+      "text": "50억원 초과 구간 누진 기본세액",
+      "value": 123380
+    },
+    {
+      "id": "AMT_2018_25",
+      "kind": "statute",
+      "metric": "보유금액",
+      "text": "2018.3.31 이전 양도분 코스피 보유금액 기준",
+      "value": 25,
+      "unit": "억원",
+      "as_of": "2026-09-14",
+      "tier": 1,
+      "source_url": "https://www.law.go.kr/법령/소득세법시행령",
+      "verdict": "confirmed",
+      "render": "assert",
+      "note": "구 §157④2호가목 — 자료의 '2018.4.1 인하(25→15억)' 근거",
+      "printed_on": [
+        "A-p1-table"
+      ]
+    },
+    {
+      "id": "AMT_3EOK_PLAN",
+      "kind": "statute",
+      "metric": "보유금액",
+      "text": "시행령에 있었다가 삭제된 3억원 하향 규정",
+      "value": 3,
+      "unit": "억원",
+      "as_of": "2026-09-14",
+      "tier": 1,
+      "source_url": "https://www.law.go.kr/법령/소득세법시행령",
+      "verdict": "confirmed",
+      "render": "assert",
+      "note": "2020.2.18 본(제30423호)에는 '2021년 4월 1일 이후 주식등을 양도하는 경우: 3억원'이 실제로 있었고, 2021.2.17 본(제31442호)에서 해당 목이 삭제됐다. 자료의 '2020년 11월 유예' 서술이 조문으로 뒷받침된다",
+      "printed_on": [
+        "A-p1-card1",
+        "B-p1-note"
+      ]
+    },
+    {
+      "id": "KIN_KBL_EFF2",
+      "kind": "statute",
+      "metric": "시행일",
+      "text": "국세기본법 시행령 친족 축소 조문의 시행일",
+      "value": "2023-03-01",
+      "unit": "일자",
+      "as_of": "2026-09-14",
+      "tier": 1,
+      "source_url": "https://www.law.go.kr/법령/국세기본법시행령",
+      "verdict": "confirmed",
+      "render": "assert",
+      "note": "국기령 부칙 <대통령령 제33276호, 2023.2.28> 제1조 단서 — 제1조의2제1항 개정규정은 2023년 3월 1일부터 시행. 2023-02-01 시점 조문은 6촌/4촌, 2023-04-01 시점 조문은 4촌/3촌으로 실제 갈린다",
+      "printed_on": [
+        "A-p1-note",
+        "A-p3-timeline"
+      ]
+    }
+  ],
+  "derived": [
+    {
+      "id": "TAX_20_LOCAL",
+      "kind": "product",
+      "text": "3억원 이하 구간 지방소득세 포함 세율",
+      "a": "TAX_20",
+      "b": 1.1,
+      "printed": 22.0,
+      "unit": "%",
+      "note": "지방소득세는 소득세액의 10%",
+      "printed_on": [
+        "A-p4-table1",
+        "B-p2-table1"
+      ]
+    },
+    {
+      "id": "TAX_25_LOCAL",
+      "kind": "product",
+      "text": "3억원 초과 구간 지방소득세 포함 세율",
+      "a": "TAX_25",
+      "b": 1.1,
+      "printed": 27.5,
+      "unit": "%",
+      "printed_on": [
+        "A-p4-table1",
+        "B-p2-table1"
+      ]
+    },
+    {
+      "id": "TAX_30_LOCAL",
+      "kind": "product",
+      "text": "1년 미만 보유 구간 지방소득세 포함 세율",
+      "a": "TAX_30",
+      "b": 1.1,
+      "printed": 33.0,
+      "unit": "%",
+      "printed_on": [
+        "A-p4-table1",
+        "B-p2-table1"
+      ]
+    },
+    {
+      "id": "TAX_PROG_CONT",
+      "kind": "product",
+      "text": "3억원까지 20% 적용 시 세액 — 누진 구간 기본세액 6천만원과 일치해야 함",
+      "a": 3.0,
+      "b": 20.0,
+      "printed": 60.0,
+      "unit": "백만원",
+      "note": "3억원 × 20% = 6천만원. 법 §104①11가목2) 표의 '6천만원 + 초과액×25%' 와 구간이 이어진다",
+      "printed_on": [
+        "A-p4-table1"
+      ]
+    },
+    {
+      "id": "DIV_ACC_20_CHK",
+      "kind": "product",
+      "text": "2천만원 × 14% = 280만원 — 다음 구간 기본세액과 일치해야 함",
+      "a": 2000.0,
+      "b": 0.14,
+      "printed": 280.0,
+      "unit": "만원",
+      "printed_on": [
+        "A-p4-table4"
+      ]
+    }
+  ]
+}
