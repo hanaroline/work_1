@@ -1,0 +1,39 @@
+상한가 명단 원천 탐색 2026-09-14 08:26:14 KST
+(수집 결과는 바꾸지 않는다. 무엇이 값을 주는지만 적는다.)
+
+[네이버 앱] https://m.stock.naver.com/api/stocks/upperLimit?page=1&pageSize=100
+    실패 · 30 bytes · 종목코드 0 개
+    앞머리: HTTPError: HTTP Error 404: 404
+[네이버 앱] https://m.stock.naver.com/api/stocks/lowerLimit?page=1&pageSize=100
+    실패 · 30 bytes · 종목코드 0 개
+    앞머리: HTTPError: HTTP Error 404: 404
+[네이버 앱] https://m.stock.naver.com/api/stocks/upDownLimit/upper?page=1&pageSize=100
+    실패 · 30 bytes · 종목코드 0 개
+    앞머리: HTTPError: HTTP Error 404: 404
+[네이버 앱] https://m.stock.naver.com/api/stocks/ranking/upperLimit?page=1&pageSize=100
+    실패 · 30 bytes · 종목코드 0 개
+    앞머리: HTTPError: HTTP Error 404: 404
+[네이버 앱] https://stock.naver.com/api/domestic/ranking/upperLimit?startIdx=0&pageSize=100
+    실패 · 36 bytes · 종목코드 0 개
+    앞머리: HTTPError: HTTP Error 404: Not Found
+[네이버 앱] https://stock.naver.com/api/domestic/stock/upperLimit?startIdx=0&pageSize=100
+    실패 · 36 bytes · 종목코드 0 개
+    앞머리: HTTPError: HTTP Error 404: Not Found
+[네이버 앱] https://stock.naver.com/api/domestic/market/upperLimit?startIdx=0&pageSize=100
+    실패 · 36 bytes · 종목코드 0 개
+    앞머리: HTTPError: HTTP Error 404: Not Found
+[다음 금융] https://finance.daum.net/api/trend/upper_limit?market=KOSPI
+    실패 · 27 bytes · 종목코드 0 개
+    앞머리: HTTPError: HTTP Error 500: 
+[다음 금융] https://finance.daum.net/api/trend/upper_limit?market=KOSDAQ
+    실패 · 27 bytes · 종목코드 0 개
+    앞머리: HTTPError: HTTP Error 500: 
+[다음 금융] https://finance.daum.net/api/quotes/upper_limit
+    실패 · 27 bytes · 종목코드 0 개
+    앞머리: HTTPError: HTTP Error 500: 
+
+### KRX 전종목 시세 (등락률로 추려 내기)
+    실패 HTTPError: HTTP Error 400: Bad Request
+
+### 셸에서 주소 읽기 — 아래 파일을 보십시오
+    next_chunks.txt 에 적었다
