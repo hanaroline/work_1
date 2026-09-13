@@ -1186,6 +1186,53 @@ def _rates_add_ktb10y(out, dump_dir=None):
     return out
 
 
+def krx_limit_names(kind, trdDd, dump_dir=None):
+    """**상한가·하한가 종목명을 KRX 전종목 시세에서 추려 낸다.** 새 1순위.
+
+    네이버 상한가 화면은 2026-09-10 개편 뒤 React 셸만 준다. 그래서 거래소
+    원본으로 옮겼다 &mdash; KRX 에는 「상한가」 전용 표가 따로 없지만
+    **전종목 시세에 등락률이 있으므로 거기서 골라내면 된다.**
+
+    2026-09-14 탐색에서 이 경로가 **403 이 아니라 400** 을 돌려준 것이
+    실마리였다. 러너 IP 가 막힌 것이 아니라 **`trdDd` 에 오늘(개장 전)을
+    넣어서** 자료가 없었던 것이다. 직전 거래일을 넣어야 한다.
+    (`krx:futures_investors` 의 403 은 OTP 경로라 사정이 다르다.)
+
+    국내 가격제한폭은 ±30% 이고 호가 단위 때문에 정확히 30.00 이 되지는
+    않는다. **29% 를 문턱으로 잡고, 찾은 개수를 등락 종목 수와 대조할 수
+    있도록 함께 돌려준다** &mdash; 두 값이 어긋나면 판에 그 사실을 적는다.
+    """
+    want_up = kind == "upper"
+    rows = krx_json("dbms/MDC/STAT/standard/MDCSTAT01501",
+                    mktId="ALL", trdDd=trdDd, share="1", money="1")
+    if dump_dir:
+        os.makedirs(dump_dir, exist_ok=True)
+        with open(os.path.join(dump_dir, "krx_allstocks_%s.json" % trdDd),
+                  "w", encoding="utf-8") as f:
+            json.dump(rows[:40], f, ensure_ascii=False, indent=1)
+    names = []
+    for r in rows:
+        rt = _num(r.get("FLUC_RT"))
+        if rt is None:
+            continue
+        if (rt >= 29.0) if want_up else (rt <= -29.0):
+            code = (r.get("ISU_SRT_CD") or "").strip()
+            name = _text(r.get("ISU_ABBRV") or "")
+            if code and name:
+                names.append({"code": code, "name": name,
+                              "change_pct": rt,
+                              "market": _text(r.get("MKT_NM") or "")})
+    if not rows:
+        raise ValueError("KRX 전종목 시세가 비었다 (trdDd=%s)" % trdDd)
+    names.sort(key=lambda x: -abs(x["change_pct"]))
+    return {"names": names[:40], "count": len(names), "date": trdDd,
+            "source_url": "https://data.krx.co.kr (전종목 시세 MDCSTAT01501)",
+            "basis": "전종목 등락률에서 %s29% 문턱으로 골라냈다 — 상한가 전용 표가 "
+                     "따로 없다. 개수는 등락 종목 수와 대조하십시오"
+                     % ("+" if want_up else "&minus;"),
+            "note": None if names else "해당 종목 없음"}
+
+
 def _is_next_shell(body):
     """받아 온 것이 값이 아니라 **React 셸**인지 가린다.
 
@@ -3551,19 +3598,24 @@ def probe_limit_sources(dump_dir="data/market/raw"):
         "https://stock.naver.com/api/domestic/stock/upperLimit?startIdx=0&pageSize=100",
         "https://stock.naver.com/api/domestic/market/upperLimit?startIdx=0&pageSize=100",
     ]
-    # ② 다음 금융 — 오리진이 달라 네이버 개편과 무관하다.
+    # ② 다음 금융 — 오리진이 달라 네이버 개편과 무관하다. 1차 후보 셋이
+    #    **404 가 아니라 500** 을 돌려줬다(경로는 있는데 인자가 틀렸다는 뜻).
+    #    다음의 실제 모양은 `/api/trend/rises` 에 `change=UPPER_LIMIT` 이다.
     daum = [
-        "https://finance.daum.net/api/trend/upper_limit?market=KOSPI",
-        "https://finance.daum.net/api/trend/upper_limit?market=KOSDAQ",
-        "https://finance.daum.net/api/quotes/upper_limit",
+        "https://finance.daum.net/api/trend/rises?market=KOSPI&change=UPPER_LIMIT"
+        "&perPage=30&page=1&pagination=true",
+        "https://finance.daum.net/api/trend/falls?market=KOSPI&change=LOWER_LIMIT"
+        "&perPage=30&page=1&pagination=true",
+        "https://finance.daum.net/api/trend/rises?market=KOSDAQ&change=UPPER_LIMIT"
+        "&perPage=30&page=1&pagination=true",
     ]
     for group, urls in (("네이버 앱", naver), ("다음 금융", daum)):
         for url in urls:
             if "daum" in url:
-                ref, extra = ("https://finance.daum.net/domestic/upper_lower",
-                              {"Accept": "application/json, text/plain, */*",
-                               # 다음은 Referer 만으로는 403 을 준다.
-                               "X-Requested-With": "XMLHttpRequest"})
+                # 다음은 Referer 를 보지만 `X-Requested-With` 를 달면 오히려
+                # 500 을 준다(2026-09-14 1차 탐색). 떼고 다시 두드린다.
+                ref, extra = ("https://finance.daum.net/domestic/rises",
+                              {"Accept": "application/json, text/plain, */*"})
             else:
                 ref, extra = ("https://m.stock.naver.com/",
                               {"Accept": "application/json, text/plain, */*"})
@@ -3590,19 +3642,32 @@ def probe_limit_sources(dump_dir="data/market/raw"):
     # ③ KRX 전종목 시세 — 상한가 표가 따로 없어도 **등락률로 추려 낼 수 있다.**
     #    수집 서버 IP 가 막혀 상시 실패해 왔지만(krx:allstocks), 이 경로는
     #    따로 확인한 적이 없으므로 한 번 두드려 본다.
+    # **날짜를 여러 개 넣어 본다.** 1차 탐색에서 오늘(개장 전)로 물었더니
+    # 403 이 아니라 400 이 왔다 — 막힌 것이 아니라 자료가 없는 날이었다.
     lines.append("### KRX 전종목 시세 (등락률로 추려 내기)")
-    try:
-        rows = krx_json("dbms/MDC/STAT/standard/MDCSTAT01501",
-                        mktId="ALL", trdDd=datetime.now(KST).strftime("%Y%m%d"),
-                        share="1", money="1")
-        up = [r for r in rows
-              if _num(r.get("FLUC_RT")) is not None and _num(r.get("FLUC_RT")) >= 29.0]
-        lines.append("    응답 %d 종목 · 등락률 +29% 이상 %d 개" % (len(rows), len(up)))
-        for r in up[:10]:
-            lines.append("      %s %s %s%%" % (r.get("ISU_SRT_CD"), r.get("ISU_ABBRV"),
-                                               r.get("FLUC_RT")))
-    except Exception as e:                                        # noqa: BLE001
-        lines.append("    실패 %s: %s" % (type(e).__name__, str(e)[:140]))
+    days = []
+    d0 = datetime.now(KST)
+    for back in range(0, 6):
+        days.append((d0 - timedelta(days=back)).strftime("%Y%m%d"))
+    for trd in days:
+        try:
+            rows = krx_json("dbms/MDC/STAT/standard/MDCSTAT01501",
+                            mktId="ALL", trdDd=trd, share="1", money="1")
+        except Exception as e:                                    # noqa: BLE001
+            lines.append("    %s · 실패 %s: %s" % (trd, type(e).__name__, str(e)[:90]))
+            continue
+        if not rows:
+            lines.append("    %s · 빈 응답" % trd)
+            continue
+        up = [r for r in rows if (_num(r.get("FLUC_RT")) or 0) >= 29.0]
+        dn = [r for r in rows if (_num(r.get("FLUC_RT")) or 0) <= -29.0]
+        lines.append("    %s · **%d 종목** · 상한가 후보 %d · 하한가 후보 %d"
+                     % (trd, len(rows), len(up), len(dn)))
+        lines.append("    들어 있는 칸: %s" % ", ".join(sorted(rows[0].keys())))
+        for r in up[:12]:
+            lines.append("      %s %s %s %s%%" % (r.get("ISU_SRT_CD"), r.get("ISU_ABBRV"),
+                                                  r.get("MKT_NM"), r.get("FLUC_RT")))
+        break                                   # 값을 준 첫 날짜에서 멈춘다
     lines.append("")
 
     # ④ 앱 페이지의 JS 묶음에서 주소를 직접 읽는다(짐작이 다 빗나갔을 때).
@@ -3979,9 +4044,19 @@ def main():
         out["krx_futures"] = v
 
     # 상한가·하한가 종목명 (개수는 market_internals.breadth 에 있다)
+    # **KRX 전종목 시세가 1순위**다(2026-09-14). 네이버 화면이 개편으로
+    # 셸만 주므로, 거래소 원본에서 등락률로 골라낸다. 날짜는 **직전 거래일**
+    # 이어야 한다 — 오늘(개장 전)을 넣으면 자료가 없어 400 이 온다.
+    kr_day = ((out.get("indices") or {}).get("kospi") or {}).get("date")
+    trd = kr_day.replace("-", "") if kr_day else None
     for kind in ("upper", "lower"):
-        v, st = run("limit", naver_limit_names, kind, "data/market/raw")
-        out["sources"]["naver:limit:" + kind] = st
+        v = None
+        if trd:
+            v, st = run("limit_krx", krx_limit_names, kind, trd, "data/market/raw")
+            out["sources"]["krx:limit:" + kind] = st
+        if not v:
+            v, st = run("limit", naver_limit_names, kind, "data/market/raw")
+            out["sources"]["naver:limit:" + kind] = st
         if v:
             out.setdefault("limit_names", {})[kind] = v
 
