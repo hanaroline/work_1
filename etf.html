@@ -915,6 +915,12 @@ footer .disc + .disc{margin-top:12px;}
             data-en="Where the source has no distribution history, total return equals price return and understates by roughly the yield — mostly bond funds, 1–3.6pp. Such funds are flagged in the detail view."></span>
     </div>
 
+    <div class="notice">
+      <strong data-ko="몇 종목은 수익률 원천이 다릅니다." data-en="A few funds use a different source for returns.">몇 종목은 수익률 원천이 다릅니다.</strong>
+      <span data-ko="수익률은 원칙적으로 <u>야후 일봉을 받아 직접 계산</u>합니다. 그런데 원천에 일봉 이력이 아예 없는 국내 종목이 몇 개 있어(심볼도 종목 종류도 맞는데 값이 있는 봉이 하나뿐입니다), 그 종목만 <b>네이버 금융의 시장가 수익률</b>을 그대로 옮겨 적었습니다. 상세 화면이 칸 머리와 안내문에 <b>네이버 기준</b>이라고 밝힙니다. 분배금을 재투자한 총수익률이 아니라 <u>분배금만큼 낮게</u> 보이고, 원천과 기준이 모두 다르므로 <b>목록·랭킹의 수익률 칸에는 넣지 않았습니다</b> — 그 칸이 비어 있는 것은 자료가 없어서가 아니라 한 줄로 세울 수 없어서입니다."
+            data-en="Returns are normally computed here from Yahoo daily bars. For a few Korean funds the source has no daily history at all, so Naver's own price return is carried over instead and labelled as such in the detail view. Being a price return from a different source, it is excluded from the list and ranking columns."></span>
+    </div>
+
     <h3 style="margin-top:38px" data-ko="자료는 어디서 오고 언제 것인가" data-en="Where the data comes from">자료는 어디서 오고 언제 것인가</h3>
     <div id="howto-source" class="notice" style="border-left-color:var(--blue)"></div>
     <p class="section-lead" style="font-size:15px"
@@ -1693,6 +1699,10 @@ function returnTable(etf) {
   // 총수익률을 못 구한 소수 종목은 시장가로 대신 보여 주되, 그 사실을 아래
   // 안내문에 적는다. 다른 계열을 말없이 끼워 넣는 것이 제일 나쁘다.
   var basis = hasTr ? 'tr' : 'price';
+  // 원천이 야후가 아니라 네이버인 종목. 야후 일봉이 비어 값을 못 만든
+  // 국내 소수 종목을 네이버 시장가 수익률로 채운 것이다. 다른 종목과 원천이
+  // 다르므로 반드시 밝힌다.
+  var fromNaver = etf.retSource === 'naver';
 
   var rows = '';
   var any = false;
@@ -1766,7 +1776,10 @@ function returnTable(etf) {
   var peerN = peersOf(etf).length;
   var head = '<th>' + (lang === 'ko' ? '기간' : 'Period') + '</th>' +
     '<th class="num">' + (lang === 'ko'
-      ? (hasTr ? '총수익률' : '시장가') : (hasTr ? 'Total return' : 'Price')) + '</th>' +
+      ? (hasTr ? '총수익률' : '시장가' +
+          (fromNaver ? '<span class="th-sub">네이버 기준</span>' : ''))
+      : (hasTr ? 'Total return' : 'Price' +
+          (fromNaver ? '<span class="th-sub">from Naver</span>' : ''))) + '</th>' +
     '<th class="num">' + (lang === 'ko'
       ? '기준가 기준<span class="th-sub">' +
         (etf.navAsOf && etf.navAsOf !== etf.retAsOf ? esc(etf.navAsOf) + ' 기준' : '분배금 제외') + '</span>'
@@ -1821,7 +1834,26 @@ function returnTable(etf) {
         'total return above equals the price return. Actual performance is higher by roughly the yield.')
       + '</div>';
   }
-  if (!hasTr) {
+  if (!hasTr && fromNaver) {
+    // 까닭이 다르면 다르게 말해야 한다. 이쪽은 "분배금 이력이 없다" 가 아니라
+    // **일봉 자체가 없다** 이고, 그래서 원천까지 바뀌었다.
+    notes += '<div class="notice" style="margin:12px 0 0">' + (lang === 'ko'
+      ? '<strong>이 종목의 수익률은 네이버 금융 값입니다.</strong> ' +
+        '다른 종목은 야후 일봉을 받아 직접 계산하는데, 이 종목은 원천에 일봉 이력이 ' +
+        '없어 계산할 수 없었습니다. 그래서 네이버가 자기 화면에 싣는 ' +
+        '<u>시장가 수익률</u>을 그대로 옮겨 적었습니다' +
+        (etf.retAsOf ? ' (기준일 ' + esc(etf.retAsOf) + ')' : '') + '.<br>' +
+        '분배금을 재투자한 총수익률이 아니므로 <u>다른 종목보다 분배금만큼 낮게</u> 보입니다. ' +
+        '원천과 기준이 모두 다르니 나란히 놓고 비교하지 마십시오 — 그래서 순위·유형 평균 ' +
+        '대비를 비웠고, <strong>목록과 랭킹 화면의 수익률 칸도 비워 두었습니다.</strong>'
+      : '<strong>These figures come from Naver Finance.</strong> Every other fund is computed ' +
+        'here from Yahoo daily bars, but the source has no daily history for this one, so ' +
+        'Naver’s own price return is carried over as-is' +
+        (etf.retAsOf ? ' (as of ' + esc(etf.retAsOf) + ')' : '') + '. It is a price return, not a ' +
+        'total return, so it runs lower than the others by roughly the distribution yield. ' +
+        'Different source and different basis — not comparable, so rank, peer columns and the ' +
+        'list/ranking screens are left blank.') + '</div>';
+  } else if (!hasTr) {
     notes += '<div class="notice" style="margin:12px 0 0">' + (lang === 'ko'
       ? '<strong>이 종목만 시장가 기준입니다.</strong> 원천에 분배금 이력이 없어 ' +
         '총수익률을 만들지 못했습니다. 다른 종목과 나란히 놓고 비교하지 마십시오 — ' +
