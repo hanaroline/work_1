@@ -150,6 +150,28 @@
     return segs[segs.length - 1].trim();
   }
 
+  /**
+   * 클래스 이름을 창구가 소리 내어 읽을 수 있게 다듬는다.
+   *
+   * 앞 판은 첫 숫자에서 잘랐다. 그러면 이름 앞에 수수료 조각이 붙어 온 행
+   * (「0.15% 이내 수수료미징구- 오프라인- 퇴직연금(C-RP (퇴직연금))」)에서 이름이
+   * 통째로 날아가고, 「-퇴직연금(C)」 처럼 앞에 붙은 붙임표도 그대로 남았다.
+   * 판독 490종목 중 116종목이 값은 있는데 이름이 없었고 5종목은 군더더기가 붙었다.
+   *
+   * 뒤에 딸려 온 숫자 칸을 떼고, 앞의 수수료 조각·문장부호를 떼고, 첫 한글부터 쓴다.
+   */
+  function cleanClassName(s) {
+    var nm = String(s || '').replace(/\s+/g, ' ').trim();
+    /* 뒤에 붙은 숫자 칸 — 「… (C-P2) 없음 0.800 0.50」 */
+    nm = nm.replace(/\s+(?:없음|납입금액의)[\s\S]*$/, '');
+    nm = nm.replace(/\s+\d[\d.,%\s]*$/, '');
+    /* 앞에 붙은 수수료 조각 — 「0.15% 이내 수수료미징구- …」 */
+    nm = nm.replace(/^[\d.,%\s]*(?:이내|이하)?\s*/, '');
+    /* 앞에 남은 붙임표·점 */
+    nm = nm.replace(/^[-—·.\s]+/, '');
+    return nm.trim();
+  }
+
   /** 그 행에서 창구가 말해야 하는 총보수 — 모자형·재간접형은 합성 총보수·비용이 기준이다 */
   function feeRowTotal(r) {
     if (!r) return null;
@@ -797,9 +819,7 @@
           var r = pensionFeeRow(t);
           if (!feeRowTotal(r)) return null;
           /* 그 행이 가진 이름만 쓴다 — 덩어리 앞쪽은 옆 클래스의 이름이다 */
-          var nm = feeRowOwnLabel(r).replace(/\s+/g, ' ').trim();
-          /* 이름 뒤에 숫자 칸이 딸려 오는 행이 있다 — 클래스 이름까지만 남긴다 */
-          nm = nm.split(/\s+(?=없음|납입금액의|\d)/)[0].trim();
+          var nm = cleanClassName(feeRowOwnLabel(r));
           /* 창구가 소리 내어 읽는 말이다 — 「퇴직연금」 이 없으면 이름이 아니다 */
           return PENSION_RETIRE.test(nm) ? { value: nm, index: r.index, length: r.length } : null;
         }
