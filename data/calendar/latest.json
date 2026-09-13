@@ -1,9 +1,9 @@
 {
- "builtAt": "2026-09-13 00:21 KST",
- "builtAtUtc": "2026-09-12T15:21:46Z",
+ "builtAt": "2026-09-14 08:24 KST",
+ "builtAtUtc": "2026-09-13T23:24:38Z",
  "window": {
-  "from": "2026-07-29",
-  "to": "2028-01-25"
+  "from": "2026-07-30",
+  "to": "2028-01-26"
  },
  "note": "증시 일정 캘린더. confirmed 는 official(공식 확인) · websearch(검색 교차 확인) · tentative(기관이 잠정으로 공표) · estimate(제공사 추정 구간) · rule(규칙으로 만든 날짜) 다. 확정이 아닌 것은 화면에서 배지로 구분한다.",
  "confirmed_legend": {
@@ -21,16 +21,16 @@
   "rule": "Derived from the usual release cadence — not confirmed"
  },
  "counts": {
-  "policy": 54,
+  "policy": 53,
   "indicator": 178,
   "earnings": 166,
   "conference": 9,
   "supply": 36,
   "holiday": 103,
   "other": 3,
-  "total": 549,
+  "total": 548,
   "confirmed": {
-   "official": 296,
+   "official": 295,
    "websearch": 23,
    "tentative": 0,
    "estimate": 0,
@@ -97,19 +97,19 @@
    "series_days": 400
   },
   "fed_implied": {
-   "contract_price": 96.14,
-   "implied_rate_pct": 3.86,
-   "quote_date": "2026-09-11",
+   "contract_price": 96.145,
+   "implied_rate_pct": 3.855,
+   "quote_date": "2026-09-14",
    "note": "해당 결제월의 평균 연방기금금리 기대치. policy_rate_us.effr 와 견주십시오 — 단기 국채와 견주면 안 됩니다(국채는 정책금리 위에서 거래되는 게 보통)",
    "source": "CBOT 30일 연방기금 금리선물 (ZQ=F)",
    "effr_pct": 3.63,
    "vs_effr_bp": 23,
    "perf": {
-    "w1": 16.4,
-    "m1": 23.1,
-    "m3": 24.1,
+    "w1": 15.4,
+    "m1": 22.2,
+    "m3": 23.1,
     "m6": 22.2,
-    "y1": -35.4,
+    "y1": -36.4,
     "ytd": 13.5,
     "unit": "bp",
     "basis": "내재금리(100 − 가격) 기준. 선물 가격 등락률에서 되짚었다"
@@ -131,7 +131,7 @@
     "COFIX 신잔액"
    ],
    "ktb10y_errors": [
-    "il.naver?marketindexCd=IRR_GOVT10Y -> 값 없음(119495 bytes)",
+    "il.naver?marketindexCd=IRR_GOVT10Y -> 값 없음(119102 bytes)",
     "nds/south-korea-10-year-bond-yield -> HTTP Error 403: Forbidden"
    ],
    "ktb1y": 3.56,
@@ -182,7 +182,7 @@
     }
    }
   },
-  "asof_kst": "2026-09-12 09:08:16"
+  "asof_kst": "2026-09-14 08:10:58"
  },
  "holidays": [
   {
@@ -1801,12 +1801,6 @@
    "market": "us",
    "sector": "hc"
   },
-  "BSX": {
-   "ko": "보스턴사이언티픽",
-   "en": "Boston Scientific",
-   "market": "us",
-   "sector": "hc"
-  },
   "T": {
    "ko": "AT&T",
    "en": "AT&T",
@@ -1858,12 +1852,6 @@
   "UNP": {
    "ko": "유니온퍼시픽",
    "en": "Union Pacific",
-   "market": "us",
-   "sector": "ind"
-  },
-  "HON": {
-   "ko": "허니웰",
-   "en": "Honeywell International",
    "market": "us",
    "sector": "ind"
   },
@@ -2023,12 +2011,6 @@
    "market": "us",
    "sector": "it"
   },
-  "AMT": {
-   "ko": "아메리칸타워",
-   "en": "American Tower",
-   "market": "us",
-   "sector": "re"
-  },
   "MO": {
    "ko": "알트리아",
    "en": "Altria Group",
@@ -2058,6 +2040,24 @@
    "en": "Intercontinental Exchange",
    "market": "us",
    "sector": "fin"
+  },
+  "SPCX": {
+   "ko": "스페이스X",
+   "en": "SpaceX",
+   "market": "us",
+   "sector": "ind"
+  },
+  "LRCX": {
+   "ko": "램리서치",
+   "en": "Lam Research",
+   "market": "us",
+   "sector": "it"
+  },
+  "AMAT": {
+   "ko": "어플라이드 머티리얼즈",
+   "en": "Applied Materials",
+   "market": "us",
+   "sector": "it"
   }
  },
  "earnings_snapshot_bases": {
@@ -2464,7 +2464,7 @@
    "source_en": "Federal Reserve — FOMC meeting calendars",
    "minutes_rule_en": "Minutes three weeks after the meeting, 14:00 local",
    "meetings_per_year": 8,
-   "fetched_at": "2026-09-12"
+   "fetched_at": "2026-09-13"
   },
   {
    "key": "bok",
@@ -2537,7 +2537,7 @@
    "source_en": "Bank of England — Upcoming MPC dates",
    "projections_note_en": "A Monetary Policy Report and press conference accompany the February, April (May), July (August) and November meetings",
    "meetings_per_year": 8,
-   "fetched_at": "2026-09-12"
+   "fetched_at": "2026-09-13"
   },
   {
    "key": "pboc",
@@ -2941,31 +2941,6 @@
   }
  ],
  "events": [
-  {
-   "id": "policy-fed-2026-07-29",
-   "date": "2026-07-29",
-   "end_date": null,
-   "country": "us",
-   "category": "policy",
-   "importance": 3,
-   "title_ko": "미국 연방준비제도 (FOMC) 정책금리 결정",
-   "title_en": "Federal Reserve (FOMC) rate decision",
-   "org": "미국 연방준비제도 (FOMC)",
-   "org_en": "Federal Reserve (FOMC)",
-   "detail_ko": "기자회견 · 07-28~07-29 이틀 회의의 둘째 날",
-   "detail_en": "press conference",
-   "time_local": "14:00",
-   "tz": "America/New_York",
-   "time_kst": "2026-07-30 03:00",
-   "url": "https://www.federalreserve.gov/monetarypolicy/fomccalendars.htm",
-   "source": "Federal Reserve — FOMC meeting calendars",
-   "source_en": "Federal Reserve — FOMC meeting calendars",
-   "confirmed": "official",
-   "tags": [
-    "central-bank",
-    "fed"
-   ]
-  },
   {
    "id": "indicator-us-pce-2026-07-30",
    "date": "2026-07-30",
@@ -3516,31 +3491,6 @@
    "tags": [
     "indicator",
     "us-retail"
-   ]
-  },
-  {
-   "id": "indicator-fomc-minutes-2026-08-19",
-   "date": "2026-08-19",
-   "end_date": null,
-   "country": "us",
-   "category": "indicator",
-   "importance": 2,
-   "title_ko": "FOMC 의사록 공개 (07/29 회의)",
-   "title_en": "FOMC minutes (2026-07-29 meeting)",
-   "org": "美 연방준비제도",
-   "org_en": "Federal Reserve",
-   "detail_ko": "회의 종료 3주 뒤 공개 — 성명서에 없던 위원 간 의견 분포가 드러난다",
-   "detail_en": "Released three weeks after the meeting",
-   "time_local": "14:00",
-   "tz": "America/New_York",
-   "time_kst": "2026-08-20 03:00",
-   "url": "https://www.federalreserve.gov/monetarypolicy/fomccalendars.htm",
-   "source": "Federal Reserve — FOMC meeting calendars",
-   "source_en": "Federal Reserve — FOMC meeting calendars",
-   "confirmed": "rule",
-   "tags": [
-    "fed",
-    "minutes"
    ]
   },
   {
@@ -6365,6 +6315,32 @@
    ]
   },
   {
+   "id": "earnings-LRCX-2026-10-21",
+   "date": "2026-10-21",
+   "end_date": null,
+   "country": "us",
+   "category": "earnings",
+   "importance": 1,
+   "title_ko": "램리서치 실적발표",
+   "title_en": "Lam Research earnings",
+   "org": "LRCX",
+   "org_en": "LRCX",
+   "detail_ko": "컨퍼런스콜 시각은 이 화면이 쓰는 소스에 없다 — 회사 IR 공지를 보십시오",
+   "detail_en": "No conference-call time in this source — see the company's IR notice",
+   "time_local": null,
+   "tz": "America/New_York",
+   "time_kst": null,
+   "url": "http://investor.lamrc.com/",
+   "source": "US 스냅샷 (data/us100/latest.json)",
+   "source_en": "US100 snapshot (data/us100/latest.json)",
+   "confirmed": "official",
+   "tags": [
+    "earnings",
+    "us",
+    "LRCX"
+   ]
+  },
+  {
    "id": "earnings-TMO-2026-10-21",
    "date": "2026-10-21",
    "end_date": null,
@@ -6724,32 +6700,6 @@
     "earnings",
     "us",
     "PG"
-   ]
-  },
-  {
-   "id": "earnings-HON-2026-10-22",
-   "date": "2026-10-22",
-   "end_date": null,
-   "country": "us",
-   "category": "earnings",
-   "importance": 1,
-   "title_ko": "허니웰 실적발표",
-   "title_en": "Honeywell International earnings",
-   "org": "HON",
-   "org_en": "HON",
-   "detail_ko": "회사 IR 공지가 원문이다",
-   "detail_en": "The company's IR notice is the record",
-   "time_local": null,
-   "tz": "America/New_York",
-   "time_kst": null,
-   "url": "https://finance.yahoo.com/quote/HON",
-   "source": "US 스냅샷 (data/us100/latest.json)",
-   "source_en": "US100 snapshot (data/us100/latest.json)",
-   "confirmed": "official",
-   "tags": [
-    "earnings",
-    "us",
-    "HON"
    ]
   },
   {
@@ -7168,32 +7118,6 @@
    ]
   },
   {
-   "id": "earnings-AMT-2026-10-27",
-   "date": "2026-10-27",
-   "end_date": null,
-   "country": "us",
-   "category": "earnings",
-   "importance": 1,
-   "title_ko": "아메리칸타워 실적발표",
-   "title_en": "American Tower earnings",
-   "org": "AMT",
-   "org_en": "AMT",
-   "detail_ko": "컨퍼런스콜 시각은 이 화면이 쓰는 소스에 없다 — 회사 IR 공지를 보십시오",
-   "detail_en": "No conference-call time in this source — see the company's IR notice",
-   "time_local": null,
-   "tz": "America/New_York",
-   "time_kst": null,
-   "url": "http://www.americantower.com/atcweb/irpages/irhome.asp",
-   "source": "US 스냅샷 (data/us100/latest.json)",
-   "source_en": "US100 snapshot (data/us100/latest.json)",
-   "confirmed": "official",
-   "tags": [
-    "earnings",
-    "us",
-    "AMT"
-   ]
-  },
-  {
    "id": "earnings-UNH-2026-10-27",
    "date": "2026-10-27",
    "end_date": null,
@@ -7449,32 +7373,6 @@
     "earnings",
     "us",
     "META"
-   ]
-  },
-  {
-   "id": "earnings-BSX-2026-10-28",
-   "date": "2026-10-28",
-   "end_date": null,
-   "country": "us",
-   "category": "earnings",
-   "importance": 1,
-   "title_ko": "보스턴사이언티픽 실적발표",
-   "title_en": "Boston Scientific earnings",
-   "org": "BSX",
-   "org_en": "BSX",
-   "detail_ko": "컨퍼런스콜 시각은 이 화면이 쓰는 소스에 없다 — 회사 IR 공지를 보십시오",
-   "detail_en": "No conference-call time in this source — see the company's IR notice",
-   "time_local": null,
-   "tz": "America/New_York",
-   "time_kst": null,
-   "url": "http://phx.corporate-ir.net/phoenix.zhtml?c=62272&p=irol-irhome",
-   "source": "US 스냅샷 (data/us100/latest.json)",
-   "source_en": "US100 snapshot (data/us100/latest.json)",
-   "confirmed": "official",
-   "tags": [
-    "earnings",
-    "us",
-    "BSX"
    ]
   },
   {
@@ -9106,6 +9004,32 @@
    ]
   },
   {
+   "id": "earnings-SPCX-2026-11-03",
+   "date": "2026-11-03",
+   "end_date": null,
+   "country": "us",
+   "category": "earnings",
+   "importance": 1,
+   "title_ko": "스페이스X 실적발표",
+   "title_en": "SpaceX earnings",
+   "org": "SPCX",
+   "org_en": "SPCX",
+   "detail_ko": "회사 IR 공지가 원문이다",
+   "detail_en": "The company's IR notice is the record",
+   "time_local": null,
+   "tz": "America/New_York",
+   "time_kst": null,
+   "url": "https://finance.yahoo.com/quote/SPCX",
+   "source": "US 스냅샷 (data/us100/latest.json)",
+   "source_en": "US100 snapshot (data/us100/latest.json)",
+   "confirmed": "official",
+   "tags": [
+    "earnings",
+    "us",
+    "SPCX"
+   ]
+  },
+  {
    "id": "earnings-ANET-2026-11-03",
    "date": "2026-11-03",
    "end_date": null,
@@ -10137,6 +10061,31 @@
    ]
   },
   {
+   "id": "indicator-us-claims-2026-11-12",
+   "date": "2026-11-12",
+   "end_date": null,
+   "country": "us",
+   "category": "indicator",
+   "importance": 1,
+   "title_ko": "미국 신규 실업수당 청구건수 (주간)",
+   "title_en": "US Initial Jobless Claims",
+   "org": "美 노동부 (DOL)",
+   "org_en": "Department of Labor",
+   "detail_ko": "매주 목요일 08:30 ET",
+   "detail_en": "Every Thursday, 08:30 ET",
+   "time_local": "08:30",
+   "tz": "America/New_York",
+   "time_kst": "2026-11-12 22:30",
+   "url": "https://www.dol.gov/ui/data.pdf",
+   "source": "美 노동부 (DOL)",
+   "source_en": "Department of Labor",
+   "confirmed": "rule",
+   "tags": [
+    "indicator",
+    "us-claims"
+   ]
+  },
+  {
    "id": "earnings-CSCO-2026-11-12",
    "date": "2026-11-12",
    "end_date": null,
@@ -10160,6 +10109,32 @@
     "earnings",
     "us",
     "CSCO"
+   ]
+  },
+  {
+   "id": "earnings-AMAT-2026-11-12",
+   "date": "2026-11-12",
+   "end_date": null,
+   "country": "us",
+   "category": "earnings",
+   "importance": 1,
+   "title_ko": "어플라이드 머티리얼즈 실적발표",
+   "title_en": "Applied Materials earnings",
+   "org": "AMAT",
+   "org_en": "AMAT",
+   "detail_ko": "컨퍼런스콜 시각은 이 화면이 쓰는 소스에 없다 — 회사 IR 공지를 보십시오",
+   "detail_en": "No conference-call time in this source — see the company's IR notice",
+   "time_local": null,
+   "tz": "America/New_York",
+   "time_kst": null,
+   "url": "http://www.appliedmaterials.com/investor-relations",
+   "source": "US 스냅샷 (data/us100/latest.json)",
+   "source_en": "US100 snapshot (data/us100/latest.json)",
+   "confirmed": "official",
+   "tags": [
+    "earnings",
+    "us",
+    "AMAT"
    ]
   },
   {
