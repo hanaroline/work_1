@@ -87,13 +87,35 @@
    * 그 앞 4칸이 순서대로 총보수 / 판매보수 / 동종유형 총보수 / 합성 총보수·비용이다.
    *   예) 0.8620  0.7000  0.8900  1.9652  298  508  728  1,201  2,607
    */
+  var isFeeInt = function (x) { return /^[\d,]+$/.test(x); };
+  /**
+   * 비율 칸. 「0.145%」 처럼 백분율 기호가 붙어 오는 설명서가 있다 (다올·신한 등).
+   * 앞 판은 기호 없는 숫자만 받아서 그런 표를 통째로 놓쳤다.
+   */
+  var isFeeRate = function (x) { return /^\d+(?:\.\d+)?%?$/.test(x) || x === '-'; };
+  var feeNum = function (x) { return String(x == null ? '' : x).replace(/%$/, ''); };
+  /**
+   * 숫자만 든 칸이 공백으로 붙어 오면 갈라 준다.
+   *
+   *   「0.145% 0.11%」  ->  「0.145%」 「0.11%」
+   *
+   * PDF 가 두 칸 사이를 탭이 아니라 공백으로 내놓는 표가 있다. 그대로 두면 칸 수가
+   * 모자라 표가 아닌 것으로 판정된다. 글자가 섞인 칸(「납입금액의 0.1% 이내」)은
+   * 건드리지 않는다 — 그것은 한 칸이 맞다.
+   */
+  var splitGlued = function (x) {
+    var s = String(x).trim();
+    return /^[\d.,%]+(?:\s+[\d.,%]+)+$/.test(s) ? s.split(/\s+/) : [x];
+  };
+
   function fundFeeTable(text) {
     var lines = String(text).split('\n');
     var rows = [], at = 0;
-    var isInt = function (x) { return /^[\d,]+$/.test(x); };
-    var isRate = function (x) { return /^\d+(?:\.\d+)?$/.test(x) || x === '-'; };
+    var isInt = isFeeInt;
+    var isRate = isFeeRate;
     for (var i = 0; i < lines.length; i++) {
-      var c = cellsOf(lines[i]).filter(function (x) { return x !== ''; });
+      var c = cellsOf(lines[i]).filter(function (x) { return x !== ''; })
+        .reduce(function (a, x) { return a.concat(splitGlued(x)); }, []);
       if (c.length >= 9 && c.slice(-5).every(isInt) && c.slice(-9, -5).every(isRate)) {
         /* 클래스 이름·판매수수료는 앞 몇 줄에 흩어져 있다 */
         var label = '', cls = null;
@@ -110,14 +132,77 @@
           : (label.match(/납입금액의\s*[\d.]+\s*%\s*이내|없음/) || [null])[0];
         rows.push({
           cls: cls, label: label, salesFee: salesFee,
-          total: c[c.length - 9], mgmtFee: c[c.length - 8],
-          peerTotal: c[c.length - 7], synthetic: c[c.length - 6],
+          total: feeNum(c[c.length - 9]), mgmtFee: feeNum(c[c.length - 8]),
+          peerTotal: feeNum(c[c.length - 7]), synthetic: feeNum(c[c.length - 6]),
           index: at, length: lines[i].length
         });
       }
       at += lines[i].length + 1;
     }
-    return rows;
+    return rows.length ? rows : feeTableSplitRows(lines);
+  }
+
+  /** 보수 표가 시작되는 자리 */
+  var FEE_HEAD = /투자자가\s*부담하는\s*(?:수수료|비용)|1,?\s?000\s*만원\s*투자\s*시/;
+  /** 보수 표가 끝나는 자리 — 주석·다음 절이 시작되면 더 보지 않는다 */
+  var FEE_END = /^\s*[(（]?\s*주\s*\d+\s*[)）]|투자\s*실적\s*추이|운용\s*전문\s*인력|^\s*주\s*\d\s*\)/;
+  /** 보수 행의 이름다움 — 클래스가 없는 표(자산구성·수익률)를 걸러 낸다 */
+  var FEE_LABELISH = /수수료|오프라인|온라인|종류|클래스|\([A-Za-z]/;
+
+  /**
+   * 비율과 예시금액이 서로 다른 줄에 있는 표 (DB·삼성 등).
+   *
+   *   146| 0.94 \t0.70 \t1.14 \t0.94      <- 비율 네 칸
+   *   147| 96 \t198 \t304                 <- 예시금액 (세 칸뿐)
+   *
+   * 위의 엄격한 판정은 「뒤 다섯 칸이 정수, 그 앞 네 칸이 비율」 한 줄을 찾는다.
+   * 이렇게 갈라진 표는 한 줄에 아홉 칸이 모이지 않아 통째로 못 읽었다.
+   *
+   * 느슨하게 풀면 자산구성표·수익률표의 숫자 줄까지 보수로 읽힌다 — 그러면 지금
+   * 「확인필요」 인 것이 「틀린 보수」 로 바뀌어 더 나쁘다. 그래서 세 겹으로 묶는다.
+   *   ① 「투자자가 부담하는 수수료」 머리글 다음부터만 본다
+   *   ② 「주1)」·「투자실적 추이」 가 나오면 거기서 끊는다 (표의 끝)
+   *   ③ 그 행의 이름에 클래스다운 말이 있어야 한다
+   * 그리고 엄격한 판정이 한 줄도 못 찾았을 때만 쓴다 — 지금 읽히는 표는 건드리지 않는다.
+   */
+  function feeTableSplitRows(lines) {
+    var heads = [];
+    for (var h = 0; h < lines.length; h++) if (FEE_HEAD.test(lines[h])) heads.push(h);
+    for (var n = 0; n < heads.length; n++) {
+      var rows = [], at = 0;
+      for (var p = 0; p < heads[n]; p++) at += lines[p].length + 1;
+      for (var i = heads[n]; i < lines.length && i < heads[n] + 80; i++) {
+        if (i > heads[n]) at += lines[i - 1].length + 1;
+        if (i === heads[n]) continue;
+        if (FEE_END.test(lines[i].trim())) break;
+        var toks = lines[i].split(/[\t ]+/).filter(function (x) { return x !== ''; });
+        /* 앞머리부터 이어지는 비율 칸만 센다 — 뒤에 붙은 예시금액은 세지 않는다 */
+        var rates = [];
+        for (var t = 0; t < toks.length; t++) {
+          if (!isFeeRate(toks[t]) || !/[.%]/.test(toks[t])) break;
+          rates.push(feeNum(toks[t]));
+        }
+        if (rates.length < 4) continue;
+        var label = '', cls = null;
+        for (var k = i - 1; k >= 0 && k >= i - 6; k--) {
+          var s = lines[k].replace(/\t/g, ' ').trim();
+          if (!s || /^[\d,.\s%-]+$/.test(s)) break;
+          label = s + ' ' + label;
+          var mm = s.match(/\(([A-Za-z]{1,2}\d?(?:-[A-Za-z])?)\)\s*$/);
+          if (mm) { cls = mm[1]; break; }
+        }
+        label = label.replace(/\s+/g, ' ').trim();
+        if (!FEE_LABELISH.test(label)) continue;
+        rows.push({
+          cls: cls, label: label,
+          salesFee: (label.match(/납입금액의\s*[\d.]+\s*%\s*이내|없음/) || [null])[0],
+          total: rates[0], mgmtFee: rates[1], peerTotal: rates[2], synthetic: rates[3],
+          index: at, length: lines[i].length
+        });
+      }
+      if (rows.length) return rows;
+    }
+    return [];
   }
 
   /** 클래스 한 줄 골라내기 — A / A-e / C / C1 / C-e 표기가 섞여 있다 */
