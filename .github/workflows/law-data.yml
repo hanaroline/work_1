@@ -77,6 +77,14 @@ jobs:
           LAW_OC: ${{ secrets.LAW_OC }}
         run: python scripts/fetch_law.py
 
+      - name: 연혁 조문 수집
+        # 시행일이 다르면 다른 조문이다. 과거 양도분을 인용하려면 그때
+        # 시행 중이던 본문이 필요한데, 현행 수집으로는 나오지 않는다.
+        # data/law/history_targets.json 에 적은 시점만 받는다.
+        env:
+          LAW_OC: ${{ secrets.LAW_OC }}
+        run: python scripts/fetch_law_history.py
+
       - name: 연혁 호출 탐침
         # data/law/PROBE 가 있을 때만 돈다. 세션은 law.go.kr 에 못 붙어서
         # 연혁 법령 API 의 겉모양을 볼 수 없으므로, 러너가 후보를 두드려
