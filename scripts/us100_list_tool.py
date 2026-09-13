@@ -59,8 +59,29 @@ CHART = "https://query1.finance.yahoo.com/v8/finance/chart/%s?range=1mo&interval
 UA = {"User-Agent": "Mozilla/5.0 (compatible; us100-list-tool)"}
 
 
+def ranking_verdicts(path=None):
+    """러너가 ranking.json 에 적어 둔 시세 확인 결과 — {sym: (되는가, 사유, 이름)}.
+
+    이 도구가 도는 자리(에이전트 환경·사내망)에서는 야후로 나가지 못하는 경우가 많다.
+    나갈 수 있는 쪽(GitHub Actions 러너)이 매일 점검하면서 확인해 적어 두므로,
+    그 결과를 먼저 쓰고, 없을 때만 직접 불러 본다.
+    """
+    path = path or RANKING
+    if not os.path.exists(path):
+        return {}
+    try:
+        j = json.load(open(path, encoding="utf-8"))
+    except Exception:                                       # noqa: BLE001
+        return {}
+    out = {}
+    for c in (j.get("add") or []):
+        if "tradable" in c:
+            out[c["sym"]] = (bool(c["tradable"]), c.get("tradableWhy") or "", c.get("longName"))
+    return out
+
+
 def tradable(sym, timeout=12):
-    """이 심볼이 실제로 시세를 주는지 본다.
+    """이 심볼이 실제로 시세를 주는지 직접 불러 본다(러너 판정이 없을 때만).
 
     순위 화면에는 상장 형태가 다른 것들이 섞여 들어온다(비상장 평가액이 스크리너에
     잡히거나, 막 상장해 시세가 아직 얇거나). 그런 것을 목록에 넣으면 그 종목만
@@ -309,9 +330,14 @@ def cmd_report(a):
     drops.sort(key=lambda c: -c["rank"])
 
     if not a.no_verify:
+        said = ranking_verdicts(path)
         ok, bad = [], []
         for c in adds[:12]:
-            good, why, name = tradable(c["sym"])
+            if c["sym"] in said:
+                good, why, name = said[c["sym"]]
+                why = (why or "") + " (러너 확인)"
+            else:
+                good, why, name = tradable(c["sym"])
             (ok if good else bad).append((c, why, name))
             if good:
                 c["verified"] = why
@@ -379,10 +405,15 @@ def cmd_apply(a):
         elif len(p[1]) < 60:
             errs.append("%s 의 개요가 너무 짧다(%d자) — 다른 종목과 깊이가 어긋난다" % (c["sym"], len(p[1])))
     if not a.no_verify:
+        said = ranking_verdicts()
         for c in adds:
             if not c.get("sym"):
                 continue
-            good, why, name = tradable(c["sym"])
+            if c["sym"] in said:
+                good, why, name = said[c["sym"]]
+                why = (why or "") + " (러너 확인)"
+            else:
+                good, why, name = tradable(c["sym"])
             if not good:
                 errs.append("%s 의 시세를 확인하지 못했다(%s) — 목록에 넣으면 그 종목만 비어 보인다" % (c["sym"], why))
             else:
