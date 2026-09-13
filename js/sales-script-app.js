@@ -1882,8 +1882,15 @@
          */
         if (rawValue('clsPExp')) {
           pick = rawValue('clsPExp');
-          who = rawValue('clsPName')
-            ? '투자설명서 ' + rawValue('clsPName') + ' 클래스' : '퇴직연금 클래스';
+          /*
+           * 판독해 둔 이름에 군더더기가 붙은 것이 있다 — 「-퇴직연금(C)」 처럼 앞에
+           * 붙임표가 남거나 수수료 조각이 앞에 붙는다. 판독 규칙도 고쳤지만 이미
+           * 받아 둔 값은 그대로이므로 읽을 때 한 번 더 다듬는다. 창구가 소리 내어
+           * 읽는 말이라 「마이너스 퇴직연금」 으로 나가면 안 된다.
+           */
+          var pn = String(rawValue('clsPName') || '')
+            .replace(/^[\d.,%\s]*(?:이내|이하)?\s*/, '').replace(/^[-—·.\s]+/, '').trim();
+          who = pn ? '투자설명서 ' + pn + ' 클래스' : '퇴직연금 클래스';
         } else if (itp && itp.clsPExp != null) { pick = itp.clsPExp; who = '퇴직연금 클래스'; }
         else if (rawValue('clsExp')) { pick = rawValue('clsExp'); who = '투자설명서 기재 기준'; }
         /*
