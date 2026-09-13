@@ -325,11 +325,15 @@ def sec_today(C):
 
     grid = "stat-grid six"
     return ('<div class="' + grid + '">\n' + "\n".join(cards) + '\n</div>\n'
-            # 장마감 판에 「09시 개장에 들고 갈 것」은 맞지 않는다.
-            + callout("오늘 마감에서 들고 갈 것" if C["kind"] == "close"
-                      else "오늘 09시 개장에 들고 갈 것",
-                      "What to carry from today&rsquo;s close" if C["kind"] == "close"
-                      else "What to carry into the 09:00 open",
+            # 장마감 판에 「09시 개장에 들고 갈 것」은 맞지 않는다. **주말·휴장일
+            # 판도 마찬가지다** — 오늘 09시에는 열리지 않는다(2026-09-13 에
+            # 일요일 판이 그대로 「오늘 09시 개장」을 달고 나갈 뻔했다).
+            + callout({"close": "오늘 마감에서 들고 갈 것",
+                       "global": "다음 개장에 들고 갈 것"}.get(C["kind"],
+                                                       "오늘 09시 개장에 들고 갈 것"),
+                      {"close": "What to carry from today&rsquo;s close",
+                       "global": "What to carry into the next open"}.get(
+                          C["kind"], "What to carry into the 09:00 open"),
                       paras))
 
 
@@ -897,7 +901,11 @@ def sec_verify(C):
         N.used.add("verify")
     fixed = [
         ("(a) 묶음마다 기준일이 다릅니다", "(a) The basis date differs by group",
-         "<strong>오늘 09시 개장 전이라 「오늘 시세」는 아직 없습니다.</strong> 국내&middot;해외 지수와 종목, "
+         # 주말·휴장일 판에 「오늘 09시 개장 전」은 틀린 말이다 — 오늘은 열리지 않는다.
+         ("<strong>국내 장이 열리지 않는 날이라 「오늘 시세」가 없습니다.</strong> "
+          if C["kind"] == "global" else
+          "<strong>오늘 09시 개장 전이라 「오늘 시세」는 아직 없습니다.</strong> ") +
+         "국내&middot;해외 지수와 종목, "
          "업종 ETF, 미 국채 곡선, 원자재는 모두 <strong>" + DK(C["prev_us"], True) + " 마감</strong>이고, "
          "<strong>환율만 24시간 시장이라 오늘 아침(" + DK(C["today"]) + ") 값</strong>입니다 " + VF_MD + ". "
          + (("예탁금&middot;신용융자는 결제일 기준이라 <strong>" + DK(d(C["mfl"]["date"])) + "</strong>입니다. ")
@@ -1469,6 +1477,15 @@ def main():
                 % (kinden, suffix_en, DE(today, True), today.year))
     html = assemble(ROOT + "/docs/briefing-chrome", doc, title, C["hero"], now,
                     title_en=title_en)
+    # 껍데기의 머리 칩은 「국내 개장일」로 굳어 있다. **주말·휴장일 판에는 틀린
+    # 말이다** — 그날은 국내가 쉰다. 판에 맞춰 갈아 끼우고 1개를 찾았는지 본다.
+    if a.kind == "global":
+        chip_old = ("<span data-lang-ko>고객 브리핑용 · 국내 개장일</span>"
+                    "<span data-lang-en>For client briefing · Korea trading</span>")
+        chip_new = ("<span data-lang-ko>고객 브리핑용 &middot; 국내 휴장일</span>"
+                    "<span data-lang-en>For client briefing &middot; Korea closed</span>")
+        assert html.count(chip_old) == 1, "머리 칩을 한 개 찾지 못했다"
+        html = html.replace(chip_old, chip_new, 1)
     if CORE[0]:
         # 이 판은 <head> 없는 아티팩트 본문이다. 껍데기 CSS 가 끝나는 자리
         # 바로 뒤에 붙여야 같은 우선순위에서 이긴다(지침 6절).
