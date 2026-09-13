@@ -1,0 +1,343 @@
+[
+  {
+    "name": "list_law_plain",
+    "path": "lawSearch.do",
+    "params": {
+      "target": "law",
+      "query": "소득세법 시행령"
+    },
+    "ok": true,
+    "outline": [
+      "{} ['LawSearch']",
+      "  LawSearch: {} ['law', 'resultMsg', '키워드', 'page', 'resultCode', 'target', 'totalCnt', 'section', 'numOfRows']",
+      "    law: {} ['현행연혁코드', '법령일련번호', '자법타법여부', '법령상세링크', '법령명한글', '법령구분명', '소관부처명', '공포번호', '제개정구분명', '소관부처코드', 'id', '법령ID', '공동부령정보', '시행일자']",
+      "      현행연혁코드: 현행",
+      "      법령일련번호: 286211",
+      "      자법타법여부: ",
+      "      법령상세링크: /DRF/lawService.do?OC=thelite&target=law&MST=286211&type=HTML&mobileYn=&efYd=20260701",
+      "      법령명한글: 소득세법 시행령",
+      "      법령구분명: 대통령령",
+      "      소관부처명: 재정경제부",
+      "      공포번호: 36343",
+      "      제개정구분명: 일부개정",
+      "      소관부처코드: 1053000",
+      "      id: 1",
+      "      법령ID: 003956",
+      "      공동부령정보: ",
+      "      시행일자: 20260701",
+      "    resultMsg: success",
+      "    키워드: 소득세법 시행령",
+      "    page: 1",
+      "    resultCode: 00",
+      "    target: law",
+      "    totalCnt: 1",
+      "    section: lawNm",
+      "    numOfRows: 1"
+    ],
+    "clipped": false
+  },
+  {
+    "name": "list_law_nw2",
+    "path": "lawSearch.do",
+    "params": {
+      "target": "law",
+      "query": "소득세법 시행령",
+      "nw": 2
+    },
+    "ok": true,
+    "outline": [
+      "{} ['LawSearch']",
+      "  LawSearch: {} ['law', 'resultMsg', '키워드', 'page', 'resultCode', 'target', 'totalCnt', 'section', 'numOfRows']",
+      "    law: {} ['현행연혁코드', '법령일련번호', '자법타법여부', '법령상세링크', '법령명한글', '법령구분명', '소관부처명', '공포번호', '제개정구분명', '소관부처코드', 'id', '법령ID', '공동부령정보', '시행일자']",
+      "      현행연혁코드: 시행예정",
+      "      법령일련번호: 241175",
+      "      자법타법여부: ",
+      "      법령상세링크: /DRF/lawService.do?OC=thelite&target=law&MST=241175&type=HTML&mobileYn=&efYd=20270101",
+      "      법령명한글: 소득세법 시행령",
+      "      법령구분명: 대통령령",
+      "      소관부처명: 재정경제부",
+      "      공포번호: 32516",
+      "      제개정구분명: 일부개정",
+      "      소관부처코드: 1053000",
+      "      id: 1",
+      "      법령ID: 003956",
+      "      공동부령정보: ",
+      "      시행일자: 20270101",
+      "    resultMsg: success",
+      "    키워드: 소득세법 시행령",
+      "    page: 1",
+      "    resultCode: 00",
+      "    target: law",
+      "    totalCnt: 1",
+      "    section: lawNm",
+      "    numOfRows: 1"
+    ],
+    "clipped": false
+  },
+  {
+    "name": "list_eflaw",
+    "path": "lawSearch.do",
+    "params": {
+      "target": "eflaw",
+      "query": "소득세법 시행령"
+    },
+    "ok": true,
+    "outline": [
+      "{} ['LawSearch']",
+      "  LawSearch: {} ['law', 'resultMsg', '키워드', 'page', 'resultCode', 'target', 'totalCnt', 'section', 'numOfRows']",
+      "    law: [20]",
+      "      [0] {} ['현행연혁코드', '법령일련번호', '자법타법여부', '법령상세링크', '법령명한글', '법령구분명', '소관부처명', '공포번호', '제개정구분명', '소관부처코드', 'id', '법령ID', '공동부령정보', '시행일자']",
+      "    resultMsg: success",
+      "    키워드: 소득세법 시행령",
+      "    page: 1",
+      "    resultCode: 00",
+      "    target: eflaw",
+      "    totalCnt: 367",
+      "    section: lawNm",
+      "    numOfRows: 20"
+    ],
+    "clipped": false
+  },
+  {
+    "name": "list_eflaw_efyd",
+    "path": "lawSearch.do",
+    "params": {
+      "target": "eflaw",
+      "query": "소득세법 시행령",
+      "efYd": "20200101~20250101"
+    },
+    "ok": true,
+    "outline": [
+      "{} ['LawSearch']",
+      "  LawSearch: {} ['law', 'resultMsg', '키워드', 'page', 'resultCode', 'target', 'totalCnt', 'section', 'numOfRows']",
+      "    law: [20]",
+      "      [0] {} ['현행연혁코드', '법령일련번호', '자법타법여부', '법령상세링크', '법령명한글', '법령구분명', '소관부처명', '공포번호', '제개정구분명', '소관부처코드', 'id', '법령ID', '공동부령정보', '시행일자']",
+      "    resultMsg: success",
+      "    키워드: 소득세법 시행령",
+      "    page: 1",
+      "    resultCode: 00",
+      "    target: eflaw",
+      "    totalCnt: 60",
+      "    section: lawNm",
+      "    numOfRows: 20"
+    ],
+    "clipped": false
+  },
+  {
+    "name": "list_lsHistory",
+    "path": "lawSearch.do",
+    "params": {
+      "target": "lsHistory",
+      "query": "소득세법 시행령"
+    },
+    "ok": false,
+    "error": "RuntimeError: JSON 이 아닌 응답: 국가법령통합관리시스템 .noSearchResult{ border:1px solid #ccc; border-radius:10px; /* height: 50px; */ width: 280px; text-align: left; margin: 0 0 20px; /* padding: 20px 0 0; */ padding: 15px; letter-spacing: 0."
+  },
+  {
+    "name": "list_lsHstInf",
+    "path": "lawSearch.do",
+    "params": {
+      "target": "lsHstInf",
+      "query": "소득세법 시행령"
+    },
+    "ok": true,
+    "outline": [
+      "{} ['LawSearch']",
+      "  LawSearch: {} ['target', 'totalCnt']",
+      "    target: lsHstInf",
+      "    totalCnt: 0"
+    ],
+    "clipped": false
+  },
+  {
+    "name": "list_law_ancyd",
+    "path": "lawSearch.do",
+    "params": {
+      "target": "law",
+      "query": "소득세법 시행령",
+      "ancYd": "20221201~20230401"
+    },
+    "ok": true,
+    "outline": [
+      "{} ['LawSearch']",
+      "  LawSearch: {} ['resultMsg', '키워드', 'page', 'resultCode', 'target', 'totalCnt', 'section', 'numOfRows']",
+      "    resultMsg: success",
+      "    키워드: 소득세법 시행령",
+      "    page: 1",
+      "    resultCode: 00",
+      "    target: law",
+      "    totalCnt: 0",
+      "    section: lawNm",
+      "    numOfRows: 0"
+    ],
+    "clipped": false
+  },
+  {
+    "name": "list_law_efyd",
+    "path": "lawSearch.do",
+    "params": {
+      "target": "law",
+      "query": "소득세법 시행령",
+      "efYd": "20220101~20230101"
+    },
+    "ok": true,
+    "outline": [
+      "{} ['LawSearch']",
+      "  LawSearch: {} ['resultMsg', '키워드', 'page', 'resultCode', 'target', 'totalCnt', 'section', 'numOfRows']",
+      "    resultMsg: success",
+      "    키워드: 소득세법 시행령",
+      "    page: 1",
+      "    resultCode: 00",
+      "    target: law",
+      "    totalCnt: 0",
+      "    section: lawNm",
+      "    numOfRows: 0"
+    ],
+    "clipped": false
+  },
+  {
+    "name": "body_eflaw_mst",
+    "path": "lawService.do",
+    "params": {
+      "target": "eflaw",
+      "MST": "286211"
+    },
+    "ok": false,
+    "error": "RuntimeError: JSON 이 아닌 응답: 국가법령정보 공동활용 미신청된 목록/본문에 대한 접근입니다. OPEN API 로그인 후 [OPEN API] -> [OPEN API 신청] -> 등록된 API 선택 후 법령종류를 체크해 주세요. 동일한 문제가 지속될 경우 아래 번호로 문의해 주시기 바랍니다. 법제처 공동활용 유지보수팀(02-2109-6446)"
+  },
+  {
+    "name": "body_law_mst_efyd",
+    "path": "lawService.do",
+    "params": {
+      "target": "law",
+      "MST": "286211",
+      "efYd": "20220601"
+    },
+    "ok": true,
+    "outline": [
+      "{} ['법령']",
+      "  법령: {} ['개정문', '법령키', '별표', '기본정보', '부칙', '조문', '제개정이유']",
+      "    개정문: {} ['개정문내용']",
+      "      개정문내용: [1]",
+      "    법령키: 0039562026052236343",
+      "    별표: {} ['별표단위']",
+      "      별표단위: [11]",
+      "    기본정보: {} ['법령명_한글', '공포번호', '전화번호', '언어', '제개정구분', '법령ID', '공동부령정보', '소관부처', '공포법령여부', '법종구분', '제명변경여부', '시행일자', '별표편집여부', '연락부서']",
+      "      법령명_한글: 소득세법 시행령",
+      "      공포번호: 36343",
+      "      전화번호: 044-215-4217",
+      "      언어: 한글",
+      "      제개정구분: 일부개정",
+      "      법령ID: 003956",
+      "      공동부령정보: ",
+      "      소관부처: {} ['content', '소관부처코드']",
+      "      공포법령여부: Y",
+      "      법종구분: {} ['content', '법종구분코드']",
+      "      제명변경여부: N",
+      "      시행일자: 20260701",
+      "      별표편집여부: N",
+      "      연락부서: {} ['부서단위']",
+      "    부칙: {} ['부칙단위']",
+      "      부칙단위: [208]",
+      "    조문: {} ['조문단위']",
+      "      조문단위: [507]",
+      "    제개정이유: {} ['제개정이유내용']",
+      "      제개정이유내용: [1]"
+    ],
+    "clipped": true
+  },
+  {
+    "name": "body_law_id_efyd",
+    "path": "lawService.do",
+    "params": {
+      "target": "law",
+      "ID": "003956",
+      "efYd": "20220601"
+    },
+    "ok": true,
+    "outline": [
+      "{} ['법령']",
+      "  법령: {} ['개정문', '법령키', '별표', '기본정보', '부칙', '조문', '제개정이유']",
+      "    개정문: {} ['개정문내용']",
+      "      개정문내용: [1]",
+      "    법령키: 0039562026052236343",
+      "    별표: {} ['별표단위']",
+      "      별표단위: [11]",
+      "    기본정보: {} ['법령명_한글', '공포번호', '전화번호', '언어', '제개정구분', '법령ID', '공동부령정보', '소관부처', '공포법령여부', '법종구분', '제명변경여부', '시행일자', '별표편집여부', '연락부서']",
+      "      법령명_한글: 소득세법 시행령",
+      "      공포번호: 36343",
+      "      전화번호: 044-215-4217",
+      "      언어: 한글",
+      "      제개정구분: 일부개정",
+      "      법령ID: 003956",
+      "      공동부령정보: ",
+      "      소관부처: {} ['content', '소관부처코드']",
+      "      공포법령여부: Y",
+      "      법종구분: {} ['content', '법종구분코드']",
+      "      제명변경여부: N",
+      "      시행일자: 20260701",
+      "      별표편집여부: N",
+      "      연락부서: {} ['부서단위']",
+      "    부칙: {} ['부칙단위']",
+      "      부칙단위: [208]",
+      "    조문: {} ['조문단위']",
+      "      조문단위: [507]",
+      "    제개정이유: {} ['제개정이유내용']",
+      "      제개정이유내용: [1]"
+    ],
+    "clipped": true
+  },
+  {
+    "name": "body_lsHistory_id",
+    "path": "lawService.do",
+    "params": {
+      "target": "lsHistory",
+      "ID": "003956"
+    },
+    "ok": false,
+    "error": "RuntimeError: JSON 이 아닌 응답: 국가법령정보 공동활용 미신청된 목록/본문에 대한 접근입니다. OPEN API 로그인 후 [OPEN API] -> [OPEN API 신청] -> 등록된 API 선택 후 법령종류를 체크해 주세요. 동일한 문제가 지속될 경우 아래 번호로 문의해 주시기 바랍니다. 법제처 공동활용 유지보수팀(02-2109-6446)"
+  },
+  {
+    "name": "body_lsHstInf_mst",
+    "path": "lawService.do",
+    "params": {
+      "target": "lsHstInf",
+      "MST": "286211"
+    },
+    "ok": false,
+    "error": "RuntimeError: 접속 실패: HTTPError: HTTP Error 404: Not Found"
+  },
+  {
+    "name": "body_law_mst_jo157",
+    "path": "lawService.do",
+    "params": {
+      "target": "law",
+      "MST": "286211",
+      "JO": "015700"
+    },
+    "ok": true,
+    "outline": [
+      "{} ['법령']",
+      "  법령: {} ['법령키', '기본정보', '조문']",
+      "    법령키: 0039562026052236343",
+      "    기본정보: {} ['법령명_한글', '조문별시행일자', '공포번호', '전화번호', '언어', '제개정구분', '법령ID', '공동부령정보', '소관부처', '공포법령여부', '법종구분', '제명변경여부', '시행일자', '별표편집여부']",
+      "      법령명_한글: 소득세법 시행령",
+      "      조문별시행일자: 20260701",
+      "      공포번호: 36343",
+      "      전화번호: 044-215-4217",
+      "      언어: 한글",
+      "      제개정구분: 일부개정",
+      "      법령ID: 003956",
+      "      공동부령정보: ",
+      "      소관부처: {} ['content', '소관부처코드']",
+      "      공포법령여부: Y",
+      "      법종구분: {} ['content', '법종구분코드']",
+      "      제명변경여부: N",
+      "      시행일자: 20260701",
+      "      별표편집여부: N",
+      "    조문: {} ['조문단위']",
+      "      조문단위: [2]"
+    ],
+    "clipped": false
+  }
+]
