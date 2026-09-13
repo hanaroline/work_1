@@ -1,71 +1,91 @@
 {
-  "수집시각": "2026-09-14 00:36:41 KST",
+  "수집시각": "2026-09-14 00:56:27 KST",
   "출처": "국가법령정보센터 OPEN API (law.go.kr/DRF)",
   "주의": "시행일자가 다르면 다른 조문이다. 인용할 때는 아래 시행일자를 같이 밝힌다. 이 파일은 받은 시점의 현행본이며, 그 뒤 개정은 다시 수집해야 반영된다.",
   "요약": {
     "시도": 20,
-    "성공": 20
+    "성공": 0
   },
   "sources": {
     "자본시장과 금융투자업에 관한 법률": {
-      "ok": true
+      "ok": false,
+      "error": "RuntimeError: 접속 실패(3회 시도): URLError: <urlopen error timed out>"
     },
     "자본시장과 금융투자업에 관한 법률 시행령": {
-      "ok": true
+      "ok": false,
+      "error": "RuntimeError: 접속 실패(3회 시도): URLError: <urlopen error timed out>"
     },
     "자본시장과 금융투자업에 관한 법률 시행규칙": {
-      "ok": true
+      "ok": false,
+      "error": "RuntimeError: 접속 실패 (앞선 실패로 건너뜀)"
     },
     "금융소비자 보호에 관한 법률": {
-      "ok": true
+      "ok": false,
+      "error": "RuntimeError: 접속 실패 (앞선 실패로 건너뜀)"
     },
     "금융소비자 보호에 관한 법률 시행령": {
-      "ok": true
+      "ok": false,
+      "error": "RuntimeError: 접속 실패 (앞선 실패로 건너뜀)"
     },
     "금융회사의 지배구조에 관한 법률": {
-      "ok": true
+      "ok": false,
+      "error": "RuntimeError: 접속 실패 (앞선 실패로 건너뜀)"
     },
     "금융실명거래 및 비밀보장에 관한 법률": {
-      "ok": true
+      "ok": false,
+      "error": "RuntimeError: 접속 실패 (앞선 실패로 건너뜀)"
     },
     "특정 금융거래정보의 보고 및 이용 등에 관한 법률": {
-      "ok": true
+      "ok": false,
+      "error": "RuntimeError: 접속 실패 (앞선 실패로 건너뜀)"
     },
     "신용정보의 이용 및 보호에 관한 법률": {
-      "ok": true
+      "ok": false,
+      "error": "RuntimeError: 접속 실패 (앞선 실패로 건너뜀)"
     },
     "외국환거래법": {
-      "ok": true
+      "ok": false,
+      "error": "RuntimeError: 접속 실패 (앞선 실패로 건너뜀)"
     },
     "금융투자업규정": {
-      "ok": true
+      "ok": false,
+      "error": "RuntimeError: 접속 실패 (앞선 실패로 건너뜀)"
     },
     "금융소비자 보호에 관한 감독규정": {
-      "ok": true
+      "ok": false,
+      "error": "RuntimeError: 접속 실패 (앞선 실패로 건너뜀)"
     },
     "소득세법": {
-      "ok": true
+      "ok": false,
+      "error": "RuntimeError: 접속 실패 (앞선 실패로 건너뜀)"
     },
     "소득세법 시행령": {
-      "ok": true
+      "ok": false,
+      "error": "RuntimeError: 접속 실패 (앞선 실패로 건너뜀)"
     },
     "국세기본법": {
-      "ok": true
+      "ok": false,
+      "error": "RuntimeError: 접속 실패 (앞선 실패로 건너뜀)"
     },
     "국세기본법 시행령": {
-      "ok": true
+      "ok": false,
+      "error": "RuntimeError: 접속 실패 (앞선 실패로 건너뜀)"
     },
     "증권거래세법": {
-      "ok": true
+      "ok": false,
+      "error": "RuntimeError: 접속 실패 (앞선 실패로 건너뜀)"
     },
     "증권거래세법 시행령": {
-      "ok": true
+      "ok": false,
+      "error": "RuntimeError: 접속 실패 (앞선 실패로 건너뜀)"
     },
     "농어촌특별세법": {
-      "ok": true
+      "ok": false,
+      "error": "RuntimeError: 접속 실패 (앞선 실패로 건너뜀)"
     },
     "조세특례제한법": {
-      "ok": true
+      "ok": false,
+      "error": "RuntimeError: 접속 실패 (앞선 실패로 건너뜀)"
     }
   },
   "법령": [
