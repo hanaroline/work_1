@@ -78,6 +78,10 @@ jobs:
         run: python scripts/fetch_law.py
 
       - name: 연혁 조문 수집
+        # 현행 수집이 흔들려 죽어도 연혁은 따로 받아 본다. 둘은 쓰는 API 가
+        # 달라서 한쪽이 안 된다고 다른 쪽까지 건너뛸 이유가 없다.
+        if: always()
+        continue-on-error: true
         # 시행일이 다르면 다른 조문이다. 과거 양도분을 인용하려면 그때
         # 시행 중이던 본문이 필요한데, 현행 수집으로는 나오지 않는다.
         # data/law/history_targets.json 에 적은 시점만 받는다.
@@ -97,6 +101,9 @@ jobs:
         run: python scripts/probe_law_history.py
 
       - name: 커밋
+        # 일부만 받았어도 남긴다. 다 받지 못했다고 받은 것까지 버리면
+        # 다음 실행에서 또 처음부터 받아야 한다.
+        if: always()
         run: |
           git config user.name  'github-actions[bot]'
           git config user.email 'github-actions[bot]@users.noreply.github.com'
