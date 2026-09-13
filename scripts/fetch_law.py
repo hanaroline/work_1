@@ -43,6 +43,9 @@ KST = timezone(timedelta(hours=9))
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 OUT = os.path.join(ROOT, "data", "law")
 TIMEOUT = 25
+# 서버가 이따금 통째로 무응답이 된다. 잠깐 쉬었다 다시 두드리면 넘어간다.
+RETRY = 3
+BACKOFF = 4
 UA = ("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
       "(KHTML, like Gecko) Chrome/125.0 Safari/537.36")
 
@@ -93,24 +96,36 @@ def slugify(name):
 
 # ── 내려받기 ──────────────────────────────────────────────────────
 def get(path, params):
-    """DRF 엔드포인트 호출. https 가 막히면 http 로 한 번 더 시도한다.
+    """DRF 엔드포인트 호출. https 가 막히면 http 로, 그래도 안 되면 다시 한 번.
 
     law.go.kr 은 오래된 안내서가 http 로 적혀 있고 실제로 둘 다 열려 있다.
     러너 쪽 TLS 사정으로 https 가 실패해도 수집이 통째로 죽지 않게 한다.
+
+    한 바퀴로 끝내지 않는 이유는 서버가 이따금 통째로 무응답이 되기 때문이다.
+    한 번은 12건이 전부 타임아웃으로 죽었다가 20분 뒤에는 20건이 멀쩡히
+    들어왔다. 잠깐 쉬었다 다시 두드리면 넘어가는 종류의 흔들림이라, 여기서
+    받아 내고 위쪽은 모르게 한다.
     """
     qs = urllib.parse.urlencode(params, encoding="utf-8")
     last = None
-    for scheme in ("https", "http"):
-        url = "%s://www.law.go.kr/DRF/%s?%s" % (scheme, path, qs)
-        try:
-            req = urllib.request.Request(url, headers={"User-Agent": UA})
-            with urllib.request.urlopen(req, timeout=TIMEOUT) as r:
-                body = r.read()
-            break
-        except Exception as e:                                    # noqa: BLE001
-            last = e
+    for attempt in range(RETRY):
+        if attempt:
+            time.sleep(BACKOFF * attempt)
+        for scheme in ("https", "http"):
+            url = "%s://www.law.go.kr/DRF/%s?%s" % (scheme, path, qs)
+            try:
+                req = urllib.request.Request(url, headers={"User-Agent": UA})
+                with urllib.request.urlopen(req, timeout=TIMEOUT) as r:
+                    body = r.read()
+                break
+            except Exception as e:                                # noqa: BLE001
+                last = e
+        else:
+            continue
+        break
     else:
-        raise RuntimeError("접속 실패: %s: %s" % (type(last).__name__, last))
+        raise RuntimeError("접속 실패(%d회 시도): %s: %s"
+                           % (RETRY, type(last).__name__, last))
 
     text = body.decode("utf-8", "replace").lstrip("\ufeff").strip()
     if not text:
