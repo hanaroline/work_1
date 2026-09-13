@@ -297,6 +297,7 @@ async function main () {
       freq: seed.freq || {},
       band: seed.band || 'radio',   // radio | tv
       kind: seed.kind || 'talk',
+      note: seed.note || null,      // 왜 화면에서 못 트는지 같은 설명
       official: { url: seed.official?.url || seed.official?.home || null, verified: false },
       youtube: { channelId: null, handle: null, verified: false, embeddable: null, checked: null }
     }
