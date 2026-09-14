@@ -3908,6 +3908,7 @@
     h.push('<div class="card-b"' + (open ? '' : ' hidden') + '>');
     if (!app) h.push('<div class="warnbox">' + whyNotApplicable(item) + '</div>');
     if (item.crit) h.push('<div class="warnbox">★ ' + esc(item.crit) + '</div>');
+    h.push(docPages(item.id));
     (item.script || []).forEach(function (s) {
       if (!lineOn(s)) return;
       var c = s.t === 'say' ? 'say' : (s.t === 'act' ? 'act' : (s.t === 'warn' ? 'warnbox' : 'note'));
@@ -5717,6 +5718,58 @@
   var PR = { on: false, i: 0 };
   function prList() { return itemsOf().filter(applicable); }
 
+  /* ==========================================================
+     교부문서 쪽 표시 (테스트판)
+     ==========================================================
+     창구가 고객 앞에서 「이 쪽입니다」 하고 짚을 번호다. 읽는 값이 아니라
+     직원이 참조하는 값이라 회색 작은 표시로 옆에 단다.
+
+     ★ data/doc-pages.js 가 실린 판에서만 나온다 ★
+     그 파일이 없으면 아래 함수는 빈 문자열을 돌려주므로, 기존 배포본은
+     동작이 전혀 달라지지 않는다. 새 기능을 기존 판에 몰래 들이지 않는다.
+
+     쪽은 「제목이 정확히 한 쪽에서만 잡힌」 자리만 담겨 있다(build_doc_pages.mjs).
+     비어 있으면 아무것도 그리지 않는다 — 틀린 쪽을 짚게 하느니 비운다. */
+  var DOC_PAGE_OF = {
+    e_prospectus: ['docStart', 'target'],
+    e_payoff: ['fixDate', 'payoff', 'payoffChart'],
+    e_risk: ['lossCase', 'caution', 'sim'],
+    e_midRedeem: ['midRedeem']
+  };
+  var docPgStyled = false;
+  function docPages(itemId) {
+    var D = window.DOC_PAGES;
+    if (!D || !D.items) return '';
+    var keys = DOC_PAGE_OF[itemId];
+    if (!keys) return '';
+    var p = product();
+    var it = p && p.id ? D.items[p.id] : null;
+    if (!it || !it.at) return '';
+
+    var label = {};
+    (D.anchors || []).forEach(function (a) { label[a.key] = a.what; });
+    var parts = [];
+    keys.forEach(function (k) {
+      if (it.at[k]) parts.push('<span class="docpg"><b>p.' + it.at[k] + '</b> ' + esc(label[k] || k) + '</span>');
+    });
+    if (!parts.length) return '';
+
+    if (!docPgStyled) {
+      docPgStyled = true;
+      var st = document.createElement('style');
+      st.textContent =
+        '.docpgs{margin:6px 0 2px;font-size:12px;color:var(--gray-tx,#667);display:flex;flex-wrap:wrap;gap:6px;align-items:center}'
+        + '.docpgs>.lbl{font-weight:700;color:var(--orange-dk,#c60)}'
+        + '.docpg{background:#fff7ef;border:1px solid #f0d8c0;border-radius:4px;padding:2px 7px;white-space:nowrap}'
+        + '.docpg b{color:var(--orange-dk,#c60);font-variant-numeric:tabular-nums}'
+        + '@media print{.docpgs{color:#555}.docpg{background:none;border:1px solid #ccc}}';
+      document.head.appendChild(st);
+    }
+    return '<div class="docpgs" title="교부한 ' + esc(D.docLabel || '설명서')
+      + ' 의 쪽입니다. 읽는 값이 아니라 고객에게 짚어 드릴 때 참조하십시오.">'
+      + '<span class="lbl">📄 교부자료</span>' + parts.join('') + '</div>';
+  }
+
   function prRender() {
     var l = prList();
     if (!l.length) return;
@@ -5729,6 +5782,7 @@
     h.push('<span class="tag sec">' + esc(item.sec) + '</span>');
     h.push('<span class="pts ' + cls + '">' + (item.plus ? '+' + item.max : item.max + '점') + '</span></div>');
     if (item.crit) h.push('<div class="warnbox">★ ' + esc(item.crit) + '</div>');
+    h.push(docPages(item.id));
     (item.script || []).forEach(function (s) {
       if (!lineOn(s)) return;
       var c = s.t === 'say' ? 'say' : (s.t === 'act' ? 'act' : (s.t === 'warn' ? 'warnbox' : 'note'));
