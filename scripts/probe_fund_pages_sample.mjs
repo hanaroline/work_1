@@ -38,18 +38,26 @@ const HEAD = 200;
 
 /* 쪽 앞부분은 「22 9. 집합투자기구의 투자전략…」 처럼 인쇄 쪽번호로 시작한다.
    그래서 제목을 줄머리에 고정하지 않고 앞부분 안에서 찾는다. */
+/* zone 'head' — 쪽을 새로 여는 것들. 쪽 앞부분에서만 찾는다.
+   zone 'body' — 절 제목이 **쪽 중간에서 시작**하는 것들. 쪽 전체에서 찾되
+                 첫 번째로 나온 쪽을 쓴다.
+   왜 갈랐나: 첫 표본에서 투자전략 30%, 보수 28%, 과세 0% 였다. 원인은 규칙이
+   아니라 문서 구조였다 — 펀드 투자설명서는 ELS 와 달리 절이 쪽 경계에서
+   시작하지 않고 본문 중간에서 이어진다. 쪽 앞부분만 보면 못 찾는다.
+   번호 붙은 제목(「9. 집합투자기구의 투자전략 및 수익구조」)은 문서에서 한 번만
+   제목으로 쓰이므로, 목차를 뺀 뒤 첫 번째 것을 쓰는 것은 추측이 아니다. */
 const ANCHORS = [
-  ['summary', /요\s*약\s*정\s*보/, '요약정보 (간이투자설명서)'],
-  ['part1', /제\s*1\s*부[.\s]*모집\s*또는\s*매출/, '제1부 모집 또는 매출'],
-  ['part2', /제\s*2\s*부[.\s]*집합투자기구에\s*관한/, '제2부 집합투자기구'],
-  ['manager', /\d+\s*\.\s*운용전문인력에\s*관한\s*사항/, '운용전문인력'],
-  ['object', /\d+\s*\.\s*집합투자기구의\s*투자목적/, '투자목적'],
-  ['target', /\d+\s*\.\s*집합투자기구의\s*투자대상/, '투자대상'],
-  ['strategy', /\d+\s*\.\s*집합투자기구의\s*투자전략/, '투자전략 및 수익구조'],
-  ['risk', /\d+\s*\.\s*집합투자기구의\s*투자위험/, '투자위험'],
-  ['trade', /\d+\s*\.\s*매입\s*,?\s*환매\s*,?\s*전환절차/, '매입·환매·전환절차'],
-  ['fee', /\d+\s*\.\s*보수\s*및\s*수수료/, '보수 및 수수료'],
-  ['tax', /\d+\s*\.\s*과세에\s*관한\s*사항/, '과세'],
+  ['summary', 'head', /요\s*약\s*정\s*보/, '요약정보 (간이투자설명서)'],
+  ['part1', 'head', /제\s*1\s*부[.\s]*모집\s*또는\s*매출/, '제1부 모집 또는 매출'],
+  ['part2', 'head', /제\s*2\s*부[.\s]*집합투자기구에\s*관한/, '제2부 집합투자기구'],
+  ['manager', 'body', /\d+\s*\.\s*운용전문인력에\s*관한\s*사항/, '운용전문인력'],
+  ['object', 'body', /\d+\s*\.\s*(집합투자기구의\s*)?투자목적\s*(및|,)?\s*/, '투자목적'],
+  ['target', 'body', /\d+\s*\.\s*(집합투자기구의\s*)?투자대상/, '투자대상'],
+  ['strategy', 'body', /\d+\s*\.\s*(집합투자기구의\s*)?투자전략/, '투자전략 및 수익구조'],
+  ['risk', 'body', /\d+\s*\.\s*(집합투자기구의\s*)?투자위험/, '투자위험'],
+  ['trade', 'body', /\d+\s*\.\s*매입\s*,?\s*환매\s*,?\s*전환/, '매입·환매·전환절차'],
+  ['fee', 'body', /\d+\s*\.\s*(집합투자기구의\s*)?보수\s*(및|,)\s*수수료/, '보수 및 수수료'],
+  ['tax', 'body', /\d+\s*\.\s*(집합투자기구의\s*)?과세/, '과세'],
 ];
 
 const log = (s = '') => console.log(s);
@@ -67,24 +75,32 @@ async function pdfPages(buf) {
 
 function mapPages(pages) {
   /* 목차 쪽을 찾아 그 다음부터 본다. 목차에 제목이 다 적혀 있어 빼지 않으면
-     어느 제목이든 두 쪽 이상에 걸린다. */
+     어느 제목이든 두 쪽 이상에 걸린다. 「상세 목차」·「목 차」 도 잡는다. */
   let toc = -1;
-  for (let i = 0; i < Math.min(pages.length, 8); i++) {
-    if (/목\s*차/.test(pages[i].slice(0, 80))) toc = i;
+  for (let i = 0; i < Math.min(pages.length, 12); i++) {
+    if (/목\s*차/.test(pages[i].slice(0, 120))) toc = i;
   }
   const from = toc + 1;
 
-  const found = {}, ambig = {}, miss = [];
-  for (const [key, re, what] of ANCHORS) {
+  const found = {}, ambig = {}, miss = [], how = {};
+  for (const [key, zone, re, what] of ANCHORS) {
     const hits = [];
     for (let i = from; i < pages.length; i++) {
-      if (re.test(pages[i].slice(0, HEAD))) hits.push(i + 1);
+      const t = pages[i];
+      if (re.test(zone === 'head' ? t.slice(0, HEAD) : t)) hits.push(i + 1);
     }
-    if (hits.length === 1) found[key] = hits[0];
-    else if (hits.length === 0) miss.push(what);
-    else ambig[key] = hits;
+    if (!hits.length) { miss.push(what); continue; }
+    if (zone === 'head') {
+      if (hits.length === 1) { found[key] = hits[0]; how[key] = 'head'; }
+      else ambig[key] = hits;
+    } else {
+      /* 번호 붙은 제목은 문서에서 한 번만 제목으로 쓰인다. 뒤의 것들은
+         상호참조라 첫 번째를 쓴다 — 다만 몇 곳에 나왔는지 함께 적어 둔다. */
+      found[key] = hits[0];
+      how[key] = hits.length === 1 ? 'body' : 'body(+' + (hits.length - 1) + ')';
+    }
   }
-  return { found, ambig, miss, toc: toc + 1 };
+  return { found, ambig, miss, how, toc: toc + 1 };
 }
 
 async function main() {
@@ -128,7 +144,7 @@ async function main() {
 
   head('자리별 적중률');
   log('자리                      한 쪽(담김)   여러 쪽(비움)   없음');
-  for (const [key, , what] of ANCHORS) {
+  for (const [key, , , what] of ANCHORS) {
     const one = res.filter((r) => r.found[key]).length;
     const many = res.filter((r) => r.ambig[key]).length;
     const none = res.length - one - many;
@@ -141,7 +157,7 @@ async function main() {
   for (const r of res) {
     for (const [k, hits] of Object.entries(r.ambig)) {
       if (shown++ >= 12) break;
-      const what = (ANCHORS.find((a) => a[0] === k) || [])[2];
+      const what = (ANCHORS.find((a) => a[0] === k) || [])[3];
       log(`  ${r.name.slice(0, 28).padEnd(30)} ${what} → p.${hits.join(', p.')}`);
     }
     if (shown >= 12) break;
