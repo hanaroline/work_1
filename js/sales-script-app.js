@@ -5762,6 +5762,17 @@
         + '.docpgs>.lbl{font-weight:700;color:var(--orange-dk,#c60)}'
         + '.docpg{background:#fff7ef;border:1px solid #f0d8c0;border-radius:4px;padding:2px 7px;white-space:nowrap}'
         + '.docpg b{color:var(--orange-dk,#c60);font-variant-numeric:tabular-nums}'
+        /* 읽기 모드 — 본문은 직원이 그대로 읽는 문장이다. 그래서 쪽 표시는
+           문장 안에 넣지 않는다(괄호로 끼우면 언젠가 소리 내어 읽힌다).
+           대신 ① 카드 위에 붙여 두어 스크롤해도 따라오게 하고,
+                ② 읽기 모드는 화면을 멀리 두므로 크게 하고,
+                ③ 「읽지 않습니다」 를 표시에 박아 문장이 아님을 생김새로 못 박는다. */
+        + '#prBody .docpgs{position:sticky;top:0;z-index:5;margin:0 0 10px;padding:8px 10px;'
+        + 'font-size:15px;background:#fffaf4;border:1px solid #f0d8c0;border-left:4px solid var(--orange-dk,#c60);'
+        + 'border-radius:6px;box-shadow:0 2px 6px rgba(0,0,0,.06)}'
+        + '#prBody .docpgs>.lbl::after{content:" · 읽지 않습니다";font-weight:400;color:#999;font-size:12px}'
+        + '#prBody .docpg{font-size:15px;padding:3px 9px}'
+        + '#prBody .docpg b{font-size:17px}'
         + '@media print{.docpgs{color:#555}.docpg{background:none;border:1px solid #ccc}}';
       document.head.appendChild(st);
     }
