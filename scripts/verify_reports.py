@@ -278,17 +278,27 @@ def verify(path):
     # 「목표주가 8건 상향」이 머리 요약에 실릴 뻔했다.
     #
     # 그래서 상하향은 본문이 그렇게 적은 경우에만 인정한다.
-    mv_noevi = []
+    mv_noevi, mv_unk = [], 0
     for r in rows:
         if not r.get("target_move"):
             continue
         hay = (r.get("excerpt") or "") + " " + (r.get("title") or "")
         # 방향어만으로는 모자라다 — 목표주가와 묶여 있어야 근거다.
-        if not _TP_MOVE.search(hay):
-            mv_noevi.append((r["url"], r["target_move"]))
+        if _TP_MOVE.search(hay):
+            continue
+        # 본문을 앞 1200자까지만 보관한다. 그 뒤에 적힌 근거는 여기서 볼 수
+        # 없다 — 뽑을 때는 본문 전체를 보므로 실제로는 있을 수 있다. 다1 이
+        # 인용을 셀 때 쓰는 잣대와 같게, 못 한 것을 「어긋났다」고 세지 않고
+        # 따로 센다. 9/14 판의 유진 DL이앤씨가 그랬다(본문 1523자·발췌 1200자).
+        if (r.get("body_chars") or 0) > len(r.get("excerpt") or ""):
+            mv_unk += 1
+            continue
+        mv_noevi.append((r["url"], r["target_move"]))
+    mv_all = sum(1 for r in rows if r.get("target_move"))
     check("다4-1 상하향에 본문 근거가 있음", not mv_noevi,
-          "상하향 %d건 중 근거 못 찾음 %d"
-          % (sum(1 for r in rows if r.get("target_move")), len(mv_noevi)))
+          "상하향 %d건 중 근거 못 찾음 %d%s"
+          % (mv_all, len(mv_noevi),
+             " · 본문 뒷부분이라 대조 불가 %d" % mv_unk if mv_unk else ""))
     for u, mv in mv_noevi[:5]:
         warn("다4-1 눈으로 볼 것", "%s — %s" % (mv, u))
 
