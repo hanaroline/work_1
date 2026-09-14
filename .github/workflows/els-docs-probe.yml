@@ -1,0 +1,49 @@
+name: ELS 홈페이지 설명서 조사 (읽기만)
+
+# 지금 ELS 투자설명서 값은 전부 DART 일괄신고추가서류에서 온다. 그건 검증된
+# 파이프라인이 이미 있어서 그대로 쓴 것이지, 미래에셋 홈페이지 문서를 보고
+# 버린 것이 아니다. 무엇이 걸려 있는지 확인하고 나서 판단한다.
+#
+# 이 워크플로는 **아무것도 커밋하지 않는다.** 읽고 로그에 적을 뿐이다.
+# (이 저장소는 아티팩트 내려받기가 막힌 적이 있어 — Azure blob 403 —
+#  로그만 보고도 판단할 수 있게 결과를 전부 로그에 찍는다.)
+
+on:
+  workflow_dispatch:
+    inputs:
+      rounds:
+        description: '상세를 들여다볼 회차 수'
+        type: string
+        default: '3'
+  # 조사 스크립트를 고쳐 밀면 바로 돌게 한다 (한 번도 돈 적 없는 워크플로는
+  # 작업 브랜치에서 API 로 부를 수 없다 — push 가 첫 실행을 만든다)
+  push:
+    branches:
+      - 'claude/els-**'
+    paths:
+      - 'scripts/probe_els_docs.mjs'
+      - '.github/workflows/els-docs-probe.yml'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: els-docs-probe-${{ github.ref_name }}
+  cancel-in-progress: true
+
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Playwright 설치
+        run: npm i --no-save playwright@1.56.1 && npx playwright install --with-deps chromium
+
+      - name: 조사
+        run: node scripts/probe_els_docs.mjs "${{ inputs.rounds || '3' }}"
