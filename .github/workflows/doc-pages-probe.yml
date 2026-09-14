@@ -1,0 +1,40 @@
+name: 교부문서 쪽 구성 조사 (읽기만)
+
+# 스크립트 항목에 「몇 페이지」 를 붙이기 전에, 교부 문서가 쪽마다 무엇을 담고
+# 있는지 본다. 창구는 이 번호를 고객 앞에서 손가락으로 짚는 데 쓴다 —
+# 문서를 보지 않고 매칭 규칙을 쓰면 그게 틀리는 지점이다.
+#
+# 아무것도 커밋하지 않는다 (permissions: contents: read).
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - 'claude/els-**'
+    paths:
+      - 'scripts/probe_doc_pages.mjs'
+      - '.github/workflows/doc-pages-probe.yml'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: doc-pages-probe-${{ github.ref_name }}
+  cancel-in-progress: true
+
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Playwright 설치
+        run: npm i --no-save playwright@1.56.1 && npx playwright install --with-deps chromium
+
+      - name: 조사
+        run: node scripts/probe_doc_pages.mjs
