@@ -1,0 +1,47 @@
+name: 펀드 투자설명서 쪽 구성 조사 (읽기만)
+
+# 펀드 쪽 지도를 만들기 전에 두 가지를 본다.
+#   ① 투자설명서 안에 핵심(요약)설명서가 포함돼 있나
+#   ② 운용사가 다르면 쪽 구성도 다른가
+#      ELS 는 한 발행사가 같은 서식으로 찍어 쪽이 거의 같았다. 펀드는 운용사가
+#      제각각이라 같으리라는 보장이 없다 — 이걸 모르고 만들면 헛수고가 된다.
+#
+# 아무것도 커밋하지 않는다.
+
+on:
+  workflow_dispatch:
+    inputs:
+      count:
+        description: '살펴볼 종목 수 (운용사 각각 하나씩)'
+        type: string
+        default: '6'
+  push:
+    branches:
+      - 'claude/els-**'
+    paths:
+      - 'scripts/probe_fund_doc_pages.mjs'
+      - '.github/workflows/fund-doc-pages-probe.yml'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: fund-doc-pages-probe-${{ github.ref_name }}
+  cancel-in-progress: true
+
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: pdfjs 설치
+        run: npm install --no-save pdfjs-dist@3.11.174
+
+      - name: 조사
+        run: node scripts/probe_fund_doc_pages.mjs "${{ inputs.count || '6' }}"
