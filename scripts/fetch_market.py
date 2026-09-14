@@ -3675,34 +3675,58 @@ def probe_limit_sources(dump_dir="data/market/raw"):
     #    마이자산 경로만 나왔다). 금리·환율을 되찾을 때 통한 방법은 **그 값을
     #    실제로 그리는 앱 페이지**를 열고 그 묶음을 보는 것이었다. 그러니
     #    먼저 어떤 랭킹 주소가 살아 있는지부터 확인한다.
-    lines.append("### 새 앱의 랭킹 화면 찾기 (200 을 주는 주소를 고른다)")
-    page_candidates = [
-        "https://m.stock.naver.com/domestic/ranking/upperLimit",
-        "https://m.stock.naver.com/domestic/ranking/rise",
-        "https://m.stock.naver.com/domestic/ranking",
-        "https://stock.naver.com/domestic/ranking/upperLimit",
-        "https://stock.naver.com/domestic/ranking",
-        "https://stock.naver.com/sise/upper",
-    ]
-    alive = []
-    for url in page_candidates:
-        try:
-            body = _get(url, referer="https://m.stock.naver.com/")
-            note = "셸" if _is_next_shell(body) else "본문"
-            alive.append((url, len(body)))
-            lines.append("    200 · %s · %d bytes · %s" % (note, len(body), url))
-        except Exception as e:                                    # noqa: BLE001
-            lines.append("    실패 · %s · %s" % (str(e)[:40], url))
+    # **짐작을 그만두고 앱이 들고 있는 경로 목록을 읽는다.** 3차까지 주소를
+    # 여섯씩 찍어 보았지만 전부 404 였다. Next.js 앱은 `_buildManifest.js` 에
+    # **모든 페이지 경로**를 적어 두고, 사이트맵에도 같은 것이 들어 있다.
+    # 거기서 랭킹 화면의 진짜 주소를 읽어 오면 찍을 필요가 없다.
+    lines.append("### 앱이 들고 있는 경로 목록 읽기 (짐작하지 않는다)")
+    routes = []
+    try:
+        shell = _get("https://finance.naver.com/sise/sise_upper.naver",
+                     referer="https://finance.naver.com/")
+        bid = re.search(r'"buildId"\s*:\s*"([^"]+)"', shell)
+        if not bid:
+            m = re.search(r'_next/static/([^/"]+)/_buildManifest\.js', shell)
+            bid = m
+        lines.append("    buildId: %s" % (bid.group(1) if bid else "못 찾음"))
+        if bid:
+            for base in ("https://ssl.pstatic.net/imgstock/fn/real/pc",
+                         "https://finance.naver.com"):
+                man = "%s/_next/static/%s/_buildManifest.js" % (base, bid.group(1))
+                try:
+                    js = _get(man, referer="https://finance.naver.com/")
+                except Exception as e:                            # noqa: BLE001
+                    lines.append("    %s → %s" % (man[-46:], str(e)[:40]))
+                    continue
+                routes = sorted(set(re.findall(r'"(/[^"]{2,80})"', js)))
+                lines.append("    %s → 경로 %d 개" % (man[-46:], len(routes)))
+                break
+    except Exception as e:                                        # noqa: BLE001
+        lines.append("    셸/매니페스트 실패 %s: %s" % (type(e).__name__, str(e)[:90]))
+    want = [r for r in routes
+            if any(w in r.lower() for w in ("upper", "lower", "rank", "sise", "updown"))]
+    lines.append("    그중 눈에 띄는 것 %d 개:" % len(want))
+    for r in want[:40]:
+        lines.append("      %s" % r)
+    if not want and routes:
+        lines.append("    (걸린 것이 없어 앞 40 개를 그대로 적는다)")
+        for r in routes[:40]:
+            lines.append("      %s" % r)
     lines.append("")
-    lines.append("### 살아 있는 화면의 JS 묶음에서 주소 읽기")
-    if alive:
+
+    # 사이트맵도 같은 목록을 준다 — 매니페스트가 막히면 이쪽이 답이 된다.
+    lines.append("### 사이트맵")
+    for sm in ("https://stock.naver.com/sitemap.xml",
+               "https://m.stock.naver.com/sitemap.xml",
+               "https://finance.naver.com/sitemap.xml"):
         try:
-            probe_next_chunks([("랭킹 화면", alive[0][0])], dump_dir)
-            lines.append("    %s 의 묶음을 probe_chunks.txt 에 적었다" % alive[0][0])
+            body = _get(sm, referer="https://finance.naver.com/")
+            locs = re.findall(r"<loc>([^<]+)</loc>", body)[:12]
+            lines.append("    %s → %d bytes · %d 주소" % (sm, len(body), len(locs)))
+            for u in locs:
+                lines.append("      %s" % u)
         except Exception as e:                                    # noqa: BLE001
-            lines.append("    묶음 읽기 실패 %s: %s" % (type(e).__name__, str(e)[:120]))
-    else:
-        lines.append("    200 을 주는 랭킹 화면이 하나도 없다 — 다른 실마리가 필요하다")
+            lines.append("    %s → %s" % (sm, str(e)[:40]))
 
     path = os.path.join(dump_dir, "limit_sources.txt")
     with open(path, "w", encoding="utf-8") as f:
