@@ -22,6 +22,10 @@ def _pos52(close, fw):
 
 _KNUM = {6: "여섯", 8: "여덟", 10: "열", 12: "열둘"}
 
+# 등락 종목 수 추이에 세우는 거래일 수. 캡션의 「최근 N거래일」도 이 값에서
+# 나오므로, 늘리거나 줄일 때 문구를 따로 고칠 일이 없습니다.
+BREADTH_DAYS = 5
+
 
 def _split(dct, k=8):
     """등락률로 정렬해 위 k · 아래 k. **표 하나에 마흔 줄을 싣지 않는다.**"""
@@ -168,9 +172,13 @@ def _tables(C):
     # history 에 오늘 줄이 이미 들어 있어(개편 뒤 수집은 장중에도 값을 준다)
     # 「오늘 마감」인 양 읽힌다. 마지막 마감일까지만 싣는다.
     last_kr = (C["KS"] or {}).get("date") or ""
-    for r in (C["H"].get("rows") or []):
-        if last_kr and r.get("date", "") > last_kr:
-            continue
+    # **한 주치만 싣는다(2026-09-14).** 넉 달치 history 를 그대로 세우니 서른
+    # 줄 가까이가 나왔고, 「지수 방향과 폭이 어긋난 날을 찾아 보십시오」라는
+    # 꼬리말이 가리키기에는 너무 길어 아무도 읽지 않는 표가 됐습니다. 최근
+    # 다섯 거래일이면 이번 주 안에서 어긋난 날이 곧바로 보입니다.
+    hist = [r for r in (C["H"].get("rows") or [])
+            if not (last_kr and r.get("date", "") > last_kr)]
+    for r in hist[-BREADTH_DAYS:]:
         # 수집이 네이버를 못 받은 날은 `breadth` 자체가 없는 줄이 남는다
         # (2026-09-10 저녁 수집 셋이 그랬다). 그런 줄에서 죽지 말고, 값이
         # 0 으로 들어온 날과 똑같이 «—» 로 비워 둔다 — 지수 등락률은 있으므로
@@ -188,7 +196,8 @@ def _tables(C):
                      '<td class="n">' + (dash if miss else n(kq_["advancing"], 0)) + '</td>'
                      '<td class="n">' + (dash if miss else n(kq_["declining"], 0)) + '</td>'
                      '<td class="n opt">' + VF_MD + '</td></tr>')
-    C["breadth_trend"] = tbl("등락 종목 수 추이", "Breadth over recent sessions", bh, brows,
+    C["breadth_trend"] = tbl("등락 종목 수 추이 &mdash; 최근 %d거래일" % BREADTH_DAYS,
+                             "Breadth over the last %d sessions" % BREADTH_DAYS, bh, brows,
                              cls="data compact",
                              foot_ko="<strong>지수 방향과 폭이 어긋난 날</strong>을 찾아 보십시오 &mdash; "
                                      "그런 날은 대형주 몇 개가 지수를 움직인 것입니다.",
