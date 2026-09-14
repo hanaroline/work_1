@@ -4194,16 +4194,17 @@ def main():
         except Exception as e:                                    # noqa: BLE001
             print("!! 묶음 탐색 실패: %s" % e)
 
-    # **상한가 명단이 비었는데 등락 종목 수는 있다면 원천을 찾아본다.**
-    # 둘이 어긋나는 것은 「그날 없었다」가 아니라 「못 받았다」는 뜻이다.
-    ln = out.get("limit_names") or {}
-    mi = out.get("market_internals") or {}
-    counted = sum((mi.get(m, {}).get("breadth") or {}).get(f, 0) or 0
-                  for m in ("kospi", "kosdaq") for f in ("limit_up", "limit_down"))
-    listed = sum((ln.get(k) or {}).get("count", 0) or 0 for k in ("upper", "lower"))
-    if counted and not listed:
-        print("\n=== 등락 종목 수는 상한·하한 %d 개인데 명단이 0 건이다 "
-              "— 다른 원천을 찾는다 ===" % counted)
+    # **상한가 명단 원천이 실패하면 다른 길을 찾아본다.**
+    #
+    # 처음에는 「등락 종목 수는 있는데 명단이 0 건일 때만」으로 걸어 두었다가
+    # **탐색이 한 번도 돌지 않았다**(2026-09-14 09:02). 개장 직후에는 상한가가
+    # 아직 0 개라 그 조건이 성립하지 않는다. 원천을 찾는 일은 그날 상한가가
+    # 몇 개였는지와 아무 상관이 없다 — **못 받았으면 찾는다.**
+    failed = [k for k, v in out["sources"].items()
+              if k.startswith("naver:limit:") and not v["ok"]]
+    if failed:
+        print("\n=== 상한가 명단 원천이 실패했다(%s) — 다른 길을 찾는다 ==="
+              % ", ".join(failed))
         try:
             probe_limit_sources()
         except Exception as e:                                    # noqa: BLE001
