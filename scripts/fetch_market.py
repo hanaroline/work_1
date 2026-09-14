@@ -1295,7 +1295,7 @@ def naver_limit_api(kind, dump_dir=None):
     order = "up" if kind == "upper" else "down"
     ref = ("https://stock.naver.com/market/stock/kr/stocklist/"
            + ("upper" if kind == "upper" else "lower"))
-    names, seen, scanned, pages = [], set(), 0, []
+    names, seen, scanned, pages, status = [], set(), 0, [], None
     for page in range(4):                       # 400건이면 어느 날이든 넉넉하다
         url = ("%s?tradeType=KRX&marketType=ALL&orderType=%s"
                "&startIdx=%d&pageSize=100" % (LIMIT_API, order, page * 100))
@@ -1312,6 +1312,13 @@ def naver_limit_api(kind, dump_dir=None):
         if not rows:
             break
         scanned += len(rows)
+        # **이 명단이 장중 실시간인지 전 거래일 마감인지 적어 둔다.**
+        # 수집은 개장 전(07:30)에도 돌고 장중에도 돈다. 같은 API 가 두 때에
+        # 다른 것을 주므로, 판에 「오늘 상한가」라고 쓸지 「어제 상한가」라고
+        # 쓸지는 이 표시를 보고 갈라야 한다.
+        if status is None and rows:
+            status = {"market_status": str(rows[0].get("marketStatus") or ""),
+                      "session": str(rows[0].get("tradingSessionType") or "")}
         hit = 0
         for r in rows:
             if str(r.get("upDownGb") or "") != gb:
@@ -1335,6 +1342,8 @@ def naver_limit_api(kind, dump_dir=None):
             break
     return {"names": names[:40], "count": len(names), "scanned": scanned,
             "source_url": pages[0] if pages else LIMIT_API,
+            "market_status": (status or {}).get("market_status"),
+            "session": (status or {}).get("session"),
             "basis": "화면이 부르는 API 에서 upDownGb=%s(%s) 로 골라냈다 — "
                      "등락률 문턱이 아니라 거래소가 매긴 구분이다"
                      % (gb, "상한" if kind == "upper" else "하한"),
