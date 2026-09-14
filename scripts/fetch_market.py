@@ -3714,6 +3714,37 @@ def probe_limit_sources(dump_dir="data/market/raw"):
             lines.append("      %s" % r)
     lines.append("")
 
+    # ⑤ **야후 스크리너.** 여태 네이버·다음·KRX 만 두드렸는데, 이 수집기가
+    #    날마다 멀쩡히 붙고 있는 곳이 하나 더 있다 — 야후다. 예약 스크리너
+    #    `day_gainers` 를 한국 지역으로 부르면 그날 많이 오른 종목이 등락률
+    #    순으로 온다. **가격제한폭이 ±30% 이므로 맨 위가 곧 상한가다.**
+    lines.append("### 야후 스크리너 (한 번도 안 해 본 길)")
+    for url in (
+        "https://query1.finance.yahoo.com/v1/finance/screener/predefined/saved"
+        "?scrIds=day_gainers&count=100&region=KR&lang=ko-KR",
+        "https://query2.finance.yahoo.com/v1/finance/screener/predefined/saved"
+        "?scrIds=day_gainers&count=100&region=KR",
+        "https://query1.finance.yahoo.com/v1/finance/trending/KR?count=50",
+    ):
+        try:
+            body = _get(url)
+            j = json.loads(body)
+            quotes = (((j.get("finance") or {}).get("result") or [{}])[0]
+                      .get("quotes") or [])
+            lines.append("    200 · %d bytes · 종목 %d 개 · %s"
+                         % (len(body), len(quotes), url[-58:]))
+            for q in quotes[:12]:
+                lines.append("      %s %s %s%%"
+                             % (q.get("symbol"), q.get("shortName"),
+                                q.get("regularMarketChangePercent")))
+            if quotes:
+                with open(os.path.join(dump_dir, "yahoo_gainers_kr.json"),
+                          "w", encoding="utf-8") as f:
+                    json.dump(quotes[:60], f, ensure_ascii=False, indent=1)
+        except Exception as e:                                    # noqa: BLE001
+            lines.append("    실패 · %s · %s" % (str(e)[:44], url[-58:]))
+    lines.append("")
+
     # 사이트맵도 같은 목록을 준다 — 매니페스트가 막히면 이쪽이 답이 된다.
     lines.append("### 사이트맵")
     for sm in ("https://stock.naver.com/sitemap.xml",
