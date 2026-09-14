@@ -1,0 +1,79 @@
+name: 교부문서 쪽 지도 만들기 (테스트판)
+
+# 창구가 고객 앞에서 짚을 쪽 번호를 만든다. 기존 배포본은 건드리지 않는다 —
+# data/doc-pages.js 는 새 파일이고, 테스트판 화면만 이 파일을 참조한다.
+#
+# 쪽 번호는 회차마다 다를 수 있어(뒤쪽 투자설명서 부분이 1~5쪽씩 밀린다)
+# 상품 목록이 갱신될 때마다 다시 만들어야 한다.
+
+on:
+  workflow_dispatch:
+  workflow_call:
+  push:
+    branches:
+      - 'claude/els-**'
+    paths:
+      - 'scripts/build_doc_pages.mjs'
+      - '.github/workflows/doc-pages.yml'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: doc-pages-${{ github.ref_name }}
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref_name }}
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Playwright 설치
+        run: npm i --no-save playwright@1.56.1 && npx playwright install --with-deps chromium
+
+      - name: 쪽 지도 생성
+        run: node scripts/build_doc_pages.mjs
+
+      # 쪽 번호는 고객 앞에서 짚는 값이다. 지도가 반쯤 비었으면 담지 않는다.
+      - name: 지도 점검
+        run: |
+          node -e "
+          const g={}; new Function('window', require('fs').readFileSync('data/doc-pages.js','utf8'))(g);
+          const d=g.DOC_PAGES, items=Object.values(d.items), n=items.length;
+          if (!n) { console.log('::error::한 건도 없습니다'); process.exit(1); }
+          /* 창구가 실제로 짚는 앞쪽(간이투자설명서) 자리는 거의 모두 잡혀야 한다 */
+          const core=['docStart','fixDate','payoff','payoffChart','lossCase','sim','midRedeem','caution'];
+          let bad=0;
+          for (const k of core) {
+            const have=items.filter(it=>it.at[k]).length;
+            const pct=100*have/n;
+            console.log('  '+k.padEnd(14)+have+'/'+n+' ('+pct.toFixed(0)+'%)');
+            if (pct < 90) { console.log('::error::'+k+' 가 '+pct.toFixed(0)+'% 뿐입니다 — 제목 규칙을 다시 보십시오'); bad++; }
+          }
+          if (bad) process.exit(1);
+          console.log('앞쪽 자리 모두 90% 이상 — 담습니다');
+          "
+
+      - name: 결과 커밋
+        run: |
+          git config user.name  'github-actions[bot]'
+          git config user.email 'github-actions[bot]@users.noreply.github.com'
+          git add -A data/doc-pages.js
+          if [ -z "$(git diff --cached --name-only)" ]; then
+            echo '변경 없음'; exit 0
+          fi
+          git commit -m "chore(els): 교부문서 쪽 지도 갱신"
+          for i in 1 2 3 4 5; do
+            if git push; then exit 0; fi
+            echo "push 거절 — 원격 변경을 받아 재시도 ($i/5)"
+            git pull --rebase --autostash origin "${{ github.ref_name }}" || exit 1
+          done
+          echo '5회 시도 후에도 push 실패'; exit 1
