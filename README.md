@@ -566,15 +566,23 @@ window.ELS_DATA = {
 페이지가 *옆에 있는 json 파일*을 읽는 것조차 CORS 로 막기 때문에(origin `null`), 데이터를 같이
 복사해 두어도 소용이 없습니다. 그 PC 에서는 **데이터를 파일 안에 넣은 단일 파일**을 써야 합니다:
 
+**가장 쉬운 길 — 고정 주소에서 바로 받기.** 매일 수집이 새 판을 이 주소에 올려 둡니다
+(열고 **다른 이름으로 저장**):
+
+    https://raw.githubusercontent.com/hanaroline/work_1/us100-data/data/us100/us-top100-offline.html
+
+직접 만들 수도 있습니다:
+
 ```bash
 # 인터넷 되는 PC 에서 (데이터가 저장소에 있는 상태)
 git checkout origin/us100-data -- data/us100      # 최신 수집분 받기
-python scripts/make_offline_html.py               # → us-top100-offline.html (약 4.2 MB)
+python scripts/make_offline_html.py               # → us-top100-offline.html (약 4.3 MB)
 ```
 
-또는 **GitHub Actions 의 수집 실행 페이지 → Artifacts → `us-top100-offline`** 에서 내려받으면 됩니다
-(매일 수집 때 자동으로 만들어 14일간 보관). 이 파일 하나만 업무용 PC 로 옮겨 더블클릭하면
-100개 기업의 시세·지표·실적·컨센서스·일정·뉴스·차트·종목비교가 **인터넷 없이 그대로** 나옵니다.
+**GitHub Actions 의 수집 실행 페이지 → Artifacts → `us-top100-offline`** 에도 같은 파일이
+올라가지만, 그쪽은 로그인해서 zip 을 풀어야 하고 14일 뒤 사라집니다. 위 고정 주소는 늘
+가장 새 판입니다. 이 파일 하나만 업무용 PC 로 옮겨 더블클릭하면 100개 기업의 시세·지표·
+실적·컨센서스·일정·뉴스·차트·종목비교가 **인터넷 없이 그대로** 나옵니다.
 
 | | 인터넷 되는 PC | 오프라인 PC |
 |---|---|---|
@@ -761,7 +769,8 @@ export default {
 |------|------|
 | `.github/workflows/us100-quotes.yml` | **가격만** — 미국 정규장 시간대(13~20 UTC) **10분 주기**, 마감 직후 2회, `data/us100/QUOTES_REFRESH` 수정 push, 수동 실행. 한 판에 20~40초 |
 | `scripts/fetch_us100_quotes.py` | 25종목씩 묶어 spark(1일 5분봉 → 5일 일봉) → 실패 시 Stooq 벌크. 환율도 함께 받아 `quotes.json` 저장 |
-| `.github/workflows/us100-data.yml` | **전체** — 미국 마감 뒤 **21:30·22:30 UTC** 예약(화~토), `data/us100/REFRESH` 수정 push, 수동 실행 |
+| `.github/workflows/us100-data.yml` | **전체** — 미국 마감 뒤 **21:30·22:30 UTC** 예약(화~토), `data/us100/REFRESH` 수정 push, 수동 실행. 오프라인 판도 여기서 만들어 고정 주소에 올립니다 |
+| `.github/workflows/us100-offline.yml` | `us-top100.html` 을 고쳐 push 할 때 — 수집은 하지 않고 **오프라인 판만** 새 화면으로 다시 만들어 올립니다(30~60초). 화면을 고친 날 오프라인 판이 하루 동안 낡은 화면을 담고 있지 않게 하려는 것입니다 |
 | `scripts/fetch_us100.py` | 종목별로 일봉 2년 · 월봉 10년 · quoteSummary 13개 모듈 · fundamentals-timeseries 를 받아 저장. 시작할 때 `fc.yahoo.com` 쿠키 → `/v1/test/getcrumb` 으로 crumb 을 얻는다. 야후 chart 가 404 인 심볼은 Stooq CSV 로, 손익 모듈이 빼놓은 영업이익·EPS 는 timeseries 로 메운다 |
 | `data/us100/latest.json` | 전 종목 요약(시세·지표·목표주가·일정·실적) + 종목별 수집 상태 |
 | `data/us100/chart/{SYM}.json` | 종목별 일봉 2년 · 월봉 10년 (주봉은 화면이 일봉을 주 단위로 묶어 만든다) |
