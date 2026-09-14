@@ -40,20 +40,31 @@ const HEAD_CHARS = 220;   /* 「쪽 앞부분」 의 길이 — 제목은 여기
  *   what 창구에 보여 줄 짧은 이름
  * 제목은 조사에서 실제로 본 문장에서 땄다. 지어내지 않았다.
  */
+/* 교부본은 같은 내용을 두 번 담고 있다 — 앞의 간이투자설명서(p.5~21)와
+   뒤의 투자설명서 본문(p.22~). 그래서 「(예상 손익구조 그래프)」 같은 제목은
+   p.14 와 p.38 두 곳에서 잡힌다. 문서 전체에서 한 번을 찾으려 하면 전부 비어
+   버린다(첫 실행에서 그렇게 됐다).
+
+   나누어 찾는다. 경계는 「투 자 설 명 서 20XX년」 이 오는 쪽이다.
+   zone 'brief' = 그 앞(간이투자설명서), 'full' = 그 뒤(투자설명서 본문).
+   창구가 고객과 짚어 가는 곳은 앞쪽이므로 기본으로 앞쪽 쪽번호를 쓰고,
+   뒤쪽은 함께 담아 둔다(더 자세한 근거를 찾을 때 쓴다). */
+const BOUNDARY = /투\s*자\s*설\s*명\s*서\s*20\d\d년/;
+
 const ANCHORS = [
-  ['docStart', /간\s*이\s*투\s*자\s*설\s*명\s*서/, '간이투자설명서 첫 쪽 (명칭·위험등급)'],
-  ['target', /목표시장\s*설정\s*근거/, '목표시장·고난도 해당근거'],
-  ['fixDate', /\(1\)\s*평가일,\s*관찰일\s*및\s*평가방법/, '평가일·최초기준가격'],
-  ['payoff', /\(2\)\s*손익구조/, '손익구조 (차수별 상환조건)'],
-  ['payoffChart', /\(예상\s*손익구조\s*그래프\)/, '예상 손익구조 그래프'],
-  ['lossCase', /손실률\s*사례\s*1/, '손실 발생 사례'],
-  ['sim', /기초자산의\s*과거\s*데이터를\s*이용한\s*수익률\s*모의실험/, '수익률 모의실험'],
-  ['midRedeem', /중도상환가격\s*평가일/, '중도상환 가격평가일'],
-  ['caution', /투자자\s*유의사항/, '투자자 유의사항'],
-  ['prospectus', /투\s*자\s*설\s*명\s*서\s*20\d\d년/, '투자설명서 본문 시작'],
-  ['riskFactors', /Ⅲ\.\s*투자위험요소/, '투자위험요소'],
-  ['offering', /\[\s*모집\s*또는\s*매출의\s*개요\s*\]/, '모집·매출 개요'],
-  ['fundUse', /Ⅵ\.\s*자금의\s*사용목적/, '자금의 사용목적'],
+  ['docStart', 'brief', /간\s*이\s*투\s*자\s*설\s*명\s*서/, '간이투자설명서 첫 쪽 (명칭·위험등급)'],
+  ['target', 'brief', /목표시장\s*설정\s*근거/, '목표시장·고난도 해당근거'],
+  ['fixDate', 'brief', /평가일\s*,?\s*관찰일\s*및\s*평가방법/, '평가일·최초기준가격'],
+  ['payoff', 'brief', /\(2\)\s*손익구조/, '손익구조 (차수별 상환조건)'],
+  ['payoffChart', 'brief', /\(\s*예상\s*손익구조\s*그래프\s*\)/, '예상 손익구조 그래프'],
+  ['lossCase', 'brief', /손실률\s*사례\s*1/, '손실 발생 사례'],
+  ['sim', 'brief', /과거\s*데이터를\s*이용한\s*수익률\s*모의실험/, '수익률 모의실험'],
+  ['midRedeem', 'brief', /중도상환가격\s*평가일/, '중도상환 가격평가일'],
+  ['caution', 'brief', /투자자\s*유의사항/, '투자자 유의사항'],
+  ['prospectus', 'full', BOUNDARY, '투자설명서 본문 시작'],
+  ['riskFactors', 'full', /Ⅲ\.\s*투자위험요소/, '투자위험요소'],
+  ['offering', 'full', /\[\s*모집\s*또는\s*매출의\s*개요\s*\]/, '모집·매출 개요'],
+  ['fundUse', 'full', /Ⅵ\.\s*자금의\s*사용목적/, '자금의 사용목적'],
 ];
 
 const log = (s = '') => console.log(s);
@@ -75,17 +86,29 @@ async function readPdf(page, url) {
   }, url);
 }
 
-/** 한 문서에서 자리별 쪽을 찾는다. 한 쪽에만 걸릴 때만 담는다. */
+/**
+ * 한 문서에서 자리별 쪽을 찾는다.
+ * 구간(간이투자설명서 / 투자설명서 본문)을 나눈 뒤, **그 구간 안에서 한 쪽에만**
+ * 걸릴 때만 담는다. 두 쪽 이상이면 비운다 — 어느 쪽을 짚을지 고를 수 없으므로.
+ */
 function mapPages(pages) {
+  /* 경계: 「투 자 설 명 서 20XX년」 이 쪽 앞부분에 오는 첫 쪽 */
+  let bIdx = pages.findIndex((t) => BOUNDARY.test(t.slice(0, HEAD_CHARS)));
+  if (bIdx < 0) bIdx = pages.length;          /* 못 찾으면 전부 간이 구간으로 본다 */
+
   const found = {}, ambiguous = [], missing = [];
-  for (const [key, re, what] of ANCHORS) {
+  for (const [key, zone, re, what] of ANCHORS) {
+    const from = zone === 'full' ? bIdx : 0;
+    const to = zone === 'full' ? pages.length : bIdx;
     const hits = [];
-    pages.forEach((t, i) => { if (re.test(t.slice(0, HEAD_CHARS))) hits.push(i + 1); });
+    for (let i = from; i < to; i++) {
+      if (re.test(pages[i].slice(0, HEAD_CHARS))) hits.push(i + 1);
+    }
     if (hits.length === 1) found[key] = hits[0];
     else if (hits.length === 0) missing.push(what);
     else ambiguous.push(`${what} (p.${hits.join(',')})`);
   }
-  return { found, ambiguous, missing };
+  return { found, ambiguous, missing, boundary: bIdx + 1 };
 }
 
 async function main() {
@@ -120,8 +143,8 @@ async function main() {
       log(`  ✗ ${p.name} (${p.code}) — ${doc.error}`);
       continue;
     }
-    const { found, ambiguous, missing } = mapPages(doc.pages);
-    items[p.code] = { name: p.name, url: ORIGIN + DOC(p.code), pages: doc.numPages, at: found };
+    const { found, ambiguous, missing, boundary } = mapPages(doc.pages);
+    items[p.code] = { name: p.name, url: ORIGIN + DOC(p.code), pages: doc.numPages, briefUntil: boundary - 1, at: found };
     ok++;
     missing.concat(ambiguous).forEach((m) => { missTally[m] = (missTally[m] || 0) + 1; });
     log(`  ✓ ${p.name}  ${doc.numPages}쪽 · 짚을 자리 ${Object.keys(found).length}/${ANCHORS.length}`
@@ -132,7 +155,7 @@ async function main() {
   log();
   log(`받음 ${ok}건 · 못 받음 ${fail}건`);
   log('자리별로 담긴 건수:');
-  for (const [key, , what] of ANCHORS) {
+  for (const [key, , , what] of ANCHORS) {
     const n = Object.values(items).filter((it) => it.at[key]).length;
     const pgs = [...new Set(Object.values(items).map((it) => it.at[key]).filter(Boolean))].sort((a, b) => a - b);
     log(`  ${what.padEnd(26)} ${String(n).padStart(3)}/${ok}건  쪽: ${pgs.length <= 6 ? 'p.' + pgs.join(', p.') : `p.${pgs[0]}~p.${pgs[pgs.length - 1]} (${pgs.length}가지)`}`);
@@ -154,7 +177,7 @@ async function main() {
       updatedAt: new Date().toISOString(),
       source: 'securities.miraeasset.com /public/editor/elsdls/<ISIN>.pdf',
       docLabel: '간이투자설명서 및 투자설명서 (교부본)',
-      anchors: ANCHORS.map(([key, , what]) => ({ key, what })),
+      anchors: ANCHORS.map(([key, zone, , what]) => ({ key, zone, what })),
       items,
     }, null, 1)
     + ';\n}(typeof window !== \'undefined\' ? window : this));\n';
