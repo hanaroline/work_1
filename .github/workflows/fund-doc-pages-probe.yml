@@ -12,14 +12,15 @@ on:
   workflow_dispatch:
     inputs:
       count:
-        description: '살펴볼 종목 수 (운용사 각각 하나씩)'
+        description: '표본 종목 수 (운용사 골고루)'
         type: string
-        default: '6'
+        default: '40'
   push:
     branches:
       - 'claude/els-**'
     paths:
       - 'scripts/probe_fund_doc_pages.mjs'
+      - 'scripts/probe_fund_pages_sample.mjs'
       - '.github/workflows/fund-doc-pages-probe.yml'
 
 permissions:
@@ -43,5 +44,7 @@ jobs:
       - name: pdfjs 설치
         run: npm install --no-save pdfjs-dist@3.11.174
 
-      - name: 조사
-        run: node scripts/probe_fund_doc_pages.mjs "${{ inputs.count || '6' }}"
+      # 1차 조사(구조 파악)는 이미 답을 줬다 — 핵심요약설명서는 없고, 쪽 구성은
+      # 종목마다 다르다. 이제 표준 서식 번호 제목으로 적중률을 본다.
+      - name: 표본 적중률
+        run: node scripts/probe_fund_pages_sample.mjs "${{ inputs.count || '40' }}"
