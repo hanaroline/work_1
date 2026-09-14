@@ -49,20 +49,53 @@ jobs:
       # latest.json 뿐이라 8분 걸리는 이 수집에 매달아 둘 이유가 없고, 수집이 느린 날에
       # 점검까지 함께 못 도는 일을 피한다.
 
-      - name: 데이터 브랜치에 올리기
-        # main 히스토리에 쌓지 않는다 — 차트 100개(약 3MB)가 매일 통째로 바뀌므로
-        # 쌓으면 저장소가 1년에 1GB 규모로 붇는다. 지금 조회되는 값만 의미가 있어
-        # 데이터 전용 브랜치를 커밋 하나로 갈아끼운다(scripts/publish_us100_data.sh).
-        env:
-          COMMIT_LABEL: 전체수집
-          PUBLISH_FILES: latest.json chart
-        run: bash scripts/publish_us100_data.sh
+      - name: 직전 가격 파일과 목록 점검 결과 받기
+        # 오프라인 파일에 가격(장중 갱신)과 대상 목록 점검 결과도 함께 넣으려는 것이다.
+        # 이 판이 만든 파일이 아니므로 아래 PUBLISH_FILES 에는 넣지 않는다
+        # (브랜치에 있는 것이 그대로 보존된다).
+        #
+        # 이 단계가 없으면 코드 브랜치의 안내 파일({"movedTo": …})이 그대로 쓰여
+        # 오프라인 판에 가격이 안 담긴다 — 국내 판에서 실제로 겪은 일이다.
+        continue-on-error: true
+        run: |
+          if git fetch --quiet origin "+refs/heads/us100-data:refs/remotes/origin/us100-data" 2>/dev/null; then
+            for f in quotes.json ranking.json; do
+              git show "origin/us100-data:data/us100/$f" > "data/us100/$f" 2>/dev/null || true
+            done
+          fi
+          python - <<'PY'
+          import json, os
+          for f in ('quotes.json', 'ranking.json'):
+              p = os.path.join('data/us100', f)
+              if not os.path.exists(p) or os.path.getsize(p) < 40:
+                  print('%s 없음' % f); continue
+              try:
+                  d = json.load(open(p, encoding='utf-8'))
+              except Exception as e:
+                  print('%s 못 읽음 — %s' % (f, e)); continue
+              print('%s — %s' % (f, '안내 파일' if d.get('movedTo')
+                                else (d.get('fetchedAt') or d.get('builtAt'))))
+          PY
 
       - name: 오프라인 단일 파일 만들기
         # 인터넷이 막힌 업무용 PC 용. 데이터를 HTML 안에 넣어 파일 하나로 만든다
         # (file:// 로 열린 페이지는 옆에 있는 json 도 CORS 로 못 읽는다).
-        # Actions 실행 페이지의 Artifacts 에서 내려받아 옮기면 된다.
-        run: python scripts/make_offline_html.py --out us-top100-offline.html
+        run: |
+          python scripts/make_offline_html.py --out us-top100-offline.html
+          cp us-top100-offline.html data/us100/
+
+      - name: 데이터 브랜치에 올리기
+        # main 히스토리에 쌓지 않는다 — 차트 100개(약 3MB)가 매일 통째로 바뀌므로
+        # 쌓으면 저장소가 1년에 1GB 규모로 붇는다. 지금 조회되는 값만 의미가 있어
+        # 데이터 전용 브랜치를 커밋 하나로 갈아끼운다(scripts/publish_us100_data.sh).
+        #
+        # 오프라인 파일을 여기 함께 올리는 이유: Actions 의 Artifacts 는 로그인해서
+        # zip 을 풀어야 하고 14일 뒤 사라진다. 데이터 브랜치에 두면 언제나 같은 주소에서
+        # 가장 새 판을 받을 수 있다.
+        env:
+          COMMIT_LABEL: 전체수집
+          PUBLISH_FILES: latest.json chart us-top100-offline.html
+        run: bash scripts/publish_us100_data.sh
 
       - uses: actions/upload-artifact@v4
         with:

@@ -1,0 +1,76 @@
+name: 미국 100대 기업 오프라인 판 다시 만들기
+
+# 오프라인 판(us-top100-offline.html)은 **화면 파일 + 수집 데이터**를 합친 것이다.
+# 전체 수집(us100-data.yml)이 하루 한 번 다시 만들지만, 화면만 고친 날에는 오프라인 판이
+# 하루 동안 낡은 화면을 담고 있게 된다. 그 사이를 메우려고 이 워크플로를 둔다.
+#
+# 수집은 하지 않는다 — 데이터 브랜치에 이미 있는 값을 받아 화면만 새것으로 갈아 끼우고
+# 다시 올린다. 30~60초에 끝난다. (국내 판의 kr100-offline.yml 과 같은 구조다.)
+
+on:
+  push:
+    paths:
+      - 'us-top100.html'
+      - 'scripts/make_offline_html.py'
+      - '.github/workflows/us100-offline.yml'
+
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: us100-offline-${{ github.ref_name }}
+  cancel-in-progress: true          # 연달아 고쳤으면 마지막 판만 올리면 된다
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: 데이터 브랜치에서 수집분 받기
+        id: data
+        run: |
+          mkdir -p data/us100
+          if ! git fetch --quiet origin "+refs/heads/us100-data:refs/remotes/origin/us100-data" 2>/dev/null; then
+            echo "::warning::데이터 브랜치가 없다 — 전체 수집이 먼저다"
+            echo "ok=false" >> "$GITHUB_OUTPUT"; exit 0
+          fi
+          git archive origin/us100-data | tar -x
+          if [ -s data/us100/latest.json ] && grep -q '"companies"' data/us100/latest.json; then
+            echo "ok=true" >> "$GITHUB_OUTPUT"
+            ls -la data/us100/ | head -5
+            echo "차트 $(ls data/us100/chart 2>/dev/null | wc -l)개"
+          else
+            echo "::warning::데이터 브랜치에 스냅샷이 없다 — 전체 수집이 먼저다"
+            echo "ok=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: 오프라인 판 만들기
+        if: steps.data.outputs.ok == 'true'
+        run: |
+          python scripts/make_offline_html.py --out us-top100-offline.html
+          cp us-top100-offline.html data/us100/
+
+      - name: 데이터 브랜치에 올리기
+        if: steps.data.outputs.ok == 'true'
+        # 이 판이 만든 것은 오프라인 파일 하나뿐이다. 나머지(스냅샷·차트·가격·목록점검)는
+        # 스크립트가 브랜치에서 받아 그대로 보존한다.
+        env:
+          COMMIT_LABEL: 오프라인판
+          PUBLISH_FILES: us-top100-offline.html
+        run: bash scripts/publish_us100_data.sh
+
+      - uses: actions/upload-artifact@v4
+        if: steps.data.outputs.ok == 'true'
+        with:
+          name: us-top100-offline
+          path: us-top100-offline.html
+          retention-days: 14
+          if-no-files-found: warn
