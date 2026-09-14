@@ -4257,7 +4257,16 @@ def main():
     # 몇 개였는지와 아무 상관이 없다 — **못 받았으면 찾는다.**
     failed = [k for k, v in out["sources"].items()
               if k.startswith("naver:limit:") and not v["ok"]]
-    if failed:
+    # **하루에 한 번만 돈다.** 이 탐색은 HTTP 를 스무 번 가까이 두드리고
+    # 야후 응답만 260KB 다. 수집은 하루에도 여러 번 도므로 그때마다 돌면
+    # 얻는 것 없이 느려진다 — 오늘 이미 적었으면 건너뛴다.
+    _probe_log = "data/market/raw/limit_sources.txt"
+    _today = datetime.now(KST).strftime("%Y-%m-%d")
+    try:
+        _done = _today in open(_probe_log, encoding="utf-8").readline()
+    except OSError:
+        _done = False
+    if failed and not _done:
         print("\n=== 상한가 명단 원천이 실패했다(%s) — 다른 길을 찾는다 ==="
               % ", ".join(failed))
         try:
