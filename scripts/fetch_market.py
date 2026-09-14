@@ -1248,10 +1248,111 @@ LIMIT_URLS = {
     "lower": ["https://finance.naver.com/sise/sise_lower.naver"],
 }
 
+# 개편된 화면이 **실제로 부르는** 주소. 짐작이 아니라 브라우저로 보고 적었다
+# (scripts/probe_limit_xhr.mjs · 2026-09-14 10:09 KST 관찰).
+LIMIT_API = "https://stock.naver.com/api/domestic/market/stock/default"
+
+# 네이버가 쓰는 등락 구분. 1 상한 · 2 상승 · 3 보합 · 4 하한 · 5 하락.
+LIMIT_GB = {"upper": "1", "lower": "4"}
+LIMIT_SOSOK = {"0": "코스피", "1": "코스닥"}
+
+
+def _limit_num(x):
+    """이 API 는 값을 **문자열로** 준다("30.0", "11310"). 숫자로 돌린다.
+
+    `_num` 은 float 만 다듬고 문자열은 그대로 흘려보내므로, 그것에 맡기면
+    등락률이 판까지 `"30.0"` 인 채로 실려 가 셈이 어긋난다.
+    """
+    try:
+        return round(float(str(x).replace(",", "")), 4)
+    except (TypeError, ValueError):
+        return None
+
+
+def naver_limit_api(kind, dump_dir=None):
+    """**상한가·하한가 종목명을 화면이 쓰는 그 API 에서 받는다.** 1순위.
+
+    2026-09-10 개편 뒤 옛 화면(`sise_upper.naver`)은 React 셸만 준다. 주소를
+    다섯 바퀴 찍어 맞히려다 전부 빗나간 끝에 브라우저로 열어 오가는 요청을
+    관찰했고, 화면이 부르는 것이 이 주소임을 **눈으로 확인했다**.
+
+        .../market/stock/default?tradeType=KRX&marketType=ALL
+            &orderType=up|down&startIdx=0&pageSize=100
+
+    주의할 점 둘.
+
+    **① 이 API 는 상한가만 주지 않는다.** 등락률로 정렬한 전체 목록이다
+    (관찰 당시 100건 중 상한가는 여섯). 그래서 `upDownGb` 로 걸러야 한다 —
+    등락률에 문턱을 두고 재는 것보다 낫다. 가격제한폭은 호가 단위 때문에
+    정확히 30.00 이 되지 않아(29.81, 29.9 …) 문턱은 늘 어림이지만, 이 값은
+    거래소가 매긴 구분이라 어림이 아니다.
+
+    **② 정렬이 내림차순이라 상한가는 맨 앞에 몰린다.** 한 쪽(100건) 끝까지
+    상한가면 다음 쪽이 더 있다는 뜻이므로 이어서 받는다. 상한가가 100개를
+    넘는 날은 드물지만, 드물다고 빠뜨리면 그날의 판이 틀린다.
+    """
+    gb = LIMIT_GB[kind]
+    order = "up" if kind == "upper" else "down"
+    ref = ("https://stock.naver.com/market/stock/kr/stocklist/"
+           + ("upper" if kind == "upper" else "lower"))
+    names, seen, scanned, pages = [], set(), 0, []
+    for page in range(4):                       # 400건이면 어느 날이든 넉넉하다
+        url = ("%s?tradeType=KRX&marketType=ALL&orderType=%s"
+               "&startIdx=%d&pageSize=100" % (LIMIT_API, order, page * 100))
+        rows = json.loads(_get(url, referer=ref,
+                               headers={"Accept": "application/json"}))
+        if dump_dir and page == 0:
+            os.makedirs(dump_dir, exist_ok=True)
+            with open(os.path.join(dump_dir, "limit_api_%s.json" % kind),
+                      "w", encoding="utf-8") as f:
+                json.dump(rows[:20], f, ensure_ascii=False, indent=1)
+        if not isinstance(rows, list):
+            raise ValueError("%s -> 목록이 아니다(%s)" % (url[-40:], type(rows)))
+        pages.append(url)
+        if not rows:
+            break
+        scanned += len(rows)
+        hit = 0
+        for r in rows:
+            if str(r.get("upDownGb") or "") != gb:
+                continue
+            code = str(r.get("itemcode") or "").strip()
+            name = _text(str(r.get("itemname") or ""))
+            if not (code and name) or code in seen:
+                continue
+            seen.add(code)
+            hit += 1
+            names.append({
+                "code": code, "name": name,
+                "change_pct": _limit_num(r.get("prevChangeRate")),
+                "price": _limit_num(r.get("nowPrice")),
+                "market": LIMIT_SOSOK.get(str(r.get("sosok") or ""), ""),
+                # 며칠째 연달아 붙었는지. 판에서 「사흘째 상한가」를 쓸 수 있다.
+                "continual": _limit_num(r.get("continualUpperLimit")),
+            })
+        # 이 쪽이 끝까지 상한가가 아니면 다음 쪽에는 더 없다(내림차순이므로).
+        if hit < len(rows):
+            break
+    return {"names": names[:40], "count": len(names), "scanned": scanned,
+            "source_url": pages[0] if pages else LIMIT_API,
+            "basis": "화면이 부르는 API 에서 upDownGb=%s(%s) 로 골라냈다 — "
+                     "등락률 문턱이 아니라 거래소가 매긴 구분이다"
+                     % (gb, "상한" if kind == "upper" else "하한"),
+            "note": None if names else "해당 종목 없음"}
+
 
 def naver_limit_names(kind, dump_dir=None):
-    """상한가·하한가 종목명. kind 는 'upper' 또는 'lower'."""
+    """상한가·하한가 종목명. kind 는 'upper' 또는 'lower'.
+
+    **API 가 1순위, 옛 화면 긁기가 2순위**다. 옛 화면은 개편 뒤 셸만 주므로
+    지금은 거의 실패하지만, API 가 또 바뀌는 날 두 실패를 함께 보여 주는 쪽이
+    한 줄짜리 오류보다 낫다.
+    """
     errors = []
+    try:
+        return naver_limit_api(kind, dump_dir)
+    except Exception as e:                                    # noqa: BLE001
+        errors.append("api -> %s: %s" % (type(e).__name__, e))
     for n, url in enumerate(LIMIT_URLS[kind]):
         try:
             s = _get(url, referer="https://finance.naver.com/sise/", encoding="cp949")
@@ -4124,15 +4225,16 @@ def main():
         out["krx_futures"] = v
 
     # 상한가·하한가 종목명 (개수는 market_internals.breadth 에 있다)
-    # **KRX 전종목 시세가 1순위**다(2026-09-14). 네이버 화면이 개편으로
-    # 셸만 주므로, 거래소 원본에서 등락률로 골라낸다. 날짜는 **직전 거래일**
-    # 이어야 한다 — 오늘(개장 전)을 넣으면 자료가 없어 400 이 온다.
-    # **KRX 를 1순위로 두었다가 물렸다**(2026-09-14). `getJsonData.cmd` 의
-    # 400 이 날짜 탓이라고 보고 직전 거래일을 넣어 봤지만 **여섯 날짜 모두
-    # 400** 이었다 — 자료가 없는 날의 문제가 아니라 요청 모양 자체가 거부된다.
-    # 그런데 이 호출은 전종목을 받아오느라 무겁고, 상한·하한으로 두 번 도는
-    # 사이 수집 한 판이 9분을 넘겼다. **되지도 않는 것을 날마다 두 번 부르지
-    # 않는다** — 경로를 찾을 때까지는 탐색(`probe_limit_sources`)에만 둔다.
+    # **되찾았다**(2026-09-14). 2026-09-10 개편 뒤 나흘 동안 못 받던 것을
+    # 브라우저로 화면을 열어 오가는 요청을 보고 주소를 찾았다 —
+    # `stock.naver.com/api/domestic/market/stock/default` (naver_limit_api).
+    # 그전 다섯 바퀴는 모두 주소를 찍어서 맞히려던 것이었고 전부 빗나갔다.
+    # **짐작이 다섯 번 빗나가면 방법을 바꾸는 것이 여섯 번째 짐작보다 낫다.**
+    #
+    # KRX 전종목 시세를 1순위로 두었다가 물린 자리이기도 하다. `getJsonData`
+    # 의 400 이 날짜 탓인 줄 알고 직전 거래일을 넣어 봤지만 여섯 날짜 모두
+    # 400 이었고, 전종목을 상한·하한으로 두 번 받느라 수집 한 판이 9분을
+    # 넘겼다. 지금은 탐색(`probe_limit_sources`)에만 남겨 두었다.
     for kind in ("upper", "lower"):
         v, st = run("limit", naver_limit_names, kind, "data/market/raw")
         out["sources"]["naver:limit:" + kind] = st
