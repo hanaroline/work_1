@@ -22,6 +22,7 @@ on:
       - 'claude/els-**'
     paths:
       - 'scripts/probe_els_docs.mjs'
+      - 'scripts/probe_els_docs2.mjs'
       - '.github/workflows/els-docs-probe.yml'
 
 permissions:
@@ -45,5 +46,11 @@ jobs:
       - name: Playwright 설치
         run: npm i --no-save playwright@1.56.1 && npx playwright install --with-deps chromium
 
-      - name: 조사
+      - name: 1차 — 무엇이 어디에 걸려 있나
         run: node scripts/probe_els_docs.mjs "${{ inputs.rounds || '3' }}"
+
+      # 1차가 상세를 못 읽었다(새 창을 안 따라갔고, HTML 을 안 훑었다).
+      # 2차는 1차에서 얻은 주소 규칙으로 상세를 직접 연다.
+      - name: 2차 — 상세 본문과 게시판을 직접 읽는다
+        if: always()
+        run: node scripts/probe_els_docs2.mjs
