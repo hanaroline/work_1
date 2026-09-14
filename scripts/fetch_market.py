@@ -3670,14 +3670,39 @@ def probe_limit_sources(dump_dir="data/market/raw"):
         break                                   # 값을 준 첫 날짜에서 멈춘다
     lines.append("")
 
-    # ④ 앱 페이지의 JS 묶음에서 주소를 직접 읽는다(짐작이 다 빗나갔을 때).
-    lines.append("### 셸에서 주소 읽기 — 아래 파일을 보십시오")
-    try:
-        probe_next_chunks([("상한가 화면", "https://finance.naver.com/sise/sise_upper.naver")],
-                          dump_dir)
-        lines.append("    next_chunks.txt 에 적었다")
-    except Exception as e:                                        # noqa: BLE001
-        lines.append("    묶음 읽기 실패 %s: %s" % (type(e).__name__, str(e)[:120]))
+    # ④ **새 앱의 랭킹 화면을 먼저 찾는다.** 2차까지는 옛 `finance.naver.com`
+    #    화면의 묶음을 뒤졌는데, 거기에는 값 경로가 들어 있지 않았다(커뮤니티·
+    #    마이자산 경로만 나왔다). 금리·환율을 되찾을 때 통한 방법은 **그 값을
+    #    실제로 그리는 앱 페이지**를 열고 그 묶음을 보는 것이었다. 그러니
+    #    먼저 어떤 랭킹 주소가 살아 있는지부터 확인한다.
+    lines.append("### 새 앱의 랭킹 화면 찾기 (200 을 주는 주소를 고른다)")
+    page_candidates = [
+        "https://m.stock.naver.com/domestic/ranking/upperLimit",
+        "https://m.stock.naver.com/domestic/ranking/rise",
+        "https://m.stock.naver.com/domestic/ranking",
+        "https://stock.naver.com/domestic/ranking/upperLimit",
+        "https://stock.naver.com/domestic/ranking",
+        "https://stock.naver.com/sise/upper",
+    ]
+    alive = []
+    for url in page_candidates:
+        try:
+            body = _get(url, referer="https://m.stock.naver.com/")
+            note = "셸" if _is_next_shell(body) else "본문"
+            alive.append((url, len(body)))
+            lines.append("    200 · %s · %d bytes · %s" % (note, len(body), url))
+        except Exception as e:                                    # noqa: BLE001
+            lines.append("    실패 · %s · %s" % (str(e)[:40], url))
+    lines.append("")
+    lines.append("### 살아 있는 화면의 JS 묶음에서 주소 읽기")
+    if alive:
+        try:
+            probe_next_chunks([("랭킹 화면", alive[0][0])], dump_dir)
+            lines.append("    %s 의 묶음을 probe_chunks.txt 에 적었다" % alive[0][0])
+        except Exception as e:                                    # noqa: BLE001
+            lines.append("    묶음 읽기 실패 %s: %s" % (type(e).__name__, str(e)[:120]))
+    else:
+        lines.append("    200 을 주는 랭킹 화면이 하나도 없다 — 다른 실마리가 필요하다")
 
     path = os.path.join(dump_dir, "limit_sources.txt")
     with open(path, "w", encoding="utf-8") as f:
@@ -4047,16 +4072,15 @@ def main():
     # **KRX 전종목 시세가 1순위**다(2026-09-14). 네이버 화면이 개편으로
     # 셸만 주므로, 거래소 원본에서 등락률로 골라낸다. 날짜는 **직전 거래일**
     # 이어야 한다 — 오늘(개장 전)을 넣으면 자료가 없어 400 이 온다.
-    kr_day = ((out.get("indices") or {}).get("kospi") or {}).get("date")
-    trd = kr_day.replace("-", "") if kr_day else None
+    # **KRX 를 1순위로 두었다가 물렸다**(2026-09-14). `getJsonData.cmd` 의
+    # 400 이 날짜 탓이라고 보고 직전 거래일을 넣어 봤지만 **여섯 날짜 모두
+    # 400** 이었다 — 자료가 없는 날의 문제가 아니라 요청 모양 자체가 거부된다.
+    # 그런데 이 호출은 전종목을 받아오느라 무겁고, 상한·하한으로 두 번 도는
+    # 사이 수집 한 판이 9분을 넘겼다. **되지도 않는 것을 날마다 두 번 부르지
+    # 않는다** — 경로를 찾을 때까지는 탐색(`probe_limit_sources`)에만 둔다.
     for kind in ("upper", "lower"):
-        v = None
-        if trd:
-            v, st = run("limit_krx", krx_limit_names, kind, trd, "data/market/raw")
-            out["sources"]["krx:limit:" + kind] = st
-        if not v:
-            v, st = run("limit", naver_limit_names, kind, "data/market/raw")
-            out["sources"]["naver:limit:" + kind] = st
+        v, st = run("limit", naver_limit_names, kind, "data/market/raw")
+        out["sources"]["naver:limit:" + kind] = st
         if v:
             out.setdefault("limit_names", {})[kind] = v
 
