@@ -309,11 +309,30 @@
     return toks.length > 0 && nums.length < 2;
   }
 
+  /**
+   * 보수율다운 값인가.
+   *
+   * 보수 표를 느슨하게 읽게 하자 예시금액이나 라벨이 보수 자리에 들어오는 일이
+   * 생겼다 — 전량 판독 4,970개 값 중 59개가 그랬다 (「90,045」·「59,229」 는
+   * 1,000만원 투자시 예시금액(원)이고, 「A-E(수수료선취-온라인)」 은 이름이다).
+   * 창구가 「총보수는 연 90,045% 입니다」 를 읽는 일은 없어야 한다.
+   *
+   * 공모펀드 총보수·비용은 아무리 높아도 연 5%를 넘지 않는다. 10%를 상한으로
+   * 두고 그 밖은 담지 않는다 — 못 읽어 「확인필요」 로 남는 편이 낫다.
+   */
+  function feeRatePlausible(v) {
+    var s = String(v == null ? '' : v).replace(/[%\s]/g, '');
+    if (!/^\d+(?:\.\d+)?$/.test(s)) return false;
+    var n = parseFloat(s);
+    return n > 0 && n <= 10;
+  }
+
   /** 그 행에서 창구가 말해야 하는 총보수 — 모자형·재간접형은 합성 총보수·비용이 기준이다 */
   function feeRowTotal(r) {
     if (!r) return null;
-    var v = /^\d/.test(r.synthetic || '') ? r.synthetic : r.total;
-    return /^\d/.test(v || '') ? v : null;
+    var v = feeRatePlausible(r.synthetic) ? r.synthetic
+      : (feeRatePlausible(r.total) ? r.total : null);
+    return v || null;
   }
 
   /** 이름에 「퇴직」 이 적혔는가 — 퇴직연금 클래스의 유일하게 믿을 만한 표시다 */
@@ -901,12 +920,12 @@
         id: 'clsAExp', label: 'A클래스 총보수(연)',
         fn: function (t) {
           var r = feeRow(t, /^A$/i) || feeRow(t, /^A/i);
-          if (r) {
-            var v = /^\d/.test(r.synthetic || '') ? r.synthetic : r.total;
-            if (/^\d/.test(v || '')) return { value: v, index: r.index, length: r.length };
-          }
+          var v = feeRowTotal(r);
+          if (v) return { value: v, index: r.index, length: r.length };
           var c = feeCell(t, [/합성\s*총\s*보수/, /총\s*보수[·•\s]*비용/, /^총\s*보수/], /^A(?:[\s\-]|클래스|$)/i);
-          return c ? { value: String(c.value).replace(/%$/, ''), index: c.index, length: c.length } : null;
+          /* 보수율답지 않은 값은 담지 않는다 — 예시금액·라벨이 들어오던 자리다 */
+          return (c && feeRatePlausible(c.value))
+            ? { value: feeNum(c.value), index: c.index, length: c.length } : null;
         },
         re: [/합성\s*총\s*보수[·•\s]*비용[^가-힣\d%]{0,20}?연?\s*(\d+\.\d+)\s*%/,
         /총\s*보수[·•\s]*비용[^가-힣\d%]{0,20}?연?\s*(\d+\.\d+)\s*%/],
@@ -916,12 +935,11 @@
         id: 'clsCExp', label: 'C클래스 총보수(연)',
         fn: function (t) {
           var r = feeRow(t, /^C\d?$/i) || feeRow(t, /^C/i);
-          if (r) {
-            var v = /^\d/.test(r.synthetic || '') ? r.synthetic : r.total;
-            if (/^\d/.test(v || '')) return { value: v, index: r.index, length: r.length };
-          }
+          var v = feeRowTotal(r);
+          if (v) return { value: v, index: r.index, length: r.length };
           var c = feeCell(t, [/합성\s*총\s*보수/, /총\s*보수[·•\s]*비용/, /^총\s*보수/], /^C(?:[\s\-]|클래스|$)/i);
-          return c ? { value: String(c.value).replace(/%$/, ''), index: c.index, length: c.length } : null;
+          return (c && feeRatePlausible(c.value))
+            ? { value: feeNum(c.value), index: c.index, length: c.length } : null;
         }
       },
       /**
