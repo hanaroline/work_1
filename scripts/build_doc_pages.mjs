@@ -134,7 +134,7 @@ async function main() {
   });
 
   const items = {};
-  let ok = 0, fail = 0;
+  let ok = 0, fail = 0, diagShown = 0;
   const missTally = {};
   for (const p of els) {
     const doc = await readPdf(page, ORIGIN + DOC(p.code));
@@ -144,6 +144,17 @@ async function main() {
       continue;
     }
     const { found, ambiguous, missing, boundary } = mapPages(doc.pages);
+    /* 못 찾은 자리가 있으면 그 문서의 앞 구간 제목을 찍어 둔다.
+       세 번째로 제목을 추측하지 않기 위해서다 — 문서가 뭐라고 쓰는지 보고 고친다.
+       로그가 묻히지 않게 앞의 두 건만. */
+    if (missing.length && diagShown < 2) {
+      diagShown++;
+      log(`    ── 못 찾은 자리: ${missing.join(' / ')}`);
+      log(`    ── ${p.name} 의 간이투자설명서 구간(p.1~${boundary - 1}) 쪽 앞머리 ──`);
+      doc.pages.slice(0, boundary - 1).forEach((t, i) => {
+        if (t.length > 30) log(`       p.${String(i + 1).padStart(2)} ${t.slice(0, 105)}`);
+      });
+    }
     items[p.code] = { name: p.name, url: ORIGIN + DOC(p.code), pages: doc.numPages, briefUntil: boundary - 1, at: found };
     ok++;
     missing.concat(ambiguous).forEach((m) => { missTally[m] = (missTally[m] || 0) + 1; });

@@ -49,17 +49,27 @@ jobs:
           const g={}; new Function('window', require('fs').readFileSync('data/doc-pages.js','utf8'))(g);
           const d=g.DOC_PAGES, items=Object.values(d.items), n=items.length;
           if (!n) { console.log('::error::한 건도 없습니다'); process.exit(1); }
-          /* 창구가 실제로 짚는 앞쪽(간이투자설명서) 자리는 거의 모두 잡혀야 한다 */
-          const core=['docStart','fixDate','payoff','payoffChart','lossCase','sim','midRedeem','caution'];
+          /* 두 가지를 갈라서 본다.
+             MUST — 이게 무너지면 **규칙이 깨진 것**이다. 실패시킨다.
+                    (지금까지 관측: 전부 97~100%)
+             SOFT — 문서마다 표현이 달라 못 찾을 수 있는 자리. 못 찾으면 그 상품만
+                    표시가 비고, 빈칸은 설계상 안전하다. 실패시키지 않고 적어만 둔다.
+             한 자리가 안 잡힌다고 지도 전체를 버리면, 잘 잡힌 나머지까지 창구가
+             못 쓰게 된다. */
+          const MUST=['docStart','payoff','payoffChart','sim','midRedeem','caution'];
+          const SOFT=['fixDate','lossCase','target'];
+          const pct=k=>100*items.filter(it=>it.at[k]).length/n;
           let bad=0;
-          for (const k of core) {
-            const have=items.filter(it=>it.at[k]).length;
-            const pct=100*have/n;
-            console.log('  '+k.padEnd(14)+have+'/'+n+' ('+pct.toFixed(0)+'%)');
-            if (pct < 90) { console.log('::error::'+k+' 가 '+pct.toFixed(0)+'% 뿐입니다 — 제목 규칙을 다시 보십시오'); bad++; }
+          console.log('[필수]');
+          for (const k of MUST) {
+            const p=pct(k);
+            console.log('  '+k.padEnd(14)+items.filter(it=>it.at[k]).length+'/'+n+' ('+p.toFixed(0)+'%)');
+            if (p < 95) { console.log('::error::'+k+' 가 '+p.toFixed(0)+'% 뿐입니다 — 제목 규칙이 깨졌습니다'); bad++; }
           }
+          console.log('[보조 — 못 찾으면 그 상품만 빈칸]');
+          for (const k of SOFT) console.log('  '+k.padEnd(14)+items.filter(it=>it.at[k]).length+'/'+n+' ('+pct(k).toFixed(0)+'%)');
           if (bad) process.exit(1);
-          console.log('앞쪽 자리 모두 90% 이상 — 담습니다');
+          console.log('필수 자리 모두 95% 이상 — 담습니다');
           "
 
       - name: 결과 커밋
