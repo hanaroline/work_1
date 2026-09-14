@@ -1,4 +1,4 @@
-상한가 명단 원천 탐색 2026-09-14 09:10:10 KST
+상한가 명단 원천 탐색 2026-09-14 09:15:52 KST
 (수집 결과는 바꾸지 않는다. 무엇이 값을 주는지만 적는다.)
 
 [네이버 앱] https://m.stock.naver.com/api/stocks/upperLimit?page=1&pageSize=100
@@ -40,13 +40,11 @@
     20260910 · 실패 HTTPError: HTTP Error 400: Bad Request
     20260909 · 실패 HTTPError: HTTP Error 400: Bad Request
 
-### 새 앱의 랭킹 화면 찾기 (200 을 주는 주소를 고른다)
-    실패 · HTTP Error 404: OK · https://m.stock.naver.com/domestic/ranking/upperLimit
-    실패 · HTTP Error 404: OK · https://m.stock.naver.com/domestic/ranking/rise
-    실패 · HTTP Error 404: OK · https://m.stock.naver.com/domestic/ranking
-    실패 · HTTP Error 404: Not Found · https://stock.naver.com/domestic/ranking/upperLimit
-    실패 · HTTP Error 404: Not Found · https://stock.naver.com/domestic/ranking
-    실패 · HTTP Error 404: Not Found · https://stock.naver.com/sise/upper
+### 앱이 들고 있는 경로 목록 읽기 (짐작하지 않는다)
+    buildId: 못 찾음
+    그중 눈에 띄는 것 0 개:
 
-### 살아 있는 화면의 JS 묶음에서 주소 읽기
-    200 을 주는 랭킹 화면이 하나도 없다 — 다른 실마리가 필요하다
+### 사이트맵
+    https://stock.naver.com/sitemap.xml → HTTP Error 404: Not Found
+    https://m.stock.naver.com/sitemap.xml → HTTP Error 404: 404
+    https://finance.naver.com/sitemap.xml → 2691 bytes · 0 주소
