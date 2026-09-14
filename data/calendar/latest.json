@@ -1,9 +1,9 @@
 {
- "builtAt": "2026-09-14 08:24 KST",
- "builtAtUtc": "2026-09-13T23:24:38Z",
+ "builtAt": "2026-09-14 14:39 KST",
+ "builtAtUtc": "2026-09-14T05:39:12Z",
  "window": {
-  "from": "2026-07-30",
-  "to": "2028-01-26"
+  "from": "2026-07-31",
+  "to": "2028-01-27"
  },
  "note": "증시 일정 캘린더. confirmed 는 official(공식 확인) · websearch(검색 교차 확인) · tentative(기관이 잠정으로 공표) · estimate(제공사 추정 구간) · rule(규칙으로 만든 날짜) 다. 확정이 아닌 것은 화면에서 배지로 구분한다.",
  "confirmed_legend": {
@@ -21,20 +21,20 @@
   "rule": "Derived from the usual release cadence — not confirmed"
  },
  "counts": {
-  "policy": 53,
-  "indicator": 178,
+  "policy": 52,
+  "indicator": 175,
   "earnings": 166,
   "conference": 9,
   "supply": 36,
   "holiday": 103,
   "other": 3,
-  "total": 548,
+  "total": 544,
   "confirmed": {
-   "official": 295,
+   "official": 294,
    "websearch": 23,
    "tentative": 0,
    "estimate": 0,
-   "rule": 230
+   "rule": 227
   }
  },
  "sources": {
@@ -182,7 +182,7 @@
     }
    }
   },
-  "asof_kst": "2026-09-14 08:10:58"
+  "asof_kst": "2026-09-14 10:16:04"
  },
  "holidays": [
   {
@@ -1483,12 +1483,6 @@
    "market": "us",
    "sector": "it"
   },
-  "GOOGL": {
-   "ko": "알파벳(구글)",
-   "en": "Alphabet",
-   "market": "us",
-   "sector": "comm"
-  },
   "AMZN": {
    "ko": "아마존",
    "en": "Amazon.com",
@@ -1506,12 +1500,6 @@
    "en": "Broadcom",
    "market": "us",
    "sector": "it"
-  },
-  "TSLA": {
-   "ko": "테슬라",
-   "en": "Tesla",
-   "market": "us",
-   "sector": "cd"
   },
   "BRK-B": {
    "ko": "버크셔 해서웨이 B",
@@ -1660,12 +1648,6 @@
   "CRM": {
    "ko": "세일즈포스",
    "en": "Salesforce",
-   "market": "us",
-   "sector": "it"
-  },
-  "IBM": {
-   "ko": "IBM",
-   "en": "IBM",
    "market": "us",
    "sector": "it"
   },
@@ -1818,12 +1800,6 @@
    "en": "Progressive",
    "market": "us",
    "sector": "fin"
-  },
-  "NEE": {
-   "ko": "넥스트에라에너지",
-   "en": "NextEra Energy",
-   "market": "us",
-   "sector": "util"
   },
   "BLK": {
    "ko": "블랙록",
@@ -2058,6 +2034,30 @@
    "en": "Applied Materials",
    "market": "us",
    "sector": "it"
+  },
+  "IBM": {
+   "ko": "IBM",
+   "en": "IBM",
+   "market": "us",
+   "sector": "it"
+  },
+  "GOOGL": {
+   "ko": "알파벳(구글)",
+   "en": "Alphabet",
+   "market": "us",
+   "sector": "comm"
+  },
+  "TSLA": {
+   "ko": "테슬라",
+   "en": "Tesla",
+   "market": "us",
+   "sector": "cd"
+  },
+  "NEE": {
+   "ko": "넥스트에라에너지",
+   "en": "NextEra Energy",
+   "market": "us",
+   "sector": "util"
   }
  },
  "earnings_snapshot_bases": {
@@ -2464,7 +2464,7 @@
    "source_en": "Federal Reserve — FOMC meeting calendars",
    "minutes_rule_en": "Minutes three weeks after the meeting, 14:00 local",
    "meetings_per_year": 8,
-   "fetched_at": "2026-09-13"
+   "fetched_at": "2026-09-14"
   },
   {
    "key": "bok",
@@ -2537,7 +2537,7 @@
    "source_en": "Bank of England — Upcoming MPC dates",
    "projections_note_en": "A Monetary Policy Report and press conference accompany the February, April (May), July (August) and November meetings",
    "meetings_per_year": 8,
-   "fetched_at": "2026-09-13"
+   "fetched_at": "2026-09-14"
   },
   {
    "key": "pboc",
@@ -2941,107 +2941,6 @@
   }
  ],
  "events": [
-  {
-   "id": "indicator-us-pce-2026-07-30",
-   "date": "2026-07-30",
-   "end_date": null,
-   "country": "us",
-   "category": "indicator",
-   "importance": 3,
-   "title_ko": "미국 개인소득·지출 (PCE 물가)",
-   "title_en": "US Personal Income and Outlays (PCE)",
-   "org": "美 경제분석국 (BEA)",
-   "org_en": "Bureau of Economic Analysis",
-   "detail_ko": "통상 매월 말 08:30 ET",
-   "detail_en": "Usually at the end of the month, 08:30 ET",
-   "time_local": "08:30",
-   "tz": "America/New_York",
-   "time_kst": "2026-07-30 21:30",
-   "url": "https://www.bea.gov/news/schedule",
-   "source": "美 경제분석국 (BEA)",
-   "source_en": "Bureau of Economic Analysis",
-   "confirmed": "rule",
-   "tags": [
-    "indicator",
-    "us-pce"
-   ]
-  },
-  {
-   "id": "policy-boe-2026-07-30",
-   "date": "2026-07-30",
-   "end_date": null,
-   "country": "gb",
-   "category": "policy",
-   "importance": 2,
-   "title_ko": "영란은행 통화정책위원회 (BOE MPC) 정책금리 결정",
-   "title_en": "Bank of England (MPC) rate decision",
-   "org": "영란은행 통화정책위원회 (BOE MPC)",
-   "org_en": "Bank of England (MPC)",
-   "detail_ko": "기자회견 · 경제전망 동시 발표",
-   "detail_en": "press conference · projections released",
-   "time_local": "12:00",
-   "tz": "Europe/London",
-   "time_kst": "2026-07-30 20:00",
-   "url": "https://www.bankofengland.co.uk/monetary-policy/upcoming-mpc-dates",
-   "source": "Bank of England — Upcoming MPC dates",
-   "source_en": "Bank of England — Upcoming MPC dates",
-   "confirmed": "official",
-   "tags": [
-    "central-bank",
-    "boe",
-    "sep"
-   ]
-  },
-  {
-   "id": "indicator-kr-ip-2026-07-30",
-   "date": "2026-07-30",
-   "end_date": null,
-   "country": "kr",
-   "category": "indicator",
-   "importance": 2,
-   "title_ko": "한국 산업활동동향",
-   "title_en": "Korea Industrial Activity",
-   "org": "통계청",
-   "org_en": "Statistics Korea",
-   "detail_ko": "통상 매월 말 08:00",
-   "detail_en": "Usually at the end of the month, 08:00",
-   "time_local": "08:00",
-   "tz": "Asia/Seoul",
-   "time_kst": "2026-07-30 08:00",
-   "url": "https://kostat.go.kr/board.es?mid=a10501010000&bid=11570",
-   "source": "통계청",
-   "source_en": "Statistics Korea",
-   "confirmed": "rule",
-   "tags": [
-    "indicator",
-    "kr-ip"
-   ]
-  },
-  {
-   "id": "indicator-us-claims-2026-07-30",
-   "date": "2026-07-30",
-   "end_date": null,
-   "country": "us",
-   "category": "indicator",
-   "importance": 1,
-   "title_ko": "미국 신규 실업수당 청구건수 (주간)",
-   "title_en": "US Initial Jobless Claims",
-   "org": "美 노동부 (DOL)",
-   "org_en": "Department of Labor",
-   "detail_ko": "매주 목요일 08:30 ET",
-   "detail_en": "Every Thursday, 08:30 ET",
-   "time_local": "08:30",
-   "tz": "America/New_York",
-   "time_kst": "2026-07-30 21:30",
-   "url": "https://www.dol.gov/ui/data.pdf",
-   "source": "美 노동부 (DOL)",
-   "source_en": "Department of Labor",
-   "confirmed": "rule",
-   "tags": [
-    "indicator",
-    "us-claims"
-   ]
-  },
   {
    "id": "indicator-eu-hicp-2026-07-31",
    "date": "2026-07-31",
