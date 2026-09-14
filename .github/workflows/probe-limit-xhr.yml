@@ -1,0 +1,64 @@
+name: 상한가 원천 관찰
+
+# 상한가·하한가 화면이 **실제로 부르는 주소**를 브라우저로 관찰한다.
+#
+# 주소를 다섯 바퀴 찍어서 맞히려다 전부 빗나간 뒤에 만든 것이다(자세한
+# 내력은 scripts/probe_limit_xhr.mjs 머리말). 브라우저를 띄우는 일이라
+# 무거우므로 **시세 수집에 붙이지 않고 따로 둔다** — 날마다 도는 수집이
+# 이것 때문에 느려지면 안 된다.
+#
+# 손으로 발동하거나, data/market/PROBE_LIMIT 를 건드려 밀어 넣으면 돈다.
+# (브리핑 세션은 Actions 쓰기 권한이 없어 workflow_dispatch 를 API 로
+#  부르지 못하지만 git push 는 된다 — 시세 수집과 같은 방식이다.)
+
+on:
+  push:
+    paths:
+      - 'data/market/PROBE_LIMIT'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: probe-limit-xhr
+  cancel-in-progress: false
+
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: 브라우저 준비
+        run: |
+          npm install --no-save --no-audit --no-fund playwright
+          npx playwright install --with-deps chromium
+
+      - name: 화면이 부르는 주소 관찰
+        continue-on-error: true
+        run: node scripts/probe_limit_xhr.mjs
+
+      - name: 커밋
+        if: always()
+        run: |
+          git config user.name  'github-actions[bot]'
+          git config user.email 'github-actions[bot]@users.noreply.github.com'
+          git add data/market/raw || true
+          if git diff --staged --quiet; then
+            echo "남긴 것 없음"
+            exit 0
+          fi
+          git commit -m "상한가 원천 관찰 $(TZ=Asia/Seoul date '+%Y-%m-%d %H:%M KST')"
+          # 시세 수집과 겹칠 수 있으므로 되받아서 다시 민다.
+          for i in 1 2 3 4 5; do
+            if git push; then echo "밀어 넣음 (시도 $i)"; exit 0; fi
+            git pull --rebase --no-edit origin main || { git rebase --abort || true; exit 1; }
+            sleep $((i * 5))
+          done
+          exit 1
