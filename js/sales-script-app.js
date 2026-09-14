@@ -254,6 +254,15 @@
      */
     var FP = window.FUND_PROSPECTUS;
     var ex = (FP && FP.items && FP.items[it.code]) || null;
+    /* 보수율이 들어가야 하는 자리 (아래 거르기에서 쓴다) */
+    var FEE_RATE_FIELDS = ['clsAExp', 'clsCExp', 'clsPExp', 'clsExp'];
+    /** 공모펀드 총보수·비용은 아무리 높아도 연 5%를 넘지 않는다 — 10%를 상한으로 둔다 */
+    var feeRateOk = function (v) {
+      var s = String(v == null ? '' : v).replace(/[%\s]/g, '');
+      if (!/^\d+(?:\.\d+)?$/.test(s)) return false;
+      var n = parseFloat(s);
+      return n > 0 && n <= 10;
+    };
     var exSrc = ex ? '판매회사 수집분' : null;
     /**
      * 두 번째 원천 — 금융투자협회 전자공시.
@@ -277,7 +286,19 @@
       var pl = FP.pool;
       Object.keys(ex).forEach(function (k) {
         var v = ex[k];
-        put(k, (pl && typeof v === 'number') ? pl[v] : v);
+        v = (pl && typeof v === 'number') ? pl[v] : v;
+        /*
+         * 보수율 자리에 보수율이 아닌 것이 들어온 판독분을 걸러 낸다.
+         *
+         * 보수 표를 느슨하게 읽게 한 뒤 예시금액·라벨이 보수 자리로 들어오는 일이
+         * 생겼다 — 2026-09-13 판독 4,970개 값 중 59개가 그랬다(「90,045」 는
+         * 1,000만원 투자시 예시금액(원)이고 「A-E(수수료선취-온라인)」 은 이름이다).
+         * 판독 규칙도 고쳤지만 이미 받아 둔 값은 그대로이므로 읽을 때 한 번 더 턴다.
+         * 창구가 「총보수는 연 90,045% 입니다」 를 읽는 일은 없어야 한다 —
+         * 담지 않으면 「확인필요」 로 남아 창구가 원문을 확인한다.
+         */
+        if (FEE_RATE_FIELDS.indexOf(k) >= 0 && !feeRateOk(v)) return;
+        put(k, v);
       });
     }
     return {
