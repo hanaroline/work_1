@@ -148,7 +148,9 @@ const topRate = [...A.items].sort((a, b) => b.annualRate - a.annualRate)[0];
 const best = REC[0];
 // 위험당 대가 1위는 별도 사실로만 쓴다 (추천 선정 기준이 아니다)
 const bestPerRisk = [...A.items].filter((i) => i.mcLoss).sort((a, b) => b.annualRate / b.mcLoss - a.annualRate / a.mcLoss)[0];
-const perRisk = (i) => i.annualRate / i.mcLoss;
+// 나누는 값은 표에 인쇄된 손실 확률(소수 1자리)이다. 원값으로 나누면 창구에서
+// 표의 숫자로 검산했을 때 끝자리가 어긋난다 — 제38122회가 1.25 대신 1.24 로 나왔다.
+const perRisk = (i) => i.annualRate / +i.mcLoss.toFixed(1);
 
 // ══ 1. 표지 겸 요약 ═════════════════════════════════════════════════════════
 {
