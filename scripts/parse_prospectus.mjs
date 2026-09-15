@@ -194,8 +194,11 @@ const out = {};
 const warn = [];
 for (const f of files) {
   const text = await readFile(`${DIR}/${f}`, 'utf8');
+  // 문서를 종목별 덩어리로 자르는 기준점. 주간 발행분은 회차 수만큼 나오지만
+  // 한 회차만 따로 낸 공시에는 딱 한 번 나온다 — 2회 미만을 버리면 그런 공시가
+  // 통째로 사라진다(제38132회가 그랬다). 하나라도 있으면 끝까지를 한 덩어리로 본다.
   const marks = [...text.matchAll(/종목명/g)].map((m) => m.index);
-  if (marks.length < 2) continue;
+  if (!marks.length) continue;
   const blocks = marks.map((s, i) => text.slice(s, marks[i + 1] ?? text.length));
   const items = blocks.map(parseBlock).filter((p) => p.no);
   if (!items.length) continue;

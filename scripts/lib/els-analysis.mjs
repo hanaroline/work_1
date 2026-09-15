@@ -234,14 +234,24 @@ export async function analyze(rcpNo) {
   const H = w.ELS_DATA.history;
   const P = JSON.parse(await readFile('tools/discovery/prospectus_parsed.json', 'utf8'));
 
-  const RCP = rcpNo || Object.keys(P).sort().pop();
-  if (!P[RCP]) throw new Error(`접수번호 ${RCP} 없음. 가능: ${Object.keys(P).join(', ')}`);
+  // 한 주치가 공시 하나로 안 끝나는 때가 있다. 같은 모집 주간인데 하루 늦게
+  // 시작하는 회차를 따로 낸 공시가 그렇다(제38132회). 접수번호를 쉼표로 여러 개
+  // 받아 한 자료로 묶는다. 회차가 많은 쪽이 대표 공시다 — 표지·근거란이 그것을 쓴다.
+  const RCPS = (Array.isArray(rcpNo) ? rcpNo : String(rcpNo || '').split(','))
+    .map((s) => s.trim()).filter(Boolean);
+  if (!RCPS.length) RCPS.push(Object.keys(P).sort().pop());
+  for (const r of RCPS) {
+    if (!P[r]) throw new Error(`접수번호 ${r} 없음. 가능: ${Object.keys(P).join(', ')}`);
+  }
+  const RCP = [...RCPS].sort((a, b) => P[b].items.length - P[a].items.length)[0];
 
   const states = await readFile('tools/discovery/offer_states.json', 'utf8').then(JSON.parse).catch(() => null);
   const batch = P[RCP];
   await loadCache();
-  const items = batch.items.map((it) => enrich(it, H, RCP));
-  const head = items[0];
+  const items = RCPS
+    .flatMap((r) => P[r].items.map((it) => ({ ...enrich(it, H, r), rcp: r })))
+    .sort((a, b) => a.no - b.no);
+  const head = items.find((i) => i.rcp === RCP) || items[0];
 
   /**
    * 청약 일정 — 개인 일반투자자는 숙려기간과 가입의사확인기간에 청약을 할 수 없다.
@@ -340,8 +350,12 @@ export async function analyze(rcpNo) {
 
   return {
     coupon,
-    rcp: RCP, batch, items, head, H,
+    rcp: RCP, rcps: RCPS, batch, items, head, H,
     filedOn: `${RCP.slice(0, 4)}.${RCP.slice(4, 6)}.${RCP.slice(6, 8)}`,
+    // 공시가 여럿이면 회차마다 출처가 다르다. 대장은 이걸로 항목별 링크를 건다.
+    srcOf: (it) => `https://dart.fss.or.kr/dsaf001/main.do?rcpNo=${it.rcp || RCP}`,
+    // 대표 공시와 청약일정이 다른 회차들 (표지에 따로 적어야 한다)
+    offSchedule: items.filter((i) => i.offerStart !== head.offerStart || i.offerEnd !== head.offerEnd),
     offer: (batch.offer || '').split('~').map((s) => s.trim().replace(/-/g, '.')),
     checkedAt: w.ELS_DATA.checkedAt || w.ELS_DATA.updatedAt || null,
     mc: { ...MC, version: MC_VERSION },
