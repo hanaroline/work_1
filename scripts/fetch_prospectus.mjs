@@ -116,8 +116,11 @@ for (const f of wanted) {
     console.log(`  ${f.date} ${f.rcpNo} dcm=${dcm} ${(doc.buf.length / 1024 / 1024).toFixed(2)}MB 회차 ${series.length}종 (${range})`);
     docs.push({ ...f, dcmNo: dcm, chars: text.length, series, range });
     // 회차 번호대를 박아두면 번호가 굴러간 다음 달부터 아무것도 안 남는다.
-    // 여러 회차를 한 번에 담은 문서(=주간 발행분)이면 표를 떠 둔다.
-    if (nums.length >= 5) {
+    // 예전에는 "5종 이상" 인 문서만 주간 발행분으로 보고 떠 뒀는데, 그러면 한두
+    // 회차만 따로 내는 공시가 통째로 버려진다 — 제38132회가 그렇게 빠졌다.
+    // 회차가 하나라도 있고 청약기간 표가 붙어 있으면 뜬다. 조건이 엉성한 문서는
+    // 뒤의 파서 정합성 검사가 잡는다(조용히 버리는 것보다 낫다).
+    if (nums.length >= 1 && text.includes('청약기간')) {
       // 회차별 조건·모의실험을 로컬에서 파싱할 수 있게 본문 전체를 남긴다
       await writeFile(`${OUT}/prospectus_${f.rcpNo}.txt`, text);
       const slices = (needle, before, after, max) => {
