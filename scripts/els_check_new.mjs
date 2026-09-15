@@ -17,6 +17,7 @@
 // 종료코드는 항상 0. STATUS 줄로 읽는다.
 
 import { readFile, appendFile } from 'node:fs/promises';
+import { execFileSync } from 'node:child_process';
 
 const ROOT = new URL('../', import.meta.url);
 const read = (p) => readFile(new URL(p, ROOT), 'utf8');
@@ -26,9 +27,24 @@ const kstDay = (d) => d.toISOString().slice(0, 10);
 const kstStamp = (d) => `${kstDay(d)} ${d.toISOString().slice(11, 16)}`;
 
 // data/els.js 는 window.ELS_DATA 에 붙는 스크립트다.
-const w = {};
-new Function('window', await read('data/els.js'))(w);
-const data = w.ELS_DATA;
+//
+// 작업 브랜치의 사본만 보면 안 된다. 브랜치에 수집을 거는 길(API 발동 또는
+// 요청파일 push)이 막힌 환경에서는 그 사본이 며칠씩 낡은 채로 멀쩡해 보인다.
+// 기본 브랜치(main)에는 워크플로의 매일 예약이 09:40~10:10 KST 에 목록을
+// 갱신해 둔다 — 그건 git fetch 만으로 읽을 수 있다. 둘 중 신선한 쪽을 쓴다.
+const loadEls = (src) => { const w = {}; new Function('window', src)(w); return w.ELS_DATA; };
+const stamp = (d) => (d?.updatedAt ? new Date(d.updatedAt).getTime() : -1);
+
+const local = loadEls(await read('data/els.js'));
+let fromMain = null;
+try {
+  execFileSync('git', ['fetch', '--quiet', 'origin', 'main'], { stdio: 'ignore' });
+  fromMain = loadEls(execFileSync('git', ['show', 'origin/main:data/els.js'], { encoding: 'utf8' }));
+} catch { /* main 을 못 읽어도 로컬 사본으로 계속한다 */ }
+
+const useMain = fromMain && stamp(fromMain) > stamp(local);
+const data = useMain ? fromMain : local;
+const origin = useMain ? 'origin/main' : '작업 브랜치';
 
 const updatedAt = data.updatedAt ? new Date(data.updatedAt) : null;
 const collectedKst = updatedAt ? new Date(updatedAt.getTime() + 9 * 3600 * 1000) : null;
@@ -57,7 +73,7 @@ const newNos = [...listed].filter((n) => !covered.has(n)).sort((a, b) => a - b);
 const out = [];
 out.push(`지금(KST): ${kstStamp(now)}`);
 out.push(
-  `목록 수집 시각: ${collectedKst ? kstStamp(collectedKst) : '없음'} (source=${data.source ?? '?'})`
+  `목록 수집 시각: ${collectedKst ? kstStamp(collectedKst) : '없음'} (${origin} · source=${data.source ?? '?'})`
 );
 out.push(`목록에 실린 회차 ${listed.size}건 · 이미 다룬 회차 ${covered.size}건`);
 
@@ -65,7 +81,7 @@ let status;
 if (!fresh) {
   status = 'STALE';
   out.push(
-    '⚠ 오늘 수집한 목록이 아닙니다. 이 상태의 비교는 뜻이 없습니다 — 먼저 els-weekly.yml 로 수집을 걸고 결과를 받은 뒤 다시 부르세요.'
+    '⚠ 오늘 수집한 목록이 아닙니다. 이 상태의 비교는 뜻이 없습니다 — 작업 브랜치와 origin/main 어느 쪽에도 오늘 목록이 없습니다. 수집을 걸어 받은 뒤 다시 부르세요. 그래도 안 되면 점검이 실패한 것이므로 조용히 끝내지 말고 사용자에게 알려야 합니다.'
   );
 } else if (newNos.length) {
   status = 'NEW';
