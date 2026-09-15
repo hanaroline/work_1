@@ -1,10 +1,10 @@
 # ELS 신규 회차 자동 점검·갱신 런북
 
-자동 예약(Routine)이 **매주 월·수·금 아침 8시 30분(KST)** 에 이 문서를 따라 도는 것을 전제로 쓴다.
+자동 예약(Routine)이 **매주 월·수·금 10시 30분(KST)** 에 이 문서를 따라 도는 것을 전제로 쓴다.
 예약 슬롯이 비영업일이면 **다음 영업일**로 밀린다. 그 판정은 사람이 하지 않고
 `scripts/els_schedule_check.mjs` 가 한다.
 
-> 예약은 실제로는 **월~금 매일 아침** 깨어난다. 깨어난 세션이 스스로
+> 예약은 실제로는 **월~금 매일** 깨어난다. 깨어난 세션이 스스로
 > "오늘이 내 슬롯인가"를 판정하고 아니면 즉시 끝낸다. 이렇게 해야 월요일이
 > 공휴일일 때 화요일로 이월되는 규칙이 성립한다 (월·수·금에만 깨우면 이월할
 > 자리가 없다).
@@ -55,41 +55,46 @@ node scripts/els_schedule_check.mjs
 | `els-weekly.yml` | 홈페이지 청약중 목록 수집 | `data/els.js`, `tools/discovery/rendered_list.json` |
 | `els-prospectus-probe.yml` | 최신 회차 공시 원문(일괄신고추가서류) 추출 | `tools/discovery/prospectus_*.json` |
 
-**두 워크플로 모두 스스로 걸어야 한다.** `els-weekly.yml` 에 매일 도는 스케줄이
-있긴 하지만 (가) 기본 브랜치(main)에서만 돌고 (나) GitHub 스케줄 지연 때문에
-실제로는 09:30~10:00 KST 에 실행된다. 08:30 슬롯에서는 아직 그날 목록이 없다.
+### 예약 세션은 수집을 스스로 걸지 못한다
 
-MCP 도구가 없는 세션이라면 **git push 로 부른다.** 두 워크플로에 요청 파일
-경로가 `push.paths` 로 걸려 있다.
+이것이 이 런북에서 가장 중요한 사실이다. 예약이 띄우는 세션에는
+**GitHub MCP 도구가 없다** (도구 목록이 `Bash · Write · Edit · Read · Glob ·
+Grep · Agent` 뿐이다). 그리고 2026-09-15 진단 실행에서 요청 파일을 커밋해
+push 시켜 봤지만 **원격에 올라오지 않았다.** 즉 작업 브랜치에 수집을 거는
+두 길이 모두 막혀 있다.
 
-```bash
-date -u +'마지막 요청: %Y-%m-%dT%H:%M:%SZ' >> tools/discovery/collect-request.txt
-git commit -am "chore(els): 목록 수집 요청" && git push origin claude/els-product-structure-page-ljsucw
-# 공시 원문이 필요할 때
-date -u +'마지막 요청: %Y-%m-%dT%H:%M:%SZ' >> tools/discovery/prospectus-request.txt
-git commit -am "chore(els): 공시 원문 수집 요청" && git push origin claude/els-product-structure-page-ljsucw
-```
+대신 **기본 브랜치(main)** 를 읽는다. 거기에는 워크플로의 매일 예약이 목록을
+갱신해 두고, 그건 `git fetch` 만으로 읽힌다. 최근 관측으로는 **09:40~10:10 KST**
+에 들어온다 — 점검 슬롯을 10:30 으로 잡은 이유가 이것이다.
 
-워크플로가 끝나면 결과를 같은 브랜치에 커밋하므로 받아온다.
+`scripts/els_check_new.mjs` 가 작업 브랜치 사본과 `origin/main` 사본 중
+수집 시각이 늦은 쪽을 **자동으로 고른다.** 세션이 따로 할 일은 없다.
 
-**수집은 건너뛸 수 없다.** `data/els.js` 가 어제 것이어도 파일은 멀쩡해 보이고
-회차도 그럴듯하게 들어 있다. 그것을 읽고 "새 회차 없음" 이라고 끝내면 점검이
-돈 적이 없는데 성공으로 기록된다 — 2026-09-11 아침에 실제로 그렇게 됐다.
-그래서 판정은 눈으로 하지 말고 아래 스크립트에 맡긴다.
+> 사람이 돌릴 때(=이 대화처럼 MCP 도구가 있는 세션)는 그냥
+> `mcp__github__actions_run_trigger` 로 `els-weekly.yml` 을 `ref` = 작업 브랜치로
+> 돌리는 편이 빠르다. 결과는 같은 브랜치에 커밋되므로 `git pull` 로 받는다.
+
+### 판정
+
+**수집 시각은 건너뛸 수 없다.** `data/els.js` 가 어제 것이어도 파일은 멀쩡해
+보이고 회차도 그럴듯하게 들어 있다. 그것을 읽고 "새 회차 없음" 이라고 끝내면
+점검이 돈 적이 없는데 성공으로 기록된다 — 2026-09-11 에 실제로 그렇게 됐고,
+09-14 에는 그래서 신규 18종을 통째로 놓쳤다. 판정은 눈으로 하지 말고
+아래 스크립트에 맡긴다.
 
 ```bash
 git pull --ff-only origin claude/els-product-structure-page-ljsucw
 node scripts/els_check_new.mjs --log
 ```
 
-이 스크립트는 `data/els.js` 의 수집 시각이 **오늘(KST)** 인지 먼저 보고, 오늘 것이
+이 스크립트는 고른 사본의 수집 시각이 **오늘(KST)** 인지 먼저 보고, 오늘 것이
 아니면 비교를 거부한다. 목록에 실린 회차와 `tools/discovery/prospectus_parsed.json`
 에 파싱돼 있는 회차(= 이미 제안서로 다룬 회차)를 맞춰 판정하고,
 `docs/els-autorun-log.md` 에 한 줄 남긴다.
 
 | STATUS | 뜻 | 할 일 |
 |---|---|---|
-| `STALE` | 오늘 목록이 아니다 | 수집을 걸고 받은 뒤 **다시 부른다.** 이대로 끝내지 않는다 |
+| `STALE` | 어느 사본에도 오늘 목록이 없다 | **점검 실패다.** 조용히 끝내지 말고 사용자에게 그 사실을 알린다 |
 | `NONE` | 오늘 목록을 받았고 새 회차가 없다 | 기록 줄만 커밋하고 끝낸다 |
 | `NEW` | 새 회차가 있다 (`NEW_NOS` 에 나열) | 3절로 간다 |
 
