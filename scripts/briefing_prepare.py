@@ -34,8 +34,39 @@ def _split(dct, k=8):
     return items[:k], items[-k:]
 
 
+def _prefer_daily(idx, daily):
+    """국내 지수는 **거래소 일별시세를 우선한다**(지침 0-1절).
+
+    야후 지수 심볼은 마감 뒤에도 한동안 어제 봉을 물고 있습니다 —
+    2026-09-15 장마감 수집(16:13)에서 `indices.kosdaq` 이 9/14 종가
+    806.79(&minus;1.69%)였는데 같은 파일의 `index_daily` 는 9/15 종가
+    812.41(+0.70%)이었습니다. **부호가 반대**였고, 그대로 두면 코스닥이
+    오른 날 판에 「내렸다」가 실립니다.
+
+    일별시세가 더 새것일 때만 종가·등락률·날짜를 덮어씁니다. 장중 고저는
+    `market_internals.*.intraday` 가 따로 들고 있으므로 건드리지 않습니다.
+    """
+    rows = (daily or {}).get("series") or []
+    if not rows or not idx:
+        return idx
+    top = rows[0]
+    if not top.get("date") or top["date"] <= (idx.get("date") or ""):
+        return idx
+    out = dict(idx)
+    out["date"] = top["date"]
+    if top.get("close") is not None:
+        out["close"] = top["close"]
+    if top.get("change_pct") is not None:
+        out["change_pct"] = top["change_pct"]
+    out["daily_basis"] = True          # 검증 노트에서 이 자국을 봅니다
+    return out
+
+
 def prepare(D, H, N, today, now, kind):
     I = D["indices"]
+    _dly = D.get("index_daily") or {}
+    I["kospi"] = _prefer_daily(I.get("kospi"), _dly.get("kospi"))
+    I["kosdaq"] = _prefer_daily(I.get("kosdaq"), _dly.get("kosdaq"))
     KS, KQ = I["kospi"], I["kosdaq"]
     # 네이버가 페이지 구조를 바꾸면 `market_internals` 가 통째로 빠진다
     # (2026-09-11 아침에 실제로 그랬다 — 업종·증시자금·기사까지 함께 실패했다).
