@@ -21,6 +21,20 @@ const OUT = 'tools/discovery/els-claims.json';
 const SRC = `https://dart.fss.or.kr/dsaf001/main.do?rcpNo=${A.rcp}`;
 const FILED = A.filedOn.replace(/\./g, '-');            // 2026.08.28 -> 2026-08-28
 
+// 한 자료가 공시 두 건에 걸칠 수 있다(하루 늦게 시작하는 회차를 따로 낸 경우).
+// 회차별 주장은 그 회차가 실린 공시를 출처로 달아야 한다 — 대표 공시 하나로
+// 뭉뚱그리면 원문을 열었을 때 그 회차가 없다.
+const RCP_OF = new Map(A.items.map((i) => [i.no, i.rcp || A.rcp]));
+const rcpForId = (id) => {
+  const m = /^[A-Z](\d{5})_/.exec(id);
+  return (m && RCP_OF.get(Number(m[1]))) || A.rcp;
+};
+const srcFor = (id) => `https://dart.fss.or.kr/dsaf001/main.do?rcpNo=${rcpForId(id)}`;
+const filedFor = (id) => {
+  const r = rcpForId(id);
+  return `${r.slice(0, 4)}-${r.slice(4, 6)}-${r.slice(6, 8)}`;
+};
+
 // 시세 이월 여부 — 이월된 자산은 백테스트(A) 꼬리가 실관측이 아니다
 const w = {};
 new Function('window', await readFile('data/els.js', 'utf8'))(w);
@@ -35,7 +49,7 @@ const add = (c) => { claims.push(c); return c.id; };
 const disclosed = (id, metric, text, value, unit, printed_on, extra = {}) => add({
   id, kind: 'contract_term', metric, text, value, unit,
   series: '일괄신고추가서류 공시 원문',
-  as_of: FILED, tier: 1, source_url: SRC,
+  as_of: filedFor(id), tier: 1, source_url: srcFor(id),
   verdict: 'confirmed', render: 'assert', printed_on, ...extra,
 });
 
@@ -43,7 +57,7 @@ const disclosed = (id, metric, text, value, unit, printed_on, extra = {}) => add
 const computed = (id, metric, text, value, unit, printed_on, extra = {}) => add({
   id, kind: 'model_output', metric, text, value, unit,
   series: `자체 몬테카를로 (공시 변동성·상관계수 입력, ${A.mc.paths.toLocaleString('ko-KR')} 경로, 대조변량, 시드 고정)`,
-  as_of: FILED, tier: 1, source_url: SRC,
+  as_of: filedFor(id), tier: 1, source_url: srcFor(id),
   verdict: 'confirmed', render: 'assert',
   note: '공시된 값이 아니라 공시 입력으로 재현 가능하게 돌린 모형 결과. 덱에서 "B. 시뮬레이션"으로 표기',
   printed_on, ...extra,

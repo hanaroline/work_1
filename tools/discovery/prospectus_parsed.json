@@ -4647,6 +4647,184 @@
       }
     ]
   },
+  "20260727000150": {
+    "rcpNo": "20260727000150",
+    "source": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260727000150",
+    "range": "38005~38005",
+    "offer": "2026-07-28 ~ 2026-07-31",
+    "count": 1,
+    "items": [
+      {
+        "title": "미래에셋증권 제38005회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
+        "no": 38005,
+        "riskLabel": "매우높은위험",
+        "riskGrade": 1,
+        "principalProtected": false,
+        "underlyings": [
+          "삼성전자",
+          "SK하이닉스"
+        ],
+        "issueSize": 10000000000,
+        "offerStart": "2026-07-28",
+        "offerEnd": "2026-07-31",
+        "coolStart": "2026-07-28",
+        "coolEnd": "2026-07-28",
+        "coolingFrom": "2026-07-29",
+        "coolingTo": "2026-07-30",
+        "confirmBy": "2026-07-31",
+        "confirmNote": "2026년 07월 31일 오후 5시까지",
+        "payDate": "2026-08-03",
+        "recordingRight": true,
+        "riskSummaryDoc": true,
+        "maxLossNotice": true,
+        "issueDate": "2026-08-03",
+        "maturityDate": "2027-02-10",
+        "baseDate": "2026-08-03",
+        "currency": "KRW",
+        "faceValue": 10000,
+        "fairValue": 9683.89,
+        "fairValueDate": "2026-07-24",
+        "fairValueGap": -3.16,
+        "volatility": [
+          {
+            "asset": "삼성전자",
+            "vol": 83.9
+          },
+          {
+            "asset": "SK하이닉스",
+            "vol": 96.18
+          }
+        ],
+        "correlation": [
+          {
+            "pair": "삼성전자 · SK하이닉스",
+            "rho": 0.8397
+          }
+        ],
+        "schedule": [
+          {
+            "step": 1,
+            "date": "2026-11-03",
+            "payout": 109,
+            "barrier": 70
+          }
+        ],
+        "lizard": null,
+        "maturityBarrier": 70,
+        "knockIn": 35,
+        "knockInBasis": "종가",
+        "annualRate": 36,
+        "docMaxRate": 18,
+        "simulation": [
+          {
+            "label": "1차 조기상환",
+            "ret": "9.00%",
+            "count": 4770,
+            "share": 96.54
+          },
+          {
+            "label": "만기상환",
+            "ret": "18.00%",
+            "count": 98,
+            "share": 1.98
+          },
+          {
+            "label": "만기상환손실",
+            "ret": "-10% ~ 0%",
+            "count": 0,
+            "share": 0
+          },
+          {
+            "label": "-20% ~ -10%",
+            "ret": null,
+            "count": 0,
+            "share": 0
+          },
+          {
+            "label": "-30% ~ -20%",
+            "ret": null,
+            "count": 0,
+            "share": 0
+          },
+          {
+            "label": "-40% ~ -30%",
+            "ret": null,
+            "count": 5,
+            "share": 0.1
+          },
+          {
+            "label": "-50% ~ -40%",
+            "ret": null,
+            "count": 7,
+            "share": 0.14
+          },
+          {
+            "label": "-50%이하",
+            "ret": null,
+            "count": 61,
+            "share": 1.23
+          },
+          {
+            "label": "진행중",
+            "ret": null,
+            "count": 0,
+            "share": 0
+          },
+          {
+            "label": "Total",
+            "ret": null,
+            "count": 4941,
+            "share": 100
+          }
+        ],
+        "simRange": {
+          "from": "2006-01-02",
+          "to": "2026-01-16"
+        },
+        "simRuns": 4941,
+        "simFirst": 96.54,
+        "simLoss": 1.47,
+        "lossBuckets": [
+          {
+            "label": "만기상환손실",
+            "ret": "-10% ~ 0%",
+            "count": 0,
+            "share": 0
+          },
+          {
+            "label": "-20% ~ -10%",
+            "ret": null,
+            "count": 0,
+            "share": 0
+          },
+          {
+            "label": "-30% ~ -20%",
+            "ret": null,
+            "count": 0,
+            "share": 0
+          },
+          {
+            "label": "-40% ~ -30%",
+            "ret": null,
+            "count": 5,
+            "share": 0.1
+          },
+          {
+            "label": "-50% ~ -40%",
+            "ret": null,
+            "count": 7,
+            "share": 0.14
+          },
+          {
+            "label": "-50%이하",
+            "ret": null,
+            "count": 61,
+            "share": 1.23
+          }
+        ]
+      }
+    ]
+  },
   "20260731000093": {
     "rcpNo": "20260731000093",
     "source": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260731000093",
@@ -12872,6 +13050,913 @@
             "ret": null,
             "count": 35,
             "share": 0.71
+          }
+        ]
+      }
+    ]
+  },
+  "20260821000466": {
+    "rcpNo": "20260821000466",
+    "source": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260821000466",
+    "range": "36998~36999",
+    "offer": "2026-09-04 ~ 2026-09-04",
+    "count": 2,
+    "items": [
+      {
+        "title": "미래에셋증권 제36998회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
+        "no": 36998,
+        "riskLabel": "매우높은위험",
+        "riskGrade": 1,
+        "principalProtected": false,
+        "underlyings": [
+          "EuroStoxx50",
+          "S&P500",
+          "KOSPI200"
+        ],
+        "issueSize": 19800000000,
+        "offerStart": "2026-09-04",
+        "offerEnd": "2026-09-04",
+        "coolStart": null,
+        "coolEnd": null,
+        "coolingFrom": null,
+        "coolingTo": null,
+        "confirmBy": null,
+        "confirmNote": null,
+        "payDate": "2026-09-04",
+        "recordingRight": true,
+        "riskSummaryDoc": true,
+        "maxLossNotice": true,
+        "issueDate": "2026-09-04",
+        "maturityDate": "2029-09-03",
+        "baseDate": "2026-09-03",
+        "currency": "KRW",
+        "faceValue": 10000,
+        "fairValue": 9855.94,
+        "fairValueDate": "2026-08-18",
+        "fairValueGap": -1.44,
+        "volatility": [
+          {
+            "asset": "EuroStoxx50",
+            "vol": 22.24
+          },
+          {
+            "asset": "S&P500",
+            "vol": 24.17
+          },
+          {
+            "asset": "KOSPI200",
+            "vol": 40.52
+          }
+        ],
+        "correlation": [
+          {
+            "pair": "EuroStoxx50 · S&P500",
+            "rho": 0.5698
+          },
+          {
+            "pair": "EuroStoxx50 · KOSPI200",
+            "rho": 0.2313
+          },
+          {
+            "pair": "S&P500 · KOSPI200",
+            "rho": 0.1754
+          }
+        ],
+        "schedule": [
+          {
+            "step": 1,
+            "date": "2027-02-26",
+            "payout": 103.95,
+            "barrier": 75
+          },
+          {
+            "step": 2,
+            "date": "2027-09-01",
+            "payout": 107.9,
+            "barrier": 70
+          },
+          {
+            "step": 3,
+            "date": "2028-02-29",
+            "payout": 111.85,
+            "barrier": 70
+          },
+          {
+            "step": 4,
+            "date": "2028-08-30",
+            "payout": 115.8,
+            "barrier": 60
+          },
+          {
+            "step": 5,
+            "date": "2029-02-27",
+            "payout": 119.75,
+            "barrier": 50
+          }
+        ],
+        "lizard": null,
+        "maturityBarrier": 40,
+        "knockIn": null,
+        "knockInBasis": null,
+        "annualRate": 7.9,
+        "docMaxRate": 23.7,
+        "simulation": [
+          {
+            "label": "1차 조기상환",
+            "ret": "3.95%",
+            "count": 4752,
+            "share": 96.84
+          },
+          {
+            "label": "2차 조기상환",
+            "ret": "7.90%",
+            "count": 107,
+            "share": 2.18
+          },
+          {
+            "label": "3차 조기상환",
+            "ret": "11.85%",
+            "count": 48,
+            "share": 0.98
+          },
+          {
+            "label": "4차 조기상환",
+            "ret": "15.80%",
+            "count": 0,
+            "share": 0
+          },
+          {
+            "label": "5차 조기상환",
+            "ret": "19.75%",
+            "count": 0,
+            "share": 0
+          },
+          {
+            "label": "만기상환",
+            "ret": "23.70%",
+            "count": 0,
+            "share": 0
+          },
+          {
+            "label": "만기상환손실",
+            "ret": "-10% ~ 0%",
+            "count": 0,
+            "share": 0
+          },
+          {
+            "label": "-20% ~ -10%",
+            "ret": null,
+            "count": 0,
+            "share": 0
+          },
+          {
+            "label": "-30% ~ -20%",
+            "ret": null,
+            "count": 0,
+            "share": 0
+          },
+          {
+            "label": "-40% ~ -30%",
+            "ret": null,
+            "count": 0,
+            "share": 0
+          },
+          {
+            "label": "-50% ~ -40%",
+            "ret": null,
+            "count": 0,
+            "share": 0
+          },
+          {
+            "label": "-50%이하",
+            "ret": null,
+            "count": 0,
+            "share": 0
+          },
+          {
+            "label": "진행중",
+            "ret": null,
+            "count": 0,
+            "share": 0
+          },
+          {
+            "label": "Total",
+            "ret": null,
+            "count": 4907,
+            "share": 100
+          }
+        ],
+        "simRange": {
+          "from": "2003-01-02",
+          "to": "2023-08-11"
+        },
+        "simRuns": 4907,
+        "simFirst": 96.84,
+        "simLoss": 0,
+        "lossBuckets": [
+          {
+            "label": "만기상환손실",
+            "ret": "-10% ~ 0%",
+            "count": 0,
+            "share": 0
+          },
+          {
+            "label": "-20% ~ -10%",
+            "ret": null,
+            "count": 0,
+            "share": 0
+          },
+          {
+            "label": "-30% ~ -20%",
+            "ret": null,
+            "count": 0,
+            "share": 0
+          },
+          {
+            "label": "-40% ~ -30%",
+            "ret": null,
+            "count": 0,
+            "share": 0
+          },
+          {
+            "label": "-50% ~ -40%",
+            "ret": null,
+            "count": 0,
+            "share": 0
+          },
+          {
+            "label": "-50%이하",
+            "ret": null,
+            "count": 0,
+            "share": 0
+          }
+        ]
+      },
+      {
+        "title": "미래에셋증권 제36999회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
+        "no": 36999,
+        "riskLabel": "매우높은위험",
+        "riskGrade": 1,
+        "principalProtected": false,
+        "underlyings": [
+          "EuroStoxx50",
+          "S&P500",
+          "KOSPI200"
+        ],
+        "issueSize": 19800000000,
+        "offerStart": "2026-09-04",
+        "offerEnd": "2026-09-04",
+        "coolStart": null,
+        "coolEnd": null,
+        "coolingFrom": null,
+        "coolingTo": null,
+        "confirmBy": null,
+        "confirmNote": null,
+        "payDate": "2026-09-04",
+        "recordingRight": true,
+        "riskSummaryDoc": true,
+        "maxLossNotice": true,
+        "issueDate": "2026-09-04",
+        "maturityDate": "2029-09-03",
+        "baseDate": "2026-09-03",
+        "currency": "KRW",
+        "faceValue": 10000,
+        "fairValue": 9771.69,
+        "fairValueDate": "2026-08-18",
+        "fairValueGap": -2.28,
+        "volatility": [
+          {
+            "asset": "EuroStoxx50",
+            "vol": 22.24
+          },
+          {
+            "asset": "S&P500",
+            "vol": 24.17
+          },
+          {
+            "asset": "KOSPI200",
+            "vol": 40.52
+          }
+        ],
+        "correlation": [
+          {
+            "pair": "EuroStoxx50 · S&P500",
+            "rho": 0.5698
+          },
+          {
+            "pair": "EuroStoxx50 · KOSPI200",
+            "rho": 0.2313
+          },
+          {
+            "pair": "S&P500 · KOSPI200",
+            "rho": 0.1754
+          }
+        ],
+        "schedule": [],
+        "lizard": null,
+        "maturityBarrier": 50,
+        "knockIn": null,
+        "knockInBasis": null,
+        "annualRate": 9.36,
+        "docMaxRate": 0.78,
+        "simulation": [
+          {
+            "label": "1차 조기상환",
+            "ret": "~4.68%",
+            "count": 4427,
+            "share": 90.2
+          },
+          {
+            "label": "2차 조기상환",
+            "ret": "~9.36%",
+            "count": 377,
+            "share": 7.68
+          },
+          {
+            "label": "3차 조기상환",
+            "ret": "~14.04%",
+            "count": 59,
+            "share": 1.2
+          },
+          {
+            "label": "4차 조기상환",
+            "ret": "~18.72%",
+            "count": 45,
+            "share": 0.92
+          },
+          {
+            "label": "5차 조기상환",
+            "ret": "~23.40%",
+            "count": 0,
+            "share": 0
+          },
+          {
+            "label": "만기상환",
+            "ret": "~28.08%",
+            "count": 0,
+            "share": 0
+          },
+          {
+            "label": "만기상환손실",
+            "ret": "-10% ~ 0%",
+            "count": 0,
+            "share": 0
+          },
+          {
+            "label": "-20% ~ -10%",
+            "ret": null,
+            "count": 0,
+            "share": 0
+          },
+          {
+            "label": "-30% ~ -20%",
+            "ret": null,
+            "count": 0,
+            "share": 0
+          },
+          {
+            "label": "-40% ~ -30%",
+            "ret": null,
+            "count": 0,
+            "share": 0
+          },
+          {
+            "label": "-50% ~ -40%",
+            "ret": null,
+            "count": 0,
+            "share": 0
+          },
+          {
+            "label": "-50%이하",
+            "ret": null,
+            "count": 0,
+            "share": 0
+          },
+          {
+            "label": "진행중",
+            "ret": null,
+            "count": 0,
+            "share": 0
+          },
+          {
+            "label": "Total",
+            "ret": null,
+            "count": 4908,
+            "share": 100
+          }
+        ],
+        "simRange": {
+          "from": "2003-01-02",
+          "to": "2023-08-14"
+        },
+        "simRuns": 4908,
+        "simFirst": 90.2,
+        "simLoss": 0,
+        "lossBuckets": [
+          {
+            "label": "만기상환손실",
+            "ret": "-10% ~ 0%",
+            "count": 0,
+            "share": 0
+          },
+          {
+            "label": "-20% ~ -10%",
+            "ret": null,
+            "count": 0,
+            "share": 0
+          },
+          {
+            "label": "-30% ~ -20%",
+            "ret": null,
+            "count": 0,
+            "share": 0
+          },
+          {
+            "label": "-40% ~ -30%",
+            "ret": null,
+            "count": 0,
+            "share": 0
+          },
+          {
+            "label": "-50% ~ -40%",
+            "ret": null,
+            "count": 0,
+            "share": 0
+          },
+          {
+            "label": "-50%이하",
+            "ret": null,
+            "count": 0,
+            "share": 0
+          }
+        ]
+      }
+    ]
+  },
+  "20260825000207": {
+    "rcpNo": "20260825000207",
+    "source": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260825000207",
+    "range": "36711~36712",
+    "offer": "2026-09-14 ~ 2026-09-14",
+    "count": 2,
+    "items": [
+      {
+        "title": "미래에셋증권 제36711회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
+        "no": 36711,
+        "riskLabel": "매우높은위험",
+        "riskGrade": 1,
+        "principalProtected": false,
+        "underlyings": [
+          "EuroStoxx50",
+          "S&P500",
+          "KOSPI200"
+        ],
+        "issueSize": 19800000000,
+        "offerStart": "2026-09-14",
+        "offerEnd": "2026-09-14",
+        "coolStart": null,
+        "coolEnd": null,
+        "coolingFrom": null,
+        "coolingTo": null,
+        "confirmBy": null,
+        "confirmNote": null,
+        "payDate": "2026-09-14",
+        "recordingRight": true,
+        "riskSummaryDoc": true,
+        "maxLossNotice": true,
+        "issueDate": "2026-09-14",
+        "maturityDate": "2029-09-13",
+        "baseDate": "2026-09-11",
+        "currency": "KRW",
+        "faceValue": 10000,
+        "fairValue": 9909.79,
+        "fairValueDate": "2026-08-24",
+        "fairValueGap": -0.9,
+        "volatility": [
+          {
+            "asset": "EuroStoxx50",
+            "vol": 22.03
+          },
+          {
+            "asset": "S&P500",
+            "vol": 24.07
+          },
+          {
+            "asset": "KOSPI200",
+            "vol": 38.82
+          }
+        ],
+        "correlation": [
+          {
+            "pair": "EuroStoxx50 · S&P500",
+            "rho": 0.5737
+          },
+          {
+            "pair": "EuroStoxx50 · KOSPI200",
+            "rho": 0.2279
+          },
+          {
+            "pair": "S&P500 · KOSPI200",
+            "rho": 0.1647
+          }
+        ],
+        "schedule": [
+          {
+            "step": 1,
+            "date": "2027-03-11",
+            "payout": 104,
+            "barrier": 75
+          },
+          {
+            "step": 2,
+            "date": "2027-09-10",
+            "payout": 108,
+            "barrier": 70
+          },
+          {
+            "step": 3,
+            "date": "2028-03-10",
+            "payout": 112,
+            "barrier": 70
+          },
+          {
+            "step": 4,
+            "date": "2028-09-11",
+            "payout": 116,
+            "barrier": 60
+          },
+          {
+            "step": 5,
+            "date": "2029-03-09",
+            "payout": 120,
+            "barrier": 50
+          }
+        ],
+        "lizard": null,
+        "maturityBarrier": 40,
+        "knockIn": null,
+        "knockInBasis": null,
+        "annualRate": 8,
+        "docMaxRate": 24,
+        "simulation": [
+          {
+            "label": "1차 조기상환",
+            "ret": "4.00%",
+            "count": 4754,
+            "share": 96.8
+          },
+          {
+            "label": "2차 조기상환",
+            "ret": "8.00%",
+            "count": 107,
+            "share": 2.18
+          },
+          {
+            "label": "3차 조기상환",
+            "ret": "12.00%",
+            "count": 50,
+            "share": 1.02
+          },
+          {
+            "label": "4차 조기상환",
+            "ret": "16.00%",
+            "count": 0,
+            "share": 0
+          },
+          {
+            "label": "5차 조기상환",
+            "ret": "20.00%",
+            "count": 0,
+            "share": 0
+          },
+          {
+            "label": "만기상환",
+            "ret": "24.00%",
+            "count": 0,
+            "share": 0
+          },
+          {
+            "label": "만기상환손실",
+            "ret": "-10% ~ 0%",
+            "count": 0,
+            "share": 0
+          },
+          {
+            "label": "-20% ~ -10%",
+            "ret": null,
+            "count": 0,
+            "share": 0
+          },
+          {
+            "label": "-30% ~ -20%",
+            "ret": null,
+            "count": 0,
+            "share": 0
+          },
+          {
+            "label": "-40% ~ -30%",
+            "ret": null,
+            "count": 0,
+            "share": 0
+          },
+          {
+            "label": "-50% ~ -40%",
+            "ret": null,
+            "count": 0,
+            "share": 0
+          },
+          {
+            "label": "-50%이하",
+            "ret": null,
+            "count": 0,
+            "share": 0
+          },
+          {
+            "label": "진행중",
+            "ret": null,
+            "count": 0,
+            "share": 0
+          },
+          {
+            "label": "Total",
+            "ret": null,
+            "count": 4911,
+            "share": 100
+          }
+        ],
+        "simRange": {
+          "from": "2003-01-02",
+          "to": "2023-08-18"
+        },
+        "simRuns": 4911,
+        "simFirst": 96.8,
+        "simLoss": 0,
+        "lossBuckets": [
+          {
+            "label": "만기상환손실",
+            "ret": "-10% ~ 0%",
+            "count": 0,
+            "share": 0
+          },
+          {
+            "label": "-20% ~ -10%",
+            "ret": null,
+            "count": 0,
+            "share": 0
+          },
+          {
+            "label": "-30% ~ -20%",
+            "ret": null,
+            "count": 0,
+            "share": 0
+          },
+          {
+            "label": "-40% ~ -30%",
+            "ret": null,
+            "count": 0,
+            "share": 0
+          },
+          {
+            "label": "-50% ~ -40%",
+            "ret": null,
+            "count": 0,
+            "share": 0
+          },
+          {
+            "label": "-50%이하",
+            "ret": null,
+            "count": 0,
+            "share": 0
+          }
+        ]
+      },
+      {
+        "title": "미래에셋증권 제36712회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
+        "no": 36712,
+        "riskLabel": "매우높은위험",
+        "riskGrade": 1,
+        "principalProtected": false,
+        "underlyings": [
+          "EuroStoxx50",
+          "S&P500",
+          "KOSPI200"
+        ],
+        "issueSize": 19800000000,
+        "offerStart": "2026-09-14",
+        "offerEnd": "2026-09-14",
+        "coolStart": null,
+        "coolEnd": null,
+        "coolingFrom": null,
+        "coolingTo": null,
+        "confirmBy": null,
+        "confirmNote": null,
+        "payDate": "2026-09-14",
+        "recordingRight": true,
+        "riskSummaryDoc": true,
+        "maxLossNotice": true,
+        "issueDate": "2026-09-14",
+        "maturityDate": "2029-09-13",
+        "baseDate": "2026-09-11",
+        "currency": "KRW",
+        "faceValue": 10000,
+        "fairValue": 9886.27,
+        "fairValueDate": "2026-08-24",
+        "fairValueGap": -1.14,
+        "volatility": [
+          {
+            "asset": "EuroStoxx50",
+            "vol": 22.03
+          },
+          {
+            "asset": "S&P500",
+            "vol": 24.07
+          },
+          {
+            "asset": "KOSPI200",
+            "vol": 38.82
+          }
+        ],
+        "correlation": [
+          {
+            "pair": "EuroStoxx50 · S&P500",
+            "rho": 0.5737
+          },
+          {
+            "pair": "EuroStoxx50 · KOSPI200",
+            "rho": 0.2279
+          },
+          {
+            "pair": "S&P500 · KOSPI200",
+            "rho": 0.1647
+          }
+        ],
+        "schedule": [
+          {
+            "step": 1,
+            "date": "2027-03-11",
+            "payout": 104.35,
+            "barrier": 85
+          },
+          {
+            "step": 2,
+            "date": "2027-09-10",
+            "payout": 108.7,
+            "barrier": 70
+          },
+          {
+            "step": 3,
+            "date": "2028-03-10",
+            "payout": 113.05,
+            "barrier": 70
+          },
+          {
+            "step": 4,
+            "date": "2028-09-11",
+            "payout": 117.4,
+            "barrier": 60
+          },
+          {
+            "step": 5,
+            "date": "2029-03-09",
+            "payout": 121.75,
+            "barrier": 50
+          }
+        ],
+        "lizard": null,
+        "maturityBarrier": 40,
+        "knockIn": null,
+        "knockInBasis": null,
+        "annualRate": 8.7,
+        "docMaxRate": 26.1,
+        "simulation": [
+          {
+            "label": "1차 조기상환",
+            "ret": "4.35%",
+            "count": 4426,
+            "share": 90.12
+          },
+          {
+            "label": "2차 조기상환",
+            "ret": "8.70%",
+            "count": 387,
+            "share": 7.88
+          },
+          {
+            "label": "3차 조기상환",
+            "ret": "13.05%",
+            "count": 57,
+            "share": 1.16
+          },
+          {
+            "label": "4차 조기상환",
+            "ret": "17.40%",
+            "count": 41,
+            "share": 0.83
+          },
+          {
+            "label": "5차 조기상환",
+            "ret": "21.75%",
+            "count": 0,
+            "share": 0
+          },
+          {
+            "label": "만기상환",
+            "ret": "26.10%",
+            "count": 0,
+            "share": 0
+          },
+          {
+            "label": "만기상환손실",
+            "ret": "-10% ~ 0%",
+            "count": 0,
+            "share": 0
+          },
+          {
+            "label": "-20% ~ -10%",
+            "ret": null,
+            "count": 0,
+            "share": 0
+          },
+          {
+            "label": "-30% ~ -20%",
+            "ret": null,
+            "count": 0,
+            "share": 0
+          },
+          {
+            "label": "-40% ~ -30%",
+            "ret": null,
+            "count": 0,
+            "share": 0
+          },
+          {
+            "label": "-50% ~ -40%",
+            "ret": null,
+            "count": 0,
+            "share": 0
+          },
+          {
+            "label": "-50%이하",
+            "ret": null,
+            "count": 0,
+            "share": 0
+          },
+          {
+            "label": "진행중",
+            "ret": null,
+            "count": 0,
+            "share": 0
+          },
+          {
+            "label": "Total",
+            "ret": null,
+            "count": 4911,
+            "share": 100
+          }
+        ],
+        "simRange": {
+          "from": "2003-01-02",
+          "to": "2023-08-18"
+        },
+        "simRuns": 4911,
+        "simFirst": 90.12,
+        "simLoss": 0,
+        "lossBuckets": [
+          {
+            "label": "만기상환손실",
+            "ret": "-10% ~ 0%",
+            "count": 0,
+            "share": 0
+          },
+          {
+            "label": "-20% ~ -10%",
+            "ret": null,
+            "count": 0,
+            "share": 0
+          },
+          {
+            "label": "-30% ~ -20%",
+            "ret": null,
+            "count": 0,
+            "share": 0
+          },
+          {
+            "label": "-40% ~ -30%",
+            "ret": null,
+            "count": 0,
+            "share": 0
+          },
+          {
+            "label": "-50% ~ -40%",
+            "ret": null,
+            "count": 0,
+            "share": 0
+          },
+          {
+            "label": "-50%이하",
+            "ret": null,
+            "count": 0,
+            "share": 0
           }
         ]
       }
@@ -21721,6 +22806,444 @@
       }
     ]
   },
+  "20260901000204": {
+    "rcpNo": "20260901000204",
+    "source": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260901000204",
+    "range": "36716~36717",
+    "offer": "2026-09-22 ~ 2026-09-22",
+    "count": 2,
+    "items": [
+      {
+        "title": "미래에셋증권 제36716회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
+        "no": 36716,
+        "riskLabel": "매우높은위험",
+        "riskGrade": 1,
+        "principalProtected": false,
+        "underlyings": [
+          "EuroStoxx50",
+          "S&P500",
+          "KOSPI200"
+        ],
+        "issueSize": 19840000000,
+        "offerStart": "2026-09-22",
+        "offerEnd": "2026-09-22",
+        "coolStart": null,
+        "coolEnd": null,
+        "coolingFrom": null,
+        "coolingTo": null,
+        "confirmBy": null,
+        "confirmNote": null,
+        "payDate": "2026-09-22",
+        "recordingRight": true,
+        "riskSummaryDoc": true,
+        "maxLossNotice": true,
+        "issueDate": "2026-09-22",
+        "maturityDate": "2029-09-20",
+        "baseDate": "2026-09-21",
+        "currency": "KRW",
+        "faceValue": 10000,
+        "fairValue": 9909.73,
+        "fairValueDate": "2026-08-31",
+        "fairValueGap": -0.9,
+        "volatility": [
+          {
+            "asset": "EuroStoxx50",
+            "vol": 21.83
+          },
+          {
+            "asset": "S&P500",
+            "vol": 23.72
+          },
+          {
+            "asset": "KOSPI200",
+            "vol": 37.21
+          }
+        ],
+        "correlation": [
+          {
+            "pair": "EuroStoxx50 · S&P500",
+            "rho": 0.5665
+          },
+          {
+            "pair": "EuroStoxx50 · KOSPI200",
+            "rho": 0.2247
+          },
+          {
+            "pair": "S&P500 · KOSPI200",
+            "rho": 0.1697
+          }
+        ],
+        "schedule": [
+          {
+            "step": 1,
+            "date": "2027-03-17",
+            "payout": 103.65,
+            "barrier": 75
+          },
+          {
+            "step": 2,
+            "date": "2027-09-17",
+            "payout": 107.3,
+            "barrier": 70
+          },
+          {
+            "step": 3,
+            "date": "2028-03-17",
+            "payout": 110.95,
+            "barrier": 70
+          },
+          {
+            "step": 4,
+            "date": "2028-09-19",
+            "payout": 114.6,
+            "barrier": 60
+          },
+          {
+            "step": 5,
+            "date": "2029-03-19",
+            "payout": 118.25,
+            "barrier": 50
+          }
+        ],
+        "lizard": null,
+        "maturityBarrier": 40,
+        "knockIn": null,
+        "knockInBasis": null,
+        "annualRate": 7.3,
+        "docMaxRate": 21.9,
+        "simulation": [
+          {
+            "label": "1차 조기상환",
+            "ret": "3.65%",
+            "count": 4762,
+            "share": 96.87
+          },
+          {
+            "label": "2차 조기상환",
+            "ret": "7.30%",
+            "count": 106,
+            "share": 2.16
+          },
+          {
+            "label": "3차 조기상환",
+            "ret": "10.95%",
+            "count": 48,
+            "share": 0.98
+          },
+          {
+            "label": "4차 조기상환",
+            "ret": "14.60%",
+            "count": 0,
+            "share": 0
+          },
+          {
+            "label": "5차 조기상환",
+            "ret": "18.25%",
+            "count": 0,
+            "share": 0
+          },
+          {
+            "label": "만기상환",
+            "ret": "21.90%",
+            "count": 0,
+            "share": 0
+          },
+          {
+            "label": "만기상환손실",
+            "ret": "-10% ~ 0%",
+            "count": 0,
+            "share": 0
+          },
+          {
+            "label": "-20% ~ -10%",
+            "ret": null,
+            "count": 0,
+            "share": 0
+          },
+          {
+            "label": "-30% ~ -20%",
+            "ret": null,
+            "count": 0,
+            "share": 0
+          },
+          {
+            "label": "-40% ~ -30%",
+            "ret": null,
+            "count": 0,
+            "share": 0
+          },
+          {
+            "label": "-50% ~ -40%",
+            "ret": null,
+            "count": 0,
+            "share": 0
+          },
+          {
+            "label": "-50%이하",
+            "ret": null,
+            "count": 0,
+            "share": 0
+          },
+          {
+            "label": "진행중",
+            "ret": null,
+            "count": 0,
+            "share": 0
+          },
+          {
+            "label": "Total",
+            "ret": null,
+            "count": 4916,
+            "share": 100
+          }
+        ],
+        "simRange": {
+          "from": "2003-01-02",
+          "to": "2023-08-25"
+        },
+        "simRuns": 4916,
+        "simFirst": 96.87,
+        "simLoss": 0,
+        "lossBuckets": [
+          {
+            "label": "만기상환손실",
+            "ret": "-10% ~ 0%",
+            "count": 0,
+            "share": 0
+          },
+          {
+            "label": "-20% ~ -10%",
+            "ret": null,
+            "count": 0,
+            "share": 0
+          },
+          {
+            "label": "-30% ~ -20%",
+            "ret": null,
+            "count": 0,
+            "share": 0
+          },
+          {
+            "label": "-40% ~ -30%",
+            "ret": null,
+            "count": 0,
+            "share": 0
+          },
+          {
+            "label": "-50% ~ -40%",
+            "ret": null,
+            "count": 0,
+            "share": 0
+          },
+          {
+            "label": "-50%이하",
+            "ret": null,
+            "count": 0,
+            "share": 0
+          }
+        ]
+      },
+      {
+        "title": "미래에셋증권 제36717회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
+        "no": 36717,
+        "riskLabel": "매우높은위험",
+        "riskGrade": 1,
+        "principalProtected": false,
+        "underlyings": [
+          "EuroStoxx50",
+          "S&P500",
+          "KOSPI200"
+        ],
+        "issueSize": 19800000000,
+        "offerStart": "2026-09-22",
+        "offerEnd": "2026-09-22",
+        "coolStart": null,
+        "coolEnd": null,
+        "coolingFrom": null,
+        "coolingTo": null,
+        "confirmBy": null,
+        "confirmNote": null,
+        "payDate": "2026-09-22",
+        "recordingRight": true,
+        "riskSummaryDoc": true,
+        "maxLossNotice": true,
+        "issueDate": "2026-09-22",
+        "maturityDate": "2029-09-20",
+        "baseDate": "2026-09-21",
+        "currency": "KRW",
+        "faceValue": 10000,
+        "fairValue": 9890.48,
+        "fairValueDate": "2026-08-31",
+        "fairValueGap": -1.1,
+        "volatility": [
+          {
+            "asset": "EuroStoxx50",
+            "vol": 21.83
+          },
+          {
+            "asset": "S&P500",
+            "vol": 23.72
+          },
+          {
+            "asset": "KOSPI200",
+            "vol": 37.21
+          }
+        ],
+        "correlation": [
+          {
+            "pair": "EuroStoxx50 · S&P500",
+            "rho": 0.5665
+          },
+          {
+            "pair": "EuroStoxx50 · KOSPI200",
+            "rho": 0.2247
+          },
+          {
+            "pair": "S&P500 · KOSPI200",
+            "rho": 0.1697
+          }
+        ],
+        "schedule": [],
+        "lizard": null,
+        "maturityBarrier": 40,
+        "knockIn": null,
+        "knockInBasis": null,
+        "annualRate": 7.2,
+        "docMaxRate": 0.6,
+        "simulation": [
+          {
+            "label": "1차 조기상환",
+            "ret": "~3.60%",
+            "count": 4439,
+            "share": 90.3
+          },
+          {
+            "label": "2차 조기상환",
+            "ret": "~7.20%",
+            "count": 380,
+            "share": 7.73
+          },
+          {
+            "label": "3차 조기상환",
+            "ret": "~10.80%",
+            "count": 58,
+            "share": 1.18
+          },
+          {
+            "label": "4차 조기상환",
+            "ret": "~14.40%",
+            "count": 39,
+            "share": 0.79
+          },
+          {
+            "label": "5차 조기상환",
+            "ret": "~18.00%",
+            "count": 0,
+            "share": 0
+          },
+          {
+            "label": "만기상환",
+            "ret": "~21.60%",
+            "count": 0,
+            "share": 0
+          },
+          {
+            "label": "만기상환손실",
+            "ret": "-10% ~ 0%",
+            "count": 0,
+            "share": 0
+          },
+          {
+            "label": "-20% ~ -10%",
+            "ret": null,
+            "count": 0,
+            "share": 0
+          },
+          {
+            "label": "-30% ~ -20%",
+            "ret": null,
+            "count": 0,
+            "share": 0
+          },
+          {
+            "label": "-40% ~ -30%",
+            "ret": null,
+            "count": 0,
+            "share": 0
+          },
+          {
+            "label": "-50% ~ -40%",
+            "ret": null,
+            "count": 0,
+            "share": 0
+          },
+          {
+            "label": "-50%이하",
+            "ret": null,
+            "count": 0,
+            "share": 0
+          },
+          {
+            "label": "진행중",
+            "ret": null,
+            "count": 0,
+            "share": 0
+          },
+          {
+            "label": "Total",
+            "ret": null,
+            "count": 4916,
+            "share": 100
+          }
+        ],
+        "simRange": {
+          "from": "2003-01-02",
+          "to": "2023-08-25"
+        },
+        "simRuns": 4916,
+        "simFirst": 90.3,
+        "simLoss": 0,
+        "lossBuckets": [
+          {
+            "label": "만기상환손실",
+            "ret": "-10% ~ 0%",
+            "count": 0,
+            "share": 0
+          },
+          {
+            "label": "-20% ~ -10%",
+            "ret": null,
+            "count": 0,
+            "share": 0
+          },
+          {
+            "label": "-30% ~ -20%",
+            "ret": null,
+            "count": 0,
+            "share": 0
+          },
+          {
+            "label": "-40% ~ -30%",
+            "ret": null,
+            "count": 0,
+            "share": 0
+          },
+          {
+            "label": "-50% ~ -40%",
+            "ret": null,
+            "count": 0,
+            "share": 0
+          },
+          {
+            "label": "-50%이하",
+            "ret": null,
+            "count": 0,
+            "share": 0
+          }
+        ]
+      }
+    ]
+  },
   "20260904000316": {
     "rcpNo": "20260904000316",
     "source": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260904000316",
@@ -25035,6 +26558,214 @@
             "ret": null,
             "count": 461,
             "share": 8.87
+          }
+        ]
+      }
+    ]
+  },
+  "20260908000224": {
+    "rcpNo": "20260908000224",
+    "source": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260908000224",
+    "range": "36722~36722",
+    "offer": "2026-10-06 ~ 2026-10-06",
+    "count": 1,
+    "items": [
+      {
+        "title": "미래에셋증권 제36722회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
+        "no": 36722,
+        "riskLabel": "매우높은위험",
+        "riskGrade": 1,
+        "principalProtected": false,
+        "underlyings": [
+          "EuroStoxx50",
+          "S&P500",
+          "KOSPI200"
+        ],
+        "issueSize": 19800000000,
+        "offerStart": "2026-10-06",
+        "offerEnd": "2026-10-06",
+        "coolStart": null,
+        "coolEnd": null,
+        "coolingFrom": null,
+        "coolingTo": null,
+        "confirmBy": null,
+        "confirmNote": null,
+        "payDate": "2026-10-06",
+        "recordingRight": true,
+        "riskSummaryDoc": true,
+        "maxLossNotice": true,
+        "issueDate": "2026-10-06",
+        "maturityDate": "2029-10-19",
+        "baseDate": "2026-10-02",
+        "currency": "KRW",
+        "faceValue": 10000,
+        "fairValue": 9652.67,
+        "fairValueDate": "2026-09-07",
+        "fairValueGap": -3.47,
+        "volatility": [
+          {
+            "asset": "EuroStoxx50",
+            "vol": 21.76
+          },
+          {
+            "asset": "S&P500",
+            "vol": 23.25
+          },
+          {
+            "asset": "KOSPI200",
+            "vol": 36.54
+          }
+        ],
+        "correlation": [
+          {
+            "pair": "EuroStoxx50 · S&P500",
+            "rho": 0.5688
+          },
+          {
+            "pair": "EuroStoxx50 · KOSPI200",
+            "rho": 0.2239
+          },
+          {
+            "pair": "S&P500 · KOSPI200",
+            "rho": 0.1638
+          }
+        ],
+        "schedule": [],
+        "lizard": null,
+        "maturityBarrier": 60,
+        "knockIn": null,
+        "knockInBasis": null,
+        "annualRate": 8.82,
+        "docMaxRate": 0.735,
+        "simulation": [
+          {
+            "label": "1차 조기상환",
+            "ret": "~4.41%",
+            "count": 4378,
+            "share": 88.97
+          },
+          {
+            "label": "2차 조기상환",
+            "ret": "~8.82%",
+            "count": 423,
+            "share": 8.6
+          },
+          {
+            "label": "3차 조기상환",
+            "ret": "~13.23%",
+            "count": 77,
+            "share": 1.56
+          },
+          {
+            "label": "4차 조기상환",
+            "ret": "~17.64%",
+            "count": 42,
+            "share": 0.85
+          },
+          {
+            "label": "5차 조기상환",
+            "ret": "~22.05%",
+            "count": 1,
+            "share": 0.02
+          },
+          {
+            "label": "만기상환",
+            "ret": "~26.46%",
+            "count": 0,
+            "share": 0
+          },
+          {
+            "label": "만기상환손실",
+            "ret": "-10% ~ 0%",
+            "count": 0,
+            "share": 0
+          },
+          {
+            "label": "-20% ~ -10%",
+            "ret": null,
+            "count": 0,
+            "share": 0
+          },
+          {
+            "label": "-30% ~ -20%",
+            "ret": null,
+            "count": 0,
+            "share": 0
+          },
+          {
+            "label": "-40% ~ -30%",
+            "ret": null,
+            "count": 0,
+            "share": 0
+          },
+          {
+            "label": "-50% ~ -40%",
+            "ret": null,
+            "count": 0,
+            "share": 0
+          },
+          {
+            "label": "-50%이하",
+            "ret": null,
+            "count": 0,
+            "share": 0
+          },
+          {
+            "label": "진행중",
+            "ret": null,
+            "count": 0,
+            "share": 0
+          },
+          {
+            "label": "Total",
+            "ret": null,
+            "count": 4921,
+            "share": 100
+          }
+        ],
+        "simRange": {
+          "from": "2003-01-02",
+          "to": "2023-09-01"
+        },
+        "simRuns": 4921,
+        "simFirst": 88.97,
+        "simLoss": 0,
+        "lossBuckets": [
+          {
+            "label": "만기상환손실",
+            "ret": "-10% ~ 0%",
+            "count": 0,
+            "share": 0
+          },
+          {
+            "label": "-20% ~ -10%",
+            "ret": null,
+            "count": 0,
+            "share": 0
+          },
+          {
+            "label": "-30% ~ -20%",
+            "ret": null,
+            "count": 0,
+            "share": 0
+          },
+          {
+            "label": "-40% ~ -30%",
+            "ret": null,
+            "count": 0,
+            "share": 0
+          },
+          {
+            "label": "-50% ~ -40%",
+            "ret": null,
+            "count": 0,
+            "share": 0
+          },
+          {
+            "label": "-50%이하",
+            "ret": null,
+            "count": 0,
+            "share": 0
           }
         ]
       }
@@ -28756,6 +30487,245 @@
             "ret": null,
             "count": 1,
             "share": 0.03
+          },
+          {
+            "label": "-50%이하",
+            "ret": null,
+            "count": 0,
+            "share": 0
+          }
+        ]
+      }
+    ]
+  },
+  "20260914000166": {
+    "rcpNo": "20260914000166",
+    "source": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260914000166",
+    "range": "38132~38132",
+    "offer": "2026-09-15 ~ 2026-09-23",
+    "count": 1,
+    "items": [
+      {
+        "title": "미래에셋증권 제38132회 파생결합증권(주가연계증권)(매우높은위험,원금비보장)(상품위험등급:1등급)",
+        "no": 38132,
+        "riskLabel": "매우높은위험",
+        "riskGrade": 1,
+        "principalProtected": false,
+        "underlyings": [
+          "Nikkei225",
+          "삼성전자",
+          "SK하이닉스"
+        ],
+        "issueSize": 5000000000,
+        "offerStart": "2026-09-15",
+        "offerEnd": "2026-09-23",
+        "coolStart": "2026-09-15",
+        "coolEnd": "2026-09-18",
+        "coolingFrom": "2026-09-21",
+        "coolingTo": "2026-09-22",
+        "confirmBy": "2026-09-23",
+        "confirmNote": "2026년 09월 23일 오후 5시까지",
+        "payDate": "2026-09-28",
+        "recordingRight": true,
+        "riskSummaryDoc": true,
+        "maxLossNotice": true,
+        "issueDate": "2026-09-28",
+        "maturityDate": "2029-09-28",
+        "baseDate": "2026-09-28",
+        "currency": "KRW",
+        "faceValue": 10000,
+        "fairValue": 9572.56,
+        "fairValueDate": "2026-09-11",
+        "fairValueGap": -4.27,
+        "volatility": [
+          {
+            "asset": "Nikkei225",
+            "vol": 29.38
+          },
+          {
+            "asset": "삼성전자",
+            "vol": 49.45
+          },
+          {
+            "asset": "SK하이닉스",
+            "vol": 57.67
+          }
+        ],
+        "correlation": [
+          {
+            "pair": "Nikkei225 · 삼성전자",
+            "rho": 0.6965
+          },
+          {
+            "pair": "Nikkei225 · SK하이닉스",
+            "rho": 0.7095
+          },
+          {
+            "pair": "삼성전자 · SK하이닉스",
+            "rho": 0.8753
+          }
+        ],
+        "schedule": [
+          {
+            "step": 1,
+            "date": "2027-03-26",
+            "payout": 110.4,
+            "barrier": 80
+          },
+          {
+            "step": 2,
+            "date": "2027-09-28",
+            "payout": 120.8,
+            "barrier": 80
+          },
+          {
+            "step": 3,
+            "date": "2028-03-28",
+            "payout": 131.2,
+            "barrier": 75
+          },
+          {
+            "step": 4,
+            "date": "2028-09-28",
+            "payout": 141.6,
+            "barrier": 75
+          },
+          {
+            "step": 5,
+            "date": "2029-03-28",
+            "payout": 152,
+            "barrier": 70
+          }
+        ],
+        "lizard": null,
+        "maturityBarrier": 65,
+        "knockIn": 30,
+        "knockInBasis": "종가",
+        "annualRate": 20.8,
+        "docMaxRate": 62.4,
+        "simulation": [
+          {
+            "label": "1차 조기상환",
+            "ret": "10.40%",
+            "count": 4075,
+            "share": 84.3
+          },
+          {
+            "label": "2차 조기상환",
+            "ret": "20.80%",
+            "count": 322,
+            "share": 6.66
+          },
+          {
+            "label": "3차 조기상환",
+            "ret": "31.20%",
+            "count": 253,
+            "share": 5.23
+          },
+          {
+            "label": "4차 조기상환",
+            "ret": "41.60%",
+            "count": 47,
+            "share": 0.97
+          },
+          {
+            "label": "5차 조기상환",
+            "ret": "52.00%",
+            "count": 36,
+            "share": 0.74
+          },
+          {
+            "label": "만기상환",
+            "ret": "62.40%",
+            "count": 6,
+            "share": 0.12
+          },
+          {
+            "label": "만기상환손실",
+            "ret": "-10% ~ 0%",
+            "count": 0,
+            "share": 0
+          },
+          {
+            "label": "-20% ~ -10%",
+            "ret": null,
+            "count": 0,
+            "share": 0
+          },
+          {
+            "label": "-30% ~ -20%",
+            "ret": null,
+            "count": 0,
+            "share": 0
+          },
+          {
+            "label": "-40% ~ -30%",
+            "ret": null,
+            "count": 9,
+            "share": 0.19
+          },
+          {
+            "label": "-50% ~ -40%",
+            "ret": null,
+            "count": 86,
+            "share": 1.78
+          },
+          {
+            "label": "-50%이하",
+            "ret": null,
+            "count": 0,
+            "share": 0
+          },
+          {
+            "label": "진행중",
+            "ret": null,
+            "count": 0,
+            "share": 0
+          },
+          {
+            "label": "Total",
+            "ret": null,
+            "count": 4834,
+            "share": 100
+          }
+        ],
+        "simRange": {
+          "from": "2003-01-06",
+          "to": "2023-09-07"
+        },
+        "simRuns": 4834,
+        "simFirst": 84.3,
+        "simLoss": 1.97,
+        "lossBuckets": [
+          {
+            "label": "만기상환손실",
+            "ret": "-10% ~ 0%",
+            "count": 0,
+            "share": 0
+          },
+          {
+            "label": "-20% ~ -10%",
+            "ret": null,
+            "count": 0,
+            "share": 0
+          },
+          {
+            "label": "-30% ~ -20%",
+            "ret": null,
+            "count": 0,
+            "share": 0
+          },
+          {
+            "label": "-40% ~ -30%",
+            "ret": null,
+            "count": 9,
+            "share": 0.19
+          },
+          {
+            "label": "-50% ~ -40%",
+            "ret": null,
+            "count": 86,
+            "share": 1.78
           },
           {
             "label": "-50%이하",

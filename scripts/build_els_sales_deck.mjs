@@ -163,7 +163,15 @@ const perRisk = (i) => i.annualRate / +i.mcLoss.toFixed(1);
   s.addText(`제${A.items[0].no}~${A.items.at(-1).no}회\n${A.items.length}종`, {
     x: M, y: 1.06, w: 7.5, h: 1.7, fontFace: F, fontSize: 40, bold: true, color: WHITE, lineSpacing: 46, margin: 0,
   });
-  s.addText(`공모 청약 ${dot(P.start)}~${dot(P.end)} · 일괄신고추가서류 ${A.filedOn} 공시 원문 기준`, {
+  // 한 주치가 공시 두 건에 걸치면 청약기간도 회차마다 갈린다. 대표 공시의 날짜만
+  // 적으면 하루 늦게 시작하는 회차를 잘못 안내하게 되므로 전체 구간과 공시 날짜를
+  // 모두 적는다.
+  const spanStart = A.items.map((i) => i.offerStart).sort()[0];
+  const spanEnd = A.items.map((i) => i.offerEnd).sort().at(-1);
+  const filedList = A.rcps
+    .map((r) => `${r.slice(0, 4)}.${r.slice(4, 6)}.${r.slice(6, 8)}`)
+    .sort().join('·');
+  s.addText(`공모 청약 ${dot(spanStart)}~${dot(spanEnd)} · 일괄신고추가서류 ${filedList} 공시 원문 기준`, {
     x: M, y: 2.82, w: 7.5, h: 0.3, fontFace: F, fontSize: 13, color: WHITE, margin: 0,
   });
 
@@ -211,6 +219,17 @@ const perRisk = (i) => i.annualRate / +i.mcLoss.toFixed(1);
     s.addText(v, { x: 8.82, y: y + 0.22, w: 3.6, h: 0.32, fontFace: F, fontSize: fs, bold: true, color: c, margin: 0 });
     if (note) s.addText(note, { x: 8.82, y: y + 0.54, w: 3.6, h: 0.22, fontFace: F, fontSize: 8.5, color: i === 0 ? ACTIVE : MUTED, margin: 0 });
   });
+
+  // 위 일정은 대표 공시 기준이다. 다른 공시로 나온 회차는 날짜가 며칠씩 밀리므로
+  // 여기에 따로 적는다 — 적지 않으면 창구가 전 종목을 같은 날로 안내하게 된다.
+  if (A.offSchedule.length) {
+    s.addText(
+      A.offSchedule
+        .map((i) => `제${i.no}회는 청약 ${dot(i.offerStart)}~${dot(i.offerEnd)} (별도 공시)`)
+        .join('\n'),
+      { x: 8.82, y: 6.02, w: 3.6, h: 0.4, fontFace: F, fontSize: 8.5, color: ACTIVE, margin: 0, lineSpacing: 11 },
+    );
+  }
 
   s.addText('전 종목 원금비보장 · 위험등급 1등급(매우높은위험) · 예금자보호 대상 아님', {
     x: M, y: 6.72, w: CW, h: 0.28, fontFace: F, fontSize: 10, color: WHITE, margin: 0,
@@ -575,7 +594,7 @@ const perRisk = (i) => i.annualRate / +i.mcLoss.toFixed(1);
   ].filter(Boolean).join(' ');
 
   s.addText(
-    `조건·공정가격·적용 변동성·상관계수·백테스트(A)는 일괄신고추가서류(접수번호 ${A.rcp}, ${A.filedOn} 공시) 원문에서 그대로 옮겼습니다. 손실 확률(B)은 그 공시 변동성과 상관계수로 같은 조건을 ${(A.mc.paths / 10000).toFixed(0)}만 번 다시 돌린 값이며, 공시된 수치가 아닙니다. 수익률은 확정이 아니라 조건 충족 시의 상한입니다.`,
+    `조건·공정가격·적용 변동성·상관계수·백테스트(A)는 일괄신고추가서류(접수번호 ${A.rcps.join(' · ')}) 원문에서 그대로 옮겼습니다. 손실 확률(B)은 그 공시 변동성과 상관계수로 같은 조건을 ${(A.mc.paths / 10000).toFixed(0)}만 번 다시 돌린 값이며, 공시된 수치가 아닙니다. 수익률은 확정이 아니라 조건 충족 시의 상한입니다.`,
     { x: rx + 0.18, y: yS + 0.36, w: rw - 0.36, h: 0.62, fontFace: F, fontSize: 8.5, color: BODY, margin: 0, lineSpacing: 12, valign: 'top' },
   );
   if (caveat) {
