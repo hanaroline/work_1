@@ -64,6 +64,26 @@ jobs:
         continue-on-error: true
         run: node scripts/collect_cc_etf.mjs
 
+      # 진단자료는 볼 수 없으면 없는 것과 같다. 아티팩트를 내려받을 수 없는
+      # 자리에서도 봐야 하므로 저장소에도 남긴다. data/ 와 엑셀은 건드리지
+      # 않는다 — 이건 무엇이 잘못됐는지 적은 쪽지일 뿐이다.
+      - name: 수집 실패 진단자료 커밋
+        if: steps.collect.outcome == 'failure'
+        continue-on-error: true
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add tools/etfcheck-discovery/collect-failures.json || true
+          if git diff --cached --quiet; then
+            echo "남길 진단자료가 없습니다"
+            exit 0
+          fi
+          git commit -m "chore(etf): 수집 실패 진단자료 ($(date -u +%Y-%m-%d\ %H:%M))"
+          for i in 1 2 3; do
+            if git push; then exit 0; fi
+            git pull --rebase origin "${{ github.ref_name }}" || exit 1
+          done
+
       - name: 수집 실패 진단자료
         if: steps.collect.outcome == 'failure'
         uses: actions/upload-artifact@v4
