@@ -31,6 +31,8 @@ import path from 'node:path';
 const BASE = 'https://www.etfcheck.co.kr';
 const OUT = 'data/cc_etf.json';
 const DIAG = 'discovery/cc-etf';
+// 저장소에 남겨 두는 진단자료. discovery/ 는 .gitignore 에 걸려 있다.
+const DIAG_REPO = 'tools/etfcheck-discovery';
 
 // ── 채택 기준 ──────────────────────────────────────────────────────────
 // 고객에게 권하는 자리에 올릴 종목이다. 팔고 싶을 때 못 파는 종목(유동성)과
@@ -236,11 +238,18 @@ async function apiOutline(code, tries = 3) {
 }
 
 function dumpDiagnostics(extra = {}) {
+  const body = { when: new Date().toISOString(), samples: outlineSamples, ...extra };
   fs.mkdirSync(DIAG, { recursive: true });
-  fs.writeFileSync(
-    path.join(DIAG, 'outline-failures.json'),
-    JSON.stringify({ when: new Date().toISOString(), samples: outlineSamples, ...extra }, null, 2),
-  );
+  fs.writeFileSync(path.join(DIAG, 'outline-failures.json'), JSON.stringify(body, null, 2));
+  // `discovery/` 는 .gitignore 에 걸려 있어 아티팩트로만 남는다. 아티팩트를
+  // 내려받을 수 없는 자리에서도 봐야 하므로 tools/ 밑에도 적고, 로그에도
+  // 첫 표본을 찍는다. 진단자료는 볼 수 없으면 없는 것과 같다.
+  fs.mkdirSync(DIAG_REPO, { recursive: true });
+  fs.writeFileSync(path.join(DIAG_REPO, 'collect-failures.json'), JSON.stringify(body, null, 2));
+  if (outlineSamples.length) {
+    console.log('── 값이 안 든 상세 응답 표본 ──');
+    console.log(JSON.stringify(outlineSamples[0]).slice(0, 3000));
+  }
 }
 
 async function refreshHeaders() {
