@@ -97,6 +97,7 @@ if (!appHeaders) {
   throw new Error('앱 머리글(checkclient)을 못 잡았습니다. 화면 구조가 바뀌었을 수 있습니다.');
 }
 // 브라우저가 스스로 붙이는 머리글은 다시 붙일 수 없다(금지 머리글).
+// 중간에 갈아 끼울 수 있게 const 객체 하나를 계속 고쳐 쓴다(refreshHeaders).
 const HDRS = Object.fromEntries(
   Object.entries(appHeaders).filter(
     ([k]) => !/^(host|:|accept-encoding|connection|content-length|cookie|referer|sec-|user-agent)/i.test(k),
@@ -127,7 +128,18 @@ if (universe.length < 10) {
   throw new Error(`모집단이 ${universe.length}종목뿐입니다. 분류 코드가 바뀌었는지 확인하십시오.`);
 }
 
-async function api(p) {
+// 부르기 실패와 "값이 없음" 을 반드시 갈라 놓는다.
+//
+// 첫 판에서 이것을 섞어 두었다가 크게 데었다. 61종목을 다섯 갈래로 한꺼번에
+// 부르니 서른세 번째쯤부터 원천이 답을 끊었는데, 실패한 응답을 빈 배열로
+// 받아 "분배 이력 0개월" 이라고 적었다. RISE 미국30년국채커버드콜처럼 매달
+// 꼬박꼬박 분배하는 종목이 "분배한 적 없음" 으로 파일에 남은 것이다.
+// 모르는 것을 사실로 적는 것이 이 작업에서 제일 나쁜 고장이다.
+//
+// 그래서 실패는 null 이 아니라 던진다. 부르는 쪽이 반드시 마주하게 된다.
+class ApiError extends Error {}
+
+async function apiOnce(p) {
   const r = await page.evaluate(
     async ({ base, p, headers }) => {
       try {
@@ -139,12 +151,45 @@ async function api(p) {
     },
     { base: BASE, p, headers: HDRS },
   );
-  if (r.status !== 200) return null;
+  if (r.status !== 200) throw new ApiError(`HTTP ${r.status}`);
+  let j;
   try {
-    const j = JSON.parse(r.text);
-    return j.success === false ? null : j.results || null;
+    j = JSON.parse(r.text);
   } catch {
-    return null;
+    throw new ApiError(`JSON 아님: ${r.text.slice(0, 80)}`);
+  }
+  if (j.success === false) throw new ApiError(j.message || 'success:false');
+  return j.results ?? []; // 빈 배열은 "정말로 값이 없다" 는 뜻이다
+}
+
+async function api(p, tries = 3) {
+  let last;
+  for (let i = 0; i < tries; i++) {
+    try {
+      return await apiOnce(p);
+    } catch (e) {
+      last = e;
+      // 끊겼을 때는 쉬었다 다시 묻는다. 그래도 안 되면 화면을 다시 열어
+      // 머리글을 새로 얻는다 — 토큰이 시간이 지나 죽는 경우가 있다.
+      await sleep(800 * (i + 1));
+      if (i === tries - 2) await refreshHeaders();
+    }
+  }
+  throw last;
+}
+
+async function refreshHeaders() {
+  appHeaders = null;
+  await page.goto(BASE, { waitUntil: 'domcontentloaded', timeout: 60000 });
+  await page.waitForTimeout(6000);
+  if (appHeaders) {
+    for (const k of Object.keys(HDRS)) delete HDRS[k];
+    for (const [k, v] of Object.entries(appHeaders)) {
+      if (!/^(host|:|accept-encoding|connection|content-length|cookie|referer|sec-|user-agent)/i.test(k)) {
+        HDRS[k] = v;
+      }
+    }
+    console.log('  (머리글을 새로 받았습니다)');
   }
 }
 
@@ -157,18 +202,56 @@ for (const [i, row] of universe.entries()) {
   const name = row.F16002;
   process.stdout.write(`[${i + 1}/${universe.length}] ${code} ${name} … `);
 
-  const [outline, hist, monthly, fee, term] = await Promise.all([
-    api(`/user/etp/getEtpItemOutline?code=${code}&befDate=${new Date().getFullYear() - 1}0101`),
-    api(`/user/etp/getEtpItemCashHist?code=${code}&limit=36`),
-    api(`/user/etp/getEtpItemCashMonthly?code=${code}`),
-    api(`/user/etp/getEtpLatestFee?code=${code}`),
-    api(`/user/etp/getEtpTermHist?F16013=${code}&gubun=1Y`),
-  ]);
+  // 한꺼번에 다섯 갈래로 부르지 않는다. 첫 판에서 그렇게 했다가 서른세
+  // 번째 종목부터 원천이 답을 끊었다. 차례로, 사이를 띄워서 묻는다.
+  // 61종목 × 5번이면 2분 남짓이다 — 한 달에 한 번 도는 일에 그 정도는 싸다.
+  let outline;
+  let hist;
+  let monthly;
+  let fee;
+  let navHist;
+  let term;
+  try {
+    outline = await api(`/user/etp/getEtpItemOutline?code=${code}&befDate=${new Date().getFullYear() - 1}0101`);
+    await sleep(250);
+    hist = await api(`/user/etp/getEtpItemCashHist?code=${code}&limit=36`);
+    await sleep(250);
+    monthly = await api(`/user/etp/getEtpItemCashMonthly?code=${code}`);
+    await sleep(250);
+    fee = await api(`/user/etp/getEtpLatestFee?code=${code}`);
+    await sleep(250);
+    navHist = await api(`/user/etp/getSimpleEtpHist?F16013=${code}&limit=250&type=diff`);
+    await sleep(250);
+    term = await api(`/user/etp/getEtpTermHist?F16013=${code}&gubun=1Y`);
+  } catch (e) {
+    // 여기서 멈추지 않고 다음 종목으로 넘어가되, **이 종목을 채택 목록에
+    // 올리지 않는다.** 값이 반쯤 온 종목을 "분배 이력 0개월" 로 적는 일은
+    // 다시 하지 않는다.
+    console.log(`수집 실패 — 제외 (${String(e.message).slice(0, 60)})`);
+    failed.push({ code, name, why: String(e.message).slice(0, 200) });
+    items.push({
+      code,
+      name,
+      manager: row.F33961 || null,
+      adopted: false,
+      dataComplete: false,
+      excludeReason: `수집 실패(세 번 다시 물었으나 답이 오지 않음: ${String(e.message).slice(0, 80)})`,
+    });
+    await sleep(600);
+    continue;
+  }
 
-  if (!outline?.[0]) {
-    console.log('상세 없음 — 건너뜀');
-    failed.push({ code, name, why: 'getEtpItemOutline 응답 없음' });
-    await sleep(150);
+  if (!outline[0]) {
+    console.log('상세 비어 있음 — 제외');
+    items.push({
+      code,
+      name,
+      manager: row.F33961 || null,
+      adopted: false,
+      dataComplete: false,
+      excludeReason: '상세(getEtpItemOutline)가 빈 응답',
+    });
+    await sleep(400);
     continue;
   }
   const o = outline[0];
@@ -195,16 +278,39 @@ for (const [i, row] of universe.entries()) {
   const theirSum = num(mo.DIV_AMT_YEAR);
   const theirRate = num(mo.DIV_RATE_REAL);
 
-  // 1년 일별 종가·거래량. 변동성과 60일 평균 거래대금을 여기서 낸다.
-  const days = (term || []).map((d) => ({
+  // 일별 기준가(NAV)와 종가. 변동성과 60일 평균 거래대금을 여기서 낸다.
+  //
+  // 변동성은 **종가가 아니라 NAV** 로 낸다. 종가는 호가 공백이나 하루치
+  // 이상치 하나로 크게 흔들리는데, 그 한 점이 연 변동성을 몇 십 %p 씩
+  // 밀어 올려 멀쩡한 종목을 떨어뜨린다. NAV 는 그 펀드가 실제로 담고 있는
+  // 값이라 그런 잡음이 적다. 종가 기준 값도 함께 적어 두어 둘이 크게
+  // 어긋나면 사람이 볼 수 있게 한다.
+  const days = (navHist || []).map((d) => ({
     date: String(d.F12506),
     close: num(d.F15001),
-    volume: num(d.F15015),
+    nav: num(d.F15301),
+    units: num(d.F16500), // 상장좌수
   }));
-  // 받은 차례가 최신순이므로 뒤집어 옛날→최신으로 놓는다.
-  const chron = [...days].reverse().filter((d) => d.close > 0);
-  const vol = annualVolatility(chron.map((d) => d.close));
-  const last60 = days.slice(0, 60);
+  const chron = [...days].reverse();
+  const navVol = annualVolatility(chron.map((d) => d.nav).filter((x) => x > 0));
+  const pxVol = annualVolatility(chron.map((d) => d.close).filter((x) => x > 0));
+  const vol = navVol ?? pxVol;
+
+  // 하루에 ±15% 넘게 움직인 날. 커버드콜 ETF 에서 그런 날은 시장이 아니라
+  // 액면분할이나 원천의 오기일 때가 많다. 지우지 않고 세어서 적어 둔다 —
+  // 조용히 버리면 무엇을 버렸는지 아무도 모르게 된다.
+  const jumps = [];
+  for (let i = 1; i < chron.length; i++) {
+    const a = chron[i - 1].nav;
+    const b = chron[i].nav;
+    if (a > 0 && b > 0 && Math.abs(Math.log(b / a)) > 0.15) {
+      jumps.push({ date: chron[i].date, from: a, to: b });
+    }
+  }
+
+  // 60일 평균 거래대금. 거래량은 시세 이력(getEtpTermHist)에만 있다.
+  const tdays = (term || []).map((d) => ({ close: num(d.F15001), volume: num(d.F15015) }));
+  const last60 = tdays.slice(0, 60);
   const turnover60 =
     last60.length >= 40
       ? last60.reduce((s, d) => s + (d.close || 0) * (d.volume || 0), 0) / last60.length
@@ -249,6 +355,9 @@ for (const [i, row] of universe.entries()) {
     expenseRatio: num(fee?.[0]?.TOTAL_FEE) ?? num(o.F34763),
     ter: num(fee?.[0]?.TER),
     volatility: vol === null ? null : Number(vol.toFixed(2)),
+    volatilityNav: navVol === null ? null : Number(navVol.toFixed(2)),
+    volatilityPrice: pxVol === null ? null : Number(pxVol.toFixed(2)),
+    priceJumps: jumps,
     distMonthlyRate: last?.rate ?? null,
     distMonthlyAmount: last?.amount ?? null,
     lastDistDate: last?.date ?? null,
@@ -257,6 +366,7 @@ for (const [i, row] of universe.entries()) {
     distTtmRateSource: theirRate,
     distTtmSumSource: theirSum,
     distMonths: months,
+    dataComplete: true,
     adopted: why.length === 0,
     excludeReason: why.length ? why.join(', ') : null,
     sourceUrl: `${BASE}/mobile/etpitem/${code}/basic`,
@@ -282,8 +392,9 @@ const out = {
   rules: RULES,
   derived: {
     distTtmRate: '최근 12회 분배금 합계 ÷ 현재가 × 100. ETFCHECK 의 DIV_RATE_REAL 과 대조해 0.15%p 넘게 어긋나면 제외한다.',
-    volatility: '최근 1년 일간 로그수익률의 표본표준편차 × √252 × 100.',
+    volatility: '최근 1년 일간 기준가(NAV) 로그수익률의 표본표준편차 × √252 × 100. 종가 기준 값은 volatilityPrice 에 따로 적는다.',
     turnover60: '최근 60거래일 (종가 × 거래량) 의 평균.',
+    priceJumps: '하루에 ±15% 넘게 움직인 날. 커버드콜 ETF 에서는 시장보다 액면분할이나 원천 오기일 때가 많다. 지우지 않고 세어서 남긴다.',
   },
   universe: universe.length,
   adoptedCount: adopted.length,
