@@ -1,0 +1,1647 @@
+<title data-en="Morning Market Briefing (Core) · Thursday 17 September 2026 | Mirae Asset Securities Mapo WM">모닝 마켓 브리핑 핵심본 · 2026년 9월 17일(목) | 미래에셋증권 마포WM</title>
+<style>
+*,*::before,*::after{box-sizing:border-box}
+
+/* ============ tokens ============ */
+:root{
+  --primary:#F58220; --primary-active:#CB6015; --primary-soft:#FAB072;
+  --secondary:#043B72;
+  --canvas:#FFFFFF; --surface-soft:#ECEFF4; --surface-subtle:#F7F8FA; --card:#FFFFFF;
+  --hairline:#CDCECB; --hairline-soft:#E5E4E1;
+  --ink:#1A1A1A; --body:#3D3D3D; --muted:#6C6C6C; --muted-soft:#84888B;
+  --up:#C62828; --down:#043B72; --warning:#D4A017; --success:#2E8540;
+  --hl-row:#D7D7D7; --on-primary:#FFFFFF;
+  --callout-bg:#F58220; --callout-fg:#FFFFFF; --callout-rule:rgba(255,255,255,.5);
+  --vf-warn-bg:#FCF7E8; --vf-warn-fg:#8A6A0D;
+  --vf-ok-bg:#F0F7F1;   --vf-ok-fg:#1F5C2C;
+  --vf-bad-bg:#FBF0F0;  --vf-bad-fg:#8F1F1F;
+  --link-rule:rgba(4,59,114,.28);
+  --font-kr:'Pretendard','Apple SD Gothic Neo','Noto Sans KR','Malgun Gothic',system-ui,sans-serif;
+  --font-en:'Aptos','Segoe UI',system-ui,-apple-system,'Helvetica Neue',Arial,sans-serif;
+  --font-num:'Aptos','Segoe UI',system-ui,-apple-system,'Helvetica Neue',Arial,sans-serif;
+  --space-section:104px; --space-block:56px; --space-content:28px; --space-tight:14px;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --primary:#FF9A4A; --primary-active:#FFB169; --primary-soft:#4A331E;
+    --secondary:#82B7EA;
+    --canvas:#15171B; --surface-soft:#212630; --surface-subtle:#1B1F26; --card:#1A1E25;
+    --hairline:#3A414C; --hairline-soft:#2A303A;
+    --ink:#F1F3F6; --body:#CDD3DB; --muted:#98A0AB; --muted-soft:#7F8794;
+    --up:#FF7A7A; --down:#82B7EA; --warning:#E4BB55; --success:#63C07C;
+    --hl-row:#272C34; --on-primary:#241206;
+    --callout-bg:#8A4410; --callout-fg:#FFF1E4; --callout-rule:rgba(255,241,228,.45);
+    --vf-warn-bg:#3A2F14; --vf-warn-fg:#E8C86B;
+    --vf-ok-bg:#16301D;   --vf-ok-fg:#7DD494;
+    --vf-bad-bg:#3A1D1D;  --vf-bad-fg:#F09090;
+    --link-rule:rgba(130,183,234,.35);
+  }
+}
+:root[data-theme="dark"]{
+  --primary:#FF9A4A; --primary-active:#FFB169; --primary-soft:#4A331E;
+  --secondary:#82B7EA;
+  --canvas:#15171B; --surface-soft:#212630; --surface-subtle:#1B1F26; --card:#1A1E25;
+  --hairline:#3A414C; --hairline-soft:#2A303A;
+  --ink:#F1F3F6; --body:#CDD3DB; --muted:#98A0AB; --muted-soft:#7F8794;
+  --up:#FF7A7A; --down:#82B7EA; --warning:#E4BB55; --success:#63C07C;
+  --hl-row:#272C34; --on-primary:#241206;
+  --callout-bg:#8A4410; --callout-fg:#FFF1E4; --callout-rule:rgba(255,241,228,.45);
+  --vf-warn-bg:#3A2F14; --vf-warn-fg:#E8C86B;
+  --vf-ok-bg:#16301D;   --vf-ok-fg:#7DD494;
+  --vf-bad-bg:#3A1D1D;  --vf-bad-fg:#F09090;
+  --link-rule:rgba(130,183,234,.35);
+}
+:root[data-theme="light"]{
+  --primary:#F58220; --primary-active:#CB6015; --primary-soft:#FAB072;
+  --secondary:#043B72;
+  --canvas:#FFFFFF; --surface-soft:#ECEFF4; --surface-subtle:#F7F8FA; --card:#FFFFFF;
+  --hairline:#CDCECB; --hairline-soft:#E5E4E1;
+  --ink:#1A1A1A; --body:#3D3D3D; --muted:#6C6C6C; --muted-soft:#84888B;
+  --up:#C62828; --down:#043B72; --warning:#D4A017; --success:#2E8540;
+  --hl-row:#D7D7D7; --on-primary:#FFFFFF;
+  --callout-bg:#F58220; --callout-fg:#FFFFFF; --callout-rule:rgba(255,255,255,.5);
+  --vf-warn-bg:#FCF7E8; --vf-warn-fg:#8A6A0D;
+  --vf-ok-bg:#F0F7F1;   --vf-ok-fg:#1F5C2C;
+  --vf-bad-bg:#FBF0F0;  --vf-bad-fg:#8F1F1F;
+  --link-rule:rgba(4,59,114,.28);
+}
+@media (max-width:768px){ :root{--space-section:72px;--space-block:36px} }
+
+/* ============ base ============ */
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--canvas);color:var(--body);font-family:var(--font-kr);
+  font-size:19px;line-height:1.65;font-variant-numeric:tabular-nums}
+html[lang="en"] body{font-family:var(--font-en)}
+.num{font-family:var(--font-num);font-variant-numeric:tabular-nums}
+a{color:var(--secondary);text-decoration:none;border-bottom:1px solid var(--link-rule)}
+a:hover{color:var(--primary-active);border-bottom-color:var(--primary)}
+a:focus-visible{outline:2px solid var(--primary);outline-offset:2px;border-radius:2px}
+strong,b{color:var(--ink);font-weight:700}
+.page{max-width:1200px;margin:0 auto;padding:0 32px}
+@media (max-width:768px){ .page{padding:0 20px} }
+
+/* ============ shell / sidenav ============ */
+.shell{display:block}
+@media (min-width:1080px){
+  .shell{display:grid;grid-template-columns:208px minmax(0,1fr);gap:48px;align-items:start}
+  .sidenav{position:sticky;top:24px;max-height:calc(100vh - 48px);overflow-y:auto;padding-bottom:19px}
+  .shell > main{min-width:0}
+  .shell > main > .section:first-child{margin-top:56px}
+}
+.sidenav-label{font-size:14px;font-weight:500;letter-spacing:.6px;color:var(--muted-soft);
+  margin:0 0 10px;padding-bottom:8px;border-bottom:1px solid var(--primary)}
+.sidenav ul{list-style:none;margin:0 0 28px;padding:0}
+.sidenav ul:last-of-type{margin-bottom:14px}
+.sidenav a{display:block;font-size:15px;line-height:1.35;color:var(--body);
+  padding:7px 0 7px 12px;border:0;border-left:2px solid transparent}
+.sidenav a:hover{color:var(--primary-active);border-left-color:var(--hairline);background:var(--surface-subtle)}
+.sidenav a[aria-current]{color:var(--primary-active);font-weight:700;border-left-color:var(--primary)}
+.sidenav .sn{font-family:var(--font-num);font-size:12px;color:var(--muted-soft);margin-right:7px}
+.sidenav a[aria-current] .sn{color:var(--primary)}
+.sidenav-dates a{font-size:15px}
+.sidenav-dates .d{font-family:var(--font-num);font-size:12px;color:var(--muted-soft);margin-right:7px}
+.sidenav-dates a[aria-current] .d{color:var(--primary)}
+.sidenav-dates .na{display:block;padding:7px 0 7px 12px;font-size:14px;color:var(--muted-soft)}
+.section{scroll-margin-top:24px}
+@media (max-width:1079px){
+  .sidenav{position:sticky;top:0;z-index:5;background:var(--canvas);
+    border-bottom:1px solid var(--hairline);padding:12px 0 10px;margin-bottom:28px}
+  .sidenav-label{display:none}
+  .sidenav ul{display:flex;gap:8px;overflow-x:auto;margin:0 0 8px;-webkit-overflow-scrolling:touch;scrollbar-width:thin}
+  .sidenav ul:last-of-type{margin-bottom:0}
+  .sidenav ul li{flex:none}
+  .sidenav a{padding:6px 12px;border:1px solid var(--hairline);border-radius:2px;white-space:nowrap;font-size:15px}
+  .sidenav a[aria-current]{background:var(--primary);color:var(--on-primary);border-color:var(--primary)}
+  .sidenav a[aria-current] .sn{color:var(--on-primary);opacity:.7}
+  .section{scroll-margin-top:96px}
+}
+/* 오른쪽 상세 패널은 걷어냈다. 상세는 어느 화면에서나 제자리에서 펼쳐진다 —
+   화면 폭에 따라 같은 클릭이 다르게 동작하면 읽는 사람이 두 가지를 배워야 하고,
+   패널 자리를 만드느라 1400~1620px 구간에서 표의 설명 열까지 접혀 있었다.
+   넓은 화면에서는 본문 칸만 조금 넓힌다. */
+@media (min-width:1400px){ .page.wide{max-width:1320px} }
+.detail-title{display:none}
+
+/* ============ topbar / hero ============ */
+.topbar{display:flex;align-items:flex-start;justify-content:space-between;gap:19px;padding-top:24px}
+.chip{display:inline-block;font-size:14px;letter-spacing:.6px;font-weight:500;color:var(--muted);
+  border:1px solid var(--hairline);padding:4px 10px;border-radius:2px}
+.topbar-actions{display:flex;align-items:center;gap:10px;flex:none;flex-wrap:wrap;justify-content:flex-end}
+.lang-toggle{display:inline-flex;border:1px solid var(--hairline);border-radius:2px;overflow:hidden;
+  box-shadow:0 2px 8px rgba(0,0,0,.06);flex:none;background:var(--card)}
+.lang-toggle button{font-family:var(--font-en);font-size:14px;font-weight:500;letter-spacing:.5px;
+  padding:10px 17px;border:0;background:var(--card);color:var(--muted);cursor:pointer;line-height:1}
+.lang-toggle button + button{border-left:1px solid var(--hairline)}
+.lang-toggle button:hover:not([aria-checked="true"]){background:var(--surface-subtle);color:var(--ink)}
+.lang-toggle button[aria-checked="true"]{background:var(--primary);color:var(--on-primary)}
+.lang-toggle button:focus-visible{outline:2px solid var(--primary);outline-offset:-2px}
+.expand-all,.print-btn{font-family:var(--font-kr);font-size:14px;font-weight:500;letter-spacing:.3px;
+  padding:9px 15px;border-radius:2px;cursor:pointer;white-space:nowrap;line-height:1.2}
+html[lang="en"] .expand-all,html[lang="en"] .print-btn{font-family:var(--font-en)}
+.expand-all{border:1px solid var(--hairline);background:var(--card);color:var(--muted)}
+.expand-all:hover{background:var(--surface-subtle);color:var(--ink)}
+.expand-all:focus-visible,.print-btn:focus-visible{outline:2px solid var(--primary);outline-offset:2px}
+.print-btn{border:1px solid var(--primary);background:var(--primary);color:var(--on-primary)}
+.print-btn:hover{background:var(--primary-active);border-color:var(--primary-active)}
+.print-btn.alt{background:var(--card);color:var(--primary-active)}
+.print-btn.alt:hover{background:var(--surface-subtle);border-color:var(--primary-active)}
+.expand-all .lbl-collapse{display:none}
+.expand-all[aria-pressed="true"] .lbl-expand{display:none}
+.expand-all[aria-pressed="true"] .lbl-collapse{display:inline}
+@media (max-width:680px){ .topbar{flex-wrap:wrap} .topbar-actions{width:100%;row-gap:10px} }
+
+.hero{margin-top:28px;padding-bottom:var(--space-block);border-bottom:1px solid var(--hairline-soft)}
+.hero-kicker{font-size:16px;font-weight:500;letter-spacing:.6px;color:var(--primary-active);margin:0 0 14px}
+.hero h1{font-size:46px;font-weight:700;line-height:1.16;letter-spacing:-.5px;color:var(--ink);
+  margin:0 0 19px;text-wrap:balance}
+.hero-lede{font-size:21px;line-height:1.6;color:var(--body);margin:0;max-width:62em}
+.hero-meta{margin-top:19px;font-size:14px;letter-spacing:.2px;color:var(--muted-soft)}
+@media (max-width:768px){ .hero h1{font-size:31px} .hero-lede{font-size:19px} }
+.tone{display:inline-block;font-size:14px;font-weight:500;letter-spacing:.4px;padding:4px 10px;
+  border-radius:2px;color:#FFFFFF;background:var(--muted-soft)}
+.tone.risk-off{background:var(--up)} .tone.risk-on{background:var(--success)}
+.tone.mixed{background:var(--warning);color:#2A2000}
+:root[data-theme="dark"] .tone.risk-off,:root[data-theme="dark"] .tone.risk-on{color:#12151A}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .tone.risk-off,
+  :root:not([data-theme="light"]) .tone.risk-on{color:#12151A}}
+
+/* ============ sections ============ */
+.section{margin-top:var(--space-section)}
+.section-rule{height:1px;background:var(--primary);margin-bottom:19px}
+.sec-num{font-family:var(--font-num);font-size:14px;font-weight:600;letter-spacing:1.2px;
+  color:var(--primary);display:block;margin-bottom:4px}
+.section-title{font-size:26px;font-weight:700;color:var(--ink);margin:0 0 var(--space-content)}
+@media (max-width:768px){ .section-title{font-size:22px} }
+.section h3{font-size:22px;font-weight:600;color:var(--ink);margin:var(--space-block) 0 var(--space-tight)}
+@media (max-width:768px){ .section h3{font-size:19px} }
+.section h3:first-of-type{margin-top:0}
+.section p{margin:0 0 var(--space-content);max-width:62em}
+.lede{font-size:19px;color:var(--ink);font-weight:500;line-height:1.6}
+.sub{font-size:17px;line-height:1.55;color:var(--muted)}
+.cap{font-size:14px;color:var(--muted-soft);line-height:1.5}
+.section ul.plain{margin:0 0 var(--space-content);padding-left:22px}
+.section ul.plain li{margin-bottom:10px}
+
+/* ============ keypoints ============ */
+.keypoints{list-style:none;margin:0;padding:0;counter-reset:kp}
+.keypoints > li{counter-increment:kp;position:relative;padding:19px 0 19px 52px;
+  border-bottom:1px solid var(--hairline-soft)}
+.keypoints > li:first-child{border-top:1px solid var(--hairline-soft)}
+.keypoints > li::before{content:counter(kp,decimal-leading-zero);position:absolute;left:0;top:21px;
+  font-family:var(--font-num);font-size:16px;font-weight:700;color:var(--primary);letter-spacing:.6px}
+
+/* ============ stat cards ============ */
+.stat-grid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:1px;
+  background:var(--card);border:1px solid var(--hairline)}
+@media (max-width:1279px){ .stat-grid{grid-template-columns:repeat(2,minmax(0,1fr))} }
+@media (max-width:560px){ .stat-grid{grid-template-columns:minmax(0,1fr)} }
+.stat{background:var(--card);padding:22px 20px;box-shadow:0 0 0 1px var(--hairline-soft)}
+@media (max-width:1279px){ .stat-grid > .stat:nth-child(5):last-child{grid-column:1/-1} }
+.stat-grid.six{grid-template-columns:repeat(3,minmax(0,1fr))}
+.stat-grid.eight{grid-template-columns:repeat(4,minmax(0,1fr))}
+@media (max-width:1279px){ .stat-grid.eight{grid-template-columns:repeat(2,minmax(0,1fr))} }
+@media (max-width:560px){ .stat-grid.eight{grid-template-columns:minmax(0,1fr)} }
+@media (max-width:1023px){ .stat-grid.six{grid-template-columns:repeat(2,minmax(0,1fr))} }
+@media (max-width:560px){ .stat-grid.six{grid-template-columns:minmax(0,1fr)} }
+.stat-label{font-size:15px;font-weight:500;letter-spacing:.6px;line-height:1.2;color:var(--muted);margin:0 0 10px}
+.stat-value{font-family:var(--font-num);font-size:31px;font-weight:700;line-height:1;letter-spacing:-.6px;color:var(--ink)}
+.stat-value.sm{font-size:22px;letter-spacing:-.2px}
+.stat-chg{font-size:14px;line-height:1.4;margin-top:10px;font-family:var(--font-num)}
+.stat-chg.up{color:var(--up)} .stat-chg.down{color:var(--down)} .stat-chg.flat{color:var(--muted-soft)}
+.stat-note{font-size:13px;line-height:1.4;color:var(--muted-soft);margin-top:8px;font-family:var(--font-kr)}
+.stat-note .down{color:var(--down)} .stat-note .up{color:var(--up)}
+html[lang="en"] .stat-note{font-family:var(--font-en)}
+
+/* ============ tables ============ */
+.table-wrap{overflow-x:auto;border:1px solid var(--hairline);margin:0 0 var(--space-content);-webkit-overflow-scrolling:touch}
+table.data{width:100%;border-collapse:collapse;font-size:16px;min-width:560px}
+table.data caption{caption-side:top;text-align:left;font-size:14px;color:var(--muted-soft);padding:0 0 10px}
+table.data th,table.data td{padding:11px 13px;border-bottom:1px solid var(--hairline-soft);text-align:left;vertical-align:top;line-height:1.5}
+table.data.compact th,table.data.compact td{padding:8px 11px}
+table.data thead th{background:var(--primary-soft);color:var(--ink);font-size:15px;font-weight:700;white-space:nowrap}
+table.data tbody tr:hover{background:var(--surface-subtle)}
+table.data tbody th{font-weight:600;color:var(--ink);white-space:nowrap}
+table.data td.n,table.data th.n{text-align:right;font-family:var(--font-num);white-space:nowrap}
+table.data td.tick,table.data th.tick{font-family:var(--font-num);font-variant-numeric:tabular-nums;letter-spacing:.3px;color:var(--muted);white-space:nowrap}
+table.data td.wh,table.data th.wh{white-space:nowrap;color:var(--muted);font-size:14px}
+table.data td.up,table.data .up{color:var(--up)} table.data td.down,table.data .down{color:var(--down)}
+table.data .na{color:var(--muted-soft)}
+table.data tr.hl > td,table.data tr.hl > th{background:var(--hl-row)}
+table.data tr.hl:hover > td,table.data tr.hl:hover > th{background:var(--hl-row)}
+table.data tr.base > td,table.data tr.base > th{background:var(--surface-subtle);
+  border-bottom:2px solid var(--hairline)}
+table.data tr.base > *:first-child{box-shadow:inset 3px 0 0 var(--secondary)}
+table.data tr.sum > td,table.data tr.sum > th{background:var(--surface-subtle);
+  border-top:2px solid var(--hairline);font-weight:600}
+table.data tr.sum > *:first-child{box-shadow:inset 3px 0 0 var(--primary)}
+table.data.compact{min-width:420px;font-size:15px}
+/* 좁은 화면: 표를 화면 안에 넣는다. min-width 를 두면 등락률 열이 잘린다 */
+@media (max-width:680px){
+  table.data,table.data.compact{min-width:0;font-size:14px}
+  table.data th,table.data td,
+  table.data.compact th,table.data.compact td{padding:7px 8px}
+  table.data thead th,table.data tbody th{white-space:normal;word-break:keep-all;overflow-wrap:anywhere}
+  table.data td{overflow-wrap:anywhere}
+  /* 숫자는 공백에서만 접는다. 값 한가운데가 끊기면 읽을 수 없다 */
+  table.data td.n,table.data th.n{white-space:normal;overflow-wrap:normal;word-break:keep-all}
+  table.data thead th{font-size:13px}
+  /* 좁은 화면에서 뺄 수 있는 보조 열 */
+  table.data .opt{display:none}
+  /* 기본 .vf 정의가 뒤쪽에 있어 같은 우선순위로는 진다 */
+  table.data .vf{font-size:10px;padding:1px 5px;letter-spacing:.2px;white-space:normal;overflow-wrap:normal;word-break:keep-all}
+}
+@media (max-width:400px){
+  table.data,table.data.compact{font-size:13px}
+  table.data th,table.data td,
+  table.data.compact th,table.data.compact td{padding:6px 6px}
+}
+table.data th.note{min-width:190px}
+table.data td.sparkcell{width:132px;color:var(--primary);line-height:0}
+.spark{display:block;overflow:visible}
+@media (max-width:680px){table.data .sparkcell{display:none}}
+table.data td.note{font-size:14px;line-height:1.45;color:var(--muted);white-space:normal;min-width:190px;max-width:340px}
+@media (max-width:680px){table.data .note{display:none}}
+
+/* 긴 경로·파일명이 좁은 화면을 넘지 않게 한다 */
+code{overflow-wrap:anywhere;word-break:break-word}
+
+/* 증권사 인용 칸은 이 표의 본론이다. 넓게 잡는다. */
+table.data td.say{min-width:300px;line-height:1.55}
+@media (max-width:560px){ table.data td.say{min-width:0} }
+table.data td.say a{white-space:nowrap}
+
+/* 등락 사유 — 회사 한 줄 설명과 같은 칸에 있지만 성격이 다르다.
+   설명은 바뀌지 않는 것, 사유는 그날의 것이다. */
+table.data .why{display:block;margin-top:4px;padding-left:9px;color:var(--body);
+  border-left:2px solid var(--primary);line-height:1.45}
+table.data .why .vf{margin-left:4px}
+
+/* 기간 수익률 열(.perf) 과 설명 열(.note) 은 함께 설 자리가 없다.
+   본문 칸은 아무리 넓어도 ~1000px 이다. 그래서 둘 중 하나만 세운다.
+     1620px 위   설명 + 기간 수익률
+     860~1620px  설명을 접고 숫자를 남긴다 (숫자가 표의 본론이다)
+     860px 아래  기간 수익률도 접는다 */
+table.data .perf{padding-left:8px;padding-right:8px}
+@media (max-width:860px){ table.data .perf{display:none} }
+table.data.compact .perf{padding-left:5px;padding-right:5px}
+
+/* ============ verification flags ============ */
+.vf{display:inline-block;font-size:11px;font-weight:600;letter-spacing:.4px;padding:2px 7px;
+  border-radius:2px;border:1px solid var(--hairline);color:var(--muted);background:var(--card);
+  white-space:nowrap;font-family:var(--font-en);vertical-align:1px}
+.vf.ok{border-color:var(--success);color:var(--vf-ok-fg);background:var(--vf-ok-bg)}
+.vf.solo{border-color:var(--warning);color:var(--vf-warn-fg);background:var(--vf-warn-bg)}
+.vf.bad{border-color:var(--up);color:var(--vf-bad-fg);background:var(--vf-bad-bg)}
+.vf.none{border-color:var(--hairline);color:var(--muted-soft);background:var(--surface-subtle)}
+.vf.new{border-color:var(--primary);color:var(--primary-active);background:var(--vf-warn-bg)}
+
+/* ============ bars ============ */
+.bars{display:grid;gap:10px;margin:0 0 var(--space-content)}
+.bar-row{display:grid;grid-template-columns:minmax(96px,168px) 1fr 74px;align-items:center;gap:14px;font-size:16px}
+.bar-name{color:var(--body);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.bar-track{position:relative;height:20px;background:var(--surface-subtle);border:1px solid var(--hairline-soft)}
+.bar-track .zero{position:absolute;top:0;bottom:0;left:50%;width:1px;background:var(--hairline)}
+.bar-fill{position:absolute;top:3px;bottom:3px}
+.bar-fill.up{background:var(--up);left:50%}
+.bar-fill.down{background:var(--down)}
+.bar-val{text-align:right;font-family:var(--font-num);font-size:16px}
+.bar-val.up{color:var(--up)} .bar-val.down{color:var(--down)} .bar-val.flat{color:var(--muted-soft)}
+
+/* ============ house views ============ */
+.views{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1px;
+  background:var(--card);border:1px solid var(--hairline);margin-bottom:var(--space-content)}
+@media (max-width:1023px){ .views{grid-template-columns:minmax(0,1fr)} }
+.view{background:var(--card);padding:22px 20px;box-shadow:0 0 0 1px var(--hairline-soft)}
+.view-firm{font-size:16px;font-weight:700;letter-spacing:.3px;color:var(--primary-active);margin:0 0 4px}
+.view-who{font-size:14px;color:var(--muted-soft);margin:0 0 12px}
+.view-who.num{font-size:15px;color:var(--ink);letter-spacing:-.1px}
+.view-body{font-size:16px;line-height:1.55;margin:0;color:var(--body)}
+.view-stance{display:inline-block;margin-top:12px;font-size:13px;font-weight:500;letter-spacing:.4px;
+  padding:3px 9px;border-radius:2px;border:1px solid var(--hairline);color:var(--muted)}
+.view-stance.bull{border-color:var(--up);color:var(--up)}
+.view-stance.bear{border-color:var(--down);color:var(--down)}
+.view-stance.neutral{border-color:var(--muted-soft);color:var(--muted)}
+
+/* ============ callouts ============ */
+.callout{background:var(--callout-bg);color:var(--callout-fg);border-radius:4px;padding:34px;margin:0 0 var(--space-content)}
+.callout h3{color:var(--callout-fg);margin:0 0 14px;font-size:22px;font-weight:700}
+.callout p,.callout li{color:var(--callout-fg)}
+.callout p{font-size:17px;line-height:1.6;max-width:none}
+.callout p:last-child{margin-bottom:0}
+.callout ul{margin:0;padding-left:22px}
+.callout li{margin-bottom:10px;font-size:17px;line-height:1.55}
+.callout li:last-child{margin-bottom:0}
+.callout a{color:var(--callout-fg);border-bottom-color:var(--callout-rule)}
+.callout a:hover{color:var(--callout-fg);border-bottom-color:var(--callout-fg)}
+.soft-card{background:var(--surface-soft);border-radius:4px;padding:24px 26px;margin:0 0 var(--space-content)}
+.soft-card h4{margin:0 0 10px;font-size:19px;font-weight:700;color:var(--ink)}
+.soft-card p:last-child,.soft-card ul:last-child{margin-bottom:0}
+.soft-card.warn{background:var(--vf-warn-bg);border-left:3px solid var(--warning)}
+
+/* ============ risks / qa ============ */
+.risks{list-style:none;margin:0;padding:0}
+.risks > li{padding:14px 0 14px 22px;border-bottom:1px solid var(--hairline-soft);position:relative;
+  font-size:17px;line-height:1.55}
+.risks > li::before{content:"";position:absolute;left:0;top:24px;width:10px;height:1px;background:var(--primary)}
+.qa{margin:0}
+.qa .exp{border-bottom:1px solid var(--hairline-soft);padding:19px 0}
+.qa .exp:first-child{border-top:1px solid var(--hairline-soft)}
+.qa .exp > summary{font-size:19px;font-weight:700;color:var(--ink)}
+.qa .exp > summary .exp-mark{top:2px}
+.disc{font-size:14px;color:var(--muted-soft);margin-top:14px;padding-top:10px;
+  border-top:1px solid var(--hairline-soft);line-height:1.5}
+
+/* ============ sources / footer ============ */
+.sources{list-style:none;margin:0;padding:0;font-size:14px;line-height:1.5;columns:2;column-gap:38px}
+@media (max-width:768px){ .sources{columns:1} }
+.sources li{margin-bottom:10px;break-inside:avoid}
+.sources .pub{color:var(--muted-soft)}
+footer.foot{margin-top:var(--space-section);padding:28px 0 56px;border-top:1px solid var(--primary);
+  font-size:14px;color:var(--muted-soft)}
+footer.foot p{margin:0 0 8px;max-width:none}
+
+/* ============ drilldown ============ */
+.exp > summary{cursor:pointer;list-style:none;display:block;position:relative;padding-right:34px}
+.exp > summary::-webkit-details-marker{display:none}
+.exp > summary::marker{content:""}
+.exp > summary:focus-visible{outline:2px solid var(--primary);outline-offset:3px}
+.exp-mark{position:absolute;right:0;top:0;width:22px;height:22px;flex:none;
+  border:1px solid var(--hairline);border-radius:2px;background:var(--card);
+  font-family:var(--font-num);font-size:15px;font-weight:700;line-height:20px;text-align:center;color:var(--primary-active)}
+.exp > summary:hover .exp-mark{background:var(--primary);border-color:var(--primary);color:var(--on-primary)}
+.exp[open] > summary .exp-mark::after{content:"\2212"}
+.exp:not([open]) > summary .exp-mark::after{content:"+"}
+.detail{margin-top:19px;padding:19px 22px;background:var(--surface-subtle);
+  border-left:2px solid var(--primary);border-radius:0 2px 2px 0}
+.detail > p{font-size:16px;line-height:1.6;margin:0 0 14px;max-width:62em}
+.detail > p:last-child{margin-bottom:0}
+.detail dl{margin:0 0 14px}
+.detail dl:last-child{margin-bottom:0}
+.detail dt{font-size:13px;font-weight:500;letter-spacing:.4px;color:var(--muted);margin-top:12px}
+.detail dt:first-child{margin-top:0}
+.detail dd{margin:2px 0 0;font-size:16px;line-height:1.5;color:var(--ink)}
+.detail dd.n{font-family:var(--font-num);font-variant-numeric:tabular-nums;letter-spacing:0}
+.detail-links{margin:14px 0 0;padding:0;list-style:none;font-size:14px;line-height:1.5}
+.detail-links li{margin-bottom:6px}
+.detail-links li::before{content:"\2192";color:var(--primary);margin-right:8px}
+.detail-label{display:block;font-size:13px;font-weight:500;letter-spacing:.5px;color:var(--primary-active);margin-bottom:10px}
+.keypoints > li > .exp > summary,.risks > li > .exp > summary{padding-right:34px}
+details.stat > summary,details.view > summary{padding-right:34px}
+details.stat > summary .exp-mark,details.view > summary .exp-mark{top:-2px}
+table.data tr.clickable{cursor:pointer}
+table.data tr.clickable > *:first-child{padding-left:34px;position:relative}
+table.data tr.clickable > *:first-child::before{content:"+";position:absolute;left:13px;top:11px;
+  font-family:var(--font-num);font-size:15px;font-weight:700;color:var(--primary-active)}
+table.data tr.clickable[aria-expanded="true"] > *:first-child::before{content:"\2212"}
+table.data tr.clickable:focus-visible{outline:2px solid var(--primary);outline-offset:-2px}
+table.data tr.detail-row > td{background:var(--surface-subtle);padding:0}
+table.data tr.detail-row:hover > td{background:var(--surface-subtle)}
+table.data tr.detail-row .detail{margin:0;border-radius:0}
+table.data tr.detail-row[hidden]{display:none}
+
+/* ============ i18n ============ */
+[data-lang-en]{display:none}
+html[lang="en"] [data-lang-ko]{display:none}
+html[lang="en"] [data-lang-en]{display:revert}
+
+@media (prefers-reduced-motion:reduce){ *{scroll-behavior:auto!important} }
+
+/* ============ print ============ */
+@media print{
+  :root{
+    --primary:#F58220;--primary-active:#CB6015;--primary-soft:#FAB072;--secondary:#043B72;
+    --canvas:#FFFFFF;--surface-soft:#ECEFF4;--surface-subtle:#F7F8FA;--card:#FFFFFF;
+    --hairline:#CDCECB;--hairline-soft:#E5E4E1;
+    --ink:#000000;--body:#1A1A1A;--muted:#555555;--muted-soft:#777777;
+    --up:#C62828;--down:#043B72;--warning:#D4A017;--success:#2E8540;--hl-row:#D7D7D7;
+    --vf-warn-bg:#FCF7E8;--vf-warn-fg:#8A6A0D;--vf-ok-bg:#F0F7F1;--vf-ok-fg:#1F5C2C;
+    --vf-bad-bg:#FBF0F0;--vf-bad-fg:#8F1F1F;
+    --space-section:28px;--space-block:19px;--space-content:14px;
+  }
+  .lang-toggle,.expand-all,.print-btn,.sidenav,.chip{display:none!important}
+  .shell,.page.wide .shell{display:block!important}
+  .detail dl{display:grid;grid-template-columns:32% 1fr;column-gap:10px;row-gap:3px}
+  .detail dt,.detail dd{margin:0!important;font-size:9.5pt}
+  .detail{padding:10px 12px;margin-top:10px;background:#FFF;border-left:2px solid #999;break-inside:avoid}
+  .detail > p{font-size:10pt;margin-bottom:8px}
+  .detail-label{margin-bottom:6px}
+  .detail-links{display:none}
+  .exp > summary{padding-right:0}
+  /* 접힌 채로 인쇄되면 **제목만 찍히고 본문이 없다.** 요약본에서 근거 블록
+     일곱이 그렇게 나가 「빠진 자리」로 읽혔다 — 약속만 하고 내용이 없는
+     제목은 없느니만 못하다. 종이에서는 어디에 있는지를 제목 옆에 적는다.
+     전체본은 모두 펼친 채 인쇄하므로 이 줄이 붙지 않는다. */
+  html[lang="ko"] .exp:not([open]) > summary::after{
+    content:" \2014 전체본에 펼쳐져 있습니다"}
+  html[lang="en"] .exp:not([open]) > summary::after{
+    content:" \2014 expanded in the full edition"}
+  .exp:not([open]) > summary::after{font-size:8.5pt;font-weight:400;color:#777}
+  .exp-mark,table.data tr.clickable > *:first-child::before{display:none!important}
+  table.data tr.clickable > *:first-child{padding-left:13px}
+  body{font-size:11pt;line-height:1.4;color:#000;background:#FFF}
+  .page{max-width:100%;padding:0}
+  .section{margin-top:28px}
+  .hero h1{font-size:24pt} .hero-lede{font-size:12pt} .section-title{font-size:15pt}
+  .stat-grid,.views{break-inside:avoid;grid-template-columns:repeat(3,minmax(0,1fr))}
+  .section-rule,.section-title,h3{break-after:avoid}
+  table,.stat,.view,.callout,.soft-card{break-inside:avoid}
+  table.data{font-size:9pt;min-width:0}
+  .callout{background:#FFF!important;color:#000!important;border:1px solid #999}
+  .callout h3,.callout p,.callout li,.callout a{color:#000!important}
+  a{border-bottom:0;color:#000}
+  .table-wrap{overflow:visible}
+  .stat,.view{box-shadow:none!important;border:1px solid #CDCECB}
+}
+/* 인쇄: 설명은 접고 기간 수익률은 세운다 — 종이 폭이 ~700px 이다 */
+@media print{
+  table.data .perf{display:table-cell!important;padding-left:5px;padding-right:5px}
+  table.data{font-size:8pt}
+}
+
+/* 설명은 「접히는 열」이 아니라 이름 아래 붙는 줄이다. 열로 두면 좁은 화면과
+   인쇄에서 통째로 사라진다 — 8월 15일 판에서 실제로 그렇게 사라졌다. */
+table.data .sub{display:block;margin-top:3px;font-size:13px;font-weight:400;
+  line-height:1.45;color:var(--muted);white-space:normal;word-break:keep-all;
+  overflow-wrap:anywhere;max-width:330px}
+@media (min-width:521px){ table.data tbody th.hasnote{min-width:150px} }
+@media (max-width:520px){ table.data .sub{font-size:12px;max-width:180px} }
+@media (max-width:400px){ table.data .sub{max-width:150px} }
+/* 340px 은 아직 쓰이는 폭이다(갤럭시 폴드 접은 화면). 여기서는 여백을 더 줄인다. */
+/* 껍데기의 `table.data.compact th{padding:6px}` 가 클래스 두 개라 더 세다.
+   compact 도 같이 적어야 이긴다. */
+@media (max-width:360px){ table.data th,table.data td,
+  table.data.compact th,table.data.compact td{padding-left:4px;padding-right:4px}
+  table.data .sub{max-width:120px} }
+@media print{ table.data .sub{display:block!important;font-size:7.5pt;max-width:none} }
+
+/* 기간 수익률은 860px 아래에서 열이 접힌다. 접힌 자리를 이름 밑의 줄이 받는다
+   — 폰에서 기간 추이가 통째로 사라지면 안 된다. 열과 줄 중 한 벌만 보인다. */
+table.data .perfline{display:none}
+@media (max-width:860px){
+  table.data .perfline{display:block;margin-top:4px;font-size:12px;font-weight:400;
+    line-height:1.5;color:var(--muted);white-space:normal;word-break:keep-all;
+    overflow-wrap:anywhere;max-width:330px}
+  /* 이름과 값이 줄바꿈으로 갈라지면 「1개월」과 「-5.1%」가 다른 줄에 놓인다.
+     한 쌍은 붙여 두고 쌍과 쌍 사이에서만 넘긴다. */
+  table.data .perfline .p{white-space:nowrap}
+  table.data .perfline .k{opacity:.72;margin-right:1px}
+  table.data .perfline .up{color:var(--up)}
+  table.data .perfline .down{color:var(--down)}
+  table.data .perfline .na{opacity:.45}
+  table.data .perfline i{font-style:normal;opacity:.35;padding:0 4px}
+}
+@media (max-width:520px){ table.data .perfline{font-size:11px;max-width:180px} }
+@media (max-width:400px){ table.data .perfline{max-width:150px} }
+@media (max-width:360px){ table.data .perfline{max-width:120px} }
+/* 인쇄는 종이 폭이 ~700px 이지만 기간 열을 세워 두었다. 줄은 접는다. */
+@media print{ table.data .perfline{display:none!important} }
+
+/* 인쇄: 긴 블록을 통째로 붙들면 앞 쪽에 큰 빈칸이 남는다. 쪽을 넘겨 잇되
+   줄은 쪼개지 않고 머리행을 되풀이한다. 짧은 것만 종전대로 붙든다. */
+@media print{
+  table.data{break-inside:auto!important}
+  table.data thead{display:table-header-group}
+  table.data tr{break-inside:avoid;break-after:auto}
+  table.data caption{break-after:avoid}
+  table.data.keep{break-inside:avoid!important}
+  .soft-card,.callout,.exp{break-inside:auto!important}
+  .soft-card.keep,.callout.keep{break-inside:avoid!important}
+  .stat,.view{break-inside:avoid}
+  p,li,dd{orphans:3;widows:3}
+  /* 제목만 남고 내용이 다음 쪽으로 넘어가는 것을 막는다. 절 번호도 포함한다
+     — 빼면 「01」 한 글자만 앞 쪽에 남는다. 실제로 그렇게 나왔다. */
+  h3,h4,.section-title,.section-rule,.sec-num{break-after:avoid}
+  /* 그리드는 쪽을 넘기면 **빈 칸 자리를 남긴다** — 크로미움이 다음 쪽으로 간
+     칸의 자리를 앞 쪽에 그대로 잡아 둔다. 표와 달리 쪼개면 더 나빠진다.
+     대신 인쇄에서 열을 늘려 낮게 만들어 통째로 들어가게 한다. */
+  .stat-grid{break-inside:avoid!important;grid-template-columns:repeat(4,minmax(0,1fr))!important}
+  /* 글이 긴 카드(하우스 시각·지역별 요약)는 인쇄에서 열로 세우면 칸이 좁아
+     세로로 길어지고, 한 줄이 통째로 다음 쪽에 밀린다. 종이에서는 한 칸씩
+     가로로 눕히는 편이 짧고 잘 흐른다. */
+  .views{display:block!important}
+  .views > *{margin-bottom:9px;break-inside:avoid}
+  .views > *:last-child{margin-bottom:0}
+  /* 글이 긴 카드는 통째로 붙들면 앞 쪽이 절반 비어 버린다 — 8/18 판 28쪽이
+     하우스 시각 카드 하나 때문에 47.6% 비었다. 쪽을 넘겨 잇게 둔다.
+     **`.views` 자체에 avoid 를 걸어 두면 안 된다** — 그 한 줄이 아래 규칙을
+     전부 덮어 실제로 47.6% 가 그대로 남았다. 블록으로 눕혔으니 붙들 이유도 없다. */
+  .views{break-inside:auto!important}
+  .views > .view{break-inside:auto}
+  .views > .view > h4{break-after:avoid}
+  /* 숫자 카드는 짧으므로 격자를 유지한다. 한 줄에 들어가면 쪽을 넘겨도 안전하다. */
+  .stat-grid.flow{break-inside:auto!important}
+  /* 꼬리말 세 줄만 마지막 쪽에 남는 것을 막는다 */
+  footer.foot{break-before:avoid;break-inside:avoid}
+  /* 여백을 조금씩 줄인다 — 쪽 머리에 남는 여백은 그대로 빈칸이고, 첫 쪽에서는
+     52px 이 모자라 첫 절의 지표 카드가 통째로 2쪽으로 밀려나 있었다. */
+  .section{margin-top:16px}
+  .section-title{margin-bottom:10px}
+  .hero{margin-top:6px;padding-bottom:8px}
+  .hero h1{margin-bottom:10px}
+}
+
+
+/* 매물대·비중 가로 막대 — 「어디에 얼마나」를 한눈에 (요건 5) */
+.hbar{display:inline-block;width:104px;height:10px;vertical-align:middle;
+  background:var(--surface-soft);border:1px solid var(--hairline-soft);
+  border-radius:1px;overflow:hidden}
+.hbar-fill{display:block;height:100%;background:var(--primary)}
+table.data td.barcell{width:118px;line-height:0;padding-top:9px}
+@media (max-width:720px){ table.data td.barcell,table.data th.barcell{display:none} }
+.spark.down{color:var(--secondary)}
+
+/* **사이드바가 켜져 있는 좁은 띠**(861~1199px)에서도 기간 열을 접는다.
+   화면은 넓은데 본문 칸이 좁아, 열 넷을 세우면 표가 넘친다 — 10절 판을 재면서
+   1080~1140px 에서만 최대 +64px 넘쳤다. 접힌 자리는 이름 밑의 줄이 받으므로
+   정보는 사라지지 않는다. **이 규칙은 껍데기가 들고 있어야 한다** — 후처리기는
+   CSS 가 이미 있으면 건너뛰므로 거기에 넣으면 조용히 새어 나간다(지침 6-1). */
+@media (min-width:861px) and (max-width:1199px){
+  table.data .perf{display:none}
+  table.data .perfline{display:block;margin-top:4px;font-size:12px;font-weight:400;
+    line-height:1.5;color:var(--muted);white-space:normal;max-width:330px}
+  table.data .perfline .p{white-space:nowrap}
+  table.data .perfline .k{opacity:.72;margin-right:1px}
+  table.data .perfline .up{color:var(--up)}
+  table.data .perfline .down{color:var(--down)}
+  table.data .perfline .na{opacity:.45}
+  table.data .perfline i{font-style:normal;opacity:.35;padding:0 4px}
+}
+/* 340px 에서 추이 표가 2px 넘쳤다 — 열이 여덟이라 여백을 한 치수 더 줄인다. */
+@media (max-width:360px){
+  table.data.compact th,table.data.compact td{padding-left:3px;padding-right:3px;font-size:11px}
+}
+</style>
+<!-- print-fit -->
+
+<style id="core-density">
+/* ── 핵심본 밀도 ────────────────────────────────────────────────
+   전체 판은 앉아서 읽는 문서라 호흡이 넓다. 핵심본은 **개장 전에 한 번
+   훑는 시트**라 같은 내용을 절반의 자리에 넣는다. 줄인 것은 여백과 글자
+   크기이지 내용이 아니다 — 표의 설명 줄(.sub)은 그대로 둔다. 그것을
+   없애면 「이 지수가 무엇인지」가 PDF 에서 통째로 사라진다(지침 4-3절).
+
+   껍데기 CSS 뒤에 붙이므로 같은 우선순위에서 이긴다(지침 6절).        */
+.section{margin-top:26px}
+/* 기간 사다리 — 핵심본은 열 넷을 세울 자리가 없으므로 **이름 밑의 한 줄**로
+   낸다. `fold_perf.py` 의 `.perfline` 과 모양은 같지만 그쪽은 화면 폭에 따라
+   열과 번갈아 보이느라 인쇄에서 숨는다. 이 줄은 대신할 열이 아예 없으니
+   화면에서도 종이에서도 **항상 보인다**. 한 쌍은 붙여 두고 쌍 사이에서만
+   넘긴다 — 「1개월」과 「-5.1%」가 갈라지면 읽히지 않는다. */
+table.data .perfrow{display:inline;margin-left:6px;font-size:11.5px;font-weight:400;
+  line-height:1.45;color:var(--muted);white-space:normal;word-break:keep-all;
+  overflow-wrap:anywhere}
+table.data .perfrow .p{white-space:nowrap}
+table.data .perfrow .k{opacity:.72;margin-right:1px}
+table.data .perfrow .up{color:var(--up)}
+table.data .perfrow .down{color:var(--down)}
+table.data .perfrow .flat{opacity:.6}
+table.data .perfrow i{font-style:normal;opacity:.35;padding:0 3px}
+@media print{
+  table.data .perfrow{font-size:5.9pt;line-height:1.14;margin-left:4px}
+  table.data .perfrow i{padding:0 2px}
+  .section{margin-top:15px}
+}
+/* 좁은 표를 나란히 세운다. 화면이 좁아지면 스스로 한 단으로 풀린다 —
+   폭 훑기에서 340px 까지 넘침 0 이어야 하므로 고정 2·3단을 쓰지 않는다. */
+.duo{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(430px,100%),1fr));gap:0 14px}
+.trio{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(232px,100%),1fr));gap:0 12px}
+.duo > *,.trio > *{min-width:0}
+/* 격자 칸 안에서는 표가 min-width 를 고집하면 안 된다 — 칸보다 넓어져
+   700~1080px 구간에서 62 곳이 넘쳤다. 폭을 풀고 글자를 한 치수 줄인다. */
+.duo table.data,.trio table.data{min-width:0!important;width:100%}
+/* 칸보다 넓은 표는 **제 상자 안에서 밀어 보게** 둔다. `visible` 로 두면
+   칸 밖으로 삐져나와 쪽 전체가 가로로 밀린다 — 증시 주변자금 표(여섯 칸)가
+   되살아나자 핵심본 940~1100px 구간에서 27 곳이 넘쳤다.             */
+.duo .table-wrap,.trio .table-wrap{overflow-x:auto}
+.trio table.data th,.trio table.data td{padding:3px 5px;font-size:12px}
+.trio table.data caption{font-size:12.5px}
+/* 반 칸에 들어가려면 표가 350px 안쪽이어야 한다. 글자와 여백을 한 치수 줄이고,
+   스파크라인 칸은 통째로 뺀다 &mdash; 132px 짜리 그림 하나가 표를 574px 로
+   밀어 올려 혼자 223px 넘쳤다. 추이 그림은 전체 판에 그대로 있다.        */
+.duo table.data th,.duo table.data td{padding:2px 5px;font-size:11.5px;line-height:1.3}
+.duo table.data caption{font-size:12.5px}
+.duo table.data .sparkcell,.duo table.data th.sparkcell{display:none}
+.duo table.data .sub{font-size:10.5px}
+.duo table.data .wrap,.trio table.data .wrap{white-space:normal;word-break:keep-all;overflow-wrap:anywhere}
+.duo table.data .n,.trio table.data .n{overflow-wrap:normal;white-space:nowrap}
+.hol{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(180px,100%),1fr));gap:2px 14px;
+  margin:0 0 10px;padding:0;list-style:none}
+.hol li{font-size:12.5px;line-height:1.45;padding:1px 0;border-bottom:1px solid var(--hairline-soft)}
+.hol li b{font-weight:600;color:var(--ink)}
+.hol li em{font-style:normal;color:var(--primary-active);font-weight:600}
+/* 오늘의 결론 — **여섯 값을 한 줄에.** 껍데기는 3단 두 줄로 세우는데, 그러면
+   첫 쪽에서 카드 여섯이 세로로 두 뼘을 먹는다. 개장 전에 훑는 시트에서 지수·
+   거래대금·외국인·금리·환율은 **한 눈에 나란히** 놓여야 견줄 수 있다.
+   auto-fit 이라 좁은 화면에서는 스스로 줄을 접는다(340px 까지 넘침 0).      */
+.stat-grid.six{grid-template-columns:repeat(auto-fit,minmax(min(152px,100%),1fr))!important}
+.stat-grid.six .stat{padding:8px 10px}
+.stat-grid.six .stat-label{font-size:11.5px;letter-spacing:.3px}
+.stat-grid.six .stat-value{font-size:19px}
+.stat-grid.six .stat-chg{font-size:12px}
+.stat-grid.six .stat-note{font-size:10.5px;line-height:1.3;margin-top:3px}
+@media print{ .stat-grid.six{grid-template-columns:repeat(6,1fr)!important}
+  .stat-grid.six .stat{padding:5px 6px}
+  .stat-grid.six .stat-label{font-size:6.6pt} .stat-grid.six .stat-value{font-size:12pt}
+  .stat-grid.six .stat-chg{font-size:7.4pt} .stat-grid.six .stat-note{font-size:6.2pt;line-height:1.2} }
+h3.mini{font-size:15px;font-weight:600;color:var(--ink);margin:14px 0 6px}
+@media print{ h3.mini{font-size:10pt;margin:9px 0 4px;break-after:avoid} }
+@media print{
+  .duo{grid-template-columns:1fr 1fr;gap:0 10px}
+  .duo table.data th,.duo table.data td{padding:1.5px 4px;font-size:7.6pt}
+  .duo table.data caption{font-size:8.4pt}
+  .trio{grid-template-columns:1fr 1fr 1fr;gap:0 9px}
+  .hol{grid-template-columns:1fr 1fr 1fr 1fr;gap:1px 9px}
+  .hol li{font-size:7.3pt;line-height:1.22}
+}
+/* 머리말 — 큰 글자가 그날의 한마디를 하므로 46px 은 두 줄로 넘친다.
+   한 치수 줄이되 **여전히 쪽에서 가장 큰 글자**로 둔다.                  */
+.hero h1{font-size:34px;line-height:1.2;margin:0 0 12px}
+.hero-kicker{font-size:14px;margin:0 0 9px}
+.hero-lede{font-size:17.5px;line-height:1.5}
+.hero{margin-top:18px;padding-bottom:16px}
+.hero-meta{margin-top:12px;font-size:12.5px}
+@media print{
+  .hero h1{font-size:19pt;line-height:1.18;margin-bottom:6px}
+  .hero-kicker{font-size:8pt;margin-bottom:5px}
+  .hero-lede{font-size:10.4pt;line-height:1.42}
+  .hero-meta{margin-top:6px;font-size:6.8pt}
+  .hero{margin-top:0;padding-bottom:7px}
+}
+.shell > main > .section:first-child{margin-top:14px}
+.sec-num{font-size:12px;letter-spacing:1px}
+.section-title{font-size:20px}
+p.lede{font-size:15.5px;line-height:1.5;margin:0 0 11px}
+.section > p{font-size:15.5px;line-height:1.55;margin:0 0 9px}
+.stat-grid{margin:0 0 13px}
+.stat{padding:10px 12px}
+.stat-label{font-size:12.5px;margin:0 0 2px}
+.stat-value{font-size:23px;line-height:1.05;margin:0}
+.stat-chg{font-size:13px;margin:1px 0 0}
+.stat-note{font-size:11.5px;line-height:1.35;margin:4px 0 0}
+.callout{padding:16px 18px;margin:0}
+.callout-title{font-size:16.5px;margin:0 0 7px}
+.callout p{font-size:15px;line-height:1.55;margin:0 0 8px}
+.callout p:last-child{margin-bottom:0}
+.table-wrap{margin:0 0 11px}
+table.data caption{font-size:13.5px;padding-bottom:4px}
+table.data th,table.data td{padding:4px 8px;font-size:13px;line-height:1.35}
+table.data .sub{font-size:11px;line-height:1.28}
+.tbl-foot,table.data tfoot td{font-size:11px;line-height:1.4;padding:5px 8px}
+.soft-grid{gap:9px}
+.soft-card{padding:12px 14px}
+.soft-card .q{font-size:15px;margin:0 0 5px}
+.soft-card p{font-size:14px;line-height:1.5;margin:0}
+footer.foot{margin-top:22px;padding:16px 0 24px;font-size:11px}
+@media print{
+  .section{margin-top:22px}
+  .section{margin-top:4px}
+  table.data th,table.data td{padding:1.1px 4.5px;font-size:7.9pt;line-height:1.08}
+  table.data .sub{font-size:6.7pt;line-height:1.1}
+  table.data caption{font-size:8.7pt;padding-bottom:2px}
+  .tbl-foot,table.data tfoot td{font-size:6.4pt;line-height:1.2}
+  p.lede{font-size:9.1pt;line-height:1.33;margin-bottom:4px}
+  .section > p{font-size:9.1pt;line-height:1.33;margin-bottom:3px}
+  .stat-grid{margin-bottom:5px}
+  .callout{padding:8px 11px}
+  .callout p{font-size:9.0pt;line-height:1.36;margin-bottom:4px}
+  .soft-card{padding:6px 8px}
+  .soft-card p{font-size:8.5pt;line-height:1.3}
+  .soft-card .q{font-size:9.6pt}
+  .stat{padding:7px 9px}
+  .stat-value{font-size:14.5pt}
+  .stat-note{font-size:7pt;line-height:1.25}
+  .section-title{font-size:14.5pt}
+  .table-wrap{margin-bottom:3px}
+  footer.foot{margin-top:6px;padding:5px 0 2px;break-before:avoid}
+  /* 다섯 쪽에 맞추려면 **블록을 통째로 붙들면 안 된다.** 전체 판은 짧은 표를
+     붙들어 쪽 가운데가 갈리지 않게 하지만, 그 대가로 앞 쪽에 빈 띠가 남는다.
+     핵심본은 자리가 없으므로 이어붙이고, **줄만 쪼개지지 않게** 한다.     */
+  table.data,.table-wrap,.callout,.soft-grid,.soft-card,.stat-grid{break-inside:auto!important}
+  table.data tbody tr,table.data thead tr{break-inside:avoid}
+  table.data thead{display:table-header-group}
+  table.data caption{break-after:avoid}
+  /* 인쇄용 「브리핑 목록」은 전체 판의 기능이다. 핵심본은 다섯 쪽짜리 시트라
+     서른 줄짜리 목록을 실을 자리가 없다 — 화면에서는 사이드바에 그대로 있다. */
+  .archive-print{display:none!important}
+  /* 나란히 세우기 — 좁은 표는 한 단씩 쓰면 자리가 아깝다. 유럽·일본·중화권
+     셋을 3단으로 세우면 셋이 한 표 높이에 들어간다.                     */
+  .duo,.trio{break-inside:auto!important}
+}
+</style>
+
+
+<div class="page wide">
+
+<div class="topbar">
+  <span class="chip"><span data-lang-ko>고객 브리핑용 · 국내 개장일</span><span data-lang-en>For client briefing · Korea trading</span></span>
+  <div class="topbar-actions">
+    <!-- 「요약 PDF」 단추를 걷어냈다(2026-09-12). 상세를 접은 채 인쇄하면
+         종이에는 펼칠 단추가 없어 **제목만 찍히고 본문이 사라진다** — 근거
+         블록 일곱이 그렇게 나가 「빠진 자리」로 읽혔다. 짧은 판이 필요하면
+         접어서 감추는 것이 아니라 같은 날짜의 **핵심본**을 쓴다. -->
+    <button type="button" class="print-btn" data-print="full" title="모든 상세를 펼쳐 인쇄 / PDF 저장 — 짧은 판이 필요하면 같은 날짜의 핵심본을 쓰십시오"><span data-lang-ko>PDF 저장</span><span data-lang-en>Save as PDF</span></button>
+    <button type="button" class="expand-all" aria-pressed="false"><span class="lbl-expand"><span data-lang-ko>전체 펼치기</span><span data-lang-en>Expand all</span></span><span class="lbl-collapse"><span data-lang-ko>전체 접기</span><span data-lang-en>Collapse all</span></span></button>
+    <div class="lang-toggle" role="radiogroup" aria-label="Language">
+      <button type="button" data-lang="ko" role="radio" aria-checked="true">KO</button>
+      <button type="button" data-lang="en" role="radio" aria-checked="false">EN</button>
+    </div>
+  </div>
+</div>
+
+
+<div class="hero">
+  <p class="hero-kicker"><span data-lang-ko>2026년 9월 17일(목)</span><span data-lang-en>Thursday 17 September 2026</span> &middot; <span data-lang-ko>미래에셋증권 마포WM &middot; 모닝 마켓 브리핑</span><span data-lang-en>Mirae Asset Securities, Mapo WM &middot; Morning Market Briefing</span></p>
+  <h1 class="hero-title"><span data-lang-ko>올린 것이 아니라 한 문장이 흔들었습니다</span><span data-lang-en>It was one sentence, not the hike</span></h1>
+  <p class="hero-lede"><span data-lang-ko><strong>연준이 3년 2개월 만에 금리를 올렸습니다 &mdash; 3.50~3.75%에서 3.75~4.00%로, 위원 전원 찬성이었습니다.</strong> 그런데 시장을 흔든 것은 인상이 아니었습니다. 인상은 이미 90% 넘게 값에 들어가 있었고, 발표 전까지 3대 지수는 <strong>오히려 올라 있었습니다</strong> &mdash; 8월 소매판매가 예상을 크게 웃돈 데다 사우디가 오만을 통해 원유를 추가 공급한다는 보도에 유가가 꺾였기 때문입니다. 분위기를 바꾼 것은 오후 회견에서 나온 케빈 워시 의장의 한 문장이었습니다. 지금의 금융여건을 <strong>「긴축적이라고 표현하기 어렵다」</strong>고 하면서 이번 인상을 <strong>「완화의 일부를 제거한 것」</strong>이라고 설명한 대목입니다. 지금 수준조차 충분히 제약적이지 않다면 어디까지 올릴지 가늠하기 어려워집니다. 그 뒤로 지수는 상승분을 반납했고, <strong>10년물은 4.95%에서 5.003%로 되올라 5% 위에서 하루를 마쳤습니다 &mdash; WSJ 은 이것이 19년 만이라고 전했습니다.</strong> 국내는 하루 앞서 반등했지만 <strong>지수를 끌어올린 것은 반도체 몇 종목</strong>이었고, 원화는 또 밀렸습니다.</span><span data-lang-en><strong>The Fed raised rates for the first time in 39 months &mdash; from 3.50-3.75% to 3.75-4.00%, unanimously.</strong> But the hike is not what moved the market. It was more than 90% priced, and the three major indices were <strong>higher going into the announcement</strong>: August retail sales beat sharply and oil fell on reports that Saudi Arabia would add supply via Oman. What changed the mood was one sentence at the afternoon press conference. Chair Kevin Warsh said current financial conditions are <strong>"hard to describe as tight"</strong> and framed the move as <strong>"removing some of the accommodation."</strong> If even this level is not sufficiently restrictive, the terminal rate becomes hard to place. Equities gave back their gains, and <strong>the 10-year round-tripped from 4.95% to 5.003%, closing above 5% &mdash; the first such close in nineteen years, per the WSJ.</strong> Korea had rallied a day earlier, but <strong>it was a handful of semiconductor names that carried the index</strong>, and the won weakened again.</span></p>
+  <p class="hero-meta"><span class="tone mixed"><span data-lang-ko>3년 2개월 만의 인상</span><span data-lang-en>First hike in 39 months</span></span> &nbsp; <span data-lang-ko>기준: 국내&middot;해외 모두 9월 16일(수) 마감 &middot; 환율은 오늘 아침 9월 17일 &middot; 시세 파일 09-17 07:40 수집 &middot; 작성 2026-09-17(목) 07:48 KST &middot; <strong>오늘 09:00 국내 증시 개장</strong></span><span data-lang-en>Basis: closes of Wednesday 16 September; FX as of this morning; data collected 09-17 07:40; compiled 07:48 KST</span></p>
+</div>
+<div class="shell">
+
+<!-- 목차와 지난 브리핑 목록은 **비워 둔다**.
+
+     예전에는 여기에 지난 판의 목록이 그대로 남아 있었다. 목차는 8/19 판의
+     18절이, 지난 브리핑은 8/19 까지의 14건이 박혀 있었다. 목차는
+     briefing_lib.assemble() 이 절 목록에서 다시 만들어 덮으므로 티가 나지
+     않았지만, 지난 브리핑은 build_archive_nav.py 를 돌리지 않으면 그대로
+     실려 나갔다 — 8/27 을 지어도 사이드바는 8/19 까지만 보였다.
+
+     이제 둘 다 빈 채로 둔다. 채우는 자리는 하나뿐이다.
+       목차          → assemble() 이 doc.toc() 으로 채운다
+       브리핑 목록   → build_archive_nav.py 가 index.json 으로 채운다
+     비어 있으면 recheck.py 가 FAIL 을 낸다. 조용히 어제 것이 나가느니
+     소리를 내고 멈추는 편이 낫다. -->
+
+<nav class="sidenav" aria-label="목차">
+  <p class="sidenav-label"><span data-lang-ko>목차</span><span data-lang-en>Contents</span></p>
+  <ul class="sidenav-toc">
+    <li><a href="#today"><span class="sn">01</span><span data-lang-ko>오늘의 결론</span><span data-lang-en>The Bottom Line</span></a></li>
+    <li><a href="#korea"><span class="sn">02</span><span data-lang-ko>국내 증시</span><span data-lang-en>Korean Equities</span></a></li>
+    <li><a href="#flows"><span class="sn">03</span><span data-lang-ko>수급 &middot; 증시 주변자금</span><span data-lang-en>Flows and Money Around the Market</span></a></li>
+    <li><a href="#global"><span class="sn">04</span><span data-lang-ko>간밤 해외</span><span data-lang-en>Overnight Overseas</span></a></li>
+    <li><a href="#earnings"><span class="sn">05</span><span data-lang-ko>실적 &middot; 컨퍼런스콜</span><span data-lang-en>Results and Calls</span></a></li>
+    <li><a href="#macro"><span class="sn">06</span><span data-lang-ko>금리 &middot; 환율 &middot; 원자재</span><span data-lang-en>Rates, FX and Commodities</span></a></li>
+    <li><a href="#deep"><span class="sn">07</span><span data-lang-ko>심층 분석 &mdash; 3년 2개월 만의 인상과 「완화의 일부를 제거했다」</span><span data-lang-en>In Depth &mdash; the first hike in 39 months and "removing some accommodation"</span></a></li>
+    <li><a href="#calendar"><span class="sn">08</span><span data-lang-ko>일정 &middot; 체크포인트</span><span data-lang-en>Calendar</span></a></li>
+    <li><a href="#talking"><span class="sn">09</span><span data-lang-ko>고객 응대</span><span data-lang-en>Talking Points</span></a></li>
+    <li><a href="#verify"><span class="sn">10</span><span data-lang-ko>데이터 &middot; 검증</span><span data-lang-en>Data and Verification</span></a></li>
+  </ul>
+  <p class="sidenav-label"><span data-lang-ko>브리핑 목록</span><span data-lang-en>All editions</span></p>
+  <ul class="sidenav-dates">
+    <li><a href="#" aria-current="page"><span class="d">09-17</span><span data-lang-ko>모닝 마켓</span><span data-lang-en>Morning market</span></a></li>
+    <li><a href="https://claude.ai/artifact/DJ7a66ExkSCK91HJwMJh6h" target="_blank" rel="noopener"><span class="d">09-16</span><span data-lang-ko>모닝 마켓</span><span data-lang-en>Morning market</span></a></li>
+    <li><a href="https://claude.ai/artifact/5Vsj3ncNtJ6EzB5GZ57b2d" target="_blank" rel="noopener"><span class="d">09-15</span><span data-lang-ko>장마감 시황</span><span data-lang-en>Market close</span></a></li>
+    <li><a href="https://claude.ai/artifact/JzYv2uDELdbqcdAvssGCgQ" target="_blank" rel="noopener"><span class="d">09-15</span><span data-lang-ko>모닝 마켓</span><span data-lang-en>Morning market</span></a></li>
+    <li><a href="https://claude.ai/code/artifact/c0d07f87-a118-4720-84aa-30d7ab0a27b6" target="_blank" rel="noopener"><span class="d">09-14</span><span data-lang-ko>장마감 시황</span><span data-lang-en>Market close</span></a></li>
+    <li><a href="https://claude.ai/code/artifact/6752182d-093a-4ca1-8278-daba1884df2f" target="_blank" rel="noopener"><span class="d">09-14</span><span data-lang-ko>모닝 마켓</span><span data-lang-en>Morning market</span></a></li>
+    <li><a href="https://claude.ai/code/artifact/5f159f71-0e00-45fd-bb1c-ed19cc619da3" target="_blank" rel="noopener"><span class="d">09-13</span><span data-lang-ko>해외 증시</span><span data-lang-en>Overseas</span></a></li>
+    <li><a href="https://claude.ai/code/artifact/323a658c-bc4f-4b2c-b5c4-d53b8f244795" target="_blank" rel="noopener"><span class="d">09-12</span><span data-lang-ko>해외 증시</span><span data-lang-en>Overseas</span></a></li>
+    <li><a href="https://claude.ai/code/artifact/a294a193-d2f6-4cce-90eb-c106ab51194d" target="_blank" rel="noopener"><span class="d">09-11</span><span data-lang-ko>장마감 시황</span><span data-lang-en>Market close</span></a></li>
+    <li><a href="https://claude.ai/code/artifact/ebb9ba15-22ba-4f79-8354-bcc3a0e0d665" target="_blank" rel="noopener"><span class="d">09-11</span><span data-lang-ko>모닝 마켓</span><span data-lang-en>Morning market</span></a></li>
+    <li><a href="https://claude.ai/code/artifact/6eb5c203-e197-4cee-9b4f-69ab3d4ebe42" target="_blank" rel="noopener"><span class="d">09-10</span><span data-lang-ko>장마감 시황</span><span data-lang-en>Market close</span></a></li>
+    <li><a href="https://claude.ai/code/artifact/3c8d1f6a-c1a7-45b2-9571-3dfa9c5b56bb" target="_blank" rel="noopener"><span class="d">09-10</span><span data-lang-ko>모닝 마켓</span><span data-lang-en>Morning market</span></a></li>
+    <li><a href="https://claude.ai/code/artifact/9fb8d0c0-de55-445b-97e3-13f4524f4a61" target="_blank" rel="noopener"><span class="d">09-09</span><span data-lang-ko>장마감 시황</span><span data-lang-en>Market close</span></a></li>
+    <li><a href="https://claude.ai/code/artifact/3b8dd752-7641-4b28-807c-74210b51e716" target="_blank" rel="noopener"><span class="d">09-09</span><span data-lang-ko>모닝 마켓</span><span data-lang-en>Morning market</span></a></li>
+    <li><a href="https://claude.ai/code/artifact/0f456c7b-6c02-418f-9528-10d6051429cd" target="_blank" rel="noopener"><span class="d">09-08</span><span data-lang-ko>장마감 시황</span><span data-lang-en>Market close</span></a></li>
+    <li><a href="https://claude.ai/code/artifact/08768b8a-7c83-40ec-9d3f-bb189afec012" target="_blank" rel="noopener"><span class="d">09-08</span><span data-lang-ko>모닝 마켓</span><span data-lang-en>Morning market</span></a></li>
+    <li><a href="https://claude.ai/code/artifact/e20b4e31-6bc8-4b49-91ec-c4f46f42ae29" target="_blank" rel="noopener"><span class="d">09-07</span><span data-lang-ko>장마감 시황</span><span data-lang-en>Market close</span></a></li>
+    <li><a href="https://claude.ai/code/artifact/d50802dd-1522-439f-bd70-2920fb476a71" target="_blank" rel="noopener"><span class="d">09-07</span><span data-lang-ko>모닝</span><span data-lang-en>Morning</span></a></li>
+    <li><a href="https://claude.ai/code/artifact/e9cec7b3-e4b1-4e50-8917-045f6d8d03f4" target="_blank" rel="noopener"><span class="d">09-05</span><span data-lang-ko>해외 증시</span><span data-lang-en>Overseas</span></a></li>
+    <li><a href="https://claude.ai/code/artifact/83a72177-acef-4a8b-b2cf-10dd8f734af9" target="_blank" rel="noopener"><span class="d">09-04</span><span data-lang-ko>장마감 시황</span><span data-lang-en>Market close</span></a></li>
+    <li><a href="https://claude.ai/code/artifact/2f348cb2-5f25-4976-a5b0-2d53471996b0" target="_blank" rel="noopener"><span class="d">09-04</span><span data-lang-ko>모닝</span><span data-lang-en>Morning</span></a></li>
+    <li><a href="https://claude.ai/code/artifact/3becc6ef-1506-45bd-a00c-2ee4aa6023f9" target="_blank" rel="noopener"><span class="d">09-03</span><span data-lang-ko>장마감 시황</span><span data-lang-en>Market close</span></a></li>
+    <li><a href="https://claude.ai/code/artifact/606a17d0-e56d-4608-bdc2-34628d8e3fd8" target="_blank" rel="noopener"><span class="d">09-03</span><span data-lang-ko>모닝</span><span data-lang-en>Morning</span></a></li>
+    <li><a href="https://claude.ai/code/artifact/54c17d11-e3bb-4da4-93f1-631ce0f8ac70" target="_blank" rel="noopener"><span class="d">09-02</span><span data-lang-ko>모닝</span><span data-lang-en>Morning</span></a></li>
+    <li><a href="https://claude.ai/code/artifact/554151ab-53de-475d-a9db-86b0c4778a61" target="_blank" rel="noopener"><span class="d">09-01</span><span data-lang-ko>장마감 시황</span><span data-lang-en>Market close</span></a></li>
+    <li><a href="https://claude.ai/code/artifact/fb8359ec-5f20-4e07-a9eb-f0236346c50f" target="_blank" rel="noopener"><span class="d">09-01</span><span data-lang-ko>모닝</span><span data-lang-en>Morning</span></a></li>
+    <li><a href="https://claude.ai/code/artifact/b2e1c5f1-3795-45f9-83d6-1858128862c8" target="_blank" rel="noopener"><span class="d">08-31</span><span data-lang-ko>장마감 시황</span><span data-lang-en>Market close</span></a></li>
+    <li><a href="https://claude.ai/code/artifact/56daa887-4ba0-4487-9576-c5adb553116a" target="_blank" rel="noopener"><span class="d">08-31</span><span data-lang-ko>모닝 마켓</span><span data-lang-en>Morning</span></a></li>
+    <li><a href="https://claude.ai/code/artifact/e4edf2de-4dc0-452c-85c7-6186e466e0e5" target="_blank" rel="noopener"><span class="d">08-30</span><span data-lang-ko>해외 증시</span><span data-lang-en>Overseas brief</span></a></li>
+    <li><a href="https://claude.ai/code/artifact/74cfc5fe-c04a-486c-a596-71bc2627bdc5" target="_blank" rel="noopener"><span class="d">08-29</span><span data-lang-ko>해외 증시</span><span data-lang-en>Overseas brief</span></a></li>
+    <li><a href="https://claude.ai/code/artifact/35f0f7c1-22f6-41b2-ae84-f283247a3378" target="_blank" rel="noopener"><span class="d">08-28</span><span data-lang-ko>장마감 시황</span><span data-lang-en>Market close</span></a></li>
+    <li><a href="https://claude.ai/code/artifact/c9ebe35a-620a-4880-82db-1ebc893c20a5" target="_blank" rel="noopener"><span class="d">08-28</span><span data-lang-ko>모닝</span><span data-lang-en>Morning brief</span></a></li>
+    <li><a href="https://claude.ai/code/artifact/daf04ef0-26c1-440d-96cb-04b66c1fc610" target="_blank" rel="noopener"><span class="d">08-27</span><span data-lang-ko>장마감 시황</span><span data-lang-en>Market close</span></a></li>
+    <li><a href="https://claude.ai/code/artifact/0b5810db-861c-4b9e-85e9-b9fb54875967" target="_blank" rel="noopener"><span class="d">08-27</span><span data-lang-ko>모닝</span><span data-lang-en>Morning brief</span></a></li>
+    <li><a href="https://claude.ai/code/artifact/b27f3cea-0283-4449-80ab-9652fb74394b" target="_blank" rel="noopener"><span class="d">08-26</span><span data-lang-ko>모닝</span><span data-lang-en>Morning brief</span></a></li>
+    <li><a href="https://claude.ai/code/artifact/9e0333c2-1b26-4c4e-a07b-1167096d183b" target="_blank" rel="noopener"><span class="d">08-25</span><span data-lang-ko>장마감 시황</span><span data-lang-en>Market close</span></a></li>
+    <li><a href="https://claude.ai/code/artifact/3dd838fd-0cb8-4449-81f0-f01839407935" target="_blank" rel="noopener"><span class="d">08-25</span><span data-lang-ko>모닝</span><span data-lang-en>Morning brief</span></a></li>
+    <li><a href="https://claude.ai/code/artifact/1e8675b8-545c-4f3d-b5a6-2df772a122d1" target="_blank" rel="noopener"><span class="d">08-24</span><span data-lang-ko>모닝</span><span data-lang-en>Morning brief</span></a></li>
+    <li><a href="https://claude.ai/code/artifact/66c51b57-6e3c-4287-92bf-b44d104a2e85" target="_blank" rel="noopener"><span class="d">08-23</span><span data-lang-ko>해외 증시</span><span data-lang-en>Global brief</span></a></li>
+    <li><a href="https://claude.ai/code/artifact/13bd1e19-7f34-4332-9c17-7bf9f10b06e0" target="_blank" rel="noopener"><span class="d">08-22</span><span data-lang-ko>해외 증시</span><span data-lang-en>Global markets</span></a></li>
+    <li><a href="https://claude.ai/code/artifact/402298bd-070a-44a5-97b5-9dca7fda8552" target="_blank" rel="noopener"><span class="d">08-21</span><span data-lang-ko>장마감 시황</span><span data-lang-en>Market close</span></a></li>
+    <li><a href="https://claude.ai/code/artifact/3b765df8-e6b5-4b22-82c8-764a925692b7" target="_blank" rel="noopener"><span class="d">08-21</span><span data-lang-ko>모닝 마켓</span><span data-lang-en>Morning brief</span></a></li>
+    <li><a href="https://claude.ai/code/artifact/864a091f-6152-44d7-ba4b-3a4c09857b50" target="_blank" rel="noopener"><span class="d">08-20</span><span data-lang-ko>장마감 시황</span><span data-lang-en>Market close</span></a></li>
+    <li><a href="https://claude.ai/code/artifact/624996c3-aa73-4da4-9f69-79b2dba3a45c" target="_blank" rel="noopener"><span class="d">08-20</span><span data-lang-ko>모닝 마켓</span><span data-lang-en>Morning brief</span></a></li>
+    <li><a href="https://claude.ai/code/artifact/dca66b4e-550e-42ed-96d9-b24918392756" target="_blank" rel="noopener"><span class="d">08-19</span><span data-lang-ko>모닝 마켓</span><span data-lang-en>Morning brief</span></a></li>
+    <li><a href="https://claude.ai/code/artifact/c04b8081-7ddf-41a3-a693-d3f90acb6b71" target="_blank" rel="noopener"><span class="d">08-18</span><span data-lang-ko>모닝 마켓</span><span data-lang-en>Morning brief</span></a></li>
+    <li><a href="https://claude.ai/code/artifact/87160ee2-f83f-495a-9d9a-c036dd3b3f14" target="_blank" rel="noopener"><span class="d">08-17</span><span data-lang-ko>해외 증시</span><span data-lang-en>Global brief</span></a></li>
+    <li><a href="https://claude.ai/code/artifact/4498278f-4fa5-4ea1-aca1-dacb819f3ea7" target="_blank" rel="noopener"><span class="d">08-15</span><span data-lang-ko>해외 증시</span><span data-lang-en>Global brief</span></a></li>
+    <li><a href="https://claude.ai/code/artifact/9ee323f2-2aac-4b76-86ac-968b1546caf9" target="_blank" rel="noopener"><span class="d">08-14</span><span data-lang-ko>모닝 마켓</span><span data-lang-en>Morning brief</span></a></li>
+    <li><a href="https://claude.ai/code/artifact/4de32129-86ab-4daa-8a65-7658d2848765" target="_blank" rel="noopener"><span class="d">08-13</span><span data-lang-ko>모닝 마켓</span><span data-lang-en>Morning brief</span></a></li>
+    <li><a href="https://claude.ai/code/artifact/2f4b11f0-6a38-4007-9afd-02cefca42228" target="_blank" rel="noopener"><span class="d">08-12</span><span data-lang-ko>모닝 마켓</span><span data-lang-en>Morning brief</span></a></li>
+    <li><a href="https://claude.ai/code/artifact/81ed2f4f-4a38-4b60-911b-e42ee67c316a" target="_blank" rel="noopener"><span class="d">08-11</span><span data-lang-ko>모닝 마켓</span><span data-lang-en>Morning brief</span></a></li>
+    <li><a href="https://claude.ai/code/artifact/6bddc99f-2f51-4847-8707-a4b29c83a32f" target="_blank" rel="noopener"><span class="d">08-10</span><span data-lang-ko>장마감 시황</span><span data-lang-en>Close brief</span></a></li>
+    <li><a href="https://claude.ai/code/artifact/f92ff123-0fc4-4931-b5cf-f9deb1fb7897" target="_blank" rel="noopener"><span class="d">08-10</span><span data-lang-ko>모닝 마켓</span><span data-lang-en>Morning brief</span></a></li>
+    <li><a href="https://claude.ai/code/artifact/46f66af2-cd8c-4d32-bbe6-9cddbea5dab9" target="_blank" rel="noopener"><span class="d">08-08</span><span data-lang-ko>해외 증시 모닝</span><span data-lang-en>Global morning</span></a></li>
+    <li><a href="https://claude.ai/code/artifact/e4224dd3-fbc3-4cd1-970c-1c8f9e9713ba" target="_blank" rel="noopener"><span class="d">08-07</span><span data-lang-ko>장마감 시황</span><span data-lang-en>Close brief</span></a></li>
+    <li><a href="https://claude.ai/code/artifact/8692db99-79e8-43f5-9a8d-832e560effe9" target="_blank" rel="noopener"><span class="d">08-07</span><span data-lang-ko>모닝 마켓</span><span data-lang-en>Morning brief</span></a></li>
+    <li><a href="https://claude.ai/code/artifact/382fd976-d577-44b0-8380-3c5d378bada7" target="_blank" rel="noopener"><span class="d">08-06</span><span data-lang-ko>아침 브리핑</span><span data-lang-en>Morning brief</span></a></li>
+  </ul>
+</nav>
+
+
+<main>
+
+<section class="section" id="today">
+  <div class="section-rule"></div>
+  <span class="sec-num">01</span>
+  <h2 class="section-title"><span data-lang-ko>오늘의 결론</span><span data-lang-en>The Bottom Line</span></h2>
+<div class="stat-grid six">
+<div class="stat">
+  <p class="stat-label"><span data-lang-ko>코스피 (9/16)</span><span data-lang-en>KOSPI (16 September)</span></p>
+  <p class="stat-value">6,717.97</p>
+  <p class="stat-chg"><span class="up">+1.37%</span></p>
+  <p class="stat-note"><span data-lang-ko>상승 304 대 하락 578 (0.53배) &mdash; 열에 3</span><span data-lang-en>304 up, 578 down (0.53x)</span></p>
+</div>
+<div class="stat">
+  <p class="stat-label"><span data-lang-ko>코스닥</span><span data-lang-en>KOSDAQ</span></p>
+  <p class="stat-value">815.98</p>
+  <p class="stat-chg"><span class="up">+0.44%</span></p>
+  <p class="stat-note"><span data-lang-ko>상승 739 대 하락 893 (0.83배)</span><span data-lang-en>739 up, 893 down (0.83x)</span></p>
+</div>
+<div class="stat">
+  <p class="stat-label"><span data-lang-ko>거래대금</span><span data-lang-en>Turnover</span></p>
+  <p class="stat-value">16.69조</p>
+  <p class="stat-chg"><span class="down">사흘 연속 감소</span></p>
+  <p class="stat-note"><span data-lang-ko>19.67 &rarr; 21.58 &rarr; 17.13 &rarr; 16.69</span><span data-lang-en>KRW 16.69tn</span></p>
+</div>
+<div class="stat">
+  <p class="stat-label"><span data-lang-ko>외국인 순매수</span><span data-lang-en>Foreign net</span></p>
+  <p class="stat-value">&minus;1.67조</p>
+  <p class="stat-chg"></p>
+  <p class="stat-note"><span data-lang-ko>기관 +1.23조 &middot; 개인 &minus;1.21조</span><span data-lang-en>Institutions +1.23조, retail &minus;1.21조</span></p>
+</div>
+<div class="stat">
+  <p class="stat-label"><span data-lang-ko>미 10년물</span><span data-lang-en>US 10-year</span></p>
+  <p class="stat-value">5.010%</p>
+  <p class="stat-chg"><span class="up">+1.0bp</span></p>
+  <p class="stat-note"><span data-lang-ko>2년 <span class="up">+7.0bp</span> &middot; 30년 <span class="down">&minus;1.0bp</span></span><span data-lang-en>2y <span class="up">+7.0bp</span>, 30y <span class="down">&minus;1.0bp</span></span></p>
+</div>
+<div class="stat">
+  <p class="stat-label"><span data-lang-ko>원/달러</span><span data-lang-en>USD/KRW</span></p>
+  <p class="stat-value">1,377.20</p>
+  <p class="stat-chg"><span class="up">+1.00%</span></p>
+  <p class="stat-note"><span data-lang-ko>달러인덱스 <span class="up">+0.69%</span> <span class="mut">(미 장중 기준)</span></span><span data-lang-en>Dollar index <span class="up">+0.69%</span></span></p>
+</div>
+</div>
+<div class="callout">
+  <p class="callout-title"><span data-lang-ko>오늘 09시 개장에 들고 갈 것</span><span data-lang-en>What to carry into the 09:00 open</span></p>
+<p><span data-lang-ko><strong>&#9312; 점도표가 회견보다 분명했습니다.</strong> 전망을 제출한 FOMC 위원 18명 가운데 <strong>16명이 올해 최소 한 차례 추가 인상이 적절하다</strong>고 봤습니다. 워시 의장은 「나는 포워드 가이던스를 제시하는 일을 하지 않는다」며 말을 아꼈지만, 점도표는 이미 말을 했습니다. 시장의 물음도 「올리느냐」에서 <strong>「몇 번 더」</strong>로 넘어갔습니다. 아래 금리 표에서 <strong>곡선이 어떻게 눌렸는지</strong>를 함께 보십시오 &mdash; 짧은 쪽이 오르고 긴 쪽이 내려 <strong>장단기 폭이 좁아졌습니다.</strong></span><span data-lang-en><strong>&#9312; The dot plot spoke more plainly than the press conference.</strong> Of the 18 FOMC participants submitting projections, <strong>16 saw at least one further hike as appropriate this year.</strong> Chair Warsh withheld guidance &mdash; "I don't do forward guidance" &mdash; but the dots had already spoken. The market's question has moved from whether to <strong>how many more.</strong> Note in the rates table below <strong>how the curve flattened</strong>: the front end rose while the long end eased, <strong>narrowing the spread.</strong></span></p>
+<p><span data-lang-ko><strong>&#9313; 어제 국내 반등은 폭이 좁았습니다.</strong> 코스피는 올랐는데 <strong>내린 종목이 오른 종목보다 훨씬 많았습니다</strong> &mdash; 아래 등락 종목 수 표를 보십시오. 업종표에서도 통신장비&middot;전자장비&middot;반도체가 위에 몰려 있고 나머지는 대부분 내렸습니다. 종목표 상위가 사실상 <strong>반도체와 소부장 한 줄</strong>입니다. 외국인은 <strong>엿새째</strong> 팔았는데도 그 종목들이 올랐습니다 &mdash; 기관이 받았습니다. <strong>지수 하나로 「시장이 좋았다」고 말할 수 없는 날</strong>입니다.</span><span data-lang-en><strong>&#9313; Yesterday's rally at home was narrow.</strong> The KOSPI rose while <strong>decliners far outnumbered advancers</strong> &mdash; see the breadth table. In sectors, telecom equipment, electronic equipment and semiconductors cluster at the top and most of the rest fell. The top of the stock table is effectively <strong>one line: chips and their supply chain.</strong> Foreigners sold for a <strong>sixth session</strong> and those names still rose &mdash; institutions took the other side. <strong>This is not a day where the index alone supports saying "the market was good."</strong></span></p>
+<p><span data-lang-ko><strong>&#9314; 유가는 꺾였는데 원화는 또 밀렸습니다.</strong> 사우디가 오만을 통해 원유를 추가 공급한다는 보도에 WTI 와 브렌트가 함께 내렸습니다 &mdash; 로이터에 따르면 최근 2주 반 동안 20% 넘게 올랐던 유가입니다. 물가 쪽 부담 하나는 덜었습니다. 다만 <strong>달러인덱스가 100을 넘었고</strong> 원/달러는 이틀 연속 올랐습니다. 아래 환율 표에서 원화 크로스가 모두 같은 방향인지 보십시오 &mdash; 지금 국내 계좌에 가장 빨리 닿는 것은 금리보다 <strong>환율</strong>입니다.</span><span data-lang-en><strong>&#9314; Oil turned down, but the won weakened again.</strong> WTI and Brent both fell on reports of extra Saudi supply routed through Oman &mdash; crude that Reuters notes had risen more than 20% in two and a half weeks. One inflation pressure has eased. But <strong>the dollar index crossed 100</strong> and the won fell for a second day. Check in the FX table whether the won crosses all move the same way &mdash; right now the fastest channel to Korean accounts is not rates but <strong>the currency.</strong></span></p>
+</div>
+</section>
+
+<section class="section" id="korea">
+  <div class="section-rule"></div>
+  <span class="sec-num">02</span>
+  <h2 class="section-title"><span data-lang-ko>국내 증시</span><span data-lang-en>Korean Equities</span></h2>
+<p class="lede"><span data-lang-ko><strong>지수는 올랐는데 시장의 폭은 좁았습니다.</strong> 코스피와 코스닥 모두 상승 마감했지만 등락 종목 수는 양쪽 다 <strong>내린 종목이 더 많습니다</strong> &mdash; 대형주 몇 개가 지수를 끌어올린 모양입니다. 업종에서는 통신장비가 맨 위에 서고 전자장비&middot;반도체가 뒤를 이었으며, 아래쪽에는 광고&middot;IT서비스&middot;인터넷&middot;건설이 있습니다. 종목표 상위는 삼성전기&middot;주성엔지니어링&middot;SK하이닉스&middot;HPSP&middot;이수페타시스&middot;리노공업으로 <strong>사실상 반도체와 장비&middot;기판 한 묶음</strong>입니다. 이 흐름은 간밤 미국에서도 이어졌습니다(「간밤 해외」 절).<br><strong>수급은 반대 방향이었습니다</strong> &mdash; 외국인이 엿새째 팔았고 개인도 팔았는데 기관이 받았습니다. 자세한 것은 「수급」 절에 있습니다.</span><span data-lang-en><strong>The index rose but breadth was narrow.</strong> Both boards closed higher, yet <strong>decliners outnumbered advancers on each</strong> &mdash; a few heavyweights carried the index. Telecom equipment led the sectors, followed by electronic equipment and semiconductors, while advertising, IT services, internet and construction sat at the bottom. The top of the stock table &mdash; Samsung Electro-Mechanics, Jusung Engineering, SK hynix, HPSP, ISU Petasys, Leeno &mdash; is <strong>effectively one cluster: chips, equipment and substrates.</strong> The same shape carried into the US overnight (see the overseas section).<br><strong>Flows ran the other way</strong>: foreigners sold for a sixth session and retail sold too, while institutions bought. Details in the flows section.</span></p>
+<div class="duo">
+<div class="table-wrap">
+<table class="data compact">
+  <caption><span data-lang-ko>국내 지수 &mdash; 9월 16일(수) 마감</span><span data-lang-en>Korean indices &mdash; Wednesday 16 September close</span></caption>
+  <thead><tr><th class="wrap"><span data-lang-ko>항목</span><span data-lang-en>Measure</span></th><th class="n"><span data-lang-ko>코스피</span><span data-lang-en>KOSPI</span></th><th class="n"><span data-lang-ko>코스닥</span><span data-lang-en>KOSDAQ</span></th><th class="n opt"><span data-lang-ko>검증</span><span data-lang-en>Verified</span></th></tr></thead>
+  <tbody>
+      <tr class="hl"><th class="wrap hasnote"><span data-lang-ko>종가</span><span data-lang-en>Close</span><span class="sub"><span data-lang-ko>코스피는 대형주 중심 &mdash; <strong>삼성전자&middot;SK하이닉스가 절반 가까이</strong>입니다. 코스닥은 중소형&middot;성장주 중심입니다</span><span data-lang-en>KOSPI is large-cap heavy; KOSDAQ is small and mid-cap growth</span></span></th><td class="n">6,717.97</td><td class="n">815.98</td><td class="n opt"><span class="vf ok">MARKET DATA</span></td></tr>
+      <tr><th class="wrap hasnote"><span data-lang-ko>등락률</span><span data-lang-en>Change %</span><span class="sub"><span data-lang-ko>&nbsp;</span><span data-lang-en>&nbsp;</span></span></th><td class="n"><span class="up">+1.37%</span></td><td class="n"><span class="up">+0.44%</span></td><td class="n opt"><span class="vf ok">MARKET DATA</span></td></tr>
+      <tr><th class="wrap hasnote"><span data-lang-ko>상승 / 하락 종목</span><span data-lang-en>Advancing / declining</span><span class="sub"><span data-lang-ko>지수 방향과 어긋나면 대형주 몇 개가 지수를 움직인 것입니다</span><span data-lang-en>If it disagrees with the index, a few heavyweights moved it</span></span></th><td class="n">304 / 578</td><td class="n">739 / 893</td><td class="n opt"><span class="vf ok">MARKET DATA</span></td></tr>
+      <tr><th class="wrap hasnote"><span data-lang-ko>오른 종목 비율</span><span data-lang-en>Share advancing</span><span class="sub"><span data-lang-ko>열 종목 가운데 몇 개가 올랐는지</span><span data-lang-en>How many in ten rose</span></span></th><td class="n">열에 3</td><td class="n">열에 4</td><td class="n opt"><span class="vf ok">MARKET DATA</span></td></tr>
+      <tr><th class="wrap hasnote"><span data-lang-ko>52주 구간 내 위치</span><span data-lang-en>Position in the 52-week range</span><span class="sub"><span data-lang-ko>(종가 &minus; 저) &divide; (고 &minus; 저). <strong>지금이 비싼 자리인지</strong></span><span data-lang-en>(close &minus; low) / (high &minus; low)</span></span></th><td class="n">55.7%</td><td class="n">30.9%</td><td class="n opt"><span class="vf ok">MARKET DATA</span></td></tr>
+      <tr><th class="wrap hasnote"><span data-lang-ko>상한 / 하한</span><span data-lang-en>Limit up / down</span><span class="sub"><span data-lang-ko>&nbsp;</span><span data-lang-en>&nbsp;</span></span></th><td class="n">0 / 1</td><td class="n">7 / 0</td><td class="n opt"><span class="vf ok">MARKET DATA</span></td></tr>
+  </tbody>
+</table>
+<p class="tbl-foot"><span data-lang-ko><strong>52주 최고는 네이버 지수 페이지 표기 그대로</strong>이며 최근 종가 흐름과 차이가 큽니다 &mdash; 검증 노트를 보십시오 <span class="vf none">NOT FOUND</span>.</span><span data-lang-en><strong>The 52-week high is as published by Naver</strong> and sits far above recent closes &mdash; see the verification notes <span class="vf none">NOT FOUND</span>.</span></p>
+</div>
+<div class="table-wrap">
+<table class="data compact">
+  <caption><span data-lang-ko>업종 &mdash; 9월 16일</span><span data-lang-en>Sectors &mdash; 16 September</span></caption>
+  <thead><tr><th class="wrap"><span data-lang-ko>업종</span><span data-lang-en>Sector</span></th><th class="n"><span data-lang-ko>등락</span><span data-lang-en>Chg %</span></th><th class="n"><span data-lang-ko>1주 누적</span><span data-lang-en>1W</span></th></tr></thead>
+  <tbody>
+      <tr class="grp"><th class="wrap" colspan="3"><span data-lang-ko>오른 업종</span><span data-lang-en>Leaders</span></th></tr>
+      <tr><th class="wrap">통신장비</th><td class="n"><span class="up">+6.16%</span></td><td class="n"><span class="up">+5.96%</span></td></tr>
+      <tr><th class="wrap">가정용기기와용품</th><td class="n"><span class="up">+3.72%</span></td><td class="n"><span class="up">+7.90%</span></td></tr>
+      <tr><th class="wrap">전자장비와기기</th><td class="n"><span class="up">+3.27%</span></td><td class="n"><span class="down">&minus;1.41%</span></td></tr>
+      <tr><th class="wrap">반도체와반도체장비</th><td class="n"><span class="up">+2.94%</span></td><td class="n"><span class="down">&minus;4.77%</span></td></tr>
+      <tr><th class="wrap">전기장비</th><td class="n"><span class="up">+2.43%</span></td><td class="n"><span class="down">&minus;2.63%</span></td></tr>
+      <tr class="grp"><th class="wrap" colspan="3"><span data-lang-ko>내린 업종</span><span data-lang-en>Laggards</span></th></tr>
+      <tr><th class="wrap">광고</th><td class="n"><span class="down">&minus;3.66%</span></td><td class="n"><span class="down">&minus;5.18%</span></td></tr>
+      <tr><th class="wrap">IT서비스</th><td class="n"><span class="down">&minus;2.91%</span></td><td class="n"><span class="down">&minus;8.40%</span></td></tr>
+      <tr><th class="wrap">인터넷과카탈로그소매</th><td class="n"><span class="down">&minus;2.23%</span></td><td class="n"><span class="down">&minus;3.87%</span></td></tr>
+      <tr><th class="wrap">건설</th><td class="n"><span class="down">&minus;2.16%</span></td><td class="n"><span class="down">&minus;4.19%</span></td></tr>
+      <tr><th class="wrap">게임엔터테인먼트</th><td class="n"><span class="down">&minus;2.09%</span></td><td class="n"><span class="down">&minus;2.01%</span></td></tr>
+  </tbody>
+</table>
+<p class="tbl-foot"><span data-lang-ko>「1주 누적」은 <strong>일간 등락률을 더한 값</strong>이지 지수 계열이 아닙니다 &mdash; 네이버는 업종 지수를 주지 않습니다 <span class="vf ok">CALCULATED</span>.</span><span data-lang-en>The weekly column <strong>sums daily moves</strong>; Naver publishes no sector index series <span class="vf ok">CALCULATED</span>.</span></p>
+</div>
+</div>
+<div class="duo">
+<div class="table-wrap">
+<table class="data compact">
+  <caption><span data-lang-ko>오른 쪽 &middot; 국내 종목 &mdash; 9월 16일 마감, 원</span><span data-lang-en>Gainers &middot; Korean stocks &mdash; 16 September, in won</span></caption>
+  <thead><tr><th class="wrap"><span data-lang-ko>종목</span><span data-lang-en>Name</span></th><th class="n"><span data-lang-ko>종가</span><span data-lang-en>Close</span></th><th class="n"><span data-lang-ko>등락률</span><span data-lang-en>Change %</span></th></tr></thead>
+  <tbody>
+      <tr><th class="wrap">삼성전기<span data-lang-ko><span class="sub">전자장비와기기 업종이 어제 상승 상위였습니다</span></span><span data-lang-en><span class="sub">Electronic equipment was among the top sectors yesterday</span></span><span class="perfrow"><span class="p"><span class="k">1주</span> <span class="down">&minus;1.64%</span></span><i>&middot;</i><span class="p"><span class="k">1개월</span> <span class="down">&minus;11.36%</span></span><i>&middot;</i><span class="p"><span class="k">연초</span> <span class="up">+441.57%</span></span></span></th><td class="n">1,381,000</td><td class="n"><span class="up">+4.86%</span></td></tr>
+      <tr><th class="wrap">주성엔지니어링<span data-lang-ko><span class="sub">반도체와반도체장비 업종이 어제 상승 상위였습니다</span></span><span data-lang-en><span class="sub">Semiconductors and equipment was among the top sectors yesterday</span></span><span class="perfrow"><span class="p"><span class="k">1주</span> <span class="down">&minus;2.18%</span></span><i>&middot;</i><span class="p"><span class="k">1개월</span> <span class="up">+13.61%</span></span><i>&middot;</i><span class="p"><span class="k">연초</span> <span class="up">+629.24%</span></span></span></th><td class="n">202,000</td><td class="n"><span class="up">+4.77%</span></td></tr>
+      <tr><th class="wrap">SK하이닉스<span data-lang-ko><span class="sub">인텔이 미국 내 메모리 생산을 함께 논의한다는 보도가 간밤에 나왔습니다 &mdash; 인텔은 그 소식에 4% 올랐습니다</span></span><span data-lang-en><span class="sub">Reports overnight said Intel is discussing US memory production with it; Intel rose 4% on the news</span></span><span class="perfrow"><span class="p"><span class="k">1주</span> <span class="down">&minus;5.23%</span></span><i>&middot;</i><span class="p"><span class="k">1개월</span> <span class="up">+6.93%</span></span><i>&middot;</i><span class="p"><span class="k">연초</span> <span class="up">+170.20%</span></span></span></th><td class="n">1,759,000</td><td class="n"><span class="up">+4.08%</span></td></tr>
+      <tr><th class="wrap">HPSP<span class="perfrow"><span class="p"><span class="k">1주</span> <span class="down">&minus;4.64%</span></span><i>&middot;</i><span class="p"><span class="k">1개월</span> <span class="up">+32.18%</span></span><i>&middot;</i><span class="p"><span class="k">연초</span> <span class="up">+59.40%</span></span></span></th><td class="n">53,400</td><td class="n"><span class="up">+2.89%</span></td></tr>
+      <tr><th class="wrap">이수페타시스<span class="perfrow"><span class="p"><span class="k">1주</span> <span class="down">&minus;4.19%</span></span><i>&middot;</i><span class="p"><span class="k">1개월</span> <span class="up">+12.55%</span></span><i>&middot;</i><span class="p"><span class="k">연초</span> <span class="down">&minus;9.73%</span></span></span></th><td class="n">107,600</td><td class="n"><span class="up">+2.87%</span></td></tr>
+      <tr><th class="wrap">리노공업<span class="perfrow"><span class="p"><span class="k">1주</span> <span class="down">&minus;5.99%</span></span><i>&middot;</i><span class="p"><span class="k">1개월</span> <span class="down">&minus;6.92%</span></span><i>&middot;</i><span class="p"><span class="k">연초</span> <span class="up">+9.29%</span></span></span></th><td class="n">65,900</td><td class="n"><span class="up">+2.49%</span></td></tr>
+      <tr><th class="wrap">삼성전자<span class="perfrow"><span class="p"><span class="k">1주</span> <span class="down">&minus;5.94%</span></span><i>&middot;</i><span class="p"><span class="k">1개월</span> <span class="down">&minus;7.65%</span></span><i>&middot;</i><span class="p"><span class="k">연초</span> <span class="up">+111.43%</span></span></span></th><td class="n">253,500</td><td class="n"><span class="up">+2.01%</span></td></tr>
+      <tr><th class="wrap">SK스퀘어<span class="perfrow"><span class="p"><span class="k">1주</span> <span class="down">&minus;10.37%</span></span><i>&middot;</i><span class="p"><span class="k">1개월</span> <span class="down">&minus;11.61%</span></span><i>&middot;</i><span class="p"><span class="k">연초</span> <span class="up">+177.17%</span></span></span></th><td class="n">1,020,000</td><td class="n"><span class="up">+2.00%</span></td></tr>
+      <tr><th class="wrap">삼성물산<span class="perfrow"><span class="p"><span class="k">1주</span> <span class="down">&minus;5.98%</span></span><i>&middot;</i><span class="p"><span class="k">1개월</span> <span class="down">&minus;4.20%</span></span><i>&middot;</i><span class="p"><span class="k">연초</span> <span class="up">+47.60%</span></span></span></th><td class="n">353,500</td><td class="n"><span class="up">+1.87%</span></td></tr>
+      <tr><th class="wrap">한미반도체<span class="perfrow"><span class="p"><span class="k">1주</span> <span class="down">&minus;9.78%</span></span><i>&middot;</i><span class="p"><span class="k">1개월</span> <span class="down">&minus;1.31%</span></span><i>&middot;</i><span class="p"><span class="k">연초</span> <span class="up">+77.39%</span></span></span></th><td class="n">226,000</td><td class="n"><span class="up">+1.57%</span></td></tr>
+  </tbody>
+</table>
+</div>
+<div class="table-wrap">
+<table class="data compact">
+  <caption><span data-lang-ko>내린 쪽 &middot; 국내 종목 &mdash; 9월 16일 마감, 원</span><span data-lang-en>Losers &middot; Korean stocks &mdash; 16 September, in won</span></caption>
+  <thead><tr><th class="wrap"><span data-lang-ko>종목</span><span data-lang-en>Name</span></th><th class="n"><span data-lang-ko>종가</span><span data-lang-en>Close</span></th><th class="n"><span data-lang-ko>등락률</span><span data-lang-en>Change %</span></th></tr></thead>
+  <tbody>
+      <tr><th class="wrap">SK이노베이션<span data-lang-ko><span class="sub">간밤 유가가 꺾였습니다 &mdash; 이틀 전 유가 급등에 올랐던 자리를 되돌렸습니다</span></span><span data-lang-en><span class="sub">Oil turned down overnight, giving back the gain it made on the surge two sessions ago</span></span><span class="perfrow"><span class="p"><span class="k">1주</span> <span class="down">&minus;11.21%</span></span><i>&middot;</i><span class="p"><span class="k">1개월</span> <span class="up">+5.91%</span></span><i>&middot;</i><span class="p"><span class="k">연초</span> <span class="up">+34.68%</span></span></span></th><td class="n">136,300</td><td class="n"><span class="down">&minus;3.81%</span></td></tr>
+      <tr><th class="wrap">크래프톤<span class="perfrow"><span class="p"><span class="k">1주</span> <span class="down">&minus;2.87%</span></span><i>&middot;</i><span class="p"><span class="k">1개월</span> <span class="down">&minus;14.71%</span></span><i>&middot;</i><span class="p"><span class="k">연초</span> <span class="down">&minus;17.48%</span></span></span></th><td class="n">203,000</td><td class="n"><span class="down">&minus;3.56%</span></td></tr>
+      <tr><th class="wrap">현대건설<span class="perfrow"><span class="p"><span class="k">1주</span> <span class="down">&minus;6.96%</span></span><i>&middot;</i><span class="p"><span class="k">1개월</span> <span class="up">+7.34%</span></span><i>&middot;</i><span class="p"><span class="k">연초</span> <span class="up">+77.32%</span></span></span></th><td class="n">124,300</td><td class="n"><span class="down">&minus;2.97%</span></td></tr>
+      <tr><th class="wrap">현대모비스<span class="perfrow"><span class="p"><span class="k">1주</span> <span class="down">&minus;8.26%</span></span><i>&middot;</i><span class="p"><span class="k">1개월</span> <span class="down">&minus;29.98%</span></span><i>&middot;</i><span class="p"><span class="k">연초</span> <span class="up">+2.68%</span></span></span></th><td class="n">383,000</td><td class="n"><span class="down">&minus;2.92%</span></td></tr>
+      <tr><th class="wrap">카카오<span class="perfrow"><span class="p"><span class="k">1주</span> <span class="down">&minus;4.42%</span></span><i>&middot;</i><span class="p"><span class="k">1개월</span> <span class="down">&minus;16.25%</span></span><i>&middot;</i><span class="p"><span class="k">연초</span> <span class="down">&minus;44.26%</span></span></span></th><td class="n">33,500</td><td class="n"><span class="down">&minus;2.90%</span></td></tr>
+      <tr><th class="wrap">HD현대중공업<span class="perfrow"><span class="p"><span class="k">1주</span> <span class="down">&minus;4.96%</span></span><i>&middot;</i><span class="p"><span class="k">1개월</span> <span class="down">&minus;13.63%</span></span><i>&middot;</i><span class="p"><span class="k">연초</span> <span class="down">&minus;13.46%</span></span></span></th><td class="n">440,500</td><td class="n"><span class="down">&minus;2.87%</span></td></tr>
+      <tr><th class="wrap">두산에너빌리티<span class="perfrow"><span class="p"><span class="k">1주</span> <span class="down">&minus;8.62%</span></span><i>&middot;</i><span class="p"><span class="k">1개월</span> <span class="up">+1.45%</span></span><i>&middot;</i><span class="p"><span class="k">연초</span> <span class="up">+11.29%</span></span></span></th><td class="n">83,800</td><td class="n"><span class="down">&minus;2.78%</span></td></tr>
+      <tr><th class="wrap">에코프로비엠<span class="perfrow"><span class="p"><span class="k">1주</span> <span class="down">&minus;9.40%</span></span><i>&middot;</i><span class="p"><span class="k">1개월</span> <span class="down">&minus;10.80%</span></span><i>&middot;</i><span class="p"><span class="k">연초</span> <span class="down">&minus;28.99%</span></span></span></th><td class="n">104,100</td><td class="n"><span class="down">&minus;2.71%</span></td></tr>
+      <tr><th class="wrap">펄어비스<span class="perfrow"><span class="p"><span class="k">1주</span> <span class="down">&minus;1.14%</span></span><i>&middot;</i><span class="p"><span class="k">1개월</span> <span class="up">+11.20%</span></span><i>&middot;</i><span class="p"><span class="k">연초</span> <span class="down">&minus;7.09%</span></span></span></th><td class="n">34,750</td><td class="n"><span class="down">&minus;2.66%</span></td></tr>
+      <tr><th class="wrap">에코프로<span class="perfrow"><span class="p"><span class="k">1주</span> <span class="down">&minus;5.30%</span></span><i>&middot;</i><span class="p"><span class="k">1개월</span> <span class="down">&minus;12.18%</span></span><i>&middot;</i><span class="p"><span class="k">연초</span> <span class="down">&minus;9.47%</span></span></span></th><td class="n">82,200</td><td class="n"><span class="down">&minus;2.61%</span></td></tr>
+  </tbody>
+</table>
+</div>
+</div>
+<p class="tbl-foot"><span data-lang-ko><strong>수집한 55 종목을 다 싣지 않고 위아래 열씩만</strong> 보입니다 &mdash; 가운데 종목은 그날을 설명하지 못합니다. 「사유」는 <strong>확인된 것만</strong> 답니다.</span><span data-lang-en><strong>Only the top and bottom 10</strong> &mdash; the middle of the list does not explain the day. A reason is shown <strong>only where verified</strong>.</span></p>
+<div class="table-wrap">
+<table class="data compact">
+  <caption><span data-lang-ko>등락 종목 수 추이 &mdash; 최근 5거래일</span><span data-lang-en>Breadth over the last 5 sessions</span></caption>
+  <thead><tr><th class="wrap"><span data-lang-ko>날짜</span><span data-lang-en>Date</span></th><th class="n"><span data-lang-ko>코스피 %</span><span data-lang-en>KOSPI %</span></th><th class="n"><span data-lang-ko>상승</span><span data-lang-en>Adv</span></th><th class="n"><span data-lang-ko>하락</span><span data-lang-en>Dec</span></th><th class="n"><span data-lang-ko>코스닥 %</span><span data-lang-en>KOSDAQ %</span></th><th class="n"><span data-lang-ko>상승</span><span data-lang-en>Adv</span></th><th class="n"><span data-lang-ko>하락</span><span data-lang-en>Dec</span></th><th class="n opt"><span data-lang-ko>검증</span><span data-lang-en>Verified</span></th></tr></thead>
+  <tbody>
+      <tr><th class="wrap">09-10</th><td class="n"><span class="down">&minus;0.25%</span></td><td class="n"><span class="mut">&mdash;</span></td><td class="n"><span class="mut">&mdash;</span></td><td class="n"><span class="up">+0.79%</span></td><td class="n"><span class="mut">&mdash;</span></td><td class="n"><span class="mut">&mdash;</span></td><td class="n opt"><span class="vf ok">MARKET DATA</span></td></tr>
+      <tr><th class="wrap">09-11</th><td class="n"><span class="down">&minus;1.76%</span></td><td class="n">190</td><td class="n">665</td><td class="n"><span class="down">&minus;1.53%</span></td><td class="n">430</td><td class="n">1,207</td><td class="n opt"><span class="vf ok">MARKET DATA</span></td></tr>
+      <tr><th class="wrap">09-14</th><td class="n"><span class="down">&minus;3.26%</span></td><td class="n">327</td><td class="n">485</td><td class="n"><span class="down">&minus;1.69%</span></td><td class="n">603</td><td class="n">954</td><td class="n opt"><span class="vf ok">MARKET DATA</span></td></tr>
+      <tr><th class="wrap">09-15</th><td class="n"><span class="down">&minus;0.85%</span></td><td class="n">254</td><td class="n">623</td><td class="n"><span class="up">+0.70%</span></td><td class="n">788</td><td class="n">842</td><td class="n opt"><span class="vf ok">MARKET DATA</span></td></tr>
+      <tr><th class="wrap">09-16</th><td class="n"><span class="up">+1.37%</span></td><td class="n">304</td><td class="n">578</td><td class="n"><span class="up">+0.44%</span></td><td class="n">739</td><td class="n">893</td><td class="n opt"><span class="vf ok">MARKET DATA</span></td></tr>
+  </tbody>
+</table>
+<p class="tbl-foot"><span data-lang-ko><strong>지수 방향과 폭이 어긋난 날</strong>을 찾아 보십시오 &mdash; 그런 날은 대형주 몇 개가 지수를 움직인 것입니다.</span><span data-lang-en><strong>Look for days when the index and breadth disagree</strong> &mdash; on those days a few heavyweights moved the index.</span></p>
+</div>
+</section>
+
+<section class="section" id="flows">
+  <div class="section-rule"></div>
+  <span class="sec-num">03</span>
+  <h2 class="section-title"><span data-lang-ko>수급 &middot; 증시 주변자금</span><span data-lang-en>Flows and Money Around the Market</span></h2>
+<p class="lede"><span data-lang-ko><strong>여섯 거래일째 외국인 순매도입니다.</strong> 다만 <strong>크기는 이틀 연속 줄었습니다</strong> &mdash; 아래 10거래일 추이에서 가장 컸던 날과 견주어 보십시오. 어제 달라진 것은 <strong>받는 쪽</strong>입니다. 그전까지는 개인이 받았는데 어제는 개인도 파는 쪽으로 돌아섰고 <strong>기관이 홀로 받았습니다.</strong> 프로그램은 비차익이 계속 나가는 쪽입니다.<br>주변자금에서는 <strong>예탁금이 줄고 신용융자가 늘었습니다</strong> &mdash; 살 힘은 줄고 빌린 힘은 늘어난 모양이라 방향이 엇갈립니다. 다만 <strong>기준일이 다릅니다</strong>(결제일 기준이라 종가일보다 늦습니다). 매물대는 <strong>근사</strong>이고, 지수가 올라오면서 위쪽에 쌓인 비중은 지난 판보다 줄었습니다.</span><span data-lang-en><strong>A sixth straight session of foreign net selling.</strong> But <strong>the size shrank for a second day</strong> &mdash; compare with the largest day in the ten-session trend below. What changed yesterday is <strong>who took the other side</strong>: retail had been absorbing, but yesterday retail sold too and <strong>institutions alone bought.</strong> Non-arbitrage programme flow kept going out.<br>On the cash side, <strong>deposits fell while margin loans rose</strong> &mdash; buying power down, borrowed power up, so the two point opposite ways. Note the <strong>different as-of dates</strong> (settlement-dated, lagging the close). The supply bands are an <strong>approximation</strong>, and the weight above the index is lighter than in the last edition as the index climbed into it.</span></p>
+<div class="duo">
+<div class="table-wrap">
+<table class="data compact">
+  <caption><span data-lang-ko>투자자별 순매수 &mdash; 9월 16일, 단위 원</span><span data-lang-en>Net buying by investor type &mdash; 16 September</span></caption>
+  <thead><tr><th class="wrap"><span data-lang-ko>주체 &middot; 항목</span><span data-lang-en>Who / what</span></th><th class="n"><span data-lang-ko>코스피</span><span data-lang-en>KOSPI</span></th><th class="n"><span data-lang-ko>코스닥</span><span data-lang-en>KOSDAQ</span></th><th class="n opt"><span data-lang-ko>검증</span><span data-lang-en>Verified</span></th></tr></thead>
+  <tbody>
+      <tr class="hl"><th class="wrap hasnote"><span data-lang-ko>외국인 순매수</span><span data-lang-en>Foreign net buying</span><span class="sub"><span data-lang-ko>방향보다 <strong>전날 대비 변화</strong>가 큽니다 &mdash; 팔던 손이 멎는 것만으로 지수가 움직입니다</span><span data-lang-en>The change matters more than the level</span></span></th><td class="n">&minus;1.67조</td><td class="n">&minus;272억</td><td class="n opt"><span class="vf ok">MARKET DATA</span></td></tr>
+      <tr><th class="wrap hasnote"><span data-lang-ko>기관 순매수</span><span data-lang-en>Institutions</span><span class="sub"><span data-lang-ko>연기금·투신·보험</span><span data-lang-en>Pensions, funds, insurers</span></span></th><td class="n">+1.23조</td><td class="n">+222억</td><td class="n opt"><span class="vf ok">MARKET DATA</span></td></tr>
+      <tr><th class="wrap hasnote"><span data-lang-ko>개인 순매수</span><span data-lang-en>Retail</span><span class="sub"><span data-lang-ko>외국인·기관이 판 것을 누가 받았는지</span><span data-lang-en>Who absorbed what the others sold</span></span></th><td class="n">&minus;1.21조</td><td class="n">+62억</td><td class="n opt"><span class="vf ok">MARKET DATA</span></td></tr>
+      <tr><th class="wrap hasnote"><span data-lang-ko>프로그램 비차익</span><span data-lang-en>Non-arb programme</span><span class="sub"><span data-lang-ko>크게 마이너스면 <strong>바스켓 매도</strong>가 지수를 눌렀다는 신호입니다</span><span data-lang-en>Deeply negative means basket selling weighed on the index</span></span></th><td class="n">&minus;1.30조</td><td class="n">&minus;130억</td><td class="n opt"><span class="vf ok">MARKET DATA</span></td></tr>
+  </tbody>
+</table>
+<p class="tbl-foot"><span data-lang-ko>세 주체 합이 0 이 아닌 것은 <strong>기타법인이 빠져 있기 때문</strong>입니다. <strong>선물 외국인은 받지 못하므로 프로그램 비차익을 대용</strong>으로 봅니다 <span class="vf solo">1 SOURCE</span>.</span><span data-lang-en>The columns do not sum to zero because <strong>other corporates are excluded</strong>. <strong>Foreign futures flow is unavailable; non-arb programme trading stands in</strong> <span class="vf solo">1 SOURCE</span>.</span></p>
+</div>
+<div class="table-wrap">
+<table class="data compact">
+  <caption><span data-lang-ko>코스피 투자자별 순매수 &mdash; 최근 10거래일, 단위 억원</span><span data-lang-en>KOSPI net buying by investor type &mdash; last 10 sessions</span></caption>
+  <thead><tr><th class="wrap"><span data-lang-ko>날짜</span><span data-lang-en>Date</span></th><th class="n"><span data-lang-ko>개인</span><span data-lang-en>Retail</span></th><th class="n"><span data-lang-ko>외국인</span><span data-lang-en>Foreign</span></th><th class="n"><span data-lang-ko>기관</span><span data-lang-en>Institution</span></th><th class="n opt"><span data-lang-ko>검증</span><span data-lang-en>Verified</span></th></tr></thead>
+  <tbody>
+      <tr><th class="wrap">26.09.16</th><td class="n">&minus;1.21조</td><td class="n">&minus;1.67조</td><td class="n">+1.23조</td><td class="n opt"><span class="vf ok">MARKET DATA</span></td></tr>
+      <tr><th class="wrap">26.09.15</th><td class="n">+8,596억</td><td class="n">&minus;1.55조</td><td class="n">&minus;9,585억</td><td class="n opt"><span class="vf ok">MARKET DATA</span></td></tr>
+      <tr><th class="wrap">26.09.14</th><td class="n">+3.04조</td><td class="n">&minus;3.34조</td><td class="n">&minus;1.19조</td><td class="n opt"><span class="vf ok">MARKET DATA</span></td></tr>
+      <tr><th class="wrap">26.09.11</th><td class="n">+1.87조</td><td class="n">&minus;2.30조</td><td class="n">&minus;1.22조</td><td class="n opt"><span class="vf ok">MARKET DATA</span></td></tr>
+      <tr><th class="wrap">26.09.10</th><td class="n">+3,802억</td><td class="n">&minus;2.62조</td><td class="n">+5,744억</td><td class="n opt"><span class="vf ok">MARKET DATA</span></td></tr>
+      <tr><th class="wrap">26.09.09</th><td class="n">&minus;2.29조</td><td class="n">&minus;4,348억</td><td class="n">+9,422억</td><td class="n opt"><span class="vf ok">MARKET DATA</span></td></tr>
+      <tr><th class="wrap">26.09.08</th><td class="n">&minus;3.03조</td><td class="n">+6,316억</td><td class="n">+6,427억</td><td class="n opt"><span class="vf ok">MARKET DATA</span></td></tr>
+      <tr><th class="wrap">26.09.07</th><td class="n">&minus;6.84조</td><td class="n">+2.55조</td><td class="n">+2.65조</td><td class="n opt"><span class="vf ok">MARKET DATA</span></td></tr>
+      <tr><th class="wrap">26.09.04</th><td class="n">&minus;3.72조</td><td class="n">+4,796억</td><td class="n">+1.67조</td><td class="n opt"><span class="vf ok">MARKET DATA</span></td></tr>
+      <tr><th class="wrap">26.09.03</th><td class="n">&minus;9,552억</td><td class="n">+414억</td><td class="n">+9,143억</td><td class="n opt"><span class="vf ok">MARKET DATA</span></td></tr>
+  </tbody>
+</table>
+<p class="tbl-foot"><span data-lang-ko><strong>하루치가 아니라 방향이 언제 바뀌었는지를 보십시오.</strong> 외국인이 며칠째 같은 쪽인지, 그 흐름이 끊긴 날이 언제인지가 위 표의 하루치보다 오래 갑니다 <span class="vf ok">MARKET DATA</span>. 개인과 외국인이 <strong>거울처럼 반대</strong>인 구간은 손이 바뀌고 있다는 뜻입니다.</span><span data-lang-en><strong>Read the turn, not the day.</strong> How many sessions foreigners have stayed on one side, and when that run broke, outlasts any single day&rsquo;s figure <span class="vf ok">MARKET DATA</span>. Stretches where retail mirrors foreign flow are the market changing hands.</span></p>
+</div>
+</div>
+<div class="duo">
+<div class="table-wrap">
+<table class="data compact">
+  <caption><span data-lang-ko>증시 주변자금 &mdash; 9월 15일 기준</span><span data-lang-en>Money around the market &mdash; as of 15 September</span></caption>
+  <thead><tr><th class="wrap"><span data-lang-ko>항목</span><span data-lang-en>Item</span></th><th class="n"><span data-lang-ko>잔액</span><span data-lang-en>Level</span></th><th class="n"><span data-lang-ko>전일 대비</span><span data-lang-en>Change</span></th><th class="n sparkcell"><span data-lang-ko>10영업일 흐름</span><span data-lang-en>10 sessions</span></th><th class="n opt"><span data-lang-ko>검증</span><span data-lang-en>Verified</span></th></tr></thead>
+  <tbody>
+      <tr class="hl"><th class="wrap hasnote"><span data-lang-ko>고객예탁금</span><span data-lang-en>Customer deposits</span><span class="sub"><span data-lang-ko><strong>증시로 들어와 대기 중인 돈</strong>입니다. 늘면 살 힘이 붙습니다</span><span data-lang-en>Cash parked and waiting to buy</span></span></th><td class="n">105.33조원</td><td class="n">&minus;1.49조</td><td class="n sparkcell"><svg class="spark down" width="132" height="30" viewBox="0 0 132 30" role="img" aria-hidden="true"><polyline fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round" stroke-linecap="round" points="2.0,4.8 8.7,6.9 15.5,14.8 22.2,10.9 28.9,11.7 35.7,17.9 42.4,21.6 49.2,16.3 55.9,16.5 62.6,19.1 69.4,12.2 76.1,19.8 82.8,27.0 89.6,26.4 96.3,21.2 103.1,11.2 109.8,3.0 116.5,4.0 123.3,4.4 130.0,7.0"/></svg></td><td class="n opt"><span class="vf ok">MARKET DATA</span></td></tr>
+      <tr><th class="wrap hasnote"><span data-lang-ko>신용융자 잔고</span><span data-lang-en>Margin loans</span><span class="sub"><span data-lang-ko><strong>빌려서 산 돈</strong>입니다. 늘면 오를 때도 내릴 때도 폭이 커집니다</span><span data-lang-en>Money borrowed to buy; it amplifies both directions</span></span></th><td class="n">32.41조원</td><td class="n">+2,197억</td><td class="n sparkcell"><svg class="spark up" width="132" height="30" viewBox="0 0 132 30" role="img" aria-hidden="true"><polyline fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round" stroke-linecap="round" points="2.0,27.0 8.7,21.0 15.5,15.4 22.2,13.2 28.9,11.0 35.7,8.2 42.4,5.8 49.2,5.7 55.9,6.7 62.6,4.8 69.4,4.7 76.1,3.6 82.8,3.0 89.6,7.2 96.3,11.9 103.1,15.3 109.8,15.9 116.5,16.8 123.3,13.2 130.0,10.9"/></svg></td><td class="n opt"><span class="vf ok">MARKET DATA</span></td></tr>
+      <tr><th class="wrap hasnote"><span data-lang-ko>주식형 펀드</span><span data-lang-en>Equity funds</span><span class="sub"><span data-lang-ko>간접 투자 쪽 자금</span><span data-lang-en>Indirect flows</span></span></th><td class="n">330.65조원</td><td class="n">&minus;1.37조</td><td class="n sparkcell"><svg class="spark down" width="132" height="30" viewBox="0 0 132 30" role="img" aria-hidden="true"><polyline fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round" stroke-linecap="round" points="2.0,21.8 8.7,7.1 15.5,9.0 22.2,17.6 28.9,15.7 35.7,11.3 42.4,4.5 49.2,8.5 55.9,10.2 62.6,10.6 69.4,25.9 76.1,27.0 82.8,19.5 89.6,6.5 96.3,7.5 103.1,3.0 109.8,5.2 116.5,13.6 123.3,21.7 130.0,24.3"/></svg></td><td class="n opt"><span class="vf ok">MARKET DATA</span></td></tr>
+      <tr><th class="wrap hasnote"><span data-lang-ko>채권형 펀드</span><span data-lang-en>Bond funds</span><span class="sub"><span data-lang-ko>위험을 덜 때 이쪽이 늡니다</span><span data-lang-en>This grows when risk comes off</span></span></th><td class="n">213.17조원</td><td class="n">+2,189억</td><td class="n sparkcell"><svg class="spark down" width="132" height="30" viewBox="0 0 132 30" role="img" aria-hidden="true"><polyline fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round" stroke-linecap="round" points="2.0,12.4 8.7,11.5 15.5,3.0 22.2,7.2 28.9,7.8 35.7,3.9 42.4,5.2 49.2,16.4 55.9,17.3 62.6,27.0 69.4,25.5 76.1,24.9 82.8,26.9 89.6,22.7 96.3,14.3 103.1,12.8 109.8,9.7 116.5,12.2 123.3,15.9 130.0,12.9"/></svg></td><td class="n opt"><span class="vf ok">MARKET DATA</span></td></tr>
+  </tbody>
+</table>
+<p class="tbl-foot"><span data-lang-ko><strong>신용융자와 예탁금은 결제일 기준</strong>이라 종가일보다 1~2영업일 늦습니다 <span class="vf ok">MARKET DATA</span>. 증감은 네이버가 주는 부호 없는 값이 아니라 <strong>계열에서 계산한 실제 증감</strong>입니다 <span class="vf ok">CALCULATED</span>. 스파크라인의 세로 축은 <strong>줄마다 따로 맞췄으므로 높이를 줄끼리 견주지 마십시오.</strong></span><span data-lang-en><strong>Deposits and margin balances are on a settlement basis</strong>, one to two sessions behind the close <span class="vf ok">MARKET DATA</span>. Changes are computed from the series, not taken from the unsigned figure Naver publishes <span class="vf ok">CALCULATED</span>. <strong>Each sparkline is scaled to its own row</strong> &mdash; do not compare heights.</span></p>
+</div>
+<div class="table-wrap">
+<table class="data compact">
+  <caption><span data-lang-ko>매물대 근사 &mdash; 최근 12영업일 거래대금이 쌓인 자리</span><span data-lang-en>Where turnover sat &mdash; last 12 sessions</span></caption>
+  <thead><tr><th class="wrap"><span data-lang-ko>지수 구간</span><span data-lang-en>Index band</span></th><th class="n barcell"><span data-lang-ko>거래대금 비중</span><span data-lang-en>Share of turnover</span></th><th class="n"><span data-lang-ko>비중</span><span data-lang-en>Share</span></th><th class="n"><span data-lang-ko>거래일</span><span data-lang-en>Sessions</span></th><th class="n opt"><span data-lang-ko>검증</span><span data-lang-en>Verified</span></th></tr></thead>
+  <tbody>
+      <tr><th class="wrap">6,970.15 ~ 7,051.64</th><td class="n barcell"><span class="hbar" role="img" aria-hidden="true"><span class="hbar-fill" style="width:29.0%"></span></span></td><td class="n">29.0%</td><td class="n">3</td><td class="n opt"><span class="vf ok">CALCULATED</span></td></tr>
+      <tr><th class="wrap">6,888.67 ~ 6,970.15</th><td class="n barcell"><span class="hbar" role="img" aria-hidden="true"><span class="hbar-fill" style="width:18.2%"></span></span></td><td class="n">18.2%</td><td class="n">2</td><td class="n opt"><span class="vf ok">CALCULATED</span></td></tr>
+      <tr><th class="wrap">6,807.18 ~ 6,888.67</th><td class="n barcell"><span class="hbar" role="img" aria-hidden="true"><span class="hbar-fill" style="width:7.6%"></span></span></td><td class="n">7.6%</td><td class="n">1</td><td class="n opt"><span class="vf ok">CALCULATED</span></td></tr>
+      <tr><th class="wrap">6,725.69 ~ 6,807.18</th><td class="n barcell"><span class="hbar" role="img" aria-hidden="true"><span class="hbar-fill" style="width:0.0%"></span></span></td><td class="n">0.0%</td><td class="n">0</td><td class="n opt"><span class="vf ok">CALCULATED</span></td></tr>
+      <tr class="hl"><th class="wrap">6,644.21 ~ 6,725.69<span class="sub">현재가 이 구간</span></th><td class="n barcell"><span class="hbar" role="img" aria-hidden="true"><span class="hbar-fill" style="width:22.2%"></span></span></td><td class="n">22.2%</td><td class="n">3</td><td class="n opt"><span class="vf ok">CALCULATED</span></td></tr>
+      <tr><th class="wrap">6,562.72 ~ 6,644.21</th><td class="n barcell"><span class="hbar" role="img" aria-hidden="true"><span class="hbar-fill" style="width:23.0%"></span></span></td><td class="n">23.0%</td><td class="n">3</td><td class="n opt"><span class="vf ok">CALCULATED</span></td></tr>
+  </tbody>
+</table>
+<p class="tbl-foot"><span data-lang-ko><strong>가장 두꺼운 구간은 6,970.15~7,051.64 로 전체의 29.0%</strong> 이고, <strong>현재가 위쪽에 쌓인 비중은 54.8%</strong> 입니다 <span class="vf ok">CALCULATED</span>. 위쪽이 두꺼우면 올라갈 때 <strong>본전에 팔려는 물량</strong>을 만납니다. <strong>이것은 진짜 매물대가 아니라 근사입니다</strong> &mdash; 가격대별 거래량 분포는 무료 원천이 없어, 일별 종가와 거래대금으로 만든 것입니다(검증 노트 (c)).</span><span data-lang-en><strong>The heaviest band is 6,970.15&ndash;7,051.64, 29.0% of the total</strong>, and <strong>54.8% sits above the current level</strong> <span class="vf ok">CALCULATED</span>. A heavy band overhead means <strong>sellers waiting to get out at cost</strong>. <strong>This is an approximation, not a true volume profile</strong> &mdash; see note (c).</span></p>
+</div>
+</div>
+</section>
+
+<section class="section" id="global">
+  <div class="section-rule"></div>
+  <span class="sec-num">04</span>
+  <h2 class="section-title"><span data-lang-ko>간밤 해외</span><span data-lang-en>Overnight Overseas</span></h2>
+<p class="lede"><span data-lang-ko><strong>업종이 금리 하나로 갈렸습니다.</strong> 아래 미국 업종 표에서 <strong>금융이 크게 내렸습니다</strong> &mdash; 추가 인상이 대출 증가와 경기에 부담이 된다는 우려입니다. 보도에 따르면 은행주 ETF(KBE)가 2.6% 내려 <strong>2월 이후 최악의 하루</strong>였고 골드만삭스&middot;아메리칸익스프레스가 4% 가까이 빠졌습니다 <span class="vf solo">1 SOURCE</span>. <strong>에너지는 유가가 꺾이며 더 크게 내렸습니다.</strong> 반대로 <strong>기술&middot;헬스케어는 버텼고 반도체는 올랐습니다</strong> &mdash; 아래 종목표에서 AMD&middot;TSMC&middot;엔비디아&middot;ASML 이 오르고 플랫폼(마이크로소프트&middot;아마존&middot;알파벳)이 내린 것을 보십시오. <strong>이틀 전과 정반대의 짝</strong>입니다. 나스닥이 사실상 보합에 그친 데는 <strong>인텔이 SK하이닉스와 미국 내 메모리 생산을 논의한다는 보도에 4% 뛴</strong> 영향이 있었습니다 <span class="vf solo">1 SOURCE</span> &mdash; 이 종목은 이 판의 표에 없습니다.<br><strong>이 표는 정규장 마감 값입니다</strong> &mdash; 장 마감 뒤 실적은 들어 있지 않으니 「실적&middot;컨퍼런스콜」 절과 함께 보십시오.</span><span data-lang-en><strong>Sectors split along one axis: rates.</strong> In the US sector table, <strong>financials fell hard</strong> on concern that further hikes weigh on loan growth and the economy. Press reports put the bank ETF (KBE) down 2.6%, <strong>its worst day since February</strong>, with Goldman Sachs and American Express down close to 4% <span class="vf solo">1 SOURCE</span>. <strong>Energy fell further still as oil turned down.</strong> Conversely <strong>technology and healthcare held, and semiconductors rose</strong> &mdash; in the table below AMD, TSMC, Nvidia and ASML gained while the platforms (Microsoft, Amazon, Alphabet) fell: <strong>the exact inverse of two sessions ago.</strong> The Nasdaq finished near flat partly because <strong>Intel jumped 4% on reports it is discussing US memory production with SK hynix</strong> <span class="vf solo">1 SOURCE</span> &mdash; that name is not in this edition's tables.<br><strong>These are regular-session closes</strong> &mdash; post-close results are not in them, so read this with the results section.</span></p>
+<div class="duo">
+<div class="table-wrap">
+<table class="data compact">
+  <caption><span data-lang-ko>해외 지수 &mdash; 9월 16일 현지 마감</span><span data-lang-en>Overseas indices &mdash; local close, 16 September</span></caption>
+  <thead><tr><th class="wrap"><span data-lang-ko>지수</span><span data-lang-en>Index</span></th><th class="wrap"><span data-lang-ko>지역</span><span data-lang-en>Region</span></th><th class="n"><span data-lang-ko>종가</span><span data-lang-en>Close</span></th><th class="n"><span data-lang-ko>등락률</span><span data-lang-en>Change %</span></th><th class="n opt"><span data-lang-ko>검증</span><span data-lang-en>Verified</span></th></tr></thead>
+  <tbody>
+      <tr><th class="wrap"><span data-lang-ko>다우</span><span data-lang-en>Dow</span></th><td class="wrap"><span data-lang-ko>미국</span><span data-lang-en>US</span></td><td class="n">51,461.90</td><td class="n"><span class="down">&minus;1.21%</span></td><td class="n opt"><span class="vf ok">MARKET DATA</span></td></tr>
+      <tr><th class="wrap"><span data-lang-ko>S&amp;P 500</span><span data-lang-en>S&amp;P 500</span></th><td class="wrap"><span data-lang-ko>미국</span><span data-lang-en>US</span></td><td class="n">7,551.81</td><td class="n"><span class="down">&minus;0.45%</span></td><td class="n opt"><span class="vf ok">MARKET DATA</span></td></tr>
+      <tr><th class="wrap"><span data-lang-ko>나스닥</span><span data-lang-en>NASDAQ</span></th><td class="wrap"><span data-lang-ko>미국</span><span data-lang-en>US</span></td><td class="n">25,978.42</td><td class="n"><span class="down">&minus;0.01%</span></td><td class="n opt"><span class="vf ok">MARKET DATA</span></td></tr>
+      <tr class="hl"><th class="wrap"><span data-lang-ko>SOX (반도체)</span><span data-lang-en>SOX</span></th><td class="wrap"><span data-lang-ko>미국</span><span data-lang-en>US</span></td><td class="n">11,246.11</td><td class="n"><span class="up">+0.63%</span></td><td class="n opt"><span class="vf ok">MARKET DATA</span></td></tr>
+      <tr><th class="wrap"><span data-lang-ko>VIX</span><span data-lang-en>VIX</span></th><td class="wrap"><span data-lang-ko>미국</span><span data-lang-en>US</span></td><td class="n">17.71</td><td class="n"><span class="up">+2.97%</span></td><td class="n opt"><span class="vf ok">MARKET DATA</span></td></tr>
+      <tr><th class="wrap"><span data-lang-ko>STOXX 600</span><span data-lang-en>STOXX 600</span></th><td class="wrap"><span data-lang-ko>유럽</span><span data-lang-en>Europe</span></td><td class="n">637.09</td><td class="n"><span class="up">+0.46%</span></td><td class="n opt"><span class="vf ok">MARKET DATA</span></td></tr>
+      <tr><th class="wrap"><span data-lang-ko>DAX</span><span data-lang-en>DAX</span></th><td class="wrap"><span data-lang-ko>유럽</span><span data-lang-en>Europe</span></td><td class="n">25,537.75</td><td class="n"><span class="up">+0.53%</span></td><td class="n opt"><span class="vf ok">MARKET DATA</span></td></tr>
+      <tr><th class="wrap"><span data-lang-ko>니케이</span><span data-lang-en>Nikkei</span></th><td class="wrap"><span data-lang-ko>아시아</span><span data-lang-en>Asia</span></td><td class="n">63,923.00</td><td class="n"><span class="up">+0.69%</span></td><td class="n opt"><span class="vf ok">MARKET DATA</span></td></tr>
+      <tr><th class="wrap"><span data-lang-ko>항셍</span><span data-lang-en>Hang Seng</span></th><td class="wrap"><span data-lang-ko>아시아</span><span data-lang-en>Asia</span></td><td class="n">24,713.78</td><td class="n"><span class="up">+0.19%</span></td><td class="n opt"><span class="vf ok">MARKET DATA</span></td></tr>
+      <tr><th class="wrap"><span data-lang-ko>상하이</span><span data-lang-en>Shanghai</span></th><td class="wrap"><span data-lang-ko>아시아</span><span data-lang-en>Asia</span></td><td class="n">3,891.60</td><td class="n"><span class="up">+0.71%</span></td><td class="n opt"><span class="vf ok">MARKET DATA</span></td></tr>
+      <tr class="hl"><th class="wrap"><span data-lang-ko>가권</span><span data-lang-en>Taiwan</span></th><td class="wrap"><span data-lang-ko>아시아</span><span data-lang-en>Asia</span></td><td class="n">45,848.90</td><td class="n"><span class="up">+0.74%</span></td><td class="n opt"><span class="vf ok">MARKET DATA</span></td></tr>
+  </tbody>
+</table>
+<p class="tbl-foot"><span data-lang-ko><strong>아시아는 미국보다 먼저 닫습니다</strong> &mdash; 같은 날짜라도 아시아는 미국 장중에 나온 소식을 모르는 채 거래를 끝냅니다 <span class="vf ok">CALCULATED</span>. <strong>가권은 TSMC 비중이 커 반도체 투심의 대리 지표</strong>로 봅니다.</span><span data-lang-en><strong>Asia closes before New York</strong> &mdash; on the same date, Asia trades without knowing what the US session brings <span class="vf ok">CALCULATED</span>. <strong>Taiwan, TSMC-heavy, reads as a proxy for semiconductor sentiment.</strong></span></p>
+</div>
+<div class="table-wrap">
+<table class="data compact">
+  <caption><span data-lang-ko>S&amp;P 500 주요 업종 &mdash; 오른 4 &middot; 내린 4</span><span data-lang-en>S&amp;P 500 sectors &mdash; top and bottom 4</span></caption>
+  <thead><tr><th class="wrap"><span data-lang-ko>업종</span><span data-lang-en>Sector</span></th><th class="n"><span data-lang-ko>등락</span><span data-lang-en>Chg %</span></th></tr></thead>
+  <tbody>
+      <tr><th class="wrap hasnote">기술<span class="sub"><span data-lang-ko>S&P500 기술업종(XLK). 애플·MS·엔비디아가 큰 비중</span><span data-lang-en>S&P 500 technology (XLK); Apple, Microsoft and Nvidia dominate</span></span></th><td class="n"><span class="up">+0.10%</span></td></tr>
+      <tr><th class="wrap hasnote">헬스케어<span class="sub"><span data-lang-ko>S&P500 헬스케어(XLV). 제약·의료기기·보험</span><span data-lang-en>S&P 500 health care (XLV); pharma, devices and insurers</span></span></th><td class="n"><span class="up">+0.07%</span></td></tr>
+      <tr><th class="wrap hasnote">유틸리티<span class="sub"><span data-lang-ko>S&P500 유틸리티(XLU). 전력·가스. 금리 내리면 유리</span><span data-lang-en>S&P 500 utilities (XLU); benefits when rates fall</span></span></th><td class="n"><span class="flat">+0.00%</span></td></tr>
+      <tr><th class="wrap hasnote">산업재<span class="sub"><span data-lang-ko>S&P500 산업재(XLI). 항공·기계·운송·방산</span><span data-lang-en>S&P 500 industrials (XLI); aerospace, machinery and transport</span></span></th><td class="n"><span class="down">&minus;0.08%</span></td></tr>
+      <tr><th class="wrap hasnote">소재<span class="sub"><span data-lang-ko>S&P500 소재업종(XLB). 화학·금속. 중국 경기에 민감</span><span data-lang-en>S&P 500 materials (XLB); chemicals and metals, China-sensitive</span></span></th><td class="n"><span class="down">&minus;0.73%</span></td></tr>
+      <tr><th class="wrap hasnote">커뮤니케이션<span class="sub"><span data-lang-ko>S&P500 커뮤니케이션(XLC). 알파벳·메타·넷플릭스</span><span data-lang-en>S&P 500 communication services (XLC); Alphabet, Meta, Netflix</span></span></th><td class="n"><span class="down">&minus;0.90%</span></td></tr>
+      <tr><th class="wrap hasnote">금융<span class="sub"><span data-lang-ko>S&P500 금융업종(XLF). 은행·보험·카드. 금리와 경기에 민감</span><span data-lang-en>S&P 500 financials (XLF); banks, insurers and card networks</span></span></th><td class="n"><span class="down">&minus;1.62%</span></td></tr>
+      <tr><th class="wrap hasnote">에너지<span class="sub"><span data-lang-ko>S&P500 에너지업종(XLE). 유가에 직접 연동</span><span data-lang-en>S&P 500 energy (XLE); moves directly with crude</span></span></th><td class="n"><span class="down">&minus;2.88%</span></td></tr>
+  </tbody>
+</table>
+<p class="tbl-foot"><span data-lang-ko><strong>금리가 오른 날은 부동산&middot;유틸리티가 먼저 밀립니다</strong> &mdash; 배당으로 사는 자산이기 때문입니다. 열한 업종 전부는 전체 판에 있습니다 <span class="vf ok">CALCULATED</span>.</span><span data-lang-en><strong>When yields rise, real estate and utilities give way first</strong> &mdash; they are bought for yield. All eleven sectors are in the full edition <span class="vf ok">CALCULATED</span>.</span></p>
+</div>
+</div>
+<div class="duo">
+<div class="table-wrap">
+<table class="data compact">
+  <caption><span data-lang-ko>오른 쪽 &middot; 미국 종목 &mdash; 9월 16일, 달러</span><span data-lang-en>Gainers &middot; US stocks &mdash; 16 September, in dollars</span></caption>
+  <thead><tr><th class="wrap"><span data-lang-ko>종목</span><span data-lang-en>Name</span></th><th class="n"><span data-lang-ko>종가</span><span data-lang-en>Close</span></th><th class="n"><span data-lang-ko>등락률</span><span data-lang-en>Change %</span></th></tr></thead>
+  <tbody>
+      <tr><th class="wrap">AMD<span class="perfrow"><span class="p"><span class="k">1주</span> <span class="down">&minus;1.65%</span></span><i>&middot;</i><span class="p"><span class="k">1개월</span> <span class="down">&minus;0.37%</span></span><i>&middot;</i><span class="p"><span class="k">연초</span> <span class="up">+139.31%</span></span></span></th><td class="n">512.50</td><td class="n"><span class="up">+1.65%</span></td></tr>
+      <tr><th class="wrap">TSMC<span class="perfrow"><span class="p"><span class="k">1주</span> <span class="down">&minus;4.05%</span></span><i>&middot;</i><span class="p"><span class="k">1개월</span> <span class="down">&minus;2.02%</span></span><i>&middot;</i><span class="p"><span class="k">연초</span> <span class="up">+37.46%</span></span></span></th><td class="n">417.72</td><td class="n"><span class="up">+0.96%</span></td></tr>
+      <tr><th class="wrap">엔비디아<span class="perfrow"><span class="p"><span class="k">1주</span> <span class="down">&minus;4.37%</span></span><i>&middot;</i><span class="p"><span class="k">1개월</span> <span class="down">&minus;5.00%</span></span><i>&middot;</i><span class="p"><span class="k">연초</span> <span class="up">+14.69%</span></span></span></th><td class="n">213.90</td><td class="n"><span class="up">+0.82%</span></td></tr>
+      <tr><th class="wrap">ASML<span class="perfrow"><span class="p"><span class="k">1주</span> <span class="down">&minus;7.36%</span></span><i>&middot;</i><span class="p"><span class="k">1개월</span> <span class="down">&minus;13.12%</span></span><i>&middot;</i><span class="p"><span class="k">연초</span> <span class="up">+49.76%</span></span></span></th><td class="n">1,602.22</td><td class="n"><span class="up">+0.67%</span></td></tr>
+      <tr><th class="wrap">메타<span class="perfrow"><span class="p"><span class="k">1주</span> <span class="up">+3.00%</span></span><i>&middot;</i><span class="p"><span class="k">1개월</span> <span class="up">+14.15%</span></span><i>&middot;</i><span class="p"><span class="k">연초</span> <span class="up">+2.00%</span></span></span></th><td class="n">673.31</td><td class="n"><span class="up">+0.46%</span></td></tr>
+      <tr><th class="wrap">테슬라<span class="perfrow"><span class="p"><span class="k">1주</span> <span class="down">&minus;2.65%</span></span><i>&middot;</i><span class="p"><span class="k">1개월</span> <span class="up">+4.62%</span></span><i>&middot;</i><span class="p"><span class="k">연초</span> <span class="down">&minus;20.38%</span></span></span></th><td class="n">358.08</td><td class="n"><span class="up">+0.42%</span></td></tr>
+  </tbody>
+</table>
+</div>
+<div class="table-wrap">
+<table class="data compact">
+  <caption><span data-lang-ko>내린 쪽 &middot; 미국 종목 &mdash; 9월 16일, 달러</span><span data-lang-en>Losers &middot; US stocks &mdash; 16 September, in dollars</span></caption>
+  <thead><tr><th class="wrap"><span data-lang-ko>종목</span><span data-lang-en>Name</span></th><th class="n"><span data-lang-ko>종가</span><span data-lang-en>Close</span></th><th class="n"><span data-lang-ko>등락률</span><span data-lang-en>Change %</span></th></tr></thead>
+  <tbody>
+      <tr><th class="wrap">마이크로소프트<span class="perfrow"><span class="p"><span class="k">1주</span> <span class="down">&minus;0.27%</span></span><i>&middot;</i><span class="p"><span class="k">1개월</span> <span class="down">&minus;1.03%</span></span><i>&middot;</i><span class="p"><span class="k">연초</span> <span class="up">+1.38%</span></span></span></th><td class="n">490.30</td><td class="n"><span class="down">&minus;1.37%</span></td></tr>
+      <tr><th class="wrap">아마존<span class="perfrow"><span class="p"><span class="k">1주</span> <span class="down">&minus;2.55%</span></span><i>&middot;</i><span class="p"><span class="k">1개월</span> <span class="down">&minus;6.35%</span></span><i>&middot;</i><span class="p"><span class="k">연초</span> <span class="up">+6.56%</span></span></span></th><td class="n">245.96</td><td class="n"><span class="down">&minus;0.99%</span></td></tr>
+      <tr><th class="wrap">알파벳<span class="perfrow"><span class="p"><span class="k">1주</span> <span class="up">+3.70%</span></span><i>&middot;</i><span class="p"><span class="k">1개월</span> <span class="down">&minus;0.88%</span></span><i>&middot;</i><span class="p"><span class="k">연초</span> <span class="up">+9.54%</span></span></span></th><td class="n">342.87</td><td class="n"><span class="down">&minus;0.61%</span></td></tr>
+      <tr><th class="wrap">마이크론<span class="perfrow"><span class="p"><span class="k">1주</span> <span class="down">&minus;9.85%</span></span><i>&middot;</i><span class="p"><span class="k">1개월</span> <span class="down">&minus;4.64%</span></span><i>&middot;</i><span class="p"><span class="k">연초</span> <span class="up">+224.64%</span></span></span></th><td class="n">926.55</td><td class="n"><span class="down">&minus;0.11%</span></td></tr>
+      <tr><th class="wrap">브로드컴<span class="perfrow"><span class="p"><span class="k">1주</span> <span class="down">&minus;6.83%</span></span><i>&middot;</i><span class="p"><span class="k">1개월</span> <span class="down">&minus;13.61%</span></span><i>&middot;</i><span class="p"><span class="k">연초</span> <span class="down">&minus;1.90%</span></span></span></th><td class="n">339.51</td><td class="n"><span class="up">+0.07%</span></td></tr>
+      <tr><th class="wrap">애플<span class="perfrow"><span class="p"><span class="k">1주</span> <span class="up">+5.41%</span></span><i>&middot;</i><span class="p"><span class="k">1개월</span> <span class="up">+8.66%</span></span><i>&middot;</i><span class="p"><span class="k">연초</span> <span class="up">+22.27%</span></span></span></th><td class="n">332.41</td><td class="n"><span class="up">+0.32%</span></td></tr>
+  </tbody>
+</table>
+</div>
+</div>
+<p class="tbl-foot"><span data-lang-ko><strong>이 표는 미국 정규장 마감 값</strong>입니다 &mdash; 마감 뒤에 나온 실적이나 시간외 움직임은 들어 있지 않습니다. <strong>「실적&middot;컨퍼런스콜」 절과 함께 보십시오.</strong></span><span data-lang-en><strong>These are regular-session closes</strong> &mdash; after-hours moves and post-close results are not in them. <strong>Read alongside the results section.</strong></span></p>
+<div class="trio">
+<div class="table-wrap">
+<table class="data compact">
+  <caption><span data-lang-ko>유럽 &mdash; 거래 통화 기준</span><span data-lang-en>Europe &mdash; local currency</span></caption>
+  <thead><tr><th class="wrap"><span data-lang-ko>종목</span><span data-lang-en>Name</span></th><th class="n"><span data-lang-ko>종가</span><span data-lang-en>Close</span></th><th class="n"><span data-lang-ko>등락률</span><span data-lang-en>Change %</span></th></tr></thead>
+  <tbody>
+      <tr class="grp"><th class="wrap" colspan="3"><span data-lang-ko>오른 쪽</span><span data-lang-en>Up</span></th></tr>
+      <tr><th class="wrap">ASML</th><td class="n">1,396.20</td><td class="n"><span class="up">+1.26%</span></td></tr>
+      <tr><th class="wrap">인피니언</th><td class="n">55.00</td><td class="n"><span class="up">+1.23%</span></td></tr>
+      <tr><th class="wrap">LVMH</th><td class="n">410.95</td><td class="n"><span class="up">+1.11%</span></td></tr>
+      <tr class="grp"><th class="wrap" colspan="3"><span data-lang-ko>내린 쪽</span><span data-lang-en>Down</span></th></tr>
+      <tr><th class="wrap">네슬레</th><td class="n">77.66</td><td class="n"><span class="down">&minus;0.30%</span></td></tr>
+      <tr><th class="wrap">노보노디스크</th><td class="n">272.60</td><td class="n"><span class="down">&minus;1.20%</span></td></tr>
+      <tr><th class="wrap">쉘</th><td class="n">3,576.50</td><td class="n"><span class="down">&minus;2.08%</span></td></tr>
+  </tbody>
+</table>
+</div><div class="table-wrap">
+<table class="data compact">
+  <caption><span data-lang-ko>일본 &mdash; 단위 엔</span><span data-lang-en>Japan &mdash; in yen</span></caption>
+  <thead><tr><th class="wrap"><span data-lang-ko>종목</span><span data-lang-en>Name</span></th><th class="n"><span data-lang-ko>종가</span><span data-lang-en>Close</span></th><th class="n"><span data-lang-ko>등락률</span><span data-lang-en>Change %</span></th></tr></thead>
+  <tbody>
+      <tr class="grp"><th class="wrap" colspan="3"><span data-lang-ko>오른 쪽</span><span data-lang-en>Up</span></th></tr>
+      <tr><th class="wrap">히타치</th><td class="n">5,372.00</td><td class="n"><span class="up">+2.89%</span></td></tr>
+      <tr><th class="wrap">신에쓰화학</th><td class="n">5,820.00</td><td class="n"><span class="up">+2.23%</span></td></tr>
+      <tr><th class="wrap">도쿄일렉트론</th><td class="n">51,690.00</td><td class="n"><span class="up">+2.05%</span></td></tr>
+      <tr class="grp"><th class="wrap" colspan="3"><span data-lang-ko>내린 쪽</span><span data-lang-en>Down</span></th></tr>
+      <tr><th class="wrap">도요타</th><td class="n">3,016.00</td><td class="n"><span class="down">&minus;0.17%</span></td></tr>
+      <tr><th class="wrap">미쓰비시UFJ</th><td class="n">3,655.00</td><td class="n"><span class="down">&minus;0.35%</span></td></tr>
+      <tr><th class="wrap">소프트뱅크그룹</th><td class="n">6,183.00</td><td class="n"><span class="down">&minus;1.53%</span></td></tr>
+  </tbody>
+</table>
+</div><div class="table-wrap">
+<table class="data compact">
+  <caption><span data-lang-ko>중화권 &mdash; 본토 CNY &middot; 홍콩 HKD</span><span data-lang-en>Greater China &mdash; CNY and HKD</span></caption>
+  <thead><tr><th class="wrap"><span data-lang-ko>종목</span><span data-lang-en>Name</span></th><th class="n"><span data-lang-ko>종가</span><span data-lang-en>Close</span></th><th class="n"><span data-lang-ko>등락률</span><span data-lang-en>Change %</span></th></tr></thead>
+  <tbody>
+      <tr class="grp"><th class="wrap" colspan="3"><span data-lang-ko>오른 쪽</span><span data-lang-en>Up</span></th></tr>
+      <tr><th class="wrap">SMIC</th><td class="n">63.65</td><td class="n"><span class="up">+4.77%</span></td></tr>
+      <tr><th class="wrap">중국건설은행</th><td class="n">9.63</td><td class="n"><span class="up">+0.26%</span></td></tr>
+      <tr><th class="wrap">BYD</th><td class="n">79.20</td><td class="n"><span class="up">+0.19%</span></td></tr>
+      <tr class="grp"><th class="wrap" colspan="3"><span data-lang-ko>내린 쪽</span><span data-lang-en>Down</span></th></tr>
+      <tr><th class="wrap">샤오미</th><td class="n">26.18</td><td class="n"><span class="down">&minus;1.21%</span></td></tr>
+      <tr><th class="wrap">텐센트</th><td class="n">433.40</td><td class="n"><span class="down">&minus;1.23%</span></td></tr>
+      <tr><th class="wrap">CATL</th><td class="n">305.48</td><td class="n"><span class="down">&minus;3.44%</span></td></tr>
+  </tbody>
+</table>
+</div>
+</div>
+<p class="tbl-foot"><span data-lang-ko>세 표는 <strong>통화가 다 다릅니다</strong>(EUR&middot;GBp&middot;CHF&middot;JPY&middot;CNY&middot;HKD) &mdash; <strong>종가는 견주지 말고 등락률로 견주십시오.</strong> 도쿄와 홍콩은 국내 오후에 닫으므로 <strong>미국 장중 소식을 모르는 값</strong>입니다 <span class="vf ok">MARKET DATA</span>.</span><span data-lang-en>The three tables are in <strong>different currencies</strong> (EUR, GBp, CHF, JPY, CNY, HKD) &mdash; <strong>compare percentages, not price levels.</strong> Tokyo and Hong Kong close before the US session <span class="vf ok">MARKET DATA</span>.</span></p>
+</section>
+
+<section class="section" id="earnings">
+  <div class="section-rule"></div>
+  <span class="sec-num">05</span>
+  <h2 class="section-title"><span data-lang-ko>실적 &middot; 컨퍼런스콜</span><span data-lang-en>Results and Calls</span></h2>
+<p class="lede"><span data-lang-ko>간밤 미국 대형 실적 발표는 없었습니다. 오늘 아침 수집분에서 나온 국내 대목은 실적이 아니라 <strong>목표주가가 크게 엇갈린다는 이야기</strong>입니다 &mdash; 같은 종목을 두고 증권사 전망이 벌어져 있다는 것 자체가 그날의 정보이지, 어느 쪽이 맞다는 뜻이 아닙니다. <strong>목표주가는 이 판에 숫자로 옮겨 적지 않습니다</strong>(리포트 본문에서 확인하지 않았습니다). 컨퍼런스콜 발언은 오늘 수집분에 잡힌 것이 없어 <span class="vf none">NOT FOUND</span> 로 둡니다.</span><span data-lang-en>There were no major US results overnight. What this morning's collection surfaced domestically is not earnings but <strong>a sharp divergence in price targets</strong> &mdash; the spread between houses on the same stock is itself the information, not a signal that either side is right. <strong>We do not transcribe target prices into this edition</strong> (they were not verified against the underlying reports). No conference-call remarks were captured today, so that line is <span class="vf none">NOT FOUND</span>.</span></p>
+<div class="table-wrap">
+<table class="data compact">
+  <caption><span data-lang-ko>실적 &middot; 컨퍼런스콜 &mdash; 오늘 수집분</span><span data-lang-en>Results and calls &mdash; today&rsquo;s collection</span></caption>
+  <thead><tr><th class="wrap"><span data-lang-ko>기업</span><span data-lang-en>Company</span></th><th class="wrap"><span data-lang-ko>기사에서</span><span data-lang-en>From the article</span></th><th class="n"><span data-lang-ko>판정</span><span data-lang-en>Verdict</span></th><th class="n"><span data-lang-ko>컨콜</span><span data-lang-en>Call</span></th></tr></thead>
+  <tbody>
+      <tr><th class="wrap">삼성전자<span class="sub">253,500원</span></th><td class="wrap">이처럼 목표주가가 크게 벌어지는 가장 큰 이유는 삼성전자의 향후 실적과 반도체 업황을 바라보는 전제가 서로 다르기 때문이다</td><td class="n"><span data-lang-ko><span class="vf ok">상회</span></span><span data-lang-en><span class="vf ok">BEAT</span></span></td><td class="n">&mdash;</td></tr>
+      <tr><th class="wrap">현대차<span class="sub">362,000원</span></th><td class="wrap">김성훈 현대차증권 연구원은 "브로커리지는 거래대금과 시장 방향성에 좌우되지만 금융상품 판매·자산관리 비즈니스인 WM은 시황 민감도가 상대적으로 낮고 장기적으로 쌓아온 고객 네트워크와 금융상품 공급 역량을 바탕으로 성장할 수 있는 사업"이라며 "지속가능한 이익 수준 상향과 안정적인 주주환원이 뒷받침될 경우</td><td class="n"><span data-lang-ko><span class="vf bad">하회</span></span><span data-lang-en><span class="vf bad">MISS</span></span></td><td class="n">&mdash;</td></tr>
+  </tbody>
+</table>
+<p class="tbl-foot"><span data-lang-ko><strong>판정은 기사에 「상회」&middot;「하회」라고 적혀 있을 때만</strong> 답니다 &mdash; 컨센서스를 저희가 다시 계산한 것이 아닙니다. 인용 원문은 전체 판에 있습니다 <span class="vf solo">1 SOURCE</span>.</span><span data-lang-en><strong>A verdict appears only where the article says beat or miss</strong> &mdash; we do not recompute consensus. The quotations are in the full edition <span class="vf solo">1 SOURCE</span>.</span></p>
+</div>
+</section>
+
+<section class="section" id="macro">
+  <div class="section-rule"></div>
+  <span class="sec-num">06</span>
+  <h2 class="section-title"><span data-lang-ko>금리 &middot; 환율 &middot; 원자재</span><span data-lang-en>Rates, FX and Commodities</span></h2>
+<p class="lede"><span data-lang-ko><strong>곡선을 먼저 보십시오 &mdash; 오늘은 여기에 결정이 그대로 찍혀 있습니다.</strong> 정책에 민감한 <strong>짧은 쪽이 올랐고</strong>(2년물이 가장 크게) <strong>20&middot;30년물은 오히려 내렸습니다.</strong> 장단기 폭이 좁아진 이 모양이 「지금 더 조이고, 그래서 나중 성장은 덜 본다」는 값 매김입니다. 10년물은 결정 직전 4.95% 까지 내렸다가 회견 뒤 되올라 <strong>5% 위에서 마감</strong>했습니다.<br>유가는 반대로 움직였습니다 &mdash; 사우디가 오만을 통해 추가 공급에 나선다는 보도에 <strong>WTI&middot;브렌트가 함께 내렸습니다.</strong> 채권 변동성(MOVE)도 낮아졌습니다.<br>환율에서는 <strong>달러인덱스가 100을 넘었고</strong> 원화는 달러 상대 통화 전반에 밀렸습니다. 두 표의 빗금 방향이 서로 반대이므로 꼬리말을 함께 보십시오.</span><span data-lang-en><strong>Start with the curve &mdash; today the decision is printed on it.</strong> The policy-sensitive <strong>front end rose</strong> (the 2-year most) while <strong>20- and 30-year yields fell.</strong> That flattening is the market pricing "tighter now, so less growth later." The 10-year had slipped to 4.95% before the decision and round-tripped after the press conference to <strong>close above 5%.</strong><br>Oil went the other way: <strong>WTI and Brent both fell</strong> on reports of extra Saudi supply through Oman. Bond volatility (MOVE) eased too.<br>In FX, <strong>the dollar index crossed 100</strong> and the won weakened broadly against the dollar-side currencies. The two tables quote in opposite directions, so read their footnotes together.</span></p>
+<div class="duo">
+<div>
+<div class="table-wrap">
+<table class="data compact">
+  <caption><span data-lang-ko>금리 &mdash; 9월 16일 확정</span><span data-lang-en>Rates &mdash; official fixings, 16 September</span></caption>
+  <thead><tr><th class="wrap"><span data-lang-ko>항목</span><span data-lang-en>Item</span></th><th class="n"><span data-lang-ko>현재</span><span data-lang-en>Level</span></th><th class="n"><span data-lang-ko>전일 대비</span><span data-lang-en>Change</span></th><th class="n opt"><span data-lang-ko>검증</span><span data-lang-en>Verified</span></th></tr></thead>
+  <tbody>
+      <tr class="hl"><th class="wrap hasnote"><span data-lang-ko>미 국채 2년</span><span data-lang-en>US 2-year</span><span class="sub"><span data-lang-ko><strong>정책금리 기대</strong>가 가장 먼저 붙는 만기입니다</span><span data-lang-en>Where policy expectations show up first</span></span></th><td class="n">4.740%</td><td class="n"><span class="up">+7.0bp</span></td><td class="n opt"><span class="vf ok">MARKET DATA</span></td></tr>
+      <tr class="hl"><th class="wrap hasnote"><span data-lang-ko>미 국채 10년</span><span data-lang-en>US 10-year</span><span class="sub"><span data-lang-ko>국내 성장주&middot;반도체의 <strong>할인율</strong>입니다</span><span data-lang-en>The discount rate on Korean growth and semis</span></span></th><td class="n">5.010%</td><td class="n"><span class="up">+1.0bp</span></td><td class="n opt"><span class="vf ok">MARKET DATA</span></td></tr>
+      <tr><th class="wrap hasnote"><span data-lang-ko>미 국채 30년</span><span data-lang-en>US 30-year</span><span class="sub"><span data-lang-ko>재정과 기간 프리미엄이 붙는 자리</span><span data-lang-en>Where fiscal risk and term premium sit</span></span></th><td class="n">5.350%</td><td class="n"><span class="down">&minus;1.0bp</span></td><td class="n opt"><span class="vf ok">MARKET DATA</span></td></tr>
+      <tr><th class="wrap hasnote"><span data-lang-ko>10년 &minus; 2년</span><span data-lang-en>10s minus 2s</span><span class="sub"><span data-lang-ko><strong>기울기</strong>. 가팔라지면 성장&middot;물가 쪽, 눌리면 정책 쪽입니다</span><span data-lang-en>The slope &mdash; steepening is growth, flattening is policy</span></span></th><td class="n"><span class="up">+27bp</span></td><td class="n">&mdash;</td><td class="n opt"><span class="vf ok">MARKET DATA</span></td></tr>
+      <tr><th class="wrap hasnote"><span data-lang-ko>국고채 10년</span><span data-lang-en>Korea 10-year</span><span class="sub"><span data-lang-ko>한미 금리차가 원화 방향과 직결됩니다</span><span data-lang-en>The Korea&ndash;US gap drives the won</span></span></th><td class="n">4.547%</td><td class="n"><span class="up">+9.4bp</span></td><td class="n opt"><span class="vf ok">MARKET DATA</span></td></tr>
+      <tr><th class="wrap hasnote"><span data-lang-ko>한미 10년 금리차</span><span data-lang-en>Korea minus US, 10-year</span><span class="sub"><span data-lang-ko>마이너스면 <strong>국내 금리가 미국보다 낮다</strong>는 뜻이고 원화에 부담입니다</span><span data-lang-en>Negative means Korean yields sit below US yields</span></span></th><td class="n"><span class="down">&minus;46.3bp</span></td><td class="n">&mdash;</td><td class="n opt"><span class="vf ok">MARKET DATA</span></td></tr>
+      <tr><th class="wrap hasnote"><span data-lang-ko>COFIX (신규취급액)</span><span data-lang-en>COFIX, new loans</span><span class="sub"><span data-lang-ko><strong>고객 대출금리에 직결</strong>됩니다</span><span data-lang-en>Feeds directly into retail loan rates</span></span></th><td class="n">3.18%</td><td class="n">&mdash;</td><td class="n opt"><span class="vf ok">MARKET DATA</span></td></tr>
+  </tbody>
+</table>
+<p class="tbl-foot"><span data-lang-ko>미 국채는 <strong>재무부 확정 고시</strong>이고 <span class="vf ok">2 SOURCES</span>, 국고채는 한국은행 ECOS 입니다. <strong>한미 금리차는 같은 만기끼리 뺀 값</strong>입니다 <span class="vf ok">CALCULATED</span>. 만기 열한 개 전부는 <strong>바로 아래 곡선표</strong>에 있습니다.</span><span data-lang-en>US yields are <strong>Treasury official fixings</strong> <span class="vf ok">2 SOURCES</span>; Korean yields come from ECOS. <strong>The gap is same-maturity subtraction</strong> <span class="vf ok">CALCULATED</span>. The full eleven-point curve is <strong>just below</strong>.</span></p>
+</div>
+<div class="table-wrap">
+<table class="data compact">
+  <caption><span data-lang-ko>미 재무부 확정 곡선 &mdash; 만기 11개</span><span data-lang-en>US Treasury official curve &mdash; 11 maturities</span></caption>
+  <thead><tr><th class="wrap"><span data-lang-ko>만기</span><span data-lang-en>Maturity</span></th><th class="n"><span data-lang-ko>수익률</span><span data-lang-en>Yield</span></th><th class="n"><span data-lang-ko>전일 대비</span><span data-lang-en>Change</span></th></tr></thead>
+  <tbody>
+      <tr><th class="wrap"><span data-lang-ko>1개월</span><span data-lang-en>1M</span><span class="perfrow"><span class="p"><span class="k">1주</span> <span class="up">+15.0bp</span></span><i>&middot;</i><span class="p"><span class="k">1개월</span> <span class="up">+17.0bp</span></span><i>&middot;</i><span class="p"><span class="k">연초</span> <span class="up">+22.0bp</span></span></span></th><td class="n">3.960%</td><td class="n"><span class="up">+3.0bp</span></td></tr>
+      <tr><th class="wrap"><span data-lang-ko>3개월</span><span data-lang-en>3M</span><span class="perfrow"><span class="p"><span class="k">1주</span> <span class="up">+19.0bp</span></span><i>&middot;</i><span class="p"><span class="k">1개월</span> <span class="up">+28.0bp</span></span><i>&middot;</i><span class="p"><span class="k">연초</span> <span class="up">+47.0bp</span></span></span></th><td class="n">4.140%</td><td class="n"><span class="up">+3.0bp</span></td></tr>
+      <tr><th class="wrap"><span data-lang-ko>6개월</span><span data-lang-en>6M</span><span class="perfrow"><span class="p"><span class="k">1주</span> <span class="up">+21.0bp</span></span><i>&middot;</i><span class="p"><span class="k">1개월</span> <span class="up">+27.0bp</span></span><i>&middot;</i><span class="p"><span class="k">연초</span> <span class="up">+63.0bp</span></span></span></th><td class="n">4.220%</td><td class="n"><span class="up">+5.0bp</span></td></tr>
+      <tr><th class="wrap"><span data-lang-ko>1년</span><span data-lang-en>1Y</span><span class="perfrow"><span class="p"><span class="k">1주</span> <span class="up">+28.0bp</span></span><i>&middot;</i><span class="p"><span class="k">1개월</span> <span class="up">+47.0bp</span></span><i>&middot;</i><span class="p"><span class="k">연초</span> <span class="up">+97.0bp</span></span></span></th><td class="n">4.450%</td><td class="n"><span class="up">+6.0bp</span></td></tr>
+      <tr class="hl"><th class="wrap"><span data-lang-ko>2년</span><span data-lang-en>2Y</span><span class="perfrow"><span class="p"><span class="k">1주</span> <span class="up">+31.0bp</span></span><i>&middot;</i><span class="p"><span class="k">1개월</span> <span class="up">+57.0bp</span></span><i>&middot;</i><span class="p"><span class="k">연초</span> <span class="up">+127.0bp</span></span></span></th><td class="n">4.740%</td><td class="n"><span class="up">+7.0bp</span></td></tr>
+      <tr><th class="wrap"><span data-lang-ko>3년</span><span data-lang-en>3Y</span><span class="perfrow"><span class="p"><span class="k">1주</span> <span class="up">+33.0bp</span></span><i>&middot;</i><span class="p"><span class="k">1개월</span> <span class="up">+58.0bp</span></span><i>&middot;</i><span class="p"><span class="k">연초</span> <span class="up">+127.0bp</span></span></span></th><td class="n">4.820%</td><td class="n"><span class="up">+6.0bp</span></td></tr>
+      <tr><th class="wrap"><span data-lang-ko>5년</span><span data-lang-en>5Y</span><span class="perfrow"><span class="p"><span class="k">1주</span> <span class="up">+25.0bp</span></span><i>&middot;</i><span class="p"><span class="k">1개월</span> <span class="up">+50.0bp</span></span><i>&middot;</i><span class="p"><span class="k">연초</span> <span class="up">+113.0bp</span></span></span></th><td class="n">4.860%</td><td class="n"><span class="up">+3.0bp</span></td></tr>
+      <tr><th class="wrap"><span data-lang-ko>7년</span><span data-lang-en>7Y</span><span class="perfrow"><span class="p"><span class="k">1주</span> <span class="up">+23.0bp</span></span><i>&middot;</i><span class="p"><span class="k">1개월</span> <span class="up">+43.0bp</span></span><i>&middot;</i><span class="p"><span class="k">연초</span> <span class="up">+100.0bp</span></span></span></th><td class="n">4.940%</td><td class="n"><span class="up">+3.0bp</span></td></tr>
+      <tr class="hl"><th class="wrap"><span data-lang-ko>10년</span><span data-lang-en>10Y</span><span class="perfrow"><span class="p"><span class="k">1주</span> <span class="up">+18.0bp</span></span><i>&middot;</i><span class="p"><span class="k">1개월</span> <span class="up">+33.0bp</span></span><i>&middot;</i><span class="p"><span class="k">연초</span> <span class="up">+83.0bp</span></span></span></th><td class="n">5.010%</td><td class="n"><span class="up">+1.0bp</span></td></tr>
+      <tr><th class="wrap"><span data-lang-ko>20년</span><span data-lang-en>20Y</span><span class="perfrow"><span class="p"><span class="k">1주</span> <span class="up">+11.0bp</span></span><i>&middot;</i><span class="p"><span class="k">1개월</span> <span class="up">+14.0bp</span></span><i>&middot;</i><span class="p"><span class="k">연초</span> <span class="up">+60.0bp</span></span></span></th><td class="n">5.390%</td><td class="n"><span class="down">&minus;1.0bp</span></td></tr>
+      <tr class="hl"><th class="wrap"><span data-lang-ko>30년</span><span data-lang-en>30Y</span><span class="perfrow"><span class="p"><span class="k">1주</span> <span class="up">+7.0bp</span></span><i>&middot;</i><span class="p"><span class="k">1개월</span> <span class="up">+10.0bp</span></span><i>&middot;</i><span class="p"><span class="k">연초</span> <span class="up">+51.0bp</span></span></span></th><td class="n">5.350%</td><td class="n"><span class="down">&minus;1.0bp</span></td></tr>
+  </tbody>
+</table>
+<p class="tbl-foot"><span data-lang-ko><strong>짧은 쪽이 더 움직였으면 정책 기대</strong>, 장기물까지 같이 움직였으면 <strong>성장&middot;물가 전망</strong>이 움직인 것입니다 <span class="vf ok">2 SOURCES</span>.</span><span data-lang-en><strong>The front end moving means policy expectations</strong>; the long end moving means the growth and inflation view <span class="vf ok">2 SOURCES</span>.</span></p>
+</div>
+<div class="table-wrap">
+<table class="data compact">
+  <caption><span data-lang-ko>원자재 &middot; 기타 &mdash; 9월 16일</span><span data-lang-en>Commodities &mdash; 16 September</span></caption>
+  <thead><tr><th class="wrap"><span data-lang-ko>항목</span><span data-lang-en>Item</span></th><th class="n"><span data-lang-ko>종가</span><span data-lang-en>Close</span></th><th class="n"><span data-lang-ko>등락률</span><span data-lang-en>Change %</span></th></tr></thead>
+  <tbody>
+      <tr class="hl"><th class="wrap"><span data-lang-ko>브렌트유</span><span data-lang-en>Brent</span><span class="perfrow"><span class="p"><span class="k">1주</span> <span class="up">+4.26%</span></span><i>&middot;</i><span class="p"><span class="k">1개월</span> <span class="up">+19.20%</span></span><i>&middot;</i><span class="p"><span class="k">연초</span> <span class="up">+73.41%</span></span></span></th><td class="n">105.52</td><td class="n"><span class="down">&minus;2.97%</span></td></tr>
+      <tr><th class="wrap"><span data-lang-ko>WTI</span><span data-lang-en>WTI</span><span class="perfrow"><span class="p"><span class="k">1주</span> <span class="up">+6.11%</span></span><i>&middot;</i><span class="p"><span class="k">1개월</span> <span class="up">+23.69%</span></span><i>&middot;</i><span class="p"><span class="k">연초</span> <span class="up">+77.50%</span></span></span></th><td class="n">101.92</td><td class="n"><span class="down">&minus;3.69%</span></td></tr>
+      <tr><th class="wrap"><span data-lang-ko>금</span><span data-lang-en>Gold</span><span class="perfrow"><span class="p"><span class="k">1주</span> <span class="down">&minus;3.61%</span></span><i>&middot;</i><span class="p"><span class="k">1개월</span> <span class="down">&minus;3.10%</span></span><i>&middot;</i><span class="p"><span class="k">연초</span> <span class="down">&minus;0.96%</span></span></span></th><td class="n">4,299.60</td><td class="n"><span class="down">&minus;0.77%</span></td></tr>
+      <tr><th class="wrap"><span data-lang-ko>은</span><span data-lang-en>Silver</span><span class="perfrow"><span class="p"><span class="k">1주</span> <span class="down">&minus;6.70%</span></span><i>&middot;</i><span class="p"><span class="k">1개월</span> <span class="down">&minus;2.46%</span></span><i>&middot;</i><span class="p"><span class="k">연초</span> <span class="down">&minus;9.62%</span></span></span></th><td class="n">63.39</td><td class="n"><span class="up">+0.24%</span></td></tr>
+      <tr><th class="wrap"><span data-lang-ko>구리</span><span data-lang-en>Copper</span><span class="perfrow"><span class="p"><span class="k">1주</span> <span class="down">&minus;5.23%</span></span><i>&middot;</i><span class="p"><span class="k">1개월</span> <span class="down">&minus;2.30%</span></span><i>&middot;</i><span class="p"><span class="k">연초</span> <span class="up">+14.52%</span></span></span></th><td class="n">6.45</td><td class="n"><span class="up">+1.24%</span></td></tr>
+      <tr><th class="wrap"><span data-lang-ko>천연가스</span><span data-lang-en>Nat gas</span><span class="perfrow"><span class="p"><span class="k">1주</span> <span class="up">+2.52%</span></span><i>&middot;</i><span class="p"><span class="k">1개월</span> <span class="up">+5.85%</span></span><i>&middot;</i><span class="p"><span class="k">연초</span> <span class="down">&minus;21.51%</span></span></span></th><td class="n">2.89</td><td class="n"><span class="down">&minus;0.89%</span></td></tr>
+      <tr><th class="wrap"><span data-lang-ko>비트코인</span><span data-lang-en>Bitcoin</span><span class="perfrow"><span class="p"><span class="k">1주</span> <span class="down">&minus;3.31%</span></span><i>&middot;</i><span class="p"><span class="k">1개월</span> <span class="up">+20.45%</span></span><i>&middot;</i><span class="p"><span class="k">연초</span> <span class="down">&minus;13.53%</span></span></span></th><td class="n">75,667.86</td><td class="n"><span class="up">+0.07%</span></td></tr>
+  </tbody>
+</table>
+<p class="tbl-foot"><span data-lang-ko>유가는 <strong>야후 일봉 종가</strong>입니다 &mdash; 국내 보도가 쓰는 <strong>선물 정산가</strong>와 폭이 다를 수 있습니다 <span class="vf ok">MARKET DATA</span>.</span><span data-lang-en>Crude is the <strong>Yahoo daily close</strong>, which differs from the <strong>futures settlement</strong> Korean coverage quotes <span class="vf ok">MARKET DATA</span>.</span></p>
+</div>
+</div>
+<div>
+<div class="table-wrap">
+<table class="data compact">
+  <caption><span data-lang-ko>원화 환율 &mdash; 오늘 아침 9월 17일</span><span data-lang-en>The won &mdash; this morning, 17 September</span></caption>
+  <thead><tr><th class="wrap"><span data-lang-ko>통화쌍</span><span data-lang-en>Pair</span></th><th class="n"><span data-lang-ko>현재</span><span data-lang-en>Level</span></th><th class="n"><span data-lang-ko>등락률</span><span data-lang-en>Change %</span></th><th class="n opt"><span data-lang-ko>검증</span><span data-lang-en>Verified</span></th></tr></thead>
+  <tbody>
+      <tr class="hl"><th class="wrap hasnote"><span data-lang-ko>원/달러</span><span data-lang-en>KRW/USD</span><span class="perfrow"><span class="p"><span class="k">1주</span> <span class="up">+2.84%</span></span><i>&middot;</i><span class="p"><span class="k">1개월</span> <span class="down">&minus;2.80%</span></span><i>&middot;</i><span class="p"><span class="k">연초</span> <span class="down">&minus;4.22%</span></span></span><span class="sub"><span data-lang-ko>수입 물가와 외국인 수급을 동시에 흔드는 단일 변수</span><span data-lang-en>The single variable that moves import prices and foreign flows at once</span></span></th><td class="n">1,377.2</td><td class="n"><span class="up">+1.00%</span></td><td class="n opt"><span class="vf ok">MARKET DATA</span></td></tr>
+      <tr><th class="wrap hasnote"><span data-lang-ko>원/100엔</span><span data-lang-en>KRW/100JPY</span><span class="perfrow"><span class="p"><span class="k">1주</span> <span class="up">+1.02%</span></span><i>&middot;</i><span class="p"><span class="k">1개월</span> <span class="down">&minus;0.83%</span></span><i>&middot;</i><span class="p"><span class="k">연초</span> <span class="down">&minus;4.11%</span></span></span><span class="sub"><span data-lang-ko>엔 대비 원화. 일본 여행·엔화 예금과 수출 경쟁력이 함께 걸린다</span><span data-lang-en>Won against yen — travel, yen deposits and export competitiveness</span></span></th><td class="n">881.4</td><td class="n"><span class="up">+0.36%</span></td><td class="n opt"><span class="vf ok">MARKET DATA</span></td></tr>
+      <tr><th class="wrap hasnote"><span data-lang-ko>원/위안</span><span data-lang-en>KRW/CNY</span><span class="perfrow"><span class="p"><span class="k">1주</span> <span class="up">+2.91%</span></span><i>&middot;</i><span class="p"><span class="k">1개월</span> <span class="down">&minus;2.26%</span></span><i>&middot;</i><span class="p"><span class="k">연초</span> <span class="down">&minus;0.07%</span></span></span><span class="sub"><span data-lang-ko>중국 경기와 원화가 같이 움직인다. 원화의 대리 통화로 읽힌다</span><span data-lang-en>Won tracks the yuan; the won trades as a China proxy</span></span></th><td class="n">205.4</td><td class="n"><span class="up">+1.09%</span></td><td class="n opt"><span class="vf ok">MARKET DATA</span></td></tr>
+      <tr><th class="wrap hasnote"><span data-lang-ko>원/유로</span><span data-lang-en>KRW/EUR</span><span class="perfrow"><span class="p"><span class="k">1주</span> <span class="up">+1.45%</span></span><i>&middot;</i><span class="p"><span class="k">1개월</span> <span class="down">&minus;3.34%</span></span><i>&middot;</i><span class="p"><span class="k">연초</span> <span class="down">&minus;6.48%</span></span></span><span class="sub"><span data-lang-ko>유럽 펀드·유로 표시 자산의 원화 환산값</span><span data-lang-en>Won value of European funds and euro-denominated assets</span></span></th><td class="n">1,579.8</td><td class="n"><span class="up">+0.41%</span></td><td class="n opt"><span class="vf ok">MARKET DATA</span></td></tr>
+      <tr><th class="wrap hasnote"><span data-lang-ko>원/호주달러</span><span data-lang-en>KRW/AUD</span><span class="perfrow"><span class="p"><span class="k">1주</span> <span class="up">+0.97%</span></span><i>&middot;</i><span class="p"><span class="k">1개월</span> <span class="down">&minus;2.45%</span></span><i>&middot;</i><span class="p"><span class="k">연초</span> <span class="up">+1.37%</span></span></span><span class="sub"><span data-lang-ko>호주 자원·배당 상품의 환산 기준. 원자재 값과 같이 간다</span><span data-lang-en>Conversion base for Australian resource and dividend products; tracks commodities</span></span></th><td class="n">976.3</td><td class="n"><span class="up">+0.48%</span></td><td class="n opt"><span class="vf ok">MARKET DATA</span></td></tr>
+      <tr><th class="wrap hasnote"><span data-lang-ko>원/헤알</span><span data-lang-en>KRW/BRL</span><span class="perfrow"><span class="p"><span class="k">1주</span> <span class="up">+1.50%</span></span><i>&middot;</i><span class="p"><span class="k">1개월</span> <span class="down">&minus;1.90%</span></span><i>&middot;</i><span class="p"><span class="k">연초</span> <span class="up">+1.81%</span></span></span><span class="sub"><span data-lang-ko>브라질 국채 투자의 손익을 실제로 가르는 환율. 이자보다 크게 움직인다</span><span data-lang-en>The rate that actually decides Brazilian bond P&L — it swings more than the coupon</span></span></th><td class="n">267.3</td><td class="n"><span class="up">+0.82%</span></td><td class="n opt"><span class="vf ok">MARKET DATA</span></td></tr>
+  </tbody>
+</table>
+<p class="tbl-foot"><span data-lang-ko><strong>이 표는 뒤 통화가 1개입니다</strong> &mdash; 원/달러 1,377 은 달러 1개를 사는 데 1,377원이 든다는 뜻이라, <strong>숫자가 내려가면 원화가 세진 것</strong>입니다. 원화 크로스 다섯은 받아 온 값이 아니라 <strong>원/달러에서 계산한 재정환율</strong>입니다 <span class="vf ok">CALCULATED</span> &mdash; 원화는 달러 말고 직접 거래되는 시장이 사실상 없어 국내 고시 환율도 전부 그렇게 만듭니다. <strong>달러 상대 통화는 빗금 방향이 반대</strong>라 <strong>바로 아래</strong>에 따로 두었습니다.</span><span data-lang-en><strong>In this table the second currency is the unit</strong> &mdash; USD/KRW 1,377 means one dollar costs 1,377 won, so <strong>a lower number is a stronger won</strong>. The five crosses are <strong>computed from USD/KRW</strong> <span class="vf ok">CALCULATED</span>, as Korean published rates are. <strong>The dollar crosses read the other way round</strong> and sit <strong>just below</strong>.</span></p>
+</div>
+<div class="table-wrap">
+<table class="data compact">
+  <caption><span data-lang-ko>달러 상대 통화</span><span data-lang-en>The dollar against others</span></caption>
+  <thead><tr><th class="wrap"><span data-lang-ko>통화쌍 &middot; 지수</span><span data-lang-en>Pair or index</span></th><th class="n"><span data-lang-ko>현재</span><span data-lang-en>Level</span></th><th class="n"><span data-lang-ko>등락률</span><span data-lang-en>Change %</span></th><th class="n opt"><span data-lang-ko>검증</span><span data-lang-en>Verified</span></th></tr></thead>
+  <tbody>
+      <tr><th class="wrap hasnote"><span data-lang-ko>달러인덱스</span><span data-lang-en>Dollar Index</span><span class="perfrow"><span class="p"><span class="k">1주</span> <span class="up">+1.59%</span></span><i>&middot;</i><span class="p"><span class="k">1개월</span> <span class="up">+0.67%</span></span><i>&middot;</i><span class="p"><span class="k">연초</span> <span class="up">+2.10%</span></span></span><span class="sub"><span data-lang-ko>주요 6개 통화 대비 달러. 원화가 약해진 것인지 달러가 세진 것인지 가른다 &mdash; <strong>이 줄만 통화쌍이 아니라 지수</strong>이고, 미국 장중에만 갱신돼 시각 기준이 다릅니다</span><span data-lang-en>Dollar against six majors — separates a weak won from a strong dollar &mdash; <strong>An index, not a pair</strong>, and on a different clock</span></span></th><td class="n">100.3</td><td class="n"><span class="up">+0.69%</span></td><td class="n opt"><span class="vf ok">MARKET DATA</span></td></tr>
+      <tr><th class="wrap hasnote"><span data-lang-ko>달러/엔</span><span data-lang-en>USD/JPY</span><span class="perfrow"><span class="p"><span class="k">1주</span> <span class="up">+1.80%</span></span><i>&middot;</i><span class="p"><span class="k">1개월</span> <span class="down">&minus;1.99%</span></span><i>&middot;</i><span class="p"><span class="k">연초</span> <span class="down">&minus;0.11%</span></span></span><span class="sub"><span data-lang-ko>일본은행 정책과 엔 캐리 자금의 방향계</span><span data-lang-en>Barometer for BOJ policy and yen-carry money</span></span></th><td class="n">156.2</td><td class="n"><span class="up">+0.63%</span></td><td class="n opt"><span class="vf ok">MARKET DATA</span></td></tr>
+      <tr><th class="wrap hasnote"><span data-lang-ko>달러/위안</span><span data-lang-en>USD/CNY</span><span class="perfrow"><span class="p"><span class="k">1주</span> <span class="down">&minus;0.07%</span></span><i>&middot;</i><span class="p"><span class="k">1개월</span> <span class="down">&minus;0.55%</span></span><i>&middot;</i><span class="p"><span class="k">연초</span> <span class="down">&minus;4.15%</span></span></span><span class="sub"><span data-lang-ko>인민은행 고시가 상단을 정한다. 위안 약세는 원화 약세로 옮는다</span><span data-lang-en>PBOC fixing caps it; yuan weakness spills into the won</span></span></th><td class="n">6.7055</td><td class="n"><span class="down">&minus;0.08%</span></td><td class="n opt"><span class="vf ok">MARKET DATA</span></td></tr>
+      <tr><th class="wrap hasnote"><span data-lang-ko>달러/대만달러</span><span data-lang-en>USD/TWD</span><span class="perfrow"><span class="p"><span class="k">1주</span> <span class="up">+1.06%</span></span><i>&middot;</i><span class="p"><span class="k">1개월</span> <span class="down">&minus;0.91%</span></span><i>&middot;</i><span class="p"><span class="k">연초</span> <span class="up">+1.88%</span></span></span><span class="sub"><span data-lang-ko>반도체 수출국 통화. 원화와 가장 비슷하게 움직인다</span><span data-lang-en>The other semiconductor exporter's currency; the closest match to the won</span></span></th><td class="n">31.8</td><td class="n"><span class="up">+0.18%</span></td><td class="n opt"><span class="vf ok">MARKET DATA</span></td></tr>
+      <tr><th class="wrap hasnote"><span data-lang-ko>유로/달러</span><span data-lang-en>EUR/USD</span><span class="perfrow"><span class="p"><span class="k">1주</span> <span class="down">&minus;1.35%</span></span><i>&middot;</i><span class="p"><span class="k">1개월</span> <span class="down">&minus;0.56%</span></span><i>&middot;</i><span class="p"><span class="k">연초</span> <span class="down">&minus;2.36%</span></span></span><span class="sub"><span data-lang-ko>달러인덱스의 절반 이상을 차지한다. 사실상 달러의 반대편 &mdash; <strong>여기만 반대입니다</strong> &mdash; 올라가면 달러 약세</span><span data-lang-en>Over half the dollar index — effectively the other side of the dollar &mdash; <strong>Reversed</strong> &mdash; up means a weaker dollar</span></span></th><td class="n">1.1471</td><td class="n"><span class="down">&minus;0.58%</span></td><td class="n opt"><span class="vf ok">MARKET DATA</span></td></tr>
+      <tr><th class="wrap hasnote"><span data-lang-ko>파운드/달러</span><span data-lang-en>GBP/USD</span><span class="perfrow"><span class="p"><span class="k">1주</span> <span class="down">&minus;1.21%</span></span><i>&middot;</i><span class="p"><span class="k">1개월</span> <span class="down">&minus;0.82%</span></span><i>&middot;</i><span class="p"><span class="k">연초</span> <span class="down">&minus;0.64%</span></span></span><span class="sub"><span data-lang-ko>영란은행 금리 경로가 실린다 &mdash; <strong>여기만 반대입니다</strong></span><span data-lang-en>Carries the Bank of England rate path &mdash; <strong>Reversed</strong></span></span></th><td class="n">1.3380</td><td class="n"><span class="down">&minus;0.69%</span></td><td class="n opt"><span class="vf ok">MARKET DATA</span></td></tr>
+  </tbody>
+</table>
+<p class="tbl-foot"><span data-lang-ko><strong>이 표는 빗금 앞이 1개입니다</strong> &mdash; 달러/엔 159 는 달러 1개가 159엔. 그래서 <strong>달러가 앞이면 숫자↑ = 달러 강세</strong>이고, 달러가 뒤인 <strong>유로/달러&middot;파운드/달러만 반대</strong>입니다. 위의 원화 표와 규칙이 다르다는 점을 함께 보십시오. <strong>맨 윗줄만 통화쌍이 아닙니다.</strong></span><span data-lang-en><strong>Here the first currency is the unit</strong> &mdash; USD/JPY 159 means one dollar buys 159 yen, so <strong>up is a stronger dollar</strong>, except in <strong>EUR/USD and GBP/USD</strong>. Note this is the opposite convention to the won table above. <strong>The top row is an index, not a pair.</strong></span></p>
+</div>
+</div>
+</div>
+</section>
+
+<section class="section" id="deep">
+  <div class="section-rule"></div>
+  <span class="sec-num">07</span>
+  <h2 class="section-title"><span data-lang-ko>심층 분석 &mdash; 3년 2개월 만의 인상과 「완화의 일부를 제거했다」</span><span data-lang-en>In Depth &mdash; the first hike in 39 months and "removing some accommodation"</span></h2>
+<p class="lede"><span data-lang-ko>연준이 2023년 7월 이후 처음으로 금리를 올렸습니다. 인상 자체는 예상돼 있었으므로 이 절의 본론은 <strong>회견에서 무엇이 바뀌었나</strong>입니다. <strong>시세는 「무엇이」를 말하지만 「왜」는 말하지 않습니다</strong> &mdash; 아래는 오늘 아침 수집된 기사 본문에서 확인한 것만 적었습니다.</span><span data-lang-en>The Fed raised rates for the first time since July 2023. The hike was expected, so what matters here is <strong>what changed at the press conference.</strong> <strong>Prices say what, not why</strong> &mdash; what follows comes only from this morning's collected article text.</span></p>
+<div class="soft-grid">
+<div class="soft-card">
+  <p class="q"><span data-lang-ko>무엇이 결정됐나</span><span data-lang-en>What was decided</span></p>
+  <p><span data-lang-ko>기준금리를 연 <strong>3.50~3.75% 에서 3.75~4.00% 로 0.25%포인트</strong> 올렸습니다. <strong>위원 12명 전원 찬성</strong>이고, 2023년 7월 이후 <strong>3년 2개월 만의 첫 인상</strong>입니다. 함께 공개된 점도표에서는 전망을 제출한 <strong>18명 가운데 16명이 올해 최소 한 차례 추가 인상이 적절하다</strong>고 봤습니다. 워시 의장은 지난 7주 동안 달라진 것으로 셋을 들었습니다 &mdash; <strong>①</strong> 노동시장을 포함한 광범위한 지표에서 경제가 강해졌고, <strong>②</strong> 여름철 물가 추세가 기준을 충족하지 못했으며, <strong>③</strong> 지정학적 상황에 대한 판단이 달라졌다는 것입니다. 같은 날 아침 발표된 <strong>8월 소매판매는 +1.2%</strong> 로 예상(+0.8%)을 크게 웃돌았습니다. <span class="vf ok">2 SOURCES</span></span><span data-lang-en>The target range was raised <strong>25 basis points, from 3.50-3.75% to 3.75-4.00%</strong>, with <strong>all 12 voters in favour</strong> &mdash; the <strong>first increase in 39 months</strong>, since July 2023. In the dot plot released alongside, <strong>16 of the 18 participants submitting projections</strong> saw at least one further hike as appropriate this year. Chair Warsh named three things that changed over the prior seven weeks: <strong>(1)</strong> broad indicators including the labour market showed a stronger economy, <strong>(2)</strong> the summer inflation trend did not meet the committee's bar, and <strong>(3)</strong> its read on the geopolitical situation shifted. <strong>August retail sales, out that morning, rose 1.2%</strong> against an expected 0.8%. <span class="vf ok">2 SOURCES</span></span></p>
+</div>
+<div class="soft-card">
+  <p class="q"><span data-lang-ko>왜 시장이 그렇게 반응했나</span><span data-lang-en>Why the market reacted that way</span></p>
+  <p><span data-lang-ko><strong>인상이 아니라 한 문장이었습니다.</strong> 3대 지수는 발표 전까지 <strong>올라 있었습니다</strong> &mdash; 소매판매가 좋았고 유가가 꺾였기 때문입니다. 분위기가 바뀐 것은 오후 회견부터입니다. 워시 의장은 「인플레이션이 너무 높고 너무 오랫동안 지속됐다」며, 지금의 광범위한 금융여건을 <strong>긴축적이라고 표현하기 어렵다</strong>고 했고 이번 인상을 <strong>「완화의 일부를 제거한 것」</strong>이라고 설명했습니다. 크리슈나 구하 에버코어 부회장은 회견이 <strong>「일관되게 매파적」</strong>이었다며, 이 표현이 <strong>「의장이 금리를 어디까지 올려야 한다고 생각하는지에 대한 판단을 흐트러뜨릴 위험」</strong>이 있다고 했습니다. 문제는 인상 폭이 아니라 <strong>끝을 가늠할 수 없게 된 것</strong>입니다. 그래서 값이 이렇게 갈렸습니다 &mdash; 정책에 민감한 <strong>2년물이 크게 오르고</strong>, 금리 상승에 직접 노출된 <strong>금융주가 가장 크게 맞았으며</strong>, 아트 호건(B.라일리웰스)이 <strong>「거대한 심리적 수준」</strong>이라 부른 10년물 5%가 다시 뚫렸습니다. <span class="vf solo">1 SOURCE</span></span><span data-lang-en><strong>It was one sentence, not the hike.</strong> The three indices were <strong>higher</strong> going into the announcement, helped by strong retail sales and falling oil. The afternoon press conference changed that. Chair Warsh said inflation "is too high and has been too high for too long," described broad financial conditions as <strong>hard to call tight</strong>, and framed the move as <strong>"removing some of the accommodation."</strong> Evercore vice chairman Krishna Guha called the conference <strong>"consistently hawkish,"</strong> warning the phrasing <strong>"risks scrambling our read on how far the Chair thinks rates need to go."</strong> The problem was not the size of the move but that <strong>the end point became unplaceable.</strong> Hence the split: the policy-sensitive <strong>2-year rose sharply</strong>, <strong>financials took the worst of it</strong>, and the 10-year cleared 5% again &mdash; what Art Hogan of B. Riley Wealth called <strong>"a huge psychological level."</strong> <span class="vf solo">1 SOURCE</span></span></p>
+</div>
+<div class="soft-card">
+  <p class="q"><span data-lang-ko>국내에는 어떻게 닿나</span><span data-lang-en>How it reaches Korea</span></p>
+  <p><span data-lang-ko><strong>세 갈래입니다.</strong> ① <strong>환율이 가장 빠릅니다.</strong> 달러인덱스가 100을 넘었고 원/달러는 이틀 연속 올랐습니다. 연준이 추가 인상을 가리키는 동안에는 달러 쪽이 쉽게 약해지지 않습니다 &mdash; 원화 약세는 수입물가를 올리고 외국인 수급에 불리합니다(엿새째 순매도인 지금 국면에서 특히 그렇습니다). ② <strong>업종이 갈립니다.</strong> 간밤 미국에서 가장 크게 맞은 것은 금융이었고, 반대로 기술&middot;반도체는 버텼습니다. 국내에서도 어제 그 모양이 먼저 나왔습니다 &mdash; 반도체와 장비&middot;기판이 위, 광고&middot;IT서비스&middot;인터넷이 아래였습니다. 다만 <strong>국내 은행주는 금리 상승 자체는 이익에 나쁘지 않아</strong> 미국 은행주와 같은 방향으로 움직인다고 단정할 수 없습니다. ③ <strong>유가는 반대 방향입니다.</strong> 사우디의 추가 공급 보도로 유가가 꺾인 것은 원유를 달러로 사는 국내 물가에 부담을 더는 쪽입니다 &mdash; 다만 어제 정유주는 그만큼 되돌렸습니다.</span><span data-lang-en><strong>Three channels.</strong> (1) <strong>The currency is fastest.</strong> The dollar index cleared 100 and the won fell for a second day. While the Fed points to more hikes the dollar does not weaken easily &mdash; and a softer won raises import prices and works against foreign flows, which matters in a sixth straight session of net selling. (2) <strong>Sectors split.</strong> Financials took the worst of it overnight while technology and semiconductors held; the same shape appeared here a day earlier, with chips, equipment and substrates on top and advertising, IT services and internet below. Note, though, that <strong>higher rates are not straightforwardly bad for Korean bank earnings</strong>, so their direction need not match US banks'. (3) <strong>Oil runs the other way.</strong> Falling crude on the Saudi supply reports eases the domestic price burden for a country buying oil in dollars &mdash; though refiners gave back their gains yesterday.</span></p>
+</div>
+<div class="soft-card">
+  <p class="q"><span data-lang-ko>무엇이 아직 답해지지 않았나</span><span data-lang-en>What is still unanswered</span></p>
+  <p><span data-lang-ko><strong>셋입니다.</strong> ① <strong>몇 번 더인가.</strong> 워시 의장은 「포워드 가이던스를 제시하지 않겠다」고 했고 점도표는 <strong>위원들의 전망일 뿐</strong>입니다. 시장이 매기는 10월 추가 인상 확률은 보도 기준 50% 안팎입니다 <span class="vf solo">1 SOURCE</span>. ② <strong>어디까지가 「충분히 제약적」인가.</strong> 회견에서 이 기준이 제시되지 않았기 때문에, 의장의 판단을 되짚을 자료가 앞으로의 <strong>물가 추세</strong>밖에 없습니다 &mdash; 본인도 「개별 지표가 아니라 추세」라고 했습니다. ③ <strong>유가가 다시 오르면 어떻게 되나.</strong> 이번 하락은 사우디의 추가 공급 보도에서 왔고 <strong>호르무즈가 열린 것이 아닙니다.</strong> 워시 의장도 「금리 인상으로 호르무즈가 열리지는 않지만, 상대가격 변화가 2차&middot;3차로 번지지 않게 하는 것이 우리 임무」라고 했습니다 &mdash; <strong>공급 충격이 되풀이되면 인상 횟수가 늘어나는 경로</strong>가 여기에 있습니다.</span><span data-lang-en><strong>Three things.</strong> (1) <strong>How many more.</strong> Chair Warsh declined to guide, and the dots are <strong>projections, not decisions</strong>; press puts the market-implied odds of an October hike at around 50% <span class="vf solo">1 SOURCE</span>. (2) <strong>Where "sufficiently restrictive" sits.</strong> No threshold was offered, so the only way to track the Chair's judgement is <strong>the inflation trend</strong> &mdash; which he said matters more than any single print. (3) <strong>What if oil turns back up.</strong> This decline came from reports of extra Saudi supply; <strong>Hormuz has not reopened.</strong> Warsh himself said a rate rise will not reopen the strait, but that keeping relative price changes from spreading into second- and third-round effects is the Fed's job &mdash; <strong>which is exactly the path by which repeated supply shocks raise the hike count.</strong></span></p>
+</div>
+</div>
+</section>
+
+<section class="section" id="calendar">
+  <div class="section-rule"></div>
+  <span class="sec-num">08</span>
+  <h2 class="section-title"><span data-lang-ko>일정 &middot; 체크포인트</span><span data-lang-en>Calendar</span></h2>
+<p class="lede"><span data-lang-ko><strong>FOMC 가 지나갔으니 이제 볼 것은 「다음」입니다.</strong> 점도표가 연내 추가 인상을 가리키고 있어, 앞으로 나오는 물가&middot;고용 지표가 <strong>그 횟수를 정하는 자료</strong>가 됩니다. 그리고 <strong>추석 연휴가 다음 주</strong>입니다 &mdash; 그사이 해외는 계속 열리므로 재개장 아침이 며칠치를 한꺼번에 받습니다.</span><span data-lang-en><strong>With the FOMC behind us, the question is what comes next.</strong> The dots point to more hikes this year, so upcoming inflation and employment data become <strong>the inputs that set the count.</strong> And <strong>Chuseok falls next week</strong> &mdash; overseas markets stay open through it, so the reopening morning absorbs several sessions at once.</span></p>
+<div class="table-wrap">
+<table class="data compact">
+  <caption><span data-lang-ko>예정 일정 &mdash; 9월 17일 이후 (한국시간)</span><span data-lang-en>Scheduled events from 17 September, KST</span></caption>
+  <thead><tr><th class="wrap"><span data-lang-ko>일시 (KST)</span><span data-lang-en>When</span></th><th class="wrap"><span data-lang-ko>구분</span><span data-lang-en>Type</span></th><th class="wrap"><span data-lang-ko>일정</span><span data-lang-en>Event</span></th><th class="n opt"><span data-lang-ko>검증</span><span data-lang-en>Verified</span></th></tr></thead>
+  <tbody>
+      <tr class="hl"><th class="wrap hasnote"><strong>지난밤 9/17 (목) 03:00 KST &mdash; 끝났습니다</strong><span class="sub"><span data-lang-ko><strong>결과입니다, 전망이 아닙니다.</strong> 다음 자리는 회견에서 말을 아낀 「몇 번 더」이고, 그것을 정하는 것은 앞으로의 물가&middot;고용 지표입니다</span><span data-lang-en><strong>A result, not a forecast.</strong> What is open is the count the Chair declined to guide on, and upcoming inflation and jobs data will set it</span></span></th><td class="wrap"><span data-lang-ko>미국</span><span data-lang-en>US</span></td><td class="wrap"><span data-lang-ko>FOMC &mdash; 0.25%p 인상(3.75~4.00%), 만장일치. 점도표는 연내 추가 인상</span><span data-lang-en>FOMC &mdash; 25bp hike to 3.75-4.00%, unanimous; dots point to more this year</span></td><td class="n opt"><span class="vf solo">1 SOURCE</span></td></tr>
+      <tr><th class="wrap hasnote">9/17 (목) ~ 9/22 (화)<span class="sub"><span data-lang-ko>간밤 인텔&middot;SK하이닉스 보도와 어제 국내 반도체 강세가 <strong>실물 물량으로 뒷받침되는지</strong> 보는 자리입니다</span><span data-lang-en>Whether the Intel/SK hynix headlines and yesterday's domestic chip strength are <strong>backed by actual volumes</strong></span></span></th><td class="wrap"><span data-lang-ko>한국</span><span data-lang-en>Korea</span></td><td class="wrap"><span data-lang-ko>9월 1~20일 수출입 속보 &mdash; 반도체 단가&middot;물량</span><span data-lang-en>1-20 September trade readings &mdash; chip prices and volumes</span></td><td class="n opt"><span class="vf solo">1 SOURCE</span></td></tr>
+      <tr class="hl"><th class="wrap hasnote"><strong>9/24 (목) ~ 9/25 (금)</strong><span class="sub"><span data-lang-ko>9/23(수) 마감 뒤 <strong>9/28(월)</strong> 에 열립니다. 그사이 미국은 두 번 더 마감하므로 재개장 아침이 <strong>이틀치를 한꺼번에</strong> 받습니다 &mdash; 연준이 추가 인상을 가리킨 국면이라 그 이틀의 폭이 평소보다 클 수 있습니다</span><span data-lang-en>Closes after Wed 23 Sep, reopening <strong>Mon 28 Sep</strong>. The US closes twice in between, so the reopening morning absorbs <strong>two sessions at once</strong> &mdash; and with the Fed pointing to more hikes, those two could carry more range than usual</span></span></th><td class="wrap"><span data-lang-ko>한국</span><span data-lang-en>Korea</span></td><td class="wrap"><span data-lang-ko>추석 &mdash; 국내 증시 휴장</span><span data-lang-en>Chuseok &mdash; Korean market closed</span></td><td class="n opt"><span class="vf solo">1 SOURCE</span></td></tr>
+      <tr><th class="wrap hasnote">9/21 (월) ~ 9/23 (수)<span class="sub"><span data-lang-ko>아시아 시간대 유동성이 얇아집니다 &mdash; 달러가 100을 넘은 국면이라 그 주 환율 호가에 특히 감안하십시오</span><span data-lang-en>Asian-hours liquidity thins &mdash; worth allowing for in FX quotes that week with the dollar index above 100</span></span></th><td class="wrap"><span data-lang-ko>일본</span><span data-lang-en>Japan</span></td><td class="wrap"><span data-lang-ko>경로의 날&middot;국민의 휴일&middot;추분 &mdash; 도쿄 사흘 연속 휴장</span><span data-lang-en>Three consecutive Tokyo holidays</span></td><td class="n opt"><span class="vf solo">1 SOURCE</span></td></tr>
+      <tr><th class="wrap hasnote">10/1 (목) ~ 10/7 (수)<span class="sub"><span data-lang-ko>홍콩은 10/1 하루만 쉽니다 &mdash; 본토와 홍콩의 재개장이 일주일 어긋납니다</span><span data-lang-en>Hong Kong closes only on 1 October, so the two reopen a week apart</span></span></th><td class="wrap"><span data-lang-ko>중국</span><span data-lang-en>China</span></td><td class="wrap"><span data-lang-ko>국경절&middot;중추절 연휴 &mdash; 본토 다섯 거래일 휴장, 10/8(목) 재개장</span><span data-lang-en>National Day / Mid-Autumn &mdash; mainland closed five sessions, reopening Thu 8 Oct</span></td><td class="n opt"><span class="vf solo">1 SOURCE</span></td></tr>
+  </tbody>
+</table>
+<p class="tbl-foot"><span data-lang-ko><strong>지난 줄은 스스로 빠집니다</strong> &mdash; 오늘 0줄을 걷어냈습니다 <span class="vf ok">CALCULATED</span>. <strong>컨센서스와 전망은 결과가 아닙니다.</strong> 거래소가 일정을 바꾸므로 주문 직전 다시 확인하십시오.</span><span data-lang-en><strong>Elapsed rows drop out on their own</strong> &mdash; 0 removed today <span class="vf ok">CALCULATED</span>. <strong>Forecasts are not results.</strong> Exchanges move dates; reconfirm before acting.</span></p>
+</div>
+<h3 class="mini"><span data-lang-ko>휴장일 &mdash; 국내&middot;해외 가까운 순</span><span data-lang-en>Market holidays &mdash; Korea and overseas</span></h3>
+<ul class="hol">
+  <li><b>9/21</b> <span data-lang-ko>일본 &middot; 경로의 날</span><span data-lang-en>Japan &middot; Respect for the Aged Day</span></li>
+  <li><b>9/22</b> <span data-lang-ko>일본 &middot; 국민의 휴일</span><span data-lang-en>Japan &middot; Citizens' Holiday</span></li>
+  <li><b>9/23</b> <span data-lang-ko>일본 &middot; 추분</span><span data-lang-en>Japan &middot; Autumnal Equinox</span></li>
+  <li><b>9/24</b> <span data-lang-ko>한국 &middot; 추석 연휴</span><span data-lang-en>Korea &middot; Chuseok holiday</span></li>
+  <li><b>9/25</b> <span data-lang-ko>한국 &middot; 추석</span><span data-lang-en>Korea &middot; Chuseok</span></li>
+  <li><b>10/1</b> <span data-lang-ko>홍콩 &middot; 국경절</span><span data-lang-en>Hong Kong &middot; National Day</span></li>
+  <li><b>10/1</b> <span data-lang-ko>중국 본토 &middot; 국경절·중추절 연휴 시작</span><span data-lang-en>Mainland China &middot; National Day / Mid-Autumn begins</span></li>
+  <li><b>10/5</b> <span data-lang-ko>한국 &middot; 개천절 대체공휴일</span><span data-lang-en>Korea &middot; Substitute holiday</span></li>
+  <li><b>10/9</b> <span data-lang-ko>한국 &middot; 한글날</span><span data-lang-en>Korea &middot; Hangul Day</span></li>
+  <li><b>10/12</b> <span data-lang-ko>일본 &middot; 스포츠의 날</span><span data-lang-en>Japan &middot; Sports Day</span></li>
+  <li><b>10/19</b> <span data-lang-ko>홍콩 &middot; 중양절 (대체)</span><span data-lang-en>Hong Kong &middot; Double Ninth Festival (obs.)</span></li>
+  <li><b>11/3</b> <span data-lang-ko>일본 &middot; 문화의 날</span><span data-lang-en>Japan &middot; Culture Day</span></li>
+  <li><b>11/23</b> <span data-lang-ko>일본 &middot; 근로감사의 날</span><span data-lang-en>Japan &middot; Labour Thanksgiving Day</span></li>
+  <li><b>11/26</b> <span data-lang-ko>미국 &middot; 추수감사절</span><span data-lang-en>United States &middot; Thanksgiving</span></li>
+  <li><b>11/27</b> <span data-lang-ko>미국 &middot; 추수감사절 다음 날 <em>조기마감</em></span><span data-lang-en>United States &middot; Day after Thanksgiving <em>early close</em></span></li>
+  <li><b>12/24</b> <span data-lang-ko>미국 &middot; 크리스마스 이브 <em>조기마감</em></span><span data-lang-en>United States &middot; Christmas Eve <em>early close</em></span></li>
+  <li><b>12/24</b> <span data-lang-ko>홍콩 &middot; 크리스마스 이브 <em>조기마감</em></span><span data-lang-en>Hong Kong &middot; Christmas Eve <em>early close</em></span></li>
+  <li><b>12/25</b> <span data-lang-ko>한국 &middot; 성탄절</span><span data-lang-en>Korea &middot; Christmas Day</span></li>
+</ul>
+<p class="tbl-foot"><span data-lang-ko>앞으로 넉 달 가운데 가까운 18건입니다 (나머지 15건은 전체 판에). <strong>거래소가 나중에 바꾸므로 주문 직전 다시 확인하십시오.</strong> <span class="vf solo">1 SOURCE</span></span><span data-lang-en>The nearest 18 of the next four months, with 15 more in the full edition. <strong>Exchanges revise these &mdash; reconfirm before acting.</strong> <span class="vf solo">1 SOURCE</span></span></p>
+</section>
+
+<section class="section" id="talking">
+  <div class="section-rule"></div>
+  <span class="sec-num">09</span>
+  <h2 class="section-title"><span data-lang-ko>고객 응대</span><span data-lang-en>Talking Points</span></h2>
+<div class="soft-grid">
+<div class="soft-card">
+  <p class="q"><span data-lang-ko>Q. 금리를 올렸는데 왜 제 주식이 더 빠졌습니까? 인상은 예상됐던 것 아닙니까?</span><span data-lang-en>Q. Rates went up as expected &mdash; why did my stocks fall further?</span></p>
+  <p><span data-lang-ko><strong>맞습니다, 인상은 예상돼 있었습니다</strong> &mdash; 90% 넘게 값에 들어가 있었고, 발표 전까지 미국 지수는 오히려 올라 있었습니다. 값을 돌려세운 것은 <strong>회견의 한 문장</strong>이었습니다. 워시 의장이 지금의 금융여건을 「긴축적이라고 표현하기 어렵다」고 하면서 이번 인상을 <strong>「완화의 일부를 제거한 것」</strong>이라고 했습니다. 지금 수준이 아직 조이는 것이 아니라면 <strong>끝이 어디인지 알 수 없어집니다</strong> &mdash; 시장이 싫어하는 것은 높은 금리보다 <strong>끝을 모르는 상태</strong>입니다. 그래서 아래 표에서 보시듯 금융주가 가장 크게 맞았고 곡선의 짧은 쪽이 올랐습니다.</span><span data-lang-en><strong>You are right that the hike was expected</strong> &mdash; over 90% priced, and US indices were higher going into it. What turned prices was <strong>one sentence at the press conference</strong>: Chair Warsh said current financial conditions are "hard to describe as tight" and called the move <strong>"removing some of the accommodation."</strong> If this level is not yet restrictive, <strong>the end point becomes unknowable</strong> &mdash; and markets dislike an unknown end more than a high level. Hence financials took the worst of it and the front of the curve rose, as the tables show.</span></p>
+</div>
+<div class="soft-card">
+  <p class="q"><span data-lang-ko>Q. 그러면 금리를 몇 번 더 올립니까?</span><span data-lang-en>Q. So how many more hikes?</span></p>
+  <p><span data-lang-ko><strong>연준도 숫자를 약속하지 않았습니다.</strong> 워시 의장은 「나는 포워드 가이던스를 제시하는 일을 하지 않는다」고 했습니다. 다만 <strong>점도표는 말을 했습니다</strong> &mdash; 전망을 낸 18명 중 16명이 올해 최소 한 차례 추가 인상이 적절하다고 봤습니다. <strong>이것은 위원들의 전망이지 결정이 아닙니다.</strong> 그러니 「몇 번」을 미리 맞히려 하기보다, 앞으로 나올 물가와 고용 지표를 <strong>그 횟수를 정하는 자료</strong>로 보시는 편이 낫습니다. 워시 의장 본인도 「개별 지표가 아니라 추세가 중요하다」고 했습니다.</span><span data-lang-en><strong>The Fed did not promise a number.</strong> Chair Warsh said plainly, "I don't do forward guidance." But <strong>the dots did speak</strong>: 16 of 18 participants saw at least one more hike as appropriate this year. <strong>Those are projections, not decisions.</strong> Rather than trying to guess the count, treat upcoming inflation and employment data as <strong>the inputs that will set it</strong> &mdash; the Chair himself said the trend matters more than any single print.</span></p>
+</div>
+<div class="soft-card">
+  <p class="q"><span data-lang-ko>Q. 환율이 1,370원대입니다. 지금이 고점입니까?</span><span data-lang-en>Q. The won is in the 1,370s &mdash; is this the peak?</span></p>
+  <p><span data-lang-ko><strong>고점을 아는 사람은 없습니다.</strong> 다만 지금 무엇이 밀고 있는지는 표에서 볼 수 있습니다. 어제는 <strong>달러인덱스가 100을 넘었고</strong> 원화는 달러뿐 아니라 다른 통화에도 함께 밀렸습니다 &mdash; 달러 강세와 원화 약세가 <strong>겹쳐 있는</strong> 상태입니다. 연준이 추가 인상을 가리키는 동안에는 달러 쪽 힘이 쉽게 빠지지 않습니다. 다만 <strong>유가가 꺾인 것은 반대 방향</strong>입니다 &mdash; 원유를 달러로 사는 나라에는 부담을 더는 쪽입니다. 실수요라면 한 번에 하지 않고 나누시는 편이 평균을 고르게 합니다.</span><span data-lang-en><strong>Nobody knows the peak.</strong> But the tables show what is pushing. Yesterday <strong>the dollar index crossed 100</strong> and the won weakened against other currencies too &mdash; dollar strength and won weakness are <strong>stacked.</strong> While the Fed points to more hikes, the dollar side does not give way easily. <strong>The fall in oil pushes the other way</strong>, easing the burden on a country that buys crude in dollars. For real needs, splitting the purchase evens out the average.</span></p>
+</div>
+</div>
+</section>
+
+<section class="section" id="verify">
+  <div class="section-rule"></div>
+  <span class="sec-num">10</span>
+  <h2 class="section-title"><span data-lang-ko>데이터 &middot; 검증</span><span data-lang-en>Data and Verification</span></h2>
+<p class="lede"><span data-lang-ko><strong>이것은 핵심본입니다 &mdash; 그날의 결론만 한 장에 담았습니다.</strong> 표의 근거, 만기별 곡선, 지역별 종목표, 검증 노트 전체는 <strong>같은 날짜의 전체 판</strong>에 그대로 있습니다.</span><span data-lang-en><strong>This is the core edition &mdash; the day's conclusions on a single sheet.</strong> Supporting tables, the full maturity curve, regional stock tables and the complete verification notes remain in <strong>the full edition of the same date</strong>.</span></p>
+<p><span data-lang-ko><strong>어디서 왔나.</strong> 시세는 야후&middot;네이버&middot;한국은행 ECOS, 미 국채는 <strong>재무부 일별 고시 확정치</strong>, 사유&middot;일정은 그날 수집한 기사 본문입니다 <span class="vf ok">MARKET DATA</span>. 누적&middot;스프레드&middot;비율은 <strong>계산</strong>입니다 <span class="vf ok">CALCULATED</span>.</span><span data-lang-en><strong>Where it comes from.</strong> Prices from Yahoo, Naver and the Bank of Korea's ECOS; US Treasuries from <strong>Treasury's official daily par yields</strong>; reasons and calendar items from article text collected that morning <span class="vf ok">MARKET DATA</span>. Cumulative figures, spreads and ratios are <strong>computed</strong> <span class="vf ok">CALCULATED</span>.</span></p>
+<p><span data-lang-ko><strong>오늘 짚어 둔 것.</strong> 이 판의 「간밤」은 한국시간 오늘 새벽까지입니다; 10년물 5%는 「종가」로도 5% 입니다 &mdash; 어제와 다릅니다; 인텔&middot;은행주&middot;점도표는 표가 아니라 기사에서 왔습니다; 상한가 명단 건수가 등락 종목 수 집계보다 많습니다 &mdash; 애프터마켓 때문입니다 외 3건. <strong>받지 못하는 항목</strong>은 VKOSPI(무료 원천 없음, VIX 로 대신합니다)와 미수금&middot;반대매매(금융투자협회 방화벽, 신용융자로 대신합니다), 한국은행 기준금리(ECOS 샘플 인증키가 0행을 돌려줍니다)입니다 <span class="vf none">NOT FOUND</span>.</span><span data-lang-en><strong>Flagged today.</strong> "Overnight" in this edition runs to the early hours of today, Korean time; The 10-year is now above 5% on a closing basis too &mdash; unlike yesterday; Intel, the bank stocks and the dot plot come from press, not from the tables; The limit-up list carries more names than the breadth tally &mdash; the after-market is why and 3 more. <strong>Still unavailable</strong>: VKOSPI (no free source; we use the VIX), unpaid balances and forced liquidations (KOFIA firewall; we use margin loans), and the BOK policy rate (ECOS returns zero rows on the sample key) <span class="vf none">NOT FOUND</span>.</span></p>
+</section>
+
+<!-- archive-print:start -->
+<style>
+.archive-print{display:none}
+@media print{
+  .archive-print{display:block;margin-top:22px;padding-top:12px;
+    border-top:1px solid #CDCECB;break-inside:auto}
+  .archive-print .h{font-size:10.5pt;font-weight:700;color:#043B72;margin:0 0 3px}
+  .archive-print .s{font-size:9pt;color:#555;margin:0 0 9px}
+  .archive-print ul{list-style:none;margin:0;padding:0;columns:2;column-gap:24px}
+  .archive-print li{font-size:9.5pt;line-height:1.55;break-inside:avoid;
+    color:#1A1A1A;padding:0}
+  .archive-print .d{font-family:var(--font-num);font-size:9pt;color:#555;
+    margin-right:7px;letter-spacing:.2px}
+  .archive-print a{color:#043B72;text-decoration:none}
+  .archive-print .me{color:#777}
+}
+</style>
+<div class="archive-print">
+  <p class="h"><span data-lang-ko>브리핑 목록</span><span data-lang-en>All editions</span></p>
+  <p class="s"><span data-lang-ko>날짜를 누르면 그 판이 열립니다. 화면 왼쪽 목차 아래에도 같은 목록이 있습니다.</span><span data-lang-en>Each date links to that edition; the same list sits below the contents in the left-hand column on screen.</span></p>
+  <ul>
+    <li><span class="d">09-17</span><span data-lang-ko>모닝 마켓</span><span data-lang-en>Morning market</span> <span class="me"><span data-lang-ko>&mdash; 이 판</span><span data-lang-en>&mdash; this edition</span></span></li>
+    <li><span class="d">09-16</span><a href="https://claude.ai/artifact/DJ7a66ExkSCK91HJwMJh6h"><span data-lang-ko>모닝 마켓</span><span data-lang-en>Morning market</span></a></li>
+    <li><span class="d">09-15</span><a href="https://claude.ai/artifact/5Vsj3ncNtJ6EzB5GZ57b2d"><span data-lang-ko>장마감 시황</span><span data-lang-en>Market close</span></a></li>
+    <li><span class="d">09-15</span><a href="https://claude.ai/artifact/JzYv2uDELdbqcdAvssGCgQ"><span data-lang-ko>모닝 마켓</span><span data-lang-en>Morning market</span></a></li>
+    <li><span class="d">09-14</span><a href="https://claude.ai/code/artifact/c0d07f87-a118-4720-84aa-30d7ab0a27b6"><span data-lang-ko>장마감 시황</span><span data-lang-en>Market close</span></a></li>
+    <li><span class="d">09-14</span><a href="https://claude.ai/code/artifact/6752182d-093a-4ca1-8278-daba1884df2f"><span data-lang-ko>모닝 마켓</span><span data-lang-en>Morning market</span></a></li>
+    <li><span class="d">09-13</span><a href="https://claude.ai/code/artifact/5f159f71-0e00-45fd-bb1c-ed19cc619da3"><span data-lang-ko>해외 증시</span><span data-lang-en>Overseas</span></a></li>
+    <li><span class="d">09-12</span><a href="https://claude.ai/code/artifact/323a658c-bc4f-4b2c-b5c4-d53b8f244795"><span data-lang-ko>해외 증시</span><span data-lang-en>Overseas</span></a></li>
+    <li><span class="d">09-11</span><a href="https://claude.ai/code/artifact/a294a193-d2f6-4cce-90eb-c106ab51194d"><span data-lang-ko>장마감 시황</span><span data-lang-en>Market close</span></a></li>
+    <li><span class="d">09-11</span><a href="https://claude.ai/code/artifact/ebb9ba15-22ba-4f79-8354-bcc3a0e0d665"><span data-lang-ko>모닝 마켓</span><span data-lang-en>Morning market</span></a></li>
+    <li><span class="d">09-10</span><a href="https://claude.ai/code/artifact/6eb5c203-e197-4cee-9b4f-69ab3d4ebe42"><span data-lang-ko>장마감 시황</span><span data-lang-en>Market close</span></a></li>
+    <li><span class="d">09-10</span><a href="https://claude.ai/code/artifact/3c8d1f6a-c1a7-45b2-9571-3dfa9c5b56bb"><span data-lang-ko>모닝 마켓</span><span data-lang-en>Morning market</span></a></li>
+    <li><span class="d">09-09</span><a href="https://claude.ai/code/artifact/9fb8d0c0-de55-445b-97e3-13f4524f4a61"><span data-lang-ko>장마감 시황</span><span data-lang-en>Market close</span></a></li>
+    <li><span class="d">09-09</span><a href="https://claude.ai/code/artifact/3b8dd752-7641-4b28-807c-74210b51e716"><span data-lang-ko>모닝 마켓</span><span data-lang-en>Morning market</span></a></li>
+    <li><span class="d">09-08</span><a href="https://claude.ai/code/artifact/0f456c7b-6c02-418f-9528-10d6051429cd"><span data-lang-ko>장마감 시황</span><span data-lang-en>Market close</span></a></li>
+    <li><span class="d">09-08</span><a href="https://claude.ai/code/artifact/08768b8a-7c83-40ec-9d3f-bb189afec012"><span data-lang-ko>모닝 마켓</span><span data-lang-en>Morning market</span></a></li>
+    <li><span class="d">09-07</span><a href="https://claude.ai/code/artifact/e20b4e31-6bc8-4b49-91ec-c4f46f42ae29"><span data-lang-ko>장마감 시황</span><span data-lang-en>Market close</span></a></li>
+    <li><span class="d">09-07</span><a href="https://claude.ai/code/artifact/d50802dd-1522-439f-bd70-2920fb476a71"><span data-lang-ko>모닝</span><span data-lang-en>Morning</span></a></li>
+    <li><span class="d">09-05</span><a href="https://claude.ai/code/artifact/e9cec7b3-e4b1-4e50-8917-045f6d8d03f4"><span data-lang-ko>해외 증시</span><span data-lang-en>Overseas</span></a></li>
+    <li><span class="d">09-04</span><a href="https://claude.ai/code/artifact/83a72177-acef-4a8b-b2cf-10dd8f734af9"><span data-lang-ko>장마감 시황</span><span data-lang-en>Market close</span></a></li>
+    <li><span class="d">09-04</span><a href="https://claude.ai/code/artifact/2f348cb2-5f25-4976-a5b0-2d53471996b0"><span data-lang-ko>모닝</span><span data-lang-en>Morning</span></a></li>
+    <li><span class="d">09-03</span><a href="https://claude.ai/code/artifact/3becc6ef-1506-45bd-a00c-2ee4aa6023f9"><span data-lang-ko>장마감 시황</span><span data-lang-en>Market close</span></a></li>
+    <li><span class="d">09-03</span><a href="https://claude.ai/code/artifact/606a17d0-e56d-4608-bdc2-34628d8e3fd8"><span data-lang-ko>모닝</span><span data-lang-en>Morning</span></a></li>
+    <li><span class="d">09-02</span><a href="https://claude.ai/code/artifact/54c17d11-e3bb-4da4-93f1-631ce0f8ac70"><span data-lang-ko>모닝</span><span data-lang-en>Morning</span></a></li>
+    <li><span class="d">09-01</span><a href="https://claude.ai/code/artifact/554151ab-53de-475d-a9db-86b0c4778a61"><span data-lang-ko>장마감 시황</span><span data-lang-en>Market close</span></a></li>
+    <li><span class="d">09-01</span><a href="https://claude.ai/code/artifact/fb8359ec-5f20-4e07-a9eb-f0236346c50f"><span data-lang-ko>모닝</span><span data-lang-en>Morning</span></a></li>
+    <li><span class="d">08-31</span><a href="https://claude.ai/code/artifact/b2e1c5f1-3795-45f9-83d6-1858128862c8"><span data-lang-ko>장마감 시황</span><span data-lang-en>Market close</span></a></li>
+    <li><span class="d">08-31</span><a href="https://claude.ai/code/artifact/56daa887-4ba0-4487-9576-c5adb553116a"><span data-lang-ko>모닝 마켓</span><span data-lang-en>Morning</span></a></li>
+    <li><span class="d">08-30</span><a href="https://claude.ai/code/artifact/e4edf2de-4dc0-452c-85c7-6186e466e0e5"><span data-lang-ko>해외 증시</span><span data-lang-en>Overseas brief</span></a></li>
+    <li><span class="d">08-29</span><a href="https://claude.ai/code/artifact/74cfc5fe-c04a-486c-a596-71bc2627bdc5"><span data-lang-ko>해외 증시</span><span data-lang-en>Overseas brief</span></a></li>
+    <li><span class="d">08-28</span><a href="https://claude.ai/code/artifact/35f0f7c1-22f6-41b2-ae84-f283247a3378"><span data-lang-ko>장마감 시황</span><span data-lang-en>Market close</span></a></li>
+    <li><span class="d">08-28</span><a href="https://claude.ai/code/artifact/c9ebe35a-620a-4880-82db-1ebc893c20a5"><span data-lang-ko>모닝</span><span data-lang-en>Morning brief</span></a></li>
+    <li><span class="d">08-27</span><a href="https://claude.ai/code/artifact/daf04ef0-26c1-440d-96cb-04b66c1fc610"><span data-lang-ko>장마감 시황</span><span data-lang-en>Market close</span></a></li>
+    <li><span class="d">08-27</span><a href="https://claude.ai/code/artifact/0b5810db-861c-4b9e-85e9-b9fb54875967"><span data-lang-ko>모닝</span><span data-lang-en>Morning brief</span></a></li>
+    <li><span class="d">08-26</span><a href="https://claude.ai/code/artifact/b27f3cea-0283-4449-80ab-9652fb74394b"><span data-lang-ko>모닝</span><span data-lang-en>Morning brief</span></a></li>
+    <li><span class="d">08-25</span><a href="https://claude.ai/code/artifact/9e0333c2-1b26-4c4e-a07b-1167096d183b"><span data-lang-ko>장마감 시황</span><span data-lang-en>Market close</span></a></li>
+    <li><span class="d">08-25</span><a href="https://claude.ai/code/artifact/3dd838fd-0cb8-4449-81f0-f01839407935"><span data-lang-ko>모닝</span><span data-lang-en>Morning brief</span></a></li>
+    <li><span class="d">08-24</span><a href="https://claude.ai/code/artifact/1e8675b8-545c-4f3d-b5a6-2df772a122d1"><span data-lang-ko>모닝</span><span data-lang-en>Morning brief</span></a></li>
+    <li><span class="d">08-23</span><a href="https://claude.ai/code/artifact/66c51b57-6e3c-4287-92bf-b44d104a2e85"><span data-lang-ko>해외 증시</span><span data-lang-en>Global brief</span></a></li>
+    <li><span class="d">08-22</span><a href="https://claude.ai/code/artifact/13bd1e19-7f34-4332-9c17-7bf9f10b06e0"><span data-lang-ko>해외 증시</span><span data-lang-en>Global markets</span></a></li>
+    <li><span class="d">08-21</span><a href="https://claude.ai/code/artifact/402298bd-070a-44a5-97b5-9dca7fda8552"><span data-lang-ko>장마감 시황</span><span data-lang-en>Market close</span></a></li>
+    <li><span class="d">08-21</span><a href="https://claude.ai/code/artifact/3b765df8-e6b5-4b22-82c8-764a925692b7"><span data-lang-ko>모닝 마켓</span><span data-lang-en>Morning brief</span></a></li>
+    <li><span class="d">08-20</span><a href="https://claude.ai/code/artifact/864a091f-6152-44d7-ba4b-3a4c09857b50"><span data-lang-ko>장마감 시황</span><span data-lang-en>Market close</span></a></li>
+    <li><span class="d">08-20</span><a href="https://claude.ai/code/artifact/624996c3-aa73-4da4-9f69-79b2dba3a45c"><span data-lang-ko>모닝 마켓</span><span data-lang-en>Morning brief</span></a></li>
+    <li><span class="d">08-19</span><a href="https://claude.ai/code/artifact/dca66b4e-550e-42ed-96d9-b24918392756"><span data-lang-ko>모닝 마켓</span><span data-lang-en>Morning brief</span></a></li>
+    <li><span class="d">08-18</span><a href="https://claude.ai/code/artifact/c04b8081-7ddf-41a3-a693-d3f90acb6b71"><span data-lang-ko>모닝 마켓</span><span data-lang-en>Morning brief</span></a></li>
+    <li><span class="d">08-17</span><a href="https://claude.ai/code/artifact/87160ee2-f83f-495a-9d9a-c036dd3b3f14"><span data-lang-ko>해외 증시</span><span data-lang-en>Global brief</span></a></li>
+    <li><span class="d">08-15</span><a href="https://claude.ai/code/artifact/4498278f-4fa5-4ea1-aca1-dacb819f3ea7"><span data-lang-ko>해외 증시</span><span data-lang-en>Global brief</span></a></li>
+    <li><span class="d">08-14</span><a href="https://claude.ai/code/artifact/9ee323f2-2aac-4b76-86ac-968b1546caf9"><span data-lang-ko>모닝 마켓</span><span data-lang-en>Morning brief</span></a></li>
+    <li><span class="d">08-13</span><a href="https://claude.ai/code/artifact/4de32129-86ab-4daa-8a65-7658d2848765"><span data-lang-ko>모닝 마켓</span><span data-lang-en>Morning brief</span></a></li>
+    <li><span class="d">08-12</span><a href="https://claude.ai/code/artifact/2f4b11f0-6a38-4007-9afd-02cefca42228"><span data-lang-ko>모닝 마켓</span><span data-lang-en>Morning brief</span></a></li>
+    <li><span class="d">08-11</span><a href="https://claude.ai/code/artifact/81ed2f4f-4a38-4b60-911b-e42ee67c316a"><span data-lang-ko>모닝 마켓</span><span data-lang-en>Morning brief</span></a></li>
+    <li><span class="d">08-10</span><a href="https://claude.ai/code/artifact/6bddc99f-2f51-4847-8707-a4b29c83a32f"><span data-lang-ko>장마감 시황</span><span data-lang-en>Close brief</span></a></li>
+    <li><span class="d">08-10</span><a href="https://claude.ai/code/artifact/f92ff123-0fc4-4931-b5cf-f9deb1fb7897"><span data-lang-ko>모닝 마켓</span><span data-lang-en>Morning brief</span></a></li>
+    <li><span class="d">08-08</span><a href="https://claude.ai/code/artifact/46f66af2-cd8c-4d32-bbe6-9cddbea5dab9"><span data-lang-ko>해외 증시 모닝</span><span data-lang-en>Global morning</span></a></li>
+    <li><span class="d">08-07</span><a href="https://claude.ai/code/artifact/e4224dd3-fbc3-4cd1-970c-1c8f9e9713ba"><span data-lang-ko>장마감 시황</span><span data-lang-en>Close brief</span></a></li>
+    <li><span class="d">08-07</span><a href="https://claude.ai/code/artifact/8692db99-79e8-43f5-9a8d-832e560effe9"><span data-lang-ko>모닝 마켓</span><span data-lang-en>Morning brief</span></a></li>
+    <li><span class="d">08-06</span><a href="https://claude.ai/code/artifact/382fd976-d577-44b0-8380-3c5d378bada7"><span data-lang-ko>아침 브리핑</span><span data-lang-en>Morning brief</span></a></li>
+  </ul>
+</div>
+<!-- archive-print:end -->
+
+</main>
+
+</div><!-- /shell -->
+
+<footer class="foot">
+  <p><span data-lang-ko>미래에셋증권 마포WM · 송재섭 · 2026년 9월 17일(목) 07:48 KST 작성.</span><span data-lang-en>Mirae Asset Securities, Mapo WM · Jaeseop Song · Compiled 07:48 KST, Thursday 17 September 2026.</span></p>
+  <p><span data-lang-ko>본 자료는 공개된 언론 보도와 공식 발표를 정리한 내부 참고용이며, 특정 종목의 매매를 권유하지 않습니다. 투자 판단의 최종 책임은 투자자 본인에게 있습니다. 확인되지 않은 수치는 비워 두거나 "미확인"으로 표기했고, 검증 등급은 각 항목의 배지로 표시했습니다.</span><span data-lang-en>An internal reference compiled from public reporting and official releases. It does not recommend the purchase or sale of any security; investment decisions and their consequences rest with the investor. Unverified figures are left blank or marked as such, and each item carries a verification badge.</span></p>
+</footer>
+
+</div><!-- /page -->
+
+<script>
+(function () {
+  var root = document.documentElement;
+  var KEY = 'mas-briefing-lang';
+
+  /* 탭 제목은 <title> 에서 읽는다. 여기에 문자열로 적으면 판을 물릴 때 얼어붙는다. */
+  var tEl = document.querySelector('title');
+  var T_KO = tEl ? tEl.textContent : document.title;
+  var T_EN = (tEl && tEl.getAttribute('data-en')) || T_KO;
+
+  /* ---- 한/영 ---- */
+  function applyLang(lang) {
+    root.setAttribute('lang', lang);
+    var btns = document.querySelectorAll('.lang-toggle button');
+    for (var i = 0; i < btns.length; i++) {
+      btns[i].setAttribute('aria-checked', btns[i].getAttribute('data-lang') === lang ? 'true' : 'false');
+    }
+    document.title = (lang === 'ko') ? T_KO : T_EN;
+    try { localStorage.setItem(KEY, lang); } catch (e) {}
+  }
+  var saved = null;
+  try { saved = localStorage.getItem(KEY); } catch (e) {}
+  applyLang(saved === 'en' ? 'en' : 'ko');
+  document.addEventListener('click', function (e) {
+    var b = e.target.closest ? e.target.closest('.lang-toggle button') : null;
+    if (b) applyLang(b.getAttribute('data-lang'));
+  });
+
+  /* ---- 표 행 확장 ---- */
+  function detailRowOf(tr) {
+    var n = tr.nextElementSibling;
+    return (n && n.classList.contains('detail-row')) ? n : null;
+  }
+  function toggleRow(tr, force) {
+    var d = detailRowOf(tr);
+    if (!d) return;
+    var open = force !== undefined ? force : tr.getAttribute('aria-expanded') !== 'true';
+    tr.setAttribute('aria-expanded', open ? 'true' : 'false');
+    if (open) { d.removeAttribute('hidden'); } else { d.setAttribute('hidden', ''); }
+  }
+
+  /* 상세는 제자리에서 펼친다. 화면 폭에 따라 같은 클릭이 다르게 동작하지 않는다. */
+  document.addEventListener('click', function (e) {
+    if (!e.target.closest) return;
+    if (e.target.closest('a')) return;
+    var tr = e.target.closest('tr.clickable');
+    if (tr) toggleRow(tr);
+  });
+  document.addEventListener('keydown', function (e) {
+    if (e.key !== 'Enter' && e.key !== ' ') return;
+    var tr = e.target.closest ? e.target.closest('tr.clickable') : null;
+    if (tr) { e.preventDefault(); toggleRow(tr); }
+  });
+
+  /* ---- 전체 펼치기 / 접기 ---- */
+  function setAll(open) {
+    var ds = document.querySelectorAll('details.exp');
+    for (var i = 0; i < ds.length; i++) { if (open) { ds[i].setAttribute('open', ''); } else { ds[i].removeAttribute('open'); } }
+    var rows = document.querySelectorAll('tr.clickable');
+    for (var j = 0; j < rows.length; j++) toggleRow(rows[j], open);
+    var btn = document.querySelector('.expand-all');
+    if (btn) btn.setAttribute('aria-pressed', open ? 'true' : 'false');
+  }
+  var eb = document.querySelector('.expand-all');
+  if (eb) {
+    eb.addEventListener('click', function () {
+      setAll(eb.getAttribute('aria-pressed') !== 'true');
+    });
+  }
+
+  /* ---- 인쇄 / PDF ---- */
+  function snapshot() {
+    var s = { d: [], r: [] };
+    var ds = document.querySelectorAll('details.exp');
+    var rows = document.querySelectorAll('tr.clickable');
+    for (var i = 0; i < ds.length; i++) s.d.push(ds[i].hasAttribute('open'));
+    for (var j = 0; j < rows.length; j++) s.r.push(rows[j].getAttribute('aria-expanded') === 'true');
+    return s;
+  }
+  function restoreFrom(s) {
+    if (!s) return;
+    var ds = document.querySelectorAll('details.exp');
+    var rows = document.querySelectorAll('tr.clickable');
+    for (var i = 0; i < ds.length; i++) {
+      if (s.d[i]) { ds[i].setAttribute('open', ''); } else { ds[i].removeAttribute('open'); }
+    }
+    for (var j = 0; j < rows.length; j++) toggleRow(rows[j], s.r[j]);
+    var btn = document.querySelector('.expand-all');
+    if (btn) {
+      var allOpen = ds.length > 0 && document.querySelectorAll('details.exp[open]').length === ds.length;
+      btn.setAttribute('aria-pressed', allOpen ? 'true' : 'false');
+    }
+  }
+  var pbs = document.querySelectorAll('.print-btn');
+  for (var k = 0; k < pbs.length; k++) {
+    pbs[k].addEventListener('click', function (ev) {
+      var full = ev.currentTarget.getAttribute('data-print') === 'full';
+      var before = snapshot();
+      setAll(full);
+      void document.body.offsetHeight;
+      try { window.focus(); } catch (e) {}
+      try { window.print(); } finally { restoreFrom(before); }
+    });
+  }
+
+  /* ---- 목차 스크롤 스파이 ---- */
+  var tocLinks = document.querySelectorAll('.sidenav-toc a');
+  if (tocLinks.length && 'IntersectionObserver' in window) {
+    var byId = {}, targets = [];
+    for (var t = 0; t < tocLinks.length; t++) {
+      var id = tocLinks[t].getAttribute('href').slice(1);
+      var el = document.getElementById(id);
+      if (el) { byId[id] = tocLinks[t]; targets.push(el); }
+    }
+    var visible = {};
+    function paint() {
+      var best = null;
+      for (var i = 0; i < targets.length; i++) {
+        if (visible[targets[i].id]) { best = targets[i].id; break; }
+      }
+      for (var id2 in byId) {
+        if (id2 === best) { byId[id2].setAttribute('aria-current', 'true'); }
+        else { byId[id2].removeAttribute('aria-current'); }
+      }
+      if (best && window.innerWidth < 1080) {
+        var a = byId[best];
+        var ul = a.parentNode.parentNode;
+        if (ul.scrollWidth > ul.clientWidth) {
+          var target = a.offsetLeft - (ul.clientWidth - a.offsetWidth) / 2;
+          ul.scrollTo ? ul.scrollTo({ left: target, behavior: 'smooth' }) : (ul.scrollLeft = target);
+        }
+      }
+    }
+    var io = new IntersectionObserver(function (entries) {
+      for (var i = 0; i < entries.length; i++) {
+        visible[entries[i].target.id] = entries[i].isIntersecting;
+      }
+      paint();
+    }, { rootMargin: '-96px 0px -55% 0px', threshold: 0 });
+    for (var j2 = 0; j2 < targets.length; j2++) io.observe(targets[j2]);
+  }
+
+})();
+</script>
+</body></html>
