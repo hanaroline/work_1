@@ -185,6 +185,27 @@ async function api(p, tries = 3) {
   throw last;
 }
 
+// 상세는 **값이 들어 있는지까지** 보고 나서야 받은 것으로 친다.
+//
+// 두 번째로 데인 자리다. 처음에는 응답이 통째로 안 와서 "분배 이력 0개월" 을
+// 사실처럼 적었고, 그걸 고친 뒤에는 200 으로 오되 F15001(현재가)이 빈 채로
+// 오는 응답을 받아 "현재가 없음" 으로 적었다. 상장된 ETF 에 현재가가 없을
+// 수는 없다 — 그건 그 종목의 사실이 아니라 우리가 제대로 못 받았다는 뜻이다.
+// 실제로 그 한 판에서 채택이 22종목에서 11종목으로 반토막 났다.
+async function apiOutline(code, tries = 3) {
+  let last;
+  for (let i = 0; i < tries; i++) {
+    const rows = await api(`/user/etp/getEtpItemOutline?code=${code}&befDate=${new Date().getFullYear() - 1}0101`);
+    const o = rows?.[0];
+    const has = (v) => v !== null && v !== undefined && v !== '' && Number(v) > 0;
+    if (o && has(o.F15001)) return o;
+    last = o ? `현재가(F15001)=${JSON.stringify(o.F15001)}` : '빈 응답';
+    await sleep(1000 * (i + 1));
+    if (i === tries - 2) await refreshHeaders();
+  }
+  throw new ApiError(`상세에 현재가가 없습니다 (${last})`);
+}
+
 async function refreshHeaders() {
   appHeaders = null;
   await page.goto(BASE, { waitUntil: 'domcontentloaded', timeout: 60000 });
@@ -219,7 +240,7 @@ for (const [i, row] of universe.entries()) {
   let navHist;
   let term;
   try {
-    outline = await api(`/user/etp/getEtpItemOutline?code=${code}&befDate=${new Date().getFullYear() - 1}0101`);
+    outline = await apiOutline(code);
     await sleep(250);
     hist = await api(`/user/etp/getEtpItemCashHist?code=${code}&limit=36`);
     await sleep(250);
@@ -248,20 +269,8 @@ for (const [i, row] of universe.entries()) {
     continue;
   }
 
-  if (!outline[0]) {
-    console.log('상세 비어 있음 — 제외');
-    items.push({
-      code,
-      name,
-      manager: row.F33961 || null,
-      adopted: false,
-      dataComplete: false,
-      excludeReason: '상세(getEtpItemOutline)가 빈 응답',
-    });
-    await sleep(400);
-    continue;
-  }
-  const o = outline[0];
+  // apiOutline 이 값이 든 행만 돌려준다. 여기 왔다는 것은 현재가가 있다는 뜻이다.
+  const o = outline;
   asOf = asOf || String(o.F12506 || '');
 
   const price = num(o.F15001);
@@ -391,7 +400,30 @@ for (const [i, row] of universe.entries()) {
   await sleep(150);
 }
 
+// 지난 판보다 채택이 뚝 떨어졌으면 덮어쓰지 않는다.
+//
+// 채택이 0 이 되는 고장은 눈에 띄지만, 22에서 11로 반토막 나는 고장은
+// 안 띈다 — 파일은 멀쩡해 보이고 검사도 통과한다. 실제로 그렇게 한 판이
+// 나갔다(상세가 200 으로 오되 현재가가 빈 채로 온 종목이 절반이었다).
+// 시장이 변해 정말로 줄어든 것일 수도 있으므로 막되, 넘길 길을 남긴다.
+const prev = (() => {
+  try {
+    return JSON.parse(fs.readFileSync(OUT, 'utf8'));
+  } catch {
+    return null;
+  }
+})();
 const adopted = items.filter((x) => x.adopted);
+if (prev?.adoptedCount >= 5 && adopted.length < prev.adoptedCount * 0.6 && !process.env.CC_ETF_ALLOW_DROP) {
+  fs.mkdirSync(DIAG, { recursive: true });
+  fs.writeFileSync(path.join(DIAG, 'items.json'), JSON.stringify(items, null, 2));
+  throw new Error(
+    `채택이 ${prev.adoptedCount}종목에서 ${adopted.length}종목으로 줄었습니다. ` +
+      '수집이 반쯤 어긋났을 때 나오는 모양이라 data/ 를 덮어쓰지 않습니다. ' +
+      'discovery/cc-etf/items.json 을 보고, 정말 줄어든 것이 맞으면 ' +
+      'CC_ETF_ALLOW_DROP=1 로 다시 돌리십시오.',
+  );
+}
 if (!adopted.length) {
   fs.mkdirSync(DIAG, { recursive: true });
   fs.writeFileSync(path.join(DIAG, 'items.json'), JSON.stringify(items, null, 2));
