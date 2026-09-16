@@ -202,18 +202,39 @@ async function api(p, tries = 3) {
 // 오는 응답을 받아 "현재가 없음" 으로 적었다. 상장된 ETF 에 현재가가 없을
 // 수는 없다 — 그건 그 종목의 사실이 아니라 우리가 제대로 못 받았다는 뜻이다.
 // 실제로 그 한 판에서 채택이 22종목에서 11종목으로 반토막 났다.
+// 값이 안 들어 있을 때 **무엇이 왔는지** 남긴다. 2026-09-16 에 192종목이
+// 전부 "현재가(F15001)=undefined" 로 떨어졌는데, 그 한 줄로는 원천이 우리를
+// 막은 것인지, 응답 모양이 바뀐 것인지, 인자가 틀린 것인지 알 수 없었다.
+// 실패한 응답의 키와 앞부분을 적어 두면 다음 판에서 눈으로 볼 수 있다.
+const outlineSamples = [];
+
 async function apiOutline(code, tries = 3) {
-  let last;
+  let last = '빈 응답';
   for (let i = 0; i < tries; i++) {
     const rows = await api(`/user/etp/getEtpItemOutline?code=${code}&befDate=${new Date().getFullYear() - 1}0101`);
     const o = rows?.[0];
     const has = (v) => v !== null && v !== undefined && v !== '' && Number(v) > 0;
     if (o && has(o.F15001)) return o;
-    last = o ? `현재가(F15001)=${JSON.stringify(o.F15001)}` : '빈 응답';
-    await sleep(1000 * (i + 1));
+    if (o) {
+      last = `현재가(F15001)=${JSON.stringify(o.F15001)}, 키 ${Object.keys(o).length}개`;
+      if (outlineSamples.length < 5) {
+        outlineSamples.push({ code, try: i, keys: Object.keys(o).slice(0, 60), row: o });
+      }
+    } else if (outlineSamples.length < 5) {
+      outlineSamples.push({ code, try: i, keys: [], row: rows });
+    }
+    await sleep(1500 * (i + 1));
     if (i === tries - 2) await refreshHeaders();
   }
   throw new ApiError(`상세에 현재가가 없습니다 (${last})`);
+}
+
+function dumpDiagnostics(extra = {}) {
+  fs.mkdirSync(DIAG, { recursive: true });
+  fs.writeFileSync(
+    path.join(DIAG, 'outline-failures.json'),
+    JSON.stringify({ when: new Date().toISOString(), samples: outlineSamples, ...extra }, null, 2),
+  );
 }
 
 async function refreshHeaders() {
@@ -267,6 +288,17 @@ for (const [i, row] of universe.entries()) {
     // 다시 하지 않는다.
     console.log(`수집 실패 — 제외 (${String(e.message).slice(0, 60)})`);
     failed.push({ code, name, why: String(e.message).slice(0, 200) });
+    // 앞에서부터 줄줄이 실패하면 그건 종목 문제가 아니라 원천이 우리를
+    // 막았거나 응답 모양이 바뀐 것이다. 192종목을 그대로 다 돌면 재시도만
+    // 하다가 한 시간 반이 지나간다(실제로 그랬다). 일찍 멈추고 말한다.
+    if (failed.length >= 8 && items.every((x) => x.dataComplete === false)) {
+      dumpDiagnostics({ note: '앞 8종목이 모두 실패해 일찍 멈췄습니다.', failed });
+      throw new Error(
+        `앞 ${failed.length}종목이 모두 같은 이유로 실패했습니다: ${String(e.message).slice(0, 120)}\n` +
+          '원천이 막았거나 응답 모양이 바뀐 것으로 보입니다. data/ 는 그대로 둡니다.\n' +
+          `무엇이 왔는지는 ${DIAG}/outline-failures.json 에 적어 두었습니다.`,
+      );
+    }
     items.push({
       code,
       name,
@@ -429,6 +461,7 @@ const adopted = items.filter((x) => x.adopted);
 if (prev?.adoptedCount >= 5 && adopted.length < prev.adoptedCount * 0.6 && !process.env.CC_ETF_ALLOW_DROP) {
   fs.mkdirSync(DIAG, { recursive: true });
   fs.writeFileSync(path.join(DIAG, 'items.json'), JSON.stringify(items, null, 2));
+  dumpDiagnostics({ note: '채택이 크게 줄어 덮어쓰지 않았습니다.', failedCount: failed.length });
   throw new Error(
     `채택이 ${prev.adoptedCount}종목에서 ${adopted.length}종목으로 줄었습니다. ` +
       '수집이 반쯤 어긋났을 때 나오는 모양이라 data/ 를 덮어쓰지 않습니다. ' +
