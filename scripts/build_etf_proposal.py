@@ -53,10 +53,10 @@ LINE_DARK = "49535B"     # 합계 줄 위의 선
 
 FONT = "Spoqa Han Sans Neo"  # 브랜드 지정 서체. 없으면 뷰어가 대체한다.
 
-# 비교표에 싣는 종목 수. 채택 종목은 60개 가까이 되는데 그걸 다 실으면
-# 고객이 받는 한 장이 표 하나로 덮인다. 콤보박스에는 전부 담기고, 남은
-# 종목은 [ETF데이터] 장에 그대로 있다.
-COMPARE_TOP = 12
+# 비교표에 싣는 종목 수. 채택 종목이 일흔이 넘어 다 실으면 고객이 받는 장이
+# 표 하나로 덮인다. 두 갈래로 뽑아 합친다 — 많이 주는 쪽과 큰 쪽.
+COMPARE_YIELD = 8   # 연 분배율 상위
+COMPARE_AUM = 6     # 순자산 상위 (파킹형 제외)
 
 WON = '#,##0"원"'
 WON_PLAIN = "#,##0"
@@ -577,31 +577,61 @@ def build_proposal(wb, data, first_sel, last_sel, first_adopted, last_adopted):
     r += 2
 
     # ── 5. 종목 비교 ──
-    n_adopted = last_adopted - first_adopted + 1
-    shown = min(n_adopted, COMPARE_TOP)
+    #
+    # 연 분배율 상위만 싣던 판을 버렸다. 그렇게 뽑으면 열두 줄이 전부
+    # 커버드콜(16~28%)이 되고, 정작 기본으로 골라 둔 TIGER 미국배당다우존스
+    # 같은 정통 배당 ETF 가 표에 없다. 담당자가 제안서를 펼치면 공격적인
+    # 종목만 보이는 셈이다.
+    #
+    # 그래서 두 갈래로 뽑아 합친다 — 많이 주는 쪽(연 분배율 상위)과 큰 쪽
+    # (순자산 상위). 고객이 실제로 고르는 축이 그 둘이다. 순자산 쪽에서는
+    # 파킹형을 뺀다. 안 빼면 CD금리·KOFR 이 상위 여덟 중 셋을 차지하는데,
+    # 월마다 돈이 나오기는 해도 비교표에 올릴 상품이 아니다.
+    adopted_items = sorted(
+        [x for x in data["items"] if x.get("adopted")],
+        key=lambda x: -(x.get("distTtmRate") or 0),
+    )
+    row_of = {x["code"]: first_adopted + i for i, x in enumerate(adopted_items)}
+    by_yield = adopted_items[:COMPARE_YIELD]
+    by_aum = sorted(
+        [x for x in adopted_items if (x.get("assetClassCode") or "") != "0108"],
+        key=lambda x: -(x.get("aum") or 0),
+    )[:COMPARE_AUM]
+    seen_codes, compare = set(), []
+    for x in by_yield + by_aum:
+        if x["code"] not in seen_codes:
+            seen_codes.add(x["code"])
+            compare.append(x)
+    compare.sort(key=lambda x: -(x.get("distTtmRate") or 0))
+
     r = section(ws, r, "5",
-                f"채택 ETF 비교  (1억원 단독 투자 기준 · 연 분배율 상위 {shown}종목 / 채택 {n_adopted}종목)",
+                f"채택 ETF 비교  (1억원 단독 투자 기준 · 연 분배율 상위 {COMPARE_YIELD} + "
+                f"순자산 상위 {COMPARE_AUM}, 파킹형 제외 · 채택 {len(adopted_items)}종목 중)",
                 LAST)
+    # 월 분배율은 뺐다 — 연 분배율 ÷ 12 라 한 칸을 차지할 값이 아니다.
+    # 그 자리에 유형을 넣는다. 같은 표에 커버드콜과 리츠·채권형이 섞여
+    # 있으므로 무엇인지가 분배율만큼 중요하다.
     table_head(ws, r,
-               ["종목명", "현재가", "연 분배율", "월 분배율",
+               ["종목명", "유형", "현재가", "연 분배율",
                 "월 분배금(세전)", "월 분배금(세후)", vol_label(data, short=True)], 2)
     r += 1
-    for i in range(shown):
-        rr, src = r + i, first_adopted + i
+    for i, it in enumerate(compare):
+        rr, src = r + i, row_of[it["code"]]
         put(ws, rr, 2, f"='{D}'!$A${src}", None, kind="source")
         ws.cell(row=rr, column=2).font = f(10, color=INK)
-        put(ws, rr, 3, f"='{D}'!$D${src}", WON)
-        put(ws, rr, 4, f"='{D}'!$J${src}", PCT)
-        put(ws, rr, 5, f"='{D}'!$J${src}/12", PCT3)
-        put(ws, rr, 6, f"=IF($C{rr}=0,0,ROUNDDOWN(100000000/$C{rr},0)*$C{rr}*$D{rr}/12)", WON)
+        c = put(ws, rr, 3, f"='{D}'!$P${src}", None, kind="source")
+        c.alignment = Alignment(vertical="center", horizontal="center")
+        put(ws, rr, 4, f"='{D}'!$D${src}", WON)
+        put(ws, rr, 5, f"='{D}'!$J${src}", PCT)
+        put(ws, rr, 6, f"=IF($D{rr}=0,0,ROUNDDOWN(100000000/$D{rr},0)*$D{rr}*$E{rr}/12)", WON)
         put(ws, rr, 7, f"=$F{rr}*(1-{C_TAX})", WON)
         put(ws, rr, 8, f"='{D}'!$H${src}", PCT)
         if i % 2 == 1:
-            for c in range(2, 9):
-                ws.cell(row=rr, column=c).fill = fill(SURFACE)
+            for c2 in range(2, 9):
+                ws.cell(row=rr, column=c2).fill = fill(SURFACE)
         ws.row_dimensions[rr].height = 19
-    box(ws, r - 1, 2, r + shown - 1, 8)
-    r += shown
+    box(ws, r - 1, 2, r + len(compare) - 1, 8)
+    r += len(compare)
     label(ws, r, 2,
           "※ 드롭다운에는 기준 미달 종목까지 전부 담겨 있습니다. 위 표에는 기준을 통과한 종목만 실었습니다.",
           size=9, color=MUTED)

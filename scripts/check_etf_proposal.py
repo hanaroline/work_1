@@ -222,12 +222,18 @@ def main() -> int:  # noqa: PLR0915
     # 비교표는 채택 종목을 다 싣지 않는다 — 스무 종목이 넘으면 고객이 받는
     # 한 장이 표 하나로 덮인다. 연 분배율 위에서부터 자르므로, 검사도
     # "전부" 가 아니라 "위에서부터 끊기지 않고" 를 본다.
-    if seen and seen != list(range(first, first + len(seen))):
-        fail(f"비교표가 채택 종목을 위에서부터 순서대로 훑지 않습니다: {seen}")
-    elif seen and seen[-1] > last_adopted:
-        fail(f"비교표가 채택 구간(~{last_adopted}행)을 넘어 기준 미달 종목까지 싣고 있습니다.")
-    elif seen:
-        notes.append(f"비교표 {len(seen)}행이 채택 {len(adopted)}종목 중 위 {len(seen)}개와 맞습니다.")
+    # 비교표는 이제 **연 분배율 상위 + 순자산 상위** 를 합쳐 뽑으므로 줄이
+    # 이어지지 않는다. 그러니 "차례대로인가" 가 아니라 "채택 구간 안인가,
+    # 겹치지 않는가" 를 본다.
+    if seen:
+        if len(set(seen)) != len(seen):
+            dup = [x for x in set(seen) if seen.count(x) > 1]
+            fail(f"비교표에 같은 종목이 두 번 실렸습니다 (ETF데이터 {dup}행).")
+        out = [x for x in seen if not (first <= x <= last_adopted)]
+        if out:
+            fail(f"비교표가 채택 구간({first}~{last_adopted}행) 밖을 가리킵니다: {out}")
+        if not problems:
+            notes.append(f"비교표 {len(seen)}행이 채택 {len(adopted)}종목 안을 겹치지 않고 가리킵니다.")
 
     # ── 5. 시트 값이 원천과 같은가 ──
     for i, item in enumerate(selectable):
@@ -366,10 +372,12 @@ def main() -> int:  # noqa: PLR0915
         notes.append(f"금액별 표 {checked}줄을 줄마다 다시 계산해 맞췄습니다.")
 
     # ── 비교표 — 종목마다 1억 기준 월 분배금 ──
+    # 줄마다 **그 줄이 가리키는** 종목으로 계산한다. 예전처럼 adopted[i] 를
+    # 쓰면 비교표를 다르게 뽑는 순간 엉뚱한 종목과 맞춰 보게 된다.
     cmp_hdr, _ = find_label(ws, "종목명", cols=(2,))
     if cmp_hdr and seen:
-        for i in range(len(seen)):
-            it = adopted[i]
+        for i, src in enumerate(seen):
+            it = selectable[src - first]
             rr = cmp_hdr + 1 + i
             q = math.floor(100_000_000 / it["price"])
             want = q * it["price"] * (it["distTtmRate"] / 100) / 12
