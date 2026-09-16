@@ -175,7 +175,13 @@ async function apiOnce(p) {
   } catch {
     throw new ApiError(`JSON 아님: ${r.text.slice(0, 80)}`);
   }
-  if (j.success === false) throw new ApiError(j.message || 'success:false');
+  // `success` 가 true 가 **아니면** 전부 실패로 친다.
+  //
+  // 처음에는 `=== false` 만 봤는데, ETFCHECK 은 인증이 끊기면
+  // `{"success":-1,"message":"인증에 실패하여 자동으로 로그아웃되었습니다."}`
+  // 를 준다. -1 은 false 가 아니므로 그대로 통과했고, results 가 없어
+  // 빈 배열이 되어 "값이 없다" 로 둔갑했다. 성공이 아닌 것은 성공이 아니다.
+  if (j.success !== true) throw new ApiError(String(j.message || `success=${j.success}`).slice(0, 120));
   return j.results ?? []; // 빈 배열은 "정말로 값이 없다" 는 뜻이다
 }
 
