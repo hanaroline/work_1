@@ -43,7 +43,7 @@ SRC = Path(sys.argv[2]) if len(sys.argv) > 2 else ROOT / "data" / "cc_etf.json"
 DATA_COLS = {
     "A": "종목명", "B": "종목코드", "C": "운용사", "D": "현재가", "E": "순자산총액",
     "F": "60일 평균거래대금", "G": "총보수", "H": "변동성", "I": "최근 월분배율",
-    "J": "연환산 분배율", "K": "분배이력", "L": "최근 분배기준일", "M": "채택", "N": "제외 사유", "O": "기초지수",
+    "J": "연환산 분배율", "K": "분배이력", "L": "최근 분배기준일", "M": "채택", "N": "제외 사유", "O": "기초지수", "P": "유형",
 }
 
 problems: list[str] = []
@@ -127,26 +127,47 @@ def main() -> int:  # noqa: PLR0915
         fail(f"채택 구간이 {n}행인데 원천의 채택 종목은 {len(adopted)}건입니다.")
 
     # ── 2. 콤보박스 ──
+    # 콤보박스는 둘이다 — ETF 목록과 배분 방식. 순서를 믿지 말고 무엇을
+    # 가리키는지로 고른다.
     dvs = [d for d in ws.data_validations.dataValidation if d.type == "list"]
-    if not dvs:
-        fail("[제안서] 에 목록형 데이터 유효성(콤보박스)이 없습니다.")
+    dv_etf = next((d for d in dvs if "채택종목" in (d.formula1 or "")), None)
+    dv_mode = next((d for d in dvs if "비율" in (d.formula1 or "")), None)
+    if dv_etf is None:
+        fail("[제안서] 에 ETF 목록 콤보박스(채택종목)가 없습니다.")
     else:
-        dv = dvs[0]
-        if "채택종목" not in (dv.formula1 or ""):
-            fail(f"콤보박스가 채택종목을 가리키지 않습니다: {dv.formula1}")
-        sel = ws[str(dv.sqref).split()[0].split(":")[0]]
+        cells = str(dv_etf.sqref)
+        sel = ws[cells.split()[0].split(":")[0]]
         if not sel.value:
-            fail(f"콤보박스 칸 {sel.coordinate} 이 비어 있습니다 — 열자마자 0원 제안서가 됩니다.")
+            fail(f"콤보박스 첫 줄 {sel.coordinate} 이 비어 있습니다 — 열자마자 0원 제안서가 됩니다.")
         elif sel.value not in [x["name"] for x in adopted]:
-            fail(f"미리 골라 둔 종목 '{sel.value}' 가 채택 목록에 없습니다.")
+            fail(f"미리 넣어 둔 종목 '{sel.value}' 가 채택 목록에 없습니다.")
         else:
-            notes.append(f"콤보박스 {sel.coordinate} · 기본 선택 '{sel.value}' · 후보 {n}종목")
+            notes.append(f"ETF 콤보박스 {cells} · 첫 줄 '{sel.value}' · 후보 {n}종목")
+    if dv_mode is None:
+        fail("[제안서] 에 배분 방식(비율/금액) 콤보박스가 없습니다.")
+    else:
+        notes.append(f"배분 방식 콤보박스 {dv_mode.sqref}")
 
     # ── 3. 수식 참조 ──
+    # 포트폴리오의 ETF·배분 칸(B·C)은 **비어 있는 것이 정상**이다. 다섯 줄을
+    # 다 채우지 않아도 되게 만든 자리라, 빈 칸을 가리킨다고 나무라면 안 된다.
+    # 나머지 칸은 그대로 본다 — 빈 칸을 가리키는 수식은 여전히 고장이다.
+    p_hdr0, _ = find_label(ws, "투자 ETF", cols=(2,))
+    blank_ok = set()
+    if p_hdr0:
+        rr0 = p_hdr0 + 1
+        while rr0 <= p_hdr0 + 40:
+            v = ws[f"B{rr0}"].value
+            if isinstance(v, str) and v.strip() == "합계":
+                break
+            blank_ok.add(f"B{rr0}")
+            blank_ok.add(f"C{rr0}")
+            rr0 += 1
+
     ref_own = re.compile(r"(?<![!\w$])\$?([A-H])\$?(\d+)\b")
     # 범위 끝(`:$B$6`)까지 한 덩어리로 잡는다. 앞쪽만 떼어 내면 남은
     # `:$B$6` 가 제안서 자기 칸 참조처럼 보여 없는 문제를 만든다.
-    ref_data = re.compile(r"'ETF데이터'!\$([A-O])\$(\d+)(?::\$([A-O])\$(\d+))?")
+    ref_data = re.compile(r"'ETF데이터'!\$([A-P])\$(\d+)(?::\$([A-P])\$(\d+))?")
     n_formula = 0
     for row in ws.iter_rows():
         for c in row:
@@ -166,6 +187,8 @@ def main() -> int:  # noqa: PLR0915
             # INDEX 의 범위 인자는 빈 칸 검사를 하면 안 된다(범위 전체를 준다).
             for col, rw in ref_own.findall(ref_data.sub("", body)):
                 tgt = ws[f"{col}{int(rw)}"]
+                if tgt.coordinate in blank_ok:
+                    continue
                 if tgt.value in (None, "") and tgt.coordinate != c.coordinate:
                     fail(f"{c.coordinate}: 제안서 {col}{rw} 을 가리키는데 그 칸이 비어 있습니다. → {body}")
     notes.append(f"제안서 수식 {n_formula}개, 참조 대상이 모두 채워져 있습니다.")
@@ -224,32 +247,80 @@ def main() -> int:  # noqa: PLR0915
         r, c = find_label(ws, text, cols)
         return None if r is None else f"{chr(64 + c)}{r}"
 
-    amount = ws[cell_of("투자금액 (원)")].value
+    amount = ws[cell_of("총 투자금액 (원)")].value
     tax = ws[cell_of("배당소득세율")].value
-    picked = ws[cell_of("투자 ETF (선택)")].value
-    item = next((x for x in adopted if x["name"] == picked), None)
-    if item is None:
-        fail(f"고른 종목 '{picked}' 을 원천에서 못 찾았습니다.")
+    mode = ws[cell_of("배분 방식")].value
+
+    # ── 포트폴리오 줄마다 손으로 계산해 맞춘다 ──
+    # 한 종목만 고르던 때와 달리, 이제 다섯 줄이 각자 수량·실투자금·분배금을
+    # 낸다. 한 줄이라도 다른 줄의 값을 가리키면 합계는 그럴듯한데 내역이
+    # 틀린 제안서가 된다 — 합계만 보면 안 잡힌다.
+    p_hdr, _ = find_label(ws, "투자 ETF", cols=(2,))
+    if p_hdr is None:
+        fail("포트폴리오 표(머리글 '투자 ETF')를 찾지 못했습니다.")
+        return report()
+    by_name = {x["name"]: x for x in adopted}
+    slots = []
+    rr = p_hdr + 1
+    while ws[f"B{rr}"].value is not None or ws[f"C{rr}"].value is not None or rr <= p_hdr + 5:
+        if isinstance(ws[f"B{rr}"].value, str) and ws[f"B{rr}"].value.strip() == "합계":
+            break
+        slots.append(rr)
+        rr += 1
+        if rr > p_hdr + 40:
+            break
+    tot_row = rr
+
+    tot_invest = tot_pre = 0.0
+    filled = 0
+    for rr in slots:
+        name = ws[f"B{rr}"].value
+        alloc = ws[f"C{rr}"].value
+        if not name:
+            for col in ("D", "E", "F", "G", "H"):
+                if not near(val(f"{col}{rr}"), 0, 1e-6):
+                    fail(f"포트폴리오 {col}{rr}: 빈 줄인데 {val(f'{col}{rr}')} 이 나옵니다.")
+            continue
+        it = by_name.get(name)
+        if it is None:
+            fail(f"포트폴리오 {rr}행의 '{name}' 이 채택 목록에 없습니다.")
+            continue
+        filled += 1
+        alloc_amt = round(amount * alloc / 100) if mode == "비율" else alloc
+        q = math.floor(alloc_amt / it["price"])
+        inv = q * it["price"]
+        pre = inv * (it["distTtmRate"] / 100) / 12
+        tot_invest += inv
+        tot_pre += pre
+        for col, want in [("D", alloc_amt), ("E", q), ("F", inv), ("G", pre), ("H", pre * (1 - tax))]:
+            got = val(f"{col}{rr}")
+            if not near(got, want):
+                fail(f"포트폴리오 {col}{rr} ({name}): {got} ≠ 손계산 {want:,.2f}")
+    if not filled:
+        fail("포트폴리오에 담긴 종목이 하나도 없습니다 — 열자마자 0원짜리 제안서가 됩니다.")
         return report()
 
-    price, ttm, mon = item["price"], item["distTtmRate"] / 100, item["distMonthlyRate"] / 100
-    qty = math.floor(amount / price)
-    invested = qty * price
+    # 합계 줄
+    for col, want in [("F", tot_invest), ("G", tot_pre), ("H", tot_pre * (1 - tax))]:
+        got = val(f"{col}{tot_row}")
+        if not near(got, want):
+            fail(f"합계 {col}{tot_row}: {got} ≠ 손계산 {want:,.2f}")
+
+    # ── 요약 ──
+    w_ann = tot_pre * 12 / tot_invest if tot_invest else 0
     expect = {
-        "매수 가능 수량": qty,
-        "실제 투자금액": invested,
-        "미투자 잔액": amount - invested,
-        "월 예상 분배금 (세전)": invested * ttm / 12,
-        "월 예상 분배금 (세후)": invested * ttm / 12 * (1 - tax),
-        "연 예상 분배금 (세전)": invested * ttm,
-        "연 예상 분배금 (세후)": invested * ttm * (1 - tax),
-        "직전 월 실적 기준 (세전)": invested * mon,
-        "월 수익률 (세전)": ttm / 12,
-        "연 수익률 (세전)": ttm,
-        "연 수익률 (세후)": ttm * (1 - tax),
+        "실제 투자금액": tot_invest,
+        "미투자 잔액": amount - tot_invest,
+        "담은 종목 수": filled,
+        "월 예상 분배금 (세전)": tot_pre,
+        "월 예상 분배금 (세후)": tot_pre * (1 - tax),
+        "연 예상 분배금 (세전)": tot_pre * 12,
+        "연 예상 분배금 (세후)": tot_pre * 12 * (1 - tax),
+        "연 수익률 (세전, 가중평균)": w_ann,
+        "연 수익률 (세후, 가중평균)": w_ann * (1 - tax),
     }
     for labl, want in expect.items():
-        ref = cell_of(labl)
+        ref = cell_of(labl, cols=(1, 2, 6))
         if ref is None:
             fail(f"'{labl}' 칸을 찾지 못했습니다.")
             continue
@@ -258,17 +329,15 @@ def main() -> int:  # noqa: PLR0915
         if not near(got, want, tol):
             fail(f"'{labl}' ({ref}) 계산값 {got} ≠ 손계산 {want}")
 
-    # 금액별 표 — 줄마다 다시 계산해 맞춰 본다.
-    hdr, _ = find_label(ws, "투자금액", cols=(2,))
+    # ── 금액별 표 — 가중평균 분배율을 그대로 적용한 근사치 ──
+    hdr, _ = find_label(ws, "투자금액 구간", cols=(2,))
     checked = 0
     if hdr:
         rr = hdr + 1
         while isinstance(ws[f"B{rr}"].value, (int, float)):
             tier = ws[f"B{rr}"].value
-            q = math.floor(tier / price)
-            for col, want in [("C", q), ("D", q * price), ("E", q * price * ttm / 12),
-                              ("F", q * price * ttm / 12 * (1 - tax)), ("G", q * price * ttm),
-                              ("H", q * price * ttm * (1 - tax))]:
+            for col, want in [("C", tier * w_ann / 12), ("D", tier * w_ann / 12 * (1 - tax)),
+                              ("E", tier * w_ann), ("F", tier * w_ann * (1 - tax))]:
                 got = val(f"{col}{rr}")
                 if not near(got, want):
                     fail(f"금액별 표 {col}{rr} ({tier:,}원): {got} ≠ 손계산 {want:,.0f}")
@@ -277,7 +346,7 @@ def main() -> int:  # noqa: PLR0915
     if checked:
         notes.append(f"금액별 표 {checked}줄을 줄마다 다시 계산해 맞췄습니다.")
 
-    # 비교표 — 종목마다 1억 기준 월 분배금을 다시 계산한다.
+    # ── 비교표 — 종목마다 1억 기준 월 분배금 ──
     cmp_hdr, _ = find_label(ws, "종목명", cols=(2,))
     if cmp_hdr and seen:
         for i in range(len(seen)):
@@ -292,8 +361,9 @@ def main() -> int:  # noqa: PLR0915
 
     if not problems:
         notes.append(
-            f"검산 통과 — {picked}: {amount:,.0f}원 → {qty:,}주, "
-            f"월 세전 {invested * ttm / 12:,.0f}원 / 연 {ttm:.2%}"
+            f"검산 통과 — {filled}종목 포트폴리오({mode} 배분): "
+            f"{amount:,.0f}원 중 {tot_invest:,.0f}원 투자, "
+            f"월 세전 {tot_pre:,.0f}원 / 연 {w_ann:.2%}"
         )
     return report()
 

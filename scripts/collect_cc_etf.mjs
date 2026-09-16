@@ -1,4 +1,10 @@
-// 월배당 커버드콜 ETF 를 ETFCHECK 에서 받아 `data/cc_etf.json` 에 적는다.
+// 국내 상장 월배당 ETF 를 ETFCHECK 에서 받아 `data/cc_etf.json` 에 적는다.
+//
+// 파일 이름의 `cc` 는 covered call 이다. 처음에 커버드콜만 담으려고 지은
+// 이름인데, 2026-09 에 월배당 ETF 전체로 넓혔다. 이름은 그대로 두었다 —
+// 워크플로우·생성기·검사기·문서가 모두 이 이름을 가리키고 있어서, 이름만
+// 바꾸려고 여섯 군데를 건드리는 것이 얻는 것보다 위험하다. 커버드콜인지
+// 아닌지는 항목마다 `type` 에 적는다.
 //
 // 이 파일이 제안서 엑셀의 유일한 원천이다. 여기서 만들어 낸 수치는 하나도
 // 없다 — 전부 ETFCHECK 이 준 값이거나, 그 값으로 명시된 식에 따라 계산한
@@ -12,10 +18,9 @@
 // fetch 로 부른다. 종목마다 화면을 여는 길도 있었지만 잇달아 열면
 // ERR_EMPTY_RESPONSE 가 온다 — 61종목을 그렇게 열 수는 없다.
 //
-// 모집단은 이름이 아니라 **분류**로 고른다. getEtpCtgMap 에서 국내이면서
-// 커버드콜(0609005) 이고 월배당(0609002) 인 종목. 이름으로 거른 결과와
-// 어긋나지 않는 것을 확인했고(관찰 5차), 분류 쪽이 오래간다 — 상품명은
-// 운용사가 언제든 바꾼다.
+// 모집단은 이름이 아니라 **분류**로 고른다. getEtpCtgMap 에서 국내 상장이고
+// 월배당(0609002) 인 종목 전부. 이름으로 거른 결과와 어긋나지 않는 것을
+// 확인했고(관찰 5차), 분류 쪽이 오래간다 — 상품명은 운용사가 언제든 바꾼다.
 //
 // 세션(클로드 쪽)에서는 etfcheck.co.kr 로 CONNECT 가 403 이라 못 돈다.
 // **러너에서만** 돈다.
@@ -118,19 +123,24 @@ if (!mast.length || !ctgMap.length) {
   throw new Error(`마스터/분류대응을 못 받았습니다 (마스터 ${mast.length}, 분류 ${ctgMap.length}).`);
 }
 
+// 모집단은 **국내 상장 월배당 ETF 전부**(분류 0609002)다. 처음에는 커버드콜
+// (0609005)까지 겹쳐야만 담았는데, 그러면 리츠·인프라·배당주·채권형처럼
+// 월배당을 꼬박꼬박 주는 종목이 통째로 빠진다. 월 지급을 원하는 고객에게
+// 커버드콜만 보여 줄 이유가 없다. 커버드콜인지 아닌지는 `type` 에 적어
+// 두었으니 [ETF데이터] 장에서 가려 볼 수 있다.
+const ctgOf = new Map(ctgMap.filter((r) => r.F16013).map((r) => [r.F16013, String(r.ctgInfo || '')]));
 const picked = new Set(
   ctgMap
-    .filter(
-      (r) =>
-        r.F16013 &&
-        r.domestic_flag === 1 &&
-        String(r.ctgInfo || '').includes('0609005') && // 커버드콜
-        String(r.ctgInfo || '').includes('0609002'), // 월배당
-    )
+    .filter((r) => r.F16013 && r.domestic_flag === 1 && String(r.ctgInfo || '').includes('0609002'))
     .map((r) => r.F16013),
 );
 const universe = mast.filter((r) => picked.has(r.F16013));
-console.log(`모집단 ${universe.length}종목 (마스터 ${mast.length}행)`);
+const isCoveredCall = (code) => (ctgOf.get(code) || '').includes('0609005');
+console.log(
+  `모집단 ${universe.length}종목 (마스터 ${mast.length}행) — ` +
+    `커버드콜 ${universe.filter((r) => isCoveredCall(r.F16013)).length}, ` +
+    `그 외 월배당 ${universe.filter((r) => !isCoveredCall(r.F16013)).length}`,
+);
 if (universe.length < 10) {
   throw new Error(`모집단이 ${universe.length}종목뿐입니다. 분류 코드가 바뀌었는지 확인하십시오.`);
 }
@@ -260,6 +270,7 @@ for (const [i, row] of universe.entries()) {
     items.push({
       code,
       name,
+      type: isCoveredCall(code) ? '커버드콜' : '월배당',
       manager: row.F33961 || null,
       adopted: false,
       dataComplete: false,
@@ -367,6 +378,7 @@ for (const [i, row] of universe.entries()) {
   items.push({
     code,
     name,
+    type: isCoveredCall(code) ? '커버드콜' : '월배당',
     manager: o.F33961 || row.F33961 || null,
     index: o.F34777 || null,
     listedOn: listed,
@@ -433,8 +445,10 @@ if (!adopted.length) {
 const out = {
   source: 'ETFCHECK (https://www.etfcheck.co.kr)',
   sourceNote:
-    '국내 상장 ETF 중 ETFCHECK 분류가 커버드콜(0609005) 이면서 월배당(0609002) 인 종목. ' +
-    '상품명이 아니라 분류로 고른다.',
+    '국내 상장 ETF 중 ETFCHECK 분류가 월배당(0609002) 인 종목 전부. 상품명이 아니라 ' +
+    '분류로 고른다. 커버드콜(0609005) 인지 아닌지는 항목마다 type 에 적는다 — ' +
+    '처음에는 커버드콜만 담았는데, 그러면 리츠·인프라·배당주·채권형처럼 월배당을 ' +
+    '꼬박꼬박 주는 종목이 통째로 빠졌다.',
   collectedAt: new Date().toISOString(),
   asOf: asOf ? `${asOf.slice(0, 4)}-${asOf.slice(4, 6)}-${asOf.slice(6, 8)}` : null,
   rules: RULES,
