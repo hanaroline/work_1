@@ -1,249 +1,98 @@
-# ETFCHECK 관찰 2026-09-16T02:37:59.213Z
+# ETFCHECK 관찰 2026-09-16T02:43:01.378Z
 
-관찰한 JSON 응답 77건, 그중 종목 명단으로 보이는 것 7건.
-
-## [메인] GET https://www.etfcheck.co.kr/stock/etp/getEtfTotalExpenseRatio
-- 상태 200, 83190 bytes
-- `$.results` — 1171행, 코드키 F16013
-  - 키: F16013, F35188, F35190, F35192
-  - 표본:
-```json
-{
-  "F16013": "0000D0",
-  "F35188": "0.390",
-  "F35190": "0.47",
-  "F35192": "0.4741"
-}
 ```
+[대량] /user/common/getEtpMast → 403, 0 bytes
+  JSON 아님: 
+[대량] /stock/etp/getEtfTotalExpenseRatio → 403, 0 bytes
+  JSON 아님: 
+[대량] /user/common/getEtpCtgLarge → 403, 0 bytes
+  JSON 아님: 
+[대량] /user/common/getEtpCtgMiddle → 403, 0 bytes
+  JSON 아님: 
+[대량] /user/common/getEtpCtgMap → 403, 0 bytes
+  JSON 아님: 
 
-## [메인] GET https://www.etfcheck.co.kr/user/common/getEtpMast
-- 상태 200, 1176640 bytes
-- `$.results` — 1535행, 코드키 F16013,F13510,F19184,F03007,F13507,F15001,F15015,F33835,F33836,F19285_10,F19285_14,F15023
-  - 키: F16012, F16013, F16002, F16493, F16017, F18070, F15001, F15472, F15301, F30818, F15304, F15004, BEFRATE, W01001, W01002, W01003, W01004, W01005, W01006, F15015, F03007, F13507, F13510, F19184, F15023, F20012, F31631, F33835, F33836, W00061, W00065, F19285_08, F19285_10, F19285_14, F30823, F34777, F34241, F33960, F33961, F12506, UPDATE_TIME
-  - 표본:
-```json
-{
-  "F16012": "KR7451060008",
-  "F16013": "451060",
-  "F16002": "1Q 200액티브",
-  "F16493": "2",
-  "F16017": "20230131",
-  "F18070": "00",
-  "F15001": "33715",
-  "F15472": "325",
-  "F15301": "33724.35",
-  "F30818": "0.59",
-  "F15304": "-0.02",
-  "F15004": "0.97",
-  "BEFRATE": "-1.30",
-  "W01001": "-6.620",
-  "W01002": "-4.680",
-  "W01003": "-25.010",
-  "W01004": "25.960",
-  "W01005": "71.969",
-  "W01006": "121.030",
-  "F15015": "7465",
-  "F03007": "79331",
-  "F13507": "53974",
-  "F13510": "145594",
-  "F19184": "150349",
-  "F15023": "250709993",
-  "F20012": 7465,
-  "F31631": "33558.07",
-  "F33835": "0",
-  "F33836": "0",
-  "W00061": "0",
-  "W00065": "146277810000",
-  "F19285_08": "-1034599000",
-  "F19285_10": "-18794000",
-  "F19285_14": "863972000",
-  "F30823": "0.58",
-  "F34777": "KOSPI 200",
-  "F34241": "K",
-  "F33960": "3210",
-  "F33961": "하나자산운용",
-  "F12506": "20260916",
-  "UPDATE_TIME": "2026-09-16 11:36:05"
-}
-```
+[선별] 마스터 0행 중 이름에 '커버드콜' 이 든 것 0건
 
-## [모바일메인] GET https://www.etfcheck.co.kr/stock/etp/getEtfTotalExpenseRatio
-- 상태 200, 83190 bytes
-- `$.results` — 1171행, 코드키 F16013
-  - 키: F16013, F35188, F35190, F35192
-  - 표본:
-```json
-{
-  "F16013": "0000D0",
-  "F35188": "0.390",
-  "F35190": "0.47",
-  "F35192": "0.4741"
-}
-```
+[낱개] 표본 종목 undefined (?)
 
-## [모바일메인] GET https://www.etfcheck.co.kr/user/common/getEtpMast
-- 상태 200, 1176664 bytes
-- `$.results` — 1535행, 코드키 F16013,F13510,F19184,F03007,F13507,F15001,F15015,F33835,F33836,F19285_10,F19285_14,F15023
-  - 키: F16012, F16013, F16002, F16493, F16017, F18070, F15001, F15472, F15301, F30818, F15304, F15004, BEFRATE, W01001, W01002, W01003, W01004, W01005, W01006, F15015, F03007, F13507, F13510, F19184, F15023, F20012, F31631, F33835, F33836, W00061, W00065, F19285_08, F19285_10, F19285_14, F30823, F34777, F34241, F33960, F33961, F12506, UPDATE_TIME
-  - 표본:
-```json
-{
-  "F16012": "KR7451060008",
-  "F16013": "451060",
-  "F16002": "1Q 200액티브",
-  "F16493": "2",
-  "F16017": "20230131",
-  "F18070": "00",
-  "F15001": "33715",
-  "F15472": "325",
-  "F15301": "33731.89",
-  "F30818": "0.61",
-  "F15304": "-0.05",
-  "F15004": "0.97",
-  "BEFRATE": "-1.30",
-  "W01001": "-6.620",
-  "W01002": "-4.680",
-  "W01003": "-25.010",
-  "W01004": "25.960",
-  "W01005": "71.969",
-  "W01006": "121.030",
-  "F15015": "7465",
-  "F03007": "79331",
-  "F13507": "53974",
-  "F13510": "145594",
-  "F19184": "150349",
-  "F15023": "250709993",
-  "F20012": 7465,
-  "F31631": "33558.07",
-  "F33835": "0",
-  "F33836": "0",
-  "W00061": "0",
-  "W00065": "146277810000",
-  "F19285_08": "-1034599000",
-  "F19285_10": "-18794000",
-  "F19285_14": "863972000",
-  "F30823": "0.64",
-  "F34777": "KOSPI 200",
-  "F34241": "K",
-  "F33960": "3210",
-  "F33961": "하나자산운용",
-  "F12506": "20260916",
-  "UPDATE_TIME": "2026-09-16 11:36:49"
-}
-```
+  /mobile/etpitem/undefined/basic → 200, 새 XHR 23건
+      200 3432B https://www.etfcheck.co.kr/user/cust/getbannerInfo?testSuffix=
+      200 162B https://www.etfcheck.co.kr/user/member/insertUserAppLog
+      200 133B https://www.etfcheck.co.kr/user/etp/getEtpDiffHistAvg?F16013=undefined&limit=60&type=diff
+      200 29B https://www.etfcheck.co.kr/user/etp/getEtpTermHist?F16013=undefined&gubun=1Y
+      200 50B https://www.etfcheck.co.kr/user/etp/getEtpItemOutline?code=undefined&befDate=20250916
+      200 50B https://www.etfcheck.co.kr/user/etp/getSimpleEtpHist?F16013=undefined&limit=60&type=diff
+      200 2541B https://www.etfcheck.co.kr/user/common/getEtpCtgLarge
+      200 50B https://www.etfcheck.co.kr/user/etp/getEtpLatestFee?code=undefined
+      200 50B https://www.etfcheck.co.kr/user/etp/getEtpDesc?code=undefined
+      200 747B https://www.etfcheck.co.kr/user/etp/getScaleCtgName
+      200 78904B https://www.etfcheck.co.kr/user/common/getEtpCtgMiddle
+      200 182B https://www.etfcheck.co.kr/user/member/insertEtpInfoLog
+      200 93B https://www.etfcheck.co.kr/user/common/getLastBusinessDay?date=20260916
+      200 83190B https://www.etfcheck.co.kr/stock/etp/getEtfTotalExpenseRatio
+      200 519B https://www.etfcheck.co.kr/user/etp/getEtpMainTIekcerList?dataInfo[]=%7B%22type%22:%22index%22,%22name%22:%22KOSPI%22,%22code%22:%221%22,%22marketId%22:%22M002%22%7D&dataInfo[]=%7B%22type%22:%22ktb%22,%22name%22:%22%EA%B5%AD%EA%B3%A0%EC%B1%84+3%EB%85%84%22,%22code%22:%22KTBS03%22,%22marketId%22:%22%22%7D&dataInfo[]=%7B%22type%22:%22exch%22,%22name%22:%22USD%2FKRW%22,%22code%22:%2219USDSP%22,%22marketId%22:%22%22%7D
+      200 110B https://www.etfcheck.co.kr/user/common/getJangGubun
+      200 1106B https://www.etfcheck.co.kr/user/etp/getEtpScreenerLog
+      200 3432B https://www.etfcheck.co.kr/user/cust/getbannerInfo?testSuffix=
+      200 3432B https://www.etfcheck.co.kr/user/cust/getbannerInfo?testSuffix=
+      200 162B https://www.etfcheck.co.kr/user/member/insertUserAppLog
+      200 175B https://www.etfcheck.co.kr/user/member/updateBannerViewCount
+      200 1176671B https://www.etfcheck.co.kr/user/common/getEtpMast
+      200 1482623B https://www.etfcheck.co.kr/user/common/getEtpCtgMap
 
-## [검색:커버드콜] GET https://www.etfcheck.co.kr/user/common/getEtpMast
-- 상태 200, 1176660 bytes
-- `$.results` — 1535행, 코드키 F16013,F13510,F19184,F03007,F13507,F15001,F15015,F33835,F33836,F19285_10,F19285_14,F15023
-  - 키: F16012, F16013, F16002, F16493, F16017, F18070, F15001, F15472, F15301, F30818, F15304, F15004, BEFRATE, W01001, W01002, W01003, W01004, W01005, W01006, F15015, F03007, F13507, F13510, F19184, F15023, F20012, F31631, F33835, F33836, W00061, W00065, F19285_08, F19285_10, F19285_14, F30823, F34777, F34241, F33960, F33961, F12506, UPDATE_TIME
-  - 표본:
-```json
-{
-  "F16012": "KR7451060008",
-  "F16013": "451060",
-  "F16002": "1Q 200액티브",
-  "F16493": "2",
-  "F16017": "20230131",
-  "F18070": "00",
-  "F15001": "33715",
-  "F15472": "325",
-  "F15301": "33731.89",
-  "F30818": "0.61",
-  "F15304": "-0.05",
-  "F15004": "0.97",
-  "BEFRATE": "-1.30",
-  "W01001": "-6.620",
-  "W01002": "-4.680",
-  "W01003": "-25.010",
-  "W01004": "25.960",
-  "W01005": "71.969",
-  "W01006": "121.030",
-  "F15015": "7465",
-  "F03007": "79331",
-  "F13507": "53974",
-  "F13510": "145594",
-  "F19184": "150349",
-  "F15023": "250709993",
-  "F20012": 7465,
-  "F31631": "33558.07",
-  "F33835": "0",
-  "F33836": "0",
-  "W00061": "0",
-  "W00065": "146277810000",
-  "F19285_08": "-1034599000",
-  "F19285_10": "-18794000",
-  "F19285_14": "863972000",
-  "F30823": "0.64",
-  "F34777": "KOSPI 200",
-  "F34241": "K",
-  "F33960": "3210",
-  "F33961": "하나자산운용",
-  "F12506": "20260916",
-  "UPDATE_TIME": "2026-09-16 11:36:49"
-}
-```
+  /mobile/etpitem/undefined/dividend → 200, 새 XHR 10건
+      200 2541B https://www.etfcheck.co.kr/user/common/getEtpCtgLarge
+      200 78904B https://www.etfcheck.co.kr/user/common/getEtpCtgMiddle
+      200 83190B https://www.etfcheck.co.kr/stock/etp/getEtfTotalExpenseRatio
+      200 93B https://www.etfcheck.co.kr/user/common/getLastBusinessDay?date=20260916
+      200 110B https://www.etfcheck.co.kr/user/common/getJangGubun
+      200 519B https://www.etfcheck.co.kr/user/etp/getEtpMainTIekcerList?dataInfo[]=%7B%22type%22:%22index%22,%22name%22:%22KOSPI%22,%22code%22:%221%22,%22marketId%22:%22M002%22%7D&dataInfo[]=%7B%22type%22:%22ktb%22,%22name%22:%22%EA%B5%AD%EA%B3%A0%EC%B1%84+3%EB%85%84%22,%22code%22:%22KTBS03%22,%22marketId%22:%22%22%7D&dataInfo[]=%7B%22type%22:%22exch%22,%22name%22:%22USD%2FKRW%22,%22code%22:%2219USDSP%22,%22marketId%22:%22%22%7D
+      200 1106B https://www.etfcheck.co.kr/user/etp/getEtpScreenerLog
+      200 3432B https://www.etfcheck.co.kr/user/cust/getbannerInfo?testSuffix=
+      200 1176660B https://www.etfcheck.co.kr/user/common/getEtpMast
+      200 1482623B https://www.etfcheck.co.kr/user/common/getEtpCtgMap
 
-## [검색:월배당] GET https://www.etfcheck.co.kr/stock/etp/getEtfTotalExpenseRatio
-- 상태 200, 83190 bytes
-- `$.results` — 1171행, 코드키 F16013
-  - 키: F16013, F35188, F35190, F35192
-  - 표본:
-```json
-{
-  "F16013": "0000D0",
-  "F35188": "0.390",
-  "F35190": "0.47",
-  "F35192": "0.4741"
-}
-```
+  /mobile/etpitem/undefined/distribution → 200, 새 XHR 0건
 
-## [검색:월배당] GET https://www.etfcheck.co.kr/user/common/getEtpMast
-- 상태 200, 1176660 bytes
-- `$.results` — 1535행, 코드키 F16013,F13510,F19184,F03007,F13507,F15001,F15015,F33835,F33836,F19285_10,F19285_14,F15023
-  - 키: F16012, F16013, F16002, F16493, F16017, F18070, F15001, F15472, F15301, F30818, F15304, F15004, BEFRATE, W01001, W01002, W01003, W01004, W01005, W01006, F15015, F03007, F13507, F13510, F19184, F15023, F20012, F31631, F33835, F33836, W00061, W00065, F19285_08, F19285_10, F19285_14, F30823, F34777, F34241, F33960, F33961, F12506, UPDATE_TIME
-  - 표본:
-```json
-{
-  "F16012": "KR7451060008",
-  "F16013": "451060",
-  "F16002": "1Q 200액티브",
-  "F16493": "2",
-  "F16017": "20230131",
-  "F18070": "00",
-  "F15001": "33715",
-  "F15472": "325",
-  "F15301": "33731.46",
-  "F30818": "0.61",
-  "F15304": "-0.04",
-  "F15004": "0.97",
-  "BEFRATE": "-1.30",
-  "W01001": "-6.620",
-  "W01002": "-4.680",
-  "W01003": "-25.010",
-  "W01004": "25.960",
-  "W01005": "71.969",
-  "W01006": "121.030",
-  "F15015": "7465",
-  "F03007": "79331",
-  "F13507": "53974",
-  "F13510": "145594",
-  "F19184": "150349",
-  "F15023": "250709993",
-  "F20012": 7465,
-  "F31631": "33558.07",
-  "F33835": "0",
-  "F33836": "0",
-  "W00061": "0",
-  "W00065": "146277810000",
-  "F19285_08": "-1034599000",
-  "F19285_10": "-18794000",
-  "F19285_14": "863972000",
-  "F30823": "0.63",
-  "F34777": "KOSPI 200",
-  "F34241": "K",
-  "F33960": "3210",
-  "F33961": "하나자산운용",
-  "F12506": "20260916",
-  "UPDATE_TIME": "2026-09-16 11:37:33"
-}
+  /etpitem/undefined/basic → 200, 새 XHR 9건
+      200 2541B https://www.etfcheck.co.kr/user/common/getEtpCtgLarge
+      200 83190B https://www.etfcheck.co.kr/stock/etp/getEtfTotalExpenseRatio
+      200 93B https://www.etfcheck.co.kr/user/common/getLastBusinessDay?date=20260916
+      200 110B https://www.etfcheck.co.kr/user/common/getJangGubun
+      200 78904B https://www.etfcheck.co.kr/user/common/getEtpCtgMiddle
+      200 1106B https://www.etfcheck.co.kr/user/etp/getEtpScreenerLog
+      200 3432B https://www.etfcheck.co.kr/user/cust/getbannerInfo?testSuffix=
+      200 1176668B https://www.etfcheck.co.kr/user/common/getEtpMast
+      200 1482623B https://www.etfcheck.co.kr/user/common/getEtpCtgMap
+
+  /stock/etp/etpItem?code=undefined → 403, 새 XHR 0건
+
+  /mobile/screener → 200, 새 XHR 10건
+      200 3432B https://www.etfcheck.co.kr/user/cust/getbannerInfo?testSuffix=
+      200 78904B https://www.etfcheck.co.kr/user/common/getEtpCtgMiddle
+      200 83190B https://www.etfcheck.co.kr/stock/etp/getEtfTotalExpenseRatio
+      200 110B https://www.etfcheck.co.kr/user/common/getJangGubun
+      200 93B https://www.etfcheck.co.kr/user/common/getLastBusinessDay?date=20260916
+      200 1106B https://www.etfcheck.co.kr/user/etp/getEtpScreenerLog
+      200 2541B https://www.etfcheck.co.kr/user/common/getEtpCtgLarge
+      200 519B https://www.etfcheck.co.kr/user/etp/getEtpMainTIekcerList?dataInfo[]=%7B%22type%22:%22index%22,%22name%22:%22KOSPI%22,%22code%22:%221%22,%22marketId%22:%22M002%22%7D&dataInfo[]=%7B%22type%22:%22ktb%22,%22name%22:%22%EA%B5%AD%EA%B3%A0%EC%B1%84+3%EB%85%84%22,%22code%22:%22KTBS03%22,%22marketId%22:%22%22%7D&dataInfo[]=%7B%22type%22:%22exch%22,%22name%22:%22USD%2FKRW%22,%22code%22:%2219USDSP%22,%22marketId%22:%22%22%7D
+      200 1176668B https://www.etfcheck.co.kr/user/common/getEtpMast
+      200 1482623B https://www.etfcheck.co.kr/user/common/getEtpCtgMap
+
+  /screener → 200, 새 XHR 10건
+      200 2541B https://www.etfcheck.co.kr/user/common/getEtpCtgLarge
+      200 78904B https://www.etfcheck.co.kr/user/common/getEtpCtgMiddle
+      200 83190B https://www.etfcheck.co.kr/stock/etp/getEtfTotalExpenseRatio
+      200 3432B https://www.etfcheck.co.kr/user/cust/getbannerInfo?testSuffix=
+      200 110B https://www.etfcheck.co.kr/user/common/getJangGubun
+      200 1106B https://www.etfcheck.co.kr/user/etp/getEtpScreenerLog
+      200 93B https://www.etfcheck.co.kr/user/common/getLastBusinessDay?date=20260916
+      200 519B https://www.etfcheck.co.kr/user/etp/getEtpMainTIekcerList?dataInfo[]=%7B%22type%22:%22index%22,%22name%22:%22KOSPI%22,%22code%22:%221%22,%22marketId%22:%22M002%22%7D&dataInfo[]=%7B%22type%22:%22ktb%22,%22name%22:%22%EA%B5%AD%EA%B3%A0%EC%B1%84+3%EB%85%84%22,%22code%22:%22KTBS03%22,%22marketId%22:%22%22%7D&dataInfo[]=%7B%22type%22:%22exch%22,%22name%22:%22USD%2FKRW%22,%22code%22:%2219USDSP%22,%22marketId%22:%22%22%7D
+      200 1176673B https://www.etfcheck.co.kr/user/common/getEtpMast
+      200 1482623B https://www.etfcheck.co.kr/user/common/getEtpCtgMap
+
+  /mobile/etpscreener → 실패 Error: page.goto: net::ERR_EMPTY_RESPONSE at https://www.etfcheck.co.kr/mobile/e, 새 XHR 0건
+
+[분배금 후보] 0건
 ```
