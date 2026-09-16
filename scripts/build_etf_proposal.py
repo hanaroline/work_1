@@ -136,6 +136,9 @@ def build_data_sheet(wb, data):
         ("순자산총액", 17), ("60일 평균거래대금", 19), ("총보수(연)", 11),
         ("변동성(1년)", 11), ("최근 월분배율", 13), ("연환산 분배율", 13),
         ("분배이력(개월)", 13), ("최근 분배기준일", 15), ("채택", 8), ("제외 사유", 30),
+        # 기초지수는 맨 뒤에 붙인다. 가운데 끼워 넣으면 제안서 쪽 수식의
+        # 열 글자가 한 칸씩 밀려 조용히 엉뚱한 칸을 가리키게 된다.
+        ("기초지수", 34),
     ]
     ws.cell(row=1, column=1, value="ETFCHECK 수집 원본 — 이 장의 값은 손으로 고치지 마십시오. 매월 1일 수집기가 덮어씁니다.")
     ws.cell(row=1, column=1).font = f(10, bold=True, color=ORANGE)
@@ -172,9 +175,10 @@ def build_data_sheet(wb, data):
             None if x.get("distMonthlyRate") is None else x["distMonthlyRate"] / 100,
             None if x.get("distTtmRate") is None else x["distTtmRate"] / 100,
             x.get("distMonths"), x.get("lastDistDate"),
-            "채택" if ok else "제외", x.get("excludeReason") or "",
+            "채택" if ok else "제외", x.get("excludeReason") or "", x.get("index") or "",
         ]
-        fmts = [None, None, None, WON_PLAIN, WON_PLAIN, WON_PLAIN, PCT, PCT, PCT, PCT, "#,##0", None, None, None]
+        fmts = [None, None, None, WON_PLAIN, WON_PLAIN, WON_PLAIN, PCT, PCT, PCT, PCT,
+                "#,##0", None, None, None, None]
         for i, (v, fmt) in enumerate(zip(vals, fmts), start=1):
             c = ws.cell(row=r, column=i, value=v)
             c.font = f(10, color=INK if ok else MUTED)
@@ -286,6 +290,7 @@ def build_proposal(wb, data, first_adopted, last_adopted):
         ("변동성 (1년)", pick("H", "0"), PCT),
         ("최근 월분배율", pick("I", "0"), PCT),
         ("연환산 분배율 (최근 12개월)", pick("J", "0"), PCT),
+        ("기초지수", pick("O"), None),
     ]
     ov_start = r
     for i, (lab, formula, fmt) in enumerate(overview):

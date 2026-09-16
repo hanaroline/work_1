@@ -292,9 +292,15 @@ for (const [i, row] of universe.entries()) {
     units: num(d.F16500), // 상장좌수
   }));
   const chron = [...days].reverse();
-  const navVol = annualVolatility(chron.map((d) => d.nav).filter((x) => x > 0));
+  const navSeries = chron.map((d) => d.nav).filter((x) => x > 0);
+  const navVol = annualVolatility(navSeries);
   const pxVol = annualVolatility(chron.map((d) => d.close).filter((x) => x > 0));
   const vol = navVol ?? pxVol;
+  // 며칠치로 낸 값인지 함께 적는다. limit=250 을 달라고 해도 원천이 몇 개를
+  // 주는지는 원천 마음이다. "1년 변동성" 이라고 적으려면 정말 한 해치로
+  // 냈는지 말할 수 있어야 한다.
+  const volDays = navSeries.length;
+  const volWindow = volDays >= 200 ? '1년' : `${volDays}거래일`;
 
   // 하루에 ±15% 넘게 움직인 날. 커버드콜 ETF 에서 그런 날은 시장이 아니라
   // 액면분할이나 원천의 오기일 때가 많다. 지우지 않고 세어서 적어 둔다 —
@@ -328,8 +334,9 @@ for (const [i, row] of universe.entries()) {
   if (turnover60 === null) why.push('거래대금 미확인');
   else if (turnover60 < RULES.minTurnover)
     why.push(`60일 거래대금 ${(turnover60 / 1e8).toFixed(1)}억(기준 ${RULES.minTurnover / 1e8}억 미만)`);
-  if (vol === null) why.push('변동성 산출 불가(시세 이력 부족)');
-  else if (vol > RULES.maxVol) why.push(`변동성 ${vol.toFixed(1)}%(기준 ${RULES.maxVol}% 초과)`);
+  if (vol === null) why.push(`변동성 산출 불가(시세 ${volDays}일치뿐)`);
+  else if (vol > RULES.maxVol)
+    why.push(`변동성 ${vol.toFixed(1)}%(${volWindow} 기준, 기준 ${RULES.maxVol}% 초과)`);
   if (months < RULES.minTrackMonths) why.push(`분배 이력 ${months}개월(기준 ${RULES.minTrackMonths}개월 미만)`);
   if (ttmRate === null) why.push('연 분배율 산출 불가(12회 분배 이력 없음)');
 
@@ -357,6 +364,8 @@ for (const [i, row] of universe.entries()) {
     volatility: vol === null ? null : Number(vol.toFixed(2)),
     volatilityNav: navVol === null ? null : Number(navVol.toFixed(2)),
     volatilityPrice: pxVol === null ? null : Number(pxVol.toFixed(2)),
+    volatilityDays: volDays,
+    volatilityWindow: volWindow,
     priceJumps: jumps,
     distMonthlyRate: last?.rate ?? null,
     distMonthlyAmount: last?.amount ?? null,
@@ -392,7 +401,10 @@ const out = {
   rules: RULES,
   derived: {
     distTtmRate: '최근 12회 분배금 합계 ÷ 현재가 × 100. ETFCHECK 의 DIV_RATE_REAL 과 대조해 0.15%p 넘게 어긋나면 제외한다.',
-    volatility: '최근 1년 일간 기준가(NAV) 로그수익률의 표본표준편차 × √252 × 100. 종가 기준 값은 volatilityPrice 에 따로 적는다.',
+    volatility:
+      '일간 기준가(NAV) 로그수익률의 표본표준편차 × √252 × 100. 몇 거래일치로 냈는지는 ' +
+      'volatilityDays 에 적는다 — 250일을 달라고 해도 원천이 몇 개를 주는지는 원천 마음이므로, ' +
+      '"1년" 이라고 말하려면 정말 한 해치였는지 확인할 수 있어야 한다. 종가 기준 값은 volatilityPrice.',
     turnover60: '최근 60거래일 (종가 × 거래량) 의 평균.',
     priceJumps: '하루에 ±15% 넘게 움직인 날. 커버드콜 ETF 에서는 시장보다 액면분할이나 원천 오기일 때가 많다. 지우지 않고 세어서 남긴다.',
   },
