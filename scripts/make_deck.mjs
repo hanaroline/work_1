@@ -57,6 +57,10 @@ const pres = new PptxGenJS();
 pres.layout = 'LAYOUT_WIDE';              // 13.3" × 7.5"
 pres.author = '미래에셋증권 마포WM';
 pres.title = '증권사 리포트 자동 요약';
+// 이 칸을 비워 두면 만든 라이브러리 이름이 그대로 박힌다("PptxGenJS
+// Presentation"). 사내 파일 검사기는 이런 칸도 들여다보므로 제 이름을 적어 둔다.
+pres.subject = '증권사 리포트 자동 요약 — 마포WM 세미나 자료';
+pres.company = '미래에셋증권';
 
 const W = 13.3;
 const M = 0.62;                            // 좌우 여백
@@ -497,6 +501,43 @@ function footer(s, page) {
     + '자랑의 근거는 「완벽하다」가 아니라 「틀린 것을 잡아 왔다」입니다.');
 }
 
+// ── 낸 뒤에 다시 싼다 ────────────────────────────────────────────────
+// pptxgenjs 가 내는 꾸러미는 빈 디렉터리 칸(_rels/, ppt/ …)이 앞에 오고
+// [Content_Types].xml 이 첫 칸이 아니다. OPC 규격은 그 칸이 맨 앞일 것을
+// 요구하고, 어기면 엄격하게 읽는 쪽이 파일을 아예 알아보지 못한다 —
+// LibreOffice 가 「열 수 없음」으로 튕겼고, 사내 파일 검사기(FM)는
+// 「새로운 패턴의 확장자」로 보아 업로드를 막았다. 파워포인트는 너그러워
+// 그냥 열리므로 눈에 띄지 않는다.
+//
+// 그래서 낸 파일을 풀어 [Content_Types].xml 을 맨 앞에 두고, 빈 디렉터리
+// 칸은 빼고 다시 싼다. 내용은 한 글자도 건드리지 않는다.
+async function repack(file) {
+  const JSZip = require('jszip');                 // pptxgenjs 가 쓰는 그 라이브러리
+  const CT = '[Content_Types].xml';
+
+  const src = await JSZip.loadAsync(fs.readFileSync(file));
+  const names = Object.keys(src.files).filter((nm) => !src.files[nm].dir);
+  if (!names.includes(CT)) throw new Error('꾸러미에 ' + CT + ' 이 없다 — 낼 수 없다');
+
+  const out = new JSZip();
+  for (const nm of [CT, ...names.filter((nm) => nm !== CT)]) {
+    out.file(nm, await src.files[nm].async('nodebuffer'),
+      { createFolders: false, date: src.files[nm].date });
+  }
+  fs.writeFileSync(file, await out.generateAsync({
+    type: 'nodebuffer', compression: 'DEFLATE', compressionOptions: { level: 6 },
+    platform: 'UNIX',
+  }));
+
+  // 다시 싼 것이 규격대로인지 그 자리에서 확인한다.
+  const check = await JSZip.loadAsync(fs.readFileSync(file));
+  const got = Object.keys(check.files);
+  if (got[0] !== CT) throw new Error('첫 칸이 ' + got[0] + ' 이다 — ' + CT + ' 이어야 한다');
+  if (got.some((nm) => check.files[nm].dir)) throw new Error('빈 디렉터리 칸이 남았다');
+  return got.length;
+}
+
 const file = path.join(OUT, '미래에셋_증권사리포트자동요약_소개.pptx');
 await pres.writeFile({ fileName: file });
-console.log('만듦: ' + file);
+const parts = await repack(file);
+console.log('만듦: ' + file + ` (${PAGES}쪽 · 꾸러미 ${parts}칸)`);
