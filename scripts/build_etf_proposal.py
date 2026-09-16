@@ -58,6 +58,7 @@ WON_PLAIN = "#,##0"
 PCT = "0.00%"
 PCT3 = "0.000%"
 QTY = '#,##0"주"'
+EOK = '#,##0"억원"'   # 순자산·거래대금은 원 단위로 적으면 자릿수를 세어야 읽힌다
 
 thin = Side(style="thin", color=HAIRLINE)
 BOX = Border(left=thin, right=thin, top=thin, bottom=thin)
@@ -214,7 +215,10 @@ def build_data_sheet(wb, data):
 def build_proposal(wb, data, first_adopted, last_adopted):
     ws = wb.create_sheet("제안서", 0)
     LAST = 8  # A..H
-    widths = [3, 22, 20, 18, 18, 18, 18, 16]
+    # A 는 왼쪽 여백이다. 표는 전부 B 부터 시작한다 — 미리보기 PDF 를 보고
+    # 알았는데, 비교표를 A 부터 그렸더니 종목명이 3칸짜리 여백 열에 들어가
+    # "SOL0040Y0" 처럼 잘린 이름과 코드가 붙어 찍혔다.
+    widths = [3, 30, 22, 17, 20, 18, 17, 15]
     for i, w in enumerate(widths, start=1):
         ws.column_dimensions[get_column_letter(i)].width = w
     ws.sheet_view.showGridLines = False
@@ -260,8 +264,11 @@ def build_proposal(wb, data, first_adopted, last_adopted):
         ws.row_dimensions[rr].height = 22
     C_NAME, C_AMT, C_ETF, C_TAX, C_DATE = (f"$C${cust_row + i}" for i in range(5))
 
-    label(ws, cust_row + 2, 4, "◀ 목록에서 ETF 를 고르십시오", size=9, color=MUTED)
-    label(ws, cust_row + 3, 4, "국내 상장 ETF 분배금 기준 15.4% (지방소득세 포함)", size=9, color=MUTED)
+    # 안내 문구는 D 가 아니라 E 에 둔다. ETF 이름이 길어 C 를 넘치는데,
+    # D 에 글자가 있으면 이름이 잘려 찍힌다. E 로 밀면 이름이 D 까지
+    # 자연스럽게 흘러 나온다.
+    label(ws, cust_row + 2, 5, "◀ 목록에서 ETF 를 고르십시오", size=9, color=MUTED)
+    label(ws, cust_row + 3, 5, "국내 상장 ETF 분배금 기준 15.4% (지방소득세 포함)", size=9, color=MUTED)
 
     # 콤보박스 — 채택 종목 구간만 가리킨다.
     dv = DataValidation(type="list", formula1=f"=채택종목", allow_blank=False, showDropDown=False)
@@ -288,10 +295,17 @@ def build_proposal(wb, data, first_adopted, last_adopted):
     ws.column_dimensions["K"].hidden = True
     MROW = "$K$2"
 
-    def pick(col_letter, fallback='""'):
-        """선택한 ETF 의 ETF데이터 한 칸을 가져온다."""
+    def pick(col_letter, fallback='""', scale=None):
+        """선택한 ETF 의 ETF데이터 한 칸을 가져온다.
+
+        scale 은 나눌 수. 순자산 2,435,426,000,000원 은 자릿수를 세어야
+        읽히는 숫자다. 고객에게 주는 자리에서는 억원으로 줄여 적는다.
+        """
         rng = f"'{D}'!${col_letter}${first_adopted}:${col_letter}${last_adopted}"
-        return f"=IF({MROW}=0,{fallback},INDEX({rng},{MROW}))"
+        body = f"INDEX({rng},{MROW})"
+        if scale:
+            body = f"{body}/{scale}"
+        return f"=IF({MROW}=0,{fallback},{body})"
 
     # ── 2. 선택 ETF 개요 ──
     r = section(ws, r, "2. 선택 ETF 개요", LAST)
@@ -299,8 +313,8 @@ def build_proposal(wb, data, first_adopted, last_adopted):
         ("종목코드", pick("B"), None),
         ("운용사", pick("C"), None),
         ("현재가", pick("D", "0"), WON),
-        ("순자산총액", pick("E", "0"), WON),
-        ("60일 평균거래대금", pick("F", "0"), WON),
+        ("순자산총액", pick("E", "0", scale=100_000_000), EOK),
+        ("60일 평균거래대금", pick("F", "0", scale=100_000_000), EOK),
         ("총보수 (연)", pick("G", "0"), PCT),
         (vol_label(data), pick("H", "0"), PCT),
         ("최근 월분배율", pick("I", "0"), PCT),
@@ -420,9 +434,11 @@ def build_proposal(wb, data, first_adopted, last_adopted):
     if shown < total_adopted:
         title5 += f" — 연 분배율 상위 {shown}종목 / 전체 {total_adopted}종목"
     r = section(ws, r, title5, LAST)
-    heads2 = ["종목명", "종목코드", "현재가", "연 분배율", "월 분배율",
+    # 종목코드는 뺐다. B 부터 시작하면 여덟 칸이 안 나오는데, 고객이 보는
+    # 자리에서는 코드보다 이름·분배율·변동성이 먼저다. 코드는 [ETF데이터] 에 있다.
+    heads2 = ["종목명", "현재가", "연 분배율", "월 분배율",
               "월 분배금(세전)", "월 분배금(세후)", vol_label(data, short=True)]
-    for i, h in enumerate(heads2, start=1):
+    for i, h in enumerate(heads2, start=2):
         c = ws.cell(row=r, column=i, value=h)
         c.font = f(10, bold=True)
         c.fill = fill(SOFT_ORANGE)
@@ -435,8 +451,7 @@ def build_proposal(wb, data, first_adopted, last_adopted):
     for i in range(n):
         rr = r + i
         src = first_adopted + i
-        put(ws, rr, 1, f"='{D}'!$A${src}", None, kind="source")
-        put(ws, rr, 2, f"='{D}'!$B${src}", None, kind="source")
+        put(ws, rr, 2, f"='{D}'!$A${src}", None, kind="source")
         put(ws, rr, 3, f"='{D}'!$D${src}", WON)
         put(ws, rr, 4, f"='{D}'!$J${src}", PCT)
         put(ws, rr, 5, f"='{D}'!$J${src}/12", PCT3)
@@ -446,7 +461,7 @@ def build_proposal(wb, data, first_adopted, last_adopted):
         put(ws, rr, 7, f"=$F{rr}*(1-{C_TAX})", WON)
         put(ws, rr, 8, f"='{D}'!$H${src}", PCT)
         if i % 2 == 1:
-            for c in range(1, 9):
+            for c in range(2, 9):
                 ws.cell(row=rr, column=c).fill = fill(SURFACE)
     r += n
 

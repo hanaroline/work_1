@@ -171,9 +171,11 @@ def main() -> int:  # noqa: PLR0915
     notes.append(f"제안서 수식 {n_formula}개, 참조 대상이 모두 채워져 있습니다.")
 
     # ── 4. 비교표가 채택 종목을 하나씩 훑는가 ──
+    # 비교표의 종목명은 B 열에 있다. A 는 왼쪽 여백이라 3칸뿐이어서, 거기
+    # 종목명을 두었더니 미리보기 PDF 에 "SOL0040Y0" 처럼 잘려 찍혔다.
     seen = [
         int(re.search(r"\$A\$(\d+)", r[0].value).group(1))
-        for r in ws.iter_rows(min_col=1, max_col=1)
+        for r in ws.iter_rows(min_col=2, max_col=2)
         if isinstance(r[0].value, str) and r[0].value.startswith("='ETF데이터'!$A$")
     ]
     # 비교표는 채택 종목을 다 싣지 않는다 — 스무 종목이 넘으면 고객이 받는
@@ -276,7 +278,7 @@ def main() -> int:  # noqa: PLR0915
         notes.append(f"금액별 표 {checked}줄을 줄마다 다시 계산해 맞췄습니다.")
 
     # 비교표 — 종목마다 1억 기준 월 분배금을 다시 계산한다.
-    cmp_hdr, _ = find_label(ws, "종목명", cols=(1,))
+    cmp_hdr, _ = find_label(ws, "종목명", cols=(2,))
     if cmp_hdr and seen:
         for i in range(len(seen)):
             it = adopted[i]
