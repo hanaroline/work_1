@@ -176,10 +176,15 @@ def main() -> int:  # noqa: PLR0915
         for r in ws.iter_rows(min_col=1, max_col=1)
         if isinstance(r[0].value, str) and r[0].value.startswith("='ETF데이터'!$A$")
     ]
-    if seen and seen != list(range(first, last + 1)):
-        fail(f"비교표가 채택 종목을 순서대로 훑지 않습니다: {seen}")
+    # 비교표는 채택 종목을 다 싣지 않는다 — 스무 종목이 넘으면 고객이 받는
+    # 한 장이 표 하나로 덮인다. 연 분배율 위에서부터 자르므로, 검사도
+    # "전부" 가 아니라 "위에서부터 끊기지 않고" 를 본다.
+    if seen and seen != list(range(first, first + len(seen))):
+        fail(f"비교표가 채택 종목을 위에서부터 순서대로 훑지 않습니다: {seen}")
     elif seen:
-        notes.append(f"비교표 {len(seen)}행이 채택 종목 {first}~{last} 행과 일대일로 맞습니다.")
+        notes.append(
+            f"비교표 {len(seen)}행이 채택 {last - first + 1}종목 중 위 {len(seen)}개와 일대일로 맞습니다."
+        )
 
     # ── 5. 시트 값이 원천과 같은가 ──
     for i, item in enumerate(adopted):
@@ -272,15 +277,16 @@ def main() -> int:  # noqa: PLR0915
 
     # 비교표 — 종목마다 1억 기준 월 분배금을 다시 계산한다.
     cmp_hdr, _ = find_label(ws, "종목명", cols=(1,))
-    if cmp_hdr:
-        for i, it in enumerate(adopted):
+    if cmp_hdr and seen:
+        for i in range(len(seen)):
+            it = adopted[i]
             rr = cmp_hdr + 1 + i
             q = math.floor(100_000_000 / it["price"])
             want = q * it["price"] * (it["distTtmRate"] / 100) / 12
             got = val(f"F{rr}")
             if not near(got, want):
                 fail(f"비교표 F{rr} ({it['name']}): {got} ≠ 손계산 {want:,.0f}")
-        notes.append(f"비교표 {len(adopted)}종목의 1억 기준 월 분배금을 다시 계산해 맞췄습니다.")
+        notes.append(f"비교표 {len(seen)}종목의 1억 기준 월 분배금을 다시 계산해 맞췄습니다.")
 
     if not problems:
         notes.append(
