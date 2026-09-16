@@ -325,24 +325,6 @@ for (const [i, row] of universe.entries()) {
 
   const aum = num(o.F15028);
 
-  // 분배 내역. 최근 것이 맨 위로 온다.
-  const dist = (hist || []).map((h) => ({
-    date: String(h.F12506),
-    amount: num(h.F31892),
-    rate: num(h.DIV_RATE),
-  }));
-  const last = dist[0] || null;
-
-  // 최근 12회 분배금 합계 ÷ 현재가. ETFCHECK 도 같은 값을 DIV_RATE_REAL 로
-  // 주므로 아래에서 맞춰 본다 — 어긋나면 우리가 잘못 이해한 것이다.
-  const ttm12 = dist.slice(0, 12);
-  const ttmSum = ttm12.length === 12 ? ttm12.reduce((s, d) => s + (d.amount || 0), 0) : null;
-  const ttmRate = ttmSum && price ? (ttmSum / price) * 100 : null;
-
-  const mo = (monthly || [])[0] || {};
-  const theirSum = num(mo.DIV_AMT_YEAR);
-  const theirRate = num(mo.DIV_RATE_REAL);
-
   // 일별 기준가(NAV)와 종가. 변동성과 60일 평균 거래대금을 여기서 낸다.
   //
   // 변동성은 **종가가 아니라 NAV** 로 낸다. 종가는 호가 공백이나 하루치
@@ -384,6 +366,24 @@ for (const [i, row] of universe.entries()) {
     price = null;
     priceSource = null;
   }
+
+  // 분배 내역. 최근 것이 맨 위로 온다.
+  const dist = (hist || []).map((h) => ({
+    date: String(h.F12506),
+    amount: num(h.F31892),
+    rate: num(h.DIV_RATE),
+  }));
+  const last = dist[0] || null;
+
+  // 최근 12회 분배금 합계 ÷ 현재가. ETFCHECK 도 같은 값을 DIV_RATE_REAL 로
+  // 주므로 아래에서 맞춰 본다 — 어긋나면 우리가 잘못 이해한 것이다.
+  const ttm12 = dist.slice(0, 12);
+  const ttmSum = ttm12.length === 12 ? ttm12.reduce((s, d) => s + (d.amount || 0), 0) : null;
+  const ttmRate = ttmSum && price ? (ttmSum / price) * 100 : null;
+
+  const mo = (monthly || [])[0] || {};
+  const theirSum = num(mo.DIV_AMT_YEAR);
+  const theirRate = num(mo.DIV_RATE_REAL);
 
   // 하루에 ±15% 넘게 움직인 날. 커버드콜 ETF 에서 그런 날은 시장이 아니라
   // 액면분할이나 원천의 오기일 때가 많다. 지우지 않고 세어서 적어 둔다 —
