@@ -310,6 +310,17 @@ def verify(path):
         warn("다4-2 참고", "상하향 %d건이 모두 「%s」 — 한쪽으로만 쏠렸는지 보십시오"
              % (len(mvs), mvs[0]))
 
+    # 상하향에는 가리킬 종목이 있어야 한다. 시황·투자정보에서는 「목표주가
+    # 상향」이 올렸다는 뜻이 아니라 팩터 이름으로 적힌다 — 9/16 하나증권
+    # 「종목을 고르지 않는 시장」이 그랬고, 머리 요약에 「목표주가는 1건
+    # 상향()」으로 실릴 뻔했다. 종목 없는 상하향은 문장으로 쓸 수도 없다.
+    mv_nostock = [(r["url"], r["target_move"]) for r in rows
+                  if r.get("target_move") and not (r.get("stock") or {}).get("name")]
+    check("다4-3 상하향에 가리킬 종목이 있음", not mv_nostock,
+          "상하향 %d건 중 종목 없음 %d" % (mv_all, len(mv_nostock)))
+    for u, mv in mv_nostock[:5]:
+        warn("다4-3 눈으로 볼 것", "%s — %s" % (mv, u))
+
     # 머리 요약에 실리는 인용도 같은 잣대로 본다.
     brief_bad, brief_n = [], 0
     for b in ov.get("brief") or []:
