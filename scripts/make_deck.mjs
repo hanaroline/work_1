@@ -1,10 +1,16 @@
-// 증권사 리포트 자동 요약 — 소개·사용법 4쪽 PPT
+// 증권사 리포트 자동 요약 — 소개·사용법 5쪽 PPT
 //
 //   node scripts/make_deck.mjs [낼 곳]
 //
 // 실리는 수치는 전부 docs/deck/claims.json 에서 읽는다. 그 대장은
 // scripts/verify_deck_claims.py 가 원자료에서 다시 뽑아 대조하므로,
 // 슬라이드에 손으로 적은 숫자가 들어갈 자리가 없다.
+//
+// 한가운데 3쪽은 방송·뉴스 영상을 트는 자리다. 실리는 방송사·제목·구간은
+// docs/deck/clips.json 에서 읽고, scripts/verify_deck_clips.py 가 유튜브에서
+// 실제 제목·채널을 받아 대조한다. 영상 자체는 재생 페이지
+// docs/deck/clips.html 에서 원본을 구간만 지정해 튼다 — 내려받아 잘라 붙이지
+// 않는다(저작권), 파워포인트에 임베드를 박아 두지도 않는다(발표장에서 자주 막힌다).
 //
 // 색·글꼴은 mas-design 을 따른다 — 오렌지 #F58220, 블루 #043B72,
 // 흰 바탕, 모서리 4px 이하, 그라데이션·이모지·그림자 없음.
@@ -26,6 +32,14 @@ const claims = JSON.parse(
   fs.readFileSync(path.join(ROOT, 'docs/deck/claims.json'), 'utf-8'));
 const V = Object.fromEntries(claims.map((c) => [c.id, c.value]));
 const n = (x) => x.toLocaleString('en-US');
+
+// ── 영상 대장도 같은 자리에서 읽는다 ─────────────────────────────────
+// 3쪽(영상)에 실리는 방송사·제목·구간은 전부 여기서 온다. 손으로 적지
+// 않는다 — scripts/verify_deck_clips.py 가 영상마다 실제 제목·채널을
+// 받아 이 대장과 대조하므로, 슬라이드에 적힌 것이 곧 확인된 것이다.
+const clipBook = JSON.parse(
+  fs.readFileSync(path.join(ROOT, 'docs/deck/clips.json'), 'utf-8'));
+const mmss = (s) => `${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')}`;
 
 // ── 브랜드 토큰 ──────────────────────────────────────────────────────
 const ORANGE = 'F58220';
@@ -65,12 +79,14 @@ function sectionTitle(s, text, y, kicker) {
   });
 }
 
+const PAGES = 5;
+
 function footer(s, page) {
   s.addText('미래에셋증권 마포WM · 증권사 리포트 자동 요약 · 2026-09-08', {
     x: M, y: 6.92, w: 9.0, h: 0.28, isTextBox: true, margin: 0,
     fontFace: KR, fontSize: 9, color: MUTED,
   });
-  s.addText(`${page} / 4`, {
+  s.addText(`${page} / ${PAGES}`, {
     x: W - M - 1.2, y: 6.92, w: 1.2, h: 0.28, isTextBox: true, margin: 0,
     fontFace: KR, fontSize: 9, color: MUTED, align: 'right',
   });
@@ -219,7 +235,116 @@ function footer(s, page) {
     + '수집·요약·검산·파일 만들기는 전부 자동입니다.');
 }
 
-// ═══════════════════════════════════════════════════ 3쪽 · 무엇이 다른가
+// ════════════════════════════════════════════════════════ 3쪽 · 영상
+// 자료 한가운데서 한 번 쉬어 가는 자리다. 말로 하던 것을 방송 화면으로
+// 한 번 보여 주고 다음 장(무엇이 다른가)으로 넘어간다.
+//
+// 영상은 이 파일에 붙이지 않는다. 방송 화면을 내려받아 잘라 붙이는 것은
+// 저작권 문제이고, 파워포인트에 박아 둔 임베드는 발표장 망에서 자주
+// 막힌다. 원본을 구간만 지정해 재생 페이지(docs/deck/clips.html)에서 튼다.
+{
+  const s = pres.addSlide();
+  s.background = { color: WHITE };
+  sectionTitle(s, '말로 하던 것을 화면으로 — 국내·해외에서 지금 벌어지는 일', 0.56, '영상으로 보는 현황');
+
+  s.addText(
+    '아래 네 편을 이 자리에서 틉니다. 방송 원본을 구간만 지정해 재생합니다 — '
+    + '내려받아 편집하지 않으므로 저작권 문제가 없고 화질도 원본 그대로입니다.',
+    { x: M, y: 1.46, w: CW, h: 0.32, isTextBox: true, margin: 0,
+      fontFace: KR, fontSize: 12, color: BODY });
+
+  const gw = CW / 2 - 0.16;
+  let no = 0;
+  clipBook.groups.forEach((g, gi) => {
+    const gx = M + gi * (CW / 2 + 0.16);
+
+    s.addShape(pres.ShapeType.rect, {
+      x: gx, y: 1.92, w: gw, h: 0.52, fill: { color: TINT },
+      line: { color: HAIR, width: 0.75 }, rectRadius: 0,
+    });
+    s.addShape(pres.ShapeType.rect, {
+      x: gx, y: 1.92, w: 0.05, h: 0.52, fill: { color: ORANGE }, line: { type: 'none' },
+    });
+    s.addText(g.title, {
+      x: gx + 0.22, y: 1.96, w: gw - 0.34, h: 0.26, isTextBox: true, margin: 0,
+      fontFace: KR, fontSize: 13, bold: true, color: INK,
+    });
+    s.addText(g.lead, {
+      x: gx + 0.22, y: 2.18, w: gw - 0.34, h: 0.24, isTextBox: true, margin: 0,
+      fontFace: KR, fontSize: 10, color: MUTED,
+    });
+
+    clipBook.clips.filter((c) => c.group === g.id).forEach((c, ci) => {
+      no += 1;
+      const y = 2.68 + ci * 1.46;
+
+      // 번호 — 재생 페이지에서 누르는 숫자키와 같은 번호다.
+      s.addShape(pres.ShapeType.rect, {
+        x: gx, y, w: 0.28, h: 0.28, fill: { color: BLUE }, line: { type: 'none' },
+      });
+      s.addText(String(no), {
+        x: gx, y: y + 0.015, w: 0.28, h: 0.26, isTextBox: true, margin: 0,
+        fontFace: KR, fontSize: 12, bold: true, color: WHITE, align: 'center',
+      });
+
+      s.addText(`${c.region} · ${c.channel}`, {
+        x: gx + 0.4, y: y - 0.01, w: gw - 0.4, h: 0.24, isTextBox: true, margin: 0,
+        fontFace: KR, fontSize: 10.5, bold: true, color: ORANGE,
+      });
+      s.addText(c.title, {
+        x: gx + 0.4, y: y + 0.22, w: gw - 0.4, h: 0.48, isTextBox: true, margin: 0,
+        fontFace: KR, fontSize: 12.5, bold: true, color: INK, lineSpacing: 17,
+      });
+      s.addText(c.gist, {
+        x: gx + 0.4, y: y + 0.70, w: gw - 0.4, h: 0.46, isTextBox: true, margin: 0,
+        fontFace: KR, fontSize: 10.5, color: BODY, lineSpacing: 15,
+      });
+      // 구간은 사람이 미리 보고 정했을 때만 시각을 적는다.
+      const cut = c.check && c.check.range
+        ? `${mmss(c.start)}–${mmss(c.end)} · ${c.end - c.start}초`
+        : `약 ${c.end - c.start}초 · 구간 확정 전`;
+      s.addText(cut, {
+        x: gx + 0.4, y: y + 1.16, w: gw - 0.4, h: 0.22, isTextBox: true, margin: 0,
+        fontFace: KR, fontSize: 10, bold: true, color: BLUE,
+      });
+    });
+  });
+
+  // 재생 방법 — 발표자가 이 쪽에서 바로 보고 따라 할 수 있게.
+  s.addShape(pres.ShapeType.rect, {
+    x: M, y: 5.74, w: CW, h: 0.92, fill: { color: TINT },
+    line: { color: HAIR, width: 0.75 }, rectRadius: 0,
+  });
+  s.addText('트는 법', {
+    x: M + 0.3, y: 5.86, w: 1.2, h: 0.24, isTextBox: true, margin: 0,
+    fontFace: KR, fontSize: 11, bold: true, color: ORANGE,
+  });
+  s.addText(
+    [{ text: '발표 전에 ', options: { color: BODY } },
+     { text: 'python3 -m http.server 8000', options: { color: BLUE, bold: true } },
+     { text: ' 을 띄우고 ', options: { color: BODY } },
+     { text: 'localhost:8000/docs/deck/clips.html', options: { color: BLUE, bold: true } },
+     { text: ' 을 열어 둡니다. 이 쪽에서 창을 바꿔 숫자키 ', options: { color: BODY } },
+     { text: '1–4', options: { color: BLUE, bold: true } },
+     { text: ' 로 클립을 고르면 지정한 구간만 재생되고 끝에서 멈춥니다.', options: { color: BODY } }],
+    { x: M + 1.16, y: 5.86, w: CW - 1.46, h: 0.7, isTextBox: true, margin: 0,
+      fontFace: KR, fontSize: 11, lineSpacing: 17 },
+  );
+
+  footer(s, 3);
+
+  const cues = clipBook.clips
+    .map((c, i) => `${i + 1}. ${c.channel} — ${c.cue}`).join('\n');
+  s.addNotes(
+    '이 쪽은 말을 줄이고 화면을 보여 주는 자리입니다. 클립마다 이어서 할 말:\n'
+    + cues
+    + '\n\n미리 할 일: python3 scripts/verify_deck_clips.py docs/deck/clips.json — '
+    + '영상이 지워졌거나 임베드가 막혔으면 여기서 걸립니다. 구간은 재생 페이지에서 '
+    + '미리 보며 잡아 대장(docs/deck/clips.json)에 적어 둡니다.\n'
+    + '망이 막힌 발표장이면 각 클립의 원본 링크를 미리 열어 두는 것으로 대신합니다.');
+}
+
+// ═══════════════════════════════════════════════════ 4쪽 · 무엇이 다른가
 {
   const s = pres.addSlide();
   s.background = { color: WHITE };
@@ -304,13 +429,13 @@ function footer(s, page) {
     fontFace: KR, fontSize: 11, bold: true, color: BLUE,
   });
 
-  footer(s, 3);
+  footer(s, 4);
   s.addNotes('핵심 자랑거리: 요약이 생성물이 아니라 추출물이라 원문 대조가 가능하고, '
     + '실제로 963대목을 대조해 어긋남 0입니다. 16대목은 보관 본문(앞 1,200자) 밖이라 '
     + '「확인」으로 세지 않고 따로 적습니다.');
 }
 
-// ══════════════════════════════════════════════ 4쪽 · 실제로 잡아낸 것
+// ═══════════════════════════════════════════ 5쪽 · 실제로 잡아낸 것
 {
   const s = pres.addSlide();
   s.background = { color: WHITE };
@@ -367,7 +492,7 @@ function footer(s, page) {
     { x: M + 0.4, y: 6.14, w: CW - 0.8, h: 0.36, isTextBox: true, margin: 0,
       fontFace: KR, fontSize: 14, bold: true, color: WHITE });
 
-  footer(s, 4);
+  footer(s, 5);
   s.addNotes('여기 적힌 열한 건은 전부 실제로 있었던 일이고, 저장소 커밋에 기록이 남아 있습니다. '
     + '자랑의 근거는 「완벽하다」가 아니라 「틀린 것을 잡아 왔다」입니다.');
 }
