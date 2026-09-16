@@ -203,17 +203,17 @@ async function api(p, tries = 3) {
   throw last;
 }
 
-// 상세는 **값이 들어 있는지까지** 보고 나서야 받은 것으로 친다.
+// 상세(getEtpItemOutline)는 **한 행이 오기만 하면** 받은 것으로 친다.
 //
-// 두 번째로 데인 자리다. 처음에는 응답이 통째로 안 와서 "분배 이력 0개월" 을
-// 사실처럼 적었고, 그걸 고친 뒤에는 200 으로 오되 F15001(현재가)이 빈 채로
-// 오는 응답을 받아 "현재가 없음" 으로 적었다. 상장된 ETF 에 현재가가 없을
-// 수는 없다 — 그건 그 종목의 사실이 아니라 우리가 제대로 못 받았다는 뜻이다.
-// 실제로 그 한 판에서 채택이 22종목에서 11종목으로 반토막 났다.
-// 값이 안 들어 있을 때 **무엇이 왔는지** 남긴다. 2026-09-16 에 192종목이
-// 전부 "현재가(F15001)=undefined" 로 떨어졌는데, 그 한 줄로는 원천이 우리를
-// 막은 것인지, 응답 모양이 바뀐 것인지, 인자가 틀린 것인지 알 수 없었다.
-// 실패한 응답의 키와 앞부분을 적어 두면 다음 판에서 눈으로 볼 수 있다.
+// 처음에는 현재가(F15001)가 들어 있어야 성공으로 쳤다. 그랬더니 192종목이
+// 전부 실패했는데, 까 보니 원천이 막은 것이 아니라 **응답 모양이 달랐다**.
+// 29개 키가 멀쩡히 오는데(순자산·상장일·운용사·기초지수·보수·52주 고저·
+// 60일 평균 거래대금) 실시간 시세 항목만 빠져 있었다. 성공한 판은 전부
+// 장중(KST 11:35~13:07)이었고 실패한 판은 장 마감 뒤(16:28, 04:55)였다.
+//
+// 그래서 현재가를 상세에서 구하지 않는다. 마스터와 일별 시세에는 장이
+// 열려 있든 아니든 값이 있다. 어느 쪽에서 가져왔는지는 priceSource 에
+// 적어 둔다 — 값의 출처를 모르면 값을 믿을 수 없다.
 const outlineSamples = [];
 
 async function apiOutline(code, tries = 3) {
@@ -221,20 +221,13 @@ async function apiOutline(code, tries = 3) {
   for (let i = 0; i < tries; i++) {
     const rows = await api(`/user/etp/getEtpItemOutline?code=${code}&befDate=${new Date().getFullYear() - 1}0101`);
     const o = rows?.[0];
-    const has = (v) => v !== null && v !== undefined && v !== '' && Number(v) > 0;
-    if (o && has(o.F15001)) return o;
-    if (o) {
-      last = `현재가(F15001)=${JSON.stringify(o.F15001)}, 키 ${Object.keys(o).length}개`;
-      if (outlineSamples.length < 5) {
-        outlineSamples.push({ code, try: i, keys: Object.keys(o).slice(0, 60), row: o });
-      }
-    } else if (outlineSamples.length < 5) {
-      outlineSamples.push({ code, try: i, keys: [], row: rows });
-    }
+    if (o && Object.keys(o).length >= 5) return o;
+    last = o ? `키 ${Object.keys(o).length}개뿐` : '빈 응답';
+    if (outlineSamples.length < 5) outlineSamples.push({ code, try: i, keys: o ? Object.keys(o) : [], row: o ?? rows });
     await sleep(1500 * (i + 1));
     if (i === tries - 2) await refreshHeaders();
   }
-  throw new ApiError(`상세에 현재가가 없습니다 (${last})`);
+  throw new ApiError(`상세가 비어 있습니다 (${last})`);
 }
 
 function dumpDiagnostics(extra = {}) {
@@ -327,11 +320,9 @@ for (const [i, row] of universe.entries()) {
     continue;
   }
 
-  // apiOutline 이 값이 든 행만 돌려준다. 여기 왔다는 것은 현재가가 있다는 뜻이다.
   const o = outline;
-  asOf = asOf || String(o.F12506 || '');
+  asOf = asOf || String(o.F12506 || row.F12506 || '');
 
-  const price = num(o.F15001);
   const aum = num(o.F15028);
 
   // 분배 내역. 최근 것이 맨 위로 온다.
@@ -376,6 +367,24 @@ for (const [i, row] of universe.entries()) {
   const volDays = navSeries.length;
   const volWindow = volDays >= 200 ? '1년' : `${volDays}거래일`;
 
+  // 현재가. 상세(getEtpItemOutline)에는 장이 닫히면 시세 항목이 빠지므로
+  // 거기서 구하지 않는다. 마스터와 일별 시세에는 언제나 값이 있다.
+  // 어느 쪽에서 가져왔는지 적어 둔다 — 출처를 모르면 값을 믿을 수 없다.
+  let price = num(row.F15001);
+  let priceSource = '마스터 종가(F15001)';
+  if (!(price > 0)) {
+    price = num(o.F15001);
+    priceSource = '상세 종가(F15001)';
+  }
+  if (!(price > 0) && days[0]) {
+    price = days[0].close;
+    priceSource = `일별 시세 최신 종가 (${days[0].date})`;
+  }
+  if (!(price > 0)) {
+    price = null;
+    priceSource = null;
+  }
+
   // 하루에 ±15% 넘게 움직인 날. 커버드콜 ETF 에서 그런 날은 시장이 아니라
   // 액면분할이나 원천의 오기일 때가 많다. 지우지 않고 세어서 적어 둔다 —
   // 조용히 버리면 무엇을 버렸는지 아무도 모르게 된다.
@@ -402,7 +411,7 @@ for (const [i, row] of universe.entries()) {
   // 제외 사유는 하나만 적지 않는다. "순자산이 작아서" 만 보여 주면 고치고
   // 나서도 다른 이유로 또 걸린다.
   const why = [];
-  if (!price) why.push('현재가 없음');
+  if (!price) why.push('현재가를 마스터·상세·일별시세 어디에서도 못 찾음');
   if (aum === null) why.push('순자산 미확인');
   else if (aum < RULES.minAum) why.push(`순자산 ${(aum / 1e8).toFixed(0)}억(기준 ${RULES.minAum / 1e8}억 미만)`);
   if (turnover60 === null) why.push('거래대금 미확인');
@@ -430,7 +439,8 @@ for (const [i, row] of universe.entries()) {
     index: o.F34777 || null,
     listedOn: listed,
     price,
-    nav: num(o.F15301),
+    priceSource,
+    nav: num(o.F15301) ?? (days[0] ? days[0].nav : null),
     aum,
     turnoverDay: num(o.F15023),
     turnover60: turnover60 === null ? null : Math.round(turnover60),
@@ -501,6 +511,7 @@ const out = {
   asOf: asOf ? `${asOf.slice(0, 4)}-${asOf.slice(4, 6)}-${asOf.slice(6, 8)}` : null,
   rules: RULES,
   derived: {
+    price: '마스터(getEtpMast)의 종가를 먼저 쓰고, 없으면 상세, 그래도 없으면 일별 시세의 최신 종가를 쓴다. 어느 쪽인지는 항목마다 priceSource 에 적는다. 상세는 장이 닫히면 시세 항목이 빠져서 기댈 수 없다.',
     distTtmRate: '최근 12회 분배금 합계 ÷ 현재가 × 100. ETFCHECK 의 DIV_RATE_REAL 과 대조해 0.15%p 넘게 어긋나면 제외한다.',
     volatility:
       '일간 기준가(NAV) 로그수익률의 표본표준편차 × √252 × 100. 몇 거래일치로 냈는지는 ' +
