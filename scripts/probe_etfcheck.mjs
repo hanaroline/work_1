@@ -1,32 +1,35 @@
 // ETFCHECK 이 **실제로 부르는 주소**를 브라우저로 관찰한다.
 //
-// 왜 관찰부터 하나
-// ──────────────────────────────────────────────────────────────────────
-// ETFCHECK 은 화면 껍데기만 내려주고 값은 브라우저가 나중에 API 로 받아
-// 그린다. 게다가 키 이름이 `F16002`, `W00065` 같은 사내 코드라 이름만
-// 보고는 무슨 값인지 알 수 없다. 주소도 키 뜻도 짐작하지 않는다 —
-// 화면을 열고, 오가는 요청을 전부 적고, 값이 담겨 온 응답만 남긴다.
-//
-// 이 파일은 **수집기가 아니다.** data/ 를 건드리지 않는다.
+// 이 파일은 **수집기가 아니다.** data/ 를 건드리지 않는다. 관찰 결과만
+// tools/etfcheck-discovery/ 에 남기고, 그걸 보고 collect_cc_etf.mjs 의
+// 필드 매핑을 확정한다.
 //
 // 지금까지 알아낸 것
 // ──────────────────────────────────────────────────────────────────────
-// 1차  GET /user/common/getEtpMast             국내 ETP 마스터 1,535행
-//      GET /stock/etp/getEtfTotalExpenseRatio  총보수/실부담비용률 1,171행
-//      GET /user/common/getEtpCtgLarge|Middle|Map  분류 체계와 종목-분류 대응
-// 2차  · 화면 안에서 fetch 로 직접 부르면 403 이다. 앱이 보내는 요청에만
-//        답한다. 무엇이 다른지가 이번 판의 물음이다.
-//      · 낱개 화면이 부르는 것들: getEtpItemOutline / getEtpLatestFee /
-//        getEtpDesc / getEtpTermHist / getSimpleEtpHist / getEtpDiffHistAvg
-// 3차  · 이름에 '커버드콜' 이 든 종목 63개.
-//      · 분류에 커버드콜(0609005)·월배당(0609002) 이 따로 있다. 이름으로
-//        거르는 것보다 이쪽이 오래간다 — 상품명은 운용사가 언제든 바꾼다.
-//      · 낱개 화면을 잇달아 열었더니 ERR_EMPTY_RESPONSE. 너무 빨리 두드린
-//        듯하다. 이번엔 사이를 띄우고, 새 문맥으로 연다.
-// 아직 못 찾은 것 — 이번 판의 목표
-//      · 분배금(월분배율) 주소
-//      · 순자산총액. 마스터의 W00065 는 CD금리액티브에서 -989억이 나와
-//        순자산이 아니다(자금유출입으로 보인다). 확인 전에는 쓰지 않는다.
+// 주소
+//   GET /user/common/getEtpMast              국내 ETP 마스터 1,535행
+//   GET /user/common/getEtpCtgMap            종목-분류 대응 9,092행
+//   GET /user/common/getEtpCtgMiddle         분류 이름 (커버드콜 0609005, 월배당 0609002)
+//   GET /user/etp/getEtpItemOutline?code=&befDate=   낱개 상세
+//   GET /user/etp/getEtpLatestFee?code=      TER / TOTAL_FEE
+//   GET /user/etp/getEtpTermHist?F16013=&gubun=1Y    1년 일별 종가·거래량
+//   GET /user/etp/getSimpleEtpHist?F16013=&limit=&type=diff  일별 NAV·상장좌수·설정환매
+// 키
+//   F16013 종목코드 · F16002 종목명 · F15001 종가 · F15301 NAV
+//   F15023 거래대금(당일) · F15015 거래량 · F16017 상장일 · F33961 운용사
+//   **F15028 순자산총액** — getEtpItemOutlineAssetRank2 의 NET_ASSET 과 같은 값이라
+//   확인했다(498400: 5,759,831,000,000 원). 마스터의 W00065 는 음수가 나오므로
+//   순자산이 아니다.
+// 403 의 정체
+//   앱 요청에는 `authorization: Bearer` 와 `checkclient: <해시>` 가 붙는다.
+//   같은 머리글을 달아 fetch 하면 200 이 온다(맨몸 403 → 머리글 복사 200,
+//   1,177,037 bytes). 그래서 수집기는 브라우저로 화면을 한 번만 열어 머리글을
+//   얻고, 나머지는 fetch 로 부른다. 종목마다 화면을 여는 것보다 훨씬 빠르고,
+//   잇달아 열다 ERR_EMPTY_RESPONSE 를 맞는 일도 없다.
+// 아직 못 찾은 것
+//   · 분배금(월분배율) 주소. /dividend 화면은 잇달아 열면 빈 응답이 온다.
+//     이번 판은 화면을 여는 대신 **앱의 자바스크립트 묶음을 읽어** 주소
+//     목록을 뽑는다. 짐작이 아니라 앱이 가진 목록 그대로다.
 //
 // 세션(클로드 쪽)에서는 etfcheck.co.kr 로 CONNECT 가 403 이라 못 돈다.
 // **러너에서만** 돈다.
@@ -38,10 +41,6 @@ const OUT = 'tools/etfcheck-discovery';
 fs.mkdirSync(OUT, { recursive: true });
 
 const BASE = 'https://www.etfcheck.co.kr';
-const UA =
-  'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 ' +
-  '(KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36';
-
 const log = [];
 const say = (s) => {
   log.push(s);
@@ -51,169 +50,137 @@ const say = (s) => {
 const browser = await chromium.launch({
   executablePath: process.env.CHROMIUM_PATH || undefined,
 });
+const ctx = await browser.newContext({
+  locale: 'ko-KR',
+  viewport: { width: 1440, height: 900 },
+  userAgent:
+    'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 ' +
+    '(KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36',
+});
+const page = await ctx.newPage();
 
 const xhr = [];
-function wire(page) {
-  page.on('response', async (res) => {
-    const url = res.url();
-    if (!url.startsWith(BASE)) return;
-    if (/\.(js|css|png|jpe?g|gif|svg|webp|woff2?|ico)(\?|$)/i.test(url)) return;
-    let body = '';
-    try {
-      body = await res.text();
-    } catch {
-      return;
-    }
-    const head = body.slice(0, 200).trim();
-    if (!(head.startsWith('{') || head.startsWith('['))) return;
-    xhr.push({
-      url,
-      status: res.status(),
-      bytes: body.length,
-      body,
-      reqHeaders: res.request().headers(),
-    });
-  });
-}
-const latest = (re) => [...xhr].reverse().find((x) => re.test(x.url));
+let appHeaders = null;
+page.on('response', async (res) => {
+  const url = res.url();
+  if (!url.startsWith(BASE)) return;
+  if (/\/user\/|\/stock\/|\/etc\//.test(url) && !appHeaders) {
+    const h = res.request().headers();
+    if (h.checkclient) appHeaders = h;
+  }
+  if (/\.(css|png|jpe?g|gif|svg|webp|woff2?|ico)(\?|$)/i.test(url)) return;
+  if (/\.js(\?|$)/i.test(url)) {
+    xhr.push({ url, kind: 'js' });
+    return;
+  }
+  let body = '';
+  try {
+    body = await res.text();
+  } catch {
+    return;
+  }
+  const head = body.slice(0, 200).trim();
+  if (head.startsWith('{') || head.startsWith('[')) xhr.push({ url, kind: 'json', body });
+});
 
-async function fresh() {
-  const ctx = await browser.newContext({
-    locale: 'ko-KR',
-    viewport: { width: 1440, height: 900 },
-    userAgent: UA,
-  });
-  const page = await ctx.newPage();
-  wire(page);
-  return { ctx, page };
-}
-
-// ── 1. 첫 화면. 마스터와 분류를 받아 둔다 ──────────────────────────────
-let { ctx, page } = await fresh();
 await page.goto(BASE, { waitUntil: 'domcontentloaded', timeout: 60000 });
 await page.waitForTimeout(10000);
 
-const mastRes = latest(/getEtpMast/);
+const mastRes = [...xhr].reverse().find((x) => /getEtpMast/.test(x.url));
 const mast = mastRes ? JSON.parse(mastRes.body).results || [] : [];
-say(`[마스터] ${mast.length}행`);
+const ctgMapRes = [...xhr].reverse().find((x) => /getEtpCtgMap/.test(x.url));
+const ctgMap = ctgMapRes ? JSON.parse(ctgMapRes.body).results || [] : [];
+say(`[마스터] ${mast.length}행, [분류대응] ${ctgMap.length}행`);
 
-// 앱이 보내는 머리글을 그대로 적는다. 우리 fetch 와 무엇이 다른지가
-// 403 의 답이다.
-if (mastRes) {
-  say('[앱이 보낸 머리글]');
-  for (const [k, v] of Object.entries(mastRes.reqHeaders)) {
-    say(`   ${k}: ${String(v).slice(0, 160)}`);
-  }
-}
-
-// ── 2. 같은 주소를 화면 안에서 머리글까지 붙여 다시 불러 본다 ──────────
-const replay = await page.evaluate(async ({ base, headers }) => {
-  const out = {};
-  for (const [label, init] of [
-    ['맨몸', {}],
-    ['머리글 복사', { headers }],
-  ]) {
-    try {
-      const r = await fetch(`${base}/user/common/getEtpMast`, {
-        credentials: 'include',
-        ...init,
-      });
-      out[label] = { status: r.status, bytes: (await r.text()).length };
-    } catch (e) {
-      out[label] = { status: 0, error: String(e).slice(0, 120) };
-    }
-  }
-  return out;
-}, {
-  base: BASE,
-  headers: mastRes
-    ? Object.fromEntries(
-        Object.entries(mastRes.reqHeaders).filter(
-          // 브라우저가 스스로 붙이는 것은 다시 붙일 수 없다(금지 머리글).
-          ([k]) => !/^(host|:|accept-encoding|connection|content-length|cookie|referer|sec-|user-agent)/i.test(k),
-        ),
-      )
-    : {},
-});
-say(`\n[재현] ${JSON.stringify(replay)}`);
-
-// ── 3. 분류로 커버드콜·월배당 종목을 뽑는다 ────────────────────────────
-const ctgMid = latest(/getEtpCtgMiddle/);
-const ctgMap = latest(/getEtpCtgMap/);
-if (ctgMid) fs.writeFileSync(path.join(OUT, 'ctgMiddle.json'), ctgMid.body);
-if (ctgMap) {
-  const map = JSON.parse(ctgMap.body);
-  fs.writeFileSync(path.join(OUT, 'ctgMap-shape.json'), JSON.stringify(map).slice(0, 4000));
-  const rows = map.results || map;
-  say(`\n[분류대응] ${Array.isArray(rows) ? rows.length : '?'}행, 표본:`);
-  say('   ' + JSON.stringify(Array.isArray(rows) ? rows.slice(0, 3) : rows).slice(0, 800));
-  if (Array.isArray(rows)) {
-    const cc = rows.filter((r) => JSON.stringify(r).includes('0609005'));
-    const md = rows.filter((r) => JSON.stringify(r).includes('0609002'));
-    say(`   커버드콜(0609005) ${cc.length}행, 월배당(0609002) ${md.length}행`);
-    say('   커버드콜 표본: ' + JSON.stringify(cc.slice(0, 3)).slice(0, 600));
-    fs.writeFileSync(
-      path.join(OUT, 'ctg-coveredcall-rows.json'),
-      JSON.stringify({ coveredCall: cc.slice(0, 200), monthly: md.slice(0, 200) }, null, 2),
-    );
-  }
-}
-
-const cc = mast.filter((r) => /커버드콜/.test(String(r.F16002 || '')));
-fs.writeFileSync(path.join(OUT, 'mast-coveredcall.json'), JSON.stringify(cc, null, 2));
-
-// ── 4. 낱개 화면 — 새 문맥으로, 사이를 띄워서 ──────────────────────────
-// 3차에서 잇달아 열었다가 ERR_EMPTY_RESPONSE 를 맞았다. 사람이 보는
-// 속도로 연다.
-const target = cc.sort((a, b) => Number(b.F15023 || 0) - Number(a.F15023 || 0))[0];
-const code = target?.F16013;
-say(`\n[낱개] 표본 ${code} (${target?.F16002})`);
-
-await ctx.close();
-for (const sub of ['basic', 'dividend']) {
-  ({ ctx, page } = await fresh());
-  const before = xhr.length;
-  let status = '?';
-  try {
-    // 리퍼러를 달아 준다. 앱 안에서 넘어간 것처럼 보이게 한다.
-    await page.goto(BASE, { waitUntil: 'domcontentloaded', timeout: 60000 });
-    await page.waitForTimeout(6000);
-    const r = await page.goto(`${BASE}/mobile/etpitem/${code}/${sub}`, {
-      waitUntil: 'domcontentloaded',
-      timeout: 60000,
-      referer: BASE + '/',
-    });
-    status = r ? r.status() : '?';
-    await page.waitForTimeout(12000);
-  } catch (e) {
-    status = `실패 ${String(e).slice(0, 90)}`;
-  }
-  const known =
-    /getEtpMast|getEtpCtg|TotalExpenseRatio|getbannerInfo|insert|update|BreakingNews|NewsList|TIekcerList|ScreenerLog|JangGubun|LastBusinessDay|AdPopup|getScaleCtgName/;
-  say(`\n  /mobile/etpitem/${code}/${sub} → ${status}, 새 XHR ${xhr.length - before}건`);
-  for (const x of xhr.slice(before)) {
-    if (known.test(x.url)) {
-      say(`      (기존) ${x.status} ${x.bytes}B ${x.url.slice(0, 100)}`);
-      continue;
-    }
-    say(`      ★ ${x.status} ${x.bytes}B ${x.url}`);
-    say(`        ${x.body.slice(0, 2000).replace(/\s+/g, ' ')}`);
-  }
-  await ctx.close();
-}
-
-fs.writeFileSync(
-  path.join(OUT, 'xhr.json'),
-  JSON.stringify(
-    xhr.map((x) => ({ url: x.url, status: x.status, bytes: x.bytes, body: x.body.slice(0, 12_000) })),
-    null,
-    2,
-  ),
+// 분류로 고른 국내 월배당 커버드콜
+const pick = new Set(
+  ctgMap
+    .filter(
+      (r) =>
+        r.F16013 &&
+        r.domestic_flag === 1 &&
+        String(r.ctgInfo || '').includes('0609005') &&
+        String(r.ctgInfo || '').includes('0609002'),
+    )
+    .map((r) => r.F16013),
 );
+const universe = mast.filter((r) => pick.has(r.F16013));
+say(`[모집단] 국내 ∧ 커버드콜(0609005) ∧ 월배당(0609002) = ${universe.length}종목`);
+fs.writeFileSync(path.join(OUT, 'universe.json'), JSON.stringify(universe, null, 2));
+
+// ── 앱의 자바스크립트 묶음에서 주소 목록을 뽑는다 ──────────────────────
+const scripts = await page.evaluate(() =>
+  performance
+    .getEntriesByType('resource')
+    .map((e) => e.name)
+    .filter((n) => /\.js(\?|$)/.test(n) && n.includes(location.host)),
+);
+say(`\n[묶음] 자바스크립트 ${scripts.length}개를 읽는다`);
+
+const endpoints = new Set();
+for (const url of scripts) {
+  const text = await page.evaluate(async (u) => {
+    try {
+      return await (await fetch(u)).text();
+    } catch {
+      return '';
+    }
+  }, url);
+  for (const m of text.matchAll(/["'`](\/(?:user|stock|etc)\/[A-Za-z0-9_\-/]+)["'`]/g)) {
+    endpoints.add(m[1]);
+  }
+}
+const all = [...endpoints].sort();
+fs.writeFileSync(path.join(OUT, 'endpoints.json'), JSON.stringify(all, null, 2));
+say(`[묶음] 주소 ${all.length}개를 찾았다`);
+
+const dvd = all.filter((p) => /dvd|divid|dist|pay|분배/i.test(p));
+say(`\n[분배 후보 주소] ${dvd.length}개`);
+for (const p of dvd) say(`   ${p}`);
+
+// ── 머리글을 달아 직접 불러 본다 ───────────────────────────────────────
+if (!appHeaders) {
+  say('\n[중단] 앱 머리글을 못 잡았다.');
+} else {
+  const hdrs = Object.fromEntries(
+    Object.entries(appHeaders).filter(
+      ([k]) => !/^(host|:|accept-encoding|connection|content-length|cookie|referer|sec-|user-agent)/i.test(k),
+    ),
+  );
+  say(`\n[머리글] ${Object.keys(hdrs).join(', ')}`);
+
+  const target = universe.sort((a, b) => Number(b.F15023 || 0) - Number(a.F15023 || 0))[0];
+  const code = target.F16013;
+  say(`[표본] ${code} ${target.F16002}`);
+
+  // 분배 후보 + 이미 아는 낱개 주소를 한 번씩 부른다. 인자 이름이
+  // code 인지 F16013 인지 모르므로 둘 다 달아 본다.
+  const tries = [
+    ...dvd.map((p) => `${p}?code=${code}&F16013=${code}&limit=24`),
+    `/user/etp/getEtpItemOutline?code=${code}&befDate=20250916`,
+    `/user/etp/getEtpLatestFee?code=${code}`,
+  ];
+  for (const p of tries) {
+    const r = await page.evaluate(
+      async ({ base, p, headers }) => {
+        try {
+          const res = await fetch(base + p, { headers, credentials: 'include' });
+          const t = await res.text();
+          return { status: res.status, bytes: t.length, head: t.slice(0, 2500) };
+        } catch (e) {
+          return { status: 0, head: String(e).slice(0, 200) };
+        }
+      },
+      { base: BASE, p, headers: hdrs },
+    );
+    say(`\n  ${p}\n    → ${r.status}, ${r.bytes ?? 0}B`);
+    if (r.status === 200) say(`    ${r.head.replace(/\s+/g, ' ')}`);
+  }
+}
+
 fs.writeFileSync(
   path.join(OUT, 'report.md'),
   `# ETFCHECK 관찰 ${new Date().toISOString()}\n\n\`\`\`\n${log.join('\n')}\n\`\`\`\n`,
 );
-
 await browser.close();
 say('\n관찰 끝.');
