@@ -46,6 +46,10 @@ MUTED = "6C6C6C"
 INPUT_FILL = "FFF7E6"    # 입력 칸 — 오렌지 계열의 아주 옅은 톤
 INPUT_FONT = "0000FF"    # 입력값은 파란 글씨 (금융모델 관례)
 ERROR = "C62828"         # 배분이 어긋났을 때만 쓴다 (mas-design 의 의미색)
+WARNING = "D4A017"       # 기준 미달 종목을 담았을 때
+SURFACE_SOFT = "ECEFF4"  # 큰 수치 칸 배경
+HAIRLINE_SOFT = "E5E4E1" # 표 안쪽 선
+LINE_DARK = "49535B"     # 합계 줄 위의 선
 
 FONT = "Spoqa Han Sans Neo"  # 브랜드 지정 서체. 없으면 뷰어가 대체한다.
 
@@ -61,7 +65,7 @@ PCT3 = "0.000%"
 QTY = '#,##0"주"'
 EOK = '#,##0"억원"'   # 순자산·거래대금은 원 단위로 적으면 자릿수를 세어야 읽힌다
 
-thin = Side(style="thin", color=HAIRLINE)
+thin = Side(style="thin", color=HAIRLINE_SOFT)
 BOX = Border(left=thin, right=thin, top=thin, bottom=thin)
 
 
@@ -80,12 +84,22 @@ def rule_row(ws, row, last_col):
     ws.row_dimensions[row].height = 4
 
 
-def section(ws, row, title, last_col):
+def section(ws, row, number, title, last_col):
+    """1px 오렌지 룰 + 그 아래 좌측 정렬 제목. 브랜드 레이아웃 시그니처다.
+
+    번호만 오렌지로 세우고 제목은 먹색으로 둔다. 제목까지 오렌지로 칠하면
+    한 장에 오렌지가 예닐곱 번 나와 강조가 강조를 잡아먹는다.
+    """
     rule_row(ws, row, last_col)
-    c = ws.cell(row=row + 1, column=1, value=title)
+    n = ws.cell(row=row + 1, column=1, value=number)
+    n.font = f(13, bold=True, color=ORANGE)
+    n.alignment = Alignment(horizontal="right", vertical="center")
+    c = ws.cell(row=row + 1, column=2, value=title)
     c.font = f(13, bold=True)
-    ws.row_dimensions[row + 1].height = 24
-    return row + 2
+    c.alignment = Alignment(vertical="center")
+    ws.row_dimensions[row + 1].height = 26
+    ws.row_dimensions[row + 2].height = 6
+    return row + 3
 
 
 def label(ws, row, col, text, size=10, bold=False, color=INK):
@@ -170,19 +184,36 @@ def build_data_sheet(wb, data):
         ws.column_dimensions[get_column_letter(i)].width = width
     ws.row_dimensions[hr].height = 30
 
-    # 채택 종목을 **먼저, 끊기지 않게** 적는다. 콤보박스가 이 구간을 그대로
-    # 가리키기 때문이다. 중간에 제외 종목이 끼면 드롭다운에 제외 종목이 뜬다.
+    # 차례가 곧 드롭다운의 차례다. 세 덩이로 나눠 적는다.
+    #
+    #   1) 채택 — 기준을 통과한 종목, 연 분배율 높은 순
+    #   2) 기준 미달 — 통과하지 못했지만 값이 온전한 종목
+    #   3) 고를 수 없는 것 — 연 분배율이 없거나 수집이 실패한 종목.
+    #
+    # 드롭다운은 1)+2) 를 가리킨다. 처음에는 1) 만 담았는데, 기준은 우리가
+    # 정한 선일 뿐이고 그 선 밖의 종목을 담을지는 담당자가 판단할 일이다.
+    # 다만 기준 미달 종목을 담으면 제안서에서 노란 글씨로 알려 준다.
+    # 3) 은 뺀다 — 담아도 0원이 나오고, 0원은 "분배를 안 한다" 는 거짓말이 된다.
     items = data["items"]
-    adopted = sorted(
-        [x for x in items if x.get("adopted")],
-        key=lambda x: (x.get("distTtmRate") or 0),
-        reverse=True,
+    by_yield = lambda x: (x.get("distTtmRate") or 0)  # noqa: E731
+    adopted = sorted([x for x in items if x.get("adopted")], key=by_yield, reverse=True)
+    usable_rejected = sorted(
+        [x for x in items
+         # 연 분배율이 없는 종목은 뺀다. 이 문서가 내놓는 값이 전부
+         # "실투자금 × 연 분배율 ÷ 12" 이라, 그 값이 없으면 담아도 0원이
+         # 나온다. 0원을 보여 주는 것은 "분배를 안 한다" 는 거짓말이 된다.
+         # 분배 이력이 열두 달을 못 채운 종목이 대부분이고, 사유는
+         # [ETF데이터] 장에 그대로 남는다.
+         if not x.get("adopted") and x.get("dataComplete") is not False
+         and (x.get("price") or 0) > 0 and x.get("distTtmRate") is not None],
+        key=by_yield, reverse=True,
     )
-    rejected = [x for x in items if not x.get("adopted")]
+    picked_codes = {x["code"] for x in adopted} | {x["code"] for x in usable_rejected}
+    unusable = [x for x in items if x["code"] not in picked_codes]
 
     r = hr + 1
     first_adopted = r
-    for x in adopted + rejected:
+    for x in adopted + usable_rejected + unusable:
         ok = bool(x.get("adopted"))
         vals = [
             x.get("name"), x.get("code"), x.get("manager"), x.get("price"),
@@ -208,58 +239,108 @@ def build_data_sheet(wb, data):
                 c.fill = fill(SURFACE)
         r += 1
     last_adopted = first_adopted + len(adopted) - 1
+    last_sel = first_adopted + len(adopted) + len(usable_rejected) - 1
 
     ws.freeze_panes = f"A{hr + 1}"
-    return ws, first_adopted, last_adopted, len(adopted), len(rejected)
+    ws.auto_filter.ref = f"A{hr}:{get_column_letter(len(cols))}{r - 1}"
+    return ws, first_adopted, last_adopted, last_sel, len(adopted), len(usable_rejected), len(unusable)
 
 
 # ══════════════════════════════════════════════════════════════════════
 # ══════════════════════════════════════════════════════════════════════
-# 포트폴리오에 담을 수 있는 종목 수. 다섯 줄이면 한 고객 제안에 충분하고,
-# 더 늘리면 한 장에 안 들어간다. 비워 둔 줄은 계산에서 빠진다.
-SLOTS = 5
+# 포트폴리오에 담을 수 있는 줄 수. 다섯 줄로 시작했다가 열 줄로 늘렸다.
+# 빈 줄은 계산에서 빠지므로 남겨 두어도 값이 흐트러지지 않는다.
+SLOTS = 10
 
 
-def build_proposal(wb, data, first_adopted, last_adopted):
+def box(ws, r1, c1, r2, c2):
+    """표 바깥 테두리를 한 겹 두른다.
+
+    안쪽은 얇은 선(E5E4E1), 바깥은 한 톤 진한 선(CDCECB). 표가 배경에서
+    떨어져 보이게 하는 것은 이 한 겹이다 — 안팎을 같은 선으로 두르면
+    표가 아니라 격자로 보인다.
+    """
+    edge = Side(style="thin", color=HAIRLINE)
+    for c in range(c1, c2 + 1):
+        top = ws.cell(row=r1, column=c)
+        bot = ws.cell(row=r2, column=c)
+        top.border = Border(
+            left=top.border.left, right=top.border.right, bottom=top.border.bottom, top=edge
+        )
+        bot.border = Border(
+            left=bot.border.left, right=bot.border.right, top=bot.border.top, bottom=edge
+        )
+    for r in range(r1, r2 + 1):
+        lf = ws.cell(row=r, column=c1)
+        rt = ws.cell(row=r, column=c2)
+        lf.border = Border(top=lf.border.top, bottom=lf.border.bottom, right=lf.border.right, left=edge)
+        rt.border = Border(top=rt.border.top, bottom=rt.border.bottom, left=rt.border.left, right=edge)
+
+
+def table_head(ws, row, texts, start_col, height=30):
+    """표 머리 — FAB072 채움 + 굵게. 브랜드 시그니처다."""
+    for i, t in enumerate(texts, start=start_col):
+        c = ws.cell(row=row, column=i, value=t)
+        c.font = f(10, bold=True, color=INK)
+        c.fill = fill(SOFT_ORANGE)
+        c.alignment = Alignment(horizontal="center", vertical="center", wrap_text=True)
+        c.border = BOX
+    ws.row_dimensions[row].height = height
+
+
+def build_proposal(wb, data, first_sel, last_sel, first_adopted, last_adopted):
     ws = wb.create_sheet("제안서", 0)
     LAST = 8  # A..H
-    # A 는 왼쪽 여백이다. 표는 전부 B 부터 시작한다 — 미리보기 PDF 를 보고
-    # 알았는데, 비교표를 A 부터 그렸더니 종목명이 3칸짜리 여백 열에 들어가
-    # "SOL0040Y0" 처럼 잘린 이름과 코드가 붙어 찍혔다.
-    widths = [3, 30, 18, 17, 13, 16, 16, 16]
+    # A 는 왼쪽 여백이다. 표는 전부 B 부터 시작한다 — 비교표를 A 부터 그렸더니
+    # 종목명이 3칸짜리 여백 열에 들어가 "SOL0040Y0" 처럼 잘려 찍혔다.
+    widths = [2.5, 32, 16, 15, 13, 16, 17, 17]
     for i, w in enumerate(widths, start=1):
         ws.column_dimensions[get_column_letter(i)].width = w
     ws.sheet_view.showGridLines = False
 
-    # ── 머리띠 (hero-orange) ──
+    D = "ETF데이터"
+
+    def rng(col, a=first_sel, b=last_sel):
+        return f"'{D}'!${col}${a}:${col}${b}"
+
+    # ── 머리띠 ────────────────────────────────────────────────────────
+    # 오렌지 풀블리드 + 좌상단 분류 태그. 로고나 워드마크는 흉내 내지 않는다.
     ws.merge_cells(start_row=1, start_column=1, end_row=1, end_column=LAST)
-    t = ws.cell(row=1, column=1, value="   월배당 ETF 투자 제안서")
-    t.font = Font(name=FONT, size=20, bold=True, color="FFFFFF")
-    t.alignment = Alignment(vertical="center")
-    ws.row_dimensions[1].height = 44
+    tag = ws.cell(row=1, column=1, value="   사내한 · Confidential")
+    tag.font = Font(name=FONT, size=9, color="FFFFFF")
+    tag.alignment = Alignment(vertical="center")
+    ws.row_dimensions[1].height = 16
+
     ws.merge_cells(start_row=2, start_column=1, end_row=2, end_column=LAST)
-    s = ws.cell(row=2, column=1, value="   Monthly Distribution ETF Portfolio — 미래에셋증권")
+    t = ws.cell(row=2, column=1, value="   월배당 ETF 투자 제안서")
+    t.font = Font(name=FONT, size=22, bold=True, color="FFFFFF")
+    t.alignment = Alignment(vertical="center")
+    ws.row_dimensions[2].height = 40
+
+    ws.merge_cells(start_row=3, start_column=1, end_row=3, end_column=LAST)
+    s = ws.cell(row=3, column=1, value="   Monthly Distribution ETF Portfolio")
     s.font = Font(name=FONT, size=10, color="FFFFFF")
     s.alignment = Alignment(vertical="center")
-    ws.row_dimensions[2].height = 20
-    for row in (1, 2):
+    ws.row_dimensions[3].height = 22
+
+    for row in (1, 2, 3):
         for c in range(1, LAST + 1):
             ws.cell(row=row, column=c).fill = fill(ORANGE)
+    # 머리띠 아래 블루 실선 한 줄. 오렌지 단색으로 끝내는 것보다 문서가
+    # 단단해 보인다 — 브랜드 짝색(secondary)을 여기 한 번만 쓴다.
+    for c in range(1, LAST + 1):
+        ws.cell(row=4, column=c).fill = fill(BLUE)
+    ws.row_dimensions[4].height = 3
 
     asof = data.get("asOf") or data.get("collectedAt", "")[:10]
-    ws.merge_cells(start_row=3, start_column=1, end_row=3, end_column=LAST)
-    m = ws.cell(row=3, column=1, value=f"   자료: ETFCHECK · 기준일 {asof} · 매월 1일 갱신")
+    ws.merge_cells(start_row=5, start_column=1, end_row=5, end_column=LAST)
+    m = ws.cell(row=5, column=1, value=f"   자료 ETFCHECK · 기준일 {asof} · 매월 1일 자동 갱신")
     m.font = f(9, color=MUTED)
-    ws.row_dimensions[3].height = 18
-
-    D = "ETF데이터"
-    adopted_rows = last_adopted - first_adopted + 1
-
-    def rng(col):
-        return f"'{D}'!${col}${first_adopted}:${col}${last_adopted}"
+    m.alignment = Alignment(vertical="center")
+    ws.row_dimensions[5].height = 20
 
     # ── 1. 고객 정보 ──
-    r = section(ws, 5, "1. 고객 정보 및 투자 조건", LAST)
+    r = section(ws, 7, "1", "고객 정보 및 투자 조건", LAST)
     cust_row = r
     rows_in = [
         ("고객명", "홍길동", None),
@@ -272,13 +353,12 @@ def build_proposal(wb, data, first_adopted, last_adopted):
         rr = r + i
         label(ws, rr, 2, lab, bold=True)
         put(ws, rr, 3, val, fmt, kind="input")
-        ws.row_dimensions[rr].height = 22
-    C_NAME = f"$C${cust_row}"
+        ws.row_dimensions[rr].height = 21
+    box(ws, r, 3, r + len(rows_in) - 1, 3)
     C_AMT = f"$C${cust_row + 1}"
     C_MODE = f"$C${cust_row + 2}"
     C_TAX = f"$C${cust_row + 3}"
 
-    # 배분 방식 콤보박스. "비율" 이면 아래 표의 배분 칸은 %, "금액" 이면 원이다.
     dv_mode = DataValidation(type="list", formula1='"비율,금액"', allow_blank=False, showDropDown=False)
     dv_mode.error = "비율 또는 금액 중에서 고르십시오."
     dv_mode.errorTitle = "배분 방식"
@@ -287,120 +367,103 @@ def build_proposal(wb, data, first_adopted, last_adopted):
     ws.add_data_validation(dv_mode)
     dv_mode.add(ws.cell(row=cust_row + 2, column=3))
 
-    label(ws, cust_row + 2, 5, "비율 = 총 투자금액을 %로 나눔 · 금액 = 종목별 금액을 직접 입력", size=9, color=MUTED)
+    label(ws, cust_row + 2, 5, "비율 = 총액을 %로 나눔 · 금액 = 종목별 금액 직접 입력", size=9, color=MUTED)
     label(ws, cust_row + 3, 5, "국내 상장 ETF 분배금 기준 15.4% (지방소득세 포함)", size=9, color=MUTED)
 
-    # ── 계산 보조 (숨김) ──
-    # MATCH 를 수식마다 되풀이하면 한 군데를 고칠 때 스무 군데를 같이 고쳐야
-    # 한다. 줄마다 한 칸에 모은다.
     ws["J1"] = "계산 보조 (수정하지 마십시오)"
     ws["J1"].font = f(9, color=MUTED)
     ws.column_dimensions["J"].hidden = True
     ws.column_dimensions["K"].hidden = True
+    ws.column_dimensions["L"].hidden = True
 
     # ── 2. 포트폴리오 ──
-    r = section(ws, cust_row + 5, "2. 투자 포트폴리오 (ETF 를 여러 개 고를 수 있습니다)", LAST)
+    r = section(ws, cust_row + 6, "2", f"투자 포트폴리오  (최대 {SLOTS}종목)", LAST)
     hdr = r
-    # 배분 칸의 이름은 위에서 고른 방식을 따라간다. "배분" 이라고만 적어 두면
-    # 25 라는 값이 25% 인지 25원인지 알 수 없다.
-    heads = [
-        None,  # B 는 아래에서 수식으로 넣는다
-        f'=IF({C_MODE}="비율","배분 비율 (%)","배분 금액 (원)")',
-        "배정 금액",
-        "매수 수량",
-        "실투자금액",
-        "월 분배금(세전)",
-        "월 분배금(세후)",
-    ]
-    hc = ws.cell(row=hdr, column=2, value="투자 ETF")
-    hc.font = f(10, bold=True)
-    hc.fill = fill(SOFT_ORANGE)
-    hc.alignment = Alignment(horizontal="center", vertical="center", wrap_text=True)
-    hc.border = BOX
-    for i, h in enumerate(heads[1:], start=3):
-        c = ws.cell(row=hdr, column=i, value=h)
-        c.font = f(10, bold=True)
-        c.fill = fill(SOFT_ORANGE)
-        c.alignment = Alignment(horizontal="center", vertical="center", wrap_text=True)
-        c.border = BOX
-    ws.row_dimensions[hdr].height = 30
+    table_head(
+        ws, hdr,
+        ["투자 ETF",
+         f'=IF({C_MODE}="비율","배분 비율 (%)","배분 금액 (원)")',
+         "배정 금액", "매수 수량", "실투자금액", "월 분배금(세전)", "월 분배금(세후)"],
+        2,
+    )
+    p_first, p_last = hdr + 1, hdr + SLOTS
 
-    p_first = hdr + 1
-    p_last = hdr + SLOTS
-
-    # ETF 콤보박스 — 채택 종목 구간만 가리킨다. 빈 줄을 허용해야 다섯 개를
-    # 다 채우지 않아도 된다.
-    dv = DataValidation(type="list", formula1="=채택종목", allow_blank=True, showDropDown=False)
-    dv.error = "목록에 있는 ETF 중에서 고르십시오. 유동성·변동성 기준을 통과한 종목만 담겨 있습니다."
+    dv = DataValidation(type="list", formula1="=선택가능종목", allow_blank=True, showDropDown=False)
+    dv.error = "목록에 있는 ETF 중에서 고르십시오."
     dv.errorTitle = "선택할 수 없는 종목"
-    dv.prompt = "▼ 를 눌러 ETF 를 고르십시오. 비워 두면 그 줄은 계산에서 빠집니다."
+    dv.prompt = "▼ 를 눌러 고르십시오. 비워 두면 그 줄은 계산에서 빠집니다."
     dv.promptTitle = "ETF 선택"
     ws.add_data_validation(dv)
-    dv.add(f"C{p_first}:C{p_first}")  # 자리만 잡아 두고 아래에서 다시 건다
 
     for i in range(SLOTS):
         rr = p_first + i
-        # B: ETF 이름 (입력)
         cell = put(ws, rr, 2, None, None, kind="input")
         cell.alignment = Alignment(vertical="center", horizontal="left")
-        # C: 배분 (입력)
         put(ws, rr, 3, None, "#,##0.##", kind="input")
-        # K: 그 종목이 ETF데이터 몇 번째 줄인지
-        ws[f"K{rr}"] = f'=IF($B{rr}="",0,IFERROR(MATCH($B{rr},채택종목,0),0))'
+        ws[f"K{rr}"] = f'=IF($B{rr}="",0,IFERROR(MATCH($B{rr},선택가능종목,0),0))'
         ws[f"K{rr}"].font = f(9, color=MUTED)
-        # D: 배정 금액 — 방식에 따라 총액의 몇 % 이거나, 적어 넣은 금액 그대로
+        # 그 종목이 채택인지 기준 미달인지. 기준 미달도 고를 수 있게 했으므로
+        # 담겼는지 아닌지를 아래에서 알려 줘야 한다.
+        ws[f"L{rr}"] = f'=IF($K{rr}=0,"",INDEX({rng("M")},$K{rr}))'
+        ws[f"L{rr}"].font = f(9, color=MUTED)
         put(ws, rr, 4,
             f'=IF($K{rr}=0,0,IF({C_MODE}="비율",ROUND({C_AMT}*$C{rr}/100,0),$C{rr}))', WON)
-        # E: 매수 수량 — 정수 매수만 가능하므로 내림
-        put(ws, rr, 5,
-            f"=IF($K{rr}=0,0,ROUNDDOWN($D{rr}/INDEX({rng('D')},$K{rr}),0))", QTY)
-        # F: 실제 투자금액
+        put(ws, rr, 5, f"=IF($K{rr}=0,0,ROUNDDOWN($D{rr}/INDEX({rng('D')},$K{rr}),0))", QTY)
         put(ws, rr, 6, f"=IF($K{rr}=0,0,$E{rr}*INDEX({rng('D')},$K{rr}))", WON)
-        # G: 월 분배금(세전) = 실투자금 × 연 분배율 ÷ 12
         put(ws, rr, 7, f"=IF($K{rr}=0,0,$F{rr}*INDEX({rng('J')},$K{rr})/12)", WON)
-        # H: 월 분배금(세후)
         put(ws, rr, 8, f"=$G{rr}*(1-{C_TAX})", WON)
         if i % 2 == 1:
             for c in range(4, 9):
                 ws.cell(row=rr, column=c).fill = fill(SURFACE)
-        ws.row_dimensions[rr].height = 20
-
-    # 콤보박스를 다섯 줄 전체에 건다.
+        ws.row_dimensions[rr].height = 19
     dv.sqref = f"B{p_first}:B{p_last}"
 
-    # 합계 줄
     tot = p_last + 1
     label(ws, tot, 2, "합계", bold=True)
-    ws.cell(row=tot, column=2).fill = fill(HIGHLIGHT)
-    ws.cell(row=tot, column=2).border = BOX
     for col, letter, fmt in [
         (3, "C", "#,##0.##"), (4, "D", WON), (6, "F", WON), (7, "G", WON), (8, "H", WON),
     ]:
-        c = put(ws, tot, col, f"=SUM({letter}{p_first}:{letter}{p_last})", fmt, bold=True)
-        c.fill = fill(HIGHLIGHT)
-    # 수량 합계는 뜻이 없다(종목마다 단가가 다르다). 빈칸으로 둔다.
-    ec = ws.cell(row=tot, column=5)
-    ec.fill = fill(HIGHLIGHT)
-    ec.border = BOX
+        put(ws, tot, col, f"=SUM({letter}{p_first}:{letter}{p_last})", fmt, bold=True)
+    for c in range(2, 9):
+        cell = ws.cell(row=tot, column=c)
+        cell.fill = fill(HIGHLIGHT)
+        cell.border = Border(
+            left=cell.border.left, right=cell.border.right, bottom=cell.border.bottom,
+            top=Side(style="thin", color=LINE_DARK),
+        )
+    ws.row_dimensions[tot].height = 21
+    box(ws, hdr, 2, tot, 8)
 
-    # 배분이 어긋나면 말해 준다. 비율 합이 100 이 아니거나 금액 합이 총액을
-    # 넘으면 아래 숫자가 전부 어긋나는데, 색만으로는 눈에 안 띈다.
+    # 배분이 어긋나거나 기준 미달 종목이 담기면 말해 준다. 색만으로는
+    # 눈에 안 띄고, 아래 숫자가 전부 그 영향을 받는다.
     warn = tot + 1
     ws.merge_cells(start_row=warn, start_column=2, end_row=warn, end_column=LAST)
     wc = ws.cell(
         row=warn,
         column=2,
         value=(
-            f'=IF({C_MODE}="비율",'
-            f'IF(ABS($C{tot}-100)>0.01,"※ 배분 비율 합계가 100%가 아닙니다. 위 배분 칸을 확인하십시오.",'
-            f'""),'
+            f'=IF({C_MODE}="비율",IF(ABS($C{tot}-100)>0.01,'
+            f'"※ 배분 비율 합계가 100%가 아닙니다. 배분 칸을 확인하십시오.",""),'
             f'IF($D{tot}>{C_AMT},"※ 배분 금액 합계가 총 투자금액을 넘습니다.",""))'
         ),
     )
     wc.font = f(10, bold=True, color=ERROR)
-    ws.row_dimensions[warn].height = 18
+    ws.row_dimensions[warn].height = 17
 
-    note = warn + 1
+    warn2 = warn + 1
+    ws.merge_cells(start_row=warn2, start_column=2, end_row=warn2, end_column=LAST)
+    wc2 = ws.cell(
+        row=warn2,
+        column=2,
+        value=(
+            f'=IF(COUNTIF($L${p_first}:$L${p_last},"제외")>0,'
+            f'"※ 유동성·변동성 기준에 미달한 종목이 담겨 있습니다. [ETF데이터] 장의 제외 사유를 확인하십시오.","")'
+        ),
+    )
+    wc2.font = f(10, bold=True, color=WARNING)
+    ws.row_dimensions[warn2].height = 17
+
+    note = warn2 + 1
     ws.merge_cells(start_row=note, start_column=2, end_row=note, end_column=LAST)
     nc = ws.cell(
         row=note,
@@ -409,18 +472,17 @@ def build_proposal(wb, data, first_adopted, last_adopted):
     )
     nc.font = f(9, color=MUTED)
 
-    TOT_INVEST = f"$F${tot}"
-    TOT_M_PRE = f"$G${tot}"
-    TOT_M_POST = f"$H${tot}"
+    TOT_INVEST, TOT_M_PRE, TOT_M_POST = f"$F${tot}", f"$G${tot}", f"$H${tot}"
 
     # ── 3. 요약 ──
-    r = section(ws, note + 2, "3. 예상 분배금 요약", LAST)
+    r = section(ws, note + 2, "3", "예상 분배금 요약", LAST)
+
+    # 왼쪽: 투자금 갈래. 오른쪽: 받는 돈. 받는 돈 쪽 첫 줄만 크게 키운다 —
+    # 이 문서에서 고객이 제일 먼저 보는 숫자가 그것이다.
     left = [
         ("총 투자금액", f"={C_AMT}", WON),
         ("실제 투자금액", f"={TOT_INVEST}", WON),
         ("미투자 잔액", f"={C_AMT}-{TOT_INVEST}", WON),
-        # 빈 줄을 세지 않으려면 이름 칸이 아니라 보조 칸(K)을 본다. COUNTIF 로
-        # 글자 있는 칸을 세면 비어 있는 줄까지 세어 다섯이 나온다.
         ("담은 종목 수", f'=COUNTIF($K${p_first}:$K${p_last},">0")', '#,##0"종목"'),
     ]
     for i, (lab, formula, fmt) in enumerate(left):
@@ -428,40 +490,52 @@ def build_proposal(wb, data, first_adopted, last_adopted):
         label(ws, rr, 2, lab, bold=True)
         put(ws, rr, 3, formula, fmt)
         ws.row_dimensions[rr].height = 20
+    box(ws, r, 3, r + len(left) - 1, 3)
+
+    # 큰 수치 한 칸 (stat-callout). 라벨은 작게 위에, 수치는 크게.
+    label(ws, r, 6, "월 예상 분배금 (세전)", size=10, bold=True)
+    kpi = put(ws, r, 7, f"={TOT_M_PRE}", WON, bold=True, size=18)
+    kpi.font = f(18, bold=True, color=ORANGE)
+    for c in (6, 7, 8):
+        cell = ws.cell(row=r, column=c)
+        cell.fill = fill(SURFACE_SOFT)
+    ws.merge_cells(start_row=r, start_column=7, end_row=r, end_column=8)
+    ws.row_dimensions[r].height = 34
+    box(ws, r, 6, r, 8)
 
     right = [
-        ("월 예상 분배금 (세전)", f"={TOT_M_PRE}", WON),
         ("월 예상 분배금 (세후)", f"={TOT_M_POST}", WON),
         ("연 예상 분배금 (세전)", f"={TOT_M_PRE}*12", WON),
         ("연 예상 분배금 (세후)", f"={TOT_M_POST}*12", WON),
     ]
-    for i, (lab, formula, fmt) in enumerate(right):
-        rr = r + i
-        label(ws, rr, 6, lab, bold=True)
-        c = put(ws, rr, 7, formula, fmt, bold=(i == 0), size=11 if i == 0 else 10)
-        if i == 0:
-            c.fill = fill(HIGHLIGHT)
-    r += 4
-
-    # 가중평균 수익률 — 포트폴리오 전체를 하나로 봤을 때의 수익률이다.
-    W_ANN = f"$C${r}"
-    rate = [
-        ("연 수익률 (세전, 가중평균)", f"=IF({TOT_INVEST}=0,0,{TOT_M_PRE}*12/{TOT_INVEST})", PCT),
-        ("연 수익률 (세후, 가중평균)", f"=IF({TOT_INVEST}=0,0,{TOT_M_POST}*12/{TOT_INVEST})", PCT),
-    ]
-    for i, (lab, formula, fmt) in enumerate(rate):
-        rr = r + i
-        label(ws, rr, 2, lab, bold=True)
-        put(ws, rr, 3, formula, fmt)
-        ws.row_dimensions[rr].height = 20
-    rate2 = [
-        ("월 수익률 (세전)", f"=IF({TOT_INVEST}=0,0,{TOT_M_PRE}/{TOT_INVEST})", PCT3),
-        ("월 수익률 (세후)", f"=IF({TOT_INVEST}=0,0,{TOT_M_POST}/{TOT_INVEST})", PCT3),
-    ]
-    for i, (lab, formula, fmt) in enumerate(rate2):
+    for i, (lab, formula, fmt) in enumerate(right, start=1):
         rr = r + i
         label(ws, rr, 6, lab, bold=True)
         put(ws, rr, 7, formula, fmt)
+        ws.row_dimensions[rr].height = 20
+    box(ws, r + 1, 7, r + 3, 7)
+    r += 4
+
+    W_ANN = f"$C${r}"
+    for i, (lab, formula, fmt) in enumerate([
+        ("연 수익률 (세전, 가중평균)", f"=IF({TOT_INVEST}=0,0,{TOT_M_PRE}*12/{TOT_INVEST})", PCT),
+        ("연 수익률 (세후, 가중평균)", f"=IF({TOT_INVEST}=0,0,{TOT_M_POST}*12/{TOT_INVEST})", PCT),
+    ]):
+        rr = r + i
+        label(ws, rr, 2, lab, bold=True)
+        c = put(ws, rr, 3, formula, fmt, bold=(i == 0))
+        if i == 0:
+            c.font = f(11, bold=True, color=BLUE)
+        ws.row_dimensions[rr].height = 20
+    box(ws, r, 3, r + 1, 3)
+    for i, (lab, formula, fmt) in enumerate([
+        ("월 수익률 (세전)", f"=IF({TOT_INVEST}=0,0,{TOT_M_PRE}/{TOT_INVEST})", PCT3),
+        ("월 수익률 (세후)", f"=IF({TOT_INVEST}=0,0,{TOT_M_POST}/{TOT_INVEST})", PCT3),
+    ]):
+        rr = r + i
+        label(ws, rr, 6, lab, bold=True)
+        put(ws, rr, 7, formula, fmt)
+    box(ws, r, 7, r + 1, 7)
     r += 2
 
     label(ws, r, 2,
@@ -471,23 +545,17 @@ def build_proposal(wb, data, first_adopted, last_adopted):
     r += 2
 
     # ── 4. 금액별 표 ──
-    r = section(ws, r, "4. 총 투자금액별 예상 분배금 (위 포트폴리오 구성을 그대로 두고 금액만 바꿨을 때)", LAST)
-    heads4 = ["투자금액 구간", "월 분배금(세전)", "월 분배금(세후)", "연 분배금(세전)", "연 분배금(세후)"]
-    for i, h in enumerate(heads4, start=2):
-        c = ws.cell(row=r, column=i, value=h)
-        c.font = f(10, bold=True)
-        c.fill = fill(SOFT_ORANGE)
-        c.alignment = Alignment(horizontal="center", vertical="center", wrap_text=True)
-        c.border = BOX
-    ws.row_dimensions[r].height = 28
+    r = section(ws, r, "4", "총 투자금액별 예상 분배금  (위 구성을 그대로 두고 금액만 바꿨을 때)", LAST)
+    table_head(ws, r,
+               ["투자금액 구간", "월 분배금(세전)", "월 분배금(세후)", "연 분배금(세전)", "연 분배금(세후)"],
+               2, height=28)
     r += 1
-
     tiers = [10_000_000, 30_000_000, 50_000_000, 100_000_000,
              200_000_000, 300_000_000, 500_000_000, 1_000_000_000]
     for i, amt in enumerate(tiers):
         rr = r + i
         a = put(ws, rr, 2, amt, WON, kind="source")
-        a.font = f(10, bold=True)
+        a.font = f(10, bold=True, color=INK)
         put(ws, rr, 3, f"=$B{rr}*{W_ANN}/12", WON)
         put(ws, rr, 4, f"=$C{rr}*(1-{C_TAX})", WON)
         put(ws, rr, 5, f"=$B{rr}*{W_ANN}", WON)
@@ -495,57 +563,48 @@ def build_proposal(wb, data, first_adopted, last_adopted):
         if i % 2 == 1:
             for c in range(2, 7):
                 ws.cell(row=rr, column=c).fill = fill(SURFACE)
+        ws.row_dimensions[rr].height = 19
+    box(ws, r - 1, 2, r + len(tiers) - 1, 6)
     r += len(tiers)
     label(ws, r, 2,
-          "※ 위 표는 2. 의 포트폴리오 구성(종목과 비중)을 그대로 두고 금액만 바꾼 값입니다. "
-          "단주 절사는 반영하지 않은 근사치라 2·3. 의 값과 몇 천 원 차이가 날 수 있습니다.",
+          "※ 단주 절사를 반영하지 않은 근사치라 2·3. 의 값과 몇 천 원 차이가 날 수 있습니다.",
           size=9, color=MUTED)
     r += 2
 
-    # ── 5. 채택 종목 비교 ──
-    shown = min(adopted_rows, COMPARE_TOP)
-    title5 = "5. 채택 ETF 비교 (1억원 단독 투자 기준)"
-    if shown < adopted_rows:
-        title5 += f" — 연 분배율 상위 {shown}종목 / 전체 {adopted_rows}종목"
-    r = section(ws, r, title5, LAST)
-    # 종목코드는 뺐다. B 부터 시작하면 여덟 칸이 안 나오는데, 고객이 보는
-    # 자리에서는 코드보다 이름·분배율·변동성이 먼저다. 코드는 [ETF데이터] 에 있다.
-    heads2 = ["종목명", "현재가", "연 분배율", "월 분배율",
-              "월 분배금(세전)", "월 분배금(세후)", vol_label(data, short=True)]
-    for i, h in enumerate(heads2, start=2):
-        c = ws.cell(row=r, column=i, value=h)
-        c.font = f(10, bold=True)
-        c.fill = fill(SOFT_ORANGE)
-        c.alignment = Alignment(horizontal="center", vertical="center", wrap_text=True)
-        c.border = BOX
-    ws.row_dimensions[r].height = 30
+    # ── 5. 종목 비교 ──
+    n_adopted = last_adopted - first_adopted + 1
+    shown = min(n_adopted, COMPARE_TOP)
+    r = section(ws, r, "5",
+                f"채택 ETF 비교  (1억원 단독 투자 기준 · 연 분배율 상위 {shown}종목 / 채택 {n_adopted}종목)",
+                LAST)
+    table_head(ws, r,
+               ["종목명", "현재가", "연 분배율", "월 분배율",
+                "월 분배금(세전)", "월 분배금(세후)", vol_label(data, short=True)], 2)
     r += 1
-
     for i in range(shown):
-        rr = r + i
-        src = first_adopted + i
+        rr, src = r + i, first_adopted + i
         put(ws, rr, 2, f"='{D}'!$A${src}", None, kind="source")
+        ws.cell(row=rr, column=2).font = f(10, color=INK)
         put(ws, rr, 3, f"='{D}'!$D${src}", WON)
         put(ws, rr, 4, f"='{D}'!$J${src}", PCT)
         put(ws, rr, 5, f"='{D}'!$J${src}/12", PCT3)
-        # 1억을 그 종목 현재가로 나눈 수량 기준. 금액을 그냥 곱하면 단주를
-        # 살 수 있다는 뜻이 되어, 위 표들과 숫자가 어긋난다.
         put(ws, rr, 6, f"=IF($C{rr}=0,0,ROUNDDOWN(100000000/$C{rr},0)*$C{rr}*$D{rr}/12)", WON)
         put(ws, rr, 7, f"=$F{rr}*(1-{C_TAX})", WON)
         put(ws, rr, 8, f"='{D}'!$H${src}", PCT)
         if i % 2 == 1:
             for c in range(2, 9):
                 ws.cell(row=rr, column=c).fill = fill(SURFACE)
+        ws.row_dimensions[rr].height = 19
+    box(ws, r - 1, 2, r + shown - 1, 8)
     r += shown
-
-    rules = data.get("rules", {})
-    label(ws, r + 1, 2,
-          "※ 유동성·변동성 기준을 통과한 종목만 실었습니다. 제외 종목과 사유는 [ETF데이터] 장에 있습니다.",
+    label(ws, r, 2,
+          "※ 드롭다운에는 기준 미달 종목까지 전부 담겨 있습니다. 위 표에는 기준을 통과한 종목만 실었습니다.",
           size=9, color=MUTED)
-    r += 3
+    r += 2
 
     # ── 6. 유의사항 ──
-    r = section(ws, r, "6. 유의사항", LAST)
+    rules = data.get("rules", {})
+    r = section(ws, r, "6", "유의사항", LAST)
     notes = [
         "이 자료는 투자 권유가 아니라 참고 자료입니다. 최종 투자 판단과 그 결과는 투자자 본인에게 귀속됩니다.",
         "ETF 는 예금자보호법의 보호를 받지 않으며, 원금 손실이 발생할 수 있습니다.",
@@ -557,90 +616,112 @@ def build_proposal(wb, data, first_adopted, last_adopted):
         "수량은 정수 매수를 가정해 내림 처리했습니다. 남는 금액은 '미투자 잔액'에 표시됩니다.",
         "여러 종목에 나눠 담아도 분배 시기는 종목마다 다릅니다. 매월 같은 날 한꺼번에 들어오지 않습니다.",
         "목록에는 커버드콜뿐 아니라 리츠·채권형·배당주·파킹형 월배당 ETF 가 함께 있습니다. 분배 재원과 위험이 서로 다르므로 [ETF데이터] 장의 '유형'·'자산군' 칸을 확인하십시오.",
+        "드롭다운에는 유동성·변동성 기준에 미달한 종목도 담겨 있습니다. 담으면 2. 아래에 안내가 뜹니다.",
     ]
     for i, t in enumerate(notes):
-        ws.merge_cells(start_row=r + i, start_column=1, end_row=r + i, end_column=LAST)
-        c = ws.cell(row=r + i, column=1, value=f"  · {t}")
+        ws.merge_cells(start_row=r + i, start_column=2, end_row=r + i, end_column=LAST)
+        c = ws.cell(row=r + i, column=2, value=f"· {t}")
         c.font = f(9, color=INK if i < 2 else MUTED)
-        c.alignment = Alignment(vertical="center", wrap_text=False)
-        ws.row_dimensions[r + i].height = 17
+        c.alignment = Alignment(vertical="center")
+        ws.row_dimensions[r + i].height = 16
     r += len(notes) + 1
 
-    src_line = (
-        f"  자료 출처: ETFCHECK (www.etfcheck.co.kr) · 수집 시각 {data.get('collectedAt', '')} · "
-        f"대상: 국내 상장 월배당 ETF · 채택 기준: 순자산 {rules.get('minAum', 0)/1e8:,.0f}억원 이상, "
-        f"60일 평균거래대금 {rules.get('minTurnover', 0)/1e8:,.0f}억원 이상, "
-        # "1년 변동성" 이라고 박지 않는다. 원천이 한 해치를 주지 않은 달에
-        # 그 글자가 거짓이 된다. 정확한 창은 [ETF데이터] 장 머리와 원천 json 에 있다.
-        f"연환산 변동성 {rules.get('maxVol', 0):g}% 이하, 분배 이력 {rules.get('minTrackMonths', 0)}개월 이상"
+    ws.merge_cells(start_row=r, start_column=2, end_row=r, end_column=LAST)
+    c = ws.cell(
+        row=r,
+        column=2,
+        value=(
+            f"자료 출처 ETFCHECK (www.etfcheck.co.kr) · 수집 {data.get('collectedAt', '')} · "
+            f"대상 국내 상장 월배당 ETF · 채택 기준 순자산 {rules.get('minAum', 0)/1e8:,.0f}억원 이상, "
+            f"60일 평균거래대금 {rules.get('minTurnover', 0)/1e8:,.0f}억원 이상, "
+            f"연환산 변동성 {rules.get('maxVol', 0):g}% 이하, 분배 이력 {rules.get('minTrackMonths', 0)}개월 이상"
+        ),
     )
-    ws.merge_cells(start_row=r, start_column=1, end_row=r, end_column=LAST)
-    c = ws.cell(row=r, column=1, value=src_line)
-    c.font = f(9, color=MUTED)
+    c.font = f(8.5, color=MUTED)
+    ws.row_dimensions[r].height = 15
 
-    ws.freeze_panes = "A4"
-
-    # 인쇄. 이 장은 고객에게 건네는 한 장이라 대개 인쇄하거나 PDF 로 저장한다.
-    # 기본값으로 두면 A4 에 넘쳐 표가 두 쪽으로 갈라진다.
+    ws.freeze_panes = "A6"
     ws.page_setup.orientation = "portrait"
     ws.page_setup.paperSize = ws.PAPERSIZE_A4
     ws.page_setup.fitToWidth = 1
-    ws.page_setup.fitToHeight = 0  # 세로는 넘치면 다음 장으로
+    ws.page_setup.fitToHeight = 0
     ws.sheet_properties.pageSetUpPr.fitToPage = True
     ws.print_options.horizontalCentered = True
-    ws.page_margins.left = ws.page_margins.right = 0.4
-    ws.page_margins.top = ws.page_margins.bottom = 0.5
+    ws.page_margins.left = ws.page_margins.right = 0.35
+    ws.page_margins.top = ws.page_margins.bottom = 0.45
     ws.print_area = f"A1:H{r}"
-    # 표가 다음 장으로 넘어가도 머리글이 따라가게 한다.
-    ws.print_title_rows = "1:3"
+    ws.print_title_rows = "1:5"
+    ws.oddFooter.right.text = "&P / &N"
+    ws.oddFooter.right.size = 8
+    ws.oddFooter.right.color = "6C6C6C"
     return ws, p_first, p_last
 
 
-def build_guide(wb, data, n_adopted, n_rejected):
+def build_guide(wb, data, n_adopted, n_rejected, n_bad):
     ws = wb.create_sheet("사용법")
-    ws.column_dimensions["A"].width = 3
-    ws.column_dimensions["B"].width = 100
+    ws.column_dimensions["A"].width = 2.5
+    ws.column_dimensions["B"].width = 104
     ws.sheet_view.showGridLines = False
-    ws.cell(row=1, column=2, value="이 파일을 쓰는 법").font = f(16, bold=True, color=ORANGE)
+
+    for c in range(1, 3):
+        ws.cell(row=1, column=c).fill = fill(ORANGE)
+    t = ws.cell(row=1, column=2, value="이 파일을 쓰는 법")
+    t.font = Font(name=FONT, size=16, bold=True, color="FFFFFF")
+    t.alignment = Alignment(vertical="center")
+    ws.row_dimensions[1].height = 34
+    for c in range(1, 3):
+        ws.cell(row=2, column=c).fill = fill(BLUE)
+    ws.row_dimensions[2].height = 3
+
     body = [
         "",
-        "1. [제안서] 장의 노란 칸만 고치면 됩니다.",
+        ("1. [제안서] 장의 노란 칸만 고치면 됩니다.", "h"),
         "     · 고객명 — 그대로 인쇄됩니다.",
         "     · 총 투자금액 — 원 단위로 넣으십시오. 예: 100000000",
-        "     · 배분 방식 — '비율' 또는 '금액'. 아래 표의 배분 칸 뜻이 이것에 따라 바뀝니다.",
+        "     · 배분 방식 — '비율' 또는 '금액'. 포트폴리오 표의 배분 칸 뜻이 이것에 따라 바뀝니다.",
         "     · 배당소득세율 — 기본 15.4%. 금융소득종합과세 대상자면 여기만 바꾸십시오.",
         "",
-        "2. 포트폴리오는 다섯 줄까지 담을 수 있습니다.",
+        (f"2. 포트폴리오는 {SLOTS}줄까지 담을 수 있습니다.", "h"),
         "     · 투자 ETF 칸을 누르면 ▼ 가 나옵니다. 목록에서 고르십시오.",
-        "     · 배분 방식이 '비율' 이면 배분 칸에 %를 넣습니다. 합이 100 이 되어야 합니다.",
+        "     · '비율' 이면 배분 칸에 %를 넣습니다. 합이 100 이 되어야 합니다.",
         "       예) 50 / 30 / 20 → 총 투자금액을 5:3:2 로 나눕니다.",
-        "     · 배분 방식이 '금액' 이면 배분 칸에 원 단위 금액을 직접 넣습니다.",
+        "     · '금액' 이면 배분 칸에 원 단위 금액을 직접 넣습니다.",
         "       예) 60000000 / 25000000 / 15000000",
         "     · 한 종목만 담으려면 첫 줄에만 넣고 배분을 100 으로 두십시오.",
         "     · 빈 줄은 계산에서 빠집니다. 줄을 지울 필요가 없습니다.",
-        "     · 배분이 어긋나면(비율 합이 100 이 아니거나 금액 합이 총액을 넘으면)",
-        "       합계 줄 아래에 빨간 글씨로 알려 줍니다.",
+        "     · 배분이 어긋나면(비율 합 ≠ 100, 금액 합 > 총액) 합계 줄 아래에 빨간 글씨로 알려 줍니다.",
         "",
-        "3. 나머지 칸은 전부 수식입니다. 손으로 고치면 다음 갱신 때 되돌아갑니다.",
+        ("3. 드롭다운에는 고를 수 있는 종목이 전부 담겨 있습니다.", "h"),
+        f"     · 채택 {n_adopted}종목 — 유동성·변동성·분배이력 기준을 통과한 종목",
+        f"     · 기준 미달 {n_rejected}종목 — 통과하지 못했지만 고를 수는 있습니다.",
+        "       담으면 합계 줄 아래에 노란 글씨로 알려 주고, 사유는 [ETF데이터] 장 '제외 사유' 칸에 있습니다.",
+        f"     · 선택 불가 {n_bad}종목 — 연 분배율을 낼 수 없는 종목이라 드롭다운에 없습니다.",
+        "       (분배 이력이 열두 달을 못 채웠거나 수집이 실패한 종목입니다. 사유는 [ETF데이터] 장에 있습니다.)",
+        "     · 커버드콜인지, 무슨 자산군인지는 [ETF데이터] 장의 '유형'·'자산군' 칸에 있습니다.",
         "",
-        "4. 목록에 담긴 ETF",
-        f"     · 채택 {n_adopted}종목 — 유동성·변동성 기준을 통과한 국내 상장 월배당 ETF",
-        f"     · 제외 {n_rejected}종목 — 사유는 [ETF데이터] 장 '제외 사유' 칸에 적혀 있습니다.",
-        "     · 커버드콜인지 아닌지는 [ETF데이터] 장 맨 오른쪽 '유형' 칸에 있습니다.",
+        ("4. 나머지 칸은 전부 수식입니다.", "h"),
+        "     손으로 고치면 다음 갱신 때 되돌아갑니다.",
         "",
-        "5. 갱신",
-        "     매월 1일 오전(KST)에 ETFCHECK 에서 월분배율을 다시 받아 이 파일을 새로 만듭니다.",
-        "     고객명·투자금액·포트폴리오는 갱신 때 초기값으로 돌아가므로,",
-        "     고객별 사본은 따로 저장해 두십시오.",
+        ("5. 갱신", "h"),
+        "     매월 1일 오전(KST)에 ETFCHECK 에서 분배율을 다시 받아 이 파일을 새로 만듭니다.",
+        "     고객명·투자금액·포트폴리오는 갱신 때 초기값으로 돌아가므로, 고객별 사본은 따로 저장해 두십시오.",
         "",
-        "6. 값이 이상해 보이면",
+        ("6. 값이 이상해 보이면", "h"),
         "     [ETF데이터] 장을 먼저 보십시오. 그 장이 원천이고, [제안서] 장은 그 장을 가리킬 뿐입니다.",
         "     그 장의 값이 ETFCHECK 화면과 다르면 수집이 어긋난 것이니 알려 주십시오.",
     ]
-    for i, line in enumerate(body, start=2):
-        c = ws.cell(row=i, column=2, value=line)
-        c.font = f(11, bold=line[:2].strip().endswith("."), color=INK)
-        ws.row_dimensions[i].height = 19
+    r = 4
+    for line in body:
+        text, kind = line if isinstance(line, tuple) else (line, "")
+        c = ws.cell(row=r, column=2, value=text)
+        if kind == "h":
+            c.font = f(11, bold=True, color=BLUE)
+            ws.row_dimensions[r].height = 24
+        else:
+            c.font = f(10, color=INK if text.strip() else MUTED)
+            ws.row_dimensions[r].height = 18
+        c.alignment = Alignment(vertical="center")
+        r += 1
     return ws
 
 
@@ -649,26 +730,24 @@ def main():
     wb = Workbook()
     wb.remove(wb.active)
 
-    ds, first, last, n_ok, n_no = build_data_sheet(wb, data)
-    # 콤보박스가 가리킬 이름. 종목 수가 달라져도 이름만 다시 잡으면 된다.
+    ds, first_adopted, last_adopted, last_sel, n_ok, n_rej, n_bad = build_data_sheet(wb, data)
+    # 드롭다운이 가리킬 이름. 채택 + 기준 미달(값이 온전한 것)까지 담는다.
+    # 수집 실패 종목은 그 뒤에 있어 이 구간에 들어오지 않는다.
     wb.defined_names.add(
-        DefinedName("채택종목", attr_text=f"'ETF데이터'!$A${first}:$A${last}")
+        DefinedName("선택가능종목", attr_text=f"'ETF데이터'!$A${first_adopted}:$A${last_sel}")
     )
-    ws, p_first, p_last = build_proposal(wb, data, first, last)
-    build_guide(wb, data, n_ok, n_no)
+    ws, p_first, p_last = build_proposal(wb, data, first_adopted, last_sel, first_adopted, last_adopted)
+    build_guide(wb, data, n_ok, n_rej, n_bad)
 
-    # 첫 줄에 종목 하나를 미리 넣어 둔다. 다섯 줄을 전부 비워 두면 열자마자
+    # 첫 줄에 종목 하나를 미리 넣어 둔다. 열 줄을 전부 비워 두면 열자마자
     # 0원짜리 제안서가 뜬다.
     #
-    # 분배율이 제일 높은 종목을 기본값으로 두지 않는다. 그 자리는 대개 한
-    # 종목에 몰아 넣은 커버드콜이 차지하는데, 아무 손도 대지 않고 인쇄한
-    # 제안서가 그 종목을 권하는 꼴이 된다. 순자산이 가장 큰 종목 —
-    # 가장 무난한 것 — 을 한 줄만 넣고, 나머지 네 줄은 비워 둔다. 무엇을
-    # 어떻게 섞을지는 사람이 정할 일이지 이 파일이 정할 일이 아니다.
-    # 파킹형(단기자금, 분류 0108)은 기본 선택에서 뺀다. 월배당 전체로 넓히면서
-    # CD금리·KOFR 같은 종목이 들어왔는데, 순자산이 6조를 넘어 "순자산 최대" 로
-    # 고르면 언제나 그것이 뽑힌다. 월마다 돈이 나오기는 해도 월지급 제안서를
-    # 그것으로 열 수는 없다 — 목록에는 그대로 두고, 기본값에서만 뺀다.
+    # 분배율 1위를 기본값으로 두지 않는다. 그 자리는 대개 한 종목에 몰아 넣은
+    # 커버드콜이 차지하는데, 아무 손도 대지 않고 인쇄한 제안서가 그 종목을
+    # 권하는 꼴이 된다. 파킹형(단기자금, 분류 0108)도 뺀다 — 순자산이 6조를
+    # 넘어 "순자산 최대" 로 고르면 언제나 CD금리 펀드가 뽑힌다.
+    # 남은 것 중 순자산 최대, 곧 가장 무난한 것 하나만 넣고 나머지는 비워 둔다.
+    # 무엇을 어떻게 섞을지는 사람이 정할 일이지 이 파일이 정할 일이 아니다.
     pool = [x for x in data["items"] if x.get("adopted")]
     not_parking = [x for x in pool if (x.get("assetClassCode") or "") != "0108"]
     default = max(not_parking or pool, key=lambda x: (x.get("aum") or 0))
@@ -678,7 +757,10 @@ def main():
     wb.active = wb["제안서"]
     OUT.parent.mkdir(parents=True, exist_ok=True)
     wb.save(OUT)
-    print(f"만들었습니다: {OUT}  (채택 {n_ok}종목 / 제외 {n_no}종목)")
+    print(
+        f"만들었습니다: {OUT}  "
+        f"(채택 {n_ok} / 기준 미달 {n_rej} / 선택 불가 {n_bad}, 드롭다운 {n_ok + n_rej}종목)"
+    )
 
 
 if __name__ == "__main__":

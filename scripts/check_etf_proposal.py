@@ -101,10 +101,23 @@ def main() -> int:  # noqa: PLR0915
         print(f"[중단] {XLSX} 가 없습니다.")
         return 1
     data = json.loads(SRC.read_text(encoding="utf-8"))
-    adopted = sorted(
-        [x for x in data["items"] if x.get("adopted")],
-        key=lambda x: -(x.get("distTtmRate") or 0),
+    items = data["items"]
+    by_yield = lambda x: -(x.get("distTtmRate") or 0)  # noqa: E731
+    adopted = sorted([x for x in items if x.get("adopted")], key=by_yield)
+    # 드롭다운은 채택 + 기준 미달(값이 온전한 것)을 담는다. 기준은 우리가
+    # 정한 선일 뿐이라 그 밖의 종목도 고를 수 있게 열어 두었다.
+    usable_rejected = sorted(
+        [x for x in items
+         # 연 분배율이 없는 종목은 뺀다. 이 문서가 내놓는 값이 전부
+         # "실투자금 × 연 분배율 ÷ 12" 이라, 그 값이 없으면 담아도 0원이
+         # 나온다. 0원을 보여 주는 것은 "분배를 안 한다" 는 거짓말이 된다.
+         # 분배 이력이 열두 달을 못 채운 종목이 대부분이고, 사유는
+         # [ETF데이터] 장에 그대로 남는다.
+         if not x.get("adopted") and x.get("dataComplete") is not False
+         and (x.get("price") or 0) > 0 and x.get("distTtmRate") is not None],
+        key=by_yield,
     )
+    selectable = adopted + usable_rejected
 
     wb = load_workbook(XLSX)
     for name in ("제안서", "ETF데이터", "사용법"):
@@ -116,31 +129,36 @@ def main() -> int:  # noqa: PLR0915
     ws, ds = wb["제안서"], wb["ETF데이터"]
 
     # ── 1. 채택 구간 ──
-    dn = wb.defined_names.get("채택종목")
+    dn = wb.defined_names.get("선택가능종목")
     if dn is None:
-        print("이름 '채택종목' 이 없습니다 — 콤보박스가 가리킬 데가 없습니다.")
+        print("이름 '선택가능종목' 이 없습니다 — 콤보박스가 가리킬 데가 없습니다.")
         return 1
     m = re.search(r"\$A\$(\d+):\$A\$(\d+)", dn.attr_text)
     first, last = int(m.group(1)), int(m.group(2))
     n = last - first + 1
-    if n != len(adopted):
-        fail(f"채택 구간이 {n}행인데 원천의 채택 종목은 {len(adopted)}건입니다.")
+    if n != len(selectable):
+        fail(f"선택 구간이 {n}행인데 고를 수 있는 종목은 {len(selectable)}건입니다.")
+    # 채택 종목은 그 구간의 **앞쪽**에 끊기지 않게 있어야 한다. 비교표가
+    # 거기를 그대로 훑기 때문이다.
+    last_adopted = first + len(adopted) - 1
 
     # ── 2. 콤보박스 ──
     # 콤보박스는 둘이다 — ETF 목록과 배분 방식. 순서를 믿지 말고 무엇을
     # 가리키는지로 고른다.
     dvs = [d for d in ws.data_validations.dataValidation if d.type == "list"]
-    dv_etf = next((d for d in dvs if "채택종목" in (d.formula1 or "")), None)
+    dv_etf = next((d for d in dvs if "선택가능종목" in (d.formula1 or "")), None)
     dv_mode = next((d for d in dvs if "비율" in (d.formula1 or "")), None)
     if dv_etf is None:
-        fail("[제안서] 에 ETF 목록 콤보박스(채택종목)가 없습니다.")
+        fail("[제안서] 에 ETF 목록 콤보박스(선택가능종목)가 없습니다.")
     else:
         cells = str(dv_etf.sqref)
         sel = ws[cells.split()[0].split(":")[0]]
         if not sel.value:
             fail(f"콤보박스 첫 줄 {sel.coordinate} 이 비어 있습니다 — 열자마자 0원 제안서가 됩니다.")
+        elif sel.value not in [x["name"] for x in selectable]:
+            fail(f"미리 넣어 둔 종목 '{sel.value}' 가 선택 목록에 없습니다.")
         elif sel.value not in [x["name"] for x in adopted]:
-            fail(f"미리 넣어 둔 종목 '{sel.value}' 가 채택 목록에 없습니다.")
+            fail(f"미리 넣어 둔 종목 '{sel.value}' 가 기준 미달 종목입니다 — 기본값은 채택 종목이어야 합니다.")
         else:
             notes.append(f"ETF 콤보박스 {cells} · 첫 줄 '{sel.value}' · 후보 {n}종목")
     if dv_mode is None:
@@ -206,13 +224,13 @@ def main() -> int:  # noqa: PLR0915
     # "전부" 가 아니라 "위에서부터 끊기지 않고" 를 본다.
     if seen and seen != list(range(first, first + len(seen))):
         fail(f"비교표가 채택 종목을 위에서부터 순서대로 훑지 않습니다: {seen}")
+    elif seen and seen[-1] > last_adopted:
+        fail(f"비교표가 채택 구간(~{last_adopted}행)을 넘어 기준 미달 종목까지 싣고 있습니다.")
     elif seen:
-        notes.append(
-            f"비교표 {len(seen)}행이 채택 {last - first + 1}종목 중 위 {len(seen)}개와 일대일로 맞습니다."
-        )
+        notes.append(f"비교표 {len(seen)}행이 채택 {len(adopted)}종목 중 위 {len(seen)}개와 맞습니다.")
 
     # ── 5. 시트 값이 원천과 같은가 ──
-    for i, item in enumerate(adopted):
+    for i, item in enumerate(selectable):
         rw = first + i
         for col, key, div in [
             ("A", "name", None), ("B", "code", None), ("C", "manager", None),
@@ -228,7 +246,7 @@ def main() -> int:  # noqa: PLR0915
                     fail(f"ETF데이터 {col}{rw} ({DATA_COLS[col]}): 시트 {got} ≠ 원천 {want}/{div}")
             elif got != want:
                 fail(f"ETF데이터 {col}{rw} ({DATA_COLS[col]}): 시트 '{got}' ≠ 원천 '{want}'")
-    notes.append(f"ETF데이터 {len(adopted)}행이 원천 json 과 일치합니다.")
+    notes.append(f"ETF데이터 {len(selectable)}행(채택 {len(adopted)} + 기준 미달 {len(usable_rejected)})이 원천 json 과 일치합니다.")
 
     # ── 6. 실제로 계산해 손계산과 맞춰 본다 ──
     v = evaluate(XLSX)
@@ -259,16 +277,17 @@ def main() -> int:  # noqa: PLR0915
     if p_hdr is None:
         fail("포트폴리오 표(머리글 '투자 ETF')를 찾지 못했습니다.")
         return report()
-    by_name = {x["name"]: x for x in adopted}
+    by_name = {x["name"]: x for x in selectable}
+    # 합계 줄은 **라벨로** 찾는다. 줄 수를 박아 두었더니 담을 수 있는 칸을
+    # 다섯에서 열로 늘린 순간 빈 줄에서 멈춰 엉뚱한 줄을 합계로 봤다.
     slots = []
     rr = p_hdr + 1
-    while ws[f"B{rr}"].value is not None or ws[f"C{rr}"].value is not None or rr <= p_hdr + 5:
-        if isinstance(ws[f"B{rr}"].value, str) and ws[f"B{rr}"].value.strip() == "합계":
+    while rr <= p_hdr + 60:
+        head = ws[f"B{rr}"].value          # `v` 는 계산 결과 사전이다. 덮어쓰면 안 된다.
+        if isinstance(head, str) and head.strip() == "합계":
             break
         slots.append(rr)
         rr += 1
-        if rr > p_hdr + 40:
-            break
     tot_row = rr
 
     tot_invest = tot_pre = 0.0
@@ -283,7 +302,7 @@ def main() -> int:  # noqa: PLR0915
             continue
         it = by_name.get(name)
         if it is None:
-            fail(f"포트폴리오 {rr}행의 '{name}' 이 채택 목록에 없습니다.")
+            fail(f"포트폴리오 {rr}행의 '{name}' 이 선택 목록에 없습니다.")
             continue
         filled += 1
         alloc_amt = round(amount * alloc / 100) if mode == "비율" else alloc
