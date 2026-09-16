@@ -88,10 +88,22 @@ jobs:
       # 미리보기 PDF. 엑셀을 열지 않고도 이번 달 제안서가 어떻게 생겼는지
       # 볼 수 있어야 한다 — 표가 두 쪽으로 갈라졌다거나 칸이 밀렸다거나
       # 하는 것은 숫자 검사로는 안 잡히고 눈으로만 보인다.
-      # 러너에는 리브레오피스가 깔려 있다.
+      #
+      # ubuntu-latest 가 24.04 로 올라가면서 리브레오피스가 이미지에서 빠졌다.
+      # 처음에 "러너에 깔려 있겠지" 하고 그냥 불렀다가, continue-on-error 에
+      # 가려 조용히 건너뛰어졌다. 있는지 보고 없으면 받는다.
+      - name: 리브레오피스 (미리보기용)
+        if: steps.collect.outcome == 'success'
+        run: |
+          if command -v soffice >/dev/null; then
+            echo "이미 있습니다: $(soffice --version 2>/dev/null | head -1)"
+          else
+            sudo apt-get update -qq
+            sudo apt-get install -y -qq --no-install-recommends libreoffice-calc fonts-noto-cjk
+          fi
+
       - name: 미리보기 PDF
         if: steps.collect.outcome == 'success'
-        continue-on-error: true
         run: |
           soffice --headless --norestore --convert-to pdf \
             --outdir /tmp/pdf 고객제안서_월배당ETF.xlsx
