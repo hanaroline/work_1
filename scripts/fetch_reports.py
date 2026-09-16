@@ -903,7 +903,14 @@ def fetch_detail(rep, dump_dir=None, alien=()):
         op = opinion(body, rep["title"])
         if op:
             rep["opinion"] = op
-    if not rep.get("target_move"):
+    # 목표주가 상하향은 **종목을 가진 리포트**에서만 인정한다. 시황·투자정보
+    # 에서는 「목표주가 상향」이 종목을 올렸다는 뜻이 아니라 팩터 이름으로
+    # 적힌다. 9/16 하나증권 「종목을 고르지 않는 시장」(투자정보)이 그랬다 —
+    # 「고CAPEX, 목표주가 상향, 기관 1개월 순매수 등 알파 액션 팩터는 뚜렷한
+    # 하락세임」. 올렸다는 말이 아니라 그 이름의 팩터가 부진하다는 말인데,
+    # 머리 요약에 「목표주가는 1건 상향()」으로 실릴 뻔했다 — 가리킬 종목이
+    # 없으니 괄호까지 비었다. 빈 괄호가 오히려 다행이었다.
+    if not rep.get("target_move") and rep.get("stock"):
         move = _TP_MOVE.search(body + " " + rep["title"])
         if move:
             rep["target_move"] = move.group(1)
@@ -1612,6 +1619,10 @@ def drop_unsourced(r):
     # 붙으므로 근거가 있지만, **지난 판에서 넘어온 줄**에는 잘못된 판정이
     # 그대로 실려 온다(작성일 주가를 직전 목표가로 잘못 읽던 때의 값).
     # 발췌에도 제목에도 그런 말이 없으면 댈 근거가 없으므로 지운다.
+    # 가리킬 종목이 없는 상하향도 지운다 — 시황·투자정보에 팩터 이름으로
+    # 적힌 「목표주가 상향」이 지난 판에서 넘어올 수 있다(9/16).
+    if r.get("target_move") and not r.get("stock"):
+        r.pop("target_move", None)
     if r.get("target_move"):
         hay = (r.get("excerpt") or "") + " " + (r.get("title") or "")
         if not _TP_MOVE.search(hay):
