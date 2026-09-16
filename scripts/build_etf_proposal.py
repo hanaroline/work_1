@@ -48,6 +48,11 @@ INPUT_FONT = "0000FF"    # 입력값은 파란 글씨 (금융모델 관례)
 
 FONT = "Spoqa Han Sans Neo"  # 브랜드 지정 서체. 없으면 뷰어가 대체한다.
 
+# 비교표에 싣는 종목 수. 채택 종목은 60개 가까이 되는데 그걸 다 실으면
+# 고객이 받는 한 장이 표 하나로 덮인다. 콤보박스에는 전부 담기고, 남은
+# 종목은 [ETF데이터] 장에 그대로 있다.
+COMPARE_TOP = 12
+
 WON = '#,##0"원"'
 WON_PLAIN = "#,##0"
 PCT = "0.00%"
@@ -389,7 +394,12 @@ def build_proposal(wb, data, first_adopted, last_adopted):
     r += 2
 
     # ── 5. 채택 종목 비교 ──
-    r = section(ws, r, "5. 채택 ETF 비교 (1억원 투자 기준)", LAST)
+    total_adopted = last_adopted - first_adopted + 1
+    shown = min(total_adopted, COMPARE_TOP)
+    title5 = "5. 채택 ETF 비교 (1억원 투자 기준)"
+    if shown < total_adopted:
+        title5 += f" — 연 분배율 상위 {shown}종목 / 전체 {total_adopted}종목"
+    r = section(ws, r, title5, LAST)
     heads2 = ["종목명", "종목코드", "현재가", "연 분배율", "월 분배율",
               "월 분배금(세전)", "월 분배금(세후)", "변동성(1년)"]
     for i, h in enumerate(heads2, start=1):
@@ -401,7 +411,7 @@ def build_proposal(wb, data, first_adopted, last_adopted):
     ws.row_dimensions[r].height = 30
     r += 1
 
-    n = last_adopted - first_adopted + 1
+    n = min(last_adopted - first_adopted + 1, COMPARE_TOP)
     for i in range(n):
         rr = r + i
         src = first_adopted + i

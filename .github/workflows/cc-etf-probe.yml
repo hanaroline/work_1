@@ -7,14 +7,10 @@ name: ETFCHECK 관찰 (필드 매핑 확인용)
 # 클로드 세션에서는 etfcheck.co.kr 로 CONNECT 가 403 이라 붙지 못한다.
 # 그래서 원천을 보는 일은 전부 러너 몫이다.
 
+# 부를 때만 돈다. 밀어 넣을 때마다 도는 것으로 두었더니 수집기를 고칠
+# 때마다 관찰까지 같이 돌았다. 관찰은 원천이 바뀐 것 같을 때만 하면 된다.
 on:
   workflow_dispatch:
-  push:
-    branches:
-      - 'claude/intelligent-**'
-    paths:
-      - 'scripts/probe_etfcheck.mjs'
-      - '.github/workflows/cc-etf-probe.yml'
 
 permissions:
   contents: write
