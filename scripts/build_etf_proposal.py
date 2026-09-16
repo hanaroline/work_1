@@ -155,7 +155,7 @@ def build_data_sheet(wb, data):
         ("분배이력(개월)", 13), ("최근 분배기준일", 15), ("채택", 8), ("제외 사유", 30),
         # 기초지수는 맨 뒤에 붙인다. 가운데 끼워 넣으면 제안서 쪽 수식의
         # 열 글자가 한 칸씩 밀려 조용히 엉뚱한 칸을 가리키게 된다.
-        ("기초지수", 34), ("유형", 11),
+        ("기초지수", 34), ("유형", 11), ("자산군", 14),
     ]
     ws.cell(row=1, column=1, value="ETFCHECK 수집 원본 — 이 장의 값은 손으로 고치지 마십시오. 매월 1일 수집기가 덮어씁니다.")
     ws.cell(row=1, column=1).font = f(10, bold=True, color=ORANGE)
@@ -193,10 +193,10 @@ def build_data_sheet(wb, data):
             None if x.get("distTtmRate") is None else x["distTtmRate"] / 100,
             x.get("distMonths"), x.get("lastDistDate"),
             "채택" if ok else "제외", x.get("excludeReason") or "", x.get("index") or "",
-            x.get("type") or "",
+            x.get("type") or "", x.get("assetClass") or "",
         ]
         fmts = [None, None, None, WON_PLAIN, WON_PLAIN, WON_PLAIN, PCT, PCT, PCT, PCT,
-                "#,##0", None, None, None, None, None]
+                "#,##0", None, None, None, None, None, None]
         for i, (v, fmt) in enumerate(zip(vals, fmts), start=1):
             c = ws.cell(row=r, column=i, value=v)
             c.font = f(10, color=INK if ok else MUTED)
@@ -556,6 +556,7 @@ def build_proposal(wb, data, first_adopted, last_adopted):
         "매매수수료·거래세·환율 변동은 반영하지 않았습니다. 총보수는 분배율에 이미 반영되어 있습니다(기준가 차감).",
         "수량은 정수 매수를 가정해 내림 처리했습니다. 남는 금액은 '미투자 잔액'에 표시됩니다.",
         "여러 종목에 나눠 담아도 분배 시기는 종목마다 다릅니다. 매월 같은 날 한꺼번에 들어오지 않습니다.",
+        "목록에는 커버드콜뿐 아니라 리츠·채권형·배당주·파킹형 월배당 ETF 가 함께 있습니다. 분배 재원과 위험이 서로 다르므로 [ETF데이터] 장의 '유형'·'자산군' 칸을 확인하십시오.",
     ]
     for i, t in enumerate(notes):
         ws.merge_cells(start_row=r + i, start_column=1, end_row=r + i, end_column=LAST)
@@ -664,10 +665,13 @@ def main():
     # 제안서가 그 종목을 권하는 꼴이 된다. 순자산이 가장 큰 종목 —
     # 가장 무난한 것 — 을 한 줄만 넣고, 나머지 네 줄은 비워 둔다. 무엇을
     # 어떻게 섞을지는 사람이 정할 일이지 이 파일이 정할 일이 아니다.
-    default = max(
-        [x for x in data["items"] if x.get("adopted")],
-        key=lambda x: (x.get("aum") or 0),
-    )
+    # 파킹형(단기자금, 분류 0108)은 기본 선택에서 뺀다. 월배당 전체로 넓히면서
+    # CD금리·KOFR 같은 종목이 들어왔는데, 순자산이 6조를 넘어 "순자산 최대" 로
+    # 고르면 언제나 그것이 뽑힌다. 월마다 돈이 나오기는 해도 월지급 제안서를
+    # 그것으로 열 수는 없다 — 목록에는 그대로 두고, 기본값에서만 뺀다.
+    pool = [x for x in data["items"] if x.get("adopted")]
+    not_parking = [x for x in pool if (x.get("assetClassCode") or "") != "0108"]
+    default = max(not_parking or pool, key=lambda x: (x.get("aum") or 0))
     ws.cell(row=p_first, column=2).value = default["name"]
     ws.cell(row=p_first, column=3).value = 100   # 비율 방식이므로 100%
 

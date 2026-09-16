@@ -43,7 +43,7 @@ SRC = Path(sys.argv[2]) if len(sys.argv) > 2 else ROOT / "data" / "cc_etf.json"
 DATA_COLS = {
     "A": "종목명", "B": "종목코드", "C": "운용사", "D": "현재가", "E": "순자산총액",
     "F": "60일 평균거래대금", "G": "총보수", "H": "변동성", "I": "최근 월분배율",
-    "J": "연환산 분배율", "K": "분배이력", "L": "최근 분배기준일", "M": "채택", "N": "제외 사유", "O": "기초지수", "P": "유형",
+    "J": "연환산 분배율", "K": "분배이력", "L": "최근 분배기준일", "M": "채택", "N": "제외 사유", "O": "기초지수", "P": "유형", "Q": "자산군",
 }
 
 problems: list[str] = []
@@ -167,7 +167,7 @@ def main() -> int:  # noqa: PLR0915
     ref_own = re.compile(r"(?<![!\w$])\$?([A-H])\$?(\d+)\b")
     # 범위 끝(`:$B$6`)까지 한 덩어리로 잡는다. 앞쪽만 떼어 내면 남은
     # `:$B$6` 가 제안서 자기 칸 참조처럼 보여 없는 문제를 만든다.
-    ref_data = re.compile(r"'ETF데이터'!\$([A-P])\$(\d+)(?::\$([A-P])\$(\d+))?")
+    ref_data = re.compile(r"'ETF데이터'!\$([A-Q])\$(\d+)(?::\$([A-Q])\$(\d+))?")
     n_formula = 0
     for row in ws.iter_rows():
         for c in row:
