@@ -1,0 +1,300 @@
+// 월배당 커버드콜 ETF 를 ETFCHECK 에서 받아 `data/cc_etf.json` 에 적는다.
+//
+// 이 파일이 제안서 엑셀의 유일한 원천이다. 여기서 만들어 낸 수치는 하나도
+// 없다 — 전부 ETFCHECK 이 준 값이거나, 그 값으로 명시된 식에 따라 계산한
+// 값이다. 계산한 것은 `derived` 에 식을 함께 적어 둔다.
+//
+// 어떻게 받나 (관찰 6차까지의 결론. tools/etfcheck-discovery/ 참고)
+// ──────────────────────────────────────────────────────────────────────
+// ETFCHECK 은 앱 요청에만 답한다. 맨몸으로 fetch 하면 403 이고, 앱이 붙이는
+// `authorization: Bearer` 와 `checkclient: <해시>` 를 그대로 달면 200 이 온다.
+// 그래서 브라우저로 첫 화면을 **한 번만** 열어 그 머리글을 얻고, 나머지는
+// fetch 로 부른다. 종목마다 화면을 여는 길도 있었지만 잇달아 열면
+// ERR_EMPTY_RESPONSE 가 온다 — 61종목을 그렇게 열 수는 없다.
+//
+// 모집단은 이름이 아니라 **분류**로 고른다. getEtpCtgMap 에서 국내이면서
+// 커버드콜(0609005) 이고 월배당(0609002) 인 종목. 이름으로 거른 결과와
+// 어긋나지 않는 것을 확인했고(관찰 5차), 분류 쪽이 오래간다 — 상품명은
+// 운용사가 언제든 바꾼다.
+//
+// 세션(클로드 쪽)에서는 etfcheck.co.kr 로 CONNECT 가 403 이라 못 돈다.
+// **러너에서만** 돈다.
+import { chromium } from 'playwright';
+import fs from 'node:fs';
+import path from 'node:path';
+
+const BASE = 'https://www.etfcheck.co.kr';
+const OUT = 'data/cc_etf.json';
+const DIAG = 'discovery/cc-etf';
+
+// ── 채택 기준 ──────────────────────────────────────────────────────────
+// 고객에게 권하는 자리에 올릴 종목이다. 팔고 싶을 때 못 파는 종목(유동성)과
+// 분배금보다 원금이 더 흔들리는 종목(변동성)은 뺀다. 숫자는 여기 한 군데에
+// 있고, 엑셀 아래에도 그대로 찍힌다 — 기준을 숨기지 않는다.
+const RULES = {
+  minAum: 30_000_000_000,      // 순자산총액 300억원
+  minTurnover: 500_000_000,    // 60일 평균 거래대금 5억원
+  maxVol: 25,                  // 1년 일간수익률 연환산 변동성 25%
+  minTrackMonths: 12,          // 분배 이력 12개월
+};
+
+// 분배 이력을 12개월로 두는 이유: 연 분배율을 "최근 12개월 분배금 합계 ÷
+// 현재가" 로 적기 때문이다. 이력이 아홉 달뿐인 종목의 아홉 달치 합계를
+// 연 분배율이라 적으면 실제보다 낮게 나온다. 반대로 아홉 달치를 12개월로
+// 늘려 적으면 없는 분배를 있다고 하는 것이 된다. 어느 쪽도 제안서에 쓸 수
+// 없으므로 열두 달을 채운 종목만 올린다. 나머지는 사유와 함께 남긴다.
+
+const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+const num = (v) => (v === null || v === undefined || v === '' ? null : Number(v));
+
+function annualVolatility(closes) {
+  // 일간 로그수익률의 표본표준편차 × √252. 영업일 252일은 관행값이다.
+  const rets = [];
+  for (let i = 1; i < closes.length; i++) {
+    const a = closes[i - 1];
+    const b = closes[i];
+    if (a > 0 && b > 0) rets.push(Math.log(b / a));
+  }
+  if (rets.length < 60) return null; // 두어 달치로 연 변동성을 말할 수 없다
+  const mean = rets.reduce((s, x) => s + x, 0) / rets.length;
+  const varr = rets.reduce((s, x) => s + (x - mean) ** 2, 0) / (rets.length - 1);
+  return Math.sqrt(varr * 252) * 100;
+}
+
+const browser = await chromium.launch({
+  executablePath: process.env.CHROMIUM_PATH || undefined,
+});
+const ctx = await browser.newContext({
+  locale: 'ko-KR',
+  viewport: { width: 1440, height: 900 },
+  userAgent:
+    'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 ' +
+    '(KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36',
+});
+const page = await ctx.newPage();
+
+const seen = [];
+let appHeaders = null;
+page.on('response', async (res) => {
+  const url = res.url();
+  if (!url.startsWith(BASE)) return;
+  if (!appHeaders && res.request().headers().checkclient) {
+    appHeaders = res.request().headers();
+  }
+  if (!/getEtpMast|getEtpCtgMap/.test(url)) return;
+  try {
+    seen.push({ url, body: await res.text() });
+  } catch {
+    /* 못 읽는 응답은 넘긴다 */
+  }
+});
+
+console.log('첫 화면을 연다 (머리글과 마스터를 받으려고)');
+await page.goto(BASE, { waitUntil: 'domcontentloaded', timeout: 60000 });
+await page.waitForTimeout(12000);
+
+if (!appHeaders) {
+  throw new Error('앱 머리글(checkclient)을 못 잡았습니다. 화면 구조가 바뀌었을 수 있습니다.');
+}
+// 브라우저가 스스로 붙이는 머리글은 다시 붙일 수 없다(금지 머리글).
+const HDRS = Object.fromEntries(
+  Object.entries(appHeaders).filter(
+    ([k]) => !/^(host|:|accept-encoding|connection|content-length|cookie|referer|sec-|user-agent)/i.test(k),
+  ),
+);
+
+const grab = (re) => [...seen].reverse().find((x) => re.test(x.url));
+const mast = JSON.parse(grab(/getEtpMast/)?.body || '{}').results || [];
+const ctgMap = JSON.parse(grab(/getEtpCtgMap/)?.body || '{}').results || [];
+if (!mast.length || !ctgMap.length) {
+  throw new Error(`마스터/분류대응을 못 받았습니다 (마스터 ${mast.length}, 분류 ${ctgMap.length}).`);
+}
+
+const picked = new Set(
+  ctgMap
+    .filter(
+      (r) =>
+        r.F16013 &&
+        r.domestic_flag === 1 &&
+        String(r.ctgInfo || '').includes('0609005') && // 커버드콜
+        String(r.ctgInfo || '').includes('0609002'), // 월배당
+    )
+    .map((r) => r.F16013),
+);
+const universe = mast.filter((r) => picked.has(r.F16013));
+console.log(`모집단 ${universe.length}종목 (마스터 ${mast.length}행)`);
+if (universe.length < 10) {
+  throw new Error(`모집단이 ${universe.length}종목뿐입니다. 분류 코드가 바뀌었는지 확인하십시오.`);
+}
+
+async function api(p) {
+  const r = await page.evaluate(
+    async ({ base, p, headers }) => {
+      try {
+        const res = await fetch(base + p, { headers, credentials: 'include' });
+        return { status: res.status, text: await res.text() };
+      } catch (e) {
+        return { status: 0, text: String(e).slice(0, 200) };
+      }
+    },
+    { base: BASE, p, headers: HDRS },
+  );
+  if (r.status !== 200) return null;
+  try {
+    const j = JSON.parse(r.text);
+    return j.success === false ? null : j.results || null;
+  } catch {
+    return null;
+  }
+}
+
+const items = [];
+const failed = [];
+let asOf = null;
+
+for (const [i, row] of universe.entries()) {
+  const code = row.F16013;
+  const name = row.F16002;
+  process.stdout.write(`[${i + 1}/${universe.length}] ${code} ${name} … `);
+
+  const [outline, hist, monthly, fee, term] = await Promise.all([
+    api(`/user/etp/getEtpItemOutline?code=${code}&befDate=${new Date().getFullYear() - 1}0101`),
+    api(`/user/etp/getEtpItemCashHist?code=${code}&limit=36`),
+    api(`/user/etp/getEtpItemCashMonthly?code=${code}`),
+    api(`/user/etp/getEtpLatestFee?code=${code}`),
+    api(`/user/etp/getEtpTermHist?F16013=${code}&gubun=1Y`),
+  ]);
+
+  if (!outline?.[0]) {
+    console.log('상세 없음 — 건너뜀');
+    failed.push({ code, name, why: 'getEtpItemOutline 응답 없음' });
+    await sleep(150);
+    continue;
+  }
+  const o = outline[0];
+  asOf = asOf || String(o.F12506 || '');
+
+  const price = num(o.F15001);
+  const aum = num(o.F15028);
+
+  // 분배 내역. 최근 것이 맨 위로 온다.
+  const dist = (hist || []).map((h) => ({
+    date: String(h.F12506),
+    amount: num(h.F31892),
+    rate: num(h.DIV_RATE),
+  }));
+  const last = dist[0] || null;
+
+  // 최근 12회 분배금 합계 ÷ 현재가. ETFCHECK 도 같은 값을 DIV_RATE_REAL 로
+  // 주므로 아래에서 맞춰 본다 — 어긋나면 우리가 잘못 이해한 것이다.
+  const ttm12 = dist.slice(0, 12);
+  const ttmSum = ttm12.length === 12 ? ttm12.reduce((s, d) => s + (d.amount || 0), 0) : null;
+  const ttmRate = ttmSum && price ? (ttmSum / price) * 100 : null;
+
+  const mo = (monthly || [])[0] || {};
+  const theirSum = num(mo.DIV_AMT_YEAR);
+  const theirRate = num(mo.DIV_RATE_REAL);
+
+  // 1년 일별 종가·거래량. 변동성과 60일 평균 거래대금을 여기서 낸다.
+  const days = (term || []).map((d) => ({
+    date: String(d.F12506),
+    close: num(d.F15001),
+    volume: num(d.F15015),
+  }));
+  // 받은 차례가 최신순이므로 뒤집어 옛날→최신으로 놓는다.
+  const chron = [...days].reverse().filter((d) => d.close > 0);
+  const vol = annualVolatility(chron.map((d) => d.close));
+  const last60 = days.slice(0, 60);
+  const turnover60 =
+    last60.length >= 40
+      ? last60.reduce((s, d) => s + (d.close || 0) * (d.volume || 0), 0) / last60.length
+      : null;
+
+  const listed = String(o.F16017 || '');
+  const months = dist.length;
+
+  // 제외 사유는 하나만 적지 않는다. "순자산이 작아서" 만 보여 주면 고치고
+  // 나서도 다른 이유로 또 걸린다.
+  const why = [];
+  if (!price) why.push('현재가 없음');
+  if (aum === null) why.push('순자산 미확인');
+  else if (aum < RULES.minAum) why.push(`순자산 ${(aum / 1e8).toFixed(0)}억(기준 ${RULES.minAum / 1e8}억 미만)`);
+  if (turnover60 === null) why.push('거래대금 미확인');
+  else if (turnover60 < RULES.minTurnover)
+    why.push(`60일 거래대금 ${(turnover60 / 1e8).toFixed(1)}억(기준 ${RULES.minTurnover / 1e8}억 미만)`);
+  if (vol === null) why.push('변동성 산출 불가(시세 이력 부족)');
+  else if (vol > RULES.maxVol) why.push(`변동성 ${vol.toFixed(1)}%(기준 ${RULES.maxVol}% 초과)`);
+  if (months < RULES.minTrackMonths) why.push(`분배 이력 ${months}개월(기준 ${RULES.minTrackMonths}개월 미만)`);
+  if (ttmRate === null) why.push('연 분배율 산출 불가(12회 분배 이력 없음)');
+
+  // 우리 계산과 ETFCHECK 값이 어긋나면 채택하지 않는다. 어느 쪽이 맞는지
+  // 모르는 수치를 제안서에 올릴 수는 없다.
+  let mismatch = null;
+  if (ttmRate !== null && theirRate !== null && Math.abs(ttmRate - theirRate) > 0.15) {
+    mismatch = `연분배율 계산 ${ttmRate.toFixed(4)}% vs ETFCHECK ${theirRate.toFixed(4)}%`;
+    why.push(`분배율 대조 불일치(${mismatch})`);
+  }
+
+  items.push({
+    code,
+    name,
+    manager: o.F33961 || row.F33961 || null,
+    index: o.F34777 || null,
+    listedOn: listed,
+    price,
+    nav: num(o.F15301),
+    aum,
+    turnoverDay: num(o.F15023),
+    turnover60: turnover60 === null ? null : Math.round(turnover60),
+    expenseRatio: num(fee?.[0]?.TOTAL_FEE) ?? num(o.F34763),
+    ter: num(fee?.[0]?.TER),
+    volatility: vol === null ? null : Number(vol.toFixed(2)),
+    distMonthlyRate: last?.rate ?? null,
+    distMonthlyAmount: last?.amount ?? null,
+    lastDistDate: last?.date ?? null,
+    distTtmSum: ttmSum,
+    distTtmRate: ttmRate === null ? null : Number(ttmRate.toFixed(4)),
+    distTtmRateSource: theirRate,
+    distTtmSumSource: theirSum,
+    distMonths: months,
+    adopted: why.length === 0,
+    excludeReason: why.length ? why.join(', ') : null,
+    sourceUrl: `${BASE}/mobile/etpitem/${code}/basic`,
+  });
+  console.log(why.length ? `제외 (${why[0]})` : '채택');
+  await sleep(150);
+}
+
+const adopted = items.filter((x) => x.adopted);
+if (!adopted.length) {
+  fs.mkdirSync(DIAG, { recursive: true });
+  fs.writeFileSync(path.join(DIAG, 'items.json'), JSON.stringify(items, null, 2));
+  throw new Error('채택된 종목이 0건입니다. 기준이 너무 좁거나 수집이 어긋났습니다. data/ 는 그대로 둡니다.');
+}
+
+const out = {
+  source: 'ETFCHECK (https://www.etfcheck.co.kr)',
+  sourceNote:
+    '국내 상장 ETF 중 ETFCHECK 분류가 커버드콜(0609005) 이면서 월배당(0609002) 인 종목. ' +
+    '상품명이 아니라 분류로 고른다.',
+  collectedAt: new Date().toISOString(),
+  asOf: asOf ? `${asOf.slice(0, 4)}-${asOf.slice(4, 6)}-${asOf.slice(6, 8)}` : null,
+  rules: RULES,
+  derived: {
+    distTtmRate: '최근 12회 분배금 합계 ÷ 현재가 × 100. ETFCHECK 의 DIV_RATE_REAL 과 대조해 0.15%p 넘게 어긋나면 제외한다.',
+    volatility: '최근 1년 일간 로그수익률의 표본표준편차 × √252 × 100.',
+    turnover60: '최근 60거래일 (종가 × 거래량) 의 평균.',
+  },
+  universe: universe.length,
+  adoptedCount: adopted.length,
+  items,
+  failed,
+};
+fs.mkdirSync(path.dirname(OUT), { recursive: true });
+fs.writeFileSync(OUT, JSON.stringify(out, null, 2) + '\n');
+
+console.log(
+  `\n${OUT} 에 적었습니다 — 모집단 ${universe.length}, 채택 ${adopted.length}, ` +
+    `제외 ${items.length - adopted.length}, 상세 실패 ${failed.length}`,
+);
+await browser.close();

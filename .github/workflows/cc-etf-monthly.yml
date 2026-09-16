@@ -1,0 +1,144 @@
+name: 월배당 커버드콜 ETF 제안서 갱신 (매월 1일)
+
+# 왜 매월 1일인가
+# ──────────────────────────────────────────────────────────────────────
+# 커버드콜 ETF 의 분배금은 달마다 새로 정해진다. 분배 기준일이 보통 그 달
+# 마지막 영업일이고 지급은 그 뒤 며칠 안이라, 1일에 받으면 직전 달 분배가
+# 확정된 상태로 들어온다. 달 중간에 받으면 어떤 종목은 새 달치가 반영되고
+# 어떤 종목은 아직이라 한 표 안에서 기준이 섞인다.
+#
+# 수집이 실패하면 data/cc_etf.json 을 건드리지 않는다. 엑셀도 다시 만들지
+# 않는다. 직전 달 자료가 그대로 남는 편이, 반쯤 비어 있는 제안서가 고객에게
+# 나가는 것보다 낫다. 다만 잡은 빨갛게 남긴다 — 자료가 조용히 낡으면 안 된다.
+
+on:
+  schedule:
+    # 매월 1일 10:00 KST = 1일 01:00 UTC. (KST 는 UTC+9, 서머타임 없음.)
+    # 깃허브 schedule 은 정시에 딱 뜨지 않고 몇 분에서 십수 분 밀린다.
+    - cron: '0 1 1 * *'
+  workflow_dispatch:
+  # 수집기·생성기를 고쳤을 때 바로 검증되도록
+  push:
+    branches:
+      - 'claude/intelligent-**'
+    paths:
+      - 'scripts/collect_cc_etf.mjs'
+      - 'scripts/build_etf_proposal.py'
+      - 'scripts/check_etf_proposal.py'
+      - '.github/workflows/cc-etf-monthly.yml'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: cc-etf-monthly-${{ github.ref_name }}
+  cancel-in-progress: false
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref_name }}
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Playwright 설치
+        run: npm i -D playwright@1.56.1 && npx playwright install --with-deps chromium
+
+      - name: 파이썬 꾸러미
+        run: pip install --quiet openpyxl formulas
+
+      # 수집 실패는 잡을 바로 실패시키지 않는다. data/cc_etf.json 을 건드리지
+      # 않고 끝나므로 직전 달 자료가 그대로 남는다. 마지막에 빨갛게 만든다.
+      - name: ETFCHECK 수집
+        id: collect
+        continue-on-error: true
+        run: node scripts/collect_cc_etf.mjs
+
+      - name: 수집 실패 진단자료
+        if: steps.collect.outcome == 'failure'
+        uses: actions/upload-artifact@v4
+        with:
+          name: cc-etf-collect-debug
+          path: |
+            discovery/
+            tools/etfcheck-discovery/
+          retention-days: 14
+          if-no-files-found: ignore
+
+      - name: 엑셀 다시 만들기
+        if: steps.collect.outcome == 'success'
+        run: python scripts/build_etf_proposal.py
+
+      # 검사를 통과하지 못하면 커밋하지 않는다. 틀린 제안서가 저장소에
+      # 들어가는 것이 수집 실패보다 나쁘다 — 아무도 못 알아채기 때문이다.
+      - name: 제안서 검사
+        if: steps.collect.outcome == 'success'
+        run: python scripts/check_etf_proposal.py
+
+      - name: 커밋
+        if: steps.collect.outcome == 'success'
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data/cc_etf.json 고객제안서_월배당ETF.xlsx
+          if git diff --cached --quiet; then
+            echo "변경 없음 — 커밋 생략"
+            exit 0
+          fi
+          git commit -m "chore(etf): 월배당 커버드콜 제안서 갱신 ($(date -u +%Y-%m))"
+          for i in 1 2 3 4 5; do
+            if git push; then exit 0; fi
+            echo "push 거절 — 원격 변경을 받아 재시도 ($i/5)"
+            git pull --rebase origin "${{ github.ref_name }}" || exit 1
+          done
+          echo "5회 시도 후에도 push 실패"
+          exit 1
+
+      - name: 결과 요약
+        if: always()
+        run: |
+          {
+            echo "### 월배당 커버드콜 ETF 제안서"
+            echo ""
+            if [ "${{ steps.collect.outcome }}" != "success" ]; then
+              echo "- 수집: **실패** — \`data/cc_etf.json\` 과 엑셀은 직전 달 자료를 그대로 둡니다."
+              echo "- 진단자료는 \`cc-etf-collect-debug\` 아티팩트를 보십시오."
+              exit 0
+            fi
+            echo "- 수집: 성공"
+            echo ""
+            python - <<'PY'
+          import json
+          d = json.load(open("data/cc_etf.json", encoding="utf-8"))
+          ok = [x for x in d["items"] if x["adopted"]]
+          no = [x for x in d["items"] if not x["adopted"]]
+          print(f"- 기준일 {d.get('asOf')} · 후보 {len(d['items'])}종목 중 채택 {len(ok)} / 제외 {len(no)}")
+          print("")
+          print("| 종목 | 코드 | 현재가 | 연 분배율 | 최근 월분배율 | 순자산 | 60일 거래대금 |")
+          print("|---|---|---:|---:|---:|---:|---:|")
+          for x in sorted(ok, key=lambda x: -(x.get("distTtmRate") or 0))[:25]:
+              print(
+                  f"| {x['name']} | {x['code']} | {x['price']:,} | "
+                  f"{x['distTtmRate']:.2f}% | {x['distMonthlyRate']:.2f}% | "
+                  f"{(x['aum'] or 0)/1e8:,.0f}억 | {(x['turnover60'] or 0)/1e8:,.1f}억 |"
+              )
+          PY
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      # 수집이 실패했으면 잡을 빨갛게 남긴다. 부름만 성공하고 자료는 안 바뀐
+      # 달이 조용히 지나가면 안 된다.
+      - name: 수집 실패 판정
+        if: always() && steps.collect.outcome == 'failure'
+        run: |
+          echo "::error::ETFCHECK 수집 실패 — 자료와 엑셀은 직전 달 것을 유지합니다."
+          exit 1
