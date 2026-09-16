@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>세미나 영상 — 국내외 현황</title>
+<style>
+  /* 발표 중에 띄워 놓고 쓰는 화면이다. 색은 미래에셋 브랜드를 따른다 —
+     오렌지 #F58220(강조), 블루 #043B72(수치·링크), 흰 바탕,
+     모서리 4px 이하, 그림자·그라데이션·이모지 없음. */
+  :root {
+    --orange: #F58220; --orange-active: #CB6015; --soft: #FAB072;
+    --blue: #043B72;
+    --page: #f9f9f7; --surface: #fcfcfb;
+    --ink: #0b0b0b; --body: #52514e; --muted: #898781;
+    --line: #e1e0d9;
+    --radius: 4px;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--page); color: var(--ink);
+    font-family: system-ui, -apple-system, "Segoe UI", "Malgun Gothic", sans-serif;
+    font-size: 15px; line-height: 1.6;
+  }
+  header {
+    border-bottom: 1px solid var(--line); background: var(--surface);
+    padding: 14px 20px; display: flex; align-items: baseline; gap: 14px; flex-wrap: wrap;
+  }
+  header .rule { width: 100%; height: 2px; background: var(--orange); margin-bottom: 12px; }
+  h1 { font-size: 17px; margin: 0; font-weight: 700; }
+  header .sub { font-size: 12.5px; color: var(--muted); }
+  header .keys { margin-left: auto; font-size: 12px; color: var(--muted); }
+  header .keys b { color: var(--body); font-weight: 600; }
+
+  .warn {
+    display: none; margin: 0; padding: 10px 20px; background: #FFF4E8;
+    border-bottom: 1px solid var(--soft); font-size: 13px; color: #6b3d0c;
+  }
+  .warn code {
+    background: #fff; border: 1px solid var(--soft); border-radius: var(--radius);
+    padding: 1px 5px; font-size: 12.5px;
+  }
+
+  .wrap { display: grid; grid-template-columns: 340px 1fr; gap: 0; min-height: calc(100vh - 56px); }
+  @media (max-width: 900px) { .wrap { grid-template-columns: 1fr; } }
+
+  /* ── 왼쪽: 클립 목록 ── */
+  nav { border-right: 1px solid var(--line); background: var(--surface); padding: 16px 0 40px; }
+  .group { padding: 0 16px; margin-bottom: 6px; }
+  .group h2 {
+    font-size: 11.5px; letter-spacing: .08em; color: var(--orange);
+    margin: 18px 0 2px; font-weight: 700;
+  }
+  .group p { font-size: 12px; color: var(--muted); margin: 0 0 8px; }
+  .clip {
+    display: block; width: 100%; text-align: left; cursor: pointer;
+    background: none; border: none; border-left: 3px solid transparent;
+    padding: 10px 16px 10px 13px; font: inherit; color: inherit;
+  }
+  .clip:hover { background: #f2f1ec; }
+  .clip[aria-current="true"] { border-left-color: var(--orange); background: #f2f1ec; }
+  .clip .meta { font-size: 11.5px; color: var(--muted); display: flex; gap: 6px; align-items: center; }
+  .clip .no {
+    display: inline-block; min-width: 17px; height: 17px; line-height: 17px; text-align: center;
+    background: var(--blue); color: #fff; font-size: 11px; font-weight: 700; border-radius: 2px;
+  }
+  .clip .title { display: block; font-size: 13.5px; font-weight: 600; margin-top: 3px; line-height: 1.45; }
+  .clip .span { display: block; margin-top: 2px; font-size: 11.5px; color: var(--blue);
+                font-variant-numeric: tabular-nums; }
+  .badge {
+    font-size: 10.5px; border: 1px solid var(--soft); color: #8a4a06;
+    background: #FFF4E8; border-radius: 2px; padding: 0 4px;
+  }
+
+  /* ── 오른쪽: 재생 ── */
+  main { padding: 18px 22px 40px; min-width: 0; }
+  /* 단추·멘트가 화면 밖으로 밀리지 않게 화면 높이에 맞춰 폭을 잡는다. */
+  .stage { background: #000; border-radius: var(--radius); overflow: hidden;
+           width: min(100%, calc(56vh * 16 / 9)); margin: 0 auto; }
+  .stage > div { aspect-ratio: 16 / 9; width: 100%; }
+  .stage iframe { width: 100%; height: 100%; border: 0; display: block; }
+  .nowrap { display: flex; gap: 10px; align-items: baseline; margin: 14px 0 2px; }
+  .nowrap h3 { margin: 0; font-size: 18px; font-weight: 700; }
+  .nowrap .ch { font-size: 12.5px; color: var(--muted); }
+  .gist { color: var(--body); font-size: 14px; margin: 6px 0 0; max-width: 62em; }
+  .cue {
+    border-left: 3px solid var(--orange); background: var(--surface);
+    padding: 10px 14px; margin: 14px 0 0; max-width: 62em;
+    font-size: 13.5px; color: var(--body);
+  }
+  .cue b { color: var(--ink); font-weight: 700; display: block; font-size: 11.5px;
+           letter-spacing: .06em; margin-bottom: 3px; }
+
+  .bar { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; margin-top: 16px; }
+  button.act, a.act {
+    font: inherit; font-size: 13px; cursor: pointer; text-decoration: none;
+    background: var(--surface); color: var(--ink);
+    border: 1px solid var(--line); border-radius: var(--radius); padding: 6px 11px;
+  }
+  button.act:hover, a.act:hover { border-color: var(--muted); }
+  button.act.primary { background: var(--orange); border-color: var(--orange); color: #fff; font-weight: 600; }
+  button.act.primary:hover { background: var(--orange-active); border-color: var(--orange-active); }
+  .bar .t { font-size: 12.5px; color: var(--muted); font-variant-numeric: tabular-nums; margin-left: 4px; }
+
+  .cut { margin-top: 16px; border: 1px solid var(--line); border-radius: var(--radius);
+         background: var(--surface); padding: 12px 14px; max-width: 62em; }
+  .cut h4 { margin: 0 0 4px; font-size: 12.5px; }
+  .cut p { margin: 0 0 8px; font-size: 12.5px; color: var(--muted); }
+  .cut pre {
+    margin: 0; padding: 9px 11px; background: #f2f1ec; border-radius: var(--radius);
+    font-size: 12px; overflow-x: auto; color: var(--blue); white-space: pre-wrap; word-break: break-all;
+  }
+  .links { margin-top: 18px; font-size: 12.5px; color: var(--muted); max-width: 62em; }
+  .links a { color: var(--blue); }
+  .links div { margin-top: 3px; }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="rule"></div>
+  <h1>세미나 영상 — 국내외 현황</h1>
+  <span class="sub" id="asof">클립을 불러오는 중…</span>
+  <span class="keys"><b>1–4</b> 클립 · <b>Space</b> 재생/정지 · <b>R</b> 구간 처음부터 · <b>←/→</b> 5초</span>
+</header>
+
+<p class="warn" id="warn"></p>
+
+<div class="wrap">
+  <nav id="list"></nav>
+  <main>
+    <div class="stage"><div id="player"></div></div>
+
+    <div class="nowrap">
+      <h3 id="t-title">—</h3>
+      <span class="ch" id="t-ch"></span>
+    </div>
+    <p class="gist" id="t-gist"></p>
+    <div class="cue" id="t-cue" hidden><b>이어서 할 말</b><span></span></div>
+
+    <div class="bar">
+      <button class="act primary" id="b-play">재생 / 멈춤</button>
+      <button class="act" id="b-restart">구간 처음부터</button>
+      <button class="act" id="b-full">전체 보기(구간 해제)</button>
+      <span class="t" id="t-time">0:00 / 구간 0:00–0:00</span>
+    </div>
+
+    <div class="cut">
+      <h4>구간 잡기 — 미리 보면서 자를 곳을 정합니다</h4>
+      <p>재생 중에 누르면 그 순간을 집습니다. 아래 줄을 <code>docs/deck/clips.json</code> 의 해당 클립에 그대로 옮겨 적으면 확정됩니다.</p>
+      <div class="bar" style="margin:0 0 10px">
+        <button class="act" id="b-in">여기를 시작으로</button>
+        <button class="act" id="b-out">여기를 끝으로</button>
+        <button class="act" id="b-copy">줄 복사</button>
+      </div>
+      <pre id="cutline">—</pre>
+    </div>
+
+    <div class="links" id="links"></div>
+  </main>
+</div>
+
+<script>
+/* 발표 중에 쓰는 화면이라, 무엇이 안 되든 「왜 안 되는지」가 화면에 남게 만든다.
+   영상 파일을 손대지 않는다 — 원본을 구간만 지정해 튼다(저작권·화질 양쪽에서 이 편이 옳다). */
+
+const $ = (s) => document.querySelector(s);
+const state = { book: null, clips: [], i: 0, player: null, ready: false, span: true, tick: null };
+
+const mmss = (s) => {
+  s = Math.max(0, Math.floor(s || 0));
+  return Math.floor(s / 60) + ':' + String(s % 60).padStart(2, '0');
+};
+
+function warn(html) {
+  const el = $('#warn');
+  el.innerHTML = html;
+  el.style.display = 'block';
+}
+
+/* ── 대장 읽기 ─────────────────────────────────────────────────── */
+async function load() {
+  try {
+    const r = await fetch('clips.json', { cache: 'no-store' });
+    if (!r.ok) throw new Error('HTTP ' + r.status);
+    state.book = await r.json();
+  } catch (e) {
+    warn('clips.json 을 읽지 못했습니다 (' + e.message + '). '
+       + '파일을 직접 열면(file://) 브라우저가 막습니다 — 저장소 뿌리에서 '
+       + '<code>python3 -m http.server 8000</code> 를 띄우고 '
+       + '<code>http://localhost:8000/docs/deck/clips.html</code> 로 여세요.');
+    return;
+  }
+  state.clips = state.book.clips || [];
+  $('#asof').textContent = state.book['기준'] + ' 판 · 클립 ' + state.clips.length + '편';
+  drawList();
+  select(0);
+}
+
+function drawList() {
+  const nav = $('#list');
+  nav.innerHTML = '';
+  let no = 0;
+  (state.book.groups || []).forEach((g) => {
+    const box = document.createElement('div');
+    box.className = 'group';
+    const h = document.createElement('h2'); h.textContent = g.title;
+    const p = document.createElement('p'); p.textContent = g.lead || '';
+    box.append(h, p);
+    nav.append(box);
+    state.clips.forEach((c, idx) => {
+      if (c.group !== g.id) return;
+      no += 1;
+      const b = document.createElement('button');
+      b.className = 'clip'; b.dataset.idx = idx; b.type = 'button';
+      const chk = c.check || {};
+      b.innerHTML =
+        '<span class="meta"><span class="no">' + no + '</span>'
+        + '<span>' + c.region + ' · ' + esc(c.channel) + '</span>'
+        + (chk.id && chk.range ? '' : '<span class="badge">'
+            + (!chk.id ? '영상 미확인' : '구간 미확인') + '</span>')
+        + '</span>'
+        + '<span class="title">' + esc(c.title) + '</span>'
+        + '<span class="span">' + mmss(c.start) + '–' + mmss(c.end)
+        + ' (' + (c.end - c.start) + '초)</span>';
+      b.addEventListener('click', () => select(idx));
+      nav.append(b);
+    });
+  });
+}
+
+const esc = (s) => String(s).replace(/[&<>"]/g, (m) =>
+  ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[m]));
+
+/* ── 클립 고르기 ───────────────────────────────────────────────── */
+function cur() { return state.clips[state.i]; }
+
+function select(i) {
+  if (!state.clips[i]) return;
+  state.i = i;
+  state.span = true;
+  const c = cur();
+
+  document.querySelectorAll('.clip').forEach((el) => {
+    el.setAttribute('aria-current', String(Number(el.dataset.idx) === i));
+  });
+
+  $('#t-title').textContent = c.title;
+  $('#t-ch').textContent = c.region + ' · ' + c.channel;
+  $('#t-gist').textContent = c.gist || '';
+  const cue = $('#t-cue');
+  if (c.cue) { cue.hidden = false; cue.querySelector('span').textContent = c.cue; }
+  else { cue.hidden = true; }
+
+  const alts = (c.alt || []).map((a) =>
+    '<div>대안: <a href="https://www.youtube.com/watch?v=' + a.video + '" target="_blank" rel="noreferrer">'
+    + esc(a.title) + '</a></div>').join('');
+  $('#links').innerHTML =
+    '<div>원본: <a href="https://www.youtube.com/watch?v=' + c.video + '&t=' + c.start
+    + 's" target="_blank" rel="noreferrer">youtube.com/watch?v=' + c.video + '</a>'
+    + ' — 재생이 막히면 이 링크로 여세요.</div>'
+    + alts
+    + (c.search ? '<div>이 자리를 더 최신 판으로 바꾸려면: <a href="' + c.search
+        + '" target="_blank" rel="noreferrer">' + esc(c.channel) + ' 채널에서 찾기</a></div>' : '');
+
+  $('#cutline').textContent = '—';
+  mount();
+}
+
+/* ── 유튜브 플레이어 ───────────────────────────────────────────── */
+function mount() {
+  const c = cur();
+  const vars = {
+    rel: 0, modestbranding: 1, playsinline: 1,
+    start: state.span ? c.start : 0,
+  };
+  if (state.span) vars.end = c.end;
+
+  if (!state.ready) return;                 // API 가 아직 — onYouTubeIframeAPIReady 가 다시 부른다
+  if (state.player) { state.player.destroy(); state.player = null; }
+  state.player = new YT.Player('player', {
+    videoId: c.video, playerVars: vars,
+    events: {
+      onReady: () => { clock(); },
+      onError: (e) => warn('영상을 재생하지 못했습니다(코드 ' + e.data + '). '
+        + '지워졌거나 임베드가 막힌 영상일 수 있습니다 — 아래 원본·대안 링크로 여세요. '
+        + '발표 전에 <code>python3 scripts/verify_deck_clips.py docs/deck/clips.json</code> 로 미리 걸러집니다.'),
+    },
+  });
+}
+
+function clock() {
+  clearInterval(state.tick);
+  state.tick = setInterval(() => {
+    if (!state.player || !state.player.getCurrentTime) return;
+    const c = cur(), t = state.player.getCurrentTime();
+    $('#t-time').textContent = mmss(t) + ' / '
+      + (state.span ? '구간 ' + mmss(c.start) + '–' + mmss(c.end) : '전체 보기');
+    // end 파라미터가 듣지 않는 경우가 있어 한 번 더 세워 둔다.
+    if (state.span && t >= c.end - 0.25 && state.player.getPlayerState() === 1) {
+      state.player.pauseVideo();
+    }
+  }, 250);
+}
+
+window.onYouTubeIframeAPIReady = () => { state.ready = true; if (state.clips.length) mount(); };
+
+(function api() {
+  const s = document.createElement('script');
+  s.src = 'https://www.youtube.com/iframe_api';
+  s.onerror = () => warn('유튜브에 닿지 못했습니다 — 이 PC의 망에서 유튜브가 막혀 있습니다. '
+    + '발표 PC에서는 사내망 대신 외부망으로 여세요.');
+  document.head.append(s);
+  setTimeout(() => {
+    if (!state.ready) warn('유튜브 플레이어가 20초 안에 뜨지 않았습니다 — 망을 확인하거나, '
+      + '아래 원본 링크로 직접 여세요.');
+  }, 20000);
+})();
+
+/* ── 단추·단축키 ───────────────────────────────────────────────── */
+function playPause() {
+  if (!state.player) return;
+  if (state.player.getPlayerState() === 1) state.player.pauseVideo();
+  else state.player.playVideo();
+}
+function restart() {
+  if (!state.player) return;
+  state.player.seekTo(state.span ? cur().start : 0, true);
+  state.player.playVideo();
+}
+$('#b-play').addEventListener('click', playPause);
+$('#b-restart').addEventListener('click', restart);
+$('#b-full').addEventListener('click', () => {
+  state.span = !state.span;
+  $('#b-full').textContent = state.span ? '전체 보기(구간 해제)' : '구간으로 돌아가기';
+  mount();
+});
+
+function cut(which) {
+  if (!state.player || !state.player.getCurrentTime) return;
+  const c = cur(), t = Math.floor(state.player.getCurrentTime());
+  if (which === 'in') c.start = t; else c.end = t;
+  if (c.end <= c.start) c.end = c.start + 15;
+  c.check = Object.assign({}, c.check, { range: true });
+  $('#cutline').textContent =
+    '"id": "' + c.id + '",  "start": ' + c.start + ', "end": ' + c.end
+    + ',  "check": { "id": ' + Boolean((c.check || {}).id) + ', "range": true }'
+    + '   // ' + mmss(c.start) + '–' + mmss(c.end) + ' (' + (c.end - c.start) + '초)';
+  drawList();
+  document.querySelectorAll('.clip').forEach((el) => {
+    el.setAttribute('aria-current', String(Number(el.dataset.idx) === state.i));
+  });
+}
+$('#b-in').addEventListener('click', () => cut('in'));
+$('#b-out').addEventListener('click', () => cut('out'));
+$('#b-copy').addEventListener('click', async () => {
+  const txt = $('#cutline').textContent;
+  if (txt === '—') return;
+  try { await navigator.clipboard.writeText(txt); $('#b-copy').textContent = '복사했습니다'; }
+  catch (e) { $('#b-copy').textContent = '복사 실패 — 손으로 긁어 주세요'; }
+  setTimeout(() => { $('#b-copy').textContent = '줄 복사'; }, 2000);
+});
+
+document.addEventListener('keydown', (e) => {
+  if (e.target.matches('input, textarea')) return;
+  const n = Number(e.key);
+  if (n >= 1 && n <= state.clips.length) { select(n - 1); return; }
+  if (e.code === 'Space') { e.preventDefault(); playPause(); }
+  else if (e.key === 'r' || e.key === 'R') restart();
+  else if (e.key === 'ArrowRight' && state.player) state.player.seekTo(state.player.getCurrentTime() + 5, true);
+  else if (e.key === 'ArrowLeft' && state.player) state.player.seekTo(Math.max(0, state.player.getCurrentTime() - 5), true);
+});
+/* 플레이어를 클릭한 뒤에는 키가 유튜브 쪽으로 들어간다 — 바깥을 한 번 누르면 돌아온다. */
+
+if (location.protocol === 'file:') {
+  warn('파일을 직접 열었습니다(file://). 이 상태로는 clips.json 을 못 읽고 재생도 막힐 수 있습니다 — '
+     + '저장소 뿌리에서 <code>python3 -m http.server 8000</code> 를 띄우고 '
+     + '<code>http://localhost:8000/docs/deck/clips.html</code> 로 여세요.');
+}
+load();
+</script>
+</body>
+</html>
