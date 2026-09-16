@@ -435,6 +435,11 @@ for (const [i, row] of universe.entries()) {
     code,
     name,
     type: isCoveredCall(code) ? '커버드콜' : '월배당',
+    // 자산군(주식·채권·리츠·단기자금…). 월배당 전체로 넓히면서 파킹형
+    // (CD금리·KOFR)까지 들어왔는데, 그것들은 월마다 돈이 나오기는 해도
+    // 월지급 제안서의 주인공이 아니다. 가려 볼 수 있게 적어 둔다.
+    assetClass: o.ctg_large_name || null,
+    assetClassCode: o.ctg_large_code || null,
     manager: o.F33961 || row.F33961 || null,
     index: o.F34777 || null,
     listedOn: listed,
