@@ -518,9 +518,17 @@ def main():
     ws, cust_row = build_proposal(wb, data, first, last)
     build_guide(wb, data, n_ok, n_no)
 
-    # 첫 종목을 미리 골라 둔다. 빈 칸으로 두면 열자마자 0원짜리 제안서가 뜬다.
-    top = ws.cell(row=cust_row + 2, column=3)
-    top.value = ds.cell(row=first, column=1).value
+    # 종목 하나를 미리 골라 둔다. 빈 칸으로 두면 열자마자 0원짜리 제안서가 뜬다.
+    #
+    # 분배율이 제일 높은 종목을 기본값으로 두지 않는다. 그 자리는 대개 한
+    # 종목에 몰아 넣은 커버드콜이 차지하는데, 아무 손도 대지 않고 인쇄한
+    # 제안서가 그 종목을 권하는 꼴이 된다. 순자산이 가장 큰 종목 —
+    # 가장 무난한 것 — 을 기본으로 두고, 고르는 일은 사람이 하게 한다.
+    default = max(
+        [x for x in data["items"] if x.get("adopted")],
+        key=lambda x: (x.get("aum") or 0),
+    )
+    ws.cell(row=cust_row + 2, column=3).value = default["name"]
 
     wb.active = wb["제안서"]
     OUT.parent.mkdir(parents=True, exist_ok=True)
