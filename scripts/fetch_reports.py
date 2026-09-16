@@ -1544,6 +1544,16 @@ def _absorb(old, new):
     for k in _CARRY:
         if not old.get(k) and new.get(k):
             old[k] = new[k]
+    # 목표주가는 값과 출처가 한 쌍이다. 값만 옮기고 딱지(`target_from`)를
+    # 두고 오면, 네이버가 제 칸으로 준 수가 본문에서 캐낸 수인 척 남는다.
+    # 검산 다4 는 글자에서 캔 수라면 본문에 그대로 적혀 있기를 요구하므로
+    # 그 자리에서 걸린다 — 9/16 09:38 판에서 열 건이 그랬다(LG·SK바이오팜
+    # 등). 수가 틀린 것이 아니라 어디서 왔는지를 잃은 것이었다.
+    #
+    # 값이 같을 때만 딱지를 옮긴다. 이번 판이 제 목표주가를 따로 캐냈다면
+    # 그것은 그 판의 출처를 따라야 한다.
+    if new.get("target_from") and old.get("target_price") == new.get("target_price"):
+        old.setdefault("target_from", new["target_from"])
     # 제목은 되찾은 쪽(잘리지 않은 쪽)이 낫다.
     if old["title"].rstrip().endswith("..") and not new["title"].rstrip().endswith(".."):
         old["title"] = new["title"]
