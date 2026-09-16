@@ -64,6 +64,11 @@ PCT = "0.00%"
 PCT3 = "0.000%"
 QTY = '#,##0"주"'
 EOK = '#,##0"억원"'   # 순자산·거래대금은 원 단위로 적으면 자릿수를 세어야 읽힌다
+# 0 을 빈칸으로 찍는 판. 포트폴리오의 안 채운 줄에 쓴다 — 고객이 받는 장에
+# "0원 0주 0원" 이 아홉 줄 깔리면 표가 아니라 잡음이 된다. 세 번째 구획이
+# 0 일 때의 표시이고, 비워 두면 아무것도 찍히지 않는다.
+WON_Z = '#,##0"원";-#,##0"원";""'
+QTY_Z = '#,##0"주";-#,##0"주";""' 
 
 thin = Side(style="thin", color=HAIRLINE_SOFT)
 BOX = Border(left=thin, right=thin, top=thin, bottom=thin)
@@ -407,11 +412,11 @@ def build_proposal(wb, data, first_sel, last_sel, first_adopted, last_adopted):
         ws[f"L{rr}"] = f'=IF($K{rr}=0,"",INDEX({rng("M")},$K{rr}))'
         ws[f"L{rr}"].font = f(9, color=MUTED)
         put(ws, rr, 4,
-            f'=IF($K{rr}=0,0,IF({C_MODE}="비율",ROUND({C_AMT}*$C{rr}/100,0),$C{rr}))', WON)
-        put(ws, rr, 5, f"=IF($K{rr}=0,0,ROUNDDOWN($D{rr}/INDEX({rng('D')},$K{rr}),0))", QTY)
-        put(ws, rr, 6, f"=IF($K{rr}=0,0,$E{rr}*INDEX({rng('D')},$K{rr}))", WON)
-        put(ws, rr, 7, f"=IF($K{rr}=0,0,$F{rr}*INDEX({rng('J')},$K{rr})/12)", WON)
-        put(ws, rr, 8, f"=$G{rr}*(1-{C_TAX})", WON)
+            f'=IF($K{rr}=0,0,IF({C_MODE}="비율",ROUND({C_AMT}*$C{rr}/100,0),$C{rr}))', WON_Z)
+        put(ws, rr, 5, f"=IF($K{rr}=0,0,ROUNDDOWN($D{rr}/INDEX({rng('D')},$K{rr}),0))", QTY_Z)
+        put(ws, rr, 6, f"=IF($K{rr}=0,0,$E{rr}*INDEX({rng('D')},$K{rr}))", WON_Z)
+        put(ws, rr, 7, f"=IF($K{rr}=0,0,$F{rr}*INDEX({rng('J')},$K{rr})/12)", WON_Z)
+        put(ws, rr, 8, f"=$G{rr}*(1-{C_TAX})", WON_Z)
         if i % 2 == 1:
             for c in range(4, 9):
                 ws.cell(row=rr, column=c).fill = fill(SURFACE)
