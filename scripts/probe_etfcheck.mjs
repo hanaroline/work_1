@@ -6,30 +6,29 @@
 //
 // 지금까지 알아낸 것
 // ──────────────────────────────────────────────────────────────────────
-// 주소
-//   GET /user/common/getEtpMast              국내 ETP 마스터 1,535행
-//   GET /user/common/getEtpCtgMap            종목-분류 대응 9,092행
-//   GET /user/common/getEtpCtgMiddle         분류 이름 (커버드콜 0609005, 월배당 0609002)
-//   GET /user/etp/getEtpItemOutline?code=&befDate=   낱개 상세
-//   GET /user/etp/getEtpLatestFee?code=      TER / TOTAL_FEE
-//   GET /user/etp/getEtpTermHist?F16013=&gubun=1Y    1년 일별 종가·거래량
-//   GET /user/etp/getSimpleEtpHist?F16013=&limit=&type=diff  일별 NAV·상장좌수·설정환매
-// 키
-//   F16013 종목코드 · F16002 종목명 · F15001 종가 · F15301 NAV
-//   F15023 거래대금(당일) · F15015 거래량 · F16017 상장일 · F33961 운용사
-//   **F15028 순자산총액** — getEtpItemOutlineAssetRank2 의 NET_ASSET 과 같은 값이라
-//   확인했다(498400: 5,759,831,000,000 원). 마스터의 W00065 는 음수가 나오므로
-//   순자산이 아니다.
-// 403 의 정체
+// 403 의 정체 (4차)
 //   앱 요청에는 `authorization: Bearer` 와 `checkclient: <해시>` 가 붙는다.
-//   같은 머리글을 달아 fetch 하면 200 이 온다(맨몸 403 → 머리글 복사 200,
-//   1,177,037 bytes). 그래서 수집기는 브라우저로 화면을 한 번만 열어 머리글을
-//   얻고, 나머지는 fetch 로 부른다. 종목마다 화면을 여는 것보다 훨씬 빠르고,
-//   잇달아 열다 ERR_EMPTY_RESPONSE 를 맞는 일도 없다.
-// 아직 못 찾은 것
-//   · 분배금(월분배율) 주소. /dividend 화면은 잇달아 열면 빈 응답이 온다.
-//     이번 판은 화면을 여는 대신 **앱의 자바스크립트 묶음을 읽어** 주소
-//     목록을 뽑는다. 짐작이 아니라 앱이 가진 목록 그대로다.
+//   같은 머리글을 달아 fetch 하면 200 이 온다. 그래서 수집기는 화면을 한 번만
+//   열어 머리글을 얻고, 나머지는 fetch 로 부른다.
+// 모집단 (5차)
+//   분류 대응(getEtpCtgMap)에서 국내 ∧ 커버드콜(0609005) ∧ 월배당(0609002)
+//   = 61종목. 이름으로 거른 63종목과 어긋나지 않았다(이름에 '커버드콜'이
+//   있는데 분류에 없는 종목 0건). 분류 쪽이 오래간다 — 상품명은 바뀐다.
+// 주소·키
+//   /user/common/getEtpMast              마스터 1,535행
+//   /user/etp/getEtpItemOutline?code=    낱개 상세. **F15028 순자산총액**
+//                                        (AssetRank2 의 NET_ASSET 과 값이 같다)
+//   /user/etp/getEtpLatestFee?code=      TER / TOTAL_FEE
+//   /user/etp/getEtpTermHist?F16013=&gubun=1Y   1년 일별 종가(F15001)·거래량(F15015)
+//   F16013 코드 · F16002 이름 · F15001 종가 · F15301 NAV · F15023 거래대금
+//   F16017 상장일 · F33961 운용사 · F34777 기초지수
+// 분배금 (6차, 이번 판)
+//   앱 자바스크립트에서 주소 209개를 뽑아 보니 ETFCHECK 은 분배금을
+//   **Cash** 라고 부른다. dividend 로만 찾다가 못 찾았던 이유다.
+//     getEtpItemDivOutline / getEtpItemCash / getEtpItemCashMonthly
+//     getEtpItemCashYearly / getEtpItemCashHist
+//     getEtpRankListCash / getEtpRankItemCashMonthly   ← 전 종목 한 번에?
+//   이번 판은 이것들을 실제로 불러 본문을 본다.
 //
 // 세션(클로드 쪽)에서는 etfcheck.co.kr 로 CONNECT 가 403 이라 못 돈다.
 // **러너에서만** 돈다.
@@ -59,40 +58,29 @@ const ctx = await browser.newContext({
 });
 const page = await ctx.newPage();
 
-const xhr = [];
+const seen = [];
 let appHeaders = null;
 page.on('response', async (res) => {
   const url = res.url();
   if (!url.startsWith(BASE)) return;
-  if (/\/user\/|\/stock\/|\/etc\//.test(url) && !appHeaders) {
+  if (!appHeaders) {
     const h = res.request().headers();
     if (h.checkclient) appHeaders = h;
   }
-  if (/\.(css|png|jpe?g|gif|svg|webp|woff2?|ico)(\?|$)/i.test(url)) return;
-  if (/\.js(\?|$)/i.test(url)) {
-    xhr.push({ url, kind: 'js' });
-    return;
-  }
-  let body = '';
+  if (!/getEtpMast|getEtpCtgMap/.test(url)) return;
   try {
-    body = await res.text();
+    seen.push({ url, body: await res.text() });
   } catch {
-    return;
+    /* 못 읽는 응답은 넘긴다 */
   }
-  const head = body.slice(0, 200).trim();
-  if (head.startsWith('{') || head.startsWith('[')) xhr.push({ url, kind: 'json', body });
 });
 
 await page.goto(BASE, { waitUntil: 'domcontentloaded', timeout: 60000 });
 await page.waitForTimeout(10000);
 
-const mastRes = [...xhr].reverse().find((x) => /getEtpMast/.test(x.url));
-const mast = mastRes ? JSON.parse(mastRes.body).results || [] : [];
-const ctgMapRes = [...xhr].reverse().find((x) => /getEtpCtgMap/.test(x.url));
-const ctgMap = ctgMapRes ? JSON.parse(ctgMapRes.body).results || [] : [];
-say(`[마스터] ${mast.length}행, [분류대응] ${ctgMap.length}행`);
-
-// 분류로 고른 국내 월배당 커버드콜
+const grab = (re) => [...seen].reverse().find((x) => re.test(x.url));
+const mast = JSON.parse(grab(/getEtpMast/)?.body || '{}').results || [];
+const ctgMap = JSON.parse(grab(/getEtpCtgMap/)?.body || '{}').results || [];
 const pick = new Set(
   ctgMap
     .filter(
@@ -105,82 +93,74 @@ const pick = new Set(
     .map((r) => r.F16013),
 );
 const universe = mast.filter((r) => pick.has(r.F16013));
-say(`[모집단] 국내 ∧ 커버드콜(0609005) ∧ 월배당(0609002) = ${universe.length}종목`);
+say(`[모집단] ${universe.length}종목 (마스터 ${mast.length}행)`);
 fs.writeFileSync(path.join(OUT, 'universe.json'), JSON.stringify(universe, null, 2));
 
-// ── 앱의 자바스크립트 묶음에서 주소 목록을 뽑는다 ──────────────────────
-const scripts = await page.evaluate(() =>
-  performance
-    .getEntriesByType('resource')
-    .map((e) => e.name)
-    .filter((n) => /\.js(\?|$)/.test(n) && n.includes(location.host)),
-);
-say(`\n[묶음] 자바스크립트 ${scripts.length}개를 읽는다`);
-
-const endpoints = new Set();
-for (const url of scripts) {
-  const text = await page.evaluate(async (u) => {
-    try {
-      return await (await fetch(u)).text();
-    } catch {
-      return '';
-    }
-  }, url);
-  for (const m of text.matchAll(/["'`](\/(?:user|stock|etc)\/[A-Za-z0-9_\-/]+)["'`]/g)) {
-    endpoints.add(m[1]);
-  }
-}
-const all = [...endpoints].sort();
-fs.writeFileSync(path.join(OUT, 'endpoints.json'), JSON.stringify(all, null, 2));
-say(`[묶음] 주소 ${all.length}개를 찾았다`);
-
-const dvd = all.filter((p) => /dvd|divid|dist|pay|분배/i.test(p));
-say(`\n[분배 후보 주소] ${dvd.length}개`);
-for (const p of dvd) say(`   ${p}`);
-
-// ── 머리글을 달아 직접 불러 본다 ───────────────────────────────────────
 if (!appHeaders) {
-  say('\n[중단] 앱 머리글을 못 잡았다.');
-} else {
-  const hdrs = Object.fromEntries(
-    Object.entries(appHeaders).filter(
-      ([k]) => !/^(host|:|accept-encoding|connection|content-length|cookie|referer|sec-|user-agent)/i.test(k),
-    ),
-  );
-  say(`\n[머리글] ${Object.keys(hdrs).join(', ')}`);
-
-  const target = universe.sort((a, b) => Number(b.F15023 || 0) - Number(a.F15023 || 0))[0];
-  const code = target.F16013;
-  say(`[표본] ${code} ${target.F16002}`);
-
-  // 분배 후보 + 이미 아는 낱개 주소를 한 번씩 부른다. 인자 이름이
-  // code 인지 F16013 인지 모르므로 둘 다 달아 본다.
-  const tries = [
-    ...dvd.map((p) => `${p}?code=${code}&F16013=${code}&limit=24`),
-    `/user/etp/getEtpItemOutline?code=${code}&befDate=20250916`,
-    `/user/etp/getEtpLatestFee?code=${code}`,
-  ];
-  for (const p of tries) {
-    const r = await page.evaluate(
-      async ({ base, p, headers }) => {
-        try {
-          const res = await fetch(base + p, { headers, credentials: 'include' });
-          const t = await res.text();
-          return { status: res.status, bytes: t.length, head: t.slice(0, 2500) };
-        } catch (e) {
-          return { status: 0, head: String(e).slice(0, 200) };
-        }
-      },
-      { base: BASE, p, headers: hdrs },
-    );
-    say(`\n  ${p}\n    → ${r.status}, ${r.bytes ?? 0}B`);
-    if (r.status === 200) say(`    ${r.head.replace(/\s+/g, ' ')}`);
-  }
+  say('[중단] 앱 머리글을 못 잡았다.');
+  await browser.close();
+  process.exit(1);
 }
+const hdrs = Object.fromEntries(
+  Object.entries(appHeaders).filter(
+    ([k]) => !/^(host|:|accept-encoding|connection|content-length|cookie|referer|sec-|user-agent)/i.test(k),
+  ),
+);
+
+const target = universe.sort((a, b) => Number(b.F15023 || 0) - Number(a.F15023 || 0))[0];
+const code = target.F16013;
+const isin = target.F16012;
+say(`[표본] ${code} ${target.F16002}\n`);
+
+async function call(p) {
+  return page.evaluate(
+    async ({ base, p, headers }) => {
+      try {
+        const res = await fetch(base + p, { headers, credentials: 'include' });
+        const t = await res.text();
+        return { status: res.status, bytes: t.length, body: t };
+      } catch (e) {
+        return { status: 0, bytes: 0, body: String(e).slice(0, 200) };
+      }
+    },
+    { base: BASE, p, headers: hdrs },
+  );
+}
+
+// 인자 이름을 모르므로 code 와 F16013 을 둘 다 달아 본다. 서버가 모르는
+// 인자는 대개 무시한다.
+const q = `code=${code}&F16013=${code}&F16012=${isin}&limit=36&etpType=ETF`;
+const TRIES = [
+  `/user/etp/getEtpItemDivOutline?${q}`,
+  `/user/etp/getEtpItemCash?${q}`,
+  `/user/etp/getEtpItemCashMonthly?${q}`,
+  `/user/etp/getEtpItemCashYearly?${q}`,
+  `/user/etp/getEtpItemCashHist?${q}`,
+  `/user/etp/getEtpRankItemCash?${q}`,
+  `/user/etp/getEtpRankItemCashMonthly?${q}`,
+  `/user/etp/getEtpRankListCash?${q}`,
+  `/user/etp/getEtpYieldList?${q}`,
+  `/user/etp/getEtpItemTaxBaseHist?${q}`,
+  `/user/etp/getIssueRecentDiv?${q}`,
+  `/user/etp/getEtpScreenerMobileList3?${q}`,
+];
+
+const keep = {};
+for (const p of TRIES) {
+  const r = await call(p);
+  const name = p.split('?')[0].split('/').pop();
+  say(`  ${name} → ${r.status}, ${r.bytes}B`);
+  if (r.status === 200 && r.bytes > 40) {
+    say(`    ${r.body.slice(0, 2200).replace(/\s+/g, ' ')}`);
+    keep[name] = r.body.slice(0, 200_000);
+  }
+  say('');
+}
+fs.writeFileSync(path.join(OUT, 'cash-endpoints.json'), JSON.stringify(keep, null, 2));
 
 fs.writeFileSync(
   path.join(OUT, 'report.md'),
   `# ETFCHECK 관찰 ${new Date().toISOString()}\n\n\`\`\`\n${log.join('\n')}\n\`\`\`\n`,
 );
 await browser.close();
-say('\n관찰 끝.');
+say('관찰 끝.');
