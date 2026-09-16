@@ -85,12 +85,27 @@ jobs:
         if: steps.collect.outcome == 'success'
         run: python scripts/check_etf_proposal.py
 
+      # 미리보기 PDF. 엑셀을 열지 않고도 이번 달 제안서가 어떻게 생겼는지
+      # 볼 수 있어야 한다 — 표가 두 쪽으로 갈라졌다거나 칸이 밀렸다거나
+      # 하는 것은 숫자 검사로는 안 잡히고 눈으로만 보인다.
+      # 러너에는 리브레오피스가 깔려 있다.
+      - name: 미리보기 PDF
+        if: steps.collect.outcome == 'success'
+        continue-on-error: true
+        run: |
+          soffice --headless --norestore --convert-to pdf \
+            --outdir /tmp/pdf 고객제안서_월배당ETF.xlsx
+          mkdir -p docs
+          mv /tmp/pdf/고객제안서_월배당ETF.pdf docs/etf-proposal-preview.pdf
+          ls -la docs/etf-proposal-preview.pdf
+
       - name: 커밋
         if: steps.collect.outcome == 'success'
         run: |
           git config user.name  "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add data/cc_etf.json 고객제안서_월배당ETF.xlsx
+          git add docs/etf-proposal-preview.pdf 2>/dev/null || true
           if git diff --cached --quiet; then
             echo "변경 없음 — 커밋 생략"
             exit 0

@@ -467,6 +467,20 @@ def build_proposal(wb, data, first_adopted, last_adopted):
     c.font = f(9, color=MUTED)
 
     ws.freeze_panes = "A4"
+
+    # 인쇄. 이 장은 고객에게 건네는 한 장이라 대개 인쇄하거나 PDF 로 저장한다.
+    # 기본값으로 두면 A4 에 넘쳐 표가 두 쪽으로 갈라진다.
+    ws.page_setup.orientation = "portrait"
+    ws.page_setup.paperSize = ws.PAPERSIZE_A4
+    ws.page_setup.fitToWidth = 1
+    ws.page_setup.fitToHeight = 0  # 세로는 넘치면 다음 장으로
+    ws.sheet_properties.pageSetUpPr.fitToPage = True
+    ws.print_options.horizontalCentered = True
+    ws.page_margins.left = ws.page_margins.right = 0.4
+    ws.page_margins.top = ws.page_margins.bottom = 0.5
+    ws.print_area = f"A1:H{r}"
+    # 표가 다음 장으로 넘어가도 머리글이 따라가게 한다.
+    ws.print_title_rows = "1:3"
     return ws, cust_row
 
 
