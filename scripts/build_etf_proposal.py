@@ -128,13 +128,28 @@ def load():
 
 
 # ══════════════════════════════════════════════════════════════════════
+def vol_label(data, short=False):
+    """변동성 칸에 붙일 이름.
+
+    "1년" 이라고 박아 두면 원천이 한 해치를 주지 않은 달에 그 글자가 거짓이
+    된다. 채택 종목이 실제로 몇 거래일치로 산출됐는지를 보고 이름을 정한다.
+    """
+    dd = [x.get("volatilityDays") for x in data["items"] if x.get("adopted")]
+    dd = [d for d in dd if d]
+    if dd and min(dd) >= 200:
+        return "변동성(1년)" if short else "변동성 (1년, 연환산)"
+    if dd:
+        return f"변동성(연환산·최소 {min(dd)}일)" if short else f"변동성 (연환산, 최소 {min(dd)}거래일)"
+    return "변동성(연환산)" if short else "변동성 (연환산)"
+
+
 def build_data_sheet(wb, data):
     """수집 원본을 그대로 보여 주는 장. 제안서의 모든 수식이 여기를 본다."""
     ws = wb.create_sheet("ETF데이터")
     cols = [
         ("종목명", 34), ("종목코드", 11), ("운용사", 18), ("현재가", 12),
         ("순자산총액", 17), ("60일 평균거래대금", 19), ("총보수(연)", 11),
-        ("변동성(1년)", 11), ("최근 월분배율", 13), ("연환산 분배율", 13),
+        (vol_label(data, short=True), 13), ("최근 월분배율", 13), ("연환산 분배율", 13),
         ("분배이력(개월)", 13), ("최근 분배기준일", 15), ("채택", 8), ("제외 사유", 30),
         # 기초지수는 맨 뒤에 붙인다. 가운데 끼워 넣으면 제안서 쪽 수식의
         # 열 글자가 한 칸씩 밀려 조용히 엉뚱한 칸을 가리키게 된다.
@@ -287,7 +302,7 @@ def build_proposal(wb, data, first_adopted, last_adopted):
         ("순자산총액", pick("E", "0"), WON),
         ("60일 평균거래대금", pick("F", "0"), WON),
         ("총보수 (연)", pick("G", "0"), PCT),
-        ("변동성 (1년)", pick("H", "0"), PCT),
+        (vol_label(data), pick("H", "0"), PCT),
         ("최근 월분배율", pick("I", "0"), PCT),
         ("연환산 분배율 (최근 12개월)", pick("J", "0"), PCT),
         ("기초지수", pick("O"), None),
@@ -406,7 +421,7 @@ def build_proposal(wb, data, first_adopted, last_adopted):
         title5 += f" — 연 분배율 상위 {shown}종목 / 전체 {total_adopted}종목"
     r = section(ws, r, title5, LAST)
     heads2 = ["종목명", "종목코드", "현재가", "연 분배율", "월 분배율",
-              "월 분배금(세전)", "월 분배금(세후)", "변동성(1년)"]
+              "월 분배금(세전)", "월 분배금(세후)", vol_label(data, short=True)]
     for i, h in enumerate(heads2, start=1):
         c = ws.cell(row=r, column=i, value=h)
         c.font = f(10, bold=True)
@@ -465,7 +480,9 @@ def build_proposal(wb, data, first_adopted, last_adopted):
         f"  자료 출처: ETFCHECK (www.etfcheck.co.kr) · 수집 시각 {data.get('collectedAt', '')} · "
         f"채택 기준: 순자산 {rules.get('minAum', 0)/1e8:,.0f}억원 이상, "
         f"60일 평균거래대금 {rules.get('minTurnover', 0)/1e8:,.0f}억원 이상, "
-        f"1년 변동성 {rules.get('maxVol', 0):g}% 이하, 분배 이력 {rules.get('minTrackMonths', 0)}개월 이상"
+        # "1년 변동성" 이라고 박지 않는다. 원천이 한 해치를 주지 않은 달에
+        # 그 글자가 거짓이 된다. 정확한 창은 [ETF데이터] 장 머리와 원천 json 에 있다.
+        f"연환산 변동성 {rules.get('maxVol', 0):g}% 이하, 분배 이력 {rules.get('minTrackMonths', 0)}개월 이상"
     )
     ws.merge_cells(start_row=r, start_column=1, end_row=r, end_column=LAST)
     c = ws.cell(row=r, column=1, value=src_line)
