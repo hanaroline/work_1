@@ -160,7 +160,19 @@ export function findPart2(pages, toc) {
     P2_OPEN.lastIndex = 0;
     let x;
     while ((x = P2_OPEN.exec(t))) {
-      const after = t.slice(x.index, x.index + 160);
+      /* 제목이 쪽 끝에 걸리면 「1. 집합투자기구의 명칭」 은 다음 쪽에 있다 —
+         남은 10종목이 모두 이 꼴이었다.
+
+             p.15  … 3. 집합투자기구의 신탁계약기간 제 2 부 . 집합투자기구에 관한 사항
+             p.16  1. 집합투자기구의 명칭 …
+
+         이 쪽에 남은 글이 모자랄 때만 다음 쪽에서 채운다. 쪽 한가운데서 걸린
+         것은 이 쪽 글만으로 판정되므로 상호참조를 봐주게 되지 않는다.
+         다음 쪽이 목차면 채우지 않는다 — 목차에는 어떤 제목이든 다 있다. */
+      let after = t.slice(x.index, x.index + 160);
+      if (after.length < 160 && !(toc && toc.has(i + 1))) {
+        after += ' ' + (pages[i + 1] || '').slice(0, 160 - after.length);
+      }
       if (P2_FIRST_SECTION.test(after)) return { page: i + 1, how: x.index <= 12 ? 'first' : 'mid' };
       if (x.index <= 12 && !P2_REFERS.test(after)) return { page: i + 1, how: 'first' };
     }
