@@ -327,12 +327,19 @@ table.sb tr.refonly .mem span{color:var(--muted-soft)}
       <div>
         <div class="eyebrow" data-i18n="ebSeason">SEASON SCOREBOARD</div>
         <h2 data-i18n="s1t">시즌 스코어보드</h2>
-        <p data-i18n="s1d">위 여섯 칸은 이 화면이 직접 집계한 25개사 결과이고, 아래 여섯 칸은 지수 전체를 다루는 외부 기관 집계다. 유니버스가 다르므로 한 칸에 섞지 않는다.</p>
+        <p data-i18n="s1d">위 여섯 칸은 이 화면이 직접 집계한 25개사 결과이고, 아래 여섯 칸은 지수 전체를 다루는 외부 기관 집계다. 유니버스가 다르므로 한 칸에 섞지 않는다. 맨 아래 차트는 위 여섯 칸 중 '가속 / 둔화 기업 수' 를 기업별로 편 것이다.</p>
       </div>
     </div>
     <div class="tiles" id="own-tiles"></div>
     <p class="cap" style="margin:14px 0 22px" data-i18n="s1own">위: 이 화면이 담은 25개사 · 각 기업의 발표 자료에서 직접 집계</p>
     <div class="tiles" id="idx-tiles"></div>
+    <!-- 가속/둔화 타일(13/3)을 기업별로 편 차트. 타일 두 줄 사이에 끼우면
+         키가 1,700px 이라 외부 집계 줄이 너무 멀어져서 스코어보드 끝에 둔다 -->
+    <div class="chart-box" style="margin-top:var(--space-block)">
+      <h3 data-i18n="c4t">성장 가속도 — 직전분기가 지난 1년보다 빠른가</h3>
+      <p class="cap" data-i18n="c4d">직전분기 전년동기비에서 최근 12개월(LTM) 성장률을 뺀 값(%p). 양수면 최근 분기가 지난 1년 평균보다 빠르다는 뜻이다.</p>
+      <div id="ch-accel"></div>
+    </div>
   </section>
 
   <!-- 2. 캘린더 -->
@@ -399,7 +406,7 @@ table.sb tr.refonly .mem span{color:var(--muted-soft)}
       <div>
         <div class="eyebrow" data-i18n="ebSec">REVENUE BY SECTOR</div>
         <h2 data-i18n="s4t">매출액 분야 분석</h2>
-        <p data-i18n="s4d">아래 두 차트는 외부 섹터 통계를 옮긴 것이 아니라, 이 화면에 담긴 25개사의 발표치를 직접 합산·평균한 것이다. 표본이 작은 섹터는 막대 옆에 기업 수를 적었다.</p>
+        <p data-i18n="s4d">이 섹션의 차트는 외부 섹터 통계를 옮긴 것이 아니라, 이 화면에 담긴 25개사의 발표치를 직접 합산·평균한 것이다. 표본이 작은 섹터는 막대 옆에 기업 수를 적었다.</p>
       </div>
     </div>
     <div class="chart-grid">
@@ -413,11 +420,6 @@ table.sb tr.refonly .mem span{color:var(--muted-soft)}
         <p class="cap" data-i18n="c2d">기업별 전년동기비의 단순평균(가중 아님) · 확인된 기업만</p>
         <div id="ch-yoy"></div>
       </div>
-    </div>
-    <div class="chart-box" style="margin-top:var(--space-block)">
-      <h3 data-i18n="c4t">성장 가속도 — 직전분기가 지난 1년보다 빠른가</h3>
-      <p class="cap" data-i18n="c4d">직전분기 전년동기비에서 최근 12개월(LTM) 성장률을 뺀 값(%p). 양수면 최근 분기가 지난 1년 평균보다 빠르다는 뜻이다.</p>
-      <div id="ch-accel"></div>
     </div>
     <div class="chart-box" style="margin-top:var(--space-block)">
       <h3 data-i18n="c3t">기업별 매출 성장률과 컨센서스 서프라이즈</h3>
@@ -525,7 +527,7 @@ var T = {
   heroSub:"발표일·컨센서스·실제치·가이던스를 기업별로 흩어 찾지 않고, 실적 시즌 하나를 한 화면에서 훑는다.",
   mAsOf:"기준일 2026-09-17", mSrc:"출처: 기업 IR·8-K 공시 및 확인된 보도 · 배수는 stockanalysis.com",
   ebSeason:"SEASON SCOREBOARD", s1t:"시즌 스코어보드",
-  s1d:"위 여섯 칸은 이 화면이 직접 집계한 25개사 결과이고, 아래 여섯 칸은 지수 전체를 다루는 외부 기관 집계다. 유니버스가 다르므로 한 칸에 섞지 않는다.",
+  s1d:"위 여섯 칸은 이 화면이 직접 집계한 25개사 결과이고, 아래 여섯 칸은 지수 전체를 다루는 외부 기관 집계다. 유니버스가 다르므로 한 칸에 섞지 않는다. 맨 아래 차트는 위 여섯 칸 중 '가속 / 둔화 기업 수' 를 기업별로 편 것이다.",
   s1own:"위: 이 화면이 담은 25개사 · 각 기업의 발표 자료에서 직접 집계",
   ebCal:"EARNINGS CALENDAR", s2t:"실적 발표 캘린더",
   s2d:"직전 시즌이 어떤 순서로 지나갔는지, 다음 발표가 언제인지를 한 줄로 본다. 칩을 누르면 해당 기업 행이 열린다. 아래 표는 회사가 수치로 제시한 다음 분기 매출이다.",
@@ -537,7 +539,7 @@ var T = {
   cTicker:"기업", cSector:"섹터", cDate:"발표일", cPeriod:"보고분기", cRev:"매출",
   cCons:"컨센서스", cSurp:"서프라이즈", cYoy:"전년동기비", cGuide:"가이던스", cScore:"모멘텀",
   ebSec:"REVENUE BY SECTOR", s4t:"매출액 분야 분석",
-  s4d:"아래 두 차트는 외부 섹터 통계를 옮긴 것이 아니라, 이 화면에 담긴 25개사의 발표치를 직접 합산·평균한 것이다. 표본이 작은 섹터는 막대 옆에 기업 수를 적었다.",
+  s4d:"이 섹션의 차트는 외부 섹터 통계를 옮긴 것이 아니라, 이 화면에 담긴 25개사의 발표치를 직접 합산·평균한 것이다. 표본이 작은 섹터는 막대 옆에 기업 수를 적었다.",
   c1t:"섹터별 분기 매출 합계", c1d:"단위 10억 달러 · 직전 보고분기 기준",
   c2t:"섹터별 평균 매출 성장률", c2d:"기업별 전년동기비의 단순평균(가중 아님) · 확인된 기업만",
   c3t:"기업별 매출 성장률과 컨센서스 서프라이즈",
@@ -625,7 +627,7 @@ var T = {
   heroSub:"Report dates, consensus, actuals and guidance for a whole earnings season — on one screen instead of one company at a time.",
   mAsOf:"As of 2026-09-17", mSrc:"Sources: company IR / 8-K filings and verified reporting · multiples from stockanalysis.com",
   ebSeason:"SEASON SCOREBOARD", s1t:"Season scoreboard",
-  s1d:"The six tiles above are this dashboard's own tally across its 25 companies. The six below are index-wide figures from outside providers. Different universes — they are never mixed in one tile.",
+  s1d:"The six tiles above are this dashboard's own tally across its 25 companies. The six below are index-wide figures from outside providers. Different universes — they are never mixed in one tile. The chart at the foot of the section unpacks one of the top tiles, accelerating versus slowing, company by company.",
   s1own:"Above: the 25 companies in this dashboard · tallied directly from their own releases",
   ebCal:"EARNINGS CALENDAR", s2t:"Earnings calendar",
   s2d:"How the last season ran, and what reports next. Click a chip to open that company's row. The table below is next-quarter revenue the companies put a number on.",
@@ -637,7 +639,7 @@ var T = {
   cTicker:"Company", cSector:"Sector", cDate:"Reported", cPeriod:"Quarter", cRev:"Revenue",
   cCons:"Consensus", cSurp:"Surprise", cYoy:"YoY", cGuide:"Guidance", cScore:"Momentum",
   ebSec:"REVENUE BY SECTOR", s4t:"Revenue analysis by sector",
-  s4d:"These two charts are not borrowed sector statistics — they aggregate the reported figures of the 25 companies on this page. Thin samples carry their company count next to the bar.",
+  s4d:"The charts in this section are not borrowed sector statistics — they aggregate the reported figures of the 25 companies on this page. Thin samples carry their company count next to the bar.",
   c1t:"Quarterly revenue by sector", c1d:"USD billions · last reported quarter",
   c2t:"Average revenue growth by sector", c2d:"Simple average of company YoY (unweighted) · verified companies only",
   c3t:"Revenue growth against consensus surprise",
@@ -766,7 +768,8 @@ function showTip(e,html){tip.innerHTML=html;tip.style.opacity="1";
   if(x+270>window.innerWidth)x=e.clientX-270;
   if(y+90>window.innerHeight)y=e.clientY-90;
   tip.style.left=x+"px";tip.style.top=y+"px"}
-function hideTip(){tip.style.opacity="0"}
+/* 내용까지 비운다 — 투명하게만 두면 한/영을 바꿔도 이전 언어의 문장이 DOM 에 남는다 */
+function hideTip(){tip.style.opacity="0";tip.innerHTML=""}
 
 /* ------------------------------------------------ 집계 */
 var CO=D.companies, rep=CO.filter(function(c){return !c.upcoming});
@@ -998,7 +1001,9 @@ function openRow(tk){
 
 /* ------------------------------------------------ 차트 */
 function barChart(el,data,opts){
-  var W=520,rowH=34,padL=opts.padL||128,padR=54,padT=8,
+  /* padR 은 막대 오른쪽에 값을 적을 자리다. 가속도 차트처럼 라벨이 긴 곳
+     ('+25.3%p')은 호출할 때 넓혀 준다 — 좁으면 글자가 여백 밖으로 밀린다 */
+  var W=520,rowH=34,padL=opts.padL||128,padR=opts.padR||54,padT=8,
       H=padT+data.length*rowH+26;
   var vals=data.map(function(d){return d.v}),
       max=Math.max.apply(null,vals.concat([0])),
@@ -1017,8 +1022,10 @@ function barChart(el,data,opts){
     s+='<g class="bar" data-i="'+i+'">'+
       '<rect x="'+xa+'" y="'+y+'" width="'+Math.max(w,1.5)+'" height="'+h+'" fill="'+d.c+'"/>'+
       '<text class="tlab" x="'+(padL-9)+'" y="'+(y+h/2+4)+'" text-anchor="end">'+esc(d.l)+"</text>"+
-      '<text class="vlab" x="'+(xv+(d.v<0?-7:7))+'" y="'+(y+h/2+4)+'" text-anchor="'+
-      (d.v<0?"end":"start")+'">'+esc(d.t)+"</text></g>"});
+      // 음수 막대의 값은 축 오른쪽 빈자리에 적는다. 막대 왼쪽에 적으면 가장 큰
+      // 음수(막대가 축 왼쪽 끝까지 닿는 행)에서 티커 이름을 덮어 가린다.
+      '<text class="vlab" x="'+(d.v<0?x0+7:xv+7)+'" y="'+(y+h/2+4)+'" text-anchor="start">'+
+      esc(d.t)+"</text></g>"});
   s+="</svg>";
   el.innerHTML=s;
   $$(".bar",el).forEach(function(g){
@@ -1051,7 +1058,8 @@ function renderCharts(){
         esc(L==="ko"?"직전분기":"Latest quarter")+" "+sgn(c.yoy,1)+"<br>"+
         esc(L==="ko"?"LTM":"LTM")+" "+sgn(c.ltmg,1)+"<br>"+
         esc(L==="ko"?"가속도":"Acceleration")+" "+(c.accel>0?"+":"")+c.accel.toFixed(1)+"%p"}}),
-    {pct:false,padL:64,aria:L==="ko"?"기업별 성장 가속도":"Revenue growth acceleration"});
+    {pct:false,padL:64,padR:66,
+     aria:L==="ko"?"기업별 성장 가속도":"Revenue growth acceleration"});
   scatter()}
 
 function scatter(){
@@ -1295,7 +1303,7 @@ function renderAll(){
   renderCharts();insights();renderRank();renderNotes()}
 
 $$(".lang-toggle button").forEach(function(b){b.addEventListener("click",function(){
-  L=b.getAttribute("data-lang");localStorage.setItem("earnLang",L);applyLang()})});
+  L=b.getAttribute("data-lang");localStorage.setItem("earnLang",L);hideTip();applyLang()})});
 $("#q").addEventListener("input",function(e){query=e.target.value;renderTbl()});
 $$("#tbl thead th").forEach(function(th){th.addEventListener("click",function(){
   var k=th.getAttribute("data-k");
