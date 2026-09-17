@@ -23,12 +23,14 @@ SERIES = {
     "매출 컨센서스": "인용 기사에 명시된 제공사 (기업마다 상이 — 각 행의 출처 참조)",
     "EPS 컨센서스": "인용 기사에 명시된 제공사 (기업마다 상이)",
     "가이던스": "기업이 직접 제시한 전망 (애널리스트 추정치가 아님)",
+    "밸류에이션": "stockanalysis.com 한 곳 · 2026-09-17 기준 (제공사 혼용 금지)",
 }
 SERIES_EN = {
     "Quarterly revenue": "As reported by the company (press release / 8-K)",
     "Revenue consensus": "The provider named in the cited article — differs by company; see each row's source",
     "EPS consensus": "The provider named in the cited article — differs by company",
     "Guidance": "Issued by the company itself, not an analyst estimate",
+    "Valuation": "stockanalysis.com only · as of 2026-09-17 (never mixed across providers)",
 }
 
 # ---------------------------------------------------------------- 기업 데이터
@@ -308,11 +310,46 @@ for _c in C:
     _c["consnote_en"] = CN_EN.get(_c["t"], "")
     _c["per_en"] = PER_EN.get(_c["per"], _c["per"])
 
+# ---------------------------------------------------------------- 밸류에이션
+# 선행 P/E · PEG 는 **한 제공사(stockanalysis.com) 한 날짜**로 통일했다.
+# 이유는 계열 혼용 사고다. 같은 시점 NVDA 선행 P/E 가 출처마다
+# 18.12 / 23.8 / 24.50 / 48.30 (2.7배 차이), PLTR 은 P/E 147.69 / 177.89 / 249 로
+# 엇갈렸다. 섞으면 순위가 통째로 바뀌므로 절대 섞지 않는다.
+#
+# 점수에는 **선행 P/E 만** 쓴다. PEG 는 제공사가 산식을 공개하지 않아
+# 화면에 참고로만 싣고 점수에는 넣지 않는다.
+VAL_SRC = "https://stockanalysis.com/stocks/%s/statistics/"
+VAL_ASOF = "2026-09-17"
+VAL = {   # 티커: (선행 P/E, PEG)
+ "NVDA": (18.12, 0.35), "MSFT": (24.93, 1.55), "AAPL": (34.33, 3.25),
+ "GOOGL": (25.39, 1.93), "AMZN": (28.76, 1.38), "META": (20.80, 1.04),
+ "AVGO": (23.55, 0.50), "TSLA": (188.57, 6.97), "AMD": (42.61, 0.65),
+ "ORCL": (19.10, 0.65), "CRM": (17.45, 1.08), "PLTR": (97.87, 1.82),
+ "INTC": (None, None), "MU": (7.07, 0.04), "NFLX": (22.34, 1.05),
+ "JPM": (14.96, 1.48), "GS": (14.89, 1.03), "LLY": (28.18, 1.33),
+ "UNH": (22.37, 1.73), "JNJ": (24.06, 2.96), "WMT": (35.74, 3.48),
+ "COST": (43.25, 4.00), "HD": (21.73, 4.04), "CAT": (28.32, 1.54),
+ "XOM": (13.76, 1.20),
+}
+VAL_NOTE = {
+ "INTC": ("직전 12개월 적자(매출 570.3억달러, 손실 -112.9억달러, EPS -2.30달러)로 "
+          "P/E 가 성립하지 않는다. 선행 P/E 도 제공사 화면에서 확인되지 않았다."),
+ "MU": "PEG 0.04 는 예상 이익 증가율이 극단적으로 커서 나온 값 — 배수 자체로 읽지 말 것.",
+ "TSLA": "선행 P/E 188.57 은 이익 기저가 얕아 나온 값 — 이익이 회복되면 크게 움직인다.",
+}
+# 선행 P/E 를 0~100 으로 환산하는 고정 구간(하우스 기준).
+# 지수 배수를 기준점으로 쓰지 않은 이유: 이번 수집에서 S&P500 선행 P/E 가
+# 19.1 / 22.4 / 22.9 / 25.6 으로 엇갈려 기준점으로 삼을 수 없었다.
+VAL_BAND = (12.0, 45.0)     # 12배 이하 100점, 45배 이상 0점
+
 # ---------------------------------------------------------------- 스코어
-# 실적 모멘텀 스코어 — 확인된 지표만 쓴다. 밸류에이션·주가는 들어가지 않는다.
+# 두 축을 따로 내고 합친다.
+#   실적 모멘텀 — 발표된 실적만. 가격은 들어가지 않는다.
+#   밸류에이션  — 가격 부담만. 실적은 들어가지 않는다.
 BANDS = {"surprise": (-3.0, 8.0), "yoy": (-5.0, 60.0), "eps": (-10.0, 30.0)}
 W = {"surprise": 25.0, "yoy": 35.0, "guide": 25.0, "eps": 15.0}
-MIN_COVERAGE = 50.0   # 이 아래면 점수를 공표하지 않는다
+MIN_COVERAGE = 50.0   # 이 아래면 모멘텀 점수를 공표하지 않는다
+MIX = {"momentum": 70.0, "valuation": 30.0}   # 투자매력도 결합 비중
 
 
 def band(v, lo, hi):
@@ -346,6 +383,19 @@ for c in C:
     c["epssurprise"] = (round((c["eps"] / c["epsc"] - 1) * 100, 2)
                         if c.get("eps") is not None and c.get("epsc") else None)
     c["score"], c["coverage"], c["scoreparts"] = score(c)
+
+    fpe, peg = VAL.get(c["t"], (None, None))
+    c["fpe"], c["peg"], c["valnote"] = fpe, peg, VAL_NOTE.get(c["t"], "")
+    # 배수가 낮을수록 높은 점수 — band() 를 뒤집어 쓴다.
+    c["valscore"] = (round(100.0 - band(fpe, *VAL_BAND), 1)
+                     if fpe is not None else None)
+    # 투자매력도는 두 축이 모두 있어야 낸다. 한쪽만으로 합성하면
+    # 그 기업만 다른 잣대로 재는 것이 된다.
+    c["appeal"] = (round(c["score"] * MIX["momentum"] / 100.0
+                         + c["valscore"] * MIX["valuation"] / 100.0, 1)
+                   if c["score"] is not None and c["valscore"] is not None else None)
+    c["appealgap"] = ("momentum" if c["score"] is None else
+                      "valuation" if c["valscore"] is None else None)
 
 
 # ------------------------------------------------- 지수 레벨 집계 (외부 기관)
@@ -426,12 +476,31 @@ for c in C:
             revision=({1: "up", 0: "unchanged", -1: "down"}[c["guide"]]
                       if c.get("guide") is not None else "new"),
             verdict="confirmed", render="assert", printed_on=["table-main"]))
+    # 밸류에이션 — 집계사이트 한 곳이 유일한 근거라 tier 3 이고, 회사가 발표한
+    # 값이 아니다. 'marked'(참고 표기)로만 인쇄하고 화면에서도 실적치와 구분한다.
+    for key, cid, metric, label, where, memo in (
+        ("fpe", "FPE", "선행 P/E", "선행 P/E", ["table-main", "rank-appeal"],
+         "집계사이트 한 곳의 당일 값. 제공사마다 선행 이익 기준이 달라 다른 곳 수치와 섞지 말 것"),
+        ("peg", "PEG", "PEG", "PEG", ["table-main"],
+         "제공사 산정. 산식(예상 이익 증가율의 기간·기준)이 공개돼 있지 않아 "
+         "점수에는 넣지 않고 참고로만 싣는다"),
+    ):
+        if c.get(key) is None:
+            continue
+        claims.append(dict(
+            id=f"{tag}_{cid}", kind="market_multiple", metric=metric,
+            text=f"{c['ko']} {label}", value=c[key], unit="배",
+            series=SERIES["밸류에이션"], as_of=VAL_ASOF, tier=3,
+            source_url=VAL_SRC % c["t"].lower(),
+            verdict="confirmed", render="marked",
+            note=memo + ((" — " + c["valnote"]) if c.get("valnote") else ""),
+            printed_on=where))
 
 ledger = dict(
     deliverable="미국 주요기업 실적 어닝스 인텔리전스 대시보드 (earnings-intel.html)",
     as_of=ASOF, series_policy=SERIES, claims=claims, derived=derived,
     unit_policy={"분기 매출": "USD bn", "매출 컨센서스": "USD bn",
-                 "가이던스": "방향(+1/0/-1)"})
+                 "가이던스": "방향(+1/0/-1)", "선행 P/E": "배", "PEG": "배"})
 
 OUT.mkdir(parents=True, exist_ok=True)
 (OUT / "claims.json").write_text(json.dumps(ledger, ensure_ascii=False, indent=1), "utf-8")
@@ -455,16 +524,20 @@ cov = dict(total=len(C),
            cons=sum(1 for c in C if c.get("cons")),
            yoy=sum(1 for c in C if c.get("yoy") is not None),
            guide=sum(1 for c in C if c.get("guide") is not None),
-           eps=sum(1 for c in C if c.get("epssurprise") is not None))
+           eps=sum(1 for c in C if c.get("epssurprise") is not None),
+           fpe=sum(1 for c in C if c.get("fpe") is not None),
+           appeal=sum(1 for c in C if c.get("appeal") is not None))
 
 keys = ("t ko en sec sub per pend rep repapprox rev cons consderived surprise yoy eps epsc "
         "epssurprise guide gtxt gkind note warn src csrc tier score coverage scoreparts "
-        "upcoming nextrep nextconf nextsrc consnote epsnote gtxt_en note_en consnote_en per_en").split()
+        "upcoming nextrep nextconf nextsrc consnote epsnote gtxt_en note_en consnote_en per_en "
+        "fpe peg valscore appeal appealgap valnote").split()
 payload = dict(
     asOf=ASOF,
     generated="scripts/build_earnings.py",
     season=dict(prev="2026년 2분기(캘린더) 실적 시즌", nextq="2026년 3분기(캘린더) 실적 시즌"),
     weights=W, bands=BANDS, minCoverage=MIN_COVERAGE, seriesPolicy=SERIES,
+    valBand=VAL_BAND, mix=MIX, valAsOf=VAL_ASOF,
     seriesPolicyEn=SERIES_EN, coverage=cov,
     index=INDEX,
     companies=[{k: c.get(k) for k in keys} for c in C],
@@ -489,6 +562,13 @@ print("기업 %d사 · claim %d건 · derived %d건" % (len(C), len(claims), len
 print("컨센서스 확인 %d/%d · YoY 확인 %d/%d · 가이던스 확인 %d/%d · EPS 서프라이즈 %d/%d"
       % (cov["cons"], cov["total"], cov["yoy"], cov["total"],
          cov["guide"], cov["total"], cov["eps"], cov["total"]))
-for c in sorted([c for c in C if c["score"] is not None],
-                key=lambda x: -x["score"])[:8]:
-    print("  %-6s %5.1f  (커버리지 %d%%)" % (c["t"], c["score"], c["coverage"]))
+print("선행 P/E 확인 %d/%d · 투자매력도 산출 %d/%d"
+      % (cov["fpe"], cov["total"], cov["appeal"], cov["total"]))
+print("  %-6s %7s %7s %7s   %s" % ("티커", "매력도", "모멘텀", "밸류", "선행 P/E"))
+for c in sorted([c for c in C if c["appeal"] is not None],
+                key=lambda x: -x["appeal"])[:10]:
+    print("  %-6s %7.1f %7.1f %7.1f   %6.2f배"
+          % (c["t"], c["appeal"], c["score"], c["valscore"], c["fpe"]))
+miss = [c for c in C if c["appeal"] is None]
+print("  미산출 %d사: %s" % (len(miss), ", ".join(
+    "%s(%s)" % (c["t"], "모멘텀" if c["appealgap"] == "momentum" else "밸류") for c in miss)))
