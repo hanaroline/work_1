@@ -117,6 +117,13 @@ def verify_against_yahoo(doc, sample=40):
     naver_out = yahoo_out = 0     # 한쪽 종가가 상대 고저를 벗어난 건수
     only_n = only_y = 0
     worst = []
+    # 첫 판에서 어긋남이 **날짜로 뭉치는** 것이 보였다 — 2024-11-07 은 본 다섯 종목
+    # 모두에서 어긋났다. 종목이 아니라 날짜로 뭉친다면 그건 벤더의 잡음이 아니라
+    # 그날 무슨 일이 있었다는 뜻이다. 그래서 날짜별로 센다.
+    by_date = {}
+    ohl_same = ohl_diff = 0       # 어긋난 봉에서 시·고·저까지 같은가
+    n_days = {}                   # 날짜별 대조한 봉 수 — 뭉침을 재려면 분모가 필요하다
+    only_n_days, only_y_days = [], []
 
     for sym in syms[::step][:sample]:
         yb = yahoo_bars(sym)
@@ -128,16 +135,28 @@ def verify_against_yahoo(doc, sample=40):
         lo = max(min(nd), min(yb)) if nd and yb else None
         if lo is None:
             continue
-        only_n += len([d for d in nd if d >= lo and d not in yb])
-        only_y += len([d for d in yb if d >= lo and d not in nd])
+        a = [d for d in nd if d >= lo and d not in yb]
+        b = [d for d in yb if d >= lo and d not in nd]
+        only_n += len(a); only_y += len(b)
+        only_n_days += [(sym, d) for d in a]
+        only_y_days += [(sym, d) for d in b]
         for d in sorted(set(nd) & set(yb)):
             no, nh, nl, nc, _ = nd[d]
             yo, yh, yl, yc, _ = yb[d]
             if None in (nc, yc, nh, nl, yh, yl):
                 continue
             pairs += 1
+            n_days[d] = n_days.get(d, 0) + 1
             rel = (nc - yc) / yc * 100
             rels.append(rel)
+            if abs(rel) > 0.005:
+                by_date[d] = by_date.get(d, 0) + 1
+                # **시·고·저까지 같은데 종가만 다른가?** 그렇다면 「다른 세션을
+                # 보고 있다」가 아니라 「같은 세션의 마감값을 다르게 적었다」는 뜻이다.
+                if (no, nh, nl) == (yo, yh, yl):
+                    ohl_same += 1
+                else:
+                    ohl_diff += 1
             # **가릴 수 있는 한 가지** — 상대의 고저 범위를 벗어난 종가는
             # 그 세션의 종가일 수 없다.
             if nc > yh or nc < yl:
@@ -165,6 +184,28 @@ def verify_against_yahoo(doc, sample=40):
                          % (ab[len(ab) // 2], ab[int(len(ab) * 0.9)], ab[-1],
                             sum(1 for x in diff if x > 0), sum(1 for x in diff if x < 0)))
     sys.stderr.write('  거래일 어긋남 — 네이버에만 %d · 야후에만 %d\n' % (only_n, only_y))
+    if only_n_days or only_y_days:
+        sys.stderr.write('    네이버에만: %s\n'
+                         % ', '.join('%s %s' % x for x in only_n_days[:12]))
+        sys.stderr.write('    야후에만:   %s\n'
+                         % ', '.join('%s %s' % x for x in only_y_days[:12]))
+    if diff:
+        sys.stderr.write('  **어긋난 봉에서 시·고·저는** — 똑같음 %d 건 · 다름 %d 건\n'
+                         % (ohl_same, ohl_diff))
+        # 날짜로 뭉치는가 — 그 날 대조한 봉 가운데 몇이 어긋났는지로 본다
+        top = sorted(by_date.items(), key=lambda kv: -kv[1])[:12]
+        sys.stderr.write('  어긋남이 많은 날 (그날 대조한 봉 대비)\n')
+        for d, k in top:
+            sys.stderr.write('    %s  %d/%d 종목\n' % (d, k, n_days.get(d, 0)))
+        # 최근 20 거래일에 얼마나 몰렸는가 — 신호가 제일 많이 쓰는 봉이다
+        alld = sorted(n_days)
+        recent = set(alld[-20:])
+        rn = sum(v for d, v in by_date.items() if d in recent)
+        rb = sum(v for d, v in n_days.items() if d in recent)
+        sys.stderr.write('  최근 20 거래일 — 어긋남 %d/%d (%.1f%%), 그 앞 전체 %d/%d (%.1f%%)\n'
+                         % (rn, rb, (rn / rb * 100 if rb else 0),
+                            len(diff) - rn, pairs - rb,
+                            ((len(diff) - rn) / (pairs - rb) * 100) if pairs - rb else 0))
     sys.stderr.write('  **상대 고저를 벗어난 종가** — 네이버 종가 %d 건 · 야후 종가 %d 건\n'
                      % (naver_out, yahoo_out))
     if worst:
