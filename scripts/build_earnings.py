@@ -24,6 +24,7 @@ SERIES = {
     "EPS 컨센서스": "인용 기사에 명시된 제공사 (기업마다 상이)",
     "가이던스": "기업이 직접 제시한 전망 (애널리스트 추정치가 아님)",
     "밸류에이션": "stockanalysis.com 한 곳 · 2026-09-17 기준 (제공사 혼용 금지)",
+    "LTM": "stockanalysis.com 한 곳 · 2026-09-17 조회 (분기 실적치와는 계열이 다름)",
 }
 SERIES_EN = {
     "Quarterly revenue": "As reported by the company (press release / 8-K)",
@@ -31,6 +32,7 @@ SERIES_EN = {
     "EPS consensus": "The provider named in the cited article — differs by company",
     "Guidance": "Issued by the company itself, not an analyst estimate",
     "Valuation": "stockanalysis.com only · as of 2026-09-17 (never mixed across providers)",
+    "LTM": "stockanalysis.com only · retrieved 2026-09-17 (a different series from the reported quarter)",
 }
 
 # ---------------------------------------------------------------- 기업 데이터
@@ -403,6 +405,59 @@ VG_NOTE = {
    "중앙값이 흡수한다. WBD 는 제공사 값이 상장지마다 811~1,014배로 어긋나 제외했다.",
 }
 
+
+# ---------------------------------------------------------------- 기간 확장
+# 분기 한 점만 보면 그 분기가 좋았는지만 알 수 있고 '추세'는 안 보인다.
+# LTM(최근 12개월) 매출·성장률을 같은 제공사·같은 날짜로 함께 받아
+#   가속도 = 직전분기 YoY − LTM YoY
+# 를 만든다. 두 점뿐이지만 방향은 읽힌다.
+#
+# 분기별 시계열을 쓰지 않은 이유: 검색 요약이 회계분기 라벨을 섞는다.
+# (NVDA 의 FY27 Q2 를 'Q1 FY2026' 으로, 2025년 분기를 2026년으로 표기한 사례 확인)
+# 라벨이 틀린 시계열은 없느니만 못해서 채택하지 않았다.
+LTM_SRC = "https://stockanalysis.com/stocks/%s/revenue/"
+LTM = {   # 티커: (LTM 매출 USD bn, LTM 성장률 %)
+ "NVDA": (302.97, 83.38), "MSFT": (331.84, 17.79), "AAPL": (466.82, 14.24),
+ "GOOGL": (445.87, 20.05), "AMZN": (775.68, 15.77), "META": (228.25, 27.65),
+ "AVGO": (75.47, 94.17), "TSLA": (103.62, 9.37), "AMD": (41.31, 39.54),
+ "ORCL": (71.78, 21.62), "CRM": (43.94, 11.23), "PLTR": (5.22, 67.71),
+ "INTC": (57.03, 7.47), "MU": (90.27, 166.98), "NFLX": (48.37, 16.02),
+ "JPM": (186.33, 13.79), "GS": (66.20, 17.77), "LLY": (79.67, 49.58),
+ "UNH": (450.13, 6.46), "JNJ": (97.93, 8.06), "WMT": (735.84, 6.16),
+ "COST": (293.59, 9.23), "HD": (169.18, 2.50), "CAT": (74.73, 18.36),
+ "XOM": (361.06, 9.62),
+}
+# 가속도는 계열이 다른 두 값의 차다 — 분기 YoY 는 회사 발표, LTM YoY 는
+# 집계사이트 산정. 매출 정의가 어긋날 수 있는 곳은 따로 단서를 단다.
+LTM_NOTE = {
+ "JPM": "회사 발표 총순영업수익(57.3십억달러)과 집계사이트의 매출 정의가 달라 "
+        "가속도는 방향만 참고할 것",
+ "GS":  "회사 발표 순영업수익과 집계사이트의 매출 정의가 달라 가속도는 방향만 참고할 것",
+ "MU":  "LTM +166.98% 는 메모리 업사이클 구간의 값 — 기저효과가 크다",
+ "HD":  "같은 제공사의 통계 화면에서는 LTM 매출이 166.59십억달러로 조회된 적이 있다"
+        "(조회 시점 차이). 이 화면은 매출 화면 값으로 통일한다",
+}
+ACCEL_BAND = 2.0    # ±2%p 안쪽이면 '유지'로 본다
+
+# --- 미래 방향 -------------------------------------------------------------
+# 서드파티의 분기·연간 컨센서스는 확보하지 못했다(제공사 페이지 요약에 수치가
+# 실리지 않음). 대신 **회사가 수치로 제시한 차기 분기 매출 가이던스**만 모은다.
+# 이건 1차 출처이고 이미 위 gtxt 에 문장으로 들어 있는 값을, 숫자로 다시 세운 것이다.
+# 범위로 제시된 것은 중간값을 쓰고 범위를 함께 남긴다.
+GNEXT = {   # 티커: (중간값 USD bn, 표기, 대상 분기)
+ "NVDA": (108.0, "1,080억달러 ±2%", "Q3 FY27"),
+ "AVGO": (34.8,  "348억달러", "Q4 FY26"),
+ "AMZN": (199.5, "1,970~2,020억달러", "Q3 CY26"),
+ "META": (62.5,  "610~640억달러", "Q3 CY26"),
+ "AMD":  (13.0,  "130억달러 ±3억달러", "Q3 CY26"),
+ "INTC": (16.3,  "158~168억달러", "Q3 CY26"),
+ "MU":   (50.0,  "500억달러", "Q4 FY26"),
+}
+GNEXT_EN = {
+ "NVDA": "$108B ±2%", "AVGO": "$34.8B", "AMZN": "$197–202B", "META": "$61–64B",
+ "AMD": "$13B ±$0.3B", "INTC": "$15.8–16.8B", "MU": "$50B",
+}
+
 # ---------------------------------------------------------------- 스코어
 # 두 축을 따로 내고 합친다.
 #   실적 모멘텀 — 발표된 실적만. 가격은 들어가지 않는다.
@@ -444,6 +499,22 @@ for c in C:
     c["epssurprise"] = (round((c["eps"] / c["epsc"] - 1) * 100, 2)
                         if c.get("eps") is not None and c.get("epsc") else None)
     c["score"], c["coverage"], c["scoreparts"] = score(c)
+
+    ltm, ltmg = LTM.get(c["t"], (None, None))
+    c["ltm"], c["ltmg"], c["ltmnote"] = ltm, ltmg, LTM_NOTE.get(c["t"], "")
+    # 가속도 = 직전분기 YoY − LTM YoY. 양수면 최근 분기가 지난 1년보다 빠르다.
+    c["accel"] = (round(c["yoy"] - ltmg, 1)
+                  if c.get("yoy") is not None and ltmg is not None else None)
+    c["trend"] = (None if c["accel"] is None else
+                  "up" if c["accel"] > ACCEL_BAND else
+                  "down" if c["accel"] < -ACCEL_BAND else "flat")
+
+    g = GNEXT.get(c["t"])
+    c["gnext"], c["gnexttxt"], c["gnextper"] = (g if g else (None, None, None))
+    c["gnexten"] = GNEXT_EN.get(c["t"])
+    # 회사 가이던스 중간값이 직전 분기 대비 몇 % 인가 — 검증된 두 수의 나눗셈
+    c["gnextqoq"] = (round((c["gnext"] / c["rev"] - 1) * 100, 1)
+                     if c.get("gnext") and c.get("rev") else None)
 
     fpe, peg = VAL.get(c["t"], (None, None))
     c["fpe"], c["peg"], c["valnote"] = fpe, peg, VAL_NOTE.get(c["t"], "")
@@ -570,6 +641,37 @@ for c in C:
             revision=({1: "up", 0: "unchanged", -1: "down"}[c["guide"]]
                       if c.get("guide") is not None else "new"),
             verdict="confirmed", render="assert", printed_on=["table-main"]))
+    if c.get("gnext") is not None:
+        claims.append(dict(
+            id=f"{tag}_GNEXT", kind="company_guidance", metric="차기분기 매출 가이던스",
+            text=f"{c['ko']} {c['gnextper']} 매출 가이던스 — {c['gnexttxt']}",
+            value=c["gnext"], unit="USD bn", series=SERIES["가이던스"],
+            as_of=c["rep"] or ASOF, tier=c["tier"], source_url=c["src"],
+            announced_on=c["rep"] or ASOF, attributed_to=f"{c['en']} (회사 발표)",
+            target_period=c["gnextper"], revision="new",
+            verdict="confirmed", render="assert",
+            note="범위로 제시된 것은 중간값. 애널리스트 추정치가 아니라 회사가 제시한 수치다",
+            printed_on=["forward-path"]))
+        derived.append(dict(id=f"D_{tag}_GQOQ", kind="pct_change",
+                            **{"from": f"{tag}_REV", "to": f"{tag}_GNEXT"},
+                            printed=c["gnextqoq"], tolerance=0.05))
+    if c.get("ltm") is not None:
+        claims.append(dict(
+            id=f"{tag}_LTM", kind="reported_result", metric="LTM 매출",
+            text=f"{c['ko']} 최근 12개월 매출", value=c["ltm"], unit="USD bn",
+            series=SERIES["LTM"], as_of=VAL_ASOF, tier=3,
+            source_url=LTM_SRC % c["t"].lower(), verdict="confirmed", render="marked",
+            note="집계사이트가 분기 실적을 합산해 산정한 값. 회사가 그대로 발표한 수치가 아니다"
+                 + ((" — " + c["ltmnote"]) if c.get("ltmnote") else ""),
+            printed_on=["table-main", "chart-trend"]))
+        claims.append(dict(
+            id=f"{tag}_LTMG", kind="reported_result", metric="LTM 성장률",
+            text=f"{c['ko']} 최근 12개월 매출 성장률", value=c["ltmg"], unit="%",
+            series=SERIES["LTM"], as_of=VAL_ASOF, tier=3,
+            source_url=LTM_SRC % c["t"].lower(), verdict="confirmed", render="marked",
+            note="가속도(분기 YoY − LTM YoY)의 분모가 되는 값. 분기 YoY 는 회사 발표라 "
+                 "두 값의 계열이 다르다 — 방향 판정에만 쓴다",
+            printed_on=["table-main", "chart-trend"]))
     # 밸류에이션 — 집계사이트 한 곳이 유일한 근거라 tier 3 이고, 회사가 발표한
     # 값이 아니다. 'marked'(참고 표기)로만 인쇄하고 화면에서도 실적치와 구분한다.
     for key, cid, metric, label, where, memo in (
@@ -619,7 +721,8 @@ ledger = dict(
     deliverable="미국 주요기업 실적 어닝스 인텔리전스 대시보드 (earnings-intel.html)",
     as_of=ASOF, series_policy=SERIES, claims=claims, derived=derived,
     unit_policy={"분기 매출": "USD bn", "매출 컨센서스": "USD bn",
-                 "가이던스": "방향(+1/0/-1)", "선행 P/E": "배", "PEG": "배", "섹터 기준배수": "배"})
+                 "가이던스": "방향(+1/0/-1)", "선행 P/E": "배", "PEG": "배", "섹터 기준배수": "배",
+                 "LTM 매출": "USD bn", "LTM 성장률": "%"})
 
 OUT.mkdir(parents=True, exist_ok=True)
 (OUT / "claims.json").write_text(json.dumps(ledger, ensure_ascii=False, indent=1), "utf-8")
@@ -647,18 +750,23 @@ cov = dict(total=len(C),
            guide=sum(1 for c in C if c.get("guide") is not None),
            eps=sum(1 for c in C if c.get("epssurprise") is not None),
            fpe=sum(1 for c in C if c.get("fpe") is not None),
+           ltm=sum(1 for c in C if c.get("ltm") is not None),
+           accel=sum(1 for c in C if c.get("accel") is not None),
+           gnext=sum(1 for c in C if c.get("gnext") is not None),
            appeal=sum(1 for c in C if c.get("appeal") is not None))
 
 keys = ("t ko en sec sub per pend rep repapprox rev cons consderived surprise yoy eps epsc "
         "epssurprise guide gtxt gkind note warn src csrc tier score coverage scoreparts "
         "upcoming nextrep nextconf nextsrc consnote epsnote gtxt_en note_en consnote_en per_en "
-        "fpe peg valscore valabs relpe secmed vgrp vgrpEn appeal appealgap valnote").split()
+        "fpe peg valscore valabs relpe secmed vgrp vgrpEn appeal appealgap valnote "
+        "ltm ltmg accel trend ltmnote gnext gnexttxt gnextper gnexten gnextqoq").split()
 payload = dict(
     asOf=ASOF,
     generated="scripts/build_earnings.py",
     season=dict(prev="2026년 2분기(캘린더) 실적 시즌", nextq="2026년 3분기(캘린더) 실적 시즌"),
     weights=W, bands=BANDS, minCoverage=MIN_COVERAGE, seriesPolicy=SERIES,
     valBand=VAL_BAND, relBand=REL_BAND, mix=MIX, valAsOf=VAL_ASOF,
+    accelBand=ACCEL_BAND,
     secBench=[SECBENCH[k] for k in VG_ORDER if k in SECBENCH],
     seriesPolicyEn=SERIES_EN, coverage=cov,
     index=INDEX,
@@ -684,8 +792,20 @@ print("기업 %d사 · claim %d건 · derived %d건" % (len(C), len(claims), len
 print("컨센서스 확인 %d/%d · YoY 확인 %d/%d · 가이던스 확인 %d/%d · EPS 서프라이즈 %d/%d"
       % (cov["cons"], cov["total"], cov["yoy"], cov["total"],
          cov["guide"], cov["total"], cov["eps"], cov["total"]))
-print("선행 P/E 확인 %d/%d · 투자매력도 산출 %d/%d"
-      % (cov["fpe"], cov["total"], cov["appeal"], cov["total"]))
+print("선행 P/E 확인 %d/%d · LTM %d/%d · 가속도 산출 %d/%d · 투자매력도 %d/%d"
+      % (cov["fpe"], cov["total"], cov["ltm"], cov["total"],
+         cov["accel"], cov["total"], cov["appeal"], cov["total"]))
+_up = [c for c in C if c.get("trend") == "up"]
+_dn = [c for c in C if c.get("trend") == "down"]
+print("  가속 %d사: %s" % (len(_up), " ".join(
+    "%s(%+.0f%%p)" % (c["t"], c["accel"]) for c in sorted(_up, key=lambda x: -x["accel"]))))
+print("차기분기 수치 가이던스 %d사:" % cov["gnext"])
+for c in sorted([c for c in C if c.get("gnextqoq") is not None],
+                key=lambda x: -x["gnextqoq"]):
+    print("  %-6s %7.2f → %7.2f  (%+.1f%% QoQ)  %s"
+          % (c["t"], c["rev"], c["gnext"], c["gnextqoq"], c["gnextper"]))
+print("  둔화 %d사: %s" % (len(_dn), " ".join(
+    "%s(%+.0f%%p)" % (c["t"], c["accel"]) for c in sorted(_dn, key=lambda x: x["accel"]))))
 print("기준그룹 배수(선행 P/E 중앙값):")
 for _k in VG_ORDER:
     _b = SECBENCH.get(_k)

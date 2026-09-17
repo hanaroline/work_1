@@ -6,7 +6,8 @@
   "매출 컨센서스": "인용 기사에 명시된 제공사 (기업마다 상이 — 각 행의 출처 참조)",
   "EPS 컨센서스": "인용 기사에 명시된 제공사 (기업마다 상이)",
   "가이던스": "기업이 직접 제시한 전망 (애널리스트 추정치가 아님)",
-  "밸류에이션": "stockanalysis.com 한 곳 · 2026-09-17 기준 (제공사 혼용 금지)"
+  "밸류에이션": "stockanalysis.com 한 곳 · 2026-09-17 기준 (제공사 혼용 금지)",
+  "LTM": "stockanalysis.com 한 곳 · 2026-09-17 조회 (분기 실적치와는 계열이 다름)"
  },
  "claims": [
   {
@@ -64,6 +65,66 @@
    "render": "assert",
    "printed_on": [
     "table-main"
+   ]
+  },
+  {
+   "id": "NVDA_GNEXT",
+   "kind": "company_guidance",
+   "metric": "차기분기 매출 가이던스",
+   "text": "엔비디아 Q3 FY27 매출 가이던스 — 1,080억달러 ±2%",
+   "value": 108.0,
+   "unit": "USD bn",
+   "series": "기업이 직접 제시한 전망 (애널리스트 추정치가 아님)",
+   "as_of": "2026-08-26",
+   "tier": 1,
+   "source_url": "https://nvidianews.nvidia.com/news/nvidia-announces-financial-results-for-second-quarter-fiscal-2027",
+   "announced_on": "2026-08-26",
+   "attributed_to": "NVIDIA (회사 발표)",
+   "target_period": "Q3 FY27",
+   "revision": "new",
+   "verdict": "confirmed",
+   "render": "assert",
+   "note": "범위로 제시된 것은 중간값. 애널리스트 추정치가 아니라 회사가 제시한 수치다",
+   "printed_on": [
+    "forward-path"
+   ]
+  },
+  {
+   "id": "NVDA_LTM",
+   "kind": "reported_result",
+   "metric": "LTM 매출",
+   "text": "엔비디아 최근 12개월 매출",
+   "value": 302.97,
+   "unit": "USD bn",
+   "series": "stockanalysis.com 한 곳 · 2026-09-17 조회 (분기 실적치와는 계열이 다름)",
+   "as_of": "2026-09-17",
+   "tier": 3,
+   "source_url": "https://stockanalysis.com/stocks/nvda/revenue/",
+   "verdict": "confirmed",
+   "render": "marked",
+   "note": "집계사이트가 분기 실적을 합산해 산정한 값. 회사가 그대로 발표한 수치가 아니다",
+   "printed_on": [
+    "table-main",
+    "chart-trend"
+   ]
+  },
+  {
+   "id": "NVDA_LTMG",
+   "kind": "reported_result",
+   "metric": "LTM 성장률",
+   "text": "엔비디아 최근 12개월 매출 성장률",
+   "value": 83.38,
+   "unit": "%",
+   "series": "stockanalysis.com 한 곳 · 2026-09-17 조회 (분기 실적치와는 계열이 다름)",
+   "as_of": "2026-09-17",
+   "tier": 3,
+   "source_url": "https://stockanalysis.com/stocks/nvda/revenue/",
+   "verdict": "confirmed",
+   "render": "marked",
+   "note": "가속도(분기 YoY − LTM YoY)의 분모가 되는 값. 분기 YoY 는 회사 발표라 두 값의 계열이 다르다 — 방향 판정에만 쓴다",
+   "printed_on": [
+    "table-main",
+    "chart-trend"
    ]
   },
   {
@@ -161,6 +222,44 @@
    ]
   },
   {
+   "id": "MSFT_LTM",
+   "kind": "reported_result",
+   "metric": "LTM 매출",
+   "text": "마이크로소프트 최근 12개월 매출",
+   "value": 331.84,
+   "unit": "USD bn",
+   "series": "stockanalysis.com 한 곳 · 2026-09-17 조회 (분기 실적치와는 계열이 다름)",
+   "as_of": "2026-09-17",
+   "tier": 3,
+   "source_url": "https://stockanalysis.com/stocks/msft/revenue/",
+   "verdict": "confirmed",
+   "render": "marked",
+   "note": "집계사이트가 분기 실적을 합산해 산정한 값. 회사가 그대로 발표한 수치가 아니다",
+   "printed_on": [
+    "table-main",
+    "chart-trend"
+   ]
+  },
+  {
+   "id": "MSFT_LTMG",
+   "kind": "reported_result",
+   "metric": "LTM 성장률",
+   "text": "마이크로소프트 최근 12개월 매출 성장률",
+   "value": 17.79,
+   "unit": "%",
+   "series": "stockanalysis.com 한 곳 · 2026-09-17 조회 (분기 실적치와는 계열이 다름)",
+   "as_of": "2026-09-17",
+   "tier": 3,
+   "source_url": "https://stockanalysis.com/stocks/msft/revenue/",
+   "verdict": "confirmed",
+   "render": "marked",
+   "note": "가속도(분기 YoY − LTM YoY)의 분모가 되는 값. 분기 YoY 는 회사 발표라 두 값의 계열이 다르다 — 방향 판정에만 쓴다",
+   "printed_on": [
+    "table-main",
+    "chart-trend"
+   ]
+  },
+  {
    "id": "MSFT_FPE",
    "kind": "market_multiple",
    "metric": "선행 P/E",
@@ -252,6 +351,44 @@
    "render": "assert",
    "printed_on": [
     "table-main"
+   ]
+  },
+  {
+   "id": "AAPL_LTM",
+   "kind": "reported_result",
+   "metric": "LTM 매출",
+   "text": "애플 최근 12개월 매출",
+   "value": 466.82,
+   "unit": "USD bn",
+   "series": "stockanalysis.com 한 곳 · 2026-09-17 조회 (분기 실적치와는 계열이 다름)",
+   "as_of": "2026-09-17",
+   "tier": 3,
+   "source_url": "https://stockanalysis.com/stocks/aapl/revenue/",
+   "verdict": "confirmed",
+   "render": "marked",
+   "note": "집계사이트가 분기 실적을 합산해 산정한 값. 회사가 그대로 발표한 수치가 아니다",
+   "printed_on": [
+    "table-main",
+    "chart-trend"
+   ]
+  },
+  {
+   "id": "AAPL_LTMG",
+   "kind": "reported_result",
+   "metric": "LTM 성장률",
+   "text": "애플 최근 12개월 매출 성장률",
+   "value": 14.24,
+   "unit": "%",
+   "series": "stockanalysis.com 한 곳 · 2026-09-17 조회 (분기 실적치와는 계열이 다름)",
+   "as_of": "2026-09-17",
+   "tier": 3,
+   "source_url": "https://stockanalysis.com/stocks/aapl/revenue/",
+   "verdict": "confirmed",
+   "render": "marked",
+   "note": "가속도(분기 YoY − LTM YoY)의 분모가 되는 값. 분기 YoY 는 회사 발표라 두 값의 계열이 다르다 — 방향 판정에만 쓴다",
+   "printed_on": [
+    "table-main",
+    "chart-trend"
    ]
   },
   {
@@ -349,6 +486,44 @@
    ]
   },
   {
+   "id": "GOOGL_LTM",
+   "kind": "reported_result",
+   "metric": "LTM 매출",
+   "text": "알파벳 최근 12개월 매출",
+   "value": 445.87,
+   "unit": "USD bn",
+   "series": "stockanalysis.com 한 곳 · 2026-09-17 조회 (분기 실적치와는 계열이 다름)",
+   "as_of": "2026-09-17",
+   "tier": 3,
+   "source_url": "https://stockanalysis.com/stocks/googl/revenue/",
+   "verdict": "confirmed",
+   "render": "marked",
+   "note": "집계사이트가 분기 실적을 합산해 산정한 값. 회사가 그대로 발표한 수치가 아니다",
+   "printed_on": [
+    "table-main",
+    "chart-trend"
+   ]
+  },
+  {
+   "id": "GOOGL_LTMG",
+   "kind": "reported_result",
+   "metric": "LTM 성장률",
+   "text": "알파벳 최근 12개월 매출 성장률",
+   "value": 20.05,
+   "unit": "%",
+   "series": "stockanalysis.com 한 곳 · 2026-09-17 조회 (분기 실적치와는 계열이 다름)",
+   "as_of": "2026-09-17",
+   "tier": 3,
+   "source_url": "https://stockanalysis.com/stocks/googl/revenue/",
+   "verdict": "confirmed",
+   "render": "marked",
+   "note": "가속도(분기 YoY − LTM YoY)의 분모가 되는 값. 분기 YoY 는 회사 발표라 두 값의 계열이 다르다 — 방향 판정에만 쓴다",
+   "printed_on": [
+    "table-main",
+    "chart-trend"
+   ]
+  },
+  {
    "id": "GOOGL_FPE",
    "kind": "market_multiple",
    "metric": "선행 P/E",
@@ -440,6 +615,66 @@
    "render": "assert",
    "printed_on": [
     "table-main"
+   ]
+  },
+  {
+   "id": "AMZN_GNEXT",
+   "kind": "company_guidance",
+   "metric": "차기분기 매출 가이던스",
+   "text": "아마존 Q3 CY26 매출 가이던스 — 1,970~2,020억달러",
+   "value": 199.5,
+   "unit": "USD bn",
+   "series": "기업이 직접 제시한 전망 (애널리스트 추정치가 아님)",
+   "as_of": "2026-07-30",
+   "tier": 1,
+   "source_url": "https://www.sec.gov/Archives/edgar/data/1018724/000101872426000024/amzn-20260630xex991.htm",
+   "announced_on": "2026-07-30",
+   "attributed_to": "Amazon (회사 발표)",
+   "target_period": "Q3 CY26",
+   "revision": "new",
+   "verdict": "confirmed",
+   "render": "assert",
+   "note": "범위로 제시된 것은 중간값. 애널리스트 추정치가 아니라 회사가 제시한 수치다",
+   "printed_on": [
+    "forward-path"
+   ]
+  },
+  {
+   "id": "AMZN_LTM",
+   "kind": "reported_result",
+   "metric": "LTM 매출",
+   "text": "아마존 최근 12개월 매출",
+   "value": 775.68,
+   "unit": "USD bn",
+   "series": "stockanalysis.com 한 곳 · 2026-09-17 조회 (분기 실적치와는 계열이 다름)",
+   "as_of": "2026-09-17",
+   "tier": 3,
+   "source_url": "https://stockanalysis.com/stocks/amzn/revenue/",
+   "verdict": "confirmed",
+   "render": "marked",
+   "note": "집계사이트가 분기 실적을 합산해 산정한 값. 회사가 그대로 발표한 수치가 아니다",
+   "printed_on": [
+    "table-main",
+    "chart-trend"
+   ]
+  },
+  {
+   "id": "AMZN_LTMG",
+   "kind": "reported_result",
+   "metric": "LTM 성장률",
+   "text": "아마존 최근 12개월 매출 성장률",
+   "value": 15.77,
+   "unit": "%",
+   "series": "stockanalysis.com 한 곳 · 2026-09-17 조회 (분기 실적치와는 계열이 다름)",
+   "as_of": "2026-09-17",
+   "tier": 3,
+   "source_url": "https://stockanalysis.com/stocks/amzn/revenue/",
+   "verdict": "confirmed",
+   "render": "marked",
+   "note": "가속도(분기 YoY − LTM YoY)의 분모가 되는 값. 분기 YoY 는 회사 발표라 두 값의 계열이 다르다 — 방향 판정에만 쓴다",
+   "printed_on": [
+    "table-main",
+    "chart-trend"
    ]
   },
   {
@@ -537,6 +772,66 @@
    ]
   },
   {
+   "id": "META_GNEXT",
+   "kind": "company_guidance",
+   "metric": "차기분기 매출 가이던스",
+   "text": "메타 Q3 CY26 매출 가이던스 — 610~640억달러",
+   "value": 62.5,
+   "unit": "USD bn",
+   "series": "기업이 직접 제시한 전망 (애널리스트 추정치가 아님)",
+   "as_of": "2026-07-29",
+   "tier": 1,
+   "source_url": "https://www.sec.gov/Archives/edgar/data/1326801/000162828026050596/meta-06302026xexhibit991.htm",
+   "announced_on": "2026-07-29",
+   "attributed_to": "Meta Platforms (회사 발표)",
+   "target_period": "Q3 CY26",
+   "revision": "new",
+   "verdict": "confirmed",
+   "render": "assert",
+   "note": "범위로 제시된 것은 중간값. 애널리스트 추정치가 아니라 회사가 제시한 수치다",
+   "printed_on": [
+    "forward-path"
+   ]
+  },
+  {
+   "id": "META_LTM",
+   "kind": "reported_result",
+   "metric": "LTM 매출",
+   "text": "메타 최근 12개월 매출",
+   "value": 228.25,
+   "unit": "USD bn",
+   "series": "stockanalysis.com 한 곳 · 2026-09-17 조회 (분기 실적치와는 계열이 다름)",
+   "as_of": "2026-09-17",
+   "tier": 3,
+   "source_url": "https://stockanalysis.com/stocks/meta/revenue/",
+   "verdict": "confirmed",
+   "render": "marked",
+   "note": "집계사이트가 분기 실적을 합산해 산정한 값. 회사가 그대로 발표한 수치가 아니다",
+   "printed_on": [
+    "table-main",
+    "chart-trend"
+   ]
+  },
+  {
+   "id": "META_LTMG",
+   "kind": "reported_result",
+   "metric": "LTM 성장률",
+   "text": "메타 최근 12개월 매출 성장률",
+   "value": 27.65,
+   "unit": "%",
+   "series": "stockanalysis.com 한 곳 · 2026-09-17 조회 (분기 실적치와는 계열이 다름)",
+   "as_of": "2026-09-17",
+   "tier": 3,
+   "source_url": "https://stockanalysis.com/stocks/meta/revenue/",
+   "verdict": "confirmed",
+   "render": "marked",
+   "note": "가속도(분기 YoY − LTM YoY)의 분모가 되는 값. 분기 YoY 는 회사 발표라 두 값의 계열이 다르다 — 방향 판정에만 쓴다",
+   "printed_on": [
+    "table-main",
+    "chart-trend"
+   ]
+  },
+  {
    "id": "META_FPE",
    "kind": "market_multiple",
    "metric": "선행 P/E",
@@ -626,6 +921,66 @@
    "render": "assert",
    "printed_on": [
     "table-main"
+   ]
+  },
+  {
+   "id": "AVGO_GNEXT",
+   "kind": "company_guidance",
+   "metric": "차기분기 매출 가이던스",
+   "text": "브로드컴 Q4 FY26 매출 가이던스 — 348억달러",
+   "value": 34.8,
+   "unit": "USD bn",
+   "series": "기업이 직접 제시한 전망 (애널리스트 추정치가 아님)",
+   "as_of": "2026-09-02",
+   "tier": 1,
+   "source_url": "https://investors.broadcom.com/news-releases/news-release-details/broadcom-inc-announces-third-quarter-fiscal-year-2026-financial",
+   "announced_on": "2026-09-02",
+   "attributed_to": "Broadcom (회사 발표)",
+   "target_period": "Q4 FY26",
+   "revision": "new",
+   "verdict": "confirmed",
+   "render": "assert",
+   "note": "범위로 제시된 것은 중간값. 애널리스트 추정치가 아니라 회사가 제시한 수치다",
+   "printed_on": [
+    "forward-path"
+   ]
+  },
+  {
+   "id": "AVGO_LTM",
+   "kind": "reported_result",
+   "metric": "LTM 매출",
+   "text": "브로드컴 최근 12개월 매출",
+   "value": 75.47,
+   "unit": "USD bn",
+   "series": "stockanalysis.com 한 곳 · 2026-09-17 조회 (분기 실적치와는 계열이 다름)",
+   "as_of": "2026-09-17",
+   "tier": 3,
+   "source_url": "https://stockanalysis.com/stocks/avgo/revenue/",
+   "verdict": "confirmed",
+   "render": "marked",
+   "note": "집계사이트가 분기 실적을 합산해 산정한 값. 회사가 그대로 발표한 수치가 아니다",
+   "printed_on": [
+    "table-main",
+    "chart-trend"
+   ]
+  },
+  {
+   "id": "AVGO_LTMG",
+   "kind": "reported_result",
+   "metric": "LTM 성장률",
+   "text": "브로드컴 최근 12개월 매출 성장률",
+   "value": 94.17,
+   "unit": "%",
+   "series": "stockanalysis.com 한 곳 · 2026-09-17 조회 (분기 실적치와는 계열이 다름)",
+   "as_of": "2026-09-17",
+   "tier": 3,
+   "source_url": "https://stockanalysis.com/stocks/avgo/revenue/",
+   "verdict": "confirmed",
+   "render": "marked",
+   "note": "가속도(분기 YoY − LTM YoY)의 분모가 되는 값. 분기 YoY 는 회사 발표라 두 값의 계열이 다르다 — 방향 판정에만 쓴다",
+   "printed_on": [
+    "table-main",
+    "chart-trend"
    ]
   },
   {
@@ -723,6 +1078,44 @@
    ]
   },
   {
+   "id": "TSLA_LTM",
+   "kind": "reported_result",
+   "metric": "LTM 매출",
+   "text": "테슬라 최근 12개월 매출",
+   "value": 103.62,
+   "unit": "USD bn",
+   "series": "stockanalysis.com 한 곳 · 2026-09-17 조회 (분기 실적치와는 계열이 다름)",
+   "as_of": "2026-09-17",
+   "tier": 3,
+   "source_url": "https://stockanalysis.com/stocks/tsla/revenue/",
+   "verdict": "confirmed",
+   "render": "marked",
+   "note": "집계사이트가 분기 실적을 합산해 산정한 값. 회사가 그대로 발표한 수치가 아니다",
+   "printed_on": [
+    "table-main",
+    "chart-trend"
+   ]
+  },
+  {
+   "id": "TSLA_LTMG",
+   "kind": "reported_result",
+   "metric": "LTM 성장률",
+   "text": "테슬라 최근 12개월 매출 성장률",
+   "value": 9.37,
+   "unit": "%",
+   "series": "stockanalysis.com 한 곳 · 2026-09-17 조회 (분기 실적치와는 계열이 다름)",
+   "as_of": "2026-09-17",
+   "tier": 3,
+   "source_url": "https://stockanalysis.com/stocks/tsla/revenue/",
+   "verdict": "confirmed",
+   "render": "marked",
+   "note": "가속도(분기 YoY − LTM YoY)의 분모가 되는 값. 분기 YoY 는 회사 발표라 두 값의 계열이 다르다 — 방향 판정에만 쓴다",
+   "printed_on": [
+    "table-main",
+    "chart-trend"
+   ]
+  },
+  {
    "id": "TSLA_FPE",
    "kind": "market_multiple",
    "metric": "선행 P/E",
@@ -814,6 +1207,66 @@
    "render": "assert",
    "printed_on": [
     "table-main"
+   ]
+  },
+  {
+   "id": "AMD_GNEXT",
+   "kind": "company_guidance",
+   "metric": "차기분기 매출 가이던스",
+   "text": "AMD Q3 CY26 매출 가이던스 — 130억달러 ±3억달러",
+   "value": 13.0,
+   "unit": "USD bn",
+   "series": "기업이 직접 제시한 전망 (애널리스트 추정치가 아님)",
+   "as_of": "2026-08-04",
+   "tier": 1,
+   "source_url": "https://www.sec.gov/Archives/edgar/data/0000002488/000000248826000121/amdq22026earningsslidesf.htm",
+   "announced_on": "2026-08-04",
+   "attributed_to": "AMD (회사 발표)",
+   "target_period": "Q3 CY26",
+   "revision": "new",
+   "verdict": "confirmed",
+   "render": "assert",
+   "note": "범위로 제시된 것은 중간값. 애널리스트 추정치가 아니라 회사가 제시한 수치다",
+   "printed_on": [
+    "forward-path"
+   ]
+  },
+  {
+   "id": "AMD_LTM",
+   "kind": "reported_result",
+   "metric": "LTM 매출",
+   "text": "AMD 최근 12개월 매출",
+   "value": 41.31,
+   "unit": "USD bn",
+   "series": "stockanalysis.com 한 곳 · 2026-09-17 조회 (분기 실적치와는 계열이 다름)",
+   "as_of": "2026-09-17",
+   "tier": 3,
+   "source_url": "https://stockanalysis.com/stocks/amd/revenue/",
+   "verdict": "confirmed",
+   "render": "marked",
+   "note": "집계사이트가 분기 실적을 합산해 산정한 값. 회사가 그대로 발표한 수치가 아니다",
+   "printed_on": [
+    "table-main",
+    "chart-trend"
+   ]
+  },
+  {
+   "id": "AMD_LTMG",
+   "kind": "reported_result",
+   "metric": "LTM 성장률",
+   "text": "AMD 최근 12개월 매출 성장률",
+   "value": 39.54,
+   "unit": "%",
+   "series": "stockanalysis.com 한 곳 · 2026-09-17 조회 (분기 실적치와는 계열이 다름)",
+   "as_of": "2026-09-17",
+   "tier": 3,
+   "source_url": "https://stockanalysis.com/stocks/amd/revenue/",
+   "verdict": "confirmed",
+   "render": "marked",
+   "note": "가속도(분기 YoY − LTM YoY)의 분모가 되는 값. 분기 YoY 는 회사 발표라 두 값의 계열이 다르다 — 방향 판정에만 쓴다",
+   "printed_on": [
+    "table-main",
+    "chart-trend"
    ]
   },
   {
@@ -911,6 +1364,44 @@
    ]
   },
   {
+   "id": "ORCL_LTM",
+   "kind": "reported_result",
+   "metric": "LTM 매출",
+   "text": "오라클 최근 12개월 매출",
+   "value": 71.78,
+   "unit": "USD bn",
+   "series": "stockanalysis.com 한 곳 · 2026-09-17 조회 (분기 실적치와는 계열이 다름)",
+   "as_of": "2026-09-17",
+   "tier": 3,
+   "source_url": "https://stockanalysis.com/stocks/orcl/revenue/",
+   "verdict": "confirmed",
+   "render": "marked",
+   "note": "집계사이트가 분기 실적을 합산해 산정한 값. 회사가 그대로 발표한 수치가 아니다",
+   "printed_on": [
+    "table-main",
+    "chart-trend"
+   ]
+  },
+  {
+   "id": "ORCL_LTMG",
+   "kind": "reported_result",
+   "metric": "LTM 성장률",
+   "text": "오라클 최근 12개월 매출 성장률",
+   "value": 21.62,
+   "unit": "%",
+   "series": "stockanalysis.com 한 곳 · 2026-09-17 조회 (분기 실적치와는 계열이 다름)",
+   "as_of": "2026-09-17",
+   "tier": 3,
+   "source_url": "https://stockanalysis.com/stocks/orcl/revenue/",
+   "verdict": "confirmed",
+   "render": "marked",
+   "note": "가속도(분기 YoY − LTM YoY)의 분모가 되는 값. 분기 YoY 는 회사 발표라 두 값의 계열이 다르다 — 방향 판정에만 쓴다",
+   "printed_on": [
+    "table-main",
+    "chart-trend"
+   ]
+  },
+  {
    "id": "ORCL_FPE",
    "kind": "market_multiple",
    "metric": "선행 P/E",
@@ -1002,6 +1493,44 @@
    "render": "assert",
    "printed_on": [
     "table-main"
+   ]
+  },
+  {
+   "id": "CRM_LTM",
+   "kind": "reported_result",
+   "metric": "LTM 매출",
+   "text": "세일즈포스 최근 12개월 매출",
+   "value": 43.94,
+   "unit": "USD bn",
+   "series": "stockanalysis.com 한 곳 · 2026-09-17 조회 (분기 실적치와는 계열이 다름)",
+   "as_of": "2026-09-17",
+   "tier": 3,
+   "source_url": "https://stockanalysis.com/stocks/crm/revenue/",
+   "verdict": "confirmed",
+   "render": "marked",
+   "note": "집계사이트가 분기 실적을 합산해 산정한 값. 회사가 그대로 발표한 수치가 아니다",
+   "printed_on": [
+    "table-main",
+    "chart-trend"
+   ]
+  },
+  {
+   "id": "CRM_LTMG",
+   "kind": "reported_result",
+   "metric": "LTM 성장률",
+   "text": "세일즈포스 최근 12개월 매출 성장률",
+   "value": 11.23,
+   "unit": "%",
+   "series": "stockanalysis.com 한 곳 · 2026-09-17 조회 (분기 실적치와는 계열이 다름)",
+   "as_of": "2026-09-17",
+   "tier": 3,
+   "source_url": "https://stockanalysis.com/stocks/crm/revenue/",
+   "verdict": "confirmed",
+   "render": "marked",
+   "note": "가속도(분기 YoY − LTM YoY)의 분모가 되는 값. 분기 YoY 는 회사 발표라 두 값의 계열이 다르다 — 방향 판정에만 쓴다",
+   "printed_on": [
+    "table-main",
+    "chart-trend"
    ]
   },
   {
@@ -1099,6 +1628,44 @@
    ]
   },
   {
+   "id": "PLTR_LTM",
+   "kind": "reported_result",
+   "metric": "LTM 매출",
+   "text": "팔란티어 최근 12개월 매출",
+   "value": 5.22,
+   "unit": "USD bn",
+   "series": "stockanalysis.com 한 곳 · 2026-09-17 조회 (분기 실적치와는 계열이 다름)",
+   "as_of": "2026-09-17",
+   "tier": 3,
+   "source_url": "https://stockanalysis.com/stocks/pltr/revenue/",
+   "verdict": "confirmed",
+   "render": "marked",
+   "note": "집계사이트가 분기 실적을 합산해 산정한 값. 회사가 그대로 발표한 수치가 아니다",
+   "printed_on": [
+    "table-main",
+    "chart-trend"
+   ]
+  },
+  {
+   "id": "PLTR_LTMG",
+   "kind": "reported_result",
+   "metric": "LTM 성장률",
+   "text": "팔란티어 최근 12개월 매출 성장률",
+   "value": 67.71,
+   "unit": "%",
+   "series": "stockanalysis.com 한 곳 · 2026-09-17 조회 (분기 실적치와는 계열이 다름)",
+   "as_of": "2026-09-17",
+   "tier": 3,
+   "source_url": "https://stockanalysis.com/stocks/pltr/revenue/",
+   "verdict": "confirmed",
+   "render": "marked",
+   "note": "가속도(분기 YoY − LTM YoY)의 분모가 되는 값. 분기 YoY 는 회사 발표라 두 값의 계열이 다르다 — 방향 판정에만 쓴다",
+   "printed_on": [
+    "table-main",
+    "chart-trend"
+   ]
+  },
+  {
    "id": "PLTR_FPE",
    "kind": "market_multiple",
    "metric": "선행 P/E",
@@ -1193,6 +1760,66 @@
    ]
   },
   {
+   "id": "INTC_GNEXT",
+   "kind": "company_guidance",
+   "metric": "차기분기 매출 가이던스",
+   "text": "인텔 Q3 CY26 매출 가이던스 — 158~168억달러",
+   "value": 16.3,
+   "unit": "USD bn",
+   "series": "기업이 직접 제시한 전망 (애널리스트 추정치가 아님)",
+   "as_of": "2026-07-23",
+   "tier": 1,
+   "source_url": "https://www.intc.com/news-events/press-releases/detail/1776/intel-reports-second-quarter-2026-financial-results",
+   "announced_on": "2026-07-23",
+   "attributed_to": "Intel (회사 발표)",
+   "target_period": "Q3 CY26",
+   "revision": "new",
+   "verdict": "confirmed",
+   "render": "assert",
+   "note": "범위로 제시된 것은 중간값. 애널리스트 추정치가 아니라 회사가 제시한 수치다",
+   "printed_on": [
+    "forward-path"
+   ]
+  },
+  {
+   "id": "INTC_LTM",
+   "kind": "reported_result",
+   "metric": "LTM 매출",
+   "text": "인텔 최근 12개월 매출",
+   "value": 57.03,
+   "unit": "USD bn",
+   "series": "stockanalysis.com 한 곳 · 2026-09-17 조회 (분기 실적치와는 계열이 다름)",
+   "as_of": "2026-09-17",
+   "tier": 3,
+   "source_url": "https://stockanalysis.com/stocks/intc/revenue/",
+   "verdict": "confirmed",
+   "render": "marked",
+   "note": "집계사이트가 분기 실적을 합산해 산정한 값. 회사가 그대로 발표한 수치가 아니다",
+   "printed_on": [
+    "table-main",
+    "chart-trend"
+   ]
+  },
+  {
+   "id": "INTC_LTMG",
+   "kind": "reported_result",
+   "metric": "LTM 성장률",
+   "text": "인텔 최근 12개월 매출 성장률",
+   "value": 7.47,
+   "unit": "%",
+   "series": "stockanalysis.com 한 곳 · 2026-09-17 조회 (분기 실적치와는 계열이 다름)",
+   "as_of": "2026-09-17",
+   "tier": 3,
+   "source_url": "https://stockanalysis.com/stocks/intc/revenue/",
+   "verdict": "confirmed",
+   "render": "marked",
+   "note": "가속도(분기 YoY − LTM YoY)의 분모가 되는 값. 분기 YoY 는 회사 발표라 두 값의 계열이 다르다 — 방향 판정에만 쓴다",
+   "printed_on": [
+    "table-main",
+    "chart-trend"
+   ]
+  },
+  {
    "id": "MU_REV",
    "kind": "reported_result",
    "metric": "분기 매출",
@@ -1245,6 +1872,66 @@
    "render": "assert",
    "printed_on": [
     "table-main"
+   ]
+  },
+  {
+   "id": "MU_GNEXT",
+   "kind": "company_guidance",
+   "metric": "차기분기 매출 가이던스",
+   "text": "마이크론 Q4 FY26 매출 가이던스 — 500억달러",
+   "value": 50.0,
+   "unit": "USD bn",
+   "series": "기업이 직접 제시한 전망 (애널리스트 추정치가 아님)",
+   "as_of": "2026-06-25",
+   "tier": 1,
+   "source_url": "https://investors.micron.com/news/press-release/2026/Micron-Technology-Inc--Reports-Record-Results-for-the-Third-Quarter-of-Fiscal-2026/default.aspx",
+   "announced_on": "2026-06-25",
+   "attributed_to": "Micron (회사 발표)",
+   "target_period": "Q4 FY26",
+   "revision": "new",
+   "verdict": "confirmed",
+   "render": "assert",
+   "note": "범위로 제시된 것은 중간값. 애널리스트 추정치가 아니라 회사가 제시한 수치다",
+   "printed_on": [
+    "forward-path"
+   ]
+  },
+  {
+   "id": "MU_LTM",
+   "kind": "reported_result",
+   "metric": "LTM 매출",
+   "text": "마이크론 최근 12개월 매출",
+   "value": 90.27,
+   "unit": "USD bn",
+   "series": "stockanalysis.com 한 곳 · 2026-09-17 조회 (분기 실적치와는 계열이 다름)",
+   "as_of": "2026-09-17",
+   "tier": 3,
+   "source_url": "https://stockanalysis.com/stocks/mu/revenue/",
+   "verdict": "confirmed",
+   "render": "marked",
+   "note": "집계사이트가 분기 실적을 합산해 산정한 값. 회사가 그대로 발표한 수치가 아니다 — LTM +166.98% 는 메모리 업사이클 구간의 값 — 기저효과가 크다",
+   "printed_on": [
+    "table-main",
+    "chart-trend"
+   ]
+  },
+  {
+   "id": "MU_LTMG",
+   "kind": "reported_result",
+   "metric": "LTM 성장률",
+   "text": "마이크론 최근 12개월 매출 성장률",
+   "value": 166.98,
+   "unit": "%",
+   "series": "stockanalysis.com 한 곳 · 2026-09-17 조회 (분기 실적치와는 계열이 다름)",
+   "as_of": "2026-09-17",
+   "tier": 3,
+   "source_url": "https://stockanalysis.com/stocks/mu/revenue/",
+   "verdict": "confirmed",
+   "render": "marked",
+   "note": "가속도(분기 YoY − LTM YoY)의 분모가 되는 값. 분기 YoY 는 회사 발표라 두 값의 계열이 다르다 — 방향 판정에만 쓴다",
+   "printed_on": [
+    "table-main",
+    "chart-trend"
    ]
   },
   {
@@ -1342,6 +2029,44 @@
    ]
   },
   {
+   "id": "NFLX_LTM",
+   "kind": "reported_result",
+   "metric": "LTM 매출",
+   "text": "넷플릭스 최근 12개월 매출",
+   "value": 48.37,
+   "unit": "USD bn",
+   "series": "stockanalysis.com 한 곳 · 2026-09-17 조회 (분기 실적치와는 계열이 다름)",
+   "as_of": "2026-09-17",
+   "tier": 3,
+   "source_url": "https://stockanalysis.com/stocks/nflx/revenue/",
+   "verdict": "confirmed",
+   "render": "marked",
+   "note": "집계사이트가 분기 실적을 합산해 산정한 값. 회사가 그대로 발표한 수치가 아니다",
+   "printed_on": [
+    "table-main",
+    "chart-trend"
+   ]
+  },
+  {
+   "id": "NFLX_LTMG",
+   "kind": "reported_result",
+   "metric": "LTM 성장률",
+   "text": "넷플릭스 최근 12개월 매출 성장률",
+   "value": 16.02,
+   "unit": "%",
+   "series": "stockanalysis.com 한 곳 · 2026-09-17 조회 (분기 실적치와는 계열이 다름)",
+   "as_of": "2026-09-17",
+   "tier": 3,
+   "source_url": "https://stockanalysis.com/stocks/nflx/revenue/",
+   "verdict": "confirmed",
+   "render": "marked",
+   "note": "가속도(분기 YoY − LTM YoY)의 분모가 되는 값. 분기 YoY 는 회사 발표라 두 값의 계열이 다르다 — 방향 판정에만 쓴다",
+   "printed_on": [
+    "table-main",
+    "chart-trend"
+   ]
+  },
+  {
    "id": "NFLX_FPE",
    "kind": "market_multiple",
    "metric": "선행 P/E",
@@ -1434,6 +2159,44 @@
    ]
   },
   {
+   "id": "JPM_LTM",
+   "kind": "reported_result",
+   "metric": "LTM 매출",
+   "text": "JP모건 최근 12개월 매출",
+   "value": 186.33,
+   "unit": "USD bn",
+   "series": "stockanalysis.com 한 곳 · 2026-09-17 조회 (분기 실적치와는 계열이 다름)",
+   "as_of": "2026-09-17",
+   "tier": 3,
+   "source_url": "https://stockanalysis.com/stocks/jpm/revenue/",
+   "verdict": "confirmed",
+   "render": "marked",
+   "note": "집계사이트가 분기 실적을 합산해 산정한 값. 회사가 그대로 발표한 수치가 아니다 — 회사 발표 총순영업수익(57.3십억달러)과 집계사이트의 매출 정의가 달라 가속도는 방향만 참고할 것",
+   "printed_on": [
+    "table-main",
+    "chart-trend"
+   ]
+  },
+  {
+   "id": "JPM_LTMG",
+   "kind": "reported_result",
+   "metric": "LTM 성장률",
+   "text": "JP모건 최근 12개월 매출 성장률",
+   "value": 13.79,
+   "unit": "%",
+   "series": "stockanalysis.com 한 곳 · 2026-09-17 조회 (분기 실적치와는 계열이 다름)",
+   "as_of": "2026-09-17",
+   "tier": 3,
+   "source_url": "https://stockanalysis.com/stocks/jpm/revenue/",
+   "verdict": "confirmed",
+   "render": "marked",
+   "note": "가속도(분기 YoY − LTM YoY)의 분모가 되는 값. 분기 YoY 는 회사 발표라 두 값의 계열이 다르다 — 방향 판정에만 쓴다",
+   "printed_on": [
+    "table-main",
+    "chart-trend"
+   ]
+  },
+  {
    "id": "JPM_FPE",
    "kind": "market_multiple",
    "metric": "선행 P/E",
@@ -1523,6 +2286,44 @@
    "render": "assert",
    "printed_on": [
     "table-main"
+   ]
+  },
+  {
+   "id": "GS_LTM",
+   "kind": "reported_result",
+   "metric": "LTM 매출",
+   "text": "골드만삭스 최근 12개월 매출",
+   "value": 66.2,
+   "unit": "USD bn",
+   "series": "stockanalysis.com 한 곳 · 2026-09-17 조회 (분기 실적치와는 계열이 다름)",
+   "as_of": "2026-09-17",
+   "tier": 3,
+   "source_url": "https://stockanalysis.com/stocks/gs/revenue/",
+   "verdict": "confirmed",
+   "render": "marked",
+   "note": "집계사이트가 분기 실적을 합산해 산정한 값. 회사가 그대로 발표한 수치가 아니다 — 회사 발표 순영업수익과 집계사이트의 매출 정의가 달라 가속도는 방향만 참고할 것",
+   "printed_on": [
+    "table-main",
+    "chart-trend"
+   ]
+  },
+  {
+   "id": "GS_LTMG",
+   "kind": "reported_result",
+   "metric": "LTM 성장률",
+   "text": "골드만삭스 최근 12개월 매출 성장률",
+   "value": 17.77,
+   "unit": "%",
+   "series": "stockanalysis.com 한 곳 · 2026-09-17 조회 (분기 실적치와는 계열이 다름)",
+   "as_of": "2026-09-17",
+   "tier": 3,
+   "source_url": "https://stockanalysis.com/stocks/gs/revenue/",
+   "verdict": "confirmed",
+   "render": "marked",
+   "note": "가속도(분기 YoY − LTM YoY)의 분모가 되는 값. 분기 YoY 는 회사 발표라 두 값의 계열이 다르다 — 방향 판정에만 쓴다",
+   "printed_on": [
+    "table-main",
+    "chart-trend"
    ]
   },
   {
@@ -1620,6 +2421,44 @@
    ]
   },
   {
+   "id": "LLY_LTM",
+   "kind": "reported_result",
+   "metric": "LTM 매출",
+   "text": "일라이 릴리 최근 12개월 매출",
+   "value": 79.67,
+   "unit": "USD bn",
+   "series": "stockanalysis.com 한 곳 · 2026-09-17 조회 (분기 실적치와는 계열이 다름)",
+   "as_of": "2026-09-17",
+   "tier": 3,
+   "source_url": "https://stockanalysis.com/stocks/lly/revenue/",
+   "verdict": "confirmed",
+   "render": "marked",
+   "note": "집계사이트가 분기 실적을 합산해 산정한 값. 회사가 그대로 발표한 수치가 아니다",
+   "printed_on": [
+    "table-main",
+    "chart-trend"
+   ]
+  },
+  {
+   "id": "LLY_LTMG",
+   "kind": "reported_result",
+   "metric": "LTM 성장률",
+   "text": "일라이 릴리 최근 12개월 매출 성장률",
+   "value": 49.58,
+   "unit": "%",
+   "series": "stockanalysis.com 한 곳 · 2026-09-17 조회 (분기 실적치와는 계열이 다름)",
+   "as_of": "2026-09-17",
+   "tier": 3,
+   "source_url": "https://stockanalysis.com/stocks/lly/revenue/",
+   "verdict": "confirmed",
+   "render": "marked",
+   "note": "가속도(분기 YoY − LTM YoY)의 분모가 되는 값. 분기 YoY 는 회사 발표라 두 값의 계열이 다르다 — 방향 판정에만 쓴다",
+   "printed_on": [
+    "table-main",
+    "chart-trend"
+   ]
+  },
+  {
    "id": "LLY_FPE",
    "kind": "market_multiple",
    "metric": "선행 P/E",
@@ -1711,6 +2550,44 @@
    "render": "assert",
    "printed_on": [
     "table-main"
+   ]
+  },
+  {
+   "id": "UNH_LTM",
+   "kind": "reported_result",
+   "metric": "LTM 매출",
+   "text": "유나이티드헬스 최근 12개월 매출",
+   "value": 450.13,
+   "unit": "USD bn",
+   "series": "stockanalysis.com 한 곳 · 2026-09-17 조회 (분기 실적치와는 계열이 다름)",
+   "as_of": "2026-09-17",
+   "tier": 3,
+   "source_url": "https://stockanalysis.com/stocks/unh/revenue/",
+   "verdict": "confirmed",
+   "render": "marked",
+   "note": "집계사이트가 분기 실적을 합산해 산정한 값. 회사가 그대로 발표한 수치가 아니다",
+   "printed_on": [
+    "table-main",
+    "chart-trend"
+   ]
+  },
+  {
+   "id": "UNH_LTMG",
+   "kind": "reported_result",
+   "metric": "LTM 성장률",
+   "text": "유나이티드헬스 최근 12개월 매출 성장률",
+   "value": 6.46,
+   "unit": "%",
+   "series": "stockanalysis.com 한 곳 · 2026-09-17 조회 (분기 실적치와는 계열이 다름)",
+   "as_of": "2026-09-17",
+   "tier": 3,
+   "source_url": "https://stockanalysis.com/stocks/unh/revenue/",
+   "verdict": "confirmed",
+   "render": "marked",
+   "note": "가속도(분기 YoY − LTM YoY)의 분모가 되는 값. 분기 YoY 는 회사 발표라 두 값의 계열이 다르다 — 방향 판정에만 쓴다",
+   "printed_on": [
+    "table-main",
+    "chart-trend"
    ]
   },
   {
@@ -1808,6 +2685,44 @@
    ]
   },
   {
+   "id": "JNJ_LTM",
+   "kind": "reported_result",
+   "metric": "LTM 매출",
+   "text": "존슨앤드존슨 최근 12개월 매출",
+   "value": 97.93,
+   "unit": "USD bn",
+   "series": "stockanalysis.com 한 곳 · 2026-09-17 조회 (분기 실적치와는 계열이 다름)",
+   "as_of": "2026-09-17",
+   "tier": 3,
+   "source_url": "https://stockanalysis.com/stocks/jnj/revenue/",
+   "verdict": "confirmed",
+   "render": "marked",
+   "note": "집계사이트가 분기 실적을 합산해 산정한 값. 회사가 그대로 발표한 수치가 아니다",
+   "printed_on": [
+    "table-main",
+    "chart-trend"
+   ]
+  },
+  {
+   "id": "JNJ_LTMG",
+   "kind": "reported_result",
+   "metric": "LTM 성장률",
+   "text": "존슨앤드존슨 최근 12개월 매출 성장률",
+   "value": 8.06,
+   "unit": "%",
+   "series": "stockanalysis.com 한 곳 · 2026-09-17 조회 (분기 실적치와는 계열이 다름)",
+   "as_of": "2026-09-17",
+   "tier": 3,
+   "source_url": "https://stockanalysis.com/stocks/jnj/revenue/",
+   "verdict": "confirmed",
+   "render": "marked",
+   "note": "가속도(분기 YoY − LTM YoY)의 분모가 되는 값. 분기 YoY 는 회사 발표라 두 값의 계열이 다르다 — 방향 판정에만 쓴다",
+   "printed_on": [
+    "table-main",
+    "chart-trend"
+   ]
+  },
+  {
    "id": "JNJ_FPE",
    "kind": "market_multiple",
    "metric": "선행 P/E",
@@ -1899,6 +2814,44 @@
    "render": "assert",
    "printed_on": [
     "table-main"
+   ]
+  },
+  {
+   "id": "WMT_LTM",
+   "kind": "reported_result",
+   "metric": "LTM 매출",
+   "text": "월마트 최근 12개월 매출",
+   "value": 735.84,
+   "unit": "USD bn",
+   "series": "stockanalysis.com 한 곳 · 2026-09-17 조회 (분기 실적치와는 계열이 다름)",
+   "as_of": "2026-09-17",
+   "tier": 3,
+   "source_url": "https://stockanalysis.com/stocks/wmt/revenue/",
+   "verdict": "confirmed",
+   "render": "marked",
+   "note": "집계사이트가 분기 실적을 합산해 산정한 값. 회사가 그대로 발표한 수치가 아니다",
+   "printed_on": [
+    "table-main",
+    "chart-trend"
+   ]
+  },
+  {
+   "id": "WMT_LTMG",
+   "kind": "reported_result",
+   "metric": "LTM 성장률",
+   "text": "월마트 최근 12개월 매출 성장률",
+   "value": 6.16,
+   "unit": "%",
+   "series": "stockanalysis.com 한 곳 · 2026-09-17 조회 (분기 실적치와는 계열이 다름)",
+   "as_of": "2026-09-17",
+   "tier": 3,
+   "source_url": "https://stockanalysis.com/stocks/wmt/revenue/",
+   "verdict": "confirmed",
+   "render": "marked",
+   "note": "가속도(분기 YoY − LTM YoY)의 분모가 되는 값. 분기 YoY 는 회사 발표라 두 값의 계열이 다르다 — 방향 판정에만 쓴다",
+   "printed_on": [
+    "table-main",
+    "chart-trend"
    ]
   },
   {
@@ -1996,6 +2949,44 @@
    ]
   },
   {
+   "id": "COST_LTM",
+   "kind": "reported_result",
+   "metric": "LTM 매출",
+   "text": "코스트코 최근 12개월 매출",
+   "value": 293.59,
+   "unit": "USD bn",
+   "series": "stockanalysis.com 한 곳 · 2026-09-17 조회 (분기 실적치와는 계열이 다름)",
+   "as_of": "2026-09-17",
+   "tier": 3,
+   "source_url": "https://stockanalysis.com/stocks/cost/revenue/",
+   "verdict": "confirmed",
+   "render": "marked",
+   "note": "집계사이트가 분기 실적을 합산해 산정한 값. 회사가 그대로 발표한 수치가 아니다",
+   "printed_on": [
+    "table-main",
+    "chart-trend"
+   ]
+  },
+  {
+   "id": "COST_LTMG",
+   "kind": "reported_result",
+   "metric": "LTM 성장률",
+   "text": "코스트코 최근 12개월 매출 성장률",
+   "value": 9.23,
+   "unit": "%",
+   "series": "stockanalysis.com 한 곳 · 2026-09-17 조회 (분기 실적치와는 계열이 다름)",
+   "as_of": "2026-09-17",
+   "tier": 3,
+   "source_url": "https://stockanalysis.com/stocks/cost/revenue/",
+   "verdict": "confirmed",
+   "render": "marked",
+   "note": "가속도(분기 YoY − LTM YoY)의 분모가 되는 값. 분기 YoY 는 회사 발표라 두 값의 계열이 다르다 — 방향 판정에만 쓴다",
+   "printed_on": [
+    "table-main",
+    "chart-trend"
+   ]
+  },
+  {
    "id": "COST_FPE",
    "kind": "market_multiple",
    "metric": "선행 P/E",
@@ -2085,6 +3076,44 @@
    "render": "assert",
    "printed_on": [
     "table-main"
+   ]
+  },
+  {
+   "id": "HD_LTM",
+   "kind": "reported_result",
+   "metric": "LTM 매출",
+   "text": "홈디포 최근 12개월 매출",
+   "value": 169.18,
+   "unit": "USD bn",
+   "series": "stockanalysis.com 한 곳 · 2026-09-17 조회 (분기 실적치와는 계열이 다름)",
+   "as_of": "2026-09-17",
+   "tier": 3,
+   "source_url": "https://stockanalysis.com/stocks/hd/revenue/",
+   "verdict": "confirmed",
+   "render": "marked",
+   "note": "집계사이트가 분기 실적을 합산해 산정한 값. 회사가 그대로 발표한 수치가 아니다 — 같은 제공사의 통계 화면에서는 LTM 매출이 166.59십억달러로 조회된 적이 있다(조회 시점 차이). 이 화면은 매출 화면 값으로 통일한다",
+   "printed_on": [
+    "table-main",
+    "chart-trend"
+   ]
+  },
+  {
+   "id": "HD_LTMG",
+   "kind": "reported_result",
+   "metric": "LTM 성장률",
+   "text": "홈디포 최근 12개월 매출 성장률",
+   "value": 2.5,
+   "unit": "%",
+   "series": "stockanalysis.com 한 곳 · 2026-09-17 조회 (분기 실적치와는 계열이 다름)",
+   "as_of": "2026-09-17",
+   "tier": 3,
+   "source_url": "https://stockanalysis.com/stocks/hd/revenue/",
+   "verdict": "confirmed",
+   "render": "marked",
+   "note": "가속도(분기 YoY − LTM YoY)의 분모가 되는 값. 분기 YoY 는 회사 발표라 두 값의 계열이 다르다 — 방향 판정에만 쓴다",
+   "printed_on": [
+    "table-main",
+    "chart-trend"
    ]
   },
   {
@@ -2182,6 +3211,44 @@
    ]
   },
   {
+   "id": "CAT_LTM",
+   "kind": "reported_result",
+   "metric": "LTM 매출",
+   "text": "캐터필러 최근 12개월 매출",
+   "value": 74.73,
+   "unit": "USD bn",
+   "series": "stockanalysis.com 한 곳 · 2026-09-17 조회 (분기 실적치와는 계열이 다름)",
+   "as_of": "2026-09-17",
+   "tier": 3,
+   "source_url": "https://stockanalysis.com/stocks/cat/revenue/",
+   "verdict": "confirmed",
+   "render": "marked",
+   "note": "집계사이트가 분기 실적을 합산해 산정한 값. 회사가 그대로 발표한 수치가 아니다",
+   "printed_on": [
+    "table-main",
+    "chart-trend"
+   ]
+  },
+  {
+   "id": "CAT_LTMG",
+   "kind": "reported_result",
+   "metric": "LTM 성장률",
+   "text": "캐터필러 최근 12개월 매출 성장률",
+   "value": 18.36,
+   "unit": "%",
+   "series": "stockanalysis.com 한 곳 · 2026-09-17 조회 (분기 실적치와는 계열이 다름)",
+   "as_of": "2026-09-17",
+   "tier": 3,
+   "source_url": "https://stockanalysis.com/stocks/cat/revenue/",
+   "verdict": "confirmed",
+   "render": "marked",
+   "note": "가속도(분기 YoY − LTM YoY)의 분모가 되는 값. 분기 YoY 는 회사 발표라 두 값의 계열이 다르다 — 방향 판정에만 쓴다",
+   "printed_on": [
+    "table-main",
+    "chart-trend"
+   ]
+  },
+  {
    "id": "CAT_FPE",
    "kind": "market_multiple",
    "metric": "선행 P/E",
@@ -2271,6 +3338,44 @@
    "render": "assert",
    "printed_on": [
     "table-main"
+   ]
+  },
+  {
+   "id": "XOM_LTM",
+   "kind": "reported_result",
+   "metric": "LTM 매출",
+   "text": "엑슨모빌 최근 12개월 매출",
+   "value": 361.06,
+   "unit": "USD bn",
+   "series": "stockanalysis.com 한 곳 · 2026-09-17 조회 (분기 실적치와는 계열이 다름)",
+   "as_of": "2026-09-17",
+   "tier": 3,
+   "source_url": "https://stockanalysis.com/stocks/xom/revenue/",
+   "verdict": "confirmed",
+   "render": "marked",
+   "note": "집계사이트가 분기 실적을 합산해 산정한 값. 회사가 그대로 발표한 수치가 아니다",
+   "printed_on": [
+    "table-main",
+    "chart-trend"
+   ]
+  },
+  {
+   "id": "XOM_LTMG",
+   "kind": "reported_result",
+   "metric": "LTM 성장률",
+   "text": "엑슨모빌 최근 12개월 매출 성장률",
+   "value": 9.62,
+   "unit": "%",
+   "series": "stockanalysis.com 한 곳 · 2026-09-17 조회 (분기 실적치와는 계열이 다름)",
+   "as_of": "2026-09-17",
+   "tier": 3,
+   "source_url": "https://stockanalysis.com/stocks/xom/revenue/",
+   "verdict": "confirmed",
+   "render": "marked",
+   "note": "가속도(분기 YoY − LTM YoY)의 분모가 되는 값. 분기 YoY 는 회사 발표라 두 값의 계열이 다르다 — 방향 판정에만 쓴다",
+   "printed_on": [
+    "table-main",
+    "chart-trend"
    ]
   },
   {
@@ -2383,7 +3488,7 @@
    ]
   },
   {
-   "id": "SECMED_38798",
+   "id": "SECMED_22167",
    "kind": "derived_benchmark",
    "metric": "섹터 기준배수",
    "text": "경기소비재 기준 선행 P/E 중앙값",
@@ -2474,7 +3579,7 @@
    ]
   },
   {
-   "id": "SECMED_91468",
+   "id": "SECMED_22433",
    "kind": "derived_benchmark",
    "metric": "섹터 기준배수",
    "text": "금융 기준 선행 P/E 중앙값",
@@ -2619,7 +3724,7 @@
    ]
   },
   {
-   "id": "SECMED_41483",
+   "id": "SECMED_51177",
    "kind": "derived_benchmark",
    "metric": "섹터 기준배수",
    "text": "산업재 기준 선행 P/E 중앙값",
@@ -2710,7 +3815,7 @@
    ]
   },
   {
-   "id": "SECMED_95419",
+   "id": "SECMED_48214",
    "kind": "derived_benchmark",
    "metric": "섹터 기준배수",
    "text": "에너지 기준 선행 P/E 중앙값",
@@ -2801,7 +3906,7 @@
    ]
   },
   {
-   "id": "SECMED_93956",
+   "id": "SECMED_77267",
    "kind": "derived_benchmark",
    "metric": "섹터 기준배수",
    "text": "정보기술 기준 선행 P/E 중앙값",
@@ -2910,7 +4015,7 @@
    ]
   },
   {
-   "id": "SECMED_61262",
+   "id": "SECMED_4986",
    "kind": "derived_benchmark",
    "metric": "섹터 기준배수",
    "text": "커뮤니케이션 · 인터넷 기준 선행 P/E 중앙값",
@@ -3055,7 +4160,7 @@
    ]
   },
   {
-   "id": "SECMED_491",
+   "id": "SECMED_17395",
    "kind": "derived_benchmark",
    "metric": "섹터 기준배수",
    "text": "커뮤니케이션 · 통신미디어 기준 선행 P/E 중앙값",
@@ -3200,7 +4305,7 @@
    ]
   },
   {
-   "id": "SECMED_97019",
+   "id": "SECMED_32453",
    "kind": "derived_benchmark",
    "metric": "섹터 기준배수",
    "text": "필수소비재 기준 선행 P/E 중앙값",
@@ -3291,7 +4396,7 @@
    ]
   },
   {
-   "id": "SECMED_32424",
+   "id": "SECMED_45755",
    "kind": "derived_benchmark",
    "metric": "섹터 기준배수",
    "text": "헬스케어 기준 선행 P/E 중앙값",
@@ -3317,6 +4422,14 @@
    "from": "NVDA_CONS",
    "to": "NVDA_REV",
    "printed": 4.39,
+   "tolerance": 0.05
+  },
+  {
+   "id": "D_NVDA_GQOQ",
+   "kind": "pct_change",
+   "from": "NVDA_REV",
+   "to": "NVDA_GNEXT",
+   "printed": 12.2,
    "tolerance": 0.05
   },
   {
@@ -3352,11 +4465,35 @@
    "tolerance": 0.05
   },
   {
+   "id": "D_AMZN_GQOQ",
+   "kind": "pct_change",
+   "from": "AMZN_REV",
+   "to": "AMZN_GNEXT",
+   "printed": -0.5,
+   "tolerance": 0.05
+  },
+  {
    "id": "D_META_SURP",
    "kind": "pct_change",
    "from": "META_CONS",
    "to": "META_REV",
    "printed": 1.05,
+   "tolerance": 0.05
+  },
+  {
+   "id": "D_META_GQOQ",
+   "kind": "pct_change",
+   "from": "META_REV",
+   "to": "META_GNEXT",
+   "printed": 2.8,
+   "tolerance": 0.05
+  },
+  {
+   "id": "D_AVGO_GQOQ",
+   "kind": "pct_change",
+   "from": "AVGO_REV",
+   "to": "AVGO_GNEXT",
+   "printed": 17.6,
    "tolerance": 0.05
   },
   {
@@ -3373,6 +4510,14 @@
    "from": "AMD_CONS",
    "to": "AMD_REV",
    "printed": 1.77,
+   "tolerance": 0.05
+  },
+  {
+   "id": "D_AMD_GQOQ",
+   "kind": "pct_change",
+   "from": "AMD_REV",
+   "to": "AMD_GNEXT",
+   "printed": 13.0,
    "tolerance": 0.05
   },
   {
@@ -3405,6 +4550,22 @@
    "from": "INTC_CONS",
    "to": "INTC_REV",
    "printed": 11.65,
+   "tolerance": 0.05
+  },
+  {
+   "id": "D_INTC_GQOQ",
+   "kind": "pct_change",
+   "from": "INTC_REV",
+   "to": "INTC_GNEXT",
+   "printed": 1.2,
+   "tolerance": 0.05
+  },
+  {
+   "id": "D_MU_GQOQ",
+   "kind": "pct_change",
+   "from": "MU_REV",
+   "to": "MU_GNEXT",
+   "printed": 20.5,
    "tolerance": 0.05
   },
   {
@@ -3470,6 +4631,8 @@
   "가이던스": "방향(+1/0/-1)",
   "선행 P/E": "배",
   "PEG": "배",
-  "섹터 기준배수": "배"
+  "섹터 기준배수": "배",
+  "LTM 매출": "USD bn",
+  "LTM 성장률": "%"
  }
 }
