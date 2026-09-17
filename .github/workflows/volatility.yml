@@ -51,10 +51,21 @@ jobs:
 
       # 일봉은 기본 가지에 없다 — 이력을 남기지 않는 kr100-data 가지에 있다.
       # checkout 은 기본 가지만 받아 오므로 여기서 따로 받는다(얕게).
+      #
+      # **refspec 을 손으로 적는다.** `git fetch origin kr100-data` 만 하면
+      # FETCH_HEAD 만 서고 `origin/kr100-data` 는 안 생긴다 — actions/checkout 이
+      # 만드는 작업본은 원격 refspec 이
+      # `+refs/heads/main:refs/remotes/origin/main` 하나뿐이라, 딸려 오는
+      # 원격추적 가지가 만들어지지 않기 때문이다. 수집 대본은
+      # `git show origin/kr100-data:...` 로 읽으므로 그러면 거기서 죽는다.
+      # 사람 기계의 클론은 refspec 이 넓어 손으로 돌릴 때는 통과한다 —
+      # 러너에서만 드러나는 자리라 여기 적어 둔다.
       - name: 종목 일봉 가지 받기
         run: |
           for i in 1 2 3 4; do
-            if git fetch --depth 1 origin kr100-data; then
+            if git fetch --depth 1 origin \
+                 '+refs/heads/kr100-data:refs/remotes/origin/kr100-data'; then
+              git rev-parse --verify origin/kr100-data >/dev/null
               echo "받음 (시도 $i)"; exit 0
             fi
             echo "실패 — 다시 시도한다 ($i/4)"; sleep $((i * i * 2))
