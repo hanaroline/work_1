@@ -476,22 +476,52 @@ function addRow(code = '', alloc = '') {
 }
 function delRow(i) { rows.splice(i, 1); if (!rows.length) rows.push({ code: '', alloc: '' }); render(); }
 
-function render() {
-  const total = numOf($('amt').value), mode = $('mode').value, tax = numOf($('tax').value) / 100;
-  const tb = $('pfBody');
-  tb.innerHTML = rows.map((r, i) => {
-    const c = r.code ? calcRow(r.code, numOf(r.alloc), total, mode, tax) : null;
-    return `<tr class="${r.code ? '' : 'empty'}">
-      <td><select onchange="rows[${i}].code=this.value;render()">${optionsHtml(r.code)}</select></td>
-      <td><input class="num" value="${r.alloc}" oninput="rows[${i}].alloc=this.value;render()"></td>
-      <td class="r num">${c ? won(c.assign) : ''}</td>
-      <td class="r num">${c ? c.qty.toLocaleString('ko-KR') + '주' : ''}</td>
-      <td class="r num">${c ? won(c.invest) : ''}</td>
-      <td class="r num">${c ? won(c.pre) : ''}</td>
-      <td class="r num">${c ? won(c.post) : ''}</td>
+/* 줄을 다시 그리는 일과 숫자를 다시 셈하는 일을 나눠 둔다.
+   ──────────────────────────────────────────────────────────────────────
+   예전에는 배분 칸에 글자 하나 칠 때마다 render() 가 표 전체를 innerHTML
+   로 새로 그렸다. 그러면 **지금 타이핑하고 있는 input 자체가 지워지고 새로
+   만들어져서** 커서가 날아간다. "20" 을 치면 2 까지만 들어가고 0 은 갈 데가
+   없어진 칸으로 떨어진다. 한 자리밖에 못 넣는 칸이 되어 있었다.
+
+   그래서 칸을 건드리는 일과 값을 고쳐 쓰는 일을 갈랐다. 타이핑 중에는
+   recalc() 만 부른다 — 파생된 숫자 칸만 textContent 로 갈아 끼우고 input 과
+   select 은 손대지 않으므로 커서가 그대로 있다. 표 구조가 진짜로 바뀌는
+   때(줄 추가·삭제·불러오기)에만 renderRows() 로 다시 그린다.
+
+   종목 select 도 recalc() 만 부르면 된다. 종목을 바꿔도 줄의 생김새는 그대로고
+   숫자만 달라지기 때문이다. 다시 그리면 오히려 고른 값이 튄다. */
+function render() { renderRows(); recalc(); }
+
+function renderRows() {
+  $('pfBody').innerHTML = rows.map((r, i) => `<tr class="${r.code ? '' : 'empty'}">
+      <td><select onchange="rows[${i}].code=this.value;recalc()">${optionsHtml(r.code)}</select></td>
+      <td><input class="num" value="${r.alloc}" oninput="rows[${i}].alloc=this.value;recalc()"></td>
+      <td class="r num" data-f="assign"></td>
+      <td class="r num" data-f="qty"></td>
+      <td class="r num" data-f="invest"></td>
+      <td class="r num" data-f="pre"></td>
+      <td class="r num" data-f="post"></td>
       <td class="c noprint"><button class="icon" onclick="delRow(${i})">✕</button></td>
-    </tr>`;
-  }).join('');
+    </tr>`).join('');
+}
+
+function recalc() {
+  const total = numOf($('amt').value), mode = $('mode').value, tax = numOf($('tax').value) / 100;
+
+  // 줄 안의 숫자 칸만 갈아 끼운다. input/select 은 건드리지 않는다.
+  const trs = $('pfBody').querySelectorAll('tr');
+  rows.forEach((r, i) => {
+    const tr = trs[i];
+    if (!tr) return;
+    const c = r.code ? calcRow(r.code, numOf(r.alloc), total, mode, tax) : null;
+    tr.className = r.code ? '' : 'empty';
+    const set = (f, v) => { const el = tr.querySelector(`[data-f="${f}"]`); if (el) el.textContent = v; };
+    set('assign', c ? won(c.assign) : '');
+    set('qty', c ? c.qty.toLocaleString('ko-KR') + '주' : '');
+    set('invest', c ? won(c.invest) : '');
+    set('pre', c ? won(c.pre) : '');
+    set('post', c ? won(c.post) : '');
+  });
 
   const cs = rows.map(r => r.code ? calcRow(r.code, numOf(r.alloc), total, mode, tax) : null).filter(Boolean);
   const sum = k => cs.reduce((s, c) => s + c[k], 0);
@@ -626,8 +656,10 @@ function msg(t) { $('saveMsg').textContent = t; setTimeout(() => { $('saveMsg').
   try { saved = JSON.parse(localStorage.getItem('etfProposal') || 'null'); } catch {}
   if (saved) applyState(saved); else { rows = [{ code: DATA.defaultCode, alloc: 100 }]; render(); }
   renderQuery(); renderCompare();
+  // 여기서도 recalc() 만 부른다. 총 투자금액을 치는 동안 표를 새로 그리면,
+  // 그 표 안에서 고치고 있던 배분 칸이 같이 지워진다.
   for (const id of ['amt', 'mode', 'tax', 'cust', 'pdate'])
-    $(id).addEventListener('input', () => { render(); renderCompare(); });
+    $(id).addEventListener('input', () => { recalc(); renderCompare(); });
   for (const id of ['qFreq', 'qMin', 'qMax', 'qName', 'qAdopt'])
     $(id).addEventListener('input', renderQuery);
 })();
