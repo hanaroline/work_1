@@ -293,6 +293,22 @@ def verify_absences(doc):
                        '백테스트가 %s 모델의 것인데 지금은 %s 다 — 산출물이 그 사실을 '
                        '적고 있어야 한다' % (bt.get('engine_hash') or '(적히지 않음)', cur))
 
+    # 종목별 수급이 실렸다면, 그것이 **실제로 축에 들어갔는지**와 백테스트가
+    # 그 자료를 포함하지 않는다는 사실이 적혀 있는지를 본다. 자료만 들여놓고
+    # 축이 여전히 비어 있으면 화면은 「수급 반영」이라 적으면서 아무것도 안 쓴다.
+    for it in doc['items']:
+        fd = it.get('flow_data')
+        if not fd:
+            continue
+        nm = it['symbol']
+        check_true('%s 수급자료가 있으면 축도 있다' % nm,
+                   (it.get('axes') or {}).get('flow') is not None,
+                   '수급 %d 세션이 실렸는데 자금수급 축이 비어 있다' % fd['sessions'])
+        check_true('%s 수급 세션 수를 적었다' % nm, fd.get('sessions', 0) > 0)
+        check_true('%s 백테스트가 이 축을 안 쟀다고 적었다' % nm,
+                   '백테스트' in (fd.get('note') or ''),
+                   '성적표가 이 축으로 잰 것이 아니라는 말이 있어야 한다')
+
     check_true('유의사항이 실려 있다', bool(doc.get('disclaimer')),
                '투자권유가 아니라는 것과 준법 확인이 필요하다는 것을 적어야 한다')
     check_true('유의사항에 투자권유 아님', '투자 권유가 아닙니다' in (doc.get('disclaimer') or ''))

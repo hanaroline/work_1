@@ -72,6 +72,27 @@ try {
       }
     }
 
+    // 종목별 수급이 실렸으면 화면이 그 사실과 **백테스트가 그 축을 안 쟀다는 것**을
+    // 말해야 한다. 자료가 늘어난 것은 좋은 일이지만 성적표가 그 자료로 잰 것이
+    // 아니라는 점을 숨기면, 화면이 실제보다 검증된 것처럼 보인다.
+    const flowSym = await page.evaluate(async () => {
+      const r = await fetch('../../data/signals/latest.json');
+      const d = await r.json();
+      const it = (d.items || []).find(x => x.flow_data);
+      if (!it) return null;
+      const sel = document.getElementById('pick');
+      sel.value = it.symbol; sel.dispatchEvent(new Event('change'));
+      return it.symbol;
+    });
+    if (flowSym) {
+      await page.waitForTimeout(300);
+      const t = await page.textContent('#body');
+      ok(`[${theme}] 수급 실린 종목에 세션 수가 뜬다`, /세션 실렸습니다/.test(t || ''), flowSym);
+      ok(`[${theme}] 수급 실린 종목에 백테스트 한계가 뜬다`,
+         /백테스트는 이 자료 없이/.test(t || ''),
+         '성적표가 이 축을 안 쟀다는 말이 있어야 한다');
+    }
+
     // 한계·유의사항
     const dis = await page.textContent('#disclaimer');
     ok(`[${theme}] 유의사항이 보인다`, /투자 권유가 아닙니다/.test(dis || ''));
