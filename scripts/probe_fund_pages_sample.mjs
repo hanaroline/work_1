@@ -57,23 +57,23 @@ async function main() {
   const C = g.FUND_CATALOG;
   const withT = C.items.filter((x) => x.docT);
 
-  /* 운용사가 골고루 섞이게 — 한 운용사에 몰리면 적중률이 부풀려진다 */
-  const byMgr = new Map();
-  for (const it of withT) {
-    if (!byMgr.has(it.mgr)) byMgr.set(it.mgr, []);
-    byMgr.get(it.mgr).push(it);
-  }
-  const mgrs = [...byMgr.keys()];
+  /**
+   * 전체를 일정 간격으로 훑는다.
+   *
+   * 처음에는 「운용사마다 첫 종목」 을 돌아가며 골랐다. 운용사가 골고루 섞이니
+   * 좋은 표본이라고 생각했는데, 그 표본이 90% 라고 말한 자리가 전량에서는 76% 였다.
+   * 운용사의 첫 종목은 대개 평범한 증권투자신탁이어서, 서식이 다른 특별자산·부동산·
+   * 사모재간접이 표본에 거의 안 들어왔던 것이다. 그 차이를 모른 채 전량을 돌려
+   * 2시간 45분을 버렸다.
+   *
+   * 간격으로 훑으면 카탈로그에 있는 비율 그대로 섞인다 — 표본이 말하는 숫자를
+   * 전량에서도 그대로 볼 수 있다. 표본을 믿을 수 없으면 표본을 돌릴 이유가 없다.
+   */
+  const step = Math.max(1, Math.floor(withT.length / HOW_MANY));
   const pick = [];
-  for (let round = 0; pick.length < HOW_MANY && round < 6; round++) {
-    for (const m of mgrs) {
-      const l = byMgr.get(m);
-      if (l[round]) pick.push(l[round]);
-      if (pick.length >= HOW_MANY) break;
-    }
-  }
-  log(`투자설명서 있는 ${withT.length}종목 · 운용사 ${mgrs.length}곳`);
-  log(`표본 ${pick.length}종목 (운용사 ${new Set(pick.map((x) => x.mgr)).size}곳)`);
+  for (let i = 0; i < withT.length && pick.length < HOW_MANY; i += step) pick.push(withT[i]);
+  log(`투자설명서 있는 ${withT.length}종목`);
+  log(`표본 ${pick.length}종목 — ${step}종목마다 하나씩 (운용사 ${new Set(pick.map((x) => x.mgr)).size}곳)`);
 
   const res = [];
   for (const [i, it] of pick.entries()) {
