@@ -63,7 +63,17 @@ WON_PLAIN = "#,##0"
 PCT = "0.00%"
 PCT3 = "0.000%"
 QTY = '#,##0"주"'
-EOK = '#,##0"억원"'   # 순자산·거래대금은 원 단위로 적으면 자릿수를 세어야 읽힌다
+# 순자산·거래대금은 원 단위로 적으면 자릿수를 세어야 읽힌다.
+#
+# **이 서식은 글자만 붙인다. 나누지 않는다.** 엑셀의 표시 서식으로는 1억을
+# 나눌 수 없다(쉼표 하나가 1,000 씩이라 억은 떨어지지 않는다). 그래서 이 서식을
+# 쓰는 칸은 **수식에서 미리 1e8 로 나눠 두어야 한다.**
+#
+# 그러지 않아서 [종목조회] 의 순자산이 68,374억원 대신 6,837,352,830,000억원
+# 으로 찍히고 있었다. 1억 배다. 칸이 좁아 ###### 으로 보였을 뿐 값 자체가
+# 틀려 있었다. HTML 판은 aum/1e8 로 제대로 나누고 있어서 두 판이 어긋났다.
+EOK = '#,##0"억원"'
+EOK_DIV = 100_000_000  # EOK 서식을 쓰는 수식은 이 값으로 나눈다
 # 0 을 빈칸으로 찍는 판. 포트폴리오의 안 채운 줄에 쓴다 — 고객이 받는 장에
 # "0원 0주 0원" 이 아홉 줄 깔리면 표가 아니라 잡음이 된다. 세 번째 구획이
 # 0 일 때의 표시이고, 비워 두면 아무것도 찍히지 않는다.
@@ -539,7 +549,9 @@ def build_lookup_sheet(wb, data, first_sel, last_sel):
             (5, f'=IF($K{rr}=0,"",$D{rr}/12)', PCT3),    # 월 환산
             (6, pick("D", rr), WON),                     # 현재가
             (7, pick("H", rr), PCT),                     # 변동성
-            (8, pick("E", rr), EOK),                     # 순자산
+            # 순자산. 억원으로 적으므로 여기서 1억을 나눈다 — 서식은 글자만
+            # 붙일 뿐 나누지 못한다(EOK 주석 참고).
+            (8, f'=IF($K{rr}=0,"",INDEX(\'{D}\'!$E${first_sel}:$E${last_sel},$K{rr})/{EOK_DIV})', EOK),
             (9, pick("M", rr), None),                    # 채택
         ]
         for c, v, fmt in cells:
@@ -742,7 +754,28 @@ def build_proposal(wb, data, first_sel, last_sel, first_adopted, last_adopted):
         rr = p_first + i
         cell = put(ws, rr, 2, None, None, kind="input")
         cell.alignment = Alignment(vertical="center", horizontal="left")
-        put(ws, rr, 3, None, "#,##0.##", kind="input")
+        # 배분도 [종목조회] 에서 담은 만큼 **고르게 나눠 미리 채운다.**
+        #
+        # 이름만 채우고 배분을 비워 뒀더니, 세 종목을 담아도 배정금액이 0원이라
+        # 두 줄이 빈칸으로 보였다. 0원을 빈칸으로 찍는 서식이라 담당자 눈에는
+        # "한 개만 담겼다" 로 보인다. 실제로 더 나빴던 것은, 첫 줄이 100% 를
+        # 그대로 들고 있어서 **세 종목을 담았는데 돈은 전부 첫 종목에 들어가고**
+        # 합계는 멀쩡해 보여 경고도 뜨지 않았다는 점이다.
+        #
+        # 나누어떨어지지 않는 몫은 마지막 줄이 받는다. 100/3 을 33.33 씩 세 번
+        # 넣으면 99.99 가 되어 "합계가 100%가 아닙니다" 경고가 늘 떠 있게 된다.
+        #
+        # 손으로 고치고 싶으면 그냥 덮어쓰면 된다 — 종목 칸과 같다.
+        n = f"MAX(담긴수,1)"
+        i1 = i + 1
+        even_pct = f"IF({i1}<{n},ROUND(100/{n},2),100-ROUND(100/{n},2)*({n}-1))"
+        even_amt = (
+            f"IF({i1}<{n},ROUNDDOWN({C_AMT}/{n},0),"
+            f"{C_AMT}-ROUNDDOWN({C_AMT}/{n},0)*({n}-1))"
+        )
+        put(ws, rr, 3,
+            f'=IF($B{rr}="","",IF({C_MODE}="비율",{even_pct},{even_amt}))',
+            "#,##0.##", kind="input")
         ws[f"K{rr}"] = f'=IF($B{rr}="",0,IFERROR(MATCH($B{rr},선택가능종목,0),0))'
         ws[f"K{rr}"].font = f(9, color=MUTED)
         # 그 종목이 채택인지 기준 미달인지. 기준 미달도 고를 수 있게 했으므로
@@ -1216,7 +1249,9 @@ def main():
         ws.cell(row=rr, column=2).value = (
             f'=IF(담긴수=0,{fallback},IFERROR(INDEX(담긴목록,{i + 1}),""))'
         )
-    ws.cell(row=p_first, column=3).value = 100   # 비율 방식이므로 100%
+    # 배분 칸은 build_proposal 에서 '담은 만큼 고르게 나누는' 수식으로 채웠다.
+    # 아무것도 안 담았으면 담긴수=0 이라 MAX(담긴수,1)=1 이 되어 첫 줄이 100%
+    # 가 된다 — 예전에 여기서 100 을 박아 넣던 것과 같은 결과다.
 
     wb.active = wb["제안서"]
     OUT.parent.mkdir(parents=True, exist_ok=True)

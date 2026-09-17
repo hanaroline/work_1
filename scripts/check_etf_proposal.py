@@ -315,7 +315,10 @@ def main() -> int:  # noqa: PLR0915
         name = val(f"B{rr}")
         if isinstance(name, str):
             name = name.strip()
-        alloc = ws[f"C{rr}"].value
+        # 배분 칸도 이제 '담은 만큼 고르게 나누는' 수식이다. 칸에 적힌 글자가
+        # 아니라 계산해서 나온 수를 봐야 한다. (수식 글자를 그대로 곱하다가
+        # 파이썬이 글자를 억 번 이어 붙여 메모리가 터졌다.)
+        alloc = val(f"C{rr}")
         if not name:
             for col in ("D", "E", "F", "G", "H"):
                 if not near(val(f"{col}{rr}"), 0, 1e-6):
@@ -409,6 +412,7 @@ def main() -> int:  # noqa: PLR0915
         )
 
     check_lookup(selectable, first, last)
+    check_lookup_units(v, wb["종목조회"], selectable)
     check_pick_and_search(selectable)
 
     # HTML 판이 같은 값을 내는지 맞춰 볼 수 있게, 엑셀을 **실제로 계산해서 나온**
@@ -439,6 +443,66 @@ def main() -> int:  # noqa: PLR0915
 
 
 # ── [종목조회] 검산 ────────────────────────────────────────────────────
+def check_lookup_units(v, lk, selectable) -> None:
+    """[종목조회] 에 찍히는 값이 **단위까지** 맞는지 본다.
+
+    왜 따로 보나
+    ────────────────────────────────────────────────────────────────
+    순자산이 68,374억원 대신 6,837,352,830,000억원 으로 찍히고 있었다. 1억 배다.
+    엑셀의 표시 서식('#,##0"억원"')은 글자만 붙일 뿐 나누지 못하는데, 수식에서
+    안 나눠 준 것이다. 칸이 좁아 ###### 으로만 보여서 오래 지나도록 몰랐다.
+
+    앞의 검사들이 이걸 못 잡은 까닭이 분명하다 — 다들 **참조가 맞는지**(엉뚱한
+    줄을 가리키지 않는지)를 봤다. 여기서는 참조가 맞았고 자릿수가 틀렸다.
+    그래서 화면에 찍히는 수를 원천의 수와 직접 견준다.
+    """
+    first = None
+    for row in lk.iter_rows(min_col=2, max_col=2):
+        for c in row:
+            if isinstance(c.value, str) and c.value.startswith("=IF($K"):
+                first = c.row
+                break
+        if first:
+            break
+    if first is None:
+        fail("[종목조회] 결과 표를 못 찾아 단위를 못 봤습니다.")
+        return
+
+    by_name = {x["name"]: x for x in selectable}
+    n = 0
+    for i in range(LOOKUP_ROWS_MAX):
+        rr = first + i
+        name = v.get(("종목조회", f"B{rr}"))
+        if not name or not isinstance(name, str):
+            break
+        it = by_name.get(name.strip())
+        if it is None:
+            continue
+        n += 1
+        # 순자산: 억원으로 찍혀야 한다.
+        got = v.get(("종목조회", f"H{rr}"))
+        want = (it.get("aum") or 0) / 100_000_000
+        if not near(got, want, max(1.0, want * 0.001)):
+            fail(
+                f"[종목조회] {rr}행 '{name}' 순자산이 {got} 인데 원천은 {want:,.0f}억원입니다"
+                f" (배수 {(float(got) / want if want and got else 0):,.0f})."
+            )
+            return
+        # 현재가: 원 단위 그대로여야 한다.
+        gp = v.get(("종목조회", f"F{rr}"))
+        if not near(gp, it["price"], 1):
+            fail(f"[종목조회] {rr}행 '{name}' 현재가가 {gp} 인데 원천은 {it['price']:,.0f}원입니다.")
+            return
+        # 연 분배율: 엑셀은 0.05 로 담고 0.00% 서식으로 5% 를 찍는다.
+        gr = v.get(("종목조회", f"D{rr}"))
+        wr = (it.get("distTtmRate") or 0) / 100
+        if not near(gr, wr, 0.0002):
+            fail(f"[종목조회] {rr}행 '{name}' 연 분배율이 {gr} 인데 원천은 {wr:.4f} 입니다.")
+            return
+    if n:
+        notes.append(f"[종목조회] {n}줄의 순자산·현재가·분배율을 원천과 단위까지 맞췄습니다.")
+
+
 def check_pick_and_search(selectable) -> None:
     """'담기' 와 '종목 검색' 이 실제로 도는지 본다.
 
@@ -501,7 +565,24 @@ def check_pick_and_search(selectable) -> None:
     elif b22 not in ("", None):
         fail(f"두 종목만 담았는데 B22 에 '{b22}' 이 남아 있습니다.")
     else:
-        notes.append(f"'담기' 두 종목이 [제안서] 에 그대로 올라옵니다 ('{n1}' 외 1).")
+        # 이름만 올라오고 배분이 비면, 그 줄은 배정금액 0원이라 화면에서
+        # **빈 줄로 보인다.** 담당자는 "한 개만 담겼다" 고 읽는다. 더 나쁜 것은
+        # 첫 줄이 100% 를 그대로 들고 있어 돈이 전부 첫 종목에 들어가면서도
+        # 합계는 멀쩡해 보인다는 점이다. 그래서 배분까지 본다.
+        c20, c21 = g("제안서", "C20"), g("제안서", "C21")
+        try:
+            s = float(c20) + float(c21)
+        except (TypeError, ValueError):
+            s = None
+        if s is None:
+            fail(f"'담기' 로 올라온 줄의 배분이 비어 있습니다 (C20={c20!r}, C21={c21!r}) — "
+                 "배정금액이 0원이 되어 빈 줄로 보입니다.")
+        elif abs(s - 100) > 0.01:
+            fail(f"두 종목을 담았는데 배분 합계가 {s} 입니다 (100 이어야 합니다).")
+        else:
+            notes.append(
+                f"'담기' 두 종목이 [제안서] 에 올라오고 배분이 {float(c20):g}/{float(c21):g} 로 "
+                f"고르게 나뉩니다 ('{n1}' 외 1).")
 
     # ── 검색 → 목록 좁히기 ──
     # X 칸에 위에서부터 걸린 종목만 빈칸 없이 쌓여야 한다.
