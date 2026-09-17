@@ -1,0 +1,571 @@
+{
+  "when": "2026-09-17T02:41:40.581Z",
+  "purpose": "지급주기·연분배율 조회를 붙이기 전, 모집단 확대 비용을 실측한다",
+  "완료": false,
+  "counts": {
+    "국내상장전체": 1540,
+    "월배당분류": 192,
+    "1단계대상": 1540,
+    "1단계성공": 30,
+    "1단계실패": 276
+  },
+  "주기별": {
+    "분기배당": 4,
+    "판정 불가(상장 1년 미만)": 11,
+    "연배당": 12,
+    "월배당": 2,
+    "무분배": 1
+  },
+  "시간": {
+    "1단계초": 3313,
+    "호출당초": 110.43333333333334,
+    "2단계대상": 18,
+    "2단계추정분": 199
+  },
+  "stoppedEarly": "예산 55분을 넘겨 306/1540 에서 멈췄습니다",
+  "screenerProbe": {
+    "note": "1차 실측에서 10행·국내 0종목으로 확인 — 전 종목 목록이 아니라 관문에 쓸 수 없다"
+  },
+  "failedSample": [
+    {
+      "code": "0069M0",
+      "name": "1Q 미국나스닥100",
+      "why": "page.goto: net::ERR_EMPTY_RESPONSE at https://www.etfcheck.co.kr/\nCall log:\n  - navigating to \"https://www.etfcheck.co.kr/\", waiting until \"domcontentloaded\"\n"
+    },
+    {
+      "code": "0111P0",
+      "name": "1Q 미국나스닥100미국채혼합50액티브",
+      "why": "HTTP 0"
+    },
+    {
+      "code": "475270",
+      "name": "ACE 5월만기자동연장회사채AA-이상액티브",
+      "why": "HTTP 0"
+    },
+    {
+      "code": "475280",
+      "name": "ACE 8월만기자동연장회사채AA-이상액티브",
+      "why": "HTTP 0"
+    },
+    {
+      "code": "469150",
+      "name": "ACE AI반도체TOP3+",
+      "why": "HTTP 0"
+    },
+    {
+      "code": "0079X0",
+      "name": "ACE BYD밸류체인액티브",
+      "why": "HTTP 403"
+    },
+    {
+      "code": "385590",
+      "name": "ACE ESG액티브",
+      "why": "page.goto: net::ERR_EMPTY_RESPONSE at https://www.etfcheck.co.kr/\nCall log:\n  - navigating to \"https://www.etfcheck.co.kr/\", waiting until \"domcontentloaded\"\n"
+    },
+    {
+      "code": "226380",
+      "name": "ACE Fn성장소비주도주",
+      "why": "page.goto: net::ERR_EMPTY_RESPONSE at https://www.etfcheck.co.kr/\nCall log:\n  - navigating to \"https://www.etfcheck.co.kr/\", waiting until \"domcontentloaded\"\n"
+    },
+    {
+      "code": "475050",
+      "name": "ACE KPOP포커스",
+      "why": "HTTP 403"
+    },
+    {
+      "code": "411060",
+      "name": "ACE KRX금현물",
+      "why": "HTTP 0"
+    },
+    {
+      "code": "0221Z0",
+      "name": "ACE K바이오코스닥액티브",
+      "why": "HTTP 0"
+    },
+    {
+      "code": "0210A0",
+      "name": "ACE K반도체TOP2+",
+      "why": "HTTP 403"
+    },
+    {
+      "code": "0216Z0",
+      "name": "ACE K방산TOP5+",
+      "why": "HTTP 0"
+    },
+    {
+      "code": "0172Y0",
+      "name": "ACE K수출핵심TOP10산업액티브",
+      "why": "HTTP 0"
+    },
+    {
+      "code": "0177X0",
+      "name": "ACE K휴머노이드로봇산업TOP2+",
+      "why": "page.goto: net::ERR_EMPTY_RESPONSE at https://www.etfcheck.co.kr/\nCall log:\n  - navigating to \"https://www.etfcheck.co.kr/\", waiting until \"domcontentloaded\"\n"
+    },
+    {
+      "code": "291130",
+      "name": "ACE MSCI멕시코(합성)",
+      "why": "HTTP 403"
+    },
+    {
+      "code": "256440",
+      "name": "ACE MSCI인도네시아(합성)",
+      "why": "HTTP 403"
+    },
+    {
+      "code": "261920",
+      "name": "ACE MSCI필리핀(합성)",
+      "why": "HTTP 0"
+    },
+    {
+      "code": "0194T0",
+      "name": "ACE SK하이닉스단일종목레버리지",
+      "why": "HTTP 0"
+    },
+    {
+      "code": "0139P0",
+      "name": "ACE 고배당주",
+      "why": "HTTP 403"
+    }
+  ],
+  "items": [
+    {
+      "code": "451060",
+      "name": "1Q 200액티브",
+      "freq": "분기배당",
+      "count12m": 4,
+      "months12m": [
+        "2025-10",
+        "2026-01",
+        "2026-04",
+        "2026-07"
+      ],
+      "listedOn": "20230131",
+      "monthlyCtg": false,
+      "aum": null,
+      "turnoverDay": null,
+      "divRate": null
+    },
+    {
+      "code": "0184E0",
+      "name": "1Q 200채권혼합50액티브",
+      "freq": "판정 불가(상장 1년 미만)",
+      "count12m": 1,
+      "months12m": [
+        "2026-07"
+      ],
+      "listedOn": "20260421",
+      "monthlyCtg": false,
+      "aum": null,
+      "turnoverDay": null,
+      "divRate": null
+    },
+    {
+      "code": "491610",
+      "name": "1Q CD금리액티브(합성)",
+      "freq": "연배당",
+      "count12m": 1,
+      "months12m": [
+        "2025-11"
+      ],
+      "listedOn": "20240924",
+      "monthlyCtg": false,
+      "aum": null,
+      "turnoverDay": null,
+      "divRate": null
+    },
+    {
+      "code": "0182R0",
+      "name": "1Q K반도체TOP2+",
+      "freq": "판정 불가(상장 1년 미만)",
+      "count12m": 0,
+      "months12m": [],
+      "listedOn": "20260414",
+      "monthlyCtg": false,
+      "aum": null,
+      "turnoverDay": null,
+      "divRate": null
+    },
+    {
+      "code": "0182S0",
+      "name": "1Q K반도체TOP2채권혼합50",
+      "freq": "판정 불가(상장 1년 미만)",
+      "count12m": 0,
+      "months12m": [],
+      "listedOn": "20260414",
+      "monthlyCtg": false,
+      "aum": null,
+      "turnoverDay": null,
+      "divRate": null
+    },
+    {
+      "code": "0103T0",
+      "name": "1Q K소버린AI",
+      "freq": "연배당",
+      "count12m": 2,
+      "months12m": [
+        "2026-01",
+        "2026-04"
+      ],
+      "listedOn": "20250930",
+      "monthlyCtg": false,
+      "aum": null,
+      "turnoverDay": null,
+      "divRate": null
+    },
+    {
+      "code": "0198D0",
+      "name": "1Q SK하이닉스선물단일종목레버리지",
+      "freq": "판정 불가(상장 1년 미만)",
+      "count12m": 0,
+      "months12m": [],
+      "listedOn": "20260527",
+      "monthlyCtg": false,
+      "aum": null,
+      "turnoverDay": null,
+      "divRate": null
+    },
+    {
+      "code": "463290",
+      "name": "1Q 단기금융채액티브",
+      "freq": "연배당",
+      "count12m": 1,
+      "months12m": [
+        "2025-12"
+      ],
+      "listedOn": "20230803",
+      "monthlyCtg": false,
+      "aum": null,
+      "turnoverDay": null,
+      "divRate": null
+    },
+    {
+      "code": "0131W0",
+      "name": "1Q 단기특수은행채액티브",
+      "freq": "판정 불가(상장 1년 미만)",
+      "count12m": 0,
+      "months12m": [],
+      "listedOn": "20251125",
+      "monthlyCtg": false,
+      "aum": null,
+      "turnoverDay": null,
+      "divRate": null
+    },
+    {
+      "code": "479080",
+      "name": "1Q 머니마켓액티브",
+      "freq": "연배당",
+      "count12m": 1,
+      "months12m": [
+        "2025-11"
+      ],
+      "listedOn": "20240402",
+      "monthlyCtg": false,
+      "aum": null,
+      "turnoverDay": null,
+      "divRate": null
+    },
+    {
+      "code": "0026S0",
+      "name": "1Q 미국S&P500",
+      "freq": "분기배당",
+      "count12m": 4,
+      "months12m": [
+        "2025-12",
+        "2026-03",
+        "2026-06",
+        "2026-09"
+      ],
+      "listedOn": "20250318",
+      "monthlyCtg": false,
+      "aum": null,
+      "turnoverDay": null,
+      "divRate": null
+    },
+    {
+      "code": "0052S0",
+      "name": "1Q 미국S&P500미국채혼합50액티브",
+      "freq": "분기배당",
+      "count12m": 4,
+      "months12m": [
+        "2025-10",
+        "2026-01",
+        "2026-04",
+        "2026-07"
+      ],
+      "listedOn": "20250610",
+      "monthlyCtg": false,
+      "aum": null,
+      "turnoverDay": null,
+      "divRate": null
+    },
+    {
+      "code": "0083S0",
+      "name": "1Q 미국메디컬AI",
+      "freq": "연배당",
+      "count12m": 2,
+      "months12m": [
+        "2025-10",
+        "2026-07"
+      ],
+      "listedOn": "20250722",
+      "monthlyCtg": false,
+      "aum": null,
+      "turnoverDay": null,
+      "divRate": null
+    },
+    {
+      "code": "0004G0",
+      "name": "1Q 미국배당TOP30",
+      "freq": "월배당",
+      "count12m": 11,
+      "months12m": [
+        "2025-10",
+        "2025-11",
+        "2025-12",
+        "2026-01",
+        "2026-02",
+        "2026-03",
+        "2026-04",
+        "2026-05",
+        "2026-06",
+        "2026-07",
+        "2026-08"
+      ],
+      "listedOn": "20250121",
+      "monthlyCtg": true,
+      "aum": null,
+      "turnoverDay": null,
+      "divRate": null
+    },
+    {
+      "code": "0131V0",
+      "name": "1Q 미국우주항공테크",
+      "freq": "판정 불가(상장 1년 미만)",
+      "count12m": 1,
+      "months12m": [
+        "2026-04"
+      ],
+      "listedOn": "20251125",
+      "monthlyCtg": false,
+      "aum": null,
+      "turnoverDay": null,
+      "divRate": null
+    },
+    {
+      "code": "0198B0",
+      "name": "1Q 삼성전자선물단일종목레버리지",
+      "freq": "판정 불가(상장 1년 미만)",
+      "count12m": 0,
+      "months12m": [],
+      "listedOn": "20260527",
+      "monthlyCtg": false,
+      "aum": null,
+      "turnoverDay": null,
+      "divRate": null
+    },
+    {
+      "code": "0094X0",
+      "name": "1Q 샤오미밸류체인액티브",
+      "freq": "연배당",
+      "count12m": 2,
+      "months12m": [
+        "2026-01",
+        "2026-07"
+      ],
+      "listedOn": "20250902",
+      "monthlyCtg": false,
+      "aum": null,
+      "turnoverDay": null,
+      "divRate": null
+    },
+    {
+      "code": "0224X0",
+      "name": "1Q 엔비디아알파벳미국채혼합50",
+      "freq": "판정 불가(상장 1년 미만)",
+      "count12m": 1,
+      "months12m": [
+        "2026-08"
+      ],
+      "listedOn": "20260728",
+      "monthlyCtg": true,
+      "aum": null,
+      "turnoverDay": null,
+      "divRate": null
+    },
+    {
+      "code": "0172V0",
+      "name": "1Q 은액티브",
+      "freq": "판정 불가(상장 1년 미만)",
+      "count12m": 0,
+      "months12m": [],
+      "listedOn": "20260331",
+      "monthlyCtg": false,
+      "aum": null,
+      "turnoverDay": null,
+      "divRate": null
+    },
+    {
+      "code": "0017Y0",
+      "name": "1Q 종합채권(AA-이상)액티브",
+      "freq": "연배당",
+      "count12m": 1,
+      "months12m": [
+        "2025-11"
+      ],
+      "listedOn": "20250225",
+      "monthlyCtg": false,
+      "aum": null,
+      "turnoverDay": null,
+      "divRate": null
+    },
+    {
+      "code": "0052T0",
+      "name": "1Q 중단기회사채(A-이상)액티브",
+      "freq": "연배당",
+      "count12m": 1,
+      "months12m": [
+        "2025-11"
+      ],
+      "listedOn": "20250527",
+      "monthlyCtg": false,
+      "aum": null,
+      "turnoverDay": null,
+      "divRate": null
+    },
+    {
+      "code": "495330",
+      "name": "1Q 코리아밸류업",
+      "freq": "월배당",
+      "count12m": 10,
+      "months12m": [
+        "2025-10",
+        "2025-11",
+        "2026-01",
+        "2026-02",
+        "2026-03",
+        "2026-04",
+        "2026-05",
+        "2026-06",
+        "2026-07",
+        "2026-08"
+      ],
+      "listedOn": "20241104",
+      "monthlyCtg": true,
+      "aum": null,
+      "turnoverDay": null,
+      "divRate": null
+    },
+    {
+      "code": "0186S0",
+      "name": "1Q 코스닥150채권혼합50액티브",
+      "freq": "판정 불가(상장 1년 미만)",
+      "count12m": 1,
+      "months12m": [
+        "2026-07"
+      ],
+      "listedOn": "20260428",
+      "monthlyCtg": false,
+      "aum": null,
+      "turnoverDay": null,
+      "divRate": null
+    },
+    {
+      "code": "492500",
+      "name": "1Q 현대차그룹채권(A+이상)&국고통안",
+      "freq": "연배당",
+      "count12m": 1,
+      "months12m": [
+        "2025-12"
+      ],
+      "listedOn": "20241002",
+      "monthlyCtg": false,
+      "aum": null,
+      "turnoverDay": null,
+      "divRate": null
+    },
+    {
+      "code": "0206G0",
+      "name": "1Q 현대차기아채권혼합50",
+      "freq": "판정 불가(상장 1년 미만)",
+      "count12m": 0,
+      "months12m": [],
+      "listedOn": "20260609",
+      "monthlyCtg": false,
+      "aum": null,
+      "turnoverDay": null,
+      "divRate": null
+    },
+    {
+      "code": "473440",
+      "name": "ACE 11월만기자동연장회사채AA-이상액티브",
+      "freq": "연배당",
+      "count12m": 1,
+      "months12m": [
+        "2025-11"
+      ],
+      "listedOn": "20231219",
+      "monthlyCtg": false,
+      "aum": null,
+      "turnoverDay": null,
+      "divRate": null
+    },
+    {
+      "code": "105190",
+      "name": "ACE 200",
+      "freq": "분기배당",
+      "count12m": 4,
+      "months12m": [
+        "2025-10",
+        "2026-01",
+        "2026-04",
+        "2026-07"
+      ],
+      "listedOn": "20080925",
+      "monthlyCtg": false,
+      "aum": null,
+      "turnoverDay": null,
+      "divRate": null
+    },
+    {
+      "code": "332500",
+      "name": "ACE 200TR",
+      "freq": "무분배",
+      "count12m": 0,
+      "months12m": [],
+      "listedOn": "20190828",
+      "monthlyCtg": false,
+      "aum": null,
+      "turnoverDay": null,
+      "divRate": null
+    },
+    {
+      "code": "475260",
+      "name": "ACE 2월만기자동연장회사채AA-이상액티브",
+      "freq": "연배당",
+      "count12m": 1,
+      "months12m": [
+        "2025-11"
+      ],
+      "listedOn": "20240123",
+      "monthlyCtg": false,
+      "aum": null,
+      "turnoverDay": null,
+      "divRate": null
+    },
+    {
+      "code": "385600",
+      "name": "ACE 2차전지&친환경차액티브",
+      "freq": "연배당",
+      "count12m": 1,
+      "months12m": [
+        "2026-04"
+      ],
+      "listedOn": "20210525",
+      "monthlyCtg": false,
+      "aum": null,
+      "turnoverDay": null,
+      "divRate": null
+    }
+  ]
+}
