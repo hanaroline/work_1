@@ -1,0 +1,798 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>시장 변동성 경보</title>
+<!--
+  네 축(변동성·가격압축·모멘텀·자금수급)을 합친 경보 점수와 시나리오 확률, 백테스트를 보여 준다.
+
+  **이 화면은 셈을 하지 않는다.** 모든 수는 data/volatility/latest.json 에 이미
+  적혀 있는 것을 옮겨 찍을 뿐이다. 브라우저에서 다시 셈하면 검산 스크립트
+  (scripts/verify_volatility.py)가 대조할 자리가 없어지기 때문이다.
+
+  띄우는 법 — 저장소 뿌리에서 `python3 -m http.server 8000` 뒤
+  http://localhost:8000/docs/volatility/ 로 연다. 파일을 그냥 두 번 눌러 열면
+  브라우저 보안정책이 자료 읽기를 막는다(그때는 안내가 뜬다).
+-->
+<style>
+  /* ===== 팔레트 — index.html 과 같은 것을 쓴다(dataviz 레퍼런스) ===== */
+  :root {
+    --surface-1: #fcfcfb; --page: #f9f9f7;
+    --text-primary: #0b0b0b; --text-secondary: #52514e; --text-muted: #898781;
+    --grid: #e1e0d9; --axis: #c3c2b7; --border: rgba(11,11,11,0.10);
+    --series-1: #2a78d6; --series-2: #1baf7a; --series-3: #eda100;
+    --series-5: #4a3aa7; --series-6: #e34948; --series-8: #eb6834;
+    --up: #d03b3b; --down: #2a78d6; --good: #006300;
+    --warn: #b06f00; --danger: #c0392b;
+    --shadow: 0 1px 2px rgba(11,11,11,.05), 0 4px 16px rgba(11,11,11,.04);
+    --radius: 14px;
+  }
+  :root[data-theme="dark"] {
+    --surface-1: #1a1a19; --page: #0d0d0d;
+    --text-primary: #ffffff; --text-secondary: #c3c2b7; --text-muted: #898781;
+    --grid: #2c2c2a; --axis: #383835; --border: rgba(255,255,255,0.10);
+    --series-1: #3987e5; --series-2: #199e70; --series-3: #c98500;
+    --series-5: #9085e9; --series-6: #e66767; --series-8: #d95926;
+    --up: #ff6b6b; --down: #5598e7; --good: #0ca30c;
+    --warn: #e0a030; --danger: #ff6b6b;
+    --shadow: 0 1px 2px rgba(0,0,0,.4), 0 4px 16px rgba(0,0,0,.3);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --surface-1: #1a1a19; --page: #0d0d0d;
+      --text-primary: #ffffff; --text-secondary: #c3c2b7; --text-muted: #898781;
+      --grid: #2c2c2a; --axis: #383835; --border: rgba(255,255,255,0.10);
+      --series-1: #3987e5; --series-2: #199e70; --series-3: #c98500;
+      --series-5: #9085e9; --series-6: #e66767; --series-8: #d95926;
+      --up: #ff6b6b; --down: #5598e7; --good: #0ca30c;
+      --warn: #e0a030; --danger: #ff6b6b;
+      --shadow: 0 1px 2px rgba(0,0,0,.4), 0 4px 16px rgba(0,0,0,.3);
+    }
+  }
+
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    font-family: system-ui, -apple-system, "Segoe UI", "Malgun Gothic", sans-serif;
+    background: var(--page); color: var(--text-primary); line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+  }
+  a { color: var(--series-1); }
+
+  .topbar {
+    position: sticky; top: 0; z-index: 20; background: var(--surface-1);
+    border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; gap: 12px; padding: 12px 20px; flex-wrap: wrap;
+  }
+  .brand { font-weight: 700; font-size: 17px; letter-spacing: -.02em; white-space: nowrap; }
+  .brand .dot { color: var(--series-6); }
+  .spacer { flex: 1; }
+  .btn {
+    border: 1px solid var(--border); background: var(--page); color: var(--text-primary);
+    padding: 9px 13px; font-size: 14px; border-radius: 10px; cursor: pointer; white-space: nowrap;
+  }
+  .btn:hover { border-color: var(--series-1); }
+
+  .wrap { max-width: 1120px; margin: 16px auto 60px; padding: 0 20px; }
+  .card {
+    background: var(--surface-1); border: 1px solid var(--border); border-radius: var(--radius);
+    box-shadow: var(--shadow); padding: 20px 22px; margin-bottom: 18px;
+  }
+  .section-title {
+    display: flex; align-items: center; gap: 10px; font-size: 15px; font-weight: 700;
+    letter-spacing: -.01em; margin: 0 0 6px; flex-wrap: wrap;
+  }
+  .section-title .accent { width: 4px; height: 16px; border-radius: 2px; background: var(--series-1); }
+  .sub { font-size: 13px; color: var(--text-muted); margin: 0 0 16px; }
+  .badge {
+    font-size: 11px; font-weight: 600; padding: 3px 8px; border-radius: 999px;
+    border: 1px solid var(--border); color: var(--text-secondary); background: var(--page);
+  }
+  .badge.warn { color: var(--warn); border-color: color-mix(in srgb, var(--warn) 45%, transparent); }
+  .badge.danger { color: var(--danger); border-color: color-mix(in srgb, var(--danger) 45%, transparent); }
+  .badge.good { color: var(--good); border-color: color-mix(in srgb, var(--good) 40%, transparent); }
+
+  /* ===== 히어로 — 경보 점수 ===== */
+  .hero { display: flex; flex-wrap: wrap; gap: 26px 40px; align-items: flex-start; }
+  .gauge { flex: 0 0 auto; text-align: center; width: 150px; }
+  .gauge .ring { position: relative; width: 150px; height: 150px; }
+  .gauge svg { display: block; }
+  .gauge .inner {
+    position: absolute; inset: 0; display: flex; flex-direction: column;
+    align-items: center; justify-content: center; gap: 0;
+  }
+  .gauge .score { font-size: 40px; font-weight: 800; letter-spacing: -.03em; line-height: 1.05;
+    font-variant-numeric: tabular-nums; }
+  .gauge .grade { font-size: 14px; font-weight: 700; }
+  .gauge .rank { font-size: 11.5px; color: var(--text-muted); margin-top: 6px; line-height: 1.35; }
+  .hero-body { flex: 1 1 380px; min-width: 300px; }
+  .hero-body h2 { margin: 0 0 6px; font-size: 20px; letter-spacing: -.02em; }
+  .hero-body .phase-note { color: var(--text-secondary); font-size: 14px; margin: 0 0 14px; }
+  .idx { display: flex; flex-wrap: wrap; gap: 14px 28px; margin-bottom: 14px; }
+  .idx .k { font-size: 12px; color: var(--text-muted); display: block; }
+  .idx .v { font-size: 17px; font-weight: 700; font-variant-numeric: tabular-nums; }
+  .up { color: var(--up); } .down { color: var(--down); }
+
+  .callout {
+    border-left: 3px solid var(--warn); background: color-mix(in srgb, var(--warn) 8%, transparent);
+    padding: 11px 14px; border-radius: 0 8px 8px 0; font-size: 13.5px; margin: 12px 0 0;
+  }
+  .callout.danger { border-left-color: var(--danger); background: color-mix(in srgb, var(--danger) 8%, transparent); }
+  .callout strong { font-weight: 700; }
+
+  /* ===== 네 축 ===== */
+  .axes { display: grid; gap: 14px; }
+  .axis-row { display: grid; grid-template-columns: 86px 1fr 52px; gap: 12px; align-items: center; }
+  .axis-name { font-size: 13.5px; font-weight: 600; display: flex; align-items: center; gap: 7px; }
+  .swatch { width: 10px; height: 10px; border-radius: 3px; flex: none; }
+  .track { height: 22px; background: var(--page); border: 1px solid var(--border); border-radius: 6px; overflow: hidden; position: relative; }
+  .fill { height: 100%; border-radius: 5px 0 0 5px; }
+  .axis-val { font-size: 15px; font-weight: 700; text-align: right; font-variant-numeric: tabular-nums; }
+  .axis-meta { grid-column: 2 / 4; font-size: 11.5px; color: var(--text-muted); margin-top: -8px; }
+  .axis-row.out .track { opacity: .45; }
+  .axis-row.out .axis-name { color: var(--text-muted); }
+
+  /* ===== 표 ===== */
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  th, td { padding: 8px 10px; text-align: right; border-bottom: 1px solid var(--border); font-variant-numeric: tabular-nums; }
+  th:first-child, td:first-child { text-align: left; font-variant-numeric: normal; }
+  thead th { font-size: 11.5px; color: var(--text-muted); font-weight: 600; white-space: nowrap; }
+  tbody tr.best { background: color-mix(in srgb, var(--series-1) 7%, transparent); }
+  tbody tr.best td:first-child::after { content: " ◀ 지금 쓰는 점수"; font-size: 11px; color: var(--series-1); font-weight: 600; }
+  .pos { color: var(--good); } .neg { color: var(--danger); }
+  .tbl-wrap { overflow-x: auto; }
+
+  /* ===== 차트 ===== */
+  .chart { position: relative; height: 210px; margin-top: 6px; }
+  .chart.tall { height: 260px; }
+  .legend { display: flex; flex-wrap: wrap; gap: 6px 16px; font-size: 12px; color: var(--text-secondary); margin-top: 10px; }
+  .legend span { display: inline-flex; align-items: center; gap: 6px; }
+  .legend i { width: 12px; height: 3px; border-radius: 2px; display: inline-block; }
+
+  /* ===== 시나리오 ===== */
+  .scen-tabs { display: flex; gap: 6px; margin-bottom: 14px; flex-wrap: wrap; }
+  .scen-tabs .btn.on { background: var(--series-1); color: #fff; border-color: transparent; font-weight: 600; }
+  .scen-grid { display: grid; gap: 10px; }
+  .scen-row { display: grid; grid-template-columns: 78px 1fr 130px; gap: 12px; align-items: center; }
+  .scen-name { font-size: 13.5px; font-weight: 600; }
+  .scen-bars { position: relative; height: 26px; }
+  .scen-bar { position: absolute; left: 0; height: 11px; border-radius: 0 3px 3px 0; }
+  .scen-bar.cond { top: 0; }
+  .scen-bar.base { top: 14px; opacity: .42; }
+  .scen-num { font-size: 12.5px; text-align: right; font-variant-numeric: tabular-nums; color: var(--text-secondary); }
+  .scen-num b { font-size: 15px; color: var(--text-primary); }
+
+  /* ===== 문장 ===== */
+  .note { border-left: 3px solid var(--border); padding: 2px 0 2px 14px; margin: 0 0 14px; }
+  .note .kind { font-size: 11px; font-weight: 700; color: var(--text-muted); letter-spacing: .04em; }
+  .note .text { font-size: 14px; }
+  .note.k-한계 { border-left-color: var(--warn); }
+  .note.k-별도경고 { border-left-color: var(--danger); }
+  .note.k-판정 { border-left-color: var(--series-1); }
+  .note b { font-weight: 700; }
+
+  details { margin-top: 12px; }
+  summary { cursor: pointer; font-size: 13px; color: var(--text-secondary); }
+  summary:hover { color: var(--series-1); }
+  .kv { display: grid; grid-template-columns: repeat(auto-fill, minmax(178px, 1fr)); gap: 10px 18px; margin-top: 12px; }
+  .kv .k { font-size: 11.5px; color: var(--text-muted); display: block; }
+  .kv .v { font-size: 14px; font-weight: 600; font-variant-numeric: tabular-nums; }
+  .foot { font-size: 12px; color: var(--text-muted); margin-top: 26px; line-height: 1.7; }
+  .err { padding: 40px 20px; text-align: center; color: var(--text-secondary); }
+  .err code { background: var(--surface-1); padding: 2px 6px; border-radius: 5px; }
+
+  @media print {
+    .topbar, .scen-tabs, .btn { display: none !important; }
+    body { background: #fff; }
+    .card { break-inside: avoid; box-shadow: none; border-color: #ddd; }
+    details { display: none; }
+  }
+  @media (max-width: 560px) {
+    .wrap { padding: 0 16px; }
+    .axis-row { grid-template-columns: 74px 1fr 44px; }
+    .scen-row { grid-template-columns: 62px 1fr 108px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="brand">시장 변동성 경보<span class="dot">.</span></div>
+  <span class="badge" id="asofBadge">—</span>
+  <div class="spacer"></div>
+  <button class="btn" id="copyBtn" title="고객 응대 문장을 클립보드로">📋 문장 복사</button>
+  <button class="btn" onclick="window.print()" title="A4 리포트로 저장·인쇄">🖨 인쇄</button>
+  <button class="btn" id="themeBtn" title="라이트/다크">◐</button>
+</div>
+
+<div class="wrap" id="root">
+  <div class="err" id="loading">자료를 읽는 중…</div>
+</div>
+
+<script src="../../vendor/chart.umd.js"></script>
+<script>
+(function () {
+  "use strict";
+
+  var DATA = "../../data/volatility/latest.json";
+  var AX = [
+    { key: "volatility",  ko: "변동성",   css: "--series-6" },
+    { key: "compression", ko: "가격압축", css: "--series-3" },
+    { key: "momentum",    ko: "모멘텀",   css: "--series-5" },
+    { key: "flow",        ko: "자금수급", css: "--series-1" }
+  ];
+  var SCEN = [
+    { key: "crash", ko: "급락" },
+    { key: "down",  ko: "약세" },
+    { key: "flat",  ko: "횡보" },
+    { key: "up",    ko: "상승" }
+  ];
+
+  var D = null, charts = {}, scenH = "10";
+
+  /* ---------- 잡일 ---------- */
+  function cv(name) { return getComputedStyle(document.documentElement).getPropertyValue(name).trim(); }
+  function esc(s) { return String(s == null ? "" : s).replace(/[&<>"']/g, function (c) {
+    return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]; }); }
+  /* **굵게** 만 허용한다 — 자료에서 온 글에 태그를 열어 주지 않는다 */
+  function md(s) { return esc(s).replace(/\*\*([^*]+)\*\*/g, "<b>$1</b>"); }
+  function num(x, d) { return x == null ? "—" : Number(x).toFixed(d == null ? 1 : d); }
+  function pct(x, d) { return x == null ? "—" : Number(x).toFixed(d == null ? 1 : d) + "%"; }
+  function sgn(x, d) { if (x == null) return "—";
+    return (x > 0 ? "+" : "") + Number(x).toFixed(d == null ? 1 : d); }
+  function man(x) {                      /* 억원을 읽기 좋게 */
+    if (x == null) return "—";
+    if (Math.abs(x) >= 10000) return (x / 10000).toFixed(1) + "조원";
+    return Math.round(x).toLocaleString("ko-KR") + "억원";
+  }
+  /* 색을 두 갈래로 쓴다.
+     pcls — **가격·수익률**. 국내 관례대로 오르면 붉고 내리면 푸르다.
+     qcls — **모델 성적**(리프트 따위). 나으면 초록, 못하면 붉다.
+     한 화면에서 붉은색이 「올랐다」와 「나쁘다」를 오가면 읽는 사람이 헷갈리므로
+     갈래를 갈라 두고, 어느 쪽이든 부호(+/−)를 늘 같이 적어 색에만 기대지 않는다. */
+  function pcls(x) { return x == null ? "" : (x > 0 ? "up" : (x < 0 ? "down" : "")); }
+  function qcls(x) { return x == null ? "" : (x > 0 ? "pos" : (x < 0 ? "neg" : "")); }
+
+  /* ---------- 자료 ----------
+     한 파일 판(make_volatility_offline.py)에는 자료가 안에 심겨 있다. 그것이
+     있으면 먼저 그리고, 인터넷이 되는 자리에서는 더 새 파일이 오면 덮는다. */
+  var embedded = document.getElementById("vol-embedded");
+  if (embedded) {
+    try { D = JSON.parse(embedded.textContent); render(); } catch (e) {}
+  }
+
+  fetch(DATA, { cache: "no-cache" })
+    .then(function (r) { if (!r.ok) throw new Error("HTTP " + r.status); return r.json(); })
+    .then(function (j) {
+      if (D && j.asof <= D.asof && j.generated_at_kst <= D.generated_at_kst) return;
+      D = j;
+      Object.keys(charts).forEach(function (k) { charts[k].destroy(); });
+      charts = {};
+      render();
+    })
+    .catch(function (e) {
+      if (D) return;               /* 심어 둔 자료로 이미 그렸으면 조용히 넘어간다 */
+      document.getElementById("root").innerHTML =
+        '<div class="err"><p><b>자료를 읽지 못했습니다.</b> (' + esc(e.message) + ')</p>' +
+        '<p>저장소 뿌리에서 <code>python3 -m http.server 8000</code> 을 띄운 뒤 ' +
+        '<code>http://localhost:8000/docs/volatility/</code> 로 여십시오.</p>' +
+        '<p>자료가 아직 없다면 <code>python3 scripts/build_vol_history.py &amp;&amp; ' +
+        'python3 scripts/build_volatility.py</code> 를 먼저 돌리십시오.</p></div>';
+    });
+
+  /* ---------- 그리기 ---------- */
+  function render() {
+    var s = D.score, ix = D.index;
+    document.getElementById("asofBadge").textContent = D.asof + " 기준";
+    document.title = "시장 변동성 경보 " + D.asof + " · " + num(s.total, 0) + "점";
+
+    var html = "";
+    html += heroCard(s, ix);
+    html += axesCard(s);
+    html += timelineCard();
+    html += scenarioCard();
+    html += backtestCard();
+    html += indicatorCard();
+    html += notesCard();
+    html += footer();
+    document.getElementById("root").innerHTML = html;
+
+    drawCharts();
+    bind();
+  }
+
+  /* ===== 1. 히어로 ===== */
+  function heroCard(s, ix) {
+    var gradeCls = ({ "위험": "danger", "경계": "danger", "주의": "warn",
+                      "관심": "", "안정": "good" })[s.grade] || "";
+    var col = s.grade === "위험" || s.grade === "경계" ? "var(--danger)"
+            : s.grade === "주의" ? "var(--warn)" : "var(--series-1)";
+    var warn = "";
+    (D.notes || []).forEach(function (n) {
+      if (n.kind === "별도경고") warn += '<div class="callout danger">' + md(n.text) + "</div>";
+    });
+
+    return '<div class="card">' +
+      '<div class="hero">' +
+        '<div class="gauge">' +
+          '<div class="ring">' + gaugeSvg(s.total, col) +
+            '<div class="inner">' +
+              '<div class="score" style="color:' + col + '">' + num(s.total, 0) + '</div>' +
+              '<div class="grade" style="color:' + col + '">' + esc(s.grade || "등급 미정") + '</div>' +
+            '</div>' +
+          '</div>' +
+          '<div class="rank">' + (s.self_pct == null ? "자리 못 잼"
+              : "두 해 이력의<br>상위 " + num(100 - s.self_pct, 0) + "%") + '</div>' +
+        '</div>' +
+        '<div class="hero-body">' +
+          '<h2>' + esc(s.phase_label || "국면 미정") +
+            ' <span class="badge ' + (s.alert ? "danger" : "") + '">' +
+              (s.alert ? "경보 발동" : "경보 아님") + '</span>' +
+            ' <span class="badge">문턱 ' + num(s.alert_threshold, 0) + '점</span></h2>' +
+          '<p class="phase-note">' + esc(s.phase_note || "") + '</p>' +
+          '<div class="idx">' +
+            '<div><span class="k">' + esc(ix.name) + '</span><span class="v">' +
+              Number(ix.close).toLocaleString("ko-KR", { maximumFractionDigits: 2 }) + '</span></div>' +
+            '<div><span class="k">전일 대비</span><span class="v ' +
+              (ix.change_pct >= 0 ? "up" : "down") + '">' + sgn(ix.change_pct, 2) + '%</span></div>' +
+            '<div><span class="k">20일 실현변동성(연율)</span><span class="v">' +
+              pct(D.indicators.rv20, 1) + '</span></div>' +
+            '<div><span class="k">60일 고점 대비</span><span class="v ' +
+              pcls(D.indicators.drawdown60) + '">' + pct(D.indicators.drawdown60, 1) + '</span></div>' +
+          '</div>' +
+          warn +
+        '</div>' +
+      '</div>' +
+      '<details><summary>이 점수가 무엇인가</summary>' +
+        '<p style="font-size:13.5px;color:var(--text-secondary)">' + md(s.meaning_note || "") + '</p>' +
+        '<p style="font-size:13.5px;color:var(--text-secondary)">' + md(s.grade_note || "") + '</p>' +
+      '</details>' +
+    '</div>';
+  }
+
+  function gaugeSvg(v, col) {
+    var R = 62, C = 2 * Math.PI * R, frac = Math.max(0, Math.min(100, v || 0)) / 100;
+    return '<svg width="150" height="150" viewBox="0 0 150 150" role="img" aria-label="경보 점수 ' +
+      num(v, 0) + '점 (100점 만점)">' +
+      '<circle cx="75" cy="75" r="' + R + '" fill="none" stroke="' + cv("--grid") + '" stroke-width="12"/>' +
+      '<circle cx="75" cy="75" r="' + R + '" fill="none" stroke="' + col + '" stroke-width="12" ' +
+        'stroke-linecap="round" stroke-dasharray="' + (C * frac) + ' ' + C + '" ' +
+        'transform="rotate(-90 75 75)"/></svg>';
+  }
+
+  /* ===== 2. 네 축 ===== */
+  function axesCard(s) {
+    var w = s.adaptive_weights || {}, unfit = s.adaptive_unfitted || [];
+    var rows = AX.map(function (a) {
+      var o = s.axes[a.key] || {}, v = o.score;
+      var wt = w[a.key];
+      var inScore = wt != null;
+      var meta;
+      if (!inScore) {
+        meta = unfit.indexOf(a.key) >= 0
+          ? "표본이 모자라 <b>점수에 들어가지 않음</b> — 따로 보십시오"
+          : "값이 없어 점수에 들어가지 않음";
+      } else if (wt <= 0.001) {
+        meta = "가중치 <b>0%</b> — 재어 보니 이후 낙폭과 상관이 없었음";
+      } else {
+        meta = "가중치 " + num(wt * 100, 0) + "%";
+      }
+      var parts = Object.keys(o.parts || {}).map(function (k) {
+        return esc(k) + " " + num(o.parts[k], 0);
+      }).join(" · ");
+      return '<div class="axis-row' + (inScore && wt > 0.001 ? "" : " out") + '">' +
+          '<div class="axis-name"><span class="swatch" style="background:' + cv(a.css) + '"></span>' +
+            esc(a.ko) + '</div>' +
+          '<div class="track"><div class="fill" style="width:' + (v == null ? 0 : v) +
+            '%;background:' + cv(a.css) + '"></div></div>' +
+          '<div class="axis-val">' + num(v, 0) + '</div>' +
+          '<div class="axis-meta">' + meta + (parts ? " · <span title=\"구성요소\">" + parts + "</span>" : "") + '</div>' +
+        '</div>';
+    }).join("");
+
+    var fit = (s.adaptive_fit || {}).detail || {};
+    var fitRows = AX.map(function (a) {
+      var f = fit[a.key] || {};
+      return "<tr><td>" + esc(a.ko) + "</td><td>" + (f.rho == null ? "—" : num(f.rho, 3)) +
+        "</td><td>" + (f.n == null ? "—" : f.n) + "</td><td>" +
+        (w[a.key] == null ? "점수에 없음" : num(w[a.key] * 100, 0) + "%") + "</td>" +
+        "<td style=\"text-align:left;color:var(--text-muted);font-size:12px\">" +
+        esc(f.note || "") + "</td></tr>";
+    }).join("");
+
+    return '<div class="card">' +
+      '<div class="section-title"><span class="accent"></span>네 축 분해</div>' +
+      '<p class="sub">각 축은 0(평온)~100(위태). 모두 <b>제 과거 안에서의 자리</b>로 잰 값이라 ' +
+        '지수 수준이 달라져도 뜻이 흔들리지 않습니다.</p>' +
+      '<div class="axes">' + rows + '</div>' +
+      '<details><summary>가중치는 어떻게 정해지는가 — 축별 순위상관</summary>' +
+        '<p style="font-size:13px;color:var(--text-secondary)">' + md(s.adaptive_note || "") + '</p>' +
+        '<div class="tbl-wrap"><table><thead><tr><th>축</th><th>순위상관 ρ</th><th>표본</th>' +
+        '<th>가중치</th><th>비고</th></tr></thead><tbody>' + fitRows + '</tbody></table></div>' +
+        '<p style="font-size:12px;color:var(--text-muted);margin-top:10px">' +
+        'ρ 는 「그 축의 점수가 높던 날 뒤에 실제로 더 많이 밀렸는가」의 순위상관입니다. ' +
+        '0 이하면 가중치 0 이 됩니다. 균등가중으로 셈한 점수는 ' + num(s.equal_total, 0) + '점입니다.</p>' +
+      '</details>' +
+    '</div>';
+  }
+
+  /* ===== 3. 타임라인 ===== */
+  function timelineCard() {
+    return '<div class="card">' +
+      '<div class="section-title"><span class="accent"></span>지수와 경보 점수</div>' +
+      '<p class="sub">위는 지수, 아래는 경보 점수와 그날의 문턱. 붉은 세로줄은 실제 급락 사건이 ' +
+        '시작된 날(10거래일 안에 10% 이상 밀린 자리)입니다.</p>' +
+      '<div class="chart tall"><canvas id="cIdx"></canvas></div>' +
+      '<div class="legend"><span><i style="background:' + cv("--text-primary") + '"></i>지수 종가</span>' +
+        '<span><i style="background:' + cv("--danger") + '"></i>급락 사건 시작</span></div>' +
+      '<div class="chart" style="margin-top:18px"><canvas id="cScore"></canvas></div>' +
+      '<div class="legend"><span><i style="background:' + cv("--series-1") + '"></i>경보 점수</span>' +
+        '<span><i style="background:' + cv("--text-muted") + '"></i>문턱(상위 20%)</span></div>' +
+      '<div class="chart" style="margin-top:18px"><canvas id="cAxes"></canvas></div>' +
+      '<div class="legend">' + AX.map(function (a) {
+        return '<span><i style="background:' + cv(a.css) + '"></i>' + esc(a.ko) + '</span>'; }).join("") +
+      '</div>' +
+    '</div>';
+  }
+
+  /* ===== 4. 시나리오 ===== */
+  function scenarioCard() {
+    var hs = Object.keys(D.scenarios.horizons || {}).sort(function (a, b) { return a - b; });
+    var tabs = hs.map(function (h) {
+      return '<button class="btn scen-tab' + (h === scenH ? " on" : "") + '" data-h="' + h + '">' +
+        h + '거래일</button>'; }).join("");
+    return '<div class="card">' +
+      '<div class="section-title"><span class="accent"></span>시나리오 확률' +
+        '<span class="badge">같은 국면이던 과거를 센 것</span></div>' +
+      '<p class="sub">오늘과 <b>같은 국면(' + esc(D.score.phase_label) + ')</b>이던 과거 날들의 ' +
+        '이후 실제 결과 분포입니다. 모델이 지어낸 확률이 아니라 <b>센 빈도</b>이고, ' +
+        '옅은 막대는 아무 날이나 집었을 때(무조건부)입니다.</p>' +
+      '<div class="scen-tabs">' + tabs + '</div>' +
+      '<div id="scenBody"></div>' +
+    '</div>';
+  }
+
+  function scenBody() {
+    var h = (D.scenarios.horizons || {})[scenH];
+    if (!h) return '<p class="sub">이 기간의 자료가 없습니다.</p>';
+    if (h.insufficient) {
+      return '<div class="callout">같은 국면이던 과거가 <b>' + h.n + '일</b>뿐이라 확률을 내지 않습니다 ' +
+        '(최소 ' + h.min_sample + '일). 표본이 얕을 때 확률을 적는 것이 이 일에서 가장 흔한 거짓말이라 ' +
+        '비워 둡니다 — 스냅숏이 쌓이면 저절로 채워집니다.</div>';
+    }
+    var t = h.thresholds_pct || {};
+    var bars = SCEN.map(function (sc) {
+      var p = h.prob[sc.key], b = (h.baseline.prob || {})[sc.key], lift = (h.lift || {})[sc.key];
+      var col = sc.key === "crash" ? cv("--danger") : sc.key === "down" ? cv("--series-3")
+              : sc.key === "up" ? cv("--series-2") : cv("--text-muted");
+      var range = sc.key === "crash" ? "저가 " + num(t.crash, 1) + "% 이하"
+                : sc.key === "down" ? num(t.down, 1) + "% 이하"
+                : sc.key === "up" ? num(t.up, 1) + "% 이상" : "±" + num(t.up, 1) + "% 안";
+      return '<div class="scen-row">' +
+        '<div class="scen-name">' + esc(sc.ko) + '<br><span style="font-size:11px;color:var(--text-muted);font-weight:400">' +
+          range + '</span></div>' +
+        '<div class="scen-bars">' +
+          '<div class="scen-bar cond" style="width:' + p + '%;background:' + col + '"></div>' +
+          '<div class="scen-bar base" style="width:' + b + '%;background:' + cv("--text-muted") + '"></div>' +
+        '</div>' +
+        '<div class="scen-num"><b>' + num(p, 0) + '%</b> <span style="color:var(--text-muted)">vs ' +
+          num(b, 0) + '%</span><br><span class="' + qcls(lift) + '">' + sgn(lift, 1) + '%p</span></div>' +
+      '</div>';
+    }).join("");
+
+    return '<div class="scen-grid">' + bars + '</div>' +
+      '<div class="kv" style="margin-top:18px">' +
+        '<div><span class="k">같은 국면 표본</span><span class="v">' + h.n + '일</span></div>' +
+        '<div><span class="k">전체 표본</span><span class="v">' + h.baseline.n + '일</span></div>' +
+        '<div><span class="k">1σ (' + scenH + '거래일)</span><span class="v">' + pct(t.sigma, 1) + '</span></div>' +
+        '<div><span class="k">수익률 중앙값</span><span class="v ' + pcls(h.ret.median) + '">' +
+          sgn(h.ret.median, 2) + '%</span></div>' +
+        '<div><span class="k">사분위 구간</span><span class="v">' + sgn(h.ret.q25, 1) + ' ~ ' +
+          sgn(h.ret.q75, 1) + '%</span></div>' +
+        '<div><span class="k">최악 / 최선</span><span class="v">' + sgn(h.ret.worst, 1) + ' / ' +
+          sgn(h.ret.best, 1) + '%</span></div>' +
+      '</div>' +
+      '<p class="sub" style="margin-top:14px">경계는 고정 퍼센트가 아니라 <b>오늘 변동성의 σ 배</b>입니다 — ' +
+        '연 44%로 흔들리는 장에서 ±3%는 아무 일도 아니고, 잠잠한 장에서는 큰 사건이기 때문입니다.</p>';
+  }
+
+  /* ===== 5. 백테스트 ===== */
+  function backtestCard() {
+    return '<div class="card">' +
+      '<div class="section-title"><span class="accent"></span>백테스트 — 이 경보는 쓸 만한가</div>' +
+      '<p class="sub">두 가지 잣대로 각각 잽니다. <b>절대 낙폭</b>은 고객이 실제로 겪는 것이고, ' +
+        '<b>σ 기준</b>은 「변동성이 높아졌다」는 몫을 빼고도 실력이 남는지를 묻는 더 엄한 시험입니다. ' +
+        '두 답이 다르므로 <b>둘 다 싣습니다</b>.</p>' +
+      cmpTable("abs", "절대 낙폭 기준 — 10거래일 안에 10% 이상 하락") +
+      cmpTable("sigma", "σ 기준 — 10거래일 안에 −1.5σ 이하") +
+      sweepTable() +
+      eventTable() +
+    '</div>';
+  }
+
+  function cmpTable(mode, title) {
+    var rows = (D.compare || {})[mode] || [];
+    if (!rows.length) return "";
+    var body = rows.map(function (r) {
+      if (r.insufficient) {
+        return '<tr><td>' + esc(r.label) + '</td><td colspan="6" style="text-align:left;color:var(--text-muted)">' +
+          esc(r.reason || "잴 수 없음") + '</td></tr>';
+      }
+      return '<tr' + (r.label === "적응 가중" ? ' class="best"' : "") + '>' +
+        '<td>' + esc(r.label) + '</td>' +
+        '<td>' + r.signal_days + '일 (' + num(r.signal_share_pct, 0) + '%)</td>' +
+        '<td>' + r.events + '건</td>' +
+        '<td>' + r.caught + '건</td>' +
+        '<td><b>' + num(r.recall_pct, 0) + '%</b></td>' +
+        '<td>' + num(r.precision_pct, 1) + '% <span style="color:var(--text-muted)">/ ' +
+          num(r.baseline_pct, 1) + '%</span></td>' +
+        '<td class="' + qcls(r.lift_pp) + '"><b>' + sgn(r.lift_pp, 1) + '%p</b></td></tr>';
+    }).join("");
+    var first = rows[0] || {};
+    return '<h3 style="font-size:13.5px;margin:20px 0 4px">' + esc(title) + '</h3>' +
+      '<p style="font-size:12px;color:var(--text-muted);margin:0 0 8px">평가 구간 ' +
+        esc(first.from || "") + " ~ " + esc(first.to || "") + ' (' + (first.scored_sessions || 0) +
+        '세션). <b>다섯 줄 모두 같은 구간·같은 경보 빈도</b>로 재어야 견줄 수 있습니다.</p>' +
+      '<div class="tbl-wrap"><table><thead><tr><th>점수</th><th>경보일</th><th>급락</th><th>포착</th>' +
+      '<th>포착률</th><th>정밀도 / 기준선</th><th>리프트</th></tr></thead><tbody>' + body +
+      '</tbody></table></div>';
+  }
+
+  function sweepTable() {
+    var rows = (D.sweep || {}).abs || [];
+    if (!rows.length) return "";
+    var body = rows.map(function (r) {
+      return '<tr' + (r.alert_pct === (D.config || {}).alert_pct ? ' class="best"' : "") + '>' +
+        '<td>' + esc(r.top_share) + '</td><td>' + r.signal_days + '일 (' + num(r.signal_share_pct, 0) + '%)</td>' +
+        '<td>' + num(r.recall_pct, 0) + '%</td><td>' + num(r.precision_pct, 1) + '%</td>' +
+        '<td class="' + qcls(r.lift_pp) + '">' + sgn(r.lift_pp, 1) + '%p</td>' +
+        '<td>' + (r.median_lead_sessions == null ? "—" : r.median_lead_sessions + "일") + '</td></tr>';
+    }).join("");
+    return '<details open><summary>경보를 얼마나 자주 울릴 것인가 — 문턱 훑기 (절대 낙폭 기준)</summary>' +
+      '<p style="font-size:12px;color:var(--text-muted);margin:8px 0">문턱을 낮추면 더 많이 잡지만 ' +
+        '헛울림도 늘어납니다. 어디에 설지는 쓰는 사람이 정할 일이라 표로 냅니다.</p>' +
+      '<div class="tbl-wrap"><table><thead><tr><th>문턱</th><th>경보일</th><th>포착률</th>' +
+      '<th>정밀도</th><th>리프트</th><th>중앙 선행</th></tr></thead><tbody>' + body +
+      '</tbody></table></div></details>';
+  }
+
+  function eventTable() {
+    var ev = (((D.backtest || {}).abs || {}).detection || {}).events || [];
+    if (!ev.length) return "";
+    var body = ev.map(function (e) {
+      return "<tr><td>" + esc(e.start_date) + "</td><td>" + esc(e.trough_date) + "</td>" +
+        '<td class="down">' + num(e.drop_pct, 1) + "%</td><td>" + num(e.score_at_start, 0) + "</td>" +
+        "<td>" + (e.caught ? '<span class="badge good">잡음</span>' : '<span class="badge danger">놓침</span>') +
+        "</td><td>" + (e.lead_sessions == null ? "—" : e.lead_sessions + "일 전") + "</td></tr>";
+    }).join("");
+    return '<details><summary>실제 급락 사건 하나하나 (' + ev.length + '건)</summary>' +
+      '<div class="tbl-wrap"><table><thead><tr><th>시작</th><th>저점</th><th>낙폭</th>' +
+      '<th>시작일 점수</th><th>판정</th><th>선행</th></tr></thead><tbody>' + body +
+      '</tbody></table></div></details>';
+  }
+
+  /* ===== 6. 지표 원본 ===== */
+  function indicatorCard() {
+    var I = D.indicators;
+    var g = function (label, val) {
+      return '<div><span class="k">' + esc(label) + '</span><span class="v">' + val + '</span></div>'; };
+    return '<div class="card">' +
+      '<div class="section-title"><span class="accent"></span>지표 원본</div>' +
+      '<p class="sub">화면에 찍히는 수는 모두 여기서 왔습니다. ' +
+        '<code>scripts/verify_volatility.py</code> 가 이 값들을 원자료에서 다시 셈해 대조합니다.</p>' +
+      '<div class="kv">' +
+        g("실현변동성 5일", pct(I.rv5)) + g("실현변동성 20일", pct(I.rv20)) +
+        g("실현변동성 60일", pct(I.rv60)) + g("단기/장기 비", num(I.rv_ratio, 2)) +
+        g("ATR(14)", num(I.atr14, 1)) + g("ATR 비율", pct(I.atrp, 2)) +
+        g("볼린저 밴드폭", pct(I.bbw, 2)) + g("%b", num(I.pctb, 2)) +
+        g("스퀴즈", I.squeeze ? (I.squeeze_days + "일째") : "아님") +
+        g("NR7", I.nr7 ? "예" : "아니오") +
+        g("RSI(14)", num(I.rsi14)) + g("MACD 히스토그램", num(I.macd_hist, 2)) +
+        g("20일 이격도", sgn(I.disparity20, 2) + "%") + g("60일 이격도", sgn(I.disparity60, 2) + "%") +
+        g("20일 수익률", sgn(I.ret20, 2) + "%") + g("60일 고점 대비", pct(I.drawdown60)) +
+        g("VIX", num(I.vix, 2)) +
+        g("외국인 5일 누적", man(I.foreign_cum5)) + g("외국인 20일 누적", man(I.foreign_cum20)) +
+        g("기관 5일 누적", man(I.inst_cum5)) +
+        g("고객예탁금", man(I.deposit)) + g("예탁금 20일 증감", sgn(I.deposit_chg20, 2) + "%") +
+        g("신용잔고", man(I.credit)) + g("신용 20일 증감", sgn(I.credit_chg20, 2) + "%") +
+      '</div>' +
+      '<details><summary>이 지수는 무엇이며 얼마나 믿을 수 있는가</summary>' + validationHtml() + '</details>' +
+    '</div>';
+  }
+
+  function validationHtml() {
+    var v = (D.index || {}).validation || {};
+    return '<p style="font-size:13px;color:var(--text-secondary)">' + esc(D.index.basis || "") + '</p>' +
+      '<div class="kv">' +
+        '<div><span class="k">일간수익률 상관 (실제 코스피 대비)</span><span class="v">' +
+          num(v.corr_daily_return, 4) + '</span></div>' +
+        '<div><span class="k">추적오차 (일간)</span><span class="v">' + pct(v.tracking_error_pct, 3) + '</span></div>' +
+        '<div><span class="k">겹쳐 본 세션</span><span class="v">' + (v.return_pairs || 0) + '일</span></div>' +
+        '<div><span class="k">프록시 / 실제 연율변동성</span><span class="v">' +
+          pct(v.proxy_ann_vol_pct) + ' / ' + pct(v.real_ann_vol_pct) + '</span></div>' +
+        '<div><span class="k">판정</span><span class="v">' + esc(v.verdict || "—") + '</span></div>' +
+        '<div><span class="k">구성 종목</span><span class="v">' + (v.members || 0) + '종목</span></div>' +
+      '</div>' +
+      '<p style="font-size:12px;color:var(--text-muted);margin-top:12px">' +
+        '실제 코스피 일봉을 두 해치 받아 둔 곳이 없어, 시가총액 상위 코스피 종목을 가중해 ' +
+        '대신 세운 계열입니다. 겹치는 날로 재어 보니 일간수익률 상관이 ' + num(v.corr_daily_return, 4) +
+        ' 였습니다. 다만 프록시 쪽 변동성이 ' + pct(v.proxy_ann_vol_pct) + ' 로 실제 ' +
+        pct(v.real_ann_vol_pct) + ' 보다 조금 높습니다 — 상위 종목에 쏠려 있기 때문이고, ' +
+        '이 도구가 내는 변동성 수치는 그만큼 높게 나옵니다.</p>';
+  }
+
+  /* ===== 7. 문장 ===== */
+  function notesCard() {
+    var body = (D.notes || []).map(function (n) {
+      return '<div class="note k-' + esc(n.kind) + '">' +
+        '<div class="kind">' + esc(n.kind) + '</div>' +
+        '<div class="text">' + md(n.text) + '</div></div>';
+    }).join("");
+    return '<div class="card">' +
+      '<div class="section-title"><span class="accent"></span>고객 커뮤니케이션' +
+        '<span class="badge">수치에서 조립한 문장</span></div>' +
+      '<p class="sub">문장을 짓는 모델은 파이프라인에 없습니다. 아래는 위에 찍힌 수를 틀에 끼워 만든 것이고, ' +
+        '틀마다 근거가 되는 수가 <code>latest.json</code> 의 <code>notes[].basis</code> 에 함께 실립니다.</p>' +
+      body +
+    '</div>';
+  }
+
+  function footer() {
+    var c = D.coverage || {}, cf = D.config || {};
+    return '<div class="foot">' +
+      '자료 기준 <b>' + esc(D.asof) + '</b> · 만든 때 ' + esc(D.generated_at_kst) + ' KST<br>' +
+      '지수 ' + c.index_sessions + '세션(' + esc((c.source || {}).index_from) + '~) · ' +
+      '점수가 매겨진 날 ' + c.scored_sessions + '일(' + esc(c.scored_from) + '~) · ' +
+      '수급 ' + c.flow_sessions + '일 · VIX ' + c.vix_sessions + '일<br>' +
+      md(c.note || "") + '<br>' +
+      '경보 문턱 상위 ' + (100 - (cf.alert_pct || 80)) + '% · 가중치 재측정 ' + cf.refit_every +
+      '세션마다 · 확률 최소표본 ' + cf.min_sample + '일<br>' +
+      '<b>이 화면은 투자 권유가 아닙니다.</b> 경보는 대비를 앞당기는 장치이고, 백테스트 표본은 두 해· ' +
+      '급락 여덟 건뿐입니다. 판단의 근거로 삼기 전에 백테스트 칸의 한계를 먼저 읽으십시오.' +
+    '</div>';
+  }
+
+  /* ===== 차트 ===== */
+  function drawCharts() {
+    if (typeof Chart === "undefined") return;
+    var T = D.timeline || [];
+    var labels = T.map(function (r) { return r.d; });
+    var tick = { color: cv("--text-muted"), font: { size: 11 }, maxRotation: 0, autoSkip: true, maxTicksLimit: 8 };
+    var gridc = { color: cv("--grid"), drawTicks: false };
+    var base = {
+      responsive: true, maintainAspectRatio: false,
+      interaction: { mode: "index", intersect: false },
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          backgroundColor: cv("--surface-1"), titleColor: cv("--text-primary"),
+          bodyColor: cv("--text-secondary"), borderColor: cv("--border"), borderWidth: 1,
+          padding: 10, displayColors: true
+        }
+      },
+      scales: {
+        x: { grid: { display: false }, ticks: tick, border: { color: cv("--axis") } },
+        y: { grid: gridc, ticks: tick, border: { display: false } }
+      },
+      elements: { point: { radius: 0, hoverRadius: 5, hitRadius: 12 }, line: { borderWidth: 2 } }
+    };
+    var clone = function (o) { return JSON.parse(JSON.stringify(o)); };
+
+    /* 급락 사건 시작일에 세로줄 — 주석 플러그인 없이 직접 그린다 */
+    var evDates = {};
+    ((((D.backtest || {}).abs || {}).detection || {}).events || []).forEach(function (e) {
+      evDates[e.start_date] = e; });
+    var evLines = {
+      id: "evLines",
+      beforeDatasetsDraw: function (ch) {
+        var xs = ch.scales.x, a = ch.chartArea, g = ch.ctx;
+        g.save(); g.strokeStyle = cv("--danger"); g.globalAlpha = .45; g.lineWidth = 1.5;
+        labels.forEach(function (d, i) {
+          if (!evDates[d]) return;
+          var x = xs.getPixelForValue(i);
+          g.beginPath(); g.moveTo(x, a.top); g.lineTo(x, a.bottom); g.stroke();
+        });
+        g.restore();
+      }
+    };
+
+    var o1 = clone(base); o1.plugins = base.plugins;
+    o1.plugins.tooltip.callbacks = { afterBody: function (it) {
+      var d = labels[it[0].dataIndex], e = evDates[d];
+      return e ? ["급락 시작 — 저점 " + e.trough_date + " (" + e.drop_pct + "%)"] : [];
+    } };
+    charts.idx = new Chart(document.getElementById("cIdx"), {
+      type: "line",
+      data: { labels: labels, datasets: [{
+        label: "지수 종가", data: T.map(function (r) { return r.c; }),
+        borderColor: cv("--text-primary"), backgroundColor: "transparent", tension: .15 }] },
+      options: o1, plugins: [evLines]
+    });
+
+    var o2 = clone(base);
+    o2.scales.y.min = 0; o2.scales.y.max = 100;
+    charts.score = new Chart(document.getElementById("cScore"), {
+      type: "line",
+      data: { labels: labels, datasets: [
+        { label: "경보 점수", data: T.map(function (r) { return r.total; }),
+          borderColor: cv("--series-1"), backgroundColor: "transparent", tension: .2, spanGaps: true },
+        { label: "문턱", data: T.map(function (r) { return r.cut; }),
+          borderColor: cv("--text-muted"), borderDash: [5, 4], borderWidth: 1.5,
+          backgroundColor: "transparent", tension: .2, spanGaps: true }
+      ] }, options: o2, plugins: [evLines]
+    });
+
+    var o3 = clone(base);
+    o3.scales.y.min = 0; o3.scales.y.max = 100;
+    charts.axes = new Chart(document.getElementById("cAxes"), {
+      type: "line",
+      data: { labels: labels, datasets: AX.map(function (a, k) {
+        return { label: a.ko,
+          data: T.map(function (r) { return r[{ volatility: "v", compression: "c_",
+                                                momentum: "m", flow: "f" }[a.key]]; }),
+          borderColor: cv(a.css), backgroundColor: "transparent",
+          borderWidth: a.key === "flow" ? 2.5 : 2, tension: .25, spanGaps: true };
+      }) }, options: o3
+    });
+  }
+
+  /* ===== 상호작용 ===== */
+  function bind() {
+    document.getElementById("scenBody").innerHTML = scenBody();
+    Array.prototype.forEach.call(document.querySelectorAll(".scen-tab"), function (b) {
+      b.onclick = function () {
+        scenH = b.getAttribute("data-h");
+        Array.prototype.forEach.call(document.querySelectorAll(".scen-tab"), function (x) {
+          x.classList.toggle("on", x === b); });
+        document.getElementById("scenBody").innerHTML = scenBody();
+      };
+    });
+    document.getElementById("copyBtn").onclick = function () {
+      var t = (D.notes || []).map(function (n) {
+        return "[" + n.kind + "] " + n.text.replace(/\*\*/g, ""); }).join("\n\n");
+      t = "시장 변동성 경보 · " + D.asof + " 기준\n\n" + t +
+          "\n\n※ 투자 권유가 아닙니다. 경보는 대비를 앞당기는 장치이며 방향을 맞히는 장치가 아닙니다.";
+      var b = document.getElementById("copyBtn"), o = b.textContent;
+      var done = function () {
+        b.textContent = "✓ 복사했습니다"; setTimeout(function () { b.textContent = o; }, 1600); };
+      /* 클립보드를 막아 둔 환경(사내 정책·구형 브라우저)이 있다. 그때 아무 일도
+         일어나지 않으면 눌러도 안 되는 단추가 되므로, 골라 둔 글상자를 대신 연다. */
+      var fallback = function () {
+        var ta = document.createElement("textarea");
+        ta.value = t;
+        ta.style.cssText = "position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);" +
+          "width:min(620px,92vw);height:46vh;z-index:99;padding:14px;font-size:13px;" +
+          "border-radius:10px;border:1px solid var(--border);background:var(--surface-1);" +
+          "color:var(--text-primary)";
+        document.body.appendChild(ta); ta.select();
+        ta.onblur = function () { ta.remove(); };
+        b.textContent = "Ctrl+C 로 복사하십시오";
+        setTimeout(function () { b.textContent = o; }, 2600);
+      };
+      try {
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard.writeText(t).then(done, fallback);
+        } else { fallback(); }
+      } catch (e) { fallback(); }
+    };
+  }
+
+  /* 테마 — 바꾸면 차트 색도 다시 세운다 */
+  var themeBtn = document.getElementById("themeBtn");
+  themeBtn.onclick = function () {
+    var now = document.documentElement.getAttribute("data-theme");
+    var dark = now ? now === "dark"
+      : window.matchMedia("(prefers-color-scheme: dark)").matches;
+    document.documentElement.setAttribute("data-theme", dark ? "light" : "dark");
+    try { localStorage.setItem("vol-theme", dark ? "light" : "dark"); } catch (e) {}
+    if (D) { Object.keys(charts).forEach(function (k) { charts[k].destroy(); }); render(); }
+  };
+  try {
+    var saved = localStorage.getItem("vol-theme");
+    if (saved) document.documentElement.setAttribute("data-theme", saved);
+  } catch (e) {}
+})();
+</script>
+</body>
+</html>

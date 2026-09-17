@@ -1,0 +1,124 @@
+name: 변동성 모델 갱신
+
+# 네 축(변동성·가격압축·모멘텀·자금수급)을 합친 경보 점수를 다시 셈해 커밋한다.
+#
+# **시세 수집 뒤에 돌아야 한다.** 이 모델이 먹는 것은 두 갈래인데,
+#   가격 일봉  ← kr100-data 가지 (kr100-quotes 워크플로가 채운다)
+#   수급·예탁금 ← data/market/<날짜>.json (market-data 워크플로가 채운다)
+# 둘 다 다른 워크플로의 산출물이라, 그것들이 끝나기 전에 돌면 어제 자료로 셈한
+# 오늘 판을 내게 된다. 그래서 예약을 국내 마감 수집(15:40·16:00 KST)보다
+# 넉넉히 뒤인 17:20 에 두고, 늦어질 때를 대비해 한 번 더 건다.
+#
+# 예약은 제때 돌지 않는다(같은 저장소에서 95분 지연을 겪었다). 급하면
+# workflow_dispatch 로 직접 부른다.
+
+on:
+  schedule:
+    # 17:20 KST = 08:20 UTC — 국내 마감 수집이 끝난 뒤
+    - cron: '20 8 * * 1-5'
+    # 위가 늦을 때를 대비한 두 번째 — 18:10 KST = 09:10 UTC
+    - cron: '10 9 * * 1-5'
+
+  # 자료가 갱신되면 따라 돈다. 시세 판이 새로 들어왔는데 모델이 어제 것이면
+  # 화면 위아래가 서로 다른 날을 가리키게 된다.
+  push:
+    branches: [main]
+    paths:
+      - 'data/market/latest.json'
+      - 'scripts/vol_lib.py'
+      - 'scripts/vol_backtest.py'
+      - 'scripts/build_vol_history.py'
+      - 'scripts/build_volatility.py'
+
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: volatility
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      # 일봉은 기본 가지에 없다 — 이력을 남기지 않는 kr100-data 가지에 있다.
+      # checkout 은 기본 가지만 받아 오므로 여기서 따로 받는다(얕게).
+      - name: 종목 일봉 가지 받기
+        run: |
+          for i in 1 2 3 4; do
+            if git fetch --depth 1 origin kr100-data; then
+              echo "받음 (시도 $i)"; exit 0
+            fi
+            echo "실패 — 다시 시도한다 ($i/4)"; sleep $((i * i * 2))
+          done
+          echo "::error::kr100-data 가지를 받지 못했습니다"
+          exit 1
+
+      - name: 이력 모으기
+        run: python3 scripts/build_vol_history.py
+
+      - name: 모델 셈하기
+        run: python3 scripts/build_volatility.py
+
+      # **검산이 산출물을 막는다.** 어긋난 수가 실린 판을 커밋하지 않는다.
+      - name: 재검산
+        run: |
+          python3 scripts/verify_volatility.py | tee data/volatility/verify.txt
+          echo "exit=${PIPESTATUS[0]}"
+          exit ${PIPESTATUS[0]}
+
+      - name: 커밋
+        run: |
+          git config user.name  'github-actions[bot]'
+          git config user.email 'github-actions[bot]@users.noreply.github.com'
+          git add data/volatility
+          if git diff --staged --quiet; then
+            echo "변경 없음"
+            exit 0
+          fi
+          git commit -m "변동성 모델 갱신 $(TZ=Asia/Seoul date '+%Y-%m-%d %H:%M KST')"
+
+          # 밀리면 되받아서 다시 민다 — 시세·리포트 수집과 겹칠 자리가 있다.
+          # 서로 다른 파일을 건드리므로 되받기는 거의 언제나 깨끗하다.
+          for i in 1 2 3 4 5; do
+            if git push; then
+              echo "밀어 넣음 (시도 $i)"; exit 0
+            fi
+            echo "거절됨 — 되받아 다시 시도한다 ($i/5)"
+            if ! git pull --rebase --no-edit origin main; then
+              git rebase --abort || true
+              echo "::error::되받기 충돌 — 손으로 확인하십시오"
+              exit 1
+            fi
+            sleep $((i * 5))
+          done
+          echo "::error::다섯 번 밀어 봤지만 모두 거절됐습니다"
+          exit 1
+
+      - name: 요약
+        if: always()
+        run: |
+          if [ -f data/volatility/latest.json ]; then
+            python3 - <<'PY'
+          import json
+          d = json.load(open('data/volatility/latest.json', encoding='utf-8'))
+          s, c = d['score'], d['coverage']
+          print("::notice::%s — 경보 %.0f점(%s)%s · 국면 %s"
+                % (d['asof'], s['total'], s['grade'],
+                   ', 경보 발동' if s['alert'] else '', s['phase_label']))
+          if s.get('adaptive_unfitted'):
+              print("::warning::표본이 모자라 점수에 못 든 축: %s (수급 자료 %d 일)"
+                    % (', '.join(s['adaptive_unfitted']), c['flow_sessions']))
+          n = (d['backtest']['abs']['detection'] or {}).get('events_in_scored_range', 0)
+          if n < 20:
+              print("::warning::급락 표본이 %d 건뿐입니다 — 백테스트 성적의 오차가 큽니다" % n)
+          PY
+          fi
