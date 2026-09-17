@@ -202,30 +202,44 @@ jobs:
           const g={}; new Function('window', require('fs').readFileSync('data/fund-doc-pages.js','utf8'))(g);
           const D=g.FUND_DOC_PAGES, keys=D.anchors.map(a=>a.key), rows=Object.values(D.rows), n=rows.length;
           if (!n) { console.log('::error::쪽 지도가 한 건도 없습니다 — 판독이 되지 않았습니다'); process.exit(1); }
-          const pct=k=>100*rows.filter(r=>r[keys.indexOf(k)+1]).length/n;
+          const at=(r,k)=>r[keys.indexOf(k)+1];
           const MUST=['object','target','strategy','risk','trade','fee','tax'];
-          const SOFT=['summary','part1','part2','manager'];
+          const SOFT=['summary','part1','manager'];
           const what=k=>(D.anchors.find(a=>a.key===k)||{}).what||k;
           let broken=0, weak=[];
           console.log('쪽 지도 '+n+'건');
-          console.log('[필수 — 창구가 짚는 자리]');
+
+          /* ★ 본문 자리는 제2부를 찾은 종목에서만 셀 수 있다 ★
+             본문은 제2부부터 찾으므로, 제2부를 못 찾으면 일곱 자리가 **함께** 빈다.
+             전체를 분모로 삼으면 일곱 자리가 똑같은 숫자로 내려앉고, 「세 자리 넘게
+             85% 아래면 서식이 바뀐 것」 이라는 규칙에 통째로 걸린다. 실제로 그 일이
+             났다 — 일곱 자리가 모두 77% 로 같았고(=제2부 77%), 차례는 0건으로
+             멀쩡한 지도였는데 점검이 막아 두 시간을 버렸다.
+             원인이 하나(제2부)인데 일곱 번 센 것이다. 제2부를 찾은 종목만 분모로
+             삼으면 규칙이 깨졌는지 아닌지가 그대로 보인다. */
+          const p2=rows.filter(r=>at(r,'part2'));
+          const cov=100*p2.length/n;
+          console.log('[본문 시작 — 제2부] '+p2.length+'/'+n+'건 ('+cov.toFixed(0)+'%)');
+          if (cov < 40) { console.log('::error::제2부를 '+cov.toFixed(0)+'% 밖에 못 찾았습니다 — 찾는 규칙이 깨졌습니다'); broken++; }
+          else if (cov < 85) console.log('::warning title=제2부를 못 찾은 종목::'+(100-cov).toFixed(0)+'% 는 본문 쪽이 통째로 빈칸입니다 (틀린 쪽은 아닙니다)');
+
+          console.log('[필수 — 창구가 짚는 자리 · 제2부를 찾은 '+p2.length+'건 기준]');
           for (const k of MUST) {
-            const p=pct(k);
+            const p=p2.length?100*p2.filter(r=>at(r,k)).length/p2.length:0;
             console.log('  '+what(k).padEnd(22)+p.toFixed(0)+'%');
             if (p < 40) { console.log('::error::'+what(k)+' 가 '+p.toFixed(0)+'% 뿐입니다 — 이 자리의 규칙이 깨졌습니다'); broken++; }
             else if (p < 85) weak.push(what(k)+' '+p.toFixed(0)+'%');
           }
           console.log('[보조 — 못 찾으면 그 종목만 빈칸]');
-          for (const k of SOFT) console.log('  '+what(k).padEnd(22)+pct(k).toFixed(0)+'%');
+          for (const k of SOFT) console.log('  '+what(k).padEnd(22)+(100*rows.filter(r=>at(r,k)).length/n).toFixed(0)+'%');
           if (weak.length) console.log('::warning title=덜 잡힌 자리::'+weak.join(' / ')+' — 그 종목만 빈칸입니다. 제목 변형을 probe_fund_title.mjs 로 확인해 채우십시오');
-          if (weak.length >= 3) { console.log('::error::필수 자리 '+weak.length+'곳이 85% 아래입니다 — 서식이 통째로 바뀐 것으로 보입니다'); broken++; }
+          if (weak.length >= 3) { console.log('::error::제2부를 찾고도 필수 자리 '+weak.length+'곳이 85% 아래입니다 — 서식이 통째로 바뀐 것으로 보입니다'); broken++; }
 
           /* ★ 차례 검산 — 적중률이 못 보는 것 ★
              적중률은 「무언가 찾았나」 만 센다. 실제로 요약 구간의 절 제목을 본문으로
              잘못 짚은 2,924종목이 자리마다 99~100% 로 이 점검을 통과했다. 창구가
              「보수는 6쪽」 하고 편 곳에 요약 한 줄만 있는 값이었다.
              본문 자리는 반드시 제2부 뒤에 온다 — 앞이면 그건 요약 구간이다. */
-          const at=(r,k)=>r[keys.indexOf(k)+1];
           const BODY=['object','target','strategy','risk','trade','fee','tax'];
           const withP2=rows.filter(r=>at(r,'part2'));
           let outOfOrder=0;
