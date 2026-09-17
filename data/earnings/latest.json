@@ -49,6 +49,7 @@
  "secBench": [
   {
    "sec": "정보기술",
+   "secEn": "Information Technology",
    "median": 23.55,
    "n": 13,
    "nOwn": 9,
@@ -111,14 +112,63 @@
    ]
   },
   {
-   "sec": "커뮤니케이션",
-   "median": 14.15,
-   "n": 7,
+   "sec": "커뮤니케이션 · 인터넷",
+   "secEn": "Comm. Services · Internet",
+   "median": 23.45,
+   "n": 8,
    "nOwn": 3,
-   "nPeer": 4,
-   "lo": 7.51,
-   "hi": 25.39,
+   "nPeer": 5,
+   "lo": 10.9,
+   "hi": 33.19,
    "members": [
+    [
+     "PINS",
+     10.9
+    ],
+    [
+     "MTCH",
+     13.99
+    ],
+    [
+     "META",
+     20.8
+    ],
+    [
+     "NFLX",
+     22.34
+    ],
+    [
+     "EA",
+     24.56
+    ],
+    [
+     "GOOGL",
+     25.39
+    ],
+    [
+     "RDDT",
+     26.11
+    ],
+    [
+     "SPOT",
+     33.19
+    ]
+   ]
+  },
+  {
+   "sec": "커뮤니케이션 · 통신미디어",
+   "secEn": "Comm. Services · Telecom & Media",
+   "median": 9.66,
+   "n": 7,
+   "nOwn": 0,
+   "nPeer": 7,
+   "lo": 2.87,
+   "hi": 14.15,
+   "members": [
+    [
+     "CHTR",
+     2.87
+    ],
     [
      "CMCSA",
      7.51
@@ -132,25 +182,22 @@
      9.66
     ],
     [
+     "FOXA",
+     11.34
+    ],
+    [
+     "TMUS",
+     13.84
+    ],
+    [
      "DIS",
      14.15
-    ],
-    [
-     "META",
-     20.8
-    ],
-    [
-     "NFLX",
-     22.34
-    ],
-    [
-     "GOOGL",
-     25.39
     ]
    ]
   },
   {
    "sec": "경기소비재",
+   "secEn": "Consumer Discretionary",
    "median": 21.73,
    "n": 7,
    "nOwn": 3,
@@ -190,6 +237,7 @@
   },
   {
    "sec": "헬스케어",
+   "secEn": "Health Care",
    "median": 22.37,
    "n": 7,
    "nOwn": 3,
@@ -229,6 +277,7 @@
   },
   {
    "sec": "금융",
+   "secEn": "Financials",
    "median": 13.76,
    "n": 6,
    "nOwn": 2,
@@ -264,6 +313,7 @@
   },
   {
    "sec": "필수소비재",
+   "secEn": "Consumer Staples",
    "median": 21.11,
    "n": 9,
    "nOwn": 2,
@@ -311,6 +361,7 @@
   },
   {
    "sec": "산업재",
+   "secEn": "Industrials",
    "median": 27.77,
    "n": 8,
    "nOwn": 1,
@@ -354,6 +405,7 @@
   },
   {
    "sec": "에너지",
+   "secEn": "Energy",
    "median": 13.51,
    "n": 5,
    "nOwn": 1,
@@ -526,6 +578,8 @@
    "valabs": 81.5,
    "relpe": 0.77,
    "secmed": 23.55,
+   "vgrp": "정보기술",
+   "vgrpEn": "Information Technology",
    "appeal": 73.7,
    "appealgap": null,
    "valnote": ""
@@ -580,6 +634,8 @@
    "valabs": 60.8,
    "relpe": 1.06,
    "secmed": 23.55,
+   "vgrp": "정보기술",
+   "vgrpEn": "Information Technology",
    "appeal": 59.8,
    "appealgap": null,
    "valnote": ""
@@ -634,6 +690,8 @@
    "valabs": 32.3,
    "relpe": 1.46,
    "secmed": 23.55,
+   "vgrp": "정보기술",
+   "vgrpEn": "Information Technology",
    "appeal": 27.5,
    "appealgap": null,
    "valnote": ""
@@ -682,11 +740,13 @@
    "per_en": "CY26 Q2",
    "fpe": 25.39,
    "peg": 1.93,
-   "valscore": 14.0,
+   "valscore": 61.3,
    "valabs": 59.4,
-   "relpe": 1.79,
-   "secmed": 14.15,
-   "appeal": 36.9,
+   "relpe": 1.08,
+   "secmed": 23.45,
+   "vgrp": "커뮤니케이션 · 인터넷",
+   "vgrpEn": "Comm. Services · Internet",
+   "appeal": 51.1,
    "appealgap": null,
    "valnote": ""
   },
@@ -739,6 +799,8 @@
    "valabs": 49.2,
    "relpe": 1.32,
    "secmed": 21.73,
+   "vgrp": "경기소비재",
+   "vgrpEn": "Consumer Discretionary",
    "appeal": 44.5,
    "appealgap": null,
    "valnote": ""
@@ -789,11 +851,13 @@
    "per_en": "CY26 Q2",
    "fpe": 20.8,
    "peg": 1.04,
-   "valscore": 35.3,
+   "valscore": 74.0,
    "valabs": 73.3,
-   "relpe": 1.47,
-   "secmed": 14.15,
-   "appeal": 38.2,
+   "relpe": 0.89,
+   "secmed": 23.45,
+   "vgrp": "커뮤니케이션 · 인터넷",
+   "vgrpEn": "Comm. Services · Internet",
+   "appeal": 49.8,
    "appealgap": null,
    "valnote": ""
   },
@@ -845,6 +909,8 @@
    "valabs": 65.0,
    "relpe": 1.0,
    "secmed": 23.55,
+   "vgrp": "정보기술",
+   "vgrpEn": "Information Technology",
    "appeal": 90.0,
    "appealgap": null,
    "valnote": ""
@@ -898,6 +964,8 @@
    "valabs": 0.0,
    "relpe": 8.68,
    "secmed": 21.73,
+   "vgrp": "경기소비재",
+   "vgrpEn": "Consumer Discretionary",
    "appeal": 36.5,
    "appealgap": null,
    "valnote": "선행 P/E 188.57 은 이익 기저가 얕아 나온 값 — 이익이 회복되면 크게 움직인다."
@@ -952,6 +1020,8 @@
    "valabs": 7.2,
    "relpe": 1.81,
    "secmed": 23.55,
+   "vgrp": "정보기술",
+   "vgrpEn": "Information Technology",
    "appeal": 44.1,
    "appealgap": null,
    "valnote": ""
@@ -1005,6 +1075,8 @@
    "valabs": 78.5,
    "relpe": 0.81,
    "secmed": 23.55,
+   "vgrp": "정보기술",
+   "vgrpEn": "Information Technology",
    "appeal": 56.9,
    "appealgap": null,
    "valnote": ""
@@ -1058,6 +1130,8 @@
    "valabs": 83.5,
    "relpe": 0.74,
    "secmed": 23.55,
+   "vgrp": "정보기술",
+   "vgrpEn": "Information Technology",
    "appeal": 59.0,
    "appealgap": null,
    "valnote": ""
@@ -1111,6 +1185,8 @@
    "valabs": 0.0,
    "relpe": 4.16,
    "secmed": 23.55,
+   "vgrp": "정보기술",
+   "vgrpEn": "Information Technology",
    "appeal": 69.6,
    "appealgap": null,
    "valnote": ""
@@ -1165,6 +1241,8 @@
    "valabs": null,
    "relpe": null,
    "secmed": 23.55,
+   "vgrp": "정보기술",
+   "vgrpEn": "Information Technology",
    "appeal": null,
    "appealgap": "valuation",
    "valnote": "직전 12개월 적자(매출 570.3억달러, 손실 -112.9억달러, EPS -2.30달러)로 P/E 가 성립하지 않는다. 선행 P/E 도 제공사 화면에서 확인되지 않았다."
@@ -1216,6 +1294,8 @@
    "valabs": 100.0,
    "relpe": 0.3,
    "secmed": 23.55,
+   "vgrp": "정보기술",
+   "vgrpEn": "Information Technology",
    "appeal": null,
    "appealgap": "momentum",
    "valnote": "PEG 0.04 는 예상 이익 증가율이 극단적으로 커서 나온 값 — 배수 자체로 읽지 말 것."
@@ -1265,11 +1345,13 @@
    "per_en": "CY26 Q2",
    "fpe": 22.34,
    "peg": 1.05,
-   "valscore": 28.0,
+   "valscore": 70.0,
    "valabs": 68.7,
-   "relpe": 1.58,
-   "secmed": 14.15,
-   "appeal": 31.9,
+   "relpe": 0.95,
+   "secmed": 23.45,
+   "vgrp": "커뮤니케이션 · 인터넷",
+   "vgrpEn": "Comm. Services · Internet",
+   "appeal": 44.5,
    "appealgap": null,
    "valnote": ""
   },
@@ -1321,6 +1403,8 @@
    "valabs": 91.0,
    "relpe": 1.09,
    "secmed": 13.76,
+   "vgrp": "금융",
+   "vgrpEn": "Financials",
    "appeal": 68.1,
    "appealgap": null,
    "valnote": ""
@@ -1373,6 +1457,8 @@
    "valabs": 91.2,
    "relpe": 1.08,
    "secmed": 13.76,
+   "vgrp": "금융",
+   "vgrpEn": "Financials",
    "appeal": 72.6,
    "appealgap": null,
    "valnote": ""
@@ -1427,6 +1513,8 @@
    "valabs": 51.0,
    "relpe": 1.26,
    "secmed": 22.37,
+   "vgrp": "헬스케어",
+   "vgrpEn": "Health Care",
    "appeal": 80.2,
    "appealgap": null,
    "valnote": ""
@@ -1480,6 +1568,8 @@
    "valabs": 68.6,
    "relpe": 1.0,
    "secmed": 22.37,
+   "vgrp": "헬스케어",
+   "vgrpEn": "Health Care",
    "appeal": 50.5,
    "appealgap": null,
    "valnote": ""
@@ -1534,6 +1624,8 @@
    "valabs": 63.5,
    "relpe": 1.08,
    "secmed": 22.37,
+   "vgrp": "헬스케어",
+   "vgrpEn": "Health Care",
    "appeal": 49.8,
    "appealgap": null,
    "valnote": ""
@@ -1588,6 +1680,8 @@
    "valabs": 28.1,
    "relpe": 1.69,
    "secmed": 21.11,
+   "vgrp": "필수소비재",
+   "vgrpEn": "Consumer Staples",
    "appeal": 39.5,
    "appealgap": null,
    "valnote": ""
@@ -1640,6 +1734,8 @@
    "valabs": 5.3,
    "relpe": 2.05,
    "secmed": 21.11,
+   "vgrp": "필수소비재",
+   "vgrpEn": "Consumer Staples",
    "appeal": 16.4,
    "appealgap": null,
    "valnote": ""
@@ -1692,6 +1788,8 @@
    "valabs": 70.5,
    "relpe": 1.0,
    "secmed": 21.73,
+   "vgrp": "경기소비재",
+   "vgrpEn": "Consumer Discretionary",
    "appeal": 41.3,
    "appealgap": null,
    "valnote": ""
@@ -1746,6 +1844,8 @@
    "valabs": 50.5,
    "relpe": 1.02,
    "secmed": 27.77,
+   "vgrp": "산업재",
+   "vgrpEn": "Industrials",
    "appeal": 73.7,
    "appealgap": null,
    "valnote": ""
@@ -1797,6 +1897,8 @@
    "valabs": 94.7,
    "relpe": 1.02,
    "secmed": 13.51,
+   "vgrp": "에너지",
+   "vgrpEn": "Energy",
    "appeal": null,
    "appealgap": "momentum",
    "valnote": ""
