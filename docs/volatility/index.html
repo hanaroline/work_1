@@ -267,6 +267,12 @@
     try { D = JSON.parse(embedded.textContent); render(); } catch (e) {}
   }
 
+  /* 심어 둔 자료로 이미 그렸고 file:// 로 열렸으면 **더 받으러 가지 않는다.**
+     브라우저가 file:// 에서의 fetch 를 막으므로 될 리 없는 시도이고, 실패가
+     콘솔에 오류로 남는다 — 고객에게 건네는 한 파일 판에 붉은 줄이 찍힐 까닭이
+     없다. 연기 시험(scripts/check_volatility_page.mjs)이 이걸 잡았다. */
+  if (D && location.protocol === "file:") return;
+
   fetch(DATA, { cache: "no-cache" })
     .then(function (r) { if (!r.ok) throw new Error("HTTP " + r.status); return r.json(); })
     .then(function (j) {
