@@ -21,6 +21,7 @@ on:
     paths:
       - 'scripts/probe_fund_doc_pages.mjs'
       - 'scripts/probe_fund_pages_sample.mjs'
+      - 'scripts/probe_fund_tax.mjs'
       - '.github/workflows/fund-doc-pages-probe.yml'
 
 permissions:
@@ -46,5 +47,10 @@ jobs:
 
       # 1차 조사(구조 파악)는 이미 답을 줬다 — 핵심요약설명서는 없고, 쪽 구성은
       # 종목마다 다르다. 이제 표준 서식 번호 제목으로 적중률을 본다.
+      # 표본에서 과세만 0% 였다. 두 번 고쳐도 0% 라면 제목 형태가 내 짐작과
+      # 다른 것이다 — 세 번째로 추측하지 않고 원문을 찍어 본다.
+      - name: 과세 제목 원문 확인
+        run: node scripts/probe_fund_tax.mjs 8
+
       - name: 표본 적중률
         run: node scripts/probe_fund_pages_sample.mjs "${{ inputs.count || '40' }}"
