@@ -71,24 +71,58 @@ if (!ctgMap.length) throw new Error('분류대응을 못 받았습니다.');
 const ctgOf = new Map(ctgMap.filter((r) => r.F16013).map((r) => [r.F16013, String(r.ctgInfo || '')]));
 const domestic = new Set(ctgMap.filter((r) => r.F16013 && r.domestic_flag === 1).map((r) => r.F16013));
 
-const r = await page.evaluate(
-  async ({ url, headers }) => {
-    const res = await fetch(url, { headers, credentials: 'include' });
-    return { status: res.status, text: await res.text() };
-  },
-  { url: `${BASE}/user/etp/getEtpScreenerMobileList3`, headers: HDRS },
-);
-if (r.status !== 200) throw new Error(`스크리너 HTTP ${r.status}`);
-const j = JSON.parse(r.text);
-if (j.success !== true) throw new Error(`스크리너 success=${j.success}`);
-const rows = j.results || [];
-console.log(`스크리너 ${rows.length}행`);
+// 재시도를 넣는다. 앞선 확인에서 이 원천은 `TypeError: Failed to fetch` 를
+// 심심찮게 뱉었다(열 번 중 네 번). 한 번만 부르고 죽게 두었더니 실제로 그
+// 한 번에 걸려 아무것도 못 남겼다. 간헐적인 실패는 실패가 아니라 재시도할
+// 일이다.
+//
+// 그리고 거르는 일을 **브라우저 안에서** 한다. 7,220행을 통째로 넘기면 수
+// MB짜리 문자열이 경계를 건너는데, 그 자체가 실패 거리다. 필요한 칸만 추려
+// 1,540행으로 줄여 넘긴다.
+const PICK = [
+  'F16013', 'F16002', 'F33961', 'F15001', 'F15301', 'F15028', 'F15023',
+  'F15015', 'F34763', 'F16017', 'DIV_DATE', 'DIV_RATE', 'REC_DIV_DATE',
+  'REC_DIV_AMT', 'MONTH_CODE', 'SCALE_CODE', 'ETP_TYPE',
+];
 
-const dom = rows.filter((x) => domestic.has(x.F16013));
-console.log(`그중 국내 상장 ${dom.length}종목`);
-if (dom.length < 1000) throw new Error(`국내가 ${dom.length}종목뿐입니다 — 응답 모양이 바뀌었는지 보십시오.`);
+let raw = null;
+let lastErr = null;
+for (let attempt = 1; attempt <= 5; attempt++) {
+  try {
+    raw = await page.evaluate(
+      async ({ url, headers, keep, pick }) => {
+        const res = await fetch(url, { headers, credentials: 'include' });
+        if (res.status !== 200) return { error: `HTTP ${res.status}` };
+        const j = await res.json();
+        if (j.success !== true) return { error: `success=${j.success}` };
+        const all = j.results || [];
+        const keepSet = new Set(keep);
+        // 국내만 남기고, 필요한 칸만 추린다. 넘어가는 양을 줄이는 것이
+        // 여기서 제일 중요한 일이다.
+        const slim = all
+          .filter((x) => keepSet.has(x.F16013))
+          .map((x) => Object.fromEntries(pick.map((k) => [k, x[k] ?? null])));
+        return { total: all.length, rows: slim };
+      },
+      { url: `${BASE}/user/etp/getEtpScreenerMobileList3`, headers: HDRS, keep: [...domestic], pick: PICK },
+    );
+    if (raw?.error) throw new Error(raw.error);
+    break;
+  } catch (e) {
+    lastErr = e;
+    raw = null;
+    console.log(`  스크리너 ${attempt}/5 실패: ${String(e.message).slice(0, 80)}`);
+    if (attempt < 5) await new Promise((r) => setTimeout(r, 3000 * attempt));
+  }
+}
+if (!raw) throw new Error(`스크리너를 다섯 번 불렀으나 실패했습니다: ${String(lastErr?.message).slice(0, 120)}`);
 
-const items = dom.map((x) => ({
+console.log(`스크리너 ${raw.total}행 · 그중 국내 상장 ${raw.rows.length}종목`);
+if (raw.rows.length < 1000) {
+  throw new Error(`국내가 ${raw.rows.length}종목뿐입니다 — 응답 모양이 바뀌었는지 보십시오.`);
+}
+
+const items = raw.rows.map((x) => ({
   code: x.F16013,
   name: x.F16002,
   manager: x.F33961,
@@ -108,6 +142,7 @@ const items = dom.map((x) => ({
   etpType: x.ETP_TYPE || null,
   ctgInfo: ctgOf.get(x.F16013) || '',
 }));
+const screenerRowCount = raw.total;
 
 fs.mkdirSync(path.dirname(OUT_DUMP), { recursive: true });
 fs.writeFileSync(OUT_DUMP, JSON.stringify({ when: new Date().toISOString(), count: items.length, items }, null, 2));
@@ -163,7 +198,7 @@ try {
 
 const findings = {
   when: new Date().toISOString(),
-  screenerRows: rows.length,
+  screenerRows: screenerRowCount,
   domesticRows: items.length,
   gateCounts,
   monthCodeTally: tallyMonthCode,
@@ -173,7 +208,7 @@ fs.writeFileSync(OUT_NOTE, JSON.stringify(findings, null, 2));
 
 if (process.env.GITHUB_STEP_SUMMARY) {
   const L = ['### 스크리너 한 번으로 얻은 것', ''];
-  L.push(`- 스크리너 **${rows.length}행** · 국내 상장 **${items.length}종목** (호출 1회)`);
+  L.push(`- 스크리너 **${screenerRowCount}행** · 국내 상장 **${items.length}종목** (호출 1회)`);
   L.push('');
   L.push('| 관문 | 통과 종목 |');
   L.push('|---|---:|');
