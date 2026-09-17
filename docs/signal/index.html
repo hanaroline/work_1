@@ -130,8 +130,10 @@
   td.num { font-variant-numeric: tabular-nums; }
 
   /* 축 막대 */
-  .axrow { display: grid; grid-template-columns: 82px 1fr 58px; gap: 10px; align-items: center;
+  .axrow { display: grid; grid-template-columns: 116px 1fr 52px; gap: 10px; align-items: center;
            font-size: 13px; padding: 4px 0; }
+  .axrow > span:first-child { white-space: nowrap; }
+  @media (max-width: 520px) { .axrow { grid-template-columns: 92px 1fr 46px; } }
   .axbar { position: relative; height: 16px; background: var(--grid); border-radius: 4px; }
   .axbar i { position: absolute; top: 0; height: 100%; border-radius: 4px; }
   .axbar b { position: absolute; top: -3px; bottom: -3px; left: 50%; width: 1px; background: var(--axis); }
@@ -222,7 +224,7 @@
     var h = '';
     Object.keys(AXLABEL).forEach(function (k) {
       var v = axes[k];
-      var w = weights && weights[k] != null ? ' · 가중 ' + Math.round(weights[k] * 100) + '%' : '';
+      var w = weights && weights[k] != null ? ' ' + Math.round(weights[k] * 100) + '%' : '';
       if (v == null) {
         h += '<div class="axrow"><span>' + AXLABEL[k] + '</span>' +
              '<span class="muted">자료가 모자라 셈하지 못했습니다</span><span>—</span></div>';
@@ -241,7 +243,9 @@
   /* ── 가격 차트 (인라인 SVG) ──────────────────────────────────── */
   function priceChart(ch, plan) {
     if (!ch || !ch.c || ch.c.length < 2) return '';
-    var W = 860, H = 260, PL = 52, PR = 66, PT = 12, PB = 22;
+    // PR 은 오른쪽 계획선 이름표(「현재 253,500」)가 들어갈 자리다. 66 으로
+    // 두었더니 여섯 자리 가격에서 잘렸다.
+    var W = 860, H = 260, PL = 52, PR = 96, PT = 12, PB = 22;
     var n = ch.c.length;
     var vals = [];
     ['c', 'bb_up', 'bb_lo', 'ma20', 'ma60'].forEach(function (k) {
@@ -458,8 +462,30 @@
              esc(v.plan.band_label || '—') + '</div>' : '') +
            planRows(v.plan) + '</div>';
     });
-    s += '</div><div class="note">같은 종목이 시계마다 다른 쪽을 가리키는 일은 흔합니다. ' +
-         '그 어긋남을 하나로 뭉개지 않고 그대로 둡니다.</div></div>';
+    s += '</div>';
+
+    /* 네 시계의 점수가 똑같이 나오는 일이 잦다(이 자료에서 종목의 84~99%).
+       버그가 아니라 **「이 종목에서는 어느 축이 앞일을 말해 주는지 가려내지
+       못했다」는 정직한 답**이다 — 그러면 가중치가 넷 다 사전값(25%)에 머물고,
+       시계는 가중치를 재는 데만 쓰이므로 점수가 같아진다.
+
+       그래도 네 칸을 말없이 나란히 두면 네 개의 독립된 판단처럼 보인다. 같을
+       때는 같다고 적는다. */
+    var scores = [5, 10, 20, 60].map(function (h) {
+      var v = hz[String(h)] || hz[h] || {};
+      return v.score == null ? null : Math.round(v.score * 10) / 10;
+    }).filter(function (x) { return x != null; });
+    var allSame = scores.length >= 2 && scores.every(function (x) { return x === scores[0]; });
+    if (allSame) {
+      s += '<div class="note"><b>네 시계의 점수가 같습니다.</b> 이 종목에서는 어느 축이 앞일을 ' +
+           '말해 주는지 가려내지 못해 가중치가 넷 다 사전값(25%)에 머물렀고, 시계는 가중치를 ' +
+           '재는 데만 쓰이므로 점수가 같아졌습니다. <b>시계에 따라 실제로 달라지는 것은 아래 ' +
+           '「같은 신호대였던 과거」의 분포입니다.</b></div>';
+    } else {
+      s += '<div class="note">같은 종목이 시계마다 다른 쪽을 가리키는 일은 흔합니다. ' +
+           '그 어긋남을 하나로 뭉개지 않고 그대로 둡니다.</div>';
+    }
+    s += '</div>';
 
     s += conflictNote(hz);
 
@@ -518,7 +544,10 @@
   /* ── 자료 ────────────────────────────────────────────────────── */
   function limitsHtml(bt) {
     if (!bt) return '<span class="muted">백테스트 파일(data/signals/backtest.json)을 읽지 못했습니다.</span>';
-    var h = bt.summary_ko ? '<div>' + esc(bt.summary_ko) + '</div>' : '';
+    // summary_ko 는 파이썬이 **강조**를 별표로 적어 보낸다. 시장 경고 쪽에는
+    // 변환이 있는데 여기만 빠져 있어 별표가 글자 그대로 찍혔다.
+    var h = bt.summary_ko
+      ? '<div>' + esc(bt.summary_ko).replace(/\*\*(.+?)\*\*/g, '<b>$1</b>') + '</div>' : '';
     var hz = (bt.horizons || {});
     var rows = '';
     Object.keys(hz).forEach(function (k) {
