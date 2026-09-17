@@ -99,19 +99,30 @@ def prepare(D, H, N, today, now, kind):
     prev_kr = d(KS["date"])
     prev_us = d(I["sp500"]["date"])
 
-    # 거래대금 — 며칠째 줄고 있는지 **세어서** 말한다
-    ser = D["index_daily"]["kospi"]["series"]
-    tv = [(r["date"], r["value_mn_krw"] / 1e6) for r in ser[:5]]
-    down = 0
-    for i in range(len(tv) - 1):
-        if tv[i][1] < tv[i + 1][1]:
-            down += 1
-        else:
-            break
-    word = {0: "", 1: "이틀 연속 감소", 2: "사흘 연속 감소", 3: "나흘 연속 감소",
-            4: "닷새 연속 감소"}.get(down, "감소")
-    if down == 0:
-        word = "전일 대비 증가" if len(tv) > 1 and tv[0][1] > tv[1][1] else "보합"
+    # 거래대금 — 며칠째 줄고 있는지 **세어서** 말한다.
+    #
+    # **원천이 빠져도 판은 나와야 합니다.** 2026-09-18 아침에 네이버 일별시세가
+    # HTTP 410(Gone) 으로 끊기자 이 줄이 KeyError 를 내며 빌더가 통째로
+    # 멈췄습니다 — 거래대금 한 항목 때문에 그날 브리핑이 아예 안 나오는
+    # 상태였습니다. 없으면 `—` 로 두고 나머지를 냅니다(지침의 graceful
+    # degradation). **0 으로 채우지 않습니다** — 0 은 「거래가 없었다」는
+    # 뜻이 되어 버립니다.
+    ser = ((D.get("index_daily") or {}).get("kospi") or {}).get("series") or []
+    tv = [(r["date"], r["value_mn_krw"] / 1e6) for r in ser[:5]
+          if r.get("value_mn_krw") is not None]
+    if not tv:
+        word = None                      # 표·문장에서 `—` 로 나갑니다
+    else:
+        down = 0
+        for i in range(len(tv) - 1):
+            if tv[i][1] < tv[i + 1][1]:
+                down += 1
+            else:
+                break
+        word = {0: "", 1: "이틀 연속 감소", 2: "사흘 연속 감소", 3: "나흘 연속 감소",
+                4: "닷새 연속 감소"}.get(down, "감소")
+        if down == 0:
+            word = "전일 대비 증가" if len(tv) > 1 and tv[0][1] > tv[1][1] else "보합"
 
     def _ten(b):
         """열에 몇이 올랐나. 등락 종목 수가 없으면 **지어내지 않고 None 을 낸다.**"""
@@ -144,10 +155,17 @@ def prepare(D, H, N, today, now, kind):
         "FX": FX, "byk": byk, "usdkrw": usdkrw,
         "today": today, "now": now, "kind": kind,
         "prev_kr": prev_kr, "prev_us": prev_us,
-        "turnover": tv, "turnover_word": ('<span class="down">' + word + '</span>' if down
-                                          else '<span class="flat">' + word + '</span>'),
-        "turnover_trail": " &rarr; ".join(n(x[1]) for x in reversed(tv[:4])),
-        "turnover_trail_en": "KRW " + n(tv[0][1]) + "tn",
+        # 거래대금 원천이 끊긴 날에는 네 자리 모두 `—` 로 나갑니다(위 주석 참고).
+        # **`turnover_now` 를 쓰십시오** — `turnover[0][1]` 을 직접 집으면
+        # 계열이 빈 날 IndexError 로 빌더가 멈춥니다(2026-09-18 에 그랬습니다).
+        "turnover": tv,
+        "turnover_now": (n(tv[0][1]) + "조") if tv else "&mdash;",
+        "turnover_word": ('<span class="na">&mdash;</span>' if word is None else
+                          '<span class="down">' + word + '</span>' if down
+                          else '<span class="flat">' + word + '</span>'),
+        "turnover_trail": (" &rarr; ".join(n(x[1]) for x in reversed(tv[:4]))
+                           if tv else "&mdash;"),
+        "turnover_trail_en": ("KRW " + n(tv[0][1]) + "tn") if tv else "&mdash;",
         "adv_per_ten": adv10, "adv_per_ten_q": adv10q,
         "fgn1": fgn1, "fgn2": fgn2,
         "kr_top": kr_top, "kr_bot": kr_bot, "us_top": us_top, "us_bot": us_bot,
@@ -483,7 +501,7 @@ def _fallbacks(C):
         ("<strong>국내.</strong> 코스피 " + pct(KS["change_pct"]) + " (" + n(KS["close"]) + "), 코스닥 "
          + pct(KQ["change_pct"]) + " 입니다. 오른 종목 " + n(ksb["advancing"], 0) + " 대 내린 종목 "
          + n(ksb["declining"], 0) + " 로 <strong>지수와 폭이 " + agree_ko
-         + " 쪽</strong>을 봤습니다 " + VF_MD + ". 거래대금은 " + n(C["turnover"][0][1]) + "조입니다.",
+         + " 쪽</strong>을 봤습니다 " + VF_MD + ". 거래대금은 " + C["turnover_now"] + "입니다.",
          "<strong>Korea.</strong> The KOSPI was " + pct(KS["change_pct"]) + " and the KOSDAQ "
          + pct(KQ["change_pct"]) + ", with " + n(ksb["advancing"], 0) + " advancers against "
          + n(ksb["declining"], 0) + " &mdash; <strong>index and breadth "

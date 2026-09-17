@@ -301,7 +301,7 @@ def sec_today(C):
              + " (" + _adr(kqb) + "배)",
              n(kqb.get("advancing"), 0) + " up, " + n(kqb.get("declining"), 0) + " down ("
              + _adr(kqb) + "x)"),
-        stat("거래대금", "Turnover", n(C["turnover"][0][1]) + "조", C["turnover_word"],
+        stat("거래대금", "Turnover", C["turnover_now"], C["turnover_word"],
              C["turnover_trail"], C["turnover_trail_en"]),
         stat("외국인 순매수", "Foreign net", eok(kf.get("foreign")), "",
              "기관 " + eok(kf.get("institution")) + " &middot; 개인 " + eok(kf.get("retail")),
