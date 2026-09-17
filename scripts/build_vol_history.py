@@ -63,7 +63,14 @@ def load_charts(ref=CHART_REF, local_dir=None):
         if ls.returncode != 0:
             log('· %s 가 없어 받아 온다' % ref)
             br = ref.split('/', 1)[-1]
-            fe = _git('fetch', '--depth', '1', 'origin', br)
+            # **refspec 을 손으로 적는다.** `git fetch origin <가지>` 만 하면
+            # FETCH_HEAD 만 서고 `origin/<가지>` 는 안 생길 수 있다 — 원격의
+            # fetch refspec 이 좁을 때 그렇고, actions/checkout 이 만드는 작업본이
+            # 바로 그 경우다(+refs/heads/main:refs/remotes/origin/main 하나뿐).
+            # 이 저장소에서는 refspec 이 넓어 손으로 돌릴 때는 통과하므로,
+            # 러너에서 첫 실행이 죽고 나서야 드러난다.
+            fe = _git('fetch', '--depth', '1', 'origin',
+                      '+refs/heads/%s:refs/remotes/origin/%s' % (br, br))
             if fe.returncode != 0:
                 raise SystemExit('kr100-data 가지를 받지 못했습니다:\n' + fe.stderr)
             ls = _git('ls-tree', '-r', '--name-only', ref, CHART_DIR)
