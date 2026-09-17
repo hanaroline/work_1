@@ -54,6 +54,13 @@ jobs:
         continue-on-error: true
         run: node scripts/probe_daily_xhr.mjs
 
+      # 관찰로 찾은 후보를 **브라우저 없이 받아** 쓸 수 있는지 확인한다 —
+      # 평범한 요청으로 열리는지, 필요한 항목(거래대금·투자자 구분)이
+      # 실제로 들어 있는지. 상한가 때도 이 확인 뒤에 파서를 붙였다.
+      - name: 찾은 후보 주소 확인
+        continue-on-error: true
+        run: python3 scripts/probe_daily_api.py
+
       - name: 커밋
         if: always()
         run: |
