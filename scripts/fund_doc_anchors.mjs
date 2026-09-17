@@ -115,12 +115,25 @@ const TOC_TITLE = /\d+\s*\.\s*(집합투자기구의|투자목적|투자대상|�
  * 실제로 겪은 오류다.
  */
 const PART_OPEN = /^\s*\d{0,4}\s*제\s*[12]\s*부/;
+
+/**
+ * 절 제목이 다섯 개 넘는다는 것만으로는 목차라고 할 수 없다.
+ *
+ * 제2부 첫 쪽에도 1~5절(명칭·연혁·신탁계약기간·집합투자업자·운용전문인력)이
+ * 표로 몰려 있어 똑같이 다섯 개를 넘긴다. 그 쪽을 목차로 여기는 바람에 본문
+ * 시작을 못 잡는 문서가 남았다 — 값이 비싼 오인이다.
+ *
+ * 그래서 목차임을 말해 주는 표를 하나 더 요구한다. 목차는 제1부·제2부를 **함께**
+ * 늘어놓거나, 제목 뒤에 점선을 깔아 쪽번호를 붙인다. 제2부 첫 쪽에는 둘 다 없다.
+ */
+const TOC_MARK = /제\s*1\s*부|\.{4,}|·{4,}|…{2,}/;
 export function tocPages(pages) {
   const set = new Set();
   for (let i = 0; i < Math.min(pages.length, 14); i++) {
     const head = pages[i].slice(0, 120);
     if (/목\s*차/.test(head)) { set.add(i); continue; }
     if (PART_OPEN.test(head)) continue;
+    if (!TOC_MARK.test(pages[i])) continue;
     if ((pages[i].match(TOC_TITLE) || []).length >= 5) set.add(i);
   }
   return set;
