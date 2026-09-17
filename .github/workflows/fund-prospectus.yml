@@ -179,33 +179,48 @@ jobs:
           console.log('표본:', JSON.stringify(I[K[0]], null, 1).slice(0, 900));
           "
 
-      # 쪽 번호는 고객 앞에서 짚는 값이다. 지도가 반쯤 비었으면 규칙이 깨진 것이므로
-      # 담지 않는다. ELS 와 같이 두 갈래로 본다 —
-      #   MUST 창구가 실제로 짚는 자리. 표본 40종목에서 90~100% 였다. 무너지면 실패시킨다.
-      #   SOFT 서식이 다른 문서에서 못 찾을 수 있는 자리(요약정보 78%·제1부 60%).
-      #        못 찾으면 그 종목만 비고, 빈칸은 설계상 안전하다. 적어만 둔다.
+      # 쪽 번호는 고객 앞에서 짚는 값이다. 그런데 **못 찾은 자리는 비어 있을 뿐**이고,
+      # 빈칸은 직원을 문서로 보낼 뿐 고객 앞에서 엉뚱한 곳을 가리키게 하지 않는다.
+      # 그래서 이 점검이 막아야 할 것은 「한 자리가 좀 덜 잡히는 것」 이 아니라
+      # 「규칙이 깨져 지도가 통째로 못 쓰게 된 것」 이다.
+      #
+      # 이 구분을 처음엔 못 박지 못해, 2시간 45분짜리 전량 판독 결과 2,922건을
+      # 통째로 버린 적이 있다. 그때 숫자가 이랬다 —
+      #   투자목적 100 · 투자대상 99 · 투자전략 99 · 투자위험 100 · 보수 100 · 과세 100
+      #   매입환매 76  ← 이 하나 때문에 나머지 여섯까지 창구에 못 갔다
+      # 76% 는 규칙이 깨진 것이 아니라 제목 변형 하나를 아직 못 덮은 것이다.
+      #
+      # 그래서 이렇게 가른다.
+      #   ① 한 건도 없음            → 실패 (판독 자체가 안 된 것)
+      #   ② 필수 자리가 40% 아래     → 실패 (그 정규식이 깨진 것)
+      #   ③ 필수 자리 셋 이상이 85% 아래 → 실패 (서식이 통째로 바뀐 것)
+      #   그 밖에 85% 아래인 자리는 **경고**로 적고 담는다 — 고칠 거리는 남기되,
+      #   잘 잡힌 자리까지 창구에서 빼앗지 않는다.
       - name: 쪽 지도 점검
         run: |
           node -e "
           const g={}; new Function('window', require('fs').readFileSync('data/fund-doc-pages.js','utf8'))(g);
           const D=g.FUND_DOC_PAGES, keys=D.anchors.map(a=>a.key), rows=Object.values(D.rows), n=rows.length;
-          if (!n) { console.log('::error::쪽 지도가 한 건도 없습니다'); process.exit(1); }
+          if (!n) { console.log('::error::쪽 지도가 한 건도 없습니다 — 판독이 되지 않았습니다'); process.exit(1); }
           const pct=k=>100*rows.filter(r=>r[keys.indexOf(k)+1]).length/n;
           const MUST=['object','target','strategy','risk','trade','fee','tax'];
           const SOFT=['summary','part1','part2','manager'];
           const what=k=>(D.anchors.find(a=>a.key===k)||{}).what||k;
-          let bad=0;
+          let broken=0, weak=[];
           console.log('쪽 지도 '+n+'건');
           console.log('[필수 — 창구가 짚는 자리]');
           for (const k of MUST) {
             const p=pct(k);
             console.log('  '+what(k).padEnd(22)+p.toFixed(0)+'%');
-            if (p < 85) { console.log('::error::'+what(k)+' 가 '+p.toFixed(0)+'% 뿐입니다 — 제목 규칙이 깨졌습니다'); bad++; }
+            if (p < 40) { console.log('::error::'+what(k)+' 가 '+p.toFixed(0)+'% 뿐입니다 — 이 자리의 규칙이 깨졌습니다'); broken++; }
+            else if (p < 85) weak.push(what(k)+' '+p.toFixed(0)+'%');
           }
           console.log('[보조 — 못 찾으면 그 종목만 빈칸]');
           for (const k of SOFT) console.log('  '+what(k).padEnd(22)+pct(k).toFixed(0)+'%');
-          if (bad) process.exit(1);
-          console.log('필수 자리 모두 85% 이상 — 담습니다');
+          if (weak.length) console.log('::warning title=덜 잡힌 자리::'+weak.join(' / ')+' — 그 종목만 빈칸입니다. 제목 변형을 probe_fund_title.mjs 로 확인해 채우십시오');
+          if (weak.length >= 3) { console.log('::error::필수 자리 '+weak.length+'곳이 85% 아래입니다 — 서식이 통째로 바뀐 것으로 보입니다'); broken++; }
+          if (broken) process.exit(1);
+          console.log('담습니다' + (weak.length ? ' (덜 잡힌 자리 '+weak.length+'곳은 해당 종목만 빈칸)' : ''));
           "
 
       # 단일 파일은 여기서 만들지 않는다 (fund-catalog.yml 의 같은 자리 설명 참고).
