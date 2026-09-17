@@ -40,6 +40,39 @@ def log(*a):
     print(*a, file=sys.stderr)
 
 
+# 파일에 적을 때마다 바뀌는 칸. 내용을 견줄 때는 빼고 본다.
+VOLATILE = ('generated_at_kst', 'generated_at_utc')
+
+
+def write_if_changed(path, doc, volatile=VOLATILE):
+    """**바뀐 것이 시각뿐이면 파일을 건드리지 않는다.**
+
+    이 워크플로는 하루에 예닐곱 번 돈다(예약 둘 + 시세 파일이 밀릴 때마다).
+    그런데 지수 일봉이 그대로면 모델도 그대로라, 새로 써 봐야 `generated_at_kst`
+    한 칸만 달라진다. 그 한 칸 때문에 매번 커밋이 생겼다 — 병합 직후 1분 사이에
+    같은 내용의 갱신 커밋이 둘 생기는 것을 보고 알았다.
+
+    게다가 이 파일들은 **줄바꿈 없는 한 줄 JSON** 이라 git 이 줄 단위 델타를
+    만들지 못한다. 한 글자가 달라도 80KB 짜리 덩이가 통째로 새로 쌓인다.
+
+    그래서 시각을 뺀 내용이 같으면 그대로 둔다. 그러면 `generated_at_kst` 는
+    「이 내용이 만들어진 때」라는 제 뜻을 되찾는다 — 「마지막으로 돌린 때」는
+    Actions 기록과 verify.txt 가 말해 준다.
+    """
+    new = {k: v for k, v in doc.items() if k not in volatile}
+    if os.path.exists(path):
+        try:
+            old = json.load(open(path, encoding='utf-8'))
+            if {k: v for k, v in old.items() if k not in volatile} == new:
+                return False
+        except ValueError:
+            pass                      # 깨진 파일이면 새로 쓴다
+    os.makedirs(os.path.dirname(path), exist_ok=True)
+    with open(path, 'w', encoding='utf-8') as f:
+        json.dump(doc, f, ensure_ascii=False, separators=(',', ':'))
+    return True
+
+
 # ─────────────────────────────────────────────────────────────────────
 # 가. 종목 일봉 — kr100-data 가지
 # ─────────────────────────────────────────────────────────────────────
@@ -376,10 +409,10 @@ def main(argv):
     }
 
     path = os.path.join(ROOT, out_path)
-    os.makedirs(os.path.dirname(path), exist_ok=True)
-    with open(path, 'w', encoding='utf-8') as f:
-        json.dump(doc, f, ensure_ascii=False, separators=(',', ':'))
-    log('· %s (%.0f KB)' % (out_path, os.path.getsize(path) / 1024))
+    if write_if_changed(path, doc):
+        log('· %s (%.0f KB)' % (out_path, os.path.getsize(path) / 1024))
+    else:
+        log('· %s — 시각 말고 달라진 것이 없어 그대로 둔다' % out_path)
 
     if val.get('corr_daily_return') is not None and val['corr_daily_return'] < 0.97:
         log('::error::프록시 상관이 %.4f 로 낮습니다 — 지수로 쓰지 마십시오'
