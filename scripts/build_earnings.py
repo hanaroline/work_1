@@ -340,7 +340,35 @@ VAL_NOTE = {
 # 선행 P/E 를 0~100 으로 환산하는 고정 구간(하우스 기준).
 # 지수 배수를 기준점으로 쓰지 않은 이유: 이번 수집에서 S&P500 선행 P/E 가
 # 19.1 / 22.4 / 22.9 / 25.6 으로 엇갈려 기준점으로 삼을 수 없었다.
-VAL_BAND = (12.0, 45.0)     # 12배 이하 100점, 45배 이상 0점
+VAL_BAND = (12.0, 45.0)     # 12배 이하 100점, 45배 이상 0점 — 절대 기준(참고용)
+
+# ---------------------------------------------------------------- 섹터 중립화
+# 절대 배수로 점수를 내면 은행·에너지가 구조적으로 유리해진다. 그래서 점수는
+# **섹터 대비 상대배수**(기업 선행 P/E ÷ 섹터 중앙값)로 낸다.
+#
+# 섹터 기준배수를 밖에서 구하지 못했다. 찾은 섹터 배수는 2025년 11월 기준이라
+# 회사 배수(2026-09-17)와 시점이 어긋나 쓸 수 없었다. 그래서 **같은 제공사·
+# 같은 날짜로 섹터별 대형주를 더 받아 중앙값을 직접 만든다.**
+#
+# 아래는 화면에 실리지 않고 기준배수 계산에만 쓰는 동종업체다. 대시보드
+# 25개사가 얇은 섹터(산업재·에너지는 1개사뿐)를 메우는 것이 목적이다.
+PEERS = {
+ "정보기술":   {"CSCO": 25.87, "IBM": 18.41, "TXN": 35.27, "QCOM": 17.97},
+ "커뮤니케이션": {"DIS": 14.15, "VZ": 8.50, "T": 9.66, "CMCSA": 7.51},
+ "경기소비재": {"MCD": 19.05, "NKE": 21.62, "LOW": 16.34, "SBUX": 35.23},
+ "헬스케어":   {"ABBV": 17.46, "MRK": 15.13, "PFE": 8.55, "TMO": 23.22},
+ "금융":      {"BAC": 12.63, "WFC": 10.25, "MS": 17.80, "C": 11.29},
+ "필수소비재": {"PG": 20.98, "KO": 26.38, "PEP": 16.16, "PM": 21.11,
+              "MO": 10.40, "MDLZ": 19.95, "CL": 23.73},
+ "산업재":    {"GE": 47.61, "RTX": 27.22, "BA": 173.65, "UNP": 21.07,
+              "DE": 30.78, "LMT": 19.66, "ETN": 25.97},
+ "에너지":    {"CVX": 13.51, "COP": 12.80, "SLB": 19.02, "EOG": 12.80},
+}
+# 상대배수를 0~100 으로 환산하는 구간. 섹터 중앙값의 절반이면 100점,
+# 두 배면 0점. 중앙값과 같으면(1.0배) 67점이 아니라 (2.0-1.0)/1.5 = 67점 —
+# 중립 지점이 50점이 아닌 것은 위쪽(비쌈)이 아래쪽(쌈)보다 폭이 넓기 때문이다.
+REL_BAND = (0.5, 2.0)
+MIN_PEERS = 5   # 이 아래면 섹터 중앙값을 만들지 않는다
 
 # ---------------------------------------------------------------- 스코어
 # 두 축을 따로 내고 합친다.
@@ -387,8 +415,36 @@ for c in C:
     fpe, peg = VAL.get(c["t"], (None, None))
     c["fpe"], c["peg"], c["valnote"] = fpe, peg, VAL_NOTE.get(c["t"], "")
     # 배수가 낮을수록 높은 점수 — band() 를 뒤집어 쓴다.
-    c["valscore"] = (round(100.0 - band(fpe, *VAL_BAND), 1)
-                     if fpe is not None else None)
+    c["valabs"] = (round(100.0 - band(fpe, *VAL_BAND), 1)
+                   if fpe is not None else None)
+
+# --- 섹터 기준배수(중앙값)와 섹터 중립 V 점수 -------------------------------
+def median(xs):
+    xs = sorted(xs)
+    n = len(xs)
+    return None if not n else (xs[n // 2] if n % 2 else (xs[n // 2 - 1] + xs[n // 2]) / 2.0)
+
+
+SECBENCH = {}
+for _sec in {c["sec"] for c in C}:
+    own = {c["t"]: c["fpe"] for c in C if c["sec"] == _sec and c["fpe"] is not None}
+    pool = dict(own); pool.update(PEERS.get(_sec, {}))
+    med = median(list(pool.values())) if len(pool) >= MIN_PEERS else None
+    SECBENCH[_sec] = dict(
+        sec=_sec, median=(round(med, 2) if med is not None else None),
+        n=len(pool), nOwn=len(own), nPeer=len(pool) - len(own),
+        lo=(round(min(pool.values()), 2) if pool else None),
+        hi=(round(max(pool.values()), 2) if pool else None),
+        members=sorted(pool.items(), key=lambda kv: kv[1]))
+
+for c in C:
+    b = SECBENCH[c["sec"]]
+    # 상대배수 = 기업 선행 P/E ÷ 섹터 중앙값. 1.0 이면 섹터 평균 수준.
+    c["relpe"] = (round(c["fpe"] / b["median"], 2)
+                  if c["fpe"] is not None and b["median"] else None)
+    c["valscore"] = (round(100.0 - band(c["relpe"], *REL_BAND), 1)
+                     if c["relpe"] is not None else None)
+    c["secmed"] = b["median"]
     # 투자매력도는 두 축이 모두 있어야 낸다. 한쪽만으로 합성하면
     # 그 기업만 다른 잣대로 재는 것이 된다.
     c["appeal"] = (round(c["score"] * MIX["momentum"] / 100.0
@@ -496,11 +552,35 @@ for c in C:
             note=memo + ((" — " + c["valnote"]) if c.get("valnote") else ""),
             printed_on=where))
 
+for _sec, _b in sorted(SECBENCH.items()):
+    if _b["median"] is None:
+        continue
+    for _tk, _v in _b["members"]:
+        if any(c["t"] == _tk for c in C):
+            continue          # 대시보드 기업은 이미 위에서 등록됨
+        claims.append(dict(
+            id=f"PEER_{_tk}_FPE", kind="market_multiple", metric="선행 P/E",
+            text=f"{_tk} 선행 P/E (섹터 기준배수 산출용)", value=_v, unit="배",
+            series=SERIES["밸류에이션"], as_of=VAL_ASOF, tier=3,
+            source_url=VAL_SRC % _tk.lower(), verdict="confirmed", render="marked",
+            note=f"{_sec} 섹터 중앙값 계산에만 쓰는 동종업체. 화면의 기업 표에는 실리지 않는다.",
+            printed_on=["sector-benchmark"]))
+    claims.append(dict(
+        id=f"SECMED_{abs(hash(_sec)) % 100000}", kind="derived_benchmark",
+        metric="섹터 기준배수", text=f"{_sec} 섹터 선행 P/E 중앙값",
+        value=_b["median"], unit="배", series=SERIES["밸류에이션"],
+        as_of=VAL_ASOF, tier=3, source_url=VAL_SRC % "xom",
+        verdict="confirmed", render="marked",
+        note=("대형주 %d개사(대시보드 %d + 동종업체 %d)의 중앙값 — 섹터 지수의 배수가 아니다. "
+              "구성: %s" % (_b["n"], _b["nOwn"], _b["nPeer"],
+                          ", ".join("%s %.2f" % m for m in _b["members"]))),
+        printed_on=["sector-benchmark", "table-main"]))
+
 ledger = dict(
     deliverable="미국 주요기업 실적 어닝스 인텔리전스 대시보드 (earnings-intel.html)",
     as_of=ASOF, series_policy=SERIES, claims=claims, derived=derived,
     unit_policy={"분기 매출": "USD bn", "매출 컨센서스": "USD bn",
-                 "가이던스": "방향(+1/0/-1)", "선행 P/E": "배", "PEG": "배"})
+                 "가이던스": "방향(+1/0/-1)", "선행 P/E": "배", "PEG": "배", "섹터 기준배수": "배"})
 
 OUT.mkdir(parents=True, exist_ok=True)
 (OUT / "claims.json").write_text(json.dumps(ledger, ensure_ascii=False, indent=1), "utf-8")
@@ -531,13 +611,14 @@ cov = dict(total=len(C),
 keys = ("t ko en sec sub per pend rep repapprox rev cons consderived surprise yoy eps epsc "
         "epssurprise guide gtxt gkind note warn src csrc tier score coverage scoreparts "
         "upcoming nextrep nextconf nextsrc consnote epsnote gtxt_en note_en consnote_en per_en "
-        "fpe peg valscore appeal appealgap valnote").split()
+        "fpe peg valscore valabs relpe secmed appeal appealgap valnote").split()
 payload = dict(
     asOf=ASOF,
     generated="scripts/build_earnings.py",
     season=dict(prev="2026년 2분기(캘린더) 실적 시즌", nextq="2026년 3분기(캘린더) 실적 시즌"),
     weights=W, bands=BANDS, minCoverage=MIN_COVERAGE, seriesPolicy=SERIES,
-    valBand=VAL_BAND, mix=MIX, valAsOf=VAL_ASOF,
+    valBand=VAL_BAND, relBand=REL_BAND, mix=MIX, valAsOf=VAL_ASOF,
+    secBench=[SECBENCH[k] for k in SEC_ORDER if k in SECBENCH],
     seriesPolicyEn=SERIES_EN, coverage=cov,
     index=INDEX,
     companies=[{k: c.get(k) for k in keys} for c in C],
@@ -564,11 +645,18 @@ print("컨센서스 확인 %d/%d · YoY 확인 %d/%d · 가이던스 확인 %d/%
          cov["guide"], cov["total"], cov["eps"], cov["total"]))
 print("선행 P/E 확인 %d/%d · 투자매력도 산출 %d/%d"
       % (cov["fpe"], cov["total"], cov["appeal"], cov["total"]))
+print("섹터 기준배수(선행 P/E 중앙값):")
+for _k in SEC_ORDER:
+    _b = SECBENCH.get(_k)
+    if _b:
+        print("  %-8s %6.2f배  (대형주 %d사 = 수록 %d + 동종 %d, 범위 %.1f~%.1f)"
+              % (_k, _b["median"], _b["n"], _b["nOwn"], _b["nPeer"], _b["lo"], _b["hi"]))
 print("  %-6s %7s %7s %7s   %s" % ("티커", "매력도", "모멘텀", "밸류", "선행 P/E"))
 for c in sorted([c for c in C if c["appeal"] is not None],
                 key=lambda x: -x["appeal"])[:10]:
-    print("  %-6s %7.1f %7.1f %7.1f   %6.2f배"
-          % (c["t"], c["appeal"], c["score"], c["valscore"], c["fpe"]))
+    print("  %-6s %7.1f %7.1f %7.1f   %6.2f배 (섹터 대비 %.2f배, 절대 V %.0f)"
+          % (c["t"], c["appeal"], c["score"], c["valscore"], c["fpe"],
+             c["relpe"], c["valabs"]))
 miss = [c for c in C if c["appeal"] is None]
 print("  미산출 %d사: %s" % (len(miss), ", ".join(
     "%s(%s)" % (c["t"], "모멘텀" if c["appealgap"] == "momentum" else "밸류") for c in miss)))
