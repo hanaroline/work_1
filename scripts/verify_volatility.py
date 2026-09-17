@@ -229,6 +229,41 @@ def main(argv):
     if w:
         tot = sum(w.values())
         check('다.가중치 합 = 1', tot, 1.0, 0.002)
+
+        # 축소(shrinkage) 셈을 다시 해 본다 — w = λ×잰몫 + (1−λ)×사전값, 정규화
+        det = (s.get('adaptive_fit') or {}).get('detail') or {}
+        cfg0 = L.get('config') or {}
+        prior_all = cfg0.get('prior') or cfg0.get('equal_weights') or {}
+        raw = {}
+        for k, f in det.items():
+            lam = f.get('lambda')
+            if lam is None:
+                continue
+            share = f.get('fitted_share') or 0.0
+            pri = f.get('prior', prior_all.get(k, 0.25))
+            raw[k] = lam * share + (1 - lam) * pri
+            # λ 가 유효표본에서 제대로 나왔는가
+            if f.get('n_eff') is not None:
+                k_ps = cfg0.get('k_pseudo', 10.0)
+                check('다.%s λ = n_eff/(n_eff+K)' % k,
+                      f['n_eff'] / (f['n_eff'] + k_ps), lam, 0.006)
+                check('다.%s 유효표본 = 표본/기간' % k,
+                      max(f['n'] / float(cfg0.get('fit_horizon', 10)), 1.0), f['n_eff'], 0.06)
+        if raw:
+            tw = sum(raw.values())
+            for k, v in raw.items():
+                # 화면의 가중치는 그날 값이 있는 축으로 다시 정규화된 것이라,
+                # 축이 하나도 안 빠진 날에만 곧바로 견줄 수 있다
+                if not (s.get('axes_absent') or []):
+                    check('다.%s 가중치 = 축소 셈' % k, v / tw, w.get(k), 0.004)
+        # 잰 몫은 양수 상관만 정규화한 것이다
+        sh = {k: f.get('fitted_share') for k, f in det.items()
+              if f.get('fitted_share') is not None}
+        if sh and sum(sh.values()) > 0:
+            check('다.잰 몫 합 = 1', sum(sh.values()), 1.0, 0.004)
+            for k, f in det.items():
+                if f.get('rho') is not None and f['rho'] <= 0:
+                    check('다.%s 상관이 0 이하면 잰 몫 0' % k, f.get('fitted_share'), 0.0, 0.0006)
         acc = 0.0
         for k, wt in w.items():
             sc = (s['axes'].get(k) or {}).get('score')
@@ -343,23 +378,36 @@ def main(argv):
 
     # ── 사. 없는 것 ───────────────────────────────────────────────
     cov = L.get('coverage') or {}
-    unfit = s.get('adaptive_unfitted') or []
+    absent = s.get('axes_absent') or []
     notes = L.get('notes') or []
     kinds = set(n.get('kind') for n in notes)
     # **글월을 낱말로 찾지 않는다.** 처음에 「'표본'이라는 말이 어딘가 있는가」로
     # 보았더니, 한계 문장을 통째로 지워도 시나리오 문장에 든 「같은 국면 표본
     # 21일」이 걸려 검사가 통과했다. 갈래(kind)로 본다.
-    for k in unfit:
-        # 점수에 못 들어간 축은 가중치에도 없어야 한다
-        check_eq('사.%s 축이 가중치에서 빠졌다' % k, k in w, False,
-                 '표본이 모자라다면서 가중치에 들어 있습니다')
-        check_eq('사.%s 축이 빠진 사실을 적었다' % k, '가중치' in kinds, True,
-                 '축이 조용히 빠졌습니다 — 화면이 안전하다고 잘못 읽힙니다')
-        # 그 축이 위험을 가리키는데 점수에 없다면 따로 경고해야 한다
+
+    # **값이 있는 축은 하나도 빠지지 않아야 한다.** 예전에는 표본이 모자란 축을
+    # 점수에서 통째로 뺐는데, 그러면 그 축이 88점을 가리켜도 화면의 점수는
+    # 모르는 채로 낮게 나온다. 지금은 사전값으로 섞어 넣으므로 빠질 수 없다.
+    for k, a in s['axes'].items():
+        if a.get('score') is not None:
+            check_eq('사.%s 축이 점수에 들어 있다' % k, k in w, True,
+                     '값이 있는 축이 점수에서 빠졌습니다 — 화면이 안전하다고 잘못 읽힙니다')
+    for k in absent:
+        check_eq('사.%s 축은 값이 없어 빠진 것이다' % k,
+                 (s['axes'].get(k) or {}).get('score') is None, True)
+        check_eq('사.%s 축이 빠진 사실을 적었다' % k, '한계' in kinds, True)
+
+    # 증거가 얕은데 가중치를 받은 축 — 그 가중치가 사전값에서 왔다고 적어야 한다
+    fit = (s.get('adaptive_fit') or {}).get('detail') or {}
+    for k, wt in w.items():
+        lam = (fit.get(k) or {}).get('lambda')
         sc_k = (s['axes'].get(k) or {}).get('score')
-        if sc_k is not None and sc_k >= 70:
-            check_eq('사.%s 축(%.0f점)을 따로 경고했다' % (k, sc_k), '별도경고' in kinds, True,
-                     '점수에 안 든 축이 70점을 넘는데 따로 알리지 않았습니다')
+        if lam is not None and lam < 0.35:
+            check_eq('사.%s 축 가중치가 사전값임을 적었다' % k, '가중치' in kinds, True,
+                     'λ=%.2f 인데 잰 값인 것처럼 내보냈습니다' % lam)
+            if sc_k is not None and sc_k >= 70:
+                check_eq('사.%s 축(%.0f점)을 따로 경고했다' % (k, sc_k), '별도경고' in kinds, True,
+                         '실력이 확인되지 않은 축이 70점을 넘는데 따로 알리지 않았습니다')
     # 축이 넷 다 비면 점수가 있을 수 없다
     have_ax = sum(1 for a in s['axes'].values() if a.get('score') is not None)
     check_eq('사.축이 하나도 없으면 점수도 없다',
@@ -394,8 +442,14 @@ def main(argv):
     print('  급락 사건 %d 건 — 스물이 안 되면 포착률의 오차가 큽니다' % n_ev)
     if empty:
         print('  값이 없어 빈 축: %s' % ', '.join(empty))
-    if unfit:
-        print('  표본이 모자라 점수에 못 든 축: %s' % ', '.join(unfit))
+    if absent:
+        print('  오늘 값이 없어 빠진 축: %s' % ', '.join(absent))
+    thin = [k for k, f in ((s.get('adaptive_fit') or {}).get('detail') or {}).items()
+            if (f.get('lambda') or 0) < 0.35 and k in w]
+    if thin:
+        print('  가중치가 거의 사전값인 축(실력 확인 안 됨): %s' % ', '.join(thin))
+    print('  수급이 점수에 들어간 날 %d 일 / 이력 %d 일 — 문턱을 재는 이력의 대부분은 수급이 빠진 판'
+          % (cov.get('flow_in_score_sessions', 0), cov.get('index_sessions', 0)))
     return 1 if bad else 0
 
 

@@ -245,9 +245,14 @@ def mean_of(vals):
 # ─────────────────────────────────────────────────────────────────────
 
 WEIGHTS = {'volatility': 0.25, 'compression': 0.25, 'momentum': 0.25, 'flow': 0.25}
-WEIGHT_NOTE = ('균등가중은 **기준선**이다 — 아무것도 맞추지 않은 상태의 점수. '
-               '머리에 세우는 점수는 아래 워크포워드 가중(adaptive)이고, 둘을 나란히 내는 까닭은 '
-               '가중치를 맞춘 것이 정말 보탬이 됐는지 견줄 자리가 있어야 하기 때문이다.')
+WEIGHT_NOTE = ('균등가중은 **기준선이자 사전값**이다 — 아무것도 재지 못했을 때 돌아갈 자리. '
+               '머리에 세우는 점수는 여기에 잰 값을 증거의 힘만큼 섞은 것이고, 둘을 나란히 내는 '
+               '까닭은 섞은 것이 정말 보탬이 됐는지 견줄 자리가 있어야 하기 때문이다.')
+
+# 수급 z점수의 최소 관측. 가격 계열(20)보다 낮춰 잡는다 — 수급 원자료가 쉰 날
+# 남짓뿐이라 20 으로 두면 누적·z점수 창이 그것을 다시 절반으로 깎는다. 얕게 잰
+# z점수는 그만큼 못 믿을 값이지만, 그 못 믿음은 가중치 축소(evidence)가 받는다.
+FLOW_MIN_OBS = 15
 
 # 등급은 **점수의 자기 백분위**로 매긴다. 「65점」은 셈법을 바꾸면 뜻이 달라지지만
 # 「제 이력의 상위 5%」는 셈법이 바뀌어도 그대로다. 고객에게 옮길 때도 이쪽이
@@ -396,16 +401,16 @@ def axis_flow(flow_ind, i):
     parts = {}
     for key, name in (('foreign_cum5', 'foreign5'), ('foreign_cum20', 'foreign20'),
                       ('inst_cum5', 'inst5')):
-        z = zscore(flow_ind[key], i) if flow_ind.get(key) else None
+        z = zscore(flow_ind[key], i, min_obs=FLOW_MIN_OBS) if flow_ind.get(key) else None
         if z is not None:
             # z −2 → 100점, z +2 → 0점. 자른 자리를 넘는 값은 그대로 끝이다.
             parts[name] = clamp(50 - z * 25)
     if flow_ind.get('deposit_chg20'):
-        z = zscore(flow_ind['deposit_chg20'], i)
+        z = zscore(flow_ind['deposit_chg20'], i, min_obs=FLOW_MIN_OBS)
         if z is not None:
             parts['deposit'] = clamp(50 - z * 25)
     if flow_ind.get('credit_chg20'):
-        z = zscore(flow_ind['credit_chg20'], i)
+        z = zscore(flow_ind['credit_chg20'], i, min_obs=FLOW_MIN_OBS)
         if z is not None:
             # 부호를 뒤집지 않는다 — 신용이 **불어나는** 쪽이 위험이다
             parts['credit'] = clamp(50 + z * 25)
@@ -489,7 +494,38 @@ AXIS_KEYS = [('v', 'volatility'), ('c', 'compression'), ('m', 'momentum'), ('f',
 BURN_IN = 150        # 이만큼 쌓이기 전에는 가중치를 재지 않는다. 484 세션뿐이라 1년(250)을
                      # 태우면 평가할 구간이 남지 않는다 — 여기서도 표본이 발목을 잡는다.
 REFIT_EVERY = 20     # 한 달에 한 번 다시 잰다. 날마다 고치면 점수가 널뛴다.
-MIN_FIT_OBS = 60     # 축 하나를 재는 데 필요한 최소 관측
+MIN_FIT_OBS = 12     # 상관을 셈이라도 해 보는 데 필요한 최소 관측
+
+# 사전값 — 아직 아무것도 재지 못했을 때의 가중치. 넷을 똑같이 둔다.
+PRIOR = dict(WEIGHTS)
+
+# 사전값의 힘을 **유효관측 몇 개어치**로 볼 것인가. 열로 둔다 — 유효관측이 열이면
+# 잰 값과 사전값을 반반 믿고, 마흔이면 잰 값을 80% 믿는다.
+K_PSEUDO = 10.0
+
+
+def effective_n(n, h):
+    """중첩을 감안한 유효 표본 수.
+
+    이 상관을 재는 짝들은 서로 **독립이 아니다.** 오늘의 「이후 10거래일 낙폭」과
+    내일의 그것은 아흐레를 공유한다. 그래서 관측 300개가 독립 300개가 아니라
+    서른개어치밖에 안 된다. 이것을 무시하면 표준오차가 √10 배 작게 나와,
+    우연히 생긴 상관을 실력으로 읽는다.
+
+    나누기 h 는 거친 보정이다(Newey–West 를 쓰면 더 정교하지만 여기서는 표본이
+    얕아 정교함이 보태 줄 것이 없다). 요점은 **중첩을 0 으로 치지 않는다**는 것이다.
+    """
+    return max(n / float(h), 1.0)
+
+
+def evidence(n, h, k=K_PSEUDO):
+    """잰 값을 얼마나 믿을 것인가 — 0(전혀) ~ 1(온전히).
+
+    유효관측이 쌓일수록 1 에 다가간다. 이 값이 λ 이고, 가중치는
+    `λ×잰 값 + (1−λ)×사전값` 으로 섞는다.
+    """
+    ne = effective_n(n, h)
+    return ne / (ne + k)
 
 
 def spearman(xs, ys):
@@ -521,62 +557,94 @@ def forward_min(bars, j, h):
     return (min(b['l'] for b in bars[j + 1:j + h + 1]) / c0 - 1) * 100
 
 
+def fit_weights(bars, rows, t, h=10, prior=None, k=K_PSEUDO):
+    """t 시점의 가중치를 정한다 — **잰 값과 사전값을 증거의 힘만큼 섞어서.**
+
+    **미래를 보지 않는다.** t 보다 앞선 날 가운데 **결과가 이미 드러난 날**
+    (j + h < t)만 쓴다. 그래서 백테스트에 그대로 얹어도 성적이 부풀지 않는다.
+
+    왜 섞는가 — 처음에는 「관측 60개가 안 되면 그 축은 점수에서 뺀다」로 두었다.
+    그랬더니 자금수급 축이 통째로 빠졌다. 그 축이 88점을 가리키는데도 점수에는
+    없으니, 화면을 급히 보는 사람은 낮은 점수를 보고 안전하다고 읽는다. 문턱만
+    낮추는 것으로는 풀리지 않는다 — 수급의 상관은 관측 19개에 ρ=−0.21, 표준오차
+    0.25 로 **잰 것이 없는 것과 같아서**, 문턱을 낮추면 가중치 0 으로 들어가
+    결국 빠진 것과 같아진다.
+
+    그래서 문턱을 없애고 이렇게 한다. 증거가 두터운 축은 잰 값 쪽으로, 얕은 축은
+    사전값(균등 25%) 쪽으로 간다. 증거의 힘 λ 는 **중첩을 감안한 유효관측**으로
+    잰다. 이러면 **모든 축이 언제나 점수에 들어가고**, 자료가 쌓이는 만큼 저절로
+    잰 값이 사전값을 밀어낸다 — 넘어야 할 턱이 없다.
+
+    돌려주는 것: (가중치, 축별 내역)
+    """
+    prior = prior or PRIOR
+    fitted, detail = {}, {}
+    for key, name in AXIS_KEYS:
+        xs, ys = [], []
+        for j in range(max(0, t - h)):           # 결과가 드러난 날만
+            if rows[j][key] is None:
+                continue
+            f = forward_min(bars, j, h)
+            if f is None:
+                continue
+            xs.append(rows[j][key])
+            ys.append(-f)                        # 많이 밀릴수록 큰 값
+        n = len(xs)
+        if n >= MIN_FIT_OBS:
+            r = spearman(xs, ys)
+            lam = evidence(n, h, k)
+            fitted[name] = max(0.0, r)
+            detail[name] = {'rho': round(r, 4), 'n': n,
+                            'n_eff': round(effective_n(n, h), 1),
+                            'lambda': round(lam, 3)}
+        else:
+            # 상관을 셈할 수조차 없는 축. λ=0 이니 사전값 그대로 간다.
+            detail[name] = {'rho': None, 'n': n, 'n_eff': None, 'lambda': 0.0,
+                            'note': '표본 %d 일 — 상관을 재지 못해 사전값으로 넣습니다' % n}
+
+    # 잰 값들을 서로 견줄 수 있게 한 번 정규화한다(양수 부분만)
+    s = sum(fitted.values())
+    share = {k: v / s for k, v in fitted.items()} if s > 0 else {}
+
+    w = {}
+    for _, name in AXIS_KEYS:
+        lam = detail[name]['lambda']
+        w[name] = lam * share.get(name, 0.0) + (1 - lam) * prior[name]
+        detail[name]['fitted_share'] = round(share.get(name, 0.0), 4) if share else None
+        detail[name]['prior'] = prior[name]
+    tot = sum(w.values())
+    w = {k: v / tot for k, v in w.items()} if tot else dict(prior)
+    for name in w:
+        detail[name]['weight'] = round(w[name], 4)
+    return w, detail
+
+
 def adaptive_series(bars, rows, h=10, burn=BURN_IN, refit=REFIT_EVERY):
-    """축마다 「그 점수가 높던 날 뒤가 실제로 나빴는가」를 재서 가중치로 삼는다.
+    """날마다 점수를 낸다. 가중치는 한 달에 한 번 `fit_weights` 로 다시 잰다.
 
-    **미래를 보지 않는다.** t 일의 가중치는 t 보다 앞선 날 가운데 **결과가 이미
-    드러난 날**(j + h < t)만으로 잰다. 그래서 백테스트에 그대로 얹어도 성적이
-    부풀지 않는다.
-
-    가중치는 순위상관의 **양수 부분**을 정규화한 값이다. 상관이 0 이하인 축은
-    가중치 0 — 뒷일을 말해 주지 못한 축을 억지로 끼워 넣지 않는다. 이 저장소의
-    자료에서는 압축 축이 실제로 0 으로 떨어진다(그 사실 자체가 산출물이다).
-
-    돌려주는 것: (점수 계열, 날짜별 가중치, 가중치를 다시 잰 기록)
+    돌려주는 것: (점수 계열, 날짜별 가중치, 가중치를 다시 잰 기록,
+                  날짜별 「값이 없어 그날 빠진 축」)
     """
     n = len(bars)
     score = [None] * n
     wmap = [None] * n
-    unfit = [None] * n
+    absent = [None] * n
     history = []
-    cur, cur_unfit = None, []
+    cur = None
     for t in range(n):
         if t >= burn and (t - burn) % refit == 0:
-            w, detail, miss = {}, {}, []
-            for key, name in AXIS_KEYS:
-                xs, ys = [], []
-                for j in range(t - h):           # 결과가 드러난 날만
-                    if rows[j][key] is None:
-                        continue
-                    f = forward_min(bars, j, h)
-                    if f is None:
-                        continue
-                    xs.append(rows[j][key])
-                    ys.append(-f)                # 많이 밀릴수록 큰 값
-                if len(xs) >= MIN_FIT_OBS:
-                    r = spearman(xs, ys)
-                    w[name] = max(0.0, r)
-                    detail[name] = {'rho': round(r, 4), 'n': len(xs)}
-                else:
-                    # **재지 못한 축과 재어 보니 0 인 축은 다르다.** 앞의 것은
-                    # 아직 모르는 것이고 뒤의 것은 알아낸 것이다 — 섞어 두면
-                    # 화면에서 「수급은 쓸모없다」고 잘못 읽힌다.
-                    miss.append(name)
-                    detail[name] = {'rho': None, 'n': len(xs),
-                                    'note': '표본 %d 일 — %d 일이 되어야 잽니다' % (len(xs), MIN_FIT_OBS)}
-            s = sum(w.values())
-            cur = {k: v / s for k, v in w.items()} if s > 0 else None
-            cur_unfit = miss
+            cur, detail = fit_weights(bars, rows, t, h)
             history.append({'d': bars[t]['d'],
-                            'weights': {k: round(v, 4) for k, v in (cur or {}).items()},
-                            'unfitted': miss, 'detail': detail})
+                            'weights': {k: round(v, 4) for k, v in cur.items()},
+                            'detail': detail})
         if cur:
-            # 가중치 0 인 축도 **자리는 남긴다** — 0 이라는 것이 산출물이다
-            have = {k: rows[t][key] for key, k in AXIS_KEYS
-                    if k in cur and rows[t][key] is not None}
+            # 가중치 0 인 축도 **자리는 남긴다** — 0 이라는 것이 산출물이다.
+            # 그날 값 자체가 없는 축만 빠지고, 빠진 축은 따로 적어 낸다.
+            have = {k: rows[t][key] for key, k in AXIS_KEYS if rows[t][key] is not None}
+            gone = [k for key, k in AXIS_KEYS if rows[t][key] is None]
             tw = sum(cur[k] for k in have)
             if tw > 0:
                 score[t] = sum(cur[k] * have[k] for k in have) / tw
                 wmap[t] = {k: round(cur[k] / tw, 4) for k in have}
-                unfit[t] = list(cur_unfit)
-    return score, wmap, history, unfit
+                absent[t] = gone
+    return score, wmap, history, absent
