@@ -9,6 +9,7 @@
 """
 from __future__ import annotations
 
+import hashlib
 import json
 import pathlib
 
@@ -815,7 +816,11 @@ for _sec, _b in sorted(SECBENCH.items()):
             note=f"{_sec} 기준배수 계산에만 쓰는 동종업체. 화면의 기업 표에는 실리지 않는다.",
             printed_on=["sector-benchmark"]))
     claims.append(dict(
-        id=f"SECMED_{abs(hash(_sec)) % 100000}", kind="derived_benchmark",
+        # 대장 ID 는 실행마다 같아야 한다. 파이썬 hash() 는 프로세스마다 값이
+        # 달라져(해시 시드 무작위화) 빌드할 때마다 ID 가 바뀌고, 그러면 대장의
+        # diff 가 의미를 잃고 특정 주장을 ID 로 지목할 수도 없다.
+        id=f"SECMED_{hashlib.md5(_sec.encode('utf-8')).hexdigest()[:6]}",
+        kind="derived_benchmark",
         metric="섹터 기준배수", text=f"{_sec} 기준 선행 P/E 중앙값",
         value=_b["median"], unit="배", series=SERIES["밸류에이션"],
         as_of=VAL_ASOF, tier=3, source_url=VAL_SRC % "xom",
