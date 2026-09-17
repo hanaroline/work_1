@@ -148,13 +148,22 @@ def main() -> int:  # noqa: PLR0915
     # 콤보박스는 둘이다 — ETF 목록과 배분 방식. 순서를 믿지 말고 무엇을
     # 가리키는지로 고른다.
     dvs = [d for d in ws.data_validations.dataValidation if d.type == "list"]
-    dv_etf = next((d for d in dvs if "선택가능종목" in (d.formula1 or "")), None)
+    # 콤보박스가 가리키는 이름이 바뀌었다 — 검색으로 좁힌 목록(검색결과)을 본다.
+    # 계산이 쓰는 목록은 여전히 선택가능종목이고, 그쪽은 아래에서 따로 본다.
+    dv_etf = next((d for d in dvs if "검색결과" in (d.formula1 or "")), None)
     dv_mode = next((d for d in dvs if "비율" in (d.formula1 or "")), None)
     if dv_etf is None:
-        fail("[제안서] 에 ETF 목록 콤보박스(선택가능종목)가 없습니다.")
+        fail("[제안서] 에 ETF 목록 콤보박스(검색결과)가 없습니다.")
     else:
         cells = str(dv_etf.sqref)
         sel = ws[cells.split()[0].split(":")[0]]
+        # 첫 줄은 이제 '담긴수=0 이면 기본 종목' 수식이다. 수식 글자에서
+        # 기본 종목 이름을 꺼내 본다(따옴표 안의 첫 글자 뭉치).
+        sel_name = sel.value
+        if isinstance(sel_name, str) and sel_name.startswith("="):
+            m = re.search(r'"((?:[^"]|"")+)"', sel_name)
+            sel_name = m.group(1).replace('""', '"') if m else None
+        sel = type("C", (), {"value": sel_name, "coordinate": sel.coordinate})()
         if not sel.value:
             fail(f"콤보박스 첫 줄 {sel.coordinate} 이 비어 있습니다 — 열자마자 0원 제안서가 됩니다.")
         elif sel.value not in [x["name"] for x in selectable]:
@@ -301,7 +310,11 @@ def main() -> int:  # noqa: PLR0915
     tot_invest = tot_pre = 0.0
     filled = 0
     for rr in slots:
-        name = ws[f"B{rr}"].value
+        # 종목 칸은 이제 [종목조회] 의 '담기' 를 받아 오는 수식이다. 칸에 적힌
+        # 글자(수식)가 아니라 **계산해서 나온 값**을 봐야 한다.
+        name = val(f"B{rr}")
+        if isinstance(name, str):
+            name = name.strip()
         alloc = ws[f"C{rr}"].value
         if not name:
             for col in ("D", "E", "F", "G", "H"):
@@ -396,13 +409,16 @@ def main() -> int:  # noqa: PLR0915
         )
 
     check_lookup(selectable, first, last)
+    check_pick_and_search(selectable)
 
     # HTML 판이 같은 값을 내는지 맞춰 볼 수 있게, 엑셀을 **실제로 계산해서 나온**
     # 값을 적어 둔다. scripts/check_etf_html.mjs 가 이 파일을 읽어 브라우저에
     # 찍힌 값과 견준다. 두 구현이 서로 다른 언어로 따로 계산한 값이 맞아떨어져야
     # 통과다 — 같은 자료로 두 벌을 만들면서 둘이 어긋나면 하나만 있는 것보다 나쁘다.
     if not problems:
-        pick = ws[f"B{p_hdr0 + 1}"].value
+        pick = val(f"B{p_hdr0 + 1}")
+        if isinstance(pick, str):
+            pick = pick.strip()
         it0 = next((x for x in selectable if x["name"] == pick), None)
         exp = {
             "defaultName": pick,
@@ -423,6 +439,90 @@ def main() -> int:  # noqa: PLR0915
 
 
 # ── [종목조회] 검산 ────────────────────────────────────────────────────
+def check_pick_and_search(selectable) -> None:
+    """'담기' 와 '종목 검색' 이 실제로 도는지 본다.
+
+    둘 다 **다른 장에 값을 옮기는** 기능이라, 칸 주소가 한 칸만 밀려도 조용히
+    아무 일도 일어나지 않는다. 오류 표시도 안 뜬다 — O 를 넣었는데 제안서가
+    그대로인 것을 사람이 알아채야 한다. 그래서 기계가 본다.
+
+    파일을 손대지 않고, 사본에 O 를 넣고 검색어를 넣어 **다시 계산해서** 본다.
+    """
+    import tempfile
+
+    wb = load_workbook(XLSX)
+    lk, ws = wb["종목조회"], wb["제안서"]
+
+    first = None
+    for row in lk.iter_rows(min_col=2, max_col=2):
+        for c in row:
+            if isinstance(c.value, str) and c.value.startswith("=IF($K"):
+                first = c.row
+                break
+        if first:
+            break
+    if first is None:
+        fail("[종목조회] 결과 표를 못 찾아 '담기' 를 시험하지 못했습니다.")
+        return
+
+    scell = None
+    for row in ws.iter_rows(min_col=4, max_col=4):
+        for c in row:
+            if isinstance(c.value, str) and c.value.strip() == "종목 검색":
+                scell = f"E{c.row}"
+                break
+        if scell:
+            break
+    if scell is None:
+        fail("[제안서] 에서 '종목 검색' 칸을 못 찾았습니다.")
+        return
+
+    # 1번째·3번째 줄을 담고, 검색어를 넣는다. 한 번만 계산해 둘 다 본다.
+    lk.cell(first, 10).value = "O"
+    lk.cell(first + 2, 10).value = "O"
+    ws[scell] = TERM = "커버드콜"
+    with tempfile.NamedTemporaryFile(suffix=".xlsx", delete=False) as tf:
+        tmp = Path(tf.name)
+    wb.save(tmp)
+    v2 = evaluate(tmp)
+    tmp.unlink(missing_ok=True)
+    if v2 is None:
+        return
+
+    g = lambda sh, ref: v2.get((sh, ref))  # noqa: E731
+
+    # ── 담기 → 제안서 ──
+    n1, n3 = g("종목조회", f"B{first}"), g("종목조회", f"B{first + 2}")
+    b20, b21, b22 = g("제안서", "B20"), g("제안서", "B21"), g("제안서", "B22")
+    if b20 != n1:
+        fail(f"'담기' 가 안 먹습니다 — 1번째로 담은 '{n1}' 대신 제안서 B20 에 '{b20}' 이 있습니다.")
+    elif b21 != n3:
+        fail(f"'담기' 두 번째가 안 먹습니다 — '{n3}' 대신 B21 에 '{b21}' 이 있습니다.")
+    elif b22 not in ("", None):
+        fail(f"두 종목만 담았는데 B22 에 '{b22}' 이 남아 있습니다.")
+    else:
+        notes.append(f"'담기' 두 종목이 [제안서] 에 그대로 올라옵니다 ('{n1}' 외 1).")
+
+    # ── 검색 → 목록 좁히기 ──
+    # X 칸에 위에서부터 걸린 종목만 빈칸 없이 쌓여야 한다.
+    got = []
+    r = 4
+    while True:
+        x = g("ETF데이터", f"X{r}")
+        if x is None or x == "":
+            break
+        got.append(x)
+        r += 1
+    want = [x["name"] for x in selectable if TERM in x["name"]]
+    off = [x for x in got if TERM not in x]
+    if off:
+        fail(f"'{TERM}' 검색에 엉뚱한 종목이 섞였습니다: {off[:3]}")
+    elif len(got) != len(want):
+        fail(f"'{TERM}' 검색 결과가 {len(got)}종목인데 원천에는 {len(want)}종목입니다.")
+    else:
+        notes.append(f"'종목 검색' 이 '{TERM}' 로 {len(got)}종목까지 목록을 좁힙니다.")
+
+
 def check_lookup(selectable, first_sel, last_sel) -> None:  # noqa: ARG001
     """조건을 바꿔 가며 실제로 계산시키고, 손으로 고른 것과 맞춰 본다.
 
@@ -452,7 +552,7 @@ def check_lookup(selectable, first_sel, last_sel) -> None:  # noqa: ARG001
     first_hit = None
     for row in lk.iter_rows(min_col=2, max_col=2):
         for c in row:
-            if isinstance(c.value, str) and c.value.startswith("=IF($J"):
+            if isinstance(c.value, str) and c.value.startswith("=IF($K"):
                 first_hit = c.row
                 break
         if first_hit:

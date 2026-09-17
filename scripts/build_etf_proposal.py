@@ -309,12 +309,50 @@ def build_data_sheet(wb, data):
         # 맞은 줄이 나온다.
         prev = "0" if rr == first_adopted else f"${tl2}{rr - 1}"
         ws.cell(row=rr, column=c_rank).value = f"=IF(${tl}{rr}=1,{prev}+1,{prev})"
-    for c in (c_match, c_rank):
+
+    # ── [제안서] 의 종목 검색이 쓰는 숨긴 계산 칸 ──────────────────────
+    #
+    # 콤보박스에 514종목이 한 줄로 들어 있으면 원하는 것을 찾기가 어렵다.
+    # 글자 몇 개로 목록을 좁힐 수 있어야 한다. 방법은 위와 같다 —
+    #
+    #   V: 검색어가 종목명에 들어 있으면 1
+    #   W: 맞은 것에 차례를 매긴다
+    #   X: k번째로 맞은 **종목명 자체**를 뽑아 붙인다(빈칸 없이 위에서부터)
+    #
+    # 콤보박스는 X 를 가리키되, 높이를 맞은 개수만큼만 잡는다(OFFSET). 그래야
+    # 목록 끝에 빈 줄이 줄줄이 달리지 않는다.
+    #
+    # **계산이 보는 목록은 바꾸지 않는다.** 담긴 종목을 찾는 K 칸은 여전히
+    # 전체 목록(선택가능종목)을 본다. 검색어를 바꿨다고 이미 담아 둔 종목이
+    # 목록 밖으로 나가면서 계산이 0원이 되면 안 되기 때문이다. 좁히는 것은
+    # **고르는 목록**뿐이고, 이미 고른 것은 검색어와 무관하게 그대로 있다.
+    c_smatch = len(cols) + 3       # V
+    c_srank = len(cols) + 4        # W
+    c_slist = len(cols) + 5        # X
+    vl, wl, xl = (get_column_letter(c) for c in (c_smatch, c_srank, c_slist))
+    for rr in range(first_adopted, last_sel + 1):
+        # 검색어가 비면 전부 통과. 빈 칸을 그대로 SEARCH 에 넣으면 엑셀이 0
+        # 으로 읽어 "0" 이라는 글자를 찾으러 간다 — 그러면 아무것도 안 나온다.
+        ws.cell(row=rr, column=c_smatch).value = (
+            f'=IF(검색어="",1,IF(ISNUMBER(SEARCH(검색어,$A{rr})),1,0))'
+        )
+        prev = "0" if rr == first_adopted else f"${wl}{rr - 1}"
+        ws.cell(row=rr, column=c_srank).value = f"=IF(${vl}{rr}=1,{prev}+1,{prev})"
+        k = rr - first_adopted + 1
+        ws.cell(row=rr, column=c_slist).value = (
+            f"=IFERROR(INDEX($A${first_adopted}:$A${last_sel},"
+            f"MATCH({k},${wl}${first_adopted}:${wl}${last_sel},0)),\"\")"
+        )
+
+    for c in (c_match, c_rank, c_smatch, c_srank, c_slist):
         ws.column_dimensions[get_column_letter(c)].hidden = True
 
     ws.freeze_panes = f"A{hr + 1}"
     ws.auto_filter.ref = f"A{hr}:{get_column_letter(len(cols))}{r - 1}"
-    return ws, first_adopted, last_adopted, last_sel, len(adopted), len(usable_rejected), len(unusable)
+    # 검색용 칸의 글자를 그대로 돌려준다. 여기 글자를 main 에 박아 두면 칸을
+    # 하나 늘리는 순간 이름이 조용히 엉뚱한 칸을 가리킨다.
+    return (ws, first_adopted, last_adopted, last_sel,
+            len(adopted), len(usable_rejected), len(unusable), vl, xl)
 
 
 # ══════════════════════════════════════════════════════════════════════
@@ -413,8 +451,8 @@ def build_lookup_sheet(wb, data, first_sel, last_sel):
     고르면 된다.
     """
     ws = wb.create_sheet("종목조회", 1)
-    LAST = 8
-    widths = [2.5, 34, 13, 14, 14, 13, 15, 13]
+    LAST = 9
+    widths = [2.5, 34, 13, 14, 14, 13, 15, 13, 9]
     for i, w in enumerate(widths, start=1):
         ws.column_dimensions[get_column_letter(i)].width = w
     ws.sheet_view.showGridLines = False
@@ -474,30 +512,31 @@ def build_lookup_sheet(wb, data, first_sel, last_sel):
 
     # ── 2. 조회 결과 ──
     r = section(ws, r, "2", f"조회 결과 (최대 {LOOKUP_ROWS}종목)", LAST)
-    head = ["종목명", "지급주기", "연 분배율", "월 환산", "현재가", "변동성", "순자산", "채택"]
+    head = ["종목명", "지급주기", "연 분배율", "월 환산", "현재가", "변동성", "순자산", "채택", "담기"]
     table_head(ws, r, head, 2)
     r += 1
     first_row = r
 
-    # 숨긴 칸 J 에 "몇 번째 줄인가" 를 담고, 나머지 칸은 그 값으로 집어 온다.
+    # 숨긴 칸 K 에 "몇 번째 줄인가" 를 담고, 나머지 칸은 그 값으로 집어 온다.
     # 줄마다 MATCH 를 여덟 번 돌리지 않으려는 것이기도 하고, 집어 오는 칸이
     # 늘어나도 한 군데만 고치면 되기 때문이기도 하다.
+    # (J 였는데 '담기' 칸이 10번 자리를 쓰게 되어 K 로 옮겼다.)
     def pick(col, rr):
         return (
-            f'=IF($J{rr}=0,"",'
-            f"INDEX('{D}'!${col}${first_sel}:${col}${last_sel},$J{rr}))"
+            f'=IF($K{rr}=0,"",'
+            f"INDEX('{D}'!${col}${first_sel}:${col}${last_sel},$K{rr}))"
         )
 
     for k in range(LOOKUP_ROWS):
         rr = first_row + k
-        ws.cell(row=rr, column=10).value = (
+        ws.cell(row=rr, column=11).value = (
             f"=IFERROR(MATCH({k + 1},'{D}'!$U${first_sel}:$U${last_sel},0),0)"
         )
         cells = [
             (2, pick("A", rr), None),                    # 종목명
             (3, pick("R", rr), None),                    # 지급주기
             (4, pick("J", rr), PCT),                     # 연 분배율
-            (5, f'=IF($J{rr}=0,"",$D{rr}/12)', PCT3),    # 월 환산
+            (5, f'=IF($K{rr}=0,"",$D{rr}/12)', PCT3),    # 월 환산
             (6, pick("D", rr), WON),                     # 현재가
             (7, pick("H", rr), PCT),                     # 변동성
             (8, pick("E", rr), EOK),                     # 순자산
@@ -516,8 +555,39 @@ def build_lookup_sheet(wb, data, first_sel, last_sel):
                 )
             if k % 2:
                 cell.fill = fill(SURFACE)
-    ws.column_dimensions["J"].hidden = True
-    box(ws, first_row - 1, 2, first_row + LOOKUP_ROWS - 1, 9)
+
+        # ── 담기 ──────────────────────────────────────────────────────
+        # 여기에 'O' 를 넣으면 [제안서] 의 포트폴리오에 그 종목이 올라간다.
+        # 엑셀 파일(.xlsx)에서는 단추를 눌러 다른 장에 값을 쓸 수 없다 —
+        # 그건 매크로(VBA)가 하는 일이고, 매크로 파일은 사내 배포에서 막힌다.
+        # 그래서 '누르는' 대신 '표시하는' 방식으로 같은 일을 한다. 콤보박스를
+        # 달아 두었으므로 ▼ 를 눌러 O 를 고르면 된다.
+        mk = put(ws, rr, 10, None, None, kind="input")
+        mk.alignment = Alignment(horizontal="center", vertical="center")
+
+    # 담기 칸의 콤보박스. 아무 글자나 넣어도 담기지만, 고를 수 있게 해 두면
+    # 무엇을 넣어야 하는지 물어볼 일이 없다.
+    dv_mark = DataValidation(type="list", formula1='"O"', allow_blank=True, showDropDown=False)
+    dv_mark.prompt = "▼ 를 눌러 O 를 고르면 [제안서] 포트폴리오에 올라갑니다. 지우면 내려갑니다."
+    dv_mark.promptTitle = "담기"
+    ws.add_data_validation(dv_mark)
+    dv_mark.sqref = f"J{first_row}:J{first_row + LOOKUP_ROWS - 1}"
+
+    # ── 담은 종목을 차례대로 뽑아 두는 숨긴 칸 ─────────────────────────
+    # [ETF데이터] 의 조회 칸과 같은 방식이다. L 은 담겼는지, M 은 몇 번째로
+    # 담겼는지, N 은 그 차례의 종목명이다. [제안서] 는 N 만 본다.
+    for k in range(LOOKUP_ROWS):
+        rr = first_row + k
+        ws.cell(row=rr, column=12).value = f'=IF(AND($B{rr}<>"",$J{rr}<>""),1,0)'
+        prev = "0" if k == 0 else f"$M{rr - 1}"
+        ws.cell(row=rr, column=13).value = f"=IF($L{rr}=1,{prev}+1,{prev})"
+        ws.cell(row=rr, column=14).value = (
+            f"=IFERROR(INDEX($B${first_row}:$B${first_row + LOOKUP_ROWS - 1},"
+            f"MATCH({k + 1},$M${first_row}:$M${first_row + LOOKUP_ROWS - 1},0)),\"\")"
+        )
+    for _h in ("K", "L", "M", "N"):
+        ws.column_dimensions[_h].hidden = True
+    box(ws, first_row - 1, 2, first_row + LOOKUP_ROWS - 1, 10)
     last_row = first_row + LOOKUP_ROWS - 1
 
     r = last_row + 2
@@ -525,9 +595,19 @@ def build_lookup_sheet(wb, data, first_sel, last_sel):
           f"※ 조건에 맞는 종목이 {LOOKUP_ROWS}개를 넘으면 위에서부터 {LOOKUP_ROWS}개만 나옵니다. "
           "조건을 좁혀 보십시오.", size=9, color=MUTED)
     label(ws, r + 1, 2,
-          "※ 여기서 고른 종목명을 [제안서] 장의 콤보박스에서 선택하십시오. "
-          "제안서 콤보박스는 조건과 상관없이 전체 목록을 그대로 담고 있습니다 — "
-          "조건을 바꿨다고 이미 담아 둔 종목이 빠지면 안 되기 때문입니다.",
+          "※ 담고 싶은 종목의 '담기' 칸에 O 를 넣으십시오. [제안서] 의 포트폴리오에 "
+          "위에서부터 차례로 올라갑니다. 지우면 내려갑니다. 배분 비율은 제안서에서 직접 넣으십시오.",
+          size=9, color=MUTED)
+    # 이 경고를 빼면 안 된다. '담기' 표시는 종목이 아니라 **줄**에 붙기 때문에,
+    # 조건을 바꿔 그 줄에 다른 종목이 오면 표시는 그대로 남은 채 담긴 종목만
+    # 바뀐다. 조용히 바뀌는 것이 제일 나쁘다.
+    label(ws, r + 2, 2,
+          "※ '담기' 표시는 종목이 아니라 그 줄에 붙습니다. 담은 뒤에 위의 조회 조건을 바꾸면 "
+          "그 줄에 다른 종목이 올라오면서 담긴 종목도 함께 바뀝니다. 조건을 먼저 정하고 담으십시오.",
+          size=9, color=WARNING)
+    label(ws, r + 3, 2,
+          "※ [제안서] 에서 직접 고르셔도 됩니다. 그 장의 콤보박스는 조건과 상관없이 전체 목록을 "
+          "담고 있습니다 — 조건을 바꿨다고 이미 담아 둔 종목이 빠지면 안 되기 때문입니다.",
           size=9, color=MUTED)
 
     ws.freeze_panes = f"A{first_row}"
@@ -624,6 +704,22 @@ def build_proposal(wb, data, first_sel, last_sel, first_adopted, last_adopted):
     # ── 2. 포트폴리오 ──
     r = section(ws, cust_row + 6, "2", f"투자 포트폴리오  (최대 {SLOTS}종목)", LAST)
     hdr = r
+
+    # ── 종목 검색 ──────────────────────────────────────────────────────
+    # 콤보박스에 514종목이 한 줄로 들어 있으면 원하는 것을 찾기가 어렵다.
+    # 여기에 글자 몇 개를 넣으면 아래 콤보박스 목록이 그만큼만 남는다.
+    # 대소문자는 가리지 않고, 이름 가운데 들어 있어도 걸린다.
+    #
+    # 좁아지는 것은 **고르는 목록**뿐이다. 이미 담아 둔 종목은 검색어와
+    # 상관없이 그대로 있고 계산도 그대로다. ([ETF데이터] 의 주석 참고)
+    srch_row = cust_row + 7
+    label(ws, srch_row, 4, "종목 검색", size=10, bold=True)
+    srch = put(ws, srch_row, 5, None, None, kind="input")
+    srch.alignment = Alignment(vertical="center", horizontal="left")
+    label(ws, srch_row, 6,
+          "← 글자 일부를 넣으면 아래 ▼ 목록이 그만큼만 남습니다 (예: 커버드콜). 비우면 전체.",
+          size=9, color=MUTED)
+    SEARCH_CELL = f"$E${srch_row}"
     table_head(
         ws, hdr,
         ["투자 ETF",
@@ -633,10 +729,12 @@ def build_proposal(wb, data, first_sel, last_sel, first_adopted, last_adopted):
     )
     p_first, p_last = hdr + 1, hdr + SLOTS
 
-    dv = DataValidation(type="list", formula1="=선택가능종목", allow_blank=True, showDropDown=False)
-    dv.error = "목록에 있는 ETF 중에서 고르십시오."
+    # 목록은 '검색결과' 를 본다 — 위 검색 칸이 비어 있으면 전체와 같다.
+    # 계산이 종목을 찾을 때 쓰는 목록(K 칸의 선택가능종목)은 그대로 전체다.
+    dv = DataValidation(type="list", formula1="=검색결과", allow_blank=True, showDropDown=False)
+    dv.error = "목록에 있는 ETF 중에서 고르십시오. 검색 칸을 비우면 전체 목록이 나옵니다."
     dv.errorTitle = "선택할 수 없는 종목"
-    dv.prompt = "▼ 를 눌러 고르십시오. 비워 두면 그 줄은 계산에서 빠집니다."
+    dv.prompt = "▼ 를 눌러 고르십시오. 위 '종목 검색' 으로 목록을 좁힐 수 있습니다."
     dv.promptTitle = "ETF 선택"
     ws.add_data_validation(dv)
 
@@ -964,7 +1062,7 @@ def build_proposal(wb, data, first_sel, last_sel, first_adopted, last_adopted):
     ws.oddFooter.right.text = "&P / &N"
     ws.oddFooter.right.size = 8
     ws.oddFooter.right.color = "6C6C6C"
-    return ws, p_first, p_last
+    return ws, p_first, p_last, SEARCH_CELL
 
 
 def build_guide(wb, data, n_adopted, n_rejected, n_bad):
@@ -993,6 +1091,12 @@ def build_guide(wb, data, n_adopted, n_rejected, n_bad):
         "",
         (f"2. 포트폴리오는 {SLOTS}줄까지 담을 수 있습니다.", "h"),
         "     · 투자 ETF 칸을 누르면 ▼ 가 나옵니다. 목록에서 고르십시오.",
+        "     · 종목이 많아 찾기 어려우면 표 위의 '종목 검색' 에 글자 일부를 넣으십시오"
+        " (예: 커버드콜). ▼ 목록이 그만큼만 남고, 비우면 전체로 돌아옵니다.",
+        "     · [종목조회] 장에서 '담기' 칸에 O 를 넣으면 이 표에 자동으로 올라옵니다."
+        " 담은 순서대로 채워지고, O 를 지우면 내려갑니다. 배분 비율은 직접 넣으십시오.",
+        "     · 손으로 ▼ 로 고르면 그 줄은 손으로 고른 값이 남습니다(그 줄만"
+        " [종목조회] 를 따라가지 않습니다). 다음 달 파일에서는 다시 연결됩니다.",
         "     · '비율' 이면 배분 칸에 %를 넣습니다. 합이 100 이 되어야 합니다.",
         "       예) 50 / 30 / 20 → 총 투자금액을 5:3:2 로 나눕니다.",
         "     · '금액' 이면 배분 칸에 원 단위 금액을 직접 넣습니다.",
@@ -1040,14 +1144,37 @@ def main():
     wb = Workbook()
     wb.remove(wb.active)
 
-    ds, first_adopted, last_adopted, last_sel, n_ok, n_rej, n_bad = build_data_sheet(wb, data)
+    (ds, first_adopted, last_adopted, last_sel,
+     n_ok, n_rej, n_bad, col_smatch, col_slist) = build_data_sheet(wb, data)
     # 드롭다운이 가리킬 이름. 채택 + 기준 미달(값이 온전한 것)까지 담는다.
     # 수집 실패 종목은 그 뒤에 있어 이 구간에 들어오지 않는다.
+    #
+    # **계산이 보는 목록은 늘 이것이다.** 검색으로 좁아지는 것은 고르는 목록
+    # (아래 '검색결과')뿐이라, 검색어를 바꿔도 이미 담아 둔 종목은 그대로다.
     wb.defined_names.add(
         DefinedName("선택가능종목", attr_text=f"'ETF데이터'!$A${first_adopted}:$A${last_sel}")
     )
-    ws, p_first, p_last = build_proposal(wb, data, first_adopted, last_sel, first_adopted, last_adopted)
+    ws, p_first, p_last, search_cell = build_proposal(
+        wb, data, first_adopted, last_sel, first_adopted, last_adopted)
     lk, cond_row, lk_first, lk_last = build_lookup_sheet(wb, data, first_adopted, last_sel)
+
+    # 검색 칸과, 그 검색에 걸린 종목만 담은 목록.
+    #
+    # 높이를 걸린 개수만큼만 잡는다(OFFSET). 구간을 통째로 가리키면 목록
+    # 끝에 빈 줄이 수백 개 달려 ▼ 를 눌렀을 때 아래가 허옇게 비어 보인다.
+    # 하나도 안 걸렸을 때를 대비해 최소 1로 둔다 — 높이가 0이면 엑셀이
+    # 이름 자체를 오류로 본다.
+    wb.defined_names.add(DefinedName("검색어", attr_text=f"'제안서'!{search_cell}"))
+    wb.defined_names.add(DefinedName("검색결과", attr_text=(
+        f"OFFSET('ETF데이터'!${col_slist}${first_adopted},0,0,"
+        f"MAX(1,COUNTIF('ETF데이터'!${col_smatch}${first_adopted}:"
+        f"${col_smatch}${last_sel},1)),1)"
+    )))
+    # [종목조회] 에서 'O' 로 담은 종목을 차례대로 담은 목록과 그 개수.
+    wb.defined_names.add(
+        DefinedName("담긴목록", attr_text=f"'종목조회'!$N${lk_first}:$N${lk_last}"))
+    wb.defined_names.add(
+        DefinedName("담긴수", attr_text=f"'종목조회'!$M${lk_last}"))
     # 조회 조건 세 칸에 이름을 붙인다. [ETF데이터] 장의 숨긴 계산 칸이 이
     # 이름들을 본다 — 칸 주소를 그대로 박아 두면 줄이 하나 밀리는 순간
     # 조회가 엉뚱한 칸을 조건으로 읽는다.
@@ -1072,7 +1199,23 @@ def main():
     monthly = [x for x in pool if (x.get("payoutFreq") or "") == "월배당"]
     not_parking = [x for x in (monthly or pool) if (x.get("assetClassCode") or "") != "0108"]
     default = max(not_parking or monthly or pool, key=lambda x: (x.get("aum") or 0))
-    ws.cell(row=p_first, column=2).value = default["name"]
+
+    # 종목 칸은 [종목조회] 에서 'O' 로 담은 것을 차례대로 받아 온다.
+    #
+    # 아무것도 담지 않았으면 첫 줄만 기본 종목을 보여 주고 나머지는 비운다 —
+    # 열 줄이 전부 비면 열자마자 0원짜리 제안서가 뜨기 때문이다. 하나라도
+    # 담기면 기본 종목은 물러나고 담은 것만 올라온다.
+    #
+    # 손으로 고르고 싶으면 그냥 ▼ 로 고르면 된다. 그러면 그 줄의 수식이
+    # 지워지고 고른 값이 남는다 — 그 줄만 손으로 잡히고 나머지 줄은 계속
+    # [종목조회] 를 따라간다. 다음 달 파일에서는 다시 수식으로 돌아온다.
+    esc = default["name"].replace('"', '""')
+    for i in range(SLOTS):
+        rr = p_first + i
+        fallback = f'"{esc}"' if i == 0 else '""'
+        ws.cell(row=rr, column=2).value = (
+            f'=IF(담긴수=0,{fallback},IFERROR(INDEX(담긴목록,{i + 1}),""))'
+        )
     ws.cell(row=p_first, column=3).value = 100   # 비율 방식이므로 100%
 
     wb.active = wb["제안서"]
