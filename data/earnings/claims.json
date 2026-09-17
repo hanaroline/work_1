@@ -2309,6 +2309,842 @@
    "printed_on": [
     "table-main"
    ]
+  },
+  {
+   "id": "PEER_LOW_FPE",
+   "kind": "market_multiple",
+   "metric": "선행 P/E",
+   "text": "LOW 선행 P/E (섹터 기준배수 산출용)",
+   "value": 16.34,
+   "unit": "배",
+   "series": "stockanalysis.com 한 곳 · 2026-09-17 기준 (제공사 혼용 금지)",
+   "as_of": "2026-09-17",
+   "tier": 3,
+   "source_url": "https://stockanalysis.com/stocks/low/statistics/",
+   "verdict": "confirmed",
+   "render": "marked",
+   "note": "경기소비재 섹터 중앙값 계산에만 쓰는 동종업체. 화면의 기업 표에는 실리지 않는다.",
+   "printed_on": [
+    "sector-benchmark"
+   ]
+  },
+  {
+   "id": "PEER_MCD_FPE",
+   "kind": "market_multiple",
+   "metric": "선행 P/E",
+   "text": "MCD 선행 P/E (섹터 기준배수 산출용)",
+   "value": 19.05,
+   "unit": "배",
+   "series": "stockanalysis.com 한 곳 · 2026-09-17 기준 (제공사 혼용 금지)",
+   "as_of": "2026-09-17",
+   "tier": 3,
+   "source_url": "https://stockanalysis.com/stocks/mcd/statistics/",
+   "verdict": "confirmed",
+   "render": "marked",
+   "note": "경기소비재 섹터 중앙값 계산에만 쓰는 동종업체. 화면의 기업 표에는 실리지 않는다.",
+   "printed_on": [
+    "sector-benchmark"
+   ]
+  },
+  {
+   "id": "PEER_NKE_FPE",
+   "kind": "market_multiple",
+   "metric": "선행 P/E",
+   "text": "NKE 선행 P/E (섹터 기준배수 산출용)",
+   "value": 21.62,
+   "unit": "배",
+   "series": "stockanalysis.com 한 곳 · 2026-09-17 기준 (제공사 혼용 금지)",
+   "as_of": "2026-09-17",
+   "tier": 3,
+   "source_url": "https://stockanalysis.com/stocks/nke/statistics/",
+   "verdict": "confirmed",
+   "render": "marked",
+   "note": "경기소비재 섹터 중앙값 계산에만 쓰는 동종업체. 화면의 기업 표에는 실리지 않는다.",
+   "printed_on": [
+    "sector-benchmark"
+   ]
+  },
+  {
+   "id": "PEER_SBUX_FPE",
+   "kind": "market_multiple",
+   "metric": "선행 P/E",
+   "text": "SBUX 선행 P/E (섹터 기준배수 산출용)",
+   "value": 35.23,
+   "unit": "배",
+   "series": "stockanalysis.com 한 곳 · 2026-09-17 기준 (제공사 혼용 금지)",
+   "as_of": "2026-09-17",
+   "tier": 3,
+   "source_url": "https://stockanalysis.com/stocks/sbux/statistics/",
+   "verdict": "confirmed",
+   "render": "marked",
+   "note": "경기소비재 섹터 중앙값 계산에만 쓰는 동종업체. 화면의 기업 표에는 실리지 않는다.",
+   "printed_on": [
+    "sector-benchmark"
+   ]
+  },
+  {
+   "id": "SECMED_63508",
+   "kind": "derived_benchmark",
+   "metric": "섹터 기준배수",
+   "text": "경기소비재 섹터 선행 P/E 중앙값",
+   "value": 21.73,
+   "unit": "배",
+   "series": "stockanalysis.com 한 곳 · 2026-09-17 기준 (제공사 혼용 금지)",
+   "as_of": "2026-09-17",
+   "tier": 3,
+   "source_url": "https://stockanalysis.com/stocks/xom/statistics/",
+   "verdict": "confirmed",
+   "render": "marked",
+   "note": "대형주 7개사(대시보드 3 + 동종업체 4)의 중앙값 — 섹터 지수의 배수가 아니다. 구성: LOW 16.34, MCD 19.05, NKE 21.62, HD 21.73, AMZN 28.76, SBUX 35.23, TSLA 188.57",
+   "printed_on": [
+    "sector-benchmark",
+    "table-main"
+   ]
+  },
+  {
+   "id": "PEER_WFC_FPE",
+   "kind": "market_multiple",
+   "metric": "선행 P/E",
+   "text": "WFC 선행 P/E (섹터 기준배수 산출용)",
+   "value": 10.25,
+   "unit": "배",
+   "series": "stockanalysis.com 한 곳 · 2026-09-17 기준 (제공사 혼용 금지)",
+   "as_of": "2026-09-17",
+   "tier": 3,
+   "source_url": "https://stockanalysis.com/stocks/wfc/statistics/",
+   "verdict": "confirmed",
+   "render": "marked",
+   "note": "금융 섹터 중앙값 계산에만 쓰는 동종업체. 화면의 기업 표에는 실리지 않는다.",
+   "printed_on": [
+    "sector-benchmark"
+   ]
+  },
+  {
+   "id": "PEER_C_FPE",
+   "kind": "market_multiple",
+   "metric": "선행 P/E",
+   "text": "C 선행 P/E (섹터 기준배수 산출용)",
+   "value": 11.29,
+   "unit": "배",
+   "series": "stockanalysis.com 한 곳 · 2026-09-17 기준 (제공사 혼용 금지)",
+   "as_of": "2026-09-17",
+   "tier": 3,
+   "source_url": "https://stockanalysis.com/stocks/c/statistics/",
+   "verdict": "confirmed",
+   "render": "marked",
+   "note": "금융 섹터 중앙값 계산에만 쓰는 동종업체. 화면의 기업 표에는 실리지 않는다.",
+   "printed_on": [
+    "sector-benchmark"
+   ]
+  },
+  {
+   "id": "PEER_BAC_FPE",
+   "kind": "market_multiple",
+   "metric": "선행 P/E",
+   "text": "BAC 선행 P/E (섹터 기준배수 산출용)",
+   "value": 12.63,
+   "unit": "배",
+   "series": "stockanalysis.com 한 곳 · 2026-09-17 기준 (제공사 혼용 금지)",
+   "as_of": "2026-09-17",
+   "tier": 3,
+   "source_url": "https://stockanalysis.com/stocks/bac/statistics/",
+   "verdict": "confirmed",
+   "render": "marked",
+   "note": "금융 섹터 중앙값 계산에만 쓰는 동종업체. 화면의 기업 표에는 실리지 않는다.",
+   "printed_on": [
+    "sector-benchmark"
+   ]
+  },
+  {
+   "id": "PEER_MS_FPE",
+   "kind": "market_multiple",
+   "metric": "선행 P/E",
+   "text": "MS 선행 P/E (섹터 기준배수 산출용)",
+   "value": 17.8,
+   "unit": "배",
+   "series": "stockanalysis.com 한 곳 · 2026-09-17 기준 (제공사 혼용 금지)",
+   "as_of": "2026-09-17",
+   "tier": 3,
+   "source_url": "https://stockanalysis.com/stocks/ms/statistics/",
+   "verdict": "confirmed",
+   "render": "marked",
+   "note": "금융 섹터 중앙값 계산에만 쓰는 동종업체. 화면의 기업 표에는 실리지 않는다.",
+   "printed_on": [
+    "sector-benchmark"
+   ]
+  },
+  {
+   "id": "SECMED_11700",
+   "kind": "derived_benchmark",
+   "metric": "섹터 기준배수",
+   "text": "금융 섹터 선행 P/E 중앙값",
+   "value": 13.76,
+   "unit": "배",
+   "series": "stockanalysis.com 한 곳 · 2026-09-17 기준 (제공사 혼용 금지)",
+   "as_of": "2026-09-17",
+   "tier": 3,
+   "source_url": "https://stockanalysis.com/stocks/xom/statistics/",
+   "verdict": "confirmed",
+   "render": "marked",
+   "note": "대형주 6개사(대시보드 2 + 동종업체 4)의 중앙값 — 섹터 지수의 배수가 아니다. 구성: WFC 10.25, C 11.29, BAC 12.63, GS 14.89, JPM 14.96, MS 17.80",
+   "printed_on": [
+    "sector-benchmark",
+    "table-main"
+   ]
+  },
+  {
+   "id": "PEER_LMT_FPE",
+   "kind": "market_multiple",
+   "metric": "선행 P/E",
+   "text": "LMT 선행 P/E (섹터 기준배수 산출용)",
+   "value": 19.66,
+   "unit": "배",
+   "series": "stockanalysis.com 한 곳 · 2026-09-17 기준 (제공사 혼용 금지)",
+   "as_of": "2026-09-17",
+   "tier": 3,
+   "source_url": "https://stockanalysis.com/stocks/lmt/statistics/",
+   "verdict": "confirmed",
+   "render": "marked",
+   "note": "산업재 섹터 중앙값 계산에만 쓰는 동종업체. 화면의 기업 표에는 실리지 않는다.",
+   "printed_on": [
+    "sector-benchmark"
+   ]
+  },
+  {
+   "id": "PEER_UNP_FPE",
+   "kind": "market_multiple",
+   "metric": "선행 P/E",
+   "text": "UNP 선행 P/E (섹터 기준배수 산출용)",
+   "value": 21.07,
+   "unit": "배",
+   "series": "stockanalysis.com 한 곳 · 2026-09-17 기준 (제공사 혼용 금지)",
+   "as_of": "2026-09-17",
+   "tier": 3,
+   "source_url": "https://stockanalysis.com/stocks/unp/statistics/",
+   "verdict": "confirmed",
+   "render": "marked",
+   "note": "산업재 섹터 중앙값 계산에만 쓰는 동종업체. 화면의 기업 표에는 실리지 않는다.",
+   "printed_on": [
+    "sector-benchmark"
+   ]
+  },
+  {
+   "id": "PEER_ETN_FPE",
+   "kind": "market_multiple",
+   "metric": "선행 P/E",
+   "text": "ETN 선행 P/E (섹터 기준배수 산출용)",
+   "value": 25.97,
+   "unit": "배",
+   "series": "stockanalysis.com 한 곳 · 2026-09-17 기준 (제공사 혼용 금지)",
+   "as_of": "2026-09-17",
+   "tier": 3,
+   "source_url": "https://stockanalysis.com/stocks/etn/statistics/",
+   "verdict": "confirmed",
+   "render": "marked",
+   "note": "산업재 섹터 중앙값 계산에만 쓰는 동종업체. 화면의 기업 표에는 실리지 않는다.",
+   "printed_on": [
+    "sector-benchmark"
+   ]
+  },
+  {
+   "id": "PEER_RTX_FPE",
+   "kind": "market_multiple",
+   "metric": "선행 P/E",
+   "text": "RTX 선행 P/E (섹터 기준배수 산출용)",
+   "value": 27.22,
+   "unit": "배",
+   "series": "stockanalysis.com 한 곳 · 2026-09-17 기준 (제공사 혼용 금지)",
+   "as_of": "2026-09-17",
+   "tier": 3,
+   "source_url": "https://stockanalysis.com/stocks/rtx/statistics/",
+   "verdict": "confirmed",
+   "render": "marked",
+   "note": "산업재 섹터 중앙값 계산에만 쓰는 동종업체. 화면의 기업 표에는 실리지 않는다.",
+   "printed_on": [
+    "sector-benchmark"
+   ]
+  },
+  {
+   "id": "PEER_DE_FPE",
+   "kind": "market_multiple",
+   "metric": "선행 P/E",
+   "text": "DE 선행 P/E (섹터 기준배수 산출용)",
+   "value": 30.78,
+   "unit": "배",
+   "series": "stockanalysis.com 한 곳 · 2026-09-17 기준 (제공사 혼용 금지)",
+   "as_of": "2026-09-17",
+   "tier": 3,
+   "source_url": "https://stockanalysis.com/stocks/de/statistics/",
+   "verdict": "confirmed",
+   "render": "marked",
+   "note": "산업재 섹터 중앙값 계산에만 쓰는 동종업체. 화면의 기업 표에는 실리지 않는다.",
+   "printed_on": [
+    "sector-benchmark"
+   ]
+  },
+  {
+   "id": "PEER_GE_FPE",
+   "kind": "market_multiple",
+   "metric": "선행 P/E",
+   "text": "GE 선행 P/E (섹터 기준배수 산출용)",
+   "value": 47.61,
+   "unit": "배",
+   "series": "stockanalysis.com 한 곳 · 2026-09-17 기준 (제공사 혼용 금지)",
+   "as_of": "2026-09-17",
+   "tier": 3,
+   "source_url": "https://stockanalysis.com/stocks/ge/statistics/",
+   "verdict": "confirmed",
+   "render": "marked",
+   "note": "산업재 섹터 중앙값 계산에만 쓰는 동종업체. 화면의 기업 표에는 실리지 않는다.",
+   "printed_on": [
+    "sector-benchmark"
+   ]
+  },
+  {
+   "id": "PEER_BA_FPE",
+   "kind": "market_multiple",
+   "metric": "선행 P/E",
+   "text": "BA 선행 P/E (섹터 기준배수 산출용)",
+   "value": 173.65,
+   "unit": "배",
+   "series": "stockanalysis.com 한 곳 · 2026-09-17 기준 (제공사 혼용 금지)",
+   "as_of": "2026-09-17",
+   "tier": 3,
+   "source_url": "https://stockanalysis.com/stocks/ba/statistics/",
+   "verdict": "confirmed",
+   "render": "marked",
+   "note": "산업재 섹터 중앙값 계산에만 쓰는 동종업체. 화면의 기업 표에는 실리지 않는다.",
+   "printed_on": [
+    "sector-benchmark"
+   ]
+  },
+  {
+   "id": "SECMED_42917",
+   "kind": "derived_benchmark",
+   "metric": "섹터 기준배수",
+   "text": "산업재 섹터 선행 P/E 중앙값",
+   "value": 27.77,
+   "unit": "배",
+   "series": "stockanalysis.com 한 곳 · 2026-09-17 기준 (제공사 혼용 금지)",
+   "as_of": "2026-09-17",
+   "tier": 3,
+   "source_url": "https://stockanalysis.com/stocks/xom/statistics/",
+   "verdict": "confirmed",
+   "render": "marked",
+   "note": "대형주 8개사(대시보드 1 + 동종업체 7)의 중앙값 — 섹터 지수의 배수가 아니다. 구성: LMT 19.66, UNP 21.07, ETN 25.97, RTX 27.22, CAT 28.32, DE 30.78, GE 47.61, BA 173.65",
+   "printed_on": [
+    "sector-benchmark",
+    "table-main"
+   ]
+  },
+  {
+   "id": "PEER_COP_FPE",
+   "kind": "market_multiple",
+   "metric": "선행 P/E",
+   "text": "COP 선행 P/E (섹터 기준배수 산출용)",
+   "value": 12.8,
+   "unit": "배",
+   "series": "stockanalysis.com 한 곳 · 2026-09-17 기준 (제공사 혼용 금지)",
+   "as_of": "2026-09-17",
+   "tier": 3,
+   "source_url": "https://stockanalysis.com/stocks/cop/statistics/",
+   "verdict": "confirmed",
+   "render": "marked",
+   "note": "에너지 섹터 중앙값 계산에만 쓰는 동종업체. 화면의 기업 표에는 실리지 않는다.",
+   "printed_on": [
+    "sector-benchmark"
+   ]
+  },
+  {
+   "id": "PEER_EOG_FPE",
+   "kind": "market_multiple",
+   "metric": "선행 P/E",
+   "text": "EOG 선행 P/E (섹터 기준배수 산출용)",
+   "value": 12.8,
+   "unit": "배",
+   "series": "stockanalysis.com 한 곳 · 2026-09-17 기준 (제공사 혼용 금지)",
+   "as_of": "2026-09-17",
+   "tier": 3,
+   "source_url": "https://stockanalysis.com/stocks/eog/statistics/",
+   "verdict": "confirmed",
+   "render": "marked",
+   "note": "에너지 섹터 중앙값 계산에만 쓰는 동종업체. 화면의 기업 표에는 실리지 않는다.",
+   "printed_on": [
+    "sector-benchmark"
+   ]
+  },
+  {
+   "id": "PEER_CVX_FPE",
+   "kind": "market_multiple",
+   "metric": "선행 P/E",
+   "text": "CVX 선행 P/E (섹터 기준배수 산출용)",
+   "value": 13.51,
+   "unit": "배",
+   "series": "stockanalysis.com 한 곳 · 2026-09-17 기준 (제공사 혼용 금지)",
+   "as_of": "2026-09-17",
+   "tier": 3,
+   "source_url": "https://stockanalysis.com/stocks/cvx/statistics/",
+   "verdict": "confirmed",
+   "render": "marked",
+   "note": "에너지 섹터 중앙값 계산에만 쓰는 동종업체. 화면의 기업 표에는 실리지 않는다.",
+   "printed_on": [
+    "sector-benchmark"
+   ]
+  },
+  {
+   "id": "PEER_SLB_FPE",
+   "kind": "market_multiple",
+   "metric": "선행 P/E",
+   "text": "SLB 선행 P/E (섹터 기준배수 산출용)",
+   "value": 19.02,
+   "unit": "배",
+   "series": "stockanalysis.com 한 곳 · 2026-09-17 기준 (제공사 혼용 금지)",
+   "as_of": "2026-09-17",
+   "tier": 3,
+   "source_url": "https://stockanalysis.com/stocks/slb/statistics/",
+   "verdict": "confirmed",
+   "render": "marked",
+   "note": "에너지 섹터 중앙값 계산에만 쓰는 동종업체. 화면의 기업 표에는 실리지 않는다.",
+   "printed_on": [
+    "sector-benchmark"
+   ]
+  },
+  {
+   "id": "SECMED_98097",
+   "kind": "derived_benchmark",
+   "metric": "섹터 기준배수",
+   "text": "에너지 섹터 선행 P/E 중앙값",
+   "value": 13.51,
+   "unit": "배",
+   "series": "stockanalysis.com 한 곳 · 2026-09-17 기준 (제공사 혼용 금지)",
+   "as_of": "2026-09-17",
+   "tier": 3,
+   "source_url": "https://stockanalysis.com/stocks/xom/statistics/",
+   "verdict": "confirmed",
+   "render": "marked",
+   "note": "대형주 5개사(대시보드 1 + 동종업체 4)의 중앙값 — 섹터 지수의 배수가 아니다. 구성: COP 12.80, EOG 12.80, CVX 13.51, XOM 13.76, SLB 19.02",
+   "printed_on": [
+    "sector-benchmark",
+    "table-main"
+   ]
+  },
+  {
+   "id": "PEER_QCOM_FPE",
+   "kind": "market_multiple",
+   "metric": "선행 P/E",
+   "text": "QCOM 선행 P/E (섹터 기준배수 산출용)",
+   "value": 17.97,
+   "unit": "배",
+   "series": "stockanalysis.com 한 곳 · 2026-09-17 기준 (제공사 혼용 금지)",
+   "as_of": "2026-09-17",
+   "tier": 3,
+   "source_url": "https://stockanalysis.com/stocks/qcom/statistics/",
+   "verdict": "confirmed",
+   "render": "marked",
+   "note": "정보기술 섹터 중앙값 계산에만 쓰는 동종업체. 화면의 기업 표에는 실리지 않는다.",
+   "printed_on": [
+    "sector-benchmark"
+   ]
+  },
+  {
+   "id": "PEER_IBM_FPE",
+   "kind": "market_multiple",
+   "metric": "선행 P/E",
+   "text": "IBM 선행 P/E (섹터 기준배수 산출용)",
+   "value": 18.41,
+   "unit": "배",
+   "series": "stockanalysis.com 한 곳 · 2026-09-17 기준 (제공사 혼용 금지)",
+   "as_of": "2026-09-17",
+   "tier": 3,
+   "source_url": "https://stockanalysis.com/stocks/ibm/statistics/",
+   "verdict": "confirmed",
+   "render": "marked",
+   "note": "정보기술 섹터 중앙값 계산에만 쓰는 동종업체. 화면의 기업 표에는 실리지 않는다.",
+   "printed_on": [
+    "sector-benchmark"
+   ]
+  },
+  {
+   "id": "PEER_CSCO_FPE",
+   "kind": "market_multiple",
+   "metric": "선행 P/E",
+   "text": "CSCO 선행 P/E (섹터 기준배수 산출용)",
+   "value": 25.87,
+   "unit": "배",
+   "series": "stockanalysis.com 한 곳 · 2026-09-17 기준 (제공사 혼용 금지)",
+   "as_of": "2026-09-17",
+   "tier": 3,
+   "source_url": "https://stockanalysis.com/stocks/csco/statistics/",
+   "verdict": "confirmed",
+   "render": "marked",
+   "note": "정보기술 섹터 중앙값 계산에만 쓰는 동종업체. 화면의 기업 표에는 실리지 않는다.",
+   "printed_on": [
+    "sector-benchmark"
+   ]
+  },
+  {
+   "id": "PEER_TXN_FPE",
+   "kind": "market_multiple",
+   "metric": "선행 P/E",
+   "text": "TXN 선행 P/E (섹터 기준배수 산출용)",
+   "value": 35.27,
+   "unit": "배",
+   "series": "stockanalysis.com 한 곳 · 2026-09-17 기준 (제공사 혼용 금지)",
+   "as_of": "2026-09-17",
+   "tier": 3,
+   "source_url": "https://stockanalysis.com/stocks/txn/statistics/",
+   "verdict": "confirmed",
+   "render": "marked",
+   "note": "정보기술 섹터 중앙값 계산에만 쓰는 동종업체. 화면의 기업 표에는 실리지 않는다.",
+   "printed_on": [
+    "sector-benchmark"
+   ]
+  },
+  {
+   "id": "SECMED_18477",
+   "kind": "derived_benchmark",
+   "metric": "섹터 기준배수",
+   "text": "정보기술 섹터 선행 P/E 중앙값",
+   "value": 23.55,
+   "unit": "배",
+   "series": "stockanalysis.com 한 곳 · 2026-09-17 기준 (제공사 혼용 금지)",
+   "as_of": "2026-09-17",
+   "tier": 3,
+   "source_url": "https://stockanalysis.com/stocks/xom/statistics/",
+   "verdict": "confirmed",
+   "render": "marked",
+   "note": "대형주 13개사(대시보드 9 + 동종업체 4)의 중앙값 — 섹터 지수의 배수가 아니다. 구성: MU 7.07, CRM 17.45, QCOM 17.97, NVDA 18.12, IBM 18.41, ORCL 19.10, AVGO 23.55, MSFT 24.93, CSCO 25.87, AAPL 34.33, TXN 35.27, AMD 42.61, PLTR 97.87",
+   "printed_on": [
+    "sector-benchmark",
+    "table-main"
+   ]
+  },
+  {
+   "id": "PEER_CMCSA_FPE",
+   "kind": "market_multiple",
+   "metric": "선행 P/E",
+   "text": "CMCSA 선행 P/E (섹터 기준배수 산출용)",
+   "value": 7.51,
+   "unit": "배",
+   "series": "stockanalysis.com 한 곳 · 2026-09-17 기준 (제공사 혼용 금지)",
+   "as_of": "2026-09-17",
+   "tier": 3,
+   "source_url": "https://stockanalysis.com/stocks/cmcsa/statistics/",
+   "verdict": "confirmed",
+   "render": "marked",
+   "note": "커뮤니케이션 섹터 중앙값 계산에만 쓰는 동종업체. 화면의 기업 표에는 실리지 않는다.",
+   "printed_on": [
+    "sector-benchmark"
+   ]
+  },
+  {
+   "id": "PEER_VZ_FPE",
+   "kind": "market_multiple",
+   "metric": "선행 P/E",
+   "text": "VZ 선행 P/E (섹터 기준배수 산출용)",
+   "value": 8.5,
+   "unit": "배",
+   "series": "stockanalysis.com 한 곳 · 2026-09-17 기준 (제공사 혼용 금지)",
+   "as_of": "2026-09-17",
+   "tier": 3,
+   "source_url": "https://stockanalysis.com/stocks/vz/statistics/",
+   "verdict": "confirmed",
+   "render": "marked",
+   "note": "커뮤니케이션 섹터 중앙값 계산에만 쓰는 동종업체. 화면의 기업 표에는 실리지 않는다.",
+   "printed_on": [
+    "sector-benchmark"
+   ]
+  },
+  {
+   "id": "PEER_T_FPE",
+   "kind": "market_multiple",
+   "metric": "선행 P/E",
+   "text": "T 선행 P/E (섹터 기준배수 산출용)",
+   "value": 9.66,
+   "unit": "배",
+   "series": "stockanalysis.com 한 곳 · 2026-09-17 기준 (제공사 혼용 금지)",
+   "as_of": "2026-09-17",
+   "tier": 3,
+   "source_url": "https://stockanalysis.com/stocks/t/statistics/",
+   "verdict": "confirmed",
+   "render": "marked",
+   "note": "커뮤니케이션 섹터 중앙값 계산에만 쓰는 동종업체. 화면의 기업 표에는 실리지 않는다.",
+   "printed_on": [
+    "sector-benchmark"
+   ]
+  },
+  {
+   "id": "PEER_DIS_FPE",
+   "kind": "market_multiple",
+   "metric": "선행 P/E",
+   "text": "DIS 선행 P/E (섹터 기준배수 산출용)",
+   "value": 14.15,
+   "unit": "배",
+   "series": "stockanalysis.com 한 곳 · 2026-09-17 기준 (제공사 혼용 금지)",
+   "as_of": "2026-09-17",
+   "tier": 3,
+   "source_url": "https://stockanalysis.com/stocks/dis/statistics/",
+   "verdict": "confirmed",
+   "render": "marked",
+   "note": "커뮤니케이션 섹터 중앙값 계산에만 쓰는 동종업체. 화면의 기업 표에는 실리지 않는다.",
+   "printed_on": [
+    "sector-benchmark"
+   ]
+  },
+  {
+   "id": "SECMED_34200",
+   "kind": "derived_benchmark",
+   "metric": "섹터 기준배수",
+   "text": "커뮤니케이션 섹터 선행 P/E 중앙값",
+   "value": 14.15,
+   "unit": "배",
+   "series": "stockanalysis.com 한 곳 · 2026-09-17 기준 (제공사 혼용 금지)",
+   "as_of": "2026-09-17",
+   "tier": 3,
+   "source_url": "https://stockanalysis.com/stocks/xom/statistics/",
+   "verdict": "confirmed",
+   "render": "marked",
+   "note": "대형주 7개사(대시보드 3 + 동종업체 4)의 중앙값 — 섹터 지수의 배수가 아니다. 구성: CMCSA 7.51, VZ 8.50, T 9.66, DIS 14.15, META 20.80, NFLX 22.34, GOOGL 25.39",
+   "printed_on": [
+    "sector-benchmark",
+    "table-main"
+   ]
+  },
+  {
+   "id": "PEER_MO_FPE",
+   "kind": "market_multiple",
+   "metric": "선행 P/E",
+   "text": "MO 선행 P/E (섹터 기준배수 산출용)",
+   "value": 10.4,
+   "unit": "배",
+   "series": "stockanalysis.com 한 곳 · 2026-09-17 기준 (제공사 혼용 금지)",
+   "as_of": "2026-09-17",
+   "tier": 3,
+   "source_url": "https://stockanalysis.com/stocks/mo/statistics/",
+   "verdict": "confirmed",
+   "render": "marked",
+   "note": "필수소비재 섹터 중앙값 계산에만 쓰는 동종업체. 화면의 기업 표에는 실리지 않는다.",
+   "printed_on": [
+    "sector-benchmark"
+   ]
+  },
+  {
+   "id": "PEER_PEP_FPE",
+   "kind": "market_multiple",
+   "metric": "선행 P/E",
+   "text": "PEP 선행 P/E (섹터 기준배수 산출용)",
+   "value": 16.16,
+   "unit": "배",
+   "series": "stockanalysis.com 한 곳 · 2026-09-17 기준 (제공사 혼용 금지)",
+   "as_of": "2026-09-17",
+   "tier": 3,
+   "source_url": "https://stockanalysis.com/stocks/pep/statistics/",
+   "verdict": "confirmed",
+   "render": "marked",
+   "note": "필수소비재 섹터 중앙값 계산에만 쓰는 동종업체. 화면의 기업 표에는 실리지 않는다.",
+   "printed_on": [
+    "sector-benchmark"
+   ]
+  },
+  {
+   "id": "PEER_MDLZ_FPE",
+   "kind": "market_multiple",
+   "metric": "선행 P/E",
+   "text": "MDLZ 선행 P/E (섹터 기준배수 산출용)",
+   "value": 19.95,
+   "unit": "배",
+   "series": "stockanalysis.com 한 곳 · 2026-09-17 기준 (제공사 혼용 금지)",
+   "as_of": "2026-09-17",
+   "tier": 3,
+   "source_url": "https://stockanalysis.com/stocks/mdlz/statistics/",
+   "verdict": "confirmed",
+   "render": "marked",
+   "note": "필수소비재 섹터 중앙값 계산에만 쓰는 동종업체. 화면의 기업 표에는 실리지 않는다.",
+   "printed_on": [
+    "sector-benchmark"
+   ]
+  },
+  {
+   "id": "PEER_PG_FPE",
+   "kind": "market_multiple",
+   "metric": "선행 P/E",
+   "text": "PG 선행 P/E (섹터 기준배수 산출용)",
+   "value": 20.98,
+   "unit": "배",
+   "series": "stockanalysis.com 한 곳 · 2026-09-17 기준 (제공사 혼용 금지)",
+   "as_of": "2026-09-17",
+   "tier": 3,
+   "source_url": "https://stockanalysis.com/stocks/pg/statistics/",
+   "verdict": "confirmed",
+   "render": "marked",
+   "note": "필수소비재 섹터 중앙값 계산에만 쓰는 동종업체. 화면의 기업 표에는 실리지 않는다.",
+   "printed_on": [
+    "sector-benchmark"
+   ]
+  },
+  {
+   "id": "PEER_PM_FPE",
+   "kind": "market_multiple",
+   "metric": "선행 P/E",
+   "text": "PM 선행 P/E (섹터 기준배수 산출용)",
+   "value": 21.11,
+   "unit": "배",
+   "series": "stockanalysis.com 한 곳 · 2026-09-17 기준 (제공사 혼용 금지)",
+   "as_of": "2026-09-17",
+   "tier": 3,
+   "source_url": "https://stockanalysis.com/stocks/pm/statistics/",
+   "verdict": "confirmed",
+   "render": "marked",
+   "note": "필수소비재 섹터 중앙값 계산에만 쓰는 동종업체. 화면의 기업 표에는 실리지 않는다.",
+   "printed_on": [
+    "sector-benchmark"
+   ]
+  },
+  {
+   "id": "PEER_CL_FPE",
+   "kind": "market_multiple",
+   "metric": "선행 P/E",
+   "text": "CL 선행 P/E (섹터 기준배수 산출용)",
+   "value": 23.73,
+   "unit": "배",
+   "series": "stockanalysis.com 한 곳 · 2026-09-17 기준 (제공사 혼용 금지)",
+   "as_of": "2026-09-17",
+   "tier": 3,
+   "source_url": "https://stockanalysis.com/stocks/cl/statistics/",
+   "verdict": "confirmed",
+   "render": "marked",
+   "note": "필수소비재 섹터 중앙값 계산에만 쓰는 동종업체. 화면의 기업 표에는 실리지 않는다.",
+   "printed_on": [
+    "sector-benchmark"
+   ]
+  },
+  {
+   "id": "PEER_KO_FPE",
+   "kind": "market_multiple",
+   "metric": "선행 P/E",
+   "text": "KO 선행 P/E (섹터 기준배수 산출용)",
+   "value": 26.38,
+   "unit": "배",
+   "series": "stockanalysis.com 한 곳 · 2026-09-17 기준 (제공사 혼용 금지)",
+   "as_of": "2026-09-17",
+   "tier": 3,
+   "source_url": "https://stockanalysis.com/stocks/ko/statistics/",
+   "verdict": "confirmed",
+   "render": "marked",
+   "note": "필수소비재 섹터 중앙값 계산에만 쓰는 동종업체. 화면의 기업 표에는 실리지 않는다.",
+   "printed_on": [
+    "sector-benchmark"
+   ]
+  },
+  {
+   "id": "SECMED_33297",
+   "kind": "derived_benchmark",
+   "metric": "섹터 기준배수",
+   "text": "필수소비재 섹터 선행 P/E 중앙값",
+   "value": 21.11,
+   "unit": "배",
+   "series": "stockanalysis.com 한 곳 · 2026-09-17 기준 (제공사 혼용 금지)",
+   "as_of": "2026-09-17",
+   "tier": 3,
+   "source_url": "https://stockanalysis.com/stocks/xom/statistics/",
+   "verdict": "confirmed",
+   "render": "marked",
+   "note": "대형주 9개사(대시보드 2 + 동종업체 7)의 중앙값 — 섹터 지수의 배수가 아니다. 구성: MO 10.40, PEP 16.16, MDLZ 19.95, PG 20.98, PM 21.11, CL 23.73, KO 26.38, WMT 35.74, COST 43.25",
+   "printed_on": [
+    "sector-benchmark",
+    "table-main"
+   ]
+  },
+  {
+   "id": "PEER_PFE_FPE",
+   "kind": "market_multiple",
+   "metric": "선행 P/E",
+   "text": "PFE 선행 P/E (섹터 기준배수 산출용)",
+   "value": 8.55,
+   "unit": "배",
+   "series": "stockanalysis.com 한 곳 · 2026-09-17 기준 (제공사 혼용 금지)",
+   "as_of": "2026-09-17",
+   "tier": 3,
+   "source_url": "https://stockanalysis.com/stocks/pfe/statistics/",
+   "verdict": "confirmed",
+   "render": "marked",
+   "note": "헬스케어 섹터 중앙값 계산에만 쓰는 동종업체. 화면의 기업 표에는 실리지 않는다.",
+   "printed_on": [
+    "sector-benchmark"
+   ]
+  },
+  {
+   "id": "PEER_MRK_FPE",
+   "kind": "market_multiple",
+   "metric": "선행 P/E",
+   "text": "MRK 선행 P/E (섹터 기준배수 산출용)",
+   "value": 15.13,
+   "unit": "배",
+   "series": "stockanalysis.com 한 곳 · 2026-09-17 기준 (제공사 혼용 금지)",
+   "as_of": "2026-09-17",
+   "tier": 3,
+   "source_url": "https://stockanalysis.com/stocks/mrk/statistics/",
+   "verdict": "confirmed",
+   "render": "marked",
+   "note": "헬스케어 섹터 중앙값 계산에만 쓰는 동종업체. 화면의 기업 표에는 실리지 않는다.",
+   "printed_on": [
+    "sector-benchmark"
+   ]
+  },
+  {
+   "id": "PEER_ABBV_FPE",
+   "kind": "market_multiple",
+   "metric": "선행 P/E",
+   "text": "ABBV 선행 P/E (섹터 기준배수 산출용)",
+   "value": 17.46,
+   "unit": "배",
+   "series": "stockanalysis.com 한 곳 · 2026-09-17 기준 (제공사 혼용 금지)",
+   "as_of": "2026-09-17",
+   "tier": 3,
+   "source_url": "https://stockanalysis.com/stocks/abbv/statistics/",
+   "verdict": "confirmed",
+   "render": "marked",
+   "note": "헬스케어 섹터 중앙값 계산에만 쓰는 동종업체. 화면의 기업 표에는 실리지 않는다.",
+   "printed_on": [
+    "sector-benchmark"
+   ]
+  },
+  {
+   "id": "PEER_TMO_FPE",
+   "kind": "market_multiple",
+   "metric": "선행 P/E",
+   "text": "TMO 선행 P/E (섹터 기준배수 산출용)",
+   "value": 23.22,
+   "unit": "배",
+   "series": "stockanalysis.com 한 곳 · 2026-09-17 기준 (제공사 혼용 금지)",
+   "as_of": "2026-09-17",
+   "tier": 3,
+   "source_url": "https://stockanalysis.com/stocks/tmo/statistics/",
+   "verdict": "confirmed",
+   "render": "marked",
+   "note": "헬스케어 섹터 중앙값 계산에만 쓰는 동종업체. 화면의 기업 표에는 실리지 않는다.",
+   "printed_on": [
+    "sector-benchmark"
+   ]
+  },
+  {
+   "id": "SECMED_42886",
+   "kind": "derived_benchmark",
+   "metric": "섹터 기준배수",
+   "text": "헬스케어 섹터 선행 P/E 중앙값",
+   "value": 22.37,
+   "unit": "배",
+   "series": "stockanalysis.com 한 곳 · 2026-09-17 기준 (제공사 혼용 금지)",
+   "as_of": "2026-09-17",
+   "tier": 3,
+   "source_url": "https://stockanalysis.com/stocks/xom/statistics/",
+   "verdict": "confirmed",
+   "render": "marked",
+   "note": "대형주 7개사(대시보드 3 + 동종업체 4)의 중앙값 — 섹터 지수의 배수가 아니다. 구성: PFE 8.55, MRK 15.13, ABBV 17.46, UNH 22.37, TMO 23.22, JNJ 24.06, LLY 28.18",
+   "printed_on": [
+    "sector-benchmark",
+    "table-main"
+   ]
   }
  ],
  "derived": [
@@ -2470,6 +3306,7 @@
   "매출 컨센서스": "USD bn",
   "가이던스": "방향(+1/0/-1)",
   "선행 P/E": "배",
-  "PEG": "배"
+  "PEG": "배",
+  "섹터 기준배수": "배"
  }
 }
