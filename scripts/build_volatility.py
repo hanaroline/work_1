@@ -34,6 +34,32 @@ def log(*a):
     print(*a, file=sys.stderr)
 
 
+# 파일에 적을 때마다 바뀌는 칸. 내용을 견줄 때는 빼고 본다.
+VOLATILE = ('generated_at_kst',)
+
+
+def write_if_changed(path, doc, volatile=VOLATILE):
+    """**바뀐 것이 시각뿐이면 파일을 건드리지 않는다.**
+
+    까닭은 build_vol_history.py 의 같은 함수에 적어 두었다 — 요약하면, 이 갱신은
+    하루에 예닐곱 번 도는데 지수 일봉이 그대로면 모델도 그대로라 `generated_at_kst`
+    한 칸만 달라진 판이 매번 커밋됐다. 게다가 줄바꿈 없는 한 줄 JSON 이라 git 이
+    줄 델타를 못 만들어, 한 글자가 달라도 80KB 가 통째로 새로 쌓인다.
+    """
+    new = {k: v for k, v in doc.items() if k not in volatile}
+    if os.path.exists(path):
+        try:
+            old = json.load(open(path, encoding='utf-8'))
+            if {k: v for k, v in old.items() if k not in volatile} == new:
+                return False
+        except ValueError:
+            pass                      # 깨진 파일이면 새로 쓴다
+    os.makedirs(os.path.dirname(path), exist_ok=True)
+    with open(path, 'w', encoding='utf-8') as f:
+        json.dump(doc, f, ensure_ascii=False, separators=(',', ':'))
+    return True
+
+
 # ─────────────────────────────────────────────────────────────────────
 # 수급 계열을 지수 날짜에 맞춰 세운다
 # ─────────────────────────────────────────────────────────────────────
@@ -478,10 +504,10 @@ def main(argv):
     }
 
     path = os.path.join(ROOT, out_path)
-    os.makedirs(os.path.dirname(path), exist_ok=True)
-    with open(path, 'w', encoding='utf-8') as f:
-        json.dump(doc, f, ensure_ascii=False, separators=(',', ':'))
-    log('· %s (%.0f KB)' % (out_path, os.path.getsize(path) / 1024))
+    if write_if_changed(path, doc):
+        log('· %s (%.0f KB)' % (out_path, os.path.getsize(path) / 1024))
+    else:
+        log('· %s — 시각 말고 달라진 것이 없어 그대로 둔다' % out_path)
 
     # 날짜판도 남긴다 — **그날 무엇이라 말했는지**를 나중에 되짚어 보려는 것이다.
     # 통판을 그대로 복사하지는 않는다. 타임라인·백테스트·문턱 훑기는 이력이 있으면
@@ -490,10 +516,11 @@ def main(argv):
     keep = ('generated_at_kst', 'asof', 'index', 'score', 'indicators',
             'scenarios', 'coverage', 'notes', 'config')
     dated = os.path.join(ROOT, os.path.dirname(out_path), '%s.json' % bars[i]['d'])
-    with open(dated, 'w', encoding='utf-8') as f:
-        json.dump({k: doc[k] for k in keep}, f, ensure_ascii=False, separators=(',', ':'))
-    log('· %s (그날의 판정만, %.0f KB)'
-        % (os.path.basename(dated), os.path.getsize(dated) / 1024))
+    if write_if_changed(dated, {k: doc[k] for k in keep}):
+        log('· %s (그날의 판정만, %.0f KB)'
+            % (os.path.basename(dated), os.path.getsize(dated) / 1024))
+    else:
+        log('· %s — 그대로 둔다' % os.path.basename(dated))
     return 0
 
 
