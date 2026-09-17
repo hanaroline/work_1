@@ -124,16 +124,45 @@ async function callOnce({ url, method = 'GET', body = null }) {
   return j.results ?? [];
 }
 
+// 머리글 재발급은 **화면을 새로 여는 일**이다. 그게 이 원천에서 제일 비싼
+// 동작이고, 2차 실측을 망가뜨린 것도 그것이었다.
+//
+// 2차 실측: 306종목 중 30종목만 성공하고 276종목이 403·HTTP 0·
+// ERR_EMPTY_RESPONSE 로 실패했다. 성공한 30개가 전부 맨 앞쪽이었다 — 즉
+// 서른 종목쯤 되다가 통째로 막혔다. 까 보니 내가 만든 악순환이었다.
+// 호출이 실패하면 화면을 새로 열었는데, 수집기 주석에 내가 예전에 적어 둔
+// 그대로다 — "잇달아 열면 ERR_EMPTY_RESPONSE 가 온다". 실패 몇 건 → 화면
+// 열기 → 원천이 화면 열기를 막음 → 머리글을 못 받음 → 이후 전부 403 → 또
+// 화면 열기. 수집기가 1,152회를 탈 없이 도는 이유는 화면을 거의 안 열기
+// 때문이다.
+//
+// 그래서 재발급에 고삐를 건다. 5분에 한 번, 통틀어 열 번까지. 그 밖의
+// 실패는 화면을 열지 않고 그냥 쉬었다 다시 묻는다.
+const REFRESH_MIN_GAP_MS = 5 * 60 * 1000;
+const REFRESH_MAX = 10;
+let lastRefresh = 0;
+let refreshCount = 0;
+
 async function refreshHeaders() {
+  const now = Date.now();
+  if (refreshCount >= REFRESH_MAX || now - lastRefresh < REFRESH_MIN_GAP_MS) return false;
+  lastRefresh = now;
+  refreshCount++;
   appHeaders = null;
-  await page.goto(BASE, { waitUntil: 'domcontentloaded', timeout: 60000 });
-  await page.waitForTimeout(6000);
-  if (!appHeaders) return;
+  try {
+    await page.goto(BASE, { waitUntil: 'domcontentloaded', timeout: 60000 });
+    await page.waitForTimeout(6000);
+  } catch (e) {
+    console.log(`  (화면을 못 열었습니다: ${String(e.message).slice(0, 60)})`);
+    return false;
+  }
+  if (!appHeaders) return false;
   for (const k of Object.keys(HDRS)) delete HDRS[k];
   for (const [k, v] of Object.entries(appHeaders)) {
     if (!/^(host|:|accept-encoding|connection|content-length|cookie|referer|sec-|user-agent)/i.test(k)) HDRS[k] = v;
   }
-  console.log('  (머리글을 새로 받았습니다)');
+  console.log(`  (머리글을 새로 받았습니다 — ${refreshCount}/${REFRESH_MAX})`);
+  return true;
 }
 
 async function call(spec, tries = 3) {
@@ -143,7 +172,10 @@ async function call(spec, tries = 3) {
       return await callOnce(spec);
     } catch (e) {
       last = e;
-      await sleep(800 * (i + 1));
+      // 막혔다는 신호(403)면 더 오래 쉰다. 곧바로 다시 물으면 막힌 채로
+      // 두드리기만 하고 차단이 길어진다.
+      const blocked = /HTTP (403|429|0)/.test(String(e.message));
+      await sleep((blocked ? 4000 : 800) * (i + 1));
       if (i === tries - 2) await refreshHeaders();
     }
   }
@@ -226,16 +258,39 @@ function classify(n, listedOn) {
 // 저장하고, 예산을 넘기면 거기까지를 "여기까지 쟀다" 고 적고 끝낸다.
 const BUDGET_MS = 55 * 60 * 1000;
 
+// 이미 아는 종목에는 예산을 쓰지 않는다.
+//
+// 수집기가 이번 판에서 192종목의 주기를 **이미 판정해 두었다**(data/cc_etf.json).
+// 원천이 우리를 막는 마당에 아는 것을 다시 묻는 것은 한정된 예산을 버리는
+// 짓이다. 그대로 가져다 합치고, 호출은 모르는 종목에만 쓴다. 어디서 온
+// 값인지는 source 에 적어 둔다 — 섞어 놓고 출처를 안 적으면 나중에 이 표를
+// 믿을 수 없게 된다.
+const known = new Map();
+try {
+  for (const it of JSON.parse(fs.readFileSync('data/cc_etf.json', 'utf8')).items || []) {
+    if (it.code && it.payoutFreq) known.set(it.code, it);
+  }
+  console.log(`[${lap()}s] 수집기가 이미 판정해 둔 ${known.size}종목은 다시 묻지 않습니다`);
+} catch {
+  console.log(`[${lap()}s] data/cc_etf.json 을 못 읽었습니다 — 전 종목을 새로 묻습니다`);
+}
+
 const results = [];
 const failed = [];
 const tStage1 = Date.now();
 let stoppedEarly = null;
+let consecutiveFail = 0;
+let calledOk = 0;   // 실제로 원천에 물어서 받아 낸 종목 수
+let calledTried = 0; // 실제로 물어 본 종목 수 (성공·실패 합)
 
 function saveReport(extra = {}) {
   const tally = {};
   for (const r of results) tally[r.freq] = (tally[r.freq] || 0) + 1;
   const elapsed = Math.round((Date.now() - tStage1) / 1000);
-  const perCall = results.length ? elapsed / results.length : null;
+  // 호출당 시간은 **실제로 부른 종목**으로만 낸다. 수집기에서 그대로 가져온
+  // 종목은 시간을 안 쓰므로, 그것까지 분모에 넣으면 실제보다 빠르다고
+  // 적히고 그 숫자로 2단계 예산을 잘못 잡게 된다.
+  const perCall = calledOk ? elapsed / calledOk : null;
   const stage2Targets = results.filter((r) => r.freq !== '무분배' && r.freq !== '판정 불가(상장 1년 미만)');
   fs.mkdirSync(path.dirname(OUT), { recursive: true });
   fs.writeFileSync(
@@ -251,6 +306,9 @@ function saveReport(extra = {}) {
           '1단계대상': gated.length,
           '1단계성공': results.length,
           '1단계실패': failed.length,
+          수집기에서가져옴: results.length - calledOk,
+          실제호출시도: calledTried,
+          실제호출성공: calledOk,
         },
         주기별: tally,
         시간: {
@@ -284,12 +342,32 @@ for (const [i, row] of gated.entries()) {
     );
     if (i > 0) saveReport(); // 중간 저장. 잘려도 여기까지는 남는다
   }
+  // 수집기가 이미 판정해 둔 종목은 호출 없이 그대로 합친다.
+  const k = known.get(code);
+  if (k) {
+    results.push({
+      code,
+      name,
+      freq: k.payoutFreq,
+      count12m: k.payoutCount12m,
+      months12m: k.payoutMonths12m || [],
+      listedOn: k.listedOn || row.F16017 || null,
+      monthlyCtg: monthlyCodes.has(code),
+      aum: k.aum ?? null,
+      turnoverDay: k.turnoverDay ?? null,
+      divRate: k.distTtmRate ?? null,
+      source: '수집기(data/cc_etf.json)',
+    });
+    continue;
+  }
+
   // 예산을 넘겼으면 멈춘다. 잘려서 아무것도 못 남기느니 여기까지를 남긴다.
   if (Date.now() - tStage1 > BUDGET_MS) {
     stoppedEarly = `예산 ${BUDGET_MS / 60000}분을 넘겨 ${i}/${gated.length} 에서 멈췄습니다`;
     console.log(`  [${lap()}s] ${stoppedEarly}`);
     break;
   }
+  calledTried++;
   try {
     const rows = await call({ url: `/user/etp/getEtpItemDivOutline?code=${code}` });
     const { n, months } = countLast12(rows);
@@ -306,8 +384,24 @@ for (const [i, row] of gated.entries()) {
       turnoverDay: s ? num(s.F15023) : null,
       divRate: s ? num(s.DIV_RATE) : null,
     });
+    calledOk++;
+    consecutiveFail = 0;
   } catch (e) {
     failed.push({ code, name, why: String(e.message).slice(0, 160) });
+    consecutiveFail++;
+    // 연속 실패 차단기.
+    //
+    // 2차 실측은 서른 종목 뒤로 막혔는데도 55분을 꽉 채워 재시도만 했다.
+    // 276번을 두드려서 얻은 것은 없고, 원천 쪽에서 우리를 더 오래 막을
+    // 이유만 쌓았다. 막힌 것이 분명해지면 즉시 멈추고 여기까지를 남긴다 —
+    // 잘 돌아가는 매월 1일 수집까지 막히는 것이 제일 나쁘다.
+    if (consecutiveFail >= 20) {
+      stoppedEarly =
+        `${i}/${gated.length} 에서 20연속 실패해 멈췄습니다 (마지막: ${String(e.message).slice(0, 80)}). ` +
+        '원천이 막은 것으로 보입니다 — 계속 두드리지 않습니다.';
+      console.log(`  [${lap()}s] ${stoppedEarly}`);
+      break;
+    }
     if (failed.length >= 10 && results.length === 0) {
       saveReport({ note: '앞 10종목이 모두 실패해 일찍 멈췄습니다' });
       throw new Error(`앞 ${failed.length}종목이 모두 실패했습니다: ${String(e.message).slice(0, 120)}`);
