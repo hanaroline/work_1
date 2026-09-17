@@ -25,6 +25,7 @@ SERIES = {
     "가이던스": "기업이 직접 제시한 전망 (애널리스트 추정치가 아님)",
     "밸류에이션": "stockanalysis.com 한 곳 · 2026-09-17 기준 (제공사 혼용 금지)",
     "LTM": "stockanalysis.com 한 곳 · 2026-09-17 조회 (분기 실적치와는 계열이 다름)",
+    "시세": "stockanalysis.com 한 곳 · 종목마다 화면 기준일이 달라 각 행에 기준일을 남김",
 }
 SERIES_EN = {
     "Quarterly revenue": "As reported by the company (press release / 8-K)",
@@ -33,6 +34,7 @@ SERIES_EN = {
     "Guidance": "Issued by the company itself, not an analyst estimate",
     "Valuation": "stockanalysis.com only · as of 2026-09-17 (never mixed across providers)",
     "LTM": "stockanalysis.com only · retrieved 2026-09-17 (a different series from the reported quarter)",
+    "Market data": "stockanalysis.com only · the provider stamps a different date per ticker, kept on each row",
 }
 
 # ---------------------------------------------------------------- 기업 데이터
@@ -436,8 +438,74 @@ LTM_NOTE = {
  "MU":  "LTM +166.98% 는 메모리 업사이클 구간의 값 — 기저효과가 크다",
  "HD":  "같은 제공사의 통계 화면에서는 LTM 매출이 166.59십억달러로 조회된 적이 있다"
         "(조회 시점 차이). 이 화면은 매출 화면 값으로 통일한다",
+ "ORCL": "같은 제공사의 통계 화면에는 LTM 매출이 67.36십억달러로 실려 있다"
+         "(화면별 산정 차이). 이 화면은 매출 화면 값으로 통일한다 — P/S 도 이 값으로 나눈다",
 }
 ACCEL_BAND = 2.0    # ±2%p 안쪽이면 '유지'로 본다
+
+# ---------------------------------------------------- 밸류에이션 지표 확장
+# 표에 선행 P/E · PEG 만 있으면 '이익 기준' 한 축만 보인다. 매출을 다루는
+# 화면인 만큼 **매출 기준 배수(P/S)** 를, 그리고 자본구조·감가상각 차이를
+# 걷어낸 **EV/EBITDA** 를 함께 싣는다.
+#
+# P/S 는 제공사 요약에 실리지 않아 직접 계산한다 — 시가총액 ÷ LTM 매출.
+# 분자·분모가 모두 같은 제공사라 계열은 지켜진다. 대신 두 값의 기준일이
+# 서로 다를 수 있다(시가총액은 가격, LTM 은 분기 합산).
+#
+# 시가총액·EV/EBITDA 는 가격을 타고 매일 움직인다. 제공사 화면이 찍어 준
+# 기준일이 종목마다 달라(8/31~9/17) 하루로 맞추지 못했다. 맞춘 척하지 않고
+# 어긋난 종목은 기준일을 그대로 남긴다.
+MCAP_SRC = "https://stockanalysis.com/stocks/%s/market-cap/"
+MCAP = {   # 티커: 시가총액 USD bn
+ "NVDA": 5270.0, "MSFT": 3660.0, "AAPL": 4550.0, "GOOGL": 4140.0,
+ "AMZN": 2830.0, "META": 1720.0, "AVGO": 1770.0, "TSLA": 1410.0,
+ "AMD": 850.67, "ORCL": 457.36, "CRM": 210.40, "PLTR": 409.24,
+ "INTC": 530.97, "MU": 1150.0, "NFLX": 334.45, "JPM": 946.37,
+ "GS": 314.46, "LLY": 1020.0, "UNH": 386.29, "JNJ": 651.25,
+ "WMT": 850.02, "COST": 420.30, "HD": 331.00, "CAT": 374.15,
+ "XOM": 683.19,
+}
+# 제공사 화면이 다른 날짜를 찍어 준 종목만 따로 적는다(나머지는 VAL_ASOF).
+MCAP_ASOF = {
+ "NVDA": "2026-09-11", "NFLX": "2026-09-14", "AMD": "2026-09-09",
+ "PLTR": "2026-09-08", "JPM": "2026-08-31",
+}
+MCAP_NOTE = {
+ "JPM": "제공사 화면 기준일이 8월 31일로 다른 종목보다 보름 이르다 — P/S 도 그만큼 옛값이다",
+ "AMD": "같은 제공사의 다른 화면에서는 8월 24일 기준 750.81십억달러였다(가격 변동)",
+ "PLTR": "같은 제공사의 8월 통계 화면에서는 447.67십억달러였다(가격 변동)",
+ "CRM": "같은 제공사의 8월 25일 화면에서는 168.46십억달러였다(가격 변동)",
+ "COST": "같은 제공사의 8월 20일 화면에서는 413.99십억달러였다(가격 변동)",
+}
+EVEB = {   # 티커: EV/EBITDA 배 — 확인 못 한 곳은 None
+ "NVDA": 26.07, "MSFT": 19.09, "AAPL": 27.11, "GOOGL": 23.20,
+ "AMZN": None, "META": 15.84, "AVGO": 43.08, "TSLA": 128.34,
+ "AMD": 79.87, "ORCL": 33.57, "CRM": 19.62, "PLTR": 164.67,
+ "INTC": 32.75, "MU": 16.48, "NFLX": 22.40, "JPM": None,
+ "GS": None, "LLY": 25.65, "UNH": 20.32, "JNJ": 19.49,
+ "WMT": 20.73, "COST": 29.63, "HD": 15.76, "CAT": 25.44,
+ "XOM": 10.52,
+}
+EVEB_NOTE = {
+ "AMZN": "미국 상장분 값이 제공사 요약에 실리지 않았다(해외 상장분은 14.48~17.12로 엇갈림) — 싣지 않는다",
+ "JPM": "은행은 EBITDA 가 영업성과를 대표하지 않아 이 지표를 쓰지 않는다",
+ "GS": "은행은 EBITDA 가 영업성과를 대표하지 않아 이 지표를 쓰지 않는다",
+ "JNJ": "미국 상장분 19.49배 기준. 같은 제공사라도 상장지별로 12.69~16.42배까지 달라 미국분으로 통일했다",
+ "ORCL": "제공사 통계 화면에 직접 실리지 않아 같은 제공사 비율 화면 값을 썼다",
+ "TSLA": "128배는 이익 기저가 얕아 벌어진 값 — 배수 자체로 읽지 말 것",
+ "PLTR": "165배는 배수라기보다 성장 기대가 반영된 값",
+}
+EVEB_NOTE_EN = {
+ "AMZN": "the US listing's figure was not in the provider's summary (foreign listings ranged 14.48–17.12), so it is left out",
+ "JPM": "EBITDA does not represent operating performance at a bank, so the metric is not used",
+ "GS": "EBITDA does not represent operating performance at a bank, so the metric is not used",
+ "JNJ": "on the US listing, 19.49x. The same provider shows 12.69–16.42x on other listings, so the US one is used",
+ "ORCL": "not carried on the provider's statistics page, so the same provider's ratios page was used",
+ "TSLA": "128x reflects a thin earnings base — do not read it as a multiple on its own",
+ "PLTR": "165x reflects growth expectations more than a multiple",
+}
+# P/S 도 점수에는 넣지 않는다. V 점수는 지금처럼 **섹터 대비 선행 P/E** 한 축만
+# 쓴다 — 지표를 늘린다고 점수를 늘리면 같은 비쌈을 두 번 세게 된다.
 
 # --- 미래 방향 -------------------------------------------------------------
 # 서드파티의 분기·연간 컨센서스는 확보하지 못했다(제공사 페이지 요약에 수치가
@@ -518,6 +586,16 @@ for c in C:
 
     fpe, peg = VAL.get(c["t"], (None, None))
     c["fpe"], c["peg"], c["valnote"] = fpe, peg, VAL_NOTE.get(c["t"], "")
+
+    c["mcap"] = MCAP.get(c["t"])
+    c["mcapasof"] = MCAP_ASOF.get(c["t"], VAL_ASOF)
+    c["mcapnote"] = MCAP_NOTE.get(c["t"], "")
+    c["eveb"] = EVEB.get(c["t"])
+    c["evebnote"] = EVEB_NOTE.get(c["t"], "")
+    c["evebnote_en"] = EVEB_NOTE_EN.get(c["t"], "")
+    # P/S = 시가총액 ÷ LTM 매출. 제공사가 주지 않아 직접 나눈 값이다.
+    c["ps"] = (round(c["mcap"] / c["ltm"], 2)
+               if c.get("mcap") and c.get("ltm") else None)
     # 배수가 낮을수록 높은 점수 — band() 를 뒤집어 쓴다.
     c["valabs"] = (round(100.0 - band(fpe, *VAL_BAND), 1)
                    if fpe is not None else None)
@@ -691,6 +769,37 @@ for c in C:
             verdict="confirmed", render="marked",
             note=memo + ((" — " + c["valnote"]) if c.get("valnote") else ""),
             printed_on=where))
+    # 시가총액 — 배수가 아니라 가격 × 주식수다. P/S 의 분자이기도 해서
+    # 기준일을 종목마다 그대로 남긴다.
+    if c.get("mcap") is not None:
+        claims.append(dict(
+            id=f"{tag}_MCAP", kind="market_data", metric="시가총액",
+            text=f"{c['ko']} 시가총액", value=c["mcap"], unit="USD bn",
+            series=SERIES["시세"], as_of=c["mcapasof"], tier=3,
+            source_url=MCAP_SRC % c["t"].lower(), verdict="confirmed", render="marked",
+            note="가격에 따라 매일 움직이는 값. 제공사 화면이 찍어 준 기준일을 그대로 쓴다"
+                 + ((" — " + c["mcapnote"]) if c.get("mcapnote") else ""),
+            printed_on=["table-main"]))
+        if c.get("ps") is not None:
+            derived.append(dict(id=f"D_{tag}_PS", kind="ratio",
+                                numerator=f"{tag}_MCAP", denominator=f"{tag}_LTM",
+                                printed=c["ps"], tolerance=0.02))
+    if c.get("eveb") is not None:
+        claims.append(dict(
+            id=f"{tag}_EVEB", kind="market_multiple", metric="EV/EBITDA",
+            text=f"{c['ko']} EV/EBITDA", value=c["eveb"], unit="배",
+            series=SERIES["밸류에이션"], as_of=VAL_ASOF, tier=3,
+            source_url=VAL_SRC % c["t"].lower(), verdict="confirmed", render="marked",
+            note="제공사 산정. 자본구조·감가상각 차이를 걷어낸 배수라 P/E 와 순위가 다를 수 있다"
+                 + ((" — " + c["evebnote"]) if c.get("evebnote") else ""),
+            printed_on=["table-main"]))
+    elif c.get("evebnote"):
+        claims.append(dict(
+            id=f"{tag}_EVEB", kind="market_multiple", metric="EV/EBITDA",
+            text=f"{c['ko']} EV/EBITDA", value=0, unit="배",
+            series=SERIES["밸류에이션"], as_of=VAL_ASOF, tier=3,
+            source_url=VAL_SRC % c["t"].lower(), verdict="unverified", render="omit",
+            note=c["evebnote"], printed_on=[]))
 
 for _sec, _b in sorted(SECBENCH.items()):
     if _b["median"] is None:
@@ -722,7 +831,8 @@ ledger = dict(
     as_of=ASOF, series_policy=SERIES, claims=claims, derived=derived,
     unit_policy={"분기 매출": "USD bn", "매출 컨센서스": "USD bn",
                  "가이던스": "방향(+1/0/-1)", "선행 P/E": "배", "PEG": "배", "섹터 기준배수": "배",
-                 "LTM 매출": "USD bn", "LTM 성장률": "%"})
+                 "LTM 매출": "USD bn", "LTM 성장률": "%",
+                 "시가총액": "USD bn", "EV/EBITDA": "배", "P/S": "배"})
 
 OUT.mkdir(parents=True, exist_ok=True)
 (OUT / "claims.json").write_text(json.dumps(ledger, ensure_ascii=False, indent=1), "utf-8")
@@ -750,6 +860,8 @@ cov = dict(total=len(C),
            guide=sum(1 for c in C if c.get("guide") is not None),
            eps=sum(1 for c in C if c.get("epssurprise") is not None),
            fpe=sum(1 for c in C if c.get("fpe") is not None),
+           ps=sum(1 for c in C if c.get("ps") is not None),
+           eveb=sum(1 for c in C if c.get("eveb") is not None),
            ltm=sum(1 for c in C if c.get("ltm") is not None),
            accel=sum(1 for c in C if c.get("accel") is not None),
            gnext=sum(1 for c in C if c.get("gnext") is not None),
@@ -759,6 +871,7 @@ keys = ("t ko en sec sub per pend rep repapprox rev cons consderived surprise yo
         "epssurprise guide gtxt gkind note warn src csrc tier score coverage scoreparts "
         "upcoming nextrep nextconf nextsrc consnote epsnote gtxt_en note_en consnote_en per_en "
         "fpe peg valscore valabs relpe secmed vgrp vgrpEn appeal appealgap valnote "
+        "mcap mcapasof mcapnote eveb evebnote evebnote_en ps "
         "ltm ltmg accel trend ltmnote gnext gnexttxt gnextper gnexten gnextqoq").split()
 payload = dict(
     asOf=ASOF,
@@ -795,6 +908,8 @@ print("컨센서스 확인 %d/%d · YoY 확인 %d/%d · 가이던스 확인 %d/%
 print("선행 P/E 확인 %d/%d · LTM %d/%d · 가속도 산출 %d/%d · 투자매력도 %d/%d"
       % (cov["fpe"], cov["total"], cov["ltm"], cov["total"],
          cov["accel"], cov["total"], cov["appeal"], cov["total"]))
+print("P/S 산출 %d/%d · EV/EBITDA 확인 %d/%d  (둘 다 점수에는 넣지 않음)"
+      % (cov["ps"], cov["total"], cov["eveb"], cov["total"]))
 _up = [c for c in C if c.get("trend") == "up"]
 _dn = [c for c in C if c.get("trend") == "down"]
 print("  가속 %d사: %s" % (len(_up), " ".join(

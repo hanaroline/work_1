@@ -7,7 +7,8 @@
   "EPS 컨센서스": "인용 기사에 명시된 제공사 (기업마다 상이)",
   "가이던스": "기업이 직접 제시한 전망 (애널리스트 추정치가 아님)",
   "밸류에이션": "stockanalysis.com 한 곳 · 2026-09-17 기준 (제공사 혼용 금지)",
-  "LTM": "stockanalysis.com 한 곳 · 2026-09-17 조회 (분기 실적치와는 계열이 다름)"
+  "LTM": "stockanalysis.com 한 곳 · 2026-09-17 조회 (분기 실적치와는 계열이 다름)",
+  "시세": "stockanalysis.com 한 곳 · 종목마다 화면 기준일이 달라 각 행에 기준일을 남김"
  },
  "claims": [
   {
@@ -165,6 +166,42 @@
    ]
   },
   {
+   "id": "NVDA_MCAP",
+   "kind": "market_data",
+   "metric": "시가총액",
+   "text": "엔비디아 시가총액",
+   "value": 5270.0,
+   "unit": "USD bn",
+   "series": "stockanalysis.com 한 곳 · 종목마다 화면 기준일이 달라 각 행에 기준일을 남김",
+   "as_of": "2026-09-11",
+   "tier": 3,
+   "source_url": "https://stockanalysis.com/stocks/nvda/market-cap/",
+   "verdict": "confirmed",
+   "render": "marked",
+   "note": "가격에 따라 매일 움직이는 값. 제공사 화면이 찍어 준 기준일을 그대로 쓴다",
+   "printed_on": [
+    "table-main"
+   ]
+  },
+  {
+   "id": "NVDA_EVEB",
+   "kind": "market_multiple",
+   "metric": "EV/EBITDA",
+   "text": "엔비디아 EV/EBITDA",
+   "value": 26.07,
+   "unit": "배",
+   "series": "stockanalysis.com 한 곳 · 2026-09-17 기준 (제공사 혼용 금지)",
+   "as_of": "2026-09-17",
+   "tier": 3,
+   "source_url": "https://stockanalysis.com/stocks/nvda/statistics/",
+   "verdict": "confirmed",
+   "render": "marked",
+   "note": "제공사 산정. 자본구조·감가상각 차이를 걷어낸 배수라 P/E 와 순위가 다를 수 있다",
+   "printed_on": [
+    "table-main"
+   ]
+  },
+  {
    "id": "MSFT_REV",
    "kind": "reported_result",
    "metric": "분기 매출",
@@ -292,6 +329,42 @@
    "verdict": "confirmed",
    "render": "marked",
    "note": "제공사 산정. 산식(예상 이익 증가율의 기간·기준)이 공개돼 있지 않아 점수에는 넣지 않고 참고로만 싣는다",
+   "printed_on": [
+    "table-main"
+   ]
+  },
+  {
+   "id": "MSFT_MCAP",
+   "kind": "market_data",
+   "metric": "시가총액",
+   "text": "마이크로소프트 시가총액",
+   "value": 3660.0,
+   "unit": "USD bn",
+   "series": "stockanalysis.com 한 곳 · 종목마다 화면 기준일이 달라 각 행에 기준일을 남김",
+   "as_of": "2026-09-17",
+   "tier": 3,
+   "source_url": "https://stockanalysis.com/stocks/msft/market-cap/",
+   "verdict": "confirmed",
+   "render": "marked",
+   "note": "가격에 따라 매일 움직이는 값. 제공사 화면이 찍어 준 기준일을 그대로 쓴다",
+   "printed_on": [
+    "table-main"
+   ]
+  },
+  {
+   "id": "MSFT_EVEB",
+   "kind": "market_multiple",
+   "metric": "EV/EBITDA",
+   "text": "마이크로소프트 EV/EBITDA",
+   "value": 19.09,
+   "unit": "배",
+   "series": "stockanalysis.com 한 곳 · 2026-09-17 기준 (제공사 혼용 금지)",
+   "as_of": "2026-09-17",
+   "tier": 3,
+   "source_url": "https://stockanalysis.com/stocks/msft/statistics/",
+   "verdict": "confirmed",
+   "render": "marked",
+   "note": "제공사 산정. 자본구조·감가상각 차이를 걷어낸 배수라 P/E 와 순위가 다를 수 있다",
    "printed_on": [
     "table-main"
    ]
@@ -429,6 +502,42 @@
    ]
   },
   {
+   "id": "AAPL_MCAP",
+   "kind": "market_data",
+   "metric": "시가총액",
+   "text": "애플 시가총액",
+   "value": 4550.0,
+   "unit": "USD bn",
+   "series": "stockanalysis.com 한 곳 · 종목마다 화면 기준일이 달라 각 행에 기준일을 남김",
+   "as_of": "2026-09-17",
+   "tier": 3,
+   "source_url": "https://stockanalysis.com/stocks/aapl/market-cap/",
+   "verdict": "confirmed",
+   "render": "marked",
+   "note": "가격에 따라 매일 움직이는 값. 제공사 화면이 찍어 준 기준일을 그대로 쓴다",
+   "printed_on": [
+    "table-main"
+   ]
+  },
+  {
+   "id": "AAPL_EVEB",
+   "kind": "market_multiple",
+   "metric": "EV/EBITDA",
+   "text": "애플 EV/EBITDA",
+   "value": 27.11,
+   "unit": "배",
+   "series": "stockanalysis.com 한 곳 · 2026-09-17 기준 (제공사 혼용 금지)",
+   "as_of": "2026-09-17",
+   "tier": 3,
+   "source_url": "https://stockanalysis.com/stocks/aapl/statistics/",
+   "verdict": "confirmed",
+   "render": "marked",
+   "note": "제공사 산정. 자본구조·감가상각 차이를 걷어낸 배수라 P/E 와 순위가 다를 수 있다",
+   "printed_on": [
+    "table-main"
+   ]
+  },
+  {
    "id": "GOOGL_REV",
    "kind": "reported_result",
    "metric": "분기 매출",
@@ -556,6 +665,42 @@
    "verdict": "confirmed",
    "render": "marked",
    "note": "제공사 산정. 산식(예상 이익 증가율의 기간·기준)이 공개돼 있지 않아 점수에는 넣지 않고 참고로만 싣는다",
+   "printed_on": [
+    "table-main"
+   ]
+  },
+  {
+   "id": "GOOGL_MCAP",
+   "kind": "market_data",
+   "metric": "시가총액",
+   "text": "알파벳 시가총액",
+   "value": 4140.0,
+   "unit": "USD bn",
+   "series": "stockanalysis.com 한 곳 · 종목마다 화면 기준일이 달라 각 행에 기준일을 남김",
+   "as_of": "2026-09-17",
+   "tier": 3,
+   "source_url": "https://stockanalysis.com/stocks/googl/market-cap/",
+   "verdict": "confirmed",
+   "render": "marked",
+   "note": "가격에 따라 매일 움직이는 값. 제공사 화면이 찍어 준 기준일을 그대로 쓴다",
+   "printed_on": [
+    "table-main"
+   ]
+  },
+  {
+   "id": "GOOGL_EVEB",
+   "kind": "market_multiple",
+   "metric": "EV/EBITDA",
+   "text": "알파벳 EV/EBITDA",
+   "value": 23.2,
+   "unit": "배",
+   "series": "stockanalysis.com 한 곳 · 2026-09-17 기준 (제공사 혼용 금지)",
+   "as_of": "2026-09-17",
+   "tier": 3,
+   "source_url": "https://stockanalysis.com/stocks/googl/statistics/",
+   "verdict": "confirmed",
+   "render": "marked",
+   "note": "제공사 산정. 자본구조·감가상각 차이를 걷어낸 배수라 P/E 와 순위가 다를 수 있다",
    "printed_on": [
     "table-main"
    ]
@@ -715,6 +860,40 @@
    ]
   },
   {
+   "id": "AMZN_MCAP",
+   "kind": "market_data",
+   "metric": "시가총액",
+   "text": "아마존 시가총액",
+   "value": 2830.0,
+   "unit": "USD bn",
+   "series": "stockanalysis.com 한 곳 · 종목마다 화면 기준일이 달라 각 행에 기준일을 남김",
+   "as_of": "2026-09-17",
+   "tier": 3,
+   "source_url": "https://stockanalysis.com/stocks/amzn/market-cap/",
+   "verdict": "confirmed",
+   "render": "marked",
+   "note": "가격에 따라 매일 움직이는 값. 제공사 화면이 찍어 준 기준일을 그대로 쓴다",
+   "printed_on": [
+    "table-main"
+   ]
+  },
+  {
+   "id": "AMZN_EVEB",
+   "kind": "market_multiple",
+   "metric": "EV/EBITDA",
+   "text": "아마존 EV/EBITDA",
+   "value": 0,
+   "unit": "배",
+   "series": "stockanalysis.com 한 곳 · 2026-09-17 기준 (제공사 혼용 금지)",
+   "as_of": "2026-09-17",
+   "tier": 3,
+   "source_url": "https://stockanalysis.com/stocks/amzn/statistics/",
+   "verdict": "unverified",
+   "render": "omit",
+   "note": "미국 상장분 값이 제공사 요약에 실리지 않았다(해외 상장분은 14.48~17.12로 엇갈림) — 싣지 않는다",
+   "printed_on": []
+  },
+  {
    "id": "META_REV",
    "kind": "reported_result",
    "metric": "분기 매출",
@@ -864,6 +1043,42 @@
    "verdict": "confirmed",
    "render": "marked",
    "note": "제공사 산정. 산식(예상 이익 증가율의 기간·기준)이 공개돼 있지 않아 점수에는 넣지 않고 참고로만 싣는다",
+   "printed_on": [
+    "table-main"
+   ]
+  },
+  {
+   "id": "META_MCAP",
+   "kind": "market_data",
+   "metric": "시가총액",
+   "text": "메타 시가총액",
+   "value": 1720.0,
+   "unit": "USD bn",
+   "series": "stockanalysis.com 한 곳 · 종목마다 화면 기준일이 달라 각 행에 기준일을 남김",
+   "as_of": "2026-09-17",
+   "tier": 3,
+   "source_url": "https://stockanalysis.com/stocks/meta/market-cap/",
+   "verdict": "confirmed",
+   "render": "marked",
+   "note": "가격에 따라 매일 움직이는 값. 제공사 화면이 찍어 준 기준일을 그대로 쓴다",
+   "printed_on": [
+    "table-main"
+   ]
+  },
+  {
+   "id": "META_EVEB",
+   "kind": "market_multiple",
+   "metric": "EV/EBITDA",
+   "text": "메타 EV/EBITDA",
+   "value": 15.84,
+   "unit": "배",
+   "series": "stockanalysis.com 한 곳 · 2026-09-17 기준 (제공사 혼용 금지)",
+   "as_of": "2026-09-17",
+   "tier": 3,
+   "source_url": "https://stockanalysis.com/stocks/meta/statistics/",
+   "verdict": "confirmed",
+   "render": "marked",
+   "note": "제공사 산정. 자본구조·감가상각 차이를 걷어낸 배수라 P/E 와 순위가 다를 수 있다",
    "printed_on": [
     "table-main"
    ]
@@ -1021,6 +1236,42 @@
    ]
   },
   {
+   "id": "AVGO_MCAP",
+   "kind": "market_data",
+   "metric": "시가총액",
+   "text": "브로드컴 시가총액",
+   "value": 1770.0,
+   "unit": "USD bn",
+   "series": "stockanalysis.com 한 곳 · 종목마다 화면 기준일이 달라 각 행에 기준일을 남김",
+   "as_of": "2026-09-17",
+   "tier": 3,
+   "source_url": "https://stockanalysis.com/stocks/avgo/market-cap/",
+   "verdict": "confirmed",
+   "render": "marked",
+   "note": "가격에 따라 매일 움직이는 값. 제공사 화면이 찍어 준 기준일을 그대로 쓴다",
+   "printed_on": [
+    "table-main"
+   ]
+  },
+  {
+   "id": "AVGO_EVEB",
+   "kind": "market_multiple",
+   "metric": "EV/EBITDA",
+   "text": "브로드컴 EV/EBITDA",
+   "value": 43.08,
+   "unit": "배",
+   "series": "stockanalysis.com 한 곳 · 2026-09-17 기준 (제공사 혼용 금지)",
+   "as_of": "2026-09-17",
+   "tier": 3,
+   "source_url": "https://stockanalysis.com/stocks/avgo/statistics/",
+   "verdict": "confirmed",
+   "render": "marked",
+   "note": "제공사 산정. 자본구조·감가상각 차이를 걷어낸 배수라 P/E 와 순위가 다를 수 있다",
+   "printed_on": [
+    "table-main"
+   ]
+  },
+  {
    "id": "TSLA_REV",
    "kind": "reported_result",
    "metric": "분기 매출",
@@ -1148,6 +1399,42 @@
    "verdict": "confirmed",
    "render": "marked",
    "note": "제공사 산정. 산식(예상 이익 증가율의 기간·기준)이 공개돼 있지 않아 점수에는 넣지 않고 참고로만 싣는다 — 선행 P/E 188.57 은 이익 기저가 얕아 나온 값 — 이익이 회복되면 크게 움직인다.",
+   "printed_on": [
+    "table-main"
+   ]
+  },
+  {
+   "id": "TSLA_MCAP",
+   "kind": "market_data",
+   "metric": "시가총액",
+   "text": "테슬라 시가총액",
+   "value": 1410.0,
+   "unit": "USD bn",
+   "series": "stockanalysis.com 한 곳 · 종목마다 화면 기준일이 달라 각 행에 기준일을 남김",
+   "as_of": "2026-09-17",
+   "tier": 3,
+   "source_url": "https://stockanalysis.com/stocks/tsla/market-cap/",
+   "verdict": "confirmed",
+   "render": "marked",
+   "note": "가격에 따라 매일 움직이는 값. 제공사 화면이 찍어 준 기준일을 그대로 쓴다",
+   "printed_on": [
+    "table-main"
+   ]
+  },
+  {
+   "id": "TSLA_EVEB",
+   "kind": "market_multiple",
+   "metric": "EV/EBITDA",
+   "text": "테슬라 EV/EBITDA",
+   "value": 128.34,
+   "unit": "배",
+   "series": "stockanalysis.com 한 곳 · 2026-09-17 기준 (제공사 혼용 금지)",
+   "as_of": "2026-09-17",
+   "tier": 3,
+   "source_url": "https://stockanalysis.com/stocks/tsla/statistics/",
+   "verdict": "confirmed",
+   "render": "marked",
+   "note": "제공사 산정. 자본구조·감가상각 차이를 걷어낸 배수라 P/E 와 순위가 다를 수 있다 — 128배는 이익 기저가 얕아 벌어진 값 — 배수 자체로 읽지 말 것",
    "printed_on": [
     "table-main"
    ]
@@ -1307,6 +1594,42 @@
    ]
   },
   {
+   "id": "AMD_MCAP",
+   "kind": "market_data",
+   "metric": "시가총액",
+   "text": "AMD 시가총액",
+   "value": 850.67,
+   "unit": "USD bn",
+   "series": "stockanalysis.com 한 곳 · 종목마다 화면 기준일이 달라 각 행에 기준일을 남김",
+   "as_of": "2026-09-09",
+   "tier": 3,
+   "source_url": "https://stockanalysis.com/stocks/amd/market-cap/",
+   "verdict": "confirmed",
+   "render": "marked",
+   "note": "가격에 따라 매일 움직이는 값. 제공사 화면이 찍어 준 기준일을 그대로 쓴다 — 같은 제공사의 다른 화면에서는 8월 24일 기준 750.81십억달러였다(가격 변동)",
+   "printed_on": [
+    "table-main"
+   ]
+  },
+  {
+   "id": "AMD_EVEB",
+   "kind": "market_multiple",
+   "metric": "EV/EBITDA",
+   "text": "AMD EV/EBITDA",
+   "value": 79.87,
+   "unit": "배",
+   "series": "stockanalysis.com 한 곳 · 2026-09-17 기준 (제공사 혼용 금지)",
+   "as_of": "2026-09-17",
+   "tier": 3,
+   "source_url": "https://stockanalysis.com/stocks/amd/statistics/",
+   "verdict": "confirmed",
+   "render": "marked",
+   "note": "제공사 산정. 자본구조·감가상각 차이를 걷어낸 배수라 P/E 와 순위가 다를 수 있다",
+   "printed_on": [
+    "table-main"
+   ]
+  },
+  {
    "id": "ORCL_REV",
    "kind": "reported_result",
    "metric": "분기 매출",
@@ -1376,7 +1699,7 @@
    "source_url": "https://stockanalysis.com/stocks/orcl/revenue/",
    "verdict": "confirmed",
    "render": "marked",
-   "note": "집계사이트가 분기 실적을 합산해 산정한 값. 회사가 그대로 발표한 수치가 아니다",
+   "note": "집계사이트가 분기 실적을 합산해 산정한 값. 회사가 그대로 발표한 수치가 아니다 — 같은 제공사의 통계 화면에는 LTM 매출이 67.36십억달러로 실려 있다(화면별 산정 차이). 이 화면은 매출 화면 값으로 통일한다 — P/S 도 이 값으로 나눈다",
    "printed_on": [
     "table-main",
     "chart-trend"
@@ -1434,6 +1757,42 @@
    "verdict": "confirmed",
    "render": "marked",
    "note": "제공사 산정. 산식(예상 이익 증가율의 기간·기준)이 공개돼 있지 않아 점수에는 넣지 않고 참고로만 싣는다",
+   "printed_on": [
+    "table-main"
+   ]
+  },
+  {
+   "id": "ORCL_MCAP",
+   "kind": "market_data",
+   "metric": "시가총액",
+   "text": "오라클 시가총액",
+   "value": 457.36,
+   "unit": "USD bn",
+   "series": "stockanalysis.com 한 곳 · 종목마다 화면 기준일이 달라 각 행에 기준일을 남김",
+   "as_of": "2026-09-17",
+   "tier": 3,
+   "source_url": "https://stockanalysis.com/stocks/orcl/market-cap/",
+   "verdict": "confirmed",
+   "render": "marked",
+   "note": "가격에 따라 매일 움직이는 값. 제공사 화면이 찍어 준 기준일을 그대로 쓴다",
+   "printed_on": [
+    "table-main"
+   ]
+  },
+  {
+   "id": "ORCL_EVEB",
+   "kind": "market_multiple",
+   "metric": "EV/EBITDA",
+   "text": "오라클 EV/EBITDA",
+   "value": 33.57,
+   "unit": "배",
+   "series": "stockanalysis.com 한 곳 · 2026-09-17 기준 (제공사 혼용 금지)",
+   "as_of": "2026-09-17",
+   "tier": 3,
+   "source_url": "https://stockanalysis.com/stocks/orcl/statistics/",
+   "verdict": "confirmed",
+   "render": "marked",
+   "note": "제공사 산정. 자본구조·감가상각 차이를 걷어낸 배수라 P/E 와 순위가 다를 수 있다 — 제공사 통계 화면에 직접 실리지 않아 같은 제공사 비율 화면 값을 썼다",
    "printed_on": [
     "table-main"
    ]
@@ -1571,6 +1930,42 @@
    ]
   },
   {
+   "id": "CRM_MCAP",
+   "kind": "market_data",
+   "metric": "시가총액",
+   "text": "세일즈포스 시가총액",
+   "value": 210.4,
+   "unit": "USD bn",
+   "series": "stockanalysis.com 한 곳 · 종목마다 화면 기준일이 달라 각 행에 기준일을 남김",
+   "as_of": "2026-09-17",
+   "tier": 3,
+   "source_url": "https://stockanalysis.com/stocks/crm/market-cap/",
+   "verdict": "confirmed",
+   "render": "marked",
+   "note": "가격에 따라 매일 움직이는 값. 제공사 화면이 찍어 준 기준일을 그대로 쓴다 — 같은 제공사의 8월 25일 화면에서는 168.46십억달러였다(가격 변동)",
+   "printed_on": [
+    "table-main"
+   ]
+  },
+  {
+   "id": "CRM_EVEB",
+   "kind": "market_multiple",
+   "metric": "EV/EBITDA",
+   "text": "세일즈포스 EV/EBITDA",
+   "value": 19.62,
+   "unit": "배",
+   "series": "stockanalysis.com 한 곳 · 2026-09-17 기준 (제공사 혼용 금지)",
+   "as_of": "2026-09-17",
+   "tier": 3,
+   "source_url": "https://stockanalysis.com/stocks/crm/statistics/",
+   "verdict": "confirmed",
+   "render": "marked",
+   "note": "제공사 산정. 자본구조·감가상각 차이를 걷어낸 배수라 P/E 와 순위가 다를 수 있다",
+   "printed_on": [
+    "table-main"
+   ]
+  },
+  {
    "id": "PLTR_REV",
    "kind": "reported_result",
    "metric": "분기 매출",
@@ -1703,6 +2098,42 @@
    ]
   },
   {
+   "id": "PLTR_MCAP",
+   "kind": "market_data",
+   "metric": "시가총액",
+   "text": "팔란티어 시가총액",
+   "value": 409.24,
+   "unit": "USD bn",
+   "series": "stockanalysis.com 한 곳 · 종목마다 화면 기준일이 달라 각 행에 기준일을 남김",
+   "as_of": "2026-09-08",
+   "tier": 3,
+   "source_url": "https://stockanalysis.com/stocks/pltr/market-cap/",
+   "verdict": "confirmed",
+   "render": "marked",
+   "note": "가격에 따라 매일 움직이는 값. 제공사 화면이 찍어 준 기준일을 그대로 쓴다 — 같은 제공사의 8월 통계 화면에서는 447.67십억달러였다(가격 변동)",
+   "printed_on": [
+    "table-main"
+   ]
+  },
+  {
+   "id": "PLTR_EVEB",
+   "kind": "market_multiple",
+   "metric": "EV/EBITDA",
+   "text": "팔란티어 EV/EBITDA",
+   "value": 164.67,
+   "unit": "배",
+   "series": "stockanalysis.com 한 곳 · 2026-09-17 기준 (제공사 혼용 금지)",
+   "as_of": "2026-09-17",
+   "tier": 3,
+   "source_url": "https://stockanalysis.com/stocks/pltr/statistics/",
+   "verdict": "confirmed",
+   "render": "marked",
+   "note": "제공사 산정. 자본구조·감가상각 차이를 걷어낸 배수라 P/E 와 순위가 다를 수 있다 — 165배는 배수라기보다 성장 기대가 반영된 값",
+   "printed_on": [
+    "table-main"
+   ]
+  },
+  {
    "id": "INTC_REV",
    "kind": "reported_result",
    "metric": "분기 매출",
@@ -1817,6 +2248,42 @@
    "printed_on": [
     "table-main",
     "chart-trend"
+   ]
+  },
+  {
+   "id": "INTC_MCAP",
+   "kind": "market_data",
+   "metric": "시가총액",
+   "text": "인텔 시가총액",
+   "value": 530.97,
+   "unit": "USD bn",
+   "series": "stockanalysis.com 한 곳 · 종목마다 화면 기준일이 달라 각 행에 기준일을 남김",
+   "as_of": "2026-09-17",
+   "tier": 3,
+   "source_url": "https://stockanalysis.com/stocks/intc/market-cap/",
+   "verdict": "confirmed",
+   "render": "marked",
+   "note": "가격에 따라 매일 움직이는 값. 제공사 화면이 찍어 준 기준일을 그대로 쓴다",
+   "printed_on": [
+    "table-main"
+   ]
+  },
+  {
+   "id": "INTC_EVEB",
+   "kind": "market_multiple",
+   "metric": "EV/EBITDA",
+   "text": "인텔 EV/EBITDA",
+   "value": 32.75,
+   "unit": "배",
+   "series": "stockanalysis.com 한 곳 · 2026-09-17 기준 (제공사 혼용 금지)",
+   "as_of": "2026-09-17",
+   "tier": 3,
+   "source_url": "https://stockanalysis.com/stocks/intc/statistics/",
+   "verdict": "confirmed",
+   "render": "marked",
+   "note": "제공사 산정. 자본구조·감가상각 차이를 걷어낸 배수라 P/E 와 순위가 다를 수 있다",
+   "printed_on": [
+    "table-main"
    ]
   },
   {
@@ -1972,6 +2439,42 @@
    ]
   },
   {
+   "id": "MU_MCAP",
+   "kind": "market_data",
+   "metric": "시가총액",
+   "text": "마이크론 시가총액",
+   "value": 1150.0,
+   "unit": "USD bn",
+   "series": "stockanalysis.com 한 곳 · 종목마다 화면 기준일이 달라 각 행에 기준일을 남김",
+   "as_of": "2026-09-17",
+   "tier": 3,
+   "source_url": "https://stockanalysis.com/stocks/mu/market-cap/",
+   "verdict": "confirmed",
+   "render": "marked",
+   "note": "가격에 따라 매일 움직이는 값. 제공사 화면이 찍어 준 기준일을 그대로 쓴다",
+   "printed_on": [
+    "table-main"
+   ]
+  },
+  {
+   "id": "MU_EVEB",
+   "kind": "market_multiple",
+   "metric": "EV/EBITDA",
+   "text": "마이크론 EV/EBITDA",
+   "value": 16.48,
+   "unit": "배",
+   "series": "stockanalysis.com 한 곳 · 2026-09-17 기준 (제공사 혼용 금지)",
+   "as_of": "2026-09-17",
+   "tier": 3,
+   "source_url": "https://stockanalysis.com/stocks/mu/statistics/",
+   "verdict": "confirmed",
+   "render": "marked",
+   "note": "제공사 산정. 자본구조·감가상각 차이를 걷어낸 배수라 P/E 와 순위가 다를 수 있다",
+   "printed_on": [
+    "table-main"
+   ]
+  },
+  {
    "id": "NFLX_REV",
    "kind": "reported_result",
    "metric": "분기 매출",
@@ -2099,6 +2602,42 @@
    "verdict": "confirmed",
    "render": "marked",
    "note": "제공사 산정. 산식(예상 이익 증가율의 기간·기준)이 공개돼 있지 않아 점수에는 넣지 않고 참고로만 싣는다",
+   "printed_on": [
+    "table-main"
+   ]
+  },
+  {
+   "id": "NFLX_MCAP",
+   "kind": "market_data",
+   "metric": "시가총액",
+   "text": "넷플릭스 시가총액",
+   "value": 334.45,
+   "unit": "USD bn",
+   "series": "stockanalysis.com 한 곳 · 종목마다 화면 기준일이 달라 각 행에 기준일을 남김",
+   "as_of": "2026-09-14",
+   "tier": 3,
+   "source_url": "https://stockanalysis.com/stocks/nflx/market-cap/",
+   "verdict": "confirmed",
+   "render": "marked",
+   "note": "가격에 따라 매일 움직이는 값. 제공사 화면이 찍어 준 기준일을 그대로 쓴다",
+   "printed_on": [
+    "table-main"
+   ]
+  },
+  {
+   "id": "NFLX_EVEB",
+   "kind": "market_multiple",
+   "metric": "EV/EBITDA",
+   "text": "넷플릭스 EV/EBITDA",
+   "value": 22.4,
+   "unit": "배",
+   "series": "stockanalysis.com 한 곳 · 2026-09-17 기준 (제공사 혼용 금지)",
+   "as_of": "2026-09-17",
+   "tier": 3,
+   "source_url": "https://stockanalysis.com/stocks/nflx/statistics/",
+   "verdict": "confirmed",
+   "render": "marked",
+   "note": "제공사 산정. 자본구조·감가상각 차이를 걷어낸 배수라 P/E 와 순위가 다를 수 있다",
    "printed_on": [
     "table-main"
    ]
@@ -2234,6 +2773,40 @@
    ]
   },
   {
+   "id": "JPM_MCAP",
+   "kind": "market_data",
+   "metric": "시가총액",
+   "text": "JP모건 시가총액",
+   "value": 946.37,
+   "unit": "USD bn",
+   "series": "stockanalysis.com 한 곳 · 종목마다 화면 기준일이 달라 각 행에 기준일을 남김",
+   "as_of": "2026-08-31",
+   "tier": 3,
+   "source_url": "https://stockanalysis.com/stocks/jpm/market-cap/",
+   "verdict": "confirmed",
+   "render": "marked",
+   "note": "가격에 따라 매일 움직이는 값. 제공사 화면이 찍어 준 기준일을 그대로 쓴다 — 제공사 화면 기준일이 8월 31일로 다른 종목보다 보름 이르다 — P/S 도 그만큼 옛값이다",
+   "printed_on": [
+    "table-main"
+   ]
+  },
+  {
+   "id": "JPM_EVEB",
+   "kind": "market_multiple",
+   "metric": "EV/EBITDA",
+   "text": "JP모건 EV/EBITDA",
+   "value": 0,
+   "unit": "배",
+   "series": "stockanalysis.com 한 곳 · 2026-09-17 기준 (제공사 혼용 금지)",
+   "as_of": "2026-09-17",
+   "tier": 3,
+   "source_url": "https://stockanalysis.com/stocks/jpm/statistics/",
+   "verdict": "unverified",
+   "render": "omit",
+   "note": "은행은 EBITDA 가 영업성과를 대표하지 않아 이 지표를 쓰지 않는다",
+   "printed_on": []
+  },
+  {
    "id": "GS_REV",
    "kind": "reported_result",
    "metric": "분기 매출",
@@ -2364,6 +2937,40 @@
    ]
   },
   {
+   "id": "GS_MCAP",
+   "kind": "market_data",
+   "metric": "시가총액",
+   "text": "골드만삭스 시가총액",
+   "value": 314.46,
+   "unit": "USD bn",
+   "series": "stockanalysis.com 한 곳 · 종목마다 화면 기준일이 달라 각 행에 기준일을 남김",
+   "as_of": "2026-09-17",
+   "tier": 3,
+   "source_url": "https://stockanalysis.com/stocks/gs/market-cap/",
+   "verdict": "confirmed",
+   "render": "marked",
+   "note": "가격에 따라 매일 움직이는 값. 제공사 화면이 찍어 준 기준일을 그대로 쓴다",
+   "printed_on": [
+    "table-main"
+   ]
+  },
+  {
+   "id": "GS_EVEB",
+   "kind": "market_multiple",
+   "metric": "EV/EBITDA",
+   "text": "골드만삭스 EV/EBITDA",
+   "value": 0,
+   "unit": "배",
+   "series": "stockanalysis.com 한 곳 · 2026-09-17 기준 (제공사 혼용 금지)",
+   "as_of": "2026-09-17",
+   "tier": 3,
+   "source_url": "https://stockanalysis.com/stocks/gs/statistics/",
+   "verdict": "unverified",
+   "render": "omit",
+   "note": "은행은 EBITDA 가 영업성과를 대표하지 않아 이 지표를 쓰지 않는다",
+   "printed_on": []
+  },
+  {
    "id": "LLY_REV",
    "kind": "reported_result",
    "metric": "분기 매출",
@@ -2491,6 +3098,42 @@
    "verdict": "confirmed",
    "render": "marked",
    "note": "제공사 산정. 산식(예상 이익 증가율의 기간·기준)이 공개돼 있지 않아 점수에는 넣지 않고 참고로만 싣는다",
+   "printed_on": [
+    "table-main"
+   ]
+  },
+  {
+   "id": "LLY_MCAP",
+   "kind": "market_data",
+   "metric": "시가총액",
+   "text": "일라이 릴리 시가총액",
+   "value": 1020.0,
+   "unit": "USD bn",
+   "series": "stockanalysis.com 한 곳 · 종목마다 화면 기준일이 달라 각 행에 기준일을 남김",
+   "as_of": "2026-09-17",
+   "tier": 3,
+   "source_url": "https://stockanalysis.com/stocks/lly/market-cap/",
+   "verdict": "confirmed",
+   "render": "marked",
+   "note": "가격에 따라 매일 움직이는 값. 제공사 화면이 찍어 준 기준일을 그대로 쓴다",
+   "printed_on": [
+    "table-main"
+   ]
+  },
+  {
+   "id": "LLY_EVEB",
+   "kind": "market_multiple",
+   "metric": "EV/EBITDA",
+   "text": "일라이 릴리 EV/EBITDA",
+   "value": 25.65,
+   "unit": "배",
+   "series": "stockanalysis.com 한 곳 · 2026-09-17 기준 (제공사 혼용 금지)",
+   "as_of": "2026-09-17",
+   "tier": 3,
+   "source_url": "https://stockanalysis.com/stocks/lly/statistics/",
+   "verdict": "confirmed",
+   "render": "marked",
+   "note": "제공사 산정. 자본구조·감가상각 차이를 걷어낸 배수라 P/E 와 순위가 다를 수 있다",
    "printed_on": [
     "table-main"
    ]
@@ -2628,6 +3271,42 @@
    ]
   },
   {
+   "id": "UNH_MCAP",
+   "kind": "market_data",
+   "metric": "시가총액",
+   "text": "유나이티드헬스 시가총액",
+   "value": 386.29,
+   "unit": "USD bn",
+   "series": "stockanalysis.com 한 곳 · 종목마다 화면 기준일이 달라 각 행에 기준일을 남김",
+   "as_of": "2026-09-17",
+   "tier": 3,
+   "source_url": "https://stockanalysis.com/stocks/unh/market-cap/",
+   "verdict": "confirmed",
+   "render": "marked",
+   "note": "가격에 따라 매일 움직이는 값. 제공사 화면이 찍어 준 기준일을 그대로 쓴다",
+   "printed_on": [
+    "table-main"
+   ]
+  },
+  {
+   "id": "UNH_EVEB",
+   "kind": "market_multiple",
+   "metric": "EV/EBITDA",
+   "text": "유나이티드헬스 EV/EBITDA",
+   "value": 20.32,
+   "unit": "배",
+   "series": "stockanalysis.com 한 곳 · 2026-09-17 기준 (제공사 혼용 금지)",
+   "as_of": "2026-09-17",
+   "tier": 3,
+   "source_url": "https://stockanalysis.com/stocks/unh/statistics/",
+   "verdict": "confirmed",
+   "render": "marked",
+   "note": "제공사 산정. 자본구조·감가상각 차이를 걷어낸 배수라 P/E 와 순위가 다를 수 있다",
+   "printed_on": [
+    "table-main"
+   ]
+  },
+  {
    "id": "JNJ_REV",
    "kind": "reported_result",
    "metric": "분기 매출",
@@ -2755,6 +3434,42 @@
    "verdict": "confirmed",
    "render": "marked",
    "note": "제공사 산정. 산식(예상 이익 증가율의 기간·기준)이 공개돼 있지 않아 점수에는 넣지 않고 참고로만 싣는다",
+   "printed_on": [
+    "table-main"
+   ]
+  },
+  {
+   "id": "JNJ_MCAP",
+   "kind": "market_data",
+   "metric": "시가총액",
+   "text": "존슨앤드존슨 시가총액",
+   "value": 651.25,
+   "unit": "USD bn",
+   "series": "stockanalysis.com 한 곳 · 종목마다 화면 기준일이 달라 각 행에 기준일을 남김",
+   "as_of": "2026-09-17",
+   "tier": 3,
+   "source_url": "https://stockanalysis.com/stocks/jnj/market-cap/",
+   "verdict": "confirmed",
+   "render": "marked",
+   "note": "가격에 따라 매일 움직이는 값. 제공사 화면이 찍어 준 기준일을 그대로 쓴다",
+   "printed_on": [
+    "table-main"
+   ]
+  },
+  {
+   "id": "JNJ_EVEB",
+   "kind": "market_multiple",
+   "metric": "EV/EBITDA",
+   "text": "존슨앤드존슨 EV/EBITDA",
+   "value": 19.49,
+   "unit": "배",
+   "series": "stockanalysis.com 한 곳 · 2026-09-17 기준 (제공사 혼용 금지)",
+   "as_of": "2026-09-17",
+   "tier": 3,
+   "source_url": "https://stockanalysis.com/stocks/jnj/statistics/",
+   "verdict": "confirmed",
+   "render": "marked",
+   "note": "제공사 산정. 자본구조·감가상각 차이를 걷어낸 배수라 P/E 와 순위가 다를 수 있다 — 미국 상장분 19.49배 기준. 같은 제공사라도 상장지별로 12.69~16.42배까지 달라 미국분으로 통일했다",
    "printed_on": [
     "table-main"
    ]
@@ -2892,6 +3607,42 @@
    ]
   },
   {
+   "id": "WMT_MCAP",
+   "kind": "market_data",
+   "metric": "시가총액",
+   "text": "월마트 시가총액",
+   "value": 850.02,
+   "unit": "USD bn",
+   "series": "stockanalysis.com 한 곳 · 종목마다 화면 기준일이 달라 각 행에 기준일을 남김",
+   "as_of": "2026-09-17",
+   "tier": 3,
+   "source_url": "https://stockanalysis.com/stocks/wmt/market-cap/",
+   "verdict": "confirmed",
+   "render": "marked",
+   "note": "가격에 따라 매일 움직이는 값. 제공사 화면이 찍어 준 기준일을 그대로 쓴다",
+   "printed_on": [
+    "table-main"
+   ]
+  },
+  {
+   "id": "WMT_EVEB",
+   "kind": "market_multiple",
+   "metric": "EV/EBITDA",
+   "text": "월마트 EV/EBITDA",
+   "value": 20.73,
+   "unit": "배",
+   "series": "stockanalysis.com 한 곳 · 2026-09-17 기준 (제공사 혼용 금지)",
+   "as_of": "2026-09-17",
+   "tier": 3,
+   "source_url": "https://stockanalysis.com/stocks/wmt/statistics/",
+   "verdict": "confirmed",
+   "render": "marked",
+   "note": "제공사 산정. 자본구조·감가상각 차이를 걷어낸 배수라 P/E 와 순위가 다를 수 있다",
+   "printed_on": [
+    "table-main"
+   ]
+  },
+  {
    "id": "COST_REV",
    "kind": "reported_result",
    "metric": "분기 매출",
@@ -3024,6 +3775,42 @@
    ]
   },
   {
+   "id": "COST_MCAP",
+   "kind": "market_data",
+   "metric": "시가총액",
+   "text": "코스트코 시가총액",
+   "value": 420.3,
+   "unit": "USD bn",
+   "series": "stockanalysis.com 한 곳 · 종목마다 화면 기준일이 달라 각 행에 기준일을 남김",
+   "as_of": "2026-09-17",
+   "tier": 3,
+   "source_url": "https://stockanalysis.com/stocks/cost/market-cap/",
+   "verdict": "confirmed",
+   "render": "marked",
+   "note": "가격에 따라 매일 움직이는 값. 제공사 화면이 찍어 준 기준일을 그대로 쓴다 — 같은 제공사의 8월 20일 화면에서는 413.99십억달러였다(가격 변동)",
+   "printed_on": [
+    "table-main"
+   ]
+  },
+  {
+   "id": "COST_EVEB",
+   "kind": "market_multiple",
+   "metric": "EV/EBITDA",
+   "text": "코스트코 EV/EBITDA",
+   "value": 29.63,
+   "unit": "배",
+   "series": "stockanalysis.com 한 곳 · 2026-09-17 기준 (제공사 혼용 금지)",
+   "as_of": "2026-09-17",
+   "tier": 3,
+   "source_url": "https://stockanalysis.com/stocks/cost/statistics/",
+   "verdict": "confirmed",
+   "render": "marked",
+   "note": "제공사 산정. 자본구조·감가상각 차이를 걷어낸 배수라 P/E 와 순위가 다를 수 있다",
+   "printed_on": [
+    "table-main"
+   ]
+  },
+  {
    "id": "HD_REV",
    "kind": "reported_result",
    "metric": "분기 매출",
@@ -3149,6 +3936,42 @@
    "verdict": "confirmed",
    "render": "marked",
    "note": "제공사 산정. 산식(예상 이익 증가율의 기간·기준)이 공개돼 있지 않아 점수에는 넣지 않고 참고로만 싣는다",
+   "printed_on": [
+    "table-main"
+   ]
+  },
+  {
+   "id": "HD_MCAP",
+   "kind": "market_data",
+   "metric": "시가총액",
+   "text": "홈디포 시가총액",
+   "value": 331.0,
+   "unit": "USD bn",
+   "series": "stockanalysis.com 한 곳 · 종목마다 화면 기준일이 달라 각 행에 기준일을 남김",
+   "as_of": "2026-09-17",
+   "tier": 3,
+   "source_url": "https://stockanalysis.com/stocks/hd/market-cap/",
+   "verdict": "confirmed",
+   "render": "marked",
+   "note": "가격에 따라 매일 움직이는 값. 제공사 화면이 찍어 준 기준일을 그대로 쓴다",
+   "printed_on": [
+    "table-main"
+   ]
+  },
+  {
+   "id": "HD_EVEB",
+   "kind": "market_multiple",
+   "metric": "EV/EBITDA",
+   "text": "홈디포 EV/EBITDA",
+   "value": 15.76,
+   "unit": "배",
+   "series": "stockanalysis.com 한 곳 · 2026-09-17 기준 (제공사 혼용 금지)",
+   "as_of": "2026-09-17",
+   "tier": 3,
+   "source_url": "https://stockanalysis.com/stocks/hd/statistics/",
+   "verdict": "confirmed",
+   "render": "marked",
+   "note": "제공사 산정. 자본구조·감가상각 차이를 걷어낸 배수라 P/E 와 순위가 다를 수 있다",
    "printed_on": [
     "table-main"
    ]
@@ -3286,6 +4109,42 @@
    ]
   },
   {
+   "id": "CAT_MCAP",
+   "kind": "market_data",
+   "metric": "시가총액",
+   "text": "캐터필러 시가총액",
+   "value": 374.15,
+   "unit": "USD bn",
+   "series": "stockanalysis.com 한 곳 · 종목마다 화면 기준일이 달라 각 행에 기준일을 남김",
+   "as_of": "2026-09-17",
+   "tier": 3,
+   "source_url": "https://stockanalysis.com/stocks/cat/market-cap/",
+   "verdict": "confirmed",
+   "render": "marked",
+   "note": "가격에 따라 매일 움직이는 값. 제공사 화면이 찍어 준 기준일을 그대로 쓴다",
+   "printed_on": [
+    "table-main"
+   ]
+  },
+  {
+   "id": "CAT_EVEB",
+   "kind": "market_multiple",
+   "metric": "EV/EBITDA",
+   "text": "캐터필러 EV/EBITDA",
+   "value": 25.44,
+   "unit": "배",
+   "series": "stockanalysis.com 한 곳 · 2026-09-17 기준 (제공사 혼용 금지)",
+   "as_of": "2026-09-17",
+   "tier": 3,
+   "source_url": "https://stockanalysis.com/stocks/cat/statistics/",
+   "verdict": "confirmed",
+   "render": "marked",
+   "note": "제공사 산정. 자본구조·감가상각 차이를 걷어낸 배수라 P/E 와 순위가 다를 수 있다",
+   "printed_on": [
+    "table-main"
+   ]
+  },
+  {
    "id": "XOM_REV",
    "kind": "reported_result",
    "metric": "분기 매출",
@@ -3416,6 +4275,42 @@
    ]
   },
   {
+   "id": "XOM_MCAP",
+   "kind": "market_data",
+   "metric": "시가총액",
+   "text": "엑슨모빌 시가총액",
+   "value": 683.19,
+   "unit": "USD bn",
+   "series": "stockanalysis.com 한 곳 · 종목마다 화면 기준일이 달라 각 행에 기준일을 남김",
+   "as_of": "2026-09-17",
+   "tier": 3,
+   "source_url": "https://stockanalysis.com/stocks/xom/market-cap/",
+   "verdict": "confirmed",
+   "render": "marked",
+   "note": "가격에 따라 매일 움직이는 값. 제공사 화면이 찍어 준 기준일을 그대로 쓴다",
+   "printed_on": [
+    "table-main"
+   ]
+  },
+  {
+   "id": "XOM_EVEB",
+   "kind": "market_multiple",
+   "metric": "EV/EBITDA",
+   "text": "엑슨모빌 EV/EBITDA",
+   "value": 10.52,
+   "unit": "배",
+   "series": "stockanalysis.com 한 곳 · 2026-09-17 기준 (제공사 혼용 금지)",
+   "as_of": "2026-09-17",
+   "tier": 3,
+   "source_url": "https://stockanalysis.com/stocks/xom/statistics/",
+   "verdict": "confirmed",
+   "render": "marked",
+   "note": "제공사 산정. 자본구조·감가상각 차이를 걷어낸 배수라 P/E 와 순위가 다를 수 있다",
+   "printed_on": [
+    "table-main"
+   ]
+  },
+  {
    "id": "PEER_LOW_FPE",
    "kind": "market_multiple",
    "metric": "선행 P/E",
@@ -3488,7 +4383,7 @@
    ]
   },
   {
-   "id": "SECMED_43835",
+   "id": "SECMED_90482",
    "kind": "derived_benchmark",
    "metric": "섹터 기준배수",
    "text": "경기소비재 기준 선행 P/E 중앙값",
@@ -3579,7 +4474,7 @@
    ]
   },
   {
-   "id": "SECMED_28180",
+   "id": "SECMED_6939",
    "kind": "derived_benchmark",
    "metric": "섹터 기준배수",
    "text": "금융 기준 선행 P/E 중앙값",
@@ -3724,7 +4619,7 @@
    ]
   },
   {
-   "id": "SECMED_79031",
+   "id": "SECMED_44142",
    "kind": "derived_benchmark",
    "metric": "섹터 기준배수",
    "text": "산업재 기준 선행 P/E 중앙값",
@@ -3815,7 +4710,7 @@
    ]
   },
   {
-   "id": "SECMED_76777",
+   "id": "SECMED_66109",
    "kind": "derived_benchmark",
    "metric": "섹터 기준배수",
    "text": "에너지 기준 선행 P/E 중앙값",
@@ -3906,7 +4801,7 @@
    ]
   },
   {
-   "id": "SECMED_90953",
+   "id": "SECMED_31614",
    "kind": "derived_benchmark",
    "metric": "섹터 기준배수",
    "text": "정보기술 기준 선행 P/E 중앙값",
@@ -4015,7 +4910,7 @@
    ]
   },
   {
-   "id": "SECMED_5892",
+   "id": "SECMED_17914",
    "kind": "derived_benchmark",
    "metric": "섹터 기준배수",
    "text": "커뮤니케이션 · 인터넷 기준 선행 P/E 중앙값",
@@ -4160,7 +5055,7 @@
    ]
   },
   {
-   "id": "SECMED_18108",
+   "id": "SECMED_1448",
    "kind": "derived_benchmark",
    "metric": "섹터 기준배수",
    "text": "커뮤니케이션 · 통신미디어 기준 선행 P/E 중앙값",
@@ -4305,7 +5200,7 @@
    ]
   },
   {
-   "id": "SECMED_58582",
+   "id": "SECMED_24422",
    "kind": "derived_benchmark",
    "metric": "섹터 기준배수",
    "text": "필수소비재 기준 선행 P/E 중앙값",
@@ -4396,7 +5291,7 @@
    ]
   },
   {
-   "id": "SECMED_9803",
+   "id": "SECMED_85703",
    "kind": "derived_benchmark",
    "metric": "섹터 기준배수",
    "text": "헬스케어 기준 선행 P/E 중앙값",
@@ -4433,12 +5328,28 @@
    "tolerance": 0.05
   },
   {
+   "id": "D_NVDA_PS",
+   "kind": "ratio",
+   "numerator": "NVDA_MCAP",
+   "denominator": "NVDA_LTM",
+   "printed": 17.39,
+   "tolerance": 0.02
+  },
+  {
    "id": "D_MSFT_SURP",
    "kind": "pct_change",
    "from": "MSFT_CONS",
    "to": "MSFT_REV",
    "printed": 2.73,
    "tolerance": 0.05
+  },
+  {
+   "id": "D_MSFT_PS",
+   "kind": "ratio",
+   "numerator": "MSFT_MCAP",
+   "denominator": "MSFT_LTM",
+   "printed": 11.03,
+   "tolerance": 0.02
   },
   {
    "id": "D_AAPL_SURP",
@@ -4449,12 +5360,28 @@
    "tolerance": 0.05
   },
   {
+   "id": "D_AAPL_PS",
+   "kind": "ratio",
+   "numerator": "AAPL_MCAP",
+   "denominator": "AAPL_LTM",
+   "printed": 9.75,
+   "tolerance": 0.02
+  },
+  {
    "id": "D_GOOGL_SURP",
    "kind": "pct_change",
    "from": "GOOGL_CONS",
    "to": "GOOGL_REV",
    "printed": 2.45,
    "tolerance": 0.05
+  },
+  {
+   "id": "D_GOOGL_PS",
+   "kind": "ratio",
+   "numerator": "GOOGL_MCAP",
+   "denominator": "GOOGL_LTM",
+   "printed": 9.29,
+   "tolerance": 0.02
   },
   {
    "id": "D_AMZN_SURP",
@@ -4473,6 +5400,14 @@
    "tolerance": 0.05
   },
   {
+   "id": "D_AMZN_PS",
+   "kind": "ratio",
+   "numerator": "AMZN_MCAP",
+   "denominator": "AMZN_LTM",
+   "printed": 3.65,
+   "tolerance": 0.02
+  },
+  {
    "id": "D_META_SURP",
    "kind": "pct_change",
    "from": "META_CONS",
@@ -4489,6 +5424,14 @@
    "tolerance": 0.05
   },
   {
+   "id": "D_META_PS",
+   "kind": "ratio",
+   "numerator": "META_MCAP",
+   "denominator": "META_LTM",
+   "printed": 7.54,
+   "tolerance": 0.02
+  },
+  {
    "id": "D_AVGO_GQOQ",
    "kind": "pct_change",
    "from": "AVGO_REV",
@@ -4497,12 +5440,28 @@
    "tolerance": 0.05
   },
   {
+   "id": "D_AVGO_PS",
+   "kind": "ratio",
+   "numerator": "AVGO_MCAP",
+   "denominator": "AVGO_LTM",
+   "printed": 23.45,
+   "tolerance": 0.02
+  },
+  {
    "id": "D_TSLA_SURP",
    "kind": "pct_change",
    "from": "TSLA_CONS",
    "to": "TSLA_REV",
    "printed": 6.85,
    "tolerance": 0.05
+  },
+  {
+   "id": "D_TSLA_PS",
+   "kind": "ratio",
+   "numerator": "TSLA_MCAP",
+   "denominator": "TSLA_LTM",
+   "printed": 13.61,
+   "tolerance": 0.02
   },
   {
    "id": "D_AMD_SURP",
@@ -4521,12 +5480,28 @@
    "tolerance": 0.05
   },
   {
+   "id": "D_AMD_PS",
+   "kind": "ratio",
+   "numerator": "AMD_MCAP",
+   "denominator": "AMD_LTM",
+   "printed": 20.59,
+   "tolerance": 0.02
+  },
+  {
    "id": "D_ORCL_SURP",
    "kind": "pct_change",
    "from": "ORCL_CONS",
    "to": "ORCL_REV",
    "printed": 0.89,
    "tolerance": 0.05
+  },
+  {
+   "id": "D_ORCL_PS",
+   "kind": "ratio",
+   "numerator": "ORCL_MCAP",
+   "denominator": "ORCL_LTM",
+   "printed": 6.37,
+   "tolerance": 0.02
   },
   {
    "id": "D_CRM_SURP",
@@ -4537,12 +5512,28 @@
    "tolerance": 0.05
   },
   {
+   "id": "D_CRM_PS",
+   "kind": "ratio",
+   "numerator": "CRM_MCAP",
+   "denominator": "CRM_LTM",
+   "printed": 4.79,
+   "tolerance": 0.02
+  },
+  {
    "id": "D_PLTR_SURP",
    "kind": "pct_change",
    "from": "PLTR_CONS",
    "to": "PLTR_REV",
    "printed": 7.78,
    "tolerance": 0.05
+  },
+  {
+   "id": "D_PLTR_PS",
+   "kind": "ratio",
+   "numerator": "PLTR_MCAP",
+   "denominator": "PLTR_LTM",
+   "printed": 78.4,
+   "tolerance": 0.02
   },
   {
    "id": "D_INTC_SURP",
@@ -4561,12 +5552,28 @@
    "tolerance": 0.05
   },
   {
+   "id": "D_INTC_PS",
+   "kind": "ratio",
+   "numerator": "INTC_MCAP",
+   "denominator": "INTC_LTM",
+   "printed": 9.31,
+   "tolerance": 0.02
+  },
+  {
    "id": "D_MU_GQOQ",
    "kind": "pct_change",
    "from": "MU_REV",
    "to": "MU_GNEXT",
    "printed": 20.5,
    "tolerance": 0.05
+  },
+  {
+   "id": "D_MU_PS",
+   "kind": "ratio",
+   "numerator": "MU_MCAP",
+   "denominator": "MU_LTM",
+   "printed": 12.74,
+   "tolerance": 0.02
   },
   {
    "id": "D_NFLX_SURP",
@@ -4577,12 +5584,44 @@
    "tolerance": 0.05
   },
   {
+   "id": "D_NFLX_PS",
+   "kind": "ratio",
+   "numerator": "NFLX_MCAP",
+   "denominator": "NFLX_LTM",
+   "printed": 6.91,
+   "tolerance": 0.02
+  },
+  {
+   "id": "D_JPM_PS",
+   "kind": "ratio",
+   "numerator": "JPM_MCAP",
+   "denominator": "JPM_LTM",
+   "printed": 5.08,
+   "tolerance": 0.02
+  },
+  {
+   "id": "D_GS_PS",
+   "kind": "ratio",
+   "numerator": "GS_MCAP",
+   "denominator": "GS_LTM",
+   "printed": 4.75,
+   "tolerance": 0.02
+  },
+  {
    "id": "D_LLY_SURP",
    "kind": "pct_change",
    "from": "LLY_CONS",
    "to": "LLY_REV",
    "printed": 10.81,
    "tolerance": 0.05
+  },
+  {
+   "id": "D_LLY_PS",
+   "kind": "ratio",
+   "numerator": "LLY_MCAP",
+   "denominator": "LLY_LTM",
+   "printed": 12.8,
+   "tolerance": 0.02
   },
   {
    "id": "D_UNH_SURP",
@@ -4593,12 +5632,28 @@
    "tolerance": 0.05
   },
   {
+   "id": "D_UNH_PS",
+   "kind": "ratio",
+   "numerator": "UNH_MCAP",
+   "denominator": "UNH_LTM",
+   "printed": 0.86,
+   "tolerance": 0.02
+  },
+  {
    "id": "D_JNJ_SURP",
    "kind": "pct_change",
    "from": "JNJ_CONS",
    "to": "JNJ_REV",
    "printed": 1.12,
    "tolerance": 0.05
+  },
+  {
+   "id": "D_JNJ_PS",
+   "kind": "ratio",
+   "numerator": "JNJ_MCAP",
+   "denominator": "JNJ_LTM",
+   "printed": 6.65,
+   "tolerance": 0.02
   },
   {
    "id": "D_WMT_SURP",
@@ -4609,6 +5664,14 @@
    "tolerance": 0.05
   },
   {
+   "id": "D_WMT_PS",
+   "kind": "ratio",
+   "numerator": "WMT_MCAP",
+   "denominator": "WMT_LTM",
+   "printed": 1.16,
+   "tolerance": 0.02
+  },
+  {
    "id": "D_COST_SURP",
    "kind": "pct_change",
    "from": "COST_CONS",
@@ -4617,12 +5680,44 @@
    "tolerance": 0.05
   },
   {
+   "id": "D_COST_PS",
+   "kind": "ratio",
+   "numerator": "COST_MCAP",
+   "denominator": "COST_LTM",
+   "printed": 1.43,
+   "tolerance": 0.02
+  },
+  {
+   "id": "D_HD_PS",
+   "kind": "ratio",
+   "numerator": "HD_MCAP",
+   "denominator": "HD_LTM",
+   "printed": 1.96,
+   "tolerance": 0.02
+  },
+  {
    "id": "D_CAT_SURP",
    "kind": "pct_change",
    "from": "CAT_CONS",
    "to": "CAT_REV",
    "printed": 6.55,
    "tolerance": 0.05
+  },
+  {
+   "id": "D_CAT_PS",
+   "kind": "ratio",
+   "numerator": "CAT_MCAP",
+   "denominator": "CAT_LTM",
+   "printed": 5.01,
+   "tolerance": 0.02
+  },
+  {
+   "id": "D_XOM_PS",
+   "kind": "ratio",
+   "numerator": "XOM_MCAP",
+   "denominator": "XOM_LTM",
+   "printed": 1.89,
+   "tolerance": 0.02
   }
  ],
  "unit_policy": {
@@ -4633,6 +5728,9 @@
   "PEG": "배",
   "섹터 기준배수": "배",
   "LTM 매출": "USD bn",
-  "LTM 성장률": "%"
+  "LTM 성장률": "%",
+  "시가총액": "USD bn",
+  "EV/EBITDA": "배",
+  "P/S": "배"
  }
 }
