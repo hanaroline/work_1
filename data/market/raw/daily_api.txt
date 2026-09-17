@@ -1,4 +1,4 @@
-후보 주소 확인 2026-09-18 08:41 KST (직전 영업일 어림 20260918)
+후보 주소 확인 2026-09-18 08:46 KST (직전 영업일 어림 20260918)
 브라우저 없이 평범한 요청으로 열리는지, 필요한 항목이 있는지 본다.
 
 ### 일별시세 KOSPI (거래대금 없음을 확인한 자리)
@@ -9,18 +9,18 @@
 
 ### 지수 통합 KOSPI (거래대금 후보)
     https://stock.naver.com/api/securityFe/api/index/KOSPI/integration
-    200 · 15992 bytes
+    200 · 15995 bytes
     낱말 있음: accumulatedtradingvalue → …":"거래량","value":"-"},{"code":"accumulatedTradingValue","key":"대금","value":"-"},{"code":"highPriceOf52Weeks","key":"52주 최…
     낱말 있음: tradingvalue → …lue":"-"},{"code":"accumulatedTradingValue","key":"대금","value":"-"},{"code":"highPriceOf52Weeks","key":"52주 최고","value":…
     낱말 있음: tradingvolume → …lue":"-"},{"code":"accumulatedTradingVolume","key":"거래량","value":"-"},{"code":"accumulatedTradingValue","key":"대금","valu…
-    모양: {"stockEndType": "str", "itemCode": "str", "reutersCode": "str", "stockName": "str", "totalInfos": ["[8개]", {"code": "…", "key": "…", "value": "…"}], "description": "str", "dealTrendInfo": {"bizdate": "str", "personalValue": "str", "foreignValue": "str", "institutionalValue": "str"}, "programTrendInfo": {"bizdate": "str", "indexDifferenceReal": "str", "indexBiDifferenceReal": "str", "indexTotalReal": "str"}, "upDownStockInfo": {"upperCount": "str", "riseCount": "str", "lowerCount": "str", "fallCount": "str", "steadyCount": "str"}, "enrollStocks": ["[10개]", {"stockType": "…", "stockEndType": "…", "itemCode": "…", "reutersCode": "…", "stockName": "…", "sosok": "…", "closePrice": "…", "compareT
+    모양: {"stockEndType": "str", "itemCode": "str", "reutersCode": "str", "stockName": "str", "totalInfos": ["[8개]", {"code": "…", "key": "…", "value": "…"}], "description": "str", "dealTrendInfo": {"bizdate": "str", "personalValue": "str", "foreignValue": "str", "institutionalValue": "str"}, "programTrendInfo": {"bizdate": "str", "indexBiDifferenceReal": "str", "indexTotalReal": "str", "indexDifferenceReal": "str"}, "upDownStockInfo": {"upperCount": "str", "riseCount": "str", "lowerCount": "str", "fallCount": "str", "steadyCount": "str"}, "enrollStocks": ["[10개]", {"stockType": "…", "stockEndType": "…", "itemCode": "…", "reutersCode": "…", "stockName": "…", "sosok": "…", "closePrice": "…", "compareT
     → 본문을 data/market/raw/daily_api_-1.json 에 남겼다
 
 ### 실시간 지수 KOSPI (오늘치 거래대금 후보)
     https://polling.finance.naver.com/api/realtime/domestic/index/KOSPI
     200 · 931 bytes
-    낱말 있음: accumulatedtradingvalue → …ccumulatedTradingVolume":"-","accumulatedTradingValue":"-","marketStatus":"PREOPEN","localTradedAt":"2026-09-18T08:41:04…
-    낱말 있음: tradingvalue → …radingVolume":"-","accumulatedTradingValue":"-","marketStatus":"PREOPEN","localTradedAt":"2026-09-18T08:41:04+09:00","sy…
+    낱말 있음: accumulatedtradingvalue → …ccumulatedTradingVolume":"-","accumulatedTradingValue":"-","marketStatus":"PREOPEN","localTradedAt":"2026-09-18T08:46:48…
+    낱말 있음: tradingvalue → …radingVolume":"-","accumulatedTradingValue":"-","marketStatus":"PREOPEN","localTradedAt":"2026-09-18T08:46:48+09:00","sy…
     낱말 있음: tradingvolume → …-","lowPrice":"-","accumulatedTradingVolume":"-","accumulatedTradingValue":"-","marketStatus":"PREOPEN","localTradedAt":…
     모양: {"pollingInterval": "int", "datas": ["[1개]", {"itemCode": "…", "stockName": "…", "stockExchangeType": "…", "closePrice": "…", "compareToPreviousClosePrice": "…", "compareToPreviousPrice": "…", "fluctuationsRatio": "…", "openPrice": "…", "highPrice": "…", "lowPrice": "…", "accumulatedTradingVolume": "…", "accumulatedTradingValue": "…", "marketStatus": "…", "localTradedAt": "…"}], "time": "str"}
     → 본문을 data/market/raw/daily_api_-1.json 에 남겼다
@@ -41,8 +41,8 @@
 ### 실시간 지수 KOSDAQ
     https://polling.finance.naver.com/api/realtime/domestic/index/KOSDAQ
     200 · 932 bytes
-    낱말 있음: accumulatedtradingvalue → …ccumulatedTradingVolume":"-","accumulatedTradingValue":"-","marketStatus":"PREOPEN","localTradedAt":"2026-09-18T08:41:07…
-    낱말 있음: tradingvalue → …radingVolume":"-","accumulatedTradingValue":"-","marketStatus":"PREOPEN","localTradedAt":"2026-09-18T08:41:07+09:00","sy…
+    낱말 있음: accumulatedtradingvalue → …ccumulatedTradingVolume":"-","accumulatedTradingValue":"-","marketStatus":"PREOPEN","localTradedAt":"2026-09-18T08:46:51…
+    낱말 있음: tradingvalue → …radingVolume":"-","accumulatedTradingValue":"-","marketStatus":"PREOPEN","localTradedAt":"2026-09-18T08:46:51+09:00","sy…
     낱말 있음: tradingvolume → …-","lowPrice":"-","accumulatedTradingVolume":"-","accumulatedTradingValue":"-","marketStatus":"PREOPEN","localTradedAt":…
     모양: {"pollingInterval": "int", "datas": ["[1개]", {"itemCode": "…", "stockName": "…", "stockExchangeType": "…", "closePrice": "…", "compareToPreviousClosePrice": "…", "compareToPreviousPrice": "…", "fluctuationsRatio": "…", "openPrice": "…", "highPrice": "…", "lowPrice": "…", "accumulatedTradingVolume": "…", "accumulatedTradingValue": "…", "marketStatus": "…", "localTradedAt": "…"}], "time": "str"}
     → 본문을 data/market/raw/daily_api_-1.json 에 남겼다
@@ -56,15 +56,15 @@
 
 ### 투자자별 NXT·KOSPI (관찰된 그대로)
     https://stock.naver.com/api/domestic/market/trend/daily?tradeType=NXT&marketType=KOSPI&bizdate=20260918&startIdx=0&pageSize=30
-    200 · 50306 bytes
-    낱말 있음: diffvalue → …ts":[{"investorGubun":"9001","diffValue":"-1946000000","sellQuant":"21503","sellPrice":"5704000000","buyQuant":"21926","…
-    모양: {"content": ["[30개]", {"bizdate": "…", "time": "…", "netAmounts": "…"}], "pageable": {"sort": {"empty": "…", "sorted": "…", "unsorted": "…"}, "offset": "str", "pageNumber": "str", "pageSize": "str", "paged": "bool", "unpaged": "bool"}, "totalPages": "str", "totalElements": "str", "last": "bool", "size": "str", "number": "str", "sort": {"empty": "bool", "sorted": "bool", "unsorted": "bool"}, "numberOfElements": "str", "first": "bool", "empty": "bool"}
+    200 · 50323 bytes
+    낱말 있음: diffvalue → …ts":[{"investorGubun":"9001","diffValue":"-1937000000","sellQuant":"22216","sellPrice":"6033000000","buyQuant":"23275","…
+    모양: {"content": ["[30개]", {"bizdate": "…", "time": "…", "netAmounts": "…"}], "pageable": {"sort": {"empty": "…", "sorted": "…", "unsorted": "…"}, "offset": "str", "pageNumber": "str", "pageSize": "str", "paged": "bool", "unpaged": "bool"}, "last": "bool", "totalPages": "str", "totalElements": "str", "first": "bool", "size": "str", "number": "str", "sort": {"empty": "bool", "sorted": "bool", "unsorted": "bool"}, "numberOfElements": "str", "empty": "bool"}
     → 본문을 data/market/raw/daily_api_83.json 에 남겼다
 
 ### 투자자별 KRX·KOSDAQ
     https://stock.naver.com/api/domestic/market/trend/daily?tradeType=KRX&marketType=KOSDAQ&bizdate=20260918&startIdx=0&pageSize=30
     200 · 52860 bytes
     낱말 있음: diffvalue → …ts":[{"investorGubun":"9001","diffValue":"-13000000","sellQuant":"2609462","sellPrice":"17465000000","buyQuant":"2313771…
-    모양: {"content": ["[30개]", {"bizdate": "…", "time": "…", "netAmounts": "…"}], "pageable": {"sort": {"empty": "…", "sorted": "…", "unsorted": "…"}, "offset": "str", "pageNumber": "str", "pageSize": "str", "paged": "bool", "unpaged": "bool"}, "last": "bool", "totalPages": "str", "totalElements": "str", "first": "bool", "size": "str", "number": "str", "sort": {"empty": "bool", "sorted": "bool", "unsorted": "bool"}, "numberOfElements": "str", "empty": "bool"}
+    모양: {"content": ["[30개]", {"bizdate": "…", "time": "…", "netAmounts": "…"}], "pageable": {"sort": {"empty": "…", "sorted": "…", "unsorted": "…"}, "offset": "str", "pageNumber": "str", "pageSize": "str", "unpaged": "bool", "paged": "bool"}, "totalPages": "str", "totalElements": "str", "last": "bool", "size": "str", "number": "str", "sort": {"empty": "bool", "sorted": "bool", "unsorted": "bool"}, "numberOfElements": "str", "first": "bool", "empty": "bool"}
     → 본문을 data/market/raw/daily_api_83.json 에 남겼다
 
