@@ -140,9 +140,18 @@ PAGE = r"""<!DOCTYPE html>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>월배당 ETF 투자 제안서</title>
+<!-- 글꼴은 **PC에 깔린 것을 먼저 쓰고**, 없을 때만 구글 폰트를 받는다.
+     이 문서는 인터넷이 없는 자리에서도 열려야 하고(사내망·출장·고객 사무실),
+     고객에게 메일로 보내는 파일이라 무거워도 안 된다. 그래서 글꼴을 파일 안에
+     심지 않는다 — 한글 웹폰트는 굵기마다 메가바이트 단위라 제안서 한 장이
+     몇 MB가 된다.
+     media="print" 로 받아 놓고 다 받으면 all 로 바꾼다. 이러면 이 요청이
+     **첫 화면을 붙잡지 못한다.** 사내 프록시가 응답 없이 물고 있어도 본문은
+     제때 뜬다. 인터넷이 없으면 조용히 실패하고 아래 지정한 PC 글꼴로 간다. -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" media="print" onload="this.media='all';this.onload=null"
+      href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&family=Inter:wght@400;500;600;700&display=swap">
 <style>
 :root{
   --orange:#F58220; --orange-active:#CB6015; --soft:#FAB072;
@@ -151,8 +160,16 @@ PAGE = r"""<!DOCTYPE html>
   --hair:#CDCECB; --hair-soft:#E5E4E1; --line-dark:#49535B;
   --ink:#1A1A1A; --body:#3D3D3D; --muted:#6C6C6C; --muted-soft:#84888B;
   --error:#C62828; --warn:#D4A017; --ok:#2E8540;
-  --font-kr:'Spoqa Han Sans Neo','Noto Sans KR',sans-serif;
-  --font-num:'Inter','SF Mono',monospace;
+  /* 미래에셋 표준 글꼴이 먼저, 그다음 PC에 반드시 있는 한글 글꼴로 내려간다.
+     예전에는 'Noto Sans KR' 다음이 곧장 sans-serif 였는데, 그 둘이 없는
+     PC에서는 한글이 기본 산세리프로 떨어진다. 윈도우는 맑은 고딕,
+     맥은 애플 SD 고딕으로 받아 두면 인터넷 없이도 제 모양이 난다. */
+  --font-kr:'Spoqa Han Sans Neo','Noto Sans KR','Malgun Gothic','Apple SD Gothic Neo',sans-serif;
+  /* 숫자는 등폭이 아니라 **자릿수 정렬**(tabular-nums)이 중요하다. 예전에는
+     Inter 다음이 'SF Mono',monospace 였는데, SF Mono 는 맥에만 있어서
+     윈도우에서 인터넷이 끊기면 금액이 전부 Courier New 로 찍혔다. 제안서의
+     모든 원화 금액이 타자기 글꼴이 되는 셈이다. 같은 계열 산세리프로 내린다. */
+  --font-num:'Inter','Aptos','Segoe UI',system-ui,-apple-system,sans-serif;
   --space-section:88px; --space-block:44px;
 }
 *{box-sizing:border-box}
