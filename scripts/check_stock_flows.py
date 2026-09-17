@@ -184,6 +184,7 @@ def run_verifier(doc):
         sys.stderr = open(os.devnull, 'w')
         V.verify_shape(doc)
         V.verify_closes(doc)
+        V.verify_close_lag(doc)
         V.verify_against_market(doc)
     finally:
         sys.stderr.close()
@@ -232,6 +233,12 @@ def test_fault_injection():
         for s in d['stocks'].values():
             s['f'] = [0 for _ in s['f']]
     caught.append(('없는 것을 0 으로 메운다', inject('0 메우기', zeros)))
+
+    def shiftdates(d):
+        # 종가를 한 칸 밀려 붙인 꼴. verify_close_lag 이 이걸 잡아야 한다.
+        for s2 in d['stocks'].values():
+            s2['c'] = s2['c'][1:] + [s2['c'][-1]]
+    caught.append(('날짜를 한 칸 밀려 붙인다', inject('날짜 밀림', shiftdates)))
 
     def badclose(d):
         for s in d['stocks'].values():
