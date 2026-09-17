@@ -632,11 +632,35 @@
 
   function show(msg) { $('body').innerHTML = '<div class="card"><div class="spin">' + esc(msg) + '</div></div>'; }
 
-  fetch('../../data/signals/latest.json')
-    .then(function (r) { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
+  /* ── 자료를 어디서 읽는가 ─────────────────────────────────────
+     인터넷이 막힌 업무용 PC 를 위해 자료를 HTML 안에 심어 둔 판이 있다
+     (scripts/make_signal_offline.py). 그 판에는 아래 <script type=
+     "application/json"> 블록이 들어 있고, 여기서는 그것을 먼저 본다.
+
+     **두 벌로 갈라 두지 않는 것이 요점이다.** 내장판을 위해 화면 코드를
+     따로 베껴 두면 언젠가 조용히 어긋난다 — 이 저장소가 fund-weekly.yml
+     주석에 적어 둔 것과 같은 이유다. 그래서 갈림은 이 함수 하나뿐이고
+     그리는 코드는 인터넷판과 완전히 같은 것을 쓴다. */
+  function embedded(id) {
+    var el = document.getElementById(id);
+    if (!el) return null;
+    try { return JSON.parse(el.textContent); } catch (e) { return null; }
+  }
+
+  function loadJson(id, url) {
+    var e = embedded(id);
+    if (e) return Promise.resolve(e);
+    return fetch(url).then(function (r) {
+      if (!r.ok) throw new Error('HTTP ' + r.status);
+      return r.json();
+    });
+  }
+
+  loadJson('signals-embedded', '../../data/signals/latest.json')
     .then(function (d) {
       DATA = d;
-      $('asof').textContent = '산출 ' + (d.generated_at_kst || '');
+      $('asof').textContent = '산출 ' + (d.generated_at_kst || '') +
+        (embedded('signals-embedded') ? ' · 내장 스냅샷' : '');
       $('disclaimer').textContent = d.disclaimer || '';
       fillSelect();
       $('pickNote').textContent = '미리 셈해 둔 ' + (d.items || []).length + '종목';
@@ -651,8 +675,7 @@
            '파일을 두 번 눌러 열면 브라우저 보안정책이 자료 읽기를 막습니다.');
     });
 
-  fetch('../../data/signals/backtest.json')
-    .then(function (r) { return r.ok ? r.json() : null; })
+  loadJson('backtest-embedded', '../../data/signals/backtest.json')
     .then(function (d) { BT = d; $('limits').innerHTML = limitsHtml(d); })
     .catch(function () { $('limits').innerHTML = limitsHtml(null); });
 
@@ -702,8 +725,16 @@
     var tried = 0;
     function attempt() {
       if (tried >= syms.length) {
-        show('「' + q + '」 의 일봉을 받지 못했습니다. 종목코드(6자리) 또는 미국 티커를 확인해 주십시오. ' +
-             '자료를 못 받았을 때 지어낸 값으로 신호를 내지는 않습니다.');
+        /* 내장판(인터넷 없는 자리)에서는 원인이 다르다 — 종목코드가 틀린 것이
+           아니라 밖으로 나갈 길이 없는 것이다. 같은 문구를 쓰면 코드를 잘못
+           적은 줄 알고 몇 번씩 다시 치게 된다. */
+        show(embedded('signals-embedded')
+          ? '「' + q + '」 는 내장 스냅샷에 없습니다. 임의 종목은 일봉을 새로 받아야 하는데 ' +
+            '이 판은 인터넷 없이 열도록 만든 것이라 밖으로 나갈 수 없습니다. ' +
+            '위 목록의 ' + ((DATA && DATA.items || []).length) + '종목은 그대로 보실 수 있고, ' +
+            '임의 종목이 필요하시면 인터넷이 되는 자리에서 대시보드를 여십시오.'
+          : '「' + q + '」 의 일봉을 받지 못했습니다. 종목코드(6자리) 또는 미국 티커를 확인해 주십시오. ' +
+            '자료를 못 받았을 때 지어낸 값으로 신호를 내지는 않습니다.');
         return;
       }
       var sym = syms[tried++];
