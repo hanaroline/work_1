@@ -1,0 +1,61 @@
+name: 지급주기 모집단 실측 (일회성)
+
+# 분기·연배당까지 담으려면 모집단을 192종목에서 국내 상장 전체 1,535종목으로
+# 넓혀야 한다. 그대로 넓히면 월 1일 갱신이 시간 초과로 깨질 수 있어, 먼저
+# **몇 종목이 남는지** 를 실제로 세어 본다. 아무것도 만들지 않고 아무것도
+# 덮어쓰지 않는다 — 잰 것을 tools/etfcheck-discovery/freq-universe.json 에
+# 적기만 한다.
+#
+# 다 재고 나면 이 잡은 지운다.
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - 'claude/intelligent-**'
+    paths:
+      - 'scripts/probe_freq_universe.mjs'
+      - '.github/workflows/etf-freq-probe.yml'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: etf-freq-probe-${{ github.ref_name }}
+  cancel-in-progress: false
+
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 75
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref_name }}
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Playwright 설치
+        run: npm i -D playwright@1.56.1 && npx playwright install --with-deps chromium
+
+      - name: 실측
+        run: node scripts/probe_freq_universe.mjs
+
+      - name: 결과 커밋
+        if: always()
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add tools/etfcheck-discovery/freq-universe.json || true
+          if git diff --cached --quiet; then
+            echo "남길 결과가 없습니다"
+            exit 0
+          fi
+          git commit -m "chore(etf): 지급주기 모집단 실측 결과"
+          for i in 1 2 3 4 5; do
+            if git push; then exit 0; fi
+            git pull --rebase origin "${{ github.ref_name }}" || exit 1
+          done
+          exit 1
