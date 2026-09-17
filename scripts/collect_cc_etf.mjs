@@ -500,6 +500,27 @@ let asOf = null;
 
 let stoppedEarly = null;
 
+// 연속 실패 차단기.
+//
+// 2026-09 판에서 원천의 성질이 드러났다. 509종목을 돌았는데 **앞 301종목은
+// 99% 성공하고, 302번째부터 209종목은 0.5% 성공**했다. 서서히 나빠진 것이
+// 아니라 한 지점에서 벽이 섰다 — 한 판에 답해 주는 양이 정해져 있는 것으로
+// 보인다.
+//
+// 바로 밑의 6할 규칙은 이 벽을 못 잡는다. 그것은 **누적** 비율이라서, 앞에서
+// 300종목을 깨끗이 모아 두면 뒤가 전부 막혀도 비율이 6할에 닿지 않는다.
+// 실제로 이 판에서 한 번도 울리지 않았고, 벽 뒤에서 20분 넘게 재시도만 했다.
+//
+// 그래서 **연속** 실패를 따로 센다. 서른 번 잇달아 실패하면 그 뒤는 0.5%
+// 이므로 더 가 봐야 얻는 것이 없다.
+//
+// 여기서는 throw 하지 않고 break 한다. 이 차단기가 울리는 판은 앞의 300종목을
+// **제대로 모은** 판이다. 그걸 버리면 벽에 부딪힌 벌로 하루치 수집을 날리는
+// 셈이 된다. 밑의 두 규칙이 throw 하는 것은 처음부터 막힌 판 — 거기서는
+// 버릴 것이 없다.
+const MAX_CONSEC_FAIL = 30;
+let consecFail = 0;
+
 for (const [i, row] of universe.entries()) {
   const code = row.F16013;
   const name = row.F16002;
@@ -573,6 +594,7 @@ for (const [i, row] of universe.entries()) {
     // 다시 하지 않는다.
     console.log(`수집 실패 — 제외 (${String(e.message).slice(0, 60)})`);
     failed.push({ code, name, why: String(e.message).slice(0, 200) });
+    consecFail++;
     // 앞에서부터 줄줄이 실패하면 그건 종목 문제가 아니라 원천이 우리를
     // 막았거나 응답 모양이 바뀐 것이다. 192종목을 그대로 다 돌면 재시도만
     // 하다가 한 시간 반이 지나간다(실제로 그랬다). 일찍 멈추고 말한다.
@@ -609,9 +631,24 @@ for (const [i, row] of universe.entries()) {
       dataComplete: false,
       excludeReason: `수집 실패(세 번 다시 물었으나 답이 오지 않음: ${String(e.message).slice(0, 80)})`,
     });
+
+    // 벽에 닿았다. 여기서 멈추고, 지금까지 모은 것은 그대로 쓴다.
+    if (consecFail >= MAX_CONSEC_FAIL) {
+      stoppedEarly =
+        `${consecFail}종목이 잇달아 실패해 ${i + 1}/${universe.length} 에서 멈췄습니다. ` +
+        '원천이 한 판에 답해 주는 양을 넘긴 것으로 보입니다 — 여기서 더 가도 얻는 것이 없어 ' +
+        '남은 시간을 재시도로 태우지 않습니다.';
+      console.log(`\n${stoppedEarly}`);
+      break;
+    }
+
     await sleep(600);
     continue;
   }
+
+  // 다섯 번을 다 받아 냈다. 연속 실패는 여기서 끊긴다 — 중간에 한 종목이
+  // 실패하는 것은 흔한 일이고, 차단기는 **잇달아** 실패할 때만 울려야 한다.
+  consecFail = 0;
 
   // 예전에는 여기서 상세(getEtpItemOutline)를 꺼냈다. 이제 그 값들이 스크리너
   // 한 행에 들어 있으므로 `row` 가 곧 그 자리다. 기초지수(F34777)만 마스터에
