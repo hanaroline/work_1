@@ -98,10 +98,26 @@ export const HEAD = 200;
  * 들어가는 일은 없다.
  */
 const TOC_TITLE = /\d+\s*\.\s*(집합투자기구의|투자목적|투자대상|투자전략|투자위험|매입|보수|이익\s*배\s*분|운용전문인력|재무|집합투자업자)/g;
+
+/**
+ * 쪽을 「제N부」 로 여는 쪽 — 인쇄 쪽번호가 앞에 오는 것까지만 봐준다.
+ *
+ * 이 쪽은 구간의 첫 쪽이지 목차가 아니다. 제2부 첫 쪽에는 1~5절 제목이 표로
+ * 몰려 있어 아래 개수 규칙에 걸렸고, 그 바람에 **제2부를 통째로 놓쳤다**.
+ * 제2부를 못 찾으면 본문 자리가 전부 비므로 값비싼 오인이다.
+ *
+ * ★ 줄머리에 있을 때만 본다 ★ 아무 데나 「제1부」 가 보이면 넘기는 식으로 하면,
+ * 낱말 없는 목차 쪽(「〈투자결정시 유의사항〉〈요약정보〉 제1부. 모집 또는 매출 …」)
+ * 까지 본문으로 여겨 요약정보가 목차 쪽을 가리키게 된다 — 전에 우리프랭클린에서
+ * 실제로 겪은 오류다.
+ */
+const PART_OPEN = /^\s*\d{0,4}\s*제\s*[12]\s*부/;
 export function tocPages(pages) {
   const set = new Set();
   for (let i = 0; i < Math.min(pages.length, 14); i++) {
-    if (/목\s*차/.test(pages[i].slice(0, 120))) { set.add(i); continue; }
+    const head = pages[i].slice(0, 120);
+    if (/목\s*차/.test(head)) { set.add(i); continue; }
+    if (PART_OPEN.test(head)) continue;
     if ((pages[i].match(TOC_TITLE) || []).length >= 5) set.add(i);
   }
   return set;
@@ -133,12 +149,17 @@ export function mapPages(pages) {
     }
   }
 
-  /* ② 본문이 어디서 시작하나 — 이것이 정해지지 않으면 본문 자리는 담지 않는다.
-        차례가 요약 ≤ 제1부 < 제2부 여야 앞머리 인식을 믿을 수 있다. 어긋나면
-        그 문서는 내가 읽은 구조가 아니므로 넘겨짚지 않는다. */
+  /* ② 본문이 어디서 시작하나 — **제2부뿐이다.**
+        차례가 제1부 < 제2부 여야 앞머리 인식을 믿을 수 있다. 어긋나면 그 문서는
+        내가 읽은 구조가 아니므로 넘겨짚지 않는다.
+
+        ★ 제1부로 대체하지 않는다 ★ 처음엔 제2부를 못 찾으면 제1부부터 찾게
+        두었다. 표본으로 재어 보니 제1부·제2부를 다 찾은 22종목 가운데 11종목에서
+        투자대상·매입환매 제목이 **그 사이**(제1부 안)에 걸렸다. 제1부는 모집·매출
+        구간이라 매입 방법·투자대상 이야기가 또 나온다. 대체를 두면 절반이 틀린
+        쪽을 가리키므로, 제2부를 못 찾으면 본문 자리를 통째로 비운다. */
   let bodyFrom = null, bodyBy = null;
   if (at.part2 && (!at.part1 || at.part1 < at.part2)) { bodyFrom = at.part2 - 1; bodyBy = 'part2'; }
-  else if (at.part1 && !at.part2) { bodyFrom = at.part1 - 1; bodyBy = 'part1'; }
 
   /* ③ 본문 자리 — 제2부부터 쪽 전체에서 찾고 첫 쪽을 쓴다 */
   if (bodyFrom !== null) {
