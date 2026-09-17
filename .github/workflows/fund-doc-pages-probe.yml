@@ -15,6 +15,14 @@ on:
         description: '표본 종목 수 (운용사 골고루)'
         type: string
         default: '40'
+      title_key:
+        description: '제목 원문을 찍어 볼 자리 (trade/fee/tax… · 비우면 안 찍음)'
+        type: string
+        default: ''
+      title_word:
+        description: '그 자리의 핵심 낱말 정규식 (예: 환\s*매)'
+        type: string
+        default: '환\s*매'
   push:
     branches:
       - 'claude/els-**'
@@ -22,6 +30,8 @@ on:
       - 'scripts/probe_fund_doc_pages.mjs'
       - 'scripts/probe_fund_pages_sample.mjs'
       - 'scripts/probe_fund_tax.mjs'
+      - 'scripts/probe_fund_title.mjs'
+      - 'scripts/fund_doc_anchors.mjs'
       - '.github/workflows/fund-doc-pages-probe.yml'
 
 permissions:
@@ -50,5 +60,13 @@ jobs:
       # 과세가 두 번 고쳐도 0% 였던 이유는 원문 확인으로 끝났다 — 제목이
       # 「14. 이익배분 및 과세에 관한 사항」 이었다. probe_fund_tax.mjs 는 기록으로
       # 남겨 두고, 필요할 때만 수동으로 돌린다.
+      # 적중률이 낮은 자리는 정규식을 짐작으로 고치면 반드시 또 틀린다. 과세가
+      # 그랬다 — 두 번 고쳐도 0% 였고, 원문을 찍고 나서야 제목이 「14. 이익배분 및
+      # 과세에 관한 사항」 인 것을 알았다. 그 한 번으로 끝났다.
+      # 못 찾은 종목의 제목 원문만 골라 찍는다.
+      - name: 제목 원문 확인 (못 찾은 종목만)
+        if: inputs.title_key != ''
+        run: node scripts/probe_fund_title.mjs "${{ inputs.title_key }}" "${{ inputs.title_word }}" "${{ inputs.count || '40' }}"
+
       - name: 표본 적중률
         run: node scripts/probe_fund_pages_sample.mjs "${{ inputs.count || '40' }}"
