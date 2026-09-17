@@ -219,6 +219,22 @@ jobs:
           for (const k of SOFT) console.log('  '+what(k).padEnd(22)+pct(k).toFixed(0)+'%');
           if (weak.length) console.log('::warning title=덜 잡힌 자리::'+weak.join(' / ')+' — 그 종목만 빈칸입니다. 제목 변형을 probe_fund_title.mjs 로 확인해 채우십시오');
           if (weak.length >= 3) { console.log('::error::필수 자리 '+weak.length+'곳이 85% 아래입니다 — 서식이 통째로 바뀐 것으로 보입니다'); broken++; }
+
+          /* ★ 차례 검산 — 적중률이 못 보는 것 ★
+             적중률은 「무언가 찾았나」 만 센다. 실제로 요약 구간의 절 제목을 본문으로
+             잘못 짚은 2,924종목이 자리마다 99~100% 로 이 점검을 통과했다. 창구가
+             「보수는 6쪽」 하고 편 곳에 요약 한 줄만 있는 값이었다.
+             본문 자리는 반드시 제2부 뒤에 온다 — 앞이면 그건 요약 구간이다. */
+          const at=(r,k)=>r[keys.indexOf(k)+1];
+          const BODY=['object','target','strategy','risk','trade','fee','tax'];
+          const withP2=rows.filter(r=>at(r,'part2'));
+          let outOfOrder=0;
+          for (const r of withP2) if (BODY.some(k=>at(r,k) && at(r,k) < at(r,'part2'))) outOfOrder++;
+          console.log('[차례 검산] 제2부를 찾은 '+withP2.length+'건 중 본문 자리가 제2부보다 앞선 것 '+outOfOrder+'건');
+          if (outOfOrder) { console.log('::error::'+outOfOrder+'건이 요약 구간을 본문으로 짚고 있습니다 — 쪽 번호가 틀렸습니다'); broken++; }
+          const overflow=rows.filter(r=>r.slice(1).some(v=>v>r[0])).length;
+          if (overflow) { console.log('::error::쪽 번호가 문서 쪽수를 넘는 줄 '+overflow+'건'); broken++; }
+
           if (broken) process.exit(1);
           console.log('담습니다' + (weak.length ? ' (덜 잡힌 자리 '+weak.length+'곳은 해당 종목만 빈칸)' : ''));
           "

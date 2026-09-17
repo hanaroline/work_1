@@ -29,10 +29,32 @@
  *   first — 쪽을 새로 여는 앞머리 구간(요약정보·제1부·제2부). **목차보다 앞**에
  *           오는 문서가 많아 목차 뒤부터 보면 통째로 놓친다. 목차 쪽만 빼고
  *           처음부터 보되 첫 쪽을 쓴다 — 구간이 여러 쪽이어도 짚는 곳은 시작 쪽이다.
- *   body  — 번호 붙은 절 제목. 목차 뒤부터 쪽 전체에서 찾되 첫 번째 쪽을 쓴다.
- *           번호 붙은 제목은 문서에서 한 번만 제목으로 쓰이고 뒤의 것은 상호참조다.
- *           목차 뒤부터 보는 이유 — 앞쪽 요약정보에도 같은 낱말이 나오는데,
- *           창구가 짚어야 할 곳은 제2부 본문이다.
+ *   body  — 번호 붙은 절 제목. **제2부가 시작하는 쪽부터** 쪽 전체에서 찾되
+ *           첫 번째 쪽을 쓴다.
+ *
+ * ★ 본문을 어디서부터 찾는가 — 여기서 한 번 크게 틀렸다 ★
+ *
+ * 처음에는 「목차 다음 쪽부터」 였다. 목차만 넘기면 본문이라고 여겼는데, 실제
+ * 문서의 차례는 이렇다.
+ *
+ *     표지 → 목차 → 요약정보〈간이투자설명서〉 → 제1부 → 제2부
+ *
+ * 요약정보 구간에도 같은 절 제목이 번호까지 붙어 그대로 들어 있다. 그래서 목차
+ * 다음부터 찾으면 본문이 아니라 **요약 구간**이 먼저 걸린다.
+ *
+ * 전량 2,924종목에서 확인한 결과 — 제2부를 찾은 1,939종목 가운데 1,198종목이
+ * 한 종목 안에서 요약 구간과 본문이 **섞여** 있었다. 보수는 요약 구간 6쪽,
+ * 투자위험은 본문 23쪽 하는 식이다. 창구가 고객 앞에서 「보수는 6쪽입니다」 하고
+ * 편 곳에는 보수 표가 아니라 요약 한 줄만 있다.
+ *
+ * 적중률로는 이걸 볼 수 없었다. 자리마다 99~100% 가 나왔는데, 적중률은 「무언가
+ * 찾았나」 만 세지 「맞는 쪽을 찾았나」 는 세지 못한다. 그래서 이제 **차례**로
+ * 검산한다 (checkOrder) — 본문 자리가 제2부보다 앞에 있으면 그건 요약 구간이다.
+ *
+ * 그러므로 본문 시작은 제2부다. 제2부를 못 찾으면 제1부를 쓰고, 둘 다 못 찾으면
+ * **본문 자리를 통째로 비운다**. 어디부터가 본문인지 모르는 문서에서 넘겨짚으면
+ * 바로 이 오류가 되돌아온다. 빈칸은 직원을 문서로 보내지만, 틀린 쪽은 고객 앞에서
+ * 엉뚱한 곳을 가리키게 한다.
  */
 export const ANCHORS = [
   /* 「요약정보」 라는 낱말을 안 쓰고 「〈간이투자설명서〉」 만 다는 운용사가 있다
@@ -90,7 +112,9 @@ export const flat = (s) => String(s).replace(/\s+/g, ' ').trim();
 
 /**
  * pages : 쪽마다의 텍스트 배열 (flat 을 거친 것)
- * 반환   : { at, how, toc, from } — at[key] 는 1부터 세는 쪽 번호, 없으면 담지 않는다
+ * 반환   : { at, how, toc, from, bodyFrom, bodyBy }
+ *   at[key]  1부터 세는 쪽 번호. 못 찾았거나 믿을 수 없으면 담지 않는다.
+ *   bodyBy   본문 시작을 무엇으로 잡았나 — 'part2' | 'part1' | null(못 잡음)
  */
 export function mapPages(pages) {
   const toc = tocPages(pages);
@@ -99,16 +123,58 @@ export function mapPages(pages) {
   const from = last + 1;
 
   const at = {}, how = {};
+
+  /* ① 앞머리 구간 — 목차만 빼고 처음부터, 쪽 머리에서 찾는다 */
   for (const [key, zone, re] of ANCHORS) {
-    const hits = [];
-    for (let i = zone === 'first' ? 0 : from; i < pages.length; i++) {
+    if (zone !== 'first') continue;
+    for (let i = 0; i < pages.length; i++) {
       if (toc.has(i)) continue;
-      const t = pages[i];
-      if (re.test(zone === 'body' ? t : t.slice(0, HEAD))) hits.push(i + 1);
+      if (re.test(pages[i].slice(0, HEAD))) { at[key] = i + 1; how[key] = 'first'; break; }
     }
-    if (!hits.length) continue;
-    at[key] = hits[0];
-    how[key] = zone + (hits.length > 1 ? '(+' + (hits.length - 1) + ')' : '');
   }
-  return { at, how, toc: [...toc].map((i) => i + 1), from: from + 1 };
+
+  /* ② 본문이 어디서 시작하나 — 이것이 정해지지 않으면 본문 자리는 담지 않는다.
+        차례가 요약 ≤ 제1부 < 제2부 여야 앞머리 인식을 믿을 수 있다. 어긋나면
+        그 문서는 내가 읽은 구조가 아니므로 넘겨짚지 않는다. */
+  let bodyFrom = null, bodyBy = null;
+  if (at.part2 && (!at.part1 || at.part1 < at.part2)) { bodyFrom = at.part2 - 1; bodyBy = 'part2'; }
+  else if (at.part1 && !at.part2) { bodyFrom = at.part1 - 1; bodyBy = 'part1'; }
+
+  /* ③ 본문 자리 — 제2부부터 쪽 전체에서 찾고 첫 쪽을 쓴다 */
+  if (bodyFrom !== null) {
+    for (const [key, zone, re] of ANCHORS) {
+      if (zone !== 'body') continue;
+      const hits = [];
+      for (let i = bodyFrom; i < pages.length; i++) {
+        if (toc.has(i)) continue;
+        if (re.test(pages[i])) hits.push(i + 1);
+      }
+      if (!hits.length) continue;
+      at[key] = hits[0];
+      how[key] = bodyBy + (hits.length > 1 ? '(+' + (hits.length - 1) + ')' : '');
+    }
+  }
+
+  return { at, how, toc: [...toc].map((i) => i + 1), from: from + 1, bodyFrom: bodyFrom === null ? 0 : bodyFrom + 1, bodyBy };
+}
+
+/**
+ * 담긴 쪽 번호가 **차례에 맞는가** 를 본다.
+ *
+ * 적중률은 「무언가 찾았나」 만 센다. 요약 구간을 본문으로 잘못 짚어도 적중률은
+ * 100% 로 나온다 — 실제로 그렇게 2,924종목을 만들고도 못 알아봤다. 그래서 값이
+ * 아니라 **차례**를 본다. 서식이 정한 차례를 거스르면 그건 다른 구간을 짚은 것이다.
+ *
+ * 반환 : { bad, why } — bad 가 true 면 그 종목은 담지 않는다
+ */
+export const BODY_SEQ = ['object', 'target', 'strategy', 'risk', 'trade', 'fee', 'tax'];
+export function checkOrder(at) {
+  /* 본문 자리는 모두 제2부 뒤에 있어야 한다 */
+  if (at.part2) {
+    for (const k of BODY_SEQ) if (at[k] && at[k] < at.part2) return { bad: true, why: k + ' 가 제2부보다 앞' };
+  }
+  /* 앞머리 차례 — 요약 ≤ 제1부 < 제2부 */
+  if (at.summary && at.part1 && at.summary > at.part1) return { bad: true, why: '요약정보가 제1부보다 뒤' };
+  if (at.part1 && at.part2 && at.part1 >= at.part2) return { bad: true, why: '제1부가 제2부보다 뒤' };
+  return { bad: false, why: '' };
 }

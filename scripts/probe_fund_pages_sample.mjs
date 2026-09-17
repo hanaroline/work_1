@@ -30,7 +30,7 @@ import { readFileSync } from 'node:fs';
 import { createRequire } from 'node:module';
 /* 규칙은 scripts/fund_doc_anchors.mjs 한 곳에만 있다 — 표본과 전량이 같은 규칙을
    써야 표본에서 본 적중률이 전량에서 그대로 나온다. */
-import { ANCHORS, mapPages, flat } from './fund_doc_anchors.mjs';
+import { ANCHORS, mapPages, flat, checkOrder, BODY_SEQ, HEAD } from './fund_doc_anchors.mjs';
 
 const require0 = createRequire(import.meta.url);
 const pdfjs = require0('pdfjs-dist/legacy/build/pdf.js');
@@ -96,6 +96,29 @@ async function main() {
     /* 못 찾은 것은 왜 못 찾았는지 알아야 고친다. 앞쪽 머리글을 남겨 둔다 —
        요약정보가 정말 없는 문서인지, 낱말이 다른지 눈으로 가른다. */
     if (!m.at.summary) m.heads = pages.slice(0, 9).map((t, k) => `p.${k + 1} ${t.slice(0, 64)}`);
+    /* 제2부를 못 찾으면 본문 자리가 통째로 빈다 — 이제 제2부가 가장 값비싼
+       자리다. 못 찾은 문서의 쪽 머리를 남겨 제목이 실제로 어떻게 적혀 있는지 본다. */
+    if (!m.at.part2) {
+      m.p2heads = pages
+        .map((t, k) => [k + 1, t.slice(0, HEAD)])
+        .filter(([, t]) => /제\s*2\s*부|집합투자기구에\s*관한|[ⅡII]\s*[.．]/.test(t))
+        .slice(0, 4)
+        .map(([k, t]) => `p.${k} ${t.slice(0, 96)}`);
+    }
+    /* 제1부를 본문 시작으로 써도 되는가 (제2부를 못 찾은 문서의 대체 수단)
+       — 제1부와 제2부 사이에서 본문 제목이 걸리는지를 직접 훑어 본다. 걸린다면
+       제1부 대체는 요약 구간을 짚던 것과 똑같은 오류를 만든다. 본문 자리는 이제
+       제2부부터만 찾으므로 at 으로는 이걸 알 수 없어 원문을 다시 본다. */
+    if (m.at.part1 && m.at.part2) {
+      m.between = [];
+      for (const [key, zone, re] of ANCHORS) {
+        if (zone !== 'body') continue;
+        for (let k = m.at.part1 - 1; k < m.at.part2 - 1; k++) {
+          if (re.test(pages[k])) { m.between.push(`${key}@p.${k + 1}`); break; }
+        }
+      }
+    }
+    m.order = checkOrder(m.at);
     res.push({ ...it, pages: pages.length, ...m });
     if ((i + 1) % 10 === 0) log(`  … ${i + 1}/${pick.length}`);
   }
@@ -112,6 +135,35 @@ async function main() {
     log(`  ${what.padEnd(24)} ${String(one).padStart(3)} (${pct.padStart(3)}%)      ${String(none).padStart(3)}            ${String(multi).padStart(3)}`);
   }
 
+  head('본문 시작을 무엇으로 잡았나 — 못 잡으면 본문 자리가 통째로 빈다');
+  const by = (v) => res.filter((r) => r.bodyBy === v).length;
+  log(`  제2부로 잡음   ${String(by('part2')).padStart(3)} / ${res.length}`);
+  log(`  제1부로 대체   ${String(by('part1')).padStart(3)}`);
+  log(`  못 잡음(빈칸)  ${String(by(null)).padStart(3)}`);
+
+  head('차례 검산 — 적중률이 못 보는 것');
+  const bad = res.filter((r) => r.order.bad);
+  log(`차례가 어긋난 종목 ${bad.length}/${res.length}`);
+  bad.slice(0, 8).forEach((r) => log(`  ${r.name.slice(0, 34).padEnd(36)} ${r.order.why}`));
+  log('');
+  log('※ 이 자리가 0 이 아니면 담으면 안 된다. 전량 2,924종목에서 요약 구간을');
+  log('   본문으로 잘못 짚고도 적중률은 99~100% 였다 — 차례만이 그걸 잡아낸다.');
+
+  head('제1부를 본문 시작으로 써도 되는가 (제1부·제2부 사이에서 걸린 제목)');
+  const withBoth = res.filter((r) => r.between);
+  const anyBetween = withBoth.filter((r) => r.between.length);
+  log(`제1부·제2부를 다 찾은 ${withBoth.length}종목 중 사이에서 걸린 것 ${anyBetween.length}종목`);
+  anyBetween.slice(0, 8).forEach((r) => log(`  ${r.name.slice(0, 30).padEnd(32)} ${r.between.join(' ')}`));
+  if (!anyBetween.length) log('  없음 — 제1부 대체는 안전하다');
+
+  head('제2부를 못 찾은 종목 — 그 문서에 제2부가 어떻게 적혀 있나');
+  const noP2 = res.filter((r) => r.p2heads);
+  log(`${noP2.length}/${res.length}종목`);
+  noP2.slice(0, 6).forEach((r) => {
+    log(`  ${r.mgr} · ${r.name.slice(0, 38)} (${r.pages}쪽)`);
+    (r.p2heads.length ? r.p2heads : ['     그런 낱말이 아예 없음']).forEach((h) => log(`     ${h}`));
+  });
+
   head('요약정보로 고른 쪽이 정말 시작 쪽인가 (앞 10종목)');
   res.slice(0, 10).forEach((r) => {
     const p = r.at.summary;
@@ -126,17 +178,20 @@ async function main() {
   });
 
   head('한 자리도 못 찾은 종목 (서식이 다른 문서)');
-  const bad = res.filter((r) => Object.keys(r.at).length <= 2);
-  log(`${bad.length}/${res.length}종목`);
-  bad.slice(0, 10).forEach((r) => log(`  ${r.mgr} · ${r.name.slice(0, 34)} (${r.pages}쪽, 목차 p.${r.toc.join(',') || '없음'}) — 담긴 자리 ${Object.keys(r.at).length}개`));
+  const thin = res.filter((r) => Object.keys(r.at).length <= 2);
+  log(`${thin.length}/${res.length}종목`);
+  thin.slice(0, 10).forEach((r) => log(`  ${r.mgr} · ${r.name.slice(0, 34)} (${r.pages}쪽, 목차 p.${r.toc.join(',') || '없음'}) — 담긴 자리 ${Object.keys(r.at).length}개`));
 
   head('요약');
   const avg = res.reduce((s, r) => s + Object.keys(r.at).length, 0) / res.length;
   log(`읽은 종목 ${res.length}개 · 쪽수 ${Math.min(...res.map((r) => r.pages))}~${Math.max(...res.map((r) => r.pages))}`);
   log(`종목당 담긴 자리 평균 ${avg.toFixed(1)}/${ANCHORS.length}개`);
   log('');
-  log('판단 기준 — 창구가 실제로 짚는 자리(투자전략·투자위험·보수·매입환매)가');
-  log('90% 넘게 「한 쪽」 으로 잡히면 전량을 돌릴 만하다. 아니면 규칙을 더 고친다.');
+  log('판단 기준 — 순서가 있다.');
+  log('  ① 차례가 어긋난 종목이 0 이어야 한다. 여기가 0 이 아니면 적중률은 볼 것도 없다.');
+  log('  ② 그 다음에 창구가 짚는 자리(투자전략·투자위험·보수·매입환매)의 적중률을 본다.');
+  log('적중률이 떨어지고 차례가 맞는 쪽이, 적중률이 높고 차례가 틀린 쪽보다 낫다 —');
+  log('못 찾은 것은 빈칸이지만 잘못 찾은 것은 고객 앞에서 엉뚱한 쪽을 펴게 한다.');
   head('표본 조사 끝 — 아무것도 커밋하지 않았습니다');
 }
 
