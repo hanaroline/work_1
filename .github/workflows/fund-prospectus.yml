@@ -107,13 +107,13 @@ jobs:
       - name: 예약 안전장치 — 규칙이 바뀌었으면 전량 승격을 막는다
         if: github.event_name == 'schedule' || inputs.guard_rules
         run: |
-          node -e "
+          # 지문은 판독기에게 물어본다. 여기서 다시 계산하면 계산법이 두 벌이 되어
+          # 언젠가 어긋난다 — 실제로 참조 조립을 두 벌로 두었다가 전량 판독 두 시간을
+          # 태운 적이 있다. 가르는 기준은 한 군데에만 둔다.
+          NOW=$(node scripts/fetch_fund_prospectus.mjs --print-stamp)
+          NOW="$NOW" node -e "
           const fs = require('fs');
-          /* fetch_fund_prospectus.mjs 와 같은 방식으로 규칙 지문을 낸다 (djb2) */
-          const src = fs.readFileSync('js/sales-script-prospectus.js', 'utf8');
-          let h = 5381;
-          for (let i = 0; i < src.length; i++) h = ((h * 33) ^ src.charCodeAt(i)) >>> 0;
-          const now = src.length + '-' + h.toString(36);
+          const now = process.env.NOW;
           const g = {};
           new Function('window', fs.readFileSync('data/fund-prospectus.js', 'utf8'))(g);
           const was = g.FUND_PROSPECTUS.rulesStamp || '(기록 없음)';
@@ -179,16 +179,45 @@ jobs:
           console.log('표본:', JSON.stringify(I[K[0]], null, 1).slice(0, 900));
           "
 
+      # 쪽 번호는 고객 앞에서 짚는 값이다. 지도가 반쯤 비었으면 규칙이 깨진 것이므로
+      # 담지 않는다. ELS 와 같이 두 갈래로 본다 —
+      #   MUST 창구가 실제로 짚는 자리. 표본 40종목에서 90~100% 였다. 무너지면 실패시킨다.
+      #   SOFT 서식이 다른 문서에서 못 찾을 수 있는 자리(요약정보 78%·제1부 60%).
+      #        못 찾으면 그 종목만 비고, 빈칸은 설계상 안전하다. 적어만 둔다.
+      - name: 쪽 지도 점검
+        run: |
+          node -e "
+          const g={}; new Function('window', require('fs').readFileSync('data/fund-doc-pages.js','utf8'))(g);
+          const D=g.FUND_DOC_PAGES, keys=D.anchors.map(a=>a.key), rows=Object.values(D.rows), n=rows.length;
+          if (!n) { console.log('::error::쪽 지도가 한 건도 없습니다'); process.exit(1); }
+          const pct=k=>100*rows.filter(r=>r[keys.indexOf(k)+1]).length/n;
+          const MUST=['object','target','strategy','risk','trade','fee','tax'];
+          const SOFT=['summary','part1','part2','manager'];
+          const what=k=>(D.anchors.find(a=>a.key===k)||{}).what||k;
+          let bad=0;
+          console.log('쪽 지도 '+n+'건');
+          console.log('[필수 — 창구가 짚는 자리]');
+          for (const k of MUST) {
+            const p=pct(k);
+            console.log('  '+what(k).padEnd(22)+p.toFixed(0)+'%');
+            if (p < 85) { console.log('::error::'+what(k)+' 가 '+p.toFixed(0)+'% 뿐입니다 — 제목 규칙이 깨졌습니다'); bad++; }
+          }
+          console.log('[보조 — 못 찾으면 그 종목만 빈칸]');
+          for (const k of SOFT) console.log('  '+what(k).padEnd(22)+pct(k).toFixed(0)+'%');
+          if (bad) process.exit(1);
+          console.log('필수 자리 모두 85% 이상 — 담습니다');
+          "
+
       # 단일 파일은 여기서 만들지 않는다 (fund-catalog.yml 의 같은 자리 설명 참고).
       - name: 결과 커밋
         run: |
           git config user.name  'github-actions[bot]'
           git config user.email 'github-actions[bot]@users.noreply.github.com'
-          git add -A data/fund-prospectus.js
+          git add -A data/fund-prospectus.js data/fund-doc-pages.js
           if [ -z "$(git diff --cached --name-only)" ]; then
             echo '변경 없음'; exit 0
           fi
-          git commit -m "chore(fund): 투자설명서 판독 결과 갱신"
+          git commit -m "chore(fund): 투자설명서 판독 결과·쪽 지도 갱신"
           for i in 1 2 3 4 5; do
             if git push; then exit 0; fi
             echo "push 거절 — 원격 변경을 받아 재시도 ($i/5)"
