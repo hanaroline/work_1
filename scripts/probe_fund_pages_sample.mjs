@@ -79,21 +79,36 @@ async function pdfPages(buf) {
   return out;
 }
 
-function mapPages(pages) {
-  /* 목차 쪽을 찾아 그 다음부터 본다. 목차에 제목이 다 적혀 있어 빼지 않으면
-     어느 제목이든 두 쪽 이상에 걸린다. 「상세 목차」·「목 차」 도 잡는다. */
-  let toc = -1;
-  for (let i = 0; i < Math.min(pages.length, 12); i++) {
-    if (/목\s*차/.test(pages[i].slice(0, 120))) toc = i;
+/* 목차 쪽을 「목차」 라는 낱말로만 찾으면 놓친다. 표본에서 우리프랭클린 문서의
+   목차 쪽에는 그 낱말이 없었고(「〈투자결정시 유의사항〉〈요약정보〉 제1부…」),
+   그 바람에 요약정보가 목차 쪽으로 잡혔다. 고객 앞에서 엉뚱한 쪽을 펴는 값이다.
+   그래서 낱말이 아니라 생김새로 가른다 — 번호 붙은 절 제목이 한 쪽에 다섯 개
+   넘게 늘어서 있으면 그것은 본문이 아니라 목차다. */
+const TOC_TITLE = /\d+\s*\.\s*(집합투자기구의|투자목적|투자대상|투자전략|투자위험|매입|보수|이익\s*배\s*분|운용전문인력|재무|집합투자업자)/g;
+function tocPages(pages) {
+  const set = new Set();
+  for (let i = 0; i < Math.min(pages.length, 14); i++) {
+    if (/목\s*차/.test(pages[i].slice(0, 120))) { set.add(i); continue; }
+    const n = (pages[i].match(TOC_TITLE) || []).length;
+    if (n >= 5) set.add(i);
   }
-  const from = toc + 1;
+  return set;
+}
+
+function mapPages(pages) {
+  const toc = tocPages(pages);
+  /* 본문 절 제목은 목차 뒤에서만 찾는다. 앞쪽 요약정보(간이투자설명서)에도
+     같은 낱말이 나오는데, 창구가 짚어야 할 곳은 제2부 본문이기 때문이다. */
+  let last = -1;
+  for (const i of toc) if (i > last) last = i;
+  const from = last + 1;
 
   const found = {}, ambig = {}, miss = [], how = {}, all = {};
   for (const [key, zone, re, what] of ANCHORS) {
     const hits = [];
     const start = zone === 'first' ? 0 : from;
     for (let i = start; i < pages.length; i++) {
-      if (zone === 'first' && i === toc) continue;   // 목차에는 제목이 다 적혀 있다
+      if (toc.has(i)) continue;   // 목차에는 제목이 다 적혀 있다
       const t = pages[i];
       if (re.test(zone === 'body' ? t : t.slice(0, HEAD))) hits.push(i + 1);
     }
@@ -112,7 +127,7 @@ function mapPages(pages) {
       how[key] = hits.length === 1 ? 'body' : 'body(+' + (hits.length - 1) + ')';
     }
   }
-  return { found, ambig, miss, how, all, toc: toc + 1 };
+  return { found, ambig, miss, how, all, toc: [...toc].map((i) => i + 1), from: from + 1 };
 }
 
 async function main() {
@@ -157,6 +172,9 @@ async function main() {
     for (const [key, zone] of ANCHORS) {
       if (zone === 'first' && m.found[key]) m.peek[key] = pages[m.found[key] - 1].slice(0, 76);
     }
+    /* 못 찾은 것은 왜 못 찾았는지 알아야 고친다. 앞쪽 머리글을 남겨 둔다 —
+       요약정보가 정말 없는 문서인지, 낱말이 다른지 눈으로 가른다. */
+    if (!m.found.summary) m.heads = pages.slice(0, 9).map((t, k) => `p.${k + 1} ${t.slice(0, 64)}`);
     res.push({ ...it, pages: pages.length, ...m });
     if ((i + 1) % 10 === 0) log(`  … ${i + 1}/${pick.length}`);
   }
@@ -188,10 +206,17 @@ async function main() {
     log(`  ${r.name.slice(0, 26).padEnd(28)} ${p ? 'p.' + String(p).padStart(2) + ' (' + r.how.summary + ')  ' + r.peek.summary : '— 없음'}`);
   });
 
+  head('요약정보를 못 찾은 종목 — 앞쪽 머리글 (앞 3종목)');
+  res.filter((r) => r.heads).slice(0, 3).forEach((r) => {
+    log(`  ${r.mgr} · ${r.name.slice(0, 40)} (${r.pages}쪽, 목차 p.${r.toc.join(',') || '없음'})`);
+    r.heads.forEach((h) => log(`     ${h}`));
+    log('');
+  });
+
   head('한 자리도 못 찾은 종목 (서식이 다른 문서)');
   const bad = res.filter((r) => Object.keys(r.found).length <= 2);
   log(`${bad.length}/${res.length}종목`);
-  bad.slice(0, 10).forEach((r) => log(`  ${r.mgr} · ${r.name.slice(0, 34)} (${r.pages}쪽, 목차 p.${r.toc}) — 담긴 자리 ${Object.keys(r.found).length}개`));
+  bad.slice(0, 10).forEach((r) => log(`  ${r.mgr} · ${r.name.slice(0, 34)} (${r.pages}쪽, 목차 p.${r.toc.join(',') || '없음'}) — 담긴 자리 ${Object.keys(r.found).length}개`));
 
   head('요약');
   const avg = res.reduce((s, r) => s + Object.keys(r.found).length, 0) / res.length;
