@@ -78,12 +78,14 @@ a{color:var(--secondary)}
   text-transform:uppercase;margin-bottom:6px}
 
 /* ---------- 스탯 타일 ---------- */
-.tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(215px,1fr));gap:1px;
+.tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(182px,1fr));gap:1px;
   background:var(--hair-soft);border:1px solid var(--hair)}
-.tile{background:#fff;padding:22px 20px 20px}
+.tile{background:#fff;padding:20px 16px 18px}
+.tile .val .sep{color:var(--hair);font-weight:400;margin:0 2px}
+.tile .val .dn{color:var(--secondary)}
 .tile .lab{font-size:15px;font-weight:500;letter-spacing:.5px;color:var(--muted);
   line-height:1.3;min-height:2.6em}
-.tile .val{font-size:44px;font-weight:700;line-height:1.05;letter-spacing:-.6px;
+.tile .val{font-size:38px;font-weight:700;line-height:1.05;letter-spacing:-.6px;
   color:var(--secondary);margin-top:10px}
 .tile.accent .val{color:var(--primary)}
 .tile .ref{font-size:13px;line-height:1.45;color:var(--muted-soft);margin-top:9px}
@@ -318,7 +320,7 @@ table.sb tr.refonly .mem span{color:var(--muted-soft)}
       <div>
         <div class="eyebrow" data-i18n="ebSeason">SEASON SCOREBOARD</div>
         <h2 data-i18n="s1t">시즌 스코어보드</h2>
-        <p data-i18n="s1d">위쪽 다섯 칸은 이 화면이 직접 집계한 25개사 결과이고, 아래 여섯 칸은 지수 전체를 다루는 외부 기관 집계다. 유니버스가 다르므로 한 칸에 섞지 않는다.</p>
+        <p data-i18n="s1d">위 여섯 칸은 이 화면이 직접 집계한 25개사 결과이고, 아래 여섯 칸은 지수 전체를 다루는 외부 기관 집계다. 유니버스가 다르므로 한 칸에 섞지 않는다.</p>
       </div>
     </div>
     <div class="tiles" id="own-tiles"></div>
@@ -515,7 +517,7 @@ var T = {
   heroSub:"발표일·컨센서스·실제치·가이던스를 기업별로 흩어 찾지 않고, 실적 시즌 하나를 한 화면에서 훑는다.",
   mAsOf:"기준일 2026-09-17", mSrc:"출처: 기업 IR·8-K 공시 및 확인된 보도 · 배수는 stockanalysis.com",
   ebSeason:"SEASON SCOREBOARD", s1t:"시즌 스코어보드",
-  s1d:"위쪽 다섯 칸은 이 화면이 직접 집계한 25개사 결과이고, 아래 여섯 칸은 지수 전체를 다루는 외부 기관 집계다. 유니버스가 다르므로 한 칸에 섞지 않는다.",
+  s1d:"위 여섯 칸은 이 화면이 직접 집계한 25개사 결과이고, 아래 여섯 칸은 지수 전체를 다루는 외부 기관 집계다. 유니버스가 다르므로 한 칸에 섞지 않는다.",
   s1own:"위: 이 화면이 담은 25개사 · 각 기업의 발표 자료에서 직접 집계",
   ebCal:"EARNINGS CALENDAR", s2t:"실적 발표 캘린더",
   s2d:"직전 시즌이 어떤 순서로 지나갔는지, 다음 발표가 언제인지를 한 줄로 본다. 칩을 누르면 해당 기업 행이 열린다. 아래 표는 회사가 수치로 제시한 다음 분기 매출이다.",
@@ -592,6 +594,8 @@ var T = {
   tOwnYoy:"평균 매출 성장률", tOwnYoyRef:"전년동기비 단순평균",
   tOwnUp:"가이던스 상향 기업", tOwnUpRef:"가이던스를 확인한 기업 중",
   tOwnBig:"분기 매출 합계", tOwnBigRef:"수록 25개사 직전 보고분기 합",
+  tOwnTrend:"가속 / 둔화 기업 수",
+  tOwnTrendRef:"직전분기 성장률이 LTM 보다 ±2%p 밖 — 둔화 쪽에 모멘텀 1위 브로드컴(-8.2%p)",
   ownN:"이 화면 집계 · 25개사",
   calPrev:"직전 시즌 — 2026년 2분기(캘린더)", calNext:"다음 발표 예정",
   detPeriodEnd:"분기말", detEps:"EPS(실제/컨센)", detGuide:"가이던스",
@@ -610,7 +614,7 @@ var T = {
   heroSub:"Report dates, consensus, actuals and guidance for a whole earnings season — on one screen instead of one company at a time.",
   mAsOf:"As of 2026-09-17", mSrc:"Sources: company IR / 8-K filings and verified reporting · multiples from stockanalysis.com",
   ebSeason:"SEASON SCOREBOARD", s1t:"Season scoreboard",
-  s1d:"The five tiles above are this dashboard's own tally across its 25 companies. The six below are index-wide figures from outside providers. Different universes — they are never mixed in one tile.",
+  s1d:"The six tiles above are this dashboard's own tally across its 25 companies. The six below are index-wide figures from outside providers. Different universes — they are never mixed in one tile.",
   s1own:"Above: the 25 companies in this dashboard · tallied directly from their own releases",
   ebCal:"EARNINGS CALENDAR", s2t:"Earnings calendar",
   s2d:"How the last season ran, and what reports next. Click a chip to open that company's row. The table below is next-quarter revenue the companies put a number on.",
@@ -688,6 +692,8 @@ var T = {
   tOwnYoy:"Average revenue growth", tOwnYoyRef:"simple average of YoY",
   tOwnUp:"Raised guidance", tOwnUpRef:"of companies with verified guidance",
   tOwnBig:"Combined quarterly revenue", tOwnBigRef:"sum across the 25 companies",
+  tOwnTrend:"Accelerating / slowing",
+  tOwnTrendRef:"quarter growth more than 2pp from LTM — the slowing side holds Broadcom, top of the momentum score (-8.2pp)",
   ownN:"This dashboard · 25 companies",
   calPrev:"Last season — Q2 2026 (calendar)", calNext:"Coming up",
   detPeriodEnd:"Period end", detEps:"EPS (actual/cons.)", detGuide:"Guidance",
@@ -757,6 +763,9 @@ function agg(){
     surp:wc.reduce(function(a,c){return a+c.surprise},0)/wc.length,
     yoy:ys.reduce(function(a,c){return a+c.yoy},0)/ys.length, nYoy:ys.length,
     up:gs.filter(function(c){return c.guide===1}).length, nGuide:gs.length,
+    up2:CO.filter(function(c){return c.trend==="up"}).length,
+    dn2:CO.filter(function(c){return c.trend==="down"}).length,
+    nTrend:CO.filter(function(c){return c.trend}).length,
     rev:CO.reduce(function(a,c){return a+c.rev},0)
   }}
 var A=agg();
@@ -769,11 +778,14 @@ function renderTiles(){
    {lab:t("tOwnSurp"),val:sgn(A.surp,2),ref:t("tOwnSurpRef")},
    {lab:t("tOwnYoy"),val:sgn(A.yoy,1),ref:A.nYoy+" / "+D.coverage.total+" — "+t("tOwnYoyRef")},
    {lab:t("tOwnUp"),val:A.up+" / "+A.nGuide,ref:t("tOwnUpRef")},
+   {lab:t("tOwnTrend"),
+    val:A.up2+'<span class="sep">/</span><span class="dn">'+A.dn2+"</span>",
+    html:true, ref:t("tOwnTrendRef")},
    {lab:t("tOwnBig"),val:"$"+com(Math.round(A.rev))+"B",ref:t("tOwnBigRef")}
   ];
   $("#own-tiles").innerHTML=own.map(function(o){
     return '<div class="tile'+(o.accent?" accent":"")+'"><div class="lab">'+esc(o.lab)+
-      '</div><div class="val num">'+esc(o.val)+'</div><div class="ref">'+esc(o.ref)+
+      '</div><div class="val num">'+(o.html?o.val:esc(o.val))+'</div><div class="ref">'+esc(o.ref)+
       '</div><div class="who">'+esc(t("ownN"))+'</div></div>'}).join("");
   $("#idx-tiles").innerHTML=D.index.map(function(o){
     return '<div class="tile"><div class="lab">'+esc(L==="ko"?o.ko:o.en)+
@@ -1092,12 +1104,6 @@ function insights(){
        en:"Consumer, health care and housing-linked names mostly grew in single digits. The index-level double-digit revenue growth is the work of a few names at the top — the average should not be read as the operating environment."},
    e:{ko:"월마트 +5.9%(미국 동일점포 +2.6%) · 홈디포 +5.7%(동일점포 +1.7%) · J&J +6.6% · 넷플릭스 +13%, 매출 컨센서스 "+sgn(nf.surprise,2)+" — 이번 시즌 몇 안 되는 하회",
        en:"Walmart +5.9% (US comps +2.6%) · Home Depot +5.7% (comps +1.7%) · J&J +6.6% · Netflix +13% with revenue "+sgn(nf.surprise,2)+" — one of the season's few misses"}},
-  {h:{ko:"한 분기만 보면 놓치는 것 — 브로드컴은 둔화 중이다",
-       en:"What one quarter hides — Broadcom is decelerating"},
-   p:{ko:"직전분기 성장률에서 최근 12개월 성장률을 빼면 속도의 방향이 보인다. 이 화면에서 가속 13사, 둔화 3사인데, 둔화 쪽에 모멘텀 점수 1위인 브로드컴이 들어 있다. 분기 하나만 보면 100점짜리 기업이고, 1년을 같이 보면 속도가 꺾이는 중이다. 둘 다 사실이므로 둘 다 보아야 한다.",
-       en:"Subtracting last-twelve-month growth from the latest quarter's shows which way the speed is moving. Thirteen names here are accelerating and three are slowing — and the slowing group contains Broadcom, which tops the momentum score. On one quarter it is a 100-point company; against the trailing year its pace is rolling over. Both are true, so both belong on the screen."},
-   e:{ko:"둔화 — 브로드컴 분기 +86% vs LTM +94.2%(-8.2%p) · 유나이티드헬스 +0.4% vs +6.5%(-6.1%p) · 넷플릭스 +13% vs +16.0%(-3.0%p) / 가속 상위 — 팔란티어 +25.3%p · 엔비디아 +22.6%p · 골드만삭스 +21.2%p · 인텔 +17.9%p",
-       en:"Slowing — Broadcom +86% in the quarter versus +94.2% LTM (-8.2pp), UnitedHealth +0.4% versus +6.5% (-6.1pp), Netflix +13% versus +16.0% (-3.0pp). Fastest accelerations — Palantir +25.3pp, NVIDIA +22.6pp, Goldman Sachs +21.2pp, Intel +17.9pp"}},
   {h:{ko:"가이던스 상향이 실적 상회보다 많은 정보를 준다",en:"Raised guidance carries more information than a beat"},
    p:{ko:"컨센서스 상회는 추정치가 낮았다는 뜻일 수도 있다. 반면 연간 가이던스를 올린 것은 회사가 남은 분기를 직접 다시 계산했다는 신호다. 가이던스를 확인한 "+A.nGuide+"개사 중 "+A.up+"개사가 전망을 올렸고, 그중 9개사는 연간 전망 상향이다(나머지 2개사는 차기 분기 가이던스가 컨센서스를 웃돈 경우).",
        en:"A beat can simply mean the estimate was low. Raising full-year guidance means the company re-ran the rest of its year and committed to a higher number. Of the "+A.nGuide+" companies with verified guidance, "+A.up+" raised it — 9 of those lifted full-year outlooks; the other two guided the next quarter above consensus."},
