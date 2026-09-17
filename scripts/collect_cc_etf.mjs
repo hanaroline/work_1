@@ -1,4 +1,9 @@
-// 국내 상장 월배당 ETF 를 ETFCHECK 에서 받아 `data/cc_etf.json` 에 적는다.
+// 국내 상장 ETF 를 ETFCHECK 에서 받아 `data/cc_etf.json` 에 적는다.
+//
+// 모집단은 **순자산 300억 이상 ∨ 월배당 분류**, 약 892종목이다. 월배당만
+// 담다가 2026-09 에 넓혔다 — 분기배당·연배당도 고를 수 있어야 하는데,
+// ETFCHECK 분류에는 그 둘이 아예 없어서 실제 지급한 달로 판정해야 하고,
+// 그러려면 월배당이 아닌 종목까지 물어야 하기 때문이다.
 //
 // 파일 이름의 `cc` 는 covered call 이다. 처음에 커버드콜만 담으려고 지은
 // 이름인데, 2026-09 에 월배당 ETF 전체로 넓혔다. 이름은 그대로 두었다 —
@@ -18,9 +23,13 @@
 // fetch 로 부른다. 종목마다 화면을 여는 길도 있었지만 잇달아 열면
 // ERR_EMPTY_RESPONSE 가 온다 — 61종목을 그렇게 열 수는 없다.
 //
-// 모집단은 이름이 아니라 **분류**로 고른다. getEtpCtgMap 에서 국내 상장이고
-// 월배당(0609002) 인 종목 전부. 이름으로 거른 결과와 어긋나지 않는 것을
-// 확인했고(관찰 5차), 분류 쪽이 오래간다 — 상품명은 운용사가 언제든 바꾼다.
+// 기본 수치(현재가·순자산·거래대금·보수·상장일·운용사)는 스크리너
+// (getEtpScreenerMobileList3) 를 **매개변수 없이** 한 번 불러 전 종목을 한꺼번에
+// 받는다. 종목마다 상세를 부르던 것을 없앴다 — 상세는 장이 닫히면 시세 항목이
+// 빠져서 제일 자주 말썽을 부리던 쪽이었다.
+//
+// 종목은 이름이 아니라 **분류**로 가린다(getEtpCtgMap). 상품명은 운용사가
+// 언제든 바꾸지만 분류는 오래간다.
 //
 // 세션(클로드 쪽)에서는 etfcheck.co.kr 로 CONNECT 가 403 이라 못 돈다.
 // **러너에서만** 돈다.
@@ -150,7 +159,7 @@ page.on('response', async (res) => {
   if (!appHeaders && res.request().headers().checkclient) {
     appHeaders = res.request().headers();
   }
-  if (!/getEtpMast|getEtpCtgMap/.test(url)) return;
+  if (!/getEtpMast|getEtpCtgMap|getEtpCtgLarge/.test(url)) return;
   try {
     seen.push({ url, body: await res.text() });
   } catch {
@@ -180,27 +189,166 @@ if (!mast.length || !ctgMap.length) {
   throw new Error(`마스터/분류대응을 못 받았습니다 (마스터 ${mast.length}, 분류 ${ctgMap.length}).`);
 }
 
-// 모집단은 **국내 상장 월배당 ETF 전부**(분류 0609002)다. 처음에는 커버드콜
-// (0609005)까지 겹쳐야만 담았는데, 그러면 리츠·인프라·배당주·채권형처럼
-// 월배당을 꼬박꼬박 주는 종목이 통째로 빠진다. 월 지급을 원하는 고객에게
-// 커버드콜만 보여 줄 이유가 없다. 커버드콜인지 아닌지는 `type` 에 적어
-// 두었으니 [ETF데이터] 장에서 가려 볼 수 있다.
-const ctgOf = new Map(ctgMap.filter((r) => r.F16013).map((r) => [r.F16013, String(r.ctgInfo || '')]));
-const picked = new Set(
-  ctgMap
-    .filter((r) => r.F16013 && r.domestic_flag === 1 && String(r.ctgInfo || '').includes('0609002'))
-    .map((r) => r.F16013),
-);
-const universe = mast.filter((r) => picked.has(r.F16013));
-const isCoveredCall = (code) => (ctgOf.get(code) || '').includes('0609005');
-console.log(
-  `모집단 ${universe.length}종목 (마스터 ${mast.length}행) — ` +
-    `커버드콜 ${universe.filter((r) => isCoveredCall(r.F16013)).length}, ` +
-    `그 외 월배당 ${universe.filter((r) => !isCoveredCall(r.F16013)).length}`,
-);
-if (universe.length < 10) {
-  throw new Error(`모집단이 ${universe.length}종목뿐입니다. 분류 코드가 바뀌었는지 확인하십시오.`);
+// 자산군 이름표. 첫 화면이 이걸 부를 때도 있고 안 부를 때도 있어서, 화면이
+// 부른 것을 주웠으면 그걸 쓰고 아니면 직접 부른다. 주워지기만 기다렸다가는
+// 어느 달엔가 조용히 빈 채로 지나가고, 그러면 자산군이 전부 빈칸이 되면서
+// 파킹형을 기본 선택에서 빼는 규칙이 아무 소리 없이 망가진다.
+let ctgLarge = JSON.parse(grab(/getEtpCtgLarge/)?.body || '{}').results || [];
+if (!ctgLarge.length) {
+  for (let i = 0; i < 3 && !ctgLarge.length; i++) {
+    try {
+      const rr = await page.evaluate(
+        async ({ url, headers }) => {
+          const res = await fetch(url, { headers, credentials: 'include' });
+          return res.status === 200 ? await res.json() : { success: false };
+        },
+        { url: `${BASE}/user/common/getEtpCtgLarge`, headers: HDRS },
+      );
+      if (rr?.success === true) ctgLarge = rr.results || [];
+    } catch {
+      /* 아래에서 다시 본다 */
+    }
+    if (!ctgLarge.length) await sleep(1500 * (i + 1));
+  }
 }
+if (!ctgLarge.length) {
+  throw new Error('자산군 이름표(getEtpCtgLarge)를 못 받았습니다. 자산군이 빈 채로 나가면 파킹형 제외가 망가집니다.');
+}
+const largeName = new Map(ctgLarge.map((r) => [r.ctg_large_code, r.ctg_large_name]));
+
+const ctgOf = new Map(ctgMap.filter((r) => r.F16013).map((r) => [r.F16013, String(r.ctgInfo || '')]));
+const isCoveredCall = (code) => (ctgOf.get(code) || '').includes('0609005');
+const isMonthlyCtg = (code) => (ctgOf.get(code) || '').includes('0609002');
+const domesticCodes = new Set(
+  ctgMap.filter((r) => r.F16013 && r.domestic_flag === 1).map((r) => r.F16013),
+);
+// 자산군(주식·채권·부동산·단기자금…)은 분류 문자열에서 그대로 유도한다.
+// 예전에는 종목마다 상세를 불러 ctg_large_name 을 받아 왔는데, 분류 문자열의
+// "01|0101|0101001|USA" 에서 두 번째 조각이 그 값이다. 이미 판정해 둔
+// 187종목과 맞춰 보니 **전부 일치하고 불일치가 없다**(확인 2026-09-17).
+// 종목마다 한 번씩 부르던 것을 공짜로 얻는다.
+function assetClassOf(code) {
+  for (const part of (ctgOf.get(code) || '').split(',')) {
+    const p = part.split('|');
+    if (p.length >= 3 && p[0] === '01') return { code: p[1], name: largeName.get(p[1]) || null };
+  }
+  return { code: null, name: null };
+}
+
+// ── 스크리너 한 번으로 전 종목의 기본 수치를 받는다 ─────────────────────
+//
+// getEtpScreenerMobileList3 을 **매개변수 없이** 부르면 7,220행이 오고 국내
+// 상장 1,540종목을 전부 덮는다. 한 행에 현재가·기준가·순자산·거래대금·
+// 거래량·보수·상장일·운용사·최근 분배가 다 있다.
+//
+// 이게 종목당 두 번의 호출(상세 getEtpItemOutline, 보수 getEtpLatestFee)을
+// 없앤다. 게다가 상세는 **장이 닫히면 시세 항목이 빠져서** 그동안 제일 자주
+// 말썽을 부리던 쪽이었는데, 스크리너는 장이 열려 있든 아니든 값을 준다.
+//
+// 처음 관찰했을 때 이 항목이 36행만 주길래 화면용으로 잘라 주는 줄 알았다.
+// 아니었다 — 화면이 조건을 걸어 두었던 것이고, 매개변수를 빼면 전부 온다.
+const SCREENER_PICK = [
+  'F16013', 'F16002', 'F33961', 'F15001', 'F15301', 'F15028', 'F15023',
+  'F15015', 'F34763', 'F16017', 'DIV_DATE', 'DIV_RATE', 'REC_DIV_DATE', 'REC_DIV_AMT', 'F12506',
+];
+async function fetchScreener() {
+  let lastErr = null;
+  for (let attempt = 1; attempt <= 5; attempt++) {
+    try {
+      // 거르는 일은 브라우저 안에서 한다. 7,220행을 통째로 넘기면 수 MB짜리
+      // 문자열이 경계를 건너는데 그 자체가 실패 거리다.
+      const out = await page.evaluate(
+        async ({ url, headers, keep, pick }) => {
+          const res = await fetch(url, { headers, credentials: 'include' });
+          if (res.status !== 200) return { error: `HTTP ${res.status}` };
+          const j = await res.json();
+          if (j.success !== true) return { error: `success=${j.success}` };
+          const all = j.results || [];
+          const keepSet = new Set(keep);
+          return {
+            total: all.length,
+            rows: all
+              .filter((x) => keepSet.has(x.F16013))
+              .map((x) => Object.fromEntries(pick.map((k) => [k, x[k] ?? null]))),
+          };
+        },
+        {
+          url: `${BASE}/user/etp/getEtpScreenerMobileList3`,
+          headers: HDRS,
+          keep: [...domesticCodes],
+          pick: SCREENER_PICK,
+        },
+      );
+      if (out?.error) throw new Error(out.error);
+      return out;
+    } catch (e) {
+      lastErr = e;
+      // 이 원천은 `TypeError: Failed to fetch` 를 심심찮게 뱉는다(확인한 판에서
+      // 열 번 중 네 번). 간헐적인 실패는 실패가 아니라 다시 물을 일이다.
+      console.log(`  스크리너 ${attempt}/5 실패: ${String(e.message).slice(0, 80)}`);
+      if (attempt < 5) await sleep(3000 * attempt);
+    }
+  }
+  throw new Error(`스크리너를 다섯 번 불렀으나 실패했습니다: ${String(lastErr?.message).slice(0, 120)}`);
+}
+
+const screener = await fetchScreener();
+const scr = new Map(screener.rows.map((r) => [r.F16013, r]));
+console.log(`스크리너 ${screener.total}행 → 국내 상장 ${scr.size}종목`);
+if (scr.size < 1000) {
+  throw new Error(`스크리너에서 국내가 ${scr.size}종목뿐입니다. 응답 모양이 바뀌었는지 확인하십시오.`);
+}
+
+// ── 모집단 ────────────────────────────────────────────────────────────
+//
+// **순자산 300억 이상 ∨ 월배당 분류**. 892종목이다.
+//
+// 분기·연배당까지 담으려면 월배당 분류(192종목)만으로는 안 된다 — ETFCHECK
+// 분류에는 분기배당도 연배당도 없어서, 지급주기는 실제 지급한 달로 판정해야
+// 하고 그러려면 월배당이 아닌 종목까지 물어야 한다. 그렇다고 국내 1,540종목을
+// 다 돌면 한도 75분을 넘긴다.
+//
+// 어디서 끊을지는 어림하지 않고 재서 정했다. 관문 후보를 놓고 "수집에 몇 분이
+// 걸리는가" 와 "지금 고를 수 있던 종목을 몇 개 잃는가" 를 같이 세어 봤다.
+//
+//   순자산 300억 ∧ 일거래 1억   555종목  21분  드롭다운 49개 손실  채택 2개 손실
+//   순자산 300억               835종목  31분  드롭다운 34개 손실  채택 0
+//   순자산 300억 ∨ 월배당분류   892종목  33분  손실 없음           채택 0
+//
+// 거래대금을 관문에 넣으면 순자산 2,239억짜리가 "그날 거래가 0.4억이었다" 는
+// 이유로 잘린다. 하루치는 그렇게 들쭉날쭉하다. 유동성은 여기서 거르지 않고,
+// 60일 평균으로 아래 채택 기준에서 본다 — 관문은 비용을 줄이려고 두는 것이지
+// 판정하려고 두는 것이 아니다.
+//
+// 월배당 분류를 따로 더하는 것은, 순자산이 작아도 월배당이면 이 문서의
+// 주인공이기 때문이다. 그것을 빼면 지금 고를 수 있던 종목을 잃는다.
+const MIN_UNIVERSE_AUM = 30_000_000_000;
+const universe = [...scr.values()]
+  .filter((r) => (num(r.F15028) ?? 0) >= MIN_UNIVERSE_AUM || isMonthlyCtg(r.F16013))
+  // 월배당을 먼저, 그다음 순자산 큰 순. 예산에 걸려 중간에 멈추더라도 지금
+  // 쓰고 있는 종목부터 챙긴다 — 잘리는 자리는 늘 뒤쪽이어야 한다.
+  .sort((a, b) => {
+    const am = isMonthlyCtg(a.F16013) ? 0 : 1;
+    const bm = isMonthlyCtg(b.F16013) ? 0 : 1;
+    if (am !== bm) return am - bm;
+    return (num(b.F15028) ?? 0) - (num(a.F15028) ?? 0);
+  });
+
+const mastOf = new Map(mast.filter((r) => r.F16013).map((r) => [r.F16013, r]));
+console.log(
+  `모집단 ${universe.length}종목 — ` +
+    `월배당 분류 ${universe.filter((r) => isMonthlyCtg(r.F16013)).length}, ` +
+    `그 외(순자산 ${MIN_UNIVERSE_AUM / 1e8}억 이상) ${universe.filter((r) => !isMonthlyCtg(r.F16013)).length}`,
+);
+if (universe.length < 100) {
+  throw new Error(`모집단이 ${universe.length}종목뿐입니다. 분류 코드나 응답 모양이 바뀌었는지 확인하십시오.`);
+}
+
+// 예산. 워크플로 한도가 75분이라 55분에서 멈춘다. 거기까지 모은 것은 그대로
+// 쓰고, 못 간 종목은 "수집 안 함" 으로 남긴다. 한도에 잘려 아무것도 못 남기는
+// 일은 실측기에서 이미 한 번 겪었다.
+const BUDGET_MS = 55 * 60 * 1000;
+const tStart = Date.now();
 
 // 부르기 실패와 "값이 없음" 을 반드시 갈라 놓는다.
 //
@@ -258,35 +406,19 @@ async function api(p, tries = 3) {
   throw last;
 }
 
-// 상세(getEtpItemOutline)는 **한 행이 오기만 하면** 받은 것으로 친다.
+// 상세(getEtpItemOutline)는 더 부르지 않는다.
 //
-// 처음에는 현재가(F15001)가 들어 있어야 성공으로 쳤다. 그랬더니 192종목이
-// 전부 실패했는데, 까 보니 원천이 막은 것이 아니라 **응답 모양이 달랐다**.
-// 29개 키가 멀쩡히 오는데(순자산·상장일·운용사·기초지수·보수·52주 고저·
-// 60일 평균 거래대금) 실시간 시세 항목만 빠져 있었다. 성공한 판은 전부
-// 장중(KST 11:35~13:07)이었고 실패한 판은 장 마감 뒤(16:28, 04:55)였다.
+// 그 항목이 주던 값(순자산·상장일·운용사·보수·현재가·기준가·거래대금)이
+// 스크리너 한 행에 다 들어 있고, 스크리너는 호출 **한 번**으로 전 종목을
+// 준다. 게다가 상세는 장이 닫히면 실시간 시세 항목이 빠져서 제일 자주 말썽을
+// 부리던 쪽이었다 — 한때 192종목이 전부 "실패" 로 찍혔는데, 원천이 막은 것이
+// 아니라 응답 모양이 장 마감 뒤에 달라졌던 것이다. 그 사정 자체가 사라졌다.
 //
-// 그래서 현재가를 상세에서 구하지 않는다. 마스터와 일별 시세에는 장이
-// 열려 있든 아니든 값이 있다. 어느 쪽에서 가져왔는지는 priceSource 에
-// 적어 둔다 — 값의 출처를 모르면 값을 믿을 수 없다.
-const outlineSamples = [];
-
-async function apiOutline(code, tries = 3) {
-  let last = '빈 응답';
-  for (let i = 0; i < tries; i++) {
-    const rows = await api(`/user/etp/getEtpItemOutline?code=${code}&befDate=${new Date().getFullYear() - 1}0101`);
-    const o = rows?.[0];
-    if (o && Object.keys(o).length >= 5) return o;
-    last = o ? `키 ${Object.keys(o).length}개뿐` : '빈 응답';
-    if (outlineSamples.length < 5) outlineSamples.push({ code, try: i, keys: o ? Object.keys(o) : [], row: o ?? rows });
-    await sleep(1500 * (i + 1));
-    if (i === tries - 2) await refreshHeaders();
-  }
-  throw new ApiError(`상세가 비어 있습니다 (${last})`);
-}
+// 자산군(ctg_large)도 분류 문자열에서 유도하고(assetClassOf), 기초지수는
+// 마스터에 있다. 상세가 홀로 쥐고 있던 값은 이제 없다.
 
 function dumpDiagnostics(extra = {}) {
-  const body = { when: new Date().toISOString(), samples: outlineSamples, ...extra };
+  const body = { when: new Date().toISOString(), ...extra };
   fs.mkdirSync(DIAG, { recursive: true });
   fs.writeFileSync(path.join(DIAG, 'outline-failures.json'), JSON.stringify(body, null, 2));
   // `discovery/` 는 .gitignore 에 걸려 있어 아티팩트로만 남는다. 아티팩트를
@@ -294,10 +426,8 @@ function dumpDiagnostics(extra = {}) {
   // 첫 표본을 찍는다. 진단자료는 볼 수 없으면 없는 것과 같다.
   fs.mkdirSync(DIAG_REPO, { recursive: true });
   fs.writeFileSync(path.join(DIAG_REPO, 'collect-failures.json'), JSON.stringify(body, null, 2));
-  if (outlineSamples.length) {
-    console.log('── 값이 안 든 상세 응답 표본 ──');
-    console.log(JSON.stringify(outlineSamples[0]).slice(0, 3000));
-  }
+  console.log('── 진단자료 ──');
+  console.log(JSON.stringify(body).slice(0, 3000));
 }
 
 async function refreshHeaders() {
@@ -319,24 +449,37 @@ const items = [];
 const failed = [];
 let asOf = null;
 
+let stoppedEarly = null;
+
 for (const [i, row] of universe.entries()) {
   const code = row.F16013;
   const name = row.F16002;
+
+  // 예산을 넘겼으면 멈춘다. 모집단이 192종목에서 892종목으로 커졌으니
+  // 한도(75분)에 잘려 아무것도 못 남기는 일이 실제로 일어날 수 있다.
+  // 모집단은 월배당을 앞에 두고 정렬해 두었으므로, 잘리는 자리는 늘
+  // 뒤쪽 — 지금 쓰고 있는 종목은 이미 다 모은 뒤다.
+  if (Date.now() - tStart > BUDGET_MS) {
+    stoppedEarly = `예산 ${BUDGET_MS / 60000}분을 넘겨 ${i}/${universe.length} 에서 멈췄습니다`;
+    console.log(`\n${stoppedEarly}`);
+    break;
+  }
+
   process.stdout.write(`[${i + 1}/${universe.length}] ${code} ${name} … `);
 
   // 한꺼번에 다섯 갈래로 부르지 않는다. 첫 판에서 그렇게 했다가 서른세
   // 번째 종목부터 원천이 답을 끊었다. 차례로, 사이를 띄워서 묻는다.
-  // 61종목 × 5번이면 2분 남짓이다 — 한 달에 한 번 도는 일에 그 정도는 싸다.
-  let outline;
+  //
+  // 종목당 다섯 번이다. 예전에는 일곱 번이었는데 상세(getEtpItemOutline)와
+  // 보수(getEtpLatestFee)를 뺐다 — 그 둘이 주던 값이 스크리너 한 번에 다
+  // 들어 있다. 상세는 장이 닫히면 시세 항목이 빠져서 제일 자주 말썽을
+  // 부리던 쪽이기도 했다. 892종목 × 5번이면 33분이다.
   let hist;
   let monthly;
-  let fee;
   let navHist;
   let term;
   let divOutline;
   try {
-    outline = await apiOutline(code);
-    await sleep(250);
     // 지급주기를 판정할 원천. 연도별 지급 횟수와 지급한 달 목록을 준다.
     divOutline = await api(`/user/etp/getEtpItemDivOutline?code=${code}`);
     await sleep(250);
@@ -346,8 +489,6 @@ for (const [i, row] of universe.entries()) {
     hist = await api(`/user/etp/getEtpItemCashHist?code=${code}&limit=60`);
     await sleep(250);
     monthly = await api(`/user/etp/getEtpItemCashMonthly?code=${code}`);
-    await sleep(250);
-    fee = await api(`/user/etp/getEtpLatestFee?code=${code}`);
     await sleep(250);
     navHist = await api(`/user/etp/getSimpleEtpHist?F16013=${code}&limit=250&type=diff`);
     await sleep(250);
@@ -361,6 +502,18 @@ for (const [i, row] of universe.entries()) {
     // 앞에서부터 줄줄이 실패하면 그건 종목 문제가 아니라 원천이 우리를
     // 막았거나 응답 모양이 바뀐 것이다. 192종목을 그대로 다 돌면 재시도만
     // 하다가 한 시간 반이 지나간다(실제로 그랬다). 일찍 멈추고 말한다.
+    // 모집단이 892종목으로 커지면서 차단기를 하나 더 둔다. 앞이 **전부**
+    // 실패해야만 멈추는 규칙은, 절반쯤 되고 절반쯤 실패하는 판을 못 잡는다.
+    // 그런 판이 제일 위험하다 — 파일이 멀쩡해 보이는데 절반이 비어 있다.
+    // 쉰 종목을 넘겼는데 실패가 6할이 넘으면 원천이 우리를 막은 것이다.
+    if (i >= 50 && failed.length > (i + 1) * 0.6) {
+      dumpDiagnostics({ note: `${i + 1}종목 중 ${failed.length}종목이 실패해 멈췄습니다.`, failed: failed.slice(0, 30) });
+      throw new Error(
+        `${i + 1}종목 중 ${failed.length}종목(${Math.round((failed.length / (i + 1)) * 100)}%)이 실패했습니다.\n` +
+          '원천이 막은 것으로 보입니다. data/ 는 그대로 둡니다 — 절반만 든 파일이 ' +
+          '멀쩡해 보이는 채로 나가는 것이 제일 나쁩니다.',
+      );
+    }
     if (failed.length >= 8 && items.every((x) => x.dataComplete === false)) {
       dumpDiagnostics({ note: '앞 8종목이 모두 실패해 일찍 멈췄습니다.', failed });
       throw new Error(
@@ -386,10 +539,13 @@ for (const [i, row] of universe.entries()) {
     continue;
   }
 
-  const o = outline;
-  asOf = asOf || String(o.F12506 || row.F12506 || '');
+  // 예전에는 여기서 상세(getEtpItemOutline)를 꺼냈다. 이제 그 값들이 스크리너
+  // 한 행에 들어 있으므로 `row` 가 곧 그 자리다. 기초지수(F34777)만 마스터에
+  // 있어서 따로 집는다.
+  const mr = mastOf.get(code) || {};
+  asOf = asOf || String(row.F12506 || mr.F12506 || '');
 
-  const aum = num(o.F15028);
+  const aum = num(row.F15028);
 
   // 일별 기준가(NAV)와 종가. 변동성과 60일 평균 거래대금을 여기서 낸다.
   //
@@ -415,14 +571,15 @@ for (const [i, row] of universe.entries()) {
   const volDays = navSeries.length;
   const volWindow = volDays >= 200 ? '1년' : `${volDays}거래일`;
 
-  // 현재가. 상세(getEtpItemOutline)에는 장이 닫히면 시세 항목이 빠지므로
-  // 거기서 구하지 않는다. 마스터와 일별 시세에는 언제나 값이 있다.
-  // 어느 쪽에서 가져왔는지 적어 둔다 — 출처를 모르면 값을 믿을 수 없다.
+  // 현재가. 상세(getEtpItemOutline)는 장이 닫히면 시세 항목이 빠져서 기댈 수
+  // 없었는데, 이제 아예 부르지 않는다. 스크리너·마스터·일별 시세에는 장이
+  // 열려 있든 아니든 값이 있다. 어느 쪽에서 가져왔는지 적어 둔다 — 출처를
+  // 모르면 값을 믿을 수 없다.
   let price = num(row.F15001);
-  let priceSource = '마스터 종가(F15001)';
+  let priceSource = '스크리너 종가(F15001)';
   if (!(price > 0)) {
-    price = num(o.F15001);
-    priceSource = '상세 종가(F15001)';
+    price = num(mr.F15001);
+    priceSource = '마스터 종가(F15001)';
   }
   if (!(price > 0) && days[0]) {
     price = days[0].close;
@@ -460,8 +617,8 @@ for (const [i, row] of universe.entries()) {
   // 종목만")이 우연히 막아 주던 것을 새 규칙은 안 막는다. 상장 1년이 안 된
   // 종목은 채택에서도 빠지지만, 값 자체를 비워 두어야 [ETF데이터] 장이나
   // 드롭다운 어디에서도 반쪽짜리 숫자가 연 분배율 행세를 하지 못한다.
-  const ttmWindowFull = /^\d{8}$/.test(String(o.F16017 || row.F16017 || ''))
-    ? Number(String(o.F16017 || row.F16017)) <= TTM_FROM
+  const ttmWindowFull = /^\d{8}$/.test(String(row.F16017 || mr.F16017 || ''))
+    ? Number(String(row.F16017 || mr.F16017)) <= TTM_FROM
     : false;
 
   // 창 안에 한 건도 없어도 연 분배율을 낼 수 없다. 0 으로 적지 않는다 —
@@ -493,7 +650,7 @@ for (const [i, row] of universe.entries()) {
       ? last60.reduce((s, d) => s + (d.close || 0) * (d.volume || 0), 0) / last60.length
       : null;
 
-  const listed = String(o.F16017 || row.F16017 || '');
+  const listed = String(row.F16017 || mr.F16017 || '');
   const months = dist.length;
 
   // 지급주기. 분류가 아니라 실제 지급한 달로 판정한다(위 classifyPayout 참고).
@@ -559,19 +716,23 @@ for (const [i, row] of universe.entries()) {
     // 자산군(주식·채권·리츠·단기자금…). 월배당 전체로 넓히면서 파킹형
     // (CD금리·KOFR)까지 들어왔는데, 그것들은 월마다 돈이 나오기는 해도
     // 월지급 제안서의 주인공이 아니다. 가려 볼 수 있게 적어 둔다.
-    assetClass: o.ctg_large_name || null,
-    assetClassCode: o.ctg_large_code || null,
-    manager: o.F33961 || row.F33961 || null,
-    index: o.F34777 || null,
+    assetClass: assetClassOf(code).name,
+    assetClassCode: assetClassOf(code).code,
+    manager: row.F33961 || mr.F33961 || null,
+    index: mr.F34777 || null,
     listedOn: listed,
     price,
     priceSource,
-    nav: num(o.F15301) ?? (days[0] ? days[0].nav : null),
+    nav: num(row.F15301) ?? (days[0] ? days[0].nav : null),
     aum,
-    turnoverDay: num(o.F15023),
+    turnoverDay: num(row.F15023),
     turnover60: turnover60 === null ? null : Math.round(turnover60),
-    expenseRatio: num(fee?.[0]?.TOTAL_FEE) ?? num(o.F34763),
-    ter: num(fee?.[0]?.TER),
+    // 총보수는 스크리너의 F34763 을 쓴다. 예전에는 종목마다 getEtpLatestFee 를
+    // 불러 TOTAL_FEE 를 받았는데, 892종목에 호출 한 번씩 더 붙일 값이 아니다.
+    // TER(실부담비용)은 그 호출에만 있던 값이라 더는 담지 않는다 — 없는 것을
+    // 있는 척 채우느니 비워 둔다.
+    expenseRatio: num(row.F34763),
+    ter: null,
     volatility: vol === null ? null : Number(vol.toFixed(2)),
     volatilityNav: navVol === null ? null : Number(navVol.toFixed(2)),
     volatilityPrice: pxVol === null ? null : Number(pxVol.toFixed(2)),
@@ -636,15 +797,18 @@ if (!adopted.length) {
 const out = {
   source: 'ETFCHECK (https://www.etfcheck.co.kr)',
   sourceNote:
-    '국내 상장 ETF 중 ETFCHECK 분류가 월배당(0609002) 인 종목 전부. 상품명이 아니라 ' +
-    '분류로 고른다. 커버드콜(0609005) 인지 아닌지는 항목마다 type 에 적는다 — ' +
-    '처음에는 커버드콜만 담았는데, 그러면 리츠·인프라·배당주·채권형처럼 월배당을 ' +
-    '꼬박꼬박 주는 종목이 통째로 빠졌다.',
+    '국내 상장 ETF 중 순자산 300억 이상이거나 ETFCHECK 분류가 월배당(0609002) 인 종목. ' +
+    '상품명이 아니라 분류와 수치로 고른다. 커버드콜(0609005) 인지 아닌지는 항목마다 type 에 ' +
+    '적는다. 처음에는 커버드콜만, 다음에는 월배당만 담았는데 — 분기배당·연배당도 고를 수 ' +
+    '있어야 하고 ETFCHECK 분류에는 그 둘이 없어서, 월배당이 아닌 종목까지 담아 실제 지급한 ' +
+    '달로 주기를 판정한다. 어디서 끊을지는 재서 정했다: 거래대금을 관문에 넣으면 순자산 ' +
+    '2,239억짜리가 그날 거래가 한산했다는 이유로 잘리고, 월배당 분류를 빼면 순자산이 작은 ' +
+    '월배당 종목을 잃는다. 이 관문은 지금 고를 수 있던 종목을 하나도 잃지 않는다.',
   collectedAt: new Date().toISOString(),
   asOf: asOf ? `${asOf.slice(0, 4)}-${asOf.slice(4, 6)}-${asOf.slice(6, 8)}` : null,
   rules: RULES,
   derived: {
-    price: '마스터(getEtpMast)의 종가를 먼저 쓰고, 없으면 상세, 그래도 없으면 일별 시세의 최신 종가를 쓴다. 어느 쪽인지는 항목마다 priceSource 에 적는다. 상세는 장이 닫히면 시세 항목이 빠져서 기댈 수 없다.',
+    price: '스크리너의 종가를 먼저 쓰고, 없으면 마스터, 그래도 없으면 일별 시세의 최신 종가를 쓴다. 어느 쪽인지는 항목마다 priceSource 에 적는다.',
     distTtmRate:
       '기준일이 **1년 전 오늘 이후**인 분배금의 합계 ÷ 현재가 × 100. 창의 시작일은 항목마다 ' +
       'distTtmFrom 에, 더한 건수는 distTtmCount 에 적는다. 예전에는 "최근 12회" 로 냈는데, ' +
@@ -667,6 +831,11 @@ const out = {
     priceJumps: '하루에 ±15% 넘게 움직인 날. 커버드콜 ETF 에서는 시장보다 액면분할이나 원천 오기일 때가 많다. 지우지 않고 세어서 남긴다.',
   },
   universe: universe.length,
+  universeRule: `순자산 ${MIN_UNIVERSE_AUM / 1e8}억 이상 ∨ 월배당 분류(0609002). 국내 상장 ${scr.size}종목 중 ${universe.length}종목.`,
+  // 예산에 걸려 중간에 멈췄으면 그 사실을 적는다. 모집단 892 중 600 만 담고도
+  // 파일이 멀쩡해 보이면 아무도 못 알아챈다.
+  stoppedEarly,
+  collected: items.length,
   adoptedCount: adopted.length,
   items,
   failed,
@@ -675,7 +844,11 @@ fs.mkdirSync(path.dirname(OUT), { recursive: true });
 fs.writeFileSync(OUT, JSON.stringify(out, null, 2) + '\n');
 
 console.log(
-  `\n${OUT} 에 적었습니다 — 모집단 ${universe.length}, 채택 ${adopted.length}, ` +
-    `제외 ${items.length - adopted.length}, 상세 실패 ${failed.length}`,
+  `\n${OUT} 에 적었습니다 — 모집단 ${universe.length}, 수집 ${items.length}, ` +
+    `채택 ${adopted.length}, 제외 ${items.length - adopted.length}, 실패 ${failed.length}` +
+    (stoppedEarly ? `\n※ ${stoppedEarly}` : ''),
 );
+const freqTally = {};
+for (const x of items) freqTally[x.payoutFreq || '(모름)'] = (freqTally[x.payoutFreq || '(모름)'] || 0) + 1;
+console.log('지급주기별: ' + Object.entries(freqTally).sort((a, b) => b[1] - a[1]).map(([k, v]) => `${k} ${v}`).join(', '));
 await browser.close();
