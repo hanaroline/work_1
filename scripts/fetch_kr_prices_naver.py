@@ -218,18 +218,20 @@ def fetch_one(code, span):
 
 
 def universe():
-    """kr-top100.html 의 COMPANIES 에서 종목코드를 읽는다."""
-    p = os.path.join(ROOT, 'kr-top100.html')
-    txt = open(p, encoding='utf-8').read()
-    m = re.search(r'var COMPANIES\s*=\s*(\[.*?\]);', txt, re.S)
-    if not m:
-        raise SystemExit('kr-top100.html 에서 COMPANIES 를 찾지 못했습니다')
-    out = []
-    for c in json.loads(m.group(1)):
-        sym = c[0] if isinstance(c, list) else c.get('symbol')
-        if sym and sym.endswith(('.KS', '.KQ')):
-            out.append((sym, sym.split('.')[0]))
-    return out
+    """대상 종목 (야후심볼, 6자리 코드) 목록.
+
+    **build_signals 의 것을 그대로 쓴다.** 처음에는 여기서 COMPANIES 를 json 으로
+    읽으려다 러너에서 0 초 만에 터졌다 — 그 배열은 JS 주석과 홑따옴표가 섞여 있어
+    JSON 이 아니다. build_signals.load_names 가 이미 정규식으로 그 일을 하고 있었고,
+    같은 일을 하는 파서를 두 벌 두면 목록 꼴이 바뀔 때 한쪽만 고쳐져 어긋난다.
+    """
+    sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+    import build_signals as B
+    names = B.load_names('KR')
+    if not names:
+        raise SystemExit('kr-top100.html 에서 종목 목록을 읽지 못했습니다')
+    return [(sym, sym.split('.')[0]) for sym in sorted(names)
+            if sym.endswith(('.KS', '.KQ'))]
 
 
 def merge(old, sym, rows):

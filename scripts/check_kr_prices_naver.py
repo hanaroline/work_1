@@ -179,7 +179,31 @@ def test_verifier_catches():
     ok('검산기 — 빈 종가를 잡는다', bool(run_self(bad4)))
 
 
+def test_universe():
+    """**대상 목록을 실제로 읽어 본다.**
+
+    처음 판이 러너에서 0 초 만에 터졌다. 파서 시험 스물일곱 가지가 모두 통과했는데도
+    그랬다 — 시험이 **파서만** 보고 있었고, 종목 목록을 읽는 자리는 아무도 안 봤기
+    때문이다. 거기서 COMPANIES 를 json 으로 읽으려 했는데 그 배열에는 JS 주석과
+    홑따옴표가 섞여 있어 JSON 이 아니다.
+
+    수집기가 첫 줄에서 죽으면 뒤의 어떤 검산도 돌지 못한다. 그 자리를 시험에 넣는다.
+    """
+    try:
+        u = P.universe()
+    except Exception as e:                                      # noqa: BLE001
+        FAILS.append('대상 목록을 읽지 못한다 — %s: %s' % (type(e).__name__, e))
+        N[0] += 1
+        return
+    ok('대상 목록이 비지 않는다', len(u) >= 50, '%d 종목' % len(u))
+    ok('야후 심볼 꼴', all(s.endswith(('.KS', '.KQ')) for s, _ in u))
+    ok('종목코드 6자리', all(len(c) == 6 and c.isdigit() for _, c in u),
+       str([c for _, c in u if not (len(c) == 6 and c.isdigit())][:3]))
+    ok('삼성전자가 들어 있다', any(c == '005930' for _, c in u))
+
+
 def main():
+    test_universe()
     test_sisejson()
     test_mobile()
     test_fchart()
