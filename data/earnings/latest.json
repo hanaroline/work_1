@@ -31,7 +31,8 @@
   "매출 컨센서스": "인용 기사에 명시된 제공사 (기업마다 상이 — 각 행의 출처 참조)",
   "EPS 컨센서스": "인용 기사에 명시된 제공사 (기업마다 상이)",
   "가이던스": "기업이 직접 제시한 전망 (애널리스트 추정치가 아님)",
-  "밸류에이션": "stockanalysis.com 한 곳 · 2026-09-17 기준 (제공사 혼용 금지)"
+  "밸류에이션": "stockanalysis.com 한 곳 · 2026-09-17 기준 (제공사 혼용 금지)",
+  "LTM": "stockanalysis.com 한 곳 · 2026-09-17 조회 (분기 실적치와는 계열이 다름)"
  },
  "valBand": [
   12.0,
@@ -46,6 +47,7 @@
   "valuation": 30.0
  },
  "valAsOf": "2026-09-17",
+ "accelBand": 2.0,
  "secBench": [
   {
    "sec": "정보기술",
@@ -441,7 +443,8 @@
   "Revenue consensus": "The provider named in the cited article — differs by company; see each row's source",
   "EPS consensus": "The provider named in the cited article — differs by company",
   "Guidance": "Issued by the company itself, not an analyst estimate",
-  "Valuation": "stockanalysis.com only · as of 2026-09-17 (never mixed across providers)"
+  "Valuation": "stockanalysis.com only · as of 2026-09-17 (never mixed across providers)",
+  "LTM": "stockanalysis.com only · retrieved 2026-09-17 (a different series from the reported quarter)"
  },
  "coverage": {
   "total": 25,
@@ -451,6 +454,9 @@
   "guide": 20,
   "eps": 13,
   "fpe": 24,
+  "ltm": 25,
+  "accel": 23,
+  "gnext": 7,
   "appeal": 22
  },
  "index": [
@@ -582,7 +588,17 @@
    "vgrpEn": "Information Technology",
    "appeal": 73.7,
    "appealgap": null,
-   "valnote": ""
+   "valnote": "",
+   "ltm": 302.97,
+   "ltmg": 83.38,
+   "accel": 22.6,
+   "trend": "up",
+   "ltmnote": "",
+   "gnext": 108.0,
+   "gnexttxt": "1,080억달러 ±2%",
+   "gnextper": "Q3 FY27",
+   "gnexten": "$108B ±2%",
+   "gnextqoq": 12.2
   },
   {
    "t": "MSFT",
@@ -638,7 +654,17 @@
    "vgrpEn": "Information Technology",
    "appeal": 59.8,
    "appealgap": null,
-   "valnote": ""
+   "valnote": "",
+   "ltm": 331.84,
+   "ltmg": 17.79,
+   "accel": 0.2,
+   "trend": "flat",
+   "ltmnote": "",
+   "gnext": null,
+   "gnexttxt": null,
+   "gnextper": null,
+   "gnexten": null,
+   "gnextqoq": null
   },
   {
    "t": "AAPL",
@@ -694,7 +720,17 @@
    "vgrpEn": "Information Technology",
    "appeal": 27.5,
    "appealgap": null,
-   "valnote": ""
+   "valnote": "",
+   "ltm": 466.82,
+   "ltmg": 14.24,
+   "accel": 1.8,
+   "trend": "flat",
+   "ltmnote": "",
+   "gnext": null,
+   "gnexttxt": null,
+   "gnextper": null,
+   "gnexten": null,
+   "gnextqoq": null
   },
   {
    "t": "GOOGL",
@@ -748,7 +784,17 @@
    "vgrpEn": "Comm. Services · Internet",
    "appeal": 51.1,
    "appealgap": null,
-   "valnote": ""
+   "valnote": "",
+   "ltm": 445.87,
+   "ltmg": 20.05,
+   "accel": 3.9,
+   "trend": "up",
+   "ltmnote": "",
+   "gnext": null,
+   "gnexttxt": null,
+   "gnextper": null,
+   "gnexten": null,
+   "gnextqoq": null
   },
   {
    "t": "AMZN",
@@ -803,7 +849,17 @@
    "vgrpEn": "Consumer Discretionary",
    "appeal": 44.5,
    "appealgap": null,
-   "valnote": ""
+   "valnote": "",
+   "ltm": 775.68,
+   "ltmg": 15.77,
+   "accel": 4.2,
+   "trend": "up",
+   "ltmnote": "",
+   "gnext": 199.5,
+   "gnexttxt": "1,970~2,020억달러",
+   "gnextper": "Q3 CY26",
+   "gnexten": "$197–202B",
+   "gnextqoq": -0.5
   },
   {
    "t": "META",
@@ -859,7 +915,17 @@
    "vgrpEn": "Comm. Services · Internet",
    "appeal": 49.8,
    "appealgap": null,
-   "valnote": ""
+   "valnote": "",
+   "ltm": 228.25,
+   "ltmg": 27.65,
+   "accel": 0.4,
+   "trend": "flat",
+   "ltmnote": "",
+   "gnext": 62.5,
+   "gnexttxt": "610~640억달러",
+   "gnextper": "Q3 CY26",
+   "gnexten": "$61–64B",
+   "gnextqoq": 2.8
   },
   {
    "t": "AVGO",
@@ -913,7 +979,17 @@
    "vgrpEn": "Information Technology",
    "appeal": 90.0,
    "appealgap": null,
-   "valnote": ""
+   "valnote": "",
+   "ltm": 75.47,
+   "ltmg": 94.17,
+   "accel": -8.2,
+   "trend": "down",
+   "ltmnote": "",
+   "gnext": 34.8,
+   "gnexttxt": "348억달러",
+   "gnextper": "Q4 FY26",
+   "gnexten": "$34.8B",
+   "gnextqoq": 17.6
   },
   {
    "t": "TSLA",
@@ -968,7 +1044,17 @@
    "vgrpEn": "Consumer Discretionary",
    "appeal": 36.5,
    "appealgap": null,
-   "valnote": "선행 P/E 188.57 은 이익 기저가 얕아 나온 값 — 이익이 회복되면 크게 움직인다."
+   "valnote": "선행 P/E 188.57 은 이익 기저가 얕아 나온 값 — 이익이 회복되면 크게 움직인다.",
+   "ltm": 103.62,
+   "ltmg": 9.37,
+   "accel": 16.6,
+   "trend": "up",
+   "ltmnote": "",
+   "gnext": null,
+   "gnexttxt": null,
+   "gnextper": null,
+   "gnexten": null,
+   "gnextqoq": null
   },
   {
    "t": "AMD",
@@ -1024,7 +1110,17 @@
    "vgrpEn": "Information Technology",
    "appeal": 44.1,
    "appealgap": null,
-   "valnote": ""
+   "valnote": "",
+   "ltm": 41.31,
+   "ltmg": 39.54,
+   "accel": 10.5,
+   "trend": "up",
+   "ltmnote": "",
+   "gnext": 13.0,
+   "gnexttxt": "130억달러 ±3억달러",
+   "gnextper": "Q3 CY26",
+   "gnexten": "$13B ±$0.3B",
+   "gnextqoq": 13.0
   },
   {
    "t": "ORCL",
@@ -1079,7 +1175,17 @@
    "vgrpEn": "Information Technology",
    "appeal": 56.9,
    "appealgap": null,
-   "valnote": ""
+   "valnote": "",
+   "ltm": 71.78,
+   "ltmg": 21.62,
+   "accel": 8.4,
+   "trend": "up",
+   "ltmnote": "",
+   "gnext": null,
+   "gnexttxt": null,
+   "gnextper": null,
+   "gnexten": null,
+   "gnextqoq": null
   },
   {
    "t": "CRM",
@@ -1134,7 +1240,17 @@
    "vgrpEn": "Information Technology",
    "appeal": 59.0,
    "appealgap": null,
-   "valnote": ""
+   "valnote": "",
+   "ltm": 43.94,
+   "ltmg": 11.23,
+   "accel": -0.2,
+   "trend": "flat",
+   "ltmnote": "",
+   "gnext": null,
+   "gnexttxt": null,
+   "gnextper": null,
+   "gnexten": null,
+   "gnextqoq": null
   },
   {
    "t": "PLTR",
@@ -1189,7 +1305,17 @@
    "vgrpEn": "Information Technology",
    "appeal": 69.6,
    "appealgap": null,
-   "valnote": ""
+   "valnote": "",
+   "ltm": 5.22,
+   "ltmg": 67.71,
+   "accel": 25.3,
+   "trend": "up",
+   "ltmnote": "",
+   "gnext": null,
+   "gnexttxt": null,
+   "gnextper": null,
+   "gnexten": null,
+   "gnextqoq": null
   },
   {
    "t": "INTC",
@@ -1245,7 +1371,17 @@
    "vgrpEn": "Information Technology",
    "appeal": null,
    "appealgap": "valuation",
-   "valnote": "직전 12개월 적자(매출 570.3억달러, 손실 -112.9억달러, EPS -2.30달러)로 P/E 가 성립하지 않는다. 선행 P/E 도 제공사 화면에서 확인되지 않았다."
+   "valnote": "직전 12개월 적자(매출 570.3억달러, 손실 -112.9억달러, EPS -2.30달러)로 P/E 가 성립하지 않는다. 선행 P/E 도 제공사 화면에서 확인되지 않았다.",
+   "ltm": 57.03,
+   "ltmg": 7.47,
+   "accel": 17.9,
+   "trend": "up",
+   "ltmnote": "",
+   "gnext": 16.3,
+   "gnexttxt": "158~168억달러",
+   "gnextper": "Q3 CY26",
+   "gnexten": "$15.8–16.8B",
+   "gnextqoq": 1.2
   },
   {
    "t": "MU",
@@ -1298,7 +1434,17 @@
    "vgrpEn": "Information Technology",
    "appeal": null,
    "appealgap": "momentum",
-   "valnote": "PEG 0.04 는 예상 이익 증가율이 극단적으로 커서 나온 값 — 배수 자체로 읽지 말 것."
+   "valnote": "PEG 0.04 는 예상 이익 증가율이 극단적으로 커서 나온 값 — 배수 자체로 읽지 말 것.",
+   "ltm": 90.27,
+   "ltmg": 166.98,
+   "accel": null,
+   "trend": null,
+   "ltmnote": "LTM +166.98% 는 메모리 업사이클 구간의 값 — 기저효과가 크다",
+   "gnext": 50.0,
+   "gnexttxt": "500억달러",
+   "gnextper": "Q4 FY26",
+   "gnexten": "$50B",
+   "gnextqoq": 20.5
   },
   {
    "t": "NFLX",
@@ -1353,7 +1499,17 @@
    "vgrpEn": "Comm. Services · Internet",
    "appeal": 44.5,
    "appealgap": null,
-   "valnote": ""
+   "valnote": "",
+   "ltm": 48.37,
+   "ltmg": 16.02,
+   "accel": -3.0,
+   "trend": "down",
+   "ltmnote": "",
+   "gnext": null,
+   "gnexttxt": null,
+   "gnextper": null,
+   "gnexten": null,
+   "gnextqoq": null
   },
   {
    "t": "JPM",
@@ -1407,7 +1563,17 @@
    "vgrpEn": "Financials",
    "appeal": 68.1,
    "appealgap": null,
-   "valnote": ""
+   "valnote": "",
+   "ltm": 186.33,
+   "ltmg": 13.79,
+   "accel": 14.2,
+   "trend": "up",
+   "ltmnote": "회사 발표 총순영업수익(57.3십억달러)과 집계사이트의 매출 정의가 달라 가속도는 방향만 참고할 것",
+   "gnext": null,
+   "gnexttxt": null,
+   "gnextper": null,
+   "gnexten": null,
+   "gnextqoq": null
   },
   {
    "t": "GS",
@@ -1461,7 +1627,17 @@
    "vgrpEn": "Financials",
    "appeal": 72.6,
    "appealgap": null,
-   "valnote": ""
+   "valnote": "",
+   "ltm": 66.2,
+   "ltmg": 17.77,
+   "accel": 21.2,
+   "trend": "up",
+   "ltmnote": "회사 발표 순영업수익과 집계사이트의 매출 정의가 달라 가속도는 방향만 참고할 것",
+   "gnext": null,
+   "gnexttxt": null,
+   "gnextper": null,
+   "gnexten": null,
+   "gnextqoq": null
   },
   {
    "t": "LLY",
@@ -1517,7 +1693,17 @@
    "vgrpEn": "Health Care",
    "appeal": 80.2,
    "appealgap": null,
-   "valnote": ""
+   "valnote": "",
+   "ltm": 79.67,
+   "ltmg": 49.58,
+   "accel": -1.6,
+   "trend": "flat",
+   "ltmnote": "",
+   "gnext": null,
+   "gnexttxt": null,
+   "gnextper": null,
+   "gnexten": null,
+   "gnextqoq": null
   },
   {
    "t": "UNH",
@@ -1572,7 +1758,17 @@
    "vgrpEn": "Health Care",
    "appeal": 50.5,
    "appealgap": null,
-   "valnote": ""
+   "valnote": "",
+   "ltm": 450.13,
+   "ltmg": 6.46,
+   "accel": -6.1,
+   "trend": "down",
+   "ltmnote": "",
+   "gnext": null,
+   "gnexttxt": null,
+   "gnextper": null,
+   "gnexten": null,
+   "gnextqoq": null
   },
   {
    "t": "JNJ",
@@ -1628,7 +1824,17 @@
    "vgrpEn": "Health Care",
    "appeal": 49.8,
    "appealgap": null,
-   "valnote": ""
+   "valnote": "",
+   "ltm": 97.93,
+   "ltmg": 8.06,
+   "accel": -1.5,
+   "trend": "flat",
+   "ltmnote": "",
+   "gnext": null,
+   "gnexttxt": null,
+   "gnextper": null,
+   "gnexten": null,
+   "gnextqoq": null
   },
   {
    "t": "WMT",
@@ -1684,7 +1890,17 @@
    "vgrpEn": "Consumer Staples",
    "appeal": 39.5,
    "appealgap": null,
-   "valnote": ""
+   "valnote": "",
+   "ltm": 735.84,
+   "ltmg": 6.16,
+   "accel": -0.3,
+   "trend": "flat",
+   "ltmnote": "",
+   "gnext": null,
+   "gnexttxt": null,
+   "gnextper": null,
+   "gnexten": null,
+   "gnextqoq": null
   },
   {
    "t": "COST",
@@ -1738,7 +1954,17 @@
    "vgrpEn": "Consumer Staples",
    "appeal": 16.4,
    "appealgap": null,
-   "valnote": ""
+   "valnote": "",
+   "ltm": 293.59,
+   "ltmg": 9.23,
+   "accel": 2.1,
+   "trend": "up",
+   "ltmnote": "",
+   "gnext": null,
+   "gnexttxt": null,
+   "gnextper": null,
+   "gnexten": null,
+   "gnextqoq": null
   },
   {
    "t": "HD",
@@ -1792,7 +2018,17 @@
    "vgrpEn": "Consumer Discretionary",
    "appeal": 41.3,
    "appealgap": null,
-   "valnote": ""
+   "valnote": "",
+   "ltm": 169.18,
+   "ltmg": 2.5,
+   "accel": 3.2,
+   "trend": "up",
+   "ltmnote": "같은 제공사의 통계 화면에서는 LTM 매출이 166.59십억달러로 조회된 적이 있다(조회 시점 차이). 이 화면은 매출 화면 값으로 통일한다",
+   "gnext": null,
+   "gnexttxt": null,
+   "gnextper": null,
+   "gnexten": null,
+   "gnextqoq": null
   },
   {
    "t": "CAT",
@@ -1848,7 +2084,17 @@
    "vgrpEn": "Industrials",
    "appeal": 73.7,
    "appealgap": null,
-   "valnote": ""
+   "valnote": "",
+   "ltm": 74.73,
+   "ltmg": 18.36,
+   "accel": 5.6,
+   "trend": "up",
+   "ltmnote": "",
+   "gnext": null,
+   "gnexttxt": null,
+   "gnextper": null,
+   "gnexten": null,
+   "gnextqoq": null
   },
   {
    "t": "XOM",
@@ -1901,7 +2147,17 @@
    "vgrpEn": "Energy",
    "appeal": null,
    "appealgap": "momentum",
-   "valnote": ""
+   "valnote": "",
+   "ltm": 361.06,
+   "ltmg": 9.62,
+   "accel": null,
+   "trend": null,
+   "ltmnote": "",
+   "gnext": null,
+   "gnexttxt": null,
+   "gnextper": null,
+   "gnexten": null,
+   "gnextqoq": null
   }
  ],
  "sectors": [
