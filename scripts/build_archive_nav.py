@@ -151,7 +151,16 @@ def beta(path, briefings):
     # 같은 날 판이 이미 목록에 있으면 **그것**을 「이 판」으로 표시한다. 예전에는
     # 무조건 「베타 시안」 줄을 하나 새로 얹어서, 새 형식으로 다시 지은 8/27 판이
     # 목록에 08-27 을 두 줄 — 「베타 시안」과 「모닝」 — 로 실었다.
-    same = [b for b in visible if b.get("date") == mine]
+    #
+    # **날짜만으로 고르면 안 된다(2026-09-17).** 하루에 판이 셋(이벤트·장마감·
+    # 모닝)인 날이 생기자, `2026-09-17-close-core.html` 이 같은 날 첫 줄인
+    # 「FOMC 브리프」를 「이 판」으로 짚었다 — 핵심본 사이드바에서 이벤트
+    # 브리프가 `href="#"` 인 죽은 줄이 되고, 정작 장마감은 현재 판 표시를
+    # 잃었다. 핵심본은 `-core` 를 뗀 파일이 자기 짝이므로 **파일 이름으로
+    # 먼저 맞추고**, 못 찾을 때만 날짜로 떨어진다.
+    stem = re.sub(r"-core(?=\.html$)", "", os.path.basename(path))
+    same = ([b for b in visible if b.get("file") == stem]
+            or [b for b in visible if b.get("date") == mine])
     if same:
         me = same[0]
     else:
