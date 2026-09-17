@@ -91,7 +91,7 @@ const PAGES_OUT = argOf('--pages-out', OUT.replace(/[^/\\]+$/, 'fund-doc-pages.j
 /* ── 앱과 똑같은 추출 규칙·본문 판독을 쓴다 ───────────────── */
 const prosSrc = await readFile('js/sales-script-prospectus.js', 'utf8');
 /* 쪽 지도 규칙 — 표본 조사와 같은 파일을 쓴다 (scripts/fund_doc_anchors.mjs 머리말 참고) */
-const { ANCHORS, mapPages, flat } = await import('./fund_doc_anchors.mjs');
+const { ANCHORS, mapPages, flat, checkOrder } = await import('./fund_doc_anchors.mjs');
 const anchorSrc = await readFile(new URL('./fund_doc_anchors.mjs', import.meta.url), 'utf8');
 /**
  * 추출 규칙의 지문.
@@ -324,7 +324,15 @@ const refs = {};
    되는데, 이 도구는 파일 하나로 업무용PC 에 들고 가는 것이라 크기가 곧
    배포 가능성이다. 배열로 담으면 140KB 안쪽이다. */
 const pgRows = {};
+/* 차례가 어긋난 줄은 담지 않는다.
+   ★ 이 검사가 없어서 2,924종목을 통째로 버렸다 ★ 요약 구간의 절 제목을 본문으로
+   잘못 짚었는데, 자리마다 적중률이 99~100% 로 나와 점검을 그대로 통과했다.
+   적중률은 「무언가 찾았나」 만 세고 「맞는 쪽을 찾았나」 는 세지 못한다.
+   차례(checkOrder)는 그걸 센다 — 본문 자리가 제2부보다 앞이면 요약 구간이다. */
+const pgSkipped = [];
 const pgPut = (code, nPages, at) => {
+  const bad = checkOrder(at);
+  if (bad.bad) { pgSkipped.push(code + ' — ' + bad.why); return; }
   const row = [nPages];
   for (const [key] of ANCHORS) row.push(at[key] || 0);
   /* 한 자리도 못 찾았으면 담지 않는다 — 쪽수만 있는 줄은 화면에서 쓸 데가 없다 */
@@ -465,6 +473,10 @@ await writeFile(PAGES_OUT, pgBody);
     const h = hit(key);
     console.log(`  ${what.padEnd(22)} ${String(h).padStart(5)}건 (${n ? (100 * h / n).toFixed(0) : 0}%)`);
   }
+  /* 차례가 어긋나 버린 줄 — 0 이 정상이다. 여기에 숫자가 쌓이면 규칙이 아니라
+     서식이 바뀐 것이므로 원문을 보고 고쳐야 한다. */
+  console.log(`  차례가 어긋나 버린 줄 ${pgSkipped.length}건`);
+  pgSkipped.slice(0, 10).forEach((s) => console.log(`    ${s}`));
 }
 console.log(`\n${OUT} 기록 — ${Object.keys(items).length}건 · 이번에 읽은 것 ${ok}건 · 실패 ${fail} · 빈문서 ${empty}`);
 console.log(`  문구 풀 ${pool.length}개 (중복 제거)`);
