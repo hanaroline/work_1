@@ -61,6 +61,18 @@ jobs:
         continue-on-error: true
         run: python3 scripts/probe_daily_api.py
 
+      # 네이버는 지수 거래대금을 「오늘 한 점」으로만 남겼고 장전에는 빈
+      # 값이다(관찰로 확인). 아침 7시 30분에 도는 브리핑은 그것을 못 쓰므로
+      # 계열은 KRX 에서 가져와야 한다 — 여기서도 주소를 짐작하지 않고
+      # 화면이 부르는 것을 본다.
+      - name: KRX 지수 일별시세 화면 관찰
+        continue-on-error: true
+        run: node scripts/probe_krx_xhr.mjs
+
+      - name: KRX 후보 주소 확인 (브라우저 없이)
+        continue-on-error: true
+        run: python3 scripts/probe_krx_index.py
+
       - name: 커밋
         if: always()
         run: |
