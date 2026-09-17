@@ -546,7 +546,16 @@
     if (!bt) return '<span class="muted">백테스트 파일(data/signals/backtest.json)을 읽지 못했습니다.</span>';
     // summary_ko 는 파이썬이 **강조**를 별표로 적어 보낸다. 시장 경고 쪽에는
     // 변환이 있는데 여기만 빠져 있어 별표가 글자 그대로 찍혔다.
-    var h = bt.summary_ko
+    // 성적이 지금 모델의 것이 아니면 **성적보다 먼저** 그 말을 한다.
+    var h = '';
+    var stale = DATA && DATA.backtest_stale;
+    if (stale) {
+      h += '<div class="dangerbox" style="margin-top:0">' +
+           esc(stale.text).replace(/\*\*(.+?)\*\*/g, '<b>$1</b>') +
+           ' <span class="muted">(백테스트 ' + esc(stale.backtest_engine) +
+           ' · 지금 ' + esc(stale.current_engine) + ')</span></div>';
+    }
+    h += bt.summary_ko
       ? '<div>' + esc(bt.summary_ko).replace(/\*\*(.+?)\*\*/g, '<b>$1</b>') + '</div>' : '';
     var hz = (bt.horizons || {});
     var rows = '';

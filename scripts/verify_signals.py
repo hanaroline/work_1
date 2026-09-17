@@ -275,6 +275,24 @@ def verify_no_lookahead(bars, cut=30):
 # ─────────────────────────────────────────────────────────────────────
 
 def verify_absences(doc):
+    # 성적이 지금 모델의 것인가. 어긋났으면 **어긋났다고 적혀 있어야** 한다 —
+    # 백테스트는 손으로만 돌리므로 모델을 고친 뒤 다시 돌리는 것을 잊기 쉽다.
+    import hashlib
+    cur = hashlib.sha256(
+        open(os.path.join(ROOT, 'scripts', 'signal_lib.py'), 'rb').read()).hexdigest()[:16]
+    if doc.get('engine_hash'):
+        check_true('엔진 해시가 지금 파일과 맞는다', doc['engine_hash'] == cur,
+                   '산출물 %s vs 지금 %s — 신호를 다시 셈해야 합니다'
+                   % (doc['engine_hash'], cur))
+    btp = os.path.join(ROOT, 'data', 'signals', 'backtest.json')
+    if os.path.exists(btp):
+        bt = json.load(open(btp, encoding='utf-8'))
+        # 해시가 없는 것도 낡은 것으로 친다 — 확인할 수 없는 것을 괜찮다고 치지 않는다
+        if bt.get('engine_hash') != cur:
+            check_true('낡은 성적을 낡았다고 적었다', bool(doc.get('backtest_stale')),
+                       '백테스트가 %s 모델의 것인데 지금은 %s 다 — 산출물이 그 사실을 '
+                       '적고 있어야 한다' % (bt.get('engine_hash') or '(적히지 않음)', cur))
+
     check_true('유의사항이 실려 있다', bool(doc.get('disclaimer')),
                '투자권유가 아니라는 것과 준법 확인이 필요하다는 것을 적어야 한다')
     check_true('유의사항에 투자권유 아님', '투자 권유가 아닙니다' in (doc.get('disclaimer') or ''))
@@ -373,6 +391,15 @@ def fault_injection(bars, item, doc):
         d['disclaimer'] = ''
         verify_absences(d)
     run('유의사항 지우기', drop_disclaimer)
+
+    def drop_stale():
+        # 성적이 낡았는데 낡았다는 표시를 지운 판. 백테스트가 실제로 낡아 있을
+        # 때만 잡히는 시험이라, 안 낡았으면 이 흠은 심을 자리가 없다.
+        d = copy.deepcopy(doc)
+        d.pop('backtest_stale', None)
+        verify_absences(d)
+    if doc.get('backtest_stale'):
+        run('낡은 성적 표시 지우기', drop_stale)
 
     return caught
 
