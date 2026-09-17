@@ -89,6 +89,9 @@ def verify_closes(doc, sample=25):
     step = max(1, len(syms) // sample)
     checked = matched = 0
     bad = []
+    detail = []
+    rels = []
+    only_flow = only_chart = 0
     why = {'shift_prev': 0, 'shift_next': 0, 'ohl': 0, 'unknown': 0}
 
     for sym in syms[::step][:sample]:
@@ -99,6 +102,12 @@ def verify_closes(doc, sample=25):
         ohlc = load_chart_ohlc(sym) or {}
         days = sorted(chart)
         s = doc['stocks'][sym]
+        fds = set(s.get('d') or [])
+        # 수급에만 있는 날 / 일봉에만 있는 날 — 거래일 자체가 어긋나면 여기서 센다
+        only_flow += len(fds - set(days))
+        lo = min(fds) if fds else None
+        if lo:
+            only_chart += len([x for x in days if x >= lo and x not in fds])
         for d, c in zip(s.get('d') or [], s.get('c') or []):
             if c is None or d not in chart:
                 continue
@@ -127,6 +136,20 @@ def verify_closes(doc, sample=25):
             if len(bad) < 10:
                 bad.append('%s %s 수급 %.0f vs 일봉종가 %.0f (%s)'
                            % (sym, d, c, chart[d], tag))
+            rels.append((c - chart[d]) / chart[d] * 100)
+            fmt = lambda x: '-' if x is None else '%.0f' % x
+            detail.append('%-11s %s  %9.0f | %9s %9s %9s | %9s %9s %9s  %s'
+                          % (sym, d, c, fmt(prev), fmt(chart[d]), fmt(nxt),
+                             fmt(o), fmt(h), fmt(l), tag))
+
+    # 어긋난 건을 **전부 맥락과 함께** 찍는다. 갈래 수만 세어서는 원인을 못 가린다 —
+    # 처음 판에서 「앞날 6 · 다음날 3 · 시고저 13 · 불명 17」이 나왔는데, 넷에 흩어져
+    # 있다는 것까지는 알았지만 그래서 무엇이 잘못인지는 알 수 없었다.
+    if detail:
+        sys.stderr.write('\n어긋난 건 전부 (수급종가 | 일봉 D-1 / D / D+1 | D의 시·고·저)\n')
+        for row in detail[:60]:
+            sys.stderr.write('  %s\n' % row)
+        sys.stderr.write('\n')
 
     if not checked:
         fail('종가를 한 건도 대조하지 못했습니다 — 날짜가 일봉과 전혀 안 겹칩니다')
@@ -137,6 +160,17 @@ def verify_closes(doc, sample=25):
     if why['shift_prev'] or why['shift_next'] or why['ohl'] or why['unknown']:
         sys.stderr.write('  어긋남 내역 — 앞날 %d · 다음날 %d · 시고저 %d · 불명 %d\n'
                          % (why['shift_prev'], why['shift_next'], why['ohl'], why['unknown']))
+    sys.stderr.write('  거래일 어긋남 — 수급에만 있는 날 %d · 일봉에만 있는 날 %d\n'
+                     % (only_flow, only_chart))
+    if checked:
+        rel = [abs(x) for x in rels]
+        rel.sort()
+        sys.stderr.write('  상대차 분포(어긋난 건) — 중앙 %.2f%% · 최대 %.2f%% · '
+                         '수급이 높은 건 %d / 낮은 건 %d\n'
+                         % ((rel[len(rel) // 2] if rel else 0),
+                            (rel[-1] if rel else 0),
+                            sum(1 for x in rels if x > 0),
+                            sum(1 for x in rels if x < 0)))
 
     if rate >= 95:
         return
