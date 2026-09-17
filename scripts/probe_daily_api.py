@@ -37,10 +37,23 @@ while _d.weekday() >= 5:
 BIZ = _d.strftime("%Y%m%d")
 
 CANDIDATES = [
-    ("일별시세 KOSPI",
+    # ── 거래대금 후보 ────────────────────────────────────────────────
+    # 아래 넷은 모두 **첫 관찰에서 실제로 오간 주소**다(daily_xhr.txt). 짐작해
+    # 넣은 것이 아니라, 지수 화면이 부르는 것 가운데 거래대금이 있을 법한
+    # 자리를 골라 항목을 들여다보는 것이다.
+    ("일별시세 KOSPI (거래대금 없음을 확인한 자리)",
      "https://stock.naver.com/api/securityFe/api/index/KOSPI/price?page=1&pageSize=20"),
+    ("지수 통합 KOSPI (거래대금 후보)",
+     "https://stock.naver.com/api/securityFe/api/index/KOSPI/integration"),
+    ("실시간 지수 KOSPI (오늘치 거래대금 후보)",
+     "https://polling.finance.naver.com/api/realtime/domestic/index/KOSPI"),
+    ("지수 차트 KOSPI (일봉 계열)",
+     "https://stock.naver.com/api/securityService/chart/domestic/index/KOSPI?periodType=day"),
     ("일별시세 KOSDAQ",
      "https://stock.naver.com/api/securityFe/api/index/KOSDAQ/price?page=1&pageSize=20"),
+    ("실시간 지수 KOSDAQ",
+     "https://polling.finance.naver.com/api/realtime/domestic/index/KOSDAQ"),
+    # ── 투자자별(이미 붙였다 — 계속 열리는지 지키는 뜻) ──────────────
     ("투자자별 KRX·KOSPI",
      "https://stock.naver.com/api/domestic/market/trend/daily"
      "?tradeType=KRX&marketType=KOSPI&bizdate=%s&startIdx=0&pageSize=30" % BIZ),
@@ -96,12 +109,18 @@ def main():
             lines.append("    JSON 이 아니다 — 앞 200자: %s" % body[:200])
             lines.append("")
             continue
-        # **거래대금이 있는지**가 일별시세의 핵심 확인 사항이다.
+        # **거래대금이 있는지**가 일별시세의 핵심 확인 사항이다. 낱말이
+        # 있다는 것만으로는 모자라니 **앞뒤를 같이 적어** 값까지 눈으로
+        # 본다 — `value` 같은 흔한 낱말은 엉뚱한 자리에도 걸리기 때문이다.
         low = body.lower()
-        for want in ("tradingvalue", "accumulatedtradingvalue", "value",
-                     "거래대금", "tradingvolume", "diffvalue"):
-            if want in low:
-                lines.append("    낱말 있음: %s" % want)
+        for want in ("accumulatedtradingvalue", "acctradingvalue", "tradingvalue",
+                     "tradevalue", "transactionamount", "거래대금",
+                     "tradingvolume", "diffvalue"):
+            i = low.find(want)
+            if i < 0:
+                continue
+            lines.append("    낱말 있음: %s → …%s…"
+                         % (want, body[max(0, i - 30):i + 90].replace("\n", " ")))
         lines.append("    모양: %s" % json.dumps(keys_of(j), ensure_ascii=False)[:700])
         f = os.path.join(OUT, "daily_api_%d.json" % i)
         with open(f, "w", encoding="utf-8") as fh:

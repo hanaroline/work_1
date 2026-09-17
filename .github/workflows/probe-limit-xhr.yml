@@ -50,7 +50,7 @@ jobs:
       # 원천이 끊길 때마다 워크플로를 새로 만들지 않는다 — 브라우저를 띄우는
       # 준비가 같으므로 같은 자리에서 이어 돌린다. `continue-on-error` 라
       # 하나가 실패해도 나머지는 돈다.
-      - name: 일별시세·투자자별 화면이 부르는 주소 관찰
+      - name: 거래대금·투자자별 화면이 부르는 주소 관찰
         continue-on-error: true
         run: node scripts/probe_daily_xhr.mjs
 
