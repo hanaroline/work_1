@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>월배당 ETF 투자 제안서</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --orange:#F58220; --orange-active:#CB6015; --soft:#FAB072;
+  --blue:#043B72; --highlight:#D7D7D7;
+  --canvas:#FFFFFF; --surface:#ECEFF4; --subtle:#F7F8FA;
+  --hair:#CDCECB; --hair-soft:#E5E4E1; --line-dark:#49535B;
+  --ink:#1A1A1A; --body:#3D3D3D; --muted:#6C6C6C; --muted-soft:#84888B;
+  --error:#C62828; --warn:#D4A017; --ok:#2E8540;
+  --font-kr:'Spoqa Han Sans Neo','Noto Sans KR',sans-serif;
+  --font-num:'Inter','SF Mono',monospace;
+  --space-section:88px; --space-block:44px;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{
+  font-family:var(--font-kr); font-size:17px; line-height:1.65;
+  color:var(--body); background:var(--canvas);
+  -webkit-font-smoothing:antialiased;
+}
+.num{font-family:var(--font-num); font-variant-numeric:tabular-nums}
+/* 숫자 칸은 줄을 바꾸지 않는다. "100,000,000" 과 "원" 이 갈라지면 표가 두
+   줄로 벌어지면서 금액이 두 개처럼 읽힌다. */
+td.num,td.r,th.r,.kpi .v,.kpi .s{white-space:nowrap}
+
+/* ── 머리띠 ─────────────────────────────────────────── */
+.band{background:var(--orange); color:#fff; padding:18px 0 22px}
+.band .tag{font-size:12px; letter-spacing:.4px; opacity:.85}
+.band h1{font-size:34px; font-weight:700; margin:6px 0 2px; letter-spacing:-.3px; color:#fff}
+.band .sub{font-size:14px; opacity:.9}
+.band-rule{height:3px; background:var(--blue)}
+.meta{font-size:13px; color:var(--muted); padding:10px 0 0}
+
+.page{max-width:1140px; margin:0 auto; padding:0 24px}
+@media(max-width:768px){ .page{padding:0 16px} .band h1{font-size:26px} }
+
+/* ── 섹션 ───────────────────────────────────────────── */
+section{margin-top:var(--space-block)}
+.rule{height:1px; background:var(--orange); margin-bottom:14px}
+h2{font-size:21px; font-weight:700; color:var(--ink); margin:0 0 4px;
+   display:flex; align-items:baseline; gap:10px}
+h2 .n{color:var(--orange); font-size:19px; font-weight:700}
+h2 .hint{font-size:13px; font-weight:400; color:var(--muted)}
+/* 번호 대신 붙이는 표식. 이 절은 담당자가 고를 때 쓰는 도구라 인쇄본에서
+   빠지는데, 번호를 달아 두면 인쇄본의 절 번호가 4 다음 6 으로 건너뛰어
+   무언가 빠뜨린 문서처럼 보인다. */
+h2 .tool-tag{font-size:12px; font-weight:500; color:var(--muted);
+  border:1px solid var(--hair); border-radius:2px; padding:2px 8px; align-self:center}
+
+/* ── 표 ─────────────────────────────────────────────── */
+table{width:100%; border-collapse:collapse; margin-top:12px; font-size:15px}
+th{background:var(--soft); color:var(--ink); font-weight:700; font-size:14px;
+   padding:10px 8px; text-align:center; border:1px solid var(--hair-soft)}
+td{padding:8px; border:1px solid var(--hair-soft); color:var(--body)}
+tbody tr:nth-child(even) td{background:var(--subtle)}
+tbody tr:hover td{background:#F1F3F6}
+td.r,th.r{text-align:right}
+td.c,th.c{text-align:center}
+tfoot td{background:var(--highlight); font-weight:700; color:var(--ink);
+         border-top:2px solid var(--line-dark)}
+.tbl-wrap{border:1px solid var(--hair); overflow-x:auto}
+.tbl-wrap table{margin:0}
+
+/* ── 입력 ───────────────────────────────────────────── */
+.grid{display:grid; grid-template-columns:repeat(auto-fit,minmax(215px,1fr)); gap:14px; margin-top:14px}
+label{display:block; font-size:13px; font-weight:500; color:var(--muted); margin-bottom:5px}
+input,select{
+  width:100%; font-family:var(--font-kr); font-size:16px; color:var(--ink);
+  padding:9px 11px; border:1px solid var(--hair); border-radius:2px; background:#fff;
+}
+input.num{font-family:var(--font-num); text-align:right}
+input:focus,select:focus{outline:2px solid var(--orange); outline-offset:-1px; border-color:var(--orange)}
+select{cursor:pointer}
+
+button{
+  font-family:var(--font-kr); font-size:15px; font-weight:500; cursor:pointer;
+  padding:9px 17px; border-radius:2px; border:1px solid var(--hair);
+  background:#fff; color:var(--ink);
+}
+button:hover{background:var(--subtle)}
+button.primary{background:var(--orange); border-color:var(--orange); color:#fff}
+button.primary:hover{background:var(--orange-active)}
+button.icon{padding:5px 10px; font-size:14px; color:var(--muted)}
+.btns{display:flex; gap:9px; flex-wrap:wrap; margin-top:14px}
+
+/* ── 수치 카드 ──────────────────────────────────────── */
+.kpis{display:grid; grid-template-columns:repeat(auto-fit,minmax(215px,1fr)); gap:14px; margin-top:14px}
+.kpi{border:1px solid var(--hair); padding:17px 19px; background:#fff; border-radius:2px;
+     /* 격자 칸은 기본이 min-width:auto 라, 줄바꿈을 막은 긴 숫자가 칸을 밀어내
+        오른쪽이 잘린다. 0 으로 두어야 격자가 정한 너비를 지킨다. */
+     min-width:0}
+.kpi.hero{background:var(--surface)}
+.kpi .k{font-size:13px; font-weight:500; color:var(--muted); letter-spacing:.3px}
+.kpi .v{font-size:29px; font-weight:700; color:var(--ink); line-height:1.15; margin-top:5px}
+.kpi.hero .v{color:var(--orange); font-size:34px}
+.kpi .s{font-size:13px; color:var(--muted-soft); margin-top:3px}
+
+.warn{color:var(--warn); font-weight:700; font-size:14px; margin-top:9px}
+.err{color:var(--error); font-weight:700; font-size:14px; margin-top:9px}
+.note{font-size:13px; color:var(--muted); margin-top:9px}
+ul.notice{font-size:14px; color:var(--body); padding-left:19px; margin:10px 0}
+ul.notice li{margin:5px 0}
+.footer{margin:var(--space-section) 0 44px; padding-top:16px; border-top:1px solid var(--hair-soft);
+        font-size:12px; color:var(--muted-soft)}
+.badge{display:inline-block; font-size:12px; padding:1px 7px; border:1px solid var(--hair);
+       border-radius:2px; color:var(--muted)}
+.badge.no{color:var(--warn); border-color:var(--warn)}
+
+/* ── 인쇄 ───────────────────────────────────────────── */
+@media print{
+  @page{ size:A4; margin:12mm }
+  body{font-size:10.5pt; line-height:1.35; color:#000}
+  .noprint{display:none !important}
+  .page{max-width:100%; padding:0}
+  .band{padding:10px 0 12px; -webkit-print-color-adjust:exact; print-color-adjust:exact}
+  .band h1{font-size:19pt}
+  section{margin-top:16px; page-break-inside:avoid}
+  h2{font-size:12pt}
+  table{font-size:8.6pt; page-break-inside:avoid}
+  th,td{padding:3px 4px}
+  th,tfoot td,.kpi.hero,.band,.band-rule{-webkit-print-color-adjust:exact; print-color-adjust:exact}
+  .kpi .v{font-size:15pt} .kpi.hero .v{font-size:17pt}
+  /* 인쇄에서는 입력 칸이 아니라 값으로 보여야 한다. 테두리와 화살표를 지운다 —
+     셀렉트 화살표와 날짜 아이콘이 그대로 찍히면 문서가 아니라 화면 사진처럼 보인다. */
+  input,select{border:none; padding:0; font-size:10.5pt; background:transparent;
+               -webkit-appearance:none; appearance:none}
+  input::-webkit-calendar-picker-indicator{display:none}
+  /* 카드는 두 칸으로. 화면용 세 칸을 그대로 두면 A4 폭을 넘어 오른쪽이 잘린다. */
+  .kpis,.grid{grid-template-columns:repeat(2,1fr); gap:8px}
+  .kpi{padding:8px 10px}
+  .tbl-wrap{overflow:visible}
+  /* 빈 포트폴리오 줄은 인쇄에서 뺀다 — 고객이 받는 장에 빈 줄이 깔리면 잡음이다 */
+  tr.empty{display:none}
+  /* 종목 조회는 인쇄에서 뺀다. 담당자가 고를 때 쓰는 도구지 고객에게 보낼
+     내용이 아니고, 조건을 안 좁히면 백사십 줄이 그대로 딸려 나간다. */
+  section.tool{display:none}
+}
+</style>
+</head>
+<body>
+
+<div class="band">
+  <div class="page">
+    <div class="tag">사내한 · Confidential</div>
+    <h1>월배당 ETF 투자 제안서</h1>
+    <div class="sub">Monthly Distribution ETF Portfolio</div>
+  </div>
+</div>
+<div class="band-rule"></div>
+
+<div class="page">
+  <div class="meta">자료 ETFCHECK · 기준일 2026-09-17 · 매월 1일 자동 갱신 · 모집단 192종목 중 채택 71</div>
+
+  <div class="btns noprint">
+    <button class="primary" onclick="window.print()">인쇄 / PDF 저장</button>
+    <button onclick="saveState()">작성 내용 저장</button>
+    <button onclick="document.getElementById('loadFile').click()">불러오기</button>
+    <input type="file" id="loadFile" accept=".json" style="display:none" onchange="loadState(this)">
+    <button onclick="resetAll()">처음으로</button>
+    <span class="note" id="saveMsg" style="align-self:center"></span>
+  </div>
+
+  <!-- 1. 고객 정보 -->
+  <section>
+    <div class="rule"></div>
+    <h2><span class="n">1</span> 고객 정보 및 투자 조건</h2>
+    <div class="grid">
+      <div><label for="cust">고객명</label><input id="cust" value="홍길동"></div>
+      <div><label for="amt">총 투자금액 (원)</label><input id="amt" class="num" value="100,000,000"></div>
+      <div><label for="mode">배분 방식</label>
+        <select id="mode"><option>비율</option><option>금액</option></select></div>
+      <div><label for="tax">배당소득세율 (%)</label><input id="tax" class="num" value="15.4"></div>
+      <div><label for="pdate">제안일</label><input id="pdate" type="date" value="2026-09-17"></div>
+    </div>
+    <div class="note">비율 = 총액을 %로 나눔 · 금액 = 종목별 금액 직접 입력. 국내 상장 ETF 분배금 기준 15.4%(지방소득세 포함).</div>
+  </section>
+
+  <!-- 2. 포트폴리오 -->
+  <section>
+    <div class="rule"></div>
+    <h2><span class="n">2</span> 투자 포트폴리오
+      <span class="hint">고를 수 있는 종목 145</span></h2>
+    <div class="tbl-wrap">
+      <table id="pf">
+        <thead><tr>
+          <th style="min-width:230px">투자 ETF</th><th style="width:92px">배분</th>
+          <th class="r" style="width:120px">배정금액</th><th class="r" style="width:82px">매수 수량</th>
+          <th class="r" style="width:120px">실투자금액</th>
+          <th class="r" style="width:118px">월 분배금(세전)</th><th class="r" style="width:118px">월 분배금(세후)</th>
+          <th class="c noprint" style="width:44px"></th>
+        </tr></thead>
+        <tbody id="pfBody"></tbody>
+        <tfoot><tr>
+          <td>합계</td><td class="r num" id="tAlloc">0</td><td class="r num" id="tAssign">0</td>
+          <td class="r"></td><td class="r num" id="tInvest">0</td>
+          <td class="r num" id="tPre">0</td><td class="r num" id="tPost">0</td><td class="noprint"></td>
+        </tr></tfoot>
+      </table>
+    </div>
+    <div class="btns noprint"><button onclick="addRow()">+ 종목 추가</button></div>
+    <div class="err" id="wAlloc"></div>
+    <div class="warn" id="wReject"></div>
+    <div class="warn" id="wFreq"></div>
+    <div class="note">빈 줄은 계산에서 빠집니다. 매수 수량은 정수로 내림하며, 남는 금액은 미투자 잔액이 됩니다.</div>
+  </section>
+
+  <!-- 3. 요약 -->
+  <section>
+    <div class="rule"></div>
+    <h2><span class="n">3</span> 예상 분배금 요약</h2>
+    <div class="kpis">
+      <div class="kpi hero"><div class="k">월 예상 분배금 (세전)</div><div class="v num" id="kPre">0원</div>
+        <div class="s num" id="kPost">세후 0원</div></div>
+      <div class="kpi"><div class="k">연 예상 분배금 (세전)</div><div class="v num" id="kAnnPre">0원</div>
+        <div class="s num" id="kAnnPost">세후 0원</div></div>
+      <div class="kpi"><div class="k">연 수익률 (세전, 가중평균)</div><div class="v num" id="kAnnRate">0.00%</div>
+        <div class="s num" id="kAnnRateNet">세후 0.00%</div></div>
+      <div class="kpi"><div class="k">실제 투자금액</div><div class="v num" id="kInvest">0원</div>
+        <div class="s num" id="kIdle">미투자 잔액 0원</div></div>
+    </div>
+    <div class="note">연 수익률은 담은 종목들의 최근 12개월 실제 분배금을 투자 비중으로 가중평균한 값입니다. 확정 수익률이 아니며 매월 달라집니다.</div>
+  </section>
+
+  <!-- 4. 금액 구간 -->
+  <section>
+    <div class="rule"></div>
+    <h2><span class="n">4</span> 총 투자금액별 예상 분배금 <span class="hint">위 구성을 그대로 두고 금액만 바꿨을 때</span></h2>
+    <div class="tbl-wrap"><table>
+      <thead><tr><th class="r">투자금액 구간</th><th class="r">월 분배금(세전)</th><th class="r">월 분배금(세후)</th>
+        <th class="r">연 분배금(세전)</th><th class="r">연 분배금(세후)</th></tr></thead>
+      <tbody id="tiers"></tbody>
+    </table></div>
+    <div class="note">단주 절사를 반영하지 않은 근사치라 위 표와 몇천 원 차이가 날 수 있습니다.</div>
+  </section>
+
+  <!-- 5. 종목 조회 -->
+  <section class="tool">
+    <div class="rule"></div>
+    <h2><span class="tool-tag">담당자용</span> 종목 조회
+      <span class="hint">지급주기와 연 분배율로 고릅니다 · 인쇄본에는 들어가지 않습니다</span></h2>
+    <div class="grid">
+      <div><label for="qFreq">지급주기</label><select id="qFreq"></select></div>
+      <div><label for="qMin">연 분배율 최소 (%)</label><input id="qMin" class="num" value="0"></div>
+      <div><label for="qMax">연 분배율 최대 (%)</label><input id="qMax" class="num" value="100"></div>
+      <div><label for="qName">종목명 포함</label><input id="qName" placeholder="예: 미국배당"></div>
+      <div><label for="qAdopt">채택 여부</label>
+        <select id="qAdopt"><option>전체</option><option>채택만</option><option>기준 미달만</option></select></div>
+    </div>
+    <div class="note" id="qCount"></div>
+    <div class="tbl-wrap"><table>
+      <thead><tr><th>종목명</th><th class="c">지급주기</th><th class="r">연 분배율</th><th class="r">월 환산</th>
+        <th class="r">현재가</th><th class="r">변동성(1년)</th><th class="r">순자산</th><th class="c">채택</th>
+        <th class="c noprint">담기</th></tr></thead>
+      <tbody id="qBody"></tbody>
+    </table></div>
+    <div class="note">'판정 불가' 는 상장 1년이 안 돼 지급주기를 말할 수 없는 종목입니다. 빼지 않고 그대로 담았습니다.</div>
+  </section>
+
+  <!-- 6. 비교 -->
+  <section>
+    <div class="rule"></div>
+    <h2><span class="n">5</span> 월배당 ETF 비교 <span class="hint">1억원 단독 투자 기준</span></h2>
+    <div class="tbl-wrap"><table>
+      <thead><tr><th>종목명</th><th class="c">유형</th><th class="r">현재가</th><th class="r">연 분배율</th>
+        <th class="r">월 분배금(세전)</th><th class="r">월 분배금(세후)</th><th class="r">변동성</th></tr></thead>
+      <tbody id="cmpBody"></tbody>
+    </table></div>
+  </section>
+
+  <!-- 7. 유의사항 -->
+  <section>
+    <div class="rule"></div>
+    <h2><span class="n">6</span> 유의사항</h2>
+    <ul class="notice">
+      <li>이 자료는 투자 권유가 아니라 참고 자료입니다. 최종 투자 판단과 그 결과는 투자자 본인에게 귀속됩니다.</li>
+      <li>ETF 는 예금자보호법의 보호를 받지 않으며, 원금 손실이 발생할 수 있습니다.</li>
+      <li>분배금은 확정되지 않습니다. 커버드콜 ETF 의 분배 재원은 옵션 프리미엄이므로, 시장 변동성이 낮아지면 분배금도 함께 줄어듭니다.</li>
+      <li>분배금의 일부가 원금에서 지급될 수 있습니다(자본 환급). 이 경우 기준가가 그만큼 낮아집니다.</li>
+      <li>표시된 연 분배율은 최근 12개월 실제 분배금 합계를 현재가로 나눈 값이며, 앞으로의 수익률을 보장하지 않습니다.</li>
+      <li>세율은 국내 상장 ETF 분배금 기준 15.4%(배당소득세 14% + 지방소득세 1.4%)를 적용했습니다. 금융소득종합과세 대상자는 실효세율이 달라집니다.</li>
+      <li>매매수수료·거래세·환율 변동은 반영하지 않았습니다. 총보수는 분배율에 이미 반영되어 있습니다(기준가 차감).</li>
+      <li>수량은 정수 매수를 가정해 내림 처리했습니다. 남는 금액은 '미투자 잔액' 으로 표시됩니다.</li>
+      <li>여러 종목에 나눠 담아도 분배 시기는 종목마다 다릅니다. 매월 같은 날 한꺼번에 들어오지 않습니다.</li>
+      <li>목록에는 커버드콜뿐 아니라 리츠·채권형·배당주·파킹형 월배당 ETF 가 함께 있습니다. 분배 재원과 위험이 서로 다릅니다.</li>
+      <li>유동성·변동성 기준에 미달한 종목도 담을 수 있게 열어 두었습니다. 담으면 위에 표시됩니다.</li>
+    </ul>
+  </section>
+
+  <div class="footer">
+    자료 출처 ETFCHECK (www.etfcheck.co.kr) · 기준일 2026-09-17 ·
+    채택 기준: 국내 상장, 순자산 300억원 이상, 60일 평균거래대금 5억원 이상,
+    연환산 변동성 35% 이하, 상장 12개월 이상
+  </div>
+</div>
+
+<script>
+const DATA = {"asOf": "2026-09-17", "rules": {"minAum": 30000000000, "minTurnover": 500000000, "maxVol": 35, "minTrackMonths": 12}, "universe": 192, "adoptedCount": 71, "defaultCode": "458730", "items": [{"code": "0040Y0", "name": "SOL 팔란티어커버드콜OTM채권혼합", "manager": "신한자산운용", "price": 7990, "aum": 359499000000, "turnover60": 2844164576, "expense": 0.7532, "vol": 16.37, "ttm": 27.9725, "freq": "월배당", "count12m": 11, "type": "커버드콜", "asset": "멀티에셋", "adopted": true, "why": "", "lastDiv": "20260828", "index": "KEDI Palantir Covered Call OTM Treasury Balanced Index NTR"}, {"code": "480020", "name": "ACE 미국빅테크7+데일리타겟커버드콜(합성)", "manager": "한국투신운용(ETF)", "price": 10045, "aum": 179805500000, "turnover60": 2861887649, "expense": 0.5384, "vol": 21.39, "ttm": 26.3813, "freq": "월배당", "count12m": 12, "type": "커버드콜", "asset": "주식", "adopted": true, "why": "", "lastDiv": "20260914", "index": "Bloomberg US Big Tech Top 7 Plus Premium(QQQ) Decrement 15%"}, {"code": "0040X0", "name": "SOL 팔란티어미국채커버드콜혼합", "manager": "신한자산운용", "price": 9295, "aum": 171400500000, "turnover60": 1636623539, "expense": 0.7991, "vol": 22.85, "ttm": 24.7015, "freq": "월배당", "count12m": 11, "type": "커버드콜", "asset": "멀티에셋", "adopted": true, "why": "", "lastDiv": "20260828", "index": "KEDI Palantir U.S. Treasury Covered Call Balanced Index NTR"}, {"code": "489030", "name": "PLUS 고배당주위클리커버드콜", "manager": "한화자산운용", "price": 6520, "aum": 305930500000, "turnover60": 4215662838, "expense": 0.8243, "vol": 30.72, "ttm": 23.2822, "freq": "월배당", "count12m": 11, "type": "커버드콜", "asset": "주식", "adopted": true, "why": "", "lastDiv": "20260828", "index": "코스피 고배당 위클리 콜매도 ATM 지수"}, {"code": "494300", "name": "KODEX 미국나스닥100데일리커버드콜OTM", "manager": "삼성자산운용(ETF)", "price": 8890, "aum": 1017016000000, "turnover60": 13338415180, "expense": 0.5108, "vol": 19.39, "ttm": 22.7222, "freq": "월배당", "count12m": 11, "type": "커버드콜", "asset": "주식", "adopted": true, "why": "", "lastDiv": "20260828", "index": "Nasdaq-100 Daily Covered Call 101 Index TR"}, {"code": "491620", "name": "RISE 미국테크100데일리고정커버드콜", "manager": "KB자산운용", "price": 10345, "aum": 567697500000, "turnover60": 7422134847, "expense": 0.5748, "vol": 20.22, "ttm": 21.7496, "freq": "월배당", "count12m": 11, "type": "커버드콜", "asset": "주식", "adopted": true, "why": "", "lastDiv": "20260828", "index": "KEDI U.S. Tech100 90% Participation + Daily Options Premium"}, {"code": "490590", "name": "RISE 미국AI밸류체인데일리고정커버드콜", "manager": "KB자산운용", "price": 13965, "aum": 777572000000, "turnover60": 9793481578, "expense": 0.578, "vol": 33.11, "ttm": 20.7805, "freq": "월배당", "count12m": 11, "type": "커버드콜", "asset": "주식", "adopted": true, "why": "", "lastDiv": "20260828", "index": "KEDI U.S. AI Value Chain 90% Participation + Daily Options P"}, {"code": "480030", "name": "ACE 미국500데일리타겟커버드콜(합성)", "manager": "한국투신운용(ETF)", "price": 9610, "aum": 161448000000, "turnover60": 1336755067, "expense": 0.5391, "vol": 15.03, "ttm": 20.2185, "freq": "월배당", "count12m": 12, "type": "커버드콜", "asset": "주식", "adopted": true, "why": "", "lastDiv": "20260914", "index": "Bloomberg US 500 Large Cap Premium(SPY) Decrement 15% Distri"}, {"code": "0018C0", "name": "PLUS 고배당주위클리고정커버드콜", "manager": "한화자산운용", "price": 10665, "aum": 81054000000, "turnover60": 1011248498, "expense": 0.5958, "vol": 26.68, "ttm": 16.7557, "freq": "월배당", "count12m": 12, "type": "커버드콜", "asset": "주식", "adopted": true, "why": "", "lastDiv": "20260914", "index": "코스피 고배당 위클리 고정 커버드콜 지수"}, {"code": "475080", "name": "KODEX 테슬라커버드콜채권혼합액티브", "manager": "삼성자산운용(ETF)", "price": 7865, "aum": 286679250000, "turnover60": 1418666928, "expense": 0.5215, "vol": 12.43, "ttm": 16.3509, "freq": "월배당", "count12m": 11, "type": "커버드콜", "asset": "멀티에셋", "adopted": true, "why": "", "lastDiv": "20260828", "index": "KEDI Tesla Income Premium Balanced Index"}, {"code": "493810", "name": "TIGER 미국AI빅테크10타겟데일리커버드콜", "manager": "미래에셋자산운용", "price": 11240, "aum": 245141000000, "turnover60": 1799050260, "expense": 0.4813, "vol": 21.84, "ttm": 16.1566, "freq": "월배당", "count12m": 12, "type": "커버드콜", "asset": "주식", "adopted": true, "why": "", "lastDiv": "20260914", "index": "KEDI US AI Big Tech 10+15% Daily Premium Index TR"}, {"code": "0005A0", "name": "KODEX 미국S&P500데일리커버드콜OTM", "manager": "삼성자산운용(ETF)", "price": 9290, "aum": 199735000000, "turnover60": 1958922434, "expense": 0.564, "vol": 14.74, "ttm": 15.9419, "freq": "월배당", "count12m": 11, "type": "커버드콜", "asset": "주식", "adopted": true, "why": "", "lastDiv": "20260828", "index": "S&P500 Covered Call 1% OTM Daily Index(TR)"}, {"code": "486290", "name": "TIGER 미국나스닥100타겟데일리커버드콜", "manager": "미래에셋자산운용", "price": 10365, "aum": 2477076000000, "turnover60": 29238390499, "expense": 0.4563, "vol": 20.69, "ttm": 15.8032, "freq": "월배당", "count12m": 11, "type": "커버드콜", "asset": "주식", "adopted": true, "why": "", "lastDiv": "20260828", "index": "NASDAQ 100 Daily Covered Call Target Premium 15% Index"}, {"code": "483280", "name": "KODEX 미국AI테크TOP10타겟커버드콜", "manager": "삼성자산운용(ETF)", "price": 11665, "aum": 458434500000, "turnover60": 2801830944, "expense": 0.5831, "vol": 24.53, "ttm": 15.7737, "freq": "월배당", "count12m": 11, "type": "커버드콜", "asset": "주식", "adopted": true, "why": "", "lastDiv": "20260828", "index": "KEDI US AI Tech Top 10+15% Premium Index"}, {"code": "498410", "name": "KODEX 금융고배당TOP10타겟위클리커버드콜", "manager": "삼성자산운용(ETF)", "price": 12165, "aum": 848946000000, "turnover60": 22542969019, "expense": 0.6697, "vol": 32.72, "ttm": 15.4706, "freq": "월배당", "count12m": 11, "type": "커버드콜", "asset": "주식", "adopted": true, "why": "", "lastDiv": "20260828", "index": "코스피 200 금융 고배당 TOP 10 타겟 15% 분배 위클리 커버드콜"}, {"code": "476550", "name": "TIGER 미국30년국채커버드콜액티브(H)", "manager": "미래에셋자산운용", "price": 6725, "aum": 760368000000, "turnover60": 7792532803, "expense": 0.7784, "vol": 8.88, "ttm": 13.4721, "freq": "월배당", "count12m": 11, "type": "커버드콜", "asset": "채권", "adopted": true, "why": "", "lastDiv": "20260828", "index": "KEDI US Treasury 30Y Weekly Covered Call 30 Index"}, {"code": "481060", "name": "KODEX 미국30년국채타겟커버드콜(합성 H)", "manager": "삼성자산운용(ETF)", "price": 7275, "aum": 742413750000, "turnover60": 4026404612, "expense": 0.3244, "vol": 8.35, "ttm": 13.2509, "freq": "월배당", "count12m": 12, "type": "커버드콜", "asset": "채권", "adopted": true, "why": "", "lastDiv": "20260914", "index": "Bloomberg U.S. Treasury 20+ Year + 12% Premium (TLT) Covered"}, {"code": "473330", "name": "SOL 미국30년국채커버드콜(합성)", "manager": "신한자산운용", "price": 7875, "aum": 276018750000, "turnover60": 2152431069, "expense": 0.35, "vol": 13.54, "ttm": 12.9143, "freq": "월배당", "count12m": 11, "type": "커버드콜", "asset": "채권", "adopted": true, "why": "", "lastDiv": "20260828", "index": "KEDI US Treasury 20Y+ 2% OTM BuyWrite Index"}, {"code": "441680", "name": "TIGER 미국나스닥100커버드콜(합성)", "manager": "미래에셋자산운용", "price": 10730, "aum": 282330500000, "turnover60": 934343138, "expense": 0.4923, "vol": 14.63, "ttm": 12.4884, "freq": "월배당", "count12m": 11, "type": "커버드콜", "asset": "주식", "adopted": true, "why": "", "lastDiv": "20260828", "index": "Cboe NASDAQ-100 BuyWrite V2 Index"}, {"code": "483290", "name": "KODEX 미국배당다우존스타겟커버드콜", "manager": "삼성자산운용(ETF)", "price": 10200, "aum": 177654000000, "turnover60": 2245620814, "expense": 0.5798, "vol": 15.71, "ttm": 12.2157, "freq": "월배당", "count12m": 11, "type": "커버드콜", "asset": "주식", "adopted": true, "why": "", "lastDiv": "20260828", "index": "Dow Jones US Dividend 100 10% Premium Covered Call Index(PR)"}, {"code": "0008S0", "name": "TIGER 미국배당다우존스타겟데일리커버드콜", "manager": "미래에셋자산운용", "price": 9720, "aum": 313306000000, "turnover60": 3322700171, "expense": 0.4797, "vol": 14.36, "ttm": 12.1091, "freq": "월배당", "count12m": 12, "type": "커버드콜", "asset": "주식", "adopted": true, "why": "", "lastDiv": "20260914", "index": "Dow Jones U.S. Dividend 100 10% Daily Premium Covered Call I"}, {"code": "474220", "name": "TIGER 미국테크TOP10타겟커버드콜", "manager": "미래에셋자산운용", "price": 14870, "aum": 419334000000, "turnover60": 1650047189, "expense": 0.6686, "vol": 19.39, "ttm": 10.5447, "freq": "월배당", "count12m": 12, "type": "커버드콜", "asset": "주식", "adopted": true, "why": "", "lastDiv": "20260914", "index": "Bloomberg U.S. Tech Top10 + 10% Premium Covered Call Index"}, {"code": "329200", "name": "TIGER 리츠부동산인프라", "manager": "미래에셋자산운용", "price": 4057, "aum": 1556265200000, "turnover60": 12104722584, "expense": 0.1412, "vol": 17.7, "ttm": 9.7609, "freq": "월배당", "count12m": 11, "type": "일반", "asset": "부동산", "adopted": true, "why": "", "lastDiv": "20260828", "index": "FnGuide 리츠부동산인프라"}, {"code": "441640", "name": "KODEX 미국배당커버드콜액티브", "manager": "삼성자산운용(ETF)", "price": 12345, "aum": 1707387500000, "turnover60": 12205846429, "expense": 0.3631, "vol": 12.34, "ttm": 9.5909, "freq": "월배당", "count12m": 12, "type": "커버드콜", "asset": "주식", "adopted": true, "why": "", "lastDiv": "20260914", "index": "S&P 500"}, {"code": "476800", "name": "KODEX 한국부동산리츠인프라", "manager": "삼성자산운용(ETF)", "price": 4180, "aum": 482838750000, "turnover60": 2310152052, "expense": 0.1492, "vol": 14.86, "ttm": 9.2584, "freq": "월배당", "count12m": 12, "type": "일반", "asset": "부동산", "adopted": true, "why": "", "lastDiv": "20260914", "index": "KRX 부동산리츠인프라 지수"}, {"code": "460960", "name": "ACE 글로벌인컴TOP10", "manager": "한국투신운용(ETF)", "price": 10830, "aum": 85015500000, "turnover60": 831890105, "expense": 0.4552, "vol": 11.1, "ttm": 7.8763, "freq": "월배당", "count12m": 11, "type": "일반", "asset": "멀티에셋", "adopted": true, "why": "", "lastDiv": "20260828", "index": "Solactive Global Superior Income TOP 10 Index PR"}, {"code": "468380", "name": "KODEX iShares미국하이일드액티브", "manager": "삼성자산운용(ETF)", "price": 10800, "aum": 89573450000, "turnover60": 768144699, "expense": 0.2327, "vol": 10.13, "ttm": 7.1852, "freq": "월배당", "count12m": 11, "type": "일반", "asset": "채권", "adopted": true, "why": "", "lastDiv": "20260828", "index": "ICE BofAML US HY Constrained Index"}, {"code": "484790", "name": "KODEX 미국30년국채액티브(H)", "manager": "삼성자산운용(ETF)", "price": 8145, "aum": 586975400000, "turnover60": 4519114883, "expense": 0.0584, "vol": 9.05, "ttm": 5.267, "freq": "월배당", "count12m": 11, "type": "일반", "asset": "채권", "adopted": true, "why": "", "lastDiv": "20260828", "index": "KEDI-KAP 미 국채 20년+ 지수(TR)"}, {"code": "0098N0", "name": "PLUS 자사주매입고배당주", "manager": "한화자산운용", "price": 13140, "aum": 79497000000, "turnover60": 874039437, "expense": 0.4286, "vol": 28.2, "ttm": 4.9087, "freq": "월배당", "count12m": 12, "type": "일반", "asset": "주식", "adopted": true, "why": "", "lastDiv": "20260914", "index": "FnGuide 고배당주 플러스 자사주 지수"}, {"code": "437080", "name": "KODEX 미국종합채권ESG액티브(H)", "manager": "삼성자산운용(ETF)", "price": 95870, "aum": 223879800000, "turnover60": 595704011, "expense": 0.23, "vol": 3.91, "ttm": 4.6198, "freq": "월배당", "count12m": 11, "type": "일반", "asset": "채권", "adopted": true, "why": "", "lastDiv": "20260828", "index": "Bloomberg MSCI US Aggregate 2BN ex Securitized SRI Capped In"}, {"code": "0048J0", "name": "KODEX 미국머니마켓액티브", "manager": "삼성자산운용(ETF)", "price": 13755, "aum": 862690500000, "turnover60": 8062690722, "expense": 0.081, "vol": 10.55, "ttm": 4.6092, "freq": "월배당", "count12m": 11, "type": "일반", "asset": "단기자금(파킹형)", "adopted": true, "why": "", "lastDiv": "20260828", "index": "KAP 미국 머니마켓 지수"}, {"code": "0022T0", "name": "SOL 국제금커버드콜액티브", "manager": "신한자산운용", "price": 12825, "aum": 73017000000, "turnover60": 993543787, "expense": 0.6738, "vol": 28.73, "ttm": 4.499, "freq": "월배당", "count12m": 11, "type": "커버드콜", "asset": "원자재", "adopted": true, "why": "", "lastDiv": "20260828", "index": "KEDI Gold Income Premium Index (Net Total Return)"}, {"code": "476760", "name": "ACE 미국30년국채액티브", "manager": "한국투자신탁운용", "price": 8825, "aum": 381240000000, "turnover60": 4859107583, "expense": 0.1314, "vol": 13.23, "ttm": 4.4986, "freq": "월배당", "count12m": 11, "type": "일반", "asset": "채권", "adopted": true, "why": "", "lastDiv": "20260828", "index": "Bloomberg US Treasury 20+ Year Total Return Index"}, {"code": "0052D0", "name": "TIGER 코리아배당다우존스", "manager": "미래에셋자산운용", "price": 15550, "aum": 339112000000, "turnover60": 2509850168, "expense": 0.4184, "vol": 30.46, "ttm": 4.3023, "freq": "월배당", "count12m": 12, "type": "일반", "asset": "주식", "adopted": true, "why": "", "lastDiv": "20260914", "index": "Dow Jones Korea Dividend 30 Index (KRW)"}, {"code": "0091C0", "name": "KODEX 미국10년국채액티브(H)", "manager": "삼성자산운용(ETF)", "price": 9375, "aum": 186656250000, "turnover60": 885434183, "expense": 0.2175, "vol": 4.47, "ttm": 4.2667, "freq": "월배당", "count12m": 12, "type": "일반", "asset": "채권", "adopted": true, "why": "", "lastDiv": "20260914", "index": "KAP 미국 국채 10년 지수(총수익)"}, {"code": "453850", "name": "ACE 미국30년국채액티브(H)", "manager": "한국투자신탁운용", "price": 7095, "aum": 1470793500000, "turnover60": 6881450635, "expense": 0.1321, "vol": 8.8, "ttm": 4.186, "freq": "월배당", "count12m": 11, "type": "일반", "asset": "채권", "adopted": true, "why": "", "lastDiv": "20260828", "index": "Bloomberg US Treasury 20+ Year Total Return Index"}, {"code": "455030", "name": "KODEX 미국달러SOFR금리액티브(합성)", "manager": "삼성자산운용(ETF)", "price": 11840, "aum": 537536000000, "turnover60": 1597749922, "expense": 0.1804, "vol": 10.63, "ttm": 4.1723, "freq": "월배당", "count12m": 11, "type": "일반", "asset": "단기자금(파킹형)", "adopted": true, "why": "", "lastDiv": "20260828", "index": "Bloomberg SOFR Index"}, {"code": "279530", "name": "KODEX 고배당주", "manager": "삼성자산운용(ETF)", "price": 17670, "aum": 349569000000, "turnover60": 5280636258, "expense": 0.5271, "vol": 29.73, "ttm": 4.137, "freq": "월배당", "count12m": 11, "type": "일반", "asset": "주식", "adopted": true, "why": "", "lastDiv": "20260828", "index": "FnGuide 고배당 Plus 지수"}, {"code": "161510", "name": "PLUS 고배당주", "manager": "한화자산운용", "price": 25305, "aum": 2418479100000, "turnover60": 22277773178, "expense": 0.3443, "vol": 30.55, "ttm": 4.0861, "freq": "월배당", "count12m": 11, "type": "일반", "asset": "주식", "adopted": true, "why": "", "lastDiv": "20260828", "index": "FnGuide 고배당주"}, {"code": "0089D0", "name": "KODEX 금융고배당TOP10", "manager": "삼성자산운용(ETF)", "price": 13800, "aum": 233389000000, "turnover60": 3450365010, "expense": 0.4122, "vol": 34.91, "ttm": 4.0362, "freq": "월배당", "count12m": 11, "type": "일반", "asset": "주식", "adopted": true, "why": "", "lastDiv": "20260914", "index": "코스피 200 금융 고배당 TOP 10 지수"}, {"code": "0085P0", "name": "ACE 미국10년국채액티브", "manager": "한국투신운용(ETF)", "price": 9645, "aum": 110917500000, "turnover60": 1740848658, "expense": 0.2155, "vol": 10.76, "ttm": 3.8984, "freq": "월배당", "count12m": 11, "type": "일반", "asset": "채권", "adopted": true, "why": "", "lastDiv": "20260828", "index": "ICE U.S.Treasury 7-10 Year Bond Index"}, {"code": "251600", "name": "PLUS 고배당주채권혼합", "manager": "한화자산운용", "price": 15445, "aum": 596754000000, "turnover60": 3673494896, "expense": 0.484, "vol": 15.38, "ttm": 3.6776, "freq": "월배당", "count12m": 11, "type": "일반", "asset": "멀티에셋", "adopted": true, "why": "", "lastDiv": "20260828", "index": "FnGuide 고배당 채권혼합 지수"}, {"code": "0046A0", "name": "TIGER 미국초단기(3개월이하)국채", "manager": "미래에셋자산운용", "price": 9530, "aum": 372038370000, "turnover60": 8139718434, "expense": 0.2068, "vol": 10.51, "ttm": 3.6097, "freq": "월배당", "count12m": 11, "type": "일반", "asset": "단기자금(파킹형)", "adopted": true, "why": "", "lastDiv": "20260828", "index": "ICE 0-3 Month US Treasury Securities Index"}, {"code": "466940", "name": "TIGER 은행고배당플러스TOP10", "manager": "미래에셋자산운용", "price": 27750, "aum": 866250000000, "turnover60": 22219772541, "expense": 0.3869, "vol": 33.56, "ttm": 3.5892, "freq": "월배당", "count12m": 11, "type": "일반", "asset": "주식", "adopted": true, "why": "", "lastDiv": "20260828", "index": "FnGuide 은행 고배당 플러스 TOP 10 지수"}, {"code": "091170", "name": "KODEX 은행", "manager": "삼성자산운용(ETF)", "price": 17040, "aum": 301285500000, "turnover60": 25819951123, "expense": 0.3334, "vol": 34.42, "ttm": 3.5739, "freq": "월배당", "count12m": 11, "type": "일반", "asset": "주식", "adopted": true, "why": "", "lastDiv": "20260828", "index": "KRX 은행"}, {"code": "472870", "name": "RISE 미국30년국채엔화노출(합성 H)", "manager": "KB자산운용", "price": 6905, "aum": 167688750000, "turnover60": 1606626124, "expense": 0.1874, "vol": 13.67, "ttm": 3.4468, "freq": "월배당", "count12m": 11, "type": "일반", "asset": "채권", "adopted": true, "why": "", "lastDiv": "20260828", "index": "KIS 미국채 30년 엔화노출 지수(USD/JPY 헤지)"}, {"code": "476750", "name": "ACE 미국30년국채엔화노출액티브(H)", "manager": "한국투자신탁운용", "price": 7460, "aum": 60426000000, "turnover60": 631586522, "expense": 0.2615, "vol": 12.84, "ttm": 3.445, "freq": "월배당", "count12m": 11, "type": "일반", "asset": "채권", "adopted": true, "why": "", "lastDiv": "20260828", "index": "Bloomberg U.S. Treasury 20+ Year Index T1530 JPY Currency He"}, {"code": "497880", "name": "SOL CD금리&머니마켓액티브", "manager": "신한자산운용", "price": 50107, "aum": 289836240000, "turnover60": 5815622955, "expense": 0.0711, "vol": 0.9, "ttm": 3.1133, "freq": "월배당", "count12m": 11, "type": "일반", "asset": "단기자금(파킹형)", "adopted": true, "why": "", "lastDiv": "20260828", "index": "KAP CD & 단기자금시장 지수"}, {"code": "446720", "name": "SOL 미국배당다우존스", "manager": "신한자산운용", "price": 13540, "aum": 1030394000000, "turnover60": 4540619876, "expense": 0.1698, "vol": 14.16, "ttm": 2.9985, "freq": "월배당", "count12m": 11, "type": "일반", "asset": "주식", "adopted": true, "why": "", "lastDiv": "20260828", "index": "Dow Jones U.S. Dividend 100 Price Return Index"}, {"code": "490490", "name": "SOL 미국배당미국채혼합50", "manager": "신한자산운용", "price": 10855, "aum": 468720000000, "turnover60": 2677493726, "expense": 0.2903, "vol": 10.68, "ttm": 2.9664, "freq": "월배당", "count12m": 12, "type": "일반", "asset": "멀티에셋", "adopted": true, "why": "", "lastDiv": "20260914", "index": "KRX 다우존스 미국배당국채 혼합지수"}, {"code": "237370", "name": "KODEX 코리아배당성장채권혼합", "manager": "삼성자산운용(ETF)", "price": 15665, "aum": 162916000000, "turnover60": 1170058905, "expense": 0.3494, "vol": 10.84, "ttm": 2.962, "freq": "월배당", "count12m": 12, "type": "일반", "asset": "멀티에셋", "adopted": true, "why": "", "lastDiv": "20260914", "index": "배당성장채권혼합지수"}, {"code": "402970", "name": "ACE 미국배당다우존스", "manager": "한국투신운용(ETF)", "price": 15015, "aum": 963642000000, "turnover60": 4737233387, "expense": 0.1481, "vol": 14.08, "ttm": 2.9371, "freq": "월배당", "count12m": 12, "type": "일반", "asset": "주식", "adopted": true, "why": "", "lastDiv": "20260914", "index": "Dow Jones U.S. Dividend 100 Price Return Index"}, {"code": "458730", "name": "TIGER 미국배당다우존스", "manager": "미래에셋자산운용", "price": 14775, "aum": 4315021000000, "turnover60": 32505423021, "expense": 0.1034, "vol": 14.16, "ttm": 2.9306, "freq": "월배당", "count12m": 11, "type": "일반", "asset": "주식", "adopted": true, "why": "", "lastDiv": "20260828", "index": "Dow Jones U.S. Dividend 100 Price Return Index"}, {"code": "489250", "name": "KODEX 미국배당다우존스", "manager": "삼성자산운용(ETF)", "price": 12720, "aum": 604200000000, "turnover60": 5524076546, "expense": 0.1834, "vol": 14.17, "ttm": 2.8931, "freq": "월배당", "count12m": 12, "type": "일반", "asset": "주식", "adopted": true, "why": "", "lastDiv": "20260914", "index": "Dow Jones U.S. Dividend 100 Price Return Index"}, {"code": "481050", "name": "KODEX CD1년금리플러스액티브(합성)", "manager": "삼성자산운용(ETF)", "price": 1023300, "aum": 2540559323500, "turnover60": 23897804699, "expense": 0.0659, "vol": 0.82, "ttm": 2.8798, "freq": "월배당", "count12m": 11, "type": "일반", "asset": "단기자금(파킹형)", "adopted": true, "why": "", "lastDiv": "20260828", "index": "KAP 1년은행CD+추가금리 지수"}, {"code": "499660", "name": "TIGER CD금리플러스액티브(합성)", "manager": "미래에셋자산운용", "price": 1002030, "aum": 450212079000, "turnover60": 12891666875, "expense": 0.0328, "vol": 0.81, "ttm": 2.8153, "freq": "월배당", "count12m": 11, "type": "일반", "asset": "단기자금(파킹형)", "adopted": true, "why": "", "lastDiv": "20260828", "index": "KIS CD+CPI연동금리 월분배 지수(PR지수)"}, {"code": "452360", "name": "SOL 미국배당다우존스(H)", "manager": "신한자산운용", "price": 13250, "aum": 226318500000, "turnover60": 1887249162, "expense": 0.2404, "vol": 11.07, "ttm": 2.8151, "freq": "월배당", "count12m": 11, "type": "일반", "asset": "주식", "adopted": true, "why": "", "lastDiv": "20260828", "index": "Dow Jones U.S. Dividend 100 Price Return Index"}, {"code": "459580", "name": "KODEX CD금리액티브(합성)", "manager": "삼성자산운용(ETF)", "price": 1075140, "aum": 6837352830000, "turnover60": 513592768904, "expense": 0.0332, "vol": 0.79, "ttm": 2.7515, "freq": "월배당", "count12m": 11, "type": "일반", "asset": "단기자금(파킹형)", "adopted": true, "why": "", "lastDiv": "20260828", "index": "KAP 양도성예금증서(CD) 금리 지수"}, {"code": "136340", "name": "RISE 중기우량회사채", "manager": "KB자산운용", "price": 103875, "aum": 295954120000, "turnover60": 590102398, "expense": 0.1037, "vol": 2.12, "ttm": 2.7225, "freq": "월배당", "count12m": 11, "type": "일반", "asset": "채권", "adopted": true, "why": "", "lastDiv": "20260828", "index": "KOBI Credit"}, {"code": "214980", "name": "KODEX 단기채권PLUS", "manager": "삼성자산운용(ETF)", "price": 114410, "aum": 1831406520000, "turnover60": 3818732111, "expense": 0.1704, "vol": 0.83, "ttm": 2.6964, "freq": "월배당", "count12m": 12, "type": "일반", "asset": "채권", "adopted": true, "why": "", "lastDiv": "20260914", "index": "KRW Cash+PLUS Index"}, {"code": "211900", "name": "KODEX 코리아배당성장", "manager": "삼성자산운용(ETF)", "price": 28340, "aum": 92088750000, "turnover60": 542037536, "expense": 0.2156, "vol": 34.53, "ttm": 2.6217, "freq": "월배당", "count12m": 11, "type": "일반", "asset": "주식", "adopted": true, "why": "", "lastDiv": "20260828", "index": "코스피 배당성장 50"}, {"code": "423160", "name": "KODEX KOFR금리액티브(합성)", "manager": "삼성자산운용(ETF)", "price": 110807, "aum": 3632462610000, "turnover60": 11142772557, "expense": 0.0618, "vol": 0.75, "ttm": 2.6081, "freq": "월배당", "count12m": 11, "type": "일반", "asset": "단기자금(파킹형)", "adopted": true, "why": "", "lastDiv": "20260828", "index": "KOFR 인덱스"}, {"code": "329650", "name": "KODEX TRF3070", "manager": "삼성자산운용(ETF)", "price": 13940, "aum": 230010000000, "turnover60": 667451988, "expense": 0.3135, "vol": 4.84, "ttm": 2.604, "freq": "월배당", "count12m": 12, "type": "일반", "asset": "멀티에셋", "adopted": true, "why": "", "lastDiv": "20260914", "index": "FnGuide TRF 3070 지수"}, {"code": "273140", "name": "KODEX 단기변동금리부채권액티브", "manager": "삼성자산운용(ETF)", "price": 114610, "aum": 279763010000, "turnover60": 502697422, "expense": 0.1725, "vol": 0.77, "ttm": 2.553, "freq": "월배당", "count12m": 12, "type": "일반", "asset": "채권", "adopted": true, "why": "", "lastDiv": "20260914", "index": "KAP 단기변동금리부 은행채"}, {"code": "153130", "name": "KODEX 단기채권", "manager": "삼성자산운용(ETF)", "price": 113145, "aum": 806384415000, "turnover60": 4055046454, "expense": 0.1779, "vol": 0.78, "ttm": 2.5171, "freq": "월배당", "count12m": 12, "type": "일반", "asset": "채권", "adopted": true, "why": "", "lastDiv": "20260914", "index": "KRW Cash Index"}, {"code": "448330", "name": "KODEX 삼성전자채권혼합", "manager": "삼성자산운용(ETF)", "price": 17145, "aum": 1267385000000, "turnover60": 13840558325, "expense": 0.1635, "vol": 23.06, "ttm": 2.1114, "freq": "월배당", "count12m": 12, "type": "일반", "asset": "멀티에셋", "adopted": true, "why": "", "lastDiv": "20260914", "index": "Wise 삼성전자 채권혼합 지수"}, {"code": "429000", "name": "TIGER 미국S&P500배당귀족", "manager": "미래에셋자산운용", "price": 13015, "aum": 186543500000, "turnover60": 1352413917, "expense": 0.4159, "vol": 14.68, "ttm": 2.1053, "freq": "월배당", "count12m": 11, "type": "일반", "asset": "주식", "adopted": true, "why": "", "lastDiv": "20260828", "index": "S&P 500 Dividend Aristocrats Index"}, {"code": "284430", "name": "KODEX 200미국채혼합50", "manager": "삼성자산운용(ETF)", "price": 20530, "aum": 1987680000000, "turnover60": 21788123207, "expense": 0.6232, "vol": 25, "ttm": 1.7048, "freq": "월배당", "count12m": 12, "type": "일반", "asset": "멀티에셋", "adopted": true, "why": "", "lastDiv": "20260914", "index": "코스피 200 미국채 혼합지수"}, {"code": "0057H0", "name": "PLUS 미국S&P500미국채혼합50액티브", "manager": "한화자산운용", "price": 11550, "aum": 79833000000, "turnover60": 1030471946, "expense": 0.3249, "vol": 10.15, "ttm": 1.5498, "freq": "월배당", "count12m": 10, "type": "일반", "asset": "멀티에셋", "adopted": true, "why": "", "lastDiv": "20260828", "index": "S&P500 and U.S. Treasury Bill 0-3 Month 50/50 Blend Index (U"}, {"code": "245340", "name": "TIGER 미국다우존스30", "manager": "미래에셋자산운용", "price": 34755, "aum": 141145900000, "turnover60": 877026053, "expense": 0.4859, "vol": 14.54, "ttm": 1.3523, "freq": "월배당", "count12m": 11, "type": "일반", "asset": "주식", "adopted": true, "why": "", "lastDiv": "20260828", "index": "DowJones Industrial Average Index"}, {"code": "433330", "name": "SOL 미국S&P500", "manager": "신한자산운용", "price": 21675, "aum": 299253000000, "turnover60": 2015338123, "expense": 0.143, "vol": 14.52, "ttm": 0.9043, "freq": "월배당", "count12m": 11, "type": "일반", "asset": "주식", "adopted": true, "why": "", "lastDiv": "20260828", "index": "S&P 500"}, {"code": "480040", "name": "ACE 미국반도체데일리타겟커버드콜(합성)", "manager": "한국투신운용(ETF)", "price": 13635, "aum": 185436000000, "turnover60": 3424830283, "expense": 0.5407, "vol": 44.13, "ttm": 25.5372, "freq": "월배당", "count12m": 12, "type": "커버드콜", "asset": "주식", "adopted": false, "why": "변동성 44.1%(1년 기준, 기준 35% 초과)", "lastDiv": "20260914", "index": "Bloomberg US Listed Semiconductor Premium(QQQ) Decrement 15%"}, {"code": "0094M0", "name": "RISE 코리아밸류업위클리고정커버드콜", "manager": "KB자산운용", "price": 17050, "aum": 342053000000, "turnover60": 9555900462, "expense": 0.5637, "vol": 45.84, "ttm": 24.6334, "freq": "월배당", "count12m": 12, "type": "커버드콜", "asset": "주식", "adopted": false, "why": "변동성 45.8%(1년 기준, 기준 35% 초과)", "lastDiv": "20260914", "index": "코리아 밸류업 위클리 커버드콜 30% 지수"}, {"code": "472150", "name": "TIGER 배당커버드콜액티브", "manager": "미래에셋자산운용", "price": 20040, "aum": 2477361550000, "turnover60": 99540735899, "expense": 0.6008, "vol": 57.32, "ttm": 21.8812, "freq": "월배당", "count12m": 11, "type": "커버드콜", "asset": "주식", "adopted": false, "why": "변동성 57.3%(1년 기준, 기준 35% 초과)", "lastDiv": "20260828", "index": "코스피 200 커버드콜 5% OTM"}, {"code": "475720", "name": "RISE 200위클리커버드콜", "manager": "KB자산운용", "price": 12485, "aum": 829960500000, "turnover60": 12376311669, "expense": 0.6305, "vol": 43.27, "ttm": 19.7837, "freq": "월배당", "count12m": 11, "type": "커버드콜", "asset": "주식", "adopted": false, "why": "변동성 43.3%(1년 기준, 기준 35% 초과)", "lastDiv": "20260828", "index": "코스피 200 위클리 커버드콜 ATM 지수"}, {"code": "0013R0", "name": "RISE 테슬라미국채타겟커버드콜혼합(합성)", "manager": "KB자산운용", "price": 7725, "aum": 27828000000, "turnover60": 157141278, "expense": 0.3495, "vol": 18.57, "ttm": 18.123, "freq": "월배당", "count12m": 11, "type": "커버드콜", "asset": "멀티에셋", "adopted": false, "why": "순자산 278억(기준 300억 미만), 60일 거래대금 1.6억(기준 5억 미만)", "lastDiv": "20260828", "index": "KEDI Tesla U.S. 30Y Treasury 15% Target Premium Balanced Ind"}, {"code": "490600", "name": "RISE 미국배당100데일리고정커버드콜", "manager": "KB자산운용", "price": 8810, "aum": 168711500000, "turnover60": 2316105116, "expense": 0.5953, "vol": 14.6, "ttm": 17.9001, "freq": "월배당", "count12m": 12, "type": "커버드콜", "asset": "주식", "adopted": false, "why": "분배율 대조 불일치(연분배율 계산 17.9001% vs ETFCHECK 16.5380%)", "lastDiv": "20260914", "index": "KEDI U.S. Dividend100 90% Participation + Daily Options Prem"}, {"code": "498400", "name": "KODEX 200타겟위클리커버드콜", "manager": "삼성자산운용(ETF)", "price": 19885, "aum": 5852340000000, "turnover60": 172046003723, "expense": 0.5095, "vol": 56.56, "ttm": 15.7204, "freq": "월배당", "count12m": 12, "type": "커버드콜", "asset": "주식", "adopted": false, "why": "변동성 56.6%(1년 기준, 기준 35% 초과)", "lastDiv": "20260914", "index": "코스피 200 타겟 15% 위클리 커버드콜 지수"}, {"code": "0094L0", "name": "RISE 차이나테크TOP10위클리타겟커버드콜", "manager": "KB자산운용", "price": 6955, "aum": 9737000000, "turnover60": 59258108, "expense": 1.1533, "vol": 27.86, "ttm": 15.6722, "freq": "월배당", "count12m": 11, "type": "커버드콜", "asset": "주식", "adopted": false, "why": "순자산 97억(기준 300억 미만), 60일 거래대금 0.6억(기준 5억 미만)", "lastDiv": "20260828", "index": "Bloomberg China Tech Select Top 10 + 12% Target Premium Week"}, {"code": "494420", "name": "PLUS 미국배당증가성장주데일리커버드콜", "manager": "한화자산운용", "price": 8700, "aum": 15660000000, "turnover60": 114429663, "expense": 0.7707, "vol": 14.39, "ttm": 14.8736, "freq": "월배당", "count12m": 12, "type": "커버드콜", "asset": "주식", "adopted": false, "why": "순자산 157억(기준 300억 미만), 60일 거래대금 1.1억(기준 5억 미만)", "lastDiv": "20260914", "index": "Bloomberg U.S. Dividend Growth Partial Covered Call Index"}, {"code": "0073X0", "name": "FOCUS 알리바바미국채커버드콜혼합", "manager": "브이아이자산운용", "price": 8670, "aum": 4768500000, "turnover60": 30798393, "expense": 1.601, "vol": 16.43, "ttm": 14.8212, "freq": "월배당", "count12m": 11, "type": "커버드콜", "asset": "멀티에셋", "adopted": false, "why": "순자산 48억(기준 300억 미만), 60일 거래대금 0.3억(기준 5억 미만)", "lastDiv": "20260828", "index": "KEDI 알리바바 미국채커버드콜혼합지수(TR)"}, {"code": "0000D0", "name": "TIGER 엔비디아미국채커버드콜밸런스(합성)", "manager": "미래에셋자산운용", "price": 8845, "aum": 61203000000, "turnover60": 350904121, "expense": 0.4741, "vol": 16.82, "ttm": 13.6009, "freq": "월배당", "count12m": 11, "type": "커버드콜", "asset": "멀티에셋", "adopted": false, "why": "60일 거래대금 3.5억(기준 5억 미만)", "lastDiv": "20260828", "index": "KEDI Nvidia U.S. 30Y Treasury Target Covered Call Balanced I"}, {"code": "494210", "name": "SOL 미국500타겟데일리커버드콜액티브", "manager": "신한자산운용", "price": 10700, "aum": 7486500000, "turnover60": 64181372, "expense": 0.621, "vol": 15.72, "ttm": 12.5514, "freq": "월배당", "count12m": 11, "type": "커버드콜", "asset": "주식", "adopted": false, "why": "순자산 75억(기준 300억 미만), 60일 거래대금 0.6억(기준 5억 미만)", "lastDiv": "20260828", "index": "KEDI U.S. Quality500 + Monthly 1% Premium Index NTR"}, {"code": "482730", "name": "TIGER 미국S&P500타겟데일리커버드콜", "manager": "미래에셋자산운용", "price": 11525, "aum": 662687500000, "turnover60": 4876747229, "expense": 0.4313, "vol": 14.81, "ttm": 11.4534, "freq": "월배당", "count12m": 12, "type": "커버드콜", "asset": "주식", "adopted": false, "why": "분배율 대조 불일치(연분배율 계산 11.4534% vs ETFCHECK 10.6291%)", "lastDiv": "20260914", "index": "S&P 500 10% Daily Premium Covered Call Index (USD) PR"}, {"code": "472830", "name": "RISE 미국30년국채커버드콜(합성)", "manager": "KB자산운용", "price": 7790, "aum": 43234500000, "turnover60": 283229683, "expense": 0.3419, "vol": 14.12, "ttm": 11.3736, "freq": "월배당", "count12m": 11, "type": "커버드콜", "asset": "채권", "adopted": false, "why": "60일 거래대금 2.8억(기준 5억 미만)", "lastDiv": "20260828", "index": "Bloomberg U.S. Treasury 20+ Year(TLT) 2% OTM Covered Call In"}, {"code": "290080", "name": "RISE 200고배당커버드콜ATM", "manager": "KB자산운용", "price": 7490, "aum": 12733000000, "turnover60": 169318686, "expense": 0.636, "vol": 30.96, "ttm": 10.5741, "freq": "월배당", "count12m": 11, "type": "커버드콜", "asset": "주식", "adopted": false, "why": "순자산 127억(기준 300억 미만), 60일 거래대금 1.7억(기준 5억 미만)", "lastDiv": "20260828", "index": "코스피 200 고배당 커버드콜 ATM"}, {"code": "0049M0", "name": "ACE 미국배당퀄리티+커버드콜액티브", "manager": "한국투신운용(ETF)", "price": 11105, "aum": 78219750000, "turnover60": 374960701, "expense": 0.5323, "vol": 12.89, "ttm": 7.5011, "freq": "월배당", "count12m": 11, "type": "커버드콜", "asset": "주식", "adopted": false, "why": "60일 거래대금 3.7억(기준 5억 미만)", "lastDiv": "20260828", "index": "Bloomberg WisdomTree U.S. Quality Dividend & B500 Premium De"}, {"code": "441800", "name": "TIME Korea플러스배당액티브", "manager": "타임폴리오자산운용", "price": 28590, "aum": 781425200000, "turnover60": 11500156298, "expense": 1.1006, "vol": 48.93, "ttm": 7.2753, "freq": "월배당", "count12m": 11, "type": "일반", "asset": "주식", "adopted": false, "why": "변동성 48.9%(1년 기준, 기준 35% 초과)", "lastDiv": "20260828", "index": "KOSPI 200"}, {"code": "289480", "name": "TIGER 200커버드콜", "manager": "미래에셋자산운용", "price": 12760, "aum": 26796000000, "turnover60": 425696091, "expense": 0.7145, "vol": 38.33, "ttm": 6.9906, "freq": "월배당", "count12m": 11, "type": "커버드콜", "asset": "주식", "adopted": false, "why": "순자산 268억(기준 300억 미만), 60일 거래대금 4.3억(기준 5억 미만), 변동성 38.3%(1년 기준, 기준 35% 초과)", "lastDiv": "20260828", "index": "코스피 200 커버드콜 ATM"}, {"code": "476850", "name": "KoAct 배당성장액티브", "manager": "삼성액티브자산(ETF)", "price": 21390, "aum": 102336000000, "turnover60": 2296960174, "expense": 0.9448, "vol": 50.02, "ttm": 6.9472, "freq": "비정기", "count12m": 8, "type": "일반", "asset": "주식", "adopted": false, "why": "변동성 50.0%(1년 기준, 기준 35% 초과)", "lastDiv": "20260828", "index": "코스피"}, {"code": "0086B0", "name": "TIGER 리츠부동산인프라TOP10액티브", "manager": "미래에셋자산운용", "price": 9365, "aum": 45864000000, "turnover60": 229655391, "expense": 0.1463, "vol": 17.18, "ttm": 6.9194, "freq": "월배당", "count12m": 12, "type": "일반", "asset": "부동산", "adopted": false, "why": "60일 거래대금 2.3억(기준 5억 미만)", "lastDiv": "20260914", "index": "KEDI 리츠부동산인프라TOP10 지수"}, {"code": "455660", "name": "ACE 미국하이일드액티브(H)", "manager": "한국투자신탁운용", "price": 9340, "aum": 61644000000, "turnover60": 205346153, "expense": 0.3596, "vol": 3.94, "ttm": 6.8737, "freq": "월배당", "count12m": 11, "type": "일반", "asset": "채권", "adopted": false, "why": "60일 거래대금 2.1억(기준 5억 미만)", "lastDiv": "20260828", "index": "iBoxx USD Liquid High Yield Total Return Index"}, {"code": "352540", "name": "KODEX 일본부동산리츠(H)", "manager": "삼성자산운용(ETF)", "price": 11030, "aum": 37502000000, "turnover60": 144238540, "expense": 0.525, "vol": 12.01, "ttm": 6.6727, "freq": "월배당", "count12m": 10, "type": "일반", "asset": "부동산", "adopted": false, "why": "60일 거래대금 1.4억(기준 5억 미만)", "lastDiv": "20260828", "index": "TSE 부동산 지수"}, {"code": "429740", "name": "PLUS K리츠", "manager": "한화자산운용", "price": 6095, "aum": 6095000000, "turnover60": 33544287, "expense": 0.353, "vol": 20.24, "ttm": 6.6284, "freq": "월배당", "count12m": 11, "type": "일반", "asset": "부동산", "adopted": false, "why": "순자산 61억(기준 300억 미만), 60일 거래대금 0.3억(기준 5억 미만)", "lastDiv": "20260828", "index": "FnGuide 리츠 지수"}, {"code": "480460", "name": "WON 한국부동산TOP3플러스", "manager": "우리자산운용", "price": 9105, "aum": 7739250000, "turnover60": 26195852, "expense": 0.3313, "vol": 17, "ttm": 6.5898, "freq": "월배당", "count12m": 11, "type": "일반", "asset": "부동산", "adopted": false, "why": "순자산 77억(기준 300억 미만), 60일 거래대금 0.3억(기준 5억 미만)", "lastDiv": "20260828", "index": "DeepSearch 한국부동산 Top3 플러스 지수"}, {"code": "341850", "name": "TIGER 리츠부동산인프라채권", "manager": "미래에셋자산운용", "price": 4560, "aum": 9130000000, "turnover60": 33492994, "expense": 0.2886, "vol": 13.26, "ttm": 6.3158, "freq": "월배당", "count12m": 11, "type": "일반", "asset": "멀티에셋", "adopted": false, "why": "순자산 91억(기준 300억 미만), 60일 거래대금 0.3억(기준 5억 미만)", "lastDiv": "20260828", "index": "KIS 리츠부동산인프라채권 지수"}, {"code": "487950", "name": "KODEX 대만테크고배당다우존스", "manager": "삼성자산운용(ETF)", "price": 12925, "aum": 18741250000, "turnover60": 307083625, "expense": 0.9642, "vol": 29.53, "ttm": 6.2437, "freq": "월배당", "count12m": 11, "type": "일반", "asset": "주식", "adopted": false, "why": "순자산 187억(기준 300억 미만), 60일 거래대금 3.1억(기준 5억 미만)", "lastDiv": "20260828", "index": "Dow Jones Taiwan Technology Dividend 30 Index (TWD)"}, {"code": "316300", "name": "ACE 싱가포르리츠", "manager": "한국투신운용(ETF)", "price": 12410, "aum": 6205000000, "turnover60": 13162013, "expense": 1.0192, "vol": 13.23, "ttm": 6.1805, "freq": "월배당", "count12m": 11, "type": "일반", "asset": "부동산", "adopted": false, "why": "순자산 62억(기준 300억 미만), 60일 거래대금 0.1억(기준 5억 미만)", "lastDiv": "20260828", "index": "Morningstar Singapore REIT Yield Focus Index"}, {"code": "481340", "name": "RISE 미국30년국채액티브", "manager": "KB자산운용", "price": 8440, "aum": 24068250000, "turnover60": 339106435, "expense": 0.1572, "vol": 13.09, "ttm": 5.0948, "freq": "월배당", "count12m": 11, "type": "일반", "asset": "채권", "adopted": false, "why": "순자산 241억(기준 300억 미만), 60일 거래대금 3.4억(기준 5억 미만)", "lastDiv": "20260828", "index": "Bloomberg US Treasury 20+ Year Total Return Index"}, {"code": "437070", "name": "KODEX 아시아달러채권ESG플러스액티브", "manager": "삼성자산운용(ETF)", "price": 58180, "aum": 20130280000, "turnover60": 55334444, "expense": 0.2319, "vol": 10.31, "ttm": 5.0034, "freq": "월배당", "count12m": 11, "type": "일반", "asset": "채권", "adopted": false, "why": "순자산 201억(기준 300억 미만), 60일 거래대금 0.6억(기준 5억 미만)", "lastDiv": "20260828", "index": "Bloomberg MSCI EM Asia Investment Grade Credit SRI Index TR"}, {"code": "458260", "name": "TIGER 미국투자등급회사채액티브(H)", "manager": "미래에셋자산운용", "price": 45795, "aum": 219600000000, "turnover60": 406912395, "expense": 0.2203, "vol": 5.28, "ttm": 4.9809, "freq": "월배당", "count12m": 11, "type": "일반", "asset": "채권", "adopted": false, "why": "60일 거래대금 4.1억(기준 5억 미만)", "lastDiv": "20260828", "index": "iBoxx USD Liquid Investment Grade PR Index"}, {"code": "497780", "name": "KoAct 미국천연가스인프라액티브", "manager": "삼성액티브자산(ETF)", "price": 10380, "aum": 19156750000, "turnover60": 202819990, "expense": 0.7934, "vol": 17.91, "ttm": 4.9422, "freq": "월배당", "count12m": 11, "type": "일반", "asset": "주식", "adopted": false, "why": "순자산 192억(기준 300억 미만), 60일 거래대금 2.0억(기준 5억 미만)", "lastDiv": "20260828", "index": "Solactive US Natural Gas Infrastructure Index PR"}, {"code": "332620", "name": "PLUS 미국장기우량회사채", "manager": "한화자산운용", "price": 87180, "aum": 16302660000, "turnover60": 57294263, "expense": 0.4, "vol": 11.95, "ttm": 4.7671, "freq": "월배당", "count12m": 11, "type": "일반", "asset": "채권", "adopted": false, "why": "순자산 163억(기준 300억 미만), 60일 거래대금 0.6억(기준 5억 미만)", "lastDiv": "20260828", "index": "ICE BOFAML 15+ YEAR AAA-A US CORPORATE INDEX"}, {"code": "104530", "name": "KIWOOM 코리아고배당", "manager": "키움투자자산운용", "price": 17240, "aum": 35260000000, "turnover60": 190985522, "expense": 0.3257, "vol": 30.82, "ttm": 4.7274, "freq": "월배당", "count12m": 12, "type": "일반", "asset": "주식", "adopted": false, "why": "60일 거래대금 1.9억(기준 5억 미만)", "lastDiv": "20260914", "index": "FnGuide Wealth 고배당20"}, {"code": "468630", "name": "KODEX iShares미국투자등급회사채액티브", "manager": "삼성자산운용(ETF)", "price": 10695, "aum": 30052950000, "turnover60": 461984535, "expense": 0.187, "vol": 10.88, "ttm": 4.6564, "freq": "월배당", "count12m": 11, "type": "일반", "asset": "채권", "adopted": false, "why": "60일 거래대금 4.6억(기준 5억 미만)", "lastDiv": "20260828", "index": "iBoxx USD Liquid IG Index"}, {"code": "475380", "name": "RISE 글로벌리얼티인컴", "manager": "KB자산운용", "price": 10035, "aum": 26592750000, "turnover60": 80400919, "expense": 0.1555, "vol": 14.18, "ttm": 3.986, "freq": "월배당", "count12m": 11, "type": "일반", "asset": "부동산", "adopted": false, "why": "순자산 266억(기준 300억 미만), 60일 거래대금 0.8억(기준 5억 미만)", "lastDiv": "20260828", "index": "Solactive Global Realty Income Index PR"}, {"code": "166400", "name": "TIGER 200커버드콜OTM", "manager": "미래에셋자산운용", "price": 24145, "aum": 12047500000, "turnover60": 47129501, "expense": 0.6403, "vol": 42.63, "ttm": 3.9387, "freq": "월배당", "count12m": 11, "type": "커버드콜", "asset": "주식", "adopted": false, "why": "순자산 120억(기준 300억 미만), 60일 거래대금 0.5억(기준 5억 미만), 변동성 42.6%(1년 기준, 기준 35% 초과)", "lastDiv": "20260828", "index": "코스피 200 커버드콜 5% OTM"}, {"code": "0097L0", "name": "KIWOOM 한국고배당&미국AI테크", "manager": "키움투자자산운용", "price": 12430, "aum": 24189750000, "turnover60": 115268073, "expense": 0.6977, "vol": 26.09, "ttm": 3.8214, "freq": "월배당", "count12m": 11, "type": "일반", "asset": "주식", "adopted": false, "why": "순자산 242억(기준 300억 미만), 60일 거래대금 1.2억(기준 5억 미만)", "lastDiv": "20260828", "index": "Akros 미국AI테크Top10&한국고배당 3070 지수"}, {"code": "0085N0", "name": "ACE 미국10년국채액티브(H)", "manager": "한국투신운용(ETF)", "price": 9605, "aum": 34578000000, "turnover60": 286326748, "expense": 0.2432, "vol": 4.39, "ttm": 3.8105, "freq": "월배당", "count12m": 11, "type": "일반", "asset": "채권", "adopted": false, "why": "60일 거래대금 2.9억(기준 5억 미만)", "lastDiv": "20260828", "index": "ICE U.S.Treasury 7-10 Year Bond Index"}, {"code": "332610", "name": "PLUS 미국단기회사채(AAA~A)", "manager": "한화자산운용", "price": 125015, "aum": 12001440000, "turnover60": 3963794931, "expense": 0.4, "vol": 10.37, "ttm": 3.7995, "freq": "월배당", "count12m": 11, "type": "일반", "asset": "채권", "adopted": false, "why": "순자산 120억(기준 300억 미만)", "lastDiv": "20260828", "index": "ICE BOFAML 1-3 YEAR AAA-A US CORPORATE INDEX"}, {"code": "498860", "name": "RISE 코리아금융고배당", "manager": "KB자산운용", "price": 16715, "aum": 33460000000, "turnover60": 433580877, "expense": 0.2237, "vol": 42.1, "ttm": 3.5537, "freq": "월배당", "count12m": 12, "type": "일반", "asset": "주식", "adopted": false, "why": "60일 거래대금 4.3억(기준 5억 미만), 변동성 42.1%(1년 기준, 기준 35% 초과)", "lastDiv": "20260914", "index": "iSelect 코리아 금융 고배당 지수"}, {"code": "0004G0", "name": "1Q 미국배당TOP30", "manager": "하나자산운용", "price": 8800, "aum": 13200000000, "turnover60": 90841055, "expense": 0.4354, "vol": 15.76, "ttm": 3.5, "freq": "월배당", "count12m": 11, "type": "일반", "asset": "주식", "adopted": false, "why": "순자산 132억(기준 300억 미만), 60일 거래대금 0.9억(기준 5억 미만)", "lastDiv": "20260828", "index": "Solactive U.S. Dividend 30 Index PR"}, {"code": "181480", "name": "ACE 미국부동산리츠(합성 H)", "manager": "한국투신운용(ETF)", "price": 82105, "aum": 9852600000, "turnover60": 85833165, "expense": 0.4405, "vol": 14.11, "ttm": 3.4809, "freq": "월배당", "count12m": 11, "type": "일반", "asset": "부동산", "adopted": false, "why": "순자산 99억(기준 300억 미만), 60일 거래대금 0.9억(기준 5억 미만)", "lastDiv": "20260828", "index": "DowJones US Real Estate Index"}, {"code": "0086C0", "name": "TIGER 리츠부동산인프라10채권혼합액티브", "manager": "미래에셋자산운용", "price": 9755, "aum": 17071250000, "turnover60": 95033508, "expense": 0.2413, "vol": 7.64, "ttm": 3.4444, "freq": "월배당", "count12m": 12, "type": "일반", "asset": "멀티에셋", "adopted": false, "why": "순자산 171억(기준 300억 미만), 60일 거래대금 1.0억(기준 5억 미만)", "lastDiv": "20260914", "index": "KEDI 리츠부동산인프라TOP10 채권혼합 지수"}, {"code": "352560", "name": "KODEX 미국부동산리츠(H)", "manager": "삼성자산운용(ETF)", "price": 11935, "aum": 31627750000, "turnover60": 428135026, "expense": 0.3289, "vol": 13.71, "ttm": 3.4185, "freq": "월배당", "count12m": 10, "type": "일반", "asset": "부동산", "adopted": false, "why": "60일 거래대금 4.3억(기준 5억 미만)", "lastDiv": "20260828", "index": "Dow Jones U.S. Real Estate Index"}, {"code": "484880", "name": "SOL 금융지주플러스고배당", "manager": "신한자산운용", "price": 23690, "aum": 396975000000, "turnover60": 15002139046, "expense": 0.3656, "vol": 36.1, "ttm": 3.4149, "freq": "월배당", "count12m": 11, "type": "일반", "asset": "주식", "adopted": false, "why": "변동성 36.1%(1년 기준, 기준 35% 초과)", "lastDiv": "20260828", "index": "FnGuide 금융지주플러스고배당 지수"}, {"code": "182480", "name": "TIGER 미국MSCI리츠(합성 H)", "manager": "미래에셋자산운용", "price": 13055, "aum": 115060000000, "turnover60": 233127062, "expense": 0.4358, "vol": 13.95, "ttm": 3.401, "freq": "월배당", "count12m": 11, "type": "일반", "asset": "부동산", "adopted": false, "why": "60일 거래대금 2.3억(기준 5억 미만)", "lastDiv": "20260828", "index": "MSCI US REIT Index"}, {"code": "336160", "name": "RISE 금융채액티브", "manager": "KB자산운용", "price": 99850, "aum": 46829650000, "turnover60": 27498510, "expense": 0.0946, "vol": 2.03, "ttm": 3.2389, "freq": "월배당", "count12m": 11, "type": "일반", "asset": "채권", "adopted": false, "why": "60일 거래대금 0.3억(기준 5억 미만)", "lastDiv": "20260828", "index": "KIS 종합채권 금융채 2.5-3Y"}, {"code": "471460", "name": "KIWOOM 국고채30년액티브", "manager": "키움투자자산운용", "price": 44645, "aum": 20536700000, "turnover60": 85988265, "expense": 0.0663, "vol": 13.97, "ttm": 3.1717, "freq": "월배당", "count12m": 11, "type": "일반", "asset": "채권", "adopted": false, "why": "순자산 205억(기준 300억 미만), 60일 거래대금 0.9억(기준 5억 미만)", "lastDiv": "20260828", "index": "KIS-키움 국고채30년 지수"}, {"code": "322410", "name": "HANARO K고배당", "manager": "NH-Amundi자산운용", "price": 23125, "aum": 40503750000, "turnover60": 169078724, "expense": 0.1807, "vol": 28.35, "ttm": 2.9924, "freq": "월배당", "count12m": 11, "type": "일반", "asset": "주식", "adopted": false, "why": "60일 거래대금 1.7억(기준 5억 미만)", "lastDiv": "20260828", "index": "FnGuide K고배당"}, {"code": "460660", "name": "RISE 미국S&P배당킹", "manager": "KB자산운용", "price": 11615, "aum": 17437500000, "turnover60": 96717840, "expense": 0.3141, "vol": 15.58, "ttm": 2.9789, "freq": "월배당", "count12m": 11, "type": "일반", "asset": "주식", "adopted": false, "why": "순자산 174억(기준 300억 미만), 60일 거래대금 1.0억(기준 5억 미만)", "lastDiv": "20260828", "index": "S&P Dividend Monarchs Index (USD)"}, {"code": "493420", "name": "SOL 미국배당다우존스2호", "manager": "신한자산운용", "price": 12500, "aum": 26239500000, "turnover60": 133242212, "expense": 0.1981, "vol": 14.08, "ttm": 2.976, "freq": "월배당", "count12m": 12, "type": "일반", "asset": "주식", "adopted": false, "why": "순자산 262억(기준 300억 미만), 60일 거래대금 1.3억(기준 5억 미만)", "lastDiv": "20260914", "index": "Dow Jones U.S. Dividend 100 Total Return Index"}, {"code": "464470", "name": "PLUS 미국채30년액티브", "manager": "한화자산운용", "price": 47135, "aum": 36026420000, "turnover60": 302957266, "expense": 0.2515, "vol": 13.07, "ttm": 2.6838, "freq": "월배당", "count12m": 11, "type": "일반", "asset": "채권", "adopted": false, "why": "60일 거래대금 3.0억(기준 5억 미만)", "lastDiv": "20260828", "index": "ICE U.S. Treasury 20+ Year Bond Index"}, {"code": "0015E0", "name": "KIWOOM 엔비디아미국30년국채혼합액티브(H)", "manager": "키움투자자산운용", "price": 10375, "aum": 5187500000, "turnover60": 32801982, "expense": 0.5058, "vol": 10.78, "ttm": 2.3133, "freq": "월배당", "count12m": 11, "type": "일반", "asset": "멀티에셋", "adopted": false, "why": "순자산 52억(기준 300억 미만), 60일 거래대금 0.3억(기준 5억 미만)", "lastDiv": "20260828", "index": "Bloomberg BlendedNVDIAand USLong Treasury Bond Index"}, {"code": "0015F0", "name": "KIWOOM 팔란티어미국30년국채혼합액티브(H)", "manager": "키움투자자산운용", "price": 10440, "aum": 12528000000, "turnover60": 88856528, "expense": 0.4504, "vol": 15.63, "ttm": 2.2989, "freq": "월배당", "count12m": 11, "type": "일반", "asset": "멀티에셋", "adopted": false, "why": "순자산 125억(기준 300억 미만), 60일 거래대금 0.9억(기준 5억 미만)", "lastDiv": "20260828", "index": "Bloomberg Blended PALANTIR and USLong Treasury Bond Index"}, {"code": "0089C0", "name": "KODEX 미국S&P500변동성확대시커버드콜", "manager": "삼성자산운용(ETF)", "price": 11270, "aum": 42826000000, "turnover60": 368838372, "expense": 0.6338, "vol": 13.98, "ttm": 2.2094, "freq": "월배당", "count12m": 11, "type": "커버드콜", "asset": "주식", "adopted": false, "why": "60일 거래대금 3.7억(기준 5억 미만)", "lastDiv": "20260828", "index": "Cboe S&P 500 Volatility Contingent Daily Covered Call Index"}, {"code": "0049K0", "name": "ACE 미국배당퀄리티채권혼합50", "manager": "한국투신운용(ETF)", "price": 11020, "aum": 26999000000, "turnover60": 181672919, "expense": 0.499, "vol": 6.68, "ttm": 2.1869, "freq": "월배당", "count12m": 11, "type": "일반", "asset": "멀티에셋", "adopted": false, "why": "순자산 270억(기준 300억 미만), 60일 거래대금 1.8억(기준 5억 미만)", "lastDiv": "20260828", "index": "Bloomberg WisdomTree U.S. Quality Dividend & Short Term KRW"}, {"code": "329660", "name": "KODEX TRF5050", "manager": "삼성자산운용(ETF)", "price": 17635, "aum": 82884500000, "turnover60": 283009172, "expense": 0.2539, "vol": 7.27, "ttm": 2.1548, "freq": "월배당", "count12m": 12, "type": "일반", "asset": "멀티에셋", "adopted": false, "why": "60일 거래대금 2.8억(기준 5억 미만)", "lastDiv": "20260914", "index": "FnGuide TRF 5050 지수"}, {"code": "373790", "name": "KIWOOM 미국방어배당성장나스닥", "manager": "키움투자자산운용", "price": 15315, "aum": 4288200000, "turnover60": 11088906, "expense": 1.4787, "vol": 14.27, "ttm": 1.9719, "freq": "월배당", "count12m": 11, "type": "일반", "asset": "주식", "adopted": false, "why": "순자산 43억(기준 300억 미만), 60일 거래대금 0.1억(기준 5억 미만)", "lastDiv": "20260828", "index": "Nasdaq US Low Volatility Dividend Achievers Index"}, {"code": "495230", "name": "KoAct 코리아밸류업액티브", "manager": "삼성액티브자산(ETF)", "price": 30650, "aum": 241345000000, "turnover60": 3578698046, "expense": 1.0675, "vol": 55.06, "ttm": 1.9706, "freq": "월배당", "count12m": 11, "type": "일반", "asset": "주식", "adopted": false, "why": "변동성 55.1%(1년 기준, 기준 35% 초과)", "lastDiv": "20260828", "index": "코리아 밸류업 지수"}, {"code": "329670", "name": "KODEX TRF7030", "manager": "삼성자산운용(ETF)", "price": 21740, "aum": 86940000000, "turnover60": 347315015, "expense": 0.1997, "vol": 10.25, "ttm": 1.8537, "freq": "월배당", "count12m": 12, "type": "일반", "asset": "멀티에셋", "adopted": false, "why": "60일 거래대금 3.5억(기준 5억 미만)", "lastDiv": "20260914", "index": "FnGuide TRF 7030 지수"}, {"code": "476690", "name": "TIGER 글로벌비만치료제TOP2Plus", "manager": "미래에셋자산운용", "price": 10160, "aum": 30480000000, "turnover60": 221448576, "expense": 0.6367, "vol": 24.27, "ttm": 1.6142, "freq": "월배당", "count12m": 11, "type": "일반", "asset": "주식", "adopted": false, "why": "60일 거래대금 2.2억(기준 5억 미만)", "lastDiv": "20260828", "index": "Indxx Global Obesity Treatment Top 2 Plus Index"}, {"code": "465670", "name": "TIGER 미국캐시카우100", "manager": "미래에셋자산운용", "price": 16510, "aum": 22423500000, "turnover60": 314831825, "expense": 0.7799, "vol": 17.22, "ttm": 1.5021, "freq": "월배당", "count12m": 11, "type": "일반", "asset": "주식", "adopted": false, "why": "순자산 224억(기준 300억 미만), 60일 거래대금 3.1억(기준 5억 미만)", "lastDiv": "20260828", "index": "Global X U.S. Cash Flow Kings 100 Index PR"}, {"code": "0046Y0", "name": "ACE 미국배당퀄리티", "manager": "한국투신운용(ETF)", "price": 12365, "aum": 53169500000, "turnover60": 188080431, "expense": 0.4157, "vol": 12.96, "ttm": 1.4153, "freq": "월배당", "count12m": 11, "type": "일반", "asset": "주식", "adopted": false, "why": "60일 거래대금 1.9억(기준 5억 미만)", "lastDiv": "20260828", "index": "Wisdom Tree U.S. Quality Dividend Growth Index"}, {"code": "0084D0", "name": "KIWOOM 미국테크100월간목표헤지액티브", "manager": "키움투자자산운용", "price": 11195, "aum": 8956000000, "turnover60": 56817401, "expense": 0.9686, "vol": 13.52, "ttm": 1.4113, "freq": "월배당", "count12m": 11, "type": "일반", "asset": "멀티에셋", "adopted": false, "why": "순자산 90억(기준 300억 미만), 60일 거래대금 0.6억(기준 5억 미만)", "lastDiv": "20260828", "index": "Akros U.S. Tech 100 Protective Allocation Monthly Index TR"}, {"code": "495850", "name": "KODEX 코리아밸류업", "manager": "삼성자산운용(ETF)", "price": 31660, "aum": 656945000000, "turnover60": 10315973385, "expense": 0.1629, "vol": 52.48, "ttm": 1.1497, "freq": "월배당", "count12m": 11, "type": "일반", "asset": "주식", "adopted": false, "why": "변동성 52.5%(1년 기준, 기준 35% 초과)", "lastDiv": "20260828", "index": "코리아 밸류업 지수"}, {"code": "495330", "name": "1Q 코리아밸류업", "manager": "하나자산운용", "price": 31550, "aum": 135665000000, "turnover60": 608977454, "expense": 0.091, "vol": 52.51, "ttm": 1.1189, "freq": "월배당", "count12m": 10, "type": "일반", "asset": "주식", "adopted": false, "why": "변동성 52.5%(1년 기준, 기준 35% 초과)", "lastDiv": "20260828", "index": "코리아 밸류업 지수"}, {"code": "499150", "name": "SOL 미국S&P500엔화노출(H)", "manager": "신한자산운용", "price": 10815, "aum": 5425000000, "turnover60": 22199954, "expense": 0.9134, "vol": 15.3, "ttm": 1.1003, "freq": "월배당", "count12m": 11, "type": "일반", "asset": "주식", "adopted": false, "why": "순자산 54억(기준 300억 미만), 60일 거래대금 0.2억(기준 5억 미만)", "lastDiv": "20260828", "index": "S&P 500 YEN Hdg"}, {"code": "495050", "name": "RISE 코리아밸류업", "manager": "KB자산운용", "price": 31870, "aum": 941906250000, "turnover60": 14878321946, "expense": 0.0663, "vol": 52.52, "ttm": 1.0919, "freq": "월배당", "count12m": 11, "type": "일반", "asset": "주식", "adopted": false, "why": "변동성 52.5%(1년 기준, 기준 35% 초과)", "lastDiv": "20260914", "index": "코리아 밸류업 지수"}, {"code": "0089B0", "name": "PLUS 미국나스닥100미국채혼합50", "manager": "한화자산운용", "price": 11110, "aum": 33375000000, "turnover60": 432237782, "expense": 0.4684, "vol": 12.97, "ttm": 1.0621, "freq": "비정기", "count12m": 9, "type": "일반", "asset": "멀티에셋", "adopted": false, "why": "60일 거래대금 4.3억(기준 5억 미만)", "lastDiv": "20260828", "index": "Nasdaq-100 US T-Bills 1-3 Month 50/50 Index"}, {"code": "453330", "name": "RISE 미국S&P500(H)", "manager": "KB자산운용", "price": 17960, "aum": 82639000000, "turnover60": 427276250, "expense": 0.2014, "vol": 13.04, "ttm": 1.0189, "freq": "월배당", "count12m": 11, "type": "일반", "asset": "주식", "adopted": false, "why": "60일 거래대금 4.3억(기준 5억 미만)", "lastDiv": "20260828", "index": "S&P 500"}, {"code": "495040", "name": "PLUS 코리아밸류업", "manager": "한화자산운용", "price": 31470, "aum": 84753000000, "turnover60": 190087222, "expense": 0.1792, "vol": 52.37, "ttm": 1.001, "freq": "월배당", "count12m": 12, "type": "일반", "asset": "주식", "adopted": false, "why": "60일 거래대금 1.9억(기준 5억 미만), 변동성 52.4%(1년 기준, 기준 35% 초과)", "lastDiv": "20260914", "index": "코리아 밸류업 지수"}, {"code": "496080", "name": "TIGER 코리아밸류업", "manager": "미래에셋자산운용", "price": 31775, "aum": 497122250000, "turnover60": 12220677877, "expense": 0.1488, "vol": 52.28, "ttm": 0.9441, "freq": "월배당", "count12m": 11, "type": "일반", "asset": "주식", "adopted": false, "why": "변동성 52.3%(1년 기준, 기준 35% 초과)", "lastDiv": "20260828", "index": "코리아 밸류업 지수"}, {"code": "432840", "name": "HANARO 미국S&P500", "manager": "NH-Amundi자산운용", "price": 19495, "aum": 15596000000, "turnover60": 61748597, "expense": 0.3286, "vol": 14.49, "ttm": 0.713, "freq": "월배당", "count12m": 11, "type": "일반", "asset": "주식", "adopted": false, "why": "순자산 156억(기준 300억 미만), 60일 거래대금 0.6억(기준 5억 미만)", "lastDiv": "20260828", "index": "S&P 500"}, {"code": "448100", "name": "WON 200", "manager": "우리자산운용", "price": 110030, "aum": 126367750000, "turnover60": 3526183121, "expense": 0.0663, "vol": 58.59, "ttm": 0.6635, "freq": "월배당", "count12m": 11, "type": "일반", "asset": "주식", "adopted": false, "why": "변동성 58.6%(1년 기준, 기준 35% 초과)", "lastDiv": "20260828", "index": "KOSPI 200"}], "compare": ["0040Y0", "480020", "0040X0", "489030", "494300", "491620", "490590", "480030", "486290", "441640", "161510", "458730", "214980", "284430"]};
+const F = new Map(DATA.items.map(x => [x.code, x]));
+const won = n => (Math.round(n)).toLocaleString('ko-KR') + '원';
+const pct = (n, d = 2) => (n).toFixed(d) + '%';
+const numOf = s => { const v = parseFloat(String(s).replace(/[^0-9.\-]/g, '')); return isFinite(v) ? v : 0; };
+
+/* CALC — 엑셀판과 같은 식이다. 둘이 어긋나면 안 되므로 여기 한 군데에만 둔다.
+     배정금액   = 비율 ? 총액 × 배분/100 : 배분(입력한 금액)
+     매수 수량  = floor(배정금액 ÷ 현재가)          (정수 매수)
+     실투자금액 = 매수 수량 × 현재가
+     월 분배금  = 실투자금액 × 연 분배율 ÷ 12
+     세후       = 세전 × (1 − 세율)
+   엑셀 쪽 수식은 build_etf_proposal.py 의 포트폴리오 줄에 그대로 있다. */
+function calcRow(code, alloc, total, mode, tax) {
+  const it = F.get(code);
+  if (!it || !(it.price > 0)) return null;
+  const assign = mode === '비율' ? total * alloc / 100 : alloc;
+  const qty = Math.floor(assign / it.price);
+  const invest = qty * it.price;
+  const pre = invest * (it.ttm / 100) / 12;
+  return { it, assign, qty, invest, pre, post: pre * (1 - tax) };
+}
+
+let rows = [];
+const $ = id => document.getElementById(id);
+
+function optionsHtml(sel) {
+  return '<option value="">— 종목 선택 —</option>' + DATA.items.map(x =>
+    `<option value="${x.code}"${x.code === sel ? ' selected' : ''}>${x.name}${x.adopted ? '' : ' (기준 미달)'}</option>`
+  ).join('');
+}
+
+function addRow(code = '', alloc = '') {
+  rows.push({ code, alloc });
+  render();
+}
+function delRow(i) { rows.splice(i, 1); if (!rows.length) rows.push({ code: '', alloc: '' }); render(); }
+
+function render() {
+  const total = numOf($('amt').value), mode = $('mode').value, tax = numOf($('tax').value) / 100;
+  const tb = $('pfBody');
+  tb.innerHTML = rows.map((r, i) => {
+    const c = r.code ? calcRow(r.code, numOf(r.alloc), total, mode, tax) : null;
+    return `<tr class="${r.code ? '' : 'empty'}">
+      <td><select onchange="rows[${i}].code=this.value;render()">${optionsHtml(r.code)}</select></td>
+      <td><input class="num" value="${r.alloc}" oninput="rows[${i}].alloc=this.value;render()"></td>
+      <td class="r num">${c ? won(c.assign) : ''}</td>
+      <td class="r num">${c ? c.qty.toLocaleString('ko-KR') + '주' : ''}</td>
+      <td class="r num">${c ? won(c.invest) : ''}</td>
+      <td class="r num">${c ? won(c.pre) : ''}</td>
+      <td class="r num">${c ? won(c.post) : ''}</td>
+      <td class="c noprint"><button class="icon" onclick="delRow(${i})">✕</button></td>
+    </tr>`;
+  }).join('');
+
+  const cs = rows.map(r => r.code ? calcRow(r.code, numOf(r.alloc), total, mode, tax) : null).filter(Boolean);
+  const sum = k => cs.reduce((s, c) => s + c[k], 0);
+  const tAlloc = rows.reduce((s, r) => s + (r.code ? numOf(r.alloc) : 0), 0);
+  const invest = sum('invest'), pre = sum('pre'), post = sum('post');
+
+  $('tAlloc').textContent = mode === '비율' ? tAlloc.toFixed(2) : won(tAlloc);
+  $('tAssign').textContent = won(sum('assign'));
+  $('tInvest').textContent = won(invest);
+  $('tPre').textContent = won(pre);
+  $('tPost').textContent = won(post);
+
+  $('wAlloc').textContent =
+    !cs.length ? '' :
+    mode === '비율'
+      ? (Math.abs(tAlloc - 100) > 0.01 ? '※ 배분 비율 합계가 100%가 아닙니다. 배분 칸을 확인하십시오.' : '')
+      : (sum('assign') > total ? '※ 배분 금액 합계가 총 투자금액을 넘습니다.' : '');
+  $('wReject').textContent = cs.some(c => !c.it.adopted)
+    ? '※ 유동성·변동성 기준에 미달한 종목이 담겨 있습니다. 아래 종목 조회에서 사유를 확인하십시오.' : '';
+  $('wFreq').textContent = cs.some(c => c.it.freq && c.it.freq !== '월배당')
+    ? "※ 월배당이 아닌 종목이 담겨 있습니다. '월 예상 분배금' 은 연 분배금을 12로 나눈 월 환산액이며, 실제 지급은 그 종목의 주기(분기·연 등)를 따릅니다." : '';
+
+  const annPre = pre * 12, annPost = post * 12;
+  $('kPre').textContent = won(pre);
+  $('kPost').textContent = '세후 ' + won(post);
+  $('kAnnPre').textContent = won(annPre);
+  $('kAnnPost').textContent = '세후 ' + won(annPost);
+  $('kAnnRate').textContent = invest > 0 ? pct(annPre / invest * 100) : '0.00%';
+  $('kAnnRateNet').textContent = '세후 ' + (invest > 0 ? pct(annPost / invest * 100) : '0.00%');
+  $('kInvest').textContent = won(invest);
+  $('kIdle').textContent = '미투자 잔액 ' + won(Math.max(0, total - invest));
+
+  // 구간표 — 지금 구성의 가중 연 분배율을 금액만 바꿔 적용한다.
+  const rate = invest > 0 ? annPre / invest : 0;
+  $('tiers').innerHTML = [1e7, 3e7, 5e7, 1e8, 2e8, 3e8, 5e8, 1e9].map(a => {
+    const p = a * rate / 12;
+    return `<tr><td class="r num">${won(a)}</td><td class="r num">${won(p)}</td>
+      <td class="r num">${won(p * (1 - tax))}</td><td class="r num">${won(p * 12)}</td>
+      <td class="r num">${won(p * 12 * (1 - tax))}</td></tr>`;
+  }).join('');
+
+  saveLocal();
+}
+
+/* 종목 조회 — 엑셀은 배열 수식을 못 써서 숨긴 칸으로 60줄까지만 뽑지만,
+   여기서는 줄 수 제한 없이 조건에 맞는 것을 전부 보여 준다. */
+function renderQuery() {
+  const f = $('qFreq').value, lo = numOf($('qMin').value), hi = numOf($('qMax').value);
+  const nm = $('qName').value.trim(), ad = $('qAdopt').value;
+  const tax = numOf($('tax').value) / 100;
+  const hit = DATA.items.filter(x =>
+    (f === '전체' || x.freq === f) &&
+    x.ttm != null && x.ttm >= lo - 1e-9 && x.ttm <= hi + 1e-9 &&
+    (!nm || x.name.includes(nm)) &&
+    (ad === '전체' || (ad === '채택만' ? x.adopted : !x.adopted))
+  );
+  $('qCount').innerHTML = `조건에 맞는 종목 <b>${hit.length}</b>종목 / 전체 ${DATA.items.length}종목`;
+  $('qBody').innerHTML = hit.map(x => `<tr>
+    <td>${x.name}${x.adopted ? '' : ` <span class="badge no" title="${x.why}">기준 미달</span>`}</td>
+    <td class="c">${x.freq || '—'}</td>
+    <td class="r num">${pct(x.ttm)}</td>
+    <td class="r num">${pct(x.ttm / 12, 3)}</td>
+    <td class="r num">${x.price ? x.price.toLocaleString('ko-KR') : '—'}</td>
+    <td class="r num">${x.vol != null ? pct(x.vol, 1) : '—'}</td>
+    <td class="r num">${x.aum ? (x.aum / 1e8).toLocaleString('ko-KR', { maximumFractionDigits: 0 }) + '억' : '—'}</td>
+    <td class="c">${x.adopted ? '채택' : '제외'}</td>
+    <td class="c noprint"><button class="icon" onclick="pick('${x.code}')">담기</button></td>
+  </tr>`).join('') || '<tr><td colspan="9" class="c">조건에 맞는 종목이 없습니다.</td></tr>';
+}
+function pick(code) {
+  const empty = rows.findIndex(r => !r.code);
+  if (empty >= 0) rows[empty].code = code; else rows.push({ code, alloc: '' });
+  render();
+  document.getElementById('pf').scrollIntoView({ behavior: 'smooth', block: 'center' });
+}
+
+function renderCompare() {
+  const tax = numOf($('tax').value) / 100;
+  $('cmpBody').innerHTML = DATA.compare.map(c => {
+    const x = F.get(c); if (!x) return '';
+    const qty = Math.floor(1e8 / x.price), invest = qty * x.price;
+    const pre = invest * (x.ttm / 100) / 12;
+    return `<tr><td>${x.name}</td><td class="c">${x.type}</td>
+      <td class="r num">${x.price.toLocaleString('ko-KR')}</td>
+      <td class="r num">${pct(x.ttm)}</td><td class="r num">${won(pre)}</td>
+      <td class="r num">${won(pre * (1 - tax))}</td>
+      <td class="r num">${x.vol != null ? pct(x.vol, 1) : '—'}</td></tr>`;
+  }).join('');
+}
+
+/* 저장 / 불러오기.
+   파일로 내려받는 쪽이 본체다 — 브라우저를 바꾸거나 다른 사람에게 넘겨도
+   그대로 열린다. localStorage 는 실수로 새로고침했을 때를 위한 보조일 뿐이라
+   읽고 쓰는 자리를 전부 try 로 감싼다(사생활 보호 창에서는 막힌다). */
+function state() {
+  return { cust: $('cust').value, amt: $('amt').value, mode: $('mode').value,
+           tax: $('tax').value, pdate: $('pdate').value, rows };
+}
+function applyState(s) {
+  if (!s) return;
+  for (const k of ['cust', 'amt', 'mode', 'tax', 'pdate']) if (s[k] != null) $(k).value = s[k];
+  rows = Array.isArray(s.rows) && s.rows.length ? s.rows : [{ code: DATA.defaultCode, alloc: 100 }];
+  render();
+}
+function saveState() {
+  const s = state();
+  const name = (s.cust || '고객').replace(/[\\/:*?"<>|]/g, '') + '_월배당ETF제안서.json';
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([JSON.stringify(s, null, 2)], { type: 'application/json' }));
+  a.download = name; a.click(); URL.revokeObjectURL(a.href);
+  msg('저장했습니다 — ' + name);
+}
+function loadState(input) {
+  const f = input.files[0]; if (!f) return;
+  const r = new FileReader();
+  r.onload = () => { try { applyState(JSON.parse(r.result)); msg('불러왔습니다 — ' + f.name); }
+                     catch { msg('읽을 수 없는 파일입니다.'); } };
+  r.readAsText(f); input.value = '';
+}
+function saveLocal() { try { localStorage.setItem('etfProposal', JSON.stringify(state())); } catch {} }
+function resetAll() {
+  try { localStorage.removeItem('etfProposal'); } catch {}
+  location.reload();
+}
+function msg(t) { $('saveMsg').textContent = t; setTimeout(() => { $('saveMsg').textContent = ''; }, 4000); }
+
+// 시작
+(function init() {
+  const freqs = ['전체', ...[...new Set(DATA.items.map(x => x.freq).filter(Boolean))]];
+  $('qFreq').innerHTML = freqs.map(f => `<option>${f}</option>`).join('');
+  let saved = null;
+  try { saved = JSON.parse(localStorage.getItem('etfProposal') || 'null'); } catch {}
+  if (saved) applyState(saved); else { rows = [{ code: DATA.defaultCode, alloc: 100 }]; render(); }
+  renderQuery(); renderCompare();
+  for (const id of ['amt', 'mode', 'tax', 'cust', 'pdate'])
+    $(id).addEventListener('input', () => { render(); renderCompare(); });
+  for (const id of ['qFreq', 'qMin', 'qMax', 'qName', 'qAdopt'])
+    $(id).addEventListener('input', renderQuery);
+})();
+</script>
+</body>
+</html>

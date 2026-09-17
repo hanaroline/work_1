@@ -396,6 +396,29 @@ def main() -> int:  # noqa: PLR0915
         )
 
     check_lookup(selectable, first, last)
+
+    # HTML 판이 같은 값을 내는지 맞춰 볼 수 있게, 엑셀을 **실제로 계산해서 나온**
+    # 값을 적어 둔다. scripts/check_etf_html.mjs 가 이 파일을 읽어 브라우저에
+    # 찍힌 값과 견준다. 두 구현이 서로 다른 언어로 따로 계산한 값이 맞아떨어져야
+    # 통과다 — 같은 자료로 두 벌을 만들면서 둘이 어긋나면 하나만 있는 것보다 나쁘다.
+    if not problems:
+        pick = ws[f"B{p_hdr0 + 1}"].value
+        it0 = next((x for x in selectable if x["name"] == pick), None)
+        exp = {
+            "defaultName": pick,
+            "defaultFreq": (it0 or {}).get("payoutFreq") or "",
+            "amount": amount,
+            "invest": round(tot_invest),
+            "pre": round(tot_pre),
+            "post": round(tot_pre * (1 - tax)),
+            "annRate": round(w_ann * 100, 2),
+            "compareCount": len(seen),
+        }
+        out = ROOT / "discovery" / "etf-expected.json"
+        out.parent.mkdir(parents=True, exist_ok=True)
+        out.write_text(json.dumps(exp, ensure_ascii=False, indent=2), encoding="utf-8")
+        notes.append(f"엑셀 검산값을 {out.relative_to(ROOT)} 에 적었습니다 (HTML 대조용).")
+
     return report()
 
 
