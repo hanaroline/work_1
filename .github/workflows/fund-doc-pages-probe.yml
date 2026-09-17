@@ -23,6 +23,10 @@ on:
         description: '그 자리의 핵심 낱말 정규식 (예: 환\s*매)'
         type: string
         default: '환\s*매'
+      part2_why:
+        description: '제2부를 못 찾은 까닭만 펼쳐 본다 (적중률 조사는 건너뜀)'
+        type: boolean
+        default: false
   push:
     branches:
       - 'claude/els-**'
@@ -68,5 +72,13 @@ jobs:
         if: inputs.title_key != ''
         run: node scripts/probe_fund_title.mjs "${{ inputs.title_key }}" "${{ inputs.title_word }}" "${{ inputs.count || '40' }}"
 
+      # 제2부 인식이 75% 에서 멈춰 규칙을 세 번 고쳤는데 움직이지 않았다.
+      # 「못 찾았다」 만 보고 정규식을 또 고치면 짐작이다 — 과세에서 두 번 그렇게
+      # 틀렸다. 판정에 쓰이는 사실을 자리마다 펼쳐 놓고 눈으로 가른다.
+      - name: 제2부를 못 찾은 까닭 펼치기
+        if: inputs.part2_why
+        run: node scripts/probe_fund_part2_why.mjs "${{ inputs.count || '40' }}"
+
       - name: 표본 적중률
+        if: ${{ !inputs.part2_why }}
         run: node scripts/probe_fund_pages_sample.mjs "${{ inputs.count || '40' }}"
