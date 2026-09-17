@@ -44,6 +44,11 @@ jobs:
       - uses: actions/checkout@v4
         with:
           ref: ${{ github.ref_name }}
+          # 앞 커밋과 견주려면 이력이 있어야 한다. 기본값(1)은 마지막 커밋
+          # 하나만 받아 오므로 `git diff <앞커밋>..` 이 늘 실패하고, 그러면
+          # "견줄 데가 없으니 수집한다" 는 안전판으로 떨어져 **언제나** 수집한다.
+          # 건너뛰라고 만든 장치가 한 번도 안 걸리는 셈이었다(2026-09 확인).
+          fetch-depth: 0
 
       - uses: actions/setup-node@v4
         with:
@@ -73,6 +78,7 @@ jobs:
           fi
           before="${{ github.event.before }}"
           # 새 잡가지의 첫 푸시는 before 가 0 뿐이라 견줄 데가 없다. 그때는 수집한다.
+          # (이력을 다 받아 오게 고쳤으므로 이제 여기 걸리는 일은 드물다.)
           if [ -z "$before" ] || [ "$before" = "0000000000000000000000000000000000000000" ] \
              || ! git cat-file -e "$before^{commit}" 2>/dev/null; then
             echo "견줄 앞 커밋이 없어 수집합니다"
