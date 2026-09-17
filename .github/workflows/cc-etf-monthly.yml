@@ -173,20 +173,26 @@ jobs:
           git config user.name  "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
 
+          # 원격 최신으로 맞추기 전에 **수집이 만들어 낸 것**을 챙겨 둔다.
+          # 곳간(etf_dist_cache.json)을 빠뜨리면 reset 이 지워 버려서, 다음
+          # 달에 아껴야 할 호출을 그대로 다시 하게 된다.
           KEEP="$(mktemp -d)"
           cp data/cc_etf.json "$KEEP/"
+          cp data/etf_dist_cache.json "$KEEP/" 2>/dev/null || true
 
           for i in 1 2 3 4 5; do
             git fetch --quiet origin "$B"
             git reset --hard --quiet "origin/$B"
             cp "$KEEP/cc_etf.json" data/cc_etf.json
+            cp "$KEEP/etf_dist_cache.json" data/ 2>/dev/null || true
 
             python scripts/build_etf_proposal.py
             python scripts/build_etf_proposal_html.py
             python scripts/check_etf_proposal.py
             node scripts/check_etf_html.mjs
 
-            git add data/cc_etf.json 고객제안서_월배당ETF.xlsx docs/etf-proposal.html
+            git add data/cc_etf.json data/etf_dist_cache.json \
+                    고객제안서_월배당ETF.xlsx docs/etf-proposal.html
             if git diff --cached --quiet; then
               echo "변경 없음 — 커밋 생략"
               exit 0
