@@ -49,14 +49,18 @@ const RULES = {
   minAum: 30_000_000_000,      // 순자산총액 300억원
   minTurnover: 500_000_000,    // 60일 평균 거래대금 5억원
   maxVol: 35,                  // 1년 일간수익률 연환산 변동성 35%
-  minTrackMonths: 12,          // 분배 이력 12개월
+  minTrackMonths: 12,          // 상장 후 12개월
 };
 
-// 분배 이력을 12개월로 두는 이유: 연 분배율을 "최근 12개월 분배금 합계 ÷
-// 현재가" 로 적기 때문이다. 이력이 아홉 달뿐인 종목의 아홉 달치 합계를
-// 연 분배율이라 적으면 실제보다 낮게 나온다. 반대로 아홉 달치를 12개월로
-// 늘려 적으면 없는 분배를 있다고 하는 것이 된다. 어느 쪽도 제안서에 쓸 수
-// 없으므로 열두 달을 채운 종목만 올린다. 나머지는 사유와 함께 남긴다.
+// 12개월을 요구하는 이유: 연 분배율을 "최근 12개월 분배금 합계 ÷ 현재가" 로
+// 적기 때문이다. 상장한 지 아홉 달뿐인 종목의 아홉 달치 합계를 연 분배율이라
+// 적으면 실제보다 낮게 나온다. 반대로 아홉 달치를 열두 달로 늘려 적으면 없는
+// 분배를 있다고 하는 것이 된다. 어느 쪽도 제안서에 쓸 수 없다.
+//
+// 재는 대상을 분배 **건수**에서 **상장 기간**으로 바꿨다. 건수로 세면
+// 분기배당 종목이 2년을 꼬박 분배하고도 건수가 여덟이라 "이력 8개월" 로
+// 적히고 걸러진다. 월배당만 담을 때는 건수가 곧 개월수여서 드러나지 않던
+// 결함이다.
 
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 const num = (v) => (v === null || v === undefined || v === '' ? null : Number(v));
@@ -73,6 +77,57 @@ function annualVolatility(closes) {
   const mean = rets.reduce((s, x) => s + x, 0) / rets.length;
   const varr = rets.reduce((s, x) => s + (x - mean) ** 2, 0) / (rets.length - 1);
   return Math.sqrt(varr * 252) * 100;
+}
+
+// ── 지급주기와 "최근 12개월" ────────────────────────────────────────────
+// ETFCHECK 분류에는 분기배당도 연배당도 없다(0609 계열은 고배당/월배당/
+// 주배당/리츠/커버드콜/MLP 뿐). 그래서 주기는 분류가 아니라 **실제 지급
+// 횟수**로 판정한다. getEtpItemDivOutline 이 연도별 지급 횟수와 지급한 달
+// 목록("01,02,…")을 주므로 달 단위로 정확히 셀 수 있다. 추정이 아니다.
+const NOW = new Date();
+const CUR_Y = NOW.getFullYear();
+const CUR_M = NOW.getMonth() + 1;
+// 분배금 합계를 낼 창(窓)은 **정확히 1년 전 오늘**부터다. 20250917 같은
+// 여덟 자리로 만들어 분배 기준일(F12506)과 그대로 견준다.
+const TTM_FROM = (() => {
+  const d = new Date(NOW);
+  d.setFullYear(d.getFullYear() - 1);
+  return Number(
+    `${d.getFullYear()}${String(d.getMonth() + 1).padStart(2, '0')}${String(d.getDate()).padStart(2, '0')}`,
+  );
+})();
+
+function payoutMonths12m(divOutline) {
+  const ms = [];
+  for (const r of divOutline || []) {
+    const y = Number(r.DATE);
+    for (const m of String(r.MONTH || '')
+      .split(',')
+      .map(Number)
+      .filter((x) => x >= 1 && x <= 12)) {
+      if ((y === CUR_Y && m <= CUR_M) || (y === CUR_Y - 1 && m > CUR_M)) {
+        ms.push(`${y}-${String(m).padStart(2, '0')}`);
+      }
+    }
+  }
+  return ms.sort();
+}
+
+// 이력이 12개월을 못 채운 종목은 **주기를 판정하지 않는다.** 여섯 달에 두 번
+// 준 것을 "분기배당" 이라고 부르면 거짓이다. 목록에서 빼지는 않고 그대로
+// '판정 불가' 라고 적는다 — 담을지는 담당자가 판단할 일이다.
+function classifyPayout(n, listedOn) {
+  const s = String(listedOn || '');
+  if (/^\d{8}$/.test(s)) {
+    const monthsListed = (CUR_Y - Number(s.slice(0, 4))) * 12 + (CUR_M - Number(s.slice(4, 6)));
+    if (monthsListed < 12) return '판정 불가(상장 1년 미만)';
+  }
+  if (n === 0) return '무분배';
+  if (n >= 20) return '주배당';
+  if (n >= 10) return '월배당';
+  if (n >= 3 && n <= 6) return '분기배당';
+  if (n <= 2) return '연배당';
+  return '비정기'; // 연 7~9회 — 월도 분기도 아니다. 그렇게 적는다.
 }
 
 const browser = await chromium.launch({
@@ -278,10 +333,17 @@ for (const [i, row] of universe.entries()) {
   let fee;
   let navHist;
   let term;
+  let divOutline;
   try {
     outline = await apiOutline(code);
     await sleep(250);
-    hist = await api(`/user/etp/getEtpItemCashHist?code=${code}&limit=36`);
+    // 지급주기를 판정할 원천. 연도별 지급 횟수와 지급한 달 목록을 준다.
+    divOutline = await api(`/user/etp/getEtpItemDivOutline?code=${code}`);
+    await sleep(250);
+    // limit 을 36 에서 60 으로 올린다. 최근 12개월 합계를 건수가 아니라 창으로
+    // 내게 되면서, 주배당 종목은 한 해에만 오십 건이 넘기 때문이다. 36 이면
+    // 그런 종목의 1년치가 잘려 합계가 실제보다 작게 나온다.
+    hist = await api(`/user/etp/getEtpItemCashHist?code=${code}&limit=60`);
     await sleep(250);
     monthly = await api(`/user/etp/getEtpItemCashMonthly?code=${code}`);
     await sleep(250);
@@ -310,8 +372,12 @@ for (const [i, row] of universe.entries()) {
     items.push({
       code,
       name,
-      type: isCoveredCall(code) ? '커버드콜' : '월배당',
+      type: isCoveredCall(code) ? '커버드콜' : '일반',
       manager: row.F33961 || null,
+      // 수집이 실패한 종목의 주기는 **모른다.** 비워 둔다 — '월배당' 같은
+      // 그럴듯한 기본값을 넣으면 그 순간 모르는 것이 사실로 둔갑한다.
+      payoutFreq: null,
+      payoutCount12m: null,
       adopted: false,
       dataComplete: false,
       excludeReason: `수집 실패(세 번 다시 물었으나 답이 오지 않음: ${String(e.message).slice(0, 80)})`,
@@ -375,10 +441,32 @@ for (const [i, row] of universe.entries()) {
   }));
   const last = dist[0] || null;
 
-  // 최근 12회 분배금 합계 ÷ 현재가. ETFCHECK 도 같은 값을 DIV_RATE_REAL 로
-  // 주므로 아래에서 맞춰 본다 — 어긋나면 우리가 잘못 이해한 것이다.
-  const ttm12 = dist.slice(0, 12);
-  const ttmSum = ttm12.length === 12 ? ttm12.reduce((s, d) => s + (d.amount || 0), 0) : null;
+  // 최근 **12개월** 분배금 합계 ÷ 현재가.
+  //
+  // 처음에는 "최근 12**회**" 로 냈다. 월배당만 담을 때는 12회가 곧 12개월이라
+  // 맞았는데, 분기·연배당까지 담으면 그 순간 거짓이 된다 — 분기배당의 12회는
+  // 3년치고 연배당의 12회는 12년치다. 그대로 두면 분기배당 종목의 연 분배율이
+  // 실제의 세 배로 찍히고, 그 숫자가 고객 제안서의 "월 얼마" 가 된다.
+  //
+  // 그래서 횟수가 아니라 **창(窓)** 으로 센다. 기준일이 1년 전 오늘 이후인
+  // 분배만 더한다. 주기가 무엇이든 같은 뜻이 된다.
+  const ttmDist = dist.filter((d) => /^\d{8}$/.test(d.date) && Number(d.date) >= TTM_FROM);
+
+  // 창이 **실제로 다 채워졌을 때만** 연 분배율을 적는다.
+  //
+  // 이력 요건을 건수에서 상장 기간으로 바꾸면서 생긴 구멍이다. 상장 여섯 달
+  // 된 종목은 창(1년) 안에 분배가 여섯 건뿐인데, 그 여섯 달치 합계를 그대로
+  // "연 분배율" 이라 적으면 실제의 절반으로 찍힌다. 예전 규칙("12회를 채운
+  // 종목만")이 우연히 막아 주던 것을 새 규칙은 안 막는다. 상장 1년이 안 된
+  // 종목은 채택에서도 빠지지만, 값 자체를 비워 두어야 [ETF데이터] 장이나
+  // 드롭다운 어디에서도 반쪽짜리 숫자가 연 분배율 행세를 하지 못한다.
+  const ttmWindowFull = /^\d{8}$/.test(String(o.F16017 || row.F16017 || ''))
+    ? Number(String(o.F16017 || row.F16017)) <= TTM_FROM
+    : false;
+
+  // 창 안에 한 건도 없어도 연 분배율을 낼 수 없다. 0 으로 적지 않는다 —
+  // 0 은 "분배를 안 한다" 는 뜻이 되어 버린다.
+  const ttmSum = ttmDist.length && ttmWindowFull ? ttmDist.reduce((s, d) => s + (d.amount || 0), 0) : null;
   const ttmRate = ttmSum && price ? (ttmSum / price) * 100 : null;
 
   const mo = (monthly || [])[0] || {};
@@ -405,8 +493,21 @@ for (const [i, row] of universe.entries()) {
       ? last60.reduce((s, d) => s + (d.close || 0) * (d.volume || 0), 0) / last60.length
       : null;
 
-  const listed = String(o.F16017 || '');
+  const listed = String(o.F16017 || row.F16017 || '');
   const months = dist.length;
+
+  // 지급주기. 분류가 아니라 실제 지급한 달로 판정한다(위 classifyPayout 참고).
+  const paidMonths = payoutMonths12m(divOutline);
+  const payoutCount12m = paidMonths.length;
+  const payoutFreq = classifyPayout(payoutCount12m, listed);
+
+  // 상장한 지 몇 달 됐나. 예전에는 "분배 이력 n개월" 을 분배 **건수**로 셌다.
+  // 월배당만 담을 때는 건수가 곧 개월수였지만, 분기배당 종목은 2년을 꼬박
+  // 분배해도 건수가 8이라 "이력 8개월" 로 적히고 걸러졌다. 이력의 길이는
+  // 건수가 아니라 상장 기간으로 본다.
+  const monthsListed = /^\d{8}$/.test(listed)
+    ? (CUR_Y - Number(listed.slice(0, 4))) * 12 + (CUR_M - Number(listed.slice(4, 6)))
+    : null;
 
   // 제외 사유는 하나만 적지 않는다. "순자산이 작아서" 만 보여 주면 고치고
   // 나서도 다른 이유로 또 걸린다.
@@ -420,21 +521,41 @@ for (const [i, row] of universe.entries()) {
   if (vol === null) why.push(`변동성 산출 불가(시세 ${volDays}일치뿐)`);
   else if (vol > RULES.maxVol)
     why.push(`변동성 ${vol.toFixed(1)}%(${volWindow} 기준, 기준 ${RULES.maxVol}% 초과)`);
-  if (months < RULES.minTrackMonths) why.push(`분배 이력 ${months}개월(기준 ${RULES.minTrackMonths}개월 미만)`);
-  if (ttmRate === null) why.push('연 분배율 산출 불가(12회 분배 이력 없음)');
+  if (monthsListed === null) why.push('상장일 미확인');
+  else if (monthsListed < RULES.minTrackMonths)
+    why.push(`상장 ${monthsListed}개월(기준 ${RULES.minTrackMonths}개월 미만)`);
+  if (payoutCount12m === 0) why.push('최근 12개월 분배 없음');
+  if (ttmRate === null) {
+    why.push(
+      ttmWindowFull
+        ? '연 분배율 산출 불가(최근 12개월 분배 기록 없음)'
+        : '연 분배율 산출 불가(상장 1년 미만 — 12개월 창이 안 채워짐)',
+    );
+  }
 
-  // 우리 계산과 ETFCHECK 값이 어긋나면 채택하지 않는다. 어느 쪽이 맞는지
-  // 모르는 수치를 제안서에 올릴 수는 없다.
+  // 우리 계산과 ETFCHECK 값을 맞춰 본다. 어긋나면 어느 쪽이 맞는지 모르는
+  // 것이므로 제안서에 올리지 않는다.
+  //
+  // 다만 **월·주배당에만** 제외 사유로 건다. ETFCHECK 의 DIV_RATE_REAL 이
+  // 어떤 창으로 낸 값인지는 우리가 관찰로 확인하지 못했다 — 월배당에서는
+  // 최근 12회와 최근 12개월이 같은 값이라 둘 중 어느 쪽이어도 맞아떨어져서,
+  // 이 대조가 통과한 것이 "같은 기준" 이라는 증거가 되지 못한다. 분기·연배당은
+  // 두 기준이 크게 갈리므로, 기준이 다른 값끼리 견주어 멀쩡한 종목을 떨어뜨릴
+  // 수 있다. 그래서 차이는 반드시 적어 두되(사람이 볼 수 있게) 제외는 하지
+  // 않는다. 모르는 것을 근거로 버리는 것도 모르는 것을 사실로 적는 것만큼 나쁘다.
   let mismatch = null;
   if (ttmRate !== null && theirRate !== null && Math.abs(ttmRate - theirRate) > 0.15) {
     mismatch = `연분배율 계산 ${ttmRate.toFixed(4)}% vs ETFCHECK ${theirRate.toFixed(4)}%`;
-    why.push(`분배율 대조 불일치(${mismatch})`);
+    if (payoutFreq === '월배당' || payoutFreq === '주배당') why.push(`분배율 대조 불일치(${mismatch})`);
   }
 
   items.push({
     code,
     name,
-    type: isCoveredCall(code) ? '커버드콜' : '월배당',
+    // 유형은 '커버드콜/일반' 이다. 예전에는 '커버드콜/월배당' 이었는데, 모집단이
+    // 월배당뿐일 때만 말이 되는 이름이었다. 분기·연배당까지 담으면 지급주기를
+    // 유형 칸에 적는 꼴이 되어 두 가지를 뒤섞는다. 주기는 payoutFreq 에 따로 적는다.
+    type: isCoveredCall(code) ? '커버드콜' : '일반',
     // 자산군(주식·채권·리츠·단기자금…). 월배당 전체로 넓히면서 파킹형
     // (CD금리·KOFR)까지 들어왔는데, 그것들은 월마다 돈이 나오기는 해도
     // 월지급 제안서의 주인공이 아니다. 가려 볼 수 있게 적어 둔다.
@@ -462,8 +583,15 @@ for (const [i, row] of universe.entries()) {
     lastDistDate: last?.date ?? null,
     distTtmSum: ttmSum,
     distTtmRate: ttmRate === null ? null : Number(ttmRate.toFixed(4)),
+    distTtmCount: ttmDist.length, // 창 안에서 실제로 더한 건수
+    distTtmFrom: String(TTM_FROM), // 창의 시작일. 값의 뜻을 나중에 되짚을 수 있어야 한다
     distTtmRateSource: theirRate,
     distTtmSumSource: theirSum,
+    distTtmMismatch: mismatch, // 대조가 어긋났으면 그대로 남긴다(월·주배당만 제외 사유)
+    payoutFreq,
+    payoutCount12m,
+    payoutMonths12m: paidMonths,
+    monthsListed,
     distMonths: months,
     dataComplete: true,
     adopted: why.length === 0,
@@ -517,7 +645,20 @@ const out = {
   rules: RULES,
   derived: {
     price: '마스터(getEtpMast)의 종가를 먼저 쓰고, 없으면 상세, 그래도 없으면 일별 시세의 최신 종가를 쓴다. 어느 쪽인지는 항목마다 priceSource 에 적는다. 상세는 장이 닫히면 시세 항목이 빠져서 기댈 수 없다.',
-    distTtmRate: '최근 12회 분배금 합계 ÷ 현재가 × 100. ETFCHECK 의 DIV_RATE_REAL 과 대조해 0.15%p 넘게 어긋나면 제외한다.',
+    distTtmRate:
+      '기준일이 **1년 전 오늘 이후**인 분배금의 합계 ÷ 현재가 × 100. 창의 시작일은 항목마다 ' +
+      'distTtmFrom 에, 더한 건수는 distTtmCount 에 적는다. 예전에는 "최근 12회" 로 냈는데, ' +
+      '월배당만 담을 때는 12회가 곧 12개월이라 맞았지만 분기배당의 12회는 3년치, 연배당의 ' +
+      '12회는 12년치라 주기를 넓히는 순간 거짓이 된다. ETFCHECK 의 DIV_RATE_REAL 과 대조한 ' +
+      '차이는 distTtmMismatch 에 남기되, 제외 사유로 거는 것은 월·주배당뿐이다 — 그쪽 값이 ' +
+      '어떤 창으로 낸 것인지 관찰로 확인하지 못했고, 기준이 다른 값끼리 견주어 멀쩡한 종목을 ' +
+      '떨어뜨릴 수는 없다.',
+    payoutFreq:
+      '최근 12개월 동안 분배한 **달 수**로 판정한다(getEtpItemDivOutline 의 연도별 MONTH 목록). ' +
+      '20회 이상 주배당 · 10~13회 월배당 · 3~6회 분기배당 · 1~2회 연배당 · 7~9회 비정기 · 0회 무분배. ' +
+      'ETFCHECK 분류에는 분기배당·연배당이 없어서(0609 계열은 고배당/월배당/주배당/리츠/커버드콜/MLP) ' +
+      '분류로는 고를 수 없다. 상장한 지 1년이 안 된 종목은 판정하지 않고 "판정 불가(상장 1년 미만)" 로 ' +
+      '적는다 — 여섯 달에 두 번 준 것을 분기배당이라 부르면 거짓이다.',
     volatility:
       '일간 기준가(NAV) 로그수익률의 표본표준편차 × √252 × 100. 몇 거래일치로 냈는지는 ' +
       'volatilityDays 에 적는다 — 250일을 달라고 해도 원천이 몇 개를 주는지는 원천 마음이므로, ' +
