@@ -47,9 +47,12 @@ const HEAD = 200;
    번호 붙은 제목(「9. 집합투자기구의 투자전략 및 수익구조」)은 문서에서 한 번만
    제목으로 쓰이므로, 목차를 뺀 뒤 첫 번째 것을 쓰는 것은 추측이 아니다. */
 const ANCHORS = [
-  ['summary', 'head', /요\s*약\s*정\s*보/, '요약정보 (간이투자설명서)'],
-  ['part1', 'head', /제\s*1\s*부[.\s]*모집\s*또는\s*매출/, '제1부 모집 또는 매출'],
-  ['part2', 'head', /제\s*2\s*부[.\s]*집합투자기구에\s*관한/, '제2부 집합투자기구'],
+  /* 요약정보는 **목차보다 앞**에 오는 문서가 많다. 목차 다음부터 보면 통째로
+     놓친다. 그래서 zone 'first' — 목차 쪽만 빼고 처음부터 보되 첫 쪽을 쓴다.
+     구간이 여러 쪽에 걸쳐도 창구가 짚는 것은 시작 쪽이다. */
+  ['summary', 'first', /요\s*약\s*정\s*보/, '요약정보 (간이투자설명서)'],
+  ['part1', 'first', /제\s*1\s*부[.\s]*모집\s*또는\s*매출/, '제1부 모집 또는 매출'],
+  ['part2', 'first', /제\s*2\s*부[.\s]*집합투자기구에\s*관한/, '제2부 집합투자기구'],
   ['manager', 'body', /\d+\s*\.\s*운용전문인력에\s*관한\s*사항/, '운용전문인력'],
   ['object', 'body', /\d+\s*\.\s*(집합투자기구의\s*)?투자목적\s*(및|,)?\s*/, '투자목적'],
   ['target', 'body', /\d+\s*\.\s*(집합투자기구의\s*)?투자대상/, '투자대상'],
@@ -57,7 +60,10 @@ const ANCHORS = [
   ['risk', 'body', /\d+\s*\.\s*(집합투자기구의\s*)?투자위험/, '투자위험'],
   ['trade', 'body', /\d+\s*\.\s*매입\s*,?\s*환매\s*,?\s*전환/, '매입·환매·전환절차'],
   ['fee', 'body', /\d+\s*\.\s*(집합투자기구의\s*)?보수\s*(및|,)\s*수수료/, '보수 및 수수료'],
-  ['tax', 'body', /\d+\s*\.\s*(집합투자기구의\s*)?과세/, '과세'],
+  /* 과세는 두 번 고쳐도 0% 였다. 원문을 찍어 보니 제목이 「과세」 로 시작하지
+     않았다 — 「14. 이익배분 및 과세에 관한 사항」 이고, 「이익 배분」 처럼 사이가
+     벌어진 문서도 있다. 짐작으로 세 번째 규칙을 쓰지 않고 원문대로 적는다. */
+  ['tax', 'body', /\d+\s*\.\s*이익\s*배\s*분\s*(및|,)?\s*과세/, '이익배분 및 과세'],
 ];
 
 const log = (s = '') => console.log(s);
@@ -82,17 +88,23 @@ function mapPages(pages) {
   }
   const from = toc + 1;
 
-  const found = {}, ambig = {}, miss = [], how = {};
+  const found = {}, ambig = {}, miss = [], how = {}, all = {};
   for (const [key, zone, re, what] of ANCHORS) {
     const hits = [];
-    for (let i = from; i < pages.length; i++) {
+    const start = zone === 'first' ? 0 : from;
+    for (let i = start; i < pages.length; i++) {
+      if (zone === 'first' && i === toc) continue;   // 목차에는 제목이 다 적혀 있다
       const t = pages[i];
-      if (re.test(zone === 'head' ? t.slice(0, HEAD) : t)) hits.push(i + 1);
+      if (re.test(zone === 'body' ? t : t.slice(0, HEAD))) hits.push(i + 1);
     }
+    all[key] = hits;
     if (!hits.length) { miss.push(what); continue; }
     if (zone === 'head') {
       if (hits.length === 1) { found[key] = hits[0]; how[key] = 'head'; }
       else ambig[key] = hits;
+    } else if (zone === 'first') {
+      found[key] = hits[0];
+      how[key] = hits.length === 1 ? 'first' : 'first(+' + (hits.length - 1) + ')';
     } else {
       /* 번호 붙은 제목은 문서에서 한 번만 제목으로 쓰인다. 뒤의 것들은
          상호참조라 첫 번째를 쓴다 — 다만 몇 곳에 나왔는지 함께 적어 둔다. */
@@ -100,7 +112,7 @@ function mapPages(pages) {
       how[key] = hits.length === 1 ? 'body' : 'body(+' + (hits.length - 1) + ')';
     }
   }
-  return { found, ambig, miss, how, toc: toc + 1 };
+  return { found, ambig, miss, how, all, toc: toc + 1 };
 }
 
 async function main() {
@@ -138,6 +150,13 @@ async function main() {
     } catch (e) { log(`  ✗ ${it.name.slice(0, 30)} — ${e.name}`); continue; }
 
     const m = mapPages(pages);
+    /* 'first' 자리는 「첫 쪽을 쓴다」 는 판단이 들어간다. 정말 그 구간의 시작인지
+       눈으로 확인할 수 있게 고른 쪽의 머리글을 함께 남긴다. 고객 앞에서 짚는
+       값이라 통계만 보고 넘어가지 않는다. */
+    m.peek = {};
+    for (const [key, zone] of ANCHORS) {
+      if (zone === 'first' && m.found[key]) m.peek[key] = pages[m.found[key] - 1].slice(0, 76);
+    }
     res.push({ ...it, pages: pages.length, ...m });
     if ((i + 1) % 10 === 0) log(`  … ${i + 1}/${pick.length}`);
   }
@@ -162,6 +181,12 @@ async function main() {
     }
     if (shown >= 12) break;
   }
+
+  head('요약정보로 고른 쪽이 정말 시작 쪽인가 (앞 10종목)');
+  res.slice(0, 10).forEach((r) => {
+    const p = r.found.summary;
+    log(`  ${r.name.slice(0, 26).padEnd(28)} ${p ? 'p.' + String(p).padStart(2) + ' (' + r.how.summary + ')  ' + r.peek.summary : '— 없음'}`);
+  });
 
   head('한 자리도 못 찾은 종목 (서식이 다른 문서)');
   const bad = res.filter((r) => Object.keys(r.found).length <= 2);
