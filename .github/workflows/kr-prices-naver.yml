@@ -17,6 +17,18 @@ name: 국내 일봉 네이버 판 수집
 # 네이버를 백 번씩 두드릴 까닭이 없다.
 
 on:
+  # **임시 방아쇠 — main 에 들어가면 지운다.**
+  # workflow_dispatch 는 파일이 기본 가지에 있어야 단추가 생긴다(없으면 404). 그런데
+  # 세 길 가운데 무엇이 살아 있는지는 **살아 있는 응답에 대고 돌려 봐야** 알 수 있고,
+  # 모르는 채로 main 에 넣을 수는 없다. 수급 수집기 때 쓴 것과 같은 방식이다.
+  push:
+    branches:
+      - 'claude/**'
+    paths:
+      - 'scripts/fetch_kr_prices_naver.py'
+      - 'scripts/verify_kr_prices_naver.py'
+      - '.github/workflows/kr-prices-naver.yml'
+
   workflow_dispatch:
     inputs:
       limit:
