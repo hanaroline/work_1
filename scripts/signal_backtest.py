@@ -18,6 +18,7 @@
 종목일 수가 아니다.** 그래서 신뢰구간은 종목이 아니라 **날짜 블록**으로 뽑는다.
 """
 
+import hashlib
 import json
 import math
 import os
@@ -499,6 +500,10 @@ def main(argv):
             report['horizons'][h][key] = agg
             sys.stderr.write('h=%d %s 끝\n' % (h, key))
 
+    # 이 성적이 어느 모델의 것인지 적어 둔다. build_signals.py 가 이것을 대조해
+    # 「지금 모델과 다르다」를 산출물에 남긴다.
+    report['engine_hash'] = hashlib.sha256(
+        open(os.path.join(ROOT, 'scripts', 'signal_lib.py'), 'rb').read()).hexdigest()[:16]
     add_verdict(report)
     sys.stderr.write('\n%s\n\n' % report['summary_ko'])
     js = json.dumps(report, ensure_ascii=False, indent=1)

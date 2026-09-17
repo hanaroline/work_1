@@ -8,6 +8,7 @@
 일이 흔하고 그 어긋남이 정보다. 하나로 뭉개면 그게 사라진다.
 """
 
+import hashlib
 import json
 import os
 import subprocess
@@ -28,6 +29,17 @@ OUT_DIR = os.path.join(ROOT, 'data', 'signals')
 # 시나리오 확률은 표본 20일 미만이면 내지 않는다. vol_backtest 가 세운 규칙을
 # 그대로 따른다 — 두 화면이 서로 다른 잣대로 확률을 내면 안 된다.
 MIN_SCENARIO_OBS = VB.MIN_OBS if hasattr(VB, 'MIN_OBS') else 20
+
+
+def engine_hash():
+    """엔진 파일의 지문. 성적이 어느 모델의 것인지 대조하는 데 쓴다.
+
+    signal_lib.py 하나만 본다 — build_signals.py 가 바뀌어도(화면에 실어 보낼
+    항목을 늘리는 따위) 성적은 달라지지 않기 때문이다. 셈이 달라지는 자리는
+    signal_lib.py 다.
+    """
+    p = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'signal_lib.py')
+    return hashlib.sha256(open(p, 'rb').read()).hexdigest()[:16]
 
 
 def kst_now():
@@ -316,10 +328,33 @@ def main(argv):
     # 오히려 평상시보다 나빴다는 뜻이다. 그걸 화면 맨 아래 한계 문단에만 적어 두면
     # 종목 하나를 띄워 놓고 「적극 매수」를 보는 사람에게는 닿지 않는다.
     result['market_caveats'] = {}
+    result['engine_hash'] = engine_hash()
     btp = os.path.join(out_dir, 'backtest.json')
     if os.path.exists(btp):
         try:
             bt = json.load(open(btp, encoding='utf-8'))
+            # **성적이 어느 모델의 것인지 대조한다.**
+            #
+            # 백테스트는 손으로만 돌리므로(성적이 날마다 바뀌면 안 되니까) 모델을
+            # 고친 뒤 다시 돌리는 것을 잊으면, 화면은 새 모델의 신호를 내면서
+            # 옛 모델의 성적을 「이 신호는 이렇습니다」로 싣게 된다. 사람이 기억해서
+            # 막을 일이 아니다 — 엔진 해시를 양쪽에 적어 두고 어긋나면 적는다.
+            # 해시가 **없는** 것도 낡은 것으로 친다. 확인할 수 없는 것을 괜찮다고
+            # 치면, 해시를 붙이기 전에 만들어진 판이 조용히 통과한다 — 실제로
+            # 이 저장소에서 그 일이 한 번 났다.
+            bh = bt.get('engine_hash')
+            if bh != result['engine_hash']:
+                result['backtest_stale'] = {
+                    'backtest_engine': bh or '(적히지 않음)',
+                    'current_engine': result['engine_hash'],
+                    'text': (('아래 성적은 **지금 모델의 것이 아닙니다.** signal_lib.py 가 '
+                              '백테스트를 돌린 뒤에 바뀌었습니다.')
+                             if bh else
+                             ('아래 성적이 **어느 모델의 것인지 적혀 있지 않습니다.** '
+                              '엔진 해시를 붙이기 전에 만들어진 판입니다.')) +
+                            ' 다시 돌리기 전까지는 성적을 그대로 읽지 마십시오.'}
+                sys.stderr.write('::warning::backtest.json 이 지금 모델의 것이 아니다 '
+                                 '(%s != %s)\n' % (bh or '없음', result['engine_hash']))
             for mk in ('KR', 'US'):
                 ds = []
                 for h, hv in (bt.get('horizons') or {}).items():
