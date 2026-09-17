@@ -299,9 +299,11 @@ if (scr.size < 1000) {
   throw new Error(`스크리너에서 국내가 ${scr.size}종목뿐입니다. 응답 모양이 바뀌었는지 확인하십시오.`);
 }
 
+const skippedNoDiv = [];
+
 // ── 모집단 ────────────────────────────────────────────────────────────
 //
-// **순자산 300억 이상 ∨ 월배당 분류**. 892종목이다.
+// **순자산 300억 이상 ∨ 월배당 분류**, 그중 분배 기록이 있는 종목.
 //
 // 분기·연배당까지 담으려면 월배당 분류(192종목)만으로는 안 된다 — ETFCHECK
 // 분류에는 분기배당도 연배당도 없어서, 지급주기는 실제 지급한 달로 판정해야
@@ -325,6 +327,21 @@ if (scr.size < 1000) {
 const MIN_UNIVERSE_AUM = 30_000_000_000;
 const universe = [...scr.values()]
   .filter((r) => (num(r.F15028) ?? 0) >= MIN_UNIVERSE_AUM || isMonthlyCtg(r.F16013))
+  // 분배한 적이 없는 종목은 부르지 않는다.
+  //
+  // 스크리너가 종목마다 마지막 분배일(DIV_DATE)을 공짜로 준다. 그게 비어
+  // 있으면 분배 기록이 아예 없다는 뜻이고, 그런 종목은 연 분배율을 낼 수 없어
+  // 이 문서에 담을 수가 없다. 2026-09 판에서 그런 종목 72개를 확인해 보니
+  // **전부** 무분배(18) 아니면 상장 1년 미만(10)이었고 분배한 종목은 하나도
+  // 없었다(나머지는 예산에 걸려 확인 못 함).
+  //
+  // 빼도 놓치지 않는다. 스크리너는 매달 새로 받으므로, 그 종목이 분배를
+  // 시작하면 다음 달에 DIV_DATE 가 생기면서 저절로 들어온다.
+  .filter((r) => {
+    if (r.DIV_DATE || r.REC_DIV_DATE) return true;
+    skippedNoDiv.push(r.F16013);
+    return false;
+  })
   // 월배당을 먼저, 그다음 순자산 큰 순. 예산에 걸려 중간에 멈추더라도 지금
   // 쓰고 있는 종목부터 챙긴다 — 잘리는 자리는 늘 뒤쪽이어야 한다.
   .sort((a, b) => {
@@ -335,6 +352,7 @@ const universe = [...scr.values()]
   });
 
 const mastOf = new Map(mast.filter((r) => r.F16013).map((r) => [r.F16013, r]));
+console.log(`분배 기록이 없어 부르지 않는 종목 ${skippedNoDiv.length}개 (호출 0회)`);
 console.log(
   `모집단 ${universe.length}종목 — ` +
     `월배당 분류 ${universe.filter((r) => isMonthlyCtg(r.F16013)).length}, ` +
@@ -343,6 +361,37 @@ console.log(
 if (universe.length < 100) {
   throw new Error(`모집단이 ${universe.length}종목뿐입니다. 분류 코드나 응답 모양이 바뀌었는지 확인하십시오.`);
 }
+
+// ── 분배 이력 곳간 ────────────────────────────────────────────────────
+//
+// 종목마다 다섯 번 묻는데, 그중 세 번(분배 개요·분배 이력·월별 분배)은
+// **분배가 새로 일어나지 않았으면 지난달과 똑같은 답**이 온다. 892종목이면
+// 2,676번을 같은 답 받자고 묻는 셈이고, 그러다 원천이 막아 지난 판에서
+// 194종목이 403 으로 떨어졌다.
+//
+// 무효화 신호가 정확히 있다. 스크리너가 매번 공짜로 주는 마지막 분배일
+// (REC_DIV_DATE)이 곳간에 적어 둔 것과 같으면, 그 사이 새 분배가 없었다는
+// 뜻이므로 분배 이력이 바뀌었을 수가 없다. 추측이 아니라 확정이다. 다르면
+// 그 종목만 다시 묻는다.
+//
+// 변동성과 거래대금은 곳간에 넣지 않는다. 그것들은 분배와 상관없이 날마다
+// 바뀌므로 매번 새로 받아야 한다. 아껴도 되는 것만 아낀다.
+//
+// 연 분배율은 곳간에 **넣지 않고 매번 다시 계산한다.** 창(窓)이 달마다
+// 움직여서 지난달 합계를 그대로 쓰면 창 밖으로 나간 분배가 남아 있게 된다.
+// 곳간에는 분배 **내역**을 넣고, 창은 이번 달 것으로 다시 씌운다.
+const CACHE = 'data/etf_dist_cache.json';
+const cache = (() => {
+  try {
+    const j = JSON.parse(fs.readFileSync(CACHE, 'utf8'));
+    return j && typeof j === 'object' ? j.items || {} : {};
+  } catch {
+    return {};
+  }
+})();
+console.log(`분배 이력 곳간 ${Object.keys(cache).length}종목`);
+let reused = 0;
+let refetched = 0;
 
 // 예산. 워크플로 한도가 75분이라 55분에서 멈춘다. 거기까지 모은 것은 그대로
 // 쓰고, 못 간 종목은 "수집 안 함" 으로 남긴다. 한도에 잘려 아무것도 못 남기는
@@ -474,22 +523,47 @@ for (const [i, row] of universe.entries()) {
   // 보수(getEtpLatestFee)를 뺐다 — 그 둘이 주던 값이 스크리너 한 번에 다
   // 들어 있다. 상세는 장이 닫히면 시세 항목이 빠져서 제일 자주 말썽을
   // 부리던 쪽이기도 했다. 892종목 × 5번이면 33분이다.
+  // 곳간에 있고 마지막 분배일이 그대로면 분배 쪽 세 번은 건너뛴다.
+  const recDiv = String(row.REC_DIV_DATE || row.DIV_DATE || '');
+  const cached = cache[code];
+  const cacheOk = Boolean(cached && recDiv && cached.recDivDate === recDiv && Array.isArray(cached.hist));
+
   let hist;
   let monthly;
   let navHist;
   let term;
   let divOutline;
   try {
-    // 지급주기를 판정할 원천. 연도별 지급 횟수와 지급한 달 목록을 준다.
-    divOutline = await api(`/user/etp/getEtpItemDivOutline?code=${code}`);
-    await sleep(250);
-    // limit 을 36 에서 60 으로 올린다. 최근 12개월 합계를 건수가 아니라 창으로
-    // 내게 되면서, 주배당 종목은 한 해에만 오십 건이 넘기 때문이다. 36 이면
-    // 그런 종목의 1년치가 잘려 합계가 실제보다 작게 나온다.
-    hist = await api(`/user/etp/getEtpItemCashHist?code=${code}&limit=60`);
-    await sleep(250);
-    monthly = await api(`/user/etp/getEtpItemCashMonthly?code=${code}`);
-    await sleep(250);
+    if (cacheOk) {
+      // 곳간에서 꺼내 쓴다. 원천을 부르지 않는다.
+      divOutline = cached.divOutline || [];
+      hist = cached.hist || [];
+      monthly = cached.monthly0 ? [cached.monthly0] : [];
+      reused++;
+    } else {
+      refetched++;
+      // 지급주기를 판정할 원천. 연도별 지급 횟수와 지급한 달 목록을 준다.
+      divOutline = await api(`/user/etp/getEtpItemDivOutline?code=${code}`);
+      await sleep(250);
+      // limit 을 36 에서 60 으로 올린다. 최근 12개월 합계를 건수가 아니라 창으로
+      // 내게 되면서, 주배당 종목은 한 해에만 오십 건이 넘기 때문이다. 36 이면
+      // 그런 종목의 1년치가 잘려 합계가 실제보다 작게 나온다.
+      hist = await api(`/user/etp/getEtpItemCashHist?code=${code}&limit=60`);
+      await sleep(250);
+      monthly = await api(`/user/etp/getEtpItemCashMonthly?code=${code}`);
+      await sleep(250);
+      // 곳간에는 **쓰는 칸만** 담는다. 응답을 통째로 담으면 892종목에 6MB 가
+      // 되어 달마다 그 덩치가 저장소에 커밋되고, 무엇이 달라졌는지도 안 보인다.
+      cache[code] = {
+        recDivDate: recDiv,
+        checkedAt: new Date().toISOString().slice(0, 10),
+        divOutline: (divOutline || []).map((r) => ({ DATE: r.DATE, MONTH: r.MONTH })),
+        hist: (hist || []).map((h) => ({ F12506: h.F12506, F31892: h.F31892, DIV_RATE: h.DIV_RATE })),
+        monthly0: monthly?.[0]
+          ? { DIV_AMT_YEAR: monthly[0].DIV_AMT_YEAR, DIV_RATE_REAL: monthly[0].DIV_RATE_REAL }
+          : null,
+      };
+    }
     navHist = await api(`/user/etp/getSimpleEtpHist?F16013=${code}&limit=250&type=diff`);
     await sleep(250);
     term = await api(`/user/etp/getEtpTermHist?F16013=${code}&gubun=1Y`);
@@ -842,6 +916,28 @@ const out = {
 };
 fs.mkdirSync(path.dirname(OUT), { recursive: true });
 fs.writeFileSync(OUT, JSON.stringify(out, null, 2) + '\n');
+
+// 곳간을 남긴다. 이번에 새로 받은 종목이 다음 달에는 호출 없이 쓰인다.
+//
+// 이번 판에서 예산에 걸려 못 간 종목은 곳간에도 없으므로, 다음 달에는 그만큼
+// 남는 시간이 그쪽으로 간다. 달을 거듭할수록 앞쪽이 싸지고 뒤쪽이 채워진다.
+fs.writeFileSync(
+  CACHE,
+  JSON.stringify(
+    {
+      note:
+        '분배 쪽 세 호출(개요·이력·월별)의 응답을 그대로 담아 둔다. 스크리너가 주는 ' +
+        '마지막 분배일(REC_DIV_DATE)이 그대로면 새 분배가 없었다는 뜻이므로 다시 묻지 않는다. ' +
+        '연 분배율은 여기서 꺼내 쓰지 않고 매번 이번 달 창으로 다시 계산한다 — 창이 달마다 움직이기 때문이다.',
+      updatedAt: new Date().toISOString(),
+      count: Object.keys(cache).length,
+      items: cache,
+    },
+    null,
+    2,
+  ) + '\n',
+);
+console.log(`곳간 ${Object.keys(cache).length}종목 (이번 판 재사용 ${reused} · 새로 받음 ${refetched})`);
 
 console.log(
   `\n${OUT} 에 적었습니다 — 모집단 ${universe.length}, 수집 ${items.length}, ` +
