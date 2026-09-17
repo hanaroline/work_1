@@ -10,7 +10,9 @@ A = 'https://claude.ai/code/artifact/'
 
 
 def art(uid):
-    return A + uid
+    # 예전 아티팩트는 uuid 하나로 주소가 만들어졌지만, 새로 올린 것은 짧은
+    # 토큰에 경로도 다르다(claude.ai/artifact/…). 이미 완성된 주소면 그대로 쓴다.
+    return uid if uid.startswith('http') else A + uid
 
 
 # ─── 주제별 산출물 ────────────────────────────────────────────────
@@ -214,18 +216,20 @@ GROUPS = [
              '2026-09-04', 'e0d4d73a-22db-4d93-a0c5-6ab177711daa', True),
             ('ETF 편입종목 조회', 'ETF Holdings Lookup',
              '국내·미국·홍콩·일본·중국 상장 ETF 1,353종목의 상위 10개 편입종목과 비중. '
-             '9/9 수집분, 총수익률 단일 기준. 목록에서 체크로 최대 8개를 담아 겹침을 '
+             '9/13 수집분, 총수익률 단일 기준. 목록에서 체크로 최대 8개를 담아 겹침을 '
              '견주고, 종목 역조회·랭킹까지 봅니다. 사용법 탭에 화면 그림 8장과 '
-             '내려받기 단추가 함께 실렸습니다. '
+             '내려받기 단추가 함께 실렸습니다. 야후에 일봉이 없는 국내 종목은 네이버 '
+             '값으로 채우고 그 사실을 종목마다 밝힙니다. '
              '(8/31~9/10 에 올라가 있던 판은 빌드가 잘려 빈 화면이었습니다. 고쳐 올렸습니다.)',
              'Top-10 holdings and weights for 1,353 ETFs listed in Korea, the US, Hong Kong, '
-             'Japan and China, on Sep 9 data and a total-return basis. Tick up to eight in '
+             'Japan and China, on Sep 13 data and a total-return basis. Tick up to eight in '
              'the list to compare overlap; reverse lookup and rankings included. The How-to '
-             'tab now carries its eight screenshots and working download buttons. '
+             'tab carries its eight screenshots and working download buttons. Korean names '
+             'with no Yahoo daily series are filled from Naver, and each such name says so. '
              '(The edition posted Aug 31–Sep 10 was a truncated build that rendered blank; '
              'this one is fixed.)',
              'ETF 편입종목 조회 도구', 'ETF holdings lookup tool',
-             '2026-09-09', 'c3f08597-8d47-45ce-ba27-17fd26a63dc7', True),
+             '2026-09-13', 'c3f08597-8d47-45ce-ba27-17fd26a63dc7', True),
             ('ETF 편입종목 조회 사용법', 'ETF Holdings Lookup · How-to',
              '화면 여섯 개를 실제 화면 그림 8장과 함께 짚어 주는 안내서. 「숫자를 읽기 전에」 '
              '절에는 만들면서 실제로 틀렸던 것들 — 기준일 하루 차이로 1개월 수익률이 '
@@ -277,6 +281,21 @@ GROUPS = [
              'with 267 events baked into the file.',
              '증시 일정 화면', 'Market calendar screen',
              '2026-09-09', '1bde1435-33ce-4cd6-97d6-6e3ef06d26c0', True),
+            ('TV · 라디오 온에어', 'TV & Radio On-Air',
+             '지상파·보도채널 라디오를 TV 처럼 보면서 듣는 화면. 방송사 공식 유튜브 '
+             '라이브를 정식 임베드로 얹고, 영상이 없는 시간대와 지역·인터넷 방송은 '
+             '소리만으로 잇습니다. 아티팩트에는 올릴 수 없습니다 — 유튜브 임베드와 '
+             '방송 스트림이 모두 외부 요청이라 아티팩트 안에서는 막히고, 채널 목록도 '
+             '따로 받아 오는 파일이라 빈 화면이 됩니다. 저장소를 내려받아 로컬 서버로 '
+             '열어야 동작합니다(`radio-launch.cmd`).',
+             'Terrestrial and news radio watched like TV: the broadcasters\' official '
+             'YouTube live streams embedded properly, with audio-only for the hours and '
+             'stations that have no video. It cannot be published as an artifact — the '
+             'YouTube embeds, the audio streams and the channel list are all outbound '
+             'requests, which artifacts block, leaving an empty shell. Run it from the '
+             'repository over a local server instead.',
+             'TV · 라디오 온에어 화면', 'TV/radio on-air screen',
+             '2026-09-13', None, ('아티팩트 불가 · 저장소', 'Cannot publish · in repo')),
         ]),
     dict(
         ko='세금 · 계산기 · 영업 도구', en='Tax, Calculators & Sales Tools',
@@ -301,6 +320,34 @@ GROUPS = [
              'download buttons do not work inside an artifact.',
              '완전판매 스크립트 자동화 시스템', 'Compliance script automation',
              '2026-09-06', '6e974295-f4c2-49e3-8bea-33775ef7ca4b', True),
+            ('완전판매 스크립트 · 상품설명의무 전용판', 'Compliance Script · Explanation Duty',
+             '같은 시스템에서 적합성원칙을 걷어내고 상품설명의무만 남긴 창구용 판. '
+             '펀드는 국내·해외를 가리지 않고 3,191건이 한 목록에 나오고, 고른 상품이 '
+             '해외면 해외 평가표로 저절로 바뀝니다. 배점도 설명의무 몫만 셉니다'
+             '(펀드 70 · ELS 60 · 채권 75점). 읽기 모드·셀프채점·투자설명서 판독은 '
+             '전체판과 같고, 인터넷 없이 동작합니다.',
+             'The same system with the suitability half removed — product explanation duty '
+             'only. All 3,191 funds appear in one list regardless of domestic or overseas, '
+             'and picking an overseas fund switches the checklist automatically. Scoring '
+             'counts the explanation-duty points alone (fund 70, ELS 60, bond 75). Reading '
+             'mode, self-scoring and prospectus parsing are unchanged, and it runs offline.',
+             'ELS · 펀드 투자설명서 판독', 'ELS/fund prospectus parsing',
+             '2026-09-15', 'https://claude.ai/artifact/9bFnJrrFeH7rMYtLGmJE7b', True),
+            ('월배당 ETF 고객제안서', 'Monthly-Distribution ETF Proposal',
+             '투자금액을 넣으면 매월 얼마를 받게 되는지 보여 주는 엑셀 한 장. 최대 '
+             '5종목까지 비율이나 금액으로 나눠 담고, 세전·세후 월·연 분배금과 '
+             '1천만~10억 금액별 표가 함께 나옵니다. 종목은 이름이 아니라 ETFCHECK '
+             '분류(월배당)로 고르고 매월 1일 자동으로 갱신됩니다 — 이름으로 거르면 '
+             '운용사가 이름을 바꿀 때 목록이 흔들리기 때문입니다. 엑셀 파일이라 '
+             '아티팩트 페이지로 열 수 없어 저장소에서 받아야 합니다.',
+             'One spreadsheet that turns an investment amount into what the client receives '
+             'each month — up to five ETFs split by weight or by amount, with pre- and '
+             'post-tax monthly and annual distributions and a table across amounts. Holdings '
+             'are chosen by ETFCHECK\'s monthly-distribution category rather than by fund '
+             'name (names change), refreshed on the first of each month. Being a spreadsheet, '
+             'it cannot open as an artifact page — take it from the repository.',
+             '월배당 ETF 제안서', 'Monthly-distribution ETF proposal',
+             '2026-09-16', None, ('엑셀 · 저장소', 'Spreadsheet · in repo')),
             ('마포WM 모바일 창구', 'Mapo WM Mobile Desk',
              '고객에게 문자로 보내는 한 장. 비대면 계좌개설 6종과 자주 찾는 업무 7종을 '
              '눌러 바로 진행하게 만들었습니다. 링크는 마포WM으로 개설되는 실제 계좌개설 '
@@ -476,6 +523,20 @@ GROUPS = [
              'An arcade shooter built in the same session.',
              'Tetris game', 'Tetris game',
              '2026-07-09', '189bc251-61dc-409b-9b78-df39b8f0a092', True),
+            ('세미나 중간 영상 클립', 'Seminar Video Clips',
+             '세미나 슬라이드 한가운데에 방송 영상을 트는 자리를 만든 작업입니다. '
+             '덱 생성기(`make_deck.mjs`)가 클립 자리를 슬라이드에 넣고, '
+             '`verify_deck_clips.py` 가 낸 PPTX 의 압축 규격까지 점검합니다 — '
+             '첫 칸이 `[Content_Types].xml` 이 아니면 파워포인트가 파일을 열지 '
+             '못하기 때문입니다. 산출물이 생성기와 점검 스크립트라 따로 볼 화면이 '
+             '없어 저장소 경로만 적습니다.',
+             'Work that opens a slot in the middle of a seminar deck to play broadcast '
+             'video. The deck generator places the clip slot, and a checker validates the '
+             'emitted PPTX down to its zip layout — PowerPoint refuses the file unless '
+             '`[Content_Types].xml` is the first entry. The output is tooling, so there is '
+             'no page to view; the repository path is recorded instead.',
+             '세미나 영상 클립', 'Seminar video clips',
+             '2026-09-16', None, ('생성기 · 저장소', 'Tooling · in repo')),
         ]),
 ]
 
@@ -489,6 +550,12 @@ FILES = [
 
 # 아티팩트가 없는 세션 (정직한 결산)
 NOARTIFACT = [
+    ('연습용 화면 2건 (카운터 · 자기소개)', 'Two practice pages (counter, profile)',
+     '자바스크립트를 익히려고 만든 연습 화면입니다 — 숫자를 올리고 내리는 카운터와 '
+     '「홍길동」 이름이 그대로 들어 있는 자기소개 한 장. 업무 산출물이 아니라 '
+     '자료실에 올리지 않았습니다.',
+     'Two pages made to practise JavaScript — a counter, and a profile page still carrying '
+     'its placeholder name. Not work deliverables, so they are not published here.'),
     ('주식 투자 자료 검증 · 2건', 'Stock material verification (2 sessions)',
      '남의 자료를 원문과 대조해 고친 작업입니다. 결과가 검증 대상 자료에 반영돼 별도 산출물이 없습니다.',
      'Line-by-line verification of existing material; the result went back into that '
@@ -717,13 +784,13 @@ h.append('<div class="lang" role="radiogroup" aria-label="언어 선택 / Langua
 h.append('</div>')
 
 h.append(bi('세션 산출물 자료실', 'Session Work Library', 'h1'))
-h.append(bi('클로드 코드 세션 47개가 남긴 최종 작업본을 주제별로 모았습니다. '
+h.append(bi('클로드 코드 세션 53개가 남긴 최종 작업본을 주제별로 모았습니다. '
             '제목을 누르면 해당 아티팩트가 열립니다.',
-            'The final deliverable of every one of 47 Claude Code sessions, grouped by '
+            'The final deliverable of every one of 53 Claude Code sessions, grouped by '
             'subject. Each title opens its artifact.', 'p', 'sub'))
 
 h.append('<div class="stats">')
-for kolab, enlab, val in [('세션', 'Sessions', '47'),
+for kolab, enlab, val in [('세션', 'Sessions', '53'),
                           ('주제', 'Subjects', str(len(GROUPS))),
                           ('새로 올린 아티팩트', 'Newly published', str(new_count)),
                           ('색인에 실은 항목', 'Indexed items', str(rows_total))]:
@@ -809,10 +876,10 @@ for (tko, ten, dko, den) in NOARTIFACT:
 h.append('</div></section>')
 
 h.append('<footer>')
-h.append(bi('기준 2026-09-10 · 저장소 <code>hanaroline/work_1</code> · '
+h.append(bi('기준 2026-09-17 · 저장소 <code>hanaroline/work_1</code> · '
             '세션별 브랜치의 마지막 커밋에서 산출물을 뽑았습니다. 이 색인은 월·목 아침에 '
             '스스로 갱신됩니다.',
-            'As of 2026-09-10 · repository <code>hanaroline/work_1</code> · deliverables taken '
+            'As of 2026-09-17 · repository <code>hanaroline/work_1</code> · deliverables taken '
             'from the last commit on each session branch. This index refreshes itself on '
             'Monday and Thursday mornings.', 'p'))
 h.append(bi('세션 목록에는 최근 35개가 잡힙니다. 그보다 앞선 브랜치 두 개'
@@ -826,6 +893,20 @@ h.append(bi('세션 목록에는 최근 35개가 잡힙니다. 그보다 앞선 
             'artifacts are the original; the two factsheets were found in the artifact list '
             'but the session that produced them could not be identified from the session '
             'listing.', 'p'))
+h.append(bi('<b>9/17 기준 밀린 것 —</b> <code>국내·미국 100대 기업</code>·'
+            '<code>증시 일정 캘린더</code>·<code>증권사 리포트 다이제스트</code>·'
+            '<code>완전판매 스크립트</code>(전체판) 는 저장소에 더 새 판이 있지만 이번 '
+            '회차에 갈아 끼우지 못했습니다. 아티팩트를 덮어쓰려면 지금 올라가 있는 판을 '
+            '먼저 통째로 다시 읽어야 하는데, 이 화면들은 데이터를 파일에 담고 있어 그 '
+            '과정이 한 건에 수천 줄입니다. 각 화면은 자기가 안고 있는 자료의 시점을 '
+            '스스로 밝히므로 틀린 값을 보여 주지는 않습니다.',
+            '<b>Behind as of Sep 17 —</b> newer builds of <code>Korea / US Top-100</code>, '
+            '<code>Market Calendar</code>, <code>Broker Report Digest</code> and the full '
+            '<code>Compliance Script</code> exist in the repository but were not swapped in '
+            'this round: overwriting an artifact requires re-reading the published build in '
+            'full, and these pages carry their data inline, which runs to thousands of lines '
+            'each. Every one of them states the date of the data it holds, so none of them '
+            'shows a wrong figure.', 'p'))
 h.append(bi('<b>바로잡습니다 —</b> <code>ETF 편입종목 조회</code> 는 8/31 부터 9/10 까지 '
             '빈 화면이었습니다. 아티팩트용 조각을 뽑는 스크립트가 본문을 자바스크립트 '
             '문자열 안의 <code>&lt;/body&gt;</code> 에서 잘라내, 마지막 스크립트가 닫히지 '
