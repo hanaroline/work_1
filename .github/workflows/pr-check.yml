@@ -1,0 +1,202 @@
+name: PR 점검
+
+# **이 저장소에 처음 붙는 PR CI 다.** 여기 있는 워크플로 열여덟은 모두 예약이거나
+# 특정 파일이 밀렸을 때 도는 수집기라, PR 에서 도는 것이 하나도 없었다 — 무엇을
+# 고쳐 올리든 사람이 눈으로 보는 것 말고는 걸러 주는 것이 없었다.
+#
+# 무엇을 보는가.
+#   기본   — 파이썬 대본이 컴파일되는가, 워크플로 YAML 과 자료 JSON 이 읽히는가
+#   변동성 — 이력·모델을 **실제로 다시 만들고 재검산을 돌려** 통과하는가,
+#            그 자료로 화면이 브라우저에서 깨지지 않는가
+#
+# **자료 파일이 커밋된 것과 같은지는 보지 않는다.** 지수 일봉은 kr100-data 가지에
+# 있고 날마다 자라므로, 다시 만들면 커밋된 것과 당연히 달라진다. 그래서 「같은가」가
+# 아니라 「스스로 아귀가 맞는가」를 본다 — 커밋된 판과 새로 만든 판 둘 다에 대고.
+#
+# 자료를 커밋하지 않는다(권한도 읽기뿐이다). 이 워크플로는 보기만 한다.
+
+on:
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+# 같은 PR 에 새로 밀면 앞의 것은 끊는다 — 지난 커밋의 성적은 쓸 데가 없다.
+concurrency:
+  group: pr-check-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  basic:
+    name: 기본 — 문법과 자료 읽기
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: 파이썬 대본이 컴파일되는가
+        run: |
+          # 이 저장소의 파이썬은 표준 라이브러리만 쓰므로 깔 것이 없다.
+          # 오타 하나로 예약 수집이 통째로 죽는 것을 여기서 막는다.
+          python3 -m compileall -q scripts/ || exit 1
+          echo "대본 $(ls scripts/*.py | wc -l) 개 컴파일 통과"
+
+      - name: 워크플로 YAML 이 읽히는가
+        run: |
+          python3 -m pip install --quiet pyyaml
+          python3 - <<'PY'
+          import glob, sys, yaml
+          bad = []
+          for f in sorted(glob.glob('.github/workflows/*.yml')):
+              try:
+                  d = yaml.safe_load(open(f, encoding='utf-8'))
+              except Exception as e:
+                  bad.append((f, str(e))); continue
+              # YAML 은 맨 앞의 on: 을 **참(True)** 으로 읽는다. 있는지만 본다.
+              if not isinstance(d, dict) or 'jobs' not in d:
+                  bad.append((f, 'jobs 가 없습니다'))
+          for f, why in bad:
+              print(f'::error file={f}::{why}')
+          print(f'워크플로 {len(glob.glob(".github/workflows/*.yml"))} 개 가운데 {len(bad)} 개 어긋남')
+          sys.exit(1 if bad else 0)
+          PY
+
+      - name: 자료 JSON 이 읽히는가
+        run: |
+          python3 - <<'PY'
+          import glob, json, os, sys
+
+          # **raw/ 는 건너뛴다.** 수집기가 파싱에 실패했을 때 무슨 응답을 받았는지
+          # 남겨 두는 진단물이라, JSON 이 아닌 것이 정상이다 — 주소 한 줄 뒤에
+          # 404 본문이 붙어 있거나(`session_index.json`) `<!-- 덤프: … -->` 머리글이
+          # 앞에 달려 있다(`detail_37480.json`). 처음 이 검사를 붙였을 때 서른한
+          # 개가 걸렸는데, 걸린 것이 흠이 아니라 검사가 틀린 것이었다.
+          SKIP = ('/raw/',)
+
+          bad, n, skipped = [], 0, 0
+          for f in sorted(glob.glob('data/**/*.json', recursive=True)):
+              if any(s in '/' + f.replace(os.sep, '/') for s in SKIP):
+                  skipped += 1
+                  continue
+              n += 1
+              try:
+                  json.load(open(f, encoding='utf-8'))
+              except Exception as e:
+                  bad.append((f, str(e)[:120]))
+          for f, why in bad:
+              print(f'::error file={f}::{why}')
+          print(f'자료 {n} 개 가운데 {len(bad)} 개 어긋남 (진단물 {skipped} 개는 건너뜀)')
+          sys.exit(1 if bad else 0)
+          PY
+
+  volatility:
+    name: 변동성 — 모델 재검산과 화면
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: 커밋된 자료가 스스로 아귀가 맞는가
+        # 손으로 고친 수가 섞여 들어오는 것을 여기서 잡는다. 자료가 아직 없는
+        # PR(대본만 고친 첫 판 따위)에서는 건너뛴다.
+        run: |
+          if [ -f data/volatility/latest.json ] && [ -f data/volatility/history.json ]; then
+            python3 scripts/verify_volatility.py
+          else
+            echo "::notice::커밋된 변동성 자료가 없어 건너뜁니다"
+          fi
+
+      # 지수 일봉은 기본 가지에 없다 — kr100-data 가지에 있다.
+      #
+      # **refspec 을 손으로 적는다.** `git fetch origin kr100-data` 만 하면
+      # FETCH_HEAD 만 서고 `origin/kr100-data` 는 안 생긴다 — actions/checkout 이
+      # 만드는 작업본은 원격 refspec 이 `+refs/heads/main:refs/remotes/origin/main`
+      # 하나뿐이기 때문이다. 수집 대본은 `git show origin/kr100-data:...` 로 읽으므로
+      # 그러면 거기서 죽는다. 사람 기계의 클론은 refspec 이 넓어 손으로 돌릴 때는
+      # 통과한다 — 러너에서만 드러나는 자리다.
+      - name: 종목 일봉 가지 받기
+        run: |
+          for i in 1 2 3 4; do
+            if git fetch --depth 1 origin \
+                 '+refs/heads/kr100-data:refs/remotes/origin/kr100-data'; then
+              git rev-parse --verify origin/kr100-data >/dev/null
+              echo "받음 (시도 $i)"; exit 0
+            fi
+            echo "실패 — 다시 시도한다 ($i/4)"; sleep $((i * i * 2))
+          done
+          echo "::error::kr100-data 가지를 받지 못했습니다"
+          exit 1
+
+      - name: 이력·모델을 다시 만든다
+        # 커밋된 것과 같은지는 보지 않는다 — kr100-data 는 날마다 자라므로
+        # 다시 만들면 당연히 달라진다. 여기서 보는 것은 **대본이 도는가** 와
+        # **프록시가 아직 코스피를 대신할 자격이 있는가**(상관 0.97 문턱)이다.
+        run: |
+          python3 scripts/build_vol_history.py
+          python3 scripts/build_volatility.py
+
+      - name: 새로 만든 자료를 재검산한다
+        run: |
+          python3 scripts/verify_volatility.py | tee /tmp/verify.txt
+          code=${PIPESTATUS[0]}
+          {
+            echo '### 변동성 모델 재검산'
+            echo '```'
+            cat /tmp/verify.txt
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+          exit $code
+
+      - name: 한 파일 판 만들기
+        run: python3 scripts/make_volatility_offline.py --out /tmp/volatility-offline.html
+
+      - name: 브라우저 준비
+        # 세션 시작 갈고리(.claude/hooks/session-start.sh)가 박아 쓰는 판과 같게
+        # 맞춘다. 러너와 세션이 다른 판을 쓰면 한쪽에서 통과한 것이 다른 쪽에서 깨진다.
+        run: |
+          npm i -D playwright@1.56.1 --no-audit --no-fund
+          npx playwright install --with-deps chromium
+
+      - name: 화면이 브라우저에서 깨지지 않는가
+        # 재검산은 **수**가 맞는지를 본다. 자료가 다 맞아도 화면은 깨진다 —
+        # 칸 이름을 바꾸면 화면이 undefined 를 찍고, 차트 라이브러리를 못 찾으면
+        # 그림 자리가 통째로 빈다. 그건 열어 봐야 드러난다.
+        run: |
+          python3 -m http.server 8000 >/dev/null 2>&1 &
+          for i in $(seq 1 20); do
+            curl -sf -o /dev/null http://localhost:8000/docs/volatility/ && break
+            sleep 1
+          done
+          node scripts/check_volatility_page.mjs \
+            --base http://localhost:8000 \
+            --offline /tmp/volatility-offline.html
+
+      - name: 어긋났을 때 화면을 남긴다
+        if: failure()
+        run: |
+          node -e "
+            const { chromium } = require('playwright');
+            (async () => {
+              const b = await chromium.launch();
+              const p = await b.newPage({ viewport: { width: 1180, height: 1400 } });
+              await p.goto('http://localhost:8000/docs/volatility/', { waitUntil: 'networkidle' });
+              await p.waitForTimeout(1500);
+              await p.screenshot({ path: 'pr-check-volatility.png', fullPage: true });
+              await b.close();
+            })();
+          " || true
+
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: 변동성-화면
+          path: pr-check-volatility.png
+          if-no-files-found: ignore
