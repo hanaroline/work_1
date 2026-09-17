@@ -5724,9 +5724,9 @@
      창구가 고객 앞에서 「이 쪽입니다」 하고 짚을 번호다. 읽는 값이 아니라
      직원이 참조하는 값이라 회색 작은 표시로 옆에 단다.
 
-     ★ data/doc-pages.js 가 실린 판에서만 나온다 ★
-     그 파일이 없으면 아래 함수는 빈 문자열을 돌려주므로, 기존 배포본은
-     동작이 전혀 달라지지 않는다. 새 기능을 기존 판에 몰래 들이지 않는다.
+     ★ data/doc-pages.js (ELS) · data/fund-doc-pages.js (펀드) 가 실린 판에서만
+       나온다 ★ 그 파일이 없으면 아래 함수는 빈 문자열을 돌려주므로, 기존
+       배포본은 동작이 전혀 달라지지 않는다. 새 기능을 기존 판에 몰래 들이지 않는다.
 
      쪽은 「제목이 정확히 한 쪽에서만 잡힌」 자리만 담겨 있다(build_doc_pages.mjs).
      비어 있으면 아무것도 그리지 않는다 — 틀린 쪽을 짚게 하느니 비운다. */
@@ -5736,21 +5736,57 @@
     e_risk: ['lossCase', 'caution', 'sim'],
     e_midRedeem: ['midRedeem']
   };
+  /* 펀드 — 평가표가 「(간이)투자설명서를 짚어가며 설명」 하라고 적은 자리에 맞춘다.
+     f_prospectus 는 핵심(요약)설명서를 교부·사용하는 항목인데, 운용사가 만드는
+     투자설명서 안에는 판매회사 양식인 핵심(요약)설명서가 없다(표본 6/6). 대신
+     앞쪽 「요약정보〈간이투자설명서〉」 구간이 그 자리이므로 거기를 짚어 준다. */
+  var FUND_DOC_PAGE_OF = {
+    f_prospectus: ['summary'],
+    f_asset: ['object', 'target', 'strategy'],
+    f_risk: ['risk'],
+    f_riskOverseas: ['risk'],
+    f_fee: ['fee'],
+    f_trade: ['trade']
+  };
+  /**
+   * 이 항목에서 짚을 쪽 — ELS 와 펀드는 담은 꼴이 다르다.
+   *   ELS   items[ISIN].at = { 자리: 쪽 }      (33건이라 이름 그대로 담아도 된다)
+   *   펀드   rows[표준코드] = [쪽수, 쪽, 쪽…]  (3,000건이라 배열로 줄여 담았다)
+   * 화면은 둘을 구별할 이유가 없으므로 여기서 같은 꼴로 펴서 돌려준다.
+   */
+  function docPageSrc(itemId) {
+    var p = product();
+    if (!p || !p.id) return null;
+    var label, i;
+    if (DOC_PAGE_OF[itemId]) {
+      var D = window.DOC_PAGES;
+      var it = D && D.items ? D.items[p.id] : null;
+      if (!it || !it.at) return null;
+      label = {};
+      (D.anchors || []).forEach(function (a) { label[a.key] = a.what; });
+      return { keys: DOC_PAGE_OF[itemId], at: it.at, label: label, docLabel: D.docLabel };
+    }
+    if (FUND_DOC_PAGE_OF[itemId]) {
+      var F = window.FUND_DOC_PAGES;
+      var row = F && F.rows ? F.rows[p.id] : null;
+      if (!row) return null;
+      var at = {};
+      label = {};
+      for (i = 0; i < (F.anchors || []).length; i++) {
+        label[F.anchors[i].key] = F.anchors[i].what;
+        if (row[i + 1]) at[F.anchors[i].key] = row[i + 1];   // 0 은 「못 찾음」 이다
+      }
+      return { keys: FUND_DOC_PAGE_OF[itemId], at: at, label: label, docLabel: F.docLabel };
+    }
+    return null;
+  }
   var docPgStyled = false;
   function docPages(itemId) {
-    var D = window.DOC_PAGES;
-    if (!D || !D.items) return '';
-    var keys = DOC_PAGE_OF[itemId];
-    if (!keys) return '';
-    var p = product();
-    var it = p && p.id ? D.items[p.id] : null;
-    if (!it || !it.at) return '';
-
-    var label = {};
-    (D.anchors || []).forEach(function (a) { label[a.key] = a.what; });
+    var src = docPageSrc(itemId);
+    if (!src) return '';
     var parts = [];
-    keys.forEach(function (k) {
-      if (it.at[k]) parts.push('<span class="docpg"><b>p.' + it.at[k] + '</b> ' + esc(label[k] || k) + '</span>');
+    src.keys.forEach(function (k) {
+      if (src.at[k]) parts.push('<span class="docpg"><b>p.' + src.at[k] + '</b> ' + esc(src.label[k] || k) + '</span>');
     });
     if (!parts.length) return '';
 
@@ -5776,7 +5812,7 @@
         + '@media print{.docpgs{color:#555}.docpg{background:none;border:1px solid #ccc}}';
       document.head.appendChild(st);
     }
-    return '<div class="docpgs" title="교부한 ' + esc(D.docLabel || '설명서')
+    return '<div class="docpgs" title="교부한 ' + esc(src.docLabel || '설명서')
       + ' 의 쪽입니다. 읽는 값이 아니라 고객에게 짚어 드릴 때 참조하십시오.">'
       + '<span class="lbl">📄 교부자료</span>' + parts.join('') + '</div>';
   }
