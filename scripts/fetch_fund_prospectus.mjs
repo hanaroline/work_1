@@ -74,9 +74,25 @@ const CODES = argOf('--codes', '').split(/[,\s]+/).filter(Boolean);
  * 다만 그 카탈로그에 없는 종목은 참조를 채우지 않아 어차피 다시 읽는다.
  */
 const SEED_REFS = argOf('--seed-refs', '');
+/**
+ * --pages-out 경로 : 쪽 지도를 함께 만들어 여기에 적는다 (기본 data/fund-doc-pages.js).
+ *
+ * 왜 여기서 같이 만드나 — 쪽 지도를 따로 만들면 같은 PDF 3,019건을 한 번 더 받아야
+ * 한다. 세 시간이 두 번 든다. 이미 받아서 펼쳐 놓은 문서에서 쪽 번호까지 함께
+ * 뽑으면 비용이 늘지 않고, 「어느 설명서를 읽었나」(refs)·「무엇이 바뀌었나」
+ * 판단도 한 곳에 모인다.
+ *
+ * 기본값은 --out 옆자리다. 표본 워크플로가 --out /tmp/… 로 돌리는데 쪽 지도만
+ * data/ 로 고정해 두면, 60건짜리 표본이 3,000건짜리 지도를 덮어쓴다. 두 파일은
+ * 같은 판독에서 나오므로 늘 같은 자리에 함께 둔다.
+ */
+const PAGES_OUT = argOf('--pages-out', OUT.replace(/[^/\\]+$/, 'fund-doc-pages.js'));
 
 /* ── 앱과 똑같은 추출 규칙·본문 판독을 쓴다 ───────────────── */
 const prosSrc = await readFile('js/sales-script-prospectus.js', 'utf8');
+/* 쪽 지도 규칙 — 표본 조사와 같은 파일을 쓴다 (scripts/fund_doc_anchors.mjs 머리말 참고) */
+const { ANCHORS, mapPages, flat } = await import('./fund_doc_anchors.mjs');
+const anchorSrc = await readFile(new URL('./fund_doc_anchors.mjs', import.meta.url), 'utf8');
 /**
  * 추출 규칙의 지문.
  *
@@ -86,12 +102,22 @@ const prosSrc = await readFile('js/sales-script-prospectus.js', 'utf8');
  *
  * 규칙 파일이 바뀌면 전량을 다시 읽는다. 두 시간이 들지만, 고친 규칙이 반영되지
  * 않은 채 「최신」 이라고 말하는 것보다 낫다.
+ *
+ * 쪽 지도 규칙(fund_doc_anchors.mjs)도 같은 지문에 넣는다. 자리 규칙을 고쳤는데
+ * 이어서 판독이 「설명서가 그대로」 라며 넘어가면, 옛 규칙으로 잡은 쪽 번호가
+ * 그대로 남는다. 가르는 기준은 한 군데에만 둔다.
  */
 const rulesStamp = (function (s) {
   var h = 5381;
   for (var i = 0; i < s.length; i++) h = ((h * 33) ^ s.charCodeAt(i)) >>> 0;
   return s.length + '-' + h.toString(36);
-}(prosSrc));
+}(prosSrc + '\n--- fund_doc_anchors ---\n' + anchorSrc));
+
+/* --print-stamp : 지금 규칙의 지문만 찍고 끝낸다.
+   워크플로의 「예약 안전장치」 가 지문을 스스로 다시 계산하면 계산법이 두 벌이
+   되어 언젠가 어긋난다 (실제로 참조 조립을 두 벌로 두었다가 두 시간을 태웠다).
+   지문은 이 파일 하나에서만 낸다. */
+if (args.includes('--print-stamp')) { console.log(rulesStamp); process.exit(0); }
 const win = {};
 new Function('window', prosSrc)(win);
 const PROS = win.SS_PROS;
@@ -134,7 +160,9 @@ async function pdfText(buf) {
     flush();
     chunks.push(unwrap(lines).join('\n'));
   }
-  return { text: chunks.join('\n'), pages: doc.numPages };
+  /* 쪽 지도는 쪽마다의 글을 따로 봐야 한다 — 이어 붙인 뒤에는 몇 쪽인지 알 수 없다.
+     같은 판독을 두 번 하지 않으려고 여기서 함께 돌려준다. */
+  return { text: chunks.join('\n'), pages: doc.numPages, perPage: chunks };
 }
 /** 줄바꿈으로 끊긴 본문을 잇는다 (앱과 같은 규칙) */
 function unwrap(lines) {
@@ -290,6 +318,34 @@ const intern = (v) => {
 const items = {};
 const refs = {};
 
+/* ── 쪽 지도 ───────────────────────────────────────────────────
+   rows[표준코드] = [쪽수, 자리1쪽, 자리2쪽, …] — 자리 순서는 ANCHORS 순서,
+   0 은 「못 찾음(비움)」 이다. 이름을 붙인 객체로 담으면 3,019종목에 360KB 가
+   되는데, 이 도구는 파일 하나로 업무용PC 에 들고 가는 것이라 크기가 곧
+   배포 가능성이다. 배열로 담으면 140KB 안쪽이다. */
+const pgRows = {};
+const pgPut = (code, nPages, at) => {
+  const row = [nPages];
+  for (const [key] of ANCHORS) row.push(at[key] || 0);
+  /* 한 자리도 못 찾았으면 담지 않는다 — 쪽수만 있는 줄은 화면에서 쓸 데가 없다 */
+  if (row.slice(1).some((v) => v)) pgRows[code] = row;
+};
+/* 다시 읽지 않는 종목의 쪽 지도는 직전 판에서 옮긴다. 지도 규칙이 바뀌면 위
+   rulesStamp 가 달라져 전량을 다시 읽으므로, 옮겨 온 줄이 옛 규칙일 수는 없다. */
+let prevRows = {};
+try {
+  const pg = {};
+  new Function('window', await readFile(PAGES_OUT, 'utf8'))(pg);
+  const P = pg.FUND_DOC_PAGES;
+  /* 자리 순서가 그때와 지금이 같을 때만 옮긴다. 순서가 바뀌었는데 그대로 옮기면
+     쪽 번호가 딴 자리로 밀린다 — 조용히 틀리는 쪽이라 가장 위험하다. */
+  if (P && P.anchors && P.anchors.map((a) => a.key).join(',') === ANCHORS.map((a) => a[0]).join(',')) {
+    prevRows = P.rows || {};
+  } else if (P) {
+    console.log('쪽 지도의 자리 구성이 달라졌습니다 — 직전 지도를 옮기지 않고 다시 만듭니다.');
+  }
+} catch { /* 아직 없다 — 이번에 처음 만든다 */ }
+
 /* 다시 읽지 않는 종목은 직전 판독을 그대로 옮긴다. 문구 풀은 새로 짜므로
    옛 번호를 값으로 되돌려 다시 담는다 — 옛 번호를 그대로 두면 딴 문구를 가리킨다.
    카탈로그에서 빠진 종목(판매 종료)은 옮기지 않는다. */
@@ -306,8 +362,9 @@ if (prev) {
       f[k] = intern(v);
     }
     if (Object.keys(f).length) { items[code] = f; refs[code] = prevRefs[code]; carried++; }
+    if (prevRows[code]) pgRows[code] = prevRows[code];
   }
-  console.log(`  직전 판독에서 옮긴 것 ${carried}건`);
+  console.log(`  직전 판독에서 옮긴 것 ${carried}건 (쪽 지도 ${Object.keys(pgRows).length}건)`);
 }
 
 let ok = 0, fail = 0, empty = 0;
@@ -318,8 +375,11 @@ for (let i = 0; i < slice.length; i++) {
   try {
     const r = await fetch(url, { signal: AbortSignal.timeout(60000) });
     if (!r.ok) throw new Error('HTTP ' + r.status);
-    const { text, pages } = await pdfText(Buffer.from(await r.arrayBuffer()));
+    const { text, pages, perPage } = await pdfText(Buffer.from(await r.arrayBuffer()));
     if (text.length < 300) { empty++; continue; }
+    /* 쪽 지도는 항목 추출과 따로 간다 — 항목을 하나도 못 뽑은 문서라도 쪽은
+       잡힐 수 있고, 그 반대도 있다. 한쪽이 비었다고 다른 쪽을 버리지 않는다. */
+    pgPut(it.code, pages, mapPages(perPage.map(flat)).at);
     if (DUMP) await writeFile(`${DUMP}/${it.code}.txt`, it.name + '\n' + text);
     const f = {};
     for (const x of PROS.extract(text, 'fund')) {
@@ -368,6 +428,44 @@ const body =
     items,
   }) + ';\n';
 await writeFile(OUT, body);
+
+/* ── 쪽 지도 파일 ─────────────────────────────────────────────── */
+const pgBody =
+  '/**\n' +
+  ' * 펀드 투자설명서의 쪽 지도 — 창구가 고객 앞에서 짚을 쪽.\n' +
+  ' *\n' +
+  ' * 생성 : scripts/fetch_fund_prospectus.mjs (투자설명서를 판독하는 김에 함께 만든다)\n' +
+  ' * 규칙 : scripts/fund_doc_anchors.mjs — 표본 조사와 같은 규칙을 쓴다\n' +
+  ' *\n' +
+  ' * rows[표준코드] = [쪽수, 자리1쪽, 자리2쪽, …]  자리 순서는 anchors 순서.\n' +
+  ' *   0 은 「못 찾음」 이고 화면에서는 아무것도 띄우지 않는다.\n' +
+  ' *   이름 붙은 객체로 담으면 3,000종목에 360KB 가 된다 — 이 도구는 파일 하나로\n' +
+  ' *   업무용PC 에 들고 가는 것이라 크기가 곧 배포 가능성이다.\n' +
+  ' *\n' +
+  ' * ★ 못 찾은 자리는 비운다 ★ 틀린 쪽을 짚게 하느니 비운다. 빈칸은 직원을\n' +
+  ' *   문서로 보내지만, 틀린 쪽은 고객 앞에서 엉뚱한 곳을 가리키게 한다.\n' +
+  ' */\n' +
+  'window.FUND_DOC_PAGES = ' + JSON.stringify({
+    updatedAt: new Date().toISOString(),
+    source: C.docBase + '<표준코드>/<표준코드>_T_<문서번호>.pdf',
+    docLabel: '투자설명서 (요약정보〈간이투자설명서〉 포함)',
+    rulesStamp: keepStamp || rulesStamp,
+    anchors: ANCHORS.map(([key, zone, , what]) => ({ key, zone, what })),
+    rows: pgRows,
+  }) + ';\n';
+await writeFile(PAGES_OUT, pgBody);
+{
+  const n = Object.keys(pgRows).length;
+  const hit = (k) => {
+    const i = ANCHORS.findIndex((a) => a[0] === k) + 1;
+    return Object.values(pgRows).filter((r) => r[i]).length;
+  };
+  console.log(`\n${PAGES_OUT} 기록 — 쪽 지도 ${n}건 · ${(Buffer.byteLength(pgBody) / 1024).toFixed(0)}KB`);
+  for (const [key, , , what] of ANCHORS) {
+    const h = hit(key);
+    console.log(`  ${what.padEnd(22)} ${String(h).padStart(5)}건 (${n ? (100 * h / n).toFixed(0) : 0}%)`);
+  }
+}
 console.log(`\n${OUT} 기록 — ${Object.keys(items).length}건 · 이번에 읽은 것 ${ok}건 · 실패 ${fail} · 빈문서 ${empty}`);
 console.log(`  문구 풀 ${pool.length}개 (중복 제거)`);
 console.log(`  크기 ${(Buffer.byteLength(body) / 1024 / 1024).toFixed(2)}MB`);

@@ -28,43 +28,15 @@
  */
 import { readFileSync } from 'node:fs';
 import { createRequire } from 'node:module';
+/* 규칙은 scripts/fund_doc_anchors.mjs 한 곳에만 있다 — 표본과 전량이 같은 규칙을
+   써야 표본에서 본 적중률이 전량에서 그대로 나온다. */
+import { ANCHORS, mapPages, flat } from './fund_doc_anchors.mjs';
 
 const require0 = createRequire(import.meta.url);
 const pdfjs = require0('pdfjs-dist/legacy/build/pdf.js');
 pdfjs.GlobalWorkerOptions.workerSrc = require0.resolve('pdfjs-dist/legacy/build/pdf.worker.js');
 
 const HOW_MANY = Number(process.argv[2] || 40);
-const HEAD = 200;
-
-/* 쪽 앞부분은 「22 9. 집합투자기구의 투자전략…」 처럼 인쇄 쪽번호로 시작한다.
-   그래서 제목을 줄머리에 고정하지 않고 앞부분 안에서 찾는다. */
-/* zone 'head' — 쪽을 새로 여는 것들. 쪽 앞부분에서만 찾는다.
-   zone 'body' — 절 제목이 **쪽 중간에서 시작**하는 것들. 쪽 전체에서 찾되
-                 첫 번째로 나온 쪽을 쓴다.
-   왜 갈랐나: 첫 표본에서 투자전략 30%, 보수 28%, 과세 0% 였다. 원인은 규칙이
-   아니라 문서 구조였다 — 펀드 투자설명서는 ELS 와 달리 절이 쪽 경계에서
-   시작하지 않고 본문 중간에서 이어진다. 쪽 앞부분만 보면 못 찾는다.
-   번호 붙은 제목(「9. 집합투자기구의 투자전략 및 수익구조」)은 문서에서 한 번만
-   제목으로 쓰이므로, 목차를 뺀 뒤 첫 번째 것을 쓰는 것은 추측이 아니다. */
-const ANCHORS = [
-  /* 요약정보는 **목차보다 앞**에 오는 문서가 많다. 목차 다음부터 보면 통째로
-     놓친다. 그래서 zone 'first' — 목차 쪽만 빼고 처음부터 보되 첫 쪽을 쓴다.
-     구간이 여러 쪽에 걸쳐도 창구가 짚는 것은 시작 쪽이다. */
-  ['summary', 'first', /요\s*약\s*정\s*보/, '요약정보 (간이투자설명서)'],
-  ['part1', 'first', /제\s*1\s*부[.\s]*모집\s*또는\s*매출/, '제1부 모집 또는 매출'],
-  ['part2', 'first', /제\s*2\s*부[.\s]*집합투자기구에\s*관한/, '제2부 집합투자기구'],
-  ['manager', 'body', /\d+\s*\.\s*운용전문인력에\s*관한\s*사항/, '운용전문인력'],
-  ['object', 'body', /\d+\s*\.\s*(집합투자기구의\s*)?투자목적\s*(및|,)?\s*/, '투자목적'],
-  ['target', 'body', /\d+\s*\.\s*(집합투자기구의\s*)?투자대상/, '투자대상'],
-  ['strategy', 'body', /\d+\s*\.\s*(집합투자기구의\s*)?투자전략/, '투자전략 및 수익구조'],
-  ['risk', 'body', /\d+\s*\.\s*(집합투자기구의\s*)?투자위험/, '투자위험'],
-  ['trade', 'body', /\d+\s*\.\s*매입\s*,?\s*환매\s*,?\s*전환/, '매입·환매·전환절차'],
-  ['fee', 'body', /\d+\s*\.\s*(집합투자기구의\s*)?보수\s*(및|,)\s*수수료/, '보수 및 수수료'],
-  /* 과세는 두 번 고쳐도 0% 였다. 원문을 찍어 보니 제목이 「과세」 로 시작하지
-     않았다 — 「14. 이익배분 및 과세에 관한 사항」 이고, 「이익 배분」 처럼 사이가
-     벌어진 문서도 있다. 짐작으로 세 번째 규칙을 쓰지 않고 원문대로 적는다. */
-  ['tax', 'body', /\d+\s*\.\s*이익\s*배\s*분\s*(및|,)?\s*과세/, '이익배분 및 과세'],
-];
 
 const log = (s = '') => console.log(s);
 const head = (s) => { log(); log('━'.repeat(74)); log(s); log('━'.repeat(74)); };
@@ -74,60 +46,9 @@ async function pdfPages(buf) {
   const out = [];
   for (let i = 1; i <= doc.numPages; i++) {
     const tc = await (await doc.getPage(i)).getTextContent();
-    out.push(tc.items.map((it) => it.str).join(' ').replace(/\s+/g, ' ').trim());
+    out.push(flat(tc.items.map((it) => it.str).join(' ')));
   }
   return out;
-}
-
-/* 목차 쪽을 「목차」 라는 낱말로만 찾으면 놓친다. 표본에서 우리프랭클린 문서의
-   목차 쪽에는 그 낱말이 없었고(「〈투자결정시 유의사항〉〈요약정보〉 제1부…」),
-   그 바람에 요약정보가 목차 쪽으로 잡혔다. 고객 앞에서 엉뚱한 쪽을 펴는 값이다.
-   그래서 낱말이 아니라 생김새로 가른다 — 번호 붙은 절 제목이 한 쪽에 다섯 개
-   넘게 늘어서 있으면 그것은 본문이 아니라 목차다. */
-const TOC_TITLE = /\d+\s*\.\s*(집합투자기구의|투자목적|투자대상|투자전략|투자위험|매입|보수|이익\s*배\s*분|운용전문인력|재무|집합투자업자)/g;
-function tocPages(pages) {
-  const set = new Set();
-  for (let i = 0; i < Math.min(pages.length, 14); i++) {
-    if (/목\s*차/.test(pages[i].slice(0, 120))) { set.add(i); continue; }
-    const n = (pages[i].match(TOC_TITLE) || []).length;
-    if (n >= 5) set.add(i);
-  }
-  return set;
-}
-
-function mapPages(pages) {
-  const toc = tocPages(pages);
-  /* 본문 절 제목은 목차 뒤에서만 찾는다. 앞쪽 요약정보(간이투자설명서)에도
-     같은 낱말이 나오는데, 창구가 짚어야 할 곳은 제2부 본문이기 때문이다. */
-  let last = -1;
-  for (const i of toc) if (i > last) last = i;
-  const from = last + 1;
-
-  const found = {}, ambig = {}, miss = [], how = {}, all = {};
-  for (const [key, zone, re, what] of ANCHORS) {
-    const hits = [];
-    const start = zone === 'first' ? 0 : from;
-    for (let i = start; i < pages.length; i++) {
-      if (toc.has(i)) continue;   // 목차에는 제목이 다 적혀 있다
-      const t = pages[i];
-      if (re.test(zone === 'body' ? t : t.slice(0, HEAD))) hits.push(i + 1);
-    }
-    all[key] = hits;
-    if (!hits.length) { miss.push(what); continue; }
-    if (zone === 'head') {
-      if (hits.length === 1) { found[key] = hits[0]; how[key] = 'head'; }
-      else ambig[key] = hits;
-    } else if (zone === 'first') {
-      found[key] = hits[0];
-      how[key] = hits.length === 1 ? 'first' : 'first(+' + (hits.length - 1) + ')';
-    } else {
-      /* 번호 붙은 제목은 문서에서 한 번만 제목으로 쓰인다. 뒤의 것들은
-         상호참조라 첫 번째를 쓴다 — 다만 몇 곳에 나왔는지 함께 적어 둔다. */
-      found[key] = hits[0];
-      how[key] = hits.length === 1 ? 'body' : 'body(+' + (hits.length - 1) + ')';
-    }
-  }
-  return { found, ambig, miss, how, all, toc: [...toc].map((i) => i + 1), from: from + 1 };
 }
 
 async function main() {
@@ -170,39 +91,30 @@ async function main() {
        값이라 통계만 보고 넘어가지 않는다. */
     m.peek = {};
     for (const [key, zone] of ANCHORS) {
-      if (zone === 'first' && m.found[key]) m.peek[key] = pages[m.found[key] - 1].slice(0, 76);
+      if (zone === 'first' && m.at[key]) m.peek[key] = pages[m.at[key] - 1].slice(0, 76);
     }
     /* 못 찾은 것은 왜 못 찾았는지 알아야 고친다. 앞쪽 머리글을 남겨 둔다 —
        요약정보가 정말 없는 문서인지, 낱말이 다른지 눈으로 가른다. */
-    if (!m.found.summary) m.heads = pages.slice(0, 9).map((t, k) => `p.${k + 1} ${t.slice(0, 64)}`);
+    if (!m.at.summary) m.heads = pages.slice(0, 9).map((t, k) => `p.${k + 1} ${t.slice(0, 64)}`);
     res.push({ ...it, pages: pages.length, ...m });
     if ((i + 1) % 10 === 0) log(`  … ${i + 1}/${pick.length}`);
   }
 
   head('자리별 적중률');
-  log('자리                      한 쪽(담김)   여러 쪽(비움)   없음');
+  log('자리                      담김      비움(못 찾음)   제목이 두 곳 넘게 나온 것');
   for (const [key, , , what] of ANCHORS) {
-    const one = res.filter((r) => r.found[key]).length;
-    const many = res.filter((r) => r.ambig[key]).length;
-    const none = res.length - one - many;
+    const one = res.filter((r) => r.at[key]).length;
+    const none = res.length - one;
+    /* 제목이 여러 곳에 나오면 첫 번째를 쓴다. 대부분 상호참조지만, 많이 나오는
+       자리는 규칙이 느슨하다는 뜻이므로 몇 종목에서 그랬는지 세어 둔다. */
+    const multi = res.filter((r) => /\(\+/.test(r.how[key] || '')).length;
     const pct = (100 * one / res.length).toFixed(0);
-    log(`  ${what.padEnd(24)} ${String(one).padStart(3)} (${pct.padStart(3)}%)      ${String(many).padStart(3)}          ${String(none).padStart(3)}`);
-  }
-
-  head('여러 쪽에 걸린 예 (규칙이 더 좁아져야 하는 자리)');
-  let shown = 0;
-  for (const r of res) {
-    for (const [k, hits] of Object.entries(r.ambig)) {
-      if (shown++ >= 12) break;
-      const what = (ANCHORS.find((a) => a[0] === k) || [])[3];
-      log(`  ${r.name.slice(0, 28).padEnd(30)} ${what} → p.${hits.join(', p.')}`);
-    }
-    if (shown >= 12) break;
+    log(`  ${what.padEnd(24)} ${String(one).padStart(3)} (${pct.padStart(3)}%)      ${String(none).padStart(3)}            ${String(multi).padStart(3)}`);
   }
 
   head('요약정보로 고른 쪽이 정말 시작 쪽인가 (앞 10종목)');
   res.slice(0, 10).forEach((r) => {
-    const p = r.found.summary;
+    const p = r.at.summary;
     log(`  ${r.name.slice(0, 26).padEnd(28)} ${p ? 'p.' + String(p).padStart(2) + ' (' + r.how.summary + ')  ' + r.peek.summary : '— 없음'}`);
   });
 
@@ -214,12 +126,12 @@ async function main() {
   });
 
   head('한 자리도 못 찾은 종목 (서식이 다른 문서)');
-  const bad = res.filter((r) => Object.keys(r.found).length <= 2);
+  const bad = res.filter((r) => Object.keys(r.at).length <= 2);
   log(`${bad.length}/${res.length}종목`);
-  bad.slice(0, 10).forEach((r) => log(`  ${r.mgr} · ${r.name.slice(0, 34)} (${r.pages}쪽, 목차 p.${r.toc.join(',') || '없음'}) — 담긴 자리 ${Object.keys(r.found).length}개`));
+  bad.slice(0, 10).forEach((r) => log(`  ${r.mgr} · ${r.name.slice(0, 34)} (${r.pages}쪽, 목차 p.${r.toc.join(',') || '없음'}) — 담긴 자리 ${Object.keys(r.at).length}개`));
 
   head('요약');
-  const avg = res.reduce((s, r) => s + Object.keys(r.found).length, 0) / res.length;
+  const avg = res.reduce((s, r) => s + Object.keys(r.at).length, 0) / res.length;
   log(`읽은 종목 ${res.length}개 · 쪽수 ${Math.min(...res.map((r) => r.pages))}~${Math.max(...res.map((r) => r.pages))}`);
   log(`종목당 담긴 자리 평균 ${avg.toFixed(1)}/${ANCHORS.length}개`);
   log('');
