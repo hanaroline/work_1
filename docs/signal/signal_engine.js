@@ -640,6 +640,17 @@
     var s = Object.keys(fitted).reduce(function (a, k) { return a + fitted[k]; }, 0);
     var share = {};
     if (s > 0) Object.keys(fitted).forEach(function (k) { share[k] = fitted[k] / s; });
+
+    // 쏠리는 정도를 잰 상관의 크기만큼으로 묶는다. 넷 중 하나만 표준오차를
+    // 넘으면 그 하나가 share 1.0 을 가져가 가중치 80~92% 가 되는데, 문턱을
+    // 넘었다는 것은 「0 은 아닌 것 같다」이지 「이 축이 다 설명한다」가 아니다.
+    // (signal_lib.fit_weights 의 같은 자리 주석 참고)
+    if (s > 0) {
+      var strength = Math.min(1, s);
+      Object.keys(PRIOR).forEach(function (k) {
+        share[k] = strength * (share[k] || 0) + (1 - strength) * PRIOR[k];
+      });
+    }
     var w = {};
     AXIS_KEYS.forEach(function (pair) {
       var name = pair[1], lam = detail[name].lambda;

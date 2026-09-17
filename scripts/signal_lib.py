@@ -676,6 +676,25 @@ def fit_weights(bars, rows, t, h=10, prior=None, k=K_PSEUDO):
 
     s = sum(fitted.values())
     share = {k2: v / s for k2, v in fitted.items()} if s > 0 else {}
+
+    # **쏠리는 정도를 잰 상관의 크기만큼으로 묶는다.**
+    #
+    # 표준오차를 못 넘는 상관을 0 으로 둔 뒤에도 문제가 남아 있었다. 몫을 양수
+    # 부분의 **비율**로 나누므로, 넷 가운데 하나만 문턱을 넘으면 그 하나가 share
+    # 1.0 을 가져가고 가중치 80~92% 가 된다. 문턱을 넘었다는 것은 「0 은 아닌 것
+    # 같다」는 뜻이지 「이 축 하나가 다 설명한다」는 뜻이 아니다.
+    #
+    # 그래서 한 겹 더 둔다. 잰 상관을 다 더한 값(0~1)을 **증거의 총량**으로 보고,
+    # 그만큼만 쏠린 몫 쪽으로 간다. ρ_adj 가 0.065 면 쏠림도 6.5% 만 먹는다.
+    # 새로 고를 값이 없다 — 상관의 크기가 곧 쏠릴 만큼이다.
+    #
+    # 이 겹이 없을 때 이 자료에서 코스피 프록시의 매물대 축이 80%, 어떤 종목은
+    # 자금수급 축이 92% 를 가져갔다. 그 값들은 ρ=0.22 로 잰 것이다.
+    strength = min(1.0, sum(fitted.values()))
+    if share:
+        share = {k2: strength * v + (1 - strength) * prior[k2]
+                 for k2, v in ((k3, share.get(k3, 0.0)) for k3 in prior)}
+
     w = {}
     for _, name in AXIS_KEYS:
         # **표시용으로 반올림한 값을 도로 읽어 쓰지 않는다.**
