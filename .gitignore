@@ -24,3 +24,7 @@ market-calendar-offline.html
 
 # 목록 점검 결과는 데이터 브랜치(us100-data)가 원본이다. 여기 받아 두는 것은 사본일 뿐.
 data/us100/ranking.json
+
+# 변동성 경보 한 파일 판(자료를 심은 판) — 만들 때마다 0.3MB 가 통째로 바뀐다.
+# `python3 scripts/make_volatility_offline.py` 로 다시 만들면 되므로 남기지 않는다.
+volatility-offline.html
