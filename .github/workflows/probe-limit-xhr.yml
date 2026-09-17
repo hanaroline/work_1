@@ -1,6 +1,9 @@
-name: 상한가 원천 관찰
+name: 끊긴 원천 관찰 (브라우저)
 
-# 상한가·하한가 화면이 **실제로 부르는 주소**를 브라우저로 관찰한다.
+# 끊긴 화면이 **실제로 부르는 주소**를 브라우저로 관찰한다.
+#
+#   scripts/probe_limit_xhr.mjs  — 상한가·하한가 (2026-09-10 개편으로 끊김)
+#   scripts/probe_daily_xhr.mjs  — 일별시세·투자자별 (2026-09-18 에 410)
 #
 # 주소를 다섯 바퀴 찍어서 맞히려다 전부 빗나간 뒤에 만든 것이다(자세한
 # 내력은 scripts/probe_limit_xhr.mjs 머리말). 브라우저를 띄우는 일이라
@@ -40,9 +43,16 @@ jobs:
           npm install --no-save --no-audit --no-fund playwright
           npx playwright install --with-deps chromium
 
-      - name: 화면이 부르는 주소 관찰
+      - name: 상한가 화면이 부르는 주소 관찰
         continue-on-error: true
         run: node scripts/probe_limit_xhr.mjs
+
+      # 원천이 끊길 때마다 워크플로를 새로 만들지 않는다 — 브라우저를 띄우는
+      # 준비가 같으므로 같은 자리에서 이어 돌린다. `continue-on-error` 라
+      # 하나가 실패해도 나머지는 돈다.
+      - name: 일별시세·투자자별 화면이 부르는 주소 관찰
+        continue-on-error: true
+        run: node scripts/probe_daily_xhr.mjs
 
       - name: 커밋
         if: always()
