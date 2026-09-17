@@ -369,7 +369,7 @@ table.sb tr.refonly .mem span{color:var(--muted-soft)}
       <div>
         <div class="eyebrow" data-i18n="ebTbl">COMPANY DETAIL</div>
         <h2 data-i18n="s3t">기업별 실적 · 가이던스</h2>
-        <p data-i18n="s3d">직전 보고분기의 매출 실제치와 컨센서스, 서프라이즈, 전년동기비, 회사가 직접 제시한 가이던스. 매출·성장률 칸의 작은 글씨는 최근 12개월(LTM) 값이고, ▲▼ 는 분기 성장률이 LTM 보다 빠른지 느린지다. 주황으로 깐 세 칸(선행 P/E · P/S · PEG)은 회사 발표치가 아니라 집계사이트 값이라 눈으로 구분해 뒀다. 행을 누르면 세부와 출처가 열린다. 확인하지 못한 값은 채우지 않고 n/a 로 둔다.</p>
+        <p data-i18n="s3d">직전 보고분기의 매출 실제치와 컨센서스, 서프라이즈, 전년동기비, 회사가 직접 제시한 가이던스. 매출·성장률 칸의 작은 글씨는 최근 12개월(LTM) 값이고, ▲▼ 는 분기 성장률이 LTM 보다 빠른지 느린지다. 주황으로 깐 세 칸(선행 P/E · P/S · PEG)은 회사 발표치가 아니라 집계사이트 값이라 눈으로 구분해 뒀다. 행을 누르면 세부와 출처가 열린다. 확인하지 못한 값은 채우지 않고 n/a 로 둔다. 표 아래 산점도는 같은 25개사를 성장률 × 서프라이즈 평면에 흩뿌린 것이다.</p>
       </div>
     </div>
     <div class="controls">
@@ -397,6 +397,12 @@ table.sb tr.refonly .mem span{color:var(--muted-soft)}
       </table>
     </div>
     <p class="cap" style="margin-top:12px" data-i18n="s3n">매출·컨센서스 단위는 10억 달러. 회계연도가 회사마다 달라 보고분기 라벨과 실제 분기말이 다를 수 있다 — 행을 열면 분기말 날짜가 나온다. 티커 밑의 금액은 시가총액이고, P/S 는 그 시가총액을 LTM 매출로 나눈 값이다(제공사가 주지 않아 직접 계산). EV/EBITDA 는 칸을 더 늘리지 않으려고 행을 열면 나오게 뒀다. 세 지표 모두 점수에는 넣지 않는다 — V 점수는 지금도 기준그룹 대비 선행 P/E 한 축이다.</p>
+    <!-- 산점도는 위 표와 같은 기업 단위 데이터다 — 섹터 섹션이 아니라 표 아래에 둔다 -->
+    <div class="chart-box" style="margin-top:var(--space-block)">
+      <h3 data-i18n="c3t">기업별 매출 성장률과 컨센서스 서프라이즈</h3>
+      <p class="cap" data-i18n="c3d">가로축 전년동기비(%) · 세로축 컨센서스 대비 상회폭(%) · 원 크기는 분기 매출 규모</p>
+      <div id="ch-scatter"></div>
+    </div>
   </section>
 
   <!-- 4. 매출액 분야 분석 -->
@@ -406,7 +412,7 @@ table.sb tr.refonly .mem span{color:var(--muted-soft)}
       <div>
         <div class="eyebrow" data-i18n="ebSec">REVENUE BY SECTOR</div>
         <h2 data-i18n="s4t">매출액 분야 분석</h2>
-        <p data-i18n="s4d">이 섹션의 차트는 외부 섹터 통계를 옮긴 것이 아니라, 이 화면에 담긴 25개사의 발표치를 직접 합산·평균한 것이다. 표본이 작은 섹터는 막대 옆에 기업 수를 적었다.</p>
+        <p data-i18n="s4d">아래 두 차트는 외부 섹터 통계를 옮긴 것이 아니라, 이 화면에 담긴 25개사의 발표치를 직접 합산·평균한 것이다. 표본이 작은 섹터는 막대 옆에 기업 수를 적었다.</p>
       </div>
     </div>
     <div class="chart-grid">
@@ -420,11 +426,6 @@ table.sb tr.refonly .mem span{color:var(--muted-soft)}
         <p class="cap" data-i18n="c2d">기업별 전년동기비의 단순평균(가중 아님) · 확인된 기업만</p>
         <div id="ch-yoy"></div>
       </div>
-    </div>
-    <div class="chart-box" style="margin-top:var(--space-block)">
-      <h3 data-i18n="c3t">기업별 매출 성장률과 컨센서스 서프라이즈</h3>
-      <p class="cap" data-i18n="c3d">가로축 전년동기비(%) · 세로축 컨센서스 대비 상회폭(%) · 원 크기는 분기 매출 규모</p>
-      <div id="ch-scatter"></div>
     </div>
   </section>
 
@@ -534,12 +535,12 @@ var T = {
   lgBeat:"매출 컨센서스 상회", lgMiss:"매출 컨센서스 하회",
   lgNa:"컨센서스 확인 실패", lgNext:"발표 예정",
   ebTbl:"COMPANY DETAIL", s3t:"기업별 실적 · 가이던스",
-  s3d:"직전 보고분기의 매출 실제치와 컨센서스, 서프라이즈, 전년동기비, 회사가 직접 제시한 가이던스. 매출·성장률 칸의 작은 글씨는 최근 12개월(LTM) 값이고, ▲▼ 는 분기 성장률이 LTM 보다 빠른지 느린지다. 주황으로 깐 세 칸(선행 P/E · P/S · PEG)은 회사 발표치가 아니라 집계사이트 값이라 눈으로 구분해 뒀다. 행을 누르면 세부와 출처가 열린다. 확인하지 못한 값은 채우지 않고 n/a 로 둔다.",
+  s3d:"직전 보고분기의 매출 실제치와 컨센서스, 서프라이즈, 전년동기비, 회사가 직접 제시한 가이던스. 매출·성장률 칸의 작은 글씨는 최근 12개월(LTM) 값이고, ▲▼ 는 분기 성장률이 LTM 보다 빠른지 느린지다. 주황으로 깐 세 칸(선행 P/E · P/S · PEG)은 회사 발표치가 아니라 집계사이트 값이라 눈으로 구분해 뒀다. 행을 누르면 세부와 출처가 열린다. 확인하지 못한 값은 채우지 않고 n/a 로 둔다. 표 아래 산점도는 같은 25개사를 성장률 × 서프라이즈 평면에 흩뿌린 것이다.",
   s3n:"매출·컨센서스 단위는 10억 달러. 회계연도가 회사마다 달라 보고분기 라벨과 실제 분기말이 다를 수 있다 — 행을 열면 분기말 날짜가 나온다. 티커 밑의 금액은 시가총액이고, P/S 는 그 시가총액을 LTM 매출로 나눈 값이다(제공사가 주지 않아 직접 계산). EV/EBITDA 는 칸을 더 늘리지 않으려고 행을 열면 나오게 뒀다. 세 지표 모두 점수에는 넣지 않는다 — V 점수는 지금도 기준그룹 대비 선행 P/E 한 축이다.",
   cTicker:"기업", cSector:"섹터", cDate:"발표일", cPeriod:"보고분기", cRev:"매출",
   cCons:"컨센서스", cSurp:"서프라이즈", cYoy:"전년동기비", cGuide:"가이던스", cScore:"모멘텀",
   ebSec:"REVENUE BY SECTOR", s4t:"매출액 분야 분석",
-  s4d:"이 섹션의 차트는 외부 섹터 통계를 옮긴 것이 아니라, 이 화면에 담긴 25개사의 발표치를 직접 합산·평균한 것이다. 표본이 작은 섹터는 막대 옆에 기업 수를 적었다.",
+  s4d:"아래 두 차트는 외부 섹터 통계를 옮긴 것이 아니라, 이 화면에 담긴 25개사의 발표치를 직접 합산·평균한 것이다. 표본이 작은 섹터는 막대 옆에 기업 수를 적었다.",
   c1t:"섹터별 분기 매출 합계", c1d:"단위 10억 달러 · 직전 보고분기 기준",
   c2t:"섹터별 평균 매출 성장률", c2d:"기업별 전년동기비의 단순평균(가중 아님) · 확인된 기업만",
   c3t:"기업별 매출 성장률과 컨센서스 서프라이즈",
@@ -634,12 +635,12 @@ var T = {
   lgBeat:"Revenue above consensus", lgMiss:"Revenue below consensus",
   lgNa:"Consensus not verified", lgNext:"Upcoming",
   ebTbl:"COMPANY DETAIL", s3t:"Results and guidance by company",
-  s3d:"Last reported quarter: actual revenue, consensus, surprise, year-over-year, and the guidance the company itself issued. The small figures under revenue and growth are last-twelve-month values, and ▲▼ shows whether the quarter ran faster or slower than that trailing year. The three shaded columns (forward P/E · P/S · PEG) are aggregator figures, not company-reported ones, and are tinted so you can tell them apart. Click a row for detail and sources. Anything not verified is left as n/a rather than filled in.",
+  s3d:"Last reported quarter: actual revenue, consensus, surprise, year-over-year, and the guidance the company itself issued. The small figures under revenue and growth are last-twelve-month values, and ▲▼ shows whether the quarter ran faster or slower than that trailing year. The three shaded columns (forward P/E · P/S · PEG) are aggregator figures, not company-reported ones, and are tinted so you can tell them apart. Click a row for detail and sources. Anything not verified is left as n/a rather than filled in. The scatter below the table places the same 25 companies on a growth-versus-surprise plane.",
   s3n:"Revenue and consensus in USD billions. Fiscal years differ, so the quarter label may not match the calendar quarter — open a row to see the period end date. The figure under each ticker is market cap, and P/S is that market cap divided by LTM revenue (the provider does not publish it, so we divide it ourselves). EV/EBITDA sits inside the expanded row rather than adding another column. None of the three enters the score — V still rests on the single axis of forward P/E against the benchmark group.",
   cTicker:"Company", cSector:"Sector", cDate:"Reported", cPeriod:"Quarter", cRev:"Revenue",
   cCons:"Consensus", cSurp:"Surprise", cYoy:"YoY", cGuide:"Guidance", cScore:"Momentum",
   ebSec:"REVENUE BY SECTOR", s4t:"Revenue analysis by sector",
-  s4d:"The charts in this section are not borrowed sector statistics — they aggregate the reported figures of the 25 companies on this page. Thin samples carry their company count next to the bar.",
+  s4d:"These two charts are not borrowed sector statistics — they aggregate the reported figures of the 25 companies on this page. Thin samples carry their company count next to the bar.",
   c1t:"Quarterly revenue by sector", c1d:"USD billions · last reported quarter",
   c2t:"Average revenue growth by sector", c2d:"Simple average of company YoY (unweighted) · verified companies only",
   c3t:"Revenue growth against consensus surprise",
