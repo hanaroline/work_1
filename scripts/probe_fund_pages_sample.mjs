@@ -93,6 +93,11 @@ async function main() {
     for (const [key, zone] of ANCHORS) {
       if (zone === 'first' && m.at[key]) m.peek[key] = pages[m.at[key] - 1].slice(0, 76);
     }
+    /* 쪽 한가운데서 찾은 제2부는 쪽 머리를 봐야 소용없다 — 걸린 대목을 보여 준다 */
+    if (m.at.part2 && m.how.part2 === 'mid') {
+      const x = /.{0,20}제\s*2\s*부[.\s]*집합투자기구에\s*관한\s*사항.{0,50}/.exec(pages[m.at.part2 - 1]);
+      if (x) m.peek.part2 = '… ' + x[0].trim();
+    }
     /* 못 찾은 것은 왜 못 찾았는지 알아야 고친다. 앞쪽 머리글을 남겨 둔다 —
        요약정보가 정말 없는 문서인지, 낱말이 다른지 눈으로 가른다. */
     if (!m.at.summary) m.heads = pages.slice(0, 9).map((t, k) => `p.${k + 1} ${t.slice(0, 64)}`);
@@ -166,6 +171,12 @@ async function main() {
   noP2.slice(0, 6).forEach((r) => {
     log(`  ${r.mgr} · ${r.name.slice(0, 38)} (${r.pages}쪽)`);
     (r.p2heads.length ? r.p2heads : ['     그런 낱말이 아예 없음']).forEach((h) => log(`     ${h}`));
+  });
+
+  head('제2부로 고른 쪽이 정말 제2부 첫 쪽인가 — 본문 시작을 여기서 잡는다');
+  log('(mid 는 쪽 한가운데서 제목을 찾은 것 — 상호참조를 잘못 잡았는지 눈으로 본다)');
+  res.filter((r) => r.at.part2).slice(0, 12).forEach((r) => {
+    log(`  ${r.name.slice(0, 24).padEnd(26)} p.${String(r.at.part2).padStart(3)} (${r.how.part2})  ${(r.peek.part2 || '').slice(0, 60)}`);
   });
 
   head('요약정보로 고른 쪽이 정말 시작 쪽인가 (앞 10종목)');
