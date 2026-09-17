@@ -115,7 +115,8 @@ def aux_percentiles(bars, aux):
 # 문장 조립
 # ─────────────────────────────────────────────────────────────────────
 
-def build_notes(cur, ind, i, scen, bt, flow_cov, total, self_pct, alert, weights, unfitted):
+def build_notes(cur, ind, i, scen, bt, flow_cov, total, self_pct, alert, weights,
+                absent, fit, flow_in_score, total_ex_flow):
     """고객 응대용 문장. 틀에 수를 끼운 것이고, 근거 수를 함께 싣는다."""
     out = []
     g = V.grade_of(self_pct)
@@ -140,34 +141,64 @@ def build_notes(cur, ind, i, scen, bt, flow_cov, total, self_pct, alert, weights
           'momentum': '모멘텀', 'flow': '자금수급'}
     if weights:
         top = sorted(weights.items(), key=lambda x: -x[1])
-        zero = [ko[k] for k, w in top if w <= 0.001]
-        s = '지금 가중치는 ' + ', '.join('%s %.0f%%' % (ko[k], w * 100) for k, w in top if w > 0.001)
-        if zero:
-            s += ' — %s 축은 재어 보니 뒷일과 상관이 없어 가중치 0 입니다' % '·'.join(zero)
-        if unfitted:
-            s += '. %s 축은 아직 표본이 모자라 이 점수에 **들어가 있지 않습니다**' % '·'.join(
-                ko[k] for k in unfitted)
+        s = '지금 가중치는 ' + ', '.join('%s %.0f%%' % (ko[k], w * 100) for k, w in top)
+        # 가중치가 무엇에서 왔는지 갈라 적는다. 「잰 값」과 「사전값」을 뭉뚱그리면
+        # 재어 보지도 않은 축의 가중치를 실력으로 읽는다.
+        thin = [ko[k] for k in weights
+                if (fit.get(k) or {}).get('lambda', 0) < 0.35]
+        if thin:
+            s += ('. 다만 %s 축은 표본이 얕아 **잰 값이 아니라 사전값(균등 25%%)이 '
+                  '거의 그대로 들어간 것**입니다 — 실력을 확인한 가중치가 아닙니다'
+                  % '·'.join(thin))
         out.append({'kind': '가중치', 'text': s + '.',
-                    'basis': {'weights': weights, 'unfitted': unfitted}})
+                    'basis': {'weights': weights,
+                              'lambda': {k: (fit.get(k) or {}).get('lambda') for k in weights},
+                              'thin': thin}})
 
-    # 점수에 못 들어간 축이 위험을 가리키고 있으면 그것부터 말한다 —
-    # 조용히 빠지는 것이 이 도구에서 가장 위험한 사고다
-    for k in (unfitted or []):
+    # 증거가 얕은 축이 위험을 가리키면 그것부터 말한다. 이제는 점수에 **들어가
+    # 있지만**, 그 몫이 사전값에서 온 것이라는 사실은 따로 알려야 한다.
+    for k, wt in sorted((weights or {}).items(), key=lambda x: -x[1]):
         key = {'volatility': 'v', 'compression': 'c', 'momentum': 'm', 'flow': 'f'}[k]
         val = cur[key]
-        if val is not None and val >= 70:
+        lam = (fit.get(k) or {}).get('lambda', 1.0)
+        if val is not None and val >= 70 and lam < 0.35:
             out.append({
                 'kind': '별도경고',
-                'text': ('%s 축이 %.0f점으로 높습니다. 이 축은 쌓인 자료가 %d 일뿐이라 '
-                         '경보 점수에 아직 들어가지 않았으니 **점수와 따로 보십시오** — '
-                         '점수가 낮다고 이 축이 안전하다는 뜻이 아닙니다.'
-                         % (ko[k], val, flow_cov)),
-                'basis': {'axis': ko[k], 'score': round(val, 1), 'sessions': flow_cov},
+                'text': ('%s 축이 %.0f점으로 높고, 가중치 %.0f%%로 점수에 들어가 있습니다. '
+                         '다만 이 축은 자료가 %d 일뿐이라 **그 가중치가 사전값에서 온 것**이고 '
+                         '과거 실적으로 확인된 것이 아닙니다 — 점수 하나로 갈음하지 말고 '
+                         '이 축을 직접 보십시오.'
+                         % (ko[k], val, wt * 100, flow_cov)),
+                'basis': {'axis': ko[k], 'score': round(val, 1), 'weight': round(wt, 4),
+                          'lambda': lam, 'sessions': flow_cov},
             })
 
-    # 점수를 끌어올린 축이 무엇인가 — **점수에 실제로 들어간 축 가운데서** 고른다.
-    # 넷 다 놓고 고르면 위의 별도경고와 엇갈려, 점수에 안 든 축을 「주도축」이라
-    # 부르는 꼴이 된다.
+    # 수급이 점수를 얼마나 밀어올렸는지, 그리고 그 점수를 견주는 이력이 어떤
+    # 판인지. 둘을 함께 적지 않으면 「57점」이 두 해 내내 같은 셈법으로 나온
+    # 값인 줄로 읽힌다.
+    if total_ex_flow is not None and cur['f'] is not None:
+        out.append({
+            'kind': '수급반영',
+            'text': ('수급 축을 넣어 점수가 %.0f점에서 **%.0f점**이 됐습니다(%+.0f점). '
+                     '다만 수급이 점수에 들어간 날은 두 해 이력 가운데 %d 일뿐이라, '
+                     '문턱과 백분위를 재는 이력의 대부분은 수급이 빠진 판입니다 — '
+                     '오늘 점수를 그 이력과 견줄 때 이만큼 감안하십시오.'
+                     % (total_ex_flow, total, total - total_ex_flow, flow_in_score)),
+            'basis': {'total': round(total, 1), 'without_flow': round(total_ex_flow, 1),
+                      'delta': round(total - total_ex_flow, 1),
+                      'flow_in_score_sessions': flow_in_score},
+        })
+
+    # 그날 값이 아예 없어 빠진 축이 있으면 적는다
+    if absent:
+        out.append({
+            'kind': '한계',
+            'text': ('%s 축은 오늘 값이 없어 점수에서 빠졌습니다 — 남은 축의 가중치를 다시 '
+                     '나눠 셈했습니다.' % '·'.join(ko[k] for k in absent)),
+            'basis': {'absent': absent, 'weights': weights},
+        })
+
+    # 점수를 끌어올린 축이 무엇인가 — 점수에 실제로 들어간 축 가운데서 고른다.
     inside = set(weights or {})
     axes = [('volatility', cur['v'], '변동성', '이미 흔들리는 폭이 제 이력의 위쪽에 있습니다'),
             ('compression', cur['c'], '가격압축', '밴드가 좁아졌습니다 — 방향은 아직 없고 힘만 쌓인 자리입니다'),
@@ -200,13 +231,6 @@ def build_notes(cur, ind, i, scen, bt, flow_cov, total, self_pct, alert, weights
                     'text': '같은 국면이던 과거가 %d 일뿐이라 확률을 내지 않습니다 (최소 %d 일).'
                             % (h10.get('n', 0), h10.get('min_sample', B.MIN_SAMPLE)),
                     'basis': {'n': h10.get('n', 0)}})
-
-    # 수급 축이 비었으면 그것부터 말한다
-    if cur['f'] is None:
-        out.append({'kind': '한계',
-                    'text': '수급 축은 오늘 셈에 들어가지 않았습니다 — 쌓인 수급 자료가 %d 일뿐입니다. '
-                            '남은 세 축의 가중치를 다시 나눠 셈했습니다.' % flow_cov,
-                    'basis': {'flow_sessions': flow_cov, 'weights': cur['weights_used']}})
 
     # 백테스트가 말해 주는 이 문턱의 실력
     ab = (bt or {}).get('abs') or {}
@@ -272,7 +296,7 @@ def main(argv):
 
     # 워크포워드 가중 — 머리에 세우는 점수. 축마다 「그 점수가 높던 날 뒤가
     # 실제로 나빴는가」를 **과거만으로** 재서 가중치를 정한다.
-    adaptive, wmap, whist, unfit = V.adaptive_series(bars, rows)
+    adaptive, wmap, whist, absent = V.adaptive_series(bars, rows)
 
     equal = [r['total'] for r in rows]
     scored = [k for k in range(len(bars)) if adaptive[k] is not None]
@@ -308,6 +332,18 @@ def main(argv):
                 for m in ('abs', 'sigma')}
     flags, cuts = B.alert_flags(adaptive, threshold)
     flow_cov = sum(1 for x in flow['foreign'] if x is not None)
+    # 수급 축이 실제로 점수에 **들어간** 날. 원자료가 있는 날(flow_cov)과 다르다 —
+    # 누적과 z점수가 앞자락을 먹기 때문이다. 문턱·백분위를 재는 이력의 대부분은
+    # 수급이 빠진 판이므로, 이 수를 숨기면 오늘 점수를 이력과 견줄 수 없다.
+    flow_in_score = sum(1 for r in rows if r['f'] is not None)
+
+    # 수급을 뺀 오늘 점수 — 수급이 점수를 얼마나 밀어올렸는지 보이려는 것이다
+    w_now = wmap[i] or {}
+    ex = {k: v for k, v in w_now.items() if k != 'flow'}
+    tw_ex = sum(ex.values())
+    keymap = {'volatility': 'v', 'compression': 'c', 'momentum': 'm'}
+    total_ex_flow = (sum(v * cur[keymap[k]] for k, v in ex.items()) / tw_ex
+                     if tw_ex else None)
 
     # 점수 자체의 백분위 — 등급을 여기서 매긴다. 「65점」은 셈법을 바꾸면 뜻이
     # 달라지지만 「제 이력의 상위 12%」는 바뀌지 않는다.
@@ -351,12 +387,16 @@ def main(argv):
             'alert': bool(flags[i]),
             'alert_threshold': None if cuts[i] is None else round(cuts[i], 1),
             'equal_total': None if equal[i] is None else round(equal[i], 1),
+            'total_ex_flow': None if total_ex_flow is None else round(total_ex_flow, 1),
+            'flow_in_score_sessions': flow_in_score,
             'adaptive_weights': wmap[i],
-            'adaptive_unfitted': unfit[i] or [],
+            'axes_absent': absent[i] or [],
             'adaptive_fit': whist[-1] if whist else None,
             'adaptive_note': ('가중치는 축마다 「그 점수가 높던 날 뒤가 실제로 얼마나 밀렸는가」의 '
-                              '순위상관을 **과거만으로** 재서 정한다. 상관이 0 이하인 축은 가중치 0 이다. '
-                              '한 달에 한 번 다시 잰다.'),
+                              '순위상관을 **과거만으로** 재고, 그것을 **증거의 힘(λ)만큼** 사전값'
+                              '(균등 25%)과 섞어 정한다. λ 는 중첩을 감안한 유효관측으로 잰다 — '
+                              '표본이 얕은 축은 잰 값이 아니라 사전값 쪽으로 가고, 자료가 쌓이는 만큼 '
+                              '저절로 잰 값이 사전값을 밀어낸다. 한 달에 한 번 다시 잰다.'),
             'phase': cur['phase'],
             'phase_label': (V.PHASES.get(cur['phase']) or ('—', ''))[0],
             'phase_note': (V.PHASES.get(cur['phase']) or ('', ''))[1],
@@ -374,8 +414,9 @@ def main(argv):
             'axes_missing': cur['axes_missing'],
             'weight_note': V.WEIGHT_NOTE,
             'meaning_note': ('점수는 각 지표가 **제 과거 안에서** 어디쯤인지를 모아 만든 값이다. '
-                             '65점은 「지표들이 제 이력의 나쁜 쪽에 들어와 있다」는 뜻이지, '
-                             '급락 확률 65% 라는 뜻이 아니다. 확률은 아래 scenarios 에서 따로 낸다.'),
+                             '오늘의 %.0f점은 「지표들이 제 이력의 이만큼 나쁜 쪽에 들어와 있다」는 '
+                             '뜻이지 **급락 확률 %.0f%% 라는 뜻이 아니다.** 확률은 아래 시나리오에서 '
+                             '따로 낸다.' % (adaptive[i], adaptive[i])),
         },
         'indicators': {
             'rv5': pick(ind['rv5']), 'rv20': pick(ind['rv20']), 'rv60': pick(ind['rv60']),
@@ -410,14 +451,20 @@ def main(argv):
             'scored_sessions': len(scored),
             'scored_from': bars[scored[0]]['d'],
             'flow_sessions': flow_cov,
+            'flow_in_score_sessions': flow_in_score,
             'vix_sessions': sum(1 for x in vix_series if x is not None),
             'source': hist['coverage'],
-            'note': ('가격 세 축(변동성·압축·모멘텀)은 %d 세션 위에서 셈했고, 수급 축은 %d 일뿐이다. '
-                     '백테스트 성적은 **가격 세 축**의 성적이다 — 수급이 든 채로 겪은 급락 사건이 '
-                     '아직 표본이 못 된다.' % (len(scored), flow_cov)),
+            'note': ('가격 세 축(변동성·압축·모멘텀)은 %d 세션 위에서 셈했고, 수급 축이 점수에 '
+                     '들어간 날은 %d 일이다(원자료는 %d 일이지만 누적·z점수 창이 앞자락을 먹는다). '
+                     '그래서 **문턱과 백분위를 재는 이력의 대부분은 수급이 빠진 판**이고, '
+                     '아래 백테스트 성적도 사실상 가격 세 축의 성적이다 — 수급이 든 채로 겪은 '
+                     '급락 사건이 아직 표본이 못 된다.'
+                     % (len(scored), flow_in_score, flow_cov)),
         },
         'notes': build_notes(cur, ind, i, scen, bt, flow_cov,
-                             adaptive[i], self_pct, bool(flags[i]), wmap[i], unfit[i]),
+                             adaptive[i], self_pct, bool(flags[i]), wmap[i],
+                             absent[i], (whist[-1] if whist else {}).get('detail') or {},
+                             flow_in_score, total_ex_flow),
         'config': {
             'equal_weights': V.WEIGHTS, 'alert_pct': threshold,
             'min_sample': B.MIN_SAMPLE, 'horizons': B.HORIZONS,
@@ -425,6 +472,8 @@ def main(argv):
             'event_window': B.EVENT_WINDOW, 'lookback_sessions': B.LOOKBACK,
             'pct_rank_window': 252, 'pct_rank_min_obs': 60,
             'burn_in': V.BURN_IN, 'refit_every': V.REFIT_EVERY,
+            'prior': V.PRIOR, 'k_pseudo': V.K_PSEUDO, 'fit_horizon': 10,
+            'min_fit_obs': V.MIN_FIT_OBS, 'flow_min_obs': V.FLOW_MIN_OBS,
         },
     }
 

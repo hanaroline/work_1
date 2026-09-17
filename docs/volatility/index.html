@@ -132,6 +132,11 @@
   .axis-meta { grid-column: 2 / 4; font-size: 11.5px; color: var(--text-muted); margin-top: -8px; }
   .axis-row.out .track { opacity: .45; }
   .axis-row.out .axis-name { color: var(--text-muted); }
+  /* 가중치가 잰 값에서 왔는지 사전값에서 왔는지 — 색만으로 가리지 않고 글로 적는다 */
+  .tag { font-size: 10.5px; padding: 1px 6px; border-radius: 999px; border: 1px solid var(--border);
+    color: var(--text-muted); white-space: nowrap; }
+  .tag.prior { color: var(--warn); border-color: color-mix(in srgb, var(--warn) 45%, transparent); }
+  .tag.fitted { color: var(--good); border-color: color-mix(in srgb, var(--good) 35%, transparent); }
 
   /* ===== 표 ===== */
   table { width: 100%; border-collapse: collapse; font-size: 13px; }
@@ -311,6 +316,7 @@
     var warn = "";
     (D.notes || []).forEach(function (n) {
       if (n.kind === "별도경고") warn += '<div class="callout danger">' + md(n.text) + "</div>";
+      if (n.kind === "수급반영") warn += '<div class="callout">' + md(n.text) + "</div>";
     });
 
     return '<div class="card">' +
@@ -363,25 +369,33 @@
 
   /* ===== 2. 네 축 ===== */
   function axesCard(s) {
-    var w = s.adaptive_weights || {}, unfit = s.adaptive_unfitted || [];
+    var w = s.adaptive_weights || {}, absent = s.axes_absent || [];
+    var fit = (s.adaptive_fit || {}).detail || {};
     var rows = AX.map(function (a) {
       var o = s.axes[a.key] || {}, v = o.score;
       var wt = w[a.key];
+      var lam = (fit[a.key] || {}).lambda;
       var inScore = wt != null;
       var meta;
       if (!inScore) {
-        meta = unfit.indexOf(a.key) >= 0
-          ? "표본이 모자라 <b>점수에 들어가지 않음</b> — 따로 보십시오"
-          : "값이 없어 점수에 들어가지 않음";
-      } else if (wt <= 0.001) {
-        meta = "가중치 <b>0%</b> — 재어 보니 이후 낙폭과 상관이 없었음";
+        meta = absent.indexOf(a.key) >= 0
+          ? "오늘 값이 없어 <b>점수에서 빠짐</b>"
+          : "점수에 들어가지 않음";
       } else {
-        meta = "가중치 " + num(wt * 100, 0) + "%";
+        meta = "가중치 <b>" + num(wt * 100, 0) + "%</b>";
+        /* 가중치가 어디서 왔는지 갈라 적는다 — 잰 값인지 사전값인지 */
+        if (lam == null || lam < 0.35) {
+          meta += ' <span class="tag prior">거의 사전값 — 실력 확인 안 됨</span>';
+        } else if (wt <= 0.05) {
+          meta += ' <span class="tag">재어 보니 이후 낙폭과 상관 없었음</span>';
+        } else {
+          meta += ' <span class="tag fitted">과거 실적으로 잰 값</span>';
+        }
       }
       var parts = Object.keys(o.parts || {}).map(function (k) {
         return esc(k) + " " + num(o.parts[k], 0);
       }).join(" · ");
-      return '<div class="axis-row' + (inScore && wt > 0.001 ? "" : " out") + '">' +
+      return '<div class="axis-row' + (inScore ? "" : " out") + '">' +
           '<div class="axis-name"><span class="swatch" style="background:' + cv(a.css) + '"></span>' +
             esc(a.ko) + '</div>' +
           '<div class="track"><div class="fill" style="width:' + (v == null ? 0 : v) +
@@ -391,14 +405,16 @@
         '</div>';
     }).join("");
 
-    var fit = (s.adaptive_fit || {}).detail || {};
     var fitRows = AX.map(function (a) {
       var f = fit[a.key] || {};
-      return "<tr><td>" + esc(a.ko) + "</td><td>" + (f.rho == null ? "—" : num(f.rho, 3)) +
-        "</td><td>" + (f.n == null ? "—" : f.n) + "</td><td>" +
-        (w[a.key] == null ? "점수에 없음" : num(w[a.key] * 100, 0) + "%") + "</td>" +
-        "<td style=\"text-align:left;color:var(--text-muted);font-size:12px\">" +
-        esc(f.note || "") + "</td></tr>";
+      return "<tr><td>" + esc(a.ko) + "</td>" +
+        "<td>" + (f.rho == null ? "—" : num(f.rho, 3)) + "</td>" +
+        "<td>" + (f.n == null ? "—" : f.n) + "</td>" +
+        "<td>" + (f.n_eff == null ? "—" : num(f.n_eff, 1)) + "</td>" +
+        "<td>" + (f.lambda == null ? "—" : num(f.lambda, 2)) + "</td>" +
+        "<td>" + (f.fitted_share == null ? "—" : num(f.fitted_share * 100, 0) + "%") + "</td>" +
+        "<td>" + num((f.prior == null ? 0.25 : f.prior) * 100, 0) + "%</td>" +
+        "<td><b>" + (w[a.key] == null ? "—" : num(w[a.key] * 100, 0) + "%") + "</b></td></tr>";
     }).join("");
 
     return '<div class="card">' +
@@ -409,10 +425,17 @@
       '<details><summary>가중치는 어떻게 정해지는가 — 축별 순위상관</summary>' +
         '<p style="font-size:13px;color:var(--text-secondary)">' + md(s.adaptive_note || "") + '</p>' +
         '<div class="tbl-wrap"><table><thead><tr><th>축</th><th>순위상관 ρ</th><th>표본</th>' +
-        '<th>가중치</th><th>비고</th></tr></thead><tbody>' + fitRows + '</tbody></table></div>' +
+        '<th>유효표본</th><th>λ(증거)</th><th>잰 몫</th><th>사전값</th><th>최종 가중치</th>' +
+        '</tr></thead><tbody>' + fitRows + '</tbody></table></div>' +
         '<p style="font-size:12px;color:var(--text-muted);margin-top:10px">' +
         'ρ 는 「그 축의 점수가 높던 날 뒤에 실제로 더 많이 밀렸는가」의 순위상관입니다. ' +
-        '0 이하면 가중치 0 이 됩니다. 균등가중으로 셈한 점수는 ' + num(s.equal_total, 0) + '점입니다.</p>' +
+        '<b>유효표본</b>은 관측 수를 그대로 쓰지 않고 중첩을 나눈 값입니다 — 오늘의 ' +
+        '「이후 10거래일 낙폭」과 내일의 그것은 아흐레를 공유하므로 관측 400개가 독립 400개가 ' +
+        '아닙니다. <b>λ</b> 는 그 유효표본으로 잰 「잰 값을 얼마나 믿을 것인가」이고, ' +
+        '최종 가중치는 <code>λ×잰 몫 + (1−λ)×사전값</code> 입니다. ' +
+        '<b>표본이 얕은 축은 저절로 사전값(균등 25%) 쪽으로 가고, 자료가 쌓이는 만큼 ' +
+        '잰 값이 사전값을 밀어냅니다 — 넘어야 할 턱이 없습니다.</b> ' +
+        '균등가중만으로 셈한 점수는 ' + num(s.equal_total, 0) + '점입니다.</p>' +
       '</details>' +
     '</div>';
   }
