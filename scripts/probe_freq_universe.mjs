@@ -31,15 +31,9 @@ import path from 'node:path';
 const BASE = 'https://www.etfcheck.co.kr';
 const OUT = 'tools/etfcheck-discovery/freq-universe.json';
 
-// 1단계 관문. 최종 채택 기준(순자산 300억·60일 거래대금 5억)보다 **일부러
-// 느슨하게** 잡는다. 여기 쓰는 거래대금은 하루치(F15023)라 60일 평균보다
-// 들쭉날쭉해서, 최종 기준을 그대로 대면 통과했을 종목이 하루 한산했다는
-// 이유로 여기서 잘려 나간다. 관문은 비용을 줄이려고 두는 것이지 판정하려고
-// 두는 것이 아니다 — 판정은 2단계에서 60일 평균으로 한다.
-const GATE = {
-  minAum: 30_000_000_000, // 순자산 300억 (최종 기준과 같다. 순자산은 하루로 안 흔들린다)
-  minTurnoverDay: 100_000_000, // 하루 거래대금 1억 (최종 기준 5억의 1/5)
-};
+// 순자산으로 먼저 자르는 관문은 두지 않는다. 1차 실측에서 스크리너가 전 종목을
+// 주지 않는 것을 확인했고(10행·국내 0종목), 순자산을 종목마다 따로 받으면
+// 1단계가 두 배로 비싸져 관문을 두는 뜻이 없어진다. 전 종목에 주기 판정을 돌린다.
 
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 const num = (v) => (v === null || v === undefined || v === '' ? null : Number(v));
@@ -166,55 +160,20 @@ const monthlyCodes = new Set(
 const universe = mast.filter((r) => domesticCodes.has(r.F16013));
 console.log(`[${lap()}s] 국내 상장 ${universe.length}종목 (그중 월배당 분류 ${monthlyCodes.size})`);
 
-// ── A. 스크리너가 전 종목을 주는가 ────────────────────────────────────
-// 앱이 스크리너 화면에서 스스로 부르는 모양을 먼저 본다. 관찰한 판은 36행만
-// 왔는데 그것이 **화면이 걸어 둔 조건 때문인지, 한 번에 주는 최대치인지**
-// 를 모른다. 모르는 채로 "전 종목이 온다" 고 적을 수는 없다.
-const screenerProbe = { tried: [], observed: [], rows: null, note: null };
-for (const p of ['/mobile/screener', '/screener', '/mobile/etpscreener']) {
-  try {
-    await page.goto(BASE + p, { waitUntil: 'domcontentloaded', timeout: 45000 });
-    await page.waitForTimeout(7000);
-    screenerProbe.tried.push({ path: p, calls: screenerCalls.length });
-    if (screenerCalls.length) break;
-  } catch (e) {
-    screenerProbe.tried.push({ path: p, error: String(e.message).slice(0, 120) });
-  }
-}
-screenerProbe.observed = screenerCalls.slice(0, 5);
-
-let screenerRows = null;
-if (screenerCalls.length) {
-  const s = screenerCalls[screenerCalls.length - 1];
-  try {
-    const rows = await call({ url: s.url, method: s.method, body: s.postData || null });
-    screenerRows = rows;
-    screenerProbe.rows = rows.length;
-    screenerProbe.note = `앱이 부르는 모양 그대로 ${rows.length}행`;
-  } catch (e) {
-    screenerProbe.note = `앱 모양 그대로 불렀으나 실패: ${String(e.message).slice(0, 120)}`;
-  }
-}
-console.log(`[${lap()}s] 스크리너: ${screenerProbe.note || '앱이 부르는 것을 못 잡았습니다'}`);
-
-// 스크리너가 전 종목을 안 주면, 순자산은 상세에서 한 종목씩 받아야 한다.
-// 그건 1단계를 두 배로 비싸게 만든다. 그래서 그 경우엔 관문을 걸지 않고
-// **전 종목**에 주기 판정을 돌려서, 적어도 "주기별로 몇 종목인가" 는 잰다.
+// ── A. 스크리너 ───────────────────────────────────────────────────────
+// 1차 실측(2026-09-17)에서 확인했다. 앱이 부르는 모양을 그대로 베껴 불렀더니
+// **10행**이 왔고 그중 국내 종목은 **0개**였다. 전 종목 목록이 아니다.
+// 그래서 순자산으로 먼저 자르는 관문은 못 쓴다 — 전 종목에 주기 판정을 돌려
+// 적어도 "주기별로 몇 종목인가" 를 잰다.
+//
+// 스크리너 화면을 찾아 돌아다니던 부분은 뺐다. 얻은 것이 없었고, 엉뚱한
+// 경로로 옮겨 다니는 사이 세션이 흐트러졌을 여지만 남겼다.
+const screenerProbe = {
+  note: '1차 실측에서 10행·국내 0종목으로 확인 — 전 종목 목록이 아니라 관문에 쓸 수 없다',
+};
 const byCode = new Map();
-if (screenerRows) for (const r of screenerRows) if (r.F16013) byCode.set(r.F16013, r);
-const screenerCovers = universe.filter((r) => byCode.has(r.F16013)).length;
-const gateUsable = screenerRows && screenerCovers >= universe.length * 0.9;
-console.log(`[${lap()}s] 스크리너가 국내 ${universe.length}종목 중 ${screenerCovers}종목을 덮습니다 → 관문 ${gateUsable ? '사용' : '미사용(전 종목 판정)'}`);
-
-const gated = gateUsable
-  ? universe.filter((r) => {
-      const s = byCode.get(r.F16013);
-      const aum = num(s.F15028);
-      const to = num(s.F15023);
-      return aum !== null && aum >= GATE.minAum && to !== null && to >= GATE.minTurnoverDay;
-    })
-  : universe;
-console.log(`[${lap()}s] 1단계 대상 ${gated.length}종목`);
+const gated = universe;
+console.log(`[${lap()}s] 1단계 대상 ${gated.length}종목 (관문 미사용 — 스크리너가 전 종목을 주지 않는다)`);
 
 // ── B. 지급주기 판정 ──────────────────────────────────────────────────
 // 최근 12개월 지급 횟수로 본다. getEtpItemDivOutline 은 연도별 지급 횟수와
@@ -260,13 +219,77 @@ function classify(n, listedOn) {
   return '비정기';
 }
 
+// 예산. 워크플로 한도가 75분이라 55분에서 스스로 멈춘다.
+//
+// 1차 실측은 한도에 걸려 잘렸고, 그때까지 센 350종목치가 **통째로 사라졌다**.
+// 다 재지 못한 것보다 재 놓고 못 남긴 것이 더 나쁜 실수다. 이제 중간에
+// 저장하고, 예산을 넘기면 거기까지를 "여기까지 쟀다" 고 적고 끝낸다.
+const BUDGET_MS = 55 * 60 * 1000;
+
 const results = [];
 const failed = [];
 const tStage1 = Date.now();
+let stoppedEarly = null;
+
+function saveReport(extra = {}) {
+  const tally = {};
+  for (const r of results) tally[r.freq] = (tally[r.freq] || 0) + 1;
+  const elapsed = Math.round((Date.now() - tStage1) / 1000);
+  const perCall = results.length ? elapsed / results.length : null;
+  const stage2Targets = results.filter((r) => r.freq !== '무분배' && r.freq !== '판정 불가(상장 1년 미만)');
+  fs.mkdirSync(path.dirname(OUT), { recursive: true });
+  fs.writeFileSync(
+    OUT,
+    JSON.stringify(
+      {
+        when: new Date().toISOString(),
+        purpose: '지급주기·연분배율 조회를 붙이기 전, 모집단 확대 비용을 실측한다',
+        완료: results.length + failed.length >= gated.length,
+        counts: {
+          국내상장전체: universe.length,
+          월배당분류: monthlyCodes.size,
+          '1단계대상': gated.length,
+          '1단계성공': results.length,
+          '1단계실패': failed.length,
+        },
+        주기별: tally,
+        시간: {
+          '1단계초': elapsed,
+          호출당초: perCall,
+          '2단계대상': stage2Targets.length,
+          '2단계추정분': perCall ? Math.round((stage2Targets.length * perCall * 6) / 60) : null,
+        },
+        stoppedEarly,
+        screenerProbe,
+        failedSample: failed.slice(0, 20),
+        items: results,
+        ...extra,
+      },
+      null,
+      2,
+    ),
+  );
+  return { tally, elapsed, perCall, stage2Targets };
+}
+
 for (const [i, row] of gated.entries()) {
   const code = row.F16013;
   const name = row.F16002;
-  if (i % 50 === 0) console.log(`  [${lap()}s] ${i}/${gated.length} …`);
+  if (i % 50 === 0) {
+    const done = results.length + failed.length;
+    const rate = done ? (Date.now() - tStage1) / done : 0;
+    console.log(
+      `  [${lap()}s] ${i}/${gated.length} … 성공 ${results.length} 실패 ${failed.length}` +
+        (rate ? ` · 종목당 ${(rate / 1000).toFixed(2)}초 · 남은 예상 ${Math.round(((gated.length - i) * rate) / 60000)}분` : ''),
+    );
+    if (i > 0) saveReport(); // 중간 저장. 잘려도 여기까지는 남는다
+  }
+  // 예산을 넘겼으면 멈춘다. 잘려서 아무것도 못 남기느니 여기까지를 남긴다.
+  if (Date.now() - tStage1 > BUDGET_MS) {
+    stoppedEarly = `예산 ${BUDGET_MS / 60000}분을 넘겨 ${i}/${gated.length} 에서 멈췄습니다`;
+    console.log(`  [${lap()}s] ${stoppedEarly}`);
+    break;
+  }
   try {
     const rows = await call({ url: `/user/etp/getEtpItemDivOutline?code=${code}` });
     const { n, months } = countLast12(rows);
@@ -285,13 +308,18 @@ for (const [i, row] of gated.entries()) {
     });
   } catch (e) {
     failed.push({ code, name, why: String(e.message).slice(0, 160) });
-    // 앞에서부터 줄줄이 실패하면 원천이 막은 것이다. 한 시간을 재시도로
-    // 태우지 않고 일찍 멈춘다.
     if (failed.length >= 10 && results.length === 0) {
+      saveReport({ note: '앞 10종목이 모두 실패해 일찍 멈췄습니다' });
       throw new Error(`앞 ${failed.length}종목이 모두 실패했습니다: ${String(e.message).slice(0, 120)}`);
     }
   }
-  await sleep(120);
+  // 간격은 **검증된 수집기와 같은 250ms** 로 둔다.
+  //
+  // 1차 실측에서 120ms 로 뒀다가 크게 데었다. 원천이 막기 시작했고, 막힐
+  // 때마다 재시도 두 번에 머리글 재발급(약 8초)까지 타면서 종목당 11.9초가
+  // 들었다 — 빠르게 가려다 다섯 배 느려진 셈이다. 수집기는 250ms 로 192종목
+  // × 6호출을 탈 없이 돈다. 검증된 속도를 두고 달릴 이유가 없다.
+  await sleep(250);
 }
 const stage1Sec = Math.round((Date.now() - tStage1) / 1000);
 
@@ -305,48 +333,36 @@ const perCall = results.length ? stage1Sec / results.length : null;
 const stage2Targets = results.filter((r) => r.freq !== '무분배' && r.freq !== '판정 불가(상장 1년 미만)');
 const stage2EstMin = perCall ? Math.round((stage2Targets.length * perCall * 6) / 60) : null;
 
-const report = {
-  when: new Date().toISOString(),
-  purpose: '지급주기·연분배율 조회를 붙이기 전, 모집단 확대 비용을 실측한다',
-  gate: GATE,
-  counts: {
-    국내상장전체: universe.length,
-    월배당분류: monthlyCodes.size,
-    스크리너덮은수: screenerCovers,
-    관문사용: gateUsable,
-    '1단계대상': gated.length,
-    '1단계성공': results.length,
-    '1단계실패': failed.length,
-  },
-  주기별: tally,
-  시간: { '1단계초': stage1Sec, 호출당초: perCall, '2단계대상': stage2Targets.length, '2단계추정분': stage2EstMin },
-  screenerProbe,
-  failedSample: failed.slice(0, 20),
-  items: results,
-};
+// 관문은 이번 판에서 쓰지 않았다(스크리너가 전 종목을 주지 않는다). 쓰지 않은
+// 기준을 결과에 적으면 그것으로 걸렀다고 읽힌다 — 적지 않는다.
+saveReport();
 
-fs.mkdirSync(path.dirname(OUT), { recursive: true });
-fs.writeFileSync(OUT, JSON.stringify(report, null, 2));
-
+const done = results.length + failed.length;
 console.log('');
 console.log('══ 실측 결과 ══');
-console.log(`국내 상장 ${universe.length} → 1단계 대상 ${gated.length} → 판정 성공 ${results.length} (실패 ${failed.length})`);
+if (stoppedEarly) console.log(`※ ${stoppedEarly} — 아래는 여기까지 잰 값입니다`);
+console.log(`국내 상장 ${universe.length} → 판정 ${done}종목 (성공 ${results.length}, 실패 ${failed.length})`);
 for (const [k, v] of Object.entries(tally).sort((a, b) => b[1] - a[1])) console.log(`  ${k}: ${v}`);
-console.log(`1단계 ${stage1Sec}초 (호출당 ${perCall?.toFixed(2)}초)`);
+console.log(`1단계 ${stage1Sec}초 (종목당 ${perCall?.toFixed(2)}초)`);
+if (perCall) {
+  console.log(`  → 전 종목 1단계 환산 ${Math.round((universe.length * perCall) / 60)}분`);
+}
 console.log(`2단계 대상 ${stage2Targets.length}종목 × 6호출 ≈ ${stage2EstMin}분 (워크플로 한도 75분)`);
 
 if (process.env.GITHUB_STEP_SUMMARY) {
   const L = [];
   L.push('### 지급주기 모집단 실측');
   L.push('');
-  L.push(`- 국내 상장 **${universe.length}**종목 → 1단계 대상 **${gated.length}** → 판정 성공 **${results.length}** (실패 ${failed.length})`);
-  L.push(`- 스크리너: ${screenerProbe.note || '앱 호출을 못 잡음'} — 국내 ${screenerCovers}종목 덮음, 관문 ${gateUsable ? '사용' : '미사용'}`);
+  if (stoppedEarly) L.push(`> ⚠ ${stoppedEarly} — 아래는 여기까지 잰 값입니다.`);
+  L.push(`- 국내 상장 **${universe.length}**종목 → 판정 **${done}** (성공 ${results.length}, 실패 ${failed.length})`);
+  L.push(`- 스크리너: ${screenerProbe.note}`);
   L.push('');
   L.push('| 지급주기 | 종목 수 |');
   L.push('|---|---:|');
   for (const [k, v] of Object.entries(tally).sort((a, b) => b[1] - a[1])) L.push(`| ${k} | ${v} |`);
   L.push('');
-  L.push(`- 1단계 **${stage1Sec}초** (호출당 ${perCall?.toFixed(2)}초)`);
+  L.push(`- 1단계 **${stage1Sec}초** (종목당 ${perCall?.toFixed(2)}초)`);
+  if (perCall) L.push(`- 전 종목 1단계 환산 **${Math.round((universe.length * perCall) / 60)}분**`);
   L.push(`- 2단계 대상 **${stage2Targets.length}**종목 × 6호출 ≈ **${stage2EstMin}분** (한도 75분)`);
   fs.appendFileSync(process.env.GITHUB_STEP_SUMMARY, L.join('\n') + '\n');
 }
