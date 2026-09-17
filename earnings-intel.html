@@ -1,0 +1,1015 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>미국 주요기업 실적 어닝스 인텔리전스</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --primary:#F58220; --primary-active:#CB6015; --primary-soft:#FAB072;
+  --secondary:#043B72; --disabled:#D7D7D7;
+  --canvas:#FFFFFF; --soft:#ECEFF4; --subtle:#F7F8FA;
+  --hair:#CDCECB; --hair-soft:#E5E4E1;
+  --ink:#1A1A1A; --body:#3D3D3D; --muted:#6C6C6C; --muted-soft:#84888B;
+  --line-dark:#49535B; --line-mid:#84888B;
+  --success:#2E8540; --warning:#D4A017; --error:#C62828;
+  --c1:#F58220; --c2:#043B72; --c3:#FAB072; --c4:#0086B8; --c5:#AD624E;
+  --c6:#00A9CE; --c7:#F0B26B; --c8:#7E9FC3; --c9:#84888B;
+  --font-kr:'Spoqa Han Sans Neo','Noto Sans KR',sans-serif;
+  --font-en:'Inter','Aptos','Segoe UI',system-ui,sans-serif;
+  --space-section:104px; --space-block:56px; --space-content:28px; --space-tight:14px;
+}
+@media (max-width:768px){:root{--space-section:72px;--space-block:36px}}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--canvas);color:var(--body);
+  font-family:var(--font-kr);font-size:19px;line-height:1.65;
+  font-variant-numeric:tabular-nums}
+html[lang="en"] body{font-family:var(--font-en)}
+html[lang="ko"] body{word-break:keep-all}
+h1,h2,h3{color:var(--ink);margin:0}
+h1{font-size:34px;font-weight:700;line-height:1.25;letter-spacing:-.3px}
+h2{font-size:26px;font-weight:600;line-height:1.3}
+h3{font-size:22px;font-weight:600;line-height:1.3}
+@media (max-width:768px){h1{font-size:26px}h2{font-size:22px}h3{font-size:19px}}
+a{color:var(--secondary)}
+.page{max-width:1200px;margin:0 auto;padding:0 32px}
+@media (max-width:768px){.page{padding:0 16px}}
+.num{font-variant-numeric:tabular-nums}
+.cap{font-size:14px;line-height:1.4;letter-spacing:.2px;color:var(--muted)}
+
+/* ---------- 언어 토글 ---------- */
+.toolbar{display:flex;justify-content:space-between;align-items:flex-start;gap:14px;
+  flex-wrap:wrap;padding-top:20px}
+.lang-toggle{display:inline-flex;border:1px solid var(--hair);border-radius:2px;
+  overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,.06);background:#fff;margin-left:auto}
+.lang-toggle button{font-family:var(--font-en);font-size:14px;font-weight:500;
+  letter-spacing:.5px;padding:10px 17px;border:0;background:#fff;color:var(--muted);
+  cursor:pointer;line-height:1.2}
+.lang-toggle button+button{border-left:1px solid var(--hair)}
+.lang-toggle button[aria-checked="true"]{background:var(--primary);color:#fff}
+.lang-toggle button[aria-checked="false"]:hover{background:var(--subtle);color:var(--ink)}
+.lang-toggle button:focus-visible{outline:2px solid var(--primary);outline-offset:-2px}
+
+/* ---------- Hero ---------- */
+.hero{background:var(--primary);color:#fff;padding-bottom:var(--space-block)}
+.hero .toolbar{padding-top:18px}
+.hero .lang-toggle{border-color:rgba(255,255,255,.55)}
+.tagbar{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.tag{font-size:13px;letter-spacing:.4px;border:1px solid rgba(255,255,255,.7);
+  border-radius:2px;padding:3px 9px;color:#fff}
+.hero h1{color:#fff;font-size:52px;letter-spacing:-1px;line-height:1.12;margin:26px 0 0}
+@media (max-width:768px){.hero h1{font-size:34px}}
+.hero .sub{font-size:21px;color:rgba(255,255,255,.94);margin-top:14px;max-width:62ch}
+@media (max-width:768px){.hero .sub{font-size:17px}}
+.hero .meta{margin-top:24px;font-size:14px;color:rgba(255,255,255,.88);
+  display:flex;gap:10px 22px;flex-wrap:wrap}
+
+/* ---------- 섹션 ---------- */
+.section{padding-top:var(--space-section)}
+.section-rule{height:1px;background:var(--primary);margin-bottom:19px}
+.section-head{display:flex;justify-content:space-between;align-items:baseline;
+  gap:14px;flex-wrap:wrap;margin-bottom:var(--space-content)}
+.section-head p{margin:6px 0 0;max-width:72ch;color:var(--body)}
+.eyebrow{font-size:13px;font-weight:500;letter-spacing:1.1px;color:var(--primary-active);
+  text-transform:uppercase;margin-bottom:6px}
+
+/* ---------- 스탯 타일 ---------- */
+.tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(215px,1fr));gap:1px;
+  background:var(--hair-soft);border:1px solid var(--hair)}
+.tile{background:#fff;padding:22px 20px 20px}
+.tile .lab{font-size:15px;font-weight:500;letter-spacing:.5px;color:var(--muted);
+  line-height:1.3;min-height:2.6em}
+.tile .val{font-size:44px;font-weight:700;line-height:1.05;letter-spacing:-.6px;
+  color:var(--secondary);margin-top:10px}
+.tile.accent .val{color:var(--primary)}
+.tile .ref{font-size:13px;line-height:1.45;color:var(--muted-soft);margin-top:9px}
+.tile .who{font-size:12px;color:var(--muted-soft);margin-top:7px;
+  border-top:1px solid var(--hair-soft);padding-top:7px}
+.tile .who a{color:var(--muted-soft)}
+
+/* ---------- 캘린더 ---------- */
+.cal-wrap{border:1px solid var(--hair);background:#fff}
+.cal-band{display:flex;align-items:center;gap:12px;padding:12px 18px;
+  border-bottom:1px solid var(--hair-soft);background:var(--subtle);flex-wrap:wrap}
+.cal-band b{font-size:16px;color:var(--ink)}
+.cal-row{display:grid;grid-template-columns:136px 1fr;gap:0;border-bottom:1px solid var(--hair-soft)}
+.cal-row:last-child{border-bottom:0}
+.cal-date{padding:14px 16px;border-right:1px solid var(--hair-soft);background:var(--subtle)}
+.cal-date .d{font-size:19px;font-weight:700;color:var(--ink);line-height:1.15;white-space:nowrap}
+.cal-date .w{font-size:13px;color:var(--muted)}
+.cal-items{padding:12px 16px;display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.chip{display:inline-flex;align-items:center;gap:7px;border:1px solid var(--hair);
+  border-radius:2px;padding:5px 10px;font-size:15px;background:#fff;cursor:pointer;
+  font-family:var(--font-en);font-weight:600;color:var(--ink)}
+.chip:hover{background:var(--subtle)}
+.chip .dot{width:7px;height:7px;border-radius:50%;background:var(--c9)}
+.chip.beat .dot{background:var(--success)} .chip.miss .dot{background:var(--error)}
+.chip.na .dot{background:var(--c9)}
+.chip .pct{font-size:13px;font-weight:500;color:var(--muted)}
+.cal-row.future .cal-date{background:#fff}
+.cal-row.future .chip{border-style:dashed;border-color:var(--primary);color:var(--primary-active)}
+.cal-row.future .chip .dot{background:var(--primary)}
+.cal-row.future .chip.soft{border-color:var(--hair);color:var(--muted)}
+.cal-row.future .chip.soft .dot{background:var(--primary-soft)}
+.chip .cf{font-size:11px;font-weight:500;color:var(--muted-soft);letter-spacing:.3px}
+.legend{display:flex;gap:8px 20px;flex-wrap:wrap;margin-top:14px;font-size:14px;color:var(--muted)}
+.legend span{display:inline-flex;align-items:center;gap:7px}
+.legend i{width:9px;height:9px;border-radius:50%;display:inline-block;font-style:normal}
+
+/* ---------- 컨트롤 ---------- */
+.controls{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:16px}
+.controls input[type=search]{font:inherit;font-size:16px;padding:8px 12px;
+  border:1px solid var(--hair);border-radius:2px;min-width:200px;background:#fff;color:var(--ink)}
+.controls input[type=search]:focus-visible{outline:2px solid var(--primary);outline-offset:-1px}
+.filters{display:flex;gap:6px;flex-wrap:wrap}
+.filters button{font:inherit;font-size:15px;padding:7px 13px;border:1px solid var(--hair);
+  border-radius:2px;background:#fff;color:var(--muted);cursor:pointer}
+.filters button[aria-pressed="true"]{background:var(--primary);border-color:var(--primary);color:#fff}
+.filters button:hover[aria-pressed="false"]{background:var(--subtle);color:var(--ink)}
+
+/* ---------- 표 ---------- */
+.tbl-scroll{overflow-x:auto;border:1px solid var(--hair)}
+table{border-collapse:collapse;width:100%;min-width:1020px;background:#fff;table-layout:fixed}
+col.c-tick{width:112px} col.c-sec{width:102px} col.c-date{width:100px}
+col.c-per{width:90px} col.c-rev{width:74px} col.c-cons{width:82px}
+col.c-surp{width:86px} col.c-yoy{width:84px} col.c-score{width:104px}
+td.nw{white-space:nowrap}
+th,td{padding:11px 9px;text-align:left;border-bottom:1px solid var(--hair-soft);
+  font-size:15px;line-height:1.45;vertical-align:top}
+thead th{background:var(--primary-soft);color:var(--ink);font-weight:700;font-size:15px;
+  white-space:nowrap;cursor:pointer;user-select:none;position:sticky;top:0;z-index:2}
+thead th:hover{background:#f7a35d}
+thead th .arr{opacity:.45;font-size:12px;margin-left:3px}
+thead th[aria-sort] .arr{opacity:1}
+td.n,th.n{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+tbody tr:hover{background:var(--subtle)}
+tbody tr.open{background:var(--subtle)}
+.tick{font-family:var(--font-en);font-weight:700;color:var(--ink);font-size:16px}
+.nm{color:var(--muted);font-size:13px;display:block;line-height:1.3;word-break:keep-all}
+.pill{display:inline-block;border-radius:2px;padding:2px 8px;font-size:13px;font-weight:600;
+  white-space:nowrap}
+.pill.up{background:#E8F3EA;color:var(--success)}
+.pill.dn{background:#FBEAEA;color:var(--error)}
+.pill.fl{background:var(--soft);color:var(--muted)}
+.pill.na{background:transparent;color:var(--muted-soft);font-weight:400;border:1px dashed var(--hair)}
+.gd{font-size:13px;line-height:1.4;color:var(--body);display:block;word-break:keep-all}
+.gd .dir{font-weight:700}
+.gd .dir.up{color:var(--success)} .gd .dir.dn{color:var(--error)} .gd .dir.fl{color:var(--muted)}
+.det{background:var(--subtle)}
+.det td{padding:16px 14px;border-bottom:1px solid var(--hair)}
+.det dl{margin:0;display:grid;grid-template-columns:118px 1fr;gap:7px 16px;font-size:15px}
+.det dt{color:var(--muted);font-size:14px}
+.det dd{margin:0;color:var(--body)}
+.det .warn{color:var(--error)}
+.score-cell{display:flex;align-items:center;gap:8px;justify-content:flex-end}
+.score-bar{width:38px;height:7px;background:var(--hair-soft);border-radius:1px;overflow:hidden;flex:none}
+.score-bar i{display:block;height:100%;background:var(--primary)}
+.score-num{font-weight:700;color:var(--ink);min-width:2.2em;text-align:right}
+
+/* ---------- 차트 ---------- */
+.chart-grid{display:grid;grid-template-columns:1fr 1fr;gap:var(--space-block)}
+@media (max-width:900px){.chart-grid{grid-template-columns:1fr}}
+.chart-box{border:1px solid var(--hair);background:#fff;padding:20px}
+.chart-box h3{font-size:19px;margin-bottom:4px}
+.chart-box .cap{margin-bottom:16px}
+svg{display:block;width:100%;height:auto;overflow:visible}
+.bar{cursor:pointer}
+.bar:hover rect{opacity:.82}
+.axis{stroke:var(--line-dark);stroke-width:1}
+.grid{stroke:var(--line-mid);stroke-width:1;stroke-dasharray:3 3;opacity:.45}
+.tlab{font-size:13px;fill:var(--muted)}
+.vlab{font-size:13px;fill:var(--ink);font-weight:600}
+#tip{position:fixed;background:#1A1A1A;color:#fff;font-size:13px;line-height:1.5;
+  padding:8px 11px;border-radius:2px;pointer-events:none;opacity:0;transition:opacity .1s;
+  z-index:50;max-width:260px}
+
+/* ---------- 인사이트 ---------- */
+.ins{display:grid;grid-template-columns:repeat(auto-fit,minmax(310px,1fr));gap:1px;
+  background:var(--hair-soft);border:1px solid var(--hair)}
+.ins article{background:#fff;padding:24px 22px}
+.ins h3{font-size:20px;margin-bottom:10px}
+.ins p{margin:0 0 12px;font-size:17px;line-height:1.6}
+.ins .ev{font-size:14px;line-height:1.55;color:var(--muted);border-top:1px solid var(--hair-soft);
+  padding-top:11px;margin:0}
+.ins .ev b{color:var(--ink);font-weight:600}
+.callout{background:var(--primary);color:#fff;border-radius:4px;padding:38px 42px;
+  margin-top:var(--space-block)}
+@media (max-width:768px){.callout{padding:26px 22px}}
+.callout h3{color:#fff;font-size:24px;margin-bottom:12px}
+.callout p{margin:0;font-size:18px;line-height:1.65;color:rgba(255,255,255,.96);max-width:78ch}
+
+/* ---------- 스코어 랭킹 ---------- */
+.rank{border:1px solid var(--hair);background:#fff}
+.rank-row{display:grid;grid-template-columns:34px 92px 1fr 66px;gap:12px;align-items:center;
+  padding:9px 16px;border-bottom:1px solid var(--hair-soft)}
+.rank-row:last-child{border-bottom:0}
+.rank-row:hover{background:var(--subtle)}
+.rank-row .i{font-size:14px;color:var(--muted-soft);font-variant-numeric:tabular-nums}
+.rank-row .t{font-family:var(--font-en);font-weight:700;color:var(--ink);font-size:16px}
+.rank-row .t small{display:block;font-family:var(--font-kr);font-weight:400;
+  font-size:12px;color:var(--muted)}
+html[lang="en"] .rank-row .t small{font-family:var(--font-en)}
+.rank-bar{height:16px;background:var(--hair-soft);position:relative;border-radius:1px}
+.rank-bar i{display:block;height:100%;background:var(--primary);border-radius:1px}
+.rank-bar i.low{background:var(--primary-soft)}
+.rank-row .v{text-align:right;font-weight:700;font-size:17px;color:var(--ink)}
+.rank-row .v small{display:block;font-size:11px;font-weight:400;color:var(--muted-soft)}
+.formula{border:1px solid var(--hair);background:var(--subtle);padding:20px 22px;margin-top:20px}
+.formula h3{font-size:18px;margin-bottom:12px}
+.formula ul{margin:0;padding-left:20px;font-size:15px;line-height:1.7}
+.formula code{font-family:var(--font-en);font-size:14px;background:#fff;
+  border:1px solid var(--hair-soft);padding:1px 5px;border-radius:2px}
+
+/* ---------- 각주 ---------- */
+.notes{border-top:1px solid var(--hair);margin-top:var(--space-section);
+  padding:var(--space-block) 0 70px}
+.notes h2{font-size:22px;margin-bottom:18px}
+.notes .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:26px}
+.notes h4{font-size:15px;color:var(--ink);margin:0 0 7px;font-weight:600}
+.notes p,.notes li{font-size:14px;line-height:1.6;color:var(--muted);margin:0 0 8px}
+.notes ul{margin:0;padding-left:18px}
+.unv{border-left:3px solid var(--warning);background:#FDF8EC;padding:14px 18px;margin-top:20px}
+.unv h4{color:#8A6D12}
+.unv li{color:#5F4C0D}
+
+@media print{
+  .lang-toggle,.controls,#tip{display:none!important}
+  body{font-size:11pt;line-height:1.4}
+  .page{max-width:100%;padding:0}
+  .section{padding-top:24pt}
+  .hero{background:#fff!important;color:#000!important;
+    border-bottom:2px solid var(--primary);padding-bottom:16pt}
+  .hero h1,.hero .sub,.hero .meta{color:#000!important}
+  .tag{color:#000;border-color:#999}
+  .chart-box,.tbl-scroll,.ins,.tiles,.cal-wrap,.rank{page-break-inside:avoid}
+  table{min-width:0;font-size:9pt}
+  th,td{padding:4px 6px}
+  h2,h3,.section-head{page-break-after:avoid}
+  .callout{background:#fff!important;color:#000!important;border:1px solid var(--primary)}
+  .callout h3,.callout p{color:#000!important}
+  a{text-decoration:none;color:#000}
+}
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="page">
+    <div class="toolbar">
+      <div class="tagbar">
+        <span class="tag" data-i18n="tagInternal">사내한</span>
+        <span class="tag" data-i18n="tagKind">실적 인텔리전스</span>
+      </div>
+      <div class="lang-toggle" role="radiogroup" aria-label="Language">
+        <button type="button" role="radio" data-lang="ko" aria-checked="true">KO</button>
+        <button type="button" role="radio" data-lang="en" aria-checked="false">EN</button>
+      </div>
+    </div>
+    <h1 data-i18n="heroTitle">미국 주요기업 실적 어닝스 인텔리전스</h1>
+    <p class="sub" data-i18n="heroSub">발표일·컨센서스·실제치·가이던스를 기업별로 흩어 찾지 않고, 실적 시즌 하나를 한 화면에서 훑는다.</p>
+    <div class="meta">
+      <span data-i18n="mAsOf">기준일 2026-09-17</span>
+      <span id="m-cov"></span>
+      <span data-i18n="mSrc">출처: 기업 IR·8-K 공시 및 확인된 보도</span>
+    </div>
+  </div>
+</header>
+
+<main class="page">
+
+  <!-- 1. 시즌 스코어보드 -->
+  <section class="section" id="scoreboard">
+    <div class="section-rule"></div>
+    <div class="section-head">
+      <div>
+        <div class="eyebrow" data-i18n="ebSeason">SEASON SCOREBOARD</div>
+        <h2 data-i18n="s1t">시즌 스코어보드</h2>
+        <p data-i18n="s1d">위쪽 다섯 칸은 이 화면이 직접 집계한 25개사 결과이고, 아래 여섯 칸은 지수 전체를 다루는 외부 기관 집계다. 유니버스가 다르므로 한 칸에 섞지 않는다.</p>
+      </div>
+    </div>
+    <div class="tiles" id="own-tiles"></div>
+    <p class="cap" style="margin:14px 0 22px" data-i18n="s1own">위: 이 화면이 담은 25개사 · 각 기업의 발표 자료에서 직접 집계</p>
+    <div class="tiles" id="idx-tiles"></div>
+  </section>
+
+  <!-- 2. 캘린더 -->
+  <section class="section" id="calendar">
+    <div class="section-rule"></div>
+    <div class="section-head">
+      <div>
+        <div class="eyebrow" data-i18n="ebCal">EARNINGS CALENDAR</div>
+        <h2 data-i18n="s2t">실적 발표 캘린더</h2>
+        <p data-i18n="s2d">직전 시즌이 어떤 순서로 지나갔는지, 다음 발표가 언제인지를 한 줄로 본다. 칩을 누르면 해당 기업 행이 열린다.</p>
+      </div>
+    </div>
+    <div class="cal-wrap" id="cal"></div>
+    <div class="legend">
+      <span><i style="background:#2E8540"></i><span data-i18n="lgBeat">매출 컨센서스 상회</span></span>
+      <span><i style="background:#C62828"></i><span data-i18n="lgMiss">매출 컨센서스 하회</span></span>
+      <span><i style="background:#84888B"></i><span data-i18n="lgNa">컨센서스 확인 실패</span></span>
+      <span><i style="background:#F58220"></i><span data-i18n="lgNext">발표 예정</span></span>
+    </div>
+  </section>
+
+  <!-- 3. 기업별 표 -->
+  <section class="section" id="table">
+    <div class="section-rule"></div>
+    <div class="section-head">
+      <div>
+        <div class="eyebrow" data-i18n="ebTbl">COMPANY DETAIL</div>
+        <h2 data-i18n="s3t">기업별 실적 · 가이던스</h2>
+        <p data-i18n="s3d">직전 보고분기의 매출 실제치와 컨센서스, 서프라이즈, 전년동기비, 회사가 직접 제시한 가이던스. 행을 누르면 세부와 출처가 열린다. 확인하지 못한 값은 채우지 않고 n/a 로 둔다.</p>
+      </div>
+    </div>
+    <div class="controls">
+      <input type="search" id="q" placeholder="티커 · 기업명 검색" aria-label="검색">
+      <div class="filters" id="sec-filters"></div>
+    </div>
+    <div class="tbl-scroll">
+      <table id="tbl">
+        <colgroup><col class="c-tick"><col class="c-sec"><col class="c-date"><col class="c-per"><col class="c-rev"><col class="c-cons"><col class="c-surp"><col class="c-yoy"><col><col class="c-score"></colgroup>
+        <thead><tr>
+          <th data-k="t" data-i18n="cTicker">기업<span class="arr">↕</span></th>
+          <th data-k="sec" data-i18n="cSector">섹터<span class="arr">↕</span></th>
+          <th data-k="rep" data-i18n="cDate">발표일<span class="arr">↕</span></th>
+          <th data-k="per" data-i18n="cPeriod">보고분기<span class="arr">↕</span></th>
+          <th class="n" data-k="rev" data-i18n="cRev">매출<span class="arr">↕</span></th>
+          <th class="n" data-k="cons" data-i18n="cCons">컨센서스<span class="arr">↕</span></th>
+          <th class="n" data-k="surprise" data-i18n="cSurp">서프라이즈<span class="arr">↕</span></th>
+          <th class="n" data-k="yoy" data-i18n="cYoy">전년동기비<span class="arr">↕</span></th>
+          <th data-k="guide" data-i18n="cGuide">가이던스<span class="arr">↕</span></th>
+          <th class="n" data-k="score" data-i18n="cScore">모멘텀<span class="arr">↕</span></th>
+        </tr></thead>
+        <tbody id="tbody"></tbody>
+      </table>
+    </div>
+    <p class="cap" style="margin-top:12px" data-i18n="s3n">매출·컨센서스 단위는 10억 달러. 회계연도가 회사마다 달라 보고분기 라벨과 실제 분기말이 다를 수 있다 — 행을 열면 분기말 날짜가 나온다.</p>
+  </section>
+
+  <!-- 4. 매출액 분야 분석 -->
+  <section class="section" id="sector">
+    <div class="section-rule"></div>
+    <div class="section-head">
+      <div>
+        <div class="eyebrow" data-i18n="ebSec">REVENUE BY SECTOR</div>
+        <h2 data-i18n="s4t">매출액 분야 분석</h2>
+        <p data-i18n="s4d">아래 두 차트는 외부 섹터 통계를 옮긴 것이 아니라, 이 화면에 담긴 25개사의 발표치를 직접 합산·평균한 것이다. 표본이 작은 섹터는 막대 옆에 기업 수를 적었다.</p>
+      </div>
+    </div>
+    <div class="chart-grid">
+      <div class="chart-box">
+        <h3 data-i18n="c1t">섹터별 분기 매출 합계</h3>
+        <p class="cap" data-i18n="c1d">단위 10억 달러 · 직전 보고분기 기준</p>
+        <div id="ch-rev"></div>
+      </div>
+      <div class="chart-box">
+        <h3 data-i18n="c2t">섹터별 평균 매출 성장률</h3>
+        <p class="cap" data-i18n="c2d">기업별 전년동기비의 단순평균(가중 아님) · 확인된 기업만</p>
+        <div id="ch-yoy"></div>
+      </div>
+    </div>
+    <div class="chart-box" style="margin-top:var(--space-block)">
+      <h3 data-i18n="c3t">기업별 매출 성장률과 컨센서스 서프라이즈</h3>
+      <p class="cap" data-i18n="c3d">가로축 전년동기비(%) · 세로축 컨센서스 대비 상회폭(%) · 원 크기는 분기 매출 규모</p>
+      <div id="ch-scatter"></div>
+    </div>
+  </section>
+
+  <!-- 5. 인사이트 -->
+  <section class="section" id="insight">
+    <div class="section-rule"></div>
+    <div class="section-head">
+      <div>
+        <div class="eyebrow" data-i18n="ebIns">BUSINESS TRENDS</div>
+        <h2 data-i18n="s5t">사업 추이에서 읽히는 것</h2>
+        <p data-i18n="s5d">각 문단 아래에 근거가 된 수치를 붙였다. 근거가 없는 해석은 싣지 않았다.</p>
+      </div>
+    </div>
+    <div class="ins" id="insights"></div>
+    <div class="callout">
+      <h3 data-i18n="coT">한 줄로 줄이면</h3>
+      <p data-i18n="coB"></p>
+    </div>
+  </section>
+
+  <!-- 6. 투자매력도 -->
+  <section class="section" id="score">
+    <div class="section-rule"></div>
+    <div class="section-head">
+      <div>
+        <div class="eyebrow" data-i18n="ebScore">EARNINGS MOMENTUM</div>
+        <h2 data-i18n="s6t">투자매력도 — 실적 모멘텀 스코어</h2>
+        <p data-i18n="s6d">발표된 실적만으로 계산한 0~100 점수다. 주가와 밸류에이션은 들어가지 않으므로 '싼가'를 말해주지 않는다. 확인된 축이 절반에 못 미치는 기업은 점수를 내지 않고 비워 둔다.</p>
+      </div>
+    </div>
+    <div class="rank" id="rank"></div>
+    <div class="legend"><span><i style="background:#F58220"></i><span data-i18n="lgFull">확인된 축 75% 이상</span></span><span><i style="background:#FAB072"></i><span data-i18n="lgPart">확인된 축 50~75% — 점수를 더 넓게 보아야 함</span></span><span><i style="background:#CDCECB"></i><span data-i18n="lgNone2">커버리지 50% 미만 — 점수 미공표</span></span></div>
+    <div class="formula">
+      <h3 data-i18n="fT">계산식</h3>
+      <ul id="formula-list"></ul>
+      <p class="cap" style="margin:12px 0 0" data-i18n="fN">각 축은 위 구간을 0~100 으로 선형 환산한 뒤 잘라낸다. 확인되지 않은 축은 0점으로 깔지 않고 가중치를 나머지 축에 다시 나눈다 — 자료가 적은 기업이 나쁜 기업으로 둔갑하지 않도록.</p>
+    </div>
+  </section>
+
+  <!-- 7. 각주 -->
+  <section class="notes" id="notes">
+    <h2 data-i18n="s7t">데이터 출처와 검증</h2>
+    <div class="grid">
+      <div>
+        <h4 data-i18n="n1t">계열 정책</h4>
+        <ul id="series-list"></ul>
+      </div>
+      <div>
+        <h4 data-i18n="n2t">검산</h4>
+        <p data-i18n="n2b">인쇄되는 모든 수치는 <code>data/earnings/claims.json</code> 에 한 줄씩 등록돼 있고, 서프라이즈·성장률 같은 파생값은 사람이 아니라 스크립트가 계산했다. 화면은 <code>scripts/build_earnings.py</code> 가 채운다 — 이 HTML 에 손으로 적은 숫자는 없다.</p>
+        <p data-i18n="n2c">검산: <code>python3 scripts/check_claims.py data/earnings/claims.json</code></p>
+      </div>
+      <div>
+        <h4 data-i18n="n3t">읽을 때 주의</h4>
+        <ul>
+          <li data-i18n="n3a">컨센서스 제공사(LSEG·Zacks·StreetAccount·Visible Alpha)가 기업마다 달라, 서프라이즈율의 기업 간 비교는 대략의 순서로만 본다.</li>
+          <li data-i18n="n3b">회계연도가 달라 같은 '분기'가 같은 달이 아니다. 엔비디아 FY27 Q2 는 7월 종료, 애플 FY26 Q3 는 6월 종료다.</li>
+          <li data-i18n="n3c">'가이던스'는 회사가 직접 제시한 전망만 가리킨다. 애널리스트 추정치는 컨센서스 칸에 있다.</li>
+        </ul>
+      </div>
+    </div>
+    <div class="unv">
+      <h4 data-i18n="uvT">확인하지 못한 항목 (화면에서 n/a 로 비워 둔 것)</h4>
+      <ul id="unverified"></ul>
+    </div>
+    <p class="cap" style="margin-top:24px" data-i18n="uvF">이 화면의 수집 경로는 웹 검색 결과에 한정됐다(직접 API 접근은 사내 네트워크 정책으로 차단). 인용에 쓰려면 각 행의 출처 링크에서 원문을 확인하는 편이 안전하다.</p>
+  </section>
+</main>
+
+<div id="tip" role="status"></div>
+
+<script id="earnings-data" type="application/json">
+{"asOf":"2026-09-17","generated":"scripts/build_earnings.py","season":{"prev":"2026년 2분기(캘린더) 실적 시즌","nextq":"2026년 3분기(캘린더) 실적 시즌"},"weights":{"surprise":25.0,"yoy":35.0,"guide":25.0,"eps":15.0},"bands":{"surprise":[-3.0,8.0],"yoy":[-5.0,60.0],"eps":[-10.0,30.0]},"minCoverage":50.0,"seriesPolicy":{"분기 매출":"기업 발표 실적치 (보도자료·8-K 기준)","매출 컨센서스":"인용 기사에 명시된 제공사 (기업마다 상이 — 각 행의 출처 참조)","EPS 컨센서스":"인용 기사에 명시된 제공사 (기업마다 상이)","가이던스":"기업이 직접 제시한 전망 (애널리스트 추정치가 아님)"},"seriesPolicyEn":{"Quarterly revenue":"As reported by the company (press release / 8-K)","Revenue consensus":"The provider named in the cited article — differs by company; see each row's source","EPS consensus":"The provider named in the cited article — differs by company","Guidance":"Issued by the company itself, not an analyst estimate"},"coverage":{"total":25,"rev":25,"cons":19,"yoy":23,"guide":20,"eps":13},"index":[{"k":"rev_beat","ko":"매출 컨센서스 상회 기업 비율","en":"Companies beating revenue estimates","v":"80%","ref":"5년 평균 70% · 10년 평균 68%","ref_en":"5-yr avg 70% · 10-yr avg 68%","who":"FactSet Earnings Insight","scope":"S&P 500 · 2026년 2분기","scope_en":"S&P 500 · Q2 2026","url":"https://www.factset.com/earningsinsight"},{"k":"rev_surp","ko":"매출 실제치의 추정치 대비 상회폭","en":"Aggregate revenue surprise","v":"+2.8%","ref":"5년 평균 +1.9% · 10년 평균 +1.6%","ref_en":"5-yr avg +1.9% · 10-yr avg +1.6%","who":"FactSet Earnings Insight","scope":"S&P 500 · 2026년 2분기","scope_en":"S&P 500 · Q2 2026","url":"https://www.factset.com/earningsinsight"},{"k":"rev_growth","ko":"지수 매출 성장률(YoY)","en":"Index revenue growth (YoY)","v":"12.8%","ref":"2022년 2분기(13.9%) 이후 최고 · 2개분기 연속 두 자릿수","ref_en":"Highest since Q2 2022 (13.9%) · second straight double-digit quarter","who":"FactSet Earnings Insight","scope":"S&P 500 · 2026년 2분기","scope_en":"S&P 500 · Q2 2026","url":"https://insight.factset.com/sp-500-reporting-highest-revenue-growth-in-3-years"},{"k":"eps_growth","ko":"지수 이익 성장률(YoY)","en":"Index earnings growth (YoY)","v":"37.9%","ref":"알파벳 제외 시 25.9% — 한 기업이 12%p 를 끌어올림","ref_en":"25.9% excluding Alphabet — one company adds 12pp","who":"FactSet Earnings Insight","scope":"S&P 500 · 2026년 2분기","scope_en":"S&P 500 · Q2 2026","url":"https://www.factset.com/earningsinsight"},{"k":"q3_eps","ko":"차기 분기 이익 성장률 전망","en":"Next-quarter earnings growth estimate","v":"28.7%","ref":"6월 30일 기준 26.6% 에서 상향 · 예상 이익 7,960억달러","ref_en":"Up from 26.6% as of June 30 · estimated earnings $796.0B","who":"FactSet Earnings Insight","scope":"S&P 500 · 2026년 3분기 추정","scope_en":"S&P 500 · Q3 2026 estimate","url":"https://www.factset.com/earningsinsight"},{"k":"q3_zacks","ko":"차기 분기 매출 성장률 전망","en":"Next-quarter revenue growth estimate","v":"10.9%","ref":"이익 +22.6% 동반 · FactSet 과 유니버스·산정방식이 달라 위 수치와 직접 비교 불가","ref_en":"With earnings +22.6% · different universe and method from FactSet, not directly comparable","who":"Zacks Q3 Earnings Preview","scope":"2026년 3분기 추정","scope_en":"Q3 2026 estimate","url":"https://finance.yahoo.com/markets/stocks/articles/q3-earnings-preview-high-expectations-203800936.html"}],"companies":[{"t":"NVDA","ko":"엔비디아","en":"NVIDIA","sec":"정보기술","sub":"반도체","per":"FY27 Q2","pend":"2026-07-26","rep":"2026-08-26","repapprox":null,"rev":96.22,"cons":92.17,"consderived":null,"surprise":4.39,"yoy":106.0,"eps":2.22,"epsc":2.1,"epssurprise":5.71,"guide":0,"gtxt":"Q3 FY27 매출 1,080억달러 ±2%","gkind":"차기분기","note":"데이터센터 890억달러(+117% YoY), GAAP·non-GAAP 총이익률 75.0%","warn":null,"src":"https://nvidianews.nvidia.com/news/nvidia-announces-financial-results-for-second-quarter-fiscal-2027","csrc":"https://www.cnbc.com/2026/08/26/nvidia-nvda-earnings-report-q2-2027-live-updates.html","tier":1,"score":70.2,"coverage":100.0,"scoreparts":{"surprise":67.2,"yoy":100.0,"guide":50.0,"eps":39.3},"upcoming":null,"nextrep":null,"nextconf":null,"nextsrc":null,"consnote":null,"epsnote":null,"gtxt_en":"Q3 FY27 revenue $108B ±2%","note_en":"Data Center $89.0B (+117% YoY); GAAP and non-GAAP gross margin both 75.0%","consnote_en":"","per_en":"FY27 Q2"},{"t":"MSFT","ko":"마이크로소프트","en":"Microsoft","sec":"정보기술","sub":"소프트웨어","per":"FY26 Q4","pend":"2026-06-30","rep":"2026-07-29","repapprox":null,"rev":90.01,"cons":87.62,"consderived":null,"surprise":2.73,"yoy":18.0,"eps":4.74,"epsc":4.24,"epssurprise":11.79,"guide":1,"gtxt":"Q1 FY27 Azure 성장률 +45%(cc) — 컨센 41.4% 상회","gkind":"차기분기","note":"Azure +43%, FY26 Azure 연매출 1,000억달러 돌파(+41%)","warn":null,"src":"https://www.microsoft.com/en-us/investor/earnings/fy-2026-q4/press-release-webcast","csrc":"https://www.cnbc.com/2026/07/29/microsoft-msft-q4-earnings-report-2026.html","tier":1,"score":58.6,"coverage":100.0,"scoreparts":{"surprise":52.1,"yoy":35.4,"guide":100.0,"eps":54.5},"upcoming":null,"nextrep":null,"nextconf":null,"nextsrc":null,"consnote":null,"epsnote":null,"gtxt_en":"Q1 FY27 Azure growth +45% cc — above the 41.4% consensus","note_en":"Azure +43%; FY26 Azure revenue passed $100B (+41%)","consnote_en":"","per_en":"FY26 Q4"},{"t":"AAPL","ko":"애플","en":"Apple","sec":"정보기술","sub":"하드웨어","per":"FY26 Q3","pend":"2026-06-27","rep":"2026-07-30","repapprox":null,"rev":109.42,"cons":108.65,"consderived":null,"surprise":0.71,"yoy":16.0,"eps":1.91,"epsc":1.89,"epssurprise":1.06,"guide":-1,"gtxt":"당분기 가이던스 약세 — 공급 제약 언급(수치 미제시)","gkind":"정성","note":"iPhone +22%(6월분기 최대), Mac 104억달러 +29%, 서비스 307억달러","warn":null,"src":"https://www.apple.com/newsroom/2026/07/apple-reports-third-quarter-results/","csrc":"https://www.cnbc.com/2026/07/30/apple-earnings-live-updates.html","tier":1,"score":23.9,"coverage":100.0,"scoreparts":{"surprise":33.7,"yoy":32.3,"guide":0.0,"eps":27.7},"upcoming":null,"nextrep":null,"nextconf":null,"nextsrc":null,"consnote":null,"epsnote":null,"gtxt_en":"Soft guidance for the current quarter, citing supply constraints (no figure given)","note_en":"iPhone +22% (June-quarter record); Mac $10.4B +29%; Services $30.7B","consnote_en":"","per_en":"FY26 Q3"},{"t":"GOOGL","ko":"알파벳","en":"Alphabet","sec":"커뮤니케이션","sub":"인터넷","per":"CY26 Q2","pend":"2026-06-30","rep":"2026-07-22","repapprox":null,"rev":119.8,"cons":116.93,"consderived":null,"surprise":2.45,"yoy":24.0,"eps":null,"epsc":null,"epssurprise":null,"guide":null,"gtxt":"분기 매출 가이던스 미제시(사규) — 2026 캡엑스 상향 발표","gkind":"미제시","note":"구글클라우드 248억달러 +82%, 클라우드 영업이익 88억달러(전년 28억)","warn":null,"src":"https://s206.q4cdn.com/479360582/files/doc_financials/2026/q2/2026q2-alphabet-earnings-release.pdf","csrc":"https://www.cnbc.com/2026/07/22/google-earnings-q2-goog-live-updates.html","tier":1,"score":46.7,"coverage":60.0,"scoreparts":{"surprise":49.5,"yoy":44.6},"upcoming":null,"nextrep":"2026-10-27","nextconf":"2차","nextsrc":null,"consnote":null,"epsnote":null,"gtxt_en":"No quarterly revenue guidance (company policy); raised 2026 capex","note_en":"Google Cloud $24.8B +82%; Cloud operating income $8.8B (vs $2.8B a year ago)","consnote_en":"","per_en":"CY26 Q2"},{"t":"AMZN","ko":"아마존","en":"Amazon","sec":"경기소비재","sub":"이커머스·클라우드","per":"CY26 Q2","pend":"2026-06-30","rep":"2026-07-30","repapprox":null,"rev":200.6,"cons":196.47,"consderived":null,"surprise":2.1,"yoy":20.0,"eps":null,"epsc":null,"epssurprise":null,"guide":0,"gtxt":"Q3 매출 1,970~2,020억달러, 영업이익 225~265억달러","gkind":"차기분기","note":"AWS +36.7%(18개분기 최고, 컨센 31%), AWS 연환산 1,690억달러, 백로그 4,960억달러","warn":null,"src":"https://www.sec.gov/Archives/edgar/data/1018724/000101872426000024/amzn-20260630xex991.htm","csrc":"https://www.cnbc.com/2026/07/30/amazon-amzn-q2-earnings-report-2026.html","tier":1,"score":44.2,"coverage":85.0,"scoreparts":{"surprise":46.4,"yoy":38.5,"guide":50.0},"upcoming":null,"nextrep":null,"nextconf":null,"nextsrc":null,"consnote":null,"epsnote":null,"gtxt_en":"Q3 net sales $197–202B; operating income $22.5–26.5B","note_en":"AWS +36.7%, fastest in 18 quarters (consensus 31%); AWS run rate $169B; backlog $496B","consnote_en":"","per_en":"CY26 Q2"},{"t":"META","ko":"메타","en":"Meta Platforms","sec":"커뮤니케이션","sub":"인터넷","per":"CY26 Q2","pend":"2026-06-30","rep":"2026-07-29","repapprox":null,"rev":60.8,"cons":60.17,"consderived":null,"surprise":1.05,"yoy":28.0,"eps":6.18,"epsc":7.22,"epssurprise":-14.4,"guide":0,"gtxt":"Q3 매출 610~640억달러(환율 약 1%p 역풍 가정)","gkind":"차기분기","note":"캡엑스 310.8억달러, FCF 7.84억달러, DAP 36.0억명 +3% — 매출 상회·EPS 하회","warn":null,"src":"https://www.sec.gov/Archives/edgar/data/1326801/000162828026050596/meta-06302026xexhibit991.htm","csrc":"https://www.tipranks.com/stocks/meta/earnings/q2-2026-report","tier":1,"score":39.5,"coverage":100.0,"scoreparts":{"surprise":36.8,"yoy":50.8,"guide":50.0,"eps":0.0},"upcoming":null,"nextrep":null,"nextconf":null,"nextsrc":null,"consnote":null,"epsnote":"GAAP 희석 EPS 와 LSEG 컨센서스 비교 — 조정 기준 아님","gtxt_en":"Q3 revenue $61–64B (assumes ~1pp FX headwind)","note_en":"Capex $31.08B; FCF $784M; DAP 3.60B +3% — revenue beat, EPS missed","consnote_en":"","per_en":"CY26 Q2"},{"t":"AVGO","ko":"브로드컴","en":"Broadcom","sec":"정보기술","sub":"반도체","per":"FY26 Q3","pend":"2026-08-02","rep":"2026-09-02","repapprox":null,"rev":29.6,"cons":null,"consderived":null,"surprise":null,"yoy":86.0,"eps":null,"epsc":null,"epssurprise":null,"guide":1,"gtxt":"Q4 매출 348억달러(+93%), AI 217억달러 / FY26 AI 매출 약 580억달러로 상향","gkind":"차기분기+연간상향","note":"AI 반도체 167억달러 +221%(QoQ +54%), 반도체 208억달러 +127%, 영업이익 201억달러 +92%","warn":null,"src":"https://investors.broadcom.com/news-releases/news-release-details/broadcom-inc-announces-third-quarter-fiscal-year-2026-financial","csrc":"https://www.cnbc.com/2026/09/02/broadcom-avgo-q3-earnings-report-2026.html","tier":1,"score":100.0,"coverage":60.0,"scoreparts":{"yoy":100.0,"guide":100.0},"upcoming":null,"nextrep":null,"nextconf":null,"nextsrc":null,"consnote":null,"epsnote":null,"gtxt_en":"Q4 revenue $34.8B (+93%), AI $21.7B; FY26 AI revenue guidance raised to ~$58B","note_en":"AI semiconductors $16.7B +221% (+54% QoQ); semis $20.8B +127%; operating income $20.1B +92%","consnote_en":"","per_en":"FY26 Q3"},{"t":"TSLA","ko":"테슬라","en":"Tesla","sec":"경기소비재","sub":"자동차","per":"CY26 Q2","pend":"2026-06-30","rep":"2026-07-22","repapprox":null,"rev":28.24,"cons":26.43,"consderived":true,"surprise":6.85,"yoy":26.0,"eps":0.33,"epsc":0.54,"epssurprise":-38.89,"guide":null,"gtxt":"구체 수치 가이던스 확인되지 않음","gkind":"미제시","note":"인도 480,126대 +25%(예상 약 406,600대), 영업이익률 1.4%, FCF -10.9억달러","warn":null,"src":"https://assets-ir.tesla.com/tesla-contents/IR/TSLA-Q2-2026-Update.pdf","csrc":"https://www.cnbc.com/2026/07/22/tesla-tsla-q2-2026-earnings-report.html","tier":1,"score":52.1,"coverage":75.0,"scoreparts":{"surprise":89.5,"yoy":47.7,"eps":0.0},"upcoming":null,"nextrep":"2026-10-28","nextconf":"2차","nextsrc":null,"consnote":"기사에 '컨센 대비 +6.84%' 만 명시 — 컨센서스 금액은 역산값","epsnote":"조정 EPS. 다른 보도는 컨센 0.51달러 — 제공사 상이","gtxt_en":"No specific numeric guidance identified","note_en":"Deliveries 480,126 +25% (vs ~406,600 expected); operating margin 1.4%; FCF -$1.09B","consnote_en":"the article gives only '+6.84% versus consensus' — the consensus figure is back-calculated","per_en":"CY26 Q2"},{"t":"AMD","ko":"AMD","en":"AMD","sec":"정보기술","sub":"반도체","per":"CY26 Q2","pend":"2026-06-27","rep":"2026-08-04","repapprox":null,"rev":11.5,"cons":11.3,"consderived":null,"surprise":1.77,"yoy":50.0,"eps":1.66,"epsc":1.62,"epssurprise":2.47,"guide":0,"gtxt":"Q3 매출 130억달러 ±3억달러(중간값 +41% YoY)","gkind":"차기분기","note":"데이터센터 67억달러 +107%(컨센 65억), GAAP EPS 1.38","warn":null,"src":"https://www.sec.gov/Archives/edgar/data/0000002488/000000248826000121/amdq22026earningsslidesf.htm","csrc":"https://qz.com/amd-record-revenue-data-center-earnings-q2-2026-080426","tier":1,"score":57.6,"coverage":100.0,"scoreparts":{"surprise":43.4,"yoy":84.6,"guide":50.0,"eps":31.2},"upcoming":null,"nextrep":null,"nextconf":null,"nextsrc":null,"consnote":null,"epsnote":null,"gtxt_en":"Q3 revenue ~$13B ±$300M (midpoint +41% YoY)","note_en":"Data Center $6.7B +107% (consensus $6.5B); GAAP EPS $1.38","consnote_en":"","per_en":"CY26 Q2"},{"t":"ORCL","ko":"오라클","en":"Oracle","sec":"정보기술","sub":"소프트웨어","per":"FY27 Q1","pend":"2026-08-31","rep":"2026-09-10","repapprox":null,"rev":19.3,"cons":19.13,"consderived":null,"surprise":0.89,"yoy":30.0,"eps":null,"epsc":null,"epssurprise":null,"guide":0,"gtxt":"RPO 의 매출 전환 가속 전망(정성) — 분기 매출 수치 미확보","gkind":"정성","note":"클라우드 116억달러 +62%, IaaS 74억달러 +121%, RPO 6,640억달러(+2,090억 YoY), 신규 AI 계약 300억달러+","warn":null,"src":"https://www.oracle.com/news/announcement/q1fy27-earnings-release-2026-09-10/","csrc":"https://www.fool.com/earnings/call-transcripts/2026/09/11/oracle-orcl-q1-2027-earnings-call-transcript/","tier":1,"score":47.3,"coverage":85.0,"scoreparts":{"surprise":35.4,"yoy":53.8,"guide":50.0},"upcoming":null,"nextrep":null,"nextconf":null,"nextsrc":null,"consnote":null,"epsnote":null,"gtxt_en":"Qualitative: RPO-to-revenue conversion expected to accelerate (no revenue figure)","note_en":"Cloud $11.6B +62%; IaaS $7.4B +121%; RPO $664B (+$209B YoY); $30B+ new AI contracts","consnote_en":"","per_en":"FY27 Q1"},{"t":"CRM","ko":"세일즈포스","en":"Salesforce","sec":"정보기술","sub":"소프트웨어","per":"FY27 Q2","pend":"2026-07-31","rep":"2026-08-26","repapprox":null,"rev":11.35,"cons":11.32,"consderived":null,"surprise":0.27,"yoy":11.0,"eps":null,"epsc":null,"epssurprise":null,"guide":1,"gtxt":"FY27 매출 461~464억달러로 상향(+11~12%)","gkind":"연간상향","note":"Agentforce ARR 15억달러+ (+240%), Agentforce+Data360 ARR 39억달러 (+210%)","warn":"non-GAAP EPS 의 약 43% 가 전략투자 평가익 26억달러 — 영업 실적과 분리해 볼 것","src":"https://www.salesforce.com/news/press-releases/2026/08/26/fy27-q2-earnings/","csrc":"https://www.cnbc.com/2026/08/26/salesforce-crm-q2-earnings-report-2027.html","tier":1,"score":48.3,"coverage":85.0,"scoreparts":{"surprise":29.7,"yoy":24.6,"guide":100.0},"upcoming":null,"nextrep":null,"nextconf":null,"nextsrc":null,"consnote":null,"epsnote":null,"gtxt_en":"FY27 revenue raised to $46.1–46.4B (+11–12%)","note_en":"Agentforce ARR above $1.5B (+240%); Agentforce + Data 360 ARR $3.9B (+210%)","consnote_en":"","per_en":"FY27 Q2"},{"t":"PLTR","ko":"팔란티어","en":"Palantir","sec":"정보기술","sub":"소프트웨어","per":"CY26 Q2","pend":"2026-06-30","rep":"2026-08-03","repapprox":null,"rev":1.94,"cons":1.8,"consderived":null,"surprise":7.78,"yoy":93.0,"eps":null,"epsc":null,"epssurprise":null,"guide":1,"gtxt":"FY26 매출 81.5~81.6억달러로 상향(종전 76.5~76.6억)","gkind":"연간상향","note":"미국 상업부문 7.64억달러 +149%, TCV 33.7억달러 +49%","warn":null,"src":"https://www.sec.gov/Archives/edgar/data/0001321655/000132165526000039/a2026q2ex991pressrelease.htm","csrc":"https://www.cnbc.com/2026/08/03/palantir-pltr-earnings-q2-2026.html","tier":1,"score":99.4,"coverage":85.0,"scoreparts":{"surprise":98.0,"yoy":100.0,"guide":100.0},"upcoming":null,"nextrep":null,"nextconf":null,"nextsrc":null,"consnote":null,"epsnote":null,"gtxt_en":"FY26 revenue raised to $8.15–8.16B (from $7.65–7.66B)","note_en":"US commercial $764M +149%; TCV $3.37B +49%","consnote_en":"","per_en":"CY26 Q2"},{"t":"INTC","ko":"인텔","en":"Intel","sec":"정보기술","sub":"반도체","per":"CY26 Q2","pend":"2026-06-27","rep":"2026-07-23","repapprox":null,"rev":16.1,"cons":14.42,"consderived":null,"surprise":11.65,"yoy":25.4,"eps":0.42,"epsc":0.21,"epssurprise":100.0,"guide":0,"gtxt":"Q3 매출 158~168억달러, non-GAAP EPS 0.38달러","gkind":"차기분기","note":"15년 만의 최고 성장률. DCAI 63억달러 +59%, CCG 89억달러 +13%, 파운드리 58억달러 +31%","warn":null,"src":"https://www.intc.com/news-events/press-releases/detail/1776/intel-reports-second-quarter-2026-financial-results","csrc":"https://www.cnbc.com/2026/07/23/intel-intc-earnings-report-q2-2026.html","tier":1,"score":68.9,"coverage":100.0,"scoreparts":{"surprise":100.0,"yoy":46.8,"guide":50.0,"eps":100.0},"upcoming":null,"nextrep":null,"nextconf":null,"nextsrc":null,"consnote":null,"epsnote":null,"gtxt_en":"Q3 revenue $15.8–16.8B; non-GAAP EPS $0.38","note_en":"Fastest growth in 15 years. DCAI $6.3B +59%; CCG $8.9B +13%; Foundry $5.8B +31%","consnote_en":"","per_en":"CY26 Q2"},{"t":"MU","ko":"마이크론","en":"Micron","sec":"정보기술","sub":"반도체","per":"FY26 Q3","pend":"2026-05-28","rep":"2026-06-25","repapprox":true,"rev":41.5,"cons":null,"consderived":null,"surprise":null,"yoy":null,"eps":25.11,"epsc":null,"epssurprise":null,"guide":1,"gtxt":"Q4 FY26 매출 500억달러 — 컨센 434.5억달러를 65.5억 상회","gkind":"차기분기","note":"DRAM 313억달러(매출의 76%) +343% YoY, 총이익률 84.9%, HBM4 12단 램프 진행","warn":null,"src":"https://investors.micron.com/news/press-release/2026/Micron-Technology-Inc--Reports-Record-Results-for-the-Third-Quarter-of-Fiscal-2026/default.aspx","csrc":"https://tradethepool.com/fundamental/micron-q3-fy2026-earnings-revenue-ai-boom-guidance/","tier":1,"score":null,"coverage":25.0,"scoreparts":{"guide":100.0},"upcoming":null,"nextrep":"2026-09-30","nextconf":"확정","nextsrc":"https://investors.micron.com/news/press-release/2026/Micron-Technology-to-Report-Fiscal-Fourth-Quarter-Results-on-September-30-2026/default.aspx","consnote":null,"epsnote":null,"gtxt_en":"Q4 FY26 revenue $50B — $6.55B above the $43.45B consensus","note_en":"DRAM $31.3B (76% of revenue) +343% YoY; gross margin 84.9%; HBM4 12-high ramping","consnote_en":"","per_en":"FY26 Q3"},{"t":"NFLX","ko":"넷플릭스","en":"Netflix","sec":"커뮤니케이션","sub":"미디어","per":"CY26 Q2","pend":"2026-06-30","rep":"2026-07-16","repapprox":null,"rev":12.56,"cons":12.59,"consderived":null,"surprise":-0.24,"yoy":13.0,"eps":null,"epsc":null,"epssurprise":null,"guide":0,"gtxt":"FY26 매출 510~514억달러로 범위 축소(종전 507~517억, 중간값 동일)","gkind":"연간유지","note":"시즌 내 몇 안 되는 매출 컨센서스 하회 사례. 광고 매출 2026년 약 30억달러 목표 유지, 영업이익률 목표 31.5%","warn":null,"src":"https://s22.q4cdn.com/959853165/files/doc_financials/2026/q2/FINAL-Q2-26-Shareholder-Letter.pdf","csrc":"https://www.cnbc.com/2026/07/16/netflix-nflx-earnings-q2-2026.html","tier":1,"score":33.5,"coverage":85.0,"scoreparts":{"surprise":25.1,"yoy":27.7,"guide":50.0},"upcoming":null,"nextrep":null,"nextconf":null,"nextsrc":null,"consnote":null,"epsnote":null,"gtxt_en":"FY26 revenue narrowed to $51.0–51.4B (from $50.7–51.7B; same midpoint)","note_en":"One of the few revenue misses this season. Ads on track for ~$3B in 2026; 31.5% margin target","consnote_en":"","per_en":"CY26 Q2"},{"t":"JPM","ko":"JP모건","en":"JPMorgan Chase","sec":"금융","sub":"은행","per":"CY26 Q2","pend":"2026-06-30","rep":"2026-07-14","repapprox":null,"rev":57.3,"cons":null,"consderived":null,"surprise":null,"yoy":28.0,"eps":7.7,"epsc":null,"epssurprise":null,"guide":1,"gtxt":"FY26 순이자이익 약 1,055억달러로 상향(3개월 전 1,030억)","gkind":"연간상향","note":"순이익 212억달러 +41%, ROE 24%, 순이자이익 256억달러 +10%","warn":null,"src":"https://www.jpmorganchase.com/content/dam/jpmc/jpmorgan-chase-and-co/investor-relations/documents/quarterly-earnings/2026/2nd-quarter/6cded9fd-a164-4e6c-8cff-377357cf105c.pdf","csrc":"https://www.cnbc.com/2026/07/13/bank-earnings-jpmorgan-chase-goldman-sachs-bank-of-america.html","tier":1,"score":71.3,"coverage":60.0,"scoreparts":{"yoy":50.8,"guide":100.0},"upcoming":null,"nextrep":"2026-10-13","nextconf":"확정","nextsrc":"https://www.jpmorganchase.com/ir/news/2025/jpmc-announces-conference-calls-to-review-first-quarter-second-quarter-third-quarter-and-fourth-quarter-2026-earnings","consnote":"매출 컨센서스가 출처마다 51.35 / 58.02 / 57.3 십억달러로 엇갈림(기준 상이) — 확인 실패로 처리","epsnote":"'컨센 대비 +31.7%' 보도가 있으나 특이항목 포함 기준이 불명 — 서프라이즈 미산출","gtxt_en":"FY26 net interest income raised to ~$105.5B (from $103B three months earlier)","note_en":"Net income $21.2B +41%; ROE 24%; net interest income $25.6B +10%","consnote_en":"revenue consensus differs across sources ($51.35B / $58.02B / $57.3B, different bases) — treated as unverified","per_en":"CY26 Q2"},{"t":"GS","ko":"골드만삭스","en":"Goldman Sachs","sec":"금융","sub":"투자은행","per":"CY26 Q2","pend":"2026-06-30","rep":"2026-07-14","repapprox":null,"rev":20.34,"cons":null,"consderived":null,"surprise":null,"yoy":39.0,"eps":20.98,"epsc":14.47,"epssurprise":44.99,"guide":null,"gtxt":"가이던스 미제시(업종 관행)","gkind":"미제시","note":"순이익 66.3억달러(전년 37.2억), ROE 23.5%, 주식 74.2억달러 +72%, FICC 45.9억달러 +32%, IB 수수료 34.0억달러 +55%","warn":null,"src":"https://www.goldmansachs.com/pressroom/press-releases/2026/2026-07-14-q2-results","csrc":"https://finance.yahoo.com/markets/stocks/articles/goldman-q2-earnings-beat-solid-133500401.html","tier":1,"score":77.4,"coverage":50.0,"scoreparts":{"yoy":67.7,"eps":100.0},"upcoming":null,"nextrep":null,"nextconf":null,"nextsrc":null,"consnote":"매출 컨센서스 15.77십억달러 보도는 서프라이즈율(+26.2%)과 계산이 맞지 않아 채택하지 않음","epsnote":"Zacks 컨센서스 기준","gtxt_en":"No guidance issued (sector practice)","note_en":"Net earnings $6.63B (vs $3.72B); ROE 23.5%; Equities $7.42B +72%; FICC $4.59B +32%; IB fees $3.40B +55%","consnote_en":"the reported $15.77B consensus does not reconcile with the stated +26.2% surprise, so it was not used","per_en":"CY26 Q2"},{"t":"LLY","ko":"일라이 릴리","en":"Eli Lilly","sec":"헬스케어","sub":"제약","per":"CY26 Q2","pend":"2026-06-30","rep":"2026-08-05","repapprox":null,"rev":22.97,"cons":20.73,"consderived":null,"surprise":10.81,"yoy":48.0,"eps":8.38,"epsc":6.01,"epssurprise":39.43,"guide":1,"gtxt":"FY26 매출 850~870억달러로 상향(종전 820~850억), EPS 35.50~36.50달러","gkind":"연간상향","note":"마운자로 99억달러 +91%, 미국 젭바운드 49억달러 +44%, 합산 149억달러(증가분 63억)","warn":null,"src":"https://investor.lilly.com/news-releases/news-release-details/lilly-reports-second-quarter-2026-financial-results-raises-full","csrc":"https://www.cnbc.com/2026/08/05/eli-lilly-lly-earnings-q2-2026.html","tier":1,"score":93.5,"coverage":100.0,"scoreparts":{"surprise":100.0,"yoy":81.5,"guide":100.0,"eps":100.0},"upcoming":null,"nextrep":null,"nextconf":null,"nextsrc":null,"consnote":null,"epsnote":null,"gtxt_en":"FY26 revenue raised to $85–87B (from $82–85B); EPS $35.50–36.50","note_en":"Mounjaro $9.9B +91%; US Zepbound $4.9B +44%; combined $14.9B ($6.3B of the growth)","consnote_en":"","per_en":"CY26 Q2"},{"t":"UNH","ko":"유나이티드헬스","en":"UnitedHealth","sec":"헬스케어","sub":"관리의료","per":"CY26 Q2","pend":"2026-06-30","rep":"2026-07-16","repapprox":null,"rev":112.0,"cons":110.9,"consderived":null,"surprise":0.99,"yoy":0.4,"eps":null,"epsc":null,"epssurprise":null,"guide":1,"gtxt":"FY26 조정 EPS 19.50~20.00달러로 상향(종전 18.25달러 초과), MCR 88.1%±25bp 로 개선(종전 88.8%±50bp)","gkind":"연간상향","note":"매출은 거의 제자리(1,116→1,120억달러)이나 영업이익 80억달러(전년 52억, +55%) — 매출이 아니라 마진의 분기","warn":null,"src":"https://www.sec.gov/Archives/edgar/data/0000731766/000073176626000191/uhgearnings_q22026vpower.htm","csrc":"https://www.cnbc.com/2026/07/16/unitedhealth-group-unh-earnings-q2-2026.html","tier":1,"score":43.5,"coverage":85.0,"scoreparts":{"surprise":36.3,"yoy":8.3,"guide":100.0},"upcoming":null,"nextrep":null,"nextconf":null,"nextsrc":null,"consnote":null,"epsnote":null,"gtxt_en":"FY26 adjusted EPS raised to $19.50–20.00 (from above $18.25); MCR 88.1% ±25bp (from 88.8% ±50bp)","note_en":"Revenue nearly flat ($111.6B → $112.0B) but operating earnings $8.0B vs $5.2B (+55%) — a margin quarter, not a revenue one","consnote_en":"","per_en":"CY26 Q2"},{"t":"JNJ","ko":"존슨앤드존슨","en":"Johnson & Johnson","sec":"헬스케어","sub":"제약·의료기기","per":"CY26 Q2","pend":"2026-06-28","rep":"2026-07-15","repapprox":null,"rev":25.3,"cons":25.02,"consderived":null,"surprise":1.12,"yoy":6.6,"eps":2.9,"epsc":2.86,"epssurprise":1.4,"guide":1,"gtxt":"FY26 보고 매출 1,008~1,014억달러로 상향(+7.0~7.6%), 조정 EPS 11.50~11.65달러(종전 11.30~11.50)","gkind":"연간상향","note":"메드테크 +4.5%. 연매출 10억달러 이상 제품·플랫폼 28개 — 1,000억달러 고지 가시권","warn":null,"src":"https://www.investor.jnj.com/investor-news/news-details/2026/Johnson--Johnson-reports-Q2-2026-results-raises-2026-outlook/default.aspx","csrc":"https://www.cnbc.com/2026/07/15/johnson-johnson-jnj-q2-earnings.html","tier":1,"score":44.9,"coverage":100.0,"scoreparts":{"surprise":37.5,"yoy":17.8,"guide":100.0,"eps":28.5},"upcoming":null,"nextrep":null,"nextconf":null,"nextsrc":null,"consnote":null,"epsnote":null,"gtxt_en":"FY26 reported sales raised to $100.8–101.4B (+7.0–7.6%); adjusted EPS $11.50–11.65 (from $11.30–11.50)","note_en":"MedTech +4.5%. 28 products and platforms above $1B in annual sales — $100B in sight","consnote_en":"","per_en":"CY26 Q2"},{"t":"WMT","ko":"월마트","en":"Walmart","sec":"필수소비재","sub":"종합소매","per":"FY27 Q2","pend":"2026-07-31","rep":"2026-08-20","repapprox":null,"rev":187.9,"cons":186.3,"consderived":null,"surprise":0.86,"yoy":5.9,"eps":0.81,"epsc":0.73,"epssurprise":10.96,"guide":1,"gtxt":"FY27 매출 +4~5%(cc)로 상향(종전 +3.5~4.5%), 조정 EPS 2.80~2.87달러(종전 2.75~2.85)","gkind":"연간상향","note":"미국 동일점포 +2.6%(거래건수 주도, 건강·웰니스 80bp 역풍). 이커머스·광고·멤버십 + 관세 환급 효과","warn":null,"src":"https://corporate.walmart.com/news/2026/08/20/walmart-releases-q2-fy27-earnings","csrc":"https://www.cnbc.com/2026/08/20/walmart-wmt-q2-2027-earnings.html","tier":1,"score":47.5,"coverage":100.0,"scoreparts":{"surprise":35.1,"yoy":16.8,"guide":100.0,"eps":52.4},"upcoming":null,"nextrep":null,"nextconf":null,"nextsrc":null,"consnote":"Zacks 컨센서스 기준. 다른 출처는 실적 187.94 / 컨센 186.77십억달러","epsnote":null,"gtxt_en":"FY27 net sales raised to +4–5% cc (from +3.5–4.5%); adjusted EPS $2.80–2.87 (from $2.75–2.85)","note_en":"US comps +2.6%, transaction-led (80bp health & wellness headwind). E-commerce, ads, membership plus tariff refunds","consnote_en":"Zacks consensus. Another source gives $187.94B actual against $186.77B consensus","per_en":"FY27 Q2"},{"t":"COST","ko":"코스트코","en":"Costco","sec":"필수소비재","sub":"창고형할인","per":"FY26 Q4 (16주)","pend":"2026-08-30","rep":null,"repapprox":null,"rev":93.9,"cons":94.55,"consderived":null,"surprise":-0.69,"yoy":11.3,"eps":null,"epsc":null,"epssurprise":null,"guide":null,"gtxt":"정식 실적발표 전 — 가이던스 없음","gkind":"발표전","note":"월별 매출 공시로 순매출은 공개(FY26 연간 2,973억달러 +10.2%). 정식 발표는 9/24","warn":null,"src":"https://theshelbyreport.com/2026/09/15/costco-caps-fy26-with-297-3b-in-sales-up-10-2-percent/","csrc":"https://finance.yahoo.com/markets/stocks/articles/expect-costco-wholesales-q4-2026-134037110.html","tier":2,"score":23.4,"coverage":60.0,"scoreparts":{"surprise":21.0,"yoy":25.1},"upcoming":true,"nextrep":"2026-09-24","nextconf":"확정","nextsrc":"https://investor.costco.com/events-and-presentations/events/event-details/2026/Q4-2026-Earnings-Call/default.aspx","consnote":"컨센서스는 94.2~94.9십억달러 구간의 중간값. 정식 실적발표(9/24) 전이라 실제치와의 대조는 미확정","epsnote":null,"gtxt_en":"Ahead of the formal release — no guidance","note_en":"Net sales already public via monthly disclosure (FY26 $297.3B +10.2%). Formal release Sept 24","consnote_en":"midpoint of the $94.2–94.9B consensus range. Ahead of the Sept 24 release, the comparison is provisional","per_en":"FY26 Q4 (16 wks)"},{"t":"HD","ko":"홈디포","en":"Home Depot","sec":"경기소비재","sub":"주택개량","per":"FY26 Q2","pend":"2026-08-02","rep":"2026-08-18","repapprox":null,"rev":47.9,"cons":null,"consderived":null,"surprise":null,"yoy":5.7,"eps":null,"epsc":null,"epssurprise":null,"guide":0,"gtxt":"FY26 가이던스 유지(재확인)","gkind":"연간유지","note":"동일점포 +1.7%(예상 +0.9% 상회, StreetAccount), 미국 +1.3%. 조정 EPS 4.92달러(전년 4.68)","warn":null,"src":"https://corporate.homedepot.com/news/earnings/home-depot-announces-second-quarter-2026-earnings","csrc":"https://www.cnbc.com/2026/08/18/home-depot-hd-q2-2026-earnings.html","tier":1,"score":30.4,"coverage":60.0,"scoreparts":{"yoy":16.5,"guide":50.0},"upcoming":null,"nextrep":null,"nextconf":null,"nextsrc":null,"consnote":"매출 컨센서스는 확인되지 않음. 동일점포 컨센서스(+0.9%)만 확인","epsnote":null,"gtxt_en":"FY26 guidance reaffirmed","note_en":"Comps +1.7% vs +0.9% expected (StreetAccount); US +1.3%. Adjusted EPS $4.92 (vs $4.68)","consnote_en":"revenue consensus not found; only the comparable-sales consensus (+0.9%) was verified","per_en":"FY26 Q2"},{"t":"CAT","ko":"캐터필러","en":"Caterpillar","sec":"산업재","sub":"기계","per":"CY26 Q2","pend":"2026-06-30","rep":"2026-08-04","repapprox":null,"rev":20.5,"cons":19.24,"consderived":true,"surprise":6.55,"yoy":24.0,"eps":8.17,"epsc":6.19,"epssurprise":31.99,"guide":1,"gtxt":"FY26 매출 성장률을 mid~high teens 로 상향(4월 대비)","gkind":"연간상향","note":"백로그 720억달러 +92%(전분기比 +94억). 관세 비용 FY26 약 22억달러로 하향(종전 25억), 분기 4억달러(예상 7억)","warn":null,"src":"https://www.cnbc.com/2026/08/04/caterpillar-cat-q2-2026-earnings.html","csrc":"https://www.investing.com/news/transcripts/earnings-call-transcript-caterpillar-q2-2026-beats-forecasts-shares-jump-9-93CH-4834724","tier":2,"score":77.3,"coverage":100.0,"scoreparts":{"surprise":86.8,"yoy":44.6,"guide":100.0,"eps":100.0},"upcoming":null,"nextrep":null,"nextconf":null,"nextsrc":null,"consnote":"기사에 '컨센 대비 +12.6억달러' 만 명시 — 컨센서스 금액은 역산값","epsnote":null,"gtxt_en":"FY26 sales growth raised to mid-to-high teens (from the April outlook)","note_en":"Backlog $72B +92% (+$9.4B QoQ). FY26 tariff cost cut to ~$2.2B (from $2.5B); $400M in the quarter vs $700M expected","consnote_en":"the article gives only '+$1.26B versus consensus' — the consensus figure is back-calculated","per_en":"CY26 Q2"},{"t":"XOM","ko":"엑슨모빌","en":"ExxonMobil","sec":"에너지","sub":"종합에너지","per":"CY26 Q2","pend":"2026-06-30","rep":"2026-07-31","repapprox":null,"rev":116.0,"cons":null,"consderived":null,"surprise":null,"yoy":null,"eps":3.52,"epsc":3.56,"epssurprise":-1.12,"guide":null,"gtxt":"가이던스 미제시(업종 관행)","gkind":"미제시","note":"순이익 145억달러(+105% YoY), 업스트림 79.3억달러 +54.7%, 생산 4,514 koebd(20여년 내 최고), 영업현금흐름 235.6억달러","warn":null,"src":"https://investor.exxonmobil.com/company-information/press-releases/detail/1208/exxonmobil-announces-second-quarter-2026-results","csrc":"https://www.ogj.com/general-interest/companies/news/55394938/exxonmobil-second-quarter-earnings-climb-to-145-billion-on-rising-oil-prices-record-permian-output","tier":1,"score":null,"coverage":15.0,"scoreparts":{"eps":22.2},"upcoming":null,"nextrep":null,"nextconf":null,"nextsrc":null,"consnote":"'매출 114.53 vs 컨센 109.94십억달러' 보도는 SNS 단독 출처이고 회사 발표(매출·기타수익 1,160억달러)와 기준이 달라 채택하지 않음","epsnote":null,"gtxt_en":"No guidance issued (sector practice)","note_en":"Net income $14.5B (+105% YoY); Upstream $7.93B +54.7%; production 4,514 koebd, highest in over two decades; operating cash flow $23.56B","consnote_en":"the '$114.53B vs $109.94B consensus' report is a single social-media source and uses a different basis from the company release (revenues and other income $116.0B), so it was not used","per_en":"CY26 Q2"}],"sectors":[{"sec":"정보기술","n":10,"rev":426.9,"yoy":48.4,"yoyn":9,"surp":3.77,"surpn":8,"tickers":["NVDA","MSFT","AAPL","AVGO","AMD","ORCL","CRM","PLTR","INTC","MU"]},{"sec":"커뮤니케이션","n":3,"rev":193.2,"yoy":21.7,"yoyn":3,"surp":1.09,"surpn":3,"tickers":["GOOGL","META","NFLX"]},{"sec":"경기소비재","n":3,"rev":276.7,"yoy":17.2,"yoyn":3,"surp":4.47,"surpn":2,"tickers":["AMZN","TSLA","HD"]},{"sec":"헬스케어","n":3,"rev":160.3,"yoy":18.3,"yoyn":3,"surp":4.31,"surpn":3,"tickers":["LLY","UNH","JNJ"]},{"sec":"금융","n":2,"rev":77.6,"yoy":33.5,"yoyn":2,"surp":null,"surpn":0,"tickers":["JPM","GS"]},{"sec":"필수소비재","n":2,"rev":281.8,"yoy":8.6,"yoyn":2,"surp":0.09,"surpn":2,"tickers":["WMT","COST"]},{"sec":"산업재","n":1,"rev":20.5,"yoy":24.0,"yoyn":1,"surp":6.55,"surpn":1,"tickers":["CAT"]},{"sec":"에너지","n":1,"rev":116.0,"yoy":null,"yoyn":0,"surp":null,"surpn":0,"tickers":["XOM"]}]}
+</script>
+
+<script>
+(function(){
+"use strict";
+var D = JSON.parse(document.getElementById("earnings-data").textContent);
+var $ = function(s,r){return (r||document).querySelector(s)};
+var $$ = function(s,r){return Array.prototype.slice.call((r||document).querySelectorAll(s))};
+var CS = [D.chart1,"#F58220","#043B72","#FAB072","#0086B8","#AD624E","#00A9CE","#F0B26B","#7E9FC3","#84888B"];
+var PAL = ["#F58220","#043B72","#FAB072","#0086B8","#AD624E","#00A9CE","#F0B26B","#7E9FC3","#84888B"];
+
+/* ------------------------------------------------ 한/영 문구 */
+var T = {
+ ko:{
+  tagInternal:"사내한", tagKind:"실적 인텔리전스",
+  heroTitle:"미국 주요기업 실적 어닝스 인텔리전스",
+  heroSub:"발표일·컨센서스·실제치·가이던스를 기업별로 흩어 찾지 않고, 실적 시즌 하나를 한 화면에서 훑는다.",
+  mAsOf:"기준일 2026-09-17", mSrc:"출처: 기업 IR·8-K 공시 및 확인된 보도",
+  ebSeason:"SEASON SCOREBOARD", s1t:"시즌 스코어보드",
+  s1d:"위쪽 다섯 칸은 이 화면이 직접 집계한 25개사 결과이고, 아래 여섯 칸은 지수 전체를 다루는 외부 기관 집계다. 유니버스가 다르므로 한 칸에 섞지 않는다.",
+  s1own:"위: 이 화면이 담은 25개사 · 각 기업의 발표 자료에서 직접 집계",
+  ebCal:"EARNINGS CALENDAR", s2t:"실적 발표 캘린더",
+  s2d:"직전 시즌이 어떤 순서로 지나갔는지, 다음 발표가 언제인지를 한 줄로 본다. 칩을 누르면 해당 기업 행이 열린다.",
+  lgBeat:"매출 컨센서스 상회", lgMiss:"매출 컨센서스 하회",
+  lgNa:"컨센서스 확인 실패", lgNext:"발표 예정",
+  ebTbl:"COMPANY DETAIL", s3t:"기업별 실적 · 가이던스",
+  s3d:"직전 보고분기의 매출 실제치와 컨센서스, 서프라이즈, 전년동기비, 회사가 직접 제시한 가이던스. 행을 누르면 세부와 출처가 열린다. 확인하지 못한 값은 채우지 않고 n/a 로 둔다.",
+  s3n:"매출·컨센서스 단위는 10억 달러. 회계연도가 회사마다 달라 보고분기 라벨과 실제 분기말이 다를 수 있다 — 행을 열면 분기말 날짜가 나온다.",
+  cTicker:"기업", cSector:"섹터", cDate:"발표일", cPeriod:"보고분기", cRev:"매출",
+  cCons:"컨센서스", cSurp:"서프라이즈", cYoy:"전년동기비", cGuide:"가이던스", cScore:"모멘텀",
+  ebSec:"REVENUE BY SECTOR", s4t:"매출액 분야 분석",
+  s4d:"아래 두 차트는 외부 섹터 통계를 옮긴 것이 아니라, 이 화면에 담긴 25개사의 발표치를 직접 합산·평균한 것이다. 표본이 작은 섹터는 막대 옆에 기업 수를 적었다.",
+  c1t:"섹터별 분기 매출 합계", c1d:"단위 10억 달러 · 직전 보고분기 기준",
+  c2t:"섹터별 평균 매출 성장률", c2d:"기업별 전년동기비의 단순평균(가중 아님) · 확인된 기업만",
+  c3t:"기업별 매출 성장률과 컨센서스 서프라이즈",
+  c3d:"가로축 전년동기비(%) · 세로축 컨센서스 대비 상회폭(%) · 원 크기는 분기 매출 규모",
+  ebIns:"BUSINESS TRENDS", s5t:"사업 추이에서 읽히는 것",
+  s5d:"각 문단 아래에 근거가 된 수치를 붙였다. 근거가 없는 해석은 싣지 않았다.",
+  coT:"한 줄로 줄이면",
+  ebScore:"EARNINGS MOMENTUM", s6t:"투자매력도 — 실적 모멘텀 스코어",
+  s6d:"발표된 실적만으로 계산한 0~100 점수다. 주가와 밸류에이션은 들어가지 않으므로 '싼가'를 말해주지 않는다. 확인된 축이 절반에 못 미치는 기업은 점수를 내지 않고 비워 둔다.",
+  fT:"계산식",
+  fN:"각 축은 위 구간을 0~100 으로 선형 환산한 뒤 잘라낸다. 확인되지 않은 축은 0점으로 깔지 않고 가중치를 나머지 축에 다시 나눈다 — 자료가 적은 기업이 나쁜 기업으로 둔갑하지 않도록.",
+  s7t:"데이터 출처와 검증", n1t:"계열 정책", n2t:"검산",
+  n2b:"인쇄되는 모든 수치는 <code>data/earnings/claims.json</code> 에 한 줄씩 등록돼 있고, 서프라이즈·성장률 같은 파생값은 사람이 아니라 스크립트가 계산했다. 화면은 <code>scripts/build_earnings.py</code> 가 채운다 — 이 HTML 에 손으로 적은 숫자는 없다.",
+  n2c:"검산: <code>python3 scripts/check_claims.py data/earnings/claims.json</code>",
+  n3t:"읽을 때 주의",
+  n3a:"컨센서스 제공사(LSEG·Zacks·StreetAccount·Visible Alpha)가 기업마다 달라, 서프라이즈율의 기업 간 비교는 대략의 순서로만 본다.",
+  n3b:"회계연도가 달라 같은 '분기'가 같은 달이 아니다. 엔비디아 FY27 Q2 는 7월 종료, 애플 FY26 Q3 는 6월 종료다.",
+  n3c:"'가이던스'는 회사가 직접 제시한 전망만 가리킨다. 애널리스트 추정치는 컨센서스 칸에 있다.",
+  uvT:"확인하지 못한 항목 (화면에서 n/a 로 비워 둔 것)",
+  uvF:"이 화면의 수집 경로는 웹 검색 결과에 한정됐다(직접 API 접근은 사내 네트워크 정책으로 차단). 인용에 쓰려면 각 행의 출처 링크에서 원문을 확인하는 편이 안전하다.",
+  searchPH:"티커 · 기업명 검색", all:"전체",
+  lgFull:"확인된 축 75% 이상", lgPart:"확인된 축 50~75% — 점수를 더 넓게 보아야 함",
+  lgNone2:"커버리지 50% 미만 — 점수 미공표",
+  covTxt:function(c){return "수록 "+c.total+"개사 · 컨센서스 확인 "+c.cons+" · 가이던스 확인 "+c.guide},
+  tOwnBeat:"매출 컨센서스 상회", tOwnBeatRef:"컨센서스를 확인한 기업 중",
+  tOwnSurp:"평균 매출 서프라이즈", tOwnSurpRef:"단순평균 · 컨센서스 확인 기업",
+  tOwnYoy:"평균 매출 성장률", tOwnYoyRef:"전년동기비 단순평균",
+  tOwnUp:"가이던스 상향 기업", tOwnUpRef:"가이던스를 확인한 기업 중",
+  tOwnBig:"분기 매출 합계", tOwnBigRef:"수록 25개사 직전 보고분기 합",
+  ownN:"이 화면 집계 · 25개사",
+  calPrev:"직전 시즌 — 2026년 2분기(캘린더)", calNext:"다음 발표 예정",
+  detPeriodEnd:"분기말", detEps:"EPS(실제/컨센)", detGuide:"가이던스",
+  detNote:"분기 특징", detSrc:"출처", detWarn:"주의", detScore:"스코어 구성",
+  detNextRep:"차기 발표", detConsNote:"컨센서스 주석", detEpsNote:"EPS 주석",
+  srcPR:"기업 발표자료", srcNews:"컨센서스 출처", srcNext:"일정 출처",
+  na:"n/a", conf:"확정", conf2:"2차 출처", approx:"근사",
+  noScore:"커버리지 부족", cov:"커버리지",
+  axSurp:"매출 서프라이즈", axYoy:"매출 성장률", axGuide:"가이던스 방향", axEps:"EPS 서프라이즈",
+  gUp:"상향", gFlat:"유지·제시", gDown:"약세", gNone:"미제시",
+  wUnit:"가중치", bUnit:"구간"
+ },
+ en:{
+  tagInternal:"INTERNAL", tagKind:"EARNINGS INTELLIGENCE",
+  heroTitle:"US Large-Cap Earnings Intelligence",
+  heroSub:"Report dates, consensus, actuals and guidance for a whole earnings season — on one screen instead of one company at a time.",
+  mAsOf:"As of 2026-09-17", mSrc:"Sources: company IR / 8-K filings and verified reporting",
+  ebSeason:"SEASON SCOREBOARD", s1t:"Season scoreboard",
+  s1d:"The five tiles above are this dashboard's own tally across its 25 companies. The six below are index-wide figures from outside providers. Different universes — they are never mixed in one tile.",
+  s1own:"Above: the 25 companies in this dashboard · tallied directly from their own releases",
+  ebCal:"EARNINGS CALENDAR", s2t:"Earnings calendar",
+  s2d:"How the last season ran, and what reports next. Click a chip to open that company's row.",
+  lgBeat:"Revenue above consensus", lgMiss:"Revenue below consensus",
+  lgNa:"Consensus not verified", lgNext:"Upcoming",
+  ebTbl:"COMPANY DETAIL", s3t:"Results and guidance by company",
+  s3d:"Last reported quarter: actual revenue, consensus, surprise, year-over-year, and the guidance the company itself issued. Click a row for detail and sources. Anything not verified is left as n/a rather than filled in.",
+  s3n:"Revenue and consensus in USD billions. Fiscal years differ, so the quarter label may not match the calendar quarter — open a row to see the period end date.",
+  cTicker:"Company", cSector:"Sector", cDate:"Reported", cPeriod:"Quarter", cRev:"Revenue",
+  cCons:"Consensus", cSurp:"Surprise", cYoy:"YoY", cGuide:"Guidance", cScore:"Momentum",
+  ebSec:"REVENUE BY SECTOR", s4t:"Revenue analysis by sector",
+  s4d:"These two charts are not borrowed sector statistics — they aggregate the reported figures of the 25 companies on this page. Thin samples carry their company count next to the bar.",
+  c1t:"Quarterly revenue by sector", c1d:"USD billions · last reported quarter",
+  c2t:"Average revenue growth by sector", c2d:"Simple average of company YoY (unweighted) · verified companies only",
+  c3t:"Revenue growth against consensus surprise",
+  c3d:"X: year-over-year (%) · Y: beat versus consensus (%) · bubble size is quarterly revenue",
+  ebIns:"BUSINESS TRENDS", s5t:"What the business trends say",
+  s5d:"Every paragraph carries the figures it rests on. Nothing is asserted without them.",
+  coT:"In one line",
+  ebScore:"EARNINGS MOMENTUM", s6t:"Investment appeal — earnings momentum score",
+  s6d:"A 0–100 score built only from reported results. Price and valuation are not in it, so it does not tell you whether a stock is cheap. Companies with less than half the axes verified are left unscored.",
+  fT:"How it is calculated",
+  fN:"Each axis is mapped linearly onto the band above, then clipped. An unverified axis is not scored as zero — its weight is redistributed across the remaining axes, so a thinly covered company is not mistaken for a weak one.",
+  s7t:"Sources and verification", n1t:"Series policy", n2t:"Verification",
+  n2b:"Every printed figure has a row in <code>data/earnings/claims.json</code>, and derived values such as surprise and growth were computed by script, not by hand. The page is filled by <code>scripts/build_earnings.py</code> — no number in this HTML was typed manually.",
+  n2c:"Check: <code>python3 scripts/check_claims.py data/earnings/claims.json</code>",
+  n3t:"Reading notes",
+  n3a:"Consensus providers differ by company (LSEG, Zacks, StreetAccount, Visible Alpha), so treat cross-company surprise rates as a rough ordering only.",
+  n3b:"Fiscal years differ, so the same 'quarter' is not the same months. NVIDIA's FY27 Q2 ended in July; Apple's FY26 Q3 ended in June.",
+  n3c:"'Guidance' means only what the company itself issued. Analyst estimates sit in the consensus column.",
+  uvT:"Not verified (left as n/a on the page)",
+  uvF:"Collection for this page was limited to web search results; direct API access is blocked by network policy. Before quoting, confirm against the primary source linked on each row.",
+  searchPH:"Search ticker or company", all:"All",
+  lgFull:"75%+ of axes verified", lgPart:"50–75% verified — read the score more loosely",
+  lgNone2:"below 50% coverage — no score published",
+  covTxt:function(c){return c.total+" companies · consensus verified "+c.cons+" · guidance verified "+c.guide},
+  tOwnBeat:"Beat revenue consensus", tOwnBeatRef:"of companies with verified consensus",
+  tOwnSurp:"Average revenue surprise", tOwnSurpRef:"simple average · verified consensus only",
+  tOwnYoy:"Average revenue growth", tOwnYoyRef:"simple average of YoY",
+  tOwnUp:"Raised guidance", tOwnUpRef:"of companies with verified guidance",
+  tOwnBig:"Combined quarterly revenue", tOwnBigRef:"sum across the 25 companies",
+  ownN:"This dashboard · 25 companies",
+  calPrev:"Last season — Q2 2026 (calendar)", calNext:"Coming up",
+  detPeriodEnd:"Period end", detEps:"EPS (actual/cons.)", detGuide:"Guidance",
+  detNote:"What defined the quarter", detSrc:"Sources", detWarn:"Caution", detScore:"Score inputs",
+  detNextRep:"Next report", detConsNote:"Consensus note", detEpsNote:"EPS note",
+  srcPR:"Company release", srcNews:"Consensus source", srcNext:"Schedule source",
+  na:"n/a", conf:"confirmed", conf2:"secondary", approx:"approx.",
+  noScore:"low coverage", cov:"coverage",
+  axSurp:"Revenue surprise", axYoy:"Revenue growth", axGuide:"Guidance direction", axEps:"EPS surprise",
+  gUp:"Raised", gFlat:"Maintained", gDown:"Soft", gNone:"None",
+  wUnit:"weight", bUnit:"band"
+ }
+};
+var SECEN = {"정보기술":"Information Technology","커뮤니케이션":"Communication Services",
+ "경기소비재":"Consumer Discretionary","헬스케어":"Health Care","금융":"Financials",
+ "필수소비재":"Consumer Staples","산업재":"Industrials","에너지":"Energy"};
+var SUBEN = {"반도체":"Semiconductors","소프트웨어":"Software","하드웨어":"Hardware",
+ "인터넷":"Internet","이커머스·클라우드":"E-commerce & Cloud","자동차":"Automotive",
+ "미디어":"Media","은행":"Banking","투자은행":"Investment Banking","제약":"Pharmaceuticals",
+ "관리의료":"Managed Care","제약·의료기기":"Pharma & MedTech","종합소매":"Retail",
+ "창고형할인":"Warehouse Club","주택개량":"Home Improvement","기계":"Machinery",
+ "종합에너지":"Integrated Energy"};
+var GKEN = {"차기분기":"next quarter","연간상향":"FY raised","연간유지":"FY maintained",
+ "차기분기+연간상향":"next quarter + FY raised","정성":"qualitative","미제시":"none","발표전":"pre-release"};
+
+var L = localStorage.getItem("earnLang") || "ko";
+function t(k){return T[L][k]}
+function secN(s){return L==="ko"?s:(SECEN[s]||s)}
+function subN(s){return L==="ko"?s:(SUBEN[s]||s)}
+
+/* ------------------------------------------------ 포맷 */
+function com(v){return String(v).replace(/\B(?=(\d{3})+(?!\d))/g,",")}
+function fmt(v,d){return v===null||v===undefined?t("na"):v.toFixed(d===undefined?1:d)}
+function sgn(v,d){if(v===null||v===undefined)return t("na");
+  return (v>0?"+":"")+v.toFixed(d===undefined?1:d)+"%"}
+var WD={ko:["일","월","화","수","목","금","토"],en:["Sun","Mon","Tue","Wed","Thu","Fri","Sat"]};
+function wd(iso){var p=iso.split("-");
+  return WD[L][new Date(Date.UTC(+p[0],+p[1]-1,+p[2])).getUTCDay()]}
+function md(iso){var p=iso.split("-");
+  return L==="ko"?(+p[1])+"월 "+(+p[2])+"일":p[1]+"/"+p[2]}
+function esc(s){return String(s==null?"":s).replace(/[&<>"]/g,function(c){
+  return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]})}
+function gtext(c){return (L==="ko"?c.gtxt:(c.gtxt_en||c.gtxt))||""}
+function ntext(c){return (L==="ko"?c.note:(c.note_en||c.note))||""}
+function gdir(c){
+  if(c.guide===1)return["up",t("gUp")]; if(c.guide===0)return["fl",t("gFlat")];
+  if(c.guide===-1)return["dn",t("gDown")]; return["na",t("gNone")]}
+
+/* ------------------------------------------------ 툴팁 */
+var tip=$("#tip");
+function showTip(e,html){tip.innerHTML=html;tip.style.opacity="1";
+  var x=e.clientX+14,y=e.clientY+14;
+  if(x+270>window.innerWidth)x=e.clientX-270;
+  if(y+90>window.innerHeight)y=e.clientY-90;
+  tip.style.left=x+"px";tip.style.top=y+"px"}
+function hideTip(){tip.style.opacity="0"}
+
+/* ------------------------------------------------ 집계 */
+var CO=D.companies, rep=CO.filter(function(c){return !c.upcoming});
+function agg(){
+  var wc=CO.filter(function(c){return c.surprise!==null&&c.surprise!==undefined});
+  var beat=wc.filter(function(c){return c.surprise>0}).length;
+  var ys=CO.filter(function(c){return c.yoy!==null&&c.yoy!==undefined});
+  var gs=CO.filter(function(c){return c.guide!==null&&c.guide!==undefined});
+  return {
+    nCons:wc.length, beat:beat, beatPct:Math.round(beat/wc.length*100),
+    surp:wc.reduce(function(a,c){return a+c.surprise},0)/wc.length,
+    yoy:ys.reduce(function(a,c){return a+c.yoy},0)/ys.length, nYoy:ys.length,
+    up:gs.filter(function(c){return c.guide===1}).length, nGuide:gs.length,
+    rev:CO.reduce(function(a,c){return a+c.rev},0)
+  }}
+var A=agg();
+
+/* ------------------------------------------------ 렌더: 타일 */
+function renderTiles(){
+  $("#m-cov").textContent=t("covTxt")(D.coverage);
+  var own=[
+   {lab:t("tOwnBeat"),val:A.beatPct+"%",ref:A.beat+" / "+A.nCons+" — "+t("tOwnBeatRef"),accent:true},
+   {lab:t("tOwnSurp"),val:sgn(A.surp,2),ref:t("tOwnSurpRef")},
+   {lab:t("tOwnYoy"),val:sgn(A.yoy,1),ref:A.nYoy+" / "+D.coverage.total+" — "+t("tOwnYoyRef")},
+   {lab:t("tOwnUp"),val:A.up+" / "+A.nGuide,ref:t("tOwnUpRef")},
+   {lab:t("tOwnBig"),val:"$"+com(Math.round(A.rev))+"B",ref:t("tOwnBigRef")}
+  ];
+  $("#own-tiles").innerHTML=own.map(function(o){
+    return '<div class="tile'+(o.accent?" accent":"")+'"><div class="lab">'+esc(o.lab)+
+      '</div><div class="val num">'+esc(o.val)+'</div><div class="ref">'+esc(o.ref)+
+      '</div><div class="who">'+esc(t("ownN"))+'</div></div>'}).join("");
+  $("#idx-tiles").innerHTML=D.index.map(function(o){
+    return '<div class="tile"><div class="lab">'+esc(L==="ko"?o.ko:o.en)+
+      '</div><div class="val num">'+esc(o.v)+'</div><div class="ref">'+
+      esc(L==="ko"?o.ref:o.ref_en)+'</div><div class="who"><a href="'+esc(o.url)+
+      '" target="_blank" rel="noopener">'+esc(o.who)+'</a> · '+
+      esc(L==="ko"?o.scope:o.scope_en)+'</div></div>'}).join("");
+}
+
+/* ------------------------------------------------ 렌더: 캘린더 */
+function renderCal(){
+  var past={},fut={};
+  CO.forEach(function(c){if(c.rep){(past[c.rep]=past[c.rep]||[]).push(c)}});
+  CO.forEach(function(c){if(c.nextrep){(fut[c.nextrep]=fut[c.nextrep]||[]).push(c)}});
+  function chip(c,future){
+    var cls,tail;
+    if(future){
+      var ok=c.nextconf==="확정";
+      cls=ok?"":"soft";
+      tail='<span class="cf">'+esc(ok?t("conf"):t("conf2"))+"</span>";
+    }else{
+      cls=(c.surprise===null||c.surprise===undefined)?"na":(c.surprise>0?"beat":"miss");
+      tail=(c.surprise===null||c.surprise===undefined)?"":
+        '<span class="pct">'+sgn(c.surprise,1)+"</span>";
+    }
+    return '<button type="button" class="chip '+cls+'" data-go="'+esc(c.t)+
+      '"><span class="dot"></span>'+esc(c.t)+tail+'</button>'}
+  function rows(map,future){
+    return Object.keys(map).sort().map(function(d){
+      return '<div class="cal-row'+(future?" future":"")+'"><div class="cal-date"><div class="d num">'+
+        esc(md(d))+'</div><div class="w">'+esc(wd(d))+'</div></div><div class="cal-items">'+
+        map[d].map(function(c){return chip(c,future)}).join("")+'</div></div>'}).join("")}
+  $("#cal").innerHTML=
+    '<div class="cal-band"><b>'+esc(t("calNext"))+'</b></div>'+rows(fut,true)+
+    '<div class="cal-band"><b>'+esc(t("calPrev"))+'</b></div>'+rows(past,false);
+  $$("#cal .chip").forEach(function(b){b.addEventListener("click",function(){
+    openRow(b.getAttribute("data-go"))})});
+}
+
+/* ------------------------------------------------ 렌더: 표 */
+var sortK="score",sortDir=-1,filterSec="",query="";
+function cmp(a,b){
+  var x=a[sortK],y=b[sortK];
+  if(x===null||x===undefined)return 1; if(y===null||y===undefined)return -1;
+  if(typeof x==="string")return x.localeCompare(y)*sortDir;
+  return (x-y)*sortDir}
+function rows(){
+  return CO.filter(function(c){
+    if(filterSec&&c.sec!==filterSec)return false;
+    if(query){var q=query.toLowerCase();
+      if((c.t+" "+c.ko+" "+c.en).toLowerCase().indexOf(q)<0)return false}
+    return true}).sort(cmp)}
+function scoreCell(c){
+  if(c.score===null||c.score===undefined)
+    return '<span class="pill na">'+esc(t("noScore"))+"</span>";
+  return '<span class="score-cell"><span class="score-bar"><i style="width:'+
+    c.score+'%"></i></span><span class="score-num num">'+c.score.toFixed(0)+"</span></span>"}
+function detail(c){
+  var d=[];
+  d.push([t("detPeriodEnd"),esc(c.pend)+(c.repapprox?' <span class="pill na">'+esc(t("approx"))+"</span>":"")]);
+  if(c.eps!==null&&c.eps!==undefined)
+    d.push([t("detEps"),esc(fmt(c.eps,2))+" / "+esc(c.epsc?fmt(c.epsc,2):t("na"))+
+      (c.epssurprise!==null&&c.epssurprise!==undefined?
+        ' <span class="pill '+(c.epssurprise>0?"up":"dn")+'">'+esc(sgn(c.epssurprise,1))+"</span>":"")]);
+  d.push([t("detGuide"),esc(gtext(c))]);
+  d.push([t("detNote"),esc(ntext(c))]);
+  if(c.nextrep)d.push([t("detNextRep"),esc(c.nextrep)+" ("+esc(c.nextconf==="확정"?t("conf"):t("conf2"))+")"+
+    (c.nextsrc?' · <a href="'+esc(c.nextsrc)+'" target="_blank" rel="noopener">'+esc(t("srcNext"))+"</a>":"")]);
+  var cnd=L==="ko"?c.consnote:c.consnote_en;
+  if(cnd)d.push([t("detConsNote"),esc(cnd)]);
+  if(c.epsnote&&L==="ko")d.push([t("detEpsNote"),esc(c.epsnote)]);
+  if(c.warn&&L==="ko")d.push(['<span class="warn">'+esc(t("detWarn"))+"</span>",
+    '<span class="warn">'+esc(c.warn)+"</span>"]);
+  if(c.scoreparts&&Object.keys(c.scoreparts).length){
+    var m={surprise:t("axSurp"),yoy:t("axYoy"),guide:t("axGuide"),eps:t("axEps")};
+    d.push([t("detScore"),Object.keys(c.scoreparts).map(function(k){
+      return esc(m[k])+" "+c.scoreparts[k].toFixed(0)}).join(" · ")+
+      " — "+esc(t("cov"))+" "+c.coverage+"%"])}
+  d.push([t("detSrc"),'<a href="'+esc(c.src)+'" target="_blank" rel="noopener">'+esc(t("srcPR"))+
+    "</a>"+(c.csrc?' · <a href="'+esc(c.csrc)+'" target="_blank" rel="noopener">'+
+    esc(t("srcNews"))+"</a>":"")]);
+  return '<tr class="det"><td colspan="10"><dl>'+d.map(function(p){
+    return "<dt>"+p[0]+"</dt><dd>"+p[1]+"</dd>"}).join("")+"</dl></td></tr>"}
+function renderTbl(){
+  var html=rows().map(function(c){
+    var g=gdir(c);
+    var sp=(c.surprise===null||c.surprise===undefined)?'<span class="pill na">'+esc(t("na"))+"</span>":
+      '<span class="pill '+(c.surprise>0?"up":"dn")+'">'+esc(sgn(c.surprise,2))+"</span>";
+    var yo=(c.yoy===null||c.yoy===undefined)?'<span class="pill na">'+esc(t("na"))+"</span>":
+      '<span class="pill '+(c.yoy>0?"up":c.yoy<0?"dn":"fl")+'">'+esc(sgn(c.yoy,1))+"</span>";
+    return '<tr data-t="'+esc(c.t)+'"><td><span class="tick">'+esc(c.t)+
+      '</span><span class="nm">'+esc(L==="ko"?c.ko:c.en)+"</span></td>"+
+      "<td class=\"nw\">"+esc(secN(c.sec))+'<span class="nm" style="white-space:normal">'+esc(subN(c.sub))+"</span></td>"+
+      "<td class=\"nw\">"+(c.rep?esc(c.rep):'<span class="pill na">'+esc(L==="ko"?"발표전":"pre-release")+"</span>")+"</td>"+
+      "<td>"+esc(L==="ko"?c.per:(c.per_en||c.per))+"</td>"+
+      '<td class="n"><b>'+esc(fmt(c.rev,2))+"</b></td>"+
+      '<td class="n">'+(c.cons?esc(fmt(c.cons,2))+(c.consderived?"*":""):
+        '<span class="pill na">'+esc(t("na"))+"</span>")+"</td>"+
+      '<td class="n">'+sp+"</td><td class=\"n\">"+yo+"</td>"+
+      '<td><span class="gd"><span class="dir '+g[0]+'">'+esc(g[1])+"</span> — "+
+        esc(gtext(c))+"</span></td>"+
+      '<td class="n">'+scoreCell(c)+"</td></tr>"}).join("");
+  $("#tbody").innerHTML=html;
+  $$("#tbody tr[data-t]").forEach(function(tr){
+    tr.addEventListener("click",function(){toggle(tr)})});
+}
+function toggle(tr){
+  var nx=tr.nextElementSibling;
+  if(nx&&nx.classList.contains("det")){nx.remove();tr.classList.remove("open");return}
+  $$("#tbody tr.det").forEach(function(r){r.remove()});
+  $$("#tbody tr.open").forEach(function(r){r.classList.remove("open")});
+  var c=CO.filter(function(x){return x.t===tr.getAttribute("data-t")})[0];
+  tr.insertAdjacentHTML("afterend",detail(c));tr.classList.add("open")}
+function openRow(tk){
+  filterSec="";query="";$("#q").value="";
+  $$("#sec-filters button").forEach(function(b){
+    b.setAttribute("aria-pressed",b.getAttribute("data-sec")===""?"true":"false")});
+  renderTbl();
+  var tr=$('#tbody tr[data-t="'+tk+'"]');
+  if(tr){toggle(tr);tr.scrollIntoView({behavior:"smooth",block:"center"})}}
+
+/* ------------------------------------------------ 차트 */
+function barChart(el,data,opts){
+  var W=520,rowH=34,padL=opts.padL||128,padR=54,padT=8,
+      H=padT+data.length*rowH+26;
+  var vals=data.map(function(d){return d.v}),
+      max=Math.max.apply(null,vals.concat([0])),
+      min=Math.min.apply(null,vals.concat([0]));
+  var span=(max-min)||1, x0=padL+(0-min)/span*(W-padL-padR);
+  function X(v){return padL+(v-min)/span*(W-padL-padR)}
+  var s='<svg viewBox="0 0 '+W+' '+H+'" role="img" aria-label="'+esc(opts.aria||"")+'">';
+  var ticks=4;
+  for(var i=0;i<=ticks;i++){var tv=min+(span*i/ticks),tx=X(tv);
+    s+='<line class="grid" x1="'+tx+'" y1="'+padT+'" x2="'+tx+'" y2="'+(H-26)+'"/>'+
+       '<text class="tlab" x="'+tx+'" y="'+(H-10)+'" text-anchor="middle">'+
+       (opts.pct?tv.toFixed(0)+"%":Math.round(tv))+"</text>"}
+  s+='<line class="axis" x1="'+x0+'" y1="'+padT+'" x2="'+x0+'" y2="'+(H-26)+'"/>';
+  data.forEach(function(d,i){
+    var y=padT+i*rowH+5,h=rowH-13,xv=X(d.v),xa=Math.min(x0,xv),w=Math.abs(xv-x0);
+    s+='<g class="bar" data-i="'+i+'">'+
+      '<rect x="'+xa+'" y="'+y+'" width="'+Math.max(w,1.5)+'" height="'+h+'" fill="'+d.c+'"/>'+
+      '<text class="tlab" x="'+(padL-9)+'" y="'+(y+h/2+4)+'" text-anchor="end">'+esc(d.l)+"</text>"+
+      '<text class="vlab" x="'+(xv+(d.v<0?-7:7))+'" y="'+(y+h/2+4)+'" text-anchor="'+
+      (d.v<0?"end":"start")+'">'+esc(d.t)+"</text></g>"});
+  s+="</svg>";
+  el.innerHTML=s;
+  $$(".bar",el).forEach(function(g){
+    var d=data[+g.getAttribute("data-i")];
+    g.addEventListener("mousemove",function(e){showTip(e,d.tip)});
+    g.addEventListener("mouseleave",hideTip)})}
+
+function renderCharts(){
+  var S=D.sectors.slice().sort(function(a,b){return b.rev-a.rev});
+  barChart($("#ch-rev"),S.map(function(s,i){
+    return {l:secN(s.sec),v:s.rev,t:"$"+com(Math.round(s.rev))+"B",c:PAL[i%9],
+      tip:"<b>"+esc(secN(s.sec))+"</b><br>"+esc(L==="ko"?"분기 매출 합계":"Combined revenue")+
+        " $"+s.rev.toFixed(1)+"B<br>"+s.n+(L==="ko"?"개사":" companies")+" · "+
+        esc(s.tickers.join(" "))}}),
+    {pct:false,aria:L==="ko"?"섹터별 분기 매출 합계":"Quarterly revenue by sector"});
+  var Y=D.sectors.filter(function(s){return s.yoy!==null})
+        .sort(function(a,b){return b.yoy-a.yoy});
+  barChart($("#ch-yoy"),Y.map(function(s,i){
+    return {l:secN(s.sec),v:s.yoy,t:sgn(s.yoy,1)+(s.yoyn<3?" ("+s.yoyn+")":""),
+      c:s.yoy>=20?"#F58220":s.yoy>=8?"#FAB072":"#043B72",
+      tip:"<b>"+esc(secN(s.sec))+"</b><br>"+esc(L==="ko"?"평균 성장률":"Average growth")+" "+
+        sgn(s.yoy,1)+"<br>"+esc(L==="ko"?"확인 기업":"verified")+" "+s.yoyn+"/"+s.n}}),
+    {pct:true,aria:L==="ko"?"섹터별 평균 매출 성장률":"Average revenue growth by sector"});
+  scatter()}
+
+function scatter(){
+  var pts=CO.filter(function(c){
+    return c.yoy!==null&&c.yoy!==undefined&&c.surprise!==null&&c.surprise!==undefined});
+  var W=1060,H=400,pl=72,pr=24,pt=18,pb=48;
+  var xs=pts.map(function(p){return p.yoy}),ys=pts.map(function(p){return p.surprise});
+  var x1=Math.min.apply(null,xs.concat([0]))-6,x2=Math.max.apply(null,xs)+8;
+  var y1=Math.min.apply(null,ys.concat([0]))-1.2,y2=Math.max.apply(null,ys)+1.6;
+  function X(v){return pl+(v-x1)/(x2-x1)*(W-pl-pr)}
+  function Y(v){return H-pb-(v-y1)/(y2-y1)*(H-pt-pb)}
+  var rmax=Math.max.apply(null,pts.map(function(p){return p.rev}));
+  function R(v){return 5+Math.sqrt(v/rmax)*20}
+  var s='<svg viewBox="0 0 '+W+' '+H+'" role="img" aria-label="'+
+    esc(L==="ko"?"기업별 매출 성장률과 서프라이즈 분포":"Revenue growth versus surprise")+'">';
+  var i,tv,g;
+  for(i=0;i<=5;i++){tv=x1+(x2-x1)*i/5;g=X(tv);
+    s+='<line class="grid" x1="'+g+'" y1="'+pt+'" x2="'+g+'" y2="'+(H-pb)+'"/>'+
+       '<text class="tlab" x="'+g+'" y="'+(H-pb+20)+'" text-anchor="middle">'+tv.toFixed(0)+"%</text>"}
+  for(i=0;i<=4;i++){tv=y1+(y2-y1)*i/4;g=Y(tv);
+    s+='<line class="grid" x1="'+pl+'" y1="'+g+'" x2="'+(W-pr)+'" y2="'+g+'"/>'+
+       '<text class="tlab" x="'+(pl-9)+'" y="'+(g+4)+'" text-anchor="end">'+tv.toFixed(1)+"%</text>"}
+  s+='<line class="axis" x1="'+pl+'" y1="'+Y(0)+'" x2="'+(W-pr)+'" y2="'+Y(0)+'"/>'+
+     '<line class="axis" x1="'+X(0)+'" y1="'+pt+'" x2="'+X(0)+'" y2="'+(H-pb)+'"/>';
+  pts.sort(function(a,b){return b.rev-a.rev}).forEach(function(p,i){
+    var cx=X(p.yoy),cy=Y(p.surprise),r=R(p.rev);
+    s+='<g class="bar" data-i="'+i+'"><circle cx="'+cx+'" cy="'+cy+'" r="'+r+
+      '" fill="'+(p.surprise>0?"#F58220":"#043B72")+'" fill-opacity=".62" stroke="'+
+      (p.surprise>0?"#CB6015":"#043B72")+'" stroke-width="1"/>'+
+      '<text class="tlab" x="'+cx+'" y="'+(cy-r-5)+'" text-anchor="middle" '+
+      'style="font-size:12px;font-weight:600;fill:#1A1A1A">'+esc(p.t)+"</text></g>"});
+  s+='<text class="tlab" x="'+(W/2)+'" y="'+(H-6)+'" text-anchor="middle">'+
+     esc(L==="ko"?"매출 전년동기비 (%)":"Revenue YoY (%)")+"</text>"+
+     '<text class="tlab" x="20" y="'+(H/2)+'" text-anchor="middle" transform="rotate(-90 20 '+
+     (H/2)+')">'+esc(L==="ko"?"컨센서스 서프라이즈 (%)":"Consensus surprise (%)")+"</text></svg>";
+  var el=$("#ch-scatter");el.innerHTML=s;
+  var sorted=pts;
+  $$(".bar",el).forEach(function(g){
+    var p=sorted[+g.getAttribute("data-i")];
+    g.style.cursor="pointer";
+    g.addEventListener("mousemove",function(e){showTip(e,
+      "<b>"+esc(p.t)+" "+esc(L==="ko"?p.ko:p.en)+"</b><br>"+
+      esc(L==="ko"?"매출":"Revenue")+" $"+p.rev.toFixed(2)+"B · "+esc(secN(p.sec))+"<br>"+
+      esc(L==="ko"?"전년동기비":"YoY")+" "+sgn(p.yoy,1)+"<br>"+
+      esc(L==="ko"?"서프라이즈":"Surprise")+" "+sgn(p.surprise,2))});
+    g.addEventListener("mouseleave",hideTip);
+    g.addEventListener("click",function(){openRow(p.t)})})}
+
+/* ------------------------------------------------ 인사이트 */
+function pick(t){return CO.filter(function(c){return c.t===t})[0]}
+function insights(){
+  var nv=pick("NVDA"),av=pick("AVGO"),mu=pick("MU"),or=pick("ORCL"),
+      ms=pick("MSFT"),am=pick("AMZN"),go=pick("GOOGL"),ap=pick("AAPL"),
+      un=pick("UNH"),nf=pick("NFLX"),ts=pick("TSLA"),ct=pick("CAT"),me=pick("META");
+  var K=[
+  {h:{ko:"AI 인프라는 아직 가속 구간에 있다",en:"The AI infrastructure build is still accelerating"},
+   p:{ko:"반도체·클라우드 인프라를 파는 쪽의 성장률이 전분기보다 더 가팔라졌다. 둔화의 조짐이 매출 단에서는 아직 잡히지 않는다. 다만 성장의 대부분이 소수 공급자에게 몰려 있다는 점은 같이 봐야 한다.",
+       en:"Growth at the companies selling AI silicon and cloud capacity got steeper, not flatter. At the revenue line there is still no sign of a slowdown — though the growth stays concentrated in a handful of suppliers."},
+   e:{ko:"엔비디아 매출 "+sgn(nv.yoy,0)+" · 브로드컴 "+sgn(av.yoy,0)+"(AI 반도체 +221%) · 마이크론 DRAM +343% · 오라클 IaaS +121%, RPO 6,640억달러",
+       en:"NVIDIA revenue "+sgn(nv.yoy,0)+" · Broadcom "+sgn(av.yoy,0)+" (AI semis +221%) · Micron DRAM +343% · Oracle IaaS +121%, RPO $664B"}},
+  {h:{ko:"클라우드 3사의 성장률이 동시에 올라갔다",en:"All three hyperscalers reaccelerated at once"},
+   p:{ko:"AWS 는 18개 분기 만의 최고 성장률을, 애저와 구글클라우드도 시장 예상을 넘는 성장을 냈다. 클라우드 수요가 한 회사의 사정이 아니라 업계 전체의 사이클이라는 뜻이다. 대신 그만큼의 캡엑스가 따라붙고 있어, 다음 분기부터는 매출이 아니라 현금흐름이 논점이 된다.",
+       en:"AWS posted its fastest growth in 18 quarters, and Azure and Google Cloud also came in ahead of expectations. That makes this an industry cycle, not one company's story. The matching capex is the catch — from here the argument moves from revenue to cash flow."},
+   e:{ko:"AWS +36.7%(컨센 31%) · 애저 +43%, 차기 가이던스 +45%cc(컨센 41.4%) · 구글클라우드 +82%, 영업이익 88억달러(전년 28억) · 메타 캡엑스 310.8억달러에 FCF 7.84억달러",
+       en:"AWS +36.7% (consensus 31%) · Azure +43%, guided +45% cc (consensus 41.4%) · Google Cloud +82%, operating income $8.8B vs $2.8B · Meta capex $31.08B against $784M of free cash flow"}},
+  {h:{ko:"매출은 넘겼는데 이익이 못 따라온 기업들",en:"Revenue cleared the bar; profit did not follow"},
+   p:{ko:"이번 시즌의 분기점은 매출이 아니라 그 아래였다. 매출 컨센서스를 넘기고도 EPS 에서 밀린 기업이 뚜렷하게 나왔고, 원인은 대체로 투자 확대다. 매출 서프라이즈만 보고 줄을 세우면 이 기업들이 과대평가된다.",
+       en:"The dividing line this season sat below the revenue line. Several companies beat on revenue and still missed on EPS, mostly because of stepped-up investment. Ranking on revenue surprise alone flatters exactly these names."},
+   e:{ko:"메타 매출 "+sgn(me.surprise,1)+" 상회 · GAAP EPS 6.18달러 vs 컨센 7.22달러 · 테슬라 매출 "+sgn(ts.surprise,1)+" 상회 · 조정 EPS 0.33달러 vs 0.54달러, 영업이익률 1.4%",
+       en:"Meta revenue "+sgn(me.surprise,1)+" · GAAP EPS $6.18 vs $7.22 consensus · Tesla revenue "+sgn(ts.surprise,1)+" · adjusted EPS $0.33 vs $0.54, operating margin 1.4%"}},
+  {h:{ko:"성장은 매출에서만 나오지 않는다",en:"Not all the growth came from revenue"},
+   p:{ko:"유나이티드헬스는 매출이 사실상 제자리였는데 영업이익이 55% 늘었다. 매출 성장률만으로 화면을 정렬하면 이런 마진 회복형 분기가 바닥에 깔린다. 캐터필러도 관세 비용 추정을 낮추면서 이익 쪽에서 더 크게 개선됐다.",
+       en:"UnitedHealth's revenue was essentially flat while operating earnings rose 55%. Sorting on revenue growth alone buries this kind of margin-recovery quarter. Caterpillar likewise improved more on the profit line as it cut its tariff-cost estimate."},
+   e:{ko:"UNH 매출 "+sgn(un.yoy,1)+"(1,116→1,120억달러), 영업이익 52→80억달러 · MCR 가이던스 88.8%→88.1% 로 개선 · 캐터필러 EPS "+sgn(ct.epssurprise,0)+" 상회, FY26 관세비용 25→22억달러",
+       en:"UNH revenue "+sgn(un.yoy,1)+" ($111.6B → $112.0B), operating earnings $5.2B → $8.0B · MCR guidance improved 88.8% → 88.1% · Caterpillar EPS "+sgn(ct.epssurprise,0)+", FY26 tariff cost cut $2.5B → $2.2B"}},
+  {h:{ko:"AI 밖에서는 한 자릿수 성장이 정상값이다",en:"Outside AI, single-digit growth is the norm"},
+   p:{ko:"소비·헬스케어·주택 관련 기업들의 매출 성장률은 대체로 한 자릿수다. 지수 전체 매출 성장률이 두 자릿수인 것은 상위 몇 개 기업이 끌어올린 결과이므로, 평균을 업황으로 읽으면 안 된다.",
+       en:"Consumer, health care and housing-linked names mostly grew in single digits. The index-level double-digit revenue growth is the work of a few names at the top — the average should not be read as the operating environment."},
+   e:{ko:"월마트 +5.9%(미국 동일점포 +2.6%) · 홈디포 +5.7%(동일점포 +1.7%) · J&J +6.6% · 넷플릭스 +13%, 매출 컨센서스 "+sgn(nf.surprise,2)+" — 이번 시즌 몇 안 되는 하회",
+       en:"Walmart +5.9% (US comps +2.6%) · Home Depot +5.7% (comps +1.7%) · J&J +6.6% · Netflix +13% with revenue "+sgn(nf.surprise,2)+" — one of the season's few misses"}},
+  {h:{ko:"가이던스 상향이 실적 상회보다 많은 정보를 준다",en:"Raised guidance carries more information than a beat"},
+   p:{ko:"컨센서스 상회는 추정치가 낮았다는 뜻일 수도 있다. 반면 연간 가이던스를 올린 것은 회사가 남은 분기를 직접 다시 계산했다는 신호다. 가이던스를 확인한 "+A.nGuide+"개사 중 "+A.up+"개사가 전망을 올렸고, 그중 9개사는 연간 전망 상향이다(나머지 2개사는 차기 분기 가이던스가 컨센서스를 웃돈 경우).",
+       en:"A beat can simply mean the estimate was low. Raising full-year guidance means the company re-ran the rest of its year and committed to a higher number. Of the "+A.nGuide+" companies with verified guidance, "+A.up+" raised it — 9 of those lifted full-year outlooks; the other two guided the next quarter above consensus."},
+   e:{ko:"연간 상향 9개사 — 릴리(매출 820~850→850~870억달러) · 팔란티어(76.5→81.5억달러) · UNH(EPS >18.25→19.50~20.00달러) · JP모건 NII(1,030→1,055억달러) · 브로드컴(FY26 AI 약 580억달러) · 세일즈포스 · 월마트 · J&J · 캐터필러 / 분기 가이던스가 컨센서스 상회 2개사 — 마이크로소프트(Azure +45%cc vs 41.4%) · 마이크론(500억 vs 434.5억달러)",
+       en:"Nine raised full-year outlooks — Lilly ($82–85B → $85–87B) · Palantir ($7.65B → $8.15B) · UNH (EPS >$18.25 → $19.50–20.00) · JPMorgan NII ($103B → $105.5B) · Broadcom (FY26 AI ~$58B) · Salesforce · Walmart · J&J · Caterpillar. Two guided the next quarter above consensus — Microsoft (Azure +45% cc vs 41.4%) and Micron ($50B vs $43.45B)"}}
+  ];
+  $("#insights").innerHTML=K.map(function(k){
+    return "<article><h3>"+esc(k.h[L])+"</h3><p>"+esc(k.p[L])+
+      '</p><p class="ev"><b>'+(L==="ko"?"근거":"Evidence")+"</b> — "+esc(k.e[L])+"</p></article>"}).join("");
+  var co={ko:"이번 시즌은 '전부 좋았다'가 아니라 'AI 공급망은 가속, 그 밖은 한 자릿수'였다. 매출 컨센서스 상회율 "+
+      A.beatPct+"% 는 추정치가 따라가지 못했다는 뜻이기도 하므로, 줄을 세울 때는 서프라이즈보다 가이던스 상향("+
+      A.up+"/"+A.nGuide+"개사)과 이익이 매출을 따라왔는지를 먼저 본다.",
+    en:"This was not a season where everything worked — the AI supply chain accelerated while everything else grew in single digits. A "+
+      A.beatPct+"% revenue beat rate also means estimates were behind, so when ranking names, start with raised guidance ("+
+      A.up+" of "+A.nGuide+") and whether profit kept up with revenue, rather than with the surprise itself."};
+  $('[data-i18n="coB"]').textContent=co[L]}
+
+/* ------------------------------------------------ 스코어 랭킹 */
+function renderRank(){
+  var sc=CO.filter(function(c){return c.score!==null&&c.score!==undefined})
+          .sort(function(a,b){return b.score-a.score});
+  var ns=CO.filter(function(c){return c.score===null||c.score===undefined});
+  $("#rank").innerHTML=sc.map(function(c,i){
+    return '<div class="rank-row" data-t="'+esc(c.t)+'"><span class="i num">'+(i+1)+
+      '</span><span class="t">'+esc(c.t)+"<small>"+esc(L==="ko"?c.ko:c.en)+
+      '</small></span><span class="rank-bar"><i class="'+(c.coverage<75?"low":"")+
+      '" style="width:'+c.score+'%"></i></span><span class="v num">'+c.score.toFixed(0)+
+      "<small>"+esc(t("cov"))+" "+c.coverage+"%</small></span></div>"}).join("")+
+    ns.map(function(c){
+      return '<div class="rank-row" data-t="'+esc(c.t)+'"><span class="i num">–</span>'+
+        '<span class="t">'+esc(c.t)+"<small>"+esc(L==="ko"?c.ko:c.en)+
+        '</small></span><span class="rank-bar"></span><span class="v num" '+
+        'style="font-size:13px;font-weight:400;color:#84888B">'+esc(t("noScore"))+
+        "<small>"+esc(t("cov"))+" "+c.coverage+"%</small></span></div>"}).join("");
+  $$("#rank .rank-row").forEach(function(r){
+    r.style.cursor="pointer";
+    r.addEventListener("click",function(){openRow(r.getAttribute("data-t"))})});
+  var m={surprise:[t("axSurp"),D.bands.surprise],yoy:[t("axYoy"),D.bands.yoy],
+         eps:[t("axEps"),D.bands.eps]};
+  var li=["surprise","yoy"].map(function(k){
+    return "<li><b>"+esc(m[k][0])+"</b> — "+esc(t("wUnit"))+" "+D.weights[k]+
+      "% · "+esc(t("bUnit"))+" <code>"+m[k][1][0]+"% ~ "+m[k][1][1]+"%</code></li>"});
+  li.push("<li><b>"+esc(t("axGuide"))+"</b> — "+esc(t("wUnit"))+" "+D.weights.guide+
+    "% · <code>"+esc(t("gUp"))+" 100 / "+esc(t("gFlat"))+" 50 / "+esc(t("gDown"))+" 0</code></li>");
+  li.push("<li><b>"+esc(m.eps[0])+"</b> — "+esc(t("wUnit"))+" "+D.weights.eps+
+    "% · "+esc(t("bUnit"))+" <code>"+m.eps[1][0]+"% ~ "+m.eps[1][1]+"%</code></li>");
+  li.push("<li><b>"+esc(L==="ko"?"공표 기준":"Publication threshold")+"</b> — "+
+    esc(L==="ko"?"확인된 가중치 합계가 ":"score published only when verified weights reach ")+
+    D.minCoverage+"%"+esc(L==="ko"?" 미만이면 점수를 내지 않는다":"")+"</li>");
+  $("#formula-list").innerHTML=li.join("")}
+
+/* ------------------------------------------------ 각주 */
+function renderNotes(){
+  var sp=L==="ko"?D.seriesPolicy:D.seriesPolicyEn;
+  $("#series-list").innerHTML=Object.keys(sp).map(function(k){
+    return "<li><b>"+esc(k)+"</b> — "+esc(sp[k])+"</li>"}).join("");
+  var u=[];
+  CO.forEach(function(c){
+    var cn=L==="ko"?c.consnote:(c.consnote_en||c.consnote);
+    if(!c.cons&&cn)u.push("<li><b>"+esc(c.t)+"</b> "+esc(L==="ko"?"매출 컨센서스":"revenue consensus")+
+      " — "+esc(cn)+"</li>");
+    else if(!c.cons)u.push("<li><b>"+esc(c.t)+"</b> "+esc(L==="ko"?"매출 컨센서스":"revenue consensus")+
+      " — "+esc(L==="ko"?"공개 자료에서 확인되지 않음":"not found in public sources")+"</li>")});
+  CO.forEach(function(c){if(c.yoy===null||c.yoy===undefined)
+    u.push("<li><b>"+esc(c.t)+"</b> "+esc(L==="ko"?"전년동기비":"YoY growth")+" — "+
+      esc(L==="ko"?"공개 자료에서 확인되지 않음":"not found in public sources")+"</li>")});
+  $("#unverified").innerHTML=u.join("")}
+
+/* ------------------------------------------------ 필터 */
+function renderFilters(){
+  var secs=[];D.sectors.forEach(function(s){secs.push(s.sec)});
+  $("#sec-filters").innerHTML='<button type="button" data-sec="" aria-pressed="'+
+    (filterSec===""?"true":"false")+'">'+esc(t("all"))+"</button>"+
+    secs.map(function(s){return '<button type="button" data-sec="'+esc(s)+'" aria-pressed="'+
+      (filterSec===s?"true":"false")+'">'+esc(secN(s))+"</button>"}).join("");
+  $$("#sec-filters button").forEach(function(b){b.addEventListener("click",function(){
+    filterSec=b.getAttribute("data-sec");
+    $$("#sec-filters button").forEach(function(x){
+      x.setAttribute("aria-pressed",x===b?"true":"false")});
+    renderTbl()})})}
+
+/* ------------------------------------------------ 언어 */
+function applyLang(){
+  document.documentElement.lang=L;
+  $$("[data-i18n]").forEach(function(el){
+    var k=el.getAttribute("data-i18n"),v=T[L][k];
+    if(typeof v==="string"){if(/<code>|<b>/.test(v))el.innerHTML=v;else el.textContent=v}});
+  $("#q").placeholder=t("searchPH");
+  $$(".lang-toggle button").forEach(function(b){
+    b.setAttribute("aria-checked",b.getAttribute("data-lang")===L?"true":"false")});
+  renderAll()}
+function renderAll(){
+  renderTiles();renderCal();renderFilters();renderTbl();
+  renderCharts();insights();renderRank();renderNotes()}
+
+$$(".lang-toggle button").forEach(function(b){b.addEventListener("click",function(){
+  L=b.getAttribute("data-lang");localStorage.setItem("earnLang",L);applyLang()})});
+$("#q").addEventListener("input",function(e){query=e.target.value;renderTbl()});
+$$("#tbl thead th").forEach(function(th){th.addEventListener("click",function(){
+  var k=th.getAttribute("data-k");
+  if(sortK===k)sortDir=-sortDir; else {sortK=k;sortDir=(k==="t"||k==="sec"||k==="per")?1:-1}
+  $$("#tbl thead th").forEach(function(x){x.removeAttribute("aria-sort")});
+  th.setAttribute("aria-sort",sortDir>0?"ascending":"descending");
+  renderTbl()})});
+window.addEventListener("resize",function(){renderCharts()});
+applyLang();
+})();
+</script>
+</body>
+</html>

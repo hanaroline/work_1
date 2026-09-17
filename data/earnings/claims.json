@@ -1,0 +1,1584 @@
+{
+ "deliverable": "미국 주요기업 실적 어닝스 인텔리전스 대시보드 (earnings-intel.html)",
+ "as_of": "2026-09-17",
+ "series_policy": {
+  "분기 매출": "기업 발표 실적치 (보도자료·8-K 기준)",
+  "매출 컨센서스": "인용 기사에 명시된 제공사 (기업마다 상이 — 각 행의 출처 참조)",
+  "EPS 컨센서스": "인용 기사에 명시된 제공사 (기업마다 상이)",
+  "가이던스": "기업이 직접 제시한 전망 (애널리스트 추정치가 아님)"
+ },
+ "claims": [
+  {
+   "id": "NVDA_REV",
+   "kind": "reported_result",
+   "metric": "분기 매출",
+   "text": "엔비디아 FY27 Q2 매출",
+   "value": 96.22,
+   "unit": "USD bn",
+   "series": "기업 발표 실적치 (보도자료·8-K 기준)",
+   "as_of": "2026-08-26",
+   "tier": 1,
+   "source_url": "https://nvidianews.nvidia.com/news/nvidia-announces-financial-results-for-second-quarter-fiscal-2027",
+   "verdict": "confirmed",
+   "render": "assert",
+   "printed_on": [
+    "table-main",
+    "chart-sector"
+   ]
+  },
+  {
+   "id": "NVDA_CONS",
+   "kind": "consensus",
+   "metric": "매출 컨센서스",
+   "text": "엔비디아 FY27 Q2 매출 컨센서스",
+   "value": 92.17,
+   "unit": "USD bn",
+   "series": "인용 기사에 명시된 제공사 (기업마다 상이 — 각 행의 출처 참조)",
+   "as_of": "2026-08-26",
+   "tier": 1,
+   "source_url": "https://www.cnbc.com/2026/08/26/nvidia-nvda-earnings-report-q2-2027-live-updates.html",
+   "verdict": "confirmed",
+   "render": "assert",
+   "note": "",
+   "printed_on": [
+    "table-main"
+   ]
+  },
+  {
+   "id": "NVDA_GUIDE",
+   "kind": "company_guidance",
+   "metric": "가이던스",
+   "text": "엔비디아 가이던스 — Q3 FY27 매출 1,080억달러 ±2%",
+   "value": 0,
+   "unit": "방향(+1/0/-1)",
+   "series": "기업이 직접 제시한 전망 (애널리스트 추정치가 아님)",
+   "as_of": "2026-08-26",
+   "tier": 1,
+   "source_url": "https://nvidianews.nvidia.com/news/nvidia-announces-financial-results-for-second-quarter-fiscal-2027",
+   "announced_on": "2026-08-26",
+   "attributed_to": "NVIDIA (회사 발표)",
+   "target_period": "차기분기",
+   "revision": "unchanged",
+   "verdict": "confirmed",
+   "render": "assert",
+   "printed_on": [
+    "table-main"
+   ]
+  },
+  {
+   "id": "MSFT_REV",
+   "kind": "reported_result",
+   "metric": "분기 매출",
+   "text": "마이크로소프트 FY26 Q4 매출",
+   "value": 90.01,
+   "unit": "USD bn",
+   "series": "기업 발표 실적치 (보도자료·8-K 기준)",
+   "as_of": "2026-07-29",
+   "tier": 1,
+   "source_url": "https://www.microsoft.com/en-us/investor/earnings/fy-2026-q4/press-release-webcast",
+   "verdict": "confirmed",
+   "render": "assert",
+   "printed_on": [
+    "table-main",
+    "chart-sector"
+   ]
+  },
+  {
+   "id": "MSFT_CONS",
+   "kind": "consensus",
+   "metric": "매출 컨센서스",
+   "text": "마이크로소프트 FY26 Q4 매출 컨센서스",
+   "value": 87.62,
+   "unit": "USD bn",
+   "series": "인용 기사에 명시된 제공사 (기업마다 상이 — 각 행의 출처 참조)",
+   "as_of": "2026-07-29",
+   "tier": 1,
+   "source_url": "https://www.cnbc.com/2026/07/29/microsoft-msft-q4-earnings-report-2026.html",
+   "verdict": "confirmed",
+   "render": "assert",
+   "note": "",
+   "printed_on": [
+    "table-main"
+   ]
+  },
+  {
+   "id": "MSFT_GUIDE",
+   "kind": "company_guidance",
+   "metric": "가이던스",
+   "text": "마이크로소프트 가이던스 — Q1 FY27 Azure 성장률 +45%(cc) — 컨센 41.4% 상회",
+   "value": 1,
+   "unit": "방향(+1/0/-1)",
+   "series": "기업이 직접 제시한 전망 (애널리스트 추정치가 아님)",
+   "as_of": "2026-07-29",
+   "tier": 1,
+   "source_url": "https://www.microsoft.com/en-us/investor/earnings/fy-2026-q4/press-release-webcast",
+   "announced_on": "2026-07-29",
+   "attributed_to": "Microsoft (회사 발표)",
+   "target_period": "차기분기",
+   "revision": "up",
+   "verdict": "confirmed",
+   "render": "assert",
+   "printed_on": [
+    "table-main"
+   ]
+  },
+  {
+   "id": "AAPL_REV",
+   "kind": "reported_result",
+   "metric": "분기 매출",
+   "text": "애플 FY26 Q3 매출",
+   "value": 109.42,
+   "unit": "USD bn",
+   "series": "기업 발표 실적치 (보도자료·8-K 기준)",
+   "as_of": "2026-07-30",
+   "tier": 1,
+   "source_url": "https://www.apple.com/newsroom/2026/07/apple-reports-third-quarter-results/",
+   "verdict": "confirmed",
+   "render": "assert",
+   "printed_on": [
+    "table-main",
+    "chart-sector"
+   ]
+  },
+  {
+   "id": "AAPL_CONS",
+   "kind": "consensus",
+   "metric": "매출 컨센서스",
+   "text": "애플 FY26 Q3 매출 컨센서스",
+   "value": 108.65,
+   "unit": "USD bn",
+   "series": "인용 기사에 명시된 제공사 (기업마다 상이 — 각 행의 출처 참조)",
+   "as_of": "2026-07-30",
+   "tier": 1,
+   "source_url": "https://www.cnbc.com/2026/07/30/apple-earnings-live-updates.html",
+   "verdict": "confirmed",
+   "render": "assert",
+   "note": "",
+   "printed_on": [
+    "table-main"
+   ]
+  },
+  {
+   "id": "AAPL_GUIDE",
+   "kind": "company_guidance",
+   "metric": "가이던스",
+   "text": "애플 가이던스 — 당분기 가이던스 약세 — 공급 제약 언급(수치 미제시)",
+   "value": -1,
+   "unit": "방향(+1/0/-1)",
+   "series": "기업이 직접 제시한 전망 (애널리스트 추정치가 아님)",
+   "as_of": "2026-07-30",
+   "tier": 1,
+   "source_url": "https://www.apple.com/newsroom/2026/07/apple-reports-third-quarter-results/",
+   "announced_on": "2026-07-30",
+   "attributed_to": "Apple (회사 발표)",
+   "target_period": "정성",
+   "revision": "down",
+   "verdict": "confirmed",
+   "render": "assert",
+   "printed_on": [
+    "table-main"
+   ]
+  },
+  {
+   "id": "GOOGL_REV",
+   "kind": "reported_result",
+   "metric": "분기 매출",
+   "text": "알파벳 CY26 Q2 매출",
+   "value": 119.8,
+   "unit": "USD bn",
+   "series": "기업 발표 실적치 (보도자료·8-K 기준)",
+   "as_of": "2026-07-22",
+   "tier": 1,
+   "source_url": "https://s206.q4cdn.com/479360582/files/doc_financials/2026/q2/2026q2-alphabet-earnings-release.pdf",
+   "verdict": "confirmed",
+   "render": "assert",
+   "printed_on": [
+    "table-main",
+    "chart-sector"
+   ]
+  },
+  {
+   "id": "GOOGL_CONS",
+   "kind": "consensus",
+   "metric": "매출 컨센서스",
+   "text": "알파벳 CY26 Q2 매출 컨센서스",
+   "value": 116.93,
+   "unit": "USD bn",
+   "series": "인용 기사에 명시된 제공사 (기업마다 상이 — 각 행의 출처 참조)",
+   "as_of": "2026-07-22",
+   "tier": 1,
+   "source_url": "https://www.cnbc.com/2026/07/22/google-earnings-q2-goog-live-updates.html",
+   "verdict": "confirmed",
+   "render": "assert",
+   "note": "",
+   "printed_on": [
+    "table-main"
+   ]
+  },
+  {
+   "id": "GOOGL_GUIDE",
+   "kind": "company_guidance",
+   "metric": "가이던스",
+   "text": "알파벳 가이던스 — 분기 매출 가이던스 미제시(사규) — 2026 캡엑스 상향 발표",
+   "value": 0,
+   "unit": "방향(+1/0/-1)",
+   "series": "기업이 직접 제시한 전망 (애널리스트 추정치가 아님)",
+   "as_of": "2026-07-22",
+   "tier": 1,
+   "source_url": "https://s206.q4cdn.com/479360582/files/doc_financials/2026/q2/2026q2-alphabet-earnings-release.pdf",
+   "announced_on": "2026-07-22",
+   "attributed_to": "Alphabet (회사 발표)",
+   "target_period": "미제시",
+   "revision": "new",
+   "verdict": "confirmed",
+   "render": "assert",
+   "printed_on": [
+    "table-main"
+   ]
+  },
+  {
+   "id": "AMZN_REV",
+   "kind": "reported_result",
+   "metric": "분기 매출",
+   "text": "아마존 CY26 Q2 매출",
+   "value": 200.6,
+   "unit": "USD bn",
+   "series": "기업 발표 실적치 (보도자료·8-K 기준)",
+   "as_of": "2026-07-30",
+   "tier": 1,
+   "source_url": "https://www.sec.gov/Archives/edgar/data/1018724/000101872426000024/amzn-20260630xex991.htm",
+   "verdict": "confirmed",
+   "render": "assert",
+   "printed_on": [
+    "table-main",
+    "chart-sector"
+   ]
+  },
+  {
+   "id": "AMZN_CONS",
+   "kind": "consensus",
+   "metric": "매출 컨센서스",
+   "text": "아마존 CY26 Q2 매출 컨센서스",
+   "value": 196.47,
+   "unit": "USD bn",
+   "series": "인용 기사에 명시된 제공사 (기업마다 상이 — 각 행의 출처 참조)",
+   "as_of": "2026-07-30",
+   "tier": 1,
+   "source_url": "https://www.cnbc.com/2026/07/30/amazon-amzn-q2-earnings-report-2026.html",
+   "verdict": "confirmed",
+   "render": "assert",
+   "note": "",
+   "printed_on": [
+    "table-main"
+   ]
+  },
+  {
+   "id": "AMZN_GUIDE",
+   "kind": "company_guidance",
+   "metric": "가이던스",
+   "text": "아마존 가이던스 — Q3 매출 1,970~2,020억달러, 영업이익 225~265억달러",
+   "value": 0,
+   "unit": "방향(+1/0/-1)",
+   "series": "기업이 직접 제시한 전망 (애널리스트 추정치가 아님)",
+   "as_of": "2026-07-30",
+   "tier": 1,
+   "source_url": "https://www.sec.gov/Archives/edgar/data/1018724/000101872426000024/amzn-20260630xex991.htm",
+   "announced_on": "2026-07-30",
+   "attributed_to": "Amazon (회사 발표)",
+   "target_period": "차기분기",
+   "revision": "unchanged",
+   "verdict": "confirmed",
+   "render": "assert",
+   "printed_on": [
+    "table-main"
+   ]
+  },
+  {
+   "id": "META_REV",
+   "kind": "reported_result",
+   "metric": "분기 매출",
+   "text": "메타 CY26 Q2 매출",
+   "value": 60.8,
+   "unit": "USD bn",
+   "series": "기업 발표 실적치 (보도자료·8-K 기준)",
+   "as_of": "2026-07-29",
+   "tier": 1,
+   "source_url": "https://www.sec.gov/Archives/edgar/data/1326801/000162828026050596/meta-06302026xexhibit991.htm",
+   "verdict": "confirmed",
+   "render": "assert",
+   "printed_on": [
+    "table-main",
+    "chart-sector"
+   ]
+  },
+  {
+   "id": "META_CONS",
+   "kind": "consensus",
+   "metric": "매출 컨센서스",
+   "text": "메타 CY26 Q2 매출 컨센서스",
+   "value": 60.17,
+   "unit": "USD bn",
+   "series": "인용 기사에 명시된 제공사 (기업마다 상이 — 각 행의 출처 참조)",
+   "as_of": "2026-07-29",
+   "tier": 1,
+   "source_url": "https://www.tipranks.com/stocks/meta/earnings/q2-2026-report",
+   "verdict": "confirmed",
+   "render": "assert",
+   "note": "",
+   "printed_on": [
+    "table-main"
+   ]
+  },
+  {
+   "id": "META_GUIDE",
+   "kind": "company_guidance",
+   "metric": "가이던스",
+   "text": "메타 가이던스 — Q3 매출 610~640억달러(환율 약 1%p 역풍 가정)",
+   "value": 0,
+   "unit": "방향(+1/0/-1)",
+   "series": "기업이 직접 제시한 전망 (애널리스트 추정치가 아님)",
+   "as_of": "2026-07-29",
+   "tier": 1,
+   "source_url": "https://www.sec.gov/Archives/edgar/data/1326801/000162828026050596/meta-06302026xexhibit991.htm",
+   "announced_on": "2026-07-29",
+   "attributed_to": "Meta Platforms (회사 발표)",
+   "target_period": "차기분기",
+   "revision": "unchanged",
+   "verdict": "confirmed",
+   "render": "assert",
+   "printed_on": [
+    "table-main"
+   ]
+  },
+  {
+   "id": "AVGO_REV",
+   "kind": "reported_result",
+   "metric": "분기 매출",
+   "text": "브로드컴 FY26 Q3 매출",
+   "value": 29.6,
+   "unit": "USD bn",
+   "series": "기업 발표 실적치 (보도자료·8-K 기준)",
+   "as_of": "2026-09-02",
+   "tier": 1,
+   "source_url": "https://investors.broadcom.com/news-releases/news-release-details/broadcom-inc-announces-third-quarter-fiscal-year-2026-financial",
+   "verdict": "confirmed",
+   "render": "assert",
+   "printed_on": [
+    "table-main",
+    "chart-sector"
+   ]
+  },
+  {
+   "id": "AVGO_CONS",
+   "kind": "consensus",
+   "metric": "매출 컨센서스",
+   "text": "브로드컴 FY26 Q3 매출 컨센서스",
+   "value": 0,
+   "unit": "USD bn",
+   "series": "인용 기사에 명시된 제공사 (기업마다 상이 — 각 행의 출처 참조)",
+   "as_of": "2026-09-17",
+   "tier": 1,
+   "source_url": "https://www.cnbc.com/2026/09/02/broadcom-avgo-q3-earnings-report-2026.html",
+   "verdict": "unverified",
+   "render": "omit",
+   "note": "공개 자료에서 확인되지 않음",
+   "printed_on": []
+  },
+  {
+   "id": "AVGO_GUIDE",
+   "kind": "company_guidance",
+   "metric": "가이던스",
+   "text": "브로드컴 가이던스 — Q4 매출 348억달러(+93%), AI 217억달러 / FY26 AI 매출 약 580억달러로 상향",
+   "value": 1,
+   "unit": "방향(+1/0/-1)",
+   "series": "기업이 직접 제시한 전망 (애널리스트 추정치가 아님)",
+   "as_of": "2026-09-02",
+   "tier": 1,
+   "source_url": "https://investors.broadcom.com/news-releases/news-release-details/broadcom-inc-announces-third-quarter-fiscal-year-2026-financial",
+   "announced_on": "2026-09-02",
+   "attributed_to": "Broadcom (회사 발표)",
+   "target_period": "차기분기+연간상향",
+   "revision": "up",
+   "verdict": "confirmed",
+   "render": "assert",
+   "printed_on": [
+    "table-main"
+   ]
+  },
+  {
+   "id": "TSLA_REV",
+   "kind": "reported_result",
+   "metric": "분기 매출",
+   "text": "테슬라 CY26 Q2 매출",
+   "value": 28.24,
+   "unit": "USD bn",
+   "series": "기업 발표 실적치 (보도자료·8-K 기준)",
+   "as_of": "2026-07-22",
+   "tier": 1,
+   "source_url": "https://assets-ir.tesla.com/tesla-contents/IR/TSLA-Q2-2026-Update.pdf",
+   "verdict": "confirmed",
+   "render": "assert",
+   "printed_on": [
+    "table-main",
+    "chart-sector"
+   ]
+  },
+  {
+   "id": "TSLA_CONS",
+   "kind": "consensus",
+   "metric": "매출 컨센서스",
+   "text": "테슬라 CY26 Q2 매출 컨센서스",
+   "value": 26.43,
+   "unit": "USD bn",
+   "series": "인용 기사에 명시된 제공사 (기업마다 상이 — 각 행의 출처 참조)",
+   "as_of": "2026-07-22",
+   "tier": 1,
+   "source_url": "https://www.cnbc.com/2026/07/22/tesla-tsla-q2-2026-earnings-report.html",
+   "verdict": "confirmed",
+   "render": "marked",
+   "note": "기사에 '컨센 대비 +6.84%' 만 명시 — 컨센서스 금액은 역산값",
+   "printed_on": [
+    "table-main"
+   ]
+  },
+  {
+   "id": "TSLA_GUIDE",
+   "kind": "company_guidance",
+   "metric": "가이던스",
+   "text": "테슬라 가이던스 — 구체 수치 가이던스 확인되지 않음",
+   "value": 0,
+   "unit": "방향(+1/0/-1)",
+   "series": "기업이 직접 제시한 전망 (애널리스트 추정치가 아님)",
+   "as_of": "2026-07-22",
+   "tier": 1,
+   "source_url": "https://assets-ir.tesla.com/tesla-contents/IR/TSLA-Q2-2026-Update.pdf",
+   "announced_on": "2026-07-22",
+   "attributed_to": "Tesla (회사 발표)",
+   "target_period": "미제시",
+   "revision": "new",
+   "verdict": "confirmed",
+   "render": "assert",
+   "printed_on": [
+    "table-main"
+   ]
+  },
+  {
+   "id": "AMD_REV",
+   "kind": "reported_result",
+   "metric": "분기 매출",
+   "text": "AMD CY26 Q2 매출",
+   "value": 11.5,
+   "unit": "USD bn",
+   "series": "기업 발표 실적치 (보도자료·8-K 기준)",
+   "as_of": "2026-08-04",
+   "tier": 1,
+   "source_url": "https://www.sec.gov/Archives/edgar/data/0000002488/000000248826000121/amdq22026earningsslidesf.htm",
+   "verdict": "confirmed",
+   "render": "assert",
+   "printed_on": [
+    "table-main",
+    "chart-sector"
+   ]
+  },
+  {
+   "id": "AMD_CONS",
+   "kind": "consensus",
+   "metric": "매출 컨센서스",
+   "text": "AMD CY26 Q2 매출 컨센서스",
+   "value": 11.3,
+   "unit": "USD bn",
+   "series": "인용 기사에 명시된 제공사 (기업마다 상이 — 각 행의 출처 참조)",
+   "as_of": "2026-08-04",
+   "tier": 1,
+   "source_url": "https://qz.com/amd-record-revenue-data-center-earnings-q2-2026-080426",
+   "verdict": "confirmed",
+   "render": "assert",
+   "note": "",
+   "printed_on": [
+    "table-main"
+   ]
+  },
+  {
+   "id": "AMD_GUIDE",
+   "kind": "company_guidance",
+   "metric": "가이던스",
+   "text": "AMD 가이던스 — Q3 매출 130억달러 ±3억달러(중간값 +41% YoY)",
+   "value": 0,
+   "unit": "방향(+1/0/-1)",
+   "series": "기업이 직접 제시한 전망 (애널리스트 추정치가 아님)",
+   "as_of": "2026-08-04",
+   "tier": 1,
+   "source_url": "https://www.sec.gov/Archives/edgar/data/0000002488/000000248826000121/amdq22026earningsslidesf.htm",
+   "announced_on": "2026-08-04",
+   "attributed_to": "AMD (회사 발표)",
+   "target_period": "차기분기",
+   "revision": "unchanged",
+   "verdict": "confirmed",
+   "render": "assert",
+   "printed_on": [
+    "table-main"
+   ]
+  },
+  {
+   "id": "ORCL_REV",
+   "kind": "reported_result",
+   "metric": "분기 매출",
+   "text": "오라클 FY27 Q1 매출",
+   "value": 19.3,
+   "unit": "USD bn",
+   "series": "기업 발표 실적치 (보도자료·8-K 기준)",
+   "as_of": "2026-09-10",
+   "tier": 1,
+   "source_url": "https://www.oracle.com/news/announcement/q1fy27-earnings-release-2026-09-10/",
+   "verdict": "confirmed",
+   "render": "assert",
+   "printed_on": [
+    "table-main",
+    "chart-sector"
+   ]
+  },
+  {
+   "id": "ORCL_CONS",
+   "kind": "consensus",
+   "metric": "매출 컨센서스",
+   "text": "오라클 FY27 Q1 매출 컨센서스",
+   "value": 19.13,
+   "unit": "USD bn",
+   "series": "인용 기사에 명시된 제공사 (기업마다 상이 — 각 행의 출처 참조)",
+   "as_of": "2026-09-10",
+   "tier": 1,
+   "source_url": "https://www.fool.com/earnings/call-transcripts/2026/09/11/oracle-orcl-q1-2027-earnings-call-transcript/",
+   "verdict": "confirmed",
+   "render": "assert",
+   "note": "",
+   "printed_on": [
+    "table-main"
+   ]
+  },
+  {
+   "id": "ORCL_GUIDE",
+   "kind": "company_guidance",
+   "metric": "가이던스",
+   "text": "오라클 가이던스 — RPO 의 매출 전환 가속 전망(정성) — 분기 매출 수치 미확보",
+   "value": 0,
+   "unit": "방향(+1/0/-1)",
+   "series": "기업이 직접 제시한 전망 (애널리스트 추정치가 아님)",
+   "as_of": "2026-09-10",
+   "tier": 1,
+   "source_url": "https://www.oracle.com/news/announcement/q1fy27-earnings-release-2026-09-10/",
+   "announced_on": "2026-09-10",
+   "attributed_to": "Oracle (회사 발표)",
+   "target_period": "정성",
+   "revision": "unchanged",
+   "verdict": "confirmed",
+   "render": "assert",
+   "printed_on": [
+    "table-main"
+   ]
+  },
+  {
+   "id": "CRM_REV",
+   "kind": "reported_result",
+   "metric": "분기 매출",
+   "text": "세일즈포스 FY27 Q2 매출",
+   "value": 11.35,
+   "unit": "USD bn",
+   "series": "기업 발표 실적치 (보도자료·8-K 기준)",
+   "as_of": "2026-08-26",
+   "tier": 1,
+   "source_url": "https://www.salesforce.com/news/press-releases/2026/08/26/fy27-q2-earnings/",
+   "verdict": "confirmed",
+   "render": "assert",
+   "printed_on": [
+    "table-main",
+    "chart-sector"
+   ]
+  },
+  {
+   "id": "CRM_CONS",
+   "kind": "consensus",
+   "metric": "매출 컨센서스",
+   "text": "세일즈포스 FY27 Q2 매출 컨센서스",
+   "value": 11.32,
+   "unit": "USD bn",
+   "series": "인용 기사에 명시된 제공사 (기업마다 상이 — 각 행의 출처 참조)",
+   "as_of": "2026-08-26",
+   "tier": 1,
+   "source_url": "https://www.cnbc.com/2026/08/26/salesforce-crm-q2-earnings-report-2027.html",
+   "verdict": "confirmed",
+   "render": "assert",
+   "note": "",
+   "printed_on": [
+    "table-main"
+   ]
+  },
+  {
+   "id": "CRM_GUIDE",
+   "kind": "company_guidance",
+   "metric": "가이던스",
+   "text": "세일즈포스 가이던스 — FY27 매출 461~464억달러로 상향(+11~12%)",
+   "value": 1,
+   "unit": "방향(+1/0/-1)",
+   "series": "기업이 직접 제시한 전망 (애널리스트 추정치가 아님)",
+   "as_of": "2026-08-26",
+   "tier": 1,
+   "source_url": "https://www.salesforce.com/news/press-releases/2026/08/26/fy27-q2-earnings/",
+   "announced_on": "2026-08-26",
+   "attributed_to": "Salesforce (회사 발표)",
+   "target_period": "연간상향",
+   "revision": "up",
+   "verdict": "confirmed",
+   "render": "assert",
+   "printed_on": [
+    "table-main"
+   ]
+  },
+  {
+   "id": "PLTR_REV",
+   "kind": "reported_result",
+   "metric": "분기 매출",
+   "text": "팔란티어 CY26 Q2 매출",
+   "value": 1.94,
+   "unit": "USD bn",
+   "series": "기업 발표 실적치 (보도자료·8-K 기준)",
+   "as_of": "2026-08-03",
+   "tier": 1,
+   "source_url": "https://www.sec.gov/Archives/edgar/data/0001321655/000132165526000039/a2026q2ex991pressrelease.htm",
+   "verdict": "confirmed",
+   "render": "assert",
+   "printed_on": [
+    "table-main",
+    "chart-sector"
+   ]
+  },
+  {
+   "id": "PLTR_CONS",
+   "kind": "consensus",
+   "metric": "매출 컨센서스",
+   "text": "팔란티어 CY26 Q2 매출 컨센서스",
+   "value": 1.8,
+   "unit": "USD bn",
+   "series": "인용 기사에 명시된 제공사 (기업마다 상이 — 각 행의 출처 참조)",
+   "as_of": "2026-08-03",
+   "tier": 1,
+   "source_url": "https://www.cnbc.com/2026/08/03/palantir-pltr-earnings-q2-2026.html",
+   "verdict": "confirmed",
+   "render": "assert",
+   "note": "",
+   "printed_on": [
+    "table-main"
+   ]
+  },
+  {
+   "id": "PLTR_GUIDE",
+   "kind": "company_guidance",
+   "metric": "가이던스",
+   "text": "팔란티어 가이던스 — FY26 매출 81.5~81.6억달러로 상향(종전 76.5~76.6억)",
+   "value": 1,
+   "unit": "방향(+1/0/-1)",
+   "series": "기업이 직접 제시한 전망 (애널리스트 추정치가 아님)",
+   "as_of": "2026-08-03",
+   "tier": 1,
+   "source_url": "https://www.sec.gov/Archives/edgar/data/0001321655/000132165526000039/a2026q2ex991pressrelease.htm",
+   "announced_on": "2026-08-03",
+   "attributed_to": "Palantir (회사 발표)",
+   "target_period": "연간상향",
+   "revision": "up",
+   "verdict": "confirmed",
+   "render": "assert",
+   "printed_on": [
+    "table-main"
+   ]
+  },
+  {
+   "id": "INTC_REV",
+   "kind": "reported_result",
+   "metric": "분기 매출",
+   "text": "인텔 CY26 Q2 매출",
+   "value": 16.1,
+   "unit": "USD bn",
+   "series": "기업 발표 실적치 (보도자료·8-K 기준)",
+   "as_of": "2026-07-23",
+   "tier": 1,
+   "source_url": "https://www.intc.com/news-events/press-releases/detail/1776/intel-reports-second-quarter-2026-financial-results",
+   "verdict": "confirmed",
+   "render": "assert",
+   "printed_on": [
+    "table-main",
+    "chart-sector"
+   ]
+  },
+  {
+   "id": "INTC_CONS",
+   "kind": "consensus",
+   "metric": "매출 컨센서스",
+   "text": "인텔 CY26 Q2 매출 컨센서스",
+   "value": 14.42,
+   "unit": "USD bn",
+   "series": "인용 기사에 명시된 제공사 (기업마다 상이 — 각 행의 출처 참조)",
+   "as_of": "2026-07-23",
+   "tier": 1,
+   "source_url": "https://www.cnbc.com/2026/07/23/intel-intc-earnings-report-q2-2026.html",
+   "verdict": "confirmed",
+   "render": "assert",
+   "note": "",
+   "printed_on": [
+    "table-main"
+   ]
+  },
+  {
+   "id": "INTC_GUIDE",
+   "kind": "company_guidance",
+   "metric": "가이던스",
+   "text": "인텔 가이던스 — Q3 매출 158~168억달러, non-GAAP EPS 0.38달러",
+   "value": 0,
+   "unit": "방향(+1/0/-1)",
+   "series": "기업이 직접 제시한 전망 (애널리스트 추정치가 아님)",
+   "as_of": "2026-07-23",
+   "tier": 1,
+   "source_url": "https://www.intc.com/news-events/press-releases/detail/1776/intel-reports-second-quarter-2026-financial-results",
+   "announced_on": "2026-07-23",
+   "attributed_to": "Intel (회사 발표)",
+   "target_period": "차기분기",
+   "revision": "unchanged",
+   "verdict": "confirmed",
+   "render": "assert",
+   "printed_on": [
+    "table-main"
+   ]
+  },
+  {
+   "id": "MU_REV",
+   "kind": "reported_result",
+   "metric": "분기 매출",
+   "text": "마이크론 FY26 Q3 매출",
+   "value": 41.5,
+   "unit": "USD bn",
+   "series": "기업 발표 실적치 (보도자료·8-K 기준)",
+   "as_of": "2026-06-25",
+   "tier": 1,
+   "source_url": "https://investors.micron.com/news/press-release/2026/Micron-Technology-Inc--Reports-Record-Results-for-the-Third-Quarter-of-Fiscal-2026/default.aspx",
+   "verdict": "confirmed",
+   "render": "assert",
+   "printed_on": [
+    "table-main",
+    "chart-sector"
+   ]
+  },
+  {
+   "id": "MU_CONS",
+   "kind": "consensus",
+   "metric": "매출 컨센서스",
+   "text": "마이크론 FY26 Q3 매출 컨센서스",
+   "value": 0,
+   "unit": "USD bn",
+   "series": "인용 기사에 명시된 제공사 (기업마다 상이 — 각 행의 출처 참조)",
+   "as_of": "2026-09-17",
+   "tier": 1,
+   "source_url": "https://tradethepool.com/fundamental/micron-q3-fy2026-earnings-revenue-ai-boom-guidance/",
+   "verdict": "unverified",
+   "render": "omit",
+   "note": "공개 자료에서 확인되지 않음",
+   "printed_on": []
+  },
+  {
+   "id": "MU_GUIDE",
+   "kind": "company_guidance",
+   "metric": "가이던스",
+   "text": "마이크론 가이던스 — Q4 FY26 매출 500억달러 — 컨센 434.5억달러를 65.5억 상회",
+   "value": 1,
+   "unit": "방향(+1/0/-1)",
+   "series": "기업이 직접 제시한 전망 (애널리스트 추정치가 아님)",
+   "as_of": "2026-06-25",
+   "tier": 1,
+   "source_url": "https://investors.micron.com/news/press-release/2026/Micron-Technology-Inc--Reports-Record-Results-for-the-Third-Quarter-of-Fiscal-2026/default.aspx",
+   "announced_on": "2026-06-25",
+   "attributed_to": "Micron (회사 발표)",
+   "target_period": "차기분기",
+   "revision": "up",
+   "verdict": "confirmed",
+   "render": "assert",
+   "printed_on": [
+    "table-main"
+   ]
+  },
+  {
+   "id": "NFLX_REV",
+   "kind": "reported_result",
+   "metric": "분기 매출",
+   "text": "넷플릭스 CY26 Q2 매출",
+   "value": 12.56,
+   "unit": "USD bn",
+   "series": "기업 발표 실적치 (보도자료·8-K 기준)",
+   "as_of": "2026-07-16",
+   "tier": 1,
+   "source_url": "https://s22.q4cdn.com/959853165/files/doc_financials/2026/q2/FINAL-Q2-26-Shareholder-Letter.pdf",
+   "verdict": "confirmed",
+   "render": "assert",
+   "printed_on": [
+    "table-main",
+    "chart-sector"
+   ]
+  },
+  {
+   "id": "NFLX_CONS",
+   "kind": "consensus",
+   "metric": "매출 컨센서스",
+   "text": "넷플릭스 CY26 Q2 매출 컨센서스",
+   "value": 12.59,
+   "unit": "USD bn",
+   "series": "인용 기사에 명시된 제공사 (기업마다 상이 — 각 행의 출처 참조)",
+   "as_of": "2026-07-16",
+   "tier": 1,
+   "source_url": "https://www.cnbc.com/2026/07/16/netflix-nflx-earnings-q2-2026.html",
+   "verdict": "confirmed",
+   "render": "assert",
+   "note": "",
+   "printed_on": [
+    "table-main"
+   ]
+  },
+  {
+   "id": "NFLX_GUIDE",
+   "kind": "company_guidance",
+   "metric": "가이던스",
+   "text": "넷플릭스 가이던스 — FY26 매출 510~514억달러로 범위 축소(종전 507~517억, 중간값 동일)",
+   "value": 0,
+   "unit": "방향(+1/0/-1)",
+   "series": "기업이 직접 제시한 전망 (애널리스트 추정치가 아님)",
+   "as_of": "2026-07-16",
+   "tier": 1,
+   "source_url": "https://s22.q4cdn.com/959853165/files/doc_financials/2026/q2/FINAL-Q2-26-Shareholder-Letter.pdf",
+   "announced_on": "2026-07-16",
+   "attributed_to": "Netflix (회사 발표)",
+   "target_period": "연간유지",
+   "revision": "unchanged",
+   "verdict": "confirmed",
+   "render": "assert",
+   "printed_on": [
+    "table-main"
+   ]
+  },
+  {
+   "id": "JPM_REV",
+   "kind": "reported_result",
+   "metric": "분기 매출",
+   "text": "JP모건 CY26 Q2 매출",
+   "value": 57.3,
+   "unit": "USD bn",
+   "series": "기업 발표 실적치 (보도자료·8-K 기준)",
+   "as_of": "2026-07-14",
+   "tier": 1,
+   "source_url": "https://www.jpmorganchase.com/content/dam/jpmc/jpmorgan-chase-and-co/investor-relations/documents/quarterly-earnings/2026/2nd-quarter/6cded9fd-a164-4e6c-8cff-377357cf105c.pdf",
+   "verdict": "confirmed",
+   "render": "assert",
+   "printed_on": [
+    "table-main",
+    "chart-sector"
+   ]
+  },
+  {
+   "id": "JPM_CONS",
+   "kind": "consensus",
+   "metric": "매출 컨센서스",
+   "text": "JP모건 CY26 Q2 매출 컨센서스",
+   "value": 0,
+   "unit": "USD bn",
+   "series": "인용 기사에 명시된 제공사 (기업마다 상이 — 각 행의 출처 참조)",
+   "as_of": "2026-09-17",
+   "tier": 1,
+   "source_url": "https://www.cnbc.com/2026/07/13/bank-earnings-jpmorgan-chase-goldman-sachs-bank-of-america.html",
+   "verdict": "unverified",
+   "render": "omit",
+   "note": "매출 컨센서스가 출처마다 51.35 / 58.02 / 57.3 십억달러로 엇갈림(기준 상이) — 확인 실패로 처리",
+   "printed_on": []
+  },
+  {
+   "id": "JPM_GUIDE",
+   "kind": "company_guidance",
+   "metric": "가이던스",
+   "text": "JP모건 가이던스 — FY26 순이자이익 약 1,055억달러로 상향(3개월 전 1,030억)",
+   "value": 1,
+   "unit": "방향(+1/0/-1)",
+   "series": "기업이 직접 제시한 전망 (애널리스트 추정치가 아님)",
+   "as_of": "2026-07-14",
+   "tier": 1,
+   "source_url": "https://www.jpmorganchase.com/content/dam/jpmc/jpmorgan-chase-and-co/investor-relations/documents/quarterly-earnings/2026/2nd-quarter/6cded9fd-a164-4e6c-8cff-377357cf105c.pdf",
+   "announced_on": "2026-07-14",
+   "attributed_to": "JPMorgan Chase (회사 발표)",
+   "target_period": "연간상향",
+   "revision": "up",
+   "verdict": "confirmed",
+   "render": "assert",
+   "printed_on": [
+    "table-main"
+   ]
+  },
+  {
+   "id": "GS_REV",
+   "kind": "reported_result",
+   "metric": "분기 매출",
+   "text": "골드만삭스 CY26 Q2 매출",
+   "value": 20.34,
+   "unit": "USD bn",
+   "series": "기업 발표 실적치 (보도자료·8-K 기준)",
+   "as_of": "2026-07-14",
+   "tier": 1,
+   "source_url": "https://www.goldmansachs.com/pressroom/press-releases/2026/2026-07-14-q2-results",
+   "verdict": "confirmed",
+   "render": "assert",
+   "printed_on": [
+    "table-main",
+    "chart-sector"
+   ]
+  },
+  {
+   "id": "GS_CONS",
+   "kind": "consensus",
+   "metric": "매출 컨센서스",
+   "text": "골드만삭스 CY26 Q2 매출 컨센서스",
+   "value": 0,
+   "unit": "USD bn",
+   "series": "인용 기사에 명시된 제공사 (기업마다 상이 — 각 행의 출처 참조)",
+   "as_of": "2026-09-17",
+   "tier": 1,
+   "source_url": "https://finance.yahoo.com/markets/stocks/articles/goldman-q2-earnings-beat-solid-133500401.html",
+   "verdict": "unverified",
+   "render": "omit",
+   "note": "매출 컨센서스 15.77십억달러 보도는 서프라이즈율(+26.2%)과 계산이 맞지 않아 채택하지 않음",
+   "printed_on": []
+  },
+  {
+   "id": "GS_GUIDE",
+   "kind": "company_guidance",
+   "metric": "가이던스",
+   "text": "골드만삭스 가이던스 — 가이던스 미제시(업종 관행)",
+   "value": 0,
+   "unit": "방향(+1/0/-1)",
+   "series": "기업이 직접 제시한 전망 (애널리스트 추정치가 아님)",
+   "as_of": "2026-07-14",
+   "tier": 1,
+   "source_url": "https://www.goldmansachs.com/pressroom/press-releases/2026/2026-07-14-q2-results",
+   "announced_on": "2026-07-14",
+   "attributed_to": "Goldman Sachs (회사 발표)",
+   "target_period": "미제시",
+   "revision": "new",
+   "verdict": "confirmed",
+   "render": "assert",
+   "printed_on": [
+    "table-main"
+   ]
+  },
+  {
+   "id": "LLY_REV",
+   "kind": "reported_result",
+   "metric": "분기 매출",
+   "text": "일라이 릴리 CY26 Q2 매출",
+   "value": 22.97,
+   "unit": "USD bn",
+   "series": "기업 발표 실적치 (보도자료·8-K 기준)",
+   "as_of": "2026-08-05",
+   "tier": 1,
+   "source_url": "https://investor.lilly.com/news-releases/news-release-details/lilly-reports-second-quarter-2026-financial-results-raises-full",
+   "verdict": "confirmed",
+   "render": "assert",
+   "printed_on": [
+    "table-main",
+    "chart-sector"
+   ]
+  },
+  {
+   "id": "LLY_CONS",
+   "kind": "consensus",
+   "metric": "매출 컨센서스",
+   "text": "일라이 릴리 CY26 Q2 매출 컨센서스",
+   "value": 20.73,
+   "unit": "USD bn",
+   "series": "인용 기사에 명시된 제공사 (기업마다 상이 — 각 행의 출처 참조)",
+   "as_of": "2026-08-05",
+   "tier": 1,
+   "source_url": "https://www.cnbc.com/2026/08/05/eli-lilly-lly-earnings-q2-2026.html",
+   "verdict": "confirmed",
+   "render": "assert",
+   "note": "",
+   "printed_on": [
+    "table-main"
+   ]
+  },
+  {
+   "id": "LLY_GUIDE",
+   "kind": "company_guidance",
+   "metric": "가이던스",
+   "text": "일라이 릴리 가이던스 — FY26 매출 850~870억달러로 상향(종전 820~850억), EPS 35.50~36.50달러",
+   "value": 1,
+   "unit": "방향(+1/0/-1)",
+   "series": "기업이 직접 제시한 전망 (애널리스트 추정치가 아님)",
+   "as_of": "2026-08-05",
+   "tier": 1,
+   "source_url": "https://investor.lilly.com/news-releases/news-release-details/lilly-reports-second-quarter-2026-financial-results-raises-full",
+   "announced_on": "2026-08-05",
+   "attributed_to": "Eli Lilly (회사 발표)",
+   "target_period": "연간상향",
+   "revision": "up",
+   "verdict": "confirmed",
+   "render": "assert",
+   "printed_on": [
+    "table-main"
+   ]
+  },
+  {
+   "id": "UNH_REV",
+   "kind": "reported_result",
+   "metric": "분기 매출",
+   "text": "유나이티드헬스 CY26 Q2 매출",
+   "value": 112.0,
+   "unit": "USD bn",
+   "series": "기업 발표 실적치 (보도자료·8-K 기준)",
+   "as_of": "2026-07-16",
+   "tier": 1,
+   "source_url": "https://www.sec.gov/Archives/edgar/data/0000731766/000073176626000191/uhgearnings_q22026vpower.htm",
+   "verdict": "confirmed",
+   "render": "assert",
+   "printed_on": [
+    "table-main",
+    "chart-sector"
+   ]
+  },
+  {
+   "id": "UNH_CONS",
+   "kind": "consensus",
+   "metric": "매출 컨센서스",
+   "text": "유나이티드헬스 CY26 Q2 매출 컨센서스",
+   "value": 110.9,
+   "unit": "USD bn",
+   "series": "인용 기사에 명시된 제공사 (기업마다 상이 — 각 행의 출처 참조)",
+   "as_of": "2026-07-16",
+   "tier": 1,
+   "source_url": "https://www.cnbc.com/2026/07/16/unitedhealth-group-unh-earnings-q2-2026.html",
+   "verdict": "confirmed",
+   "render": "assert",
+   "note": "",
+   "printed_on": [
+    "table-main"
+   ]
+  },
+  {
+   "id": "UNH_GUIDE",
+   "kind": "company_guidance",
+   "metric": "가이던스",
+   "text": "유나이티드헬스 가이던스 — FY26 조정 EPS 19.50~20.00달러로 상향(종전 18.25달러 초과), MCR 88.1%±25bp 로 개선(종전 88.8%±50bp)",
+   "value": 1,
+   "unit": "방향(+1/0/-1)",
+   "series": "기업이 직접 제시한 전망 (애널리스트 추정치가 아님)",
+   "as_of": "2026-07-16",
+   "tier": 1,
+   "source_url": "https://www.sec.gov/Archives/edgar/data/0000731766/000073176626000191/uhgearnings_q22026vpower.htm",
+   "announced_on": "2026-07-16",
+   "attributed_to": "UnitedHealth (회사 발표)",
+   "target_period": "연간상향",
+   "revision": "up",
+   "verdict": "confirmed",
+   "render": "assert",
+   "printed_on": [
+    "table-main"
+   ]
+  },
+  {
+   "id": "JNJ_REV",
+   "kind": "reported_result",
+   "metric": "분기 매출",
+   "text": "존슨앤드존슨 CY26 Q2 매출",
+   "value": 25.3,
+   "unit": "USD bn",
+   "series": "기업 발표 실적치 (보도자료·8-K 기준)",
+   "as_of": "2026-07-15",
+   "tier": 1,
+   "source_url": "https://www.investor.jnj.com/investor-news/news-details/2026/Johnson--Johnson-reports-Q2-2026-results-raises-2026-outlook/default.aspx",
+   "verdict": "confirmed",
+   "render": "assert",
+   "printed_on": [
+    "table-main",
+    "chart-sector"
+   ]
+  },
+  {
+   "id": "JNJ_CONS",
+   "kind": "consensus",
+   "metric": "매출 컨센서스",
+   "text": "존슨앤드존슨 CY26 Q2 매출 컨센서스",
+   "value": 25.02,
+   "unit": "USD bn",
+   "series": "인용 기사에 명시된 제공사 (기업마다 상이 — 각 행의 출처 참조)",
+   "as_of": "2026-07-15",
+   "tier": 1,
+   "source_url": "https://www.cnbc.com/2026/07/15/johnson-johnson-jnj-q2-earnings.html",
+   "verdict": "confirmed",
+   "render": "assert",
+   "note": "",
+   "printed_on": [
+    "table-main"
+   ]
+  },
+  {
+   "id": "JNJ_GUIDE",
+   "kind": "company_guidance",
+   "metric": "가이던스",
+   "text": "존슨앤드존슨 가이던스 — FY26 보고 매출 1,008~1,014억달러로 상향(+7.0~7.6%), 조정 EPS 11.50~11.65달러(종전 11.30~11.50)",
+   "value": 1,
+   "unit": "방향(+1/0/-1)",
+   "series": "기업이 직접 제시한 전망 (애널리스트 추정치가 아님)",
+   "as_of": "2026-07-15",
+   "tier": 1,
+   "source_url": "https://www.investor.jnj.com/investor-news/news-details/2026/Johnson--Johnson-reports-Q2-2026-results-raises-2026-outlook/default.aspx",
+   "announced_on": "2026-07-15",
+   "attributed_to": "Johnson & Johnson (회사 발표)",
+   "target_period": "연간상향",
+   "revision": "up",
+   "verdict": "confirmed",
+   "render": "assert",
+   "printed_on": [
+    "table-main"
+   ]
+  },
+  {
+   "id": "WMT_REV",
+   "kind": "reported_result",
+   "metric": "분기 매출",
+   "text": "월마트 FY27 Q2 매출",
+   "value": 187.9,
+   "unit": "USD bn",
+   "series": "기업 발표 실적치 (보도자료·8-K 기준)",
+   "as_of": "2026-08-20",
+   "tier": 1,
+   "source_url": "https://corporate.walmart.com/news/2026/08/20/walmart-releases-q2-fy27-earnings",
+   "verdict": "confirmed",
+   "render": "assert",
+   "printed_on": [
+    "table-main",
+    "chart-sector"
+   ]
+  },
+  {
+   "id": "WMT_CONS",
+   "kind": "consensus",
+   "metric": "매출 컨센서스",
+   "text": "월마트 FY27 Q2 매출 컨센서스",
+   "value": 186.3,
+   "unit": "USD bn",
+   "series": "인용 기사에 명시된 제공사 (기업마다 상이 — 각 행의 출처 참조)",
+   "as_of": "2026-08-20",
+   "tier": 1,
+   "source_url": "https://www.cnbc.com/2026/08/20/walmart-wmt-q2-2027-earnings.html",
+   "verdict": "confirmed",
+   "render": "assert",
+   "note": "Zacks 컨센서스 기준. 다른 출처는 실적 187.94 / 컨센 186.77십억달러",
+   "printed_on": [
+    "table-main"
+   ]
+  },
+  {
+   "id": "WMT_GUIDE",
+   "kind": "company_guidance",
+   "metric": "가이던스",
+   "text": "월마트 가이던스 — FY27 매출 +4~5%(cc)로 상향(종전 +3.5~4.5%), 조정 EPS 2.80~2.87달러(종전 2.75~2.85)",
+   "value": 1,
+   "unit": "방향(+1/0/-1)",
+   "series": "기업이 직접 제시한 전망 (애널리스트 추정치가 아님)",
+   "as_of": "2026-08-20",
+   "tier": 1,
+   "source_url": "https://corporate.walmart.com/news/2026/08/20/walmart-releases-q2-fy27-earnings",
+   "announced_on": "2026-08-20",
+   "attributed_to": "Walmart (회사 발표)",
+   "target_period": "연간상향",
+   "revision": "up",
+   "verdict": "confirmed",
+   "render": "assert",
+   "printed_on": [
+    "table-main"
+   ]
+  },
+  {
+   "id": "COST_REV",
+   "kind": "reported_result",
+   "metric": "분기 매출",
+   "text": "코스트코 FY26 Q4 (16주) 매출",
+   "value": 93.9,
+   "unit": "USD bn",
+   "series": "기업 발표 실적치 (보도자료·8-K 기준)",
+   "as_of": "2026-09-17",
+   "tier": 2,
+   "source_url": "https://theshelbyreport.com/2026/09/15/costco-caps-fy26-with-297-3b-in-sales-up-10-2-percent/",
+   "verdict": "confirmed",
+   "render": "assert",
+   "printed_on": [
+    "table-main",
+    "chart-sector"
+   ]
+  },
+  {
+   "id": "COST_CONS",
+   "kind": "consensus",
+   "metric": "매출 컨센서스",
+   "text": "코스트코 FY26 Q4 (16주) 매출 컨센서스",
+   "value": 94.55,
+   "unit": "USD bn",
+   "series": "인용 기사에 명시된 제공사 (기업마다 상이 — 각 행의 출처 참조)",
+   "as_of": "2026-09-17",
+   "tier": 2,
+   "source_url": "https://finance.yahoo.com/markets/stocks/articles/expect-costco-wholesales-q4-2026-134037110.html",
+   "verdict": "confirmed",
+   "render": "assert",
+   "note": "컨센서스는 94.2~94.9십억달러 구간의 중간값. 정식 실적발표(9/24) 전이라 실제치와의 대조는 미확정",
+   "printed_on": [
+    "table-main"
+   ]
+  },
+  {
+   "id": "COST_GUIDE",
+   "kind": "company_guidance",
+   "metric": "가이던스",
+   "text": "코스트코 가이던스 — 정식 실적발표 전 — 가이던스 없음",
+   "value": 0,
+   "unit": "방향(+1/0/-1)",
+   "series": "기업이 직접 제시한 전망 (애널리스트 추정치가 아님)",
+   "as_of": "2026-09-17",
+   "tier": 2,
+   "source_url": "https://theshelbyreport.com/2026/09/15/costco-caps-fy26-with-297-3b-in-sales-up-10-2-percent/",
+   "announced_on": "2026-09-17",
+   "attributed_to": "Costco (회사 발표)",
+   "target_period": "발표전",
+   "revision": "new",
+   "verdict": "confirmed",
+   "render": "assert",
+   "printed_on": [
+    "table-main"
+   ]
+  },
+  {
+   "id": "HD_REV",
+   "kind": "reported_result",
+   "metric": "분기 매출",
+   "text": "홈디포 FY26 Q2 매출",
+   "value": 47.9,
+   "unit": "USD bn",
+   "series": "기업 발표 실적치 (보도자료·8-K 기준)",
+   "as_of": "2026-08-18",
+   "tier": 1,
+   "source_url": "https://corporate.homedepot.com/news/earnings/home-depot-announces-second-quarter-2026-earnings",
+   "verdict": "confirmed",
+   "render": "assert",
+   "printed_on": [
+    "table-main",
+    "chart-sector"
+   ]
+  },
+  {
+   "id": "HD_CONS",
+   "kind": "consensus",
+   "metric": "매출 컨센서스",
+   "text": "홈디포 FY26 Q2 매출 컨센서스",
+   "value": 0,
+   "unit": "USD bn",
+   "series": "인용 기사에 명시된 제공사 (기업마다 상이 — 각 행의 출처 참조)",
+   "as_of": "2026-09-17",
+   "tier": 1,
+   "source_url": "https://www.cnbc.com/2026/08/18/home-depot-hd-q2-2026-earnings.html",
+   "verdict": "unverified",
+   "render": "omit",
+   "note": "매출 컨센서스는 확인되지 않음. 동일점포 컨센서스(+0.9%)만 확인",
+   "printed_on": []
+  },
+  {
+   "id": "HD_GUIDE",
+   "kind": "company_guidance",
+   "metric": "가이던스",
+   "text": "홈디포 가이던스 — FY26 가이던스 유지(재확인)",
+   "value": 0,
+   "unit": "방향(+1/0/-1)",
+   "series": "기업이 직접 제시한 전망 (애널리스트 추정치가 아님)",
+   "as_of": "2026-08-18",
+   "tier": 1,
+   "source_url": "https://corporate.homedepot.com/news/earnings/home-depot-announces-second-quarter-2026-earnings",
+   "announced_on": "2026-08-18",
+   "attributed_to": "Home Depot (회사 발표)",
+   "target_period": "연간유지",
+   "revision": "unchanged",
+   "verdict": "confirmed",
+   "render": "assert",
+   "printed_on": [
+    "table-main"
+   ]
+  },
+  {
+   "id": "CAT_REV",
+   "kind": "reported_result",
+   "metric": "분기 매출",
+   "text": "캐터필러 CY26 Q2 매출",
+   "value": 20.5,
+   "unit": "USD bn",
+   "series": "기업 발표 실적치 (보도자료·8-K 기준)",
+   "as_of": "2026-08-04",
+   "tier": 2,
+   "source_url": "https://www.cnbc.com/2026/08/04/caterpillar-cat-q2-2026-earnings.html",
+   "verdict": "confirmed",
+   "render": "assert",
+   "printed_on": [
+    "table-main",
+    "chart-sector"
+   ]
+  },
+  {
+   "id": "CAT_CONS",
+   "kind": "consensus",
+   "metric": "매출 컨센서스",
+   "text": "캐터필러 CY26 Q2 매출 컨센서스",
+   "value": 19.24,
+   "unit": "USD bn",
+   "series": "인용 기사에 명시된 제공사 (기업마다 상이 — 각 행의 출처 참조)",
+   "as_of": "2026-08-04",
+   "tier": 2,
+   "source_url": "https://www.investing.com/news/transcripts/earnings-call-transcript-caterpillar-q2-2026-beats-forecasts-shares-jump-9-93CH-4834724",
+   "verdict": "confirmed",
+   "render": "marked",
+   "note": "기사에 '컨센 대비 +12.6억달러' 만 명시 — 컨센서스 금액은 역산값",
+   "printed_on": [
+    "table-main"
+   ]
+  },
+  {
+   "id": "CAT_GUIDE",
+   "kind": "company_guidance",
+   "metric": "가이던스",
+   "text": "캐터필러 가이던스 — FY26 매출 성장률을 mid~high teens 로 상향(4월 대비)",
+   "value": 1,
+   "unit": "방향(+1/0/-1)",
+   "series": "기업이 직접 제시한 전망 (애널리스트 추정치가 아님)",
+   "as_of": "2026-08-04",
+   "tier": 2,
+   "source_url": "https://www.cnbc.com/2026/08/04/caterpillar-cat-q2-2026-earnings.html",
+   "announced_on": "2026-08-04",
+   "attributed_to": "Caterpillar (회사 발표)",
+   "target_period": "연간상향",
+   "revision": "up",
+   "verdict": "confirmed",
+   "render": "assert",
+   "printed_on": [
+    "table-main"
+   ]
+  },
+  {
+   "id": "XOM_REV",
+   "kind": "reported_result",
+   "metric": "분기 매출",
+   "text": "엑슨모빌 CY26 Q2 매출",
+   "value": 116.0,
+   "unit": "USD bn",
+   "series": "기업 발표 실적치 (보도자료·8-K 기준)",
+   "as_of": "2026-07-31",
+   "tier": 1,
+   "source_url": "https://investor.exxonmobil.com/company-information/press-releases/detail/1208/exxonmobil-announces-second-quarter-2026-results",
+   "verdict": "confirmed",
+   "render": "assert",
+   "printed_on": [
+    "table-main",
+    "chart-sector"
+   ]
+  },
+  {
+   "id": "XOM_CONS",
+   "kind": "consensus",
+   "metric": "매출 컨센서스",
+   "text": "엑슨모빌 CY26 Q2 매출 컨센서스",
+   "value": 0,
+   "unit": "USD bn",
+   "series": "인용 기사에 명시된 제공사 (기업마다 상이 — 각 행의 출처 참조)",
+   "as_of": "2026-09-17",
+   "tier": 1,
+   "source_url": "https://www.ogj.com/general-interest/companies/news/55394938/exxonmobil-second-quarter-earnings-climb-to-145-billion-on-rising-oil-prices-record-permian-output",
+   "verdict": "unverified",
+   "render": "omit",
+   "note": "'매출 114.53 vs 컨센 109.94십억달러' 보도는 SNS 단독 출처이고 회사 발표(매출·기타수익 1,160억달러)와 기준이 달라 채택하지 않음",
+   "printed_on": []
+  },
+  {
+   "id": "XOM_GUIDE",
+   "kind": "company_guidance",
+   "metric": "가이던스",
+   "text": "엑슨모빌 가이던스 — 가이던스 미제시(업종 관행)",
+   "value": 0,
+   "unit": "방향(+1/0/-1)",
+   "series": "기업이 직접 제시한 전망 (애널리스트 추정치가 아님)",
+   "as_of": "2026-07-31",
+   "tier": 1,
+   "source_url": "https://investor.exxonmobil.com/company-information/press-releases/detail/1208/exxonmobil-announces-second-quarter-2026-results",
+   "announced_on": "2026-07-31",
+   "attributed_to": "ExxonMobil (회사 발표)",
+   "target_period": "미제시",
+   "revision": "new",
+   "verdict": "confirmed",
+   "render": "assert",
+   "printed_on": [
+    "table-main"
+   ]
+  }
+ ],
+ "derived": [
+  {
+   "id": "D_NVDA_SURP",
+   "kind": "pct_change",
+   "from": "NVDA_CONS",
+   "to": "NVDA_REV",
+   "printed": 4.39,
+   "tolerance": 0.05
+  },
+  {
+   "id": "D_MSFT_SURP",
+   "kind": "pct_change",
+   "from": "MSFT_CONS",
+   "to": "MSFT_REV",
+   "printed": 2.73,
+   "tolerance": 0.05
+  },
+  {
+   "id": "D_AAPL_SURP",
+   "kind": "pct_change",
+   "from": "AAPL_CONS",
+   "to": "AAPL_REV",
+   "printed": 0.71,
+   "tolerance": 0.05
+  },
+  {
+   "id": "D_GOOGL_SURP",
+   "kind": "pct_change",
+   "from": "GOOGL_CONS",
+   "to": "GOOGL_REV",
+   "printed": 2.45,
+   "tolerance": 0.05
+  },
+  {
+   "id": "D_AMZN_SURP",
+   "kind": "pct_change",
+   "from": "AMZN_CONS",
+   "to": "AMZN_REV",
+   "printed": 2.1,
+   "tolerance": 0.05
+  },
+  {
+   "id": "D_META_SURP",
+   "kind": "pct_change",
+   "from": "META_CONS",
+   "to": "META_REV",
+   "printed": 1.05,
+   "tolerance": 0.05
+  },
+  {
+   "id": "D_TSLA_SURP",
+   "kind": "pct_change",
+   "from": "TSLA_CONS",
+   "to": "TSLA_REV",
+   "printed": 6.85,
+   "tolerance": 0.05
+  },
+  {
+   "id": "D_AMD_SURP",
+   "kind": "pct_change",
+   "from": "AMD_CONS",
+   "to": "AMD_REV",
+   "printed": 1.77,
+   "tolerance": 0.05
+  },
+  {
+   "id": "D_ORCL_SURP",
+   "kind": "pct_change",
+   "from": "ORCL_CONS",
+   "to": "ORCL_REV",
+   "printed": 0.89,
+   "tolerance": 0.05
+  },
+  {
+   "id": "D_CRM_SURP",
+   "kind": "pct_change",
+   "from": "CRM_CONS",
+   "to": "CRM_REV",
+   "printed": 0.27,
+   "tolerance": 0.05
+  },
+  {
+   "id": "D_PLTR_SURP",
+   "kind": "pct_change",
+   "from": "PLTR_CONS",
+   "to": "PLTR_REV",
+   "printed": 7.78,
+   "tolerance": 0.05
+  },
+  {
+   "id": "D_INTC_SURP",
+   "kind": "pct_change",
+   "from": "INTC_CONS",
+   "to": "INTC_REV",
+   "printed": 11.65,
+   "tolerance": 0.05
+  },
+  {
+   "id": "D_NFLX_SURP",
+   "kind": "pct_change",
+   "from": "NFLX_CONS",
+   "to": "NFLX_REV",
+   "printed": -0.24,
+   "tolerance": 0.05
+  },
+  {
+   "id": "D_LLY_SURP",
+   "kind": "pct_change",
+   "from": "LLY_CONS",
+   "to": "LLY_REV",
+   "printed": 10.81,
+   "tolerance": 0.05
+  },
+  {
+   "id": "D_UNH_SURP",
+   "kind": "pct_change",
+   "from": "UNH_CONS",
+   "to": "UNH_REV",
+   "printed": 0.99,
+   "tolerance": 0.05
+  },
+  {
+   "id": "D_JNJ_SURP",
+   "kind": "pct_change",
+   "from": "JNJ_CONS",
+   "to": "JNJ_REV",
+   "printed": 1.12,
+   "tolerance": 0.05
+  },
+  {
+   "id": "D_WMT_SURP",
+   "kind": "pct_change",
+   "from": "WMT_CONS",
+   "to": "WMT_REV",
+   "printed": 0.86,
+   "tolerance": 0.05
+  },
+  {
+   "id": "D_COST_SURP",
+   "kind": "pct_change",
+   "from": "COST_CONS",
+   "to": "COST_REV",
+   "printed": -0.69,
+   "tolerance": 0.05
+  },
+  {
+   "id": "D_CAT_SURP",
+   "kind": "pct_change",
+   "from": "CAT_CONS",
+   "to": "CAT_REV",
+   "printed": 6.55,
+   "tolerance": 0.05
+  }
+ ],
+ "unit_policy": {
+  "분기 매출": "USD bn",
+  "매출 컨센서스": "USD bn",
+  "가이던스": "방향(+1/0/-1)"
+ }
+}
