@@ -288,6 +288,7 @@ def build_data_sheet(wb, data):
     col_freq = get_column_letter(len(cols) - 1)   # 지급주기
     col_ttm = get_column_letter(10)               # 연환산 분배율
     tl = get_column_letter(c_match)
+    tl2 = get_column_letter(c_rank)
     for rr in range(first_adopted, last_sel + 1):
         # 조건 셋을 모두 만족해야 1. 연 분배율이 빈 칸인 종목은 애초에 이
         # 구간에 없지만, 빈 칸은 엑셀에서 0 으로 읽혀 "최소 0%" 에 걸리므로
@@ -297,9 +298,17 @@ def build_data_sheet(wb, data):
             f'OR(조회_주기="전체",${col_freq}{rr}=조회_주기),'
             f"${col_ttm}{rr}>=조회_최소,${col_ttm}{rr}<=조회_최대),1,0)"
         )
-        ws.cell(row=rr, column=c_rank).value = (
-            f'=IF(${tl}{rr}=1,COUNTIF(${tl}${first_adopted}:${tl}{rr},1),"")'
-        )
+        # 누적 개수는 **바로 윗줄에 1을 더하는** 식으로 센다.
+        #
+        # 처음에는 COUNTIF 로 위쪽 전체를 매번 다시 셌는데, 줄이 늘면 그게
+        # n² 이 된다. 모집단이 892종목이 되면 80만 번짜리 계산이라 검산기가
+        # 조합마다 몇 분씩 걸린다. 윗줄 + 1 이면 한 번씩만 보면 된다.
+        #
+        # 조건에 안 맞는 줄은 윗줄 값을 그대로 물려받아 같은 수가 이어지는데,
+        # MATCH 는 **처음 나오는 자리**를 돌려주므로 k 를 찾으면 정확히 k번째로
+        # 맞은 줄이 나온다.
+        prev = "0" if rr == first_adopted else f"${tl2}{rr - 1}"
+        ws.cell(row=rr, column=c_rank).value = f"=IF(${tl}{rr}=1,{prev}+1,{prev})"
     for c in (c_match, c_rank):
         ws.column_dimensions[get_column_letter(c)].hidden = True
 
@@ -609,9 +618,8 @@ def build_proposal(wb, data, first_sel, last_sel, first_adopted, last_adopted):
 
     ws["J1"] = "계산 보조 (수정하지 마십시오)"
     ws["J1"].font = f(9, color=MUTED)
-    ws.column_dimensions["J"].hidden = True
-    ws.column_dimensions["K"].hidden = True
-    ws.column_dimensions["L"].hidden = True
+    for _h in ("J", "K", "L", "M", "N"):
+        ws.column_dimensions[_h].hidden = True
 
     # ── 2. 포트폴리오 ──
     r = section(ws, cust_row + 6, "2", f"투자 포트폴리오  (최대 {SLOTS}종목)", LAST)
@@ -643,6 +651,14 @@ def build_proposal(wb, data, first_sel, last_sel, first_adopted, last_adopted):
         # 담겼는지 아닌지를 아래에서 알려 줘야 한다.
         ws[f"L{rr}"] = f'=IF($K{rr}=0,"",INDEX({rng("M")},$K{rr}))'
         ws[f"L{rr}"].font = f(9, color=MUTED)
+        # 그 종목의 지급주기. 이 문서의 모든 숫자가 "연 분배율 ÷ 12" 라서,
+        # 분기·연배당 종목을 담으면 '월 예상 분배금' 은 실제로 매달 들어오는
+        # 돈이 아니라 **월 환산액**이 된다. 말하지 않으면 고객은 매달 그
+        # 금액이 들어온다고 읽는다. 담는 것을 막지는 않되 반드시 말한다.
+        ws[f"M{rr}"] = f'=IF($K{rr}=0,"",INDEX({rng("R")},$K{rr}))'
+        ws[f"M{rr}"].font = f(9, color=MUTED)
+        ws[f"N{rr}"] = f'=IF(OR($M{rr}="",$M{rr}="월배당"),0,1)'
+        ws[f"N{rr}"].font = f(9, color=MUTED)
         put(ws, rr, 4,
             f'=IF($K{rr}=0,0,IF({C_MODE}="비율",ROUND({C_AMT}*$C{rr}/100,0),$C{rr}))', WON_Z)
         put(ws, rr, 5, f"=IF($K{rr}=0,0,ROUNDDOWN($D{rr}/INDEX({rng('D')},$K{rr}),0))", QTY_Z)
@@ -700,7 +716,21 @@ def build_proposal(wb, data, first_sel, last_sel, first_adopted, last_adopted):
     wc2.font = f(10, bold=True, color=WARNING)
     ws.row_dimensions[warn2].height = 17
 
-    note = warn2 + 1
+    warn3 = warn2 + 1
+    ws.merge_cells(start_row=warn3, start_column=2, end_row=warn3, end_column=LAST)
+    wc3 = ws.cell(
+        row=warn3,
+        column=2,
+        value=(
+            f'=IF(SUM($N${p_first}:$N${p_last})>0,'
+            f'"※ 월배당이 아닌 종목이 담겨 있습니다. 위의 \'월 예상 분배금\' 은 연 분배금을 12로 나눈 '
+            f'월 환산액이며, 실제 지급은 그 종목의 주기(분기·연 등)를 따릅니다.","")'
+        ),
+    )
+    wc3.font = f(10, bold=True, color=WARNING)
+    ws.row_dimensions[warn3].height = 17
+
+    note = warn3 + 1
     ws.merge_cells(start_row=note, start_column=2, end_row=note, end_column=LAST)
     nc = ws.cell(
         row=note,
@@ -819,14 +849,27 @@ def build_proposal(wb, data, first_sel, last_sel, first_adopted, last_adopted):
     # (순자산 상위). 고객이 실제로 고르는 축이 그 둘이다. 순자산 쪽에서는
     # 파킹형을 뺀다. 안 빼면 CD금리·KOFR 이 상위 여덟 중 셋을 차지하는데,
     # 월마다 돈이 나오기는 해도 비교표에 올릴 상품이 아니다.
+    # 2026-09 에 모집단을 892종목으로 넓히면서 한 가지를 더 걸어야 했다.
+    # 이제 채택 목록에 KODEX 200(24.8조)처럼 연 1회 배당하는 대형 지수 ETF 가
+    # 들어온다. 순자산 축으로 뽑으면 비교표가 그런 종목으로 채워지는데, 이
+    # 문서는 "월배당 ETF 투자 제안서" 다. 월 얼마를 받는지 견주라고 만든 표에
+    # 연 1회 배당을 올리면 표가 제 뜻을 잃는다.
+    #
+    # 그래서 비교표는 **월배당으로 한정한다.** 다른 주기를 보고 싶으면
+    # [종목조회] 장에서 주기를 골라 보면 된다 — 그러라고 만든 장이다.
+    # 드롭다운은 그대로 전부 담고 있으므로 담는 데는 아무 제약이 없다.
     adopted_items = sorted(
         [x for x in data["items"] if x.get("adopted")],
         key=lambda x: -(x.get("distTtmRate") or 0),
     )
     row_of = {x["code"]: first_adopted + i for i, x in enumerate(adopted_items)}
-    by_yield = adopted_items[:COMPARE_YIELD]
+    monthly_items = [x for x in adopted_items if (x.get("payoutFreq") or "") == "월배당"]
+    # 주기를 아직 안 실은 자료로도 돌아야 한다. 월배당이 한 종목도 없으면
+    # 예전처럼 채택 전체에서 뽑는다 — 빈 표를 내놓는 것보다 낫다.
+    pool_cmp = monthly_items or adopted_items
+    by_yield = pool_cmp[:COMPARE_YIELD]
     by_aum = sorted(
-        [x for x in adopted_items if (x.get("assetClassCode") or "") != "0108"],
+        [x for x in pool_cmp if (x.get("assetClassCode") or "") != "0108"],
         key=lambda x: -(x.get("aum") or 0),
     )[:COMPARE_AUM]
     seen_codes, compare = set(), []
@@ -837,8 +880,8 @@ def build_proposal(wb, data, first_sel, last_sel, first_adopted, last_adopted):
     compare.sort(key=lambda x: -(x.get("distTtmRate") or 0))
 
     r = section(ws, r, "5",
-                f"채택 ETF 비교  (1억원 단독 투자 기준 · 연 분배율 상위 {COMPARE_YIELD} + "
-                f"순자산 상위 {COMPARE_AUM}, 파킹형 제외 · 채택 {len(adopted_items)}종목 중)",
+                f"월배당 ETF 비교  (1억원 단독 투자 기준 · 연 분배율 상위 {COMPARE_YIELD} + "
+                f"순자산 상위 {COMPARE_AUM}, 파킹형 제외 · 채택 월배당 {len(pool_cmp)}종목 중)",
                 LAST)
     # 월 분배율은 뺐다 — 연 분배율 ÷ 12 라 한 칸을 차지할 값이 아니다.
     # 그 자리에 유형을 넣는다. 같은 표에 커버드콜과 리츠·채권형이 섞여
@@ -1021,9 +1064,14 @@ def main():
     # 넘어 "순자산 최대" 로 고르면 언제나 CD금리 펀드가 뽑힌다.
     # 남은 것 중 순자산 최대, 곧 가장 무난한 것 하나만 넣고 나머지는 비워 둔다.
     # 무엇을 어떻게 섞을지는 사람이 정할 일이지 이 파일이 정할 일이 아니다.
+    # 2026-09: 모집단을 넓히면서 **월배당을 먼저 고른다** 는 조건이 하나 더
+    # 필요해졌다. 안 걸면 "순자산 최대" 가 KODEX 200(24.8조)을 뽑는데, 그것은
+    # 연 1회 배당이다. 아무 손도 대지 않고 인쇄한 "월배당 ETF 투자 제안서" 가
+    # 연 1회 배당하는 코스피200 ETF 를 권하는 꼴이 된다.
     pool = [x for x in data["items"] if x.get("adopted")]
-    not_parking = [x for x in pool if (x.get("assetClassCode") or "") != "0108"]
-    default = max(not_parking or pool, key=lambda x: (x.get("aum") or 0))
+    monthly = [x for x in pool if (x.get("payoutFreq") or "") == "월배당"]
+    not_parking = [x for x in (monthly or pool) if (x.get("assetClassCode") or "") != "0108"]
+    default = max(not_parking or monthly or pool, key=lambda x: (x.get("aum") or 0))
     ws.cell(row=p_first, column=2).value = default["name"]
     ws.cell(row=p_first, column=3).value = 100   # 비율 방식이므로 100%
 
