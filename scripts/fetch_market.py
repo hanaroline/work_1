@@ -792,11 +792,99 @@ def _investor_urls(now, back=0):
     return ["%s?bizdate=%s&sosok=" % (base, d) for d in days]
 
 
-def naver_investors(now, dump_dir=None):
-    """투자자별 매매동향 — 개인/외국인/기관 순매수, 단위 억원. 약 한 달치.
+# 투자자 구분값. **짐작하지 않고 수집기가 이미 가진 값과 대조해 확정했다**
+# (2026-09-18, 다섯 거래일 × 세 항목이 원 단위까지 일치).
+#
+#   개인   = 8000
+#   외국인 = 9000 + 9001(기타외국인)   ← 9000 만 쓰면 하루 수십억씩 어긋난다
+#   기관계 = 1000 금융투자 · 2000 보험 · 3000 투신 · 3100 사모
+#            · 4000 은행 · 5000 기타금융 · 6000 연기금
+#
+# **7000·7100 은 기타법인이라 기관계에 넣지 않는다.** 7100 은 2026-09-17 에
+# +1조 7,046억으로 기관계(+2,480억)보다 훨씬 컸다 — 잘못 더하면 수급 해석이
+# 통째로 뒤집힌다.
+INV_RETAIL = ("8000",)
+INV_FOREIGN = ("9000", "9001")
+INV_INST = ("1000", "2000", "3000", "3100", "4000", "5000", "6000")
 
-    화면 한 장에 **열 줄**만 나오므로 bizdate 를 2주씩 뒤로 옮겨 세 번 부르고
-    날짜로 합친다. 「이번 주 내내 외국인이 샀는가」를 말하려면 열 줄로는 모자란다.
+TREND_DAILY = "https://stock.naver.com/api/domestic/market/trend/daily"
+
+
+def naver_investors_api(now, market="KOSPI", days=30, dump_dir=None):
+    """**투자자별 매매동향을 화면이 쓰는 그 API 에서 받는다.** 1순위.
+
+    2026-09-18 아침에 옛 화면(`investorDealTrendDay.naver`)이 **HTTP 410
+    (Gone)** 으로 끊겼다 — 「없어졌다」는 뜻이라 일시적 오류가 아니다.
+    2026-09-10 개편으로 상한가 화면이 끊겼을 때와 같은 일이고, 같은 방법으로
+    찾았다: 브라우저로 화면을 열어 오가는 요청을 그대로 적었다
+    (`scripts/probe_daily_xhr.mjs` → `scripts/probe_daily_api.py`).
+
+    옛 화면은 한 번에 **열 줄**만 줘서 bizdate 를 2주씩 옮겨 세 번 불러야
+    했는데, 이 API 는 **한 번에 서른 줄**을 준다(총 5,357일치). 부르는 횟수가
+    셋에서 하나로 줄었다.
+
+    값은 **원 단위**로 오므로 억원으로 바꾼다 — 판과 지침이 모두 억원이다.
+    """
+    url = ("%s?tradeType=KRX&marketType=%s&bizdate=%s&startIdx=0&pageSize=%d"
+           % (TREND_DAILY, market, now.strftime("%Y%m%d"), days))
+    j = json.loads(_get(url, referer="https://stock.naver.com/",
+                        headers={"Accept": "application/json"}))
+    rows = j.get("content") or []
+    if dump_dir:
+        os.makedirs(dump_dir, exist_ok=True)
+        with open(os.path.join(dump_dir, "investors_api_%s.json" % market.lower()),
+                  "w", encoding="utf-8") as f:
+            json.dump(rows[:3], f, ensure_ascii=False, indent=1)
+    out = []
+    for r in rows:
+        amt = {x.get("investorGubun"): x.get("diffValue")
+               for x in (r.get("netAmounts") or [])}
+
+        def s(codes):
+            """원 → 억원. 한 코드라도 없으면 **0 으로 때우지 않고 None 을 낸다.**"""
+            got = [amt.get(c) for c in codes]
+            if any(v is None for v in got):
+                return None
+            return round(sum(float(v) for v in got) / 1e8)
+
+        b = str(r.get("bizdate") or "")
+        if len(b) != 8:
+            continue
+        out.append({
+            "date": "%s.%s.%s" % (b[2:4], b[4:6], b[6:8]),   # 옛 형식과 맞춘다
+            "retail": s(INV_RETAIL),
+            "foreign": s(INV_FOREIGN),
+            "institution": s(INV_INST),
+            "unit": "억원",
+            "source_url": url,
+        })
+    if not out:
+        raise ValueError("투자자별 API 가 빈 목록을 줬다 (%s)" % url[-60:])
+    out.sort(key=lambda r: r["date"], reverse=True)
+    return out
+
+
+def naver_investors(now, dump_dir=None):
+    """투자자별 매매동향 — 개인/외국인/기관 순매수, 단위 억원.
+
+    **API 가 1순위, 옛 화면 긁기가 2순위**다. 옛 화면은 2026-09-18 부터 410
+    이라 지금은 실패하지만, API 가 또 바뀌는 날 두 실패를 함께 보여 주는
+    쪽이 한 줄짜리 오류보다 낫다.
+    """
+    try:
+        return naver_investors_api(now, "KOSPI", 30, dump_dir)
+    except Exception as e:                                    # noqa: BLE001
+        _api_err = "api -> %s: %s" % (type(e).__name__, str(e)[:80])
+    try:
+        return _naver_investors_legacy(now, dump_dir)
+    except Exception as e:                                    # noqa: BLE001
+        raise ValueError("%s | legacy -> %s: %s"
+                         % (_api_err, type(e).__name__, str(e)[:80]))
+
+
+def _naver_investors_legacy(now, dump_dir=None):
+    """옛 화면 긁기(2026-09-18 부터 410). 화면 한 장에 **열 줄**만 나오므로
+    bizdate 를 2주씩 뒤로 옮겨 세 번 부르고 날짜로 합친다.
     """
     seen, merged = set(), []
     for back in (0, 14, 28):
