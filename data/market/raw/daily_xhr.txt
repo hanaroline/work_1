@@ -1,0 +1,92 @@
+일별시세·투자자별 원천 관찰 2026-09-17T23:03:06.495Z
+(브라우저로 열어 오가는 요청을 그대로 적는다. 수집 결과는 바꾸지 않는다.)
+
+### 옛 국내증시 허브  https://finance.naver.com/sise/
+    첫 응답 200
+    화면 안의 관련 링크:
+      투자자별 매매동향 → https://stock.naver.com/market/stock/kr/trend/trader
+      코스피
+장마감
+6,715.41
+2.56
+(- → https://stock.naver.com/domestic/index/KOSPI/price
+      코스피 200
+1,058.27
+1.78
+(- → https://stock.naver.com/domestic/index/KPI200/price
+      코스피 200 선물
+1,060.80
+1.95 → https://stock.naver.com/domestic/index/FUT/price
+      투자자 동향 → https://stock.naver.com/market/stock/kr/trend/trader?tradeType=1&marketType=kospi
+    → 타고 들어감: https://stock.naver.com/market/stock/kr/trend/trader
+    [200] 날짜  83 개      ·   20448 bytes · application/json · https://stock.naver.com/api/domestic/market/ipo/progress?startIdx=0&pageSize=20
+    [200] 날짜  64 개 ·값말 ·   50433 bytes · application/json · https://stock.naver.com/api/domestic/market/trend/daily?tradeType=NXT&marketType=KOSPI&bizdate=20260917&startIdx=0&pageSize=30
+    [200] 날짜  40 개      ·   22496 bytes · application/json · https://stock.naver.com/api/domestic/market/trendDeposit/chart?startDate=20260719&endDate=20260917
+    [200] 날짜   7 개      ·   16991 bytes · application/json · https://stock.naver.com/api/domestic/market/stock/default?tradeType=NXT&marketType=ALL&orderType=marketSum&startIdx=0&pageSize=10
+    [200] 날짜   6 개 ·값말 ·   29001 bytes · application/json · https://polling.finance.naver.com/api/realtime/domestic/NXT/stock/010140,079550,012450,329180,272210,000500,042660,298040,034020,483650,005930,000660,
+    [200] 날짜   5 개      ·   16905 bytes · application/json · https://stock.naver.com/api/domestic/market/stock/default?tradeType=NXT&marketType=ALL&orderType=priceTop&startIdx=0&pageSize=10
+    [200] 날짜   4 개 ·값말 ·   19985 bytes · application/json · https://stock.naver.com/api/stockSecurity/rankings/v2/domestic/industries?sortType=marketCap&excludeCodes=25
+    [200] 날짜   3 개 ·값말 ·   10031 bytes · application/json · https://stock.naver.com/api/stockSecurity/rankings/v2/domestic/industries?sortType=changeRate&size=5&excludeCodes=25&period=daily
+    [200] 날짜   3 개 ·값말 ·   10022 bytes · application/json · https://stock.naver.com/api/stockSecurity/rankings/v2/domestic/themes?sortType=changeRate&size=5&excludeCodes=25&period=daily
+    [200] 날짜   3 개 ·값말 ·   14565 bytes · application/json · https://polling.finance.naver.com/api/realtime/domestic/NXT/stock/000150,000500,000660,000990,005930,009150,034020,052690,402340,437730
+    [200] 날짜   3 개 ·값말 ·   21680 bytes · application/json · https://polling.finance.naver.com/api/realtime/domestic/stock/000270,000660,005380,005490,005930,006400,034020,035420,035720,066570
+    [200] 날짜   3 개 ·값말 ·   21680 bytes · application/json · https://polling.finance.naver.com/api/realtime/domestic/stock/000270,000660,005380,005490,005930,006400,034020,035420,035720,066570
+    [200] 날짜   2 개      ·     177 bytes · application/json · https://stock.naver.com/api/stockSecurity/rankings/v2/domestic/industries/total-market-cap
+    [200] 날짜   2 개 ·값말 ·    8675 bytes · application/json · https://stock.naver.com/api/securityService/integration/indicators?indicatorCodes=KOSPI%2CKOSDAQ%2CKPI200%2CFUT%2CKQI150%2CKVALUE%2CFX_USDKRW%2C.DXY%2
+    [200] 날짜   2 개 ·값말 ·    4649 bytes · application/json · https://stock.naver.com/api/domestic/home/marketaggregate/aggregateInvestorRanking
+    [200] 날짜   2 개 ·값말 ·    4681 bytes · application/json · https://stock.naver.com/api/domestic/home/marketaggregate/aggregateInvestorRanking
+    [200] 날짜   2 개 ·값말 ·     352 bytes · application/json · https://stock.naver.com/api/domestic/home/marketaggregate/aggregateInvestor
+    [200] 날짜   2 개      ·   34561 bytes · application/json · https://stock.naver.com/api/securityService/chart/domestic/index/KOSPI?periodType=day
+    [200] 날짜   2 개      ·   33669 bytes · application/json · https://stock.naver.com/api/securityService/chart/domestic/index/KOSDAQ?periodType=day
+    [200] 날짜   2 개 ·값말 ·    5792 bytes · application/json · https://polling.finance.naver.com/api/realtime/domestic/index/KOSPI,KOSDAQ,KPI200,FUT,KQI150,KVALUE
+    [200] 날짜   2 개 ·값말 ·     827 bytes · application/json · https://polling.finance.naver.com/api/realtime/marketindex/energy/CLcv1
+    [200] 날짜   2 개 ·값말 ·    3822 bytes · application/json · https://polling.finance.naver.com/api/realtime/worldstock/index/.DJI,.IXIC,.INX,.VIX
+    [200] 날짜   2 개 ·값말 ·     831 bytes · application/json · https://polling.finance.naver.com/api/realtime/marketindex/metals/GCcv1
+    [200] 날짜   2 개 ·값말 ·     809 bytes · application/json · https://polling.finance.naver.com/api/realtime/marketindex/exchange/.DXY
+    [200] 날짜   2 개 ·값말 ·    1479 bytes · application/json · https://stock.naver.com/api/domestic/market/trend/chart/time?tradeType=NXT&marketType=KOSPI&selectedRange=1%EC%9D%BC&bizdate=20260917&startDate=202609
+    → 본문을 data/market/raw/daily_xhr_0_0.json 에 남겼다  (https://stock.naver.com/api/domestic/market/trend/daily?tradeType=NXT&marketType=KOSPI&bizdate=20260917&startIdx=0&pageS)
+    → 본문을 data/market/raw/daily_xhr_0_1.json 에 남겼다  (https://polling.finance.naver.com/api/realtime/domestic/NXT/stock/010140,079550,012450,329180,272210,000500,042660,29804)
+
+### 새 증권 첫 화면  https://stock.naver.com/
+    첫 응답 200
+    화면 안의 관련 링크:
+      코스피
+상세 페이지로 이동 → https://stock.naver.com/domestic/index/KOSPI/price
+    → 타고 들어감: https://stock.naver.com/domestic/index/KOSPI/price
+    [200] 날짜 288 개 ·값말 ·   47820 bytes · application/json · https://api.stock.naver.com/chart/domestic/index/KOSPI/day?startDateTime=202507160900&endDateTime=202609180803&wrapper=true
+    [200] 날짜  20 개      ·    5115 bytes · application/json · https://stock.naver.com/api/securityFe/api/index/KOSPI/price?page=1&pageSize=20
+    [200] 날짜   4 개      ·    2029 bytes · application/json · https://stock.naver.com/api/securityAi/marketBriefing/current?marketBriefing=domain
+    [200] 날짜   4 개 ·값말 ·   11916 bytes · application/json · https://stock.naver.com/api/securityService/integration/v1/indicators?domesticIndexCodes=KOSPI%2CKOSDAQ&foreignIndexCodes=.INX%2C.IXIC%2C.DJI%2C.SOX%2
+    [200] 날짜   4 개      ·    1847 bytes · application/json · https://stock.naver.com/api/news/home
+    [200] 날짜   4 개 ·값말 ·   30655 bytes · application/json · https://polling.finance.naver.com/api/realtime/domestic/stock/000270,000660,005380,005490,005930,006400,034020,035420,035720,066570,009150,028300,2722
+    [200] 날짜   4 개 ·값말 ·  272268 bytes · application/x-javascript · https://connect.facebook.net/ko_KR/bundle/sdk.js/
+    [200] 날짜   3 개      ·     918 bytes · application/json · https://stock.naver.com/api/securityAi/indicatorBriefing/current?itemCode=KOSPI
+    [200] 날짜   3 개      ·  117447 bytes · application/json · https://stock.naver.com/api/securityService/chart/domestic/exchange/FX_USDKRW?periodType=day
+    [200] 날짜   3 개 ·값말 ·   21675 bytes · application/json · https://polling.finance.naver.com/api/realtime/domestic/stock/000270,000660,005380,005490,005930,006400,034020,035420,035720,066570
+    [200] 날짜   3 개 ·값말 ·   21683 bytes · application/json · https://polling.finance.naver.com/api/realtime/domestic/stock/000270,000660,005380,005490,005930,006400,034020,035420,035720,066570
+    [200] 날짜   3 개      ·    7510 bytes · text/css · https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Condensed:wght@500&family=Roboto&display=swap
+    [200] 날짜   2 개      ·   34561 bytes · application/json · https://stock.naver.com/api/securityService/chart/domestic/index/KOSPI?periodType=day
+    [200] 날짜   2 개      ·     736 bytes · application/json · https://stock.naver.com/api/stockSecurity/exchanges/market-status?exchanges=nasdaq
+    [200] 날짜   2 개      ·   33669 bytes · application/json · https://stock.naver.com/api/securityService/chart/domestic/index/KOSDAQ?periodType=day
+    [200] 날짜   2 개 ·값말 ·     827 bytes · application/json · https://polling.finance.naver.com/api/realtime/marketindex/energy/CLcv1
+    [200] 날짜   2 개 ·값말 ·     831 bytes · application/json · https://polling.finance.naver.com/api/realtime/marketindex/metals/GCcv1
+    [200] 날짜   2 개 ·값말 ·    1956 bytes · application/json · https://polling.finance.naver.com/api/realtime/domestic/index/KOSPI,KOSDAQ
+    [200] 날짜   2 개 ·값말 ·    4770 bytes · application/json · https://polling.finance.naver.com/api/realtime/worldstock/index/.DJI,.IXIC,.INX,.SOX,.VIX
+    [200] 날짜   2 개 ·값말 ·     931 bytes · application/json · https://polling.finance.naver.com/api/realtime/domestic/index/KOSPI
+    [200] 날짜   2 개 ·값말 ·    2682 bytes · application/json · https://polling.finance.naver.com/api/realtime/domestic/index/KOSPI,KOSDAQ,KPI200
+    [200] 날짜   2 개 ·값말 ·    5297 bytes · application/json · https://stock.naver.com/api/securityService/integration/indicators?indicatorCodes=KOSPI%2CKOSDAQ%2CKPI200%2C.DJI%2C.INX%2CFX_USDKRW%2C.IXIC%2CGCcv1%2C
+    [200] 날짜   2 개 ·값말 ·   15945 bytes · application/json · https://stock.naver.com/api/securityFe/api/index/KOSPI/integration
+    [200] 날짜   2 개 ·값말 ·    2936 bytes · application/json · https://polling.finance.naver.com/api/realtime/worldstock/index/.DJI,.INX,.IXIC
+    [200] 날짜   2 개 ·값말 ·     831 bytes · application/json · https://polling.finance.naver.com/api/realtime/marketindex/metals/GCcv1
+    → 본문을 data/market/raw/daily_xhr_1_0.json 에 남겼다  (https://api.stock.naver.com/chart/domestic/index/KOSPI/day?startDateTime=202507160900&endDateTime=202609180803&wrapper=t)
+
+### 옛 일별시세(410 확인용)  https://finance.naver.com/sise/sise_index_day.naver?code=KOSPI&page=1
+    첫 응답 410
+    [410] 날짜   1 개 ·값말 ·    2134 bytes · text/html · https://finance.naver.com/sise/sise_index_day.naver?code=KOSPI&page=1
+    값이 담긴 응답을 하나도 못 찾았다
+
+### 옛 투자자별(410 확인용)  https://finance.naver.com/sise/investorDealTrendDay.naver
+    첫 응답 410
+    [410] 날짜   1 개      ·    1499 bytes · text/html · https://finance.naver.com/sise/investorDealTrendDay.naver
+    값이 담긴 응답을 하나도 못 찾았다
+
