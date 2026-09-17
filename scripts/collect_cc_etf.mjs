@@ -125,7 +125,14 @@ function payoutMonths12m(divOutline) {
 // 이력이 12개월을 못 채운 종목은 **주기를 판정하지 않는다.** 여섯 달에 두 번
 // 준 것을 "분기배당" 이라고 부르면 거짓이다. 목록에서 빼지는 않고 그대로
 // '판정 불가' 라고 적는다 — 담을지는 담당자가 판단할 일이다.
-function classifyPayout(n, listedOn) {
+/** 'YYYY-MM' 두 개가 몇 달 떨어져 있나. */
+function monthGap(a, b) {
+  const [ay, am] = String(a).split('-').map(Number);
+  const [by, bm] = String(b).split('-').map(Number);
+  return Math.abs((by - ay) * 12 + (bm - am));
+}
+
+function classifyPayout(n, listedOn, paidMonths = []) {
   const s = String(listedOn || '');
   if (/^\d{8}$/.test(s)) {
     const monthsListed = (CUR_Y - Number(s.slice(0, 4))) * 12 + (CUR_M - Number(s.slice(4, 6)));
@@ -135,7 +142,28 @@ function classifyPayout(n, listedOn) {
   if (n >= 20) return '주배당';
   if (n >= 10) return '월배당';
   if (n >= 3 && n <= 6) return '분기배당';
-  if (n <= 2) return '연배당';
+
+  // 연 2회는 **반기배당**이다. 예전에는 이 자리가 없어서 전부 '연배당' 으로
+  // 들어갔다. 2026-09 판에서 그런 종목이 44개였고, 그중 TIGER 반도체TOP10 ·
+  // 현대차그룹플러스 · LG그룹플러스 · RISE KIS국고채30년 은 과거 이력의 지급
+  // 간격이 182~183일로 명백한 반기 지급이었다. '연 1회' 로 설명하면 거짓말이
+  // 된다.
+  //
+  // 다만 2회라고 무조건 반기는 아니다. **두 지급이 얼마나 떨어져 있는지**
+  // 를 봐야 한다. 연 1회 주던 종목이 한 해만 한 번 더 주면 그 두 번은
+  // 서너 달 붙어 있고(KODEX 코스피: 2026-04, 2026-07), 진짜 반기 지급은
+  // 여섯 달로 갈린다(TIGER 반도체TOP10: 2025-10, 2026-04 — 실제 지급일도
+  // 4월·10월로 되풀이된다).
+  //
+  // 그래서 다섯~일곱 달 떨어진 것만 반기로 본다. 서너 달 붙은 것은 반기도
+  // 연간도 아니라 판단이 서지 않으므로, 없는 확신을 지어내지 않고 예전처럼
+  // 연배당에 둔다. 모르는 것을 사실로 적는 것이 제일 나쁘다.
+  if (n === 2) {
+    const ms = [...paidMonths].sort();
+    const gap = ms.length === 2 ? monthGap(ms[0], ms[1]) : 0;
+    return gap >= 5 && gap <= 7 ? '반기배당' : '연배당';
+  }
+  if (n === 1) return '연배당';
   return '비정기'; // 연 7~9회 — 월도 분기도 아니다. 그렇게 적는다.
 }
 
@@ -767,7 +795,7 @@ for (const [i, row] of universe.entries()) {
   // 지급주기. 분류가 아니라 실제 지급한 달로 판정한다(위 classifyPayout 참고).
   const paidMonths = payoutMonths12m(divOutline);
   const payoutCount12m = paidMonths.length;
-  const payoutFreq = classifyPayout(payoutCount12m, listed);
+  const payoutFreq = classifyPayout(payoutCount12m, listed, paidMonths);
 
   // 상장한 지 몇 달 됐나. 예전에는 "분배 이력 n개월" 을 분배 **건수**로 셌다.
   // 월배당만 담을 때는 건수가 곧 개월수였지만, 분기배당 종목은 2년을 꼬박
