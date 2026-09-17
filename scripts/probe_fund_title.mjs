@@ -44,20 +44,13 @@ const g = {};
 new Function('window', readFileSync('data/fund-catalog.js', 'utf8'))(g);
 const C = g.FUND_CATALOG;
 
-/* 운용사를 골고루 — 한 곳에 몰리면 그 운용사의 서식만 보게 된다 */
-const byMgr = new Map();
-for (const it of C.items.filter((x) => x.docT)) {
-  if (!byMgr.has(it.mgr)) byMgr.set(it.mgr, []);
-  byMgr.get(it.mgr).push(it);
-}
-const mgrs = [...byMgr.keys()];
+/* 전체를 일정 간격으로 훑는다 — 운용사마다 첫 종목을 고르면 평범한 증권투자신탁만
+   보게 되고, 정작 서식이 다른 특별자산·부동산·사모재간접이 빠진다.
+   (표본 조사 스크립트의 같은 자리 설명 참고 — 그 차이로 2시간 45분을 버렸다) */
+const withT = C.items.filter((x) => x.docT);
+const step = Math.max(1, Math.floor(withT.length / HOW_MANY));
 const pick = [];
-for (let round = 0; pick.length < HOW_MANY && round < 8; round++) {
-  for (const m of mgrs) {
-    if (byMgr.get(m)[round]) pick.push(byMgr.get(m)[round]);
-    if (pick.length >= HOW_MANY) break;
-  }
-}
+for (let i = 0; i < withT.length && pick.length < HOW_MANY; i += step) pick.push(withT[i]);
 
 log(`자리 「${A[3]}」 · 지금 규칙 ${A[2]}`);
 log(`${pick.length}종목을 읽어 **못 찾은 것만** 원문을 찍는다\n`);
