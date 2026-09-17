@@ -266,11 +266,72 @@ def test_fault_injection():
     print()
 
 
+def run_freshness(doc, bar_date):
+    """신선도 검사만 돌려 (실패, 경고) 를 돌려준다.
+
+    흠 심기 틀(inject)을 그대로 못 쓰는 까닭 — 그 틀은 **실패**만 본다. 낡은 자료는
+    실패가 아니라 경고다(네이버가 늦는 것은 우리가 고칠 일이 아니고, 받아 둔 날들은
+    늦었어도 버릴 것이 아니다). 그래서 경고까지 보는 자리를 따로 둔다.
+
+    잣대(일봉의 마지막 거래일)를 **고정해서 넣는다.** 저장소의 진짜 일봉을 쓰면
+    시험 결과가 「오늘 수집이 얼마나 돌았나」에 따라 달라진다 — 코드가 그대로인데
+    어제는 통과하고 오늘은 실패하는 시험은 아무것도 지켜 주지 못한다.
+    """
+    V.FAILS.clear(); V.WARNS.clear(); V.CHECKS[0] = 0
+    keep = V.latest_bar_date
+    try:
+        V.latest_bar_date = lambda sample=25: bar_date
+        V.verify_freshness(doc)
+    finally:
+        V.latest_bar_date = keep
+    stale = any('[STALE]' in w for w in V.WARNS)
+    return list(V.FAILS), stale
+
+
+def test_freshness():
+    """**그날치가 빠졌는데 조용히 성공하는 것**을 잡는지 본다.
+
+    실제로 그 일이 있었다 — 16:14 에 받은 판이 전날까지만 담고 있었는데 아무도
+    그렇다고 말해 주지 않아 하루 늦은 수급으로 신호를 냈다. 그 상태를 그대로
+    되살려 본다.
+    """
+    import copy
+    base = build_fixture()
+    if not base:
+        FAILS.append('신선도 시험용 판을 만들지 못했습니다')
+        return
+    days = sorted({x for s in base['stocks'].values() for x in s['d']})
+    base['coverage']['from'], base['coverage']['to'] = days[0], days[-1]
+
+    # 가) 일봉 끝까지 와 있는 판 — 조용해야 한다
+    f, stale = run_freshness(copy.deepcopy(base), days[-1])
+    N[0] += 1
+    ok('최신인 판에는 낡았다고 하지 않는다', not stale and not f, ' / '.join(f[:2]))
+
+    # 나) 마지막 하루가 빠진 판 — **잡아야 한다**
+    d2 = copy.deepcopy(base)
+    for s in d2['stocks'].values():
+        for k in ('d', 'c', 'f', 'i', 'p', 'r'):
+            s[k] = s[k][:-1]
+    d2['coverage']['to'] = days[-2]
+    _, stale2 = run_freshness(d2, days[-1])
+    N[0] += 1
+    ok('그날치가 빠지면 잡는다', stale2, '16:14 에 받은 판이 이 꼴이었다')
+
+    # 다) 수급이 일봉보다 **앞서는** 판 — 날짜를 잘못 짚은 것이므로 실패여야 한다
+    d3 = copy.deepcopy(base)
+    d3['coverage']['to'] = '2099-01-01'
+    f3, _ = run_freshness(d3, days[-1])
+    N[0] += 1
+    ok('수급이 일봉보다 앞서면 실패로 잡는다', bool(f3))
+
+
 def main():
     test_json_parser()
     test_html_parser()
     test_merge()
     test_fault_injection()
+    test_freshness()
     if os.path.exists(TMP):
         os.remove(TMP)
 
