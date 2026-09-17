@@ -71,15 +71,26 @@ function explain(pages, toc, i, idx) {
   const opens = idx <= 12;
   const refers = REFERS.test(after);
 
-  let why;
-  if (isToc) why = '목차 쪽이라 건너뜀';
-  else if (!phrase) why = '뒤에 「집합투자기구에 관한」 이 안 붙음 (상호참조 꼴)';
-  else if (first) why = '★ 받았어야 함 — 「1. 집합투자기구의 명칭」 이 이어짐';
-  else if (opens && !refers) why = '★ 받았어야 함 — 쪽을 이 제목으로 엶';
-  else if (opens && refers) why = '쪽은 열지만 참조를 뜻하는 말이 뒤따름';
-  else why = '쪽 한가운데인데 「1. 집합투자기구의 명칭」 이 안 이어짐';
+  /* 제목이 쪽의 **맨 끝**에 오나 — 구간을 여는 속표지는 제목으로 쪽이 끝나고,
+     상호참조는 문장 한가운데라 뒤에 말이 더 있다. 판정에는 안 쓰고 보여만 준다. */
+  const endsPage = tail.replace(PHRASE, '').trim() === '';
 
-  return { isToc, phrase, first, opens, refers, spilled, why, snip: t.slice(Math.max(0, idx - 24), idx + 86).trim() };
+  let why, rank;
+  if (isToc) { why = '목차 쪽이라 건너뜀'; rank = 0; }
+  else if (!phrase) { why = '뒤에 「집합투자기구에 관한」 이 안 붙음 (상호참조 꼴)'; rank = 1; }
+  else if (first) { why = '★ 받았어야 함 — 「1. 집합투자기구의 명칭」 이 이어짐'; rank = 9; }
+  else if (opens && !refers) { why = '★ 받았어야 함 — 쪽을 이 제목으로 엶'; rank = 9; }
+  else if (opens && refers) { why = '쪽은 열지만 참조를 뜻하는 말이 뒤따름'; rank = 3; }
+  else if (endsPage) { why = '제목으로 쪽이 끝남(속표지로 보임) — 다음 쪽에 「1. 집합투자기구의 명칭」 이 없어 물리침'; rank = 5; }
+  else { why = '쪽 한가운데인데 「1. 집합투자기구의 명칭」 이 안 이어짐'; rank = 4; }
+
+  return {
+    isToc, phrase, first, opens, refers, spilled, endsPage, why, rank,
+    snip: t.slice(Math.max(0, idx - 24), idx + 86).trim(),
+    /* 물리친 자리가 진짜 제2부였는지 가리려면 다음 쪽 첫머리를 봐야 한다 —
+       여기가 이번 진단에서 가장 알고 싶은 대목이다 */
+    next: (pages[i + 1] || '').slice(0, 96),
+  };
 }
 
 async function main() {
@@ -129,14 +140,17 @@ async function main() {
       log('   「제2부」 가 한 번도 안 나옴 — 서식이 다른 문서다');
       continue;
     }
-    /* 이 종목에서 가장 아까운 자리 하나를 골라 셈에 넣는다 —
-       받았어야 하는 자리가 있으면 그것, 없으면 제일 그럴듯한 것 */
+    /* 이 종목에서 **가장 아까운** 자리 하나를 골라 셈에 넣는다.
+       처음엔 첫 자리를 담았는데, 첫 자리는 거의 늘 목차라 셈이 「목차 때문」 이라고
+       거짓말을 했다. 진짜 제2부일 법한 자리일수록 rank 를 높게 두고 그것을 고른다. */
     let best = null;
     for (const s of spots) {
       const e = explain(pages, toc, s.i, s.idx);
       log(`   p.${String(s.i + 1).padStart(3)}  ${e.why}${e.spilled ? ' (다음 쪽까지 이어 봄)' : ''}`);
       log(`          「${e.snip}」`);
-      if (!best || (e.why.startsWith('★') && !best.why.startsWith('★'))) best = e;
+      /* 물리친 속표지라면 다음 쪽 첫머리를 보여 준다 — 진짜 제2부였는지는 여기서 갈린다 */
+      if (e.rank >= 4) log(`      다음 쪽 → 「${e.next}」`);
+      if (!best || e.rank > best.rank) best = e;
     }
     tally[best.why] = (tally[best.why] || 0) + 1;
     if (best.why.startsWith('★')) shouldHave.push(`${it.code} ${it.name.slice(0, 32)}`);
