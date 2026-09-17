@@ -75,34 +75,98 @@ def pearson(xs, ys):
 # ─────────────────────────────────────────────────────────────────────
 
 def verify_closes(doc, sample=25):
+    """실린 종가를 일봉과 맞춘다. **어긋나면 왜 어긋났는지까지 가린다.**
+
+    처음에는 일치율만 냈더니 84% 가 나왔고, 그 숫자만으로는 무엇이 잘못인지
+    알 수 없었다. 어긋난 값이 **옆 날짜의 종가와 맞는지**, **그날의 시가·고가·저가
+    가운데 하나와 맞는지**를 함께 보면 갈린다.
+
+      옆 날짜와 맞는다        → 날짜를 한 칸 밀려 붙였다
+      같은 날 시가·고가와 맞는다 → 종가가 아닌 칸을 읽었다
+      아무것과도 안 맞는다      → 출처가 서로 다른 가격을 쓴다(수정주가 따위)
+    """
     syms = sorted(doc['stocks'])
     step = max(1, len(syms) // sample)
     checked = matched = 0
     bad = []
+    why = {'shift_prev': 0, 'shift_next': 0, 'ohl': 0, 'unknown': 0}
+
     for sym in syms[::step][:sample]:
         chart = load_chart(sym)
         if not chart:
             warn('%s 일봉을 읽지 못해 종가를 대조하지 못했습니다' % sym)
             continue
+        ohlc = load_chart_ohlc(sym) or {}
+        days = sorted(chart)
         s = doc['stocks'][sym]
         for d, c in zip(s.get('d') or [], s.get('c') or []):
             if c is None or d not in chart:
                 continue
             checked += 1
-            # 수정주가 때문에 소수점 아래가 다를 수 있다. 0.5% 를 넘으면 다른 값이다.
-            if abs(c - chart[d]) <= max(1.0, chart[d] * 0.005):
+            near = lambda a, b: a is not None and b is not None and \
+                abs(a - b) <= max(1.0, abs(b) * 0.005)
+            if near(c, chart[d]):
                 matched += 1
-            elif len(bad) < 8:
-                bad.append('%s %s 수급파일 %.0f vs 일봉 %.0f' % (sym, d, c, chart[d]))
+                continue
+            k = days.index(d)
+            prev = chart[days[k - 1]] if k > 0 else None
+            nxt = chart[days[k + 1]] if k + 1 < len(days) else None
+            o, h, l = (ohlc.get(d) or (None, None, None))
+            if near(c, prev):
+                why['shift_prev'] += 1
+                tag = '앞날 종가와 같음'
+            elif near(c, nxt):
+                why['shift_next'] += 1
+                tag = '다음날 종가와 같음'
+            elif any(near(c, x) for x in (o, h, l)):
+                why['ohl'] += 1
+                tag = '같은 날 시가·고가·저가 가운데 하나와 같음'
+            else:
+                why['unknown'] += 1
+                tag = '어느 것과도 안 맞음'
+            if len(bad) < 10:
+                bad.append('%s %s 수급 %.0f vs 일봉종가 %.0f (%s)'
+                           % (sym, d, c, chart[d], tag))
+
     if not checked:
         fail('종가를 한 건도 대조하지 못했습니다 — 날짜가 일봉과 전혀 안 겹칩니다')
         return
     rate = matched / checked * 100
     CHECKS[0] += 1
     sys.stderr.write('종가 대조 %d 건 가운데 %d 건 일치 (%.1f%%)\n' % (checked, matched, rate))
-    if rate < 95:
-        fail('종가 일치율 %.1f%% — 날짜를 잘못 짚었거나 표의 칸이 밀렸을 수 있습니다. %s'
-             % (rate, ' / '.join(bad)))
+    if why['shift_prev'] or why['shift_next'] or why['ohl'] or why['unknown']:
+        sys.stderr.write('  어긋남 내역 — 앞날 %d · 다음날 %d · 시고저 %d · 불명 %d\n'
+                         % (why['shift_prev'], why['shift_next'], why['ohl'], why['unknown']))
+
+    if rate >= 95:
+        return
+
+    # 무엇이 잘못인지에 따라 다른 말을 한다. 「불명」이 대부분이면 파싱이 아니라
+    # **두 출처가 서로 다른 가격을 쓴다**는 뜻이고, 그건 고칠 것이 아니라 알 것이다.
+    tot = sum(why.values()) or 1
+    if why['shift_prev'] + why['shift_next'] > tot * 0.5:
+        fail('종가 일치율 %.1f%% — 어긋난 값의 절반 넘게 **옆 날짜 종가와 같습니다**. '
+             '날짜를 한 칸 밀려 붙였습니다. %s' % (rate, ' / '.join(bad[:5])))
+    elif why['ohl'] > tot * 0.5:
+        fail('종가 일치율 %.1f%% — 어긋난 값의 절반 넘게 **같은 날 시가·고가·저가와 '
+             '같습니다**. 종가가 아닌 칸을 읽고 있습니다. %s' % (rate, ' / '.join(bad[:5])))
+    else:
+        fail('종가 일치율 %.1f%% — 어긋난 값이 옆 날짜와도, 같은 날 다른 칸과도 '
+             '맞지 않습니다(불명 %d/%d). 두 출처가 서로 다른 가격을 쓰는 것일 수 '
+             '있습니다(수정주가 따위) — 그렇다면 대조 기준을 바꿔야 합니다. %s'
+             % (rate, why['unknown'], tot, ' / '.join(bad[:5])))
+
+
+def load_chart_ohlc(sym):
+    r = subprocess.run(['git', '-C', ROOT, 'show',
+                        'origin/kr100-data:data/kr100/chart/%s.json' % sym],
+                       capture_output=True, text=True)
+    if r.returncode != 0:
+        return None
+    d = json.loads(r.stdout).get('daily') or {}
+    if not d.get('d'):
+        return None
+    return {d['d'][i]: (d['o'][i], d['h'][i], d['l'][i]) for i in range(len(d['d']))}
 
 
 # ─────────────────────────────────────────────────────────────────────
