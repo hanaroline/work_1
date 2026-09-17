@@ -65,8 +65,12 @@ PRINT_CSS = """<style>
 </style>
 """
 
-# 같은 날 두 판이 있을 때의 순서. 모닝·해외 판이 먼저, 장마감이 뒤.
-SESSION_ORDER = {"morning": 0, "global": 0, "global-morning": 0, "close": 1}
+# 같은 날 여러 판이 있을 때의 순서. 모닝·해외 판이 먼저, 장마감이 뒤,
+# 이벤트 브리프(FOMC·금통위처럼 날짜가 정해진 일회성 자료)가 맨 뒤.
+# **기본값 0 에 기대지 마십시오** — 같은 값이면 파이썬 정렬이 안정적이라
+# index.json 에 적힌 순서가 그대로 나와, 넣은 자리에 따라 목록이 달라집니다.
+SESSION_ORDER = {"morning": 0, "global": 0, "global-morning": 0,
+                 "close": 1, "event": 2}
 
 
 def key(b):

@@ -20,9 +20,11 @@ INDEX = os.path.join(DIR, "index.json")
 OUT = os.path.join(DIR, "archive.html")
 KST = datetime.timezone(datetime.timedelta(hours=9))
 WD = "월화수목금토일"
-SESSION_ORDER = {"morning": 3, "close": 2, "global": 1}
+# 내림차순으로 세우므로 숫자가 클수록 그날의 위쪽입니다.
+# 이벤트 브리프(FOMC·금통위처럼 날짜가 정해진 일회성 자료)는 0 이라 그날 맨 아래입니다.
+SESSION_ORDER = {"morning": 3, "close": 2, "global": 1, "event": 0}
 KIND = {"morning": ("모닝 마켓", "Morning"), "close": ("장마감 시황", "Close"),
-        "global": ("해외 증시", "Overseas")}
+        "global": ("해외 증시", "Overseas"), "event": ("이벤트 브리프", "Event brief")}
 
 
 def esc(s):
