@@ -1,0 +1,238 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""네이버 일봉이 믿을 만한지 보고, **야후와 얼마나 어긋나는지 잰다.**
+
+이 대본이 답해야 하는 질문은 둘이다.
+
+  하나. 네이버 일봉 자체가 말이 되는가   — 한쪽 자료만으로 답할 수 있다
+  둘.   야후와 어디서 얼마나 갈리는가     — 두 자료를 맞대야 답할 수 있다
+
+**둘째가 「어느 쪽이 맞는가」에 답하지 못한다는 점을 분명히 해 둔다.** 두 벤더가
+다르다는 사실만 재는 것이고, 심판은 제3의 출처가 있어야 한다. 그래서 갈림을 실패로
+적지 않고 **크기와 모양을 적어 사람이 판단할 재료로 남긴다.**
+
+다만 한 가지는 가릴 수 있다 — **한쪽 종가가 다른 쪽 고저 범위를 벗어나면** 그 종가는
+그 세션의 것일 수 없다. 그 건수를 양쪽 모두에 대해 센다. 한쪽에만 쏠리면 그쪽이
+그 세션 가격을 안 쓰고 있다는 뜻이다.
+
+  python3 scripts/verify_kr_prices_naver.py
+"""
+
+import json
+import math
+import os
+import statistics as st
+import subprocess
+import sys
+
+ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+IN = os.path.join(ROOT, 'data', 'prices_naver', 'kr100.json')
+
+FAILS, WARNS, CHECKS = [], [], [0]
+
+
+def fail(m):
+    FAILS.append(m)
+
+
+def warn(m):
+    WARNS.append(m)
+
+
+def check(cond, m):
+    CHECKS[0] += 1
+    if not cond:
+        fail(m)
+    return cond
+
+
+def yahoo_bars(sym):
+    r = subprocess.run(['git', '-C', ROOT, 'show',
+                        'origin/kr100-data:data/kr100/chart/%s.json' % sym],
+                       capture_output=True, text=True)
+    if r.returncode != 0:
+        return None
+    d = json.loads(r.stdout).get('daily') or {}
+    if not d.get('d'):
+        return None
+    return {d['d'][i]: (d['o'][i], d['h'][i], d['l'][i], d['c'][i], d['v'][i])
+            for i in range(len(d['d']))}
+
+
+# ─────────────────────────────────────────────────────────────────────
+# 하나. 네이버 일봉 자체가 말이 되는가
+# ─────────────────────────────────────────────────────────────────────
+
+def verify_self(doc):
+    bad_ohlc = bad_order = dup = 0
+    zero_v = 0
+    n_bars = 0
+    for sym, s in doc['stocks'].items():
+        ds = s['d']
+        check(ds == sorted(ds), '%s 날짜가 오름차순이 아닙니다' % sym)
+        if len(set(ds)) != len(ds):
+            dup += 1
+        ragged = False
+        for k in ('o', 'h', 'l', 'c', 'v'):
+            if not check(len(s[k]) == len(ds),
+                         '%s %s 계열 길이가 날짜와 다릅니다 (%d vs %d)'
+                         % (sym, k, len(s[k]), len(ds))):
+                ragged = True
+        # 길이가 어긋난 종목은 봉을 하나씩 짚지 않는다 — 여기서 터지면 **검산기가
+        # 보고를 못 하고 죽는다.** 흠을 잡으라고 만든 것이 흠 앞에서 넘어지면
+        # 아무것도 지켜 주지 못한다. 길이 어긋남은 위에서 이미 실패로 적었다.
+        if ragged:
+            continue
+        for i in range(len(ds)):
+            o, h, l, c, v = s['o'][i], s['h'][i], s['l'][i], s['c'][i], s['v'][i]
+            n_bars += 1
+            if None in (o, h, l, c):
+                bad_ohlc += 1
+                continue
+            # **봉의 뜻 자체** — 고가는 시·종보다 낮을 수 없고 저가는 높을 수 없다.
+            # 칸이 밀려 읽혔으면 여기서 무너진다.
+            if h < l or h < max(o, c) or l > min(o, c):
+                bad_order += 1
+            if not v:
+                zero_v += 1
+    check(dup == 0, '%d 종목에서 날짜가 겹칩니다' % dup)
+    check(bad_ohlc == 0, '%d 봉에서 시·고·저·종 가운데 빈 칸이 있습니다' % bad_ohlc)
+    check(bad_order == 0,
+          '%d 봉에서 고가<저가 따위로 봉이 말이 안 됩니다 — 칸이 밀렸을 수 있습니다'
+          % bad_order)
+    if zero_v > n_bars * 0.05:
+        warn('거래량이 0 인 봉이 %d 개(%.1f%%)입니다' % (zero_v, zero_v / n_bars * 100))
+    sys.stderr.write('네이버 일봉 자체 점검 — 봉 %d, 어긋난 봉 %d\n' % (n_bars, bad_order))
+
+
+# ─────────────────────────────────────────────────────────────────────
+# 둘. 야후와 맞대 보기 — **어느 쪽이 맞는지가 아니라 얼마나 다른지**
+# ─────────────────────────────────────────────────────────────────────
+
+def verify_against_yahoo(doc, sample=40):
+    syms = sorted(doc['stocks'])
+    step = max(1, len(syms) // sample)
+    pairs = 0
+    rels = []
+    naver_out = yahoo_out = 0     # 한쪽 종가가 상대 고저를 벗어난 건수
+    only_n = only_y = 0
+    worst = []
+
+    for sym in syms[::step][:sample]:
+        yb = yahoo_bars(sym)
+        if not yb:
+            continue
+        s = doc['stocks'][sym]
+        nd = {s['d'][i]: (s['o'][i], s['h'][i], s['l'][i], s['c'][i], s['v'][i])
+              for i in range(len(s['d']))}
+        lo = max(min(nd), min(yb)) if nd and yb else None
+        if lo is None:
+            continue
+        only_n += len([d for d in nd if d >= lo and d not in yb])
+        only_y += len([d for d in yb if d >= lo and d not in nd])
+        for d in sorted(set(nd) & set(yb)):
+            no, nh, nl, nc, _ = nd[d]
+            yo, yh, yl, yc, _ = yb[d]
+            if None in (nc, yc, nh, nl, yh, yl):
+                continue
+            pairs += 1
+            rel = (nc - yc) / yc * 100
+            rels.append(rel)
+            # **가릴 수 있는 한 가지** — 상대의 고저 범위를 벗어난 종가는
+            # 그 세션의 종가일 수 없다.
+            if nc > yh or nc < yl:
+                naver_out += 1
+            if yc > nh or yc < nl:
+                yahoo_out += 1
+            if abs(rel) > 0.5 and len(worst) < 25:
+                worst.append('%-11s %s  네이버 %9.0f  야후 %9.0f  (%+.2f%%) '
+                             '| 야후 고저 %.0f~%.0f | 네이버 고저 %.0f~%.0f'
+                             % (sym, d, nc, yc, rel, yl, yh, nl, nh))
+
+    if not pairs:
+        fail('야후와 겹치는 봉이 하나도 없습니다 — 날짜나 종목코드가 어긋납니다')
+        return
+
+    CHECKS[0] += 1
+    diff = [x for x in rels if abs(x) > 0.005]
+    agree = (pairs - len(diff)) / pairs * 100
+    ab = sorted(abs(x) for x in diff)
+    sys.stderr.write(
+        '\n야후 대조 %d 봉 — 같은 값 %.1f%%, 어긋난 %d 건\n' % (pairs, agree, len(diff)))
+    if ab:
+        sys.stderr.write('  상대차 중앙 %.2f%% · 90분위 %.2f%% · 최대 %.2f%% · '
+                         '네이버가 높은 건 %d / 낮은 건 %d\n'
+                         % (ab[len(ab) // 2], ab[int(len(ab) * 0.9)], ab[-1],
+                            sum(1 for x in diff if x > 0), sum(1 for x in diff if x < 0)))
+    sys.stderr.write('  거래일 어긋남 — 네이버에만 %d · 야후에만 %d\n' % (only_n, only_y))
+    sys.stderr.write('  **상대 고저를 벗어난 종가** — 네이버 종가 %d 건 · 야후 종가 %d 건\n'
+                     % (naver_out, yahoo_out))
+    if worst:
+        sys.stderr.write('\n0.5%% 넘게 어긋난 건 (일부)\n')
+        for w in worst:
+            sys.stderr.write('  %s\n' % w)
+        sys.stderr.write('\n')
+
+    # 거래일이 어긋나면 그건 벤더 차이가 아니라 자료 문제다
+    check(only_n + only_y == 0,
+          '거래일이 어긋납니다 — 네이버에만 %d 일 · 야후에만 %d 일' % (only_n, only_y))
+
+    # 중앙값이 크게 벌어지면 단위나 수정주가 기준이 다른 것이다
+    if ab:
+        check(ab[len(ab) // 2] < 3.0,
+              '종가 상대차 중앙값이 %.2f%% 입니다 — 벤더 차이로 보기에 큽니다' % ab[len(ab) // 2])
+
+    # **여기서부터는 판정이 아니라 기록이다.**
+    if diff:
+        side = ('네이버' if naver_out > yahoo_out * 2 else
+                '야후' if yahoo_out > naver_out * 2 else None)
+        msg = ('두 출처가 종가를 %.1f%% 만 같게 봅니다(어긋난 %d 건, 중앙 %.2f%% · '
+               '최대 %.2f%%). 상대의 고저 범위를 벗어난 종가는 네이버 %d 건 · 야후 %d 건입니다. '
+               % (agree, len(diff), ab[len(ab) // 2], ab[-1], naver_out, yahoo_out))
+        if side:
+            msg += ('**%s 쪽이 그 세션 가격을 안 쓰는 쪽으로 기웁니다** — 한쪽에 쏠렸습니다. '
+                    '다만 이것만으로 단정하지 마십시오. ' % side)
+        else:
+            msg += ('어느 쪽으로도 쏠리지 않아 **이 자료만으로는 심판할 수 없습니다.** ')
+        msg += '지표의 기준을 바꾸려면 제3의 출처(거래소 공시)가 필요합니다.'
+        warn(msg)
+
+
+def main(argv):
+    path = argv[argv.index('--in') + 1] if '--in' in argv else IN
+    if not os.path.exists(path):
+        sys.stderr.write('::error::%s 가 없습니다 — 먼저 fetch_kr_prices_naver.py 를 돌리십시오\n'
+                         % path)
+        return 1
+    doc = json.load(open(path, encoding='utf-8'))
+    if not doc.get('stocks'):
+        sys.stderr.write('::error::받은 종목이 없습니다\n')
+        return 1
+
+    check(bool(doc.get('unit')), '단위를 적지 않았습니다')
+    check(bool(doc.get('routes_used')), '어느 길로 받았는지 적지 않았습니다')
+    verify_self(doc)
+    verify_against_yahoo(doc)
+
+    lines = ['검산 %d 가지' % CHECKS[0],
+             '길 %s' % json.dumps(doc.get('routes_used'), ensure_ascii=False), '']
+    if WARNS:
+        lines.append('알아 둘 것 %d' % len(WARNS))
+        for w in WARNS[:10]:
+            lines.append('  · %s' % w)
+        lines.append('')
+    if FAILS:
+        lines.append('실패 %d' % len(FAILS))
+        for f in FAILS[:30]:
+            lines.append('  - %s' % f)
+    else:
+        lines.append('실패 없음')
+    out = '\n'.join(lines)
+    print(out)
+    open(os.path.join(os.path.dirname(path), 'verify.txt'), 'w',
+         encoding='utf-8').write(out + '\n')
+    return 1 if FAILS else 0
+
+
+if __name__ == '__main__':
+    sys.exit(main(sys.argv[1:]))
