@@ -361,6 +361,53 @@ def verify_against_market(doc):
 # 다. 꼴 점검
 # ─────────────────────────────────────────────────────────────────────
 
+# main() 이 채운다 — latest_bar_date 가 어느 종목의 일봉을 볼지 고를 때 쓴다.
+doc_symbols = []
+
+
+def latest_bar_date(sample=25):
+    """일봉이 아는 **가장 최근 거래일**. 수급이 거기까지 왔는지 재는 잣대다."""
+    best = None
+    for sym in sorted(doc_symbols)[:sample]:
+        cl = load_chart(sym)
+        if not cl:
+            continue
+        d = max(cl)
+        if best is None or d > best:
+            best = d
+    return best
+
+
+def verify_freshness(doc):
+    """**오늘 자료가 빠졌는데 성공으로 끝나는 것**을 막는다.
+
+    수집기는 날짜로 병합하므로, 네이버가 아직 그날치를 안 올렸으면 어제 것을 그대로
+    다시 쓰고 조용히 성공한다. 실제로 그 일이 있었다 — 16:14 에 받은 판이 전날까지만
+    담고 있었는데 아무도 그렇다고 말해 주지 않아, 하루 늦은 자료로 신호를 냈다.
+
+    **실패가 아니라 경고인 까닭.** 네이버가 늦는 것은 우리가 고칠 수 있는 일이 아니고,
+    받아 둔 열흘치는 늦었어도 버릴 것이 아니다. 막아야 할 것은 「낡았다는 사실이
+    보이지 않는 것」이지 낡은 자료 자체가 아니다. 그래서 커밋은 되게 두되 보고서에
+    [STALE] 자국을 남기고 워크플로가 그것을 읽어 경고를 띄운다 — 워크플로에서 같은
+    비교를 다시 하면 두 벌이 되어 언젠가 어긋난다.
+    """
+    cov = doc.get('coverage') or {}
+    to = cov.get('to')
+    bar = latest_bar_date()
+    if not to or not bar:
+        warn('일봉을 읽지 못해 수급이 최신인지 재지 못했습니다')
+        return
+    CHECKS[0] += 1
+    if to < bar:
+        warn('[STALE] 수급이 %s 까지인데 일봉은 %s 까지입니다 — **그날치가 아직 없습니다.** '
+             '네이버가 종목별 수급을 늦게 올리기 때문이며(16:14 에는 없고 21:28 에는 '
+             '있었습니다), 고칠 것이 아니라 더 늦게 받아야 하는 일입니다. '
+             '이 판으로 신호를 내면 수급만 하루 뒤진 값이 섞입니다.' % (to, bar))
+    elif to > bar:
+        fail('수급이 %s 까지인데 일봉은 %s 까지입니다 — 수급이 일봉보다 앞섭니다. '
+             '날짜를 잘못 짚었을 수 있습니다.' % (to, bar))
+
+
 def verify_shape(doc):
     check(bool(doc.get('unit')), '단위를 적지 않았습니다')
     check(bool(doc.get('derivation')), '순매수를 어떻게 억원으로 바꿨는지 적지 않았습니다')
@@ -398,7 +445,10 @@ def main(argv):
         return 1
     doc = json.load(open(path, encoding='utf-8'))
 
+    doc_symbols[:] = list(doc.get('stocks') or {})
+
     verify_shape(doc)
+    verify_freshness(doc)
     verify_closes(doc)
     verify_close_lag(doc)
     verify_against_market(doc)
