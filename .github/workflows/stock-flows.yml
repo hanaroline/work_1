@@ -19,6 +19,17 @@ on:
     # 위가 늦을 때를 대비한 두 번째 — 18:00 KST
     - cron: '0 9 * * 1-5'
 
+  # **처음 한 번 돌려 보려고 붙인 방아쇠다.** workflow_dispatch 는 워크플로 파일이
+  # 기본 가지에 있어야 단추가 생기는데, 이 수집기는 아직 기능 가지에만 있다.
+  # 그런데 파서가 맞는지는 살아 있는 응답에 대고 돌려 봐야 알 수 있어서, 이 가지에
+  # 밀 때 돌게 해 둔다. main 에 들어가면 이 블록은 지운다 — 예약과 단추로 충분하다.
+  push:
+    branches: [claude/blissful-sagan-sn0yse]
+    paths:
+      - 'scripts/fetch_stock_flows.py'
+      - 'scripts/verify_stock_flows.py'
+      - '.github/workflows/stock-flows.yml'
+
   workflow_dispatch:
     inputs:
       pages:
@@ -82,10 +93,15 @@ jobs:
           git add data/flows
           if git diff --staged --quiet; then echo "변경 없음"; exit 0; fi
           git commit -m "종목별 수급 $(TZ=Asia/Seoul date '+%Y-%m-%d %H:%M KST')"
+
+          # **돌고 있는 가지로 민다.** `git push` 와 `origin main` 을 박아 두면
+          # 기능 가지에서 돌릴 때 엉뚱한 곳을 되받는다. GITHUB_REF_NAME 을 쓴다.
+          BR="${GITHUB_REF_NAME}"
           for i in 1 2 3 4 5; do
-            git push && exit 0
-            git pull --rebase --no-edit origin main || { git rebase --abort || true; \
-              echo "::error::되받기 충돌"; exit 1; }
+            git push origin "HEAD:refs/heads/$BR" && exit 0
+            echo "거절됨 — 되받아 다시 시도한다 ($i/5)"
+            git pull --rebase --no-edit origin "$BR" || { git rebase --abort || true; \
+              echo "::error::되받기 충돌 — 손으로 확인하십시오"; exit 1; }
             sleep $((i * 5))
           done
           echo "::error::다섯 번 밀어 봤지만 모두 거절됐습니다"; exit 1
