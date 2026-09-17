@@ -51,16 +51,53 @@ jobs:
         with:
           python-version: '3.12'
 
+      # 수집할 때만 깐다. 30초쯤 걸리는데, 엑셀만 다시 만드는 판에서는 쓸 데가 없다.
       - name: Playwright 설치
+        if: steps.need.outputs.collect == 'true'
         run: npm i -D playwright@1.56.1 && npx playwright install --with-deps chromium
 
       - name: 파이썬 꾸러미
         run: pip install --quiet openpyxl formulas
 
+      # 수집기를 안 건드린 푸시에서는 수집을 건너뛴다.
+      #
+      # 모집단이 892종목이 되면서 수집이 35~40분 걸린다. 그런데 엑셀 생성기나
+      # 검사기만 고친 푸시에서도 매번 수집부터 다시 돌고 있었다 — 한 글자
+      # 고치고 40분을 기다린 셈이다. 자료는 이미 data/cc_etf.json 에 있으므로
+      # 그걸로 다시 만들면 3분이면 끝난다.
+      #
+      # 정기 갱신(schedule)과 손으로 돌리는 판(workflow_dispatch)은 당연히
+      # 수집한다. 수집기 자체를 고쳤을 때도 수집한다 — 안 그러면 고친 수집기가
+      # 한 번도 안 돌아 본 채로 다음 달 1일을 맞는다.
+      - name: 수집이 필요한가
+        id: need
+        run: |
+          if [ "${{ github.event_name }}" != "push" ]; then
+            echo "수집합니다 (${{ github.event_name }})"
+            echo "collect=true" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          before="${{ github.event.before }}"
+          # 새 잡가지의 첫 푸시는 before 가 0 뿐이라 견줄 데가 없다. 그때는 수집한다.
+          if [ -z "$before" ] || [ "$before" = "0000000000000000000000000000000000000000" ] \
+             || ! git cat-file -e "$before^{commit}" 2>/dev/null; then
+            echo "견줄 앞 커밋이 없어 수집합니다"
+            echo "collect=true" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          if git diff --name-only "$before" "${{ github.sha }}" | grep -q 'scripts/collect_cc_etf.mjs'; then
+            echo "수집기가 바뀌어 수집합니다"
+            echo "collect=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "수집기가 그대로라 건너뜁니다 — 있는 자료로 엑셀만 다시 만듭니다"
+            echo "collect=false" >> "$GITHUB_OUTPUT"
+          fi
+
       # 수집 실패는 잡을 바로 실패시키지 않는다. data/cc_etf.json 을 건드리지
       # 않고 끝나므로 직전 달 자료가 그대로 남는다. 마지막에 빨갛게 만든다.
       - name: ETFCHECK 수집
         id: collect
+        if: steps.need.outputs.collect == 'true'
         continue-on-error: true
         run: node scripts/collect_cc_etf.mjs
 
@@ -68,7 +105,7 @@ jobs:
       # 자리에서도 봐야 하므로 저장소에도 남긴다. data/ 와 엑셀은 건드리지
       # 않는다 — 이건 무엇이 잘못됐는지 적은 쪽지일 뿐이다.
       - name: 수집 실패 진단자료 커밋
-        if: steps.collect.outcome == 'failure'
+        if: steps.need.outputs.collect == 'true' && steps.collect.outcome == 'failure'
         continue-on-error: true
         run: |
           git config user.name  "github-actions[bot]"
@@ -85,7 +122,7 @@ jobs:
           done
 
       - name: 수집 실패 진단자료
-        if: steps.collect.outcome == 'failure'
+        if: steps.need.outputs.collect == 'true' && steps.collect.outcome == 'failure'
         uses: actions/upload-artifact@v4
         with:
           name: cc-etf-collect-debug
@@ -96,13 +133,13 @@ jobs:
           if-no-files-found: ignore
 
       - name: 엑셀 다시 만들기
-        if: steps.collect.outcome == 'success'
+        if: steps.need.outputs.collect != 'true' || steps.collect.outcome == 'success'
         run: python scripts/build_etf_proposal.py
 
       # 검사를 통과하지 못하면 커밋하지 않는다. 틀린 제안서가 저장소에
       # 들어가는 것이 수집 실패보다 나쁘다 — 아무도 못 알아채기 때문이다.
       - name: 제안서 검사
-        if: steps.collect.outcome == 'success'
+        if: steps.need.outputs.collect != 'true' || steps.collect.outcome == 'success'
         run: python scripts/check_etf_proposal.py
 
       # 미리보기 PDF. 엑셀을 열지 않고도 이번 달 제안서가 어떻게 생겼는지
@@ -113,7 +150,7 @@ jobs:
       # 처음에 "러너에 깔려 있겠지" 하고 그냥 불렀다가, continue-on-error 에
       # 가려 조용히 건너뛰어졌다. 있는지 보고 없으면 받는다.
       - name: 리브레오피스 (미리보기용)
-        if: steps.collect.outcome == 'success'
+        if: steps.need.outputs.collect != 'true' || steps.collect.outcome == 'success'
         run: |
           if command -v soffice >/dev/null; then
             echo "이미 있습니다: $(soffice --version 2>/dev/null | head -1)"
@@ -123,7 +160,7 @@ jobs:
           fi
 
       - name: 미리보기 PDF
-        if: steps.collect.outcome == 'success'
+        if: steps.need.outputs.collect != 'true' || steps.collect.outcome == 'success'
         run: |
           soffice --headless --norestore --convert-to pdf \
             --outdir /tmp/pdf 고객제안서_월배당ETF.xlsx
@@ -132,7 +169,7 @@ jobs:
           ls -la docs/etf-proposal-preview.pdf
 
       - name: 커밋
-        if: steps.collect.outcome == 'success'
+        if: steps.need.outputs.collect != 'true' || steps.collect.outcome == 'success'
         run: |
           git config user.name  "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
@@ -157,12 +194,15 @@ jobs:
           {
             echo "### 월배당 커버드콜 ETF 제안서"
             echo ""
-            if [ "${{ steps.collect.outcome }}" != "success" ]; then
+            if [ "${{ steps.need.outputs.collect }}" != "true" ]; then
+              echo "- 수집: **건너뜀** — 수집기가 그대로라 있는 자료로 엑셀만 다시 만들었습니다."
+            elif [ "${{ steps.collect.outcome }}" != "success" ]; then
               echo "- 수집: **실패** — \`data/cc_etf.json\` 과 엑셀은 직전 달 자료를 그대로 둡니다."
               echo "- 진단자료는 \`cc-etf-collect-debug\` 아티팩트를 보십시오."
               exit 0
+            else
+              echo "- 수집: 성공"
             fi
-            echo "- 수집: 성공"
             echo ""
             python - <<'PY'
           import json
@@ -185,7 +225,7 @@ jobs:
       # 수집이 실패했으면 잡을 빨갛게 남긴다. 부름만 성공하고 자료는 안 바뀐
       # 달이 조용히 지나가면 안 된다.
       - name: 수집 실패 판정
-        if: always() && steps.collect.outcome == 'failure'
+        if: always() && steps.need.outputs.collect == 'true' && steps.collect.outcome == 'failure'
         run: |
           echo "::error::ETFCHECK 수집 실패 — 자료와 엑셀은 직전 달 것을 유지합니다."
           exit 1
