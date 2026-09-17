@@ -74,6 +74,62 @@ def load_names(market):
     return out
 
 
+FLOW_PATH = os.path.join(ROOT, 'data', 'flows', 'kr100.json')
+
+
+def load_flows(path=None):
+    """종목별 외국인·기관 수급. 없으면 빈 것을 낸다 — 없는 축은 없는 채로 둔다."""
+    path = path or FLOW_PATH
+    if not os.path.exists(path):
+        return {}
+    try:
+        return json.load(open(path, encoding='utf-8')).get('stocks') or {}
+    except Exception as e:
+        sys.stderr.write('수급 파일을 읽지 못했다: %s\n' % e)
+        return {}
+
+
+def align_flow(bars, s):
+    """수급을 일봉 날짜에 맞춰 세우고 누적을 셈한다.
+
+    `signal_lib.axis_flow` 가 먹는 꼴로 맞춘다 — foreign_cum5/20, inst_cum5/20.
+    **없는 날은 None 이다. 0 이 아니다.** 0 으로 채우면 「사지도 팔지도 않았다」가
+    되어 자료가 빠진 날마다 수급 축이 중립으로 끌려간다.
+
+    누적은 **그날까지의 뒤돌아본 5·20일 합**이다. 창 안에 빠진 날이 절반을 넘으면
+    그 누적도 내지 않는다 — 두 날치로 잰 「20일 누적」은 20일 누적이 아니다.
+    """
+    if not s or not s.get('d'):
+        return None
+    by = {}
+    for k, d in enumerate(s['d']):
+        by[d] = (s['f'][k] if k < len(s.get('f') or []) else None,
+                 s['i'][k] if k < len(s.get('i') or []) else None)
+    n = len(bars)
+    f = [None] * n
+    i_ = [None] * n
+    for k, b in enumerate(bars):
+        v = by.get(b['d'])
+        if v:
+            f[k], i_[k] = v
+
+    def cum(xs, w):
+        out = [None] * n
+        for k in range(n):
+            lo = max(0, k - w + 1)
+            win = xs[lo:k + 1]
+            have = [x for x in win if x is not None]
+            if len(win) == w and len(have) > w * 0.5:
+                out[k] = sum(have)
+        return out
+
+    if not any(x is not None for x in f) and not any(x is not None for x in i_):
+        return None
+    return {'foreign': f, 'inst': i_,
+            'foreign_cum5': cum(f, 5), 'foreign_cum20': cum(f, 20),
+            'inst_cum5': cum(i_, 5), 'inst_cum20': cum(i_, 20)}
+
+
 def scenario_probs(bars, rows, scores, self_pcts, i):
     """오늘과 **같은 신호대**였던 과거 날들의 이후 분포.
 
@@ -156,13 +212,14 @@ def reasons(ind, row, i, plan):
     return out
 
 
-def one(bars, bench, name, symbol, market):
+def one(bars, bench, name, symbol, market, flow=None):
     """종목 하나의 오늘 판."""
     if len(bars) < S.BURN_IN + 60:
         return {'symbol': symbol, 'name': name, 'market': market,
                 'note': '일봉 %d 세션 — 점수를 내기에 모자랍니다' % len(bars)}
     ind = S.compute_indicators(bars, bench)
-    rows = S.score_series(ind, bars)
+    fl = align_flow(bars, flow) if flow else None
+    rows = S.score_series(ind, bars, flow=fl)
     i = len(bars) - 1
 
     out = {'symbol': symbol, 'name': name, 'market': market,
@@ -175,6 +232,22 @@ def one(bars, bench, name, symbol, market):
         out['axes'][ko] = None if v is None else round(v, 1)
     out['conf'] = None if rows[i]['conf'] is None else round(rows[i]['conf'], 1)
     out['axes_missing'] = rows[i]['axes_missing']
+
+    # 수급 축에 **종목별 외국인·기관 자료가 실제로 들어간 날이 며칠인지** 적는다.
+    # 백테스트는 이 자료 없이 잰 것이라, 들어가기 시작하면 화면이 그 사실을 말해야
+    # 한다. (자료가 쌓이는 만큼 λ 가 올라가 가중치도 저절로 커진다)
+    if fl:
+        cov = sum(1 for x in fl['foreign'] if x is not None)
+        out['flow_data'] = {
+            'sessions': cov,
+            'in_score': sum(1 for x in fl['foreign_cum20'] if x is not None),
+            'latest_foreign': _r(fl['foreign'][i]),
+            'latest_inst': _r(fl['inst'][i]),
+            'cum20_foreign': _r(fl['foreign_cum20'][i]),
+            'cum20_inst': _r(fl['inst_cum20'][i]),
+            'note': ('외국인·기관 순매수가 %d 세션 실렸습니다. **백테스트는 이 자료 '
+                     '없이 잰 것입니다** — 성적표가 이 축을 포함하지 않습니다.' % cov),
+        }
 
     vp = rows[i].get('vp')
     if vp:
@@ -290,6 +363,10 @@ def main(argv):
 
     idx_close = {b['d']: b['c'] for b in idx_bars} if idx_bars else None
 
+    flows = load_flows(argv[argv.index('--flows') + 1] if '--flows' in argv else None)
+    if flows:
+        sys.stderr.write('종목별 수급 %d 종목\n' % len(flows))
+
     for mk, branch, prefix in B.UNIVERSES:
         if mk not in markets:
             continue
@@ -304,7 +381,8 @@ def main(argv):
                 continue
             sym = os.path.basename(p)[:-5]
             bench = [idx_close.get(b['d']) for b in bars] if (mk == 'KR' and idx_close) else None
-            result['items'].append(one(bars, bench, names.get(sym, sym), sym, mk))
+            result['items'].append(one(bars, bench, names.get(sym, sym), sym, mk,
+                                       flow=flows.get(sym) if mk == 'KR' else None))
             cnt += 1
         result['universe'][mk] = cnt
         sys.stderr.write('%s %d 종목\n' % (mk, cnt))

@@ -25,6 +25,7 @@ on:
       - 'scripts/signal_lib.py'
       - 'scripts/build_signals.py'
       - 'data/volatility/latest.json'
+      - 'data/flows/kr100.json'
 
   workflow_dispatch:
 
