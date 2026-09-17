@@ -305,9 +305,18 @@ def verify_absences(doc):
                    (it.get('axes') or {}).get('flow') is not None,
                    '수급 %d 세션이 실렸는데 자금수급 축이 비어 있다' % fd['sessions'])
         check_true('%s 수급 세션 수를 적었다' % nm, fd.get('sessions', 0) > 0)
-        check_true('%s 백테스트가 이 축을 안 쟀다고 적었다' % nm,
-                   '백테스트' in (fd.get('note') or ''),
-                   '성적표가 이 축으로 잰 것이 아니라는 말이 있어야 한다')
+        # **점수에 안 들어갔으면 안 들어갔다고 적혀 있어야 한다.**
+        # 「N 세션 실렸습니다」만 적으면 급히 보는 사람은 반영된 줄로 읽는다.
+        note = fd.get('note') or ''
+        if fd.get('in_score', 0) == 0:
+            check_true('%s 점수 미편입을 적었다' % nm,
+                       '아직 점수에 들어가지 않습니다' in note,
+                       '수급 %d 세션이 실렸지만 점수 편입 0 일이므로 그 사실이 '
+                       '적혀 있어야 한다' % fd['sessions'])
+        else:
+            check_true('%s 백테스트가 이 축을 안 쟀다고 적었다' % nm,
+                       '백테스트' in note,
+                       '성적표가 이 축으로 잰 것이 아니라는 말이 있어야 한다')
 
     check_true('유의사항이 실려 있다', bool(doc.get('disclaimer')),
                '투자권유가 아니라는 것과 준법 확인이 필요하다는 것을 적어야 한다')

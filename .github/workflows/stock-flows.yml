@@ -19,16 +19,9 @@ on:
     # 위가 늦을 때를 대비한 두 번째 — 18:00 KST
     - cron: '0 9 * * 1-5'
 
-  # **처음 한 번 돌려 보려고 붙인 방아쇠다.** workflow_dispatch 는 워크플로 파일이
-  # 기본 가지에 있어야 단추가 생기는데, 이 수집기는 아직 기능 가지에만 있다.
-  # 그런데 파서가 맞는지는 살아 있는 응답에 대고 돌려 봐야 알 수 있어서, 이 가지에
-  # 밀 때 돌게 해 둔다. main 에 들어가면 이 블록은 지운다 — 예약과 단추로 충분하다.
-  push:
-    branches: [claude/blissful-sagan-sn0yse]
-    paths:
-      - 'scripts/fetch_stock_flows.py'
-      - 'scripts/verify_stock_flows.py'
-      - '.github/workflows/stock-flows.yml'
+  # (파서를 확인하려고 이 가지에 push 방아쇠를 잠시 붙여 네 번 돌렸고, 확인이
+  #  끝나 뗐다. 이제 예약과 단추로만 돈다 — 방아쇠를 남겨 두면 이 파일을 고칠
+  #  때마다 네이버를 백 번씩 두드린다.)
 
   workflow_dispatch:
     inputs:

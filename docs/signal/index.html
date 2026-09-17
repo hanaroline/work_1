@@ -455,17 +455,23 @@
        일이지만, 성적표가 그 자료로 잰 것이 아니라는 점은 숨기면 안 된다. */
     var fd = it.flow_data;
     if (fd) {
-      s += '<div class="warnbox"><b>수급 축에 종목별 외국인·기관 자료가 ' + fd.sessions +
-           '세션 실렸습니다</b> (점수에 들어간 날 ' + fd.in_score + '일).' +
+      // 문구는 파이썬이 만든 것을 그대로 쓴다. 「자료가 실렸다」와 「점수에
+      // 들어갔다」는 다른 말이고, 어느 쪽인지는 build_signals 가 in_score 를 보고
+      // 갈라 적는다. 화면이 여기서 다시 문장을 지으면 두 곳이 어긋난다.
+      s += '<div class="warnbox">' +
+           esc(fd.note).replace(/\*\*(.+?)\*\*/g, '<b>$1</b>') +
+           (fd.latest_foreign != null
+             ? ' <span class="muted">오늘 외국인 ' +
+               (fd.latest_foreign > 0 ? '+' : '') + num(fd.latest_foreign, 0) + '억' +
+               (fd.latest_inst != null
+                 ? ' · 기관 ' + (fd.latest_inst > 0 ? '+' : '') + num(fd.latest_inst, 0) + '억'
+                 : '') + '</span>'
+             : '') +
            (fd.cum20_foreign != null
-             ? ' 20일 누적 외국인 <b>' + (fd.cum20_foreign > 0 ? '+' : '') +
-               num(fd.cum20_foreign, 0) + '억</b>'
+             ? ' <span class="muted">20일 누적 외국인 ' +
+               (fd.cum20_foreign > 0 ? '+' : '') + num(fd.cum20_foreign, 0) + '억</span>'
              : '') +
-           (fd.cum20_inst != null
-             ? ' · 기관 <b>' + (fd.cum20_inst > 0 ? '+' : '') + num(fd.cum20_inst, 0) + '억</b>'
-             : '') +
-           '. <b>백테스트는 이 자료 없이 잰 것입니다</b> — 아래 성적표에 이 축은 ' +
-           '들어 있지 않습니다. 자료가 쌓이는 만큼 가중치가 저절로 올라갑니다.</div>';
+           '</div>';
     }
     s += '<div class="note">축 점수는 각 지표가 <b>제 과거 1년 안에서</b> 어디쯤인지를 모은 값입니다. ' +
          '가중치는 그 축이 과거에 실제로 앞일을 말해 주었는가를 <b>그 시점 이전 자료로만</b> 재서 정합니다.</div>';

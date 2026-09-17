@@ -75,22 +75,35 @@ try {
     // 종목별 수급이 실렸으면 화면이 그 사실과 **백테스트가 그 축을 안 쟀다는 것**을
     // 말해야 한다. 자료가 늘어난 것은 좋은 일이지만 성적표가 그 자료로 잰 것이
     // 아니라는 점을 숨기면, 화면이 실제보다 검증된 것처럼 보인다.
-    const flowSym = await page.evaluate(async () => {
+    // **상태에 따라 다른 것을 확인한다.** 자료가 실린 것과 점수에 들어간 것은
+    // 다른 말이고, 화면은 그 둘을 갈라 적어야 한다. 처음에는 「N 세션 실렸습니다」만
+    // 찾았는데, 자료가 열흘뿐이라 점수에 한 날도 안 들어간 상태에서 그 문구가
+    // 뜨면 급히 보는 사람은 반영된 줄로 읽는다.
+    const flow = await page.evaluate(async () => {
       const r = await fetch('../../data/signals/latest.json');
       const d = await r.json();
       const it = (d.items || []).find(x => x.flow_data);
       if (!it) return null;
       const sel = document.getElementById('pick');
       sel.value = it.symbol; sel.dispatchEvent(new Event('change'));
-      return it.symbol;
+      return { symbol: it.symbol, inScore: it.flow_data.in_score,
+               sessions: it.flow_data.sessions };
     });
-    if (flowSym) {
+    if (flow) {
       await page.waitForTimeout(300);
       const t = await page.textContent('#body');
-      ok(`[${theme}] 수급 실린 종목에 세션 수가 뜬다`, /세션 실렸습니다/.test(t || ''), flowSym);
-      ok(`[${theme}] 수급 실린 종목에 백테스트 한계가 뜬다`,
-         /백테스트는 이 자료 없이/.test(t || ''),
-         '성적표가 이 축을 안 쟀다는 말이 있어야 한다');
+      if (flow.inScore === 0) {
+        ok(`[${theme}] 점수에 안 들어갔다고 뜬다`,
+           /아직 점수에 들어가지 않습니다/.test(t || ''),
+           `${flow.symbol} 수급 ${flow.sessions}세션, 점수편입 0`);
+        ok(`[${theme}] 반영된 것처럼 적지 않는다`, !/세션 실렸고/.test(t || ''));
+      } else {
+        ok(`[${theme}] 점수 편입 일수가 뜬다`, /일이 점수에 들어갔습니다/.test(t || ''),
+           flow.symbol);
+        ok(`[${theme}] 백테스트 한계가 뜬다`,
+           /백테스트는 이 자료 없이/.test(t || ''),
+           '성적표가 이 축을 안 쟀다는 말이 있어야 한다');
+      }
     }
 
     // 한계·유의사항
