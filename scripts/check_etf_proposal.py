@@ -15,6 +15,7 @@
   4. 콤보박스가 살아 있고 채택 구간을 가리키는가
   5. 시트 값이 data/cc_etf.json 과 한 글자도 다르지 않은가
   6. 수식을 실제로 계산했을 때 손계산과 같은 값이 나오는가
+  7. [종목조회] 가 조건 조합마다 손으로 고른 것과 같은 종목을 내놓는가
 
 왜 리브레오피스를 안 쓰나
   처음에는 리브레오피스로 다시 계산시켰다. 그런데 `--convert-to xlsx` 는
@@ -43,7 +44,8 @@ SRC = Path(sys.argv[2]) if len(sys.argv) > 2 else ROOT / "data" / "cc_etf.json"
 DATA_COLS = {
     "A": "종목명", "B": "종목코드", "C": "운용사", "D": "현재가", "E": "순자산총액",
     "F": "60일 평균거래대금", "G": "총보수", "H": "변동성", "I": "최근 월분배율",
-    "J": "연환산 분배율", "K": "분배이력", "L": "최근 분배기준일", "M": "채택", "N": "제외 사유", "O": "기초지수", "P": "유형", "Q": "자산군",
+    "J": "연환산 분배율", "K": "분배 기록수", "L": "최근 분배기준일", "M": "채택", "N": "제외 사유", "O": "기초지수", "P": "유형", "Q": "자산군",
+    "R": "지급주기", "S": "연 지급횟수",
 }
 
 problems: list[str] = []
@@ -392,7 +394,139 @@ def main() -> int:  # noqa: PLR0915
             f"{amount:,.0f}원 중 {tot_invest:,.0f}원 투자, "
             f"월 세전 {tot_pre:,.0f}원 / 연 {w_ann:.2%}"
         )
+
+    check_lookup(selectable, first, last)
     return report()
+
+
+# ── [종목조회] 검산 ────────────────────────────────────────────────────
+def check_lookup(selectable, first_sel, last_sel) -> None:  # noqa: ARG001
+    """조건을 바꿔 가며 실제로 계산시키고, 손으로 고른 것과 맞춰 본다.
+
+    이 장은 눈으로 봐서는 맞는지 알 수 없다. 조건을 걸면 종목이 몇 줄 나오는데
+    그것이 **정말 그 조건에 맞는 종목인지**는 데이터 장 900줄을 손으로 훑어야
+    알 수 있고, 매월 1일 자동으로 다시 만들어지므로 사람이 매번 그럴 수도 없다.
+    그래서 조건 조합마다 기계가 직접 골라 보고 맞춰 본다.
+
+    한 줄 어긋난 참조는 여기서 특히 위험하다. 조회 결과가 조용히 한 칸씩
+    밀리면, 담당자는 "분기배당 5% 이상" 을 걸어 놓고 월배당 2% 짜리를
+    분기배당이라 믿고 고르게 된다.
+    """
+    import shutil
+    import tempfile
+
+    from openpyxl import load_workbook as _load
+
+    wb = _load(XLSX)
+    if "종목조회" not in wb.sheetnames:
+        fail("[종목조회] 장이 없습니다.")
+        return
+    lk = wb["종목조회"]
+    cond_row, _ = find_label(lk, "지급주기", cols=(2,))
+    if not cond_row:
+        fail("[종목조회] 에서 '지급주기' 조건 칸을 못 찾았습니다.")
+        return
+    first_hit = None
+    for row in lk.iter_rows(min_col=2, max_col=2):
+        for c in row:
+            if isinstance(c.value, str) and c.value.startswith("=IF($J"):
+                first_hit = c.row
+                break
+        if first_hit:
+            break
+    if not first_hit:
+        fail("[종목조회] 에서 결과 표의 첫 줄을 못 찾았습니다.")
+        return
+
+    # 손으로 고르는 쪽. 데이터 장의 차례(채택 먼저, 그 안에서 연 분배율 높은
+    # 순)를 그대로 따른다 — 조회 결과도 그 차례로 나오기 때문이다.
+    def expect(freq, lo, hi):
+        out = []
+        for x in selectable:
+            r = x.get("distTtmRate")
+            if r is None:
+                continue
+            f = x.get("payoutFreq") or ""
+            f = "판정 불가" if f.startswith("판정 불가") else f
+            if freq != "전체" and f != freq:
+                continue
+            if not (lo - 1e-9 <= r / 100 <= hi + 1e-9):
+                continue
+            out.append(x["name"])
+        return out
+
+    # 주기 3가지 × 분배율 구간 3가지. 자료에 실제로 있는 주기로 고른다 —
+    # 한 종목도 없는 조건만 시험하면 "빈 칸이 나온다" 만 확인하게 된다.
+    have = []
+    for x in selectable:
+        f = x.get("payoutFreq") or ""
+        f = "판정 불가" if f.startswith("판정 불가") else f
+        if f and f not in have:
+            have.append(f)
+    freqs = ["전체"] + have[:3]
+    bands = [(0.0, 1.0), (0.05, 1.0), (0.0, 0.03)]
+
+    combos = [(f, lo, hi) for f in freqs for lo, hi in bands]
+    tmpdir = Path(tempfile.mkdtemp())
+    try:
+        checked = 0
+        nonempty = 0
+        widest = 0
+        for freq, lo, hi in combos:
+            lk.cell(row=cond_row, column=3).value = freq
+            lk.cell(row=cond_row + 1, column=3).value = lo
+            lk.cell(row=cond_row + 2, column=3).value = hi
+            probe = tmpdir / f"lk_{checked}.xlsx"
+            wb.save(probe)
+            cells = evaluate(probe)
+            if cells is None:
+                return
+            want = expect(freq, lo, hi)
+            got = []
+            for k in range(LOOKUP_ROWS_MAX):
+                v = cells.get(("종목조회", f"B{first_hit + k}"))
+                if v in (None, "", 0):
+                    break
+                got.append(v)
+            label = f"{freq} / {lo:.0%}~{hi:.0%}"
+            # 결과 줄 수에 상한이 있으므로, 조건에 맞는 것이 더 많으면
+            # 앞에서부터 그만큼만 나오는 것이 맞다.
+            want_cut = want[:LOOKUP_ROWS_MAX]
+            if got != want_cut:
+                fail(
+                    f"[종목조회] {label}: {len(got)}종목이 나왔는데 손으로 고르면 "
+                    f"{len(want_cut)}종목입니다. "
+                    f"처음 다른 자리 — 나온 값 {got[:3]} / 손계산 {want_cut[:3]}"
+                )
+                return
+            # 개수 칸도 함께 본다. 표는 60줄에서 잘리지만 개수는 전부 세야 한다.
+            n_cell = cells.get(("종목조회", f"C{cond_row + 3}"))
+            if n_cell is not None and not near(n_cell, len(want), tol=0.5):
+                fail(f"[종목조회] {label}: 개수 칸 {n_cell} ≠ 손계산 {len(want)}")
+                return
+            checked += 1
+            if got:
+                nonempty += 1
+                widest = max(widest, len(got))
+        # 아홉 조합이 전부 빈 결과였어도 "다 맞았다" 가 된다. 빈 것끼리 맞춰
+        # 놓고 검증했다고 할 수는 없다. 적어도 몇 조합은 실제로 종목을
+        # 내놓아야 이 검사가 무언가를 본 것이다.
+        if nonempty < 3:
+            fail(
+                f"[종목조회] 조건 {checked}조합 중 종목이 나온 것이 {nonempty}개뿐입니다 — "
+                "빈 결과끼리 맞춘 것이라 검사가 아무것도 보지 못했습니다."
+            )
+            return
+        notes.append(
+            f"[종목조회] 조건 {checked}조합을 실제로 계산해 손계산과 맞췄습니다 "
+            f"(종목이 나온 조합 {nonempty}개, 가장 많이 나온 조합 {widest}종목)."
+        )
+    finally:
+        shutil.rmtree(tmpdir, ignore_errors=True)
+
+
+# build_etf_proposal.py 의 LOOKUP_ROWS 와 같아야 한다.
+LOOKUP_ROWS_MAX = 60
 
 
 def report() -> int:

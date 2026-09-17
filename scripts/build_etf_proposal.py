@@ -164,6 +164,23 @@ def vol_label(data, short=False):
     return "변동성(연환산)" if short else "변동성 (연환산)"
 
 
+def freq_label(x):
+    """[종목조회] 의 콤보박스에 그대로 쓸 짧은 이름.
+
+    원천은 '판정 불가(상장 1년 미만)' 처럼 까닭까지 달고 오는데, 콤보박스에
+    담을 값과 칸에 적히는 값이 한 글자라도 다르면 조회가 아무것도 못 찾는다.
+    까닭은 [ETF데이터] 장의 '제외 사유' 에 그대로 남으므로 여기서는 짧게 적는다.
+    """
+    f = x.get("payoutFreq")
+    if not f:
+        return ""
+    return "판정 불가" if f.startswith("판정 불가") else f
+
+
+# [종목조회] 콤보박스에 담을 지급주기. '전체' 가 맨 앞이다.
+FREQ_CHOICES = ["전체", "월배당", "분기배당", "연배당", "주배당", "비정기", "판정 불가"]
+
+
 def build_data_sheet(wb, data):
     """수집 원본을 그대로 보여 주는 장. 제안서의 모든 수식이 여기를 본다."""
     ws = wb.create_sheet("ETF데이터")
@@ -171,10 +188,14 @@ def build_data_sheet(wb, data):
         ("종목명", 34), ("종목코드", 11), ("운용사", 18), ("현재가", 12),
         ("순자산총액", 17), ("60일 평균거래대금", 19), ("총보수(연)", 11),
         (vol_label(data, short=True), 13), ("최근 월분배율", 13), ("연환산 분배율", 13),
-        ("분배이력(개월)", 13), ("최근 분배기준일", 15), ("채택", 8), ("제외 사유", 30),
+        # '분배이력(개월)' 이었는데 건수로 고쳐 적는다. 월배당만 담을 때는 건수가
+        # 곧 개월수여서 같은 말이었지만, 분기배당 종목은 2년을 분배해도 건수가
+        # 여덟이라 "이력 8개월" 로 읽히면 거짓이 된다.
+        ("분배 기록수", 12), ("최근 분배기준일", 15), ("채택", 8), ("제외 사유", 30),
         # 기초지수는 맨 뒤에 붙인다. 가운데 끼워 넣으면 제안서 쪽 수식의
         # 열 글자가 한 칸씩 밀려 조용히 엉뚱한 칸을 가리키게 된다.
         ("기초지수", 34), ("유형", 11), ("자산군", 14),
+        ("지급주기", 12), ("연 지급횟수", 12),
     ]
     ws.cell(row=1, column=1, value="ETFCHECK 수집 원본 — 이 장의 값은 손으로 고치지 마십시오. 매월 1일 수집기가 덮어씁니다.")
     ws.cell(row=1, column=1).font = f(10, bold=True, color=ORANGE)
@@ -230,9 +251,10 @@ def build_data_sheet(wb, data):
             x.get("distMonths"), x.get("lastDistDate"),
             "채택" if ok else "제외", x.get("excludeReason") or "", x.get("index") or "",
             x.get("type") or "", x.get("assetClass") or "",
+            freq_label(x), x.get("payoutCount12m"),
         ]
         fmts = [None, None, None, WON_PLAIN, WON_PLAIN, WON_PLAIN, PCT, PCT, PCT, PCT,
-                "#,##0", None, None, None, None, None, None]
+                "#,##0", None, None, None, None, None, None, None, "#,##0"]
         for i, (v, fmt) in enumerate(zip(vals, fmts), start=1):
             c = ws.cell(row=r, column=i, value=v)
             c.font = f(10, color=INK if ok else MUTED)
@@ -245,6 +267,41 @@ def build_data_sheet(wb, data):
         r += 1
     last_adopted = first_adopted + len(adopted) - 1
     last_sel = first_adopted + len(adopted) + len(usable_rejected) - 1
+
+    # ── [종목조회] 가 쓰는 숨긴 계산 칸 ────────────────────────────────
+    #
+    # 엑셀의 콤보박스(데이터 유효성 검사)는 다른 칸 값에 따라 목록이 저절로
+    # 줄어들지 않는다. FILTER 같은 배열 수식은 이 문서가 구버전 엑셀에서도
+    # 열려야 해서 못 쓰고, VBA 는 매크로 파일(.xlsm)이 되어 사내 배포에서
+    # 막힐 수 있다. 그래서 고전적인 방법을 쓴다 —
+    #
+    #   T: 조건에 맞으면 1
+    #   U: 맞은 것에 1,2,3… 차례를 매긴다(위에서부터 누적 개수)
+    #
+    # [종목조회] 는 "U 에서 k 를 찾아라"(MATCH) 로 k번째 종목을 집어낸다.
+    # 배열 수식도 VBA 도 없이 조건 조회가 된다.
+    #
+    # 칸은 드롭다운이 가리키는 구간(채택 + 기준 미달)에만 넣는다. 그 아래
+    # '고를 수 없는' 종목은 조회 결과에 나와도 담을 수 없으니 뜻이 없다.
+    c_match = len(cols) + 1        # T
+    c_rank = len(cols) + 2         # U
+    col_freq = get_column_letter(len(cols) - 1)   # 지급주기
+    col_ttm = get_column_letter(10)               # 연환산 분배율
+    tl = get_column_letter(c_match)
+    for rr in range(first_adopted, last_sel + 1):
+        # 조건 셋을 모두 만족해야 1. 연 분배율이 빈 칸인 종목은 애초에 이
+        # 구간에 없지만, 빈 칸은 엑셀에서 0 으로 읽혀 "최소 0%" 에 걸리므로
+        # 그래도 명시해 둔다 — 빈 값이 0% 짜리 종목 행세를 하면 안 된다.
+        ws.cell(row=rr, column=c_match).value = (
+            f'=IF(AND(${col_ttm}{rr}<>"",'
+            f'OR(조회_주기="전체",${col_freq}{rr}=조회_주기),'
+            f"${col_ttm}{rr}>=조회_최소,${col_ttm}{rr}<=조회_최대),1,0)"
+        )
+        ws.cell(row=rr, column=c_rank).value = (
+            f'=IF(${tl}{rr}=1,COUNTIF(${tl}${first_adopted}:${tl}{rr},1),"")'
+        )
+    for c in (c_match, c_rank):
+        ws.column_dimensions[get_column_letter(c)].hidden = True
 
     ws.freeze_panes = f"A{hr + 1}"
     ws.auto_filter.ref = f"A{hr}:{get_column_letter(len(cols))}{r - 1}"
@@ -291,6 +348,181 @@ def table_head(ws, row, texts, start_col, height=30):
         c.alignment = Alignment(horizontal="center", vertical="center", wrap_text=True)
         c.border = BOX
     ws.row_dimensions[row].height = height
+
+
+def header_band(ws, last_col, title, subtitle, asof_line):
+    """모든 장이 같은 머리띠를 쓴다 — 오렌지 풀블리드 + 블루 실선 한 줄."""
+    ws.merge_cells(start_row=1, start_column=1, end_row=1, end_column=last_col)
+    tag = ws.cell(row=1, column=1, value="   사내한 · Confidential")
+    tag.font = Font(name=FONT, size=9, color="FFFFFF")
+    tag.alignment = Alignment(vertical="center")
+    ws.row_dimensions[1].height = 16
+
+    ws.merge_cells(start_row=2, start_column=1, end_row=2, end_column=last_col)
+    t = ws.cell(row=2, column=1, value=f"   {title}")
+    t.font = Font(name=FONT, size=22, bold=True, color="FFFFFF")
+    t.alignment = Alignment(vertical="center")
+    ws.row_dimensions[2].height = 40
+
+    ws.merge_cells(start_row=3, start_column=1, end_row=3, end_column=last_col)
+    s = ws.cell(row=3, column=1, value=f"   {subtitle}")
+    s.font = Font(name=FONT, size=10, color="FFFFFF")
+    s.alignment = Alignment(vertical="center")
+    ws.row_dimensions[3].height = 22
+
+    for row in (1, 2, 3):
+        for c in range(1, last_col + 1):
+            ws.cell(row=row, column=c).fill = fill(ORANGE)
+    for c in range(1, last_col + 1):
+        ws.cell(row=4, column=c).fill = fill(BLUE)
+    ws.row_dimensions[4].height = 3
+
+    ws.merge_cells(start_row=5, start_column=1, end_row=5, end_column=last_col)
+    m = ws.cell(row=5, column=1, value=f"   {asof_line}")
+    m.font = f(9, color=MUTED)
+    m.alignment = Alignment(vertical="center")
+    ws.row_dimensions[5].height = 20
+
+
+# [종목조회] 에 싣는 줄 수. 조건에 맞는 종목이 이보다 많으면 위에서부터
+# 이만큼만 나오고, 몇 종목이 걸렸는지는 개수로 따로 알려 준다.
+LOOKUP_ROWS = 60
+
+
+def build_lookup_sheet(wb, data, first_sel, last_sel):
+    """지급주기·연 분배율로 종목을 골라 보는 장.
+
+    왜 [제안서] 의 콤보박스를 줄이지 않고 장을 따로 두나
+    ────────────────────────────────────────────────────────────────
+    엑셀의 콤보박스는 다른 칸 값에 따라 목록이 저절로 줄어들지 않는다.
+    OFFSET 으로 동적 이름을 만들어 목록 자체를 줄일 수는 있지만, 그러면
+    조건을 한 번 건드리는 순간 **이미 담아 둔 종목이 목록에서 빠지면서
+    계산이 0원이 된다.** 고객 앞에 낼 문서가 그래서는 안 된다.
+
+    그래서 [제안서] 의 콤보박스는 전체 목록을 그대로 두고, 고르는 일을
+    돕는 장을 따로 둔다. 여기서 조건을 걸어 찾은 종목명을 [제안서] 에서
+    고르면 된다.
+    """
+    ws = wb.create_sheet("종목조회", 1)
+    LAST = 8
+    widths = [2.5, 34, 13, 14, 14, 13, 15, 13]
+    for i, w in enumerate(widths, start=1):
+        ws.column_dimensions[get_column_letter(i)].width = w
+    ws.sheet_view.showGridLines = False
+
+    D = "ETF데이터"
+    asof = data.get("asOf") or data.get("collectedAt", "")[:10]
+    header_band(
+        ws, LAST, "ETF 종목 조회", "ETF Screener",
+        f"자료 ETFCHECK · 기준일 {asof} · 지급주기와 연 분배율로 고릅니다",
+    )
+
+    # ── 1. 조회 조건 ──
+    r = section(ws, 7, "1", "조회 조건", LAST)
+    conds = [
+        ("지급주기", "전체", None, "조회_주기"),
+        ("연 분배율 최소", 0.0, PCT, "조회_최소"),
+        ("연 분배율 최대", 1.0, PCT, "조회_최대"),
+    ]
+    first_cond = r
+    for label_text, val, fmt, _name in conds:
+        label(ws, r, 2, label_text)
+        put(ws, r, 3, val, fmt, kind="input", bold=True)
+        r += 1
+
+    # 지급주기 콤보박스. 값은 [ETF데이터] 장의 '지급주기' 칸과 **글자까지
+    # 똑같아야** 한다 — 한 글자만 달라도 조회가 아무것도 못 찾는다.
+    dv = DataValidation(
+        type="list", formula1=f'"{",".join(FREQ_CHOICES)}"', allow_blank=False, showDropDown=False
+    )
+    ws.add_data_validation(dv)
+    dv.add(ws.cell(row=first_cond, column=3))
+
+    label(ws, first_cond, 5,
+          "분배율은 백분율로 넣으십시오 (예: 5%). 최소·최대 사이에 드는 종목만 나옵니다.",
+          size=9, color=MUTED)
+    label(ws, first_cond + 1, 5,
+          "'판정 불가' 는 상장 1년이 안 돼 주기를 말할 수 없는 종목입니다. 빼지 않고 그대로 담았습니다.",
+          size=9, color=MUTED)
+    label(ws, first_cond + 2, 5,
+          "결과는 기준을 통과한 종목이 먼저, 그 안에서 연 분배율 높은 순입니다.",
+          size=9, color=MUTED)
+
+    r += 1
+    cnt_row = r
+    label(ws, r, 2, "조건에 맞는 종목", bold=True)
+    hit = ws.cell(row=r, column=3)
+    hit.value = f"=COUNTIF('{D}'!$T${first_sel}:$T${last_sel},1)"
+    hit.font = f(14, bold=True, color=ORANGE)
+    hit.number_format = '#,##0"종목"'
+    hit.alignment = Alignment(horizontal="right", vertical="center")
+    # 앞에 '=' 를 두지 않는다. 엑셀도 검산기도 '=' 로 시작하는 글자를 수식으로
+    # 읽어 버린다 — 실제로 검산기가 여기서 멈췄다.
+    ws.cell(row=r, column=4).value = f"전체 {last_sel - first_sel + 1}종목 중"
+    ws.cell(row=r, column=4).font = f(9, color=MUTED)
+    ws.row_dimensions[r].height = 22
+    r += 2
+
+    # ── 2. 조회 결과 ──
+    r = section(ws, r, "2", f"조회 결과 (최대 {LOOKUP_ROWS}종목)", LAST)
+    head = ["종목명", "지급주기", "연 분배율", "월 환산", "현재가", "변동성", "순자산", "채택"]
+    table_head(ws, r, head, 2)
+    r += 1
+    first_row = r
+
+    # 숨긴 칸 J 에 "몇 번째 줄인가" 를 담고, 나머지 칸은 그 값으로 집어 온다.
+    # 줄마다 MATCH 를 여덟 번 돌리지 않으려는 것이기도 하고, 집어 오는 칸이
+    # 늘어나도 한 군데만 고치면 되기 때문이기도 하다.
+    def pick(col, rr):
+        return (
+            f'=IF($J{rr}=0,"",'
+            f"INDEX('{D}'!${col}${first_sel}:${col}${last_sel},$J{rr}))"
+        )
+
+    for k in range(LOOKUP_ROWS):
+        rr = first_row + k
+        ws.cell(row=rr, column=10).value = (
+            f"=IFERROR(MATCH({k + 1},'{D}'!$U${first_sel}:$U${last_sel},0),0)"
+        )
+        cells = [
+            (2, pick("A", rr), None),                    # 종목명
+            (3, pick("R", rr), None),                    # 지급주기
+            (4, pick("J", rr), PCT),                     # 연 분배율
+            (5, f'=IF($J{rr}=0,"",$D{rr}/12)', PCT3),    # 월 환산
+            (6, pick("D", rr), WON),                     # 현재가
+            (7, pick("H", rr), PCT),                     # 변동성
+            (8, pick("E", rr), EOK),                     # 순자산
+            (9, pick("M", rr), None),                    # 채택
+        ]
+        for c, v, fmt in cells:
+            cell = ws.cell(row=rr, column=c, value=v)
+            cell.font = f(10)
+            cell.border = BOX
+            if fmt:
+                cell.number_format = fmt
+                cell.alignment = Alignment(horizontal="right")
+            else:
+                cell.alignment = Alignment(
+                    horizontal="center" if c in (3, 9) else "left", vertical="center"
+                )
+            if k % 2:
+                cell.fill = fill(SURFACE)
+    ws.column_dimensions["J"].hidden = True
+    box(ws, first_row - 1, 2, first_row + LOOKUP_ROWS - 1, 9)
+    last_row = first_row + LOOKUP_ROWS - 1
+
+    r = last_row + 2
+    label(ws, r, 2,
+          f"※ 조건에 맞는 종목이 {LOOKUP_ROWS}개를 넘으면 위에서부터 {LOOKUP_ROWS}개만 나옵니다. "
+          "조건을 좁혀 보십시오.", size=9, color=MUTED)
+    label(ws, r + 1, 2,
+          "※ 여기서 고른 종목명을 [제안서] 장의 콤보박스에서 선택하십시오. "
+          "제안서 콤보박스는 조건과 상관없이 전체 목록을 그대로 담고 있습니다 — "
+          "조건을 바꿨다고 이미 담아 둔 종목이 빠지면 안 되기 때문입니다.",
+          size=9, color=MUTED)
+
+    ws.freeze_panes = f"A{first_row}"
+    return ws, first_cond, first_row, last_row
 
 
 def build_proposal(wb, data, first_sel, last_sel, first_adopted, last_adopted):
@@ -772,6 +1004,12 @@ def main():
         DefinedName("선택가능종목", attr_text=f"'ETF데이터'!$A${first_adopted}:$A${last_sel}")
     )
     ws, p_first, p_last = build_proposal(wb, data, first_adopted, last_sel, first_adopted, last_adopted)
+    lk, cond_row, lk_first, lk_last = build_lookup_sheet(wb, data, first_adopted, last_sel)
+    # 조회 조건 세 칸에 이름을 붙인다. [ETF데이터] 장의 숨긴 계산 칸이 이
+    # 이름들을 본다 — 칸 주소를 그대로 박아 두면 줄이 하나 밀리는 순간
+    # 조회가 엉뚱한 칸을 조건으로 읽는다.
+    for i, name in enumerate(["조회_주기", "조회_최소", "조회_최대"]):
+        wb.defined_names.add(DefinedName(name, attr_text=f"'종목조회'!$C${cond_row + i}"))
     build_guide(wb, data, n_ok, n_rej, n_bad)
 
     # 첫 줄에 종목 하나를 미리 넣어 둔다. 열 줄을 전부 비워 두면 열자마자
