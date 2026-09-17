@@ -5,7 +5,8 @@
   "분기 매출": "기업 발표 실적치 (보도자료·8-K 기준)",
   "매출 컨센서스": "인용 기사에 명시된 제공사 (기업마다 상이 — 각 행의 출처 참조)",
   "EPS 컨센서스": "인용 기사에 명시된 제공사 (기업마다 상이)",
-  "가이던스": "기업이 직접 제시한 전망 (애널리스트 추정치가 아님)"
+  "가이던스": "기업이 직접 제시한 전망 (애널리스트 추정치가 아님)",
+  "밸류에이션": "stockanalysis.com 한 곳 · 2026-09-17 기준 (제공사 혼용 금지)"
  },
  "claims": [
   {
@@ -61,6 +62,43 @@
    "revision": "unchanged",
    "verdict": "confirmed",
    "render": "assert",
+   "printed_on": [
+    "table-main"
+   ]
+  },
+  {
+   "id": "NVDA_FPE",
+   "kind": "market_multiple",
+   "metric": "선행 P/E",
+   "text": "엔비디아 선행 P/E",
+   "value": 18.12,
+   "unit": "배",
+   "series": "stockanalysis.com 한 곳 · 2026-09-17 기준 (제공사 혼용 금지)",
+   "as_of": "2026-09-17",
+   "tier": 3,
+   "source_url": "https://stockanalysis.com/stocks/nvda/statistics/",
+   "verdict": "confirmed",
+   "render": "marked",
+   "note": "집계사이트 한 곳의 당일 값. 제공사마다 선행 이익 기준이 달라 다른 곳 수치와 섞지 말 것",
+   "printed_on": [
+    "table-main",
+    "rank-appeal"
+   ]
+  },
+  {
+   "id": "NVDA_PEG",
+   "kind": "market_multiple",
+   "metric": "PEG",
+   "text": "엔비디아 PEG",
+   "value": 0.35,
+   "unit": "배",
+   "series": "stockanalysis.com 한 곳 · 2026-09-17 기준 (제공사 혼용 금지)",
+   "as_of": "2026-09-17",
+   "tier": 3,
+   "source_url": "https://stockanalysis.com/stocks/nvda/statistics/",
+   "verdict": "confirmed",
+   "render": "marked",
+   "note": "제공사 산정. 산식(예상 이익 증가율의 기간·기준)이 공개돼 있지 않아 점수에는 넣지 않고 참고로만 싣는다",
    "printed_on": [
     "table-main"
    ]
@@ -123,6 +161,43 @@
    ]
   },
   {
+   "id": "MSFT_FPE",
+   "kind": "market_multiple",
+   "metric": "선행 P/E",
+   "text": "마이크로소프트 선행 P/E",
+   "value": 24.93,
+   "unit": "배",
+   "series": "stockanalysis.com 한 곳 · 2026-09-17 기준 (제공사 혼용 금지)",
+   "as_of": "2026-09-17",
+   "tier": 3,
+   "source_url": "https://stockanalysis.com/stocks/msft/statistics/",
+   "verdict": "confirmed",
+   "render": "marked",
+   "note": "집계사이트 한 곳의 당일 값. 제공사마다 선행 이익 기준이 달라 다른 곳 수치와 섞지 말 것",
+   "printed_on": [
+    "table-main",
+    "rank-appeal"
+   ]
+  },
+  {
+   "id": "MSFT_PEG",
+   "kind": "market_multiple",
+   "metric": "PEG",
+   "text": "마이크로소프트 PEG",
+   "value": 1.55,
+   "unit": "배",
+   "series": "stockanalysis.com 한 곳 · 2026-09-17 기준 (제공사 혼용 금지)",
+   "as_of": "2026-09-17",
+   "tier": 3,
+   "source_url": "https://stockanalysis.com/stocks/msft/statistics/",
+   "verdict": "confirmed",
+   "render": "marked",
+   "note": "제공사 산정. 산식(예상 이익 증가율의 기간·기준)이 공개돼 있지 않아 점수에는 넣지 않고 참고로만 싣는다",
+   "printed_on": [
+    "table-main"
+   ]
+  },
+  {
    "id": "AAPL_REV",
    "kind": "reported_result",
    "metric": "분기 매출",
@@ -175,6 +250,43 @@
    "revision": "down",
    "verdict": "confirmed",
    "render": "assert",
+   "printed_on": [
+    "table-main"
+   ]
+  },
+  {
+   "id": "AAPL_FPE",
+   "kind": "market_multiple",
+   "metric": "선행 P/E",
+   "text": "애플 선행 P/E",
+   "value": 34.33,
+   "unit": "배",
+   "series": "stockanalysis.com 한 곳 · 2026-09-17 기준 (제공사 혼용 금지)",
+   "as_of": "2026-09-17",
+   "tier": 3,
+   "source_url": "https://stockanalysis.com/stocks/aapl/statistics/",
+   "verdict": "confirmed",
+   "render": "marked",
+   "note": "집계사이트 한 곳의 당일 값. 제공사마다 선행 이익 기준이 달라 다른 곳 수치와 섞지 말 것",
+   "printed_on": [
+    "table-main",
+    "rank-appeal"
+   ]
+  },
+  {
+   "id": "AAPL_PEG",
+   "kind": "market_multiple",
+   "metric": "PEG",
+   "text": "애플 PEG",
+   "value": 3.25,
+   "unit": "배",
+   "series": "stockanalysis.com 한 곳 · 2026-09-17 기준 (제공사 혼용 금지)",
+   "as_of": "2026-09-17",
+   "tier": 3,
+   "source_url": "https://stockanalysis.com/stocks/aapl/statistics/",
+   "verdict": "confirmed",
+   "render": "marked",
+   "note": "제공사 산정. 산식(예상 이익 증가율의 기간·기준)이 공개돼 있지 않아 점수에는 넣지 않고 참고로만 싣는다",
    "printed_on": [
     "table-main"
    ]
@@ -237,6 +349,43 @@
    ]
   },
   {
+   "id": "GOOGL_FPE",
+   "kind": "market_multiple",
+   "metric": "선행 P/E",
+   "text": "알파벳 선행 P/E",
+   "value": 25.39,
+   "unit": "배",
+   "series": "stockanalysis.com 한 곳 · 2026-09-17 기준 (제공사 혼용 금지)",
+   "as_of": "2026-09-17",
+   "tier": 3,
+   "source_url": "https://stockanalysis.com/stocks/googl/statistics/",
+   "verdict": "confirmed",
+   "render": "marked",
+   "note": "집계사이트 한 곳의 당일 값. 제공사마다 선행 이익 기준이 달라 다른 곳 수치와 섞지 말 것",
+   "printed_on": [
+    "table-main",
+    "rank-appeal"
+   ]
+  },
+  {
+   "id": "GOOGL_PEG",
+   "kind": "market_multiple",
+   "metric": "PEG",
+   "text": "알파벳 PEG",
+   "value": 1.93,
+   "unit": "배",
+   "series": "stockanalysis.com 한 곳 · 2026-09-17 기준 (제공사 혼용 금지)",
+   "as_of": "2026-09-17",
+   "tier": 3,
+   "source_url": "https://stockanalysis.com/stocks/googl/statistics/",
+   "verdict": "confirmed",
+   "render": "marked",
+   "note": "제공사 산정. 산식(예상 이익 증가율의 기간·기준)이 공개돼 있지 않아 점수에는 넣지 않고 참고로만 싣는다",
+   "printed_on": [
+    "table-main"
+   ]
+  },
+  {
    "id": "AMZN_REV",
    "kind": "reported_result",
    "metric": "분기 매출",
@@ -289,6 +438,43 @@
    "revision": "unchanged",
    "verdict": "confirmed",
    "render": "assert",
+   "printed_on": [
+    "table-main"
+   ]
+  },
+  {
+   "id": "AMZN_FPE",
+   "kind": "market_multiple",
+   "metric": "선행 P/E",
+   "text": "아마존 선행 P/E",
+   "value": 28.76,
+   "unit": "배",
+   "series": "stockanalysis.com 한 곳 · 2026-09-17 기준 (제공사 혼용 금지)",
+   "as_of": "2026-09-17",
+   "tier": 3,
+   "source_url": "https://stockanalysis.com/stocks/amzn/statistics/",
+   "verdict": "confirmed",
+   "render": "marked",
+   "note": "집계사이트 한 곳의 당일 값. 제공사마다 선행 이익 기준이 달라 다른 곳 수치와 섞지 말 것",
+   "printed_on": [
+    "table-main",
+    "rank-appeal"
+   ]
+  },
+  {
+   "id": "AMZN_PEG",
+   "kind": "market_multiple",
+   "metric": "PEG",
+   "text": "아마존 PEG",
+   "value": 1.38,
+   "unit": "배",
+   "series": "stockanalysis.com 한 곳 · 2026-09-17 기준 (제공사 혼용 금지)",
+   "as_of": "2026-09-17",
+   "tier": 3,
+   "source_url": "https://stockanalysis.com/stocks/amzn/statistics/",
+   "verdict": "confirmed",
+   "render": "marked",
+   "note": "제공사 산정. 산식(예상 이익 증가율의 기간·기준)이 공개돼 있지 않아 점수에는 넣지 않고 참고로만 싣는다",
    "printed_on": [
     "table-main"
    ]
@@ -351,6 +537,43 @@
    ]
   },
   {
+   "id": "META_FPE",
+   "kind": "market_multiple",
+   "metric": "선행 P/E",
+   "text": "메타 선행 P/E",
+   "value": 20.8,
+   "unit": "배",
+   "series": "stockanalysis.com 한 곳 · 2026-09-17 기준 (제공사 혼용 금지)",
+   "as_of": "2026-09-17",
+   "tier": 3,
+   "source_url": "https://stockanalysis.com/stocks/meta/statistics/",
+   "verdict": "confirmed",
+   "render": "marked",
+   "note": "집계사이트 한 곳의 당일 값. 제공사마다 선행 이익 기준이 달라 다른 곳 수치와 섞지 말 것",
+   "printed_on": [
+    "table-main",
+    "rank-appeal"
+   ]
+  },
+  {
+   "id": "META_PEG",
+   "kind": "market_multiple",
+   "metric": "PEG",
+   "text": "메타 PEG",
+   "value": 1.04,
+   "unit": "배",
+   "series": "stockanalysis.com 한 곳 · 2026-09-17 기준 (제공사 혼용 금지)",
+   "as_of": "2026-09-17",
+   "tier": 3,
+   "source_url": "https://stockanalysis.com/stocks/meta/statistics/",
+   "verdict": "confirmed",
+   "render": "marked",
+   "note": "제공사 산정. 산식(예상 이익 증가율의 기간·기준)이 공개돼 있지 않아 점수에는 넣지 않고 참고로만 싣는다",
+   "printed_on": [
+    "table-main"
+   ]
+  },
+  {
    "id": "AVGO_REV",
    "kind": "reported_result",
    "metric": "분기 매출",
@@ -401,6 +624,43 @@
    "revision": "up",
    "verdict": "confirmed",
    "render": "assert",
+   "printed_on": [
+    "table-main"
+   ]
+  },
+  {
+   "id": "AVGO_FPE",
+   "kind": "market_multiple",
+   "metric": "선행 P/E",
+   "text": "브로드컴 선행 P/E",
+   "value": 23.55,
+   "unit": "배",
+   "series": "stockanalysis.com 한 곳 · 2026-09-17 기준 (제공사 혼용 금지)",
+   "as_of": "2026-09-17",
+   "tier": 3,
+   "source_url": "https://stockanalysis.com/stocks/avgo/statistics/",
+   "verdict": "confirmed",
+   "render": "marked",
+   "note": "집계사이트 한 곳의 당일 값. 제공사마다 선행 이익 기준이 달라 다른 곳 수치와 섞지 말 것",
+   "printed_on": [
+    "table-main",
+    "rank-appeal"
+   ]
+  },
+  {
+   "id": "AVGO_PEG",
+   "kind": "market_multiple",
+   "metric": "PEG",
+   "text": "브로드컴 PEG",
+   "value": 0.5,
+   "unit": "배",
+   "series": "stockanalysis.com 한 곳 · 2026-09-17 기준 (제공사 혼용 금지)",
+   "as_of": "2026-09-17",
+   "tier": 3,
+   "source_url": "https://stockanalysis.com/stocks/avgo/statistics/",
+   "verdict": "confirmed",
+   "render": "marked",
+   "note": "제공사 산정. 산식(예상 이익 증가율의 기간·기준)이 공개돼 있지 않아 점수에는 넣지 않고 참고로만 싣는다",
    "printed_on": [
     "table-main"
    ]
@@ -463,6 +723,43 @@
    ]
   },
   {
+   "id": "TSLA_FPE",
+   "kind": "market_multiple",
+   "metric": "선행 P/E",
+   "text": "테슬라 선행 P/E",
+   "value": 188.57,
+   "unit": "배",
+   "series": "stockanalysis.com 한 곳 · 2026-09-17 기준 (제공사 혼용 금지)",
+   "as_of": "2026-09-17",
+   "tier": 3,
+   "source_url": "https://stockanalysis.com/stocks/tsla/statistics/",
+   "verdict": "confirmed",
+   "render": "marked",
+   "note": "집계사이트 한 곳의 당일 값. 제공사마다 선행 이익 기준이 달라 다른 곳 수치와 섞지 말 것 — 선행 P/E 188.57 은 이익 기저가 얕아 나온 값 — 이익이 회복되면 크게 움직인다.",
+   "printed_on": [
+    "table-main",
+    "rank-appeal"
+   ]
+  },
+  {
+   "id": "TSLA_PEG",
+   "kind": "market_multiple",
+   "metric": "PEG",
+   "text": "테슬라 PEG",
+   "value": 6.97,
+   "unit": "배",
+   "series": "stockanalysis.com 한 곳 · 2026-09-17 기준 (제공사 혼용 금지)",
+   "as_of": "2026-09-17",
+   "tier": 3,
+   "source_url": "https://stockanalysis.com/stocks/tsla/statistics/",
+   "verdict": "confirmed",
+   "render": "marked",
+   "note": "제공사 산정. 산식(예상 이익 증가율의 기간·기준)이 공개돼 있지 않아 점수에는 넣지 않고 참고로만 싣는다 — 선행 P/E 188.57 은 이익 기저가 얕아 나온 값 — 이익이 회복되면 크게 움직인다.",
+   "printed_on": [
+    "table-main"
+   ]
+  },
+  {
    "id": "AMD_REV",
    "kind": "reported_result",
    "metric": "분기 매출",
@@ -515,6 +812,43 @@
    "revision": "unchanged",
    "verdict": "confirmed",
    "render": "assert",
+   "printed_on": [
+    "table-main"
+   ]
+  },
+  {
+   "id": "AMD_FPE",
+   "kind": "market_multiple",
+   "metric": "선행 P/E",
+   "text": "AMD 선행 P/E",
+   "value": 42.61,
+   "unit": "배",
+   "series": "stockanalysis.com 한 곳 · 2026-09-17 기준 (제공사 혼용 금지)",
+   "as_of": "2026-09-17",
+   "tier": 3,
+   "source_url": "https://stockanalysis.com/stocks/amd/statistics/",
+   "verdict": "confirmed",
+   "render": "marked",
+   "note": "집계사이트 한 곳의 당일 값. 제공사마다 선행 이익 기준이 달라 다른 곳 수치와 섞지 말 것",
+   "printed_on": [
+    "table-main",
+    "rank-appeal"
+   ]
+  },
+  {
+   "id": "AMD_PEG",
+   "kind": "market_multiple",
+   "metric": "PEG",
+   "text": "AMD PEG",
+   "value": 0.65,
+   "unit": "배",
+   "series": "stockanalysis.com 한 곳 · 2026-09-17 기준 (제공사 혼용 금지)",
+   "as_of": "2026-09-17",
+   "tier": 3,
+   "source_url": "https://stockanalysis.com/stocks/amd/statistics/",
+   "verdict": "confirmed",
+   "render": "marked",
+   "note": "제공사 산정. 산식(예상 이익 증가율의 기간·기준)이 공개돼 있지 않아 점수에는 넣지 않고 참고로만 싣는다",
    "printed_on": [
     "table-main"
    ]
@@ -577,6 +911,43 @@
    ]
   },
   {
+   "id": "ORCL_FPE",
+   "kind": "market_multiple",
+   "metric": "선행 P/E",
+   "text": "오라클 선행 P/E",
+   "value": 19.1,
+   "unit": "배",
+   "series": "stockanalysis.com 한 곳 · 2026-09-17 기준 (제공사 혼용 금지)",
+   "as_of": "2026-09-17",
+   "tier": 3,
+   "source_url": "https://stockanalysis.com/stocks/orcl/statistics/",
+   "verdict": "confirmed",
+   "render": "marked",
+   "note": "집계사이트 한 곳의 당일 값. 제공사마다 선행 이익 기준이 달라 다른 곳 수치와 섞지 말 것",
+   "printed_on": [
+    "table-main",
+    "rank-appeal"
+   ]
+  },
+  {
+   "id": "ORCL_PEG",
+   "kind": "market_multiple",
+   "metric": "PEG",
+   "text": "오라클 PEG",
+   "value": 0.65,
+   "unit": "배",
+   "series": "stockanalysis.com 한 곳 · 2026-09-17 기준 (제공사 혼용 금지)",
+   "as_of": "2026-09-17",
+   "tier": 3,
+   "source_url": "https://stockanalysis.com/stocks/orcl/statistics/",
+   "verdict": "confirmed",
+   "render": "marked",
+   "note": "제공사 산정. 산식(예상 이익 증가율의 기간·기준)이 공개돼 있지 않아 점수에는 넣지 않고 참고로만 싣는다",
+   "printed_on": [
+    "table-main"
+   ]
+  },
+  {
    "id": "CRM_REV",
    "kind": "reported_result",
    "metric": "분기 매출",
@@ -634,6 +1005,43 @@
    ]
   },
   {
+   "id": "CRM_FPE",
+   "kind": "market_multiple",
+   "metric": "선행 P/E",
+   "text": "세일즈포스 선행 P/E",
+   "value": 17.45,
+   "unit": "배",
+   "series": "stockanalysis.com 한 곳 · 2026-09-17 기준 (제공사 혼용 금지)",
+   "as_of": "2026-09-17",
+   "tier": 3,
+   "source_url": "https://stockanalysis.com/stocks/crm/statistics/",
+   "verdict": "confirmed",
+   "render": "marked",
+   "note": "집계사이트 한 곳의 당일 값. 제공사마다 선행 이익 기준이 달라 다른 곳 수치와 섞지 말 것",
+   "printed_on": [
+    "table-main",
+    "rank-appeal"
+   ]
+  },
+  {
+   "id": "CRM_PEG",
+   "kind": "market_multiple",
+   "metric": "PEG",
+   "text": "세일즈포스 PEG",
+   "value": 1.08,
+   "unit": "배",
+   "series": "stockanalysis.com 한 곳 · 2026-09-17 기준 (제공사 혼용 금지)",
+   "as_of": "2026-09-17",
+   "tier": 3,
+   "source_url": "https://stockanalysis.com/stocks/crm/statistics/",
+   "verdict": "confirmed",
+   "render": "marked",
+   "note": "제공사 산정. 산식(예상 이익 증가율의 기간·기준)이 공개돼 있지 않아 점수에는 넣지 않고 참고로만 싣는다",
+   "printed_on": [
+    "table-main"
+   ]
+  },
+  {
    "id": "PLTR_REV",
    "kind": "reported_result",
    "metric": "분기 매출",
@@ -686,6 +1094,43 @@
    "revision": "up",
    "verdict": "confirmed",
    "render": "assert",
+   "printed_on": [
+    "table-main"
+   ]
+  },
+  {
+   "id": "PLTR_FPE",
+   "kind": "market_multiple",
+   "metric": "선행 P/E",
+   "text": "팔란티어 선행 P/E",
+   "value": 97.87,
+   "unit": "배",
+   "series": "stockanalysis.com 한 곳 · 2026-09-17 기준 (제공사 혼용 금지)",
+   "as_of": "2026-09-17",
+   "tier": 3,
+   "source_url": "https://stockanalysis.com/stocks/pltr/statistics/",
+   "verdict": "confirmed",
+   "render": "marked",
+   "note": "집계사이트 한 곳의 당일 값. 제공사마다 선행 이익 기준이 달라 다른 곳 수치와 섞지 말 것",
+   "printed_on": [
+    "table-main",
+    "rank-appeal"
+   ]
+  },
+  {
+   "id": "PLTR_PEG",
+   "kind": "market_multiple",
+   "metric": "PEG",
+   "text": "팔란티어 PEG",
+   "value": 1.82,
+   "unit": "배",
+   "series": "stockanalysis.com 한 곳 · 2026-09-17 기준 (제공사 혼용 금지)",
+   "as_of": "2026-09-17",
+   "tier": 3,
+   "source_url": "https://stockanalysis.com/stocks/pltr/statistics/",
+   "verdict": "confirmed",
+   "render": "marked",
+   "note": "제공사 산정. 산식(예상 이익 증가율의 기간·기준)이 공개돼 있지 않아 점수에는 넣지 않고 참고로만 싣는다",
    "printed_on": [
     "table-main"
    ]
@@ -803,6 +1248,43 @@
    ]
   },
   {
+   "id": "MU_FPE",
+   "kind": "market_multiple",
+   "metric": "선행 P/E",
+   "text": "마이크론 선행 P/E",
+   "value": 7.07,
+   "unit": "배",
+   "series": "stockanalysis.com 한 곳 · 2026-09-17 기준 (제공사 혼용 금지)",
+   "as_of": "2026-09-17",
+   "tier": 3,
+   "source_url": "https://stockanalysis.com/stocks/mu/statistics/",
+   "verdict": "confirmed",
+   "render": "marked",
+   "note": "집계사이트 한 곳의 당일 값. 제공사마다 선행 이익 기준이 달라 다른 곳 수치와 섞지 말 것 — PEG 0.04 는 예상 이익 증가율이 극단적으로 커서 나온 값 — 배수 자체로 읽지 말 것.",
+   "printed_on": [
+    "table-main",
+    "rank-appeal"
+   ]
+  },
+  {
+   "id": "MU_PEG",
+   "kind": "market_multiple",
+   "metric": "PEG",
+   "text": "마이크론 PEG",
+   "value": 0.04,
+   "unit": "배",
+   "series": "stockanalysis.com 한 곳 · 2026-09-17 기준 (제공사 혼용 금지)",
+   "as_of": "2026-09-17",
+   "tier": 3,
+   "source_url": "https://stockanalysis.com/stocks/mu/statistics/",
+   "verdict": "confirmed",
+   "render": "marked",
+   "note": "제공사 산정. 산식(예상 이익 증가율의 기간·기준)이 공개돼 있지 않아 점수에는 넣지 않고 참고로만 싣는다 — PEG 0.04 는 예상 이익 증가율이 극단적으로 커서 나온 값 — 배수 자체로 읽지 말 것.",
+   "printed_on": [
+    "table-main"
+   ]
+  },
+  {
    "id": "NFLX_REV",
    "kind": "reported_result",
    "metric": "분기 매출",
@@ -855,6 +1337,43 @@
    "revision": "unchanged",
    "verdict": "confirmed",
    "render": "assert",
+   "printed_on": [
+    "table-main"
+   ]
+  },
+  {
+   "id": "NFLX_FPE",
+   "kind": "market_multiple",
+   "metric": "선행 P/E",
+   "text": "넷플릭스 선행 P/E",
+   "value": 22.34,
+   "unit": "배",
+   "series": "stockanalysis.com 한 곳 · 2026-09-17 기준 (제공사 혼용 금지)",
+   "as_of": "2026-09-17",
+   "tier": 3,
+   "source_url": "https://stockanalysis.com/stocks/nflx/statistics/",
+   "verdict": "confirmed",
+   "render": "marked",
+   "note": "집계사이트 한 곳의 당일 값. 제공사마다 선행 이익 기준이 달라 다른 곳 수치와 섞지 말 것",
+   "printed_on": [
+    "table-main",
+    "rank-appeal"
+   ]
+  },
+  {
+   "id": "NFLX_PEG",
+   "kind": "market_multiple",
+   "metric": "PEG",
+   "text": "넷플릭스 PEG",
+   "value": 1.05,
+   "unit": "배",
+   "series": "stockanalysis.com 한 곳 · 2026-09-17 기준 (제공사 혼용 금지)",
+   "as_of": "2026-09-17",
+   "tier": 3,
+   "source_url": "https://stockanalysis.com/stocks/nflx/statistics/",
+   "verdict": "confirmed",
+   "render": "marked",
+   "note": "제공사 산정. 산식(예상 이익 증가율의 기간·기준)이 공개돼 있지 않아 점수에는 넣지 않고 참고로만 싣는다",
    "printed_on": [
     "table-main"
    ]
@@ -915,6 +1434,43 @@
    ]
   },
   {
+   "id": "JPM_FPE",
+   "kind": "market_multiple",
+   "metric": "선행 P/E",
+   "text": "JP모건 선행 P/E",
+   "value": 14.96,
+   "unit": "배",
+   "series": "stockanalysis.com 한 곳 · 2026-09-17 기준 (제공사 혼용 금지)",
+   "as_of": "2026-09-17",
+   "tier": 3,
+   "source_url": "https://stockanalysis.com/stocks/jpm/statistics/",
+   "verdict": "confirmed",
+   "render": "marked",
+   "note": "집계사이트 한 곳의 당일 값. 제공사마다 선행 이익 기준이 달라 다른 곳 수치와 섞지 말 것",
+   "printed_on": [
+    "table-main",
+    "rank-appeal"
+   ]
+  },
+  {
+   "id": "JPM_PEG",
+   "kind": "market_multiple",
+   "metric": "PEG",
+   "text": "JP모건 PEG",
+   "value": 1.48,
+   "unit": "배",
+   "series": "stockanalysis.com 한 곳 · 2026-09-17 기준 (제공사 혼용 금지)",
+   "as_of": "2026-09-17",
+   "tier": 3,
+   "source_url": "https://stockanalysis.com/stocks/jpm/statistics/",
+   "verdict": "confirmed",
+   "render": "marked",
+   "note": "제공사 산정. 산식(예상 이익 증가율의 기간·기준)이 공개돼 있지 않아 점수에는 넣지 않고 참고로만 싣는다",
+   "printed_on": [
+    "table-main"
+   ]
+  },
+  {
    "id": "GS_REV",
    "kind": "reported_result",
    "metric": "분기 매출",
@@ -965,6 +1521,43 @@
    "revision": "new",
    "verdict": "confirmed",
    "render": "assert",
+   "printed_on": [
+    "table-main"
+   ]
+  },
+  {
+   "id": "GS_FPE",
+   "kind": "market_multiple",
+   "metric": "선행 P/E",
+   "text": "골드만삭스 선행 P/E",
+   "value": 14.89,
+   "unit": "배",
+   "series": "stockanalysis.com 한 곳 · 2026-09-17 기준 (제공사 혼용 금지)",
+   "as_of": "2026-09-17",
+   "tier": 3,
+   "source_url": "https://stockanalysis.com/stocks/gs/statistics/",
+   "verdict": "confirmed",
+   "render": "marked",
+   "note": "집계사이트 한 곳의 당일 값. 제공사마다 선행 이익 기준이 달라 다른 곳 수치와 섞지 말 것",
+   "printed_on": [
+    "table-main",
+    "rank-appeal"
+   ]
+  },
+  {
+   "id": "GS_PEG",
+   "kind": "market_multiple",
+   "metric": "PEG",
+   "text": "골드만삭스 PEG",
+   "value": 1.03,
+   "unit": "배",
+   "series": "stockanalysis.com 한 곳 · 2026-09-17 기준 (제공사 혼용 금지)",
+   "as_of": "2026-09-17",
+   "tier": 3,
+   "source_url": "https://stockanalysis.com/stocks/gs/statistics/",
+   "verdict": "confirmed",
+   "render": "marked",
+   "note": "제공사 산정. 산식(예상 이익 증가율의 기간·기준)이 공개돼 있지 않아 점수에는 넣지 않고 참고로만 싣는다",
    "printed_on": [
     "table-main"
    ]
@@ -1027,6 +1620,43 @@
    ]
   },
   {
+   "id": "LLY_FPE",
+   "kind": "market_multiple",
+   "metric": "선행 P/E",
+   "text": "일라이 릴리 선행 P/E",
+   "value": 28.18,
+   "unit": "배",
+   "series": "stockanalysis.com 한 곳 · 2026-09-17 기준 (제공사 혼용 금지)",
+   "as_of": "2026-09-17",
+   "tier": 3,
+   "source_url": "https://stockanalysis.com/stocks/lly/statistics/",
+   "verdict": "confirmed",
+   "render": "marked",
+   "note": "집계사이트 한 곳의 당일 값. 제공사마다 선행 이익 기준이 달라 다른 곳 수치와 섞지 말 것",
+   "printed_on": [
+    "table-main",
+    "rank-appeal"
+   ]
+  },
+  {
+   "id": "LLY_PEG",
+   "kind": "market_multiple",
+   "metric": "PEG",
+   "text": "일라이 릴리 PEG",
+   "value": 1.33,
+   "unit": "배",
+   "series": "stockanalysis.com 한 곳 · 2026-09-17 기준 (제공사 혼용 금지)",
+   "as_of": "2026-09-17",
+   "tier": 3,
+   "source_url": "https://stockanalysis.com/stocks/lly/statistics/",
+   "verdict": "confirmed",
+   "render": "marked",
+   "note": "제공사 산정. 산식(예상 이익 증가율의 기간·기준)이 공개돼 있지 않아 점수에는 넣지 않고 참고로만 싣는다",
+   "printed_on": [
+    "table-main"
+   ]
+  },
+  {
    "id": "UNH_REV",
    "kind": "reported_result",
    "metric": "분기 매출",
@@ -1079,6 +1709,43 @@
    "revision": "up",
    "verdict": "confirmed",
    "render": "assert",
+   "printed_on": [
+    "table-main"
+   ]
+  },
+  {
+   "id": "UNH_FPE",
+   "kind": "market_multiple",
+   "metric": "선행 P/E",
+   "text": "유나이티드헬스 선행 P/E",
+   "value": 22.37,
+   "unit": "배",
+   "series": "stockanalysis.com 한 곳 · 2026-09-17 기준 (제공사 혼용 금지)",
+   "as_of": "2026-09-17",
+   "tier": 3,
+   "source_url": "https://stockanalysis.com/stocks/unh/statistics/",
+   "verdict": "confirmed",
+   "render": "marked",
+   "note": "집계사이트 한 곳의 당일 값. 제공사마다 선행 이익 기준이 달라 다른 곳 수치와 섞지 말 것",
+   "printed_on": [
+    "table-main",
+    "rank-appeal"
+   ]
+  },
+  {
+   "id": "UNH_PEG",
+   "kind": "market_multiple",
+   "metric": "PEG",
+   "text": "유나이티드헬스 PEG",
+   "value": 1.73,
+   "unit": "배",
+   "series": "stockanalysis.com 한 곳 · 2026-09-17 기준 (제공사 혼용 금지)",
+   "as_of": "2026-09-17",
+   "tier": 3,
+   "source_url": "https://stockanalysis.com/stocks/unh/statistics/",
+   "verdict": "confirmed",
+   "render": "marked",
+   "note": "제공사 산정. 산식(예상 이익 증가율의 기간·기준)이 공개돼 있지 않아 점수에는 넣지 않고 참고로만 싣는다",
    "printed_on": [
     "table-main"
    ]
@@ -1141,6 +1808,43 @@
    ]
   },
   {
+   "id": "JNJ_FPE",
+   "kind": "market_multiple",
+   "metric": "선행 P/E",
+   "text": "존슨앤드존슨 선행 P/E",
+   "value": 24.06,
+   "unit": "배",
+   "series": "stockanalysis.com 한 곳 · 2026-09-17 기준 (제공사 혼용 금지)",
+   "as_of": "2026-09-17",
+   "tier": 3,
+   "source_url": "https://stockanalysis.com/stocks/jnj/statistics/",
+   "verdict": "confirmed",
+   "render": "marked",
+   "note": "집계사이트 한 곳의 당일 값. 제공사마다 선행 이익 기준이 달라 다른 곳 수치와 섞지 말 것",
+   "printed_on": [
+    "table-main",
+    "rank-appeal"
+   ]
+  },
+  {
+   "id": "JNJ_PEG",
+   "kind": "market_multiple",
+   "metric": "PEG",
+   "text": "존슨앤드존슨 PEG",
+   "value": 2.96,
+   "unit": "배",
+   "series": "stockanalysis.com 한 곳 · 2026-09-17 기준 (제공사 혼용 금지)",
+   "as_of": "2026-09-17",
+   "tier": 3,
+   "source_url": "https://stockanalysis.com/stocks/jnj/statistics/",
+   "verdict": "confirmed",
+   "render": "marked",
+   "note": "제공사 산정. 산식(예상 이익 증가율의 기간·기준)이 공개돼 있지 않아 점수에는 넣지 않고 참고로만 싣는다",
+   "printed_on": [
+    "table-main"
+   ]
+  },
+  {
    "id": "WMT_REV",
    "kind": "reported_result",
    "metric": "분기 매출",
@@ -1193,6 +1897,43 @@
    "revision": "up",
    "verdict": "confirmed",
    "render": "assert",
+   "printed_on": [
+    "table-main"
+   ]
+  },
+  {
+   "id": "WMT_FPE",
+   "kind": "market_multiple",
+   "metric": "선행 P/E",
+   "text": "월마트 선행 P/E",
+   "value": 35.74,
+   "unit": "배",
+   "series": "stockanalysis.com 한 곳 · 2026-09-17 기준 (제공사 혼용 금지)",
+   "as_of": "2026-09-17",
+   "tier": 3,
+   "source_url": "https://stockanalysis.com/stocks/wmt/statistics/",
+   "verdict": "confirmed",
+   "render": "marked",
+   "note": "집계사이트 한 곳의 당일 값. 제공사마다 선행 이익 기준이 달라 다른 곳 수치와 섞지 말 것",
+   "printed_on": [
+    "table-main",
+    "rank-appeal"
+   ]
+  },
+  {
+   "id": "WMT_PEG",
+   "kind": "market_multiple",
+   "metric": "PEG",
+   "text": "월마트 PEG",
+   "value": 3.48,
+   "unit": "배",
+   "series": "stockanalysis.com 한 곳 · 2026-09-17 기준 (제공사 혼용 금지)",
+   "as_of": "2026-09-17",
+   "tier": 3,
+   "source_url": "https://stockanalysis.com/stocks/wmt/statistics/",
+   "verdict": "confirmed",
+   "render": "marked",
+   "note": "제공사 산정. 산식(예상 이익 증가율의 기간·기준)이 공개돼 있지 않아 점수에는 넣지 않고 참고로만 싣는다",
    "printed_on": [
     "table-main"
    ]
@@ -1255,6 +1996,43 @@
    ]
   },
   {
+   "id": "COST_FPE",
+   "kind": "market_multiple",
+   "metric": "선행 P/E",
+   "text": "코스트코 선행 P/E",
+   "value": 43.25,
+   "unit": "배",
+   "series": "stockanalysis.com 한 곳 · 2026-09-17 기준 (제공사 혼용 금지)",
+   "as_of": "2026-09-17",
+   "tier": 3,
+   "source_url": "https://stockanalysis.com/stocks/cost/statistics/",
+   "verdict": "confirmed",
+   "render": "marked",
+   "note": "집계사이트 한 곳의 당일 값. 제공사마다 선행 이익 기준이 달라 다른 곳 수치와 섞지 말 것",
+   "printed_on": [
+    "table-main",
+    "rank-appeal"
+   ]
+  },
+  {
+   "id": "COST_PEG",
+   "kind": "market_multiple",
+   "metric": "PEG",
+   "text": "코스트코 PEG",
+   "value": 4.0,
+   "unit": "배",
+   "series": "stockanalysis.com 한 곳 · 2026-09-17 기준 (제공사 혼용 금지)",
+   "as_of": "2026-09-17",
+   "tier": 3,
+   "source_url": "https://stockanalysis.com/stocks/cost/statistics/",
+   "verdict": "confirmed",
+   "render": "marked",
+   "note": "제공사 산정. 산식(예상 이익 증가율의 기간·기준)이 공개돼 있지 않아 점수에는 넣지 않고 참고로만 싣는다",
+   "printed_on": [
+    "table-main"
+   ]
+  },
+  {
    "id": "HD_REV",
    "kind": "reported_result",
    "metric": "분기 매출",
@@ -1305,6 +2083,43 @@
    "revision": "unchanged",
    "verdict": "confirmed",
    "render": "assert",
+   "printed_on": [
+    "table-main"
+   ]
+  },
+  {
+   "id": "HD_FPE",
+   "kind": "market_multiple",
+   "metric": "선행 P/E",
+   "text": "홈디포 선행 P/E",
+   "value": 21.73,
+   "unit": "배",
+   "series": "stockanalysis.com 한 곳 · 2026-09-17 기준 (제공사 혼용 금지)",
+   "as_of": "2026-09-17",
+   "tier": 3,
+   "source_url": "https://stockanalysis.com/stocks/hd/statistics/",
+   "verdict": "confirmed",
+   "render": "marked",
+   "note": "집계사이트 한 곳의 당일 값. 제공사마다 선행 이익 기준이 달라 다른 곳 수치와 섞지 말 것",
+   "printed_on": [
+    "table-main",
+    "rank-appeal"
+   ]
+  },
+  {
+   "id": "HD_PEG",
+   "kind": "market_multiple",
+   "metric": "PEG",
+   "text": "홈디포 PEG",
+   "value": 4.04,
+   "unit": "배",
+   "series": "stockanalysis.com 한 곳 · 2026-09-17 기준 (제공사 혼용 금지)",
+   "as_of": "2026-09-17",
+   "tier": 3,
+   "source_url": "https://stockanalysis.com/stocks/hd/statistics/",
+   "verdict": "confirmed",
+   "render": "marked",
+   "note": "제공사 산정. 산식(예상 이익 증가율의 기간·기준)이 공개돼 있지 않아 점수에는 넣지 않고 참고로만 싣는다",
    "printed_on": [
     "table-main"
    ]
@@ -1367,6 +2182,43 @@
    ]
   },
   {
+   "id": "CAT_FPE",
+   "kind": "market_multiple",
+   "metric": "선행 P/E",
+   "text": "캐터필러 선행 P/E",
+   "value": 28.32,
+   "unit": "배",
+   "series": "stockanalysis.com 한 곳 · 2026-09-17 기준 (제공사 혼용 금지)",
+   "as_of": "2026-09-17",
+   "tier": 3,
+   "source_url": "https://stockanalysis.com/stocks/cat/statistics/",
+   "verdict": "confirmed",
+   "render": "marked",
+   "note": "집계사이트 한 곳의 당일 값. 제공사마다 선행 이익 기준이 달라 다른 곳 수치와 섞지 말 것",
+   "printed_on": [
+    "table-main",
+    "rank-appeal"
+   ]
+  },
+  {
+   "id": "CAT_PEG",
+   "kind": "market_multiple",
+   "metric": "PEG",
+   "text": "캐터필러 PEG",
+   "value": 1.54,
+   "unit": "배",
+   "series": "stockanalysis.com 한 곳 · 2026-09-17 기준 (제공사 혼용 금지)",
+   "as_of": "2026-09-17",
+   "tier": 3,
+   "source_url": "https://stockanalysis.com/stocks/cat/statistics/",
+   "verdict": "confirmed",
+   "render": "marked",
+   "note": "제공사 산정. 산식(예상 이익 증가율의 기간·기준)이 공개돼 있지 않아 점수에는 넣지 않고 참고로만 싣는다",
+   "printed_on": [
+    "table-main"
+   ]
+  },
+  {
    "id": "XOM_REV",
    "kind": "reported_result",
    "metric": "분기 매출",
@@ -1417,6 +2269,43 @@
    "revision": "new",
    "verdict": "confirmed",
    "render": "assert",
+   "printed_on": [
+    "table-main"
+   ]
+  },
+  {
+   "id": "XOM_FPE",
+   "kind": "market_multiple",
+   "metric": "선행 P/E",
+   "text": "엑슨모빌 선행 P/E",
+   "value": 13.76,
+   "unit": "배",
+   "series": "stockanalysis.com 한 곳 · 2026-09-17 기준 (제공사 혼용 금지)",
+   "as_of": "2026-09-17",
+   "tier": 3,
+   "source_url": "https://stockanalysis.com/stocks/xom/statistics/",
+   "verdict": "confirmed",
+   "render": "marked",
+   "note": "집계사이트 한 곳의 당일 값. 제공사마다 선행 이익 기준이 달라 다른 곳 수치와 섞지 말 것",
+   "printed_on": [
+    "table-main",
+    "rank-appeal"
+   ]
+  },
+  {
+   "id": "XOM_PEG",
+   "kind": "market_multiple",
+   "metric": "PEG",
+   "text": "엑슨모빌 PEG",
+   "value": 1.2,
+   "unit": "배",
+   "series": "stockanalysis.com 한 곳 · 2026-09-17 기준 (제공사 혼용 금지)",
+   "as_of": "2026-09-17",
+   "tier": 3,
+   "source_url": "https://stockanalysis.com/stocks/xom/statistics/",
+   "verdict": "confirmed",
+   "render": "marked",
+   "note": "제공사 산정. 산식(예상 이익 증가율의 기간·기준)이 공개돼 있지 않아 점수에는 넣지 않고 참고로만 싣는다",
    "printed_on": [
     "table-main"
    ]
@@ -1579,6 +2468,8 @@
  "unit_policy": {
   "분기 매출": "USD bn",
   "매출 컨센서스": "USD bn",
-  "가이던스": "방향(+1/0/-1)"
+  "가이던스": "방향(+1/0/-1)",
+  "선행 P/E": "배",
+  "PEG": "배"
  }
 }
