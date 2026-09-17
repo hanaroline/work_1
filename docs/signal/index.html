@@ -1,0 +1,703 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>매수·매도 타이밍 신호</title>
+<!--
+  추세·모멘텀·자금수급·매물대 네 축을 −100~+100 으로 합쳐 매수/매도 신호를 내고,
+  진입·손절·목표·비중까지 숫자로 보여 준다. 시계 네 개(5·10·20·60일)를 나란히 둔다.
+
+  **셈하는 자리가 둘이다.**
+    미리 셈해 둔 종목(지수·KR100·US100) — data/signals/latest.json 을 옮겨 찍기만 한다.
+      변동성 화면이 세운 규율이다. 화면이 다시 셈하면 verify_signals.py 가 대조할
+      자리가 없어진다.
+    임의 종목 — 서버에 자료가 없으므로 브라우저가 일봉을 받아 signal_engine.js 로
+      그 자리에서 셈한다. 화면에 「브라우저 계산」이라고 적고, 백테스트가 없다는
+      것도 함께 적는다.
+
+  **가짜 자료로 신호를 내지 않는다.** index.html 은 실시간 조회가 막히면 샘플
+  자료로 넘어간다 — 시세 화면에서는 괜찮지만 여기서는 **가짜 매수 신호**가 된다.
+  이 화면은 폴백하지 않고 「자료를 받지 못했습니다」라고 적고 멈춘다.
+
+  띄우는 법 — 저장소 뿌리에서 `python3 -m http.server 8000` 뒤
+  http://localhost:8000/docs/signal/ 로 연다.
+-->
+<style>
+  /* 팔레트 — 저장소의 다른 화면과 같은 것(dataviz 레퍼런스) */
+  :root {
+    --surface-1: #fcfcfb; --page: #f9f9f7;
+    --text-primary: #0b0b0b; --text-secondary: #52514e; --text-muted: #898781;
+    --grid: #e1e0d9; --axis: #c3c2b7; --border: rgba(11,11,11,0.10);
+    --series-1: #2a78d6; --series-2: #1baf7a; --series-3: #eda100;
+    --series-5: #4a3aa7; --series-6: #e34948; --series-8: #eb6834;
+    --up: #d03b3b; --down: #2a78d6; --good: #006300;
+    --warn: #b06f00; --danger: #c0392b;
+    --shadow: 0 1px 2px rgba(11,11,11,.05), 0 4px 16px rgba(11,11,11,.04);
+    --radius: 14px;
+  }
+  :root[data-theme="dark"] {
+    --surface-1: #1a1a19; --page: #0d0d0d;
+    --text-primary: #ffffff; --text-secondary: #c3c2b7; --text-muted: #898781;
+    --grid: #2c2c2a; --axis: #383835; --border: rgba(255,255,255,0.10);
+    --series-1: #3987e5; --series-2: #199e70; --series-3: #c98500;
+    --series-5: #9085e9; --series-6: #e66767; --series-8: #d95926;
+    --up: #ff6b6b; --down: #5598e7; --good: #0ca30c;
+    --warn: #e0a030; --danger: #ff6b6b;
+    --shadow: 0 1px 2px rgba(0,0,0,.4), 0 4px 16px rgba(0,0,0,.3);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --surface-1: #1a1a19; --page: #0d0d0d;
+      --text-primary: #ffffff; --text-secondary: #c3c2b7; --text-muted: #898781;
+      --grid: #2c2c2a; --axis: #383835; --border: rgba(255,255,255,0.10);
+      --series-1: #3987e5; --series-2: #199e70; --series-3: #c98500;
+      --series-5: #9085e9; --series-6: #e66767; --series-8: #d95926;
+      --up: #ff6b6b; --down: #5598e7; --good: #0ca30c;
+      --warn: #e0a030; --danger: #ff6b6b;
+      --shadow: 0 1px 2px rgba(0,0,0,.4), 0 4px 16px rgba(0,0,0,.3);
+    }
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    font-family: system-ui, -apple-system, "Segoe UI", "Malgun Gothic", sans-serif;
+    background: var(--page); color: var(--text-primary); line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: 1180px; margin: 0 auto; padding: 24px 16px 80px; }
+  header { display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap; margin-bottom: 4px; }
+  h1 { font-size: 22px; margin: 0; letter-spacing: -0.01em; }
+  .sub { color: var(--text-secondary); font-size: 13px; }
+  .card {
+    background: var(--surface-1); border: 1px solid var(--border);
+    border-radius: var(--radius); box-shadow: var(--shadow);
+    padding: 18px; margin-top: 16px;
+  }
+  .card h2 { font-size: 15px; margin: 0 0 12px; letter-spacing: -0.01em; }
+  .muted { color: var(--text-muted); font-size: 12.5px; }
+  .sec { color: var(--text-secondary); font-size: 13px; }
+
+  /* 검색 */
+  .searchrow { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; margin-top: 14px; }
+  input[type=text], select {
+    font: inherit; font-size: 14px; padding: 9px 12px; border-radius: 9px;
+    border: 1px solid var(--border); background: var(--surface-1); color: var(--text-primary);
+    min-width: 200px;
+  }
+  button {
+    font: inherit; font-size: 14px; padding: 9px 14px; border-radius: 9px; cursor: pointer;
+    border: 1px solid var(--border); background: var(--surface-1); color: var(--text-primary);
+  }
+  button:hover { border-color: var(--axis); }
+  .chip {
+    display: inline-block; padding: 2px 9px; border-radius: 999px;
+    font-size: 11.5px; font-weight: 600; border: 1px solid var(--border);
+  }
+  .chip.live { background: rgba(27,175,122,.12); color: var(--good); }
+  .chip.browser { background: rgba(237,161,0,.14); color: var(--warn); }
+
+  /* 머리 요약 */
+  .head { display: flex; gap: 22px; flex-wrap: wrap; align-items: flex-end; }
+  .price { font-size: 30px; font-weight: 700; letter-spacing: -0.02em; }
+  .chg.up { color: var(--up); } .chg.down { color: var(--down); }
+  .band {
+    display: inline-block; padding: 6px 14px; border-radius: 10px;
+    font-size: 16px; font-weight: 700;
+  }
+  .b-strong_buy { background: rgba(208,59,59,.14); color: var(--up); }
+  .b-buy        { background: rgba(208,59,59,.09); color: var(--up); }
+  .b-hold       { background: rgba(137,135,129,.14); color: var(--text-secondary); }
+  .b-reduce     { background: rgba(42,120,214,.10); color: var(--down); }
+  .b-sell       { background: rgba(42,120,214,.16); color: var(--down); }
+
+  /* 시계 네 칸 */
+  .hgrid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+  @media (max-width: 860px) { .hgrid { grid-template-columns: repeat(2, 1fr); } }
+  @media (max-width: 480px) { .hgrid { grid-template-columns: 1fr; } }
+  .hcard { border: 1px solid var(--border); border-radius: 11px; padding: 13px; }
+  .hcard .hh { font-size: 12px; color: var(--text-muted); font-weight: 600; letter-spacing: .02em; }
+  .kv { display: flex; justify-content: space-between; gap: 8px; font-size: 13px; padding: 2px 0; }
+  .kv span:last-child { font-variant-numeric: tabular-nums; font-weight: 600; }
+
+  /* 표는 좁은 화면에서 제 칸을 넘는다. 페이지 전체를 가로로 밀리게 두는 대신
+     표만 따로 밀리게 한다 — 헤드리스 점검이 폰 너비에서 102px 넘침을 잡았다. */
+  .scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+  table { border-collapse: collapse; width: 100%; font-size: 13px; min-width: 420px; }
+  th, td { text-align: right; padding: 6px 8px; border-bottom: 1px solid var(--border); }
+  th:first-child, td:first-child { text-align: left; }
+  thead th { color: var(--text-secondary); font-weight: 600; font-size: 12px; }
+  td.num { font-variant-numeric: tabular-nums; }
+
+  /* 축 막대 */
+  .axrow { display: grid; grid-template-columns: 82px 1fr 58px; gap: 10px; align-items: center;
+           font-size: 13px; padding: 4px 0; }
+  .axbar { position: relative; height: 16px; background: var(--grid); border-radius: 4px; }
+  .axbar i { position: absolute; top: 0; height: 100%; border-radius: 4px; }
+  .axbar b { position: absolute; top: -3px; bottom: -3px; left: 50%; width: 1px; background: var(--axis); }
+
+  .note { font-size: 12.5px; color: var(--text-secondary); margin: 5px 0; }
+  .warnbox {
+    border-left: 3px solid var(--warn); padding: 10px 14px; margin-top: 12px;
+    background: rgba(237,161,0,.07); border-radius: 0 8px 8px 0; font-size: 13px;
+  }
+  .dangerbox {
+    border-left: 3px solid var(--danger); padding: 10px 14px; margin-top: 12px;
+    background: rgba(192,57,43,.07); border-radius: 0 8px 8px 0; font-size: 13px;
+  }
+  ul.reasons { margin: 6px 0 0; padding-left: 18px; font-size: 13px; color: var(--text-secondary); }
+  ul.reasons li { margin: 3px 0; }
+  svg { display: block; max-width: 100%; }
+  .spin { color: var(--text-muted); font-size: 13px; padding: 20px 0; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>매수 · 매도 타이밍 신호</h1>
+    <span class="sub" id="asof"></span>
+    <span style="flex:1"></span>
+    <button id="theme" title="라이트/다크">◐</button>
+  </header>
+  <div class="sub">추세 · 모멘텀 · 자금수급 · 매물대를 합쳐 −100(매도) ~ +100(매수) 으로 냅니다.
+    진입·손절·목표까지 함께 냅니다 — 손절 없는 매수 신호는 신호가 아니기 때문입니다.</div>
+
+  <div class="searchrow">
+    <select id="pick"><option>불러오는 중…</option></select>
+    <input type="text" id="free" placeholder="다른 종목 (예: 035720 / TSLA)" />
+    <button id="go">조회</button>
+    <span class="muted" id="pickNote"></span>
+  </div>
+
+  <div id="body"></div>
+
+  <div class="card">
+    <h2>이 신호를 어떻게 읽어야 하는가</h2>
+    <div id="limits" class="sec">백테스트 결과를 불러오는 중…</div>
+    <div class="dangerbox" id="disclaimer"></div>
+  </div>
+</div>
+
+<script src="signal_engine.js"></script>
+<script>
+(function () {
+  'use strict';
+  var $ = function (id) { return document.getElementById(id); };
+  var DATA = null, BT = null;
+
+  /* ── 테마 ─────────────────────────────────────────────────────── */
+  $('theme').onclick = function () {
+    var cur = document.documentElement.getAttribute('data-theme');
+    var next = cur === 'dark' ? 'light' : (cur === 'light' ? 'dark' :
+      (matchMedia('(prefers-color-scheme: dark)').matches ? 'light' : 'dark'));
+    document.documentElement.setAttribute('data-theme', next);
+    if (CUR) render(CUR);
+  };
+
+  /* ── 꾸밈 ─────────────────────────────────────────────────────── */
+  function num(x, d) {
+    if (x == null || isNaN(x)) return '—';
+    d = d == null ? 2 : d;
+    return Number(x).toLocaleString('ko-KR', { minimumFractionDigits: d, maximumFractionDigits: d });
+  }
+  function px(x) {
+    if (x == null) return '—';
+    return Math.abs(x) >= 1000 ? Number(Math.round(x)).toLocaleString('ko-KR') : num(x, 2);
+  }
+  function pct(x, d) {
+    if (x == null || isNaN(x)) return '—';
+    d = d == null ? 1 : d;
+    return (x > 0 ? '+' : '') + num(x, d) + '%';
+  }
+  function esc(s) {
+    return String(s == null ? '' : s).replace(/[&<>"]/g, function (c) {
+      return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c];
+    });
+  }
+  function cssVar(n) { return getComputedStyle(document.documentElement).getPropertyValue(n).trim(); }
+
+  /* ── 축 막대 ─────────────────────────────────────────────────── */
+  var AXLABEL = { trend: '추세', momentum: '모멘텀', flow: '자금수급', supply: '매물대' };
+  function axisBars(axes, weights) {
+    var h = '';
+    Object.keys(AXLABEL).forEach(function (k) {
+      var v = axes[k];
+      var w = weights && weights[k] != null ? ' · 가중 ' + Math.round(weights[k] * 100) + '%' : '';
+      if (v == null) {
+        h += '<div class="axrow"><span>' + AXLABEL[k] + '</span>' +
+             '<span class="muted">자료가 모자라 셈하지 못했습니다</span><span>—</span></div>';
+        return;
+      }
+      var half = Math.min(50, Math.abs(v) / 2);
+      var col = v >= 0 ? cssVar('--up') : cssVar('--down');
+      var left = v >= 0 ? 50 : 50 - half;
+      h += '<div class="axrow"><span>' + AXLABEL[k] + '<span class="muted">' + w + '</span></span>' +
+           '<span class="axbar"><b></b><i style="left:' + left + '%;width:' + half + '%;background:' + col + '"></i></span>' +
+           '<span class="num" style="text-align:right">' + (v > 0 ? '+' : '') + num(v, 0) + '</span></div>';
+    });
+    return h;
+  }
+
+  /* ── 가격 차트 (인라인 SVG) ──────────────────────────────────── */
+  function priceChart(ch, plan) {
+    if (!ch || !ch.c || ch.c.length < 2) return '';
+    var W = 860, H = 260, PL = 52, PR = 66, PT = 12, PB = 22;
+    var n = ch.c.length;
+    var vals = [];
+    ['c', 'bb_up', 'bb_lo', 'ma20', 'ma60'].forEach(function (k) {
+      (ch[k] || []).forEach(function (x) { if (x != null) vals.push(x); });
+    });
+    if (plan) ['stop', 'target'].forEach(function (k) { if (plan[k] != null) vals.push(plan[k]); });
+    var lo = Math.min.apply(null, vals), hi = Math.max.apply(null, vals);
+    var pad = (hi - lo) * 0.06 || 1; lo -= pad; hi += pad;
+    var X = function (i) { return PL + (W - PL - PR) * (i / (n - 1)); };
+    var Y = function (v) { return PT + (H - PT - PB) * (1 - (v - lo) / (hi - lo)); };
+
+    function path(arr, col, wdt, dash) {
+      var d = '', on = false;
+      for (var i = 0; i < n; i++) {
+        if (arr[i] == null) { on = false; continue; }
+        d += (on ? 'L' : 'M') + X(i).toFixed(1) + ' ' + Y(arr[i]).toFixed(1) + ' ';
+        on = true;
+      }
+      if (!d) return '';
+      return '<path d="' + d + '" fill="none" stroke="' + col + '" stroke-width="' + wdt +
+             '"' + (dash ? ' stroke-dasharray="' + dash + '"' : '') + ' />';
+    }
+
+    var s = '<svg viewBox="0 0 ' + W + ' ' + H + '" role="img" aria-label="가격 차트">';
+    // 가로 눈금
+    for (var g = 0; g <= 4; g++) {
+      var v = lo + (hi - lo) * g / 4, y = Y(v);
+      s += '<line x1="' + PL + '" y1="' + y.toFixed(1) + '" x2="' + (W - PR) + '" y2="' + y.toFixed(1) +
+           '" stroke="' + cssVar('--grid') + '" stroke-width="1" />';
+      s += '<text x="' + (PL - 6) + '" y="' + (y + 4).toFixed(1) + '" text-anchor="end" font-size="10" fill="' +
+           cssVar('--text-muted') + '">' + px(v) + '</text>';
+    }
+    // 볼린저 띠
+    if (ch.bb_up && ch.bb_lo) {
+      var d1 = '', d2 = '';
+      for (var i = 0; i < n; i++) if (ch.bb_up[i] != null) d1 += (d1 ? 'L' : 'M') + X(i).toFixed(1) + ' ' + Y(ch.bb_up[i]).toFixed(1) + ' ';
+      for (var j = n - 1; j >= 0; j--) if (ch.bb_lo[j] != null) d2 += 'L' + X(j).toFixed(1) + ' ' + Y(ch.bb_lo[j]).toFixed(1) + ' ';
+      if (d1 && d2) s += '<path d="' + d1 + d2 + 'Z" fill="' + cssVar('--series-1') + '" opacity="0.07" />';
+    }
+    s += path(ch.ma60, cssVar('--series-5'), 1.2);
+    s += path(ch.ma20, cssVar('--series-3'), 1.2);
+    s += path(ch.c, cssVar('--text-primary'), 1.8);
+
+    // 계획선 — 진입·손절·목표
+    function mark(v, col, label) {
+      if (v == null) return '';
+      var y = Y(v);
+      return '<line x1="' + PL + '" y1="' + y.toFixed(1) + '" x2="' + (W - PR) + '" y2="' + y.toFixed(1) +
+             '" stroke="' + col + '" stroke-width="1.2" stroke-dasharray="4 3" />' +
+             '<text x="' + (W - PR + 5) + '" y="' + (y + 3.5).toFixed(1) + '" font-size="10.5" fill="' + col +
+             '" font-weight="600">' + label + '</text>';
+    }
+    if (plan) {
+      s += mark(plan.close, cssVar('--text-secondary'), '현재 ' + px(plan.close));
+      s += mark(plan.target, cssVar('--good'), '목표 ' + px(plan.target));
+      s += mark(plan.stop, cssVar('--danger'), '손절 ' + px(plan.stop));
+    }
+    // 날짜
+    [0, Math.floor(n / 2), n - 1].forEach(function (i) {
+      s += '<text x="' + X(i).toFixed(1) + '" y="' + (H - 6) + '" text-anchor="middle" font-size="10" fill="' +
+           cssVar('--text-muted') + '">' + esc((ch.d[i] || '').slice(2)) + '</text>';
+    });
+    s += '</svg>';
+    return s;
+  }
+
+  /* ── 매물대 ─────────────────────────────────────────────────── */
+  function vpChart(vp, close) {
+    if (!vp || !vp.bins || !vp.bins.length) return '';
+    var W = 300, rowH = 11, H = vp.bins.length * rowH + 16;
+    var mx = Math.max.apply(null, vp.bins.map(function (b) { return b.pct; })) || 1;
+    var s = '<svg viewBox="0 0 ' + W + ' ' + H + '" role="img" aria-label="매물대">';
+    for (var k = vp.bins.length - 1; k >= 0; k--) {
+      var b = vp.bins[k];
+      var y = (vp.bins.length - 1 - k) * rowH + 8;
+      var w = (W - 118) * (b.pct / mx);
+      var above = b.lo >= close;
+      var col = above ? cssVar('--down') : cssVar('--up');
+      s += '<rect x="62" y="' + y + '" width="' + Math.max(0.5, w).toFixed(1) + '" height="' + (rowH - 2) +
+           '" fill="' + col + '" opacity="' + (above ? 0.5 : 0.75) + '" rx="1.5" />';
+      if (k % 3 === 0 || b.pct === mx) {
+        s += '<text x="58" y="' + (y + rowH - 3) + '" text-anchor="end" font-size="8.5" fill="' +
+             cssVar('--text-muted') + '">' + px(b.lo) + '</text>';
+      }
+      if (b.pct === mx) {
+        s += '<text x="' + (66 + w) + '" y="' + (y + rowH - 3) + '" font-size="8.5" fill="' +
+             cssVar('--text-secondary') + '">POC ' + num(b.pct, 1) + '%</text>';
+      }
+    }
+    var yc = (vp.bins.length - 1 - vp.bins.findIndex(function (b) { return b.lo <= close && close < b.hi; })) * rowH + 8;
+    if (yc > 0 && yc < H) {
+      s += '<line x1="58" y1="' + yc + '" x2="' + (W - 6) + '" y2="' + yc + '" stroke="' +
+           cssVar('--text-primary') + '" stroke-width="1.2" />';
+    }
+    s += '</svg>';
+    return s;
+  }
+
+  /* ── 한 판 그리기 ────────────────────────────────────────────── */
+  var CUR = null;
+
+  function planRows(p) {
+    if (!p || p.band == null) return '<div class="muted">' + esc((p && p.note) || '표본이 모자랍니다') + '</div>';
+    var h = '<div class="kv"><span>판단</span><span>' + esc(p.action || '—') + '</span></div>';
+    h += '<div class="kv"><span>점수</span><span>' + (p.score > 0 ? '+' : '') + num(p.score, 0) +
+         ' <span class="muted">(상위 ' + num(100 - p.self_pct, 0) + '%)</span></span></div>';
+    if (p.stop != null) {
+      h += '<div class="kv"><span>손절</span><span>' + px(p.stop) +
+           ' <span class="muted">' + pct(p.stop_pct) + '</span></span></div>';
+    }
+    if (p.target != null) {
+      h += '<div class="kv"><span>목표</span><span>' + px(p.target) +
+           ' <span class="muted">' + pct(p.target_pct) + '</span></span></div>';
+    }
+    if (p.rr != null) h += '<div class="kv"><span>손익비</span><span>' + num(p.rr, 2) + '</span></div>';
+    if (p.weight != null) h += '<div class="kv"><span>비중</span><span>' + num(p.weight * 100, 0) + '%</span></div>';
+    if (p.note) h += '<div class="note">' + esc(p.note) + '</div>';
+    return h;
+  }
+
+  function scenarioTable(hz) {
+    var rows = '';
+    var any = false;
+    Object.keys(hz).forEach(function (hk) {
+      var sc = (hz[hk] || {}).scenario;
+      if (!sc || !sc.horizons) return;
+      Object.keys(sc.horizons).forEach(function (sh) {
+        if (sh !== hk) return;            // 시계마다 제 시계의 분포만 싣는다
+        var v = sc.horizons[sh];
+        any = true;
+        if (v.up_prob == null) {
+          rows += '<tr><td>' + esc(hk) + '일</td><td colspan="5" class="muted">' + esc(v.note || '표본 부족') + '</td></tr>';
+        } else {
+          rows += '<tr><td>' + esc(hk) + '일</td><td class="num">' + v.samples + '</td><td class="num">' +
+                  num(v.up_prob, 0) + '%</td><td class="num">' + pct(v.median) + '</td><td class="num">' +
+                  pct(v.p10) + '</td><td class="num">' + pct(v.p90) + '</td></tr>';
+        }
+      });
+    });
+    if (!any) return '';
+    return '<div class="scroll"><table><thead><tr><th>시계</th><th>표본</th><th>상승 확률</th><th>중앙</th>' +
+           '<th>하위 10%</th><th>상위 10%</th></tr></thead><tbody>' + rows + '</tbody></table></div>';
+  }
+
+  /* 점수와 시나리오가 서로 다른 말을 하면 **그걸 화면에 적는다.**
+     「적극 매수」 옆에 「같은 신호대였던 과거의 25%만 올랐다」가 있으면 그건 감출
+     것이 아니라 읽는 사람이 꼭 알아야 할 것이다. */
+  function conflictNote(hz) {
+    var bad = [];
+    Object.keys(hz).forEach(function (hk) {
+      var v = hz[hk] || {};
+      var band = (v.plan || {}).band;
+      var sc = ((v.scenario || {}).horizons || {})[hk];
+      if (!sc || sc.up_prob == null) return;
+      if ((band === 'buy' || band === 'strong_buy') && sc.up_prob < 50) {
+        bad.push(hk + '일 시계는 매수 신호지만, 같은 신호대였던 과거 ' + sc.samples +
+                 '일 가운데 오른 것은 ' + num(sc.up_prob, 0) + '% 뿐이고 중앙값은 ' + pct(sc.median) + ' 입니다');
+      }
+      if ((band === 'sell' || band === 'reduce') && sc.up_prob > 50) {
+        bad.push(hk + '일 시계는 청산 신호지만, 같은 신호대였던 과거 ' + sc.samples +
+                 '일 가운데 ' + num(sc.up_prob, 0) + '% 가 올랐습니다');
+      }
+    });
+    if (!bad.length) return '';
+    return '<div class="warnbox"><b>점수와 과거 통계가 어긋납니다.</b><ul class="reasons">' +
+           bad.map(function (x) { return '<li>' + esc(x) + '</li>'; }).join('') +
+           '</ul>이 도구는 어긋남을 감추지 않습니다. 둘이 다를 때는 **표본 수를 함께 보고** ' +
+           '판단하십시오 — 점수는 지표의 지금 자리이고, 확률은 그 자리였던 과거의 결과입니다.</div>';
+  }
+
+  function render(it) {
+    CUR = it;
+    var b = $('body');
+    if (it.error) { b.innerHTML = '<div class="card"><div class="dangerbox">' + esc(it.error) + '</div></div>'; return; }
+
+    var hz = it.horizons || {};
+    var h20 = hz['20'] || hz[20] || {};
+    var p20 = h20.plan || {};
+    var src = it._browser
+      ? '<span class="chip browser">브라우저 계산 · 백테스트 없음</span>'
+      : '<span class="chip live">미리 셈해 둔 값</span>';
+
+    var s = '<div class="card"><div class="head">' +
+      '<div><div style="font-size:15px;font-weight:600">' + esc(it.name || it.symbol) +
+      ' <span class="muted">' + esc(it.symbol) + '</span> ' + src + '</div>' +
+      '<div class="price">' + px(it.close) +
+      ' <span class="chg ' + (it.change_pct >= 0 ? 'up' : 'down') + '" style="font-size:15px">' +
+      pct(it.change_pct, 2) + '</span></div>' +
+      '<div class="muted">기준일 ' + esc(it.asof) + '</div></div>' +
+      '<div style="margin-left:auto;text-align:right">' +
+      (p20.band ? '<div class="band b-' + p20.band + '">' + esc(p20.band_label) + '</div>' : '') +
+      '<div class="muted" style="margin-top:6px">20일 시계 기준 · 확신도 ' + num(it.conf, 0) + '</div></div>' +
+      '</div>';
+
+    // 백테스트가 이 시장에 대해 한 말을 **종목 바로 옆에** 붙인다. 화면 맨 아래
+    // 한계 문단에만 적으면, 「적극 매수」만 보고 창을 닫는 사람에게는 닿지 않는다.
+    var cav = DATA && DATA.market_caveats && DATA.market_caveats[it.market];
+    if (cav) {
+      s += '<div class="' + (cav.level === 'danger' ? 'dangerbox' : 'warnbox') + '">' +
+           cav.text.replace(/\*\*(.+?)\*\*/g, '<b>$1</b>') + '</div>';
+    }
+
+    s += '<div style="margin-top:16px">' + axisBars(it.axes || {}, h20.weights) + '</div>';
+    s += '<div class="note">축 점수는 각 지표가 <b>제 과거 1년 안에서</b> 어디쯤인지를 모은 값입니다. ' +
+         '가중치는 그 축이 과거에 실제로 앞일을 말해 주었는가를 <b>그 시점 이전 자료로만</b> 재서 정합니다.</div>';
+    s += '</div>';
+
+    // 시계 네 칸
+    s += '<div class="card"><h2>시계별 판단 — 나란히 둡니다</h2><div class="hgrid">';
+    [5, 10, 20, 60].forEach(function (h) {
+      var v = hz[String(h)] || hz[h] || {};
+      s += '<div class="hcard"><div class="hh">' + h + '거래일</div>' +
+           (v.plan ? '<div class="band b-' + (v.plan.band || 'hold') + '" style="font-size:13px;padding:3px 9px;margin:6px 0">' +
+             esc(v.plan.band_label || '—') + '</div>' : '') +
+           planRows(v.plan) + '</div>';
+    });
+    s += '</div><div class="note">같은 종목이 시계마다 다른 쪽을 가리키는 일은 흔합니다. ' +
+         '그 어긋남을 하나로 뭉개지 않고 그대로 둡니다.</div></div>';
+
+    s += conflictNote(hz);
+
+    // 차트
+    if (it.chart) {
+      s += '<div class="card"><h2>가격 · 볼린저 · 이동평균과 매매 계획</h2>' +
+           priceChart(it.chart, p20) +
+           '<div class="note">점선은 20일 시계의 계획선입니다. ' +
+           '<span style="color:' + cssVar('--series-3') + '">■</span> 20일선 ' +
+           '<span style="color:' + cssVar('--series-5') + '">■</span> 60일선 ' +
+           '<span style="color:' + cssVar('--series-1') + '">■</span> 볼린저(20, 2σ)</div></div>';
+    }
+
+    // 매물대
+    var vp = it.volume_profile;
+    if (vp) {
+      s += '<div class="card"><h2>매물대 — 어느 가격대에 물량이 쌓여 있는가</h2>' +
+           '<div style="display:flex;gap:24px;flex-wrap:wrap;align-items:flex-start">' +
+           '<div>' + vpChart(vp, it.close) + '</div><div style="min-width:260px;flex:1">' +
+           '<div class="kv"><span>현재가 <b>위</b> 물량</span><span>' + num(vp.above_pct, 1) + '%</span></div>' +
+           '<div class="kv"><span>현재가 <b>아래</b> 물량</span><span>' + num(vp.below_pct, 1) + '%</span></div>' +
+           '<div class="kv"><span>POC (가장 두꺼운 자리)</span><span>' + px(vp.poc) + '</span></div>' +
+           '<div class="kv"><span>가치영역 (70%)</span><span>' + px(vp.val) + ' ~ ' + px(vp.vah) + '</span></div>' +
+           (vp.nearest_up != null ? '<div class="kv"><span>가까운 저항</span><span>' + px(vp.nearest_up) + '</span></div>' : '') +
+           (vp.nearest_dn != null ? '<div class="kv"><span>가까운 지지</span><span>' + px(vp.nearest_dn) + '</span></div>' : '') +
+           '<div class="note">최근 ' + vp.sessions + '세션 거래대금을 그날 고가~저가에 <b>고르게 펴서</b> 쌓았습니다. ' +
+           '분봉이 없어 시가·종가 근처 쏠림은 반영하지 못합니다 — 흉내 내면 근거 없는 정교함이 됩니다.</div>' +
+           '</div></div></div>';
+    }
+
+    // 시나리오
+    var st = scenarioTable(hz);
+    if (st) {
+      s += '<div class="card"><h2>같은 신호대였던 과거는 어땠는가</h2>' + st +
+           '<div class="note">오늘과 <b>같은 신호대</b>였던 과거 날들의 이후 수익률 분포입니다. ' +
+           '표본 20일 미만이면 확률을 내지 않습니다 — 아무 말도 못 하는 것이 틀린 말을 하는 것보다 낫습니다.</div></div>';
+    }
+
+    // 근거
+    if (h20.reasons && h20.reasons.length) {
+      s += '<div class="card"><h2>왜 이 신호인가 (20일 시계)</h2><ul class="reasons">' +
+           h20.reasons.map(function (r) { return '<li>' + esc(r.text) + '</li>'; }).join('') +
+           '</ul></div>';
+    }
+
+    if (it._browser) {
+      s += '<div class="card"><div class="warnbox"><b>이 종목은 브라우저가 그 자리에서 셈한 값입니다.</b> ' +
+        '지수·KR100·US100 과 달리 서버가 미리 셈해 두지 않아 <b>검산 대본이 대조한 적이 없고, ' +
+        '백테스트도 이 종목을 포함하지 않습니다.</b> 셈법 자체는 파이썬 엔진과 골든벡터로 맞춰 두었지만, ' +
+        '받아 온 일봉의 품질(수정주가 여부·결측)은 확인하지 못했습니다.</div></div>';
+    }
+
+    b.innerHTML = s;
+  }
+
+  /* ── 자료 ────────────────────────────────────────────────────── */
+  function limitsHtml(bt) {
+    if (!bt) return '<span class="muted">백테스트 파일(data/signals/backtest.json)을 읽지 못했습니다.</span>';
+    var h = bt.summary_ko ? '<div>' + esc(bt.summary_ko) + '</div>' : '';
+    var hz = (bt.horizons || {});
+    var rows = '';
+    Object.keys(hz).forEach(function (k) {
+      var m = ((hz[k] || {}).flip || {}).KR;
+      if (!m) return;
+      var e = m.event || {}, q = m.equity || {}, bo = e.bootstrap || {};
+      rows += '<tr><td>' + esc(k) + '일</td>' +
+        '<td class="num">' + num(e.signal_mean, 2) + '%</td>' +
+        '<td class="num">' + num(e.baseline_mean, 2) + '%</td>' +
+        '<td class="num">' + (bo.diff != null ? pct(bo.diff, 2) : '—') + '</td>' +
+        '<td class="num">' + (bo.ci_lo != null ? num(bo.ci_lo, 2) + ' ~ ' + num(bo.ci_hi, 2) : '—') + '</td>' +
+        '<td class="num">' + (q.excess_median_pct != null ? pct(q.excess_median_pct, 1) : '—') + '</td>' +
+        '<td class="num">' + (q.in_market_median_pct != null ? num(q.in_market_median_pct, 0) + '%' : '—') + '</td>' +
+        '<td class="num">' + (q.mdd_saved_median_pct != null ? pct(q.mdd_saved_median_pct, 1) : '—') + '</td></tr>';
+    });
+    if (rows) {
+      h += '<div class="scroll"><table style="margin-top:10px"><thead><tr><th>시계</th><th>신호일 이후</th><th>평상시</th>' +
+        '<th>차이</th><th>95% 구간</th><th>보유 대비</th><th>장에 머문 시간</th><th>낙폭 절감</th></tr></thead><tbody>' +
+        rows + '</tbody></table></div>';
+      h += '<div class="note">국내 100종목 기준입니다. <b>차이의 95% 구간이 0 을 걸치면 그 시계에서는 ' +
+        '신호가 값을 한다고 말할 수 없습니다.</b> 구간은 종목이 아니라 <b>날짜 블록</b>으로 뽑았습니다 — ' +
+        '같은 날 백 종목이 함께 움직이므로 종목일을 독립 관측으로 세면 구간이 터무니없이 좁아집니다.</div>';
+    }
+    return h;
+  }
+
+  function fillSelect() {
+    var sel = $('pick');
+    sel.innerHTML = '';
+    var groups = { INDEX: '지수', KR: '국내', US: '미국' };
+    Object.keys(groups).forEach(function (mk) {
+      var xs = (DATA.summary || []).filter(function (x) { return x.market === mk; });
+      if (!xs.length) return;
+      var og = document.createElement('optgroup');
+      og.label = groups[mk] + ' (' + xs.length + ')';
+      xs.forEach(function (x) {
+        var o = document.createElement('option');
+        o.value = x.symbol;
+        o.textContent = (x.name || x.symbol) + (x.band_label ? ' · ' + x.band_label : '');
+        og.appendChild(o);
+      });
+      sel.appendChild(og);
+    });
+    sel.onchange = function () {
+      var it = DATA.items.filter(function (x) { return x.symbol === sel.value; })[0];
+      if (it) render(it);
+    };
+  }
+
+  function show(msg) { $('body').innerHTML = '<div class="card"><div class="spin">' + esc(msg) + '</div></div>'; }
+
+  fetch('../../data/signals/latest.json')
+    .then(function (r) { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
+    .then(function (d) {
+      DATA = d;
+      $('asof').textContent = '산출 ' + (d.generated_at_kst || '');
+      $('disclaimer').textContent = d.disclaimer || '';
+      fillSelect();
+      $('pickNote').textContent = '미리 셈해 둔 ' + (d.items || []).length + '종목';
+      var first = (d.items || []).filter(function (x) { return x.horizons; })[0];
+      if (first) render(first);
+      else show('신호를 낼 만큼 이력이 쌓인 종목이 없습니다.');
+    })
+    .catch(function (e) {
+      show('신호 자료를 읽지 못했습니다 (' + e.message + '). ' +
+           '저장소 뿌리에서 python3 -m http.server 8000 으로 띄운 뒤 ' +
+           'http://localhost:8000/docs/signal/ 로 여십시오. ' +
+           '파일을 두 번 눌러 열면 브라우저 보안정책이 자료 읽기를 막습니다.');
+    });
+
+  fetch('../../data/signals/backtest.json')
+    .then(function (r) { return r.ok ? r.json() : null; })
+    .then(function (d) { BT = d; $('limits').innerHTML = limitsHtml(d); })
+    .catch(function () { $('limits').innerHTML = limitsHtml(null); });
+
+  /* ── 임의 종목 — 브라우저가 셈한다 ──────────────────────────── */
+  $('go').onclick = function () {
+    var q = $('free').value.trim();
+    if (!q) return;
+    var hit = (DATA && DATA.items || []).filter(function (x) {
+      return x.symbol === q || x.symbol.split('.')[0] === q ||
+             (x.name || '').toLowerCase() === q.toLowerCase();
+    })[0];
+    if (hit) { render(hit); return; }
+    lookup(q);
+  };
+  $('free').onkeydown = function (e) { if (e.key === 'Enter') $('go').click(); };
+
+  function yahooSymbol(q) {
+    if (/^\d{6}$/.test(q)) return [q + '.KS', q + '.KQ'];
+    return [q.toUpperCase()];
+  }
+
+  /* 일봉을 받아 온다. **샘플로 넘어가지 않는다** — 못 받으면 못 받았다고 적는다.
+     index.html 은 샘플 폴백을 두지만 그건 시세 화면이라 괜찮은 것이고, 여기서
+     같은 짓을 하면 지어낸 자료로 매수 신호를 내게 된다. */
+  var PROXIES = [
+    function (u) { return u; },
+    function (u) { return 'https://api.codetabs.com/v1/proxy?quest=' + encodeURIComponent(u); },
+    function (u) { return 'https://corsproxy.io/?' + encodeURIComponent(u); },
+    function (u) { return 'https://api.allorigins.win/raw?url=' + encodeURIComponent(u); }
+  ];
+
+  function fetchJson(url) {
+    var i = 0;
+    function next() {
+      if (i >= PROXIES.length) return Promise.reject(new Error('모든 경로가 막혔습니다'));
+      var p = PROXIES[i++];
+      return fetch(p(url), { cache: 'no-store' })
+        .then(function (r) { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
+        .catch(next);
+    }
+    return next();
+  }
+
+  function lookup(q) {
+    show('「' + q + '」 일봉을 받아 브라우저에서 셈하는 중…');
+    var syms = yahooSymbol(q);
+    var tried = 0;
+    function attempt() {
+      if (tried >= syms.length) {
+        show('「' + q + '」 의 일봉을 받지 못했습니다. 종목코드(6자리) 또는 미국 티커를 확인해 주십시오. ' +
+             '자료를 못 받았을 때 지어낸 값으로 신호를 내지는 않습니다.');
+        return;
+      }
+      var sym = syms[tried++];
+      var url = 'https://query1.finance.yahoo.com/v8/finance/chart/' + encodeURIComponent(sym) +
+                '?range=2y&interval=1d';
+      fetchJson(url).then(function (j) {
+        var res = j && j.chart && j.chart.result && j.chart.result[0];
+        if (!res || !res.timestamp) throw new Error('빈 응답');
+        var qd = res.indicators.quote[0];
+        var bars = [];
+        for (var i = 0; i < res.timestamp.length; i++) {
+          if (qd.open[i] == null || qd.close[i] == null || qd.high[i] == null || qd.low[i] == null) continue;
+          bars.push({
+            d: new Date(res.timestamp[i] * 1000).toISOString().slice(0, 10),
+            o: qd.open[i], h: qd.high[i], l: qd.low[i], c: qd.close[i], v: qd.volume[i] || 0
+          });
+        }
+        var r = window.SignalEngine.analyze(bars);
+        if (r.error) { show(r.error); return; }
+        var ind = r.ind, i2 = r.i, lo = Math.max(0, bars.length - 250);
+        var it = {
+          symbol: sym, name: (res.meta && res.meta.symbol) || sym,
+          market: 'FREE', _browser: true,
+          asof: r.asof, close: r.close,
+          change_pct: bars.length > 1 ? (bars[i2].c / bars[i2 - 1].c - 1) * 100 : null,
+          axes: r.axes, conf: r.conf, axes_missing: r.axes_missing,
+          horizons: {}, volume_profile: null,
+          chart: {
+            d: bars.slice(lo).map(function (b) { return b.d; }),
+            c: bars.slice(lo).map(function (b) { return b.c; }),
+            ma20: ind.ma20.slice(lo), ma60: ind.ma60.slice(lo),
+            bb_up: ind.bb_up.slice(lo), bb_lo: ind.bb_lo.slice(lo)
+          }
+        };
+        Object.keys(r.horizons).forEach(function (h) {
+          it.horizons[h] = { score: r.horizons[h].score, self_pct: r.horizons[h].self_pct,
+                             weights: r.horizons[h].weights, plan: r.horizons[h].plan };
+        });
+        var vp = r.volume_profile;
+        if (vp) {
+          it.volume_profile = {
+            poc: vp.poc, val: vp.val, vah: vp.vah,
+            above_pct: vp.above_pct, below_pct: vp.below_pct,
+            nearest_up: vp.nearest_up, nearest_dn: vp.nearest_dn, sessions: vp.sessions,
+            bins: vp.buckets.map(function (b, k) {
+              return { lo: vp.lo + k * vp.width, hi: vp.lo + (k + 1) * vp.width,
+                       pct: b / vp.total * 100 };
+            })
+          };
+        }
+        render(it);
+      }).catch(function () { attempt(); });
+    }
+    attempt();
+  }
+})();
+</script>
+</body>
+</html>
