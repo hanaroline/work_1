@@ -73,8 +73,12 @@ async function main() {
   log(`버려진 종목 ${codes.length}건의 원문을 펼친다`);
   log('보고 싶은 것 — 요약정보로 잡힌 쪽에 정말 요약정보 구간이 있나\n');
 
-  const tally = {};
-  let bodyOk = 0;
+  /* ★ 먼저 모으고 나중에 찍는다 ★ 종목마다 원문을 스무 줄씩 찍으면 서른 종목에
+     육백 줄이 되어, 실행 기록을 꼬리부터 몇 번씩 끊어 읽어야 한다. 그러다 정작
+     중요한 줄을 놓친다 — 전량 점검에서 실제로 그렇게 두 시간을 버렸다.
+     그래서 ① 종목마다 한 줄 ② 까닭별 셈 ③ 까닭마다 앞 두 종목만 원문 전체,
+     이 차례로 찍는다. 까닭이 같으면 원문도 대개 같은 꼴이다. */
+  const got = [];
 
   for (const code of codes) {
     const it = C.items.find((x) => x.code === code);
@@ -90,10 +94,39 @@ async function main() {
     const toc = tocPages(pages);
     const { at, how } = mapPages(pages);
     const bad = checkOrder(at);
+    const body = BODY_SEQ.map((k) => at[k]).filter(Boolean);
+    const seq = body.every((v, i) => i === 0 || v >= body[i - 1]);
+    const afterP2 = at.part2 ? body.every((v) => v >= at.part2) : false;
+    got.push({ code, it, pages, toc, at, how, bad, body, seq, afterP2,
+      why: bad.bad ? bad.why : (body.length ? '통과' : '통과(본문 자리가 하나도 없음)') });
+  }
 
+  /* ① 종목마다 한 줄 — 어디가 빈지, 무엇에 걸렸는지 */
+  bar('종목마다 한 줄');
+  for (const r of got) {
+    log(`${r.code} ${String(r.it.mgr).padStart(4)} ${r.it.name.slice(0, 30).padEnd(30)} ${String(r.pages.length).padStart(3)}쪽 ` +
+        `목차 ${([...r.toc].map((k) => k + 1).join(',') || '없음').padEnd(7)} ` +
+        `요약 ${String(r.at.summary || '-').padStart(3)} 제1부 ${String(r.at.part1 || '-').padStart(3)} 제2부 ${String(r.at.part2 || '-').padStart(3)} ` +
+        `본문 ${r.body.length}/7  ${r.why}`);
+  }
+
+  /* ② 까닭별 셈 */
+  const tally = {};
+  for (const r of got) tally[r.why] = (tally[r.why] || 0) + 1;
+  bar('버린 까닭 — 종목 수');
+  Object.entries(tally).sort((a, b) => b[1] - a[1]).forEach(([k, v]) => log(`  ${String(v).padStart(3)}  ${k}`));
+
+  /* ③ 까닭마다 앞 두 종목의 원문 전체 */
+  const shown = {};
+  for (const r of got) {
+    shown[r.why] = (shown[r.why] || 0) + 1;
+    if (shown[r.why] > 2) continue;
+    const { pages, toc, at, how } = r;
+
+    log('');
     log('━'.repeat(78));
-    log(`${code} · ${it.mgr} · ${it.name.slice(0, 40)}  (${pages.length}쪽, 목차 p.${[...toc].map((k) => k + 1).join(',') || '없음'})`);
-    log(`   판정 : ${bad.bad ? '버림 — ' + bad.why : '통과'}`);
+    log(`${r.code} · ${r.it.mgr} · ${r.it.name.slice(0, 40)}  (${pages.length}쪽, 목차 p.${[...toc].map((k) => k + 1).join(',') || '없음'})`);
+    log(`   판정 : ${r.bad.bad ? '버림 — ' + r.bad.why : '통과'}`);
 
     /* 앞머리 세 자리 — 잡힌 쪽의 원문을 그대로 */
     for (const key of ['summary', 'part1', 'part2']) {
@@ -104,20 +137,18 @@ async function main() {
     }
 
     /* ★ 목차 판정을 그 자리에서 따져 본다 ★
-       첫 판에서 「제1부 p.2 · 요약정보 p.4」 가 나왔다. 제1부로 잡힌 쪽 글이
-       「제 1 부 모집 또는 매출에 관한 사항 1. 명칭 2. 종류 및 형태 3. 모집예정금액
-       …」 처럼 절 제목이 줄줄이 이어지는 꼴이라, 그 쪽은 구간 첫 쪽이 아니라
-       **목차**로 보인다. 그런데 tocPages 는 「목차 없음」 이라고 했다.
-
-       맞다면 버려진 까닭은 요약정보가 아니라 목차 판정이다. 그것을 눈으로
-       확인하려고 앞 여섯 쪽의 판정 근거를 그대로 펼친다. 조건 이름을 옮겨 적지
-       않고 tocPages 가 실제로 내놓은 집합과 나란히 놓는다. */
+       앞서 버려진 108종목이 여기서 갈렸다 — 목차 쪽이 「제1부」 로 시작하는 바람에
+       「제N부로 쪽을 열면 건너뛴다」 에 걸려 목차가 아닌 것으로 넘어갔고, 그래서
+       제1부가 목차 쪽으로 잡혀 요약정보보다 앞섰다. 조건 이름을 옮겨 적지 않고
+       tocPages 가 실제로 내놓은 집합과 나란히 놓는다. */
     log('   목차 판정 — 앞 여섯 쪽');
     for (let i = 0; i < Math.min(6, pages.length); i++) {
       const t = pages[i], head = t.slice(0, 120);
+      const open = head.match(/^\s*\d{0,4}\s*제\s*([12])\s*부/);
+      const other = open ? (open[1] === '1' ? /제\s*2\s*부/ : /제\s*1\s*부/).test(t) : false;
       const facts = [
         /목\s*차/.test(head) ? '「목차」 있음' : '「목차」 없음',
-        /^\s*\d{0,4}\s*제\s*[12]\s*부/.test(head) ? '제N부로 쪽을 엶 → 건너뜀' : '제N부로 안 엶',
+        open ? `제${open[1]}부로 쪽을 엶` + (other ? ' · 다른 부도 말함 → 목차로 봄' : ' · 다른 부는 안 말함 → 건너뜀') : '제N부로 안 엶',
         /제\s*1\s*부|\.{4,}|·{4,}|…{2,}/.test(t) ? '목차 표 있음' : '목차 표 없음',
         '절 제목 ' + (t.match(/\d+\s*\.\s*(집합투자기구의|투자목적|투자대상|투자전략|투자위험|매입|보수|이익\s*배\s*분|운용전문인력|재무|집합투자업자)/g) || []).length + '개',
       ];
@@ -125,26 +156,18 @@ async function main() {
       log(`          「${t.slice(0, 150)}」`);
     }
 
-    /* 필수 일곱 자리가 실제로 쓸 만한가 — 이것이 살릴 가치를 정한다 */
-    const body = BODY_SEQ.map((k) => at[k]).filter(Boolean);
-    const seq = body.every((v, i) => i === 0 || v >= body[i - 1]);
-    const afterP2 = at.part2 ? body.every((v) => v >= at.part2) : false;
-    log(`   필수 일곱 : ${body.length}/7 자리 · 차례 ${seq ? '맞음' : '★어긋남★'} · 제2부 뒤 ${at.part2 ? (afterP2 ? '맞음' : '★아님★') : '제2부 없음'}`);
+    log(`   필수 일곱 : ${r.body.length}/7 자리 · 차례 ${r.seq ? '맞음' : '★어긋남★'} · 제2부 뒤 ${at.part2 ? (r.afterP2 ? '맞음' : '★아님★') : '제2부 없음'}`);
     log(`        ${BODY_SEQ.map((k) => WHAT[k].slice(0, 4) + ' ' + (at[k] || '-')).join(' · ')}`);
-    if (body.length === 7 && seq && afterP2) bodyOk++;
-
-    tally[bad.why || '통과'] = (tally[bad.why || '통과'] || 0) + 1;
   }
 
-  bar('버린 까닭 — 종목 수');
-  Object.entries(tally).sort((a, b) => b[1] - a[1]).forEach(([k, v]) => log(`  ${String(v).padStart(3)}  ${k}`));
+  const bodyOk = got.filter((r) => r.body.length === 7 && r.seq && r.afterP2).length;
 
   bar('요약');
-  log(`필수 일곱 자리가 온전한(7/7 · 차례 맞음 · 제2부 뒤) 종목 ${bodyOk}/${codes.length}`);
+  log(`읽은 종목 ${got.length}/${codes.length} · 필수 일곱 자리가 온전한(7/7 · 차례 맞음 · 제2부 뒤) 종목 ${bodyOk}`);
   log('');
-  log('읽는 법 — 요약정보로 잡힌 쪽 글이 정말 요약 구간 첫머리면, 그 문서는 구조가');
-  log('다른 것이므로 통째로 비우는 지금이 맞다. 그게 아니라 유의사항·표지 같은');
-  log('엉뚱한 쪽이면 요약정보 정규식이 헛짚은 것이니, 보조만 비우고 필수는 살린다.');
+  log('읽는 법 — 잡힌 쪽 글이 정말 그 구간 첫머리면, 그 문서는 구조가 다른 것이므로');
+  log('통째로 비우는 지금이 맞다. 그게 아니라 유의사항·표지·목차 같은 엉뚱한 쪽이면');
+  log('규칙이 헛짚은 것이니 고칠 데가 있다. 가르는 것은 숫자가 아니라 위의 원문이다.');
   bar('조사 끝 — 아무것도 커밋하지 않았습니다');
 }
 
