@@ -1,4 +1,4 @@
-네이버 API 탐색 2026-09-18 16:13:53 KST
+네이버 API 탐색 2026-09-18 16:36:07 KST
 (원천이 실패한 날에만 돈다. 수집 결과는 바꾸지 않는다.)
 
 [internals] https://m.stock.naver.com/api/index/KOSPI/basic
@@ -16,7 +16,7 @@
     응답 앞머리: HTTPError: HTTP Error 409: Conflict
 
 [internals] https://m.stock.naver.com/api/index/KOSPI/integration
-    쓸모 · 16303 bytes · 걸린 낱말 ['riseCount', 'fallCount', '상승']
+    쓸모 · 16302 bytes · 걸린 낱말 ['riseCount', 'fallCount', '상승']
     남김: data/market/raw/probe_03_internals.txt
     앞머리: {"stockEndType":"index","itemCode":"KOSPI","reutersCode":"KOSPI","stockName":"코스피","totalInfos":[{"code":"lastClosePrice","key":"전일","value":"6,715.41"},{"code":"openPrice","key":"시가","value":"6,885.70","compareToPreviousPrice":{"code":"2",
 
@@ -26,18 +26,18 @@
     앞머리: [{"localTradedAt":"2026-09-18","closePrice":"6,894.23","compareToPreviousClosePrice":"178.82","compareToPreviousPrice":{"code":"2","text":"상승","name":"RISING"},"fluctuationsRatio":"2.66","openPrice":"6,885.70","highPrice":"6,914.08","lowPri
 
 [sectors] https://m.stock.naver.com/api/stocks/industry
-    쓸모 · 2284 bytes · 걸린 낱말 ['반도체', 'changeRate']
+    쓸모 · 2290 bytes · 걸린 낱말 ['반도체', 'changeRate']
     남김: data/market/raw/probe_05_sectors.txt
-    앞머리: {"stockListSortType":"INDUSTRY","groups":[{"no":294,"name":"통신장비","totalCount":55,"changeRate":"7.09","riseCount":36,"fallCount":11,"steadyCount":8},{"no":306,"name":"전기장비","totalCount":35,"changeRate":"5.54","riseCount":32,"fallCount":1,"s
+    앞머리: {"stockListSortType":"INDUSTRY","groups":[{"no":294,"name":"통신장비","totalCount":55,"changeRate":"6.92","riseCount":37,"fallCount":10,"steadyCount":8},{"no":306,"name":"전기장비","totalCount":35,"changeRate":"5.36","riseCount":32,"fallCount":1,"s
 
 [sectors] https://api.stock.naver.com/industry
     실패 · 36 bytes · 걸린 낱말 없음
     응답 앞머리: HTTPError: HTTP Error 404: Not Found
 
 [sectors] https://m.stock.naver.com/api/stocks/industry?page=1&pageSize=100
-    쓸모 · 8647 bytes · 걸린 낱말 ['반도체', 'changeRate']
+    쓸모 · 8645 bytes · 걸린 낱말 ['반도체', 'changeRate']
     남김: data/market/raw/probe_07_sectors.txt
-    앞머리: {"stockListSortType":"INDUSTRY","groups":[{"no":294,"name":"통신장비","totalCount":55,"changeRate":"7.13","riseCount":37,"fallCount":10,"steadyCount":8},{"no":306,"name":"전기장비","totalCount":35,"changeRate":"5.56","riseCount":32,"fallCount":1,"s
+    앞머리: {"stockListSortType":"INDUSTRY","groups":[{"no":294,"name":"통신장비","totalCount":55,"changeRate":"6.90","riseCount":37,"fallCount":10,"steadyCount":8},{"no":306,"name":"전기장비","totalCount":35,"changeRate":"5.36","riseCount":32,"fallCount":1,"s
 
 [money_flow] https://m.stock.naver.com/api/domestic/market/trendDeposit?startIdx=0&pageSize=20
     실패 · 30 bytes · 걸린 낱말 없음
