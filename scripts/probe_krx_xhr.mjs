@@ -33,9 +33,24 @@ const OUT = 'data/market/raw';
 fs.mkdirSync(OUT, { recursive: true });
 
 // 들어가는 문. 사람이 여는 화면만 적는다.
+// 앞의 둘은 **화면이 스스로 적어 둔 주소**다. 첫 관찰이 받아 온 뿌리
+// HTML 안에 메뉴가 통째로 들어 있었고, 거기에 가는 곳이 적혀 있었다 —
+//
+//   <a href="javascript:gotoMenu('/contents/MDC/MDI/mdiLoader/index.cmd
+//      ?menuId=MDC0201010103', …)">개별지수 시세 추이</a>
+//   <div class="lnb_main_inbox">통계 > 기본 통계 > 지수 > 주가지수 >
+//      개별지수 시세 추이</div>
+//
+// 메뉴 글자가 `javascript:void(0)` 이라 눌러도 안 열렸지만, 주소는 화면이
+// 적어 두었으므로 외워 적은 것이 아니다. 날짜별 거래대금이 있는 자리가
+// 「개별지수 시세 추이」이고, 하루치 전부가 필요할 때를 위해 「전체지수
+// 시세」도 같이 연다.
 const ENTRIES = [
+  ['개별지수 시세 추이(주가지수)',
+   'http://data.krx.co.kr/contents/MDC/MDI/mdiLoader/index.cmd?menuId=MDC0201010103'],
+  ['전체지수 시세(주가지수)',
+   'http://data.krx.co.kr/contents/MDC/MDI/mdiLoader/index.cmd?menuId=MDC0201010101'],
   ['KRX 정보데이터시스템 뿌리', 'http://data.krx.co.kr/'],
-  ['KRX 통계 첫 화면', 'http://data.krx.co.kr/contents/MDC/MDI/mainChart/index.cmd'],
 ];
 
 // 화면 안에서 지수 일별 시세 쪽으로 가는 말.
@@ -151,18 +166,36 @@ for (const [label, url] of ENTRIES) {
     lines.push('    메뉴를 못 짚었다 — 화면 글자에서 이름을 다시 읽어야 한다');
   }
 
-  // 조회 단추를 눌러야 자료를 부르는 화면이 많다.
+  // 조회 단추를 눌러야 자료를 부르는 화면이 많다. KRX 통계 화면은 거의
+  // 다 그렇다 — 열기만 해서는 빈 표가 나온다.
   for (const word of ['조회', 'Search']) {
     try {
       const el = page.getByText(word, { exact: false }).first();
       if (await el.isVisible({ timeout: 1200 })) {
         await el.click({ timeout: 3000 });
         lines.push(`    눌러 봄: 「${word}」`);
-        await page.waitForTimeout(4000);
+        await page.waitForTimeout(5000);
       }
     } catch {
       /* 무시 */
     }
+  }
+
+  // 화면에 거래대금이 **글자로 찍혔는지** 본다 — 네이버 관찰에서 이 한 줄이
+  // 「값이 사라졌는가, 다른 요청이 나르는가」를 갈랐다.
+  try {
+    const shown = await page.evaluate(() => {
+      const t = document.body.innerText || '';
+      const i = t.indexOf('거래대금');
+      return {
+        has: i >= 0,
+        around: i >= 0 ? t.slice(Math.max(0, i - 120), i + 260).replace(/\s+/g, ' ') : '',
+      };
+    });
+    lines.push(`    화면 글자: 거래대금 ${shown.has ? '있음' : '없음'}`);
+    if (shown.around) lines.push(`      「${shown.around}」`);
+  } catch {
+    /* 무시 */
   }
 
   // **이것이 이 관찰의 알맹이다** — 무엇을 달라고 보냈는지.
