@@ -406,6 +406,7 @@ let ok = 0, fail = 0, empty = 0;
 /* 실패한 종목은 이름을 남긴다 — 이것이 있어야 --codes 로 그것만 다시 읽는다.
    앞 판은 앞 다섯 건만 찍어, 94건을 다시 읽으려면 전량을 또 돌려야 했다. */
 const failed = [];
+const failWhy = {};
 for (let i = 0; i < slice.length; i++) {
   const it = slice[i];
   const kind = it.docT ? 'T' : 'G';
@@ -433,11 +434,22 @@ for (let i = 0; i < slice.length; i++) {
   } catch (e) {
     fail++;
     failed.push(it.code);
+    /* 까닭을 갈래로 묶어 센다 — 「몇 건 실패」 만으로는 다시 걸어서 될 일인지
+       아닌지를 못 가른다. 404 는 그 문서번호로 파일이 없다는 뜻이라 몇 번을
+       걸어도 같고(카탈로그가 가리키는 곳이 비었다), 시간 초과는 회선 탓이라
+       다시 걸면 대개 받아진다. 고칠 곳이 아예 다르다. */
+    const why = /HTTP 404/.test(e.message) ? 'HTTP 404 — 그 문서번호로 파일이 없음'
+      : e.name === 'TimeoutError' || /timeout|aborted/i.test(e.message) ? '시간 초과 (세 번 걸어도)'
+      : /HTTP \d+/.test(e.message) ? e.message
+      : e.name + ' ' + e.message;
+    failWhy[why] = (failWhy[why] || 0) + 1;
     if (fail <= 5) console.log(`  ${it.code} 실패 — ${e.name} ${e.message}`);
   }
 }
 if (failed.length) {
-  console.log(`\n세 번 걸어도 못 받은 종목 ${failed.length}건 — 아래를 --codes 로 넘기면 그것만 다시 읽습니다`);
+  console.log(`\n세 번 걸어도 못 받은 종목 ${failed.length}건 — 까닭별`);
+  Object.entries(failWhy).sort((a, b) => b[1] - a[1]).forEach(([k, v]) => console.log(`  ${String(v).padStart(4)}  ${k}`));
+  console.log('  아래를 --codes 로 넘기면 그것만 다시 읽습니다 (404 는 다시 읽어도 같습니다)');
   for (let i = 0; i < failed.length; i += 10) console.log('  ' + failed.slice(i, i + 10).join(' '));
 }
 
