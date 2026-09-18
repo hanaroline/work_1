@@ -201,7 +201,82 @@ def load_funds(min_aum):
     return out, meta
 
 
-def load_branch_bars(branch, subdir, cls, kind, limit=0):
+# 업종코드 → 한글. 화면에 `equity` 나 `semi` 가 그대로 나가면 고객 자료가 아니다.
+# 두 화면(kr-top100·us-top100)에서 실제로 쓰이는 23 개를 모두 덮는다.
+SECTOR_KO = {
+    "fin": "금융", "it": "IT", "semi": "반도체", "heavy": "중공업",
+    "hc": "헬스케어", "bio": "바이오", "hold": "지주", "ind": "산업재",
+    "infra": "인프라", "comm": "커뮤니케이션", "cs": "필수소비재",
+    "cd": "경기소비재", "cons": "건설", "bat": "2차전지", "chem": "화학",
+    "elec": "전기전자", "auto": "자동차", "tel": "통신", "eng": "에너지",
+    "steel": "철강", "util": "유틸리티", "mat": "소재", "re": "부동산",
+}
+
+
+def load_stock_meta(page, branch, subdir):
+    """종목의 **한글명·시총·업종**을 모은다.
+
+    이것이 없으면 제안서 상품표에 `000100.KS` 와 `equity` 가 찍힌다 — 고객에게
+    낼 수 없는 표다. 처음 판이 그렇게 나왔고, 게다가 시총이 없어 「규모 순」
+    정렬이 사실상 사전순이 되어 **과거 1년 599% 인 종목이 맨 위에 실렸다.**
+
+    이름은 화면 파일의 COMPANIES 배열([심볼, 영문명, 한글명, 업종코드])에서,
+    시총은 자료 가지의 latest.json(quote.cap)에서 가져온다.
+    """
+    meta = {}
+    p = os.path.join(ROOT, page)
+    if os.path.exists(p):
+        body = open(p, encoding="utf-8").read()
+        # **COMPANIES 블록 안만 본다.** 파일 뒤쪽에 업종별 종목 묶음 배열이
+        # 또 있는데(['005930.KS','000660.KS','042700.KS','036930.KQ'] 꼴), 모양이
+        # 같아 함께 잡힌다. 나중 것이 이름을 덮어써 삼성전자의 이름이
+        # 「042700.KS」가 됐다 — 고객 표에 종목코드가 이름으로 찍힌 채로.
+        start = body.find("COMPANIES")
+        block = ""
+        if start >= 0:
+            end = body.find("\n];", start)
+            block = body[start:end if end > 0 else start + 40000]
+        # 배열 안에 주석이 섞여 있어 통째로 JSON 파싱이 안 된다. 줄 단위로 집는다.
+        # 따옴표는 두 가지가 섞여 있다 — 이름에 아포스트로피가 있으면 큰따옴표를
+        # 쓴다("McDonald's"). 홑따옴표만 보면 그런 종목이 조용히 빠진다.
+        q = r"""(?:'([^']*)'|"([^"]*)")"""
+        for row in re.finditer(r"\[\s*%s\s*,\s*%s\s*,\s*%s\s*,\s*%s\s*\]"
+                               % (q, q, q, q), block):
+            g = row.groups()
+            sym, en, ko, sect = (g[0] or g[1], g[2] or g[3],
+                                 g[4] or g[5], g[6] or g[7])
+            if not sym:
+                continue
+            # 3·4 번째 칸이 또 종목코드면 COMPANIES 행이 아니다 — 건너뛴다.
+            if re.match(r"^[0-9A-Z.\-]+$", ko) and "." in ko:
+                continue
+            meta.setdefault(sym, {})
+            meta[sym].update({"name": ko or en,
+                              "sector": SECTOR_KO.get(sect, sect or None)})
+
+    raw = sh(["git", "show", "%s:%s/latest.json" % (branch, subdir)])
+    if raw:
+        try:
+            doc = json.loads(raw)
+            # 환율은 자료에 적힌 것을 쓴다. 해외 시총을 원화로 견주려면 필요한데,
+            # 여기서 아무 환율이나 가져다 쓰면 그 수치의 기준일이 사라진다.
+            fx = (doc.get("fx") or {}).get("usdkrw")
+            if isinstance(fx, (int, float)):
+                meta["_fx"] = {"usdkrw": fx, "src": "%s/latest.json" % subdir}
+            for sym, c in (doc.get("companies") or {}).items():
+                q = c.get("quote") or {}
+                meta.setdefault(sym, {})
+                if isinstance(q.get("cap"), (int, float)):
+                    meta[sym]["cap"] = q["cap"]
+                if not meta[sym].get("sector"):
+                    prof = c.get("profile") or {}
+                    meta[sym]["sector"] = prof.get("sector")
+        except ValueError:
+            pass
+    return meta
+
+
+def load_branch_bars(branch, subdir, cls, kind, limit=0, meta=None):
     """자료 가지의 일봉 파일들을 읽는다(kr100-data · us100-data 공통 모양)."""
     listing = sh(["git", "ls-tree", "--name-only",
                   "%s:%s" % (branch, subdir)])
@@ -210,6 +285,10 @@ def load_branch_bars(branch, subdir, cls, kind, limit=0):
     names = [x for x in listing.split() if x.endswith(".json")]
     if limit:
         names = names[:limit]
+
+    meta = meta or {}
+    fx = (meta.get("_fx") or {}).get("usdkrw")
+    ccy = "KRW" if cls.startswith("국내") else "USD"
 
     out = []
     for name in names:
@@ -226,14 +305,25 @@ def load_branch_bars(branch, subdir, cls, kind, limit=0):
             continue
         sym = doc.get("symbol") or name[:-5]
         m = from_bars(closes)
+        info = meta.get(sym) or {}
+        # 시총은 원화로 통일한다 — 표에서 국내·해외를 나란히 견주려면 통화가
+        # 같아야 한다. 환산에 쓴 환율과 기준을 doc 에 적어 두고, 환산했다는
+        # 사실도 남긴다(원 통화 값을 잃지 않게).
+        cap = info.get("cap")
+        cap_krw = cap
+        if cap is not None and ccy == "USD":
+            cap_krw = cap * fx if fx else None
         out.append({
             "id": "%s:%s" % (kind, sym),
             "code": sym,
-            "name": doc.get("name") or sym,
+            "name": info.get("name") or sym,
             "cls": cls, "kind": kind,
             "region": "domestic" if cls.startswith("국내") else "overseas",
             "assetClass": "equity",
-            "size": None, "riskGrade": None,
+            "type": info.get("sector"),
+            "size": cap_krw, "sizeCcy": "KRW",
+            "sizeNative": cap, "sizeNativeCcy": ccy,
+            "riskGrade": None,
             "ret1y": m["ret1y"], "ret6m": m["ret6m"],
             "vol": m["vol"], "mdd": m["mdd"],
             "feeMin": None, "feeMax": None,
@@ -241,7 +331,8 @@ def load_branch_bars(branch, subdir, cls, kind, limit=0):
             "asOf": (d.get("d") or [None])[-1],
             "flags": [],
         })
-    return out, {"src": branch, "count": len(out)}
+    return out, {"src": branch, "count": len(out),
+                 "환율": meta.get("_fx")}
 
 
 def load_kr_etf():
@@ -409,10 +500,12 @@ def main():
 
     for label, fn in (
         ("펀드", lambda: load_funds(args.min_aum)),
-        ("국내주식", lambda: load_branch_bars(KR_BRANCH, "data/kr100/chart",
-                                              "국내주식", "주식")),
-        ("해외주식", lambda: load_branch_bars(US_BRANCH, "data/us100/chart",
-                                              "해외주식", "주식", args.us_limit)),
+        ("국내주식", lambda: load_branch_bars(
+            KR_BRANCH, "data/kr100/chart", "국내주식", "주식",
+            meta=load_stock_meta("kr-top100.html", KR_BRANCH, "data/kr100"))),
+        ("해외주식", lambda: load_branch_bars(
+            US_BRANCH, "data/us100/chart", "해외주식", "주식", args.us_limit,
+            meta=load_stock_meta("us-top100.html", US_BRANCH, "data/us100"))),
         ("국내ETF", load_kr_etf),
         ("해외ETF", load_overseas_etf),
     ):
