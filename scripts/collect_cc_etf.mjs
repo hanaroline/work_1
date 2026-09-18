@@ -421,6 +421,35 @@ const CACHE = 'data/etf_dist_cache.json';
 // 무효화 신호가 둘이라는 것을 놓쳤다. 하나는 "자료가 새로 생겼나"(분배일),
 // 다른 하나는 "우리가 담는 것이 달라졌나"(이 수). 앞의 것만 보고 있었다.
 const CACHE_V = 2;
+
+// 시세 쪽 곳간. **판 번호를 분배 쪽과 따로 둔다.**
+//
+// 곳간에 들어 있는 종목도 시세 두 통(getSimpleEtpHist·getEtpTermHist)은 매번
+// 불렀다. 662종목이면 그것만 1,324통 — 원천이 한 판에 받아 주는 양의 일곱 할이다.
+// 따뜻한 곳간으로 돌린 판이 그래도 벽에 부딪힌 이유가 이것이었다.
+//
+// 그런데 이 두 통이 내는 것은 **1년 변동성**과 **60일 평균 거래대금**이다. 한 달에
+// 한 번 내는 제안서에서 이 값이 며칠 묵어도 달라지는 것이 없다. 현재가는 스크리너
+// (전 종목 한 통)에서 따로 오므로 최신으로 남는다.
+//
+// 판 번호를 같이 쓰면 안 된다. 시세 칸이 바뀌었다고 CACHE_V 를 올리면 분배 이력까지
+// 통째로 버려져, 종목당 두 통이면 될 판이 여섯 통이 된다. 지난 판에서 실제로
+// 그렇게 벽에 부딪혔다. 무효화는 무효로 만들 것에만 걸어야 한다.
+const MKT_V = 1;
+const MKT_TTL_DAYS = 7;
+const TODAY = new Date().toISOString().slice(0, 10);
+const daysSince = (ymd) => {
+  const t = Date.parse(`${ymd}T00:00:00Z`);
+  return Number.isFinite(t) ? (Date.parse(`${TODAY}T00:00:00Z`) - t) / 86400000 : Infinity;
+};
+
+// 종목 사이에 쉬는 시간. **벽이 속도에 걸려 있는지 통화 수에 걸려 있는지는
+// 아직 재 본 적이 없다.** 통화 수라면 이 잠자기는 아무것도 사 주지 않고 662종목
+// 기준 13.8분만 태운다. 한 판이면 판정된다 — 줄이고 돌려서 **멈추는 종목 번호가
+// 그대로인지** 보면 된다. 그대로면 낭비였고, 앞당겨지면 잠자기가 값을 하고 있었다.
+// 그래서 상수로 빼고 끝에 찍는다. 되돌리려면 이 수만 250 으로 올리면 된다.
+const GAP_MS = Number(process.env.ETF_GAP_MS || 60);
+
 const cache = (() => {
   try {
     const j = JSON.parse(fs.readFileSync(CACHE, 'utf8'));
@@ -432,6 +461,9 @@ const cache = (() => {
 console.log(`분배 이력 곳간 ${Object.keys(cache).length}종목`);
 let reused = 0;
 let refetched = 0;
+let mktReused = 0;
+let mktRefetched = 0;
+console.log(`종목 사이 쉬는 시간 ${GAP_MS}ms · 시세 곳간 ${MKT_TTL_DAYS}일`);
 
 // 예산. 워크플로 한도가 75분이라 55분에서 멈춘다. 거기까지 모은 것은 그대로
 // 쓰고, 못 간 종목은 "수집 안 함" 으로 남긴다. 한도에 잘려 아무것도 못 남기는
@@ -591,6 +623,12 @@ for (const [i, row] of universe.entries()) {
     cached && recDiv && cached.recDivDate === recDiv && Array.isArray(cached.hist)
     && cached.v === CACHE_V,
   );
+  // 시세 쪽은 분배와 따로 판정한다. 분배가 차가워도 시세는 따뜻할 수 있고, 그
+  // 반대도 된다. 둘을 묶으면 한쪽 때문에 다른 쪽까지 다시 받는다.
+  const mktCached = cached && cached.mkt;
+  const mktOk = Boolean(
+    mktCached && mktCached.v === MKT_V && mktCached.at && daysSince(mktCached.at) <= MKT_TTL_DAYS,
+  );
 
   let hist;
   let monthly;
@@ -610,26 +648,29 @@ for (const [i, row] of universe.entries()) {
       refetched++;
       // 지급주기를 판정할 원천. 연도별 지급 횟수와 지급한 달 목록을 준다.
       divOutline = await api(`/user/etp/getEtpItemDivOutline?code=${code}`);
-      await sleep(250);
+      await sleep(GAP_MS);
       // limit 을 36 에서 60 으로 올린다. 최근 12개월 합계를 건수가 아니라 창으로
       // 내게 되면서, 주배당 종목은 한 해에만 오십 건이 넘기 때문이다. 36 이면
       // 그런 종목의 1년치가 잘려 합계가 실제보다 작게 나온다.
       hist = await api(`/user/etp/getEtpItemCashHist?code=${code}&limit=60`);
-      await sleep(250);
+      await sleep(GAP_MS);
       monthly = await api(`/user/etp/getEtpItemCashMonthly?code=${code}`);
-      await sleep(250);
+      await sleep(GAP_MS);
       // 과세표준기준가. 분배금 중 **실제로 세금이 붙는 몫**을 여기서 낸다.
       //
       // limit 을 붙이지 않는다. 실측에서 매개변수 없이 부르는 쪽이 제일 많이
       // 준다(437일). limit=400 은 400일, limit=250 은 250일이라 오히려 적다.
       taxBase = await api(`/user/etp/getEtpItemTaxBaseHist?code=${code}`);
-      await sleep(250);
+      await sleep(GAP_MS);
       // 곳간에는 **쓰는 칸만** 담는다. 응답을 통째로 담으면 892종목에 6MB 가
       // 되어 달마다 그 덩치가 저장소에 커밋되고, 무엇이 달라졌는지도 안 보인다.
       cache[code] = {
         v: CACHE_V,
         recDivDate: recDiv,
-        checkedAt: new Date().toISOString().slice(0, 10),
+        checkedAt: TODAY,
+        // 분배가 새로 생겼다고 시세 쪽까지 버리지 않는다. 통째로 덮어쓰면
+        // 여기 붙어 있던 mkt 가 조용히 사라져, 곳간을 둔 보람이 없어진다.
+        mkt: mktCached || undefined,
         divOutline: (divOutline || []).map((r) => ({ DATE: r.DATE, MONTH: r.MONTH })),
         hist: (hist || []).map((h) => ({ F12506: h.F12506, F31892: h.F31892, DIV_RATE: h.DIV_RATE })),
         monthly0: monthly?.[0]
@@ -643,9 +684,16 @@ for (const [i, row] of universe.entries()) {
           .filter((r) => /^\d{8}$/.test(r.d) && Number.isFinite(r.v) && r.v >= 0),
       };
     }
-    navHist = await api(`/user/etp/getSimpleEtpHist?F16013=${code}&limit=250&type=diff`);
-    await sleep(250);
-    term = await api(`/user/etp/getEtpTermHist?F16013=${code}&gubun=1Y`);
+    if (mktOk) {
+      // 시세 곳간이 살아 있다. 두 통을 건너뛴다 — 한 판에서 1,300통이 사라지는
+      // 자리가 여기다. 값은 아래에서 곳간에 적어 둔 **결론**으로 대신한다.
+      mktReused++;
+    } else {
+      mktRefetched++;
+      navHist = await api(`/user/etp/getSimpleEtpHist?F16013=${code}&limit=250&type=diff`);
+      await sleep(GAP_MS);
+      term = await api(`/user/etp/getEtpTermHist?F16013=${code}&gubun=1Y`);
+    }
   } catch (e) {
     // 여기서 멈추지 않고 다음 종목으로 넘어가되, **이 종목을 채택 목록에
     // 올리지 않는다.** 값이 반쯤 온 종목을 "분배 이력 0개월" 로 적는 일은
@@ -723,21 +771,62 @@ for (const [i, row] of universe.entries()) {
   // 밀어 올려 멀쩡한 종목을 떨어뜨린다. NAV 는 그 펀드가 실제로 담고 있는
   // 값이라 그런 잡음이 적다. 종가 기준 값도 함께 적어 두어 둘이 크게
   // 어긋나면 사람이 볼 수 있게 한다.
-  const days = (navHist || []).map((d) => ({
-    date: String(d.F12506),
-    close: num(d.F15001),
-    nav: num(d.F15301),
-    units: num(d.F16500), // 상장좌수
-  }));
-  const chron = [...days].reverse();
-  const navSeries = chron.map((d) => d.nav).filter((x) => x > 0);
-  const navVol = annualVolatility(navSeries);
-  const pxVol = annualVolatility(chron.map((d) => d.close).filter((x) => x > 0));
+  // 곳간에 담는 것은 250일치 시세 **자체**가 아니라 거기서 낸 **결론**이다.
+  // 시세를 통째로 담으면 662종목 × 250일이라 곳간이 몇 십 MB 가 되어 달마다
+  // 그 덩치가 저장소에 커밋된다. 쓰는 것은 변동성 두 개, 일수, 급변한 날,
+  // 거래대금, 최신 하루 — 종목당 열 줄 남짓이다.
+  let navVol;
+  let pxVol;
+  let volDays;
+  let jumps;
+  let turnover60;
+  let day0;
+  if (mktOk) {
+    ({ navVol, pxVol, volDays, jumps, turnover60, day0 } = mktCached);
+    // JSON 에는 undefined 가 없어 없는 칸은 null 로 온다. 아래 판정은 null 을
+    // "못 구했다" 로 읽으므로 그대로 두어도 맞다. 다만 jumps 는 배열이어야 한다.
+    if (!Array.isArray(jumps)) jumps = [];
+  } else {
+    const days = (navHist || []).map((d) => ({
+      date: String(d.F12506),
+      close: num(d.F15001),
+      nav: num(d.F15301),
+    }));
+    const chron = [...days].reverse();
+    const navSeries = chron.map((d) => d.nav).filter((x) => x > 0);
+    navVol = annualVolatility(navSeries);
+    pxVol = annualVolatility(chron.map((d) => d.close).filter((x) => x > 0));
+    volDays = navSeries.length;
+
+    // 하루에 ±15% 넘게 움직인 날. 커버드콜 ETF 에서 그런 날은 시장이 아니라
+    // 액면분할이나 원천의 오기일 때가 많다. 지우지 않고 세어서 적어 둔다 —
+    // 조용히 버리면 무엇을 버렸는지 아무도 모르게 된다.
+    jumps = [];
+    for (let k = 1; k < chron.length; k++) {
+      const a = chron[k - 1].nav;
+      const b = chron[k].nav;
+      if (a > 0 && b > 0 && Math.abs(Math.log(b / a)) > 0.15) {
+        jumps.push({ date: chron[k].date, from: a, to: b });
+      }
+    }
+
+    // 60일 평균 거래대금. 거래량은 시세 이력(getEtpTermHist)에만 있다.
+    const tdays = (term || []).map((d) => ({ close: num(d.F15001), volume: num(d.F15015) }));
+    const last60 = tdays.slice(0, 60);
+    turnover60 =
+      last60.length >= 40
+        ? last60.reduce((s, d) => s + (d.close || 0) * (d.volume || 0), 0) / last60.length
+        : null;
+
+    day0 = days[0] ? { date: days[0].date, close: days[0].close, nav: days[0].nav } : null;
+
+    cache[code] = cache[code] || {};
+    cache[code].mkt = { v: MKT_V, at: TODAY, navVol, pxVol, volDays, jumps, turnover60, day0 };
+  }
   const vol = navVol ?? pxVol;
   // 며칠치로 낸 값인지 함께 적는다. limit=250 을 달라고 해도 원천이 몇 개를
   // 주는지는 원천 마음이다. "1년 변동성" 이라고 적으려면 정말 한 해치로
   // 냈는지 말할 수 있어야 한다.
-  const volDays = navSeries.length;
   const volWindow = volDays >= 200 ? '1년' : `${volDays}거래일`;
 
   // 현재가. 상세(getEtpItemOutline)는 장이 닫히면 시세 항목이 빠져서 기댈 수
@@ -750,9 +839,9 @@ for (const [i, row] of universe.entries()) {
     price = num(mr.F15001);
     priceSource = '마스터 종가(F15001)';
   }
-  if (!(price > 0) && days[0]) {
-    price = days[0].close;
-    priceSource = `일별 시세 최신 종가 (${days[0].date})`;
+  if (!(price > 0) && day0 && day0.close > 0) {
+    price = day0.close;
+    priceSource = `일별 시세 최신 종가 (${day0.date})`;
   }
   if (!(price > 0)) {
     price = null;
@@ -852,26 +941,6 @@ for (const [i, row] of universe.entries()) {
   const theirSum = num(mo.DIV_AMT_YEAR);
   const theirRate = num(mo.DIV_RATE_REAL);
 
-  // 하루에 ±15% 넘게 움직인 날. 커버드콜 ETF 에서 그런 날은 시장이 아니라
-  // 액면분할이나 원천의 오기일 때가 많다. 지우지 않고 세어서 적어 둔다 —
-  // 조용히 버리면 무엇을 버렸는지 아무도 모르게 된다.
-  const jumps = [];
-  for (let i = 1; i < chron.length; i++) {
-    const a = chron[i - 1].nav;
-    const b = chron[i].nav;
-    if (a > 0 && b > 0 && Math.abs(Math.log(b / a)) > 0.15) {
-      jumps.push({ date: chron[i].date, from: a, to: b });
-    }
-  }
-
-  // 60일 평균 거래대금. 거래량은 시세 이력(getEtpTermHist)에만 있다.
-  const tdays = (term || []).map((d) => ({ close: num(d.F15001), volume: num(d.F15015) }));
-  const last60 = tdays.slice(0, 60);
-  const turnover60 =
-    last60.length >= 40
-      ? last60.reduce((s, d) => s + (d.close || 0) * (d.volume || 0), 0) / last60.length
-      : null;
-
   const listed = String(row.F16017 || mr.F16017 || '');
   const months = dist.length;
 
@@ -945,7 +1014,7 @@ for (const [i, row] of universe.entries()) {
     listedOn: listed,
     price,
     priceSource,
-    nav: num(row.F15301) ?? (days[0] ? days[0].nav : null),
+    nav: num(row.F15301) ?? (day0 ? day0.nav : null),
     aum,
     turnoverDay: num(row.F15023),
     turnover60: turnover60 === null ? null : Math.round(turnover60),
@@ -1104,7 +1173,10 @@ fs.writeFileSync(
       note:
         '분배 쪽 세 호출(개요·이력·월별)의 응답을 그대로 담아 둔다. 스크리너가 주는 ' +
         '마지막 분배일(REC_DIV_DATE)이 그대로면 새 분배가 없었다는 뜻이므로 다시 묻지 않는다. ' +
-        '연 분배율은 여기서 꺼내 쓰지 않고 매번 이번 달 창으로 다시 계산한다 — 창이 달마다 움직이기 때문이다.',
+        '연 분배율은 여기서 꺼내 쓰지 않고 매번 이번 달 창으로 다시 계산한다 — 창이 달마다 움직이기 때문이다. ' +
+        `mkt 는 시세 두 호출(일별 시세·거래량)에서 낸 결론(변동성·거래대금·급변일)이다. ${MKT_TTL_DAYS}일이 지나면 다시 받는다. ` +
+        '시세 원자료를 그대로 담지 않는 것은 곳간이 몇 십 MB 로 불어나기 때문이고, 판 번호를 분배 쪽과 따로 둔 것은 ' +
+        '한쪽이 바뀌었다고 다른 쪽까지 버리지 않기 위해서다.',
       updatedAt: new Date().toISOString(),
       count: Object.keys(cache).length,
       items: cache,
@@ -1113,7 +1185,17 @@ fs.writeFileSync(
     2,
   ) + '\n',
 );
-console.log(`곳간 ${Object.keys(cache).length}종목 (이번 판 재사용 ${reused} · 새로 받음 ${refetched})`);
+console.log(`곳간 ${Object.keys(cache).length}종목 (분배: 재사용 ${reused} · 새로 받음 ${refetched})`);
+console.log(`시세 곳간 (재사용 ${mktReused} · 새로 받음 ${mktRefetched}) — 아낀 통화 ${mktReused * 2}통`);
+
+// 벽이 통화 수에 걸리는지 속도에 걸리는지를 판정할 자리다. 이 세 줄을 판마다
+// 견주면 된다: 쉬는 시간을 줄였는데 **멈춘 자리가 그대로**면 잠자기는 값을
+// 안 하고 있었다는 뜻이고, 앞당겨졌다면 잠자기가 벽을 늦추고 있었다는 뜻이다.
+const calls = refetched * 4 + mktRefetched * 2;
+console.log(
+  `원천 호출 약 ${calls}통 (분배 ${refetched}종목 × 4 + 시세 ${mktRefetched}종목 × 2) · ` +
+    `쉬는 시간 ${GAP_MS}ms · 멈춘 자리 ${stoppedEarly ? `${items.length}/${universe.length}` : '없음(완주)'}`,
+);
 
 console.log(
   `\n${OUT} 에 적었습니다 — 모집단 ${universe.length}, 수집 ${items.length}, ` +
