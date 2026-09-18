@@ -1153,21 +1153,50 @@ function scatter(){
 
 /* ------------------------------------------------ 인사이트 */
 function pick(t){return CO.filter(function(c){return c.t===t})[0]}
+/* %p(퍼센트포인트) 표기. sgn() 은 '%' 를 붙이므로 여기서 쓰면 '%%p' 가 된다. */
+function pp(v){return v===null||v===undefined?t("na"):
+  (v>0?"+":"")+fmt(v,1)+(L==="ko"?"%p":"pp")}
+
+/* 성장률 분포 — 카드 문장에 들어가는 '몇 곳'·'중앙값'을 손으로 적지 않는다.
+   손으로 적으면 데이터가 바뀌어도 문장이 그대로 남는다(실제로 그렇게 어긋난 적이 있다). */
+function growthSpread(){
+  var v=CO.filter(function(c){return c.yoy!==null&&c.yoy!==undefined})
+          .sort(function(a,b){return a.yoy-b.yoy});
+  var n=v.length,xs=v.map(function(c){return c.yoy});
+  var sg=v.filter(function(c){return c.yoy<10});
+  return {n:n,
+    single:sg.length,
+    singleTxt:sg.map(function(c){return c.ko+" "+sgn(c.yoy,1)}).join(" · "),
+    singleTxtEn:sg.map(function(c){return c.en+" "+sgn(c.yoy,1)}).join(" · "),
+    big:v.filter(function(c){return c.yoy>=20}).length,
+    lo:xs[0],hi:xs[n-1],
+    med:n%2?xs[(n-1)/2]:(xs[n/2-1]+xs[n/2])/2}}
+
 function insights(){
+  var G=growthSpread();
   var nv=pick("NVDA"),av=pick("AVGO"),mu=pick("MU"),or=pick("ORCL"),
       ms=pick("MSFT"),am=pick("AMZN"),go=pick("GOOGL"),ap=pick("AAPL"),
       un=pick("UNH"),nf=pick("NFLX"),ts=pick("TSLA"),ct=pick("CAT"),me=pick("META");
   var K=[
-  {h:{ko:"AI 인프라는 아직 가속 구간에 있다",en:"The AI infrastructure build is still accelerating"},
-   p:{ko:"반도체·클라우드 인프라를 파는 쪽의 성장률이 전분기보다 더 가팔라졌다. 둔화의 조짐이 매출 단에서는 아직 잡히지 않는다. 다만 성장의 대부분이 소수 공급자에게 몰려 있다는 점은 같이 봐야 한다.",
-       en:"Growth at the companies selling AI silicon and cloud capacity got steeper, not flatter. At the revenue line there is still no sign of a slowdown — though the growth stays concentrated in a handful of suppliers."},
-   e:{ko:"엔비디아 매출 "+sgn(nv.yoy,0)+" · 브로드컴 "+sgn(av.yoy,0)+"(AI 반도체 +221%) · 마이크론 DRAM +343% · 오라클 IaaS +121%, RPO 6,640억달러",
-       en:"NVIDIA revenue "+sgn(nv.yoy,0)+" · Broadcom "+sgn(av.yoy,0)+" (AI semis +221%) · Micron DRAM +343% · Oracle IaaS +121%, RPO $664B"}},
-  {h:{ko:"클라우드 3사의 성장률이 동시에 올라갔다",en:"All three hyperscalers reaccelerated at once"},
-   p:{ko:"AWS 는 18개 분기 만의 최고 성장률을, 애저와 구글클라우드도 시장 예상을 넘는 성장을 냈다. 클라우드 수요가 한 회사의 사정이 아니라 업계 전체의 사이클이라는 뜻이다. 대신 그만큼의 캡엑스가 따라붙고 있어, 다음 분기부터는 매출이 아니라 현금흐름이 논점이 된다.",
-       en:"AWS posted its fastest growth in 18 quarters, and Azure and Google Cloud also came in ahead of expectations. That makes this an industry cycle, not one company's story. The matching capex is the catch — from here the argument moves from revenue to cash flow."},
-   e:{ko:"AWS +36.7%(컨센 31%) · 애저 +43%, 차기 가이던스 +45%cc(컨센 41.4%) · 구글클라우드 +82%, 영업이익 88억달러(전년 28억) · 메타 캡엑스 310.8억달러에 FCF 7.84억달러",
-       en:"AWS +36.7% (consensus 31%) · Azure +43%, guided +45% cc (consensus 41.4%) · Google Cloud +82%, operating income $8.8B vs $2.8B · Meta capex $31.08B against $784M of free cash flow"}},
+  {h:{ko:"AI 인프라는 수준이 아직 꺾이지 않았다 — 속도는 갈린다",
+      en:"AI infrastructure: the level still holds, the pace splits"},
+   p:{ko:"반도체·클라우드 인프라를 파는 쪽의 성장률 수준은 여전히 높고, 매출 단에서 둔화는 보이지 않는다. 다만 '더 빨라지고 있나'는 기업마다 다르다 — 엔비디아·오라클은 지난 1년 평균보다 빠른데, 브로드컴은 분기 성장률이 LTM 에 못 미쳐 이 화면에서 둔화 폭이 가장 크다. 수준이 높은 것과 가속하는 것은 다른 이야기다. 성장이 소수 공급자에게 몰려 있다는 점도 같이 봐야 한다.",
+       en:"The companies selling AI silicon and cloud capacity are still growing at extraordinary rates, and at the revenue line there is no sign of a slowdown. Whether they are getting faster, though, differs by name — NVIDIA and Oracle are running ahead of their own trailing year, while Broadcom's quarter came in below its last-twelve-month rate, the widest deceleration on this page. A high level and an accelerating one are different claims. The growth also stays concentrated in a handful of suppliers."},
+   e:{ko:"엔비디아 매출 "+sgn(nv.yoy,0)+" (가속도 "+pp(nv.accel)+") · 브로드컴 "+sgn(av.yoy,0)+
+        " (AI 반도체 +221%, 가속도 "+pp(av.accel)+") · 오라클 IaaS +121%, RPO 6,640억달러 (가속도 "+
+        pp(or.accel)+") · 마이크론 DRAM +343% — 매출 전년동기비가 확인되지 않아 가속도는 산출하지 않음",
+       en:"NVIDIA revenue "+sgn(nv.yoy,0)+" (acceleration "+pp(nv.accel)+") · Broadcom "+sgn(av.yoy,0)+
+        " (AI semis +221%, acceleration "+pp(av.accel)+") · Oracle IaaS +121%, RPO $664B (acceleration "+
+        pp(or.accel)+") · Micron DRAM +343% — no verified revenue YoY, so no acceleration figure"}},
+  {h:{ko:"클라우드 수요는 한 회사의 사정이 아니다",en:"Cloud demand is not one company's story"},
+   p:{ko:"AWS 는 18개 분기 만의 최고 성장률을 냈고, 애저는 이번 분기 +43% 보다 높은 +45%(cc)를 다음 분기 가이던스로 제시했다 — 이 두 곳은 빨라지는 중이라는 것이 수치로 확인된다. 구글클라우드는 +82% 라는 수준만 확인됐고 직전 분기 성장률을 이 화면에서 확보하지 못해 가속 여부는 판정하지 않는다. 대신 그만큼의 캡엑스가 따라붙고 있어, 다음 분기부터는 매출이 아니라 현금흐름이 논점이 된다.",
+       en:"AWS posted its fastest growth in 18 quarters, and Azure guided the coming quarter to +45% cc, above the +43% it just printed — for those two, the reacceleration is in the numbers. For Google Cloud only the level is verified here, at +82%; its prior-quarter rate was not obtained, so this page makes no call on its direction. The matching capex is the catch — from here the argument moves from revenue to cash flow."},
+   e:{ko:"AWS +36.7%(컨센 31%, 18개 분기 최고) · 애저 +43%, 차기 가이던스 +45%cc(컨센 41.4%) · 구글클라우드 +82%, 영업이익 88억달러(전년 28억) · 메타 캡엑스 310.8억달러에 FCF 7.84억달러 / 전사 기준 가속도는 아마존 "+
+        pp(am.accel)+" · 알파벳 "+pp(go.accel)+" · 마이크로소프트 "+pp(ms.accel)+
+        " — 클라우드 부문이 아니라 회사 전체 기준이라 위 세그먼트 수치와 다르다",
+       en:"AWS +36.7% (consensus 31%, fastest in 18 quarters) · Azure +43%, guided +45% cc (consensus 41.4%) · Google Cloud +82%, operating income $8.8B vs $2.8B · Meta capex $31.08B against $784M of free cash flow. Company-level acceleration runs Amazon "+
+        pp(am.accel)+" · Alphabet "+pp(go.accel)+" · Microsoft "+pp(ms.accel)+
+        " — those cover the whole company, not the cloud segment, so they differ from the figures above"}},
   {h:{ko:"매출은 넘겼는데 이익이 못 따라온 기업들",en:"Revenue cleared the bar; profit did not follow"},
    p:{ko:"이번 시즌의 분기점은 매출이 아니라 그 아래였다. 매출 컨센서스를 넘기고도 EPS 에서 밀린 기업이 뚜렷하게 나왔고, 원인은 대체로 투자 확대다. 매출 서프라이즈만 보고 줄을 세우면 이 기업들이 과대평가된다.",
        en:"The dividing line this season sat below the revenue line. Several companies beat on revenue and still missed on EPS, mostly because of stepped-up investment. Ranking on revenue surprise alone flatters exactly these names."},
@@ -1178,11 +1207,16 @@ function insights(){
        en:"UnitedHealth's revenue was essentially flat while operating earnings rose 55%. Sorting on revenue growth alone buries this kind of margin-recovery quarter. Caterpillar likewise improved more on the profit line as it cut its tariff-cost estimate."},
    e:{ko:"UNH 매출 "+sgn(un.yoy,1)+"(1,116→1,120억달러), 영업이익 52→80억달러 · MCR 가이던스 88.8%→88.1% 로 개선 · 캐터필러 EPS "+sgn(ct.epssurprise,0)+" 상회, FY26 관세비용 25→22억달러",
        en:"UNH revenue "+sgn(un.yoy,1)+" ($111.6B → $112.0B), operating earnings $5.2B → $8.0B · MCR guidance improved 88.8% → 88.1% · Caterpillar EPS "+sgn(ct.epssurprise,0)+", FY26 tariff cost cut $2.5B → $2.2B"}},
-  {h:{ko:"AI 밖에서는 한 자릿수 성장이 정상값이다",en:"Outside AI, single-digit growth is the norm"},
-   p:{ko:"소비·헬스케어·주택 관련 기업들의 매출 성장률은 대체로 한 자릿수다. 지수 전체 매출 성장률이 두 자릿수인 것은 상위 몇 개 기업이 끌어올린 결과이므로, 평균을 업황으로 읽으면 안 된다.",
-       en:"Consumer, health care and housing-linked names mostly grew in single digits. The index-level double-digit revenue growth is the work of a few names at the top — the average should not be read as the operating environment."},
-   e:{ko:"월마트 +5.9%(미국 동일점포 +2.6%) · 홈디포 +5.7%(동일점포 +1.7%) · J&J +6.6% · 넷플릭스 +13%, 매출 컨센서스 "+sgn(nf.surprise,2)+" — 이번 시즌 몇 안 되는 하회",
-       en:"Walmart +5.9% (US comps +2.6%) · Home Depot +5.7% (comps +1.7%) · J&J +6.6% · Netflix +13% with revenue "+sgn(nf.surprise,2)+" — one of the season's few misses"}},
+  {h:{ko:"성장률 바닥에는 소비·헬스케어가 몰려 있다",
+      en:"The floor of the growth table is consumer and health care"},
+   p:{ko:"성장률이 확인된 "+G.n+"개사 가운데 한 자릿수는 "+G.single+"곳뿐이고, 모두 소비·헬스케어·주택 쪽이다. 반대편에는 20% 넘게 자란 곳이 "+G.big+"개사 있다 — 분포가 "+sgn(G.lo,1)+"에서 "+sgn(G.hi,0)+"까지 벌어져 있어서 '평균'이나 지수 성장률(12.8%)을 업황으로 읽으면 양쪽 끝이 모두 지워진다. 위에서 아래를 보면 소비가 멈춘 것 같고, 아래에서 위를 보면 전부 호황 같다. 둘 다 사실이 아니다.",
+       en:"Of the "+G.n+" companies with verified growth, only "+G.single+" grew in single digits, and all of them are consumer, health care or housing names. At the other end, "+G.big+" grew more than 20%. The spread runs from "+sgn(G.lo,1)+" to "+sgn(G.hi,0)+", so reading the average — or the index's 12.8% — as the operating environment erases both ends. From the top it looks as if the consumer has stopped; from the bottom it looks like a boom everywhere. Neither is true."},
+   e:{ko:"한 자릿수 "+G.single+"곳 — "+G.singleTxt+" (홈디포 동일점포 +1.7% · 월마트 미국 동일점포 +2.6%) / 중앙값 "+
+        sgn(G.med,1)+" · 20% 이상 "+G.big+"개사 / 넷플릭스는 +13% 에 매출 컨센서스 "+sgn(nf.surprise,2)+
+        " — 이번 시즌 하회 두 곳 중 하나",
+       en:"The "+G.single+" single-digit names — "+G.singleTxtEn+" (Home Depot comps +1.7% · Walmart US comps +2.6%) / median "+
+        sgn(G.med,1)+" · "+G.big+" names above 20% / Netflix grew 13% with revenue "+sgn(nf.surprise,2)+
+        " — one of only two misses this season"}},
   {h:{ko:"가이던스 상향이 실적 상회보다 많은 정보를 준다",en:"Raised guidance carries more information than a beat"},
    p:{ko:"컨센서스 상회는 추정치가 낮았다는 뜻일 수도 있다. 반면 연간 가이던스를 올린 것은 회사가 남은 분기를 직접 다시 계산했다는 신호다. 가이던스를 확인한 "+A.nGuide+"개사 중 "+A.up+"개사가 전망을 올렸고, 그중 9개사는 연간 전망 상향이다(나머지 2개사는 차기 분기 가이던스가 컨센서스를 웃돈 경우).",
        en:"A beat can simply mean the estimate was low. Raising full-year guidance means the company re-ran the rest of its year and committed to a higher number. Of the "+A.nGuide+" companies with verified guidance, "+A.up+" raised it — 9 of those lifted full-year outlooks; the other two guided the next quarter above consensus."},
