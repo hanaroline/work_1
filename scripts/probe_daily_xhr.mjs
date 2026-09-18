@@ -46,11 +46,25 @@ fs.mkdirSync(OUT, { recursive: true });
 // 주소를 맞히는 것이 아니라 화면이 부르는 것을 보는 것이 이 파일의 일이다.
 // 앞의 둘이 이번 관찰의 과녁(거래대금)이고, 나머지는 첫 관찰에서 쓸모가
 // 확인된 자리라 그대로 둔다.
+//
+// ── 2026-09-18 세 번째: 손전화 화면과 다른 집 ────────────────────────
+// 두 번째 관찰로 네이버 **PC 화면**에 거래대금 계열이 없음을 확인했고,
+// KRX 통계 화면은 로그인 벽(`login.jsp?site=mdc`)으로 막혔다. 수집기가
+// 쓰던 KRX 길 셋도 모두 닫혔다(403·401·400).
+//
+// 남은 자리를 두 군데 더 본다. **손전화 화면**은 PC 와 다른 API 를 쓰는
+// 일이 잦고, **다음 금융**은 아예 다른 집이다. 계열을 주는 자리가 있으면
+// 지난 며칠치를 바로 되찾을 수 있으므로, 쌓아 올리는 수를 쓰기 전에
+// 여기부터 본다.
+const MOBILE_UA =
+  'Mozilla/5.0 (iPhone; CPU iPhone OS 17_5 like Mac OS X) AppleWebKit/605.1.15 ' +
+  '(KHTML, like Gecko) Version/17.5 Mobile/15E148 Safari/604.1';
+
 const ENTRIES = [
+  ['손전화 코스피 (모바일)', 'https://m.stock.naver.com/domestic/index/KOSPI/total', MOBILE_UA],
+  ['손전화 코스피 시세 (모바일)', 'https://m.stock.naver.com/domestic/index/KOSPI/price', MOBILE_UA],
+  ['다음 금융 코스피', 'https://finance.daum.net/domestic/kospi'],
   ['코스피 상세(거래대금 과녁)', 'https://stock.naver.com/domestic/index/KOSPI/price'],
-  ['코스닥 상세(거래대금 과녁)', 'https://stock.naver.com/domestic/index/KOSDAQ/price'],
-  ['옛 국내증시 허브', 'https://finance.naver.com/sise/'],
-  ['새 증권 첫 화면', 'https://stock.naver.com/'],
   ['옛 일별시세(410 확인용)', 'https://finance.naver.com/sise/sise_index_day.naver?code=KOSPI&page=1'],
 ];
 
@@ -82,13 +96,15 @@ const browser = await chromium.launch({
 
 let saved = 0;
 
-for (const [label, url] of ENTRIES) {
+for (const [label, url, ua] of ENTRIES) {
   lines.push(`### ${label}  ${url}`);
   const ctx = await browser.newContext({
     locale: 'ko-KR',
+    ...(ua ? { isMobile: true, hasTouch: true, viewport: { width: 390, height: 844 } } : {}),
     userAgent:
+      ua ||
       'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 ' +
-      '(KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36',
+        '(KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36',
   });
   const page = await ctx.newPage();
   const seen = [];
