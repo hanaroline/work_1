@@ -29,7 +29,7 @@ on:
         type: choice
         options: ['vps', 'prod']
       only:
-        description: '묶음 하나만 (국내/지수/ETF/해외, 비우면 전부)'
+        description: '묶음 하나만 (국내/지수/ETF/해외/수급/차트/원자재, 비우면 전부)'
         required: false
         default: ''
 
