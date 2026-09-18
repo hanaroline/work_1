@@ -8,7 +8,11 @@ name: 국내 100대 기업 오프라인 판 다시 만들기
 # 다시 올린다. 30~60초에 끝난다.
 
 on:
+  # **main 에서만 돈다** — 까닭은 .github/workflows/README.md 「가지 제한」.
+  # 기능 가지에서 시험하려면 그 가지 이름을 아래 branches 에 한 줄 더 적는다
+  # (els-weekly.yml 의 `claude/els-**` 가 그 예다).
   push:
+    branches: [main]
     paths:
       - 'kr-top100.html'
       - 'scripts/make_offline_html.py'

@@ -4,8 +4,8 @@ name: 증권사 리포트 수집
 # 사내 이그레스 정책 때문에 네이버 리서치에 직접 붙지 못하므로, 러너가 대신
 # 받아 저장소에 커밋하고 세션·화면은 커밋된 data/reports/latest.json 을 읽는다.
 #
-# 주의: schedule 이벤트는 기본 브랜치(main)에 있는 워크플로만 발동한다.
-# 다른 브랜치에서는 push·수동 실행만 된다.
+# 주의: schedule 도 아래 push 도 **main 에서만** 돈다.
+# 다른 가지에서는 수동 실행(workflow_dispatch)만 된다.
 
 on:
   # 평일 네 판. 시각은 9/10 에 지난 열흘 기록을 뽑아 정했다 — 어림이 아니라
@@ -49,7 +49,11 @@ on:
   #
   # 파서를 고쳤을 때도 곧바로 다시 받습니다 — 목록·상세 구조가 바뀌면
   # 고친 즉시 실제 HTML 에 대고 확인해야 하기 때문입니다.
+  # **main 에서만 돈다** — 까닭은 .github/workflows/README.md 「가지 제한」.
+  # 기능 가지에서 시험하려면 그 가지 이름을 아래 branches 에 한 줄 더 적는다
+  # (els-weekly.yml 의 `claude/els-**` 가 그 예다).
   push:
+    branches: [main]
     paths:
       - 'data/reports/REFRESH'
       - 'scripts/fetch_reports.py'

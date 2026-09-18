@@ -5,8 +5,9 @@ name: 국내 100대 기업 시세 수집
 # 정책 밖에서 돌므로 여기서 대신 받아 데이터 브랜치(kr100-data)에 올리고, 화면은
 # 그 스냅샷을 먼저 그린 뒤 브라우저가 실시간으로 받아오면 그 위에 덮어쓴다.
 #
-# 주의: schedule 이벤트는 기본 브랜치(main)의 워크플로만 발동한다. 작업 브랜치에서는
-# 아래 push 트리거(data/kr100/REFRESH 한 줄 수정)나 수동 실행으로 돌린다.
+# 주의: schedule 도 아래 push 도 **main 에서만** 돈다. main 에서 지금 당장 돌리려면
+# data/kr100/REFRESH 를 한 줄 고쳐 push 한다. 작업 가지에서는 수동 실행을 쓰거나,
+# 아래 branches 에 그 가지를 적어 push 한다.
 
 on:
   schedule:
@@ -16,7 +17,11 @@ on:
 
   # 세션·사람이 직접 부르는 길. 세션 토큰에는 Actions 쓰기 권한이 없어
   # workflow_dispatch 를 API 로 부르지 못하지만(403), git push 는 된다.
+  # **main 에서만 돈다** — 까닭은 .github/workflows/README.md 「가지 제한」.
+  # 기능 가지에서 시험하려면 그 가지 이름을 아래 branches 에 한 줄 더 적는다
+  # (els-weekly.yml 의 `claude/els-**` 가 그 예다).
   push:
+    branches: [main]
     paths:
       - 'data/kr100/REFRESH'
       - '.github/workflows/kr100-data.yml'
