@@ -110,7 +110,7 @@ def keys_of(obj, depth=0):
     return type(obj).__name__
 
 
-def _known():
+def _known(market="kospi"):
     """저장소에 남은 코스피 거래대금(백만원)을 날짜별로 모은다.
 
     **단위를 짐작하지 않으려는 것이다.** 새 원천이 주는 숫자가 무엇인지는
@@ -124,7 +124,7 @@ def _known():
                 d = json.load(fh)
         except Exception:                                         # noqa: BLE001
             continue
-        ser = ((d.get("index_daily") or {}).get("kospi") or {}).get("series") or []
+        ser = ((d.get("index_daily") or {}).get(market) or {}).get("series") or []
         for r in ser:
             v = r.get("value_mn_krw")
             if r.get("date") and v:
@@ -132,12 +132,17 @@ def _known():
     return out
 
 
-def unit_check(j):
-    """새 원천의 값이 우리 기록과 맞는지 같은 날로 대조한다."""
+def unit_check(j, market="kospi"):
+    """새 원천의 값이 우리 기록과 맞는지 같은 날로 대조한다.
+
+    **어느 시장인지 맞춰서 본다.** 처음에는 코스닥 값을 코스피 기록에
+    맞춰 보고 「어긋난다」고 적었다 — 대조기가 틀린 것이지 자료가 틀린
+    것이 아니었다.
+    """
     rows = j.get("data") if isinstance(j, dict) else None
     if not isinstance(rows, list) or not rows or not isinstance(rows[0], dict):
         return []
-    known = _known()
+    known = _known(market)
     if not known:
         return ["대조할 옛 값이 저장소에 없다"]
     notes = []
@@ -196,7 +201,8 @@ def main():
             lines.append("    낱말 있음: %s → …%s…"
                          % (want, body[max(0, at - 30):at + 90].replace("\n", " ")))
         lines.append("    모양: %s" % json.dumps(keys_of(j), ensure_ascii=False)[:700])
-        for note in unit_check(j):
+        mkt = "kosdaq" if "KOSDAQ" in url.upper() else "kospi"
+        for note in unit_check(j, mkt):
             lines.append("    %s" % note)
         f = os.path.join(OUT, "daily_api_%d.json" % i)
         with open(f, "w", encoding="utf-8") as fh:
