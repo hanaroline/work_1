@@ -1,4 +1,4 @@
-KRX 요청 되보내기 2026-09-18 09:12 KST
+KRX 요청 되보내기 2026-09-18 09:17 KST
 관찰이 모아 둔 요청을 그대로 되보낸다 — 주소를 옮겨 적지 않는다.
 
 모인 요청 9건 가운데 서로 다른 것 9건.
@@ -6,18 +6,18 @@ KRX 요청 되보내기 2026-09-18 09:12 KST
 ### [0] KRX 정보데이터시스템 뿌리
     https://data.krx.co.kr/comm/bldAttendant/getJsonData.cmd
     보낸 본문: bld=dbms%2FMDC%2FMAIN%2FMDCMAIN00101
-    200 · 1995 bytes
+    200 · 1997 bytes
     행 7개 (output)
     항목: IND_TP_CD, IDX_IND_CD, IDX_IND_NM, IDX_IND_ENG_NM, FLUC_TP_CD, PRSNT_IDX, CMPPREVDD_IDX, IDX_FLUC_RT, UPLMTPRC_ISU_CNT, UP_ISU_CNT, STEAD_ISU_CNT, DN_ISU_CNT, LWLMTPRC_ISU_CNT
 
 ### [1] KRX 정보데이터시스템 뿌리
     https://data.krx.co.kr/comm/bldAttendant/getJsonData.cmd
     보낸 본문: mktId=STK&bld=dbms%2FMDC%2FMAIN%2FMDCMAIN00103
-    200 · 434 bytes
+    200 · 438 bytes
     행 3개 (output)
     항목: TRD_DD, DD_TP, INVST_TP, ACC_BID_TRDVAL, ACC_ASK_TRDVAL, NETBID_TRDVAL
     ★ 거래대금 항목 있음: ACC_BID_TRDVAL, ACC_ASK_TRDVAL, NETBID_TRDVAL
-    첫 행: {"TRD_DD": "20260918", "DD_TP": "T_DD", "INVST_TP": "기관(십억원)", "ACC_BID_TRDVAL": "415", "ACC_ASK_TRDVAL": "348", "NETBID_TRDVAL": "67"}
+    첫 행: {"TRD_DD": "20260918", "DD_TP": "T_DD", "INVST_TP": "기관(십억원)", "ACC_BID_TRDVAL": "525", "ACC_ASK_TRDVAL": "414", "NETBID_TRDVAL": "111"}
     → 본문을 data/market/raw/krx_hit_0.json 에 남겼다
 
 ### [2] KRX 정보데이터시스템 뿌리
@@ -48,26 +48,26 @@ KRX 요청 되보내기 2026-09-18 09:12 KST
     https://data.krx.co.kr/comm/bldAttendant/getJsonData.cmd
     보낸 본문: bld=dbms%2FMDC%2FMAIN%2FMDCMAIN00108
     200 · 57 bytes
-    행이 없다 — 통째로: {"output":[],"CURRENT_DATETIME":"2026.09.18 AM 09:12:36"}
+    행이 없다 — 통째로: {"output":[],"CURRENT_DATETIME":"2026.09.18 AM 09:17:49"}
 
 ### [6] KRX 정보데이터시스템 뿌리
     https://data.krx.co.kr/comm/bldAttendant/getJsonData.cmd
     보낸 본문: bld=dbms/MDC/MAIN/MDCMAIN00102&ddTp=1D&indTpCd=5&idxIndCd=302
-    200 · 42830 bytes
+    200 · 42891 bytes
     행 391개 (output)
     항목: TRD_DD, CLSPRC_IDX, PREVDD_IDX, ACC_TRDVOL, MIN_IDX, MAX_IDX
 
 ### [7] KRX 정보데이터시스템 뿌리
     https://data.krx.co.kr/comm/bldAttendant/getJsonData.cmd
     보낸 본문: bld=dbms/MDC/MAIN/MDCMAIN00102&ddTp=1D&indTpCd=5&idxIndCd=447
-    200 · 42844 bytes
+    200 · 42909 bytes
     행 391개 (output)
     항목: TRD_DD, CLSPRC_IDX, PREVDD_IDX, ACC_TRDVOL, MIN_IDX, MAX_IDX
 
 ### [8] KRX 정보데이터시스템 뿌리
     https://data.krx.co.kr/comm/bldAttendant/getJsonData.cmd
     보낸 본문: bld=dbms/MDC/MAIN/MDCMAIN00102&ddTp=1D&indTpCd=5&idxIndCd=300
-    200 · 42841 bytes
+    200 · 42902 bytes
     행 391개 (output)
     항목: TRD_DD, CLSPRC_IDX, PREVDD_IDX, ACC_TRDVOL, MIN_IDX, MAX_IDX
 
