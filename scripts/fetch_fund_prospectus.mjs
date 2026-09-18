@@ -93,6 +93,9 @@ const prosSrc = await readFile('js/sales-script-prospectus.js', 'utf8');
 /* 쪽 지도 규칙 — 표본 조사와 같은 파일을 쓴다 (scripts/fund_doc_anchors.mjs 머리말 참고) */
 const { ANCHORS, mapPages, flat, checkOrder } = await import('./fund_doc_anchors.mjs');
 const anchorSrc = await readFile(new URL('./fund_doc_anchors.mjs', import.meta.url), 'utf8');
+/* 글 뽑는 법 — 조사 도구와 같은 파일을 쓴다 (scripts/fund_doc_text.mjs 머리말 참고) */
+const { docPages } = await import('./fund_doc_text.mjs');
+const textSrc = await readFile(new URL('./fund_doc_text.mjs', import.meta.url), 'utf8');
 /**
  * 추출 규칙의 지문.
  *
@@ -106,12 +109,17 @@ const anchorSrc = await readFile(new URL('./fund_doc_anchors.mjs', import.meta.u
  * 쪽 지도 규칙(fund_doc_anchors.mjs)도 같은 지문에 넣는다. 자리 규칙을 고쳤는데
  * 이어서 판독이 「설명서가 그대로」 라며 넘어가면, 옛 규칙으로 잡은 쪽 번호가
  * 그대로 남는다. 가르는 기준은 한 군데에만 둔다.
+ *
+ * 글 뽑는 법(fund_doc_text.mjs)도 넣는다. 규칙이 그대로라도 글이 달라지면 판독
+ * 결과가 달라진다 — 줄을 어디서 끊고 칸을 어떻게 가르느냐가 정규식에 그대로
+ * 걸린다. 앞 판은 이것이 지문 밖에 있어, 글 뽑는 법을 손대도 「설명서가 그대로」
+ * 라며 넘어갈 수 있었다.
  */
 const rulesStamp = (function (s) {
   var h = 5381;
   for (var i = 0; i < s.length; i++) h = ((h * 33) ^ s.charCodeAt(i)) >>> 0;
   return s.length + '-' + h.toString(36);
-}(prosSrc + '\n--- fund_doc_anchors ---\n' + anchorSrc));
+}(prosSrc + '\n--- fund_doc_anchors ---\n' + anchorSrc + '\n--- fund_doc_text ---\n' + textSrc));
 
 /* --print-stamp : 지금 규칙의 지문만 찍고 끝낸다.
    워크플로의 「예약 안전장치」 가 지문을 스스로 다시 계산하면 계산법이 두 벌이
@@ -134,50 +142,15 @@ pdfjs.GlobalWorkerOptions.workerSrc = require0.resolve('pdfjs-dist/legacy/build/
  */
 async function pdfText(buf) {
   const doc = await pdfjs.getDocument({ data: new Uint8Array(buf), verbosity: 0 }).promise;
-  const chunks = [];
-  for (let n = 1; n <= doc.numPages; n++) {
-    const page = await doc.getPage(n);
-    const tc = await page.getTextContent();
-    let lastY = null, lastEnd = null, line = [];
-    const lines = [];
-    const flush = () => { if (line.length) lines.push(line.join('').replace(/[ \t]+$/, '')); line = []; };
-    for (const it of tc.items) {
-      const tr = it.transform || [];
-      const y = tr.length ? Math.round(tr[5]) : null;
-      const x = tr.length ? tr[4] : null;
-      if (lastY !== null && y !== null && Math.abs(y - lastY) > 2) { flush(); lastEnd = null; }
-      if (/^\s*$/.test(it.str)) {
-        if (x !== null) lastEnd = x + (it.width || 0);
-        if (y !== null) lastY = y;
-        if (line.length) line.push((it.width || 0) > 8 ? '\t' : ' ');
-        continue;
-      }
-      if (lastEnd !== null && x !== null && x - lastEnd > 8 && !/\t$/.test(line[line.length - 1] || '')) line.push('\t');
-      line.push(it.str);
-      if (x !== null) lastEnd = x + (it.width || 0);
-      lastY = y;
-    }
-    flush();
-    chunks.push(unwrap(lines).join('\n'));
-  }
+  /* 글 뽑는 법은 scripts/fund_doc_text.mjs 한 곳에만 둔다 — 조사 도구도 같은 것을 쓴다.
+     규칙만 한곳에 모으고 글 뽑는 법을 두 벌로 뒀더니, 표본 조사가 7/7 로 통과시킨
+     종목이 전량 지도에는 없었다. 같은 글을 봐야 같은 답이 나온다. */
+  const { pages, perPage } = await docPages(doc);
   /* 쪽 지도는 쪽마다의 글을 따로 봐야 한다 — 이어 붙인 뒤에는 몇 쪽인지 알 수 없다.
      같은 판독을 두 번 하지 않으려고 여기서 함께 돌려준다. */
-  return { text: chunks.join('\n'), pages: doc.numPages, perPage: chunks };
+  return { text: perPage.join('\n'), pages, perPage };
 }
 /** 줄바꿈으로 끊긴 본문을 잇는다 (앱과 같은 규칙) */
-function unwrap(lines) {
-  const out = [];
-  for (let i = 0; i < lines.length; i++) {
-    let cur = lines[i];
-    while (cur.indexOf('\t') < 0 && cur.length >= 40 && /[가-힣,·]$/.test(cur) &&
-      i + 1 < lines.length && lines[i + 1].indexOf('\t') < 0 &&
-      !/^\s*(?:\d+\s*[.)]|[○◦□■※【(])/.test(lines[i + 1]) && lines[i + 1].trim()) {
-      cur += lines[i + 1].trim(); i++;
-    }
-    out.push(cur);
-  }
-  return out;
-}
 
 /* 카탈로그에 이미 있는 항목은 담지 않는다 */
 const SKIP = new Set(['name', 'mgr', 'fundType', 'riskGrade', 'riskLabel', 'targets',
