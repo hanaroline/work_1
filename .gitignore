@@ -32,3 +32,6 @@ volatility-offline.html
 # 매매 신호 한 파일 판 — 201종목을 심어 4.4MB 다. 날마다 통째로 바뀌므로 저장소에
 # 쌓으면 안 된다. `python3 scripts/make_signal_offline.py` 로 다시 만든다.
 signal-offline.html
+
+# 고객용 한 장(자료를 심은 판) — `python3 scripts/build_client_page.py` 로 다시 만든다.
+volatility-client.html

@@ -1,6 +1,9 @@
-name: 상한가 원천 관찰
+name: 끊긴 원천 관찰 (브라우저)
 
-# 상한가·하한가 화면이 **실제로 부르는 주소**를 브라우저로 관찰한다.
+# 끊긴 화면이 **실제로 부르는 주소**를 브라우저로 관찰한다.
+#
+#   scripts/probe_limit_xhr.mjs  — 상한가·하한가 (2026-09-10 개편으로 끊김)
+#   scripts/probe_daily_xhr.mjs  — 일별시세·투자자별 (2026-09-18 에 410)
 #
 # 주소를 다섯 바퀴 찍어서 맞히려다 전부 빗나간 뒤에 만든 것이다(자세한
 # 내력은 scripts/probe_limit_xhr.mjs 머리말). 브라우저를 띄우는 일이라
@@ -40,9 +43,35 @@ jobs:
           npm install --no-save --no-audit --no-fund playwright
           npx playwright install --with-deps chromium
 
-      - name: 화면이 부르는 주소 관찰
+      - name: 상한가 화면이 부르는 주소 관찰
         continue-on-error: true
         run: node scripts/probe_limit_xhr.mjs
+
+      # 원천이 끊길 때마다 워크플로를 새로 만들지 않는다 — 브라우저를 띄우는
+      # 준비가 같으므로 같은 자리에서 이어 돌린다. `continue-on-error` 라
+      # 하나가 실패해도 나머지는 돈다.
+      - name: 거래대금·투자자별 화면이 부르는 주소 관찰
+        continue-on-error: true
+        run: node scripts/probe_daily_xhr.mjs
+
+      # 관찰로 찾은 후보를 **브라우저 없이 받아** 쓸 수 있는지 확인한다 —
+      # 평범한 요청으로 열리는지, 필요한 항목(거래대금·투자자 구분)이
+      # 실제로 들어 있는지. 상한가 때도 이 확인 뒤에 파서를 붙였다.
+      - name: 찾은 후보 주소 확인
+        continue-on-error: true
+        run: python3 scripts/probe_daily_api.py
+
+      # 네이버는 지수 거래대금을 「오늘 한 점」으로만 남겼고 장전에는 빈
+      # 값이다(관찰로 확인). 아침 7시 30분에 도는 브리핑은 그것을 못 쓰므로
+      # 계열은 KRX 에서 가져와야 한다 — 여기서도 주소를 짐작하지 않고
+      # 화면이 부르는 것을 본다.
+      - name: KRX 지수 일별시세 화면 관찰
+        continue-on-error: true
+        run: node scripts/probe_krx_xhr.mjs
+
+      - name: KRX 후보 주소 확인 (브라우저 없이)
+        continue-on-error: true
+        run: python3 scripts/probe_krx_index.py
 
       - name: 커밋
         if: always()
@@ -54,11 +83,25 @@ jobs:
             echo "남긴 것 없음"
             exit 0
           fi
-          git commit -m "상한가 원천 관찰 $(TZ=Asia/Seoul date '+%Y-%m-%d %H:%M KST')"
-          # 시세 수집과 겹칠 수 있으므로 되받아서 다시 민다.
+          git commit -m "끊긴 원천 관찰 $(TZ=Asia/Seoul date '+%Y-%m-%d %H:%M KST')"
+          # 시세 수집이나 다른 관찰과 겹칠 수 있으므로 되받아서 다시 민다.
+          #
+          # **rebase 로 되받지 않는다.** 2026-09-18 에 관찰 둘이 겹쳐 돌면서
+          # 같은 기록 파일을 서로 고쳤고, rebase 가 40여 개 파일에서 충돌해
+          # 멈추는 바람에 **그날의 KRX 관찰 결과가 통째로 버려졌다.**
+          # 기록 파일은 「이번에 본 것」을 적은 것이라 두 판을 섞을 일이
+          # 없다 — 늦게 본 쪽이 맞다. 그래서 남의 것 위에 우리 것을 그대로
+          # 얹는다(reset --soft). 충돌이라는 것이 아예 생기지 않는다.
           for i in 1 2 3 4 5; do
             if git push; then echo "밀어 넣음 (시도 $i)"; exit 0; fi
-            git pull --rebase --no-edit origin main || { git rebase --abort || true; exit 1; }
+            git fetch origin main || exit 1
+            git reset --soft origin/main
+            git add -A data/market/raw || true
+            if git diff --staged --quiet; then
+              echo "먼저 올라온 것과 같다 — 남길 것 없음"
+              exit 0
+            fi
+            git commit -m "끊긴 원천 관찰 $(TZ=Asia/Seoul date '+%Y-%m-%d %H:%M KST')"
             sleep $((i * 5))
           done
           exit 1

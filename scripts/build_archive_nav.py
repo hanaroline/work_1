@@ -65,8 +65,12 @@ PRINT_CSS = """<style>
 </style>
 """
 
-# 같은 날 두 판이 있을 때의 순서. 모닝·해외 판이 먼저, 장마감이 뒤.
-SESSION_ORDER = {"morning": 0, "global": 0, "global-morning": 0, "close": 1}
+# 같은 날 여러 판이 있을 때의 순서. 모닝·해외 판이 먼저, 장마감이 뒤,
+# 이벤트 브리프(FOMC·금통위처럼 날짜가 정해진 일회성 자료)가 맨 뒤.
+# **기본값 0 에 기대지 마십시오** — 같은 값이면 파이썬 정렬이 안정적이라
+# index.json 에 적힌 순서가 그대로 나와, 넣은 자리에 따라 목록이 달라집니다.
+SESSION_ORDER = {"morning": 0, "global": 0, "global-morning": 0,
+                 "close": 1, "event": 2}
 
 
 def key(b):
@@ -147,7 +151,16 @@ def beta(path, briefings):
     # 같은 날 판이 이미 목록에 있으면 **그것**을 「이 판」으로 표시한다. 예전에는
     # 무조건 「베타 시안」 줄을 하나 새로 얹어서, 새 형식으로 다시 지은 8/27 판이
     # 목록에 08-27 을 두 줄 — 「베타 시안」과 「모닝」 — 로 실었다.
-    same = [b for b in visible if b.get("date") == mine]
+    #
+    # **날짜만으로 고르면 안 된다(2026-09-17).** 하루에 판이 셋(이벤트·장마감·
+    # 모닝)인 날이 생기자, `2026-09-17-close-core.html` 이 같은 날 첫 줄인
+    # 「FOMC 브리프」를 「이 판」으로 짚었다 — 핵심본 사이드바에서 이벤트
+    # 브리프가 `href="#"` 인 죽은 줄이 되고, 정작 장마감은 현재 판 표시를
+    # 잃었다. 핵심본은 `-core` 를 뗀 파일이 자기 짝이므로 **파일 이름으로
+    # 먼저 맞추고**, 못 찾을 때만 날짜로 떨어진다.
+    stem = re.sub(r"-core(?=\.html$)", "", os.path.basename(path))
+    same = ([b for b in visible if b.get("file") == stem]
+            or [b for b in visible if b.get("date") == mine])
     if same:
         me = same[0]
     else:
