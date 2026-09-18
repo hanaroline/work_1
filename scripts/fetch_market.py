@@ -2901,7 +2901,15 @@ def daum_index_daily(code, pages=2):
     for r in j.get("data") or []:
         day = str(r.get("date") or "")[:10]
         close, chg = r.get("tradePrice"), r.get("changePrice")
+        val = r.get("accTradePrice")
         if not day or close is None:
+            continue
+        # **거래대금이 0 인 줄은 버린다.** 브리핑은 아침 7시 30분, 곧 장이
+        # 열리기 전에 돈다. 그 시각 다음이 오늘 날짜를 거래대금 0 으로
+        # 실어 보내면 「오늘 0조」가 표에 그대로 앉고, 그것은 「거래가
+        # 없었다」는 말이 된다 — 빈 값으로 두는 것보다 나쁘다. 값이 없으면
+        # 싣지 않고, 전 거래일이 맨 위로 올라오게 둔다.
+        if not val:
             continue
         prev = (close - chg) if chg is not None else None
         series.append({
@@ -2909,7 +2917,7 @@ def daum_index_daily(code, pages=2):
             "close": close,
             "change_pct": (round(chg / prev * 100, 2) if prev else None),
             "volume_k_shares": r.get("accTradeVolume"),     # 천주
-            "value_mn_krw": r.get("accTradePrice"),         # 백만원
+            "value_mn_krw": val,                            # 백만원
         })
     if not series:
         raise ValueError("다음 일별시세 행 없음")
