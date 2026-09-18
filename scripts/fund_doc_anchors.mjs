@@ -143,6 +143,34 @@ export function tocPages(pages) {
 export const flat = (s) => String(s).replace(/\s+/g, ' ').trim();
 
 /**
+ * 이 걸림이 **절 제목**인가, 어디를 보라는 **상호참조**인가.
+ *
+ * 차례 조건만으로는 못 가른다. 앞쪽 상호참조를 건너뛰어도 그 다음이 또 상호참조인
+ * 문서가 절반이었다 — 표본에서 눈으로 대조해 알았다.
+ *
+ *   ✗ p.38 「환매수수료 세부사항은 ‘제 2 부 13. 보수 및 수수료에 관한사항’ 을 참고하시기 바랍니다」
+ *   ✗ p.33 「열람 방법 등 : 제 2 부 , 10. 집합투자기구의 투자위험 - 외국 집합투자기구의 …」
+ *   ✓ p.21 「… 재분류할 수 있습니다 . 11. 매입 , 환매 , 전환절차 및 기준가격 적용기준 가 . 매입 (1) 매입방법」
+ *   ✓ p.40 「… 의결함 13. 보수 및 수수료에 관한 사항 이 투자신탁은 운용 및 판매 등의 대가로 …」
+ *
+ * 가르는 표가 둘 있다.
+ *   ① 앞에 「제2부」 가 붙어 있다 — 「제2부 11. 매입…」 은 그 절을 가리키는 말이지
+ *      그 절 자체가 아니다. 진짜 제목 앞에는 앞 절의 끝문장이 온다.
+ *   ② 뒤에 참고·참조·바랍니다·설명되어 가 곧바로 온다 — 진짜 제목 뒤에는
+ *      그 절의 내용(가. · (1) · 이 투자신탁은 …)이 온다.
+ *
+ * 창이 좁은 것은 일부러다. 절 내용 안에도 「…를 참고하십시오」 가 나올 수 있어,
+ * 제목 바로 뒤가 아니면 참조로 보지 않는다.
+ */
+const REF_BEFORE = /제\s*2\s*부/;
+const REF_AFTER = /참\s*고|참\s*조|바랍니다|설명되어/;
+export function isCrossRef(text, idx, len) {
+  if (REF_BEFORE.test(text.slice(Math.max(0, idx - 30), idx))) return true;
+  if (REF_AFTER.test(text.slice(idx + len, idx + len + 40))) return true;
+  return false;
+}
+
+/**
  * 제2부가 시작하는 쪽을 찾는다 — 본문 시작을 정하는 자리라 값이 가장 비싸다.
  *
  * 제2부를 못 찾으면 그 종목은 본문 쪽이 전부 빈칸이고, **잘못 찾으면** 본문 시작이
@@ -310,10 +338,16 @@ export function mapPages(pages) {
    */
   if (bodyFrom !== null) {
     const hitsOf = (re) => {
+      const g = new RegExp(re.source, 'g');
       const h = [];
       for (let i = bodyFrom; i < pages.length; i++) {
         if (toc.has(i)) continue;
-        if (re.test(pages[i])) h.push(i + 1);
+        const t = pages[i];
+        g.lastIndex = 0;
+        let x, real = false;
+        /* 한 쪽에 상호참조와 진짜 제목이 같이 있을 수 있으므로 걸림을 모두 본다 */
+        while ((x = g.exec(t))) if (!isCrossRef(t, x.index, x[0].length)) { real = true; break; }
+        if (real) h.push(i + 1);
       }
       return h;
     };
