@@ -1,4 +1,4 @@
-세션을 지닌 채 API 부르기 2026-09-19 07:42:34 KST
+세션을 지닌 채 API 부르기 2026-09-19 08:20:35 KST
 
 ### 증시자금동향
     페이지 https://stock.naver.com/market/stock/kr/deposit → HTTP 200 · 최종주소 https://stock.naver.com/market/stock/kr/deposit · 137405 bytes
@@ -16,12 +16,12 @@
     페이지 https://stock.naver.com/news/mainnews → HTTP 200 · 최종주소 https://stock.naver.com/news/mainnews · 127466 bytes
     받은 쿠키: 없음
     API https://stock.naver.com/api/domestic/news/list?startIdx=0&pageSize=20
-        HTTP 200 · 8774 bytes · JSON!
-        앞머리: {"articles":[{"officeId":"016","officeHname":"헤럴드경제","articleId":"0002699588","title":"[단독] 로레알 만드는 화성코스메틱, 맥쿼리 품에 안긴다…본계약 체결","datetime":"2026-09-19 07:27:09","type":"1","subcontent":"글로벌 사모펀드(PEF) 맥
+        HTTP 200 · 8752 bytes · JSON!
+        앞머리: {"articles":[{"officeId":"277","officeHname":"아시아경제","articleId":"0005818683","title":"너도나도 해외여행 간다는데…항공사 실적은 왜[주末머니]","datetime":"2026-09-19 08:08:00","type":"1","subcontent":"7~8월 국제선 여객 수는 1802만여 명
         남김: data/market/raw/session_list.json
     API https://stock.naver.com/api/domestic/news/list?category=mainnews&startIdx=0&pageSize=20
-        HTTP 200 · 8774 bytes · JSON!
-        앞머리: {"articles":[{"officeId":"016","officeHname":"헤럴드경제","articleId":"0002699588","title":"[단독] 로레알 만드는 화성코스메틱, 맥쿼리 품에 안긴다…본계약 체결","datetime":"2026-09-19 07:27:09","type":"1","subcontent":"글로벌 사모펀드(PEF) 맥
+        HTTP 200 · 8752 bytes · JSON!
+        앞머리: {"articles":[{"officeId":"277","officeHname":"아시아경제","articleId":"0005818683","title":"너도나도 해외여행 간다는데…항공사 실적은 왜[주末머니]","datetime":"2026-09-19 08:08:00","type":"1","subcontent":"7~8월 국제선 여객 수는 1802만여 명
         남김: data/market/raw/session_list.json
 
 ### 시장지표
@@ -45,25 +45,25 @@
         남김: data/market/raw/session_bond.json
     API https://stock.naver.com/api/securityService/marketindex/majors/dminte
         HTTP 404 · 224 bytes · JSON!
-        앞머리: {"detailCode":"HttpError","message":"Not Found","result":"{\"timestamp\":\"2026-09-18T22:42:44.647+0000\",\"status\":404,\"error\":\"Not Found\",\"message\":\"No message available\",\"path\":\"/market
+        앞머리: {"detailCode":"HttpError","message":"Not Found","result":"{\"timestamp\":\"2026-09-18T23:20:45.469+0000\",\"status\":404,\"error\":\"Not Found\",\"message\":\"No message available\",\"path\":\"/market
         남김: data/market/raw/session_dminte.json
     API https://stock.naver.com/api/securityService/marketindex/majors/dmInte
         HTTP 404 · 224 bytes · JSON!
-        앞머리: {"detailCode":"HttpError","message":"Not Found","result":"{\"timestamp\":\"2026-09-18T22:42:45.217+0000\",\"status\":404,\"error\":\"Not Found\",\"message\":\"No message available\",\"path\":\"/market
+        앞머리: {"detailCode":"HttpError","message":"Not Found","result":"{\"timestamp\":\"2026-09-18T23:20:46.113+0000\",\"status\":404,\"error\":\"Not Found\",\"message\":\"No message available\",\"path\":\"/market
         남김: data/market/raw/session_dmInte.json
     API https://stock.naver.com/api/securityService/marketindex/majors/domesticInte
         HTTP 404 · 230 bytes · JSON!
-        앞머리: {"detailCode":"HttpError","message":"Not Found","result":"{\"timestamp\":\"2026-09-18T22:42:45.791+0000\",\"status\":404,\"error\":\"Not Found\",\"message\":\"No message available\",\"path\":\"/market
+        앞머리: {"detailCode":"HttpError","message":"Not Found","result":"{\"timestamp\":\"2026-09-18T23:20:46.791+0000\",\"status\":404,\"error\":\"Not Found\",\"message\":\"No message available\",\"path\":\"/market
         남김: data/market/raw/session_domesticInte.json
     API https://stock.naver.com/api/securityService/marketindex/majors/domesticInterestRate
         HTTP 404 · 238 bytes · JSON!
-        앞머리: {"detailCode":"HttpError","message":"Not Found","result":"{\"timestamp\":\"2026-09-18T22:42:46.368+0000\",\"status\":404,\"error\":\"Not Found\",\"message\":\"No message available\",\"path\":\"/market
+        앞머리: {"detailCode":"HttpError","message":"Not Found","result":"{\"timestamp\":\"2026-09-18T23:20:47.444+0000\",\"status\":404,\"error\":\"Not Found\",\"message\":\"No message available\",\"path\":\"/market
         남김: data/market/raw/session_domesticInterestRate.json
     API https://stock.naver.com/api/securityService/marketindex/majors/krRate
         HTTP 404 · 224 bytes · JSON!
-        앞머리: {"detailCode":"HttpError","message":"Not Found","result":"{\"timestamp\":\"2026-09-18T22:42:47.034+0000\",\"status\":404,\"error\":\"Not Found\",\"message\":\"No message available\",\"path\":\"/market
+        앞머리: {"detailCode":"HttpError","message":"Not Found","result":"{\"timestamp\":\"2026-09-18T23:20:48.289+0000\",\"status\":404,\"error\":\"Not Found\",\"message\":\"No message available\",\"path\":\"/market
         남김: data/market/raw/session_krRate.json
     API https://stock.naver.com/api/securityService/marketindex/majors/marketRate
         HTTP 404 · 228 bytes · JSON!
-        앞머리: {"detailCode":"HttpError","message":"Not Found","result":"{\"timestamp\":\"2026-09-18T22:42:47.601+0000\",\"status\":404,\"error\":\"Not Found\",\"message\":\"No message available\",\"path\":\"/market
+        앞머리: {"detailCode":"HttpError","message":"Not Found","result":"{\"timestamp\":\"2026-09-18T23:20:48.944+0000\",\"status\":404,\"error\":\"Not Found\",\"message\":\"No message available\",\"path\":\"/market
         남김: data/market/raw/session_marketRate.json
