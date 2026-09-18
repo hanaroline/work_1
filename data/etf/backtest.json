@@ -1,0 +1,1782 @@
+{
+ "horizons": {
+  "5": {
+   "flip": {
+    "ETF_OV": {
+     "cost_bps": 15,
+     "event": {
+      "signal_days": 360,
+      "baseline_days": 9292,
+      "signal_mean": 0.235,
+      "baseline_mean": 0.441,
+      "signal_median": 0.121,
+      "baseline_median": 0.222,
+      "bootstrap": {
+       "diff": -0.206,
+       "ci_lo": -0.833,
+       "ci_hi": 0.449,
+       "boot": 2000,
+       "days": 613,
+       "significant": false
+      }
+     },
+     "trades_net": {
+      "n": 249,
+      "mean": 0.473,
+      "median": -0.089,
+      "win_rate": 47.8,
+      "avg_win": 3.963,
+      "avg_loss": -2.722,
+      "profit_factor": 1.333,
+      "best": 42.4,
+      "worst": -50.52,
+      "avg_bars": 7.8
+     },
+     "trades_gross": {
+      "n": 249,
+      "mean": 0.623,
+      "median": 0.061,
+      "win_rate": 51.4,
+      "avg_win": 3.83,
+      "avg_loss": -2.769,
+      "profit_factor": 1.463,
+      "best": 42.55,
+      "worst": -50.37,
+      "avg_bars": 7.8
+     },
+     "ma_cross_net": {
+      "n": 566,
+      "mean": 0.202,
+      "median": -0.424,
+      "win_rate": 36.0,
+      "avg_win": 3.858,
+      "avg_loss": -1.858,
+      "profit_factor": 1.17,
+      "best": 44.42,
+      "worst": -50.02,
+      "avg_bars": 5.2
+     },
+     "random_net": {
+      "n": 249,
+      "mean": 0.52,
+      "median": 0.103,
+      "win_rate": 54.6,
+      "avg_win": 2.589,
+      "avg_loss": -1.971,
+      "profit_factor": 1.581,
+      "best": 27.17,
+      "worst": -12.56,
+      "avg_bars": 5.0
+     },
+     "equity": {
+      "n": 20,
+      "strategy_median_pct": 0.17,
+      "buyhold_median_pct": 37.46,
+      "excess_median_pct": -34.49,
+      "excess_mean_pct": -43.54,
+      "beat_buyhold_pct": 15.0,
+      "in_market_median_pct": 21.5,
+      "mdd_median_pct": -10.39,
+      "bh_mdd_median_pct": -24.14,
+      "mdd_saved_median_pct": 9.52,
+      "per_day_excess_median": -0.0427,
+      "per_day_beat_pct": 30.0,
+      "ma_cross_excess_median_pct": -30.33
+     },
+     "cost_sensitivity": {
+      "0": {
+       "mean": 0.623,
+       "win_rate": 51.4
+      },
+      "25": {
+       "mean": 0.373,
+       "win_rate": 44.2
+      },
+      "50": {
+       "mean": 0.123,
+       "win_rate": 39.8
+      }
+     }
+    },
+    "ETF_KR": {
+     "cost_bps": 10,
+     "event": {
+      "signal_days": 734,
+      "baseline_days": 20689,
+      "signal_mean": 0.964,
+      "baseline_mean": 0.569,
+      "signal_median": 0.466,
+      "baseline_median": 0.302,
+      "bootstrap": {
+       "diff": 0.395,
+       "ci_lo": -0.063,
+       "ci_hi": 0.865,
+       "boot": 2000,
+       "days": 530,
+       "significant": false
+      }
+     },
+     "trades_net": {
+      "n": 522,
+      "mean": 1.05,
+      "median": 0.225,
+      "win_rate": 52.1,
+      "avg_win": 5.11,
+      "avg_loss": -3.368,
+      "profit_factor": 1.651,
+      "best": 32.88,
+      "worst": -13.04,
+      "avg_bars": 8.0
+     },
+     "trades_gross": {
+      "n": 522,
+      "mean": 1.15,
+      "median": 0.325,
+      "win_rate": 53.6,
+      "avg_win": 5.063,
+      "avg_loss": -3.378,
+      "profit_factor": 1.734,
+      "best": 32.98,
+      "worst": -12.94,
+      "avg_bars": 8.0
+     },
+     "ma_cross_net": {
+      "n": 1208,
+      "mean": 0.422,
+      "median": -0.385,
+      "win_rate": 38.2,
+      "avg_win": 4.58,
+      "avg_loss": -2.153,
+      "profit_factor": 1.318,
+      "best": 34.22,
+      "worst": -13.9,
+      "avg_bars": 5.4
+     },
+     "random_net": {
+      "n": 522,
+      "mean": 0.599,
+      "median": 0.123,
+      "win_rate": 51.9,
+      "avg_win": 3.738,
+      "avg_loss": -2.79,
+      "profit_factor": 1.446,
+      "best": 27.85,
+      "worst": -30.46,
+      "avg_bars": 5.0
+     },
+     "equity": {
+      "n": 49,
+      "strategy_median_pct": 4.4,
+      "buyhold_median_pct": 39.4,
+      "excess_median_pct": -34.09,
+      "excess_mean_pct": -51.57,
+      "beat_buyhold_pct": 14.3,
+      "in_market_median_pct": 19.1,
+      "mdd_median_pct": -11.88,
+      "bh_mdd_median_pct": -34.51,
+      "mdd_saved_median_pct": 16.9,
+      "per_day_excess_median": -0.0343,
+      "per_day_beat_pct": 32.7,
+      "ma_cross_excess_median_pct": -28.28
+     },
+     "cost_sensitivity": {
+      "0": {
+       "mean": 1.15,
+       "win_rate": 53.6
+      },
+      "25": {
+       "mean": 0.9,
+       "win_rate": 51.0
+      },
+      "50": {
+       "mean": 0.65,
+       "win_rate": 48.7
+      }
+     }
+    }
+   },
+   "noflip": {
+    "ETF_OV": {
+     "cost_bps": 15,
+     "event": {
+      "signal_days": 451,
+      "baseline_days": 9292,
+      "signal_mean": 0.368,
+      "baseline_mean": 0.441,
+      "signal_median": 0.34,
+      "baseline_median": 0.222,
+      "bootstrap": {
+       "diff": -0.073,
+       "ci_lo": -0.559,
+       "ci_hi": 0.4,
+       "boot": 2000,
+       "days": 613,
+       "significant": false
+      }
+     },
+     "trades_net": {
+      "n": 303,
+      "mean": 0.622,
+      "median": -0.15,
+      "win_rate": 47.9,
+      "avg_win": 4.319,
+      "avg_loss": -2.771,
+      "profit_factor": 1.43,
+      "best": 42.4,
+      "worst": -48.42,
+      "avg_bars": 7.9
+     },
+     "trades_gross": {
+      "n": 303,
+      "mean": 0.772,
+      "median": 0.0,
+      "win_rate": 49.8,
+      "avg_win": 4.294,
+      "avg_loss": -2.727,
+      "profit_factor": 1.564,
+      "best": 42.55,
+      "worst": -48.27,
+      "avg_bars": 7.9
+     },
+     "ma_cross_net": {
+      "n": 566,
+      "mean": 0.202,
+      "median": -0.424,
+      "win_rate": 36.0,
+      "avg_win": 3.858,
+      "avg_loss": -1.858,
+      "profit_factor": 1.17,
+      "best": 44.42,
+      "worst": -50.02,
+      "avg_bars": 5.2
+     },
+     "random_net": {
+      "n": 303,
+      "mean": 0.412,
+      "median": 0.042,
+      "win_rate": 52.1,
+      "avg_win": 2.666,
+      "avg_loss": -2.044,
+      "profit_factor": 1.421,
+      "best": 27.17,
+      "worst": -12.56,
+      "avg_bars": 5.0
+     },
+     "equity": {
+      "n": 20,
+      "strategy_median_pct": -0.01,
+      "buyhold_median_pct": 37.46,
+      "excess_median_pct": -32.54,
+      "excess_mean_pct": -38.51,
+      "beat_buyhold_pct": 10.0,
+      "in_market_median_pct": 25.0,
+      "mdd_median_pct": -10.82,
+      "bh_mdd_median_pct": -24.14,
+      "mdd_saved_median_pct": 8.42,
+      "per_day_excess_median": -0.0704,
+      "per_day_beat_pct": 30.0,
+      "ma_cross_excess_median_pct": -30.33
+     },
+     "cost_sensitivity": {
+      "0": {
+       "mean": 0.772,
+       "win_rate": 49.8
+      },
+      "25": {
+       "mean": 0.522,
+       "win_rate": 45.9
+      },
+      "50": {
+       "mean": 0.272,
+       "win_rate": 41.9
+      }
+     }
+    },
+    "ETF_KR": {
+     "cost_bps": 10,
+     "event": {
+      "signal_days": 850,
+      "baseline_days": 20689,
+      "signal_mean": 1.129,
+      "baseline_mean": 0.569,
+      "signal_median": 0.447,
+      "baseline_median": 0.302,
+      "bootstrap": {
+       "diff": 0.559,
+       "ci_lo": 0.136,
+       "ci_hi": 1.006,
+       "boot": 2000,
+       "days": 530,
+       "significant": true
+      }
+     },
+     "trades_net": {
+      "n": 615,
+      "mean": 1.002,
+      "median": -0.15,
+      "win_rate": 48.0,
+      "avg_win": 5.681,
+      "avg_loss": -3.311,
+      "profit_factor": 1.582,
+      "best": 35.1,
+      "worst": -14.79,
+      "avg_bars": 7.8
+     },
+     "trades_gross": {
+      "n": 615,
+      "mean": 1.102,
+      "median": -0.05,
+      "win_rate": 49.3,
+      "avg_win": 5.629,
+      "avg_loss": -3.295,
+      "profit_factor": 1.659,
+      "best": 35.2,
+      "worst": -14.69,
+      "avg_bars": 7.8
+     },
+     "ma_cross_net": {
+      "n": 1208,
+      "mean": 0.422,
+      "median": -0.385,
+      "win_rate": 38.2,
+      "avg_win": 4.58,
+      "avg_loss": -2.153,
+      "profit_factor": 1.318,
+      "best": 34.22,
+      "worst": -13.9,
+      "avg_bars": 5.4
+     },
+     "random_net": {
+      "n": 615,
+      "mean": 0.53,
+      "median": 0.1,
+      "win_rate": 51.7,
+      "avg_win": 3.654,
+      "avg_loss": -2.815,
+      "profit_factor": 1.389,
+      "best": 27.85,
+      "worst": -30.46,
+      "avg_bars": 5.0
+     },
+     "equity": {
+      "n": 49,
+      "strategy_median_pct": 6.63,
+      "buyhold_median_pct": 39.4,
+      "excess_median_pct": -31.26,
+      "excess_mean_pct": -50.3,
+      "beat_buyhold_pct": 14.3,
+      "in_market_median_pct": 21.9,
+      "mdd_median_pct": -12.58,
+      "bh_mdd_median_pct": -34.51,
+      "mdd_saved_median_pct": 14.98,
+      "per_day_excess_median": -0.021,
+      "per_day_beat_pct": 40.8,
+      "ma_cross_excess_median_pct": -28.28
+     },
+     "cost_sensitivity": {
+      "0": {
+       "mean": 1.102,
+       "win_rate": 49.3
+      },
+      "25": {
+       "mean": 0.852,
+       "win_rate": 46.8
+      },
+      "50": {
+       "mean": 0.602,
+       "win_rate": 44.2
+      }
+     }
+    }
+   }
+  },
+  "10": {
+   "flip": {
+    "ETF_OV": {
+     "cost_bps": 15,
+     "event": {
+      "signal_days": 362,
+      "baseline_days": 9192,
+      "signal_mean": 0.903,
+      "baseline_mean": 0.915,
+      "signal_median": 0.25,
+      "baseline_median": 0.436,
+      "bootstrap": {
+       "diff": -0.012,
+       "ci_lo": -0.742,
+       "ci_hi": 0.803,
+       "boot": 2000,
+       "days": 608,
+       "significant": false
+      }
+     },
+     "trades_net": {
+      "n": 207,
+      "mean": 1.076,
+      "median": -0.507,
+      "win_rate": 43.0,
+      "avg_win": 6.63,
+      "avg_loss": -3.113,
+      "profit_factor": 1.606,
+      "best": 36.29,
+      "worst": -50.52,
+      "avg_bars": 13.1
+     },
+     "trades_gross": {
+      "n": 207,
+      "mean": 1.226,
+      "median": -0.357,
+      "win_rate": 44.4,
+      "avg_win": 6.56,
+      "avg_loss": -3.041,
+      "profit_factor": 1.725,
+      "best": 36.44,
+      "worst": -50.37,
+      "avg_bars": 13.1
+     },
+     "ma_cross_net": {
+      "n": 566,
+      "mean": 0.401,
+      "median": -0.509,
+      "win_rate": 32.9,
+      "avg_win": 5.053,
+      "avg_loss": -1.877,
+      "profit_factor": 1.318,
+      "best": 37.48,
+      "worst": -50.02,
+      "avg_bars": 7.5
+     },
+     "random_net": {
+      "n": 207,
+      "mean": 0.486,
+      "median": 0.111,
+      "win_rate": 51.7,
+      "avg_win": 4.722,
+      "avg_loss": -4.047,
+      "profit_factor": 1.248,
+      "best": 37.82,
+      "worst": -51.01,
+      "avg_bars": 9.9
+     },
+     "equity": {
+      "n": 20,
+      "strategy_median_pct": 1.98,
+      "buyhold_median_pct": 37.46,
+      "excess_median_pct": -30.17,
+      "excess_mean_pct": -37.32,
+      "beat_buyhold_pct": 0.0,
+      "in_market_median_pct": 29.2,
+      "mdd_median_pct": -10.27,
+      "bh_mdd_median_pct": -24.14,
+      "mdd_saved_median_pct": 9.05,
+      "per_day_excess_median": -0.0394,
+      "per_day_beat_pct": 25.0,
+      "ma_cross_excess_median_pct": -29.32
+     },
+     "cost_sensitivity": {
+      "0": {
+       "mean": 1.226,
+       "win_rate": 44.4
+      },
+      "25": {
+       "mean": 0.976,
+       "win_rate": 42.0
+      },
+      "50": {
+       "mean": 0.726,
+       "win_rate": 41.1
+      }
+     }
+    },
+    "ETF_KR": {
+     "cost_bps": 10,
+     "event": {
+      "signal_days": 734,
+      "baseline_days": 20444,
+      "signal_mean": 1.331,
+      "baseline_mean": 1.16,
+      "signal_median": 0.522,
+      "baseline_median": 0.564,
+      "bootstrap": {
+       "diff": 0.171,
+       "ci_lo": -0.392,
+       "ci_hi": 0.727,
+       "boot": 2000,
+       "days": 525,
+       "significant": false
+      }
+     },
+     "trades_net": {
+      "n": 444,
+      "mean": 2.425,
+      "median": -0.439,
+      "win_rate": 46.2,
+      "avg_win": 9.325,
+      "avg_loss": -3.494,
+      "profit_factor": 2.289,
+      "best": 45.69,
+      "worst": -14.85,
+      "avg_bars": 13.5
+     },
+     "trades_gross": {
+      "n": 444,
+      "mean": 2.525,
+      "median": -0.339,
+      "win_rate": 47.3,
+      "avg_win": 9.202,
+      "avg_loss": -3.468,
+      "profit_factor": 2.382,
+      "best": 45.79,
+      "worst": -14.75,
+      "avg_bars": 13.5
+     },
+     "ma_cross_net": {
+      "n": 1208,
+      "mean": 0.872,
+      "median": -0.558,
+      "win_rate": 33.5,
+      "avg_win": 6.821,
+      "avg_loss": -2.129,
+      "profit_factor": 1.616,
+      "best": 51.19,
+      "worst": -13.9,
+      "avg_bars": 7.7
+     },
+     "random_net": {
+      "n": 444,
+      "mean": 1.54,
+      "median": 1.054,
+      "win_rate": 61.7,
+      "avg_win": 5.383,
+      "avg_loss": -4.654,
+      "profit_factor": 1.864,
+      "best": 27.07,
+      "worst": -35.54,
+      "avg_bars": 9.9
+     },
+     "equity": {
+      "n": 49,
+      "strategy_median_pct": 11.83,
+      "buyhold_median_pct": 39.4,
+      "excess_median_pct": -24.47,
+      "excess_mean_pct": -39.11,
+      "beat_buyhold_pct": 14.3,
+      "in_market_median_pct": 28.8,
+      "mdd_median_pct": -13.81,
+      "bh_mdd_median_pct": -34.51,
+      "mdd_saved_median_pct": 16.24,
+      "per_day_excess_median": -0.0046,
+      "per_day_beat_pct": 46.9,
+      "ma_cross_excess_median_pct": -21.18
+     },
+     "cost_sensitivity": {
+      "0": {
+       "mean": 2.525,
+       "win_rate": 47.3
+      },
+      "25": {
+       "mean": 2.275,
+       "win_rate": 45.3
+      },
+      "50": {
+       "mean": 2.025,
+       "win_rate": 43.7
+      }
+     }
+    }
+   },
+   "noflip": {
+    "ETF_OV": {
+     "cost_bps": 15,
+     "event": {
+      "signal_days": 448,
+      "baseline_days": 9192,
+      "signal_mean": 0.833,
+      "baseline_mean": 0.915,
+      "signal_median": 0.383,
+      "baseline_median": 0.436,
+      "bootstrap": {
+       "diff": -0.081,
+       "ci_lo": -0.803,
+       "ci_hi": 0.602,
+       "boot": 2000,
+       "days": 608,
+       "significant": false
+      }
+     },
+     "trades_net": {
+      "n": 252,
+      "mean": 1.111,
+      "median": -0.635,
+      "win_rate": 41.3,
+      "avg_win": 6.77,
+      "avg_loss": -2.866,
+      "profit_factor": 1.66,
+      "best": 36.29,
+      "worst": -48.42,
+      "avg_bars": 12.6
+     },
+     "trades_gross": {
+      "n": 252,
+      "mean": 1.261,
+      "median": -0.485,
+      "win_rate": 41.7,
+      "avg_win": 6.855,
+      "avg_loss": -2.736,
+      "profit_factor": 1.79,
+      "best": 36.44,
+      "worst": -48.27,
+      "avg_bars": 12.6
+     },
+     "ma_cross_net": {
+      "n": 566,
+      "mean": 0.401,
+      "median": -0.509,
+      "win_rate": 32.9,
+      "avg_win": 5.053,
+      "avg_loss": -1.877,
+      "profit_factor": 1.318,
+      "best": 37.48,
+      "worst": -50.02,
+      "avg_bars": 7.5
+     },
+     "random_net": {
+      "n": 252,
+      "mean": 0.174,
+      "median": -0.017,
+      "win_rate": 48.4,
+      "avg_win": 4.473,
+      "avg_loss": -3.86,
+      "profit_factor": 1.088,
+      "best": 37.82,
+      "worst": -51.01,
+      "avg_bars": 9.9
+     },
+     "equity": {
+      "n": 20,
+      "strategy_median_pct": 4.87,
+      "buyhold_median_pct": 37.46,
+      "excess_median_pct": -28.78,
+      "excess_mean_pct": -32.4,
+      "beat_buyhold_pct": 10.0,
+      "in_market_median_pct": 33.7,
+      "mdd_median_pct": -10.45,
+      "bh_mdd_median_pct": -24.14,
+      "mdd_saved_median_pct": 9.12,
+      "per_day_excess_median": -0.0408,
+      "per_day_beat_pct": 15.0,
+      "ma_cross_excess_median_pct": -29.32
+     },
+     "cost_sensitivity": {
+      "0": {
+       "mean": 1.261,
+       "win_rate": 41.7
+      },
+      "25": {
+       "mean": 1.011,
+       "win_rate": 38.9
+      },
+      "50": {
+       "mean": 0.761,
+       "win_rate": 36.9
+      }
+     }
+    },
+    "ETF_KR": {
+     "cost_bps": 10,
+     "event": {
+      "signal_days": 846,
+      "baseline_days": 20444,
+      "signal_mean": 1.522,
+      "baseline_mean": 1.16,
+      "signal_median": 0.567,
+      "baseline_median": 0.564,
+      "bootstrap": {
+       "diff": 0.362,
+       "ci_lo": -0.216,
+       "ci_hi": 0.954,
+       "boot": 2000,
+       "days": 525,
+       "significant": false
+      }
+     },
+     "trades_net": {
+      "n": 516,
+      "mean": 2.069,
+      "median": -0.585,
+      "win_rate": 44.4,
+      "avg_win": 9.081,
+      "avg_loss": -3.527,
+      "profit_factor": 2.054,
+      "best": 47.7,
+      "worst": -14.85,
+      "avg_bars": 12.9
+     },
+     "trades_gross": {
+      "n": 516,
+      "mean": 2.169,
+      "median": -0.485,
+      "win_rate": 45.7,
+      "avg_win": 8.91,
+      "avg_loss": -3.514,
+      "profit_factor": 2.137,
+      "best": 47.8,
+      "worst": -14.75,
+      "avg_bars": 12.9
+     },
+     "ma_cross_net": {
+      "n": 1208,
+      "mean": 0.872,
+      "median": -0.558,
+      "win_rate": 33.5,
+      "avg_win": 6.821,
+      "avg_loss": -2.129,
+      "profit_factor": 1.616,
+      "best": 51.19,
+      "worst": -13.9,
+      "avg_bars": 7.7
+     },
+     "random_net": {
+      "n": 516,
+      "mean": 1.429,
+      "median": 1.028,
+      "win_rate": 60.9,
+      "avg_win": 5.345,
+      "avg_loss": -4.66,
+      "profit_factor": 1.783,
+      "best": 29.11,
+      "worst": -35.54,
+      "avg_bars": 9.9
+     },
+     "equity": {
+      "n": 49,
+      "strategy_median_pct": 10.73,
+      "buyhold_median_pct": 39.4,
+      "excess_median_pct": -15.08,
+      "excess_mean_pct": -40.09,
+      "beat_buyhold_pct": 18.4,
+      "in_market_median_pct": 30.9,
+      "mdd_median_pct": -12.91,
+      "bh_mdd_median_pct": -34.51,
+      "mdd_saved_median_pct": 14.16,
+      "per_day_excess_median": -0.0018,
+      "per_day_beat_pct": 49.0,
+      "ma_cross_excess_median_pct": -21.18
+     },
+     "cost_sensitivity": {
+      "0": {
+       "mean": 2.169,
+       "win_rate": 45.7
+      },
+      "25": {
+       "mean": 1.919,
+       "win_rate": 44.0
+      },
+      "50": {
+       "mean": 1.669,
+       "win_rate": 42.4
+      }
+     }
+    }
+   }
+  },
+  "20": {
+   "flip": {
+    "ETF_OV": {
+     "cost_bps": 15,
+     "event": {
+      "signal_days": 347,
+      "baseline_days": 8992,
+      "signal_mean": 1.969,
+      "baseline_mean": 1.927,
+      "signal_median": 1.131,
+      "baseline_median": 0.998,
+      "bootstrap": {
+       "diff": 0.042,
+       "ci_lo": -0.891,
+       "ci_hi": 1.015,
+       "boot": 2000,
+       "days": 598,
+       "significant": false
+      }
+     },
+     "trades_net": {
+      "n": 180,
+      "mean": 1.752,
+      "median": -1.113,
+      "win_rate": 37.8,
+      "avg_win": 10.043,
+      "avg_loss": -3.281,
+      "profit_factor": 1.858,
+      "best": 37.22,
+      "worst": -50.52,
+      "avg_bars": 18.9
+     },
+     "trades_gross": {
+      "n": 180,
+      "mean": 1.902,
+      "median": -0.963,
+      "win_rate": 40.0,
+      "avg_win": 9.63,
+      "avg_loss": -3.249,
+      "profit_factor": 1.976,
+      "best": 37.37,
+      "worst": -50.37,
+      "avg_bars": 18.9
+     },
+     "ma_cross_net": {
+      "n": 566,
+      "mean": 0.7,
+      "median": -0.511,
+      "win_rate": 32.5,
+      "avg_win": 6.037,
+      "avg_loss": -1.87,
+      "profit_factor": 1.555,
+      "best": 57.52,
+      "worst": -50.02,
+      "avg_bars": 9.2
+     },
+     "random_net": {
+      "n": 180,
+      "mean": 1.939,
+      "median": 0.705,
+      "win_rate": 56.1,
+      "avg_win": 6.757,
+      "avg_loss": -4.219,
+      "profit_factor": 2.047,
+      "best": 43.74,
+      "worst": -51.56,
+      "avg_bars": 19.6
+     },
+     "equity": {
+      "n": 20,
+      "strategy_median_pct": 6.14,
+      "buyhold_median_pct": 37.46,
+      "excess_median_pct": -34.48,
+      "excess_mean_pct": -32.83,
+      "beat_buyhold_pct": 5.0,
+      "in_market_median_pct": 35.8,
+      "mdd_median_pct": -11.26,
+      "bh_mdd_median_pct": -24.14,
+      "mdd_saved_median_pct": 9.41,
+      "per_day_excess_median": -0.0377,
+      "per_day_beat_pct": 30.0,
+      "ma_cross_excess_median_pct": -22.07
+     },
+     "cost_sensitivity": {
+      "0": {
+       "mean": 1.902,
+       "win_rate": 40.0
+      },
+      "25": {
+       "mean": 1.652,
+       "win_rate": 37.2
+      },
+      "50": {
+       "mean": 1.402,
+       "win_rate": 36.1
+      }
+     }
+    },
+    "ETF_KR": {
+     "cost_bps": 10,
+     "event": {
+      "signal_days": 730,
+      "baseline_days": 19954,
+      "signal_mean": 2.672,
+      "baseline_mean": 2.498,
+      "signal_median": 1.109,
+      "baseline_median": 1.097,
+      "bootstrap": {
+       "diff": 0.174,
+       "ci_lo": -0.716,
+       "ci_hi": 0.969,
+       "boot": 2000,
+       "days": 515,
+       "significant": false
+      }
+     },
+     "trades_net": {
+      "n": 367,
+      "mean": 4.174,
+      "median": -0.607,
+      "win_rate": 43.1,
+      "avg_win": 14.241,
+      "avg_loss": -3.436,
+      "profit_factor": 3.134,
+      "best": 65.86,
+      "worst": -14.85,
+      "avg_bars": 20.6
+     },
+     "trades_gross": {
+      "n": 367,
+      "mean": 4.274,
+      "median": -0.507,
+      "win_rate": 44.7,
+      "avg_win": 13.818,
+      "avg_loss": -3.436,
+      "profit_factor": 3.249,
+      "best": 65.96,
+      "worst": -14.75,
+      "avg_bars": 20.6
+     },
+     "ma_cross_net": {
+      "n": 1208,
+      "mean": 1.508,
+      "median": -0.561,
+      "win_rate": 33.3,
+      "avg_win": 8.792,
+      "avg_loss": -2.125,
+      "profit_factor": 2.064,
+      "best": 75.31,
+      "worst": -13.9,
+      "avg_bars": 9.6
+     },
+     "random_net": {
+      "n": 367,
+      "mean": 3.34,
+      "median": 1.857,
+      "win_rate": 65.7,
+      "avg_win": 7.904,
+      "avg_loss": -5.389,
+      "profit_factor": 2.805,
+      "best": 42.01,
+      "worst": -27.39,
+      "avg_bars": 18.9
+     },
+     "equity": {
+      "n": 49,
+      "strategy_median_pct": 20.12,
+      "buyhold_median_pct": 39.4,
+      "excess_median_pct": -24.23,
+      "excess_mean_pct": -28.16,
+      "beat_buyhold_pct": 18.4,
+      "in_market_median_pct": 36.9,
+      "mdd_median_pct": -14.22,
+      "bh_mdd_median_pct": -34.51,
+      "mdd_saved_median_pct": 16.17,
+      "per_day_excess_median": 0.0343,
+      "per_day_beat_pct": 55.1,
+      "ma_cross_excess_median_pct": -17.85
+     },
+     "cost_sensitivity": {
+      "0": {
+       "mean": 4.274,
+       "win_rate": 44.7
+      },
+      "25": {
+       "mean": 4.024,
+       "win_rate": 42.8
+      },
+      "50": {
+       "mean": 3.774,
+       "win_rate": 41.4
+      }
+     }
+    }
+   },
+   "noflip": {
+    "ETF_OV": {
+     "cost_bps": 15,
+     "event": {
+      "signal_days": 445,
+      "baseline_days": 8992,
+      "signal_mean": 1.924,
+      "baseline_mean": 1.927,
+      "signal_median": 1.238,
+      "baseline_median": 0.998,
+      "bootstrap": {
+       "diff": -0.003,
+       "ci_lo": -0.886,
+       "ci_hi": 0.885,
+       "boot": 2000,
+       "days": 598,
+       "significant": false
+      }
+     },
+     "trades_net": {
+      "n": 209,
+      "mean": 1.783,
+      "median": -1.003,
+      "win_rate": 36.4,
+      "avg_win": 9.71,
+      "avg_loss": -2.746,
+      "profit_factor": 2.02,
+      "best": 37.22,
+      "worst": -48.42,
+      "avg_bars": 17.6
+     },
+     "trades_gross": {
+      "n": 209,
+      "mean": 1.933,
+      "median": -0.853,
+      "win_rate": 36.8,
+      "avg_win": 9.733,
+      "avg_loss": -2.617,
+      "profit_factor": 2.17,
+      "best": 37.37,
+      "worst": -48.27,
+      "avg_bars": 17.6
+     },
+     "ma_cross_net": {
+      "n": 566,
+      "mean": 0.7,
+      "median": -0.511,
+      "win_rate": 32.5,
+      "avg_win": 6.037,
+      "avg_loss": -1.87,
+      "profit_factor": 1.555,
+      "best": 57.52,
+      "worst": -50.02,
+      "avg_bars": 9.2
+     },
+     "random_net": {
+      "n": 209,
+      "mean": 1.481,
+      "median": 0.062,
+      "win_rate": 51.7,
+      "avg_win": 6.697,
+      "avg_loss": -4.097,
+      "profit_factor": 1.748,
+      "best": 43.74,
+      "worst": -51.56,
+      "avg_bars": 19.7
+     },
+     "equity": {
+      "n": 20,
+      "strategy_median_pct": 3.08,
+      "buyhold_median_pct": 37.46,
+      "excess_median_pct": -30.16,
+      "excess_mean_pct": -29.71,
+      "beat_buyhold_pct": 20.0,
+      "in_market_median_pct": 38.8,
+      "mdd_median_pct": -10.38,
+      "bh_mdd_median_pct": -24.14,
+      "mdd_saved_median_pct": 9.04,
+      "per_day_excess_median": -0.0258,
+      "per_day_beat_pct": 25.0,
+      "ma_cross_excess_median_pct": -22.07
+     },
+     "cost_sensitivity": {
+      "0": {
+       "mean": 1.933,
+       "win_rate": 36.8
+      },
+      "25": {
+       "mean": 1.683,
+       "win_rate": 34.4
+      },
+      "50": {
+       "mean": 1.433,
+       "win_rate": 32.1
+      }
+     }
+    },
+    "ETF_KR": {
+     "cost_bps": 10,
+     "event": {
+      "signal_days": 847,
+      "baseline_days": 19954,
+      "signal_mean": 3.016,
+      "baseline_mean": 2.498,
+      "signal_median": 1.476,
+      "baseline_median": 1.097,
+      "bootstrap": {
+       "diff": 0.518,
+       "ci_lo": -0.377,
+       "ci_hi": 1.403,
+       "boot": 2000,
+       "days": 515,
+       "significant": false
+      }
+     },
+     "trades_net": {
+      "n": 431,
+      "mean": 3.866,
+      "median": -0.757,
+      "win_rate": 43.6,
+      "avg_win": 13.339,
+      "avg_loss": -3.462,
+      "profit_factor": 2.981,
+      "best": 64.99,
+      "worst": -14.85,
+      "avg_bars": 18.9
+     },
+     "trades_gross": {
+      "n": 431,
+      "mean": 3.966,
+      "median": -0.657,
+      "win_rate": 44.5,
+      "avg_win": 13.159,
+      "avg_loss": -3.419,
+      "profit_factor": 3.092,
+      "best": 65.09,
+      "worst": -14.75,
+      "avg_bars": 18.9
+     },
+     "ma_cross_net": {
+      "n": 1208,
+      "mean": 1.508,
+      "median": -0.561,
+      "win_rate": 33.3,
+      "avg_win": 8.792,
+      "avg_loss": -2.125,
+      "profit_factor": 2.064,
+      "best": 75.31,
+      "worst": -13.9,
+      "avg_bars": 9.6
+     },
+     "random_net": {
+      "n": 431,
+      "mean": 3.249,
+      "median": 1.433,
+      "win_rate": 64.0,
+      "avg_win": 7.944,
+      "avg_loss": -5.111,
+      "profit_factor": 2.768,
+      "best": 42.01,
+      "worst": -27.39,
+      "avg_bars": 18.8
+     },
+     "equity": {
+      "n": 49,
+      "strategy_median_pct": 18.59,
+      "buyhold_median_pct": 39.4,
+      "excess_median_pct": -6.07,
+      "excess_mean_pct": -24.75,
+      "beat_buyhold_pct": 24.5,
+      "in_market_median_pct": 38.6,
+      "mdd_median_pct": -14.02,
+      "bh_mdd_median_pct": -34.51,
+      "mdd_saved_median_pct": 14.05,
+      "per_day_excess_median": 0.0478,
+      "per_day_beat_pct": 59.2,
+      "ma_cross_excess_median_pct": -17.85
+     },
+     "cost_sensitivity": {
+      "0": {
+       "mean": 3.966,
+       "win_rate": 44.5
+      },
+      "25": {
+       "mean": 3.716,
+       "win_rate": 42.2
+      },
+      "50": {
+       "mean": 3.466,
+       "win_rate": 39.7
+      }
+     }
+    }
+   }
+  },
+  "60": {
+   "flip": {
+    "ETF_OV": {
+     "cost_bps": 15,
+     "event": {
+      "signal_days": 332,
+      "baseline_days": 8247,
+      "signal_mean": 5.152,
+      "baseline_mean": 6.334,
+      "signal_median": 2.538,
+      "baseline_median": 3.992,
+      "bootstrap": {
+       "diff": -1.181,
+       "ci_lo": -2.661,
+       "ci_hi": 0.341,
+       "boot": 2000,
+       "days": 558,
+       "significant": false
+      }
+     },
+     "trades_net": {
+      "n": 160,
+      "mean": 2.003,
+      "median": -1.315,
+      "win_rate": 36.9,
+      "avg_win": 11.37,
+      "avg_loss": -3.469,
+      "profit_factor": 1.915,
+      "best": 44.18,
+      "worst": -50.52,
+      "avg_bars": 23.6
+     },
+     "trades_gross": {
+      "n": 160,
+      "mean": 2.153,
+      "median": -1.165,
+      "win_rate": 40.0,
+      "avg_win": 10.626,
+      "avg_loss": -3.496,
+      "profit_factor": 2.027,
+      "best": 44.33,
+      "worst": -50.37,
+      "avg_bars": 23.6
+     },
+     "ma_cross_net": {
+      "n": 566,
+      "mean": 0.76,
+      "median": -0.511,
+      "win_rate": 32.5,
+      "avg_win": 6.222,
+      "avg_loss": -1.87,
+      "profit_factor": 1.602,
+      "best": 57.81,
+      "worst": -50.02,
+      "avg_bars": 9.7
+     },
+     "random_net": {
+      "n": 160,
+      "mean": 6.08,
+      "median": 3.733,
+      "win_rate": 66.2,
+      "avg_win": 12.738,
+      "avg_loss": -6.988,
+      "profit_factor": 3.578,
+      "best": 88.98,
+      "worst": -54.84,
+      "avg_bars": 52.7
+     },
+     "equity": {
+      "n": 20,
+      "strategy_median_pct": 7.89,
+      "buyhold_median_pct": 37.46,
+      "excess_median_pct": -38.8,
+      "excess_mean_pct": -32.39,
+      "beat_buyhold_pct": 5.0,
+      "in_market_median_pct": 39.2,
+      "mdd_median_pct": -11.58,
+      "bh_mdd_median_pct": -24.14,
+      "mdd_saved_median_pct": 9.41,
+      "per_day_excess_median": -0.0358,
+      "per_day_beat_pct": 40.0,
+      "ma_cross_excess_median_pct": -23.58
+     },
+     "cost_sensitivity": {
+      "0": {
+       "mean": 2.153,
+       "win_rate": 40.0
+      },
+      "25": {
+       "mean": 1.903,
+       "win_rate": 36.9
+      },
+      "50": {
+       "mean": 1.653,
+       "win_rate": 36.2
+      }
+     }
+    },
+    "ETF_KR": {
+     "cost_bps": 10,
+     "event": {
+      "signal_days": 713,
+      "baseline_days": 18030,
+      "signal_mean": 7.618,
+      "baseline_mean": 9.197,
+      "signal_median": 4.871,
+      "baseline_median": 5.163,
+      "bootstrap": {
+       "diff": -1.578,
+       "ci_lo": -3.537,
+       "ci_hi": 0.314,
+       "boot": 2000,
+       "days": 475,
+       "significant": false
+      }
+     },
+     "trades_net": {
+      "n": 312,
+      "mean": 5.008,
+      "median": -0.847,
+      "win_rate": 40.7,
+      "avg_win": 17.394,
+      "avg_loss": -3.495,
+      "profit_factor": 3.417,
+      "best": 72.77,
+      "worst": -14.85,
+      "avg_bars": 27.3
+     },
+     "trades_gross": {
+      "n": 312,
+      "mean": 5.108,
+      "median": -0.747,
+      "win_rate": 42.6,
+      "avg_win": 16.707,
+      "avg_loss": -3.511,
+      "profit_factor": 3.536,
+      "best": 72.87,
+      "worst": -14.75,
+      "avg_bars": 27.3
+     },
+     "ma_cross_net": {
+      "n": 1208,
+      "mean": 1.469,
+      "median": -0.561,
+      "win_rate": 33.2,
+      "avg_win": 8.694,
+      "avg_loss": -2.122,
+      "profit_factor": 2.036,
+      "best": 75.26,
+      "worst": -13.9,
+      "avg_bars": 10.1
+     },
+     "random_net": {
+      "n": 312,
+      "mean": 8.921,
+      "median": 4.003,
+      "win_rate": 65.4,
+      "avg_win": 18.009,
+      "avg_loss": -8.244,
+      "profit_factor": 4.126,
+      "best": 106.89,
+      "worst": -45.35,
+      "avg_bars": 50.1
+     },
+     "equity": {
+      "n": 49,
+      "strategy_median_pct": 16.27,
+      "buyhold_median_pct": 39.4,
+      "excess_median_pct": -10.65,
+      "excess_mean_pct": -28.32,
+      "beat_buyhold_pct": 18.4,
+      "in_market_median_pct": 39.9,
+      "mdd_median_pct": -17.44,
+      "bh_mdd_median_pct": -34.51,
+      "mdd_saved_median_pct": 15.63,
+      "per_day_excess_median": 0.0123,
+      "per_day_beat_pct": 55.1,
+      "ma_cross_excess_median_pct": -14.85
+     },
+     "cost_sensitivity": {
+      "0": {
+       "mean": 5.108,
+       "win_rate": 42.6
+      },
+      "25": {
+       "mean": 4.858,
+       "win_rate": 40.1
+      },
+      "50": {
+       "mean": 4.608,
+       "win_rate": 38.5
+      }
+     }
+    }
+   },
+   "noflip": {
+    "ETF_OV": {
+     "cost_bps": 15,
+     "event": {
+      "signal_days": 416,
+      "baseline_days": 8247,
+      "signal_mean": 5.301,
+      "baseline_mean": 6.334,
+      "signal_median": 2.738,
+      "baseline_median": 3.992,
+      "bootstrap": {
+       "diff": -1.032,
+       "ci_lo": -2.479,
+       "ci_hi": 0.501,
+       "boot": 2000,
+       "days": 558,
+       "significant": false
+      }
+     },
+     "trades_net": {
+      "n": 191,
+      "mean": 1.856,
+      "median": -1.021,
+      "win_rate": 36.1,
+      "avg_win": 10.133,
+      "avg_loss": -2.826,
+      "profit_factor": 2.028,
+      "best": 43.85,
+      "worst": -48.42,
+      "avg_bars": 21
+     },
+     "trades_gross": {
+      "n": 191,
+      "mean": 2.006,
+      "median": -0.871,
+      "win_rate": 36.6,
+      "avg_win": 10.137,
+      "avg_loss": -2.699,
+      "profit_factor": 2.173,
+      "best": 44.0,
+      "worst": -48.27,
+      "avg_bars": 21
+     },
+     "ma_cross_net": {
+      "n": 566,
+      "mean": 0.76,
+      "median": -0.511,
+      "win_rate": 32.5,
+      "avg_win": 6.222,
+      "avg_loss": -1.87,
+      "profit_factor": 1.602,
+      "best": 57.81,
+      "worst": -50.02,
+      "avg_bars": 9.7
+     },
+     "random_net": {
+      "n": 191,
+      "mean": 5.277,
+      "median": 3.254,
+      "win_rate": 62.3,
+      "avg_win": 12.09,
+      "avg_loss": -5.981,
+      "profit_factor": 3.341,
+      "best": 88.98,
+      "worst": -54.84,
+      "avg_bars": 52.9
+     },
+     "equity": {
+      "n": 20,
+      "strategy_median_pct": 7.57,
+      "buyhold_median_pct": 37.46,
+      "excess_median_pct": -33.09,
+      "excess_mean_pct": -29.87,
+      "beat_buyhold_pct": 15.0,
+      "in_market_median_pct": 41.5,
+      "mdd_median_pct": -11.93,
+      "bh_mdd_median_pct": -24.14,
+      "mdd_saved_median_pct": 9.04,
+      "per_day_excess_median": -0.0313,
+      "per_day_beat_pct": 25.0,
+      "ma_cross_excess_median_pct": -23.58
+     },
+     "cost_sensitivity": {
+      "0": {
+       "mean": 2.006,
+       "win_rate": 36.6
+      },
+      "25": {
+       "mean": 1.756,
+       "win_rate": 34.0
+      },
+      "50": {
+       "mean": 1.506,
+       "win_rate": 31.9
+      }
+     }
+    },
+    "ETF_KR": {
+     "cost_bps": 10,
+     "event": {
+      "signal_days": 821,
+      "baseline_days": 18030,
+      "signal_mean": 8.167,
+      "baseline_mean": 9.197,
+      "signal_median": 4.445,
+      "baseline_median": 5.163,
+      "bootstrap": {
+       "diff": -1.029,
+       "ci_lo": -2.695,
+       "ci_hi": 0.682,
+       "boot": 2000,
+       "days": 475,
+       "significant": false
+      }
+     },
+     "trades_net": {
+      "n": 375,
+      "mean": 4.727,
+      "median": -0.716,
+      "win_rate": 43.7,
+      "avg_win": 15.093,
+      "avg_loss": -3.331,
+      "profit_factor": 3.522,
+      "best": 72.77,
+      "worst": -14.85,
+      "avg_bars": 24.1
+     },
+     "trades_gross": {
+      "n": 375,
+      "mean": 4.827,
+      "median": -0.616,
+      "win_rate": 44.8,
+      "avg_win": 14.832,
+      "avg_loss": -3.294,
+      "profit_factor": 3.655,
+      "best": 72.87,
+      "worst": -14.75,
+      "avg_bars": 24.1
+     },
+     "ma_cross_net": {
+      "n": 1208,
+      "mean": 1.469,
+      "median": -0.561,
+      "win_rate": 33.2,
+      "avg_win": 8.694,
+      "avg_loss": -2.122,
+      "profit_factor": 2.036,
+      "best": 75.26,
+      "worst": -13.9,
+      "avg_bars": 10.1
+     },
+     "random_net": {
+      "n": 375,
+      "mean": 8.74,
+      "median": 3.959,
+      "win_rate": 65.6,
+      "avg_win": 17.162,
+      "avg_loss": -7.319,
+      "profit_factor": 4.471,
+      "best": 106.89,
+      "worst": -45.35,
+      "avg_bars": 50.2
+     },
+     "equity": {
+      "n": 49,
+      "strategy_median_pct": 19.66,
+      "buyhold_median_pct": 39.4,
+      "excess_median_pct": -5.46,
+      "excess_mean_pct": -21.33,
+      "beat_buyhold_pct": 30.6,
+      "in_market_median_pct": 41.9,
+      "mdd_median_pct": -14.56,
+      "bh_mdd_median_pct": -34.51,
+      "mdd_saved_median_pct": 14.04,
+      "per_day_excess_median": 0.0342,
+      "per_day_beat_pct": 59.2,
+      "ma_cross_excess_median_pct": -14.85
+     },
+     "cost_sensitivity": {
+      "0": {
+       "mean": 4.827,
+       "win_rate": 44.8
+      },
+      "25": {
+       "mean": 4.577,
+       "win_rate": 42.4
+      },
+      "50": {
+       "mean": 4.327,
+       "win_rate": 39.7
+      }
+     }
+    }
+   }
+  }
+ },
+ "cost_grid_bps": [
+  0,
+  25,
+  50
+ ],
+ "entry_cut": 70.0,
+ "exit_cut": 30.0,
+ "universe": "etf",
+ "etf_prices_generated_at_kst": "2026-09-18 15:43:38",
+ "coverage": {
+  "ETF_OV": {
+   "requested": 21,
+   "measured": 20,
+   "too_short": 1,
+   "too_short_tickers": [
+    "ORBX"
+   ],
+   "min_sessions_required": 210,
+   "eval_days": 679,
+   "eval_from": "2024-04-23",
+   "eval_to": "2026-09-18"
+  },
+  "ETF_KR": {
+   "requested": 55,
+   "measured": 49,
+   "too_short": 6,
+   "too_short_tickers": [
+    "A0141S0",
+    "A0148J0",
+    "A0183J0",
+    "A0206G0",
+    "A0233J0",
+    "A0238P0"
+   ],
+   "min_sessions_required": 210,
+   "eval_days": 594,
+   "eval_from": "2024-04-11",
+   "eval_to": "2026-09-18"
+  }
+ },
+ "price_sources": {
+  "ETF_OV": {
+   "yahoo": 21
+  },
+  "ETF_KR": {
+   "naver": 55
+  }
+ },
+ "engine_hash": "8fb5ae34e4172121",
+ "verdict": {
+  "tests": [
+   {
+    "h": 5,
+    "flip": "flip",
+    "market": "ETF_OV",
+    "diff": -0.206,
+    "z": -0.63,
+    "p": 0.52877,
+    "alone": false,
+    "corrected": false
+   },
+   {
+    "h": 5,
+    "flip": "flip",
+    "market": "ETF_KR",
+    "diff": 0.395,
+    "z": 1.669,
+    "p": 0.09522,
+    "alone": false,
+    "corrected": false
+   },
+   {
+    "h": 5,
+    "flip": "noflip",
+    "market": "ETF_OV",
+    "diff": -0.073,
+    "z": -0.298,
+    "p": 0.76541,
+    "alone": false,
+    "corrected": false
+   },
+   {
+    "h": 5,
+    "flip": "noflip",
+    "market": "ETF_KR",
+    "diff": 0.559,
+    "z": 2.519,
+    "p": 0.01178,
+    "alone": true,
+    "corrected": false
+   },
+   {
+    "h": 10,
+    "flip": "flip",
+    "market": "ETF_OV",
+    "diff": -0.012,
+    "z": -0.03,
+    "p": 0.97571,
+    "alone": false,
+    "corrected": false
+   },
+   {
+    "h": 10,
+    "flip": "flip",
+    "market": "ETF_KR",
+    "diff": 0.171,
+    "z": 0.599,
+    "p": 0.54916,
+    "alone": false,
+    "corrected": false
+   },
+   {
+    "h": 10,
+    "flip": "noflip",
+    "market": "ETF_OV",
+    "diff": -0.081,
+    "z": -0.226,
+    "p": 0.82121,
+    "alone": false,
+    "corrected": false
+   },
+   {
+    "h": 10,
+    "flip": "noflip",
+    "market": "ETF_KR",
+    "diff": 0.362,
+    "z": 1.213,
+    "p": 0.22519,
+    "alone": false,
+    "corrected": false
+   },
+   {
+    "h": 20,
+    "flip": "flip",
+    "market": "ETF_OV",
+    "diff": 0.042,
+    "z": 0.086,
+    "p": 0.93117,
+    "alone": false,
+    "corrected": false
+   },
+   {
+    "h": 20,
+    "flip": "flip",
+    "market": "ETF_KR",
+    "diff": 0.174,
+    "z": 0.405,
+    "p": 0.68563,
+    "alone": false,
+    "corrected": false
+   },
+   {
+    "h": 20,
+    "flip": "noflip",
+    "market": "ETF_OV",
+    "diff": -0.003,
+    "z": -0.007,
+    "p": 0.9947,
+    "alone": false,
+    "corrected": false
+   },
+   {
+    "h": 20,
+    "flip": "noflip",
+    "market": "ETF_KR",
+    "diff": 0.518,
+    "z": 1.141,
+    "p": 0.25398,
+    "alone": false,
+    "corrected": false
+   },
+   {
+    "h": 60,
+    "flip": "flip",
+    "market": "ETF_OV",
+    "diff": -1.181,
+    "z": -1.542,
+    "p": 0.12305,
+    "alone": false,
+    "corrected": false
+   },
+   {
+    "h": 60,
+    "flip": "flip",
+    "market": "ETF_KR",
+    "diff": -1.578,
+    "z": -1.606,
+    "p": 0.10822,
+    "alone": false,
+    "corrected": false
+   },
+   {
+    "h": 60,
+    "flip": "noflip",
+    "market": "ETF_OV",
+    "diff": -1.032,
+    "z": -1.358,
+    "p": 0.17462,
+    "alone": false,
+    "corrected": false
+   },
+   {
+    "h": 60,
+    "flip": "noflip",
+    "market": "ETF_KR",
+    "diff": -1.029,
+    "z": -1.194,
+    "p": 0.23231,
+    "alone": false,
+    "corrected": false
+   }
+  ],
+  "alpha_corrected": 0.003125,
+  "survivors": 0,
+  "positive_alone": 1,
+  "negative_alone": 0
+ },
+ "summary_ko": "시험한 조합 16 가지(시계 4 × 부호전환 2 × 시장 2 — 국내상장 ETF · 해외상장 ETF). 여러 번 시험했으므로 Bonferroni 로 보정한 문턱은 p<0.0031 이다. **보정을 통과한 조합은 없다.** 낱개로 보면 유의해 보이는 것이 있어도(ETF_KR h=5 +0.56%p p=0.012), 16 번 시험한 것을 감안하면 우연으로 설명된다. 국내상장 ETF — 매수후보유 대비 수익은 시계 어디서도 앞서지 못한다(-34 / -24 / -24 / -11%p). 장에 머문 시간은 19~40% 이고 최대낙폭을 16~17%p 줄인다. 해외상장 ETF — 매수후보유 대비 수익은 시계 어디서도 앞서지 못한다(-34 / -30 / -34 / -39%p). 장에 머문 시간은 22~39% 이고 최대낙폭을 9~10%p 줄인다. **수익을 늘리는 도구가 아니라 겪는 낙폭을 줄이는 도구로 읽어야 한다.**"
+}
