@@ -327,11 +327,13 @@ def load_branch_bars(branch, subdir, cls, kind, limit=0, meta=None):
             "ret1y": m["ret1y"], "ret6m": m["ret6m"],
             "vol": m["vol"], "mdd": m["mdd"],
             "feeMin": None, "feeMax": None,
-            "src": "%s (일봉 %d 봉)" % (branch, m["bars"]),
+            "src": "야후 파이낸스 일봉 %d 봉 (%s)" % (m["bars"], branch),
             "asOf": (d.get("d") or [None])[-1],
             "flags": [],
         })
-    return out, {"src": branch, "count": len(out),
+    as_of = max((p["asOf"] for p in out if p.get("asOf")), default=None)
+    return out, {"src": "야후 파이낸스 일봉 (자료 가지 %s)" % branch.split("/")[-1],
+                 "count": len(out), "asOf": as_of,
                  "환율": meta.get("_fx")}
 
 
@@ -418,7 +420,25 @@ def load_kr_etf():
             n += 1
         meta["ETFCHECK"] = {"src": doc.get("source"), "count": n,
                             "채택안함_제외": skipped, "asOf": as_of}
-    return out, meta
+
+    # 출처 표는 자산군마다 한 줄이다. 안에 또 갈래를 두면 그 줄이 「—」로 비어
+    # 고객이 보는 자료에 원천이 사라진다. 그래서 겉에 한 줄로 요약해 둔다.
+    # 원천 이름이 늘 문자열인 것은 아니다 — etf/prices.json 의 source 는
+    # {'KR': …, 'OV': …} 꼴이다. 그대로 적으면 고객 자료에 파이썬 딕셔너리가
+    # 찍힌다. 값만 풀어서 사람이 읽을 한 줄로 만든다.
+    parts = []
+    for m in meta.values():
+        src = m.get("src") if isinstance(m, dict) else None
+        if isinstance(src, dict):
+            parts += [str(v) for v in src.values() if v]
+        elif src:
+            parts.append(str(src))
+    flat = {"src": " + ".join(dict.fromkeys(parts))[:120] or "—",
+            "count": len(out),
+            "asOf": max((m.get("asOf") for m in meta.values()
+                         if isinstance(m, dict) and m.get("asOf")), default=None),
+            "갈래": meta}
+    return out, flat
 
 
 def load_overseas_etf():
