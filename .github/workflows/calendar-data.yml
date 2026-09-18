@@ -15,8 +15,8 @@ name: 증시 일정 수집
 #                  새로 만들어 calendar-data 브랜치에 올린다. 주소가 고정이므로
 #                  그 자리에서 받아 업무용 PC 에 다시 넣으면 된다.
 #
-# 주의: schedule 이벤트는 기본 브랜치(main)의 워크플로만 발동한다. 작업 브랜치에서는
-# 아래 push 트리거나 수동 실행으로 돌린다.
+# 주의: schedule 도 아래 push 도 **main 에서만** 돈다. 작업 가지에서 돌려 보려면
+# 수동 실행(workflow_dispatch)을 쓰거나, 아래 branches 에 그 가지를 적어 push 한다.
 
 on:
   schedule:
@@ -32,7 +32,11 @@ on:
 
   # 세션·사람이 직접 부르는 길. 세션 토큰에는 Actions 쓰기 권한이 없어
   # workflow_dispatch 를 API 로 부르지 못하지만(403), git push 는 된다.
+  # **main 에서만 돈다** — 까닭은 .github/workflows/README.md 「가지 제한」.
+  # 기능 가지에서 시험하려면 그 가지 이름을 아래 branches 에 한 줄 더 적는다
+  # (els-weekly.yml 의 `claude/els-**` 가 그 예다).
   push:
+    branches: [main]
     paths:
       - 'data/calendar/REFRESH'
       - 'data/calendar/seed/**'
@@ -155,7 +159,8 @@ jobs:
       - name: 돌린 브랜치에 커밋
         # 돌린 그 브랜치에 되돌려 놓는다. 처음에는 main 일 때만 커밋했는데, 그러면 작업
         # 브랜치에서 돌린 수집 결과가 아무 데도 남지 않았다(Artifacts 는 14일 뒤 사라진다).
-        # 이 워크플로의 push 트리거 자체가 작업 브랜치용이므로 앞뒤가 맞지 않았다.
+        # 지금은 push 가 main 에서만 발동하므로 작업 가지에서 도는 길은 수동 실행뿐인데,
+        # 그때도 결과는 남아야 한다 — 일부러 부른 것이기 때문이다.
         #
         # 실적 스냅샷은 이 판이 만든 것이 아니므로 커밋하지 않는다(데이터 브랜치가 원본).
         run: |

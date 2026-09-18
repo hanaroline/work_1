@@ -18,6 +18,12 @@
 #   지금은 main 에도 들어가 있어 예약 실행까지 살아 있다. 일상 작업은 main
 #   에서 한다 — 자료가 두 갈래로 나뉘지 않게 하려는 것이다.
 #
+#   2026-09-18 부터 reports.yml 의 push 방아쇠에 `branches: [main]` 이 붙었다
+#   (.github/workflows/README.md 「가지 제한」). 그래서 파일이 있는지만 보면
+#   모자란다 — 가지도 맞아야 돈다. 아래에서 둘 다 본다. **조용히 아무 일도
+#   일어나지 않는 것**이 여기서 가장 나쁜 결과다: 요청을 보냈다고 믿고
+#   낡은 자료로 브리핑을 쓰게 된다.
+#
 # 요청 줄은 덮어쓰지 않고 쌓는다. 그날 몇 시 판을 왜 불렀는지가 기록이다.
 set -euo pipefail
 
@@ -27,9 +33,23 @@ BRANCH=$(git rev-parse --abbrev-ref HEAD)
 WHY="${1:-오늘 판 수집}"
 FILE=data/reports/REFRESH
 
-if [ ! -f .github/workflows/reports.yml ]; then
-  echo "!! 지금 브랜치($BRANCH)에 .github/workflows/reports.yml 이 없다." >&2
+WF=.github/workflows/reports.yml
+if [ ! -f "$WF" ]; then
+  echo "!! 지금 브랜치($BRANCH)에 $WF 이 없다." >&2
   echo "   밀어 넣어도 수집은 돌지 않는다." >&2
+  exit 1
+fi
+
+# push 방아쇠의 가지 제한을 그 워크플로에서 직접 읽는다. 여기 베껴 두면
+# 워크플로만 고쳤을 때 조용히 어긋난다.
+GUARD=$(sed -n '/^  push:/,/^  [a-z_]/p' "$WF" |
+        sed -n 's/^ *branches: *\[\(.*\)\] *$/\1/p' | tr -d ' ')
+if [ -n "$GUARD" ] && ! printf ',%s,' "$GUARD" | grep -q ",$BRANCH,"; then
+  echo "!! $WF 의 push 는 [$GUARD] 에서만 돈다. 지금 가지는 $BRANCH 다." >&2
+  echo "   밀어 넣어도 수집은 돌지 않는다. 셋 중 하나를 고른다:" >&2
+  echo "     · main 으로 옮겨 다시 실행한다 (일상 작업은 main 에서 한다)" >&2
+  echo "     · Actions 에서 손으로 발동한다 (workflow_dispatch)" >&2
+  echo "     · 수집기를 고치는 중이라면 $WF 의 branches 에 $BRANCH 를 적는다" >&2
   exit 1
 fi
 

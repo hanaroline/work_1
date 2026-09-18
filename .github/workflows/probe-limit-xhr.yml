@@ -15,7 +15,11 @@ name: 끊긴 원천 관찰 (브라우저)
 #  부르지 못하지만 git push 는 된다 — 시세 수집과 같은 방식이다.)
 
 on:
+  # **main 에서만 돈다** — 까닭은 .github/workflows/README.md 「가지 제한」.
+  # 기능 가지에서 시험하려면 그 가지 이름을 아래 branches 에 한 줄 더 적는다
+  # (els-weekly.yml 의 `claude/els-**` 가 그 예다).
   push:
+    branches: [main]
     paths:
       - 'data/market/PROBE_LIMIT'
   workflow_dispatch:
