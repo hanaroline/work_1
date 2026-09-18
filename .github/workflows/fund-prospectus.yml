@@ -246,6 +246,21 @@ jobs:
           for (const r of withP2) if (BODY.some(k=>at(r,k) && at(r,k) < at(r,'part2'))) outOfOrder++;
           console.log('[차례 검산] 제2부를 찾은 '+withP2.length+'건 중 본문 자리가 제2부보다 앞선 것 '+outOfOrder+'건');
           if (outOfOrder) { console.log('::error::'+outOfOrder+'건이 요약 구간을 본문으로 짚고 있습니다 — 쪽 번호가 틀렸습니다'); broken++; }
+
+          /* 본문 자리끼리의 차례 — 서식이 정한 순서대로 쪽 번호가 늘어나야 한다.
+             ★ 이 검사가 없어서 절반이 뒤집힌 지도를 통과시켰다 ★ 「제2부보다 뒤인가」
+             만 보면, 제2부 앞부분의 상호참조를 진짜 절로 잘못 짚은 값이 그대로 통과한다.
+             실제로 2,815건 중 1,445건(51%)이 그랬다 — 보수 880 · 매입환매 641. */
+          let seqBad=0, seqEx=[];
+          for (const r of rows) {
+            let prev=0, prevK='';
+            for (const k of BODY) { const p=at(r,k); if(!p) continue;
+              if (prev && p<prev) { seqBad++; if(seqEx.length<5) seqEx.push(what(k)+' p.'+p+' < '+what(prevK)+' p.'+prev); break; }
+              prev=p; prevK=k; }
+          }
+          console.log('[차례 검산] 본문 자리가 서식 차례를 거스른 줄 '+seqBad+'건');
+          seqEx.forEach(s=>console.log('    '+s));
+          if (seqBad) { console.log('::error::'+seqBad+'건이 절 차례를 거스릅니다 — 상호참조를 절 제목으로 짚었을 가능성이 큽니다'); broken++; }
           const overflow=rows.filter(r=>r.slice(1).some(v=>v>r[0])).length;
           if (overflow) { console.log('::error::쪽 번호가 문서 쪽수를 넘는 줄 '+overflow+'건'); broken++; }
 
