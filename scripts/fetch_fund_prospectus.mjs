@@ -375,15 +375,43 @@ if (prev) {
   console.log(`  직전 판독에서 옮긴 것 ${carried}건 (쪽 지도 ${Object.keys(pgRows).length}건)`);
 }
 
+/**
+ * 설명서 한 부를 내려받는다 — **세 번까지 다시 걸어 본다.**
+ *
+ * 전량 5차에서 3,018건 중 94건(3.1%)이 실패했다. 한 번 걸어 보고 안 되면 그 종목은
+ * 문구도 쪽 번호도 통째로 빈칸이 된다. 3,000건을 줄줄이 받는 동안 몇 건이 시간을
+ * 넘기는 것은 문서 탓이 아니라 회선 탓이라, 다시 걸면 대개 받아진다.
+ *
+ * ★ 404 는 다시 걸지 않는다 ★ 그 문서번호로는 파일이 없다는 뜻이라 몇 번을 걸어도
+ * 같다. 기다리는 값만 버리고 전량 판독이 그만큼 늦어진다.
+ */
+async function getPdf(url) {
+  let last;
+  for (let a = 1; a <= 3; a++) {
+    try {
+      const r = await fetch(url, { signal: AbortSignal.timeout(60000) });
+      if (r.status === 404) throw Object.assign(new Error('HTTP 404'), { giveUp: true });
+      if (!r.ok) throw new Error('HTTP ' + r.status);
+      return Buffer.from(await r.arrayBuffer());
+    } catch (e) {
+      last = e;
+      if (e.giveUp || a === 3) break;
+      await new Promise((s) => setTimeout(s, 1000 * a));   /* 1초 · 2초 */
+    }
+  }
+  throw last;
+}
+
 let ok = 0, fail = 0, empty = 0;
+/* 실패한 종목은 이름을 남긴다 — 이것이 있어야 --codes 로 그것만 다시 읽는다.
+   앞 판은 앞 다섯 건만 찍어, 94건을 다시 읽으려면 전량을 또 돌려야 했다. */
+const failed = [];
 for (let i = 0; i < slice.length; i++) {
   const it = slice[i];
   const kind = it.docT ? 'T' : 'G';
   const url = `${base}${it.code}/${it.code}_${kind}_${it.docT || it.docG}.pdf`;
   try {
-    const r = await fetch(url, { signal: AbortSignal.timeout(60000) });
-    if (!r.ok) throw new Error('HTTP ' + r.status);
-    const { text, pages, perPage } = await pdfText(Buffer.from(await r.arrayBuffer()));
+    const { text, pages, perPage } = await pdfText(await getPdf(url));
     if (text.length < 300) { empty++; continue; }
     /* 쪽 지도는 항목 추출과 따로 간다 — 항목을 하나도 못 뽑은 문서라도 쪽은
        잡힐 수 있고, 그 반대도 있다. 한쪽이 비었다고 다른 쪽을 버리지 않는다. */
@@ -404,8 +432,13 @@ for (let i = 0; i < slice.length; i++) {
     }
   } catch (e) {
     fail++;
+    failed.push(it.code);
     if (fail <= 5) console.log(`  ${it.code} 실패 — ${e.name} ${e.message}`);
   }
+}
+if (failed.length) {
+  console.log(`\n세 번 걸어도 못 받은 종목 ${failed.length}건 — 아래를 --codes 로 넘기면 그것만 다시 읽습니다`);
+  for (let i = 0; i < failed.length; i += 10) console.log('  ' + failed.slice(i, i + 10).join(' '));
 }
 
 const body =
