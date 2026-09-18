@@ -52,7 +52,7 @@ jobs:
       # 길 전체를 망 없이 한 번 통과시킨다. 수집기가 첫 줄에서 죽으면 뒤의 어떤
       # 검산도 돌지 못한다 — 이 저장소에서 실제로 한 번 그랬다.
       - name: 사전 시험 (네트워크 없이)
-        run: python3 scripts/check_etf.py
+        run: python3 scripts/check_etf_signals.py
 
       - name: 일봉 받기
         run: |
@@ -69,7 +69,7 @@ jobs:
         id: verify
         continue-on-error: true
         run: |
-          python3 scripts/verify_etf.py 2>&1 | tee /tmp/verify.txt
+          python3 scripts/verify_etf_signals.py 2>&1 | tee /tmp/verify.txt
           echo "rc=${PIPESTATUS[0]}" >> "$GITHUB_OUTPUT"
 
       - name: 요약

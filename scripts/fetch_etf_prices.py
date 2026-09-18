@@ -13,7 +13,7 @@
 **이름을 반드시 맞대 본다.** 티커 일흔여섯 개를 사진에서 옮겨 적었고, 코드 한 자만
 틀려도 엉뚱한 펀드를 분석하게 된다. 그런데 틀린 코드가 대개 **빈 응답이 아니라 다른
 종목의 멀쩡한 응답**을 준다. 그래서 받아 온 이름과 종목 유형(ETF인가 주식인가)을
-산출물에 적어 두고 verify_etf_prices.py 가 표의 이름과 맞대게 한다. 야후의 `GOLD` 는
+산출물에 적어 두고 verify_etf_signals.py 가 표의 이름과 맞대게 한다. 야후의 `GOLD` 는
 금광 회사(Barrick) 주식이고 표가 말하는 것은 호주 상장 금 ETF 다 — 이 검사가
 없으면 그 둘을 구별할 길이 없다.
 
@@ -244,7 +244,7 @@ def main(argv):
         'list_counts': L.counts(),
         'note': ('표(2026-09-18 기준 자산배분ETF 종목 LIST)의 ETF 76종이다. '
                  'ETN 6종은 지시대로 뺐다. **받아 온 이름을 표의 이름과 맞대 보기 '
-                 '전까지는 참고 자료다** — verify_etf_prices.py 를 먼저 돌려야 한다.'),
+                 '전까지는 참고 자료다** — verify_etf_signals.py 를 먼저 돌려야 한다.'),
         'coverage': {'requested': len(its), 'got': len(out), 'failed': len(failed),
                      'days': len(days),
                      'from': days[0] if days else None,

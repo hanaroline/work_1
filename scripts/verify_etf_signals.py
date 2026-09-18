@@ -14,7 +14,7 @@
 마지막에 **흠을 심어 본다.** 검산기가 실제로 물는지 확인하지 않은 검산기는
 검산기가 아니다.
 
-  python3 scripts/verify_etf.py
+  python3 scripts/verify_etf_signals.py
 """
 
 import copy
