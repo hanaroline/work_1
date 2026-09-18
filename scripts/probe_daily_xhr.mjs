@@ -64,6 +64,10 @@ const ENTRIES = [
   ['손전화 코스피 (모바일)', 'https://m.stock.naver.com/domestic/index/KOSPI/total', MOBILE_UA],
   ['손전화 코스피 시세 (모바일)', 'https://m.stock.naver.com/domestic/index/KOSPI/price', MOBILE_UA],
   ['다음 금융 코스피', 'https://finance.daum.net/domestic/kospi'],
+  // 코스피200 만 아직 빈다. 다음에서의 이름을 모르기 때문인데, 짐작해
+  // 넣지 않고 화면을 열어 무엇을 부르는지 본다 — 코스피 이름(KGG01P)도
+  // 그렇게 알았다.
+  ['다음 금융 코스피200', 'https://finance.daum.net/domestic/kospi200'],
   ['코스피 상세(거래대금 과녁)', 'https://stock.naver.com/domestic/index/KOSPI/price'],
   ['옛 일별시세(410 확인용)', 'https://finance.naver.com/sise/sise_index_day.naver?code=KOSPI&page=1'],
 ];
