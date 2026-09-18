@@ -273,10 +273,11 @@ def build_data_sheet(wb, data):
             "채택" if ok else "제외", x.get("excludeReason") or "", x.get("index") or "",
             x.get("type") or "", x.get("assetClass") or "",
             freq_label(x), x.get("payoutCount12m"),
-            # 과세비율. 모르면 1(전액 과세)로 적는다 — 비워 두면 엑셀이 0 으로
-            # 읽어 '전액 비과세' 가 되어 세후 금액을 부풀린다. 모를 때는 세금을
-            # 많이 매기는 쪽으로 기운다.
-            1.0 if x.get("taxableRatio") is None else x["taxableRatio"],
+            # 과세비율. 못 구한 종목은 **비워 둔다.** 1 로 적으면 '실제로 전액
+            # 과세되는 종목' 과 '확인하지 못한 종목' 이 화면에서 똑같이 100% 로
+            # 보여, 모르는 것이 사실로 둔갑한다. 계산 쪽에서는 빈칸을 1 로 읽어
+            # 전액 과세로 셈한다(세금을 적게 매기는 쪽으로 기울지 않는다).
+            x.get("taxableRatio"),
         ]
         fmts = [None, None, None, WON_PLAIN, WON_PLAIN, WON_PLAIN, PCT, PCT, PCT, PCT,
                 "#,##0", DATE8, None, None, None, None, None, None, "#,##0", PCT]
@@ -736,7 +737,7 @@ def build_proposal(wb, data, first_sel, last_sel, first_adopted, last_adopted, t
 
     ws["J1"] = "계산 보조 (수정하지 마십시오)"
     ws["J1"].font = f(9, color=MUTED)
-    for _h in ("J", "K", "L", "M", "N", "O"):
+    for _h in ("J", "K", "L", "M", "N", "O", "P"):
         ws.column_dimensions[_h].hidden = True
 
     # ── 2. 포트폴리오 ──
@@ -819,8 +820,14 @@ def build_proposal(wb, data, first_sel, last_sel, first_adopted, last_adopted, t
         # 그 종목의 과세비율. 분배금 전액에 세금을 매기는 것은 틀린 셈이라
         # (자세한 까닭은 6. 유의사항) 종목마다 다른 값을 쓴다. 못 구한 종목은
         # [ETF데이터] 에 1 로 적혀 있어 예전과 같은 셈이 된다.
-        ws[f"O{rr}"] = f'=IF($K{rr}=0,1,INDEX({rng(TAXCOL)},$K{rr}))'
+        ws[f"O{rr}"] = (
+            f'=IF($K{rr}=0,1,IF(INDEX({rng(TAXCOL)},$K{rr})="",1,INDEX({rng(TAXCOL)},$K{rr})))'
+        )
         ws[f"O{rr}"].font = f(9, color=MUTED)
+        # 과세비율을 **확인하지 못한** 종목인가. 위의 O 는 그런 종목도 1 로
+        # 셈하므로, 그 사실을 따로 들고 있어야 아래에서 말해 줄 수 있다.
+        ws[f"P{rr}"] = f'=IF($K{rr}=0,0,IF(INDEX({rng(TAXCOL)},$K{rr})="",1,0))'
+        ws[f"P{rr}"].font = f(9, color=MUTED)
         put(ws, rr, 4,
             f'=IF($K{rr}=0,0,IF({C_MODE}="비율",ROUND({C_AMT}*$C{rr}/100,0),$C{rr}))', WON_Z)
         put(ws, rr, 5, f"=IF($K{rr}=0,0,ROUNDDOWN($D{rr}/INDEX({rng('D')},$K{rr}),0))", QTY_Z)
@@ -896,7 +903,21 @@ def build_proposal(wb, data, first_sel, last_sel, first_adopted, last_adopted, t
     wc3.font = f(10, bold=True, color=WARNING)
     ws.row_dimensions[warn3].height = 17
 
-    note = warn3 + 1
+    warn4 = warn3 + 1
+    ws.merge_cells(start_row=warn4, start_column=2, end_row=warn4, end_column=LAST)
+    wc4 = ws.cell(
+        row=warn4,
+        column=2,
+        value=(
+            f'=IF(SUM($P${p_first}:$P${p_last})>0,'
+            f'"※ 과세표준을 확인하지 못한 종목이 담겨 있습니다. 그 종목은 분배금 전액에 세율을 적용해 '
+            f'계산했으므로, 실제 세후 수령액은 표시된 금액보다 많을 수 있습니다.","")'
+        ),
+    )
+    wc4.font = f(10, bold=True, color=WARNING)
+    ws.row_dimensions[warn4].height = 17
+
+    note = warn4 + 1
     ws.merge_cells(start_row=note, start_column=2, end_row=note, end_column=LAST)
     nc = ws.cell(
         row=note,
@@ -1080,6 +1101,52 @@ def build_proposal(wb, data, first_sel, last_sel, first_adopted, last_adopted, t
 
     # ── 6. 유의사항 ──
     rules = data.get("rules", {})
+
+    # 세금 문구는 **실제로 확보된 만큼만** 말한다.
+    #
+    # 과세비율을 한 종목도 못 구했는데 "종목마다 다른 비율을 적용했습니다" 라고
+    # 적으면 그 자체가 거짓말이 된다. 실제로 그런 판이 한 번 나갔다 — 곳간이
+    # 옛 판이라 661종목 중 3종목만 값이 있었는데 문구는 그대로였다.
+    _sel = [x for x in data["items"]
+            if x.get("dataComplete") is not False and (x.get("price") or 0) > 0
+            and x.get("distTtmRate") is not None]
+    _have = [x for x in _sel if x.get("taxableRatio") is not None]
+    _cov = (len(_have) / len(_sel)) if _sel else 0
+
+    _TAX_HOW = (
+        "과세비율은 최근 12개월에 실제로 매겨진 과세표준액을 같은 기간 분배금으로 나눈 값입니다. 지나간 실적이므로 "
+        "앞으로도 같다는 뜻은 아닙니다 — 분배 재원(배당·이자·매매차익·파생손익)의 구성이 바뀌면 비율도 함께 바뀌고, "
+        "실제로 한 종목 안에서도 회차마다 0%에서 17%까지 움직인 사례가 있습니다. 실제 세액은 지급 시점의 과세표준으로 "
+        "확정되므로 이 표와 다를 수 있습니다."
+    )
+    _TAX_WHY = (
+        "세금은 분배금 전액이 아니라 과세표준액에만 붙습니다. 국내주식 매매차익과 장내파생 손익은 과세표준에 들어가지 "
+        "않으므로, 그 재원으로 분배하는 종목은 분배금의 상당 부분이 비과세입니다."
+    )
+    if _cov >= 0.5:
+        TAX_NOTES = [
+            _TAX_WHY + f" 그래서 종목마다 다른 과세비율을 적용했습니다(고를 수 있는 {len(_sel)}종목 중 {len(_have)}종목). "
+            "비율은 [ETF데이터] 장의 '과세비율' 칸에 있습니다.",
+            _TAX_HOW + " 과세비율을 확인하지 못한 종목은 그 칸이 비어 있고, 분배금 전액에 세율을 적용해 "
+            "보수적으로 계산했으므로 실제 세후 수령액이 표시된 금액보다 많을 수 있습니다.",
+        ]
+    elif _have:
+        TAX_NOTES = [
+            _TAX_WHY,
+            f"다만 이번 자료에서는 고를 수 있는 {len(_sel)}종목 중 {len(_have)}종목만 과세표준을 확인할 수 있었습니다. "
+            "나머지 종목은 정확한 과세표준을 확인하지 못해 부득이 분배금 전액에 15.4%를 적용했습니다. "
+            "그 종목들의 실제 세후 수령액은 표시된 금액보다 많을 수 있습니다. "
+            "확인된 종목은 [ETF데이터] 장의 '과세비율' 칸에 값이 적혀 있고, 확인하지 못한 종목은 그 칸이 비어 있습니다.",
+            _TAX_HOW,
+        ]
+    else:
+        TAX_NOTES = [
+            _TAX_WHY,
+            "다만 이번 자료에서는 종목별 과세표준을 확인하지 못했습니다. 그래서 부득이 모든 종목의 분배금 전액에 "
+            "15.4%를 적용해 계산했습니다. 이는 세금을 가장 많이 매기는 가정이므로, 실제 세후 수령액은 이 문서에 "
+            "표시된 금액보다 많을 수 있습니다. 특히 국내주식형 커버드콜처럼 매매차익·파생손익으로 분배하는 종목은 "
+            "차이가 큽니다.",
+        ]
     r = section(ws, r, "6", "유의사항", LAST)
     notes = [
         "이 자료는 투자 권유가 아니라 참고 자료입니다. 최종 투자 판단과 그 결과는 투자자 본인에게 귀속됩니다.",
@@ -1088,13 +1155,7 @@ def build_proposal(wb, data, first_sel, last_sel, first_adopted, last_adopted, t
         "분배금의 일부가 원금에서 지급될 수 있습니다(자본 환급). 이 경우 기준가가 그만큼 낮아집니다.",
         "표시된 연 분배율은 최근 12개월 실제 분배금 합계를 현재가로 나눈 값(사후 수치)이며, 앞으로의 수익률을 보장하지 않습니다.",
         "세율은 국내 상장 ETF 분배금 기준 15.4%(배당소득세 14% + 지방소득세 1.4%)를 적용했습니다. 금융소득종합과세 대상자는 실효세율이 달라집니다.",
-        "세금은 분배금 전액이 아니라 과세표준액에만 붙습니다. 국내주식 매매차익과 장내파생 손익은 과세표준에 들어가지 "
-        "않으므로, 그 재원으로 분배하는 종목은 분배금의 상당 부분이 비과세입니다. 그래서 종목마다 다른 과세비율을 적용했고, "
-        "그 비율은 [ETF데이터] 장의 '과세비율' 칸에 있습니다.",
-        "과세비율은 최근 12개월에 실제로 매겨진 과세표준액을 같은 기간 분배금으로 나눈 값입니다. 지나간 실적이므로 앞으로도 같다는 "
-        "뜻은 아닙니다 — 분배 재원(배당·이자·매매차익·파생손익)의 구성이 바뀌면 비율도 함께 바뀌고, 실제로 한 종목 안에서도 "
-        "회차마다 0%에서 17%까지 움직인 사례가 있습니다. 실제 세액은 지급 시점의 과세표준으로 확정되므로 이 표와 다를 수 "
-        "있습니다. 과세비율을 구하지 못한 종목은 전액 과세로 보수적으로 계산했습니다.",
+        *TAX_NOTES,
         "세무 상담이 필요한 사안은 이 문서로 갈음하지 마시고 세무 전문가의 확인을 받으십시오.",
         "매매수수료·거래세·환율 변동은 반영하지 않았습니다. 총보수는 분배율에 이미 반영되어 있습니다(기준가 차감).",
         "수량은 정수 매수를 가정해 내림 처리했습니다. 남는 금액은 '미투자 잔액'에 표시됩니다.",
