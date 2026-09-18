@@ -579,6 +579,12 @@
            ' <span class="muted">(백테스트 ' + esc(stale.backtest_engine) +
            ' · 지금 ' + esc(stale.current_engine) + ')</span></div>';
     }
+    // 모델이 같아도 **먹인 일봉이 다르면** 그 성적은 지금 신호의 것이 아니다.
+    var psta = DATA && DATA.backtest_price_stale;
+    if (psta) {
+      h += '<div class="dangerbox" style="margin-top:0">' +
+           esc(psta.text).replace(/\*\*(.+?)\*\*/g, '<b>$1</b>') + '</div>';
+    }
     h += bt.summary_ko
       ? '<div>' + esc(bt.summary_ko).replace(/\*\*(.+?)\*\*/g, '<b>$1</b>') + '</div>' : '';
     var hz = (bt.horizons || {});

@@ -219,9 +219,23 @@ def verify_volume_profile(bars, item):
     # 칸까지 더하면 below_pct 이상이어야 한다. (칸을 가로지르는 몫 때문에 사이값)
     strict = sum(b['pct'] for b in vp['bins'] if b['hi'] <= c)
     loose = sum(b['pct'] for b in vp['bins'] if b['lo'] < c)
+    # 문턱을 **반올림에서 유도한다.** 산출물은 below_pct 를 소수 1자리로,
+    # 칸 비중을 2자리로 적는다. 그래서 「칸을 더한 값」과 「적힌 below_pct」는
+    # 셈이 맞아도 그만큼 어긋난다.
+    #
+    # 1e-6 으로 두었더니 T(AT&T)에서 걸렸다 — 종가 25.86 이 칸 경계에 정확히
+    # 앉아 strict 와 loose 가 같은 값(76.43)이 되었고, 적힌 below_pct 는
+    # 1자리 반올림으로 76.4 였다. 어긋남 0.03 은 **반올림 그대로**다.
+    #
+    # 잡으려는 것은 이런 반올림이 아니라 **below_pct 를 다른 가격이나 다른 칸으로
+    # 셈한 것**이다(실제로 매물대를 닷새마다만 다시 세면서 낡은 종가로 위아래
+    # 비중을 재던 흠이 있었고, 그때는 몇 %p 씩 어긋났다). 아래 문턱은 그것을
+    # 그대로 잡는다.
+    tol = 0.05 + len(vp['bins']) * 0.005        # 1자리 반올림 + 칸마다 2자리 반올림
     check_true('%s 매물대 아래비중 범위' % nm,
-               strict - 1e-6 <= vp['below_pct'] <= loose + 1e-6,
-               '%.3f <= %.3f <= %.3f' % (strict, vp['below_pct'], loose))
+               strict - tol <= vp['below_pct'] <= loose + tol,
+               '%.3f <= %.3f <= %.3f (반올림 여유 %.3f)'
+               % (strict, vp['below_pct'], loose, tol))
     check_true('%s POC 는 가치영역 안' % nm, vp['val'] <= vp['poc'] <= vp['vah'],
                'val %.2f poc %.2f vah %.2f' % (vp['val'], vp['poc'], vp['vah']))
     if vp.get('nearest_up') is not None:
@@ -292,6 +306,18 @@ def verify_absences(doc):
             check_true('낡은 성적을 낡았다고 적었다', bool(doc.get('backtest_stale')),
                        '백테스트가 %s 모델의 것인데 지금은 %s 다 — 산출물이 그 사실을 '
                        '적고 있어야 한다' % (bt.get('engine_hash') or '(적히지 않음)', cur))
+
+        # **어느 가격으로 잰 성적인가.** 모델이 같아도 먹인 일봉이 다르면 그 성적은
+        # 지금 신호의 것이 아니다. 엔진 해시로는 안 잡힌다 — 다른 것을 재는 검사다.
+        def _kind(srcs):
+            return ','.join('%s:%s' % (m, '+'.join(sorted(k for k in (srcs[m] or {}) if k)))
+                            for m in sorted(srcs or {})) or '(적히지 않음)'
+        if _kind(bt.get('price_sources')) != _kind(doc.get('price_sources')):
+            check_true('다른 가격으로 잰 성적을 그렇다고 적었다',
+                       bool(doc.get('backtest_price_stale')),
+                       '성적은 %s 로 쟀는데 신호는 %s 로 셈했다 — 산출물이 그 사실을 '
+                       '적고 있어야 한다'
+                       % (_kind(bt.get('price_sources')), _kind(doc.get('price_sources'))))
 
     # 종목별 수급이 실렸다면, 그것이 **실제로 축에 들어갔는지**와 백테스트가
     # 그 자료를 포함하지 않는다는 사실이 적혀 있는지를 본다. 자료만 들여놓고
@@ -426,6 +452,13 @@ def fault_injection(bars, item, doc):
     if doc.get('backtest_stale'):
         run('낡은 성적 표시 지우기', drop_stale)
 
+    def drop_price_stale():
+        d = copy.deepcopy(doc)
+        d.pop('backtest_price_stale', None)
+        verify_absences(d)
+    if doc.get('backtest_price_stale'):
+        run('다른 가격 성적 표시 지우기', drop_price_stale)
+
     return caught
 
 
@@ -450,7 +483,13 @@ def main(argv):
             br, pre = (('origin/kr100-data', 'data/kr100/chart/')
                        if it['market'] == 'KR' else
                        ('origin/us100-data', 'data/us100/chart/'))
-            b = B.load_bars(br, pre + it['symbol'] + '.json')
+            # **산출물이 먹은 것과 같은 봉을 읽어야 한다.** build_signals 를
+            # bars_for 로 옮기면서 여기만 야후를 그대로 읽고 있었고, 그 결과
+            # 검산이 「09-18 을 원자료에서 못 찾음」으로 12 종목을 잡았다 —
+            # 산출물이 틀린 것이 아니라 **검산기가 다른 자료를 보고 있었다.**
+            # 지표를 독립으로 다시 셈하는 것은 그대로다. 같은 봉에 대고 다시
+            # 셈해야 대조가 되는 것이지, 다른 봉을 읽으면 아무것도 검산하지 못한다.
+            b, _src = B.bars_for(it['market'], br, pre + it['symbol'] + '.json')
         cache[key] = b
         return b
 
