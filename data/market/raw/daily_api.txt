@@ -1,0 +1,101 @@
+후보 주소 확인 2026-09-18 10:34 KST (직전 영업일 어림 20260918)
+브라우저 없이 평범한 요청으로 열리는지, 필요한 항목이 있는지 본다.
+
+### 일별시세 KOSPI (거래대금 없음을 확인한 자리)
+    https://stock.naver.com/api/securityFe/api/index/KOSPI/price?page=1&pageSize=20
+    200 · 5116 bytes
+    모양: ["[20개]", {"localTradedAt": "str", "closePrice": "str", "compareToPreviousClosePrice": "str", "compareToPreviousPrice": {"code": "…", "text": "…", "name": "…"}, "fluctuationsRatio": "str", "openPrice": "str", "highPrice": "str", "lowPrice": "str"}]
+    → 본문을 data/market/raw/daily_api_0.json 에 남겼다
+
+### 지수 통합 KOSPI (거래대금 후보)
+    https://stock.naver.com/api/securityFe/api/index/KOSPI/integration
+    200 · 16278 bytes
+    낱말 있음: accumulatedtradingvalue → …"value":"122,055천주"},{"code":"accumulatedTradingValue","key":"대금","value":"6,774,567백만"},{"code":"highPriceOf52Weeks","k…
+    낱말 있음: tradingvalue → …2,055천주"},{"code":"accumulatedTradingValue","key":"대금","value":"6,774,567백만"},{"code":"highPriceOf52Weeks","key":"52주 최고…
+    낱말 있음: tradingvolume → …RISING"}},{"code":"accumulatedTradingVolume","key":"거래량","value":"122,055천주"},{"code":"accumulatedTradingValue","key":"대…
+    모양: {"stockEndType": "str", "itemCode": "str", "reutersCode": "str", "stockName": "str", "totalInfos": ["[8개]", {"code": "…", "key": "…", "value": "…"}], "description": "str", "dealTrendInfo": {"bizdate": "str", "personalValue": "str", "foreignValue": "str", "institutionalValue": "str"}, "programTrendInfo": {"bizdate": "str", "indexDifferenceReal": "str", "indexBiDifferenceReal": "str", "indexTotalReal": "str"}, "upDownStockInfo": {"upperCount": "str", "riseCount": "str", "lowerCount": "str", "fallCount": "str", "steadyCount": "str"}, "enrollStocks": ["[10개]", {"stockType": "…", "stockEndType": "…", "itemCode": "…", "reutersCode": "…", "stockName": "…", "sosok": "…", "closePrice": "…", "compareT
+    → 본문을 data/market/raw/daily_api_1.json 에 남겼다
+
+### 실시간 지수 KOSPI (오늘치 거래대금 후보)
+    https://polling.finance.naver.com/api/realtime/domestic/index/KOSPI
+    200 · 1010 bytes
+    낱말 있음: accumulatedtradingvalue → …edTradingVolume":"122,441천주","accumulatedTradingValue":"6,791,930백만","marketStatus":"OPEN","localTradedAt":"2026-09-18T1…
+    낱말 있음: tradingvalue → …lume":"122,441천주","accumulatedTradingValue":"6,791,930백만","marketStatus":"OPEN","localTradedAt":"2026-09-18T10:34:48+09:…
+    낱말 있음: tradingvolume → …Price":"6,830.95","accumulatedTradingVolume":"122,441천주","accumulatedTradingValue":"6,791,930백만","marketStatus":"OPEN","…
+    모양: {"pollingInterval": "int", "datas": ["[1개]", {"itemCode": "…", "stockName": "…", "stockExchangeType": "…", "closePrice": "…", "compareToPreviousClosePrice": "…", "compareToPreviousPrice": "…", "fluctuationsRatio": "…", "openPrice": "…", "highPrice": "…", "lowPrice": "…", "accumulatedTradingVolume": "…", "accumulatedTradingValue": "…", "marketStatus": "…", "localTradedAt": "…"}], "time": "str"}
+    → 본문을 data/market/raw/daily_api_2.json 에 남겼다
+
+### 지수 차트 KOSPI (일봉 계열)
+    https://stock.naver.com/api/securityService/chart/domestic/index/KOSPI?periodType=day
+    200 · 48787 bytes
+    낱말 있음: tradingvolume → …lowPrice":6878.61,"accumulatedTradingVolume":4777},{"localDateTime":"20260918090100","currentPrice":6873.9,"openPrice":6…
+    모양: {"code": "str", "infoType": "str", "periodType": "str", "newlyListed": "bool", "stockExchangeType": "str", "hasVolume": "bool", "decimalUnit": "int", "marketStatus": "str", "tradeStop": "bool", "openPrice": "float", "lastClosePrice": "float", "tradeBaseAt": "str", "lastTradeBaseAt": "str", "localDateTimeNow": "str"}
+    → 본문을 data/market/raw/daily_api_3.json 에 남겼다
+
+### 일별시세 KOSDAQ
+    https://stock.naver.com/api/securityFe/api/index/KOSDAQ/price?page=1&pageSize=20
+    200 · 4936 bytes
+    모양: ["[20개]", {"localTradedAt": "str", "closePrice": "str", "compareToPreviousClosePrice": "str", "compareToPreviousPrice": {"code": "…", "text": "…", "name": "…"}, "fluctuationsRatio": "str", "openPrice": "str", "highPrice": "str", "lowPrice": "str"}]
+    → 본문을 data/market/raw/daily_api_4.json 에 남겼다
+
+### 실시간 지수 KOSDAQ
+    https://polling.finance.naver.com/api/realtime/domestic/index/KOSDAQ
+    200 · 998 bytes
+    낱말 있음: accumulatedtradingvalue → …edTradingVolume":"273,198천주","accumulatedTradingValue":"3,051,091백만","marketStatus":"OPEN","localTradedAt":"2026-09-18T1…
+    낱말 있음: tradingvalue → …lume":"273,198천주","accumulatedTradingValue":"3,051,091백만","marketStatus":"OPEN","localTradedAt":"2026-09-18T10:34:50+09:…
+    낱말 있음: tradingvolume → …owPrice":"826.92","accumulatedTradingVolume":"273,198천주","accumulatedTradingValue":"3,051,091백만","marketStatus":"OPEN","…
+    모양: {"pollingInterval": "int", "datas": ["[1개]", {"itemCode": "…", "stockName": "…", "stockExchangeType": "…", "closePrice": "…", "compareToPreviousClosePrice": "…", "compareToPreviousPrice": "…", "fluctuationsRatio": "…", "openPrice": "…", "highPrice": "…", "lowPrice": "…", "accumulatedTradingVolume": "…", "accumulatedTradingValue": "…", "marketStatus": "…", "localTradedAt": "…"}], "time": "str"}
+    → 본문을 data/market/raw/daily_api_5.json 에 남겼다
+
+### 투자자별 KRX·KOSPI
+    https://stock.naver.com/api/domestic/market/trend/daily?tradeType=KRX&marketType=KOSPI&bizdate=20260918&startIdx=0&pageSize=30
+    200 · 53649 bytes
+    낱말 있음: diffvalue → …ts":[{"investorGubun":"9001","diffValue":"-3762000000","sellQuant":"444137","sellPrice":"12530000000","buyQuant":"348557…
+    모양: {"content": ["[30개]", {"bizdate": "…", "time": "…", "netAmounts": "…"}], "pageable": {"sort": {"empty": "…", "unsorted": "…", "sorted": "…"}, "offset": "str", "pageNumber": "str", "pageSize": "str", "unpaged": "bool", "paged": "bool"}, "last": "bool", "totalPages": "str", "totalElements": "str", "size": "str", "number": "str", "sort": {"empty": "bool", "unsorted": "bool", "sorted": "bool"}, "first": "bool", "numberOfElements": "str", "empty": "bool"}
+    → 본문을 data/market/raw/daily_api_6.json 에 남겼다
+
+### 투자자별 NXT·KOSPI (관찰된 그대로)
+    https://stock.naver.com/api/domestic/market/trend/daily?tradeType=NXT&marketType=KOSPI&bizdate=20260918&startIdx=0&pageSize=30
+    200 · 50383 bytes
+    낱말 있음: diffvalue → …ts":[{"investorGubun":"9001","diffValue":"-3870000000","sellQuant":"68021","sellPrice":"17864000000","buyQuant":"85589",…
+    모양: {"content": ["[30개]", {"bizdate": "…", "time": "…", "netAmounts": "…"}], "pageable": {"sort": {"empty": "…", "unsorted": "…", "sorted": "…"}, "offset": "str", "pageNumber": "str", "pageSize": "str", "unpaged": "bool", "paged": "bool"}, "totalPages": "str", "totalElements": "str", "last": "bool", "size": "str", "number": "str", "sort": {"empty": "bool", "unsorted": "bool", "sorted": "bool"}, "numberOfElements": "str", "first": "bool", "empty": "bool"}
+    → 본문을 data/market/raw/daily_api_7.json 에 남겼다
+
+### 투자자별 KRX·KOSDAQ
+    https://stock.naver.com/api/domestic/market/trend/daily?tradeType=KRX&marketType=KOSDAQ&bizdate=20260918&startIdx=0&pageSize=30
+    200 · 52832 bytes
+    낱말 있음: diffvalue → …ts":[{"investorGubun":"9001","diffValue":"-1501000000","sellQuant":"1124012","sellPrice":"10911000000","buyQuant":"92719…
+    모양: {"content": ["[30개]", {"bizdate": "…", "time": "…", "netAmounts": "…"}], "pageable": {"sort": {"empty": "…", "sorted": "…", "unsorted": "…"}, "offset": "str", "pageNumber": "str", "pageSize": "str", "unpaged": "bool", "paged": "bool"}, "last": "bool", "totalPages": "str", "totalElements": "str", "size": "str", "number": "str", "sort": {"empty": "bool", "sorted": "bool", "unsorted": "bool"}, "first": "bool", "numberOfElements": "str", "empty": "bool"}
+    → 본문을 data/market/raw/daily_api_8.json 에 남겼다
+
+### 다음 지수 일별 KOSPI
+    https://finance.daum.net/api/market_index/days?page=1&perPage=10&market=KOSPI&pagination=true
+    200 · 3083 bytes
+    낱말 있음: acctradeprice → ….400,"accTradeVolume":122055,"accTradePrice":6774567.000,"individualStraightPurchasePrice":-943896276164.000,"foreignStr…
+    모양: {"code": "int", "message": "str", "data": ["[10개]", {"date": "…", "tradePrice": "…", "change": "…", "changePrice": "…", "accTradeVolume": "…", "accTradePrice": "…", "individualStraightPurchasePrice": "…", "foreignStraightPurchasePrice": "…", "institutionStraightPurchasePrice": "…"}], "totalPages": "int", "totalCount": "int", "currentPage": "int", "pageSize": "int"}
+    단위 대조 2026-09-18 — 우리 4426320 · 새 원천 6774567 · 차이 53.05%  ⚠ 어긋난다
+    단위 대조 2026-09-17 — 우리 17144039 · 새 원천 17144039 · 차이 0.00%  ★ 같다(백만원)
+    단위 대조 2026-09-16 — 우리 16685829 · 새 원천 16685829 · 차이 0.00%  ★ 같다(백만원)
+    → 본문을 data/market/raw/daily_api_9.json 에 남겼다
+
+### 다음 지수 일별 KOSDAQ
+    https://finance.daum.net/api/market_index/days?page=1&perPage=10&market=KOSDAQ&pagination=true
+    200 · 3019 bytes
+    낱말 있음: acctradeprice → ….140,"accTradeVolume":273025,"accTradePrice":3049016.000,"individualStraightPurchasePrice":-28397354914.000,"foreignStra…
+    모양: {"code": "int", "message": "str", "data": ["[10개]", {"date": "…", "tradePrice": "…", "change": "…", "changePrice": "…", "accTradeVolume": "…", "accTradePrice": "…", "individualStraightPurchasePrice": "…", "foreignStraightPurchasePrice": "…", "institutionStraightPurchasePrice": "…"}], "totalPages": "int", "totalCount": "int", "currentPage": "int", "pageSize": "int"}
+    단위 대조 2026-09-18 — 우리 2187635 · 새 원천 3049016 · 차이 39.37%  ⚠ 어긋난다
+    단위 대조 2026-09-17 — 우리 6080481 · 새 원천 6080481 · 차이 0.00%  ★ 같다(백만원)
+    단위 대조 2026-09-16 — 우리 6573258 · 새 원천 6573258 · 차이 0.00%  ★ 같다(백만원)
+    → 본문을 data/market/raw/daily_api_10.json 에 남겼다
+
+### 다음 지수 일봉 KOSPI (200일)
+    https://finance.daum.net/api/charts/KGG01P/days?limit=10&adjusted=true
+    200 · 3248 bytes
+    낱말 있음: acctradeprice → …AccTradeVolume":240446,"candleAccTradePrice":21762301.000,"timestamp":1788706800000},{"symbolCode":"KGG01P","date":"2026…
+    낱말 있음: candleacctradeprice → …candleAccTradeVolume":240446,"candleAccTradePrice":21762301.000,"timestamp":1788706800000},{"symbolCode":"KGG01P","date"…
+    모양: {"code": "int", "message": "str", "data": ["[10개]", {"symbolCode": "…", "date": "…", "candleTime": "…", "tradePrice": "…", "openingPrice": "…", "highPrice": "…", "lowPrice": "…", "change": "…", "changePrice": "…", "changeRate": "…", "candleAccTradeVolume": "…", "candleAccTradePrice": "…", "timestamp": "…"}]}
+    단위 대조 2026-09-07 — 우리 21762301 · 새 원천 21762301 · 차이 0.00%  ★ 같다(백만원)
+    단위 대조 2026-09-08 — 우리 26187833 · 새 원천 26187833 · 차이 0.00%  ★ 같다(백만원)
+    단위 대조 2026-09-09 — 우리 22625773 · 새 원천 22625773 · 차이 0.00%  ★ 같다(백만원)
+    → 본문을 data/market/raw/daily_api_11.json 에 남겼다
+

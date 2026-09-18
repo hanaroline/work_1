@@ -1,0 +1,223 @@
+거래대금·투자자별 원천 관찰 2026-09-18T01:32:52.379Z
+(브라우저로 열어 오가는 요청을 그대로 적는다. 수집 결과는 바꾸지 않는다.)
+이번 과녁은 **지수 일별 거래대금**이다 — 첫 관찰에서 못 찾은 하나.
+
+### 손전화 코스피 (모바일)  https://m.stock.naver.com/domestic/index/KOSPI/total
+    첫 응답 200
+    눌러 봄: 「일별」
+    눌러 봄: 「시세」
+    눌러 봄: 「거래」
+    눌러 봄: 「전체」
+    화면 글자: 거래대금 없음 · 거래량 없음
+    [200] 날짜   9 개 ·거래대금말 ·   69510 bytes · text/html · https://m.stock.naver.com/domestic/index/KOSPI/total
+    [200] 날짜   4 개 ·거래대금말 ·   13095 bytes · application/json · https://m.stock.naver.com/front-api/realTime/unified
+    [200] 날짜   3 개 ·거래대금말 ·   13095 bytes · application/json · https://m.stock.naver.com/front-api/realTime/unified
+    [200] 날짜   2 개 ·거래대금말 ·    6189 bytes · application/json · https://m.stock.naver.com/front-api/stock/domestic/index/enrollStock/list?code=KOSPI&domesticStockExchangeType=KRX&page=1&pageSize=10
+    [200] 날짜   1 개 ·거래대금말 ·     827 bytes · application/json · https://m.stock.naver.com/front-api/realTime/unified
+    [200] 날짜   1 개 ·거래대금말 ·     826 bytes · application/json · https://m.stock.naver.com/front-api/realTime/unified
+    [200] 날짜 123 개            ·  195087 bytes · text/html · https://m.naver.com/services.html
+    [200] 날짜  10 개            ·    2619 bytes · application/json · https://m.stock.naver.com/front-api/stock/domestic/index/price/list?code=KOSPI&page=1&pageSize=10
+    [200] 날짜   4 개            ·    1526 bytes · application/json · https://m.stock.naver.com/_next/data/ca10e21c17874894e509b67aa8c6f0d1d1924c4e/notice/153.json?id=153
+    [200] 날짜   3 개            ·     866 bytes · application/json · https://m.stock.naver.com/front-api/briefing/indicator/current?itemCode=KOSPI
+    [200] 날짜   2 개            ·    4167 bytes · application/json · https://m.stock.naver.com/front-api/marketStatus/index?indexCodes=KOSPI%2CKOSDAQ%2CKPI200%2CKPI100%2CKQI150%2CKVALUE%2CFUT
+    [200] 날짜   1 개            ·    3118 bytes · application/json · https://m.stock.naver.com/front-api/chart/domesticPriceByTime/marketInfo?chartInfoType=index&reutersCode=KOSPI&timeFrame=minute5
+    [200] 날짜   0 개            ·     168 bytes · application/json · https://m.stock.naver.com/front-api/notice/banner?type=domestic%2Ftotal
+    [200] 날짜   0 개            ·      94 bytes · application/json · https://m.stock.naver.com/front-api/ranking/dailyAccumulated/check?itemCode=KOSPI
+    [200] 날짜   0 개            ·      59 bytes · application/json · https://m.stock.naver.com/front-api/banner?type=domesticIndex
+    [200] 날짜   0 개            ·      74 bytes · application/json · https://m.stock.naver.com/front-api/myAsset/status
+    [200] 날짜   0 개            ·    1940 bytes · application/json · https://m.stock.naver.com/front-api/discussion/items/crypto
+    [200] 날짜   0 개            ·      23 bytes · application/json · https://nam.veta.naver.com/nac/1
+    [204] 날짜   0 개            ·       0 bytes ·  · https://nlog.naver.com/n
+    [200] 날짜   0 개            ·       2 bytes · application/json · https://sentry-stock.naver.com/api/4/envelope/?sentry_version=7&sentry_key=470bdc83f341950b9dc087aa40f5db39&sentry_client=sentry.javascript.nextjs%2F1
+    [200] 날짜   0 개            ·       2 bytes · application/json · https://sentry-stock.naver.com/api/4/envelope/?sentry_version=7&sentry_key=470bdc83f341950b9dc087aa40f5db39&sentry_client=sentry.javascript.nextjs%2F1
+    [200] 날짜   0 개            ·     102 bytes · application/json · https://yorkie-api.naver.com/yorkie.v1.YorkieService/RefreshChannel
+    [200] 날짜   0 개            ·  409306 bytes · application/wasm · https://wtm.pstatic.net/011fc84/581348ee652d1d7705c9.wasm
+    [204] 날짜   0 개            ·       0 bytes ·  · https://nlog.naver.com/event
+    [200] 날짜   0 개            ·      23 bytes · application/json · https://yorkie-api.naver.com/yorkie.v1.YorkieService/RefreshChannel
+    → 본문을 data/market/raw/turnover_xhr_0_0.json 에 남겼다  (https://m.stock.naver.com/domestic/index/KOSPI/total)
+    → 본문을 data/market/raw/turnover_xhr_0_1.json 에 남겼다  (https://m.stock.naver.com/front-api/realTime/unified)
+    → 본문을 data/market/raw/turnover_xhr_0_2.json 에 남겼다  (https://m.stock.naver.com/front-api/realTime/unified)
+    → 본문을 data/market/raw/turnover_xhr_0_3.json 에 남겼다  (https://m.stock.naver.com/front-api/stock/domestic/index/enrollStock/list?code=KOSPI&domesticStockExchangeType=KRX&page=1&pageSize)
+    → 본문을 data/market/raw/turnover_xhr_0_4.json 에 남겼다  (https://m.stock.naver.com/front-api/realTime/unified)
+    → 본문을 data/market/raw/turnover_xhr_0_5.json 에 남겼다  (https://m.stock.naver.com/front-api/realTime/unified)
+    → 본문을 data/market/raw/turnover_xhr_0_6.json 에 남겼다  (https://m.naver.com/services.html)
+    → 본문을 data/market/raw/turnover_xhr_0_7.json 에 남겼다  (https://m.stock.naver.com/front-api/stock/domestic/index/price/list?code=KOSPI&page=1&pageSize=10)
+
+### 손전화 코스피 시세 (모바일)  https://m.stock.naver.com/domestic/index/KOSPI/price
+    첫 응답 200
+    눌러 봄: 「일별」
+    눌러 봄: 「시세」
+    눌러 봄: 「거래」
+    눌러 봄: 「전체」
+    화면 글자: 거래대금 없음 · 거래량 없음
+    [200] 날짜   7 개 ·거래대금말 ·   69504 bytes · text/html · https://m.stock.naver.com/domestic/index/KOSPI/total
+    [200] 날짜   3 개 ·거래대금말 ·   13095 bytes · application/json · https://m.stock.naver.com/front-api/realTime/unified
+    [200] 날짜   3 개 ·거래대금말 ·   13095 bytes · application/json · https://m.stock.naver.com/front-api/realTime/unified
+    [200] 날짜   1 개 ·거래대금말 ·    6189 bytes · application/json · https://m.stock.naver.com/front-api/stock/domestic/index/enrollStock/list?code=KOSPI&domesticStockExchangeType=KRX&page=1&pageSize=10
+    [200] 날짜   1 개 ·거래대금말 ·     827 bytes · application/json · https://m.stock.naver.com/front-api/realTime/unified
+    [200] 날짜   1 개 ·거래대금말 ·     827 bytes · application/json · https://m.stock.naver.com/front-api/realTime/unified
+    [200] 날짜 123 개            ·  195087 bytes · text/html · https://m.naver.com/services.html
+    [200] 날짜  10 개            ·    2619 bytes · application/json · https://m.stock.naver.com/front-api/stock/domestic/index/price/list?code=KOSPI&page=1&pageSize=10
+    [200] 날짜   4 개            ·    1526 bytes · application/json · https://m.stock.naver.com/_next/data/ca10e21c17874894e509b67aa8c6f0d1d1924c4e/notice/153.json?id=153
+    [200] 날짜   3 개            ·     866 bytes · application/json · https://m.stock.naver.com/front-api/briefing/indicator/current?itemCode=KOSPI
+    [200] 날짜   2 개            ·    4167 bytes · application/json · https://m.stock.naver.com/front-api/marketStatus/index?indexCodes=KOSPI%2CKOSDAQ%2CKPI200%2CKPI100%2CKQI150%2CKVALUE%2CFUT
+    [200] 날짜   1 개            ·    3118 bytes · application/json · https://m.stock.naver.com/front-api/chart/domesticPriceByTime/marketInfo?chartInfoType=index&reutersCode=KOSPI&timeFrame=minute5
+    [302] 날짜   0 개            ·       0 bytes · text/html · https://m.stock.naver.com/domestic/index/KOSPI/price
+    [200] 날짜   0 개            ·     168 bytes · application/json · https://m.stock.naver.com/front-api/notice/banner?type=domestic%2Ftotal
+    [200] 날짜   0 개            ·      59 bytes · application/json · https://m.stock.naver.com/front-api/banner?type=domesticIndex
+    [200] 날짜   0 개            ·      94 bytes · application/json · https://m.stock.naver.com/front-api/ranking/dailyAccumulated/check?itemCode=KOSPI
+    [200] 날짜   0 개            ·      74 bytes · application/json · https://m.stock.naver.com/front-api/myAsset/status
+    [200] 날짜   0 개            ·    1940 bytes · application/json · https://m.stock.naver.com/front-api/discussion/items/crypto
+    [200] 날짜   0 개            ·       2 bytes · application/json · https://sentry-stock.naver.com/api/4/envelope/?sentry_version=7&sentry_key=470bdc83f341950b9dc087aa40f5db39&sentry_client=sentry.javascript.nextjs%2F1
+    [200] 날짜   0 개            ·       2 bytes · application/json · https://sentry-stock.naver.com/api/4/envelope/?sentry_version=7&sentry_key=470bdc83f341950b9dc087aa40f5db39&sentry_client=sentry.javascript.nextjs%2F1
+    [200] 날짜   0 개            ·      24 bytes · application/json · https://nam.veta.naver.com/nac/1
+    [200] 날짜   0 개            ·     102 bytes · application/json · https://yorkie-api.naver.com/yorkie.v1.YorkieService/RefreshChannel
+    [204] 날짜   0 개            ·       0 bytes ·  · https://nlog.naver.com/n
+    [200] 날짜   0 개            ·  409306 bytes · application/wasm · https://wtm.pstatic.net/011fc84/581348ee652d1d7705c9.wasm
+    [204] 날짜   0 개            ·       0 bytes ·  · https://nlog.naver.com/event
+    → 본문을 data/market/raw/turnover_xhr_1_0.json 에 남겼다  (https://m.stock.naver.com/domestic/index/KOSPI/total)
+    → 본문을 data/market/raw/turnover_xhr_1_1.json 에 남겼다  (https://m.stock.naver.com/front-api/realTime/unified)
+    → 본문을 data/market/raw/turnover_xhr_1_2.json 에 남겼다  (https://m.stock.naver.com/front-api/realTime/unified)
+    → 본문을 data/market/raw/turnover_xhr_1_3.json 에 남겼다  (https://m.stock.naver.com/front-api/stock/domestic/index/enrollStock/list?code=KOSPI&domesticStockExchangeType=KRX&page=1&pageSize)
+    → 본문을 data/market/raw/turnover_xhr_1_4.json 에 남겼다  (https://m.stock.naver.com/front-api/realTime/unified)
+    → 본문을 data/market/raw/turnover_xhr_1_5.json 에 남겼다  (https://m.stock.naver.com/front-api/realTime/unified)
+    → 본문을 data/market/raw/turnover_xhr_1_6.json 에 남겼다  (https://m.naver.com/services.html)
+    → 본문을 data/market/raw/turnover_xhr_1_7.json 에 남겼다  (https://m.stock.naver.com/front-api/stock/domestic/index/price/list?code=KOSPI&page=1&pageSize=10)
+
+### 다음 금융 코스피  https://finance.daum.net/domestic/kospi
+    첫 응답 200
+    눌러 봄: 「시세」
+    눌러 봄: 「거래」
+    화면 글자: 거래대금 있음 · 거래량 있음
+      「차트 슬라이드 거래량별 09.18 장종료 코스피 코스닥 - 차트슬라이드 상위 급증 급감 순위 종목명 현재가 전일비 등락률 - 거래량 - 거래대금(백만) 52주고가 1 KODEX 200선물인버스2X 75 ▼2 -2.60% 784,393,277 58,829 1,111 2 KODEX 인버스 1,012 ▼18 -1.75% 186,358,274 188,595 3,230 3 TIGER 200선물인버스2X 81 ▼4 -4.71% 23,476,530 1,902」
+    화면 안의 관련 링크:
+      국내증시 → https://finance.daum.net/domestic
+      코스피 → https://finance.daum.net/domestic/kospi
+      코스피200 → https://finance.daum.net/domestic/kospi200
+      전종목 시세 → https://finance.daum.net/domestic/all_stocks
+      코스피 → https://finance.daum.net/domestic/volume?market=KOSPI
+    [200] 날짜 214 개            ·   64272 bytes · application/json · https://finance.daum.net/api/charts/KGG01P/days?limit=200&adjusted=true
+    [200] 날짜  15 개            ·    3083 bytes · application/json · https://finance.daum.net/api/market_index/days?page=1&perPage=10&market=KOSPI&pagination=true
+    [200] 날짜   6 개            ·    3033 bytes · application/json · https://finance.daum.net/api/quotes/KGG01P?summary=true&changeStatistics=true
+    [200] 날짜   4 개            ·    8731 bytes · application/json · https://finance.daum.net/content/debates/?page=1&perPage=5&notice=false
+    [200] 날짜   3 개            ·   21548 bytes · text/css · https://fonts.googleapis.com/css?family=Roboto:300,400,500,700
+    [200] 날짜   3 개            ·    5548 bytes · text/css · https://fonts.googleapis.com/css?family=Roboto
+    [200] 날짜   3 개            ·   21548 bytes · text/css · https://fonts.googleapis.com/css?family=Roboto:300,400,500,700
+    [200] 날짜   2 개            ·     234 bytes · application/json · https://finance.daum.net/api/business_dates?exchangeCountry=KOREA&limit=2
+    [200] 날짜   2 개            ·    4181 bytes · application/json · https://finance.daum.net/content/news/ranks?limit=10&newsType=popular
+    [200] 날짜   2 개            ·    2789 bytes · application/json · https://finance.daum.net/content/news?perPage=5&category=stock
+    [200] 날짜   2 개            ·    3371 bytes · application/json · https://finance.daum.net/api/trend/price_performance?fieldName=changeRate&order=desc&perPage=10&symbolCode=KGG01P&market=KOSPI&intervalType=TODAY&chan
+    [200] 날짜   2 개            ·     234 bytes · application/json · https://finance.daum.net/api/business_dates?exchangeCountry=KOREA&limit=2
+    [200] 날짜   2 개            ·     234 bytes · application/json · https://finance.daum.net/api/business_dates?exchangeCountry=KOREA&limit=2
+    [200] 날짜   2 개            ·     234 bytes · application/json · https://finance.daum.net/api/business_dates?exchangeCountry=KOREA&limit=2
+    [200] 날짜   2 개            ·    4181 bytes · application/json · https://finance.daum.net/content/news/ranks?limit=10&newsType=popular
+    [200] 날짜   2 개            ·    8197 bytes · application/json · https://finance.daum.net/api/trend/trade_volume?page=1&perPage=30&fieldName=accTradeVolume&order=desc&market=KOSPI&pagination=true
+    [200] 날짜   2 개            ·     234 bytes · application/json · https://finance.daum.net/api/business_dates?exchangeCountry=KOREA&limit=2
+    [200] 날짜   1 개            ·   11734 bytes · text/html · https://finance.daum.net/domestic/kospi
+    [200] 날짜   1 개            ·    4884 bytes · application/json · https://finance.daum.net/api/search/ranks?limit=10
+    [200] 날짜   1 개            ·    2017 bytes · application/json · https://finance.daum.net/api/market_index/times?page=1&perPage=10&market=KOSPI&pagination=true
+    [200] 날짜   1 개            ·   11777 bytes · text/html · https://finance.daum.net/domestic/volume
+    [200] 날짜   1 개            ·    4884 bytes · application/json · https://finance.daum.net/api/search/ranks?limit=10
+    [200] 날짜   0 개            ·    3547 bytes · application/json · https://finance.daum.net/resources/domestic.json?v=20240628
+    [406] 날짜   0 개            ·      50 bytes · application/json · https://finance.daum.net/api/my/groups
+    [200] 날짜   0 개            ·     843 bytes · text/html · https://t1.kakaocdn.net/kas/static/third-party/cookie/ct2.html
+    → 본문을 data/market/raw/turnover_xhr_2_0.json 에 남겼다  (https://finance.daum.net/api/charts/KGG01P/days?limit=200&adjusted=true)
+    → 본문을 data/market/raw/turnover_xhr_2_1.json 에 남겼다  (https://finance.daum.net/api/market_index/days?page=1&perPage=10&market=KOSPI&pagination=true)
+    → 본문을 data/market/raw/turnover_xhr_2_2.json 에 남겼다  (https://finance.daum.net/api/quotes/KGG01P?summary=true&changeStatistics=true)
+
+### 다음 금융 코스피200  https://finance.daum.net/domestic/kospi200
+    첫 응답 200
+    눌러 봄: 「시세」
+    눌러 봄: 「거래」
+    화면 글자: 거래대금 있음 · 거래량 있음
+      「차트 슬라이드 거래량별 09.18 장종료 코스피 코스닥 - 차트슬라이드 상위 급증 급감 순위 종목명 현재가 전일비 등락률 - 거래량 - 거래대금(백만) 52주고가 1 KODEX 200선물인버스2X 75 ▼2 -2.60% 784,833,643 58,863 1,111 2 KODEX 인버스 1,011 ▼19 -1.84% 186,755,638 188,810 3,230 3 TIGER 200선물인버스2X 82 ▼3 -3.53% 23,476,531 1,925」
+    화면 안의 관련 링크:
+      국내증시 → https://finance.daum.net/domestic
+      코스피 → https://finance.daum.net/domestic/kospi
+      코스피200 → https://finance.daum.net/domestic/kospi200
+      전종목 시세 → https://finance.daum.net/domestic/all_stocks
+      코스피 → https://finance.daum.net/domestic/volume?market=KOSPI
+    [200] 날짜  14 개            ·    3073 bytes · application/json · https://finance.daum.net/api/market_index/days?page=1&perPage=10&market=KOSPI_200&pagination=true
+    [200] 날짜   6 개            ·    2925 bytes · application/json · https://finance.daum.net/api/quotes/K2G01P?summary=true&changeStatistics=true
+    [200] 날짜   5 개            ·    1996 bytes · application/json · https://finance.daum.net/api/market_index/times?page=1&perPage=10&market=KOSPI_200&pagination=true
+    [200] 날짜   3 개            ·   21548 bytes · text/css · https://fonts.googleapis.com/css?family=Roboto:300,400,500,700
+    [200] 날짜   3 개            ·   21548 bytes · text/css · https://fonts.googleapis.com/css?family=Roboto:300,400,500,700
+    [200] 날짜   3 개            ·    4882 bytes · application/json · https://finance.daum.net/api/search/ranks?limit=10
+    [200] 날짜   3 개            ·    8201 bytes · application/json · https://finance.daum.net/api/trend/trade_volume?page=1&perPage=30&fieldName=accTradeVolume&order=desc&market=KOSPI&pagination=true
+    [200] 날짜   2 개            ·     234 bytes · application/json · https://finance.daum.net/api/business_dates?exchangeCountry=KOREA&limit=2
+    [200] 날짜   2 개            ·    4181 bytes · application/json · https://finance.daum.net/content/news/ranks?limit=10&newsType=popular
+    [200] 날짜   2 개            ·    2685 bytes · application/json · https://finance.daum.net/api/trend/included_stocks?page=1&perPage=10&fieldName=changeRate&order=desc&market=KOSPI_200&pagination=true
+    [200] 날짜   2 개            ·     234 bytes · application/json · https://finance.daum.net/api/business_dates?exchangeCountry=KOREA&limit=2
+    [200] 날짜   2 개            ·     234 bytes · application/json · https://finance.daum.net/api/business_dates?exchangeCountry=KOREA&limit=2
+    [200] 날짜   2 개            ·    4181 bytes · application/json · https://finance.daum.net/content/news/ranks?limit=10&newsType=popular
+    [200] 날짜   2 개            ·     234 bytes · application/json · https://finance.daum.net/api/business_dates?exchangeCountry=KOREA&limit=2
+    [200] 날짜   1 개            ·   11498 bytes · text/html · https://finance.daum.net/domestic/kospi200
+    [200] 날짜   1 개            ·    4884 bytes · application/json · https://finance.daum.net/api/search/ranks?limit=10
+    [200] 날짜   1 개            ·   11777 bytes · text/html · https://finance.daum.net/domestic/volume
+    [200] 날짜   0 개            ·     843 bytes · text/html · https://t1.kakaocdn.net/kas/static/third-party/cookie/ct2.html
+    [200] 날짜   0 개            ·    3547 bytes · application/json · https://finance.daum.net/resources/domestic.json?v=20240628
+    [406] 날짜   0 개            ·      50 bytes · application/json · https://finance.daum.net/api/my/groups
+    [200] 날짜   0 개            ·      35 bytes · image/gif · https://stat.tiara.daum.net/track?d=%7B%22sdk%22%3A%7B%22type%22%3A%22WEB%22%2C%22version%22%3A%221.2.0%22%7D%2C%22env%22%3A%7B%22screen%22%3A%221280X
+    [200] 날짜   0 개            ·    2130 bytes · text/javascript · https://go.daum.net/minidaum_pc.daum
+    [200] 날짜   0 개            ·      35 bytes · image/gif · https://webid.ad.daum.net/sync?v=0.0.1
+    [200] 날짜   0 개            ·    3547 bytes · application/json · https://finance.daum.net/resources/domestic.json?v=20240628
+    [200] 날짜   0 개            ·     843 bytes · text/html · https://t1.kakaocdn.net/kas/static/third-party/cookie/ct2.html
+    → 본문을 data/market/raw/turnover_xhr_3_0.json 에 남겼다  (https://finance.daum.net/api/market_index/days?page=1&perPage=10&market=KOSPI_200&pagination=true)
+    → 본문을 data/market/raw/turnover_xhr_3_1.json 에 남겼다  (https://finance.daum.net/api/quotes/K2G01P?summary=true&changeStatistics=true)
+    → 본문을 data/market/raw/turnover_xhr_3_2.json 에 남겼다  (https://finance.daum.net/api/market_index/times?page=1&perPage=10&market=KOSPI_200&pagination=true)
+
+### 코스피 상세(거래대금 과녁)  https://stock.naver.com/domestic/index/KOSPI/price
+    첫 응답 200
+    눌러 봄: 「일별」
+    눌러 봄: 「시세」
+    눌러 봄: 「거래」
+    눌러 봄: 「더보기」
+    화면 글자: 거래대금 없음 · 거래량 있음
+    화면 안의 관련 링크:
+      국내 / 국내 지수·선물 → https://stock.naver.com/market/stock/kr
+      차트·시세 → https://stock.naver.com/domestic/index/KOSPI/price
+    [200] 날짜   5 개 ·거래대금말 ·   22512 bytes · application/json · https://polling.finance.naver.com/api/realtime/domestic/stock/000270,000660,005380,005490,005930,006400,034020,035420,035720,066570
+    [200] 날짜   4 개 ·거래대금말 ·   22517 bytes · application/json · https://polling.finance.naver.com/api/realtime/domestic/stock/000270,000660,005380,005490,005930,006400,034020,035420,035720,066570
+    [200] 날짜   3 개 ·거래대금말 ·   16278 bytes · application/json · https://stock.naver.com/api/securityFe/api/index/KOSPI/integration
+    [200] 날짜   3 개 ·거래대금말 ·   22512 bytes · application/json · https://polling.finance.naver.com/api/realtime/domestic/stock/000270,000660,005380,005490,005930,006400,034020,035420,035720,066570
+    [200] 날짜   2 개 ·거래대금말 ·    2904 bytes · application/json · https://polling.finance.naver.com/api/realtime/domestic/index/KOSPI,KOSDAQ,KPI200
+    [200] 날짜   2 개 ·거래대금말 ·    1010 bytes · application/json · https://polling.finance.naver.com/api/realtime/domestic/index/KOSPI
+    [200] 날짜   2 개 ·거래대금말 ·    2936 bytes · application/json · https://polling.finance.naver.com/api/realtime/worldstock/index/.DJI,.INX,.IXIC
+    [200] 날짜   2 개 ·거래대금말 ·     829 bytes · application/json · https://polling.finance.naver.com/api/realtime/marketindex/metals/GCcv1
+    [200] 날짜   2 개 ·거래대금말 ·     830 bytes · application/json · https://polling.finance.naver.com/api/realtime/marketindex/energy/CLcv1
+    [200] 날짜   2 개 ·거래대금말 ·    1010 bytes · application/json · https://polling.finance.naver.com/api/realtime/domestic/index/KOSPI
+    [200] 날짜   2 개 ·거래대금말 ·    2904 bytes · application/json · https://polling.finance.naver.com/api/realtime/domestic/index/KOSPI,KOSDAQ,KPI200
+    [200] 날짜   2 개 ·거래대금말 ·    2936 bytes · application/json · https://polling.finance.naver.com/api/realtime/worldstock/index/.DJI,.INX,.IXIC
+    [200] 날짜   2 개 ·거래대금말 ·     829 bytes · application/json · https://polling.finance.naver.com/api/realtime/marketindex/metals/GCcv1
+    [200] 날짜   2 개 ·거래대금말 ·     830 bytes · application/json · https://polling.finance.naver.com/api/realtime/marketindex/energy/CLcv1
+    [200] 날짜   2 개 ·거래대금말 ·    1010 bytes · application/json · https://polling.finance.naver.com/api/realtime/domestic/index/KOSPI
+    [200] 날짜   2 개 ·거래대금말 ·    1010 bytes · application/json · https://polling.finance.naver.com/api/realtime/domestic/index/KOSPI
+    [200] 날짜   2 개 ·거래대금말 ·    2904 bytes · application/json · https://polling.finance.naver.com/api/realtime/domestic/index/KOSPI,KOSDAQ,KPI200
+    [200] 날짜   2 개 ·거래대금말 ·    2936 bytes · application/json · https://polling.finance.naver.com/api/realtime/worldstock/index/.DJI,.INX,.IXIC
+    [200] 날짜   2 개 ·거래대금말 ·     829 bytes · application/json · https://polling.finance.naver.com/api/realtime/marketindex/metals/GCcv1
+    [200] 날짜   2 개 ·거래대금말 ·     830 bytes · application/json · https://polling.finance.naver.com/api/realtime/marketindex/energy/CLcv1
+    [200] 날짜   2 개 ·거래대금말 ·    1010 bytes · application/json · https://polling.finance.naver.com/api/realtime/domestic/index/KOSPI
+    [200] 날짜   0 개 ·거래대금말 ·  135822 bytes · text/html · https://stock.naver.com/domestic/index/KOSPI/price
+    [200] 날짜 288 개            ·   47819 bytes · application/json · https://api.stock.naver.com/chart/domestic/index/KOSPI/day?startDateTime=202507170900&endDateTime=202609181034&wrapper=true
+    [200] 날짜  20 개            ·    5116 bytes · application/json · https://stock.naver.com/api/securityFe/api/index/KOSPI/price?page=1&pageSize=20
+    [200] 날짜  20 개            ·    5126 bytes · application/json · https://stock.naver.com/api/securityFe/api/index/KOSPI/price?page=2&pageSize=20
+    → 본문을 data/market/raw/turnover_xhr_4_0.json 에 남겼다  (https://polling.finance.naver.com/api/realtime/domestic/stock/000270,000660,005380,005490,005930,006400,034020,035420,035720,06657)
+    → 본문을 data/market/raw/turnover_xhr_4_1.json 에 남겼다  (https://polling.finance.naver.com/api/realtime/domestic/stock/000270,000660,005380,005490,005930,006400,034020,035420,035720,06657)
+    → 본문을 data/market/raw/turnover_xhr_4_2.json 에 남겼다  (https://stock.naver.com/api/securityFe/api/index/KOSPI/integration)
+    → 본문을 data/market/raw/turnover_xhr_4_3.json 에 남겼다  (https://polling.finance.naver.com/api/realtime/domestic/stock/000270,000660,005380,005490,005930,006400,034020,035420,035720,06657)
+    → 본문을 data/market/raw/turnover_xhr_4_4.json 에 남겼다  (https://polling.finance.naver.com/api/realtime/domestic/index/KOSPI,KOSDAQ,KPI200)
+    → 본문을 data/market/raw/turnover_xhr_4_5.json 에 남겼다  (https://polling.finance.naver.com/api/realtime/domestic/index/KOSPI)
+    → 본문을 data/market/raw/turnover_xhr_4_6.json 에 남겼다  (https://polling.finance.naver.com/api/realtime/worldstock/index/.DJI,.INX,.IXIC)
+    → 본문을 data/market/raw/turnover_xhr_4_7.json 에 남겼다  (https://polling.finance.naver.com/api/realtime/marketindex/metals/GCcv1)
+
+### 옛 일별시세(410 확인용)  https://finance.naver.com/sise/sise_index_day.naver?code=KOSPI&page=1
+    첫 응답 410
+    눌러 봄: 「일별」
+    눌러 봄: 「시세」
+    눌러 봄: 「거래」
+    눌러 봄: 「일별시세」
+    화면 글자: 거래대금 있음 · 거래량 있음
+      「일별시세 일별시세 날짜 체결가 전일비 등락률 거래량(천주) 거래대금(백만) 이 페이지는 더 이상 제공되지 않습니다. Npay 증권 바로가기 」
+    [410] 날짜   1 개 ·거래대금말 ·    2134 bytes · text/html · https://finance.naver.com/sise/sise_index_day.naver?code=KOSPI&page=1
+    → 본문을 data/market/raw/turnover_xhr_5_0.json 에 남겼다  (https://finance.naver.com/sise/sise_index_day.naver?code=KOSPI&page=1)
+

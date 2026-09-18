@@ -792,11 +792,99 @@ def _investor_urls(now, back=0):
     return ["%s?bizdate=%s&sosok=" % (base, d) for d in days]
 
 
-def naver_investors(now, dump_dir=None):
-    """투자자별 매매동향 — 개인/외국인/기관 순매수, 단위 억원. 약 한 달치.
+# 투자자 구분값. **짐작하지 않고 수집기가 이미 가진 값과 대조해 확정했다**
+# (2026-09-18, 다섯 거래일 × 세 항목이 원 단위까지 일치).
+#
+#   개인   = 8000
+#   외국인 = 9000 + 9001(기타외국인)   ← 9000 만 쓰면 하루 수십억씩 어긋난다
+#   기관계 = 1000 금융투자 · 2000 보험 · 3000 투신 · 3100 사모
+#            · 4000 은행 · 5000 기타금융 · 6000 연기금
+#
+# **7000·7100 은 기타법인이라 기관계에 넣지 않는다.** 7100 은 2026-09-17 에
+# +1조 7,046억으로 기관계(+2,480억)보다 훨씬 컸다 — 잘못 더하면 수급 해석이
+# 통째로 뒤집힌다.
+INV_RETAIL = ("8000",)
+INV_FOREIGN = ("9000", "9001")
+INV_INST = ("1000", "2000", "3000", "3100", "4000", "5000", "6000")
 
-    화면 한 장에 **열 줄**만 나오므로 bizdate 를 2주씩 뒤로 옮겨 세 번 부르고
-    날짜로 합친다. 「이번 주 내내 외국인이 샀는가」를 말하려면 열 줄로는 모자란다.
+TREND_DAILY = "https://stock.naver.com/api/domestic/market/trend/daily"
+
+
+def naver_investors_api(now, market="KOSPI", days=30, dump_dir=None):
+    """**투자자별 매매동향을 화면이 쓰는 그 API 에서 받는다.** 1순위.
+
+    2026-09-18 아침에 옛 화면(`investorDealTrendDay.naver`)이 **HTTP 410
+    (Gone)** 으로 끊겼다 — 「없어졌다」는 뜻이라 일시적 오류가 아니다.
+    2026-09-10 개편으로 상한가 화면이 끊겼을 때와 같은 일이고, 같은 방법으로
+    찾았다: 브라우저로 화면을 열어 오가는 요청을 그대로 적었다
+    (`scripts/probe_daily_xhr.mjs` → `scripts/probe_daily_api.py`).
+
+    옛 화면은 한 번에 **열 줄**만 줘서 bizdate 를 2주씩 옮겨 세 번 불러야
+    했는데, 이 API 는 **한 번에 서른 줄**을 준다(총 5,357일치). 부르는 횟수가
+    셋에서 하나로 줄었다.
+
+    값은 **원 단위**로 오므로 억원으로 바꾼다 — 판과 지침이 모두 억원이다.
+    """
+    url = ("%s?tradeType=KRX&marketType=%s&bizdate=%s&startIdx=0&pageSize=%d"
+           % (TREND_DAILY, market, now.strftime("%Y%m%d"), days))
+    j = json.loads(_get(url, referer="https://stock.naver.com/",
+                        headers={"Accept": "application/json"}))
+    rows = j.get("content") or []
+    if dump_dir:
+        os.makedirs(dump_dir, exist_ok=True)
+        with open(os.path.join(dump_dir, "investors_api_%s.json" % market.lower()),
+                  "w", encoding="utf-8") as f:
+            json.dump(rows[:3], f, ensure_ascii=False, indent=1)
+    out = []
+    for r in rows:
+        amt = {x.get("investorGubun"): x.get("diffValue")
+               for x in (r.get("netAmounts") or [])}
+
+        def s(codes):
+            """원 → 억원. 한 코드라도 없으면 **0 으로 때우지 않고 None 을 낸다.**"""
+            got = [amt.get(c) for c in codes]
+            if any(v is None for v in got):
+                return None
+            return round(sum(float(v) for v in got) / 1e8)
+
+        b = str(r.get("bizdate") or "")
+        if len(b) != 8:
+            continue
+        out.append({
+            "date": "%s.%s.%s" % (b[2:4], b[4:6], b[6:8]),   # 옛 형식과 맞춘다
+            "retail": s(INV_RETAIL),
+            "foreign": s(INV_FOREIGN),
+            "institution": s(INV_INST),
+            "unit": "억원",
+            "source_url": url,
+        })
+    if not out:
+        raise ValueError("투자자별 API 가 빈 목록을 줬다 (%s)" % url[-60:])
+    out.sort(key=lambda r: r["date"], reverse=True)
+    return out
+
+
+def naver_investors(now, dump_dir=None):
+    """투자자별 매매동향 — 개인/외국인/기관 순매수, 단위 억원.
+
+    **API 가 1순위, 옛 화면 긁기가 2순위**다. 옛 화면은 2026-09-18 부터 410
+    이라 지금은 실패하지만, API 가 또 바뀌는 날 두 실패를 함께 보여 주는
+    쪽이 한 줄짜리 오류보다 낫다.
+    """
+    try:
+        return naver_investors_api(now, "KOSPI", 30, dump_dir)
+    except Exception as e:                                    # noqa: BLE001
+        _api_err = "api -> %s: %s" % (type(e).__name__, str(e)[:80])
+    try:
+        return _naver_investors_legacy(now, dump_dir)
+    except Exception as e:                                    # noqa: BLE001
+        raise ValueError("%s | legacy -> %s: %s"
+                         % (_api_err, type(e).__name__, str(e)[:80]))
+
+
+def _naver_investors_legacy(now, dump_dir=None):
+    """옛 화면 긁기(2026-09-18 부터 410). 화면 한 장에 **열 줄**만 나오므로
+    bizdate 를 2주씩 뒤로 옮겨 세 번 부르고 날짜로 합친다.
     """
     seen, merged = set(), []
     for back in (0, 14, 28):
@@ -2753,8 +2841,94 @@ def nyfed_effr():
     return out
 
 
+DAUM_INDEX_DAYS = "https://finance.daum.net/api/market_index/days"
+# 다음이 쓰는 시장 이름. 셋 다 **화면이 부르는 것을 보고** 적었다 —
+# 코스피200 이 `KOSPI_200` 인 것도 짐작이 아니라 관찰에서 읽었다
+# (data/market/raw/turnover_xhr.txt, 2026-09-18).
+DAUM_MARKET = {"KOSPI": "KOSPI", "KOSDAQ": "KOSDAQ", "KPI200": "KOSPI_200"}
+
+
+def index_daily(code, pages=2):
+    """지수 일별시세 — 다음 금융을 먼저, 네이버 옛 화면을 뒤로.
+
+    2026-09-18 아침에 네이버 옛 일별시세가 410(Gone)으로 끊겼다. 그러나
+    옛 화면을 되살릴 수 없다는 것까지가 관찰의 답이었다.
+
+      · 새 지수 상세 화면에는 **거래대금 표 자체가 없다**(화면 글자로 확인).
+      · 값이 남은 두 자리(`integration` 의 「대금」·실시간 폴링)는 **오늘
+        한 점**이고 장전에는 비어 있다. 브리핑은 아침 7시 30분에 돈다.
+      · 손전화 화면도 마찬가지였다. KRX 통계는 로그인 벽이고, 수집기가
+        쓰던 KRX 길 셋도 지금 다 닫혀 있다(403·401·400).
+
+    계열을 주는 곳은 **다음 금융**뿐이었다. 붙이기 전에 저장소에 남은 옛
+    값과 맞춰 봤고 세 날이 원 단위까지 같았다 — 2026-09-16 16,685,829 ·
+    09-15 17,125,579 · 09-14 21,584,368(백만원). 종가와 거래량(천주)도
+    같다. 단위를 짐작하지 않고 대조로 확정한 것이다.
+
+    옛 길을 지우지 않고 뒤에 둔다. 네이버가 되살아나면 그쪽이 다시 받고,
+    다음이 끊기면 이쪽이 받는다 — 한 집에 매이지 않으려는 것이다.
+    """
+    try:
+        return daum_index_daily(code, pages)
+    except Exception as daum_err:                                 # noqa: BLE001
+        try:
+            return naver_index_daily(code, pages)
+        except Exception:                                         # noqa: BLE001
+            raise daum_err
+
+
+def daum_index_daily(code, pages=2):
+    """지수 일별시세 — 다음 금융. 날짜별 종가·거래량·거래대금.
+
+    `accTradePrice` 가 거래대금(백만원), `accTradeVolume` 이 거래량(천주)
+    이다. 네이버는 같은 것을 `accumulatedTradingValue` 로 적는데, 이름이
+    달라 앞선 관찰 두 번이 이 자리를 지나쳤다.
+
+    등락률은 이 응답에 없다. `changePrice` 가 부호를 달고 오므로 전일
+    종가를 되짚어 셈한다 — 2026-09-16 은 90.71/6,627.26 = 1.37% 로 우리가
+    옛 원천에서 받아 두었던 값과 같다.
+    """
+    market = DAUM_MARKET.get(code.upper())
+    if not market:
+        raise ValueError("다음 금융에서 %s 의 시장 이름을 모른다" % code)
+    per = min(60, max(10, pages * 10))
+    url = ("%s?page=1&perPage=%d&market=%s&pagination=true"
+           % (DAUM_INDEX_DAYS, per, market))
+    # 화면 주소에는 밑줄이 없다 — `KOSPI_200` 을 부르는 화면이
+    # `/domestic/kospi200` 이다.
+    page = market.lower().replace("_", "")
+    j = json.loads(_get(url,
+                        referer="https://finance.daum.net/domestic/%s" % page,
+                        headers={"Accept": "application/json"}))
+    series = []
+    for r in j.get("data") or []:
+        day = str(r.get("date") or "")[:10]
+        close, chg = r.get("tradePrice"), r.get("changePrice")
+        if not day or close is None:
+            continue
+        prev = (close - chg) if chg is not None else None
+        series.append({
+            "date": day,
+            "close": close,
+            "change_pct": (round(chg / prev * 100, 2) if prev else None),
+            "volume_k_shares": r.get("accTradeVolume"),     # 천주
+            "value_mn_krw": r.get("accTradePrice"),         # 백만원
+        })
+    if not series:
+        raise ValueError("다음 일별시세 행 없음")
+    # **부른 만큼 담는다.** 옛 원천은 쪽을 더 불러도 20행에서 끊었고, 그
+    # 탓에 코스피200 의 1개월·3개월 수익률이 통째로 비어 있었다(8/22 에
+    # 확인해 적어 둔 그 구멍이다). 다음은 부른 만큼 주므로 20 으로 잘라
+    # 버릴 까닭이 없다 — 코스피·코스닥은 예전과 같이 20행이고, 되짚을
+    # 기간이 필요한 코스피200 만 길어진다.
+    return {"code": code, "unit": {"volume": "천주", "value": "백만원"},
+            "series": series[:per], "source_url": url}
+
+
 def naver_index_daily(code, pages=2):
-    """지수 일별시세 — 날짜별 종가·거래량·거래대금.
+    """지수 일별시세 — 네이버 옛 화면. **2026-09-18 부터 410(Gone).**
+
+    되살아날 때를 대비해 남겨 둔 뒤받이다. 첫 자리는 `daum_index_daily`.
 
     야후는 거래대금을 주지 않는다. 주간 기준선을 잡거나 지난 거래일 수치를
     되짚을 때(모닝 브리핑은 전 거래일을 다룬다) 이 이력이 필요하다.
@@ -4035,9 +4209,15 @@ def main():
     # KPI200 은 쪽을 더 불러도 네이버가 20행 남짓에서 끊는다(14쪽 -> 20행,
     # 8/22 확인). 그래서 1주까지만 닿고 1개월부터는 비는데, 그 사유를 자료에
     # 적어 둔다. 지어내지 않고 「왜 없는지」를 남기는 쪽이다.
+    #
+    # 2026-09-18 부터 첫 자리는 **다음 금융**이다 — 네이버가 지수 거래대금을
+    # 걷어냈기 때문이다(`index_daily` 머리말에 내력을 적어 두었다). KPI200 은
+    # 다음에서의 시장 이름을 모르므로 옛 길로 떨어지고, 그 길이 410 이라
+    # 지금은 빈다. 모르는 이름을 그럴듯하게 적어 넣지 않는다 — 비는 것은
+    # 자료에 그대로 남는다.
     for code, pages in (("KOSPI", 2), ("KOSDAQ", 2), ("KPI200", 6)):
-        v, st = run("daily", naver_index_daily, code, pages)
-        out["sources"]["naver:daily:" + code] = st
+        v, st = run("daily", index_daily, code, pages)
+        out["sources"]["daily:" + code] = st
         if v:
             out.setdefault("index_daily", {})[code.lower()] = v
 
@@ -4058,16 +4238,21 @@ def main():
                       if _iso(r.get("date")) and r.get("close"))
         p = _perf(bars, ks2["close"]) if len(bars) > 2 else None
         if p:
-            p["basis"] = "네이버 KPI200 일별시세 (야후 ^KS200 은 일봉 이력이 짧다)"
+            # 출처를 이름으로 적는다 — 2026-09-18 부터 이 계열은 다음
+            # 금융에서 온다(네이버가 끊겨 갈아 끼웠다). 자료에 실려 나가는
+            # 문구라 바뀐 자리를 그대로 두면 읽는 사람을 속이게 된다.
+            p["basis"] = ("%s 일별시세 (야후 ^KS200 은 일봉 이력이 짧다)"
+                          % ("다음 금융 KPI200"
+                             if "daum.net" in (kd2.get("source_url") or "")
+                             else "네이버 KPI200"))
             ks2["perf"] = p
             missing = [h for h in ("m1", "m3", "m6", "y1", "ytd") if h not in p]
             if missing:
                 ks2["perf_note"] = (
-                    "네이버 KPI200 일별시세가 %d행(%s부터)뿐이라 %s 는 되짚지 못했다. "
-                    "쪽을 더 불러도 네이버가 그쯤에서 끊는다"
+                    "KPI200 일별시세가 %d행(%s부터)뿐이라 %s 는 되짚지 못했다"
                     % (len(bars), bars[0][0].isoformat(), "·".join(missing)))
         else:
-            ks2["perf_note"] = ("야후 ^KS200 일봉이 짧고 네이버 계열도 %d행뿐이라 "
+            ks2["perf_note"] = ("야후 ^KS200 일봉이 짧고 일별시세 계열도 %d행뿐이라 "
                                 "기간 수익률을 낼 수 없다" % len(bars))
 
     # VKOSPI — 야후에 없다

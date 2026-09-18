@@ -1,0 +1,392 @@
+<title>2026년 9월 FOMC 회의 결과 | 미래에셋증권 마포WM</title>
+<style>
+*,*::before,*::after{box-sizing:border-box}
+:root{
+  --primary:#F58220; --primary-active:#CB6015; --secondary:#043B72;
+  --soft:#FAB072; --hi:#D7D7D7;
+  --canvas:#FFFFFF; --subtle:#F7F8FA;
+  --hairline:#CDCECB; --hairline-soft:#E5E4E1;
+  --ink:#1A1A1A; --body:#3D3D3D; --muted:#6C6C6C; --muted-soft:#84888B;
+  --up:#C62828; --down:#043B72;
+  --font-kr:'Pretendard','Apple SD Gothic Neo','Noto Sans KR','Malgun Gothic',system-ui,sans-serif;
+}
+body{margin:0;background:var(--canvas);color:var(--body);font-family:var(--font-kr);
+  font-size:15px;line-height:1.6;font-variant-numeric:tabular-nums}
+.page{max-width:900px;margin:0 auto;padding:0 28px 56px}
+@media (max-width:768px){ .page{padding:0 16px 40px} }
+
+.hero{background:var(--primary);color:#fff;margin:0 -28px 0;padding:30px 28px 26px}
+@media (max-width:768px){ .hero{margin:0 -16px 0;padding:24px 16px 20px} }
+.kick{font-size:12px;letter-spacing:1.2px;font-weight:600;opacity:.92;margin:0 0 7px}
+.hero h1{font-size:31px;font-weight:700;line-height:1.16;letter-spacing:-.5px;margin:0 0 9px}
+@media (max-width:768px){ .hero h1{font-size:24px} }
+.hero .sub{font-size:14.5px;line-height:1.5;margin:0;max-width:64ch;color:rgba(255,255,255,.94)}
+.hero .meta{font-size:11.5px;margin:12px 0 0;color:rgba(255,255,255,.85)}
+
+.sheet{padding-top:22px}
+.sheet + .sheet{border-top:0}
+.rule{height:1px;background:var(--primary);margin:0 0 4px}
+.sec{display:flex;align-items:baseline;gap:10px;margin:0 0 12px}
+.sec .n{font-size:12px;font-weight:700;color:var(--primary);letter-spacing:1px}
+.sec h2{font-size:20px;font-weight:700;color:var(--ink);margin:0;letter-spacing:-.2px}
+.sec .tag{margin-left:auto;font-size:11px;color:var(--muted-soft);border:1px solid var(--hairline);
+  padding:2px 7px;border-radius:2px;white-space:nowrap}
+h3{font-size:14.5px;font-weight:700;color:var(--ink);margin:16px 0 7px}
+p{margin:0 0 9px}
+.lede{font-size:15.5px;line-height:1.62;color:var(--ink);margin:0 0 13px;
+  border-left:3px solid var(--soft);padding-left:12px}
+strong{color:var(--ink);font-weight:700}
+.q{color:var(--secondary);font-weight:700}
+
+table{width:100%;border-collapse:collapse;font-size:12.6px;margin:0 0 6px;
+  border:1px solid var(--hairline)}
+th,td{padding:5px 8px;border:1px solid var(--hairline-soft);text-align:right;vertical-align:top}
+th{background:var(--soft);color:#1A1A1A;font-weight:700;text-align:center;white-space:nowrap}
+td:first-child,th:first-child{text-align:left}
+tbody tr:nth-child(even){background:var(--subtle)}
+tr.hl td{background:var(--hi);font-weight:700}
+td.wrap{text-align:left;line-height:1.45}
+.cap{font-size:11px;color:var(--muted-soft);margin:0 0 14px;line-height:1.45}
+.up{color:var(--up);font-weight:700} .dn{color:var(--down);font-weight:700}
+
+.grid2{display:grid;grid-template-columns:repeat(2,minmax(min(300px,100%),1fr));gap:0 20px}
+.grid3{display:grid;grid-template-columns:repeat(3,minmax(min(190px,100%),1fr));gap:1px;
+  background:var(--hairline);border:1px solid var(--hairline);margin:0 0 14px}
+.kpi{background:#fff;padding:10px 11px}
+.kpi .l{font-size:10.5px;letter-spacing:.4px;color:var(--muted);margin:0 0 4px;font-weight:600}
+.kpi .v{font-size:21px;font-weight:700;color:var(--ink);line-height:1.05;margin:0}
+.kpi .s{font-size:10.5px;color:var(--muted-soft);margin:4px 0 0;line-height:1.35}
+
+blockquote{margin:0 0 10px;padding:9px 12px;background:var(--subtle);
+  border-left:3px solid var(--secondary);font-size:13.5px;line-height:1.55;color:var(--ink)}
+blockquote .who{display:block;font-size:11px;color:var(--muted);margin-top:5px;font-weight:600}
+
+ul{margin:0 0 10px;padding-left:18px}
+li{margin:0 0 5px}
+.note{font-size:11.5px;color:var(--muted-soft);line-height:1.5;
+  border-top:1px solid var(--hairline-soft);padding-top:9px;margin-top:12px}
+.foot{margin-top:20px;padding-top:11px;border-top:1px solid var(--hairline);
+  font-size:11px;line-height:1.55;color:var(--muted-soft)}
+
+@media print{
+  @page{size:A4;margin:8mm 8mm}
+  body{font-size:8.1pt;line-height:1.34}
+  .page{max-width:100%;padding:0}
+  .hero{margin:0;padding:10px 11px 9px}
+  .hero h1{font-size:15pt;margin-bottom:5px} .hero .sub{font-size:8pt;line-height:1.38}
+  .kick{font-size:6.6pt;margin-bottom:4px} .hero .meta{font-size:6.4pt;margin-top:7px}
+  .sheet{padding-top:8px;break-inside:auto}
+  .sheet.brk{break-before:page;padding-top:2px}
+  .sec{margin-bottom:6px} .sec h2{font-size:11pt} .sec .n{font-size:7.6pt}
+  .sec .tag{font-size:6.2pt;padding:1px 5px}
+  h3{font-size:8.7pt;margin:7px 0 3px}
+  .lede{font-size:8.4pt;margin-bottom:6px;padding-left:8px;line-height:1.38}
+  table{font-size:6.8pt;margin-bottom:3px} th,td{padding:1.8px 4px}
+  td.wrap{line-height:1.3}
+  .cap{font-size:6.2pt;margin-bottom:6px;line-height:1.32}
+  blockquote{font-size:7.4pt;padding:4px 7px;margin-bottom:4px;line-height:1.36;break-inside:avoid}
+  blockquote .who{font-size:6.2pt;margin-top:3px}
+  .grid3{margin-bottom:7px} .kpi{padding:6px 7px}
+  .kpi .v{font-size:11.5pt} .kpi .l{font-size:6.4pt;margin-bottom:2px} .kpi .s{font-size:6.2pt;line-height:1.28}
+  p{margin-bottom:4px} ul{margin-bottom:5px;padding-left:14px} li{margin-bottom:2px}
+  .note{font-size:6.4pt;padding-top:5px;margin-top:7px;line-height:1.36}
+  .foot{font-size:6.2pt;margin-top:9px;padding-top:6px}
+  table,blockquote,.grid3,.kpi{break-inside:avoid}
+  h2,h3{break-after:avoid}
+}
+</style>
+
+<div class="page">
+
+<div class="hero">
+  <p class="kick">[사내한] 미래에셋증권 마포WM · 이벤트 브리프</p>
+  <h1>2026년 9월 FOMC &mdash; 3년 2개월 만의 인상,<br>그리고 「완화의 일부를 제거했다」</h1>
+  <p class="sub">연준이 기준금리를 0.25%포인트 올려 3.75~4.00% 로 했습니다. 인상 자체는 예상돼
+    있었고, 시장을 움직인 것은 <strong style="color:#fff">케빈 워시 의장의 회견</strong>이었습니다.
+    이 자료는 <strong style="color:#fff">① 회의 결과 ② 현지 반응 ③ 예상되는 영향</strong> 세 장으로
+    정리한 것입니다.</p>
+  <p class="meta">결정 2026년 9월 16일(현지) · 한국시간 9월 17일(목) 새벽 &middot;
+    작성 2026년 9월 17일(목) 08:03 KST &middot; 시세는 9월 16일 미국 정규장 마감 기준</p>
+</div>
+
+<!-- ─────────────────────────── 1장 ─────────────────────────── -->
+<div class="sheet">
+  <div class="rule"></div>
+  <div class="sec"><span class="n">01</span><h2>회의 결과 &mdash; 무엇이 결정됐나</h2>
+    <span class="tag">2 SOURCES · 연준 성명·점도표 보도</span></div>
+
+  <p class="lede"><strong>기준금리를 연 3.50~3.75% 에서 3.75~4.00% 로 0.25%포인트 올렸습니다.
+    투표는 12 대 0 만장일치</strong>이고, 2023년 7월 이후 <strong>3년 2개월 만의 첫 인상</strong>입니다.
+    함께 나온 점도표와 경제전망은 <strong>인상이 한 번으로 끝나지 않을 수 있다</strong>는 쪽을 가리켰습니다.</p>
+
+  <div class="grid3">
+    <div class="kpi"><p class="l">기준금리 목표범위</p><p class="v">3.75~4.00%</p>
+      <p class="s">3.50~3.75% 에서 +25bp · 12 대 0 만장일치</p></div>
+    <div class="kpi"><p class="l">올해 말 금리 전망 (중간값)</p><p class="v">4.1%</p>
+      <p class="s">6월 3.8% 에서 <span class="up">+0.3%p</span> · 연내 1회 추가 인상 시사</p></div>
+    <div class="kpi"><p class="l">연내 추가 인상을 본 위원</p><p class="v">16 / 18</p>
+      <p class="s">전망을 제출한 18명 가운데 16명</p></div>
+  </div>
+
+  <h3>성명서가 말한 것</h3>
+  <p>연준은 경제를 <strong>강하게</strong> 보고 물가를 <strong>경계</strong>했습니다 &mdash; 이 조합이
+    이번 인상의 논리입니다. 성명은 「경제 활동은 <strong>견조한 속도로 확장</strong>하고 있다」,
+    「생산성 증가세가 강하고 <strong>자본투자도 견조</strong>하다」, 「고용 증가가 노동력 증가 속도에
+    보조를 맞추고 있고 <strong>실업률에도 큰 변화가 없다</strong>」고 적었습니다. 동시에
+    「<strong>인플레이션은 여전히 높은 수준</strong>」이며 이번 조치가 「물가상승률을 목표인 2% 로
+    <strong>보다 신속하게</strong> 되돌리는 데 도움이 될 것」이라고 했습니다.
+    지정학적 상황으로 불확실성은 높지만 <strong>내수는 복원력을 유지</strong>하고 있다는 평가도 덧붙였습니다.</p>
+
+  <h3>점도표 &mdash; 올해뿐 아니라 <span class="q">내년·후년까지</span> 올려 잡았습니다</h3>
+  <table>
+    <thead><tr><th>기준금리 중간값</th><th>6월 전망</th><th>9월 전망</th><th>변화</th><th class="wrap">읽는 법</th></tr></thead>
+    <tbody>
+      <tr class="hl"><td>2026년 말</td><td>3.8%</td><td>4.1%</td><td class="up">+0.3%p</td>
+        <td class="wrap">남은 두 차례 회의에서 <strong>1회 추가 인상</strong>을 시사</td></tr>
+      <tr><td>2027년 말</td><td>3.6%</td><td>4.1%</td><td class="up">+0.5%p</td>
+        <td class="wrap">올해 올린 수준을 <strong>내년 내내 유지</strong>한다는 뜻</td></tr>
+      <tr><td>2028년 말</td><td>3.4%</td><td>3.9%</td><td class="up">+0.5%p</td>
+        <td class="wrap">인하는 <strong>2028년부터 점진적으로</strong></td></tr>
+    </tbody>
+  </table>
+  <p class="cap">가장 크게 달라진 것은 올해가 아니라 <strong>내년</strong>입니다 &mdash; 3.6% 에서 4.1% 로
+    0.5%p 올랐습니다. 「한 번 올리고 오래 둔다」가 이번 점도표의 모양입니다.
+    <strong>점도표는 위원들의 전망이지 결정이 아닙니다.</strong></p>
+
+  <h3>경제전망 &mdash; 성장은 올리고, 실업률은 낮추고, 물가는 올렸습니다</h3>
+  <table>
+    <thead><tr><th>항목 (2026년)</th><th>6월</th><th>9월</th><th>변화</th><th class="wrap">함께 볼 것</th></tr></thead>
+    <tbody>
+      <tr><td>실질 GDP 성장률</td><td>2.2%</td><td>2.3%</td><td class="up">+0.1%p</td>
+        <td class="wrap">2027년도 2.3% → 2.4% 로 상향</td></tr>
+      <tr><td>실업률 (연말)</td><td>4.3%</td><td>4.1%</td><td class="dn">&minus;0.2%p</td>
+        <td class="wrap">2027·2028년도 4.1% 로 하향 &mdash; 완전고용 판단</td></tr>
+      <tr class="hl"><td>PCE 물가</td><td>3.6%</td><td>3.7%</td><td class="up">+0.1%p</td>
+        <td class="wrap">2% 복귀는 <strong>2029년</strong>으로 봅니다</td></tr>
+      <tr><td>근원 PCE 물가</td><td>3.3%</td><td>3.4%</td><td class="up">+0.1%p</td>
+        <td class="wrap">2027년 2.5% → 2028년 2.2% → 2029년 2.0%</td></tr>
+    </tbody>
+  </table>
+  <p class="cap">성장 전망을 올리고 실업률 전망을 낮추면서 금리 경로를 크게 올린 것은,
+    <strong>미국 경제가 긴축을 견딜 만큼 탄탄하지만 물가 압력은 예상보다 오래 갈 수 있다</strong>는
+    판단으로 읽힙니다. 물가가 목표에 닿는 시점을 <strong>2029년</strong>으로 본 것이 그 자체로 메시지입니다.</p>
+
+  <p class="note"><strong>한미 금리차</strong> &mdash; 이번 인상으로 미국 상단 기준 한미 금리차가
+    <strong>최대 1%포인트</strong>가 됐습니다 <span style="color:#84888B">(보도 인용, 1 SOURCE)</span>.
+    이 자료의 수치는 연준 성명·점도표·경제전망을 전한 국내 보도 두 곳 이상에서 일치한 값만 실었습니다.</p>
+</div>
+
+<!-- ─────────────────────────── 2장 ─────────────────────────── -->
+<div class="sheet brk">
+  <div class="rule"></div>
+  <div class="sec"><span class="n">02</span><h2>현지 반응 &mdash; 흔든 것은 인상이 아니라 회견이었습니다</h2>
+    <span class="tag">1 SOURCE · 기사에 실린 인용</span></div>
+
+  <p class="lede"><strong>결정 직후 시장은 조용했습니다.</strong> 인상이 90% 넘게 값에 들어가 있었기
+    때문입니다 &mdash; 발표 직후 나스닥은 오히려 <strong>+0.90%</strong>, 10년물은 <strong>4.955%</strong> 로
+    5% 아래였습니다. 값이 돌아선 것은 <strong>오후 2시 30분 워시 의장의 기자회견부터</strong>입니다.</p>
+
+  <h3>의장의 말 &mdash; 시장이 붙든 문장</h3>
+  <blockquote>「현재 금리 환경 수준을 <strong>긴축적이라 규정하기 어렵다</strong>. 그렇기에
+    <strong>완화적 기조를 일부 철회한 것</strong>이다. 우리는 물가 안정이란 책임에 더 집중할 것이다.」
+    <span class="who">케빈 워시 연준 의장 · 9월 16일 기자회견</span></blockquote>
+  <blockquote>「명백한 사실은 <strong>인플레이션이 너무 높고 너무 오랫동안 지속됐다</strong>는 것이다.
+    올여름 물가지표는 기조적인 추세가 의미 있게 개선됐다는 것을 보여주지 않는다.」
+    <span class="who">케빈 워시 · 같은 회견</span></blockquote>
+  <blockquote>「<strong>나는 포워드 가이던스를 제시하는 일을 하지 않는다.</strong> 앞으로 우리가 내릴
+    결정을 미리 판단하지 않겠다.」 &mdash; 추가 인상 여부를 묻는 질문에.
+    트럼프 대통령과의 논의를 묻자 「나는 <strong>월가의 뉴스레터가 아니다</strong>」, 「<strong>독립성은
+    양방향</strong>」이라며 선을 그었습니다.
+    <span class="who">케빈 워시 · 같은 회견</span></blockquote>
+
+  <p><strong>7월 동결에서 7주 만에 인상으로 돌아선 이유로 셋을 들었습니다</strong> &mdash;
+    ① 노동시장을 포함한 광범위한 지표에서 <strong>경제가 강해졌고</strong>,
+    ② 여름철 <strong>물가 추세가 기준을 충족하지 못했으며</strong>,
+    ③ <strong>지정학적 상황에 대한 판단이 달라졌다</strong>는 것입니다.
+    장기금리가 오른 까닭으로도 셋을 짚었습니다 &mdash; 탄탄한 경제, <strong>하이퍼스케일러들의
+    자본지출 급증</strong>, 그리고 지정학에 따른 크랙 스프레드 확대입니다.
+    개별 지표에 매달리는 것은 「<strong>위험한 집착</strong>」이며 「추세가 중요하다」고도 했습니다.</p>
+
+  <h3>시장이 되돌린 폭 &mdash; 회견 전후</h3>
+  <table>
+    <thead><tr><th>지표</th><th>결정 직후</th><th>9/16 마감</th><th class="wrap">무슨 일이 있었나</th></tr></thead>
+    <tbody>
+      <tr><td>나스닥</td><td class="up">+0.90%</td><td class="dn">&minus;0.01%</td>
+        <td class="wrap">상승분을 모두 반납, 사실상 보합</td></tr>
+      <tr class="hl"><td>다우</td><td class="up">+0.04%</td><td class="dn">&minus;1.21%</td>
+        <td class="wrap">장중 600포인트 넘게 하락 &mdash; <strong>금융주가 끌어내렸습니다</strong></td></tr>
+      <tr><td>S&amp;P 500</td><td class="up">+0.46%</td><td class="dn">&minus;0.45%</td>
+        <td class="wrap">회견 시작과 함께 하락 전환</td></tr>
+      <tr class="hl"><td>미 국채 10년물</td><td>4.955%</td><td>5.003%</td>
+        <td class="wrap">5% 를 다시 넘어 마감 &mdash; <strong>종가 기준 19년 만</strong>(WSJ)</td></tr>
+      <tr><td>미 국채 2년물</td><td>4.65%</td><td>4.74%</td>
+        <td class="wrap">정책에 가장 민감한 구간이 <span class="up">+7bp</span></td></tr>
+      <tr><td>10년&ndash;2년 스프레드</td><td>&mdash;</td><td>27bp</td>
+        <td class="wrap">전일 33bp 에서 축소 &mdash; <strong>곡선 평탄화</strong></td></tr>
+      <tr><td>달러인덱스</td><td>&mdash;</td><td>100.34</td>
+        <td class="wrap"><span class="up">+0.69%</span> &mdash; 100 선 위로</td></tr>
+    </tbody>
+  </table>
+  <p class="cap">「결정 직후」는 현지 14시 10분 무렵 보도된 값이고 「마감」은 정규장 종가입니다
+    &mdash; <strong>같은 날 안에서 방향이 바뀐 것</strong>이 이번 회의의 성격을 가장 잘 보여 줍니다.
+    10년물 마감은 재무부 고시로는 5.01% 이며 소수 셋째 자리에서 원천 간 차이가 있습니다.</p>
+
+  <h3>투자전문가 반응 &mdash; 「몇 번 더」로 옮겨 갔습니다</h3>
+  <table>
+    <thead><tr><th>인물 · 기관</th><th class="wrap">발언 요지</th><th>추가 인상 전망</th></tr></thead>
+    <tbody>
+      <tr><td>시마 샤<br><span style="font-size:.86em;color:#6C6C6C">프린시펄애셋매니지먼트</span></td>
+        <td class="wrap">「논쟁이 <strong>금리가 다시 오를지에서 몇 차례 더 인상될지로 이동</strong>했다」 &mdash;
+          만장일치는 에너지 가격과 끈질긴 물가가 <strong>비둘기파까지 움직였음</strong>을 보여 준다</td>
+        <td>한 번으로 그칠<br>가능성 낮음</td></tr>
+      <tr><td>크리슈나 구하<br><span style="font-size:.86em;color:#6C6C6C">에버코어 부회장</span></td>
+        <td class="wrap">회견이 「<strong>일관되게 매파적</strong>」이었고, 「긴축적이라 보기 어렵다」는 표현이
+          「<strong>의장이 금리를 어디까지 올려야 한다고 생각하는지에 대한 판단을 흐트러뜨릴 위험</strong>」이 있다</td>
+        <td>불확실성 확대</td></tr>
+      <tr><td>아트 호건<br><span style="font-size:.86em;color:#6C6C6C">B.라일리웰스</span></td>
+        <td class="wrap">10년물 5% 재돌파는 「<strong>거대한 심리적 수준</strong>」 &mdash; 곡선 반응과
+          고금리 장기화 우려가 단기적으로 증시의 역풍</td>
+        <td>&mdash;</td></tr>
+      <tr><td>모건스탠리 · HSBC</td><td class="wrap">12월 회의에서 한 차례 더</td><td>+1회</td></tr>
+      <tr class="hl"><td>BofA</td><td class="wrap">9월에 더해 추가 인상</td><td>+2회</td></tr>
+      <tr><td>조 라보르냐<br><span style="font-size:.86em;color:#6C6C6C">전 백악관 NEC 수석경제학자</span></td>
+        <td class="wrap">긴 인상 사이클을 예상</td><td>최소 4회</td></tr>
+      <tr><td>시장 반영치<br><span style="font-size:.86em;color:#6C6C6C">블룸버그 인용</span></td>
+        <td class="wrap">10월 FOMC 추가 인상 확률</td><td>약 50%</td></tr>
+    </tbody>
+  </table>
+  <p class="cap">모두 <strong>기사에 실린 대목</strong>입니다 <span style="color:#84888B">(1 SOURCE)</span>
+    &mdash; 리포트 원문은 확인하지 않았습니다. <strong>전망이지 결과가 아닙니다.</strong>
+    같은 사실을 두고 「+1회」에서 「최소 4회」까지 갈리는 것 자체가 지금의 불확실성입니다.</p>
+
+  <h3>반대편 목소리도 있었습니다</h3>
+  <p><strong>씨티그룹</strong>은 「금리 인상 <strong>초기</strong>에는 증시가 흔들릴 수 있지만
+    <strong>6개월&middot;12개월 뒤에는 상승한 경우가 많았다</strong>」며, 앞으로의 핵심 변수로 성장과
+    물가를 꼽았습니다 &mdash; 성장세가 견조하면 증시가 높은 채권금리를 견딜 수 있다는 것입니다.
+    <strong>HSBC</strong> 도 「온건하고 규모가 작은 <strong>금리 정상화 주기(1997년&middot;2016년)</strong>에는
+    첫 인상 후 <strong>3~6개월 내 실적이 개선</strong>되는 것이 일반적」이라고 했습니다.</p>
+</div>
+
+<!-- ─────────────────────────── 3장 ─────────────────────────── -->
+<div class="sheet brk">
+  <div class="rule"></div>
+  <div class="sec"><span class="n">03</span><h2>예상되는 영향 &mdash; 어디로, 어떻게 닿나</h2>
+    <span class="tag">확정된 투자 판단이 아닙니다</span></div>
+
+  <p class="lede"><strong>이번 결정의 무게는 「0.25%p」가 아니라 「끝을 알 수 없게 됐다」에 있습니다.</strong>
+    시장이 싫어하는 것은 높은 금리 자체보다 <strong>종착점을 가늠할 수 없는 상태</strong>입니다.
+    아래는 그것이 어디에 먼저 닿는지를 경로별로 정리한 것입니다.</p>
+
+  <h3>미국 &mdash; 업종이 금리 하나로 갈립니다</h3>
+  <table>
+    <thead><tr><th>경로</th><th class="wrap">무슨 일이 일어나나</th><th class="wrap">9/16 에 실제로</th></tr></thead>
+    <tbody>
+      <tr class="hl"><td><strong>금융</strong></td>
+        <td class="wrap">추가 인상이 대출 증가와 경기에 부담. 예대마진보다 <strong>자산건전성·거래량</strong> 우려가 앞섬</td>
+        <td class="wrap">업종 <span class="dn">&minus;1.62%</span> · 은행주 ETF(KBE) <span class="dn">&minus;2.6%</span> 로
+          <strong>2월 이후 최악</strong> · 골드만삭스·아멕스 4% 가까이 하락</td></tr>
+      <tr><td><strong>장기 성장주</strong></td>
+        <td class="wrap">할인율이 오르면 <strong>이익이 먼 쪽</strong>이 먼저 맞음</td>
+        <td class="wrap">플랫폼 하락(MS·아마존·알파벳) &mdash; 다만 반도체는 올라 <strong>갈렸습니다</strong></td></tr>
+      <tr><td><strong>에너지</strong></td>
+        <td class="wrap">금리보다 <strong>유가</strong>에 연동</td>
+        <td class="wrap">업종 <span class="dn">&minus;2.88%</span> &mdash; 사우디의 오만 경유 추가 공급 보도로 유가 급락</td></tr>
+      <tr><td><strong>채권</strong></td>
+        <td class="wrap">짧은 쪽은 정책, 긴 쪽은 성장·물가 기대</td>
+        <td class="wrap">2년물 <span class="up">+7bp</span> · 30년물 <span class="dn">&minus;1bp</span> &rarr;
+          <strong>곡선 평탄화</strong>(33 → 27bp)</td></tr>
+    </tbody>
+  </table>
+  <p class="cap"><strong>곡선 평탄화가 이번 회의의 요약입니다</strong> &mdash;
+    「지금 더 조이고, 그래서 나중 성장은 덜 본다」를 시장이 값으로 적은 것입니다.</p>
+
+  <h3>한국 &mdash; 가장 빠른 경로는 환율입니다</h3>
+  <ul>
+    <li><strong>① 환율.</strong> 달러인덱스가 100 을 넘었고 원/달러는 이틀 연속 올랐습니다. 연준이 추가
+      인상을 가리키는 동안에는 달러 쪽 힘이 쉽게 빠지지 않습니다. 원화 약세는
+      <strong>수입물가를 올리고 외국인 수급에 불리</strong>합니다 &mdash; 외국인이
+      <strong>엿새째 순매도</strong>인 지금 국면에서 특히 그렇습니다.</li>
+    <li><strong>② 한미 금리차.</strong> 미국 상단 기준 <strong>최대 1%포인트</strong>로 벌어졌습니다.
+      금리차 자체가 곧바로 자금 유출을 뜻하지는 않지만, 환헤지 비용과 원화 방향에 얹히는 압력입니다.</li>
+    <li><strong>③ 업종.</strong> 간밤 미국에서 금융이 가장 크게 맞았지만, <strong>국내 은행주는
+      금리 상승 자체가 이익에 나쁘지 않아</strong> 같은 방향을 단정할 수 없습니다. 반면
+      <strong>이익이 먼 성장주</strong>와 <strong>차입이 많은 업종</strong>(건설·부동산·일부 바이오)은
+      미국과 같은 논리를 그대로 받습니다.</li>
+    <li><strong>④ 유가.</strong> 이번엔 <strong>반대 방향으로 도왔습니다.</strong> 유가가 꺾이면 원유를
+      달러로 사는 국내 물가에 부담을 덜어 줍니다 &mdash; 다만 정유주는 그만큼 되돌렸습니다.</li>
+  </ul>
+
+  <h3>「5% 금리」를 어떻게 읽을 것인가 &mdash; 국내 하우스 시각</h3>
+  <blockquote><strong>KB증권</strong>은 최근 금리 급등의 직접적인 원인으로 <strong>유가</strong>를 지목했습니다.
+    WTI 가 90달러를 넘을 때 10년물이 4.8% 를 뚫었고 100달러를 넘자 5% 를 돌파했다는 것입니다 &mdash;
+    대략 <strong>유가 10달러당 금리 10~20bp</strong>. 따라서 「WTI 가 100달러 아래로 내려와야 10년물도
+    5% 밑으로 안정될 가능성이 높다」고 봤습니다.
+    <span class="who">이은택 KB증권 연구원 · 기사 인용(1 SOURCE)</span></blockquote>
+  <p>같은 분석은 <strong>거품 붕괴로 부르기엔 이르다</strong>고 했습니다. 과거 130년간 세 차례 사례에서
+    두 조건을 제시했는데 &mdash; <strong>①</strong> 10년물이 5.0~5.3% 를 일시적으로가 아니라
+    <strong>추세적으로</strong> 돌파하고, <strong>②</strong> 주거비를 제외한 <strong>경직적 물가가 다시
+    추세 상승</strong>하는 것 &mdash; <strong>지금은 ①의 초입이고 ②는 아직 나타나지 않았다</strong>는 것입니다.
+    PER 에 본격적으로 압박을 준 영역은 대체로 <strong>5% 중반</strong>이었다고도 덧붙였습니다.
+    <strong>전망일 뿐 결과가 아닙니다.</strong></p>
+
+  <h3>앞으로 무엇을 보아야 하나</h3>
+  <table>
+    <thead><tr><th>볼 것</th><th>언제</th><th class="wrap">왜 그것인가</th></tr></thead>
+    <tbody>
+      <tr class="hl"><td>사우디 송유관 재개</td><td>10월 전후 (추정)</td>
+        <td class="wrap"><strong>유가가 금리의 상류</strong>입니다. 복구 예상 기간은 「매우 이른 시일」부터
+          <strong>최대 8주</strong>까지 엇갈립니다 &mdash; 이 폭 자체가 지금의 불확실성</td></tr>
+      <tr><td>미국 물가 추세</td><td>월별 CPI·PCE</td>
+        <td class="wrap">의장이 「개별 지표가 아니라 <strong>추세</strong>」라고 못박았으므로,
+          한 달치가 아니라 <strong>방향</strong>이 인상 횟수를 정합니다</td></tr>
+      <tr><td>10월 FOMC</td><td>다음 회의</td>
+        <td class="wrap">시장 반영 확률 <strong>약 50%</strong> &mdash; 여기서 갈립니다</td></tr>
+      <tr><td>국내 수출 단가·물량</td><td>월 중순·말 속보</td>
+        <td class="wrap">고금리·강달러가 <strong>실물에 닿았는지</strong>를 보는 첫 국내 자료</td></tr>
+      <tr><td>추석 연휴 뒤 재개장</td><td>9/28(월)</td>
+        <td class="wrap">9/23 마감 뒤 닫혀 그사이 <strong>미국이 두 번 더 마감</strong>합니다 &mdash;
+          재개장 아침이 이틀치를 한꺼번에 받습니다</td></tr>
+    </tbody>
+  </table>
+
+  <h3>고객 응대 &mdash; 실제로 받는 질문과 답변</h3>
+  <p style="font-size:.93em;color:#6C6C6C;margin-bottom:8px">아래는 <strong>그대로 읽어 드려도 되는 문장</strong>으로 썼습니다. 숫자는 모두 이 자료의 표에 있는 값입니다. <strong>확정된 투자 판단이 아닙니다.</strong></p>
+  <table>
+    <thead><tr><th style="width:26%">고객 질문</th><th class="wrap">이렇게 말씀드리십시오</th></tr></thead>
+    <tbody>
+      <tr><td><strong>「금리 올렸는데<br>왜 주가가 빠졌나요?」</strong></td>
+        <td class="wrap">「<strong>인상은 이미 값에 들어가 있었습니다</strong> &mdash; 발표 직후에는 오히려 올랐습니다. 값을 돌려세운 것은 <strong>회견의 한 문장</strong>이었습니다. 의장이 지금 금리도 「긴축적이라 보기 어렵다」고 했는데, <strong>지금이 조이는 수준이 아니라면 끝이 어디인지 알 수 없어집니다.</strong> 시장이 싫어하는 것은 높은 금리보다 <strong>끝을 모르는 상태</strong>입니다.」</td></tr>
+      <tr class="hl"><td><strong>「앞으로 몇 번<br>더 올리나요?」</strong></td>
+        <td class="wrap">「<strong>연준도 숫자를 약속하지 않았습니다.</strong> 다만 점도표에서 <strong>18명 중 16명</strong>이 연내 한 번 더를 봤습니다. 시장은 10월 추가 인상 확률을 <strong>약 50%</strong> 로 보고 있고, 증권사 전망은 <strong>+1회에서 최소 4회까지</strong> 갈립니다. <strong>전망이지 결정이 아닙니다</strong> &mdash; 앞으로 나올 물가 지표가 그 횟수를 정합니다.」</td></tr>
+      <tr><td><strong>「제 예금&middot;대출<br>금리는요?」</strong></td>
+        <td class="wrap">「올린 것은 <strong>미국</strong> 금리입니다. 국내 예금&middot;대출에 바로 닿는 것은 <strong>CD&middot;COFIX</strong> 이고 아직 그만큼 움직이지 않았습니다. 다만 한미 금리차가 <strong>최대 1%포인트</strong>까지 벌어져 <strong>원화와 수입물가를 통해 간접적으로</strong> 옵니다 &mdash; 시차를 두고 보셔야 합니다.」</td></tr>
+      <tr><td><strong>「달러를 지금<br>사야 하나요?」</strong></td>
+        <td class="wrap">「<strong>고점을 아는 사람은 없습니다.</strong> 지금은 달러인덱스가 100 을 넘었고, 연준이 추가 인상을 가리키는 동안에는 달러가 쉽게 약해지지 않습니다. 다만 <strong>유가가 꺾인 것은 반대 방향</strong>입니다. 실수요(유학&middot;여행&middot;결제)라면 <strong>한 번에 하지 마시고 나누시는 편</strong>이 평균을 고르게 합니다.」</td></tr>
+      <tr class="hl"><td><strong>「주식을 지금<br>정리해야 하나요?」</strong></td>
+        <td class="wrap">「<strong>지금 파는 것이 정답이라고 말씀드릴 근거는 없습니다.</strong> 씨티그룹은 「인상 <strong>초기</strong>에는 흔들려도 <strong>6~12개월 뒤에는 오른 경우가 많았다</strong>」고 했고, HSBC 도 과거 소규모 정상화 주기에서는 첫 인상 뒤 3~6개월 내 실적이 개선됐다고 했습니다. 다만 <strong>업종은 분명히 갈립니다</strong> &mdash; 금융과 이익이 먼 성장주가 먼저 맞습니다. <strong>무엇을 들고 계신지부터 보시는 것</strong>이 순서입니다.」</td></tr>
+      <tr><td><strong>「이게 폭락의<br>시작인가요?」</strong></td>
+        <td class="wrap">「<strong>그렇게 볼 근거는 아직 충분하지 않습니다.</strong> KB증권은 거품 붕괴의 두 조건으로 &#9312; 10년물이 <strong>추세적으로</strong> 5.0~5.3% 를 넘고 &#9313; 주거비 제외 물가가 다시 오르는 것을 들었는데, <strong>지금은 &#9312;의 초입이고 &#9313;는 아직 없습니다.</strong> 금리가 무거운 <strong>중력</strong>인 것은 맞지만, 중력이 세졌다고 곧바로 떨어지는 것은 아닙니다.」</td></tr>
+    </tbody>
+  </table>
+  <p class="cap">답변에 쓰인 기관 전망은 모두 <strong>기사에 실린 대목</strong>입니다 <span style="color:#84888B">(1 SOURCE)</span>. 고객께 전하실 때 <strong>「○○증권은 …라고 했습니다」처럼 출처를 붙여</strong> 말씀하시면 전망을 사실로 오해하실 여지가 줄어듭니다.</p>
+
+
+  <p class="note"><strong>자료의 한계 &mdash; 먼저 밝힙니다.</strong>
+    ① 이 자료의 연준 성명·점도표·경제전망 수치는 <strong>국내 보도를 통해 확인</strong>한 것이고
+    연준 원문(Statement·SEP)을 직접 열어 대조하지는 않았습니다.
+    ② 투자전문가 코멘트는 모두 <strong>기사에 실린 대목</strong>이며 리포트 원문이 아닙니다
+    <span style="color:#84888B">(1 SOURCE)</span>.
+    ③ 시세는 <strong>9월 16일 미국 정규장 마감</strong>이며, 「결정 직후」 값은 현지 14시 10분 무렵
+    보도된 <strong>장중값</strong>입니다.
+    ④ 10월 인상 확률 50% 는 <strong>보도가 인용한 시장 반영치</strong>로, 시점에 따라 달라집니다.
+    ⑤ <strong>전망을 결과처럼 읽지 마십시오</strong> &mdash; 이 자료에서 확정된 사실은 1장의 결정 내용뿐입니다.</p>
+
+  <div class="foot">
+    <p>미래에셋증권 마포WM · 내부 참고용입니다. 특정 종목의 매매를 권유하지 않으며,
+      투자 판단의 최종 책임은 투자자 본인에게 있습니다. 확정된 투자 판단이 아닙니다.</p>
+    <p>작성 2026년 9월 17일(목) KST · 시세 출처: 야후 파이낸스·미 재무부(수집 시각 09-17 07:40 KST) ·
+      발언과 전망 출처: 그날 수집된 국내 보도 원문</p>
+  </div>
+</div>
+
+</div>
