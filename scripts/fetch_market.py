@@ -2841,8 +2841,86 @@ def nyfed_effr():
     return out
 
 
+DAUM_INDEX_DAYS = "https://finance.daum.net/api/market_index/days"
+# 다음이 쓰는 시장 이름. KPI200 은 여기 없다 — 이름을 모르므로 **적지
+# 않는다.** 모르는 것을 그럴듯하게 적어 넣는 것이 이 항목을 두 번 잃게
+# 만든 버릇이다.
+DAUM_MARKET = {"KOSPI": "KOSPI", "KOSDAQ": "KOSDAQ"}
+
+
+def index_daily(code, pages=2):
+    """지수 일별시세 — 다음 금융을 먼저, 네이버 옛 화면을 뒤로.
+
+    2026-09-18 아침에 네이버 옛 일별시세가 410(Gone)으로 끊겼다. 그러나
+    옛 화면을 되살릴 수 없다는 것까지가 관찰의 답이었다.
+
+      · 새 지수 상세 화면에는 **거래대금 표 자체가 없다**(화면 글자로 확인).
+      · 값이 남은 두 자리(`integration` 의 「대금」·실시간 폴링)는 **오늘
+        한 점**이고 장전에는 비어 있다. 브리핑은 아침 7시 30분에 돈다.
+      · 손전화 화면도 마찬가지였다. KRX 통계는 로그인 벽이고, 수집기가
+        쓰던 KRX 길 셋도 지금 다 닫혀 있다(403·401·400).
+
+    계열을 주는 곳은 **다음 금융**뿐이었다. 붙이기 전에 저장소에 남은 옛
+    값과 맞춰 봤고 세 날이 원 단위까지 같았다 — 2026-09-16 16,685,829 ·
+    09-15 17,125,579 · 09-14 21,584,368(백만원). 종가와 거래량(천주)도
+    같다. 단위를 짐작하지 않고 대조로 확정한 것이다.
+
+    옛 길을 지우지 않고 뒤에 둔다. 네이버가 되살아나면 그쪽이 다시 받고,
+    다음이 끊기면 이쪽이 받는다 — 한 집에 매이지 않으려는 것이다.
+    """
+    try:
+        return daum_index_daily(code, pages)
+    except Exception as daum_err:                                 # noqa: BLE001
+        try:
+            return naver_index_daily(code, pages)
+        except Exception:                                         # noqa: BLE001
+            raise daum_err
+
+
+def daum_index_daily(code, pages=2):
+    """지수 일별시세 — 다음 금융. 날짜별 종가·거래량·거래대금.
+
+    `accTradePrice` 가 거래대금(백만원), `accTradeVolume` 이 거래량(천주)
+    이다. 네이버는 같은 것을 `accumulatedTradingValue` 로 적는데, 이름이
+    달라 앞선 관찰 두 번이 이 자리를 지나쳤다.
+
+    등락률은 이 응답에 없다. `changePrice` 가 부호를 달고 오므로 전일
+    종가를 되짚어 셈한다 — 2026-09-16 은 90.71/6,627.26 = 1.37% 로 우리가
+    옛 원천에서 받아 두었던 값과 같다.
+    """
+    market = DAUM_MARKET.get(code.upper())
+    if not market:
+        raise ValueError("다음 금융에서 %s 의 시장 이름을 모른다" % code)
+    per = min(60, max(10, pages * 10))
+    url = ("%s?page=1&perPage=%d&market=%s&pagination=true"
+           % (DAUM_INDEX_DAYS, per, market))
+    j = json.loads(_get(url,
+                        referer="https://finance.daum.net/domestic/%s" % market.lower(),
+                        headers={"Accept": "application/json"}))
+    series = []
+    for r in j.get("data") or []:
+        day = str(r.get("date") or "")[:10]
+        close, chg = r.get("tradePrice"), r.get("changePrice")
+        if not day or close is None:
+            continue
+        prev = (close - chg) if chg is not None else None
+        series.append({
+            "date": day,
+            "close": close,
+            "change_pct": (round(chg / prev * 100, 2) if prev else None),
+            "volume_k_shares": r.get("accTradeVolume"),     # 천주
+            "value_mn_krw": r.get("accTradePrice"),         # 백만원
+        })
+    if not series:
+        raise ValueError("다음 일별시세 행 없음")
+    return {"code": code, "unit": {"volume": "천주", "value": "백만원"},
+            "series": series[:20], "source_url": url}
+
+
 def naver_index_daily(code, pages=2):
-    """지수 일별시세 — 날짜별 종가·거래량·거래대금.
+    """지수 일별시세 — 네이버 옛 화면. **2026-09-18 부터 410(Gone).**
+
+    되살아날 때를 대비해 남겨 둔 뒤받이다. 첫 자리는 `daum_index_daily`.
 
     야후는 거래대금을 주지 않는다. 주간 기준선을 잡거나 지난 거래일 수치를
     되짚을 때(모닝 브리핑은 전 거래일을 다룬다) 이 이력이 필요하다.
@@ -4123,9 +4201,15 @@ def main():
     # KPI200 은 쪽을 더 불러도 네이버가 20행 남짓에서 끊는다(14쪽 -> 20행,
     # 8/22 확인). 그래서 1주까지만 닿고 1개월부터는 비는데, 그 사유를 자료에
     # 적어 둔다. 지어내지 않고 「왜 없는지」를 남기는 쪽이다.
+    #
+    # 2026-09-18 부터 첫 자리는 **다음 금융**이다 — 네이버가 지수 거래대금을
+    # 걷어냈기 때문이다(`index_daily` 머리말에 내력을 적어 두었다). KPI200 은
+    # 다음에서의 시장 이름을 모르므로 옛 길로 떨어지고, 그 길이 410 이라
+    # 지금은 빈다. 모르는 이름을 그럴듯하게 적어 넣지 않는다 — 비는 것은
+    # 자료에 그대로 남는다.
     for code, pages in (("KOSPI", 2), ("KOSDAQ", 2), ("KPI200", 6)):
-        v, st = run("daily", naver_index_daily, code, pages)
-        out["sources"]["naver:daily:" + code] = st
+        v, st = run("daily", index_daily, code, pages)
+        out["sources"]["daily:" + code] = st
         if v:
             out.setdefault("index_daily", {})[code.lower()] = v
 
