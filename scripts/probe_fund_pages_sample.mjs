@@ -31,6 +31,7 @@ import { createRequire } from 'node:module';
 /* 규칙은 scripts/fund_doc_anchors.mjs 한 곳에만 있다 — 표본과 전량이 같은 규칙을
    써야 표본에서 본 적중률이 전량에서 그대로 나온다. */
 import { ANCHORS, mapPages, flat, checkOrder, BODY_SEQ, HEAD } from './fund_doc_anchors.mjs';
+import { docPages } from './fund_doc_text.mjs';
 
 const require0 = createRequire(import.meta.url);
 const pdfjs = require0('pdfjs-dist/legacy/build/pdf.js');
@@ -41,14 +42,15 @@ const HOW_MANY = Number(process.argv[2] || 40);
 const log = (s = '') => console.log(s);
 const head = (s) => { log(); log('━'.repeat(74)); log(s); log('━'.repeat(74)); };
 
+/* ★ 글 뽑는 법은 전량 판독기와 같은 것을 쓴다 ★
+   앞서는 조각을 그냥 공백으로 이어 붙였는데, 판독기는 x/y 좌표로 줄을 다시 세우고
+   칸을 탭으로 가른다. flat() 을 거쳐도 둘은 같아지지 않아, 이 조사가 7/7 로
+   통과시킨 종목(KR5212472819)이 전량 지도에는 없었다. 규칙만 한곳에 모으고 글
+   뽑는 법을 두 벌로 뒀던 탓이다 — 같은 글을 봐야 같은 답이 나온다. */
 async function pdfPages(buf) {
   const doc = await pdfjs.getDocument({ data: new Uint8Array(buf), verbosity: 0 }).promise;
-  const out = [];
-  for (let i = 1; i <= doc.numPages; i++) {
-    const tc = await (await doc.getPage(i)).getTextContent();
-    out.push(flat(tc.items.map((it) => it.str).join(' ')));
-  }
-  return out;
+  const { perPage } = await docPages(doc);
+  return perPage.map(flat);   /* 판독기도 mapPages 에 넘기기 전에 이렇게 한다 */
 }
 
 async function main() {
