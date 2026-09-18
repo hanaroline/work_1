@@ -392,17 +392,23 @@ def main(argv):
         if limit:
             paths = paths[:limit]
         cnt = 0
+        used = {}
         for p in paths:
-            bars = B.load_bars(branch, p)
+            # **백테스트와 같은 문을 쓴다**(B.bars_for). 갈라 두면 화면이 네이버로
+            # 셈한 신호를 내면서 성적표는 야후로 잰 것이 된다.
+            bars, src = B.bars_for(mk, branch, p)
             if not bars:
                 continue
+            used[src] = used.get(src, 0) + 1
             sym = os.path.basename(p)[:-5]
             bench = [idx_close.get(b['d']) for b in bars] if (mk == 'KR' and idx_close) else None
             result['items'].append(one(bars, bench, names.get(sym, sym), sym, mk,
                                        flow=flows.get(sym) if mk == 'KR' else None))
             cnt += 1
         result['universe'][mk] = cnt
-        sys.stderr.write('%s %d 종목\n' % (mk, cnt))
+        result.setdefault('price_sources', {})[mk] = used
+        sys.stderr.write('%s %d 종목 — 가격 출처 %s\n'
+                         % (mk, cnt, json.dumps(used, ensure_ascii=False)))
 
     # 화면이 목록을 빨리 그릴 수 있도록 요약만 따로 뽑아 둔다
     result['summary'] = []
@@ -450,6 +456,30 @@ def main(argv):
                             ' 다시 돌리기 전까지는 성적을 그대로 읽지 마십시오.'}
                 sys.stderr.write('::warning::backtest.json 이 지금 모델의 것이 아니다 '
                                  '(%s != %s)\n' % (bh or '없음', result['engine_hash']))
+
+            # **어느 가격으로 잰 성적인가.** 모델이 같아도 가격 출처가 다르면
+            # 그 성적은 지금 신호의 것이 아니다. 2026-09-18 에 국내 일봉을
+            # 야후에서 네이버로 옮기면서 실제로 생긴 문제다 — 엔진 해시는 그대로라
+            # 기존 검사로는 잡히지 않는다. 있는 검사를 늘리는 것이 아니라
+            # **다른 것을 재는 검사를 하나 더 두는 것**이다.
+            def _kind(srcs):
+                """{'KR': {'naver': 100}} → 'KR:naver' 꼴로 견줄 수 있게 줄인다."""
+                out = []
+                for m in sorted(srcs or {}):
+                    u = srcs[m] or {}
+                    out.append('%s:%s' % (m, '+'.join(sorted(k for k in u if k))))
+                return ','.join(out) or '(적히지 않음)'
+
+            cur_src, bt_src = _kind(result.get('price_sources')), _kind(bt.get('price_sources'))
+            if cur_src != bt_src:
+                result['backtest_price_stale'] = {
+                    'backtest_prices': bt_src, 'current_prices': cur_src,
+                    'text': ('아래 성적은 **지금과 다른 가격으로 잰 것입니다** '
+                             '(성적 %s / 지금 %s). 모델은 같지만 먹인 일봉이 다릅니다 — '
+                             '다시 돌리기 전까지 성적을 그대로 읽지 마십시오.'
+                             % (bt_src, cur_src))}
+                sys.stderr.write('::warning::backtest.json 이 다른 가격으로 잰 것이다 '
+                                 '(%s != %s)\n' % (bt_src, cur_src))
             for mk in ('KR', 'US'):
                 ds = []
                 for h, hv in (bt.get('horizons') or {}).items():

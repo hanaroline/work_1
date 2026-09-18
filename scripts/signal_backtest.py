@@ -66,6 +66,74 @@ def load_bars(branch, path):
     return out
 
 
+# ── 국내 가격 출처 ────────────────────────────────────────────────
+#
+# 2026-09-18 에 국내 일봉을 야후에서 **네이버로 옮겼다.**
+#
+# 옮긴 까닭은 하나뿐이다 — **야후가 거래일을 통째로 빠뜨렸다.** 2025-09-19(금)이
+# 야후 100 종목 어디에도 없는데 공휴일이 아니고(앞뒤로 09-18·09-22 가 다 있다)
+# 네이버에는 있다. 공통 구간에서 100 종목 모두에 없는 평일 26 일을 뽑아 보면
+# 나머지 25 일은 전부 실제 공휴일이고 그 하루만 아니다. 세션이 빠지면 이동평균·
+# RSI·매물대처럼 **창을 쓰는 지표가 그 뒤로 전부 실제와 다른 날들을 본다.**
+#
+# **종가 갈림은 옮긴 까닭이 아니다.** 두 출처는 98.3% 를 같게 보고, 갈리는
+# 1.7% 는 네이버가 높은 건 20 / 낮은 건 21, 상대의 고저를 벗어난 종가는
+# 네이버 2 / 야후 2 로 완전히 대칭이라 **어느 쪽이 맞는지 가릴 수 없다.**
+# 특히 최근 20 거래일에서 20% 가 갈리는데(그 앞은 0.9%) 어느 쪽이 잠정치인지
+# 아직 모른다. 그 불확실은 출처를 바꿔도 없어지지 않는다 — 다만 이제 어느 쪽을
+# 쓰는지가 산출물에 적히므로, 나중에 판명되면 무엇을 다시 셈해야 하는지 알 수 있다.
+#
+# 미국은 네이버 원천이 없어 야후 그대로다. 두 시장은 따로 재므로 섞이지 않는다.
+PRICE_SOURCE_KR = os.environ.get('SIGNAL_KR_PRICES', 'naver')
+NAVER_KR = os.path.join(ROOT, 'data', 'prices_naver', 'kr100.json')
+
+# 이보다 짧으면 야후로 물러선다. 워크포워드가 서려면 BURN_IN(150) 뒤로도 한참
+# 남아야 하고, 매물대는 120 세션을 본다. 한 해치는 있어야 말이 된다.
+MIN_NAVER_BARS = 260
+
+_NAVER = {'loaded': False, 'stocks': {}}
+
+
+def _naver_bars(sym):
+    if not _NAVER['loaded']:
+        _NAVER['loaded'] = True
+        if os.path.exists(NAVER_KR):
+            try:
+                _NAVER['stocks'] = (json.load(open(NAVER_KR, encoding='utf-8'))
+                                    or {}).get('stocks') or {}
+            except (ValueError, OSError):
+                _NAVER['stocks'] = {}
+    s = _NAVER['stocks'].get(sym)
+    if not s:
+        return None
+    out = []
+    for i in range(len(s['d'])):
+        if None in (s['o'][i], s['h'][i], s['l'][i], s['c'][i]):
+            continue
+        out.append({'d': s['d'][i], 'o': s['o'][i], 'h': s['h'][i],
+                    'l': s['l'][i], 'c': s['c'][i], 'v': s['v'][i] or 0})
+    return out or None
+
+
+def bars_for(market, branch, path):
+    """(봉, 출처). **신호와 백테스트가 같은 문을 쓴다.**
+
+    여기 하나만 고치면 둘이 함께 바뀐다. 갈라 두면 화면이 네이버로 셈한 신호를
+    내면서 성적표는 야후로 잰 것이 되는데, 그건 이 저장소가 engine_hash 로 막아 둔
+    것과 똑같은 종류의 고장이다.
+
+    물러섬을 두는 까닭 — 네이버에 없거나 이력이 짧은 종목까지 떨어뜨리면 목록이
+    구멍 난다. 대신 **어느 종목을 어느 출처로 셈했는지 세어 산출물에 적는다.**
+    """
+    sym = os.path.basename(path)[:-5]
+    if market == 'KR' and PRICE_SOURCE_KR == 'naver':
+        nb = _naver_bars(sym)
+        if nb and len(nb) >= MIN_NAVER_BARS:
+            return nb, 'naver'
+    yb = load_bars(branch, path)
+    return yb, ('yahoo' if yb else None)
+
+
 def list_universe(branch, prefix):
     r = subprocess.run(['git', '-C', ROOT, 'ls-tree', '-r', '--name-only', branch],
                        capture_output=True, text=True)
@@ -409,8 +477,12 @@ def main(argv):
 
     report = {'horizons': {}, 'cost_grid_bps': COST_GRID_BPS,
               'entry_cut': ENTRY_CUT, 'exit_cut': EXIT_CUT}
+    # **어느 가격으로 잰 성적인지 새긴다.** engine_hash 가 「어느 모델인가」를
+    # 막아 주듯, 이것은 「어느 가격인가」를 막는다. 가격 출처를 바꾸고 성적표를
+    # 다시 안 돌리면 화면이 네이버 신호에 야후 성적을 붙이게 된다.
 
     loaded = {}
+    srcs = {}
     for mk, branch, prefix in UNIVERSES:
         if mk not in markets:
             continue
@@ -419,12 +491,16 @@ def main(argv):
             paths = paths[:limit]
         bmap = bench_series(mk)
         rows = []
+        used = {}
         for p in paths:
-            b = load_bars(branch, p)
+            b, src = bars_for(mk, branch, p)
             if b:
+                used[src] = used.get(src, 0) + 1
                 rows.append((os.path.basename(p)[:-5], b, align_bench(b, bmap)))
         loaded[mk] = rows
-        sys.stderr.write('%s 종목 %d 개 읽음\n' % (mk, len(rows)))
+        srcs[mk] = used
+        sys.stderr.write('%s 종목 %d 개 읽음 — 출처 %s\n'
+                         % (mk, len(rows), json.dumps(used, ensure_ascii=False)))
 
     # 지표·축은 시계와 무관하므로 flip 마다 한 번만 셈해 둔다. 이걸 안 하면
     # 시계 네 개에 같은 셈을 네 번 한다.
@@ -502,6 +578,7 @@ def main(argv):
 
     # 이 성적이 어느 모델의 것인지 적어 둔다. build_signals.py 가 이것을 대조해
     # 「지금 모델과 다르다」를 산출물에 남긴다.
+    report['price_sources'] = srcs
     report['engine_hash'] = hashlib.sha256(
         open(os.path.join(ROOT, 'scripts', 'signal_lib.py'), 'rb').read()).hexdigest()[:16]
     add_verdict(report)
