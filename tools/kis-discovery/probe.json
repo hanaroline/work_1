@@ -1,0 +1,287 @@
+{
+ "잰때": "2026-09-18 23:38:32 KST",
+ "환경": "vps",
+ "도메인": "https://openapivts.koreainvestment.com:29443",
+ "결과": [
+  {
+   "묶음": "국내",
+   "이름": "주식현재가 시세",
+   "경로": "/uapi/domestic-stock/v1/quotations/inquire-price",
+   "tr_id": "FHKST01010100",
+   "파라미터": {
+    "FID_COND_MRKT_DIV_CODE": "J",
+    "FID_INPUT_ISCD": "005930"
+   },
+   "rt_cd": "0",
+   "msg_cd": "MCA00000",
+   "msg1": "정상처리 되었습니다.",
+   "확인칸": "output.stck_prpr",
+   "확인값": "260000",
+   "판정": "정상",
+   "응답키": [
+    "msg1",
+    "msg_cd",
+    "output",
+    "rt_cd"
+   ]
+  },
+  {
+   "묶음": "국내",
+   "이름": "주식현재가 일자별(최근 30일)",
+   "경로": "/uapi/domestic-stock/v1/quotations/inquire-daily-price",
+   "tr_id": "FHKST01010400",
+   "파라미터": {
+    "FID_COND_MRKT_DIV_CODE": "J",
+    "FID_INPUT_ISCD": "005930",
+    "FID_PERIOD_DIV_CODE": "D",
+    "FID_ORG_ADJ_PRC": "0"
+   },
+   "판정": "HTTP오류",
+   "상세": "HTTP 500 {\"rt_cd\":\"1\",\"msg1\":\"초당 거래건수를 초과하였습니다.\",\"msg_cd\":\"EGW00201\",\"message\":\"EGW00201\"}"
+  },
+  {
+   "묶음": "국내",
+   "이름": "국내주식기간별시세(일/주/월/년) ★기준 일봉 후보",
+   "경로": "/uapi/domestic-stock/v1/quotations/inquire-daily-itemchartprice",
+   "tr_id": "FHKST03010100",
+   "파라미터": {
+    "FID_COND_MRKT_DIV_CODE": "J",
+    "FID_INPUT_ISCD": "005930",
+    "FID_INPUT_DATE_1": "20250918",
+    "FID_INPUT_DATE_2": "20260918",
+    "FID_PERIOD_DIV_CODE": "D",
+    "FID_ORG_ADJ_PRC": "0"
+   },
+   "rt_cd": "0",
+   "msg_cd": "MCA00000",
+   "msg1": "정상처리 되었습니다.",
+   "확인칸": "output2.0.stck_clpr",
+   "확인값": "260000",
+   "판정": "정상",
+   "응답키": [
+    "msg1",
+    "msg_cd",
+    "output1",
+    "output2",
+    "rt_cd"
+   ]
+  },
+  {
+   "묶음": "국내",
+   "이름": "주식현재가 호가·예상체결",
+   "경로": "/uapi/domestic-stock/v1/quotations/inquire-asking-price-exp-ccn",
+   "tr_id": "FHKST01010200",
+   "파라미터": {
+    "FID_COND_MRKT_DIV_CODE": "J",
+    "FID_INPUT_ISCD": "005930"
+   },
+   "rt_cd": "0",
+   "msg_cd": "MCA00000",
+   "msg1": "정상처리 되었습니다.",
+   "확인칸": "output1.askp1",
+   "확인값": "260000",
+   "판정": "정상",
+   "응답키": [
+    "msg1",
+    "msg_cd",
+    "output1",
+    "output2",
+    "rt_cd"
+   ]
+  },
+  {
+   "묶음": "국내",
+   "이름": "주식현재가 체결",
+   "경로": "/uapi/domestic-stock/v1/quotations/inquire-ccnl",
+   "tr_id": "FHKST01010300",
+   "파라미터": {
+    "FID_COND_MRKT_DIV_CODE": "J",
+    "FID_INPUT_ISCD": "005930"
+   },
+   "rt_cd": "0",
+   "msg_cd": "MCA00000",
+   "msg1": "정상처리 되었습니다.",
+   "확인칸": "output.0.stck_prpr",
+   "확인값": "260000",
+   "판정": "정상",
+   "응답키": [
+    "msg1",
+    "msg_cd",
+    "output",
+    "rt_cd"
+   ]
+  },
+  {
+   "묶음": "지수",
+   "이름": "국내업종 현재지수(코스피)",
+   "경로": "/uapi/domestic-stock/v1/quotations/inquire-index-price",
+   "tr_id": "FHPUP02100000",
+   "파라미터": {
+    "FID_COND_MRKT_DIV_CODE": "U",
+    "FID_INPUT_ISCD": "0001"
+   },
+   "rt_cd": "0",
+   "msg_cd": "MCA00000",
+   "msg1": "정상처리 되었습니다.",
+   "확인칸": "output.bstp_nmix_prpr",
+   "확인값": "6894.23",
+   "판정": "정상",
+   "응답키": [
+    "msg1",
+    "msg_cd",
+    "output",
+    "rt_cd"
+   ]
+  },
+  {
+   "묶음": "지수",
+   "이름": "국내업종 기간별지수(코스피 일봉)",
+   "경로": "/uapi/domestic-stock/v1/quotations/inquire-daily-indexchartprice",
+   "tr_id": "FHKUP03500100",
+   "파라미터": {
+    "FID_COND_MRKT_DIV_CODE": "U",
+    "FID_INPUT_ISCD": "0001",
+    "FID_INPUT_DATE_1": "20250918",
+    "FID_INPUT_DATE_2": "20260918",
+    "FID_PERIOD_DIV_CODE": "D"
+   },
+   "판정": "HTTP오류",
+   "상세": "HTTP 500 {\"rt_cd\":\"1\",\"msg1\":\"초당 거래건수를 초과하였습니다.\",\"msg_cd\":\"EGW00201\",\"message\":\"EGW00201\"}"
+  },
+  {
+   "묶음": "ETF",
+   "이름": "ETF/ETN 현재가",
+   "경로": "/uapi/etfetn/v1/quotations/inquire-price",
+   "tr_id": "FHPST02400000",
+   "파라미터": {
+    "FID_COND_MRKT_DIV_CODE": "J",
+    "FID_INPUT_ISCD": "069500"
+   },
+   "rt_cd": "0",
+   "msg_cd": "MCA00000",
+   "msg1": "정상처리 되었습니다.",
+   "확인칸": "output.stck_prpr",
+   "확인값": "109285",
+   "판정": "정상",
+   "응답키": [
+    "msg1",
+    "msg_cd",
+    "output",
+    "rt_cd"
+   ]
+  },
+  {
+   "묶음": "ETF",
+   "이름": "ETF 구성종목시세",
+   "경로": "/uapi/etfetn/v1/quotations/inquire-component-stock-price",
+   "tr_id": "FHKST121600C0",
+   "파라미터": {
+    "FID_COND_MRKT_DIV_CODE": "J",
+    "FID_INPUT_ISCD": "069500",
+    "FID_COND_SCR_DIV_CODE": "11216"
+   },
+   "rt_cd": "0",
+   "msg_cd": "MCA00000",
+   "msg1": "정상처리 되었습니다.",
+   "확인칸": "output2.0.stck_shrn_iscd",
+   "확인값": "005930",
+   "판정": "정상",
+   "응답키": [
+    "msg1",
+    "msg_cd",
+    "output1",
+    "output2",
+    "rt_cd"
+   ]
+  },
+  {
+   "묶음": "ETF",
+   "이름": "ETF 를 주식 일봉 TR 로 받기(우회로)",
+   "경로": "/uapi/domestic-stock/v1/quotations/inquire-daily-itemchartprice",
+   "tr_id": "FHKST03010100",
+   "파라미터": {
+    "FID_COND_MRKT_DIV_CODE": "J",
+    "FID_INPUT_ISCD": "069500",
+    "FID_INPUT_DATE_1": "20250918",
+    "FID_INPUT_DATE_2": "20260918",
+    "FID_PERIOD_DIV_CODE": "D",
+    "FID_ORG_ADJ_PRC": "0"
+   },
+   "rt_cd": "0",
+   "msg_cd": "MCA00000",
+   "msg1": "정상처리 되었습니다.",
+   "확인칸": "output2.0.stck_clpr",
+   "확인값": "109285",
+   "판정": "정상",
+   "응답키": [
+    "msg1",
+    "msg_cd",
+    "output1",
+    "output2",
+    "rt_cd"
+   ]
+  },
+  {
+   "묶음": "해외",
+   "이름": "해외주식 현재체결가(AAPL/나스닥)",
+   "경로": "/uapi/overseas-price/v1/quotations/price",
+   "tr_id": "HHDFS00000300",
+   "파라미터": {
+    "AUTH": "",
+    "EXCD": "NAS",
+    "SYMB": "AAPL"
+   },
+   "rt_cd": "0",
+   "msg_cd": "MCA00000",
+   "msg1": "정상처리 되었습니다.",
+   "확인칸": "output.last",
+   "확인값": "333.1199",
+   "판정": "정상",
+   "응답키": [
+    "msg1",
+    "msg_cd",
+    "output",
+    "rt_cd"
+   ]
+  },
+  {
+   "묶음": "해외",
+   "이름": "해외주식 현재가상세(AAPL)",
+   "경로": "/uapi/overseas-price/v1/quotations/price-detail",
+   "tr_id": "HHDFS76200200",
+   "파라미터": {
+    "AUTH": "",
+    "EXCD": "NAS",
+    "SYMB": "AAPL"
+   },
+   "rt_cd": "0",
+   "msg_cd": "MCA00000",
+   "msg1": "정상처리 되었습니다.",
+   "확인칸": "output.last",
+   "확인값": "333.1050",
+   "판정": "정상",
+   "응답키": [
+    "msg1",
+    "msg_cd",
+    "output",
+    "rt_cd"
+   ]
+  },
+  {
+   "묶음": "해외",
+   "이름": "해외주식 기간별시세(AAPL 일봉)",
+   "경로": "/uapi/overseas-price/v1/quotations/dailyprice",
+   "tr_id": "HHDFS76240000",
+   "파라미터": {
+    "AUTH": "",
+    "EXCD": "NAS",
+    "SYMB": "AAPL",
+    "GUBN": "0",
+    "BYMD": "",
+    "MODP": "0"
+   },
+   "판정": "HTTP오류",
+   "상세": "HTTP 500 {\"rt_cd\":\"1\",\"msg1\":\"초당 거래건수를 초과하였습니다.\",\"msg_cd\":\"EGW00201\",\"message\":\"EGW00201\"}"
+  }
+ ]
+}
