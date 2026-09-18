@@ -24,7 +24,7 @@ from datetime import date
 from pathlib import Path
 
 from openpyxl import Workbook
-from openpyxl.styles import Alignment, Border, Font, PatternFill, Side
+from openpyxl.styles import Alignment, Border, Font, PatternFill, Protection, Side
 from openpyxl.utils import get_column_letter
 from openpyxl.workbook.defined_name import DefinedName
 from openpyxl.worksheet.datavalidation import DataValidation
@@ -133,11 +133,21 @@ def label(ws, row, col, text, size=10, bold=False, color=INK):
 
 
 def put(ws, row, col, value, fmt=None, *, kind="formula", bold=False, size=10):
-    """kind: input(파랑+노랑) / formula(검정) / source(회색)"""
+    """kind: input(파랑+노랑) / formula(검정) / source(회색)
+
+    노란 칸(input)만 잠금을 풀어 둔다. 장 전체에 보호를 걸어 두었으므로,
+    **노란 칸이 아닌 곳은 지우거나 고칠 수 없다.** 수식 한 칸이 실수로
+    지워지면 그 줄이 조용히 0원이 되는데, 매월 자동으로 다시 만들기 때문에
+    사람이 매번 열어 볼 수도 없다.
+
+    암호는 걸지 않는다. 막으려는 것은 '실수' 지 '사람' 이 아니다. 정말 고쳐야
+    할 일이 생기면 [검토] > [시트 보호 해제] 를 한 번 누르면 된다.
+    """
     c = ws.cell(row=row, column=col, value=value)
     if kind == "input":
         c.font = f(size, bold=True, color=INPUT_FONT)
         c.fill = fill(INPUT_FILL)
+        c.protection = Protection(locked=False)
     elif kind == "source":
         c.font = f(size, bold=bold, color=MUTED)
     else:
@@ -755,9 +765,20 @@ def build_proposal(wb, data, first_sel, last_sel, first_adopted, last_adopted, t
     label(ws, srch_row, 4, "종목 검색", size=10, bold=True)
     srch = put(ws, srch_row, 5, None, None, kind="input")
     srch.alignment = Alignment(vertical="center", horizontal="left")
-    label(ws, srch_row, 6,
-          "← 글자 일부를 넣으면 아래 ▼ 목록이 그만큼만 남습니다 (예: 커버드콜). 비우면 전체.",
-          size=9, color=MUTED)
+    # 검색은 **아래 '투자 ETF' 칸의 ▼ 목록**을 좁힐 뿐이라, 글자를 쳐 넣어도
+    # 화면에서는 아무 일도 일어나지 않는다. 그러면 사람은 고장 난 줄 안다.
+    # 그래서 몇 종목이 걸렸는지 그 자리에서 보여 주고, 어디를 눌러야 하는지
+    # 적어 둔다.
+    hint = ws.cell(row=srch_row, column=6)
+    hint.value = (
+        '=IF(검색어="",'
+        '"← 글자 일부를 넣으면 아래 \'투자 ETF\' 의 ▼ 목록이 그만큼만 남습니다 (예: 커버드콜)",'
+        'IF(검색건수=0,'
+        '"→ \'"&검색어&"\' 에 맞는 종목이 없습니다. 글자를 줄여 보십시오.",'
+        '"→ \'"&검색어&"\' 로 "&검색건수&"종목. 아래 \'투자 ETF\' 칸의 ▼ 를 누르십시오."))'
+    )
+    hint.font = f(9, color=MUTED)
+    hint.alignment = Alignment(vertical="center")
     SEARCH_CELL = f"$E${srch_row}"
     table_head(
         ws, hdr,
@@ -1276,6 +1297,22 @@ def build_guide(wb, data, n_adopted, n_rejected, n_bad):
     return ws
 
 
+def lock_sheet(ws, *, allow_filter=True):
+    """장을 보호한다. 잠금이 풀린 칸(노란 입력칸)만 고칠 수 있게 된다.
+
+    잠금 표시는 원래 모든 칸에 켜져 있지만, **장 보호를 켜지 않으면 아무
+    효력이 없다.** 지금까지 그 상태였다 — 표시만 있고 실제로는 다 지워졌다.
+    """
+    ws.protection.sheet = True          # 암호는 걸지 않는다(설정하지 않으면 없는 것)
+    ws.protection.selectLockedCells = False  # 잠긴 칸도 눌러서 값은 볼 수 있게
+    ws.protection.selectUnlockedCells = False
+    ws.protection.formatCells = False      # 서식·열너비는 허용(보기 편하라고)
+    ws.protection.formatColumns = False
+    ws.protection.formatRows = False
+    ws.protection.sort = not allow_filter
+    ws.protection.autoFilter = not allow_filter
+
+
 def main():
     data = load()
     wb = Workbook()
@@ -1302,6 +1339,9 @@ def main():
     # 하나도 안 걸렸을 때를 대비해 최소 1로 둔다 — 높이가 0이면 엑셀이
     # 이름 자체를 오류로 본다.
     wb.defined_names.add(DefinedName("검색어", attr_text=f"'제안서'!{search_cell}"))
+    wb.defined_names.add(DefinedName("검색건수", attr_text=(
+        f"COUNTIF('ETF데이터'!${col_smatch}${first_adopted}:${col_smatch}${last_sel},1)"
+    )))
     wb.defined_names.add(DefinedName("검색결과", attr_text=(
         f"OFFSET('ETF데이터'!${col_slist}${first_adopted},0,0,"
         f"MAX(1,COUNTIF('ETF데이터'!${col_smatch}${first_adopted}:"
@@ -1356,6 +1396,11 @@ def main():
     # 배분 칸은 build_proposal 에서 '담은 만큼 고르게 나누는' 수식으로 채웠다.
     # 아무것도 안 담았으면 담긴수=0 이라 MAX(담긴수,1)=1 이 되어 첫 줄이 100%
     # 가 된다 — 예전에 여기서 100 을 박아 넣던 것과 같은 결과다.
+
+    # 노란 입력칸 말고는 고치거나 지울 수 없게 잠근다. 이 문서의 값은 거의
+    # 전부 수식이라, 한 칸만 지워져도 그 줄이 조용히 0원이 된다.
+    for _name in ("제안서", "종목조회", "ETF데이터", "사용법"):
+        lock_sheet(wb[_name])
 
     wb.active = wb["제안서"]
     OUT.parent.mkdir(parents=True, exist_ok=True)

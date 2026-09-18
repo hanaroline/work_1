@@ -50,6 +50,7 @@ DATA_COLS = {
 
 # 빈칸이 정상인 칸. 그 자체가 "모른다" 는 뜻을 담는다.
 BLANK_OK_COLS = {"T"}
+INPUT_FILL = "FFF7E6"   # 노란 입력칸 (build_etf_proposal.py 와 같아야 한다)
 
 problems: list[str] = []
 notes: list[str] = []
@@ -422,6 +423,7 @@ def main() -> int:  # noqa: PLR0915
 
     check_lookup(selectable, first, last)
     check_lookup_units(v, wb["종목조회"], selectable)
+    check_protection(wb)
     check_pick_and_search(selectable, wb)
 
     # HTML 판이 같은 값을 내는지 맞춰 볼 수 있게, 엑셀을 **실제로 계산해서 나온**
@@ -510,6 +512,47 @@ def check_lookup_units(v, lk, selectable) -> None:
             return
     if n:
         notes.append(f"[종목조회] {n}줄의 순자산·현재가·분배율을 원천과 단위까지 맞췄습니다.")
+
+
+def check_protection(wb) -> None:
+    """노란 입력칸 말고는 고치거나 지울 수 없는지 본다.
+
+    잠금 표시는 원래 모든 칸에 켜져 있지만 **장 보호를 켜지 않으면 아무 효력이
+    없다.** 오래도록 그 상태였다 — 표시만 있고 실제로는 무엇이든 지워졌다.
+    이 문서는 값의 거의 전부가 수식이라, 한 칸만 지워져도 그 줄이 조용히
+    0원이 된다.
+    """
+    for name in ("제안서", "종목조회", "ETF데이터", "사용법"):
+        ws = wb[name]
+        if not ws.protection.sheet:
+            fail(f"[{name}] 장에 보호가 걸려 있지 않습니다 — 수식을 아무나 지울 수 있습니다.")
+            return
+        if ws.protection.password:
+            fail(f"[{name}] 장에 암호가 걸려 있습니다. 막으려는 것은 실수지 사람이 아닙니다.")
+            return
+
+    # 잠금이 풀린 칸은 **노란 입력칸뿐**이어야 한다. 수식 칸이 하나라도 풀려
+    # 있으면 보호를 걸어 둔 뜻이 없다.
+    for name in ("제안서", "종목조회"):
+        ws = wb[name]
+        loose = []
+        for row in ws.iter_rows():
+            for c in row:
+                if c.protection and c.protection.locked is False:
+                    if c.fill is None or (c.fill.fgColor.rgb or "")[-6:].upper() != INPUT_FILL:
+                        loose.append(c.coordinate)
+        if loose:
+            fail(f"[{name}] 노란 칸이 아닌데 잠금이 풀린 칸: {', '.join(loose[:8])}")
+            return
+
+    n_p = sum(1 for row in wb["제안서"].iter_rows() for c in row
+              if c.protection and c.protection.locked is False)
+    n_l = sum(1 for row in wb["종목조회"].iter_rows() for c in row
+              if c.protection and c.protection.locked is False)
+    if n_p < 5 or n_l < 3:
+        fail(f"고칠 수 있는 칸이 너무 적습니다 (제안서 {n_p} · 종목조회 {n_l}) — 입력까지 막혔습니다.")
+        return
+    notes.append(f"노란 입력칸만 고칠 수 있습니다 (제안서 {n_p}칸 · 종목조회 {n_l}칸, 나머지는 잠김·암호 없음).")
 
 
 def check_pick_and_search(selectable, wb=None) -> None:
