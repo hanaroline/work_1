@@ -105,6 +105,9 @@ def main():
                 "asset": x.get("assetClass") or "", "adopted": bool(x.get("adopted")),
                 "why": x.get("excludeReason") or "", "lastDiv": x.get("lastDistDate") or "",
                 "index": x.get("index") or "",
+                # 과세비율. 못 구한 종목은 1(전액 과세)로 둔다 — 모를 때는
+                # 세금을 많이 매기는 쪽으로 기운다.
+                "taxR": 1.0 if x.get("taxableRatio") is None else x["taxableRatio"],
             }
             for x in selectable
         ],
@@ -439,6 +442,13 @@ ul.notice li{margin:5px 0}
       <li>분배금의 일부가 원금에서 지급될 수 있습니다(자본 환급). 이 경우 기준가가 그만큼 낮아집니다.</li>
       <li>표시된 연 분배율은 최근 12개월 실제 분배금 합계를 현재가로 나눈 값이며, 앞으로의 수익률을 보장하지 않습니다.</li>
       <li>세율은 국내 상장 ETF 분배금 기준 15.4%(배당소득세 14% + 지방소득세 1.4%)를 적용했습니다. 금융소득종합과세 대상자는 실효세율이 달라집니다.</li>
+      <li>세금은 분배금 전액이 아니라 <b>과세표준액</b>에만 붙습니다. 국내주식 매매차익과 장내파생 손익은 과세표준에 들어가지 않으므로,
+          그 재원으로 분배하는 종목은 분배금의 상당 부분이 비과세입니다. 그래서 종목마다 다른 과세비율을 적용했습니다.</li>
+      <li>과세비율은 <b>최근 12개월에 실제로 매겨진 과세표준액을 같은 기간 분배금으로 나눈 값</b>입니다. 지나간 실적이므로 앞으로도 같다는
+          뜻은 아닙니다 — 분배 재원(배당·이자·매매차익·파생손익)의 구성이 바뀌면 비율도 함께 바뀌고, 실제로 한 종목 안에서도 회차마다
+          0%에서 17%까지 움직인 사례가 있습니다. 실제 세액은 지급 시점의 과세표준으로 확정되므로 이 문서와 다를 수 있습니다.
+          과세비율을 구하지 못한 종목은 전액 과세로 보수적으로 계산했습니다.</li>
+      <li>세무 상담이 필요한 사안은 이 문서로 갈음하지 마시고 세무 전문가의 확인을 받으십시오.</li>
       <li>매매수수료·거래세·환율 변동은 반영하지 않았습니다. 총보수는 분배율에 이미 반영되어 있습니다(기준가 차감).</li>
       <li>수량은 정수 매수를 가정해 내림 처리했습니다. 남는 금액은 '미투자 잔액' 으로 표시됩니다.</li>
       <li>여러 종목에 나눠 담아도 분배 시기는 종목마다 다릅니다. 매월 같은 날 한꺼번에 들어오지 않습니다.</li>
@@ -475,7 +485,10 @@ function calcRow(code, alloc, total, mode, tax) {
   const qty = Math.floor(assign / it.price);
   const invest = qty * it.price;
   const pre = invest * (it.ttm / 100) / 12;
-  return { it, assign, qty, invest, pre, post: pre * (1 - tax) };
+  // 세금은 분배금 전액이 아니라 과세표준액에만 붙는다. 종목마다 그 비율이
+  // 달라서(국내주식형 커버드콜 2~3% · 해외형 100%) 종목의 값을 곱한다.
+  const tr = it.taxR === undefined || it.taxR === null ? 1 : it.taxR;
+  return { it, assign, qty, invest, pre, post: pre * (1 - tax * tr) };
 }
 
 let rows = [];
@@ -573,11 +586,14 @@ function recalc() {
 
   // 구간표 — 지금 구성의 가중 연 분배율을 금액만 바꿔 적용한다.
   const rate = invest > 0 ? annPre / invest : 0;
+  // 종목마다 과세비율이 달라 하나의 세율로는 낼 수 없다. 지금 담은 구성이
+  // 실제로 내는 비율(세후 합 ÷ 세전 합)을 그대로 쓴다.
+  const netR = pre > 0 ? post / pre : 1 - tax;
   $('tiers').innerHTML = [1e7, 3e7, 5e7, 1e8, 2e8, 3e8, 5e8, 1e9].map(a => {
     const p = a * rate / 12;
     return `<tr><td class="r num">${won(a)}</td><td class="r num">${won(p)}</td>
-      <td class="r num">${won(p * (1 - tax))}</td><td class="r num">${won(p * 12)}</td>
-      <td class="r num">${won(p * 12 * (1 - tax))}</td></tr>`;
+      <td class="r num">${won(p * netR)}</td><td class="r num">${won(p * 12)}</td>
+      <td class="r num">${won(p * 12 * netR)}</td></tr>`;
   }).join('');
 
   saveLocal();
@@ -624,7 +640,7 @@ function renderCompare() {
     return `<tr><td>${x.name}</td><td class="c">${x.type}</td>
       <td class="r num">${x.price.toLocaleString('ko-KR')}</td>
       <td class="r num">${pct(x.ttm)}</td><td class="r num">${won(pre)}</td>
-      <td class="r num">${won(pre * (1 - tax))}</td>
+      <td class="r num">${won(pre * (1 - tax * (x.taxR == null ? 1 : x.taxR)))}</td>
       <td class="r num">${x.vol != null ? pct(x.vol, 1) : '—'}</td></tr>`;
   }).join('');
 }

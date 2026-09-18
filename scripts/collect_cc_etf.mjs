@@ -582,12 +582,14 @@ for (const [i, row] of universe.entries()) {
   let navHist;
   let term;
   let divOutline;
+  let taxBase;
   try {
     if (cacheOk) {
       // 곳간에서 꺼내 쓴다. 원천을 부르지 않는다.
       divOutline = cached.divOutline || [];
       hist = cached.hist || [];
       monthly = cached.monthly0 ? [cached.monthly0] : [];
+      taxBase = cached.taxBase || [];
       reused++;
     } else {
       refetched++;
@@ -601,6 +603,12 @@ for (const [i, row] of universe.entries()) {
       await sleep(250);
       monthly = await api(`/user/etp/getEtpItemCashMonthly?code=${code}`);
       await sleep(250);
+      // 과세표준기준가. 분배금 중 **실제로 세금이 붙는 몫**을 여기서 낸다.
+      //
+      // limit 을 붙이지 않는다. 실측에서 매개변수 없이 부르는 쪽이 제일 많이
+      // 준다(437일). limit=400 은 400일, limit=250 은 250일이라 오히려 적다.
+      taxBase = await api(`/user/etp/getEtpItemTaxBaseHist?code=${code}`);
+      await sleep(250);
       // 곳간에는 **쓰는 칸만** 담는다. 응답을 통째로 담으면 892종목에 6MB 가
       // 되어 달마다 그 덩치가 저장소에 커밋되고, 무엇이 달라졌는지도 안 보인다.
       cache[code] = {
@@ -611,6 +619,12 @@ for (const [i, row] of universe.entries()) {
         monthly0: monthly?.[0]
           ? { DIV_AMT_YEAR: monthly[0].DIV_AMT_YEAR, DIV_RATE_REAL: monthly[0].DIV_RATE_REAL }
           : null,
+        // 과표는 평소 큰 음수라 통째로 담으면 곳간이 몇 배로 커진다.
+        // 쓰는 것은 **0 이상인 날**뿐이므로(= 분배 기준일의 과세표준액)
+        // 그 날만 골라 담는다. 종목당 열 줄 남짓이다.
+        taxBase: (taxBase || [])
+          .map((r) => ({ d: String(r.TRADE_DATE), v: Number(r.TAX_BASE) }))
+          .filter((r) => /^\d{8}$/.test(r.d) && Number.isFinite(r.v) && r.v >= 0),
       };
     }
     navHist = await api(`/user/etp/getSimpleEtpHist?F16013=${code}&limit=250&type=diff`);
@@ -765,6 +779,59 @@ for (const [i, row] of universe.entries()) {
   const ttmSum = ttmDist.length && ttmWindowFull ? ttmDist.reduce((s, d) => s + (d.amount || 0), 0) : null;
   const ttmRate = ttmSum && price ? (ttmSum / price) * 100 : null;
 
+  // ── 종목별 과세비율 ────────────────────────────────────────────────
+  //
+  // 분배금 전액에 15.4% 를 매기는 것은 틀린 셈이다. ETF 분배금의 과세 대상은
+  // **과세표준액**이고, 국내주식 매매차익·장내파생 손익은 거기에 안 잡힌다.
+  // 그래서 그 재원으로 분배하는 상품은 대부분이 비과세다.
+  //
+  // 2026-09 실측(tools/etfcheck-discovery/taxbase.json, 8종목 48건)에서
+  // getEtpItemTaxBaseHist 의 성격이 드러났다. 이 값은 평소 큰 음수인데
+  // **분배 기준일에만 그 분배의 주당 과세표준액**이 0 이상으로 들어온다.
+  // 48건 전부 0~분배금 범위 안이었고, 갈리는 폭이 컸다 —
+  //   KODEX 200타겟위클리커버드콜 2.6% · TIGER 배당커버드콜액티브 3.5%
+  //   ACE 미국30년국채액티브(H) 0% · KODEX 200 95.6%
+  //   해외 커버드콜·채권·파킹형 100%
+  // 국내주식형 커버드콜에 15.4% 를 다 떼면 세후 수령액을 크게 적게 적는다.
+  //
+  // 날짜를 정확히 맞추려 들지 않는다. 분배일과 기준일이 하루이틀 어긋나므로,
+  // 분배일에서 **뒤로 이레 안**에 있는 0 이상인 날을 찾는다. 평소 값이 큰
+  // 음수라 그 창에서 0 이상인 날은 그 분배의 과세표준뿐이다.
+  const taxRows = (taxBase || [])
+    .map((r) => ({ d: String(r.d ?? r.TRADE_DATE), v: Number(r.v ?? r.TAX_BASE) }))
+    .filter((r) => /^\d{8}$/.test(r.d) && Number.isFinite(r.v) && r.v >= 0);
+  const dayBefore = (yyyymmdd, days) => {
+    const y = Number(yyyymmdd.slice(0, 4));
+    const m = Number(yyyymmdd.slice(4, 6)) - 1;
+    const dd = Number(yyyymmdd.slice(6, 8));
+    const t = new Date(Date.UTC(y, m, dd - days));
+    return Number(
+      `${t.getUTCFullYear()}${String(t.getUTCMonth() + 1).padStart(2, '0')}${String(t.getUTCDate()).padStart(2, '0')}`,
+    );
+  };
+  let taxedSum = 0;
+  let taxMatched = 0;
+  for (const d of ttmDist) {
+    const lo = dayBefore(d.date, 7);
+    const hi = Number(d.date);
+    // 창 안에서 분배일에 가장 가까운 것을 고른다.
+    const hit = taxRows
+      .filter((r) => Number(r.d) >= lo && Number(r.d) <= hi)
+      .sort((a, b) => Number(b.d) - Number(a.d))[0];
+    if (!hit) continue;
+    taxMatched++;
+    // 과세표준이 분배금을 넘을 수는 없다. 넘으면 우리가 짝을 잘못 지은 것이니
+    // 분배금까지만 센다 — 세금을 실제보다 적게 적는 쪽으로 기울지 않는다.
+    taxedSum += Math.min(hit.v, d.amount || 0);
+  }
+  // 창 안 분배의 **일곱 할 이상**을 짝지었을 때만 쓴다. 몇 건만 맞춰 놓고
+  // 전체 비율이라 우기면, 비과세 재원이 큰 종목일수록 크게 틀린다.
+  // 못 내면 null 로 두고, 문서는 100% 과세(지금까지의 셈)로 되돌아간다.
+  const taxableRatio =
+    ttmSum && ttmDist.length && taxMatched >= Math.ceil(ttmDist.length * 0.7)
+      ? Math.min(1, Math.max(0, taxedSum / ttmSum))
+      : null;
+
   const mo = (monthly || [])[0] || {};
   const theirSum = num(mo.DIV_AMT_YEAR);
   const theirRate = num(mo.DIV_RATE_REAL);
@@ -881,6 +948,11 @@ for (const [i, row] of universe.entries()) {
     distMonthlyRate: last?.rate ?? null,
     distMonthlyAmount: last?.amount ?? null,
     lastDistDate: last?.date ?? null,
+    // 종목별 과세비율. null 이면 판단이 안 서는 것이므로 문서는 100% 과세로
+    // 되돌아간다 — 세금을 적게 적는 쪽으로 기울지 않는다.
+    taxableRatio: taxableRatio === null ? null : Number(taxableRatio.toFixed(4)),
+    taxableMatched: taxMatched,
+    taxableOf: ttmDist.length,
     distTtmSum: ttmSum,
     distTtmRate: ttmRate === null ? null : Number(ttmRate.toFixed(4)),
     distTtmCount: ttmDist.length, // 창 안에서 실제로 더한 건수
