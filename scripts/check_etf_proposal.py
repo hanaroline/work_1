@@ -48,6 +48,9 @@ DATA_COLS = {
     "R": "지급주기", "S": "연 지급횟수", "T": "과세비율",
 }
 
+# 빈칸이 정상인 칸. 그 자체가 "모른다" 는 뜻을 담는다.
+BLANK_OK_COLS = {"T"}
+
 problems: list[str] = []
 notes: list[str] = []
 
@@ -209,6 +212,12 @@ def main() -> int:  # noqa: PLR0915
                 for cc, rr in ends:
                     if not (first <= rr <= last):
                         fail(f"{c.coordinate}: ETF데이터 {cc}{rr} 는 채택 구간({first}~{last}) 밖입니다.")
+                    # '과세비율' 은 **비어 있는 것이 뜻을 가진 칸**이다 —
+                    # 빈칸 = 과세표준을 확인하지 못함. 1 로 채우면 '실제로 전액
+                    # 과세되는 종목' 과 구분이 사라진다. 수식이 빈칸을 1 로 읽어
+                    # 전액 과세로 셈하므로 계산도 어긋나지 않는다.
+                    elif cc in BLANK_OK_COLS:
+                        continue
                     elif ds[f"{cc}{rr}"].value in (None, ""):
                         fail(f"{c.coordinate}: ETF데이터 {cc}{rr} ({DATA_COLS.get(cc)}) 가 빈 칸입니다.")
                 if rw2 and (col != col2 or int(rw) != first or int(rw2) != last):
