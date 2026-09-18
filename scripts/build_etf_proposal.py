@@ -74,6 +74,14 @@ QTY = '#,##0"주"'
 # 틀려 있었다. HTML 판은 aum/1e8 로 제대로 나누고 있어서 두 판이 어긋났다.
 EOK = '#,##0"억원"'
 EOK_DIV = 100_000_000  # EOK 서식을 쓰는 수식은 이 값으로 나눈다
+
+# 날짜는 원천이 20260828 같은 여덟 자리 숫자로 준다. 그대로 두면 칸에
+# "20260828" 로 찍혀 사람이 자리를 세어 읽어야 한다.
+#
+# 진짜 날짜값으로 바꾸지 않고 **표시 서식만** 바꾼다. 값은 숫자로 남으므로
+# 자동 필터의 정렬이 그대로 맞고(여덟 자리 숫자는 크기 순이 곧 날짜 순이다),
+# 이 칸을 보는 수식이 생기더라도 뜻이 달라지지 않는다.
+DATE8 = "0000-00-00"
 # 0 을 빈칸으로 찍는 판. 포트폴리오의 안 채운 줄에 쓴다 — 고객이 받는 장에
 # "0원 0주 0원" 이 아홉 줄 깔리면 표가 아니라 잡음이 된다. 세 번째 구획이
 # 0 일 때의 표시이고, 비워 두면 아무것도 찍히지 않는다.
@@ -264,7 +272,7 @@ def build_data_sheet(wb, data):
             freq_label(x), x.get("payoutCount12m"),
         ]
         fmts = [None, None, None, WON_PLAIN, WON_PLAIN, WON_PLAIN, PCT, PCT, PCT, PCT,
-                "#,##0", None, None, None, None, None, None, None, "#,##0"]
+                "#,##0", DATE8, None, None, None, None, None, None, "#,##0"]
         for i, (v, fmt) in enumerate(zip(vals, fmts), start=1):
             c = ws.cell(row=r, column=i, value=v)
             c.font = f(10, color=INK if ok else MUTED)
