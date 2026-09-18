@@ -1085,13 +1085,55 @@ function scatter(){
        '<text class="tlab" x="'+(pl-9)+'" y="'+(g+4)+'" text-anchor="end">'+tv.toFixed(1)+"%</text>"}
   s+='<line class="axis" x1="'+pl+'" y1="'+Y(0)+'" x2="'+(W-pr)+'" y2="'+Y(0)+'"/>'+
      '<line class="axis" x1="'+X(0)+'" y1="'+pt+'" x2="'+X(0)+'" y2="'+(H-pb)+'"/>';
-  pts.sort(function(a,b){return b.rev-a.rev}).forEach(function(p,i){
-    var cx=X(p.yoy),cy=Y(p.surprise),r=R(p.rev);
-    s+='<g class="bar" data-i="'+i+'"><circle cx="'+cx+'" cy="'+cy+'" r="'+r+
-      '" fill="'+(p.surprise>0?"#F58220":"#043B72")+'" fill-opacity=".62" stroke="'+
-      (p.surprise>0?"#CB6015":"#043B72")+'" stroke-width="1"/>'+
-      '<text class="tlab" x="'+cx+'" y="'+(cy-r-5)+'" text-anchor="middle" '+
-      'style="font-size:12px;font-weight:600;fill:#1A1A1A">'+esc(p.t)+"</text></g>"});
+  pts.sort(function(a,b){return b.rev-a.rev});
+  var geo=pts.map(function(p){
+    return {p:p,cx:X(p.yoy),cy:Y(p.surprise),r:R(p.rev)}});
+
+  /* 티커 라벨을 무조건 원 위에 찍으면 저성장 구간처럼 점이 몰린 곳에서
+     라벨끼리 겹쳐 읽히지 않는다(COST·NFLX, MSFT·AMZN 이 그랬다).
+     원 위 → 아래 → 오른쪽 → 왼쪽 순으로 빈자리를 찾아 놓는다.
+     기준: ① 이미 놓은 라벨과 겹치지 않을 것 ② 다른 원을 덮지 않을 것
+     ③ 그림 영역을 벗어나지 않을 것. ②까지 만족하는 자리가 없으면 ①만
+     지키고, 그것도 없으면 첫 후보에 그대로 둔다(겹쳐도 위치는 정직하게). */
+  function hit(a,b){return a.x1<b.x2&&b.x1<a.x2&&a.y1<b.y2&&b.y1<a.y2}
+  function inside(b){return b.x1>=pl-4&&b.x2<=W-pr+4&&b.y1>=pt&&b.y2<=H-pb}
+  var circles=geo.map(function(g){
+    return {x1:g.cx-g.r,x2:g.cx+g.r,y1:g.cy-g.r,y2:g.cy+g.r}});
+  var labels=[];
+  geo.forEach(function(g,gi){
+    var w=g.p.t.length*7.7+3;
+    var cands=[
+      {x:g.cx,        y:g.cy-g.r-5,  a:"middle"},
+      {x:g.cx,        y:g.cy+g.r+14, a:"middle"},
+      {x:g.cx+g.r+5,  y:g.cy+4,      a:"start"},
+      {x:g.cx-g.r-5,  y:g.cy+4,      a:"end"},
+      {x:g.cx,        y:g.cy-g.r-18, a:"middle"},
+      {x:g.cx,        y:g.cy+g.r+27, a:"middle"}
+    ].map(function(c){
+      c.box={x1:c.a==="start"?c.x:c.a==="end"?c.x-w:c.x-w/2,
+             x2:c.a==="start"?c.x+w:c.a==="end"?c.x:c.x+w/2,
+             y1:c.y-9,y2:c.y+3};
+      return c});
+    function pick(avoidCircles){
+      for(var i=0;i<cands.length;i++){
+        var c=cands[i];
+        if(!inside(c.box))continue;
+        if(labels.some(function(l){return hit(c.box,l)}))continue;
+        if(avoidCircles&&circles.some(function(o,oi){
+          return oi!==gi&&hit(c.box,o)}))continue;
+        return c}
+      return null}
+    var put=pick(true)||pick(false)||cands[0];
+    labels.push(put.box);
+    g.lab=put});
+
+  geo.forEach(function(g,i){
+    s+='<g class="bar" data-i="'+i+'"><circle cx="'+g.cx+'" cy="'+g.cy+'" r="'+g.r+
+      '" fill="'+(g.p.surprise>0?"#F58220":"#043B72")+'" fill-opacity=".62" stroke="'+
+      (g.p.surprise>0?"#CB6015":"#043B72")+'" stroke-width="1"/>'+
+      '<text class="tlab" x="'+g.lab.x.toFixed(1)+'" y="'+g.lab.y.toFixed(1)+
+      '" text-anchor="'+g.lab.a+'" '+
+      'style="font-size:12px;font-weight:600;fill:#1A1A1A">'+esc(g.p.t)+"</text></g>"});
   s+='<text class="tlab" x="'+(W/2)+'" y="'+(H-6)+'" text-anchor="middle">'+
      esc(L==="ko"?"매출 전년동기비 (%)":"Revenue YoY (%)")+"</text>"+
      '<text class="tlab" x="20" y="'+(H/2)+'" text-anchor="middle" transform="rotate(-90 20 '+
