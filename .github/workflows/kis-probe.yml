@@ -1,0 +1,108 @@
+name: 한국투자증권 오픈API 관찰 (쓸 수 있는 시세 확인용)
+
+# 수집기가 아니다. 지금 가진 앱키로 **어떤 시세 API 가 실제로 응답하는지**
+# 재려고 부른다. data/ 는 건드리지 않고 관찰 결과만 tools/kis-discovery/ 에 커밋한다.
+#
+# 클로드 세션에서는 KIS 에 아예 붙지 못한다 — 9443(실전)·29443(모의) 은 이그레스
+# 프록시가 비-443 포트를 지원하지 않고, 443 으로 가면 CONNECT 403 이다.
+# 개발자포털(apiportal.koreainvestment.com)도 같은 정책에 막혀 문서조차 못 연다.
+# 그래서 원천을 보는 일은 전부 러너 몫이다 — ETFCHECK·ELS 와 같은 사정이다.
+#
+# 받은 앱키가 **모의투자**(계좌 50 으로 시작)라는 점이 이 관찰의 요점이다.
+# 모의투자는 주문·잔고 검증용이라 시세 API 중 상당수에 「모의투자 미지원」이
+# 붙는데, 어디까지 되는지 확인된 목록이 없다. 한 회차 돌리면 답이 나온다.
+#
+# **필요한 Secrets** — Settings > Secrets and variables > Actions
+#   KIS_APP_KEY      APP Key
+#   KIS_APP_SECRET   APP Secret
+# 앱키는 저장소에 절대 커밋하지 않는다. 관찰 결과에도 들어가지 않는다
+# (probe 는 경로·TR_ID·응답만 적는다).
+
+# 부를 때만 돈다. 접근토큰은 1분에 1회만 발급되므로 자주 돌릴 것이 못 된다.
+on:
+  workflow_dispatch:
+    inputs:
+      env:
+        description: '어느 앱키로 (vps=모의, prod=실전)'
+        required: false
+        default: 'vps'
+        type: choice
+        options: ['vps', 'prod']
+      only:
+        description: '묶음 하나만 (국내/지수/ETF/해외, 비우면 전부)'
+        required: false
+        default: ''
+
+permissions:
+  contents: write
+
+concurrency:
+  group: kis-probe-${{ github.ref_name }}
+  cancel-in-progress: false
+
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref_name }}
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: 앱키가 들어 있는지 먼저 본다
+        run: |
+          if [ -z "${{ secrets.KIS_APP_KEY }}" ] || [ -z "${{ secrets.KIS_APP_SECRET }}" ]; then
+            echo "::error::KIS_APP_KEY / KIS_APP_SECRET 이 저장소 Secrets 에 없습니다."
+            echo "Settings > Secrets and variables > Actions 에서 넣어 주세요."
+            exit 1
+          fi
+          echo "앱키 있음 — 관찰을 시작합니다."
+
+      - name: 관찰
+        id: probe
+        continue-on-error: true
+        env:
+          KIS_APP_KEY: ${{ secrets.KIS_APP_KEY }}
+          KIS_APP_SECRET: ${{ secrets.KIS_APP_SECRET }}
+          # 토큰 캐시는 저장소 밖에 둔다 — 실수로라도 커밋되면 안 된다.
+          KIS_TOKEN_CACHE: ${{ runner.temp }}/kis-token.json
+        run: |
+          ARGS="--env ${{ inputs.env || 'vps' }}"
+          if [ -n "${{ inputs.only }}" ]; then ARGS="$ARGS --only ${{ inputs.only }}"; fi
+          python3 scripts/probe_kis.py $ARGS
+
+      - name: 관찰 결과 커밋
+        if: always()
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add tools/kis-discovery || true
+          if git diff --cached --quiet; then
+            echo "남은 관찰 결과가 없다 — 커밋 생략"
+            exit 0
+          fi
+          git commit -m "chore(kis): 한국투자증권 오픈API 관찰 결과 ($(date -u +%Y-%m-%d\ %H:%M))"
+          for i in 1 2 3 4 5; do
+            if git push; then exit 0; fi
+            echo "push 거절 — 원격 변경을 받아 재시도 ($i/5)"
+            git pull --rebase origin "${{ github.ref_name }}" || exit 1
+          done
+          exit 1
+
+      - name: 요약
+        if: always()
+        run: |
+          {
+            echo "### 한국투자증권 오픈API 관찰"
+            echo ""
+            if [ -f tools/kis-discovery/report.md ]; then
+              head -c 60000 tools/kis-discovery/report.md
+            else
+              echo "관찰 결과 파일이 없습니다 — 토큰 발급조차 못 했을 수 있습니다."
+              echo "위 '관찰' 단계의 로그를 보세요."
+            fi
+          } >> "$GITHUB_STEP_SUMMARY"
