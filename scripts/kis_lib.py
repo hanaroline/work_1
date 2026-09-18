@@ -65,9 +65,22 @@ DOMAINS = {
 
 TIMEOUT = 20
 
-# 초당 호출 제한. 실전 20건/초, 모의 2건/초로 알려져 있으나 확인된 값이 아니다.
-# 넉넉하게 잡는다 — 100 종목을 훑어도 모의에서 1분이면 끝난다.
-MIN_INTERVAL = {"prod": 0.12, "vps": 0.55}
+# 초당 호출 제한. **실측으로 고친 값이다.**
+#
+# 처음에는 「모의 2건/초」라는 말을 믿고 0.55 초를 두었는데, 2026-09-18 관찰에서
+# 13 번 가운데 3 번이 EGW00201(초당 거래건수를 초과하였습니다)로 물렸다. 초당
+# 1.8 건꼴이면 이미 넘는다는 뜻이다. 그래서 모의는 1 건/초 아래로 내린다.
+#
+# 이것만으로는 모자라다. 유량 제한은 내 쪽 간격만이 아니라 서버가 보는 전체
+# 흐름으로 걸리므로, 넘었을 때 **물러섰다 다시 거는** 길이 있어야 한다.
+# 아래 RETRY_* 가 그 몫이다.
+MIN_INTERVAL = {"prod": 0.15, "vps": 1.1}
+
+# 유량 제한에 물렸을 때만 다시 건다. 다른 거절(없는 종목, 미지원 TR)은 몇 번을
+# 다시 걸어도 같은 답이 오므로 한 번에 끝낸다.
+RETRY_CODES = {"EGW00201"}      # 초당 거래건수 초과
+RETRY_MAX = 4
+RETRY_BACKOFF = 1.5             # 1.5s → 3s → 6s
 
 
 class KisError(RuntimeError):
@@ -242,11 +255,15 @@ class KisClient(object):
             time.sleep(wait)
         self._last_call = time.time()
 
-    def get(self, path, tr_id, params, tr_cont="", raw=False):
-        """시세 조회. rt_cd 가 0 이 아니면 KisError 를 던진다.
+    def _once(self, path, tr_id, params, tr_cont):
+        """한 번 건다. KIS 의 거절은 (몸통, msg_cd) 로 돌려준다.
 
-        raw=True 면 rt_cd 를 보지 않고 응답을 그대로 준다 — 무엇이 돌아오는지
-        살피는 probe 에서 쓴다.
+        **KIS 는 거절을 HTTP 500 에 실어 보낸다.** 2026-09-18 관찰에서
+        EGW00201 이 그렇게 왔다. 그러므로 HTTPError 를 곧장 「HTTP 오류」로
+        적으면 안 된다 — 몸통에 rt_cd·msg_cd 가 그대로 들어 있어서, 그것을
+        읽지 않으면 「유량 초과」와 「경로가 틀림」을 구별하지 못한다.
+        처음 판이 그 둘을 뭉뚱그렸고, 그래서 멀쩡한 TR 세 개가 틀린 것으로
+        적혔다.
         """
         self._throttle()
         url = self.base + path + "?" + urllib.parse.urlencode(params)
@@ -266,14 +283,44 @@ class KisClient(object):
             with urllib.request.urlopen(req, timeout=TIMEOUT,
                                         context=self._ssl) as res:
                 got = json.loads(res.read().decode("utf-8"))
+            return got, str(got.get("msg_cd", "")) if \
+                str(got.get("rt_cd", "")) != "0" else None
         except urllib.error.HTTPError as exc:
-            detail = exc.read().decode("utf-8", "replace")[:400]
-            if raw:
-                return {"_http": exc.code, "_body": detail}
-            raise KisError("HTTP%s" % exc.code, detail, tr_id)
+            raw_body = exc.read().decode("utf-8", "replace")
+            try:
+                got = json.loads(raw_body)
+            except ValueError:
+                # 정말로 JSON 이 아니면 그때는 HTTP 오류로 적는다
+                return {"_http": exc.code, "_body": raw_body[:400]}, None
+            got.setdefault("_http", exc.code)
+            return got, str(got.get("msg_cd", "")) or ("HTTP%s" % exc.code)
+
+    def get(self, path, tr_id, params, tr_cont="", raw=False):
+        """시세 조회. rt_cd 가 0 이 아니면 KisError 를 던진다.
+
+        유량 제한(EGW00201)에 물리면 물러섰다 다시 건다. 이 재시도가 없으면
+        100 종목을 훑는 수집기가 중간부터 무너진다 — 간격을 아무리 벌려도
+        서버가 보는 흐름은 내 쪽 간격만으로 정해지지 않기 때문이다.
+
+        raw=True 면 rt_cd 를 보지 않고 응답을 그대로 준다 — 무엇이 돌아오는지
+        살피는 probe 에서 쓴다.
+        """
+        wait = RETRY_BACKOFF
+        for attempt in range(RETRY_MAX):
+            got, refused = self._once(path, tr_id, params, tr_cont)
+            if refused in RETRY_CODES and attempt < RETRY_MAX - 1:
+                if self.verbose:
+                    print("    유량 초과(%s) — %.1f초 물러섰다 다시 겁니다 (%d/%d)"
+                          % (refused, wait, attempt + 1, RETRY_MAX - 1))
+                time.sleep(wait)
+                wait *= 2
+                continue
+            break
 
         if raw:
             return got
+        if "_body" in got:
+            raise KisError("HTTP%s" % got.get("_http"), got["_body"], tr_id)
         if str(got.get("rt_cd", "")) != "0":
             raise KisError(got.get("msg_cd", "?"), got.get("msg1", "?"), tr_id)
         return got
