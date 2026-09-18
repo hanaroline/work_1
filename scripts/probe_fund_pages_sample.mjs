@@ -128,6 +128,26 @@ async function main() {
       }
     }
     m.order = checkOrder(m.at);
+    /* 차례 조건 때문에 건너뛴 걸림(↓N)이 정말 상호참조였는지 눈으로 본다.
+       건너뛴 쪽과 고른 쪽의 원문을 나란히 남긴다 — 통계만 보고 넘어가서
+       절반이 뒤집힌 지도를 두 번 만들었다. */
+    m.skips = [];
+    for (const [key, zone, re] of ANCHORS) {
+      if (zone !== 'body' || !/↓/.test(m.how[key] || '')) continue;
+      const cut = m.at[key];
+      for (let i = m.bodyFrom - 1; i < cut - 1 && m.skips.length < 40; i++) {
+        if (m.toc.indexOf(i + 1) >= 0) continue;
+        const x = re.exec(pages[i]);
+        if (!x) continue;
+        const near = (t, j) => t.slice(Math.max(0, j - 26), j + 62).trim();
+        m.skips.push({
+          key, what: ANCHORS.find((a) => a[0] === key)[3],
+          skipped: 'p.' + (i + 1) + ' 「' + near(pages[i], x.index) + '」',
+          chosen: 'p.' + cut + ' 「' + near(pages[cut - 1], (re.exec(pages[cut - 1]) || { index: 0 }).index) + '」',
+        });
+        break;
+      }
+    }
     res.push({ ...it, pages: pages.length, ...m });
     if ((i + 1) % 10 === 0) log(`  … ${i + 1}/${pick.length}`);
   }
@@ -172,6 +192,19 @@ async function main() {
     log(`  ${r.mgr} · ${r.name.slice(0, 38)} (${r.pages}쪽)`);
     (r.p2heads.length ? r.p2heads : ['     그런 낱말이 아예 없음']).forEach((h) => log(`     ${h}`));
   });
+
+  head('차례 조건이 건너뛴 걸림 — 정말 상호참조였나 (눈으로 가린다)');
+  const sk = res.flatMap((r) => (r.skips || []).map((s) => ({ ...s, name: r.name })));
+  log(`건너뛴 걸림이 있는 종목 ${res.filter((r) => (r.skips || []).length).length}/${res.length} · 아래는 앞 10건`);
+  sk.slice(0, 10).forEach((s) => {
+    log(`  ${s.name.slice(0, 26)} — ${s.what}`);
+    log(`     건너뜀 ${s.skipped}`);
+    log(`     고름   ${s.chosen}`);
+  });
+  if (!sk.length) log('  없음');
+  log('');
+  log('※ 「건너뜀」 이 참고하시기 바랍니다 꼴이고 「고름」 이 절 제목이면 맞게 고른 것이다.');
+  log('   거꾸로면 진짜 절을 건너뛴 것이므로 걸면 안 된다.');
 
   head('제2부로 고른 쪽이 정말 제2부 첫 쪽인가 — 본문 시작을 여기서 잡는다');
   log('(mid 는 쪽 한가운데서 제목을 찾은 것 — 상호참조를 잘못 잡았는지 눈으로 본다)');
