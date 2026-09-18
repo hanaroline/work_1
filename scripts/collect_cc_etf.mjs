@@ -409,6 +409,18 @@ if (universe.length < 100) {
 // 움직여서 지난달 합계를 그대로 쓰면 창 밖으로 나간 분배가 남아 있게 된다.
 // 곳간에는 분배 **내역**을 넣고, 창은 이번 달 것으로 다시 씌운다.
 const CACHE = 'data/etf_dist_cache.json';
+// 곳간에 담는 **칸이 바뀌면 이 수를 올린다.** 그러면 옛 판은 전부 다시 받는다.
+//
+// 이걸 안 두어서 과세비율이 통째로 빈 채 나갔다. 새 칸(taxBase)을 담게
+// 고쳐 놓고 곳간 판정은 "마지막 분배일이 그대로인가" 만 보게 두었더니,
+// 이미 쌓여 있던 659종목이 전부 곳간에 걸려 새 호출을 건너뛰었다. 그 칸이
+// 없으니 빈 배열이 되고, 과세비율은 661종목 중 3종목만 나왔다. 수집은
+// '성공' 으로 끝나고 아무도 안 알려 준다 — 조용히 아무 일도 안 일어나는
+// 쪽이라 제일 나쁘다.
+//
+// 무효화 신호가 둘이라는 것을 놓쳤다. 하나는 "자료가 새로 생겼나"(분배일),
+// 다른 하나는 "우리가 담는 것이 달라졌나"(이 수). 앞의 것만 보고 있었다.
+const CACHE_V = 2;
 const cache = (() => {
   try {
     const j = JSON.parse(fs.readFileSync(CACHE, 'utf8'));
@@ -575,7 +587,10 @@ for (const [i, row] of universe.entries()) {
   // 곳간에 있고 마지막 분배일이 그대로면 분배 쪽 세 번은 건너뛴다.
   const recDiv = String(row.REC_DIV_DATE || row.DIV_DATE || '');
   const cached = cache[code];
-  const cacheOk = Boolean(cached && recDiv && cached.recDivDate === recDiv && Array.isArray(cached.hist));
+  const cacheOk = Boolean(
+    cached && recDiv && cached.recDivDate === recDiv && Array.isArray(cached.hist)
+    && cached.v === CACHE_V,
+  );
 
   let hist;
   let monthly;
@@ -612,6 +627,7 @@ for (const [i, row] of universe.entries()) {
       // 곳간에는 **쓰는 칸만** 담는다. 응답을 통째로 담으면 892종목에 6MB 가
       // 되어 달마다 그 덩치가 저장소에 커밋되고, 무엇이 달라졌는지도 안 보인다.
       cache[code] = {
+        v: CACHE_V,
         recDivDate: recDiv,
         checkedAt: new Date().toISOString().slice(0, 10),
         divOutline: (divOutline || []).map((r) => ({ DATE: r.DATE, MONTH: r.MONTH })),
@@ -988,6 +1004,29 @@ const prev = (() => {
   }
 })();
 const adopted = items.filter((x) => x.adopted);
+
+// 새로 담기로 한 값이 **실제로 담겼는지** 본다.
+//
+// 과세비율을 넣고 수집이 '성공' 으로 끝났는데 661종목 중 3종목만 값이 있었다.
+// 곳간이 옛 판이라 새 호출을 통째로 건너뛴 것인데, 아무 데도 티가 안 났다.
+// 수를 세어 말하지 않으면 다음에도 조용히 지나간다.
+{
+  const ok = adopted.filter((x) => x.taxableRatio !== null && x.taxableRatio !== undefined).length;
+  const ratio = adopted.length ? ok / adopted.length : 0;
+  console.log(`\n과세비율을 구한 채택 종목: ${ok}/${adopted.length} (${Math.round(ratio * 100)}%)`);
+  if (adopted.length >= 20 && ratio < 0.5) {
+    dumpDiagnostics({
+      note: `채택 ${adopted.length}종목 중 ${ok}종목만 과세비율이 나왔습니다.`,
+      failedCount: failed.length,
+    });
+    throw new Error(
+      `채택 ${adopted.length}종목 중 과세비율이 나온 것이 ${ok}종목뿐입니다.\n` +
+        '과세표준을 못 받았거나 곳간이 옛 판이라 새 호출을 건너뛴 것입니다. ' +
+        '이대로 내보내면 세후 금액이 전부 전액 과세로 찍히므로 data/ 를 덮어쓰지 않습니다.',
+    );
+  }
+}
+
 if (prev?.adoptedCount >= 5 && adopted.length < prev.adoptedCount * 0.6 && !process.env.CC_ETF_ALLOW_DROP) {
   fs.mkdirSync(DIAG, { recursive: true });
   fs.writeFileSync(path.join(DIAG, 'items.json'), JSON.stringify(items, null, 2));
