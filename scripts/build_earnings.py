@@ -12,6 +12,7 @@ from __future__ import annotations
 import hashlib
 import json
 import pathlib
+import re
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 OUT = ROOT / "data" / "earnings"
@@ -527,6 +528,95 @@ GNEXT_EN = {
  "AMD": "$13B ±$0.3B", "INTC": "$15.8–16.8B", "MU": "$50B",
 }
 
+# ------------------------------------------------ 인사이트 카드가 인용하는 수치
+# 카드 문장 안의 숫자를 HTML 에 손으로 적어 두면, 데이터가 바뀌어도 문장은
+# 그대로 남는다. 실제로 그렇게 어긋난 적이 있어(가속 구간·한 자릿수 성장)
+# 인용 수치를 전부 여기로 옮겼다. 값으로 두면 대장에 등록되고, 화면은
+# 조립만 한다. 세그먼트 수치는 회사 보도자료가 1차 출처다.
+FACTS = [
+ # --- 카드 ① AI 인프라 -----------------------------------------------------
+ dict(id="AVGO_AISEG", t="AVGO", v=221.0, unit="%",
+      ko="브로드컴 AI 반도체 매출 증가율", en="Broadcom AI semiconductor revenue growth"),
+ dict(id="MU_DRAM", t="MU", v=343.0, unit="%",
+      ko="마이크론 DRAM 매출 증가율", en="Micron DRAM revenue growth"),
+ dict(id="ORCL_IAAS", t="ORCL", v=121.0, unit="%",
+      ko="오라클 IaaS 매출 증가율", en="Oracle IaaS revenue growth"),
+ dict(id="ORCL_RPO", t="ORCL", v=664.0, unit="USD bn",
+      ko="오라클 잔여수행의무(RPO)", en="Oracle remaining performance obligations"),
+ # --- 카드 ② 클라우드 ------------------------------------------------------
+ dict(id="AWS_G", t="AMZN", v=36.7, unit="%", ko="AWS 매출 증가율", en="AWS revenue growth"),
+ dict(id="AWS_CONS", t="AMZN", v=31.0, unit="%",
+      ko="AWS 성장률 컨센서스", en="AWS growth consensus",
+      note="회사 발표치가 아니라 인용 기사에 실린 시장 추정치"),
+ dict(id="AWS_STREAK", t="AMZN", v=18.0, unit="분기",
+      ko="AWS 성장률이 최고치인 기간", en="Quarters since AWS last grew this fast"),
+ dict(id="AZURE_G", t="MSFT", v=43.0, unit="%", ko="애저 매출 증가율", en="Azure revenue growth"),
+ dict(id="AZURE_NEXT", t="MSFT", v=45.0, unit="%",
+      ko="애저 차기 분기 가이던스(고정환율)", en="Azure guidance for the next quarter (cc)"),
+ dict(id="AZURE_CONS", t="MSFT", v=41.4, unit="%",
+      ko="애저 차기 분기 컨센서스", en="Azure consensus for the next quarter",
+      note="회사 발표치가 아니라 인용 기사에 실린 시장 추정치"),
+ dict(id="GCP_G", t="GOOGL", v=82.0, unit="%",
+      ko="구글클라우드 매출 증가율", en="Google Cloud revenue growth"),
+ dict(id="GCP_OP", t="GOOGL", v=8.8, unit="USD bn",
+      ko="구글클라우드 영업이익", en="Google Cloud operating income"),
+ dict(id="GCP_OP_PY", t="GOOGL", v=2.8, unit="USD bn",
+      ko="구글클라우드 영업이익(전년 동기)", en="Google Cloud operating income a year earlier"),
+ dict(id="META_CAPEX", t="META", v=31.08, unit="USD bn", ko="메타 캡엑스", en="Meta capex"),
+ dict(id="META_FCF", t="META", v=0.784, unit="USD bn",
+      ko="메타 잉여현금흐름", en="Meta free cash flow"),
+ # --- 카드 ③ 이익이 못 따라온 곳 --------------------------------------------
+ dict(id="TSLA_OPM", t="TSLA", v=1.4, unit="%", ko="테슬라 영업이익률", en="Tesla operating margin"),
+ # --- 카드 ④ 마진 회복 -----------------------------------------------------
+ dict(id="UNH_REV_PY", t="UNH", v=111.6, unit="USD bn",
+      ko="UNH 전년 동기 매출", en="UnitedHealth revenue a year earlier"),
+ dict(id="UNH_OP", t="UNH", v=8.0, unit="USD bn",
+      ko="UNH 영업이익", en="UnitedHealth operating earnings"),
+ dict(id="UNH_OP_PY", t="UNH", v=5.2, unit="USD bn",
+      ko="UNH 영업이익(전년 동기)", en="UnitedHealth operating earnings a year earlier"),
+ dict(id="UNH_OP_G", t="UNH", v=55.0, unit="%",
+      ko="UNH 영업이익 증가율", en="UnitedHealth operating earnings growth",
+      note="회사가 제시한 증가율. 위 반올림된 두 값(5.2 → 8.0)으로 나누면 53.8% 가 나오는데, "
+           "이는 반올림 때문이다 — 증가율은 회사 발표치를 그대로 싣는다"),
+ dict(id="UNH_MCR_PREV", t="UNH", v=88.8, unit="%",
+      ko="UNH 종전 의료손해율 가이던스", en="UnitedHealth prior medical care ratio guidance"),
+ dict(id="UNH_MCR", t="UNH", v=88.1, unit="%",
+      ko="UNH 상향된 의료손해율 가이던스", en="UnitedHealth improved medical care ratio guidance"),
+ dict(id="CAT_TARIFF_PREV", t="CAT", v=2.5, unit="USD bn",
+      ko="캐터필러 종전 FY26 관세 비용 추정", en="Caterpillar prior FY26 tariff-cost estimate"),
+ dict(id="CAT_TARIFF", t="CAT", v=2.2, unit="USD bn",
+      ko="캐터필러 하향된 FY26 관세 비용 추정", en="Caterpillar lowered FY26 tariff-cost estimate"),
+ # --- 카드 ⑤ 성장률 바닥 ---------------------------------------------------
+ dict(id="HD_COMP", t="HD", v=1.7, unit="%", ko="홈디포 동일점포 매출 증가율",
+      en="Home Depot comparable sales growth"),
+ dict(id="WMT_COMP", t="WMT", v=2.6, unit="%", ko="월마트 미국 동일점포 매출 증가율",
+      en="Walmart US comparable sales growth"),
+]
+
+# 가이던스를 올린 기업을 '연간 전망 상향'과 '차기 분기 가이던스가 컨센서스 상회'
+# 로 나눈다. 카드 ⑥ 이 이 둘의 개수를 세는데, 세는 일을 화면이 하게 하려면
+# 분류가 데이터에 있어야 한다. 근거는 각 기업의 gtxt(회사 발표 문구)다.
+GRAISE = {
+ "LLY": "annual", "PLTR": "annual", "UNH": "annual", "JPM": "annual",
+ "AVGO": "annual", "CRM": "annual", "WMT": "annual", "JNJ": "annual",
+ "CAT": "annual",
+ "MSFT": "quarter", "MU": "quarter",
+}
+# 카드에 짧게 인용할 상향 폭. 긴 gtxt 대신 쓴다(같은 발표에서 온 같은 수치).
+GRAISE_TXT = {
+ "LLY": ("매출 820~850→850~870억달러", "revenue $82–85B → $85–87B"),
+ "PLTR": ("76.5→81.5억달러", "$7.65B → $8.15B"),
+ "UNH": ("EPS >18.25→19.50~20.00달러", "EPS >$18.25 → $19.50–20.00"),
+ "JPM": ("순이자이익 1,030→1,055억달러", "NII $103B → $105.5B"),
+ "AVGO": ("FY26 AI 매출 약 580억달러", "FY26 AI revenue ~$58B"),
+ "CRM": ("FY27 매출 461~464억달러", "FY27 revenue $46.1–46.4B"),
+ "WMT": ("FY27 매출 +4~5%cc", "FY27 revenue +4–5% cc"),
+ "JNJ": ("FY26 매출 1,008~1,014억달러", "FY26 revenue $100.8–101.4B"),
+ "CAT": ("FY26 매출 성장률 mid~high teens", "FY26 revenue growth to mid-to-high teens"),
+ "MSFT": ("Azure +45%cc vs 컨센 41.4%", "Azure +45% cc vs 41.4% consensus"),
+ "MU": ("500억 vs 컨센 434.5억달러", "$50B vs $43.45B consensus"),
+}
+
 # ---------------------------------------------------------------- 스코어
 # 두 축을 따로 내고 합친다.
 #   실적 모멘텀 — 발표된 실적만. 가격은 들어가지 않는다.
@@ -587,6 +677,22 @@ for c in C:
 
     fpe, peg = VAL.get(c["t"], (None, None))
     c["fpe"], c["peg"], c["valnote"] = fpe, peg, VAL_NOTE.get(c["t"], "")
+
+    c["graise"] = GRAISE.get(c["t"]) if c.get("guide") == 1 else None
+    _gt = GRAISE_TXT.get(c["t"])
+    c["graisetxt"], c["graisetxt_en"] = _gt if _gt else (None, None)
+    # 짧은 인용구는 gtxt(회사 발표 문구)를 줄인 것이다. 둘이 따로 놀면
+    # 화면에는 대장에 없는 수치가 찍힌다 — 숫자가 원문에 다 있는지 확인한다.
+    if _gt:
+        _src_digits = set(re.findall(r"\d+(?:\.\d+)?", c["gtxt"].replace(",", "")))
+        _cut_digits = set(re.findall(r"\d+(?:\.\d+)?", _gt[0].replace(",", "")))
+        _stray = {x for x in _cut_digits
+                  if x not in _src_digits and x.rstrip("0").rstrip(".") not in
+                  {y.rstrip("0").rstrip(".") for y in _src_digits}}
+        if _stray:
+            raise SystemExit(
+                "GRAISE_TXT[%s] 의 수치 %s 가 gtxt 에 없다 — 인용구가 회사 발표 문구와 "
+                "어긋났다. 둘 중 하나가 갱신되지 않은 것이다." % (c["t"], sorted(_stray)))
 
     c["mcap"] = MCAP.get(c["t"])
     c["mcapasof"] = MCAP_ASOF.get(c["t"], VAL_ASOF)
@@ -802,6 +908,19 @@ for c in C:
             source_url=VAL_SRC % c["t"].lower(), verdict="unverified", render="omit",
             note=c["evebnote"], printed_on=[]))
 
+# 카드가 인용하는 수치도 대장에 넣는다. 화면에 인쇄되는데 대장에 없으면
+# 검산 대상 밖이 된다 — 이 항목들이 그동안 그랬다.
+_CBY = {c["t"]: c for c in C}
+for _f in FACTS:
+    _src = _CBY[_f["t"]]
+    claims.append(dict(
+        id=_f["id"], kind="reported_result", metric=_f["ko"],
+        text="%s (%s)" % (_f["ko"], _src["per"]), value=_f["v"], unit=_f["unit"],
+        series=SERIES["분기 매출"], as_of=_src["rep"] or ASOF, tier=_src["tier"],
+        source_url=_f.get("url") or _src["src"], verdict="confirmed", render="assert",
+        note=_f.get("note", "인사이트 카드 문장에 인용되는 값 — 회사 발표 자료 기준"),
+        printed_on=["insight-cards"]))
+
 for _sec, _b in sorted(SECBENCH.items()):
     if _b["median"] is None:
         continue
@@ -876,7 +995,7 @@ keys = ("t ko en sec sub per pend rep repapprox rev cons consderived surprise yo
         "epssurprise guide gtxt gkind note warn src csrc tier score coverage scoreparts "
         "upcoming nextrep nextconf nextsrc consnote epsnote gtxt_en note_en consnote_en per_en "
         "fpe peg valscore valabs relpe secmed vgrp vgrpEn appeal appealgap valnote "
-        "mcap mcapasof mcapnote eveb evebnote evebnote_en ps "
+        "mcap mcapasof mcapnote eveb evebnote evebnote_en ps graise graisetxt graisetxt_en "
         "ltm ltmg accel trend ltmnote gnext gnexttxt gnextper gnexten gnextqoq").split()
 payload = dict(
     asOf=ASOF,
@@ -888,6 +1007,8 @@ payload = dict(
     secBench=[SECBENCH[k] for k in VG_ORDER if k in SECBENCH],
     seriesPolicyEn=SERIES_EN, coverage=cov,
     index=INDEX,
+    # 카드가 문장 안에서 부르는 값. 화면은 여기서 꺼내 쓰기만 한다.
+    facts={f["id"]: {k: f[k] for k in ("v", "unit", "ko", "en")} for f in FACTS},
     companies=[{k: c.get(k) for k in keys} for c in C],
     sectors=sectors)
 (OUT / "latest.json").write_text(json.dumps(payload, ensure_ascii=False, indent=1), "utf-8")
