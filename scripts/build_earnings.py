@@ -910,6 +910,75 @@ for c in C:
 
 # 카드가 인용하는 수치도 대장에 넣는다. 화면에 인쇄되는데 대장에 없으면
 # 검산 대상 밖이 된다 — 이 항목들이 그동안 그랬다.
+# 외부 기관 집계(FactSet·Zacks)도 화면에 인쇄되는데 대장에 없었다. 값이 문자열
+# ("28.7%")이라 그동안 빠져 있었지만, 인쇄되는 수치는 전부 등록 대상이다.
+#
+# 한계를 분명히 해 둔다: **인용한 보고서 회차의 발표일을 확정하지 못했다.**
+# FactSet Earnings Insight 는 주간 간행물이라 같은 분기라도 회차마다 수치가
+# 움직인다(실제로 Q2 매출 성장률은 7월 2일자 12.2%, 7월 10일자 12.3%, 시즌
+# 종료 시점 12.8% 로 올라갔다 — 보고 기업이 늘면서 올라가는 정상적인 움직임).
+# 발표일을 모르는 채로 '기관 전망(institution_forecast)'으로 등록하면 보도일을
+# 발표일로 둔갑시키게 되므로, **지수 집계 수준(market_level)으로 등록하고
+# 회차 미확인 사실을 주석과 화면에 남긴다.** 날짜를 지어내지 않는다.
+IDX_META = {
+ "q3_eps":   dict(target="S&P 500 · 2026년 3분기 추정", revision="up", revision_from=26.6,
+                  note="분기 시작(6월 30일) 기준 26.6% 에서 상향된 추정치. 상향 방향과 "
+                       "기준값은 확인했으나 인용 회차의 발표일은 확정하지 못했다"),
+ "q3_zacks": dict(target="S&P 500 · 2026년 3분기 추정", revision="new",
+                  note="FactSet 과 유니버스·산정방식이 달라 위 FactSet 수치와 직접 비교 불가. "
+                       "2차 보도를 통해 인용했고 원 보고서 발표일은 확정하지 못했다"),
+}
+for _i in INDEX:
+    _m = IDX_META.get(_i["k"], {})
+    claims.append(dict(
+        id="IDX_" + _i["k"].upper(), kind="market_level",
+        metric="지수 집계", text="%s — %s" % (_i["ko"], _i["scope"]),
+        value=float(_i["v"].rstrip("%")), unit="%",
+        series="외부 기관 집계 (유니버스가 이 화면 25개사와 다름)",
+        as_of=ASOF, tier=2, source_url=_i["url"], attributed_to=_i["who"],
+        target_period=_m.get("target"),
+        revision=_m.get("revision"), revision_from=_m.get("revision_from"),
+        verdict="confirmed", render="assert",
+        note=_m.get("note", "이 화면 25개사 집계가 아니라 지수 전체를 다루는 외부 집계 — "
+                            "한 칸에 섞지 않는다. 주간 간행물이라 회차마다 수치가 움직이는데 "
+                            "인용 회차의 발표일은 확정하지 못했다"),
+        printed_on=["scoreboard-index"]))
+
+# 화면이 '이래서 한 제공사로 통일했다'는 근거로 **다른 제공사 값들을 인쇄한다.**
+# 채택하지 않은 값이라고 대장 밖에 두면, 인쇄되는데 검산 대상이 아닌 수치가 된다.
+# 관측은 했고 채택만 하지 않은 것이므로 confirmed + marked 로 등록한다.
+REJECTED = [
+ dict(id="ALT_NVDA_FPE", ko="엔비디아 선행 P/E — 채택하지 않은 다른 제공사 값",
+      vals=[23.8, 24.50, 48.30], unit="배", metric="대조용 배수",
+      note="같은 시점 NVDA 선행 P/E 가 제공사마다 18.12 / 23.8 / 24.50 / 48.30 으로 2.7배까지 "
+           "벌어졌다. 이 화면은 stockanalysis.com 의 18.12 를 쓰고 나머지는 채택하지 않았다"),
+ dict(id="ALT_PLTR_PE", ko="팔란티어 P/E — 채택하지 않은 다른 제공사 값",
+      vals=[147.69, 177.89, 249.0], unit="배", metric="대조용 배수",
+      note="제공사마다 P/E 가 147.69 / 177.89 / 249 로 엇갈렸다. 계열을 섞으면 순위가 통째로 "
+           "바뀌므로 한 곳으로 통일했다"),
+ dict(id="ALT_SPX_FPE", ko="S&P500 선행 P/E — 기준점으로 쓰지 않은 값",
+      vals=[19.1, 22.4, 22.9, 25.6], unit="배", metric="대조용 배수",
+      note="이번 수집에서 지수 선행 P/E 가 19.1 / 22.4 / 22.9 / 25.6 으로 엇갈려 밸류에이션 "
+           "구간의 기준점으로 삼을 수 없었다. 그래서 하우스 고정구간(12~45배)을 쓴다"),
+ dict(id="ALT_FCT_REV_EDITIONS", ko="FactSet Q2 매출 성장률 — 회차별 값",
+      vals=[12.2, 12.3], unit="%", metric="대조용 지수 집계",
+      note="7월 2일자 12.2%, 7월 10일자 12.3%. 시즌이 진행되며 12.8% 까지 올라갔다 — 보고 기업이 "
+           "늘면서 오르는 정상적인 움직임이고, 주간 간행물의 수치가 회차마다 달라진다는 근거다",
+      url="https://advantage.factset.com/hubfs/Website/Resources%20Section/Research%20Desk/"
+          "Earnings%20Insight/EarningsInsight_071026.pdf"),
+]
+for _r in REJECTED:
+    for _n, _v in enumerate(_r["vals"], 1):
+        claims.append(dict(
+            id="%s_%d" % (_r["id"], _n), kind="market_multiple" if _r["unit"] == "배" else "market_level",
+            # metric 마다 단위가 하나여야 한다(검산기가 혼용을 잡는다).
+            metric=_r["metric"], text=_r["ko"], value=_v, unit=_r["unit"],
+            series="비교 대상 — 이 화면이 채택한 계열이 아님",
+            as_of=VAL_ASOF, tier=3,
+            source_url=_r.get("url", "https://stockanalysis.com/"),
+            verdict="confirmed", render="marked", note=_r["note"],
+            printed_on=["notes-valuation"]))
+
 _CBY = {c["t"]: c for c in C}
 for _f in FACTS:
     _src = _CBY[_f["t"]]
@@ -956,7 +1025,11 @@ ledger = dict(
     unit_policy={"분기 매출": "USD bn", "매출 컨센서스": "USD bn",
                  "가이던스": "방향(+1/0/-1)", "선행 P/E": "배", "PEG": "배", "섹터 기준배수": "배",
                  "LTM 매출": "USD bn", "LTM 성장률": "%",
-                 "시가총액": "USD bn", "EV/EBITDA": "배", "P/S": "배"})
+                 "시가총액": "USD bn", "EV/EBITDA": "배", "P/S": "배",
+                 "차기분기 매출 가이던스": "USD bn", "지수 집계": "%",
+                 "대조용 배수": "배", "대조용 지수 집계": "%",
+                 # 인용 수치는 항목마다 metric 이름이 달라 FACTS 에서 그대로 만든다
+                 **{f["ko"]: f["unit"] for f in FACTS}})
 
 OUT.mkdir(parents=True, exist_ok=True)
 (OUT / "claims.json").write_text(json.dumps(ledger, ensure_ascii=False, indent=1), "utf-8")

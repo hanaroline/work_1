@@ -4311,6 +4311,354 @@
    ]
   },
   {
+   "id": "IDX_REV_BEAT",
+   "kind": "market_level",
+   "metric": "지수 집계",
+   "text": "매출 컨센서스 상회 기업 비율 — S&P 500 · 2026년 2분기",
+   "value": 80.0,
+   "unit": "%",
+   "series": "외부 기관 집계 (유니버스가 이 화면 25개사와 다름)",
+   "as_of": "2026-09-17",
+   "tier": 2,
+   "source_url": "https://www.factset.com/earningsinsight",
+   "attributed_to": "FactSet Earnings Insight",
+   "target_period": null,
+   "revision": null,
+   "revision_from": null,
+   "verdict": "confirmed",
+   "render": "assert",
+   "note": "이 화면 25개사 집계가 아니라 지수 전체를 다루는 외부 집계 — 한 칸에 섞지 않는다. 주간 간행물이라 회차마다 수치가 움직이는데 인용 회차의 발표일은 확정하지 못했다",
+   "printed_on": [
+    "scoreboard-index"
+   ]
+  },
+  {
+   "id": "IDX_REV_SURP",
+   "kind": "market_level",
+   "metric": "지수 집계",
+   "text": "매출 실제치의 추정치 대비 상회폭 — S&P 500 · 2026년 2분기",
+   "value": 2.8,
+   "unit": "%",
+   "series": "외부 기관 집계 (유니버스가 이 화면 25개사와 다름)",
+   "as_of": "2026-09-17",
+   "tier": 2,
+   "source_url": "https://www.factset.com/earningsinsight",
+   "attributed_to": "FactSet Earnings Insight",
+   "target_period": null,
+   "revision": null,
+   "revision_from": null,
+   "verdict": "confirmed",
+   "render": "assert",
+   "note": "이 화면 25개사 집계가 아니라 지수 전체를 다루는 외부 집계 — 한 칸에 섞지 않는다. 주간 간행물이라 회차마다 수치가 움직이는데 인용 회차의 발표일은 확정하지 못했다",
+   "printed_on": [
+    "scoreboard-index"
+   ]
+  },
+  {
+   "id": "IDX_REV_GROWTH",
+   "kind": "market_level",
+   "metric": "지수 집계",
+   "text": "지수 매출 성장률(YoY) — S&P 500 · 2026년 2분기",
+   "value": 12.8,
+   "unit": "%",
+   "series": "외부 기관 집계 (유니버스가 이 화면 25개사와 다름)",
+   "as_of": "2026-09-17",
+   "tier": 2,
+   "source_url": "https://insight.factset.com/sp-500-reporting-highest-revenue-growth-in-3-years",
+   "attributed_to": "FactSet Earnings Insight",
+   "target_period": null,
+   "revision": null,
+   "revision_from": null,
+   "verdict": "confirmed",
+   "render": "assert",
+   "note": "이 화면 25개사 집계가 아니라 지수 전체를 다루는 외부 집계 — 한 칸에 섞지 않는다. 주간 간행물이라 회차마다 수치가 움직이는데 인용 회차의 발표일은 확정하지 못했다",
+   "printed_on": [
+    "scoreboard-index"
+   ]
+  },
+  {
+   "id": "IDX_EPS_GROWTH",
+   "kind": "market_level",
+   "metric": "지수 집계",
+   "text": "지수 이익 성장률(YoY) — S&P 500 · 2026년 2분기",
+   "value": 37.9,
+   "unit": "%",
+   "series": "외부 기관 집계 (유니버스가 이 화면 25개사와 다름)",
+   "as_of": "2026-09-17",
+   "tier": 2,
+   "source_url": "https://www.factset.com/earningsinsight",
+   "attributed_to": "FactSet Earnings Insight",
+   "target_period": null,
+   "revision": null,
+   "revision_from": null,
+   "verdict": "confirmed",
+   "render": "assert",
+   "note": "이 화면 25개사 집계가 아니라 지수 전체를 다루는 외부 집계 — 한 칸에 섞지 않는다. 주간 간행물이라 회차마다 수치가 움직이는데 인용 회차의 발표일은 확정하지 못했다",
+   "printed_on": [
+    "scoreboard-index"
+   ]
+  },
+  {
+   "id": "IDX_Q3_EPS",
+   "kind": "market_level",
+   "metric": "지수 집계",
+   "text": "차기 분기 이익 성장률 전망 — S&P 500 · 2026년 3분기 추정",
+   "value": 28.7,
+   "unit": "%",
+   "series": "외부 기관 집계 (유니버스가 이 화면 25개사와 다름)",
+   "as_of": "2026-09-17",
+   "tier": 2,
+   "source_url": "https://www.factset.com/earningsinsight",
+   "attributed_to": "FactSet Earnings Insight",
+   "target_period": "S&P 500 · 2026년 3분기 추정",
+   "revision": "up",
+   "revision_from": 26.6,
+   "verdict": "confirmed",
+   "render": "assert",
+   "note": "분기 시작(6월 30일) 기준 26.6% 에서 상향된 추정치. 상향 방향과 기준값은 확인했으나 인용 회차의 발표일은 확정하지 못했다",
+   "printed_on": [
+    "scoreboard-index"
+   ]
+  },
+  {
+   "id": "IDX_Q3_ZACKS",
+   "kind": "market_level",
+   "metric": "지수 집계",
+   "text": "차기 분기 매출 성장률 전망 — 2026년 3분기 추정",
+   "value": 10.9,
+   "unit": "%",
+   "series": "외부 기관 집계 (유니버스가 이 화면 25개사와 다름)",
+   "as_of": "2026-09-17",
+   "tier": 2,
+   "source_url": "https://finance.yahoo.com/markets/stocks/articles/q3-earnings-preview-high-expectations-203800936.html",
+   "attributed_to": "Zacks Q3 Earnings Preview",
+   "target_period": "S&P 500 · 2026년 3분기 추정",
+   "revision": "new",
+   "revision_from": null,
+   "verdict": "confirmed",
+   "render": "assert",
+   "note": "FactSet 과 유니버스·산정방식이 달라 위 FactSet 수치와 직접 비교 불가. 2차 보도를 통해 인용했고 원 보고서 발표일은 확정하지 못했다",
+   "printed_on": [
+    "scoreboard-index"
+   ]
+  },
+  {
+   "id": "ALT_NVDA_FPE_1",
+   "kind": "market_multiple",
+   "metric": "대조용 배수",
+   "text": "엔비디아 선행 P/E — 채택하지 않은 다른 제공사 값",
+   "value": 23.8,
+   "unit": "배",
+   "series": "비교 대상 — 이 화면이 채택한 계열이 아님",
+   "as_of": "2026-09-17",
+   "tier": 3,
+   "source_url": "https://stockanalysis.com/",
+   "verdict": "confirmed",
+   "render": "marked",
+   "note": "같은 시점 NVDA 선행 P/E 가 제공사마다 18.12 / 23.8 / 24.50 / 48.30 으로 2.7배까지 벌어졌다. 이 화면은 stockanalysis.com 의 18.12 를 쓰고 나머지는 채택하지 않았다",
+   "printed_on": [
+    "notes-valuation"
+   ]
+  },
+  {
+   "id": "ALT_NVDA_FPE_2",
+   "kind": "market_multiple",
+   "metric": "대조용 배수",
+   "text": "엔비디아 선행 P/E — 채택하지 않은 다른 제공사 값",
+   "value": 24.5,
+   "unit": "배",
+   "series": "비교 대상 — 이 화면이 채택한 계열이 아님",
+   "as_of": "2026-09-17",
+   "tier": 3,
+   "source_url": "https://stockanalysis.com/",
+   "verdict": "confirmed",
+   "render": "marked",
+   "note": "같은 시점 NVDA 선행 P/E 가 제공사마다 18.12 / 23.8 / 24.50 / 48.30 으로 2.7배까지 벌어졌다. 이 화면은 stockanalysis.com 의 18.12 를 쓰고 나머지는 채택하지 않았다",
+   "printed_on": [
+    "notes-valuation"
+   ]
+  },
+  {
+   "id": "ALT_NVDA_FPE_3",
+   "kind": "market_multiple",
+   "metric": "대조용 배수",
+   "text": "엔비디아 선행 P/E — 채택하지 않은 다른 제공사 값",
+   "value": 48.3,
+   "unit": "배",
+   "series": "비교 대상 — 이 화면이 채택한 계열이 아님",
+   "as_of": "2026-09-17",
+   "tier": 3,
+   "source_url": "https://stockanalysis.com/",
+   "verdict": "confirmed",
+   "render": "marked",
+   "note": "같은 시점 NVDA 선행 P/E 가 제공사마다 18.12 / 23.8 / 24.50 / 48.30 으로 2.7배까지 벌어졌다. 이 화면은 stockanalysis.com 의 18.12 를 쓰고 나머지는 채택하지 않았다",
+   "printed_on": [
+    "notes-valuation"
+   ]
+  },
+  {
+   "id": "ALT_PLTR_PE_1",
+   "kind": "market_multiple",
+   "metric": "대조용 배수",
+   "text": "팔란티어 P/E — 채택하지 않은 다른 제공사 값",
+   "value": 147.69,
+   "unit": "배",
+   "series": "비교 대상 — 이 화면이 채택한 계열이 아님",
+   "as_of": "2026-09-17",
+   "tier": 3,
+   "source_url": "https://stockanalysis.com/",
+   "verdict": "confirmed",
+   "render": "marked",
+   "note": "제공사마다 P/E 가 147.69 / 177.89 / 249 로 엇갈렸다. 계열을 섞으면 순위가 통째로 바뀌므로 한 곳으로 통일했다",
+   "printed_on": [
+    "notes-valuation"
+   ]
+  },
+  {
+   "id": "ALT_PLTR_PE_2",
+   "kind": "market_multiple",
+   "metric": "대조용 배수",
+   "text": "팔란티어 P/E — 채택하지 않은 다른 제공사 값",
+   "value": 177.89,
+   "unit": "배",
+   "series": "비교 대상 — 이 화면이 채택한 계열이 아님",
+   "as_of": "2026-09-17",
+   "tier": 3,
+   "source_url": "https://stockanalysis.com/",
+   "verdict": "confirmed",
+   "render": "marked",
+   "note": "제공사마다 P/E 가 147.69 / 177.89 / 249 로 엇갈렸다. 계열을 섞으면 순위가 통째로 바뀌므로 한 곳으로 통일했다",
+   "printed_on": [
+    "notes-valuation"
+   ]
+  },
+  {
+   "id": "ALT_PLTR_PE_3",
+   "kind": "market_multiple",
+   "metric": "대조용 배수",
+   "text": "팔란티어 P/E — 채택하지 않은 다른 제공사 값",
+   "value": 249.0,
+   "unit": "배",
+   "series": "비교 대상 — 이 화면이 채택한 계열이 아님",
+   "as_of": "2026-09-17",
+   "tier": 3,
+   "source_url": "https://stockanalysis.com/",
+   "verdict": "confirmed",
+   "render": "marked",
+   "note": "제공사마다 P/E 가 147.69 / 177.89 / 249 로 엇갈렸다. 계열을 섞으면 순위가 통째로 바뀌므로 한 곳으로 통일했다",
+   "printed_on": [
+    "notes-valuation"
+   ]
+  },
+  {
+   "id": "ALT_SPX_FPE_1",
+   "kind": "market_multiple",
+   "metric": "대조용 배수",
+   "text": "S&P500 선행 P/E — 기준점으로 쓰지 않은 값",
+   "value": 19.1,
+   "unit": "배",
+   "series": "비교 대상 — 이 화면이 채택한 계열이 아님",
+   "as_of": "2026-09-17",
+   "tier": 3,
+   "source_url": "https://stockanalysis.com/",
+   "verdict": "confirmed",
+   "render": "marked",
+   "note": "이번 수집에서 지수 선행 P/E 가 19.1 / 22.4 / 22.9 / 25.6 으로 엇갈려 밸류에이션 구간의 기준점으로 삼을 수 없었다. 그래서 하우스 고정구간(12~45배)을 쓴다",
+   "printed_on": [
+    "notes-valuation"
+   ]
+  },
+  {
+   "id": "ALT_SPX_FPE_2",
+   "kind": "market_multiple",
+   "metric": "대조용 배수",
+   "text": "S&P500 선행 P/E — 기준점으로 쓰지 않은 값",
+   "value": 22.4,
+   "unit": "배",
+   "series": "비교 대상 — 이 화면이 채택한 계열이 아님",
+   "as_of": "2026-09-17",
+   "tier": 3,
+   "source_url": "https://stockanalysis.com/",
+   "verdict": "confirmed",
+   "render": "marked",
+   "note": "이번 수집에서 지수 선행 P/E 가 19.1 / 22.4 / 22.9 / 25.6 으로 엇갈려 밸류에이션 구간의 기준점으로 삼을 수 없었다. 그래서 하우스 고정구간(12~45배)을 쓴다",
+   "printed_on": [
+    "notes-valuation"
+   ]
+  },
+  {
+   "id": "ALT_SPX_FPE_3",
+   "kind": "market_multiple",
+   "metric": "대조용 배수",
+   "text": "S&P500 선행 P/E — 기준점으로 쓰지 않은 값",
+   "value": 22.9,
+   "unit": "배",
+   "series": "비교 대상 — 이 화면이 채택한 계열이 아님",
+   "as_of": "2026-09-17",
+   "tier": 3,
+   "source_url": "https://stockanalysis.com/",
+   "verdict": "confirmed",
+   "render": "marked",
+   "note": "이번 수집에서 지수 선행 P/E 가 19.1 / 22.4 / 22.9 / 25.6 으로 엇갈려 밸류에이션 구간의 기준점으로 삼을 수 없었다. 그래서 하우스 고정구간(12~45배)을 쓴다",
+   "printed_on": [
+    "notes-valuation"
+   ]
+  },
+  {
+   "id": "ALT_SPX_FPE_4",
+   "kind": "market_multiple",
+   "metric": "대조용 배수",
+   "text": "S&P500 선행 P/E — 기준점으로 쓰지 않은 값",
+   "value": 25.6,
+   "unit": "배",
+   "series": "비교 대상 — 이 화면이 채택한 계열이 아님",
+   "as_of": "2026-09-17",
+   "tier": 3,
+   "source_url": "https://stockanalysis.com/",
+   "verdict": "confirmed",
+   "render": "marked",
+   "note": "이번 수집에서 지수 선행 P/E 가 19.1 / 22.4 / 22.9 / 25.6 으로 엇갈려 밸류에이션 구간의 기준점으로 삼을 수 없었다. 그래서 하우스 고정구간(12~45배)을 쓴다",
+   "printed_on": [
+    "notes-valuation"
+   ]
+  },
+  {
+   "id": "ALT_FCT_REV_EDITIONS_1",
+   "kind": "market_level",
+   "metric": "대조용 지수 집계",
+   "text": "FactSet Q2 매출 성장률 — 회차별 값",
+   "value": 12.2,
+   "unit": "%",
+   "series": "비교 대상 — 이 화면이 채택한 계열이 아님",
+   "as_of": "2026-09-17",
+   "tier": 3,
+   "source_url": "https://advantage.factset.com/hubfs/Website/Resources%20Section/Research%20Desk/Earnings%20Insight/EarningsInsight_071026.pdf",
+   "verdict": "confirmed",
+   "render": "marked",
+   "note": "7월 2일자 12.2%, 7월 10일자 12.3%. 시즌이 진행되며 12.8% 까지 올라갔다 — 보고 기업이 늘면서 오르는 정상적인 움직임이고, 주간 간행물의 수치가 회차마다 달라진다는 근거다",
+   "printed_on": [
+    "notes-valuation"
+   ]
+  },
+  {
+   "id": "ALT_FCT_REV_EDITIONS_2",
+   "kind": "market_level",
+   "metric": "대조용 지수 집계",
+   "text": "FactSet Q2 매출 성장률 — 회차별 값",
+   "value": 12.3,
+   "unit": "%",
+   "series": "비교 대상 — 이 화면이 채택한 계열이 아님",
+   "as_of": "2026-09-17",
+   "tier": 3,
+   "source_url": "https://advantage.factset.com/hubfs/Website/Resources%20Section/Research%20Desk/Earnings%20Insight/EarningsInsight_071026.pdf",
+   "verdict": "confirmed",
+   "render": "marked",
+   "note": "7월 2일자 12.2%, 7월 10일자 12.3%. 시즌이 진행되며 12.8% 까지 올라갔다 — 보고 기업이 늘면서 오르는 정상적인 움직임이고, 주간 간행물의 수치가 회차마다 달라진다는 근거다",
+   "printed_on": [
+    "notes-valuation"
+   ]
+  },
+  {
    "id": "AVGO_AISEG",
    "kind": "reported_result",
    "metric": "브로드컴 AI 반도체 매출 증가율",
@@ -6199,6 +6547,36 @@
   "LTM 성장률": "%",
   "시가총액": "USD bn",
   "EV/EBITDA": "배",
-  "P/S": "배"
+  "P/S": "배",
+  "차기분기 매출 가이던스": "USD bn",
+  "지수 집계": "%",
+  "대조용 배수": "배",
+  "대조용 지수 집계": "%",
+  "브로드컴 AI 반도체 매출 증가율": "%",
+  "마이크론 DRAM 매출 증가율": "%",
+  "오라클 IaaS 매출 증가율": "%",
+  "오라클 잔여수행의무(RPO)": "USD bn",
+  "AWS 매출 증가율": "%",
+  "AWS 성장률 컨센서스": "%",
+  "AWS 성장률이 최고치인 기간": "분기",
+  "애저 매출 증가율": "%",
+  "애저 차기 분기 가이던스(고정환율)": "%",
+  "애저 차기 분기 컨센서스": "%",
+  "구글클라우드 매출 증가율": "%",
+  "구글클라우드 영업이익": "USD bn",
+  "구글클라우드 영업이익(전년 동기)": "USD bn",
+  "메타 캡엑스": "USD bn",
+  "메타 잉여현금흐름": "USD bn",
+  "테슬라 영업이익률": "%",
+  "UNH 전년 동기 매출": "USD bn",
+  "UNH 영업이익": "USD bn",
+  "UNH 영업이익(전년 동기)": "USD bn",
+  "UNH 영업이익 증가율": "%",
+  "UNH 종전 의료손해율 가이던스": "%",
+  "UNH 상향된 의료손해율 가이던스": "%",
+  "캐터필러 종전 FY26 관세 비용 추정": "USD bn",
+  "캐터필러 하향된 FY26 관세 비용 추정": "USD bn",
+  "홈디포 동일점포 매출 증가율": "%",
+  "월마트 미국 동일점포 매출 증가율": "%"
  }
 }
