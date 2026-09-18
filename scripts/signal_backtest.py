@@ -190,7 +190,10 @@ def load_etf_universe(path=None, limit=0):
         out.setdefault(ETF_MARKETS[rec['scope']], []).append((tk, bars, None))
     if limit:
         out = {k: v[:limit] for k, v in out.items()}
-    return out, doc.get('generated_at_kst'), doc.get('source')
+    cov = doc.get('coverage') or {}
+    span = {'from': cov.get('from'), 'to': cov.get('to'), 'days': cov.get('days'),
+            'years_requested': doc.get('years_requested')}
+    return out, doc.get('generated_at_kst'), doc.get('source'), span
 
 
 # ─────────────────────────────────────────────────────────────────────
@@ -539,9 +542,14 @@ def main(argv):
     srcs = {}
     if etf:
         # ETF 우주 — 종목을 어디서 읽는가만 다르고 재는 자리는 아래 그대로다
-        loaded, gen, src = load_etf_universe(limit=limit)
+        loaded, gen, src, span = load_etf_universe(limit=limit)
         report['universe'] = 'etf'
         report['etf_prices_generated_at_kst'] = gen
+        # **어느 길이의 이력으로 잰 성적인가.** engine_hash 가 「어느 모델인가」를,
+        # price_sources 가 「어느 출처인가」를 막듯 이것은 「얼마나 긴 이력인가」를
+        # 막는다. 3해치로 잰 성적을 8해치 신호 옆에 붙이면 모델도 출처도 같아서
+        # 기존 빗장 둘이 모두 통과한다 — 실제로 한 번 그렇게 됐다.
+        report['etf_prices_span'] = span
         for mk, rows in loaded.items():
             srcs[mk] = {('naver' if mk == 'ETF_KR' else 'yahoo'): len(rows)}
             sys.stderr.write('%s 종목 %d 개 읽음\n' % (mk, len(rows)))

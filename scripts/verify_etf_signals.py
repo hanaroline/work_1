@@ -268,6 +268,17 @@ def verify_backtest(sg, px):
           '성적표가 다른 모델의 것인데(%s != %s) 낡음 표시가 없습니다'
           % (bt.get('engine_hash'), sg.get('engine_hash')))
 
+    # **이력 길이가 같은가.** 3해치로 잰 성적을 8해치 신호 옆에 붙이면 모델도
+    # 출처도 같아 위의 두 검사가 모두 통과한다 — 실제로 한 번 그렇게 됐다.
+    # 적혀 있지 않은 것도 낡은 것으로 친다 — 확인할 수 없는 것을 괜찮다고 치면
+    # 그 표시를 붙이기 전에 만들어진 판이 조용히 통과한다.
+    bt_from = (bt.get('prices_span') or {}).get('from')
+    now_from = (px.get('coverage') or {}).get('from')
+    stale = (not bt_from) or (now_from and now_from < bt_from)
+    check(not stale or sg.get('backtest_history_stale'),
+          '성적표의 이력 구간이 %s 인데(지금 %s) 낡음 표시가 없습니다'
+          % (bt_from or '적히지 않음', now_from))
+
     cov = bt.get('coverage') or {}
     check(bool(cov), '성적표에 몇 종목을 쟀는지가 적혀 있지 않습니다')
     scope_n = {}
@@ -488,6 +499,18 @@ def verify_injection(sg, px):
         verify_backtest(s, px)
         return True
     cases.append(('성적표가 다른 모델의 것', c9))
+
+    # 11) **더 짧은 이력으로 잰 성적표**를 붙이면 걸려야 한다
+    def c11():
+        s = copy.deepcopy(sg)
+        if not s.get('backtest'):
+            return False
+        s['backtest']['prices_span'] = dict(s['backtest'].get('prices_span') or {},
+                                            **{'from': '2099-01-01'})
+        s.pop('backtest_history_stale', None)
+        verify_backtest(s, px)
+        return True
+    cases.append(('더 짧은 이력으로 잰 성적표', c11))
 
     # 10) 잰 종목 수를 부풀리면 걸려야 한다
     def c10():
