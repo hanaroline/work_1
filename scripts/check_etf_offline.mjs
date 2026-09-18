@@ -61,8 +61,22 @@ try {
     ok(`[${theme}] 76 줄이 다 있다`, rows === 76, `${rows} 줄`);
 
     ok(`[${theme}] 겹침 칸이 있다`, /사실상 .* 덩이/.test(body || ''));
-    ok(`[${theme}] 성적표가 없다는 말이 있다`,
-       /성적표가 없습니다/.test(await page.textContent('#limits') || ''));
+
+    // **성적표는 붙었거나, 없다고 적혀 있거나 둘 중 하나여야 한다.**
+    // 이 화면이 가장 하기 쉬운 거짓말이 「재 본 적 없는 신호를 재 본 것처럼
+    // 보이게 하는 것」이다. 그래서 어느 쪽이든 화면에 글자로 남아야 한다.
+    const limits = (await page.textContent('#limits')) || '';
+    const hasBt = /성적표 — 이 76종으로 직접 쟀습니다/.test(body || '');
+    ok(`[${theme}] 성적표가 붙었거나 없다고 적혀 있다`,
+       hasBt || /성적표가 없습니다/.test(limits));
+    if (hasBt) {
+      // 76 으로 읽히게 두지 않는다 — 신설 ETF 는 이력이 모자라 빠진다
+      ok(`[${theme}] 몇 종목을 실제로 쟀는지 적혀 있다`,
+         /76 종목으로 잰 것이 아닙니다/.test(body || ''));
+      ok(`[${theme}] 95% 구간을 싣는다`, /95% 구간/.test(body || ''));
+      ok(`[${theme}] 비용이 가정임을 밝힌다`,
+         /사실이 아니라 가정입니다/.test(body || ''));
+    }
     ok(`[${theme}] ETN 을 뺐다고 적혀 있다`,
        /ETN .*제외|ETN .*뺐/.test((await page.textContent('#cover') || '') +
                                   (await page.textContent('#limits') || '')));

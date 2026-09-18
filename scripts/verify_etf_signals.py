@@ -235,9 +235,65 @@ def verify_tiers(sg, px):
           '신호판에 빠진 종목이 있습니다 — %s'
           % sorted({x['ticker'] for x in L.items()} - (seen | missing)))
 
-    # 성적표를 붙이지 않았다고 **적어 두었는가**. 이 표는 주식으로 잰 성적을 쓸 수 없다.
-    check('backtest_note' in sg, '백테스트를 싣지 않은 까닭이 적혀 있지 않습니다')
+    # 성적표는 붙었거나, 못 붙인 까닭이 적혀 있거나 **둘 중 하나여야 한다.**
+    check('backtest' in sg or 'backtest_note' in sg,
+          '성적표도 없고 없는 까닭도 적혀 있지 않습니다')
     check('disclaimer' in sg, '고지가 없습니다')
+
+
+# ─────────────────────────────────────────────────────────────────────
+# 다섯. 성적표가 **이 판의 것인가**
+# ─────────────────────────────────────────────────────────────────────
+#
+# 파일 이름 하나만 틀려도 주식 성적표가 ETF 옆에 붙는다. 그러면 숫자는 멀쩡하고
+# 화면도 멀쩡한데 **아무 상관 없는 성적**이 실린다 — 읽는 사람이 가려낼 길이 없다.
+
+def verify_backtest(sg, px):
+    bt = sg.get('backtest')
+    if not bt:
+        check(bool(sg.get('backtest_note')),
+              '성적표가 없는데 없는 까닭이 비어 있습니다')
+        return
+
+    p = os.path.join(ROOT, 'data', 'etf', 'backtest.json')
+    if not check(os.path.exists(p), '성적표가 붙었는데 %s 가 없습니다' % p):
+        return
+    raw = json.load(open(p, encoding='utf-8'))
+    check(raw.get('universe') == 'etf',
+          '성적표가 ETF 우주로 잰 것이 아닙니다 — universe=%r' % raw.get('universe'))
+
+    # 모델이 같은가. 다르면 **다르다고 적혀 있어야** 한다.
+    same = bt.get('engine_hash') == sg.get('engine_hash')
+    check(same or sg.get('backtest_stale'),
+          '성적표가 다른 모델의 것인데(%s != %s) 낡음 표시가 없습니다'
+          % (bt.get('engine_hash'), sg.get('engine_hash')))
+
+    cov = bt.get('coverage') or {}
+    check(bool(cov), '성적표에 몇 종목을 쟀는지가 적혀 있지 않습니다')
+    scope_n = {}
+    for rec in px['items'].values():
+        mk = 'ETF_KR' if rec['scope'] == 'KR' else 'ETF_OV'
+        scope_n[mk] = scope_n.get(mk, 0) + 1
+    for mk, c in cov.items():
+        check(c['measured'] + c['too_short'] == c['requested'],
+              '%s 의 셈이 맞지 않습니다 — 잰 것 %d + 짧은 것 %d ≠ 부른 것 %d'
+              % (mk, c['measured'], c['too_short'], c['requested']))
+        check(c['requested'] == scope_n.get(mk),
+              '%s 성적표가 %d 종목을 불렀는데 가격판에는 %s 종목입니다'
+              % (mk, c['requested'], scope_n.get(mk)))
+        # **재어진 종목 수를 76 으로 읽히게 두지 않는다**
+        check(c['measured'] <= c['requested'],
+              '%s 잰 종목이 부른 것보다 많습니다' % mk)
+
+    # 판정이 숫자와 어긋나지 않는가 — 보정 통과가 있는데 없다고 적거나 그 반대
+    v = bt.get('verdict') or {}
+    s = bt.get('summary_ko') or ''
+    if v.get('survivors') == 0:
+        check('보정을 통과한 조합은 없다' in s,
+              '보정을 통과한 조합이 0 인데 판정문이 그렇게 말하지 않습니다')
+    else:
+        check('보정을 통과한 조합:' in s,
+              '보정을 통과한 조합이 %d 인데 판정문에 적혀 있지 않습니다' % v['survivors'])
 
 
 # ─────────────────────────────────────────────────────────────────────
@@ -422,6 +478,29 @@ def verify_injection(sg, px):
         return False
     cases.append(('예외 티커가 맨 글자로 오면', c8))
 
+    # 9) **주식 성적표를 ETF 옆에 붙이면** 걸려야 한다
+    def c9():
+        s = copy.deepcopy(sg)
+        if not s.get('backtest'):
+            return False
+        s['backtest']['engine_hash'] = 'deadbeefdeadbeef'
+        s.pop('backtest_stale', None)
+        verify_backtest(s, px)
+        return True
+    cases.append(('성적표가 다른 모델의 것', c9))
+
+    # 10) 잰 종목 수를 부풀리면 걸려야 한다
+    def c10():
+        s = copy.deepcopy(sg)
+        cov = (s.get('backtest') or {}).get('coverage')
+        if not cov:
+            return False
+        mk = sorted(cov)[0]
+        cov[mk]['measured'] = cov[mk]['requested'] + 5
+        verify_backtest(s, px)
+        return True
+    cases.append(('잰 종목 수 부풀리기', c10))
+
     miss, skipped = [], []
     for label, fn in cases:
         bit = _run(fn)
@@ -446,6 +525,7 @@ def main():
     verify_names(px)
     verify_bars(px)
     verify_tiers(sg, px)
+    verify_backtest(sg, px)
     verify_recompute(sg, px)
     n_inj = verify_injection(sg, px)
 
