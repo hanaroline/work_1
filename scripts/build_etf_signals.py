@@ -106,6 +106,93 @@ def drag(rec):
             'drag_1y': round(tr - pr, 2), 'sessions': n - lo}
 
 
+NO_BACKTEST = (
+    '이 판에는 성적표가 붙어 있지 않습니다. data/signals/backtest.json 의 성적은 '
+    '**국내·미국 개별 주식 200 종목으로 잰 것이며 ETF 로 잰 것이 아닙니다** — '
+    '채권 ETF·채권혼합 50·커버드콜은 가격이 움직이는 방식이 달라 옮겨 붙일 수 '
+    '없습니다. **이 ETF들의 신호가 맞았는지는 아직 재지 않았다는 뜻입니다.** '
+    'scripts/signal_backtest.py --etf 로 재고 나서 다시 만드십시오.')
+
+ETF_MARKET_KO = {'ETF_KR': '국내상장 ETF', 'ETF_OV': '해외상장 ETF'}
+
+
+def attach_backtest(result, path):
+    """ETF 성적표를 붙인다. **붙이지 못하면 못 붙였다고 적는다.**
+
+    주식 판(build_signals.py)이 쓰는 것과 같은 빗장 둘을 둔다 — 모델이 바뀌었는가
+    (engine_hash), 그리고 가격 출처가 바뀌었는가. 여기에 하나를 더 둔다: **우주가
+    맞는가.** 이 자리에 주식 성적표를 잘못 가리키면 숫자는 멀쩡히 붙지만 ETF 와
+    아무 상관 없는 성적이 실린다. 그 사고는 파일 이름 하나만 틀려도 난다.
+    """
+    if not os.path.exists(path):
+        result['backtest_note'] = NO_BACKTEST
+        return
+    try:
+        bt = json.load(open(path, encoding='utf-8'))
+    except Exception as e:                                      # noqa: BLE001
+        sys.stderr.write('성적표를 읽지 못했다: %s\n' % e)
+        result['backtest_note'] = NO_BACKTEST
+        return
+
+    if bt.get('universe') != 'etf':
+        result['backtest_note'] = (
+            '성적표를 붙이지 않았습니다 — %s 가 **ETF 우주로 잰 것이 아닙니다**'
+            '(universe=%r). 주식 성적표를 ETF 옆에 붙이면 아무 상관 없는 숫자가 '
+            '실립니다.' % (os.path.basename(path), bt.get('universe')))
+        sys.stderr.write('::warning::성적표가 ETF 우주가 아니다 (%r)\n' % bt.get('universe'))
+        return
+
+    bh = bt.get('engine_hash')
+    if bh != result['engine_hash']:
+        result['backtest_stale'] = {
+            'backtest_engine': bh or '(적히지 않음)',
+            'current_engine': result['engine_hash'],
+            'text': ('아래 성적은 **지금 모델의 것이 아닙니다.** signal_lib.py 가 '
+                     '백테스트를 돌린 뒤에 바뀌었습니다. 다시 돌리기 전까지는 성적을 '
+                     '그대로 읽지 마십시오.')}
+        sys.stderr.write('::warning::ETF 성적표가 지금 모델의 것이 아니다 (%s != %s)\n'
+                         % (bh or '없음', result['engine_hash']))
+
+    result['backtest'] = {
+        'summary_ko': bt.get('summary_ko'),
+        'coverage': bt.get('coverage'),
+        'verdict': bt.get('verdict'),
+        'cost_grid_bps': bt.get('cost_grid_bps'),
+        'entry_cut': bt.get('entry_cut'), 'exit_cut': bt.get('exit_cut'),
+        'horizons': bt.get('horizons'),
+        'engine_hash': bh,
+        'prices_generated_at_kst': bt.get('etf_prices_generated_at_kst'),
+    }
+    result['backtest_summary_ko'] = bt.get('summary_ko')
+
+    # 시장마다 성적이 다른 말을 한다 — 그 말을 종목 옆에 붙여 보낸다.
+    result['market_caveats'] = {}
+    for mk in ('ETF_KR', 'ETF_OV'):
+        ds = []
+        for h, hv in (bt.get('horizons') or {}).items():
+            m = ((hv.get('flip') or {}).get(mk) or {})
+            bo = (m.get('event') or {}).get('bootstrap') or {}
+            if bo.get('diff') is not None:
+                ds.append(bo['diff'])
+        if len(ds) < 3:
+            continue
+        ko = ETF_MARKET_KO[mk]
+        if all(d < 0 for d in ds):
+            result['market_caveats'][mk] = {
+                'level': 'danger',
+                'text': ('백테스트에서 %s 는 **시계 넷이 모두 음수**였습니다(%s%%p) — '
+                         '신호가 높던 날 뒤가 오히려 평상시보다 나빴습니다. 이 쪽의 '
+                         '신호는 그대로 따르지 마십시오.'
+                         % (ko, ' / '.join('%+.2f' % d for d in ds)))}
+        elif all(d > 0 for d in ds):
+            result['market_caveats'][mk] = {
+                'level': 'warn',
+                'text': ('백테스트에서 %s 는 시계 넷이 모두 양수였습니다(%s%%p). 다만 '
+                         '**여러 번 시험한 것을 보정하면 유의하지 않습니다** — 방향이 '
+                         '일관된다는 약한 증거일 뿐입니다.'
+                         % (ko, ' / '.join('%+.2f' % d for d in ds)))}
+
+
 def main(argv):
     ap = argparse.ArgumentParser()
     ap.add_argument('--prices', default=PRICES)
@@ -188,12 +275,7 @@ def main(argv):
         'score20_n': len(sc),
     }
 
-    result['backtest_note'] = (
-        'data/signals/backtest.json 의 성적은 **국내·미국 개별 주식 200 종목으로 잰 '
-        '것이며 ETF 로 잰 것이 아닙니다.** 채권 ETF·채권혼합 50·커버드콜은 가격이 '
-        '움직이는 방식이 달라 그 성적을 여기 옮겨 붙일 수 없습니다. 그래서 이 판에는 '
-        '백테스트 숫자를 싣지 않았습니다 — **이 ETF들의 신호가 맞았는지는 아직 재지 '
-        '않았다는 뜻입니다.**')
+    attach_backtest(result, os.path.join(os.path.dirname(a.out), 'backtest.json'))
     result['bench_note'] = (
         '상대강도(rs20) 축은 비워 두었습니다. 지수를 따라가는 ETF 를 코스피와 견준 '
         '상대강도는 그 ETF 의 추세가 아니기 때문입니다 — 추세 축은 나머지 네 조각으로 '

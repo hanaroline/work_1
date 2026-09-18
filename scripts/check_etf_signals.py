@@ -200,11 +200,57 @@ def test_pipeline():
         shutil.rmtree(tmp, ignore_errors=True)
 
 
+def test_backtest_guard():
+    """**주식 성적표를 ETF 옆에 붙이려 하면 거부하는가.**
+
+    파일 이름 하나만 틀려도 나는 사고다. 그때 숫자는 멀쩡히 붙고 화면도 멀쩡하다 —
+    ETF 와 아무 상관 없는 성적이 실릴 뿐이다. 읽는 사람이 가려낼 길이 없으므로
+    붙이는 자리에서 막아야 한다.
+    """
+    import tempfile
+    tmp = tempfile.mkdtemp(prefix='etfbtguard')
+    try:
+        p = os.path.join(tmp, 'backtest.json')
+
+        # 1) 주식 우주 성적표 — 붙으면 안 된다
+        json.dump({'engine_hash': 'abc', 'summary_ko': '주식으로 잰 것',
+                   'horizons': {}}, open(p, 'w', encoding='utf-8'))
+        r = {'engine_hash': 'abc'}
+        BE.attach_backtest(r, p)
+        ok('주식 우주 성적표를 붙이지 않는다', 'backtest' not in r)
+        ok('붙이지 않은 까닭을 적는다',
+           'ETF 우주로 잰 것이 아닙니다' in (r.get('backtest_note') or ''))
+
+        # 2) ETF 우주인데 모델이 다르다 — 붙이되 **낡았다고 적어야** 한다
+        json.dump({'universe': 'etf', 'engine_hash': 'old', 'summary_ko': 'x',
+                   'horizons': {}}, open(p, 'w', encoding='utf-8'))
+        r = {'engine_hash': 'new'}
+        BE.attach_backtest(r, p)
+        ok('다른 모델이어도 붙는다', 'backtest' in r)
+        ok('다른 모델이면 낡음 표시가 붙는다', bool(r.get('backtest_stale')))
+
+        # 3) 제대로 된 것 — 붙고 낡음 표시가 없다
+        json.dump({'universe': 'etf', 'engine_hash': 'same', 'summary_ko': 'x',
+                   'horizons': {}}, open(p, 'w', encoding='utf-8'))
+        r = {'engine_hash': 'same'}
+        BE.attach_backtest(r, p)
+        ok('맞는 성적표는 붙는다', 'backtest' in r and not r.get('backtest_stale'))
+
+        # 4) 아예 없을 때 — 없다고 적어야 한다
+        r = {'engine_hash': 'same'}
+        BE.attach_backtest(r, os.path.join(tmp, '없는파일.json'))
+        ok('성적표가 없으면 없다고 적는다',
+           'backtest' not in r and bool(r.get('backtest_note')))
+    finally:
+        shutil.rmtree(tmp, ignore_errors=True)
+
+
 def main():
     test_list()
     test_yahoo_parse()
     test_to_series()
     test_name_agrees()
+    test_backtest_guard()
     test_pipeline()
 
     print('시험 %d 가지' % N[0])
