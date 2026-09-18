@@ -262,17 +262,30 @@ const P2_REFERS = /자세한|내용은|참고|참조|설명|바랍니다|페이�
  * 쪽으로 잡히거나(제1부 9 · 제2부 9) 제2부가 제1부보다 앞섰다.
  *
  * 그러므로 제1부를 여는 쪽은 제2부가 될 수 없고, 제2부를 확인해 줄 수도 없다.
- * 제1부가 끝나고 같은 쪽에서 제2부가 시작하는 문서라면 이 종목은 빈칸이 된다 —
- * 틀린 쪽을 짚게 하느니 비운다.
+ *
+ * ★ 다만 「그 쪽에 제1부가 있다」 만으로는 안 된다 ★ 처음엔 그렇게 걸었다가
+ * 대신 계열 36종목에서 **진짜 제2부 속표지를 물리쳤다.** 원문은 이렇다.
+ *
+ *   p.14 「… 자세한 사항은 “제5부 집합투자기구의 해지”를 참고하시기 바랍니다.
+ *          제 2 부. 집합투자기구에 관한 사항   제 1 부. 모집 또는 매출에 관한 사항」
+ *
+ * 제1부 머리글이 **제2부 제목 뒤에** 딸려 나온다 — 앞 구간의 쪽 머리글이 그 쪽
+ * 텍스트 끝에 붙은 것이다. 제1부를 여는 쪽은 반대로 제1부가 **앞에** 오고 그
+ * 뒤로 제1부의 절들이 이어진다 (브이스타 p.9).
+ *
+ * 그래서 자리를 본다 — 제1부가 제2부보다 **앞에 있을 때만** 물리친다.
+ * 뒤에 오는 것은 머리글이므로 그냥 둔다.
  */
 const P1_OPEN = /제\s*1\s*부[.\s]*모\s*집\s*(또는|,)?\s*매\s*출/;
+/** 제1부가 이 자리(제2부 걸림)보다 앞에 적혀 있나 — 앞이면 이 쪽은 제1부 구간이다 */
+function p1Before(text, idx) {
+  const m = text.match(P1_OPEN);
+  return m ? m.index < idx : false;
+}
 export function findPart2(pages, toc) {
   for (let i = 0; i < pages.length; i++) {
     if (toc && toc.has(i)) continue;
     const t = pages[i];
-    /* 제1부를 여는 쪽은 제2부가 아니다 — 둘의 1절 제목이 같아 구별이 안 된다
-       (P1_OPEN 머리말 참고). 이 쪽의 제2부 걸림은 모두 상호참조다. */
-    if (P1_OPEN.test(t)) continue;
     P2_OPEN.lastIndex = 0;
     let x;
     while ((x = P2_OPEN.exec(t))) {
@@ -282,14 +295,22 @@ export function findPart2(pages, toc) {
       const head = after.slice(0, 40);
       if (P2_POINTS_ELSEWHERE.test(head) && !P2_FIRST_SECTION.test(head)) continue;
 
+      /* 이 걸림 앞에 제1부가 있으면 여긴 제1부 구간이다 — 그 쪽의 「1. 집합투자기구의
+         명칭」 은 제1부 것이므로 아래 ① 조건이 헛으로 성립한다 (P1_OPEN 머리말 참고).
+         뒤에 오는 제1부는 쪽 머리글이므로 봐준다. */
+      if (p1Before(t, x.index)) continue;
+
       /* ① 같은 쪽 어디에든 1절이 있으면 그 쪽이 제2부다.
             뽑힌 순서는 눈에 보이는 순서가 아니므로 「뒤」 를 따지지 않는다. */
       if (P2_FIRST_SECTION.test(t)) return { page: i + 1, how: x.index <= 12 ? 'first' : 'mid' };
 
       /* ② 1절이 다음 쪽 첫머리에 있는 문서도 있다 (제목만 놓인 속표지).
             다음 쪽이 목차면 보지 않는다 — 목차에는 어떤 제목이든 다 있다. */
-      if (!(toc && toc.has(i + 1)) && !P1_OPEN.test(pages[i + 1] || '') &&
-          P2_FIRST_SECTION.test((pages[i + 1] || '').slice(0, 400))) {
+      /* 다음 쪽이 **제1부를 여는 쪽**이면 확인해 주지 않는다 — 그 쪽의
+         「1. 집합투자기구의 명칭」 은 제1부 것이다. 앞 400자 안에 있을 때만 본다
+         (쪽 끝에 붙는 머리글은 제1부 구간이라는 뜻이 아니다). */
+      const nx = (pages[i + 1] || '').slice(0, 400);
+      if (!(toc && toc.has(i + 1)) && !P1_OPEN.test(nx) && P2_FIRST_SECTION.test(nx)) {
         return { page: i + 1, how: 'cover' };
       }
 
