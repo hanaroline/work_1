@@ -2842,10 +2842,10 @@ def nyfed_effr():
 
 
 DAUM_INDEX_DAYS = "https://finance.daum.net/api/market_index/days"
-# 다음이 쓰는 시장 이름. KPI200 은 여기 없다 — 이름을 모르므로 **적지
-# 않는다.** 모르는 것을 그럴듯하게 적어 넣는 것이 이 항목을 두 번 잃게
-# 만든 버릇이다.
-DAUM_MARKET = {"KOSPI": "KOSPI", "KOSDAQ": "KOSDAQ"}
+# 다음이 쓰는 시장 이름. 셋 다 **화면이 부르는 것을 보고** 적었다 —
+# 코스피200 이 `KOSPI_200` 인 것도 짐작이 아니라 관찰에서 읽었다
+# (data/market/raw/turnover_xhr.txt, 2026-09-18).
+DAUM_MARKET = {"KOSPI": "KOSPI", "KOSDAQ": "KOSDAQ", "KPI200": "KOSPI_200"}
 
 
 def index_daily(code, pages=2):
@@ -2894,8 +2894,11 @@ def daum_index_daily(code, pages=2):
     per = min(60, max(10, pages * 10))
     url = ("%s?page=1&perPage=%d&market=%s&pagination=true"
            % (DAUM_INDEX_DAYS, per, market))
+    # 화면 주소에는 밑줄이 없다 — `KOSPI_200` 을 부르는 화면이
+    # `/domestic/kospi200` 이다.
+    page = market.lower().replace("_", "")
     j = json.loads(_get(url,
-                        referer="https://finance.daum.net/domestic/%s" % market.lower(),
+                        referer="https://finance.daum.net/domestic/%s" % page,
                         headers={"Accept": "application/json"}))
     series = []
     for r in j.get("data") or []:
