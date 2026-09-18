@@ -200,6 +200,75 @@ def test_pipeline():
         shutil.rmtree(tmp, ignore_errors=True)
 
 
+def test_years_reaches_yahoo():
+    """**--years 가 해외분까지 닿는가.**
+
+    예전에는 fetch_ov 가 yahoo_chart(sym) 을 인자 없이 불러 8해치를 달라고 해도
+    3해치가 왔다. 오류가 나지 않으므로 숫자만 보고는 알 수 없는 종류의 손실이다.
+    망을 타지 않고 확인하려고 yahoo_chart 를 바꿔치기해 받은 인자를 들여다본다.
+    """
+    seen = []
+    keep = F.yahoo_chart
+    try:
+        F.yahoo_chart = lambda sym, years=F.YEARS: (
+            seen.append((sym, years)) or (None, {'route': None, 'errors': ['시험']}))
+        it = [x for x in L.items() if x['scope'] == 'OV'][0]
+        F.fetch_ov(it, ('', ''), 8)
+    finally:
+        F.yahoo_chart = keep
+    ok('해외분에 햇수가 닿는다', seen and seen[0][1] == 8, str(seen))
+
+
+def test_keeps_old_on_failure():
+    """**받기에 실패한 날 이력을 잃지 않는가.**
+
+    이 대본은 받은 것으로 파일을 통째로 다시 쓴다. 그러면 한 종목이 실패한 날 그
+    종목이 파일에서 통째로 사라진다 — 오류 하나가 조용한 손실이 되는 자리다.
+    그 자리를 망 없이 시험한다: 수집기를 전부 실패하게 바꿔 놓고 돌려, 예전 판이
+    그대로 남는지 본다.
+    """
+    tmp = tempfile.mkdtemp(prefix='etfkeep')
+    try:
+        px = os.path.join(tmp, 'prices.json')
+        borrowed_prices(px)
+        before = json.load(open(px, encoding='utf-8'))
+        n_before = len(before['items'])
+        a_before = before['items']['A102110']['bars_n']
+
+        keep_kr, keep_ov = F.fetch_kr, F.fetch_ov
+        try:
+            F.fetch_kr = lambda it, span: (None, {'route': None, 'errors': ['시험']})
+            F.fetch_ov = lambda it, span: (None, {'route': None, 'errors': ['시험']})
+            err = sys.stderr
+            try:
+                sys.stderr = open(os.devnull, 'w')
+                F.main(['--out', px, '--limit', '5'])
+            finally:
+                sys.stderr.close()
+                sys.stderr = err
+        finally:
+            F.fetch_kr, F.fetch_ov = keep_kr, keep_ov
+
+        after = json.load(open(px, encoding='utf-8'))
+        # 다섯만 불렀고 그 다섯이 모두 실패했다. 76 종목이 모두 남아 있어야 한다 —
+        # 부른 다섯은 예전 것을 그대로, 부르지 않은 일흔하나는 손대지 않은 채로.
+        ok('모두 실패해도 종목이 사라지지 않는다',
+           len(after['items']) == n_before,
+           '%d → %d' % (n_before, len(after['items'])))
+        ok('부르지 않은 종목의 봉이 그대로다',
+           after['items']['A102110']['bars_n'] == a_before)
+        ok('낡았다고 적는다',
+           len(after['kept_from_previous']) == 5 and
+           all('stale' in after['items'][t] for t in after['kept_from_previous']),
+           str(after['kept_from_previous']))
+        ok('손대지 않은 것을 셈에 적는다',
+           after['coverage']['untouched'] == n_before - 5, str(after['coverage']))
+        ok('실패를 셈에 적는다', after['coverage']['failed'] == 5,
+           str(after['coverage']))
+    finally:
+        shutil.rmtree(tmp, ignore_errors=True)
+
+
 def test_backtest_guard():
     """**주식 성적표를 ETF 옆에 붙이려 하면 거부하는가.**
 
@@ -250,6 +319,8 @@ def main():
     test_yahoo_parse()
     test_to_series()
     test_name_agrees()
+    test_years_reaches_yahoo()
+    test_keeps_old_on_failure()
     test_backtest_guard()
     test_pipeline()
 
