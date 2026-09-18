@@ -4238,16 +4238,21 @@ def main():
                       if _iso(r.get("date")) and r.get("close"))
         p = _perf(bars, ks2["close"]) if len(bars) > 2 else None
         if p:
-            p["basis"] = "네이버 KPI200 일별시세 (야후 ^KS200 은 일봉 이력이 짧다)"
+            # 출처를 이름으로 적는다 — 2026-09-18 부터 이 계열은 다음
+            # 금융에서 온다(네이버가 끊겨 갈아 끼웠다). 자료에 실려 나가는
+            # 문구라 바뀐 자리를 그대로 두면 읽는 사람을 속이게 된다.
+            p["basis"] = ("%s 일별시세 (야후 ^KS200 은 일봉 이력이 짧다)"
+                          % ("다음 금융 KPI200"
+                             if "daum.net" in (kd2.get("source_url") or "")
+                             else "네이버 KPI200"))
             ks2["perf"] = p
             missing = [h for h in ("m1", "m3", "m6", "y1", "ytd") if h not in p]
             if missing:
                 ks2["perf_note"] = (
-                    "네이버 KPI200 일별시세가 %d행(%s부터)뿐이라 %s 는 되짚지 못했다. "
-                    "쪽을 더 불러도 네이버가 그쯤에서 끊는다"
+                    "KPI200 일별시세가 %d행(%s부터)뿐이라 %s 는 되짚지 못했다"
                     % (len(bars), bars[0][0].isoformat(), "·".join(missing)))
         else:
-            ks2["perf_note"] = ("야후 ^KS200 일봉이 짧고 네이버 계열도 %d행뿐이라 "
+            ks2["perf_note"] = ("야후 ^KS200 일봉이 짧고 일별시세 계열도 %d행뿐이라 "
                                 "기간 수익률을 낼 수 없다" % len(bars))
 
     # VKOSPI — 야후에 없다
