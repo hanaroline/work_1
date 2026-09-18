@@ -1,4 +1,4 @@
-네이버 API 탐색 2026-09-18 09:06:13 KST
+네이버 API 탐색 2026-09-18 09:33:57 KST
 (원천이 실패한 날에만 돈다. 수집 결과는 바꾸지 않는다.)
 
 [internals] https://m.stock.naver.com/api/index/KOSPI/basic
@@ -16,28 +16,28 @@
     응답 앞머리: HTTPError: HTTP Error 409: Conflict
 
 [internals] https://m.stock.naver.com/api/index/KOSPI/integration
-    쓸모 · 16226 bytes · 걸린 낱말 ['riseCount', 'fallCount', '상승']
+    쓸모 · 16256 bytes · 걸린 낱말 ['riseCount', 'fallCount', '상승']
     남김: data/market/raw/probe_03_internals.txt
     앞머리: {"stockEndType":"index","itemCode":"KOSPI","reutersCode":"KOSPI","stockName":"코스피","totalInfos":[{"code":"lastClosePrice","key":"전일","value":"6,715.41"},{"code":"openPrice","key":"시가","value":"6,885.70","compareToPreviousPrice":{"code":"2",
 
 [internals] https://m.stock.naver.com/api/index/KOSPI/price?pageSize=5&page=1
     쓸모 · 1281 bytes · 걸린 낱말 ['상승']
     남김: data/market/raw/probe_04_internals.txt
-    앞머리: [{"localTradedAt":"2026-09-18","closePrice":"6,865.32","compareToPreviousClosePrice":"149.91","compareToPreviousPrice":{"code":"2","text":"상승","name":"RISING"},"fluctuationsRatio":"2.23","openPrice":"6,885.70","highPrice":"6,885.70","lowPri
+    앞머리: [{"localTradedAt":"2026-09-18","closePrice":"6,874.33","compareToPreviousClosePrice":"158.92","compareToPreviousPrice":{"code":"2","text":"상승","name":"RISING"},"fluctuationsRatio":"2.37","openPrice":"6,885.70","highPrice":"6,885.70","lowPri
 
 [sectors] https://m.stock.naver.com/api/stocks/industry
-    쓸모 · 2276 bytes · 걸린 낱말 ['반도체', 'changeRate']
+    쓸모 · 2283 bytes · 걸린 낱말 ['반도체', 'changeRate']
     남김: data/market/raw/probe_05_sectors.txt
-    앞머리: {"stockListSortType":"INDUSTRY","groups":[{"no":282,"name":"전자장비와기기","totalCount":105,"changeRate":"4.60","riseCount":77,"fallCount":13,"steadyCount":15},{"no":288,"name":"건강관리기술","totalCount":13,"changeRate":"3.92","riseCount":11,"fallCoun
+    앞머리: {"stockListSortType":"INDUSTRY","groups":[{"no":293,"name":"컴퓨터와주변기기","totalCount":21,"changeRate":"6.66","riseCount":13,"fallCount":4,"steadyCount":4},{"no":294,"name":"통신장비","totalCount":55,"changeRate":"4.98","riseCount":40,"fallCount":5
 
 [sectors] https://api.stock.naver.com/industry
     실패 · 36 bytes · 걸린 낱말 없음
     응답 앞머리: HTTPError: HTTP Error 404: Not Found
 
 [sectors] https://m.stock.naver.com/api/stocks/industry?page=1&pageSize=100
-    쓸모 · 8632 bytes · 걸린 낱말 ['반도체', 'changeRate']
+    쓸모 · 8644 bytes · 걸린 낱말 ['반도체', 'changeRate']
     남김: data/market/raw/probe_07_sectors.txt
-    앞머리: {"stockListSortType":"INDUSTRY","groups":[{"no":282,"name":"전자장비와기기","totalCount":105,"changeRate":"4.60","riseCount":77,"fallCount":13,"steadyCount":15},{"no":288,"name":"건강관리기술","totalCount":13,"changeRate":"3.92","riseCount":11,"fallCoun
+    앞머리: {"stockListSortType":"INDUSTRY","groups":[{"no":293,"name":"컴퓨터와주변기기","totalCount":21,"changeRate":"6.66","riseCount":13,"fallCount":4,"steadyCount":4},{"no":294,"name":"통신장비","totalCount":55,"changeRate":"4.98","riseCount":40,"fallCount":5
 
 [money_flow] https://m.stock.naver.com/api/domestic/market/trendDeposit?startIdx=0&pageSize=20
     실패 · 30 bytes · 걸린 낱말 없음
