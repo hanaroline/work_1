@@ -2506,12 +2506,12 @@ A–C 가 0.6 일 수 있어, 그 값이 낮으면 사슬입니다.
 
 ```bash
 # 0-1) 자산배분 ETF 76종 (표 기준). 네트워크가 되는 곳에서만.
-python3 scripts/check_etf.py             # 네트워크 없이 — 길 전체 통과 시험 (50가지)
+python3 scripts/check_etf_signals.py             # 네트워크 없이 — 길 전체 통과 시험 (50가지)
 python3 scripts/fetch_etf_prices.py      # → data/etf/prices.json  (네이버 55 + 야후 21)
 python3 scripts/build_etf_signals.py     # → data/etf/signals.json
 python3 scripts/etf_overlap.py           # → data/etf/overlap.json (76종이 몇 덩이인가)
 python3 scripts/etf_adjusted_check.py    # → data/etf/adjusted.json (분배금이 밀어낸 몫)
-python3 scripts/verify_etf.py            # 이름 맞대기 · 등급 · 다시 셈 · 흠 심기 8가지
+python3 scripts/verify_etf_signals.py            # 이름 맞대기 · 등급 · 다시 셈 · 흠 심기 8가지
 python3 scripts/make_etf_offline.py      # → etf-offline.html (인터넷 없이 열리는 한 장)
 node scripts/check_etf_offline.mjs       # 그 한 장이 정말 자급자족하는지 (20가지)
 

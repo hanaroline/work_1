@@ -5,8 +5,8 @@
 숫자를 새로 만들지 않는다 — signals.json / overlap.json 에 있는 것만 줄을 세우고
 묶어 보인다. **여기서 셈을 하나라도 하면 화면과 글이 다른 값을 낼 자리가 생긴다.**
 
-  python3 scripts/report_etf.py             # 전부
-  python3 scripts/report_etf.py --top 15    # 위아래 열다섯씩
+  python3 scripts/report_etf_signals.py             # 전부
+  python3 scripts/report_etf_signals.py --top 15    # 위아래 열다섯씩
 """
 
 import argparse

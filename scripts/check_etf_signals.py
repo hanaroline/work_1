@@ -18,10 +18,10 @@
   · 검산기가 **심은 흠을 무는가**
 
 **여기서 시험하지 못하는 것** — 야후·네이버가 정말 그 꼴로 답하는지, 티커가 정말
-그 펀드인지. 그건 살아 있는 응답을 봐야 알고, 러너가 도는 날 verify_etf.py 의
+그 펀드인지. 그건 살아 있는 응답을 봐야 알고, 러너가 도는 날 verify_etf_signals.py 의
 이름 맞대기가 답한다.
 
-  python3 scripts/check_etf.py
+  python3 scripts/check_etf_signals.py
 """
 
 import json
@@ -36,7 +36,7 @@ sys.path.insert(0, HERE)
 import build_etf_signals as BE
 import etf_list as L
 import fetch_etf_prices as F
-import verify_etf as V
+import verify_etf_signals as V
 
 FAILS, N = [], [0]
 BORROW = os.path.join(ROOT, 'data', 'prices_naver', 'kr100.json')
@@ -210,7 +210,7 @@ def main():
     print('시험 %d 가지' % N[0])
     print()
     print('**여기서 시험하지 못한 것** — 야후·네이버가 정말 그 꼴로 답하는지, 티커가')
-    print('정말 그 펀드인지. 그건 살아 있는 응답을 봐야 알고, verify_etf.py 의 이름')
+    print('정말 그 펀드인지. 그건 살아 있는 응답을 봐야 알고, verify_etf_signals.py 의 이름')
     print('맞대기가 러너에서 답한다.')
     print()
     if FAILS:
