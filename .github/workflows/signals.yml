@@ -1,0 +1,151 @@
+name: 매매 신호 갱신
+
+# 추세·모멘텀·자금수급·매물대를 합친 매수/매도 신호를 다시 셈해 커밋한다.
+#
+# **시세 수집 뒤에 돌아야 한다.** 먹는 것은 종목 일봉 두 갈래다.
+#   국내 ← kr100-data 가지 (kr100-quotes 워크플로가 채운다)
+#   미국 ← us100-data 가지 (us100-quotes 워크플로가 채운다)
+#   지수 ← data/volatility/history.json (volatility 워크플로가 채운다)
+# 그래서 변동성 모델보다 **뒤에** 둔다 — 그쪽이 지수 이력을 세우기 때문이다.
+#
+# 백테스트는 여기서 돌리지 않는다. 10분 걸리는데 날마다 답이 달라지지 않고,
+# 무엇보다 **성적이 날마다 조용히 바뀌면 안 된다.** 모델을 고칠 때만 손으로
+# 돌려 data/signals/backtest.json 을 갱신한다(signals-backtest.yml).
+
+on:
+  schedule:
+    # 17:40 KST = 08:40 UTC — 변동성 모델(17:20)보다 뒤
+    - cron: '40 8 * * 1-5'
+    # 위가 늦을 때를 대비한 두 번째 — 18:30 KST
+    - cron: '30 9 * * 1-5'
+
+  # **수급이 들어오면 곧바로 따라 돈다.**
+  #
+  # 아래 push 방아쇠에 data/flows/kr100.json 을 적어 두었지만 그것만으로는 연결이
+  # 되지 않는다 — GITHUB_TOKEN 이 만든 커밋은 다른 워크플로를 부르지 않기 때문이다
+  # (재귀 실행을 막으려는 깃허브 규칙이다. fund-weekly.yml 주석에도 같은 말이 있다).
+  # 그래서 수급 워크플로가 커밋해도 신호는 안 돌고 다음 날 예약까지 기다렸다.
+  #
+  # workflow_run 은 그 규칙에 걸리지 않는다. 앞 워크플로가 **끝났다는 사실**에
+  # 걸리는 것이지 그것이 만든 커밋에 걸리는 것이 아니다.
+  #
+  # 수급이 늦게(19:00~22:00) 들어오므로 아래 17:40 예약은 그날 수급을 못 본다.
+  # 이 연결이 그 구멍을 메운다.
+  workflow_run:
+    workflows: ['종목별 수급 수집', '국내 일봉 네이버 판 수집']
+    types: [completed]
+    branches: [main]
+
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/signal_lib.py'
+      - 'scripts/build_signals.py'
+      - 'data/volatility/latest.json'
+      - 'data/flows/kr100.json'
+
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: signals
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    # workflow_run 은 앞 워크플로가 **실패했을 때도** 발동한다(types: [completed]).
+    # 수급 수집이 넘어졌는데 신호를 새로 내면 낡은 수급으로 셈한 판을 「방금 갱신함」
+    # 으로 덮어쓰게 된다. 성공했을 때만 잇는다. 예약·수동 실행은 그대로 돈다.
+    if: >-
+      github.event_name != 'workflow_run' ||
+      github.event.workflow_run.conclusion == 'success'
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      # 일봉은 기본 가지에 없다. actions/checkout 이 만드는 작업본은 원격 refspec 이
+      # main 하나뿐이라, refspec 을 손으로 적지 않으면 origin/<가지> 원격추적이
+      # 서지 않는다 — 대본이 `git show origin/kr100-data:...` 로 읽으므로 거기서 죽는다.
+      - name: 종목 일봉 가지 받기
+        run: |
+          for br in kr100-data us100-data; do
+            ok=0
+            for i in 1 2 3 4; do
+              if git fetch --depth 1 origin "+refs/heads/$br:refs/remotes/origin/$br"; then
+                git rev-parse --verify "origin/$br" >/dev/null
+                echo "$br 받음 (시도 $i)"; ok=1; break
+              fi
+              echo "$br 실패 — 다시 시도한다 ($i/4)"; sleep $((i * i * 2))
+            done
+            if [ "$ok" != 1 ]; then
+              echo "::error::$br 가지를 받지 못했습니다"; exit 1
+            fi
+          done
+
+      - name: 신호 셈하기
+        run: python3 scripts/build_signals.py --market KR,US
+
+      # **검산이 산출물을 막는다.** 어긋난 수가 실린 판을 커밋하지 않는다.
+      - name: 재검산
+        run: |
+          python3 scripts/verify_signals.py | tee data/signals/verify.txt
+          exit ${PIPESTATUS[0]}
+
+      # 파이썬과 JS 엔진이 갈라지지 않았는지 — 갈라지면 화면과 백테스트가
+      # 서로 다른 신호를 내게 된다.
+      - name: 엔진 대조 (파이썬 ↔ JS)
+        run: node scripts/check_signal_golden.mjs
+
+      - name: 커밋
+        run: |
+          git config user.name  'github-actions[bot]'
+          git config user.email 'github-actions[bot]@users.noreply.github.com'
+          git add data/signals
+          if git diff --staged --quiet; then
+            echo "변경 없음"
+            exit 0
+          fi
+          git commit -m "매매 신호 갱신 $(TZ=Asia/Seoul date '+%Y-%m-%d %H:%M KST')"
+
+          for i in 1 2 3 4 5; do
+            if git push; then
+              echo "밀어 넣음 (시도 $i)"; exit 0
+            fi
+            echo "거절됨 — 되받아 다시 시도한다 ($i/5)"
+            if ! git pull --rebase --no-edit origin main; then
+              git rebase --abort || true
+              echo "::error::되받기 충돌 — 손으로 확인하십시오"
+              exit 1
+            fi
+            sleep $((i * 5))
+          done
+          echo "::error::다섯 번 밀어 봤지만 모두 거절됐습니다"
+          exit 1
+
+      - name: 요약
+        if: always()
+        run: |
+          if [ -f data/signals/latest.json ]; then
+            python3 - <<'PY'
+          import json
+          d = json.load(open('data/signals/latest.json', encoding='utf-8'))
+          xs = [s for s in d['summary'] if s.get('band')]
+          from collections import Counter
+          c = Counter(s['band'] for s in xs)
+          print("::notice::%d 종목 — 매수 %d, 중립 %d, 청산 %d"
+                % (len(xs), c['strong_buy'] + c['buy'], c['hold'], c['sell'] + c['reduce']))
+          for mk, cav in (d.get('market_caveats') or {}).items():
+              if cav.get('level') == 'danger':
+                  print("::warning::%s 시장 — %s" % (mk, cav['text'].replace('**', '')))
+          missing = [s['symbol'] for s in d['summary'] if not s.get('band')]
+          if missing:
+              print("::warning::점수를 내지 못한 종목 %d (이력 부족): %s"
+                    % (len(missing), ', '.join(missing[:8])))
+          PY
+          fi

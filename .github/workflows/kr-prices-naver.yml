@@ -1,0 +1,128 @@
+name: 국내 일봉 네이버 판 수집
+
+# **국내 지표의 기준 일봉이다.** 2026-09-18 에 야후에서 갈아탔다.
+#
+# 갈아탄 까닭은 하나다 — **야후가 거래일을 통째로 빠뜨렸다.** 2025-09-19(금)이 야후
+# 100 종목 어디에도 없는데 공휴일이 아니고 네이버에는 있다. 세션이 빠지면 이동평균·
+# RSI·매물대처럼 창을 쓰는 지표가 그 뒤로 전부 실제와 다른 날들을 본다.
+#
+# **종가 갈림은 갈아탄 까닭이 아니다.** 100 종목 19,400 봉에서 91.9% 가 같고, 갈리는
+# 쪽은 어느 쪽으로도 쏠리지 않아(고저를 벗어난 종가 629 대 629) 심판할 수 없다.
+# 최근 5봉이 75.8% 로 갈리는 것은 아직 안 풀렸다.
+#
+# 수급 자료(data/flows/kr100.json)의 종가를 쓰지 않는 까닭 — 거기에는 시·고·저·거래량이
+# 없다. ATR·ADX·스토캐스틱·MFI·OBV·매물대가 전부 그것들을 쓴다. 네이버 종가에 야후
+# 고저를 붙이면 종가가 고저 범위를 벗어난 봉이 나온다(실제로 그런 건이 있었다).
+#
+# 신호가 이 자료로 셈되므로 **날마다 돌아야 한다.** 수급 수집(19:00~)보다 앞에 두어
+# 그날 신호가 그날 일봉으로 나오게 한다. 수집기는 날짜로 병합하므로 여러 번 돌아도
+# 덧나지 않고, 앞에서 못 받으면 뒤에서 받는다.
+
+on:
+  schedule:
+    - cron: '40 9 * * 1-5'    # 18:40 KST
+    - cron: '10 11 * * 1-5'   # 20:10 KST
+    - cron: '40 12 * * 1-5'   # 21:40 KST
+
+  # (세 길 가운데 무엇이 사는지 확인하려고 이 가지에 push 방아쇠를 잠시 붙여 네 번
+  #  돌렸고, 확인이 끝나 뗐다. 이제 예약과 단추로만 돈다 — 방아쇠를 남겨 두면 이
+  #  파일을 고칠 때마다 네이버를 백 번씩 두드린다.)
+
+  workflow_dispatch:
+    inputs:
+      limit:
+        description: '몇 종목만 (0 이면 전부)'
+        required: false
+        default: '0'
+      years:
+        description: '몇 해치'
+        required: false
+        default: '2'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: kr-prices-naver
+  cancel-in-progress: false
+
+jobs:
+  collect:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      # 맞대 볼 야후 일봉
+      - name: 종목 일봉 가지 받기
+        run: |
+          for i in 1 2 3 4; do
+            git fetch --depth 1 origin \
+              '+refs/heads/kr100-data:refs/remotes/origin/kr100-data' && exit 0
+            sleep $((i * i * 2))
+          done
+          echo "::error::kr100-data 가지를 받지 못했습니다"; exit 1
+
+      # 파서가 **가정한 꼴**을 제대로 읽는지, 말이 안 되는 봉을 거르는지.
+      # 살아 있는 응답을 보기 전에 이것부터 통과해야 한다.
+      - name: 자체 시험 (네트워크 없이)
+        run: python3 scripts/check_kr_prices_naver.py
+
+      - name: 네이버 일봉 받기
+        run: |
+          python3 scripts/fetch_kr_prices_naver.py \
+            --limit "${{ github.event.inputs.limit || '0' }}" \
+            --years "${{ github.event.inputs.years || '2' }}"
+
+      # **검산이 막았을 때도 받은 것을 내보낸다.** 막힌 자료를 못 보면 무엇이
+      # 어긋났는지 가릴 수 없다 — 수급 수집기에서 그것 때문에 한 번 더 돌려야 했다.
+      - name: 받은 것 내보내기
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: kr-prices-naver-raw
+          path: |
+            data/prices_naver/kr100.json
+            data/prices_naver/verify.txt
+          if-no-files-found: warn
+
+      - name: 재검산 — 야후와 맞대 보기
+        run: python3 scripts/verify_kr_prices_naver.py
+
+      - name: 커밋
+        run: |
+          git config user.name  'github-actions[bot]'
+          git config user.email 'github-actions[bot]@users.noreply.github.com'
+          git add data/prices_naver
+          if git diff --staged --quiet; then echo "변경 없음"; exit 0; fi
+          git commit -m "네이버 일봉 $(TZ=Asia/Seoul date '+%Y-%m-%d %H:%M KST')"
+          BR="${GITHUB_REF_NAME}"
+          for i in 1 2 3 4 5; do
+            git push origin "HEAD:refs/heads/$BR" && exit 0
+            git pull --rebase --no-edit origin "$BR" || { git rebase --abort || true; \
+              echo "::error::되받기 충돌 — 손으로 확인하십시오"; exit 1; }
+            sleep $((i * 5))
+          done
+          echo "::error::다섯 번 밀어 봤지만 모두 거절됐습니다"; exit 1
+
+      - name: 요약
+        if: always()
+        run: |
+          if [ -f data/prices_naver/kr100.json ]; then
+            python3 - <<'PY'
+          import json
+          d = json.load(open('data/prices_naver/kr100.json', encoding='utf-8'))
+          c, r = d['coverage'], d.get('routes_used') or {}
+          print("::notice::종목 %d · 날짜 %d (%s ~ %s) · 못 받음 %d · 길 %s"
+                % (c['stocks'], c['days'], c['from'], c['to'], c['failed'],
+                   json.dumps(r, ensure_ascii=False)))
+          if not r:
+              print("::error::세 길 가운데 살아 있는 것이 하나도 없습니다")
+          PY
+          fi
+          if [ -f data/prices_naver/verify.txt ]; then
+            sed -n '1,40p' data/prices_naver/verify.txt >> "$GITHUB_STEP_SUMMARY"
+          fi
