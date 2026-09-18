@@ -2916,8 +2916,13 @@ def daum_index_daily(code, pages=2):
         })
     if not series:
         raise ValueError("다음 일별시세 행 없음")
+    # **부른 만큼 담는다.** 옛 원천은 쪽을 더 불러도 20행에서 끊었고, 그
+    # 탓에 코스피200 의 1개월·3개월 수익률이 통째로 비어 있었다(8/22 에
+    # 확인해 적어 둔 그 구멍이다). 다음은 부른 만큼 주므로 20 으로 잘라
+    # 버릴 까닭이 없다 — 코스피·코스닥은 예전과 같이 20행이고, 되짚을
+    # 기간이 필요한 코스피200 만 길어진다.
     return {"code": code, "unit": {"volume": "천주", "value": "백만원"},
-            "series": series[:20], "source_url": url}
+            "series": series[:per], "source_url": url}
 
 
 def naver_index_daily(code, pages=2):
