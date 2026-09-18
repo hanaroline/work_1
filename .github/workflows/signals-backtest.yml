@@ -5,10 +5,18 @@ name: 매매 신호 백테스트
 # 고쳤을 때만 손으로 돌려 data/signals/backtest.json 을 갱신한다.
 #
 # 10분쯤 걸린다(200종목 × 시계 4 × 설정 2 × 부트스트랩 2000회).
+#
+# **ETF 성적표도 같은 대본으로 낸다.** universe 를 etf 로 두면 data/etf/prices.json 의
+# 76종을 재어 data/etf/backtest.json 을 쓴다. 재는 코드를 두 벌로 두면 언젠가 한쪽만
+# 고쳐져 주식 성적과 ETF 성적이 서로 다른 잣대로 잰 것이 된다.
 
 on:
   workflow_dispatch:
     inputs:
+      universe:
+        description: '무엇을 재나 (stocks 또는 etf)'
+        required: false
+        default: 'stocks'
       markets:
         description: '시장 (KR,US)'
         required: false
@@ -42,6 +50,7 @@ jobs:
           python-version: '3.12'
 
       - name: 종목 일봉 가지 받기
+        if: github.event.inputs.universe != 'etf'
         run: |
           for br in kr100-data us100-data; do
             ok=0
@@ -54,18 +63,39 @@ jobs:
             [ "$ok" = 1 ] || { echo "::error::$br 가지를 받지 못했습니다"; exit 1; }
           done
 
+      - name: 어느 판을 재나
+        id: which
+        run: |
+          if [ "${{ github.event.inputs.universe }}" = "etf" ]; then
+            echo "out=data/etf/backtest.json" >> "$GITHUB_OUTPUT"
+            echo "args=--etf" >> "$GITHUB_OUTPUT"
+          else
+            echo "out=data/signals/backtest.json" >> "$GITHUB_OUTPUT"
+            echo "args=--market ${{ github.event.inputs.markets || 'KR,US' }}" >> "$GITHUB_OUTPUT"
+          fi
+
       - name: 백테스트
         run: |
           python3 scripts/signal_backtest.py \
-            --market "${{ github.event.inputs.markets || 'KR,US' }}" \
+            ${{ steps.which.outputs.args }} \
             --h "${{ github.event.inputs.horizons || '5,10,20,60' }}" \
-            --out data/signals/backtest.json
+            --out "${{ steps.which.outputs.out }}"
+
+      # ETF 는 성적표를 신호판에 붙여야 화면에 뜬다. 붙이는 자리가 우주를 확인한다.
+      - name: ETF 신호판에 성적표 붙이기
+        if: github.event.inputs.universe == 'etf'
+        run: |
+          python3 scripts/build_etf_signals.py
+          python3 scripts/verify_etf_signals.py
 
       - name: 판정 요약
+        env:
+          OUT: ${{ steps.which.outputs.out }}
         run: |
           python3 - <<'PY'
           import json
-          d = json.load(open('data/signals/backtest.json', encoding='utf-8'))
+          import os
+          d = json.load(open(os.environ['OUT'], encoding='utf-8'))
           print("::notice::%s" % d['summary_ko'].replace('**', '')[:900])
           v = d.get('verdict') or {}
           if not v.get('survivors'):
@@ -76,7 +106,7 @@ jobs:
       - uses: actions/upload-artifact@v4
         with:
           name: signal-backtest
-          path: data/signals/backtest.json
+          path: ${{ steps.which.outputs.out }}
 
       # 사람이 직접 돌렸을 때만 커밋한다. PR 에서는 결과만 붙여 두고 판단은 사람이 한다.
       - name: 커밋
@@ -84,9 +114,14 @@ jobs:
         run: |
           git config user.name  'github-actions[bot]'
           git config user.email 'github-actions[bot]@users.noreply.github.com'
-          git add data/signals/backtest.json
+          git add "${{ steps.which.outputs.out }}"
+          # `[ … ] && …` 만 두면 조건이 거짓일 때 종료코드 1 이 되어 bash -e 가 단계를
+          # 통째로 죽인다. 주식 판을 돌릴 때마다 커밋이 실패한다 — || true 로 막는다.
+          if [ "${{ github.event.inputs.universe }}" = "etf" ]; then
+            git add data/etf/signals.json
+          fi
           if git diff --staged --quiet; then echo "변경 없음"; exit 0; fi
-          git commit -m "신호 백테스트 갱신 $(TZ=Asia/Seoul date '+%Y-%m-%d %H:%M KST')"
+          git commit -m "${{ github.event.inputs.universe == 'etf' && 'ETF' || '신호' }} 백테스트 갱신 $(TZ=Asia/Seoul date '+%Y-%m-%d %H:%M KST')"
           for i in 1 2 3 4 5; do
             git push && exit 0
             git pull --rebase --no-edit origin main || { git rebase --abort || true; exit 1; }
