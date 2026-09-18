@@ -439,6 +439,14 @@
     if (DATA.backtest_stale) {
       h += '<div class="banner danger">' + esc(DATA.backtest_stale.text) + '</div>';
     }
+    if (DATA.backtest_history_stale) {
+      h += '<div class="banner danger">' + esc(DATA.backtest_history_stale.text) + '</div>';
+    }
+    var sp = bt.prices_span || {};
+    if (sp.from) {
+      h += '<div class="muted">잰 일봉 — ' + esc(sp.from) + ' ~ ' + esc(sp.to) +
+        (sp.years_requested ? ' (' + sp.years_requested + '해치 요청)' : '') + '</div>';
+    }
     h += '<div class="sec">' + esc(bt.summary_ko || '') + '</div>';
 
     var cov = bt.coverage || {};

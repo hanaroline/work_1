@@ -116,7 +116,7 @@ NO_BACKTEST = (
 ETF_MARKET_KO = {'ETF_KR': '국내상장 ETF', 'ETF_OV': '해외상장 ETF'}
 
 
-def attach_backtest(result, path):
+def attach_backtest(result, path, prices=None):
     """ETF 성적표를 붙인다. **붙이지 못하면 못 붙였다고 적는다.**
 
     주식 판(build_signals.py)이 쓰는 것과 같은 빗장 둘을 둔다 — 모델이 바뀌었는가
@@ -153,7 +153,37 @@ def attach_backtest(result, path):
         sys.stderr.write('::warning::ETF 성적표가 지금 모델의 것이 아니다 (%s != %s)\n'
                          % (bh or '없음', result['engine_hash']))
 
+    # **얼마나 긴 이력으로 잰 성적인가.**
+    #
+    # 세 번째 빗장이다. 일봉을 3해치에서 8해치로 늘렸더니 모델도(engine_hash) 출처도
+    # (price_sources) 그대로여서 기존 빗장 둘이 모두 통과했고, 신호판은 **3해치로 잰
+    # 성적을 8해치 신호 옆에 조용히 달고 있었다.** 재는 구간이 달라지면 그것은 다른
+    # 성적이다 — 특히 여기서는 평가 구간에 내리는 장이 들어오느냐가 걸린 문제다.
+    # **구간이 적혀 있지 않은 것도 낡은 것으로 친다.** engine_hash 에서 이미 한 번
+    # 겪은 일이다 — 확인할 수 없는 것을 괜찮다고 치면, 그 표시를 붙이기 전에 만들어진
+    # 판이 조용히 통과한다. 실제로 여기서도 그랬다: 3해치 성적표에는 이 칸이 없어서
+    # 8해치 신호 옆에 아무 표시 없이 붙었다.
+    span = bt.get('etf_prices_span') or {}
+    now_from = ((prices or {}).get('coverage') or {}).get('from')
+    if not span.get('from'):
+        result['backtest_history_stale'] = {
+            'backtest_from': '(적히지 않음)', 'current_from': now_from,
+            'text': ('아래 성적이 **어느 길이의 일봉으로 잰 것인지 적혀 있지 않습니다.** '
+                     '구간을 적기 전에 만들어진 판입니다 — 다시 돌리기 전까지 성적을 '
+                     '그대로 읽지 마십시오.')}
+        sys.stderr.write('::warning::ETF 성적표에 이력 구간이 적혀 있지 않다\n')
+    elif now_from and now_from < span['from']:
+        result['backtest_history_stale'] = {
+            'backtest_from': span['from'], 'current_from': now_from,
+            'text': ('아래 성적은 **지금보다 짧은 이력으로 잰 것입니다** '
+                     '(성적 %s 부터 / 지금 %s 부터). 모델도 가격 출처도 같지만 재어 본 '
+                     '구간이 다릅니다 — 다시 돌리기 전까지 성적을 그대로 읽지 마십시오.'
+                     % (span['from'], now_from))}
+        sys.stderr.write('::warning::ETF 성적표가 더 짧은 이력으로 잰 것이다 (%s > %s)\n'
+                         % (span['from'], now_from))
+
     result['backtest'] = {
+        'prices_span': span,
         'summary_ko': bt.get('summary_ko'),
         'coverage': bt.get('coverage'),
         'verdict': bt.get('verdict'),
@@ -275,7 +305,7 @@ def main(argv):
         'score20_n': len(sc),
     }
 
-    attach_backtest(result, os.path.join(os.path.dirname(a.out), 'backtest.json'))
+    attach_backtest(result, os.path.join(os.path.dirname(a.out), 'backtest.json'), src)
     result['bench_note'] = (
         '상대강도(rs20) 축은 비워 두었습니다. 지수를 따라가는 ETF 를 코스피와 견준 '
         '상대강도는 그 ETF 의 추세가 아니기 때문입니다 — 추세 축은 나머지 네 조각으로 '
