@@ -1,0 +1,93 @@
+KRX 지수 일별시세 원천 관찰 2026-09-18T00:12:08.965Z
+(화면이 부르는 주소와 **보내는 본문**을 그대로 적는다. bld 이름을 여기서 읽는다.)
+
+### KRX 정보데이터시스템 뿌리  http://data.krx.co.kr/
+    첫 응답 200
+    화면 안의 관련 링크:
+      지수 → javascript:void(0);
+      통계 → javascript:void(0);
+      쉽게 보는 통계 → javascript:void(0);
+      통계 → javascript:gotoMenu('/contents/MDC/MDI/mdiLoader/index.cmd?menuId=MDC0201','MDC02');
+      쉽게 보는 통계 → javascript:gotoMenu('/contents/MDC/MDI/mdiLoader/index.cmd?menuId=MDC0301','MDC03');
+      기본 통계 → javascript:gotoMenu('/contents/MDC/MDI/mdiLoader/index.cmd?menuId=MDC0201','MDC0201');
+      이슈 통계 → javascript:gotoMenu('/contents/MDC/MDI/mdiLoader/index.cmd?menuId=MDC0202','MDC0202');
+      공매도 통계 → javascript:gotoMenu('/contents/MDC/MDI/mdiLoader/index.cmd?menuId=MDC0203','MDC0203');
+      통계DB 정보 → javascript:gotoMenu('/contents/MDC/MDI/mdiLoader/index.cmd?menuId=MDC0204','MDC0204');
+      주요 통계 → javascript:gotoMenu('/contents/MDC/MDI/mdiLoader/index.cmd?menuId=MDC0301','MDC0301');
+      순위 통계 → javascript:gotoMenu('/contents/MDC/MDI/mdiLoader/index.cmd?menuId=MDC0302','MDC0302');
+      시각화 통계 → javascript:gotoMenu('/contents/MDC/EASY/visualController/MDCEASY001.cmd','MDC0304');
+      지수 라이센스 → javascript:gotoMenu('/contents/MDC/DATA/datasale/index.cmd?viewNm=MDCDATA403','MDC0603');
+      기본통계 → javascript:void(0);
+      주가지수 → javascript:void(0);
+      전체지수 시세 → javascript:void(0);
+      전체지수 등락률 → javascript:void(0);
+      개별지수 시세 추이 → javascript:void(0);
+      전체지수 기본정보 → javascript:void(0);
+      개별지수 종합정보 → javascript:void(0);
+      지수구성종목 → javascript:void(0);
+      채권지수 → javascript:void(0);
+      파생 및 기타지수 → javascript:void(0);
+      종목시세 → javascript:void(0);
+      전종목 시세 → javascript:void(0);
+      개별종목 시세 추이 → javascript:void(0);
+      종목 시세 추이(월/연도) → javascript:void(0);
+      REITs 시세 → javascript:void(0);
+      뮤추얼펀드 시세 → javascript:void(0);
+      선박투자회사 시세 → javascript:void(0);
+      인프라투융자회사 시세 → javascript:void(0);
+      수익증권 시세 → javascript:void(0);
+      신주인수권증권 시세 → javascript:void(0);
+      신주인수권증서 시세 → javascript:void(0);
+      BDC 시세 → javascript:void(0);
+      최근월물 시세 추이(선물) → javascript:void(0);
+      최근월물 시세 추이(옵션) → javascript:void(0);
+      전체상품 거래실적 → javascript:void(0);
+      유종별 시세 추이 → javascript:void(0);
+      국제금시세 동향 → javascript:void(0);
+    메뉴를 못 짚었다 — 화면 글자에서 이름을 다시 읽어야 한다
+    눌러 봄: 「조회」
+    보낸 요청(POST):
+      → https://data.krx.co.kr/comm/bldAttendant/getJsonData.cmd
+        bld=dbms%2FMDC%2FMAIN%2FMDCMAIN00101
+      → https://data.krx.co.kr/comm/bldAttendant/getJsonData.cmd
+        mktId=STK&bld=dbms%2FMDC%2FMAIN%2FMDCMAIN00103
+      → https://data.krx.co.kr/comm/bldAttendant/getJsonData.cmd
+        bld=dbms%2FMDC%2FMAIN%2FMDCMAIN00104&mktId=STK
+      → https://data.krx.co.kr/comm/bldAttendant/getJsonData.cmd
+        bld=dbms%2FMDC%2FMAIN%2FMDCMAIN00106
+      → https://data.krx.co.kr/comm/bldAttendant/getJsonData.cmd
+        mktTp=STK&bld=dbms%2FMDC%2FMAIN%2FMDCMAIN00105
+      → https://data.krx.co.kr/comm/bldAttendant/getJsonData.cmd
+        bld=dbms%2FMDC%2FMAIN%2FMDCMAIN00108
+      → https://data.krx.co.kr/comm/bldAttendant/getJsonData.cmd
+        bld=dbms/MDC/MAIN/MDCMAIN00102&ddTp=1D&indTpCd=5&idxIndCd=302
+      → https://data.krx.co.kr/comm/bldAttendant/getJsonData.cmd
+        bld=dbms/MDC/MAIN/MDCMAIN00102&ddTp=1D&indTpCd=5&idxIndCd=447
+      → https://data.krx.co.kr/comm/bldAttendant/getJsonData.cmd
+        bld=dbms/MDC/MAIN/MDCMAIN00102&ddTp=1D&indTpCd=5&idxIndCd=300
+    [200] ·거래대금말 ·   551570 bytes · https://data.krx.co.kr/contents/MDC/MAIN/main/index.cmd
+    [200] ·거래대금말 ·    42844 bytes · https://data.krx.co.kr/comm/bldAttendant/getJsonData.cmd
+    [200] ·거래대금말 ·    42841 bytes · https://data.krx.co.kr/comm/bldAttendant/getJsonData.cmd
+    [200] ·거래대금말 ·    42830 bytes · https://data.krx.co.kr/comm/bldAttendant/getJsonData.cmd
+    [200] ·거래대금말 ·      149 bytes · https://data.krx.co.kr/comm/bldAttendant/getJsonData.cmd
+    [200]            ·    14270 bytes · https://data.krx.co.kr/inc/js/i18n/messages_ko.json
+    [200]            ·     5575 bytes · https://data.krx.co.kr/inc/js/i18n/words_ko.json
+    [200]            ·     1996 bytes · https://data.krx.co.kr/comm/bldAttendant/getJsonData.cmd
+    [200]            ·      521 bytes · https://data.krx.co.kr/comm/bldAttendant/getJsonData.cmd
+    [200]            ·      458 bytes · http://data.krx.co.kr/
+    [200]            ·      434 bytes · https://data.krx.co.kr/comm/bldAttendant/getJsonData.cmd
+    [200]            ·      368 bytes · https://data.krx.co.kr/comm/bldAttendant/getJsonData.cmd
+    [200]            ·       57 bytes · https://data.krx.co.kr/comm/bldAttendant/getJsonData.cmd
+    → 본문을 data/market/raw/krx_xhr_0_0.json 에 남겼다  (https://data.krx.co.kr/contents/MDC/MAIN/main/index.cmd)
+    → 본문을 data/market/raw/krx_xhr_0_1.json 에 남겼다  (https://data.krx.co.kr/comm/bldAttendant/getJsonData.cmd)
+    → 본문을 data/market/raw/krx_xhr_0_2.json 에 남겼다  (https://data.krx.co.kr/comm/bldAttendant/getJsonData.cmd)
+    → 본문을 data/market/raw/krx_xhr_0_3.json 에 남겼다  (https://data.krx.co.kr/comm/bldAttendant/getJsonData.cmd)
+
+### KRX 통계 첫 화면  http://data.krx.co.kr/contents/MDC/MDI/mainChart/index.cmd
+    첫 응답 200
+    메뉴를 못 짚었다 — 화면 글자에서 이름을 다시 읽어야 한다
+    보낸 POST 요청이 없다 — 화면을 더 깊이 들어가야 한다
+    [200]            ·     2368 bytes · http://data.krx.co.kr/contents/MDC/MDI/mainChart/index.cmd
+    거래대금이 담긴 응답을 못 찾았다
+
+보낸 요청 9건을 data/market/raw/krx_posts.json 에 모았다.
