@@ -13,6 +13,7 @@
 import datetime
 import json
 import os
+import sys
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 DIR = os.path.join(ROOT, "docs", "briefings")
@@ -20,9 +21,21 @@ INDEX = os.path.join(DIR, "index.json")
 OUT = os.path.join(DIR, "archive.html")
 KST = datetime.timezone(datetime.timedelta(hours=9))
 WD = "월화수목금토일"
-SESSION_ORDER = {"morning": 3, "close": 2, "global": 1}
+# 같은 날 여러 판의 순서는 **사이드바와 같아야 합니다.**
+#
+# 한때 이 파일이 자기 순서를 따로 들고 있었고(모닝 3·장마감 2·해외 1),
+# 사이드바와 **반대로** 세웠습니다 — 사이드바는 9/15 에 장마감을 모닝 위에
+# 놓는데 이 쪽은 모닝을 위에 놓았습니다. 같은 자료를 보여 주는 두 목록이
+# 같은 날 순서를 다르게 세우면 읽는 쪽은 둘 중 하나가 틀렸다고 봅니다.
+#
+# **그래서 베끼지 않고 가져다 씁니다.** 베껴 두면 한쪽만 고치는 날 다시
+# 갈라집니다(`build_archive_nav` 는 `__main__` 가드가 있어 불러와도
+# 파일을 건드리지 않습니다).
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from build_archive_nav import SESSION_ORDER          # noqa: E402
+
 KIND = {"morning": ("모닝 마켓", "Morning"), "close": ("장마감 시황", "Close"),
-        "global": ("해외 증시", "Overseas")}
+        "global": ("해외 증시", "Overseas"), "event": ("이벤트 브리프", "Event brief")}
 
 
 def esc(s):
