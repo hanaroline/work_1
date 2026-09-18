@@ -1,0 +1,250 @@
+name: 월배당 커버드콜 ETF 제안서 갱신 (매월 1일)
+
+# 왜 매월 1일인가
+# ──────────────────────────────────────────────────────────────────────
+# 커버드콜 ETF 의 분배금은 달마다 새로 정해진다. 분배 기준일이 보통 그 달
+# 마지막 영업일이고 지급은 그 뒤 며칠 안이라, 1일에 받으면 직전 달 분배가
+# 확정된 상태로 들어온다. 달 중간에 받으면 어떤 종목은 새 달치가 반영되고
+# 어떤 종목은 아직이라 한 표 안에서 기준이 섞인다.
+#
+# 수집이 실패하면 data/cc_etf.json 을 건드리지 않는다. 엑셀도 다시 만들지
+# 않는다. 직전 달 자료가 그대로 남는 편이, 반쯤 비어 있는 제안서가 고객에게
+# 나가는 것보다 낫다. 다만 잡은 빨갛게 남긴다 — 자료가 조용히 낡으면 안 된다.
+
+on:
+  schedule:
+    # 매월 1일 10:00 KST = 1일 01:00 UTC. (KST 는 UTC+9, 서머타임 없음.)
+    # 깃허브 schedule 은 정시에 딱 뜨지 않고 몇 분에서 십수 분 밀린다.
+    - cron: '0 1 1 * *'
+  workflow_dispatch:
+  # 수집기·생성기를 고쳤을 때 바로 검증되도록
+  push:
+    branches:
+      - 'claude/intelligent-**'
+    paths:
+      - 'scripts/collect_cc_etf.mjs'
+      - 'scripts/build_etf_proposal.py'
+      - 'scripts/build_etf_proposal_html.py'
+      - 'scripts/check_etf_html.mjs'
+      - 'scripts/check_etf_proposal.py'
+      - '.github/workflows/cc-etf-monthly.yml'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: cc-etf-monthly-${{ github.ref_name }}
+  cancel-in-progress: false
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    timeout-minutes: 75
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref_name }}
+          # 앞 커밋과 견주려면 이력이 있어야 한다. 기본값(1)은 마지막 커밋
+          # 하나만 받아 오므로 `git diff <앞커밋>..` 이 늘 실패하고, 그러면
+          # "견줄 데가 없으니 수집한다" 는 안전판으로 떨어져 **언제나** 수집한다.
+          # 건너뛰라고 만든 장치가 한 번도 안 걸리는 셈이었다(2026-09 확인).
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      # 수집기를 안 건드린 푸시에서는 수집을 건너뛴다.
+      #
+      # 모집단이 892종목이 되면서 수집이 35~40분 걸린다. 그런데 엑셀 생성기나
+      # 검사기만 고친 푸시에서도 매번 수집부터 다시 돌고 있었다 — 한 글자
+      # 고치고 40분을 기다린 셈이다. 자료는 이미 data/cc_etf.json 에 있으므로
+      # 그걸로 다시 만들면 3분이면 끝난다.
+      #
+      # 정기 갱신(schedule)과 손으로 돌리는 판(workflow_dispatch)은 당연히
+      # 수집한다. 수집기 자체를 고쳤을 때도 수집한다 — 안 그러면 고친 수집기가
+      # 한 번도 안 돌아 본 채로 다음 달 1일을 맞는다.
+      - name: 수집이 필요한가
+        id: need
+        run: |
+          if [ "${{ github.event_name }}" != "push" ]; then
+            echo "수집합니다 (${{ github.event_name }})"
+            echo "collect=true" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          before="${{ github.event.before }}"
+          # 새 잡가지의 첫 푸시는 before 가 0 뿐이라 견줄 데가 없다. 그때는 수집한다.
+          # (이력을 다 받아 오게 고쳤으므로 이제 여기 걸리는 일은 드물다.)
+          if [ -z "$before" ] || [ "$before" = "0000000000000000000000000000000000000000" ] \
+             || ! git cat-file -e "$before^{commit}" 2>/dev/null; then
+            echo "견줄 앞 커밋이 없어 수집합니다"
+            echo "collect=true" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          if git diff --name-only "$before" "${{ github.sha }}" | grep -q 'scripts/collect_cc_etf.mjs'; then
+            echo "수집기가 바뀌어 수집합니다"
+            echo "collect=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "수집기가 그대로라 건너뜁니다 — 있는 자료로 엑셀만 다시 만듭니다"
+            echo "collect=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      # 수집에도 쓰고, HTML 검사(브라우저로 열어 화면에 찍힌 값을 읽는다)에도
+      # 쓴다. 그래서 수집을 건너뛰는 판에서도 깔아야 한다.
+      - name: Playwright 설치
+        run: npm i -D playwright@1.56.1 && npx playwright install --with-deps chromium
+
+      - name: 파이썬 꾸러미
+        run: pip install --quiet openpyxl formulas
+
+      # 수집 실패는 잡을 바로 실패시키지 않는다. data/cc_etf.json 을 건드리지
+      # 않고 끝나므로 직전 달 자료가 그대로 남는다. 마지막에 빨갛게 만든다.
+      - name: ETFCHECK 수집
+        id: collect
+        if: steps.need.outputs.collect == 'true'
+        continue-on-error: true
+        run: node scripts/collect_cc_etf.mjs
+
+      # 진단자료는 볼 수 없으면 없는 것과 같다. 아티팩트를 내려받을 수 없는
+      # 자리에서도 봐야 하므로 저장소에도 남긴다. data/ 와 엑셀은 건드리지
+      # 않는다 — 이건 무엇이 잘못됐는지 적은 쪽지일 뿐이다.
+      - name: 수집 실패 진단자료 커밋
+        if: steps.need.outputs.collect == 'true' && steps.collect.outcome == 'failure'
+        continue-on-error: true
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add tools/etfcheck-discovery/collect-failures.json || true
+          if git diff --cached --quiet; then
+            echo "남길 진단자료가 없습니다"
+            exit 0
+          fi
+          git commit -m "chore(etf): 수집 실패 진단자료 ($(date -u +%Y-%m-%d\ %H:%M))"
+          for i in 1 2 3; do
+            if git push; then exit 0; fi
+            git pull --rebase origin "${{ github.ref_name }}" || exit 1
+          done
+
+      - name: 수집 실패 진단자료
+        if: steps.need.outputs.collect == 'true' && steps.collect.outcome == 'failure'
+        uses: actions/upload-artifact@v4
+        with:
+          name: cc-etf-collect-debug
+          path: |
+            discovery/
+            tools/etfcheck-discovery/
+          retention-days: 14
+          if-no-files-found: ignore
+
+      - name: 엑셀·HTML 다시 만들기
+        if: steps.need.outputs.collect != 'true' || steps.collect.outcome == 'success'
+        run: |
+          python scripts/build_etf_proposal.py
+          python scripts/build_etf_proposal_html.py
+
+      # 검사를 통과하지 못하면 커밋하지 않는다. 틀린 제안서가 저장소에
+      # 들어가는 것이 수집 실패보다 나쁘다 — 아무도 못 알아채기 때문이다.
+      - name: 제안서 검사
+        if: steps.need.outputs.collect != 'true' || steps.collect.outcome == 'success'
+        run: |
+          python scripts/check_etf_proposal.py
+          node scripts/check_etf_html.mjs
+
+      # 커밋: 원격 최신으로 맞춘 다음 **생성물을 다시 만들어** 올린다.
+      #
+      # 예전에는 그냥 커밋하고, 밀리면 `git pull --rebase` 로 따라잡았다.
+      # 그러다 56분짜리 수집을 통째로 날렸다 — 리베이스가 엑셀(이진 파일)에서
+      # 충돌하면 풀 길이 없어 그대로 죽는다. 두 쪽이 같은 엑셀을 각자 만들어
+      # 둔 상황이라 무엇을 남겨야 하는지 git 은 알 수가 없다.
+      #
+      # 합칠 수 없는 것을 합치려 하지 않는다. 엑셀은 자료에서 다시 만들면
+      # 그만이고 3초면 된다. 그러니 지켜야 할 것은 **수집한 자료 하나뿐**이다.
+      # 그것만 챙겨 두고 원격 최신으로 깨끗이 맞춘 뒤, 그 위에서 다시 만든다.
+      # 그러면 합칠 일이 아예 생기지 않고, 항상 최신 생성기로 만든 결과가 된다.
+      - name: 커밋
+        if: steps.need.outputs.collect != 'true' || steps.collect.outcome == 'success'
+        run: |
+          set -euo pipefail
+          B="${{ github.ref_name }}"
+          git config user.name  "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          # 원격 최신으로 맞추기 전에 **수집이 만들어 낸 것**을 챙겨 둔다.
+          # 곳간(etf_dist_cache.json)을 빠뜨리면 reset 이 지워 버려서, 다음
+          # 달에 아껴야 할 호출을 그대로 다시 하게 된다.
+          KEEP="$(mktemp -d)"
+          cp data/cc_etf.json "$KEEP/"
+          cp data/etf_dist_cache.json "$KEEP/" 2>/dev/null || true
+
+          for i in 1 2 3 4 5; do
+            git fetch --quiet origin "$B"
+            git reset --hard --quiet "origin/$B"
+            cp "$KEEP/cc_etf.json" data/cc_etf.json
+            cp "$KEEP/etf_dist_cache.json" data/ 2>/dev/null || true
+
+            python scripts/build_etf_proposal.py
+            python scripts/build_etf_proposal_html.py
+            python scripts/check_etf_proposal.py
+            node scripts/check_etf_html.mjs
+
+            git add data/cc_etf.json data/etf_dist_cache.json \
+                    고객제안서_월배당ETF.xlsx docs/etf-proposal.html
+            if git diff --cached --quiet; then
+              echo "변경 없음 — 커밋 생략"
+              exit 0
+            fi
+            git commit -q -m "chore(etf): 월배당 ETF 제안서 갱신 ($(date -u +%Y-%m))"
+            if git push; then
+              echo "올렸습니다 ($i 번째 시도)"
+              exit 0
+            fi
+            echo "원격이 앞서 있습니다 — 최신에 맞춰 다시 만들어 올립니다 ($i/5)"
+          done
+          echo "::error::5회 시도 후에도 push 실패"
+          exit 1
+
+      - name: 결과 요약
+        if: always()
+        run: |
+          {
+            echo "### 월배당 커버드콜 ETF 제안서"
+            echo ""
+            if [ "${{ steps.need.outputs.collect }}" != "true" ]; then
+              echo "- 수집: **건너뜀** — 수집기가 그대로라 있는 자료로 엑셀만 다시 만들었습니다."
+            elif [ "${{ steps.collect.outcome }}" != "success" ]; then
+              echo "- 수집: **실패** — \`data/cc_etf.json\` 과 엑셀은 직전 달 자료를 그대로 둡니다."
+              echo "- 진단자료는 \`cc-etf-collect-debug\` 아티팩트를 보십시오."
+              exit 0
+            else
+              echo "- 수집: 성공"
+            fi
+            echo ""
+            python - <<'PY'
+          import json
+          d = json.load(open("data/cc_etf.json", encoding="utf-8"))
+          ok = [x for x in d["items"] if x["adopted"]]
+          no = [x for x in d["items"] if not x["adopted"]]
+          print(f"- 기준일 {d.get('asOf')} · 후보 {len(d['items'])}종목 중 채택 {len(ok)} / 제외 {len(no)}")
+          print("")
+          print("| 종목 | 코드 | 현재가 | 연 분배율 | 최근 월분배율 | 순자산 | 60일 거래대금 |")
+          print("|---|---|---:|---:|---:|---:|---:|")
+          for x in sorted(ok, key=lambda x: -(x.get("distTtmRate") or 0))[:25]:
+              print(
+                  f"| {x['name']} | {x['code']} | {x['price']:,} | "
+                  f"{x['distTtmRate']:.2f}% | {x['distMonthlyRate']:.2f}% | "
+                  f"{(x['aum'] or 0)/1e8:,.0f}억 | {(x['turnover60'] or 0)/1e8:,.1f}억 |"
+              )
+          PY
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      # 수집이 실패했으면 잡을 빨갛게 남긴다. 부름만 성공하고 자료는 안 바뀐
+      # 달이 조용히 지나가면 안 된다.
+      - name: 수집 실패 판정
+        if: always() && steps.need.outputs.collect == 'true' && steps.collect.outcome == 'failure'
+        run: |
+          echo "::error::ETFCHECK 수집 실패 — 자료와 엑셀은 직전 달 것을 유지합니다."
+          exit 1
