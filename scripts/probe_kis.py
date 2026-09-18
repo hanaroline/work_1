@@ -169,10 +169,17 @@ def probe_one(kis, case):
                     % (type(exc).__name__, str(exc)[:200])})
         return row
 
-    if "_http" in got:
+    # **HTTP 상태만 보고 판정하지 않는다.** KIS 는 거절을 HTTP 500 에 실어
+    # 보내면서 몸통에는 rt_cd·msg_cd 를 제대로 담아 준다. 처음 판이 그것을
+    # 읽지 않고 「HTTP오류」로 적어, 유량 초과(EGW00201)에 물린 멀쩡한 TR
+    # 세 개가 「경로나 TR_ID 가 틀렸다」로 잘못 분류됐다.
+    # JSON 조차 아닐 때만 HTTP 오류로 적는다.
+    if "_body" in got:
         row.update({"판정": "HTTP오류", "상세": "HTTP %s %s"
-                    % (got["_http"], str(got.get("_body"))[:200])})
+                    % (got.get("_http"), str(got.get("_body"))[:200])})
         return row
+    if got.get("_http"):
+        row["http"] = got["_http"]
 
     rt_cd = str(got.get("rt_cd", ""))
     row["rt_cd"] = rt_cd
