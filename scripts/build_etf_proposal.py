@@ -214,6 +214,9 @@ def build_data_sheet(wb, data):
         # 열 글자가 한 칸씩 밀려 조용히 엉뚱한 칸을 가리키게 된다.
         ("기초지수", 34), ("유형", 11), ("자산군", 14),
         ("지급주기", 12), ("연 지급횟수", 12),
+        # 과세비율도 **맨 뒤에** 붙인다. 가운데 끼우면 제안서 쪽 수식의 열
+        # 글자가 한 칸씩 밀려 조용히 엉뚱한 칸을 가리킨다(기초지수 때와 같다).
+        ("과세비율", 11),
     ]
     ws.cell(row=1, column=1, value="ETFCHECK 수집 원본 — 이 장의 값은 손으로 고치지 마십시오. 매월 1일 수집기가 덮어씁니다.")
     ws.cell(row=1, column=1).font = f(10, bold=True, color=ORANGE)
@@ -270,9 +273,13 @@ def build_data_sheet(wb, data):
             "채택" if ok else "제외", x.get("excludeReason") or "", x.get("index") or "",
             x.get("type") or "", x.get("assetClass") or "",
             freq_label(x), x.get("payoutCount12m"),
+            # 과세비율. 모르면 1(전액 과세)로 적는다 — 비워 두면 엑셀이 0 으로
+            # 읽어 '전액 비과세' 가 되어 세후 금액을 부풀린다. 모를 때는 세금을
+            # 많이 매기는 쪽으로 기운다.
+            1.0 if x.get("taxableRatio") is None else x["taxableRatio"],
         ]
         fmts = [None, None, None, WON_PLAIN, WON_PLAIN, WON_PLAIN, PCT, PCT, PCT, PCT,
-                "#,##0", DATE8, None, None, None, None, None, None, "#,##0"]
+                "#,##0", DATE8, None, None, None, None, None, None, "#,##0", PCT]
         for i, (v, fmt) in enumerate(zip(vals, fmts), start=1):
             c = ws.cell(row=r, column=i, value=v)
             c.font = f(10, color=INK if ok else MUTED)
@@ -303,8 +310,18 @@ def build_data_sheet(wb, data):
     # '고를 수 없는' 종목은 조회 결과에 나와도 담을 수 없으니 뜻이 없다.
     c_match = len(cols) + 1        # T
     c_rank = len(cols) + 2         # U
-    col_freq = get_column_letter(len(cols) - 1)   # 지급주기
-    col_ttm = get_column_letter(10)               # 연환산 분배율
+    # 열 글자는 **이름으로** 찾는다. 자리로 세면(len(cols)-1 같은 식) 칸을
+    # 하나 붙이는 순간 조용히 옆 칸을 가리킨다. 과세비율을 붙이면서 실제로
+    # 그럴 뻔했다.
+    def col_of(title):
+        for i, (t, _w) in enumerate(cols, start=1):
+            if t == title:
+                return get_column_letter(i)
+        raise KeyError(f"[ETF데이터] 에 '{title}' 칸이 없습니다.")
+
+    col_freq = col_of("지급주기")
+    col_ttm = col_of("연환산 분배율")
+    col_tax = col_of("과세비율")
     tl = get_column_letter(c_match)
     tl2 = get_column_letter(c_rank)
     for rr in range(first_adopted, last_sel + 1):
@@ -370,7 +387,7 @@ def build_data_sheet(wb, data):
     # 검색용 칸의 글자를 그대로 돌려준다. 여기 글자를 main 에 박아 두면 칸을
     # 하나 늘리는 순간 이름이 조용히 엉뚱한 칸을 가리킨다.
     return (ws, first_adopted, last_adopted, last_sel,
-            len(adopted), len(usable_rejected), len(unusable), vl, xl)
+            len(adopted), len(usable_rejected), len(unusable), vl, xl, tl2, col_tax)
 
 
 # ══════════════════════════════════════════════════════════════════════
@@ -454,7 +471,7 @@ def header_band(ws, last_col, title, subtitle, asof_line):
 LOOKUP_ROWS = 60
 
 
-def build_lookup_sheet(wb, data, first_sel, last_sel):
+def build_lookup_sheet(wb, data, first_sel, last_sel, rank_col="U"):
     """지급주기·연 분배율로 종목을 골라 보는 장.
 
     왜 [제안서] 의 콤보박스를 줄이지 않고 장을 따로 두나
@@ -548,7 +565,7 @@ def build_lookup_sheet(wb, data, first_sel, last_sel):
     for k in range(LOOKUP_ROWS):
         rr = first_row + k
         ws.cell(row=rr, column=11).value = (
-            f"=IFERROR(MATCH({k + 1},'{D}'!$U${first_sel}:$U${last_sel},0),0)"
+            f"=IFERROR(MATCH({k + 1},'{D}'!${rank_col}${first_sel}:${rank_col}${last_sel},0),0)"
         )
         cells = [
             (2, pick("A", rr), None),                    # 종목명
@@ -634,7 +651,8 @@ def build_lookup_sheet(wb, data, first_sel, last_sel):
     return ws, first_cond, first_row, last_row
 
 
-def build_proposal(wb, data, first_sel, last_sel, first_adopted, last_adopted):
+def build_proposal(wb, data, first_sel, last_sel, first_adopted, last_adopted, tax_col="T"):
+    TAXCOL = tax_col
     ws = wb.create_sheet("제안서", 0)
     LAST = 8  # A..H
     # A 는 왼쪽 여백이다. 표는 전부 B 부터 시작한다 — 비교표를 A 부터 그렸더니
@@ -718,7 +736,7 @@ def build_proposal(wb, data, first_sel, last_sel, first_adopted, last_adopted):
 
     ws["J1"] = "계산 보조 (수정하지 마십시오)"
     ws["J1"].font = f(9, color=MUTED)
-    for _h in ("J", "K", "L", "M", "N"):
+    for _h in ("J", "K", "L", "M", "N", "O"):
         ws.column_dimensions[_h].hidden = True
 
     # ── 2. 포트폴리오 ──
@@ -798,12 +816,17 @@ def build_proposal(wb, data, first_sel, last_sel, first_adopted, last_adopted):
         ws[f"M{rr}"].font = f(9, color=MUTED)
         ws[f"N{rr}"] = f'=IF(OR($M{rr}="",$M{rr}="월배당"),0,1)'
         ws[f"N{rr}"].font = f(9, color=MUTED)
+        # 그 종목의 과세비율. 분배금 전액에 세금을 매기는 것은 틀린 셈이라
+        # (자세한 까닭은 6. 유의사항) 종목마다 다른 값을 쓴다. 못 구한 종목은
+        # [ETF데이터] 에 1 로 적혀 있어 예전과 같은 셈이 된다.
+        ws[f"O{rr}"] = f'=IF($K{rr}=0,1,INDEX({rng(TAXCOL)},$K{rr}))'
+        ws[f"O{rr}"].font = f(9, color=MUTED)
         put(ws, rr, 4,
             f'=IF($K{rr}=0,0,IF({C_MODE}="비율",ROUND({C_AMT}*$C{rr}/100,0),$C{rr}))', WON_Z)
         put(ws, rr, 5, f"=IF($K{rr}=0,0,ROUNDDOWN($D{rr}/INDEX({rng('D')},$K{rr}),0))", QTY_Z)
         put(ws, rr, 6, f"=IF($K{rr}=0,0,$E{rr}*INDEX({rng('D')},$K{rr}))", WON_Z)
         put(ws, rr, 7, f"=IF($K{rr}=0,0,$F{rr}*INDEX({rng('J')},$K{rr})/12)", WON_Z)
-        put(ws, rr, 8, f"=$G{rr}*(1-{C_TAX})", WON_Z)
+        put(ws, rr, 8, f"=$G{rr}*(1-{C_TAX}*$O{rr})", WON_Z)
         if i % 2 == 1:
             for c in range(4, 9):
                 ws.cell(row=rr, column=c).fill = fill(SURFACE)
@@ -811,6 +834,10 @@ def build_proposal(wb, data, first_sel, last_sel, first_adopted, last_adopted):
     dv.sqref = f"B{p_first}:B{p_last}"
 
     tot = p_last + 1
+    # 금액 구간표가 쓸 **실효** 세후 비율. 종목마다 과세비율이 달라서 하나의
+    # 세율로는 낼 수 없으므로, 지금 담은 구성이 실제로 내는 비율(세후 합 ÷
+    # 세전 합)을 그대로 쓴다. 아무것도 안 담았으면 전액 과세로 둔다.
+    NET_RATIO = f'IF($G${tot}=0,1-{C_TAX},$H${tot}/$G${tot})'
     label(ws, tot, 2, "합계", bold=True)
     for col, letter, fmt in [
         (3, "C", "#,##0.##"), (4, "D", WON), (6, "F", WON), (7, "G", WON), (8, "H", WON),
@@ -963,9 +990,9 @@ def build_proposal(wb, data, first_sel, last_sel, first_adopted, last_adopted):
         a = put(ws, rr, 2, amt, WON, kind="source")
         a.font = f(10, bold=True, color=INK)
         put(ws, rr, 3, f"=$B{rr}*{W_ANN}/12", WON)
-        put(ws, rr, 4, f"=$C{rr}*(1-{C_TAX})", WON)
+        put(ws, rr, 4, f"=$C{rr}*{NET_RATIO}", WON)
         put(ws, rr, 5, f"=$B{rr}*{W_ANN}", WON)
-        put(ws, rr, 6, f"=$E{rr}*(1-{C_TAX})", WON)
+        put(ws, rr, 6, f"=$E{rr}*{NET_RATIO}", WON)
         if i % 2 == 1:
             for c in range(2, 7):
                 ws.cell(row=rr, column=c).fill = fill(SURFACE)
@@ -1038,7 +1065,7 @@ def build_proposal(wb, data, first_sel, last_sel, first_adopted, last_adopted):
         put(ws, rr, 4, f"='{D}'!$D${src}", WON)
         put(ws, rr, 5, f"='{D}'!$J${src}", PCT)
         put(ws, rr, 6, f"=IF($D{rr}=0,0,ROUNDDOWN(100000000/$D{rr},0)*$D{rr}*$E{rr}/12)", WON)
-        put(ws, rr, 7, f"=$F{rr}*(1-{C_TAX})", WON)
+        put(ws, rr, 7, f"=$F{rr}*(1-{C_TAX}*'{D}'!${TAXCOL}${src})", WON)
         put(ws, rr, 8, f"='{D}'!$H${src}", PCT)
         if i % 2 == 1:
             for c2 in range(2, 9):
@@ -1061,6 +1088,14 @@ def build_proposal(wb, data, first_sel, last_sel, first_adopted, last_adopted):
         "분배금의 일부가 원금에서 지급될 수 있습니다(자본 환급). 이 경우 기준가가 그만큼 낮아집니다.",
         "표시된 연 분배율은 최근 12개월 실제 분배금 합계를 현재가로 나눈 값(사후 수치)이며, 앞으로의 수익률을 보장하지 않습니다.",
         "세율은 국내 상장 ETF 분배금 기준 15.4%(배당소득세 14% + 지방소득세 1.4%)를 적용했습니다. 금융소득종합과세 대상자는 실효세율이 달라집니다.",
+        "세금은 분배금 전액이 아니라 과세표준액에만 붙습니다. 국내주식 매매차익과 장내파생 손익은 과세표준에 들어가지 "
+        "않으므로, 그 재원으로 분배하는 종목은 분배금의 상당 부분이 비과세입니다. 그래서 종목마다 다른 과세비율을 적용했고, "
+        "그 비율은 [ETF데이터] 장의 '과세비율' 칸에 있습니다.",
+        "과세비율은 최근 12개월에 실제로 매겨진 과세표준액을 같은 기간 분배금으로 나눈 값입니다. 지나간 실적이므로 앞으로도 같다는 "
+        "뜻은 아닙니다 — 분배 재원(배당·이자·매매차익·파생손익)의 구성이 바뀌면 비율도 함께 바뀌고, 실제로 한 종목 안에서도 "
+        "회차마다 0%에서 17%까지 움직인 사례가 있습니다. 실제 세액은 지급 시점의 과세표준으로 확정되므로 이 표와 다를 수 "
+        "있습니다. 과세비율을 구하지 못한 종목은 전액 과세로 보수적으로 계산했습니다.",
+        "세무 상담이 필요한 사안은 이 문서로 갈음하지 마시고 세무 전문가의 확인을 받으십시오.",
         "매매수수료·거래세·환율 변동은 반영하지 않았습니다. 총보수는 분배율에 이미 반영되어 있습니다(기준가 차감).",
         "수량은 정수 매수를 가정해 내림 처리했습니다. 남는 금액은 '미투자 잔액'에 표시됩니다.",
         "여러 종목에 나눠 담아도 분배 시기는 종목마다 다릅니다. 매월 같은 날 한꺼번에 들어오지 않습니다.",
@@ -1186,7 +1221,7 @@ def main():
     wb.remove(wb.active)
 
     (ds, first_adopted, last_adopted, last_sel,
-     n_ok, n_rej, n_bad, col_smatch, col_slist) = build_data_sheet(wb, data)
+     n_ok, n_rej, n_bad, col_smatch, col_slist, col_rank, col_tax) = build_data_sheet(wb, data)
     # 드롭다운이 가리킬 이름. 채택 + 기준 미달(값이 온전한 것)까지 담는다.
     # 수집 실패 종목은 그 뒤에 있어 이 구간에 들어오지 않는다.
     #
@@ -1196,8 +1231,8 @@ def main():
         DefinedName("선택가능종목", attr_text=f"'ETF데이터'!$A${first_adopted}:$A${last_sel}")
     )
     ws, p_first, p_last, search_cell = build_proposal(
-        wb, data, first_adopted, last_sel, first_adopted, last_adopted)
-    lk, cond_row, lk_first, lk_last = build_lookup_sheet(wb, data, first_adopted, last_sel)
+        wb, data, first_adopted, last_sel, first_adopted, last_adopted, col_tax)
+    lk, cond_row, lk_first, lk_last = build_lookup_sheet(wb, data, first_adopted, last_sel, col_rank)
 
     # 검색 칸과, 그 검색에 걸린 종목만 담은 목록.
     #

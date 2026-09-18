@@ -45,7 +45,7 @@ DATA_COLS = {
     "A": "종목명", "B": "종목코드", "C": "운용사", "D": "현재가", "E": "순자산총액",
     "F": "60일 평균거래대금", "G": "총보수", "H": "변동성", "I": "최근 월분배율",
     "J": "연환산 분배율", "K": "분배 기록수", "L": "최근 분배기준일", "M": "채택", "N": "제외 사유", "O": "기초지수", "P": "유형", "Q": "자산군",
-    "R": "지급주기", "S": "연 지급횟수",
+    "R": "지급주기", "S": "연 지급횟수", "T": "과세비율",
 }
 
 problems: list[str] = []
@@ -196,7 +196,7 @@ def main() -> int:  # noqa: PLR0915
     ref_own = re.compile(r"(?<![!\w$])\$?([A-H])\$?(\d+)\b")
     # 범위 끝(`:$B$6`)까지 한 덩어리로 잡는다. 앞쪽만 떼어 내면 남은
     # `:$B$6` 가 제안서 자기 칸 참조처럼 보여 없는 문제를 만든다.
-    ref_data = re.compile(r"'ETF데이터'!\$([A-Q])\$(\d+)(?::\$([A-Q])\$(\d+))?")
+    ref_data = re.compile(r"'ETF데이터'!\$([A-T])\$(\d+)(?::\$([A-T])\$(\d+))?")
     n_formula = 0
     for row in ws.iter_rows():
         for c in row:
@@ -413,7 +413,7 @@ def main() -> int:  # noqa: PLR0915
 
     check_lookup(selectable, first, last)
     check_lookup_units(v, wb["종목조회"], selectable)
-    check_pick_and_search(selectable)
+    check_pick_and_search(selectable, wb)
 
     # HTML 판이 같은 값을 내는지 맞춰 볼 수 있게, 엑셀을 **실제로 계산해서 나온**
     # 값을 적어 둔다. scripts/check_etf_html.mjs 가 이 파일을 읽어 브라우저에
@@ -503,7 +503,7 @@ def check_lookup_units(v, lk, selectable) -> None:
         notes.append(f"[종목조회] {n}줄의 순자산·현재가·분배율을 원천과 단위까지 맞췄습니다.")
 
 
-def check_pick_and_search(selectable) -> None:
+def check_pick_and_search(selectable, wb=None) -> None:
     """'담기' 와 '종목 검색' 이 실제로 도는지 본다.
 
     둘 다 **다른 장에 값을 옮기는** 기능이라, 칸 주소가 한 칸만 밀려도 조용히
@@ -586,10 +586,16 @@ def check_pick_and_search(selectable) -> None:
 
     # ── 검색 → 목록 좁히기 ──
     # X 칸에 위에서부터 걸린 종목만 빈칸 없이 쌓여야 한다.
+    dn = wb.defined_names.get("검색결과")
+    mcol = re.search(r"'ETF데이터'!\$([A-Z]+)\$", dn.attr_text) if dn else None
+    if mcol is None:
+        fail("이름 '검색결과' 에서 목록 칸을 못 찾았습니다.")
+        return
+    lcol = mcol.group(1)
     got = []
     r = 4
     while True:
-        x = g("ETF데이터", f"X{r}")
+        x = g("ETF데이터", f"{lcol}{r}")
         if x is None or x == "":
             break
         got.append(x)
