@@ -83,11 +83,25 @@ jobs:
             echo "남긴 것 없음"
             exit 0
           fi
-          git commit -m "상한가 원천 관찰 $(TZ=Asia/Seoul date '+%Y-%m-%d %H:%M KST')"
-          # 시세 수집과 겹칠 수 있으므로 되받아서 다시 민다.
+          git commit -m "끊긴 원천 관찰 $(TZ=Asia/Seoul date '+%Y-%m-%d %H:%M KST')"
+          # 시세 수집이나 다른 관찰과 겹칠 수 있으므로 되받아서 다시 민다.
+          #
+          # **rebase 로 되받지 않는다.** 2026-09-18 에 관찰 둘이 겹쳐 돌면서
+          # 같은 기록 파일을 서로 고쳤고, rebase 가 40여 개 파일에서 충돌해
+          # 멈추는 바람에 **그날의 KRX 관찰 결과가 통째로 버려졌다.**
+          # 기록 파일은 「이번에 본 것」을 적은 것이라 두 판을 섞을 일이
+          # 없다 — 늦게 본 쪽이 맞다. 그래서 남의 것 위에 우리 것을 그대로
+          # 얹는다(reset --soft). 충돌이라는 것이 아예 생기지 않는다.
           for i in 1 2 3 4 5; do
             if git push; then echo "밀어 넣음 (시도 $i)"; exit 0; fi
-            git pull --rebase --no-edit origin main || { git rebase --abort || true; exit 1; }
+            git fetch origin main || exit 1
+            git reset --soft origin/main
+            git add -A data/market/raw || true
+            if git diff --staged --quiet; then
+              echo "먼저 올라온 것과 같다 — 남길 것 없음"
+              exit 0
+            fi
+            git commit -m "끊긴 원천 관찰 $(TZ=Asia/Seoul date '+%Y-%m-%d %H:%M KST')"
             sleep $((i * 5))
           done
           exit 1
