@@ -537,6 +537,164 @@
    "url": "https://finance.yahoo.com/markets/stocks/articles/q3-earnings-preview-high-expectations-203800936.html"
   }
  ],
+ "facts": {
+  "AVGO_AISEG": {
+   "v": 221.0,
+   "unit": "%",
+   "ko": "브로드컴 AI 반도체 매출 증가율",
+   "en": "Broadcom AI semiconductor revenue growth"
+  },
+  "MU_DRAM": {
+   "v": 343.0,
+   "unit": "%",
+   "ko": "마이크론 DRAM 매출 증가율",
+   "en": "Micron DRAM revenue growth"
+  },
+  "ORCL_IAAS": {
+   "v": 121.0,
+   "unit": "%",
+   "ko": "오라클 IaaS 매출 증가율",
+   "en": "Oracle IaaS revenue growth"
+  },
+  "ORCL_RPO": {
+   "v": 664.0,
+   "unit": "USD bn",
+   "ko": "오라클 잔여수행의무(RPO)",
+   "en": "Oracle remaining performance obligations"
+  },
+  "AWS_G": {
+   "v": 36.7,
+   "unit": "%",
+   "ko": "AWS 매출 증가율",
+   "en": "AWS revenue growth"
+  },
+  "AWS_CONS": {
+   "v": 31.0,
+   "unit": "%",
+   "ko": "AWS 성장률 컨센서스",
+   "en": "AWS growth consensus"
+  },
+  "AWS_STREAK": {
+   "v": 18.0,
+   "unit": "분기",
+   "ko": "AWS 성장률이 최고치인 기간",
+   "en": "Quarters since AWS last grew this fast"
+  },
+  "AZURE_G": {
+   "v": 43.0,
+   "unit": "%",
+   "ko": "애저 매출 증가율",
+   "en": "Azure revenue growth"
+  },
+  "AZURE_NEXT": {
+   "v": 45.0,
+   "unit": "%",
+   "ko": "애저 차기 분기 가이던스(고정환율)",
+   "en": "Azure guidance for the next quarter (cc)"
+  },
+  "AZURE_CONS": {
+   "v": 41.4,
+   "unit": "%",
+   "ko": "애저 차기 분기 컨센서스",
+   "en": "Azure consensus for the next quarter"
+  },
+  "GCP_G": {
+   "v": 82.0,
+   "unit": "%",
+   "ko": "구글클라우드 매출 증가율",
+   "en": "Google Cloud revenue growth"
+  },
+  "GCP_OP": {
+   "v": 8.8,
+   "unit": "USD bn",
+   "ko": "구글클라우드 영업이익",
+   "en": "Google Cloud operating income"
+  },
+  "GCP_OP_PY": {
+   "v": 2.8,
+   "unit": "USD bn",
+   "ko": "구글클라우드 영업이익(전년 동기)",
+   "en": "Google Cloud operating income a year earlier"
+  },
+  "META_CAPEX": {
+   "v": 31.08,
+   "unit": "USD bn",
+   "ko": "메타 캡엑스",
+   "en": "Meta capex"
+  },
+  "META_FCF": {
+   "v": 0.784,
+   "unit": "USD bn",
+   "ko": "메타 잉여현금흐름",
+   "en": "Meta free cash flow"
+  },
+  "TSLA_OPM": {
+   "v": 1.4,
+   "unit": "%",
+   "ko": "테슬라 영업이익률",
+   "en": "Tesla operating margin"
+  },
+  "UNH_REV_PY": {
+   "v": 111.6,
+   "unit": "USD bn",
+   "ko": "UNH 전년 동기 매출",
+   "en": "UnitedHealth revenue a year earlier"
+  },
+  "UNH_OP": {
+   "v": 8.0,
+   "unit": "USD bn",
+   "ko": "UNH 영업이익",
+   "en": "UnitedHealth operating earnings"
+  },
+  "UNH_OP_PY": {
+   "v": 5.2,
+   "unit": "USD bn",
+   "ko": "UNH 영업이익(전년 동기)",
+   "en": "UnitedHealth operating earnings a year earlier"
+  },
+  "UNH_OP_G": {
+   "v": 55.0,
+   "unit": "%",
+   "ko": "UNH 영업이익 증가율",
+   "en": "UnitedHealth operating earnings growth"
+  },
+  "UNH_MCR_PREV": {
+   "v": 88.8,
+   "unit": "%",
+   "ko": "UNH 종전 의료손해율 가이던스",
+   "en": "UnitedHealth prior medical care ratio guidance"
+  },
+  "UNH_MCR": {
+   "v": 88.1,
+   "unit": "%",
+   "ko": "UNH 상향된 의료손해율 가이던스",
+   "en": "UnitedHealth improved medical care ratio guidance"
+  },
+  "CAT_TARIFF_PREV": {
+   "v": 2.5,
+   "unit": "USD bn",
+   "ko": "캐터필러 종전 FY26 관세 비용 추정",
+   "en": "Caterpillar prior FY26 tariff-cost estimate"
+  },
+  "CAT_TARIFF": {
+   "v": 2.2,
+   "unit": "USD bn",
+   "ko": "캐터필러 하향된 FY26 관세 비용 추정",
+   "en": "Caterpillar lowered FY26 tariff-cost estimate"
+  },
+  "HD_COMP": {
+   "v": 1.7,
+   "unit": "%",
+   "ko": "홈디포 동일점포 매출 증가율",
+   "en": "Home Depot comparable sales growth"
+  },
+  "WMT_COMP": {
+   "v": 2.6,
+   "unit": "%",
+   "ko": "월마트 미국 동일점포 매출 증가율",
+   "en": "Walmart US comparable sales growth"
+  }
+ },
  "companies": [
   {
    "t": "NVDA",
@@ -600,6 +758,9 @@
    "evebnote": "",
    "evebnote_en": "",
    "ps": 17.39,
+   "graise": null,
+   "graisetxt": null,
+   "graisetxt_en": null,
    "ltm": 302.97,
    "ltmg": 83.38,
    "accel": 22.6,
@@ -673,6 +834,9 @@
    "evebnote": "",
    "evebnote_en": "",
    "ps": 11.03,
+   "graise": "quarter",
+   "graisetxt": "Azure +45%cc vs 컨센 41.4%",
+   "graisetxt_en": "Azure +45% cc vs 41.4% consensus",
    "ltm": 331.84,
    "ltmg": 17.79,
    "accel": 0.2,
@@ -746,6 +910,9 @@
    "evebnote": "",
    "evebnote_en": "",
    "ps": 9.75,
+   "graise": null,
+   "graisetxt": null,
+   "graisetxt_en": null,
    "ltm": 466.82,
    "ltmg": 14.24,
    "accel": 1.8,
@@ -817,6 +984,9 @@
    "evebnote": "",
    "evebnote_en": "",
    "ps": 9.29,
+   "graise": null,
+   "graisetxt": null,
+   "graisetxt_en": null,
    "ltm": 445.87,
    "ltmg": 20.05,
    "accel": 3.9,
@@ -889,6 +1059,9 @@
    "evebnote": "미국 상장분 값이 제공사 요약에 실리지 않았다(해외 상장분은 14.48~17.12로 엇갈림) — 싣지 않는다",
    "evebnote_en": "the US listing's figure was not in the provider's summary (foreign listings ranged 14.48–17.12), so it is left out",
    "ps": 3.65,
+   "graise": null,
+   "graisetxt": null,
+   "graisetxt_en": null,
    "ltm": 775.68,
    "ltmg": 15.77,
    "accel": 4.2,
@@ -962,6 +1135,9 @@
    "evebnote": "",
    "evebnote_en": "",
    "ps": 7.54,
+   "graise": null,
+   "graisetxt": null,
+   "graisetxt_en": null,
    "ltm": 228.25,
    "ltmg": 27.65,
    "accel": 0.4,
@@ -1033,6 +1209,9 @@
    "evebnote": "",
    "evebnote_en": "",
    "ps": 23.45,
+   "graise": "annual",
+   "graisetxt": "FY26 AI 매출 약 580억달러",
+   "graisetxt_en": "FY26 AI revenue ~$58B",
    "ltm": 75.47,
    "ltmg": 94.17,
    "accel": -8.2,
@@ -1105,6 +1284,9 @@
    "evebnote": "128배는 이익 기저가 얕아 벌어진 값 — 배수 자체로 읽지 말 것",
    "evebnote_en": "128x reflects a thin earnings base — do not read it as a multiple on its own",
    "ps": 13.61,
+   "graise": null,
+   "graisetxt": null,
+   "graisetxt_en": null,
    "ltm": 103.62,
    "ltmg": 9.37,
    "accel": 16.6,
@@ -1178,6 +1360,9 @@
    "evebnote": "",
    "evebnote_en": "",
    "ps": 20.59,
+   "graise": null,
+   "graisetxt": null,
+   "graisetxt_en": null,
    "ltm": 41.31,
    "ltmg": 39.54,
    "accel": 10.5,
@@ -1250,6 +1435,9 @@
    "evebnote": "제공사 통계 화면에 직접 실리지 않아 같은 제공사 비율 화면 값을 썼다",
    "evebnote_en": "not carried on the provider's statistics page, so the same provider's ratios page was used",
    "ps": 6.37,
+   "graise": null,
+   "graisetxt": null,
+   "graisetxt_en": null,
    "ltm": 71.78,
    "ltmg": 21.62,
    "accel": 8.4,
@@ -1322,6 +1510,9 @@
    "evebnote": "",
    "evebnote_en": "",
    "ps": 4.79,
+   "graise": "annual",
+   "graisetxt": "FY27 매출 461~464억달러",
+   "graisetxt_en": "FY27 revenue $46.1–46.4B",
    "ltm": 43.94,
    "ltmg": 11.23,
    "accel": -0.2,
@@ -1394,6 +1585,9 @@
    "evebnote": "165배는 배수라기보다 성장 기대가 반영된 값",
    "evebnote_en": "165x reflects growth expectations more than a multiple",
    "ps": 78.4,
+   "graise": "annual",
+   "graisetxt": "76.5→81.5억달러",
+   "graisetxt_en": "$7.65B → $8.15B",
    "ltm": 5.22,
    "ltmg": 67.71,
    "accel": 25.3,
@@ -1467,6 +1661,9 @@
    "evebnote": "",
    "evebnote_en": "",
    "ps": 9.31,
+   "graise": null,
+   "graisetxt": null,
+   "graisetxt_en": null,
    "ltm": 57.03,
    "ltmg": 7.47,
    "accel": 17.9,
@@ -1537,6 +1734,9 @@
    "evebnote": "",
    "evebnote_en": "",
    "ps": 12.74,
+   "graise": "quarter",
+   "graisetxt": "500억 vs 컨센 434.5억달러",
+   "graisetxt_en": "$50B vs $43.45B consensus",
    "ltm": 90.27,
    "ltmg": 166.98,
    "accel": null,
@@ -1609,6 +1809,9 @@
    "evebnote": "",
    "evebnote_en": "",
    "ps": 6.91,
+   "graise": null,
+   "graisetxt": null,
+   "graisetxt_en": null,
    "ltm": 48.37,
    "ltmg": 16.02,
    "accel": -3.0,
@@ -1680,6 +1883,9 @@
    "evebnote": "은행은 EBITDA 가 영업성과를 대표하지 않아 이 지표를 쓰지 않는다",
    "evebnote_en": "EBITDA does not represent operating performance at a bank, so the metric is not used",
    "ps": 5.08,
+   "graise": "annual",
+   "graisetxt": "순이자이익 1,030→1,055억달러",
+   "graisetxt_en": "NII $103B → $105.5B",
    "ltm": 186.33,
    "ltmg": 13.79,
    "accel": 14.2,
@@ -1751,6 +1957,9 @@
    "evebnote": "은행은 EBITDA 가 영업성과를 대표하지 않아 이 지표를 쓰지 않는다",
    "evebnote_en": "EBITDA does not represent operating performance at a bank, so the metric is not used",
    "ps": 4.75,
+   "graise": null,
+   "graisetxt": null,
+   "graisetxt_en": null,
    "ltm": 66.2,
    "ltmg": 17.77,
    "accel": 21.2,
@@ -1824,6 +2033,9 @@
    "evebnote": "",
    "evebnote_en": "",
    "ps": 12.8,
+   "graise": "annual",
+   "graisetxt": "매출 820~850→850~870억달러",
+   "graisetxt_en": "revenue $82–85B → $85–87B",
    "ltm": 79.67,
    "ltmg": 49.58,
    "accel": -1.6,
@@ -1896,6 +2108,9 @@
    "evebnote": "",
    "evebnote_en": "",
    "ps": 0.86,
+   "graise": "annual",
+   "graisetxt": "EPS >18.25→19.50~20.00달러",
+   "graisetxt_en": "EPS >$18.25 → $19.50–20.00",
    "ltm": 450.13,
    "ltmg": 6.46,
    "accel": -6.1,
@@ -1969,6 +2184,9 @@
    "evebnote": "미국 상장분 19.49배 기준. 같은 제공사라도 상장지별로 12.69~16.42배까지 달라 미국분으로 통일했다",
    "evebnote_en": "on the US listing, 19.49x. The same provider shows 12.69–16.42x on other listings, so the US one is used",
    "ps": 6.65,
+   "graise": "annual",
+   "graisetxt": "FY26 매출 1,008~1,014억달러",
+   "graisetxt_en": "FY26 revenue $100.8–101.4B",
    "ltm": 97.93,
    "ltmg": 8.06,
    "accel": -1.5,
@@ -2042,6 +2260,9 @@
    "evebnote": "",
    "evebnote_en": "",
    "ps": 1.16,
+   "graise": "annual",
+   "graisetxt": "FY27 매출 +4~5%cc",
+   "graisetxt_en": "FY27 revenue +4–5% cc",
    "ltm": 735.84,
    "ltmg": 6.16,
    "accel": -0.3,
@@ -2113,6 +2334,9 @@
    "evebnote": "",
    "evebnote_en": "",
    "ps": 1.43,
+   "graise": null,
+   "graisetxt": null,
+   "graisetxt_en": null,
    "ltm": 293.59,
    "ltmg": 9.23,
    "accel": 2.1,
@@ -2184,6 +2408,9 @@
    "evebnote": "",
    "evebnote_en": "",
    "ps": 1.96,
+   "graise": null,
+   "graisetxt": null,
+   "graisetxt_en": null,
    "ltm": 169.18,
    "ltmg": 2.5,
    "accel": 3.2,
@@ -2257,6 +2484,9 @@
    "evebnote": "",
    "evebnote_en": "",
    "ps": 5.01,
+   "graise": "annual",
+   "graisetxt": "FY26 매출 성장률 mid~high teens",
+   "graisetxt_en": "FY26 revenue growth to mid-to-high teens",
    "ltm": 74.73,
    "ltmg": 18.36,
    "accel": 5.6,
@@ -2327,6 +2557,9 @@
    "evebnote": "",
    "evebnote_en": "",
    "ps": 1.89,
+   "graise": null,
+   "graisetxt": null,
+   "graisetxt_en": null,
    "ltm": 361.06,
    "ltmg": 9.62,
    "accel": null,
