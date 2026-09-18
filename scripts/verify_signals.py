@@ -443,20 +443,31 @@ def fault_injection(bars, item, doc):
         verify_absences(d)
     run('유의사항 지우기', drop_disclaimer)
 
+    # ── 흠을 심을 자리가 있는가를 **조건으로 판단한다** ─────────────
+    #
+    # 처음에는 「표시가 붙어 있으면 심는다」로 걸었다가 놓쳤다. 성적표를 새로
+    # 돌려 어긋남이 풀렸는데 산출물에는 낡은 표시만 남아 있던 순간이 있었고,
+    # 그 상태에서 표시를 지우니 검산기가 아무 말도 안 했다 — 지울 것이 이미
+    # 없었으니 당연하다. **표시의 유무가 아니라 어긋남 자체를 물어야 한다.**
+    btp = os.path.join(ROOT, 'data', 'signals', 'backtest.json')
+    bt = json.load(open(btp, encoding='utf-8')) if os.path.exists(btp) else None
+
+    def _kind(srcs):
+        return ','.join('%s:%s' % (m, '+'.join(sorted(k for k in (srcs[m] or {}) if k)))
+                        for m in sorted(srcs or {})) or '(적히지 않음)'
+
     def drop_stale():
-        # 성적이 낡았는데 낡았다는 표시를 지운 판. 백테스트가 실제로 낡아 있을
-        # 때만 잡히는 시험이라, 안 낡았으면 이 흠은 심을 자리가 없다.
         d = copy.deepcopy(doc)
         d.pop('backtest_stale', None)
         verify_absences(d)
-    if doc.get('backtest_stale'):
+    if bt and bt.get('engine_hash') != doc.get('engine_hash'):
         run('낡은 성적 표시 지우기', drop_stale)
 
     def drop_price_stale():
         d = copy.deepcopy(doc)
         d.pop('backtest_price_stale', None)
         verify_absences(d)
-    if doc.get('backtest_price_stale'):
+    if bt and _kind(bt.get('price_sources')) != _kind(doc.get('price_sources')):
         run('다른 가격 성적 표시 지우기', drop_price_stale)
 
     return caught
