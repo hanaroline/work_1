@@ -27,6 +27,14 @@ on:
         description: '제2부를 못 찾은 까닭만 펼쳐 본다 (적중률 조사는 건너뜀)'
         type: boolean
         default: false
+      skipped:
+        description: '차례가 어긋나 버려진 종목의 원문을 펼쳐 본다 (적중률 조사는 건너뜀)'
+        type: boolean
+        default: false
+      codes:
+        description: '그때 볼 표준코드 (빈칸이면 전량 5차가 찍어 준 10종목)'
+        type: string
+        default: ''
   push:
     branches:
       - 'claude/els-**'
@@ -79,6 +87,19 @@ jobs:
         if: inputs.part2_why
         run: node scripts/probe_fund_part2_why.mjs "${{ inputs.count || '40' }}"
 
+      # 전량 5차에서 108종목이 「요약정보가 제1부보다 뒤」 하나로 통째로 버려졌다.
+      # 요약정보·제1부는 보조 자리인데 그 하나 때문에 창구가 짚는 일곱 자리까지
+      # 버리는 것이 맞는지 가려야 한다. 통계로는 못 가른다 — 잡힌 쪽의 글을 본다.
+      - name: 버려진 종목의 원문 펼치기
+        if: inputs.skipped
+        # 입력을 명령줄에 바로 끼우지 않는다. 표준코드는 영숫자뿐이므로 그 밖의
+        # 글자를 털어 내고 넘긴다 — 빈칸이면 스크립트가 기본 10종목을 쓴다.
+        env:
+          CODES: ${{ inputs.codes }}
+        run: |
+          clean=$(printf '%s' "$CODES" | tr -c 'A-Za-z0-9' ' ')
+          node scripts/probe_fund_skipped.mjs $clean
+
       - name: 표본 적중률
-        if: ${{ !inputs.part2_why }}
+        if: ${{ !inputs.part2_why && !inputs.skipped }}
         run: node scripts/probe_fund_pages_sample.mjs "${{ inputs.count || '40' }}"
