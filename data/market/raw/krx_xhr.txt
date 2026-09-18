@@ -1,4 +1,4 @@
-KRX 지수 일별시세 원천 관찰 2026-09-18T00:17:14.285Z
+KRX 지수 일별시세 원천 관찰 2026-09-18T00:22:58.859Z
 (화면이 부르는 주소와 **보내는 본문**을 그대로 적는다. bld 이름을 여기서 읽는다.)
 
 ### 개별지수 시세 추이(주가지수)  http://data.krx.co.kr/contents/MDC/MDI/mdiLoader/index.cmd?menuId=MDC0201010103
@@ -73,7 +73,7 @@ KRX 지수 일별시세 원천 관찰 2026-09-18T00:17:14.285Z
     메뉴를 못 짚었다 — 화면 글자에서 이름을 다시 읽어야 한다
     눌러 봄: 「조회」
     화면 글자: 거래대금 있음
-      「) (상장일 2026.04.10)) 2026-04-09 주식워런트증권 신규상장(한국투자증권(주) (상장일 2026.03.18)) 2026-03-17 시장별 매매동향 KOSPI KOSDAQ 파생상품 20분 지연 거래대금 십억원 거래량 백만주 상장종목 현황 20분 지연 구분 KOSPI KOSDAQ KONEX 회사수 831 1,817 107 종목수 942 1,820 107 상장주식수(백만주) 58,119 43,747 804 시가총액(십억원) - - - 신규상장 기업수* 2 43 3 *신규상장 기업수 : 당일 기준 연누적 데이터 발간자료 증권 시장지 통계월보 KRX MARKET KRX ETF·ETN MONT」
+      「) (상장일 2026.04.10)) 2026-04-09 주식워런트증권 신규상장(한국투자증권(주) (상장일 2026.03.18)) 2026-03-17 시장별 매매동향 KOSPI KOSDAQ 파생상품 20분 지연 거래대금 876 십억원 거래량 11 백만주 상장종목 현황 20분 지연 구분 KOSPI KOSDAQ KONEX 회사수 831 1,817 107 종목수 942 1,820 107 상장주식수(백만주) 58,119 43,747 804 시가총액(십억원) 5,666,157 466,187 3,501 신규상장 기업수* 2 43 3 *신규상장 기업수 : 당일 기준 연누적 데이터 발간자료 증권 시장지 통계월보 KR」
     보낸 요청(POST):
       → https://data.krx.co.kr/comm/bldAttendant/getJsonData.cmd
         bld=dbms%2FMDC%2FMAIN%2FMDCMAIN00101
@@ -94,17 +94,17 @@ KRX 지수 일별시세 원천 관찰 2026-09-18T00:17:14.285Z
       → https://data.krx.co.kr/comm/bldAttendant/getJsonData.cmd
         bld=dbms/MDC/MAIN/MDCMAIN00102&ddTp=1D&indTpCd=5&idxIndCd=300
     [200] ·거래대금말 ·   551570 bytes · https://data.krx.co.kr/contents/MDC/MAIN/main/index.cmd
-    [200] ·거래대금말 ·    42909 bytes · https://data.krx.co.kr/comm/bldAttendant/getJsonData.cmd
-    [200] ·거래대금말 ·    42902 bytes · https://data.krx.co.kr/comm/bldAttendant/getJsonData.cmd
-    [200] ·거래대금말 ·    42890 bytes · https://data.krx.co.kr/comm/bldAttendant/getJsonData.cmd
-    [200] ·거래대금말 ·      149 bytes · https://data.krx.co.kr/comm/bldAttendant/getJsonData.cmd
+    [200] ·거래대금말 ·    42987 bytes · https://data.krx.co.kr/comm/bldAttendant/getJsonData.cmd
+    [200] ·거래대금말 ·    42974 bytes · https://data.krx.co.kr/comm/bldAttendant/getJsonData.cmd
+    [200] ·거래대금말 ·    42962 bytes · https://data.krx.co.kr/comm/bldAttendant/getJsonData.cmd
+    [200] ·거래대금말 ·      163 bytes · https://data.krx.co.kr/comm/bldAttendant/getJsonData.cmd
     [200]            ·    14270 bytes · https://data.krx.co.kr/inc/js/i18n/messages_ko.json
     [200]            ·     5575 bytes · https://data.krx.co.kr/inc/js/i18n/words_ko.json
-    [200]            ·     1997 bytes · https://data.krx.co.kr/comm/bldAttendant/getJsonData.cmd
+    [200]            ·     1998 bytes · https://data.krx.co.kr/comm/bldAttendant/getJsonData.cmd
     [200]            ·      521 bytes · https://data.krx.co.kr/comm/bldAttendant/getJsonData.cmd
     [200]            ·      458 bytes · http://data.krx.co.kr/
-    [200]            ·      438 bytes · https://data.krx.co.kr/comm/bldAttendant/getJsonData.cmd
-    [200]            ·      368 bytes · https://data.krx.co.kr/comm/bldAttendant/getJsonData.cmd
+    [200]            ·      442 bytes · https://data.krx.co.kr/comm/bldAttendant/getJsonData.cmd
+    [200]            ·      386 bytes · https://data.krx.co.kr/comm/bldAttendant/getJsonData.cmd
     [200]            ·       57 bytes · https://data.krx.co.kr/comm/bldAttendant/getJsonData.cmd
     → 본문을 data/market/raw/krx_xhr_2_0.json 에 남겼다  (https://data.krx.co.kr/contents/MDC/MAIN/main/index.cmd)
     → 본문을 data/market/raw/krx_xhr_2_1.json 에 남겼다  (https://data.krx.co.kr/comm/bldAttendant/getJsonData.cmd)
