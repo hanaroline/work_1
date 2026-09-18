@@ -436,7 +436,15 @@ const CACHE_V = 2;
 // 통째로 버려져, 종목당 두 통이면 될 판이 여섯 통이 된다. 지난 판에서 실제로
 // 그렇게 벽에 부딪혔다. 무효화는 무효로 만들 것에만 걸어야 한다.
 const MKT_V = 1;
-const MKT_TTL_DAYS = 7;
+// 30일. 7일로 두었더니 매월 1일 정기 갱신은 늘 곳간 밖이라 시세 1,326통을
+// 그대로 냈다(수집 14분). 30일이면 그 판도 곳간 안에 들어와 3분에 끝난다.
+//
+// 대신 변동성과 거래대금이 최대 한 달 묵는다. 한 달에 한 번 내는 제안서에서
+// 1년 변동성과 60일 평균 거래대금이 한 달 전 값인 것은 실질 차이가 없다 —
+// 둘 다 애초에 길게 보는 값이라, 하루이틀 시세로는 소수점이 움직일 뿐이다.
+// 그래도 **묵은 것은 묵었다고 적는다**(marketAsOf). 자료가 조용히 낡는 것이
+// 이 일에서 제일 나쁘다.
+const MKT_TTL_DAYS = 30;
 const TODAY = new Date().toISOString().slice(0, 10);
 const daysSince = (ymd) => {
   const t = Date.parse(`${ymd}T00:00:00Z`);
@@ -1030,6 +1038,9 @@ for (const [i, row] of universe.entries()) {
     volatilityDays: volDays,
     volatilityWindow: volWindow,
     priceJumps: jumps,
+    // 변동성·거래대금을 **언제 받은 시세로** 냈나. 곳간에서 꺼내 쓰면 오늘이
+    // 아니다. 값만 적고 날짜를 안 적으면 묵은 자료가 새 자료인 척한다.
+    marketAsOf: mktOk ? mktCached.at : TODAY,
     distMonthlyRate: last?.rate ?? null,
     distMonthlyAmount: last?.amount ?? null,
     lastDistDate: last?.date ?? null,
@@ -1147,6 +1158,10 @@ const out = {
       'volatilityDays 에 적는다 — 250일을 달라고 해도 원천이 몇 개를 주는지는 원천 마음이므로, ' +
       '"1년" 이라고 말하려면 정말 한 해치였는지 확인할 수 있어야 한다. 종가 기준 값은 volatilityPrice.',
     turnover60: '최근 60거래일 (종가 × 거래량) 의 평균.',
+    marketAsOf:
+      `변동성·거래대금·급변일을 낸 시세를 받은 날. 이 셋은 ${MKT_TTL_DAYS}일짜리 곳간에 두므로 ` +
+      '기준일(asOf)보다 앞설 수 있다. 둘 다 길게 보는 값이라 며칠 차이로는 거의 안 움직이지만, ' +
+      '몇 시점 자료인지는 말할 수 있어야 한다. 현재가·순자산은 곳간을 안 거치고 매번 새로 받으므로 늘 기준일 자료다.',
     priceJumps: '하루에 ±15% 넘게 움직인 날. 커버드콜 ETF 에서는 시장보다 액면분할이나 원천 오기일 때가 많다. 지우지 않고 세어서 남긴다.',
   },
   universe: universe.length,
@@ -1187,6 +1202,16 @@ fs.writeFileSync(
 );
 console.log(`곳간 ${Object.keys(cache).length}종목 (분배: 재사용 ${reused} · 새로 받음 ${refetched})`);
 console.log(`시세 곳간 (재사용 ${mktReused} · 새로 받음 ${mktRefetched}) — 아낀 통화 ${mktReused * 2}통`);
+{
+  // 곳간에서 꺼내 쓴 시세가 며칠 묵었나. 유효기간을 늘렸으니 이 줄을 보고
+  // 판단할 수 있어야 한다 — "묵어도 된다" 와 "얼마나 묵었는지 모른다" 는 다르다.
+  const asOfs = items.map((x) => x.marketAsOf).filter(Boolean).sort();
+  if (asOfs.length) {
+    const oldest = asOfs[0];
+    const age = Math.round(daysSince(oldest));
+    console.log(`시세 기준일 ${oldest} ~ ${asOfs[asOfs.length - 1]} (가장 묵은 것 ${age}일, 유효기간 ${MKT_TTL_DAYS}일)`);
+  }
+}
 
 // 벽이 통화 수에 걸리는지 속도에 걸리는지를 판정할 자리다. 이 세 줄을 판마다
 // 견주면 된다: 쉬는 시간을 줄였는데 **멈춘 자리가 그대로**면 잠자기는 값을
