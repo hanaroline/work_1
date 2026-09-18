@@ -311,7 +311,7 @@ table.sb tr.refonly .mem span{color:var(--muted-soft)}
     <h1 data-i18n="heroTitle">미국 주요기업 실적 어닝스 인텔리전스</h1>
     <p class="sub" data-i18n="heroSub">발표일·컨센서스·실제치·가이던스를 기업별로 흩어 찾지 않고, 실적 시즌 하나를 한 화면에서 훑는다.</p>
     <div class="meta">
-      <span data-i18n="mAsOf">기준일 2026-09-17</span>
+      <span data-i18n="mAsOf">기준일 {asOf}</span>
       <span id="m-cov"></span>
       <span data-i18n="mSrc">출처: 기업 IR·8-K 공시 및 확인된 보도 · 배수는 stockanalysis.com</span>
     </div>
@@ -327,12 +327,13 @@ table.sb tr.refonly .mem span{color:var(--muted-soft)}
       <div>
         <div class="eyebrow" data-i18n="ebSeason">SEASON SCOREBOARD</div>
         <h2 data-i18n="s1t">시즌 스코어보드</h2>
-        <p data-i18n="s1d">위 여섯 칸은 이 화면이 직접 집계한 25개사 결과이고, 아래 여섯 칸은 지수 전체를 다루는 외부 기관 집계다. 유니버스가 다르므로 한 칸에 섞지 않는다. 맨 아래 차트는 위 여섯 칸 중 '가속 / 둔화 기업 수' 를 기업별로 편 것이다.</p>
+        <p data-i18n="s1d">위 여섯 칸은 이 화면이 직접 집계한 {total}개사 결과이고, 아래 여섯 칸은 지수 전체를 다루는 외부 기관 집계다. 유니버스가 다르므로 한 칸에 섞지 않는다. 맨 아래 차트는 위 여섯 칸 중 '가속 / 둔화 기업 수' 를 기업별로 편 것이다.</p>
       </div>
     </div>
     <div class="tiles" id="own-tiles"></div>
-    <p class="cap" style="margin:14px 0 22px" data-i18n="s1own">위: 이 화면이 담은 25개사 · 각 기업의 발표 자료에서 직접 집계</p>
+    <p class="cap" style="margin:14px 0 22px" data-i18n="s1own">위: 이 화면이 담은 {total}개사 · 각 기업의 발표 자료에서 직접 집계</p>
     <div class="tiles" id="idx-tiles"></div>
+    <p class="cap" style="margin:14px 0 0" id="idx-note"></p>
     <!-- 가속/둔화 타일(13/3)을 기업별로 편 차트. 타일 두 줄 사이에 끼우면
          키가 1,700px 이라 외부 집계 줄이 너무 멀어져서 스코어보드 끝에 둔다 -->
     <div class="chart-box" style="margin-top:var(--space-block)">
@@ -369,7 +370,7 @@ table.sb tr.refonly .mem span{color:var(--muted-soft)}
       <div>
         <div class="eyebrow" data-i18n="ebTbl">COMPANY DETAIL</div>
         <h2 data-i18n="s3t">기업별 실적 · 가이던스</h2>
-        <p data-i18n="s3d">직전 보고분기의 매출 실제치와 컨센서스, 서프라이즈, 전년동기비, 회사가 직접 제시한 가이던스. 매출·성장률 칸의 작은 글씨는 최근 12개월(LTM) 값이고, ▲▼ 는 분기 성장률이 LTM 보다 빠른지 느린지다. 주황으로 깐 세 칸(선행 P/E · P/S · PEG)은 회사 발표치가 아니라 집계사이트 값이라 눈으로 구분해 뒀다. 행을 누르면 세부와 출처가 열린다. 확인하지 못한 값은 채우지 않고 n/a 로 둔다. 표 아래 산점도는 같은 25개사를 성장률 × 서프라이즈 평면에 흩뿌린 것이다.</p>
+        <p data-i18n="s3d">직전 보고분기의 매출 실제치와 컨센서스, 서프라이즈, 전년동기비, 회사가 직접 제시한 가이던스. 매출·성장률 칸의 작은 글씨는 최근 12개월(LTM) 값이고, ▲▼ 는 분기 성장률이 LTM 보다 빠른지 느린지다. 주황으로 깐 세 칸(선행 P/E · P/S · PEG)은 회사 발표치가 아니라 집계사이트 값이라 눈으로 구분해 뒀다. 행을 누르면 세부와 출처가 열린다. 확인하지 못한 값은 채우지 않고 n/a 로 둔다. 표 아래 산점도는 같은 {total}개사를 성장률 × 서프라이즈 평면에 흩뿌린 것이다.</p>
       </div>
     </div>
     <div class="controls">
@@ -412,7 +413,7 @@ table.sb tr.refonly .mem span{color:var(--muted-soft)}
       <div>
         <div class="eyebrow" data-i18n="ebSec">REVENUE BY SECTOR</div>
         <h2 data-i18n="s4t">매출액 분야 분석</h2>
-        <p data-i18n="s4d">아래 두 차트는 외부 섹터 통계를 옮긴 것이 아니라, 이 화면에 담긴 25개사의 발표치를 직접 합산·평균한 것이다. 표본이 작은 섹터는 막대 옆에 기업 수를 적었다.</p>
+        <p data-i18n="s4d">아래 두 차트는 외부 섹터 통계를 옮긴 것이 아니라, 이 화면에 담긴 {total}개사의 발표치를 직접 합산·평균한 것이다. 표본이 작은 섹터는 막대 옆에 기업 수를 적었다.</p>
       </div>
     </div>
     <div class="chart-grid">
@@ -485,13 +486,13 @@ table.sb tr.refonly .mem span{color:var(--muted-soft)}
       <div>
         <h4 data-i18n="n4t">밸류에이션 수치의 성격</h4>
         <p data-i18n="n4a">선행 P/E·PEG 는 <b>회사가 발표한 값이 아니라 집계사이트 한 곳의 당일 추정</b>이라 표에서 배경색을 달리 두었습니다. 같은 시점에 제공사마다 크게 엇갈리기 때문에(NVDA 선행 P/E 가 18.12 / 23.8 / 24.50 / 48.30, PLTR 이 P/E 147.69 / 177.89 / 249) <b>한 곳으로 계열을 통일</b>했고, 다른 곳 수치와 섞으면 순위가 통째로 바뀝니다.</p>
-        <p data-i18n="n4b">PEG 는 제공사가 산식을 공개하지 않아 <b>점수에 넣지 않고 참고 열로만</b> 실었습니다. 배수는 매일 바뀌므로 기준일(2026-09-17)이 지나면 다시 받아야 합니다.</p>
+        <p data-i18n="n4b">PEG 는 제공사가 산식을 공개하지 않아 <b>점수에 넣지 않고 참고 열로만</b> 실었습니다. 배수는 매일 바뀌므로 기준일({valAsOf})이 지나면 다시 받아야 합니다.</p>
       </div>
       <div>
         <h4 data-i18n="n3t">읽을 때 주의</h4>
         <ul>
           <li data-i18n="n3a">컨센서스 제공사(LSEG·Zacks·StreetAccount·Visible Alpha)가 기업마다 달라, 서프라이즈율의 기업 간 비교는 대략의 순서로만 본다.</li>
-          <li data-i18n="n3b">회계연도가 달라 같은 '분기'가 같은 달이 아니다. 엔비디아 FY27 Q2 는 7월 종료, 애플 FY26 Q3 는 6월 종료다.</li>
+          <li data-i18n="n3b">회계연도가 달라 같은 '분기'가 같은 달이 아니다. 엔비디아 {nvdaPer} 는 {nvdaEnd} 종료, 애플 {aaplPer} 는 {aaplEnd} 종료다.</li>
           <li data-i18n="n3c">'가이던스'는 회사가 직접 제시한 전망만 가리킨다. 애널리스트 추정치는 컨센서스 칸에 있다.</li>
           <li data-i18n="n3d">밸류에이션 축은 배수가 낮을수록 높은 점수라, 은행·에너지처럼 원래 배수가 낮은 업종이 구조적으로 유리하다. 업종이 다른 기업의 V 점수를 맞대어 놓고 읽지 말 것.</li>
         </ul>
@@ -526,10 +527,10 @@ var T = {
   tagInternal:"사내한", tagKind:"실적 인텔리전스",
   heroTitle:"미국 주요기업 실적 어닝스 인텔리전스",
   heroSub:"발표일·컨센서스·실제치·가이던스를 기업별로 흩어 찾지 않고, 실적 시즌 하나를 한 화면에서 훑는다.",
-  mAsOf:"기준일 2026-09-17", mSrc:"출처: 기업 IR·8-K 공시 및 확인된 보도 · 배수는 stockanalysis.com",
+  mAsOf:"기준일 {asOf}", mSrc:"출처: 기업 IR·8-K 공시 및 확인된 보도 · 배수는 stockanalysis.com",
   ebSeason:"SEASON SCOREBOARD", s1t:"시즌 스코어보드",
-  s1d:"위 여섯 칸은 이 화면이 직접 집계한 25개사 결과이고, 아래 여섯 칸은 지수 전체를 다루는 외부 기관 집계다. 유니버스가 다르므로 한 칸에 섞지 않는다. 맨 아래 차트는 위 여섯 칸 중 '가속 / 둔화 기업 수' 를 기업별로 편 것이다.",
-  s1own:"위: 이 화면이 담은 25개사 · 각 기업의 발표 자료에서 직접 집계",
+  s1d:"위 여섯 칸은 이 화면이 직접 집계한 {total}개사 결과이고, 아래 여섯 칸은 지수 전체를 다루는 외부 기관 집계다. 유니버스가 다르므로 한 칸에 섞지 않는다. 맨 아래 차트는 위 여섯 칸 중 '가속 / 둔화 기업 수' 를 기업별로 편 것이다.",
+  s1own:"위: 이 화면이 담은 {total}개사 · 각 기업의 발표 자료에서 직접 집계",
   ebCal:"EARNINGS CALENDAR", s2t:"실적 발표 캘린더",
   s2d:"직전 시즌이 어떤 순서로 지나갔는지, 다음 발표가 언제인지를 한 줄로 본다. 칩을 누르면 해당 기업 행이 열린다. 아래 표는 회사가 수치로 제시한 다음 분기 매출이다.",
   lgBeat:"매출 컨센서스 상회", lgMiss:"매출 컨센서스 하회",
@@ -540,7 +541,7 @@ var T = {
   cTicker:"기업", cSector:"섹터", cDate:"발표일", cPeriod:"보고분기", cRev:"매출",
   cCons:"컨센서스", cSurp:"서프라이즈", cYoy:"전년동기비", cGuide:"가이던스", cScore:"모멘텀",
   ebSec:"REVENUE BY SECTOR", s4t:"매출액 분야 분석",
-  s4d:"아래 두 차트는 외부 섹터 통계를 옮긴 것이 아니라, 이 화면에 담긴 25개사의 발표치를 직접 합산·평균한 것이다. 표본이 작은 섹터는 막대 옆에 기업 수를 적었다.",
+  s4d:"아래 두 차트는 외부 섹터 통계를 옮긴 것이 아니라, 이 화면에 담긴 {total}개사의 발표치를 직접 합산·평균한 것이다. 표본이 작은 섹터는 막대 옆에 기업 수를 적었다.",
   c1t:"섹터별 분기 매출 합계", c1d:"단위 10억 달러 · 직전 보고분기 기준",
   c2t:"섹터별 평균 매출 성장률", c2d:"기업별 전년동기비의 단순평균(가중 아님) · 확인된 기업만",
   c3t:"기업별 매출 성장률과 컨센서스 서프라이즈",
@@ -557,7 +558,7 @@ var T = {
   n2c:"검산: <code>python3 scripts/check_claims.py data/earnings/claims.json</code>",
   n3t:"읽을 때 주의",
   n3a:"컨센서스 제공사(LSEG·Zacks·StreetAccount·Visible Alpha)가 기업마다 달라, 서프라이즈율의 기업 간 비교는 대략의 순서로만 본다.",
-  n3b:"회계연도가 달라 같은 '분기'가 같은 달이 아니다. 엔비디아 FY27 Q2 는 7월 종료, 애플 FY26 Q3 는 6월 종료다.",
+  n3b:"회계연도가 달라 같은 '분기'가 같은 달이 아니다. 엔비디아 {nvdaPer} 는 {nvdaEnd} 종료, 애플 {aaplPer} 는 {aaplEnd} 종료다.",
   n3c:"'가이던스'는 회사가 직접 제시한 전망만 가리킨다. 애널리스트 추정치는 컨센서스 칸에 있다.",
   uvT:"확인하지 못한 항목 (화면에서 n/a 로 비워 둔 것)",
   uvF:"이 화면의 수집 경로는 웹 검색 결과에 한정됐다(직접 API 접근은 사내 네트워크 정책으로 차단). 인용에 쓰려면 각 행의 출처 링크에서 원문을 확인하는 편이 안전하다.",
@@ -568,19 +569,19 @@ var T = {
   fwT:"앞으로 — 회사가 수치로 제시한 다음 분기 매출",
   fwD:"애널리스트 추정치가 아니라 회사가 실적발표에서 직접 제시한 가이던스다. 범위로 준 것은 중간값을 썼고, QoQ 는 직전 보고분기 대비 증감이다(두 수 모두 검증된 값이라 나눗셈만 했다).",
   fwCo:"기업", fwPer:"대상 분기", fwLast:"직전분기", fwGuide:"가이던스", fwQoQ:"QoQ", fwTxt:"회사 제시 표현",
-  fwWarn:"수치 가이던스를 준 곳만 실었다(25개사 중 7사). 알파벳처럼 사규로 분기 가이던스를 주지 않는 곳, 테슬라·엑슨모빌처럼 수치가 확인되지 않은 곳은 빠져 있다. 서드파티의 분기·연간 컨센서스는 이 환경에서 확보하지 못해 넣지 않았다 — 앞을 보는 값 중 확인된 것은 이 표와 선행 P/E(내년 이익 기준)뿐이다.",
+  fwWarn:"수치 가이던스를 준 곳만 실었다({total}개사 중 {gnext}사). 알파벳처럼 사규로 분기 가이던스를 주지 않는 곳, 테슬라·엑슨모빌처럼 수치가 확인되지 않은 곳은 빠져 있다. 서드파티의 분기·연간 컨센서스는 이 환경에서 확보하지 못해 넣지 않았다 — 앞을 보는 값 중 확인된 것은 이 표와 선행 P/E(내년 이익 기준)뿐이다.",
   detLtm:"최근 12개월(LTM)", ltmRev:"매출", ltmG:"성장률", detAccel:"가속도",
   trUp:"직전분기가 지난 1년보다 빠르다", trDown:"직전분기가 지난 1년보다 느리다",
   trFlat:"지난 1년과 비슷한 속도",
-  ltmSrcNote:"LTM 은 집계사이트가 분기 실적을 합산한 값(2026-09-17 조회)이라 분기 실적치와 계열이 다르다 — 가속도는 방향 판정에만 쓸 것",
+  ltmSrcNote:"LTM 은 집계사이트가 분기 실적을 합산한 값({valAsOf} 조회)이라 분기 실적치와 계열이 다르다 — 가속도는 방향 판정에만 쓸 것",
   c4t:"성장 가속도 — 직전분기가 지난 1년보다 빠른가",
   c4d:"직전분기 전년동기비에서 최근 12개월(LTM) 성장률을 뺀 값(%p). 양수면 최근 분기가 지난 1년 평균보다 빠르다는 뜻이다.",
   vsSec:"기준", detRel:"기준그룹 대비", secMedLab:"기준 중앙값", refOnly:"대조용 · 수록 기업 없음",
   vNeutral:"V(업종 중립)", vAbs:"V(절대)", vWhich:"점수에는 업종 중립 쪽을 쓴다",
   sbT:"기준배수 — 무엇으로 만든 중앙값인가",
-  sbD:"섹터 지수의 배수가 아니라, 같은 제공사·같은 날짜로 받은 대형주의 선행 P/E 중앙값이다. 굵은 티커가 이 화면에 실린 기업이고, 나머지는 기준배수 계산에만 쓴 동종업체다. 커뮤니케이션서비스는 배수 수준이 갈려 인터넷과 통신미디어로 나눴다 — 23.45배와 9.66배로, 한 섹터로 묶으면 안 되는 차이다.",
+  sbD:"섹터 지수의 배수가 아니라, 같은 제공사·같은 날짜로 받은 대형주의 선행 P/E 중앙값이다. 굵은 티커가 이 화면에 실린 기업이고, 나머지는 기준배수 계산에만 쓴 동종업체다. 커뮤니케이션서비스는 배수 수준이 갈려 인터넷과 통신미디어로 나눴다 — {medNet}와 {medTel}로, 한 섹터로 묶으면 안 되는 차이다.",
   sbSec:"기준그룹", sbMed:"중앙값", sbN:"기업 수", sbRange:"범위", sbMem:"구성 (선행 P/E)",
-  sbWarn:"남은 한계 — 중앙값은 시가총액을 반영하지 않아 그룹 안에 대형주와 중형주가 섞이면 기울 수 있다. 인터넷 그룹도 알파벳·메타와 핀터레스트·매치그룹이 같은 무게로 들어간다. CHTR 2.87배처럼 이례적인 값은 중앙값이 흡수하지만 구성 목록에서 눈으로 확인하십시오. WBD 는 제공사 값이 상장지마다 811~1,014배로 어긋나 제외했습니다.",
+  sbWarn:"남은 한계 — 중앙값은 시가총액을 반영하지 않아 그룹 안에 대형주와 중형주가 섞이면 기울 수 있다. 인터넷 그룹도 알파벳·메타와 핀터레스트·매치그룹이 같은 무게로 들어간다. CHTR {chtr}처럼 이례적인 값은 중앙값이 흡수하지만 구성 목록에서 눈으로 확인하십시오. WBD 는 제공사 값이 상장지마다 811~1,014배로 어긋나 제외했습니다.",
   relLab:"기준그룹 상대배수 (점수에 쓰는 축)",
   relFormula:"기업 선행 P/E ÷ 기준그룹 중앙값",
   relWhy:"절대 배수로 점수를 내면 은행·에너지처럼 원래 배수가 낮은 업종이 구조적으로 유리해져서, 기준그룹 중앙값으로 나눠 업종 효과를 걷어낸다. 한 섹터 안에서도 배수 수준이 갈리면 하위업종으로 쪼갠다",
@@ -588,30 +589,31 @@ var T = {
   absWhy:"업종을 걷어내기 전 값. 상세 행에서 섹터 중립 점수와 나란히 보여 준다",
   noVal:"밸류 미산출", detVal:"밸류에이션", detAppeal:"결합",
   fpeLab:"선행 P/E", xTimes:"배",
-  valSrcNote:"집계사이트 한 곳의 2026-09-17 값 — 회사 발표치가 아님",
+  valSrcNote:"집계사이트 한 곳의 {valAsOf} 값 — 회사 발표치가 아님",
   axMom:"모멘텀", axVal:"밸류에이션", mixLab:"결합",
   fpeWhy:"배수가 낮을수록 높은 점수. 지수 배수를 기준점으로 쓰지 않은 것은, 이번 수집에서 S&P500 선행 P/E 가 19.1 / 22.4 / 22.9 / 25.6 으로 엇갈려 기준점이 될 수 없었기 때문이다",
   pegWhy:"제공사가 산식을 공개하지 않아 점수에 넣지 않고 표에 참고로만 싣는다",
-  psWhy:"표에 함께 실었지만 점수에는 넣지 않는다. 배수를 여러 개 더해 점수를 내면 같은 '비쌈'을 여러 번 세게 되고, 이익·매출·EBITDA 중 무엇으로 비싼지도 가려진다. 옆에 놓고 눈으로 비교하는 쪽이 낫다 — 인텔은 적자라 P/E 가 아예 없지만 P/S 9.3배는 읽히고, 테슬라는 선행 P/E 188.6배와 P/S 13.6배가 완전히 다른 그림을 준다. 브로드컴은 선행 P/E 23.6배로 섹터 중앙값과 같은데 EV/EBITDA 는 43.1배다",
+  psWhy:"표에 함께 실었지만 점수에는 넣지 않는다. 배수를 여러 개 더해 점수를 내면 같은 '비쌈'을 여러 번 세게 되고, 이익·매출·EBITDA 중 무엇으로 비싼지도 가려진다. 옆에 놓고 눈으로 비교하는 쪽이 낫다 — 인텔은 적자라 P/E 가 아예 없지만 P/S {intcPs}는 읽히고, 테슬라는 선행 P/E {tslaFpe}와 P/S {tslaPs}가 완전히 다른 그림을 준다. 브로드컴은 선행 P/E {avgoFpe}로 정보기술 중앙값과 같은데 EV/EBITDA 는 {avgoEveb}다",
   mixWhy:"두 축이 모두 확인된 기업만 결합 점수를 낸다. 한쪽만으로 합성하면 그 기업만 다른 잣대로 재는 것이 된다",
-  valSeries:"계열", valSeriesWhy:"선행 P/E·PEG·EV/EBITDA·시가총액 모두 stockanalysis.com 한 곳, 2026-09-17 기준. 제공사를 섞으면 순위가 통째로 바뀌므로 절대 섞지 않는다. 다만 시가총액은 제공사 화면이 찍어 준 기준일이 종목마다 달라(8/31~9/17) 하루로 맞추지 못했다 — 어긋난 종목은 행을 열면 기준일이 나온다",
+  valSeries:"계열", valSeriesWhy:"선행 P/E·PEG·EV/EBITDA·시가총액 모두 stockanalysis.com 한 곳, {valAsOf} 기준. 제공사를 섞으면 순위가 통째로 바뀌므로 절대 섞지 않는다. 다만 시가총액은 제공사 화면이 찍어 준 기준일이 종목마다 달라(8/31~9/17) 하루로 맞추지 못했다 — 어긋난 종목은 행을 열면 기준일이 나온다",
   lgM:"M — 실적 모멘텀(발표된 실적)", lgV:"V — 밸류에이션(기준그룹 대비 상대배수, 낮을수록 높은 점수)",
   fT:"계산식 ① 실적 모멘텀", fT2:"계산식 ② 밸류에이션과 결합",
   n4t:"밸류에이션 수치의 성격",
-  n3d:"V 점수는 기준그룹 중앙값으로 나눈 상대배수다. 배수 수준이 갈리는 커뮤니케이션서비스는 인터넷(23.45배)과 통신미디어(9.66배)로 나눠 계산했다. 다만 중앙값은 시가총액을 반영하지 않으므로, 그룹 구성은 기준배수 표에서 직접 확인할 것.",
+  n3d:"V 점수는 기준그룹 중앙값으로 나눈 상대배수다. 배수 수준이 갈리는 커뮤니케이션서비스는 인터넷({medNet})과 통신미디어({medTel})로 나눠 계산했다. 다만 중앙값은 시가총액을 반영하지 않으므로, 그룹 구성은 기준배수 표에서 직접 확인할 것.",
   n4a:"선행 P/E·PEG 는 <b>회사가 발표한 값이 아니라 집계사이트 한 곳의 당일 추정</b>이라 표에서 배경색을 달리 두었습니다. 같은 시점에 제공사마다 크게 엇갈리기 때문에(NVDA 선행 P/E 가 18.12 / 23.8 / 24.50 / 48.30, PLTR 이 P/E 147.69 / 177.89 / 249) <b>한 곳으로 계열을 통일</b>했고, 다른 곳 수치와 섞으면 순위가 통째로 바뀝니다.",
-  n4b:"PEG 는 제공사가 산식을 공개하지 않아 <b>점수에 넣지 않고 참고 열로만</b> 실었습니다. 배수는 매일 바뀌므로 기준일(2026-09-17)이 지나면 다시 받아야 합니다.",
+  n4b:"PEG 는 제공사가 산식을 공개하지 않아 <b>점수에 넣지 않고 참고 열로만</b> 실었습니다. 배수는 매일 바뀌므로 기준일({valAsOf})이 지나면 다시 받아야 합니다.",
   lgNone2:"한 축이 미확인 — 결합 점수 미공표",
   covTxt:function(c){return "수록 "+c.total+"개사 · 컨센서스 "+c.cons+" · 가이던스 "+c.guide+" · 선행 P/E "+c.fpe+" · P/S "+c.ps+" · EV/EBITDA "+c.eveb+" 확인"},
   tOwnBeat:"매출 컨센서스 상회", tOwnBeatRef:"컨센서스를 확인한 기업 중",
   tOwnSurp:"평균 매출 서프라이즈", tOwnSurpRef:"단순평균 · 컨센서스 확인 기업",
   tOwnYoy:"평균 매출 성장률", tOwnYoyRef:"전년동기비 단순평균",
   tOwnUp:"가이던스 상향 기업", tOwnUpRef:"가이던스를 확인한 기업 중",
-  tOwnBig:"분기 매출 합계", tOwnBigRef:"수록 25개사 직전 보고분기 합",
+  tOwnBig:"분기 매출 합계", tOwnBigRef:"수록 {total}개사 직전 보고분기 합",
   tOwnTrend:"가속 / 둔화 기업 수",
-  tOwnTrendRef:"직전분기 성장률이 LTM 보다 ±2%p 밖 — 둔화 쪽에 모멘텀 1위 브로드컴(-8.2%p)",
-  ownN:"이 화면 집계 · 25개사",
-  calPrev:"직전 시즌 — 2026년 2분기(캘린더)", calNext:"다음 발표 예정",
+  tOwnTrendRef:"직전분기 성장률이 LTM 보다 ±{band}%p 밖 — 둔화 쪽에 모멘텀 {dnTopRank}위 {dnTop}({dnTopAccel})",
+  ownN:"이 화면 집계 · {total}개사",
+  idxNote:"아래: 지수 전체를 다루는 외부 기관 집계 — 이 화면 {total}개사와 유니버스가 다르다. FactSet Earnings Insight 는 주간 간행물이라 같은 분기라도 회차마다 수치가 움직이는데(Q2 매출 성장률은 7월 2일자 12.2% → 7월 10일자 12.3% → 시즌 종료 12.8%), 인용한 회차의 발표일은 확정하지 못했다. 날짜를 지어내지 않고 이 한계를 그대로 남긴다.",
+  calPrev:"직전 시즌 — {seasonPrev}", calNext:"다음 발표 예정",
   detPeriodEnd:"분기말", detEps:"EPS(실제/컨센)", detGuide:"가이던스",
   detNote:"분기 특징", detSrc:"출처", detWarn:"주의", detScore:"스코어 구성",
   detNextRep:"차기 발표", detConsNote:"컨센서스 주석", detEpsNote:"EPS 주석",
@@ -626,10 +628,10 @@ var T = {
   tagInternal:"INTERNAL", tagKind:"EARNINGS INTELLIGENCE",
   heroTitle:"US Large-Cap Earnings Intelligence",
   heroSub:"Report dates, consensus, actuals and guidance for a whole earnings season — on one screen instead of one company at a time.",
-  mAsOf:"As of 2026-09-17", mSrc:"Sources: company IR / 8-K filings and verified reporting · multiples from stockanalysis.com",
+  mAsOf:"As of {asOf}", mSrc:"Sources: company IR / 8-K filings and verified reporting · multiples from stockanalysis.com",
   ebSeason:"SEASON SCOREBOARD", s1t:"Season scoreboard",
-  s1d:"The six tiles above are this dashboard's own tally across its 25 companies. The six below are index-wide figures from outside providers. Different universes — they are never mixed in one tile. The chart at the foot of the section unpacks one of the top tiles, accelerating versus slowing, company by company.",
-  s1own:"Above: the 25 companies in this dashboard · tallied directly from their own releases",
+  s1d:"The six tiles above are this dashboard's own tally across its {total} companies. The six below are index-wide figures from outside providers. Different universes — they are never mixed in one tile. The chart at the foot of the section unpacks one of the top tiles, accelerating versus slowing, company by company.",
+  s1own:"Above: the {total} companies in this dashboard · tallied directly from their own releases",
   ebCal:"EARNINGS CALENDAR", s2t:"Earnings calendar",
   s2d:"How the last season ran, and what reports next. Click a chip to open that company's row. The table below is next-quarter revenue the companies put a number on.",
   lgBeat:"Revenue above consensus", lgMiss:"Revenue below consensus",
@@ -640,7 +642,7 @@ var T = {
   cTicker:"Company", cSector:"Sector", cDate:"Reported", cPeriod:"Quarter", cRev:"Revenue",
   cCons:"Consensus", cSurp:"Surprise", cYoy:"YoY", cGuide:"Guidance", cScore:"Momentum",
   ebSec:"REVENUE BY SECTOR", s4t:"Revenue analysis by sector",
-  s4d:"These two charts are not borrowed sector statistics — they aggregate the reported figures of the 25 companies on this page. Thin samples carry their company count next to the bar.",
+  s4d:"These two charts are not borrowed sector statistics — they aggregate the reported figures of the {total} companies on this page. Thin samples carry their company count next to the bar.",
   c1t:"Quarterly revenue by sector", c1d:"USD billions · last reported quarter",
   c2t:"Average revenue growth by sector", c2d:"Simple average of company YoY (unweighted) · verified companies only",
   c3t:"Revenue growth against consensus surprise",
@@ -657,7 +659,7 @@ var T = {
   n2c:"Check: <code>python3 scripts/check_claims.py data/earnings/claims.json</code>",
   n3t:"Reading notes",
   n3a:"Consensus providers differ by company (LSEG, Zacks, StreetAccount, Visible Alpha), so treat cross-company surprise rates as a rough ordering only.",
-  n3b:"Fiscal years differ, so the same 'quarter' is not the same months. NVIDIA's FY27 Q2 ended in July; Apple's FY26 Q3 ended in June.",
+  n3b:"Fiscal years differ, so the same 'quarter' is not the same months. NVIDIA's {nvdaPer} ended in {nvdaEnd}; Apple's {aaplPer} ended in {aaplEnd}.",
   n3c:"'Guidance' means only what the company itself issued. Analyst estimates sit in the consensus column.",
   uvT:"Not verified (left as n/a on the page)",
   uvF:"Collection for this page was limited to web search results; direct API access is blocked by network policy. Before quoting, confirm against the primary source linked on each row.",
@@ -668,12 +670,12 @@ var T = {
   fwT:"Ahead — next-quarter revenue the companies themselves put a number on",
   fwD:"Not analyst estimates: this is guidance the company issued at its earnings release. Ranges are shown at their midpoint, and QoQ is the change against the last reported quarter (both figures verified, so this is just the division).",
   fwCo:"Company", fwPer:"Quarter", fwLast:"Last qtr", fwGuide:"Guidance", fwQoQ:"QoQ", fwTxt:"As the company put it",
-  fwWarn:"Only companies that gave a number are listed (7 of 25). Alphabet, which does not guide by quarter as a matter of policy, and Tesla and ExxonMobil, where no figure was verified, are absent. Third-party quarterly and annual consensus could not be obtained in this environment, so it is not included — the only verified forward-looking figures here are this table and the forward P/E, which rests on next year's earnings.",
+  fwWarn:"Only companies that gave a number are listed ({gnext} of {total}). Alphabet, which does not guide by quarter as a matter of policy, and Tesla and ExxonMobil, where no figure was verified, are absent. Third-party quarterly and annual consensus could not be obtained in this environment, so it is not included — the only verified forward-looking figures here are this table and the forward P/E, which rests on next year's earnings.",
   detLtm:"Last twelve months", ltmRev:"Revenue", ltmG:"Growth", detAccel:"Acceleration",
   trUp:"the latest quarter is running faster than the past year",
   trDown:"the latest quarter is running slower than the past year",
   trFlat:"roughly the same pace as the past year",
-  ltmSrcNote:"LTM is the aggregator's sum of reported quarters (retrieved 2026-09-17), a different series from the reported quarter — use the acceleration for direction only",
+  ltmSrcNote:"LTM is the aggregator's sum of reported quarters (retrieved {valAsOf}), a different series from the reported quarter — use the acceleration for direction only",
   c4t:"Growth acceleration — is the latest quarter faster than the past year?",
   c4d:"Latest-quarter year-over-year minus last-twelve-month growth, in percentage points. Positive means the quarter ran ahead of the trailing year.",
   vsSec:"grp", detRel:"Versus benchmark group", secMedLab:"Group median", refOnly:"reference only · no company on this page",
@@ -689,30 +691,31 @@ var T = {
   absWhy:"the value before the sector effect is removed; shown next to the neutral score in the detail row",
   noVal:"no valuation", detVal:"Valuation", detAppeal:"Combined",
   fpeLab:"Forward P/E", xTimes:"x",
-  valSrcNote:"one aggregator's figure as of 2026-09-17 — not a company-reported number",
+  valSrcNote:"one aggregator's figure as of {valAsOf} — not a company-reported number",
   axMom:"Momentum", axVal:"Valuation", mixLab:"Combination",
   fpeWhy:"a lower multiple scores higher. The index multiple was not used as the anchor because this collection returned 19.1 / 22.4 / 22.9 / 25.6 for the S&P 500 forward P/E — too scattered to anchor on",
   pegWhy:"the provider does not publish its formula, so it is shown in the table for reference and kept out of the score",
-  psWhy:"shown in the table but kept out of the score. Rolling several multiples into one number counts the same expensiveness twice and hides which of earnings, revenue or EBITDA is the expensive one. Side by side they read better — Intel has no P/E at all, being loss-making, yet its P/S of 9.3x still reads; Tesla's 188.6x forward P/E and 13.6x P/S tell entirely different stories; Broadcom sits exactly on its sector median at 23.6x forward P/E while its EV/EBITDA is 43.1x",
+  psWhy:"shown in the table but kept out of the score. Rolling several multiples into one number counts the same expensiveness twice and hides which of earnings, revenue or EBITDA is the expensive one. Side by side they read better — Intel has no P/E at all, being loss-making, yet its P/S of {intcPs} still reads; Tesla's {tslaFpe} forward P/E and {tslaPs} P/S tell entirely different stories; Broadcom sits exactly on its sector median at {avgoFpe} forward P/E while its EV/EBITDA is {avgoEveb}",
   mixWhy:"only companies with both axes verified get a combined score. Synthesising from one axis would measure that company on a different yardstick",
-  valSeries:"Series", valSeriesWhy:"forward P/E, PEG, EV/EBITDA and market cap all come from stockanalysis.com only, as of 2026-09-17. Mixing providers reorders the whole ranking, so they are never mixed. Market cap is the exception on timing: the provider stamps a different date per ticker (Aug 31 to Sep 17) and we could not force them onto one day — open a row to see the date behind each one",
+  valSeries:"Series", valSeriesWhy:"forward P/E, PEG, EV/EBITDA and market cap all come from stockanalysis.com only, as of {valAsOf}. Mixing providers reorders the whole ranking, so they are never mixed. Market cap is the exception on timing: the provider stamps a different date per ticker (Aug 31 to Sep 17) and we could not force them onto one day — open a row to see the date behind each one",
   lgM:"M — earnings momentum (reported results)", lgV:"V — valuation (multiple relative to benchmark group; lower scores higher)",
   fT:"How it is calculated \u2460 Earnings momentum", fT2:"How it is calculated \u2461 Valuation and the blend",
   n4t:"What the valuation figures are",
-  n3d:"V is a multiple relative to the benchmark group median. Communication Services, where multiples diverge, is split into Internet (23.45x) and Telecom & Media (9.66x). A median still ignores market capitalisation, so check each group's constituents in the benchmark table.",
+  n3d:"V is a multiple relative to the benchmark group median. Communication Services, where multiples diverge, is split into Internet ({medNet}) and Telecom & Media ({medTel}). A median still ignores market capitalisation, so check each group's constituents in the benchmark table.",
   n4a:"Forward P/E and PEG are <b>not company-reported figures — they are one aggregator's estimate for that day</b>, which is why those cells carry a different background. At the same moment providers diverge sharply (NVDA forward P/E at 18.12 / 23.8 / 24.50 / 48.30; PLTR P/E at 147.69 / 177.89 / 249), so the series was <b>pinned to a single provider</b>. Mixing in another provider's figure reorders the whole ranking.",
-  n4b:"PEG is <b>shown for reference and kept out of the score</b> because the provider does not publish its formula. Multiples move daily, so refresh them once the 2026-09-17 base date has passed.",
+  n4b:"PEG is <b>shown for reference and kept out of the score</b> because the provider does not publish its formula. Multiples move daily, so refresh them once the {valAsOf} base date has passed.",
   lgNone2:"one axis unverified — no combined score",
   covTxt:function(c){return c.total+" companies · consensus "+c.cons+" · guidance "+c.guide+" · forward P/E "+c.fpe+" · P/S "+c.ps+" · EV/EBITDA "+c.eveb+" verified"},
   tOwnBeat:"Beat revenue consensus", tOwnBeatRef:"of companies with verified consensus",
   tOwnSurp:"Average revenue surprise", tOwnSurpRef:"simple average · verified consensus only",
   tOwnYoy:"Average revenue growth", tOwnYoyRef:"simple average of YoY",
   tOwnUp:"Raised guidance", tOwnUpRef:"of companies with verified guidance",
-  tOwnBig:"Combined quarterly revenue", tOwnBigRef:"sum across the 25 companies",
+  tOwnBig:"Combined quarterly revenue", tOwnBigRef:"sum across the {total} companies",
   tOwnTrend:"Accelerating / slowing",
-  tOwnTrendRef:"quarter growth more than 2pp from LTM — the slowing side holds Broadcom, top of the momentum score (-8.2pp)",
-  ownN:"This dashboard · 25 companies",
-  calPrev:"Last season — Q2 2026 (calendar)", calNext:"Coming up",
+  tOwnTrendRef:"quarter growth more than {band}pp from LTM — the slowing side holds {dnTop}, ranked #{dnTopRank} on momentum ({dnTopAccel})",
+  ownN:"This dashboard · {total} companies",
+  idxNote:"Below: index-wide tallies from outside providers — a different universe from the {total} companies here. FactSet Earnings Insight is a weekly publication, so a figure moves between editions within the same quarter (Q2 revenue growth ran 12.2% on July 2, 12.3% on July 10, 12.8% by the end of the season), and we could not pin down which edition these came from. Rather than invent a date, the limitation is left on the page.",
+  calPrev:"Last season — {seasonPrev}", calNext:"Coming up",
   detPeriodEnd:"Period end", detEps:"EPS (actual/cons.)", detGuide:"Guidance",
   detNote:"What defined the quarter", detSrc:"Sources", detWarn:"Caution", detScore:"Score inputs",
   detNextRep:"Next report", detConsNote:"Consensus note", detEpsNote:"EPS note",
@@ -737,7 +740,59 @@ var GKEN = {"차기분기":"next quarter","연간상향":"FY raised","연간유�
  "차기분기+연간상향":"next quarter + FY raised","정성":"qualitative","미제시":"none","발표전":"pre-release"};
 
 var L = localStorage.getItem("earnLang") || "ko";
-function t(k){return T[L][k]}
+/* 문구 안의 {토큰}은 데이터에서 채운다. 화면 문장에 숫자를 손으로 적어 두면
+   데이터를 갱신해도 문장이 그대로 남는다 — 카드에서 실제로 그렇게 어긋났다.
+   TOK() 는 첫 호출 때 한 번 만들고 언어가 바뀌면 다시 만든다. */
+var _tok=null,_tokLang=null;
+function TOK(){
+  if(_tok&&_tokLang===L)return _tok;
+  _tokLang=L;
+  /* 여기서 t() 를 부르면 fill() → TOK() 로 되돌아올 수 있다. 사전을 직접 읽는다. */
+  var X=T[L].xTimes,NA=T[L].na;
+  var cov=D.coverage,bench={};
+  (D.secBench||[]).forEach(function(b){bench[b.sec]=b});
+  function med(sec){var b=bench[sec];return b&&b.median!==null?fmt(b.median,2)+X:NA}
+  function peer(sec,tk){
+    var b=bench[sec];if(!b)return NA;
+    for(var i=0;i<b.members.length;i++)if(b.members[i][0]===tk)
+      return fmt(b.members[i][1],2)+X;
+    return NA}
+  function co(tk){return CO.filter(function(c){return c.t===tk})[0]||{}}
+  // 둔화 쪽에서 모멘텀 점수가 가장 높은 기업 — '모멘텀 1위가 둔화 쪽에 있다'는
+  // 문장을 손으로 적어 두지 않기 위해 데이터에서 찾는다.
+  var dn=CO.filter(function(c){return c.trend==="down"&&c.score!==null&&c.score!==undefined})
+           .sort(function(a,b){return b.score-a.score});
+  var topDn=dn[0];
+  var momRank=null;
+  if(topDn){
+    var byM=CO.filter(function(c){return c.score!==null&&c.score!==undefined})
+              .sort(function(a,b){return b.score-a.score});
+    for(var i=0;i<byM.length;i++)if(byM[i].t===topDn.t){momRank=i+1;break}}
+  var nv=co("NVDA"),ap=co("AAPL"),tsl=co("TSLA"),intc=co("INTC"),avgo=co("AVGO");
+  function mon(d){if(!d)return NA;var m=+d.split("-")[1];
+    return L==="ko"?m+"월":["","January","February","March","April","May","June",
+      "July","August","September","October","November","December"][m]}
+  _tok={
+    total:cov.total, gnext:cov.gnext, fpeN:cov.fpe,
+    asOf:D.asOf, valAsOf:D.valAsOf, band:fmt(D.accelBand,0),
+    seasonPrev:L==="ko"?D.season.prev:"Q2 2026 (calendar)",
+    medNet:med("커뮤니케이션 · 인터넷"), medTel:med("커뮤니케이션 · 통신미디어"),
+    chtr:peer("커뮤니케이션 · 통신미디어","CHTR"),
+    dnTop:L==="ko"?(topDn?topDn.ko:NA):(topDn?topDn.en:NA),
+    dnTopAccel:topDn?pp(topDn.accel):NA, dnTopRank:momRank===null?NA:momRank,
+    nvdaEnd:mon(nv.pend), aaplEnd:mon(ap.pend),
+    nvdaPer:nv.per||"", aaplPer:ap.per||"",
+    tslaFpe:tsl.fpe!==null&&tsl.fpe!==undefined?fmt(tsl.fpe,2)+X:NA,
+    tslaPs:tsl.ps!==null&&tsl.ps!==undefined?fmt(tsl.ps,2)+X:NA,
+    intcPs:intc.ps!==null&&intc.ps!==undefined?fmt(intc.ps,2)+X:NA,
+    avgoFpe:avgo.fpe!==null&&avgo.fpe!==undefined?fmt(avgo.fpe,2)+X:NA,
+    avgoEveb:avgo.eveb!==null&&avgo.eveb!==undefined?fmt(avgo.eveb,2)+X:NA};
+  return _tok}
+function fill(s){
+  if(typeof s!=="string"||s.indexOf("{")<0)return s;
+  var k=TOK();
+  return s.replace(/\{(\w+)\}/g,function(m,n){return n in k?String(k[n]):m})}
+function t(k){return fill(T[L][k])}
 function secN(s){return L==="ko"?s:(SECEN[s]||s)}
 function subN(s){return L==="ko"?s:(SUBEN[s]||s)}
 
@@ -814,6 +869,10 @@ function renderTiles(){
       esc(L==="ko"?o.ref:o.ref_en)+'</div><div class="who"><a href="'+esc(o.url)+
       '" target="_blank" rel="noopener">'+esc(o.who)+'</a> · '+
       esc(L==="ko"?o.scope:o.scope_en)+'</div></div>'}).join("");
+  // 외부 집계의 한계 — 주간 간행물이라 회차마다 값이 움직이는데 인용 회차를
+  // 확정하지 못했다. 타일 밑에 적어 둔다(대장의 주석과 같은 내용).
+  var n=$("#idx-note");
+  if(n)n.textContent=t("idxNote");
 }
 
 /* ------------------------------------------------ 렌더: 캘린더 */
@@ -1435,7 +1494,7 @@ function renderFilters(){
 function applyLang(){
   document.documentElement.lang=L;
   $$("[data-i18n]").forEach(function(el){
-    var k=el.getAttribute("data-i18n"),v=T[L][k];
+    var k=el.getAttribute("data-i18n"),v=fill(T[L][k]);
     if(typeof v==="string"){if(/<code>|<b>/.test(v))el.innerHTML=v;else el.textContent=v}});
   $("#q").placeholder=t("searchPH");
   $$(".lang-toggle button").forEach(function(b){
@@ -1446,7 +1505,8 @@ function renderAll(){
   renderCharts();insights();renderRank();renderNotes()}
 
 $$(".lang-toggle button").forEach(function(b){b.addEventListener("click",function(){
-  L=b.getAttribute("data-lang");localStorage.setItem("earnLang",L);hideTip();applyLang()})});
+  L=b.getAttribute("data-lang");localStorage.setItem("earnLang",L);
+  _tok=null;hideTip();applyLang()})});
 $("#q").addEventListener("input",function(e){query=e.target.value;renderTbl()});
 $$("#tbl thead th").forEach(function(th){th.addEventListener("click",function(){
   var k=th.getAttribute("data-k");
