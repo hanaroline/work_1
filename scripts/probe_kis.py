@@ -140,6 +140,86 @@ CASES = [
      ["output2", 0, "clos"]),
 ]
 
+# ── 2차 — 수급·차트·해외ETF·원자재 ───────────────────────────────────
+#
+# 1차에서 국내주식·ETF·지수·해외주식의 기본 시세가 되는 것을 확인했다. 그 다음
+# 물음은 「어디까지 되는가」다 — 투자자별 매매동향, 외국인·기관 수급, 분봉,
+# 해외ETF, 원자재. 아래는 **추측으로 적은 것이고 실측이 가릴 것이다.**
+# 1차에서 내 추측이 이미 한 번 틀렸다(유량 제한을 경로 오류로 오진).
+CASES += [
+    # ── 수급 — 이 저장소가 가장 아쉬워하던 칸이다 ──────────────────────
+    # data/flows/kr100.json 이 수급을 담고 있지만 시·고·저·거래량이 없어
+    # 지표에 못 쓴다고 fetch_kr_prices_naver.py 머리말에 적혀 있다. 증권사가
+    # 직접 주는 수급이면 그 칸이 메워진다.
+    ("수급", "주식현재가 투자자(개인·외국인·기관)",
+     "/uapi/domestic-stock/v1/quotations/inquire-investor", "FHKST01010900",
+     {"FID_COND_MRKT_DIV_CODE": "J", "FID_INPUT_ISCD": SAMSUNG},
+     ["output", 0, "frgn_ntby_qty"]),
+
+    ("수급", "종목별 외인·기관 추정가집계",
+     "/uapi/domestic-stock/v1/quotations/investor-trend-estimate",
+     "HHPTJ04160200",
+     {"MKSC_SHRN_ISCD": SAMSUNG},
+     ["output2", 0, "frgn_fake_ntby_qty"]),
+
+    ("수급", "외국인·기관 매매종목 가집계(시장 전체)",
+     "/uapi/domestic-stock/v1/quotations/foreign-institution-total",
+     "FHPTJ04400000",
+     {"FID_COND_MRKT_DIV_CODE": "V", "FID_COND_SCR_DIV_CODE": "16449",
+      "FID_INPUT_ISCD": "0000", "FID_DIV_CLS_CODE": "0",
+      "FID_RANK_SORT_CLS_CODE": "0", "FID_ETC_CLS_CODE": "0"},
+     ["output", 0, "hts_kor_isnm"]),
+
+    ("수급", "주식현재가 회원사(거래원)",
+     "/uapi/domestic-stock/v1/quotations/inquire-member", "FHKST01010600",
+     {"FID_COND_MRKT_DIV_CODE": "J", "FID_INPUT_ISCD": SAMSUNG},
+     ["output", "seln_mbcr_name1"]),
+
+    # ── 차트 — 일봉 말고 더 잘게 ──────────────────────────────────────
+    ("차트", "국내주식 분봉",
+     "/uapi/domestic-stock/v1/quotations/inquire-time-itemchartprice",
+     "FHKST03010200",
+     {"FID_ETC_CLS_CODE": "", "FID_COND_MRKT_DIV_CODE": "J",
+      "FID_INPUT_ISCD": SAMSUNG, "FID_INPUT_HOUR_1": "093000",
+      "FID_PW_DATA_INCU_YN": "Y"},
+     ["output2", 0, "stck_prpr"]),
+
+    # ── 해외ETF·원자재 ───────────────────────────────────────────────
+    # 해외는 ETF 도 종목코드로 취급된다. 전용 API 가 따로 있는 것이 아니라
+    # 해외주식 시세 TR 에 심볼만 바꿔 넣는 것이 되는지 본다.
+    ("해외", "해외ETF — SPY(S&P500, 아멕스)",
+     "/uapi/overseas-price/v1/quotations/price", "HHDFS00000300",
+     {"AUTH": "", "EXCD": "AMS", "SYMB": "SPY"},
+     ["output", "last"]),
+
+    ("해외", "해외ETF — QQQ(나스닥100)",
+     "/uapi/overseas-price/v1/quotations/price", "HHDFS00000300",
+     {"AUTH": "", "EXCD": "NAS", "SYMB": "QQQ"},
+     ["output", "last"]),
+
+    # 원자재의 직접 시세(WTI·금 선물)는 해외선물 영역이다. 그쪽이 막히면
+    # 원자재 ETF 로 대신 볼 수 있으므로 두 길을 다 재 둔다.
+    ("원자재", "원자재 ETF — GLD(금)",
+     "/uapi/overseas-price/v1/quotations/price", "HHDFS00000300",
+     {"AUTH": "", "EXCD": "AMS", "SYMB": "GLD"},
+     ["output", "last"]),
+
+    ("원자재", "원자재 ETF — USO(원유)",
+     "/uapi/overseas-price/v1/quotations/price", "HHDFS00000300",
+     {"AUTH": "", "EXCD": "AMS", "SYMB": "USO"},
+     ["output", "last"]),
+
+    ("원자재", "해외선물 시세(직접) — 금 GC",
+     "/uapi/overseas-futureoption/v1/quotations/inquire-price", "HHDFC55010100",
+     {"SRS_CD": "GCZ25", "EXCH_CD": "CME"},
+     ["output1", "last_price"]),
+]
+
+# 환율에 대하여 — KIS 에 전용 환율 시세 API 가 있는지 확인하지 못했고, 애초에
+# 이 저장소가 KIS 로 갈 이유가 적다. 환율은 이미 야후에서 KRW=X · DX-Y.NYB 로
+# 받고 있고(probe_sources.py), 24시간 시장이라 증권사 시세가 특별히 낫지 않다.
+# 바꿀 이유가 없으므로 후보에 넣지 않는다.
+
 # 펀드에 대하여 — KIS 오픈API 목록은 국내주식·해외주식·선물옵션·채권·ELW 로,
 # **공모펀드 기준가는 들어 있지 않은 것으로 보인다.** 확인하지 못했으므로 단정하지
 # 않되, 이 실측에 넣을 후보 경로조차 없어 칸을 비워 둔다. 지금 펀드 자료
