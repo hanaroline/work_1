@@ -1,12 +1,12 @@
-상한가 화면이 부르는 주소 관찰 2026-09-18T00:20:55.980Z
+상한가 화면이 부르는 주소 관찰 2026-09-18T00:26:34.274Z
 (브라우저로 열어 오가는 요청을 그대로 적는다. 수집 결과는 바꾸지 않는다.)
 
 ### 상한가  https://finance.naver.com/sise/sise_upper.naver
     화면에 그려진 종목 링크 0 개 · 오간 요청 15 건
-    [200] 코드 270 개 ·  167630 bytes · application/json · https://stock.naver.com/api/domestic/market/stock/default?tradeType=KRX&marketType=ALL&orderType=up&startIdx=0&pageSize=100
-    [200] 코드 212 개 ·  183339 bytes · application/json · https://polling.finance.naver.com/api/realtime/domestic/stock/000227,0004V0,000500,000660,001440,001520,0015S0,002785,004440,005320,005690,008260,0091
-    [200] 코드 167 개 ·  163291 bytes · application/json · https://polling.finance.naver.com/api/realtime/domestic/stock/000227,0004V0,000500,000660,001440,001520,0015S0,002785,004440,005320,005690,008260,0091
-    [200] 코드  10 개 ·    5444 bytes · application/json · https://stock.naver.com/api/personal/users/favorite/ranking?pageSize=10
+    [200] 코드 289 개 ·  167819 bytes · application/json · https://stock.naver.com/api/domestic/market/stock/default?tradeType=KRX&marketType=ALL&orderType=up&startIdx=0&pageSize=100
+    [200] 코드 222 개 ·  186049 bytes · application/json · https://polling.finance.naver.com/api/realtime/domestic/stock/000227,0004V0,000500,000660,001440,001520,0015S0,002785,002870,005320,005690,005710,0063
+    [200] 코드 179 개 ·  165999 bytes · application/json · https://polling.finance.naver.com/api/realtime/domestic/stock/000227,0004V0,000500,000660,001440,001520,0015S0,002785,002870,005320,005690,005710,0063
+    [200] 코드  10 개 ·    5439 bytes · application/json · https://stock.naver.com/api/personal/users/favorite/ranking?pageSize=10
     [302] 코드   0 개 ·       0 bytes ·  · https://finance.naver.com/sise/sise_upper.naver
     [200] 코드   0 개 ·  136385 bytes · text/html · https://stock.naver.com/market/stock/kr/stocklist/upper
     [200] 코드   0 개 ·    8385 bytes · application/json · https://ssl.pstatic.net/imgstock/fn/real/pc/_front/lottie/main_load.json
@@ -25,16 +25,16 @@
 
 ### 하한가  https://finance.naver.com/sise/sise_lower.naver
     화면에 그려진 종목 링크 0 개 · 오간 요청 15 건
-    [200] 코드 243 개 ·  167299 bytes · application/json · https://stock.naver.com/api/domestic/market/stock/default?tradeType=KRX&marketType=ALL&orderType=down&startIdx=0&pageSize=100
-    [200] 코드 200 개 ·  183845 bytes · application/json · https://polling.finance.naver.com/api/realtime/domestic/stock/0009K0,001020,002070,002360,002787,003780,004310,006490,0082N0,010640,010955,012320,0149
-    [200] 코드 152 개 ·  161423 bytes · application/json · https://polling.finance.naver.com/api/realtime/domestic/stock/0009K0,001020,002070,002360,002787,003780,004310,006490,0082N0,010640,010955,012320,0149
-    [200] 코드  10 개 ·    5444 bytes · application/json · https://stock.naver.com/api/personal/users/favorite/ranking?pageSize=10
+    [200] 코드 241 개 ·  167286 bytes · application/json · https://stock.naver.com/api/domestic/market/stock/default?tradeType=KRX&marketType=ALL&orderType=down&startIdx=0&pageSize=100
+    [200] 코드 186 개 ·  178555 bytes · application/json · https://polling.finance.naver.com/api/realtime/domestic/stock/0007J0,0009K0,001020,001360,0015N0,002070,002360,002787,003780,006490,007540,0082N0,0106
+    [200] 코드 140 개 ·  156133 bytes · application/json · https://polling.finance.naver.com/api/realtime/domestic/stock/0007J0,0009K0,001020,001360,0015N0,002070,002360,002787,003780,006490,007540,0082N0,0106
+    [200] 코드  10 개 ·    5439 bytes · application/json · https://stock.naver.com/api/personal/users/favorite/ranking?pageSize=10
     [302] 코드   0 개 ·       0 bytes ·  · https://finance.naver.com/sise/sise_lower.naver
     [200] 코드   0 개 ·  136385 bytes · text/html · https://stock.naver.com/market/stock/kr/stocklist/lower
     [200] 코드   0 개 ·    8385 bytes · application/json · https://ssl.pstatic.net/imgstock/fn/real/pc/_front/lottie/main_load.json
     [200] 코드   0 개 ·      23 bytes · application/json · https://nam.veta.naver.com/nac/1
-    [200] 코드   0 개 ·     112 bytes · application/json · https://stock.naver.com/api/auth/userInfo
     [200] 코드   0 개 ·     113 bytes · application/json · https://stock.naver.com/api/stockSecurity/notices/v2/banners?size=2&type=PC_TOP
+    [200] 코드   0 개 ·     112 bytes · application/json · https://stock.naver.com/api/auth/userInfo
     [200] 코드   0 개 ·    9130 bytes · application/json · https://stock.naver.com/api/stockSecurity/market-status/current?exchanges=krx&exchanges=nxt&exchanges=nasdaq&exchanges=shanghai&exchanges=hongkong&exc
     [204] 코드   0 개 ·       0 bytes ·  · https://nlog.naver.com/n
     [200] 코드   0 개 ·  133204 bytes · application/x-javascript · https://static.nid.naver.com/templates/gnb_utf8.nhn?2026091800
