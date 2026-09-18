@@ -960,6 +960,10 @@ REJECTED = [
       vals=[19.1, 22.4, 22.9, 25.6], unit="배", metric="대조용 배수",
       note="이번 수집에서 지수 선행 P/E 가 19.1 / 22.4 / 22.9 / 25.6 으로 엇갈려 밸류에이션 "
            "구간의 기준점으로 삼을 수 없었다. 그래서 하우스 고정구간(12~45배)을 쓴다"),
+ dict(id="ALT_WBD_FPE", ko="WBD 선행 P/E — 상장지마다 어긋나 제외한 값",
+      vals=[811.0, 1014.0], unit="배", metric="대조용 배수",
+      note="같은 제공사인데도 상장지마다 811~1,014배로 어긋나, 통신미디어 기준배수 계산에서 "
+           "제외했다. 중앙값이라 한 종목을 빼도 기준배수는 거의 움직이지 않는다"),
  dict(id="ALT_FCT_REV_EDITIONS", ko="FactSet Q2 매출 성장률 — 회차별 값",
       vals=[12.2, 12.3], unit="%", metric="대조용 지수 집계",
       note="7월 2일자 12.2%, 7월 10일자 12.3%. 시즌이 진행되며 12.8% 까지 올라갔다 — 보고 기업이 "
@@ -1082,6 +1086,8 @@ payload = dict(
     index=INDEX,
     # 카드가 문장 안에서 부르는 값. 화면은 여기서 꺼내 쓰기만 한다.
     facts={f["id"]: {k: f[k] for k in ("v", "unit", "ko", "en")} for f in FACTS},
+    # 채택하지 않은 대조용 수치도 화면 문장에 인쇄된다 — 손으로 적지 않게 넘긴다.
+    alt={r["id"]: r["vals"] for r in REJECTED},
     companies=[{k: c.get(k) for k in keys} for c in C],
     sectors=sectors)
 (OUT / "latest.json").write_text(json.dumps(payload, ensure_ascii=False, indent=1), "utf-8")
