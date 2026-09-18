@@ -41,6 +41,14 @@ const ENTRIES = [
 // 화면 안에서 지수 일별 시세 쪽으로 가는 말.
 const FOLLOW = ['통계', '지수', '주가지수', '일별', '시세', '기본 통계', '전체'];
 
+// **누를 차례.** 첫 관찰(2026-09-18)에서 KRX 뿌리 화면의 글자를 읽어 온
+// 메뉴 이름 그대로다 — 「기본통계 / 지수 / 주가지수 / 전체지수 시세 /
+// 전체지수 등락률 / **개별지수 시세 추이** / …」. 짐작한 이름이 아니라
+// 화면이 내어 준 이름이므로 그대로 적는다. 우리가 찾는 것은 날짜별
+// 거래대금이라 「개별지수 시세 추이」가 과녁이고, 안 되면 「전체지수
+// 시세」로 물러선다.
+const MENU = ['개별지수 시세 추이', '전체지수 시세', '주가지수', '지수'];
+
 // 거래대금을 나르는 응답인지 가리는 말. KRX 는 `ACC_TRDVAL` 로 적는다.
 const MONEY = /ACC_TRDVAL|TRD_VAL|거래대금|ACC_TRDVOL/i;
 
@@ -55,6 +63,11 @@ const browser = await chromium.launch({
 });
 
 let saved = 0;
+// 오간 요청을 **기계가 읽을 수 있게** 따로 모은다. 다음 단계
+// (`probe_krx_index.py`)가 이것을 그대로 되보내 브라우저 없이도 열리는지
+// 확인한다 — 사람이 기록을 읽고 주소를 옮겨 적는 자리를 없애려는 것이다.
+// 옮겨 적는 자리가 곧 짐작이 끼어드는 자리였다.
+const allPosts = [];
 
 for (const [label, url] of ENTRIES) {
   lines.push(`### ${label}  ${url}`);
@@ -97,43 +110,45 @@ for (const [label, url] of ENTRIES) {
     lines.push(`    페이지 열기 실패: ${String(e).slice(0, 140)}`);
   }
 
-  // 화면 안의 관련 링크를 적고, 지수 일별시세 쪽으로 한 걸음씩 타고 들어간다.
-  for (let step = 0; step < 3; step += 1) {
+  // 화면 안의 관련 링크를 **주소까지** 적는다. 첫 관찰은 글자만 적어서,
+  // 메뉴 이름은 읽었으나 어디로 가는지는 몰랐다.
+  try {
+    const links = await page.evaluate((words) => {
+      const out = [];
+      document.querySelectorAll('a[href]').forEach((a) => {
+        const t = (a.innerText || '').trim().replace(/\s+/g, ' ').slice(0, 30);
+        if (!t || !words.some((w) => t.includes(w))) return;
+        out.push(`${t} → ${a.getAttribute('href')}`);
+      });
+      return [...new Set(out)].slice(0, 40);
+    }, FOLLOW);
+    if (links.length) {
+      lines.push('    화면 안의 관련 링크:');
+      for (const l of links) lines.push(`      ${l}`);
+    }
+  } catch {
+    /* 무시 */
+  }
+
+  // 메뉴를 **이름 그대로** 눌러 들어간다. 첫 관찰은 「지수」 같은 넓은 말로
+  // 눌러 보다 아무것도 못 짚었다 — 화면이 내어 준 이름을 그대로 쓴다.
+  let entered = false;
+  for (const name of MENU) {
     try {
-      const links = await page.evaluate((words) => {
-        const out = [];
-        document.querySelectorAll('a, li, span').forEach((el) => {
-          const t = (el.innerText || '').trim().replace(/\s+/g, ' ').slice(0, 30);
-          if (!t) return;
-          if (words.some((w) => t.includes(w))) out.push(t);
-        });
-        return [...new Set(out)].slice(0, 40);
-      }, FOLLOW);
-      if (links.length) {
-        lines.push(`    [${step}] 화면 안의 말: ${links.join(' / ').slice(0, 600)}`);
+      const el = page.getByText(name, { exact: true }).first();
+      if (await el.isVisible({ timeout: 1500 })) {
+        await el.click({ timeout: 4000 });
+        lines.push(`    눌러 들어감: 「${name}」`);
+        await page.waitForTimeout(4000);
+        entered = true;
+        break;
       }
     } catch {
-      /* 무시 */
+      /* 다음 이름으로 */
     }
-
-    // 「지수」 → 「주가지수」 → 「일별 시세」 순으로 눌러 본다. 없으면 그만.
-    const order = [['지수'], ['주가지수', '지수'], ['일별', '시세']];
-    let clicked = false;
-    for (const word of order[step] || []) {
-      try {
-        const el = page.getByText(word, { exact: false }).first();
-        if (await el.isVisible({ timeout: 1200 })) {
-          await el.click({ timeout: 3000 });
-          lines.push(`    [${step}] 눌러 봄: 「${word}」`);
-          await page.waitForTimeout(3500);
-          clicked = true;
-          break;
-        }
-      } catch {
-        /* 다음 말로 */
-      }
-    }
-    if (!clicked) lines.push(`    [${step}] 누를 것을 못 찾았다`);
+  }
+  if (!entered) {
+    lines.push('    메뉴를 못 짚었다 — 화면 글자에서 이름을 다시 읽어야 한다');
   }
 
   // 조회 단추를 눌러야 자료를 부르는 화면이 많다.
@@ -151,6 +166,7 @@ for (const [label, url] of ENTRIES) {
   }
 
   // **이것이 이 관찰의 알맹이다** — 무엇을 달라고 보냈는지.
+  for (const p of posts) allPosts.push({ entry: label, ...p });
   if (posts.length) {
     lines.push('    보낸 요청(POST):');
     for (const p of posts.slice(0, 20)) {
@@ -182,6 +198,9 @@ for (const [label, url] of ENTRIES) {
 }
 
 await browser.close();
+fs.writeFileSync(path.join(OUT, 'krx_posts.json'),
+  JSON.stringify(allPosts, null, 1));
+lines.push(`보낸 요청 ${allPosts.length}건을 ${OUT}/krx_posts.json 에 모았다.`);
 const dest = path.join(OUT, 'krx_xhr.txt');
 fs.writeFileSync(dest, lines.join('\n') + '\n');
 console.log(lines.join('\n'));
