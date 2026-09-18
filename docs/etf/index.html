@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>자산배분 ETF 신호</title>
+<!--
+  자산배분 ETF 76종(ETN 제외)을 한 판에 놓고 견준다.
+
+  **겹침을 맨 위에 둔다.** 이 표에서 점수만 줄 세워 위에서 다섯을 고르면 같은 것을
+  다섯 번 사게 된다 — 나스닥100 하나가 네 가지 껍데기로 들어 있고 S&P500 은 다섯
+  가지다. 그래서 「76 종목이 사실상 몇 덩이인가」를 표보다 먼저 보인다.
+
+  **이력이 모자란 것에 신호대를 붙이지 않는다.** 신설 ETF 가 많다. 210세션을 못
+  채운 것은 축과 지표까지만 보이고 「적극 매수」 같은 글자는 내지 않는다.
+
+  **성적표가 없다.** backtest.json 은 개별 주식 200종목으로 잰 것이라 채권 ETF·
+  채권혼합 50·커버드콜에 옮겨 붙일 수 없다. 이 화면은 그 사실을 감추지 않는다.
+
+  띄우는 법 — 저장소 뿌리에서 `python3 -m http.server 8000` 뒤
+  http://localhost:8000/docs/etf/ 로 연다. (자료를 심은 한 장짜리 판은
+  scripts/make_etf_offline.py 가 만든다 — 그것은 두 번 눌러 열어도 된다.)
+-->
+<style>
+  :root {
+    --surface-1: #fcfcfb; --page: #f9f9f7;
+    --text-primary: #0b0b0b; --text-secondary: #52514e; --text-muted: #898781;
+    --grid: #e1e0d9; --axis: #c3c2b7; --border: rgba(11,11,11,0.10);
+    --series-1: #2a78d6; --series-2: #1baf7a; --series-3: #eda100;
+    --series-5: #4a3aa7; --series-6: #e34948;
+    --up: #d03b3b; --down: #2a78d6; --good: #006300;
+    --warn: #b06f00; --danger: #c0392b;
+    --shadow: 0 1px 2px rgba(11,11,11,.05), 0 4px 16px rgba(11,11,11,.04);
+    --radius: 14px;
+  }
+  :root[data-theme="dark"] {
+    --surface-1: #1a1a19; --page: #0d0d0d;
+    --text-primary: #ffffff; --text-secondary: #c3c2b7; --text-muted: #898781;
+    --grid: #2c2c2a; --axis: #383835; --border: rgba(255,255,255,0.10);
+    --series-1: #3987e5; --series-2: #199e70; --series-3: #c98500;
+    --series-5: #9085e9; --series-6: #e66767;
+    --up: #ff6b6b; --down: #5598e7; --good: #0ca30c;
+    --warn: #e0a030; --danger: #ff6b6b;
+    --shadow: 0 1px 2px rgba(0,0,0,.4), 0 4px 16px rgba(0,0,0,.3);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --surface-1: #1a1a19; --page: #0d0d0d;
+      --text-primary: #ffffff; --text-secondary: #c3c2b7; --text-muted: #898781;
+      --grid: #2c2c2a; --axis: #383835; --border: rgba(255,255,255,0.10);
+      --series-1: #3987e5; --series-2: #199e70; --series-3: #c98500;
+      --series-5: #9085e9; --series-6: #e66767;
+      --up: #ff6b6b; --down: #5598e7; --good: #0ca30c;
+      --warn: #e0a030; --danger: #ff6b6b;
+      --shadow: 0 1px 2px rgba(0,0,0,.4), 0 4px 16px rgba(0,0,0,.3);
+    }
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    font-family: system-ui, -apple-system, "Segoe UI", "Malgun Gothic", sans-serif;
+    background: var(--page); color: var(--text-primary); line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: 1240px; margin: 0 auto; padding: 24px 16px 80px; }
+  header { display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap; }
+  h1 { font-size: 22px; margin: 0; letter-spacing: -0.01em; }
+  .sub { color: var(--text-secondary); font-size: 13px; }
+  .card {
+    background: var(--surface-1); border: 1px solid var(--border);
+    border-radius: var(--radius); box-shadow: var(--shadow);
+    padding: 18px; margin-top: 16px;
+  }
+  .card h2 { font-size: 15px; margin: 0 0 10px; letter-spacing: -0.01em; }
+  .muted { color: var(--text-muted); font-size: 12.5px; }
+  .sec { color: var(--text-secondary); font-size: 13px; }
+  .note { color: var(--text-secondary); font-size: 12.5px; margin-top: 10px; }
+  .banner {
+    border-radius: 11px; padding: 12px 14px; font-size: 13px; margin-top: 12px;
+    border: 1px solid var(--border);
+  }
+  .banner.warn { background: rgba(237,161,0,.12); color: var(--warn); }
+  .banner.danger { background: rgba(192,57,43,.12); color: var(--danger); }
+  .chip {
+    display: inline-block; padding: 2px 9px; border-radius: 999px;
+    font-size: 11.5px; font-weight: 600; border: 1px solid var(--border);
+    color: var(--text-secondary);
+  }
+  .chip.ok { background: rgba(27,175,122,.12); color: var(--good); }
+  .chip.part { background: rgba(237,161,0,.14); color: var(--warn); }
+  .chip.short { background: rgba(137,135,129,.16); }
+
+  .scroll { overflow-x: auto; }
+  table { border-collapse: collapse; width: 100%; font-size: 13px; }
+  th, td { padding: 7px 9px; border-bottom: 1px solid var(--grid); text-align: left;
+           white-space: nowrap; }
+  th { font-size: 11.5px; color: var(--text-muted); font-weight: 600;
+       cursor: pointer; user-select: none; position: sticky; top: 0;
+       background: var(--surface-1); }
+  th.num, td.num { text-align: right; font-variant-numeric: tabular-nums; }
+  tbody tr { cursor: pointer; }
+  tbody tr:hover { background: rgba(137,135,129,.09); }
+  tbody tr.on { background: rgba(42,120,214,.10); }
+  .name { white-space: normal; min-width: 210px; }
+
+  .band { display: inline-block; padding: 2px 8px; border-radius: 7px;
+          font-size: 11.5px; font-weight: 700; }
+  .b-strong_buy { background: rgba(208,59,59,.16); color: var(--up); }
+  .b-buy        { background: rgba(208,59,59,.09); color: var(--up); }
+  .b-hold       { background: rgba(137,135,129,.14); color: var(--text-secondary); }
+  .b-reduce     { background: rgba(42,120,214,.10); color: var(--down); }
+  .b-sell       { background: rgba(42,120,214,.16); color: var(--down); }
+
+  /* 점수 막대 — 0 을 가운데 두고 좌우로 */
+  .bar { position: relative; height: 9px; width: 108px; background: var(--grid);
+         border-radius: 5px; display: inline-block; vertical-align: middle; }
+  .bar i { position: absolute; top: 0; height: 9px; border-radius: 5px; }
+  .bar .mid { position: absolute; left: 50%; top: -2px; width: 1px; height: 13px;
+              background: var(--axis); }
+
+  .clusters { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+              gap: 10px; }
+  .cl { border: 1px solid var(--border); border-radius: 11px; padding: 11px 13px; }
+  .cl.big { border-color: var(--series-6); }
+  .cl h3 { font-size: 12.5px; margin: 0 0 6px; color: var(--text-secondary); }
+  .cl ul { margin: 0; padding-left: 16px; font-size: 12.5px; }
+
+  .hgrid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+  @media (max-width: 900px) { .hgrid { grid-template-columns: repeat(2, 1fr); } }
+  @media (max-width: 520px) { .hgrid { grid-template-columns: 1fr; } }
+  .hcard { border: 1px solid var(--border); border-radius: 11px; padding: 13px; }
+  .hcard .hh { font-size: 12px; color: var(--text-muted); font-weight: 600; }
+  .kv { display: flex; justify-content: space-between; gap: 8px; font-size: 13px; padding: 2px 0; }
+  .kv b { font-variant-numeric: tabular-nums; }
+  .filters { display: flex; gap: 8px; flex-wrap: wrap; margin: 12px 0 4px; }
+  .filters button {
+    font: inherit; font-size: 12.5px; padding: 5px 11px; border-radius: 999px;
+    border: 1px solid var(--border); background: var(--surface-1);
+    color: var(--text-secondary); cursor: pointer;
+  }
+  .filters button.on { background: var(--text-primary); color: var(--page); }
+  .spin { color: var(--text-muted); font-size: 14px; padding: 30px 0; text-align: center; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>자산배분 ETF 신호</h1>
+    <span class="sub" id="asof">읽는 중…</span>
+  </header>
+  <div class="sub" id="cover"></div>
+
+  <div id="body">
+    <div class="card"><div class="spin">자료를 읽는 중…</div></div>
+  </div>
+
+  <div class="card">
+    <h2>이 화면이 말하지 않는 것</h2>
+    <div class="sec" id="limits"></div>
+    <div class="note" id="disclaimer"></div>
+  </div>
+</div>
+
+<script>
+(function () {
+  'use strict';
+  var DATA = null, OVL = null, SEL = null, FILTER = '전부', SORT = { k: 'score', dir: -1 };
+
+  function $(id) { return document.getElementById(id); }
+  function esc(s) {
+    return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) {
+      return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
+    });
+  }
+  function num(x, n) {
+    if (x == null || isNaN(x)) return '—';
+    return Number(x).toLocaleString('ko-KR', { minimumFractionDigits: n || 0,
+                                               maximumFractionDigits: n || 0 });
+  }
+  function sgn(x, n) {
+    if (x == null || isNaN(x)) return '—';
+    return (x > 0 ? '+' : '') + num(x, n);
+  }
+  function h20(it) {
+    var hs = it.horizons || {};
+    return hs['20'] || hs[20] || {};
+  }
+  function score(it, h) {
+    var hs = it.horizons || {};
+    var v = hs[String(h)] || hs[h] || {};
+    return v.score;
+  }
+
+  /* 점수 막대 — 0 을 가운데 두고 좌우로. 방향이 한눈에 보여야 한다. */
+  function bar(v) {
+    if (v == null || isNaN(v)) return '<span class="muted">—</span>';
+    var w = Math.min(50, Math.abs(v) / 2);
+    var col = v >= 0 ? 'var(--up)' : 'var(--down)';
+    var left = v >= 0 ? 50 : 50 - w;
+    return '<span class="bar"><i style="left:' + left + '%;width:' + w + '%;background:' +
+      col + '"></i><span class="mid"></span></span>';
+  }
+
+  function tierChip(t) {
+    if (t === 'full') return '<span class="chip ok">온전</span>';
+    if (t === 'partial') return '<span class="chip part">부분</span>';
+    return '<span class="chip short">짧음</span>';
+  }
+
+  /* ── 겹침 — 맨 위에 둔다 ─────────────────────────────────────
+     이 표에서 점수만 줄 세워 고르면 같은 것을 여러 번 사게 된다. */
+  function overlapHtml() {
+    if (!OVL) return '';
+    var big = (OVL.clusters || []).filter(function (c) { return c.n > 1; });
+    var alone = (OVL.clusters || []).filter(function (c) { return c.n === 1; }).length;
+    var h = '<div class="card"><h2>겹침 — 76 종목이 사실상 ' + OVL.cluster_count +
+      ' 덩이입니다</h2>' +
+      '<div class="sec">수익률 상관이 <b>' + OVL.cluster_cut +
+      ' 이상으로 이어지면 한 덩이</b>로 묶었습니다. 덩이 하나가 베팅 하나입니다 — ' +
+      '점수 높은 순으로 위에서 다섯을 고르면 <b>같은 것을 다섯 번 사는 일</b>이 ' +
+      '벌어집니다.</div>';
+    if (big.length) {
+      h += '<div class="clusters" style="margin-top:12px">';
+      big.forEach(function (c) {
+        h += '<div class="cl' + (c.n >= 3 ? ' big' : '') + '"><h3>' + c.n +
+          ' 종목이 한 덩이</h3><ul>';
+        c.members.forEach(function (m) {
+          h += '<li>' + esc(m.name) + ' <span class="muted">' + esc(m.ticker) +
+            '</span></li>';
+        });
+        h += '</ul></div>';
+      });
+      h += '</div>';
+    }
+    h += '<div class="note">홀로 선 것 ' + alone + ' 종목. ' + esc(OVL.method || '') + '</div>';
+
+    if ((OVL.hedge || []).length) {
+      h += '<h2 style="margin-top:18px">환헤지가 무엇을 바꾸는가</h2>' +
+        '<div class="sec">같은 지수를 사도 <b>헤지하지 않으면 원/달러가 섞입니다.</b> ' +
+        '본토 ETF 와의 주간 상관으로 그 몫을 봅니다.</div>' +
+        '<div class="scroll"><table style="margin-top:8px"><thead><tr>' +
+        '<th>지수</th><th>헤지 안 함</th><th class="num">ρ</th>' +
+        '<th>헤지</th><th class="num">ρ</th><th class="num">차이</th>' +
+        '<th class="num">관측</th></tr></thead><tbody>';
+      OVL.hedge.forEach(function (x) {
+        h += '<tr><td>' + esc(x.what) + ' (' + esc(x.home) + ')</td>' +
+          '<td>' + esc(x.plain_name) + '</td><td class="num">' + num(x.rho_plain, 3) + '</td>' +
+          '<td>' + esc(x.hedged_name) + '</td><td class="num">' + num(x.rho_hedged, 3) + '</td>' +
+          '<td class="num">' + sgn(x.gap, 3) + '</td>' +
+          '<td class="num">' + x.obs + '</td></tr>';
+      });
+      h += '</tbody></table></div>';
+    }
+    return h + '</div>';
+  }
+
+  /* ── 표 ────────────────────────────────────────────────────── */
+  var COLS = [
+    { k: 'no', t: '#', num: true, get: function (it) { return it.no; } },
+    { k: 'name', t: '이름', get: function (it) { return it.name; } },
+    { k: 'group', t: '구분', get: function (it) { return it.group; } },
+    { k: 'theme', t: '테마', get: function (it) { return it.theme; } },
+    { k: 'close', t: '종가', num: true, get: function (it) { return it.close; } },
+    { k: 'chg', t: '등락', num: true, get: function (it) { return it.change_pct; } },
+    { k: 'score', t: '20일', num: true, get: function (it) { return score(it, 20); } },
+    { k: 'pct', t: '자기%', num: true, get: function (it) { return h20(it).self_pct; } },
+    { k: 't', t: '추세', num: true, get: function (it) { return (it.axes || {}).trend; } },
+    { k: 'm', t: '모멘텀', num: true, get: function (it) { return (it.axes || {}).momentum; } },
+    { k: 's', t: '매물대', num: true, get: function (it) { return (it.axes || {}).supply; } },
+    { k: 'conf', t: '확신', num: true, get: function (it) { return it.conf; } },
+    { k: 'band', t: '신호대', get: function (it) { return (h20(it).plan || {}).band_label; } },
+    { k: 'tier', t: '등급', get: function (it) { return it.tier; } }
+  ];
+
+  function rows() {
+    var xs = (DATA.items || []).slice();
+    if (FILTER !== '전부') {
+      xs = xs.filter(function (x) { return x.group === FILTER; });
+    }
+    var c = COLS.filter(function (x) { return x.k === SORT.k; })[0] || COLS[0];
+    xs.sort(function (a, b) {
+      var x = c.get(a), y = c.get(b);
+      if (x == null && y == null) return a.no - b.no;
+      if (x == null) return 1;            // 값 없는 것은 언제나 아래로
+      if (y == null) return -1;
+      if (typeof x === 'string') return SORT.dir * x.localeCompare(y, 'ko');
+      return SORT.dir * (x - y);
+    });
+    return xs;
+  }
+
+  function tableHtml() {
+    var groups = ['전부'];
+    (DATA.items || []).forEach(function (x) {
+      if (groups.indexOf(x.group) < 0) groups.push(x.group);
+    });
+    var h = '<div class="card"><h2>76 종목 한 판</h2>' +
+      '<div class="sec">머리글을 눌러 줄을 세우고, 줄을 누르면 아래에 자세히 폅니다. ' +
+      '<b>점수는 −100 ~ +100 이며 그 종목 자신의 과거와 견준 값입니다</b> — ' +
+      '종목끼리 곧바로 견주라고 만든 눈금이 아닙니다.</div>' +
+      '<div class="filters">';
+    groups.forEach(function (g) {
+      h += '<button data-g="' + esc(g) + '" class="' + (g === FILTER ? 'on' : '') + '">' +
+        esc(g) + '</button>';
+    });
+    h += '</div><div class="scroll"><table><thead><tr>';
+    COLS.forEach(function (c) {
+      h += '<th data-k="' + c.k + '" class="' + (c.num ? 'num' : '') + '">' + esc(c.t) +
+        (SORT.k === c.k ? (SORT.dir < 0 ? ' ▾' : ' ▴') : '') + '</th>';
+    });
+    h += '</tr></thead><tbody>';
+    rows().forEach(function (it) {
+      var p = h20(it).plan || {};
+      h += '<tr data-tk="' + esc(it.ticker) + '"' +
+        (SEL === it.ticker ? ' class="on"' : '') + '>' +
+        '<td class="num">' + it.no + '</td>' +
+        '<td class="name">' + esc(it.name) + ' <span class="muted">' +
+          esc(it.ticker) + '</span></td>' +
+        '<td class="muted">' + esc(it.group) + '</td>' +
+        '<td class="muted">' + esc(it.theme) + '</td>' +
+        '<td class="num">' + num(it.close, it.close != null && it.close < 1000 ? 2 : 0) + '</td>' +
+        '<td class="num" style="color:' +
+          (it.change_pct > 0 ? 'var(--up)' : it.change_pct < 0 ? 'var(--down)' : 'inherit') +
+          '">' + sgn(it.change_pct, 2) + '</td>' +
+        '<td class="num">' + (score(it, 20) == null ? '—' :
+          sgn(score(it, 20), 1) + ' ' + bar(score(it, 20))) + '</td>' +
+        '<td class="num">' + num(h20(it).self_pct, 0) + '</td>' +
+        '<td class="num">' + sgn((it.axes || {}).trend, 0) + '</td>' +
+        '<td class="num">' + sgn((it.axes || {}).momentum, 0) + '</td>' +
+        '<td class="num">' + sgn((it.axes || {}).supply, 0) + '</td>' +
+        '<td class="num">' + num(it.conf, 0) + '</td>' +
+        '<td>' + (p.band ? '<span class="band b-' + esc(p.band) + '">' +
+          esc(p.band_label || p.band) + '</span>' : '<span class="muted">—</span>') + '</td>' +
+        '<td>' + tierChip(it.tier) + '</td></tr>';
+    });
+    return h + '</tbody></table></div></div>';
+  }
+
+  /* ── 한 종목 자세히 ─────────────────────────────────────────── */
+  function detailHtml(it) {
+    if (!it) return '';
+    var h = '<div class="card"><h2>' + esc(it.name) + ' <span class="muted">' +
+      esc(it.ticker) + (it.symbol_used && it.symbol_used !== it.ticker ?
+        ' · ' + esc(it.symbol_used) : '') + '</span></h2>';
+
+    h += '<div class="sec">' + esc(it.group) + ' · ' + esc(it.theme) +
+      ' · ' + esc(it.exchange || (it.scope === 'KR' ? '한국거래소' : '')) +
+      ' · ' + esc(it.currency || '') +
+      ' · 기준 ' + esc(it.asof) + ' · 일봉 ' + it.sessions + ' 세션' +
+      (it.listed_from ? ' (' + esc(it.listed_from) + ' 부터)' : '') + '</div>';
+
+    if (it.name_source) {
+      h += '<div class="note">원천이 돌려준 이름 — <b>' + esc(it.name_source) +
+        '</b>. 표의 이름과 맞대어 확인한 것입니다.</div>';
+    }
+    if (it.tier !== 'full') {
+      h += '<div class="banner warn">' + esc(it.tier_note || '') + '</div>';
+    }
+    if (it.distribution) {
+      var d = it.distribution;
+      h += '<div class="banner' + (Math.abs(d.drag_1y) >= 5 ? ' warn' : '') + '">' +
+        '<b>분배금 몫</b> — 최근 1년 총수익 ' + sgn(d.total_return_1y, 1) + '% 대 ' +
+        '가격수익 ' + sgn(d.price_return_1y, 1) + '%. 차이 ' + sgn(d.drag_1y, 1) +
+        '%p 가 분배금으로 빠져 <b>가격 차트에는 나타나지 않습니다.</b> ' +
+        '추세·모멘텀 축은 가격만 보므로 그만큼 낮게 읽힙니다.</div>';
+    }
+
+    if (it.tier === 'full') {
+      h += '<div class="hgrid" style="margin-top:14px">';
+      [5, 10, 20, 60].forEach(function (hz) {
+        var hv = (it.horizons || {})[String(hz)] || (it.horizons || {})[hz] || {};
+        var p = hv.plan || {};
+        h += '<div class="hcard"><div class="hh">' + hz + '일</div>';
+        if (hv.score == null) {
+          h += '<div class="muted" style="margin-top:6px">' + esc(hv.note || '—') + '</div></div>';
+          return;
+        }
+        h += '<div style="font-size:22px;font-weight:700;margin:2px 0">' +
+          sgn(hv.score, 1) + '</div>';
+        if (p.band) {
+          h += '<div><span class="band b-' + esc(p.band) + '">' +
+            esc(p.band_label || p.band) + '</span></div>';
+        }
+        h += '<div class="kv"><span class="muted">자기백분위</span><b>' +
+          num(hv.self_pct, 0) + '</b></div>';
+        if (p.entry != null) {
+          h += '<div class="kv"><span class="muted">진입</span><b>' + num(p.entry, 2) + '</b></div>';
+        }
+        if (p.stop != null) {
+          h += '<div class="kv"><span class="muted">손절</span><b>' + num(p.stop, 2) + '</b></div>';
+        }
+        if (p.target != null) {
+          h += '<div class="kv"><span class="muted">목표</span><b>' + num(p.target, 2) + '</b></div>';
+        }
+        h += '</div>';
+      });
+      h += '</div>';
+    }
+
+    var ax = it.axes || {};
+    h += '<h2 style="margin-top:18px">축 넷</h2><div class="scroll"><table><tbody>';
+    [['trend', '추세'], ['momentum', '모멘텀'], ['flow', '자금수급'], ['supply', '매물대']]
+      .forEach(function (p) {
+        h += '<tr><td style="width:90px">' + p[1] + '</td>' +
+          '<td class="num" style="width:70px">' + sgn(ax[p[0]], 1) + '</td>' +
+          '<td>' + bar(ax[p[0]]) + '</td></tr>';
+      });
+    h += '</tbody></table></div>';
+    if ((it.axes_missing || []).length) {
+      h += '<div class="note">셈하지 못한 축 — ' + esc((it.axes_missing || []).join(', ')) +
+        '. <b>0 으로 채우지 않았습니다.</b></div>';
+    }
+
+    var hh = h20(it);
+    if ((hh.reasons || []).length) {
+      h += '<h2 style="margin-top:18px">왜 이 신호인가 <span class="muted">(20일)</span></h2><ul class="sec">';
+      hh.reasons.forEach(function (r) { h += '<li>' + esc(r.text) + '</li>'; });
+      h += '</ul>';
+    }
+    if (it.volume_profile) {
+      var v = it.volume_profile;
+      h += '<div class="note"><b>매물대</b> — 현재가 위에 ' + num(v.above_pct, 0) +
+        '%, 아래에 ' + num(v.below_pct, 0) + '% (최근 ' + v.sessions + '세션 거래대금). ' +
+        '가장 가까운 매물 벽 위 ' + num(v.nearest_up, 2) + ' · 아래 ' +
+        num(v.nearest_dn, 2) + '.</div>';
+    }
+    return h + '</div>';
+  }
+
+  function limitsHtml() {
+    var h = '';
+    if (DATA && DATA.backtest_note) {
+      h += '<div class="banner danger"><b>성적표가 없습니다.</b> ' +
+        esc(DATA.backtest_note) + '</div>';
+    }
+    if (DATA && DATA.bench_note) h += '<div class="note">' + esc(DATA.bench_note) + '</div>';
+    h += '<div class="note"><b>점수는 종목끼리 견주라고 만든 눈금이 아닙니다.</b> ' +
+      '각 종목이 자기 과거와 견준 값이라, 채권 ETF 의 +40 과 반도체 ETF 의 +40 은 ' +
+      '같은 뜻이 아닙니다. 종목끼리 견주려면 같은 성격끼리(겹침 덩이 안에서) 보십시오.</div>';
+    if (DATA && (DATA.excluded_etn || []).length) {
+      h += '<div class="note">표에 있던 ETN ' + DATA.excluded_etn.length +
+        ' 종목(' + DATA.excluded_etn.map(function (x) { return esc(x.ticker); }).join(', ') +
+        ')은 지시대로 뺐습니다.</div>';
+    }
+    return h;
+  }
+
+  function draw() {
+    $('body').innerHTML = overlapHtml() + tableHtml() +
+      detailHtml((DATA.items || []).filter(function (x) { return x.ticker === SEL; })[0]);
+    Array.prototype.forEach.call(document.querySelectorAll('th[data-k]'), function (th) {
+      th.onclick = function () {
+        var k = th.getAttribute('data-k');
+        if (SORT.k === k) SORT.dir = -SORT.dir;
+        else { SORT.k = k; SORT.dir = (k === 'name' || k === 'group' || k === 'theme') ? 1 : -1; }
+        draw();
+      };
+    });
+    Array.prototype.forEach.call(document.querySelectorAll('tbody tr[data-tk]'), function (tr) {
+      tr.onclick = function () {
+        SEL = tr.getAttribute('data-tk');
+        draw();
+        var d = document.querySelectorAll('.card');
+        if (d.length) d[d.length - 1].scrollIntoView({ behavior: 'smooth', block: 'start' });
+      };
+    });
+    Array.prototype.forEach.call(document.querySelectorAll('.filters button'), function (b) {
+      b.onclick = function () { FILTER = b.getAttribute('data-g'); draw(); };
+    });
+    $('limits').innerHTML = limitsHtml();
+  }
+
+  function show(msg) {
+    $('body').innerHTML = '<div class="card"><div class="spin">' + esc(msg) + '</div></div>';
+  }
+
+  /* ── 자료를 어디서 읽는가 ─────────────────────────────────────
+     인터넷이 막힌 업무용 PC 를 위해 자료를 이 파일 안에 심은 판이 따로 있다
+     (scripts/make_etf_offline.py). 갈림은 이 함수 하나뿐이고 그리는 코드는
+     인터넷판과 완전히 같은 것을 쓴다 — 두 벌로 베껴 두면 언젠가 조용히 어긋난다. */
+  function embedded(id) {
+    var el = document.getElementById(id);
+    if (!el) return null;
+    try { return JSON.parse(el.textContent); } catch (e) { return null; }
+  }
+  function loadJson(id, url) {
+    var e = embedded(id);
+    if (e) return Promise.resolve(e);
+    return fetch(url).then(function (r) {
+      if (!r.ok) throw new Error('HTTP ' + r.status);
+      return r.json();
+    });
+  }
+
+  loadJson('overlap-embedded', '../../data/etf/overlap.json')
+    .then(function (d) { OVL = d; if (DATA) draw(); })
+    .catch(function () { OVL = null; });
+
+  loadJson('etf-embedded', '../../data/etf/signals.json')
+    .then(function (d) {
+      DATA = d;
+      var s = d.summary || {};
+      $('asof').textContent = '산출 ' + (d.generated_at_kst || '') +
+        (embedded('etf-embedded') ? ' · 내장 스냅샷' : '');
+      $('cover').innerHTML =
+        '온전 ' + s.full + ' · 부분 ' + s.partial + ' · 짧음 ' + s.short +
+        (s.missing ? ' · 못받음 ' + s.missing : '') +
+        ' <span class="muted">(ETN ' + (d.excluded_etn || []).length + '종 제외)</span>';
+      $('disclaimer').textContent = d.disclaimer || '';
+      draw();
+    })
+    .catch(function (e) {
+      show('ETF 신호 자료를 읽지 못했습니다 (' + e.message + '). ' +
+           '저장소 뿌리에서 python3 -m http.server 8000 으로 띄운 뒤 ' +
+           'http://localhost:8000/docs/etf/ 로 여십시오. 파일을 두 번 눌러 열면 ' +
+           '브라우저 보안정책이 자료 읽기를 막습니다 — 자료를 심은 한 장짜리 판을 ' +
+           '쓰시려면 scripts/make_etf_offline.py 를 돌리십시오.');
+    });
+})();
+</script>
+</body>
+</html>

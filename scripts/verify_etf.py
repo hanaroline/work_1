@@ -107,9 +107,18 @@ def verify_names(px):
 
         if rec['scope'] == 'OV':
             # **유형이 ETF 여야 한다.** 야후의 GOLD 는 금광 회사 주식이다.
-            check((rec.get('instrument_type') or '').upper() == 'ETF',
+            # 예외는 etf_list.TYPE_EXCEPTIONS 에 심볼까지 못박힌 것만이며, 그때도
+            # 경고로 남겨 사람이 본다 — 조용히 통과시키지 않는다.
+            ty = (rec.get('instrument_type') or '').upper()
+            ex = L.TYPE_EXCEPTIONS.get(tk)
+            allowed = bool(ex and ex['symbol'] == rec.get('symbol_used')
+                           and ex['type'].upper() == ty)
+            check(ty == 'ETF' or allowed,
                   '%s(%s) 가 ETF 가 아닙니다 — 야후 유형 %r, 심볼 %s'
                   % (tk, it['name'], rec.get('instrument_type'), rec.get('symbol_used')))
+            if allowed:
+                warn('%s 는 야후 유형이 %s 인데 예외로 통과시켰습니다 — %s'
+                     % (tk, ty, ex['why']))
             got = rec.get('name_source') or ''
             hits = [w for w in it['expect'] if w.lower() in got.lower()]
             check(bool(hits),
@@ -398,6 +407,20 @@ def verify_injection(sg, px):
                 return True
         return False
     cases.append(('종가를 흔듦', c7))
+
+    # 8) **예외가 예외로만 쓰이는가** — 같은 티커라도 심볼이 맨 글자 GOLD 로 오면
+    #    바릭이므로 반드시 걸려야 한다. 예외를 둔 자리는 이렇게 되물어 둔다.
+    def c8():
+        p = copy.deepcopy(px)
+        for tk, ex in L.TYPE_EXCEPTIONS.items():
+            if tk not in p['items']:
+                continue
+            p['items'][tk]['symbol_used'] = tk          # .AX 를 뗀 맨 글자
+            p['items'][tk]['instrument_type'] = ex['type']
+            verify_names(p)
+            return True
+        return False
+    cases.append(('예외 티커가 맨 글자로 오면', c8))
 
     miss, skipped = [], []
     for label, fn in cases:
