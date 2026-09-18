@@ -284,18 +284,60 @@ export function mapPages(pages) {
   let bodyFrom = null, bodyBy = null;
   if (at.part2 && (!at.part1 || at.part1 < at.part2)) { bodyFrom = at.part2 - 1; bodyBy = 'part2'; }
 
-  /* ③ 본문 자리 — 제2부부터 쪽 전체에서 찾고 첫 쪽을 쓴다 */
+  /* ③ 본문 자리 — 제2부부터 찾되, **절 차례를 조건으로 건다.**
+   *
+   * ★ 첫 걸림을 그냥 쓰면 안 된다 ★ 전량 2,815종목에서 절반(1,445)이 차례가
+   * 뒤집혀 있었다.
+   *
+   *     투자목적 p.12 · 투자대상 p.12 · 투자전략 p.15 · 투자위험 p.16
+   *     매입·환매 p.12   ← 투자전략보다 앞이다
+   *
+   * 제2부 앞부분(2~6쪽째)에 「자세한 내용은 13. 보수 및 수수료에 관한 사항을
+   * 참고」 같은 **상호참조**가 있고, 그것이 진짜 절 제목보다 먼저 걸린다.
+   * 제2부를 찾을 때 애먹은 바로 그 병인데 본문 자리에는 방어가 없었다.
+   * 잘못 걸린 자리는 보수 880 · 매입환매 641 · 투자전략 261 건이었다.
+   *
+   * 고치는 길은 문서가 이미 알려 준다 — 금융투자협회 표준 서식은 절 차례를
+   * 정해 놓았다. 투자목적 → 투자대상 → 투자전략 → 투자위험 → 매입환매 →
+   * 보수 → 과세. 번호 붙은 절은 번호 순서대로 인쇄되므로 쪽 번호도 이 차례대로
+   * 늘어나야 한다. 그래서 각 자리는 **앞 자리보다 뒤에 있는 첫 걸림**을 고른다.
+   * 상호참조는 대개 진짜 절보다 앞에 있으므로 자연히 걸러진다.
+   *
+   * 운용전문인력은 이 사슬에 넣지 않는다. 문서상 투자목적보다 앞(5절)이라
+   * 사슬의 첫 고리가 되는데, 58% 만 잡히는 자리라 그것이 잘못 걸리면 뒤의
+   * 일곱 자리가 통째로 밀린다. 보조 자리 하나를 살리려고 창구가 짚는 일곱을
+   * 걸 수는 없다. 따로 찾는다.
+   */
   if (bodyFrom !== null) {
-    for (const [key, zone, re] of ANCHORS) {
-      if (zone !== 'body') continue;
-      const hits = [];
+    const hitsOf = (re) => {
+      const h = [];
       for (let i = bodyFrom; i < pages.length; i++) {
         if (toc.has(i)) continue;
-        if (re.test(pages[i])) hits.push(i + 1);
+        if (re.test(pages[i])) h.push(i + 1);
       }
-      if (!hits.length) continue;
-      at[key] = hits[0];
-      how[key] = bodyBy + (hits.length > 1 ? '(+' + (hits.length - 1) + ')' : '');
+      return h;
+    };
+    const mark = (n, extra) => bodyBy + (extra ? '↓' + extra : '') + (n > 1 ? '(+' + (n - 1) + ')' : '');
+
+    /* 사슬에 넣지 않는 본문 자리 (지금은 운용전문인력뿐) */
+    for (const [key, zone, re] of ANCHORS) {
+      if (zone !== 'body' || BODY_SEQ.indexOf(key) >= 0) continue;
+      const h = hitsOf(re);
+      if (h.length) { at[key] = h[0]; how[key] = mark(h.length, 0); }
+    }
+
+    /* 차례를 지키며 고른다 */
+    let floor = 0;
+    for (const key of BODY_SEQ) {
+      const a = ANCHORS.find((x) => x[0] === key);
+      if (!a) continue;
+      const h = hitsOf(a[2]);
+      const before = h.filter((p) => p < floor).length;
+      const rest = h.slice(before);
+      if (!rest.length) continue;          /* 앞 자리보다 뒤에 없으면 비운다 */
+      at[key] = rest[0];
+      how[key] = mark(rest.length, before);
+      floor = rest[0];
     }
   }
 
@@ -316,6 +358,17 @@ export function checkOrder(at) {
   /* 본문 자리는 모두 제2부 뒤에 있어야 한다 */
   if (at.part2) {
     for (const k of BODY_SEQ) if (at[k] && at[k] < at.part2) return { bad: true, why: k + ' 가 제2부보다 앞' };
+  }
+  /* 본문 자리끼리도 서식이 정한 차례를 지켜야 한다.
+     ★ 이 검사가 없어서 절반이 뒤집힌 지도를 통과시켰다 ★ 「제2부보다 뒤인가」 만
+     보고 자리끼리의 차례는 안 봤다. 상호참조를 진짜 절로 잘못 짚으면 제2부보다는
+     뒤이면서 앞 자리보다는 앞인 값이 나오는데, 그게 정확히 그 꼴이었다. */
+  let prev = 0, prevKey = '';
+  for (const k of BODY_SEQ) {
+    const p = at[k];
+    if (!p) continue;
+    if (prev && p < prev) return { bad: true, why: k + ' 가 ' + prevKey + ' 보다 앞 (p.' + p + ' < p.' + prev + ')' };
+    prev = p; prevKey = k;
   }
   /* 앞머리 차례 — 요약 ≤ 제1부 < 제2부 */
   if (at.summary && at.part1 && at.summary > at.part1) return { bad: true, why: '요약정보가 제1부보다 뒤' };
