@@ -166,6 +166,41 @@
   summary { cursor: pointer; font-size: 13px; color: var(--text-secondary); }
   code { font-size: 12px; background: rgba(127,127,127,.12); padding: 1px 5px; border-radius: 4px; }
   @media (max-width: 640px) { .plans { grid-template-columns: 1fr; } }
+
+  /* ── 인쇄 · PDF 저장 ─────────────────────────────────────────────
+     **인쇄물은 화면이 아니다.** 어두운 바탕과 옅은 히트맵 색은 종이에서
+     뭉개지거나 토너만 먹는다. 그래서 인쇄할 때는 늘 밝은 판으로 돌리고,
+     칸 색은 남기되 테두리를 세워 흑백 인쇄에서도 자리가 보이게 한다.
+
+     **보이는 탭 하나만 찍는다.** 네 시장을 다 펼치면 종이가 네 배가 되는데,
+     탭을 눌러 고른 시장을 보다가 인쇄를 누른 사람이 원한 것은 그 시장이다. */
+  .printonly { display: none; }
+  @media print {
+    @page { margin: 12mm; }
+    :root, :root[data-theme="dark"] {
+      --surface-1: #fff; --page: #fff;
+      --text-primary: #000; --text-secondary: #333; --text-muted: #666;
+      --grid: #ccc; --border: #bbb; --zero: #f2f2f2;
+      --pos: 180,50,50; --neg: 40,100,180;
+      --up: #b03030; --down: #2060a0; --warn: #8a5500; --danger: #a02020;
+      --shadow: none;
+    }
+    body { background: #fff; color: #000; }
+    .wrap { max-width: none; padding: 0; }
+    #theme, #printBtn, #csvBtn, .tabs { display: none !important; }
+    .printonly { display: block; }
+    .card {
+      box-shadow: none; border-color: #bbb; break-inside: avoid;
+      margin-top: 10px; padding: 12px 14px;
+    }
+    .plan, .warnbox, .dangerbox, table { break-inside: avoid; }
+    .plans { grid-template-columns: repeat(2, 1fr); }
+    .hm td.cell { border: 1px solid #ddd; }
+    .tblwrap { overflow: visible; }
+    a { color: #000; text-decoration: none; }
+    /* 주소를 종이에 남긴다 — 인쇄물만 보고 원본을 찾을 수 있어야 한다 */
+    #srcline::after { content: " · " attr(data-url); color: #666; }
+  }
 </style>
 </head>
 <body>
@@ -174,8 +209,12 @@
     <h1>전략빌더 10종 — 매매 타이밍</h1>
     <span class="sub" id="asof"></span>
     <span style="flex:1"></span>
+    <button id="csvBtn" title="보고 있는 시장의 자리를 CSV 로 저장">⤓ CSV</button>
+    <button id="printBtn" title="인쇄 · PDF 저장 (보고 있는 시장만)">🖨 인쇄</button>
     <button id="theme" title="라이트/다크">◐</button>
   </header>
+  <p class="printonly sec" id="srcline" style="margin:6px 0 0"
+     data-url="docs/kis-timing/"><b id="printMarket"></b></p>
   <p class="sub" style="margin:6px 0 0">
     한국투자증권 오픈API 공식 저장소
     <a href="https://github.com/koreainvestment/open-trading-api">open-trading-api</a>
@@ -296,6 +335,59 @@
   }
 
   /* ── 오늘의 자리 ──────────────────────────────────────────────── */
+  /* ── 인쇄 · 저장 ──────────────────────────────────────────────── */
+
+  $('printBtn').onclick = function () { window.print(); };
+
+  /* CSV 로 내려받기.
+
+     **BOM 을 붙인다.** 없으면 엑셀이 CP949 로 읽어 종목명이 전부 깨진다.
+
+     **종목코드와 심볼을 함께 낸다.** 엑셀은 CSV 의 `000100` 을 숫자로 읽어
+     앞자리 0 을 지운다 — 따옴표로 싸도 마찬가지다. 그러면 005930 이 5930 이
+     되는데 그건 다른 종목이다. 이걸 CSV 안에서 막는 길은 `="000100"` 같은
+     엑셀 전용 수식뿐이고, 그러면 파이썬·구글시트에서 깨진다.
+     그래서 **이 저장소가 이미 쓰는 심볼**(A463250 / 000100.KS / AAPL)을 한 열
+     더 낸다. 심볼은 순수한 숫자가 아니라 엑셀이 건드리지 않으므로, 코드 열이
+     망가져도 어느 종목인지는 언제나 남는다. */
+  function csvCell(v) {
+    if (v == null) return '';
+    var s = String(v);
+    return /[",\n]/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s;
+  }
+
+  function csvOf(m) {
+    var rows = [['구분', '종목', '심볼', '종목코드', '기준일', '종가', '등락(%)',
+                 '손절 기준', '비중 힌트(%)', '신호 전략']];
+    [['합의 매수', 'buy', 'buy_hits', 'other_buy'],
+     ['합의 청산', 'sell', 'sell_hits', 'other_sell'],
+     ['관찰 매수', 'watch_buy', 'buy_hits', 'other_buy'],
+     ['관찰 청산', 'watch_sell', 'sell_hits', 'other_sell']].forEach(function (g) {
+      (m[g[1]] || []).forEach(function (p) {
+        rows.push([g[0], p.name, p.symbol, p.code, p.asof, p.close, p.change_pct,
+                   p.stop_ref, p.weight_hint,
+                   p[g[2]].concat(p[g[3]] || []).map(nameOf).join(' + ')]);
+      });
+    });
+    return rows.map(function (r) { return r.map(csvCell).join(','); }).join('\r\n');
+  }
+
+  $('csvBtn').onclick = function () {
+    var m = DOC.markets[TAB];
+    if (!m) return;
+    var blob = new Blob(['﻿' + csvOf(m)], { type: 'text/csv;charset=utf-8' });
+    var a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    /* **파일 이름은 아스키로 둔다.** 한글 이름을 주면 브라우저·환경에 따라
+       download 속성이 통째로 무시되고 `download` 라는 이름으로 떨어진다
+       (헤드리스 크로미움에서 실제로 그랬다). 시장 키는 원래 아스키다. */
+    a.download = 'kis-timing_' + TAB + '_' + m.asof + '.csv';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    setTimeout(function () { URL.revokeObjectURL(a.href); }, 1000);
+  };
+
   /* 시장을 늘어놓는 차례. **자료가 정한다**(latest.json 의 view_order) — 화면과
      검사기가 각자 차례를 갖고 있으면 언젠가 갈라진다. 자료에 없으면 있는 대로 둔다. */
   function orderedKeys() {
@@ -441,6 +533,9 @@
       b.onclick = function () { TAB = b.getAttribute('data-mk'); renderTabs(); renderToday(); };
     });
     $('tabWhy').innerHTML = esc(DOC.view_order_why || '');
+    // 인쇄물에는 탭이 안 나오므로, 어느 시장을 찍은 것인지 머리에 적어 둔다.
+    var m = DOC.markets[TAB];
+    $('printMarket').textContent = m ? (m.label + ' · 기준일 ' + m.asof) : '';
   }
 
   /* ── 히트맵 ───────────────────────────────────────────────────── */

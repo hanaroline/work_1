@@ -21,14 +21,18 @@
  *   마. 화면의 매수 종목·손절가가 **자료의 값과 같은가** (화면이 옮겨 찍는지)
  *   바. 합의 K 표와 전략 명세 10줄이 섰는가
  *   사. 390px 폭에서 가로 스크롤이 없는가
+ *   자. 저장(CSV)이 정말 내려오고 BOM·머리글·줄 수가 자료와 같은가, 그리고
+ *       **심볼이 순수 숫자가 아닌가**(엑셀이 앞자리 0 을 지우는 자리다)
+ *   차. 인쇄판에서 탭·단추가 숨고 바탕이 희며, 어느 시장을 찍은 것인지 적히는가
  *   아. 한 파일 판이 file:// 로 열려 그려지는가 — 그리고 **0바이트도 밖으로
  *       나가지 않는가**(--offline 을 줄 때만)
  *
  * 나가는 값이 0 이 아니면 어긋난 자리를 모두 적고 끝낸다.
  */
 import { chromium } from 'playwright';
-import { readFileSync } from 'node:fs';
-import { resolve } from 'node:path';
+import { readFileSync, unlinkSync } from 'node:fs';
+import { resolve, join } from 'node:path';
+import { tmpdir } from 'node:os';
 
 const arg = (k, d) => {
   const i = process.argv.indexOf(k);
@@ -150,6 +154,58 @@ const browser = await chromium.launch();
     () => document.querySelectorAll('#breakoutFail tbody tr').length);
   check(bf === MKS.length, `돌파 실패 표 ${MKS.length} 줄`, `${bf} 줄`);
 
+  await p.close();
+}
+
+// ── 인쇄 · 저장 ────────────────────────────────────────────────────
+{
+  const p = await open(browser, { viewport: { width: 1240, height: 1000 } }, '인쇄·저장');
+  const mk = MKS[0];
+  const m = D.markets[mk];
+
+  // 저장 — 파일이 정말 내려오는가, 머리글과 줄 수가 자료와 같은가.
+  const dl = p.waitForEvent('download');
+  await p.click('#csvBtn');
+  const d = await dl;
+  check(d.suggestedFilename() === `kis-timing_${mk}_${m.asof}.csv`,
+    'CSV 파일 이름', d.suggestedFilename());
+
+  const path = join(tmpdir(), `kt-check-${process.pid}.csv`);
+  await d.saveAs(path);
+  const csv = readFileSync(path, 'utf-8');
+  unlinkSync(path);
+
+  // 엑셀이 한글을 깨뜨리지 않으려면 BOM 이 있어야 한다.
+  check(csv.charCodeAt(0) === 0xFEFF, 'CSV 에 BOM 이 있음');
+  const lines = csv.replace(/^﻿/, '').split('\r\n').filter(Boolean);
+  const want = m.buy.length + m.sell.length + m.watch_buy.length + m.watch_sell.length;
+  check(lines.length === want + 1, `CSV 줄 수 ${want + 1}`, `${lines.length} 줄`);
+  check(/^구분,종목,심볼,종목코드,/.test(lines[0]), 'CSV 머리글', lines[0].slice(0, 40));
+
+  // **앞자리 0 이 살아 있는가.** 심볼은 순수 숫자가 아니어야 엑셀이 안 건드린다.
+  const head = lines[0].split(',');
+  const iSym = head.indexOf('심볼');
+  const numericSym = lines.slice(1)
+    .map((l) => l.split(',')[iSym]).filter((s) => /^\d+$/.test(s || ''));
+  check(numericSym.length === 0, 'CSV 심볼이 순수 숫자가 아님(엑셀이 0 을 안 지움)',
+    numericSym.slice(0, 3).join(','));
+
+  // 인쇄 — 종이에 나가면 안 되는 것이 숨는가, 바탕이 흰가.
+  await p.emulateMedia({ media: 'print' });
+  await p.waitForTimeout(250);
+  const hidden = await p.evaluate(() => ({
+    tabs: getComputedStyle(document.querySelector('.tabs')).display,
+    btn: getComputedStyle(document.getElementById('printBtn')).display,
+    bg: getComputedStyle(document.body).backgroundColor,
+    src: (document.getElementById('srcline').textContent || '').trim(),
+    srcShown: getComputedStyle(document.getElementById('srcline')).display,
+  }));
+  check(hidden.tabs === 'none', '인쇄판에서 탭이 숨음', hidden.tabs);
+  check(hidden.btn === 'none', '인쇄판에서 단추가 숨음', hidden.btn);
+  check(hidden.bg === 'rgb(255, 255, 255)', '인쇄판 바탕이 흼', hidden.bg);
+  check(hidden.srcShown !== 'none' && hidden.src.indexOf(m.label) >= 0,
+    '인쇄판 머리말에 시장·기준일', hidden.src);
+  await p.emulateMedia({ media: 'screen' });
   await p.close();
 }
 
