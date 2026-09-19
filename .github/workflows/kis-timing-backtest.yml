@@ -1,0 +1,110 @@
+name: 매매 타이밍 백테스트 (전략빌더 10종)
+
+# **예약으로 돌리지 않는다.** signals-backtest.yml 이 세워 둔 규율을 그대로 따른다 —
+# 성적이 날마다 조용히 바뀌면, 어제 「+3.85%p」를 보고 판단한 사람과 오늘
+# 「+3.11%p」를 보는 사람이 서로 다른 자료를 쓰게 된다.
+#
+# 여기에는 까닭이 하나 더 있다. **이 성적표가 합의 멤버를 고른다.** 학습·검증 두
+# 구간 모두 초과수익이 양수인 전략만 남기는데, 봉이 하루 자랄 때마다 그 판정이
+# 뒤집히면 **오늘 산 종목의 근거가 내일 사라진다.** 전략을 고치거나 비용 가정을
+# 바꿨을 때만 손으로 돌린다.
+#
+# 40초~2분쯤 걸린다(265종목 × 전략 9 × 학습/검증/전구간 3벌 + 합의 K 3단).
+
+on:
+  workflow_dispatch:
+
+  # 전략이나 비용 가정을 고치면 성적도 다시 재야 한다. PR 에서는 **재기만 하고
+  # 커밋하지 않는다** — 성적표를 언제 갈아 끼울지는 사람이 정한다.
+  pull_request:
+    paths:
+      - 'scripts/kis_strategy_lib.py'
+      - 'scripts/kis_timing_backtest.py'
+      - 'scripts/kis_timing_data.py'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: kis-timing-backtest
+  cancel-in-progress: true
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      # refspec 을 손으로 적는 까닭은 kis-timing.yml 의 같은 단계 주석과 같다.
+      - name: 미국 주식 일봉 가지 받기
+        run: |
+          for i in 1 2 3 4; do
+            if git fetch --depth 1 origin \
+                 '+refs/heads/us100-data:refs/remotes/origin/us100-data'; then
+              git rev-parse --verify origin/us100-data >/dev/null
+              echo "받음 (시도 $i)"; exit 0
+            fi
+            echo "실패 — 다시 시도한다 ($i/4)"; sleep $((i * i * 2))
+          done
+          echo "::error::us100-data 가지를 받지 못했습니다"
+          exit 1
+
+      - name: 성적표를 다시 잰다
+        run: |
+          python3 scripts/kis_timing_backtest.py 2>&1 | tee /tmp/bt.txt
+          exit ${PIPESTATUS[0]}
+
+      - name: 그 성적표로 오늘의 세팅을 내고 검산한다
+        # 성적표만 갈아 끼우고 세팅을 그대로 두면 **화면의 멤버와 성적이 어긋난다.**
+        # 둘은 한 벌이라 함께 낸다.
+        run: |
+          python3 scripts/build_kis_timing.py
+          python3 scripts/verify_kis_timing.py | tee /tmp/verify-kis.txt
+          exit ${PIPESTATUS[0]}
+
+      - name: 요약
+        if: always()
+        run: |
+          {
+            echo '### 전략별 성적 (전 구간 │ 학습 │ 검증)'
+            echo '```'
+            grep -E '^\[|초과|합의' /tmp/bt.txt || cat /tmp/bt.txt
+            echo '```'
+            echo '### 재검산'
+            echo '```'
+            cat /tmp/verify-kis.txt 2>/dev/null || echo '(돌지 않음)'
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      # PR 에서는 커밋하지 않는다 — 재 보기만 하고, 갈아 끼울지는 사람이 정한다.
+      - name: 커밋 (단추로 돌렸을 때만)
+        if: github.event_name == 'workflow_dispatch'
+        run: |
+          git config user.name  'github-actions[bot]'
+          git config user.email 'github-actions[bot]@users.noreply.github.com'
+          git add data/kis_timing
+          if git diff --staged --quiet; then
+            echo "변경 없음"
+            exit 0
+          fi
+          git commit -m "매매 타이밍 성적표 갱신 $(TZ=Asia/Seoul date '+%Y-%m-%d %H:%M KST')"
+
+          for i in 1 2 3 4 5; do
+            if git push; then
+              echo "밀어 넣음 (시도 $i)"; exit 0
+            fi
+            echo "거절됨 — 되받아 다시 시도한다 ($i/5)"
+            if ! git pull --rebase --no-edit origin main; then
+              git rebase --abort || true
+              echo "::error::되받기 충돌 — 손으로 확인하십시오"
+              exit 1
+            fi
+            sleep $((i * 5))
+          done
+          echo "::error::다섯 번 밀어 봤지만 모두 거절됐습니다"
+          exit 1
