@@ -28,6 +28,7 @@ from datetime import datetime
 
 import proposal_lib as P
 import proposal_exposure as EXP
+import proposal_metrics as MET
 
 ROOT = P.ROOT
 OUT = os.path.join(ROOT, "proposal.html")
@@ -44,7 +45,15 @@ HORIZON_BUCKETS = [(1, "1년 이내"), (3, "3년"), (5, "5년"), (10, "5년 초�
 
 
 def trim(p):
-    """화면이 쓰는 칸만 남긴다."""
+    """화면이 쓰는 칸만 남긴다.
+
+    **왜 이 상품인지도 함께 싣는다.** 화면은 상품을 바꿔 끼울 수 있으므로,
+    기본 다섯이 아닌 것이 표에 올라와도 고른 까닭이 보여야 한다.
+      sc  위험조정 점수(0~1)        wy  근거 한 줄        tg  측정등급(1/2/3)
+      my  가장 긴 창이 몇 해인지    mc  그 창의 연평균    mv/md 변동성·최대낙폭
+    과거 1 년만 싣던 것을 이것으로 바꾼다 — 1 해는 너무 짧아 운이 실적처럼
+    보이고, 국내ETF 는 그 1 해조차 없어 「—」가 줄줄이 찍혔다.
+    """
     out = {"n": p.get("name"), "c": p.get("code"), "k": p.get("kind"),
            "t": p.get("type") or p.get("assetClass"),
            "co": p.get("company"), "s": p.get("size"),
@@ -54,7 +63,15 @@ def trim(p):
            "as": p.get("asOf"),
            # **노출을 함께 싣는다.** 화면에서 상품을 바꾸면 도넛의 「실제 노출」도
            # 따라 바뀌어야 하므로, 자산군 이름이 아니라 이 값으로 셈한다.
-           "e": p.get("노출")}
+           "e": p.get("노출"),
+           "sc": round(p["점수"], 4) if p.get("점수") is not None else None,
+           "wy": p.get("점수근거"), "tg": p.get("측정등급")}
+    years, w = MET.longest(p.get("지표") or {})
+    if w:
+        out["my"] = years
+        out["mc"] = round(w["cagr"], 2) if w.get("cagr") is not None else None
+        out["mv"] = round(w["vol"], 2) if w.get("vol") is not None else None
+        out["md"] = round(w["mdd"], 2) if w.get("mdd") is not None else None
     if p.get("distTtmRate") is not None:
         out["d"] = p["distTtmRate"]
     if p.get("flags"):
@@ -84,8 +101,8 @@ def build_data():
         prods[cls] = [trim(p) for p in P.pick_products(
             u["상품"], cls, PER_CLASS or 10 ** 9)]
         # **처음 담기는 다섯은 따로 정한다.** 전체 목록은 n 이 커서 집중·중복
-        # 상한이 걸리지 않은 규모 순이다. 그 앞에서 다섯을 잘라 쓰면 규칙을
-        # 거치지 않은 옛날 다섯(반도체 넷, 같은 지수 둘)이 그대로 나온다.
+        # 상한이 끝내 다 풀린 순수 점수 순이다. 그 앞에서 다섯을 잘라 쓰면
+        # 상한을 거치지 않은 다섯(같은 지수 둘, 반도체 넷)이 그대로 나온다.
         picked[cls] = [(p.get("code") or p.get("name"))
                        for p in P.pick_products(u["상품"], cls, 5)]
 
@@ -202,6 +219,24 @@ td.na{color:var(--muted2)}
 .total td{background:#D7D7D7;font-weight:700}
 .tbl-wrap{overflow-x:auto}
 
+/* 고른 까닭 — 상품 줄 바로 아래에 붙는 한 줄. 표를 넓히지 않으려고 칸을
+   늘리는 대신 줄을 하나 더 둔다(칸이 열이면 인쇄가 오른쪽에서 잘린다). */
+tr.why td{background:var(--subtle);border-top:0;color:var(--muted);
+  font-size:14px;padding:6px 12px 9px}
+tr.why:hover td,tbody tr.why:hover{background:var(--subtle)}
+tr.why .lbl{display:inline-block;min-width:62px;color:var(--muted2);font-size:12px;
+  letter-spacing:.02em;margin-right:6px}
+tr.why strong{color:var(--ink);font-weight:700}
+tr.why .score{float:right;color:var(--muted2);font-variant-numeric:tabular-nums}
+/* 몇 해를 잰 값인지 숫자 옆에 작게. 「연평균 21.5%%」만 적으면 그것이 1 해인지
+   5 해인지 알 수 없는데, 그 둘은 무게가 전혀 다르다. */
+.win{display:inline-block;margin-left:4px;color:var(--muted2);font-size:12px}
+.tier{display:inline-block;margin-left:6px;padding:1px 6px;border-radius:9px;
+  font-size:11px;font-weight:700;white-space:nowrap;vertical-align:1px}
+.tier.t1{background:#FDEBD8;color:#8A4B00}
+.tier.t2{background:#E8EEF6;color:#2A4E7E}
+.tier.t3{background:#EFEFEF;color:#6B6B6B}
+
 /* 한눈에 보는 판 — 도넛 + 묶음 요약 */
 .overview{display:grid;grid-template-columns:320px 1fr;gap:28px;align-items:start;
   margin-top:var(--space-block)}
@@ -291,6 +326,11 @@ html[lang="en"] [data-ko]{display:none}
   .groups{grid-template-columns:repeat(2,1fr)}
   .note{padding:6pt 10pt;margin:8pt 0;font-size:9pt}
   .caption{font-size:8pt}
+  /* 고른 까닭은 인쇄물에도 남긴다 — 고객이 들고 가는 것은 이 종이다. */
+  tr.why td{font-size:7.5pt;padding:2pt 5pt 4pt;background:#F7F8FA}
+  tr.why .lbl{min-width:0}
+  .tier{font-size:6.5pt;padding:0 3pt}
+  .win{font-size:6.5pt}
   .wIn{border:0;background:#fff;color:#000;padding:0;width:auto;font-weight:600;
     -webkit-appearance:none;appearance:none}
   /* 인쇄물에서는 입력칸이 아니라 숫자다. % 가 없으면 「5.0」이 무엇인지 모른다. */
@@ -474,9 +514,21 @@ def render(data, u):
   <section class="section">
     <div class="section-rule"></div>
     <h2 class="section-title"><span data-ko>3. 제안 상품</span><span data-en>3. Suggested products</span></h2>
-    <p class="caption"><span data-ko>규모와 보수로 고릅니다. 수익률 순으로 고르지 않습니다 —
-      지난해 제일 많이 오른 것을 권하는 습관이 고객에게 가장 비쌉니다.</span>
-      <span data-en>Ranked by size and fee, not by past return.</span></p>
+    <p class="caption"><span data-ko><strong>여러 해의 위험조정 성과로 고릅니다.</strong>
+      1·3·5 해의 연평균 수익률, 연변동성, 최대낙폭, 보수, 그리고 창이 바뀌어도
+      성과가 유지되는지를 함께 보아 점수를 냅니다. 지난해 수익률 순으로도,
+      규모 순으로도 고르지 않습니다 — 규모는 문턱일 뿐입니다.</span>
+      <span data-en>Ranked by multi-year risk-adjusted score, not by past return or size.</span></p>
+    <div class="note"><span data-ko><strong>「고른 까닭」은 실제로 잰 값입니다.</strong>
+      상품 이름 옆의 꼬리표가 무엇을 쟀는지 말합니다 —
+      <span class="tier t1">다년 실측</span> 5·3·1 해를 모두 재어 견준 것,
+      <span class="tier t2">1해 실측</span> 1 해치 시세만 있어 다년 비교를 못 한 것,
+      <span class="tier t3">미측정</span> 시세가 없어 변동성·낙폭을 아예 못 잰 것(펀드).
+      <strong>잰 상품이 넉넉하면 미측정 상품은 후보에서 뺍니다</strong> —
+      수익률만 있고 위험이 없는 것을 위에 올리면 그것이 바로 수익률 추종입니다.
+      적힌 수치는 모두 지나간 실적이며 미래 수익률이 아닙니다.</span>
+      <span data-en>Tags state what was measured: multi-year, one year, or unmeasurable
+      (funds, whose source gives only seven trading days).</span></div>
     <div id="products"></div>
   </section>
 
@@ -552,6 +604,18 @@ const size = v => {
   if(v >= 1e8)  return (v/1e8).toLocaleString(undefined,{maximumFractionDigits:0})+'억원';
   return Math.round(v).toLocaleString()+'원';
 };
+// 근거 문구는 파이썬이 만든 것이고 「**…**」로 힘줌을 표시한다. 상품 이름이
+// 섞이므로 태그를 먼저 죽이고 나서 힘줌만 되살린다.
+const esc = s => String(s==null?'':s)
+  .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+const md = s => esc(s).replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+// 얼마나 잰 것인지 — 고객이 「연평균 3.4%%」와 「과거 1해 152%%」를 같은
+// 무게로 읽으면 안 된다. 셋째 등급은 시세가 없어 위험을 아예 못 잰 것이다.
+const TIER = {1:['다년 실측','5·3·1해를 모두 재어 견주었습니다'],
+              2:['1해 실측','1 해치 시세만 있어 다년 비교를 못 했습니다'],
+              3:['미측정','시세가 없어 변동성·낙폭을 못 쟀습니다 — 원천의 1해 수익률과 보수만 봅니다']};
+const tier = p => { const t = TIER[p.tg]; return t
+  ? `<span class="tier t${p.tg}" title="${t[1]}">${t[0]}</span>` : ''; };
 
 function fillSelects(){
   $('#yrs').innerHTML = D.horizons.map(h=>`<option value="${h.y}">${h.label}</option>`).join('');
@@ -822,23 +886,27 @@ function render(){
     const x = w[c]||0;
     const isStock = (c==='국내주식'||c==='해외주식');
     const caveat = isStock
-      ? `<p class="caption"><strong>시가총액 상위 종목입니다 — 종목 추천이 아닙니다.</strong>
-         개별 종목 선정은 별도 상담 사항이며, 과거 1년은 지나간 실적일 뿐입니다.</p>` : '';
+      ? `<p class="caption"><strong>여러 해의 위험조정 성과로 추린 것이며, 종목 추천이 아닙니다.</strong>
+         개별 종목 선정은 별도 상담 사항입니다. 적힌 연평균·변동성·최대낙폭은
+         모두 <strong>지나간 실적</strong>이고, 앞으로도 그러리라는 뜻이 아닙니다.</p>` : '';
     const each = chosen.length ? Math.round(amt*x/100/chosen.length) : 0;
     const body = chosen.length ? `
       <div class="tbl-wrap"><table><thead><tr><th>상품</th><th>유형</th><th>운용/발행</th>
-      <th class=num>규모</th><th class=num>과거 1년</th><th class=num>변동성</th><th class=num>보수</th>
+      <th class=num>연평균</th><th class=num>변동성</th><th class=num>최대낙폭</th><th class=num>보수</th>
       <th class=num>배분액</th><th class="noprint"></th></tr></thead><tbody>${chosen.map(p=>`<tr>
-        <td>${p.n||p.c||''}</td><td>${p.t||'—'}</td><td>${p.co||'—'}</td>
-        <td class="num${p.s==null?' na':''}">${size(p.s)}</td>
-        <td class="num${p.r==null?' na':''}">${p.r==null?'—':fmt(p.r)+'%%'}</td>
-        <td class="num${p.v==null?' na':''}">${p.v==null?'—':fmt(p.v)+'%%'}</td>
+        <td>${p.n||p.c||''} ${tier(p)}</td><td>${p.t||'—'}</td><td>${p.co||'—'}</td>
+        <td class="num${p.mc==null?' na':''}">${p.mc==null?'—':
+          fmt(p.mc)+'%%<span class="win">'+p.my+'해</span>'}</td>
+        <td class="num${p.mv==null?' na':''}">${p.mv==null?'—':fmt(p.mv)+'%%'}</td>
+        <td class="num${p.md==null?' na':''}">${p.md==null?'—':fmt(p.md,0)+'%%'}</td>
         <td class="num${p.f1==null?' na':''}">${p.f1==null?'—':
           (p.f2!=null&&p.f2!==p.f1? fmt(p.f1,2)+'~'+fmt(p.f2,2):fmt(p.f1,2))+'%%'}</td>
         <td class=num>${won(each)}</td>
         <td class="noprint"><button class="xbtn" data-rm="${c}" data-k="${key(p)}"
             title="이 상품 빼기" aria-label="${(p.n||'')} 빼기">×</button></td>
-      </tr>`).join('')}</tbody></table></div>`
+      </tr>${p.wy?`<tr class="why"><td colspan="9"><span class="lbl">고른 까닭</span>
+        ${md(p.wy)}${p.sc==null?'':`<span class="score">점수 ${fmt(p.sc*100,0)}</span>`}</td></tr>`:''}
+      `).join('')}</tbody></table></div>`
       : `<div class="note"><strong>고른 상품이 없습니다.</strong>
          아래에서 골라 넣으십시오 — 비중 ${fmt(x,1)}%% 가 배분될 자리입니다.</div>`;
     // 615 종짜리 목록은 스크롤로 못 고른다. 이름·운용사·유형으로 걸러 낸다.
@@ -855,7 +923,9 @@ function render(){
           <option value="">${hit.length ? `고르기 — ${hit.length}종${
             hit.length>300?' 중 300종 표시':''}` : '찾는 상품이 없습니다'}</option>
           ${hit.slice(0,300).map(p=>`<option value="${key(p)}">${(p.n||p.c||'')}${
-            p.r==null?'':' · 과거1년 '+fmt(p.r)+'%%'}${p.co?' · '+p.co:''}</option>`).join('')}
+            p.mc==null?'':' · '+p.my+'해 연'+fmt(p.mc)+'%%'}${
+            p.mv==null?'':' · 변동성 '+fmt(p.mv)+'%%'}${
+            p.tg===3?' · 미측정':''}${p.co?' · '+p.co:''}</option>`).join('')}
         </select>
         <button class="btn" data-addbtn="${c}">넣기</button>
       </div>` : '';
@@ -972,7 +1042,9 @@ function csv(){
   L.push(['실적 덮은 비중(%%)', m.retCov.toFixed(0),
           '변동성 덮은 비중(%%)', m.volCov.toFixed(0)].map(q).join(','));
   L.push('');
-  L.push(['자산군','상품','유형','운용/발행','규모(원)','과거1년(%%)','변동성(%%)','보수(%%)','배분액(만원)'].map(q).join(','));
+  L.push(['자산군','상품','유형','운용/발행','규모(원)','측정','잰 기간(해)',
+          '연평균(%%)','변동성(%%)','최대낙폭(%%)','보수(%%)','배분액(만원)',
+          '고른 까닭'].map(q).join(','));
   D.classes.forEach(c=>{
     const x = w[c]||0; if(x<=0 || c==='현금') return;
     const all = D.products[c]||[], key = p => p.c || p.n;
@@ -980,14 +1052,18 @@ function csv(){
     const each = chosen.length ? Math.round(amt*x/100/chosen.length) : '';
     chosen.forEach(p=>{
       L.push([c, p.n||p.c||'', p.t||'', p.co||'', p.s==null?'':p.s,
-              p.r==null?'':p.r.toFixed(1), p.v==null?'':p.v.toFixed(1),
-              p.f1==null?'':p.f1, each].map(q).join(','));
+              (TIER[p.tg]||[''])[0], p.my==null?'':p.my,
+              p.mc==null?'':p.mc.toFixed(1), p.mv==null?'':p.mv.toFixed(1),
+              p.md==null?'':p.md.toFixed(0),
+              p.f1==null?'':p.f1, each,
+              (p.wy||'').replace(/\\*\\*/g,'')].map(q).join(','));
     });
   });
   L.push('');
-  L.push([('「과거 1년」은 실제로 잰 값이며 미래 수익률이 아닙니다. ' +
-           '빈칸은 원천에 없어 셈하지 않은 값입니다. ' +
-           '이 자료는 참고용이며 투자 권유가 아닙니다.')].map(q).join(','));
+  L.push([('「연평균」은 잰 기간의 연환산 수익률이며 실제로 잰 값입니다 — ' +
+           '미래 수익률이 아닙니다. 「측정」이 미측정인 상품은 시세가 없어 ' +
+           '변동성·최대낙폭을 못 쟀습니다. 빈칸은 원천에 없어 셈하지 않은 ' +
+           '값입니다. 이 자료는 참고용이며 투자 권유가 아닙니다.')].map(q).join(','));
   return '\\ufeff' + L.join('\\r\\n');
 }
 

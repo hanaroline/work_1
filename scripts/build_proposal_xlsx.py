@@ -44,6 +44,7 @@ from openpyxl.utils import get_column_letter                     # noqa: E402
 from openpyxl.worksheet.datavalidation import DataValidation     # noqa: E402
 
 import proposal_lib as P                                         # noqa: E402
+import proposal_metrics as MET                                   # noqa: E402
 # 색·서체·섹션 룰은 기존 제안서에서 가져다 쓴다. 여기 다시 적으면 두 엑셀이
 # 언젠가 서로 다른 오렌지를 쓰게 된다.
 from build_etf_proposal import (                                 # noqa: E402
@@ -166,23 +167,34 @@ def sheet_classes(wb, stats):
     return ws, first_data, r - 1
 
 
+# 무엇을 쟀는지 — 고객이 「연평균 3.4%」와 「과거 1해 152%」를 같은 무게로
+# 읽으면 안 된다. 셋째는 시세가 없어 위험을 아예 못 잰 것이다(펀드).
+TIER_KO = {1: "다년 실측", 2: "1해 실측", 3: "미측정"}
+PROD_COLS = ["채택", "자산군", "상품", "유형", "운용/발행", "규모",
+             "측정", "잰 기간", "연평균", "변동성", "최대낙폭", "보수",
+             "고른 까닭"]
+PROD_W = [7, 11, 40, 14, 20, 12, 10, 9, 10, 10, 10, 12, 62]
+NCOL = len(PROD_COLS)
+
+
 def sheet_products(wb, products):
     ws = wb.create_sheet("상품")
-    r = section(ws, 1, "2", "자산군별 제안 상품", 8)
-    note(ws, r, 8,
-         "규모와 보수로 고릅니다. 수익률 순으로 고르지 않습니다 — 지난해 제일 많이 "
-         "오른 것을 권하는 습관이 고객에게 가장 비쌉니다. 개별 주식은 시가총액 상위 "
-         "종목이며 종목 추천이 아닙니다.")
+    r = section(ws, 1, "2", "자산군별 제안 상품", NCOL)
+    note(ws, r, NCOL,
+         "여러 해의 위험조정 성과로 고릅니다 — 1·3·5 해의 연평균 수익률, 연변동성, "
+         "최대낙폭, 보수, 그리고 창이 바뀌어도 성과가 유지되는지를 함께 보아 "
+         "점수를 냅니다. 지난해 수익률 순으로도, 규모 순으로도 고르지 않습니다 "
+         "(규모는 문턱일 뿐입니다). 「측정」이 미측정인 상품은 시세가 없어 "
+         "변동성·최대낙폭을 못 쟀습니다 — 잰 상품이 넉넉하면 후보에서 뺍니다. "
+         "적힌 수치는 모두 지나간 실적이며 미래 수익률이 아닙니다. "
+         "개별 주식은 종목 추천이 아닙니다.")
+    ws.row_dimensions[r].height = 58
     r += 2
-    head(ws, r, ["채택", "자산군", "상품", "유형", "운용/발행", "규모",
-                 "과거 1년", "변동성", "보수"],
-         [7, 11, 44, 16, 22, 13, 11, 11, 13])
+    head(ws, r, PROD_COLS, PROD_W)
     # 「채택」 머리는 사람이 넣는 칸이므로 파랗게 표시한다.
     ws.cell(row=r, column=1).fill = fill(INPUT_FILL)
     ws.cell(row=r, column=1).font = f(10, bold=True, color=INPUT_FONT)
-    head_row = r
     r += 1
-    first_prod = r
     for cls, items in products.items():
         for p in items:
             # **빼고 싶은 상품은 N 으로 바꾼다.** 줄을 지우면 수식·필터가
@@ -198,28 +210,42 @@ def sheet_products(wb, products):
             # 칸을 넘치고 엑셀이 ######## 로 보여 준다. 실제로 그렇게 나갔다.
             put(ws, r, 6, size_ko(p.get("size")))
             ws.cell(row=r, column=6).alignment = RIGHT
-            for i, key in enumerate(["ret1y", "vol"], start=7):
-                v = p.get(key)
+            put(ws, r, 7, TIER_KO.get(p.get("측정등급"), "—"))
+            ws.cell(row=r, column=7).alignment = CENTER
+
+            # **몇 해를 잰 값인지 함께 적는다.** 「연평균 21.5%」만 적으면
+            # 그것이 1 해인지 5 해인지 알 수 없는데 그 둘은 무게가 다르다.
+            years, w = MET.longest(p.get("지표") or {})
+            put(ws, r, 8, "%d해" % years if years else "—")
+            ws.cell(row=r, column=8).alignment = CENTER
+            for i, key, nf in ((9, "cagr", "0.0%"), (10, "vol", "0.0%"),
+                               (11, "mdd", "0%")):
+                v = (w or {}).get(key)
                 put(ws, r, i, v / 100 if isinstance(v, (int, float)) else "—",
-                    fmt="0.0%" if isinstance(v, (int, float)) else None)
+                    fmt=nf if isinstance(v, (int, float)) else None)
                 ws.cell(row=r, column=i).alignment = RIGHT
+
             lo, hi = p.get("feeMin"), p.get("feeMax")
             if isinstance(lo, (int, float)) and isinstance(hi, (int, float)) and hi != lo:
-                put(ws, r, 8, "%.2f~%.2f%%" % (lo, hi))
+                put(ws, r, 12, "%.2f~%.2f%%" % (lo, hi))
             elif isinstance(lo, (int, float)):
-                put(ws, r, 8, lo / 100, fmt="0.00%")
+                put(ws, r, 12, lo / 100, fmt="0.00%")
             else:
-                put(ws, r, 8, "—")
-            ws.cell(row=r, column=8).alignment = RIGHT
+                put(ws, r, 12, "—")
+            ws.cell(row=r, column=12).alignment = RIGHT
+            put(ws, r, 13, (p.get("점수근거") or "—").replace("**", ""))
+            ws.cell(row=r, column=13).alignment = Alignment(
+                wrap_text=True, vertical="center")
+
             if r % 2 == 0:
-                for c in range(1, 9):
+                for c in range(1, NCOL + 1):
                     cell = ws.cell(row=r, column=c)
                     rgb = cell.fill.fgColor.rgb
                     if not rgb or rgb == "00000000":
                         cell.fill = fill(SURFACE)
             r += 1
     ws.freeze_panes = ws.cell(row=8, column=1).coordinate
-    ws.auto_filter.ref = "A7:H%d" % (r - 1)
+    ws.auto_filter.ref = "A7:%s%d" % (get_column_letter(NCOL), r - 1)
     return ws
 
 
