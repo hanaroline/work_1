@@ -105,10 +105,18 @@ jobs:
         run: python3 scripts/build_kis_timing.py
 
       # **검산이 산출물을 막는다.** 어긋난 수가 실린 판을 커밋하지 않는다.
+      #
+      # 성적표 대조만은 SKIP 이 날 수 있다 — 성적표는 단추로만 다시 나는데(위
+      # 머리말) 봉은 날마다 자라므로, 「성적표를 낸 그 우주」가 아닌 자리에서는
+      # 댈 것이 없다. 그것은 흠이 아니라 이 워크플로가 일부러 고른 규율의 그림자다.
+      # 막지는 않되 **조용히 지나가지도 않게** 경고로 띄운다.
       - name: 재검산
         run: |
           python3 scripts/verify_kis_timing.py | tee /tmp/verify-kis.txt
           code=${PIPESTATUS[0]}
+          grep '^SKIP' /tmp/verify-kis.txt | while IFS= read -r l; do
+            echo "::warning::건너뛴 검사 — ${l#SKIP  }"
+          done
           {
             echo '### 전략빌더 10종 재검산'
             echo '```'
