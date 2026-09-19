@@ -27,6 +27,7 @@ import os
 from datetime import datetime
 
 import proposal_lib as P
+import proposal_exposure as EXP
 
 ROOT = P.ROOT
 OUT = os.path.join(ROOT, "proposal.html")
@@ -50,7 +51,10 @@ def trim(p):
            "r": p.get("ret1y"), "v": p.get("vol"),
            "f1": p.get("feeMin"), "f2": p.get("feeMax"),
            "rg": p.get("riskGrade"), "src": p.get("src"),
-           "as": p.get("asOf")}
+           "as": p.get("asOf"),
+           # **노출을 함께 싣는다.** 화면에서 상품을 바꾸면 도넛의 「실제 노출」도
+           # 따라 바뀌어야 하므로, 자산군 이름이 아니라 이 값으로 셈한다.
+           "e": p.get("노출")}
     if p.get("distTtmRate") is not None:
         out["d"] = p["distTtmRate"]
     if p.get("flags"):
@@ -60,6 +64,7 @@ def trim(p):
 
 def build_data():
     u = P.load_universe()
+    cma_table, cma_gen = P.cma()
     avail = {c for c, s in u["자산군"].items() if s.get("종목수")}
 
     plans = {}
@@ -71,12 +76,18 @@ def build_data():
                 "m": P.portfolio(w, u["자산군"]),
             }
 
-    prods = {}
+    prods, picked = {}, {}
     for cls in P.CLASSES:
         if cls == "현금":
             continue
+        # 「고르기」 목록에는 **전부** 싣는다 — 35 종밖에 안 떠서 못 고르던 일이 있었다.
         prods[cls] = [trim(p) for p in P.pick_products(
             u["상품"], cls, PER_CLASS or 10 ** 9)]
+        # **처음 담기는 다섯은 따로 정한다.** 전체 목록은 n 이 커서 집중·중복
+        # 상한이 걸리지 않은 규모 순이다. 그 앞에서 다섯을 잘라 쓰면 규칙을
+        # 거치지 않은 옛날 다섯(반도체 넷, 같은 지수 둘)이 그대로 나온다.
+        picked[cls] = [(p.get("code") or p.get("name"))
+                       for p in P.pick_products(u["상품"], cls, 5)]
 
     return {
         "generated": datetime.now(P.KST).strftime("%Y-%m-%d %H:%M"),
@@ -90,7 +101,12 @@ def build_data():
         "sources": u["원천"],
         "policy": u["정책"],
         "products": prods,
+        "defaultPick": picked,
         "refWeights": P.PROFILES[3]["w"],
+        # 자산군 이름이 아니라 **노출**로 셈하는 기대수익률 가정.
+        "cma": cma_table, "cmaGenerated": cma_gen,
+        "cmaMethod": "빌딩블록",
+        "expoClasses": EXP.CLASSES,
     }, u
 
 
@@ -211,6 +227,8 @@ td.na{color:var(--muted2)}
    「맨 위 높이가 너무 크다」의 정체가 이것이었다. 화면에서는 같은 요약을
    도구줄의 #toolNow 가 이미 보여 준다. */
 .printonly,.printhead,.pct{display:none}
+/* 실제 노출 범례는 여섯 군이라 가로로 편다 */
+.legend.wide{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:6px 18px;margin:14px 0 0}
 
 /* **KO/EN 은 둘 중 하나만 보인다.** 이 두 줄이 없어서 「자산배분 제안서Asset
    Allocation Proposal」처럼 두 말이 붙어 나왔다. 단추는 있는데 아무 일도
@@ -434,6 +452,17 @@ def render(data, u):
         <div class="bars" id="bars"></div>
       </div>
     </div>
+    <div class="note">
+      <strong data-ko>아래 「실제 노출」이 이 제안의 내용입니다.</strong>
+      <strong data-en>The "actual exposure" below is what this proposal really holds.</strong>
+      <span data-ko>위 자산군 이름(국내ETF·해외펀드…)은 <strong>포장지</strong>입니다 —
+        국내에 상장된 미국 지수 ETF 는 이름은 「국내ETF」지만 담긴 것은 미국 주식입니다.
+        아래는 지금 고른 상품이 실제로 무엇에 투자하는지를 다시 센 값이며,
+        상품을 바꾸면 함께 바뀝니다.</span>
+      <span data-en>Asset-class labels are wrappers; this is recomputed from what the
+        selected products actually hold.</span>
+    </div>
+    <div class="legend wide" id="realExpo"></div>
     <div id="planNotes"></div>
     <div class="tbl-wrap"><table id="allocTbl"></table></div>
     <p class="hint" id="sumWarn"></p>
@@ -557,7 +586,9 @@ function resetEdits(){
   S.w = {}; S.sel = {}; S.q = {}; S.key = planKey();
   D.classes.forEach(c=>{
     if(c==='현금') return;
-    S.sel[c] = (D.products[c]||[]).slice(0, 5).map(p=>p.c || p.n);
+    // **규칙이 고른 다섯**을 쓴다. 전체 목록의 앞 다섯을 자르면 집중·중복
+    // 상한을 거치지 않은 규모 순이 나온다(반도체 넷, 같은 지수 둘).
+    S.sel[c] = (D.defaultPick||{})[c] || (D.products[c]||[]).slice(0,5).map(p=>p.c||p.n);
   });
 }
 
@@ -610,16 +641,45 @@ function donut(items, total){
   </svg>`;
 }
 
-// 자산군을 두 축으로 묶어 보여 준다 — 국내/해외, 그리고 위험자산/안전자산.
-// 자산군 일곱 줄만 보면 「해외에 얼마나 나가 있나」가 한눈에 안 들어온다.
-const REGION = {'국내주식':'국내','국내ETF':'국내','국내펀드':'국내',
-                '해외주식':'해외','해외ETF':'해외','해외펀드':'해외','현금':'현금'};
-const KIND = {'국내주식':'주식','해외주식':'주식','국내ETF':'ETF','해외ETF':'ETF',
-              '국내펀드':'펀드','해외펀드':'펀드','현금':'현금'};
-function groupSum(w, map){
-  const o = {};
-  D.classes.forEach(c=>{ const k=map[c]; if(!k) return; o[k]=(o[k]||0)+(w[c]||0); });
+// **자산군 이름이 아니라 담긴 것으로 센다.**
+//
+// 예전에는 「국내ETF」니까 국내, 「해외펀드」니까 해외 하는 식으로 이름을 보고
+// 묶었다. 그런데 「국내ETF 15%%」에 TIGER 미국S&P500 이 들어 있으면 이름은
+// 국내인데 고객 돈은 미국에 가 있다. 실제로 「국내 40%% · 해외 45%%」라고
+// 인쇄된 제안서의 진짜 노출이 한국 주식 5%% · 해외 주식 57%% 였다.
+//
+// 그래서 **지금 골라 둔 상품의 노출**로 다시 센다. 상품을 바꾸면 이 숫자도
+// 따라 바뀐다 — 그것이 맞다.
+function sleeveExpo(c){
+  const all = D.products[c]||[], key = p => p.c || p.n;
+  const chosen = (S.sel[c]||[]).map(k=>all.find(p=>key(p)===k)).filter(Boolean);
+  const o = {}; let n = 0;
+  chosen.forEach(p=>{ if(!p.e) return; n++;
+    Object.entries(p.e).forEach(([k,v])=>{ o[k]=(o[k]||0)+v; }); });
+  if(!n) return null;
+  Object.keys(o).forEach(k=>o[k]/=n);
   return o;
+}
+function realExpo(w){
+  const o = {}; let unknown = 0;
+  D.classes.forEach(c=>{
+    const x = w[c]||0; if(x<=0) return;
+    if(c==='현금'){ o['현금성']=(o['현금성']||0)+x; return; }
+    const e = sleeveExpo(c);
+    if(!e){ unknown += x; return; }
+    Object.entries(e).forEach(([k,v])=>{ o[k]=(o[k]||0)+x*v; });
+  });
+  if(unknown>0.005) o['미배정']=unknown;
+  return o;
+}
+// 노출 × 기대수익률 가정 → 포트폴리오 기대수익률. 덮은 비중도 함께 낸다.
+function expoReturn(e){
+  let t=0, cov=0;
+  Object.entries(e||{}).forEach(([k,v])=>{
+    const r = (D.cma||{})[k];
+    if(typeof r === 'number'){ t += r*v/100; cov += v; }
+  });
+  return cov ? {ret:t, cov:cov} : {ret:null, cov:0};
 }
 
 function render(){
@@ -647,26 +707,43 @@ function render(){
   $('#legend').innerHTML = entries.map(([c,x,col])=>
     `<div><i style="background:${col}"></i>${c}<span class="v">${fmt(x,1)}%%</span></div>`).join('');
 
-  const byRegion = groupSum(w, REGION), byKind = groupSum(w, KIND);
+  const RE = realExpo(w);
+  const EXCOL = {'국내주식':ORANGE,'해외주식':BLUE,'국내채권':SOFT_ORANGE,
+                 '해외채권':'#0086B8','대체':'#AD624E','현금성':CASH_COLOR,
+                 '미배정':'#D7D7D7'};
+  const sum2 = ks => ks.reduce((a,k)=>a+(RE[k]||0),0);
   const gcard = (lb, val, sub, parts) => `<div class="gcard">
       <p class="lb">${lb}</p><p class="v">${fmt(val,1)}%%</p>
       <p class="sub">${sub}</p>
       ${parts?`<div class="gbar">${parts}</div>`:''}</div>`;
   const seg = (v,col) => v>0 ? `<span style="width:${v}%%;background:${col}"></span>` : '';
+  const er = expoReturn(RE);
   $('#groups').innerHTML = [
-    gcard('국내', byRegion['국내']||0, won(Math.round(amt*(byRegion['국내']||0)/100)),
-          seg(byRegion['국내']||0, ORANGE)+seg(100-(byRegion['국내']||0),'#ECEFF4')),
-    gcard('해외', byRegion['해외']||0, won(Math.round(amt*(byRegion['해외']||0)/100)),
-          seg(byRegion['해외']||0, BLUE)+seg(100-(byRegion['해외']||0),'#ECEFF4')),
-    gcard('위험자산', 100-(w['현금']||0),
-          `현금 ${fmt(w['현금']||0,1)}%% 를 뺀 몫`,
-          seg(100-(w['현금']||0), '#0086B8')+seg(w['현금']||0, CASH_COLOR)),
-    gcard('주식·ETF·펀드',
-          (byKind['주식']||0)+(byKind['ETF']||0)+(byKind['펀드']||0),
-          `주식 ${fmt(byKind['주식']||0,0)}%% · ETF ${fmt(byKind['ETF']||0,0)}%% · 펀드 ${fmt(byKind['펀드']||0,0)}%%`,
-          seg(byKind['주식']||0, ORANGE)+seg(byKind['ETF']||0, SOFT_ORANGE)
-          +seg(byKind['펀드']||0, BLUE)+seg(w['현금']||0, CASH_COLOR)),
+    gcard('주식', sum2(['국내주식','해외주식']),
+          `국내 ${fmt(RE['국내주식']||0,1)}%% · 해외 ${fmt(RE['해외주식']||0,1)}%%`,
+          seg(RE['국내주식']||0,ORANGE)+seg(RE['해외주식']||0,BLUE)
+          +seg(100-sum2(['국내주식','해외주식']),'#ECEFF4')),
+    gcard('채권', sum2(['국내채권','해외채권']),
+          `국내 ${fmt(RE['국내채권']||0,1)}%% · 해외 ${fmt(RE['해외채권']||0,1)}%%`,
+          seg(RE['국내채권']||0,SOFT_ORANGE)+seg(RE['해외채권']||0,'#0086B8')
+          +seg(100-sum2(['국내채권','해외채권']),'#ECEFF4')),
+    gcard('국내 자산', sum2(['국내주식','국내채권']),
+          `해외 ${fmt(sum2(['해외주식','해외채권']),1)}%% · 대체 ${fmt(RE['대체']||0,1)}%% · 현금 ${fmt(RE['현금성']||0,1)}%%`,
+          seg(sum2(['국내주식','국내채권']),ORANGE)
+          +seg(sum2(['해외주식','해외채권']),BLUE)
+          +seg(RE['대체']||0,'#AD624E')+seg(RE['현금성']||0,CASH_COLOR)),
+    gcard('기대수익률 (가정)', er.ret==null?0:er.ret,
+          er.ret==null ? '기대수익률 가정이 없습니다'
+            : `${D.cmaMethod} 기준 · 노출의 ${fmt(er.cov,0)}%% 를 덮습니다`,
+          seg(RE['국내주식']||0,ORANGE)+seg(RE['해외주식']||0,BLUE)
+          +seg(RE['국내채권']||0,SOFT_ORANGE)+seg(RE['해외채권']||0,'#0086B8')
+          +seg(RE['대체']||0,'#AD624E')+seg(RE['현금성']||0,CASH_COLOR)),
   ].join('');
+  // 실제 노출을 숫자로도 적는다 — 카드만으로는 여섯 군이 다 안 보인다.
+  const rex = $('#realExpo');
+  if(rex) rex.innerHTML = Object.entries(RE).sort((a,b)=>b[1]-a[1])
+    .map(([k,v])=>`<div><i style="background:${EXCOL[k]||'#ccc'}"></i>${k}`
+      + `<span class="v">${fmt(v,1)}%%</span></div>`).join('');
 
   $('#toolNow').textContent =
     `${D.profiles[risk].name} · ${$('#yrs').selectedOptions[0].textContent} · ${won(amt)}`

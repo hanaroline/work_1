@@ -36,6 +36,16 @@ import re
 
 CLASSES = ["국내주식", "해외주식", "국내채권", "해외채권", "대체", "현금성"]
 
+# 레버리지·인버스는 자산배분 제안서에 올릴 물건이 아니다. 장기 보유하면
+# 기초자산이 제자리로 와도 손실이 남는(변동성 끌림) 상품이고, 규모가 커서
+# 규모 순으로 고르면 실제로 올라온다 — 「NH-Amundi코리아2배인버스레버리지」가
+# 국내펀드 제안 5 종에 들어 있었다.
+LEVERAGE_PAT = re.compile(r"레버리지|인버스|2배|3배|LEVERAGE|INVERSE|곱버스|선물\\s*2X|\\b[23]X\\b", re.I)
+
+
+def is_leveraged(p):
+    return bool(LEVERAGE_PAT.search((p.get("name") or "")))
+
 # 혼합형을 쪼개는 비율. 「채권혼합」은 채권이 주(主)라는 뜻이고 「주식혼합」은
 # 그 반대다. 실무에서 쓰는 통상값이며, 원천이 실제 비중을 주지 않으므로
 # **가정**이다. 산출물에 그렇게 적는다.
@@ -53,22 +63,24 @@ MIX = {
 # **대소문자를 안 가리면 안 된다.** re.I 를 빠뜨렸더니 「Global X Physical
 # Gold ETF」가 GOLD 와 안 맞아 금이 아니라 주식으로 분류됐다.
 CASH_PAT = re.compile(
-    r"머니마켓|MMF|초단기|단기채|CD금리|KOFR|금리액티브|파킹|통안|양도성|"
+    r"머니마켓|MMF|초단기|단기채|KOFR|파킹|통안|양도성|"
+    r"CD\s*\d*\s*년?\s*금리|금리플러스|금리액티브|금리투자|"
     r"MONEY\s*MARKET|T-?BILL", re.I)
 BOND_PAT = re.compile(r"채권|국채|회사채|크레딧|크레디트|하이일드|물가연동|"
                       r"TIPS|BOND|TREASURY|AGG\b", re.I)
 # 「금리」·「기금」처럼 金 자가 들어가는 말에 걸리지 않게 금/은은 따로 본다.
-METAL_PAT = re.compile(r"(^|[^가-힣])(금|은)([^가-힣]|$)|골드|실버|GOLD|SILVER", re.I)
+# 「KRX금현물」처럼 금 뒤에 한글이 붙으면 경계 규칙에 안 걸린다.
+METAL_PAT = re.compile(r"(^|[^가-힣])(금|은)([^가-힣]|$)|금현물|금선물|은현물|KRX\\s*금|골드|실버|GOLD|SILVER", re.I)
 ALT_WORD = re.compile(r"원유|천연가스|원자재|커머디티|리츠|부동산|인프라|"
                       r"OIL|REIT|구리|INFRASTRUCTURE", re.I)
 
 OVERSEAS_PAT = re.compile(
-    r"미국|US|U\.S\.|글로벌|GLOBAL|해외|선진|신흥|이머징|EM\b|"
+    r"미국|\bUSA?\b|U\.S\.|글로벌|GLOBAL|해외|선진|신흥|이머징|\bEM\b|"
     r"차이나|중국|CHINA|홍콩|항셍|일본|JAPAN|니케이|인도|INDIA|베트남|"
     r"유럽|EURO|독일|대만|TAIWAN|나스닥|NASDAQ|S&P|SP500|다우|DOW|"
     r"필라델피아|서학|MSCI|ACWI|WORLD|러셀|RUSSELL|테슬라|애플|엔비디아|"
     r"빅테크|매그니피센트|아시아|ASIA|브라질|멕시코|영국|프랑스|"
-    r"TREASURY|UST\b|ISHARES|VANGUARD|SPDR|INVESCO|SCHWAB", re.I)
+    r"TREASURY|\bUST\b|ISHARES|VANGUARD|SPDR|INVESCO|SCHWAB", re.I)
 DOMESTIC_PAT = re.compile(r"코스피|코스닥|KOSPI|KOSDAQ|코리아|KOREA|한국|"
                           r"국고채|통안|국채|KTB", re.I)
 
