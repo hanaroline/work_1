@@ -19,6 +19,12 @@
 · **수익만 보지 않는다** — 연변동성, 최대낙폭, 그리고 위험 한 단위당 초과수익
   (샤프 비슷한 값)을 함께 본다.
 · **비용은 확실한 마이너스다** — 수익률은 가정이지만 보수는 반드시 나간다.
+· **변동성 자체도 따로 본다.** 위험 한 단위당 초과수익만 보면 강세 국면에서
+  분자가 커져 **연변동성 60% 짜리가 1.5 로 좋아 보인다.** 고객이 실제로 겪는
+  것은 그 60% 다. 그래서 비율과 별개로 변동성 자체에 점수를 준다.
+· **같은 것끼리 견준다.** 채권혼합 ETF 는 채권이 섞여 변동성이 낮으므로,
+  순수 주식 ETF 와 한 줄에 세우면 늘 이긴다. 그래서 **노출 군별로 나눠**
+  백분위를 낸다 — 채권은 채권끼리, 주식은 주식끼리.
 · **규모는 순위가 아니라 문턱이다** — 너무 작으면 못 사는 것이지, 클수록
   좋은 것이 아니다.
 
@@ -39,9 +45,10 @@ WINDOWS = [(1, 252), (3, 756), (5, 1260)]     # (해, 거래일)
 # 점수를 섞는 무게. **수익보다 위험·비용에 더 기울여 둔다** — 수익은 지나간
 # 것이고 비용은 앞으로 반드시 나가는 것이므로.
 WEIGHTS = {
-    "risk_adj": 0.40,      # 위험 한 단위당 초과수익
+    "risk_adj": 0.30,      # 위험 한 단위당 초과수익
+    "vol": 0.15,           # 변동성 자체가 낮을수록
     "mdd": 0.20,           # 최대낙폭이 얕을수록
-    "cost": 0.20,          # 보수가 쌀수록
+    "cost": 0.15,          # 보수가 쌀수록
     "consistency": 0.20,   # 창이 바뀌어도 성과가 유지되는가
 }
 
@@ -182,6 +189,8 @@ def components(p, rf):
     fee = p.get("feeMin")
     out = {
         "risk_adj": risk_adjusted(w, rf),
+        # 변동성은 **낮을수록** 좋으므로 뒤집는다.
+        "vol": (-(w or {}).get("vol")) if (w or {}).get("vol") else None,
         "mdd": (w or {}).get("mdd"),
         "cost": (-fee) if isinstance(fee, (int, float)) else None,
         "consistency": worst if (worst is not None and nwin >= 2) else None,
@@ -206,6 +215,7 @@ def components(p, rf):
         r1 = p.get("ret1y")
         out = {
             "cost": out["cost"],
+            "vol": None,
             # 위험등급은 1(고위험)~6(저위험)이 흔한 꼴이다. 낮은 위험을 선호.
             "mdd": (rg if isinstance(rg, (int, float)) else None),
             "risk_adj": (r1 / 100.0) if isinstance(r1, (int, float)) else None,
@@ -222,8 +232,19 @@ def components(p, rf):
     return out, " · ".join(why), tier
 
 
+def _expo_of(p):
+    e = p.get("노출") or {}
+    return max(e.items(), key=lambda kv: kv[1])[0] if e else "?"
+
+
 def rank_class(products, rf=RF_DEFAULT):
     """한 자산군 안에서 점수를 매긴다 — 항목마다 백분위를 내고 무게로 섞는다.
+
+    **백분위는 노출 군별로 낸다.** 한 줄에 세우면 채권혼합 ETF 가 늘 이긴다 —
+    채권이 섞여 변동성이 낮으니 위험조정 항목이 전부 유리하다. 실제로 국내ETF
+    선정에 「삼성전자채권혼합」·「삼성그룹Top3채권혼합」이 나란히 올라왔다.
+    주식은 주식끼리, 채권은 채권끼리 견주고, 자산군 안에서 몇 개씩 담을지는
+    노출 상한이 따로 정한다.
 
     각 상품에 `점수`·`점수근거`·`측정등급`을 달아 준다(제자리 수정).
     """
@@ -235,7 +256,17 @@ def rank_class(products, rf=RF_DEFAULT):
         comp.append(c)
         whys.append(w)
         tiers.append(t)
-    pcts = {k: _pct([c.get(k) for c in comp]) for k in WEIGHTS}
+
+    groups = {}
+    for i, p in enumerate(products):
+        groups.setdefault(_expo_of(p), []).append(i)
+    pcts = {k: [None] * len(products) for k in WEIGHTS}
+    for idxs in groups.values():
+        for k in WEIGHTS:
+            sub = _pct([comp[i].get(k) for i in idxs])
+            for j, i in enumerate(idxs):
+                pcts[k][i] = sub[j]
+
     for i, p in enumerate(products):
         parts = {k: pcts[k][i] for k in WEIGHTS if pcts[k][i] is not None}
         tot = sum(WEIGHTS[k] for k in parts)
