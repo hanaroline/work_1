@@ -27,32 +27,6 @@ import os
 import sys
 from datetime import datetime, timezone, timedelta
 
-VOLATILE = ('generated_at_kst',)
-
-
-def write_if_changed(path, doc, volatile=VOLATILE):
-    """**바뀐 것이 시각뿐이면 파일을 건드리지 않는다.**
-
-    `build_volatility.py` 의 같은 함수와 같은 까닭이다 — 이 갱신은 예약으로
-    하루에 두세 번 도는데, 일봉이 그대로면 세팅도 그대로라 `generated_at_kst`
-    한 칸만 달라진 판이 매번 커밋된다. 게다가 줄바꿈 없는 한 줄 JSON 이라 git 이
-    줄 델타를 못 만들어, 한 글자가 달라도 90KB 가 통째로 새로 쌓인다.
-
-    그러면 `generated_at_kst` 는 「이 세팅이 만들어진 때」라는 제 뜻을 되찾는다 —
-    「마지막으로 돌린 때」는 Actions 기록이 말해 준다.
-    """
-    new = {k: v for k, v in doc.items() if k not in volatile}
-    if os.path.exists(path):
-        try:
-            old = json.load(open(path, encoding='utf-8'))
-            if {k: v for k, v in old.items() if k not in volatile} == new:
-                return False
-        except ValueError:
-            pass                      # 깨진 파일이면 새로 쓴다
-    os.makedirs(os.path.dirname(path), exist_ok=True)
-    with open(path, 'w', encoding='utf-8') as f:
-        json.dump(doc, f, ensure_ascii=False, separators=(',', ':'))
-    return True
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import kis_strategy_lib as K
@@ -240,7 +214,7 @@ def main():
 
     os.makedirs(OUT_DIR, exist_ok=True)
     p = os.path.join(OUT_DIR, 'latest.json')
-    if write_if_changed(p, out):
+    if D.write_if_changed(p, out):
         sys.stderr.write('%s 에 적었습니다\n' % os.path.relpath(p, ROOT))
     else:
         sys.stderr.write('%s — 시각 말고 달라진 것이 없어 그대로 둡니다\n'

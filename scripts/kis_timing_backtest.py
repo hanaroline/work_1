@@ -427,9 +427,15 @@ def main():
     os.makedirs(OUT_DIR, exist_ok=True)
     doc = run()
     p = os.path.join(OUT_DIR, 'backtest.json')
-    with open(p, 'w', encoding='utf-8') as f:
-        json.dump(doc, f, ensure_ascii=False, separators=(',', ':'))
-    sys.stderr.write('\n%s 에 적었습니다 (%d 성적표)\n' % (os.path.relpath(p, ROOT), len(doc['grades'])))
+    # 성적표도 시각 말고 달라진 것이 없으면 그대로 둔다. 이 대본은 단추로만
+    # 도니 날마다 쌓이지는 않지만, 봉이 안 자란 날 눌러도 171KB 가 통째로 새로
+    # 쌓이는 것은 세팅 쪽과 똑같은 고장이다.
+    if D.write_if_changed(p, doc):
+        sys.stderr.write('\n%s 에 적었습니다 (%d 성적표)\n'
+                         % (os.path.relpath(p, ROOT), len(doc['grades'])))
+    else:
+        sys.stderr.write('\n%s — 시각 말고 달라진 것이 없어 그대로 둡니다 (%d 성적표)\n'
+                         % (os.path.relpath(p, ROOT), len(doc['grades'])))
 
 
 if __name__ == '__main__':
