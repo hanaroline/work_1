@@ -47,6 +47,7 @@ from proposal_exposure import CLASSES                            # noqa: E402
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 KST = timezone(timedelta(hours=9))
 ETF_PRICES = os.path.join(ROOT, "data", "etf", "prices.json")
+KIS_ETF = os.path.join(ROOT, "data", "proposal", "kr_etf_bars.json")
 UNIVERSE = os.path.join(ROOT, "data", "proposal", "universe.json")
 OUT = os.path.join(ROOT, "data", "proposal", "cma.json")
 
@@ -97,18 +98,43 @@ def cagr(closes, days):
 
 
 def load_proxies():
-    if not os.path.exists(ETF_PRICES):
+    """원화 프록시 일봉을 두 곳에서 모은다.
+
+      · data/etf/prices.json            네이버·야후로 받아 둔 76 종(최대 8 해)
+      · data/proposal/kr_etf_bars.json  KIS 로 받은 국내 상장 ETF(최대 10 해)
+
+    **KIS 쪽이 이긴다.** 증권사 시세이고 수정주가이며, 무엇보다 노출 군마다
+    고르게 받아 두어 해외채권·대체처럼 비어 있던 칸을 메운다. KIS 자료는
+    노출 군(expo)을 달고 오므로 프록시 목록에 손으로 적지 않아도 편입된다.
+    """
+    out, srcs, kis_gen = {}, [], None
+    if os.path.exists(ETF_PRICES):
+        doc = json.load(open(ETF_PRICES, encoding="utf-8"))
+        for v in (doc.get("items") or {}).values():
+            b = v.get("bars") or {}
+            d, c = b.get("d") or [], b.get("c") or []
+            if len(d) != len(c) or len(d) < 2:
+                continue
+            out[v["name"]] = {"d": d, "c": c, "scope": v.get("scope"),
+                              "from": v.get("from"), "to": v.get("to"),
+                              "expo": None}
+        srcs.append(str(doc.get("source")))
+    if os.path.exists(KIS_ETF):
+        doc = json.load(open(KIS_ETF, encoding="utf-8"))
+        kis_gen = doc.get("generated_at_kst")
+        for v in doc.get("items") or []:
+            d, c = v.get("d") or [], v.get("c") or []
+            if len(d) != len(c) or len(d) < 2:
+                continue
+            # KIS 는 YYYYMMDD 로 준다 — 다른 원천과 꼴을 맞춘다.
+            d = ["%s-%s-%s" % (x[:4], x[4:6], x[6:8]) if len(x) == 8 else x
+                 for x in d]
+            out[v["name"]] = {"d": d, "c": c, "scope": "KR", "from": d[0],
+                              "to": d[-1], "expo": v.get("expo")}
+        srcs.append(str(doc.get("source")))
+    if not out:
         return {}
-    doc = json.load(open(ETF_PRICES, encoding="utf-8"))
-    out = {}
-    for v in (doc.get("items") or {}).values():
-        b = v.get("bars") or {}
-        d, c = b.get("d") or [], b.get("c") or []
-        if len(d) != len(c) or len(d) < 2:
-            continue
-        out[v["name"]] = {"d": d, "c": c, "scope": v.get("scope"),
-                          "from": v.get("from"), "to": v.get("to")}
-    return out, doc.get("source"), doc.get("generated_at_kst")
+    return out, " + ".join(srcs), kis_gen
 
 
 def risk_free():
@@ -152,7 +178,13 @@ def long_run():
     out, used = {}, {}
     for c in CLASSES:
         vals, detail = [], []
-        for nm in PROXY.get(c) or []:
+        # 손으로 적어 둔 프록시 + KIS 가 그 노출 군으로 받아 둔 것. 손 목록은
+        # 자료가 없던 시절의 것이라 해외채권·대체가 비어 있다.
+        hand = PROXY.get(c) or []
+        auto = sorted(nm for nm, b in bars.items()
+                      if b.get("expo") == c and len(b["d"]) >= MIN_BARS
+                      and nm not in hand)
+        for nm in hand + auto:
             b = bars.get(nm)
             if not b:
                 detail.append({"name": nm, "why": "프록시를 찾지 못했습니다"})

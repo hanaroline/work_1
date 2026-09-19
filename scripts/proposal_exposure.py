@@ -66,7 +66,9 @@ CASH_PAT = re.compile(
     r"머니마켓|MMF|초단기|단기채|KOFR|파킹|통안|양도성|"
     r"CD\s*\d*\s*년?\s*금리|금리플러스|금리액티브|금리투자|"
     r"MONEY\s*MARKET|T-?BILL", re.I)
-BOND_PAT = re.compile(r"채권|국채|회사채|크레딧|크레디트|하이일드|물가연동|"
+# 「국고채」는 국-고-채라 「국채」와 안 맞는다. 실제로 ACE 국고채10년과
+# KODEX 국고채3년이 채권이 아니라 주식으로 분류됐다.
+BOND_PAT = re.compile(r"채권|국채|국고채|통안채|회사채|크레딧|크레디트|하이일드|물가연동|"
                       r"TIPS|BOND|TREASURY|AGG\b", re.I)
 # 「금리」·「기금」처럼 金 자가 들어가는 말에 걸리지 않게 금/은은 따로 본다.
 # 「KRX금현물」처럼 금 뒤에 한글이 붙으면 경계 규칙에 안 걸린다.
@@ -149,10 +151,19 @@ def _from_fund_type(t, name, region=None):
     return None
 
 
+# TDF(타깃데이트펀드)는 그 자체가 **여러 자산군을 섞어 굴리는 자산배분 상품**이다.
+# 게다가 목표연도에 따라 구성이 계속 바뀐다. 단일 노출로 잡을 수 없고, 짐작으로
+# 비율을 적으면 그 순간 도넛이 또 거짓이 된다. 그래서 가리지 않은 것으로 둔다 —
+# 제안 목록에서도 빠진다(자산배분 제안서 안에 또 다른 자산배분을 넣지 않는다).
+TDF_PAT = re.compile(r"TDF|타깃데이트|타겟데이트", re.I)
+
+
 def exposure(p):
     """상품 하나의 노출 묶음. 가리지 못하면 None 을 돌려준다."""
     cls, kind = p.get("cls") or "", p.get("kind") or ""
     name = p.get("name") or p.get("code") or ""
+    if TDF_PAT.search(name):
+        return None
 
     # 개별 주식은 물어볼 것이 없다.
     if kind == "주식":

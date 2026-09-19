@@ -307,6 +307,7 @@ def portfolio(weights, classes):
 
 # 한 자산군 안에서 같은 것을 여러 번 담지 않기 위한 상한.
 MAX_PER_SECTOR = 2      # 국내주식 — 같은 업종
+MAX_PER_GROUP = 1       # 같은 기업집단(삼성·SK·현대차…)
 MAX_PER_HOUSE = 2       # 같은 운용사·발행사
 MAX_PER_TRACK = 1       # 같은 기초지수(S&P500·나스닥100·코스피200…)
 MAX_PER_EXPOSURE = 2    # 같은 노출(주식/채권/대체)
@@ -314,6 +315,24 @@ MAX_PER_EXPOSURE = 2    # 같은 노출(주식/채권/대체)
 # **업종 코드가 다르다고 다른 베팅인 것은 아니다.** 반도체 둘을 막았더니
 # 삼성전기(전기전자)와 SK스퀘어(지주, 하이닉스 지주회사)가 그 자리를 채워
 # 다섯 중 넷이 여전히 같은 반도체 사슬이었다. 값사슬이 같은 업종은 묶어 센다.
+# 기업집단(지배구조) 표. 업종 코드가 못 잡는 「같은 베팅」을 잡는 자리다 —
+# SK스퀘어는 업종이 「지주」지만 실질은 SK하이닉스 지분이고, 삼성전기는
+# 「전기전자」지만 삼성전자 공급망이다. 표는 data 에 두어 코드를 안 고치고도
+# 갱신할 수 있게 했다(기업집단 편입·제외는 해마다 바뀐다).
+GROUPS_PATH = os.path.join(ROOT, "data", "proposal", "kr_groups.json")
+_GROUPS = None
+
+
+def groups():
+    global _GROUPS
+    if _GROUPS is None:
+        try:
+            _GROUPS = json.load(open(GROUPS_PATH, encoding="utf-8")).get("그룹") or {}
+        except (OSError, ValueError):
+            _GROUPS = {}
+    return _GROUPS
+
+
 SECTOR_GROUP = {
     "반도체": "반도체·전기전자", "전기전자": "반도체·전기전자", "IT": "반도체·전기전자",
     "2차전지": "2차전지·화학", "화학": "2차전지·화학",
@@ -391,20 +410,23 @@ def pick_products(products, cls, n=5, prefer=None):
     # 통째로 복원돼 상한이 아무 일도 하지 않았다. 이제 덜 중요한 상한부터
     # 하나씩 풀어 가며 다시 고른다 — 같은 지수 중복이 가장 나쁘므로 마지막에 푼다.
     steps = [set()]
-    order = (["expo"] if use_expo else []) + ["house", "sector", "track"]
+    order = (["expo"] if use_expo else []) + ["house", "sector", "group", "track"]
     for i in range(len(order)):
         steps.append(set(order[:i + 1]))
 
     for off in steps:
-        out, sector, house, track, expo = [], {}, {}, {}, {}
+        out, sector, house, track, expo, grp_n = [], {}, {}, {}, {}, {}
         for p in items:
             if len(out) >= n:
                 break
             raw = p.get("type") if p.get("kind") == "주식" else None
             sec = SECTOR_GROUP.get(raw, raw)
+            grp = groups().get(p.get("name")) if p.get("kind") == "주식" else None
             h = p.get("company")
             t = _track(p.get("name"))
             e = max((p.get("노출") or {"?": 1}).items(), key=lambda kv: kv[1])[0]
+            if "group" not in off and grp and grp_n.get(grp, 0) >= MAX_PER_GROUP:
+                continue
             if "sector" not in off and sec and sector.get(sec, 0) >= MAX_PER_SECTOR:
                 continue
             if "house" not in off and h and house.get(h, 0) >= MAX_PER_HOUSE:
@@ -416,6 +438,8 @@ def pick_products(products, cls, n=5, prefer=None):
                 continue
             out.append(p)
             expo[e] = expo.get(e, 0) + 1
+            if grp:
+                grp_n[grp] = grp_n.get(grp, 0) + 1
             if sec:
                 sector[sec] = sector.get(sec, 0) + 1
             if h:

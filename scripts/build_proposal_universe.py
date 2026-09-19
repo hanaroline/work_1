@@ -591,9 +591,18 @@ def reassign_by_exposure(products):
             out.append(p)
             continue
         p["노출"] = {k: round(v, 4) for k, v in e.items()}
-        # 노출이 현금성뿐이면 상품 칸에서 뺀다.
+        # 노출이 현금성뿐이면 **자산군을 「현금성」으로 옮긴다.** 제안 자산군
+        # (국내ETF·국내펀드…)에 없으므로 상품으로는 권해지지 않는다.
+        #
+        # 버리지 않는 까닭 — 처음에는 통째로 지웠는데, 그러자 무위험수익률을
+        # MMF 1 년 수익률로 재던 proposal_cma.py 가 잴 것을 잃고 기대수익률
+        # 전체가 무너졌다. 권하지 않는 것과 갖고 있지 않은 것은 다르다.
         if set(e) == {"현금성"}:
             dropped += 1
+            p["cls_원본"] = p["cls"]
+            p["cls"] = "현금성"
+            p["flags"] = (p.get("flags") or []) + ["현금성_제안대상아님"]
+            out.append(p)
             continue
         if p.get("kind") == "ETF":
             # 주식·채권 어느 쪽이든 **지역**만 보고 국내/해외 ETF 를 다시 정한다.
@@ -669,8 +678,8 @@ def main():
     # **상장지가 아니라 실제 노출로 자산군을 다시 정한다.** 이 한 줄이 없으면
     # 「국내ETF」 칸에 미국 지수만 담기고 「국내펀드」 칸이 통째로 MMF 가 된다.
     products, moves = reassign_by_exposure(products)
-    print("\n노출로 다시 봄 — 자산군 옮김 %d · 현금성 제외 %d · "
-          "레버리지·인버스 제외 %d · 못 가림 %d"
+    print("\n노출로 다시 봄 — 자산군 옮김 %d · 현금성으로 옮김 %d · "
+          "레버리지·인버스 뺌 %d · 못 가림 %d"
           % (moves["재분류"], moves["현금성_제외"],
              moves["레버리지_제외"], moves["미분류"]))
 
