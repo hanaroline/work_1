@@ -74,6 +74,14 @@
   }
   var eb = document.querySelector('.expand-all');
   if (eb) {
+    /* 단추의 첫 상태를 **화면에 실제로 열려 있는 것**에서 읽는다.
+       2026-09-19 에 근거 블록을 펼친 채로 내기 시작하면서 필요해졌다 —
+       마크업에 "접힘"이라고 박아 두면 전체 판에서는 첫 클릭이 헛돌고,
+       상세가 하나도 없는 핵심본에서는 반대로 접기부터 하게 된다. */
+    var ds0 = document.querySelectorAll('details.exp');
+    var allOpen0 = ds0.length > 0
+      && document.querySelectorAll('details.exp[open]').length === ds0.length;
+    eb.setAttribute('aria-pressed', allOpen0 ? 'true' : 'false');
     eb.addEventListener('click', function () {
       setAll(eb.getAttribute('aria-pressed') !== 'true');
     });
