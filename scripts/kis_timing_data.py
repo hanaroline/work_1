@@ -24,6 +24,37 @@ import subprocess
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
+VOLATILE = ('generated_at_kst',)
+
+
+def write_if_changed(path, doc, volatile=VOLATILE):
+    """**바뀐 것이 시각뿐이면 파일을 건드리지 않는다.**
+
+    `build_volatility.py` 의 같은 함수와 같은 까닭이다 — 봉이 그대로면 산출물도
+    그대로라, 새로 써 봐야 `generated_at_kst` 한 칸만 달라진다. 게다가 줄바꿈 없는
+    한 줄 JSON 이라 git 이 줄 델타를 못 만들어, 한 글자가 달라도 90~170KB 가
+    통째로 새로 쌓인다.
+
+    그러면 `generated_at_kst` 는 「이 판이 만들어진 때」라는 제 뜻을 되찾는다 —
+    「마지막으로 돌린 때」는 Actions 기록이 말해 준다.
+
+    **성적표와 세팅이 이 함수를 함께 쓴다.** 처음에는 세팅 쪽에만 넣었는데, 단추로
+    돌린 백테스트가 내용이 같은데도 171KB 를 새로 쌓는 것을 실행 기록에서 보고
+    이리로 옮겼다. 한쪽에만 둔 규율은 언젠가 다른 쪽에서 깨진다.
+    """
+    new = {k: v for k, v in doc.items() if k not in volatile}
+    if os.path.exists(path):
+        try:
+            old = json.load(open(path, encoding='utf-8'))
+            if {k: v for k, v in old.items() if k not in volatile} == new:
+                return False
+        except ValueError:
+            pass                      # 깨진 파일이면 새로 쓴다
+    os.makedirs(os.path.dirname(path), exist_ok=True)
+    with open(path, 'w', encoding='utf-8') as f:
+        json.dump(doc, f, ensure_ascii=False, separators=(',', ':'))
+    return True
+
 MARKETS = {
     'KR_STOCK': {'label': '국내주식', 'kind': '주식', 'region': 'KR', 'currency': 'KRW'},
     'US_STOCK': {'label': '미국주식', 'kind': '주식', 'region': 'US', 'currency': 'USD'},
