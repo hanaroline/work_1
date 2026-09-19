@@ -569,6 +569,20 @@ def median(xs):
     return xs[n // 2] if n % 2 else (xs[n // 2 - 1] + xs[n // 2]) / 2
 
 
+def _bar_key(code):
+    """일봉 파일에서 종목을 찾을 열쇠.
+
+    코드 모양이 원천마다 다르다 — 「005930.KS」(야후 꼴)·「A133690」(ETFCHECK
+    꼴)·「133690」·「AAPL」(해외). 앞의 A 는 ETFCHECK 접두사라 떼야 하는데,
+    **그냥 떼면 AAPL 이 PL 이 된다**(lstrip 은 앞의 A 를 전부 떼므로 ABBV 는
+    BBV, ADBE 는 DBE 가 된다). 그래서 뗀 나머지가 여섯 자리 숫자일 때만 뗀다.
+    """
+    c = str(code or "").split(".")[0].strip().upper()
+    if c.startswith("A") and c[1:].isdigit() and len(c[1:]) == 6:
+        return c[1:]
+    return c
+
+
 def attach_metrics(products):
     """상품에 **다년 지표**(1·3·5해 CAGR·변동성·최대낙폭)를 붙인다.
 
@@ -578,21 +592,31 @@ def attach_metrics(products):
 
     일봉의 출처가 둘이라 겹치면 **긴 쪽이 이긴다** — KIS 로 새로 받은
     kr_bars.json 이 보통 더 길다(10 해). 원천 이름도 함께 적어 둔다.
+
+    해외 상장분은 overseas_bars.json 에서 온다(`fetch_overseas_bars_kis.py`).
+    **달러 기준**이라는 점은 그 파일에 적혀 있고 원천 이름으로 따라온다.
     """
     bars = {}
-    p = os.path.join(OUT_DIR, "kr_bars.json")
-    if os.path.exists(p):
+    for fname in ("kr_bars.json", "overseas_bars.json"):
+        p = os.path.join(OUT_DIR, fname)
+        if not os.path.exists(p):
+            continue
         try:
             doc = json.load(open(p, encoding="utf-8"))
-            for code, v in (doc.get("items") or {}).items():
-                bars[code] = (v.get("d") or [], v.get("c") or [],
-                              doc.get("source"))
         except ValueError:
-            pass
+            continue
+        for code, v in (doc.get("items") or {}).items():
+            d, c = v.get("d") or [], v.get("c") or []
+            old = bars.get(code)
+            # 겹치면 긴 쪽이 이긴다 — 같은 종목을 두 파일이 들고 있을 때
+            # 짧은 쪽이 덮으면 애써 받은 10 해가 1 해로 줄어든다.
+            if old and len(old[1] or []) >= len(c):
+                continue
+            bars[code] = (d, c, doc.get("source"))
 
     n_long, n_any = 0, 0
     for prod in products:
-        code = str(prod.get("code") or "").split(".")[0].lstrip("A")
+        code = _bar_key(prod.get("code"))
         got = bars.get(code)
         d, c, src = got if got else (None, None, None)
         # 일봉 원천이 없으면, 로더가 이미 들고 있던 봉으로라도 잰다.
