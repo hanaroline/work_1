@@ -1,0 +1,662 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>전략빌더 10종 — 매매 타이밍</title>
+<!--
+  한국투자증권 오픈API 공식 저장소(github.com/koreainvestment/open-trading-api)의
+  전략빌더 기본 전략 10종을 국내주식 100 · 미국주식 99 · 국내ETF 48 · 해외ETF 18 에
+  대고 재어 본 뒤, **오늘 무엇을 얼마에 사고 어디서 자를지**를 내는 화면이다.
+
+  **화면은 셈하지 않는다.** data/kis_timing/latest.json 과 backtest.json 을 옮겨
+  찍기만 한다. 화면이 지표를 다시 셈하면 verify_kis_timing.py 가 대조할 자리가
+  없어지고, 언젠가 백테스트와 다른 신호를 내게 된다.
+
+  **자료를 못 받으면 지어내지 않는다.** 「받지 못했습니다」라고 적고 멈춘다.
+  시세 화면이라면 샘플로 넘어가도 되지만 여기서 같은 짓을 하면 가짜 매수
+  신호가 된다.
+
+  띄우는 법 — 저장소 뿌리에서 `python3 -m http.server 8000` 뒤
+  http://localhost:8000/docs/kis-timing/ 로 연다.
+-->
+<style>
+  /* 팔레트 — 저장소의 다른 화면과 같은 것(docs/signal, docs/volatility) */
+  :root {
+    --surface-1: #fcfcfb; --page: #f9f9f7;
+    --text-primary: #0b0b0b; --text-secondary: #52514e; --text-muted: #898781;
+    --grid: #e1e0d9; --axis: #c3c2b7; --border: rgba(11,11,11,0.10);
+    --series-1: #2a78d6; --series-2: #1baf7a; --series-3: #eda100;
+    --series-5: #4a3aa7; --series-6: #e34948; --series-8: #eb6834;
+    /* 발산 축 — 초과수익의 부호. 국내 관행대로 붉은 쪽이 플러스,
+       푸른 쪽이 마이너스, 가운데는 중립 회색이다(무지개를 쓰지 않는다). */
+    --pos: 208,59,59; --neg: 42,120,214; --zero: #efefea;
+    --up: #d03b3b; --down: #2a78d6; --good: #006300;
+    --warn: #b06f00; --danger: #c0392b;
+    --shadow: 0 1px 2px rgba(11,11,11,.05), 0 4px 16px rgba(11,11,11,.04);
+    --radius: 14px;
+  }
+  :root[data-theme="dark"] {
+    --surface-1: #1a1a19; --page: #0d0d0d;
+    --text-primary: #ffffff; --text-secondary: #c3c2b7; --text-muted: #898781;
+    --grid: #2c2c2a; --axis: #383835; --border: rgba(255,255,255,0.10);
+    --series-1: #3987e5; --series-2: #199e70; --series-3: #c98500;
+    --series-5: #9085e9; --series-6: #e66767; --series-8: #d95926;
+    --pos: 230,103,103; --neg: 85,152,231; --zero: #242422;
+    --up: #ff6b6b; --down: #5598e7; --good: #0ca30c;
+    --warn: #e0a030; --danger: #ff6b6b;
+    --shadow: 0 1px 2px rgba(0,0,0,.4), 0 4px 16px rgba(0,0,0,.3);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --surface-1: #1a1a19; --page: #0d0d0d;
+      --text-primary: #ffffff; --text-secondary: #c3c2b7; --text-muted: #898781;
+      --grid: #2c2c2a; --axis: #383835; --border: rgba(255,255,255,0.10);
+      --series-1: #3987e5; --series-2: #199e70; --series-3: #c98500;
+      --series-5: #9085e9; --series-6: #e66767; --series-8: #d95926;
+      --pos: 230,103,103; --neg: 85,152,231; --zero: #242422;
+      --up: #ff6b6b; --down: #5598e7; --good: #0ca30c;
+      --warn: #e0a030; --danger: #ff6b6b;
+      --shadow: 0 1px 2px rgba(0,0,0,.4), 0 4px 16px rgba(0,0,0,.3);
+    }
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    font-family: system-ui, -apple-system, "Segoe UI", "Malgun Gothic", sans-serif;
+    background: var(--page); color: var(--text-primary); line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: 1180px; margin: 0 auto; padding: 24px 16px 80px; }
+  header { display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap; }
+  h1 { font-size: 22px; margin: 0; letter-spacing: -0.01em; }
+  .sub { color: var(--text-secondary); font-size: 13px; }
+  .muted { color: var(--text-muted); font-size: 12.5px; }
+  .sec { color: var(--text-secondary); font-size: 13px; }
+  a { color: var(--series-1); }
+  button, select {
+    font: inherit; color: inherit; background: var(--surface-1);
+    border: 1px solid var(--border); border-radius: 9px; padding: 5px 11px; cursor: pointer;
+  }
+  .card {
+    background: var(--surface-1); border: 1px solid var(--border);
+    border-radius: var(--radius); box-shadow: var(--shadow);
+    padding: 18px; margin-top: 16px;
+  }
+  .card h2 { font-size: 15px; margin: 0 0 4px; letter-spacing: -0.01em; }
+  .card h3 { font-size: 13.5px; margin: 18px 0 8px; color: var(--text-secondary); }
+  .lede { font-size: 13px; color: var(--text-secondary); margin: 0 0 14px; }
+
+  .tabs { display: flex; gap: 6px; flex-wrap: wrap; margin: 14px 0 4px; }
+  .tabs button[aria-selected="true"] {
+    background: var(--text-primary); color: var(--page); border-color: var(--text-primary);
+  }
+
+  table { border-collapse: collapse; width: 100%; font-size: 13px; }
+  th, td { padding: 7px 9px; border-bottom: 1px solid var(--grid); text-align: right; }
+  th { color: var(--text-secondary); font-weight: 600; font-size: 12px; white-space: nowrap; }
+  th:first-child, td:first-child { text-align: left; }
+  tbody tr:hover { background: rgba(127,127,127,.06); }
+  .tblwrap { overflow-x: auto; }
+  .watchgrid { display: grid; gap: 16px; }
+  .watchgrid > div { min-width: 0; }
+  .num { font-variant-numeric: tabular-nums; }
+
+  /* 매수/청산 카드 */
+  .plans { display: grid; gap: 12px; grid-template-columns: repeat(auto-fill, minmax(288px, 1fr)); }
+  .plan { border: 1px solid var(--border); border-radius: 12px; padding: 13px 14px; background: var(--page); }
+  .plan.buy { border-left: 3px solid var(--up); }
+  .plan.sell { border-left: 3px solid var(--down); }
+  .plan .nm { font-weight: 650; font-size: 14.5px; }
+  .plan .tk { color: var(--text-muted); font-size: 12px; font-variant-numeric: tabular-nums; }
+  .plan dl { display: grid; grid-template-columns: auto 1fr; gap: 3px 10px; margin: 10px 0 0; font-size: 12.5px; }
+  .plan dt { color: var(--text-muted); }
+  .plan dd { margin: 0; text-align: right; font-variant-numeric: tabular-nums; }
+  .chips { display: flex; gap: 5px; flex-wrap: wrap; margin-top: 9px; }
+  .chip {
+    font-size: 11.5px; padding: 2px 8px; border-radius: 999px;
+    border: 1px solid var(--border); color: var(--text-secondary); background: var(--surface-1);
+  }
+  .chip.on { border-color: var(--up); color: var(--up); }
+  .chip.off { border-color: var(--down); color: var(--down); }
+
+  /* 히트맵 — 발산(초과수익의 부호). 칸의 색은 크기, 글자는 본문 색 그대로 둔다. */
+  .hm td.cell { text-align: center; font-variant-numeric: tabular-nums; cursor: default; }
+  .hm td.z { background: var(--zero); }
+  .hm td.p1 { background: rgba(var(--pos), .12); }
+  .hm td.p2 { background: rgba(var(--pos), .24); }
+  .hm td.p3 { background: rgba(var(--pos), .36); }
+  .hm td.p4 { background: rgba(var(--pos), .48); }
+  .hm td.n1 { background: rgba(var(--neg), .12); }
+  .hm td.n2 { background: rgba(var(--neg), .24); }
+  .hm td.n3 { background: rgba(var(--neg), .36); }
+  .hm td.n4 { background: rgba(var(--neg), .48); }
+  .hm td.na { color: var(--text-muted); }
+  .hm td.member { outline: 2px solid var(--text-primary); outline-offset: -2px; }
+  .legend { display: flex; align-items: center; gap: 8px; margin: 10px 0 0; font-size: 12px; color: var(--text-secondary); flex-wrap: wrap; }
+  .swatches { display: flex; }
+  .sw { width: 22px; height: 12px; border: 1px solid var(--border); border-right: 0; }
+  .sw:last-child { border-right: 1px solid var(--border); }
+
+  /* 막대 — 표 안에 붙는 값 막대(가로 길이 = 초과수익) */
+  .barcell { position: relative; min-width: 128px; text-align: left; padding-left: 14px; }
+  .bar { display: block; height: 9px; border-radius: 0 4px 4px 0; }
+  .bar.pos { background: rgb(var(--pos)); }
+  .bar.neg { background: rgb(var(--neg)); border-radius: 4px 0 0 4px; }
+  .barwrap { display: flex; align-items: center; gap: 7px; }
+
+  .tip {
+    position: fixed; z-index: 9; pointer-events: none; display: none;
+    background: var(--surface-1); border: 1px solid var(--border); border-radius: 9px;
+    box-shadow: var(--shadow); padding: 9px 11px; font-size: 12px; max-width: 280px;
+  }
+  .tip b { font-size: 12.5px; }
+  .tip div { color: var(--text-secondary); }
+
+  .warnbox {
+    border: 1px solid var(--warn); border-radius: 10px; padding: 11px 13px;
+    font-size: 12.5px; color: var(--text-secondary); margin-top: 12px;
+  }
+  .dangerbox {
+    border: 1px solid var(--danger); border-radius: 10px; padding: 11px 13px;
+    font-size: 12.5px; color: var(--text-secondary); margin-top: 14px;
+  }
+  .empty { color: var(--text-muted); font-size: 13px; padding: 10px 0; }
+  details { margin-top: 10px; }
+  summary { cursor: pointer; font-size: 13px; color: var(--text-secondary); }
+  code { font-size: 12px; background: rgba(127,127,127,.12); padding: 1px 5px; border-radius: 4px; }
+  @media (max-width: 640px) { .plans { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>전략빌더 10종 — 매매 타이밍</h1>
+    <span class="sub" id="asof"></span>
+    <span style="flex:1"></span>
+    <button id="theme" title="라이트/다크">◐</button>
+  </header>
+  <p class="sub" style="margin:6px 0 0">
+    한국투자증권 오픈API 공식 저장소
+    <a href="https://github.com/koreainvestment/open-trading-api">open-trading-api</a>
+    의 <b>전략빌더 기본 전략 10종</b>을 국내외 주식·ETF 에 대고 재어 본 뒤,
+    <b>검증을 통과한 전략이 겹치는 자리</b>만 매매 자리로 냅니다.
+  </p>
+
+  <div id="head"></div>
+
+  <div class="card">
+    <h2>오늘의 자리</h2>
+    <p class="lede" id="todayLede">불러오는 중…</p>
+    <div class="tabs" id="tabs"></div>
+    <div id="today"></div>
+  </div>
+
+  <div class="card">
+    <h2>전략 10종은 어느 시장에서 먹혔나</h2>
+    <p class="lede">
+      칸의 숫자는 <b>초과수익</b>입니다 — 그 전략의 거래당 평균수익에서,
+      <b>같은 시장·같은 보유기간에 아무 날에나 산 것</b>의 평균을 뺀 값(%p).
+      승률만으로는 알 수 없는 것을 여기서 봅니다. 상승장에서는 아무 날에나 사도
+      절반은 이기기 때문입니다. 테두리가 둘린 칸이 <b>합의에 쓰는 전략</b>입니다.
+    </p>
+    <div class="tblwrap"><div id="matrix"></div></div>
+    <div class="legend" id="hmLegend"></div>
+    <div id="matrixNote"></div>
+  </div>
+
+  <div class="card">
+    <h2>몇 개가 겹쳐야 사는가</h2>
+    <p class="lede">
+      K는 <b>같은 날 같은 종목에 매수 신호를 낸 전략의 수</b>입니다.
+      <b>검증구간</b>은 앞 구간만 보고 고른 전략을 뒤 구간에서 다시 잰 것이라
+      성적을 미리 알고 고른 효과가 없습니다 — 이 표에서 믿을 것은 그쪽입니다.
+    </p>
+    <div class="tblwrap"><div id="consensus"></div></div>
+  </div>
+
+  <div class="card">
+    <h2>재어 보니 반대였던 것 — 돌파 실패</h2>
+    <p class="lede" id="bfLede"></p>
+    <div class="tblwrap"><div id="breakoutFail"></div></div>
+  </div>
+
+  <div class="card">
+    <h2>전략 10종 — 원본 규칙 그대로</h2>
+    <p class="lede">
+      조건·기본값·손절폭은 공식 저장소의 <code>strategy/</code> 와
+      <code>strategy_core/preset/</code> 에 적힌 것입니다. 옮기면서 고친 자리는
+      세 곳이고 아래 각주에 적어 두었습니다.
+    </p>
+    <div class="tblwrap"><div id="specs"></div></div>
+    <div class="muted" style="margin-top:12px" id="deviations"></div>
+  </div>
+
+  <div class="card">
+    <h2>이 숫자를 어떻게 읽어야 하는가</h2>
+    <div id="limits" class="sec"></div>
+    <div class="dangerbox">
+      이 화면은 <b>투자 권유가 아닙니다.</b> 과거 일봉으로 잰 성적이고,
+      같은 규칙이 앞으로도 같은 성적을 낸다는 보장은 없습니다. 거래비용·세금은
+      가정값이며 실제 계좌의 것과 다릅니다. 매매 판단과 그 결과는 전적으로
+      본인의 책임입니다.
+    </div>
+  </div>
+</div>
+
+<div class="tip" id="tip"></div>
+
+<script>
+(function () {
+  'use strict';
+  var $ = function (id) { return document.getElementById(id); };
+  var DOC = null, BT = null, TAB = null;
+
+  $('theme').onclick = function () {
+    var cur = document.documentElement.getAttribute('data-theme');
+    var next = cur === 'dark' ? 'light' : (cur === 'light' ? 'dark' :
+      (matchMedia('(prefers-color-scheme: dark)').matches ? 'light' : 'dark'));
+    document.documentElement.setAttribute('data-theme', next);
+  };
+
+  /* ── 꾸밈 ─────────────────────────────────────────────────────── */
+  function esc(s) {
+    return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) {
+      return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
+    });
+  }
+  function num(x, d) {
+    if (x == null || isNaN(x)) return '—';
+    return Number(x).toLocaleString('ko-KR', { minimumFractionDigits: d, maximumFractionDigits: d });
+  }
+  function signed(x, d) {
+    if (x == null || isNaN(x)) return '—';
+    return (x > 0 ? '+' : '') + num(x, d == null ? 2 : d);
+  }
+  function price(x, cur) {
+    if (x == null) return '—';
+    return cur === 'USD' ? '$' + num(x, 2) : num(x, 0) + '원';
+  }
+
+  /* ── 자료 — 내장 스냅샷이 있으면 그것을, 없으면 파일을 읽는다.
+        갈림은 이 함수 하나뿐이고 그리는 코드는 완전히 같은 것을 쓴다. ── */
+  function embedded(id) {
+    var el = document.getElementById(id);
+    if (!el) return null;
+    try { return JSON.parse(el.textContent); } catch (e) { return null; }
+  }
+  function loadJson(id, url) {
+    var e = embedded(id);
+    if (e) return Promise.resolve(e);
+    return fetch(url, { cache: 'no-store' }).then(function (r) {
+      if (!r.ok) throw new Error('HTTP ' + r.status);
+      return r.json();
+    });
+  }
+
+  /* ── 오늘의 자리 ──────────────────────────────────────────────── */
+  function nameOf(sid) {
+    var s = (DOC.strategies || []).filter(function (x) { return x.id === sid; })[0];
+    return s ? s.name : sid;
+  }
+
+  function planCard(p, m, kind) {
+    var cur = m.currency;
+    var hits = kind === 'buy' ? p.buy_hits : p.sell_hits;
+    var others = kind === 'buy' ? p.other_buy : p.other_sell;
+    var rows = '';
+    rows += '<dt>기준 종가</dt><dd>' + price(p.close, cur) +
+            ' <span class="muted">(' + signed(p.change_pct) + '%)</span></dd>';
+    if (kind === 'buy') {
+      rows += '<dt>진입</dt><dd>다음 거래일 시가</dd>';
+      rows += '<dt>손절 기준</dt><dd>' + price(p.stop_ref, cur) +
+              ' <span class="muted">(−' + num(p.stop_pct, 0) + '%)</span></dd>';
+      if (p.weight_hint != null) {
+        rows += '<dt>비중 힌트</dt><dd>' + num(p.weight_hint, 0) + '%</dd>';
+      }
+    } else {
+      rows += '<dt>청산</dt><dd>다음 거래일 시가</dd>';
+    }
+    var chips = hits.map(function (s) {
+      return '<span class="chip ' + (kind === 'buy' ? 'on' : 'off') + '">' + esc(nameOf(s)) + '</span>';
+    }).join('');
+    if (others && others.length) {
+      chips += others.map(function (s) {
+        return '<span class="chip">' + esc(nameOf(s)) + ' <span class="muted">비멤버</span></span>';
+      }).join('');
+    }
+    return '<div class="plan ' + kind + '">' +
+      '<div class="nm">' + esc(p.name) + '</div>' +
+      '<div class="tk">' + esc(p.symbol) + ' · ' + esc(p.asof) +
+        (p.stale ? ' · <span style="color:var(--warn)">자료 ' + p.stale + '일 뒤처짐</span>' : '') +
+      '</div>' +
+      '<div class="chips">' + chips + '</div>' +
+      '<dl>' + rows + '</dl>' +
+    '</div>';
+  }
+
+  function watchTable(list, m, kind) {
+    if (!list.length) return '<div class="empty">없습니다.</div>';
+    var cur = m.currency;
+    /* 좁은 화면에서 표만 가로로 밀리게 둔다 — 감싸지 않으면 쪽 전체가 밀린다. */
+    var h = '<div class="tblwrap"><table><thead><tr><th>종목</th><th>종가</th><th>등락</th>' +
+            (kind === 'buy' ? '<th>손절 기준</th>' : '') +
+            '<th>신호 전략</th></tr></thead><tbody>';
+    list.forEach(function (p) {
+      var hits = (kind === 'buy' ? p.buy_hits : p.sell_hits)
+        .concat(kind === 'buy' ? p.other_buy : p.other_sell);
+      h += '<tr><td>' + esc(p.name) + ' <span class="muted">' + esc(p.symbol) + '</span></td>' +
+        '<td class="num">' + price(p.close, cur) + '</td>' +
+        '<td class="num" style="color:' + (p.change_pct >= 0 ? 'var(--up)' : 'var(--down)') + '">' +
+          signed(p.change_pct) + '%</td>' +
+        (kind === 'buy' ? '<td class="num">' + price(p.stop_ref, cur) + '</td>' : '') +
+        '<td style="text-align:left">' + hits.map(function (s) {
+          return esc(nameOf(s)); }).join(', ') + '</td></tr>';
+    });
+    return h + '</tbody></table></div>';
+  }
+
+  function renderToday() {
+    var m = DOC.markets[TAB];
+    if (!m) { $('today').innerHTML = '<div class="empty">자료가 없습니다.</div>'; return; }
+    var g = m.consensus_full, gt = m.consensus_test;
+    var h = '';
+
+    h += '<p class="sec" style="margin:6px 0 14px">' +
+      '<b>' + esc(m.label) + '</b> ' + m.count + '종목 · 기준일 ' + esc(m.asof) + ' · ' +
+      '합의에 쓰는 전략 ' + m.members.length + '종 (' +
+      esc(m.member_names.join(' · ') || '없음') + ')' +
+      (g && g.trades ? ' · 이 조합의 전 구간 성적 ' + g.trades + '거래 · 승률 ' +
+        num(g.win_rate, 1) + '% · 평균 ' + signed(g.avg) + '% · 초과 ' + signed(g.edge) + '%p' : '') +
+      (gt && gt.trades ? ' <span class="muted">(검증구간 ' + gt.trades + '거래 · 초과 ' +
+        signed(gt.edge) + '%p)</span>' : '') +
+      '</p>';
+
+    h += '<h3>매수 — 전략 ' + DOC.rule.k + '종 이상이 겹친 자리</h3>';
+    h += m.buy.length ? '<div class="plans">' + m.buy.map(function (p) {
+      return planCard(p, m, 'buy'); }).join('') + '</div>'
+      : '<div class="empty">오늘은 없습니다. 합의가 뜨는 날은 드뭅니다 — ' +
+        '종목·날 기준 1~2% 입니다. 아래 관찰 목록을 보십시오.</div>';
+
+    h += '<h3>청산 — 들고 있다면 내려놓을 자리</h3>';
+    h += m.sell.length ? '<div class="plans">' + m.sell.map(function (p) {
+      return planCard(p, m, 'sell'); }).join('') + '</div>'
+      : '<div class="empty">오늘은 없습니다.</div>';
+
+    h += '<h3>관찰 — 한 전략만 켜진 자리 <span class="muted">(합의가 아닙니다)</span></h3>';
+    h += '<p class="muted" style="margin:0 0 8px">' +
+      '신호 하나로는 백테스트가 초과수익을 거의 내지 못했습니다(K=1). ' +
+      '사는 자리가 아니라 <b>며칠 더 보는 자리</b>로 읽으십시오.</p>';
+    /* 격자 칸은 기본이 min-width:auto 라 표가 줄어들지 못하고 쪽 전체를 밀어낸다.
+       칸마다 min-width:0 을 주어야 .tblwrap 의 가로 스크롤이 실제로 산다. */
+    h += '<div class="watchgrid">';
+    h += '<div><div class="muted" style="margin-bottom:5px">매수 쪽 ' + m.watch_buy.length + '종</div>' +
+         watchTable(m.watch_buy, m, 'buy') + '</div>';
+    h += '<div><div class="muted" style="margin-bottom:5px">청산 쪽 ' + m.watch_sell.length + '종</div>' +
+         watchTable(m.watch_sell, m, 'sell') + '</div>';
+    h += '</div>';
+
+    if (m.stale && m.stale.length) {
+      h += '<div class="warnbox">일봉이 뒤처진 종목 ' + m.stale.length + '종 — ' +
+        m.stale.map(function (s) { return esc(s.name) + '(' + esc(s.asof) + ')'; }).join(', ') +
+        '. 이 종목의 신호는 그 날짜 기준입니다.</div>';
+    }
+    $('today').innerHTML = h;
+  }
+
+  function renderTabs() {
+    var ks = Object.keys(DOC.markets);
+    TAB = TAB || ks[0];
+    $('tabs').innerHTML = ks.map(function (k) {
+      var m = DOC.markets[k];
+      var n = m.buy.length + m.sell.length;
+      return '<button data-mk="' + k + '" aria-selected="' + (k === TAB) + '">' +
+        esc(m.label) + (n ? ' <span class="num">' + n + '</span>' : '') + '</button>';
+    }).join('');
+    Array.prototype.forEach.call($('tabs').querySelectorAll('button'), function (b) {
+      b.onclick = function () { TAB = b.getAttribute('data-mk'); renderTabs(); renderToday(); };
+    });
+  }
+
+  /* ── 히트맵 ───────────────────────────────────────────────────── */
+  function step(v) {
+    if (v == null) return 'na';
+    var a = Math.abs(v);
+    var s = a < 0.25 ? 0 : a < 1 ? 1 : a < 3 ? 2 : a < 6 ? 3 : 4;
+    if (s === 0) return 'z';
+    return (v > 0 ? 'p' : 'n') + s;
+  }
+
+  function renderMatrix() {
+    var mks = Object.keys(DOC.markets);
+    var specs = (DOC.strategies || []).filter(function (s) { return s.buy_rule; });
+    var h = '<table class="hm"><thead><tr><th>전략</th><th>분류</th>';
+    mks.forEach(function (k) { h += '<th style="text-align:center">' + esc(DOC.markets[k].label) + '</th>'; });
+    h += '</tr></thead><tbody>';
+    specs.forEach(function (s) {
+      h += '<tr><td>' + esc(s.name) + '</td><td class="muted" style="text-align:left">' +
+           esc(s.category) + '</td>';
+      mks.forEach(function (k) {
+        var bs = DOC.markets[k].by_strategy[s.id] || {};
+        var g = bs.grade || {};
+        var cls = step(g.edge);
+        h += '<td class="cell ' + cls + (bs.member ? ' member' : '') + '"' +
+          ' data-tip="' + esc(JSON.stringify({
+            t: DOC.markets[k].label + ' · ' + s.name, g: g, m: !!bs.member })) + '">' +
+          (g.edge == null ? '—' : signed(g.edge, 1)) + '</td>';
+      });
+      h += '</tr>';
+    });
+    h += '</tbody></table>';
+    $('matrix').innerHTML = h;
+
+    $('hmLegend').innerHTML =
+      '<span>초과수익</span>' +
+      '<div class="swatches">' +
+        ['n4', 'n3', 'n2', 'n1', 'z', 'p1', 'p2', 'p3', 'p4'].map(function (c) {
+          var bg = c === 'z' ? 'var(--zero)' :
+            'rgba(var(--' + (c[0] === 'p' ? 'pos' : 'neg') + '), ' +
+            ({ '1': '.12', '2': '.24', '3': '.36', '4': '.48' })[c[1]] + ')';
+          return '<span class="sw" style="background:' + bg + '"></span>';
+        }).join('') +
+      '</div>' +
+      '<span class="muted">−6%p 이하 · 0 근처 · +6%p 이상 · 칸에 커서를 올리면 거래수와 학습/검증이 보입니다</span>';
+
+    var tip = $('tip');
+    Array.prototype.forEach.call($('matrix').querySelectorAll('td.cell'), function (td) {
+      td.onmouseenter = function (e) {
+        var d;
+        try { d = JSON.parse(td.getAttribute('data-tip')); } catch (err) { return; }
+        var g = d.g || {};
+        tip.innerHTML = '<b>' + esc(d.t) + '</b>' +
+          (d.m ? ' <span class="chip on">합의 멤버</span>' : '') +
+          '<div>거래 ' + (g.trades == null ? '—' : g.trades) +
+          ' · 승률 ' + num(g.win_rate, 1) + '%' +
+          ' · 평균 ' + signed(g.avg) + '%</div>' +
+          '<div>초과 ' + signed(g.edge) + '%p ' +
+          '(학습 ' + signed(g.train_edge) + ' · 검증 ' + signed(g.test_edge) + ')</div>';
+        tip.style.display = 'block';
+        var r = td.getBoundingClientRect();
+        tip.style.left = Math.min(r.left, innerWidth - 300) + 'px';
+        tip.style.top = (r.bottom + 8) + 'px';
+      };
+      td.onmouseleave = function () { tip.style.display = 'none'; };
+    });
+
+    var picked = mks.map(function (k) {
+      var m = DOC.markets[k];
+      return esc(m.label) + ' ' + m.members.length + '종';
+    }).join(' · ');
+    $('matrixNote').innerHTML = '<p class="muted" style="margin:12px 0 0">' +
+      '합의에 남긴 전략 — ' + picked + '. 남기는 잣대는 <b>' + esc(DOC.rule.member_rule) +
+      '</b> 입니다. 한 구간에서 크게 이긴 것은 자주 우연이지만, 두 장세에서 모두 이긴 것은 덜 그렇습니다.</p>';
+  }
+
+  /* ── 합의 K ───────────────────────────────────────────────────── */
+  function renderConsensus() {
+    var rows = (BT && BT.consensus) || [];
+    if (!rows.length) { $('consensus').innerHTML = '<div class="empty">자료가 없습니다.</div>'; return; }
+    var mx = Math.max.apply(null, rows.map(function (c) { return Math.abs(c.edge || 0); })) || 1;
+    var mks = Object.keys(DOC.markets);
+    var h = '<table><thead><tr><th>시장</th><th>구간</th><th>K</th><th>거래</th>' +
+            '<th>승률</th><th>평균</th><th>대조군</th>' +
+            '<th style="text-align:left;padding-left:14px">초과수익</th></tr></thead><tbody>';
+    mks.forEach(function (k) {
+      ['test', 'full'].forEach(function (scope) {
+        rows.filter(function (c) { return c.market === k && c.scope === scope; })
+          .sort(function (a, b) { return a.k - b.k; })
+          .forEach(function (c) {
+            var thin = (c.trades || 0) < (DOC.backtest_assumptions['최소거래수'] || 30);
+            var w = Math.round(Math.abs(c.edge || 0) / mx * 100);
+            h += '<tr>' +
+              '<td>' + esc(DOC.markets[k].label) + '</td>' +
+              '<td class="muted">' + (scope === 'test' ? '검증' : '전 구간') + '</td>' +
+              '<td class="num">' + c.k + '</td>' +
+              '<td class="num">' + (c.trades || 0) +
+                (thin ? ' <span class="muted" title="표본이 모자랍니다">▲</span>' : '') + '</td>' +
+              '<td class="num">' + num(c.win_rate, 1) + '%</td>' +
+              '<td class="num">' + signed(c.avg) + '%</td>' +
+              '<td class="num muted">' + signed(c.base && c.base.avg) + '%</td>' +
+              '<td class="barcell"><span class="barwrap">' +
+                '<span class="num" style="min-width:52px;text-align:right">' +
+                  signed(c.edge) + '%p</span>' +
+                '<span class="bar ' + ((c.edge || 0) >= 0 ? 'pos' : 'neg') +
+                  '" style="width:' + w + 'px"></span>' +
+              '</span></td></tr>';
+          });
+      });
+    });
+    h += '</tbody></table>';
+    $('consensus').innerHTML = h + '<p class="muted" style="margin:10px 0 0">' +
+      '▲ 는 거래가 ' + (DOC.backtest_assumptions['최소거래수'] || 30) +
+      '건에 못 미쳐 <b>성적을 말할 수 없는</b> 칸입니다. 평균이 크게 찍혀도 ' +
+      '그 수는 몇 건의 운입니다. 이 화면이 K=' + DOC.rule.k +
+      ' 를 쓰는 까닭이 여기 있습니다 — 네 시장 모두에서 거래수와 초과수익을 함께 갖춘 유일한 자리입니다.</p>';
+  }
+
+  /* ── 돌파 실패 ────────────────────────────────────────────────── */
+  function renderBreakoutFail() {
+    var rows = (DOC.sell_only || []);
+    if (!rows.length) { $('breakoutFail').innerHTML = ''; return; }
+    var allUp = rows.every(function (r) {
+      return Object.keys(r.horizons).every(function (h) {
+        return (r.horizons[h].edge || 0) > 0; });
+    });
+    $('bfLede').innerHTML =
+      '원본은 이것을 <b>매도 신호</b>로 둡니다 — 전고를 뚫고 올라섰다가 −3% 넘게 ' +
+      '되밀리면 판다. 그러려면 신호 뒤에 <b>더 떨어져야</b> 합니다. ' +
+      (allUp
+        ? '네 시장 어디에서도 그러지 않았습니다. 신호 뒤 5·10·20 거래일 수익률이 ' +
+          '아무 날에나 산 것보다 <b>모두 높았습니다.</b> 이 자료에서 「돌파 실패」는 ' +
+          '팔 자리가 아니라 <b>눌린 자리</b>였습니다. 그래서 합의에서 뺐고, ' +
+          '반대로 뒤집어 쓰지도 않았습니다 — 원본에 없는 전략을 지어내는 일이기 때문입니다.'
+        : '결과는 아래와 같습니다.');
+    var h = '<table><thead><tr><th>시장</th><th>신호</th>' +
+            '<th>+5일</th><th>대조</th><th>+10일</th><th>대조</th><th>+20일</th><th>대조</th>' +
+            '</tr></thead><tbody>';
+    rows.forEach(function (r) {
+      var m = DOC.markets[r.market];
+      h += '<tr><td>' + esc(m ? m.label : r.market) + '</td>' +
+           '<td class="num">' + r.fired + '</td>';
+      ['5', '10', '20'].forEach(function (k) {
+        var x = r.horizons[k] || {};
+        h += '<td class="num">' + signed(x.avg) + '%</td>' +
+             '<td class="num muted">' + signed(x.base_avg) + '%</td>';
+      });
+      h += '</tr>';
+    });
+    $('breakoutFail').innerHTML = h + '</tbody></table>';
+  }
+
+  /* ── 명세 ─────────────────────────────────────────────────────── */
+  function renderSpecs() {
+    var h = '<table><thead><tr><th>#</th><th>전략</th><th>분류</th>' +
+            '<th style="text-align:left">매수</th><th style="text-align:left">매도·청산</th>' +
+            '<th>손절</th><th>익절</th></tr></thead><tbody>';
+    (DOC.strategies || []).forEach(function (s) {
+      h += '<tr><td class="num">' + s.no + '</td><td>' + esc(s.name) + '</td>' +
+        '<td class="muted" style="text-align:left">' + esc(s.category) + '</td>' +
+        '<td style="text-align:left">' + esc(s.buy_rule || '— (매도 전용)') + '</td>' +
+        '<td style="text-align:left">' + esc(s.sell_rule) + '</td>' +
+        '<td class="num">' + (s.risk.stop_loss ? '−' + num(s.risk.stop_loss, 0) + '%' : '—') + '</td>' +
+        '<td class="num">' + (s.risk.take_profit ? '+' + num(s.risk.take_profit, 0) + '%' : '—') + '</td></tr>';
+    });
+    $('specs').innerHTML = h + '</tbody></table>';
+    $('deviations').innerHTML =
+      '<b>옮기면서 고친 세 자리.</b> ① <b>모멘텀</b> — 원본은 소수(0.30)를 퍼센트 기준값(30)과 ' +
+      '견주어 사실상 켜지지 않습니다. 빌더가 내보내는 <code>roc(60) &gt; 30</code> 의 뜻을 따라 ' +
+      '퍼센트로 맞췄고 기준값은 손대지 않았습니다. ② <b>52주 신고가</b> — 원본은 현재가 API 가 ' +
+      '주는 52주 고가를 쓰지만 일봉만 있는 여기서는 <b>오늘을 뺀 직전 252봉의 고가</b>를 씁니다 ' +
+      '(오늘을 넣으면 영영 켜지지 않습니다). ③ <b>변동성 확장</b> — 프리셋의 절대 문턱(0.02)은 ' +
+      '채권 ETF 에서는 늘 참이고 레버리지 ETF 에서는 늘 거짓이라, 실행 엔진 쪽의 ' +
+      '<b>직전 10봉 최저 변동성 × 1.1</b> 이라는 상대 기준을 따랐습니다.';
+  }
+
+  /* ── 한계 ─────────────────────────────────────────────────────── */
+  function renderLimits() {
+    var a = DOC.backtest_assumptions || {};
+    var u = DOC.markets;
+    var spans = Object.keys(u).map(function (k) {
+      var uu = u[k].universe || {};
+      return '<li><b>' + esc(u[k].label) + '</b> ' + u[k].count + '종목 · ' +
+        esc(uu.from || '') + ' ~ ' + esc(uu.to || '') +
+        (uu.split_at ? ' <span class="muted">(학습/검증 경계 ' + esc(uu.split_at) + ')</span>' : '') +
+        '</li>';
+    }).join('');
+    $('limits').innerHTML =
+      '<p><b>매매를 어떻게 흉내냈는가.</b> 진입은 ' + esc(a['진입']) + ', 청산은 ' +
+      esc(a['청산']) + '. 같은 봉에서 손절선과 익절선에 모두 닿으면 <b>손절 쪽</b>으로 봅니다 — ' +
+      '일봉으로는 어느 쪽이 먼저였는지 알 수 없고, 모를 때 유리한 쪽을 고르면 성적이 부풉니다.</p>' +
+      '<p><b>대조군.</b> ' + esc(a['대조군']) + '. 승률 55%가 대단해 보여도 그 장에서 ' +
+      '아무 날에나 사도 55%가 이겼다면 그 전략은 0을 번 것입니다.</p>' +
+      '<p><b>학습과 검증.</b> ' + esc(a['학습검증']) + '.</p>' +
+      '<p><b>거래비용.</b> 왕복 ' +
+      Object.keys(a['왕복비용_bp'] || {}).map(function (k) {
+        return esc((u[k] || {}).label || k) + ' ' + a['왕복비용_bp'][k] + 'bp'; }).join(' · ') +
+      '. ' + esc(a['비용주의']) +
+      ' 다만 <b>초과수익은 비용 가정에 흔들리지 않습니다</b> — 대조군도 같은 비용을 ' +
+      '내기 때문입니다. 비용이 움직이는 것은 평균수익의 절대값입니다. ' +
+      '<b>대신 회전율이 문제입니다</b> — 거래당 초과수익이 같아도 평균 보유가 1일인 ' +
+      '규칙은 한 해에 수백 번, 20일인 규칙은 열몇 번 돕니다. 이 표의 숫자는 ' +
+      '<b>거래당</b>이지 연간이 아닙니다.</p>' +
+      '<p><b>자료 구간.</b></p><ul>' + spans + '</ul>' +
+      '<p><b>구간이 짧은 곳이 있습니다.</b> 국내·미국 주식은 2년치라 검증구간이 ' +
+      '한 해가 되지 않습니다. 그 사이 한 번의 장세만 겪었으므로, ETF 쪽(8년)보다 ' +
+      '성적을 훨씬 얇게 읽어야 합니다.</p>' +
+      '<p><b>ETF 우주는 이 저장소가 쓰는 목록입니다.</b> 국내외 상장 ETF 전부가 아니라 ' +
+      '시가·고가·저가가 갖춰진 것만 넣었습니다 — 「강한 종가」와 「52주 신고가」는 ' +
+      '종가만으로는 셈할 수 없기 때문입니다.</p>' +
+      '<p class="muted">산출물 검산 결과는 <code>data/kis_timing/verify.txt</code> 에 있습니다.</p>';
+  }
+
+  function fail(msg) {
+    $('todayLede').textContent = msg;
+    $('today').innerHTML = '';
+  }
+
+  Promise.all([
+    loadJson('kis-timing-embedded', '../../data/kis_timing/latest.json'),
+    loadJson('kis-backtest-embedded', '../../data/kis_timing/backtest.json')
+  ]).then(function (r) {
+    DOC = r[0]; BT = r[1];
+    $('asof').textContent = '산출 ' + (DOC.generated_at_kst || '') +
+      (embedded('kis-timing-embedded') ? ' · 내장 스냅샷' : '');
+    $('todayLede').innerHTML =
+      '<b>' + DOC.rule.k + '종 이상이 같은 날 같은 종목을 가리키면</b> 매수, ' +
+      '같은 수가 반대를 가리키면 청산입니다. 진입은 ' + esc(DOC.rule.entry) + ', ' +
+      '손절은 진입가 대비 −' + num(DOC.rule.stop_loss_pct, 0) + '%, ' +
+      '청산은 ' + esc(DOC.rule.exit) + ' 입니다. ' +
+      '<span class="muted">' + esc(DOC.rule.price_note) + '</span>';
+    renderTabs(); renderToday(); renderMatrix(); renderConsensus();
+    renderBreakoutFail(); renderSpecs(); renderLimits();
+  }).catch(function (e) {
+    fail('자료를 읽지 못했습니다 (' + e.message + '). ' +
+      '저장소 뿌리에서 python3 -m http.server 8000 으로 띄운 뒤 ' +
+      'http://localhost:8000/docs/kis-timing/ 로 여십시오. ' +
+      '파일을 두 번 눌러 열면 브라우저 보안정책이 자료 읽기를 막습니다. ' +
+      '자료를 못 받았을 때 지어낸 값으로 매수 신호를 내지는 않습니다.');
+  });
+})();
+</script>
+</body>
+</html>
