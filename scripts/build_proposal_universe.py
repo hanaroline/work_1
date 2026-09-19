@@ -69,6 +69,11 @@ MIN_AUM = 10_000_000_000
 SANE_1Y = {"bond": 30.0, "mmf": 15.0, "equity": 200.0,
            "mixed": 100.0, "alternative": 150.0, "other": 150.0}
 
+# 자산군 코드를 우리말로. 고객 제안서의 「유형」 칸에 `equity` 가 그대로 찍혀
+# 나갔다 — 원천의 코드를 옮겨 적은 것일 뿐인데 고객에게는 읽을 수 없는 글자다.
+ASSET_KO = {"equity": "주식", "bond": "채권", "alternative": "대체",
+            "mixed": "혼합", "mmf": "MMF", "other": "기타"}
+
 TRADING_DAYS = 252
 
 
@@ -276,6 +281,40 @@ def load_stock_meta(page, branch, subdir):
     return meta
 
 
+def kis_kr_overrides():
+    """국내주식 일봉을 **증권사 값으로 갈아 끼운다.**
+
+    왜 — kr100-data 의 일봉은 야후 파이낸스다. 그런데 이 저장소는 야후·네이버를
+    한국투자증권으로 심판해 `data/prices_kis/verdict.txt` 에 결론을 적어 두었다:
+    갈리는 봉의 **89.1% 에서 네이버가 맞고 야후가 틀렸다**. 그 결론을 내려놓고
+    고객 제안서만 야후로 만들면, 회사가 스스로 틀렸다고 판정한 숫자를 고객에게
+    내미는 셈이 된다. 실제로 벌어지던 차이는 작지 않다 — 삼성전자 1년 수익률이
+    야후 272.3%, 증권사 223.0% 로 49%p 어긋났다.
+
+    무엇을 바꾸나 — 수익률·변동성·최대낙폭, 그리고 **시가총액**. 시총은 원천이
+    주가로 셈한 값이라 주가가 틀리면 같이 틀린다. 주식수(= 시총 ÷ 야후 종가)는
+    어느 쪽 시세를 쓰든 같으므로, 거기에 증권사 종가를 곱해 고쳐 놓는다.
+
+    없으면 갈아 끼우지 않고 야후 그대로 둔다 — 빈칸으로 만들지 않는다. 대신
+    무엇을 썼는지는 상품마다 `src` 에 남으므로 표에서 섞이지 않는다.
+    """
+    p = os.path.join(ROOT, "data", "prices_kis", "kr100.json")
+    if not os.path.exists(p):
+        return {}, None
+    try:
+        doc = json.load(open(p, encoding="utf-8"))
+    except ValueError:
+        return {}, None
+    out = {}
+    for code, v in (doc.get("stocks") or {}).items():
+        closes = [c for c in (v.get("c") or []) if isinstance(c, (int, float))]
+        if len(closes) < 60:
+            continue
+        out[code] = {"m": from_bars(closes), "last": closes[-1],
+                     "asOf": (v.get("d") or [None])[-1]}
+    return out, doc.get("source")
+
+
 def load_branch_bars(branch, subdir, cls, kind, limit=0, meta=None):
     """자료 가지의 일봉 파일들을 읽는다(kr100-data · us100-data 공통 모양)."""
     listing = sh(["git", "ls-tree", "--name-only",
@@ -289,6 +328,10 @@ def load_branch_bars(branch, subdir, cls, kind, limit=0, meta=None):
     meta = meta or {}
     fx = (meta.get("_fx") or {}).get("usdkrw")
     ccy = "KRW" if cls.startswith("국내") else "USD"
+    # 국내주식만 증권사 값으로 갈아 끼운다. 해외주식은 심판을 돌린 적이 없으므로
+    # 손대지 않는다 — 검증하지 않은 것을 검증한 것처럼 바꾸면 안 된다.
+    kis, kis_src = kis_kr_overrides() if cls == "국내주식" else ({}, None)
+    swapped = 0
 
     out = []
     for name in names:
@@ -313,6 +356,21 @@ def load_branch_bars(branch, subdir, cls, kind, limit=0, meta=None):
         cap_krw = cap
         if cap is not None and ccy == "USD":
             cap_krw = cap * fx if fx else None
+
+        src = "야후 파이낸스 일봉 %d 봉 (%s)" % (m["bars"], branch)
+        as_of_one = (d.get("d") or [None])[-1]
+        flags = []
+        k = kis.get(sym)
+        if k:
+            m = k["m"]
+            # 주식수는 시세와 무관하다 — 야후 시총을 야후 종가로 나누면 나온다.
+            if cap_krw and closes[-1]:
+                cap_krw = cap_krw / closes[-1] * k["last"]
+                cap = cap_krw
+            src = "%s %d 봉" % (kis_src or "한국투자증권 오픈API", m["bars"])
+            as_of_one = k["asOf"] or as_of_one
+            flags.append("야후_대신_증권사시세_사용")
+            swapped += 1
         out.append({
             "id": "%s:%s" % (kind, sym),
             "code": sym,
@@ -327,14 +385,23 @@ def load_branch_bars(branch, subdir, cls, kind, limit=0, meta=None):
             "ret1y": m["ret1y"], "ret6m": m["ret6m"],
             "vol": m["vol"], "mdd": m["mdd"],
             "feeMin": None, "feeMax": None,
-            "src": "야후 파이낸스 일봉 %d 봉 (%s)" % (m["bars"], branch),
-            "asOf": (d.get("d") or [None])[-1],
-            "flags": [],
+            "src": src,
+            "asOf": as_of_one,
+            "flags": flags,
         })
     as_of = max((p["asOf"] for p in out if p.get("asOf")), default=None)
-    return out, {"src": "야후 파이낸스 일봉 (자료 가지 %s)" % branch.split("/")[-1],
-                 "count": len(out), "asOf": as_of,
-                 "환율": meta.get("_fx")}
+    if swapped:
+        src_label = ("%s — %d 종 (나머지 %d 종은 야후 파이낸스)"
+                     % (kis_src or "한국투자증권 오픈API", swapped,
+                        len(out) - swapped))
+        note = ("야후·네이버를 증권사 값으로 심판한 결과(data/prices_kis/verdict.txt) "
+                "야후가 갈리는 봉의 89.1%에서 틀렸으므로, 국내주식은 증권사 "
+                "일봉으로 갈아 끼웠습니다. 시가총액도 같은 종가로 고쳐 셈했습니다.")
+    else:
+        src_label = "야후 파이낸스 일봉 (자료 가지 %s)" % branch.split("/")[-1]
+        note = None
+    return out, {"src": src_label, "count": len(out), "asOf": as_of,
+                 "note": note, "환율": meta.get("_fx")}
 
 
 def load_kr_etf():
@@ -465,6 +532,10 @@ def load_overseas_etf():
             "name": it.get("name") or it["symbol"],
             "cls": "해외ETF", "kind": "ETF", "region": "overseas",
             "assetClass": it.get("assetClass") or "equity",
+            # KIS 일봉 TR 은 운용사도 설정액도 주지 않는다. 그래서 그 두 칸은
+            # 비워 둔다(만들어 넣지 않는다). 유형만은 우리말로 옮긴다.
+            "type": ASSET_KO.get(it.get("assetClass") or "equity"),
+            "company": None,
             "size": None, "riskGrade": None,
             "ret1y": m["ret1y"], "ret6m": m["ret6m"],
             "vol": m["vol"], "mdd": m["mdd"],
