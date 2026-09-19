@@ -79,8 +79,12 @@ def decompress(buf):
 
 
 def compress(data):
+    # **빈 것은 서명만.** 빈 모듈(ThisWorkbook 처럼 코드가 없는 문서 모듈)에서
+    # 길이 0 인 청크를 만들려다 헤더 크기가 -1 이 되어 터졌다.
+    if not data:
+        return b"\x01"
     out = bytearray(b"\x01")
-    for c0 in range(0, max(len(data), 1), 4096):
+    for c0 in range(0, len(data), 4096):
         chunk = data[c0:c0 + 4096]
         body, i = bytearray(), 0
         while i < len(chunk):
@@ -335,3 +339,138 @@ def write_cfb(root_kids):
 
     fatbytes = b"".join(struct.pack("<I", x) for x in fat)
     return bytes(hdr) + bytes(body) + fatbytes
+
+
+# ── VBA 프로젝트 조립 (MS-OVBA 2.3.4) ───────────────────────────────
+
+CODEPAGE = 949          # 한국어 Windows. 모듈 이름은 ASCII 로만 짓는다.
+
+
+def _rec(rid, payload, size_bytes=4):
+    """레코드 하나 — Id(2) + Size(4 또는 없음) + 내용."""
+    if size_bytes == 4:
+        return struct.pack("<HI", rid, len(payload)) + payload
+    return struct.pack("<H", rid) + payload
+
+
+def _mbcs(s):
+    return s.encode("cp%d" % CODEPAGE, "replace")
+
+
+def build_dir(project_name, modules):
+    """`VBA/dir` 스트림(압축 전).
+
+    모듈마다 MODULEOFFSET 을 0 으로 둔다 — 모듈 스트림을 성능 캐시 없이
+    소스만 압축해 넣기 때문이다. 엑셀은 열 때 캐시를 스스로 다시 만든다.
+    """
+    d = bytearray()
+    # PROJECTINFORMATION
+    d += _rec(0x0001, struct.pack("<I", 1))            # SysKind: 32비트 윈도
+    d += _rec(0x0002, struct.pack("<I", 0x0409))       # Lcid
+    d += _rec(0x0014, struct.pack("<I", 0x0409))       # LcidInvoke
+    d += _rec(0x0003, struct.pack("<H", CODEPAGE))     # CodePage
+    d += _rec(0x0004, _mbcs(project_name))             # ProjectName
+    d += _rec(0x0005, b"") + _rec(0x0040, b"")         # DocString(+유니코드)
+    d += _rec(0x0006, b"") + _rec(0x003D, b"")         # HelpFilePath
+    d += _rec(0x0007, struct.pack("<I", 0))            # HelpContext
+    d += _rec(0x0008, struct.pack("<I", 0))            # LibFlags
+    # PROJECTVERSION — Size 자리가 Reserved(=4)이고 그 뒤에 6 바이트가 온다.
+    # 이 레코드만 모양이 다르다. 규격을 안 보고 Size 로 읽으면 여기서부터
+    # 나머지 레코드가 전부 밀린다(샘플을 풀 때 실제로 그랬다).
+    d += struct.pack("<HIIH", 0x0009, 4, 1, 0)
+    d += _rec(0x000C, b"") + _rec(0x003C, b"")         # Constants
+
+    # PROJECTREFERENCES — 없다. VBA 내장 함수만 쓰므로 참조가 필요 없다.
+
+    # PROJECTMODULES
+    d += _rec(0x000F, struct.pack("<H", len(modules)))
+    d += _rec(0x0013, struct.pack("<H", 0xFFFF))       # ProjectCookie
+    for m in modules:
+        nm, doc = m["name"], m.get("document")
+        d += _rec(0x0019, _mbcs(nm))                   # ModuleName
+        d += _rec(0x0047, nm.encode("utf-16-le"))      # ModuleNameUnicode
+        d += _rec(0x001A, _mbcs(nm))                   # StreamName
+        d += _rec(0x0032, nm.encode("utf-16-le"))      # StreamNameUnicode
+        d += _rec(0x001C, b"") + _rec(0x0048, b"")     # ModuleDocString
+        d += _rec(0x0031, struct.pack("<I", 0))        # TextOffset = 0
+        d += _rec(0x001E, struct.pack("<I", 0))        # HelpContext
+        d += _rec(0x002C, struct.pack("<H", 0xFFFF))   # ModuleCookie
+        d += _rec(0x0022 if doc else 0x0021, b"")      # 문서모듈 / 표준모듈
+        d += _rec(0x002B, b"")                         # 모듈 끝
+    d += _rec(0x0010, b"")                             # dir 끝
+    return bytes(d)
+
+
+def build_project(project_id, project_name, modules):
+    """`PROJECT` 스트림 — 사람이 읽는 글이다."""
+    L = ['ID="%s"' % project_id]
+    for m in modules:
+        if m.get("document"):
+            L.append("Document=%s/&H00000000" % m["name"])
+        else:
+            L.append("Module=%s" % m["name"])
+    L += ['Name="%s"' % project_name,
+          'HelpContextID="0"',
+          'VersionCompatible32="393222000"',
+          'CMG="%s"' % encrypt(struct.pack("<I", 0), project_id, 0x1B),
+          'DPB="%s"' % encrypt(b"\x00", project_id, 0x2D),
+          'GC="%s"' % encrypt(b"\xff", project_id, 0x3F),
+          "",
+          "[Host Extender Info]",
+          "&H00000001={3832D640-CF90-11CF-8E43-00A0C911005A};VBE;&H00000000",
+          "",
+          "[Workspace]"]
+    for m in modules:
+        L.append("%s=0, 0, 0, 0, %s" % (m["name"], "C" if m.get("document") else ""))
+    return ("\r\n".join(L) + "\r\n").encode("cp%d" % CODEPAGE, "replace")
+
+
+def build_projectwm(modules):
+    """`PROJECTwm` — 모듈 이름의 MBCS↔유니코드 짝을 적어 둔 것."""
+    out = bytearray()
+    for m in modules:
+        out += _mbcs(m["name"]) + b"\x00"
+        out += m["name"].encode("utf-16-le") + b"\x00\x00"
+    out += b"\x00\x00"
+    return bytes(out)
+
+
+def build_vba_project(modules, project_name="VBAProject", project_id=None):
+    """모듈 목록 → `vbaProject.bin` 바이트.
+
+    modules: [{"name": "Module1", "code": "...", "document": False}, …]
+    """
+    pid = project_id or ("{%s}" % str(uuid.uuid4()).upper())
+    vba_kids = [
+        _Node("_VBA_PROJECT", 2,
+              # Reserved1=0x61CC · Version · Reserved2 · Reserved3.
+              # 성능 캐시는 비운다 — 엑셀이 열면서 다시 만든다.
+              struct.pack("<HHBH", 0x61CC, 0x00AF, 0x00, 0x0001)),
+        _Node("dir", 2, compress(build_dir(project_name, modules))),
+    ]
+    for m in modules:
+        # **엑셀은 모듈 소스 첫 줄에 `Attribute VB_Name` 을 둔다.** VBE 에서는
+        # 안 보이지만 스트림에는 들어 있다. 이것 없이 만들었더니 리브레오피스가
+        # 다시 내보낼 때 스스로 붙였다 — 없어도 읽히긴 하지만, 엑셀이 쓰는
+        # 모양에 맞춰 두는 편이 안전하다.
+        src = 'Attribute VB_Name = "%s"\r\n' % m["name"]
+        if m.get("document"):
+            # 문서 모듈은 속성이 몇 줄 더 붙는다. 엑셀이 만든 파일의 모양이다.
+            src += ('Attribute VB_Base = "0{00020820-0000-0000-C000-000000000046}"\r\n'
+                    if m["name"] != "ThisWorkbook" else
+                    'Attribute VB_Base = "0{00020819-0000-0000-C000-000000000046}"\r\n')
+            src += ("Attribute VB_GlobalNameSpace = False\r\n"
+                    "Attribute VB_Creatable = False\r\n"
+                    "Attribute VB_PredeclaredId = True\r\n"
+                    "Attribute VB_Exposed = True\r\n"
+                    "Attribute VB_TemplateDerived = False\r\n"
+                    "Attribute VB_Customizable = True\r\n")
+        src += m.get("code", "")
+        vba_kids.append(_Node(m["name"], 2,
+                              compress(src.encode("cp%d" % CODEPAGE, "replace"))))
+    vba = _Node("VBA", 1)
+    vba.kids = vba_kids
+    kids = [vba,
+            _Node("PROJECT", 2, build_project(pid, project_name, modules)),
+            _Node("PROJECTwm", 2, build_projectwm(modules))]
+    return write_cfb(kids), pid
