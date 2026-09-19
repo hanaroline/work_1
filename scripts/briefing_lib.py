@@ -182,8 +182,20 @@ def tbl(tko, ten, head, rows, cls="data", foot_ko="", foot_en=""):
 
 
 def exp(tko, ten, body):
-    """접는 상세. **최소 서넛은 있어야** 요약 PDF 와 전체 PDF 가 갈린다."""
-    return ('<details class="exp">\n  <summary>' + L(tko, ten) + '</summary>\n'
+    """근거 블록. **펼친 채로 낸다** — 접는 것은 읽는 쪽이 고른다.
+
+    2026-09-19 에 기본값을 뒤집었다. 그 전에는 `open` 없이 내보내 전체 판
+    화면에서 일곱 덩어리(업종 상위·하위와 등락 종목 수 추이, 투자자별 10거래일,
+    업종 ETF·유럽·일본·중국 종목, 재무부 곡선 11만기·달러 상대 통화, 휴장일,
+    검증 노트, 데이터 계보)가 제목만 보였고, **「왜 숨겼느냐」는 지적을 두 번
+    받았다.** 9/12 에는 접힌 채 인쇄되는 요약 PDF 에서, 9/19 에는 화면에서다.
+    PDF 에는 내내 펼쳐져 실려 있었으므로 빠진 적은 없지만, **접혀 있는 것과
+    없는 것을 읽는 쪽이 구별할 이유가 없다.**
+
+    접는 장치 자체는 남긴다 — `<details>` 이므로 제목을 누르면 접히고,
+    머리의 「전체 접기」 단추가 한 번에 접는다. 기본값만 반대로 둔 것이다.
+    """
+    return ('<details class="exp" open>\n  <summary>' + L(tko, ten) + '</summary>\n'
             '  <div class="exp-body">\n' + body + '\n  </div>\n</details>')
 
 
