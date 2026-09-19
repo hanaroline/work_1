@@ -593,13 +593,13 @@ def attach_metrics(products):
         got = bars.get(code)
         d, c, src = got if got else (None, None, None)
         # 일봉 원천이 없으면, 로더가 이미 들고 있던 봉으로라도 잰다.
+        # **어느 쪽이든 임시 필드는 반드시 뺀다.** 처음에는 kr_bars 가 있을 때
+        # 안 뺐더니 종가 배열이 산출물에 그대로 실려 파일이 2 MB 로 불었다.
+        fallback_c = prod.pop("_closes", None)
+        fallback_d = prod.pop("_dates", None)
         if not c:
-            c = prod.pop("_closes", None)
-            d = prod.pop("_dates", None)
-            src = prod.get("src")
+            c, d, src = fallback_c, fallback_d, prod.get("src")
         if not c or len(c) < 60:
-            prod.pop("_closes", None)
-            prod.pop("_dates", None)
             continue
         if not d or len(d) != len(c):
             d = [""] * len(c)
