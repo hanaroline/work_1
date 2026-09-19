@@ -274,17 +274,25 @@ jobs:
           npm i -D playwright@1.56.1 --no-audit --no-fund
           npx playwright install --with-deps chromium
 
+      - name: 한 파일 판 만들기
+        run: python3 scripts/make_kis_timing_offline.py --out /tmp/kis-timing-offline.html
+
       - name: 화면이 브라우저에서 깨지지 않는가
         # 재검산은 **수**가 맞는지를 본다. 자료가 다 맞아도 화면은 깨진다 —
         # 자료의 칸 이름을 바꾸면 화면이 undefined 를 찍고, 그리는 함수 하나가
         # 던지면 그 아래가 통째로 빈다. 그건 열어 봐야 드러난다.
+        #
+        # --offline 은 한 파일 판을 **바깥을 막은 브라우저**로 열어 본다.
+        # 「인터넷 없이 된다」는 말은 그렇게만 증명된다.
         run: |
           python3 -m http.server 8000 >/dev/null 2>&1 &
           for i in $(seq 1 20); do
             curl -sf -o /dev/null http://localhost:8000/docs/kis-timing/ && break
             sleep 1
           done
-          node scripts/check_kis_timing_page.mjs --base http://localhost:8000
+          node scripts/check_kis_timing_page.mjs \
+            --base http://localhost:8000 \
+            --offline /tmp/kis-timing-offline.html
 
       - name: 어긋났을 때 화면을 남긴다
         if: failure()

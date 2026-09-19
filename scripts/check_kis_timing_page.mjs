@@ -21,11 +21,14 @@
  *   마. 화면의 매수 종목·손절가가 **자료의 값과 같은가** (화면이 옮겨 찍는지)
  *   바. 합의 K 표와 전략 명세 10줄이 섰는가
  *   사. 390px 폭에서 가로 스크롤이 없는가
+ *   아. 한 파일 판이 file:// 로 열려 그려지는가 — 그리고 **0바이트도 밖으로
+ *       나가지 않는가**(--offline 을 줄 때만)
  *
  * 나가는 값이 0 이 아니면 어긋난 자리를 모두 적고 끝낸다.
  */
 import { chromium } from 'playwright';
 import { readFileSync } from 'node:fs';
+import { resolve } from 'node:path';
 
 const arg = (k, d) => {
   const i = process.argv.indexOf(k);
@@ -34,6 +37,7 @@ const arg = (k, d) => {
 const BASE = arg('--base', 'http://localhost:8000');
 const PAGE = BASE + '/docs/kis-timing/';
 const DATA = 'data/kis_timing/latest.json';
+const OFFLINE = arg('--offline', null);
 
 const fails = [];
 const ok = [];
@@ -52,6 +56,20 @@ const MKS = (() => {
   const want = (D.view_order || []).filter((k) => have.includes(k));
   return want.concat(have.filter((k) => !want.includes(k)));
 })();
+
+/** 한 파일 판을 열 때 쓰는 살림. **바깥으로 나가려는 요청을 전부 끊는다** —
+ *  file:// 자체는 route 를 타지 않으므로, 여기서 잡히는 것은 모두 진짜로 밖을
+ *  부르려 한 것이다. 「인터넷 없이 된다」는 말은 이렇게만 증명된다. */
+async function sealedContext(browser, opts) {
+  const ctx = await browser.newContext(opts);
+  const outbound = [];
+  await ctx.route('**/*', (route) => {
+    const u = route.request().url();
+    if (!u.startsWith('file://')) { outbound.push(u); return route.abort(); }
+    return route.continue();
+  });
+  return { ctx, outbound };
+}
 
 async function open(browser, opts, label) {
   const page = await browser.newPage(opts);
@@ -151,6 +169,37 @@ const browser = await chromium.launch();
   const w = await p.evaluate(() => document.documentElement.scrollWidth);
   check(w <= 391, '390px 에서 가로 스크롤 없음', `scrollWidth ${w}`);
   await p.close();
+}
+
+// ── 아. 한 파일 판 (사내망 PC 자리) ────────────────────────────────
+if (OFFLINE) {
+  const { ctx, outbound } = await sealedContext(browser,
+    { viewport: { width: 1240, height: 1000 } });
+  const p = await ctx.newPage();
+  const errs = [];
+  p.on('pageerror', (e) => errs.push(`pageerror: ${e.message}`));
+  p.on('console', (m) => { if (m.type() === 'error') errs.push(`console: ${m.text()}`); });
+  await p.goto('file://' + resolve(OFFLINE), { waitUntil: 'load' });
+  await p.waitForTimeout(1200);
+
+  check(errs.length === 0, '한 파일 판 · 오류 없음', errs.join(' | '));
+  check(outbound.length === 0, '한 파일 판 · 밖으로 나가는 요청 0',
+    `${outbound.length}건: ${outbound.slice(0, 3).join(', ')}`);
+
+  const cards = await p.evaluate(() => document.querySelectorAll('.card').length);
+  check(cards === 6, '한 파일 판 칸 여섯', `${cards} 칸`);
+
+  // 자료를 **정말 읽었는가.** 칸이 서 있어도 안이 비면 소용이 없다.
+  const rows = await p.evaluate(() => document.querySelectorAll('#matrix tbody tr').length);
+  check(rows === D.strategies.filter((s) => s.buy_rule).length,
+    '한 파일 판 히트맵이 채워짐', `${rows} 줄`);
+  const tabs = await p.$$eval('#tabs button', (ns) => ns.map((n) => n.dataset.mk));
+  check(tabs.join(',') === MKS.join(','), '한 파일 판 탭 차례',
+    `${tabs.join('>')}`);
+  const stamp = await p.textContent('#asof');
+  check(/내장 스냅샷/.test(stamp || ''), '머리말이 내장 스냅샷이라고 밝힘', stamp);
+
+  await ctx.close();
 }
 
 await browser.close();
