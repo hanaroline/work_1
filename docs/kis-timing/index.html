@@ -189,6 +189,7 @@
     <h2>오늘의 자리</h2>
     <p class="lede" id="todayLede">불러오는 중…</p>
     <div class="tabs" id="tabs"></div>
+    <p class="muted" id="tabWhy" style="margin:2px 0 0"></p>
     <div id="today"></div>
   </div>
 
@@ -295,6 +296,16 @@
   }
 
   /* ── 오늘의 자리 ──────────────────────────────────────────────── */
+  /* 시장을 늘어놓는 차례. **자료가 정한다**(latest.json 의 view_order) — 화면과
+     검사기가 각자 차례를 갖고 있으면 언젠가 갈라진다. 자료에 없으면 있는 대로 둔다. */
+  function orderedKeys() {
+    var have = Object.keys(DOC.markets);
+    var want = DOC.view_order || [];
+    var out = want.filter(function (k) { return have.indexOf(k) >= 0; });
+    have.forEach(function (k) { if (out.indexOf(k) < 0) out.push(k); });
+    return out;
+  }
+
   function nameOf(sid) {
     var s = (DOC.strategies || []).filter(function (x) { return x.id === sid; })[0];
     return s ? s.name : sid;
@@ -362,15 +373,28 @@
     var g = m.consensus_full, gt = m.consensus_test;
     var h = '';
 
+    /* 검증구간 초과수익이 음수인 시장은 **눈에 띄게 적는다.** 흐린 글씨로 묻어
+       두면, 차례가 뒤라는 것만으로는 「여기서는 이 10종이 서지 않았다」가
+       읽히지 않는다. */
+    var weak = gt && gt.trades && (gt.edge || 0) <= 0;
+
     h += '<p class="sec" style="margin:6px 0 14px">' +
       '<b>' + esc(m.label) + '</b> ' + m.count + '종목 · 기준일 ' + esc(m.asof) + ' · ' +
       '합의에 쓰는 전략 ' + m.members.length + '종 (' +
       esc(m.member_names.join(' · ') || '없음') + ')' +
       (g && g.trades ? ' · 이 조합의 전 구간 성적 ' + g.trades + '거래 · 승률 ' +
         num(g.win_rate, 1) + '% · 평균 ' + signed(g.avg) + '% · 초과 ' + signed(g.edge) + '%p' : '') +
-      (gt && gt.trades ? ' <span class="muted">(검증구간 ' + gt.trades + '거래 · 초과 ' +
-        signed(gt.edge) + '%p)</span>' : '') +
+      (gt && gt.trades ? ' <span class="' + (weak ? '' : 'muted') + '"' +
+        (weak ? ' style="color:var(--danger);font-weight:600"' : '') +
+        '>(검증구간 ' + gt.trades + '거래 · 초과 ' + signed(gt.edge) + '%p)</span>' : '') +
       '</p>';
+
+    if (weak) {
+      h += '<div class="warnbox" style="margin:0 0 14px">' +
+        '<b>이 시장에서는 서지 않았습니다.</b> 앞 구간만 보고 고른 전략을 뒤 구간에서 ' +
+        '다시 재니 초과수익이 ' + signed(gt.edge) + '%p 였습니다 — 아무 날에나 산 것보다 ' +
+        '못했다는 뜻입니다. 아래 자리는 <b>참고로만</b> 보십시오.</div>';
+    }
 
     h += '<h3>매수 — 전략 ' + DOC.rule.k + '종 이상이 겹친 자리</h3>';
     h += m.buy.length ? '<div class="plans">' + m.buy.map(function (p) {
@@ -405,7 +429,7 @@
   }
 
   function renderTabs() {
-    var ks = Object.keys(DOC.markets);
+    var ks = orderedKeys();
     TAB = TAB || ks[0];
     $('tabs').innerHTML = ks.map(function (k) {
       var m = DOC.markets[k];
@@ -416,6 +440,7 @@
     Array.prototype.forEach.call($('tabs').querySelectorAll('button'), function (b) {
       b.onclick = function () { TAB = b.getAttribute('data-mk'); renderTabs(); renderToday(); };
     });
+    $('tabWhy').innerHTML = esc(DOC.view_order_why || '');
   }
 
   /* ── 히트맵 ───────────────────────────────────────────────────── */
@@ -428,7 +453,7 @@
   }
 
   function renderMatrix() {
-    var mks = Object.keys(DOC.markets);
+    var mks = orderedKeys();
     var specs = (DOC.strategies || []).filter(function (s) { return s.buy_rule; });
     var h = '<table class="hm"><thead><tr><th>전략</th><th>분류</th>';
     mks.forEach(function (k) { h += '<th style="text-align:center">' + esc(DOC.markets[k].label) + '</th>'; });
@@ -497,7 +522,7 @@
     var rows = (BT && BT.consensus) || [];
     if (!rows.length) { $('consensus').innerHTML = '<div class="empty">자료가 없습니다.</div>'; return; }
     var mx = Math.max.apply(null, rows.map(function (c) { return Math.abs(c.edge || 0); })) || 1;
-    var mks = Object.keys(DOC.markets);
+    var mks = orderedKeys();
     var h = '<table><thead><tr><th>시장</th><th>구간</th><th>K</th><th>거래</th>' +
             '<th>승률</th><th>평균</th><th>대조군</th>' +
             '<th style="text-align:left;padding-left:14px">초과수익</th></tr></thead><tbody>';
@@ -596,7 +621,7 @@
   function renderLimits() {
     var a = DOC.backtest_assumptions || {};
     var u = DOC.markets;
-    var spans = Object.keys(u).map(function (k) {
+    var spans = orderedKeys().map(function (k) {
       var uu = u[k].universe || {};
       return '<li><b>' + esc(u[k].label) + '</b> ' + u[k].count + '종목 · ' +
         esc(uu.from || '') + ' ~ ' + esc(uu.to || '') +
