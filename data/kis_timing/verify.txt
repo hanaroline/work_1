@@ -1,12 +1,12 @@
 한국투자증권 전략빌더 10종 — 매매 타이밍 산출물 검산
-백테스트 2026-09-19 23:00:46 · 세팅 2026-09-19 22:21:40
+백테스트 2026-09-19 23:48:04 · 세팅 2026-09-19 23:49:15
 
 PASS  전략이 10종인가  — 10 종: golden_cross,momentum,week52_high,consecutive,disparity,breakout_fail,strong_close,volatility,mean_reversion,trend_filter
 PASS  지표 16 종목 × 8개를 독립 구현과 대조
-PASS  화면의 신호 135 건이 조건을 만족
+PASS  화면의 신호 147 건이 조건을 만족
 PASS  성적표 5 칸을 다시 돌려 대조
-PASS  종가·기준일 116 건이 원본 일봉과 일치
-PASS  손절가 44 건이 종가 × (1 − 5.0%)
+PASS  종가·기준일 128 건이 원본 일봉과 일치
+PASS  손절가 48 건이 종가 × (1 − 5.0%)
 PASS  합의/관찰 칸 나눔과 멤버 선정
 
 결과: 모두 통과
