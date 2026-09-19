@@ -16,6 +16,17 @@
 
 한 줄이라도 FAIL 이면 산출물을 내보내지 않는다 — 조용히 틀린 매수 신호가
 나가는 것보다 소리를 내고 멈추는 편이 낫다.
+
+## --self-only
+
+위 여섯 중 **1·2·4 는 봉을 다시 읽어야 한다.** 그런데 미국 주식 봉은 이 가지에
+없고 `us100-data` 가지에서 오며 **날마다 자란다.** 커밋된 `latest.json` 은 어제
+마지막 봉으로 셈한 것이라, 가지가 하루 나아가면 「화면의 기준일이 마지막 봉과
+다르다」가 뜬다. 그건 흠이 아니라 **자료가 자란 것**이다.
+
+`--self-only` 는 봉에 기대지 않는 검사(3·5·6 과 전략 수)만 돌린다. PR CI 는
+커밋된 자료에 이것을 대고, **새로 만든 자료에는 전부**를 댄다 — 변동성 잡이
+「같은가」가 아니라 「스스로 아귀가 맞는가」를 보는 것과 같은 규율이다.
 """
 
 import json
@@ -311,27 +322,35 @@ def verify_strategy_count(bt):
 
 
 def main():
+    self_only = '--self-only' in sys.argv
     bt = json.load(open(os.path.join(OUT_DIR, 'backtest.json'), encoding='utf-8'))
     doc = json.load(open(os.path.join(OUT_DIR, 'latest.json'), encoding='utf-8'))
-    uni, _ = D.load_universe()
 
     lines.append('한국투자증권 전략빌더 10종 — 매매 타이밍 산출물 검산')
     lines.append('백테스트 %s · 세팅 %s' % (bt['generated_at_kst'], doc['generated_at_kst']))
+    if self_only:
+        lines.append('--self-only — 봉에 기대지 않는 검사만 돌립니다')
     lines.append('')
 
     verify_strategy_count(bt)
-    verify_indicators(uni)
-    verify_signals(doc, uni)
-    verify_grades(bt, uni)
-    verify_prices(doc, uni)
+    if not self_only:
+        uni, _ = D.load_universe()
+        verify_indicators(uni)
+        verify_signals(doc, uni)
+        verify_grades(bt, uni)
+        verify_prices(doc, uni)
     verify_arith(doc)
     verify_buckets(doc, bt)
 
     lines.append('')
     lines.append('결과: %s' % ('모두 통과' if not fails else '%d 건 FAIL' % fails))
     txt = '\n'.join(lines) + '\n'
-    with open(os.path.join(OUT_DIR, 'verify.txt'), 'w', encoding='utf-8') as f:
-        f.write(txt)
+    # **부분 검사의 결과로 온전한 검사의 기록을 덮지 않는다.** verify.txt 는
+    # 「전부 대 봤다」는 증서라서, --self-only 가 그 자리에 앉으면 다음에 읽는
+    # 사람이 덜 본 것을 다 본 것으로 읽는다.
+    if not self_only:
+        with open(os.path.join(OUT_DIR, 'verify.txt'), 'w', encoding='utf-8') as f:
+            f.write(txt)
     sys.stdout.write(txt)
     _ = st
     return 1 if fails else 0

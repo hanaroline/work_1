@@ -1857,8 +1857,19 @@ python3 scripts/verify_volatility.py
 
 | 갈래 | 보는 것 |
 |---|---|
-| **기본** | 파이썬 대본 42개가 컴파일되는가 · 워크플로 YAML 19개가 읽히고 `jobs` 를 갖는가 · 자료 JSON 117개가 읽히는가 |
+| **기본** | `scripts/` 의 파이썬이 모두 컴파일되는가 · 워크플로 YAML 이 모두 읽히고 `jobs` 를 갖는가 · `data/` 의 JSON 이 모두 읽히는가 (진단물 `raw/` 는 뺍니다) |
 | **변동성** | 커밋된 자료가 스스로 아귀가 맞는가 → 이력·모델을 **실제로 다시 만들고** → 재검산이 통과하는가 → 그 자료로 **화면이 브라우저에서 깨지지 않는가** |
+| **매매 타이밍** | 커밋된 산출물이 스스로 아귀가 맞는가 → 성적표·세팅을 **실제로 다시 만들고** → 재검산 일곱 항목이 통과하는가 → 그 자료로 **화면이 브라우저에서 깨지지 않는가**(열다섯 가지) |
+
+매매 타이밍 갈래의 첫 단계는 `verify_kis_timing.py --self-only` 로 돕니다. 온전한
+검산은 봉을 다시 읽어 맞대는데, 미국 주식 봉은 `us100-data` 가지에 있고 **날마다
+자랍니다.** 커밋된 `latest.json` 은 어제 마지막 봉으로 셈한 것이라, 가지가 하루
+나아가면 「기준일이 마지막 봉과 다르다」가 뜹니다 — 그건 흠이 아니라 자료가 자란
+것입니다. 그래서 커밋된 판에는 **산출물 안에서 닫히는 검사**(손절가 산술 · 합의와
+관찰의 칸 나눔 · 멤버 선정 · 전략 수)만 대고, 봉에 기대는 넷은 **새로 만든 판**에
+댑니다. 같은 까닭으로 `--self-only` 는 `verify.txt` 를 **덮어쓰지 않습니다** —
+그 파일은 「전부 대 봤다」는 증서라서, 덜 본 것이 그 자리에 앉으면 다음에 읽는
+사람이 다 본 것으로 읽게 됩니다.
 
 **자료가 커밋된 것과 같은지는 보지 않습니다.** 지수 일봉은 `kr100-data` 가지에 있고 날마다
 자라므로 다시 만들면 커밋된 것과 당연히 달라집니다. 그래서 「같은가」가 아니라 「스스로
@@ -2865,11 +2876,20 @@ python3 scripts/build_kis_timing.py        # → data/kis_timing/latest.json
 
 # 3) 재검산 — 어긋나면 나가는 값이 1
 python3 scripts/verify_kis_timing.py       # → data/kis_timing/verify.txt
+python3 scripts/verify_kis_timing.py --self-only   # 봉 없이 — 산출물 안에서 닫히는 것만
 
 # 4) 화면 — 로컬 서버로 엽니다
 python3 -m http.server 8000
 #   http://localhost:8000/docs/kis-timing/
+
+# 5) 화면 연기 시험 (헤드리스) — PR CI 가 도는 것과 같은 것입니다
+node scripts/check_kis_timing_page.mjs --base http://localhost:8000
 ```
+
+**PR 로 올리면 `pr-check.yml` 의 「매매 타이밍」 갈래가 위 1~5 를 러너에서 그대로
+돌립니다.** 커밋된 산출물에 `--self-only` 를 대고, `us100-data` 가지를 받아 성적표와
+세팅을 새로 만든 뒤 온전한 재검산과 화면 검사를 겁니다. 어긋나면 그때의 화면을
+PNG 로 남깁니다.
 
 | 파일 | 하는 일 |
 |---|---|
@@ -2878,6 +2898,7 @@ python3 -m http.server 8000
 | `scripts/kis_timing_backtest.py` | 성적표 · 대조군 · 학습/검증 · 합의 K |
 | `scripts/build_kis_timing.py` | 오늘의 매수 · 청산 · 관찰 |
 | `scripts/verify_kis_timing.py` | 지표를 **다시 써서** 대조 — 같은 코드로 두 번 부르는 것은 검산이 아닙니다 |
+| `scripts/check_kis_timing_page.mjs` | 화면 연기 시험 — 수가 맞아도 화면은 깨집니다 |
 
 `verify_kis_timing.py` 는 지표를 순진하게(창을 매번 통째로 다시 자르며) 다시 구현해
 라이브러리와 맞대고, 화면에 오른 신호가 정말 그 조건인지 원 봉에서 다시 확인하고,
