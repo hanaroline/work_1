@@ -41,6 +41,7 @@
 import json
 import math
 import os
+import re
 from datetime import datetime, timedelta, timezone
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -188,6 +189,85 @@ def target_weights(target_return, expected, available):
     return {k: round(v, 2) for k, v in w.items()}, note
 
 
+# ── 기대수익률과 실제 노출 ───────────────────────────────────────────
+
+CMA_PATH = os.path.join(ROOT, "data", "proposal", "cma.json")
+
+
+def cma(method="빌딩블록"):
+    """자산군별 기대수익률 **가정**을 읽어 온다(proposal_cma.py 가 만든다).
+
+    `method` 는 「빌딩블록」또는 「장기실적」. 기본은 빌딩블록이다 — 장기실적은
+    창(2018~2026)이 강세장 한 국면에 갇혀 있어 주식이 18% 대로 나오고, 그것을
+    고객 제안서의 기준선으로 쓰면 과대약속이 된다. 자세한 근거는 cma.json 의
+    「견주기」와 proposal_cma.py 머리말에 있다.
+
+    파일이 없으면 **빈 dict 를 돌려준다.** 기대수익률을 몰래 지어내지 않는다.
+    """
+    if not os.path.exists(CMA_PATH):
+        return {}, None
+    doc = json.load(open(CMA_PATH, encoding="utf-8"))
+    block = doc.get(method) or {}
+    out = {c: v.get("value") for c, v in block.items()
+           if isinstance(v, dict) and v.get("value") is not None}
+    return out, doc.get("generated_at_kst")
+
+
+def sleeve_exposure(products):
+    """상품 묶음의 노출을 평균한다(같은 비중으로 담는다고 보고)."""
+    tot, out = 0.0, {}
+    for p in products:
+        e = p.get("노출") or {}
+        if not e:
+            continue
+        for c, v in e.items():
+            out[c] = out.get(c, 0.0) + v
+        tot += 1
+    if not tot:
+        return {}
+    return {c: v / tot for c, v in out.items()}
+
+
+def real_exposure(weights, picked):
+    """**제안서가 실제로 무엇에 투자하는지.**
+
+    자산군 이름(국내ETF·국내펀드…)은 포장지다. 「국내ETF 15%」가 미국 지수로
+    채워지면 도넛은 국내라고 하는데 고객 돈은 미국에 가 있다. 그래서 담긴
+    상품의 노출로 다시 셈해, 이름이 아니라 **내용**을 보여 준다.
+
+    `picked` 는 {자산군: [상품…]}. 자산군에 고른 상품이 없으면 그 비중은
+    「미배정」으로 남긴다 — 임의로 어딘가에 넣지 않는다.
+    """
+    out, unknown = {}, 0.0
+    for cls, w in (weights or {}).items():
+        if w <= 0:
+            continue
+        if cls == "현금":
+            out["현금성"] = out.get("현금성", 0.0) + w
+            continue
+        e = sleeve_exposure(picked.get(cls) or [])
+        if not e:
+            unknown += w
+            continue
+        for c, share in e.items():
+            out[c] = out.get(c, 0.0) + w * share
+    res = {c: round(v, 2) for c, v in sorted(out.items(), key=lambda kv: -kv[1])}
+    if unknown > 0.005:
+        res["미배정"] = round(unknown, 2)
+    return res
+
+
+def expected_from_exposure(expo, table):
+    """노출 × 기대수익률 → 포트폴리오 기대수익률. 덮은 비중도 함께 돌려준다."""
+    tot, cov = 0.0, 0.0
+    for c, w in (expo or {}).items():
+        v = table.get(c)
+        if isinstance(v, (int, float)):
+            tot += v * w / 100
+            cov += w
+    return (round(tot, 2) if cov else None), round(cov, 2)
+
+
 # ── 포트폴리오 지표 ──────────────────────────────────────────────────
 
 def portfolio(weights, classes):
@@ -225,20 +305,126 @@ def portfolio(weights, classes):
     return out
 
 
+# 한 자산군 안에서 같은 것을 여러 번 담지 않기 위한 상한.
+MAX_PER_SECTOR = 2      # 국내주식 — 같은 업종
+MAX_PER_HOUSE = 2       # 같은 운용사·발행사
+MAX_PER_TRACK = 1       # 같은 기초지수(S&P500·나스닥100·코스피200…)
+MAX_PER_EXPOSURE = 2    # 같은 노출(주식/채권/대체)
+
+# **업종 코드가 다르다고 다른 베팅인 것은 아니다.** 반도체 둘을 막았더니
+# 삼성전기(전기전자)와 SK스퀘어(지주, 하이닉스 지주회사)가 그 자리를 채워
+# 다섯 중 넷이 여전히 같은 반도체 사슬이었다. 값사슬이 같은 업종은 묶어 센다.
+SECTOR_GROUP = {
+    "반도체": "반도체·전기전자", "전기전자": "반도체·전기전자", "IT": "반도체·전기전자",
+    "2차전지": "2차전지·화학", "화학": "2차전지·화학",
+    "건설": "건설·중공업", "중공업": "건설·중공업",
+    "바이오": "헬스케어", "헬스케어": "헬스케어",
+}
+
+# 기초지수를 이름에서 알아본다. 「같은 지수를 운용사만 바꿔 두 번」을 막는
+# 자리다 — TIGER 미국S&P500 과 KODEX 미국S&P500 이 나란히 실리던 고장.
+_TRACK_PAT = [
+    ("S&P500", r"S&P\s*500|SP500|에스앤피\s*500"),
+    ("나스닥100", r"나스닥\s*100|NASDAQ\s*100|QQQ"),
+    ("코스피200", r"코스피\s*200|KOSPI\s*200|\b200\b"),
+    ("코스닥150", r"코스닥\s*150|KOSDAQ\s*150"),
+    ("다우", r"다우|DOW"),
+    ("필라델피아반도체", r"필라델피아|SOX"),
+    ("니케이225", r"니케이|NIKKEI"),
+    ("차이나항셍", r"항셍|HANG\s*SENG|차이나H"),
+    ("인도니프티", r"니프티|NIFTY"),
+    ("글로벌전체", r"ACWI|WORLD|전세계|글로벌\s*분산"),
+]
+
+
+def _track(name):
+    """이 상품이 따라가는 지수. 알 수 없으면 None(제한하지 않는다)."""
+    n = name or ""
+    for key, pat in _TRACK_PAT:
+        if re.search(pat, n, re.I):
+            return key
+    return None
+
+
 def pick_products(products, cls, n=5, prefer=None):
     """자산군에서 제안할 상품을 고른다.
 
     고르는 기준은 **규모와 보수**다. 수익률 순으로 고르지 않는다 — 최근 1 년
     잘 오른 것을 위에 올리면 제안서가 늘 「지난해 제일 많이 오른 것」을 권하게
     되고, 그것은 고객에게 가장 비싼 습관이다.
+
+    **그런데 규모 순만으로는 모자랐다.** 규모 순으로 다섯을 뽑았더니 이런 것이
+    나왔다.
+
+        국내주식  삼성전자 · SK하이닉스 · SK스퀘어 · 삼성전기 · 현대차
+                  → 다섯 중 넷이 사실상 같은 반도체 베팅이다.
+        국내ETF   TIGER 미국S&P500 · KODEX 미국S&P500
+                  TIGER 미국나스닥100 · KODEX 미국나스닥100 · KODEX 머니마켓액티브
+                  → 같은 지수를 운용사만 바꿔 두 번씩. 한국 주식은 0%.
+
+    고객은 다섯 종목을 보고 분산됐다고 믿는데 실제로는 한 가지를 네 번 산
+    것이다. 그래서 규모 순으로 훑되 **같은 것이 겹치면 건너뛴다** — 업종·운용사·
+    기초지수마다 상한을 둔다. 상한에 걸려 뺀 것은 `skipped` 로 셀 수 있다.
+
+    자산군 불일치(「국내ETF」에 미국 지수, 「국내펀드」에 MMF)는 여기가 아니라
+    유니버스를 만들 때 노출로 재분류하며 이미 걸러진다.
     """
-    items = [p for p in products if p.get("cls") == cls]
+    # 노출을 못 가린 상품은 제안하지 않는다. 무엇에 투자하는지 우리도
+    # 모르는 것을 고객에게 권할 수는 없다(사모재간접이 여기 걸린다).
+    items = [p for p in products
+             if p.get("cls") == cls and (p.get("노출") or not p.get("flags")
+                                         or "노출_미분류" not in p["flags"])]
     if prefer == "저보수":
         items.sort(key=lambda p: (p.get("feeMin") is None, p.get("feeMin") or 9e9,
                                   -(p.get("size") or 0)))
     else:
         items.sort(key=lambda p: -(p.get("size") or 0))
-    return items[:n]
+
+    # 노출이 한 가지뿐인 자산군(국내주식·해외주식)에서는 노출 상한이 뜻이
+    # 없다 — 모두가 같은 노출이라 셋째부터 전부 걸린다.
+    kinds = {max((p.get("노출") or {"?": 1}).items(), key=lambda kv: kv[1])[0]
+             for p in items}
+    use_expo = len(kinds) > 1
+
+    # **상한을 단계로 푼다.** 예전에는 상한에 걸린 것을 spare 에 모았다가 수가
+    # 모자라면 그대로 되메웠는데, 그러면 단일 노출 자산군에서 원래 순서가
+    # 통째로 복원돼 상한이 아무 일도 하지 않았다. 이제 덜 중요한 상한부터
+    # 하나씩 풀어 가며 다시 고른다 — 같은 지수 중복이 가장 나쁘므로 마지막에 푼다.
+    steps = [set()]
+    order = (["expo"] if use_expo else []) + ["house", "sector", "track"]
+    for i in range(len(order)):
+        steps.append(set(order[:i + 1]))
+
+    for off in steps:
+        out, sector, house, track, expo = [], {}, {}, {}, {}
+        for p in items:
+            if len(out) >= n:
+                break
+            raw = p.get("type") if p.get("kind") == "주식" else None
+            sec = SECTOR_GROUP.get(raw, raw)
+            h = p.get("company")
+            t = _track(p.get("name"))
+            e = max((p.get("노출") or {"?": 1}).items(), key=lambda kv: kv[1])[0]
+            if "sector" not in off and sec and sector.get(sec, 0) >= MAX_PER_SECTOR:
+                continue
+            if "house" not in off and h and house.get(h, 0) >= MAX_PER_HOUSE:
+                continue
+            if "track" not in off and t and track.get(t, 0) >= MAX_PER_TRACK:
+                continue
+            if ("expo" not in off and use_expo
+                    and expo.get(e, 0) >= MAX_PER_EXPOSURE):
+                continue
+            out.append(p)
+            expo[e] = expo.get(e, 0) + 1
+            if sec:
+                sector[sec] = sector.get(sec, 0) + 1
+            if h:
+                house[h] = house.get(h, 0) + 1
+            if t:
+                track[t] = track.get(t, 0) + 1
+        if len(out) >= n:
+            break
+    return out[:n]
 
 
 def load_universe(path=UNIVERSE):

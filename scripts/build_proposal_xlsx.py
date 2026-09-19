@@ -259,7 +259,7 @@ def sheet_sources(wb, u):
 
 
 def sheet_proposal(wb, data, u, rule_first, rule_last, classes,
-                   stat_first, stat_last):
+                   stat_first, stat_last, sleeve_er=None):
     ws = wb.create_sheet("제안서", 0)
     ws.sheet_view.showGridLines = False
     for i, w in enumerate([16, 14, 14, 15, 15, 14, 18], start=1):
@@ -386,10 +386,15 @@ def sheet_proposal(wb, data, u, rule_first, rule_last, classes,
             'MATCH($A%d,자산군!$A$%d:$A$%d,0)),"—")'
             % (stat_first, stat_last, row, stat_first, stat_last),
             kind="formula", fmt="0.0%")
-        # **기대수익률은 비워 둔다.** 사람이 넣는 가정이므로 기본값을 몰래
-        # 넣지 않는다. 과거 실적을 여기 복사해 넣는 것도 하지 않는다 —
-        # 그것은 「지난해처럼 오른다」고 가정하는 셈이다.
-        put(ws, row, 7, None, kind="input", fmt="0.0%")
+        # **기대수익률에 값을 채우되, 그것이 어디서 온 가정인지 밝힌다.**
+        # 예전에는 비워 두었다. 기본값이 근거 없이 박히는 것을 막으려던 것인데,
+        # 그러면 목표수익률 견주기가 늘 「가정 미입력」으로 멈췄다. 이제는
+        # 빌딩블록(무위험수익률 실측 + 리스크프리미엄 가정)으로 채우고,
+        # 「기대수익률」시트에 근거와 두 방식 비교를 함께 싣는다.
+        # 여전히 **사람이 고치는 칸**이다 — 파란 글씨로 둔다.
+        er = (sleeve_er or {}).get(cls, (None, None))[0]
+        put(ws, row, 7, er / 100 if isinstance(er, (int, float)) else None,
+            kind="input", fmt="0.0%")
 
         # **숨은 도우미 열.** 표시 칸은 값이 없을 때 「—」라는 글자를 담는데,
         # SUMPRODUCT 는 글자를 만나면 #VALUE! 를 낸다 — IFERROR 는 오류만 잡지
@@ -534,6 +539,83 @@ def sheet_proposal(wb, data, u, rule_first, rule_last, classes,
     return ws
 
 
+def sheet_cma(wb, doc, sleeve_er):
+    """기대수익률 **가정**을 밝혀 두는 시트.
+
+    제안서 시트의 「기대수익률(가정)」 칸에 값을 채워 넣되, 그 값이 어디서
+    왔는지를 여기 적는다. 숫자만 있고 근거가 없으면 반년 뒤에 아무도 그것이
+    무엇이었는지 모른다.
+    """
+    ws = wb.create_sheet("기대수익률")
+    r = section(ws, 1, "1", "자산군별 기대수익률 — 두 방식", 5)
+    r = note(ws, r, 5,
+             "기대수익률은 재는 것이 아니라 가정하는 것입니다. 서로 다른 두 길로 "
+             "세워 보고 어긋나는 곳을 함께 적습니다.")
+    r += 1
+    head(ws, r, ["자산군", "① 빌딩블록", "② 장기실적(8년)", "차이", "비고"],
+         [14, 14, 16, 10, 62])
+    r += 1
+    for row in doc.get("견주기", []):
+        put(ws, r, 1, row["cls"])
+        for i, k in enumerate(("빌딩블록", "장기실적"), start=2):
+            v = row.get(k)
+            put(ws, r, i, v / 100 if isinstance(v, (int, float)) else "—",
+                fmt="0.00%" if isinstance(v, (int, float)) else None)
+            ws.cell(row=r, column=i).alignment = RIGHT
+        d = row.get("차이")
+        put(ws, r, 4, d / 100 if isinstance(d, (int, float)) else "—",
+            fmt="+0.0%;-0.0%" if isinstance(d, (int, float)) else None)
+        ws.cell(row=r, column=4).alignment = RIGHT
+        c = put(ws, r, 5, (row.get("장기_사유") or "").replace("**", "") or "")
+        c.alignment = Alignment(horizontal="left", vertical="top", wrap_text=True)
+        ws.row_dimensions[r].height = 28
+        r += 1
+
+    bb = doc.get("빌딩블록_메타") or {}
+    r += 1
+    for line in [
+        "① 무위험수익률 %s%% 는 짐작이 아니라 MMF %s종의 1년 수익률 중앙값(실측)입니다."
+        % (bb.get("rf", "—"), bb.get("rf_n", "—")),
+        "① 의 리스크프리미엄은 **가정**입니다. 회사 자산배분본부의 장기 기대수익률(CMA)이 "
+        "있으면 scripts/proposal_cma.py 의 PREMIUM 을 그 값으로 바꾸십시오 — 화면과 "
+        "엑셀이 함께 따라옵니다.",
+        "② 를 기준선으로 쓰지 않는 까닭: 창(2018~2026)이 강세장 한 국면에 갇혀 있어 "
+        "주식이 18%대로 나오고, 같은 국내주식인데 프록시에 따라 TIGER 200 19.8% · "
+        "코스닥150 1.8% 로 20%p 가 갈립니다. 해외채권·대체는 5해를 채우는 원화 프록시가 "
+        "없어 아예 덮지 못합니다.",
+        "② 는 분배금이 빠진 가격 수익률이라 **실제보다 낮게** 나옵니다. 국내채권이 1.05%로 "
+        "나오는 것이 그 편향입니다.",
+        "달러 표시 ETF 로 장기 실적을 재지 않았습니다. 그 값은 환율이 빠진 달러 투자자의 "
+        "수익률이지 한국 고객의 수익률이 아닙니다.",
+    ]:
+        c = ws.cell(row=r, column=1, value="· " + line.replace("**", ""))
+        c.font = f(9, color=MUTED)
+        c.alignment = Alignment(wrap_text=True, vertical="top")
+        ws.merge_cells(start_row=r, start_column=1, end_row=r, end_column=5)
+        ws.row_dimensions[r].height = 30
+        r += 1
+
+    r = section(ws, r + 1, "2", "제안 자산군에 적용한 값", 5)
+    r = note(ws, r, 5,
+             "자산군(국내ETF·해외펀드…)은 포장지라 그 자체로 기대수익률이 없습니다. "
+             "그 칸에 담긴 상품의 실제 노출로 위 ① 값을 섞어 낸 것입니다.")
+    r += 1
+    head(ws, r, ["자산군", "기대수익률(가정)", "섞은 노출", "", ""], None)
+    r += 1
+    for cls, (er, mix) in sleeve_er.items():
+        put(ws, r, 1, cls)
+        put(ws, r, 2, er / 100 if isinstance(er, (int, float)) else "—",
+            fmt="0.00%" if isinstance(er, (int, float)) else None)
+        ws.cell(row=r, column=2).alignment = RIGHT
+        c = put(ws, r, 3, " · ".join("%s %.0f%%" % (k, v * 100)
+                                     for k, v in sorted(mix.items(),
+                                                        key=lambda kv: -kv[1])))
+        c.alignment = LEFT
+        ws.merge_cells(start_row=r, start_column=3, end_row=r, end_column=5)
+        r += 1
+    return ws
+
+
 def sheet_howto(wb):
     ws = wb.create_sheet("사용법")
     ws.column_dimensions["A"].width = 4          # section() 이 번호를 놓는 칸
@@ -598,14 +680,34 @@ def main():
         if items:
             products[cls] = items
 
+    # 자산군은 포장지라 그 자체로 기대수익률이 없다. 제안에 담기는 다섯 종목의
+    # **실제 노출**로 ①빌딩블록 값을 섞어 자산군별 가정을 낸다.
+    import json as _json
+    cma_doc = {}
+    if os.path.exists(P.CMA_PATH):
+        cma_doc = _json.load(open(P.CMA_PATH, encoding="utf-8"))
+    table, _ = P.cma()
+    sleeve_er = {}
+    for cls in classes:
+        if cls == "현금":
+            sleeve_er[cls] = (table.get("현금성"), {"현금성": 1.0})
+            continue
+        mix = P.sleeve_exposure(P.pick_products(u["상품"], cls, 5))
+        er, _cov = P.expected_from_exposure(
+            {k: v * 100 for k, v in mix.items()}, table)
+        sleeve_er[cls] = (er, mix)
+
     wb = Workbook()
     wb.remove(wb.active)
     _, rf, rl = sheet_rules(wb, plans, classes)
     _, stat_first, stat_last = sheet_classes(wb, u["자산군"])
     sheet_products(wb, products)
     sheet_sources(wb, u)
+    if cma_doc:
+        sheet_cma(wb, cma_doc, sleeve_er)
     sheet_howto(wb)
-    sheet_proposal(wb, plans, u, rf, rl, classes, stat_first, stat_last)
+    sheet_proposal(wb, plans, u, rf, rl, classes, stat_first, stat_last,
+                   sleeve_er)
     wb.move_sheet("제안서", offset=-len(wb.sheetnames) + 1)
 
     for ws in wb.worksheets:
