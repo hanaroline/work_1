@@ -1,0 +1,126 @@
+name: 국내 상장 다년 일봉 수집 (한국투자증권)
+
+# 상품을 **규모 순**으로 고르고 있었다. 집중·중복 상한을 씌워도 순위 기준이
+# 규모라, 「여러 해 성과와 위험을 보고 고른다」와는 거리가 멀었다.
+#
+# 위험조정 점수로 고르려면 종목마다 다년 일봉이 있어야 하는데 없었다 —
+# ETF 는 ETFCHECK 메타(규모·보수)만 있고 시세가 아예 없어, 제안서의
+# 「과거 1 년」 칸에 「—」가 찍혀 나갔다. 주식도 2 해치뿐이었다.
+#
+# 클로드 세션에서는 KIS 에 못 붙는다(9443·29443 은 이그레스 프록시가 비-443
+# 포트를 지원하지 않는다). 그래서 러너 몫이다.
+#
+# **오래 걸린다.** 모의투자는 초당 한 건이라 257 종 × 10 해면 한 시간 반쯤이다.
+# 수집기는 다섯 종목마다 파일에 쓰고, 다시 돌리면 이미 받은 것을 건너뛴다.
+# 시간 제한에 걸려도 받은 만큼은 커밋되도록 커밋 단계를 always() 로 둔다.
+#
+# **필요한 Secrets** — KIS_APP_KEY / KIS_APP_SECRET
+
+on:
+  workflow_dispatch:
+    inputs:
+      years:
+        description: '몇 해치 (기본 10)'
+        required: false
+        default: '10'
+      kind:
+        description: '무엇을 (all/etf/stock)'
+        required: false
+        default: 'all'
+        type: choice
+        options: ['all', 'etf', 'stock']
+      limit:
+        description: '자산군마다 몇 종만 (0=전부)'
+        required: false
+        default: '0'
+      env:
+        description: '어느 앱키로 (vps=모의, prod=실전)'
+        required: false
+        default: 'vps'
+        type: choice
+        options: ['vps', 'prod']
+
+permissions:
+  contents: write
+
+concurrency:
+  group: kr-bars-kis-${{ github.ref_name }}
+  cancel-in-progress: false
+
+jobs:
+  fetch:
+    runs-on: ubuntu-latest
+    timeout-minutes: 350
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref_name }}
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: 앱키가 들어 있는지 먼저 본다
+        run: |
+          if [ -z "${{ secrets.KIS_APP_KEY }}" ] || [ -z "${{ secrets.KIS_APP_SECRET }}" ]; then
+            echo "::error::KIS_APP_KEY / KIS_APP_SECRET 이 저장소 Secrets 에 없습니다."
+            exit 1
+          fi
+
+      # 받을 종목을 유니버스에서 고르므로 유니버스가 먼저 있어야 한다.
+      - name: 상품 유니버스 먼저 모으기
+        run: |
+          git fetch origin us100-data kr100-data claude/fund-search-tool --depth 1
+          python3 scripts/build_proposal_universe.py
+
+      - name: 다년 일봉 받기
+        id: fetch
+        continue-on-error: true      # 시간 제한에 걸려도 받은 만큼은 커밋한다
+        env:
+          KIS_APP_KEY: ${{ secrets.KIS_APP_KEY }}
+          KIS_APP_SECRET: ${{ secrets.KIS_APP_SECRET }}
+          KIS_TOKEN_CACHE: ${{ runner.temp }}/kis-token.json
+        run: |
+          python3 scripts/fetch_kr_bars_kis.py \
+            --env "${{ inputs.env || 'vps' }}" \
+            --years "${{ inputs.years || '10' }}" \
+            --kind "${{ inputs.kind || 'all' }}" \
+            --limit "${{ inputs.limit || '0' }}"
+
+      - name: 결과 커밋
+        if: always()
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data/proposal || true
+          if git diff --cached --quiet; then
+            echo "바뀐 것이 없다 — 커밋 생략"
+            exit 0
+          fi
+          git commit -m "data(proposal): 국내 상장 다년 일봉 수집 ($(date -u +%Y-%m-%d\ %H:%M))"
+          for i in 1 2 3 4 5; do
+            if git push; then exit 0; fi
+            echo "push 거절 — 원격 변경을 받아 재시도 ($i/5)"
+            git pull --rebase origin "${{ github.ref_name }}" || exit 1
+          done
+          exit 1
+
+      - name: 요약
+        if: always()
+        run: |
+          {
+            echo "### 국내 상장 다년 일봉 수집"
+            echo ""
+            if [ -f data/proposal/kr_bars_report.md ]; then
+              cat data/proposal/kr_bars_report.md
+            else
+              echo "산출물이 없습니다 — 수집 단계 로그를 보세요."
+            fi
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      # 수집이 실패로 끝났으면 작업도 실패로 남긴다 — 커밋은 위에서 이미 했다.
+      - name: 수집 결과 반영
+        if: steps.fetch.outcome == 'failure'
+        run: |
+          echo "::warning::수집이 도중에 끝났습니다. 같은 워크플로를 다시 돌리면 "\
+               "이미 받은 종목은 건너뛰고 남은 것만 받습니다."
