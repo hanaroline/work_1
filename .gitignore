@@ -49,6 +49,10 @@ signal-offline.html
 # 쌓인다. 실제로 한 번 그럴 뻔했다.
 kis-timing-offline*.html
 
+# 국내ETF 한 장 리포트 — 세팅이 날마다 바뀌므로 같은 까닭으로 쌓지 않는다.
+# `python3 scripts/build_kr_etf_report.py` 로 다시 만든다.
+kr-etf-report*.html
+
 # 고객용 한 장(자료를 심은 판) — `python3 scripts/build_client_page.py` 로 다시 만든다.
 volatility-client.html
 etf-offline.html
