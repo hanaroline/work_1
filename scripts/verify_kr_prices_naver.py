@@ -7,9 +7,14 @@
   하나. 네이버 일봉 자체가 말이 되는가   — 한쪽 자료만으로 답할 수 있다
   둘.   야후와 어디서 얼마나 갈리는가     — 두 자료를 맞대야 답할 수 있다
 
-**둘째가 「어느 쪽이 맞는가」에 답하지 못한다는 점을 분명히 해 둔다.** 두 벤더가
-다르다는 사실만 재는 것이고, 심판은 제3의 출처가 있어야 한다. 그래서 갈림을 실패로
-적지 않고 **크기와 모양을 적어 사람이 판단할 재료로 남긴다.**
+**둘째는 「어느 쪽이 맞는가」에 스스로 답하지 못한다.** 두 벤더가 다르다는 사실만
+재는 것이고, 심판은 제3의 출처가 있어야 한다. 그래서 갈림을 실패로 적지 않고
+**크기와 모양을 적어 사람이 판단할 재료로 남긴다.**
+
+**그 제3의 출처가 2026-09-18 에 생겼다.** 한국투자증권 오픈API 로 100 종목 496
+거래일을 받아 심판했고(scripts/verify_kr_prices_kis.py), 판정문이
+data/prices_kis/verdict.txt 에 있다. 이 대본은 그 판정문을 **읽어서** 적는다 —
+숫자를 여기 박아 두면 다시 심판했을 때 두 곳이 어긋나기 때문이다.
 
 다만 한 가지는 가릴 수 있다 — **한쪽 종가가 다른 쪽 고저 범위를 벗어나면** 그 종가는
 그 세션의 것일 수 없다. 그 건수를 양쪽 모두에 대해 센다. 한쪽에만 쏠리면 그쪽이
@@ -21,6 +26,7 @@
 import json
 import math
 import os
+import re
 import statistics as st
 import subprocess
 import sys
@@ -252,11 +258,67 @@ def verify_against_yahoo(doc, sample=40):
                % (agree, len(diff), ab[len(ab) // 2], ab[-1], naver_out, yahoo_out))
         if side:
             msg += ('**%s 쪽이 그 세션 가격을 안 쓰는 쪽으로 기웁니다** — 한쪽에 쏠렸습니다. '
-                    '다만 이것만으로 단정하지 마십시오. ' % side)
+                    % side)
+        # 판정문이 있으면 「심판할 수 없습니다」를 적지 않는다. 둘을 나란히 적으면
+        # 못 했다는 말과 했다는 말이 한 문단에 들어가 읽는 사람을 헷갈리게 한다.
+        verdict = kis_verdict()
+        if verdict:
+            msg += verdict
         else:
-            msg += ('어느 쪽으로도 쏠리지 않아 **이 자료만으로는 심판할 수 없습니다.** ')
-        msg += '지표의 기준을 바꾸려면 제3의 출처(거래소 공시)가 필요합니다.'
+            if not side:
+                msg += '어느 쪽으로도 쏠리지 않습니다. '
+            msg += ('**이 자료만으로는 심판할 수 없습니다** — 지표의 기준을 바꾸려면 '
+                    '제3의 출처(거래소 공시)가 필요합니다.')
         warn(msg)
+
+
+def kis_verdict():
+    """증권사 원본으로 심판한 결과가 있으면 그것을 적는다.
+
+    **이 자리가 오래 「제3의 출처가 필요합니다」로 끝나 있었다.** 두 벤더를 맞대는
+    것만으로는 누가 옳은지 말할 수 없기 때문이다(고저를 벗어난 종가가 네이버 629 ·
+    야후 629 로 정확히 동점이었다). 2026-09-18 에 한국투자증권 오픈API 로 그 심판을
+    했고, 판정문이 data/prices_kis/verdict.txt 에 있다.
+
+    판정문을 **읽어서** 적는다. 숫자를 여기 박아 두면 다시 심판했을 때 두 곳이
+    어긋난다 — 이 대본은 날마다 세 번 도는데 판정은 이따금 갱신되므로, 낡은
+    숫자를 계속 찍어 내게 된다. 판정문이 없으면 예전처럼 「필요합니다」로 적는다.
+    """
+    path = os.path.join(ROOT, 'data', 'prices_kis', 'verdict.txt')
+    if not os.path.exists(path):
+        return ''
+    try:
+        body = open(path, encoding='utf-8').read()
+    except OSError:
+        return ''
+
+    got = {}
+    for who in ('네이버', '야후'):
+        m = re.search(who + r'가 맞았다\s+(\d+) 건\s+\(([\d.]+)%\)', body)
+        if m:
+            got[who] = (int(m.group(1)), float(m.group(2)))
+    if len(got) != 2:
+        return ('심판은 했습니다 — data/prices_kis/verdict.txt 를 보십시오.')
+
+    win = max(got, key=lambda k: got[k][1])
+    out = ('**심판했습니다** — 한국투자증권 원본과 맞대어 %s 가 %.1f%% 로 맞습니다'
+           '(%s %.1f%%). 판정문 data/prices_kis/verdict.txt. '
+           % (win, got[win][1],
+              '야후' if win == '네이버' else '네이버',
+              got['야후' if win == '네이버' else '네이버'][1]))
+
+    # 최근 봉이 뒤집히는지도 함께 적는다. 신호가 제일 많이 쓰는 봉이라
+    # 전체 승패만 적으면 오해를 부른다.
+    m = re.search(r'최근 (\d+)봉.*?네이버 ([\d.]+)% · 야후 ([\d.]+)%', body)
+    if m:
+        n_recent, y_recent = float(m.group(2)), float(m.group(3))
+        if (n_recent > 50) != (got['네이버'][1] > 50):
+            out += ('다만 **최근 %s봉은 뒤집힙니다** — 거기서는 %s 가 %.1f%% 로 맞습니다. '
+                    '진 쪽이 확정 전 잠정치를 보여 주는 것으로 읽힙니다. '
+                    % (m.group(1),
+                       '네이버' if n_recent > y_recent else '야후',
+                       max(n_recent, y_recent)))
+    return out
 
 
 def main(argv):
