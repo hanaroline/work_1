@@ -118,22 +118,46 @@ def fetch_chunk(kis, symbol, excd, bymd):
     return out
 
 
+def symbol_forms(symbol):
+    """찔러 볼 심볼 모양. 보통은 하나지만 **종류주는 구분자가 원천마다 다르다.**
+
+    첫 수집에서 `BRK-B`(버크셔 해서웨이 B) 하나만 못 받았다 — 거래소 세 곳이
+    모두 빈 응답이었다. 야후는 `BRK-B`, 거래소 원장은 `BRK.B`, 붙여 쓰는
+    곳도 있다. 어느 것이 맞는지 짐작하지 않고 차례로 찔러 본다.
+    """
+    s = symbol.upper()
+    if "-" not in s and "." not in s and "/" not in s:
+        return [s]
+    base = s.replace("-", "").replace(".", "").replace("/", "")
+    stem, _, cls = s.replace(".", "-").replace("/", "-").partition("-")
+    forms = [s, "%s.%s" % (stem, cls), "%s/%s" % (stem, cls), base]
+    out = []
+    for x in forms:                       # 중복은 부르지 않는다 — 호출이 비싸다
+        if x and x not in out:
+            out.append(x)
+    return out
+
+
 def fetch_one(kis, symbol, excd, want_from):
     """한 종목의 일봉. 날짜를 뒤로 밀며 모은다.
 
     `excd` 를 모르면(None) 차례로 찔러 본다. **거래소가 틀리면 오류가 아니라
-    빈 응답**이 오므로, 첫 판이 비면 다음 거래소로 넘어간다. 찾은 거래소를
-    함께 돌려준다 — 부른 쪽이 적어 두었다가 다음에 쓴다.
+    빈 응답**이 오므로, 첫 판이 비면 다음 거래소로 넘어간다. 찾은 거래소와
+    실제로 통한 심볼을 함께 돌려준다 — 부른 쪽이 적어 두었다가 다음에 쓴다.
     """
     tries = [excd] if excd else EXCHANGES
-    bars, used = {}, None
+    bars, used, sym = {}, None, symbol
     for cand in tries:
-        first = fetch_chunk(kis, symbol, cand, "")
-        if first:
-            bars, used = first, cand
+        for form in symbol_forms(symbol):
+            first = fetch_chunk(kis, form, cand, "")
+            if first:
+                bars, used, sym = first, cand, form
+                break
+        if bars:
             break
     if not bars:
-        return None, {}, []
+        return None, symbol, {}, []
+    symbol = sym
 
     for _ in range(40):                  # 안전한 상한 — 무한히 돌지 않게
         oldest = min(bars)
@@ -150,7 +174,7 @@ def fetch_one(kis, symbol, excd, want_from):
         bars.update(new)
 
     days = sorted(d for d in bars if d >= want_from)
-    return used, bars, days
+    return used, symbol, bars, days
 
 
 def load_existing():
@@ -209,8 +233,10 @@ def main():
             continue
         # 전에 찾아 둔 거래소가 있으면 다시 찔러 보지 않는다.
         known = (have or {}).get("excd")
+        # 전에 통한 심볼 모양이 있으면 그것부터 쓴다 — 헛호출을 아낀다.
+        ask = (have or {}).get("kisSymbol") or sym
         try:
-            excd, _bars, days = fetch_one(kis, sym, known, want_from)
+            excd, used_sym, _bars, days = fetch_one(kis, ask, known, want_from)
         except KisError as exc:
             failed.append({**t, "why": "%s %s" % (exc.msg_cd, exc.msg1)})
             print("  [%3d/%d] %-6s %-20s 실패 %s"
@@ -235,16 +261,21 @@ def main():
                   % (i, len(want), sym, t["name"][:20], len(days)))
             continue
 
+        # **열쇠는 유니버스의 심볼로 둔다.** 통한 모양(BRK.B)이 아니라 원천이
+        # 쓰는 모양(BRK-B)이어야 유니버스가 찾는다. 통한 모양은 따로 적어 둔다.
         items[sym] = {
             "name": t["name"], "cls": t["cls"], "kind": "주식", "excd": excd,
             "d": days, "c": [_bars[x] for x in days],
             # 요청 기간의 처음까지 닿았으면 더 캘 것이 없다는 뜻이다.
             "complete": days[0] <= want_from,
         }
+        if used_sym != sym:
+            items[sym]["kisSymbol"] = used_sym
         done += 1
-        print("  [%3d/%d] %-6s %-20s %s %4d봉 %s~%s"
+        print("  [%3d/%d] %-6s %-20s %s %4d봉 %s~%s%s"
               % (i, len(want), sym, t["name"][:20], excd,
-                 len(days), days[0], days[-1]))
+                 len(days), days[0], days[-1],
+                 "" if used_sym == sym else "  (KIS: %s)" % used_sym))
         if done % SAVE_EVERY == 0:
             save(items, args.years, kis.env)
 
