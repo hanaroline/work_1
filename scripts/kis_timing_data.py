@@ -11,6 +11,7 @@
     US_STOCK  us100-data 가지 data/us100/chart/*     미국 대형주 100
     KR_ETF    data/etf/prices.json (scope=KR)        국내 상장 ETF
     OV_ETF    data/etf/prices.json (scope=OV)        해외 상장 ETF
+              + data/kis_timing/ov_extra.json        넓히려고 덧댄 곁 목록
 
 **왜 네 개로 나누는가.** 전략 성적을 시장마다 따로 재기 위해서다. 같은
 「이격도 90 이하면 산다」가 국내주식에서 먹히고 미국 대형주에서 안 먹히는 일은
@@ -65,6 +66,8 @@ MARKET_ORDER = ['KR_STOCK', 'US_STOCK', 'KR_ETF', 'OV_ETF']
 
 NAVER_KR = os.path.join(ROOT, 'data', 'prices_naver', 'kr100.json')
 ETF_PRICES = os.path.join(ROOT, 'data', 'etf', 'prices.json')
+# 해외 ETF 곁 목록 — fetch_kis_timing_ov.py 가 채운다. 없으면 없는 대로 돈다.
+OV_EXTRA = os.path.join(ROOT, 'data', 'kis_timing', 'ov_extra.json')
 US_BRANCH = 'origin/us100-data'
 US_PREFIX = 'data/us100/chart/'
 
@@ -131,8 +134,23 @@ def _load_etfs():
     if not os.path.exists(ETF_PRICES):
         return {}, '%s 가 없습니다' % os.path.relpath(ETF_PRICES, ROOT)
     doc = json.load(open(ETF_PRICES, encoding='utf-8'))
+    items = dict(doc['items'])
+
+    # 곁 목록을 **합친다.** 해외 ETF 우주가 스물한 종뿐이면 성적의 오차가 크다.
+    # 같은 티커가 양쪽에 있으면 본 목록(data/etf/prices.json)을 남긴다 — 그쪽이
+    # 표에서 온 것이고, 곁 목록은 그것을 넓히려고 덧댄 것이기 때문이다.
+    note = None
+    if os.path.exists(OV_EXTRA):
+        try:
+            extra = json.load(open(OV_EXTRA, encoding='utf-8'))
+            for tk, rec in (extra.get('items') or {}).items():
+                if tk not in items:
+                    items[tk] = rec
+        except ValueError as e:
+            note = '%s 를 읽지 못했습니다: %s' % (os.path.relpath(OV_EXTRA, ROOT), e)
+
     out = {'KR_ETF': [], 'OV_ETF': []}
-    for tk, rec in sorted(doc['items'].items()):
+    for tk, rec in sorted(items.items()):
         b = rec.get('bars') or {}
         if not b.get('d'):
             continue
@@ -143,7 +161,7 @@ def _load_etfs():
         out[mk].append({'symbol': tk, 'code': rec.get('code') or rec.get('symbol_used') or tk,
                         'name': rec.get('name'), 'group': rec.get('group'),
                         'theme': rec.get('theme'), 'bars': bars})
-    return out, None
+    return out, note
 
 
 # ─────────────────────────────────────────────────────────────────────
