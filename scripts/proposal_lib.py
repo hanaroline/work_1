@@ -44,6 +44,10 @@ import os
 import re
 from datetime import datetime, timedelta, timezone
 
+import sys
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import proposal_metrics as MET                                     # noqa: E402
+
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 KST = timezone(timedelta(hours=9))
 UNIVERSE = os.path.join(ROOT, "data", "proposal", "universe.json")
@@ -91,6 +95,20 @@ HORIZON = [
 ]
 
 RISKY = [c for c in CLASSES if c != "현금"]
+
+
+_RF_CACHE = [None]
+
+
+def _rf():
+    """위험조정에 쓰는 무위험수익률 — cma.json 의 실측을 쓴다(없으면 기본값)."""
+    if _RF_CACHE[0] is None:
+        try:
+            doc = json.load(open(CMA_PATH, encoding="utf-8"))
+            _RF_CACHE[0] = (doc.get("빌딩블록_메타") or {}).get("rf") or MET.RF_DEFAULT
+        except (OSError, ValueError):
+            _RF_CACHE[0] = MET.RF_DEFAULT
+    return _RF_CACHE[0]
 
 
 def horizon_factor(years):
@@ -336,8 +354,12 @@ def groups():
 SECTOR_GROUP = {
     "반도체": "반도체·전기전자", "전기전자": "반도체·전기전자", "IT": "반도체·전기전자",
     "2차전지": "2차전지·화학", "화학": "2차전지·화학",
+    # 「건설」은 해외 원천이 영문 업종을 줄 때만 나온다. 국내 원천에서 진짜
+    # 건설사는 인프라에 들어 있는데, 그 칸에는 한국전력·대한항공·HMM 도 함께
+    # 있어 통째로 중공업과 묶으면 너무 조인다. 그래서 인프라는 따로 둔다.
     "건설": "건설·중공업", "중공업": "건설·중공업",
     "바이오": "헬스케어", "헬스케어": "헬스케어",
+    "소비재": "소비재", "필수소비재": "소비재", "경기소비재": "소비재",
 }
 
 # 기초지수를 이름에서 알아본다. 「같은 지수를 운용사만 바꿔 두 번」을 막는
@@ -368,12 +390,13 @@ def _track(name):
 def pick_products(products, cls, n=5, prefer=None):
     """자산군에서 제안할 상품을 고른다.
 
-    고르는 기준은 **규모와 보수**다. 수익률 순으로 고르지 않는다 — 최근 1 년
-    잘 오른 것을 위에 올리면 제안서가 늘 「지난해 제일 많이 오른 것」을 권하게
-    되고, 그것은 고객에게 가장 비싼 습관이다.
+    고르는 기준은 **여러 해의 위험조정 성과**다(`proposal_metrics`). 최근 1 년
+    수익률 순으로 고르지 않는다 — 지난해 제일 많이 오른 것을 위에 올리면
+    제안서가 늘 그것을 권하게 되고, 그것은 고객에게 가장 비싼 습관이다.
+    규모 순으로도 고르지 않는다. 규모는 **문턱**이다 — 너무 작으면 못 사는
+    것이지, 클수록 좋은 것이 아니다.
 
-    **그런데 규모 순만으로는 모자랐다.** 규모 순으로 다섯을 뽑았더니 이런 것이
-    나왔다.
+    **한때는 규모 순이었다.** 그렇게 다섯을 뽑았더니 이런 것이 나왔다.
 
         국내주식  삼성전자 · SK하이닉스 · SK스퀘어 · 삼성전기 · 현대차
                   → 다섯 중 넷이 사실상 같은 반도체 베팅이다.
@@ -382,8 +405,10 @@ def pick_products(products, cls, n=5, prefer=None):
                   → 같은 지수를 운용사만 바꿔 두 번씩. 한국 주식은 0%.
 
     고객은 다섯 종목을 보고 분산됐다고 믿는데 실제로는 한 가지를 네 번 산
-    것이다. 그래서 규모 순으로 훑되 **같은 것이 겹치면 건너뛴다** — 업종·운용사·
-    기초지수마다 상한을 둔다. 상한에 걸려 뺀 것은 `skipped` 로 셀 수 있다.
+    것이다. **점수 순으로 바꿔도 이 병은 낫지 않는다** — 같은 지수를 좇는
+    ETF 는 점수도 비슷해 나란히 올라오기 때문이다. 그래서 점수 순으로 훑되
+    **같은 것이 겹치면 건너뛴다** — 업종·기업집단·운용사·기초지수·노출마다
+    상한을 둔다. 상한에 걸려 뺀 것은 `skipped` 로 셀 수 있다.
 
     자산군 불일치(「국내ETF」에 미국 지수, 「국내펀드」에 MMF)는 여기가 아니라
     유니버스를 만들 때 노출로 재분류하며 이미 걸러진다.
@@ -393,11 +418,36 @@ def pick_products(products, cls, n=5, prefer=None):
     items = [p for p in products
              if p.get("cls") == cls and (p.get("노출") or not p.get("flags")
                                          or "노출_미분류" not in p["flags"])]
+    # **규모는 문턱이지 순위가 아니다.** 너무 작으면 못 사는 것이지, 클수록
+    # 좋은 것이 아니다. 자산군의 중앙값 규모에 한참 못 미치는 것만 뒤로 민다.
+    sizes = sorted(x for x in (p.get("size") or 0 for p in items) if x > 0)
+    floor = sizes[len(sizes) // 10] if len(sizes) >= 10 else 0
+
+    # **점수로 줄을 세운다.** 예전에는 규모 순이었다 — 집중·중복 상한을 씌워도
+    # 순위 기준이 규모라 결국 「제일 큰 다섯」이었고, 성과도 위험도 보지 않았다.
+    # 이제 다년 위험조정 점수(MET.score)로 세운다. tier 가 앞선다 —
+    # 여러 해를 잰 상품이 1 해만 잰 상품보다 먼저다.
+    MET.rank_class(items, rf=_rf())
+    # **잰 것이 넉넉하면 못 잰 것은 부르지 않는다.** 해외ETF 5 위에
+    # 「United States 원유」가 「과거 1해 105.2%」로 올라온 적이 있다 —
+    # 1 등급이 63 종이나 있는데 3 등급을 끼운 것이고, 그것이 바로 수익률
+    # 추종이다. 상한에 걸려 자리가 빌 때만 못 잰 것을 쓴다.
+    measured = [p for p in items if (p.get("측정등급") or 9) <= 2]
+    if len(measured) >= n * 3:
+        items = measured
+    ranked = []
+    for p in items:
+        small = 1 if (p.get("size") or 0) < floor else 0
+        sc = p.get("점수")
+        ranked.append((small, p.get("측정등급") or 9,
+                       -(sc if sc is not None else -1),
+                       -(p.get("size") or 0), p))
     if prefer == "저보수":
-        items.sort(key=lambda p: (p.get("feeMin") is None, p.get("feeMin") or 9e9,
-                                  -(p.get("size") or 0)))
+        ranked.sort(key=lambda t: (t[0], t[4].get("feeMin") is None,
+                                   t[4].get("feeMin") or 9e9, t[2]))
     else:
-        items.sort(key=lambda p: -(p.get("size") or 0))
+        ranked.sort(key=lambda t: t[:4])
+    items = [t[4] for t in ranked]
 
     # 노출이 한 가지뿐인 자산군(국내주식·해외주식)에서는 노출 상한이 뜻이
     # 없다 — 모두가 같은 노출이라 셋째부터 전부 걸린다.
