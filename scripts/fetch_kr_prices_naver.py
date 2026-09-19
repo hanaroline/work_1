@@ -34,9 +34,14 @@
   python3 scripts/fetch_kr_prices_naver.py --limit 5       # 다섯 종목만
   python3 scripts/fetch_kr_prices_naver.py --years 1
 
-주의
-  받은 것을 **바로 쓰지 않는다.** verify_kr_prices_naver.py 가 야후와 맞대 보고
-  얼마나 어긋나는지 재기 전까지는 참고 자료다. 지표의 기준을 바꾸는 것은 그 다음이다.
+심판은 끝났다 (2026-09-18)
+  한국투자증권 오픈API 원본과 맞대어 가렸다. **갈리는 봉의 89.1% 에서 네이버가
+  맞고**(옛 봉만 보면 100%), 고저 범위를 벗어난 종가는 네이버 61 건 대 야후 1101 건
+  이다. 이 자료가 기준 일봉인 것이 옳다. 판정문 data/prices_kis/verdict.txt.
+
+  **최근 5봉은 뒤집힌다** — 거기서는 야후가 79.8% 로 맞다. 네이버가 확정 전
+  잠정치를 보여 주는 것으로 읽힌다. 봉이 나이를 먹으면 맞아 들어가므로 기준을
+  바꿀 까닭은 아니지만, 최근 봉만 쓰는 셈에서는 감안해야 한다.
 """
 
 import argparse
@@ -292,9 +297,12 @@ def main(argv):
         'routes_used': routes,
         'unit': {'o': '시가(원)', 'h': '고가(원)', 'l': '저가(원)',
                  'c': '종가(원)', 'v': '거래량(주)'},
-        'note': ('야후 일봉과 맞대 보려고 따로 받은 것입니다. '
-                 'verify_kr_prices_naver.py 가 얼마나 어긋나는지 재기 전까지는 '
-                 '**참고 자료이며 지표의 기준이 아닙니다.**'),
+        'note': ('국내 지표의 **기준 일봉**입니다. 2026-09-18 에 한국투자증권 '
+                 '오픈API 원본과 맞대어 심판했고, 갈리는 봉의 89.1% 에서 네이버가 '
+                 '맞았습니다(옛 봉만 보면 100%). 판정문은 data/prices_kis/verdict.txt '
+                 '입니다. 다만 **최근 5봉은 뒤집힙니다** — 거기서는 야후가 79.8% 로 '
+                 '맞아, 네이버가 확정 전 잠정치를 보여 주는 것으로 읽힙니다. '
+                 '최근 봉만 쓰는 셈에서는 이 점을 감안하십시오.'),
         'coverage': {'stocks': len(stocks), 'fetched_today': len(routes and stocks),
                      'days': len(days),
                      'from': days[0] if days else None,

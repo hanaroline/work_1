@@ -120,6 +120,14 @@ def main():
 
     # 심판 집계
     win_naver = win_yahoo = win_neither = 0     # 갈릴 때 KIS 가 누구와 같은가
+    # **봉 나이로 나눠서도 센다.** signal_backtest.py 가 남겨 둔 미해결 항목이
+    # 이것이다 — 「최근 5봉이 75.8% 로 갈린다(5~19일 전 봉은 99.3% 가 맞는다).
+    # 어느 쪽이 잠정치인지 모른다.」 전체 집계만 내면 그 물음에 답하지 못한다.
+    # 최근 봉은 한쪽이 잠정치를 보여 주는 것일 수 있고, 그렇다면 전체 승패와
+    # 최근 승패가 갈린다. 갈리는지 아닌지는 세어 봐야 안다.
+    RECENT_N = 5
+    recent = {"네이버": 0, "야후": 0, "둘 다 아님": 0, "봉": 0, "갈림": 0}
+    older = {"네이버": 0, "야후": 0, "둘 다 아님": 0, "봉": 0, "갈림": 0}
     pairs = 0                                   # 세 자료가 모두 있는 봉
     diffs = 0                                   # 야후·네이버가 갈린 봉
     n_out = y_out = 0                           # KIS 고저를 벗어난 종가
@@ -157,7 +165,12 @@ def main():
         if yb:
             lo = max(lo, min(yb))
 
-        for d in sorted(set(kb) & set(nb) & (set(yb) if yb else set(kb))):
+        common = sorted(set(kb) & set(nb) & (set(yb) if yb else set(kb)))
+        # 「최근 5봉」은 종목마다 다르다 — 거래정지가 있으면 달력 날짜로는 어긋난다.
+        # 그래서 그 종목의 공통 구간 끝에서 다섯 개를 센다.
+        recent_days = set(common[-RECENT_N:])
+
+        for d in common:
             if d < lo:
                 continue
             ko, kh, kl, kc, _ = kb[d]
@@ -184,17 +197,23 @@ def main():
                 y_out += 1
 
             # 하나 — 두 벤더가 갈릴 때 KIS 는 누구 편인가. **이것이 심판이다.**
+            bucket = recent if d in recent_days else older
+            bucket["봉"] += 1
             if abs((nc - yc) / yc * 100) <= EPS:
                 continue                      # 둘이 같으면 심판할 것이 없다
             diffs += 1
+            bucket["갈림"] += 1
             n_same = abs(rn) <= EPS
             y_same = abs(ry) <= EPS
             if n_same and not y_same:
                 win_naver += 1
+                bucket["네이버"] += 1
             elif y_same and not n_same:
                 win_yahoo += 1
+                bucket["야후"] += 1
             else:
                 win_neither += 1
+                bucket["둘 다 아님"] += 1
 
             if abs(rn - ry) > 0.5 and len(worst) < 25:
                 worst.append(
@@ -266,6 +285,35 @@ def main():
         else:
             w("  → 어느 쪽으로도 뚜렷하게 쏠리지 않습니다. 한 번 더 받아 보거나 "
               "표본을 늘려야 합니다.")
+    w("")
+
+    # signal_backtest.py 가 남겨 둔 미해결 항목에 답하는 자리다.
+    w("■ 봉 나이별 — 최근 %d봉과 그 이전이 다른가" % RECENT_N)
+    w("  (signal_backtest.py 가 「최근 5봉이 75.8% 로 갈리는데 어느 쪽이 잠정치인지")
+    w("   모른다」를 미해결로 남겨 두었습니다. 증권사 값이 그 물음에 답합니다.)")
+    w("")
+    for label, b in (("최근 %d봉" % RECENT_N, recent), ("그 이전", older)):
+        if not b["갈림"]:
+            w("    %-8s 갈린 봉이 없습니다 (대조 %d봉)" % (label, b["봉"]))
+            continue
+        w("    %-8s 대조 %6d봉 · 갈림 %5d (%.1f%%) — 네이버 %.1f%% · 야후 %.1f%%"
+          % (label, b["봉"], b["갈림"], b["갈림"] / b["봉"] * 100,
+             b["네이버"] / b["갈림"] * 100, b["야후"] / b["갈림"] * 100))
+    if recent["갈림"] and older["갈림"]:
+        r_n = recent["네이버"] / recent["갈림"]
+        o_n = older["네이버"] / older["갈림"]
+        # 두 구간의 승자가 뒤바뀌면 그것이 답이다 — 진 쪽이 그 구간에서
+        # 잠정치를 보여 주고 있다는 뜻이다.
+        if (r_n > 0.5) != (o_n > 0.5):
+            lose = "네이버" if r_n < 0.5 else "야후"
+            w("")
+            w("  → **최근 봉과 옛 봉의 승자가 뒤바뀝니다.** 최근 %d봉에서는 %s 가"
+              % (RECENT_N, lose))
+            w("     증권사 값과 어긋납니다 — 그쪽이 확정 전 잠정치를 보여 주는 것으로")
+            w("     읽힙니다. 최근 봉만 쓰는 신호는 이 점을 감안해야 합니다.")
+        else:
+            w("")
+            w("  → 두 구간의 승자가 같습니다. 최근 봉이라고 달리 볼 까닭이 없습니다.")
     w("")
 
     w("■ 고저 범위 이탈 — 종가가 KIS 고저를 벗어난 건수")

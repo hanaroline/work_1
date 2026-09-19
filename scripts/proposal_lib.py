@@ -1,0 +1,297 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""고객 제안서 — 자산배분 규칙과 셈. HTML·엑셀·PPT 가 **모두 이것만 본다.**
+
+왜 규칙을 파일 하나에 모으나
+──────────────────────────────────────────────────────────────────────
+산출물이 셋(HTML·엑셀·PPT)인데 배분 규칙을 저마다 들고 있으면 **언젠가 조용히
+어긋난다.** 같은 고객에게 화면과 엑셀이 다른 비중을 보여 주는 날이 온다는 뜻이다.
+이 저장소가 fund-weekly.yml 머리말에 적어 둔 것과 같은 경계다 —
+
+    여기에 베껴 두면 두 벌이 되어 언젠가 조용히 어긋난다 — 그게 이 프로젝트에서
+    제일 비싼 종류의 고장이다.
+
+그래서 규칙은 여기 한 번만 적고, `data/proposal/policy.json` 으로 내보낸다.
+파이썬(엑셀·PPT)은 이 모듈을 부르고, 화면(자바스크립트)은 그 JSON 을 읽는다.
+
+**과거 실적과 기대수익률을 갈라 놓은 까닭** — 이것이 이 파일에서 제일 중요하다
+──────────────────────────────────────────────────────────────────────
+유니버스의 국내주식 1 년 수익률 중앙값은 35.8% 다. 이 숫자를 「기대수익률」이라
+부르며 제안서에 실으면 고객은 앞으로도 그만큼 번다고 읽는다. **최근 1 년이
+그랬다는 뜻일 뿐이다.** 한 해 실적을 미래 기대치로 옮겨 적는 것은 이 업에서
+가장 흔하고 가장 비싼 거짓말이다.
+
+그래서 둘을 다른 칸에 둔다.
+
+  · **과거 1년 실적** — 유니버스에서 잰 값. 출처와 기준일이 있다. 사실이다.
+  · **기대수익률**   — 사람이 넣는 **가정**이다. 어디서 온 가정인지 적는다.
+                       비워 두면 셈하지 않는다. 기본값을 몰래 넣지 않는다.
+
+기대수익률에 기본값을 두지 않는 것이 번거로워 보이지만, 기본값을 두는 순간
+그 숫자가 어디서 왔는지 아무도 묻지 않게 된다.
+
+**위험은 셀 수 있는 것만 센다**
+──────────────────────────────────────────────────────────────────────
+펀드는 기준가 이력이 7 거래일뿐이라 변동성을 못 낸다(universe 가 그렇게 적어
+둔다). 그래서 펀드가 섞인 포트폴리오의 변동성은 **부분만 셈되고**, 셈한 몫이
+얼마인지를 함께 내놓는다. 「포트폴리오 변동성 12.3%」라고만 적으면 그 안에
+못 잰 40% 가 숨는다.
+"""
+
+import json
+import math
+import os
+from datetime import datetime, timedelta, timezone
+
+ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+KST = timezone(timedelta(hours=9))
+UNIVERSE = os.path.join(ROOT, "data", "proposal", "universe.json")
+POLICY_OUT = os.path.join(ROOT, "data", "proposal", "policy.json")
+
+CLASSES = ["국내주식", "해외주식", "국내ETF", "해외ETF", "국내펀드", "해외펀드", "현금"]
+
+# ── 위험성향별 자산군 비중 ───────────────────────────────────────────
+#
+# 표준투자권유준칙의 다섯 등급을 따른다. 비중은 **위험자산 총량**을 성향에 맞춰
+# 정하고, 그 안을 국내·해외와 상품유형으로 나눈 것이다.
+#
+# 이 표는 시장 전망이 아니라 **성향에 대한 규칙**이다. 전망으로 비중을 흔들면
+# 같은 고객이 같은 성향인데 달마다 다른 제안을 받는다.
+PROFILES = {
+    1: {"name": "안정형", "desc": "원금 손실을 감내하기 어렵다",
+        "w": {"국내주식": 0, "해외주식": 0, "국내ETF": 5, "해외ETF": 5,
+              "국내펀드": 20, "해외펀드": 10, "현금": 60}},
+    2: {"name": "안정추구형", "desc": "약간의 손실은 감내할 수 있다",
+        "w": {"국내주식": 0, "해외주식": 5, "국내ETF": 10, "해외ETF": 10,
+              "국내펀드": 25, "해외펀드": 15, "현금": 35}},
+    3: {"name": "위험중립형", "desc": "수익을 위해 상응하는 위험을 진다",
+        "w": {"국내주식": 5, "해외주식": 10, "국내ETF": 15, "해외ETF": 15,
+              "국내펀드": 20, "해외펀드": 20, "현금": 15}},
+    4: {"name": "적극투자형", "desc": "높은 수익을 위해 큰 손실도 감내한다",
+        "w": {"국내주식": 15, "해외주식": 20, "국내ETF": 15, "해외ETF": 20,
+              "국내펀드": 10, "해외펀드": 15, "현금": 5}},
+    5: {"name": "공격투자형", "desc": "원금 손실 위험을 적극 감수한다",
+        "w": {"국내주식": 25, "해외주식": 30, "국내ETF": 15, "해외ETF": 20,
+              "국내펀드": 5, "해외펀드": 5, "현금": 0}},
+}
+
+# ── 투자기간 보정 ────────────────────────────────────────────────────
+#
+# 기간이 짧으면 위험자산을 줄인다. 3 년 안에 쓸 돈으로 주식을 담으면 하락장에
+# 걸렸을 때 회복을 기다릴 시간이 없다 — 손실이 아니라 **확정 손실**이 된다.
+#
+# 줄인 몫은 현금으로 보낸다. 늘리지는 않는다 — 기간이 길다고 성향보다 더
+# 위험하게 가는 것은 성향을 무시하는 것이다.
+HORIZON = [
+    (1,  0.40, "1년 이내 — 위험자산을 성향의 40%까지만 담습니다"),
+    (3,  0.70, "3년 이내 — 위험자산을 성향의 70%까지만 담습니다"),
+    (5,  0.90, "5년 이내 — 위험자산을 성향의 90%까지 담습니다"),
+    (99, 1.00, "5년 초과 — 성향 그대로 담습니다"),
+]
+
+RISKY = [c for c in CLASSES if c != "현금"]
+
+
+def horizon_factor(years):
+    for cap, factor, note in HORIZON:
+        if years <= cap:
+            return factor, note
+    return 1.0, HORIZON[-1][2]
+
+
+def allocate(risk, years, available=None):
+    """성향과 기간으로 자산군 비중을 정한다.
+
+    `available` 은 지금 자료가 있는 자산군의 집합이다. 자료가 없는 자산군
+    (예: 아직 안 받은 해외ETF)에 비중을 주면 **살 수 없는 것을 권하는 제안서**가
+    된다. 그래서 그 몫은 같은 성격의 자산군으로 옮기고, 옮겼다는 사실을 적는다.
+    """
+    prof = PROFILES[int(risk)]
+    w = dict(prof["w"])
+    notes = []
+
+    factor, hnote = horizon_factor(years)
+    if factor < 1.0:
+        moved = 0.0
+        for c in RISKY:
+            cut = w[c] * (1 - factor)
+            w[c] -= cut
+            moved += cut
+        w["현금"] += moved
+        notes.append(hnote + " (위험자산 %.0f%%p 를 현금으로 옮겼습니다)" % moved)
+    else:
+        notes.append(hnote)
+
+    if available is not None:
+        # 자료 없는 자산군 → 짝이 되는 자산군으로. 짝도 없으면 현금으로.
+        PAIR = {"해외ETF": "해외펀드", "국내ETF": "국내펀드",
+                "해외펀드": "해외ETF", "국내펀드": "국내ETF",
+                "국내주식": "국내ETF", "해외주식": "해외ETF"}
+        for c in RISKY:
+            if c in available or w[c] <= 0:
+                continue
+            tgt = PAIR.get(c)
+            dest = tgt if (tgt in available) else "현금"
+            notes.append("**%s 는 지금 자료가 없어 제안에서 뺐습니다** — "
+                         "그 몫 %.0f%%p 를 %s 로 옮겼습니다." % (c, w[c], dest))
+            w[dest] = w.get(dest, 0) + w[c]
+            w[c] = 0
+
+    total = sum(w.values())
+    if total and abs(total - 100) > 1e-9:
+        w = {k: v * 100 / total for k, v in w.items()}
+    return {k: round(v, 2) for k, v in w.items()}, prof, notes
+
+
+def target_weights(target_return, expected, available):
+    """목표 수익률을 노리려면 어떤 비중이 필요한지 **역산**한다.
+
+    ⚠ 이 방향은 위험하다. 목표를 올리면 기계적으로 위험자산이 늘어나는데,
+    그것을 「이렇게 하면 목표를 번다」로 읽으면 안 된다. 그래서 이 함수는
+    비중만 돌려주고, **판정은 부르는 쪽이 위험과 함께 보여 주게** 한다.
+
+    셈하는 법 — 위험자산 묶음과 현금 사이의 비율만 움직인다. 위험자산 안의
+    구성은 성향 표를 그대로 쓴다. 목표를 맞추려고 자산군 하나에 몰아주면
+    분산이 깨지는데, 그것은 목표 달성이 아니라 다른 위험을 지는 것이다.
+    """
+    if not expected:
+        return None, "기대수익률 가정이 없어 역산할 수 없습니다."
+    base = {c: expected.get(c) for c in RISKY if c in available
+            and isinstance(expected.get(c), (int, float))}
+    if not base:
+        return None, "기대수익률 가정이 있는 자산군이 없습니다."
+
+    # 위험자산 묶음의 기대수익률 — 성향 3(위험중립형) 구성을 기준으로 잡는다
+    ref = PROFILES[3]["w"]
+    tot = sum(ref[c] for c in base) or 1
+    risky_ret = sum(expected[c] * ref[c] for c in base) / tot
+    cash_ret = expected.get("현금", 0) or 0
+
+    if risky_ret <= cash_ret:
+        return None, ("가정한 위험자산 기대수익률(%.1f%%)이 현금(%.1f%%)보다 "
+                      "높지 않아 역산할 수 없습니다." % (risky_ret, cash_ret))
+
+    share = (target_return - cash_ret) / (risky_ret - cash_ret)
+    note = None
+    if share > 1:
+        note = ("목표 %.1f%% 는 가정한 위험자산 기대수익률 %.1f%% 를 넘습니다 — "
+                "**현금을 0 으로 해도 닿지 않습니다.** 목표를 낮추거나 "
+                "기대수익률 가정을 다시 보셔야 합니다." % (target_return, risky_ret))
+        share = 1.0
+    if share < 0:
+        share = 0.0
+
+    w = {c: ref[c] * share * 100 / tot for c in base}
+    w["현금"] = 100 - sum(w.values())
+    for c in CLASSES:
+        w.setdefault(c, 0.0)
+    return {k: round(v, 2) for k, v in w.items()}, note
+
+
+# ── 포트폴리오 지표 ──────────────────────────────────────────────────
+
+def portfolio(weights, classes):
+    """비중과 자산군 집계로 포트폴리오 지표를 낸다.
+
+    **셈한 몫을 함께 돌려주는 것이 요점이다.** 펀드는 변동성이 없으므로
+    변동성은 포트폴리오의 일부만 덮는다. 「변동성 12.3%」라고만 적으면 그 안에
+    못 잰 몫이 숨는다.
+
+    상관관계는 셈하지 않는다 — 자산군 사이 상관을 내려면 자산군마다 하나의
+    대표 계열이 있어야 하는데 지금은 없다. 그래서 **분산효과를 뺀 가중합**을
+    내고, 그것이 실제보다 높게 나온다는 것을 적어 둔다. 낮게 보이게 만드는
+    것보다 높게 두는 편이 고객에게 안전하다.
+    """
+    out = {"과거1년실적": 0.0, "실적덮은비중": 0.0,
+           "변동성_가중합": 0.0, "변동성덮은비중": 0.0,
+           "최대낙폭_가중합": 0.0, "낙폭덮은비중": 0.0,
+           "현금비중": weights.get("현금", 0.0)}
+    for cls, wgt in weights.items():
+        if cls == "현금" or wgt <= 0:
+            continue
+        s = classes.get(cls) or {}
+        r, v, m = s.get("ret1y_중앙값"), s.get("vol_중앙값"), s.get("mdd_중앙값")
+        if isinstance(r, (int, float)):
+            out["과거1년실적"] += r * wgt / 100
+            out["실적덮은비중"] += wgt
+        if isinstance(v, (int, float)):
+            out["변동성_가중합"] += v * wgt / 100
+            out["변동성덮은비중"] += wgt
+        if isinstance(m, (int, float)):
+            out["최대낙폭_가중합"] += m * wgt / 100
+            out["낙폭덮은비중"] += wgt
+    for k in ("과거1년실적", "변동성_가중합", "최대낙폭_가중합"):
+        out[k] = round(out[k], 2)
+    return out
+
+
+def pick_products(products, cls, n=5, prefer=None):
+    """자산군에서 제안할 상품을 고른다.
+
+    고르는 기준은 **규모와 보수**다. 수익률 순으로 고르지 않는다 — 최근 1 년
+    잘 오른 것을 위에 올리면 제안서가 늘 「지난해 제일 많이 오른 것」을 권하게
+    되고, 그것은 고객에게 가장 비싼 습관이다.
+    """
+    items = [p for p in products if p.get("cls") == cls]
+    if prefer == "저보수":
+        items.sort(key=lambda p: (p.get("feeMin") is None, p.get("feeMin") or 9e9,
+                                  -(p.get("size") or 0)))
+    else:
+        items.sort(key=lambda p: -(p.get("size") or 0))
+    return items[:n]
+
+
+def load_universe(path=UNIVERSE):
+    if not os.path.exists(path):
+        raise SystemExit("유니버스가 없습니다: %s\n  먼저 "
+                         "python3 scripts/build_proposal_universe.py 를 돌리십시오."
+                         % path)
+    with open(path, encoding="utf-8") as fp:
+        return json.load(fp)
+
+
+def export_policy(path=POLICY_OUT):
+    """화면(자바스크립트)이 읽을 규칙 파일. 규칙은 여기 한 번만 적힌다."""
+    doc = {
+        "generated_at_kst": datetime.now(KST).strftime("%Y-%m-%d %H:%M:%S"),
+        "classes": CLASSES,
+        "profiles": PROFILES,
+        "horizon": [{"upTo": c, "factor": f, "note": n} for c, f, n in HORIZON],
+        "notes": {
+            "기대수익률": ("기대수익률은 **사람이 넣는 가정**입니다. 과거 실적을 "
+                           "기대수익률로 옮겨 적지 않습니다 — 최근 1 년이 그랬다는 "
+                           "것과 앞으로 그러리라는 것은 다른 말입니다."),
+            "변동성": ("자산군 사이 상관관계를 셈하지 않은 **가중합**입니다. "
+                       "분산효과가 빠져 있어 실제보다 높게 나옵니다. 낮게 보이게 "
+                       "만드는 것보다 높게 두는 편이 안전합니다."),
+            "펀드": ("펀드는 기준가 이력이 7 거래일뿐이라 변동성을 셈하지 "
+                     "않습니다. 그래서 포트폴리오 변동성은 일부만 덮으며, "
+                     "덮은 비중을 함께 적습니다."),
+            "상품선정": ("규모와 보수로 고릅니다. 수익률 순으로 고르지 않습니다 — "
+                         "지난해 제일 많이 오른 것을 권하는 습관이 고객에게 "
+                         "가장 비쌉니다."),
+        },
+    }
+    os.makedirs(os.path.dirname(path), exist_ok=True)
+    with open(path, "w", encoding="utf-8") as fp:
+        json.dump(doc, fp, ensure_ascii=False, indent=1)
+    return path
+
+
+if __name__ == "__main__":
+    u = load_universe()
+    avail = {c for c, s in u["자산군"].items() if s.get("종목수")}
+    print("자료 있는 자산군: %s\n" % ", ".join(sorted(avail)))
+    for r in (1, 3, 5):
+        w, prof, notes = allocate(r, 10, avail)
+        m = portfolio(w, u["자산군"])
+        print("성향 %d %s" % (r, prof["name"]))
+        print("  " + " · ".join("%s %.0f%%" % (k, v) for k, v in w.items() if v > 0))
+        print("  과거1년 실적(가중) %.1f%% — 덮은 비중 %.0f%% | 변동성(가중합) %.1f%% "
+              "— 덮은 비중 %.0f%%"
+              % (m["과거1년실적"], m["실적덮은비중"],
+                 m["변동성_가중합"], m["변동성덮은비중"]))
+        for n in notes:
+            print("  · %s" % n)
+        print()
+    print("규칙 파일: %s" % os.path.relpath(export_policy(), ROOT))
