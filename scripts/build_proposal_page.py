@@ -4,7 +4,7 @@
 
 드리프트를 막는 설계
 ──────────────────────────────────────────────────────────────────────
-배분 계산을 자바스크립트에 옮겨 적으면 파이썬(엑셀·PPT)과 **언젠가 조용히
+배분 계산을 자바스크립트에 옮겨 적으면 파이썬(엑셀)과 **언젠가 조용히
 어긋난다.** 그래서 **성향 5 × 기간 4 = 20 가지 배분을 파이썬이 미리 셈해
 넣고, 화면은 고르기만 한다.** 화면에는 배분 산수가 없다.
 
@@ -361,8 +361,6 @@ def render(data, u):
       <span data-ko>PDF 저장</span><span data-en>Save PDF</span></button>
     <button class="btn" id="btnCsv">
       <span data-ko>CSV</span><span data-en>CSV</span></button>
-    <button class="btn" id="btnPlanJson">
-      <span data-ko>조정안 (PPT용)</span><span data-en>Plan (for PPT)</span></button>
     <span class="sep"></span>
     <span class="now" id="toolNow"></span>
     <button class="btn" id="btnLink">
@@ -861,37 +859,52 @@ function toast(msg){
 }
 
 // CSV — 엑셀에서 바로 열리게 BOM 을 붙인다(없으면 한글이 깨진다).
+// CSV 는 **화면에서 고친 그대로**를 내보낸다.
+//
+// 예전에는 제안값(plan.w)과 처음 고른 상품(D.products)을 그대로 적었다. 비중을
+// 고치고 상품을 빼도 CSV 에는 고치기 전 것이 실렸다 — 조정안 JSON(PPT 용도로
+//  내보내던 것)이 조정 결과를 들고 있어서 가려져 있던 고장이다. PPT 를 접으면서
+// 그 JSON 도 없앴으니 CSV 가
+// 유일한 자료 내보내기가 된다. 고친 것이 안 나가면 안 된다.
 function csv(){
   const risk=$('#risk').value, yrs=$('#yrs').value, amt=Number($('#amt').value||0);
-  const plan=D.plans[risk+'|'+yrs], who=$('#client').value.trim();
+  const who=$('#client').value.trim();
+  const w = effAll(), m = metrics(w);
   const q = v => '"' + String(v==null?'':v).replace(/"/g,'""') + '"';
   const L = [];
   L.push(['자산배분 제안서'].map(q).join(','));
   L.push(['고객', who, '성향', D.profiles[risk].name,
           '기간', $('#yrs').selectedOptions[0].textContent,
           '투자금액(만원)', amt].map(q).join(','));
-  L.push(['생성', D.generated + ' KST', '유니버스', D.universe_generated||''].map(q).join(','));
+  L.push(['생성', D.generated + ' KST', '유니버스', D.universe_generated||'',
+          '비중', isEdited()? '화면에서 조정함' : '성향 기준 제안값'].map(q).join(','));
   L.push('');
   L.push(['자산군','비중(%%)','금액(만원)','과거1년(중앙,%%)','변동성(중앙,%%)'].map(q).join(','));
   D.classes.forEach(c=>{
-    const w = plan.w[c]||0; if(w<=0) return;
+    const x = w[c]||0; if(x<=0) return;
     const st = D.stats[c]||{};
-    L.push([c, w.toFixed(1), Math.round(amt*w/100),
+    L.push([c, x.toFixed(1), Math.round(amt*x/100),
             st['ret1y_중앙값']==null?'':st['ret1y_중앙값'].toFixed(1),
             st['vol_중앙값']==null?'':st['vol_중앙값'].toFixed(1)].map(q).join(','));
   });
-  const m = plan.m;
-  L.push(['합계','100.0',amt, m['과거1년실적'].toFixed(1), m['변동성_가중합'].toFixed(1)].map(q).join(','));
-  L.push(['실적 덮은 비중(%%)', m['실적덮은비중'].toFixed(0),
-          '변동성 덮은 비중(%%)', m['변동성덮은비중'].toFixed(0)].map(q).join(','));
+  // **키 이름은 화면 쪽(metrics) 것을 쓴다.** 파이썬의 portfolio() 는 한글 키를
+  // 내지만 화면의 metrics() 는 영문 키다. 한글 키를 그대로 옮겨 적었더니
+  // CSV 단추가 통째로 죽었다 — 눌러도 아무 일도 안 일어난다.
+  L.push(['합계', m.sum.toFixed(1), Math.round(amt*m.sum/100),
+          m.ret.toFixed(1), m.vol.toFixed(1)].map(q).join(','));
+  L.push(['실적 덮은 비중(%%)', m.retCov.toFixed(0),
+          '변동성 덮은 비중(%%)', m.volCov.toFixed(0)].map(q).join(','));
   L.push('');
-  L.push(['자산군','상품','유형','운용/발행','규모(원)','과거1년(%%)','변동성(%%)','보수(%%)'].map(q).join(','));
+  L.push(['자산군','상품','유형','운용/발행','규모(원)','과거1년(%%)','변동성(%%)','보수(%%)','배분액(만원)'].map(q).join(','));
   D.classes.forEach(c=>{
-    const w = plan.w[c]||0; if(w<=0 || c==='현금') return;
-    (D.products[c]||[]).slice(0,8).forEach(p=>{
+    const x = w[c]||0; if(x<=0 || c==='현금') return;
+    const all = D.products[c]||[], key = p => p.c || p.n;
+    const chosen = (S.sel[c]||[]).map(k=>all.find(p=>key(p)===k)).filter(Boolean);
+    const each = chosen.length ? Math.round(amt*x/100/chosen.length) : '';
+    chosen.forEach(p=>{
       L.push([c, p.n||p.c||'', p.t||'', p.co||'', p.s==null?'':p.s,
               p.r==null?'':p.r.toFixed(1), p.v==null?'':p.v.toFixed(1),
-              p.f1==null?'':p.f1].map(q).join(','));
+              p.f1==null?'':p.f1, each].map(q).join(','));
     });
   });
   L.push('');
@@ -904,37 +917,6 @@ function csv(){
 $('#btnWeights').onclick = ()=>{ S.w = {}; render(); remember();
                                  toast('비중을 제안값으로 되돌렸습니다.'); };
 
-// 조정안을 파일로 내보낸다 — build_proposal_pptx.py --from 이 이것을 받는다.
-// PPT 는 작업 도구가 아니라 고객에게 보여 주는 결과물이므로, 화면에서 다 고친
-// 뒤 그 결과로 만든다.
-$('#btnPlanJson').onclick = ()=>{
-  const w = effAll(), m = metrics(w);
-  const plan = {
-    client: $('#client').value.trim(),
-    amount: Number($('#amt').value||0),
-    risk: Number($('#risk').value),
-    riskName: D.profiles[$('#risk').value].name,
-    yearsLabel: $('#yrs').selectedOptions[0].textContent,
-    edited: isEdited(),
-    weights: w,
-    products: {},
-    generatedFrom: 'proposal.html ' + D.generated,
-  };
-  D.classes.forEach(c=>{
-    if(c==='현금' || (w[c]||0)<=0) return;
-    const all = D.products[c]||[], key = p=>p.c||p.n;
-    plan.products[c] = (S.sel[c]||[]).map(k=>all.find(p=>key(p)===k))
-                                     .filter(Boolean).map(p=>key(p));
-  });
-  const who = plan.client.replace(/[\\/:*?"<>|]/g,'') || '고객';
-  const a = document.createElement('a');
-  a.href = URL.createObjectURL(new Blob([JSON.stringify(plan,null,1)],
-                                        {type:'application/json'}));
-  a.download = `자산배분조정안_${who}_${D.generated.slice(0,10)}.json`;
-  document.body.appendChild(a); a.click(); a.remove();
-  setTimeout(()=>URL.revokeObjectURL(a.href), 1000);
-  toast('조정안을 내려받았습니다. PPT 는 이 파일로 만듭니다.');
-};
 
 // KO/EN — 단추만 있고 아무 일도 안 하던 것을 잇는다. 보이고 안 보이고는
 // CSS 가 하고, 여기서는 html 의 lang 만 바꾼다.

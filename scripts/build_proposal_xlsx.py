@@ -20,7 +20,7 @@
 **배분 규칙을 시트로 깔아 두는 까닭.** 비중을 제안서 시트에 값으로 박으면
 성향을 바꿔도 숫자가 안 따라온다. 그래서 파이썬이 셈해 둔 20 가지 배분을
 「배분규칙」시트에 깔고, 제안서는 INDEX/MATCH 로 집어 온다. 규칙 자체는
-proposal_lib.py 한 곳에서만 정해진다 — 화면·엑셀·PPT 가 같은 것을 본다.
+proposal_lib.py 한 곳에서만 정해진다 — 화면과 엑셀이 같은 것을 본다.
 
 쓰는 법
   python3 scripts/build_proposal_xlsx.py
@@ -121,7 +121,7 @@ def sheet_rules(wb, plans, classes):
     """성향×기간 20 가지 배분. 제안서 시트가 INDEX/MATCH 로 집어 온다."""
     ws = wb.create_sheet("배분규칙")
     ws.sheet_state = "visible"
-    ws["A1"] = "이 시트는 proposal_lib.py 가 셈한 배분입니다. 손으로 고치지 마십시오 — 고치면 화면·PPT 와 어긋납니다."
+    ws["A1"] = "이 시트는 proposal_lib.py 가 셈한 배분입니다. 손으로 고치지 마십시오 — 고치면 화면(proposal.html)과 어긋납니다."
     ws["A1"].font = f(9, color=MUTED)
     cols = ["키", "성향", "기간"] + classes
     head(ws, 3, cols, [12, 8, 10] + [11] * len(classes))
@@ -552,7 +552,7 @@ def sheet_howto(wb):
         "둘은 다른 것이며, 3 번 섹션이 둘을 견주어 줍니다.",
         "2. 나머지 칸은 수식입니다. 손으로 덮어쓰면 다음에 값이 안 따라옵니다.",
         "3. 「배분규칙」 시트는 proposal_lib.py 가 셈한 것입니다. 고치지 마십시오 — "
-        "고치면 화면(proposal.html)·PPT 와 어긋납니다.",
+        "고치면 화면(proposal.html)과 어긋납니다.",
         "4. 「기대수익률 (가정)」 칸은 비워 두었습니다. 사람이 넣는 가정이며 "
         "기본값을 두지 않았습니다 — 넣으실 때 근거를 함께 적어 두십시오.",
         "5. 자료를 새로 받으면 python3 scripts/build_proposal_universe.py 를 돌린 뒤 "
