@@ -42,7 +42,7 @@ import sys
 from datetime import datetime, timedelta, timezone
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from proposal_exposure import CLASSES                            # noqa: E402
+from proposal_exposure import CLASSES, is_blend                  # noqa: E402
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 KST = timezone(timedelta(hours=9))
@@ -53,6 +53,7 @@ OUT = os.path.join(ROOT, "data", "proposal", "cma.json")
 
 TRADING_DAYS = 252
 MIN_BARS = 1200          # 5 해는 있어야 「장기」라고 부를 만하다
+MIN_BARS_SHORT = 700     # 그마저 없을 때 — 창이 짧다고 적고 쓴다
 
 # ── ① 빌딩블록 ──────────────────────────────────────────────────────
 #
@@ -181,9 +182,11 @@ def long_run():
         # 손으로 적어 둔 프록시 + KIS 가 그 노출 군으로 받아 둔 것. 손 목록은
         # 자료가 없던 시절의 것이라 해외채권·대체가 비어 있다.
         hand = PROXY.get(c) or []
+        # **혼합형은 뺀다.** 절반이 주식인 「200미국채혼합50」으로 해외채권
+        # 수익률을 재면 채권이 아니라 주식을 재는 것이 된다.
         auto = sorted(nm for nm, b in bars.items()
                       if b.get("expo") == c and len(b["d"]) >= MIN_BARS
-                      and nm not in hand)
+                      and nm not in hand and not is_blend(nm))
         for nm in hand + auto:
             b = bars.get(nm)
             if not b:
@@ -201,11 +204,34 @@ def long_run():
             vals.append(v)
             detail.append({"name": nm, "cagr": round(v, 2), "bars": len(b["d"]),
                            "from": b["d"][0], "to": b["d"][-1]})
+        # 5 해를 채우는 **순수** 프록시가 하나도 없으면, 있는 것 중 가장 긴
+        # 것이라도 쓰되 창이 짧다는 사실을 값과 함께 적는다. 비워 두는 것보다
+        # 「3.4 해짜리다」라고 말하는 편이 쓸모 있다 — 다만 말없이 쓰지는 않는다.
+        short = None
+        if not vals:
+            cands = [(len(b["d"]), nm) for nm, b in bars.items()
+                     if b.get("expo") == c and len(b["d"]) >= MIN_BARS_SHORT
+                     and not is_blend(nm)]
+            if cands:
+                _, nm = max(cands)
+                b = bars[nm]
+                d0 = datetime.strptime(b["d"][0], "%Y-%m-%d")
+                d1 = datetime.strptime(b["d"][-1], "%Y-%m-%d")
+                v = cagr(b["c"], (d1 - d0).days)
+                if v is not None:
+                    vals = [v]
+                    short = "%s · %.1f해뿐" % (nm, (d1 - d0).days / 365.25)
+                    detail.append({"name": nm, "cagr": round(v, 2),
+                                   "bars": len(b["d"]), "from": b["d"][0],
+                                   "to": b["d"][-1], "short": True})
         if vals:
             out[c] = {"value": round(statistics.median(vals), 2),
                       "n": len(vals),
                       "spread": round(max(vals) - min(vals), 2),
-                      "basis": "국내 상장 원화 ETF %d종의 장기 연평균(중앙값)" % len(vals)}
+                      "short_window": short,
+                      "basis": ("국내 상장 원화 ETF %d종의 장기 연평균(중앙값)"
+                                % len(vals)) if not short else
+                               ("원화 프록시가 %s — 5해를 못 채웁니다" % short)}
         else:
             out[c] = {"value": None,
                       "why": "5해를 채우는 **원화** 프록시가 없습니다 — "
@@ -231,7 +257,8 @@ def compare():
         b = lr[c]["value"]
         rows.append({"cls": c, "빌딩블록": a, "장기실적": b,
                      "차이": None if (a is None or b is None) else round(b - a, 2),
-                     "장기_사유": lr[c].get("why")})
+                     "장기_사유": lr[c].get("why"),
+                     "장기_짧은창": lr[c].get("short_window")})
     return {"generated_at_kst": datetime.now(KST).strftime("%Y-%m-%d %H:%M:%S"),
             "빌딩블록": bb, "빌딩블록_메타": bbmeta,
             "장기실적": lr, "장기실적_메타": lrmeta,
@@ -263,7 +290,8 @@ def main():
         a = "%8.2f%%" % r["빌딩블록"] if r["빌딩블록"] is not None else "       —"
         b = "%8.2f%%" % r["장기실적"] if r["장기실적"] is not None else "       —"
         df = "%+7.1f%%p" % r["차이"] if r["차이"] is not None else "       —"
-        print("  %-8s %10s %10s %8s" % (r["cls"], a, b, df))
+        mark = "  ⚠ 창이 짧음" if r.get("장기_짧은창") else ""
+        print("  %-8s %10s %10s %8s%s" % (r["cls"], a, b, df, mark))
     print()
     print("② 가 쓴 프록시")
     for c, det in doc["장기실적_메타"].get("proxies", {}).items():
@@ -277,6 +305,10 @@ def main():
     for r in doc["견주기"]:
         if r["장기_사유"]:
             print("   ※ %s — %s" % (r["cls"], r["장기_사유"].replace("**", "")))
+        if r.get("장기_짧은창"):
+            print("   ⚠ %s — 5해를 채우는 순수 원화 프록시가 없어 %s 로 쟀습니다. "
+                  "한 국면만 담긴 값이라 기준선으로 쓰지 마십시오."
+                  % (r["cls"], r["장기_짧은창"]))
     print("\n   ※ %s" % doc["장기실적_메타"]["note"].replace("**", ""))
     print("   ※ %s" % bbm["note"].replace("**", ""))
 
