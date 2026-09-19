@@ -15,7 +15,8 @@
  * 보는 것.
  *   가. 페이지 오류·콘솔 오류가 하나도 없는가 (라이트·다크 두 판)
  *   나. 여섯 칸이 다 섰는가
- *   다. 시장 탭이 자료의 시장 수만큼 서고, **눌러도 오류가 나지 않는가**
+ *   다. 시장 탭이 자료의 시장 수만큼 서고, **자료가 정한 차례대로 서며**,
+ *       눌러도 오류가 나지 않는가
  *   라. 히트맵이 매수 전략 수만큼 줄을 갖고, 합의 멤버에 테두리가 둘렸는가
  *   마. 화면의 매수 종목·손절가가 **자료의 값과 같은가** (화면이 옮겨 찍는지)
  *   바. 합의 K 표와 전략 명세 10줄이 섰는가
@@ -42,7 +43,15 @@ const check = (cond, label, detail) => {
 };
 
 const D = JSON.parse(readFileSync(DATA, 'utf-8'));
-const MKS = Object.keys(D.markets);
+
+/** 화면이 시장을 늘어놓는 차례. **자료가 정한다**(view_order) — 여기에 차례를
+ *  또 적어 두면 화면과 검사기가 갈라지고, 갈라진 뒤에는 이 검사가 엉뚱한 탭의
+ *  자료를 맞대게 된다. */
+const MKS = (() => {
+  const have = Object.keys(D.markets);
+  const want = (D.view_order || []).filter((k) => have.includes(k));
+  return want.concat(have.filter((k) => !want.includes(k)));
+})();
 
 async function open(browser, opts, label) {
   const page = await browser.newPage(opts);
@@ -70,6 +79,13 @@ const browser = await chromium.launch();
   // 다. 탭 — **눌러 본다.** 서 있기만 한 탭은 아무것도 보장하지 않는다.
   const tabs = await p.$$('#tabs button');
   check(tabs.length === MKS.length, `시장 탭 ${MKS.length} 개`, `${tabs.length} 개`);
+
+  // 차례가 자료와 같은가. 첫 탭이 어디냐가 이 화면의 기본값이라 눈에 띄게 본다.
+  const order = await p.$$eval('#tabs button', (ns) => ns.map((n) => n.dataset.mk));
+  check(order.join(',') === MKS.join(','), `탭 차례가 자료의 view_order 와 같음`,
+    `화면 ${order.join('>')} · 자료 ${MKS.join('>')}`);
+  check(order[0] === MKS[0], `첫 탭이 ${D.markets[MKS[0]].label}`,
+    `${(D.markets[order[0]] || {}).label}`);
   for (let i = 0; i < tabs.length; i++) {
     await (await p.$$('#tabs button'))[i].click();
     await p.waitForTimeout(150);
