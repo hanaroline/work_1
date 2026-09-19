@@ -2938,9 +2938,29 @@ python3 scripts/verify_kis_timing.py --self-only   # 봉 없이 — 산출물 �
 python3 -m http.server 8000
 #   http://localhost:8000/docs/kis-timing/
 
-# 5) 화면 연기 시험 (헤드리스) — PR CI 가 도는 것과 같은 것입니다
-node scripts/check_kis_timing_page.mjs --base http://localhost:8000
+# 5) 인터넷 없는 PC 용 한 파일 판 — 자료를 HTML 안에 심습니다 (305KB)
+python3 scripts/make_kis_timing_offline.py          # → kis-timing-offline.html
+python3 scripts/make_kis_timing_offline.py --slim   # 화면이 안 쓰는 칸을 빼면 166KB
+
+# 6) 화면 연기 시험 (헤드리스) — PR CI 가 도는 것과 같은 것입니다
+node scripts/check_kis_timing_page.mjs --base http://localhost:8000 \
+  --offline kis-timing-offline.html
 ```
+
+**한 파일 판은 두 번 눌러 바로 열립니다.** 사내망 PC 처럼 인터넷이 막힌 자리에서는
+화면이 어떤 경로로도 자료를 못 받습니다 — 파일 옆에 json 을 같이 두는 것도 안 됩니다
+(브라우저가 `file://` 로 열린 쪽의 `fetch` 를 CORS 로 막습니다). 그래서 자료를 HTML
+안에 넣습니다. `signal-offline.html` · `volatility-offline.html` 과 같은 방식이고,
+**그리는 코드는 인터넷판과 완전히 같은 것**을 씁니다 — 갈림은 `index.html` 의
+`loadJson()` 하나뿐입니다.
+
+`--offline` 을 준 연기 시험은 그 파일을 **바깥을 막은 브라우저**로 엽니다. `file://`
+아닌 요청이 하나라도 나가면 걸립니다 — 「인터넷 없이 된다」는 말은 그렇게만 증명됩니다.
+자료를 심지 않은 원본을 한 파일 판이라고 속여 걸어 보면 네 항목이 걸리고 나가는 값이
+1 이 됩니다.
+
+머리말이 「산출 … · **내장 스냅샷**」으로 만든 시점을 밝히므로 오래된 파일을 오늘
+시세로 착각할 일은 없습니다. 새 값이 필요하면 다시 만들어 옮겨야 합니다.
 
 **PR 로 올리면 `pr-check.yml` 의 「매매 타이밍」 갈래가 위 1~5 를 러너에서 그대로
 돌립니다.** 커밋된 산출물에 `--self-only` 를 대고, `us100-data` 가지를 받아 성적표와
@@ -2994,6 +3014,7 @@ PNG 로 남깁니다.
 | `scripts/verify_kis_timing.py` | 지표를 **다시 써서** 대조 — 같은 코드로 두 번 부르는 것은 검산이 아닙니다 |
 | `scripts/check_kis_timing_page.mjs` | 화면 연기 시험 — 수가 맞아도 화면은 깨집니다 |
 | `scripts/fetch_kis_timing_ov.py` | 해외 ETF 곁 목록을 야후에서 OHLCV 로 받습니다 (러너에서) |
+| `scripts/make_kis_timing_offline.py` | 인터넷 없는 PC 용 한 파일 판 |
 
 `verify_kis_timing.py` 는 지표를 순진하게(창을 매번 통째로 다시 자르며) 다시 구현해
 라이브러리와 맞대고, 화면에 오른 신호가 정말 그 조건인지 원 봉에서 다시 확인하고,
