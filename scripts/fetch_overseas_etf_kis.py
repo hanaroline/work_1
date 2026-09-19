@@ -52,9 +52,12 @@ UNIVERSE = [
     ("VEA", "AMS", "Vanguard 선진국(미국 제외)", "equity"),
     ("VWO", "AMS", "Vanguard 신흥국", "equity"),
     # 채권
-    ("SHY", "AMS", "iShares 미국채 1-3년", "bond"),
-    ("IEF", "AMS", "iShares 미국채 7-10년", "bond"),
-    ("TLT", "AMS", "iShares 미국채 20년+", "bond"),
+    # 국채 3 종(SHY·IEF·TLT)은 **나스닥** 상장이다. 2026-09-19 첫 수집에서
+    # AMS 로 넣었다가 셋 다 봉 0 개로 돌아왔다 — 거래소를 틀리면 오류가 아니라
+    # 빈 응답이 온다. 그러면 채권 자산군에 국채가 통째로 빠진 채 제안서가 나간다.
+    ("SHY", "NAS", "iShares 미국채 1-3년", "bond"),
+    ("IEF", "NAS", "iShares 미국채 7-10년", "bond"),
+    ("TLT", "NAS", "iShares 미국채 20년+", "bond"),
     ("AGG", "AMS", "iShares 미국 종합채권", "bond"),
     ("LQD", "AMS", "iShares 투자등급 회사채", "bond"),
     ("HYG", "AMS", "iShares 하이일드 회사채", "bond"),

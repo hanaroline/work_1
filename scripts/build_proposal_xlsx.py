@@ -38,7 +38,8 @@ from datetime import datetime
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 from openpyxl import Workbook                                    # noqa: E402
-from openpyxl.styles import Alignment, Border, Side              # noqa: E402
+from openpyxl.styles import Alignment, Border, Font, Side        # noqa: E402
+from openpyxl.formatting.rule import FormulaRule                 # noqa: E402
 from openpyxl.utils import get_column_letter                     # noqa: E402
 from openpyxl.worksheet.datavalidation import DataValidation     # noqa: E402
 
@@ -46,7 +47,7 @@ import proposal_lib as P                                         # noqa: E402
 # 색·서체·섹션 룰은 기존 제안서에서 가져다 쓴다. 여기 다시 적으면 두 엑셀이
 # 언젠가 서로 다른 오렌지를 쓰게 된다.
 from build_etf_proposal import (                                 # noqa: E402
-    BOX, FONT, HIGHLIGHT, INK, INPUT_FILL, INPUT_FONT, MUTED, ORANGE,
+    BOX, ERROR, FONT, HIGHLIGHT, INK, INPUT_FILL, INPUT_FONT, MUTED, ORANGE,
     SOFT_ORANGE, SURFACE, f, fill, rule_row, section)
 
 ROOT = P.ROOT
@@ -54,6 +55,10 @@ DEFAULT_OUT = os.path.join(ROOT, "고객제안서_자산배분.xlsx")
 
 HORIZONS = [(1, "1년 이내"), (3, "3년"), (5, "5년"), (10, "5년 초과")]
 PER_CLASS = 25
+
+# 조회 단추의 두 상태. 매크로 없이 쓸 수 있는 「단추」는 이것뿐이다.
+GO_ON = "▶ 조회 실행"
+GO_OFF = "… 조건 입력 중"
 
 RIGHT = Alignment(horizontal="right")
 LEFT = Alignment(horizontal="left", vertical="center")
@@ -90,6 +95,28 @@ def put(ws, row, col, value, *, kind="src", fmt=None, bold=False):
     return c
 
 
+def note(ws, row, last_col, text):
+    """표 위에 다는 설명 한 줄. 여러 칸을 합치고 줄바꿈을 켠다 — 안 그러면
+    긴 설명이 옆 칸으로 흘러 표 머리를 덮는다(처음 판이 그랬다)."""
+    c = ws.cell(row=row, column=1, value=text.replace("**", ""))
+    c.font = f(9, color=MUTED)
+    c.alignment = Alignment(wrap_text=True, vertical="top")
+    ws.merge_cells(start_row=row, start_column=1, end_row=row, end_column=last_col)
+    ws.row_dimensions[row].height = 30
+    return row + 1
+
+
+def size_ko(v):
+    """규모를 조·억으로. 원 단위 17 자리는 칸을 넘쳐 ######## 가 된다."""
+    if not isinstance(v, (int, float)):
+        return "—"
+    if v >= 1e12:
+        return "%s조원" % format(round(v / 1e12), ",")
+    if v >= 1e8:
+        return "%s억원" % format(round(v / 1e8), ",")
+    return "%s원" % format(round(v), ",")
+
+
 def sheet_rules(wb, plans, classes):
     """성향×기간 20 가지 배분. 제안서 시트가 INDEX/MATCH 로 집어 온다."""
     ws = wb.create_sheet("배분규칙")
@@ -113,54 +140,69 @@ def sheet_rules(wb, plans, classes):
 
 def sheet_classes(wb, stats):
     ws = wb.create_sheet("자산군")
-    section(ws, 1, "1", "자산군 실측치", 6)
-    ws["A3"] = ("아래는 원천에서 **실제로 잰 값**입니다. 미래 수익률이 아닙니다. "
-                "빈칸(—)은 원천에 없어 셈하지 않은 것이며 만들어 넣지 않습니다.")
-    ws["A3"].font = f(9, color=MUTED)
-    head(ws, 5, ["자산군", "종목수", "수익률 산출", "과거 1년(중앙)",
-                 "변동성(중앙)", "최대낙폭(중앙)"], [14, 10, 12, 15, 14, 15])
-    r = 6
-    for cls, s in stats.items():
+    r = section(ws, 1, "1", "자산군 실측치", 6)
+    note(ws, r, 6,
+         "아래는 원천에서 실제로 잰 값입니다. 미래 수익률이 아닙니다. "
+         "빈칸(—)은 원천에 없어 셈하지 않은 것이며 만들어 넣지 않습니다.")
+    r += 2
+    head(ws, r, ["자산군", "종목수", "수익률 산출", "과거 1년(중앙)",
+                 "변동성(중앙)", "최대낙폭(중앙)"], [14, 10, 13, 16, 15, 16])
+    r += 1
+    first_data = r
+    for cls, st in stats.items():
         put(ws, r, 1, cls)
-        put(ws, r, 2, s["종목수"])
-        put(ws, r, 3, s["수익률산출가능"])
+        put(ws, r, 2, st["종목수"])
+        put(ws, r, 3, st["수익률산출가능"])
         for i, key in enumerate(["ret1y_중앙값", "vol_중앙값", "mdd_중앙값"], start=4):
-            v = s.get(key)
+            v = st.get(key)
             if isinstance(v, (int, float)):
                 put(ws, r, i, v / 100, fmt="0.0%")
             else:
                 put(ws, r, i, "—").alignment = RIGHT
         r += 1
-    ws["A%d" % (r + 1)] = ("펀드는 기준가 이력이 7 거래일뿐이라 변동성·최대낙폭을 "
-                           "셈하지 않고 원천의 위험등급을 씁니다.")
-    ws["A%d" % (r + 1)].font = f(9, color=MUTED)
-    return ws
+    note(ws, r + 1, 6,
+         "펀드는 기준가 이력이 7 거래일뿐이라 변동성·최대낙폭을 셈하지 않고 "
+         "원천의 위험등급을 씁니다.")
+    return ws, first_data, r - 1
 
 
 def sheet_products(wb, products):
     ws = wb.create_sheet("상품")
-    section(ws, 1, "2", "자산군별 제안 상품", 8)
-    ws["A3"] = ("규모와 보수로 고릅니다. 수익률 순으로 고르지 않습니다 — 지난해 제일 "
-                "많이 오른 것을 권하는 습관이 고객에게 가장 비쌉니다. "
-                "개별 주식은 시가총액 상위 종목이며 종목 추천이 아닙니다.")
-    ws["A3"].font = f(9, color=MUTED)
-    head(ws, 5, ["자산군", "상품", "유형", "운용/발행", "규모(원)",
+    r = section(ws, 1, "2", "자산군별 제안 상품", 8)
+    note(ws, r, 8,
+         "규모와 보수로 고릅니다. 수익률 순으로 고르지 않습니다 — 지난해 제일 많이 "
+         "오른 것을 권하는 습관이 고객에게 가장 비쌉니다. 개별 주식은 시가총액 상위 "
+         "종목이며 종목 추천이 아닙니다.")
+    r += 2
+    head(ws, r, ["채택", "자산군", "상품", "유형", "운용/발행", "규모",
                  "과거 1년", "변동성", "보수"],
-         [11, 42, 16, 20, 16, 11, 11, 12])
-    r = 6
+         [7, 11, 44, 16, 22, 13, 11, 11, 13])
+    # 「채택」 머리는 사람이 넣는 칸이므로 파랗게 표시한다.
+    ws.cell(row=r, column=1).fill = fill(INPUT_FILL)
+    ws.cell(row=r, column=1).font = f(10, bold=True, color=INPUT_FONT)
+    head_row = r
+    r += 1
+    first_prod = r
     for cls, items in products.items():
         for p in items:
-            put(ws, r, 1, cls)
-            put(ws, r, 2, p.get("name") or p.get("code"))
-            put(ws, r, 3, p.get("type") or "—")
-            put(ws, r, 4, p.get("company") or "—")
-            sz = p.get("size")
-            put(ws, r, 5, sz if isinstance(sz, (int, float)) else "—",
-                fmt="#,##0" if isinstance(sz, (int, float)) else None)
-            for i, key in enumerate(["ret1y", "vol"], start=6):
+            # **빼고 싶은 상품은 N 으로 바꾼다.** 줄을 지우면 수식·필터가
+            # 어긋나므로 지우지 않고 표시만 바꾸게 한다. 자산군별로 몇 개를
+            # 채택했는지는 아래 요약이 세어 준다.
+            put(ws, r, 1, "Y", kind="input")
+            ws.cell(row=r, column=1).alignment = CENTER
+            put(ws, r, 2, cls)
+            put(ws, r, 3, p.get("name") or p.get("code"))
+            put(ws, r, 4, p.get("type") or "—")
+            put(ws, r, 5, p.get("company") or "—")
+            # **조·억으로 적는다.** 원 단위로 적으면 삼성전자가 17 자리가 되어
+            # 칸을 넘치고 엑셀이 ######## 로 보여 준다. 실제로 그렇게 나갔다.
+            put(ws, r, 6, size_ko(p.get("size")))
+            ws.cell(row=r, column=6).alignment = RIGHT
+            for i, key in enumerate(["ret1y", "vol"], start=7):
                 v = p.get(key)
                 put(ws, r, i, v / 100 if isinstance(v, (int, float)) else "—",
                     fmt="0.0%" if isinstance(v, (int, float)) else None)
+                ws.cell(row=r, column=i).alignment = RIGHT
             lo, hi = p.get("feeMin"), p.get("feeMax")
             if isinstance(lo, (int, float)) and isinstance(hi, (int, float)) and hi != lo:
                 put(ws, r, 8, "%.2f~%.2f%%" % (lo, hi))
@@ -168,22 +210,25 @@ def sheet_products(wb, products):
                 put(ws, r, 8, lo / 100, fmt="0.00%")
             else:
                 put(ws, r, 8, "—")
+            ws.cell(row=r, column=8).alignment = RIGHT
             if r % 2 == 0:
                 for c in range(1, 9):
-                    if not ws.cell(row=r, column=c).fill.fgColor.rgb or \
-                            ws.cell(row=r, column=c).fill.fgColor.rgb == "00000000":
-                        ws.cell(row=r, column=c).fill = fill(SURFACE)
+                    cell = ws.cell(row=r, column=c)
+                    rgb = cell.fill.fgColor.rgb
+                    if not rgb or rgb == "00000000":
+                        cell.fill = fill(SURFACE)
             r += 1
-    ws.freeze_panes = "A6"
+    ws.freeze_panes = ws.cell(row=8, column=1).coordinate
+    ws.auto_filter.ref = "A7:H%d" % (r - 1)
     return ws
 
 
 def sheet_sources(wb, u):
     ws = wb.create_sheet("출처")
-    section(ws, 1, "3", "자료 출처와 기준일", 5)
-    head(ws, 3, ["자산군", "원천", "종목", "기준일", "비고"],
-         [12, 46, 8, 12, 70])
-    r = 4
+    r = section(ws, 1, "3", "자료 출처와 기준일", 5)
+    head(ws, r, ["자산군", "원천", "종목", "기준일", "비고"],
+         [12, 52, 8, 12, 80])
+    r += 1
     for name, meta in u["원천"].items():
         if not isinstance(meta, dict):
             continue
@@ -191,126 +236,293 @@ def sheet_sources(wb, u):
         put(ws, r, 2, str(meta.get("src") or "—"))
         put(ws, r, 3, meta.get("count", "—"))
         put(ws, r, 4, meta.get("asOf") or "—")
-        put(ws, r, 5, str(meta.get("note") or meta.get("error") or "")[:200])
-        ws.cell(row=r, column=5).alignment = LEFT
+        put(ws, r, 5, str(meta.get("note") or meta.get("error") or "")[:300])
+        for c in (2, 5):
+            ws.cell(row=r, column=c).alignment = Alignment(
+                horizontal="left", vertical="top", wrap_text=True)
+        ws.row_dimensions[r].height = 42
         r += 1
+
     r += 2
+    ws.cell(row=r, column=1, value="이 자료가 지키는 규칙").font = f(11, bold=True)
+    r += 1
     for k, v in u["정책"].items():
         ws.cell(row=r, column=1, value=k).font = f(10, bold=True)
-        c = ws.cell(row=r, column=2, value=str(v))
+        c = ws.cell(row=r, column=2, value=str(v).replace("**", ""))
         c.font = f(9, color=MUTED)
-        c.alignment = LEFT
+        c.alignment = Alignment(horizontal="left", vertical="top",
+                                wrap_text=True)
+        ws.merge_cells(start_row=r, start_column=2, end_row=r, end_column=5)
+        ws.row_dimensions[r].height = 46
         r += 1
     return ws
 
 
-def sheet_proposal(wb, data, u, rule_first, rule_last, classes):
+def sheet_proposal(wb, data, u, rule_first, rule_last, classes,
+                   stat_first, stat_last):
     ws = wb.create_sheet("제안서", 0)
     ws.sheet_view.showGridLines = False
-    for i, w in enumerate([16, 15, 16, 15, 15, 15, 14], start=1):
+    for i, w in enumerate([16, 14, 14, 15, 15, 14, 18], start=1):
         ws.column_dimensions[get_column_letter(i)].width = w
+    # G·H 는 합계를 셈하려고 두는 숨은 도우미 열이다(아래 참고).
+    for col in ("H", "I"):
+        ws.column_dimensions[col].hidden = True
 
-    # 머리
     t = ws.cell(row=1, column=1, value="자산배분 제안서")
     t.font = f(20, bold=True, color=ORANGE)
     ws.cell(row=2, column=1, value="미래에셋증권").font = f(10, color=MUTED)
     rule_row(ws, 3, 7)
 
     # ── 입력 ────────────────────────────────────────────────────────
-    section(ws, 5, "1", "고객 정보", 7)
-    labels = [("고객명", "", "text"), ("투자금액 (만원)", 10000, "num"),
-              ("투자기간", "5년 초과", "horizon"), ("위험성향 (1~5)", 3, "risk")]
-    r = 7
-    for label, default, kind in labels:
-        ws.cell(row=r, column=1, value=label).font = f(10, bold=True)
+    #
+    # **section() 은 세 행을 쓰고 다음 빈 행을 돌려준다.** 그 반환값을 무시하고
+    # 행 번호를 손으로 박았더니 제목 아래 6pt 여백행에 내용이 깔려 고객명 줄이
+    # 납작하게 눌렸다. 이제 돌려주는 값만 쓴다.
+    r = section(ws, 5, "1", "조회 조건", 7)
+    first_input = r
+    # **위험성향은 한 칸이다.** 번호 칸과 이름 칸을 따로 두었더니 같은 것을 두 번
+    # 묻는 꼴이었다 — 이제 드롭다운 한 칸에 번호와 이름을 함께 담고, 번호는
+    # 숨은 칸에서 떼어 쓴다.
+    risk_items = ["%d %s" % (k, P.PROFILES[k]["name"]) for k in sorted(P.PROFILES)]
+    labels = [("고객명", "", "text"),
+              ("투자금액 (만원)", 10000, "num"),
+              ("투자기간", "5년 초과", "horizon"),
+              ("위험성향", risk_items[2], "risk"),
+              # **목표 연수익률.** 이 칸이 없어서 「기대수익률 입력 항목이 왜
+              # 없냐」는 말을 들었다. 자산군별 가정(G 열)과 다른 것이다 —
+              # 이쪽은 고객이 바라는 수익률이고, 저쪽은 그것을 어떻게 벌
+              # 작정인지에 대한 가정이다. 기본값은 두지 않는다.
+              ("목표 연수익률 (%)", None, "target")]
+    for label_text, default, kind in labels:
+        ws.cell(row=r, column=1, value=label_text).font = f(10, bold=True)
         put(ws, r, 2, default, kind="input",
-            fmt="#,##0" if kind == "num" else None)
+            fmt="#,##0" if kind == "num" else ("0.0%" if kind == "target" else None))
         r += 1
+    amt_cell, yrs_cell, risk_cell, tgt_cell = (
+        first_input + 1, first_input + 2, first_input + 3, first_input + 4)
 
     dv_h = DataValidation(type="list",
                           formula1='"%s"' % ",".join(l for _, l in HORIZONS),
                           allow_blank=False)
     ws.add_data_validation(dv_h)
-    dv_h.add(ws.cell(row=9, column=2))
-    dv_r = DataValidation(type="whole", operator="between",
-                          formula1=1, formula2=5, allow_blank=False)
+    dv_h.add(ws.cell(row=yrs_cell, column=2))
+    dv_r = DataValidation(type="list", formula1='"%s"' % ",".join(risk_items),
+                          allow_blank=False)
     ws.add_data_validation(dv_r)
-    dv_r.add(ws.cell(row=10, column=2))
+    dv_r.add(ws.cell(row=risk_cell, column=2))
 
-    # 성향 이름과 조회 키 — 수식이다(입력이 바뀌면 따라 움직여야 한다).
-    ws.cell(row=11, column=1, value="성향").font = f(10, bold=True)
-    names = ",".join('"%s"' % P.PROFILES[k]["name"] for k in sorted(P.PROFILES))
-    put(ws, 11, 2, "=CHOOSE($B$10,%s)" % names, kind="formula")
-    ws.cell(row=12, column=1, value="조회 키").font = f(9, color=MUTED)
+    # ── 조회 단추 ──────────────────────────────────────────────────
+    #
+    # **매크로 없는 .xlsx 에는 누르는 단추를 넣을 수 없다.** .xlsm 으로 만들면
+    # 넣을 수 있지만 회사 PC 에서 매크로는 대개 막혀 있어, 열자마자 「사용 안
+    # 함」이 뜨는 파일을 고객 앞에 놓게 된다. 그래서 드롭다운으로 단추를
+    # 만들었다 — 「조회 실행」을 고르면 배분이 나오고, 「조건 입력 중」으로
+    # 두면 표가 비어 조건만 차분히 채울 수 있다.
+    go_cell = r
+    ws.cell(row=go_cell, column=1, value="조회").font = f(10, bold=True)
+    gc = ws.cell(row=go_cell, column=2, value=GO_ON)
+    gc.font = f(11, bold=True, color="FFFFFF")
+    gc.fill = fill(ORANGE)
+    gc.border = BOX
+    gc.alignment = CENTER
+    ws.row_dimensions[go_cell].height = 24
+    dv_g = DataValidation(type="list", formula1='"%s,%s"' % (GO_ON, GO_OFF),
+                          allow_blank=False)
+    ws.add_data_validation(dv_g)
+    dv_g.add(gc)
+    c = ws.cell(row=go_cell, column=3,
+                value="← 조건을 고친 뒤 이 칸에서 「%s」을 고르십시오. "
+                      "「%s」로 두면 표가 비워집니다." % (GO_ON, GO_OFF))
+    c.font = f(9, color=MUTED)
+    c.alignment = LEFT
+    ws.merge_cells(start_row=go_cell, start_column=3, end_row=go_cell, end_column=7)
+
+    # 숨은 도우미 — 성향 번호와 조회 키. 예전에는 눈에 보이는 줄로 두었는데,
+    # 고객에게 보여 줄 것이 아니라 셈에 쓰는 부속이다.
     years_list = ",".join(str(y) for y, _ in HORIZONS)
-    put(ws, 12, 2,
-        '=$B$10&"|"&CHOOSE(MATCH($B$9,{%s},0),%s)'
-        % (",".join('"%s"' % l for _, l in HORIZONS), years_list),
-        kind="formula")
-    ws.cell(row=12, column=2).font = f(9, color=MUTED)
+    ws["H1"] = "=IFERROR(VALUE(LEFT($B$%d,1)),3)" % risk_cell
+    ws["H2"] = ('=IF($B$%d<>"%s","",$H$1&"|"&CHOOSE(MATCH($B$%d,{%s},0),%s))'
+                % (go_cell, GO_ON, yrs_cell,
+                   ",".join('"%s"' % l for _, l in HORIZONS), years_list))
+    key_cell = go_cell
 
     # ── 배분 ────────────────────────────────────────────────────────
-    section(ws, 14, "2", "제안 배분", 7)
-    head(ws, 16, ["자산군", "비중", "금액(만원)", "과거 1년(중앙)",
-                  "변동성(중앙)", "", ""], None)
+    r = section(ws, key_cell + 2, "2", "제안 배분", 7)
+    head(ws, r, ["자산군", "제안 비중", "조정 비중", "쓰는 비중",
+                 "금액(만원)", "과거 1년(중앙)", "기대수익률 (가정)"], None)
+    for col in (3, 7):          # 사람이 넣는 두 칸은 머리부터 파랗게 표시한다
+        ws.cell(row=r, column=col).fill = fill(INPUT_FILL)
+        ws.cell(row=r, column=col).font = f(10, bold=True, color=INPUT_FONT)
     rng = "배분규칙!$D$%d:$%s$%d" % (rule_first,
                                      get_column_letter(3 + len(classes)),
                                      rule_last)
     key_rng = "배분규칙!$A$%d:$A$%d" % (rule_first, rule_last)
     hdr_rng = "배분규칙!$D$3:$%s$3" % get_column_letter(3 + len(classes))
 
-    first = 17
+    first = r + 1
     for i, cls in enumerate(classes):
-        r = first + i
-        put(ws, r, 1, cls)
-        put(ws, r, 2,
-            "=INDEX(%s,MATCH($B$12,%s,0),MATCH($A%d,%s,0))" % (rng, key_rng, r, hdr_rng),
+        row = first + i
+        put(ws, row, 1, cls)
+        # B = 성향·기간이 정한 제안 비중(수식). 사람이 손대지 않는다.
+        # 조회 키가 비면(=「조건 입력 중」) INDEX 가 오류를 내고, 그것을 빈칸으로
+        # 받는다 — 표가 통째로 비어 조건만 차분히 채울 수 있다.
+        put(ws, row, 2,
+            '=IFERROR(INDEX(%s,MATCH($H$2,%s,0),MATCH($A%d,%s,0)),"")'
+            % (rng, key_rng, row, hdr_rng),
             kind="formula", fmt="0.0%")
-        put(ws, r, 3, "=$B$8*$B%d" % r, kind="formula", fmt="#,##0")
-        # 자산군 실측치는 「자산군」 시트에서 집어 온다 — 값으로 박으면 자료를
-        # 다시 만들었을 때 제안서만 옛 숫자를 들고 있게 된다.
-        put(ws, r, 4, '=IFERROR(INDEX(자산군!$D$6:$D$%d,MATCH($A%d,자산군!$A$6:$A$%d,0)),"—")'
-            % (5 + len(u["자산군"]), r, 5 + len(u["자산군"])), kind="formula", fmt="0.0%")
-        put(ws, r, 5, '=IFERROR(INDEX(자산군!$E$6:$E$%d,MATCH($A%d,자산군!$A$6:$A$%d,0)),"—")'
-            % (5 + len(u["자산군"]), r, 5 + len(u["자산군"])), kind="formula", fmt="0.0%")
+        # C = **조정 비중.** 비워 두면 제안값을 쓴다. 제안은 출발점이고
+        # 조정이 실무의 본체라, 제안값을 덮어쓰지 않고 옆 칸에 적게 한다 —
+        # 그래야 무엇을 얼마나 고쳤는지 나중에 보인다.
+        put(ws, row, 3, None, kind="input", fmt="0.0%")
+        # D = 실제로 쓰는 비중. B 가 빈칸(조회 전)이면 0 으로 받는다 —
+        # 그냥 참조하면 금액 칸이 #VALUE! 로 물든다.
+        put(ws, row, 4,
+            '=IF($C%d="",IF(ISNUMBER($B%d),$B%d,0),$C%d)' % (row, row, row, row),
+            kind="formula", fmt="0.0%")
+        put(ws, row, 5, "=$B$%d*$D%d" % (amt_cell, row),
+            kind="formula", fmt="#,##0")
+        put(ws, row, 6,
+            '=IFERROR(INDEX(자산군!$D$%d:$D$%d,'
+            'MATCH($A%d,자산군!$A$%d:$A$%d,0)),"—")'
+            % (stat_first, stat_last, row, stat_first, stat_last),
+            kind="formula", fmt="0.0%")
+        # **기대수익률은 비워 둔다.** 사람이 넣는 가정이므로 기본값을 몰래
+        # 넣지 않는다. 과거 실적을 여기 복사해 넣는 것도 하지 않는다 —
+        # 그것은 「지난해처럼 오른다」고 가정하는 셈이다.
+        put(ws, row, 7, None, kind="input", fmt="0.0%")
+
+        # **숨은 도우미 열.** 표시 칸은 값이 없을 때 「—」라는 글자를 담는데,
+        # SUMPRODUCT 는 글자를 만나면 #VALUE! 를 낸다 — IFERROR 는 오류만 잡지
+        # 글자는 못 잡는다. 실제 엑셀에서 합계가 그렇게 깨져 나갔다.
+        put(ws, row, 8, '=IF(ISNUMBER($F%d),$F%d,0)' % (row, row),
+            kind="formula", fmt="0.0%")
+        # I = 목표수익률 역산에 쓰는 기준 구성(위험중립형 비중). 가정을 넣은
+        # 위험자산만 센다 — 가정이 없는 자산군까지 세면 위험자산 기대수익률이
+        # 실제보다 낮게 나와 목표가 닿을 수 없는 것처럼 보인다.
+        put(ws, row, 9,
+            '=IF(AND($A%d<>"현금",ISNUMBER($G%d)),%s,0)'
+            % (row, row, P.PROFILES[3]["w"].get(cls, 0)),
+            kind="formula")
     last = first + len(classes) - 1
+    cash_row = first + classes.index("현금") if "현금" in classes else last
 
     tr = last + 1
     put(ws, tr, 1, "합계", bold=True)
     put(ws, tr, 2, "=SUM($B%d:$B%d)" % (first, last), kind="formula",
         fmt="0.0%", bold=True)
-    put(ws, tr, 3, "=SUM($C%d:$C%d)" % (first, last), kind="formula",
+    put(ws, tr, 3, '=IF(COUNT($C%d:$C%d)=0,"—",SUM($C%d:$C%d))'
+        % (first, last, first, last), kind="formula", fmt="0.0%", bold=True)
+    put(ws, tr, 4, "=SUM($D%d:$D%d)" % (first, last), kind="formula",
+        fmt="0.0%", bold=True)
+    put(ws, tr, 5, "=SUM($E%d:$E%d)" % (first, last), kind="formula",
         fmt="#,##0", bold=True)
-    put(ws, tr, 4,
-        '=SUMPRODUCT($B%d:$B%d,IFERROR($D%d:$D%d,0))' % (first, last, first, last),
+    put(ws, tr, 6, "=SUMPRODUCT($D%d:$D%d,$H%d:$H%d)" % (first, last, first, last),
         kind="formula", fmt="0.0%", bold=True)
-    put(ws, tr, 5,
-        '=SUMPRODUCT($B%d:$B%d,IFERROR($E%d:$E%d,0))' % (first, last, first, last),
+    # 기대수익률 합계 — 가정을 하나도 안 넣었으면 숫자를 내지 않는다.
+    put(ws, tr, 7,
+        '=IF(COUNT($G%d:$G%d)=0,"가정 미입력",SUMPRODUCT($D%d:$D%d,$G%d:$G%d))'
+        % (first, last, first, last, first, last),
         kind="formula", fmt="0.0%", bold=True)
-    for c in range(1, 6):
+    for c in range(1, 8):
         ws.cell(row=tr, column=c).fill = fill(HIGHLIGHT)
 
+    cov = tr + 1
+    # **합계가 100% 가 아니면 크게 알린다.** 조정하다 보면 반드시 어긋나는데,
+    # 그대로 고객에게 나가면 금액과 비중이 앞뒤가 안 맞는 문서가 된다.
+    ws.cell(row=cov, column=1, value="점검").font = f(9, color=MUTED)
+    c = ws.cell(row=cov, column=2,
+                value='=IF($H$2="","조회 조건에서 「%s」을 고르시면 배분이 나옵니다",'
+                      'IF(ABS($D%d-1)>0.0005,'
+                      '"비중 합계가 100%% 가 아닙니다 — 조정 비중을 맞추십시오",'
+                      '"비중 합계 100%% 입니다"))' % (GO_ON, tr))
+    # **잘 됐을 때까지 빨갛게 쓰지 않는다.** 늘 빨간 줄은 곧 안 보이는 줄이 되고,
+    # 정말 어긋난 날에도 눈에 안 띈다. 평소엔 회색, 어긋날 때만 빨강.
+    c.font = f(10, bold=True, color=MUTED)
+    c.alignment = LEFT
+    ws.merge_cells(start_row=cov, start_column=2, end_row=cov, end_column=5)
+    ws.conditional_formatting.add(
+        "B%d" % cov,
+        FormulaRule(formula=['AND($H$2<>"",ABS($D%d-1)>0.0005)' % tr],
+                    font=Font(name=FONT, size=10, bold=True, color=ERROR)))
+    c2 = ws.cell(row=cov, column=7,
+                 value='=COUNT($G%d:$G%d)&" / %d 가정"' % (first, last, len(classes)))
+    c2.font = f(9, color=MUTED)
+    c2.alignment = RIGHT
+
+    # ── 목표 수익률 견주기 ──────────────────────────────────────────
+    #
+    # 고객이 넣은 목표와, 자산군별 가정이 실제로 내놓는 수익률을 나란히 놓는다.
+    # 역산(목표에 닿으려면 위험자산이 얼마나 필요한가)까지 보여 주되, 그것을
+    # 「이렇게 하면 번다」로 읽지 않도록 경고를 붙인다 — proposal_lib 의
+    # target_weights 가 같은 이유로 판정을 부르는 쪽에 넘긴다.
+    ws["H3"] = ('=IF(SUM($I%d:$I%d)=0,"",SUMPRODUCT($I%d:$I%d,$G%d:$G%d)'
+                '/SUM($I%d:$I%d))'
+                % (first, last, first, last, first, last, first, last))
+    ws["H4"] = '=IF(ISNUMBER($G%d),$G%d,0)' % (cash_row, cash_row)
+    ws["H5"] = ('=IF(OR($H$3="",$B$%d="",$H$3<=$H$4),"",'
+                'MEDIAN(0,($B$%d-$H$4)/($H$3-$H$4),1))' % (tgt_cell, tgt_cell))
+
+    r = section(ws, cov + 2, "3", "목표 수익률 견주기", 7)
+    tgt_rows = [
+        ("고객 목표 (연)", '=IF($B$%d="","—",$B$%d)' % (tgt_cell, tgt_cell), "0.0%"),
+        ("이 배분의 기대수익률 (가정 가중합)",
+         '=IF(COUNT($G%d:$G%d)=0,"가정 미입력",$G%d)' % (first, last, tr), "0.0%"),
+        ("차이 (기대 − 목표)",
+         '=IF(OR($B$%d="",COUNT($G%d:$G%d)=0),"—",$G%d-$B$%d)'
+         % (tgt_cell, first, last, tr, tgt_cell), "0.0%;-0.0%"),
+        ("목표에 닿으려면 필요한 위험자산 비중",
+         '=IF($H$5="","—",$H$5)', "0.0%"),
+        ("지금 배분의 위험자산 비중",
+         '=IF($H$2="","—",1-$D%d)' % cash_row, "0.0%"),
+    ]
+    for label_text, formula, fmt in tgt_rows:
+        ws.cell(row=r, column=1, value=label_text).font = f(10, bold=True)
+        ws.merge_cells(start_row=r, start_column=1, end_row=r, end_column=3)
+        put(ws, r, 4, formula, kind="formula", fmt=fmt)
+        r += 1
+
+    verdict = ws.cell(row=r, column=1, value=(
+        '=IF($B$%d="","목표 연수익률을 넣으시면 견주어 드립니다.",'
+        'IF(COUNT($G%d:$G%d)=0,"자산군별 기대수익률 가정을 넣으셔야 견줄 수 있습니다.",'
+        'IF($H$5="","가정한 위험자산 기대수익률이 현금보다 높지 않아 역산할 수 없습니다.",'
+        'IF($H$5>=1,"목표는 현금을 0 으로 해도 닿지 않습니다 — 목표를 낮추거나 가정을 다시 보십시오.",'
+        'IF($G%d>=$B$%d,"가정대로라면 목표를 웃돕니다.",'
+        '"가정대로라면 목표에 모자랍니다 — 목표를 낮추거나 위험자산을 늘려야 합니다.")))))'
+        % (tgt_cell, first, last, tr, tgt_cell)))
+    verdict.font = f(10, bold=True, color=INK)
+    verdict.alignment = LEFT
+    ws.merge_cells(start_row=r, start_column=1, end_row=r, end_column=7)
+    r += 1
+    r = note(ws, r, 7,
+             "⚠ 역산은 「목표를 올리면 위험자산이 이만큼 늘어난다」는 산수일 뿐, "
+             "그렇게 하면 목표를 번다는 뜻이 아닙니다. 위험자산 안의 구성은 "
+             "위험중립형 비율을 그대로 씁니다 — 목표를 맞추려고 한 자산군에 "
+             "몰아주면 분산이 깨집니다.")
+
     # ── 읽는 법 ─────────────────────────────────────────────────────
-    r = tr + 2
-    section(ws, r, "3", "이 표를 읽는 법", 7)
-    r += 2
+    r = section(ws, r + 1, "4", "이 표를 읽는 법", 7)
     for line in [
-        "「과거 1년」은 유니버스에서 실제로 잰 값입니다. **미래 수익률이 아닙니다** — "
-        "최근 1년이 그랬다는 것과 앞으로 그러리라는 것은 다른 말입니다.",
-        "변동성은 자산군 사이 상관관계를 셈하지 않은 가중합입니다. 분산효과가 빠져 있어 "
-        "실제보다 높게 나옵니다. 낮게 보이게 만드는 것보다 높게 두는 편이 안전합니다.",
-        "펀드는 기준가 이력이 7 거래일뿐이라 변동성을 셈하지 않았습니다. 그래서 합계 "
-        "변동성은 포트폴리오의 일부만 덮습니다 — 「자산군」 시트에서 빈칸(—)인 자산군이 "
-        "그것입니다.",
-        "「해외펀드」는 해외에 설정된 뮤추얼펀드가 아니라 해외에 투자하는 국내 설정 "
+        "「기대수익률 (가정)」은 비어 있습니다. 사람이 넣는 칸이며 기본값을 두지 "
+        "않았습니다 — 넣으실 때 근거를 함께 적어 두십시오.",
+        "「과거 1년」을 「기대수익률」 칸에 복사해 넣지 마십시오. 「지난해처럼 오른다」고 "
+        "가정하는 것이 됩니다.",
+        "기대수익률 합계는 빈 칸을 0 으로 셈합니다. 일부만 넣으면 그만큼 낮게 나오므로 "
+        "아래 「가정 넣은 자산군」 수를 함께 보십시오.",
+        "「과거 1년」은 실제로 잰 값이며 미래 수익률이 아닙니다 — 최근 1년이 그랬다는 "
+        "것과 앞으로 그러리라는 것은 다른 말입니다.",
+        "변동성은 상관관계를 셈하지 않은 가중합이라 실제보다 높게 나옵니다. 낮게 "
+        "보이게 만드는 것보다 안전합니다.",
+        "펀드는 이력이 7 거래일뿐이라 변동성을 셈하지 않았습니다. 합계 변동성은 "
+        "포트폴리오의 일부만 덮습니다 — 「자산군」 시트의 빈칸(—)이 그것입니다.",
+        "「해외펀드」는 해외 설정 뮤추얼펀드가 아니라 해외에 투자하는 국내 설정 "
         "공모펀드입니다.",
-        "이 자료는 참고용이며 투자 권유가 아닙니다. 실제 제안 전 준법감시 검토를 받으십시오.",
+        "이 자료는 참고용이며 투자 권유가 아닙니다. 제안 전 준법감시 검토를 받으십시오.",
     ]:
         c = ws.cell(row=r, column=1, value="· " + line)
         c.font = f(9, color=MUTED)
         c.alignment = Alignment(wrap_text=True, vertical="top")
         ws.merge_cells(start_row=r, start_column=1, end_row=r, end_column=7)
-        ws.row_dimensions[r].height = 26
+        ws.row_dimensions[r].height = 28
         r += 1
 
     r += 1
@@ -324,25 +536,42 @@ def sheet_proposal(wb, data, u, rule_first, rule_last, classes):
 
 def sheet_howto(wb):
     ws = wb.create_sheet("사용법")
-    section(ws, 1, "", "쓰는 법", 4)
-    ws.column_dimensions["A"].width = 100
+    ws.column_dimensions["A"].width = 4          # section() 이 번호를 놓는 칸
+    ws.column_dimensions["B"].width = 104        # section() 이 제목을 놓는 칸
+    r = section(ws, 1, "", "쓰는 법", 2)
     rows = [
-        "1. 「제안서」 시트에서 파란 글씨 칸만 고칩니다 — 고객명·투자금액·투자기간·위험성향.",
+        "1. 「제안서」 시트에서 파란 글씨 칸만 고칩니다 — 고객명·투자금액·투자기간·"
+        "위험성향·목표 연수익률. 투자기간과 위험성향은 드롭다운입니다.",
+        "1-1. 조건을 다 넣으셨으면 「조회」 칸에서 %s 을 고릅니다. "
+        "%s 로 두면 표가 비워져 조건만 차분히 채울 수 있습니다. "
+        "매크로 없는 .xlsx 에는 누르는 단추를 넣을 수 없어 드롭다운으로 만들었습니다 — "
+        ".xlsm 으로 만들면 회사 PC 에서 매크로가 막혀 열자마자 「사용 안 함」이 뜹니다."
+        % (GO_ON, GO_OFF),
+        "1-2. 「목표 연수익률」은 고객이 바라는 수익률이고, 배분표의 "
+        "「기대수익률 (가정)」은 그것을 어떻게 벌 작정인지에 대한 자산군별 가정입니다. "
+        "둘은 다른 것이며, 3 번 섹션이 둘을 견주어 줍니다.",
         "2. 나머지 칸은 수식입니다. 손으로 덮어쓰면 다음에 값이 안 따라옵니다.",
         "3. 「배분규칙」 시트는 proposal_lib.py 가 셈한 것입니다. 고치지 마십시오 — "
         "고치면 화면(proposal.html)·PPT 와 어긋납니다.",
-        "4. 자료를 새로 받으면 python3 scripts/build_proposal_universe.py 를 돌린 뒤 "
+        "4. 「기대수익률 (가정)」 칸은 비워 두었습니다. 사람이 넣는 가정이며 "
+        "기본값을 두지 않았습니다 — 넣으실 때 근거를 함께 적어 두십시오.",
+        "5. 자료를 새로 받으면 python3 scripts/build_proposal_universe.py 를 돌린 뒤 "
         "이 파일을 다시 만듭니다.",
         "",
         "셀 색 규칙 (기존 고객제안서와 같습니다)",
-        "    파란 글씨 + 옅은 칠 = 사람이 넣는 칸",
-        "    검은 글씨           = 수식",
-        "    회색 글씨           = 원천에서 받아 적은 값",
+        "      파란 글씨 + 옅은 칠 = 사람이 넣는 칸",
+        "      검은 글씨            = 수식",
+        "      회색 글씨            = 원천에서 받아 적은 값",
+        "",
+        "숨은 H·I 열은 셈에 쓰는 도우미 칸입니다 — 합계용 숫자(표시 칸에 「—」라는 "
+        "글자가 들어가면 합계가 깨집니다), 성향 번호, 조회 키, 목표 역산. "
+        "지우지 마십시오.",
     ]
     for i, line in enumerate(rows):
-        c = ws.cell(row=3 + i, column=1, value=line)
-        c.font = f(10, color=INK if not line.startswith("    ") else MUTED)
+        c = ws.cell(row=r + i, column=2, value=line)
+        c.font = f(10, color=INK if not line.startswith("   ") else MUTED)
         c.alignment = Alignment(wrap_text=True, vertical="top")
+        ws.row_dimensions[r + i].height = 18 if line else 8
     return ws
 
 
@@ -372,12 +601,19 @@ def main():
     wb = Workbook()
     wb.remove(wb.active)
     _, rf, rl = sheet_rules(wb, plans, classes)
-    sheet_classes(wb, u["자산군"])
+    _, stat_first, stat_last = sheet_classes(wb, u["자산군"])
     sheet_products(wb, products)
     sheet_sources(wb, u)
     sheet_howto(wb)
-    sheet_proposal(wb, plans, u, rf, rl, classes)
+    sheet_proposal(wb, plans, u, rf, rl, classes, stat_first, stat_last)
     wb.move_sheet("제안서", offset=-len(wb.sheetnames) + 1)
+
+    for ws in wb.worksheets:
+        ws.page_setup.orientation = "landscape"
+        ws.page_setup.fitToWidth = 1
+        ws.page_setup.fitToHeight = 0
+        ws.sheet_properties.pageSetUpPr.fitToPage = True
+        ws.print_options.horizontalCentered = True
 
     wb.save(args.out)
     print("시트: %s" % " · ".join(wb.sheetnames))

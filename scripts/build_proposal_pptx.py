@@ -10,6 +10,12 @@ proposal_lib 로 다 셈해 JSON 한 덩이로 만들고, proposal_deck.mjs 는 
 PPT 는 화면·엑셀과 달리 **한 고객·한 시나리오**의 문서다. 그래서 성향·기간·
 금액을 인자로 받아 그 한 벌을 만든다.
 
+**화면에서 고친 배분을 그대로 받는다** (`--from 조정안.json`). PPT 안에서는
+자산배분 작업을 할 수 없다 — 작업은 화면(proposal.html)이나 엑셀에서 하고,
+PPT 는 그 결과를 고객에게 보여 주는 자리다. 화면의 「조정안 내려받기」 단추가
+내보낸 파일을 여기 물리면 비중도 고른 상품도 그대로 실린다. 그것이 없으면
+PPT 는 제안값 그대로를 싣고, 표지에 그렇게 적는다.
+
 차트는 네이티브로 넣는다(그림이 아니다) — 고객 앞에서 숫자를 고칠 수 있어야
 하고, 미래에셋 기준도 그것을 요구한다.
 
@@ -17,6 +23,9 @@ PPT 는 화면·엑셀과 달리 **한 고객·한 시나리오**의 문서다. 
   python3 scripts/build_proposal_pptx.py
   python3 scripts/build_proposal_pptx.py --risk 5 --years 3 --amount 50000 \
       --client "홍길동 고객님"
+
+  # 화면에서 조정한 배분으로 만들기 (권하는 길)
+  python3 scripts/build_proposal_pptx.py --from 자산배분조정안_홍길동_2026-09-19.json
 
 산출물
   고객제안서_자산배분.pptx
@@ -65,12 +74,35 @@ def main():
     ap.add_argument("--amount", type=int, default=10000,
                     help="투자금액 (만원). 기본 1억")
     ap.add_argument("--client", default="")
+    ap.add_argument("--from", dest="plan", default=None,
+                    help="화면에서 내려받은 조정안 JSON. 비중·상품을 그대로 씁니다")
     ap.add_argument("--out", default=DEFAULT_OUT)
     args = ap.parse_args()
 
     u = P.load_universe()
     avail = {c for c, s in u["자산군"].items() if s.get("종목수")}
+
+    adjusted = None
+    if args.plan:
+        with open(args.plan, encoding="utf-8") as fp:
+            adjusted = json.load(fp)
+        # 조정안이 있으면 그것이 진실이다. 성향·기간·금액·고객명까지 따라간다 —
+        # 인자와 조정안이 어긋나면 어느 쪽 문서인지 알 수 없게 된다.
+        args.risk = int(adjusted.get("risk", args.risk))
+        args.amount = int(adjusted.get("amount", args.amount))
+        if adjusted.get("client") and not args.client:
+            args.client = adjusted["client"]
+
     weights, prof, notes = P.allocate(args.risk, args.years, avail)
+    if adjusted and adjusted.get("weights"):
+        weights = {c: float(adjusted["weights"].get(c, 0)) for c in P.CLASSES}
+        if adjusted.get("edited"):
+            notes = notes + ["화면에서 **비중을 조정한** 제안입니다."]
+        total = sum(weights.values())
+        if abs(total - 100) > 0.05:
+            # 합계가 안 맞는 조정안으로 고객 문서를 만들지 않는다.
+            raise SystemExit("조정안의 비중 합계가 %.1f%% 입니다 — 100%% 로 "
+                             "맞춘 뒤 다시 내려받으십시오." % total)
     m = P.portfolio(weights, u["자산군"])
 
     rows = []
@@ -86,10 +118,22 @@ def main():
         })
 
     products = {}
+    picked = (adjusted or {}).get("products") or {}
+    by_code = {}
+    for prod in u["상품"]:
+        by_code.setdefault(prod.get("cls"), {})[
+            prod.get("code") or prod.get("name")] = prod
     for r in rows:
         if r["cls"] == "현금":
             continue
-        items = P.pick_products(u["상품"], r["cls"], PER_CLASS)
+        if r["cls"] in picked:
+            # 화면에서 고른 것을 **그 순서 그대로** 싣는다. 찾지 못한 코드는
+            # 건너뛰되, 하나도 못 찾으면 제안값으로 돌아가지 않고 비워 둔다 —
+            # 고른 것과 다른 상품이 실리는 것이 제일 나쁘다.
+            table = by_code.get(r["cls"], {})
+            items = [table[k] for k in picked[r["cls"]] if k in table]
+        else:
+            items = P.pick_products(u["상품"], r["cls"], PER_CLASS)
         if items:
             products[r["cls"]] = [trim(p) for p in items]
 
@@ -109,6 +153,8 @@ def main():
                      "asOf": v.get("asOf") or "—"}
                     for k, v in u["원천"].items() if isinstance(v, dict)],
         "fxNote": fx_note(u),
+        "adjusted": bool(adjusted),
+        "adjustedFrom": (adjusted or {}).get("generatedFrom"),
         "generated": datetime.now(P.KST).strftime("%Y-%m-%d %H:%M"),
         "universeGenerated": u.get("generated_at_kst"),
         "out": args.out,
