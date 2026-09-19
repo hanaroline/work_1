@@ -31,9 +31,13 @@ import proposal_lib as P
 ROOT = P.ROOT
 OUT = os.path.join(ROOT, "proposal.html")
 
-# 화면에 실을 상품 수. 자산군마다 규모 순으로 이만큼만 넣는다 — 전부 넣으면
-# 파일이 커지고, 제안서에서 실제로 보여 줄 것은 몇 개뿐이다.
-PER_CLASS = 40
+# 화면에 실을 상품 수. **0 이면 전부.**
+#
+# 처음에는 자산군마다 40 종만 심었다. 그랬더니 「상품 고르기」에 35 종밖에 안
+# 떴다 — 5 종은 이미 골라 놓았으니 남는 것이 그만큼이었다. 국내펀드만 615 종이
+# 있는데 40 종에서 고르라는 것은 고르라는 말이 아니다. 전부 심으면 271 KB 쯤
+# 늘지만(저장소에 30 MB 짜리 화면도 있다) 고를 수 있는 것이 스무 배가 된다.
+PER_CLASS = 0
 
 HORIZON_BUCKETS = [(1, "1년 이내"), (3, "3년"), (5, "5년"), (10, "5년 초과")]
 
@@ -71,7 +75,8 @@ def build_data():
     for cls in P.CLASSES:
         if cls == "현금":
             continue
-        prods[cls] = [trim(p) for p in P.pick_products(u["상품"], cls, PER_CLASS)]
+        prods[cls] = [trim(p) for p in P.pick_products(
+            u["상품"], cls, PER_CLASS or 10 ** 9)]
 
     return {
         "generated": datetime.now(P.KST).strftime("%Y-%m-%d %H:%M"),
@@ -110,13 +115,21 @@ html[lang="en"] body{font-family:var(--font-en)}
 .page{max-width:1200px;margin:0 auto;padding:0 32px}
 @media(max-width:768px){.page{padding:0 20px}body{font-size:17px}}
 
-/* hero */
-.hero{background:var(--orange);color:#fff;padding:56px 0 48px}
-.hero .page{display:flex;justify-content:space-between;align-items:flex-start;gap:24px;flex-wrap:wrap}
-.hero h1{font-size:48px;font-weight:700;line-height:1.15;letter-spacing:-.5px;margin:0 0 10px}
-.hero p{font-size:20px;margin:0;opacity:.95}
-.tag{font-size:14px;letter-spacing:.6px;opacity:.9;margin:0 0 14px;display:block}
-@media(max-width:768px){.hero h1{font-size:34px}.hero p{font-size:17px}}
+/* hero — 낮게. 제안서는 표와 숫자를 보는 화면이라 머리가 클 까닭이 없다. */
+.hero{background:var(--orange);color:#fff;padding:22px 0 20px}
+.hero .page{display:flex;justify-content:space-between;align-items:center;gap:20px;flex-wrap:wrap}
+.hero h1{font-size:28px;font-weight:700;line-height:1.2;letter-spacing:-.3px;margin:0}
+.hero p{font-size:16px;margin:4px 0 0;opacity:.95}
+.tag{font-size:13px;letter-spacing:.6px;opacity:.9;margin:0 0 4px;display:block}
+@media(max-width:768px){.hero{padding:18px 0 16px}.hero h1{font-size:23px}.hero p{font-size:15px}}
+
+/* 도구 막대 — 히어로 바로 아래 붙여 두고 스크롤해도 따라온다.
+   단추가 화면 곳곳에 흩어져 있으면 무엇을 누를 수 있는지 알 수 없다. */
+.toolbar{position:sticky;top:0;z-index:20;background:#fff;
+  border-bottom:1px solid var(--hair);padding:10px 0}
+.toolbar .page{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.toolbar .sep{flex:1 1 auto}
+.toolbar .now{font-size:15px;color:var(--muted);white-space:nowrap}
 
 /* lang toggle */
 .lang{display:flex;border:1px solid var(--hair);border-radius:2px;overflow:hidden;
@@ -129,6 +142,9 @@ html[lang="en"] body{font-family:var(--font-en)}
 
 /* sections */
 .section{margin-top:var(--space-section)}
+/* 첫 섹션까지 104px 를 띄우면 도구줄 밑이 텅 빈 채로 시작한다. 섹션 사이
+   간격은 브랜드 규격이므로 그대로 두고, 맨 위만 좁힌다. */
+.page>.section:first-of-type{margin-top:44px}
 .section-rule{height:1px;background:var(--orange);margin-bottom:19px}
 .section-title{font-size:26px;font-weight:700;color:var(--ink);margin:0 0 var(--space-content)}
 h3{font-size:22px;font-weight:600;color:var(--ink);margin:38px 0 14px}
@@ -170,6 +186,38 @@ td.na{color:var(--muted2)}
 .total td{background:#D7D7D7;font-weight:700}
 .tbl-wrap{overflow-x:auto}
 
+/* 한눈에 보는 판 — 도넛 + 묶음 요약 */
+.overview{display:grid;grid-template-columns:320px 1fr;gap:28px;align-items:start;
+  margin-top:var(--space-block)}
+@media(max-width:860px){.overview{grid-template-columns:1fr}}
+.donutbox{border:1px solid var(--hair);border-radius:4px;padding:20px;text-align:center}
+.donutbox svg{width:100%;max-width:260px;height:auto}
+.donut-mid{font-size:13px;fill:var(--muted)}
+.donut-big{font-size:22px;font-weight:700;fill:var(--ink)}
+.legend{display:flex;flex-direction:column;gap:6px;margin-top:14px;text-align:left}
+.legend div{display:flex;align-items:center;gap:8px;font-size:15px}
+.legend i{width:12px;height:12px;flex:0 0 12px;display:inline-block}
+.legend .v{margin-left:auto;font-weight:600;color:var(--ink)}
+.groups{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:14px}
+.gcard{border:1px solid var(--hair);border-radius:4px;padding:16px}
+.gcard .lb{font-size:14px;color:var(--muted);margin:0 0 4px;letter-spacing:.4px}
+.gcard .v{font-size:28px;font-weight:700;color:var(--blue);margin:0;line-height:1.1}
+.gcard .sub{font-size:13px;color:var(--muted2);margin:4px 0 0}
+.gbar{height:8px;background:var(--soft);margin-top:10px;display:flex}
+.gbar span{height:100%}
+
+/* 인쇄용 머리글·꼬리글은 화면에서 감춘다. printhead 를 감추지 않았더니
+   히어로 바로 밑에 제목이 한 번 더 찍히고, 그 사이가 텅 빈 채로 보였다 —
+   「맨 위 높이가 너무 크다」의 정체가 이것이었다. 화면에서는 같은 요약을
+   도구줄의 #toolNow 가 이미 보여 준다. */
+.printonly,.printhead,.pct{display:none}
+
+/* **KO/EN 은 둘 중 하나만 보인다.** 이 두 줄이 없어서 「자산배분 제안서Asset
+   Allocation Proposal」처럼 두 말이 붙어 나왔다. 단추는 있는데 아무 일도
+   일어나지 않는 화면이었다. */
+html[lang="ko"] [data-en]{display:none}
+html[lang="en"] [data-ko]{display:none}
+
 /* 고쳐 쓰는 칸 — 비중 조정·상품 빼기 */
 .wIn{width:82px;padding:5px 8px;font-size:16px;text-align:right;
   border:1px solid var(--hair);border-radius:2px;background:#FFF7E6;color:#0000FF;
@@ -185,49 +233,67 @@ td.na{color:var(--muted2)}
 .addrow select{flex:1 1 320px;min-width:0;font-size:16px;padding:8px 10px}
 .addrow .btn{height:38px;padding:8px 16px;font-size:15px}
 .edited{font-size:14px;color:var(--orange);font-weight:600}
-@media print{ .wIn{border:0;background:#fff;color:#000;padding:0;width:auto}
-              .xbtn,.addrow{display:none!important} }
-
-/* 도구 단추 */
-.tools{display:flex;gap:8px;flex-wrap:wrap;margin-top:var(--space-content)}
-.btn{font-family:inherit;font-size:16px;font-weight:500;padding:10px 19px;
-  border:1px solid var(--hair);border-radius:2px;background:#fff;color:var(--ink);
-  cursor:pointer;height:42px}
-.btn:hover{background:var(--subtle)}
-.btn.primary{background:var(--orange);border-color:var(--orange);color:#fff}
-.btn.primary:hover{background:var(--orange-active);border-color:var(--orange-active)}
-.btn:focus-visible{outline:2px solid var(--orange);outline-offset:1px}
-.toast{position:fixed;left:50%;bottom:28px;transform:translateX(-50%);
-  background:var(--ink);color:#fff;font-size:15px;padding:10px 19px;border-radius:2px;
-  opacity:0;pointer-events:none;transition:opacity .2s}
-.toast.on{opacity:1}
-/* 인쇄할 때만 나오는 머리글 — 화면에는 이미 히어로가 있다 */
-.printhead{display:none}
-
-/* notes */
-.note{border-left:3px solid var(--orange);background:var(--subtle);padding:14px 19px;margin:19px 0;font-size:17px}
-.note.warn{border-left-color:var(--warn)}
-.note strong{color:var(--ink)}
-.caption{font-size:14px;color:var(--muted2);line-height:1.5}
-footer{margin:var(--space-section) 0 72px;padding-top:28px;border-top:1px solid var(--hair)}
-
-[data-en]{display:none}
-html[lang="en"] [data-ko]{display:none}
-html[lang="en"] [data-en]{display:inline}
-html[lang="en"] div[data-en],html[lang="en"] p[data-en],html[lang="en"] span.blk[data-en]{display:block}
-
 @media print{
-  .lang,.noprint,.tools{display:none!important}
-  .printhead{display:block;margin-bottom:14pt}
-  .printhead h1{font-size:20pt;margin:0 0 4pt;color:#000}
-  .printhead .meta{font-size:10pt;color:#333}
-  body{font-size:13pt;line-height:1.4}
+  @page{ size:A4 portrait; margin:13mm 12mm; }
+  .lang,.noprint,.tools,.toolbar,.xbtn,.addrow{display:none!important}
+  .printonly{display:block}
+  .hero{display:none!important}
+  .printhead{display:block;margin:0 0 10pt}
+  .printhead h1{font-size:19pt;margin:0 0 3pt;color:#000}
+  .printhead .meta{font-size:9.5pt;color:#333}
+  body{font-size:9.5pt;line-height:1.45;color:#000}
   .page{max-width:100%;padding:0}
-  .hero{background:#fff!important;color:#000!important;padding:0 0 12pt}
-  .hero h1{color:#000}
-  .section{margin-top:28pt;page-break-inside:avoid}
-  table,.stat,.bars{page-break-inside:avoid}
-  h2,h3{page-break-after:avoid}
+  /* 구간 사이 여백을 줄여 쪽이 헤프게 넘어가지 않게 한다 */
+  .section{margin-top:16pt}
+  .section-title{font-size:13pt;margin-bottom:8pt}
+  h3{font-size:11pt;margin:10pt 0 4pt}
+  .stats,.groups{gap:8pt;margin-top:10pt}
+  .stat,.gcard{padding:8pt;border-radius:0}
+  .stat .v{font-size:17pt}
+  .gcard .v{font-size:15pt}
+  .stat .lb,.gcard .lb{font-size:8.5pt}
+  .stat .sub,.gcard .sub{font-size:7.5pt}
+  .overview{grid-template-columns:230px 1fr;gap:12pt;margin-top:10pt}
+  .bars{margin-top:10pt}
+  .bar-row{padding:2pt 0}
+  /* **표가 종이보다 넓으면 문서 전체가 넓어진다.** 상품 표는 열이 아홉이라
+     최소 너비가 A4 폭을 넘었고, 그러자 본문 폭이 그 표에 맞춰 늘어나면서
+     카드·묶음이 통째로 오른쪽으로 삐져나가 잘렸다 — 표 하나 때문에 쪽 전체가
+     밀린 것이다. 글자를 끊을 수 있게 해 최소 너비를 줄인다. */
+  html,body{width:100%}
+  .page{width:100%}
+  table{font-size:8.5pt;margin-top:6pt;width:100%}
+  /* 끊는 것은 **긴 상품명만**이다. 숫자 칸까지 끊었더니 「400만원」이
+     「400만 / 원」으로, 보수가 「0.16~1.3 / 6%」로 갈라져 읽을 수 없었다. */
+  th,td{padding:3pt 5pt}
+  td:first-child,th:first-child{overflow-wrap:anywhere;word-break:break-word}
+  td.num,th.num{white-space:nowrap}
+  /* 칸 수를 못 박는다. auto-fit 은 본문 폭을 잘못 잡으면 칸을 안 줄인다. */
+  .stats{grid-template-columns:repeat(4,1fr)}
+  .groups{grid-template-columns:repeat(2,1fr)}
+  .note{padding:6pt 10pt;margin:8pt 0;font-size:9pt}
+  .caption{font-size:8pt}
+  .wIn{border:0;background:#fff;color:#000;padding:0;width:auto;font-weight:600;
+    -webkit-appearance:none;appearance:none}
+  /* 인쇄물에서는 입력칸이 아니라 숫자다. % 가 없으면 「5.0」이 무엇인지 모른다. */
+  .pct{display:inline}
+  .tbl-wrap{overflow:visible}
+
+  /* **쪽이 잘리거나 밀리지 않게.** 표·카드·묶음은 통째로 한 쪽에 둔다. */
+  .stat,.gcard,.donutbox,.note,.bar-row,tr{page-break-inside:avoid;break-inside:avoid}
+  table{page-break-inside:auto}
+  thead{display:table-header-group}
+  tfoot{display:table-footer-group}
+  h2,h3{page-break-after:avoid;break-after:avoid}
+  .section{page-break-inside:auto}
+  .prodblock{page-break-inside:avoid;break-inside:avoid}
+  /* **쪽을 새로 열지 않는다.** 강제로 넘겼더니 유의사항 몇 줄을 위해 빈 쪽이
+     한 장 더 나왔다. 자리가 있으면 이어 붙이고, 없을 때만 넘어가게 둔다. */
+  .printfoot{margin-top:14pt;page-break-inside:avoid;break-inside:avoid}
+  .printfoot ul{margin:6pt 0 0;padding-left:14pt}
+  .printfoot li{font-size:8.5pt;line-height:1.5;margin-bottom:3pt}
+  .printfoot p{font-size:9pt;margin:0}
+  #printSrc{font-size:8pt;color:#444;margin-top:8pt}
 }
 """
 
@@ -287,6 +353,27 @@ def render(data, u):
   </div>
 </div>
 
+<div class="toolbar noprint">
+  <div class="page">
+    <button class="btn primary" id="btnPrint">
+      <span data-ko>인쇄</span><span data-en>Print</span></button>
+    <button class="btn" id="btnPdf">
+      <span data-ko>PDF 저장</span><span data-en>Save PDF</span></button>
+    <button class="btn" id="btnCsv">
+      <span data-ko>CSV</span><span data-en>CSV</span></button>
+    <button class="btn" id="btnPlanJson">
+      <span data-ko>조정안 (PPT용)</span><span data-en>Plan (for PPT)</span></button>
+    <span class="sep"></span>
+    <span class="now" id="toolNow"></span>
+    <button class="btn" id="btnLink">
+      <span data-ko>링크 복사</span><span data-en>Copy link</span></button>
+    <button class="btn" id="btnWeights" style="display:none">
+      <span data-ko>비중 되돌리기</span><span data-en>Reset weights</span></button>
+    <button class="btn" id="btnReset">
+      <span data-ko>처음으로</span><span data-en>Reset</span></button>
+  </div>
+</div>
+
 <div class="page">
 
   <div class="printhead">
@@ -294,7 +381,7 @@ def render(data, u):
     <div class="meta" id="printMeta"></div>
   </div>
 
-  <section class="section">
+  <section class="section noprint">
     <div class="section-rule"></div>
     <h2 class="section-title"><span data-ko>1. 고객 정보</span><span data-en>1. Client inputs</span></h2>
     <div class="form">
@@ -326,17 +413,6 @@ def render(data, u):
       </div>
     </div>
 
-    <div class="tools noprint">
-      <button class="btn primary" id="btnPrint">
-        <span data-ko>인쇄 · PDF 저장</span><span data-en>Print / Save PDF</span></button>
-      <button class="btn" id="btnCsv">
-        <span data-ko>CSV 내려받기</span><span data-en>Download CSV</span></button>
-      <button class="btn" id="btnLink">
-        <span data-ko>이 설정 링크 복사</span><span data-en>Copy link</span></button>
-      <button class="btn" id="btnReset">
-        <span data-ko>처음으로</span><span data-en>Reset</span></button>
-    </div>
-
     <div class="note warn">
       <span data-ko><strong>기대수익률은 가정입니다.</strong> 아래 「과거 1년 실적」은
       유니버스에서 실제로 잰 값이고, 미래 수익률이 아닙니다. 최근 1년이 그랬다는 것과
@@ -350,16 +426,20 @@ def render(data, u):
   <section class="section">
     <div class="section-rule"></div>
     <h2 class="section-title"><span data-ko>2. 제안 배분</span><span data-en>2. Proposed allocation</span></h2>
+    <div class="overview">
+      <div class="donutbox">
+        <div id="donut"></div>
+        <div class="legend" id="legend"></div>
+      </div>
+      <div>
+        <div class="groups" id="groups"></div>
+        <div class="bars" id="bars"></div>
+      </div>
+    </div>
     <div id="planNotes"></div>
-    <div class="bars" id="bars"></div>
     <div class="tbl-wrap"><table id="allocTbl"></table></div>
     <p class="hint" id="sumWarn"></p>
-    <div class="tools noprint">
-      <button class="btn" id="btnWeights" style="display:none">
-        <span data-ko>비중을 제안값으로 되돌리기</span><span data-en>Reset weights</span></button>
-      <button class="btn" id="btnPlanJson">
-        <span data-ko>조정안 내려받기 (PPT용)</span><span data-en>Download plan (for PPT)</span></button>
-    </div>
+
     <div class="stats" id="stats"></div>
     <div class="note" id="coverNote"></div>
   </section>
@@ -373,7 +453,7 @@ def render(data, u):
     <div id="products"></div>
   </section>
 
-  <section class="section">
+  <section class="section noprint">
     <div class="section-rule"></div>
     <h2 class="section-title"><span data-ko>4. 자산군 실측치</span><span data-en>4. Measured by asset class</span></h2>
     <div class="tbl-wrap"><table>
@@ -384,7 +464,7 @@ def render(data, u):
       펀드는 기준가 이력이 7 거래일뿐이라 변동성을 셈하지 않고 위험등급을 씁니다.</p>
   </section>
 
-  <section class="section">
+  <section class="section noprint">
     <div class="section-rule"></div>
     <h2 class="section-title"><span data-ko>5. 자료 출처</span><span data-en>5. Sources</span></h2>
     <div class="tbl-wrap"><table>
@@ -392,7 +472,23 @@ def render(data, u):
       <tbody>%(srcs)s</tbody></table></div>
   </section>
 
-  <footer>
+  <div class="printonly printfoot">
+    <div class="section-rule"></div>
+    <p><strong>유의사항</strong></p>
+    <ul>
+      <li>「과거 1년」은 원천에서 실제로 잰 값이며 <strong>미래 수익률이 아닙니다.</strong>
+          최근 1년이 그랬다는 것과 앞으로 그러리라는 것은 다른 말입니다.</li>
+      <li>빈칸(—)은 원천에 없어 셈하지 않은 값입니다. 만들어 넣지 않았습니다.</li>
+      <li>변동성은 자산군 사이 상관관계를 셈하지 않은 가중합이라 실제보다 높게 나옵니다.
+          펀드는 기준가 이력이 짧아 셈하지 않아, 덮은 비중을 함께 적었습니다.</li>
+      <li>「해외펀드」는 해외에 설정된 뮤추얼펀드가 아니라 <strong>해외에 투자하는 국내 설정
+          공모펀드</strong>입니다.</li>
+      <li>이 자료는 참고용이며 투자 권유가 아닙니다. 실제 제안 전 준법감시 검토를 받으십시오.</li>
+    </ul>
+    <p id="printSrc"></p>
+  </div>
+
+  <footer class="noprint">
     <p class="caption">
       유니버스 생성 %(ugen)s · 화면 생성 %(gen)s (KST)<br>
       변동성은 자산군 사이 상관관계를 셈하지 않은 <strong>가중합</strong>입니다 —
@@ -411,6 +507,10 @@ const D = %(data)s;
 // 고정한다 — 시리즈 색을 주면 현금이 하나의 투자 자산처럼 읽힌다.
 const CHART = ['#F58220','#043B72','#FAB072','#0086B8','#AD624E','#00A9CE','#F0B26B','#7E9FC3'];
 const CASH_COLOR = '#84888B';
+// 묶음 막대가 쓰는 색. 예전에 이 세 이름을 안 만들어 두고 쓰는 바람에
+// `ORANGE is not defined` 로 render() 가 통째로 죽었다 — 화면은 멀쩡해 보이고
+// 값만 안 채워진다. node --check 는 문법만 보므로 이것을 못 잡는다.
+const ORANGE = CHART[0], BLUE = CHART[1], SOFT_ORANGE = CHART[2];
 const $ = s => document.querySelector(s);
 const fmt = (x,n=1) => (x===null||x===undefined||isNaN(x)) ? '—' : Number(x).toFixed(n);
 const won = v => { // 만원 단위 입력 → 읽기 좋은 한국어
@@ -451,12 +551,12 @@ function targetShare(target, riskyRet, cashRet){
 // 가중합을 다시 낸다」뿐이고, 사람이 고치는 이상 화면에 없을 수 없다.
 // 성향·기간을 바꾸면 고친 것을 버리고 그 성향의 제안값으로 돌아간다 —
 // 안 그러면 어느 성향의 비중인지 알 수 없게 된다.
-const S = { w:{}, sel:{}, key:'' };
+const S = { w:{}, sel:{}, q:{}, key:'' };
 
 function planKey(){ return $('#risk').value + '|' + $('#yrs').value; }
 
 function resetEdits(){
-  S.w = {}; S.sel = {}; S.key = planKey();
+  S.w = {}; S.sel = {}; S.q = {}; S.key = planKey();
   D.classes.forEach(c=>{
     if(c==='현금') return;
     S.sel[c] = (D.products[c]||[]).slice(0, 5).map(p=>p.c || p.n);
@@ -492,6 +592,38 @@ function metrics(w){
   return o;
 }
 
+// 도넛을 SVG 로 직접 그린다. 라이브러리를 부르면 한 파일로 여는 화면이
+// 망에 기대게 된다 — 고객 앞에서 열 때 인터넷이 없을 수도 있다.
+function donut(items, total){
+  const R = 54, C = 2*Math.PI*R;
+  let off = 0;
+  const arcs = items.map(([c,v,col])=>{
+    const len = total>0 ? C*v/total : 0;
+    const el = `<circle r="${R}" cx="70" cy="70" fill="none" stroke="${col}"
+      stroke-width="26" stroke-dasharray="${len} ${C-len}"
+      stroke-dashoffset="${-off}" transform="rotate(-90 70 70)"><title>${c} ${fmt(v,1)}%%</title></circle>`;
+    off += len; return el;
+  }).join('');
+  return `<svg viewBox="0 0 140 140" role="img" aria-label="자산군 비중 도넛">
+    <circle r="${R}" cx="70" cy="70" fill="none" stroke="#ECEFF4" stroke-width="26"/>
+    ${arcs}
+    <text x="70" y="66" text-anchor="middle" class="donut-mid">자산군</text>
+    <text x="70" y="86" text-anchor="middle" class="donut-big">${items.length}</text>
+  </svg>`;
+}
+
+// 자산군을 두 축으로 묶어 보여 준다 — 국내/해외, 그리고 위험자산/안전자산.
+// 자산군 일곱 줄만 보면 「해외에 얼마나 나가 있나」가 한눈에 안 들어온다.
+const REGION = {'국내주식':'국내','국내ETF':'국내','국내펀드':'국내',
+                '해외주식':'해외','해외ETF':'해외','해외펀드':'해외','현금':'현금'};
+const KIND = {'국내주식':'주식','해외주식':'주식','국내ETF':'ETF','해외ETF':'ETF',
+              '국내펀드':'펀드','해외펀드':'펀드','현금':'현금'};
+function groupSum(w, map){
+  const o = {};
+  D.classes.forEach(c=>{ const k=map[c]; if(!k) return; o[k]=(o[k]||0)+(w[c]||0); });
+  return o;
+}
+
 function render(){
   if(planKey() !== S.key) resetEdits();
   const risk = $('#risk').value, yrs = $('#yrs').value;
@@ -512,6 +644,39 @@ function render(){
   const entries = D.classes.map((c,i)=>[c, w[c]||0,
                        c==='현금' ? CASH_COLOR : CHART[i%%CHART.length]])
                            .filter(e=>e[1]>0);
+  // 한눈 판 — 도넛 · 범례 · 묶음 카드
+  $('#donut').innerHTML = donut(entries, m.sum);
+  $('#legend').innerHTML = entries.map(([c,x,col])=>
+    `<div><i style="background:${col}"></i>${c}<span class="v">${fmt(x,1)}%%</span></div>`).join('');
+
+  const byRegion = groupSum(w, REGION), byKind = groupSum(w, KIND);
+  const gcard = (lb, val, sub, parts) => `<div class="gcard">
+      <p class="lb">${lb}</p><p class="v">${fmt(val,1)}%%</p>
+      <p class="sub">${sub}</p>
+      ${parts?`<div class="gbar">${parts}</div>`:''}</div>`;
+  const seg = (v,col) => v>0 ? `<span style="width:${v}%%;background:${col}"></span>` : '';
+  $('#groups').innerHTML = [
+    gcard('국내', byRegion['국내']||0, won(Math.round(amt*(byRegion['국내']||0)/100)),
+          seg(byRegion['국내']||0, ORANGE)+seg(100-(byRegion['국내']||0),'#ECEFF4')),
+    gcard('해외', byRegion['해외']||0, won(Math.round(amt*(byRegion['해외']||0)/100)),
+          seg(byRegion['해외']||0, BLUE)+seg(100-(byRegion['해외']||0),'#ECEFF4')),
+    gcard('위험자산', 100-(w['현금']||0),
+          `현금 ${fmt(w['현금']||0,1)}%% 를 뺀 몫`,
+          seg(100-(w['현금']||0), '#0086B8')+seg(w['현금']||0, CASH_COLOR)),
+    gcard('주식·ETF·펀드',
+          (byKind['주식']||0)+(byKind['ETF']||0)+(byKind['펀드']||0),
+          `주식 ${fmt(byKind['주식']||0,0)}%% · ETF ${fmt(byKind['ETF']||0,0)}%% · 펀드 ${fmt(byKind['펀드']||0,0)}%%`,
+          seg(byKind['주식']||0, ORANGE)+seg(byKind['ETF']||0, SOFT_ORANGE)
+          +seg(byKind['펀드']||0, BLUE)+seg(w['현금']||0, CASH_COLOR)),
+  ].join('');
+
+  $('#toolNow').textContent =
+    `${D.profiles[risk].name} · ${$('#yrs').selectedOptions[0].textContent} · ${won(amt)}`
+    + (isEdited() ? ' · 조정됨' : '');
+  $('#printSrc').textContent =
+    `자료 기준 — ${D.sources && D.sources['펀드'] ? '펀드 '+(D.sources['펀드'].asOf||'') : ''}`
+    + ` · 유니버스 ${D.universe_generated||''} · 문서 ${D.generated} (KST)`;
+
   $('#bars').innerHTML = entries.map(([c,x,col])=>`
     <div class="bar-row"><div class="nm">${c}</div>
       <div class="bar-track"><div class="bar-fill" style="width:${Math.min(x,100)}%%;background:${col}"></div></div>
@@ -519,7 +684,7 @@ function render(){
 
   // 배분 표 — 비중 칸은 **고칠 수 있다**
   const bad = Math.abs(m.sum-100) > 0.05;
-  $('#allocTbl').innerHTML = `<thead><tr><th>자산군</th><th class=num>비중 (고칠 수 있음)</th>
+  $('#allocTbl').innerHTML = `<thead><tr><th>자산군</th><th class=num>비중<span class="noprint"> (고칠 수 있음)</span></th>
     <th class=num>금액</th><th class=num>과거 1년(중앙)</th><th class=num>변동성(중앙)</th></tr></thead>
     <tbody>${D.classes.map(c=>{
       const st = D.stats[c]||{}, r = st['ret1y_중앙값'], v = st['vol_중앙값'];
@@ -527,7 +692,7 @@ function render(){
       const changed = S.w[c]!==undefined && Math.abs(S.w[c]-(plan.w[c]||0))>0.001;
       return `<tr><td>${c}${changed?' <span class="edited">·수정</span>':''}</td>
         <td class=num><input class="wIn${changed?'':' off'}" type="number" step="0.5" min="0" max="100"
-             data-c="${c}" value="${x.toFixed(1)}" aria-label="${c} 비중"></td>
+             data-c="${c}" value="${x.toFixed(1)}" aria-label="${c} 비중"><span class="pct">%%</span></td>
         <td class=num>${won(Math.round(amt*x/100))}</td>
         <td class="num${r==null?' na':''}">${r==null?'—':fmt(r)+'%%'}</td>
         <td class="num${v==null?' na':''}">${v==null?'—':fmt(v)+'%%'}</td></tr>`;
@@ -601,24 +766,42 @@ function render(){
       </tr>`).join('')}</tbody></table></div>`
       : `<div class="note"><strong>고른 상품이 없습니다.</strong>
          아래에서 골라 넣으십시오 — 비중 ${fmt(x,1)}%% 가 배분될 자리입니다.</div>`;
+    // 615 종짜리 목록은 스크롤로 못 고른다. 이름·운용사·유형으로 걸러 낸다.
+    const q = (S.q[c]||'').trim().toLowerCase();
+    const hit = q ? rest.filter(p=>
+          ((p.n||'')+' '+(p.co||'')+' '+(p.t||'')+' '+(p.c||'')).toLowerCase().includes(q))
+        : rest;
     const adder = rest.length ? `
       <div class="addrow noprint">
+        <input type="search" data-q="${c}" value="${(S.q[c]||'').replace(/"/g,'&quot;')}"
+               placeholder="이름·운용사·유형으로 찾기 (전체 ${rest.length}종)"
+               aria-label="${c} 상품 찾기" style="flex:1 1 260px">
         <select data-add="${c}" aria-label="${c} 상품 고르기">
-          <option value="">상품 고르기 (${rest.length}종)…</option>
-          ${rest.slice(0,200).map(p=>`<option value="${key(p)}">${(p.n||p.c||'')}${
+          <option value="">${hit.length ? `고르기 — ${hit.length}종${
+            hit.length>300?' 중 300종 표시':''}` : '찾는 상품이 없습니다'}</option>
+          ${hit.slice(0,300).map(p=>`<option value="${key(p)}">${(p.n||p.c||'')}${
             p.r==null?'':' · 과거1년 '+fmt(p.r)+'%%'}${p.co?' · '+p.co:''}</option>`).join('')}
         </select>
         <button class="btn" data-addbtn="${c}">넣기</button>
       </div>` : '';
-    return `<h3>${c} — ${fmt(x,1)}%% · ${won(Math.round(amt*x/100))}
+    return `<div class="prodblock"><h3>${c} — ${fmt(x,1)}%% · ${won(Math.round(amt*x/100))}
               <span class="caption">(고른 ${chosen.length}종 · 한 종목당 ${won(each)})</span></h3>
-            ${caveat}${body}${adder}`;
+            ${caveat}${body}</div>${adder}`;
   }).join('');
 }
 
 // 비중 칸을 고치면 바로 반영한다. 합계가 100 이 아니어도 막지 않는다 —
 // 고치는 도중에는 당연히 어긋나고, 막으면 고칠 수가 없다. 대신 크게 적어 둔다.
 document.addEventListener('input', e=>{
+  const qc = e.target.dataset && e.target.dataset.q;
+  if(qc !== undefined && qc !== null && e.target.type === 'search'){
+    S.q[qc] = e.target.value;
+    render();
+    // 다시 그리면 포커스를 잃으므로 그 칸으로 되돌린다.
+    const el = document.querySelector(`input[data-q="${qc}"]`);
+    if(el){ el.focus(); el.setSelectionRange(el.value.length, el.value.length); }
+    return;
+  }
   const c = e.target.dataset && e.target.dataset.c;
   if(!c || !e.target.classList.contains('wIn')) return;
   const v = Number(e.target.value);
@@ -753,7 +936,24 @@ $('#btnPlanJson').onclick = ()=>{
   toast('조정안을 내려받았습니다. PPT 는 이 파일로 만듭니다.');
 };
 
+// KO/EN — 단추만 있고 아무 일도 안 하던 것을 잇는다. 보이고 안 보이고는
+// CSS 가 하고, 여기서는 html 의 lang 만 바꾼다.
+function setLang(l){
+  document.documentElement.lang = l;
+  ['ko','en'].forEach(k=>$('#'+k).setAttribute('aria-checked', String(k===l)));
+  try{ localStorage.setItem('mas-proposal-lang', l); }catch(e){}
+}
+$('#ko').onclick = ()=>setLang('ko');
+$('#en').onclick = ()=>setLang('en');
+try{ const l = localStorage.getItem('mas-proposal-lang'); if(l) setLang(l); }catch(e){}
+
 $('#btnPrint').onclick = ()=>window.print();
+// 브라우저에는 「PDF 로 저장」 API 가 없다. 인쇄 대화상자의 대상을 PDF 로
+// 고르는 것이 그것이므로, 같은 대화상자를 열되 어디를 눌러야 하는지 알려 준다.
+$('#btnPdf').onclick = ()=>{
+  toast('인쇄 대화상자에서 대상을 「PDF로 저장」으로 고르십시오.');
+  setTimeout(()=>window.print(), 700);
+};
 $('#btnCsv').onclick = ()=>{
   const who = $('#client').value.trim().replace(/[\\/:*?"<>|]/g,'') || '고객';
   const a = document.createElement('a');
@@ -839,12 +1039,73 @@ def check_js(html):
     print("  JS 구문 검사 통과")
 
 
+SMOKE = r"""
+import { chromium } from 'playwright';
+const b = await chromium.launch();
+const p = await b.newPage({ viewport: { width: 1280, height: 1000 } });
+const errs = [];
+p.on('pageerror', e => errs.push('PAGEERROR ' + e.message));
+p.on('console', m => { if (m.type() === 'error'
+    && !/ERR_CERT|ERR_NAME|net::/.test(m.text())) errs.push('CONSOLE ' + m.text()); });
+await p.goto('file://' + process.argv[2]);
+await p.waitForTimeout(700);
+// 화면이 실제로 채워졌는지 — render() 가 죽으면 이 칸들이 빈 채로 남는다.
+const filled = await p.evaluate(() => {
+  const q = s => (document.querySelector(s)?.innerHTML || '').trim().length;
+  return { donut: q('#donut'), legend: q('#legend'), groups: q('#groups'),
+           bars: q('#bars'), alloc: q('#allocTbl'), prods: q('#products'),
+           opts: Math.max(0, ...[...document.querySelectorAll('select[data-add]')]
+                                 .map(s => s.options.length)) };
+});
+await b.close();
+const empty = Object.entries(filled).filter(([, v]) => !v).map(([k]) => k);
+console.log(JSON.stringify({ errs, filled, empty }));
+process.exit(errs.length || empty.length ? 1 : 0);
+"""
+
+
+def smoke_js(path):
+    """**화면을 실제로 띄워 본다.** `node --check` 는 문법만 본다 — 정의하지
+    않은 이름을 쓰면 파싱은 멀쩡히 되고 브라우저에서만 죽는다. 실제로
+    `ORANGE is not defined` 하나로 render() 가 통째로 멈춰, 틀은 다 보이는데
+    도넛·표·상품이 전부 빈 화면이 나왔다. 그 꼴을 고객 앞에서 보지 않으려면
+    기계가 한 번 열어 봐야 한다.
+
+    playwright 가 없으면 건너뛴다 — 검사를 못 했다는 사실만 적는다.
+    """
+    import shutil
+    import subprocess
+    if not shutil.which("node"):
+        return
+    # **저장소 안에 놓는다.** /tmp 에 두면 노드가 그 자리를 기준으로 playwright
+    # 를 찾다 못 찾고, 「playwright 가 없다」며 검사를 건너뛴다 — 설치돼 있는데도.
+    runner = os.path.join(ROOT, ".proposal-smoke.mjs")
+    with open(runner, "w", encoding="utf-8") as fp:
+        fp.write(SMOKE)
+    try:
+        r = subprocess.run(["node", runner, path], cwd=ROOT,
+                           capture_output=True, text=True, timeout=120)
+    except (OSError, subprocess.TimeoutExpired) as exc:
+        print("  (화면 띄우기 검사를 건너뜁니다 — %s)" % exc)
+        return
+    finally:
+        os.remove(runner)
+    if r.returncode != 0:
+        if "Cannot find package 'playwright'" in r.stderr:
+            print("  (playwright 가 없어 화면 띄우기 검사를 건너뜁니다)")
+            return
+        raise SystemExit("화면이 제대로 그려지지 않습니다:\n%s"
+                         % (r.stdout + r.stderr)[:1200])
+    print("  화면 띄우기 검사 통과 %s" % r.stdout.strip()[:160])
+
+
 def main():
     data, u = build_data()
     html = render(data, u)
     check_js(html)
     with open(OUT, "w", encoding="utf-8") as fp:
         fp.write(html)
+    smoke_js(OUT)
     print("자산군 %d · 상품 %d 종을 실었습니다."
           % (len(u["자산군"]), sum(len(v) for v in data["products"].values())))
     print("배분 %d 가지를 미리 셈해 넣었습니다 (성향 %d × 기간 %d)."
