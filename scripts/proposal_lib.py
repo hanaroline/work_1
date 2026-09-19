@@ -44,6 +44,10 @@ import os
 import re
 from datetime import datetime, timedelta, timezone
 
+import sys
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import proposal_metrics as MET                                     # noqa: E402
+
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 KST = timezone(timedelta(hours=9))
 UNIVERSE = os.path.join(ROOT, "data", "proposal", "universe.json")
@@ -91,6 +95,20 @@ HORIZON = [
 ]
 
 RISKY = [c for c in CLASSES if c != "현금"]
+
+
+_RF_CACHE = [None]
+
+
+def _rf():
+    """위험조정에 쓰는 무위험수익률 — cma.json 의 실측을 쓴다(없으면 기본값)."""
+    if _RF_CACHE[0] is None:
+        try:
+            doc = json.load(open(CMA_PATH, encoding="utf-8"))
+            _RF_CACHE[0] = (doc.get("빌딩블록_메타") or {}).get("rf") or MET.RF_DEFAULT
+        except (OSError, ValueError):
+            _RF_CACHE[0] = MET.RF_DEFAULT
+    return _RF_CACHE[0]
 
 
 def horizon_factor(years):
@@ -393,11 +411,29 @@ def pick_products(products, cls, n=5, prefer=None):
     items = [p for p in products
              if p.get("cls") == cls and (p.get("노출") or not p.get("flags")
                                          or "노출_미분류" not in p["flags"])]
+    # **규모는 문턱이지 순위가 아니다.** 너무 작으면 못 사는 것이지, 클수록
+    # 좋은 것이 아니다. 자산군의 중앙값 규모에 한참 못 미치는 것만 뒤로 민다.
+    sizes = sorted(x for x in (p.get("size") or 0 for p in items) if x > 0)
+    floor = sizes[len(sizes) // 10] if len(sizes) >= 10 else 0
+
+    # **점수로 줄을 세운다.** 예전에는 규모 순이었다 — 집중·중복 상한을 씌워도
+    # 순위 기준이 규모라 결국 「제일 큰 다섯」이었고, 성과도 위험도 보지 않았다.
+    # 이제 다년 위험조정 점수(MET.score)로 세운다. tier 가 앞선다 —
+    # 여러 해를 잰 상품이 1 해만 잰 상품보다 먼저다.
+    MET.rank_class(items, rf=_rf())
+    ranked = []
+    for p in items:
+        small = 1 if (p.get("size") or 0) < floor else 0
+        sc = p.get("점수")
+        ranked.append((small, p.get("측정등급") or 9,
+                       -(sc if sc is not None else -1),
+                       -(p.get("size") or 0), p))
     if prefer == "저보수":
-        items.sort(key=lambda p: (p.get("feeMin") is None, p.get("feeMin") or 9e9,
-                                  -(p.get("size") or 0)))
+        ranked.sort(key=lambda t: (t[0], t[4].get("feeMin") is None,
+                                   t[4].get("feeMin") or 9e9, t[2]))
     else:
-        items.sort(key=lambda p: -(p.get("size") or 0))
+        ranked.sort(key=lambda t: t[:4])
+    items = [t[4] for t in ranked]
 
     # 노출이 한 가지뿐인 자산군(국내주식·해외주식)에서는 노출 상한이 뜻이
     # 없다 — 모두가 같은 노출이라 셋째부터 전부 걸린다.

@@ -78,6 +78,7 @@ TRADING_DAYS = 252
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import proposal_exposure as EXP                                   # noqa: E402
+import proposal_metrics as MET                                    # noqa: E402
 
 
 def sh(args):
@@ -314,6 +315,7 @@ def kis_kr_overrides():
         if len(closes) < 60:
             continue
         out[code] = {"m": from_bars(closes), "last": closes[-1],
+                     "closes": closes, "dates": v.get("d") or [],
                      "asOf": (v.get("d") or [None])[-1]}
     return out, doc.get("source")
 
@@ -391,6 +393,9 @@ def load_branch_bars(branch, subdir, cls, kind, limit=0, meta=None):
             "src": src,
             "asOf": as_of_one,
             "flags": flags,
+            # 지표를 셈할 때 쓰고 버린다 — 산출물에는 남기지 않는다.
+            "_closes": (k["closes"] if k and k.get("closes") else closes),
+            "_dates": (k["dates"] if k and k.get("dates") else (d.get("d") or None)),
         })
     as_of = max((p["asOf"] for p in out if p.get("asOf")), default=None)
     if swapped:
@@ -561,6 +566,52 @@ def median(xs):
     return xs[n // 2] if n % 2 else (xs[n // 2 - 1] + xs[n // 2]) / 2
 
 
+def attach_metrics(products):
+    """상품에 **다년 지표**(1·3·5해 CAGR·변동성·최대낙폭)를 붙인다.
+
+    이것이 없으면 상품을 규모나 1 해 수익률로밖에 못 고른다 — 바로 고치려던
+    그 문제다. 일봉이 있는 것만 붙고, 없는 것(펀드)은 비워 둔다. 비어 있다는
+    사실 자체가 선정에서 「못 쟀습니다」로 드러난다.
+
+    일봉의 출처가 둘이라 겹치면 **긴 쪽이 이긴다** — KIS 로 새로 받은
+    kr_bars.json 이 보통 더 길다(10 해). 원천 이름도 함께 적어 둔다.
+    """
+    bars = {}
+    p = os.path.join(OUT_DIR, "kr_bars.json")
+    if os.path.exists(p):
+        try:
+            doc = json.load(open(p, encoding="utf-8"))
+            for code, v in (doc.get("items") or {}).items():
+                bars[code] = (v.get("d") or [], v.get("c") or [],
+                              doc.get("source"))
+        except ValueError:
+            pass
+
+    n_long, n_any = 0, 0
+    for prod in products:
+        code = str(prod.get("code") or "").split(".")[0].lstrip("A")
+        got = bars.get(code)
+        d, c, src = got if got else (None, None, None)
+        # 일봉 원천이 없으면, 로더가 이미 들고 있던 봉으로라도 잰다.
+        if not c:
+            c = prod.pop("_closes", None)
+            d = prod.pop("_dates", None)
+            src = prod.get("src")
+        if not c or len(c) < 60:
+            prod.pop("_closes", None)
+            prod.pop("_dates", None)
+            continue
+        if not d or len(d) != len(c):
+            d = [""] * len(c)
+        m = MET.measure(d, c)
+        m["src"] = str(src or "")[:80]
+        prod["지표"] = m
+        n_any += 1
+        if "3" in m["창"] or "5" in m["창"]:
+            n_long += 1
+    return n_any, n_long
+
+
 def reassign_by_exposure(products):
     """**자산군을 상장지가 아니라 실제 노출로 다시 정한다.**
 
@@ -677,6 +728,9 @@ def main():
 
     # **상장지가 아니라 실제 노출로 자산군을 다시 정한다.** 이 한 줄이 없으면
     # 「국내ETF」 칸에 미국 지수만 담기고 「국내펀드」 칸이 통째로 MMF 가 된다.
+    n_any, n_long = attach_metrics(products)
+    print("\n다년 지표 — 잰 상품 %d (3해 이상 %d)" % (n_any, n_long))
+
     products, moves = reassign_by_exposure(products)
     print("\n노출로 다시 봄 — 자산군 옮김 %d · 현금성으로 옮김 %d · "
           "레버리지·인버스 뺌 %d · 못 가림 %d"
