@@ -170,6 +170,22 @@ td.na{color:var(--muted2)}
 .total td{background:#D7D7D7;font-weight:700}
 .tbl-wrap{overflow-x:auto}
 
+/* 도구 단추 */
+.tools{display:flex;gap:8px;flex-wrap:wrap;margin-top:var(--space-content)}
+.btn{font-family:inherit;font-size:16px;font-weight:500;padding:10px 19px;
+  border:1px solid var(--hair);border-radius:2px;background:#fff;color:var(--ink);
+  cursor:pointer;height:42px}
+.btn:hover{background:var(--subtle)}
+.btn.primary{background:var(--orange);border-color:var(--orange);color:#fff}
+.btn.primary:hover{background:var(--orange-active);border-color:var(--orange-active)}
+.btn:focus-visible{outline:2px solid var(--orange);outline-offset:1px}
+.toast{position:fixed;left:50%;bottom:28px;transform:translateX(-50%);
+  background:var(--ink);color:#fff;font-size:15px;padding:10px 19px;border-radius:2px;
+  opacity:0;pointer-events:none;transition:opacity .2s}
+.toast.on{opacity:1}
+/* 인쇄할 때만 나오는 머리글 — 화면에는 이미 히어로가 있다 */
+.printhead{display:none}
+
 /* notes */
 .note{border-left:3px solid var(--orange);background:var(--subtle);padding:14px 19px;margin:19px 0;font-size:17px}
 .note.warn{border-left-color:var(--warn)}
@@ -183,7 +199,10 @@ html[lang="en"] [data-en]{display:inline}
 html[lang="en"] div[data-en],html[lang="en"] p[data-en],html[lang="en"] span.blk[data-en]{display:block}
 
 @media print{
-  .lang,.noprint{display:none!important}
+  .lang,.noprint,.tools{display:none!important}
+  .printhead{display:block;margin-bottom:14pt}
+  .printhead h1{font-size:20pt;margin:0 0 4pt;color:#000}
+  .printhead .meta{font-size:10pt;color:#333}
   body{font-size:13pt;line-height:1.4}
   .page{max-width:100%;padding:0}
   .hero{background:#fff!important;color:#000!important;padding:0 0 12pt}
@@ -252,10 +271,21 @@ def render(data, u):
 
 <div class="page">
 
+  <div class="printhead">
+    <h1>자산배분 제안서</h1>
+    <div class="meta" id="printMeta"></div>
+  </div>
+
   <section class="section">
     <div class="section-rule"></div>
     <h2 class="section-title"><span data-ko>1. 고객 정보</span><span data-en>1. Client inputs</span></h2>
     <div class="form">
+      <div>
+        <label><span data-ko>고객명</span><span data-en>Client</span></label>
+        <input type="text" id="client" placeholder="예: 홍길동 고객님">
+        <p class="hint"><span data-ko>인쇄·CSV 에 함께 적힙니다.</span>
+           <span data-en>Appears on print and CSV.</span></p>
+      </div>
       <div>
         <label><span data-ko>투자금액 (만원)</span><span data-en>Amount (KRW 10k)</span></label>
         <input type="number" id="amt" value="10000" min="0" step="100">
@@ -276,6 +306,17 @@ def render(data, u):
         <p class="hint"><span data-ko>넣으면 그 수익률에 필요한 위험을 함께 보여 줍니다.</span>
            <span data-en>If set, shows the risk required to target it.</span></p>
       </div>
+    </div>
+
+    <div class="tools noprint">
+      <button class="btn primary" id="btnPrint">
+        <span data-ko>인쇄 · PDF 저장</span><span data-en>Print / Save PDF</span></button>
+      <button class="btn" id="btnCsv">
+        <span data-ko>CSV 내려받기</span><span data-en>Download CSV</span></button>
+      <button class="btn" id="btnLink">
+        <span data-ko>이 설정 링크 복사</span><span data-en>Copy link</span></button>
+      <button class="btn" id="btnReset">
+        <span data-ko>처음으로</span><span data-en>Reset</span></button>
     </div>
 
     <div class="note warn">
@@ -337,6 +378,7 @@ def render(data, u):
     </p>
   </footer>
 </div>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
 
 <script>
 const D = %(data)s;
@@ -380,6 +422,10 @@ function render(){
   const amt = Number($('#amt').value||0);
   const plan = D.plans[risk+'|'+yrs];
   $('#amtHint').textContent = won(amt);
+  const who = $('#client').value.trim();
+  $('#printMeta').textContent =
+    [who, D.profiles[risk].name, $('#yrs').selectedOptions[0].textContent, won(amt)]
+      .filter(Boolean).join('  ·  ') + '   |   ' + D.generated + ' (KST)';
   $('#riskHint').textContent = D.profiles[risk].desc;
 
   // 안내
@@ -477,11 +523,106 @@ $('#ko').onclick = ()=>setLang('ko');
 $('#en').onclick = ()=>setLang('en');
 try{ const s=localStorage.getItem('mas-lang'); if(s) setLang(s); }catch(e){}
 
+// ── 설정을 주소에 담아 링크로 넘긴다 ─────────────────────────────────
+// 제안 도구는 「이 조건으로 뽑아 봤습니다」를 남에게 보여 줄 일이 많다.
+// 링크에 담아 두면 파일을 주고받지 않아도 같은 화면을 연다.
+const FIELDS = ['client','amt','yrs','risk','tgt'];
+function toHash(){
+  const o = {}; FIELDS.forEach(f=>{ const v=$('#'+f).value; if(v) o[f]=v; });
+  return new URLSearchParams(o).toString();
+}
+function fromHash(){
+  const q = new URLSearchParams(location.hash.slice(1));
+  let any = false;
+  FIELDS.forEach(f=>{ if(q.has(f)){ $('#'+f).value = q.get(f); any = true; } });
+  return any;
+}
+function remember(){ try{ localStorage.setItem('mas-proposal', toHash()); }catch(e){} }
+function recall(){
+  try{ const v=localStorage.getItem('mas-proposal');
+       if(v){ const q=new URLSearchParams(v);
+              FIELDS.forEach(f=>{ if(q.has(f)) $('#'+f).value = q.get(f); }); return true; } }
+  catch(e){}
+  return false;
+}
+
+function toast(msg){
+  const t = $('#toast'); t.textContent = msg; t.classList.add('on');
+  clearTimeout(toast._t); toast._t = setTimeout(()=>t.classList.remove('on'), 2200);
+}
+
+// CSV — 엑셀에서 바로 열리게 BOM 을 붙인다(없으면 한글이 깨진다).
+function csv(){
+  const risk=$('#risk').value, yrs=$('#yrs').value, amt=Number($('#amt').value||0);
+  const plan=D.plans[risk+'|'+yrs], who=$('#client').value.trim();
+  const q = v => '"' + String(v==null?'':v).replace(/"/g,'""') + '"';
+  const L = [];
+  L.push(['자산배분 제안서'].map(q).join(','));
+  L.push(['고객', who, '성향', D.profiles[risk].name,
+          '기간', $('#yrs').selectedOptions[0].textContent,
+          '투자금액(만원)', amt].map(q).join(','));
+  L.push(['생성', D.generated + ' KST', '유니버스', D.universe_generated||''].map(q).join(','));
+  L.push('');
+  L.push(['자산군','비중(%%)','금액(만원)','과거1년(중앙,%%)','변동성(중앙,%%)'].map(q).join(','));
+  D.classes.forEach(c=>{
+    const w = plan.w[c]||0; if(w<=0) return;
+    const st = D.stats[c]||{};
+    L.push([c, w.toFixed(1), Math.round(amt*w/100),
+            st['ret1y_중앙값']==null?'':st['ret1y_중앙값'].toFixed(1),
+            st['vol_중앙값']==null?'':st['vol_중앙값'].toFixed(1)].map(q).join(','));
+  });
+  const m = plan.m;
+  L.push(['합계','100.0',amt, m['과거1년실적'].toFixed(1), m['변동성_가중합'].toFixed(1)].map(q).join(','));
+  L.push(['실적 덮은 비중(%%)', m['실적덮은비중'].toFixed(0),
+          '변동성 덮은 비중(%%)', m['변동성덮은비중'].toFixed(0)].map(q).join(','));
+  L.push('');
+  L.push(['자산군','상품','유형','운용/발행','규모(원)','과거1년(%%)','변동성(%%)','보수(%%)'].map(q).join(','));
+  D.classes.forEach(c=>{
+    const w = plan.w[c]||0; if(w<=0 || c==='현금') return;
+    (D.products[c]||[]).slice(0,8).forEach(p=>{
+      L.push([c, p.n||p.c||'', p.t||'', p.co||'', p.s==null?'':p.s,
+              p.r==null?'':p.r.toFixed(1), p.v==null?'':p.v.toFixed(1),
+              p.f1==null?'':p.f1].map(q).join(','));
+    });
+  });
+  L.push('');
+  L.push([('「과거 1년」은 실제로 잰 값이며 미래 수익률이 아닙니다. ' +
+           '빈칸은 원천에 없어 셈하지 않은 값입니다. ' +
+           '이 자료는 참고용이며 투자 권유가 아닙니다.')].map(q).join(','));
+  return '\\ufeff' + L.join('\\r\\n');
+}
+
+$('#btnPrint').onclick = ()=>window.print();
+$('#btnCsv').onclick = ()=>{
+  const who = $('#client').value.trim().replace(/[\\/:*?"<>|]/g,'') || '고객';
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([csv()], {type:'text/csv;charset=utf-8'}));
+  a.download = `자산배분제안_${who}_${D.generated.slice(0,10)}.csv`;
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(()=>URL.revokeObjectURL(a.href), 1000);
+  toast('CSV 를 내려받았습니다.');
+};
+$('#btnLink').onclick = async ()=>{
+  const url = location.origin + location.pathname + '#' + toHash();
+  try{ await navigator.clipboard.writeText(url); toast('링크를 복사했습니다.'); }
+  catch(e){ location.hash = toHash(); toast('주소창의 링크를 복사해 주세요.'); }
+};
+$('#btnReset').onclick = ()=>{
+  $('#client').value=''; $('#amt').value=10000; $('#yrs').value=10;
+  $('#risk').value=3; $('#tgt').value='';
+  try{ localStorage.removeItem('mas-proposal'); }catch(e){}
+  history.replaceState(null,'',location.pathname);
+  render(); toast('처음 설정으로 되돌렸습니다.');
+};
+
 fillSelects();
-['#amt','#yrs','#risk','#tgt'].forEach(s=>{
-  $(s).addEventListener('input', render);
-  $(s).addEventListener('change', render);
+['#client','#amt','#yrs','#risk','#tgt'].forEach(sel=>{
+  $(sel).addEventListener('input', ()=>{ render(); remember(); });
+  $(sel).addEventListener('change', ()=>{ render(); remember(); });
 });
+// 링크로 들어온 설정이 먼저다. 없으면 지난번에 보던 설정을 되살린다.
+if(!fromHash()) recall();
+window.addEventListener('hashchange', ()=>{ fromHash(); render(); });
 render();
 </script>
 </body>
@@ -500,9 +641,47 @@ def fx_note(u):
     return "USD/KRW %.2f (%s)" % (fx["usdkrw"], fx.get("src", "출처 미상"))
 
 
+def check_js(html):
+    """만든 화면의 자바스크립트가 **파싱되는지** 본다.
+
+    이 파일의 JS 는 파이썬 일반 문자열 안에 들어 있다. 그래서 `\\r\\n` 이나
+    `\\ufeff` 처럼 역슬래시를 쓰는 자리는 파이썬이 먼저 집어삼킨다 — 실제로
+    `L.join('\\r\\n')` 이 진짜 줄바꿈으로 바뀌어 문자열이 끊겼고, **화면 전체의
+    JS 가 통째로 죽었다.** 단추도 표도 아무것도 안 들었는데 HTML 은 멀쩡해
+    보였다. 그래서 기계가 본다.
+
+    node 가 없으면 건너뛴다 — 검사를 못 했다고 빌드를 막지는 않되, 건너뛴
+    사실은 적는다.
+    """
+    import re
+    import shutil
+    import subprocess
+    import tempfile
+    if not shutil.which("node"):
+        print("  (node 가 없어 JS 구문 검사를 건너뜁니다)")
+        return
+    m = re.search(r"<script>(.*)</script>", html, re.S)
+    if not m:
+        raise SystemExit("화면에 <script> 가 없습니다 — 만들다 만 것입니다.")
+    with tempfile.NamedTemporaryFile("w", suffix=".js", encoding="utf-8",
+                                     delete=False) as fp:
+        fp.write(m.group(1))
+        path = fp.name
+    try:
+        r = subprocess.run(["node", "--check", path],
+                           capture_output=True, text=True)
+    finally:
+        os.remove(path)
+    if r.returncode != 0:
+        raise SystemExit("자바스크립트가 파싱되지 않습니다:\n%s"
+                         % (r.stderr or r.stdout)[:800])
+    print("  JS 구문 검사 통과")
+
+
 def main():
     data, u = build_data()
     html = render(data, u)
+    check_js(html)
     with open(OUT, "w", encoding="utf-8") as fp:
         fp.write(html)
     print("자산군 %d · 상품 %d 종을 실었습니다."
