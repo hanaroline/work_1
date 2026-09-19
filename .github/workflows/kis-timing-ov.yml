@@ -1,0 +1,137 @@
+name: 해외 ETF 곁 목록 수집 (매매 타이밍)
+
+# 매매 타이밍 판의 해외 ETF 우주를 넓히려고 OHLCV 를 받는다.
+# → data/kis_timing/ov_extra.json
+#
+# **왜 러너에서 받는가.** 클로드 세션의 이그레스 프록시가 야후를 막는다
+# (query1/query2.finance.yahoo.com:443 → CONNECT 403). 러너에는 그 제약이
+# 없다. 네이버·ETFCHECK 수집을 러너에서 도는 것과 같은 사정이고,
+# docs/kis-strategy-builder.md 의 「그래서 어떻게 나누어 하는가」 표와도 같다.
+#
+# **왜 곁 목록인가.** data/etf/prices.json 은 사람이 준 표의 76종이고,
+# scripts/etf_list.py 는 「여기서 지어낸 것은 하나도 없다」고 못박아 두었다.
+# 다른 데서 온 종목을 그 표에 섞으면 그 말이 거짓이 된다. 그래서 따로 두고
+# kis_timing_data 가 읽을 때 합친다.
+#
+# **본 목록 21종은 여기서 손대지 않는다.** 그쪽은 「자산배분 ETF 신호」가 단추로만
+# 채운다(그 파일의 결정이다). 그래서 해외ETF 우주는 한동안 **신선도가 섞인다** —
+# 곁 목록은 날마다, 본 목록은 마지막으로 단추를 누른 날 기준이다. 산출물이 종목마다
+# asof 를 적고 사흘 넘게 뒤처지면 stale 로 표시하므로 화면에서 그대로 보인다.
+
+on:
+  schedule:
+    # 22:45 UTC = 07:45 KST — 미국 정규장 마감 수집이 끝난 뒤, 그리고
+    # 「매매 타이밍 갱신」의 23:00 UTC 예약보다 앞.
+    - cron: '45 22 * * 2-6'
+
+  workflow_dispatch:
+    inputs:
+      years:
+        description: '몇 해치'
+        required: false
+        default: '8'
+      only:
+        description: '티커 몇 개만 (쉼표, 비우면 전부)'
+        required: false
+        default: ''
+
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/fetch_kis_timing_ov.py'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: kis-timing-ov
+  cancel-in-progress: false
+
+jobs:
+  fetch:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: 받기
+        run: |
+          python3 scripts/fetch_kis_timing_ov.py \
+            --years "${{ github.event.inputs.years || '8' }}" \
+            ${{ github.event.inputs.only && format('--only "{0}"', github.event.inputs.only) || '' }}
+
+      # **이름을 맞대는 것이 첫 검사다.** 티커 한 자가 틀리면 빈 응답이 아니라
+      # 남의 멀쩡한 응답이 온다 — 지표 검산으로는 못 잡는다.
+      - name: 받아 온 것이 정말 그 종목인가
+        run: |
+          python3 - <<'PY'
+          import json, sys
+          d = json.load(open('data/kis_timing/ov_extra.json', encoding='utf-8'))
+          bad = []
+          for tk, r in d['items'].items():
+              if (r.get('instrument_type') or '').upper() != 'ETF':
+                  bad.append('%s 는 %s (ETF 아님)' % (tk, r.get('instrument_type')))
+              if (r.get('currency') or '') != 'USD':
+                  bad.append('%s 통화가 %s' % (tk, r.get('currency')))
+              if (r.get('bars_n') or 0) < 260:
+                  bad.append('%s 봉이 %s 개뿐' % (tk, r.get('bars_n')))
+          for x in bad:
+              print('::error::%s' % x)
+          print('%d 종 · 어긋남 %d' % (len(d['items']), len(bad)))
+          for tk, r in sorted(d['items'].items()):
+              print('  %-5s %5d봉 %s~%s  %s'
+                    % (tk, r['bars_n'], r['from'], r['to'], (r.get('name_source') or '')[:46]))
+          if d.get('failed'):
+              for f in d['failed']:
+                  print('::warning::%s 를 받지 못했습니다 — %s' % (f['symbol'], f['why'][:120]))
+          sys.exit(1 if bad else 0)
+          PY
+
+      # 우주가 실제로 넓어졌는지, 그 우주로 세팅이 나오는지 본다.
+      - name: 우주가 넓어졌는가
+        run: |
+          python3 - <<'PY'
+          import sys
+          sys.path.insert(0, 'scripts')
+          import kis_timing_data as D
+          uni, meta = D.load_universe()
+          n = len(uni['OV_ETF'])
+          print('::notice::해외ETF 우주 %d 종' % n)
+          if meta['notes']:
+              for x in meta['notes']:
+                  print('::warning::%s' % x)
+          if meta['dropped'].get('OV_ETF'):
+              print('::notice::이력이 모자라 빠진 것 %d 종'
+                    % len(meta['dropped']['OV_ETF']))
+          sys.exit(0 if n >= 18 else 1)
+          PY
+
+      - name: 커밋
+        run: |
+          git config user.name  'github-actions[bot]'
+          git config user.email 'github-actions[bot]@users.noreply.github.com'
+          git add data/kis_timing/ov_extra.json
+          if git diff --staged --quiet; then
+            echo "변경 없음 — 봉이 그대로입니다"
+            exit 0
+          fi
+          git commit -m "해외 ETF 곁 목록 수집 $(TZ=Asia/Seoul date '+%Y-%m-%d %H:%M KST')"
+
+          for i in 1 2 3 4 5; do
+            if git push; then
+              echo "밀어 넣음 (시도 $i)"; exit 0
+            fi
+            echo "거절됨 — 되받아 다시 시도한다 ($i/5)"
+            if ! git pull --rebase --no-edit origin main; then
+              git rebase --abort || true
+              echo "::error::되받기 충돌 — 손으로 확인하십시오"
+              exit 1
+            fi
+            sleep $((i * 5))
+          done
+          echo "::error::다섯 번 밀어 봤지만 모두 거절됐습니다"
+          exit 1
