@@ -156,6 +156,23 @@ def main():
     with open(OUT, "w", encoding="utf-8") as fp:
         json.dump(doc, fp, ensure_ascii=False, separators=(",", ":"))
 
+    # 요약을 여기서 적는다. 워크플로 안에서 파이썬 heredoc 으로 만들면 YAML
+    # 들여쓰기가 깨진다(실제로 깨졌다). 파일로 내놓으면 워크플로는 cat 만 하면 된다.
+    lines = ["원천: %s" % doc["source"], "",
+             "| 심볼 | 거래소 | 이름 | 자산군 | 봉 | 기간 |",
+             "|---|---|---|---|---|---|"]
+    for it in items:
+        lines.append("| %s | %s | %s | %s | %d | %s ~ %s |"
+                     % (it["symbol"], it["exchange"], it["name"],
+                        it["assetClass"], len(it["c"]),
+                        it["d"][0], it["d"][-1]))
+    if failed:
+        lines += ["", "**받지 못한 것 %d**" % len(failed)]
+        lines += ["- `%s` — %s" % (x["symbol"], x["why"]) for x in failed]
+    report = os.path.join(OUT_DIR, "overseas_etf_report.md")
+    with open(report, "w", encoding="utf-8") as fp:
+        fp.write("\n".join(lines) + "\n")
+
     print("\n%d 종 · 실패 %d — %s"
           % (len(items), len(failed), os.path.relpath(OUT, ROOT)))
     for f in failed:
