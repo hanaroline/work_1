@@ -157,6 +157,21 @@ def _from_fund_type(t, name, region=None):
 # 제안 목록에서도 빠진다(자산배분 제안서 안에 또 다른 자산배분을 넣지 않는다).
 TDF_PAT = re.compile(r"TDF|타깃데이트|타겟데이트", re.I)
 
+# **혼합형은 순수 프록시로 쓸 수 없다.** 「KODEX 200미국채혼합50」은 KOSPI200
+# 절반 + 미국채 절반인데 이름에 「미국채」가 있어 해외채권으로 분류된다. 그것으로
+# 해외채권 장기 수익률을 냈더니 8.54% 가 나왔다 — 채권이 아니라 주식 절반이
+# 올린 값이다(빌딩블록은 3.81%).
+#
+# 상품 목록에서까지 뺄 까닭은 없다(채권혼합 ETF 는 실제로 권할 만한 물건이다).
+# 다만 기대수익률을 재는 잣대로는 못 쓴다. 그래서 가려내기만 한다.
+BLEND_PAT = re.compile(r"혼합|밸런스|BALANCED|ALLOCATION", re.I)
+
+
+def is_blend(p):
+    """여러 자산을 섞은 상품인가 — 순수 프록시로 쓰면 안 되는 것."""
+    n = p.get("name") if isinstance(p, dict) else p
+    return bool(BLEND_PAT.search(n or "")) or bool(TDF_PAT.search(n or ""))
+
 
 def exposure(p):
     """상품 하나의 노출 묶음. 가리지 못하면 None 을 돌려준다."""
