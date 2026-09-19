@@ -675,6 +675,30 @@ def reassign_by_exposure(products):
                  "레버리지_제외": levered}
 
 
+def score_all(products):
+    """자산군마다 위험조정 점수를 매겨 **유니버스에 박아 둔다.**
+
+    점수는 고를 때(`pick_products`)도 매기지만, 그것만으로는 화면과 엑셀이
+    쓸 수 없다. 고객이 화면에서 상품을 바꿔 끼우면 기본 다섯이 아닌 상품이
+    표에 올라오는데, 그때도 **왜 이 상품인지**가 보여야 하기 때문이다.
+    점수가 파일에 있으면 고르는 쪽과 보여 주는 쪽이 같은 값을 본다.
+
+    `MET.rank_class` 는 한 자산군 안에서 백분위를 내므로 자산군마다 따로
+    부른다. 상품에 `점수`·`점수근거`·`측정등급`이 제자리로 붙는다.
+
+    무위험수익률은 고르는 쪽과 **같은 것**(cma.json 의 실측)을 쓴다. 다른
+    값을 쓰면 같은 상품인데 화면과 선정이 다른 점수를 말하게 된다.
+    """
+    import proposal_lib as P                                         # noqa: PLC0415
+    rf = P._rf()
+    by_cls = {}
+    for p in products:
+        by_cls.setdefault(p.get("cls"), []).append(p)
+    for items in by_cls.values():
+        MET.rank_class(items, rf=rf)
+    return sum(1 for p in products if p.get("점수") is not None)
+
+
 def summarise(products):
     """자산군마다 중앙값을 낸다. **평균이 아니라 중앙값**을 쓰는 까닭은 한두
     종목이 튀어도 자산군 전체 성격이 흔들리지 않게 하기 위해서다."""
@@ -736,6 +760,9 @@ def main():
           "레버리지·인버스 뺌 %d · 못 가림 %d"
           % (moves["재분류"], moves["현금성_제외"],
              moves["레버리지_제외"], moves["미분류"]))
+
+    n_scored = score_all(products)
+    print("\n위험조정 점수 — 매긴 상품 %d" % n_scored)
 
     doc = {
         "generated_at_kst": datetime.now(KST).strftime("%Y-%m-%d %H:%M:%S"),
