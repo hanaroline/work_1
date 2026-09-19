@@ -421,6 +421,13 @@ def pick_products(products, cls, n=5, prefer=None):
     # 이제 다년 위험조정 점수(MET.score)로 세운다. tier 가 앞선다 —
     # 여러 해를 잰 상품이 1 해만 잰 상품보다 먼저다.
     MET.rank_class(items, rf=_rf())
+    # **잰 것이 넉넉하면 못 잰 것은 부르지 않는다.** 해외ETF 5 위에
+    # 「United States 원유」가 「과거 1해 105.2%」로 올라온 적이 있다 —
+    # 1 등급이 63 종이나 있는데 3 등급을 끼운 것이고, 그것이 바로 수익률
+    # 추종이다. 상한에 걸려 자리가 빌 때만 못 잰 것을 쓴다.
+    measured = [p for p in items if (p.get("측정등급") or 9) <= 2]
+    if len(measured) >= n * 3:
+        items = measured
     ranked = []
     for p in items:
         small = 1 if (p.get("size") or 0) < floor else 0
