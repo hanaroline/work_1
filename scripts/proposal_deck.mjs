@@ -80,6 +80,11 @@ const td = (t, opts = {}) => ({ text: t, options: { fontSize: 11, color: BODY, .
   s.addText(`${who}${D.riskName}  ·  ${D.yearsLabel}  ·  ${won(D.amount)}`,
     { x: 0.8, y: 3.3, w: 11.5, h: 0.5, fontFace: KR, fontSize: 20,
       color: 'FFFFFF', isTextBox: true, margin: 0 });
+  // 제안값 그대로인지, 사람이 고친 배분인지 표지에서 갈라 준다. 두 문서가
+  // 섞이면 어느 쪽을 고객에게 설명했는지 나중에 알 수 없다.
+  s.addText(D.adjusted ? '화면에서 조정한 배분입니다' : '성향 기준 제안값입니다',
+    { x: 0.8, y: 3.85, w: 11.5, h: 0.35, fontFace: KR, fontSize: 14,
+      color: 'FFFFFF', isTextBox: true, margin: 0 });
   s.addText('미래에셋증권', { x: 0.8, y: 6.5, w: 6, h: 0.35, fontFace: KR,
     fontSize: 12, color: 'FFFFFF', isTextBox: true, margin: 0 });
   s.addText(D.generated, { x: 6.5, y: 6.5, w: 5.8, h: 0.35, fontFace: KR,
@@ -261,7 +266,8 @@ const td = (t, opts = {}) => ({ text: t, options: { fontSize: 11, color: BODY, .
     text: t, options: { bullet: true, breakLine: i < cautions.length - 1 },
   })), { x: 0.6, y: 3.6, w: 12.1, h: 2.9, fontFace: KR, fontSize: 11.5,
     color: BODY, isTextBox: true, margin: 0, paraSpaceAfter: 7 });
-  foot(s, `유니버스 ${D.universeGenerated || '—'} · 문서 ${D.generated} (KST)`);
+  foot(s, `유니버스 ${D.universeGenerated || '—'} · 문서 ${D.generated} (KST)`
+        + (D.adjustedFrom ? ` · 조정안 ${D.adjustedFrom}` : ''));
   s.addNotes('출처와 기준일을 반드시 함께 보여 주십시오. 기준일 없는 수치는 자료가 남는 순간 거짓이 됩니다.');
 }
 

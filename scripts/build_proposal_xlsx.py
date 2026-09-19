@@ -46,7 +46,7 @@ import proposal_lib as P                                         # noqa: E402
 # 색·서체·섹션 룰은 기존 제안서에서 가져다 쓴다. 여기 다시 적으면 두 엑셀이
 # 언젠가 서로 다른 오렌지를 쓰게 된다.
 from build_etf_proposal import (                                 # noqa: E402
-    BOX, FONT, HIGHLIGHT, INK, INPUT_FILL, INPUT_FONT, MUTED, ORANGE,
+    BOX, ERROR, FONT, HIGHLIGHT, INK, INPUT_FILL, INPUT_FONT, MUTED, ORANGE,
     SOFT_ORANGE, SURFACE, f, fill, rule_row, section)
 
 ROOT = P.ROOT
@@ -169,21 +169,31 @@ def sheet_products(wb, products):
          "오른 것을 권하는 습관이 고객에게 가장 비쌉니다. 개별 주식은 시가총액 상위 "
          "종목이며 종목 추천이 아닙니다.")
     r += 2
-    head(ws, r, ["자산군", "상품", "유형", "운용/발행", "규모",
+    head(ws, r, ["채택", "자산군", "상품", "유형", "운용/발행", "규모",
                  "과거 1년", "변동성", "보수"],
-         [11, 44, 16, 22, 13, 11, 11, 13])
+         [7, 11, 44, 16, 22, 13, 11, 11, 13])
+    # 「채택」 머리는 사람이 넣는 칸이므로 파랗게 표시한다.
+    ws.cell(row=r, column=1).fill = fill(INPUT_FILL)
+    ws.cell(row=r, column=1).font = f(10, bold=True, color=INPUT_FONT)
+    head_row = r
     r += 1
+    first_prod = r
     for cls, items in products.items():
         for p in items:
-            put(ws, r, 1, cls)
-            put(ws, r, 2, p.get("name") or p.get("code"))
-            put(ws, r, 3, p.get("type") or "—")
-            put(ws, r, 4, p.get("company") or "—")
+            # **빼고 싶은 상품은 N 으로 바꾼다.** 줄을 지우면 수식·필터가
+            # 어긋나므로 지우지 않고 표시만 바꾸게 한다. 자산군별로 몇 개를
+            # 채택했는지는 아래 요약이 세어 준다.
+            put(ws, r, 1, "Y", kind="input")
+            ws.cell(row=r, column=1).alignment = CENTER
+            put(ws, r, 2, cls)
+            put(ws, r, 3, p.get("name") or p.get("code"))
+            put(ws, r, 4, p.get("type") or "—")
+            put(ws, r, 5, p.get("company") or "—")
             # **조·억으로 적는다.** 원 단위로 적으면 삼성전자가 17 자리가 되어
             # 칸을 넘치고 엑셀이 ######## 로 보여 준다. 실제로 그렇게 나갔다.
-            put(ws, r, 5, size_ko(p.get("size")))
-            ws.cell(row=r, column=5).alignment = RIGHT
-            for i, key in enumerate(["ret1y", "vol"], start=6):
+            put(ws, r, 6, size_ko(p.get("size")))
+            ws.cell(row=r, column=6).alignment = RIGHT
+            for i, key in enumerate(["ret1y", "vol"], start=7):
                 v = p.get(key)
                 put(ws, r, i, v / 100 if isinstance(v, (int, float)) else "—",
                     fmt="0.0%" if isinstance(v, (int, float)) else None)
@@ -247,23 +257,23 @@ def sheet_proposal(wb, data, u, rule_first, rule_last, classes,
                    stat_first, stat_last):
     ws = wb.create_sheet("제안서", 0)
     ws.sheet_view.showGridLines = False
-    for i, w in enumerate([16, 15, 16, 16, 15, 18], start=1):
+    for i, w in enumerate([16, 14, 14, 15, 15, 14, 18], start=1):
         ws.column_dimensions[get_column_letter(i)].width = w
     # G·H 는 합계를 셈하려고 두는 숨은 도우미 열이다(아래 참고).
-    for col in ("G", "H"):
+    for col in ("H", "I"):
         ws.column_dimensions[col].hidden = True
 
     t = ws.cell(row=1, column=1, value="자산배분 제안서")
     t.font = f(20, bold=True, color=ORANGE)
     ws.cell(row=2, column=1, value="미래에셋증권").font = f(10, color=MUTED)
-    rule_row(ws, 3, 6)
+    rule_row(ws, 3, 7)
 
     # ── 입력 ────────────────────────────────────────────────────────
     #
     # **section() 은 세 행을 쓰고 다음 빈 행을 돌려준다.** 그 반환값을 무시하고
     # 행 번호를 손으로 박았더니 제목 아래 6pt 여백행에 내용이 깔려 고객명 줄이
     # 납작하게 눌렸다. 이제 돌려주는 값만 쓴다.
-    r = section(ws, 5, "1", "고객 정보", 6)
+    r = section(ws, 5, "1", "고객 정보", 7)
     first_input = r
     labels = [("고객명", "", "text"), ("투자금액 (만원)", 10000, "num"),
               ("투자기간", "5년 초과", "horizon"), ("위험성향 (1~5)", 3, "risk")]
@@ -299,11 +309,12 @@ def sheet_proposal(wb, data, u, rule_first, rule_last, classes,
     ws.cell(row=key_cell, column=2).font = f(9, color=MUTED)
 
     # ── 배분 ────────────────────────────────────────────────────────
-    r = section(ws, key_cell + 2, "2", "제안 배분", 6)
-    head(ws, r, ["자산군", "비중", "금액(만원)", "과거 1년(중앙)",
-                 "변동성(중앙)", "기대수익률 (가정)"], None)
-    ws.cell(row=r, column=6).fill = fill(INPUT_FILL)
-    ws.cell(row=r, column=6).font = f(10, bold=True, color=INPUT_FONT)
+    r = section(ws, key_cell + 2, "2", "제안 배분", 7)
+    head(ws, r, ["자산군", "제안 비중", "조정 비중", "쓰는 비중",
+                 "금액(만원)", "과거 1년(중앙)", "기대수익률 (가정)"], None)
+    for col in (3, 7):          # 사람이 넣는 두 칸은 머리부터 파랗게 표시한다
+        ws.cell(row=r, column=col).fill = fill(INPUT_FILL)
+        ws.cell(row=r, column=col).font = f(10, bold=True, color=INPUT_FONT)
     rng = "배분규칙!$D$%d:$%s$%d" % (rule_first,
                                      get_column_letter(3 + len(classes)),
                                      rule_last)
@@ -314,63 +325,75 @@ def sheet_proposal(wb, data, u, rule_first, rule_last, classes,
     for i, cls in enumerate(classes):
         row = first + i
         put(ws, row, 1, cls)
+        # B = 성향·기간이 정한 제안 비중(수식). 사람이 손대지 않는다.
         put(ws, row, 2,
             "=INDEX(%s,MATCH($B$%d,%s,0),MATCH($A%d,%s,0))"
             % (rng, key_cell, key_rng, row, hdr_rng),
             kind="formula", fmt="0.0%")
-        put(ws, row, 3, "=$B$%d*$B%d" % (amt_cell, row),
+        # C = **조정 비중.** 비워 두면 제안값을 쓴다. 제안은 출발점이고
+        # 조정이 실무의 본체라, 제안값을 덮어쓰지 않고 옆 칸에 적게 한다 —
+        # 그래야 무엇을 얼마나 고쳤는지 나중에 보인다.
+        put(ws, row, 3, None, kind="input", fmt="0.0%")
+        # D = 실제로 쓰는 비중
+        put(ws, row, 4, '=IF($C%d="",$B%d,$C%d)' % (row, row, row),
+            kind="formula", fmt="0.0%")
+        put(ws, row, 5, "=$B$%d*$D%d" % (amt_cell, row),
             kind="formula", fmt="#,##0")
-        for col, src in ((4, "D"), (5, "E")):
-            put(ws, row, col,
-                '=IFERROR(INDEX(자산군!$%s$%d:$%s$%d,'
-                'MATCH($A%d,자산군!$A$%d:$A$%d,0)),"—")'
-                % (src, stat_first, src, stat_last,
-                   row, stat_first, stat_last),
-                kind="formula", fmt="0.0%")
+        put(ws, row, 6,
+            '=IFERROR(INDEX(자산군!$D$%d:$D$%d,'
+            'MATCH($A%d,자산군!$A$%d:$A$%d,0)),"—")'
+            % (stat_first, stat_last, row, stat_first, stat_last),
+            kind="formula", fmt="0.0%")
         # **기대수익률은 비워 둔다.** 사람이 넣는 가정이므로 기본값을 몰래
-        # 넣지 않는다. 기본값을 두는 순간 그 숫자가 어디서 왔는지 아무도 묻지
-        # 않게 된다. 과거 실적(D 칸)을 여기 복사해 넣는 것도 하지 않는다 —
+        # 넣지 않는다. 과거 실적을 여기 복사해 넣는 것도 하지 않는다 —
         # 그것은 「지난해처럼 오른다」고 가정하는 셈이다.
-        put(ws, row, 6, None, kind="input", fmt="0.0%")
+        put(ws, row, 7, None, kind="input", fmt="0.0%")
 
         # **숨은 도우미 열.** 표시 칸은 값이 없을 때 「—」라는 글자를 담는데,
         # SUMPRODUCT 는 글자를 만나면 #VALUE! 를 낸다 — IFERROR 는 오류만 잡지
-        # 글자는 못 잡는다. 실제 엑셀에서 합계 두 칸이 그렇게 깨져 나갔다.
-        # 그래서 셈은 숫자만 담는 이 칸으로 한다.
-        for col, disp in ((7, "D"), (8, "E")):
-            put(ws, row, col, '=IF(ISNUMBER($%s%d),$%s%d,0)' % (disp, row, disp, row),
-                kind="formula", fmt="0.0%")
+        # 글자는 못 잡는다. 실제 엑셀에서 합계가 그렇게 깨져 나갔다.
+        put(ws, row, 8, '=IF(ISNUMBER($F%d),$F%d,0)' % (row, row),
+            kind="formula", fmt="0.0%")
     last = first + len(classes) - 1
 
     tr = last + 1
     put(ws, tr, 1, "합계", bold=True)
     put(ws, tr, 2, "=SUM($B%d:$B%d)" % (first, last), kind="formula",
         fmt="0.0%", bold=True)
-    put(ws, tr, 3, "=SUM($C%d:$C%d)" % (first, last), kind="formula",
+    put(ws, tr, 3, '=IF(COUNT($C%d:$C%d)=0,"—",SUM($C%d:$C%d))'
+        % (first, last, first, last), kind="formula", fmt="0.0%", bold=True)
+    put(ws, tr, 4, "=SUM($D%d:$D%d)" % (first, last), kind="formula",
+        fmt="0.0%", bold=True)
+    put(ws, tr, 5, "=SUM($E%d:$E%d)" % (first, last), kind="formula",
         fmt="#,##0", bold=True)
-    put(ws, tr, 4, "=SUMPRODUCT($B%d:$B%d,$G%d:$G%d)" % (first, last, first, last),
-        kind="formula", fmt="0.0%", bold=True)
-    put(ws, tr, 5, "=SUMPRODUCT($B%d:$B%d,$H%d:$H%d)" % (first, last, first, last),
+    put(ws, tr, 6, "=SUMPRODUCT($D%d:$D%d,$H%d:$H%d)" % (first, last, first, last),
         kind="formula", fmt="0.0%", bold=True)
     # 기대수익률 합계 — 가정을 하나도 안 넣었으면 숫자를 내지 않는다.
-    # 빈 칸은 SUMPRODUCT 에서 0 이라, 일부만 넣으면 그만큼 낮게 나온다.
-    # 그래서 몇 칸을 넣었는지 바로 옆에 적어 준다(덮은 비중과 같은 생각이다).
-    put(ws, tr, 6,
-        '=IF(COUNT($F%d:$F%d)=0,"가정 미입력",SUMPRODUCT($B%d:$B%d,$F%d:$F%d))'
+    put(ws, tr, 7,
+        '=IF(COUNT($G%d:$G%d)=0,"가정 미입력",SUMPRODUCT($D%d:$D%d,$G%d:$G%d))'
         % (first, last, first, last, first, last),
         kind="formula", fmt="0.0%", bold=True)
-    for c in range(1, 7):
+    for c in range(1, 8):
         ws.cell(row=tr, column=c).fill = fill(HIGHLIGHT)
 
     cov = tr + 1
-    ws.cell(row=cov, column=1, value="가정 넣은 자산군").font = f(9, color=MUTED)
-    c = ws.cell(row=cov, column=6,
-                value='=COUNT($F%d:$F%d)&" / %d"' % (first, last, len(classes)))
-    c.font = f(9, color=MUTED)
-    c.alignment = RIGHT
+    # **합계가 100% 가 아니면 크게 알린다.** 조정하다 보면 반드시 어긋나는데,
+    # 그대로 고객에게 나가면 금액과 비중이 앞뒤가 안 맞는 문서가 된다.
+    ws.cell(row=cov, column=1, value="점검").font = f(9, color=MUTED)
+    c = ws.cell(row=cov, column=2,
+                value='=IF(ABS($D%d-1)>0.0005,'
+                      '"비중 합계가 100%% 가 아닙니다 — 조정 비중을 맞추십시오",'
+                      '"비중 합계 100%% 입니다")' % tr)
+    c.font = f(10, bold=True, color=ERROR)
+    c.alignment = LEFT
+    ws.merge_cells(start_row=cov, start_column=2, end_row=cov, end_column=5)
+    c2 = ws.cell(row=cov, column=7,
+                 value='=COUNT($G%d:$G%d)&" / %d 가정"' % (first, last, len(classes)))
+    c2.font = f(9, color=MUTED)
+    c2.alignment = RIGHT
 
     # ── 읽는 법 ─────────────────────────────────────────────────────
-    r = section(ws, cov + 2, "3", "이 표를 읽는 법", 6)
+    r = section(ws, cov + 2, "3", "이 표를 읽는 법", 7)
     for line in [
         "「기대수익률 (가정)」은 비어 있습니다. 사람이 넣는 칸이며 기본값을 두지 "
         "않았습니다 — 넣으실 때 근거를 함께 적어 두십시오.",
@@ -391,7 +414,7 @@ def sheet_proposal(wb, data, u, rule_first, rule_last, classes,
         c = ws.cell(row=r, column=1, value="· " + line)
         c.font = f(9, color=MUTED)
         c.alignment = Alignment(wrap_text=True, vertical="top")
-        ws.merge_cells(start_row=r, start_column=1, end_row=r, end_column=6)
+        ws.merge_cells(start_row=r, start_column=1, end_row=r, end_column=7)
         ws.row_dimensions[r].height = 28
         r += 1
 
