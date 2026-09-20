@@ -359,7 +359,8 @@ function show(x) {
     put('ROE', q.roe != null ? pct(q.roe, 1) : '—');
     put('영업이익률', q.opMargin != null ? pct(q.opMargin, 1) : '—');
     put('매출 성장', q.revenueGrowth != null ? pct(q.revenueGrowth, 1) : '—');
-    put('부채비율', q.debtToEquity != null ? pct(q.debtToEquity, 0) : '—');
+    /* 부채비율은 방향이 있는 수가 아니다 — 부호를 붙이면 「늘었다」로 읽힌다 */
+    put('부채비율', q.debtToEquity != null ? Number(q.debtToEquity).toFixed(0) + '%' : '—');
     put('배당수익률', q.divYield != null ? pct(q.divYield, 2) : '—');
     put('52주 고가', q.high52 != null ? num(q.high52, q.high52 < 1000 ? 2 : 0) : '—');
     put('52주 저가', q.low52 != null ? num(q.low52, q.low52 < 1000 ? 2 : 0) : '—');
@@ -396,11 +397,14 @@ function show(x) {
     const kv = el('div', 'kv');
     const put = (k, v) => { const r = el('div'); r.appendChild(el('span', 't', k));
       r.appendChild(el('span', 'n', v)); kv.appendChild(r); };
+    /* **모은 날수를 그대로 적는다.** 자료가 열두 날치인데 「20일」이라 적으면
+       읽는 사람이 없는 여드레를 셈에 넣는다. */
+    const nd = fw.days;
     put('외국인 5일', num(fw.foreign_5d) + ' 억원');
-    put('외국인 전체', num(fw.foreign_20d) + ' 억원');
+    put('외국인 ' + nd + '일', num(fw.foreign_20d) + ' 억원');
     put('기관 5일', num(fw.inst_5d) + ' 억원');
-    put('기관 전체', num(fw.inst_20d) + ' 억원');
-    put('개인 전체', num(fw.retail_20d) + ' 억원');
+    put('기관 ' + nd + '일', num(fw.inst_20d) + ' 억원');
+    put('개인 ' + nd + '일', num(fw.retail_20d) + ' 억원');
     put('외국인 보유율', fw.foreign_hold_pct != null ? pct(fw.foreign_hold_pct, 2) : '—');
     d.appendChild(kv);
   }
