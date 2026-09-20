@@ -226,6 +226,40 @@ jobs:
           echo "::error::다섯 번 밀어 봤지만 모두 거절됐습니다"
           exit 1
 
+      # **건네는 판을 손으로 내지 않는다.**
+      #
+      # 화면 둘(docs/kis-timing · docs/kis-verdict)은 자료가 커밋되면 저절로
+      # 새로워진다. 그런데 **인쇄하고 메신저로 건네는 한 장**만은 사람이 대본을
+      # 돌려야 났다. 그래서 그것을 돌릴 사람이 없는 날에는 아무도 오늘 판을 얻지
+      # 못했다. 화면과 건네는 판이 서로 다른 날짜를 말하게 되는 길이기도 하다.
+      #
+      # **커밋 뒤에 둔다.** 리포트가 못 나오는 날에도 검산을 통과한 자료 자체는
+      # 들어가야 한다. 여기서 넘어지면 판은 빨개지지만 자료는 이미 실려 있다.
+      #
+      # 저장소에 커밋하지는 않는다 — 110 KB 짜리 생성물을 날마다 커밋하면 이력이
+      # 그것으로 덮인다. 산출물로 올려 두면 그 판을 낸 실행에 매여 남는다.
+      - name: 건네는 한 장을 만든다
+        id: report
+        run: |
+          python3 scripts/build_kr_etf_report.py --all --out /tmp/kis-timing-report.html
+          asof=$(python3 -c "import json;print(json.load(open('data/kis_timing/latest.json',encoding='utf-8'))['markets']['KR_ETF']['asof'])")
+          echo "asof=$asof" >> "$GITHUB_OUTPUT"
+          {
+            echo "### 건네는 한 장"
+            echo
+            echo "네 상품군이 탭 하나에 들어간 판입니다 ($asof 기준). 위의"
+            echo "**Artifacts** 에서 내려받으십시오 — 한 파일이고 바깥으로 나가지"
+            echo "않으므로 사내 PC 에서 그대로 열립니다."
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: kis-timing-report-${{ steps.report.outputs.asof }}
+          path: /tmp/kis-timing-report.html
+          # 한 달이면 「지난번에 뭘 건넸더라」를 되짚기에 넉넉하고, 날마다 쌓이는
+          # 것을 그대로 안고 가지도 않는다.
+          retention-days: 30
+
       - name: 요약
         if: always()
         run: |
