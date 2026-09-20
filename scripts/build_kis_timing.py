@@ -61,7 +61,7 @@ RISK_PER_TRADE = 1.0
 # **왜 성적순으로 자동 정렬하지 않는가.** 성적표를 다시 잴 때마다 탭 차례가
 # 뒤바뀌면 읽는 사람이 자리를 기억할 수 없다. 차례는 고정하고, 근거는 화면이
 # 시장마다 초과수익을 적어 보여 준다.
-VIEW_ORDER = ['KR_ETF', 'KR_STOCK', 'OV_ETF', 'US_STOCK']
+VIEW_ORDER = ['KR_ETF', 'KR_OV_ETF', 'KR_STOCK', 'OV_ETF', 'US_STOCK']
 
 
 def _fmt(px):

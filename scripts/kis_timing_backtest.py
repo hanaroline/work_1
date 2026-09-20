@@ -44,7 +44,9 @@ OUT_DIR = os.path.join(ROOT, 'data', 'kis_timing')
 
 # 왕복 거래비용(bp). **가정이다.** 매매세·수수료·호가 슬리피지를 뭉뚱그린 값이고
 # 실제 계좌의 것과 다르다. 고치려면 여기만 고치면 백테스트와 화면이 함께 바뀐다.
-COST_BPS = {'KR_STOCK': 25, 'US_STOCK': 15, 'KR_ETF': 10, 'OV_ETF': 15}
+# 국내상장 해외ETF 는 국내 ETF 와 같은 문으로 사고 판다(증권거래세 없음,
+# 국내 위탁수수료). 그래서 KR_ETF 와 같은 값을 쓴다.
+COST_BPS = {'KR_STOCK': 25, 'US_STOCK': 15, 'KR_ETF': 10, 'KR_OV_ETF': 10, 'OV_ETF': 15}
 
 # 청산 조건이 오지 않아도 여기서 끊는다.
 MAX_HOLD = 120
