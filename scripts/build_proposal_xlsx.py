@@ -194,6 +194,10 @@ def sheet_products(wb, products):
     # 「채택」 머리는 사람이 넣는 칸이므로 파랗게 표시한다.
     ws.cell(row=r, column=1).fill = fill(INPUT_FILL)
     ws.cell(row=r, column=1).font = f(10, bold=True, color=INPUT_FONT)
+    # **머리 줄 번호를 붙잡아 둔다.** 예전에는 아래에서 8·A7 로 박아 두었는데
+    # 머리는 6 행이었다. 그래서 필터가 **우리금융지주를 머리로 잡고**, 틀
+    # 고정은 첫 상품까지 함께 얼렸다. 설명 줄이 한 줄 늘거나 줄면 또 어긋난다.
+    head_row = r
     r += 1
     for cls, items in products.items():
         for p in items:
@@ -244,8 +248,8 @@ def sheet_products(wb, products):
                     if not rgb or rgb == "00000000":
                         cell.fill = fill(SURFACE)
             r += 1
-    ws.freeze_panes = ws.cell(row=8, column=1).coordinate
-    ws.auto_filter.ref = "A7:%s%d" % (get_column_letter(NCOL), r - 1)
+    ws.freeze_panes = ws.cell(row=head_row + 1, column=1).coordinate
+    ws.auto_filter.ref = "A%d:%s%d" % (head_row, get_column_letter(NCOL), r - 1)
     return ws
 
 
