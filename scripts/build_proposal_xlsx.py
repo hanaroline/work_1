@@ -177,8 +177,13 @@ PROD_COLS = ["채택", "자산군", "상품", "유형", "운용/발행", "규모
 PROD_W = [7, 11, 40, 14, 20, 12, 10, 9, 10, 10, 10, 12, 62]
 NCOL = len(PROD_COLS)
 
+# 제안서 시트에 싣는 자산군당 상품 수. 「상품」 시트에는 갈아 끼울 후보까지
+# PER_CLASS 종을 싣고, 그중 **채택(Y)한 것**만 제안서로 올라온다.
+PICK_N = 5
+KEY_COL = NCOL + 1          # 제안서가 MATCH 로 집어 오는 숨은 열
 
-def sheet_products(wb, products):
+
+def sheet_products(wb, products, picked=None):
     ws = wb.create_sheet("상품")
     r = section(ws, 1, "2", "자산군별 제안 상품", NCOL)
     note(ws, r, NCOL,
@@ -200,12 +205,24 @@ def sheet_products(wb, products):
     # 고정은 첫 상품까지 함께 얼렸다. 설명 줄이 한 줄 늘거나 줄면 또 어긋난다.
     head_row = r
     r += 1
+    first_prod = r
     for cls, items in products.items():
-        for p in items:
-            # **빼고 싶은 상품은 N 으로 바꾼다.** 줄을 지우면 수식·필터가
-            # 어긋나므로 지우지 않고 표시만 바꾸게 한다. 자산군별로 몇 개를
-            # 채택했는지는 아래 요약이 세어 준다.
-            put(ws, r, 1, "Y", kind="input")
+        for n, p in enumerate(items):
+            # **채택은 규칙이 고른 다섯이다.** 예전에는 25 종을 전부 Y 로
+            # 두었는데, 그러면 「채택」이 아무 뜻도 없고 제안서 시트가 어느
+            # 다섯을 권하는지 알 수 없었다. 이제 Y 가 곧 제안이고, 나머지는
+            # 갈아 끼울 후보다 — N 을 Y 로 바꾸면 제안서에 따라 올라온다.
+            #
+            # **목록의 앞 다섯을 자르면 안 된다.** 이 목록은 n=25 로 뽑은
+            # 것이라 집중·중복 상한이 끝내 다 풀린 순수 점수 순이다. 앞
+            # 다섯을 자르면 국내주식이 금융 다섯(우리금융·KB·신한·DB손보·
+            # 하나금융)으로 나온다 — 화면 쪽에서 한 번 겪은 고장이다.
+            # 그래서 상한을 지킨 다섯을 따로 뽑아 그것만 Y 로 둔다.
+            adopt = (picked or {}).get(cls) or []
+            keys = {(x.get("code") or x.get("name")) for x in adopt}
+            put(ws, r, 1,
+                "Y" if (p.get("code") or p.get("name")) in keys else "N",
+                kind="input")
             ws.cell(row=r, column=1).alignment = CENTER
             put(ws, r, 2, cls)
             put(ws, r, 3, p.get("name") or p.get("code"))
@@ -223,9 +240,15 @@ def sheet_products(wb, products):
             years, w = MET.longest(p.get("지표") or {})
             put(ws, r, 8, "%d해" % years if years else "—")
             ws.cell(row=r, column=8).alignment = CENTER
+            # **감정평가 기준가는 변동성·낙폭을 보여 주지 않는다.** 점수에서
+            # 빼 놓고 표에는 0.7% 를 그대로 찍으면, 고객은 그 숫자를 시세로
+            # 읽는다. 뺀 까닭은 「고른 까닭」 칸이 말해 준다.
+            appraised = "기준가_평가식_시세아님" in (p.get("flags") or [])
             for i, key, nf in ((9, "cagr", "0.0%"), (10, "vol", "0.0%"),
                                (11, "mdd", "0%")):
                 v = (w or {}).get(key)
+                if appraised and key in ("vol", "mdd"):
+                    v = None
                 put(ws, r, i, v / 100 if isinstance(v, (int, float)) else "—",
                     fmt=nf if isinstance(v, (int, float)) else None)
                 ws.cell(row=r, column=i).alignment = RIGHT
@@ -242,6 +265,14 @@ def sheet_products(wb, products):
             ws.cell(row=r, column=13).alignment = Alignment(
                 wrap_text=True, vertical="center")
 
+            # **숨은 열 — 제안서가 이것으로 집어 온다.** 「자산군|순번」을
+            # 만들어 두면 제안서에서 MATCH 한 번으로 n 번째 채택 상품을
+            # 찾을 수 있다. 배열 수식 없이(Excel 2007 문법으로) 되는 길이다.
+            put(ws, r, KEY_COL,
+                '=IF($A%d="Y",$B%d&"|"&COUNTIFS($A$%d:$A%d,"Y",$B$%d:$B%d,$B%d),"")'
+                % (r, r, first_prod, r, first_prod, r, r))
+            ws.cell(row=r, column=KEY_COL).font = f(9, color=MUTED)
+
             if r % 2 == 0:
                 for c in range(1, NCOL + 1):
                     cell = ws.cell(row=r, column=c)
@@ -249,9 +280,10 @@ def sheet_products(wb, products):
                     if not rgb or rgb == "00000000":
                         cell.fill = fill(SURFACE)
             r += 1
+    ws.column_dimensions[get_column_letter(KEY_COL)].hidden = True
     ws.freeze_panes = ws.cell(row=head_row + 1, column=1).coordinate
     ws.auto_filter.ref = "A%d:%s%d" % (head_row, get_column_letter(NCOL), r - 1)
-    return ws
+    return ws, first_prod, r - 1
 
 
 def sheet_sources(wb, u):
@@ -290,7 +322,8 @@ def sheet_sources(wb, u):
 
 
 def sheet_proposal(wb, data, u, rule_first, rule_last, classes,
-                   stat_first, stat_last, sleeve_er=None):
+                   stat_first, stat_last, sleeve_er=None,
+                   prod_first=None, prod_last=None):
     ws = wb.create_sheet("제안서", 0)
     ws.sheet_view.showGridLines = False
     for i, w in enumerate([16, 14, 14, 15, 15, 14, 18], start=1):
@@ -485,6 +518,66 @@ def sheet_proposal(wb, data, u, rule_first, rule_last, classes,
     c2.font = f(9, color=MUTED)
     c2.alignment = RIGHT
 
+    # ── 제안 상품 ───────────────────────────────────────────────────
+    #
+    # **여기에 상품이 없어서 지적을 받았다.** 배분 비중까지만 있고 정작 무엇을
+    # 사야 하는지는 별도 「상품」 시트에 있었다 — 제안서 한 장만 보면 알 수가
+    # 없었다. 고객 앞에 놓는 종이는 이 시트다.
+    #
+    # 값을 박지 않고 「상품」 시트에서 수식으로 집어 온다. 그래야 거기서
+    # 채택(Y/N)을 바꾸면 여기가 따라온다 — 두 벌이 되어 어긋나지 않는다.
+    r = section(ws, cov + 2, "3", "제안 상품", 7)
+    note_row = r
+    ws.cell(row=r, column=1,
+            value="「상품」 시트에서 채택을 Y 로 바꾸면 여기에 올라옵니다. "
+                  "배분액은 그 자산군 금액을 채택한 수로 나눈 것입니다.").font = \
+        f(9, color=MUTED)
+    ws.merge_cells(start_row=r, start_column=1, end_row=r, end_column=7)
+    r += 2
+    head(ws, r, ["자산군", "상품", "측정", "연평균", "변동성", "보수", "배분액(만원)"])
+    r += 1
+    pf, pl = prod_first, prod_last
+    key_l = get_column_letter(KEY_COL)
+    for cls in classes:
+        if cls == "현금":
+            continue
+        arow = first + classes.index(cls)        # 배분표에서 이 자산군의 줄
+        # 이 자산군에서 채택한 수 — 배분액을 나누는 분모다.
+        cnt = ('COUNTIFS(상품!$A$%d:$A$%d,"Y",상품!$B$%d:$B$%d,$A%%d)'
+               % (pf, pl, pf, pl))
+        block_first = r          # 자산군 이름은 이 줄에만 적는다
+        for n in range(1, PICK_N + 1):
+            # **키는 묶음의 첫 줄을 가리킨다.** 처음에는 $A{현재줄} 을 썼는데
+            # 자산군 이름을 첫 줄에만 적으므로 둘째 줄부터 ""&"|"&2 가 되어
+            # 아무것도 못 찾았다 — 자산군마다 한 종만 나왔다.
+            key = '$A$%d&"|"&%d' % (block_first, n)
+            ref = ('MATCH(%s,상품!$%s$%d:$%s$%d,0)' % (key, key_l, pf, key_l, pl))
+            put(ws, r, 1, cls if n == 1 else "")
+            for col, src_col, fmt in ((2, "C", None), (3, "G", None),
+                                      (4, "I", "0.0%"), (5, "J", "0.0%"),
+                                      (6, "L", "0.00%")):
+                put(ws, r, col,
+                    '=IFERROR(INDEX(상품!$%s$%d:$%s$%d,%s),"")'
+                    % (src_col, pf, src_col, pl, ref),
+                    kind="formula", fmt=fmt)
+                if col >= 3:
+                    ws.cell(row=r, column=col).alignment = RIGHT
+            # 배분액 — 그 자산군 금액 ÷ 채택 수. 상품이 없으면 빈칸.
+            put(ws, r, 7,
+                '=IFERROR(IF(INDEX(상품!$C$%d:$C$%d,%s)="","",'
+                'ROUND($E$%d/%s,0)),"")'
+                % (pf, pl, ref, arow, cnt % block_first),
+                kind="formula", fmt="#,##0")
+            r += 1
+    prod_note = r
+    ws.cell(row=r, column=1,
+            value="개별 주식은 종목 추천이 아닙니다. 적힌 수치는 모두 지나간 "
+                  "실적이며 미래 수익률이 아닙니다. 고른 근거는 「상품」 시트의 "
+                  "「고른 까닭」 칸에 있습니다.").font = f(9, color=MUTED)
+    ws.merge_cells(start_row=r, start_column=1, end_row=r, end_column=7)
+    ws.row_dimensions[r].height = 26
+    cov = r                                   # 아래 절들이 이 뒤에 이어지도록
+
     # ── 목표 수익률 견주기 ──────────────────────────────────────────
     #
     # 고객이 넣은 목표와, 자산군별 가정이 실제로 내놓는 수익률을 나란히 놓는다.
@@ -498,7 +591,7 @@ def sheet_proposal(wb, data, u, rule_first, rule_last, classes,
     ws["H5"] = ('=IF(OR($H$3="",$B$%d="",$H$3<=$H$4),"",'
                 'MEDIAN(0,($B$%d-$H$4)/($H$3-$H$4),1))' % (tgt_cell, tgt_cell))
 
-    r = section(ws, cov + 2, "3", "목표 수익률 견주기", 7)
+    r = section(ws, cov + 2, "4", "목표 수익률 견주기", 7)
     tgt_rows = [
         ("고객 목표 (연)", '=IF($B$%d="","—",$B$%d)' % (tgt_cell, tgt_cell), "0.0%"),
         ("이 배분의 기대수익률 (가정 가중합)",
@@ -536,7 +629,7 @@ def sheet_proposal(wb, data, u, rule_first, rule_last, classes,
              "몰아주면 분산이 깨집니다.")
 
     # ── 읽는 법 ─────────────────────────────────────────────────────
-    r = section(ws, r + 1, "4", "이 표를 읽는 법", 7)
+    r = section(ws, r + 1, "5", "이 표를 읽는 법", 7)
     for line in [
         "「기대수익률 (가정)」은 비어 있습니다. 사람이 넣는 칸이며 기본값을 두지 "
         "않았습니다 — 넣으실 때 근거를 함께 적어 두십시오.",
@@ -703,13 +796,16 @@ def main():
             w, _, notes = P.allocate(risk, years, avail)
             plans["%d|%d" % (risk, years)] = {"w": w, "notes": notes}
 
-    products = {}
+    products, picked = {}, {}
     for cls in classes:
         if cls == "현금":
             continue
         items = P.pick_products(u["상품"], cls, PER_CLASS)
         if items:
             products[cls] = items
+            # **제안하는 다섯은 따로 뽑는다.** 위 목록은 후보 풀이라 상한이
+            # 풀려 있다 — 그 앞을 자르면 규칙을 거치지 않은 다섯이 나온다.
+            picked[cls] = P.pick_products(u["상품"], cls, PICK_N)
 
     # 자산군은 포장지라 그 자체로 기대수익률이 없다. 제안에 담기는 다섯 종목의
     # **실제 노출**로 ①빌딩블록 값을 섞어 자산군별 가정을 낸다.
@@ -732,13 +828,13 @@ def main():
     wb.remove(wb.active)
     _, rf, rl = sheet_rules(wb, plans, classes)
     _, stat_first, stat_last = sheet_classes(wb, u["자산군"])
-    sheet_products(wb, products)
+    _, prod_first, prod_last = sheet_products(wb, products, picked)
     sheet_sources(wb, u)
     if cma_doc:
         sheet_cma(wb, cma_doc, sleeve_er)
     sheet_howto(wb)
     sheet_proposal(wb, plans, u, rf, rl, classes, stat_first, stat_last,
-                   sleeve_er)
+                   sleeve_er, prod_first, prod_last)
     wb.move_sheet("제안서", offset=-len(wb.sheetnames) + 1)
 
     for ws in wb.worksheets:
