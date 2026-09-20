@@ -96,19 +96,59 @@ jobs:
           fi
           grep -c '^  ! ' /tmp/verify.txt || true
 
+      # **거절당하면 되받지 않는다. 두 스냅숏 가운데 새것을 남긴다.**
+      #
+      # 산출물이 한 줄짜리 JSON 이라 같은 수집기의 두 판이 부딪히면 되받기가
+      # 반드시 충돌한다(kis-timing.yml 의 같은 자리 주석). 그런데 이 판은 매매
+      # 타이밍과 달라 **다시 셈할 수가 없다** — 어느 시각에 망에서 받아 온
+      # 스냅숏이라, 다시 내려면 일흔여섯 종을 다시 두드려야 한다. 비싸고, 이미
+      # 받아 둔 것이 있으니 더 옳지도 않다.
+      #
+      # 그래서 받아 온 시각(generated_at_kst)으로 새것을 가린다. 시계는
+      # prices.json 하나만 본다 — signals.json 은 그 함수라 **짝으로 움직여야**
+      # 하기 때문이다. 둘을 따로 가리면 3해치 봉 위에 8해치 신호가 앉는다.
+      #
+      # 예전 판은 밀기 → 자기 → 되받기 순서라 **되받은 뒤 다시 커밋하지 않았다.**
+      # 그래서 두 바퀴째의 밀기는 언제나 같은 것을 다시 밀었다.
       - name: 커밋
         run: |
           git config user.name 'github-actions[bot]'
           git config user.email 'github-actions[bot]@users.noreply.github.com'
-          git add -A data/etf
-          git diff --cached --quiet && { echo '바뀐 것 없음'; exit 0; }
-          git commit -m "자산배분 ETF 신호 $(TZ=Asia/Seoul date '+%Y-%m-%d %H:%M') KST"
-          for i in 1 2 3 4; do
-            git push origin HEAD:"${GITHUB_REF_NAME}" && exit 0
+          # 변수 이름은 ASCII 여야 한다 — bash 는 함수 이름과 달리 변수 이름에
+          # 한글을 받지 않는다.
+          BR="${GITHUB_REF_NAME}"
+          CLOCK=data/etf/prices.json                  # 시계는 이 파일 하나
+          MINE="${RUNNER_TEMP:-/tmp}/etf-mine"        # 이번에 받아 온 한 벌
+
+          for i in 1 2 3 4 5; do
+            git add -A data/etf
+            if git diff --cached --quiet; then
+              echo '바뀐 것 없음'; exit 0
+            fi
+            git commit -q -m "자산배분 ETF 신호 $(TZ=Asia/Seoul date '+%Y-%m-%d %H:%M') KST"
+            if git push origin HEAD:"$BR"; then
+              echo "밀어 넣음 (시도 $i)"; exit 0
+            fi
+
+            echo "거절됨 — 남의 판과 내 판 가운데 새것을 남긴다 ($i/5)"
+            rm -rf "$MINE"; mkdir -p "$MINE"
+            cp -a data/etf/. "$MINE"/
+            if ! git fetch origin "+refs/heads/$BR:refs/remotes/origin/$BR"; then
+              echo "::error::$BR 을 받지 못했습니다"; exit 1
+            fi
+            git reset --hard "origin/$BR"
+            set +e
+            python3 scripts/keep_newer_snapshot.py "$CLOCK" "$MINE/prices.json"
+            rc=$?
+            set -e
+            case $rc in
+              0) cp -a "$MINE/." data/etf/ ;;  # 내 판이 새롭다 — 한 벌째 되돌린다
+              3) : ;;                          # 남의 판이 새롭다 — 그대로 둔다
+              *) echo "::error::새것을 가리지 못했습니다"; exit 1 ;;
+            esac
             sleep $((i * i * 2))
-            git pull --rebase origin "${GITHUB_REF_NAME}" || true
           done
-          echo '::error::밀어 넣지 못했습니다'; exit 1
+          echo '::error::다섯 번 밀어 봤지만 모두 거절됐습니다'; exit 1
 
       - name: 검산이 막았으면 판을 빨갛게
         if: steps.verify.outputs.rc != '0'

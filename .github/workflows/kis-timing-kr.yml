@@ -132,23 +132,39 @@ jobs:
         run: |
           git config user.name  'github-actions[bot]'
           git config user.email 'github-actions[bot]@users.noreply.github.com'
-          git add data/kis_timing/kr_extra.json
-          if git diff --staged --quiet; then
-            echo "변경 없음 — 봉이 그대로입니다"
-            exit 0
-          fi
-          git commit -m "국내 상장 곁 목록 수집 $(TZ=Asia/Seoul date '+%Y-%m-%d %H:%M KST')"
+          # 변수 이름은 ASCII 여야 한다 — bash 는 함수 이름과 달리 변수 이름에
+          # 한글을 받지 않는다(`한판=x` 는 명령으로 읽혀 「command not found」).
+          SNAP=data/kis_timing/kr_extra.json          # 저장소에 실릴 판
+          MINE="${RUNNER_TEMP:-/tmp}/kr_extra.mine.json"
+          mkdir -p "$(dirname "$MINE")"   # RUNNER_TEMP 가 없을 수도 있다   # 이번에 받아 온 판
 
           for i in 1 2 3 4 5; do
+            git add "$SNAP"
+            if git diff --staged --quiet; then
+              echo "변경 없음 — 봉이 그대로입니다"
+              exit 0
+            fi
+            git commit -q -m "국내 상장 곁 목록 수집 $(TZ=Asia/Seoul date '+%Y-%m-%d %H:%M KST')"
             if git push; then
               echo "밀어 넣음 (시도 $i)"; exit 0
             fi
-            echo "거절됨 — 되받아 다시 시도한다 ($i/5)"
-            if ! git pull --rebase --no-edit origin main; then
-              git rebase --abort || true
-              echo "::error::되받기 충돌 — 손으로 확인하십시오"
-              exit 1
+
+            echo "거절됨 — 남의 판과 내 판 가운데 새것을 남긴다 ($i/5)"
+            cp "$SNAP" "$MINE"
+            if ! git fetch origin '+refs/heads/main:refs/remotes/origin/main'; then
+              echo "::error::main 을 받지 못했습니다"; exit 1
             fi
+            git reset --hard origin/main
+            set +e
+            python3 scripts/keep_newer_snapshot.py "$SNAP" "$MINE"
+            rc=$?
+            set -e
+            case $rc in
+              0) cp "$MINE" "$SNAP" ;;   # 내 판이 새롭다 — 되돌려 놓고 다시 민다
+              3) : ;;                    # 남의 판이 새롭다 — 그대로 둔다.
+                                         # 다음 바퀴에서 「변경 없음」으로 끝난다
+              *) echo "::error::새것을 가리지 못했습니다"; exit 1 ;;
+            esac
             sleep $((i * 5))
           done
           echo "::error::다섯 번 밀어 봤지만 모두 거절됐습니다"

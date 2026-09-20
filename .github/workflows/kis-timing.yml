@@ -184,8 +184,8 @@ jobs:
           한벌() {
             python3 scripts/build_kis_timing.py  >/dev/null &&
             python3 scripts/build_verdict.py     >/dev/null &&
-            python3 scripts/verify_kis_timing.py >/dev/null &&
-            python3 scripts/verify_verdict.py    >/dev/null
+            python3 scripts/verify_kis_timing.py >/tmp/verify-kis.txt &&
+            python3 scripts/verify_verdict.py    >/tmp/verify-verdict.txt
           }
 
           for i in 1 2 3 4 5; do
@@ -209,6 +209,18 @@ jobs:
               echo "::error::다시 셈한 판을 검산이 막았습니다 — 손으로 확인하십시오"
               exit 1
             fi
+            # **요약에 적힌 수는 다시 셈하기 전의 것이다.** 위 단계들이 이미
+            # $GITHUB_STEP_SUMMARY 에 써 버렸으므로 되물릴 수 없다. 그러니
+            # 실린 것이 무엇인지 아래에 덧붙인다 — 읽는 사람이 두 벌을 보고
+            # 어느 것이 실렸는지 알 수 있어야 한다.
+            {
+              echo "### 다시 셈했습니다 (밀어 넣기 $i 번째)"
+              echo
+              echo "위의 재검산은 **다시 셈하기 전**의 것입니다. 실제로 실린 것은 아래입니다."
+              echo '```'
+              cat /tmp/verify-kis.txt /tmp/verify-verdict.txt 2>/dev/null || echo '(없음)'
+              echo '```'
+            } >> "$GITHUB_STEP_SUMMARY"
             sleep $((i * 5))
           done
           echo "::error::다섯 번 밀어 봤지만 모두 거절됐습니다"
