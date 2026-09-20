@@ -114,28 +114,64 @@ jobs:
           } >> "$GITHUB_STEP_SUMMARY"
 
       # PR 에서는 커밋하지 않는다 — 재 보기만 하고, 갈아 끼울지는 사람이 정한다.
+      # **거절당하면 되받지 않는다. 남의 판을 받아 그 위에서 다시 잰다.**
+      #
+      # 까닭은 kis-timing.yml 의 같은 자리 주석과 똑같다 — 산출물이 한 줄짜리
+      # JSON 이라 두 판이 부딪히면 되받기가 반드시 충돌한다. 그리고 이 판은
+      # **저장소 자료의 함수**다. 남의 커밋 위에서 통째로 다시 내면 그만이고,
+      # 반쯤 기운 것을 만들 까닭이 없다.
+      #
+      # 다시 잴 때는 **넷을 다** 돌린다. 성적표만 갈아 끼우고 세팅·판정을 두면
+      # 화면의 멤버와 성적이 어긋난다 — 위 「그 성적표로…」 단계의 주석이 적어 둔,
+      # 이 저장소에서 실제로 한 번 난 사고다. && 로 잇는 까닭은 kis-timing.yml 과
+      # 같다(`if !` 자리에서는 -e 가 함수 안까지 꺼진다).
       - name: 커밋 (단추로 돌렸을 때만)
         if: github.event_name == 'workflow_dispatch'
         run: |
           git config user.name  'github-actions[bot]'
           git config user.email 'github-actions[bot]@users.noreply.github.com'
-          git add data/kis_timing
-          if git diff --staged --quiet; then
-            echo "변경 없음"
-            exit 0
-          fi
-          git commit -m "매매 타이밍 성적표 갱신 $(TZ=Asia/Seoul date '+%Y-%m-%d %H:%M KST')"
+
+          한벌() {
+            python3 scripts/kis_timing_backtest.py >/tmp/bt.txt 2>&1 &&
+            python3 scripts/build_kis_timing.py    >/dev/null &&
+            python3 scripts/build_verdict.py       >/dev/null &&
+            python3 scripts/verify_kis_timing.py   >/tmp/verify-kis.txt &&
+            python3 scripts/verify_verdict.py      >/tmp/verify-verdict.txt
+          }
 
           for i in 1 2 3 4 5; do
+            git add data/kis_timing
+            if git diff --staged --quiet; then
+              echo "변경 없음"
+              exit 0
+            fi
+            git commit -q -m "매매 타이밍 성적표 갱신 $(TZ=Asia/Seoul date '+%Y-%m-%d %H:%M KST')"
             if git push; then
               echo "밀어 넣음 (시도 $i)"; exit 0
             fi
-            echo "거절됨 — 되받아 다시 시도한다 ($i/5)"
-            if ! git pull --rebase --no-edit origin main; then
-              git rebase --abort || true
-              echo "::error::되받기 충돌 — 손으로 확인하십시오"
+
+            echo "거절됨 — 남의 판을 받아 그 위에서 다시 잰다 ($i/5)"
+            if ! git fetch origin '+refs/heads/main:refs/remotes/origin/main'; then
+              echo "::error::main 을 받지 못했습니다"; exit 1
+            fi
+            git reset --hard origin/main
+            if ! 한벌; then
+              echo "::error::다시 잰 판을 검산이 막았습니다 — 손으로 확인하십시오"
               exit 1
             fi
+            # **요약에 적힌 수는 다시 셈하기 전의 것이다.** 위 단계들이 이미
+            # $GITHUB_STEP_SUMMARY 에 써 버렸으므로 되물릴 수 없다. 그러니
+            # 실린 것이 무엇인지 아래에 덧붙인다 — 읽는 사람이 두 벌을 보고
+            # 어느 것이 실렸는지 알 수 있어야 한다.
+            {
+              echo "### 다시 셈했습니다 (밀어 넣기 $i 번째)"
+              echo
+              echo "위의 재검산은 **다시 셈하기 전**의 것입니다. 실제로 실린 것은 아래입니다."
+              echo '```'
+              grep -E '^\[|초과|합의' /tmp/bt.txt || cat /tmp/bt.txt
+              cat /tmp/verify-kis.txt /tmp/verify-verdict.txt 2>/dev/null || echo '(없음)'
+              echo '```'
+            } >> "$GITHUB_STEP_SUMMARY"
             sleep $((i * 5))
           done
           echo "::error::다섯 번 밀어 봤지만 모두 거절됐습니다"

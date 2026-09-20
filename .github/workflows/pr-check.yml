@@ -57,6 +57,11 @@ jobs:
       - name: ETF 수집기를 망 없이 시험한다
         run: python3 scripts/check_etf_signals.py
 
+      # 수집기 셋이 밀어 넣다 부딪혔을 때 어느 판을 남길지 가리는 셈이다.
+      # 여기가 틀리면 받아 온 한 벌이 조용히 사라진다.
+      - name: 새것 가리기가 맞는가
+        run: python3 scripts/keep_newer_snapshot.py --selftest
+
       - name: 워크플로 YAML 이 읽히는가
         run: |
           python3 -m pip install --quiet pyyaml
