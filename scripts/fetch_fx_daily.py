@@ -13,14 +13,22 @@
 어디서 받나 — **한 곳에 걸지 않는다**
 ──────────────────────────────────────────────────────────────────────
 처음에는 야후(`KRW=X`) 하나만 보았다가 러너에서 **첫 판에 429(Too Many
-Requests)** 를 맞았다. 러너 아이피는 공용이라 야후가 죄어 둔다. 그래서 여러
-곳을 차례로 보고, 되는 것을 쓴다. 어느 곳을 썼는지는 산출물에 적힌다.
+Requests)** 를 맞았다. 러너 아이피는 공용이라 야후가 죄어 둔다. 셋으로 늘린
+둘째 판도 **셋 다** 실패했다 — FRED 는 시간초과, Stooq 는 줄 0 개, 야후는
+또 429. 그래서 **기간을 한 번에 주는 곳**을 맨 앞에 둔다.
 
-  1. **FRED `DEXKOUS`** — 미 연준 H.10 고시(뉴욕 정오 매입률). 공공 통계라
-     가장 믿을 만하고 한도도 넉넉하다. 다만 **미국 공휴일에 구멍**이 나고
-     주말이 없다. 환산할 때 직전 값으로 메우므로 문제되지 않는다.
-  2. **Stooq `usdkrw`** — 일별 CSV, 이력이 길다.
-  3. **야후 `KRW=X`** — 24 시간 시세. 429 를 맞으면 뒤로 물러서며 다시 본다.
+  1. **Frankfurter** — 유럽중앙은행 고시환율에서 뽑은 USD/KRW. 한 번에
+     기간 전체를 주고 열쇠가 없다. ECB 는 영업일마다 유로 기준 고시환율을
+     내는데 USD/KRW 는 그 둘을 엮은 **재정환율**이다 — 국내에서 고시하는
+     원/엔·원/위안이 그렇게 만들어지는 것과 같은 방식이다.
+  2. **FRED `DEXKOUS`** — 미 연준 H.10 고시(뉴욕 정오 매입률). 공공 통계라
+     믿을 만하지만 CSV 를 즉석에서 만드느라 느릴 때가 있다.
+  3. **Stooq `usdkrw`** — 일별 CSV.
+  4. **야후 `KRW=X`** — 24 시간 시세. 429 를 맞으면 뒤로 물러서며 다시 본다.
+
+어느 곳을 썼는지, 어디가 왜 안 됐는지는 산출물(`source`·`tried`)에 적힌다.
+**어디가 쉬는 날이 다른지는 따지지 않는다** — 환산하는 쪽이 그날 이전의
+가장 가까운 환율을 쓰므로, 구멍이 나도 앞의 값으로 메워진다.
 
 이 저장소는 국내 주식 시세는 야후 대신 증권사(KIS) 값을 쓰기로 심판해
 두었지만(`data/prices_kis/verdict.txt`), **환율은 그 심판의 대상이 아니었다.**
@@ -75,13 +83,17 @@ UA = ("Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 "
 SANE_LO, SANE_HI = 500.0, 3000.0
 
 
-def _get(url, tries=4):
-    """받아 온다. 429·5xx 는 뒤로 물러서며 다시 본다."""
+def _get(url, tries=4, timeout=120):
+    """받아 온다. 429·5xx·시간초과는 뒤로 물러서며 다시 본다.
+
+    FRED 는 CSV 를 즉석에서 만들어 주느라 느릴 때가 있다 — 60 초로는 모자라
+    러너에서 `The read operation timed out` 이 났다. 넉넉히 잡는다.
+    """
     last = None
     for i in range(tries):
         req = urllib.request.Request(url, headers={"User-Agent": UA})
         try:
-            with urllib.request.urlopen(req, timeout=60) as fp:
+            with urllib.request.urlopen(req, timeout=timeout) as fp:
                 return fp.read()
         except urllib.error.HTTPError as exc:
             last = exc
@@ -92,6 +104,37 @@ def _get(url, tries=4):
         if i < tries - 1:
             time.sleep(2 ** i * 3)          # 3 · 6 · 12 초
     raise last
+
+
+def from_frankfurter(years):
+    """Frankfurter — 유럽중앙은행 고시환율에서 뽑은 USD/KRW.
+
+    **한 번에 기간 전체를 준다.** 날짜마다 부르지 않아도 되고 열쇠도 없다.
+    ECB 는 영업일마다 유로 기준 고시환율을 내는데, USD/KRW 는 그 둘을
+    엮은 **재정환율**이다. 국내에서 고시하는 원/엔·원/위안이 그렇게
+    만들어지는 것과 같은 방식이라 편법이 아니라 정공법이다.
+    """
+    end = datetime.now(KST).date()
+    start = end - timedelta(days=int(365.25 * years))
+    last = None
+    for host in ("api.frankfurter.dev", "api.frankfurter.app"):
+        url = ("https://%s/v1/%s..%s?base=USD&symbols=KRW"
+               % (host, start, end)) if host.endswith(".dev") else \
+              ("https://%s/%s..%s?base=USD&symbols=KRW" % (host, start, end))
+        try:
+            j = json.loads(_get(url, tries=2).decode("utf-8"))
+        except Exception as exc:                                  # noqa: BLE001
+            last = exc
+            continue
+        out = {}
+        for day, row in (j.get("rates") or {}).items():
+            v = _keep(day, (row or {}).get("KRW"))
+            if v is not None:
+                out[day.replace("-", "")] = v
+        if out:
+            return out, "유럽중앙은행 고시환율 (Frankfurter, USD/KRW 재정환율)"
+        last = ValueError("rates 가 비어 있습니다")
+    raise last or ValueError("Frankfurter 에서 받지 못했습니다")
 
 
 def _keep(day, val):
@@ -125,9 +168,15 @@ def from_fred(years):
 
 
 def from_stooq(years):
-    """Stooq 일별 CSV."""
+    """Stooq 일별 CSV.
+
+    한도를 넘기면 CSV 가 아니라 안내 문구를 평문으로 준다 — 그러면 줄이
+    0 개가 되는데, 그 사실만으로는 왜인지 알 수 없다. 받은 것의 앞머리를
+    오류에 실어 다음 사람이 알아볼 수 있게 한다.
+    """
     url = "https://stooq.com/q/d/l/?s=usdkrw&i=d"
-    rows = csv.DictReader(io.StringIO(_get(url).decode("utf-8", "replace")))
+    body = _get(url).decode("utf-8", "replace")
+    rows = csv.DictReader(io.StringIO(body))
     cut = (datetime.now(KST) - timedelta(days=int(365.25 * years))).strftime("%Y%m%d")
     out = {}
     for row in rows:
@@ -137,6 +186,9 @@ def from_stooq(years):
         v = _keep(day, row.get("Close"))
         if v is not None:
             out[day] = v
+    if not out:
+        raise ValueError("줄이 없습니다 — 받은 것: %r"
+                         % body[:120].replace("\n", " "))
     return out, "Stooq (usdkrw, 일별 종가)"
 
 
@@ -156,7 +208,8 @@ def from_yahoo(years):
     return out, "야후 파이낸스 (KRW=X, 일봉)"
 
 
-SOURCES = [("fred", from_fred), ("stooq", from_stooq), ("yahoo", from_yahoo)]
+SOURCES = [("frankfurter", from_frankfurter), ("fred", from_fred),
+           ("stooq", from_stooq), ("yahoo", from_yahoo)]
 
 
 def main():
