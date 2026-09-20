@@ -269,6 +269,87 @@ def test_keeps_old_on_failure():
         shutil.rmtree(tmp, ignore_errors=True)
 
 
+def test_refuses_to_shrink():
+    """**이력이 줄어드는 판을 쓰지 않는가.**
+
+    2026-09-20 에 실제로 잃었다. 「몇 해치」를 비운 채 단추를 눌렀더니 워크플로의
+    기본값 3해치로 받아 8해치 이력이 통째로 잘렸다 — 봉 79,575 → 45,383, 76종 중
+    46종이 줄었다. 수집기는 줄어든 것을 `shrank` 에 적어 두었고 경고도 띄웠지만,
+    **적어 두기만 하고 덮어썼다.** 판은 초록이었고 커밋까지 됐다.
+
+    기워 붙이는 길은 막혀 있다(fetch_etf_prices.py 의 adjclose 주석). 그러면 답은
+    쓰지 않는 것뿐이다. 세 가지를 망 없이 본다 — 막는가, 파일이 그대로인가,
+    사람이 뚫으면 써지는가. 그리고 애초에 줄여 부르지 않도록 **햇수를 비우면
+    지금 파일과 같은 해치**가 되는지도 함께 본다.
+    """
+    tmp = tempfile.mkdtemp(prefix='etfshrink')
+    try:
+        px = os.path.join(tmp, 'prices.json')
+        borrowed_prices(px)
+        doc = json.load(open(px, encoding='utf-8'))
+        doc['years_requested'] = 8
+        json.dump(doc, open(px, 'w', encoding='utf-8'), ensure_ascii=False)
+        # **해외분으로 돌린다.** 국내분만 부르면 fetch_ov 가 돌지 않아 햇수가 거기까지
+        # 닿는지 볼 수 없다 — 바로 그 자리가 예전에 한 번 샌 곳이다
+        # (test_years_reaches_yahoo 주석).
+        ovs = [x['ticker'] for x in L.items() if x['scope'] == 'OV'][:3]
+        tk = ovs[0]
+        n_before = doc['items'][tk]['bars_n']
+
+        # 받아 오는 쪽을 **예전의 절반만 주도록** 바꿔치기한다.
+        seen_years = []
+
+        def half(it, span, years=None):
+            seen_years.append(years)
+            prev = doc['items'][it['ticker']]['bars']
+            cut = max(3, prev['bars_n'] // 2) if 'bars_n' in prev else 0
+            cut = max(3, len(prev['d']) // 2)
+            rows = [{'d': prev['d'][-cut:][i], 'o': prev['o'][-cut:][i],
+                     'h': prev['h'][-cut:][i], 'l': prev['l'][-cut:][i],
+                     'c': prev['c'][-cut:][i], 'v': prev['v'][-cut:][i]}
+                    for i in range(cut)]
+            return rows, {'route': '시험', 'symbol_used': it['symbols'][0],
+                          'name_source': doc['items'][it['ticker']]['name_source'],
+                          'currency': 'KRW', 'errors': []}
+
+        keep_kr, keep_ov = F.fetch_kr, F.fetch_ov
+        err = sys.stderr
+        try:
+            F.fetch_kr = lambda it, span: half(it, span)
+            F.fetch_ov = lambda it, span, years=None: half(it, span, years)
+            sys.stderr = open(os.devnull, 'w')
+            args = ['--out', px, '--only', 'OV', '--limit', '3']
+            rc_block = F.main(args)
+            after_block = json.load(open(px, encoding='utf-8'))
+            rc_allow = F.main(args + ['--allow-shrink'])
+            after_allow = json.load(open(px, encoding='utf-8'))
+        finally:
+            sys.stderr.close()
+            sys.stderr = err
+            F.fetch_kr, F.fetch_ov = keep_kr, keep_ov
+
+        ok('짧게 오면 막는다', rc_block == 1, 'rc=%s' % rc_block)
+        ok('막았을 때 파일이 그대로다',
+           after_block['items'][tk]['bars_n'] == n_before,
+           '%s → %s' % (n_before, after_block['items'][tk]['bars_n']))
+        ok('막았을 때 예전 햇수가 남아 있다',
+           after_block.get('years_requested') == 8,
+           str(after_block.get('years_requested')))
+        ok('사람이 뚫으면 써진다', rc_allow == 0, 'rc=%s' % rc_allow)
+        ok('뚫고 쓴 판은 실제로 짧다',
+           after_allow['items'][tk]['bars_n'] < n_before,
+           '%s → %s' % (n_before, after_allow['items'][tk]['bars_n']))
+        ok('줄어든 종목을 적어 둔다', len(after_allow.get('shrank') or []) > 0,
+           str((after_allow.get('shrank') or [])[:3]))
+        # 햇수를 말하지 않았으므로 파일에 적힌 8해치를 물려받아야 한다.
+        ok('햇수를 비우면 지금 파일과 같은 해치로 받는다',
+           after_allow.get('years_requested') == 8 and 8 in seen_years,
+           '적힌 햇수 %s · 해외분에 닿은 햇수 %s'
+           % (after_allow.get('years_requested'), sorted(set(seen_years), key=str)))
+    finally:
+        shutil.rmtree(tmp, ignore_errors=True)
+
+
 def test_backtest_guard():
     """**주식 성적표를 ETF 옆에 붙이려 하면 거부하는가.**
 
@@ -321,6 +402,7 @@ def main():
     test_name_agrees()
     test_years_reaches_yahoo()
     test_keeps_old_on_failure()
+    test_refuses_to_shrink()
     test_backtest_guard()
     test_pipeline()
 
