@@ -116,6 +116,23 @@ MARKETS = {
             '순위에서 밀려난 회사는 자료에 없어, 성적이 실제보다 좋게 나오는 '
             '쪽으로 기울어 있습니다(생존 편향). ETF 판에는 없는 한계입니다.'),
     },
+    'US_STOCK': {
+        'slug': 'us-stock',
+        'csv': 'us-stock-timing',
+        'facts': True,
+        'history': (
+            '<b>전 구간과 검증구간이 서로 다른 말을 합니다.</b> 전 구간 초과수익은 '
+            '%(edge)s 인데 뒤 구간에서 다시 잰 값은 <b>%(test_edge)s</b> 로 '
+            '<b>음수</b>입니다. 앞 구간만 보고 고른 조합이 뒤 구간에서 무너졌다는 '
+            '뜻이고, 그건 앞 구간의 성적이 그 구간에 맞춰진 것이었다는 말입니다. '
+            '<b>믿을 것은 뒤엣것입니다.</b>'),
+        'scope': (
+            '대상은 <b>미국 대형주 %(count)d 종</b>입니다. 국내주식 판과 같은 '
+            '한계를 갖습니다 — 자료가 두 해뿐이고, 지금 목록에 있는 회사만 봅니다'
+            '(생존 편향). 여기에 더해 <b>이 시장에서는 검증구간 성적이 음수</b>라, '
+            '위 한계를 감안하기 전에 이미 쓸 자리가 아닙니다. '
+            '증권사 리포트와 종목별 수급은 국내 종목만 모으므로 이 판에는 없습니다.'),
+    },
     'KR_OV_ETF': {
         'slug': 'kr-ov-etf',
         'csv': 'kr-ov-etf-timing',
@@ -142,8 +159,27 @@ def esc(s):
             .replace('<', '&lt;').replace('>', '&gt;').replace('"', '&quot;'))
 
 
+# 값을 적을 때 쓰는 화폐. **자료에서 읽는다.** 시장이 다섯이 된 지금 여기 적어
+# 두면 달러 종목이 「238원」으로 찍힌다 — 실제로 미국주식 판에서 그랬다.
+_CCY = {'code': 'KRW'}
+
+
+def money(x, ccy=None):
+    """화폐에 맞춰 적는다.
+
+    원화는 원 단위로 끊고(소수점이 뜻이 없다), 달러는 **센트까지** 남긴다.
+    23.45 달러를 「23」으로 줄이면 2% 가 그냥 사라진다.
+    """
+    if x is None:
+        return '—'
+    c = ccy or _CCY['code']
+    if c == 'USD':
+        return '{:,.2f}달러'.format(x)
+    return '{:,.0f}원'.format(x)
+
+
 def won(x):
-    return '—' if x is None else '{:,.0f}원'.format(x)
+    return money(x)
 
 
 # 숫자 뒤에 붙는 조사. **한글로 읽었을 때 받침이 있는가**로 갈린다 —
@@ -204,6 +240,12 @@ def build(doc, bt, vd=None):
     rule = doc['rule']
     asm = doc['backtest_assumptions']
 
+    _CCY['code'] = m.get('currency') or 'KRW'
+    _mb = market_block((vd or {}).get('markets', {}).get(MARKET))
+    _blocked_why = ' '.join(
+        f['text'] for f in (((vd or {}).get('markets', {}).get(MARKET) or {})
+                            .get('market_flags') or []) if f['level'] == 'block')
+
     grades = {x['strategy']: x for x in bt['grades'] if x['market'] == MARKET}
     cons = [c for c in bt['consensus'] if c['market'] == MARKET]
 
@@ -252,6 +294,7 @@ def build(doc, bt, vd=None):
         'members': esc(' · '.join(m['member_names'])),
         'n_members': len(m['members']),
         'buy': plan_rows(m['buy'], names, 'buy'),
+        'market_block': _mb[0], 'buy_title': _mb[1],
         'concentration': concentration(m['buy'], vd),
         'facts': (fact_rows(m['buy'], (vd or {}).get('markets', {}).get(MARKET))
                   if MARKETS[MARKET].get('facts') else ''),
@@ -278,7 +321,9 @@ def build(doc, bt, vd=None):
         'strategy_table': strategy_table,
         'k_table': k_table,
         'watch_table': watch_rows(m['watch_buy'], names),
-        'payload': json.dumps(payload(m, names, doc, derived(m, bt, g, gt, base, rule)),
+        'payload': json.dumps(payload(m, names, doc,
+                                      dict(derived(m, bt, g, gt, base, rule),
+                                           blocked_why=_blocked_why)),
                               ensure_ascii=False,
                               separators=(',', ':')).replace('</', '<\\/'),
         'built': datetime.now(KST).strftime('%Y-%m-%d %H:%M'),
@@ -365,6 +410,30 @@ def _conc_html(plans, groups, kind, basis):
             '이 점을 먼저 보십시오.</p>'
             '<p class="cap">%s</p></div>'
             % (len(plans), len(got), esc(label), esc(kind), basis))
+
+
+def market_block(vmarket):
+    """이 시장에서 **사지 않는다**고 판정이 말했는가. (경고 HTML, 매수 칸 제목)
+
+    검증구간 초과수익이 음수인 시장이 그렇다. 그런 판에 「매수」 표를 그대로
+    실으면, 같은 저장소가 한 화면에서는 「이 시장에서는 서지 않았습니다」라고
+    하고 한 장에서는 종목을 적어 주는 꼴이 된다. **한 장이 더 멀리 간다** —
+    메신저로 옮겨지고 인쇄되어 남는다. 그래서 여기서 더 세게 적는다.
+
+    막는 까닭은 판정 산출물에서 그대로 가져온다. 여기서 다시 판단하지 않는다.
+    """
+    blocks = [f for f in ((vmarket or {}).get('market_flags') or [])
+              if f['level'] == 'block']
+    if not blocks:
+        return '', '매수'
+    why = ' '.join(esc(f['text']) for f in blocks)
+    return ('<div class="warn" style="border-left-color:#A61C1C">'
+            '<p><b>이 시장에서는 이 방식으로 사지 마십시오.</b> %s</p>'
+            '<p class="cap">아래 종목은 <b>합의 신호가 켜진 자리일 뿐</b>이고 '
+            '매수 권유가 아닙니다. 신호가 켜진 것과 그 신호가 값이 있었던 것은 '
+            '다른 말입니다. 들고 있는 것을 내려놓는 쪽(청산)은 그대로 읽으셔도 '
+            '됩니다 — 막힌 것은 사는 쪽입니다.</p></div>' % why,
+            '보류 — 합의는 모였지만 이 시장에서는 사지 않습니다')
 
 
 def _mvars(m, g, gt):
@@ -576,6 +645,12 @@ def payload(m, names, doc, dv):
     return {
         'label': m['label'], 'asof': m['asof'],
         'csv_slug': MARKETS[MARKET]['csv'],
+        'ccy': m.get('currency') or 'KRW',
+        # **막힌 시장인지 복사문·CSV 도 알아야 한다.** 한 장은 메신저로 옮겨지고
+        # 인쇄되어 남는데, 화면에만 경고가 있고 붙여 넣은 글에는 없으면 그 글은
+        # 경고 없이 혼자 돌아다닌다.
+        'blocked': bool(dv.get('blocked_why')),
+        'blocked_why': dv.get('blocked_why') or '',
         'buy': rows('buy', 'buy_hits'), 'sell': rows('sell', 'sell_hits'),
         'watch': rows('watch_buy', 'buy_hits'),
         'win': (m['consensus_full'] or {}).get('win_rate'),
@@ -783,7 +858,8 @@ TEMPLATE = r"""<!DOCTYPE html>
       <p class="cap">%(history)s</p>
     </div>
 
-    <h3>매수</h3>
+    %(market_block)s
+    <h3>%(buy_title)s</h3>
     %(buy)s
     %(concentration)s
     %(facts)s
@@ -952,7 +1028,13 @@ TEMPLATE = r"""<!DOCTYPE html>
     said.textContent = t; said.className = 'said on';
     setTimeout(function () { said.className = 'said'; }, 2600);
   }
-  function won(x) { return x == null ? '-' : Number(x).toLocaleString('ko-KR') + '원'; }
+  /* 화폐는 자료에서 읽는다 — 여기 적어 두면 달러 종목이 「238원」이 된다. */
+  function won(x) {
+    if (x == null) return '-';
+    return D.ccy === 'USD'
+      ? Number(x).toLocaleString('ko-KR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + '달러'
+      : Number(x).toLocaleString('ko-KR') + '원';
+  }
 
   document.getElementById('btnPrint').onclick = function () { window.print(); };
 
@@ -962,14 +1044,20 @@ TEMPLATE = r"""<!DOCTYPE html>
      적어 두면 우주가 바뀔 때 조용히 거짓이 된다. 실제로 한 번 그랬다. */
   function summary() {
     var L = [D.label + ' 매매 타이밍 (' + D.asof + ' 종가 기준)', ''];
+    if (D.blocked) {
+      L.push('※※ 이 시장에서는 이 방식으로 사지 마십시오 — ' + D.blocked_why);
+      L.push('   아래 종목은 신호가 켜진 자리일 뿐이고 매수 권유가 아닙니다.');
+      L.push('');
+    }
+    var TAG = D.blocked ? '[보류]' : '[매수]';
     if (D.buy.length) {
       D.buy.forEach(function (p) {
-        L.push('[매수] ' + p.name + ' (' + p.code + ')');
+        L.push(TAG + ' ' + p.name + ' (' + p.code + ')');
         L.push('  기준 종가 ' + won(p.close) + ' / 손절 ' + won(p.stop) +
                ' (-' + D.stop_pct + '%%)');
         L.push('  겹친 전략: ' + p.hits.join(' + '));
       });
-    } else { L.push('[매수] 오늘은 합의 매수 자리가 없습니다.'); }
+    } else { L.push(TAG + ' 오늘은 합의 매수 자리가 없습니다.'); }
     if (D.sell.length) {
       L.push('');
       D.sell.forEach(function (p) {
@@ -1027,7 +1115,8 @@ TEMPLATE = r"""<!DOCTYPE html>
   document.getElementById('btnCsv').onclick = function () {
     var rows = [['구분', '종목', '종목코드', '기준일', '종가', '등락(%%)', '손절 기준',
                  '비중(%%)', '겹친 전략']];
-    [['합의 매수', D.buy], ['합의 청산', D.sell], ['관찰', D.watch]].forEach(function (g) {
+    [[D.blocked ? '보류(이 시장에서는 매수 안 함)' : '합의 매수', D.buy],
+     ['합의 청산', D.sell], ['관찰', D.watch]].forEach(function (g) {
       g[1].forEach(function (p) {
         rows.push([g[0], p.name, p.code, D.asof, p.close, p.chg, p.stop, p.w,
                    p.hits.join(' + ')]);
