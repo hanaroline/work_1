@@ -593,9 +593,17 @@ def check_pick_and_search(selectable, wb=None) -> None:
         fail("[제안서] 에서 '종목 검색' 칸을 못 찾았습니다.")
         return
 
-    # 1번째·3번째 줄을 담고, 검색어를 넣는다. 한 번만 계산해 둘 다 본다.
-    lk.cell(first, 10).value = "O"
-    lk.cell(first + 2, 10).value = "O"
+    # **떨어져 있는** 네 줄을 담는다. 붙은 줄만 시험하면 "연속일 때만 되는"
+    # 어긋남을 못 잡는다 — 담긴 것을 세는 칸과 k 번째를 꺼내는 칸이 어긋나면
+    # 건너뛴 줄에서만 틀어진다. 1·3·7·12 번째를 고른다.
+    #
+    # 담기와 검색을 **한 판에** 같이 건다. 수식을 한 번 푸는 데 2분이 걸리고
+    # 러너에서는 이 검사가 두 번 도는데(검사 단계·커밋 단계), 시험마다 판을
+    # 늘리면 갱신이 몇 십 분씩 길어진다. 그리고 둘을 같이 걸면 공짜로 얻는
+    # 것이 있다 — 검색어가 켜진 채로 담긴 종목의 수치가 성한지 볼 수 있다.
+    PICKS = (0, 2, 6, 11)
+    for p in PICKS:
+        lk.cell(first + p, 10).value = "O"
     ws[scell] = TERM = "커버드콜"
     with tempfile.NamedTemporaryFile(suffix=".xlsx", delete=False) as tf:
         tmp = Path(tf.name)
@@ -608,33 +616,76 @@ def check_pick_and_search(selectable, wb=None) -> None:
     g = lambda sh, ref: v2.get((sh, ref))  # noqa: E731
 
     # ── 담기 → 제안서 ──
-    n1, n3 = g("종목조회", f"B{first}"), g("종목조회", f"B{first + 2}")
-    b20, b21, b22 = g("제안서", "B20"), g("제안서", "B21"), g("제안서", "B22")
-    if b20 != n1:
-        fail(f"'담기' 가 안 먹습니다 — 1번째로 담은 '{n1}' 대신 제안서 B20 에 '{b20}' 이 있습니다.")
-    elif b21 != n3:
-        fail(f"'담기' 두 번째가 안 먹습니다 — '{n3}' 대신 B21 에 '{b21}' 이 있습니다.")
-    elif b22 not in ("", None):
-        fail(f"두 종목만 담았는데 B22 에 '{b22}' 이 남아 있습니다.")
-    else:
+    want = [g("종목조회", f"B{first + p}") for p in PICKS]
+    got = [g("제안서", f"B{20 + i}") for i in range(10)]
+    alloc = [g("제안서", f"C{20 + i}") for i in range(10)]
+
+    ok = True
+    for i, w in enumerate(want):
+        if got[i] != w:
+            fail(
+                f"'담기' 가 어긋납니다 — {i + 1}번째로 담은 '{w}' 가 제안서 B{20 + i} 에 "
+                f"'{got[i]}' 로 왔습니다 (떨어진 {len(PICKS)}줄을 담았습니다)."
+            )
+            ok = False
+            break
+    if ok:
+        tail = [x for x in got[len(PICKS):] if x not in ("", None)]
+        if tail:
+            fail(f"{len(PICKS)}종목만 담았는데 뒤 칸에 {tail[:3]} 이 남아 있습니다.")
+            ok = False
+    if ok and len(set(want)) != len(want):
+        fail(f"서로 다른 줄을 담았는데 같은 이름이 올라옵니다 — {want}")
+        ok = False
+    if ok:
         # 이름만 올라오고 배분이 비면, 그 줄은 배정금액 0원이라 화면에서
         # **빈 줄로 보인다.** 담당자는 "한 개만 담겼다" 고 읽는다. 더 나쁜 것은
         # 첫 줄이 100% 를 그대로 들고 있어 돈이 전부 첫 종목에 들어가면서도
         # 합계는 멀쩡해 보인다는 점이다. 그래서 배분까지 본다.
-        c20, c21 = g("제안서", "C20"), g("제안서", "C21")
-        try:
-            s = float(c20) + float(c21)
-        except (TypeError, ValueError):
-            s = None
-        if s is None:
-            fail(f"'담기' 로 올라온 줄의 배분이 비어 있습니다 (C20={c20!r}, C21={c21!r}) — "
-                 "배정금액이 0원이 되어 빈 줄로 보입니다.")
-        elif abs(s - 100) > 0.01:
-            fail(f"두 종목을 담았는데 배분 합계가 {s} 입니다 (100 이어야 합니다).")
-        else:
+        nums = []
+        for i, w in enumerate(want):
+            try:
+                a = float(alloc[i])
+            except (TypeError, ValueError):
+                a = None
+            if a is None or a <= 0:
+                fail(f"'담기' 로 올라온 {i + 1}번째 '{w}' 의 배분이 {alloc[i]!r} 입니다 — "
+                     "배정금액이 0원이 되어 빈 줄로 보입니다.")
+                ok = False
+                break
+            nums.append(a)
+        if ok and abs(sum(nums) - 100) > 0.01:
+            fail(f"{len(PICKS)}종목을 담았는데 배분 합계가 {sum(nums)} 입니다 (100 이어야 합니다).")
+            ok = False
+        if ok:
             notes.append(
-                f"'담기' 두 종목이 [제안서] 에 올라오고 배분이 {float(c20):g}/{float(c21):g} 로 "
-                f"고르게 나뉩니다 ('{n1}' 외 1).")
+                f"'담기' 가 떨어진 {len(PICKS)}줄(1·3·7·12번째)을 담은 순서대로 [제안서] 에 올리고 "
+                f"배분을 {'/'.join(f'{a:g}' for a in nums)} 로 나눕니다 ('{want[0]}' 외 {len(PICKS) - 1}).")
+
+    # ── 담아 둔 종목이 검색에 휘둘리지 않는가 ──
+    #
+    # 목록은 검색어로 좁히되(검색결과) **계산은 전체 목록(선택가능종목)에서**
+    # 찾아야 한다. 이 둘을 한 범위로 묶으면, 담아 놓은 뒤 검색어를 바꾸는
+    # 순간 담긴 종목의 수치가 엉뚱한 종목 것으로 바뀐다 — 화면은 멀쩡해
+    # 보이면서. 고객에게 나가는 자료에서 제일 나쁜 종류의 어긋남이다.
+    #
+    # 지금 판은 검색어가 켜진 채로 네 줄이 담겨 있다. 담긴 종목의 주수를
+    # 원천 현재가로 되짚어 맞으면, 값이 검색 결과가 아니라 전체 목록에서
+    # 온 것이다.
+    if ok:
+        by_name = {x["name"]: x for x in selectable}
+        amount, shares = g("제안서", "F20"), g("제안서", "E20")
+        it = by_name.get(str(want[0]).strip())
+        if it and it.get("price") and isinstance(shares, (int, float)) and isinstance(amount, (int, float)):
+            back = shares * it["price"]
+            if not near(back, amount, max(it["price"], amount * 0.001)):
+                fail(
+                    f"검색어('{TERM}')가 켜진 채 담긴 '{want[0]}' 의 수치가 어긋납니다 — "
+                    f"{shares:,.0f}주 × {it['price']:,.0f}원 = {back:,.0f}원 인데 투자금액은 {amount:,.0f}원입니다. "
+                    "목록(검색결과)과 계산(선택가능종목)이 한 범위로 묶였는지 보십시오."
+                )
+            else:
+                notes.append("검색어를 넣어 둔 채로도 담긴 종목의 주수·투자금액이 원천과 맞습니다.")
 
     # ── 검색 → 목록 좁히기 ──
     # X 칸에 위에서부터 걸린 종목만 빈칸 없이 쌓여야 한다.
@@ -652,14 +703,76 @@ def check_pick_and_search(selectable, wb=None) -> None:
             break
         got.append(x)
         r += 1
-    want = [x["name"] for x in selectable if TERM in x["name"]]
-    off = [x for x in got if TERM not in x]
-    if off:
-        fail(f"'{TERM}' 검색에 엉뚱한 종목이 섞였습니다: {off[:3]}")
-    elif len(got) != len(want):
-        fail(f"'{TERM}' 검색 결과가 {len(got)}종목인데 원천에는 {len(want)}종목입니다.")
-    else:
-        notes.append(f"'종목 검색' 이 '{TERM}' 로 {len(got)}종목까지 목록을 좁힙니다.")
+    def read_list(vals):
+        """목록 칸에 **빈칸 없이 위에서부터** 쌓인 것을 읽는다.
+
+        중간에 빈칸이 생기면 거기서 멈추므로, 뒤에 더 있는지도 같이 본다 —
+        한 칸이 비면 그 아래 종목은 드롭다운에서 통째로 사라지는데, 목록이
+        짧아진 것만으로는 걸렀는지 빠뜨렸는지 구분이 안 된다.
+        """
+        out, rr = [], 4
+        while True:
+            x = vals.get(("ETF데이터", f"{lcol}{rr}"))
+            if x is None or x == "":
+                break
+            out.append(x)
+            rr += 1
+        holes = 0
+        for k in range(rr + 1, rr + 6):  # 빈칸 뒤에 더 쌓여 있나
+            x = vals.get(("ETF데이터", f"{lcol}{k}"))
+            if x not in (None, ""):
+                holes += 1
+        return out, holes
+
+    def judge(term, vals, label):
+        lst, holes = read_list(vals)
+        hint = vals.get(("제안서", hcell))
+        want = [x["name"] for x in selectable if term in x["name"]]
+        off = [x for x in lst if term and term not in x]
+        if off:
+            fail(f"{label} 검색에 엉뚱한 종목이 섞였습니다: {off[:3]}")
+            return None
+        if holes:
+            fail(f"{label} 검색 목록 중간에 빈칸이 있습니다 — 그 아래 {holes}종목이 드롭다운에서 사라집니다.")
+            return None
+        if len(lst) != len(want):
+            fail(f"{label} 검색 결과가 {len(lst)}종목인데 원천에는 {len(want)}종목입니다.")
+            return None
+        # 검색은 ▼ 목록만 좁히므로 화면이 곧바로 변하지 않는다. 그래서 이
+        # 문구가 "먹었다" 는 유일한 신호다. 건수를 말하지 않으면, 담당자는
+        # 검색이 안 먹은 줄 알고 딴 데를 뒤지게 된다("아무 반응이 없어").
+        if term and want and str(len(want)) not in str(hint):
+            fail(f"{label} 안내 문구가 걸린 건수({len(want)})를 말하지 않습니다 — {hint!r}")
+            return None
+        if term and not want and str(hint).strip() in ("", "None"):
+            fail(f"{label} 는 하나도 안 걸리는데 안내 문구가 비어 있습니다.")
+            return None
+        return len(lst)
+
+    hcell = f"F{int(scell[1:])}"
+    n_hit = judge(TERM, v2, f"'{TERM}'")
+    if n_hit is not None:
+        notes.append(f"'종목 검색' 이 '{TERM}' 로 {n_hit}종목까지 목록을 좁힙니다.")
+
+    # 걸리는 게 없을 때와 검색어를 지웠을 때. 이 둘은 다른 값을 넣어야 하므로
+    # 판을 따로 푼다(한 판 25초). 안 보고 넘기면, 오타를 친 담당자가 빈 목록
+    # 앞에서 까닭을 모른 채 멈추고, 검색어를 지워도 전체가 안 돌아온다.
+    for term, label in (("존재하지않는종목이름", "하나도 안 걸리는 말"), ("", "검색어를 지운 상태")):
+        wb2 = load_workbook(XLSX)
+        wb2["제안서"][scell] = term
+        with tempfile.NamedTemporaryFile(suffix=".xlsx", delete=False) as tf:
+            t2 = Path(tf.name)
+        wb2.save(t2)
+        v3 = evaluate(t2)
+        t2.unlink(missing_ok=True)
+        if v3 is None:
+            return
+        n = judge(term, v3, label)
+        if n is not None:
+            notes.append(
+                f"{label} 에서 목록이 {n}종목입니다"
+                + (" (전체가 돌아옵니다)." if term == "" else " (안내 문구가 까닭을 말합니다).")
+            )
 
 
 def check_lookup(selectable, first_sel, last_sel) -> None:  # noqa: ARG001
