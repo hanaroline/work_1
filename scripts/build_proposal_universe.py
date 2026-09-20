@@ -79,6 +79,7 @@ TRADING_DAYS = 252
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import proposal_exposure as EXP                                   # noqa: E402
 import proposal_metrics as MET                                    # noqa: E402
+import proposal_fx as FX                                          # noqa: E402
 
 
 def sh(args):
@@ -397,8 +398,12 @@ def load_branch_bars(branch, subdir, cls, kind, limit=0, meta=None):
             "asOf": as_of_one,
             "flags": flags,
             # 지표를 셈할 때 쓰고 버린다 — 산출물에는 남기지 않는다.
+            # **통화를 함께 적는다.** 해외 종가는 달러라 원화로 환산해야
+            # 고객이 겪는 수익률이 된다. 국내주식은 증권사 값으로 갈아
+            # 끼워도 원화 그대로다.
             "_closes": (k["closes"] if k and k.get("closes") else closes),
             "_dates": (k["dates"] if k and k.get("dates") else (d.get("d") or None)),
+            "_ccy": "KRW" if k else ccy,
         })
     as_of = max((p["asOf"] for p in out if p.get("asOf")), default=None)
     if swapped:
@@ -554,6 +559,12 @@ def load_overseas_etf():
             "src": doc.get("source", "한국투자증권 오픈API"),
             "asOf": (doc.get("generated_at_kst") or "")[:10],
             "flags": [],
+            # **봉을 넘겨 준다.** 여태 넘기지 않아 이 19 종은 다년 지표가
+            # 붙지 않고 「미측정」으로 남아 있었다 — 3 해치 봉이 있는데도.
+            # 미국 상장이므로 달러다.
+            "_closes": closes,
+            "_dates": it.get("d") or None,
+            "_ccy": "USD",
         })
     return out, {"src": doc.get("source"), "count": len(out),
                  "asOf": (doc.get("generated_at_kst") or "")[:10]}
@@ -594,10 +605,14 @@ def attach_metrics(products):
     kr_bars.json 이 보통 더 길다(10 해). 원천 이름도 함께 적어 둔다.
 
     해외 상장분은 overseas_bars.json 에서 온다(`fetch_overseas_bars_kis.py`).
-    **달러 기준**이라는 점은 그 파일에 적혀 있고 원천 이름으로 따라온다.
+    그 종가는 **달러**이므로 **원화로 환산해서 잰다** — 고객은 원화로 사고
+    원화로 팔기 때문이다. 애플이 달러로 20% 올라도 그해 원화가 10% 절상되면
+    고객 손에 남는 것은 8% 다. 환율 계열이 아직 없으면 환산하지 않고 달러
+    기준으로 재되, 그 사실을 상품마다 `flags` 에 남긴다 — 조용히 섞이면
+    표에서 원화 기준과 달러 기준이 한 줄에 나란히 서게 된다.
     """
     bars = {}
-    for fname in ("kr_bars.json", "overseas_bars.json"):
+    for fname, ccy in (("kr_bars.json", "KRW"), ("overseas_bars.json", "USD")):
         p = os.path.join(OUT_DIR, fname)
         if not os.path.exists(p):
             continue
@@ -612,31 +627,48 @@ def attach_metrics(products):
             # 짧은 쪽이 덮으면 애써 받은 10 해가 1 해로 줄어든다.
             if old and len(old[1] or []) >= len(c):
                 continue
-            bars[code] = (d, c, doc.get("source"))
+            bars[code] = (d, c, doc.get("source"), ccy)
 
-    n_long, n_any = 0, 0
+    fx = FX.load()
+    n_long, n_any, n_krw, n_nofx = 0, 0, 0, 0
     for prod in products:
         code = _bar_key(prod.get("code"))
         got = bars.get(code)
-        d, c, src = got if got else (None, None, None)
+        d, c, src, ccy = got if got else (None, None, None, None)
         # 일봉 원천이 없으면, 로더가 이미 들고 있던 봉으로라도 잰다.
         # **어느 쪽이든 임시 필드는 반드시 뺀다.** 처음에는 kr_bars 가 있을 때
         # 안 뺐더니 종가 배열이 산출물에 그대로 실려 파일이 2 MB 로 불었다.
         fallback_c = prod.pop("_closes", None)
         fallback_d = prod.pop("_dates", None)
+        fallback_ccy = prod.pop("_ccy", None)
         if not c:
-            c, d, src = fallback_c, fallback_d, prod.get("src")
+            c, d, src, ccy = fallback_c, fallback_d, prod.get("src"), fallback_ccy
         if not c or len(c) < 60:
             continue
         if not d or len(d) != len(c):
             d = [""] * len(c)
+
+        # **달러 계열은 원화로 바꾸고 나서 잰다.** 날짜가 빈 봉("")은 환율을
+        # 맞출 수가 없으므로 환산하지 않는다 — 아무 환율이나 곱하지 않는다.
+        krw = False
+        if ccy == "USD" and fx and d and d[0]:
+            d2, c2, cover = FX.to_krw(d, c, fx)
+            if len(c2) >= 60 and cover >= 0.9:
+                d, c, krw = d2, c2, True
+                src = "%s + %s 환산" % (str(src or "")[:44], fx["src"])
+                n_krw += 1
+        if ccy == "USD" and not krw:
+            prod.setdefault("flags", []).append("달러기준_환산못함")
+            n_nofx += 1
+
         m = MET.measure(d, c)
-        m["src"] = str(src or "")[:80]
+        m["src"] = str(src or "")[:100]
+        m["ccy"] = "KRW" if (ccy != "USD" or krw) else "USD"
         prod["지표"] = m
         n_any += 1
         if "3" in m["창"] or "5" in m["창"]:
             n_long += 1
-    return n_any, n_long
+    return n_any, n_long, n_krw, n_nofx
 
 
 def reassign_by_exposure(products):
@@ -779,8 +811,15 @@ def main():
 
     # **상장지가 아니라 실제 노출로 자산군을 다시 정한다.** 이 한 줄이 없으면
     # 「국내ETF」 칸에 미국 지수만 담기고 「국내펀드」 칸이 통째로 MMF 가 된다.
-    n_any, n_long = attach_metrics(products)
+    n_any, n_long, n_krw, n_nofx = attach_metrics(products)
     print("\n다년 지표 — 잰 상품 %d (3해 이상 %d)" % (n_any, n_long))
+    if n_krw or n_nofx:
+        print("  원화 환산 %d 종%s"
+              % (n_krw, (" · **환산 못한 달러 기준 %d 종**" % n_nofx)
+                 if n_nofx else ""))
+    elif not FX.load():
+        print("  (환율 계열이 없어 해외는 달러 기준입니다 — "
+              "scripts/fetch_fx_daily.py 를 러너에서 돌리십시오.)")
 
     products, moves = reassign_by_exposure(products)
     print("\n노출로 다시 봄 — 자산군 옮김 %d · 현금성으로 옮김 %d · "

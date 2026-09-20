@@ -289,8 +289,16 @@ def buy_hold(bars, self_pcts, cost_bps):
             'from': bars[a]['d'], 'to': bars[b]['d'], 'bars': b - a}
 
 
-def ma_cross(bars, ind, self_pcts, h, cost_bps):
-    """20일선 상향 돌파에 사고 하향 이탈에 파는 흔한 규칙. 견줄 자리."""
+def ma_cross(bars, ind, self_pcts, h, cost_bps, use_stop=False):
+    """20일선 상향 돌파에 사고 하향 이탈에 파는 흔한 규칙. 견줄 자리.
+
+    `use_stop` 을 켜면 **신호 쪽과 똑같은 ATR 손절**을 붙인다.
+
+    왜 두 벌로 재는가 — 신호 전략에는 손절이 있고 이 규칙에는 없다. 그대로 견주면
+    낙폭 차이가 **손절 때문인지 축 넷 때문인지 구별할 수 없다.** 손절을 붙인 판을
+    함께 내면 그 둘이 갈린다: 손절만 붙여도 같은 방어가 된다면 축과 적응가중치는
+    값을 못 하는 것이고, 그래도 신호 쪽이 낫다면 그 몫이 엔진의 몫이다.
+    """
     trades = []
     i = 1
     n = len(bars)
@@ -306,18 +314,27 @@ def ma_cross(bars, ind, self_pcts, h, cost_bps):
         if e >= n:
             break
         entry = bars[e]['o']
-        exit_i = None
+        a = ind['atr14'][i]
+        stop = (entry - S.STOP_ATR * a) if (use_stop and a) else None
+        exit_i, exit_px = None, None
         for j in range(e, min(n, e + maxhold + 1)):
+            # 손절을 먼저 본다 — 장중 저가가 손절가를 스치면 그날 나간다.
+            # 갭하락으로 손절가 아래에서 열리면 시가로 체결한다(신호 쪽과 같다).
+            if stop is not None and bars[j]['l'] <= stop:
+                exit_i, exit_px = j, min(stop, bars[j]['o'])
+                break
             if ind['ma20'][j] is not None and bars[j]['c'] < ind['ma20'][j]:
                 exit_i = min(n - 1, j + 1)
+                exit_px = bars[exit_i]['o']
                 break
         if exit_i is None:
             exit_i = min(n - 1, e + maxhold)
-        g = (bars[exit_i]['o'] / entry - 1) * 100
+            exit_px = bars[exit_i]['o']
+        g = (exit_px / entry - 1) * 100
         trades.append({'gross': g, 'net': g - cost_bps / 100.0, 'bars': exit_i - e,
                        'entry_i': e, 'exit_i': exit_i,
-                       'entry_px': entry, 'exit_px': bars[exit_i]['o']})
-        i = exit_i
+                       'entry_px': entry, 'exit_px': exit_px})
+        i = max(exit_i, e)
     return trades
 
 
@@ -493,11 +510,14 @@ def run_ticker(bars, prepared, h, cost_bps):
     sig, base = event_study(bars, sp, h)
     trades = simulate(bars, ind, rows, sp, h, cost_bps)
     mac = ma_cross(bars, ind, sp, h, cost_bps)
+    macs = ma_cross(bars, ind, sp, h, cost_bps, use_stop=True)
     rnd = random_entry(bars, sp, h, len(trades), cost_bps)
     eq = equity(trades, bars, sp, cost_bps)
     eq_ma = equity(mac, bars, sp, cost_bps)
+    eq_mas = equity(macs, bars, sp, cost_bps)
     return {'sig': sig, 'base': base, 'trades': trades,
-            'ma': mac, 'rand': rnd, 'eq': eq, 'eq_ma': eq_ma}
+            'ma': mac, 'ma_stop': macs, 'rand': rnd,
+            'eq': eq, 'eq_ma': eq_ma, 'eq_ma_stop': eq_mas}
 
 
 # ─────────────────────────────────────────────────────────────────────
@@ -614,6 +634,7 @@ def main(argv):
             for mk, rows in loaded.items():
                 cost = DEFAULT_COST_BPS[mk]
                 sig, base, trades, ma, rnd, eqs, eqms = [], [], [], [], [], [], []
+                mas, eqmss = [], []
                 for name, bars, bench in rows:
                     r = run_ticker(bars, prepped[(flip, mk, name)], h, cost)
                     if not r:
@@ -624,6 +645,9 @@ def main(argv):
                         eqs.append(r['eq'])
                     if r['eq_ma']:
                         eqms.append(r['eq_ma'])
+                    mas += r['ma_stop']
+                    if r['eq_ma_stop']:
+                        eqmss.append(r['eq_ma_stop'])
                 m = {
                     'cost_bps': cost,
                     'event': {
@@ -658,6 +682,40 @@ def main(argv):
                         'per_day_excess_median': round(st.median([e['per_day_excess'] for e in eqs if e['per_day_excess'] is not None]), 4) if eqs else None,
                         'per_day_beat_pct': round(sum(1 for e in eqs if (e['per_day_excess'] or 0) > 0) / len(eqs) * 100, 1) if eqs else None,
                         'ma_cross_excess_median_pct': round(st.median([e['excess_pct'] for e in eqms]), 2) if eqms else None,
+                    },
+                    # **한 줄짜리 규칙이 같은 일을 해 주는가.**
+                    #
+                    # 이 판의 결론이 「수익은 못 늘리고 낙폭만 줄인다」로 좁혀지면,
+                    # 다음 물음은 하나뿐이다 — 20일선 교차만으로도 그 낙폭 방어가
+                    # 되는가. 된다면 축 넷과 적응가중치를 얹은 이 엔진은 값을 못
+                    # 하는 것이고, 그건 알아야 할 일이다.
+                    #
+                    # 그래서 위 equity 와 **같은 칸을 같은 함수로** 낸다. 수익만
+                    # 꺼내 견주면 정작 견줘야 할 자리를 빼고 견주게 된다.
+                    'ma_cross_stop_net': summarize(mas, 'net'),
+                    'equity_ma_cross': {
+                        'n': len(eqms),
+                        'strategy_median_pct': round(st.median([e['total_pct'] for e in eqms]), 2) if eqms else None,
+                        'excess_median_pct': round(st.median([e['excess_pct'] for e in eqms]), 2) if eqms else None,
+                        'beat_buyhold_pct': round(sum(1 for e in eqms if e['excess_pct'] > 0) / len(eqms) * 100, 1) if eqms else None,
+                        'in_market_median_pct': round(st.median([e['in_market_pct'] for e in eqms if e['in_market_pct'] is not None]), 1) if eqms else None,
+                        'mdd_median_pct': round(st.median([e['trade_mdd_pct'] for e in eqms]), 2) if eqms else None,
+                        'mdd_saved_median_pct': round(st.median([e['mdd_saved_pct'] for e in eqms]), 2) if eqms else None,
+                        'per_day_excess_median': round(st.median([e['per_day_excess'] for e in eqms if e['per_day_excess'] is not None]), 4) if eqms else None,
+                        'per_day_beat_pct': round(sum(1 for e in eqms if (e['per_day_excess'] or 0) > 0) / len(eqms) * 100, 1) if eqms else None,
+                    },
+                    # 같은 규칙에 **신호 쪽과 똑같은 ATR 손절**만 붙인 판.
+                    # 위와 견주면 낙폭 방어의 몫이 손절에서 오는지 가려진다.
+                    'equity_ma_cross_stop': {
+                        'n': len(eqmss),
+                        'strategy_median_pct': round(st.median([e['total_pct'] for e in eqmss]), 2) if eqmss else None,
+                        'excess_median_pct': round(st.median([e['excess_pct'] for e in eqmss]), 2) if eqmss else None,
+                        'beat_buyhold_pct': round(sum(1 for e in eqmss if e['excess_pct'] > 0) / len(eqmss) * 100, 1) if eqmss else None,
+                        'in_market_median_pct': round(st.median([e['in_market_pct'] for e in eqmss if e['in_market_pct'] is not None]), 1) if eqmss else None,
+                        'mdd_median_pct': round(st.median([e['trade_mdd_pct'] for e in eqmss]), 2) if eqmss else None,
+                        'mdd_saved_median_pct': round(st.median([e['mdd_saved_pct'] for e in eqmss]), 2) if eqmss else None,
+                        'per_day_excess_median': round(st.median([e['per_day_excess'] for e in eqmss if e['per_day_excess'] is not None]), 4) if eqmss else None,
+                        'per_day_beat_pct': round(sum(1 for e in eqmss if (e['per_day_excess'] or 0) > 0) / len(eqmss) * 100, 1) if eqmss else None,
                     },
                     'cost_sensitivity': {},
                 }
