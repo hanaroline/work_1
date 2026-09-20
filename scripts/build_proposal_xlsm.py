@@ -105,6 +105,30 @@ Public Sub 조회_실행()
     Application.Goto ws.Cells(g.Row + 5, 1), True
 End Sub
 
+' 근거 줄은 윤곽선 1 단계로 묶여 있다. 접으면 엑셀이 인쇄에서도 뺀다 ―
+' 인쇄용 파일을 따로 만들면 두 벌이 되어 언젠가 어긋나므로 파일은 하나다.
+Public Sub 근거줄_접기펴기()
+    Dim ws As Worksheet, i As Long, n As Long, 접혔나 As Boolean, 있나 As Boolean
+    Set ws = ThisWorkbook.Worksheets("제안서")
+    n = ws.UsedRange.Rows.Count + ws.UsedRange.Row
+    ' 근거 줄에는 숨은 S 열에 「근거」가 박혀 있다. 윤곽선 단계로 찾지
+    ' 않는다 ― 그 속성은 엑셀 아닌 곳에서 안 통해 확인할 수가 없었다.
+    For i = 1 To n
+        If ws.Cells(i, 19).Value = "근거" Then
+            있나 = True
+            접혔나 = ws.Rows(i).Hidden
+            Exit For
+        End If
+    Next i
+    If Not 있나 Then
+        MsgBox "접을 근거 줄을 찾지 못했습니다.", vbExclamation
+        Exit Sub
+    End If
+    For i = 1 To n
+        If ws.Cells(i, 19).Value = "근거" Then ws.Rows(i).Hidden = Not 접혔나
+    Next i
+End Sub
+
 Public Sub 조건_초기화()
     Dim ws As Worksheet, g As Range, i As Long
     If MsgBox("조건과 조정 비중을 처음 값으로 되돌립니다. 계속할까요?", _
@@ -225,7 +249,9 @@ def buttons_xml(row):
     shapes = []
     for i, (label, macro, fill, line, text) in enumerate([
             ("▶ 조회 실행", "조회_실행", "F58220", "CB6015", "FFFFFF"),
-            ("조건 초기화", "조건_초기화", "FFFFFF", "84888B", "43474A")]):
+            ("조건 초기화", "조건_초기화", "FFFFFF", "84888B", "43474A"),
+            # 인쇄 전에 근거 줄을 접는 단추. 접힌 줄은 엑셀이 인쇄하지 않는다.
+            ("근거 줄 접기/펴기", "근거줄_접기펴기", "FFFFFF", "84888B", "43474A")]):
         shapes.append(SHAPE % {
             # 열만 옮긴다. 행에도 간격을 주었더니 두 단추가 대각선으로 엇갈렸다.
             "c0": 3 + i * 2, "x0": 6 * EMU, "r0": top - 1,
@@ -345,7 +371,8 @@ def main():
                             os.path.getsize(args.out) / 1024))
     print("  VBA 프로젝트 %d 바이트 · 모듈 %d(문서 %d + 표준 1)"
           % (len(vba), len(mods), len(mods) - 1))
-    print("  단추 2개 — 「▶ 조회 실행」·「조건 초기화」 (%d 행 옆)" % go_row)
+    print("  단추 3개 — 「▶ 조회 실행」·「조건 초기화」·「근거 줄 접기/펴기」 "
+          "(%d 행 옆)" % go_row)
     print("  원본 %s 는 그대로 둡니다." % os.path.basename(args.src))
 
 
