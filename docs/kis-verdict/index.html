@@ -1,0 +1,634 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>종목 판정 — 사야 하나, 팔아야 하나, 들고 있어야 하나</title>
+<!--
+  다섯 시장(국내ETF · 국내상장 해외ETF · 국내주식 · 해외ETF · 미국주식)의 종목마다
+  **기술 · 실적 · 이벤트 · 수급 · 리포트 · 시황**을 겹쳐 오늘의 자리를 내는 화면이다.
+
+  **화면은 셈하지 않는다.** data/kis_timing/verdict.json 을 옮겨 찍기만 한다.
+  화면이 판정을 다시 셈하면 검산기가 대조할 자리가 없어지고, 언젠가 산출물과
+  다른 판정을 내게 된다.
+
+  **판정을 만드는 것은 기술 하나뿐이다.** 대조군을 세워 잰 것이 그것뿐이기 때문이다.
+  실적·수급·리포트는 딱지로만 쓴다 — 막을 수는 있어도 만들 수는 없다. 까닭은
+  scripts/build_verdict.py 머리말과 아래 「이 판정을 어떻게 읽는가」에 있다.
+
+  **자료를 못 받으면 지어내지 않는다.** 「받지 못했습니다」라고 적고 멈춘다.
+
+  띄우는 법 — 저장소 뿌리에서 `python3 -m http.server 8000` 뒤
+  http://localhost:8000/docs/kis-verdict/ 로 연다.
+-->
+<style>
+  /* 팔레트 — 저장소의 다른 화면과 같은 것(docs/kis-timing, docs/signal) */
+  :root {
+    --surface-1: #fcfcfb; --page: #f9f9f7;
+    --text-primary: #0b0b0b; --text-secondary: #52514e; --text-muted: #898781;
+    --grid: #e1e0d9; --border: rgba(11,11,11,0.10);
+    --series-1: #2a78d6;
+    --up: #d03b3b; --down: #2a78d6; --good: #006300;
+    --warn: #b06f00; --danger: #c0392b;
+    --shadow: 0 1px 2px rgba(11,11,11,.05), 0 4px 16px rgba(11,11,11,.04);
+    --radius: 14px;
+  }
+  :root[data-theme="dark"] {
+    --surface-1: #1a1a19; --page: #0d0d0d;
+    --text-primary: #ffffff; --text-secondary: #c3c2b7; --text-muted: #898781;
+    --grid: #2c2c2a; --border: rgba(255,255,255,0.10);
+    --series-1: #3987e5;
+    --up: #ff6b6b; --down: #5598e7; --good: #0ca30c;
+    --warn: #e0a030; --danger: #ff6b6b;
+    --shadow: 0 1px 2px rgba(0,0,0,.4), 0 4px 16px rgba(0,0,0,.3);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --surface-1: #1a1a19; --page: #0d0d0d;
+      --text-primary: #ffffff; --text-secondary: #c3c2b7; --text-muted: #898781;
+      --grid: #2c2c2a; --border: rgba(255,255,255,0.10);
+      --series-1: #3987e5;
+      --up: #ff6b6b; --down: #5598e7; --good: #0ca30c;
+      --warn: #e0a030; --danger: #ff6b6b;
+      --shadow: 0 1px 2px rgba(0,0,0,.4), 0 4px 16px rgba(0,0,0,.3);
+    }
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    font-family: system-ui, -apple-system, "Segoe UI", "Malgun Gothic", sans-serif;
+    background: var(--page); color: var(--text-primary); line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: 1180px; margin: 0 auto; padding: 24px 16px 80px; }
+  header { display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap; }
+  h1 { font-size: 22px; margin: 0; letter-spacing: -0.01em; }
+  .sub { color: var(--text-secondary); font-size: 13px; }
+  .muted { color: var(--text-muted); font-size: 12.5px; }
+  a { color: var(--series-1); }
+  button, select, input {
+    font: inherit; color: inherit; background: var(--surface-1);
+    border: 1px solid var(--border); border-radius: 9px; padding: 5px 11px;
+  }
+  button, select { cursor: pointer; }
+  .card {
+    background: var(--surface-1); border: 1px solid var(--border);
+    border-radius: var(--radius); box-shadow: var(--shadow);
+    padding: 18px; margin-top: 16px;
+  }
+  .card h2 { font-size: 15px; margin: 0 0 4px; letter-spacing: -0.01em; }
+  .card h3 { font-size: 13.5px; margin: 18px 0 8px; color: var(--text-secondary); }
+  .lede { font-size: 13px; color: var(--text-secondary); margin: 0 0 14px; }
+  .row { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+
+  /* 검색 */
+  #q { flex: 1 1 260px; min-width: 0; padding: 9px 13px; font-size: 15px; }
+  .hits { margin-top: 10px; display: grid; gap: 6px; }
+  .hit {
+    display: flex; gap: 10px; align-items: baseline; padding: 7px 10px;
+    border: 1px solid var(--border); border-radius: 9px; cursor: pointer;
+    background: var(--page);
+  }
+  .hit:hover, .hit:focus { background: rgba(127,127,127,.09); outline: none; }
+  .hit .nm { font-weight: 620; }
+  .hit .tk { color: var(--text-muted); font-size: 12px; font-variant-numeric: tabular-nums; }
+  .hit .mk { margin-left: auto; color: var(--text-secondary); font-size: 12px; }
+
+  /* 판정 배지 */
+  .v { font-size: 12px; padding: 2px 9px; border-radius: 999px; border: 1px solid; font-weight: 640; }
+  .v.SELL { color: var(--down); border-color: var(--down); }
+  .v.BUY { color: var(--up); border-color: var(--up); }
+  .v.BLOCKED { color: var(--warn); border-color: var(--warn); }
+  .v.WATCH { color: var(--text-secondary); border-color: var(--border); }
+  .v.HOLD { color: var(--text-muted); border-color: var(--border); }
+
+  /* 딱지 */
+  .flags { display: grid; gap: 6px; margin-top: 10px; }
+  .fl { display: flex; gap: 9px; font-size: 12.8px; padding: 7px 10px; border-radius: 9px;
+        border: 1px solid var(--border); background: var(--page); align-items: baseline; }
+  .fl .k { font-size: 11.5px; color: var(--text-muted); white-space: nowrap; min-width: 52px; }
+  .fl .d { display: block; color: var(--text-muted); font-size: 11.8px; margin-top: 2px; }
+  .fl.block { border-color: var(--danger); }
+  .fl.warn { border-color: var(--warn); }
+  .fl.support { border-color: var(--good); }
+  .lvl { font-size: 11px; color: var(--text-muted); white-space: nowrap; }
+  .fl.block .lvl { color: var(--danger); }
+  .fl.warn .lvl { color: var(--warn); }
+  .fl.support .lvl { color: var(--good); }
+
+  .chips { display: flex; gap: 5px; flex-wrap: wrap; margin-top: 9px; }
+  .chip { font-size: 11.5px; padding: 2px 8px; border-radius: 999px;
+          border: 1px solid var(--border); color: var(--text-secondary); background: var(--surface-1); }
+  .chip.on { border-color: var(--up); color: var(--up); }
+  .chip.off { border-color: var(--down); color: var(--down); }
+  .chip.dim { color: var(--text-muted); }
+
+  table { border-collapse: collapse; width: 100%; font-size: 13px; }
+  th, td { padding: 7px 9px; border-bottom: 1px solid var(--grid); text-align: right; }
+  th { color: var(--text-secondary); font-weight: 600; font-size: 12px; white-space: nowrap; }
+  th:first-child, td:first-child { text-align: left; }
+  tbody tr:hover { background: rgba(127,127,127,.06); }
+  .tblwrap { overflow-x: auto; }
+  .num { font-variant-numeric: tabular-nums; }
+  .kv { display: grid; grid-template-columns: repeat(auto-fill, minmax(168px,1fr)); gap: 4px 16px; font-size: 12.8px; }
+  .kv div { display: flex; justify-content: space-between; gap: 8px; border-bottom: 1px solid var(--grid); padding: 3px 0; }
+  .kv dt, .kv .t { color: var(--text-muted); }
+  .kv .n { font-variant-numeric: tabular-nums; }
+
+  .tabs { display: flex; gap: 6px; flex-wrap: wrap; margin: 14px 0 4px; }
+  .tabs button[aria-selected="true"] {
+    background: var(--text-primary); color: var(--page); border-color: var(--text-primary);
+  }
+  .warnbox { border: 1px solid var(--warn); border-radius: 10px; padding: 11px 13px;
+             font-size: 12.5px; color: var(--text-secondary); margin-top: 12px; }
+  .dangerbox { border: 1px solid var(--danger); border-radius: 10px; padding: 11px 13px;
+               font-size: 12.5px; color: var(--text-secondary); margin-top: 14px; }
+  .empty { color: var(--text-muted); font-size: 13px; padding: 10px 0; }
+  details { margin-top: 10px; }
+  summary { cursor: pointer; font-size: 13px; color: var(--text-secondary); }
+  code { font-size: 12px; background: rgba(127,127,127,.12); padding: 1px 5px; border-radius: 4px; }
+
+  @media print {
+    @page { margin: 12mm; }
+    :root, :root[data-theme="dark"] {
+      --surface-1: #fff; --page: #fff; --text-primary: #000; --text-secondary: #333;
+      --text-muted: #666; --grid: #ccc; --border: #bbb;
+      --up: #b03030; --down: #2060a0; --warn: #8a5500; --danger: #a02020; --good: #145214;
+      --shadow: none;
+    }
+    body { background: #fff; color: #000; }
+    .wrap { max-width: none; padding: 0; }
+    #theme, #printBtn, #csvBtn, #copyBtn, .tabs, #q, .hits { display: none !important; }
+    .card { break-inside: avoid; box-shadow: none; }
+    details { display: block; } details > div { display: block !important; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>종목 판정</h1>
+    <span class="sub">사야 하나 · 팔아야 하나 · 들고 있어야 하나</span>
+    <span style="margin-left:auto" class="row">
+      <button id="theme" type="button">어둡게</button>
+      <button id="printBtn" type="button">인쇄 · PDF</button>
+    </span>
+  </header>
+  <p class="muted" id="stamp">불러오는 중…</p>
+
+  <div class="card">
+    <h2>종목 검색</h2>
+    <p class="lede">이름 · 티커 · 종목코드 어느 쪽으로도 찾습니다. 찾으면 그 종목의
+      기술 · 실적 · 이벤트 · 수급 · 리포트를 한자리에 폅니다.</p>
+    <div class="row">
+      <input id="q" type="search" placeholder="예) 삼성전자 · 005930 · AAPL · TIGER 미국나스닥100"
+             autocomplete="off" />
+      <button id="clearBtn" type="button">지우기</button>
+    </div>
+    <div class="hits" id="hits"></div>
+    <div id="detail"></div>
+  </div>
+
+  <div class="card">
+    <h2>오늘의 자리</h2>
+    <p class="lede" id="todayLede"></p>
+    <div class="tabs" id="tabs"></div>
+    <div id="lists"></div>
+  </div>
+
+  <div class="card">
+    <h2>오늘 장은 어떤 자리인가</h2>
+    <p class="lede">종목이 아니라 <b>시장 전체</b>에 걸리는 것입니다. 판정을 막지는 않습니다.</p>
+    <div id="regime"></div>
+  </div>
+
+  <div class="card">
+    <h2>이 판정을 어떻게 읽는가</h2>
+    <div id="how"></div>
+  </div>
+</div>
+
+<script>
+/* 화면은 셈하지 않는다 — verdict.json 을 옮겨 찍는다. */
+const $ = (s, r) => (r || document).querySelector(s);
+const el = (t, cls, txt) => { const n = document.createElement(t);
+  if (cls) n.className = cls; if (txt != null) n.textContent = txt; return n; };
+const num = (x, d) => (x == null || !isFinite(x)) ? '—'
+  : Number(x).toLocaleString('ko-KR', { minimumFractionDigits: d || 0, maximumFractionDigits: d || 0 });
+const pct = (x, d) => (x == null || !isFinite(x)) ? '—'
+  : (x > 0 ? '+' : '') + Number(x).toFixed(d == null ? 2 : d) + '%';
+
+let DOC = null, ALL = [], TAB = null;
+
+const VORDER = ['SELL', 'BUY', 'BLOCKED', 'WATCH', 'HOLD'];
+
+function badge(v, label) { const b = el('span', 'v ' + v, label); return b; }
+
+function stratName(id) {
+  const s = (DOC.strategies || []).find(x => x.id === id);
+  return s ? s.name : id;
+}
+
+/* ── 검색 ───────────────────────────────────────────────────────── */
+function search(term) {
+  const t = term.trim().toLowerCase();
+  const box = $('#hits'); box.innerHTML = '';
+  if (!t) { $('#detail').innerHTML = ''; return; }
+  const hit = ALL.filter(x =>
+    (x.name || '').toLowerCase().includes(t) ||
+    (x.symbol || '').toLowerCase().includes(t) ||
+    (x.code || '').toLowerCase().includes(t)).slice(0, 12);
+  if (!hit.length) {
+    box.appendChild(el('p', 'empty', '「' + term + '」에 맞는 종목이 우주에 없습니다. '
+      + '이 판은 ' + ALL.length + ' 종목을 봅니다.'));
+    return;
+  }
+  hit.forEach(x => {
+    const row = el('div', 'hit'); row.tabIndex = 0;
+    row.appendChild(badge(x.verdict, x.verdict_label));
+    row.appendChild(el('span', 'nm', x.name || x.symbol));
+    row.appendChild(el('span', 'tk', x.symbol));
+    row.appendChild(el('span', 'mk', DOC.markets[x.market].label));
+    const go = () => show(x);
+    row.addEventListener('click', go);
+    row.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); go(); } });
+    box.appendChild(row);
+  });
+  if (hit.length === 1) show(hit[0]);
+}
+
+/* ── 한 종목 펼치기 ─────────────────────────────────────────────── */
+function show(x) {
+  const d = $('#detail'); d.innerHTML = '';
+  const m = DOC.markets[x.market];
+
+  const head = el('div', 'row');
+  head.style.marginTop = '18px';
+  head.appendChild(badge(x.verdict, x.verdict_label));
+  const nm = el('span', null, x.name || x.symbol);
+  nm.style.cssText = 'font-size:18px;font-weight:660';
+  head.appendChild(nm);
+  head.appendChild(el('span', 'tk muted', x.symbol + ' · ' + m.label));
+  const px = el('span', 'num');
+  px.style.marginLeft = 'auto';
+  px.textContent = num(x.close, x.close < 1000 ? 2 : 0) + ' ' + (m.currency === 'KRW' ? '원' : '달러')
+    + '  (' + pct(x.change_pct) + ')';
+  head.appendChild(px);
+  d.appendChild(head);
+  d.appendChild(el('p', 'muted', '기준일 ' + x.asof + ' · 판정은 종가로 확정됩니다. '
+    + '사고파는 것은 다음 거래일 시가입니다.'));
+
+  if (x.blocked_by && x.blocked_by.length) {
+    const b = el('div', 'dangerbox');
+    b.appendChild(el('b', null, '합의 매수 신호가 났지만 보류했습니다.'));
+    x.blocked_by.forEach(t => b.appendChild(el('div', null, '· ' + t)));
+    d.appendChild(b);
+  }
+
+  /* 기술 */
+  const t = x.technical || {};
+  d.appendChild(el('h3', null, '기술 — 이것만 판정을 만듭니다'));
+  if (!(t.members || []).length) {
+    d.appendChild(el('p', 'empty', '이 시장에서는 검증을 통과한 전략이 없어 합의를 내지 못합니다.'));
+  } else {
+    const c = el('div', 'chips');
+    (t.members || []).forEach(s => {
+      const on = (t.buy_hits || []).includes(s), off = (t.sell_hits || []).includes(s);
+      c.appendChild(el('span', 'chip ' + (on ? 'on' : off ? 'off' : 'dim'),
+        stratName(s) + (on ? ' 매수' : off ? ' 청산' : ' —')));
+    });
+    d.appendChild(c);
+    const other = (t.other_buy || []).concat(t.other_sell || []);
+    if (other.length) {
+      const o = el('div', 'chips');
+      other.forEach(s => o.appendChild(el('span', 'chip dim',
+        stratName(s) + ((t.other_buy || []).includes(s) ? ' 매수' : ' 청산') + ' · 검증 밖')));
+      d.appendChild(o);
+      d.appendChild(el('p', 'muted', '아래 줄은 이 시장의 검증을 통과하지 못한 전략입니다. '
+        + '켜진 것을 그대로 보여 주되 합의에는 넣지 않습니다.'));
+    }
+    if (x.stop_ref != null) {
+      d.appendChild(el('p', 'muted', '손절 기준 ' + num(x.stop_ref, x.stop_ref < 1000 ? 2 : 0)
+        + ' (종가 −' + x.stop_pct + '%). 신호일 종가를 진입가로 가정한 값이라 체결 뒤 다시 잡으십시오.'));
+    }
+  }
+
+  /* 딱지 */
+  const fl = (x.flags || []).concat(m.market_flags || []);
+  if (fl.length) {
+    d.appendChild(el('h3', null, '딱지 — 막을 수는 있어도 만들 수는 없습니다'));
+    const box = el('div', 'flags');
+    const rank = { block: 0, warn: 1, support: 2, info: 3 };
+    fl.slice().sort((a, b) => (rank[a.level] ?? 9) - (rank[b.level] ?? 9)).forEach(f => {
+      const r = el('div', 'fl ' + f.level);
+      r.appendChild(el('span', 'k', f.kind));
+      const body = el('span');
+      body.appendChild(document.createTextNode(f.text));
+      if (f.detail) body.appendChild(el('span', 'd', f.detail));
+      r.appendChild(body);
+      r.appendChild(el('span', 'lvl', { block: '막음', warn: '주의', support: '보탬', info: '' }[f.level] || ''));
+      box.appendChild(r);
+    });
+    d.appendChild(box);
+  }
+
+  /* 자료가 없는 겹을 드러낸다 */
+  const cov = x.coverage || {};
+  const miss = ['fundamentals', 'reports', 'flows'].filter(k => cov[k] === false);
+  if (miss.length) {
+    const w = el('div', 'warnbox');
+    w.appendChild(el('b', null, '이 종목에 없는 겹'));
+    miss.forEach(k => w.appendChild(el('div', null, '· '
+      + ({ fundamentals: '실적·목표가', reports: '증권사 리포트', flows: '종목별 수급' })[k]
+      + ' — ' + (cov[k + '_why'] || ''))));
+    w.appendChild(el('div', null, '없는 것과 나쁜 것은 다른 말입니다.'));
+    d.appendChild(w);
+  }
+
+  /* 실적 표 */
+  const f = (x.facts || {}).fundamentals;
+  if (f) {
+    d.appendChild(el('h3', null, '실적 · 밸류에이션'));
+    const q = f.quote || {}, tg = f.target || {}, sp = f.surprises, tr = f.eps_trend || {};
+    const kv = el('div', 'kv');
+    const put = (k, v) => { const r = el('div'); r.appendChild(el('span', 't', k));
+      r.appendChild(el('span', 'n', v)); kv.appendChild(r); };
+    put('PER', q.per != null ? Number(q.per).toFixed(1) + '배' : '—');
+    put('선행 PER', q.fwdPer != null ? Number(q.fwdPer).toFixed(1) + '배' : '—');
+    put('PBR', q.pbr != null ? Number(q.pbr).toFixed(2) + '배' : '—');
+    put('ROE', q.roe != null ? pct(q.roe, 1) : '—');
+    put('영업이익률', q.opMargin != null ? pct(q.opMargin, 1) : '—');
+    put('매출 성장', q.revenueGrowth != null ? pct(q.revenueGrowth, 1) : '—');
+    put('부채비율', q.debtToEquity != null ? pct(q.debtToEquity, 0) : '—');
+    put('배당수익률', q.divYield != null ? pct(q.divYield, 2) : '—');
+    put('52주 고가', q.high52 != null ? num(q.high52, q.high52 < 1000 ? 2 : 0) : '—');
+    put('52주 저가', q.low52 != null ? num(q.low52, q.low52 < 1000 ? 2 : 0) : '—');
+    if (tg.mean != null) {
+      put('목표주가 평균', num(tg.mean, tg.mean < 1000 ? 2 : 0));
+      put('목표가까지', pct(tg.upside_pct, 1) + ' (' + num(tg.analysts) + '명)');
+    }
+    if (sp) put('최근 ' + sp.n + '분기 서프라이즈', sp.beats + '번 상회 · 평균 ' + pct(sp.avg_pct, 1));
+    const y0 = tr['0y'], y1 = tr['+1y'];
+    if (y0 && y1 && y0.eps_avg) put('내년 EPS 추정', pct((y1.eps_avg / y0.eps_avg - 1) * 100, 0) + ' (올해 대비)');
+    if (f.earnings && f.earnings.next_date)
+      put('다음 실적 발표', f.earnings.next_date + (f.earnings.estimated ? ' (추정)' : ''));
+    if (f.dividend && f.dividend.ex_date) put('배당락', f.dividend.ex_date);
+    d.appendChild(kv);
+    d.appendChild(el('p', 'muted', '기업 자료 기준 ' + (f.fetched_at || '—')
+      + ' · 시각대 ' + (f.timezone || '') + '. 목표주가는 증권사 평균이며 자주 늦게 고쳐집니다.'));
+
+    if ((f.news || []).length) {
+      const det = el('details'); det.appendChild(el('summary', null, '최근 기사 ' + f.news.length + '건'));
+      const ul = el('div');
+      f.news.forEach(n => { const p = el('div', 'muted');
+        const a = el('a', null, n.title || '(제목 없음)');
+        if (n.url) { a.href = n.url; a.target = '_blank'; a.rel = 'noopener'; }
+        p.appendChild(a); p.appendChild(document.createTextNode(' — ' + (n.source || '') + ' ' + (n.date || '')));
+        ul.appendChild(p); });
+      det.appendChild(ul); d.appendChild(det);
+    }
+  }
+
+  /* 수급 */
+  const fw = (x.facts || {}).flows;
+  if (fw) {
+    d.appendChild(el('h3', null, '수급 — 최근 ' + fw.days + ' 거래일 (' + fw.from + ' ~ ' + fw.to + ')'));
+    const kv = el('div', 'kv');
+    const put = (k, v) => { const r = el('div'); r.appendChild(el('span', 't', k));
+      r.appendChild(el('span', 'n', v)); kv.appendChild(r); };
+    put('외국인 5일', num(fw.foreign_5d) + ' 억원');
+    put('외국인 전체', num(fw.foreign_20d) + ' 억원');
+    put('기관 5일', num(fw.inst_5d) + ' 억원');
+    put('기관 전체', num(fw.inst_20d) + ' 억원');
+    put('개인 전체', num(fw.retail_20d) + ' 억원');
+    put('외국인 보유율', fw.foreign_hold_pct != null ? pct(fw.foreign_hold_pct, 2) : '—');
+    d.appendChild(kv);
+  }
+
+  /* 리포트 */
+  const rp = (x.facts || {}).reports;
+  if (rp) {
+    d.appendChild(el('h3', null, '증권사 리포트 — 최근 ' + rp.n + '건'));
+    (rp.items || []).forEach(it => {
+      const p = el('div', 'muted');
+      const a = el('a', null, it.title || '(제목 없음)');
+      if (it.url) { a.href = it.url; a.target = '_blank'; a.rel = 'noopener'; }
+      p.appendChild(a);
+      p.appendChild(document.createTextNode(' — ' + (it.broker || '') + ' ' + (it.date || '')));
+      if (it.summary) p.appendChild(el('span', 'd', it.summary + '…'));
+      d.appendChild(p);
+    });
+    d.appendChild(el('p', 'muted', '제목과 요약은 네이버 금융 리서치에서 모은 것입니다. '
+      + '판정에 쓰지 않고 참고로만 싣습니다.'));
+  }
+}
+
+/* ── 오늘의 자리 목록 ───────────────────────────────────────────── */
+function drawTabs() {
+  const box = $('#tabs'); box.innerHTML = '';
+  const mks = (DOC.view_order || []).filter(mk => DOC.markets[mk]);
+  ['ALL'].concat(mks).forEach(mk => {
+    const m = mk === 'ALL' ? null : DOC.markets[mk];
+    const n = mk === 'ALL'
+      ? ALL.filter(x => x.verdict !== 'HOLD' && x.verdict !== 'WATCH').length
+      : (m.counts.BUY || 0) + (m.counts.SELL || 0) + (m.counts.BLOCKED || 0);
+    const b = el('button', null, (mk === 'ALL' ? '전체' : m.label) + ' ' + n);
+    b.type = 'button';
+    b.setAttribute('aria-selected', String(mk === TAB));
+    b.addEventListener('click', () => { TAB = mk; drawTabs(); drawList(); });
+    box.appendChild(b);
+  });
+}
+
+function drawList() {
+  const box = $('#lists'); box.innerHTML = '';
+  const rows = (TAB === 'ALL' ? ALL : ALL.filter(x => x.market === TAB));
+  const groups = [
+    ['BUY', '매수 — 합의가 모였고 막는 딱지가 없습니다'],
+    ['BLOCKED', '보류 — 합의는 모였지만 막는 딱지가 있습니다'],
+    ['SELL', '청산 — 들고 있다면 내려놓을 자리입니다'],
+    ['WATCH', '관찰 — 전략 하나만 켜졌습니다'],
+  ];
+  let any = false;
+  groups.forEach(([v, title]) => {
+    const list = rows.filter(x => x.verdict === v);
+    if (!list.length) return;
+    if (v === 'WATCH' && TAB === 'ALL') return;   /* 전체 탭에서는 관찰을 접는다 */
+    any = true;
+    box.appendChild(el('h3', null, title + ' · ' + list.length + '종'));
+    const wrap = el('div', 'tblwrap');
+    const tb = el('table');
+    tb.innerHTML = '<thead><tr><th>종목</th><th>시장</th><th>종가</th><th>등락</th>'
+      + '<th>신호</th><th>딱지</th><th>기준일</th></tr></thead>';
+    const body = el('tbody');
+    list.forEach(x => {
+      const tr = el('tr');
+      const c0 = el('td'); const a = el('a', null, x.name || x.symbol);
+      a.href = '#'; a.addEventListener('click', e => {
+        e.preventDefault(); $('#q').value = x.symbol; search(x.symbol);
+        $('#detail').scrollIntoView({ behavior: 'smooth', block: 'start' });
+      });
+      c0.appendChild(a); c0.appendChild(el('span', 'tk muted', ' ' + x.symbol)); tr.appendChild(c0);
+      tr.appendChild(el('td', null, DOC.markets[x.market].label));
+      tr.appendChild(el('td', 'num', num(x.close, x.close < 1000 ? 2 : 0)));
+      const ch = el('td', 'num', pct(x.change_pct));
+      ch.style.color = (x.change_pct || 0) > 0 ? 'var(--up)' : (x.change_pct || 0) < 0 ? 'var(--down)' : '';
+      tr.appendChild(ch);
+      const sig = (x.technical.buy_hits || []).length ? (x.technical.buy_hits || []).map(stratName).join(' + ')
+        : (x.technical.sell_hits || []).map(stratName).join(' + ');
+      tr.appendChild(el('td', null, sig || '—'));
+      const nb = (x.flags || []).filter(f => f.level === 'block').length;
+      const nw = (x.flags || []).filter(f => f.level === 'warn').length;
+      const ns = (x.flags || []).filter(f => f.level === 'support').length;
+      tr.appendChild(el('td', 'num', (nb ? '막음 ' + nb + ' ' : '') + (nw ? '주의 ' + nw + ' ' : '')
+        + (ns ? '보탬 ' + ns : '') || '—'));
+      tr.appendChild(el('td', null, x.asof));
+      body.appendChild(tr);
+    });
+    tb.appendChild(body); wrap.appendChild(tb); box.appendChild(wrap);
+  });
+  if (!any) box.appendChild(el('p', 'empty',
+    '오늘은 이 칸에 걸린 종목이 없습니다. 합의가 모이는 날은 드뭅니다 — 그게 맞습니다.'));
+
+  const m = TAB === 'ALL' ? null : DOC.markets[TAB];
+  if (m) {
+    const p = el('p', 'muted');
+    p.textContent = m.label + ' ' + m.symbols + '종 · 기준일 ' + m.asof
+      + (m.edge_note ? ' · ' + m.edge_note : '')
+      + ' · 합의 멤버 ' + (m.members.length ? m.members.map(stratName).join(', ') : '없음');
+    box.appendChild(p);
+    if (m.edge_test != null && m.edge_test <= 0) {
+      const w = el('div', 'dangerbox');
+      w.textContent = '이 시장은 검증구간에서 합의의 초과수익이 ' + pct(m.edge_test)
+        + 'p 였습니다. 이 10종이 서지 않는 자리라는 뜻이고, 그래서 매수 신호를 모두 보류로 내립니다.';
+      box.appendChild(w);
+    }
+  }
+}
+
+/* ── 시황 ───────────────────────────────────────────────────────── */
+function drawRegime() {
+  const box = $('#regime'); box.innerHTML = '';
+  const rg = DOC.regime;
+  if (!rg) { box.appendChild(el('p', 'empty', '시황 자료를 받지 못했습니다.')); return; }
+  const kv = el('div', 'kv');
+  const NAMES = { kospi: '코스피', kosdaq: '코스닥', sp500: 'S&P500', nasdaq: '나스닥',
+    sox: '필라델피아 반도체', vix: 'VIX', usdkrw: '원/달러', dxy: '달러지수',
+    ust10y: '미 10년물', gold: '금', wti: 'WTI' };
+  Object.keys(NAMES).forEach(k => {
+    const v = rg.indices[k]; if (!v || v.close == null) return;
+    const r = el('div'); r.appendChild(el('span', 't', NAMES[k]));
+    const s = el('span', 'n');
+    s.textContent = num(v.close, v.close < 100 ? 2 : 0) + '  ' + pct(v.change_pct);
+    s.style.color = (v.change_pct || 0) > 0 ? 'var(--up)' : (v.change_pct || 0) < 0 ? 'var(--down)' : '';
+    r.appendChild(s); kv.appendChild(r);
+  });
+  box.appendChild(kv);
+  const flags = el('div', 'flags');
+  ['KR', 'US'].forEach(reg => (DOC.regime_flags[reg] || []).forEach(f => {
+    const r = el('div', 'fl ' + f.level);
+    r.appendChild(el('span', 'k', reg === 'KR' ? '국내' : '해외'));
+    r.appendChild(el('span', null, f.text));
+    flags.appendChild(r);
+  }));
+  box.appendChild(flags);
+  box.appendChild(el('p', 'muted', '시황 기준 ' + (rg.asof_kst || '—') + ' (KST)'));
+}
+
+/* ── 읽는 법 ────────────────────────────────────────────────────── */
+function drawHow() {
+  const box = $('#how'); box.innerHTML = '';
+  const h = DOC.how || {};
+  Object.keys(h).forEach(k => {
+    if (k === '막는 규칙') return;
+    const p = el('p', 'lede');
+    p.appendChild(el('b', null, k + ' — '));
+    p.appendChild(document.createTextNode(h[k]));
+    box.appendChild(p);
+  });
+  box.appendChild(el('h3', null, '매수를 막는 규칙 — 잰 것이 아니라 정한 것입니다'));
+  const wrap = el('div', 'tblwrap'); const tb = el('table');
+  tb.innerHTML = '<thead><tr><th>규칙</th><th>문턱</th><th>왜 이렇게 정했는가</th></tr></thead>';
+  const body = el('tbody');
+  (h['막는 규칙'] || []).forEach(b => {
+    const tr = el('tr');
+    tr.appendChild(el('td', null, b.text.replace(/%\([a-z_]+\)s/g, 'N').replace(/%%/g, '%')));
+    tr.appendChild(el('td', null, b.threshold));
+    const td = el('td'); td.style.textAlign = 'left'; td.textContent = b.why; tr.appendChild(td);
+    body.appendChild(tr);
+  });
+  tb.appendChild(body); wrap.appendChild(tb); box.appendChild(wrap);
+
+  const s = DOC.facts_summary || {};
+  const det = el('details');
+  det.appendChild(el('summary', null, '어느 겹에 자료가 얼마나 있는가'));
+  const kv = el('div', 'kv');
+  const put = (k, v) => { const r = el('div'); r.appendChild(el('span', 't', k));
+    r.appendChild(el('span', 'n', v)); kv.appendChild(r); };
+  put('국내 기업 자료', (s.companies_kr || {}).n + '종 · ' + ((s.companies_kr || {}).fetched_at || ''));
+  put('미국 기업 자료', (s.companies_us || {}).n + '종 · ' + ((s.companies_us || {}).fetched_at || ''));
+  put('증권사 리포트', (s.reports || {}).codes + '종목 · ' + (s.reports || {}).days + '날치');
+  put('종목별 수급', (s.flows || {}).stocks + '종');
+  put('시황', ((s.market || {}).asof_kst || '') + ' · 출처 ' + ((s.market || {}).sources_ok || '') + '곳');
+  det.appendChild(kv); box.appendChild(det);
+
+  const w = el('div', 'dangerbox');
+  w.appendChild(el('b', null, '정보 제공 목적의 사내 참고 자료이며 투자 권유가 아닙니다. '));
+  w.appendChild(document.createTextNode(
+    '판정은 과거 자료로 만든 규칙의 출력이지 앞일에 대한 예측이 아닙니다. '
+    + '기술 겹만 대조군으로 검증했고, 실적·수급·리포트 겹은 그 값을 재지 못했습니다. '
+    + '고객에게 보여 주는 자료로 쓸 경우 준법감시 부서 확인이 필요합니다.'));
+  box.appendChild(w);
+}
+
+/* ── 띄우기 ─────────────────────────────────────────────────────── */
+function boot(doc) {
+  DOC = doc;
+  ALL = [];
+  (DOC.view_order || Object.keys(DOC.markets)).forEach(mk => {
+    const m = DOC.markets[mk]; if (!m) return;
+    m.items.forEach(x => ALL.push(x));
+  });
+  ALL.sort((a, b) => VORDER.indexOf(a.verdict) - VORDER.indexOf(b.verdict)
+    || (a.name || '').localeCompare(b.name || '', 'ko'));
+
+  const n = {}; VORDER.forEach(v => n[v] = ALL.filter(x => x.verdict === v).length);
+  $('#stamp').textContent = '기준 ' + DOC.generated_at_kst + ' KST · '
+    + Object.keys(DOC.markets).length + ' 시장 ' + ALL.length + ' 종목 · 합의 문턱 K=' + DOC.k;
+  $('#todayLede').textContent = '매수 ' + n.BUY + ' · 보류 ' + n.BLOCKED + ' · 청산 ' + n.SELL
+    + ' · 관찰 ' + n.WATCH + ' · 보유 ' + n.HOLD
+    + '. 「보유」가 대부분인 것이 맞습니다 — 합의가 모이는 날은 드뭅니다.';
+
+  TAB = 'ALL';
+  drawTabs(); drawList(); drawRegime(); drawHow();
+
+  $('#q').addEventListener('input', e => search(e.target.value));
+  $('#clearBtn').addEventListener('click', () => { $('#q').value = ''; search(''); $('#q').focus(); });
+  const p = new URLSearchParams(location.search).get('q');
+  if (p) { $('#q').value = p; search(p); }
+}
+
+$('#theme').addEventListener('click', () => {
+  const dark = document.documentElement.getAttribute('data-theme') === 'dark';
+  document.documentElement.setAttribute('data-theme', dark ? 'light' : 'dark');
+  $('#theme').textContent = dark ? '어둡게' : '밝게';
+});
+$('#printBtn').addEventListener('click', () => window.print());
+
+/* 자료를 못 받으면 **지어내지 않는다.** 적고 멈춘다. */
+const SRC = new URLSearchParams(location.search).get('src') || '../../data/kis_timing/verdict.json';
+const inline = document.getElementById('verdict-data');
+if (inline) { boot(JSON.parse(inline.textContent)); }
+else {
+  fetch(SRC).then(r => { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
+    .then(boot)
+    .catch(e => {
+      $('#stamp').textContent = '판정 자료를 받지 못했습니다 — ' + e.message;
+      $('#stamp').style.color = 'var(--danger)';
+      $('#lists').innerHTML = '<p class="empty">data/kis_timing/verdict.json 을 읽지 못했습니다. '
+        + '<code>python3 scripts/build_verdict.py</code> 를 먼저 돌리십시오.</p>';
+    });
+}
+</script>
+</body>
+</html>
