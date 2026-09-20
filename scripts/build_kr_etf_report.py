@@ -73,6 +73,9 @@ from datetime import datetime, timezone, timedelta
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 KST = timezone(timedelta(hours=9))
 LATEST = os.path.join(ROOT, 'data', 'kis_timing', 'latest.json')
+# 종목 딱지(실적·목표가·수급·일정)는 판정 산출물에서 온다. **여기서 다시 셈하지
+# 않는다** — 셈이 두 벌이면 한 장과 판정 화면이 다른 말을 하게 된다.
+VERDICT = os.path.join(ROOT, 'data', 'kis_timing', 'verdict.json')
 BACKTEST = os.path.join(ROOT, 'data', 'kis_timing', 'backtest.json')
 # **한 대본이 시장 둘을 낸다.** 파일을 두 벌 두면 한쪽만 고쳐지고, 그 뒤로는
 # 두 리포트가 서로 다른 말을 하게 된다. 시장마다 다른 것은 아래 표에 모은다 —
@@ -94,6 +97,24 @@ MARKETS = {
             '미국나스닥100·니케이225 처럼 국내에 상장됐지만 해외를 따라가는 것들은 '
             '따로 셉니다. 한 칸에 섞으면 「국내ETF 에서 먹혔다」가 실은 미국 지수에서 '
             '먹힌 것일 수 있습니다.'),
+    },
+    'KR_STOCK': {
+        'slug': 'kr-stock',
+        'csv': 'kr-stock-timing',
+        # **종목 딱지를 함께 싣는다.** ETF 에는 실적도 목표주가도 없지만 개별
+        # 주식에는 있고, 그것을 뺀 한 장은 판정 화면과 다른 말을 하게 된다.
+        'facts': True,
+        'history': (
+            '<b>자료가 두 해뿐이고, 그 두 해는 한 장세입니다.</b> 국내 일봉을 '
+            '2024-09 부터 모았는데 그 사이 코스피는 크게 올랐습니다. '
+            '전 구간 초과수익(%(edge)s)이 커 보이는 것은 그 장세를 잰 값이고, '
+            '뒤 구간에서 다시 잰 값은 <b>%(test_edge)s</b> 로 훨씬 작습니다. '
+            '<b>믿을 것은 뒤엣것입니다.</b> ETF 판(8해치)과 같은 무게로 읽지 마십시오.'),
+        'scope': (
+            '대상은 <b>국내 시가총액 상위 %(count)d 종</b>입니다. 중소형주는 '
+            '없습니다. 그리고 <b>지금 목록에 있는 회사만 봅니다</b> — 그 사이 '
+            '순위에서 밀려난 회사는 자료에 없어, 성적이 실제보다 좋게 나오는 '
+            '쪽으로 기울어 있습니다(생존 편향). ETF 판에는 없는 한계입니다.'),
     },
     'KR_OV_ETF': {
         'slug': 'kr-ov-etf',
@@ -142,6 +163,16 @@ def pct(x, d=2, sign=True):
     return ('%+.*f%%' if sign else '%.*f%%') % (d, x)
 
 
+def pctp(x, d=2):
+    """초과수익의 단위는 **%p 다.** 수익률(%)과 같은 서식으로 찍으면 안 된다.
+
+    「초과수익 +6.91%」는 「6.91% 벌었다」로 읽히는데 실제 뜻은 「무작위 진입보다
+    6.91%p 더 벌었다」이다. 표 설명에만 (%p)라 적어 두고 수는 % 로 찍고 있었다 —
+    같은 자료 안에서 한 값의 단위가 두 가지면 어느 쪽도 믿을 수 없다.
+    """
+    return '—' if x is None else '%+.*f%%p' % (d, x)
+
+
 def plan_rows(plans, names, kind):
     if not plans:
         return ('<p class="none">오늘은 해당 종목이 없습니다. '
@@ -163,7 +194,7 @@ def plan_rows(plans, names, kind):
     return '\n'.join(out) + '</tbody></table></div>'
 
 
-def build(doc, bt):
+def build(doc, bt, vd=None):
     m = doc['markets'][MARKET]
     names = {s['id']: s['name'] for s in doc['strategies']}
     g = m['consensus_full'] or {}
@@ -194,7 +225,7 @@ def build(doc, bt):
         % (' class="member"' if mem else '', esc(nm),
            ' <span class="tag">합의</span>' if mem else '',
            x.get('trades'), pct(x.get('win_rate'), 1, sign=False), pct(x.get('avg')),
-           pct((x.get('train') or {}).get('edge')), pct((x.get('test') or {}).get('edge')))
+           pctp((x.get('train') or {}).get('edge')), pctp((x.get('test') or {}).get('edge')))
         for _, nm, x, mem in srows)
 
     k_table = '\n'.join(
@@ -202,7 +233,7 @@ def build(doc, bt):
         '<td class="n">%s</td><td class="n">%s</td></tr>'
         % (' class="member"' if c['k'] == rule['k'] and c['scope'] == 'test' else '',
            '검증구간' if c['scope'] == 'test' else '전 구간', c['k'], c.get('trades'),
-           pct(c.get('win_rate'), 1, sign=False), pct(c.get('avg')), pct(c.get('edge')))
+           pct(c.get('win_rate'), 1, sign=False), pct(c.get('avg')), pctp(c.get('edge')))
         for c in sorted(cons, key=lambda c: (c['scope'] != 'test', c['k'])))
 
     return TEMPLATE % dict(derived(m, bt, g, gt, base, rule), **{
@@ -212,14 +243,18 @@ def build(doc, bt):
         # 제목은 **자료의 이름표**를 쓴다. 여기 또 적어 두면 시장을 늘릴 때
         # 한쪽만 고쳐져 「국내ETF」라 적힌 해외ETF 리포트가 나온다.
         'title': esc(m['label']),
-        'history': MARKETS[MARKET]['history'] % {'count': m['count']},
-        'scope': MARKETS[MARKET]['scope'] % {'count': m['count']},
+        # 시장마다 다른 문단에도 **수를 자료에서 넣는다.** 표에 손으로 적으면
+        # 그 수만 다시 낡는다.
+        'history': MARKETS[MARKET]['history'] % _mvars(m, g, gt),
+        'scope': MARKETS[MARKET]['scope'] % _mvars(m, g, gt),
         'k': rule['k'],
         'stop': rule['stop_loss_pct'],
         'members': esc(' · '.join(m['member_names'])),
         'n_members': len(m['members']),
         'buy': plan_rows(m['buy'], names, 'buy'),
-        'concentration': concentration(m['buy']),
+        'concentration': concentration(m['buy'], vd),
+        'facts': (fact_rows(m['buy'], (vd or {}).get('markets', {}).get(MARKET))
+                  if MARKETS[MARKET].get('facts') else ''),
         'sell': plan_rows(m['sell'], names, 'sell'),
         'n_watch': len(m['watch_buy']),
         'trades': g.get('trades'),
@@ -230,9 +265,9 @@ def build(doc, bt):
         'base_win': pct(base.get('win_rate'), 1, sign=False),
         'avg': pct(g.get('avg')),
         'base_avg': pct(base.get('avg')),
-        'edge': pct(g.get('edge')),
+        'edge': pctp(g.get('edge')),
         'test_trades': gt.get('trades'),
-        'test_edge': pct(gt.get('edge')),
+        'test_edge': pctp(gt.get('edge')),
         'span_from': esc(uni.get('from')), 'span_to': esc(uni.get('to')),
         'split': esc(uni.get('split_at')),
         'cost': (asm.get('왕복비용_bp') or {}).get(MARKET),
@@ -266,7 +301,7 @@ _EXPOSURE = [
 ]
 
 
-def concentration(plans):
+def concentration(plans, vd=None):
     """매수 자리가 한쪽에 몰려 있는가.
 
     **목록이 길다고 분산이 아니다.** 열세 종을 샀는데 열 종이 미국 테크면 그건
@@ -278,6 +313,13 @@ def concentration(plans):
     """
     if len(plans) < 3:
         return ''
+    # **섹터를 알 수 있으면 이름으로 짐작하지 않는다.** 개별 주식은 판정
+    # 산출물에 실제 섹터가 실려 있다. 이름에 든 말로 가르는 것은 ETF 처럼
+    # 그것밖에 없을 때 쓰는 차선이다.
+    by_sector = _sector_groups(plans, vd)
+    if by_sector is not None:
+        return _conc_html(plans, by_sector, '섹터',
+                          '가른 잣대는 <b>기업 자료의 섹터</b>입니다.')
     hit = {}
     for p in plans:
         nm = (p.get('name') or '').upper()
@@ -287,16 +329,48 @@ def concentration(plans):
                 break
     if not hit:
         return ''
-    label, got = max(hit.items(), key=lambda kv: len(kv[1]))
+    return _conc_html(plans, hit, '노출',
+                      '가른 잣대는 <b>종목 이름에 든 말</b>입니다. 실제 보유 종목이나 '
+                      '수익률 상관을 잰 것이 아닙니다.')
+
+
+def _sector_groups(plans, vd):
+    """판정 산출물의 섹터로 묶는다. 하나라도 모르면 None — 짐작으로 메우지 않는다."""
+    if not vd:
+        return None
+    by = {}
+    for mk in vd.get('markets', {}).values():
+        for x in mk.get('items') or []:
+            by[x['symbol']] = x
+    out = {}
+    for p in plans:
+        v = by.get(p['symbol']) or {}
+        sec = (((v.get('facts') or {}).get('fundamentals') or {})
+               .get('profile') or {}).get('sector')
+        if not sec:
+            return None
+        out.setdefault(sec, []).append(p['name'])
+    return out
+
+
+def _conc_html(plans, groups, kind, basis):
+    if not groups:
+        return ''
+    label, got = max(groups.items(), key=lambda kv: len(kv[1]))
     if len(got) * 2 < len(plans):          # 절반에 못 미치면 몰렸다고 하지 않는다
         return ''
     return ('<div class="warn"><p><b>매수 자리가 한쪽에 몰려 있습니다.</b> '
-            '%d 종 가운데 <b>%d 종이 「%s」 노출</b>입니다. 목록이 길다고 분산이 '
+            '%d 종 가운데 <b>%d 종이 「%s」 %s</b>입니다. 목록이 길다고 분산이 '
             '아닙니다 — 그쪽이 흔들리면 함께 흔들립니다. 나누어 담을 생각이라면 '
             '이 점을 먼저 보십시오.</p>'
-            '<p class="cap">가른 잣대는 <b>종목 이름에 든 말</b>입니다. 실제 보유 '
-            '종목이나 수익률 상관을 잰 것이 아닙니다.</p></div>'
-            % (len(plans), len(got), esc(label)))
+            '<p class="cap">%s</p></div>'
+            % (len(plans), len(got), esc(label), esc(kind), basis))
+
+
+def _mvars(m, g, gt):
+    return {'count': m['count'], 'edge': pctp(g.get('edge')),
+            'test_edge': pctp(gt.get('edge')), 'trades': g.get('trades'),
+            'label': m['label']}
 
 
 def derived(m, bt, g, gt, base, rule):
@@ -333,19 +407,37 @@ def derived(m, bt, g, gt, base, rule):
                         else '며칠에서 몇 주를 들고 가는 방식' if hm <= 20
                         else '몇 달을 들고 가는 방식')
     sp = (stop_n / tot * 100.0)
-    out['stop_note'] = ('드물게 닿는' if sp < 5 else '열에 한 번쯤 닿는' if sp < 20
-                        else '자주 닿는')
+    sg = (sig_n / tot * 100.0)
+    # **끝나는 자리가 손절인가 신호인가에 따라 문단을 통째로 뒤집는다.**
+    # ETF 는 손절 3.4% 라 「손절이 주된 자리가 아니다」가 맞지만, 국내주식은
+    # 68.6% 라 같은 문장이 스스로 모순이 된다. 어느 쪽인지부터 셈해서 적는다.
+    if sp > 50:
+        out['exit_para'] = (
+            '<b>지는 자리는 대부분 손절입니다.</b> 끝난 거래의 <b>%.1f%%</b> 가 '
+            '손절로 잘렸고, 청산 신호까지 간 것은 %.1f%% 입니다. 손절 %s%% 가 '
+            '이 방식의 주된 출구라는 뜻이라, <b>손절을 지키지 않으면 성적이 '
+            '통째로 달라집니다.</b>' % (sp, sg, rule['stop_loss_pct']))
+    else:
+        out['exit_para'] = (
+            '<b>지는 자리가 손절은 아닙니다.</b> 끝난 거래의 <b>%.1f%%</b> 는 '
+            '청산 신호로, 손절로 잘린 것은 %.1f%% 입니다. 손절 %s%% 는 %s '
+            '마지막 방벽이지 이 방식이 지는 주된 자리가 아닙니다.'
+            % (sg, sp, rule['stop_loss_pct'],
+               '드물게 닿는' if sp < 5 else '열에 한 번쯤 닿는'))
 
     out['avg_win'] = pct(g.get('avg_win'))
     out['avg_loss'] = pct(g.get('avg_loss'))
     out['hold'] = g.get('hold_median')
 
     # 「한 번 지면 몇 번 이긴 것이 날아가는가」 — 승률만 보면 안 보이는 수다.
+    # **어느 쪽이 큰가에 따라 말을 뒤집는다.** 국내주식은 이길 때 +48.9%,
+    # 질 때 −5.2% 라 「한 번 져도 이긴 것 0.1 번이면 메워집니다」가 인쇄될
+    # 뻔했다 — 수는 맞는데 읽으면 뜻이 없다. 큰 쪽을 기준으로 적는다.
     aw, al = g.get('avg_win'), g.get('avg_loss')
     if aw and al:
         r = abs(al) / aw
         out['size_note'] = ('한 번 지면 이긴 것 %.1f 번이 날아갑니다.' % r if r >= 1
-                            else '한 번 져도 이긴 것 %.1f 번이면 메워집니다.' % r)
+                            else '한 번 이기면 진 것 %.1f 번을 메웁니다.' % (1.0 / r))
     else:
         out['size_note'] = ''
 
@@ -367,7 +459,9 @@ def derived(m, bt, g, gt, base, rule):
                             % (len(edges), mine + 1, esc(best), edges[0][0]))
         # 위에서 몇째인가로 머리말을 가른다. 앞 두 자리면 「두꺼운 축」,
         # 그 아래면 「얇습니다」. 자리를 손으로 적지 않는다.
+        # 앞 두 자리 · 가운데 · 뒤로 가른다. 다섯 시장이면 1~2 / 3 / 4~5 다.
         out['edge_note'] = ('이 시장은 근거가 두꺼운 축입니다.' if mine < 2
+                            else '이 시장은 가운데쯤입니다.' if mine < len(edges) - 2
                             else '이 시장의 초과수익은 얇습니다.')
 
     # K 를 왜 이 값으로 두는가 — 표의 수에서 문장을 만든다.
@@ -401,6 +495,45 @@ def derived(m, bt, g, gt, base, rule):
                    'K=%d 가 둘을 함께 갖춘 자리입니다.' % k)
     out['k_why'] = ' '.join(why)
     return out
+
+
+_LEVEL_KO = {'block': '막음', 'warn': '주의', 'support': '보탬', 'info': ''}
+
+
+def fact_rows(plans, vmarket):
+    """매수 자리마다 실적·목표가·수급 딱지를 붙인다. (개별 주식만)
+
+    **한 장에서 이것을 빼면 판정 화면과 다른 말을 하게 된다.** 같은 종목을 놓고
+    한쪽은 「사는 자리」만 적고 다른 쪽은 「최근 네 분기 서프라이즈 평균 −17%」를
+    적으면, 읽는 사람은 어느 쪽을 믿어야 할지 알 수 없다.
+
+    딱지는 **판정 산출물에서 그대로 가져온다.** 여기서 다시 셈하면 두 벌이 된다.
+    """
+    if not plans or not vmarket:
+        return ''
+    by = {x['symbol']: x for x in vmarket.get('items') or []}
+    out = []
+    for p in plans:
+        v = by.get(p['symbol']) or by.get(p.get('code')) or {}
+        fl = [f for f in (v.get('flags') or []) if f['level'] != 'info']
+        if not fl:
+            continue
+        rank = {'block': 0, 'warn': 1, 'support': 2}
+        fl.sort(key=lambda f: rank.get(f['level'], 9))
+        items = ''.join(
+            '<li class="fl-%s"><b>%s</b> %s <span class="lv">%s</span></li>'
+            % (f['level'], esc(f['kind']), esc(f['text']), _LEVEL_KO.get(f['level'], ''))
+            for f in fl)
+        out.append('<div class="factcard"><div class="nm">%s</div><ul>%s</ul></div>'
+                   % (esc(p['name']), items))
+    if not out:
+        return ''
+    return ('<h3>매수 자리의 실적·수급 — 기술 신호와 따로 봅니다</h3>'
+            '<p class="cap">아래는 <b>판정을 만들지 않습니다.</b> 대조군을 세워 잰 것은 '
+            '기술 신호뿐이고, 실적·목표가·수급은 그 값을 재지 못했습니다. '
+            '다만 <b>사기 전에 한 번 보라</b>는 뜻으로 싣습니다 — 「주의」가 붙은 자리는 '
+            '기술 신호가 켜졌어도 미루는 편이 낫습니다.</p>'
+            + '\n'.join(out))
 
 
 def watch_rows(plans, names):
@@ -581,6 +714,17 @@ TEMPLATE = r"""<!DOCTYPE html>
     table.data { font-size: 15px; }
   }
 
+  .factcard { border: 1px solid #E3E4E1; border-left: 3px solid #043B72;
+              padding: 12px 14px; margin-top: 10px; }
+  .factcard .nm { font-weight: 700; margin-bottom: 6px; }
+  .factcard ul { margin: 0; padding-left: 18px; }
+  .factcard li { margin: 3px 0; }
+  .factcard li b { color: #5B5C58; font-weight: 600; margin-right: 4px; }
+  .factcard .lv { color: #8A8B87; font-size: .86em; margin-left: 4px; }
+  .factcard li.fl-block { color: #A61C1C; }
+  .factcard li.fl-warn { color: #8A5A00; }
+  .factcard li.fl-support { color: #1B6B2F; }
+
   @media print {
     @page { margin: 14mm; }
     body { font-size: 13pt; line-height: 1.45; }
@@ -590,7 +734,7 @@ TEMPLATE = r"""<!DOCTYPE html>
     .hero h1 { font-size: 26pt; } .hero .sub { font-size: 13pt; }
     .section { margin-top: 26px; page-break-inside: avoid; }
     .section-title, h3 { page-break-after: avoid; }
-    table.data, .stat, .callout, .warn { page-break-inside: avoid; }
+    table.data, .stat, .callout, .warn, .factcard { page-break-inside: avoid; }
     .tblwrap { overflow: visible; }
     table.data th, table.data td.hl, .hero {
       -webkit-print-color-adjust: exact; print-color-adjust: exact;
@@ -642,6 +786,7 @@ TEMPLATE = r"""<!DOCTYPE html>
     <h3>매수</h3>
     %(buy)s
     %(concentration)s
+    %(facts)s
     <p class="cap">%(price_note)s %(weight_note)s</p>
 
     <h3>청산 — 들고 있다면 내려놓을 자리</h3>
@@ -704,11 +849,7 @@ TEMPLATE = r"""<!DOCTYPE html>
         <b>승률을 높여 주는 전략이 아닙니다 — 낮춥니다.</b> 승률 %(win)s 는 아무 날에나
         산 것(%(base_win)s)보다 낮습니다. <b>다섯 번 중 %(lose5)s 번은 지는 거래입니다.</b>
       </p>
-      <p>
-        <b>지는 자리가 손절은 아닙니다.</b> 끝난 거래의 %(exit_signal)s 는 청산 신호로,
-        손절로 잘린 것은 %(exit_stop)s 입니다. 손절 %(stop)s%% 는 %(stop_note)s
-        마지막 방벽이지 이 방식이 지는 주된 자리가 아닙니다.
-      </p>
+      <p>%(exit_para)s</p>
       <p>
         좋아지는 것은 <b>한 번의 크기</b>입니다 — 이길 때 %(avg_win)s, 질 때 %(avg_loss)s.
         %(size_note)s 평균 보유는 %(hold)s 거래일이라 <b>%(hold_note)s</b>입니다.
@@ -937,7 +1078,29 @@ def main(argv=None):
                          'build_kis_timing.py 를 다시 돌리십시오\n' % (m['members'], want))
         return 1
 
-    html = build(doc, bt)
+    # 판정 산출물 — 종목 딱지를 쓰는 시장에서는 **없거나 낡으면 멈춘다.**
+    # 실적 딱지가 조용히 빠진 한 장은, 딱지가 없는 한 장보다 나쁘다.
+    vd = None
+    if os.path.exists(VERDICT):
+        try:
+            vd = json.load(open(VERDICT, encoding='utf-8'))
+        except ValueError as e:
+            vd = None
+            sys.stderr.write('판정 자료를 읽지 못했습니다: %s\n' % e)
+    if MARKETS[MARKET].get('facts'):
+        vm = (vd or {}).get('markets', {}).get(MARKET)
+        if not vm:
+            sys.stderr.write('%s 는 종목 딱지를 함께 싣는 시장인데 판정 자료가 '
+                             '없습니다 — python3 scripts/build_verdict.py 를 '
+                             '먼저 돌리십시오\n' % MARKET)
+            return 1
+        if vm.get('asof') != m['asof'] or vm.get('members') != m['members']:
+            sys.stderr.write('판정 자료가 세팅과 어긋납니다 (기준일 %s vs %s) — '
+                             'build_verdict.py 를 다시 돌리십시오\n'
+                             % (vm.get('asof'), m['asof']))
+            return 1
+
+    html = build(doc, bt, vd)
     with open(out, 'w', encoding='utf-8') as f:
         f.write(html)
     print('썼다: %s (%.0f KB · %s · %s 기준 · 매수 %d · 청산 %d · 관찰 %d)'
