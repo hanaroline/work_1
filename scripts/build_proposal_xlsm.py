@@ -27,6 +27,15 @@
   python3 scripts/build_proposal_xlsm.py
   python3 scripts/build_proposal_xlsm.py --in 고객제안서_자산배분.xlsx
 
+확인하는 법
+  python3 scripts/verify_xlsm_macro.py
+
+  MS-OVBA 는 한 바이트만 틀려도 엑셀이 「복구할 수 없습니다」를 띄운다.
+  그래서 만든 뒤에는 기계로 확인한다 — 제3의 파서(olevba)가 소스를 한 글자
+  까지 같게 읽는지, 그리고 리브레오피스가 VBA 를 들여와 `조회_실행` 이
+  실제로 칸을 바꾸는지. 리브레오피스는 엑셀이 아니므로 MsgBox·Select·
+  매크로 보안 경고까지는 확인되지 않는다.
+
 산출물
   고객제안서_자산배분_매크로.xlsm
 """
@@ -61,7 +70,7 @@ DRAW_REL = "http://schemas.openxmlformats.org/officeDocument/2006/relationships/
 MACRO = '''Option Explicit
 
 ' 「조회」 칸을 글자로 찾는다. 행 번호를 박아 두면 시트가 한 줄만 밀려도
-' 엉뚱한 칸을 고친다 — 틀렸다는 티도 안 난다.
+' 엉뚱한 칸을 고친다 ― 틀렸다는 티도 안 난다.
 Private Function 조회칸(ws As Worksheet) As Range
     Dim c As Range
     Set c = ws.Columns(1).Find(What:="조회", LookAt:=xlWhole, MatchCase:=False)
@@ -109,7 +118,7 @@ Public Sub 조건_초기화()
     ws.Cells(g.Row - 1, 2).ClearContents          ' 목표 연수익률
     g.Value = "%(off)s"
 
-    ' 「조정 비중」 열(C)을 비운다 — 자산군 줄만 훑는다.
+    ' 「조정 비중」 열(C)을 비운다 ― 자산군 줄만 훑는다.
     For i = g.Row + 4 To g.Row + 20
         If ws.Cells(i, 1).Value = "합계" Then Exit For
         If Len(ws.Cells(i, 1).Value) > 0 Then ws.Cells(i, 3).ClearContents
