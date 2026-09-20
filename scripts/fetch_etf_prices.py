@@ -204,9 +204,34 @@ def main(argv):
     ap = argparse.ArgumentParser()
     ap.add_argument('--only', default='', help='KR 또는 OV 만')
     ap.add_argument('--limit', type=int, default=0)
-    ap.add_argument('--years', type=int, default=YEARS)
+    # **0 은 「지금 파일과 같은 해치」다.** 기본값을 숫자로 박아 두면 단추를 그냥
+    # 누른 사람이 이력을 줄이게 된다 — 실제로 그렇게 됐다(아래 --allow-shrink 주석).
+    ap.add_argument('--years', type=int, default=0)
+    ap.add_argument('--allow-shrink', action='store_true',
+                    help='예전보다 짧게 와도 그대로 쓴다 (이력이 줄어든다)')
     ap.add_argument('--out', default=OUT)
     a = ap.parse_args(argv)
+
+    # **예전 판을 읽어 둔다.** 이 대본은 받은 것으로 파일을 통째로 다시 쓴다. 그러면
+    # 한 종목이 실패한 날 그 종목의 이력이 **파일에서 사라진다** — 오류 하나가 조용한
+    # 손실이 되는 자리다. 실패하면 예전 것을 그대로 남긴다.
+    #
+    # 성공한 종목은 **섞지 않고 통째로 갈아 끼운다.** 야후의 배당보정 종가는 소급해서
+    # 다시 매겨지므로 3년 판의 adjclose 와 8년 판의 adjclose 는 기준이 다르다. 두 판을
+    # 날짜로 기워 붙이면 분배금 몫을 재는 자리가 조용히 틀어진다.
+    prev_doc, old = {}, {}
+    if os.path.exists(a.out):
+        try:
+            prev_doc = json.load(open(a.out, encoding='utf-8')) or {}
+            old = prev_doc.get('items') or {}
+        except (ValueError, OSError) as e:
+            sys.stderr.write('예전 판을 읽지 못했다(무시하고 새로 받는다): %s\n' % e)
+
+    # 햇수를 물려받는다. 파일에 적힌 것이 없으면 그때만 기본 해치를 쓴다.
+    if a.years <= 0:
+        a.years = int(prev_doc.get('years_requested') or YEARS)
+        sys.stderr.write('햇수를 말하지 않아 지금 파일과 같은 %d해치로 받는다\n'
+                         % a.years)
 
     today = datetime.now(KST)
     span = ((today - timedelta(days=int(a.years * 372))).strftime('%Y%m%d'),
@@ -217,20 +242,6 @@ def main(argv):
         its = [x for x in its if x['scope'] == a.only.upper()]
     if a.limit:
         its = its[:a.limit]
-
-    # **예전 판을 읽어 둔다.** 이 대본은 받은 것으로 파일을 통째로 다시 쓴다. 그러면
-    # 한 종목이 실패한 날 그 종목의 이력이 **파일에서 사라진다** — 오류 하나가 조용한
-    # 손실이 되는 자리다. 실패하면 예전 것을 그대로 남긴다.
-    #
-    # 성공한 종목은 **섞지 않고 통째로 갈아 끼운다.** 야후의 배당보정 종가는 소급해서
-    # 다시 매겨지므로 3년 판의 adjclose 와 8년 판의 adjclose 는 기준이 다르다. 두 판을
-    # 날짜로 기워 붙이면 분배금 몫을 재는 자리가 조용히 틀어진다.
-    old = {}
-    if os.path.exists(a.out):
-        try:
-            old = (json.load(open(a.out, encoding='utf-8')) or {}).get('items') or {}
-        except (ValueError, OSError) as e:
-            sys.stderr.write('예전 판을 읽지 못했다(무시하고 새로 받는다): %s\n' % e)
 
     out, failed, routes, kept, shrunk = {}, [], {}, [], []
     for n, it in enumerate(its):
@@ -311,6 +322,34 @@ def main(argv):
         'failed': failed,
         'items': out,
     }
+    # **짧게 온 판은 쓰지 않는다.**
+    #
+    # 예전에는 줄어든 것을 적어 두기만 하고 그대로 덮어썼다. 2026-09-20 그 자리가
+    # 실제로 터졌다 — 「몇 해치」를 비운 채 단추를 눌렀더니 기본값 3해치로 받아
+    # **8해치 이력이 통째로 사라졌다**(봉 79,575 → 45,383, 76종 중 46종이 줄었다.
+    # GOLD 는 2,030봉 2018-09-12~ 에서 761봉 2023-09-18~ 이 됐다). 판은 초록이었고
+    # 커밋도 됐다. 경고 한 줄은 아무것도 막지 못한다.
+    #
+    # 기워 붙이는 길은 위 주석이 이미 닫아 두었다(adjclose 기준이 다르다). 그러면
+    # 남는 답은 하나뿐이다 — **쓰지 않고 멈춘다.** 파일은 그대로 남으므로 잃는 것은
+    # 이번에 받은 것뿐이고, 햇수를 올려 다시 부르면 그것도 함께 온다.
+    #
+    # 원천이 정말로 이력을 줄인 때(상장폐지·통합)는 --allow-shrink 로 사람이 뚫는다.
+    if shrunk and not a.allow_shrink:
+        sys.stderr.write(
+            '::error::예전보다 짧게 온 종목 %d 개 — 쓰지 않고 멈춥니다. '
+            '%s%s\n'
+            % (len(shrunk), ', '.join(shrunk[:8]),
+               ' 외' if len(shrunk) > 8 else ''))
+        sys.stderr.write(
+            '  이력이 줄어드는 것을 막으려는 것입니다. 이번 판은 %d해치를 달라고 '
+            '했습니다 — 지금 파일은 %s해치입니다.\n'
+            % (a.years, prev_doc.get('years_requested') or '?'))
+        sys.stderr.write(
+            '  햇수를 올려 다시 부르거나(--years), 원천이 정말 줄인 것이라면 '
+            '--allow-shrink 를 붙이십시오.\n')
+        return 1
+
     os.makedirs(os.path.dirname(a.out), exist_ok=True)
     json.dump(doc, open(a.out, 'w', encoding='utf-8'), ensure_ascii=False)
 
@@ -321,7 +360,8 @@ def main(argv):
         sys.stderr.write('::warning::못 받아 예전 것을 그대로 둔 종목 %d: %s\n'
                          % (len(kept), ', '.join(kept)))
     if shrunk:
-        sys.stderr.write('::warning::예전보다 짧게 온 종목 %d: %s\n'
+        sys.stderr.write('::warning::예전보다 짧게 온 종목 %d 을 사람이 뚫고 '
+                         '썼습니다(--allow-shrink): %s\n'
                          % (len(shrunk), ', '.join(shrunk[:10])))
     print('썼다: %s' % a.out)
     return 0
