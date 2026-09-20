@@ -364,10 +364,18 @@ def page(doc, bt, vd, markets):
     for i, mk in enumerate(markets):
         MARKET = mk
         panels.append(build(doc, bt, vd, hidden=(len(markets) > 1 and i > 0)))
+        # **막힌 시장은 탭에서부터 말한다.** 탭 넷이 나란히 서면 넷이 같은
+        # 자격처럼 보인다 — 이것이 네 시장을 한 장에 담지 않던 까닭이었다.
+        # 판 안에는 붉은 띠와 순위가 있지만 **탭줄은 아무 말도 안 하므로**,
+        # 고르기 전에 알도록 여기에 적는다.
+        blocked = any(f['level'] == 'block' for f in
+                      (((vd or {}).get('markets', {}).get(mk) or {})
+                       .get('market_flags') or []))
         tabs.append('    <button type="button" role="tab" data-slug="%s" '
-                    'aria-selected="%s" aria-controls="panel-%s">%s</button>'
+                    'aria-selected="%s" aria-controls="panel-%s">%s%s</button>'
                     % (MARKETS[mk]['slug'], 'true' if i == 0 else 'false',
-                       MARKETS[mk]['slug'], esc(doc['markets'][mk]['label'])))
+                       MARKETS[mk]['slug'], esc(doc['markets'][mk]['label']),
+                       '<span class="tab-block">보류</span>' if blocked else ''))
 
     if len(markets) > 1:
         title = '매매 타이밍'
@@ -851,6 +859,12 @@ HEAD = r"""<!DOCTYPE html>
     color: var(--blue); font-weight: 700; border-bottom-color: var(--orange);
   }
   .tabs button:focus-visible { outline: 2px solid var(--blue); outline-offset: -2px; }
+  /* 막힌 시장은 고르기 전에 알아야 한다 — 판 안의 붉은 띠는 누른 뒤에야 보인다. */
+  .tabs .tab-block {
+    display: inline-block; margin-left: 7px; padding: 1px 6px;
+    border: 1px solid #A61C1C; color: #A61C1C; font-size: 13px; font-weight: 400;
+    vertical-align: 2px;
+  }
   .panel[hidden] { display: none; }
   @media (max-width: 640px) {
     .tabs .page { padding-left: 16px; padding-right: 16px; }
