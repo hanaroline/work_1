@@ -26,12 +26,14 @@ import random
 import statistics as st
 import subprocess
 import sys
+from datetime import datetime, timedelta, timezone
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import signal_lib as S
 import vol_lib as V
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+KST = timezone(timedelta(hours=9))
 
 # ─────────────────────────────────────────────────────────────────────
 # 비용 — **가정이다. 바꿔 가며 재고 그 민감도를 함께 싣는다.**
@@ -732,6 +734,10 @@ def main(argv):
     # 이 성적이 어느 모델의 것인지 적어 둔다. build_signals.py 가 이것을 대조해
     # 「지금 모델과 다르다」를 산출물에 남긴다.
     report['price_sources'] = srcs
+    # **언제 잰 성적인가.** 이 칸이 없으면 화면이 「날마다 다시 만든 판」과 「날마다
+    # 다시 잰 성적」을 구별해 말할 수 없다 — 성적표는 손으로만 돌리는데 화면만
+    # 날마다 새 시각을 달면 읽는 사람은 숫자도 새것인 줄 안다.
+    report['measured_at_kst'] = datetime.now(KST).strftime('%Y-%m-%d %H:%M:%S')
     report['engine_hash'] = hashlib.sha256(
         open(os.path.join(ROOT, 'scripts', 'signal_lib.py'), 'rb').read()).hexdigest()[:16]
     add_verdict(report)
