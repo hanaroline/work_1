@@ -48,5 +48,26 @@ for (const r of rules) {
   html = html.replace(r.from, r.to);
 }
 
+/**
+ * 교부자료 쪽 지도를 싣는다 — 앱 스크립트보다 **먼저** 와야 한다 (앱이 로드 시점에 읽는다).
+ *
+ * 처음에는 테스트판(make_test_source.mjs)에만 실었다. 쪽 번호가 하나라도 틀리면 창구가
+ * 고객 앞에서 엉뚱한 곳을 펴게 되므로, 배포본은 건드리지 않고 시험부터 한 것이다.
+ * 그 시험을 마치고 배포본에도 싣기로 했다.
+ *
+ * 아직 만들어지지 않은 지도가 있어도 여기서 멈추지 않는다. 앱은 없는 지도를 빈 것으로
+ * 보고 그 상품군에만 쪽 표시를 안 그린다 — 한쪽이 늦었다고 다른 쪽까지 못 쓰게 만들
+ * 이유가 없다.
+ */
+const APP = '<script src="js/sales-script-app.js"></script>';
+if (!html.includes(APP)) {
+  console.error(`[expl] ${SRC} 에서 앱 스크립트 태그를 찾지 못했습니다 — 쪽 지도를 실을 자리가 없습니다.`);
+  process.exit(1);
+}
+const MAPS = ['data/doc-pages.js', 'data/fund-doc-pages.js'];
+for (const m of MAPS) {
+  if (!html.includes(m)) html = html.replace(APP, `<script src="${m}"></script>\n` + APP);
+}
+
 await writeFile(OUT, html);
-console.log(`[expl] ${OUT} 생성 완료 (${rules.map((r) => r.what).join(' · ')} 반영)`);
+console.log(`[expl] ${OUT} 생성 완료 (${rules.map((r) => r.what).join(' · ')} · 쪽 지도 ${MAPS.join(' · ')} 적재)`);
