@@ -350,6 +350,88 @@ def test_refuses_to_shrink():
         shutil.rmtree(tmp, ignore_errors=True)
 
 
+def test_window_slide_is_not_shrink():
+    """**창이 미끄러진 것을 잘린 것으로 읽지 않는가.**
+
+    구간이 「오늘로부터 몇 해」라서, 하루가 지나 다시 부르면 가장 오래된 봉 하나가
+    창 밖으로 밀려난다. 봉 수만 보면 줄어든 것처럼 보인다.
+
+    2026-09-21 아침에 실제로 그래서 수집이 넘어졌다 — GOLD 2028→2027. 바로 전날
+    「남은 봉이 준 것은 창이 오늘에 매여 있어서이고 흠이 아니다」라고 적어 놓고,
+    그 현상을 막는 장치를 만든 셈이었다. 두면 **날마다** 넘어진다.
+
+    가르는 잣대는 시작 날짜가 밀린 날수다. 여기서는 셋을 본다 —
+    하루 미끄러진 판은 써지는가, 통째로 잘린 판은 그대로 막히는가,
+    그리고 끝이 앞당겨진 판(더 나쁜 쪽)은 막히는가.
+    """
+    tmp = tempfile.mkdtemp(prefix='etfslide')
+    try:
+        px = os.path.join(tmp, 'prices.json')
+        borrowed_prices(px)
+        doc = json.load(open(px, encoding='utf-8'))
+        doc['years_requested'] = 8
+        doc['generated_at_kst'] = F.kst_now()          # 방금 받은 것으로 둔다
+        json.dump(doc, open(px, 'w', encoding='utf-8'), ensure_ascii=False)
+        ovs = [x['ticker'] for x in L.items() if x['scope'] == 'OV'][:3]
+        tk = ovs[0]
+        n0 = doc['items'][tk]['bars_n']
+
+        def feed(drop_front=0, drop_back=0):
+            def f(it, span, years=None):
+                prev = doc['items'][it['ticker']]['bars']
+                d = prev['d'][drop_front: len(prev['d']) - drop_back or None]
+                i0 = drop_front
+                return ([{'d': d[i], 'o': prev['o'][i0+i], 'h': prev['h'][i0+i],
+                          'l': prev['l'][i0+i], 'c': prev['c'][i0+i], 'v': prev['v'][i0+i]}
+                         for i in range(len(d))],
+                        {'route': '시험', 'symbol_used': it['symbols'][0],
+                         'name_source': doc['items'][it['ticker']]['name_source'],
+                         'currency': 'USD', 'errors': []})
+            return f
+
+        def run(drop_front, drop_back):
+            keep_kr, keep_ov = F.fetch_kr, F.fetch_ov
+            err = sys.stderr
+            try:
+                g = feed(drop_front, drop_back)
+                F.fetch_kr = lambda it, span: g(it, span)
+                F.fetch_ov = lambda it, span, years=None: g(it, span, years)
+                sys.stderr = open(os.devnull, 'w')
+                return F.main(['--out', px, '--only', 'OV', '--limit', '3'])
+            finally:
+                sys.stderr.close(); sys.stderr = err
+                F.fetch_kr, F.fetch_ov = keep_kr, keep_ov
+
+        # 하나. 앞에서 한 줄 — 창이 하루 미끄러진 꼴
+        rc = run(1, 0)
+        after = json.load(open(px, encoding='utf-8'))
+        ok('하루 미끄러진 판은 써진다', rc == 0, 'rc=%s' % rc)
+        ok('미끄러진 것은 잘린 것으로 세지 않는다',
+           len(after.get('shrank') or []) == 0, str(after.get('shrank')))
+        ok('미끄러진 것을 적어 둔다', len(after.get('slid') or []) > 0,
+           str(after.get('slid')))
+        ok('실제로 한 줄 줄었다', after['items'][tk]['bars_n'] == n0 - 1,
+           '%s → %s' % (n0, after['items'][tk]['bars_n']))
+
+        # 둘. 앞에서 절반 — 통째로 잘린 꼴. 창이 그만큼 미끄러질 수는 없다
+        borrowed_prices(px)
+        doc2 = json.load(open(px, encoding='utf-8'))
+        doc2['generated_at_kst'] = F.kst_now()
+        json.dump(doc2, open(px, 'w', encoding='utf-8'), ensure_ascii=False)
+        rc = run(len(doc['items'][tk]['bars']['d']) // 2, 0)
+        ok('통째로 잘린 판은 막힌다', rc == 1, 'rc=%s' % rc)
+
+        # 셋. 뒤에서 한 줄 — 끝이 앞당겨졌다. 며칠이 지났든 이것은 잘린 것이다
+        borrowed_prices(px)
+        doc3 = json.load(open(px, encoding='utf-8'))
+        doc3['generated_at_kst'] = F.kst_now()
+        json.dump(doc3, open(px, 'w', encoding='utf-8'), ensure_ascii=False)
+        rc = run(0, 1)
+        ok('끝이 앞당겨진 판은 막힌다', rc == 1, 'rc=%s' % rc)
+    finally:
+        shutil.rmtree(tmp, ignore_errors=True)
+
+
 def test_backtest_guard():
     """**주식 성적표를 ETF 옆에 붙이려 하면 거부하는가.**
 
@@ -403,6 +485,7 @@ def main():
     test_years_reaches_yahoo()
     test_keeps_old_on_failure()
     test_refuses_to_shrink()
+    test_window_slide_is_not_shrink()
     test_backtest_guard()
     test_pipeline()
 
