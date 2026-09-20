@@ -17,9 +17,11 @@
 """
 
 import argparse
+import hashlib
 import json
 import math
 import os
+import re
 import sys
 from datetime import datetime, timedelta, timezone
 
@@ -27,7 +29,7 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 KST = timezone(timedelta(hours=9))
 STOCKS = os.path.join(ROOT, 'data', 'signals', 'backtest.json')
 ETF = os.path.join(ROOT, 'data', 'etf', 'backtest.json')
-OUT = os.path.join(ROOT, 'backtest-4boards.html')
+OUT = os.path.join(ROOT, 'docs', 'boards', 'index.html')
 
 HS = ['5', '10', '20', '60']
 
@@ -376,9 +378,27 @@ def main(argv):
          '<style>%s</style></head><body><div class="wrap">' % CSS]
 
     h.append('<h1>네 판을 같은 잣대로 재다</h1>')
+    # **「만든 때」와 「잰 때」를 갈라 적는다.**
+    #
+    # 이 화면은 날마다 다시 만들지만 성적표는 손으로만 다시 잰다. 머리말에 만든 때만
+    # 적어 두면 날마다 새 날짜가 붙어 **숫자도 새것인 줄로 읽힌다.** 잰 때를 나란히
+    # 두면 그 착각이 설 자리가 없다. 적혀 있지 않은 판은 적혀 있지 않다고 적는다 —
+    # 이 저장소가 engine_hash 에서 쓰는 규율과 같다.
+    stamps = []
+    for d in {id(b['doc']): b['doc'] for b in boards}.values():
+        stamps.append(d.get('measured_at_kst'))
+    known = sorted(x for x in stamps if x)
+    if len(known) == len(stamps) and known:
+        when = ('성적을 잰 때 %s' % known[0] if len(set(known)) == 1
+                else '성적을 잰 때 %s ~ %s' % (known[0], known[-1]))
+    elif known:
+        when = ('성적을 잰 때 %s <b>(일부 판은 적혀 있지 않습니다)</b>' % known[0])
+    else:
+        when = '<b>성적을 잰 때가 적혀 있지 않습니다</b> — 이 칸을 붙이기 전에 만들어진 판입니다'
     h.append('<div class="sub">국내 주식 · 미국 주식 · 국내상장 ETF · 해외상장 ETF — '
-             '같은 대본(<code>signal_backtest.py</code>)이 낸 성적입니다. '
-             '만든 때 %s</div>' % datetime.now(KST).strftime('%Y-%m-%d %H:%M KST'))
+             '같은 대본(<code>signal_backtest.py</code>)이 낸 성적입니다.<br/>'
+             '%s · 이 화면을 만든 때 %s</div>'
+             % (when, datetime.now(KST).strftime('%Y-%m-%d %H:%M KST')))
 
     # ── 한 눈에
     h.append('<div class="card"><h2>한 눈에</h2>')
@@ -487,10 +507,36 @@ def main(argv):
     h.append('</div>')
 
     h.append('</div></body></html>')
-    open(a.out, 'w', encoding='utf-8').write(''.join(h))
+    html = ''.join(h)
+
+    # **바뀐 것이 시각뿐이면 파일을 건드리지 않는다.**
+    #
+    # 이 화면은 성적표 둘만 읽는데 그것들은 손으로만 다시 잰다. 날마다 돌리면
+    # 알맹이는 그대로인 채 머리말의 만든 때 한 줄만 달라지는데, 그것을 그대로 쓰면
+    # 날마다 40KB 가 저장소에 새로 쌓이고 「갱신됨」이라는 거짓 신호가 남는다.
+    # kis_timing_data.write_if_changed 와 같은 규율이며, 지문을 파일에 적어 두어
+    # 다음 판이 견줄 수 있게 한다.
+    body = re.sub(r'이 화면을 만든 때 [^<]*', '이 화면을 만든 때 —', html)
+    digest = hashlib.sha256(body.encode('utf-8')).hexdigest()[:16]
+    html = html.replace('</body>', '<!-- content-hash: %s --></body>' % digest)
+
+    prev = ''
+    if os.path.exists(a.out):
+        try:
+            prev = open(a.out, encoding='utf-8').read()
+        except OSError:
+            prev = ''
+    if ('content-hash: %s ' % digest) in prev:
+        print('그대로 둔다: %s — 시각 말고 달라진 것이 없다 (지문 %s)'
+              % (os.path.relpath(a.out, ROOT), digest))
+        return 0
+
+    os.makedirs(os.path.dirname(a.out), exist_ok=True)
+    open(a.out, 'w', encoding='utf-8').write(html)
     mb = os.path.getsize(a.out) / 1024.0
-    print('썼다: %s (%.0f KB) — 칸 %d, 신호 우세 %d, 보정 통과 %d'
-          % (a.out, mb, t['total'], t['won'], t['survivors']))
+    print('썼다: %s (%.0f KB, 지문 %s) — 칸 %d, 신호 우세 %d, 보정 통과 %d'
+          % (os.path.relpath(a.out, ROOT), mb, digest,
+             t['total'], t['won'], t['survivors']))
     return 0
 
 
