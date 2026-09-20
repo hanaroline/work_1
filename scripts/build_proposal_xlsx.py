@@ -530,7 +530,8 @@ def sheet_proposal(wb, data, u, rule_first, rule_last, classes,
     note_row = r
     ws.cell(row=r, column=1,
             value="「상품」 시트에서 채택을 Y 로 바꾸면 여기에 올라옵니다. "
-                  "배분액은 그 자산군 금액을 채택한 수로 나눈 것입니다.").font = \
+                  "배분액은 그 자산군 금액을 채택한 수로 나눈 것입니다. "
+                  "상품 아래 회색 줄이 그 상품을 고른 까닭입니다.").font = \
         f(9, color=MUTED)
     ws.merge_cells(start_row=r, start_column=1, end_row=r, end_column=7)
     r += 2
@@ -568,6 +569,20 @@ def sheet_proposal(wb, data, u, rule_first, rule_last, classes,
                 'ROUND($E$%d/%s,0)),"")'
                 % (pf, pl, ref, arow, cnt % block_first),
                 kind="formula", fmt="#,##0")
+            r += 1
+
+            # **바로 아래에 「고른 까닭」 한 줄.** 칸을 여덟째로 늘리지 않고
+            # 줄을 쓴다 — H·I 는 배분표가 쓰는 숨은 도우미 열이라 못 비킨다.
+            # 근거 글이 80 자쯤이라 어차피 한 칸에 안 들어간다. 화면
+            # (proposal.html)도 같은 모양이다.
+            c = ws.cell(row=r, column=1,
+                        value='=IFERROR(INDEX(상품!$M$%d:$M$%d,%s),"")'
+                              % (pf, pl, ref))
+            c.font = f(9, color=MUTED)
+            c.alignment = Alignment(horizontal="left", vertical="center",
+                                    wrap_text=True)
+            ws.merge_cells(start_row=r, start_column=1, end_row=r, end_column=7)
+            ws.row_dimensions[r].height = 24
             r += 1
     prod_note = r
     ws.cell(row=r, column=1,
