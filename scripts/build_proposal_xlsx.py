@@ -182,6 +182,10 @@ NCOL = len(PROD_COLS)
 PICK_N = 5
 KEY_COL = NCOL + 1          # 제안서가 MATCH 로 집어 오는 숨은 열
 
+# 근거 줄임을 알리는 표시. 매크로가 이것으로 접을 줄을 찾는다.
+MARK_COL = 19               # S 열 — 숨긴다
+MARK = "근거"
+
 
 def sheet_products(wb, products, picked=None):
     ws = wb.create_sheet("상품")
@@ -531,7 +535,8 @@ def sheet_proposal(wb, data, u, rule_first, rule_last, classes,
     ws.cell(row=r, column=1,
             value="「상품」 시트에서 채택을 Y 로 바꾸면 여기에 올라옵니다. "
                   "배분액은 그 자산군 금액을 채택한 수로 나눈 것입니다. "
-                  "상품 아래 회색 줄이 그 상품을 고른 까닭입니다.").font = \
+                  "상품 아래 회색 줄이 고른 까닭입니다 — 왼쪽 여백의 「−」로 "
+                  "접으면 인쇄에서도 빠집니다.").font = \
         f(9, color=MUTED)
     ws.merge_cells(start_row=r, start_column=1, end_row=r, end_column=7)
     r += 2
@@ -583,7 +588,24 @@ def sheet_proposal(wb, data, u, rule_first, rule_last, classes,
                                     wrap_text=True)
             ws.merge_cells(start_row=r, start_column=1, end_row=r, end_column=7)
             ws.row_dimensions[r].height = 24
+            # **인쇄에서 빼려면 접으면 된다.** 근거 줄을 윤곽선 1 단계로 묶어
+            # 두면 왼쪽 여백의 「−」 한 번으로 서른 줄이 접히고, 엑셀은 접힌
+            # 줄을 인쇄하지 않는다. 인쇄용 파일을 따로 만들면 두 벌이 되어
+            # 언젠가 어긋나므로 파일은 하나로 둔다.
+            ws.row_dimensions[r].outlineLevel = 1
+            # **매크로가 찾을 표시를 박아 둔다.** 처음에는 매크로가
+            # `Rows(i).OutlineLevel` 을 보게 했는데, 리브레오피스에서는 그
+            # 속성이 안 통해 단추가 아무것도 안 접었다. 실제 엑셀에서는
+            # 되겠지만 **확인 못 하는 것을 넣지 않는다.** 표시를 직접 박으면
+            # 어디서든 같고, 줄이 밀려도 따라간다.
+            ws.cell(row=r, column=MARK_COL, value=MARK).font = f(9, color=MUTED)
             r += 1
+    # 접는 단추가 묶음 **아래**가 아니라 위에 놓이게 한다 — 근거 줄은
+    # 상품 줄의 부속이라 위에서 접는 것이 읽기에 맞다.
+    ws.sheet_properties.outlinePr.summaryBelow = False
+    ws.sheet_properties.outlinePr.showOutlineSymbols = True
+    ws.column_dimensions[get_column_letter(MARK_COL)].hidden = True
+
     prod_note = r
     ws.cell(row=r, column=1,
             value="개별 주식은 종목 추천이 아닙니다. 적힌 수치는 모두 지나간 "
