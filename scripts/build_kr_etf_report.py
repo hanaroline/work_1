@@ -882,9 +882,19 @@ HEAD = r"""<!DOCTYPE html>
     .hero { padding: 24px 0 20px; margin-bottom: 28px;
             -webkit-print-color-adjust: exact; print-color-adjust: exact; }
     .hero h1 { font-size: 26pt; } .hero .sub { font-size: 13pt; }
-    .section { margin-top: 26px; page-break-inside: avoid; }
+    /* **한 쪽보다 큰 덩어리에 「쪼개지 마라」를 걸지 않는다.**
+       걸면 브라우저가 그것을 통째로 다음 쪽으로 미는데, 「오늘의 자리」 절은
+       매수·청산 표 서른다섯 줄을 안고 있어 한 쪽에 들어갈 수가 없다. 그래서
+       1쪽에 머리띠만 남고 나머지가 비었다 — 2026-09-20 인쇄에서 실제로 그랬다
+       (열 쪽 가운데 첫 쪽이 통째로 빔).
+       쪼개지 말아야 할 것은 절이나 표가 아니라 **줄과 작은 상자**다. */
+    .section { margin-top: 26px; }
     .section-title, h3 { page-break-after: avoid; }
-    table.data, .stat, .callout, .warn, .factcard { page-break-inside: avoid; }
+    .stat, .callout, .warn, .factcard { page-break-inside: avoid; }
+    /* 표가 쪽을 넘어가면 머리글을 다시 찍는다 — 넘어간 쪽의 숫자가 무슨
+       칸인지 알 수 없으면 그 쪽은 못 읽는다. */
+    table.data thead { display: table-header-group; }
+    table.data tr { page-break-inside: avoid; }
     .tblwrap { overflow: visible; }
     table.data th, table.data td.hl, .hero {
       -webkit-print-color-adjust: exact; print-color-adjust: exact;
