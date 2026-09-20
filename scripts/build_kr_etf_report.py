@@ -230,7 +230,8 @@ def plan_rows(plans, names, kind):
     return '\n'.join(out) + '</tbody></table></div>'
 
 
-def build(doc, bt, vd=None):
+def build(doc, bt, vd=None, hidden=False):
+    """시장 하나의 **판**(panel)을 돌려준다. 장 전체가 아니다 — page() 가 엮는다."""
     m = doc['markets'][MARKET]
     names = {s['id']: s['name'] for s in doc['strategies']}
     g = m['consensus_full'] or {}
@@ -278,7 +279,7 @@ def build(doc, bt, vd=None):
            pct(c.get('win_rate'), 1, sign=False), pct(c.get('avg')), pctp(c.get('edge')))
         for c in sorted(cons, key=lambda c: (c['scope'] != 'test', c['k'])))
 
-    return TEMPLATE % dict(derived(m, bt, g, gt, base, rule), **{
+    return PANEL % dict(derived(m, bt, g, gt, base, rule), **{
         'asof': esc(m['asof']),
         'generated': esc(doc['generated_at_kst']),
         'count': m['count'],
@@ -327,6 +328,11 @@ def build(doc, bt, vd=None):
                               ensure_ascii=False,
                               separators=(',', ':')).replace('</', '<\\/'),
         'built': datetime.now(KST).strftime('%Y-%m-%d %H:%M'),
+        'slug': MARKETS[MARKET]['slug'],
+        'market': MARKET,
+        # 첫 판만 펴 두고 나머지는 접는다. 자바스크립트가 꺼져 있어도 첫 판은
+        # 읽히고, 접힌 것도 인쇄 대화상자의 「배경 그래픽」과 무관하게 숨는다.
+        'hidden': ' hidden' if hidden else '',
     })
 
 
@@ -344,6 +350,44 @@ _EXPOSURE = [
     ('금·원자재', ('금현물', '골드', '은선물', '원유', '원자재')),
     ('리츠·부동산', ('리츠', '부동산', '인프라')),
 ]
+
+
+def page(doc, bt, vd, markets):
+    """판 여럿을 한 장으로 엮는다.
+
+    **시장이 하나면 탭을 세우지 않는다.** 탭이 하나뿐인 탭줄은 누를 데가 없는
+    장식이고, 시장 하나짜리 판을 예전과 똑같이 두려는 뜻도 있다 — 한 장을 넷으로
+    쪼개 쓰던 사람의 링크와 인쇄가 그대로 살아 있어야 한다.
+    """
+    global MARKET, _CCY
+    panels, tabs = [], []
+    for i, mk in enumerate(markets):
+        MARKET = mk
+        panels.append(build(doc, bt, vd, hidden=(len(markets) > 1 and i > 0)))
+        # **막힌 시장은 탭에서부터 말한다.** 탭 넷이 나란히 서면 넷이 같은
+        # 자격처럼 보인다 — 이것이 네 시장을 한 장에 담지 않던 까닭이었다.
+        # 판 안에는 붉은 띠와 순위가 있지만 **탭줄은 아무 말도 안 하므로**,
+        # 고르기 전에 알도록 여기에 적는다.
+        blocked = any(f['level'] == 'block' for f in
+                      (((vd or {}).get('markets', {}).get(mk) or {})
+                       .get('market_flags') or []))
+        tabs.append('    <button type="button" role="tab" data-slug="%s" '
+                    'aria-selected="%s" aria-controls="panel-%s">%s%s</button>'
+                    % (MARKETS[mk]['slug'], 'true' if i == 0 else 'false',
+                       MARKETS[mk]['slug'], esc(doc['markets'][mk]['label']),
+                       '<span class="tab-block">보류</span>' if blocked else ''))
+
+    if len(markets) > 1:
+        title = '매매 타이밍'
+        nav = ('<div class="tabs">\n  <div class="page" role="tablist" '
+               'aria-label="상품군">\n%s\n  </div>\n</div>\n' % '\n'.join(tabs))
+    else:
+        title = doc['markets'][markets[0]]['label'] + ' 매매 타이밍'
+        nav = ''
+
+    asof = max(doc['markets'][mk]['asof'] for mk in markets)
+    return (HEAD % {'title': esc(title), 'asof': esc(asof)}
+            + nav + ''.join(panels) + TAIL)
 
 
 def concentration(plans, vd=None):
@@ -666,12 +710,12 @@ def payload(m, names, doc, dv):
 # **raw 문자열이어야 한다.** 안에 든 \n · \r\n · \ufeff 는 자바스크립트의
 # 이스케이프인데, 보통 문자열로 두면 파이썬이 먼저 먹어 진짜 줄바꿈으로 바꿔
 # 버린다. 그러면 생성된 쪽에서 문자열이 줄 가운데서 끊겨 구문 오류가 난다.
-TEMPLATE = r"""<!DOCTYPE html>
+HEAD = r"""<!DOCTYPE html>
 <html lang="ko">
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>%(title)s 매매 타이밍 — %(asof)s</title>
+<title>%(title)s — %(asof)s</title>
 <!--
   scripts/build_kr_etf_report.py 가 만든 판이다. 손으로 고치지 않는다 —
   다음 번에 다시 만들면 덮인다.
@@ -800,6 +844,37 @@ TEMPLATE = r"""<!DOCTYPE html>
   .factcard li.fl-warn { color: #8A5A00; }
   .factcard li.fl-support { color: #1B6B2F; }
 
+
+  /* ── 탭 ─────────────────────────────────────────────────────────
+     한 장에 네 시장을 담을 때만 나온다. 시장이 하나뿐인 판에는 아예 없다. */
+  .tabs { border-bottom: 1px solid var(--hair); background: var(--canvas); }
+  .tabs .page { padding-top: 0; padding-bottom: 0; display: flex; flex-wrap: wrap; }
+  .tabs button {
+    appearance: none; background: none; border: 0; border-bottom: 3px solid transparent;
+    font: inherit; font-size: 17px; color: var(--muted); cursor: pointer;
+    padding: 16px 18px; margin: 0; white-space: nowrap;
+  }
+  .tabs button:hover { color: var(--ink); }
+  .tabs button[aria-selected="true"] {
+    color: var(--blue); font-weight: 700; border-bottom-color: var(--orange);
+  }
+  .tabs button:focus-visible { outline: 2px solid var(--blue); outline-offset: -2px; }
+  /* 막힌 시장은 고르기 전에 알아야 한다 — 판 안의 붉은 띠는 누른 뒤에야 보인다. */
+  .tabs .tab-block {
+    display: inline-block; margin-left: 7px; padding: 1px 6px;
+    border: 1px solid #A61C1C; color: #A61C1C; font-size: 13px; font-weight: 400;
+    vertical-align: 2px;
+  }
+  .panel[hidden] { display: none; }
+  @media (max-width: 640px) {
+    .tabs .page { padding-left: 16px; padding-right: 16px; }
+    .tabs button { padding: 13px 12px; font-size: 15px; }
+  }
+  @media print {
+    /* **종이에는 보고 있던 한 시장만 나간다.** 넷을 다 찍으면 아무도 안 읽는다. */
+    .tabs { display: none !important; }
+  }
+
   @media print {
     @page { margin: 14mm; }
     body { font-size: 13pt; line-height: 1.45; }
@@ -824,6 +899,12 @@ TEMPLATE = r"""<!DOCTYPE html>
 </style>
 </head>
 <body>
+"""
+
+
+PANEL = r"""
+<section class="panel" id="panel-%(slug)s" data-market="%(market)s"%(hidden)s>
+<script class="report-data" type="application/json">%(payload)s</script>
 
 <div class="hero">
   <div class="page">
@@ -831,10 +912,10 @@ TEMPLATE = r"""<!DOCTYPE html>
     <h1>%(title)s 매매 타이밍</h1>
     <div class="sub">%(asof)s 종가 기준 · 대상 %(count)d 종</div>
     <div class="tools">
-      <button id="btnPrint" type="button">인쇄 · PDF 저장</button>
-      <button id="btnCsv" type="button">CSV 저장</button>
-      <button id="btnCopy" type="button">요약 복사</button>
-      <span class="said" id="said" role="status" aria-live="polite"></span>
+      <button class="btnPrint" type="button">인쇄 · PDF 저장</button>
+      <button class="btnCsv" type="button">CSV 저장</button>
+      <button class="btnCopy" type="button">요약 복사</button>
+      <span class="said" role="status" aria-live="polite"></span>
     </div>
   </div>
 </div>
@@ -1017,13 +1098,51 @@ TEMPLATE = r"""<!DOCTYPE html>
   </footer>
 
 </div>
+</section>
+"""
 
-<script id="report-data" type="application/json">%(payload)s</script>
+
+TAIL = r"""
 <script>
 (function () {
   'use strict';
-  var D = JSON.parse(document.getElementById('report-data').textContent);
-  var said = document.getElementById('said');
+
+  /* ── 탭 — 판이 둘 이상일 때만 선다 ─────────────────────────────
+     고르면 주소의 #조각도 함께 바꾼다. 그래야 「국내주식 탭」을 링크로 건넬 수
+     있고, 새로 고쳐도 보던 자리로 돌아온다. */
+  var tabs = document.querySelectorAll('.tabs button');
+  var panels = document.querySelectorAll('.panel');
+  function show(slug, push) {
+    var found = false;
+    Array.prototype.forEach.call(panels, function (p) {
+      var on = p.id === 'panel-' + slug;
+      p.hidden = !on;
+      if (on) found = true;
+    });
+    if (!found) return false;
+    Array.prototype.forEach.call(tabs, function (b) {
+      b.setAttribute('aria-selected', b.dataset.slug === slug ? 'true' : 'false');
+    });
+    if (push && window.history && window.history.replaceState) {
+      window.history.replaceState(null, '', '#' + slug);
+    }
+    return true;
+  }
+  Array.prototype.forEach.call(tabs, function (b) {
+    b.onclick = function () { show(b.dataset.slug, true); window.scrollTo(0, 0); };
+  });
+  if (tabs.length) {
+    show((location.hash || '').replace(/^#/, '') ||
+         tabs[0].dataset.slug, false) || show(tabs[0].dataset.slug, false);
+    window.addEventListener('hashchange', function () {
+      show((location.hash || '').replace(/^#/, ''), false);
+    });
+  }
+
+  /* ── 판마다 한 벌씩 묶는다 ─────────────────────────────────── */
+  Array.prototype.forEach.call(panels, function (panel) {
+  var D = JSON.parse(panel.querySelector('.report-data').textContent);
+  var said = panel.querySelector('.said');
   function say(t) {
     said.textContent = t; said.className = 'said on';
     setTimeout(function () { said.className = 'said'; }, 2600);
@@ -1036,7 +1155,7 @@ TEMPLATE = r"""<!DOCTYPE html>
       : Number(x).toLocaleString('ko-KR') + '원';
   }
 
-  document.getElementById('btnPrint').onclick = function () { window.print(); };
+  panel.querySelector('.btnPrint').onclick = function () { window.print(); };
 
   /* **요약은 경고를 달고 나간다.** 메신저에 붙여 넣는 순간 이 글은 원래 자리를
      떠나는데, 종목과 가격만 남고 승률과 초과수익의 두께가 빠지면 그건 줄인
@@ -1078,7 +1197,7 @@ TEMPLATE = r"""<!DOCTYPE html>
     return L.join('\n');
   }
 
-  document.getElementById('btnCopy').onclick = function () {
+  panel.querySelector('.btnCopy').onclick = function () {
     var t = summary();
     function fallback() {
       /* 사내 PC 는 클립보드 권한이 막혀 있는 일이 잦다. 조용히 실패하면
@@ -1112,7 +1231,7 @@ TEMPLATE = r"""<!DOCTYPE html>
     var s = String(v);
     return /[",\n]/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s;
   }
-  document.getElementById('btnCsv').onclick = function () {
+  panel.querySelector('.btnCsv').onclick = function () {
     var rows = [['구분', '종목', '종목코드', '기준일', '종가', '등락(%%)', '손절 기준',
                  '비중(%%)', '겹친 전략']];
     [[D.blocked ? '보류(이 시장에서는 매수 안 함)' : '합의 매수', D.buy],
@@ -1132,6 +1251,7 @@ TEMPLATE = r"""<!DOCTYPE html>
     setTimeout(function () { URL.revokeObjectURL(a.href); }, 1000);
     say('CSV 를 저장했습니다');
   };
+  });
 })();
 </script>
 </body>
@@ -1139,14 +1259,25 @@ TEMPLATE = r"""<!DOCTYPE html>
 """
 
 
+# 탭에 서는 차례. 검증구간 초과수익이 두꺼운 쪽부터가 아니라 **사람이 찾는
+# 차례**다 — 국내주식을 맨 앞에 두면 ETF 를 보러 온 사람이 매번 한 번 더 누른다.
+# 자료의 MARKET_ORDER 와 달리 여기는 화면의 차례라 따로 적는다.
+TAB_ORDER = ['KR_OV_ETF', 'KR_STOCK', 'KR_ETF', 'US_STOCK']
+
+
 def main(argv=None):
     global MARKET
     ap = argparse.ArgumentParser()
     ap.add_argument('--market', default=DEFAULT_MARKET, choices=sorted(MARKETS))
+    ap.add_argument('--all', action='store_true',
+                    help='네 시장을 한 장에 탭으로 담는다')
     ap.add_argument('--out', default='')
     a = ap.parse_args(argv)
-    MARKET = a.market
-    out = a.out or os.path.join(ROOT, '%s-report.html' % MARKETS[MARKET]['slug'])
+    markets = TAB_ORDER if a.all else [a.market]
+    MARKET = markets[0]
+    out = a.out or os.path.join(
+        ROOT, 'kis-timing-report.html' if a.all
+        else '%s-report.html' % MARKETS[a.market]['slug'])
 
     for p in (LATEST, BACKTEST):
         if not os.path.exists(p):
@@ -1155,6 +1286,42 @@ def main(argv=None):
     doc = json.load(open(LATEST, encoding='utf-8'))
     bt = json.load(open(BACKTEST, encoding='utf-8'))
 
+    for mk in markets:
+        rc = check_market(doc, bt, mk)
+        if rc:
+            return rc
+
+    html = page(doc, bt, _verdict(), markets)
+    with open(out, 'w', encoding='utf-8') as f:
+        f.write(html)
+    print('썼다: %s (%.0f KB)' % (os.path.relpath(out, ROOT),
+                                  os.path.getsize(out) / 1024.0))
+    for mk in markets:
+        m = doc['markets'][mk]
+        print('  %-16s %s 기준 · 매수 %d · 청산 %d · 관찰 %d'
+              % (m['label'], m['asof'], len(m['buy']), len(m['sell']),
+                 len(m['watch_buy'])))
+    return 0
+
+
+def _verdict():
+    if not os.path.exists(VERDICT):
+        return None
+    try:
+        return json.load(open(VERDICT, encoding='utf-8'))
+    except ValueError as e:
+        sys.stderr.write('판정 자료를 읽지 못했습니다: %s\n' % e)
+        return None
+
+
+def check_market(doc, bt, MARKET):
+    """**한 시장이라도 어긋나면 장을 내지 않는다.**
+
+    탭으로 묶으면 위험이 하나 는다 — 넷 가운데 하나가 낡아도 나머지 셋이
+    멀쩡해 보여 장 전체가 믿을 만해 보인다. 그래서 검사는 시장마다 돌리고,
+    하나라도 걸리면 아무것도 쓰지 않는다.
+    """
+    vd = _verdict()
     m = doc['markets'].get(MARKET)
     if not m:
         sys.stderr.write('%s 가 산출물에 없습니다\n' % MARKET)
@@ -1169,13 +1336,6 @@ def main(argv=None):
 
     # 판정 산출물 — 종목 딱지를 쓰는 시장에서는 **없거나 낡으면 멈춘다.**
     # 실적 딱지가 조용히 빠진 한 장은, 딱지가 없는 한 장보다 나쁘다.
-    vd = None
-    if os.path.exists(VERDICT):
-        try:
-            vd = json.load(open(VERDICT, encoding='utf-8'))
-        except ValueError as e:
-            vd = None
-            sys.stderr.write('판정 자료를 읽지 못했습니다: %s\n' % e)
     if MARKETS[MARKET].get('facts'):
         vm = (vd or {}).get('markets', {}).get(MARKET)
         if not vm:
@@ -1189,12 +1349,6 @@ def main(argv=None):
                              % (vm.get('asof'), m['asof']))
             return 1
 
-    html = build(doc, bt, vd)
-    with open(out, 'w', encoding='utf-8') as f:
-        f.write(html)
-    print('썼다: %s (%.0f KB · %s · %s 기준 · 매수 %d · 청산 %d · 관찰 %d)'
-          % (os.path.relpath(out, ROOT), os.path.getsize(out) / 1024.0,
-             m['label'], m['asof'], len(m['buy']), len(m['sell']), len(m['watch_buy'])))
     return 0
 
 
