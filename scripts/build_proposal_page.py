@@ -68,10 +68,16 @@ def trim(p):
            "wy": p.get("점수근거"), "tg": p.get("측정등급")}
     years, w = MET.longest(p.get("지표") or {})
     if w:
+        # **감정평가 기준가는 변동성·낙폭을 싣지 않는다.** 점수에서 빼 놓고
+        # 표에는 0.7% 를 그대로 찍으면 고객은 그것을 시세로 읽는다. 뺀
+        # 까닭은 「고른 까닭」 줄이 말해 준다.
+        appraised = "기준가_평가식_시세아님" in (p.get("flags") or [])
         out["my"] = years
         out["mc"] = round(w["cagr"], 2) if w.get("cagr") is not None else None
-        out["mv"] = round(w["vol"], 2) if w.get("vol") is not None else None
-        out["md"] = round(w["mdd"], 2) if w.get("mdd") is not None else None
+        out["mv"] = (None if appraised else
+                     round(w["vol"], 2) if w.get("vol") is not None else None)
+        out["md"] = (None if appraised else
+                     round(w["mdd"], 2) if w.get("mdd") is not None else None)
     if p.get("distTtmRate") is not None:
         out["d"] = p["distTtmRate"]
     if p.get("flags"):
