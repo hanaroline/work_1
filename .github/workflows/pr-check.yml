@@ -48,6 +48,15 @@ jobs:
           python3 -m compileall -q scripts/ || exit 1
           echo "대본 $(ls scripts/*.py | wc -l) 개 컴파일 통과"
 
+      # **ETF 수집기의 망 없는 시험을 여기서도 돌린다.**
+      #
+      # 이 시험은 etf-signals.yml 안에서만 돌았다. 그런데 그것은 **지켜야 할 바로
+      # 그 워크플로**다 — 수집기를 고치다 안전장치를 깨뜨려도 누가 단추를 누를
+      # 때까지 아무도 모른다. 2026-09-20 에 8해치 이력이 3해치로 잘린 일이
+      # 그 시험(test_refuses_to_shrink)이 지키는 자리다.
+      - name: ETF 수집기를 망 없이 시험한다
+        run: python3 scripts/check_etf_signals.py
+
       - name: 워크플로 YAML 이 읽히는가
         run: |
           python3 -m pip install --quiet pyyaml
