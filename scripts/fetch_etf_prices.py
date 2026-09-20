@@ -45,6 +45,10 @@ TIMEOUT = 25
 SLEEP = 0.35
 YEARS = 3
 
+# 창이 미끄러진 것을 잘린 것으로 오해하지 않도록 두는 여유(날). 원천이 주는
+# 줄 수가 날마다 조금씩 달라서, 지난 날수에 이만큼을 더해 견준다.
+SLIDE_MARGIN = 7
+
 
 def kst_now():
     return datetime.now(KST).strftime('%Y-%m-%d %H:%M:%S')
@@ -200,6 +204,16 @@ def to_series(rows):
     return out
 
 
+def _days_between(a, b):
+    """b − a 를 날수로. 읽지 못하면 0 (가르지 못하면 막지 않는다 — 막는 쪽은
+    아래에서 `back > 0` 과 함께 판단한다)."""
+    try:
+        f = '%Y-%m-%d'
+        return (datetime.strptime(b, f) - datetime.strptime(a, f)).days
+    except (ValueError, TypeError):
+        return 0
+
+
 def main(argv):
     ap = argparse.ArgumentParser()
     ap.add_argument('--only', default='', help='KR 또는 OV 만')
@@ -243,7 +257,15 @@ def main(argv):
     if a.limit:
         its = its[:a.limit]
 
-    out, failed, routes, kept, shrunk = {}, [], {}, [], []
+    # **창은 지난 날수만큼만 미끄러진다.** 지난번에 받은 날로부터 며칠이 지났는지
+    # 세고, 거기에 며칠 여유를 둔다(원천이 주는 줄 수가 날마다 조금씩 다르다).
+    # 지난번 받은 날을 모르면 여유만 쓴다.
+    allow_slide = SLIDE_MARGIN
+    _prev_at = (prev_doc.get('generated_at_kst') or '')[:10]
+    if _prev_at:
+        allow_slide += max(0, _days_between(_prev_at, today.strftime('%Y-%m-%d')))
+
+    out, failed, routes, kept, shrunk, slid = {}, [], {}, [], [], []
     for n, it in enumerate(its):
         if it['scope'] == 'KR':
             rows, meta = fetch_kr(it, span)
@@ -277,13 +299,30 @@ def main(argv):
                 rec['adjclose'] = meta['adjclose']
             if meta.get('errors'):
                 rec['fetch_notes'] = meta['errors']
-            # **줄어들었으면 적는다.** 더 긴 구간을 달라고 했는데 예전보다 짧게 왔다면
-            # 원천이 구간 인자를 무시했거나 무언가 잘못된 것이다. 조용히 덮어쓰면
-            # 그날부터 짧은 이력으로 지표를 셈하게 된다.
+            # **줄어든 데에는 두 가지가 있다. 가르지 않으면 날마다 멈춘다.**
+            #
+            #   창이 미끄러졌다 — 구간이 「오늘로부터 몇 해」라서 하루가 지나면
+            #                    가장 오래된 봉 하나가 밖으로 밀려난다. 흠이 아니다.
+            #   이력이 잘렸다   — 짧은 해치로 불러 통째로 날아갔다. 막아야 한다.
+            #
+            # 처음에는 봉 수만 보고 줄면 무조건 막았다. 그래서 **하루 뒤에 돌린
+            # 수집이 그대로 넘어졌다** — GOLD 2028→2027, 창이 하루 미끄러진 것뿐인데.
+            # 「흠이 아니다」라고 적어 둔 그 현상을 막는 장치를 만든 셈이었다.
+            #
+            # 가르는 잣대는 **시작 날짜가 얼마나 밀렸는가**다. 창은 지난 날수만큼만
+            # 미끄러진다. 그보다 크게 밀렸으면 잘린 것이다 (8→3해치 때 GOLD 의 시작이
+            # 2018-09-12 에서 2023-09-18 로, 1832일 밀렸다).
             was = ((old.get(it['ticker']) or {}).get('bars') or {}).get('d') or []
             if was and rec['bars_n'] < len(was):
                 rec['shrank_from'] = len(was)
-                shrunk.append('%s %d→%d' % (it['ticker'], len(was), rec['bars_n']))
+                slide = _days_between(was[0], ser['d'][0])     # 시작이 뒤로 밀린 날수
+                back = _days_between(ser['d'][-1], was[-1])    # 끝이 앞당겨진 날수
+                if slide > allow_slide or back > 0:
+                    shrunk.append('%s %d→%d (시작 %s→%s)'
+                                  % (it['ticker'], len(was), rec['bars_n'],
+                                     was[0], ser['d'][0]))
+                else:
+                    slid.append('%s %d→%d' % (it['ticker'], len(was), rec['bars_n']))
             out[it['ticker']] = rec
             routes[meta.get('route')] = routes.get(meta.get('route'), 0) + 1
         if (n + 1) % 10 == 0:
@@ -313,12 +352,15 @@ def main(argv):
         'years_requested': a.years,
         'coverage': {'requested': len(its), 'got': len(out), 'failed': len(failed),
                      'kept_from_previous': len(kept), 'shrank': len(shrunk),
+                     'slid': len(slid),
                      'untouched': untouched,
                      'days': len(days),
                      'from': days[0] if days else None,
                      'to': days[-1] if days else None},
         'kept_from_previous': kept,
         'shrank': shrunk,
+        # 창이 미끄러져 앞의 봉 몇이 밀려난 것. 흠이 아니므로 막지 않되 적어 둔다.
+        'slid': slid,
         'failed': failed,
         'items': out,
     }
@@ -359,6 +401,9 @@ def main(argv):
     if kept:
         sys.stderr.write('::warning::못 받아 예전 것을 그대로 둔 종목 %d: %s\n'
                          % (len(kept), ', '.join(kept)))
+    if slid:
+        sys.stderr.write('창이 미끄러져 앞의 봉이 밀려난 종목 %d: %s\n'
+                         % (len(slid), ', '.join(slid[:10])))
     if shrunk:
         sys.stderr.write('::warning::예전보다 짧게 온 종목 %d 을 사람이 뚫고 '
                          '썼습니다(--allow-shrink): %s\n'
