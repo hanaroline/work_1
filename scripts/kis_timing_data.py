@@ -7,11 +7,13 @@
 
 봉은 어디서 오는가 — 이 저장소가 이미 모아 둔 것을 쓴다. 새로 긁지 않는다.
 
-    KR_STOCK  data/prices_naver/kr100.json          국내 시가총액 100
-    US_STOCK  us100-data 가지 data/us100/chart/*     미국 대형주 100
-    KR_ETF    data/etf/prices.json (scope=KR)        국내 상장 ETF
-    OV_ETF    data/etf/prices.json (scope=OV)        해외 상장 ETF
-              + data/kis_timing/ov_extra.json        넓히려고 덧댄 곁 목록
+    KR_STOCK   data/prices_naver/kr100.json          국내 시가총액 100
+    US_STOCK   us100-data 가지 data/us100/chart/*     미국 대형주 100
+    KR_ETF     data/etf/prices.json (scope=KR)        국내 상장 ETF
+               + data/kis_timing/kr_extra.json        넓히려고 덧댄 곁 목록
+    KR_OV_ETF  data/kis_timing/kr_extra.json          국내 상장 · 해외 기초자산 ETF
+    OV_ETF     data/etf/prices.json (scope=OV)        해외 상장 ETF
+               + data/kis_timing/ov_extra.json        넓히려고 덧댄 곁 목록
 
 **왜 네 개로 나누는가.** 전략 성적을 시장마다 따로 재기 위해서다. 같은
 「이격도 90 이하면 산다」가 국내주식에서 먹히고 미국 대형주에서 안 먹히는 일은
@@ -60,14 +62,19 @@ MARKETS = {
     'KR_STOCK': {'label': '국내주식', 'kind': '주식', 'region': 'KR', 'currency': 'KRW'},
     'US_STOCK': {'label': '미국주식', 'kind': '주식', 'region': 'US', 'currency': 'USD'},
     'KR_ETF': {'label': '국내ETF', 'kind': 'ETF', 'region': 'KR', 'currency': 'KRW'},
+    # **원화로 사는 해외 노출.** 기초자산은 해외인데 국내에서 원화로 거래한다 —
+    # 거래시간도 환위험도 아래 OV_ETF 와 다르므로 한 칸에 섞지 않는다.
+    'KR_OV_ETF': {'label': '국내상장 해외ETF', 'kind': 'ETF', 'region': 'KR', 'currency': 'KRW'},
     'OV_ETF': {'label': '해외ETF', 'kind': 'ETF', 'region': 'US', 'currency': 'USD'},
 }
-MARKET_ORDER = ['KR_STOCK', 'US_STOCK', 'KR_ETF', 'OV_ETF']
+MARKET_ORDER = ['KR_STOCK', 'US_STOCK', 'KR_ETF', 'KR_OV_ETF', 'OV_ETF']
 
 NAVER_KR = os.path.join(ROOT, 'data', 'prices_naver', 'kr100.json')
 ETF_PRICES = os.path.join(ROOT, 'data', 'etf', 'prices.json')
 # 해외 ETF 곁 목록 — fetch_kis_timing_ov.py 가 채운다. 없으면 없는 대로 돈다.
 OV_EXTRA = os.path.join(ROOT, 'data', 'kis_timing', 'ov_extra.json')
+# 국내 상장 곁 목록 — fetch_kis_timing_kr.py 가 채운다. 마찬가지로 없으면 없는 대로.
+KR_EXTRA = os.path.join(ROOT, 'data', 'kis_timing', 'kr_extra.json')
 US_BRANCH = 'origin/us100-data'
 US_PREFIX = 'data/us100/chart/'
 
@@ -130,6 +137,60 @@ def _load_us_stocks():
     return out, None
 
 
+# ─────────────────────────────────────────────────────────────────────
+# 국내 상장 ETF 의 기초자산은 국내인가 해외인가
+# ─────────────────────────────────────────────────────────────────────
+#
+# **왜 갈라야 하는가.** 본 목록(data/etf/prices.json)의 국내 상장 55종에는
+# KODEX 200 과 TIGER 미국나스닥100 이 **한 칸에 들어 있다.** 표가 그렇게 주었기
+# 때문이다. 그대로 두면 「국내ETF 에서 이격도가 먹힌다」가 실은 미국 지수에서
+# 먹힌 것일 수 있고, 그 말을 듣고 KODEX 200 을 사는 사람이 생긴다.
+#
+# 가르는 근거를 종목마다 산출물에 남긴다(exposure_basis). 여기서 내린 판단인지
+# 원본이 말한 것인지가 구별되어야 나중에 고칠 자리를 찾을 수 있다.
+
+KR_BARS = os.path.join(ROOT, 'data', 'proposal', 'kr_bars.json')
+
+# 표의 group 으로 가르는 판단. **여기서 내린 것이다** — 원본이 말한 것이 아니다.
+_GROUP_ABROAD = ('지수/지역', '글로벌테마', '자산배분')
+_GROUP_HOME = ('국내주식형(신설)', '원자재')
+
+_KR_CLS_CACHE = None
+
+
+def _kr_bars_cls():
+    """`data/proposal/kr_bars.json` 이 적어 둔 갈래. {코드: '국내ETF'|'해외ETF'|…}
+
+    **원본이 말한 것**이라 아래 group 판단보다 앞선다. 그 파일이 없으면 빈 사전을
+    내고, 그러면 group 쪽으로만 가른다 — 없다고 멈추지 않는다.
+    """
+    global _KR_CLS_CACHE
+    if _KR_CLS_CACHE is None:
+        out = {}
+        if os.path.exists(KR_BARS):
+            try:
+                doc = json.load(open(KR_BARS, encoding='utf-8'))
+                out = {c: (r.get('cls') or '') for c, r in (doc.get('items') or {}).items()}
+            except ValueError:
+                out = {}
+        _KR_CLS_CACHE = out
+    return _KR_CLS_CACHE
+
+
+def kr_etf_market(code, group=None):
+    """국내 상장 ETF 하나를 KR_ETF / KR_OV_ETF 중 한 칸에 놓는다. (시장, 근거)"""
+    cls = _kr_bars_cls().get(str(code))
+    if cls == '해외ETF':
+        return 'KR_OV_ETF', 'kr_bars.json 이 「해외ETF」로 적었습니다'
+    if cls in ('국내ETF', '국내주식'):
+        return 'KR_ETF', 'kr_bars.json 이 「%s」로 적었습니다' % cls
+    if group in _GROUP_ABROAD:
+        return 'KR_OV_ETF', '표의 갈래가 「%s」라 해외로 보았습니다' % group
+    if group in _GROUP_HOME:
+        return 'KR_ETF', '표의 갈래가 「%s」라 국내로 보았습니다' % group
+    return 'KR_ETF', '갈래를 몰라 국내로 두었습니다 (group=%r)' % group
+
+
 def _load_etfs():
     if not os.path.exists(ETF_PRICES):
         return {}, '%s 가 없습니다' % os.path.relpath(ETF_PRICES, ROOT)
@@ -149,7 +210,8 @@ def _load_etfs():
         except ValueError as e:
             note = '%s 를 읽지 못했습니다: %s' % (os.path.relpath(OV_EXTRA, ROOT), e)
 
-    out = {'KR_ETF': [], 'OV_ETF': []}
+    # KR_STOCK 칸은 표에서 오는 것이 아니라 아래 곁 목록이 채울 수 있어 열어 둔다.
+    out = {'KR_STOCK': [], 'KR_ETF': [], 'KR_OV_ETF': [], 'OV_ETF': []}
     for tk, rec in sorted(items.items()):
         b = rec.get('bars') or {}
         if not b.get('d'):
@@ -157,10 +219,40 @@ def _load_etfs():
         bars = _clean([{'d': b['d'][i], 'o': b['o'][i], 'h': b['h'][i],
                         'l': b['l'][i], 'c': b['c'][i], 'v': (b['v'][i] or 0)}
                        for i in range(len(b['d']))])
-        mk = 'KR_ETF' if rec.get('scope') == 'KR' else 'OV_ETF'
-        out[mk].append({'symbol': tk, 'code': rec.get('code') or rec.get('symbol_used') or tk,
+        code = rec.get('code') or rec.get('symbol_used') or tk
+        basis = None
+        if rec.get('scope') == 'KR':
+            mk, basis = kr_etf_market(code, rec.get('group'))
+        else:
+            mk = 'OV_ETF'
+        out[mk].append({'symbol': tk, 'code': code,
                         'name': rec.get('name'), 'group': rec.get('group'),
-                        'theme': rec.get('theme'), 'bars': bars})
+                        'theme': rec.get('theme'), 'exposure_basis': basis,
+                        'bars': bars})
+
+    # 국내 곁 목록. 해외 쪽과 달리 **자기가 어느 시장인지 스스로 적어 온다**
+    # (market). 국내ETF 와 국내상장 해외ETF 는 티커 꼴이 같아 코드만 보고는
+    # 가를 수 없기 때문이다 — 가르는 것은 목록의 몫이지 여기의 짐작이 아니다.
+    if os.path.exists(KR_EXTRA):
+        try:
+            extra = json.load(open(KR_EXTRA, encoding='utf-8'))
+            seen = {it['code'] for rows in out.values() for it in rows}
+            for code, rec in sorted((extra.get('items') or {}).items()):
+                mk = rec.get('market')
+                if mk not in out or code in seen:
+                    continue
+                b = rec.get('bars') or {}
+                if not b.get('d'):
+                    continue
+                bars = _clean([{'d': b['d'][i], 'o': b['o'][i], 'h': b['h'][i],
+                                'l': b['l'][i], 'c': b['c'][i], 'v': (b['v'][i] or 0)}
+                               for i in range(len(b['d']))])
+                out[mk].append({'symbol': code, 'code': code, 'name': rec.get('name'),
+                                'group': None, 'theme': None,
+                                'exposure_basis': '곁 목록이 「%s」로 적어 왔습니다' % mk,
+                                'bars': bars})
+        except ValueError as e:
+            note = '%s 를 읽지 못했습니다: %s' % (os.path.relpath(KR_EXTRA, ROOT), e)
     return out, note
 
 
@@ -210,7 +302,11 @@ def load_universe(min_bars=MIN_BARS):
         notes.append(err)
 
     raw = {'KR_STOCK': kr, 'US_STOCK': us,
-           'KR_ETF': etf.get('KR_ETF', []), 'OV_ETF': etf.get('OV_ETF', [])}
+           'KR_ETF': etf.get('KR_ETF', []),
+           'KR_OV_ETF': etf.get('KR_OV_ETF', []),
+           'OV_ETF': etf.get('OV_ETF', [])}
+    # 국내 곁 목록이 국내주식을 싣고 오면 KR_STOCK 에 합친다 (지금은 비어 있다).
+    raw['KR_STOCK'] = kr + [it for it in etf.get('KR_STOCK', [])]
 
     names = {'KR': load_names('KR'), 'US': load_names('US')}
     for mk in MARKET_ORDER:

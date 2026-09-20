@@ -1,0 +1,155 @@
+name: 국내 상장 곁 목록 수집 (매매 타이밍)
+
+# 매매 타이밍 판의 **국내 상장** 우주를 넓히려고 OHLCV 를 받는다.
+# → data/kis_timing/kr_extra.json
+#
+# 해외 쪽의 kis-timing-ov.yml 과 짝이고, 같은 까닭으로 러너에서 돈다 —
+# 클로드 세션의 이그레스 프록시가 네이버를 막는다(CONNECT 403).
+#
+# **무엇이 늘어나는가.** data/proposal/kr_bars.json 의 국내 상장 256종 가운데
+# 매매 타이밍 우주에 없던 157종이다 — 국내ETF 57(채권·금·은행·배당),
+# 국내상장 해외ETF 100(미국나스닥100·MSCI선진국·니케이225·CSI300 …).
+# 뒤엣것은 **새로운 상품군**이다. 원화로 사는 해외 노출은 지금 우주 어디에도
+# 없었다. 해외ETF(OV_ETF)는 달러로 사는 미국 상장분이라 거래시간도 환위험도
+# 다르므로 한 칸에 섞지 않는다.
+#
+# **왜 곁 목록인가.** data/proposal/kr_bars.json 은 종가뿐이라 전략 셋(강한 종가·
+# 52주 신고가·돌파 실패)을 셈할 수 없다. 거기에 시가·고가·저가를 지어 넣지
+# 않고 네이버에서 OHLCV 로 다시 받아 따로 쌓는다. 본 목록(data/etf/prices.json)
+# 은 사람이 준 표라 다른 데서 온 종목을 섞지 않는다 — 해외 쪽과 같은 결정이다.
+#
+# **되풀이해 돌아도 된다.** 종목이 많아 한 번에 다 못 받을 수 있는데, 산출물이
+# 코드로 키를 잡는 사전이라 다시 돌리면 받은 것만 덮어쓴다. 다만 이 대본은
+# 실패한 것을 빈 칸으로 남기지 않고 아예 싣지 않으므로, 못 받은 종목은 다음
+# 실행에서 다시 후보가 된다.
+
+on:
+  schedule:
+    # 22:20 UTC = 07:20 KST — 국내 장이 열리기 한참 전이고, 「매매 타이밍 갱신」의
+    # 23:00 UTC 예약보다 앞이다. 해외 곁 목록(22:45)과도 겹치지 않는다.
+    - cron: '20 22 * * 2-6'
+
+  workflow_dispatch:
+    inputs:
+      years:
+        description: '몇 해치'
+        required: false
+        default: '8'
+      limit:
+        description: '앞에서 몇 종만 (0 이면 전부)'
+        required: false
+        default: '0'
+      only:
+        description: '종목코드 몇 개만 (쉼표, 비우면 전부)'
+        required: false
+        default: ''
+
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/fetch_kis_timing_kr.py'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: kis-timing-kr
+  cancel-in-progress: false
+
+jobs:
+  fetch:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: 받기
+        run: |
+          python3 scripts/fetch_kis_timing_kr.py \
+            --years "${{ github.event.inputs.years || '8' }}" \
+            --limit "${{ github.event.inputs.limit || '0' }}" \
+            ${{ github.event.inputs.only && format('--only "{0}"', github.event.inputs.only) || '' }}
+
+      # **이름을 맞대는 것이 첫 검사다.** 종목코드 한 자가 틀리면 빈 응답이 아니라
+      # 남의 멀쩡한 응답이 온다 — 지표 검산으로는 못 잡는다.
+      - name: 받아 온 것이 정말 그 종목인가
+        run: |
+          python3 - <<'PY'
+          import json, sys
+          d = json.load(open('data/kis_timing/kr_extra.json', encoding='utf-8'))
+          items = d['items']
+          bad = []
+          for code, r in sorted(items.items()):
+              if r.get('name_match') is False:
+                  bad.append('%s 이름이 어긋남 — 표 「%s」 vs 네이버 「%s」'
+                             % (code, r.get('name'), r.get('name_source')))
+              if (r.get('currency') or 'KRW') != 'KRW':
+                  bad.append('%s 통화가 %s' % (code, r.get('currency')))
+              if (r.get('bars_n') or 0) < 260:
+                  bad.append('%s 봉이 %s 개뿐' % (code, r.get('bars_n')))
+          for x in bad:
+              print('::error::%s' % x)
+          print('%d 종 · 어긋남 %d · 갈래 %s'
+                % (len(items), len(bad), d.get('per_market')))
+          no_name = sum(1 for r in items.values() if r.get('name_match') is None)
+          if no_name:
+              print('::warning::이름을 받지 못해 맞대 보지 못한 것 %d 종' % no_name)
+          if d.get('failed'):
+              for f in d['failed'][:20]:
+                  print('::warning::%s %s 를 받지 못했습니다 — %s'
+                        % (f['code'], f['name'], f['why'][:100]))
+              print('::warning::받지 못한 것 %d 종' % len(d['failed']))
+          sys.exit(1 if bad else 0)
+          PY
+
+      # 우주가 실제로 넓어졌는지, 그 우주로 세팅이 나오는지 본다.
+      - name: 우주가 넓어졌는가
+        run: |
+          python3 - <<'PY'
+          import sys
+          sys.path.insert(0, 'scripts')
+          import kis_timing_data as D
+          uni, meta = D.load_universe()
+          for mk in D.MARKET_ORDER:
+              print('::notice::%s %d 종' % (D.MARKETS[mk]['label'], len(uni.get(mk) or [])))
+          for x in meta['notes']:
+              print('::warning::%s' % x)
+          for mk, rows in meta['dropped'].items():
+              print('::notice::%s — 이력이 모자라 빠진 것 %d 종'
+                    % (D.MARKETS[mk]['label'], len(rows)))
+          # 다섯째 시장이 서지 않으면 받아 온 뜻이 없다.
+          n = len(uni.get('KR_OV_ETF') or [])
+          if n < 50:
+              print('::error::국내상장 해외ETF 가 %d 종뿐입니다' % n)
+          sys.exit(0 if n >= 50 else 1)
+          PY
+
+      - name: 커밋
+        run: |
+          git config user.name  'github-actions[bot]'
+          git config user.email 'github-actions[bot]@users.noreply.github.com'
+          git add data/kis_timing/kr_extra.json
+          if git diff --staged --quiet; then
+            echo "변경 없음 — 봉이 그대로입니다"
+            exit 0
+          fi
+          git commit -m "국내 상장 곁 목록 수집 $(TZ=Asia/Seoul date '+%Y-%m-%d %H:%M KST')"
+
+          for i in 1 2 3 4 5; do
+            if git push; then
+              echo "밀어 넣음 (시도 $i)"; exit 0
+            fi
+            echo "거절됨 — 되받아 다시 시도한다 ($i/5)"
+            if ! git pull --rebase --no-edit origin main; then
+              git rebase --abort || true
+              echo "::error::되받기 충돌 — 손으로 확인하십시오"
+              exit 1
+            fi
+            sleep $((i * 5))
+          done
+          echo "::error::다섯 번 밀어 봤지만 모두 거절됐습니다"
+          exit 1

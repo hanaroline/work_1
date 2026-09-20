@@ -17,6 +17,10 @@
 한 줄이라도 FAIL 이면 산출물을 내보내지 않는다 — 조용히 틀린 매수 신호가
 나가는 것보다 소리를 내고 멈추는 편이 낫다.
 
+세 번째(성적표)만 **SKIP** 이 날 수 있다. 성적표는 단추로만 다시 나는데 봉은
+날마다 자라므로, 「성적표를 낸 그 우주」가 아닌 자리에서는 댈 것이 없다.
+건너뛴 것을 통과로 적지 않는다 — 자세한 것은 `verify_grades` 에 적어 두었다.
+
 ## --self-only
 
 위 여섯 중 **1·2·4 는 봉을 다시 읽어야 한다.** 그런데 미국 주식 봉은 이 가지에
@@ -47,6 +51,7 @@ EPS = 1e-9
 
 lines = []
 fails = 0
+skips = 0
 
 
 def check(ok, label, detail=''):
@@ -56,6 +61,18 @@ def check(ok, label, detail=''):
     lines.append('%s  %s%s' % ('PASS' if ok else 'FAIL', label,
                                ('  — ' + detail) if detail else ''))
     return ok
+
+
+def skip(label, detail=''):
+    """**댈 수 없어서 안 댄 것**을 통과로 적지 않는다.
+
+    FAIL 이 아닌 까닭은 어긋난 수를 찾은 것이 아니기 때문이고, PASS 가 아닌
+    까닭은 대 보지 않았기 때문이다. 셋째 칸이 없으면 둘 중 하나로 거짓말을
+    하게 된다.
+    """
+    global skips
+    skips += 1
+    lines.append('SKIP  %s%s' % (label, ('  — ' + detail) if detail else ''))
 
 
 def close_to(a, b, tol=1e-6):
@@ -227,20 +244,78 @@ def verify_signals(doc, uni):
 # 3. 성적표 — 무작위로 몇 칸을 다시 돌린다
 # ─────────────────────────────────────────────────────────────────────
 
+FINGERPRINT_KEYS = ('count', 'from', 'to', 'bars_min', 'bars_max')
+
+
+def fingerprint(rows):
+    """성적표를 낸 그 우주인가를 가리는 지문.
+
+    `kis_timing_backtest.run()` 이 `universe[시장]` 에 적어 두는 것과 **같은 값**을
+    같은 방법으로 셈한다. 저쪽이 바뀌면 여기도 바꿔야 한다.
+    """
+    return {'count': len(rows),
+            'from': min(it['bars'][0]['d'] for it in rows),
+            'to': max(it['bars'][-1]['d'] for it in rows),
+            'bars_min': min(len(it['bars']) for it in rows),
+            'bars_max': max(len(it['bars']) for it in rows)}
+
+
+def _moved_why(rec, now):
+    d = ['%s %s→%s' % (k, rec.get(k), now[k])
+         for k in FINGERPRINT_KEYS if rec.get(k) != now[k]]
+    return ', '.join(d)
+
+
 def verify_grades(bt, uni):
+    """성적표 몇 칸을 **그 성적표를 낸 우주에서** 다시 돌려 대조한다.
+
+    ## 왜 우주를 먼저 재는가
+
+    성적표는 단추로만 다시 난다(kis-timing-backtest.yml). 그 결정에는 까닭이
+    있다 — 성적이 날마다 조용히 바뀌면 합의 멤버가 날마다 바뀐다. 그래서 날마다
+    도는 갱신 잡에서는 **성적표가 어제 것이고 봉은 오늘 것**인 때가 정상이다.
+
+    그 자리에서 성적표를 다시 돌리면 당연히 다른 수가 나온다. 그건 어긋난 것이
+    아니라 **자료가 자란 것**이다. 실제로 2026-09-19 해외ETF 우주가 18종에서
+    31종으로 늘어난 직후 이 검사가 갱신 잡을 넘어뜨렸다(OV_ETF/연속상승 거래
+    266 vs 494). 성적표에는 아무 잘못이 없었다.
+
+    그래서 시장마다 지문을 먼저 맞춰 본다.
+
+        지문이 같다  →  **엄격하게 대조한다.** 여기서 갈리면 진짜 고장이다.
+        지문이 다르다 →  그 칸은 건너뛰고 **무엇이 달라졌는지 적는다.**
+
+    건너뛴 것을 통과로 적지 않는 것이 요점이다(skip 참고). PR 검사는 성적표를
+    **새로 돌린 뒤** 이것을 대므로 지문이 늘 맞고, 따라서 엄격한 쪽으로 돈다.
+    """
     rng = random.Random(4)
     picks = rng.sample(bt['grades'], min(5, len(bt['grades'])))
-    bad = []
+    bad, done, moved = [], 0, {}
     for g in picks:
-        rows = uni.get(g['market']) or []
+        mk = g['market']
+        rows = uni.get(mk) or []
         if not rows:
             continue
-        re = B.grade(g['market'], g['strategy'], rows, B.COST_BPS[g['market']])
+        if mk not in moved:
+            rec = (bt.get('universe') or {}).get(mk) or {}
+            now = fingerprint(rows)
+            moved[mk] = _moved_why(rec, now)
+        if moved[mk]:
+            continue
+        done += 1
+        re = B.grade(mk, g['strategy'], rows, B.COST_BPS[mk])
         for k in ('trades', 'win_rate', 'avg', 'edge', 'hold_median'):
             if re.get(k) != g.get(k):
-                bad.append('%s/%s %s %r vs %r' % (g['market'], g['strategy'], k,
+                bad.append('%s/%s %s %r vs %r' % (mk, g['strategy'], k,
                                                   g.get(k), re.get(k)))
-    check(not bad, '성적표 %d 칸을 다시 돌려 대조' % len(picks), '; '.join(bad[:3]))
+    why = '; '.join('%s %s' % (mk, w) for mk, w in sorted(moved.items()) if w)
+    if bad or done:
+        check(not bad, '성적표 %d 칸을 다시 돌려 대조' % done,
+              '; '.join(bad[:3]) if bad
+              else ('%d 칸은 우주가 달라져 건너뜀 — %s' % (len(picks) - done, why) if why else ''))
+    else:
+        skip('성적표 대조 — 성적표를 낸 뒤 우주가 달라졌습니다', '%s. '
+             '성적을 지금 봉에 맞추려면 「매매 타이밍 백테스트」를 다시 돌리십시오' % why)
 
 
 # ─────────────────────────────────────────────────────────────────────
@@ -343,7 +418,8 @@ def main():
     verify_buckets(doc, bt)
 
     lines.append('')
-    lines.append('결과: %s' % ('모두 통과' if not fails else '%d 건 FAIL' % fails))
+    lines.append('결과: %s%s' % ('모두 통과' if not fails else '%d 건 FAIL' % fails,
+                                 ' (건너뜀 %d 건)' % skips if skips else ''))
     txt = '\n'.join(lines) + '\n'
     # **부분 검사의 결과로 온전한 검사의 기록을 덮지 않는다.** verify.txt 는
     # 「전부 대 봤다」는 증서라서, --self-only 가 그 자리에 앉으면 다음에 읽는
