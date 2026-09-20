@@ -54,18 +54,46 @@ jobs:
           echo "::error::us100-data 가지를 받지 못했습니다"
           exit 1
 
+      # 판정은 기업 자료를 겹치므로 kr100-data 가지가 있어야 한다. 없으면 실적 겹이
+      # 통째로 비고, 그 판정이 그대로 커밋된다. refspec 을 손으로 적는 까닭은 위와 같다.
+      - name: 국내 기업 자료 가지 받기
+        run: |
+          for i in 1 2 3 4; do
+            if git fetch --depth 1 origin \
+                 '+refs/heads/kr100-data:refs/remotes/origin/kr100-data'; then
+              git rev-parse --verify origin/kr100-data >/dev/null
+              echo "받음 (시도 $i)"; exit 0
+            fi
+            echo "실패 — 다시 시도한다 ($i/4)"; sleep $((i * i * 2))
+          done
+          echo "::error::kr100-data 가지를 받지 못했습니다"
+          exit 1
+
       - name: 성적표를 다시 잰다
         run: |
           python3 scripts/kis_timing_backtest.py 2>&1 | tee /tmp/bt.txt
           exit ${PIPESTATUS[0]}
 
-      - name: 그 성적표로 오늘의 세팅을 내고 검산한다
-        # 성적표만 갈아 끼우고 세팅을 그대로 두면 **화면의 멤버와 성적이 어긋난다.**
-        # 둘은 한 벌이라 함께 낸다.
+      - name: 그 성적표로 세팅과 판정을 내고 검산한다
+        # 성적표만 갈아 끼우고 나머지를 그대로 두면 **화면의 멤버와 성적이 어긋난다.**
+        #
+        # **이 자리에서 실제로 한 번 어긋났다.** 처음에는 성적표와 세팅 둘만 한 벌로
+        # 보고 여기 적어 두었는데, 뒤에 판정(verdict.json)이 생기면서 셋이 됐다.
+        # 그런데 이 단계는 둘만 낸 채였다. 2026-09-20 우주를 278 → 395종으로 넓히고
+        # 단추를 눌렀더니 세팅의 합의 멤버는 새 성적표를 따라갔고 판정은 어제 멤버에
+        # 머물러, 같은 ETF 가 매매 타이밍에서는 「매수」, 판정에서는 「관찰」이 됐다.
+        # verify_verdict.py 의 「두 화면이 같은 말을 하는가」가 그것을 잡았다.
+        #
+        # 그래서 **한 벌을 셋으로 적고, 검산도 둘 다 여기서 돈다.** 어느 하나를
+        # 빼먹으면 다음 사람이 같은 자리에서 같은 것을 겪는다.
         run: |
           python3 scripts/build_kis_timing.py
+          python3 scripts/build_verdict.py
           python3 scripts/verify_kis_timing.py | tee /tmp/verify-kis.txt
-          exit ${PIPESTATUS[0]}
+          a=${PIPESTATUS[0]}
+          python3 scripts/verify_verdict.py | tee /tmp/verify-verdict.txt
+          b=${PIPESTATUS[0]}
+          exit $(( a > b ? a : b ))
 
       - name: 요약
         if: always()
@@ -75,9 +103,13 @@ jobs:
             echo '```'
             grep -E '^\[|초과|합의' /tmp/bt.txt || cat /tmp/bt.txt
             echo '```'
-            echo '### 재검산'
+            echo '### 전략빌더 10종 재검산'
             echo '```'
             cat /tmp/verify-kis.txt 2>/dev/null || echo '(돌지 않음)'
+            echo '```'
+            echo '### 종목 판정 재검산'
+            echo '```'
+            cat /tmp/verify-verdict.txt 2>/dev/null || echo '(돌지 않음)'
             echo '```'
           } >> "$GITHUB_STEP_SUMMARY"
 
