@@ -354,7 +354,36 @@ def _rec(rid, payload, size_bytes=4):
 
 
 def _mbcs(s):
-    return s.encode("cp%d" % CODEPAGE, "replace")
+    return _enc(s)
+
+
+def _enc(s):
+    """모듈 소스·이름을 코드페이지로 담는다. **못 담으면 시끄럽게 실패한다.**
+
+    처음에는 `errors="replace"` 였다. 그러면 못 담는 글자가 조용히 `?` 가
+    되는데, 실제로 주석의 줄표(— U+2014)가 `?` 로 바뀐 채 파일에 들어갔다.
+    주석이라 기능은 멀쩡했지만 **그것이 식별자였으면 매크로가 깨졌을 것이고,
+    깨진 티도 안 났을 것이다.** cp949 는 ✓ ⚠ – 같은 흔한 글자도 못 담는다.
+
+    그래서 바꿔치기하지 않고 멈춘다. 어느 글자가 걸렸는지 말해 준다.
+    """
+    try:
+        return s.encode("cp%d" % CODEPAGE, "strict")
+    except UnicodeEncodeError:
+        bad = sorted({c for c in s if not _fits(c)})
+        raise ValueError(
+            "VBA 소스에 코드페이지 %d 로 담을 수 없는 글자가 있습니다: %s\n"
+            "  매크로 소스에서 빼거나 담을 수 있는 글자로 바꾸십시오 "
+            "(줄표는 — U+2014 대신 ― U+2015 가 담깁니다)."
+            % (CODEPAGE, " ".join("%s(U+%04X)" % (c, ord(c)) for c in bad)))
+
+
+def _fits(ch):
+    try:
+        ch.encode("cp%d" % CODEPAGE, "strict")
+        return True
+    except UnicodeEncodeError:
+        return False
 
 
 def build_dir(project_name, modules):
@@ -422,7 +451,7 @@ def build_project(project_id, project_name, modules):
           "[Workspace]"]
     for m in modules:
         L.append("%s=0, 0, 0, 0, %s" % (m["name"], "C" if m.get("document") else ""))
-    return ("\r\n".join(L) + "\r\n").encode("cp%d" % CODEPAGE, "replace")
+    return _enc("\r\n".join(L) + "\r\n")
 
 
 def build_projectwm(modules):
@@ -467,7 +496,7 @@ def build_vba_project(modules, project_name="VBAProject", project_id=None):
                     "Attribute VB_Customizable = True\r\n")
         src += m.get("code", "")
         vba_kids.append(_Node(m["name"], 2,
-                              compress(src.encode("cp%d" % CODEPAGE, "replace"))))
+                              compress(_enc(src))))
     vba = _Node("VBA", 1)
     vba.kids = vba_kids
     kids = [vba,
