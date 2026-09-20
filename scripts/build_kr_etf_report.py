@@ -1,10 +1,15 @@
 #!/usr/bin/env python3
-"""국내ETF 합의종목 리포트 — 한 파일 HTML.
+"""ETF 합의종목 리포트 — 한 파일 HTML. 시장 하나를 한 장으로 낸다.
 
-    python3 scripts/build_kr_etf_report.py
+    python3 scripts/build_kr_etf_report.py                      # 국내ETF
+    python3 scripts/build_kr_etf_report.py --market KR_OV_ETF   # 국내상장 해외ETF
     python3 scripts/build_kr_etf_report.py --out /tmp/보낼판.html
 
-## 왜 국내ETF 만인가 — 그리고 그 까닭이 더는 성립하지 않는다
+**한 대본이 시장 둘을 낸다.** 파일을 두 벌 두면 한쪽만 고쳐지고, 그 뒤로는 두
+리포트가 같은 자료를 놓고 서로 다른 말을 하게 된다. 시장마다 다른 것은 `MARKETS`
+표에 모았고 나머지는 모두 자료에서 셈한다.
+
+## 왜 국내ETF 만이었나 — 그리고 그 까닭이 더는 성립하지 않는다
 
 처음 이 리포트를 만들 때의 까닭은 「네 시장 가운데 근거가 가장 두꺼운 곳」이었다.
 **그 말은 이제 참이 아니다.**
@@ -69,8 +74,46 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 KST = timezone(timedelta(hours=9))
 LATEST = os.path.join(ROOT, 'data', 'kis_timing', 'latest.json')
 BACKTEST = os.path.join(ROOT, 'data', 'kis_timing', 'backtest.json')
-DEFAULT_OUT = os.path.join(ROOT, 'kr-etf-report.html')
-MARKET = 'KR_ETF'
+# **한 대본이 시장 둘을 낸다.** 파일을 두 벌 두면 한쪽만 고쳐지고, 그 뒤로는
+# 두 리포트가 서로 다른 말을 하게 된다. 시장마다 다른 것은 아래 표에 모은다 —
+# 나머지(수·문장·순위·K 설명)는 모두 `derived()` 가 자료에서 셈한다.
+MARKETS = {
+    'KR_ETF': {
+        'slug': 'kr-etf',
+        'csv': 'kr-etf-timing',
+        # 이 시장에만 있는 내력. 예전 판이 싣던 수가 무엇이었고 왜 달라졌는지
+        # 적지 않으면, 그 판을 본 사람은 수가 줄어든 것을 성적이 나빠진 것으로 읽는다.
+        'history': (
+            '예전 판은 <b>+3.85%%p</b> 를 싣고 있었습니다. 그때 「국내ETF」 칸에는 '
+            'KODEX 200 과 TIGER 미국나스닥100 이 함께 들어 있었고, 그 수는 '
+            '<b>국내 ETF 의 성적이 아니었습니다.</b> 기초자산으로 갈라내고 우주를 '
+            '%(count)d 종으로 넓히자 위의 값이 나왔습니다.'),
+        'scope': (
+            '대상은 국내 상장 ETF <b>전부가 아니라</b> 이 저장소가 시가·고가·저가까지 '
+            '모아 둔 %(count)d 종입니다. <b>기초자산이 해외인 ETF는 여기에 없습니다</b> — '
+            '미국나스닥100·니케이225 처럼 국내에 상장됐지만 해외를 따라가는 것들은 '
+            '따로 셉니다. 한 칸에 섞으면 「국내ETF 에서 먹혔다」가 실은 미국 지수에서 '
+            '먹힌 것일 수 있습니다.'),
+    },
+    'KR_OV_ETF': {
+        'slug': 'kr-ov-etf',
+        'csv': 'kr-ov-etf-timing',
+        'history': (
+            '<b>이 시장은 2026-09-20 에 새로 세웠습니다.</b> 그전에는 이 종목들이 '
+            '「국내ETF」 칸에 섞여 있었고, 그 칸의 성적(+3.85%%p)은 사실 상당 부분 '
+            '여기서 나온 것이었습니다. 갈라내어 따로 재자 위의 값이 나왔습니다 — '
+            '<b>섞여 있을 때의 수보다 낮습니다.</b> 우주가 %(count)d 종으로 넓어져 '
+            '표본이 두꺼워진 값이라 이쪽이 더 믿을 만합니다.'),
+        'scope': (
+            '대상은 <b>국내에 상장됐지만 기초자산이 해외인 ETF</b> %(count)d 종입니다 — '
+            '미국나스닥100·MSCI선진국·니케이225·CSI300 같은 것들입니다. '
+            '<b>원화로 사고팝니다.</b> 달러로 사는 미국 상장 ETF(해외ETF)는 거래시간도 '
+            '환위험도 달라 따로 셉니다. 환헤지 여부는 종목마다 다르며 이 리포트는 '
+            '그것을 가르지 않습니다 — 이름에 (H) 가 붙은 것이 환헤지형입니다.'),
+    },
+}
+DEFAULT_MARKET = 'KR_ETF'
+MARKET = DEFAULT_MARKET          # main() 이 --market 으로 바꾼다
 
 
 def esc(s):
@@ -166,11 +209,17 @@ def build(doc, bt):
         'asof': esc(m['asof']),
         'generated': esc(doc['generated_at_kst']),
         'count': m['count'],
+        # 제목은 **자료의 이름표**를 쓴다. 여기 또 적어 두면 시장을 늘릴 때
+        # 한쪽만 고쳐져 「국내ETF」라 적힌 해외ETF 리포트가 나온다.
+        'title': esc(m['label']),
+        'history': MARKETS[MARKET]['history'] % {'count': m['count']},
+        'scope': MARKETS[MARKET]['scope'] % {'count': m['count']},
         'k': rule['k'],
         'stop': rule['stop_loss_pct'],
         'members': esc(' · '.join(m['member_names'])),
         'n_members': len(m['members']),
         'buy': plan_rows(m['buy'], names, 'buy'),
+        'concentration': concentration(m['buy']),
         'sell': plan_rows(m['sell'], names, 'sell'),
         'n_watch': len(m['watch_buy']),
         'trades': g.get('trades'),
@@ -201,6 +250,55 @@ def build(doc, bt):
     })
 
 
+# 이름에서 읽히는 노출. **이름만 본 것**이고 실제 보유 종목이나 상관은 재지 않는다 —
+# 그 둘은 다른 말이라 리포트가 그렇게 적는다.
+_EXPOSURE = [
+    ('미국', ('미국', 'S&P', 'SP500', '나스닥', '다우', '러셀', '빅테크')),
+    ('중국', ('중국', '차이나', 'CSI', '항셍', 'H지수')),
+    ('일본', ('일본', '니케이', 'TOPIX')),
+    ('인도', ('인도', '니프티')),
+    ('베트남', ('베트남', 'VN30')),
+    ('유럽', ('유럽', '유로', '독일')),
+    ('글로벌·선진', ('글로벌', '선진', 'MSCI', '토탈')),
+    ('채권', ('국고채', '회사채', '채권', '금리', 'SOFR', '단기자금')),
+    ('금·원자재', ('금현물', '골드', '은선물', '원유', '원자재')),
+    ('리츠·부동산', ('리츠', '부동산', '인프라')),
+]
+
+
+def concentration(plans):
+    """매수 자리가 한쪽에 몰려 있는가.
+
+    **목록이 길다고 분산이 아니다.** 열세 종을 샀는데 열 종이 미국 테크면 그건
+    한 자리에 열세 번 건 것에 가깝다. 표만 보면 그 사실이 읽히지 않으므로
+    표 아래에 적는다.
+
+    가르는 잣대는 **이름에 든 말**이다. 실제 보유 종목이나 상관을 잰 것이 아니고,
+    그렇게 적는다 — 이름으로 짐작한 것을 측정한 것처럼 말하지 않는다.
+    """
+    if len(plans) < 3:
+        return ''
+    hit = {}
+    for p in plans:
+        nm = (p.get('name') or '').upper()
+        for label, keys in _EXPOSURE:
+            if any(k.upper() in nm for k in keys):
+                hit.setdefault(label, []).append(p['name'])
+                break
+    if not hit:
+        return ''
+    label, got = max(hit.items(), key=lambda kv: len(kv[1]))
+    if len(got) * 2 < len(plans):          # 절반에 못 미치면 몰렸다고 하지 않는다
+        return ''
+    return ('<div class="warn"><p><b>매수 자리가 한쪽에 몰려 있습니다.</b> '
+            '%d 종 가운데 <b>%d 종이 「%s」 노출</b>입니다. 목록이 길다고 분산이 '
+            '아닙니다 — 그쪽이 흔들리면 함께 흔들립니다. 나누어 담을 생각이라면 '
+            '이 점을 먼저 보십시오.</p>'
+            '<p class="cap">가른 잣대는 <b>종목 이름에 든 말</b>입니다. 실제 보유 '
+            '종목이나 수익률 상관을 잰 것이 아닙니다.</p></div>'
+            % (len(plans), len(got), esc(label)))
+
+
 def derived(m, bt, g, gt, base, rule):
     """문장 안에 들어갈 **말**을 수에서 만든다.
 
@@ -226,6 +324,18 @@ def derived(m, bt, g, gt, base, rule):
     out['exit_stop'] = '%.1f%%' % (stop_n / tot * 100.0)
     out['exit_signal'] = '%.1f%%' % (sig_n / tot * 100.0)
 
+    # **「자주 사고 자주 파는」·「드물게 닿는」·「얇습니다」는 수가 아니라 말이다.**
+    # 손으로 적으면 시장이 바뀔 때 조용히 거짓이 된다 — 실제로 국내상장 해외ETF
+    # 에서 보유 13 거래일이 「자주 사고 자주 파는」으로, 초과수익 2위가
+    # 「얇습니다」로 인쇄될 뻔했다. 문턱은 **여기 적어 두고** 고른 것이다.
+    hm = g.get('hold_median') or 0
+    out['hold_note'] = ('자주 사고 자주 파는 방식' if hm <= 5
+                        else '며칠에서 몇 주를 들고 가는 방식' if hm <= 20
+                        else '몇 달을 들고 가는 방식')
+    sp = (stop_n / tot * 100.0)
+    out['stop_note'] = ('드물게 닿는' if sp < 5 else '열에 한 번쯤 닿는' if sp < 20
+                        else '자주 닿는')
+
     out['avg_win'] = pct(g.get('avg_win'))
     out['avg_loss'] = pct(g.get('avg_loss'))
     out['hold'] = g.get('hold_median')
@@ -248,12 +358,17 @@ def derived(m, bt, g, gt, base, rule):
     mine = next((i for i, (_, mk) in enumerate(edges) if mk == MARKET), None)
     if mine is None or len(edges) < 2:
         out['rank_note'] = ''
+        out['edge_note'] = '이 시장의 초과수익이 얼마나 두꺼운지는 잴 수 없었습니다.'
     else:
         labels = {mk: (bt['universe'].get(mk) or {}).get('label', mk) for _, mk in edges}
         best = labels[edges[0][1]]
         out['rank_note'] = ('같은 잣대로 잰 %d 개 시장 가운데 <b>%d번째</b>입니다 '
                             '(가장 두꺼운 곳은 %s %+.2f%%p).'
                             % (len(edges), mine + 1, esc(best), edges[0][0]))
+        # 위에서 몇째인가로 머리말을 가른다. 앞 두 자리면 「두꺼운 축」,
+        # 그 아래면 「얇습니다」. 자리를 손으로 적지 않는다.
+        out['edge_note'] = ('이 시장은 근거가 두꺼운 축입니다.' if mine < 2
+                            else '이 시장의 초과수익은 얇습니다.')
 
     # K 를 왜 이 값으로 두는가 — 표의 수에서 문장을 만든다.
     per_k = {c['k']: c for c in bt['consensus']
@@ -327,6 +442,7 @@ def payload(m, names, doc, dv):
                 for p in m[key]]
     return {
         'label': m['label'], 'asof': m['asof'],
+        'csv_slug': MARKETS[MARKET]['csv'],
         'buy': rows('buy', 'buy_hits'), 'sell': rows('sell', 'sell_hits'),
         'watch': rows('watch_buy', 'buy_hits'),
         'win': (m['consensus_full'] or {}).get('win_rate'),
@@ -347,7 +463,7 @@ TEMPLATE = r"""<!DOCTYPE html>
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>국내ETF 매매 타이밍 — %(asof)s</title>
+<title>%(title)s 매매 타이밍 — %(asof)s</title>
 <!--
   scripts/build_kr_etf_report.py 가 만든 판이다. 손으로 고치지 않는다 —
   다음 번에 다시 만들면 덮인다.
@@ -493,7 +609,7 @@ TEMPLATE = r"""<!DOCTYPE html>
 <div class="hero">
   <div class="page">
     <span class="tag">사내한 · 정보 제공 목적</span>
-    <h1>국내ETF 매매 타이밍</h1>
+    <h1>%(title)s 매매 타이밍</h1>
     <div class="sub">%(asof)s 종가 기준 · 대상 %(count)d 종</div>
     <div class="tools">
       <button id="btnPrint" type="button">인쇄 · PDF 저장</button>
@@ -516,20 +632,16 @@ TEMPLATE = r"""<!DOCTYPE html>
     </p>
     <div class="warn">
       <p>
-        <b>먼저 알아야 할 것 — 이 시장의 초과수익은 얇습니다.</b> 검증구간
+        <b>먼저 알아야 할 것 — %(edge_note)s</b> 검증구간
         합의 K=%(k)d 의 초과수익이 <b>%(test_edge)s</b>(%(test_trades)s 거래)입니다.
         %(rank_note)s
       </p>
-      <p class="cap">
-        예전 판은 <b>+3.85%%p</b> 를 싣고 있었습니다. 그때 「국내ETF」 칸에는 KODEX 200 과
-        TIGER 미국나스닥100 이 함께 들어 있었고, 그 수는 <b>국내 ETF 의 성적이
-        아니었습니다.</b> 기초자산으로 갈라내고 우주를 %(count)d 종으로 넓히자 위의 값이
-        나왔습니다.
-      </p>
+      <p class="cap">%(history)s</p>
     </div>
 
     <h3>매수</h3>
     %(buy)s
+    %(concentration)s
     <p class="cap">%(price_note)s %(weight_note)s</p>
 
     <h3>청산 — 들고 있다면 내려놓을 자리</h3>
@@ -594,12 +706,12 @@ TEMPLATE = r"""<!DOCTYPE html>
       </p>
       <p>
         <b>지는 자리가 손절은 아닙니다.</b> 끝난 거래의 %(exit_signal)s 는 청산 신호로,
-        손절로 잘린 것은 %(exit_stop)s 뿐입니다. 손절 %(stop)s%% 는 드물게 닿는
+        손절로 잘린 것은 %(exit_stop)s 입니다. 손절 %(stop)s%% 는 %(stop_note)s
         마지막 방벽이지 이 방식이 지는 주된 자리가 아닙니다.
       </p>
       <p>
         좋아지는 것은 <b>한 번의 크기</b>입니다 — 이길 때 %(avg_win)s, 질 때 %(avg_loss)s.
-        %(size_note)s 평균 보유는 %(hold)s 거래일이라 <b>자주 사고 자주 파는 방식</b>입니다.
+        %(size_note)s 평균 보유는 %(hold)s 거래일이라 <b>%(hold_note)s</b>입니다.
         <b>연속으로 지는 구간을 견디지 못하면 성적이 나오지 않습니다</b> — 그 구간에서
         규칙을 버리면 이기는 한 번을 놓치고 지는 쪽만 갖게 됩니다.
       </p>
@@ -668,17 +780,12 @@ TEMPLATE = r"""<!DOCTYPE html>
       택합니다. 일봉으로는 어느 쪽이 먼저였는지 알 수 없고, 모를 때 유리한 쪽을 고르면
       성적이 부풉니다.
     </p>
-    <p>
-      대상은 국내 상장 ETF <b>전부가 아니라</b> 이 저장소가 시가·고가·저가까지 모아 둔
-      %(count)d 종입니다. <b>기초자산이 해외인 ETF는 여기에 없습니다</b> — 미국나스닥100·
-      니케이225 처럼 국내에 상장됐지만 해외를 따라가는 것들은 따로 셉니다. 한 칸에 섞으면
-      「국내ETF 에서 먹혔다」가 실은 미국 지수에서 먹힌 것일 수 있습니다.
-    </p>
+    <p>%(scope)s</p>
     <p>
       초과수익은 <b>거래비용 가정에 흔들리지 않습니다</b> — 대조군도 같은 비용을 내기
-      때문입니다. 다만 <b>손에 남는 수익은 흔들립니다.</b> 평균 보유가 %(hold)s 거래일인
-      잦은 매매라, 왕복 %(cost)sbp 가정이 실제보다 낮으면 거래당 평균 %(avg)s 는 그만큼
-      줄어듭니다. 초과수익이 얇을수록 이 가정이 결론을 좌우합니다.
+      때문입니다. 다만 <b>손에 남는 수익은 흔들립니다.</b> 평균 보유가 %(hold)s 거래일이라,
+      왕복 %(cost)sbp 가정이 실제보다 낮으면 거래당 평균 %(avg)s 는 그만큼 줄어듭니다.
+      초과수익이 얇을수록 이 가정이 결론을 좌우합니다.
     </p>
   </div>
 
@@ -790,7 +897,7 @@ TEMPLATE = r"""<!DOCTYPE html>
     a.href = URL.createObjectURL(new Blob(['\ufeff' + csv],
              { type: 'text/csv;charset=utf-8' }));
     /* 파일 이름은 아스키로 — 한글 이름은 환경에 따라 통째로 무시된다. */
-    a.download = 'kr-etf-timing_' + D.asof + '.csv';
+    a.download = D.csv_slug + '_' + D.asof + '.csv';
     document.body.appendChild(a); a.click(); document.body.removeChild(a);
     setTimeout(function () { URL.revokeObjectURL(a.href); }, 1000);
     say('CSV 를 저장했습니다');
@@ -803,9 +910,13 @@ TEMPLATE = r"""<!DOCTYPE html>
 
 
 def main(argv=None):
+    global MARKET
     ap = argparse.ArgumentParser()
-    ap.add_argument('--out', default=DEFAULT_OUT)
+    ap.add_argument('--market', default=DEFAULT_MARKET, choices=sorted(MARKETS))
+    ap.add_argument('--out', default='')
     a = ap.parse_args(argv)
+    MARKET = a.market
+    out = a.out or os.path.join(ROOT, '%s-report.html' % MARKETS[MARKET]['slug'])
 
     for p in (LATEST, BACKTEST):
         if not os.path.exists(p):
@@ -827,11 +938,11 @@ def main(argv=None):
         return 1
 
     html = build(doc, bt)
-    with open(a.out, 'w', encoding='utf-8') as f:
+    with open(out, 'w', encoding='utf-8') as f:
         f.write(html)
-    print('썼다: %s (%.0f KB · %s 기준 · 매수 %d · 청산 %d · 관찰 %d)'
-          % (os.path.relpath(a.out, ROOT), os.path.getsize(a.out) / 1024.0,
-             m['asof'], len(m['buy']), len(m['sell']), len(m['watch_buy'])))
+    print('썼다: %s (%.0f KB · %s · %s 기준 · 매수 %d · 청산 %d · 관찰 %d)'
+          % (os.path.relpath(out, ROOT), os.path.getsize(out) / 1024.0,
+             m['label'], m['asof'], len(m['buy']), len(m['sell']), len(m['watch_buy'])))
     return 0
 
 
