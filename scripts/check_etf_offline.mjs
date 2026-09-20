@@ -74,6 +74,24 @@ try {
       ok(`[${theme}] 몇 종목을 실제로 쟀는지 적혀 있다`,
          /76 종목으로 잰 것이 아닙니다/.test(body || ''));
       ok(`[${theme}] 95% 구간을 싣는다`, /95% 구간/.test(body || ''));
+      // 한 줄짜리 규칙과의 견줌 — 성적표에 그 칸이 있으면 화면에도 떠야 한다.
+      // 없으면 「엔진이 값을 하는가」라는 물음이 화면에서 사라진다.
+      const hasMa = await page.evaluate(() => {
+        const el = document.getElementById('etf-embedded');
+        if (!el) return false;
+        try {
+          const d = JSON.parse(el.textContent);
+          const hs = (d.backtest || {}).horizons || {};
+          return Object.values(hs).some(h =>
+            Object.values(h.flip || {}).some(m => m && m.equity_ma_cross));
+        } catch (e) { return false; }
+      });
+      if (hasMa) {
+        ok(`[${theme}] 20일선 교차와 견준 칸이 있다`,
+           /한 줄짜리 규칙과 견주면/.test(body || ''));
+        ok(`[${theme}] 손절을 붙인 판까지 싣는다`,
+           /20일선 교차 \+ 같은 손절/.test(body || ''));
+      }
       ok(`[${theme}] 비용이 가정임을 밝힌다`,
          /사실이 아니라 가정입니다/.test(body || ''));
     }

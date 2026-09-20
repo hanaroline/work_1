@@ -23,9 +23,9 @@ on:
   workflow_dispatch:
     inputs:
       years:
-        description: '몇 해치 (기본 3)'
+        description: '몇 해치 (기본 10)'
         required: false
-        default: '3'
+        default: '10'
       env:
         description: '어느 앱키로 (vps=모의, prod=실전)'
         required: false
@@ -69,20 +69,28 @@ jobs:
         run: |
           python3 scripts/fetch_overseas_etf_kis.py \
             --env "${{ inputs.env || 'vps' }}" \
-            --years "${{ inputs.years || '3' }}"
+            --years "${{ inputs.years || '10' }}"
 
-      # 유니버스까지 여기서 다시 만든다. 자료만 커밋해 두면 제안서가 아직 옛
-      # 유니버스를 들고 있어 「해외ETF 없음」이라고 적힌 채로 남는다.
-      - name: 상품 유니버스 다시 모으기
+      # 유니버스와 산출물까지 여기서 다시 만든다. 자료만 커밋해 두면 제안서가
+      # 아직 옛 유니버스를 들고 있어 「해외ETF 없음」이라고 적힌 채로 남는다.
+      # **|| true 로 삼키지 않는다** — 앞서 그렇게 두었다가 엑셀 두 개가 조용히
+      # 실패했고, 화면만 새 자료로 바뀌고 엑셀은 옛 자료인 채로 커밋됐다.
+      - name: 유니버스·산출물 다시 만들기
         run: |
+          set -e
+          python3 -m pip install --quiet openpyxl
           git fetch origin us100-data kr100-data claude/fund-search-tool --depth 1
           python3 scripts/build_proposal_universe.py
+          python3 scripts/build_proposal_page.py
+          python3 scripts/build_proposal_xlsx.py
+          python3 scripts/build_proposal_xlsm.py
 
       - name: 결과 커밋
         run: |
           git config user.name  "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add data/proposal || true
+          git add data/proposal proposal.html 고객제안서_자산배분.xlsx \
+                  고객제안서_자산배분_매크로.xlsm || true
           if git diff --cached --quiet; then
             echo "바뀐 것이 없다 — 커밋 생략"
             exit 0

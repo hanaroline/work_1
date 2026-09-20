@@ -236,6 +236,41 @@ STOCK_NOTES = {
               "Korea's largest non-life insurer"),
     "HD현대중공업": ("조선. LNG선·특수선 수주 잔고가 실적을 좌우",
                  "Shipbuilding; LNG and naval order backlog drives earnings"),
+    "HD현대": ("HD현대그룹 지주회사. 조선·정유·건설기계·전력기기를 거느린다",
+             "HD Hyundai group holding company: shipbuilding, refining, "
+             "construction equipment and power systems"),
+    # 2026-08-27 에 국내 종목을 42 → 55 로 늘리면서 **설명을 같이 넣지
+    # 않았다.** 그래서 아래 열셋만 「핵심」 칸이 석 주 동안 비어 있었다
+    # (지침 4-1절·7-7절이 경고하는 바로 그 자리다). 2026-09-20 에 채운다.
+    # 사업 내용만 적는다 — 실적·목표주가·전망은 날마다 바뀌므로 넣지 않는다.
+    "HD한국조선해양": ("HD현대 조선 중간지주. 삼호·미포 등 조선 계열을 묶는다",
+                  "HD Hyundai's shipbuilding intermediate holding company"),
+    "한화오션": ("조선·해양플랜트. 특수선(잠수함)과 LNG선",
+             "Shipbuilding and offshore; naval submarines and LNG carriers"),
+    "삼성중공업": ("조선·해양. FLNG 등 해양플랜트 비중이 높다",
+               "Shipbuilding and offshore; a large FLNG and offshore mix"),
+    "현대로템": ("철도차량·방산(K2 전차)·플랜트",
+              "Rolling stock, defence (K2 tanks) and plant engineering"),
+    "한미반도체": ("HBM 본딩 장비(TC본더). 메모리 후공정 장비",
+               "HBM bonding equipment (TC bonders) for memory back-end"),
+    "이수페타시스": ("고다층 인쇄회로기판(MLB). AI 가속기용 기판",
+                "High-layer-count PCBs (MLB) used in AI accelerators"),
+    "HPSP": ("고압 수소 어닐링 장비. 반도체 전공정 틈새 1위",
+             "High-pressure hydrogen annealing tools for chip front-end"),
+    "주성엔지니어링": ("반도체·디스플레이 증착 장비(ALD)",
+                 "Deposition equipment (ALD) for chips and displays"),
+    "현대건설": ("국내 대형 건설사. 원전·플랜트와 주택",
+              "A major Korean builder: nuclear, plant and housing"),
+    "삼성E&A": ("플랜트 설계·조달·시공(EPC). 화공·에너지 인프라",
+              "Plant EPC contractor in chemicals and energy infrastructure"),
+    "카카오뱅크": ("인터넷전문은행. 모바일 기반 여수신",
+               "An internet-only bank; mobile deposits and lending"),
+    "LG디스플레이": ("OLED 패널. 스마트폰·TV·차량용 디스플레이",
+                "OLED panels for handsets, TVs and vehicles"),
+    "엔씨소프트": ("리니지 계열 온라인·모바일 게임 개발사",
+               "Developer of the Lineage online and mobile game series"),
+    "LG이노텍": ("카메라모듈·기판소재. 애플 공급 비중이 큰 전자부품사",
+              "Camera modules and substrates; a major Apple supplier"),
     "두산에너빌리티": ("발전 설비. 원전·가스터빈, SMR 기대주",
                  "Power plant equipment; nuclear, gas turbines and SMRs"),
     "카카오": ("카카오톡 기반 플랫폼·핀테크·콘텐츠",
@@ -449,6 +484,10 @@ YAHOO_STOCKS = {
     # 잔고와 선종을 들고 있어 같은 날 방향이 갈린다.
     "HD한국조선해양": "009540.KS", "한화오션": "042660.KS",
     "삼성중공업": "010140.KS", "현대로템": "064350.KS",
+    # 2026-09-18 에 조선 노사 갈등이 터졌을 때 **지주회사가 사업회사보다 더
+    # 크게 빠졌는데**(HD현대 −6.52% 대 HD현대중공업 −2.02%) 표에 없어서 쓰지
+    # 못했다. 파업이 그룹 전체로 번지는 국면에서는 지주사가 먼저 반응한다.
+    "HD현대": "267250.KS",
     # --- 반도체 소부장 --- HBM 이 이 판의 축인데 장비·기판이 통째로 빠져 있었다.
     "한미반도체": "042700.KS", "이수페타시스": "007660.KS",
     "HPSP": "403870.KQ", "주성엔지니어링": "036930.KQ",
@@ -456,6 +495,8 @@ YAHOO_STOCKS = {
     "현대건설": "000720.KS", "삼성E&A": "028050.KS",
     # --- 인터넷·게임·통신 ---
     "카카오뱅크": "323410.KS", "LG디스플레이": "034220.KS", "엔씨소프트": "036570.KS",
+    # 반도체가 오르는 날 같이 움직이는 전자부품 쪽이 비어 있었다.
+    "LG이노텍": "011070.KS",
     "NAVER": "035420.KS", "카카오": "035720.KS",
     "크래프톤": "259960.KS", "SK텔레콤": "017670.KS",
     # --- 지주·소비재·에너지·운송 ---

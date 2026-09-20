@@ -499,6 +499,48 @@
       }
     });
 
+    // **한 줄짜리 규칙과 견준다.**
+    // 결론이 「수익은 못 늘리고 낙폭만 줄인다」로 좁혀지면 다음 물음은 하나뿐이다 —
+    // 20일선 교차만으로도 그 방어가 되는가. 되면 이 엔진은 값을 못 하는 것이다.
+    Object.keys(cov).forEach(function (mk) {
+      var rows = '';
+      [5, 10, 20, 60].forEach(function (hz) {
+        var m = ((bt.horizons || {})[String(hz)] || {});
+        m = ((m.flip || {})[mk]) || null;
+        if (!m || !m.equity_ma_cross) return;
+        var trio = [['신호 (축 넷 + 손절)', m.equity],
+                    ['20일선 교차', m.equity_ma_cross],
+                    ['20일선 교차 + 같은 손절', m.equity_ma_cross_stop]];
+        trio.forEach(function (p, k) {
+          var q = p[1];
+          if (!q) return;
+          rows += '<tr>' + (k === 0 ? '<td rowspan="3">' + hz + '일</td>' : '') +
+            '<td>' + esc(p[0]) + '</td>' +
+            '<td class="num">' + sgn(q.excess_median_pct, 1) + '%p</td>' +
+            '<td class="num">' + num(q.in_market_median_pct, 0) + '%</td>' +
+            '<td class="num">' + num(q.mdd_median_pct, 1) + '%</td>' +
+            '<td class="num"><b>' + sgn(q.mdd_saved_median_pct, 1) + '%p</b></td>' +
+            '<td class="num">' + sgn(q.per_day_excess_median, 4) + '</td></tr>';
+        });
+      });
+      if (!rows) return;
+      h += '<h2 style="margin-top:18px">' + esc(MK_KO[mk] || mk) +
+        ' <span class="muted">— 한 줄짜리 규칙과 견주면</span></h2>' +
+        '<div class="scroll"><table><thead><tr><th>시계</th><th>규칙</th>' +
+        '<th class="num">보유 대비</th><th class="num">장에 머문 시간</th>' +
+        '<th class="num">최대낙폭</th><th class="num">낙폭 절감</th>' +
+        '<th class="num">하루당 초과</th></tr></thead><tbody>' + rows +
+        '</tbody></table></div>';
+    });
+    if ((bt.horizons || {})['20'] &&
+        (((bt.horizons['20'].flip || {})[Object.keys(cov)[0]] || {}).equity_ma_cross)) {
+      h += '<div class="note"><b>이 표가 묻는 것은 하나입니다 — 축 넷과 적응가중치가 ' +
+        '20일선 교차보다 나은가.</b> 세 규칙 모두 같은 구간·같은 비용·같은 시간손절로 ' +
+        '쟀습니다. 셋째 줄은 20일선 교차에 신호 쪽과 <b>똑같은 2×ATR 손절</b>만 붙인 ' +
+        '것이라, 둘째와 셋째의 차이가 손절의 몫이고 첫째와 셋째의 차이가 엔진의 ' +
+        '몫입니다.</div>';
+    }
+
     h += '<div class="note"><b>차이의 95% 구간이 0 을 걸치면 그 시계에서는 신호가 값을 ' +
       '한다고 말할 수 없습니다.</b> 구간은 종목이 아니라 <b>날짜 블록</b>으로 뽑았습니다 — ' +
       '이 표의 ETF 들은 같은 날 함께 움직이므로(겹침 칸을 보십시오) 종목일을 독립 관측으로 ' +
