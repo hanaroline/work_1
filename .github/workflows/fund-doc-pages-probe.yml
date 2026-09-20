@@ -35,6 +35,10 @@ on:
         description: '그때 볼 표준코드 (빈칸이면 전량 5차가 찍어 준 10종목)'
         type: string
         default: ''
+      partnum:
+        description: '「제N부」 를 어떤 글자로 적었는지 센다 (로마숫자 조사 · 적중률 조사는 건너뜀)'
+        type: boolean
+        default: false
   push:
     branches:
       - 'claude/els-**'
@@ -100,6 +104,22 @@ jobs:
           clean=$(printf '%s' "$CODES" | tr -c 'A-Za-z0-9' ' ')
           node scripts/probe_fund_skipped.mjs $clean
 
+      # 한국밸류의 목차 쪽은 「제I부」 를 로마숫자로 적어 목차 판정이 못 잡는다.
+      # 「로마숫자도 받자」 는 한 줄이면 되지만 그 줄이 목차 판정을 건드린다 —
+      # 지금까지 네 번 말썽을 낸 자리다. 고치기 전에 얼마나 흔한지부터 센다.
+      - name: 「제N부」 표기 조사
+        if: inputs.partnum
+        env:
+          CODES: ${{ inputs.codes }}
+          COUNT: ${{ inputs.count }}
+        run: |
+          clean=$(printf '%s' "$CODES" | tr -c 'A-Za-z0-9' ' ')
+          if [ -n "$(printf '%s' "$clean" | tr -d ' ')" ]; then
+            node scripts/probe_fund_partnum.mjs $clean
+          else
+            node scripts/probe_fund_partnum.mjs --sample "$(printf '%s' "${COUNT:-60}" | tr -cd '0-9')"
+          fi
+
       - name: 표본 적중률
-        if: ${{ !inputs.part2_why && !inputs.skipped }}
+        if: ${{ !inputs.part2_why && !inputs.skipped && !inputs.partnum }}
         run: node scripts/probe_fund_pages_sample.mjs "${{ inputs.count || '40' }}"
