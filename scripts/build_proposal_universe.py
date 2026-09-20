@@ -21,9 +21,12 @@ build_etf_proposal.py 머리말에 이렇게 적혀 있다:
 그대로 잇는다. 값마다 **어디서 왔는지(src)와 언제 기준인지(asOf)** 를 달고,
 못 셈한 것은 null 로 둔다. 특히:
 
-  · **펀드는 변동성을 셈하지 않는다.** 기준가 이력이 7 거래일뿐이라 연변동성을
-    낼 수 없다. 원천의 위험등급(riskGrade)을 쓰고, 그 사실을 flags 에 적는다.
-    7 일치로 연변동성을 내면 숫자는 나오지만 그 숫자는 거짓이다.
+  · **펀드는 달 간격 기준가로 잰다.** 한때 「기준가 이력이 7 거래일뿐이라
+    변동성을 못 낸다」고 적어 두었는데 **틀렸다** — 그 7 거래일은 원천의
+    `prices/daily` 한 곳 얘기였고, `base-price/chart?term=5y` 가 5 해치를
+    달 간격으로 준다. 달 계열이라 낙폭은 다소 얕게 나오므로 표본간격을
+    함께 적는다. 계열이 없으면 원천이 준 누적 수익률과 52 주 표준편차를
+    쓰고, **최대낙폭은 비워 둔다** — 없는 것을 지어내지 않는다.
 
   · **펀드 보수는 하나로 줄이지 않는다.** 원천 note 가 「국내 공모펀드의 보수는
     원래 클래스마다 다르므로 하나의 숫자로 줄이지 않고 범위로 싣는다」고 적어
@@ -194,20 +197,36 @@ def load_funds(min_aum):
             "size": aum,
             "ret1y": r1y,
             "ret6m": ret.get("6m") if isinstance(ret.get("6m"), (int, float)) else None,
-            # **변동성은 셈하지 않는다.** 이력이 7 거래일뿐이다.
+            # **원천이 주는 다년 수익률을 버리지 않는다.** 여태 1 해만 읽고
+            # 2·3·5 해를 흘려보냈다. 2,295 종에 5 해 수익률이 있는데도
+            # 제안서에는 「미측정」으로 나갔다. 원천의 한계가 아니라 누락이었다.
+            # **누적**이라는 점이 중요하다 — ETF(네이버)는 연율인데 펀드는
+            # 누적이다. 연율로 바꾸는 것은 지표를 붙일 때 한다.
+            "retCum": {k: ret[k] for k in ("1y", "2y", "3y", "5y")
+                       if isinstance(ret.get(k), (int, float))} or None,
+            # 원천이 52 주로 셈해 둔 위험 지표. 기준가 계열이 없을 때 쓴다.
+            "srcVol": (f.get("metrics") or {}).get("standardDeviation"),
+            "srcSharpe": (f.get("metrics") or {}).get("sharpe"),
+            "srcVolWeeks": f.get("metricsWeeks"),
+            "hasStep": bool(f.get("hasStep")),
+            # 변동성·낙폭은 지표를 붙일 때 기준가 계열에서 셈한다.
             "vol": None,
             "mdd": None,
             "feeMin": f.get("feeMin"),
             "feeMax": f.get("feeMax"),
             "src": src,
             "asOf": f.get("retAsOf") or as_of,
-            "flags": flags + ["변동성_미산출_이력부족"],
+            "flags": flags,
         })
+    n5 = sum(1 for p in out if (p.get("retCum") or {}).get("5y") is not None)
+    nv = sum(1 for p in out if isinstance(p.get("srcVol"), (int, float)))
     meta = {"src": src, "asOf": as_of, "count": len(out),
             "ret1y_이상치": dropped,
+            "다년수익률_5해": n5, "원천변동성": nv,
             "note": ("보수는 클래스마다 달라 하나로 줄이지 않고 범위(feeMin~feeMax)로 "
-                     "싣습니다. 변동성·최대낙폭은 기준가 이력이 7 거래일뿐이라 "
-                     "셈하지 않고 위험등급을 씁니다.")}
+                     "싣습니다. 기간수익률은 **누적**입니다(ETF 는 연율이라 뜻이 "
+                     "다릅니다). 변동성·최대낙폭은 달 간격 기준가 계열에서 "
+                     "셈하고, 계열이 없으면 원천의 52 주 표준편차를 씁니다.")}
     return out, meta
 
 
@@ -671,6 +690,83 @@ def attach_metrics(products):
     return n_any, n_long, n_krw, n_nofx
 
 
+def attach_fund_metrics(products):
+    """펀드에 다년 지표를 붙인다. **일봉이 없어도 잴 수 있다.**
+
+    여태 펀드는 통째로 「미측정」이었는데, 원천의 한계가 아니라 우리 쪽
+    누락이었다. 두 길이 있고 좋은 쪽을 먼저 쓴다.
+
+    1. **달 간격 기준가 계열**(`fetch_fund_nav.py`) — 있으면 이것으로 잰다.
+       주식·ETF 와 **같은 방식**으로 연평균·변동성·최대낙폭이 나온다. 다만
+       표본이 달이라 낙폭은 다소 얕게 나온다(달 안에서 빠졌다 돌아온 것은
+       안 보인다). 그 사실을 `표본간격: 달`로 적어 둔다.
+    2. **원천이 주는 값** — 계열이 없으면 누적 기간수익률을 연율로 바꾸고,
+       52 주 표준편차를 변동성으로 쓴다. **최대낙폭은 못 쟀으므로 비워 둔다**
+       — 없는 것을 지어내지 않는다.
+    """
+    navs = {}
+    p = os.path.join(OUT_DIR, "fund_nav.json")
+    if os.path.exists(p):
+        try:
+            doc = json.load(open(p, encoding="utf-8"))
+            navs = doc.get("items") or {}
+        except ValueError:
+            navs = {}
+
+    n_series, n_src = 0, 0
+    for prod in products:
+        if prod.get("kind") != "펀드" or prod.get("지표"):
+            continue
+        code = str(prod.get("code") or "")
+        got = navs.get(code)
+        if got and len(got.get("c") or []) >= 24:
+            m = MET.measure(got["d"], got["c"], per_year=12, min_n=24)
+            m["src"] = "네이버 기준가 계열(달 간격, 계단 보정)"
+            m["ccy"] = "KRW"
+            if got.get("steps"):
+                m["계단보정"] = got["steps"]
+            prod["지표"] = m
+            # 계열에서 직접 잰 값을 상품 칸에도 옮겨 둔다 — 표가 이것을 쓴다.
+            _, w = MET.longest(m)
+            if w:
+                prod["vol"] = w.get("vol")
+                prod["mdd"] = w.get("mdd")
+            n_series += 1
+            continue
+
+        # 계열이 없다 — 원천이 준 것으로 잰다.
+        cum = prod.get("retCum") or {}
+        if not cum:
+            continue
+        vol = prod.get("srcVol")
+        vol = vol if isinstance(vol, (int, float)) and 0 < vol < 200 else None
+        창 = {}
+        for years in (1, 3, 5):
+            v = cum.get("%dy" % years)
+            if not isinstance(v, (int, float)) or v <= -100:
+                continue
+            창[str(years)] = {
+                # **누적을 연율로.** 3 해 245% 는 해마다 245% 가 아니다.
+                "cagr": round(((1 + v / 100.0) ** (1.0 / years) - 1) * 100, 2),
+                "vol": round(vol, 2) if vol is not None else None,
+                # 최대낙폭은 계열이 없으면 못 잰다. 지어내지 않는다.
+                "mdd": None,
+            }
+        if not 창:
+            continue
+        prod["지표"] = {
+            "bars": 0, "from": None, "to": prod.get("asOf"), "창": 창,
+            "ccy": "KRW", "표본간격": "원천제공",
+            "src": "원천 제공 기간수익률(누적→연율) + %s주 표준편차"
+                   % (prod.get("srcVolWeeks") or 52),
+        }
+        if vol is not None:
+            prod["vol"] = vol
+        prod.setdefault("flags", []).append("최대낙폭_미산출_계열없음")
+        n_src += 1
+    return n_series, n_src
+
+
 def reassign_by_exposure(products):
     """**자산군을 상장지가 아니라 실제 노출로 다시 정한다.**
 
@@ -812,7 +908,11 @@ def main():
     # **상장지가 아니라 실제 노출로 자산군을 다시 정한다.** 이 한 줄이 없으면
     # 「국내ETF」 칸에 미국 지수만 담기고 「국내펀드」 칸이 통째로 MMF 가 된다.
     n_any, n_long, n_krw, n_nofx = attach_metrics(products)
+    n_fs, n_fsrc = attach_fund_metrics(products)
     print("\n다년 지표 — 잰 상품 %d (3해 이상 %d)" % (n_any, n_long))
+    if n_fs or n_fsrc:
+        print("  펀드 — 기준가 계열로 %d 종 · 원천 제공 값으로 %d 종"
+              % (n_fs, n_fsrc))
     if n_krw or n_nofx:
         print("  원화 환산 %d 종%s"
               % (n_krw, (" · **환산 못한 달러 기준 %d 종**" % n_nofx)
@@ -837,7 +937,7 @@ def main():
                            "펀드는 원천이 주는 1 년 수익률을 씁니다 — 두 계열은 "
                            "기준일이 다를 수 있으므로 상품마다 asOf 를 답니다."),
             "변동성": ("일봉이 있는 상품만 연변동성(일간 로그수익률 표준편차 × √252)을 "
-                       "셈합니다. **펀드는 이력이 7 거래일뿐이라 셈하지 않고** "
+                       "셈합니다. **펀드는 달 간격 기준가로 셈하고**, 계열이 "
                        "원천의 위험등급을 씁니다."),
             "펀드보수": "클래스마다 달라 하나로 줄이지 않고 범위로 싣습니다.",
             "해외펀드": ("해외에 설정된 뮤추얼펀드가 아니라 **해외에 투자하는, "
