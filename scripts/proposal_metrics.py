@@ -30,7 +30,7 @@
 
 무엇을 하지 않나
 ──────────────────────────────────────────────────────────────────────
-· **못 잰 것을 지어내지 않는다.** 펀드는 원천이 기준가를 7 거래일만 주므로
+· **못 잰 것을 지어내지 않는다.** 펀드는 달 간격 기준가로 재므로
   다년 지표가 없다. 그런 상품은 **낮은 점수를 주는 대신 「못 쟀다」고 적고**,
   잴 수 있는 것(보수·1 년 수익률·위험등급)만으로 따로 줄을 세운다.
 · **점수를 수익률 예측으로 쓰지 않는다.** 이 점수는 「같은 자산군 안에서 어느
@@ -65,19 +65,25 @@ def cagr(closes, days_span):
     return ((closes[-1] / closes[0]) ** (1 / years) - 1) * 100
 
 
-def annual_vol(closes):
-    if len(closes) < 60:
+def annual_vol(closes, per_year=TRADING_DAYS, min_n=60):
+    """연변동성(%). 표본 간격이 며칠이든 `per_year` 로 연율화한다.
+
+    펀드는 일봉이 없고 **달 간격 기준가**만 있다(원천이 5 해를 60 점으로 솎아
+    준다). 달 계열이면 per_year=12, min_n=24 로 부른다 — 일봉 기준 60 개를
+    그대로 들이대면 달 계열은 영영 못 잰다.
+    """
+    if len(closes) < min_n:
         return None
     rets = []
     for i in range(1, len(closes)):
         a, b = closes[i - 1], closes[i]
         if a and b and a > 0 and b > 0:
             rets.append(math.log(b / a))
-    if len(rets) < 60:
+    if len(rets) < min_n:
         return None
     mu = sum(rets) / len(rets)
     var = sum((x - mu) ** 2 for x in rets) / (len(rets) - 1)
-    return math.sqrt(var) * math.sqrt(TRADING_DAYS) * 100
+    return math.sqrt(var) * math.sqrt(per_year) * 100
 
 
 def max_drawdown(closes):
@@ -92,15 +98,22 @@ def max_drawdown(closes):
     return mdd * 100
 
 
-def measure(dates, closes):
+def measure(dates, closes, per_year=TRADING_DAYS, min_n=60):
     """한 종목의 다년 지표. 봉이 모자란 창은 **비워 둔다**.
 
-    창을 거래일 수로 자른다 — 달력으로 자르면 휴장일 탓에 창마다 표본 수가
+    창을 표본 수로 자른다 — 달력으로 자르면 휴장일 탓에 창마다 표본 수가
     들쭉날쭉해진다.
+
+    `per_year` 는 한 해에 표본이 몇 개인가다. 일봉이면 252, **달 계열이면
+    12**. 펀드는 일봉이 없고 달 간격 기준가만 있어 12 로 부른다. 창의 크기도
+    거기에 맞춰 줄어든다 — 5 해 창이 일봉이면 1,260 개, 달이면 60 개다.
     """
     out = {"bars": len(closes), "from": dates[0] if dates else None,
            "to": dates[-1] if dates else None, "창": {}}
-    for years, need in WINDOWS:
+    if per_year != TRADING_DAYS:
+        out["표본간격"] = "달" if per_year == 12 else "%d/해" % per_year
+    for years, need_d in WINDOWS:
+        need = need_d if per_year == TRADING_DAYS else int(round(years * per_year))
         if len(closes) <= need:
             continue
         seg = closes[-(need + 1):]
@@ -108,10 +121,10 @@ def measure(dates, closes):
         try:
             span = (_d(segd[-1]) - _d(segd[0])).days
         except Exception:                                         # noqa: BLE001
-            span = need / TRADING_DAYS * 365.25
+            span = need / float(per_year) * 365.25
         out["창"][str(years)] = {
             "cagr": _r(cagr(seg, span)),
-            "vol": _r(annual_vol(seg)),
+            "vol": _r(annual_vol(seg, per_year, min_n)),
             "mdd": _r(max_drawdown(seg)),
         }
     return out
@@ -195,12 +208,23 @@ def components(p, rf):
         "cost": (-fee) if isinstance(fee, (int, float)) else None,
         "consistency": worst if (worst is not None and nwin >= 2) else None,
     }
+    # **무엇으로 잰 값인지 함께 적는다.** 일봉으로 잰 변동성과, 달 간격
+    # 기준가로 잰 변동성과, 원천이 52 주로 셈해 준 값은 같은 무게가 아니다.
+    # 적어 두지 않으면 한 줄에 나란히 서는 순간 구별이 사라진다.
+    grain = m.get("표본간격")
+    mark = {"달": " (달 간격)", "원천제공": " (원천 제공)"}.get(grain, "")
+
     why = []
     if out["risk_adj"] is not None:
-        why.append("%d해 연%.1f%% · 변동성 %.1f%% (위험대비 %.2f)"
-                   % (years, w["cagr"], w["vol"], out["risk_adj"]))
+        why.append("%d해 연%.1f%% · 변동성 %.1f%% (위험대비 %.2f)%s"
+                   % (years, w["cagr"], w["vol"], out["risk_adj"], mark))
+    elif w and w.get("cagr") is not None:
+        # 변동성을 못 재도 수익률은 잰 경우 — 잰 것만 적는다.
+        why.append("%d해 연%.1f%%%s" % (years, w["cagr"], mark))
     if out["mdd"] is not None:
         why.append("최대낙폭 %.0f%%" % out["mdd"])
+    elif grain == "원천제공":
+        why.append("**최대낙폭은 못 쟀습니다**")
     if out["cost"] is not None:
         why.append("보수 %.2f%%" % fee)
     if out["consistency"] is not None:
