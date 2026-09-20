@@ -366,6 +366,26 @@ def verify_arith(doc):
     check(not bad, '손절가 %d 건이 종가 × (1 − %s%%)' % (n, stop), '; '.join(bad[:3]))
 
 
+def verify_symbols(doc):
+    """**심볼이 순수 숫자이면 안 된다** — 엑셀이 앞자리 0 을 지운다.
+
+    화면의 CSV 저장이 종목코드와 따로 심볼 칸을 두는 것이 그 자리를 막으려는
+    것이다. 그런데 화면 검사기는 **첫 탭 한 시장만** 내려받아 본다. 2026-09-20
+    국내 곁 목록을 맨 코드로 실었을 때 마침 첫 탭이 국내ETF 라 걸렸지만,
+    같은 일이 뒤쪽 탭에서 일어났으면 통과했을 것이다. 그래서 자료 쪽에서
+    **다섯 시장을 모두** 본다.
+    """
+    bad, n = [], 0
+    for mk, m in doc['markets'].items():
+        for key in ('buy', 'sell', 'watch_buy', 'watch_sell'):
+            for p in m.get(key) or []:
+                n += 1
+                if str(p['symbol']).isdigit():
+                    bad.append('%s (%s) 심볼이 순수 숫자' % (p['symbol'], mk))
+    check(not bad, '심볼 %d 건이 순수 숫자가 아님 (엑셀이 앞자리 0 을 지운다)' % n,
+          '; '.join(bad[:3]))
+
+
 def verify_buckets(doc, bt):
     bad = []
     for mk, m in doc['markets'].items():
@@ -415,6 +435,7 @@ def main():
         verify_grades(bt, uni)
         verify_prices(doc, uni)
     verify_arith(doc)
+    verify_symbols(doc)
     verify_buckets(doc, bt)
 
     lines.append('')

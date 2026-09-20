@@ -225,7 +225,15 @@ def _load_etfs():
             mk, basis = kr_etf_market(code, rec.get('group'))
         else:
             mk = 'OV_ETF'
-        out[mk].append({'symbol': tk, 'code': code,
+        sym = tk
+        # **맨 숫자 심볼을 그대로 두지 않는다.** 도쿄·홍콩 상장분은 표의 키가
+        # `2644`·`03191` 처럼 숫자뿐인데, 그러면 엑셀이 앞자리 0 을 지우고
+        # (`03191` → `3191`) 국내 종목코드와도 구별되지 않는다. 받아 올 때 쓴
+        # 거래소 붙은 티커(`2644.T`·`3191.HK`)가 있으면 그것을 심볼로 쓴다 —
+        # 더 정확하기도 하다. 원래 키는 code 에 그대로 남는다.
+        if str(sym).isdigit() and rec.get('symbol_used'):
+            sym = rec['symbol_used']
+        out[mk].append({'symbol': sym, 'code': code,
                         'name': rec.get('name'), 'group': rec.get('group'),
                         'theme': rec.get('theme'), 'exposure_basis': basis,
                         'bars': bars})
@@ -247,7 +255,14 @@ def _load_etfs():
                 bars = _clean([{'d': b['d'][i], 'o': b['o'][i], 'h': b['h'][i],
                                 'l': b['l'][i], 'c': b['c'][i], 'v': (b['v'][i] or 0)}
                                for i in range(len(b['d']))])
-                out[mk].append({'symbol': code, 'code': code, 'name': rec.get('name'),
+                # **심볼에 A 를 붙인다.** 본 목록(data/etf/prices.json)의 국내
+                # 상장분이 `A133690` 꼴이라 맞추는 것이기도 하지만, 까닭이 하나
+                # 더 있다 — 맨 숫자 심볼은 **엑셀이 앞자리 0 을 지운다.** 화면의
+                # CSV 저장이 심볼 칸을 두는 것이 바로 그 자리를 막으려는 것이고,
+                # 검사기가 「심볼이 순수 숫자가 아닌가」를 본다. 곁 목록만 맨
+                # 코드로 실었더니 463290·273140·329200 이 그 검사에 걸렸다.
+                out[mk].append({'symbol': 'A' + code, 'code': code,
+                                'name': rec.get('name'),
                                 'group': None, 'theme': None,
                                 'exposure_basis': '곁 목록이 「%s」로 적어 왔습니다' % mk,
                                 'bars': bars})
