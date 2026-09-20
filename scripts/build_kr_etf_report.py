@@ -1133,8 +1133,16 @@ TAIL = r"""
     Array.prototype.forEach.call(tabs, function (b) {
       b.setAttribute('aria-selected', b.dataset.slug === slug ? 'true' : 'false');
     });
+    /* 주소의 #조각을 바꾸는 것은 **덤이다.** 탭을 링크로 건넬 수 있게 하려는
+       것뿐이고, 못 바꿔도 탭은 이미 바뀌었다. 그런데 미리 보기 창처럼 출처가
+       없는 문서(about:srcdoc)나 file:// 판에서는 replaceState 가 SecurityError
+       를 던진다. 감싸지 않으면 그 자리에서 함수가 끊겨, 탭은 멀쩡히 바뀌는데
+       콘솔에 붉은 줄이 쌓인다 — 받는 사람 눈에는 화면이 깨진 것으로 보인다.
+       덤 때문에 본래 일을 망치지 않는다. */
     if (push && window.history && window.history.replaceState) {
-      window.history.replaceState(null, '', '#' + slug);
+      try {
+        window.history.replaceState(null, '', '#' + slug);
+      } catch (e) { /* 주소를 못 바꿔도 탭은 바뀌었다 */ }
     }
     return true;
   }

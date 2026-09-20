@@ -364,6 +364,14 @@ jobs:
           # 요청을 전부 끊고도 온전히 그려지는지를 증명한다.
           node scripts/check_kis_verdict_page.mjs --offline
 
+      - name: 건네는 한 장을 화면으로 열어 본다
+        # **미리 보기 창 안에서도 연다.** 이 한 장은 메신저로 건네지는데, 그런
+        # 자리는 출처가 없는 문서(about:srcdoc)로 열리고 거기서는
+        # history.replaceState 가 SecurityError 를 던진다. file:// 로만 열어 보던
+        # 검사로는 한 번도 안 걸렸고, 받는 사람이 탭을 누를 때마다 붉은 줄이
+        # 쌓이는 것을 보고서야 알았다.
+        run: node scripts/check_report_page.mjs --file /tmp/kis-timing-report.html
+
       - name: 건네는 한 장이 종이에서 어떻게 나뉘는가
         # 인쇄를 「단추가 숨는가」로만 보다가 **첫 쪽이 통째로 빈 것**을 한참
         # 지나쳤다. 탭마다 진짜로 PDF 를 떠서 쪽을 세고, 첫 쪽에 들어간 잉크를
