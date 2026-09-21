@@ -100,9 +100,10 @@ td.num,th.num{text-align:right;font-variant-numeric:tabular-nums;white-space:now
 .mv .cm{font-size:15px;line-height:1.5;border-top:1px solid var(--hair-soft);
       padding-top:8px}
 .mv dl{margin:8px 0 0;font-size:13px;color:var(--muted);display:flex;gap:14px}
-.mv dl div{display:flex;gap:5px}
-.mv dt{font-weight:500}
-.mv dd{margin:0;font-variant-numeric:tabular-nums}
+.mv dl{flex-wrap:wrap;row-gap:4px}
+.mv dl div{display:flex;gap:5px;white-space:nowrap}
+.mv dt{font-weight:500;white-space:nowrap}
+.mv dd{margin:0;font-variant-numeric:tabular-nums;white-space:nowrap}
 
 /* ---- 콜아웃 ---- */
 .common{background:var(--tint);border-left:3px solid var(--primary);
@@ -237,10 +238,6 @@ td.num,th.num{text-align:right;font-variant-numeric:tabular-nums;white-space:now
 <p class="pc up">+7.04%</p>
 <p class="px"><span class="ko">1,079,000원</span><span class="en">KRW 1,079,000</span></p>
 <p class="cm"><span class="ko">SK하이닉스 지분 가치가 그대로 반영되는 투자지주라, 하이닉스 강세를 지렛대처럼 받았습니다.</span><span class="en">A holding company whose value tracks its SK Hynix stake, so it geared the Hynix move.</span></p>
-<dl>
-<div><dt><span class="ko">시총</span><span class="en">Cap</span></dt><dd><span class="ko">—</span><span class="en">—</span></dd></div>
-<div><dt><span class="ko">거래대금(당일)</span><span class="en">Turnover (day)</span></dt><dd><span class="ko">—</span><span class="en">—</span></dd></div>
-</dl>
 </div>
 <div class="mv">
 <p class="rank">NO.2</p>
@@ -249,10 +246,6 @@ td.num,th.num{text-align:right;font-variant-numeric:tabular-nums;white-space:now
 <p class="pc up">+6.42%</p>
 <p class="px"><span class="ko">1,857,000원</span><span class="en">KRW 1,857,000</span></p>
 <p class="cm"><span class="ko">간밤 미국 반도체주 반등이 그대로 옮겨왔고, HBM 수요 기대가 더해졌습니다.</span><span class="en">The overnight rebound in US semis carried over, with HBM demand expectations on top.</span></p>
-<dl>
-<div><dt><span class="ko">시총</span><span class="en">Cap</span></dt><dd><span class="ko">—</span><span class="en">—</span></dd></div>
-<div><dt><span class="ko">거래대금(당일)</span><span class="en">Turnover (day)</span></dt><dd><span class="ko">—</span><span class="en">—</span></dd></div>
-</dl>
 </div>
 <div class="mv">
 <p class="rank">NO.3</p>
@@ -261,14 +254,10 @@ td.num,th.num{text-align:right;font-variant-numeric:tabular-nums;white-space:now
 <p class="pc up">+4.82%</p>
 <p class="px"><span class="ko">69,600원</span><span class="en">KRW 69,600</span></p>
 <p class="cm"><span class="ko">반도체 검사용 프로브핀을 만듭니다. 후공정 투자 기대가 함께 붙었습니다.</span><span class="en">Makes probe pins for chip testing; back-end capex expectations lifted it with the group.</span></p>
-<dl>
-<div><dt><span class="ko">시총</span><span class="en">Cap</span></dt><dd><span class="ko">—</span><span class="en">—</span></dd></div>
-<div><dt><span class="ko">거래대금(당일)</span><span class="en">Turnover (day)</span></dt><dd><span class="ko">—</span><span class="en">—</span></dd></div>
-</dl>
 </div>
 </div>
 <p class="common"><strong><span class="ko">공통 배경</span><span class="en">Common thread</span></strong> <span class="ko">셋 다 반도체 사슬 안에 있습니다 — 지주(SK스퀘어)·메모리(SK하이닉스)·검사부품(리노공업)으로 자리는 다르지만, 간밤 미국 반도체 반등이 국내 개장과 함께 그대로 옮겨온 하루였습니다. 지수 상승분의 대부분도 같은 자리에서 나왔습니다.</span><span class="en">All three sit in the semiconductor chain — holding company, memory maker and test-component supplier. Different positions, one driver: the overnight rebound in US semis transferred straight into the Korean open, and most of the index gain came from the same place.</span></p>
-<p class="asof"><span class="ko">대상: 시세 파일에 실린 국내 주요 55종목(코스피 대형주·코스닥 상위)입니다. **시장 전체 순위가 아닙니다** — 전 종목 스크리너(시가총액 1조원 이상 · 당일 거래대금 300억원 이상)는 다음 마감 수집분부터 적용됩니다.</span><span class="en">Universe: the 55 major Korean names carried in the price file (KOSPI large caps and KOSDAQ leaders). This is NOT a whole-market ranking — the full screener (cap ≥ KRW 1tn, turnover ≥ KRW 30bn) applies from the next post-close collection.</span></p>
+<p class="asof"><span class="ko">대상: 시세 파일에 실린 국내 주요 55종목(코스피 대형주·코스닥 상위)입니다. 시장 전체 순위가 아닙니다 — 전 종목 스크리너(시가총액 1조원 이상 · 당일 거래대금 300억원 이상)는 다음 마감 수집분부터 적용됩니다.</span><span class="en">Universe: the 55 major Korean names carried in the price file (KOSPI large caps and KOSDAQ leaders). This is NOT a whole-market ranking — the full screener (cap ≥ KRW 1tn, turnover ≥ KRW 30bn) applies from the next post-close collection.</span></p>
 </section>
 <section class="card">
 <div class="rule"></div>
@@ -426,7 +415,7 @@ td.num,th.num{text-align:right;font-variant-numeric:tabular-nums;white-space:now
 </section>
 <footer class="foot">
 <p class="disc"><strong><span class="ko">고지</span><span class="en">Disclaimer</span></strong> <span class="ko">본 자료는 내부 참고용으로 작성되었으며, 특정 종목의 매매를 권유하는 자료가 아닙니다. 수록된 시세와 정보는 작성 시점 기준이며 오류가 있을 수 있습니다. 투자 판단의 최종 책임은 투자자 본인에게 있습니다.</span><span class="en">This material is prepared for internal reference only and is not a recommendation to buy or sell any security. Prices and information are as of the stated time and may contain errors. Investment decisions remain the sole responsibility of the investor.</span></p>
-<p><span class="ko">MARKET DAILY · 미래에셋증권 · 작성 2026-09-21 12:04 KST · 자료 data/market/2026-09-18.json / data/kr_movers/latest.json</span><span class="en">MARKET DAILY · Mirae Asset Securities · compiled 2026-09-21 12:04 KST · data data/market/2026-09-18.json / data/kr_movers/latest.json</span></p>
+<p><span class="ko">MARKET DAILY · 미래에셋증권 · 작성 2026-09-21 12:07 KST · 자료 data/market/2026-09-18.json / data/kr_movers/latest.json</span><span class="en">MARKET DAILY · Mirae Asset Securities · compiled 2026-09-21 12:07 KST · data data/market/2026-09-18.json / data/kr_movers/latest.json</span></p>
 </footer>
 </main>
 <script>
