@@ -14,12 +14,18 @@ name: 시장일지 수집
 
 on:
   schedule:
-    # 마감 직후 — 15:40 KST = 06:40 UTC. 여기서는 받아 두기만 한다.
+    # 마감 직후 — 15:40 KST = 06:40 UTC. 받아 두기만 한다.
     - cron: '40 6 * * 1-5'
-    # 발행 — 16:00 KST = 07:00 UTC. 한 번 더 받아 최신으로 짓는다.
-    - cron: '0 7 * * 1-5'
-    # 위가 늦을 때를 대비한 세 번째 — 16:20 KST = 07:20 UTC
-    - cron: '20 7 * * 1-5'
+    # 발행 판. **여러 번 거는 까닭**: 마감 시각이 지났다고 자료가 다 찬 것이
+    # 아니다. 2026-09-21 16:07 에 외국인은 당일 잠정치였는데 기관은 아직
+    # 전 거래일 것이었다. 그래서 짓기 전에 scripts/check_journal_ready.py 가
+    # 「둘 다 오늘 확정치인가」를 보고, 아니면 내지 않고 다음 판을 기다린다.
+    # 먼저 낸 판이 있으면 뒤의 판은 스스로 물러선다.
+    - cron: '0 7 * * 1-5'    # 16:00 KST
+    - cron: '20 7 * * 1-5'   # 16:20
+    - cron: '45 7 * * 1-5'   # 16:45
+    - cron: '15 8 * * 1-5'   # 17:15
+    - cron: '0 9 * * 1-5'    # 18:00 — 마지막 기회
   push:
     paths:
       - 'data/journal/REFRESH'
@@ -60,46 +66,67 @@ jobs:
         run: python3 scripts/verify_journal.py --warn-only
 
       # ── 여기부터가 발행 ────────────────────────────────────────────
-      # 예약 가운데 15:40 판은 **받아만 둔다.** 마감 직후라 거래소 확정치가
-      # 아직 덜 찬 때가 있어서, 그 판으로 지으면 잠정값이 고객에게 간다.
-      # 짓는 것은 16:00·16:20 판과 손으로 부른 실행이다.
-      - name: 발행할 판인지 가른다
-        id: gate
+      # 15:40 판은 **받아만 둔다.** 짓는 것은 16:00 뒤의 판과 손으로 부른
+      # 실행이고, 그것도 scripts/check_journal_ready.py 가 「자료가 다 찼다」고
+      # 할 때만이다. 시각이 아니라 자료가 발행을 정한다.
+      - name: 발행 후보인가 (판 갈래만)
+        id: pre
         run: |
           PUB=no
           case "${{ github.event.schedule }}" in
-            "0 7 * * 1-5"|"20 7 * * 1-5") PUB=yes ;;
+            "40 6 * * 1-5") PUB=no ;;
+            "") ;;                       # 예약이 아닌 발동
+            *) PUB=yes ;;
           esac
           if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
             PUB="${{ inputs.publish && 'yes' || 'no' }}"
           fi
           if [ "${{ github.event_name }}" = "push" ]; then PUB=yes; fi
+          echo "candidate=$PUB" >> "$GITHUB_OUTPUT"
+          echo "발행 후보: $PUB"
 
-          # **장이 열려 있으면 내지 않는다.** 시장일지는 마감 기준 자료다.
-          # 장중 판을 내면 잠정 순위가 확정치인 양 고객에게 간다.
-          # 손으로 부른 실행(workflow_dispatch)만 이 빗장을 넘는다.
-          ST=$(python3 -c "import json;print((json.load(open('data/journal/latest.json')) or {}).get('market_status') or '')" 2>/dev/null || true)
-          if [ "$ST" = "OPEN" ] && [ "${{ github.event_name }}" != "workflow_dispatch" ]; then
-            echo "::notice::아직 장중($ST)이라 발행하지 않고 자료만 남깁니다"
-            PUB=no
-          fi
-          echo "publish=$PUB" >> "$GITHUB_OUTPUT"
-          echo "발행 여부: $PUB (장 상태 ${ST:-모름})"
-
-      # 시장일지의 절반은 시세 파일에서 온다(지수·환율·금리·예탁금).
-      # 그 파일이 낡았으면 **금요일 종가를 월요일 것이라 말하는 판**이 나간다.
-      # 러너는 원천에 붙을 수 있으므로, 낡았으면 여기서 직접 받는다 —
-      # 「시세 수집」 예약이 늦게 도는 일이 잦아 기다리기만 할 수 없다.
+      # 시장일지의 절반은 시세 파일에서 온다(지수·환율·금리·예탁금). 그 파일이
+      # 낡았으면 **금요일 종가를 월요일 것이라 말하는 판**이 나간다. 러너는
+      # 원천에 붙을 수 있으므로 낡았으면 여기서 직접 받는다 — 「시세 수집」
+      # 예약이 늦게 도는 일이 잦아 기다리기만 할 수 없다.
+      #
+      # **발행 여부를 가리기 전에 돈다.** 가림 조건에 「시세 파일도 오늘
+      # 것인가」가 들어 있어서, 받기 전에 물으면 늘 아니라고 답한다.
       - name: 시세 파일이 오늘 것인지 확인
-        if: steps.gate.outputs.publish == 'yes'
+        if: steps.pre.outputs.candidate == 'yes'
         run: |
           if python3 scripts/check_market_fresh.py close; then
             echo "시세 파일이 오늘 마감분이다"
           else
             echo "::warning::시세 파일이 낡아 이 러너에서 직접 받는다"
             python3 scripts/fetch_market.py || \
-              echo "::warning::시세 수집에 실패했습니다 — 있는 파일로 짓고 머리말에 적습니다"
+              echo "::warning::시세 수집에 실패했습니다"
           fi
+
+      # 자료가 정말 다 찼는지 본다. 손으로 부른 실행은 잠정치를 눈감을 수
+      # 있게 하되, 기준일이 어긋나는 것은 그때도 막는다.
+      - name: 자료가 다 찼는가
+        id: gate
+        if: always()
+        run: |
+          PUB="${{ steps.pre.outputs.candidate }}"
+          if [ "$PUB" = "yes" ]; then
+            EXTRA=""
+            if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+              EXTRA="--allow-estimated"
+            fi
+            set +e
+            python3 scripts/check_journal_ready.py $EXTRA
+            RC=$?
+            set -e
+            case "$RC" in
+              0) ;;
+              2) echo "::notice::오늘 판이 이미 있습니다 — 다시 짓지 않습니다"; PUB=no ;;
+              *) echo "::notice::자료가 아직 덜 찼습니다 — 다음 판을 기다립니다"; PUB=no ;;
+            esac
+          fi
+          echo "publish=$PUB" >> "$GITHUB_OUTPUT"
+          echo "발행 여부: $PUB"
 
       # **여기서는 막는다.** 오류가 하나라도 있으면 짓지 않는다 —
       # 자료를 고치거나 그 수치를 빼는 것이 먼저다(fin-data-integrity 3단계).

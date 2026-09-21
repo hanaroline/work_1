@@ -124,9 +124,14 @@ def main() -> int:
     else:
         ok("기준일 %s — 순위 파일과 지수 종가일이 같다" % bd)
 
-    if jr.get("market_status") == "OPEN":
-        warn("장중(%s)에 받은 자료다 — 순위·상한가·신고가는 잠정값이다"
-             % jr.get("generated_at_kst"))
+    # **`market_status` 로 장중 여부를 가리지 않는다.** 네이버는 시간외단일가
+    # (16:00~18:00)까지 OPEN 으로 준다. 갈라 주는 것은 tradingSessionType 이다.
+    session = str(jr.get("session") or "")
+    if session in ("REGULAR_MARKET", "PRE_MARKET", "BEFORE_MARKET", "OPENING_AUCTION"):
+        warn("정규장 중(%s · %s)에 받은 자료다 — 순위·상한가·신고가는 잠정값이다"
+             % (session, jr.get("generated_at_kst")))
+    else:
+        ok("정규장 종료 뒤에 받은 자료다 (%s)" % (session or "구분 없음"))
 
     uni = jr.get("universe") or {}
     if (uni.get("표본") or 0) < 300:
@@ -222,6 +227,34 @@ def main() -> int:
             if s.get("rank_basis", "").startswith("수량"):
                 warn("%s %s 매수상위가 **수량 기준**이다 — 금액 순위가 아니므로 "
                      "표 이름에 적어야 한다" % (mkt, side))
+
+    # ── ⑥-2 두 수집기가 같은 종가를 말하는가 ────────────────────────
+    # 순위 파일(네이버 종목 목록)과 시세 파일(야후 개별 종목)은 서로 다른
+    # 원천이다. 겹치는 종목의 종가가 어긋나면 **한쪽이 시간외 가격을 물고
+    # 온 것**이거나 기준일이 다른 것이다. 어느 쪽이든 그대로 인쇄하면 안 된다.
+    uni_close = {}
+    for kinds in (jr.get("rank") or {}).values():
+        for rows in kinds.values():
+            if isinstance(rows, list):
+                for r in rows:
+                    if r.get("code") and r.get("close"):
+                        uni_close[r["code"]] = r["close"]
+    checked, off = 0, []
+    for code, s2 in ((mk or {}).get("stocks") or {}).items():
+        c = str(code).split(".")[0]
+        a, b = uni_close.get(c), s2.get("close")
+        if a is None or b is None:
+            continue
+        checked += 1
+        if abs(a - b) / b > 0.005:          # 0.5% 넘게 벌어지면 본다
+            off.append((s2.get("name_ko") or c, a, b))
+    if checked >= 5:
+        if off:
+            for nm_, a, b in off[:4]:
+                bad("%s 종가가 원천마다 다르다 — 순위 파일 %s · 시세 파일 %s"
+                    % (nm_, format(a, ",.0f"), format(b, ",.0f")))
+        else:
+            ok("겹치는 %d 종목의 종가가 두 원천에서 같다" % checked)
 
     # ── ⑦ ETF ──────────────────────────────────────────────────────
     etf = jr.get("etf") or {}
