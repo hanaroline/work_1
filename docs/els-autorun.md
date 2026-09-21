@@ -133,36 +133,61 @@ python3 <fin-data-integrity 스킬 경로>/scripts/check_claims.py tools/discove
 **통과하지 못하면 빌드하지 않는다.** 공시 원문에서 온 값(A)과 모델이 계산한
 값(B)은 대장에서 계열이 갈라져 있어야 한다. 섞이면 검산기가 잡는다.
 
-## 5. 덱 빌드
+## 5. 산출물 빌드
+
+주간 산출물은 **둘**이다. 제안서(덱)는 결론만, 분석자료는 그 결론의 근거까지 편다.
 
 ```bash
+# ① 제안서 — 상담 자리에 들고 가는 8장
 node scripts/build_els_sales_deck.mjs <rcpNo>   # → els-sales-deck.pptx (8장)
 soffice --headless --convert-to pdf els-sales-deck.pptx
+
+# ② 분석자료 — 근거를 끝까지 펼친 HTML (mas-design 기본 출력 형식)
+node scripts/build_els_analysis.mjs <rcpNo>     # → els-analysis.html
+node scripts/proposal_to_pdf.mjs els-analysis.html els-analysis.pdf
+```
+
+분석자료 PDF 를 뽑으려면 한글 글꼴과 playwright 가 있어야 한다. 새 컨테이너에서는
+
+```bash
+bash scripts/install_fonts.sh                   # Noto Sans KR / Inter
+PLAYWRIGHT_BROWSERS_PATH=/opt/pw-browsers PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD=1 \
+  npm install --no-save playwright@1.56.1
 ```
 
 모든 수치는 `scripts/lib/els-analysis.mjs` 의 `analyze(rcpNo)` 한 곳에서 나온다.
-덱에 숫자를 직접 써 넣지 않는다.
+덱에도 분석자료에도 숫자를 직접 써 넣지 않는다. 두 문서가 같은 주장 대장을 쓴다
+(인쇄 위치는 덱이 `p*`, 분석자료가 `h*`).
 
 몬테카를로는 `tools/discovery/mc-cache.json` 에 캐시된다 (버전·회차·경로수·시드로
 키를 잡는다). 모델을 고쳤으면 `MC_VERSION` 을 올려야 캐시가 무효화된다.
 
 ## 6. 재검증
 
-1. **시각 검증** — PDF 를 110dpi 로 래스터라이즈해 8장을 눈으로 본다. 표가 안내문을
-   덮거나 글자가 셀 밖으로 나가지 않았는지 텍스트 bbox 로도 확인한다.
+1. **시각 검증** — 두 PDF 를 110dpi 로 래스터라이즈해 덱 8장과 분석자료 전 쪽을
+   눈으로 본다. 표가 안내문을 덮거나 글자가 셀 밖으로 나가지 않았는지 텍스트 bbox 로도
+   확인한다. **기계 검사가 절대 못 잡는 종류의 결함이 여기서만 나온다** — 숫자는 맞는데
+   문장이 틀린 것들이다(아래 스타일 고정값의 마지막 네 줄이 전부 시각 검증에서 나왔다).
 2. **역추적 검증** — 렌더된 PDF의 숫자 하나하나가 대장까지 거슬러 올라가는지 본다.
+   **두 산출물 모두** 돌린다.
 
    ```bash
    python3 scripts/reverse_check_deck.py els-sales-deck.pdf tools/discovery/els-claims.json
+   python3 scripts/reverse_check_deck.py els-analysis.pdf  tools/discovery/els-claims.json
    ```
 
    걷어낼 것(회차 라벨·접수번호·날짜·배리어 나열·종목명 속 숫자)과 구조값은 스크립트
    안에 모여 있다. **이 검사는 값 집합 대조라 항목끼리 뒤바뀐 것은 못 잡는다** —
    그쪽은 `check_claims.py` 의 파생 검산이 맡는다. 미등록이 남으면 대장에 올리거나
    인쇄에서 뺀다.
-3. **1페이지 추천 1순위 = 4페이지 추천 3종의 첫 칸**인지 확인한다. 예전에
+3. **빈값 누출 검사** — 두 PDF 본문에 `null` · `undefined` · `NaN` 이나 값 자리의
+   `–` 가 없는지 본다. 기초자산이 하나뿐이거나(상관계수 없음) 낙인이 없는 상품이
+   섞이면 여기서 샌다. 실제로 "그 선이 null%로" 가 인쇄된 적이 있다(2026-09-21).
+4. **두 문서 대조** — 추천 3종·주의 4종·핵심 수치가 덱과 분석자료에서 같은지 본다.
+   둘 다 `analyze()` 에서 나오므로 어긋나면 어느 한쪽이 값을 다시 계산한 것이다.
+5. **1페이지 추천 1순위 = 4페이지 추천 3종의 첫 칸**인지 확인한다. 예전에
    두 곳이 서로 다른 상품을 가리킨 적이 있다.
-4. 온라인 전용 회차 표시가 붙었는지 확인한다. 판정 출처는 `rendered_list.json`
+6. 온라인 전용 회차 표시가 붙었는지 확인한다. 판정 출처는 `rendered_list.json`
    (홈페이지 화면)이 1순위, 목록 API가 2순위다.
 
 ## 7. 커밋·푸시·전달
@@ -176,7 +201,8 @@ git push -u origin claude/els-product-structure-page-ljsucw
 푸시가 네트워크 오류로 실패하면 2s → 4s → 8s → 16s 로 최대 4회 재시도한다.
 **PR 은 사용자가 명시적으로 요청할 때만 만든다.**
 
-마지막으로 `els-sales-deck.pptx` 와 `els-sales-deck.pdf` 를 사용자에게 보낸다.
+마지막으로 `els-sales-deck.pptx` · `els-sales-deck.pdf` 와
+`els-analysis.html` · `els-analysis.pdf` 를 사용자에게 보낸다.
 보고에는 이번 회차 범위, 상품 수, 추천 1순위, 주의 회차, 온라인 전용 여부를 담는다.
 
 ---
@@ -194,4 +220,16 @@ git push -u origin claude/els-product-structure-page-ljsucw
   반드시 표기한다.
 - 손실 확률에는 `±` 신뢰구간을 함께 적고, 등급 경계선에 걸리면 `△` 를 붙인다.
 - 색은 미래에셋 오렌지 `#F58220` / 블루 `#043B72` 기준(`mas-design`).
+- **위험당 대가(손실 확률 1%당 연 수익률)는 `perRiskOf` 하나만 쓴다.** 나누는 값은
+  자료에 인쇄된 소수 1자리 손실 확률이다. 덱·대장·분석자료가 각자 같은 식을 다시
+  적으면 한 곳만 고쳐졌을 때 조용히 갈라진다.
+- **문장이 전제하는 것이 이번 회차에 성립하는지 확인한다.** 아래 넷은 전부 실제로
+  틀린 문장이 인쇄된 사례다.
+  - 낙인이 없는 상품(노낙인형)에 `knockIn` 을 쓰면 "null%" 가 찍힌다 → `floor` 를 쓴다.
+  - 기초자산이 하나인 상품에 "두 자산이 같이 움직인다" 를 쓰면 상관계수 자리가 빈다.
+  - "조건이 달라서 값이 갈린다" 는 **실제로 다른 조건만** 짚는다. 주기·차수·낙인이
+    같은 짝에 그 셋을 적으면 "6개월마다냐 6개월마다냐" 가 된다(제38139·38143회).
+  - "개별 종목이 위험하지 않나요" 의 답은 **종목이 섞인 추천 상품**으로 한다.
+    1순위가 지수형인 주에 그걸 끌어다 쓰면 질문과 답이 어긋난다.
+- 공정가 괴리는 음수다. "제값보다 -31.7% 깎여" 는 이중부정이므로 절대값으로 적는다.
 - 요청 범위 밖의 기존 산출물은 건드리지 않는다.

@@ -58,6 +58,18 @@ export const TIER_RULE = `등급은 B(같은 조건으로 돌린 손실 확률) 
   + `${TIER_CUT[0]}% 이하 방어적, ${TIER_CUT[0]}~${TIER_CUT[1]}% 중간, ${TIER_CUT[1]}% 초과 공격적. `
   + `수익률이나 기초자산 종류는 등급에 넣지 않았습니다. 모두 원금비보장 1등급 상품이므로 "안전"이 아니라 서로 견준 순서입니다.`;
 
+/**
+ * 손실 확률 1%당 받는 연 수익률 — "위험당 대가". 완전 비례라면 모두 같은 값이어야 한다.
+ *
+ * 나누는 값은 **자료에 인쇄된 소수 1자리** 손실 확률이다. 원값(11.43…%)으로 나누면
+ * 표를 보고 손으로 검산한 사람과 끝자리가 어긋난다 — 실제로 덱이 원값으로 나눈 값을
+ * 인쇄해 주장 대장(1.25)과 한 자리 틀어진 적이 있다.
+ *
+ * 정의가 한 곳에만 있어야 한다. 예전에는 덱·대장·분석자료가 각자 같은 식을 다시
+ * 적어 두어, 한 곳만 고치면 조용히 갈라졌다.
+ */
+export const perRiskOf = (it) => (it.mcLoss ? it.annualRate / +it.mcLoss.toFixed(1) : null);
+
 export const kindOf = (it) => it.underlyings.every((u) => IDX.has(u)) ? '지수'
   : it.underlyings.some((u) => IDX.has(u)) ? '혼합' : '종목';
 export const tierOf = (it) => TIERS[it.tier];
@@ -164,8 +176,7 @@ function couponStudy(items, best) {
   };
   const reg = regress(fair.map(cp), fair.map((i) => i.mcLoss));
 
-  // 손실 확률 1%당 받는 연 수익률 — 완전 비례라면 모두 같은 값이어야 한다
-  const ratio = (i) => i.annualRate / i.mcLoss;
+  const ratio = perRiskOf;
   const rank1 = [...withMc].sort((a, b) => ratio(b) - ratio(a));
   const fairRank = [...fair].sort((a, b) => ratio(b) - ratio(a));
   const eff = {
@@ -184,16 +195,31 @@ function couponStudy(items, best) {
     groups.get(k).push(i);
   }
   const big = [...groups.values()].filter((g) => g.length >= 2).sort((a, b) => b.length - a.length)[0] ?? [];
-  let twin = null;
-  for (let a = 0; a < big.length; a++) {
-    for (let b = a + 1; b < big.length; b++) {
-      const [hi, lo] = big[a].annualRate >= big[b].annualRate ? [big[a], big[b]] : [big[b], big[a]];
-      if (hi.currency !== lo.currency) continue;                   // 통화가 다르면 ③ 통화 이야기가 된다
-      if (Math.abs(hi.mcLoss - lo.mcLoss) > 1.5) continue;         // 위험이 사실상 같은 짝만
-      const d = hi.annualRate - lo.annualRate;
-      if (!twin || d > twin.d) twin = { hi, lo, d };
+  /**
+   * 같은 기초자산 묶음 안에서 쿠폰이 가장 크게 갈리는 짝.
+   *
+   * near = 위험까지 사실상 같은 짝(손실 확률 1.5%p 이내). 이게 잡히면 "위험은 같은데
+   * 값만 다르다" 를 그대로 말할 수 있어 가장 세다. 다만 매주 잡히지는 않는다 —
+   * 2026-09-21 회차처럼 같은 기초자산이라도 차수·낙인이 제각각이면 손실 확률이
+   * 5%p 넘게 벌어져 near 가 비어 버린다. 그때도 "조건이 달라 값이 갈린다" 는 말은
+   * 그대로 성립하므로, 위험 조건을 뺀 짝(any)을 같이 돌려준다. 문서는 near 가 있으면
+   * near 로, 없으면 any 로 쓰되 손실 확률 차이를 있는 그대로 적는다.
+   */
+  const pairBest = (ok) => {
+    let best = null;
+    for (let a = 0; a < big.length; a++) {
+      for (let b = a + 1; b < big.length; b++) {
+        const [hi, lo] = big[a].annualRate >= big[b].annualRate ? [big[a], big[b]] : [big[b], big[a]];
+        if (hi.currency !== lo.currency) continue;                 // 통화가 다르면 ③ 통화 이야기가 된다
+        if (!ok(hi, lo)) continue;
+        const d = hi.annualRate - lo.annualRate;
+        if (d > 0 && (!best || d > best.d)) best = { hi, lo, d, gap: Math.abs(hi.mcLoss - lo.mcLoss) };
+      }
     }
-  }
+    return best;
+  };
+  const twin = pairBest((hi, lo) => Math.abs(hi.mcLoss - lo.mcLoss) <= 1.5);
+  const twinAny = twin || pairBest(() => true);
 
   // ② 가격 — 갭이 가장 크게 벌어진 상품
   const priced = withMc.reduce((a, b) => ((b.fairValueGap ?? 0) < (a.fairValueGap ?? 0) ? b : a));
@@ -208,7 +234,7 @@ function couponStudy(items, best) {
 
   return {
     n: withMc.length, nFair: fair.length, rho, pairs, reg, eff,
-    why: { twin, group: big.sort((a, b) => b.annualRate - a.annualRate), priced, fx },
+    why: { twin, twinAny, group: big.sort((a, b) => b.annualRate - a.annualRate), priced, fx },
     best,                                     // 상관 민감도를 확인할 상품 (아래에서 채운다)
     sens: null,
   };
@@ -222,7 +248,8 @@ function rhoSensitivity(it, rcp) {
     const mc = mcRun(p, it.volatility, r == null ? it.correlation : it.correlation.map((c) => ({ ...c, rho: r })), MC_SENS,
       cacheKey(rcp, it.no, `rho:${r ?? 'disclosed'}`, MC_SENS));
     const exp = (mc.lossRate / 100) * Math.abs(mc.avgLoss);
-    return { rho: r, loss: mc.lossRate, expLoss: exp, ratio: it.annualRate / mc.lossRate };
+    // 위험당 대가는 같은 표에 인쇄되는 1자리 손실 확률로 나눈다 (couponStudy 의 ratio 와 같은 규칙)
+    return { rho: r, loss: mc.lossRate, expLoss: exp, ratio: it.annualRate / +mc.lossRate.toFixed(1) };
   });
   const vols = it.volatility.map((v) => v.vol).sort((a, b) => a - b);
   return { no: it.no, disclosed: Math.min(...it.correlation.map((c) => c.rho)), rows, volSpread: vols[vols.length - 1] - vols[0] };
@@ -337,7 +364,7 @@ export async function analyze(rcpNo) {
     .slice(0, 4);
 
   // 위험 한 단위당 받는 수익 — 종목형을 권할 때 근거로 쓴다
-  const perRisk = (it) => (it.mcLoss ? it.annualRate / it.mcLoss : null);
+  const perRisk = perRiskOf;
   const idxG = withMc.filter((i) => kindOf(i) === '지수');
   const idxPerRisk = idxG.length ? idxG.reduce((s, i) => s + perRisk(i), 0) / idxG.length : null;
 
