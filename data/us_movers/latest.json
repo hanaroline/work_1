@@ -1,13 +1,13 @@
 {
  "note": "GitHub Actions 러너가 수집한 스냅샷. scripts/build_market_daily.py 가 읽는다.",
- "generated_at_utc": "2026-09-21T02:44:09+00:00",
- "generated_at_kst": "2026-09-21 11:44:09",
+ "generated_at_utc": "2026-09-21T02:55:58+00:00",
+ "generated_at_kst": "2026-09-21 11:55:58",
  "session_date": "2026-09-18",
  "session_date_counts": {
   "2026-09-18": 305
  },
  "universe_source": "nasdaq:screener",
- "printed_from": "yahoo:quote (v7/finance/quote, 단일 응답)",
+ "printed_from": "yahoo:quote (v7/finance/quote)",
  "screened_by": "nasdaq:screener",
  "filters": {
   "min_cap_usd": 10000000000,
@@ -237,7 +237,7 @@
    "prev_close": 229.58,
    "volume": 8936809.0,
    "avg_volume_3m": 1798012.0,
-   "cap": 11063335936.0,
+   "cap": 10777082880.0,
    "exchange": "NYSE",
    "currency": "USD",
    "market_state": "CLOSED",
@@ -570,5 +570,5 @@
    "rows": 305
   }
  },
- "elapsed_sec": 9.9
+ "elapsed_sec": 7.3
 }
