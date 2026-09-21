@@ -126,10 +126,16 @@ def verify(path):
     # 않으므로 아예 걷어 내고 시작한다.
     body = re.sub(r'<script class="report-data".*?</script>', '', raw, flags=re.S)
 
+    # **판을 `</section>` 에서 끊는다.** 앞에서만 갈라 놓으면 마지막 판의
+    # 토막이 문서 끝까지 이어져 뒤따르는 스크립트를 삼킨다. 그 안에 복사문이
+    # 쓰는 「이 시장에서는 이 방식으로 사지 마십시오」가 글자로 들어 있어서,
+    # 막힘이 풀린 날 마지막 판이 「띠는 있는데 딱지가 없다」로 읽혔다.
+    # 화면은 멀쩡했고 틀린 쪽은 이 파서였다.
     panels = {}
     for chunk in re.split(r'(?=<section class="panel")', body)[1:]:
         mk = re.search(r'data-market="([A-Z_]+)"', chunk).group(1)
-        panels[mk] = chunk
+        end = chunk.find('</section>')
+        panels[mk] = chunk if end < 0 else chunk[:end]
 
     # 1. 탭과 판이 짝이 맞는가
     tabs = re.findall(r'<button type="button" role="tab" data-slug="([a-z-]+)"'
@@ -213,8 +219,10 @@ def verify(path):
                                         % (mk, p['code'], row[j], money(p.get('stop_ref'), ccy)))
                     sp = unmoney(row[j], ccy)
                     if px is not None and sp is not None:
+                        # 끊는 자리는 **크기가 아니라 화폐**가 정한다. 크기로
+                        # 가르면 1,000달러가 넘는 미국 종목에서 센트가 날아간다.
                         wantv = px * (1 - stop_pct / 100.0)
-                        wantv = round(wantv, 2 if wantv < 1000 else 0)
+                        wantv = round(wantv, 2 if ccy == 'USD' else 0)
                         if abs(sp - wantv) > 1e-9:
                             bad_arith.append('%s %s 손절 %s ≠ 종가 %s × (1−%.1f%%) = %s'
                                              % (mk, p['code'], row[j], row[2], stop_pct,
