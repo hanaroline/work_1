@@ -14,14 +14,21 @@ name: 시장일지 수집
 
 on:
   schedule:
-    # 마감 직후 — 15:40 KST = 06:40 UTC
+    # 마감 직후 — 15:40 KST = 06:40 UTC. 여기서는 받아 두기만 한다.
     - cron: '40 6 * * 1-5'
-    # 위가 늦을 때를 대비한 두 번째 — 15:55 KST = 06:55 UTC
-    - cron: '55 6 * * 1-5'
+    # 발행 — 16:00 KST = 07:00 UTC. 한 번 더 받아 최신으로 짓는다.
+    - cron: '0 7 * * 1-5'
+    # 위가 늦을 때를 대비한 세 번째 — 16:20 KST = 07:20 UTC
+    - cron: '20 7 * * 1-5'
   push:
     paths:
       - 'data/journal/REFRESH'
   workflow_dispatch:
+    inputs:
+      publish:
+        description: '시장일지를 짓고 커밋할지 (아니면 자료만 받는다)'
+        type: boolean
+        default: true
 
 permissions:
   contents: write
@@ -52,16 +59,78 @@ jobs:
         continue-on-error: true
         run: python3 scripts/verify_journal.py --warn-only
 
+      # ── 여기부터가 발행 ────────────────────────────────────────────
+      # 예약 가운데 15:40 판은 **받아만 둔다.** 마감 직후라 거래소 확정치가
+      # 아직 덜 찬 때가 있어서, 그 판으로 지으면 잠정값이 고객에게 간다.
+      # 짓는 것은 16:00·16:20 판과 손으로 부른 실행이다.
+      - name: 발행할 판인지 가른다
+        id: gate
+        run: |
+          PUB=no
+          case "${{ github.event.schedule }}" in
+            "0 7 * * 1-5"|"20 7 * * 1-5") PUB=yes ;;
+          esac
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            PUB="${{ inputs.publish && 'yes' || 'no' }}"
+          fi
+          if [ "${{ github.event_name }}" = "push" ]; then PUB=yes; fi
+          echo "publish=$PUB" >> "$GITHUB_OUTPUT"
+          echo "발행 여부: $PUB"
+
+      # **여기서는 막는다.** 오류가 하나라도 있으면 짓지 않는다 —
+      # 자료를 고치거나 그 수치를 빼는 것이 먼저다(fin-data-integrity 3단계).
+      - name: 검산 (발행 관문)
+        if: steps.gate.outputs.publish == 'yes'
+        run: python3 scripts/verify_journal.py
+
+      - name: 시장일지 짓기
+        if: steps.gate.outputs.publish == 'yes'
+        run: python3 scripts/build_journal.py
+
+      # 「A4 한 장」은 이 자료의 약속이다. 눈이 아니라 자로 잰다.
+      # 넘쳐도 발행은 막지 않되(경고만), 다음 판에서 줄 수를 줄인다.
+      - uses: actions/setup-node@v4
+        if: steps.gate.outputs.publish == 'yes'
+        with:
+          node-version: '20'
+      - name: 쪽 넘침 확인
+        if: steps.gate.outputs.publish == 'yes'
+        continue-on-error: true
+        run: |
+          npm install --no-save --no-audit --no-fund playwright
+          npx playwright install --with-deps chromium
+          D=$(python3 -c "import json;print(json.load(open('data/market/latest.json'))['indices']['kospi']['date'])")
+          node scripts/check_journal_fit.mjs "docs/journal/$D.html" \
+            || echo "::warning::시장일지가 A4 를 넘쳤습니다 — 표의 줄 수를 줄이십시오"
+
+      # 텔레그램은 **비밀값이 있을 때만** 보낸다. 없으면 조용히 건너뛰고
+      # 산출물은 저장소에 남는다 — 보내지 못한 것을 보낸 척하지 않는다.
+      - name: 텔레그램 전송
+        if: steps.gate.outputs.publish == 'yes'
+        continue-on-error: true
+        env:
+          TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          CHAT: ${{ secrets.TELEGRAM_CHAT_ID }}
+        run: |
+          if [ -z "$TOKEN" ] || [ -z "$CHAT" ]; then
+            echo "::warning::TELEGRAM_BOT_TOKEN·TELEGRAM_CHAT_ID 가 없어 전송을 건너뜁니다"
+            exit 0
+          fi
+          python3 scripts/send_journal_telegram.py
+
+      # 검산 관문에서 막혀도 **받아 둔 자료는 남긴다.** 다음 판이 그 자료로
+      # 되짚을 수 있어야 하고, 무엇이 걸렸는지도 파일에 남아 있어야 한다.
       - name: 커밋
+        if: always()
         run: |
           git config user.name  'github-actions[bot]'
           git config user.email 'github-actions[bot]@users.noreply.github.com'
-          git add data/journal
+          git add data/journal docs/journal 2>/dev/null || git add data/journal
           if git diff --staged --quiet; then
             echo "변경 없음"
             exit 0
           fi
-          git commit -m "시장일지 순위 수집 $(TZ=Asia/Seoul date '+%Y-%m-%d %H:%M KST')"
+          git commit -m "시장일지 $(TZ=Asia/Seoul date '+%Y-%m-%d %H:%M KST')"
           # 시세 수집·리포트 수집과 겹칠 수 있다. 되받아서 다시 민다 —
           # 서로 다른 갈래를 건드리므로 되받기는 거의 언제나 깨끗하다.
           BR="${GITHUB_REF_NAME}"
