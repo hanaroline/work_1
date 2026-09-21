@@ -100,9 +100,10 @@ td.num,th.num{text-align:right;font-variant-numeric:tabular-nums;white-space:now
 .mv .cm{font-size:15px;line-height:1.5;border-top:1px solid var(--hair-soft);
       padding-top:8px}
 .mv dl{margin:8px 0 0;font-size:13px;color:var(--muted);display:flex;gap:14px}
-.mv dl div{display:flex;gap:5px}
-.mv dt{font-weight:500}
-.mv dd{margin:0;font-variant-numeric:tabular-nums}
+.mv dl{flex-wrap:wrap;row-gap:4px}
+.mv dl div{display:flex;gap:5px;white-space:nowrap}
+.mv dt{font-weight:500;white-space:nowrap}
+.mv dd{margin:0;font-variant-numeric:tabular-nums;white-space:nowrap}
 
 /* ---- 콜아웃 ---- */
 .common{background:var(--tint);border-left:3px solid var(--primary);
@@ -238,8 +239,8 @@ td.num,th.num{text-align:right;font-variant-numeric:tabular-nums;white-space:now
 <p class="px"><span class="ko">$153.92</span><span class="en">$153.92</span></p>
 <p class="cm"><span class="ko">비트코인이 2주 만에 8만 달러를 되찾자 보유 코인 평가익 기대가 붙었습니다.</span><span class="en">Bitcoin reclaimed $80,000 for the first time in two weeks, lifting its coin-treasury valuation.</span></p>
 <dl>
-<div><dt><span class="ko">시총</span><span class="en">Cap</span></dt><dd><span class="ko">$611.5억</span><span class="en">$61.1B</span></dd></div>
-<div><dt><span class="ko">일평균 거래대금</span><span class="en">Avg $ volume</span></dt><dd><span class="ko">$36.6억</span><span class="en">$3.7B</span></dd></div>
+<div><dt><span class="ko">시총</span><span class="en">Cap</span></dt><dd><span class="ko">611억 달러</span><span class="en">$61.1B</span></dd></div>
+<div><dt><span class="ko">일평균 거래대금</span><span class="en">Avg $ volume</span></dt><dd><span class="ko">36.6억 달러</span><span class="en">$3.7B</span></dd></div>
 </dl>
 </div>
 <div class="mv">
@@ -250,8 +251,8 @@ td.num,th.num{text-align:right;font-variant-numeric:tabular-nums;white-space:now
 <p class="px"><span class="ko">$194.25</span><span class="en">$194.25</span></p>
 <p class="cm"><span class="ko">SEC가 토큰화 증권 거래를 5년간 한시 허용하면서 거래소 사업 확장 기대가 실렸습니다.</span><span class="en">The SEC&#x27;s five-year exemption for tokenized-securities trading opened a new venue business.</span></p>
 <dl>
-<div><dt><span class="ko">시총</span><span class="en">Cap</span></dt><dd><span class="ko">$512.5억</span><span class="en">$51.3B</span></dd></div>
-<div><dt><span class="ko">일평균 거래대금</span><span class="en">Avg $ volume</span></dt><dd><span class="ko">$17.4억</span><span class="en">$1.7B</span></dd></div>
+<div><dt><span class="ko">시총</span><span class="en">Cap</span></dt><dd><span class="ko">513억 달러</span><span class="en">$51.3B</span></dd></div>
+<div><dt><span class="ko">일평균 거래대금</span><span class="en">Avg $ volume</span></dt><dd><span class="ko">17.4억 달러</span><span class="en">$1.7B</span></dd></div>
 </dl>
 </div>
 <div class="mv">
@@ -262,13 +263,13 @@ td.num,th.num{text-align:right;font-variant-numeric:tabular-nums;white-space:now
 <p class="px"><span class="ko">$1,791.82</span><span class="en">$1,791.82</span></p>
 <p class="cm"><span class="ko">S&amp;P 100 편입이 9월 21일 개장 전 발효돼 지수 추종 자금의 기계적 매수가 붙었습니다.</span><span class="en">S&amp;P 100 inclusion takes effect before the 21 Sep open, forcing index-tracking funds to buy.</span></p>
 <dl>
-<div><dt><span class="ko">시총</span><span class="en">Cap</span></dt><dd><span class="ko">$2624억</span><span class="en">$262.4B</span></dd></div>
-<div><dt><span class="ko">일평균 거래대금</span><span class="en">Avg $ volume</span></dt><dd><span class="ko">$248.0억</span><span class="en">$24.8B</span></dd></div>
+<div><dt><span class="ko">시총</span><span class="en">Cap</span></dt><dd><span class="ko">2,624억 달러</span><span class="en">$262.4B</span></dd></div>
+<div><dt><span class="ko">일평균 거래대금</span><span class="en">Avg $ volume</span></dt><dd><span class="ko">248억 달러</span><span class="en">$24.8B</span></dd></div>
 </dl>
 </div>
 </div>
 <p class="common"><strong><span class="ko">공통 배경</span><span class="en">Common thread</span></strong> <span class="ko">셋 다 지수와 무관하게 자기 촉매로 움직였습니다 — 규제(SEC 면제)·수급(지수 편입)·가격(낸드 공급 부족)으로 재료는 서로 다르지만, 금리를 올리는 국면에서도 이야기가 분명한 곳에만 돈이 붙었다는 점이 같습니다.</span><span class="en">All three moved on their own catalyst rather than the index — regulation, index flows and NAND pricing. Different stories, one pattern: even in a hiking cycle, money went only where the story was specific.</span></p>
-<p class="asof"><span class="ko">대상: 미국 상장 보통주 중 시가총액 100억 달러 이상 · 일평균 거래대금(3개월) 3억 달러 이상. 971종목을 걸러 158종목이 통과했고 그중 상위 3종목입니다.</span><span class="en">Universe: US-listed common stocks with market cap ≥ $10B and 3-month average dollar volume ≥ $300M. 971 screened, 158 passed; top 3 shown.</span></p>
+<p class="asof"><span class="ko">대상: 미국 상장 보통주. 시가총액 100억 달러 이상인 971종목을 추린 뒤, 등락률 상·하위 300종목을 시세로 다시 받아 일평균 거래대금(3개월) 3억 달러 이상까지 통과한 158종목에서 골랐습니다.</span><span class="en">Universe: US-listed common stocks. 971 names cleared the $10B market-cap threshold; the 300 largest movers were re-quoted and 158 also cleared $300M in 3-month average dollar volume. The top three come from those.</span></p>
 </section>
 <section class="card">
 <div class="rule"></div>
@@ -342,7 +343,7 @@ td.num,th.num{text-align:right;font-variant-numeric:tabular-nums;white-space:now
 <td class="note hide-sm"><span class="ko">서버 CPU와 AI 가속기. 반도체 강세에 함께 올랐습니다.</span><span class="en">Server CPUs and AI accelerators; rose with the semiconductor bid.</span></td>
 </tr>
 </tbody>
-<caption><span class="ko">출처: yahoo:quote (v7/finance/quote, 단일 응답). 표 안의 종가·등락률은 한 곳에서만 읽었습니다.</span><span class="en">Source: yahoo:quote (v7/finance/quote, 단일 응답). Closes and changes in this table were read from one place.</span></caption>
+<caption><span class="ko">출처: yahoo:quote (v7/finance/quote). 표 안의 종가·등락률은 한 곳에서만 읽었습니다.</span><span class="en">Source: yahoo:quote (v7/finance/quote). Closes and changes in this table were read from one place.</span></caption>
 </table>
 <div class="points">
 <p><span class="ko">반도체가 끌고 플랫폼이 눌렀습니다 — 브로드컴 +2.97%·AMD +2.70%·TSMC +1.03% 대 메타 −2.43%. 같은 &#x27;빅테크&#x27;라도 한 방향이 아닙니다.</span><span class="en">Semis pulled, platforms pushed back — Broadcom +2.97%, AMD +2.70%, TSMC +1.03% against Meta −2.43%. &#x27;Big tech&#x27; did not move as one.</span></p>
@@ -429,7 +430,7 @@ td.num,th.num{text-align:right;font-variant-numeric:tabular-nums;white-space:now
 </section>
 <footer class="foot">
 <p class="disc"><strong><span class="ko">고지</span><span class="en">Disclaimer</span></strong> <span class="ko">본 자료는 내부 참고용으로 작성되었으며, 특정 종목의 매매를 권유하는 자료가 아닙니다. 수록된 시세와 정보는 작성 시점 기준이며 오류가 있을 수 있습니다. 투자 판단의 최종 책임은 투자자 본인에게 있습니다.</span><span class="en">This material is prepared for internal reference only and is not a recommendation to buy or sell any security. Prices and information are as of the stated time and may contain errors. Investment decisions remain the sole responsibility of the investor.</span></p>
-<p><span class="ko">MARKET DAILY · 미래에셋증권 · 작성 2026-09-21 12:04 KST · 자료 data/market/2026-09-19.json / data/us_movers/latest.json</span><span class="en">MARKET DAILY · Mirae Asset Securities · compiled 2026-09-21 12:04 KST · data data/market/2026-09-19.json / data/us_movers/latest.json</span></p>
+<p><span class="ko">MARKET DAILY · 미래에셋증권 · 작성 2026-09-21 12:07 KST · 자료 data/market/2026-09-19.json / data/us_movers/latest.json</span><span class="en">MARKET DAILY · Mirae Asset Securities · compiled 2026-09-21 12:07 KST · data data/market/2026-09-19.json / data/us_movers/latest.json</span></p>
 </footer>
 </main>
 <script>

@@ -160,14 +160,18 @@ def cls_of(v):
 
 
 def money_usd(v):
-    """시가총액·거래대금을 읽기 쉬운 달러 단위로."""
+    """시가총액·거래대금을 읽기 쉬운 달러 단위로.
+
+    「$611.5억」처럼 기호를 앞에 붙이면 611.5달러인지 611.5억 달러인지가
+    한눈에 갈리지 않는다. 한국어 어순대로 「611억 달러」로 적는다.
+    """
     if not v:
         return "—"
     if v >= 1e12:
-        return "$%.2f조" % (v / 1e12)
-    if v >= 1e9:
-        return "$%.1f억" % (v / 1e8) if v < 1e11 else "$%.0f억" % (v / 1e8)
-    return "$%.0f백만" % (v / 1e6)
+        return "%.2f조 달러" % (v / 1e12)
+    if v >= 1e10:
+        return "{:,.0f}억 달러".format(v / 1e8)
+    return "%.1f억 달러" % (v / 1e8)
 
 
 def money_usd_en(v):
@@ -586,9 +590,10 @@ td.num,th.num{text-align:right;font-variant-numeric:tabular-nums;white-space:now
 .mv .cm{font-size:15px;line-height:1.5;border-top:1px solid var(--hair-soft);
       padding-top:8px}
 .mv dl{margin:8px 0 0;font-size:13px;color:var(--muted);display:flex;gap:14px}
-.mv dl div{display:flex;gap:5px}
-.mv dt{font-weight:500}
-.mv dd{margin:0;font-variant-numeric:tabular-nums}
+.mv dl{flex-wrap:wrap;row-gap:4px}
+.mv dl div{display:flex;gap:5px;white-space:nowrap}
+.mv dt{font-weight:500;white-space:nowrap}
+.mv dd{margin:0;font-variant-numeric:tabular-nums;white-space:nowrap}
 
 /* ---- 콜아웃 ---- */
 .common{background:var(--tint);border-left:3px solid var(--primary);
@@ -739,12 +744,17 @@ def render(ctx):
             ("%s원" % fmt(m["price"], 0)) if m["ccy"] == "KRW" else ("$%s" % fmt(m["price"])),
             ("KRW %s" % fmt(m["price"], 0)) if m["ccy"] == "KRW" else ("$%s" % fmt(m["price"]))))
         a('<p class="cm">%s</p>' % bi(m["comment_ko"], m["comment_en"]))
-        a("<dl>")
-        a("<div><dt>%s</dt><dd>%s</dd></div>"
-          % (bi("시총", "Cap"), bi(m["cap_ko"], m["cap_en"])))
-        a("<div><dt>%s</dt><dd>%s</dd></div>"
-          % (bi(ctx["liq_label_ko"], ctx["liq_label_en"]), bi(m["liq_ko"], m["liq_en"])))
-        a("</dl>")
+        pairs = []
+        if m["cap_ko"] != "—":
+            pairs.append((bi("시총", "Cap"), bi(m["cap_ko"], m["cap_en"])))
+        if m["liq_ko"] != "—":
+            pairs.append((bi(ctx["liq_label_ko"], ctx["liq_label_en"]),
+                          bi(m["liq_ko"], m["liq_en"])))
+        if pairs:
+            a("<dl>")
+            for dt_, dd_ in pairs:
+                a("<div><dt>%s</dt><dd>%s</dd></div>" % (dt_, dd_))
+            a("</dl>")
         a("</div>")
     a("</div>")
     a('<p class="common"><strong>%s</strong> %s</p>'
@@ -932,16 +942,19 @@ def build(edition, date_arg):
         liq_ko, liq_en = "일평균 거래대금", "Avg $ volume"
         movers_title_ko, movers_title_en = "2단 · 어제의 무빙", "Part 2 · Yesterday's movers"
         board_title_ko, board_title_en = "빅테크 보드", "Big tech board"
-        filt_ko = ("대상: 미국 상장 보통주 중 시가총액 100억 달러 이상 · "
-                   "일평균 거래대금(3개월) 3억 달러 이상. "
-                   "%s종목을 걸러 %s종목이 통과했고 그중 상위 3종목입니다."
-                   % ("{:,}".format((mv or {}).get("counts", {}).get("universe", 0)),
-                      "{:,}".format((mv or {}).get("counts", {}).get("passed_all", 0))))
-        filt_en = ("Universe: US-listed common stocks with market cap ≥ $10B and "
-                   "3-month average dollar volume ≥ $300M. "
-                   "%s screened, %s passed; top 3 shown."
-                   % ("{:,}".format((mv or {}).get("counts", {}).get("universe", 0)),
-                      "{:,}".format((mv or {}).get("counts", {}).get("passed_all", 0))))
+        _c = (mv or {}).get("counts", {})
+        filt_ko = ("대상: 미국 상장 보통주. 시가총액 100억 달러 이상인 {uni}종목을 추린 뒤, "
+                   "등락률 상·하위 {cand}종목을 시세로 다시 받아 일평균 거래대금(3개월) "
+                   "3억 달러 이상까지 통과한 {ok}종목에서 골랐습니다."
+                   .format(uni="{:,}".format(_c.get("universe", 0)),
+                           cand="{:,}".format(_c.get("candidates", 0)),
+                           ok="{:,}".format(_c.get("passed_all", 0))))
+        filt_en = ("Universe: US-listed common stocks. {uni} names cleared the $10B market-cap "
+                   "threshold; the {cand} largest movers were re-quoted and {ok} also cleared "
+                   "$300M in 3-month average dollar volume. The top three come from those."
+                   .format(uni="{:,}".format(_c.get("universe", 0)),
+                           cand="{:,}".format(_c.get("candidates", 0)),
+                           ok="{:,}".format(_c.get("passed_all", 0))))
     else:
         base_src_ko = "야후 파이낸스 · 수집 스냅샷 %s (%s 수집)" % (snap_path, snap_when)
         base_src_en = "Yahoo Finance · snapshot %s (collected %s)" % (snap_path, snap_when)
@@ -953,7 +966,7 @@ def build(edition, date_arg):
         if movers_narrow:
             # 좁은 유니버스를 넓은 것처럼 적으면 「시장 1위」라는 틀린 말이 된다.
             filt_ko = ("대상: 시세 파일에 실린 국내 주요 %d종목(코스피 대형주·코스닥 상위)입니다. "
-                       "**시장 전체 순위가 아닙니다** — 전 종목 스크리너(시가총액 1조원 이상 · "
+                       "시장 전체 순위가 아닙니다 — 전 종목 스크리너(시가총액 1조원 이상 · "
                        "당일 거래대금 300억원 이상)는 다음 마감 수집분부터 적용됩니다."
                        % len([1 for v in (snap.get("stocks") or {}).values()
                               if v.get("date") == target]))
@@ -965,7 +978,7 @@ def build(edition, date_arg):
                               if v.get("date") == target]))
         else:
             filt_ko = ("대상: 국내 상장 보통주 중 시가총액 1조원 이상 · "
-                       "당일 거래대금 300억원 이상. 평균이 아니라 **당일** 거래대금입니다.")
+                       "당일 거래대금 300억원 이상. 평균이 아니라 당일 거래대금입니다.")
             filt_en = ("Universe: KRX-listed common stocks with market cap ≥ KRW 1tn and "
                        "same-day turnover ≥ KRW 30bn. This is same-day turnover, not an average.")
 
