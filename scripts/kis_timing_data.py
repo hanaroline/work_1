@@ -8,7 +8,8 @@
 봉은 어디서 오는가 — 이 저장소가 이미 모아 둔 것을 쓴다. 새로 긁지 않는다.
 
     KR_STOCK   data/prices_naver/kr100.json          국내 시가총액 100
-    US_STOCK   us100-data 가지 data/us100/chart/*     미국 대형주 100
+    US_STOCK   us100-data 가지 data/us100/bars8y/*    미국 대형주 100 (8해치)
+               없으면 data/us100/chart/* (화면용 2해치)
     KR_ETF     data/etf/prices.json (scope=KR)        국내 상장 ETF
                + data/kis_timing/kr_extra.json        넓히려고 덧댄 곁 목록
     KR_OV_ETF  data/kis_timing/kr_extra.json          국내 상장 · 해외 기초자산 ETF
@@ -76,6 +77,12 @@ OV_EXTRA = os.path.join(ROOT, 'data', 'kis_timing', 'ov_extra.json')
 # 국내 상장 곁 목록 — fetch_kis_timing_kr.py 가 채운다. 마찬가지로 없으면 없는 대로.
 KR_EXTRA = os.path.join(ROOT, 'data', 'kis_timing', 'kr_extra.json')
 US_BRANCH = 'origin/us100-data'
+# **긴 판을 먼저 본다.** `chart/` 는 화면이 읽는 2해치(`range=2y`)이고, 그걸로
+# 앞뒤를 나누면 검증구간이 아홉 달 반밖에 안 된다 — 미국주식만 검증구간
+# 초과수익이 음수로 나와 「보류」가 붙은 까닭이 이것이다. `bars8y/` 는
+# fetch_us_bars_long.py 가 주 1회 받는 백테스트 전용 긴 판이다. 없으면
+# 예전처럼 `chart/` 로 돈다 — 긴 판이 아직 없는 가지에서도 깨지지 않는다.
+US_PREFIX_LONG = 'data/us100/bars8y/'
 US_PREFIX = 'data/us100/chart/'
 
 # 이보다 짧으면 10종을 나란히 셀 수 없다(52주 신고가가 253봉을 본다).
@@ -114,8 +121,14 @@ def _load_us_stocks():
                        capture_output=True, text=True)
     if r.returncode != 0:
         return [], 'us100-data 가지를 읽지 못했습니다 (git fetch origin us100-data)'
-    paths = sorted(p for p in r.stdout.split()
-                   if p.startswith(US_PREFIX) and p.endswith('.json'))
+    names = r.stdout.split()
+    # `_meta.json` 은 받은 시각·해치를 적어 둔 장부지 봉이 아니다 — 섞이면
+    # 종목 하나가 늘어난 것처럼 보인다.
+    long_paths = sorted(p for p in names
+                        if p.startswith(US_PREFIX_LONG) and p.endswith('.json')
+                        and not os.path.basename(p).startswith('_'))
+    paths = long_paths or sorted(p for p in names
+                                 if p.startswith(US_PREFIX) and p.endswith('.json'))
     out = []
     for p in paths:
         g = subprocess.run(['git', '-C', ROOT, 'show', '%s:%s' % (US_BRANCH, p)],
@@ -134,7 +147,11 @@ def _load_us_stocks():
                         'l': s['l'][i], 'c': s['c'][i], 'v': (s['v'][i] or 0)}
                        for i in range(len(s['d']))])
         out.append({'symbol': sym, 'code': sym, 'bars': bars})
-    return out, None
+    # **어느 판으로 쟀는지 산출물에 남긴다.** 2해치로 잰 성적과 8해치로 잰
+    # 성적은 다른 것인데, 파일만 보고는 어느 쪽인지 알 수 없다.
+    return out, ('미국 일봉: %s (%d 종)'
+                 % ('백테스트용 긴 판 bars8y' if long_paths else '화면용 chart 2해치',
+                    len(out)))
 
 
 # ─────────────────────────────────────────────────────────────────────
