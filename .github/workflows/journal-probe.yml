@@ -67,7 +67,11 @@ jobs:
         run: |
           git config user.name  'github-actions[bot]'
           git config user.email 'github-actions[bot]@users.noreply.github.com'
-          git add data/journal/raw || true
+          # 관찰 기록은 「무엇이 열리고 무엇이 막혔나」를 남기려는 것이지
+          # 응답을 보관하려는 것이 아니다. 큰 본문은 저장소를 불릴 뿐이라
+          # 커밋 전에 지운다 — 한 번은 3.1MB 가 쌓였다.
+          find data/journal/raw -type f -size +200k -delete 2>/dev/null || true
+          git add -A data/journal/raw || true
           if git diff --staged --quiet; then
             echo "남긴 것 없음"
             exit 0
