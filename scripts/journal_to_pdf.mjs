@@ -37,6 +37,39 @@ await page.waitForTimeout(300);
 
 const sheets = await page.evaluate(() => document.querySelectorAll('.sheet').length);
 
+// **어느 글꼴로 그려졌는지 실제로 묻는다.** CSS 가 바라는 이름이 아니라
+// 기계가 고른 이름을 본다 — 그 둘은 자주 다르다. 러너가 한 번은 문서 전체를
+// Noto Sans KR **Thin**(굵기 100)으로 그려 7.4px 표가 종잇장이 됐고, 이 세션은
+// 중국어 글꼴(WenQuanYi)을 골랐다. 둘 다 조용히 일어났다. 크롬의
+// CSS.getPlatformFontsForNode 가 이것을 그대로 말해 준다.
+const cdp = await page.context().newCDPSession(page);
+await cdp.send('DOM.enable');
+await cdp.send('CSS.enable');
+const { root } = await cdp.send('DOM.getDocument');
+// 글자가 **실제로 들어 있는** 마디를 물어야 한다. 빈 상자를 물으면 빈 답이
+// 온다. 표 칸과 제목을 차례로 시도해 처음 답하는 것을 쓴다.
+let used = [];
+for (const sel of ['table.dt tbody td', '.blk h2', '.hd h1', 'body']) {
+  const { nodeId } = await cdp.send('DOM.querySelector',
+    { nodeId: root.nodeId, selector: sel }).catch(() => ({ nodeId: 0 }));
+  if (!nodeId) continue;
+  const { fonts } = await cdp.send('CSS.getPlatformFontsForNode', { nodeId })
+    .catch(() => ({ fonts: [] }));
+  if (fonts && fonts.length) { used = fonts.slice(); break; }
+}
+used.sort((a, b) => b.glyphCount - a.glyphCount);
+const main = used[0]?.familyName || '(모름)';
+const thin = /\bthin\b|\blight\b|\bextralight\b/i.test(main);
+const cjkWrong = /wenquanyi|zenhei|ipa[pg]?gothic|droid sans fallback/i.test(main);
+console.log(`글꼴  ${used.map((f) => `${f.familyName}(${f.glyphCount})`).join(' · ') || '(못 읽음)'}`);
+if (thin || cjkWrong) {
+  console.warn(
+    `경고: 한글이 「${main}」 로 그려졌습니다 — ` +
+    (thin ? '가는 굵기라 작은 표 글자가 읽히지 않습니다.'
+          : '한국어 글꼴이 아닙니다(중국어·일본어 대체글꼴).') +
+    ' 이 기계에 `fonts-noto-cjk` 를 깔면 Noto Sans CJK KR 의 Regular·Bold 를 씁니다.');
+}
+
 await page.pdf({
   path: out,
   format: 'A4',
