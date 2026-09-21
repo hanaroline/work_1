@@ -135,17 +135,25 @@ python3 <fin-data-integrity 스킬 경로>/scripts/check_claims.py tools/discove
 
 ## 5. 산출물 빌드
 
-주간 산출물은 **둘**이다. 제안서(덱)는 결론만, 분석자료는 그 결론의 근거까지 편다.
+주간 산출물은 **셋**이다. 제안서는 결론만, 분석자료는 그 결론의 근거까지 편다.
+분석자료는 읽는 자리에 따라 문서판(HTML/PDF)과 발표판(PPT) 둘로 낸다 — 내용은 같다.
 
 ```bash
 # ① 제안서 — 상담 자리에 들고 가는 8장
-node scripts/build_els_sales_deck.mjs <rcpNo>   # → els-sales-deck.pptx (8장)
+node scripts/build_els_sales_deck.mjs <rcpNo>        # → els-sales-deck.pptx (8장)
 soffice --headless --convert-to pdf els-sales-deck.pptx
 
-# ② 분석자료 — 근거를 끝까지 펼친 HTML (mas-design 기본 출력 형식)
-node scripts/build_els_analysis.mjs <rcpNo>     # → els-analysis.html
+# ② 분석자료(문서판) — 근거를 끝까지 펼친 HTML (mas-design 기본 출력 형식)
+node scripts/build_els_analysis.mjs <rcpNo>          # → els-analysis.html
 node scripts/proposal_to_pdf.mjs els-analysis.html els-analysis.pdf
+
+# ③ 분석자료(발표판) — 같은 내용을 회의에서 넘기는 15장
+node scripts/build_els_analysis_deck.mjs <rcpNo>     # → els-analysis-deck.pptx (15장)
+soffice --headless --convert-to pdf els-analysis-deck.pptx
 ```
+
+**출력 이름이 겹치지 않게 둔다.** `els-analysis.pptx` 로 내면 soffice 변환 결과가
+문서판의 `els-analysis.pdf` 를 덮어쓴다 — 실제로 한 번 덮였다.
 
 분석자료 PDF 를 뽑으려면 한글 글꼴과 playwright 가 있어야 한다. 새 컨테이너에서는
 
@@ -172,9 +180,14 @@ PLAYWRIGHT_BROWSERS_PATH=/opt/pw-browsers PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD=1 \
    **두 산출물 모두** 돌린다.
 
    ```bash
-   python3 scripts/reverse_check_deck.py els-sales-deck.pdf tools/discovery/els-claims.json
-   python3 scripts/reverse_check_deck.py els-analysis.pdf  tools/discovery/els-claims.json
+   python3 scripts/reverse_check_deck.py els-sales-deck.pdf    tools/discovery/els-claims.json
+   python3 scripts/reverse_check_deck.py els-analysis.pdf      tools/discovery/els-claims.json
+   python3 scripts/reverse_check_deck.py els-analysis-deck.pdf tools/discovery/els-claims.json
    ```
+
+   **손으로 적어 둔 숫자를 잡아내는 건 이 검사뿐이다.** 발표판에 경로 수가
+   "40,000번" 으로 박혀 있었다 — MC 설정이 10만으로 오른 뒤로 계속 틀린 값이었고,
+   대장 검산은 대장 안만 보므로 잡지 못했다(2026-09-21).
 
    걷어낼 것(회차 라벨·접수번호·날짜·배리어 나열·종목명 속 숫자)과 구조값은 스크립트
    안에 모여 있다. **이 검사는 값 집합 대조라 항목끼리 뒤바뀐 것은 못 잡는다** —
@@ -205,8 +218,9 @@ git push -u origin claude/els-product-structure-page-ljsucw
 푸시가 네트워크 오류로 실패하면 2s → 4s → 8s → 16s 로 최대 4회 재시도한다.
 **PR 은 사용자가 명시적으로 요청할 때만 만든다.**
 
-마지막으로 `els-sales-deck.pptx` · `els-sales-deck.pdf` 와
-`els-analysis.html` · `els-analysis.pdf` 를 사용자에게 보낸다.
+마지막으로 `els-sales-deck.pptx` · `els-sales-deck.pdf`,
+`els-analysis.html` · `els-analysis.pdf`,
+`els-analysis-deck.pptx` · `els-analysis-deck.pdf` 를 사용자에게 보낸다.
 보고에는 이번 회차 범위, 상품 수, 추천 1순위, 주의 회차, 온라인 전용 여부를 담는다.
 
 ---
@@ -224,7 +238,7 @@ git push -u origin claude/els-product-structure-page-ljsucw
   반드시 표기한다. 2장 표의 **"1차에 끝날 확률"·"만기까지 갈 확률" 도 B 다** —
   2026-09-21 에 표기를 붙였다. 붙이면 머리글이 길어지므로 그 두 칸은 폭 0.80 이상을
   줘야 "B." 가 따로 줄을 먹지 않는다.
-- **분석자료 전 종목 표에도 같은 두 칸을 싣는다.** 덱에만 있고 분석자료에 없으면
+- **분석자료 전 종목 표(문서판·발표판 모두)에도 같은 두 칸을 싣는다.** 덱에만 있고 분석자료에 없으면
   더 깊은 문서 쪽이 오히려 한 차원을 빠뜨린 꼴이 된다(2026-09-21 에 채웠다).
   세 값의 관계는 각주로 밝힌다 — 만기 도달 확률 **안에** 손실 확률이 들어 있고,
   빼면 만기까지 가서도 약정 수익을 받는 몫이다. 손실은 만기에만 확정되기 때문이다.

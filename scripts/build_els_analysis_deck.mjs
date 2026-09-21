@@ -1,11 +1,15 @@
 #!/usr/bin/env node
 /**
- * ELS 주간 제안서 발표 덱 — els-proposal.pptx
+ * ELS 주간 분석자료 발표 덱 — els-analysis-deck.pptx
  *
- *   node scripts/build_els_deck.mjs [접수번호]
+ *   node scripts/build_els_analysis_deck.mjs [접수번호]
  *
- * els-proposal.html 과 같은 분석층(lib/els-analysis.mjs)을 쓴다. 두 산출물이 각자
- * 계산하면 언젠가 반드시 갈라지므로, 등급·추천·자산군 평균은 그쪽 한 곳에만 둔다.
+ * els-analysis.html 과 같은 내용을 회의·발표용으로 펼친 판이다. 숫자는 같은
+ * 분석층(lib/els-analysis.mjs)에서만 가져온다 — 각자 계산하면 언젠가 반드시
+ * 갈라지므로, 등급·추천·자산군 평균은 그쪽 한 곳에만 둔다.
+ *
+ * 8장짜리 세일즈 덱(els-sales-deck.pptx)과 혼동하지 말 것. 그쪽은 고객 앞에
+ * 펴는 제안서이고, 이 덱은 그 결론의 근거를 담당자가 펴 보는 자료다.
  *
  * 표·도형·차트는 전부 네이티브라 파워포인트에서 그대로 고칠 수 있다.
  */
@@ -13,7 +17,7 @@ import pptxgen from 'pptxgenjs';
 import { analyze, kindOf, tierOf, KINDS, TIER_RULE, money, baseOf, unitOf, josa } from './lib/els-analysis.mjs';
 
 const A = await analyze(process.argv[2]);
-const OUT = 'els-proposal.pptx';
+const OUT = 'els-analysis-deck.pptx';   // 문서판 els-analysis.pdf 와 겹치지 않게
 
 // ── 미래에셋 팔레트 ─────────────────────────────────────────────────────────
 const ORANGE = 'F58220', ACTIVE = 'CB6015', SOFT = 'FAB072', BLUE = '043B72';
@@ -49,6 +53,39 @@ function head(s, title, sub) {
 }
 
 const slide = () => pres.addSlide();
+
+/**
+ * "둘이 같이 움직이는 정도" 는 기초자산이 둘 이상일 때만 할 수 있는 말이다.
+ * 하나뿐인 상품(제38133회 KOSPI200)에 그냥 붙이면 값 자리에 "–" 가 찍힌다.
+ */
+const rhoPhrase = (it) => (it?.rho != null && it.underlyings.length > 1
+  ? `에 같이 움직임 ${f1(it.rho, 2)}` : '');
+
+/**
+ * 값이 갈린 짝을 두고 "무엇이 달라서" 를 적을 때, **실제로 다른 조건만** 짚는다.
+ * 주기·차수·낙인을 고정으로 적어 두면 셋이 모두 같은 짝에서
+ * "6개월마다냐 6개월마다냐, 35%냐 35%냐" 가 나간다(제38139·38143회).
+ */
+const twinWhy = (T) => {
+  const d = [];
+  if (T.hi.every !== T.lo.every) d.push(`끝날 기회를 ${T.hi.every}개월마다 보느냐 ${T.lo.every}개월마다 보느냐`);
+  if (T.hi.steps !== T.lo.steps) d.push(`그 기회가 ${T.hi.steps}번이냐 ${T.lo.steps}번이냐`);
+  if (T.hi.floor !== T.lo.floor) d.push(`원금 지키는 선이 ${T.hi.floor}%냐 ${T.lo.floor}%냐`);
+  const bar = (i) => i.barriers.join('-');
+  if (bar(T.hi) !== bar(T.lo)) d.push(`미리 끝나는 기준선이 ${bar(T.hi)}이냐 ${bar(T.lo)}이냐`);
+  return d.length ? `${d.join(', ')}가 갈랐습니다.` : '기초자산과 기간이 같아도 상환 조건이 조금씩 달라 갈립니다.';
+};
+
+/**
+ * "개별 종목이 들어간 건 더 위험하지 않나요?" 의 뒷말.
+ * 1순위 카드가 지수형인 주에 그걸 끌어다 쓰면 질문과 답이 어긋난다(제38133회).
+ */
+const stockRec = A.slots.map((s2) => s2.pick).find((i) => kindOf(i) !== '지수');
+const stockAnswer = !stockRec
+  ? `다만 이번 주 추천 ${A.slots.length}종은 모두 지수만 담은 상품이라, 그 걱정은 이 세 종에는 해당하지 않습니다.`
+  : `다만 제${stockRec.no}회는 ${stockRec.rho != null && stockRec.underlyings.length > 1
+      ? `두 자산이 거의 같이 움직이고(${f1(stockRec.rho, 2)}, 1이면 완전히 같이 움직임) ` : ''}`
+    + `원금 지키는 선이 ${stockRec.floor}%로 아래에 있어서, 위험을 지는 대가로 손실 확률 1%당 연 ${f1(A.perRisk(stockRec), 2)}%를 줍니다 — 지수형 평균 ${f1(A.idxPerRisk, 2)}%보다 많습니다.`;
 
 // ══ 1. 표지 ════════════════════════════════════════════════════════════════
 {
@@ -199,7 +236,9 @@ if (A.plan.hasCooling) {
       ] },
     { k: 'B. 같은 조건 시뮬레이션', q: '"회사가 값 매길 때 잡은 만큼 실제로 출렁인다면?"', tag: '직접 계산',
       rows: [
-        ['무엇', `${A.items.length}종 전부를 똑같은 횟수(40,000번)·똑같은 기간·똑같은 규칙으로. 출렁임과 같이 움직이는 정도는 투자설명서 값 그대로.`],
+        // 경로 수를 손으로 적어 두어 MC 설정이 10만으로 오른 뒤에도 40,000 이 찍혀 있었다.
+        // 숫자는 설정에서 읽는다.
+        ['무엇', `${A.items.length}종 전부를 똑같은 횟수(${A.mc.paths.toLocaleString('ko-KR')}번)·똑같은 기간·똑같은 규칙으로. 출렁임과 같이 움직이는 정도는 투자설명서 값 그대로.`],
         ['좋은 점', '기간 차이가 없어져서 전 상품을 공평하게 줄 세울 수 있습니다.'],
         ['조심', '어느 자산도 오른다고 보지 않았고, 회사가 쓴 출렁임 수치는 실제보다 크게 잡히는 게 보통입니다. 넉넉하게 잡은 최대치로 읽으셔야 합니다.'],
       ] },
@@ -271,7 +310,7 @@ if (A.plan.hasCooling) {
   const pts = [
     `평균으로 보면 맞는 말입니다. 개별 종목만 담은 상품이 지수만 담은 것의 ${f1(A.kindRatio)}배이고, 가격 출렁임도 ${f1(A.byKind.find((r) => r.key === '지수')?.vol, 0)}% 대 ${f1(A.byKind.find((r) => r.key === '종목')?.vol, 0)}%로 갈립니다.`,
     `그런데 상품 하나하나로 내려가면 뒤집힙니다. 지수만 담은 제${A.idxWorst.no}회가 ${f1(A.idxWorst.mcLoss)}%로 종목 섞인 상품 대부분보다 위험하고, 제${A.stockBest.no}회는 ${f1(A.stockBest.mcLoss)}%로 ${A.items.length}종 중 ${A.safest.findIndex((i) => i.no === A.stockBest.no) + 1}번째로 낮습니다.`,
-    `실제로 갈라놓은 건 자산 종류가 아니라 "원금 지키는 선이 얼마나 아래인가"와 "두 자산이 얼마나 같이 움직이는가"였습니다. 제${A.idxWorst.no}회는 선이 ${A.idxWorst.knockIn}%(이번 주에서 가장 높아 여유가 제일 적음)에 같이 움직임 ${f1(A.idxWorst.rho, 2)}, 제${A.stockBest.no}회는 선이 ${A.stockBest.knockIn}%에 같이 움직임 ${f1(A.stockBest.rho, 2)}입니다.`,
+    `실제로 갈라놓은 건 자산 종류가 아니라 "원금 지키는 선이 얼마나 아래인가"와 "두 자산이 얼마나 같이 움직이는가"였습니다. 제${A.idxWorst.no}회는 선이 ${A.idxWorst.floor}%${A.idxWorst.knockIn == null ? '(낙인이 없어 만기에 지켜야 하는 선)' : '(이번 주에서 높은 축이라 여유가 적음)'}${rhoPhrase(A.idxWorst)}, 제${A.stockBest.no}회는 선이 ${A.stockBest.floor}%${rhoPhrase(A.stockBest)}입니다.`,
   ];
   s.addText(pts.map((t, i) => ({ text: t, options: { bullet: true, breakLine: i < pts.length - 1 } })), {
     x: 6.44, y: y0 + 1.86, w: CW - 5.82, h: 3.0, fontFace: F, fontSize: 12.5, color: BODY, lineSpacing: 18, paraSpaceAfter: 12, margin: 0,
@@ -344,17 +383,23 @@ if (A.plan.hasCooling) {
 {
   const C = A.coupon, { eff: CE, why: CW2, sens: CS } = C;
   const s = slide();
-  const y0 = head(s, '그래서 어디서 갈라지나', '수익률과 손실 확률이 어긋나는 이유는 셋입니다. 셋 다 이번 회차 데이터에서 그대로 확인됩니다.');
-
-  const cw = (CW - 0.6) / 3;
+  /**
+   * 이유가 매주 셋 다 성립하지는 않는다. ① 은 같은 기초자산 묶음이, ③ 은 원화 아닌
+   * 상품이 있어야 한다. 2026-09-21 회차는 전부 원화여서 ③ 이 없다. 그런데도 제목이
+   * "셋입니다" 로 박혀 있고 칸은 3등분이라, 한 칸만 그려지고 두 칸이 비었다.
+   */
+  const T = CW2.twin || CW2.twinAny;
   const cards = [
-    CW2.twin && { n: '①', k: '상품 조건이 달라서', c: BLUE,
+    T && CW2.group.length >= 2 && { n: '①', k: '상품 조건이 달라서', c: BLUE,
       t: `${CW2.group[0].underlyings.join('·')} ${CW2.group.length}종은 기초자산도, 적용 변동성(${f1(CW2.group[0].vmax)}%)도, 기간(${CW2.group[0].months}개월)도 똑같은데 수익률만 갈립니다.\n\n`
-        + `제${CW2.twin.hi.no}회 손실 확률 ${f1(CW2.twin.hi.mcLoss)}% · 연 ${f1(CW2.twin.hi.annualRate)}%\n`
-        + `제${CW2.twin.lo.no}회 손실 확률 ${f1(CW2.twin.lo.mcLoss)}% · 연 ${f1(CW2.twin.lo.annualRate)}%\n\n`
-        + `손실 확률은 ${f1(Math.abs(CW2.twin.hi.mcLoss - CW2.twin.lo.mcLoss))}%p 차인데 수익률은 ${f1(CW2.twin.d)}%p 차입니다. 끝날 기회를 ${CW2.twin.hi.every}개월마다 보느냐 ${CW2.twin.lo.every}개월마다 보느냐, 낙인이 ${CW2.twin.hi.knockIn}%냐 ${CW2.twin.lo.knockIn}%냐가 갈랐습니다.` },
+        + `제${T.hi.no}회 손실 확률 ${f1(T.hi.mcLoss)}% · 연 ${f1(T.hi.annualRate)}%\n`
+        + `제${T.lo.no}회 손실 확률 ${f1(T.lo.mcLoss)}% · 연 ${f1(T.lo.annualRate)}%\n\n`
+        + (CW2.twin
+          ? `손실 확률은 ${f1(T.gap)}%p 차인데 수익률은 ${f1(T.d)}%p 차입니다. `
+          : `수익률은 ${f1(T.d)}%p 더 주지만 손실 확률은 ${f1(T.gap)}%p나 더 집니다 — 손실 확률 1%당 받는 돈으로 바꾸면 ${f1(CE.ratio(T.lo), 2)}%에서 ${f1(CE.ratio(T.hi), 2)}%로 오히려 줄어듭니다. `)
+        + twinWhy(T) },
     { n: '②', k: '값어치가 깎여서', c: BAD,
-      t: `제${CW2.priced.no}회는 연 ${f1(CW2.priced.annualRate)}%인데 손실 확률이 ${f1(CW2.priced.mcLoss)}%나 됩니다 — 손실 확률 1%당 ${f1(CE.ratio(CW2.priced), 2)}%로 이번 회차 꼴찌입니다. 넣는 순간의 값어치가 제값보다 ${f1(CW2.priced.fairValueGap)}%나 깎여 있기 때문입니다.\n\n`
+      t: `제${CW2.priced.no}회는 연 ${f1(CW2.priced.annualRate)}%인데 손실 확률이 ${f1(CW2.priced.mcLoss)}%나 됩니다 — 손실 확률 1%당 ${f1(CE.ratio(CW2.priced), 2)}%로 이번 회차 꼴찌입니다. 넣는 순간의 값어치가 제값보다 ${f1(Math.abs(CW2.priced.fairValueGap))}%나 깎여 있기 때문입니다.\n\n`
         + `높은 수익률이 위험을 진 대가로 돌아오는 게 아니라 비용으로 새어나간 경우입니다.\n\n`
         + `많이 깎인 ${C.n - C.nFair}종만 빼도 수익률과 변동성의 관계가 ${f1(C.rho.vol.all.r, 2)} → ${f1(C.rho.vol.fair.r, 2)}로 올라갑니다. 이 법칙은 제값 받는 상품에서만 통합니다.` },
     CW2.fx && { n: '③', k: '돈의 종류가 달라서', c: ACTIVE,
@@ -362,6 +407,10 @@ if (A.plan.hasCooling) {
         + `${CW2.fx.fx.currency} 이자가 수익률에 섞여 들어간 것이고, 대신 이 손실 확률에 잡히지 않는 환율 위험이 따로 붙기 때문입니다.\n\n`
         + `이 상품의 손실 확률은 환율을 뺀 숫자입니다.` },
   ].filter(Boolean);
+  const cw = (CW - 0.3 * (cards.length - 1)) / cards.length;
+  const NUMW = ['한 가지', '두 가지', '세 가지'];
+  const y0 = head(s, '그래서 어디서 갈라지나',
+    `수익률과 손실 확률이 어긋나는 이유는 이번 회차에서 ${NUMW[cards.length - 1] || `${cards.length}가지`}입니다. 이번 회차 데이터에서 그대로 확인됩니다.`);
   cards.forEach((c, i) => {
     const x = M + i * (cw + 0.3);
     s.addShape(pres.ShapeType.rect, { x, y: y0, w: cw, h: 2.30, fill: { color: WHITE }, line: { color: HAIR, width: 1 } });
@@ -404,7 +453,7 @@ if (A.plan.hasCooling) {
     { text: `"연 ${f1(A.rateMax)}%짜리도 있는데 왜 ${f1(CE.fairBest.annualRate)}%짜리를 먼저 권하나요?"  `, options: { bold: true, color: INK } },
     { text: `→ "수익률이 높으면 위험도 큰 것, 맞습니다. 다만 같은 손실 확률을 지고도 남들보다 많이 받는 상품이 따로 있습니다. 이번 회차는 그 차이가 ${f1(CE.fairSpread)}배까지 벌어집니다."` },
   ], { x: M + 0.22, y: y0 + 4.78, w: CW - 0.44, h: 0.72, fontFace: F, fontSize: 11.5, color: BODY, valign: 'middle', lineSpacing: 16, margin: 0 });
-  s.addNotes('수익률만 유난히 높고 위험은 안 높아 보이면 셋 중 하나입니다 — 조건 덕이거나, 돈의 종류가 다르거나, 아직 못 본 위험이 있거나. 앞의 둘로 설명이 안 되면 세 번째입니다.');
+  s.addNotes(`수익률만 유난히 높고 위험은 안 높아 보이면 ${CW2.fx ? '넷' : '셋'} 중 하나입니다 — 조건 덕이거나, ${CW2.fx ? '돈의 종류가 다르거나, ' : ''}값어치가 깎여 있거나, 아직 못 본 위험이 있거나. 앞의 것들로 설명이 안 되면 마지막입니다.`);
 }
 
 // ══ 7-9. 추천 3종 ══════════════════════════════════════════════════════════
@@ -499,13 +548,13 @@ function defence(it) {
       + `원금 지키는 게 제일 중요한 분께는 추천 1번을 권하십시오.`;
 }
 
-// ══ 8. 전체 17종 ═══════════════════════════════════════════════════════════
+// ══ 8. 전 종목 표 ══════════════════════════════════════════════════════════
 {
   const s = slide();
   const y0 = head(s, `이번 회차 전체 ${A.items.length}종`,
-    '같은 조건으로 돌린 손실 확률(B)이 낮은 순서. A 옆 괄호는 그 상품의 표본 구간 길이 — 10년에 못 미치면(빨강) 다른 상품과 나란히 비교할 수 없습니다. "만기만" = 낙인이 없어 만기 그날만 봅니다.');
-  const hdr = ['회차', '기초자산', '종류', '연 수익률', '조기상환', '낙인 배리어', '적용 변동성', 'B. 시뮬레이션 손실 확률', '등급', 'A. 설명서상 백테스트 손실 확률', '출발 가치'];
-  const ALIGN = ['left', 'left', 'left', 'right', 'right', 'right', 'right', 'right', 'center', 'right', 'right'];
+    '같은 조건으로 돌린 손실 확률(B)이 낮은 순서. A 옆 괄호는 그 상품의 표본 구간 길이 — 10년에 못 미치면(빨강) 다른 상품과 나란히 비교할 수 없습니다.');
+  const hdr = ['회차', '기초자산', '종류', '연 수익률', '조기상환', '낙인 배리어', '적용 변동성', 'B. 시뮬레이션 손실 확률', '등급', 'B. 1차 상환', 'B. 만기 도달', 'A. 설명서상 백테스트 손실 확률', '출발 가치'];
+  const ALIGN = ['left', 'left', 'left', 'right', 'right', 'right', 'right', 'right', 'center', 'right', 'right', 'right', 'right'];
   const rows = [hdr.map((t, i) => ({
     text: t, options: { bold: true, color: INK, fill: { color: SOFT }, align: ALIGN[i] },
   }))];
@@ -520,19 +569,23 @@ function defence(it) {
       { text: `${f1(it.vmax)}%`, options: { align: 'right', color: BODY } },
       { text: `${f1(it.mcLoss)}%`, options: { align: 'right', bold: true, color: [BLUE, WARN, BAD][it.tier] } },
       { text: tierOf(it).name, options: { align: 'center', color: TIER_INK[it.tier], fill: { color: TIER_BG[it.tier] } } },
+      { text: `${f1(it.mcByStep[0])}%`, options: { align: 'right', color: OK } },
+      { text: `${f1(it.mcByStep.at(-1))}%`, options: { align: 'right', color: BODY } },
       { text: `${f1(it.simLoss, 2)}%  (${it.simShort ? f1(it.simYears) : it.simYearsWhole}년)`, options: { align: 'right', color: it.simShort ? BAD : BODY } },
       { text: money(it, it.fairValue / 100), options: { align: 'right', color: (it.fairValueGap ?? 0) <= -10 ? BAD : (it.fairValueGap ?? 0) <= -5 ? WARN : BODY } },
     ]);
   }
-  const colW = [0.80, 2.85, 0.46, 0.92, 0.98, 1.10, 0.94, 1.10, 0.62, 1.40, 0.92];
+  // 합 12.093. B 두 칸을 넣느라 기초자산·A·낙인 칸에서 폭을 떼어 왔다.
+  const colW = [0.80, 2.73, 0.44, 0.74, 0.86, 0.92, 0.78, 0.94, 0.62, 0.66, 0.66, 1.10, 0.843];
   s.addTable(rows, {
     x: M, y: y0, w: CW, colW,
     fontFace: F, fontSize: 9, border: { type: 'solid', color: 'E5E4E1', pt: 1 },
     rowH: 0.24, valign: 'middle', margin: 2, autoPage: false,
   });
-  s.addText(TIER_RULE, {
-    x: M, y: y0 + rows.length * 0.24 + 0.26, w: CW, h: 0.34,
-    fontFace: F, fontSize: 10.5, color: FAINT, valign: 'top', margin: 0,
+  s.addText('"만기만" = 낙인이 없어 만기 그날만 봅니다. B. 1차 상환 = 첫 확인일에 끝날 확률, B. 만기 도달 = 한 번도 조기상환되지 않고 만기를 맞을 확률 — '
+    + '그 안에 앞의 손실 확률이 들어 있고, 빼면 만기까지 가서도 약정 수익을 받는 몫입니다. 손실은 만기에만 확정되기 때문입니다. ' + TIER_RULE, {
+    x: M, y: y0 + rows.length * 0.24 + 0.18, w: CW, h: 0.58,
+    fontFace: F, fontSize: 9.5, color: FAINT, valign: 'top', lineSpacing: 12, margin: 0,
   });
 }
 
@@ -638,7 +691,7 @@ function defence(it) {
   s.addShape(pres.ShapeType.rect, { x: M, y: qy, w: CW, h: 0.76, fill: { color: TINT }, line: { width: 0 } });
   s.addText([
     { text: '"개별 종목이 들어간 건 더 위험하지 않나요?"  ', options: { bold: true, color: INK } },
-    { text: `→ "맞습니다. 이번 주도 종목만 담은 상품의 손해 볼 가능성이 지수만 담은 것의 ${f1(A.kindRatio)}배입니다. 다만 제${it0.no}회는 두 자산이 거의 같이 움직이고(${f1(it0.rho, 2)}, 1이면 완전히 같이 움직임) 원금 지키는 선도 ${it0.knockIn}%로 훨씬 아래에 있어서, 같은 잣대로 재면 지수 상품 대부분보다 오히려 낮게 나옵니다."` },
+    { text: `→ "맞습니다. 이번 주도 종목만 담은 상품의 손해 볼 가능성이 지수만 담은 것의 ${f1(A.kindRatio)}배입니다. ${stockAnswer}"` },
   ], { x: M + 0.22, y: qy, w: CW - 0.44, h: 0.76, fontFace: F, fontSize: 11.5, color: BODY, valign: 'middle', lineSpacing: 16, margin: 0 });
 }
 
