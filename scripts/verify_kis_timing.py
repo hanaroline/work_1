@@ -338,7 +338,10 @@ def verify_prices(doc, uni):
                 n += 1
                 if b['d'] != p['asof']:
                     bad.append('%s 기준일 %s vs %s' % (p['symbol'], p['asof'], b['d']))
-                want = round(b['c'], 2 if b['c'] < 1000 else 0)
+                # **끊는 자리는 크기가 아니라 화폐가 정한다.** 예전에는 값이
+                # 1,000 을 넘으면 소수점을 버렸는데, 그러면 1,000달러가 넘는
+                # 미국 종목의 센트가 날아간다(ASML 1,679.92 → 1,680).
+                want = round(b['c'], 2 if D.MARKETS[mk]['currency'] == 'USD' else 0)
                 if not close_to(p['close'], want, 1e-9):
                     bad.append('%s 종가 %r vs %r' % (p['symbol'], p['close'], want))
     check(not bad, '종가·기준일 %d 건이 원본 일봉과 일치' % n, '; '.join(bad[:3]))
@@ -354,9 +357,13 @@ def verify_arith(doc):
                     bad.append('%s 손절가 없음' % p['symbol'])
                     continue
                 n += 1
+                # **화면에 찍힌 종가로 센다.** 읽는 사람이 손으로 맞춰 볼 수
+                # 있는 값이 그것이기 때문이다. MU 에서 이 둘이 갈렸다 —
+                # 화면 종가 1,016 × 0.95 = 965.2 인데 손절가는 끊기 전 값
+                # 1,015.8 로 셈한 965.01 이 찍혀 있었다.
                 px = p['close']
                 want = px * (1 - stop / 100.0)
-                want = round(want, 2 if want < 1000 else 0)
+                want = round(want, 2 if D.MARKETS[mk]['currency'] == 'USD' else 0)
                 if not close_to(p['stop_ref'], want, 1e-9):
                     bad.append('%s 손절가 %r vs %r' % (p['symbol'], p['stop_ref'], want))
         for key in ('sell', 'watch_sell'):

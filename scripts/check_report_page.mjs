@@ -92,7 +92,12 @@ async function walkTabs(where, page, frame) {
     check(b.tab === b.banner, `[file] ${slug} 탭 딱지와 붉은 띠가 한목소리`,
       `딱지 ${b.tab} · 띠 ${b.banner}`);
   }
-  check(Object.values(badge).some((b) => b.tab), '[file] 막힌 시장이 탭에서 보임');
+  // **막힌 시장이 있는지 없는지는 그날 자료가 정한다.** 검사기가 「하나는
+  // 막혀 있어야 한다」고 우기면, 막힘이 풀린 날 멀쩡한 판이 실패로 읽힌다 —
+  // 미국주식을 8해치로 다시 재어 보류가 풀린 날 실제로 그랬다. 여기서 보는
+  // 것은 **딱지와 띠가 어긋나지 않는가**뿐이다.
+  const blocked = Object.entries(badge).filter(([, b]) => b.tab).map(([s]) => s);
+  ok.push(`[file] 막힌 시장 ${blocked.length} 개${blocked.length ? ' (' + blocked.join(',') + ')' : ''}`);
   await p.close();
 }
 

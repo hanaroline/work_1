@@ -119,8 +119,14 @@ EARNINGS_BLOCK_DAYS = 5
 EXDIV_BLOCK_DAYS = 3
 
 
-def _fmt(px):
-    return None if px is None else round(px, 2 if px < 1000 else 0)
+def _fmt(px, ccy='KRW'):
+    """값을 그 시장의 **화폐 단위**로 끊는다.
+
+    build_kis_timing._fmt 와 같은 규칙이어야 한다 — 두 화면이 같은 종목의
+    종가를 다르게 찍으면 어느 쪽도 믿을 수 없다. 예전에는 **크기**로 갈라
+    1,000 이 넘으면 소수점을 버렸는데, 달러에서는 센트가 날아간다.
+    """
+    return None if px is None else round(px, 2 if ccy == 'USD' else 0)
 
 
 def _eok(x):
@@ -397,20 +403,24 @@ def judge(it, mk, members, acts_all, market_flags, today, latest_d):
     # 것은 판정을 가르는 것(block)뿐이고 나머지는 시장 머리에 한 번 싣는다 —
     # 화면이 둘을 겹쳐 보여 준다.
     verdict, blocks = decide(buys, sells, own + market_flags)
-    close = bars[i]['c']
+    ccy = D.MARKETS[mk]['currency']
+    # **화면에 찍히는 값으로 손절가를 셈한다** — 읽는 사람이 손으로 맞춰
+    # 볼 수 있는 값이 그것이다.
+    close = _fmt(bars[i]['c'], ccy)
     keep = own + [f for f in market_flags if f['level'] == 'block']
     return {
         'symbol': it['symbol'], 'code': it.get('code'), 'name': it['name'],
         'market': mk, 'asof': bars[i]['d'],
-        'close': _fmt(close),
-        'change_pct': round((close / bars[i - 1]['c'] - 1) * 100, 2) if i else None,
+        'close': close,                 # 이미 화폐 단위로 끊은 값이다
+        'change_pct': round((bars[i]['c'] / bars[i - 1]['c'] - 1) * 100, 2) if i else None,
         'verdict': verdict, 'verdict_label': VERDICTS[verdict]['label'],
         'technical': {
             'buy_hits': buys, 'sell_hits': sells,
             'other_buy': other_buy, 'other_sell': other_sell,
             'k': K_LIVE, 'members': members,
         },
-        'stop_ref': _fmt(close * (1 - B.CONSENSUS_STOP / 100.0)) if verdict == 'BUY' else None,
+        'stop_ref': (_fmt(close * (1 - B.CONSENSUS_STOP / 100.0), ccy)
+                     if verdict == 'BUY' else None),
         'stop_pct': B.CONSENSUS_STOP if verdict == 'BUY' else None,
         'flags': keep,
         'blocked_by': [f['text'] for f in blocks],
@@ -482,7 +492,8 @@ def main(argv=None):
                 items.append({'symbol': it['symbol'], 'code': it.get('code'),
                               'name': it['name'], 'market': mk,
                               'asof': it['bars'][-1]['d'],
-                              'close': _fmt(it['bars'][-1]['c']),
+                              'close': _fmt(it['bars'][-1]['c'],
+                                            D.MARKETS[mk]['currency']),
                               'verdict': 'HOLD', 'verdict_label': '보유',
                               'technical': {'members': [], 'buy_hits': [], 'sell_hits': []},
                               'flags': [_flag('시장', 'warn',
