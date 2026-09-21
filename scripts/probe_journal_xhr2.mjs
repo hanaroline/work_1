@@ -130,13 +130,10 @@ for (const url of INPAGE) {
 lines.push('');
 
 // 쿠키를 들고 평범한 요청으로도 되는지 — 되면 수집기는 브라우저 없이 돈다.
+// **쿠키 값은 남기지 않는다.** 이름만 적어도 「쿠키가 필요한 자리인가」는
+// 가려지고, 값은 저장소에 둘 물건이 아니다.
 const cookies = await ctx.cookies('https://stock.naver.com');
-lines.push(`### 쿠키 ${cookies.length} 개: ` + cookies.map((c) => c.name).join(', ').slice(0, 300));
-fs.writeFileSync(
-  path.join(OUT, 'x2_cookies.txt'),
-  cookies.map((c) => `${c.name}=${c.value}`).join('; ') + '\n',
-);
-lines.push('    → 쿠키 한 줄을 x2_cookies.txt 에 남겼다 (수집기가 흉내 낼 수 있는지 확인용)');
+lines.push(`### 쿠키 ${cookies.length} 개 (이름만): ` + cookies.map((c) => c.name).join(', ').slice(0, 300));
 
 await browser.close();
 const dest = path.join(OUT, 'journal_xhr2.txt');
