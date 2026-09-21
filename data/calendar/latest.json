@@ -1,6 +1,6 @@
 {
- "builtAt": "2026-09-21 14:46 KST",
- "builtAtUtc": "2026-09-21T05:46:48Z",
+ "builtAt": "2026-09-21 22:13 KST",
+ "builtAtUtc": "2026-09-21T13:13:56Z",
  "window": {
   "from": "2026-08-07",
   "to": "2028-02-03"
@@ -97,26 +97,26 @@
    "series_days": 400
   },
   "fed_implied": {
-   "contract_price": 95.98,
-   "implied_rate_pct": 4.02,
+   "contract_price": 96.105,
+   "implied_rate_pct": 3.895,
    "quote_date": "2026-09-21",
    "note": "해당 결제월의 평균 연방기금금리 기대치. policy_rate_us.effr 와 견주십시오 — 단기 국채와 견주면 안 됩니다(국채는 정책금리 위에서 거래되는 게 보통)",
    "source": "CBOT 30일 연방기금 금리선물 (ZQ=F)",
    "effr_pct": 3.88,
-   "vs_effr_bp": 14,
+   "vs_effr_bp": 2,
    "perf": {
-    "w1": 28.9,
-    "m1": 38.5,
-    "m3": 39.5,
-    "m6": 37.6,
-    "y1": -20.1,
-    "ytd": 29.8,
+    "w1": 15.4,
+    "m1": 26.0,
+    "m3": 27.0,
+    "m6": 25.1,
+    "y1": -32.6,
+    "ytd": 17.3,
     "unit": "bp",
     "basis": "내재금리(100 − 가격) 기준. 선물 가격 등락률에서 되짚었다"
    }
   },
   "rates_kr": {
-   "call": 3.025,
+   "call": 3.033,
    "cd91": 3.2,
    "cofix_new": 3.18,
    "cofix_balance": 3.05,
@@ -134,41 +134,41 @@
     "il.naver?marketindexCd=IRR_GOVT10Y -> 값 없음(135785 bytes)",
     "nds/south-korea-10-year-bond-yield -> HTTP Error 403: Forbidden"
    ],
-   "ktb1y": 3.67,
-   "ktb5y": 4.225,
-   "ktb10y": 4.466,
+   "ktb1y": 3.676,
+   "ktb5y": 4.275,
+   "ktb10y": 4.457,
    "perf": {
     "ktb1y": {
-     "w1": 11.0,
-     "m1": 24.5,
+     "w1": 11.6,
+     "m1": 26.0,
      "unit": "bp",
      "from": "2026-08-14",
      "basis": "네이버 시장지표 누적본(history.json) 대비"
     },
     "ktb5y": {
-     "w1": -4.2,
-     "m1": 11.5,
+     "w1": 0.8,
+     "m1": 16.4,
      "unit": "bp",
      "from": "2026-08-14",
      "basis": "네이버 시장지표 누적본(history.json) 대비"
     },
     "ktb10y": {
-     "w1": -7.4,
-     "m1": 8.4,
+     "w1": -8.3,
+     "m1": 8.1,
      "unit": "bp",
      "from": "2026-08-14",
      "basis": "네이버 시장지표 누적본(history.json) 대비"
     },
     "cd91": {
-     "w1": 7.0,
-     "m1": 27.0,
+     "w1": 4.0,
+     "m1": 25.0,
      "unit": "bp",
      "from": "2026-08-14",
      "basis": "네이버 시장지표 누적본(history.json) 대비"
     },
     "call": {
-     "w1": -5.8,
-     "m1": 25.5,
+     "w1": -4.2,
+     "m1": 28.3,
      "unit": "bp",
      "from": "2026-08-14",
      "basis": "네이버 시장지표 누적본(history.json) 대비"
@@ -182,13 +182,14 @@
     },
     "cofix_balance": {
      "w1": 5.0,
+     "m1": 5.0,
      "unit": "bp",
      "from": "2026-08-21",
      "basis": "네이버 시장지표 누적본(history.json) 대비"
     }
    }
   },
-  "asof_kst": "2026-09-21 09:07:41"
+  "asof_kst": "2026-09-21 19:31:05"
  },
  "holidays": [
   {
