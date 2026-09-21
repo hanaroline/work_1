@@ -1,4 +1,4 @@
-네이버 API 탐색 2026-09-21 19:32:41 KST
+네이버 API 탐색 2026-09-21 22:19:26 KST
 (원천이 실패한 날에만 돈다. 수집 결과는 바꾸지 않는다.)
 
 [internals] https://m.stock.naver.com/api/index/KOSPI/basic
@@ -16,7 +16,7 @@
     응답 앞머리: HTTPError: HTTP Error 409: Conflict
 
 [internals] https://m.stock.naver.com/api/index/KOSPI/integration
-    쓸모 · 16298 bytes · 걸린 낱말 ['riseCount', 'fallCount', '상승']
+    쓸모 · 16309 bytes · 걸린 낱말 ['riseCount', 'fallCount', '상승']
     남김: data/market/raw/probe_03_internals.txt
     앞머리: {"stockEndType":"index","itemCode":"KOSPI","reutersCode":"KOSPI","stockName":"코스피","totalInfos":[{"code":"lastClosePrice","key":"전일","value":"6,894.23"},{"code":"openPrice","key":"시가","value":"6,938.34","compareToPreviousPrice":{"code":"2",
 
@@ -26,9 +26,9 @@
     앞머리: [{"localTradedAt":"2026-09-21","closePrice":"7,007.72","compareToPreviousClosePrice":"113.49","compareToPreviousPrice":{"code":"2","text":"상승","name":"RISING"},"fluctuationsRatio":"1.65","openPrice":"6,938.34","highPrice":"7,027.58","lowPri
 
 [sectors] https://m.stock.naver.com/api/stocks/industry
-    쓸모 · 2275 bytes · 걸린 낱말 ['반도체', 'changeRate']
+    쓸모 · 2277 bytes · 걸린 낱말 ['반도체', 'changeRate']
     남김: data/market/raw/probe_05_sectors.txt
-    앞머리: {"stockListSortType":"INDUSTRY","groups":[{"no":287,"name":"소프트웨어","totalCount":74,"changeRate":"19.04","riseCount":34,"fallCount":35,"steadyCount":5},{"no":288,"name":"건강관리기술","totalCount":13,"changeRate":"7.48","riseCount":7,"fallCount":6
+    앞머리: {"stockListSortType":"INDUSTRY","groups":[{"no":287,"name":"소프트웨어","totalCount":74,"changeRate":"19.30","riseCount":39,"fallCount":28,"steadyCount":7},{"no":288,"name":"건강관리기술","totalCount":13,"changeRate":"7.68","riseCount":7,"fallCount":6
 
 [sectors] https://api.stock.naver.com/industry
     실패 · 36 bytes · 걸린 낱말 없음
@@ -37,7 +37,7 @@
 [sectors] https://m.stock.naver.com/api/stocks/industry?page=1&pageSize=100
     쓸모 · 8638 bytes · 걸린 낱말 ['반도체', 'changeRate']
     남김: data/market/raw/probe_07_sectors.txt
-    앞머리: {"stockListSortType":"INDUSTRY","groups":[{"no":287,"name":"소프트웨어","totalCount":74,"changeRate":"19.38","riseCount":34,"fallCount":35,"steadyCount":5},{"no":288,"name":"건강관리기술","totalCount":13,"changeRate":"7.52","riseCount":7,"fallCount":6
+    앞머리: {"stockListSortType":"INDUSTRY","groups":[{"no":287,"name":"소프트웨어","totalCount":74,"changeRate":"19.30","riseCount":39,"fallCount":28,"steadyCount":7},{"no":288,"name":"건강관리기술","totalCount":13,"changeRate":"7.68","riseCount":7,"fallCount":6
 
 [money_flow] https://m.stock.naver.com/api/domestic/market/trendDeposit?startIdx=0&pageSize=20
     실패 · 30 bytes · 걸린 낱말 없음
