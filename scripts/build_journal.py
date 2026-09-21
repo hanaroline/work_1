@@ -19,9 +19,10 @@
      나쁘다.
   ② **없는 값은 지어내지 않는다.** 빈칸으로 두고 NOT FOUND 배지를 단다.
      표를 못 채우면 표를 뺀다.
-  ③ **어림한 값에는 어림했다고 적는다.** 종목별 수급은 대형주 100 종목
-     한정이므로 표 이름에 「대형주 100 기준」을 박는다. 그 이름을 떼면
-     전체 시장의 매수상위라는 거짓이 된다.
+  ③ **어림한 값에는 어림했다고 적는다.** 장중에는 원천이 금액을 주지
+     않아 수량 × 종가로 어림하므로 그 칸에 「≈」를 달고, 연속 순매수는
+     대형주 100 종목 한정이므로 표 이름에 그렇게 박는다. 이름을 떼면
+     전체 시장을 센 것이라는 거짓이 된다.
 """
 from __future__ import annotations
 
@@ -35,7 +36,7 @@ import sys
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from journal_lib import (  # noqa: E402
     KST, VF_1, VF_C, VF_MD, VF_N, VF_P, DK, DE, DS, L, block, bp, d, eok,
-    eok_plain, empty, esc, n, pct, sgn, table, won,
+    eok_plain, empty, esc, n, pct, sgn, strong, table, won,
 )
 
 DOCS = "docs/journal"
@@ -440,10 +441,15 @@ def build(market: dict, jr: dict | None, now: datetime.datetime) -> tuple[str, s
         return '<span class="mut">&mdash;</span>'
 
     def sort_key(r):
+        """**크기 순**으로 세운다 — 매도 쪽은 값이 음수로 오기 때문이다.
+
+        부호를 그대로 두고 내림차순으로 세우면 매도 상위가 가장 적게 판
+        종목부터 늘어선다(실제로 그렇게 나왔다: −2억, −3억, −4억…).
+        """
         v = r.get("value_eok")
         if v is None:
             v = r.get("value_eok_est")
-        return -(v if v is not None else 0)
+        return -abs(v if v is not None else 0)
 
     def flow_block(mkt, side_label, direction, title_ko, title_en, cap=10):
         s = ((irank.get(mkt) or {}).get("sides") or {}).get(side_label)
@@ -584,7 +590,8 @@ def build(market: dict, jr: dict | None, now: datetime.datetime) -> tuple[str, s
                          eok_plain(s.get("value_eok")) + "원"] for s in nh]) if nh
                  else empty("종가가 52주 최고가에 닿은 종목이 없습니다.", "None."),
                  VF_C if nh else VF_N,
-                 "종가가 52주 최고가 이상인 종목 · 거래대금 순 · " + jr_tag)
+                 "**오늘 올라서** 종가가 52주 최고가에 닿은 종목 · 거래대금 순 · "
+                 "원천의 52주 최고가 칸은 최근 며칠을 반영하지 못할 때가 있습니다 · " + jr_tag)
 
     lim = merged("상한가", 10, None, "", "", key=lambda s: -(s.get("value_eok") or 0))
     b_lim = block("상한가", "Limit up",
@@ -631,8 +638,9 @@ def build(market: dict, jr: dict | None, now: datetime.datetime) -> tuple[str, s
     b_etf_vl = block("ETF 거래대금 상위 (레버리지·인버스 제외)", "ETF by turnover (ex-leveraged/inverse)",
                      t_vl or empty("ETF 순위를 받지 못했습니다.", "ETF ranking unavailable."),
                      VF_C if t_vl else VF_N,
-                     "원천이 주는 위 100 줄에서 레버리지·인버스를 뺀 순위입니다(전체 %s 종목 가운데)."
-                     % esc(etf.get("종목수") or ""))
+                     "원천이 주는 위 100 줄에서 레버리지·인버스를 뺀 순위입니다 — "
+                     "국내 상장 ETF %s 종목 전부를 훑은 것이 아닙니다."
+                     % esc(etf.get("총상장") or "?"))
     if not t_up:
         warn.append("ETF 순위를 받지 못했습니다.")
 
@@ -645,12 +653,14 @@ def build(market: dict, jr: dict | None, now: datetime.datetime) -> tuple[str, s
     if th_items:
         rows = []
         for t in th_items:
-            lead = (t.get("topByChangeRate") or {})
+            # topByChangeRate 는 **목록**이다. 맨 앞이 그 테마의 주도주다.
+            lead = (t.get("topByChangeRate") or [{}])[0]
+            lv = lead.get("value")
             rows.append([esc(t.get("name")),
-                         pct(float(t.get("changeRate"))) if t.get("changeRate") is not None else "",
+                         pct(float(t["changeRate"])) if t.get("changeRate") is not None else "",
                          '%d↑ / %d↓' % (int(t.get("risingCount") or 0), int(t.get("fallingCount") or 0)),
-                         '%s %s' % (esc(lead.get("stockName") or lead.get("name") or ""),
-                                    pct(float(lead["changeRate"])) if lead.get("changeRate") is not None else "")])
+                         '%s %s' % (esc(lead.get("name") or ""),
+                                    pct(float(lv)) if lv is not None else "")])
         b_theme = block("주요 테마 4", "Top 4 themes",
                         table([("테마", "Theme", "nm"), ("등락률", "Chg", "n"),
                                ("등락 종목수", "Adv/Dec", "c"), ("주도주", "Leader", "nm")], rows),
@@ -704,7 +714,7 @@ def build(market: dict, jr: dict | None, now: datetime.datetime) -> tuple[str, s
     if warn:
         lede = ('<div class="lede"><b>%s</b> %s</div>'
                 % (L("확인해 주십시오 —", "Please note —"),
-                   " / ".join(esc(w).replace("**", "") for w in warn)))
+                   " / ".join(strong(esc(w)) for w in warn)))
 
     uni = (jr or {}).get("universe") or {}
     foot = (
