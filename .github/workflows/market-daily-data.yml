@@ -1,0 +1,126 @@
+name: MARKET DAILY 수집
+
+# MARKET DAILY 카드뉴스(`scripts/build_market_daily.py`)가 쓰는 자료를 받아 둔다.
+#
+#   scripts/fetch_us_movers.py  → data/us_movers/  (모닝시황: 어제의 무빙·빅테크)
+#   scripts/fetch_kr_movers.py  → data/kr_movers/  (마감시황: 국내 무빙·시총 상위)
+#
+# 브리핑 세션은 사내 이그레스 정책 때문에 야후·나스닥·네이버에 직접 붙지
+# 못하므로(CONNECT 000), 그 정책 밖에서 도는 러너가 대신 받아 커밋한다.
+# `market-data.yml` 과 같은 구조다.
+#
+# 주의: schedule 이벤트는 기본 브랜치(main)에 있는 워크플로만 발동한다.
+# 작업 브랜치에서는 아래 push 경로 트리거로 부른다.
+
+on:
+  schedule:
+    # 미국 마감 뒤, 모닝 브리핑(07:30 KST) 전 — 06:20 KST = 21:20 UTC 전일
+    - cron: '20 21 * * *'
+    # 위가 늦을 때를 대비한 두 번째 — 06:50 KST = 21:50 UTC 전일
+    - cron: '50 21 * * *'
+    # 국내 마감(15:30 KST) 뒤 마감시황용 — 15:45 KST = 06:45 UTC
+    - cron: '45 6 * * 1-5'
+    # 위가 늦을 때를 대비한 두 번째 — 16:05 KST = 07:05 UTC
+    - cron: '5 7 * * 1-5'
+
+  # 브리핑 세션이 직접 부르는 길. 세션 토큰에는 Actions 쓰기 권한이 없어
+  # workflow_dispatch 를 API 로 부르지 못하지만(403), git push 는 된다.
+  push:
+    paths:
+      - 'data/market_daily/REFRESH'
+      - 'scripts/fetch_us_movers.py'
+      - 'scripts/fetch_kr_movers.py'
+      - '.github/workflows/market-daily-data.yml'
+
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: market-daily-data-${{ github.ref_name }}
+  cancel-in-progress: false
+
+jobs:
+  fetch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      # 한쪽이 막혀도 다른 쪽은 받아 둔다. 둘 다 실패했을 때만 마지막에 실패시킨다.
+      - name: 미국 무빙·빅테크
+        id: us
+        continue-on-error: true
+        run: python scripts/fetch_us_movers.py
+
+      - name: 국내 무빙·시총 상위
+        id: kr
+        continue-on-error: true
+        run: python scripts/fetch_kr_movers.py
+
+      - name: 커밋
+        run: |
+          git config user.name  'github-actions[bot]'
+          git config user.email 'github-actions[bot]@users.noreply.github.com'
+          git add data/us_movers data/kr_movers 2>/dev/null || true
+          if git diff --staged --quiet; then
+            echo "변경 없음"
+            exit 0
+          fi
+          git commit -m "MARKET DAILY 수집 $(TZ=Asia/Seoul date '+%Y-%m-%d %H:%M KST')"
+
+          # 밀리면 되받아서 다시 민다. 다른 수집 워크플로와 겹칠 수 있다.
+          for i in 1 2 3 4 5; do
+            if git push origin HEAD:${{ github.ref_name }}; then
+              echo "밀어 넣음 (시도 $i)"
+              exit 0
+            fi
+            echo "거절됨 — 되받아 다시 시도한다 ($i/5)"
+            if ! git pull --rebase --no-edit origin ${{ github.ref_name }}; then
+              git rebase --abort || true
+              echo "::error::되받기 충돌 — 손으로 확인하십시오"
+              exit 1
+            fi
+            sleep $((i * 5))
+          done
+          echo "::error::다섯 번 밀어 봤지만 모두 거절됐습니다"
+          exit 1
+
+      - name: 요약
+        if: always()
+        run: |
+          python - <<'PY'
+          import json, os
+          for tag, path in (("미국", "data/us_movers/latest.json"),
+                            ("국내", "data/kr_movers/latest.json")):
+              if not os.path.exists(path):
+                  print(f"::warning::{tag} 파일 없음 — {path}")
+                  continue
+              d = json.load(open(path, encoding="utf-8"))
+              c = d["counts"]
+              when = d.get("session_date") or d.get("trade_date_kst")
+              extra = f" · 시장상태 {d['market_status']}" if d.get("market_status") else ""
+              print(f"::notice::{tag} 기준일 {when}{extra} · {c}")
+              for k, v in sorted(d.get("sources", {}).items()):
+                  if not v.get("ok"):
+                      print(f"::warning::{k} 실패 — {v.get('error', '사유 없음')}")
+          PY
+
+      - name: 판정
+        if: always()
+        run: |
+          # 둘 다 실패했으면 실패로 끝낸다. 한쪽만 실패한 것은 경고로 남긴다.
+          if [ "${{ steps.us.outcome }}" != "success" ] && [ "${{ steps.kr.outcome }}" != "success" ]; then
+            echo "::error::두 수집기가 모두 실패했습니다"
+            exit 1
+          fi
+          if [ "${{ steps.us.outcome }}" != "success" ]; then
+            echo "::warning::미국 수집 실패 (국내만 갱신됨)"
+          fi
+          if [ "${{ steps.kr.outcome }}" != "success" ]; then
+            echo "::warning::국내 수집 실패 (미국만 갱신됨)"
+          fi
