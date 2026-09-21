@@ -196,6 +196,28 @@ node scripts/check_journal_fit.mjs docs/journal/<날짜>.html
 **본문 크기만 인쇄 밀도에 맞춰 줄였습니다**(웹 기준 19px 대신 표 8.5px) —
 A4 한 장에 표 열두 개를 세우는 자료라 웹 호흡을 그대로 쓸 수 없습니다.
 
+### PDF
+
+```bash
+node scripts/journal_to_pdf.mjs docs/journal/<날짜>.html
+```
+
+텔레그램으로 건네는 것이 이 PDF 입니다. 받는 쪽이 휴대폰이라도 A4 네 쪽
+그대로 열리고, 브라우저·글꼴에 기대지 않습니다. 구운 뒤 **PDF 의 쪽 수를
+세어 `.sheet` 개수와 맞는지 봅니다** — 어긋나면 어느 장이 넘쳐 꼬리 쪽이
+생긴 것입니다.
+
+> **함정 — 인쇄할 때 좁은 화면 규칙이 걸린다.** A4 쪽 상자의 안쪽 너비는
+> 192mm = **726px** 입니다. 그래서 `@media (max-width:820px)` 로 두면
+> *인쇄할 때도* 휴대폰용 규칙이 걸려, 두 단이 한 단으로 풀리고 표가 11px 로
+> 커집니다. 실제로 네 장이 **아홉 쪽**으로 구워졌습니다. `@media screen and
+> (max-width:820px)` 로 `screen` 을 반드시 붙이십시오. 화면에서 재는
+> `check_journal_fit.mjs` 는 794px 너비로 재기 때문에 이 함정을 못 봅니다 —
+> 굽고 나서 쪽 수를 세는 까닭이 이것입니다.
+
+인쇄 여백 `@page{margin:9mm 9mm 7mm}` 는 `.sheet` 의 안쪽 여백과 **같은
+값**입니다. 어긋나면 화면에서 「들어감」이던 장이 PDF 에서 2mm 넘칩니다.
+
 ---
 
 ## 6. 손으로 돌리기
@@ -212,6 +234,7 @@ git add data/journal/REFRESH && git commit -m "시장일지 수집 요청" && gi
 # 짓기
 python3 scripts/verify_journal.py && python3 scripts/build_journal.py
 node scripts/check_journal_fit.mjs docs/journal/$(date +%F).html
+node scripts/journal_to_pdf.mjs   docs/journal/$(date +%F).html
 ```
 
 ---
