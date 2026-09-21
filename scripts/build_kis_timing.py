@@ -64,10 +64,24 @@ RISK_PER_TRADE = 1.0
 VIEW_ORDER = ['KR_ETF', 'KR_OV_ETF', 'KR_STOCK', 'OV_ETF', 'US_STOCK']
 
 
-def _fmt(px):
+def _fmt(px, ccy='KRW'):
+    """값을 그 시장의 **화폐 단위**로 끊는다.
+
+    예전에는 **크기**로 갈랐다 — 1,000 이 넘으면 소수점을 버렸다. 원화에서는
+    맞는 규칙이다(원 아래는 뜻이 없다). 그런데 달러에도 그대로 걸려서,
+    1,000달러가 넘는 미국 종목의 **센트가 날아갔다.**
+
+        ASML 1,679.92 → 1,680.00달러
+        MU   1,015.80 → 1,016.00달러
+
+    화면은 달러를 「{:,.2f}달러」로 찍으므로, 없는 센트를 두 자리 만들어 내고
+    있었다. 그리고 손절가는 **끊기 전의 값**으로 셈하고 있어서, 화면의
+    1,016 × 0.95 = 965.2 와 화면에 찍힌 손절가 965.01 이 어긋났다. 읽는 사람이
+    손으로 맞춰 보면 안 맞는 자리다 — 검산이 MU 에서 잡아냈다.
+    """
     if px is None:
         return None
-    return round(px, 2 if px < 1000 else 0)
+    return round(px, 2 if ccy == 'USD' else 0)
 
 
 def plan(it, mk, members, acts_all, grade):
@@ -83,7 +97,10 @@ def plan(it, mk, members, acts_all, grade):
     if not (buys or sells or other_buy or other_sell):
         return None
 
-    close = bars[i]['c']
+    ccy = D.MARKETS[mk]['currency']
+    # **화면에 찍히는 값으로 손절가를 셈한다.** 끊기 전의 값으로 셈하면 읽는
+    # 사람이 화면의 종가에 0.95 를 곱해 봤을 때 다른 수가 나온다.
+    close = _fmt(bars[i]['c'], ccy)
     stop = close * (1 - B.CONSENSUS_STOP / 100.0)
     # 세 단계로 나눈다. K개가 모인 날은 드물어서(종목·날 기준 1~2%) 합의만 실으면
     # 대부분의 날에 화면이 빈다. 한 전략만 켜진 자리는 **관찰**로 따로 둔다 —
@@ -103,14 +120,14 @@ def plan(it, mk, members, acts_all, grade):
     return {
         'symbol': it['symbol'], 'code': it['code'], 'name': it['name'],
         'market': mk, 'asof': bars[i]['d'],
-        'close': _fmt(close),
+        'close': close,                 # 이미 화폐 단위로 끊은 값이다
         'change_pct': round((bars[i]['c'] / bars[i - 1]['c'] - 1) * 100, 2) if i else None,
         'buy_hits': buys, 'sell_hits': sells,
         'other_buy': other_buy, 'other_sell': other_sell,
         'side': side,
         # 손절가는 **신호일 종가를 진입가로 가정한** 값이다. 실제 진입은 다음
         # 거래일 시가이므로 체결 뒤 그 가격으로 다시 잡아야 한다.
-        'stop_ref': _fmt(stop) if hold else None,
+        'stop_ref': _fmt(stop, ccy) if hold else None,
         'stop_pct': B.CONSENSUS_STOP if hold else None,
         'weight_hint': (round(RISK_PER_TRADE / B.CONSENSUS_STOP * 100, 1)
                         if side == 'BUY' else None),
