@@ -1,14 +1,13 @@
-네이버 API 탐색 2026-09-21 09:08:49 KST
+네이버 API 탐색 2026-09-21 16:21:31 KST
 (원천이 실패한 날에만 돈다. 수집 결과는 바꾸지 않는다.)
 
 [internals] https://m.stock.naver.com/api/index/KOSPI/basic
-    쓸모 · 3160 bytes · 걸린 낱말 ['상승']
+    쓸모 · 3162 bytes · 걸린 낱말 ['상승']
     남김: data/market/raw/probe_00_internals.txt
     앞머리: {"stockEndType":"index","itemCode":"KOSPI","reutersCode":"KOSPI","symbolCode":"KOSPI","stockName":"코스피","itemLogoUrl":"https://ssl.pstatic.net/imgstock/fn/real/logo/index/IndexKOSPI.svg","itemLogoPngUrl":"https://ssl.pstatic.net/imgstock/fn
 
 [internals] https://m.stock.naver.com/api/index/KOSDAQ/basic
-    빈손 · 3193 bytes · 걸린 낱말 없음
-    응답 앞머리: {"stockEndType":"index","itemCode":"KOSDAQ","reutersCode":"KOSDAQ","symbolCode":"KOSDAQ","stockName":"코스닥","itemLogoUrl":"https://ssl.pstatic.net/imgstock/fn/re
+    쓸모 · 3191 bytes · 걸린 낱말 ['상승']
     남김: data/market/raw/probe_01_internals.txt
     앞머리: {"stockEndType":"index","itemCode":"KOSDAQ","reutersCode":"KOSDAQ","symbolCode":"KOSDAQ","stockName":"코스닥","itemLogoUrl":"https://ssl.pstatic.net/imgstock/fn/real/logo/index/IndexKOSDAQ.svg","itemLogoPngUrl":"https://ssl.pstatic.net/imgstoc
 
@@ -17,28 +16,28 @@
     응답 앞머리: HTTPError: HTTP Error 409: Conflict
 
 [internals] https://m.stock.naver.com/api/index/KOSPI/integration
-    쓸모 · 16245 bytes · 걸린 낱말 ['riseCount', 'fallCount', '상승']
+    쓸모 · 16303 bytes · 걸린 낱말 ['riseCount', 'fallCount', '상승']
     남김: data/market/raw/probe_03_internals.txt
     앞머리: {"stockEndType":"index","itemCode":"KOSPI","reutersCode":"KOSPI","stockName":"코스피","totalInfos":[{"code":"lastClosePrice","key":"전일","value":"6,894.23"},{"code":"openPrice","key":"시가","value":"6,938.34","compareToPreviousPrice":{"code":"2",
 
 [internals] https://m.stock.naver.com/api/index/KOSPI/price?pageSize=5&page=1
-    쓸모 · 1277 bytes · 걸린 낱말 ['상승']
+    쓸모 · 1278 bytes · 걸린 낱말 ['상승']
     남김: data/market/raw/probe_04_internals.txt
-    앞머리: [{"localTradedAt":"2026-09-21","closePrice":"6,987.78","compareToPreviousClosePrice":"93.55","compareToPreviousPrice":{"code":"2","text":"상승","name":"RISING"},"fluctuationsRatio":"1.36","openPrice":"6,938.34","highPrice":"7,007.10","lowPric
+    앞머리: [{"localTradedAt":"2026-09-21","closePrice":"7,007.72","compareToPreviousClosePrice":"113.49","compareToPreviousPrice":{"code":"2","text":"상승","name":"RISING"},"fluctuationsRatio":"1.65","openPrice":"6,938.34","highPrice":"7,027.58","lowPri
 
 [sectors] https://m.stock.naver.com/api/stocks/industry
-    쓸모 · 2281 bytes · 걸린 낱말 ['반도체', 'changeRate']
+    쓸모 · 2269 bytes · 걸린 낱말 ['반도체', 'changeRate']
     남김: data/market/raw/probe_05_sectors.txt
-    앞머리: {"stockListSortType":"INDUSTRY","groups":[{"no":287,"name":"소프트웨어","totalCount":74,"changeRate":"10.28","riseCount":24,"fallCount":40,"steadyCount":10},{"no":313,"name":"석유와가스","totalCount":19,"changeRate":"3.40","riseCount":10,"fallCount":
+    앞머리: {"stockListSortType":"INDUSTRY","groups":[{"no":287,"name":"소프트웨어","totalCount":74,"changeRate":"18.94","riseCount":33,"fallCount":35,"steadyCount":6},{"no":288,"name":"건강관리기술","totalCount":13,"changeRate":"7.80","riseCount":7,"fallCount":6
 
 [sectors] https://api.stock.naver.com/industry
     실패 · 36 bytes · 걸린 낱말 없음
     응답 앞머리: HTTPError: HTTP Error 404: Not Found
 
 [sectors] https://m.stock.naver.com/api/stocks/industry?page=1&pageSize=100
-    쓸모 · 8653 bytes · 걸린 낱말 ['반도체', 'changeRate']
+    쓸모 · 8642 bytes · 걸린 낱말 ['반도체', 'changeRate']
     남김: data/market/raw/probe_07_sectors.txt
-    앞머리: {"stockListSortType":"INDUSTRY","groups":[{"no":287,"name":"소프트웨어","totalCount":74,"changeRate":"10.27","riseCount":23,"fallCount":37,"steadyCount":14},{"no":313,"name":"석유와가스","totalCount":19,"changeRate":"3.61","riseCount":10,"fallCount":
+    앞머리: {"stockListSortType":"INDUSTRY","groups":[{"no":287,"name":"소프트웨어","totalCount":74,"changeRate":"19.00","riseCount":33,"fallCount":35,"steadyCount":6},{"no":288,"name":"건강관리기술","totalCount":13,"changeRate":"7.90","riseCount":7,"fallCount":6
 
 [money_flow] https://m.stock.naver.com/api/domestic/market/trendDeposit?startIdx=0&pageSize=20
     실패 · 30 bytes · 걸린 낱말 없음

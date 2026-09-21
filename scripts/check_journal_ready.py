@@ -48,6 +48,12 @@ RUNNING = {"REGULAR_MARKET", "PRE_MARKET", "BEFORE_MARKET", "OPENING_AUCTION"}
 def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--allow-estimated", action="store_true")
+    # 기관 종목별이 전 거래일 기준인 채로 내는 길. 2026-09-21 에 네 번 재어
+    # 보니 그 자리는 그날 안에 차지 않았다. 나머지가 모두 오늘 것인데 표
+    # 하나 때문에 판 전체를 접는 것보다, **그 표에만 날짜를 달아** 내는 편이
+    # 낫다. 다만 그렇게 낸 판은 「잠정」으로 표시하고, 뒤에 자료가 차면
+    # 다시 지어 덮는다.
+    ap.add_argument("--allow-stale-investor", action="store_true")
     ap.add_argument("--quiet", action="store_true")
     args = ap.parse_args()
 
@@ -79,7 +85,7 @@ def main() -> int:
     say(f"순위 기준일 {bd}")
 
     # 3. 두 주체가 다 찼는가
-    late = []
+    late, stale = [], []
     for mkt, o in (jr.get("investor_rank") or {}).items():
         if not o:
             late.append(f"{mkt} 수급 없음")
@@ -87,14 +93,21 @@ def main() -> int:
         for side, s in (o.get("sides") or {}).items():
             sbd = str(s.get("bizdate") or "")
             if sbd and sbd != today.replace("-", ""):
-                late.append(f"{mkt} {side} 기준일 {sbd}")
+                if args.allow_stale_investor:
+                    stale.append(f"{mkt} {side} {sbd}")
+                else:
+                    late.append(f"{mkt} {side} 기준일 {sbd}")
             elif s.get("estimated") and not args.allow_estimated:
                 late.append(f"{mkt} {side} 잠정치(estimated)")
     if late:
         say("종목별 수급이 아직 덜 찼습니다 — " + " · ".join(late))
         say("내지 않고 다음 판을 기다립니다. 한 표에 오늘과 어제를 함께 실을 수 없습니다.")
         return 1
-    say("외국인·기관 종목별 수급이 모두 오늘 확정치입니다")
+    if stale:
+        say("종목별 수급 가운데 전 거래일 기준인 것 — " + " · ".join(stale))
+        say("**잠정 판**으로 냅니다. 그 표에는 제 날짜를 달고, 뒤에 자료가 차면 다시 짓습니다.")
+    else:
+        say("외국인·기관 종목별 수급이 모두 오늘 확정치입니다")
 
     # 4. 시세 파일의 종가일
     if os.path.exists(MARKET):
@@ -111,9 +124,21 @@ def main() -> int:
 
     # 5. 오늘 판이 이미 있는가
     out = os.path.join(DOCS, f"{today}.html")
+    claims = os.path.join("data/journal", f"claims-{today}.json")
     if os.path.exists(out):
-        say(f"오늘 판이 이미 있습니다 ({out}) — 다시 짓지 않습니다")
-        return 2
+        # **잠정으로 낸 판은 덮을 수 있다.** 그러려고 잠정이라 적어 둔 것이다.
+        prior = {}
+        if os.path.exists(claims):
+            try:
+                with open(claims, encoding="utf-8") as fh:
+                    prior = json.load(fh)
+            except Exception:  # noqa: BLE001
+                prior = {}
+        if prior.get("mode") == "잠정" and not stale:
+            say(f"오늘 판이 잠정으로 나가 있고 이제 자료가 찼습니다 — 다시 짓습니다")
+        else:
+            say(f"오늘 판이 이미 있습니다 ({out}) — 다시 짓지 않습니다")
+            return 2
 
     say("내도 됩니다.")
     return 0
