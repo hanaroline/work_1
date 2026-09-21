@@ -113,9 +113,9 @@ table.dt tfoot td{background:var(--surf2);font-size:8.4px;color:var(--mut);
   white-space:normal;line-height:1.35}
 tr.hl td{background:#D7D7D7 !important;font-weight:700}
 /* 대시보드의 스무 줄짜리 표 — 한 쪽에 넷을 세우려면 한 단 더 조여야 한다 */
-table.dt.dense{font-size:7.7px}
-table.dt.dense td{padding:0.9px 3px}
-table.dt.dense th{padding:1.4px 3px}
+table.dt.dense{font-size:7.4px}
+table.dt.dense td{padding:0.6px 3px}
+table.dt.dense th{padding:1.1px 3px}
 
 .up{color:var(--up)} .down{color:var(--down)} .flat{color:var(--mut)}
 .mut{color:var(--mut2)}
@@ -455,7 +455,7 @@ def build(market: dict, jr: dict | None, now: datetime.datetime) -> tuple[str, s
             v = r.get("value_eok_est")
         return -abs(v if v is not None else 0)
 
-    def flow_block(mkt, side_label, direction, title_ko, title_en, cap=8):
+    def flow_block(mkt, side_label, direction, title_ko, title_en, cap=8, cls="dt"):
         s = ((irank.get(mkt) or {}).get("sides") or {}).get(side_label)
         if not s or not s.get(direction):
             return None
@@ -470,21 +470,32 @@ def build(market: dict, jr: dict | None, now: datetime.datetime) -> tuple[str, s
                             ("종가", "Close", "n"), ("등락", "Chg", "n")],
                            [[nm(dict(r, market=mkt)), flow_val(r),
                              won(r.get("close")), pct(r.get("change_pct"))]
-                            for r in rows]),
+                            for r in rows], cls=cls),
                      VF_MD if not s.get("estimated") else VF_P, nt)
 
     b_frgn = flow_block("코스피", "외국인", "buy",
                         "코스피 외국인 순매수 상위", "KOSPI — foreign net buy")
     b_inst = flow_block("코스피", "기관", "buy",
                         "코스피 기관 순매수 상위", "KOSPI — institutional net buy")
-    b_frgn_kq = flow_block("코스닥", "외국인", "buy",
-                           "코스닥 외국인 순매수 상위", "KOSDAQ — foreign net buy")
-    b_inst_kq = flow_block("코스닥", "기관", "buy",
-                           "코스닥 기관 순매수 상위", "KOSDAQ — institutional net buy")
-    b_frgn_sell = flow_block("코스피", "외국인", "sell",
-                             "코스피 외국인 순매도 상위", "KOSPI — foreign net sell")
-    b_inst_sell = flow_block("코스피", "기관", "sell",
-                             "코스피 기관 순매도 상위", "KOSPI — institutional net sell")
+    # 대시보드는 원천이 주는 스무 줄을 그대로 싣는다 — 시장일지가 묻는 것이
+    # 「매수상위 20 종목」이기 때문이다. 본지는 그 가운데 여덟 줄만 보인다.
+    W = dict(cap=20, cls="dt dense")
+    d_frgn_kp = flow_block("코스피", "외국인", "buy",
+                           "코스피 외국인 순매수 상위 20", "KOSPI — foreign net buy 20", **W)
+    d_inst_kp = flow_block("코스피", "기관", "buy",
+                           "코스피 기관 순매수 상위 20", "KOSPI — inst. net buy 20", **W)
+    d_frgn_kq = flow_block("코스닥", "외국인", "buy",
+                           "코스닥 외국인 순매수 상위 20", "KOSDAQ — foreign net buy 20", **W)
+    d_inst_kq = flow_block("코스닥", "기관", "buy",
+                           "코스닥 기관 순매수 상위 20", "KOSDAQ — inst. net buy 20", **W)
+    d_frgn_kp_s = flow_block("코스피", "외국인", "sell",
+                             "코스피 외국인 순매도 상위 20", "KOSPI — foreign net sell 20", **W)
+    d_inst_kp_s = flow_block("코스피", "기관", "sell",
+                             "코스피 기관 순매도 상위 20", "KOSPI — inst. net sell 20", **W)
+    d_frgn_kq_s = flow_block("코스닥", "외국인", "sell",
+                             "코스닥 외국인 순매도 상위 20", "KOSDAQ — foreign net sell 20", **W)
+    d_inst_kq_s = flow_block("코스닥", "기관", "sell",
+                             "코스닥 기관 순매도 상위 20", "KOSDAQ — inst. net sell 20", **W)
 
     if b_frgn is None and b_inst is None:
         b_frgn = block("종목별 수급", "Net buying by stock",
@@ -504,7 +515,7 @@ def build(market: dict, jr: dict | None, now: datetime.datetime) -> tuple[str, s
                 rows.append((mkt, fo[code], io[code]))
         rows.sort(key=lambda t: sort_key(t[1]) + sort_key(t[2]))
         return [[L(ko, en), nm(dict(t[1], market=t[0])), flow_val(t[1]), flow_val(t[2])]
-                for t in rows[:9]]
+                for t in rows[:6]]
 
     rows2 = both("buy", "쌍매수", "Both buy") + both("sell", "쌍매도", "Both sell")
     b_both = block("쌍매수 · 쌍매도", "Both-side buy / sell",
@@ -528,9 +539,9 @@ def build(market: dict, jr: dict | None, now: datetime.datetime) -> tuple[str, s
                     for s in lst:
                         nmap.setdefault(s.get("code"), s.get("name"))
         fs = sorted([r for r in flows["rows"] if (r.get("foreign_streak") or 0) >= 3],
-                    key=lambda r: -(r["foreign_streak"]))[:8]
+                    key=lambda r: -(r["foreign_streak"]))[:5]
         is_ = sorted([r for r in flows["rows"] if (r.get("inst_streak") or 0) >= 3],
-                     key=lambda r: -(r["inst_streak"]))[:8]
+                     key=lambda r: -(r["inst_streak"]))[:5]
         rows3 = [[L("외국인", "Foreign"),
                   '%s <span class="mut">%s</span>' % (esc(nmap.get(r["code"], r["code"])), r["code"]),
                   "%d일" % r["foreign_streak"], eok(r.get("foreign_eok"), 0)] for r in fs]
@@ -592,7 +603,8 @@ def build(market: dict, jr: dict | None, now: datetime.datetime) -> tuple[str, s
                  table([("종목", "Name", "nm"), ("종가", "Close", "n"), ("등락", "Chg", "n"),
                         ("거래대금", "Turnover", "n")],
                        [[nm(s), won(s.get("close")), pct(s.get("change_pct")),
-                         eok_plain(s.get("value_eok")) + "원"] for s in nh]) if nh
+                         eok_plain(s.get("value_eok")) + "원"] for s in nh],
+                       cls="dt dense") if nh
                  else empty("종가가 52주 최고가에 닿은 종목이 없습니다.", "None."),
                  VF_C if nh else VF_N,
                  "**오늘 올라서** 종가가 52주 최고가에 닿은 종목 · 거래대금 순 · "
@@ -603,7 +615,8 @@ def build(market: dict, jr: dict | None, now: datetime.datetime) -> tuple[str, s
                   table([("종목", "Name", "nm"), ("종가", "Close", "n"), ("등락", "Chg", "n"),
                          ("연속", "Days", "n")],
                         [[nm(s), won(s.get("close")), pct(s.get("change_pct")),
-                          str(s.get("continual_upper") or 0) + "일"] for s in lim]) if lim
+                          str(s.get("continual_upper") or 0) + "일"] for s in lim],
+                        cls="dt dense") if lim
                   else empty("상한가 종목이 없습니다.", "None."),
                   VF_C if lim else VF_N, jr_tag)
 
@@ -613,7 +626,8 @@ def build(market: dict, jr: dict | None, now: datetime.datetime) -> tuple[str, s
                         ("전일대비 거래량", "vs prev vol", "n"), ("거래대금", "Turnover", "n")],
                        [[nm(s), pct(s.get("change_pct")),
                          sgn(s.get("volume_diff_pct"), 0, "%"),
-                         eok_plain(s.get("value_eok")) + "원"] for s in qs]) if qs
+                         eok_plain(s.get("value_eok")) + "원"] for s in qs],
+                       cls="dt dense") if qs
                  else empty("해당 종목이 없습니다.", "None."),
                  VF_C if qs else VF_N,
                  "거래대금 100억원 이상인 종목 가운데 전일 거래량 대비 증가율 상위. 문턱이 없으면 평소 거래가 거의 없던 종목이 1등을 합니다.")
@@ -629,7 +643,7 @@ def build(market: dict, jr: dict | None, now: datetime.datetime) -> tuple[str, s
         return table([("ETF", "ETF", "nm"), ("종가", "Close", "n"), ("등락", "Chg", "n"),
                       (col_ko, col_en, "n")],
                      [[esc(e.get("name")), won(e.get("close")), pct(e.get("change_pct")), fmt(e)]
-                      for e in lst])
+                      for e in lst], cls="dt dense")
 
     t_up = etf_tbl("상승률상위", "거래대금", "Turnover", lambda e: eok_plain(e.get("value_eok")) + "원")
     t_vl = etf_tbl("거래대금상위", "거래대금", "Turnover", lambda e: eok_plain(e.get("value_eok")) + "원")
@@ -752,46 +766,57 @@ def build(market: dict, jr: dict | None, now: datetime.datetime) -> tuple[str, s
            '<div class="g2"><div>' + b_theme + '</div><div>' + b_news + '</div></div>',
            "", foot))
 
-    hd2 = (
-        '<div class="hd"><div><div class="kicker">%s</div><h1>%s</h1></div>'
-        '<div class="sub">%s</div></div>'
-        % (L("대시보드 · 수급과 순위", "Dashboard · Flows and rankings"),
-           L("%s 마감" % DK(cdate, True), "Close, %s" % DE(cdate, True)),
-           L("종목별 기관·외국인 매매와 기관 안쪽", "Per-stock flows and the institutional split")))
-
-    # 대시보드 — 상위 20 로 넓힌 판
     def wide(market_key, kind, title_ko, title_en, col_ko, col_en, fmt):
+        """대시보드용 — 상위 20 을 촘촘한 갈래로."""
         return rank_block(market_key, kind, title_ko, title_en, col_ko, col_en, fmt, 20,
                           jr_tag, cls="dt dense")
 
+    def dash_head(ko, en, sub_ko, sub_en):
+        return ('<div class="hd"><div><div class="kicker">%s</div><h1>%s</h1></div>'
+                '<div class="sub">%s</div></div>'
+                % (L(ko, en),
+                   L("%s 마감" % DK(cdate, True), "Close, %s" % DE(cdate, True)),
+                   L(sub_ko, sub_en)))
+
+    # 대시보드는 세 쪽이다. 시장일지가 묻는 것이 시장·주체마다 **상위 20**
+    # 이라 쪽마다 스무 줄짜리 표가 넷씩 들어간다 — 줄을 줄여 두 쪽에 욱여
+    # 넣으면 물어본 것을 주지 않는 자료가 된다.
     sheet2 = (
         '<article class="sheet">%s'
-        '<div class="g2"><div>%s%s</div><div>%s%s</div></div>'
-        '<div class="g2"><div>%s%s</div><div>%s%s</div></div>'
+        '<div class="g2"><div>%s</div><div>%s</div></div>'
+        '<div class="g2"><div>%s</div><div>%s</div></div>'
         '<div class="g2"><div>%s</div><div>%s</div></div>'
         '</article>'
-        % (hd2,
-           (b_frgn_kq or ""), (b_frgn_sell or ""),
-           (b_inst_kq or ""), (b_inst_sell or ""),
-           b_both, (b_streak or ""),
-           (b_det or ""), b_sect,
-           b_etf_up, b_etf_vl))
-
-    hd3 = (
-        '<div class="hd"><div><div class="kicker">%s</div><h1>%s</h1></div>'
-        '<div class="sub">%s</div></div>'
-        % (L("대시보드 · ETF와 시장 안쪽", "Dashboard · ETF and internals"),
-           L("%s 마감" % DK(cdate, True), "Close, %s" % DE(cdate, True)),
-           L("거래대금 10억원 이상 종목 기준 · 레버리지·인버스 제외",
-             "Turnover floor KRW 1bn · leveraged/inverse excluded")))
+        % (dash_head("대시보드 ① 매수 상위", "Dashboard 1 · Net buying",
+                     "기관·외국인이 그날 사들인 종목 — 시장별 상위 20",
+                     "What institutions and foreigners bought — top 20 per market"),
+           (d_frgn_kp or ""), (d_inst_kp or ""),
+           (d_frgn_kq or ""), (d_inst_kq or ""),
+           b_both, (b_det or "") + b_etf_vl))
 
     sheet3 = (
         '<article class="sheet">%s'
         '<div class="g2"><div>%s</div><div>%s</div></div>'
         '<div class="g2"><div>%s</div><div>%s</div></div>'
-        '<div class="g2"><div>%s%s</div><div>%s%s</div></div>'
+        '<div class="g2"><div>%s</div><div>%s</div></div>'
         '</article>'
-        % (hd3,
+        % (dash_head("대시보드 ② 매도 상위", "Dashboard 2 · Net selling",
+                     "그날 덜어 낸 종목과 이어 사는 종목",
+                     "What they sold, and what they keep buying"),
+           (d_frgn_kp_s or ""), (d_inst_kp_s or ""),
+           (d_frgn_kq_s or ""), (d_inst_kq_s or ""),
+           (b_streak or ""), b_sect))
+
+    sheet4 = (
+        '<article class="sheet">%s'
+        '<div class="g2"><div>%s</div><div>%s</div></div>'
+        '<div class="g2"><div>%s</div><div>%s</div></div>'
+        '<div class="g2"><div>%s</div><div>%s</div></div>'
+        '<div class="g2"><div>%s</div><div>%s</div></div>'
+        '</article>'
+        % (dash_head("대시보드 ③ 순위와 특이 종목", "Dashboard 3 · Rankings and outliers",
+                     "거래대금 10억원 이상 종목 기준 · ETF 는 레버리지·인버스 제외",
+                     "Turnover floor KRW 1bn · ETF excludes leveraged/inverse"),
            wide("코스피", "상승률상위", "코스피 상승률 상위 20", "KOSPI top 20 gainers",
                 "거래대금", "Turnover", lambda s: eok_plain(s.get("value_eok")) + "원"),
            wide("코스닥", "상승률상위", "코스닥 상승률 상위 20", "KOSDAQ top 20 gainers",
@@ -800,11 +825,11 @@ def build(market: dict, jr: dict | None, now: datetime.datetime) -> tuple[str, s
                 "거래량증감", "Vol chg", lambda s: sgn(s.get("volume_diff_pct"), 0, "%")),
            wide("코스닥", "거래대금상위", "코스닥 거래대금 상위 20", "KOSDAQ top 20 by turnover",
                 "거래량증감", "Vol chg", lambda s: sgn(s.get("volume_diff_pct"), 0, "%")),
-           b_nh, b_lim, b_qs, ""))
+           b_nh, b_lim, b_qs, b_etf_up))
 
     html = page("국내 시장일지 %s" % close_date,
                 "Korea Market Journal %s" % close_date,
-                [sheet1, sheet2, sheet3])
+                [sheet1, sheet2, sheet3, sheet4])
 
     # ── 텔레그램 전송본 ────────────────────────────────────────────
     def t_pct(v):
