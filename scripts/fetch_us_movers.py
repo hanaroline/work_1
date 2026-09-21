@@ -411,7 +411,7 @@ def main():
         "session_date_counts": dict(sorted(dates.items())),
         "universe_source": uni_src,
         # 인쇄되는 숫자가 어디서 왔는지 — 사양의 '한 출처로 통일' 은 이걸 말한다.
-        "printed_from": "yahoo:quote (v7/finance/quote, 단일 응답)",
+        "printed_from": "yahoo:quote (v7/finance/quote)",
         "screened_by": uni_src,
         "filters": {
             "min_cap_usd": MIN_CAP_USD,

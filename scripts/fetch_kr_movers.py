@@ -220,7 +220,7 @@ def main():
         # **이것을 보고 마감인지 장중인지 가른다.**
         "market_status": status.get("market_status"),
         "trading_session": status.get("session"),
-        "printed_from": "naver:stocklist (domestic/market/stock/default, 단일 API)",
+        "printed_from": "naver:stocklist (domestic/market/stock/default)",
         "filters": {
             "min_cap_krw": MIN_CAP_KRW,
             "min_trade_amount_krw": MIN_TRADE_AMOUNT_KRW,
