@@ -70,12 +70,15 @@ def probe(kis, label: str) -> dict:
                          "FID_RANK_SORT_CLS_CODE": "0", "FID_ETC_CLS_CODE": etc})
             rows = d.get("output") or []
             top = rows[0] if rows else {}
+            # **칸 이름을 자르지 않는다.** 첫 탐사에서 14개로 잘라 놓았더니
+            # 투신·은행·보험까지만 보이고 사모펀드·연기금이 있는지 알 수 없었다.
+            # 종목별 사모펀드 순매수는 시장일지가 NOT FOUND 로 비워 둔 칸이라,
+            # 여기 있는지 없는지가 그대로 답이 된다.
             r["칸"][f"순위:{who}"] = {
                 "됨": True, "줄수": len(rows),
                 "1위": top.get("hts_kor_isnm"),
-                "1위 순매수": top.get("frgn_ntby_tr_pbmn") or top.get("orgn_ntby_tr_pbmn")
-                              or top.get("ntby_tr_pbmn"),
-                "칸이름": sorted(top)[:14],
+                "칸이름": sorted(top),
+                "1위 줄 전체": top,
             }
         except Exception as e:  # noqa: BLE001
             r["칸"][f"순위:{who}"] = {"됨": False, "까닭": str(e)[:200]}
@@ -102,10 +105,14 @@ def probe(kis, label: str) -> dict:
         rows = d.get("output") or []
         days = [x.get("stck_bsop_date") for x in rows[:5]]
         first = rows[0] if rows else {}
+        # **「오늘」과 견주지 않는다.** 자정을 넘겨 재면 달력의 오늘은 아직
+        # 장이 열리지 않은 날이라, 맨 윗줄이 직전 거래일인 것이 정상인데도
+        # 「오늘 것 아님」으로 잘못 읽힌다. 날짜를 그대로 적고, 곡선에서 이
+        # 값이 **언제 다음 날로 넘어가는지**를 본다. 그것이 묻는 바다.
         r["칸"]["일자별투자자:삼성전자"] = {
             "됨": True,
             "맨위 날짜": first.get("stck_bsop_date"),
-            "오늘 것인가": first.get("stck_bsop_date") == today(),
+            "달력상 오늘과 같은가": first.get("stck_bsop_date") == today(),
             "최근 날짜들": days,
             "외국인 순매수수량": first.get("frgn_ntby_qty"),
             "기관 순매수수량": first.get("orgn_ntby_qty"),
@@ -157,9 +164,9 @@ def main() -> int:
             print(f"  ✗ {k} — {v.get('까닭')}")
             continue
         if k.startswith("순위:"):
-            print(f"  ○ {k} · {v['줄수']}줄 · 1위 {v['1위']} ({v['1위 순매수']})")
+            print(f"  ○ {k} · {v['줄수']}줄 · 1위 {v['1위']} · 칸 {len(v['칸이름'])}개")
         elif k.startswith("일자별"):
-            mark = "**오늘 것**" if v["오늘 것인가"] else f"오늘 아님({v['맨위 날짜']})"
+            mark = f"맨위 {v['맨위 날짜']}"
             print(f"  ○ {k} · {mark} · 외국인 {v['외국인 순매수수량']} / "
                   f"기관 {v['기관 순매수수량']}")
         else:
