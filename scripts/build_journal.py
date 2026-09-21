@@ -34,8 +34,8 @@ import sys
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from journal_lib import (  # noqa: E402
-    KST, VF_C, VF_MD, VF_N, VF_P, DK, DE, DS, L, block, bp, d, eok, eok_plain,
-    empty, esc, n, pct, sgn, table, won,
+    KST, VF_1, VF_C, VF_MD, VF_N, VF_P, DK, DE, DS, L, block, bp, d, eok,
+    eok_plain, empty, esc, n, pct, sgn, table, won,
 )
 
 DOCS = "docs/journal"

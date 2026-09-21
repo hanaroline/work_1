@@ -1,0 +1,145 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title data-en="Korea Market Journal 2026-09-18">국내 시장일지 2026-09-18</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --orange:#F58220; --orange-a:#CB6015; --soft:#FAB072; --blue:#043B72;
+  --ink:#1A1A1A; --body:#3D3D3D; --mut:#6C6C6C; --mut2:#84888B;
+  --hair:#CDCECB; --hair2:#E5E4E1; --surf:#F7F8FA; --surf2:#ECEFF4;
+  --up:#C62828; --down:#043B72;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{
+  margin:0; background:#E9EAEC; color:var(--body);
+  font-family:'Spoqa Han Sans Neo','Noto Sans KR','Apple SD Gothic Neo','Malgun Gothic',sans-serif;
+  font-size:13px; line-height:1.45; font-variant-numeric:tabular-nums;
+}
+html[lang=en] body{font-family:'Inter','Aptos','Segoe UI',system-ui,sans-serif}
+[data-lang-en]{display:none}
+html[lang=en] [data-lang-ko]{display:none}
+html[lang=en] [data-lang-en]{display:inline}
+
+.bar{max-width:210mm;margin:0 auto;padding:14px 6mm 0;display:flex;
+     justify-content:flex-end;gap:0}
+.lt{display:inline-flex;border:1px solid var(--hair);border-radius:2px;
+    box-shadow:0 2px 8px rgba(0,0,0,.06);overflow:hidden;background:#fff}
+.lt button{appearance:none;border:0;background:#fff;color:var(--mut);
+  font:500 14px/1 'Inter','Aptos',sans-serif;letter-spacing:.5px;
+  padding:10px 17px;cursor:pointer}
+.lt button+button{border-left:1px solid var(--hair)}
+.lt button[aria-checked=true]{background:var(--orange);color:#fff}
+.lt button:not([aria-checked=true]):hover{background:var(--surf);color:var(--ink)}
+
+.sheet{
+  width:210mm; min-height:297mm; margin:14px auto; padding:11mm 10mm 9mm;
+  background:#fff; box-shadow:0 1px 10px rgba(0,0,0,.13);
+}
+/* 머리 */
+.hd{display:flex;justify-content:space-between;align-items:flex-end;
+    border-bottom:2px solid var(--orange);padding-bottom:6px}
+.hd h1{margin:0;font-size:20px;font-weight:700;color:var(--ink);letter-spacing:-.3px}
+.hd .sub{font-size:11px;color:var(--mut);text-align:right;line-height:1.5}
+.kicker{font-size:10px;letter-spacing:.8px;color:var(--orange);font-weight:700;
+        text-transform:uppercase;margin-bottom:2px}
+
+/* 두 칸 격자 */
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:0 7mm;margin-top:7px}
+.g1{margin-top:7px}
+.blk{break-inside:avoid;margin:0 0 7px}
+.rule{height:1px;background:var(--orange);margin-bottom:4px}
+.blk h2{margin:0 0 3px;font-size:11.5px;font-weight:700;color:var(--ink);
+        letter-spacing:-.1px;display:flex;align-items:center;gap:5px}
+.note{margin:2px 0 0;font-size:8.6px;color:var(--mut2);line-height:1.35}
+.empty{margin:3px 0;font-size:9.5px;color:var(--mut)}
+
+/* 표 */
+table.dt{width:100%;border-collapse:collapse;font-size:9.3px;
+         border:1px solid var(--hair)}
+table.dt th{background:var(--soft);color:#2C2C2C;font-weight:700;
+  padding:2.5px 4px;border:1px solid var(--hair2);text-align:left;white-space:nowrap}
+table.dt td{padding:2.2px 4px;border:1px solid var(--hair2);color:var(--body);
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+table.dt tbody tr:nth-child(even){background:#FBFBFC}
+table.dt tbody tr:hover{background:var(--surf)}
+table.dt td.n,table.dt th.n{text-align:right}
+table.dt td.c,table.dt th.c{text-align:center}
+table.dt td.nm{max-width:0;width:34%}
+table.dt tfoot td{background:var(--surf2);font-size:8.4px;color:var(--mut);
+  white-space:normal;line-height:1.35}
+tr.hl td{background:#D7D7D7 !important;font-weight:700}
+
+.up{color:var(--up)} .down{color:var(--down)} .flat{color:var(--mut)}
+.mut{color:var(--mut2)}
+.vf{font-size:7.6px;font-weight:700;letter-spacing:.3px;padding:1px 4px;
+    border-radius:2px;vertical-align:middle;white-space:nowrap}
+.vf.ok{background:#E8F1EA;color:#2E8540;border:1px solid #BFD9C6}
+.vf.solo{background:#FBF2DC;color:#8A6A05;border:1px solid #E7D49A}
+.vf.none{background:#F3F3F3;color:#6C6C6C;border:1px solid var(--hair)}
+
+/* 한눈에 띠 */
+.strip{display:grid;grid-template-columns:repeat(4,1fr);gap:0;
+       border:1px solid var(--hair);border-left:3px solid var(--orange)}
+.strip div{padding:4px 6px;border-right:1px solid var(--hair2)}
+.strip div:last-child{border-right:0}
+.strip .k{font-size:8.6px;color:var(--mut);letter-spacing:.3px}
+.strip .v{font-size:14px;font-weight:700;color:var(--ink);line-height:1.2}
+.strip .c{font-size:9px}
+
+.lede{font-size:10.4px;line-height:1.55;color:var(--body);margin:6px 0 0;
+      padding:6px 8px;background:var(--surf2);border-left:3px solid var(--blue)}
+ul.iss{margin:3px 0 0;padding-left:14px;font-size:9.6px;line-height:1.5}
+ul.iss li{margin-bottom:2px}
+
+.foot{margin-top:8px;border-top:1px solid var(--hair);padding-top:5px;
+      font-size:8.4px;color:var(--mut2);line-height:1.45}
+
+@media (max-width:820px){
+  .sheet{width:auto;min-height:0;margin:10px;padding:14px 16px}
+  .g2{grid-template-columns:1fr;gap:0}
+  table.dt{font-size:11px}
+  .strip{grid-template-columns:repeat(2,1fr)}
+  .hd{flex-direction:column;align-items:flex-start;gap:4px}
+  .hd .sub{text-align:left}
+}
+@page{size:A4;margin:9mm}
+@media print{
+  body{background:#fff;font-size:9pt}
+  .bar{display:none}
+  .sheet{width:auto;min-height:0;margin:0;padding:0;box-shadow:none;
+         page-break-after:always}
+  .sheet:last-child{page-break-after:auto}
+  .blk,table{page-break-inside:avoid}
+  h2{page-break-after:avoid}
+}
+</style>
+</head>
+<body>
+<div class="bar"><div class="lt" role="radiogroup" aria-label="Language"><button id="ko" role="radio" aria-checked="true">KO</button><button id="en" role="radio" aria-checked="false">EN</button></div></div>
+<article class="sheet"><div class="hd"><div><div class="kicker"><span data-lang-ko>미래에셋증권 마포WM · 국내 시장일지</span><span data-lang-en>Mirae Asset Securities Mapo WM · Korea Market Journal</span></div><h1><span data-lang-ko>2026년 9월 18일(금) 마감</span><span data-lang-en>Close, Friday 18 September 2026</span></h1></div><div class="sub"><span data-lang-ko>KRX 정규장 마감(15:30 KST) 기준</span><span data-lang-en>Basis: KRX regular session close, 15:30 KST</span><br><span data-lang-ko>작성 2026-09-21 11:41 KST</span><span data-lang-en>Compiled 2026-09-21 11:41 KST</span></div></div><div class="lede"><b><span data-lang-ko>확인해 주십시오 —</span><span data-lang-en>Please note —</span></b> 투자자별 순매수 합계의 기준일(2026-09-21)이 종가일(2026-09-18)과 다릅니다. / HSCEI 를 받지 못했습니다 — 항셍(HSI)으로 갈음하지 않고 비워 두었습니다. / 종목별 기관·외국인 순매수를 채우지 못했습니다. / ETF 순위를 받지 못했습니다. / 테마 순위를 받지 못했습니다.</div><div class="strip"><div><div class="k"><span data-lang-ko>코스피</span><span data-lang-en>KOSPI</span></div><div class="v">6,894.23</div><div class="c"><span class="up">+2.66%</span></div></div><div><div class="k"><span data-lang-ko>코스닥</span><span data-lang-en>KOSDAQ</span></div><div class="v">827.12</div><div class="c"><span class="up">+0.60%</span></div></div><div><div class="k"><span data-lang-ko>원/달러(매매기준율)</span><span data-lang-en>USD/KRW (MAR)</span></div><div class="v">1,386.5</div><div class="c"><span class="up">+0.48%</span> <span class="mut">야후 대비</span></div></div><div><div class="k"><span data-lang-ko>국고채 3년</span><span data-lang-en>KTB 3Y</span></div><div class="v">4.035%</div><div class="c"><span class="mut">2026-09-18</span></div></div></div><div class="g2"><div><section class="blk"><div class="rule"></div><h2><span data-lang-ko>국내 지수 · 자금</span><span data-lang-en>Domestic indices & flows</span> <span class="vf ok">MARKET DATA</span></h2><table class="dt"><thead><tr><th class="nm"><span data-lang-ko>항목</span><span data-lang-en>Item</span></th><th class="n"><span data-lang-ko>종가·잔액</span><span data-lang-en>Level</span></th><th class="n"><span data-lang-ko>전일대비</span><span data-lang-en>Chg</span></th><th class="c"><span data-lang-ko>기준</span><span data-lang-en>As of</span></th></tr></thead><tbody><tr><td class="nm"><span data-lang-ko>코스피</span><span data-lang-en>KOSPI</span></td><td class="n">6,894.23</td><td class="n"><span class="up">+2.66%</span></td><td class="c"><span class="mut">9/18</span></td></tr><tr><td class="nm"><span data-lang-ko>코스닥</span><span data-lang-en>KOSDAQ</span></td><td class="n">827.12</td><td class="n"><span class="up">+0.60%</span></td><td class="c"><span class="mut">9/18</span></td></tr><tr><td class="nm"><span data-lang-ko>코스피 거래대금</span><span data-lang-en>KOSPI value</span></td><td class="n">28.10조원</td><td class="n"></td><td class="c"><span class="mut">9/18</span></td></tr><tr><td class="nm"><span data-lang-ko>코스닥 거래대금</span><span data-lang-en>KOSDAQ value</span></td><td class="n">7.59조원</td><td class="n"></td><td class="c"><span class="mut">9/18</span></td></tr><tr><td class="nm"><span data-lang-ko>원/달러(서울 매매기준율)</span><span data-lang-en>USD/KRW (Seoul MAR)</span></td><td class="n">1,386.5</td><td class="n"><span class="up">+0.48%</span></td><td class="c"><span class="mut">9/18</span></td></tr><tr><td class="nm"><span data-lang-ko>원/100엔</span><span data-lang-en>KRW/100JPY</span></td><td class="n">883.27</td><td class="n"><span class="down">&minus;0.04%</span></td><td class="c"><span class="mut">재정</span></td></tr><tr><td class="nm"><span data-lang-ko>국고채 3년</span><span data-lang-en>KTB 3Y</span></td><td class="n">4.035%</td><td class="n"><span class="up">+2.1bp</span></td><td class="c"><span class="mut">2026-09-18</span></td></tr><tr><td class="nm"><span data-lang-ko>고객예탁금</span><span data-lang-en>Investor deposits</span></td><td class="n">97.49조원</td><td class="n"><span class="down">&minus;2.08조</span></td><td class="c"><span class="mut">2026-09-17</span></td></tr><tr><td class="nm"><span data-lang-ko>신용융자 잔고</span><span data-lang-en>Margin balance</span></td><td class="n">32.66조원</td><td class="n"><span class="down">&minus;28억</span></td><td class="c"><span class="mut">2026-09-17</span></td></tr></tbody></table><p class="note">거래대금은 거래소 일별시세(백만원)를 억·조로 환산. 예탁금·신용잔고는 결제일 기준이라 종가일보다 1~2영업일 늦습니다.</p></section><section class="blk"><div class="rule"></div><h2><span data-lang-ko>투자자별 순매수 · 프로그램</span><span data-lang-en>Net buying by investor & program</span> <span class="vf ok">MARKET DATA</span></h2><table class="dt"><thead><tr><th class="nm"><span data-lang-ko>시장</span><span data-lang-en>Market</span></th><th class="n"><span data-lang-ko>개인</span><span data-lang-en>Retail</span></th><th class="n"><span data-lang-ko>외국인</span><span data-lang-en>Foreign</span></th><th class="n"><span data-lang-ko>기관</span><span data-lang-en>Inst.</span></th><th class="n"><span data-lang-ko>차익</span><span data-lang-en>Arb.</span></th><th class="n"><span data-lang-ko>비차익</span><span data-lang-en>Non-arb.</span></th></tr></thead><tbody><tr><td class="nm"><span data-lang-ko>코스피</span><span data-lang-en>KOSPI</span></td><td class="n"><span class="down">&minus;1,956억</span></td><td class="n"><span class="up">+1,118억</span></td><td class="n"><span class="up">+583억</span></td><td class="n"><span class="down">&minus;62억</span></td><td class="n"><span class="down">&minus;428억</span></td></tr><tr><td class="nm"><span data-lang-ko>코스닥</span><span data-lang-en>KOSDAQ</span></td><td class="n"><span class="up">+987억</span></td><td class="n"><span class="down">&minus;619억</span></td><td class="n"><span class="down">&minus;304억</span></td><td class="n"><span class="down">&minus;3억</span></td><td class="n"><span class="down">&minus;475억</span></td></tr></tbody></table><p class="note">단위 억원 · 기준일 2026-09-21. 선물 외국인은 무료 원천이 없어 비차익을 대용으로 봅니다.</p></section></div><div><section class="blk"><div class="rule"></div><h2><span data-lang-ko>해외 (직전 마감)</span><span data-lang-en>Overseas (latest close)</span> <span class="vf ok">MARKET DATA</span></h2><table class="dt"><thead><tr><th class="nm"><span data-lang-ko>항목</span><span data-lang-en>Item</span></th><th class="n"><span data-lang-ko>종가·잔액</span><span data-lang-en>Level</span></th><th class="n"><span data-lang-ko>전일대비</span><span data-lang-en>Chg</span></th><th class="c"><span data-lang-ko>기준</span><span data-lang-en>As of</span></th></tr></thead><tbody><tr><td class="nm"><span data-lang-ko>다우</span><span data-lang-en>Dow</span></td><td class="n">51,682.64</td><td class="n"><span class="down">&minus;0.18%</span></td><td class="c"><span class="mut">9/18</span></td></tr><tr><td class="nm"><span data-lang-ko>나스닥</span><span data-lang-en>Nasdaq</span></td><td class="n">26,522.54</td><td class="n"><span class="up">+0.39%</span></td><td class="c"><span class="mut">9/18</span></td></tr><tr><td class="nm"><span data-lang-ko>유로스톡스50</span><span data-lang-en>Euro Stoxx 50</span></td><td class="n">6,236.20</td><td class="n"><span class="down">&minus;1.37%</span></td><td class="c"><span class="mut">9/18</span></td></tr><tr><td class="nm"><span data-lang-ko>니케이225</span><span data-lang-en>Nikkei 225</span></td><td class="n">65,018.95</td><td class="n"><span class="up">+1.38%</span></td><td class="c"><span class="mut">9/18</span></td></tr><tr><td class="nm"><span data-lang-ko>상해종합</span><span data-lang-en>Shanghai Comp.</span></td><td class="n">3,911.87</td><td class="n"><span class="up">+0.94%</span></td><td class="c"><span class="mut">9/18</span></td></tr><tr><td class="nm"><span data-lang-ko>HSCEI</span><span data-lang-en>HSCEI</span></td><td class="n"><span class="mut">&mdash;</span></td><td class="n"></td><td class="c"><span class="vf none">NOT FOUND</span></td></tr><tr><td class="nm"><span data-lang-ko>항셍</span><span data-lang-en>Hang Seng</span></td><td class="n">24,750.78</td><td class="n"><span class="up">+0.60%</span></td><td class="c"><span class="mut">9/18</span></td></tr><tr><td class="nm"><span data-lang-ko>미국채 10년</span><span data-lang-en>UST 10Y</span></td><td class="n">5.010%</td><td class="n"><span class="up">+7.0bp</span></td><td class="c"><span class="mut">2026-09-18</span></td></tr><tr><td class="nm"><span data-lang-ko>WTI</span><span data-lang-en>WTI</span></td><td class="n">95.76</td><td class="n"><span class="down">&minus;4.53%</span></td><td class="c"><span class="mut">9/21</span></td></tr><tr><td class="nm"><span data-lang-ko>금</span><span data-lang-en>Gold</span></td><td class="n">4,411.30</td><td class="n"><span class="down">&minus;0.31%</span></td><td class="c"><span class="mut">9/21</span></td></tr></tbody></table><p class="note">미국·유럽은 국내 마감 이전의 직전 거래일 종가입니다. 미국채는 재무부 곡선.</p></section><section class="blk"><div class="rule"></div><h2><span data-lang-ko>등락 종목수</span><span data-lang-en>Advancers & decliners</span> <span class="vf ok">MARKET DATA</span></h2><table class="dt"><thead><tr><th class="nm"><span data-lang-ko>시장</span><span data-lang-en>Market</span></th><th class="n"><span data-lang-ko>상한</span><span data-lang-en>Lim↑</span></th><th class="n"><span data-lang-ko>상승</span><span data-lang-en>Adv</span></th><th class="n"><span data-lang-ko>보합</span><span data-lang-en>Unch</span></th><th class="n"><span data-lang-ko>하락</span><span data-lang-en>Dec</span></th><th class="n"><span data-lang-ko>하한</span><span data-lang-en>Lim↓</span></th></tr></thead><tbody><tr><td class="nm"><span data-lang-ko>코스피</span><span data-lang-en>KOSPI</span></td><td class="n">0</td><td class="n">280</td><td class="n">79</td><td class="n">515</td><td class="n">0</td></tr><tr><td class="nm"><span data-lang-ko>코스닥</span><span data-lang-en>KOSDAQ</span></td><td class="n">1</td><td class="n">528</td><td class="n">120</td><td class="n">1038</td><td class="n">1</td></tr></tbody></table></section><section class="blk"><div class="rule"></div><h2><span data-lang-ko>주요 테마 4</span><span data-lang-en>Top 4 themes</span> <span class="vf none">NOT FOUND</span></h2><p class="empty"><span data-lang-ko>테마 순위를 받지 못했습니다.</span><span data-lang-en>Theme ranking unavailable.</span> <span class="vf none">NOT FOUND</span></p></section></div></div><div class="g2"><div><section class="blk"><div class="rule"></div><h2><span data-lang-ko>종목별 수급</span><span data-lang-en>Net buying by stock</span> <span class="vf none">NOT FOUND</span></h2><p class="empty"><span data-lang-ko>기관·외국인 종목별 순매수를 받지 못했습니다.</span><span data-lang-en>Per-stock investor flows unavailable.</span> <span class="vf none">NOT FOUND</span></p><p class="note">무료 원천이 개편으로 끊겼습니다. data/journal/raw/journal_xhr*.txt 에 관찰 기록이 있습니다.</p></section><section class="blk"><div class="rule"></div><h2><span data-lang-ko>코스피 거래대금 상위</span><span data-lang-en>KOSPI by turnover</span> <span class="vf none">NOT FOUND</span></h2><p class="empty"><span data-lang-ko>해당 종목이 없습니다.</span><span data-lang-en>None.</span> <span class="vf none">NOT FOUND</span></p></section></div><div><section class="blk"><div class="rule"></div><h2><span data-lang-ko>코스닥 상승률 상위</span><span data-lang-en>KOSDAQ top gainers</span> <span class="vf none">NOT FOUND</span></h2><p class="empty"><span data-lang-ko>해당 종목이 없습니다.</span><span data-lang-en>None.</span> <span class="vf none">NOT FOUND</span></p></section></div></div><section class="blk"><div class="rule"></div><h2><span data-lang-ko>오늘의 시장 이슈 (수집 기사 제목)</span><span data-lang-en>Today's headlines (as collected)</span> <span class="vf solo">1 SOURCE</span></h2><ul class="iss"><li>장외중개 서울거래, 인가 받으려 지분 분산 추진...미래에셋·빗썸은?</li><li>"연휴 전 돈 쓰려면 오늘 팔아야되는데"…추석 전 주식 들고갈까</li><li>“거래대금 138조→56조”…신한證, 5대 증권사 목표가 줄줄이↓[줍줍리포트]</li><li>"'삼전닉스' 쏠림 완화…중소형주의 시간 온다"</li><li>넥사다이내믹스, 경영진 개편 이틀 만에 일본서 115만달러 AI 서버 수주</li><li>전력 인프라 업체로 재평가된 삼성SDI..'목표주가 80만원' 상향</li></ul><p class="note">수집기가 받아 둔 증시 기사 **제목 그대로**입니다. 해석·인과는 붙이지 않았습니다. 기사일 2026-09-21</p></section><div class="foot"><span data-lang-ko>수치 출처 — 지수·환율·금리·예탁금: 거래소·한국은행·네이버 시장지표 수집본(data/market/latest.json). 종목 순위: 네이버 종목 목록 API 전종목 한 벌을 받아 순위는 직접 매김(data/journal/latest.json). 종목별 기관·외국인 순매수는 <b>시가총액 상위 100 종목 한정</b>입니다. 배지 — MARKET DATA 수집 원천 그대로 · CALCULATED 원자료에서 우리가 셈 · PARTIAL 표본이 제한됨 · NOT FOUND 확보 실패. 이 자료는 정보 제공 목적이며 투자 권유가 아닙니다.</span><span data-lang-en>Sources — indices, FX, rates and deposits from the collected market file; stock rankings computed in-house from the full KRX list. Per-stock investor flows cover the <b>top 100 caps only</b>. Badges: MARKET DATA (as collected), CALCULATED (computed here), PARTIAL (limited sample), NOT FOUND. For information only; not investment advice.</span></div></article>
+<article class="sheet"><div class="hd"><div><div class="kicker"><span data-lang-ko>대시보드 · 수급과 순위</span><span data-lang-en>Dashboard · Flows and rankings</span></div><h1><span data-lang-ko>2026년 9월 18일(금) 마감</span><span data-lang-en>Close, Friday 18 September 2026</span></h1></div><div class="sub"><span data-lang-ko>본지 1쪽의 표를 넓혀 실은 것입니다</span><span data-lang-en>Expanded tables from page 1</span></div></div><div class="g2"><div><section class="blk"><div class="rule"></div><h2><span data-lang-ko>코스피 상승률 상위 20</span><span data-lang-en>KOSPI top 20 gainers</span> <span class="vf none">NOT FOUND</span></h2><p class="empty"><span data-lang-ko>해당 종목이 없습니다.</span><span data-lang-en>None.</span> <span class="vf none">NOT FOUND</span></p></section></div><div><section class="blk"><div class="rule"></div><h2><span data-lang-ko>코스닥 상승률 상위 20</span><span data-lang-en>KOSDAQ top 20 gainers</span> <span class="vf none">NOT FOUND</span></h2><p class="empty"><span data-lang-ko>해당 종목이 없습니다.</span><span data-lang-en>None.</span> <span class="vf none">NOT FOUND</span></p></section></div></div><div class="g2"><div><section class="blk"><div class="rule"></div><h2><span data-lang-ko>코스피 거래대금 상위 20</span><span data-lang-en>KOSPI top 20 by turnover</span> <span class="vf none">NOT FOUND</span></h2><p class="empty"><span data-lang-ko>해당 종목이 없습니다.</span><span data-lang-en>None.</span> <span class="vf none">NOT FOUND</span></p></section></div><div><section class="blk"><div class="rule"></div><h2><span data-lang-ko>코스닥 거래대금 상위 20</span><span data-lang-en>KOSDAQ top 20 by turnover</span> <span class="vf none">NOT FOUND</span></h2><p class="empty"><span data-lang-ko>해당 종목이 없습니다.</span><span data-lang-en>None.</span> <span class="vf none">NOT FOUND</span></p></section></div></div></article>
+<article class="sheet"><div class="hd"><div><div class="kicker"><span data-lang-ko>대시보드 · ETF와 시장 안쪽</span><span data-lang-en>Dashboard · ETF and internals</span></div><h1><span data-lang-ko>2026년 9월 18일(금) 마감</span><span data-lang-en>Close, Friday 18 September 2026</span></h1></div><div class="sub"><span data-lang-ko>레버리지·인버스는 상승률 표에서 뺐습니다</span><span data-lang-en>Leveraged/inverse excluded from gainers</span></div></div><div class="g2"><div><section class="blk"><div class="rule"></div><h2><span data-lang-ko>ETF 상승률 상위 (레버리지·인버스 제외)</span><span data-lang-en>ETF top gainers (ex-leveraged/inverse)</span> <span class="vf none">NOT FOUND</span></h2><p class="empty"><span data-lang-ko>ETF 순위를 받지 못했습니다.</span><span data-lang-en>ETF ranking unavailable.</span> <span class="vf none">NOT FOUND</span></p></section><section class="blk"><div class="rule"></div><h2><span data-lang-ko>52주 신고가 (종가 기준)</span><span data-lang-en>52-week highs (close basis)</span> <span class="vf none">NOT FOUND</span></h2><p class="empty"><span data-lang-ko>종가가 52주 최고가에 닿은 종목이 없습니다.</span><span data-lang-en>None.</span> <span class="vf none">NOT FOUND</span></p><p class="note">종가가 52주 최고가 이상인 종목 · 거래대금 순 · </p></section></div><div><section class="blk"><div class="rule"></div><h2><span data-lang-ko>ETF 거래대금 상위</span><span data-lang-en>ETF by turnover</span> <span class="vf none">NOT FOUND</span></h2><p class="empty"><span data-lang-ko>ETF 순위를 받지 못했습니다.</span><span data-lang-en>ETF ranking unavailable.</span> <span class="vf none">NOT FOUND</span></p><p class="note">거래대금 상위는 레버리지·인버스를 뺀 뒤의 순위입니다.</p></section><section class="blk"><div class="rule"></div><h2><span data-lang-ko>상한가</span><span data-lang-en>Limit up</span> <span class="vf none">NOT FOUND</span></h2><p class="empty"><span data-lang-ko>상한가 종목이 없습니다.</span><span data-lang-en>None.</span> <span class="vf none">NOT FOUND</span></p></section></div></div><div class="g2"><div><section class="blk"><div class="rule"></div><h2><span data-lang-ko>거래량 급증</span><span data-lang-en>Volume surge</span> <span class="vf none">NOT FOUND</span></h2><p class="empty"><span data-lang-ko>해당 종목이 없습니다.</span><span data-lang-en>None.</span> <span class="vf none">NOT FOUND</span></p><p class="note">거래대금 100억원 이상인 종목 가운데 전일 거래량 대비 증가율 상위. 문턱이 없으면 평소 거래가 거의 없던 종목이 1등을 합니다.</p></section></div><div><section class="blk"><div class="rule"></div><h2><span data-lang-ko>업종 등락 상·하위 5</span><span data-lang-en>Sectors — top/bottom 5</span> <span class="vf ok">MARKET DATA</span></h2><table class="dt"><thead><tr><th class="nm"><span data-lang-ko>업종</span><span data-lang-en>Sector</span></th><th class="n"><span data-lang-ko>등락률</span><span data-lang-en>Chg</span></th><th class="c"><span data-lang-ko>등락 종목수</span><span data-lang-en>Adv/Dec</span></th></tr></thead><tbody><tr><td class="nm">소프트웨어</td><td class="n"><span class="up">+10.27%</span></td><td class="c">23↑ / 37↓</td></tr><tr><td class="nm">석유와가스</td><td class="n"><span class="up">+3.61%</span></td><td class="c">10↑ / 7↓</td></tr><tr><td class="nm">전자장비와기기</td><td class="n"><span class="up">+2.67%</span></td><td class="c">32↑ / 57↓</td></tr><tr><td class="nm">복합유틸리티</td><td class="n"><span class="up">+2.54%</span></td><td class="c">1↑ / 0↓</td></tr><tr><td class="nm">반도체와반도체장비</td><td class="n"><span class="up">+2.52%</span></td><td class="c">71↑ / 83↓</td></tr><tr><td class="nm">백화점과일반상점</td><td class="n"><span class="down">&minus;1.36%</span></td><td class="c">2↑ / 11↓</td></tr><tr><td class="nm">에너지장비및서비스</td><td class="n"><span class="down">&minus;1.43%</span></td><td class="c">8↑ / 20↓</td></tr><tr><td class="nm">항공화물운송과물류</td><td class="n"><span class="down">&minus;1.52%</span></td><td class="c">1↑ / 7↓</td></tr><tr><td class="nm">인터넷과카탈로그소매</td><td class="n"><span class="down">&minus;1.88%</span></td><td class="c">0↑ / 6↓</td></tr><tr><td class="nm">문구류</td><td class="n"><span class="down">&minus;2.05%</span></td><td class="c">0↑ / 1↓</td></tr></tbody></table></section></div></div></article>
+<script>
+(function(){
+  var K=document.getElementById('ko'),E=document.getElementById('en');
+  function set(l,save){
+    document.documentElement.lang=l;
+    K.setAttribute('aria-checked',l==='ko');E.setAttribute('aria-checked',l==='en');
+    var t=document.querySelector('title');
+    if(t&&t.dataset.en){var a=t.dataset.ko||t.textContent;t.dataset.ko=a;
+      t.textContent=(l==='en')?t.dataset.en:a;}
+    if(save){try{localStorage.setItem('journal-lang',l)}catch(e){}}
+  }
+  K.onclick=function(){set('ko',1)};E.onclick=function(){set('en',1)};
+  var s=null;try{s=localStorage.getItem('journal-lang')}catch(e){}
+  set(s==='en'?'en':'ko',0);
+})();
+</script>
+</body>
+</html>
